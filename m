@@ -1,269 +1,314 @@
-Received: from NAM10-DM6-obe.outbound.protection.outlook.com (mail-dm6nam10on2063.outbound.protection.outlook.com [40.107.93.63])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-yb1-f182.google.com (mail-yb1-f182.google.com [209.85.219.182])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5364012D754;
-	Wed,  8 May 2024 18:57:46 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.93.63
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1715194667; cv=fail; b=fHSIQ01b9QZVvNxmYsZ6GRwgZCLaNmDVAIU6yyqYcGOAKHrP2ICTyn8MFIAKVfrG5pCW/N3A2YXfDY+L7zlj6jCL1mLwATnPq13rY1q4+bT7/Q6xvNdhufGyh50Q/tao8P/gcuwcvdVJQQeZ2ZRcR+++4VNQBR3esIQd6KOE4bc=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1715194667; c=relaxed/simple;
-	bh=/evl8yk1+Z1ErJKWSuG7VUGntP3parGLQrhGGewgj1I=;
-	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 Content-Type:MIME-Version; b=axJug7khCeeiyUxyrIt9SSnFS/nqxg6dHnyH5kNaBV5VuiUQL1tdp49cTYA1CldCPjExmrp2e/80TK/Zrd2M3QYvzk8MXFiCvBoUaosHDJtQf+tXlPE0FFDFpuSI4iDXWwdlNYejrnaph4/PjZYRyELXQZTsPl6CBTpcTU3zA7Y=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=Yj2F9ciD; arc=fail smtp.client-ip=40.107.93.63
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CAF78130E31
+	for <iommu@lists.linux.dev>; Wed,  8 May 2024 20:14:54 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.219.182
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1715199298; cv=none; b=iaaPShwhuS6MxScpaoccsBFvEmCxmW37uPE2/s9fMLYGWjXLWhUZQwSqxRxRT1s6sOvM+mP7Qkd56uMIgPPJdqaK9DbR6F84zIsqTqnu9/kPbZXd9iLSB2M39lMFTCtHg2TBFC0kqN25O9iU8+kkHzRQgmvg8kIBkf6B64kbYd8=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1715199298; c=relaxed/simple;
+	bh=7Br4vDTEN5HJ2NdZBnitM2Ve143bHdbrsYP9mVP1WYY=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=Do0t7o4n8rqbqAIjdvdHEZWK8a34d+51lA6W68YXgNOY9xSlmoluM4BteyYak1z/FIb79BLBafAQCzpzs176AGg07cqi3oUYAVipHnW7WgbNlcVvqfv3orDAVUrFazi9z678cJiJLu5E1fCbIqpoMsw3x0DXea1xw9C24PP3FNs=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=ZzbLIrBf; arc=none smtp.client-ip=209.85.219.182
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="Yj2F9ciD"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=kMidHUhtRzeJ/t7mCm/b8xyhLofsMviwCIzas3SGIbNihQJKJ/lFX3LBv+hroaeXMTOaOnGrXEOxVXf3JmzmK+vOmB73VUFCDn+7vuDc4nveCaUdHYkc7BwyIZqfDtZzFu59hdi4aGms9XT/L+UCZa7hw+bYkHD3ejPThK/EJOJnXM0zvZKtoPg7uisZl4e9gUDBmtlSIoX34EP9KNfDbXvGpPW4TuSDaorC/ABo1Jf1fbgVdMBn+xRiJHc3Zh8iZPlkz0aWoZoxmJp6IH+mi87DTzhvkdvp/MMokc9Ie4cn2f1Asrz6u2BycyYWs4h6O5vglMH3jUcwjOJOP0mhqw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=7Yd2J89cHeZ+kwbtskl9Z/l3Yrj8Lj9Itg60NrwJzs0=;
- b=B7bE3cDy83ibQ8fvlURu6NdQ8hys2k253SRVp3xozxfeT3oNJ9He3pgVS7RmUEg4wruLDWN2Vw7SItfbKC054Ir77nI0QBo4kjax17R6gFO72HU+makbqjVS3950sL9plHIO/0Gd5/Nyfw993pRI8e0EpF1w9fx3+VHFDZmzWz0MSLAhUfWamUYUSz6nay6/aFP0sCexVH46o4lk7fVzASA8/6ag4AsiJM42xCt7A9igQIIB2fuLcdZXHUU6K0HcOdbBUVcdFMpFlKKqwvG45FnCBl+3N8ahvJ6P8HERx/IG8JhX+4mGxO1fpEhVr96vV0WRgU5Zp+ifh//QZo3GoA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=7Yd2J89cHeZ+kwbtskl9Z/l3Yrj8Lj9Itg60NrwJzs0=;
- b=Yj2F9ciDgG2BJfzG3HqSHPufMpUJeaBUbx4aHC9jq7MnkqCYNlIVrR+wTy39F0k6xrtZkCxmljM2WEQEnIXCq4/tSUBH/1FifUDrLfaXzwlRi6npjT7o4xlH8piyMM+J0wb/y19Lx21ZrT7Br6ow59OcdI3ersXHJNpRzn25JcKHTgGWXmZvAqj211+FVjHPtJCnqofI8RbOvhbqXz/89po2juN26FpVH2Tz2junLGsTF7oheK5tcJkCLf/ze0q2JPH4lRPgZetV3qszMeCPKagiPcxZywu/7qr7CFeLssggOFtwJRopVC3wdEfHXaU0Hl+RZ795fz/R2X7H7dc5BQ==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-Received: from DM6PR12MB3849.namprd12.prod.outlook.com (2603:10b6:5:1c7::26)
- by CY8PR12MB7514.namprd12.prod.outlook.com (2603:10b6:930:92::21) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7544.46; Wed, 8 May
- 2024 18:57:29 +0000
-Received: from DM6PR12MB3849.namprd12.prod.outlook.com
- ([fe80::c296:774b:a5fc:965e]) by DM6PR12MB3849.namprd12.prod.outlook.com
- ([fe80::c296:774b:a5fc:965e%3]) with mapi id 15.20.7544.045; Wed, 8 May 2024
- 18:57:29 +0000
-From: Jason Gunthorpe <jgg@nvidia.com>
-To: iommu@lists.linux.dev,
-	Joerg Roedel <joro@8bytes.org>,
-	linux-arm-kernel@lists.infradead.org,
-	Robin Murphy <robin.murphy@arm.com>,
-	Will Deacon <will@kernel.org>
-Cc: Eric Auger <eric.auger@redhat.com>,
-	Jean-Philippe Brucker <jean-philippe@linaro.org>,
-	Moritz Fischer <mdf@kernel.org>,
-	Michael Shavit <mshavit@google.com>,
-	Nicolin Chen <nicolinc@nvidia.com>,
-	patches@lists.linux.dev,
-	Shameerali Kolothum Thodi <shameerali.kolothum.thodi@huawei.com>
-Subject: [PATCH v7 13/14] iommu/arm-smmu-v3: Allow a PASID to be set when RID is IDENTITY/BLOCKED
-Date: Wed,  8 May 2024 15:57:21 -0300
-Message-ID: <13-v7-9597c885796c+d2-smmuv3_newapi_p2b_jgg@nvidia.com>
-In-Reply-To: <0-v7-9597c885796c+d2-smmuv3_newapi_p2b_jgg@nvidia.com>
-References:
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-ClientProxiedBy: BL0PR03CA0027.namprd03.prod.outlook.com
- (2603:10b6:208:2d::40) To DM6PR12MB3849.namprd12.prod.outlook.com
- (2603:10b6:5:1c7::26)
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="ZzbLIrBf"
+Received: by mail-yb1-f182.google.com with SMTP id 3f1490d57ef6-de60380c04aso197214276.2
+        for <iommu@lists.linux.dev>; Wed, 08 May 2024 13:14:54 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20230601; t=1715199293; x=1715804093; darn=lists.linux.dev;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=/6GGfbxbSHf7A/lN3rMwiGSY9v5luUQzNgxUc7c9bjY=;
+        b=ZzbLIrBfbXZ2dD/HklVBfCxKEpPK5wG7Uje6tognyV9/tU290vrhMDsJU9CPcsbbbI
+         +N73CqyIZ0XDQIKt32Ji7RqroOSJKajNqoJEmQ3YkNR1wamJKi5spKyRNXA9VjczZ8hd
+         JGZgPIZc3jh/HDhLDAoAF97Sx1C6X2eG3hhZJ7peu7QamoLbhfULCmN1MWWxe3mZkp4U
+         tcKDNT+zbIloPJDgCGBfxx7yx9K8F8AocC798SkHDxzlkHJPytIh5TX3XkZhysQCTvZh
+         8KU/p9geAHK/ybZfbwc7YRGnMAPdphr0GiKwQrTIf3CIgTZGVknOqRKWrJz4nPX2WSZq
+         cE7Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1715199293; x=1715804093;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=/6GGfbxbSHf7A/lN3rMwiGSY9v5luUQzNgxUc7c9bjY=;
+        b=ujAxTyQJJ2FKnPkH5QIwp+sAx6tA17kTRY1qc3UGTTmkKRMJzvuGzUBYI691B8oVg4
+         kft/z6uX9eJ0ntSYcnWuOIHVtjyG9taMASejqOW7+cBhNfU8Qn01GJDFP6gopXS7Ig79
+         c8rzoywfzt3vJUAr886kMmbJlix+YUroS0RB6adksOh5Vd8z+eFpOG5+YtgT2Fr9ZPcL
+         QKP6p5+iE96tV0JWV0tgX2ckMWEGnRzvkdOQYht4u7c9EW/0w4dZBfk6TPOJm9OW5goz
+         xNuAl8pe1ug8oyUlc77ugUqeYvzI+duyZvfKQc3Bs4jdcdQY734n5HrFUrYrl7img7pp
+         /HwQ==
+X-Forwarded-Encrypted: i=1; AJvYcCXpfHFOlBBoY2ERgzhJYe9ejoE5SAj/MDZq1rM/OR/ZXPyqBRclARso797jndahdq5/g8s9FxpR7njqWeBJ7KgpYGGhYi8=
+X-Gm-Message-State: AOJu0Yyf+OxFDuY6k25Kmm57ADNAE8RE7+PDiXDTglJIpFur/Z/w+1nk
+	/eGakn5tUd78kl820Wq1wRqgVuFmAe4ygNoxuPt5Ez5vFPFV9UfT47SkfIlgpFHqbvEv25ZkXtP
+	SLshjgP9Vwr/GRRRrt9FEEDglEqXBvfjeXgrG
+X-Google-Smtp-Source: AGHT+IFVmBvGCi+oAM6+tUxDJgD4IsOcRaciEwYU8u3LzR6qQF6sa9yT2hd/T+0oQajyARE/NgoYNEJ0wyw8dxnCbww=
+X-Received: by 2002:a25:bb12:0:b0:de4:627e:b556 with SMTP id
+ 3f1490d57ef6-debb9d89584mr3933851276.16.1715199293284; Wed, 08 May 2024
+ 13:14:53 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: DM6PR12MB3849:EE_|CY8PR12MB7514:EE_
-X-MS-Office365-Filtering-Correlation-Id: bf1c56e4-cbcc-44a0-86d4-08dc6f90b4be
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;ARA:13230031|366007|7416005|1800799015|376005;
-X-Microsoft-Antispam-Message-Info:
-	=?us-ascii?Q?qquxx29URg7maX3kZp5oEqG2VslmBtMISDTRQ5NS4T8tuBAa5j+zBw8IiPle?=
- =?us-ascii?Q?UueAtEuZ6qRdFiF4fpfshyCToA37byl7n6rv90OWlQvSFWAWXHX0MGjzlm1s?=
- =?us-ascii?Q?7y5rixS7zNcJEZJ/3tXqxMKDZwKbSa0iUSW2rzEVp8kKHYGBP5vHZPZvQFn7?=
- =?us-ascii?Q?pOo2gKH3MbS7Xkh3VyVhg9hx0OldK6a1gFgWljUciz89eOcvcHZiQiha4j/G?=
- =?us-ascii?Q?MHuHyPzODac63sGu6ju6Vyu6vd4/M3HMxRBtJhpjPKf5Z8OxxFttiyCXLQD/?=
- =?us-ascii?Q?kkzFKyBq6JZ64WCYry1UbsW1uOmhLJUyh1nrCGvA7OxmrEj4DHIWL6cbab5n?=
- =?us-ascii?Q?kWceUksffm1+NJNlnfzQcIrBCKfE9z5RbNDZSc5Rv8CXt1cciLS19gEYJYEL?=
- =?us-ascii?Q?GduXZeNpUczxFJpStFBAWcf/ptfbQalLaCa7UCYwZMDVydVEdYD63rrBILC7?=
- =?us-ascii?Q?7HxUAxX6G/zNAzEq6F//dmyOB5pBJritpquJAnYfA9kwqQoz6eAB/V1oUHFJ?=
- =?us-ascii?Q?LwcqgDL+1lKX65fOMoakCthtEZJ3Kn33o4XYDTvXIUa4gxcEGerF2XytQxeu?=
- =?us-ascii?Q?b52jnBdv+UVEnx7uC3RgFOeiyeDPY+UtHjkMGqdpBBBZu/cnbPwlw0Etc6Xe?=
- =?us-ascii?Q?10YHmmi+Yyz7Gm3H4HjLOhOKjEbgNQ6zlj+vc0jyDjoSGk8lGsNDTjQeHAvy?=
- =?us-ascii?Q?P7lPYZbh/Qd3QWJkj6qVGf/dk1GahYM3zWhI2wShdkzU1dNVfrFpKiqYjkna?=
- =?us-ascii?Q?IW07Oa4777Py8KSlcgaELjbVlUOwJu9EVt56Jniq72dZM8RLmxmCvnnPzhkO?=
- =?us-ascii?Q?Y3uXGL5FVu49CFr89r8te2EnCepP2FWP1WiMH+HAftjQDAkySvwn3JXVDFtc?=
- =?us-ascii?Q?C1cjmYEkYYlnhh7gn4TCy3BsJ7059+z7xdtxCi2fwpxZ273kWdg+vll8CXtV?=
- =?us-ascii?Q?Epu0QPAvfdYlTFGt3vZ+9zF3JXLkQFQ9MVM0SS9B377DNUsm5Tsqs10/CfPp?=
- =?us-ascii?Q?5xEhHWbdt05OOWgZXwDHhCuvqiGnz4nyaS+QX+7mvXaD+Aor0/5QJOlapLTo?=
- =?us-ascii?Q?UAPb0rnBnHPdeX2Czphmkbxbdpv2cPjO/CaTzmgcUQsGi5EBbvVhnu0lBX7K?=
- =?us-ascii?Q?/jmd3nG+s3xon2nkAjUFpnfCwwJrGnGgtQfqFlA6MVNeHCt3iKOgGCvnTRjc?=
- =?us-ascii?Q?wuj2fjmYdXUuBuq547fZWLxOvgDZUfwui64JrU4xla+I0eX1lsOIxoRNJN29?=
- =?us-ascii?Q?X/jsq90kPtZvySTUf1OblBnGkTCIp+5X7tIaM3Mp/w=3D=3D?=
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM6PR12MB3849.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230031)(366007)(7416005)(1800799015)(376005);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?us-ascii?Q?DpoS5/8Zng6VywqfMWlYCx6wmvoxHyn/g7H2fc9j5nW5AY7d/YquUrrhikCd?=
- =?us-ascii?Q?y41UqVMj0bnLASWwdCjdEGjl0LhwzsxPE6UK62qvl7H4sl56QNI/lk7dEEQp?=
- =?us-ascii?Q?qoiN1qb+ZBtjWOIIfNJ1PEjgO+5E6U0QAYxi4lC68zMyaq/wEcfO0p26XBF8?=
- =?us-ascii?Q?XCLbjsXBE6gyj8YT21jkgr7zL0LmX8UyMkuDHfCZo6jgrZZDrEk3SsdPBGJx?=
- =?us-ascii?Q?OsZsIRBTLYskX4ZA6HjeBbHz1SSH0ytCD4SgzhKe/dvzQX+w4PPLFW8S0miM?=
- =?us-ascii?Q?+2R/ky2zF6bL1kg2iEOoaV4Mu1KWNFz1yRqRi68Bt7cgjNeWGSLSIS6guqxo?=
- =?us-ascii?Q?AZ6pWUH6JSzwuUMtph6sL5oryGhAZFjuSlSPWP+8S3b82Tt8DOMGyBEieYc9?=
- =?us-ascii?Q?yUInWJl7CrGXkU0WWwor4lSN6VV9rWg0brX8MQCnByO3/9Vu4IjENcHbMf1B?=
- =?us-ascii?Q?m0m087VRGl0Cj1VUNB+TSiP8B/mYeZ3Q0mrIDp/3W7OK9hLPAYfrHMxFdoRZ?=
- =?us-ascii?Q?2H/EAotZWlFR16y2mxu+9VBsU8+w1FABX2xsHOAh1Icgz7v7M/8JCZMZg7In?=
- =?us-ascii?Q?XyIkiKw5fEichznwZJHzYR94s/XUjUpjQTd8A7sfwTk14cvJFpZOAC9ZmqUY?=
- =?us-ascii?Q?Rqcx4YAcLYjyZBhMFLr2cfwA1IFKqfda6QGbmMIDiAhkGvBscwcRqy5HPcbu?=
- =?us-ascii?Q?Ser220HAVhylj4brtmFk0XvX9MkoFUZalkZT0kT4MnWtJl9tls8w3QdpuGPP?=
- =?us-ascii?Q?Y4fCQtADMdTLchP7E4NIb6K/tSLEXvNr/K0VgYUxvX5Y0QJNZ2a/PAPKQ0i6?=
- =?us-ascii?Q?dNk6wc52oIVJ1yc9FPJOH7xdPJVSdIvo1nQuW7hvYuj6/HVyW0E7l5FX7mz3?=
- =?us-ascii?Q?XfXGeeNHXt2nsq9b8sNtT0TudwIKHWCoanoy30rbHlW2ZnJrBbwaaC3077kC?=
- =?us-ascii?Q?+L6vO/Af49SrUi2JTTBAApFPhnTEUeC0iGeHyVps5w7quaTOnKwxjmFOb0Wb?=
- =?us-ascii?Q?EDnoR5HYFBb8IM9LedBIsKP5n18PdIlZ4brCa912Ev4vQ5uGFcnUCd/EttBj?=
- =?us-ascii?Q?/S15clhryaazAUcUVoe0p2UzVHVBZVaipAbmh8motdhSC9gHHFFtbZ8yY0cC?=
- =?us-ascii?Q?apbviIVr3GcBxspuYXkJzORzcfLDUE0Fp2iOgdQhMwyGYa+WvH3bvMkRy6Vw?=
- =?us-ascii?Q?TwfcSWgKGDNETNWLXGV2sUm8ypS88mS0rw0in9nU4w/4itWSkULU0sbF2tEv?=
- =?us-ascii?Q?cihAr8gh7apqzRkarmBLRJLD3kVGIki5gGgBRB60OFxIlCADpTSeQVUeeSjN?=
- =?us-ascii?Q?andYZEsg0mQYYJ2hQYQD2L74CjAGgqBGMH9DPMUK19NkhaxOEf7S9SDnTlAb?=
- =?us-ascii?Q?/zoBXIyyVQywX5nmgjg/1JnVLSKW4HyyHe4EcEu+dnQ1Icp3+nCWe2pu+T7X?=
- =?us-ascii?Q?HVhHCMxGVDWt8QRI+U5XtqofJbv6GqOhEqv593OpjOiTblpPdIsJVD1TE7Ll?=
- =?us-ascii?Q?JOB5+33b02uOkrZXTSMCK2wGmPPX59VX/tqH5Jc8FF30zK+2mMdUcofyNyyx?=
- =?us-ascii?Q?Ah74o5b/fIE5FQO6u/hZnQK2iwahpfgA7wP5RRbY?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: bf1c56e4-cbcc-44a0-86d4-08dc6f90b4be
-X-MS-Exchange-CrossTenant-AuthSource: DM6PR12MB3849.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 08 May 2024 18:57:27.9222
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: 2fdFn9ZXcrkwJ0pg1MueKuLzrU7rdihs5Hx18hkiLidBgrm2LdGzgIa+ZC2mMWDs
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: CY8PR12MB7514
+References: <20240503183713.1557480-1-tjmercier@google.com>
+ <20240506052955.GA4923@lst.de> <CABdmKX1XNTtoPTvfsJRobim8pHdDjPsKx=qVovVZDh5GEbKCfQ@mail.gmail.com>
+ <20240506160244.GA16248@lst.de> <CABdmKX1n98+bw+1kewz=wdqq2Nbpaxao_Lx-Gq8oKGNUEP4ytQ@mail.gmail.com>
+ <20240506161906.GA17237@lst.de> <CABdmKX3s_HnxciDA3XGM8Qj0kLY8OWENg+ifexrON4VYVbuLsA@mail.gmail.com>
+ <20240507054314.GA31814@lst.de> <CABdmKX3PgcXaRUH3L7OV+POMiMd5L6pEF4fLXYPgfmQUNu_trg@mail.gmail.com>
+ <Zju0JOx_ij1qH-34@arm.com>
+In-Reply-To: <Zju0JOx_ij1qH-34@arm.com>
+From: "T.J. Mercier" <tjmercier@google.com>
+Date: Wed, 8 May 2024 13:14:41 -0700
+Message-ID: <CABdmKX3LANk-0ThrQ86ay5EnToM38gVH3oddBUnXq=9cmS0gCQ@mail.gmail.com>
+Subject: Re: [PATCH] dma-direct: Set SG_DMA_SWIOTLB flag for dma-direct
+To: Catalin Marinas <catalin.marinas@arm.com>
+Cc: Christoph Hellwig <hch@lst.de>, Marek Szyprowski <m.szyprowski@samsung.com>, 
+	Robin Murphy <robin.murphy@arm.com>, isaacmanjarres@google.com, iommu@lists.linux.dev, 
+	linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-If the STE doesn't point to the CD table we can upgrade it by
-reprogramming the STE with the appropriate S1DSS. We may also need to turn
-on ATS at the same time.
+On Wed, May 8, 2024 at 10:19=E2=80=AFAM Catalin Marinas <catalin.marinas@ar=
+m.com> wrote:
+>
+> On Tue, May 07, 2024 at 01:07:25PM -0700, T.J. Mercier wrote:
+> > On Mon, May 6, 2024 at 10:43=E2=80=AFPM Christoph Hellwig <hch@lst.de> =
+wrote:
+> > > On Mon, May 06, 2024 at 09:39:53AM -0700, T.J. Mercier wrote:
+> > > > > You should not check, you simply must handle it by doing the prop=
+er
+> > > > > DMA API based ownership management.
+> > > >
+> > > > That doesn't really work for uncached buffers.
+> > >
+> > > What uncached buffers?
+> >
+> > For example these ones:
+> > https://android.googlesource.com/kernel/common/+/refs/heads/android-mai=
+nline/drivers/dma-buf/heaps/system_heap.c#141
+> >
+> > Vendors have their own drivers that also export uncached buffers in a
+> > similar way.
+>
+> IIUC, you have an uncached dma buffer and you want to pass those pages
+> to dma_map_sgtable() with DMA_ATTR_SKIP_CPU_SYNC since the buffer has
+> already been made coherent via other means (the CPU mapping is
+> uncached). The small kmalloc() bouncing gets in the way as it copies the
+> data to a cached buffer but it also skips the cache maintenance because
+> of DMA_ATTR_SKIP_CPU_SYNC.
 
-Keep track if the installed STE is pointing at the cd_table and the ATS
-state to trigger this path.
+Yes, that's a problem at the time of the mapping. It's also a problem
+for dma_buf_{begin,end}_cpu_access calls because implementing an
+uncached buffer means we want to skip dma_sync_sgtable_for_*, but that
+also skips the swiotlb copy. The goal is to only let the mapping
+succeed if the cache maintenance can always be skipped while also
+ensuring all users have a correct view of the memory, and that doesn't
+seem possible where swiotlb is involved.
 
-Tested-by: Nicolin Chen <nicolinc@nvidia.com>
-Tested-by: Shameer Kolothum <shameerali.kolothum.thodi@huawei.com>
-Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
----
- drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 49 ++++++++++++++++++++-
- drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h |  3 +-
- 2 files changed, 49 insertions(+), 3 deletions(-)
+> I assume Android carries these patches:
 
-diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-index 41d7a0664a445d..ccc10ad3ab996d 100644
---- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-+++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-@@ -2435,6 +2435,9 @@ static void arm_smmu_install_ste_for_dev(struct arm_smmu_master *master,
- 	master->cd_table.in_ste =
- 		FIELD_GET(STRTAB_STE_0_CFG, le64_to_cpu(target->data[0])) ==
- 		STRTAB_STE_0_CFG_S1_TRANS;
-+	master->ste_ats_enabled =
-+		FIELD_GET(STRTAB_STE_1_EATS, le64_to_cpu(target->data[1])) ==
-+		STRTAB_STE_1_EATS_TRANS;
- 
- 	for (i = 0; i < master->num_streams; ++i) {
- 		u32 sid = master->streams[i].id;
-@@ -2765,10 +2768,36 @@ static int arm_smmu_attach_dev(struct iommu_domain *domain, struct device *dev)
- 	return 0;
- }
- 
-+static void arm_smmu_update_ste(struct arm_smmu_master *master,
-+				struct iommu_domain *sid_domain,
-+				bool want_ats)
-+{
-+	unsigned int s1dss = STRTAB_STE_1_S1DSS_TERMINATE;
-+	struct arm_smmu_ste ste;
-+
-+	if (master->cd_table.in_ste && master->ste_ats_enabled == want_ats)
-+		return;
-+
-+	if (sid_domain->type == IOMMU_DOMAIN_IDENTITY)
-+		s1dss = STRTAB_STE_1_S1DSS_BYPASS;
-+	else
-+		WARN_ON(sid_domain->type != IOMMU_DOMAIN_BLOCKED);
-+
-+	/*
-+	 * Change the STE into a cdtable one with SID IDENTITY/BLOCKED behavior
-+	 * using s1dss if necessary. The cd_table is already installed then
-+	 * the S1DSS is correct and this will just update the EATS. Otherwise
-+	 * it installs the entire thing. This will be hitless.
-+	 */
-+	arm_smmu_make_cdtable_ste(&ste, master, want_ats, s1dss);
-+	arm_smmu_install_ste_for_dev(master, &ste);
-+}
-+
- int arm_smmu_set_pasid(struct arm_smmu_master *master,
- 		       struct arm_smmu_domain *smmu_domain, ioasid_t pasid,
- 		       const struct arm_smmu_cd *cd)
- {
-+	struct iommu_domain *sid_domain = iommu_get_domain_for_dev(master->dev);
- 	struct attach_state state = {
- 		/*
- 		 * For now the core code prevents calling this when a domain is
-@@ -2784,8 +2813,10 @@ int arm_smmu_set_pasid(struct arm_smmu_master *master,
- 	if (smmu_domain->smmu != master->smmu)
- 		return -EINVAL;
- 
--	if (!master->cd_table.in_ste)
--		return -ENODEV;
-+	if (!master->cd_table.in_ste &&
-+	    sid_domain->type != IOMMU_DOMAIN_IDENTITY &&
-+	    sid_domain->type != IOMMU_DOMAIN_BLOCKED)
-+		return -EINVAL;
- 
- 	cdptr = arm_smmu_alloc_cd_ptr(master, pasid);
- 	if (!cdptr)
-@@ -2797,6 +2828,7 @@ int arm_smmu_set_pasid(struct arm_smmu_master *master,
- 		goto out_unlock;
- 
- 	arm_smmu_write_cd_entry(master, pasid, cdptr, cd);
-+	arm_smmu_update_ste(master, sid_domain, state.want_ats);
- 
- 	arm_smmu_attach_commit(master, &state);
- 
-@@ -2819,6 +2851,19 @@ static void arm_smmu_remove_dev_pasid(struct device *dev, ioasid_t pasid,
- 		arm_smmu_atc_inv_master(master, pasid);
- 	arm_smmu_remove_master_domain(master, &smmu_domain->domain, pasid);
- 	mutex_unlock(&arm_smmu_asid_lock);
-+
-+	/*
-+	 * When the last user of the CD table goes away downgrade the STE back
-+	 * to a non-cd_table one.
-+	 */
-+	if (!arm_smmu_ssids_in_use(&master->cd_table)) {
-+		struct iommu_domain *sid_domain =
-+			iommu_get_domain_for_dev(master->dev);
-+
-+		if (domain->type == IOMMU_DOMAIN_IDENTITY ||
-+		    domain->type == IOMMU_DOMAIN_BLOCKED)
-+			sid_domain->ops->attach_dev(sid_domain, dev);
-+	}
- }
- 
- static void arm_smmu_attach_dev_ste(struct iommu_domain *domain,
-diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
-index 71ecced1db0226..3c189a48e29757 100644
---- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
-+++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
-@@ -705,7 +705,8 @@ struct arm_smmu_master {
- 	/* Locked by the iommu core using the group mutex */
- 	struct arm_smmu_ctx_desc_cfg	cd_table;
- 	unsigned int			num_streams;
--	bool				ats_enabled;
-+	bool				ats_enabled : 1;
-+	bool				ste_ats_enabled : 1;
- 	bool				stall_enabled;
- 	bool				sva_enabled;
- 	bool				iopf_enabled;
--- 
-2.43.2
+> https://lore.kernel.org/r/20201110034934.70898-8-john.stultz@linaro.org/
 
+Correct.
+
+> Arguably this is abusing the DMA API since DMA_ATTR_SKIP_CPU_SYNC should
+> be used for subsequent mappings of buffers already mapped to device by a
+> prior dma_map_*() operation. In the above patchset, the buffer is
+> vmap'ed by the dma-buf heap code and DMA_ATTR_SKIP_CPU_SYNC is used on
+> the first dma_map_*().
+>
+> Ignoring the above hacks, I think we can get in a similar situation even
+> with more complex uses of the DMA API. Let's say some buffers are
+> initially mapped to device with dma_map_page(), some of them being
+> bounced but cache maintenance completed. A subsequent dma_map_*()
+> on those pages may force a bouncing again but DMA_ATTR_SKIP_CPU_SYNC
+> will avoid the cache maintenance. You are not actually sharing the
+> original buffers but create separate (bounced) copies no longer coherent
+> with the device.
+
+Right, no good. The inverse of the dma_buf_begin_cpu_access problem.
+
+> I think in general buffer sharing with multiple dma_map_*() calls on the
+> same buffer and DMA_ATTR_SKIP_CPU_SYNC is incompatible with bouncing,
+> irrespective of the kmalloc() minalign series. If you do this for a
+> 32-bit device and one of the pages is outside the ZONE_DMA32 range,
+> you'd get a similar behaviour.
+>
+> From the kmalloc() minumum alignment perspective, it makes sense to skip
+> the bouncing if DMA_ATTR_SKIP_CPU_SYNC is passed. We also skip the
+> bouncing if the direction is DMA_TO_DEVICE or the device is fully
+> coherent.
+>
+> A completely untested patch below. It doesn't solve other problems with
+> bouncing you may have with your out of tree patches and, as Christoph
+> said, checking in your driver whether the DMA address is a swiotlb
+> buffer is completely wrong.
+
+This is where I must be missing something. Is the main opposition that
+the *driver* is checking for swiotlb use (instead of inside the DMA
+API)? Because it sounds like we agree it's a bad idea to attempt
+bouncing + DMA_ATTR_SKIP_CPU_SYNC.
+
+This code looks like it almost gets there, but it'd still reach
+swiotlb_map (instead of DMA_MAPPING_ERROR) with DMA_ATTR_SKIP_CPU_SYNC
+set for force_bounce or if the dma_capable check fails.
+
+> ---------8<------------------------
+> diff --git a/drivers/iommu/dma-iommu.c b/drivers/iommu/dma-iommu.c
+> index e4cb26f6a943..c7ff464a5f81 100644
+> --- a/drivers/iommu/dma-iommu.c
+> +++ b/drivers/iommu/dma-iommu.c
+> @@ -602,15 +602,16 @@ static bool dev_is_untrusted(struct device *dev)
+>  }
+>
+>  static bool dev_use_swiotlb(struct device *dev, size_t size,
+> -                           enum dma_data_direction dir)
+> +                           enum dma_data_direction dir, unsigned long at=
+trs)
+>  {
+>         return IS_ENABLED(CONFIG_SWIOTLB) &&
+>                 (dev_is_untrusted(dev) ||
+> -                dma_kmalloc_needs_bounce(dev, size, dir));
+> +                dma_kmalloc_needs_bounce(dev, size, dir, attrs));
+>  }
+>
+>  static bool dev_use_sg_swiotlb(struct device *dev, struct scatterlist *s=
+g,
+> -                              int nents, enum dma_data_direction dir)
+> +                              int nents, enum dma_data_direction dir,
+> +                              unsigned long attrs)
+>  {
+>         struct scatterlist *s;
+>         int i;
+> @@ -626,7 +627,7 @@ static bool dev_use_sg_swiotlb(struct device *dev, st=
+ruct scatterlist *sg,
+>          * direction, check the individual lengths in the sg list. If any
+>          * element is deemed unsafe, use the swiotlb for bouncing.
+>          */
+> -       if (!dma_kmalloc_safe(dev, dir)) {
+> +       if (!dma_kmalloc_safe(dev, dir, attrs)) {
+>                 for_each_sg(sg, s, nents, i)
+>                         if (!dma_kmalloc_size_aligned(s->length))
+>                                 return true;
+> @@ -1076,7 +1077,7 @@ static void iommu_dma_sync_single_for_cpu(struct de=
+vice *dev,
+>  {
+>         phys_addr_t phys;
+>
+> -       if (dev_is_dma_coherent(dev) && !dev_use_swiotlb(dev, size, dir))
+> +       if (dev_is_dma_coherent(dev) && !dev_use_swiotlb(dev, size, dir, =
+0))
+>                 return;
+>
+>         phys =3D iommu_iova_to_phys(iommu_get_dma_domain(dev), dma_handle=
+);
+> @@ -1092,7 +1093,7 @@ static void iommu_dma_sync_single_for_device(struct=
+ device *dev,
+>  {
+>         phys_addr_t phys;
+>
+> -       if (dev_is_dma_coherent(dev) && !dev_use_swiotlb(dev, size, dir))
+> +       if (dev_is_dma_coherent(dev) && !dev_use_swiotlb(dev, size, dir, =
+0))
+>                 return;
+>
+>         phys =3D iommu_iova_to_phys(iommu_get_dma_domain(dev), dma_handle=
+);
+> @@ -1152,7 +1153,7 @@ static dma_addr_t iommu_dma_map_page(struct device =
+*dev, struct page *page,
+>          * If both the physical buffer start address and size are
+>          * page aligned, we don't need to use a bounce page.
+>          */
+> -       if (dev_use_swiotlb(dev, size, dir) &&
+> +       if (dev_use_swiotlb(dev, size, dir, attrs) &&
+>             iova_offset(iovad, phys | size)) {
+>                 void *padding_start;
+>                 size_t padding_size, aligned_size;
+> @@ -1369,7 +1370,7 @@ static int iommu_dma_map_sg(struct device *dev, str=
+uct scatterlist *sg,
+>                         goto out;
+>         }
+>
+> -       if (dev_use_sg_swiotlb(dev, sg, nents, dir))
+> +       if (dev_use_sg_swiotlb(dev, sg, nents, dir, attrs))
+>                 return iommu_dma_map_sg_swiotlb(dev, sg, nents, dir, attr=
+s);
+>
+>         if (!(attrs & DMA_ATTR_SKIP_CPU_SYNC))
+> diff --git a/include/linux/dma-map-ops.h b/include/linux/dma-map-ops.h
+> index 4abc60f04209..857a460e40f0 100644
+> --- a/include/linux/dma-map-ops.h
+> +++ b/include/linux/dma-map-ops.h
+> @@ -277,7 +277,8 @@ static inline bool dev_is_dma_coherent(struct device =
+*dev)
+>   * Check whether potential kmalloc() buffers are safe for non-coherent D=
+MA.
+>   */
+>  static inline bool dma_kmalloc_safe(struct device *dev,
+> -                                   enum dma_data_direction dir)
+> +                                   enum dma_data_direction dir,
+> +                                   unsigned long attrs)
+>  {
+>         /*
+>          * If DMA bouncing of kmalloc() buffers is disabled, the kmalloc(=
+)
+> @@ -288,10 +289,12 @@ static inline bool dma_kmalloc_safe(struct device *=
+dev,
+>
+>         /*
+>          * kmalloc() buffers are DMA-safe irrespective of size if the dev=
+ice
+> -        * is coherent or the direction is DMA_TO_DEVICE (non-desctructiv=
+e
+> -        * cache maintenance and benign cache line evictions).
+> +        * is coherent, the direction is DMA_TO_DEVICE (non-desctructive
+> +        * cache maintenance and benign cache line evictions) or the
+> +        * attributes require no cache maintenance.
+>          */
+> -       if (dev_is_dma_coherent(dev) || dir =3D=3D DMA_TO_DEVICE)
+> +       if (dev_is_dma_coherent(dev) || dir =3D=3D DMA_TO_DEVICE ||
+> +           attrs & DMA_ATTR_SKIP_CPU_SYNC)
+>                 return true;
+>
+>         return false;
+> @@ -328,9 +331,11 @@ static inline bool dma_kmalloc_size_aligned(size_t s=
+ize)
+>   * in the kernel.
+>   */
+>  static inline bool dma_kmalloc_needs_bounce(struct device *dev, size_t s=
+ize,
+> -                                           enum dma_data_direction dir)
+> +                                           enum dma_data_direction dir,
+> +                                           unsigned long attrs)
+>  {
+> -       return !dma_kmalloc_safe(dev, dir) && !dma_kmalloc_size_aligned(s=
+ize);
+> +       return !dma_kmalloc_safe(dev, dir, attrs) &&
+> +               !dma_kmalloc_size_aligned(size);
+>  }
+>
+>  void *arch_dma_alloc(struct device *dev, size_t size, dma_addr_t *dma_ha=
+ndle,
+> diff --git a/kernel/dma/direct.h b/kernel/dma/direct.h
+> index 18d346118fe8..c2d31a67719e 100644
+> --- a/kernel/dma/direct.h
+> +++ b/kernel/dma/direct.h
+> @@ -96,7 +96,7 @@ static inline dma_addr_t dma_direct_map_page(struct dev=
+ice *dev,
+>         }
+>
+>         if (unlikely(!dma_capable(dev, dma_addr, size, true)) ||
+> -           dma_kmalloc_needs_bounce(dev, size, dir)) {
+> +           dma_kmalloc_needs_bounce(dev, size, dir, attrs)) {
+>                 if (is_pci_p2pdma_page(page))
+>                         return DMA_MAPPING_ERROR;
+>                 if (is_swiotlb_active(dev))
+>
+> --
+> Catalin
