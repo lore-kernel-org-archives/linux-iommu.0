@@ -1,314 +1,150 @@
-Received: from mail-yb1-f182.google.com (mail-yb1-f182.google.com [209.85.219.182])
+Received: from mail-ed1-f46.google.com (mail-ed1-f46.google.com [209.85.208.46])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CAF78130E31
-	for <iommu@lists.linux.dev>; Wed,  8 May 2024 20:14:54 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.219.182
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id ACA20130AD3
+	for <iommu@lists.linux.dev>; Wed,  8 May 2024 20:28:09 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.46
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1715199298; cv=none; b=iaaPShwhuS6MxScpaoccsBFvEmCxmW37uPE2/s9fMLYGWjXLWhUZQwSqxRxRT1s6sOvM+mP7Qkd56uMIgPPJdqaK9DbR6F84zIsqTqnu9/kPbZXd9iLSB2M39lMFTCtHg2TBFC0kqN25O9iU8+kkHzRQgmvg8kIBkf6B64kbYd8=
+	t=1715200091; cv=none; b=XV/WH/zqjdRCXc3O+6HxlkPWulZUs+Lb1nDbVyQdT4DMEA5rfFGbcn1gmf35xW6dbEdQnvHty1L09F7j0WkOEuuRvoBF//BR9O8uL7k5aCcnShQTfZqnFuheCKoTeFgWY9wKhsEUARxOVm1r/bX0kdDmCt79PfnYoVSVqFbTx3Q=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1715199298; c=relaxed/simple;
-	bh=7Br4vDTEN5HJ2NdZBnitM2Ve143bHdbrsYP9mVP1WYY=;
+	s=arc-20240116; t=1715200091; c=relaxed/simple;
+	bh=o2NLQhPztuDZ4rTiTDFMEINRFzrqOs93EXYAp0RXtiY=;
 	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=Do0t7o4n8rqbqAIjdvdHEZWK8a34d+51lA6W68YXgNOY9xSlmoluM4BteyYak1z/FIb79BLBafAQCzpzs176AGg07cqi3oUYAVipHnW7WgbNlcVvqfv3orDAVUrFazi9z678cJiJLu5E1fCbIqpoMsw3x0DXea1xw9C24PP3FNs=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=ZzbLIrBf; arc=none smtp.client-ip=209.85.219.182
+	 To:Cc:Content-Type; b=gBybwW/d/McYnv0EpgHzwB+dDWEFzhydnnrPJxZuG7w+HNR1BeuoTfTOtPcD78Hm7wDM4h7HRyyr5shseImNCr3mPGfFqeYWt1llDblvJ6aUYzKrnkRkRNehulE8k4G3J2C4SiSfQ442FVihzsFENys+X6+iifAfzh+QNIZ6RGo=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=l9L0o634; arc=none smtp.client-ip=209.85.208.46
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="ZzbLIrBf"
-Received: by mail-yb1-f182.google.com with SMTP id 3f1490d57ef6-de60380c04aso197214276.2
-        for <iommu@lists.linux.dev>; Wed, 08 May 2024 13:14:54 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="l9L0o634"
+Received: by mail-ed1-f46.google.com with SMTP id 4fb4d7f45d1cf-572aad902baso3803a12.0
+        for <iommu@lists.linux.dev>; Wed, 08 May 2024 13:28:09 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20230601; t=1715199293; x=1715804093; darn=lists.linux.dev;
+        d=google.com; s=20230601; t=1715200088; x=1715804888; darn=lists.linux.dev;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=/6GGfbxbSHf7A/lN3rMwiGSY9v5luUQzNgxUc7c9bjY=;
-        b=ZzbLIrBfbXZ2dD/HklVBfCxKEpPK5wG7Uje6tognyV9/tU290vrhMDsJU9CPcsbbbI
-         +N73CqyIZ0XDQIKt32Ji7RqroOSJKajNqoJEmQ3YkNR1wamJKi5spKyRNXA9VjczZ8hd
-         JGZgPIZc3jh/HDhLDAoAF97Sx1C6X2eG3hhZJ7peu7QamoLbhfULCmN1MWWxe3mZkp4U
-         tcKDNT+zbIloPJDgCGBfxx7yx9K8F8AocC798SkHDxzlkHJPytIh5TX3XkZhysQCTvZh
-         8KU/p9geAHK/ybZfbwc7YRGnMAPdphr0GiKwQrTIf3CIgTZGVknOqRKWrJz4nPX2WSZq
-         cE7Q==
+        bh=VxBCT1ZV/EGWLKjxVs7FXcKu7sqjJfkKsVJ1w+mU1+0=;
+        b=l9L0o634ZZ0AIbzUJOMAtGiMmmN6Ea99wGnV/61aEyL+dKmz3A0mzoAT7duU0V0YdP
+         TI1ON2+6fYTx+1IrFts47FntfMVRfGAz6Z7ariIW6RXfhVsPU3qli3KjmpEzmh+DKM1c
+         xfpUf5aNcoixSYM/w4D0mblvjEHVW690TJm4aBBjaA2xnkWgcjmjYd8CplfswhK5Eftm
+         ZvETc6ZhBVjvJKMEiSFPB/1DluHrREBv3ff+S5rv+Ourb8uusZ+MgQCRycidu5w+SSjd
+         Vs1LKE4YWVM+8OZwSe60BcIDFS25SwmcVF625dCR7g5qlJuXARE51quQKUAwTQDo1IHp
+         MJLA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1715199293; x=1715804093;
+        d=1e100.net; s=20230601; t=1715200088; x=1715804888;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=/6GGfbxbSHf7A/lN3rMwiGSY9v5luUQzNgxUc7c9bjY=;
-        b=ujAxTyQJJ2FKnPkH5QIwp+sAx6tA17kTRY1qc3UGTTmkKRMJzvuGzUBYI691B8oVg4
-         kft/z6uX9eJ0ntSYcnWuOIHVtjyG9taMASejqOW7+cBhNfU8Qn01GJDFP6gopXS7Ig79
-         c8rzoywfzt3vJUAr886kMmbJlix+YUroS0RB6adksOh5Vd8z+eFpOG5+YtgT2Fr9ZPcL
-         QKP6p5+iE96tV0JWV0tgX2ckMWEGnRzvkdOQYht4u7c9EW/0w4dZBfk6TPOJm9OW5goz
-         xNuAl8pe1ug8oyUlc77ugUqeYvzI+duyZvfKQc3Bs4jdcdQY734n5HrFUrYrl7img7pp
-         /HwQ==
-X-Forwarded-Encrypted: i=1; AJvYcCXpfHFOlBBoY2ERgzhJYe9ejoE5SAj/MDZq1rM/OR/ZXPyqBRclARso797jndahdq5/g8s9FxpR7njqWeBJ7KgpYGGhYi8=
-X-Gm-Message-State: AOJu0Yyf+OxFDuY6k25Kmm57ADNAE8RE7+PDiXDTglJIpFur/Z/w+1nk
-	/eGakn5tUd78kl820Wq1wRqgVuFmAe4ygNoxuPt5Ez5vFPFV9UfT47SkfIlgpFHqbvEv25ZkXtP
-	SLshjgP9Vwr/GRRRrt9FEEDglEqXBvfjeXgrG
-X-Google-Smtp-Source: AGHT+IFVmBvGCi+oAM6+tUxDJgD4IsOcRaciEwYU8u3LzR6qQF6sa9yT2hd/T+0oQajyARE/NgoYNEJ0wyw8dxnCbww=
-X-Received: by 2002:a25:bb12:0:b0:de4:627e:b556 with SMTP id
- 3f1490d57ef6-debb9d89584mr3933851276.16.1715199293284; Wed, 08 May 2024
- 13:14:53 -0700 (PDT)
+        bh=VxBCT1ZV/EGWLKjxVs7FXcKu7sqjJfkKsVJ1w+mU1+0=;
+        b=p6q6z6K9j7gK3KGIFpY46HBLKDr2ssC10PjzM0G3dBaxwS0o+OsTy8lifDRWAC1+2R
+         e/KEGHOnLDH1fdz0v2tn6rM5gVLc1QuF3GUYTw5aotRxDSEhFzXFb2B3SMp+anDXoSxD
+         +62gDB6Oxu7C69Os0oRrmYV3WVm1CAZKzY7DnbA6yyeD9CtnOc/qN3SpQYdljs23eq8C
+         3qhOBZsnYk8UO9sh9X/mWerfVdi2cjO/Nw1NkZVjZYBFM9dm61Vb+/uapriAQ/xd5Hcz
+         rYrpouMJ3i+PFIShWVrXG/jxc3V2zLPOwFnae3ZxDPl9rdts35sUCdpyS/n/ImRZp88M
+         W/tg==
+X-Forwarded-Encrypted: i=1; AJvYcCW9QOeV6RaJlng6FCs3fH7OU/DnYjJaLhBD6C5jyJS8B5XafhEr2xQ6/6EDUBkM2k5kj9nRzg9Afx/FvRXxkxU33K91mkI=
+X-Gm-Message-State: AOJu0YyrEXxlAjsVsk2hxNvjFznSkUPH0qksSAadR2qpoil0fyMKbSti
+	6Z4AybyUnqER/qv05PyveXMfwaZdz6BhfOTrUzmBilSb6mjKarqyQTVhdA8B9yp9ZaLHkv2heeb
+	W+LSuXorS0nHacplKKcIfV29D63iacHQ7jQ8H
+X-Google-Smtp-Source: AGHT+IG0Nkg3RjjAAyj+n+Ew0xyy8RnKsH20og6+OrFEWYycNhxXEo9VK176FECewK/2EQxZ5XFepnMJQqWDZY6gYdE=
+X-Received: by 2002:a05:6402:228b:b0:572:a33d:437f with SMTP id
+ 4fb4d7f45d1cf-573341614e1mr44879a12.2.1715200087751; Wed, 08 May 2024
+ 13:28:07 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <20240503183713.1557480-1-tjmercier@google.com>
- <20240506052955.GA4923@lst.de> <CABdmKX1XNTtoPTvfsJRobim8pHdDjPsKx=qVovVZDh5GEbKCfQ@mail.gmail.com>
- <20240506160244.GA16248@lst.de> <CABdmKX1n98+bw+1kewz=wdqq2Nbpaxao_Lx-Gq8oKGNUEP4ytQ@mail.gmail.com>
- <20240506161906.GA17237@lst.de> <CABdmKX3s_HnxciDA3XGM8Qj0kLY8OWENg+ifexrON4VYVbuLsA@mail.gmail.com>
- <20240507054314.GA31814@lst.de> <CABdmKX3PgcXaRUH3L7OV+POMiMd5L6pEF4fLXYPgfmQUNu_trg@mail.gmail.com>
- <Zju0JOx_ij1qH-34@arm.com>
-In-Reply-To: <Zju0JOx_ij1qH-34@arm.com>
-From: "T.J. Mercier" <tjmercier@google.com>
-Date: Wed, 8 May 2024 13:14:41 -0700
-Message-ID: <CABdmKX3LANk-0ThrQ86ay5EnToM38gVH3oddBUnXq=9cmS0gCQ@mail.gmail.com>
-Subject: Re: [PATCH] dma-direct: Set SG_DMA_SWIOTLB flag for dma-direct
-To: Catalin Marinas <catalin.marinas@arm.com>
-Cc: Christoph Hellwig <hch@lst.de>, Marek Szyprowski <m.szyprowski@samsung.com>, 
-	Robin Murphy <robin.murphy@arm.com>, isaacmanjarres@google.com, iommu@lists.linux.dev, 
-	linux-kernel@vger.kernel.org
+References: <20240507214254.2787305-1-edliaw@google.com> <20240507214254.2787305-5-edliaw@google.com>
+ <ZjuEILj0SZRuTL9I@google.com>
+In-Reply-To: <ZjuEILj0SZRuTL9I@google.com>
+From: Edward Liaw <edliaw@google.com>
+Date: Wed, 8 May 2024 13:27:39 -0700
+Message-ID: <CAG4es9VWuY4Z5HoU_SQCDaSrDC0s1knDfGvLNEa1YxhC0RZ2ZQ@mail.gmail.com>
+Subject: Re: [PATCH v2 4/5] selftests: Drop define _GNU_SOURCE
+To: Sean Christopherson <seanjc@google.com>
+Cc: shuah@kernel.org, Mark Brown <broonie@kernel.org>, Jaroslav Kysela <perex@perex.cz>, 
+	Takashi Iwai <tiwai@suse.com>, Catalin Marinas <catalin.marinas@arm.com>, Will Deacon <will@kernel.org>, 
+	Nhat Pham <nphamcs@gmail.com>, Johannes Weiner <hannes@cmpxchg.org>, 
+	Christian Brauner <brauner@kernel.org>, Eric Biederman <ebiederm@xmission.com>, 
+	Kees Cook <keescook@chromium.org>, OGAWA Hirofumi <hirofumi@mail.parknet.co.jp>, 
+	Thomas Gleixner <tglx@linutronix.de>, Ingo Molnar <mingo@redhat.com>, 
+	Peter Zijlstra <peterz@infradead.org>, Darren Hart <dvhart@infradead.org>, 
+	Davidlohr Bueso <dave@stgolabs.net>, =?UTF-8?Q?Andr=C3=A9_Almeida?= <andrealmeid@igalia.com>, 
+	Jiri Kosina <jikos@kernel.org>, Benjamin Tissoires <bentiss@kernel.org>, Jason Gunthorpe <jgg@ziepe.ca>, 
+	Kevin Tian <kevin.tian@intel.com>, Andy Lutomirski <luto@amacapital.net>, 
+	Will Drewry <wad@chromium.org>, Marc Zyngier <maz@kernel.org>, Oliver Upton <oliver.upton@linux.dev>, 
+	James Morse <james.morse@arm.com>, Suzuki K Poulose <suzuki.poulose@arm.com>, 
+	Zenghui Yu <yuzenghui@huawei.com>, Paolo Bonzini <pbonzini@redhat.com>, 
+	Anup Patel <anup@brainfault.org>, Atish Patra <atishp@atishpatra.org>, 
+	Paul Walmsley <paul.walmsley@sifive.com>, Palmer Dabbelt <palmer@dabbelt.com>, 
+	Albert Ou <aou@eecs.berkeley.edu>, Christian Borntraeger <borntraeger@linux.ibm.com>, 
+	Janosch Frank <frankja@linux.ibm.com>, Claudio Imbrenda <imbrenda@linux.ibm.com>, 
+	David Hildenbrand <david@redhat.com>, =?UTF-8?B?TWlja2HDq2wgU2FsYcO8bg==?= <mic@digikod.net>, 
+	Paul Moore <paul@paul-moore.com>, James Morris <jmorris@namei.org>, 
+	"Serge E. Hallyn" <serge@hallyn.com>, Andrew Morton <akpm@linux-foundation.org>, 
+	Seth Forshee <sforshee@kernel.org>, Bongsu Jeon <bongsu.jeon@samsung.com>, 
+	"David S. Miller" <davem@davemloft.net>, Eric Dumazet <edumazet@google.com>, 
+	Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>, 
+	Steffen Klassert <steffen.klassert@secunet.com>, Herbert Xu <herbert@gondor.apana.org.au>, 
+	=?UTF-8?Q?Andreas_F=C3=A4rber?= <afaerber@suse.de>, 
+	Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>, Matthieu Baerts <matttbe@kernel.org>, 
+	Mat Martineau <martineau@kernel.org>, Geliang Tang <geliang@kernel.org>, 
+	Willem de Bruijn <willemdebruijn.kernel@gmail.com>, Fenghua Yu <fenghua.yu@intel.com>, 
+	Reinette Chatre <reinette.chatre@intel.com>, 
+	Mathieu Desnoyers <mathieu.desnoyers@efficios.com>, "Paul E. McKenney" <paulmck@kernel.org>, 
+	Boqun Feng <boqun.feng@gmail.com>, Alexandre Belloni <alexandre.belloni@bootlin.com>, 
+	Jarkko Sakkinen <jarkko@kernel.org>, Dave Hansen <dave.hansen@linux.intel.com>, 
+	Muhammad Usama Anjum <usama.anjum@collabora.com>, linux-kernel@vger.kernel.org, 
+	linux-kselftest@vger.kernel.org, kernel-team@android.com, 
+	linux-sound@vger.kernel.org, linux-arm-kernel@lists.infradead.org, 
+	linux-mm@kvack.org, linux-input@vger.kernel.org, iommu@lists.linux.dev, 
+	kvmarm@lists.linux.dev, kvm@vger.kernel.org, kvm-riscv@lists.infradead.org, 
+	linux-riscv@lists.infradead.org, linux-security-module@vger.kernel.org, 
+	linux-fsdevel@vger.kernel.org, netdev@vger.kernel.org, 
+	linux-actions@lists.infradead.org, mptcp@lists.linux.dev, 
+	linux-rtc@vger.kernel.org, linux-sgx@vger.kernel.org, bpf@vger.kernel.org
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-On Wed, May 8, 2024 at 10:19=E2=80=AFAM Catalin Marinas <catalin.marinas@ar=
-m.com> wrote:
+On Wed, May 8, 2024 at 6:54=E2=80=AFAM Sean Christopherson <seanjc@google.c=
+om> wrote:
 >
-> On Tue, May 07, 2024 at 01:07:25PM -0700, T.J. Mercier wrote:
-> > On Mon, May 6, 2024 at 10:43=E2=80=AFPM Christoph Hellwig <hch@lst.de> =
-wrote:
-> > > On Mon, May 06, 2024 at 09:39:53AM -0700, T.J. Mercier wrote:
-> > > > > You should not check, you simply must handle it by doing the prop=
-er
-> > > > > DMA API based ownership management.
-> > > >
-> > > > That doesn't really work for uncached buffers.
-> > >
-> > > What uncached buffers?
-> >
-> > For example these ones:
-> > https://android.googlesource.com/kernel/common/+/refs/heads/android-mai=
-nline/drivers/dma-buf/heaps/system_heap.c#141
-> >
-> > Vendors have their own drivers that also export uncached buffers in a
-> > similar way.
+> On Tue, May 07, 2024, Edward Liaw wrote:
+> > _GNU_SOURCE is provided by KHDR_INCLUDES, so it should be dropped to
+> > prevent _GNU_SOURCE redefined warnings.
 >
-> IIUC, you have an uncached dma buffer and you want to pass those pages
-> to dma_map_sgtable() with DMA_ATTR_SKIP_CPU_SYNC since the buffer has
-> already been made coherent via other means (the CPU mapping is
-> uncached). The small kmalloc() bouncing gets in the way as it copies the
-> data to a cached buffer but it also skips the cache maintenance because
-> of DMA_ATTR_SKIP_CPU_SYNC.
+> ...
+>
+> > diff --git a/tools/testing/selftests/x86/test_syscall_vdso.c b/tools/te=
+sting/selftests/x86/test_syscall_vdso.c
+> > index 8965c311bd65..5cd13279bba5 100644
+> > --- a/tools/testing/selftests/x86/test_syscall_vdso.c
+> > +++ b/tools/testing/selftests/x86/test_syscall_vdso.c
+> > @@ -8,10 +8,6 @@
+> >   * Can be built statically:
+> >   * gcc -Os -Wall -static -m32 test_syscall_vdso.c thunks_32.S
+> >   */
+> > -#undef _GNU_SOURCE
+> > -#define _GNU_SOURCE 1
+> > -#undef __USE_GNU
+> > -#define __USE_GNU 1
+>
+> AFAICT, manually defining __USE_GNU is frowned upon, so I'm guessing the =
+__USE_GNU
+> stuff is just the result of misguided copy+paste.  But it would be nice t=
+o get
+> confirmation that this test isn't doing something clever.  Or at the very=
+ least,
+> explain the removal of __USE_GNU in the changelog.
 
-Yes, that's a problem at the time of the mapping. It's also a problem
-for dma_buf_{begin,end}_cpu_access calls because implementing an
-uncached buffer means we want to skip dma_sync_sgtable_for_*, but that
-also skips the swiotlb copy. The goal is to only let the mapping
-succeed if the cache maintenance can always be skipped while also
-ensuring all users have a correct view of the memory, and that doesn't
-seem possible where swiotlb is involved.
+It looks like test_syscall_vdso, test_FCMOV, test_FCOMI, and
+test_FISTTP don't actually use any GNU extensions.  I'll add that to
+the commit message.
 
-> I assume Android carries these patches:
 
-> https://lore.kernel.org/r/20201110034934.70898-8-john.stultz@linaro.org/
-
-Correct.
-
-> Arguably this is abusing the DMA API since DMA_ATTR_SKIP_CPU_SYNC should
-> be used for subsequent mappings of buffers already mapped to device by a
-> prior dma_map_*() operation. In the above patchset, the buffer is
-> vmap'ed by the dma-buf heap code and DMA_ATTR_SKIP_CPU_SYNC is used on
-> the first dma_map_*().
 >
-> Ignoring the above hacks, I think we can get in a similar situation even
-> with more complex uses of the DMA API. Let's say some buffers are
-> initially mapped to device with dma_map_page(), some of them being
-> bounced but cache maintenance completed. A subsequent dma_map_*()
-> on those pages may force a bouncing again but DMA_ATTR_SKIP_CPU_SYNC
-> will avoid the cache maintenance. You are not actually sharing the
-> original buffers but create separate (bounced) copies no longer coherent
-> with the device.
-
-Right, no good. The inverse of the dma_buf_begin_cpu_access problem.
-
-> I think in general buffer sharing with multiple dma_map_*() calls on the
-> same buffer and DMA_ATTR_SKIP_CPU_SYNC is incompatible with bouncing,
-> irrespective of the kmalloc() minalign series. If you do this for a
-> 32-bit device and one of the pages is outside the ZONE_DMA32 range,
-> you'd get a similar behaviour.
->
-> From the kmalloc() minumum alignment perspective, it makes sense to skip
-> the bouncing if DMA_ATTR_SKIP_CPU_SYNC is passed. We also skip the
-> bouncing if the direction is DMA_TO_DEVICE or the device is fully
-> coherent.
->
-> A completely untested patch below. It doesn't solve other problems with
-> bouncing you may have with your out of tree patches and, as Christoph
-> said, checking in your driver whether the DMA address is a swiotlb
-> buffer is completely wrong.
-
-This is where I must be missing something. Is the main opposition that
-the *driver* is checking for swiotlb use (instead of inside the DMA
-API)? Because it sounds like we agree it's a bad idea to attempt
-bouncing + DMA_ATTR_SKIP_CPU_SYNC.
-
-This code looks like it almost gets there, but it'd still reach
-swiotlb_map (instead of DMA_MAPPING_ERROR) with DMA_ATTR_SKIP_CPU_SYNC
-set for force_bounce or if the dma_capable check fails.
-
-> ---------8<------------------------
-> diff --git a/drivers/iommu/dma-iommu.c b/drivers/iommu/dma-iommu.c
-> index e4cb26f6a943..c7ff464a5f81 100644
-> --- a/drivers/iommu/dma-iommu.c
-> +++ b/drivers/iommu/dma-iommu.c
-> @@ -602,15 +602,16 @@ static bool dev_is_untrusted(struct device *dev)
->  }
->
->  static bool dev_use_swiotlb(struct device *dev, size_t size,
-> -                           enum dma_data_direction dir)
-> +                           enum dma_data_direction dir, unsigned long at=
-trs)
->  {
->         return IS_ENABLED(CONFIG_SWIOTLB) &&
->                 (dev_is_untrusted(dev) ||
-> -                dma_kmalloc_needs_bounce(dev, size, dir));
-> +                dma_kmalloc_needs_bounce(dev, size, dir, attrs));
->  }
->
->  static bool dev_use_sg_swiotlb(struct device *dev, struct scatterlist *s=
-g,
-> -                              int nents, enum dma_data_direction dir)
-> +                              int nents, enum dma_data_direction dir,
-> +                              unsigned long attrs)
->  {
->         struct scatterlist *s;
->         int i;
-> @@ -626,7 +627,7 @@ static bool dev_use_sg_swiotlb(struct device *dev, st=
-ruct scatterlist *sg,
->          * direction, check the individual lengths in the sg list. If any
->          * element is deemed unsafe, use the swiotlb for bouncing.
->          */
-> -       if (!dma_kmalloc_safe(dev, dir)) {
-> +       if (!dma_kmalloc_safe(dev, dir, attrs)) {
->                 for_each_sg(sg, s, nents, i)
->                         if (!dma_kmalloc_size_aligned(s->length))
->                                 return true;
-> @@ -1076,7 +1077,7 @@ static void iommu_dma_sync_single_for_cpu(struct de=
-vice *dev,
->  {
->         phys_addr_t phys;
->
-> -       if (dev_is_dma_coherent(dev) && !dev_use_swiotlb(dev, size, dir))
-> +       if (dev_is_dma_coherent(dev) && !dev_use_swiotlb(dev, size, dir, =
-0))
->                 return;
->
->         phys =3D iommu_iova_to_phys(iommu_get_dma_domain(dev), dma_handle=
-);
-> @@ -1092,7 +1093,7 @@ static void iommu_dma_sync_single_for_device(struct=
- device *dev,
->  {
->         phys_addr_t phys;
->
-> -       if (dev_is_dma_coherent(dev) && !dev_use_swiotlb(dev, size, dir))
-> +       if (dev_is_dma_coherent(dev) && !dev_use_swiotlb(dev, size, dir, =
-0))
->                 return;
->
->         phys =3D iommu_iova_to_phys(iommu_get_dma_domain(dev), dma_handle=
-);
-> @@ -1152,7 +1153,7 @@ static dma_addr_t iommu_dma_map_page(struct device =
-*dev, struct page *page,
->          * If both the physical buffer start address and size are
->          * page aligned, we don't need to use a bounce page.
->          */
-> -       if (dev_use_swiotlb(dev, size, dir) &&
-> +       if (dev_use_swiotlb(dev, size, dir, attrs) &&
->             iova_offset(iovad, phys | size)) {
->                 void *padding_start;
->                 size_t padding_size, aligned_size;
-> @@ -1369,7 +1370,7 @@ static int iommu_dma_map_sg(struct device *dev, str=
-uct scatterlist *sg,
->                         goto out;
->         }
->
-> -       if (dev_use_sg_swiotlb(dev, sg, nents, dir))
-> +       if (dev_use_sg_swiotlb(dev, sg, nents, dir, attrs))
->                 return iommu_dma_map_sg_swiotlb(dev, sg, nents, dir, attr=
-s);
->
->         if (!(attrs & DMA_ATTR_SKIP_CPU_SYNC))
-> diff --git a/include/linux/dma-map-ops.h b/include/linux/dma-map-ops.h
-> index 4abc60f04209..857a460e40f0 100644
-> --- a/include/linux/dma-map-ops.h
-> +++ b/include/linux/dma-map-ops.h
-> @@ -277,7 +277,8 @@ static inline bool dev_is_dma_coherent(struct device =
-*dev)
->   * Check whether potential kmalloc() buffers are safe for non-coherent D=
-MA.
->   */
->  static inline bool dma_kmalloc_safe(struct device *dev,
-> -                                   enum dma_data_direction dir)
-> +                                   enum dma_data_direction dir,
-> +                                   unsigned long attrs)
->  {
->         /*
->          * If DMA bouncing of kmalloc() buffers is disabled, the kmalloc(=
-)
-> @@ -288,10 +289,12 @@ static inline bool dma_kmalloc_safe(struct device *=
-dev,
->
->         /*
->          * kmalloc() buffers are DMA-safe irrespective of size if the dev=
-ice
-> -        * is coherent or the direction is DMA_TO_DEVICE (non-desctructiv=
-e
-> -        * cache maintenance and benign cache line evictions).
-> +        * is coherent, the direction is DMA_TO_DEVICE (non-desctructive
-> +        * cache maintenance and benign cache line evictions) or the
-> +        * attributes require no cache maintenance.
->          */
-> -       if (dev_is_dma_coherent(dev) || dir =3D=3D DMA_TO_DEVICE)
-> +       if (dev_is_dma_coherent(dev) || dir =3D=3D DMA_TO_DEVICE ||
-> +           attrs & DMA_ATTR_SKIP_CPU_SYNC)
->                 return true;
->
->         return false;
-> @@ -328,9 +331,11 @@ static inline bool dma_kmalloc_size_aligned(size_t s=
-ize)
->   * in the kernel.
->   */
->  static inline bool dma_kmalloc_needs_bounce(struct device *dev, size_t s=
-ize,
-> -                                           enum dma_data_direction dir)
-> +                                           enum dma_data_direction dir,
-> +                                           unsigned long attrs)
->  {
-> -       return !dma_kmalloc_safe(dev, dir) && !dma_kmalloc_size_aligned(s=
-ize);
-> +       return !dma_kmalloc_safe(dev, dir, attrs) &&
-> +               !dma_kmalloc_size_aligned(size);
->  }
->
->  void *arch_dma_alloc(struct device *dev, size_t size, dma_addr_t *dma_ha=
-ndle,
-> diff --git a/kernel/dma/direct.h b/kernel/dma/direct.h
-> index 18d346118fe8..c2d31a67719e 100644
-> --- a/kernel/dma/direct.h
-> +++ b/kernel/dma/direct.h
-> @@ -96,7 +96,7 @@ static inline dma_addr_t dma_direct_map_page(struct dev=
-ice *dev,
->         }
->
->         if (unlikely(!dma_capable(dev, dma_addr, size, true)) ||
-> -           dma_kmalloc_needs_bounce(dev, size, dir)) {
-> +           dma_kmalloc_needs_bounce(dev, size, dir, attrs)) {
->                 if (is_pci_p2pdma_page(page))
->                         return DMA_MAPPING_ERROR;
->                 if (is_swiotlb_active(dev))
->
-> --
-> Catalin
+> >  #include <unistd.h>
+> >  #include <stdlib.h>
+> >  #include <string.h>
