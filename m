@@ -1,120 +1,143 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 13441633;
-	Wed,  8 May 2024 16:44:59 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 56439DDB1;
+	Wed,  8 May 2024 16:53:38 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1715186700; cv=none; b=RjWEvBLj8kuO7x31YkqGMm1cy/d1/cIKPMvYDEIdJmWH0VUUULuifWcdFVEcG97GU3tSO6XPb0wB8HBYbZtrBCtgo/4L6V8WmxCFI0WiZcHdXrfndlRUQ/TYdsztHZLYA4hHgh08b+HT9cqO5s/IlxEPGeBgEIIxky+VOwMNc6o=
+	t=1715187219; cv=none; b=O02PSdi21XvWVLCuAkc4ut2j52otjVUMPLVtWVZJhAfQwBVm+7RMJuHQj5bUV03EIQFWA1biEsSmc98eZ2GjVGQ/ONjtNLUoUtJhJVR3DNWLf2uJCwu7bbVUEWjATElN6MEiLvbnTDguDSps0+TE3DV+WDP+UbGA1vtpftakZlg=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1715186700; c=relaxed/simple;
-	bh=0vXy5kTUEu7Jx0jxctDNvQbCc0ApL3aWNbp3Y8Ze7FM=;
-	h=Mime-Version:Content-Type:Date:Message-Id:Cc:Subject:From:To:
-	 References:In-Reply-To; b=U0mN3p+TENNrVE3SV+SQlpiEcgZ7LDr6Iawqp7KVWGb8EnEqpTsNS1AGzc+A7N9JaORPilNxShAbfAO1aw6iz5xTv6lVqOBGW6Yul1eCzLUCteUgz3rMbFvqq/O8zF4Kyi5VltezECJrMaWfkV4O9YVmBVUnpbhUfeYCtyal6OU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=r6T4Vx0y; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1715187219; c=relaxed/simple;
+	bh=/GO4GFZxrGOVPKQ52WpBbrFNKRc+hdxpgQtBpoj6F5c=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=oGOF304E4EAI88Xya+PLUO04UK3U2QF3tHttVTZVCbt9H17wZNuqOh382ZMqV2WX9u8tfM0wI759OmIrOePHMN7znjn/HMyD1nFsDcgeCZ+++RQNU/PkXtfY7YNDyqBh9QUZ8pMke5Ux6+ePeyPONI7MWLvO9wptjQ+ffOFnxEc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=LAQ5BrVX; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="r6T4Vx0y"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A392AC113CC;
-	Wed,  8 May 2024 16:44:42 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="LAQ5BrVX"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1DD76C113CC;
+	Wed,  8 May 2024 16:53:36 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1715186699;
-	bh=0vXy5kTUEu7Jx0jxctDNvQbCc0ApL3aWNbp3Y8Ze7FM=;
-	h=Date:Cc:Subject:From:To:References:In-Reply-To:From;
-	b=r6T4Vx0y4QOnGwpBQOgFUY2eu34NThzwvqE9iWCIEwfBWxfBXLKwMeMXC2MZkCWgE
-	 sSy8eWZ2B09C4cJWuUtyV7pp1xxjYBJcb9dKqRcNcRwWuRWNUhvaX8ZZNACrQ8akj+
-	 fVsf0Qgb7/q7++0jy9wmy9zGxZ08j6Zv4QRrw0dL1nzsSXULP5hHSA299xoBM9AD05
-	 6riemVsfFd1imBZpGu8mE+0OdEWqZvuhuWPeX4o1a5jHgyaeVks/tD4RoFmGk5XVgC
-	 it22dgUxqoUlvZZ7CdgHHzCOiO9So64lLxbdbeLXKuMGmV15xh0wplv/ZWkSBTpDGK
-	 EGKaRAElv3B+A==
+	s=k20201202; t=1715187218;
+	bh=/GO4GFZxrGOVPKQ52WpBbrFNKRc+hdxpgQtBpoj6F5c=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=LAQ5BrVXuGJf11Y2Afas5ya/r667FkHG3QLfCqJHrcBoL4NOW84KNO+eRnNcPAcHZ
+	 3lgbhaFyyvHEESO/fbLGW7kBGWiR+iWOhzVP945HzDaVHx79Igff4uzufV4e/mCE9h
+	 leG0kUffWSI0k/T/aEDBzHvyr0GPbwKccLJcUdTDqZJnOmm0yB+WfKQPpD0zhOS0aj
+	 QgmfuKz+dNBupCMGxM/FgoBLhPQxBgjRBRcl55mjb1o9JFBZKt9sroUDiKu7QAMiQK
+	 HrIaptWC3uCgkYKZoBcB/xIRJbOFvD+TT6221ESlm+6KSQybn9gz1+Psa0rQ9xScQ4
+	 D9GqK1FPEipWg==
+Date: Wed, 8 May 2024 17:53:33 +0100
+From: Will Deacon <will@kernel.org>
+To: Jason Gunthorpe <jgg@nvidia.com>
+Cc: iommu@lists.linux.dev, Joerg Roedel <joro@8bytes.org>,
+	linux-arm-kernel@lists.infradead.org,
+	Robin Murphy <robin.murphy@arm.com>,
+	Thorsten Leemhuis <linux@leemhuis.info>,
+	Michael Shavit <mshavit@google.com>,
+	Nicolin Chen <nicolinc@nvidia.com>, patches@lists.linux.dev
+Subject: Re: [PATCH] iommu/arm-smmu-v3: Make the kunit into a module
+Message-ID: <20240508165333.GA23294@willie-the-truck>
+References: <0-v1-24cba6c0f404+2ae-smmu_kunit_module_jgg@nvidia.com>
+ <20240507135817.GA22408@willie-the-truck>
+ <20240507140946.GO3341011@nvidia.com>
+ <20240507142248.GA22453@willie-the-truck>
+ <20240507143321.GP3341011@nvidia.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
-Mime-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-Content-Type: text/plain; charset=UTF-8
-Date: Wed, 08 May 2024 19:44:40 +0300
-Message-Id: <D14EXNEBOKFY.8SJ7SOCABM01@kernel.org>
-Cc: <linux-kernel@vger.kernel.org>, <linux-kselftest@vger.kernel.org>,
- <kernel-team@android.com>, <linux-sound@vger.kernel.org>,
- <linux-arm-kernel@lists.infradead.org>, <linux-mm@kvack.org>,
- <linux-input@vger.kernel.org>, <iommu@lists.linux.dev>,
- <kvmarm@lists.linux.dev>, <kvm@vger.kernel.org>,
- <kvm-riscv@lists.infradead.org>, <linux-riscv@lists.infradead.org>,
- <linux-security-module@vger.kernel.org>, <linux-fsdevel@vger.kernel.org>,
- <netdev@vger.kernel.org>, <linux-actions@lists.infradead.org>,
- <mptcp@lists.linux.dev>, <linux-rtc@vger.kernel.org>,
- <linux-sgx@vger.kernel.org>, <bpf@vger.kernel.org>, "kernel test robot"
- <oliver.sang@intel.com>
-Subject: Re: [PATCH v2 2/5] selftests/sgx: Include KHDR_INCLUDES in Makefile
-From: "Jarkko Sakkinen" <jarkko@kernel.org>
-To: "Dave Hansen" <dave.hansen@intel.com>, "Edward Liaw"
- <edliaw@google.com>, <shuah@kernel.org>, "Mark Brown" <broonie@kernel.org>,
- "Jaroslav Kysela" <perex@perex.cz>, "Takashi Iwai" <tiwai@suse.com>,
- "Catalin Marinas" <catalin.marinas@arm.com>, "Will Deacon"
- <will@kernel.org>, "Nhat Pham" <nphamcs@gmail.com>, "Johannes Weiner"
- <hannes@cmpxchg.org>, "Christian Brauner" <brauner@kernel.org>, "Eric
- Biederman" <ebiederm@xmission.com>, "Kees Cook" <keescook@chromium.org>,
- "OGAWA Hirofumi" <hirofumi@mail.parknet.co.jp>, "Thomas Gleixner"
- <tglx@linutronix.de>, "Ingo Molnar" <mingo@redhat.com>, "Peter Zijlstra"
- <peterz@infradead.org>, "Darren Hart" <dvhart@infradead.org>, "Davidlohr
- Bueso" <dave@stgolabs.net>, =?utf-8?q?Andr=C3=A9_Almeida?=
- <andrealmeid@igalia.com>, "Jiri Kosina" <jikos@kernel.org>, "Benjamin
- Tissoires" <bentiss@kernel.org>, "Jason Gunthorpe" <jgg@ziepe.ca>, "Kevin
- Tian" <kevin.tian@intel.com>, "Andy Lutomirski" <luto@amacapital.net>,
- "Will Drewry" <wad@chromium.org>, "Marc Zyngier" <maz@kernel.org>, "Oliver
- Upton" <oliver.upton@linux.dev>, "James Morse" <james.morse@arm.com>,
- "Suzuki K Poulose" <suzuki.poulose@arm.com>, "Zenghui Yu"
- <yuzenghui@huawei.com>, "Paolo Bonzini" <pbonzini@redhat.com>, "Sean
- Christopherson" <seanjc@google.com>, "Anup Patel" <anup@brainfault.org>,
- "Atish Patra" <atishp@atishpatra.org>, "Paul Walmsley"
- <paul.walmsley@sifive.com>, "Palmer Dabbelt" <palmer@dabbelt.com>, "Albert
- Ou" <aou@eecs.berkeley.edu>, "Christian Borntraeger"
- <borntraeger@linux.ibm.com>, "Janosch Frank" <frankja@linux.ibm.com>,
- "Claudio Imbrenda" <imbrenda@linux.ibm.com>, "David Hildenbrand"
- <david@redhat.com>, =?utf-8?q?Micka=C3=ABl_Sala=C3=BCn?= <mic@digikod.net>,
- "Paul Moore" <paul@paul-moore.com>, "James Morris" <jmorris@namei.org>,
- "Serge E. Hallyn" <serge@hallyn.com>, "Andrew Morton"
- <akpm@linux-foundation.org>, "Seth Forshee" <sforshee@kernel.org>, "Bongsu
- Jeon" <bongsu.jeon@samsung.com>, "David S. Miller" <davem@davemloft.net>,
- "Eric Dumazet" <edumazet@google.com>, "Jakub Kicinski" <kuba@kernel.org>,
- "Paolo Abeni" <pabeni@redhat.com>, "Steffen Klassert"
- <steffen.klassert@secunet.com>, "Herbert Xu" <herbert@gondor.apana.org.au>,
- =?utf-8?q?Andreas_F=C3=A4rber?= <afaerber@suse.de>, "Manivannan Sadhasivam"
- <manivannan.sadhasivam@linaro.org>, "Matthieu Baerts" <matttbe@kernel.org>,
- "Mat Martineau" <martineau@kernel.org>, "Geliang Tang"
- <geliang@kernel.org>, "Willem de Bruijn" <willemdebruijn.kernel@gmail.com>,
- "Fenghua Yu" <fenghua.yu@intel.com>, "Reinette Chatre"
- <reinette.chatre@intel.com>, "Mathieu Desnoyers"
- <mathieu.desnoyers@efficios.com>, "Paul E. McKenney" <paulmck@kernel.org>,
- "Boqun Feng" <boqun.feng@gmail.com>, "Alexandre Belloni"
- <alexandre.belloni@bootlin.com>, "Muhammad Usama Anjum"
- <usama.anjum@collabora.com>
-X-Mailer: aerc 0.17.0
-References: <20240507214254.2787305-1-edliaw@google.com>
- <20240507214254.2787305-3-edliaw@google.com>
- <c3fc5396-bc71-4dee-a3e0-d59dbbc6eda1@intel.com>
-In-Reply-To: <c3fc5396-bc71-4dee-a3e0-d59dbbc6eda1@intel.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20240507143321.GP3341011@nvidia.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 
-On Wed May 8, 2024 at 6:33 PM EEST, Dave Hansen wrote:
-> On 5/7/24 14:38, Edward Liaw wrote:
-> > Add KHDR_INCLUDES to the CFLAGS to pull in the kselftest harness
-> > dependencies (-D_GNU_SOURCE).
-> >=20
-> > Also, remove redefinitions of _GNU_SOURCE in the source code.
->
-> From an x86 and SGX perspective, looks fine.  I assume Shuah is planning
-> on taking this pile.
->
-> Acked-by: Dave Hansen <dave.hansen@linux.intel.com>
+On Tue, May 07, 2024 at 11:33:21AM -0300, Jason Gunthorpe wrote:
+> On Tue, May 07, 2024 at 03:22:48PM +0100, Will Deacon wrote:
+> > On Tue, May 07, 2024 at 11:09:46AM -0300, Jason Gunthorpe wrote:
+> > > On Tue, May 07, 2024 at 02:58:17PM +0100, Will Deacon wrote:
+> > > > On Tue, May 07, 2024 at 10:21:10AM -0300, Jason Gunthorpe wrote:
+> > > > > diff --git a/drivers/iommu/Kconfig b/drivers/iommu/Kconfig
+> > > > > index 66325210c8c986..c04584be30893f 100644
+> > > > > --- a/drivers/iommu/Kconfig
+> > > > > +++ b/drivers/iommu/Kconfig
+> > > > > @@ -415,7 +415,7 @@ config ARM_SMMU_V3_SVA
+> > > > >  	  and PRI.
+> > > > >  
+> > > > >  config ARM_SMMU_V3_KUNIT_TEST
+> > > > > -	bool "KUnit tests for arm-smmu-v3 driver"  if !KUNIT_ALL_TESTS
+> > > > > +	tristate "KUnit tests for arm-smmu-v3 driver"  if !KUNIT_ALL_TESTS
+> > > > >  	depends on KUNIT
+> > > > >  	depends on ARM_SMMU_V3_SVA
+> > > > >  	default KUNIT_ALL_TESTS
+> > > > 
+> > > > Would it work to leave this as 'bool' and have something like:
+> > > > 
+> > > > 	depends on KUNIT=y
+> > > 
+> > > Yes, there is a version like this (depends on KUNIT = ARM_SMMU_V3),
+> > > but it made kconfig act a little weird and hide the symbols.
+> > 
+> > Which symbols were hidden in which cases? Having ARM_SMMU_V3_KUNIT_TEST
+> > disappear from menuconfig when the dependency isn't satisifed sounds
+> > fine to me, but you make it sound like it was something else.
+> 
+> That isn't normal, it should show up as [ ] and be limited to M, not
+> be hidden completely.
 
-Yep,
+Sorry, but please can you explain a little more? I'm having to guess at
+a lot of the details here. Are you saying that the option disappears
+even when ARM_SMMU_V3=m?
 
-Reviewed-by: Jarkko Sakkinen <jarkko@kernel.org>
+> > > > instead? That would be a lot simpler and avoids all the conditional
+> > > > symbol exports.
+> > > 
+> > > But then Fedora is linking this code into their production kernel
+> > > which doesn't seem right.
+> > 
+> > Well, only if they select CONFIG_ARM_SMMU_V3_KUNIT_TEST, right? There
+> > also seems to be precedence for that if I grep around:
+> 
+> Thorsten said they are selecting that..
 
-I also quickly tested with NUC7 for what it is worth:
+I find that hard to believe given that the option didn't exist until
+about week ago and isn't in any released kernels :/
 
-Tested-by: Jarkko Sakkinen <jarkko@kernel.org>
+> > drivers/base/Kconfig:	depends on KUNIT=y
+> > drivers/fpga/tests/Kconfig:	depends on FPGA=y && FPGA_REGION=y && FPGA_BRIDGE=y && KUNIT=y && MODULES=n
+> > drivers/gpu/drm/xe/Kconfig:	depends on DRM && PCI && MMU && (m || (y && KUNIT=y))
+> > drivers/mmc/host/Kconfig:	depends on (MMC_SDHCI_OF_ASPEED=m || KUNIT=y)
+> > drivers/net/ethernet/microchip/vcap/Kconfig:	depends on KUNIT=y && VCAP=y && y
+> > drivers/thunderbolt/Kconfig:	depends on USB4 && KUNIT=y
+> > drivers/virt/nitro_enclaves/Kconfig:	depends on NITRO_ENCLAVES && KUNIT=y
+> > fs/Kconfig.binfmt:	depends on KUNIT=y && BINFMT_ELF=y
+> > lib/Kconfig.debug:	depends on KUNIT=y
+> > lib/Kconfig.debug:	depends on KUNIT=y
+> > lib/Kconfig.debug:	depends on RUST && KUNIT=y
+> > mm/damon/Kconfig:	depends on DAMON && KUNIT=y
+> > mm/damon/Kconfig:	depends on DAMON_VADDR && KUNIT=y
+> > mm/damon/Kconfig:	depends on DAMON_SYSFS && KUNIT=y
+> > mm/damon/Kconfig:	depends on DAMON_DBGFS && KUNIT=y
+> > net/mctp/Kconfig:        depends on MCTP=y && KUNIT=y
+> > security/landlock/Kconfig:	depends on KUNIT=y
+> 
+> These cases don't seem to involve a module, eg BINFMT_ELF can't be a
+> module.
 
-BR, Jarkko
+The DRM_XE one is tristate and has this interesting variant:
+
+	depends on ... && (m || (y && KUNIT=y))
+
+> I see the majority of kunit setups have it put the test into its own
+> module.
+> 
+> What's the issue here? This is the majority way to do kunit, I just
+> made a mistake not doing it fully when Mostafa brought it up.
+
+I just think that EXPORT_SYMBOL_IF_KUNIT looks like a pretty horrible
+hack and it would be nice to avoid it entirely with a one-liner Kconfig
+change, even if that slightly limits the configurations in which the
+unit tests are available.
+
+Will
