@@ -1,79 +1,79 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B672913BAE3;
-	Thu,  9 May 2024 12:46:57 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id B017F13A3FF
+	for <iommu@lists.linux.dev>; Thu,  9 May 2024 12:55:03 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1715258817; cv=none; b=V9dXHcQXRxgEfOl13z0i3S92LEPhl9RZTbVOKSAbKJzou0iVSZNeX59kEnqK7ANKFbd+gr/EvH3qcaVzGPLIPC9t0GDJod34jAEbtHOmlFKRtBF03yGztAlebWZiDqlWqEkeaeBy9EryXNnpFWJZbgSnv2FyhBHt4ygwyQ+ilQ4=
+	t=1715259305; cv=none; b=dhRk4ZybUx0qY41HA00dRzFLU6M/js82cTboOWBLGuFqVI/UPS50csNv97tKaYy8Aw24+La/11OQ14DhUb4YnTg23w6Pxof7S6K+i7CW3+0hvADn2N9ImAtlJCfpnvnxZ1rB3oD9kaXHmBzrldiCNlHZZqqdoOVwuoNjI615yRA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1715258817; c=relaxed/simple;
-	bh=Y1puUf3Rn4PFEIfYWjo05C5VlGgGVxqEMZoIhApAwoE=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=dJmO1sxx8jCR1DM2/MaECwS1fxcpxzDcFxeR3I0KkZFHcXlKNxAfT2Oec/HnH5frzFSMvZ+Voe/6kZyQNc0WrxsB5a92rIUPeb2P9gmdBIKPBa6NwLVPbDJ0JK+SqYNALztuiY6DlJBScvThtdbV3oijvMpCuayAxIK4SqUn7hQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=AQoXxdBT; arc=none smtp.client-ip=10.30.226.201
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="AQoXxdBT"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 09D71C116B1;
-	Thu,  9 May 2024 12:46:56 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1715258817;
-	bh=Y1puUf3Rn4PFEIfYWjo05C5VlGgGVxqEMZoIhApAwoE=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=AQoXxdBT+Gf6/1FnwrPKEUEL8un/LA/u/2/sGpDCC3rxgKcoqyWXiIYW010ItlUum
-	 CLW5mYm545cimXqZBYmCGhgG0TDtnkqwrORVR4iSIbEqIRhyhcrt3kwfXNkXg6K64O
-	 w/OV3lp+KVg/vrgpg6Otpk5K6rEE7UjvK0+ZQ/3ke7FMj3+1HjaVBF4DAXoz4gPzwI
-	 0n+UHl6L4pv6WqF0RUQ69KZCeD51zRNa7aM9mIiyeZyDaYmsZpsgrROCD8g6oq1W5t
-	 bWTjyIxOyJS//5RBCY/Nlq3g0oX9RTKZSdE+TICUdGYgN2wahiJLQ61bVw8OeIOqkv
-	 DvX0r1wcBJS5w==
-Date: Thu, 9 May 2024 08:46:55 -0400
-From: Sasha Levin <sashal@kernel.org>
-To: Pavel Machek <pavel@ucw.cz>
-Cc: linux-kernel@vger.kernel.org, stable@vger.kernel.org,
-	Krzysztof Kozlowski <krzk@kernel.org>,
-	Joerg Roedel <jroedel@suse.de>, yong.wu@mediatek.com,
-	joro@8bytes.org, will@kernel.org, matthias.bgg@gmail.com,
-	angelogioacchino.delregno@collabora.com, iommu@lists.linux.dev,
-	linux-mediatek@lists.infradead.org,
-	linux-arm-kernel@lists.infradead.org
-Subject: Re: [PATCH AUTOSEL 4.19 7/7] iommu: mtk: fix module autoloading
-Message-ID: <ZjzFv38K2fudS_zQ@sashalap>
-References: <20240422232040.1616527-1-sashal@kernel.org>
- <20240422232040.1616527-7-sashal@kernel.org>
- <Zied1/2cELhaQupG@duo.ucw.cz>
+	s=arc-20240116; t=1715259305; c=relaxed/simple;
+	bh=aSkUfhv6SwKhbFuUelERURNoIkOHYjhPTf9RrMCE0mc=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=ehgKqrFlhj9uyz5F2TsvasuSAESJOnIcC9E0BJaqlPK5ZnzAIgYJ3utZzuj+keqReWC0oVC97qhNy1MA5gxWEvOGDuhATNRjh8BLtr0wAeN3UJr1ZsMtQ8cE/lHT3HafH2wyJ0nEjvATzuCwJwDm7lo96yrS+KgtY2AxZjgHrZM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; arc=none smtp.client-ip=217.140.110.172
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 94AC8106F;
+	Thu,  9 May 2024 05:55:28 -0700 (PDT)
+Received: from [10.1.196.40] (e121345-lin.cambridge.arm.com [10.1.196.40])
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 3EA1C3F6A8;
+	Thu,  9 May 2024 05:55:02 -0700 (PDT)
+Message-ID: <1be83f24-15bd-43a4-b310-f62c720cf064@arm.com>
+Date: Thu, 9 May 2024 13:54:56 +0100
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii; format=flowed
-Content-Disposition: inline
-In-Reply-To: <Zied1/2cELhaQupG@duo.ucw.cz>
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH] dma-direct: Set SG_DMA_SWIOTLB flag for dma-direct
+To: Christoph Hellwig <hch@lst.de>, "T.J. Mercier" <tjmercier@google.com>
+Cc: Marek Szyprowski <m.szyprowski@samsung.com>, isaacmanjarres@google.com,
+ Catalin Marinas <catalin.marinas@arm.com>, iommu@lists.linux.dev,
+ linux-kernel@vger.kernel.org
+References: <20240503183713.1557480-1-tjmercier@google.com>
+ <20240506052955.GA4923@lst.de>
+ <CABdmKX1XNTtoPTvfsJRobim8pHdDjPsKx=qVovVZDh5GEbKCfQ@mail.gmail.com>
+ <20240506160244.GA16248@lst.de>
+ <CABdmKX1n98+bw+1kewz=wdqq2Nbpaxao_Lx-Gq8oKGNUEP4ytQ@mail.gmail.com>
+ <20240506161906.GA17237@lst.de>
+ <CABdmKX3s_HnxciDA3XGM8Qj0kLY8OWENg+ifexrON4VYVbuLsA@mail.gmail.com>
+ <20240507054314.GA31814@lst.de>
+ <CABdmKX3PgcXaRUH3L7OV+POMiMd5L6pEF4fLXYPgfmQUNu_trg@mail.gmail.com>
+ <20240508113353.GA31529@lst.de>
+From: Robin Murphy <robin.murphy@arm.com>
+Content-Language: en-GB
+In-Reply-To: <20240508113353.GA31529@lst.de>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-On Tue, Apr 23, 2024 at 01:39:03PM +0200, Pavel Machek wrote:
->Hi!
->
->> [ Upstream commit 7537e31df80cb58c27f3b6fef702534ea87a5957 ]
+On 08/05/2024 12:33 pm, Christoph Hellwig wrote:
+> On Tue, May 07, 2024 at 01:07:25PM -0700, T.J. Mercier wrote:
+>> On Mon, May 6, 2024 at 10:43???PM Christoph Hellwig <hch@lst.de> wrote:
+>>>
+>>> On Mon, May 06, 2024 at 09:39:53AM -0700, T.J. Mercier wrote:
+>>>>> You should not check, you simply must handle it by doing the proper
+>>>>> DMA API based ownership management.
+>>>>
+>>>> That doesn't really work for uncached buffers.
+>>>
+>>> What uncached buffers?
 >>
->> Add MODULE_DEVICE_TABLE(), so modules could be properly autoloaded
->> based on the alias from of_device_id table.
->
->This patch is queued for 4.19 and 5.15, but not 5.10. I believe that's
->wrong.
+>> For example these ones:
+>> https://android.googlesource.com/kernel/common/+/refs/heads/android-mainline/drivers/dma-buf/heaps/system_heap.c#141
+> 
+> Whatever that code is doing is probably not upstream because it's too
+> broken to live.
 
-Heh, this is funny. It fails to build on 5.10:
+Indeed, at a glance it appears to be trying to reinvent 
+dma_alloc_noncontiguous(). What's not immediately obvious is whether 
+it's particular about allocations being DMA-contiguous; if not then I 
+think it comes down to the same thing as vb2-dma-sg and the ideas we 
+were tossing around for that[1].
 
-drivers/iommu/mtk_iommu.c:872:1: warning: data definition has no type or storage class
-   872 | MODULE_DEVICE_TABLE(of, mtk_iommu_of_ids);
-       | ^~~~~~~~~~~~~~~~~~~
-drivers/iommu/mtk_iommu.c:872:1: error: type defaults to 'int' in declaration of 'MODULE_DEVICE_TABLE' [-Werror=implicit-int]
-drivers/iommu/mtk_iommu.c:872:1: warning: parameter names (without types) in function declaration
-cc1: some warnings being treated as errors
-make[2]: *** [scripts/Makefile.build:286: drivers/iommu/mtk_iommu.o] Error 1
-
-But not on any of the older trees.
-
--- 
 Thanks,
-Sasha
+Robin.
+
+[1] 
+https://lore.kernel.org/linux-media/20231228074645.765yytb2a7hvz7ti@chromium.org/
