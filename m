@@ -1,79 +1,73 @@
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id B017F13A3FF
-	for <iommu@lists.linux.dev>; Thu,  9 May 2024 12:55:03 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
+Received: from verein.lst.de (verein.lst.de [213.95.11.211])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 18D9D14C592
+	for <iommu@lists.linux.dev>; Thu,  9 May 2024 13:07:03 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=213.95.11.211
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1715259305; cv=none; b=dhRk4ZybUx0qY41HA00dRzFLU6M/js82cTboOWBLGuFqVI/UPS50csNv97tKaYy8Aw24+La/11OQ14DhUb4YnTg23w6Pxof7S6K+i7CW3+0hvADn2N9ImAtlJCfpnvnxZ1rB3oD9kaXHmBzrldiCNlHZZqqdoOVwuoNjI615yRA=
+	t=1715260025; cv=none; b=oYQdPx3SVn76vT9D5PTaBtVR+Fq0Cl2Q9xNd1fk1XK2Nywb+szy0LTKPJmD2FMn3hWTlDzmPk6+BjcJodFHPpY0mgjOOeQD+ufpTTzzgrfKnlqNziZct/ea8elm1Ymig9k7BhBi0da2M3bcVrBfSHUO0O6ghFYjAkRYf8A2rqqc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1715259305; c=relaxed/simple;
-	bh=aSkUfhv6SwKhbFuUelERURNoIkOHYjhPTf9RrMCE0mc=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=ehgKqrFlhj9uyz5F2TsvasuSAESJOnIcC9E0BJaqlPK5ZnzAIgYJ3utZzuj+keqReWC0oVC97qhNy1MA5gxWEvOGDuhATNRjh8BLtr0wAeN3UJr1ZsMtQ8cE/lHT3HafH2wyJ0nEjvATzuCwJwDm7lo96yrS+KgtY2AxZjgHrZM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; arc=none smtp.client-ip=217.140.110.172
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 94AC8106F;
-	Thu,  9 May 2024 05:55:28 -0700 (PDT)
-Received: from [10.1.196.40] (e121345-lin.cambridge.arm.com [10.1.196.40])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 3EA1C3F6A8;
-	Thu,  9 May 2024 05:55:02 -0700 (PDT)
-Message-ID: <1be83f24-15bd-43a4-b310-f62c720cf064@arm.com>
-Date: Thu, 9 May 2024 13:54:56 +0100
+	s=arc-20240116; t=1715260025; c=relaxed/simple;
+	bh=haMixcEcAs3HRy/qL9tRsAFgidrplGeqcru9vIKYGS8=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=Hv4E0/OAS1deTKtLdxubSKAw4A37vPio4vaKHf9ctPE/ZfElZwgd+NLoepsZ1Zc/pdtX27VyPiUz8A69dsxGxRzmZ21fXy2n8prce1mifCakVizw1wllQrS1b4iMtjLKpwcUtycwCj9oKm/dYqoECwqk38j0WBrXlKhal/CgJ4w=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=lst.de; spf=pass smtp.mailfrom=lst.de; arc=none smtp.client-ip=213.95.11.211
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=lst.de
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=lst.de
+Received: by verein.lst.de (Postfix, from userid 2407)
+	id 14E8568C7B; Thu,  9 May 2024 15:07:00 +0200 (CEST)
+Date: Thu, 9 May 2024 15:06:59 +0200
+From: Christoph Hellwig <hch@lst.de>
+To: Catalin Marinas <catalin.marinas@arm.com>
+Cc: "T.J. Mercier" <tjmercier@google.com>, Christoph Hellwig <hch@lst.de>,
+	Marek Szyprowski <m.szyprowski@samsung.com>,
+	Robin Murphy <robin.murphy@arm.com>, isaacmanjarres@google.com,
+	iommu@lists.linux.dev, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] dma-direct: Set SG_DMA_SWIOTLB flag for dma-direct
+Message-ID: <20240509130659.GA12345@lst.de>
+References: <CABdmKX1XNTtoPTvfsJRobim8pHdDjPsKx=qVovVZDh5GEbKCfQ@mail.gmail.com> <20240506160244.GA16248@lst.de> <CABdmKX1n98+bw+1kewz=wdqq2Nbpaxao_Lx-Gq8oKGNUEP4ytQ@mail.gmail.com> <20240506161906.GA17237@lst.de> <CABdmKX3s_HnxciDA3XGM8Qj0kLY8OWENg+ifexrON4VYVbuLsA@mail.gmail.com> <20240507054314.GA31814@lst.de> <CABdmKX3PgcXaRUH3L7OV+POMiMd5L6pEF4fLXYPgfmQUNu_trg@mail.gmail.com> <Zju0JOx_ij1qH-34@arm.com> <CABdmKX3LANk-0ThrQ86ay5EnToM38gVH3oddBUnXq=9cmS0gCQ@mail.gmail.com> <ZjyAFE4Fk_r7KnDA@arm.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH] dma-direct: Set SG_DMA_SWIOTLB flag for dma-direct
-To: Christoph Hellwig <hch@lst.de>, "T.J. Mercier" <tjmercier@google.com>
-Cc: Marek Szyprowski <m.szyprowski@samsung.com>, isaacmanjarres@google.com,
- Catalin Marinas <catalin.marinas@arm.com>, iommu@lists.linux.dev,
- linux-kernel@vger.kernel.org
-References: <20240503183713.1557480-1-tjmercier@google.com>
- <20240506052955.GA4923@lst.de>
- <CABdmKX1XNTtoPTvfsJRobim8pHdDjPsKx=qVovVZDh5GEbKCfQ@mail.gmail.com>
- <20240506160244.GA16248@lst.de>
- <CABdmKX1n98+bw+1kewz=wdqq2Nbpaxao_Lx-Gq8oKGNUEP4ytQ@mail.gmail.com>
- <20240506161906.GA17237@lst.de>
- <CABdmKX3s_HnxciDA3XGM8Qj0kLY8OWENg+ifexrON4VYVbuLsA@mail.gmail.com>
- <20240507054314.GA31814@lst.de>
- <CABdmKX3PgcXaRUH3L7OV+POMiMd5L6pEF4fLXYPgfmQUNu_trg@mail.gmail.com>
- <20240508113353.GA31529@lst.de>
-From: Robin Murphy <robin.murphy@arm.com>
-Content-Language: en-GB
-In-Reply-To: <20240508113353.GA31529@lst.de>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <ZjyAFE4Fk_r7KnDA@arm.com>
+User-Agent: Mutt/1.5.17 (2007-11-01)
 
-On 08/05/2024 12:33 pm, Christoph Hellwig wrote:
-> On Tue, May 07, 2024 at 01:07:25PM -0700, T.J. Mercier wrote:
->> On Mon, May 6, 2024 at 10:43???PM Christoph Hellwig <hch@lst.de> wrote:
->>>
->>> On Mon, May 06, 2024 at 09:39:53AM -0700, T.J. Mercier wrote:
->>>>> You should not check, you simply must handle it by doing the proper
->>>>> DMA API based ownership management.
->>>>
->>>> That doesn't really work for uncached buffers.
->>>
->>> What uncached buffers?
->>
->> For example these ones:
->> https://android.googlesource.com/kernel/common/+/refs/heads/android-mainline/drivers/dma-buf/heaps/system_heap.c#141
-> 
-> Whatever that code is doing is probably not upstream because it's too
-> broken to live.
+On Thu, May 09, 2024 at 08:49:40AM +0100, Catalin Marinas wrote:
+> I see the swiotlb use as some internal detail of the DMA API
+> implementation that should not leak outside this framework.
 
-Indeed, at a glance it appears to be trying to reinvent 
-dma_alloc_noncontiguous(). What's not immediately obvious is whether 
-it's particular about allocations being DMA-contiguous; if not then I 
-think it comes down to the same thing as vb2-dma-sg and the ideas we 
-were tossing around for that[1].
+And that's what it is.
 
-Thanks,
-Robin.
+> I think we should prevent bouncing if DMA_ATTR_SKIP_CPU_SYNC is passed.
+> However, this is not sufficient with a proper use of the DMA API since
+> the first dma_map_*() without this attribute can still do the bouncing.
+> IMHO what we need is a DMA_ATTR_NO_BOUNCE or DMA_ATTR_SHARED that will
+> be used on the first map and potentially on subsequent calls in
+> combination with DMA_ATTR_SKIP_CPU_SYNC (though we could use the latter
+> to imply "shared"). The downside is that mapping may fail if the
+> coherent mask is too narrow.
 
-[1] 
-https://lore.kernel.org/linux-media/20231228074645.765yytb2a7hvz7ti@chromium.org/
+We have two big problems here that kinda interact:
+
+ 1) DMA_ATTR_SKIP_CPU_SYNC is just a horrible API.  It exposes an
+    implementation detail instead of dealing with use cases.
+    The original one IIRC was to deal with networking receive
+    buffers that are often only partially filled and the networking
+    folks wanted to avoid the overhead for doing the cache operations
+    for the rest.  It kinda works for that but already gets iffy
+    when swiotlb is involved.  The other abuses of the flag just
+    went downhill form there.
+
+ 2) the model of dma mapping a single chunk of memory to multiple
+    devices is not really well accounted for in the DMA API.
+
+So for two we need a memory allocator that can take the constraints
+of multiple devices into account, and probably a way to fail a
+dma-buf attach when the importer can't address the memory.
+We also then need to come up with a memory ownership / cache
+maintenance protocol that works for this use case.
