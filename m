@@ -1,73 +1,101 @@
-Received: from verein.lst.de (verein.lst.de [213.95.11.211])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 18D9D14C592
-	for <iommu@lists.linux.dev>; Thu,  9 May 2024 13:07:03 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=213.95.11.211
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 1DCD71272A8
+	for <iommu@lists.linux.dev>; Thu,  9 May 2024 13:28:35 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1715260025; cv=none; b=oYQdPx3SVn76vT9D5PTaBtVR+Fq0Cl2Q9xNd1fk1XK2Nywb+szy0LTKPJmD2FMn3hWTlDzmPk6+BjcJodFHPpY0mgjOOeQD+ufpTTzzgrfKnlqNziZct/ea8elm1Ymig9k7BhBi0da2M3bcVrBfSHUO0O6ghFYjAkRYf8A2rqqc=
+	t=1715261317; cv=none; b=OJLD5qBDm/adjJ7xKgIruBsLl+zRSr38QkN8Qba/FcRJuoaWjz/O61SpiaxiqUJAKFYFi5pjDKNfcLZZxzf6WMfkt9TdSxp+YoYtN81oBH7D9Ro0Co3waCA/XOr55gs6utNzRV+xhNh0EWgLgFjQgO1UqHlsKNgctUt1UE58lk0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1715260025; c=relaxed/simple;
-	bh=haMixcEcAs3HRy/qL9tRsAFgidrplGeqcru9vIKYGS8=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=Hv4E0/OAS1deTKtLdxubSKAw4A37vPio4vaKHf9ctPE/ZfElZwgd+NLoepsZ1Zc/pdtX27VyPiUz8A69dsxGxRzmZ21fXy2n8prce1mifCakVizw1wllQrS1b4iMtjLKpwcUtycwCj9oKm/dYqoECwqk38j0WBrXlKhal/CgJ4w=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=lst.de; spf=pass smtp.mailfrom=lst.de; arc=none smtp.client-ip=213.95.11.211
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=lst.de
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=lst.de
-Received: by verein.lst.de (Postfix, from userid 2407)
-	id 14E8568C7B; Thu,  9 May 2024 15:07:00 +0200 (CEST)
-Date: Thu, 9 May 2024 15:06:59 +0200
-From: Christoph Hellwig <hch@lst.de>
-To: Catalin Marinas <catalin.marinas@arm.com>
-Cc: "T.J. Mercier" <tjmercier@google.com>, Christoph Hellwig <hch@lst.de>,
-	Marek Szyprowski <m.szyprowski@samsung.com>,
-	Robin Murphy <robin.murphy@arm.com>, isaacmanjarres@google.com,
-	iommu@lists.linux.dev, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] dma-direct: Set SG_DMA_SWIOTLB flag for dma-direct
-Message-ID: <20240509130659.GA12345@lst.de>
-References: <CABdmKX1XNTtoPTvfsJRobim8pHdDjPsKx=qVovVZDh5GEbKCfQ@mail.gmail.com> <20240506160244.GA16248@lst.de> <CABdmKX1n98+bw+1kewz=wdqq2Nbpaxao_Lx-Gq8oKGNUEP4ytQ@mail.gmail.com> <20240506161906.GA17237@lst.de> <CABdmKX3s_HnxciDA3XGM8Qj0kLY8OWENg+ifexrON4VYVbuLsA@mail.gmail.com> <20240507054314.GA31814@lst.de> <CABdmKX3PgcXaRUH3L7OV+POMiMd5L6pEF4fLXYPgfmQUNu_trg@mail.gmail.com> <Zju0JOx_ij1qH-34@arm.com> <CABdmKX3LANk-0ThrQ86ay5EnToM38gVH3oddBUnXq=9cmS0gCQ@mail.gmail.com> <ZjyAFE4Fk_r7KnDA@arm.com>
+	s=arc-20240116; t=1715261317; c=relaxed/simple;
+	bh=wAq7VQoIZQxMDiS0TmZ5x9R83JFv4jz3MrrxIGBehzg=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=t+58Kgag2rOUXXoiW5BgwhMtsqIyFLyCjqWqyxkxemlze0MDx9ceh3ciGbKVTlwaka5qO0suLl87adW+fjCXdNckqOJ+ipBRYFrKNjFaUrBtvI7vB9U41RPN+E8Qr4w/ytGGZzPJYhN+ShJg6Cg0M54+4swKyjRnqzkrtywchQ8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; arc=none smtp.client-ip=217.140.110.172
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id EB36F106F;
+	Thu,  9 May 2024 06:29:00 -0700 (PDT)
+Received: from [10.1.196.40] (e121345-lin.cambridge.arm.com [10.1.196.40])
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 973BD3F6A8;
+	Thu,  9 May 2024 06:28:34 -0700 (PDT)
+Message-ID: <9af152ec-e68f-4f10-833b-400f9fe87bda@arm.com>
+Date: Thu, 9 May 2024 14:28:33 +0100
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <ZjyAFE4Fk_r7KnDA@arm.com>
-User-Agent: Mutt/1.5.17 (2007-11-01)
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH] dma-direct: Set SG_DMA_SWIOTLB flag for dma-direct
+To: =?UTF-8?B?UGV0ciBUZXNhxZnDrWs=?= <petr@tesarici.cz>,
+ "T.J. Mercier" <tjmercier@google.com>
+Cc: Christoph Hellwig <hch@lst.de>,
+ Marek Szyprowski <m.szyprowski@samsung.com>, isaacmanjarres@google.com,
+ iommu@lists.linux.dev, linux-kernel@vger.kernel.org
+References: <20240503183713.1557480-1-tjmercier@google.com>
+ <20240504105319.75eec54a@meshulam.tesarici.cz>
+From: Robin Murphy <robin.murphy@arm.com>
+Content-Language: en-GB
+In-Reply-To: <20240504105319.75eec54a@meshulam.tesarici.cz>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 
-On Thu, May 09, 2024 at 08:49:40AM +0100, Catalin Marinas wrote:
-> I see the swiotlb use as some internal detail of the DMA API
-> implementation that should not leak outside this framework.
+On 04/05/2024 9:53 am, Petr Tesařík wrote:
+> On Fri,  3 May 2024 18:37:12 +0000
+> "T.J. Mercier" <tjmercier@google.com> wrote:
+> 
+>> As of commit 861370f49ce4 ("iommu/dma: force bouncing if the size is
+>> not cacheline-aligned") sg_dma_mark_swiotlb is called when
+>> dma_map_sgtable takes the IOMMU path and uses SWIOTLB for some portion
+>> of a scatterlist. It is never set for the direct path, so drivers
+>> cannot always rely on sg_dma_is_swiotlb to return correctly after
+>> calling dma_map_sgtable. Fix this by calling sg_dma_mark_swiotlb in the
+>> direct path like it is in the IOMMU path.
+>>
+>> Signed-off-by: T.J. Mercier <tjmercier@google.com>
+>> ---
+>>   kernel/dma/direct.c | 4 +++-
+>>   1 file changed, 3 insertions(+), 1 deletion(-)
+>>
+>> diff --git a/kernel/dma/direct.c b/kernel/dma/direct.c
+>> index 4d543b1e9d57..52f0dcb25ca2 100644
+>> --- a/kernel/dma/direct.c
+>> +++ b/kernel/dma/direct.c
+>> @@ -12,7 +12,7 @@
+>>   #include <linux/pfn.h>
+>>   #include <linux/vmalloc.h>
+>>   #include <linux/set_memory.h>
+>> -#include <linux/slab.h>
+>> +#include <linux/swiotlb.h>
+>>   #include "direct.h"
+>>   
+>>   /*
+>> @@ -497,6 +497,8 @@ int dma_direct_map_sg(struct device *dev, struct scatterlist *sgl, int nents,
+>>   			goto out_unmap;
+>>   		}
+>>   		sg_dma_len(sg) = sg->length;
+>> +		if (is_swiotlb_buffer(dev, dma_to_phys(dev, sg->dma_address)))
+>> +			sg_dma_mark_swiotlb(sg);
+>>   	}
+>>   
+>>   	return nents;
+> 
+> I'm not sure this does the right thing. IIUC when the scatterlist flags
+> include SG_DMA_SWIOTLB, iommu_dma_sync_sg_for_*() will call
+> iommu_dma_sync_single_for_*(), which in turn translates the DMA address
+> to a physical address using iommu_iova_to_phys(). It seems to me that
+> this function may not work correctly if there is no IOMMU, but it also
+> seems to me that the scatterlist may contain such non-IOMMU addresses.
 
-And that's what it is.
+In principle dma-direct *could* make use of the SG_DMA_SWIOTLB flag for 
+an ever-so-slightly cheaper check than is_swiotlb_buffer() in sync_sg 
+and unmap_sg, the same way as iommu-dma does. However the benefit would 
+be a lot less significant than for iommu-dma, where it's really about 
+the overhead of needing to perform iommu_iova_to_phys() translations for 
+every segment every time in order to *get* the right thing to check 
+is_swiotlb_buffer() on - that's what would be unreasonably prohibitive 
+otherwise.
 
-> I think we should prevent bouncing if DMA_ATTR_SKIP_CPU_SYNC is passed.
-> However, this is not sufficient with a proper use of the DMA API since
-> the first dma_map_*() without this attribute can still do the bouncing.
-> IMHO what we need is a DMA_ATTR_NO_BOUNCE or DMA_ATTR_SHARED that will
-> be used on the first map and potentially on subsequent calls in
-> combination with DMA_ATTR_SKIP_CPU_SYNC (though we could use the latter
-> to imply "shared"). The downside is that mapping may fail if the
-> coherent mask is too narrow.
-
-We have two big problems here that kinda interact:
-
- 1) DMA_ATTR_SKIP_CPU_SYNC is just a horrible API.  It exposes an
-    implementation detail instead of dealing with use cases.
-    The original one IIRC was to deal with networking receive
-    buffers that are often only partially filled and the networking
-    folks wanted to avoid the overhead for doing the cache operations
-    for the rest.  It kinda works for that but already gets iffy
-    when swiotlb is involved.  The other abuses of the flag just
-    went downhill form there.
-
- 2) the model of dma mapping a single chunk of memory to multiple
-    devices is not really well accounted for in the DMA API.
-
-So for two we need a memory allocator that can take the constraints
-of multiple devices into account, and probably a way to fail a
-dma-buf attach when the importer can't address the memory.
-We also then need to come up with a memory ownership / cache
-maintenance protocol that works for this use case.
+Thanks,
+Robin
