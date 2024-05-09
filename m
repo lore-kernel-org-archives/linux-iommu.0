@@ -1,25 +1,25 @@
 Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 1DCD71272A8
-	for <iommu@lists.linux.dev>; Thu,  9 May 2024 13:28:35 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 5D21E147C85
+	for <iommu@lists.linux.dev>; Thu,  9 May 2024 13:43:59 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1715261317; cv=none; b=OJLD5qBDm/adjJ7xKgIruBsLl+zRSr38QkN8Qba/FcRJuoaWjz/O61SpiaxiqUJAKFYFi5pjDKNfcLZZxzf6WMfkt9TdSxp+YoYtN81oBH7D9Ro0Co3waCA/XOr55gs6utNzRV+xhNh0EWgLgFjQgO1UqHlsKNgctUt1UE58lk0=
+	t=1715262242; cv=none; b=gNoV1a81cJz9mhJ8KW7nxQaDeyLQUQGDWEN72TU0foLw2qvxVY/t5yFmhwKQwwhYRf9GrjFeq1aKcxT8rKH5+y9f1rmahuy/lIn5tizpaWRcbTK6YO1d4JoyMlP56viOe3vIjeaLQ12wmWxIEErDzsp03QwcxNTPiyt6QCjwtqw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1715261317; c=relaxed/simple;
-	bh=wAq7VQoIZQxMDiS0TmZ5x9R83JFv4jz3MrrxIGBehzg=;
+	s=arc-20240116; t=1715262242; c=relaxed/simple;
+	bh=c82Jh2kfWLAyCc6IgAx1YTplgTe2tNDmsAysonjUwGE=;
 	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=t+58Kgag2rOUXXoiW5BgwhMtsqIyFLyCjqWqyxkxemlze0MDx9ceh3ciGbKVTlwaka5qO0suLl87adW+fjCXdNckqOJ+ipBRYFrKNjFaUrBtvI7vB9U41RPN+E8Qr4w/ytGGZzPJYhN+ShJg6Cg0M54+4swKyjRnqzkrtywchQ8=
+	 In-Reply-To:Content-Type; b=qNK5RSatMiVLxMZxiqVqQc0uWWaZso6NiFm9c+HuBBlfohRBDdICjtgUNHfUtTNUTnZxxhoOY/R2/YZgwaUHqj7oOeC2WFBGqLe0ffA7FiDcAj0Uc7j4Dsp0+0UUsMwAhzXAY2oBm9ubs1SnzO24NAcujx8vwT0Jzm8UnFSbxB4=
 ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; arc=none smtp.client-ip=217.140.110.172
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
 Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id EB36F106F;
-	Thu,  9 May 2024 06:29:00 -0700 (PDT)
-Received: from [10.1.196.40] (e121345-lin.cambridge.arm.com [10.1.196.40])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 973BD3F6A8;
-	Thu,  9 May 2024 06:28:34 -0700 (PDT)
-Message-ID: <9af152ec-e68f-4f10-833b-400f9fe87bda@arm.com>
-Date: Thu, 9 May 2024 14:28:33 +0100
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id F3ECB106F;
+	Thu,  9 May 2024 06:44:23 -0700 (PDT)
+Received: from [10.1.28.39] (e122027.cambridge.arm.com [10.1.28.39])
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id E6B083F6A8;
+	Thu,  9 May 2024 06:43:54 -0700 (PDT)
+Message-ID: <010686f5-3049-46a1-8230-7752a1b433ff@arm.com>
+Date: Thu, 9 May 2024 14:43:52 +0100
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -27,75 +27,321 @@ List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH] dma-direct: Set SG_DMA_SWIOTLB flag for dma-direct
-To: =?UTF-8?B?UGV0ciBUZXNhxZnDrWs=?= <petr@tesarici.cz>,
- "T.J. Mercier" <tjmercier@google.com>
-Cc: Christoph Hellwig <hch@lst.de>,
- Marek Szyprowski <m.szyprowski@samsung.com>, isaacmanjarres@google.com,
- iommu@lists.linux.dev, linux-kernel@vger.kernel.org
-References: <20240503183713.1557480-1-tjmercier@google.com>
- <20240504105319.75eec54a@meshulam.tesarici.cz>
-From: Robin Murphy <robin.murphy@arm.com>
+Subject: Re: [PATCH v6 2/7] dma: avoid redundant calls for sync operations
+To: Alexander Lobakin <aleksander.lobakin@intel.com>,
+ Christoph Hellwig <hch@lst.de>
+Cc: Eric Dumazet <edumazet@google.com>, Jakub Kicinski <kuba@kernel.org>,
+ Marek Szyprowski <m.szyprowski@samsung.com>,
+ Robin Murphy <robin.murphy@arm.com>, Joerg Roedel <joro@8bytes.org>,
+ Will Deacon <will@kernel.org>, "Rafael J. Wysocki" <rafael@kernel.org>,
+ Magnus Karlsson <magnus.karlsson@intel.com>,
+ nex.sw.ncis.osdt.itp.upstreaming@intel.com, bpf@vger.kernel.org,
+ netdev@vger.kernel.org, iommu@lists.linux.dev, linux-kernel@vger.kernel.org
+References: <20240507112026.1803778-1-aleksander.lobakin@intel.com>
+ <20240507112026.1803778-3-aleksander.lobakin@intel.com>
+From: Steven Price <steven.price@arm.com>
 Content-Language: en-GB
-In-Reply-To: <20240504105319.75eec54a@meshulam.tesarici.cz>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <20240507112026.1803778-3-aleksander.lobakin@intel.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 
-On 04/05/2024 9:53 am, Petr Tesařík wrote:
-> On Fri,  3 May 2024 18:37:12 +0000
-> "T.J. Mercier" <tjmercier@google.com> wrote:
+On 07/05/2024 12:20, Alexander Lobakin wrote:
+> Quite often, devices do not need dma_sync operations on x86_64 at least.
+> Indeed, when dev_is_dma_coherent(dev) is true and
+> dev_use_swiotlb(dev) is false, iommu_dma_sync_single_for_cpu()
+> and friends do nothing.
 > 
->> As of commit 861370f49ce4 ("iommu/dma: force bouncing if the size is
->> not cacheline-aligned") sg_dma_mark_swiotlb is called when
->> dma_map_sgtable takes the IOMMU path and uses SWIOTLB for some portion
->> of a scatterlist. It is never set for the direct path, so drivers
->> cannot always rely on sg_dma_is_swiotlb to return correctly after
->> calling dma_map_sgtable. Fix this by calling sg_dma_mark_swiotlb in the
->> direct path like it is in the IOMMU path.
->>
->> Signed-off-by: T.J. Mercier <tjmercier@google.com>
->> ---
->>   kernel/dma/direct.c | 4 +++-
->>   1 file changed, 3 insertions(+), 1 deletion(-)
->>
->> diff --git a/kernel/dma/direct.c b/kernel/dma/direct.c
->> index 4d543b1e9d57..52f0dcb25ca2 100644
->> --- a/kernel/dma/direct.c
->> +++ b/kernel/dma/direct.c
->> @@ -12,7 +12,7 @@
->>   #include <linux/pfn.h>
->>   #include <linux/vmalloc.h>
->>   #include <linux/set_memory.h>
->> -#include <linux/slab.h>
->> +#include <linux/swiotlb.h>
->>   #include "direct.h"
->>   
->>   /*
->> @@ -497,6 +497,8 @@ int dma_direct_map_sg(struct device *dev, struct scatterlist *sgl, int nents,
->>   			goto out_unmap;
->>   		}
->>   		sg_dma_len(sg) = sg->length;
->> +		if (is_swiotlb_buffer(dev, dma_to_phys(dev, sg->dma_address)))
->> +			sg_dma_mark_swiotlb(sg);
->>   	}
->>   
->>   	return nents;
+> However, indirectly calling them when CONFIG_RETPOLINE=y consumes about
+> 10% of cycles on a cpu receiving packets from softirq at ~100Gbit rate.
+> Even if/when CONFIG_RETPOLINE is not set, there is a cost of about 3%.
 > 
-> I'm not sure this does the right thing. IIUC when the scatterlist flags
-> include SG_DMA_SWIOTLB, iommu_dma_sync_sg_for_*() will call
-> iommu_dma_sync_single_for_*(), which in turn translates the DMA address
-> to a physical address using iommu_iova_to_phys(). It seems to me that
-> this function may not work correctly if there is no IOMMU, but it also
-> seems to me that the scatterlist may contain such non-IOMMU addresses.
+> Add dev->need_dma_sync boolean and turn it off during the device
+> initialization (dma_set_mask()) depending on the setup:
+> dev_is_dma_coherent() for the direct DMA, !(sync_single_for_device ||
+> sync_single_for_cpu) or the new dma_map_ops flag, %DMA_F_CAN_SKIP_SYNC,
+> advertised for non-NULL DMA ops.
+> Then later, if/when swiotlb is used for the first time, the flag
+> is reset back to on, from swiotlb_tbl_map_single().
+> 
+> On iavf, the UDP trafficgen with XDP_DROP in skb mode test shows
+> +3-5% increase for direct DMA.
+> 
+> Suggested-by: Christoph Hellwig <hch@lst.de> # direct DMA shortcut
+> Co-developed-by: Eric Dumazet <edumazet@google.com>
+> Signed-off-by: Eric Dumazet <edumazet@google.com>
+> Signed-off-by: Alexander Lobakin <aleksander.lobakin@intel.com>
 
-In principle dma-direct *could* make use of the SG_DMA_SWIOTLB flag for 
-an ever-so-slightly cheaper check than is_swiotlb_buffer() in sync_sg 
-and unmap_sg, the same way as iommu-dma does. However the benefit would 
-be a lot less significant than for iommu-dma, where it's really about 
-the overhead of needing to perform iommu_iova_to_phys() translations for 
-every segment every time in order to *get* the right thing to check 
-is_swiotlb_buffer() on - that's what would be unreasonably prohibitive 
-otherwise.
+I've bisected a boot failure (on a Firefly RK3288) to this commit.
+AFAICT the problem is that I have (at least) two drivers which don't
+call dma_set_mask() and therefore never initialise the new dma_need_sync
+variable.
+
+The specific drivers are "rockchip-drm" and "rk_gmac-dwmac". Is it a
+requirement that all drivers engaging in DMA should call dma_set_mask()
+- and therefore this has uncovered a bug in those drivers. Or is the
+assumption that all drivers call dma_set_mask() faulty?
 
 Thanks,
-Robin
+
+Steve
+
+> ---
+>  include/linux/device.h      |  4 +++
+>  include/linux/dma-map-ops.h | 12 ++++++++
+>  include/linux/dma-mapping.h | 53 +++++++++++++++++++++++++++++++----
+>  kernel/dma/mapping.c        | 55 +++++++++++++++++++++++++++++--------
+>  kernel/dma/swiotlb.c        |  6 ++++
+>  5 files changed, 113 insertions(+), 17 deletions(-)
+> 
+> diff --git a/include/linux/device.h b/include/linux/device.h
+> index b9f5464f44ed..ed95b829f05b 100644
+> --- a/include/linux/device.h
+> +++ b/include/linux/device.h
+> @@ -691,6 +691,7 @@ struct device_physical_location {
+>   *		and optionall (if the coherent mask is large enough) also
+>   *		for dma allocations.  This flag is managed by the dma ops
+>   *		instance from ->dma_supported.
+> + * @dma_need_sync: The device needs performing DMA sync operations.
+>   *
+>   * At the lowest level, every device in a Linux system is represented by an
+>   * instance of struct device. The device structure contains the information
+> @@ -803,6 +804,9 @@ struct device {
+>  #ifdef CONFIG_DMA_OPS_BYPASS
+>  	bool			dma_ops_bypass : 1;
+>  #endif
+> +#ifdef CONFIG_DMA_NEED_SYNC
+> +	bool			dma_need_sync:1;
+> +#endif
+>  };
+>  
+>  /**
+> diff --git a/include/linux/dma-map-ops.h b/include/linux/dma-map-ops.h
+> index 4abc60f04209..4893cb89cb52 100644
+> --- a/include/linux/dma-map-ops.h
+> +++ b/include/linux/dma-map-ops.h
+> @@ -18,8 +18,11 @@ struct iommu_ops;
+>   *
+>   * DMA_F_PCI_P2PDMA_SUPPORTED: Indicates the dma_map_ops implementation can
+>   * handle PCI P2PDMA pages in the map_sg/unmap_sg operation.
+> + * DMA_F_CAN_SKIP_SYNC: DMA sync operations can be skipped if the device is
+> + * coherent and it's not an SWIOTLB buffer.
+>   */
+>  #define DMA_F_PCI_P2PDMA_SUPPORTED     (1 << 0)
+> +#define DMA_F_CAN_SKIP_SYNC            (1 << 1)
+>  
+>  struct dma_map_ops {
+>  	unsigned int flags;
+> @@ -273,6 +276,15 @@ static inline bool dev_is_dma_coherent(struct device *dev)
+>  }
+>  #endif /* CONFIG_ARCH_HAS_DMA_COHERENCE_H */
+>  
+> +static inline void dma_reset_need_sync(struct device *dev)
+> +{
+> +#ifdef CONFIG_DMA_NEED_SYNC
+> +	/* Reset it only once so that the function can be called on hotpath */
+> +	if (unlikely(!dev->dma_need_sync))
+> +		dev->dma_need_sync = true;
+> +#endif
+> +}
+> +
+>  /*
+>   * Check whether potential kmalloc() buffers are safe for non-coherent DMA.
+>   */
+> diff --git a/include/linux/dma-mapping.h b/include/linux/dma-mapping.h
+> index a569b56b25e2..eb4e15893b6c 100644
+> --- a/include/linux/dma-mapping.h
+> +++ b/include/linux/dma-mapping.h
+> @@ -282,16 +282,59 @@ static inline int dma_mmap_noncontiguous(struct device *dev,
+>  #endif /* CONFIG_HAS_DMA */
+>  
+>  #if defined(CONFIG_HAS_DMA) && defined(CONFIG_DMA_NEED_SYNC)
+> -void dma_sync_single_for_cpu(struct device *dev, dma_addr_t addr, size_t size,
+> +void __dma_sync_single_for_cpu(struct device *dev, dma_addr_t addr, size_t size,
+>  		enum dma_data_direction dir);
+> -void dma_sync_single_for_device(struct device *dev, dma_addr_t addr,
+> +void __dma_sync_single_for_device(struct device *dev, dma_addr_t addr,
+>  		size_t size, enum dma_data_direction dir);
+> -void dma_sync_sg_for_cpu(struct device *dev, struct scatterlist *sg,
+> +void __dma_sync_sg_for_cpu(struct device *dev, struct scatterlist *sg,
+>  		int nelems, enum dma_data_direction dir);
+> -void dma_sync_sg_for_device(struct device *dev, struct scatterlist *sg,
+> +void __dma_sync_sg_for_device(struct device *dev, struct scatterlist *sg,
+>  		int nelems, enum dma_data_direction dir);
+> -bool dma_need_sync(struct device *dev, dma_addr_t dma_addr);
+> +bool __dma_need_sync(struct device *dev, dma_addr_t dma_addr);
+> +
+> +static inline bool dma_dev_need_sync(const struct device *dev)
+> +{
+> +	/* Always call DMA sync operations when debugging is enabled */
+> +	return dev->dma_need_sync || IS_ENABLED(CONFIG_DMA_API_DEBUG);
+> +}
+> +
+> +static inline void dma_sync_single_for_cpu(struct device *dev, dma_addr_t addr,
+> +		size_t size, enum dma_data_direction dir)
+> +{
+> +	if (dma_dev_need_sync(dev))
+> +		__dma_sync_single_for_cpu(dev, addr, size, dir);
+> +}
+> +
+> +static inline void dma_sync_single_for_device(struct device *dev,
+> +		dma_addr_t addr, size_t size, enum dma_data_direction dir)
+> +{
+> +	if (dma_dev_need_sync(dev))
+> +		__dma_sync_single_for_device(dev, addr, size, dir);
+> +}
+> +
+> +static inline void dma_sync_sg_for_cpu(struct device *dev,
+> +		struct scatterlist *sg, int nelems, enum dma_data_direction dir)
+> +{
+> +	if (dma_dev_need_sync(dev))
+> +		__dma_sync_sg_for_cpu(dev, sg, nelems, dir);
+> +}
+> +
+> +static inline void dma_sync_sg_for_device(struct device *dev,
+> +		struct scatterlist *sg, int nelems, enum dma_data_direction dir)
+> +{
+> +	if (dma_dev_need_sync(dev))
+> +		__dma_sync_sg_for_device(dev, sg, nelems, dir);
+> +}
+> +
+> +static inline bool dma_need_sync(struct device *dev, dma_addr_t dma_addr)
+> +{
+> +	return dma_dev_need_sync(dev) ? __dma_need_sync(dev, dma_addr) : false;
+> +}
+>  #else /* !CONFIG_HAS_DMA || !CONFIG_DMA_NEED_SYNC */
+> +static inline bool dma_dev_need_sync(const struct device *dev)
+> +{
+> +	return false;
+> +}
+>  static inline void dma_sync_single_for_cpu(struct device *dev, dma_addr_t addr,
+>  		size_t size, enum dma_data_direction dir)
+>  {
+> diff --git a/kernel/dma/mapping.c b/kernel/dma/mapping.c
+> index c78b78e95a26..3524bc92c37f 100644
+> --- a/kernel/dma/mapping.c
+> +++ b/kernel/dma/mapping.c
+> @@ -330,7 +330,7 @@ void dma_unmap_resource(struct device *dev, dma_addr_t addr, size_t size,
+>  EXPORT_SYMBOL(dma_unmap_resource);
+>  
+>  #ifdef CONFIG_DMA_NEED_SYNC
+> -void dma_sync_single_for_cpu(struct device *dev, dma_addr_t addr, size_t size,
+> +void __dma_sync_single_for_cpu(struct device *dev, dma_addr_t addr, size_t size,
+>  		enum dma_data_direction dir)
+>  {
+>  	const struct dma_map_ops *ops = get_dma_ops(dev);
+> @@ -342,9 +342,9 @@ void dma_sync_single_for_cpu(struct device *dev, dma_addr_t addr, size_t size,
+>  		ops->sync_single_for_cpu(dev, addr, size, dir);
+>  	debug_dma_sync_single_for_cpu(dev, addr, size, dir);
+>  }
+> -EXPORT_SYMBOL(dma_sync_single_for_cpu);
+> +EXPORT_SYMBOL(__dma_sync_single_for_cpu);
+>  
+> -void dma_sync_single_for_device(struct device *dev, dma_addr_t addr,
+> +void __dma_sync_single_for_device(struct device *dev, dma_addr_t addr,
+>  		size_t size, enum dma_data_direction dir)
+>  {
+>  	const struct dma_map_ops *ops = get_dma_ops(dev);
+> @@ -356,9 +356,9 @@ void dma_sync_single_for_device(struct device *dev, dma_addr_t addr,
+>  		ops->sync_single_for_device(dev, addr, size, dir);
+>  	debug_dma_sync_single_for_device(dev, addr, size, dir);
+>  }
+> -EXPORT_SYMBOL(dma_sync_single_for_device);
+> +EXPORT_SYMBOL(__dma_sync_single_for_device);
+>  
+> -void dma_sync_sg_for_cpu(struct device *dev, struct scatterlist *sg,
+> +void __dma_sync_sg_for_cpu(struct device *dev, struct scatterlist *sg,
+>  		    int nelems, enum dma_data_direction dir)
+>  {
+>  	const struct dma_map_ops *ops = get_dma_ops(dev);
+> @@ -370,9 +370,9 @@ void dma_sync_sg_for_cpu(struct device *dev, struct scatterlist *sg,
+>  		ops->sync_sg_for_cpu(dev, sg, nelems, dir);
+>  	debug_dma_sync_sg_for_cpu(dev, sg, nelems, dir);
+>  }
+> -EXPORT_SYMBOL(dma_sync_sg_for_cpu);
+> +EXPORT_SYMBOL(__dma_sync_sg_for_cpu);
+>  
+> -void dma_sync_sg_for_device(struct device *dev, struct scatterlist *sg,
+> +void __dma_sync_sg_for_device(struct device *dev, struct scatterlist *sg,
+>  		       int nelems, enum dma_data_direction dir)
+>  {
+>  	const struct dma_map_ops *ops = get_dma_ops(dev);
+> @@ -384,18 +384,47 @@ void dma_sync_sg_for_device(struct device *dev, struct scatterlist *sg,
+>  		ops->sync_sg_for_device(dev, sg, nelems, dir);
+>  	debug_dma_sync_sg_for_device(dev, sg, nelems, dir);
+>  }
+> -EXPORT_SYMBOL(dma_sync_sg_for_device);
+> +EXPORT_SYMBOL(__dma_sync_sg_for_device);
+>  
+> -bool dma_need_sync(struct device *dev, dma_addr_t dma_addr)
+> +bool __dma_need_sync(struct device *dev, dma_addr_t dma_addr)
+>  {
+>  	const struct dma_map_ops *ops = get_dma_ops(dev);
+>  
+>  	if (dma_map_direct(dev, ops))
+> +		/*
+> +		 * dma_need_sync could've been reset on first SWIOTLB buffer
+> +		 * mapping, but @dma_addr is not necessary an SWIOTLB buffer.
+> +		 * In this case, fall back to more granular check.
+> +		 */
+>  		return dma_direct_need_sync(dev, dma_addr);
+> -	return ops->sync_single_for_cpu || ops->sync_single_for_device;
+> +	return true;
+>  }
+> -EXPORT_SYMBOL_GPL(dma_need_sync);
+> -#endif /* CONFIG_DMA_NEED_SYNC */
+> +EXPORT_SYMBOL_GPL(__dma_need_sync);
+> +
+> +static void dma_setup_need_sync(struct device *dev)
+> +{
+> +	const struct dma_map_ops *ops = get_dma_ops(dev);
+> +
+> +	if (dma_map_direct(dev, ops) || (ops->flags & DMA_F_CAN_SKIP_SYNC))
+> +		/*
+> +		 * dma_need_sync will be reset to %true on first SWIOTLB buffer
+> +		 * mapping, if any. During the device initialization, it's
+> +		 * enough to check only for the DMA coherence.
+> +		 */
+> +		dev->dma_need_sync = !dev_is_dma_coherent(dev);
+> +	else if (!ops->sync_single_for_device && !ops->sync_single_for_cpu &&
+> +		 !ops->sync_sg_for_device && !ops->sync_sg_for_cpu)
+> +		/*
+> +		 * Synchronization is not possible when none of DMA sync ops
+> +		 * is set.
+> +		 */
+> +		dev->dma_need_sync = false;
+> +	else
+> +		dev->dma_need_sync = true;
+> +}
+> +#else /* !CONFIG_DMA_NEED_SYNC */
+> +static inline void dma_setup_need_sync(struct device *dev) { }
+> +#endif /* !CONFIG_DMA_NEED_SYNC */
+>  
+>  /*
+>   * The whole dma_get_sgtable() idea is fundamentally unsafe - it seems
+> @@ -785,6 +814,8 @@ int dma_set_mask(struct device *dev, u64 mask)
+>  
+>  	arch_dma_set_mask(dev, mask);
+>  	*dev->dma_mask = mask;
+> +	dma_setup_need_sync(dev);
+> +
+>  	return 0;
+>  }
+>  EXPORT_SYMBOL(dma_set_mask);
+> diff --git a/kernel/dma/swiotlb.c b/kernel/dma/swiotlb.c
+> index 046da973a7e2..ae3e593eaadb 100644
+> --- a/kernel/dma/swiotlb.c
+> +++ b/kernel/dma/swiotlb.c
+> @@ -1408,6 +1408,12 @@ phys_addr_t swiotlb_tbl_map_single(struct device *dev, phys_addr_t orig_addr,
+>  		return (phys_addr_t)DMA_MAPPING_ERROR;
+>  	}
+>  
+> +	/*
+> +	 * If dma_need_sync wasn't set, reset it on first SWIOTLB buffer
+> +	 * mapping to always sync SWIOTLB buffers.
+> +	 */
+> +	dma_reset_need_sync(dev);
+> +
+>  	/*
+>  	 * Save away the mapping from the original address to the DMA address.
+>  	 * This is needed when we sync the memory.  Then we sync the buffer if
+
