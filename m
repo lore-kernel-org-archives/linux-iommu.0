@@ -1,39 +1,50 @@
-Received: from verein.lst.de (verein.lst.de [213.95.11.211])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 41D3316E869
-	for <iommu@lists.linux.dev>; Thu,  9 May 2024 15:19:05 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=213.95.11.211
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2B93614A612;
+	Thu,  9 May 2024 15:23:27 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1715267948; cv=none; b=TQdhGfphGWGfPUCP39SsRBodpn2Qd69i7Wf+lBF+j1I7NXpLqssmPvxuRJDoZCFKTqiKSxEUxwGfM3ulbHOp4Q9lmkLCFRbRjy7pmAeYTxY429wSC0APYbkk2jXv6emakKUPvNzIn4F/PVBLdrO6pJAnR11h5oQbEfdMykNXLBw=
+	t=1715268208; cv=none; b=Sx1ewpIc6nREWWOu+xKP+zZx3tLnufQFEM8Roh9wuzkVM4kGG4C6pJcbneZWkNNJ0vtAoBbWVRV4ArTI++eV5eYnLB7JW8E7UBed9oqJTkSwQLI/a44KpLHwN+krVGzoKQi7GDVd+MN4PiLaGxYA+jPgsHa6btyHrCS02dj+vm8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1715267948; c=relaxed/simple;
-	bh=5aL9wZ+3v1zrCPnnvPdqxIqX0SQD7VGQLpZb5iRs/9s=;
+	s=arc-20240116; t=1715268208; c=relaxed/simple;
+	bh=XhQRq4Ns4VHWDwjnjvJd8t9wHZh7rXDyyHrWhOzYg+g=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=TlwS7tbiWl3+sfx0p7nouTD+j8vDF2Gwovf5yNOtjTTuxz9BjvNd64G/cg25SYuU5CguDqRwPzIF9E7ExMm4YARVAhJ1fIJ/m6AndSDn8iiOLG5XHRStKLxzDXWikCIZwf1MjBP8dHK5jnW/s9SffUMNL5h19TcOhL/H30OmtEU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=lst.de; spf=pass smtp.mailfrom=lst.de; arc=none smtp.client-ip=213.95.11.211
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=lst.de
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=lst.de
-Received: by verein.lst.de (Postfix, from userid 2407)
-	id B907268BFE; Thu,  9 May 2024 17:19:01 +0200 (CEST)
-Date: Thu, 9 May 2024 17:19:01 +0200
-From: Christoph Hellwig <hch@lst.de>
-To: Alexander Lobakin <aleksander.lobakin@intel.com>
-Cc: Steven Price <steven.price@arm.com>, Christoph Hellwig <hch@lst.de>,
-	Eric Dumazet <edumazet@google.com>,
-	Jakub Kicinski <kuba@kernel.org>,
-	Marek Szyprowski <m.szyprowski@samsung.com>,
-	Robin Murphy <robin.murphy@arm.com>, Joerg Roedel <joro@8bytes.org>,
-	Will Deacon <will@kernel.org>,
-	"Rafael J. Wysocki" <rafael@kernel.org>,
-	Magnus Karlsson <magnus.karlsson@intel.com>,
-	nex.sw.ncis.osdt.itp.upstreaming@intel.com, bpf@vger.kernel.org,
-	netdev@vger.kernel.org, iommu@lists.linux.dev,
-	linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] dma: fix DMA sync for drivers not calling
- dma_set_mask*()
-Message-ID: <20240509151901.GA15306@lst.de>
-References: <20240509144616.938519-1-aleksander.lobakin@intel.com> <ce83b3b8-2246-4006-a111-f2da0740bd8e@arm.com> <6ce428e6-3585-4ef5-af08-debef0a7c308@intel.com>
+	 Content-Type:Content-Disposition:In-Reply-To; b=FCy0F1hMriK/W6I/jUhVO1RceUkk5KLZfskJ04l5ulx6+E3nxU2Oh9YWedrE3sfCoOKsM0oLH6ssS5URIM0DKGjN8XDmYIDbQQbj0ZdY8smQHub18OjV1Oufc7PL5IhI79TdRvHTX5aErUhHx4qBsL2Ukdost0Qo1OAODBO50M8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=qEC9KgR8; arc=none smtp.client-ip=10.30.226.201
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="qEC9KgR8"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C295BC116B1;
+	Thu,  9 May 2024 15:23:25 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1715268207;
+	bh=XhQRq4Ns4VHWDwjnjvJd8t9wHZh7rXDyyHrWhOzYg+g=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=qEC9KgR8PnkZ6cvWTvhxe99GtZcDTdSRROjT7u/Fnfibp6tH4LtPt3HTGMbTGHPcM
+	 eg1K1cRiWsaWZbqN1VBhUlsyvQR1DTqZEhLYY/0pcN3lTY77IpUDVckzHcHRDxCHf5
+	 Kqz2u+l+isPlflLq36UZiNo0RX4Cz6LipFn9HaBCYcsh9W7YdQM/apCwFDs3xqKNet
+	 hdmnN5evWcLUMF88jeQgqUOroEthgHJ0LiWPMGZDSdWXcROJQXs0OZbHgq9/recdC8
+	 WYrobhyVfqwrxcUN4XLrIlUEt+XoCjavu7UJznUPCo6fRb+aPfqxYBpSUY6XAr7314
+	 HYeEpQUAw1Gsw==
+Date: Thu, 9 May 2024 16:23:22 +0100
+From: Will Deacon <will@kernel.org>
+To: Jason Gunthorpe <jgg@nvidia.com>
+Cc: iommu@lists.linux.dev, Joerg Roedel <joro@8bytes.org>,
+	linux-arm-kernel@lists.infradead.org,
+	Robin Murphy <robin.murphy@arm.com>,
+	Thorsten Leemhuis <linux@leemhuis.info>,
+	Michael Shavit <mshavit@google.com>,
+	Nicolin Chen <nicolinc@nvidia.com>, patches@lists.linux.dev,
+	arnd@arndb.de
+Subject: Re: [PATCH] iommu/arm-smmu-v3: Make the kunit into a module
+Message-ID: <20240509152322.GA24667@willie-the-truck>
+References: <0-v1-24cba6c0f404+2ae-smmu_kunit_module_jgg@nvidia.com>
+ <20240507135817.GA22408@willie-the-truck>
+ <20240507140946.GO3341011@nvidia.com>
+ <20240507142248.GA22453@willie-the-truck>
+ <20240507143321.GP3341011@nvidia.com>
+ <20240508165333.GA23294@willie-the-truck>
+ <20240508180423.GN4650@nvidia.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -42,13 +53,33 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <6ce428e6-3585-4ef5-af08-debef0a7c308@intel.com>
-User-Agent: Mutt/1.5.17 (2007-11-01)
+In-Reply-To: <20240508180423.GN4650@nvidia.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 
-On Thu, May 09, 2024 at 05:16:13PM +0200, Alexander Lobakin wrote:
-> Oh crap, it really should be f406. Wrong tree again >_<
+On Wed, May 08, 2024 at 03:04:23PM -0300, Jason Gunthorpe wrote:
+> On Wed, May 08, 2024 at 05:53:33PM +0100, Will Deacon wrote:
+> > On Tue, May 07, 2024 at 11:33:21AM -0300, Jason Gunthorpe wrote:
+> > > On Tue, May 07, 2024 at 03:22:48PM +0100, Will Deacon wrote:
+> > > > On Tue, May 07, 2024 at 11:09:46AM -0300, Jason Gunthorpe wrote:
+> > > > > On Tue, May 07, 2024 at 02:58:17PM +0100, Will Deacon wrote:
+> > The DRM_XE one is tristate and has this interesting variant:
+> > 
+> > 	depends on ... && (m || (y && KUNIT=y))
+> 
+> Yeah, that is one of the novel ways to write the 'compatible
+> modularity but not force enabled' check
 
-I've fixed this up and added the Tested-by in my local tree.  I'll push
-it out after a bit of testing.  More reviews or tested-bys are still
-welcome.
+Bah, and it looks like this has its own set of issues anyway:
 
+https://lore.kernel.org/all/20240224121528.1972719-1-arnd@kernel.org/
+
+> I suspect alot of these just predate the EXPORT_SYMBOL_IF_KUNIT
+> infrastructure and should probably just be moved into
+> modules.. modules clearly work better with kunit's ecosystem.
+
+Fair enough. I'll suck it up given that this seems to be the new and
+improved way of dealing with this problem. I'm just a bit paranoid about
+exporting symbols (even within a namespace), probably thanks to my time
+working on Android.
+
+Will
