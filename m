@@ -1,51 +1,79 @@
-Received: from verein.lst.de (verein.lst.de [213.95.11.211])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EE9BF149DEA
-	for <iommu@lists.linux.dev>; Thu,  9 May 2024 12:02:24 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=213.95.11.211
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B672913BAE3;
+	Thu,  9 May 2024 12:46:57 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1715256146; cv=none; b=HQUppc4PLoZockH1QNYfBmgSOkAewyEnCDSy7zpVXAZv80l9elN2nhGc3TKpQzaaN6EnV4FNVVvOmRHLxQRO4z5BqrfLFW/er8LybqXJZly0JZv7fVZH4+OO+a7iuQLEEdWpwcWiINAKvqsjOYHS/s0Y05jAS3eL/e98q464bWY=
+	t=1715258817; cv=none; b=V9dXHcQXRxgEfOl13z0i3S92LEPhl9RZTbVOKSAbKJzou0iVSZNeX59kEnqK7ANKFbd+gr/EvH3qcaVzGPLIPC9t0GDJod34jAEbtHOmlFKRtBF03yGztAlebWZiDqlWqEkeaeBy9EryXNnpFWJZbgSnv2FyhBHt4ygwyQ+ilQ4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1715256146; c=relaxed/simple;
-	bh=X2WOAQIVZvh19O6igpf5MGMHAkbbgGN0l/hQaACG2IE=;
+	s=arc-20240116; t=1715258817; c=relaxed/simple;
+	bh=Y1puUf3Rn4PFEIfYWjo05C5VlGgGVxqEMZoIhApAwoE=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=jyVqTEKEm75PBfr7j7B9+iwC98DxFf105U0FeAPOKd7V7YSN6sSk9biXqXGRLymWUC7EfUTM+mHGwcB13vEr8WYuHWMGkDR7miO+5+53meZtwr2R+eXzqR3WF8rtL/M0GyRn29TnPoa1SXJTDvkNNAnoHOqf7r3c/amFqG4agik=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=lst.de; spf=pass smtp.mailfrom=lst.de; arc=none smtp.client-ip=213.95.11.211
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=lst.de
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=lst.de
-Received: by verein.lst.de (Postfix, from userid 2407)
-	id 4AED8227A87; Thu,  9 May 2024 14:02:21 +0200 (CEST)
-Date: Thu, 9 May 2024 14:02:20 +0200
-From: Christoph Hellwig <hch@lst.de>
-To: Alexander Lobakin <aleksander.lobakin@intel.com>
-Cc: Marek Szyprowski <m.szyprowski@samsung.com>,
-	Christoph Hellwig <hch@lst.de>, Eric Dumazet <edumazet@google.com>,
-	Jakub Kicinski <kuba@kernel.org>,
-	Robin Murphy <robin.murphy@arm.com>, Joerg Roedel <joro@8bytes.org>,
-	Will Deacon <will@kernel.org>,
-	"Rafael J. Wysocki" <rafael@kernel.org>,
-	Magnus Karlsson <magnus.karlsson@intel.com>,
-	nex.sw.ncis.osdt.itp.upstreaming@intel.com, bpf@vger.kernel.org,
-	netdev@vger.kernel.org, iommu@lists.linux.dev,
-	linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v6 2/7] dma: avoid redundant calls for sync operations
-Message-ID: <20240509120220.GB11327@lst.de>
-References: <20240507112026.1803778-1-aleksander.lobakin@intel.com> <CGME20240507112115eucas1p117bc01652d4cdbe810de841830227f47@eucas1p1.samsung.com> <20240507112026.1803778-3-aleksander.lobakin@intel.com> <46160534-5003-4809-a408-6b3a3f4921e9@samsung.com> <b4632761-3ec6-4070-a60e-b74c1bfdd579@intel.com> <3dce41a3-e5a9-43e7-b918-ecb8d688ea1c@intel.com>
+	 Content-Type:Content-Disposition:In-Reply-To; b=dJmO1sxx8jCR1DM2/MaECwS1fxcpxzDcFxeR3I0KkZFHcXlKNxAfT2Oec/HnH5frzFSMvZ+Voe/6kZyQNc0WrxsB5a92rIUPeb2P9gmdBIKPBa6NwLVPbDJ0JK+SqYNALztuiY6DlJBScvThtdbV3oijvMpCuayAxIK4SqUn7hQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=AQoXxdBT; arc=none smtp.client-ip=10.30.226.201
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="AQoXxdBT"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 09D71C116B1;
+	Thu,  9 May 2024 12:46:56 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1715258817;
+	bh=Y1puUf3Rn4PFEIfYWjo05C5VlGgGVxqEMZoIhApAwoE=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=AQoXxdBT+Gf6/1FnwrPKEUEL8un/LA/u/2/sGpDCC3rxgKcoqyWXiIYW010ItlUum
+	 CLW5mYm545cimXqZBYmCGhgG0TDtnkqwrORVR4iSIbEqIRhyhcrt3kwfXNkXg6K64O
+	 w/OV3lp+KVg/vrgpg6Otpk5K6rEE7UjvK0+ZQ/3ke7FMj3+1HjaVBF4DAXoz4gPzwI
+	 0n+UHl6L4pv6WqF0RUQ69KZCeD51zRNa7aM9mIiyeZyDaYmsZpsgrROCD8g6oq1W5t
+	 bWTjyIxOyJS//5RBCY/Nlq3g0oX9RTKZSdE+TICUdGYgN2wahiJLQ61bVw8OeIOqkv
+	 DvX0r1wcBJS5w==
+Date: Thu, 9 May 2024 08:46:55 -0400
+From: Sasha Levin <sashal@kernel.org>
+To: Pavel Machek <pavel@ucw.cz>
+Cc: linux-kernel@vger.kernel.org, stable@vger.kernel.org,
+	Krzysztof Kozlowski <krzk@kernel.org>,
+	Joerg Roedel <jroedel@suse.de>, yong.wu@mediatek.com,
+	joro@8bytes.org, will@kernel.org, matthias.bgg@gmail.com,
+	angelogioacchino.delregno@collabora.com, iommu@lists.linux.dev,
+	linux-mediatek@lists.infradead.org,
+	linux-arm-kernel@lists.infradead.org
+Subject: Re: [PATCH AUTOSEL 4.19 7/7] iommu: mtk: fix module autoloading
+Message-ID: <ZjzFv38K2fudS_zQ@sashalap>
+References: <20240422232040.1616527-1-sashal@kernel.org>
+ <20240422232040.1616527-7-sashal@kernel.org>
+ <Zied1/2cELhaQupG@duo.ucw.cz>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=us-ascii; format=flowed
 Content-Disposition: inline
-In-Reply-To: <3dce41a3-e5a9-43e7-b918-ecb8d688ea1c@intel.com>
-User-Agent: Mutt/1.5.17 (2007-11-01)
+In-Reply-To: <Zied1/2cELhaQupG@duo.ucw.cz>
 
-On Thu, May 09, 2024 at 01:59:41PM +0200, Alexander Lobakin wrote:
-> Or invert the flag, so that false would mean "it needs sync" and it
-> would be the default if dma_*mask*() wasn't called.
+On Tue, Apr 23, 2024 at 01:39:03PM +0200, Pavel Machek wrote:
+>Hi!
+>
+>> [ Upstream commit 7537e31df80cb58c27f3b6fef702534ea87a5957 ]
+>>
+>> Add MODULE_DEVICE_TABLE(), so modules could be properly autoloaded
+>> based on the alias from of_device_id table.
+>
+>This patch is queued for 4.19 and 5.15, but not 5.10. I believe that's
+>wrong.
 
-That is probably the safest option.
+Heh, this is funny. It fails to build on 5.10:
 
+drivers/iommu/mtk_iommu.c:872:1: warning: data definition has no type or storage class
+   872 | MODULE_DEVICE_TABLE(of, mtk_iommu_of_ids);
+       | ^~~~~~~~~~~~~~~~~~~
+drivers/iommu/mtk_iommu.c:872:1: error: type defaults to 'int' in declaration of 'MODULE_DEVICE_TABLE' [-Werror=implicit-int]
+drivers/iommu/mtk_iommu.c:872:1: warning: parameter names (without types) in function declaration
+cc1: some warnings being treated as errors
+make[2]: *** [scripts/Makefile.build:286: drivers/iommu/mtk_iommu.o] Error 1
+
+But not on any of the older trees.
+
+-- 
+Thanks,
+Sasha
