@@ -1,104 +1,107 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.17])
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.15])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DD6E215F3E1
-	for <iommu@lists.linux.dev>; Fri, 10 May 2024 07:13:23 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=198.175.65.17
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 59F3A12AAE5
+	for <iommu@lists.linux.dev>; Fri, 10 May 2024 08:03:59 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=192.198.163.15
 ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1715325205; cv=fail; b=lZv5GYH1AEH46fqb7Y532IAuAADAHlF5NLKGv1vvhao9u4Pa1kNK9HcvMujouvInGiik7ICzd4pqClHZOFQ0u15RLyUdCZKZ0Huc+cj6FkB1X1FQFYXaG+dSFZ9Q6Gw4w3toebUhksFg1yFIYhcdrL4Wpo/pK67OOARTolZ4sk4=
+	t=1715328241; cv=fail; b=JfEEY/CQ7AAwZMmY+9NoI1RCEvfdIRLXCsmMm37mUJRrOD2zebyuBV1AFGprjW/Nzt+m08QdSAgVZll/ScrPOkqlZDF7RMKHxPNeUhVshODRBrz6Ac0OINoI7ja1/IN7b8iLCMJDS137NovR7lXSwop6wbiRVIFTEqBtU8KW4vo=
 ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1715325205; c=relaxed/simple;
-	bh=78yVetB+W65F2gRG6OK2jBZ7tx/kpWbczXQp0JODtSM=;
-	h=Message-ID:Date:Subject:To:CC:References:From:In-Reply-To:
-	 Content-Type:MIME-Version; b=dcB5Hlka1l0wseKpHTl2U2cHLlIZXQ5UxlH0foIMWxKIVQbb8XHRJfQ+0FEylGVTD44uDI1lrcILUJcn6KnETwCtXzyxWb4QYXlJeNRWFM9RHvoY1nYPAuFmA86fiY1DOsq0dkQpj5ZuRzhblgbSXCgr2SGr7Rg2kPuAnVaYHeQ=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=KiIU8C0a; arc=fail smtp.client-ip=198.175.65.17
+	s=arc-20240116; t=1715328241; c=relaxed/simple;
+	bh=D07La9l7sDdG7Ppos5x7xzQfWoK9h4Biid4q8BA3ak0=;
+	h=Date:From:To:CC:Subject:Message-ID:References:Content-Type:
+	 Content-Disposition:In-Reply-To:MIME-Version; b=i3NTJ/5cRncfNmznqA/nv/dngcHC7sLaLpB8M2Dp5BKbLmN9cTnqs7hJMXdXKXeF2w2/7jrddBQdI2so68Rcxm8tM2Dpl2v7AAxi54bnpyfxIx3pphVh4wuyEW3gTdC7wDqeaCC2luJDdnq1F318aBlbNuRWs6Hx2tJsohFPjwA=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=JUxeZ2z7; arc=fail smtp.client-ip=192.198.163.15
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="KiIU8C0a"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="JUxeZ2z7"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1715325204; x=1746861204;
-  h=message-id:date:subject:to:cc:references:from:
-   in-reply-to:content-transfer-encoding:mime-version;
-  bh=78yVetB+W65F2gRG6OK2jBZ7tx/kpWbczXQp0JODtSM=;
-  b=KiIU8C0aJCc4DLhIPCiRZpsPsCx7ZpQcJTwca/DD0DxjdBN8OmYzZX0O
-   4u/THyja9uZqfuON3Re6sRneWTAveR5PiXrpcMliE9nz/Ad9fCtEMogUF
-   kQugj9A0ROMBfdlg2+TFEy8dwtsk6L4D9dDys0EYIi878Xi8DcAPH5bvc
-   voY3NDVFsBq/EX9/hWnzEnglEt/tw1ocwfLzOsdp+mSMz3dahS6Hi7p01
-   gxG6ge2sjoXYSglCPB05k52roJKO1bTdgW7mTYVVBW8S7pGKon5i97oSZ
-   SZNdfAiAcTPnmqxSNVJD/gF7E4X1Hb5l/8nULe2tnnDCBJVtyGu44DMW5
-   A==;
-X-CSE-ConnectionGUID: okTBTTJhRZ2Nvlo0txYsFQ==
-X-CSE-MsgGUID: KcTYkVXxRMKj7xzvgzBj0w==
-X-IronPort-AV: E=McAfee;i="6600,9927,11068"; a="11421037"
+  t=1715328239; x=1746864239;
+  h=date:from:to:cc:subject:message-id:reply-to:references:
+   in-reply-to:mime-version;
+  bh=D07La9l7sDdG7Ppos5x7xzQfWoK9h4Biid4q8BA3ak0=;
+  b=JUxeZ2z7g4aS95oN0m6l2u86I3maqtGaPp93MNyQXpUFpkzSvx/8WH21
+   L8l0CJUVDYDdB3SgTZK/rsqv57/tnWYRb1Koelvhu+jT95qJ70cy70GoH
+   ahyLEe+tCUdAa4k4AGr56YaneS/w8rYE11HGJ8fsZ5iqrR6JJJJITcWzv
+   1Xp4cnTsL3bTaxaPq2AI+3+y7B4/UXmxDkOEzSgrTW+eQU5WLMUfBCJB3
+   YuDgBxKmcIZYxy0rOzKH0ABHDwJ9HZ1Om2D3gWdipiCkBX26tOY+mvFKK
+   hAv6UgXMw8c5/AlsKa1Mfwt06f0Bpku5Ha1UiEPB8wR/QCcPkGtJOHnse
+   Q==;
+X-CSE-ConnectionGUID: dsSht2BORH+jkDVfJQ125w==
+X-CSE-MsgGUID: vcaxb1XkSCyHzYr1vpqfbQ==
+X-IronPort-AV: E=McAfee;i="6600,9927,11068"; a="11461936"
 X-IronPort-AV: E=Sophos;i="6.08,150,1712646000"; 
-   d="scan'208";a="11421037"
-Received: from fmviesa004.fm.intel.com ([10.60.135.144])
-  by orvoesa109.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 May 2024 00:13:23 -0700
-X-CSE-ConnectionGUID: SXp2Sh+GQeqDhFD4oylpgA==
-X-CSE-MsgGUID: +i3YvLAIT4GaBdJfgWAUBw==
+   d="scan'208";a="11461936"
+Received: from orviesa003.jf.intel.com ([10.64.159.143])
+  by fmvoesa109.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 May 2024 01:03:58 -0700
+X-CSE-ConnectionGUID: sDkMusBHRd2FwN05ND109A==
+X-CSE-MsgGUID: R2QZgzagQfCmyQkBybYIbA==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.08,150,1712646000"; 
-   d="scan'208";a="34055286"
-Received: from orsmsx602.amr.corp.intel.com ([10.22.229.15])
-  by fmviesa004.fm.intel.com with ESMTP/TLS/AES256-GCM-SHA384; 10 May 2024 00:13:22 -0700
-Received: from orsmsx610.amr.corp.intel.com (10.22.229.23) by
- ORSMSX602.amr.corp.intel.com (10.22.229.15) with Microsoft SMTP Server
+   d="scan'208";a="34188870"
+Received: from fmsmsx603.amr.corp.intel.com ([10.18.126.83])
+  by orviesa003.jf.intel.com with ESMTP/TLS/AES256-GCM-SHA384; 10 May 2024 01:03:58 -0700
+Received: from fmsmsx611.amr.corp.intel.com (10.18.126.91) by
+ fmsmsx603.amr.corp.intel.com (10.18.126.83) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.35; Fri, 10 May 2024 00:13:21 -0700
-Received: from ORSEDG602.ED.cps.intel.com (10.7.248.7) by
- orsmsx610.amr.corp.intel.com (10.22.229.23) with Microsoft SMTP Server
+ 15.1.2507.35; Fri, 10 May 2024 01:03:57 -0700
+Received: from fmsmsx610.amr.corp.intel.com (10.18.126.90) by
+ fmsmsx611.amr.corp.intel.com (10.18.126.91) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.35 via Frontend Transport; Fri, 10 May 2024 00:13:21 -0700
-Received: from NAM11-DM6-obe.outbound.protection.outlook.com (104.47.57.168)
- by edgegateway.intel.com (134.134.137.103) with Microsoft SMTP Server
+ 15.1.2507.35; Fri, 10 May 2024 01:03:56 -0700
+Received: from fmsedg602.ED.cps.intel.com (10.1.192.136) by
+ fmsmsx610.amr.corp.intel.com (10.18.126.90) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.35 via Frontend Transport; Fri, 10 May 2024 01:03:56 -0700
+Received: from NAM04-DM6-obe.outbound.protection.outlook.com (104.47.73.40) by
+ edgegateway.intel.com (192.55.55.71) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.1.2507.35; Fri, 10 May 2024 00:12:58 -0700
+ 15.1.2507.35; Fri, 10 May 2024 01:03:56 -0700
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=Vh8HeXcfoWdRZdNFH4TBCzGcA2hktdhv7JPghN4cE+b/+MnZlnVrMyIX3jCL4+vk/LIzx+S5vKRMLPjUJBCMLyyx2cI4x2GGlY8FTTBjfMQPfVuPFMoMQhD1VDWgGURi/SZwzoItX0XAxHKMHtlRdHnn16yiaOkn+218Vcihoo/BlQ0irc56cVK+ibMX3/qfJ1afrz+imdyU0YxWC5qGTwhMgFBprcUIZa5BZBOD3/6UkS4v9MGKwLTO1lABijK850QW49jbowPdplZIkjOpmQmcjNevbDmX5zXw/cV2XEUEw57R+i549Yr5f+K2hsGh5bTCpV+Jt8feZtsJlK5Vyg==
+ b=l6iPTHcCFHzU3lM72cd8OJMv4eIN0X/VO3PhhWROMYQ9Cys2QsEma72h944U8v6K8VBsPQRJn2cH9db85yC6ss4DkGZJhEWrNvrYNfgBRy+ldQdgHTtFtSztF+jvPvRQZuwgpgPUrWQRX3tTSjDGRc7Cg5jWBEcgqwh0iBPs5J3eOTfBzs3KKOYz4X0KTu3iKGgCgrmz5cKmRFZCJOJbWoKG2ihJPSaYFXXWwp3jhlnk7CQU9aKgXB5VUJbRPumJjiHwpc+R0aAJKaGgMgfCjAHOXqMerBgAlLdW/PP4JI4REg2b1iU9An9orSpZSYr1VpyZiUdOsWNFsi36T+wZ9A==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=9Pi8U1zrJs82MXgc6ZdBXnP1uCJ/xKO/OUGX172AI1A=;
- b=ilwIHdhbfV0IudHfn7oYTOrmkIGL1J5GJHNVk26ex79GvbqNi/sQlg4E9dg69UeMcU+EavXl8qmtZ81XnR7Rup88zpLcb+lUSB1SbQzHj5V/EXsZKgEH9yf2khL+d7U7Ihcq6QmoRbcz1UtbK+QVuBhpfF26FJzCZHJoBCQ5yFXWFiEV3y5dClqBpTOhZuNDZntdiqzL2nMeDhByF6vOGdhTeqObg+wKfmoCsctzx+4zjOsw1SB1PEee6wSvdSjnZ+VjwBcQRoptXSZhOVgLTkLQCKipVJLNZT7ywlMTXC4mCKRpHhmmKKcXsOVOIM8xTNi+1HdCnkxThmBYaxzYfA==
+ bh=n82XZxOIdT89axmY87fX3fE56CZ8dJvb9YKOryOKIU8=;
+ b=Qs0XUMmZ7EKxezv/cQJHPG51dO/nKzq29hLz7FSL1dz+113LuqIbgETSvmW73YN/rddVi/XI7Q75GnGr0XEvxsec9VvNzRCsv+1SY6paJX7DlER75dQ80id9hpJNAqhUjxIBUJn1yMMlEHAlDSqeErKDnoC8e7WjdfqDT3D3sSBdz24yy/ZqEYhfMxNJsonEG5WL2JqBN5joZKEtfV9pEm4vFXRX5Pmx5WSzOdJZPgfOjq7/PCdWu8fqiHe+nQFvtE/ytqYusYj19H0RLkqszfw55RngmuHJ6CpFwLxZF7QuVu9E+zqngSzmTPd0/GxNbvfpvSIGhEFs5JTCVafTTQ==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
  dkim=pass header.d=intel.com; arc=none
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=intel.com;
-Received: from MN6PR11MB8102.namprd11.prod.outlook.com (2603:10b6:208:46d::9)
- by SA2PR11MB5065.namprd11.prod.outlook.com (2603:10b6:806:115::7) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7544.47; Fri, 10 May
- 2024 07:12:53 +0000
-Received: from MN6PR11MB8102.namprd11.prod.outlook.com
- ([fe80::bfb:c63:7490:93eb]) by MN6PR11MB8102.namprd11.prod.outlook.com
- ([fe80::bfb:c63:7490:93eb%3]) with mapi id 15.20.7544.048; Fri, 10 May 2024
- 07:12:53 +0000
-Message-ID: <5af0aeaf-c713-406d-9eed-ee24ce129b03@intel.com>
-Date: Fri, 10 May 2024 09:12:46 +0200
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH] dma: fix DMA sync for drivers not calling dma_set_mask*()
-To: Alexander Lobakin <aleksander.lobakin@intel.com>, Christoph Hellwig
-	<hch@lst.de>
-CC: Eric Dumazet <edumazet@google.com>, Jakub Kicinski <kuba@kernel.org>,
-	Marek Szyprowski <m.szyprowski@samsung.com>, Steven Price
-	<steven.price@arm.com>, Robin Murphy <robin.murphy@arm.com>, Joerg Roedel
-	<joro@8bytes.org>, Will Deacon <will@kernel.org>, "Rafael J. Wysocki"
-	<rafael@kernel.org>, Magnus Karlsson <magnus.karlsson@intel.com>,
-	<nex.sw.ncis.osdt.itp.upstreaming@intel.com>, <bpf@vger.kernel.org>,
-	<netdev@vger.kernel.org>, <iommu@lists.linux.dev>,
-	<linux-kernel@vger.kernel.org>
-References: <20240509144616.938519-1-aleksander.lobakin@intel.com>
-Content-Language: en-US
-From: Przemek Kitszel <przemyslaw.kitszel@intel.com>
-In-Reply-To: <20240509144616.938519-1-aleksander.lobakin@intel.com>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: WA2P291CA0001.POLP291.PROD.OUTLOOK.COM
- (2603:10a6:1d0:1e::20) To MN6PR11MB8102.namprd11.prod.outlook.com
- (2603:10b6:208:46d::9)
+Received: from DS7PR11MB5966.namprd11.prod.outlook.com (2603:10b6:8:71::6) by
+ CH0PR11MB8167.namprd11.prod.outlook.com (2603:10b6:610:192::7) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.7544.47; Fri, 10 May 2024 08:03:51 +0000
+Received: from DS7PR11MB5966.namprd11.prod.outlook.com
+ ([fe80::e971:d8f4:66c4:12ca]) by DS7PR11MB5966.namprd11.prod.outlook.com
+ ([fe80::e971:d8f4:66c4:12ca%6]) with mapi id 15.20.7544.047; Fri, 10 May 2024
+ 08:03:51 +0000
+Date: Fri, 10 May 2024 16:03:04 +0800
+From: Yan Zhao <yan.y.zhao@intel.com>
+To: Jason Gunthorpe <jgg@nvidia.com>
+CC: <kvm@vger.kernel.org>, <linux-kernel@vger.kernel.org>, <x86@kernel.org>,
+	<alex.williamson@redhat.com>, <kevin.tian@intel.com>,
+	<iommu@lists.linux.dev>, <pbonzini@redhat.com>, <seanjc@google.com>,
+	<dave.hansen@linux.intel.com>, <luto@kernel.org>, <peterz@infradead.org>,
+	<tglx@linutronix.de>, <mingo@redhat.com>, <bp@alien8.de>, <hpa@zytor.com>,
+	<corbet@lwn.net>, <joro@8bytes.org>, <will@kernel.org>,
+	<robin.murphy@arm.com>, <baolu.lu@linux.intel.com>, <yi.l.liu@intel.com>
+Subject: Re: [PATCH 5/5] iommufd: Flush CPU caches on DMA pages in
+ non-coherent domains
+Message-ID: <Zj3UuHQe4XgdDmDs@yzhao56-desk.sh.intel.com>
+Reply-To: Yan Zhao <yan.y.zhao@intel.com>
+References: <20240507061802.20184-1-yan.y.zhao@intel.com>
+ <20240507062212.20535-1-yan.y.zhao@intel.com>
+ <20240509141332.GP4650@nvidia.com>
+Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: inline
+In-Reply-To: <20240509141332.GP4650@nvidia.com>
+X-ClientProxiedBy: SI2PR04CA0009.apcprd04.prod.outlook.com
+ (2603:1096:4:197::8) To DS7PR11MB5966.namprd11.prod.outlook.com
+ (2603:10b6:8:71::6)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -106,138 +109,211 @@ List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: MN6PR11MB8102:EE_|SA2PR11MB5065:EE_
-X-MS-Office365-Filtering-Correlation-Id: a12c0b9a-1ed6-4155-1a36-08dc70c09be3
+X-MS-TrafficTypeDiagnostic: DS7PR11MB5966:EE_|CH0PR11MB8167:EE_
+X-MS-Office365-Filtering-Correlation-Id: 4ecbc227-62c4-47fe-522a-08dc70c7bac5
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;ARA:13230031|366007|7416005|376005|1800799015;
-X-Microsoft-Antispam-Message-Info: =?utf-8?B?ZytvT3NXdGVFSEM3V2JrQk9sb1A0TVROcnBGYzVyMU84K0VpNWl2aEtwRG9I?=
- =?utf-8?B?R01hWDVXcWYzUGRmNGdCa0phVitiYjNtWEVjYkRjOGVGNW5WaW9aTDZMT0p4?=
- =?utf-8?B?TkZBWlFDYmRHRG16d01iaitSSXpxQ1ljMGxrQlJYbGJ6dUhtcjBSdVRTZ1BG?=
- =?utf-8?B?Z2pSOSs4MkZ1Y3NXRU81MHRmaW5ObW5iTFcrcCtRQWc2Qi9OSG5FclQ4ODFL?=
- =?utf-8?B?YmZQNTcrWEd4WkwyNHUxS0JpeGg4bytLNEtNbnp6UngxYlBBVThKdGFWTXor?=
- =?utf-8?B?cThLY1FjUWFOcWFiSHl6MmZadmUzNFdEQ2RLOEVpTjBiTDRzeHNCNlVKZEJp?=
- =?utf-8?B?VnZEUnZZQjZ4elg5WGdwMmVPSFI1SWhaSFlncFh6SzVFQ1VHMXZ5ZTdQRkZR?=
- =?utf-8?B?UTRCUjQyWW14OGtXZDJKK2pDUzJnMVBEOEk4V0xDVmlKSmJTOWJDODRFMjdr?=
- =?utf-8?B?Yk1UamlhaXM2UmU2dmlpa01hTnYrbGNHb2l4L1BmdTVLdk5heVZ3OTl3ekFG?=
- =?utf-8?B?U016YkpaeUVrUWYxOWh4R1NFSnQ5U0tkM3BzRWRjNjhWUlZEYk9jMWV0Y0NR?=
- =?utf-8?B?aVMwTEx3R0MrT0lUSjdxNVV1Wk02YTRsMVdwL1RvN1pRakh2VlBXdVJwYito?=
- =?utf-8?B?WGV0TC9lTzNOWGNjeHNWbU02N2xsbEFHQWc1anlTcjJFSzFrM3I2YWxCQlVD?=
- =?utf-8?B?MUE3UjIwY29CTUhVSytMc252dmhlRlBkTkVHN0F6a0pObVBQRkcvS2dLNVVU?=
- =?utf-8?B?UC9yUFA2Z3kvaGxucG8yckFIVzR0bVBLN1ZnYloybEdmbkk1Uy9BK0tta1JP?=
- =?utf-8?B?NVNXQ2ZxdzkvRUJnQVc4Z3paMHlNckNsOE9aMHNDMVpQS01PbklYVVovd08w?=
- =?utf-8?B?RjRQb3RlNmRRYlAvR1hUMDR5alNpRHJ5angvdmlQQkFkbThPTnBNcUc0d1kr?=
- =?utf-8?B?S0NlQ3JpNUZ3L2lPclh1KzJoRUVLRVhwSFkzYVZFVW1YbEluN2o0TUhVZWFU?=
- =?utf-8?B?S3J0N25ocUo5dHFlUGRhd2tIL2x4Q2l2MnExZURwMHJiMkZ0MnliMjBLcFZQ?=
- =?utf-8?B?Z3k5TytwWitycjIzNm9SMlJPa3dpR0psVkt6M0R0a1J1R3R3R1NreC94ZDZz?=
- =?utf-8?B?bDd4N3FZVG1zbjA4K3crYmYzVi8yNTByelNIRERlMzVRYktsT3NIeTFwYlMv?=
- =?utf-8?B?TlZTWnp0d1N3VmlHd3J4ak9FUE9YTXdCVU1FTSs2Wk5ianNNbG1ZU0JydzBv?=
- =?utf-8?B?RTZOQ09UVVVQT3lWOTFrU2lkL1VsUzc1TU96WWovdDg2N3owYjJMT1dIK1Jy?=
- =?utf-8?B?YW9ERkRpOVl1WHpnciszbnhnSW5MV2xHdFNOK1NCY0VCUUdVc1R5MnUrZ1I0?=
- =?utf-8?B?ZW9BSVRXUkpCcFRrRS8rbG1hRzhGOVFsdTR4SFh1ZEI1bFZBRCtzemdvUzho?=
- =?utf-8?B?Yk51azllai92QnlhK1hJaGgrZHpUdndURUpZbFF5U1krZ0NYVXVBY0RycUZo?=
- =?utf-8?B?U01QRElWYTJ6RGs0MnlFWFBBa2o1b1lQcW54S0t3V3p6RXg1SFc0blBPSWpG?=
- =?utf-8?B?R1JyY0NUdG91SlNab2VIQnBPblZnVG9ucitvVzFVZ1ByR0xrZWpGRTMxY1Bl?=
- =?utf-8?Q?edAU2aNYUxAQITu0iAMv7jc1Vt7DNWJgosQG7eKSdsyg=3D?=
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MN6PR11MB8102.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230031)(366007)(7416005)(376005)(1800799015);DIR:OUT;SFP:1101;
+X-Microsoft-Antispam: BCL:0;ARA:13230031|1800799015|7416005|376005|366007;
+X-Microsoft-Antispam-Message-Info: =?us-ascii?Q?oeBUJD1DHvLpT37IqkzYx/vFAyUcTkb7N1xVueDKUZhFnF9ZHIkaRPDlTjnH?=
+ =?us-ascii?Q?V9ulyVrxY+Ux+onTMSW1KqburvYMCG+XDmPxhzr/uzYmaicnUzGeQ7JcnOgv?=
+ =?us-ascii?Q?Sl+cDonN2mON+8xLSbU9chpbhtluJQ/mdKtyLFSu6QdIrNIUcxxIL/LAxUv9?=
+ =?us-ascii?Q?kOk7OQXF6Qpk5zg29i2Ubod5ZwfbdqZzXXI+OgvZ3Pt4Ry1VhxlF5UMJTdy5?=
+ =?us-ascii?Q?7j4Ce+4evfkcKgvbtJftSit9hTatNYnxBuCgLBLAV6SRQjm28xAEw2lmkSnR?=
+ =?us-ascii?Q?RCP6UWmW+onpfriHuWUyI1xCKjkzaPLPFM+ymLbeAPQiEXmD0UXE4MnL/d93?=
+ =?us-ascii?Q?tUcRWFkhkmInhvSFAEBvPX8NqwHtw7ADJwpWZsDtu33cDUfhy3Hns/9lxRDN?=
+ =?us-ascii?Q?ci3GtAe7teXKd9Dx1ik7moPxA2aLkMhBnkYOdmKh4HGLI4zNFnRy8RWQn0/p?=
+ =?us-ascii?Q?dNx3qe5kPpP5bWjsvA/eQmxvP/ZkTgcTDORhj3hDB8Ekr8jzDLTfOA+XfaMi?=
+ =?us-ascii?Q?H/Bso45wkvGXkppApkkbMiwp19K6zYVhfRXM3u3Iq39nrOaTfuazNrM6GvgL?=
+ =?us-ascii?Q?/9+x52JMGvBiH0UqUYF1EY+Hdr25Zr62vM4PVg7LD3mxmV1mtLP8YgxO65Yu?=
+ =?us-ascii?Q?EZcHegfxVv32YqnVqIcAfd11RGbevtq4bcPW+0284rZUV9ZxbCMOQiqP7T4y?=
+ =?us-ascii?Q?poAXkFBBmRmubFH8CMzeZa98ajFTxMNLZlhZjWFiAShc0iVnTAKOkmw+jQrU?=
+ =?us-ascii?Q?VP1bRyO+43fRAZqMgg+/j/a/iJTY9JpiLxAPo+uZ5uVhX5QbtAXlGhNOPwT6?=
+ =?us-ascii?Q?lPux0LC4hZWSP/n5yYKH9ZcepN7zxgEtqK6kagEor3Hc1mYQ8+KuBZA21DEr?=
+ =?us-ascii?Q?ycJGQZyIj70eYBfzCQf3ufQ80ozaJSni5kchDXQvZNncz2mvSUZyZOrN7CGl?=
+ =?us-ascii?Q?iSCeFndfYgXtpgdJS0kCSa8Aa7wtbpwVwo1L+aSdTKYnzNuiZyXb5IsOzv7Z?=
+ =?us-ascii?Q?r1C+trnw/BIKDvBSLo8qCbKD1WI8uI43wM39IQtSkoO3HCE5QW/H+lKeQFLb?=
+ =?us-ascii?Q?oV6Q99b0fJcbvKquURylO2IR6tUYuBDwb5DVD+tD4XBcH5Emm+CzAp3EiNou?=
+ =?us-ascii?Q?7TQBqvQxqbZVH5sa5up/b7aL8oh+hAiUnoBIMbmP5xk+2fNRuZxnPpqtwvSb?=
+ =?us-ascii?Q?fGS4KudrMuSN6I/y33nStcdDZbzANh+7s2ya46W6uBtPMYU9g47iWok8tkMK?=
+ =?us-ascii?Q?IzUvT9sHk9XMmW1Xjk7MRAhOztWMhT1woyVtmG9Eqw=3D=3D?=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DS7PR11MB5966.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230031)(1800799015)(7416005)(376005)(366007);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?bHJFZnBWRDhEbXU1OVluNUdtUXJQQU41YWRPaDY0UFlVNWRKUjRmV3ZrMVk2?=
- =?utf-8?B?ZlFoYWtEQjZOK01WQ0hFNFhxZ3ZzaHpvVnAxYy91dkIxVWh5L3g5U2pOVVd6?=
- =?utf-8?B?Z1RRendiazF0Z3ErY2FQdTZzVEFwSnNtblVGeXZNSVY4dkVOWmVWRnNyc3pw?=
- =?utf-8?B?eFZVMmRzemZvQlhRNXpiUEhadnRzQ0R1NDBlQmIxZWROSkFqdDZrbnIwTnJZ?=
- =?utf-8?B?ZitkTjd4TnI0S0tIZkZlNDRLam5iTjl5MHdtbk5YS1JlSTFubVV6d3p0MllY?=
- =?utf-8?B?WCs1ZU5CbXRwMS9ENjdnajZyS3ZXMWxJZXJYOTZ3K0ZRUE9tWXN0S2l0Y2Na?=
- =?utf-8?B?eUhFS204Tm9FSXduMlBvUkZDeUM1MDN2UXlLMzNFN2F3TkFlZFFaMCtHWEU3?=
- =?utf-8?B?ZCtiajRHdVoxZjYzSlNZTldFdmh1a3J0MUpzbnhIaW9seS91U29WdDJ5NXJo?=
- =?utf-8?B?d1JnTElaSHFWZi8vdGRtSXhWc3RIb0Y0aUhLajVzQytKYnAzb0x0ZU5FZC9h?=
- =?utf-8?B?M0ZicXpHU0RMYUo0VXZFMy85YjA1MVJLNVBLSjJrN2FmT1RLU2FubHpUd0s5?=
- =?utf-8?B?WnZUYmVwRE9FcFEra0tzOXNhd3RYT2FNUXp5K2dMSXdscGl6d3ZCTC9vMkQw?=
- =?utf-8?B?OVBTV2RIbHR0WlZBUWkyR1ZvWUp4V3lGdVpueXVxaExZYTBIWk1pODY2dHo2?=
- =?utf-8?B?V1Q4dFNiRWNaclFJZjlTSjNDcUhHVnROZDZIbDRHZTMvbkZoRnA3dHB0d2h4?=
- =?utf-8?B?WEJPRDBkTEtxQUJXWEVnUlRZOGJmM1ZCS0NtTFVtOWVCejBGK2I2bTIrUGMv?=
- =?utf-8?B?U2ZKc3ZDTkdQUVVQSmNvL3ZFRCs0WHZBOGgrRGJpclhXb2xHR1k3MGVGMG1S?=
- =?utf-8?B?N0dIc0UxOThHN3NRTXpVOWEyM2IvaGtEdHFYWDlYSXhNeWlSZkg1WFd1Q2JR?=
- =?utf-8?B?Z1pka3NFRndtS0xpVWxMTmcwWU9FcFhjaU04djVUOFdkbGlPV2ZoTGtlOUZD?=
- =?utf-8?B?WU8wSUxSY2VUSklabTh5elBiR1VtTHJyUStIbUFPWmRiZ1d1MkxKQVBzTFZp?=
- =?utf-8?B?YzRGREQ3Ly8zSmF1dEptak82UjlLMHg2MHdRREk0R1J0bld0c3FTTjhKVjNY?=
- =?utf-8?B?TDUxY3dEd3lTQnFxRTcvb3F5Wi94NEh5UTVsb056alViSjBSMGpnSEtXQjNU?=
- =?utf-8?B?bE5QYW1XT1JZMHpkdzkzaEh2YUtYVnpYeEZRTEkveGx4NTJENllJNWNkKzhI?=
- =?utf-8?B?RlU5UjBLKy9lYXVRVnFIdFlmUDVyUVpFWElFRFpmRGlBMFhEZlluZlFtWmNi?=
- =?utf-8?B?S0dzVkNWQkpzcmxvQmJxVVE1ZFhUV2tkVFRrajJ0cy9TeWN3RHZOS2crK2Vk?=
- =?utf-8?B?U3VqTmY3ejVPUUhlVVQyMkFwZFM1OGRnZVM1NkZrK25pS0hJaU8rVTBZbndt?=
- =?utf-8?B?YzVNM2ZFcW9jZi8rUUVadkx2N1RFV0RNYTNoQVVoNWwrZ2xhcVZ2ZmdlTys4?=
- =?utf-8?B?dFh3N3pYTXVvdVI5QzVxakM1eGdvRFdRVzVnMDdEempJQTU2L3BENFhHRGZC?=
- =?utf-8?B?UWpFTDNOUi9Tc0tlc1ZudWxoc0IxSUJOK2liVmhlUnAvUjVnTC9tNFdibGRo?=
- =?utf-8?B?ZnRzWVAvZnhzbWZvOHk2M2lOZHd0anNvZi8xZTVqVjdiTXlQZU02WEtzVHFi?=
- =?utf-8?B?NE51cWlYbEJaSnZGREhPWFJkVUxoMy96TWlQUGhvck15VG1URXpXVE04ZWpU?=
- =?utf-8?B?MVJFd2JOWlRaRVV4dWFsWW5EK0xXTG50cUJtNlR3VlQ4RlpNOVVuWlpXZzJU?=
- =?utf-8?B?cEFHYm1hS3NVVUozaDVVTTlXMHlMdEFEM3FidVgxUmJibENkNGFJZm9obmdM?=
- =?utf-8?B?R2QvV09CYmpBYmNiWFFMZWlsNzkxUGZ0akwxT25VYm9sVlIrcUQrb0t4c0dI?=
- =?utf-8?B?ZEF2WkNvV0JCaEl2OVJDdHZnV01DM29tMTFDV1F2VjBOYk1qdWR5SWlKYW80?=
- =?utf-8?B?Njg2VE9GNHN0YTQzTW0yY2FnZ0NlbWVGRmF1MHFieVlTNW1ybm5rUmJOcjhk?=
- =?utf-8?B?aUlkZGlvNWRyUjFkOTJmbkVKaFI1UG83TTVYT0ZVdTlSVnNlbC9nb0FiNlZU?=
- =?utf-8?B?VDJUSmo0RVlaUzcyNjVseU5TcllNMlIwamE1WHhZUGtxcm1MOEMvMUdnNG54?=
- =?utf-8?B?Unc9PQ==?=
-X-MS-Exchange-CrossTenant-Network-Message-Id: a12c0b9a-1ed6-4155-1a36-08dc70c09be3
-X-MS-Exchange-CrossTenant-AuthSource: MN6PR11MB8102.namprd11.prod.outlook.com
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?AygMMnpbRUcfHvNuoWbGJak5FhQu95NcX75bqurEKq4e6qgb/lLgrCTyarDS?=
+ =?us-ascii?Q?NwD9QfpDxKs3rhwuH1uJxY98HunMmLStzLc4NTAPjW4w602RGu5p14EQa4VF?=
+ =?us-ascii?Q?qTZD2ZeeE4mW985HyBTx/Hv0SLVtVpiXRnWRM5gwsigo/RZen5dgQlgTabWS?=
+ =?us-ascii?Q?4x/DCNYFGsz8ZD56twXNDpqJFmo0jmiqLMIscDvfou/CNslBr4KdXRg87wHi?=
+ =?us-ascii?Q?TiSN0dH/OcEs4WsPW09d19HfwpdR29Xki6rbqmdDozLIQmQFb9lSA0qDyYeu?=
+ =?us-ascii?Q?ia0OnqSygMpVgMvdVBTP4NCqJK+CLuGXCoCNwbXMXhc8PwEtNRiTjTRcMyXs?=
+ =?us-ascii?Q?2ypUbUuOSIvzQmec7TaHEKSU9JXJTgDOU71husXg7qPKL9ylOeKRb31RGjDq?=
+ =?us-ascii?Q?vG0ntyNuERS3fvpQeEPd0AKGzBA2HIvZ0ZXxvC9bOoAjQBJs8av+3MOhKp7K?=
+ =?us-ascii?Q?Ef8CXuF4Jw8FGVpiTYMjMBAse1tJ+dET1d5/LpivLPcsvSroi78DPeMK5lqm?=
+ =?us-ascii?Q?ZcMbCppUgofRF1DC0w/ZaYD2XnefBWRXS+9b8Utk8nZByTVQd1ELo/aHcDy+?=
+ =?us-ascii?Q?t/09KcYpMwhK1OcVXBBWIyZV5V3C1eiByM9nLclYkVHldMSsTT1g47WDzKM1?=
+ =?us-ascii?Q?aDRjFSEeJG7Lif8fWCYAye/C929LX+LuLB+FFn+AZwGF6CHT0gQb53siQ3Gp?=
+ =?us-ascii?Q?YlaKI7CiLJHFEBkM2cvYaSgYWjBAyTZ87v16EipWnbTWY/UFph/lVlRjPNi2?=
+ =?us-ascii?Q?Fg84VVo0dUNY0yqDEzAxxCUf+OsvjlbpKMO+YD+ffZgO0UBR4QJLHwv5Tk//?=
+ =?us-ascii?Q?JWr973YPrRTlKZ7ldUtf6yiXqCHlAYlIEl8gkQi2GTpfKTlKf24jyVQmev7J?=
+ =?us-ascii?Q?pruhU0KsevewiYzQGMyXa0Qy0+Coxdec9xpdTQLEWDuxRhLmMSR6YUkT5XtP?=
+ =?us-ascii?Q?NlJQJjgkPBVgQuf1cg4C4L5K9c5rgLjgjOiwM3dwX5i/nqeDbITtdfQbxt7x?=
+ =?us-ascii?Q?B+pZxgCDBRp0KDSq4t79ce3Ncy/fjVuQgto0Zc4RnuKjfnEl2zVrw6mWBurU?=
+ =?us-ascii?Q?uSCRd5txmWzroKEl2odjNSp0GXpvfaKJWRNBs/im+/fRivmaDJao76l+l554?=
+ =?us-ascii?Q?NQzUuoSWOvrHHIUEeI1Da/6ra8u5neir1X3PoHJWPBARbT8cUqkDbEKyFCVm?=
+ =?us-ascii?Q?O5FKlUIQiEHWZ2vOY4PTf7hnp7Qe5kDa2XyS9z5tnV+6s4MDGIztaRVlW31z?=
+ =?us-ascii?Q?v3buw7mooi4XmuzWyRijaFH2K6UOxre5w2/ya4RH5YUdYM9qk4L7i5OtiUJz?=
+ =?us-ascii?Q?z9s1TE/1uL4+WZn2O7ZRGmxePRMKTcwn294+onDEgYDqX2BzR2Oza5ZUAE2f?=
+ =?us-ascii?Q?Wg2sHUhXRKvShQ5jioLBwr6oxMjkjZ2vw+hSbFfyTv4mmu7Y30KSH40SRsos?=
+ =?us-ascii?Q?4gbCF4yPzgUHoSitnVpJn7CMYl8G1bOuOiDzjxbKegO9z7WA5tT3m67lHZEn?=
+ =?us-ascii?Q?u7qc5pqT5KkICBs2Y548aHdtV/PZT+HuSM6RG+uwlOn3Syf36rUB27NobAr7?=
+ =?us-ascii?Q?J6/Zs6X7dlJ56kwmTDf9uyHj1E62CP7TgWhaEs70?=
+X-MS-Exchange-CrossTenant-Network-Message-Id: 4ecbc227-62c4-47fe-522a-08dc70c7bac5
+X-MS-Exchange-CrossTenant-AuthSource: DS7PR11MB5966.namprd11.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 10 May 2024 07:12:53.2507
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 10 May 2024 08:03:51.5455
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 46c98d88-e344-4ed4-8496-4ed7712e255d
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: 7o0DN8YpdqdcK6k1GTipZ9P6ArMgEAt7NLjfeC2tbmmOmjFBRyvUuGvPDfUKrarbumjdLgkB8n5xX/ZoWstZfFwvZc89dHKmycQ+rjf3i5k=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SA2PR11MB5065
+X-MS-Exchange-CrossTenant-UserPrincipalName: 1N7o0u+zhaTZxP+oNUfxBDs+0ARwkzoI9SF3H7wyhR/tHc0SFTozeY176LDfOpjEhL0oVyPN0elFbU5RByxJaQ==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: CH0PR11MB8167
 X-OriginatorOrg: intel.com
 
-On 5/9/24 16:46, Alexander Lobakin wrote:
-> There are several reports that the DMA sync shortcut broke non-coherent
-> devices.
-> dev->dma_need_sync is false after the &device allocation and if a driver
-> didn't call dma_set_mask*(), it will still be false even if the device
-> is not DMA-coherent and thus needs synchronizing. Due to historical
-> reasons, there's still a lot of drivers not calling it.
-> Invert the boolean, so that the sync will be performed by default and
-> the shortcut will be enabled only when calling dma_set_mask*().
+On Thu, May 09, 2024 at 11:13:32AM -0300, Jason Gunthorpe wrote:
+> On Tue, May 07, 2024 at 02:22:12PM +0800, Yan Zhao wrote:
+> > diff --git a/drivers/iommu/iommufd/hw_pagetable.c b/drivers/iommu/iommufd/hw_pagetable.c
+> > index 33d142f8057d..e3099d732c5c 100644
+> > --- a/drivers/iommu/iommufd/hw_pagetable.c
+> > +++ b/drivers/iommu/iommufd/hw_pagetable.c
+> > @@ -14,12 +14,18 @@ void iommufd_hwpt_paging_destroy(struct iommufd_object *obj)
+> >  		container_of(obj, struct iommufd_hwpt_paging, common.obj);
+> >  
+> >  	if (!list_empty(&hwpt_paging->hwpt_item)) {
+> > +		struct io_pagetable *iopt = &hwpt_paging->ioas->iopt;
+> >  		mutex_lock(&hwpt_paging->ioas->mutex);
+> >  		list_del(&hwpt_paging->hwpt_item);
+> >  		mutex_unlock(&hwpt_paging->ioas->mutex);
+> >  
+> > -		iopt_table_remove_domain(&hwpt_paging->ioas->iopt,
+> > -					 hwpt_paging->common.domain);
+> > +		iopt_table_remove_domain(iopt, hwpt_paging->common.domain);
+> > +
+> > +		if (!hwpt_paging->enforce_cache_coherency) {
+> > +			down_write(&iopt->domains_rwsem);
+> > +			iopt->noncoherent_domain_cnt--;
+> > +			up_write(&iopt->domains_rwsem);
 > 
-> Reported-by: Marek Szyprowski <m.szyprowski@samsung.com>
-> Closes: https://lore.kernel.org/lkml/46160534-5003-4809-a408-6b3a3f4921e9@samsung.com
-> Reported-by: Steven Price <steven.price@arm.com>
-> Closes: https://lore.kernel.org/lkml/010686f5-3049-46a1-8230-7752a1b433ff@arm.com
-> Fixes: 32ba8b823252 ("dma: avoid redundant calls for sync operations")
-> Signed-off-by: Alexander Lobakin <aleksander.lobakin@intel.com>
-> ---
->   include/linux/device.h      |  4 ++--
->   include/linux/dma-map-ops.h |  4 ++--
->   include/linux/dma-mapping.h |  2 +-
->   kernel/dma/mapping.c        | 10 +++++-----
->   kernel/dma/swiotlb.c        |  2 +-
->   5 files changed, 11 insertions(+), 11 deletions(-)
+> I think it would be nicer to put this in iopt_table_remove_domain()
+> since we already have the lock there anyhow. It would be OK to pass
+> int he hwpt. Same remark for the incr side
+Ok. Passed hwpt to the two funcions.
+
+int iopt_table_add_domain(struct io_pagetable *iopt,
+                          struct iommufd_hw_pagetable *hwpt);
+
+void iopt_table_remove_domain(struct io_pagetable *iopt,
+                              struct iommufd_hw_pagetable *hwpt);
+
 > 
-> diff --git a/include/linux/device.h b/include/linux/device.h
-> index ed95b829f05b..d4b50accff26 100644
-> --- a/include/linux/device.h
-> +++ b/include/linux/device.h
-> @@ -691,7 +691,7 @@ struct device_physical_location {
->    *		and optionall (if the coherent mask is large enough) also
->    *		for dma allocations.  This flag is managed by the dma ops
->    *		instance from ->dma_supported.
-> - * @dma_need_sync: The device needs performing DMA sync operations.
-> + * @dma_skip_sync: DMA sync operations can be skipped for coherent buffers.
->    *
->    * At the lowest level, every device in a Linux system is represented by an
->    * instance of struct device. The device structure contains the information
-> @@ -805,7 +805,7 @@ struct device {
->   	bool			dma_ops_bypass : 1;
->   #endif
->   #ifdef CONFIG_DMA_NEED_SYNC
-> -	bool			dma_need_sync:1;
-> +	bool			dma_skip_sync:1;
->   #endif
->   };
->   
+> > @@ -176,6 +182,12 @@ iommufd_hwpt_paging_alloc(struct iommufd_ctx *ictx, struct iommufd_ioas *ioas,
+> >  			goto out_abort;
+> >  	}
+> >  
+> > +	if (!hwpt_paging->enforce_cache_coherency) {
+> > +		down_write(&ioas->iopt.domains_rwsem);
+> > +		ioas->iopt.noncoherent_domain_cnt++;
+> > +		up_write(&ioas->iopt.domains_rwsem);
+> > +	}
+> > +
+> >  	rc = iopt_table_add_domain(&ioas->iopt, hwpt->domain);
+> 
+> iopt_table_add_domain also already gets the required locks too
+Right.
 
-very good solution with inverting the flag,
-Reviewed-by: Przemek Kitszel <przemyslaw.kitszel@intel.com>
+> 
+> >  	if (rc)
+> >  		goto out_detach;
+> > @@ -183,6 +195,9 @@ iommufd_hwpt_paging_alloc(struct iommufd_ctx *ictx, struct iommufd_ioas *ioas,
+> >  	return hwpt_paging;
+> >  
+> >  out_detach:
+> > +	down_write(&ioas->iopt.domains_rwsem);
+> > +	ioas->iopt.noncoherent_domain_cnt--;
+> > +	up_write(&ioas->iopt.domains_rwsem);
+> 
+> And then you don't need this error unwind
+Yes :)
 
-// ...
+> > diff --git a/drivers/iommu/iommufd/io_pagetable.h b/drivers/iommu/iommufd/io_pagetable.h
+> > index 0ec3509b7e33..557da8fb83d9 100644
+> > --- a/drivers/iommu/iommufd/io_pagetable.h
+> > +++ b/drivers/iommu/iommufd/io_pagetable.h
+> > @@ -198,6 +198,11 @@ struct iopt_pages {
+> >  	void __user *uptr;
+> >  	bool writable:1;
+> >  	u8 account_mode;
+> > +	/*
+> > +	 * CPU cache flush is required before mapping the pages to or after
+> > +	 * unmapping it from a noncoherent domain
+> > +	 */
+> > +	bool cache_flush_required:1;
+> 
+> Move this up a line so it packs with the other bool bitfield.
+Yes, thanks!
+
+> >  static void batch_clear(struct pfn_batch *batch)
+> >  {
+> >  	batch->total_pfns = 0;
+> > @@ -637,10 +648,18 @@ static void batch_unpin(struct pfn_batch *batch, struct iopt_pages *pages,
+> >  	while (npages) {
+> >  		size_t to_unpin = min_t(size_t, npages,
+> >  					batch->npfns[cur] - first_page_off);
+> > +		unsigned long pfn = batch->pfns[cur] + first_page_off;
+> > +
+> > +		/*
+> > +		 * Lazily flushing CPU caches when a page is about to be
+> > +		 * unpinned if the page was mapped into a noncoherent domain
+> > +		 */
+> > +		if (pages->cache_flush_required)
+> > +			arch_clean_nonsnoop_dma(pfn << PAGE_SHIFT,
+> > +						to_unpin << PAGE_SHIFT);
+> >  
+> >  		unpin_user_page_range_dirty_lock(
+> > -			pfn_to_page(batch->pfns[cur] + first_page_off),
+> > -			to_unpin, pages->writable);
+> > +			pfn_to_page(pfn), to_unpin, pages->writable);
+> >  		iopt_pages_sub_npinned(pages, to_unpin);
+> >  		cur++;
+> >  		first_page_off = 0;
+> 
+> Make sense
+> 
+> > @@ -1358,10 +1377,17 @@ int iopt_area_fill_domain(struct iopt_area *area, struct iommu_domain *domain)
+> >  {
+> >  	unsigned long done_end_index;
+> >  	struct pfn_reader pfns;
+> > +	bool cache_flush_required;
+> >  	int rc;
+> >  
+> >  	lockdep_assert_held(&area->pages->mutex);
+> >  
+> > +	cache_flush_required = area->iopt->noncoherent_domain_cnt &&
+> > +			       !area->pages->cache_flush_required;
+> > +
+> > +	if (cache_flush_required)
+> > +		area->pages->cache_flush_required = true;
+> > +
+> >  	rc = pfn_reader_first(&pfns, area->pages, iopt_area_index(area),
+> >  			      iopt_area_last_index(area));
+> >  	if (rc)
+> > @@ -1369,6 +1395,9 @@ int iopt_area_fill_domain(struct iopt_area *area, struct iommu_domain *domain)
+> >  
+> >  	while (!pfn_reader_done(&pfns)) {
+> >  		done_end_index = pfns.batch_start_index;
+> > +		if (cache_flush_required)
+> > +			iopt_cache_flush_pfn_batch(&pfns.batch);
+> > +
+> 
+> This is a bit unfortunate, it means we are going to flush for every
+> domain, even though it is not required. I don't see any easy way out
+> of that :(
+Yes. Do you think it's possible to add an op get_cache_coherency_enforced
+to iommu_domain_ops?
