@@ -1,182 +1,190 @@
-Received: from mail-ej1-f54.google.com (mail-ej1-f54.google.com [209.85.218.54])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from NAM10-MW2-obe.outbound.protection.outlook.com (mail-mw2nam10on2047.outbound.protection.outlook.com [40.107.94.47])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B69E2127E27
-	for <iommu@lists.linux.dev>; Fri, 10 May 2024 13:02:51 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.218.54
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1715346177; cv=none; b=MAid2Y21ZF1ZiaJeovMSy369wZTTDMDEo6QgdEmgNM309xj3ydztQZdyVSZRLfpoPy1tEZ+1PvMFpNG3++0AnQTpxRvF6TaR3nYTpmnd3weusgm+qY5h8RWfelrwoPuVgwlbkSQksW0d3QkXj1P4g0rLjYkLJFLCUoAPDcpXT5Y=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1715346177; c=relaxed/simple;
-	bh=IDOoM5FN/jEaq3m/ykRVd6MkVbSLFiji4upzz0M1kAA=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=VNG7GlzRgFvgkL/gUdb+z5/h+wKS4cnQcAKtUjoeFuklQIdb2yKr1iLYlZYRh57CU6JMrzWP1rPnuLSnxgNOZYIenI/WNIvkKupsEedo1n6ZPbzfxolg6p6k4rva+aZUVaCuUqyFFjyaihaf49gaKF85h5kwrxKmlO1+0MhxJyM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org; spf=pass smtp.mailfrom=linaro.org; dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b=Df/4/RPs; arc=none smtp.client-ip=209.85.218.54
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linaro.org
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 88B845339E
+	for <iommu@lists.linux.dev>; Fri, 10 May 2024 13:29:34 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.94.47
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1715347776; cv=fail; b=jbfZ5Ky41VuDJzgyLXf/HHjdJBwfyaEjWflvQDUAWTGs9glkZ0pGna8VJB7L2lkVPSlFIAzAY0P6Fj+iesUZCYYjqYnOiCACOFuLsyaeKHGZ9uu46KMeAlaNLqUO9Kgw3RjpfzU7kQ+yLozi/om7hFb+6q8ZuZ3zpn7PjD33vw0=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1715347776; c=relaxed/simple;
+	bh=hzc6BWpvh7kgJ3nqir54Sk4Y/osZTmHzsVCOMCleURg=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:Content-Type:
+	 Content-Disposition:In-Reply-To:MIME-Version; b=BpyHZXg58TN9yDICDVnODeebSOS7u3nkbJtDcB/1h6z9Bz1YGUF3GqemV+mwZ8TepxQGfjxX6KiDT8e07inUqeTZY+5F4Bx39Dm5WbCPAhsxneZnM2uDVcEKEP9xu9yD+KqOk2I3+cvzJqXEjudazk4WXz65WKHIDNj0Inp5Grs=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=OjP2GbiW; arc=fail smtp.client-ip=40.107.94.47
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="Df/4/RPs"
-Received: by mail-ej1-f54.google.com with SMTP id a640c23a62f3a-a4702457ccbso513591766b.3
-        for <iommu@lists.linux.dev>; Fri, 10 May 2024 06:02:51 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1715346170; x=1715950970; darn=lists.linux.dev;
-        h=content-transfer-encoding:in-reply-to:autocrypt:from
-         :content-language:references:cc:to:subject:user-agent:mime-version
-         :date:message-id:from:to:cc:subject:date:message-id:reply-to;
-        bh=9OHbA2aVTxqonA8Wb82h9NaQktmaQSCPyBhO9xRJSO4=;
-        b=Df/4/RPsKeGqZ6xYy/BJgAsi+QRXcCchRsuZiokIVcal4W60+7rzmfPL5ke2Y6k1ry
-         Rdv3d4Kklx1fm/Y7nqmNS2UL8gjn92dquW57d+fdEF+4NSyeqaAZS+i4pQSwCV5DpTfC
-         9al0TcBQku1IjwDs2q2gCP+l20aqaERZ75FGVz301+IzXKYtQEdNINe7SpaS1Y+JGDOt
-         co3zi92Wa74pLfcNjN6uktTL3vRcmD726WQ2XdDSQWJpwSMLBRu6v4TQDASQ2Rm5BNa9
-         XY4hLKdAT6DFbGdlXlkjYplHgD5SQ9mko3VALg2eM1Ik8ZQZCErNivQ7f6eIu21X7igr
-         r4JA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1715346170; x=1715950970;
-        h=content-transfer-encoding:in-reply-to:autocrypt:from
-         :content-language:references:cc:to:subject:user-agent:mime-version
-         :date:message-id:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=9OHbA2aVTxqonA8Wb82h9NaQktmaQSCPyBhO9xRJSO4=;
-        b=r7kz3zfpSCS0SeZJiPmR0vRV+v3g7Tls9+EGDrs3JQ20rFR10s2WX08q1djnKbqR63
-         qaNjxjcgyMADNPJNKDEH2kLqZgFBo3+3oFnKO7bKgO1QD0s2KQaqschkLHygoIenxv2f
-         F+aYru5yluN+9kR8TBoeYDobYNm8yRPYmVqKJA299/1ao+XzIaQ+2dTOvDNmV23L8HVH
-         jHh/PGCDsI0SRI71F5DYS1RLKrV/dqj1+s0wXyRDvhzucKMXaFeultRBcZq/DjgOjvks
-         bV+vwuXU8J9fo9ZmZD8VIOq9jSWRwmWtsRnfFqRMaOBNk5tpSd/f50gYgl3lrXND0A1v
-         j5ow==
-X-Forwarded-Encrypted: i=1; AJvYcCUSNlL35XpOJPKZMqFwlXSmOQBRgIkwTOJZieeWRKvUS0v7W/RmRH45CTfXfri0rhnlk7scZ7mRty4LJgkR6Sm6q0oNB+w=
-X-Gm-Message-State: AOJu0YxBBcZQT5a+GBku14iIi0vlRPPOuRzGbm/wVVO1gchHQuZT+rXq
-	ytAvUZKgdCrVZcWtQeSkoGI+dQ+660kVLVSrZrmqUH/M2sMUAahSFoOTiMe5bDw=
-X-Google-Smtp-Source: AGHT+IGVtxPgtNd2rd4rODKiorsOsAs0qSpPYNSo8wWMMgqW1gANzgb4n2Wkjla3fBWd2TMEpAEAsg==
-X-Received: by 2002:a17:906:40d2:b0:a5a:1f4f:cb4c with SMTP id a640c23a62f3a-a5a2d54c80amr175360666b.7.1715346170095;
-        Fri, 10 May 2024 06:02:50 -0700 (PDT)
-Received: from [192.168.62.15] (078088045141.garwolin.vectranet.pl. [78.88.45.141])
-        by smtp.gmail.com with ESMTPSA id a640c23a62f3a-a5a17b17555sm180568566b.189.2024.05.10.06.02.47
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 10 May 2024 06:02:49 -0700 (PDT)
-Message-ID: <51b2bd40-888d-4ee4-956f-c5239c5be9e9@linaro.org>
-Date: Fri, 10 May 2024 15:02:46 +0200
+	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="OjP2GbiW"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=J+vcdG6lGuZRXnpXO6e5OsfJNnwYADIh5ZoFn83mLfRWUlvfEy4fbkrXwmrHNUDbIDnMmbvDgTbH7C/Xpjn7xBf9Rq213ZNmyBSZMEjicTz0bTBJ5GIYASFlTVlpLkqjIb25kunzVBuTJx/Qs3T78Qybf1AK3ClyjcEsvGhSAD1NZGbtTFlW7LTUsmyqFzoZCydlg8cJQSPsOjJ+P9ASq+k6TbLoftZpXeSfSkuy7CNkTmkI8yD35V6HNg65OgOxDNVT5NUM4lh0rhXGQvtPkIPL4ygVj2kb5SEbFIu7bqiXrePGx4FFA18Mh2QHKORtXBCsdEdq4ncDHCYnxlWtfQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=xwtxmPMcIxuT4mDO+fChe19CHAw9k9OzD1WDaieIBk0=;
+ b=n00yrT+e1e0BcF6Juth2hJtE1j1sxpGM9ptUM/HqbPcG/ir1VQR3JA/q+yE2Gq6q5SfAkSR1Zj727tCewF9/oYCx1Na4+yKViZRsn7q7t/2MyWaIXDwEe1hTd95GFTUPPROC8uOp4ZzEjKKTz+J9PzXrV3FLrFbUQl8McOh3rZDcEczD6quPTM9nR/yh+L/yGb25Nl6umLdXPz2y6VY9PRc+hr917Yv/T7wiDycz3hiGeeB1DGEGYPQSTstzIYnkFJpjGRjMJQocMm1IW4tYP/bWTsrr5DjPVaKE8S+fgEdP0MAcf6YyDHa8pfYQldrNf2B8iiKpRRSKPCsaW4i7iA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=xwtxmPMcIxuT4mDO+fChe19CHAw9k9OzD1WDaieIBk0=;
+ b=OjP2GbiWfH87Zj2Kt8Lwe+NgDaTUGqzDqgiEUo5RpfdzxNec9rvYWPDwMszApCQB85ezQMHJbdsigFN5TY4eDEukUfEf7bGGKUHu3zEqKIAT87A9GpCtJHDhD2QxoGeSTIjOTmprLDsbU5q/P79hsi+7AfTouChSfF+aCU77xz20V7hBSXTDTiCnzTL2kjp1vqI/Ujgic1zXrI8a3rWZUe/H6PnbGNZR7RX+Zxt+s5W7zFMxECJN5FcMEEciz9nuXuTv9UsTjYLCBPxExCwTW4AEioSntuC8fomZ03/TNg3LVTQSWnCZlpZOT9NLaKFpwGZb1TIAy0oXSGW+XrC7zA==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nvidia.com;
+Received: from DM6PR12MB3849.namprd12.prod.outlook.com (2603:10b6:5:1c7::26)
+ by IA1PR12MB8287.namprd12.prod.outlook.com (2603:10b6:208:3f5::14) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7544.45; Fri, 10 May
+ 2024 13:29:30 +0000
+Received: from DM6PR12MB3849.namprd12.prod.outlook.com
+ ([fe80::c296:774b:a5fc:965e]) by DM6PR12MB3849.namprd12.prod.outlook.com
+ ([fe80::c296:774b:a5fc:965e%3]) with mapi id 15.20.7544.048; Fri, 10 May 2024
+ 13:29:29 +0000
+Date: Fri, 10 May 2024 10:29:28 -0300
+From: Jason Gunthorpe <jgg@nvidia.com>
+To: Yan Zhao <yan.y.zhao@intel.com>
+Cc: kvm@vger.kernel.org, linux-kernel@vger.kernel.org, x86@kernel.org,
+	alex.williamson@redhat.com, kevin.tian@intel.com,
+	iommu@lists.linux.dev, pbonzini@redhat.com, seanjc@google.com,
+	dave.hansen@linux.intel.com, luto@kernel.org, peterz@infradead.org,
+	tglx@linutronix.de, mingo@redhat.com, bp@alien8.de, hpa@zytor.com,
+	corbet@lwn.net, joro@8bytes.org, will@kernel.org,
+	robin.murphy@arm.com, baolu.lu@linux.intel.com, yi.l.liu@intel.com
+Subject: Re: [PATCH 5/5] iommufd: Flush CPU caches on DMA pages in
+ non-coherent domains
+Message-ID: <20240510132928.GS4650@nvidia.com>
+References: <20240507061802.20184-1-yan.y.zhao@intel.com>
+ <20240507062212.20535-1-yan.y.zhao@intel.com>
+ <20240509141332.GP4650@nvidia.com>
+ <Zj3UuHQe4XgdDmDs@yzhao56-desk.sh.intel.com>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <Zj3UuHQe4XgdDmDs@yzhao56-desk.sh.intel.com>
+X-ClientProxiedBy: BLAPR03CA0075.namprd03.prod.outlook.com
+ (2603:10b6:208:329::20) To DM6PR12MB3849.namprd12.prod.outlook.com
+ (2603:10b6:5:1c7::26)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v9 3/5] iommu/arm-smmu: introduction of ACTLR for custom
- prefetcher settings
-To: Bibek Kumar Patro <quic_bibekkum@quicinc.com>,
- Rob Clark <robdclark@gmail.com>
-Cc: will@kernel.org, robin.murphy@arm.com, joro@8bytes.org,
- dmitry.baryshkov@linaro.org, jsnitsel@redhat.com, quic_bjorande@quicinc.com,
- mani@kernel.org, quic_eberman@quicinc.com, robdclark@chromium.org,
- u.kleine-koenig@pengutronix.de, robh@kernel.org, vladimir.oltean@nxp.com,
- quic_pkondeti@quicinc.com, quic_molvera@quicinc.com,
- linux-arm-msm@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
- iommu@lists.linux.dev, linux-kernel@vger.kernel.org
-References: <20240123144543.9405-1-quic_bibekkum@quicinc.com>
- <20240123144543.9405-4-quic_bibekkum@quicinc.com>
- <CAF6AEGs3_wBNo58EbGicFoQuq8--fDohTGv1JSFgoViygLS5Lg@mail.gmail.com>
- <f2222714-1e00-424e-946d-c314d55541b8@quicinc.com>
-Content-Language: en-US
-From: Konrad Dybcio <konrad.dybcio@linaro.org>
-Autocrypt: addr=konrad.dybcio@linaro.org; keydata=
- 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
- izWDgYvmBE8=
-In-Reply-To: <f2222714-1e00-424e-946d-c314d55541b8@quicinc.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: DM6PR12MB3849:EE_|IA1PR12MB8287:EE_
+X-MS-Office365-Filtering-Correlation-Id: 6e4d62f3-7fce-41fb-9837-08dc70f53853
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;ARA:13230031|366007|376005|7416005|1800799015;
+X-Microsoft-Antispam-Message-Info:
+	=?us-ascii?Q?XDN29k5xO5jUhKjrpn4F9XdUoY+NYiKo+03JByeG329J5RxVE+CLrmMnxOzA?=
+ =?us-ascii?Q?Y+9r6i+YWasxT5iJIyENKBCL0CswWBLAp65mZJgRgpHTpxXOFcZKQgtiFDGi?=
+ =?us-ascii?Q?Lj48sj2ZClRHcUAKQNOOibCL4I8kdH6XX/pwaMLF8ItYgF5Zh842yWDtBtKI?=
+ =?us-ascii?Q?VwRUji2cHRULrZlIxG/gqG2qNCjKslNffiX7azCQ+d1GZKP026FKlvJhJQoj?=
+ =?us-ascii?Q?CZbU7ITvhcI448Y2a8RRtQstDPMHSBBdS7oMy1OiCktlCf8WPuWyYh9Pw7JT?=
+ =?us-ascii?Q?IjnYgYBOND3VBCAT6oY+e9J7pJ2HF15zQMZrsC/6NdcjRA/julZHWc3o154o?=
+ =?us-ascii?Q?Jq2PA5+HgLdwqeHxNS8M21tVIr74pweeakBhoLAMtum1wqPmiBnqLG+gI0kS?=
+ =?us-ascii?Q?fL+yWNm2WolsmVHBz5reDewkIoD0ivwDE56uWge49+6sWmjDm6kMCbhL+ZiA?=
+ =?us-ascii?Q?6St5DcvDb/Sl6gHBUjS8LQMUkkXa3UNm5KdxTOn4hHRzYYIYrJ+789o3nHYh?=
+ =?us-ascii?Q?3OcdgLVwwAXmTnyR0cYDaQrhRFlScdocMgkyBPC46rUi8yRaxEFNAz8wyVCJ?=
+ =?us-ascii?Q?b0MqtNWIw8/zr8T35ngi93UcvlhiyIhH5vP17Gktxhj33aUl3KgTCmL3uNtF?=
+ =?us-ascii?Q?QALTXYBLkYJRNX1km36j8YuPnrqSGdRdJ1TzSF+ygHfts3zy8HWZ1SOsYsfj?=
+ =?us-ascii?Q?uZ5DWto+k3tE6gC9XzNKUIgcRbTqlPItKwLIjxkWAb9EHM7yT+dtQuymXvdM?=
+ =?us-ascii?Q?Z8xAytKnXqjSVhkE3mkdGtWhlf5DbGRhAOYfgBtsflC5Nfhfvsqeoa6J0CpQ?=
+ =?us-ascii?Q?wQZJZUsqKtayWs9iRpZjRlkFJmjTBFGZ3lq80kz6Z5hnU8xwFqFkhgoQxgeb?=
+ =?us-ascii?Q?yDHQItANovkekpM/vZhGCJoLA5Sd0qzlaIDwXty+25fiHPNejoGsaQU9qSaz?=
+ =?us-ascii?Q?offJ+5U6WB78smudDuh+59cFtvhN5XKABs6Cu7XiYwuUfmXMVLIkBCzDLQPF?=
+ =?us-ascii?Q?kBcV1kJjchEUwZC80zW3TOoa9gllDsHHfrqdELqikgGDkaYh1gxJgc4ROfNd?=
+ =?us-ascii?Q?4Nzynr+Q+Kj7lRl0DPqwc3RVUYkrVWRyyuqGdfByYEUP04+RnsuGlVKbu+s9?=
+ =?us-ascii?Q?QdzdFg4gojWfIvmDA4ztLxGwCEY2FmH4u++4dUdWDO6YIqcxo4tvfnMsEWn/?=
+ =?us-ascii?Q?vvBk5bKK59QYmZ7Wlt5lJMM2uoVa87xwrPst3uFg7x8LNfOJQn8gHG9gBBch?=
+ =?us-ascii?Q?fGLxkqh26RKGC+fc5LSBsUUvrHNZGxtt3RqmNRnMog=3D=3D?=
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM6PR12MB3849.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230031)(366007)(376005)(7416005)(1800799015);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?us-ascii?Q?aonQCCqaBEMSadhJzwW5Anz3552NQq5JCOKwbvWAu3Iq3FG6T8cF9E4XmrQW?=
+ =?us-ascii?Q?UYCKyz4imeENrWee1nfO4PyS+BFm5nKVblgPOF6fAoBAGOWKkFUF1DoNPvia?=
+ =?us-ascii?Q?YpRm85rV4YeVcqNrHZBvwg9qTDDKmaDZdjtuO+PGEB8gUg7jJGh4JWxK5gg2?=
+ =?us-ascii?Q?YRk/tmy+raojtZ8mWCYUL/OpXlVN4ydMwwZJsp/2XkZn9k1o2duZTA2LgUkN?=
+ =?us-ascii?Q?rEEwe2i1c3TCjkGyBGW75CGAejC1ebXSfhPhJIx0taYDwFQod8YisSdNKrno?=
+ =?us-ascii?Q?T7EX4lHnGU8M1CZwtAfbheCuPafiR0Zw0Ep4umDpmd68h+uy42ILVKd6tZ6k?=
+ =?us-ascii?Q?Say/6O2dCc/EB2aCq0Fd0GXFqg9tTmRZRYFKXZEwDC4roEDC0zwWEToEYoAp?=
+ =?us-ascii?Q?LqkTe1O9BwruIGMuxH8CZvjwQY+UOxVUxkaZ3cCEn1FkvvXxh7DEcdQKotzD?=
+ =?us-ascii?Q?VVmz0nUONxWCTenwAcmVBzjUmvPhgLdCLGfYAJ7Wb/IVSwpbZ6+NwEjBeMfl?=
+ =?us-ascii?Q?cjwpULS+UUUyEhxkGr7/DUApFNCSfaAeqmYANnkPnmZ68YOv8z4vOp01uPE2?=
+ =?us-ascii?Q?QazyU1fSs7KDFn8R1VAxiYW/YqJN54w1We59LXQCF+E3IdAWRM081fPiqGcn?=
+ =?us-ascii?Q?AdvFObHLPRjro7DFZHwgUk8Px+7ttljWApZH4SZLGqX3hCFNfmZwCTKbgtQZ?=
+ =?us-ascii?Q?JMUHdARXFFbRgHT+ZNAMjtEBDJ+MVmeZbJIZ5rUeYKFts90+uvDxpuNatwyr?=
+ =?us-ascii?Q?ZDX8COn9LCaUmr+IAuTxK5OWncxjW2HQKSuCq4492BY1hFbgzS0yEZT9dpti?=
+ =?us-ascii?Q?wHXz4Ve0mDowjpSzMYme18OrfO3u3N314FijNlbIiLenpgG+biM7d7qkDGkC?=
+ =?us-ascii?Q?GPx3C0Om3edO9Jt9dHPMd2UsI4yUbnLnILS1VPoaIkU8X9QQasASF9Re1DNU?=
+ =?us-ascii?Q?VG2+VfGBlF5djRAdA/iRIrEvH3kaJqRkA49UK3/hfM61xRqCN9acZurBGpxN?=
+ =?us-ascii?Q?vMhjA/bBphLdoS1M5B6Rtr4vaxj7GsOA/JXtZ7iwnRB2+MLpisJ8w/hOCk63?=
+ =?us-ascii?Q?0jxG9e8L3jemYNseaLjDb1kuT7mbUgp3FpmYtPyayr43+3g3GOjE3nEa1Tzv?=
+ =?us-ascii?Q?oX5o9sVM4MAicOjtCvVtUpM05YTdqPgur1xGdOqnn9f07t/PoGY9su3sMVV+?=
+ =?us-ascii?Q?24HZYZpqBYh/u47X3/ytPpENOlKgGWPVVnondGgbmBD/hFXn3P7su8mVuptL?=
+ =?us-ascii?Q?Uo+y3JMjzIooge9VVw7cNrqbZ3tLydnVUVgofCNOAw+Xnd49a0q9hVfCfc0F?=
+ =?us-ascii?Q?d8eGIY6+Cz5dtYjBVcf1eR7DnsoMaSBEDO/+uXFm5CgMs6E11Hr7yLRlDMNO?=
+ =?us-ascii?Q?VHbz5yQS67eyS89OGHt4+elUxoQZzvCrfHEnAgJHPqtbHyt2GHUPxpJyeCIR?=
+ =?us-ascii?Q?0MCIswIUKCJx1IZBxnlmAO9v+0eRQpm+ygxDQoz6Mbwd8vipVdiZGP6qtvXl?=
+ =?us-ascii?Q?pU0h+Dn23aqX37/4wCSQ8fMjjzmUc9VO6SfvpFWKcW04xDDsLGP3HyYfzKIA?=
+ =?us-ascii?Q?PCzaBfBT7AgzFqj1+5guhk13Eks026+lgB8EGfnU?=
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 6e4d62f3-7fce-41fb-9837-08dc70f53853
+X-MS-Exchange-CrossTenant-AuthSource: DM6PR12MB3849.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 10 May 2024 13:29:29.5476
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: HJjTQuoVMEBFCEcNqhcQJ7CsKY5H722z1IMlbsKOTLAeqsUFXJAPXBdQhD/eYN/h
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: IA1PR12MB8287
 
-On 10.05.2024 2:52 PM, Bibek Kumar Patro wrote:
-> 
-> 
-> On 5/1/2024 12:30 AM, Rob Clark wrote:
->> On Tue, Jan 23, 2024 at 7:00 AM Bibek Kumar Patro
->> <quic_bibekkum@quicinc.com> wrote:
->>>
->>> Currently in Qualcomm  SoCs the default prefetch is set to 1 which allows
->>> the TLB to fetch just the next page table. MMU-500 features ACTLR
->>> register which is implementation defined and is used for Qualcomm SoCs
->>> to have a custom prefetch setting enabling TLB to prefetch the next set
->>> of page tables accordingly allowing for faster translations.
->>>
->>> ACTLR value is unique for each SMR (Stream matching register) and stored
->>> in a pre-populated table. This value is set to the register during
->>> context bank initialisation.
->>>
->>> Signed-off-by: Bibek Kumar Patro <quic_bibekkum@quicinc.com>
->>> ---
+On Fri, May 10, 2024 at 04:03:04PM +0800, Yan Zhao wrote:
+> > > @@ -1358,10 +1377,17 @@ int iopt_area_fill_domain(struct iopt_area *area, struct iommu_domain *domain)
+> > >  {
+> > >  	unsigned long done_end_index;
+> > >  	struct pfn_reader pfns;
+> > > +	bool cache_flush_required;
+> > >  	int rc;
+> > >  
+> > >  	lockdep_assert_held(&area->pages->mutex);
+> > >  
+> > > +	cache_flush_required = area->iopt->noncoherent_domain_cnt &&
+> > > +			       !area->pages->cache_flush_required;
+> > > +
+> > > +	if (cache_flush_required)
+> > > +		area->pages->cache_flush_required = true;
+> > > +
+> > >  	rc = pfn_reader_first(&pfns, area->pages, iopt_area_index(area),
+> > >  			      iopt_area_last_index(area));
+> > >  	if (rc)
+> > > @@ -1369,6 +1395,9 @@ int iopt_area_fill_domain(struct iopt_area *area, struct iommu_domain *domain)
+> > >  
+> > >  	while (!pfn_reader_done(&pfns)) {
+> > >  		done_end_index = pfns.batch_start_index;
+> > > +		if (cache_flush_required)
+> > > +			iopt_cache_flush_pfn_batch(&pfns.batch);
+> > > +
+> > 
+> > This is a bit unfortunate, it means we are going to flush for every
+> > domain, even though it is not required. I don't see any easy way out
+> > of that :(
+> Yes. Do you think it's possible to add an op get_cache_coherency_enforced
+> to iommu_domain_ops?
 
-[...]
+Do we need that? The hwpt already keeps track of that? the enforced could be
+copied into the area along side storage_domain
 
->>> +
->>> +               for_each_cfg_sme(cfg, fwspec, j, idx) {
->>> +                       smr = &smmu->smrs[idx];
->>> +                       if (smr_is_subset(smr, id, mask)) {
->>> +                               arm_smmu_cb_write(smmu, cbndx, ARM_SMMU_CB_ACTLR,
->>> +                                               actlrcfg[i].actlr);
->>
->> So, this makes ACTLR look like kind of a FIFO.  But I'm looking at
->> downstream kgsl's PRR thing (which we'll need to implement vulkan
->> sparse residency), and it appears to be wanting to set BIT(5) in ACTLR
->> to enable PRR.
->>
->>          val = KGSL_IOMMU_GET_CTX_REG(ctx, KGSL_IOMMU_CTX_ACTLR);
->>          val |= FIELD_PREP(KGSL_IOMMU_ACTLR_PRR_ENABLE, 1);
->>          KGSL_IOMMU_SET_CTX_REG(ctx, KGSL_IOMMU_CTX_ACTLR, val);
->>
->> Any idea how this works?  And does it need to be done before or after
->> the ACTLR programming done in this patch?
->>
->> BR,
->> -R
->>
-> 
-> Hi Rob,
-> 
-> Can you please help provide some more clarification on the FIFO part? By FIFO are you referring to the storing of ACTLR data in the table?
-> 
-> Thanks for pointing to the downstream implementation of kgsl driver for
-> the PRR bit. Since kgsl driver is already handling this PRR bit's
-> setting, this makes setting the PRR BIT(5) by SMMU driver redundant.
+Then I guess you could avoid flushing in the case the page came from
+the storage_domain...
 
-The kgsl driver is not present upstream.
+You'd want the storage_domain to preferentially point to any
+non-enforced domain.
 
-> Thanks for bringing up this point.
-> I will send v10 patch series removing this BIT(5) setting from the ACTLR
-> table.
+Is it worth it? How slow is this stuff?
 
-I think it's generally saner to configure the SMMU from the SMMU driver..
-
-Konrad
+Jason
