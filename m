@@ -1,114 +1,57 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.15])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 771CA13BC14
-	for <iommu@lists.linux.dev>; Fri, 10 May 2024 03:25:33 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.15
+Received: from mail.8bytes.org (mail.8bytes.org [85.214.250.239])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 8C2E15490E
+	for <iommu@lists.linux.dev>; Fri, 10 May 2024 07:04:59 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=85.214.250.239
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1715311535; cv=none; b=BTI6LzgvcK5iQfBfe0lDHhKorrNsaU/mIpLM1IacTHALHscKTiTPIOYgfKf9eebmnvYRr/e4WiJvLYHXTZOM8esQ+StGm3aDLvlRKieOgEVBm/S43x/sMsJf0llKRr/yBtdVkZtpIlw28ViRmwD6OsV/hnHPW7oSHq0MS1yttP0=
+	t=1715324701; cv=none; b=slIZPEk2phHhDZU8bvlWydIb1aZEu4smqmCSbE7qDUCHvG372KPkt1nH7cQImsCcJTAq0aF0b1KibLEUqC8Nd0v3pLE8pXAAR7wNrEEsTqX922aPpZKDAqxQTG3Ki0k1uiLsONIZAg7we29SArcwCWcFxFT/IRfqOoIJ9p2za40=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1715311535; c=relaxed/simple;
-	bh=+60/R6ZelmCn2D21Wc5U/v/CxzPMEwJYHz3a+CsKrH0=;
-	h=Message-ID:Date:MIME-Version:Cc:Subject:To:References:From:
-	 In-Reply-To:Content-Type; b=HM/qn32QZJLsL63Xs2qrqg2kqNHghQ3TlrKFNK462iaCjoJjEtRk50GpnUekCZbR5wfbXlKC1LMtxXxEu/iqVH3UeUx1ZC5FVfBzwRXkUVQTDNgrr2SxxV2veEfb08YA21xCAyMOh3YfdWwjIwCXY92ZY+A7UkOEpK9aHkyYASo=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=P0DLyvda; arc=none smtp.client-ip=192.198.163.15
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
+	s=arc-20240116; t=1715324701; c=relaxed/simple;
+	bh=cKTcfaQrnih/HQaG4vLIiNASL4N4ftFxPR1yWJb+Wq4=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=bvgzeAnWZ32ja6NjG95uPFN0m6iMVSU+Ow7iFtxG8XP38lzjLDCpNWGaWdWVNzoGdNPLxt/8J9ZvJPKdQclJDF9aZK6UKYHPCswUyfgGiQhF+Tdw76nnaxcVVtVI6C5NJCJSIS2EJtPtPMzr2bdejhz9tD7VgzkhxwqGU57wNxA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=8bytes.org; spf=pass smtp.mailfrom=8bytes.org; dkim=pass (2048-bit key) header.d=8bytes.org header.i=@8bytes.org header.b=MoPy6Iy4; arc=none smtp.client-ip=85.214.250.239
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=8bytes.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=8bytes.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="P0DLyvda"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1715311533; x=1746847533;
-  h=message-id:date:mime-version:cc:subject:to:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=+60/R6ZelmCn2D21Wc5U/v/CxzPMEwJYHz3a+CsKrH0=;
-  b=P0DLyvdaWHmnUz18kcZymcrjW3y6yekJ9mxMw/Y6f96r+/2hwiuLyAV1
-   lrheaQRsgN8IBjdqqI3fHC84x+XpGVX4UzwazhN/s+0q2TSaV1nRz78J4
-   YvX3jH3IyBPe8bVsj1iU/tW4VkdfbjIWWUDNQcBruryyFWgFY8qTLUiqM
-   DJ5mr/RkZVA4OvshJjqjCg+VN2aApRbwrdjnfISgl0Txdyr0J5X1GfGk3
-   ZUHrpoIJ/5IyZ4KYiuLwca7MUvq3Q4xN/XPRXxd9AW1efszuBmbsfCedh
-   e45TvhmR/LTDiQHdxukrXXTUcs8DmSjNumoHcZ592T0qYfgfEn534hSg0
-   Q==;
-X-CSE-ConnectionGUID: EqxIaVrkQk+lxvUPbSS31w==
-X-CSE-MsgGUID: zYR7tl9qR9uCiP1MFCnAog==
-X-IronPort-AV: E=McAfee;i="6600,9927,11068"; a="11439976"
-X-IronPort-AV: E=Sophos;i="6.08,149,1712646000"; 
-   d="scan'208";a="11439976"
-Received: from orviesa001.jf.intel.com ([10.64.159.141])
-  by fmvoesa109.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 May 2024 20:25:33 -0700
-X-CSE-ConnectionGUID: 4+6y3HM2QO+Ic3I0KZ0M1Q==
-X-CSE-MsgGUID: cZN55lAqTSaJNzDeu+BCvw==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.08,149,1712646000"; 
-   d="scan'208";a="66919206"
-Received: from unknown (HELO [10.239.159.127]) ([10.239.159.127])
-  by orviesa001.jf.intel.com with ESMTP; 09 May 2024 20:25:29 -0700
-Message-ID: <134825df-bbf7-4666-b4e7-cbadf9c2b27e@linux.intel.com>
-Date: Fri, 10 May 2024 11:23:49 +0800
+	dkim=pass (2048-bit key) header.d=8bytes.org header.i=@8bytes.org header.b="MoPy6Iy4"
+Received: from 8bytes.org (p4ffe0bdf.dip0.t-ipconnect.de [79.254.11.223])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange ECDHE (P-256) server-signature RSA-PSS (2048 bits) server-digest SHA256)
+	(No client certificate requested)
+	by mail.8bytes.org (Postfix) with ESMTPSA id DB7661C278C;
+	Fri, 10 May 2024 09:04:51 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=8bytes.org;
+	s=default; t=1715324692;
+	bh=cKTcfaQrnih/HQaG4vLIiNASL4N4ftFxPR1yWJb+Wq4=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=MoPy6Iy42oUItgPBd5q7Q4UIz4C2ajA+DFJxUhVLCAQ7jqXLngTSOVNhh+NotUpFz
+	 ybKcJ0fbUhhmIqsTAk5Hr/3AGEEUyj3kvLwXM38lhdb9d8Bgu+23PX/qkX5f4MHqeD
+	 UGTn6bp2Pu5GMP0yTJ871A8aQnGxqcyxOKeFehEbbGKZ+/IEKyGbB5tENc8x5OJovr
+	 xuLvkfGKHKGDm7gcVZJzQLONour78XrT7Kd8e+VcVfYcH0ZSZTq3jMbrkfGwquXOXV
+	 gOy32yn60v9lsYcBltUuYuVWYzk3RFlsp6MHYYzROuV9lSOAF5GxeDnTn6dxqLSiY2
+	 PVVmhHouzkQyg==
+Date: Fri, 10 May 2024 09:04:50 +0200
+From: Joerg Roedel <joro@8bytes.org>
+To: Robin Murphy <robin.murphy@arm.com>
+Cc: will@kernel.org, catalin.marinas@arm.com,
+	linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev,
+	Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+Subject: Re: [PATCH] arm64: Properly clean up iommu-dma remnants
+Message-ID: <Zj3HEqZLOlrMNR38@8bytes.org>
+References: <d4cc20cbb0c45175e98dd76bf187e2ad6421296d.1714472573.git.robin.murphy@arm.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Cc: baolu.lu@linux.intel.com, Kevin Tian <kevin.tian@intel.com>,
- Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
- Robin Murphy <robin.murphy@arm.com>,
- Jean-Philippe Brucker <jean-philippe@linaro.org>,
- Nicolin Chen <nicolinc@nvidia.com>, Yi Liu <yi.l.liu@intel.com>,
- Jacob Pan <jacob.jun.pan@linux.intel.com>,
- Joel Granados <j.granados@samsung.com>, iommu@lists.linux.dev,
- virtualization@lists.linux-foundation.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v5 7/9] iommufd: Associate fault object with
- iommufd_hw_pgtable
-To: Jason Gunthorpe <jgg@ziepe.ca>
-References: <20240430145710.68112-1-baolu.lu@linux.intel.com>
- <20240430145710.68112-8-baolu.lu@linux.intel.com>
- <20240508002508.GQ4718@ziepe.ca>
-Content-Language: en-US
-From: Baolu Lu <baolu.lu@linux.intel.com>
-In-Reply-To: <20240508002508.GQ4718@ziepe.ca>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <d4cc20cbb0c45175e98dd76bf187e2ad6421296d.1714472573.git.robin.murphy@arm.com>
 
-On 5/8/24 8:25 AM, Jason Gunthorpe wrote:
-> On Tue, Apr 30, 2024 at 10:57:08PM +0800, Lu Baolu wrote:
->>   /**
->> @@ -412,6 +415,9 @@ enum iommu_hwpt_data_type {
->>    * @data_type: One of enum iommu_hwpt_data_type
->>    * @data_len: Length of the type specific data
->>    * @data_uptr: User pointer to the type specific data
->> + * @fault_id: The ID of IOMMUFD_FAULT object. Valid only if flags field of
->> + *            IOMMU_HWPT_FAULT_ID_VALID is set.
->> + * @__reserved2: Padding to 64-bit alignment. Must be 0.
->>    *
->>    * Explicitly allocate a hardware page table object. This is the same object
->>    * type that is returned by iommufd_device_attach() and represents the
->> @@ -442,6 +448,8 @@ struct iommu_hwpt_alloc {
->>   	__u32 data_type;
->>   	__u32 data_len;
->>   	__aligned_u64 data_uptr;
->> +	__u32 fault_id;
->> +	__u32 __reserved2;
->>   };
->>   #define IOMMU_HWPT_ALLOC _IO(IOMMUFD_TYPE, IOMMUFD_CMD_HWPT_ALLOC)
-> [..]
-> 
->> @@ -359,7 +359,7 @@ static const struct iommufd_ioctl_op iommufd_ioctl_ops[] = {
->>   	IOCTL_OP(IOMMU_GET_HW_INFO, iommufd_get_hw_info, struct iommu_hw_info,
->>   		 __reserved),
->>   	IOCTL_OP(IOMMU_HWPT_ALLOC, iommufd_hwpt_alloc, struct iommu_hwpt_alloc,
->> -		 __reserved),
->> +		 __reserved2),
-> This is now how the back compat mechanism works. The value here is the
-> absolute minimum size, it should never increase. The first __reserved
-> is always the right value.
-> 
-> If you change it then old userspace that doesn't include the fault_id
-> will stop working.
+On Tue, Apr 30, 2024 at 11:22:53AM +0100, Robin Murphy wrote:
+>  arch/arm64/Kconfig          | 1 -
+>  arch/arm64/mm/dma-mapping.c | 8 --------
+>  2 files changed, 9 deletions(-)
 
-Yeah! I will remove this change.
-
-Best regards,
-baolu
+Applied, thanks.
