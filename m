@@ -1,48 +1,60 @@
-Received: from mx0b-0031df01.pphosted.com (mx0b-0031df01.pphosted.com [205.220.180.131])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-ej1-f54.google.com (mail-ej1-f54.google.com [209.85.218.54])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4B03C487BC
-	for <iommu@lists.linux.dev>; Fri, 10 May 2024 12:52:52 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.180.131
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B69E2127E27
+	for <iommu@lists.linux.dev>; Fri, 10 May 2024 13:02:51 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.218.54
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1715345575; cv=none; b=upH8azOrHuyDx4Kb7ZslVzysBo/p1cC2SwlJQBaIyc4wIKS3xbWO24gSwxFzZ6E4ApJ+5JWmfnUiAFZC1d2LrRoMcDKQ4zUt7K5qMawMJHu4EB5waoib0Ydz8EnJg99QKV1oWla/TbjfmDfCYW1bCx+Yt4omHR4H3PJHZifHtsE=
+	t=1715346177; cv=none; b=MAid2Y21ZF1ZiaJeovMSy369wZTTDMDEo6QgdEmgNM309xj3ydztQZdyVSZRLfpoPy1tEZ+1PvMFpNG3++0AnQTpxRvF6TaR3nYTpmnd3weusgm+qY5h8RWfelrwoPuVgwlbkSQksW0d3QkXj1P4g0rLjYkLJFLCUoAPDcpXT5Y=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1715345575; c=relaxed/simple;
-	bh=YgKa71bFhk1gCVwmj2pTEd1auzogW5T2QB40aMsXhQM=;
-	h=Message-ID:Date:MIME-Version:Subject:To:CC:References:From:
-	 In-Reply-To:Content-Type; b=OQ979HurFlilrKvUI+WGoxIhRMUt4/VoSH7+C2lGJB/UAB/S7gKm95wS5f4L76BiGAjGwYnawBFp5Tkre0cQ6k318uRC8cJheX4FqV/UeWk0wC5nJyHjQzTQalYpMXUErLDq/hP//VcyGRkIY8oJz00aI8DY1mPy22UCi9Jn/oQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com; spf=pass smtp.mailfrom=quicinc.com; dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b=ao4uMTdl; arc=none smtp.client-ip=205.220.180.131
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=quicinc.com
+	s=arc-20240116; t=1715346177; c=relaxed/simple;
+	bh=IDOoM5FN/jEaq3m/ykRVd6MkVbSLFiji4upzz0M1kAA=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=VNG7GlzRgFvgkL/gUdb+z5/h+wKS4cnQcAKtUjoeFuklQIdb2yKr1iLYlZYRh57CU6JMrzWP1rPnuLSnxgNOZYIenI/WNIvkKupsEedo1n6ZPbzfxolg6p6k4rva+aZUVaCuUqyFFjyaihaf49gaKF85h5kwrxKmlO1+0MhxJyM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org; spf=pass smtp.mailfrom=linaro.org; dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b=Df/4/RPs; arc=none smtp.client-ip=209.85.218.54
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linaro.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b="ao4uMTdl"
-Received: from pps.filterd (m0279870.ppops.net [127.0.0.1])
-	by mx0a-0031df01.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 44A2tj2X024585;
-	Fri, 10 May 2024 12:52:40 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=quicinc.com; h=
-	message-id:date:mime-version:subject:to:cc:references:from
-	:in-reply-to:content-type:content-transfer-encoding; s=
-	qcppdkim1; bh=uSlDWBQTrnyVfvIVoW7lWNmU7G4SoSDVW7gKuQekkkU=; b=ao
-	4uMTdlG5Q0igFLLB7U35BfQ+vtlsGGxFc7FGZKuSAtt8elwHtRatRSBLyfV3tVc4
-	MY1dAC3zxtSR4vLJjKs4J+mpqpN0PZJ9iSxtcHtvBD08ZSwO9CsB1WYJWKBrC0Ed
-	NnKHq/pH+v/KLrPKROriA0tGLzpmVBsfFHbehpAxz8sdNAB4oXJP3miSIHvStzSo
-	Xyo+iIgFQQQe1Vqofme4TT9MM7g8O+CQ1h5Du0tH7KsYnmPTrRghk2Bll/kQEqM6
-	tyHXyMoOTvcNcb6Hp2hIi577f6vIk7whR9SJMHV0sXrduQgOB+EeaDKKoSe2+KYN
-	yhlN3wazmZ9EuvTgWnug==
-Received: from nalasppmta03.qualcomm.com (Global_NAT1.qualcomm.com [129.46.96.20])
-	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 3y16w21fnp-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Fri, 10 May 2024 12:52:39 +0000 (GMT)
-Received: from nalasex01c.na.qualcomm.com (nalasex01c.na.qualcomm.com [10.47.97.35])
-	by NALASPPMTA03.qualcomm.com (8.17.1.5/8.17.1.5) with ESMTPS id 44ACqcx4031415
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Fri, 10 May 2024 12:52:38 GMT
-Received: from [10.214.66.253] (10.80.80.8) by nalasex01c.na.qualcomm.com
- (10.47.97.35) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1544.9; Fri, 10 May
- 2024 05:52:32 -0700
-Message-ID: <f2222714-1e00-424e-946d-c314d55541b8@quicinc.com>
-Date: Fri, 10 May 2024 18:22:22 +0530
+	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="Df/4/RPs"
+Received: by mail-ej1-f54.google.com with SMTP id a640c23a62f3a-a4702457ccbso513591766b.3
+        for <iommu@lists.linux.dev>; Fri, 10 May 2024 06:02:51 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google; t=1715346170; x=1715950970; darn=lists.linux.dev;
+        h=content-transfer-encoding:in-reply-to:autocrypt:from
+         :content-language:references:cc:to:subject:user-agent:mime-version
+         :date:message-id:from:to:cc:subject:date:message-id:reply-to;
+        bh=9OHbA2aVTxqonA8Wb82h9NaQktmaQSCPyBhO9xRJSO4=;
+        b=Df/4/RPsKeGqZ6xYy/BJgAsi+QRXcCchRsuZiokIVcal4W60+7rzmfPL5ke2Y6k1ry
+         Rdv3d4Kklx1fm/Y7nqmNS2UL8gjn92dquW57d+fdEF+4NSyeqaAZS+i4pQSwCV5DpTfC
+         9al0TcBQku1IjwDs2q2gCP+l20aqaERZ75FGVz301+IzXKYtQEdNINe7SpaS1Y+JGDOt
+         co3zi92Wa74pLfcNjN6uktTL3vRcmD726WQ2XdDSQWJpwSMLBRu6v4TQDASQ2Rm5BNa9
+         XY4hLKdAT6DFbGdlXlkjYplHgD5SQ9mko3VALg2eM1Ik8ZQZCErNivQ7f6eIu21X7igr
+         r4JA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1715346170; x=1715950970;
+        h=content-transfer-encoding:in-reply-to:autocrypt:from
+         :content-language:references:cc:to:subject:user-agent:mime-version
+         :date:message-id:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=9OHbA2aVTxqonA8Wb82h9NaQktmaQSCPyBhO9xRJSO4=;
+        b=r7kz3zfpSCS0SeZJiPmR0vRV+v3g7Tls9+EGDrs3JQ20rFR10s2WX08q1djnKbqR63
+         qaNjxjcgyMADNPJNKDEH2kLqZgFBo3+3oFnKO7bKgO1QD0s2KQaqschkLHygoIenxv2f
+         F+aYru5yluN+9kR8TBoeYDobYNm8yRPYmVqKJA299/1ao+XzIaQ+2dTOvDNmV23L8HVH
+         jHh/PGCDsI0SRI71F5DYS1RLKrV/dqj1+s0wXyRDvhzucKMXaFeultRBcZq/DjgOjvks
+         bV+vwuXU8J9fo9ZmZD8VIOq9jSWRwmWtsRnfFqRMaOBNk5tpSd/f50gYgl3lrXND0A1v
+         j5ow==
+X-Forwarded-Encrypted: i=1; AJvYcCUSNlL35XpOJPKZMqFwlXSmOQBRgIkwTOJZieeWRKvUS0v7W/RmRH45CTfXfri0rhnlk7scZ7mRty4LJgkR6Sm6q0oNB+w=
+X-Gm-Message-State: AOJu0YxBBcZQT5a+GBku14iIi0vlRPPOuRzGbm/wVVO1gchHQuZT+rXq
+	ytAvUZKgdCrVZcWtQeSkoGI+dQ+660kVLVSrZrmqUH/M2sMUAahSFoOTiMe5bDw=
+X-Google-Smtp-Source: AGHT+IGVtxPgtNd2rd4rODKiorsOsAs0qSpPYNSo8wWMMgqW1gANzgb4n2Wkjla3fBWd2TMEpAEAsg==
+X-Received: by 2002:a17:906:40d2:b0:a5a:1f4f:cb4c with SMTP id a640c23a62f3a-a5a2d54c80amr175360666b.7.1715346170095;
+        Fri, 10 May 2024 06:02:50 -0700 (PDT)
+Received: from [192.168.62.15] (078088045141.garwolin.vectranet.pl. [78.88.45.141])
+        by smtp.gmail.com with ESMTPSA id a640c23a62f3a-a5a17b17555sm180568566b.189.2024.05.10.06.02.47
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 10 May 2024 06:02:49 -0700 (PDT)
+Message-ID: <51b2bd40-888d-4ee4-956f-c5239c5be9e9@linaro.org>
+Date: Fri, 10 May 2024 15:02:46 +0200
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -52,255 +64,119 @@ MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
 Subject: Re: [PATCH v9 3/5] iommu/arm-smmu: introduction of ACTLR for custom
  prefetcher settings
-To: Rob Clark <robdclark@gmail.com>
-CC: <will@kernel.org>, <robin.murphy@arm.com>, <joro@8bytes.org>,
-        <dmitry.baryshkov@linaro.org>, <konrad.dybcio@linaro.org>,
-        <jsnitsel@redhat.com>, <quic_bjorande@quicinc.com>, <mani@kernel.org>,
-        <quic_eberman@quicinc.com>, <robdclark@chromium.org>,
-        <u.kleine-koenig@pengutronix.de>, <robh@kernel.org>,
-        <vladimir.oltean@nxp.com>, <quic_pkondeti@quicinc.com>,
-        <quic_molvera@quicinc.com>, <linux-arm-msm@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>, <iommu@lists.linux.dev>,
-        <linux-kernel@vger.kernel.org>
+To: Bibek Kumar Patro <quic_bibekkum@quicinc.com>,
+ Rob Clark <robdclark@gmail.com>
+Cc: will@kernel.org, robin.murphy@arm.com, joro@8bytes.org,
+ dmitry.baryshkov@linaro.org, jsnitsel@redhat.com, quic_bjorande@quicinc.com,
+ mani@kernel.org, quic_eberman@quicinc.com, robdclark@chromium.org,
+ u.kleine-koenig@pengutronix.de, robh@kernel.org, vladimir.oltean@nxp.com,
+ quic_pkondeti@quicinc.com, quic_molvera@quicinc.com,
+ linux-arm-msm@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+ iommu@lists.linux.dev, linux-kernel@vger.kernel.org
 References: <20240123144543.9405-1-quic_bibekkum@quicinc.com>
  <20240123144543.9405-4-quic_bibekkum@quicinc.com>
  <CAF6AEGs3_wBNo58EbGicFoQuq8--fDohTGv1JSFgoViygLS5Lg@mail.gmail.com>
+ <f2222714-1e00-424e-946d-c314d55541b8@quicinc.com>
 Content-Language: en-US
-From: Bibek Kumar Patro <quic_bibekkum@quicinc.com>
-In-Reply-To: <CAF6AEGs3_wBNo58EbGicFoQuq8--fDohTGv1JSFgoViygLS5Lg@mail.gmail.com>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
+From: Konrad Dybcio <konrad.dybcio@linaro.org>
+Autocrypt: addr=konrad.dybcio@linaro.org; keydata=
+ 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
+ izWDgYvmBE8=
+In-Reply-To: <f2222714-1e00-424e-946d-c314d55541b8@quicinc.com>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
- nalasex01c.na.qualcomm.com (10.47.97.35)
-X-QCInternal: smtphost
-X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
-X-Proofpoint-GUID: ACFiStFGMk5_YB90eoVNagA6a6nCfFcE
-X-Proofpoint-ORIG-GUID: ACFiStFGMk5_YB90eoVNagA6a6nCfFcE
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.293,Aquarius:18.0.1039,Hydra:6.0.650,FMLib:17.11.176.26
- definitions=2024-05-10_08,2024-05-10_02,2023-05-22_02
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 mlxlogscore=999
- suspectscore=0 clxscore=1011 phishscore=0 impostorscore=0 mlxscore=0
- lowpriorityscore=0 spamscore=0 bulkscore=0 malwarescore=0
- priorityscore=1501 adultscore=0 classifier=spam adjust=0 reason=mlx
- scancount=1 engine=8.19.0-2405010000 definitions=main-2405100092
 
-
-
-On 5/1/2024 12:30 AM, Rob Clark wrote:
-> On Tue, Jan 23, 2024 at 7:00 AM Bibek Kumar Patro
-> <quic_bibekkum@quicinc.com> wrote:
->>
->> Currently in Qualcomm  SoCs the default prefetch is set to 1 which allows
->> the TLB to fetch just the next page table. MMU-500 features ACTLR
->> register which is implementation defined and is used for Qualcomm SoCs
->> to have a custom prefetch setting enabling TLB to prefetch the next set
->> of page tables accordingly allowing for faster translations.
->>
->> ACTLR value is unique for each SMR (Stream matching register) and stored
->> in a pre-populated table. This value is set to the register during
->> context bank initialisation.
->>
->> Signed-off-by: Bibek Kumar Patro <quic_bibekkum@quicinc.com>
->> ---
->>   drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c | 61 ++++++++++++++++++++++
->>   drivers/iommu/arm/arm-smmu/arm-smmu-qcom.h | 16 +++++-
->>   drivers/iommu/arm/arm-smmu/arm-smmu.c      |  5 +-
->>   drivers/iommu/arm/arm-smmu/arm-smmu.h      |  5 ++
->>   4 files changed, 84 insertions(+), 3 deletions(-)
->>
->> diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
->> index 333daeb18c1c..6004c6d9a7b2 100644
->> --- a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
->> +++ b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
->> @@ -215,10 +215,42 @@ static bool qcom_adreno_can_do_ttbr1(struct arm_smmu_device *smmu)
->>          return true;
->>   }
->>
->> +static void qcom_smmu_set_actlr(struct device *dev, struct arm_smmu_device *smmu, int cbndx,
->> +               const struct actlr_config *actlrcfg, const size_t num_actlrcfg)
->> +{
->> +       struct arm_smmu_master_cfg *cfg = dev_iommu_priv_get(dev);
->> +       struct iommu_fwspec *fwspec = dev_iommu_fwspec_get(dev);
->> +       struct arm_smmu_smr *smr;
->> +       u16 mask;
->> +       int idx;
->> +       u16 id;
->> +       int i;
->> +       int j;
->> +
->> +       for (i = 0; i < num_actlrcfg; i++) {
->> +               id = actlrcfg[i].sid;
->> +               mask = actlrcfg[i].mask;
->> +
->> +               for_each_cfg_sme(cfg, fwspec, j, idx) {
->> +                       smr = &smmu->smrs[idx];
->> +                       if (smr_is_subset(smr, id, mask)) {
->> +                               arm_smmu_cb_write(smmu, cbndx, ARM_SMMU_CB_ACTLR,
->> +                                               actlrcfg[i].actlr);
+On 10.05.2024 2:52 PM, Bibek Kumar Patro wrote:
 > 
-> So, this makes ACTLR look like kind of a FIFO.  But I'm looking at
-> downstream kgsl's PRR thing (which we'll need to implement vulkan
-> sparse residency), and it appears to be wanting to set BIT(5) in ACTLR
-> to enable PRR.
 > 
->          val = KGSL_IOMMU_GET_CTX_REG(ctx, KGSL_IOMMU_CTX_ACTLR);
->          val |= FIELD_PREP(KGSL_IOMMU_ACTLR_PRR_ENABLE, 1);
->          KGSL_IOMMU_SET_CTX_REG(ctx, KGSL_IOMMU_CTX_ACTLR, val);
+> On 5/1/2024 12:30 AM, Rob Clark wrote:
+>> On Tue, Jan 23, 2024 at 7:00 AM Bibek Kumar Patro
+>> <quic_bibekkum@quicinc.com> wrote:
+>>>
+>>> Currently in Qualcomm  SoCs the default prefetch is set to 1 which allows
+>>> the TLB to fetch just the next page table. MMU-500 features ACTLR
+>>> register which is implementation defined and is used for Qualcomm SoCs
+>>> to have a custom prefetch setting enabling TLB to prefetch the next set
+>>> of page tables accordingly allowing for faster translations.
+>>>
+>>> ACTLR value is unique for each SMR (Stream matching register) and stored
+>>> in a pre-populated table. This value is set to the register during
+>>> context bank initialisation.
+>>>
+>>> Signed-off-by: Bibek Kumar Patro <quic_bibekkum@quicinc.com>
+>>> ---
+
+[...]
+
+>>> +
+>>> +               for_each_cfg_sme(cfg, fwspec, j, idx) {
+>>> +                       smr = &smmu->smrs[idx];
+>>> +                       if (smr_is_subset(smr, id, mask)) {
+>>> +                               arm_smmu_cb_write(smmu, cbndx, ARM_SMMU_CB_ACTLR,
+>>> +                                               actlrcfg[i].actlr);
+>>
+>> So, this makes ACTLR look like kind of a FIFO.  But I'm looking at
+>> downstream kgsl's PRR thing (which we'll need to implement vulkan
+>> sparse residency), and it appears to be wanting to set BIT(5) in ACTLR
+>> to enable PRR.
+>>
+>>          val = KGSL_IOMMU_GET_CTX_REG(ctx, KGSL_IOMMU_CTX_ACTLR);
+>>          val |= FIELD_PREP(KGSL_IOMMU_ACTLR_PRR_ENABLE, 1);
+>>          KGSL_IOMMU_SET_CTX_REG(ctx, KGSL_IOMMU_CTX_ACTLR, val);
+>>
+>> Any idea how this works?  And does it need to be done before or after
+>> the ACTLR programming done in this patch?
+>>
+>> BR,
+>> -R
+>>
 > 
-> Any idea how this works?  And does it need to be done before or after
-> the ACTLR programming done in this patch?
+> Hi Rob,
 > 
-> BR,
-> -R
+> Can you please help provide some more clarification on the FIFO part? By FIFO are you referring to the storing of ACTLR data in the table?
 > 
+> Thanks for pointing to the downstream implementation of kgsl driver for
+> the PRR bit. Since kgsl driver is already handling this PRR bit's
+> setting, this makes setting the PRR BIT(5) by SMMU driver redundant.
 
-Hi Rob,
+The kgsl driver is not present upstream.
 
-Can you please help provide some more clarification on the FIFO part? By 
-FIFO are you referring to the storing of ACTLR data in the table?
+> Thanks for bringing up this point.
+> I will send v10 patch series removing this BIT(5) setting from the ACTLR
+> table.
 
-Thanks for pointing to the downstream implementation of kgsl driver for
-the PRR bit. Since kgsl driver is already handling this PRR bit's
-setting, this makes setting the PRR BIT(5) by SMMU driver redundant.
-Thanks for bringing up this point.
-I will send v10 patch series removing this BIT(5) setting from the ACTLR
-table.
+I think it's generally saner to configure the SMMU from the SMMU driver..
 
-Thanks & regards,
-Bibek
-
->> +                               break;
->> +                       }
->> +               }
->> +       }
->> +}
->> +
->>   static int qcom_adreno_smmu_init_context(struct arm_smmu_domain *smmu_domain,
->>                  struct io_pgtable_cfg *pgtbl_cfg, struct device *dev)
->>   {
->> +       struct arm_smmu_device *smmu = smmu_domain->smmu;
->> +       struct qcom_smmu *qsmmu = to_qcom_smmu(smmu);
->> +       const struct actlr_variant *actlrvar;
->> +       int cbndx = smmu_domain->cfg.cbndx;
->>          struct adreno_smmu_priv *priv;
->> +       int i;
->>
->>          smmu_domain->cfg.flush_walk_prefer_tlbiasid = true;
->>
->> @@ -248,6 +280,18 @@ static int qcom_adreno_smmu_init_context(struct arm_smmu_domain *smmu_domain,
->>          priv->set_stall = qcom_adreno_smmu_set_stall;
->>          priv->resume_translation = qcom_adreno_smmu_resume_translation;
->>
->> +       actlrvar = qsmmu->data->actlrvar;
->> +       if (!actlrvar)
->> +               return 0;
->> +
->> +       for (i = 0; i < qsmmu->data->num_smmu ; i++) {
->> +               if (actlrvar[i].io_start == smmu->ioaddr) {
->> +                       qcom_smmu_set_actlr(dev, smmu, cbndx, actlrvar[i].actlrcfg,
->> +                                      actlrvar[i].num_actlrcfg);
->> +                       break;
->> +               }
->> +       }
->> +
->>          return 0;
->>   }
->>
->> @@ -274,7 +318,24 @@ static const struct of_device_id qcom_smmu_client_of_match[] __maybe_unused = {
->>   static int qcom_smmu_init_context(struct arm_smmu_domain *smmu_domain,
->>                  struct io_pgtable_cfg *pgtbl_cfg, struct device *dev)
->>   {
->> +       struct arm_smmu_device *smmu = smmu_domain->smmu;
->> +       struct qcom_smmu *qsmmu = to_qcom_smmu(smmu);
->> +       const struct actlr_variant *actlrvar;
->> +       int cbndx = smmu_domain->cfg.cbndx;
->> +       int i;
->> +
->>          smmu_domain->cfg.flush_walk_prefer_tlbiasid = true;
->> +       actlrvar = qsmmu->data->actlrvar;
->> +       if (!actlrvar)
->> +               return 0;
->> +
->> +       for (i = 0; i < qsmmu->data->num_smmu ; i++) {
->> +               if (actlrvar[i].io_start == smmu->ioaddr) {
->> +                       qcom_smmu_set_actlr(dev, smmu, cbndx, actlrvar[i].actlrcfg,
->> +                                      actlrvar[i].num_actlrcfg);
->> +                       break;
->> +               }
->> +       }
->>
->>          return 0;
->>   }
->> diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.h b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.h
->> index f3b91963e234..3f651242de7c 100644
->> --- a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.h
->> +++ b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.h
->> @@ -1,6 +1,6 @@
->>   /* SPDX-License-Identifier: GPL-2.0-only */
->>   /*
->> - * Copyright (c) 2022, Qualcomm Innovation Center, Inc. All rights reserved.
->> + * Copyright (c) 2022-2023, Qualcomm Innovation Center, Inc. All rights reserved.
->>    */
->>
->>   #ifndef _ARM_SMMU_QCOM_H
->> @@ -24,8 +24,22 @@ struct qcom_smmu_config {
->>          const u32 *reg_offset;
->>   };
->>
->> +struct actlr_config {
->> +       u16 sid;
->> +       u16 mask;
->> +       u32 actlr;
->> +};
->> +
->> +struct actlr_variant {
->> +       const resource_size_t io_start;
->> +       const struct actlr_config * const actlrcfg;
->> +       const size_t num_actlrcfg;
->> +};
->> +
->>   struct qcom_smmu_match_data {
->> +       const struct actlr_variant * const actlrvar;
->>          const struct qcom_smmu_config *cfg;
->> +       const size_t num_smmu;
->>          const struct arm_smmu_impl *impl;
->>          const struct arm_smmu_impl *adreno_impl;
->>   };
->> diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu.c b/drivers/iommu/arm/arm-smmu/arm-smmu.c
->> index d6d1a2a55cc0..0c7f700b27dd 100644
->> --- a/drivers/iommu/arm/arm-smmu/arm-smmu.c
->> +++ b/drivers/iommu/arm/arm-smmu/arm-smmu.c
->> @@ -990,9 +990,10 @@ static int arm_smmu_find_sme(struct arm_smmu_device *smmu, u16 id, u16 mask)
->>                   * expect simply identical entries for this case, but there's
->>                   * no harm in accommodating the generalisation.
->>                   */
->> -               if ((mask & smrs[i].mask) == mask &&
->> -                   !((id ^ smrs[i].id) & ~smrs[i].mask))
->> +
->> +               if (smr_is_subset(&smrs[i], id, mask))
->>                          return i;
->> +
->>                  /*
->>                   * If the new entry has any other overlap with an existing one,
->>                   * though, then there always exists at least one stream ID
->> diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu.h b/drivers/iommu/arm/arm-smmu/arm-smmu.h
->> index 703fd5817ec1..2e4f65412c6b 100644
->> --- a/drivers/iommu/arm/arm-smmu/arm-smmu.h
->> +++ b/drivers/iommu/arm/arm-smmu/arm-smmu.h
->> @@ -501,6 +501,11 @@ static inline void arm_smmu_writeq(struct arm_smmu_device *smmu, int page,
->>                  writeq_relaxed(val, arm_smmu_page(smmu, page) + offset);
->>   }
->>
->> +static inline bool smr_is_subset(struct arm_smmu_smr *smrs, u16 id, u16 mask)
->> +{
->> +       return (mask & smrs->mask) == mask && !((id ^ smrs->id) & ~smrs->mask);
->> +}
->> +
->>   #define ARM_SMMU_GR0           0
->>   #define ARM_SMMU_GR1           1
->>   #define ARM_SMMU_CB(s, n)      ((s)->numpage + (n))
->> --
->> 2.17.1
->>
->>
+Konrad
