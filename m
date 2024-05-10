@@ -1,25 +1,25 @@
 Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id CBA9518037
-	for <iommu@lists.linux.dev>; Fri, 10 May 2024 17:35:21 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 1285417BCE
+	for <iommu@lists.linux.dev>; Fri, 10 May 2024 17:45:59 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1715362524; cv=none; b=frqyN/x7SXYG9hjmnJK0f2O3h1oy8s/1gk4VJUkv5fIA1dCHEw3RsLiItRO5qpXKOgtfcAum/rUICwUgsS324vbBSWdVQu30zoPVHTW2T9JLcbfsASu2PJIf4Td9r4/gmgSl5HzAodr12HaWw6FKnaZJExdInfyS3V7HPbMDAb0=
+	t=1715363161; cv=none; b=XmQ9FBMV3ZfZ36ZLkVc/dMZDOOZC9flqS3ZGo4ghOKRx9eXSaJSTiG66/UBD9F7jZUY5CLny5T9GGW9B3sDVqq/C8rwOmnZFPzSgijy71Ry56nJVbwJxpNZozwJRT32H7kcAMNC5qciSLsdMOTIQvM3msgpwQh3oFvK6FzDbGtw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1715362524; c=relaxed/simple;
-	bh=TO8LzxCyAm4C6o8aGLw9P7lWmy9CduRS+UXiITsLWkc=;
+	s=arc-20240116; t=1715363161; c=relaxed/simple;
+	bh=M7bKQrXhZKKs1kZ+tT4e3a2WllT3q6PZSQPGZbcvxR4=;
 	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=ijgyfVTDmmANRrVyKTiq2Ki/ffrDP/6Q+ys+dBV2JAafvx4gSALPAvPm+iKBPELeaPeMt9kE28XxNasWl+wyOuwcwecTc4/nBfgTfPpeAiJGBNLvOJjqjthBpRvbtc1hBcIExAd7lcQu9p/ig0OnDkndfA6OP/C/P5gLsGRYuwQ=
+	 In-Reply-To:Content-Type; b=OlYJOxtLitsK3CWUpcqODkPael5aQV380amwLVxSHLAQq1QFlM9LKnORDmS82Am6ayqvaDMV0Kgp4msQ7CAc2X1XLAl1jZwNsd8BNtc7HdDO+AMvVDLrijS7rjYhG/8XdGZMv1gYw1G9Q3Gs90bsQq3wYpov1KZfsbKFedNgwP0=
 ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; arc=none smtp.client-ip=217.140.110.172
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
 Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 91CAC106F;
-	Fri, 10 May 2024 10:35:46 -0700 (PDT)
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id CA2E611FB;
+	Fri, 10 May 2024 10:46:24 -0700 (PDT)
 Received: from [10.57.3.158] (unknown [10.57.3.158])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 13AC03F6A8;
-	Fri, 10 May 2024 10:35:18 -0700 (PDT)
-Message-ID: <11456e13-23f8-43f7-8ffd-cd4e4ff825d7@arm.com>
-Date: Fri, 10 May 2024 18:35:17 +0100
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 81F9E3F6A8;
+	Fri, 10 May 2024 10:45:57 -0700 (PDT)
+Message-ID: <39f5190b-5011-4584-9748-e6d0ee5d279a@arm.com>
+Date: Fri, 10 May 2024 18:45:55 +0100
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -27,8 +27,7 @@ List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v2 1/4] dma-mapping: benchmark: fix up kthread-related
- error handling
+Subject: Re: [PATCH v2 3/4] dma-mapping: benchmark: fix node id validation
 To: Fedor Pchelkin <pchelkin@ispras.ru>,
  Xiang Chen <chenxiang66@hisilicon.com>, Barry Song <21cnbao@gmail.com>
 Cc: Christoph Hellwig <hch@lst.de>,
@@ -36,91 +35,65 @@ Cc: Christoph Hellwig <hch@lst.de>,
  linux-kernel@vger.kernel.org, Alexey Khoroshilov <khoroshilov@ispras.ru>,
  lvc-project@linuxtesting.org
 References: <20240504114713.567164-1-pchelkin@ispras.ru>
- <20240504114713.567164-2-pchelkin@ispras.ru>
+ <20240504114713.567164-4-pchelkin@ispras.ru>
 From: Robin Murphy <robin.murphy@arm.com>
 Content-Language: en-GB
-In-Reply-To: <20240504114713.567164-2-pchelkin@ispras.ru>
+In-Reply-To: <20240504114713.567164-4-pchelkin@ispras.ru>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 
 On 2024-05-04 12:47 pm, Fedor Pchelkin wrote:
-> kthread creation failure is invalidly handled inside do_map_benchmark().
-> The put_task_struct() calls on the error path are supposed to balance the
-> get_task_struct() calls which only happen after all the kthreads are
-> successfully created. Rollback using kthread_stop() for already created
-> kthreads in case of such failure.
+> While validating node ids in map_benchmark_ioctl(), node_possible() may
+> be provided with invalid argument outside of [0,MAX_NUMNODES-1] range
+> leading to:
 > 
-> In normal situation call kthread_stop_put() to gracefully stop kthreads
-> and put their task refcounts. This should be done for all started
-> kthreads.
+> BUG: KASAN: wild-memory-access in map_benchmark_ioctl (kernel/dma/map_benchmark.c:214)
+> Read of size 8 at addr 1fffffff8ccb6398 by task dma_map_benchma/971
+> CPU: 7 PID: 971 Comm: dma_map_benchma Not tainted 6.9.0-rc6 #37
+> Hardware name: QEMU Standard PC (i440FX + PIIX, 1996)
+> Call Trace:
+>   <TASK>
+> dump_stack_lvl (lib/dump_stack.c:117)
+> kasan_report (mm/kasan/report.c:603)
+> kasan_check_range (mm/kasan/generic.c:189)
+> variable_test_bit (arch/x86/include/asm/bitops.h:227) [inline]
+> arch_test_bit (arch/x86/include/asm/bitops.h:239) [inline]
+> _test_bit at (include/asm-generic/bitops/instrumented-non-atomic.h:142) [inline]
+> node_state (include/linux/nodemask.h:423) [inline]
+> map_benchmark_ioctl (kernel/dma/map_benchmark.c:214)
+> full_proxy_unlocked_ioctl (fs/debugfs/file.c:333)
+> __x64_sys_ioctl (fs/ioctl.c:890)
+> do_syscall_64 (arch/x86/entry/common.c:83)
+> entry_SYSCALL_64_after_hwframe (arch/x86/entry/entry_64.S:130)
+> 
+> Compare node ids with sane bounds first. NUMA_NO_NODE is considered a
+> special valid case meaning that benchmarking kthreads won't be bound to a
+> cpuset of a given node.
 
-Although strictly there were two overlapping bugs here, I'd agree that 
-it really doesn't seem worth the bother of trying to distinguish them. 
-I'm far from a kthread expert, but as best I can tell this looks like it 
-achieves a sensible final state. Modulo one nit below,
+Makes sense, and the style of the check looks like a reasonably common 
+pattern.
 
 Reviewed-by: Robin Murphy <robin.murphy@arm.com>
 
 > Found by Linux Verification Center (linuxtesting.org).
 > 
 > Fixes: 65789daa8087 ("dma-mapping: add benchmark support for streaming DMA APIs")
-> Suggested-by: Robin Murphy <robin.murphy@arm.com>
 > Signed-off-by: Fedor Pchelkin <pchelkin@ispras.ru>
 > ---
->   kernel/dma/map_benchmark.c | 16 ++++++++++------
->   1 file changed, 10 insertions(+), 6 deletions(-)
+>   kernel/dma/map_benchmark.c | 3 ++-
+>   1 file changed, 2 insertions(+), 1 deletion(-)
 > 
 > diff --git a/kernel/dma/map_benchmark.c b/kernel/dma/map_benchmark.c
-> index 02205ab53b7e..2478957cf9f8 100644
+> index a6edb1ef98c8..9f6c15f3f168 100644
 > --- a/kernel/dma/map_benchmark.c
 > +++ b/kernel/dma/map_benchmark.c
-> @@ -118,6 +118,8 @@ static int do_map_benchmark(struct map_benchmark_data *map)
->   		if (IS_ERR(tsk[i])) {
->   			pr_err("create dma_map thread failed\n");
->   			ret = PTR_ERR(tsk[i]);
-> +			while (--i >= 0)
-> +				kthread_stop(tsk[i]);
-
-I think this means we'd end up actually starting the threads purely to 
-get them to see the KTHREAD_SHOULD_STOP flag and exit again? Not that 
-I'm too fussed about optimising an unexpected error path, however I 
-can't help but wonder if we might only need a put_task_struct() if we 
-can safely assume that the threads have never been started at this point.
-
-Thanks,
-Robin.
-
->   			goto out;
+> @@ -212,7 +212,8 @@ static long map_benchmark_ioctl(struct file *file, unsigned int cmd,
 >   		}
 >   
-> @@ -139,13 +141,17 @@ static int do_map_benchmark(struct map_benchmark_data *map)
->   
->   	msleep_interruptible(map->bparam.seconds * 1000);
->   
-> -	/* wait for the completion of benchmark threads */
-> +	/* wait for the completion of all started benchmark threads */
->   	for (i = 0; i < threads; i++) {
-> -		ret = kthread_stop(tsk[i]);
-> -		if (ret)
-> -			goto out;
-> +		int kthread_ret = kthread_stop_put(tsk[i]);
-> +
-> +		if (kthread_ret)
-> +			ret = kthread_ret;
->   	}
->   
-> +	if (ret)
-> +		goto out;
-> +
->   	loops = atomic64_read(&map->loops);
->   	if (likely(loops > 0)) {
->   		u64 map_variance, unmap_variance;
-> @@ -170,8 +176,6 @@ static int do_map_benchmark(struct map_benchmark_data *map)
->   	}
->   
->   out:
-> -	for (i = 0; i < threads; i++)
-> -		put_task_struct(tsk[i]);
->   	put_device(map->dev);
->   	kfree(tsk);
->   	return ret;
+>   		if (map->bparam.node != NUMA_NO_NODE &&
+> -		    !node_possible(map->bparam.node)) {
+> +		    (map->bparam.node < 0 || map->bparam.node >= MAX_NUMNODES ||
+> +		     !node_possible(map->bparam.node))) {
+>   			pr_err("invalid numa node\n");
+>   			return -EINVAL;
+>   		}
