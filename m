@@ -1,343 +1,192 @@
-Received: from mail-ej1-f52.google.com (mail-ej1-f52.google.com [209.85.218.52])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from NAM11-DM6-obe.outbound.protection.outlook.com (mail-dm6nam11on2080.outbound.protection.outlook.com [40.107.223.80])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5EF04495F0
-	for <iommu@lists.linux.dev>; Fri, 10 May 2024 19:48:49 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.218.52
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1715370531; cv=none; b=Sf5/yIatx9SEUgnUIyoqOY03V4qd8Yf1+Vvv6JGpwMvxNwviBvkawHncLPVvB33sqyF6uVnEgE+UK1Qlmn/5SGrJgK1tQnAxBL3VVwuAexI/BK+sU1Z5pnvdMlSIE8beXydEGlOx3qbDhXoLgdy61flHX+zS2D46WVmLUhDoWvk=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1715370531; c=relaxed/simple;
-	bh=3XqgSEObDOCeJPpka9l8ocfh+GOn8nUFYBHjQqb8m+4=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=ep2blxkFRAoKrFe0mD4+/N8pg0dJB9Eh+QnEt6ZyVW7g9mO/66IG9ZIyx1UXsN0hcbdExESEkl3+SQyPNeK8EUiGv3IDUXOdz5pKzduDIQSXe3fcvr871V+9PCnosuhaXtjE3kN3ifdGUX29DnjbipTwOeJwXcfebTaaEPizEG0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=FxIau8hn; arc=none smtp.client-ip=209.85.218.52
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DE2B7366;
+	Sat, 11 May 2024 02:32:37 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.223.80
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1715394759; cv=fail; b=dfdGwXtq9NOwi30GEtRQBXubAOEXkdgMqpE5th5M4Zbb19pVBY3nXZAIADRY5yBtfmiqZOoPNmW0Mx3fmjf97ek4cVIlcxjmaBHFvW72DxcS3lu+OnP4hnUMNaFNrDvJPqzugIvbia0QPdLqp5QiZiQWESBOXjd33qrF6RPdYA4=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1715394759; c=relaxed/simple;
+	bh=qq9sMmsqtOK1GXG21YN6SxWgY3/me+vJCuuvjsa5jAg=;
+	h=Date:From:To:CC:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=bpwi6fUdOZx5l7Ti+iHWy+xCdzZeOqegpy3QiYDQDCHAFMrjO5ylaO/3CxHALeqxI443yKMcwVCmv3jMW1JULnZnGrDgJ2XgGtxKftRM6LY1BXIirKw6sIVDk6ZfK2O6xT9xN9OVVIFIhqwQ7wsgmvhe7Gwql+X4svPm30gTyuI=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=NgKi473X; arc=fail smtp.client-ip=40.107.223.80
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="FxIau8hn"
-Received: by mail-ej1-f52.google.com with SMTP id a640c23a62f3a-a59c0a6415fso695477966b.1
-        for <iommu@lists.linux.dev>; Fri, 10 May 2024 12:48:49 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1715370528; x=1715975328; darn=lists.linux.dev;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=lAF1txzMebY/xPXBik7+S3gqJe3LUJLfPmgTaHM48fg=;
-        b=FxIau8hnVusr4RddfoDj+Ilb4OehUQbpB7sTFHIeqh3HJ+TP8+tVAsZxGim1tdM937
-         JRXb6wDw3P3lK9KZBhY0ipdtozxwpwXF9uhiIyl6A/ia5tLn3wz3KAnv8bPNX4fEExmv
-         5acUjsHC142Kqj/Fz3GK1weIajdey6eEWGpk7DWOxG+3FIEepGQlPDG83ARlHu4Yko/0
-         9rld0NLGMoqNpE7lVmJ0GMYl8xH1ClsRQUntpRZd9zOqXShC3MbXGr3S+283jEiqeEQO
-         tDY42ULwHf058DOpoNWAW742pRQxyzPW2gY/2PvptMvbpjKtzmkeMcMBR5gvgdXGRlM0
-         cenQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1715370528; x=1715975328;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=lAF1txzMebY/xPXBik7+S3gqJe3LUJLfPmgTaHM48fg=;
-        b=EMT8y9769enmRDUhjatRR2oVA8+MVxAEyg0n2i4U3+uF+01xZtlcwo20dXnbYTtMSL
-         tCVwoZlFr3pf8XhA7ydpES94O5wGdMi0FMpBhNq5XW7iDFdRA2jfze320i/9I9PvUyfY
-         cpfjPa7UATg5SaOTHB62IUwJJ9gVsrmHS34YRGolHFvRIJJb1VPQhS04nNQYB7LIU24u
-         ZOQ4f71f4LAVF95lgNUxdP0vBdBDoK9e4rcczF9jRO+QD4sh6kVSExg1wnUKayXHnaXi
-         KR1tLjvrpoLfNRUx6Z/jvhooY4zzA9WzOU9AKDWUCPavFp+28ltxas3QsodCYRoIUDhp
-         q77Q==
-X-Forwarded-Encrypted: i=1; AJvYcCUviaszBRtTgG/xJzwD7G2ic6lJQEadf3QjWPfLjTW3L7KiccGIafyCnrNQBQQObjBBSxOSg2VxItZQWo0ZyL3RsczVLUw=
-X-Gm-Message-State: AOJu0Yy5AVObq2hMqGVhaELF0Hy8ZhuumXgZy54nwuG2T6gfHgGZ4DnM
-	Tqjco59DG/fo7+HSCQawhKDSL2DGg1ASK7Xfm5PLJy07NxChJN0LQcjWRxTZ71UWNDpungGpb2l
-	x2dcrtpSsGlzerSmlJVPMwBabYmk=
-X-Google-Smtp-Source: AGHT+IEChyfEy75A1yLV7r286DTdXiPj99++sZ6PpOSlu7hC0fo011UDBXquc6NgqpTc6nmkLuXvpsBlDu/hiTHYjlw=
-X-Received: by 2002:a50:d496:0:b0:572:93fa:d6fa with SMTP id
- 4fb4d7f45d1cf-5734d43e905mr2321977a12.0.1715370527239; Fri, 10 May 2024
- 12:48:47 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="NgKi473X"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=GdmX600mbTXPlfVH+WUEghl51PeNPbDqv3pnr44nWClXU1kjfy/ukE4KSK/STtt0viQmgDxt26AwD1YGf3REehqfBZPzhnwzTlPPomT3zSMA1f3QA+b3kspkGuAshLNcBUTx0ARQjGoASPAtyMCg7f8db21TDNdh7llvyVA8yY3Lyj7ft7EmA6qxlUAXhxTyOK5kYfVERqqgg/O4S2NHGPppbq+j+6VvdZRsbLM1t0J/QnVsKgISkMbYtUX9l+XafAQEBPn5KQloH843VxL9nDn91Tz0ytNGFW4lwoOm64JSZjH38/HJ3aQrwft8nvcYOiePXRMjrbsq+RhsVpb5mw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=nlArHNAXJaAQXqEeXrd6tCmnjVtWiXJb+PEirbo5epI=;
+ b=lXyBpiexVcI2xzVu933tpfyTX5PQguH8UbJt4JUxeZUuQ+mN9mFVIK351kG7x6ZgayakM5XnLvp99M8ZLUS/uRQAx2kJyrcsjsstQxbnH5eAfPvSqX2lBpDAHsYumHB2PVNmnt/BoHUnQ5MDSqoseh1TDB59hCuROnd8U2LS0zYiIbu4do8VBN/z2d165bXLhpEjsleuOpkHlXfRvXrQvqkjDs6EE/ffwH/V7AmxryXrg/Fni7LOQFmlCfMRWiTXzO455/hcdzpjy1c7u1TMifeNv6MLhpwBZdRiEXgi7fy3JAkbCZ6RDwfK6sIOTaI6AkUKOZb6C59f9/7TNa+EkA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 216.228.117.160) smtp.rcpttodomain=lists.linux.dev smtp.mailfrom=nvidia.com;
+ dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
+ dkim=none (message not signed); arc=none (0)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=nlArHNAXJaAQXqEeXrd6tCmnjVtWiXJb+PEirbo5epI=;
+ b=NgKi473XVrY47XGFSgjQo9JhF6PC3fuf4/PuoqDOQVpgbKWpomEWjs/gFIxdZxtN6QKJ6DEPpkt5BV7cEcQwRvkwUmiAYXJXNIPsONtQj28iPtWXDUrTYWH8XJNR3CJ3c2BK29O3fms/1+u7kAzZPrf73ORRTdAomK/oMusTJdlg0BSmJU4RPw5FdrCI2XeNnmajr4JzEloKSIDMLQacc6Vtl3aqjsLYUrXqwgPyqczcOl3RzZYNr2Qm52H3Fwru5L9OUU/ItXq+N+M2bZbw7Vcxz3TrPtfDmS8937QdDDo4E+8LVm2Y41Dn8uo5wvqCng+fB+hCkXvTo3pCUV3bnQ==
+Received: from MN2PR02CA0031.namprd02.prod.outlook.com (2603:10b6:208:fc::44)
+ by DM6PR12MB4105.namprd12.prod.outlook.com (2603:10b6:5:217::18) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7544.54; Sat, 11 May
+ 2024 02:32:35 +0000
+Received: from MN1PEPF0000F0E5.namprd04.prod.outlook.com
+ (2603:10b6:208:fc:cafe::96) by MN2PR02CA0031.outlook.office365.com
+ (2603:10b6:208:fc::44) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7544.51 via Frontend
+ Transport; Sat, 11 May 2024 02:32:34 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.117.160)
+ smtp.mailfrom=nvidia.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=nvidia.com;
+Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
+ 216.228.117.160 as permitted sender) receiver=protection.outlook.com;
+ client-ip=216.228.117.160; helo=mail.nvidia.com; pr=C
+Received: from mail.nvidia.com (216.228.117.160) by
+ MN1PEPF0000F0E5.mail.protection.outlook.com (10.167.242.43) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.7544.18 via Frontend Transport; Sat, 11 May 2024 02:32:34 +0000
+Received: from rnnvmail204.nvidia.com (10.129.68.6) by mail.nvidia.com
+ (10.129.200.66) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1544.4; Fri, 10 May
+ 2024 19:32:23 -0700
+Received: from rnnvmail204.nvidia.com (10.129.68.6) by rnnvmail204.nvidia.com
+ (10.129.68.6) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1544.4; Fri, 10 May
+ 2024 19:32:22 -0700
+Received: from nvidia.com (10.127.8.13) by mail.nvidia.com (10.129.68.6) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1544.4 via Frontend
+ Transport; Fri, 10 May 2024 19:32:19 -0700
+Date: Fri, 10 May 2024 19:32:16 -0700
+From: Nicolin Chen <nicolinc@nvidia.com>
+To: Jason Gunthorpe <jgg@nvidia.com>
+CC: <iommu@lists.linux.dev>, Joerg Roedel <joro@8bytes.org>,
+	<linux-arm-kernel@lists.infradead.org>, Robin Murphy <robin.murphy@arm.com>,
+	Will Deacon <will@kernel.org>, Eric Auger <eric.auger@redhat.com>,
+	Jean-Philippe Brucker <jean-philippe@linaro.org>, Moritz Fischer
+	<mdf@kernel.org>, Michael Shavit <mshavit@google.com>,
+	<patches@lists.linux.dev>, Shameerali Kolothum Thodi
+	<shameerali.kolothum.thodi@huawei.com>
+Subject: Re: [PATCH v7 02/14] iommu/arm-smmu-v3: Start building a generic
+ PASID layer
+Message-ID: <Zj7YsKWSqGqOgOoV@nvidia.com>
+References: <0-v7-9597c885796c+d2-smmuv3_newapi_p2b_jgg@nvidia.com>
+ <2-v7-9597c885796c+d2-smmuv3_newapi_p2b_jgg@nvidia.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <20240123144543.9405-1-quic_bibekkum@quicinc.com>
- <20240123144543.9405-4-quic_bibekkum@quicinc.com> <CAF6AEGs3_wBNo58EbGicFoQuq8--fDohTGv1JSFgoViygLS5Lg@mail.gmail.com>
- <f2222714-1e00-424e-946d-c314d55541b8@quicinc.com>
-In-Reply-To: <f2222714-1e00-424e-946d-c314d55541b8@quicinc.com>
-From: Rob Clark <robdclark@gmail.com>
-Date: Fri, 10 May 2024 12:48:22 -0700
-Message-ID: <CAF6AEGtm-KweFdMFvahH1pWmpOq7dW_p0Xe_13aHGWt0jSbg8w@mail.gmail.com>
-Subject: Re: [PATCH v9 3/5] iommu/arm-smmu: introduction of ACTLR for custom
- prefetcher settings
-To: Bibek Kumar Patro <quic_bibekkum@quicinc.com>
-Cc: will@kernel.org, robin.murphy@arm.com, joro@8bytes.org, 
-	dmitry.baryshkov@linaro.org, konrad.dybcio@linaro.org, jsnitsel@redhat.com, 
-	quic_bjorande@quicinc.com, mani@kernel.org, quic_eberman@quicinc.com, 
-	robdclark@chromium.org, u.kleine-koenig@pengutronix.de, robh@kernel.org, 
-	vladimir.oltean@nxp.com, quic_pkondeti@quicinc.com, quic_molvera@quicinc.com, 
-	linux-arm-msm@vger.kernel.org, linux-arm-kernel@lists.infradead.org, 
-	iommu@lists.linux.dev, linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: inline
+In-Reply-To: <2-v7-9597c885796c+d2-smmuv3_newapi_p2b_jgg@nvidia.com>
+X-NV-OnPremToCloud: ExternallySecured
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: MN1PEPF0000F0E5:EE_|DM6PR12MB4105:EE_
+X-MS-Office365-Filtering-Correlation-Id: 8672b4bb-465d-4ac9-4682-08dc71629dbc
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam:
+	BCL:0;ARA:13230031|36860700004|376005|82310400017|1800799015|7416005;
+X-Microsoft-Antispam-Message-Info:
+	=?us-ascii?Q?TJrD6D6ZzXj/GljtaQWKtesXqjkkkNlC0ZzF19B7ERzEg4Ug/dILISTzvxl2?=
+ =?us-ascii?Q?YjmD0AhbMx/H8uq+92F+cr2F9s1QJvkLkdPYsUKCrdYJwCsDQaBZejpUKJuT?=
+ =?us-ascii?Q?8xqhb5fpSiaRrKbwDStWhO48CxdqhFi3CKmoxXgxaW2fLL8dxCtlKIyrKxp9?=
+ =?us-ascii?Q?GXGgs4VOTxvmNsVuQls4SIylGJ3BrxNpeRcZr5T4AZ4Z/5mi5TitrGnZpfzY?=
+ =?us-ascii?Q?e7+H7uzhbll2xVqm+l4aap/qS6J4fXZqHsSz4i8tGxp9+75eOGvE8/vvjxbJ?=
+ =?us-ascii?Q?TVpmSEYM/Y6O/Uhyj8L16uzBOjLRlWLv3rJXSBpeeQp0+0mdj1gjjyUf1vv9?=
+ =?us-ascii?Q?3lA4uhD/vd7BXtxP6DfWyrzrt9c0lE/6nVMbhGnDuMRYI2+5vFGVzZRuID9y?=
+ =?us-ascii?Q?SuPA/tVg0+44wowvHoGICT/m0162OydkTsldanybzUc6Mm0VmpUr07+ugVFJ?=
+ =?us-ascii?Q?ygpACLJYdhtviMsDr4VP4sSQhqqNeM+vP/EE11aENqGfTbl6cZ8N+IXWmXdX?=
+ =?us-ascii?Q?Xni9aPbRPmK+U5ziKqXd1UsW2NI4K5IjDNUNgdjCIBSjzgk3WFnCeQ000lmu?=
+ =?us-ascii?Q?yNd0USKSuxL/3OiLOJX1S/iJ9tYgO4/wx064OK35eKPHHO5zaFDvZGGI3YyJ?=
+ =?us-ascii?Q?mSc2H+NhP3TSgJzkRlTiHoj/3z5h46s+BXOQr/Bo5lGNXLjk/obzFY0ZOrz+?=
+ =?us-ascii?Q?wxCZ9ON+Wmlw0SAhk+F5GEtDffo78vsTgGny5hYctJs8BTXadF8uIg434mNk?=
+ =?us-ascii?Q?eMg4977JYMiYAnZRGRwWvdTWmJcETZwvF2bKup8cAvzU+oNrpQdJ987sYvIz?=
+ =?us-ascii?Q?HTk+dI3YztnrHTUIGMqomc9kPzbd9fKTpWwCOWZpWkzHitQRtJO4bQI7BWdv?=
+ =?us-ascii?Q?AqWxNnj/StP48kc5BbdyfRW5B4DEOm2ztEun97F4AjRRQloaPA+JBifS+PBc?=
+ =?us-ascii?Q?Fr8iYNzbbu6C2UHxibesJCSzGxSU+MIko8V+KXdiK93afC3/2g2Vy6jnqsil?=
+ =?us-ascii?Q?TY5dw84qXXxdM7DkH5q9m2bmBCRZjDjPugkcU/dEdqtZ3uQQ3ZToH+lkHifu?=
+ =?us-ascii?Q?Nu3gYBJGqyGqbenYxvEOd8/CdjDqFdo9Hv+YimVV5HXX4McuBb1GGrB00tCJ?=
+ =?us-ascii?Q?nY3DSlImIWTL6m+TTtS/7YDoX3O70tiRfvpSH1QkjMie5dNVmcyDtv16fBPI?=
+ =?us-ascii?Q?EtoMwCiuH4XpZbe71loHrsAW5Z/d7DzaqPIDwB0t9YKye8TCX+R8MRPUf04w?=
+ =?us-ascii?Q?d25f0cMtZjgDixZgzsr9doLgQRpEHCUcxAtArAFzGR6WIw02SILBe7QWFUa+?=
+ =?us-ascii?Q?q/T1ol+aYFeH8CPd5pCDQDpkhmuv1x2G6WxIMTsPOftVdBIH/QbobwrX8GVU?=
+ =?us-ascii?Q?a0QTq+Y=3D?=
+X-Forefront-Antispam-Report:
+	CIP:216.228.117.160;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc6edge1.nvidia.com;CAT:NONE;SFS:(13230031)(36860700004)(376005)(82310400017)(1800799015)(7416005);DIR:OUT;SFP:1101;
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 11 May 2024 02:32:34.4675
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: 8672b4bb-465d-4ac9-4682-08dc71629dbc
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.117.160];Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-AuthSource:
+	MN1PEPF0000F0E5.namprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR12MB4105
 
-On Fri, May 10, 2024 at 5:52=E2=80=AFAM Bibek Kumar Patro
-<quic_bibekkum@quicinc.com> wrote:
->
->
->
-> On 5/1/2024 12:30 AM, Rob Clark wrote:
-> > On Tue, Jan 23, 2024 at 7:00=E2=80=AFAM Bibek Kumar Patro
-> > <quic_bibekkum@quicinc.com> wrote:
-> >>
-> >> Currently in Qualcomm  SoCs the default prefetch is set to 1 which all=
-ows
-> >> the TLB to fetch just the next page table. MMU-500 features ACTLR
-> >> register which is implementation defined and is used for Qualcomm SoCs
-> >> to have a custom prefetch setting enabling TLB to prefetch the next se=
-t
-> >> of page tables accordingly allowing for faster translations.
-> >>
-> >> ACTLR value is unique for each SMR (Stream matching register) and stor=
-ed
-> >> in a pre-populated table. This value is set to the register during
-> >> context bank initialisation.
-> >>
-> >> Signed-off-by: Bibek Kumar Patro <quic_bibekkum@quicinc.com>
-> >> ---
-> >>   drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c | 61 ++++++++++++++++++++=
-++
-> >>   drivers/iommu/arm/arm-smmu/arm-smmu-qcom.h | 16 +++++-
-> >>   drivers/iommu/arm/arm-smmu/arm-smmu.c      |  5 +-
-> >>   drivers/iommu/arm/arm-smmu/arm-smmu.h      |  5 ++
-> >>   4 files changed, 84 insertions(+), 3 deletions(-)
-> >>
-> >> diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c b/drivers/iomm=
-u/arm/arm-smmu/arm-smmu-qcom.c
-> >> index 333daeb18c1c..6004c6d9a7b2 100644
-> >> --- a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
-> >> +++ b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
-> >> @@ -215,10 +215,42 @@ static bool qcom_adreno_can_do_ttbr1(struct arm_=
-smmu_device *smmu)
-> >>          return true;
-> >>   }
-> >>
-> >> +static void qcom_smmu_set_actlr(struct device *dev, struct arm_smmu_d=
-evice *smmu, int cbndx,
-> >> +               const struct actlr_config *actlrcfg, const size_t num_=
-actlrcfg)
-> >> +{
-> >> +       struct arm_smmu_master_cfg *cfg =3D dev_iommu_priv_get(dev);
-> >> +       struct iommu_fwspec *fwspec =3D dev_iommu_fwspec_get(dev);
-> >> +       struct arm_smmu_smr *smr;
-> >> +       u16 mask;
-> >> +       int idx;
-> >> +       u16 id;
-> >> +       int i;
-> >> +       int j;
-> >> +
-> >> +       for (i =3D 0; i < num_actlrcfg; i++) {
-> >> +               id =3D actlrcfg[i].sid;
-> >> +               mask =3D actlrcfg[i].mask;
-> >> +
-> >> +               for_each_cfg_sme(cfg, fwspec, j, idx) {
-> >> +                       smr =3D &smmu->smrs[idx];
-> >> +                       if (smr_is_subset(smr, id, mask)) {
-> >> +                               arm_smmu_cb_write(smmu, cbndx, ARM_SMM=
-U_CB_ACTLR,
-> >> +                                               actlrcfg[i].actlr);
-> >
-> > So, this makes ACTLR look like kind of a FIFO.  But I'm looking at
-> > downstream kgsl's PRR thing (which we'll need to implement vulkan
-> > sparse residency), and it appears to be wanting to set BIT(5) in ACTLR
-> > to enable PRR.
-> >
-> >          val =3D KGSL_IOMMU_GET_CTX_REG(ctx, KGSL_IOMMU_CTX_ACTLR);
-> >          val |=3D FIELD_PREP(KGSL_IOMMU_ACTLR_PRR_ENABLE, 1);
-> >          KGSL_IOMMU_SET_CTX_REG(ctx, KGSL_IOMMU_CTX_ACTLR, val);
-> >
-> > Any idea how this works?  And does it need to be done before or after
-> > the ACTLR programming done in this patch?
-> >
-> > BR,
-> > -R
-> >
->
-> Hi Rob,
->
-> Can you please help provide some more clarification on the FIFO part? By
-> FIFO are you referring to the storing of ACTLR data in the table?
+On Wed, May 08, 2024 at 03:57:10PM -0300, Jason Gunthorpe wrote:
+> @@ -611,10 +599,9 @@ void arm_smmu_sva_remove_dev_pasid(struct iommu_domain *domain,
+>  	struct arm_smmu_bond *bond = NULL, *t;
+>  	struct arm_smmu_master *master = dev_iommu_priv_get(dev);
+>  
+> +	arm_smmu_remove_pasid(master, to_smmu_domain(domain), id);
+> +
+>  	mutex_lock(&sva_lock);
+> -
+> -	arm_smmu_clear_cd(master, id);
+> -
 
-Yeah, I mean it is writing the same ACTLR register multiple times to
-program the table.  I'm wondering if that means we need to program the
-table in a particular order compared to setting the PRR bit?  Like do
-we need to program PRR bit first, or last?
+Should the new arm_smmu_remove_pasid() be inside the sva_lock as
+the arm_smmu_clear_cd() previously? This would also seem to match
+with the arm_smmu_set_pasid() that's inside the sva_lock too.
 
-I'm planning on adding an adreno_smmu_priv interface so that drm/msm
-can call into arm-smmu-qcom to setup the PRR bit and the related
-PRR_CFG_LADDR/PRR_CFG_UADDR registers.  And I'm just wondering if
-there is an ordering constraint wrt. when qcom_smmu_set_actlr() is
-called?
+With that, arm_smmu_remove_pasid() seems to be removed entirely
+by a following change, though its function declare still exists
+in arm-smmu-v3.h (I probably should find what following patch and
+comment there..)
 
-BR,
--R
+> --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+> +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+> @@ -2412,6 +2412,10 @@ static void arm_smmu_install_ste_for_dev(struct arm_smmu_master *master,
+>  	int i, j;
+>  	struct arm_smmu_device *smmu = master->smmu;
+>  
+> +	master->cd_table.in_ste =
+> +		FIELD_GET(STRTAB_STE_0_CFG, le64_to_cpu(target->data[0])) ==
+> +		STRTAB_STE_0_CFG_S1_TRANS;
+> +
 
-> Thanks for pointing to the downstream implementation of kgsl driver for
-> the PRR bit. Since kgsl driver is already handling this PRR bit's
-> setting, this makes setting the PRR BIT(5) by SMMU driver redundant.
-> Thanks for bringing up this point.
-> I will send v10 patch series removing this BIT(5) setting from the ACTLR
-> table.
->
-> Thanks & regards,
-> Bibek
->
-> >> +                               break;
-> >> +                       }
-> >> +               }
-> >> +       }
-> >> +}
-> >> +
-> >>   static int qcom_adreno_smmu_init_context(struct arm_smmu_domain *smm=
-u_domain,
-> >>                  struct io_pgtable_cfg *pgtbl_cfg, struct device *dev)
-> >>   {
-> >> +       struct arm_smmu_device *smmu =3D smmu_domain->smmu;
-> >> +       struct qcom_smmu *qsmmu =3D to_qcom_smmu(smmu);
-> >> +       const struct actlr_variant *actlrvar;
-> >> +       int cbndx =3D smmu_domain->cfg.cbndx;
-> >>          struct adreno_smmu_priv *priv;
-> >> +       int i;
-> >>
-> >>          smmu_domain->cfg.flush_walk_prefer_tlbiasid =3D true;
-> >>
-> >> @@ -248,6 +280,18 @@ static int qcom_adreno_smmu_init_context(struct a=
-rm_smmu_domain *smmu_domain,
-> >>          priv->set_stall =3D qcom_adreno_smmu_set_stall;
-> >>          priv->resume_translation =3D qcom_adreno_smmu_resume_translat=
-ion;
-> >>
-> >> +       actlrvar =3D qsmmu->data->actlrvar;
-> >> +       if (!actlrvar)
-> >> +               return 0;
-> >> +
-> >> +       for (i =3D 0; i < qsmmu->data->num_smmu ; i++) {
-> >> +               if (actlrvar[i].io_start =3D=3D smmu->ioaddr) {
-> >> +                       qcom_smmu_set_actlr(dev, smmu, cbndx, actlrvar=
-[i].actlrcfg,
-> >> +                                      actlrvar[i].num_actlrcfg);
-> >> +                       break;
-> >> +               }
-> >> +       }
-> >> +
-> >>          return 0;
-> >>   }
-> >>
-> >> @@ -274,7 +318,24 @@ static const struct of_device_id qcom_smmu_client=
-_of_match[] __maybe_unused =3D {
-> >>   static int qcom_smmu_init_context(struct arm_smmu_domain *smmu_domai=
-n,
-> >>                  struct io_pgtable_cfg *pgtbl_cfg, struct device *dev)
-> >>   {
-> >> +       struct arm_smmu_device *smmu =3D smmu_domain->smmu;
-> >> +       struct qcom_smmu *qsmmu =3D to_qcom_smmu(smmu);
-> >> +       const struct actlr_variant *actlrvar;
-> >> +       int cbndx =3D smmu_domain->cfg.cbndx;
-> >> +       int i;
-> >> +
-> >>          smmu_domain->cfg.flush_walk_prefer_tlbiasid =3D true;
-> >> +       actlrvar =3D qsmmu->data->actlrvar;
-> >> +       if (!actlrvar)
-> >> +               return 0;
-> >> +
-> >> +       for (i =3D 0; i < qsmmu->data->num_smmu ; i++) {
-> >> +               if (actlrvar[i].io_start =3D=3D smmu->ioaddr) {
-> >> +                       qcom_smmu_set_actlr(dev, smmu, cbndx, actlrvar=
-[i].actlrcfg,
-> >> +                                      actlrvar[i].num_actlrcfg);
-> >> +                       break;
-> >> +               }
-> >> +       }
-> >>
-> >>          return 0;
-> >>   }
-> >> diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.h b/drivers/iomm=
-u/arm/arm-smmu/arm-smmu-qcom.h
-> >> index f3b91963e234..3f651242de7c 100644
-> >> --- a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.h
-> >> +++ b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.h
-> >> @@ -1,6 +1,6 @@
-> >>   /* SPDX-License-Identifier: GPL-2.0-only */
-> >>   /*
-> >> - * Copyright (c) 2022, Qualcomm Innovation Center, Inc. All rights re=
-served.
-> >> + * Copyright (c) 2022-2023, Qualcomm Innovation Center, Inc. All righ=
-ts reserved.
-> >>    */
-> >>
-> >>   #ifndef _ARM_SMMU_QCOM_H
-> >> @@ -24,8 +24,22 @@ struct qcom_smmu_config {
-> >>          const u32 *reg_offset;
-> >>   };
-> >>
-> >> +struct actlr_config {
-> >> +       u16 sid;
-> >> +       u16 mask;
-> >> +       u32 actlr;
-> >> +};
-> >> +
-> >> +struct actlr_variant {
-> >> +       const resource_size_t io_start;
-> >> +       const struct actlr_config * const actlrcfg;
-> >> +       const size_t num_actlrcfg;
-> >> +};
-> >> +
-> >>   struct qcom_smmu_match_data {
-> >> +       const struct actlr_variant * const actlrvar;
-> >>          const struct qcom_smmu_config *cfg;
-> >> +       const size_t num_smmu;
-> >>          const struct arm_smmu_impl *impl;
-> >>          const struct arm_smmu_impl *adreno_impl;
-> >>   };
-> >> diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu.c b/drivers/iommu/arm=
-/arm-smmu/arm-smmu.c
-> >> index d6d1a2a55cc0..0c7f700b27dd 100644
-> >> --- a/drivers/iommu/arm/arm-smmu/arm-smmu.c
-> >> +++ b/drivers/iommu/arm/arm-smmu/arm-smmu.c
-> >> @@ -990,9 +990,10 @@ static int arm_smmu_find_sme(struct arm_smmu_devi=
-ce *smmu, u16 id, u16 mask)
-> >>                   * expect simply identical entries for this case, but=
- there's
-> >>                   * no harm in accommodating the generalisation.
-> >>                   */
-> >> -               if ((mask & smrs[i].mask) =3D=3D mask &&
-> >> -                   !((id ^ smrs[i].id) & ~smrs[i].mask))
-> >> +
-> >> +               if (smr_is_subset(&smrs[i], id, mask))
-> >>                          return i;
-> >> +
-> >>                  /*
-> >>                   * If the new entry has any other overlap with an exi=
-sting one,
-> >>                   * though, then there always exists at least one stre=
-am ID
-> >> diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu.h b/drivers/iommu/arm=
-/arm-smmu/arm-smmu.h
-> >> index 703fd5817ec1..2e4f65412c6b 100644
-> >> --- a/drivers/iommu/arm/arm-smmu/arm-smmu.h
-> >> +++ b/drivers/iommu/arm/arm-smmu/arm-smmu.h
-> >> @@ -501,6 +501,11 @@ static inline void arm_smmu_writeq(struct arm_smm=
-u_device *smmu, int page,
-> >>                  writeq_relaxed(val, arm_smmu_page(smmu, page) + offse=
-t);
-> >>   }
-> >>
-> >> +static inline bool smr_is_subset(struct arm_smmu_smr *smrs, u16 id, u=
-16 mask)
-> >> +{
-> >> +       return (mask & smrs->mask) =3D=3D mask && !((id ^ smrs->id) & =
-~smrs->mask);
-> >> +}
-> >> +
-> >>   #define ARM_SMMU_GR0           0
-> >>   #define ARM_SMMU_GR1           1
-> >>   #define ARM_SMMU_CB(s, n)      ((s)->numpage + (n))
-> >> --
-> >> 2.17.1
-> >>
-> >>
+> +int arm_smmu_set_pasid(struct arm_smmu_master *master,
+> +		       struct arm_smmu_domain *smmu_domain, ioasid_t pasid,
+> +		       const struct arm_smmu_cd *cd)
+> +{
+> +	struct arm_smmu_cd *cdptr;
+> +
+> +	/* The core code validates pasid */
+> +
+> +	if (!master->cd_table.in_ste)
+> +		return -ENODEV;
+> +
+> +	cdptr = arm_smmu_alloc_cd_ptr(master, pasid);
+> +	if (!cdptr)
+> +		return -ENOMEM;
+
+Though I might be missing some piece, the in_ste is set in the
+arm_smmu_install_ste_for_dev() when STE.Config=S1_TRANS, in which
+case cdptr is already allocated? If so, do we still need to call
+arm_smmu_alloc_cd_ptr()? Or just arm_smmu_get_cd_ptr() instead?
+
+Thanks
+Nicolin
