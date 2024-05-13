@@ -1,164 +1,537 @@
-Received: from NAM11-DM6-obe.outbound.protection.outlook.com (mail-dm6nam11on2058.outbound.protection.outlook.com [40.107.223.58])
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.7])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D31E5146A67;
-	Mon, 13 May 2024 07:11:47 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.223.58
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9DA53146A6C
+	for <iommu@lists.linux.dev>; Mon, 13 May 2024 07:12:21 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=192.198.163.7
 ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1715584309; cv=fail; b=YYe/O0ytyuci+ZCiPO3N6FYyzQ9FUSUG2sfXmFAOaLbi/7h0i87obIwC7CtFvo3i/RPxtvGbz769xQPVIesKZDHfVxDyCc2sXNG2pnxUJ9QpRvs2WpB2sF7cRdST7m3vB7JtISIZtiOpukfXUXqcySexozYbVk3USwutuUTCUdM=
+	t=1715584343; cv=fail; b=QpiGoWI0Q1E3BA300LcGtaDJ8oo9CAriacstu2aGb1f2FktdUEikQlMAPhbjDDXiHt/yiH3+kPUSxPMYyHZ3ufNptI67DlAFOUp55SO4HrqS/71QoaHkW2bRDJ6GsRxPiC29IQGnY+tOzSSrrTZwVNxJkyNd46l2BsPODFFOLVU=
 ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1715584309; c=relaxed/simple;
-	bh=pPaxg1HaUWBfU9JWTn7jKuUo4XqefBsKww0sB859da8=;
-	h=Date:From:To:CC:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=t5ErYWWcVJv7ShHPoZuziyZaVMAQTeAEga2LUS0GOSDkas59x9FMZrRoc2wvK2jB8wcZcxqZ6qEpPI5G55ikgqmj0NHZoAxwJ7dF19zwu76KM1rM5EfsMHO4Cho89vj34C7bzKg0PIt6L8oRCRkiuFooWOk0IRjrUNO45m6Qfk8=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=PcAqOnD6; arc=fail smtp.client-ip=40.107.223.58
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
+	s=arc-20240116; t=1715584343; c=relaxed/simple;
+	bh=g4jTQSl9o2kyZtS2VqqfNL3GTR1qnrXWhJz6lnn2jRA=;
+	h=Date:From:To:CC:Subject:Message-ID:References:Content-Type:
+	 Content-Disposition:In-Reply-To:MIME-Version; b=OjHMmWgbXrtgOTgBwj4F1G5cj8vspRtN8dgnFXuaafhCtjsUy6VvmCoDsQ581Y/pY1mtUlQHNJAEp/7KspeFIP0g1kC6+m3YVx2xlBtppDWUb+hdiDSiE5dFJ32B046130SHgW7bNII0oUAOQLIS5OUk8uHtihCBUfijLyNmU1s=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=bpHjqgIg; arc=fail smtp.client-ip=192.198.163.7
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="PcAqOnD6"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="bpHjqgIg"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1715584341; x=1747120341;
+  h=date:from:to:cc:subject:message-id:reply-to:references:
+   in-reply-to:mime-version;
+  bh=g4jTQSl9o2kyZtS2VqqfNL3GTR1qnrXWhJz6lnn2jRA=;
+  b=bpHjqgIgq0suSVRK5wcaTJzoGwM4OW4ZgOKnWjhzmsAJIE3EQKO/BUCL
+   VW7CZD0IHjvRtCE4fN2zblntyO/V18ClkjOGuKArzlh7bkAGTrSnr7iWZ
+   2fKBjAD8/8l7IP8ICgC3jXEcxdo0Ibzt9MrAwuCFgdKUGqYwfnyGRUsu9
+   bbBRHn1O7zkBWfRyAwRYoOqhgpj+ylA6m3297dfJmIapjfphVwZGigPAs
+   iEfibQXU/elTIClhOoPpm//qN6vhVCr00kmM5r0tmpsKUO+qpgxlzm0Xo
+   leqy7unIchrxgswYrrunEpH/V8WTF58Z6z50EqmA6E2+CEk0nzJtUywrt
+   w==;
+X-CSE-ConnectionGUID: A2u7BVr7Q5Cb2h/SUmiAXA==
+X-CSE-MsgGUID: PttoHZp3TOyYiQ/LnDDdTg==
+X-IronPort-AV: E=McAfee;i="6600,9927,11071"; a="36881803"
+X-IronPort-AV: E=Sophos;i="6.08,157,1712646000"; 
+   d="scan'208";a="36881803"
+Received: from orviesa009.jf.intel.com ([10.64.159.149])
+  by fmvoesa101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 May 2024 00:12:20 -0700
+X-CSE-ConnectionGUID: g4iAOVXwSZu/Tg56GucNaw==
+X-CSE-MsgGUID: yJnyx56dTUOXqiBXRE3oRg==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.08,157,1712646000"; 
+   d="scan'208";a="30356838"
+Received: from fmsmsx603.amr.corp.intel.com ([10.18.126.83])
+  by orviesa009.jf.intel.com with ESMTP/TLS/AES256-GCM-SHA384; 13 May 2024 00:12:21 -0700
+Received: from fmsmsx610.amr.corp.intel.com (10.18.126.90) by
+ fmsmsx603.amr.corp.intel.com (10.18.126.83) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.35; Mon, 13 May 2024 00:12:19 -0700
+Received: from fmsmsx610.amr.corp.intel.com (10.18.126.90) by
+ fmsmsx610.amr.corp.intel.com (10.18.126.90) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.35; Mon, 13 May 2024 00:12:19 -0700
+Received: from fmsedg602.ED.cps.intel.com (10.1.192.136) by
+ fmsmsx610.amr.corp.intel.com (10.18.126.90) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.35 via Frontend Transport; Mon, 13 May 2024 00:12:19 -0700
+Received: from NAM11-DM6-obe.outbound.protection.outlook.com (104.47.57.168)
+ by edgegateway.intel.com (192.55.55.71) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.1.2507.35; Mon, 13 May 2024 00:12:19 -0700
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=hh49cje+LP5P1mRn/tDjB/nI4X24g9fV3gwdC4IZqEi/xAfDEm7ZJFHazQRT1Ra0RF4zdJg3wvfe+tZ6PTPRP9NCClLzW/sT4LS418E4gaX0wkesxZQOfeQNM1bFVX6xyHi0iCb++CWpoBl6+uaDtec6c4OltQ16BJTT7hVgGekOf/OvdtNrBI5OEcSLF9iYfWesQ7W45NEcJyIkp4GaTcP9n8a4d+K8j8TXo6oLPpaUJbEbktfwOywd0enySUbkwtx3fTF/NPKG+sQwOSYAqKlUFod9KbKTn+hbz05f5QWKSokKpKtblaf+BRJxtPsVzsjKiP3DjJJwXxy7cDgSTg==
+ b=LvW9RCEQcoBRY2iBaZg8nj9c7LPUerShnrLJ5iYyfyVwghrPvrEKkq62/RlMMW6zsaY9PnaYwS6dWUI3WQdQJi6OlY8VwTqFTLWIcWEIUfwiYek7Eq5kcAcNFcGuQLzmZGxQX5SkwTHjVDJJ064/svc8sJ1HjDpB1rsfee1A8+AY3DyY8s8OBrMfYUt0kNiN6mw5KOT6zJrGTlX4w3Z9nUp+NaHSXEm+RiP7Espr7i2as/B5OpH/KMQxm+gkP2twUC3WmZ1byZ1r9YurYm9PeuHtnFxsTGRz2GOJL8T/Q/BJpXhPAutGnnj+zwiIxkP/p70U/Ajhu5bbMyPMES/crg==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=/mIBB5OnX4Ke6EhwlPHrZYzqVhbmPswdFr206cp+ktI=;
- b=IbzKmyb8fTTBFtKV2qfCfJo6Z4E2z4T+ODxQdInHhZLiqLZodAHC2f92njmxkFKgxaFfVq9gpdZIiOtqzmYHZA9srkvH95vUD/qQY4D115hK/6CxA1ijw5KVDVyOZ7hQbhKAZ2h2/qZf9l8hJiHvXwtysGwbKphQzeDhR/SHFkg4pJK5TQ91Wsj4vEEiCDm4ACwLojqjJyiXbCC9wqrciR+KTSbT0OFv3IIuzmzfTNli1ivJJj0YXrb7Me9+v9sl2PW67e1EwgxizNZAevQYj71oKSMgruutahQBmxfhr5aEkWzHrvz9JeQYJreVr8+LoFBmURzURI4ID95+ph1V+g==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 216.228.118.232) smtp.rcpttodomain=lists.linux.dev smtp.mailfrom=nvidia.com;
- dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
- dkim=none (message not signed); arc=none (0)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=/mIBB5OnX4Ke6EhwlPHrZYzqVhbmPswdFr206cp+ktI=;
- b=PcAqOnD6+TQAZ9kYoahgWGJSEsfWXPLvMukHxa72oxPHcltgynmxgZFUpEF9gb9cYG2ef9LBKZ5qfYX3SVNmiKFDbOZbNxJmAQRqkI7PgNgPEbXBEUIYW03/956WZnC2Xa3MurFvN7BkMWRQ14NsH1LudZNhkmM/elXPnINdXWE+qZDrzKdraqD9V8/HFFkconNC2aQcl/RokJC029qLfhpU0LbXCBVauDi6DhU5k9U4jIMJngjArkJWeWSTmlDxIOLm1QkmKXWsTOZlgOY4OrZpvi4xWgCTehx2fJqmfy1RXV9+Qc2c4XVAVoopqb4xq61enanQzKnlcu3b9PDkpQ==
-Received: from BL1PR13CA0234.namprd13.prod.outlook.com (2603:10b6:208:2bf::29)
- by PH0PR12MB8127.namprd12.prod.outlook.com (2603:10b6:510:292::6) with
+ bh=qUOK20ehZIVg+D9/Ug6FPsZZtwI+jYVASS+zwZSiOwE=;
+ b=KqcdFTseEtXxjWXv/34sS6e3T1UQCppjE9DYdyIs9OoVXUKcMz8Yu+TZeDY6eRd53N8dULRZmlc/fR4e8qHQ72N3VkKKErqd5+g5wLWuQ9NQkoPvmT3mfAGGbzXZlv8i5S8SkUv/RM9fsKtrxLCVEsMTv3/PezC1z2prWECv99vfDKWG7UY6turU8FKku1RZZw81drU26LWgy78GMEBRuvP0K+MGOSMfQNlysfAJUhkrXL3/nRy5LwsBZY++h3H4UI/d4Rcl+uXLw4Tnf1/pR6qH4QUWp619Vx4/rHLuOF7jJ833XBJQyySzWIEM3RRZnfY+30hZoh0yhKa1B4re1g==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
+ dkim=pass header.d=intel.com; arc=none
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=intel.com;
+Received: from DS7PR11MB5966.namprd11.prod.outlook.com (2603:10b6:8:71::6) by
+ SA1PR11MB6686.namprd11.prod.outlook.com (2603:10b6:806:259::12) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7544.55; Mon, 13 May
- 2024 07:11:45 +0000
-Received: from BL6PEPF00020E60.namprd04.prod.outlook.com
- (2603:10b6:208:2bf:cafe::79) by BL1PR13CA0234.outlook.office365.com
- (2603:10b6:208:2bf::29) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7587.22 via Frontend
- Transport; Mon, 13 May 2024 07:11:44 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.118.232)
- smtp.mailfrom=nvidia.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=nvidia.com;
-Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 216.228.118.232 as permitted sender) receiver=protection.outlook.com;
- client-ip=216.228.118.232; helo=mail.nvidia.com; pr=C
-Received: from mail.nvidia.com (216.228.118.232) by
- BL6PEPF00020E60.mail.protection.outlook.com (10.167.249.21) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.7587.21 via Frontend Transport; Mon, 13 May 2024 07:11:44 +0000
-Received: from drhqmail201.nvidia.com (10.126.190.180) by mail.nvidia.com
- (10.127.129.5) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1544.4; Mon, 13 May
- 2024 00:11:35 -0700
-Received: from drhqmail202.nvidia.com (10.126.190.181) by
- drhqmail201.nvidia.com (10.126.190.180) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.1544.4; Mon, 13 May 2024 00:11:34 -0700
-Received: from nvidia.com (10.127.8.10) by mail.nvidia.com (10.126.190.181)
- with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1544.4 via Frontend
- Transport; Mon, 13 May 2024 00:11:32 -0700
-Date: Mon, 13 May 2024 00:11:28 -0700
-From: Nicolin Chen <nicolinc@nvidia.com>
-To: Jason Gunthorpe <jgg@nvidia.com>
-CC: <iommu@lists.linux.dev>, Joerg Roedel <joro@8bytes.org>,
-	<linux-arm-kernel@lists.infradead.org>, Robin Murphy <robin.murphy@arm.com>,
-	Will Deacon <will@kernel.org>, Eric Auger <eric.auger@redhat.com>,
-	Jean-Philippe Brucker <jean-philippe@linaro.org>, Moritz Fischer
-	<mdf@kernel.org>, Michael Shavit <mshavit@google.com>,
-	<patches@lists.linux.dev>, Shameerali Kolothum Thodi
-	<shameerali.kolothum.thodi@huawei.com>
-Subject: Re: [PATCH v7 11/14] iommu/arm-smmu-v3: Allow IDENTITY/BLOCKED to be
- set while PASID is used
-Message-ID: <ZkG9INGfwNcnubyI@nvidia.com>
-References: <0-v7-9597c885796c+d2-smmuv3_newapi_p2b_jgg@nvidia.com>
- <11-v7-9597c885796c+d2-smmuv3_newapi_p2b_jgg@nvidia.com>
+ 2024 07:12:17 +0000
+Received: from DS7PR11MB5966.namprd11.prod.outlook.com
+ ([fe80::e971:d8f4:66c4:12ca]) by DS7PR11MB5966.namprd11.prod.outlook.com
+ ([fe80::e971:d8f4:66c4:12ca%6]) with mapi id 15.20.7544.052; Mon, 13 May 2024
+ 07:12:17 +0000
+Date: Mon, 13 May 2024 15:11:28 +0800
+From: Yan Zhao <yan.y.zhao@intel.com>
+To: Alex Williamson <alex.williamson@redhat.com>
+CC: <kvm@vger.kernel.org>, <linux-kernel@vger.kernel.org>, <x86@kernel.org>,
+	<jgg@nvidia.com>, <kevin.tian@intel.com>, <iommu@lists.linux.dev>,
+	<pbonzini@redhat.com>, <seanjc@google.com>, <dave.hansen@linux.intel.com>,
+	<luto@kernel.org>, <peterz@infradead.org>, <tglx@linutronix.de>,
+	<mingo@redhat.com>, <bp@alien8.de>, <hpa@zytor.com>, <corbet@lwn.net>,
+	<joro@8bytes.org>, <will@kernel.org>, <robin.murphy@arm.com>,
+	<baolu.lu@linux.intel.com>, <yi.l.liu@intel.com>
+Subject: Re: [PATCH 4/5] vfio/type1: Flush CPU caches on DMA pages in
+ non-coherent domains
+Message-ID: <ZkG9IEQwi7HG3YBk@yzhao56-desk.sh.intel.com>
+Reply-To: Yan Zhao <yan.y.zhao@intel.com>
+References: <20240507061802.20184-1-yan.y.zhao@intel.com>
+ <20240507062138.20465-1-yan.y.zhao@intel.com>
+ <20240509121049.58238a6f.alex.williamson@redhat.com>
+ <Zj33cUe7HYOIfj5N@yzhao56-desk.sh.intel.com>
+ <20240510105728.76d97bbb.alex.williamson@redhat.com>
+Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: inline
+In-Reply-To: <20240510105728.76d97bbb.alex.williamson@redhat.com>
+X-ClientProxiedBy: SI2PR02CA0019.apcprd02.prod.outlook.com
+ (2603:1096:4:195::13) To DS7PR11MB5966.namprd11.prod.outlook.com
+ (2603:10b6:8:71::6)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: inline
-In-Reply-To: <11-v7-9597c885796c+d2-smmuv3_newapi_p2b_jgg@nvidia.com>
-X-NV-OnPremToCloud: ExternallySecured
-X-EOPAttributedMessage: 0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: BL6PEPF00020E60:EE_|PH0PR12MB8127:EE_
-X-MS-Office365-Filtering-Correlation-Id: ecc9dd36-bcf5-4ff3-caa9-08dc731bf271
+X-MS-TrafficTypeDiagnostic: DS7PR11MB5966:EE_|SA1PR11MB6686:EE_
+X-MS-Office365-Filtering-Correlation-Id: 9c660d89-547a-40d8-93ed-08dc731c05a3
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam:
-	BCL:0;ARA:13230031|82310400017|7416005|1800799015|376005|36860700004;
-X-Microsoft-Antispam-Message-Info:
-	=?us-ascii?Q?JnYDkChQ9FqCqqXXaVrfSHH3DSBTvUaQiqE5eMZ72IvwkOmoP24LKO4WR6JY?=
- =?us-ascii?Q?VqYzZq3Icur4df2Xb0U7gYbsPtxNV3bKwddI3x0NvZRecAMoQyh2YKiFGzzK?=
- =?us-ascii?Q?QEkIZvT7bxfI7qIVK07j3FMXZ7kljs0rHPBSEJ7RIIIjlXdpXuW2CnltCfex?=
- =?us-ascii?Q?+FXCTyfcIzYvJTEv2QuJEPB6V2mKl+uP8ZlrNAed0ztM9KOEWBu9t33oBqno?=
- =?us-ascii?Q?WB/GZQhyoBg/oPBNAf7hkuzGuRx+els2EsUFUVjIQb1PJpY8gMyXUYmus1ad?=
- =?us-ascii?Q?1AQ4LqbjOL51T5tN5y2N3RBglXOFS5tvV73tgiBd2RdJWUZzlI2jS8OIWac4?=
- =?us-ascii?Q?gPdGW6ew50Ze1XrUB1gubFQL7dC2WNHzIoPz5IkjhtlfGLVWjn+JXEtH8Ucp?=
- =?us-ascii?Q?+zG5aUm6iusRa/swq4FDwmVT6PEyViKpMxM1FKS0XGAITkww6nHiGSRmyOAO?=
- =?us-ascii?Q?K1jv1Q/nraqOpWQjg3RO0My9YXmh3u6PlOYvsa5t7K1FM+XrjBNn3Sgg9QuF?=
- =?us-ascii?Q?W/aSTCQxjnxTgVNu/svg1r/WEu80a1Yljg2RSyV0G+A6Uk1IGGXkxef/hpiP?=
- =?us-ascii?Q?AibEicqUs2ZYUhWdcnWoUPRmwwmCxAckkD/6OJ/TG8kNx/YL5T80Q+DPyVAp?=
- =?us-ascii?Q?b5GYxNIE7Z98BVH8zbBBaAydCIZai4eWg/S0GPrnMlD0LXpgSmmIbbmt+t2g?=
- =?us-ascii?Q?nuAjGUymMV3/NuFNhbhnvStvxSGcAhRpNiZfpeuMeraKMV0+ayChctX+TMH7?=
- =?us-ascii?Q?bVvbpVDZYmu90hHcA/0PKCmbjy/u9kzqKx7bkbQz9MtAvDwUyiuv+mj8PbwO?=
- =?us-ascii?Q?jDntmhjEHx1Kp+xYrKc4ReBceMf5HFGVcd/eLa54PoI6EyInFcEa3BELOYWK?=
- =?us-ascii?Q?3vshQUf62RU9GygXh+nwVv09E0apBThethZcksYl3Dcwr8vcIFjbXOyaItyr?=
- =?us-ascii?Q?+HmJWLb6ZhELC21GUsX9IrcSHj666dT5h0nTUu161vI56Jmx37oar717FRMF?=
- =?us-ascii?Q?kzJfQyXYqUFZ7Qtsp2n4IuKl+4LXtrO6u1T6SFNf9PQ8q73wd605/hX3NwxF?=
- =?us-ascii?Q?EqdmgNochj6vbjhbRbddlzh2oYhI8UfVRiGTwAbDp6OY9+HlL464ZVDcACfr?=
- =?us-ascii?Q?NtkzQkvLXMP3tYtKUTgwRcZzuMEqzRG8udKkX4SCriuV1E6AxK0n+EHuvR6P?=
- =?us-ascii?Q?MYVhosMmLKWbUpnDqDfD28nYTdrT9NUkTqj+6XpdI6vNVWO/faeOaaYSvn7k?=
- =?us-ascii?Q?HOPZd6nEqG8ehB2ykOnGzTC0xXB7NzjK2QF741dhKzySW/6KuBmDPDMhhMmz?=
- =?us-ascii?Q?JPWNZ4vhBz1U4aNCxlqd5htqjOOoOahD+j0Rfcpq8eLUfBbQMWfnrF4j99PA?=
- =?us-ascii?Q?PKn5uHlKHet3/SxvyYHPorKfRp2o?=
-X-Forefront-Antispam-Report:
-	CIP:216.228.118.232;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc7edge1.nvidia.com;CAT:NONE;SFS:(13230031)(82310400017)(7416005)(1800799015)(376005)(36860700004);DIR:OUT;SFP:1101;
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 13 May 2024 07:11:44.6747
+X-Microsoft-Antispam: BCL:0;ARA:13230031|1800799015|366007|376005|7416005;
+X-Microsoft-Antispam-Message-Info: =?us-ascii?Q?Z+zU6f0/ex2LE/E+gP2aFML2wIDTdH7ZvIHaf36avHxdCOAhnISvPXxLjuex?=
+ =?us-ascii?Q?zOc64s2OcnyAn4roTBdLq3JyJVhUl7/9dep+R+EjSFFSOQtipqJ8wWg+wgul?=
+ =?us-ascii?Q?/Gz1IqA7/Lrj28p7ZZP0wcjwcjWtoITgiQ42/YlSSirxAdzFbns8VrR0qr9u?=
+ =?us-ascii?Q?9x0VMqkzvCqSjtIR4Q8JphOzzPQdsyI0AS5HViA433wo+aODPh/S01ZSSlzZ?=
+ =?us-ascii?Q?9GYkFpWQCdzs48uI+NgwOvGr+PhS0r9/GCyXkhqOmCjQeqK5mPDERdSWWt97?=
+ =?us-ascii?Q?CQw3taEL0Wj4M++fYCN28K7qD+50RplkvtClMQ2guzCOkmpwIUS8AobQfkMI?=
+ =?us-ascii?Q?1ery4iy78/I+s/GwSS9mHz4F5xABNWIIp1XQSlceAp0e+A93J3ju+ds453wH?=
+ =?us-ascii?Q?pA9RSwCzqXXSN2JFZuGirT9tAX9NGb9nNhHGkksNw+wBgZ2NaJxvjJfX2CAL?=
+ =?us-ascii?Q?ODzZhyml3W2w+l12Oql+rr9hF1PBt25MwxYWxn51Chyxkn81jnhSzYteMMgH?=
+ =?us-ascii?Q?HFcJ9HMjlrmj3NIP+w878VxikWadXIr2J3NbPKQ5sM5uBxJVq15EUUP8Ta45?=
+ =?us-ascii?Q?ETIcQjMmLJ2U0oBuzmL+8YyprzPWYLDpgq5U1kfhw8BUVZCDz7fqZpYpcG52?=
+ =?us-ascii?Q?xKdyP7bVorfa7o1pcLwjDxzCGIP+HDBAAoDM13fUhLdQsrPfUJoeLAWgQQ8k?=
+ =?us-ascii?Q?WwwvqhchPv8OkWhmhFKheLtMlAaQMs3lgtN+a1TQTjcRtQdbc+7nwSqambBW?=
+ =?us-ascii?Q?AEJgR1K0P0fT8Qhs+qHEo3+wxI9JaLWS/gU0jn+5ydpKOcHvMcR3Xt1wLsOu?=
+ =?us-ascii?Q?4M5QzeHDou5sxmdGxrhWksvP2wv2Mk9Q9wJSXrJLYl1YVD0Jn1lBq06PATpw?=
+ =?us-ascii?Q?N5dCmWrBIFw8wMub2JNyRd96lDrJfg9gY/me9k3vO4uFSBHjUNjF7dNb8b4a?=
+ =?us-ascii?Q?RhTpafr3Whz/0/hG8L/1kmkWq2tyi+Ua+NtdvGIaMVlIsT8HC8Mh15hmgopf?=
+ =?us-ascii?Q?UIZwct16XJ7oWjsGdriygRovkwJM/d0GbbD+nUaaG3eZXjqJ1gELyxt6bqtZ?=
+ =?us-ascii?Q?zVaYFHhX05ex8XDRfzDmH2XpuvQe5H3nEWQjncNo8xO5KAQSJd+nf+bbZa3n?=
+ =?us-ascii?Q?vxRvngQ6DMcrCxvm7Bdfq1oM76SDXvf2JjArvmvQV9UgBnIGzfXI1di9BCSl?=
+ =?us-ascii?Q?PpBgeC1ZBLFXYVSHV1mvRHs+dM0Sxlm3eVv4VajohbKaYU6t2CIh9XN5l940?=
+ =?us-ascii?Q?9tbKfxY68V/Bg2/Uq/heOFAXA2t6S505JZ8K3IGLiA=3D=3D?=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DS7PR11MB5966.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230031)(1800799015)(366007)(376005)(7416005);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?apzKKPjd4V5ObrWPEdz3JPa04iu2C9Qj9WDeD9ytdDxPx08/9DKDR4x+oR3S?=
+ =?us-ascii?Q?QnhXIli58xjudfrzEBYixRvxWggs8hDmGF29KDINmvRc+lDCiE2Z/P/QtmjL?=
+ =?us-ascii?Q?eSKssYKvzAL3arvqIA4oivqqVoWadQxnOftxXo+JQCgS9gb1bU3AJzUYGfGf?=
+ =?us-ascii?Q?ufFJpkl2wEGIBbm9QhjC7pC9z4xhiFsQEInTTCzrxNtiAOKqPhmICyLYX43T?=
+ =?us-ascii?Q?hJdv+rOQTgLyaDRHJhZsdZjAZk2cxZcOePEMmjQKnNHmC+ETET1Nwhgcmi6q?=
+ =?us-ascii?Q?UoTkm3ortByy5wO2q8orqoMgX/3WhfW2oJV0UKOzN8LNGAE4B6LHVl1dzbtA?=
+ =?us-ascii?Q?y62PQiB8CPvLeyvcKzvnoHWLu5SCgVKbx01TlaXXu1E+uYdBcVmYxUdRAyO9?=
+ =?us-ascii?Q?BY7ReDfl4BBD9yRBitb4DebJBFAMdR6ov3gXG//Ek88jidqkinO67XbiWWdk?=
+ =?us-ascii?Q?wfmRMD1vDOtG/FBwVHi5EYuKTE8X1SpSm8aNkaZIIkU5WHho+Zo/OwKTBr0O?=
+ =?us-ascii?Q?jwOzH0K4LXJA6jZdlbEuaVRPLI74de3pNUH7fkz3J7YEsjI6VlrwTTGR1w2Z?=
+ =?us-ascii?Q?iVAIp+L01wCtzicYaAIY2wjGZQz6DOjl8EsG1Qmog0bLRL3l8slfs5Zl1J0K?=
+ =?us-ascii?Q?QtVk58O9mw0tVfuJ3ci8nAYKaw1Ly+Itnxp3JDip6VKD2BnpST2CpF0YpLA8?=
+ =?us-ascii?Q?Bs/S4VnLBfWX90rYK7wNWjUN0OWu9N9VMn3ky4YAzlsa9lrzxs0+zoxbmUcW?=
+ =?us-ascii?Q?UAhCVhsjKzsR7lI98yEJORmUQ0mc/PMDwYQPzvsmRDTX/I3IPmYBnbd334Ca?=
+ =?us-ascii?Q?rN6kE/gjlRCJ+xrcUtvIhPAlVNnXvOrzIrV5ZgPCDbI7+hULUDJwBT90nLpH?=
+ =?us-ascii?Q?c/8lfqpoF4nxIUFV6k5B5AsRUriuB3TPb01tst853u4TFDpG+UdaUmknp9X7?=
+ =?us-ascii?Q?zx27T3tBFgSH9g/526rMVg5bmyw0kn+p1X1qI69gJyG9b/DUSrWvsBxHoznP?=
+ =?us-ascii?Q?TxqrzXhLq6PJAz9KMDpNsIuCD2XHDbxhQ1btyv35V142ushfQvMxH6X4ixNd?=
+ =?us-ascii?Q?ZFFIcY4YnipIyauVGqMwFIzNoK87fbqKvB6VFAuGYsbt1Oggoa2F1bimvdWy?=
+ =?us-ascii?Q?htOIFvww3dOIqHYUTXadXICA7zrMA/NF7+JYJrcFnHH/9MrPQshMBngJB2Hc?=
+ =?us-ascii?Q?oe6OkYa7aQAWCoEUlZksBRQ8DD+GVvWLTXrWOKMDJ3d/UXJgHaChELojmW8O?=
+ =?us-ascii?Q?7JcyeBSgNhtf0Xe+svv7iculX+hupjWT1Un3rOJnWfW8CCqB45GYhko42lFN?=
+ =?us-ascii?Q?n6U6cdZzV7swgE/7jgKaqgelxXShBfmfYMtaG+gzJCdKVwEpGv2YZF7ahUF+?=
+ =?us-ascii?Q?6Puh6mfeuPwJPDZVOQOhr+dXfiUYg8iRjFluxVv7Isv2LWRh3tTao89+dcmB?=
+ =?us-ascii?Q?WNMu0Inz5Yv3cHppY6nrnoq5v+EmLEpbTKXUWGIMpApJuqF7qNj/neGcdjqx?=
+ =?us-ascii?Q?XgcoIghxRDtxd3Ibre9eSzpSDuI0tsynOtGspi/5EZh16UviBolzyWJxoEKV?=
+ =?us-ascii?Q?3My5U/vaU91hhacxRkkCMw/opwVA9UH/qBGhUqEr?=
+X-MS-Exchange-CrossTenant-Network-Message-Id: 9c660d89-547a-40d8-93ed-08dc731c05a3
+X-MS-Exchange-CrossTenant-AuthSource: DS7PR11MB5966.namprd11.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 13 May 2024 07:12:17.3151
  (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: ecc9dd36-bcf5-4ff3-caa9-08dc731bf271
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.118.232];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource:
-	BL6PEPF00020E60.namprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH0PR12MB8127
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 46c98d88-e344-4ed4-8496-4ed7712e255d
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: LMRv2SLWR6ovmiO45deBwiC1ApmuTqj+3EbkIn258nN/yzVs5N0wqQSkqIa6IqL93X8x/m6BvuP3qHOTGAjT7g==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SA1PR11MB6686
+X-OriginatorOrg: intel.com
 
-On Wed, May 08, 2024 at 03:57:19PM -0300, Jason Gunthorpe wrote:
-> diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-> index 15378c131a5bc7..41d7a0664a445d 100644
-> --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-> +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-> @@ -991,6 +991,14 @@ void arm_smmu_get_ste_used(const __le64 *ent, __le64 *used_bits)
->  				    STRTAB_STE_1_S1STALLD | STRTAB_STE_1_STRW |
->  				    STRTAB_STE_1_EATS);
->  		used_bits[2] |= cpu_to_le64(STRTAB_STE_2_S2VMID);
-> +
-> +		/*
-> +		 * See 13.5 Summary of attribute/permission configuration fields
-> +		 * for the SHCFG behavior.
-> +		 */
-> +		if (FIELD_GET(STRTAB_STE_1_S1DSS, le64_to_cpu(ent[1])) ==
-> +		    STRTAB_STE_1_S1DSS_BYPASS)
-> +			used_bits[1] |= cpu_to_le64(STRTAB_STE_1_SHCFG);
+On Fri, May 10, 2024 at 10:57:28AM -0600, Alex Williamson wrote:
+> On Fri, 10 May 2024 18:31:13 +0800
+> Yan Zhao <yan.y.zhao@intel.com> wrote:
+> 
+> > On Thu, May 09, 2024 at 12:10:49PM -0600, Alex Williamson wrote:
+> > > On Tue,  7 May 2024 14:21:38 +0800
+> > > Yan Zhao <yan.y.zhao@intel.com> wrote:  
+> > ... 
+> > > >  drivers/vfio/vfio_iommu_type1.c | 51 +++++++++++++++++++++++++++++++++
+> > > >  1 file changed, 51 insertions(+)
+> > > > 
+> > > > diff --git a/drivers/vfio/vfio_iommu_type1.c b/drivers/vfio/vfio_iommu_type1.c
+> > > > index b5c15fe8f9fc..ce873f4220bf 100644
+> > > > --- a/drivers/vfio/vfio_iommu_type1.c
+> > > > +++ b/drivers/vfio/vfio_iommu_type1.c
+> > > > @@ -74,6 +74,7 @@ struct vfio_iommu {
+> > > >  	bool			v2;
+> > > >  	bool			nesting;
+> > > >  	bool			dirty_page_tracking;
+> > > > +	bool			has_noncoherent_domain;
+> > > >  	struct list_head	emulated_iommu_groups;
+> > > >  };
+> > > >  
+> > > > @@ -99,6 +100,7 @@ struct vfio_dma {
+> > > >  	unsigned long		*bitmap;
+> > > >  	struct mm_struct	*mm;
+> > > >  	size_t			locked_vm;
+> > > > +	bool			cache_flush_required; /* For noncoherent domain */  
+> > > 
+> > > Poor packing, minimally this should be grouped with the other bools in
+> > > the structure, longer term they should likely all be converted to
+> > > bit fields.  
+> > Yes. Will do!
+> > 
+> > >   
+> > > >  };
+> > > >  
+> > > >  struct vfio_batch {
+> > > > @@ -716,6 +718,9 @@ static long vfio_unpin_pages_remote(struct vfio_dma *dma, dma_addr_t iova,
+> > > >  	long unlocked = 0, locked = 0;
+> > > >  	long i;
+> > > >  
+> > > > +	if (dma->cache_flush_required)
+> > > > +		arch_clean_nonsnoop_dma(pfn << PAGE_SHIFT, npage << PAGE_SHIFT);
+> > > > +
+> > > >  	for (i = 0; i < npage; i++, iova += PAGE_SIZE) {
+> > > >  		if (put_pfn(pfn++, dma->prot)) {
+> > > >  			unlocked++;
+> > > > @@ -1099,6 +1104,8 @@ static long vfio_unmap_unpin(struct vfio_iommu *iommu, struct vfio_dma *dma,
+> > > >  					    &iotlb_gather);
+> > > >  	}
+> > > >  
+> > > > +	dma->cache_flush_required = false;
+> > > > +
+> > > >  	if (do_accounting) {
+> > > >  		vfio_lock_acct(dma, -unlocked, true);
+> > > >  		return 0;
+> > > > @@ -1120,6 +1127,21 @@ static void vfio_remove_dma(struct vfio_iommu *iommu, struct vfio_dma *dma)
+> > > >  	iommu->dma_avail++;
+> > > >  }
+> > > >  
+> > > > +static void vfio_update_noncoherent_domain_state(struct vfio_iommu *iommu)
+> > > > +{
+> > > > +	struct vfio_domain *domain;
+> > > > +	bool has_noncoherent = false;
+> > > > +
+> > > > +	list_for_each_entry(domain, &iommu->domain_list, next) {
+> > > > +		if (domain->enforce_cache_coherency)
+> > > > +			continue;
+> > > > +
+> > > > +		has_noncoherent = true;
+> > > > +		break;
+> > > > +	}
+> > > > +	iommu->has_noncoherent_domain = has_noncoherent;
+> > > > +}  
+> > > 
+> > > This should be merged with vfio_domains_have_enforce_cache_coherency()
+> > > and the VFIO_DMA_CC_IOMMU extension (if we keep it, see below).  
+> > Will convert it to a counter and do the merge.
+> > Thanks for pointing it out!
+> > 
+> > >   
+> > > > +
+> > > >  static void vfio_update_pgsize_bitmap(struct vfio_iommu *iommu)
+> > > >  {
+> > > >  	struct vfio_domain *domain;
+> > > > @@ -1455,6 +1477,12 @@ static int vfio_pin_map_dma(struct vfio_iommu *iommu, struct vfio_dma *dma,
+> > > >  
+> > > >  	vfio_batch_init(&batch);
+> > > >  
+> > > > +	/*
+> > > > +	 * Record necessity to flush CPU cache to make sure CPU cache is flushed
+> > > > +	 * for both pin & map and unmap & unpin (for unwind) paths.
+> > > > +	 */
+> > > > +	dma->cache_flush_required = iommu->has_noncoherent_domain;
+> > > > +
+> > > >  	while (size) {
+> > > >  		/* Pin a contiguous chunk of memory */
+> > > >  		npage = vfio_pin_pages_remote(dma, vaddr + dma->size,
+> > > > @@ -1466,6 +1494,10 @@ static int vfio_pin_map_dma(struct vfio_iommu *iommu, struct vfio_dma *dma,
+> > > >  			break;
+> > > >  		}
+> > > >  
+> > > > +		if (dma->cache_flush_required)
+> > > > +			arch_clean_nonsnoop_dma(pfn << PAGE_SHIFT,
+> > > > +						npage << PAGE_SHIFT);
+> > > > +
+> > > >  		/* Map it! */
+> > > >  		ret = vfio_iommu_map(iommu, iova + dma->size, pfn, npage,
+> > > >  				     dma->prot);
+> > > > @@ -1683,9 +1715,14 @@ static int vfio_iommu_replay(struct vfio_iommu *iommu,
+> > > >  	for (; n; n = rb_next(n)) {
+> > > >  		struct vfio_dma *dma;
+> > > >  		dma_addr_t iova;
+> > > > +		bool cache_flush_required;
+> > > >  
+> > > >  		dma = rb_entry(n, struct vfio_dma, node);
+> > > >  		iova = dma->iova;
+> > > > +		cache_flush_required = !domain->enforce_cache_coherency &&
+> > > > +				       !dma->cache_flush_required;
+> > > > +		if (cache_flush_required)
+> > > > +			dma->cache_flush_required = true;  
+> > > 
+> > > The variable name here isn't accurate and the logic is confusing.  If
+> > > the domain does not enforce coherency and the mapping is not tagged as
+> > > requiring a cache flush, then we need to mark the mapping as requiring
+> > > a cache flush.  So the variable state is something more akin to
+> > > set_cache_flush_required.  But all we're saving with this is a
+> > > redundant set if the mapping is already tagged as requiring a cache
+> > > flush, so it could really be simplified to:
+> > > 
+> > > 		dma->cache_flush_required = !domain->enforce_cache_coherency;  
+> > Sorry about the confusion.
+> > 
+> > If dma->cache_flush_required is set to true by a domain not enforcing cache
+> > coherency, we hope it will not be reset to false by a later attaching to domain 
+> > enforcing cache coherency due to the lazily flushing design.
+> 
+> Right, ok, the vfio_dma objects are shared between domains so we never
+> want to set 'dma->cache_flush_required = false' due to the addition of a
+> 'domain->enforce_cache_coherent == true'.  So this could be:
+> 
+> 	if (!dma->cache_flush_required)
+> 		dma->cache_flush_required = !domain->enforce_cache_coherency;
 
-Should we check ARM_SMMU_FEAT_ATTR_TYPES_OVR here as well? 
+Though this code is easier for understanding, it leads to unnecessary setting of
+dma->cache_flush_required to false, given domain->enforce_cache_coherency is
+true at the most time.
 
-The SHCFG is RES0 when !ARM_SMMU_FEAT_ATTR_TYPES_OVR. So, the
-used_bits[1] doesn't need to include it in this case?
+> > > It might add more clarity to just name the mapping flag
+> > > dma->mapped_noncoherent.  
+> > 
+> > The dma->cache_flush_required is to mark whether pages in a vfio_dma requires
+> > cache flush in the subsequence mapping into the first non-coherent domain
+> > and page unpinning.
+> 
+> How do we arrive at a sequence where we have dma->cache_flush_required
+> that isn't the result of being mapped into a domain with
+> !domain->enforce_cache_coherency?
+Hmm, dma->cache_flush_required IS the result of being mapped into a domain with
+!domain->enforce_cache_coherency.
+My concern only arrives from the actual code sequence, i.e.
+dma->cache_flush_required is set to true before the actual mapping.
 
-Otherwise,
+If we rename it to dma->mapped_noncoherent and only set it to true after the
+actual successful mapping, it would lead to more code to handle flushing for the
+unwind case.
+Currently, flush for unwind is handled centrally in vfio_unpin_pages_remote()
+by checking dma->cache_flush_required, which is true even before a full
+successful mapping, so we won't miss flush on any pages that are mapped into a
+non-coherent domain in a short window.
 
-Reviewed-by: Nicolin Chen <nicolinc@nvidia.com>
+> 
+> It seems to me that we only get 'dma->cache_flush_required == true' as
+> a result of being mapped into a 'domain->enforce_cache_coherency ==
+> false' domain.  In that case the flush-on-map is handled at the time
+> we're setting dma->cache_flush_required and what we're actually
+> tracking with the flag is that the dma object has been mapped into a
+> noncoherent domain.
+> 
+> > So, mapped_noncoherent may not be accurate.
+> > Do you think it's better to put a comment for explanation? 
+> > 
+> > struct vfio_dma {
+> >         ...    
+> >         bool                    iommu_mapped;
+> >         bool                    lock_cap;       /* capable(CAP_IPC_LOCK) */
+> >         bool                    vaddr_invalid;
+> >         /*
+> >          *  Mark whether it is required to flush CPU caches when mapping pages
+> >          *  of the vfio_dma to the first non-coherent domain and when unpinning
+> >          *  pages of the vfio_dma
+> >          */
+> >         bool                    cache_flush_required;
+> >         ...    
+> > };
+> > >   
+> > > >  
+> > > >  		while (iova < dma->iova + dma->size) {
+> > > >  			phys_addr_t phys;
+> > > > @@ -1737,6 +1774,9 @@ static int vfio_iommu_replay(struct vfio_iommu *iommu,
+> > > >  				size = npage << PAGE_SHIFT;
+> > > >  			}
+> > > >  
+> > > > +			if (cache_flush_required)
+> > > > +				arch_clean_nonsnoop_dma(phys, size);
+> > > > +  
+> > > 
+> > > I agree with others as well that this arch callback should be named
+> > > something relative to the cache-flush/write-back operation that it
+> > > actually performs instead of the overall reason for us requiring it.
+> > >  
+> > Ok. If there are no objections, I'll rename it to arch_flush_cache_phys() as
+> > suggested by Kevin.
+> 
+> Yes, better.
+> 
+> > > >  			ret = iommu_map(domain->domain, iova, phys, size,
+> > > >  					dma->prot | IOMMU_CACHE,
+> > > >  					GFP_KERNEL_ACCOUNT);
+> > > > @@ -1801,6 +1841,7 @@ static int vfio_iommu_replay(struct vfio_iommu *iommu,
+> > > >  			vfio_unpin_pages_remote(dma, iova, phys >> PAGE_SHIFT,
+> > > >  						size >> PAGE_SHIFT, true);
+> > > >  		}
+> > > > +		dma->cache_flush_required = false;
+> > > >  	}
+> > > >  
+> > > >  	vfio_batch_fini(&batch);
+> > > > @@ -1828,6 +1869,9 @@ static void vfio_test_domain_fgsp(struct vfio_domain *domain, struct list_head *
+> > > >  	if (!pages)
+> > > >  		return;
+> > > >  
+> > > > +	if (!domain->enforce_cache_coherency)
+> > > > +		arch_clean_nonsnoop_dma(page_to_phys(pages), PAGE_SIZE * 2);
+> > > > +
+> > > >  	list_for_each_entry(region, regions, list) {
+> > > >  		start = ALIGN(region->start, PAGE_SIZE * 2);
+> > > >  		if (start >= region->end || (region->end - start < PAGE_SIZE * 2))
+> > > > @@ -1847,6 +1891,9 @@ static void vfio_test_domain_fgsp(struct vfio_domain *domain, struct list_head *
+> > > >  		break;
+> > > >  	}
+> > > >  
+> > > > +	if (!domain->enforce_cache_coherency)
+> > > > +		arch_clean_nonsnoop_dma(page_to_phys(pages), PAGE_SIZE * 2);
+> > > > +  
+> > > 
+> > > Seems like this use case isn't subject to the unmap aspect since these
+> > > are kernel allocated and freed pages rather than userspace pages.
+> > > There's not an "ongoing use of the page" concern.
+> > > 
+> > > The window of opportunity for a device to discover and exploit the
+> > > mapping side issue appears almost impossibly small.
+> > >  
+> > The concern is for a malicious device attempting DMAs automatically.
+> > Do you think this concern is valid?
+> > As there're only extra flushes for 4 pages, what about keeping it for safety?
+> 
+> Userspace doesn't know anything about these mappings, so to exploit
+> them the device would somehow need to discover and interact with the
+> mapping in the split second that the mapping exists, without exposing
+> itself with mapping faults at the IOMMU.
+> 
+> I don't mind keeping the flush before map so that infinitesimal gap
+> where previous data in physical memory exposed to the device is closed,
+> but I have a much harder time seeing that the flush on unmap to
+> synchronize physical memory is required.
+> 
+> For example, the potential KSM use case doesn't exist since the pages
+> are not owned by the user.  Any subsequent use of the pages would be
+> subject to the same condition we assumed after allocation, where the
+> physical data may be inconsistent with the cached data.  It's easy to
+> flush 2 pages, but I think it obscures the function of the flush if we
+> can't articulate the value in this case.
+>
+I agree the second flush is not necessary if we are confident that functions in
+between the two flushes do not and will not touch the page in CPU side.
+However, can we guarantee this? For instance, is it possible for some IOMMU
+driver to read/write the page for some quirks? (Or is it just a totally
+paranoid?)
+If that's not impossible, then ensuring cache and memory coherency before
+page reclaiming is better?
+
+> 
+> > > >  	__free_pages(pages, order);
+> > > >  }
+> > > >  
+> > > > @@ -2308,6 +2355,8 @@ static int vfio_iommu_type1_attach_group(void *iommu_data,
+> > > >  
+> > > >  	list_add(&domain->next, &iommu->domain_list);
+> > > >  	vfio_update_pgsize_bitmap(iommu);
+> > > > +	if (!domain->enforce_cache_coherency)
+> > > > +		vfio_update_noncoherent_domain_state(iommu);  
+> > > 
+> > > Why isn't this simply:
+> > > 
+> > > 	if (!domain->enforce_cache_coherency)
+> > > 		iommu->has_noncoherent_domain = true;  
+> > Yes, it's simpler during attach.
+> > 
+> > > Or maybe:
+> > > 
+> > > 	if (!domain->enforce_cache_coherency)
+> > > 		iommu->noncoherent_domains++;  
+> > Yes, this counter is better.
+> > I previously thought a bool can save some space.
+> > 
+> > > >  done:
+> > > >  	/* Delete the old one and insert new iova list */
+> > > >  	vfio_iommu_iova_insert_copy(iommu, &iova_copy);
+> > > > @@ -2508,6 +2557,8 @@ static void vfio_iommu_type1_detach_group(void *iommu_data,
+> > > >  			}
+> > > >  			iommu_domain_free(domain->domain);
+> > > >  			list_del(&domain->next);
+> > > > +			if (!domain->enforce_cache_coherency)
+> > > > +				vfio_update_noncoherent_domain_state(iommu);  
+> > > 
+> > > If we were to just track the number of noncoherent domains, this could
+> > > simply be iommu->noncoherent_domains-- and VFIO_DMA_CC_DMA could be:
+> > > 
+> > > 	return iommu->noncoherent_domains ? 1 : 0;
+> > > 
+> > > Maybe there should be wrappers for list_add() and list_del() relative
+> > > to the iommu domain list to make it just be a counter.  Thanks,  
+> > 
+> > Do you think we can skip the "iommu->noncoherent_domains--" in
+> > vfio_iommu_type1_release() when iommu is about to be freed.
+> > 
+> > Asking that is also because it's hard for me to find a good name for the wrapper
+> > around list_del().  :)
+> 
+> vfio_iommu_link_domain(), vfio_iommu_unlink_domain()?
+
+Ah, this is a good name!
+
+> > 
+> > It follows vfio_release_domain() in vfio_iommu_type1_release(), but not in
+> > vfio_iommu_type1_detach_group().
+> 
+> I'm not sure I understand the concern here, detach_group is performed
+> under the iommu->lock where the value of iommu->noncohernet_domains is
+> only guaranteed while this lock is held.  In the release callback the
+> iommu->lock is not held, but we have no external users at this point.
+> It's not strictly required that we decrement each domain, but it's also
+> not a bad sanity test that iommu->noncoherent_domains should be zero
+> after unlinking the domains.  Thanks,
+I previously thought I couldn't find a name for a domain operation that's
+called after vfio_release_domain(), and I couldn't merge list_del() into
+vfio_release_domain() given it's not in vfio_iommu_type1_detach_group().
+
+But vfio_iommu_unlink_domain() is a good one.
+I'll rename list_del() to vfio_iommu_unlink_domain().
+
+Thanks!
+Yan
+
