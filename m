@@ -1,128 +1,152 @@
-Received: from mail-oo1-f45.google.com (mail-oo1-f45.google.com [209.85.161.45])
+Received: from mail-pl1-f174.google.com (mail-pl1-f174.google.com [209.85.214.174])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 274CF2B9D9
-	for <iommu@lists.linux.dev>; Mon, 13 May 2024 23:13:15 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.161.45
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E8BB9446BD
+	for <iommu@lists.linux.dev>; Mon, 13 May 2024 23:14:14 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.174
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1715641997; cv=none; b=J0VgmEL6mHggIfF8sn4FlzU1ynuMPJoE4ZQMtOV0gqxLBUpO77rPmKdy84GJxXzXIAGB0QDxQt9sA0ZDEdrBy1DB9MyvZ1ZG0vyHHOkKMS2n7lNAZZPu7RIsPwHtKwQ2xUHg9FK1m8x8mMk6ThfkCE6NXHAzZNv6/J/XdxygcYM=
+	t=1715642056; cv=none; b=ZaM+OUt1MUi1s/wdFB1RlXBTJZChfhDdROo5XG4GIFDK4ReeL+2XT3iQssicoEMsRKg4IAEQET6UZ2b2HjCfhG0c91dVOh0PQmz06ruwifWH2dPRHfwrWU/Y/XazfBF8ZGj4/S/At0UZ5VRXZ76hhOKT+DHyX7i7niqJSRcFbEc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1715641997; c=relaxed/simple;
-	bh=KVxWEEMusr5o/+8wVpd82stWk9fomHiDYygEM1sIWv8=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=AC6p1CiXqUJH2dldWH0p5OSy17zPR2BZkGt6qJCnduWOSVlsiygZL4XE4DbR6gAZOIiua68k4qIoFFewj6GKBG5ymgXGkmIe6fN5GMUT+dZplwiyU5Leo1Q42WNUW69aC4SWKfygcmBERlUWbP9JHaAyi1hv43+/wJHJpGZwxZQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=MoK51ZIF; arc=none smtp.client-ip=209.85.161.45
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
+	s=arc-20240116; t=1715642056; c=relaxed/simple;
+	bh=tx7E2f0GxPxvBaGc/bmN1M48jZl3m4a2E1TZi9bi+48=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=rN17ky/x0SdUGfEKiceg6xt8PXMiC+EHXieBO6npQ53DPqVLqpWHb6sh0r09KOCamKzPukSAp2UiX4MA1hPofncZNdNC+z5QbJHK4IaDm8lgrGrHtdkfcQAZEPbmwBJpTOgRoPgEggz1a0QopofIS7zidzckcuXeSsNibWj/ubc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=chromium.org; spf=pass smtp.mailfrom=chromium.org; dkim=pass (1024-bit key) header.d=chromium.org header.i=@chromium.org header.b=iCfF8pCl; arc=none smtp.client-ip=209.85.214.174
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=chromium.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=chromium.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="MoK51ZIF"
-Received: by mail-oo1-f45.google.com with SMTP id 006d021491bc7-5b2a2ef4e4cso1574108eaf.0
-        for <iommu@lists.linux.dev>; Mon, 13 May 2024 16:13:15 -0700 (PDT)
+	dkim=pass (1024-bit key) header.d=chromium.org header.i=@chromium.org header.b="iCfF8pCl"
+Received: by mail-pl1-f174.google.com with SMTP id d9443c01a7336-1edc696df2bso42875665ad.0
+        for <iommu@lists.linux.dev>; Mon, 13 May 2024 16:14:14 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google; t=1715641995; x=1716246795; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=K13d2suv2hs48dyrO5RUdGVdLQgHtL4pY9E2k2jEkcs=;
-        b=MoK51ZIFuxtulw6melg0s1UkF9bfxSSz1DC0uSJdt5xFHM6HaltS36f5npTqYYO4wJ
-         rKfA/5kfHJlww9sXE1j7QibYSCZocf85OlodKKQ9LcmEryTEZapWN4bVq6evx8PfC+/p
-         c0/nSJ4O0YuhiWchzZdqK+kdNu/t1FjgkvD2zVXvIgRR8xwFElZ2gQUtxxHKdpw+PERT
-         gD0R1XiA8dRgMSR+QqbQs1ZgPO8ZrYc1wcELywd25oDo91H4pbvxLvws8ij/HeZa23Dk
-         C6yGjgHWLDDHdXU6njWHG01L3KN5Zn6sixRQC+937cDRDSgaTPtTNgnEqZZ+v/TwCbbH
-         U/Jw==
+        d=chromium.org; s=google; t=1715642054; x=1716246854; darn=lists.linux.dev;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=/UTWRBSAvd0X00gI81fMU/F+YZQ/Mige07NOxJW4aqM=;
+        b=iCfF8pClOQUjSkrHbvFEyxMDXqbYK/cmH5OKf+3Y0dtYm+ds2QpbVh2Xb4xXggrDnR
+         HN661rVxDjICOyzg8aX/MM6ckPTTYt6YCHJXXQrB0KuQ8B6Z2y4sHXEeLpceyal/CMa9
+         DtmLx+9kYWciLX+KpWrk1HJJ+a1iDYDtEgz5Q=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1715641995; x=1716246795;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=K13d2suv2hs48dyrO5RUdGVdLQgHtL4pY9E2k2jEkcs=;
-        b=QPc1YTlwbJVESghQBEJIaeAtJs8JgWfMVtrShXGabugf9NfR6VEWT6QC9fzuCc+9Cb
-         h4YSfiqCEhFyikov2fE5Q3Pu54e2ZSDF5Adg2N1/BywhhpDB26OdEesJHQFKlrQWENIa
-         3G8hlRBjcRhc2UNe36tae2oFvO5yVotjU8hskS+RTA2uh2DXDzmfWzbDe03SaQJBE2Td
-         LKmv0QiTZjxGEJutuFmTA5/0Ias4C5rNB71ITdKsQV+xgk7W+vkKM8BFIxz42FQ0zzhE
-         yzPu8IvWkyH/h1a90EVgKcTfQQd1zYVQv2Tq5WCek6+PgYg+nhaYGMIrhpByScNS1Tj1
-         8OAg==
-X-Forwarded-Encrypted: i=1; AJvYcCUdthGvxjmt04y/0CvpdmhQ8//Pje7zUcihZ/UIBT1zMhijGakA3mXjv6VoXhh7rBruTdlww3qyfh8CkbiFpnKhNzhQNkY=
-X-Gm-Message-State: AOJu0YxyfM7BYj8tiWFAbPvhkF69bxzN08kbJZUAQNEqi35AiQArMMct
-	do4cN0pqOTGOq5sGKtiYtf+UYrWbpj3SsIYorUIOEQv/QuzK3eyt4iYtBuPot5s=
-X-Google-Smtp-Source: AGHT+IEaRONGvO+VFioEuzjJFNAKvA7ONjteGiYwffmRtfx5NWpRsf3HAwcf5gq5E6YX5CyBb0oqqg==
-X-Received: by 2002:a05:6358:7f07:b0:18a:68c9:d7b8 with SMTP id e5c5f4694b2df-193baf0130fmr1221047055d.8.1715641995162;
-        Mon, 13 May 2024 16:13:15 -0700 (PDT)
-Received: from ziepe.ca ([50.204.89.20])
-        by smtp.gmail.com with ESMTPSA id 41be03b00d2f7-6340b862567sm7212973a12.29.2024.05.13.16.13.14
+        d=1e100.net; s=20230601; t=1715642054; x=1716246854;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=/UTWRBSAvd0X00gI81fMU/F+YZQ/Mige07NOxJW4aqM=;
+        b=I7hsYf/jAQe4t8fz7huGWSJnpahBrCZ2j2HLh/xAbClrLhQK2hy/VEd9/eFsmFeuto
+         dZXczj4ek7Gzkny6WioYNABnUTrXDmmIWytGDveBT7coWtCVaR3zapUbt+IBqbUHamhB
+         zLqzCq/udcfCj2r+vXVpuZqE2OM7qNLY9NWk8YpFhX1ZcEkCuiVq8nowfesEWIHOYURO
+         fNCFfVwZmZRtVj9JxzDgrab2oAMLqOG74KLQcc7a1HoelC+feztgKa6/N1Z3ImD6hxvQ
+         BGLcRAauWTx0SvqqOLvZotFMUvjQnMSdb816CjdpRQsDnkLd8Efsn0s4PqKmPdhk6n9t
+         xhug==
+X-Forwarded-Encrypted: i=1; AJvYcCURj5Av9AN+FoBVYtcLn8bm4fraY8fMTzenIfizbnrdXyCUnhhYODPuSAL/wyV9dTXf7rmWlt59lbfZCF16Tq2CwWhslfw=
+X-Gm-Message-State: AOJu0YzQZOGeSnbaKAbkTDLPD7aRYNF2HLsWmVlKC3js3sgd+D/M9iDz
+	xxVjgkYMgMxBL95QJsm1rFtP/NSdPzbkgwjq3fq69cYcIcM6cuW4G40oBIbOGw==
+X-Google-Smtp-Source: AGHT+IF8+sauERaqDzjL2bI/eirzDn0nfnNAe5M0xI+wO+jJKg/7dcYov0Rv8fpzNykL4ic967Yyvw==
+X-Received: by 2002:a17:903:1207:b0:1e7:b6f4:2d75 with SMTP id d9443c01a7336-1ef43d16e9amr162929375ad.6.1715642054153;
+        Mon, 13 May 2024 16:14:14 -0700 (PDT)
+Received: from dianders.sjc.corp.google.com ([2620:15c:9d:2:1165:227d:25c3:aee6])
+        by smtp.gmail.com with ESMTPSA id d9443c01a7336-1ef0c160c63sm84391945ad.282.2024.05.13.16.14.13
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 13 May 2024 16:13:14 -0700 (PDT)
-Received: from jgg by jggl with local (Exim 4.95)
-	(envelope-from <jgg@ziepe.ca>)
-	id 1s6er3-0001hF-Pn;
-	Mon, 13 May 2024 20:13:13 -0300
-Date: Mon, 13 May 2024 20:13:13 -0300
-From: Jason Gunthorpe <jgg@ziepe.ca>
-To: "Suthikulpanit, Suravee" <suravee.suthikulpanit@amd.com>
-Cc: linux-kernel@vger.kernel.org, iommu@lists.linux.dev, joro@8bytes.org,
-	thomas.lendacky@amd.com, vasant.hegde@amd.com, michael.roth@amd.com,
-	jon.grimm@amd.com, rientjes@google.com
-Subject: Re: [PATCH 1/9] iommu/amd: Introduce helper functions for managing
- IOMMU memory
-Message-ID: <ZkKeiTE7184F6isF@ziepe.ca>
-References: <20240430152430.4245-1-suravee.suthikulpanit@amd.com>
- <20240430152430.4245-2-suravee.suthikulpanit@amd.com>
- <20240501161741.GG1723318@ziepe.ca>
- <1b03ba34-ac06-47ed-9086-f8d346a20bb1@amd.com>
+        Mon, 13 May 2024 16:14:13 -0700 (PDT)
+From: Douglas Anderson <dianders@chromium.org>
+To: Will Deacon <will@kernel.org>,
+	Robin Murphy <robin.murphy@arm.com>,
+	Joerg Roedel <joro@8bytes.org>
+Cc: Stephen Boyd <swboyd@chromium.org>,
+	Douglas Anderson <dianders@chromium.org>,
+	Chen Lin <chen45464546@163.com>,
+	iommu@lists.linux.dev,
+	linux-arm-kernel@lists.infradead.org,
+	linux-kernel@vger.kernel.org
+Subject: [PATCH] iommu/arm-smmu: Don't disable next-page prefetcher on devices it works on
+Date: Mon, 13 May 2024 16:13:47 -0700
+Message-ID: <20240513161343.1.I5db5530070a1335e6cc3c55e056c2a84b1031308@changeid>
+X-Mailer: git-send-email 2.45.0.rc1.225.g2a3ae87e7f-goog
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <1b03ba34-ac06-47ed-9086-f8d346a20bb1@amd.com>
+Content-Transfer-Encoding: 8bit
 
-On Tue, May 14, 2024 at 01:59:33AM +0700, Suthikulpanit, Suravee wrote:
-> Jason
-> 
-> On 5/1/2024 11:17 PM, Jason Gunthorpe wrote:
-> > On Tue, Apr 30, 2024 at 03:24:22PM +0000, Suravee Suthikulpanit wrote:
-> > > Depending on the modes of operation, certain AMD IOMMU data structures are
-> > > allocated with constraints. For example:
-> > > 
-> > >   * Some buffers must be 4K-aligned when running in SNP-enabled host
-> > > 
-> > >   * To support AMD IOMMU emulation in an SEV guest, some data structures
-> > >     cannot be encrypted so that the VMM can access the memory successfully.
-> > 
-> > Uh, this seems like a really bad idea. The VM's integrity strongly
-> > depends on the correct function of the HW. If the IOMMU datastructures
-> > are not protected then the whole thing is not secure.
-> > 
-> > For instance allowing hostile VMs to manipulate the DTE, or interfere
-> > with the command queue, destroys any possibility to have secure DMA.
-> 
-> Currently, we have already set the area used for guest SWIOTLB region as
-> shared memory to support DMA in SEV guest. Here, we are setting additional
-> guest IOMMU data structures as shared:
-> 
-> * Device Table
-> * Command Buffer
-> * Completion-Wait Semaphore Buffer
-> * Per-device Interrupt Remapping Table
+On sc7180 trogdor devices we get a scary warning at bootup:
+  arm-smmu 15000000.iommu:
+  Failed to disable prefetcher [errata #841119 and #826419], check ACR.CACHE_LOCK
 
-And if a hostile VMM starts messing with this is everything going to
-hold up? Or will you get crashes and security bugs?
+We spent some time trying to figure out how we were going to fix these
+errata and whether we needed to do a firmware update. Upon closer
+inspection, however, we realized that the errata don't apply to us.
+Specifically, the errata document says that for these errata:
+* Found in: r0p0
+* Fixed in: r2p2
 
-I don't think it is a good idea to put things in non-secure memory
-without also doing a full security audit.
+...and trogdor devices appear to be running r2p4. That means that they
+are unaffected despite the scary warning.
 
-> > Is this some precursor to implementing a secure iommu where the data
-> > structures will remain encrypted?
-> 
-> Yes, the is precursor to secure vIOMMU support in the guest.
+The issue is that the kernel unconditionally tries to disable the
+prefetcher even on unaffected devices and then warns when it's unable
+to.
 
-How does the guest tell if the vIOMMU is secure, and shouldn't you in
-this patch refuse to load on a secure vIOMMU at all?
+Let's change the kernel to only disable the prefetcher on affected
+devices, which will get rid of the scary warning on devices that are
+unaffected. As per the comment the prefetcher is
+"not-particularly-beneficial" but it shouldn't hurt to leave it on for
+devices where it doesn't cause problems.
 
-Maybe it would be a better idea to have a mini irq side only driver
-that is audited and safe to use non-secure memory than trying to
-repurpose the entire complex driver?
+Fixes: f87f6e5b4539 ("iommu/arm-smmu: Warn once when the perfetcher errata patch fails to apply")
+Signed-off-by: Douglas Anderson <dianders@chromium.org>
+---
 
-Jason
+ drivers/iommu/arm/arm-smmu/arm-smmu-impl.c | 21 +++++++++++++--------
+ 1 file changed, 13 insertions(+), 8 deletions(-)
+
+diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu-impl.c b/drivers/iommu/arm/arm-smmu/arm-smmu-impl.c
+index 9dc772f2cbb2..d9b38b0db0d4 100644
+--- a/drivers/iommu/arm/arm-smmu/arm-smmu-impl.c
++++ b/drivers/iommu/arm/arm-smmu/arm-smmu-impl.c
+@@ -109,7 +109,7 @@ static struct arm_smmu_device *cavium_smmu_impl_init(struct arm_smmu_device *smm
+ 
+ int arm_mmu500_reset(struct arm_smmu_device *smmu)
+ {
+-	u32 reg, major;
++	u32 reg, major, minor;
+ 	int i;
+ 	/*
+ 	 * On MMU-500 r2p0 onwards we need to clear ACR.CACHE_LOCK before
+@@ -118,6 +118,7 @@ int arm_mmu500_reset(struct arm_smmu_device *smmu)
+ 	 */
+ 	reg = arm_smmu_gr0_read(smmu, ARM_SMMU_GR0_ID7);
+ 	major = FIELD_GET(ARM_SMMU_ID7_MAJOR, reg);
++	minor = FIELD_GET(ARM_SMMU_ID7_MINOR, reg);
+ 	reg = arm_smmu_gr0_read(smmu, ARM_SMMU_GR0_sACR);
+ 	if (major >= 2)
+ 		reg &= ~ARM_MMU500_ACR_CACHE_LOCK;
+@@ -131,14 +132,18 @@ int arm_mmu500_reset(struct arm_smmu_device *smmu)
+ 	/*
+ 	 * Disable MMU-500's not-particularly-beneficial next-page
+ 	 * prefetcher for the sake of errata #841119 and #826419.
++	 * These errata only affect r0p0 through r2p1 (fixed in r2p2).
+ 	 */
+-	for (i = 0; i < smmu->num_context_banks; ++i) {
+-		reg = arm_smmu_cb_read(smmu, i, ARM_SMMU_CB_ACTLR);
+-		reg &= ~ARM_MMU500_ACTLR_CPRE;
+-		arm_smmu_cb_write(smmu, i, ARM_SMMU_CB_ACTLR, reg);
+-		reg = arm_smmu_cb_read(smmu, i, ARM_SMMU_CB_ACTLR);
+-		if (reg & ARM_MMU500_ACTLR_CPRE)
+-			dev_warn_once(smmu->dev, "Failed to disable prefetcher [errata #841119 and #826419], check ACR.CACHE_LOCK\n");
++	if (major < 2 || (major == 2 && minor < 2)) {
++		for (i = 0; i < smmu->num_context_banks; ++i) {
++			reg = arm_smmu_cb_read(smmu, i, ARM_SMMU_CB_ACTLR);
++			reg &= ~ARM_MMU500_ACTLR_CPRE;
++			arm_smmu_cb_write(smmu, i, ARM_SMMU_CB_ACTLR, reg);
++			reg = arm_smmu_cb_read(smmu, i, ARM_SMMU_CB_ACTLR);
++			if (reg & ARM_MMU500_ACTLR_CPRE)
++				dev_warn_once(smmu->dev,
++					      "Failed to disable prefetcher [errata #841119 and #826419], check ACR.CACHE_LOCK\n");
++		}
+ 	}
+ 
+ 	return 0;
+-- 
+2.45.0.rc1.225.g2a3ae87e7f-goog
+
