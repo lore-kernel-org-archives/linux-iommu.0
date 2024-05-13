@@ -1,182 +1,188 @@
-Received: from NAM10-BN7-obe.outbound.protection.outlook.com (mail-bn7nam10olkn2080.outbound.protection.outlook.com [40.92.40.80])
+Received: from NAM10-BN7-obe.outbound.protection.outlook.com (mail-bn7nam10on2044.outbound.protection.outlook.com [40.107.92.44])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EDBE27BB13
-	for <iommu@lists.linux.dev>; Mon, 13 May 2024 20:05:34 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.92.40.80
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 15B391DA24;
+	Mon, 13 May 2024 20:58:29 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.92.44
 ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1715630736; cv=fail; b=cgsIj85oLKVfczFu6szJXQa78E8ifgSPSxDD4TXOJbvcTBBR9FbcccruAQ2puJdUII375JEHUTZzHO2XQWO59gi8o2fWA/zY+Q0wQ0RT3HQ/tqmdkXL5zF2K7TW5cpPacspcTgL8pyp/woHi+/+iaaISeZyqsfNVXpVVACHmB2c=
+	t=1715633911; cv=fail; b=qN4Ap+kDT+LCuQGei19dJqzvePjoOECE8sLCDpLDODtX87K10JcPc1W7j2y9LSzkAMqx1zbuvupbF2pH6L91Ylp5b3L5fSFUyy+1AmRYcVCgMbeiBF3wOANpjJHIKwBRob/11aL5H47+90zH+HRsWoTbI13l8IVKsoIfDX/z+ZI=
 ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1715630736; c=relaxed/simple;
-	bh=WFA8QzbDosjDhfXNaD8S/L2oeOpAQ/spJ5B0elA86Ms=;
-	h=From:To:CC:Subject:Date:Message-ID:References:In-Reply-To:
-	 Content-Type:MIME-Version; b=KHKusFDHLXSStAxF7lG6TpxtkfkqQEyjqo1OcpTS3C1U/HDor/i5TXvCASZRq82HEFxTFnJbE2JPM9USLw+40VhSDrtHwPHjO1SHtm9yim4d/8q8YOcRFJhKhDiT4H7+SRW23/PXZS9PBKbHdtdFqxy1DQzLWuEl9z0e53Qo05I=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=outlook.com; spf=pass smtp.mailfrom=outlook.com; dkim=pass (2048-bit key) header.d=outlook.com header.i=@outlook.com header.b=S4xW8+Q/; arc=fail smtp.client-ip=40.92.40.80
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=outlook.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=outlook.com
+	s=arc-20240116; t=1715633911; c=relaxed/simple;
+	bh=OoHyHqBZu3nPwzYDoy71ODHXaVjWpBvKXXbzx4BrxVY=;
+	h=Date:From:To:CC:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=Ty3xcafugDtzRjpfv0hljTH7DLVbiW8WBJsOixKAkdk3QFb5vkNTJt08SI9xbpGb8auY6BQ9s+XHrkf2KISydEIV3sEIApXQ7uHnBEjHMSt8A1e04YrK5QjYM8KsCH92GS/5mM/k3MLRKygz8t3VG1vFabP0OM6Zz7NG/YNtzwI=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=kjxxnOfI; arc=fail smtp.client-ip=40.107.92.44
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=outlook.com header.i=@outlook.com header.b="S4xW8+Q/"
+	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="kjxxnOfI"
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=ASIHy/Lxna9t0obTIXeuCMHj1O8sBc5IjuXfomnoaay0DhxfNeTDlINL7YA9YIv66hl5F8CapBM1biOxp+gQC3MVolUIeA7RPD3ExIOPY40Hhnq0gtDjKuKyv65UvzwhtJzM9BxseI3Jua8+KIrN1Hzns7wTQavEih4Pjfh9onHjQ1XRJEjoot1M49es6EoTlBAjaHNkPvt4Kcv/Zip2feXmHKs72Afw5XsT0JD6Wj7S1V/17nIxNlepsJ6UUjQMfUZGTqSoZqglOmYY5TVhWN4cH100GYwK1SjaX4v5Woe6rBfQwRYTvrj3Uw4Ki711QVWpff7o3qdtzdCSpRJWSg==
+ b=ZLeBSTD61DjZcjOqPzgbaQFE/Tu+yfW9HFQ+IxvZCm7TzDa29aYYCrwVlUjDMfihDn9V1QBeLL2DnURcnEtpchuUR6M0u5ws/OEKG5TvBg5xn4c7ij2v34Y5DvSk+xQQBy5+NZjraIkgRnm3L8MdO7KXhKrM4xvOIbxA7fLzM2RpVluuC4TTsBs10yZMuHsodnxTSD50Fzhwv3yAqeQ5Ejh3bSh207ulLvR5DcejgaQzZ6Ey2wQzJrD56IgAzOWeo8L/9P03GklDy8Ji+qF4cMOejxqJ+ugDUaMGHemhVNPrzEBiLLU8rlQEVgpvNZDg5gR3Ctw1SRHauJ3+vWsYUQ==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=12jBG8GeRw0MxBU1B8TsCob15P0mIFrddKloaOn0CXA=;
- b=TQ1o8GjmpSUMZKkGBikZwoY3uVTxXR2jHTic5j8r+C6pfFln2UAlAWmvMG3FHZ2PqYBN2lffBef6KBG3iksHOYQa9jPzmrcRUAFvMHHny0H44w1Lsqbl9+uBV3xUjbeRkOJ86GI90L9JTp/I/+RFAd6Hg9wR+BtnxTFya4Eq0nzyAqNLS6daxfTtbkusdO4KQL6FwpsqF2TcAhiCvSBSInbZrKhvBzrEpU6S1oZyVYOvZJp4smcJsNglw6hPajC3V8C7DzXhgmr68I7EiFu8O/DphbTuD01bd/TzHWuOTw/UiJ9+Ww2zfHcNzvOObBFSrstFHA+Px5sJfVx17cMZEQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=none; dmarc=none;
- dkim=none; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=outlook.com;
- s=selector1;
+ bh=0Z9n0NujgPG1xScpmEeh1IlWyopUhF+6S7WFmgUkDCM=;
+ b=gMvxdy8XsFRnfIDrjO4dLZuJPHV9l+2aGFmHiekHX5/kqLaLJk2fHIn1/g0qHO02ZbJcJ20e1XpTcrDJjCp7A86IbEaJgNkAWynA+RMmzvGhckA7gWlc0X70Tfb7JllebNCkqzVTdwL6sWYhxnbTuTGfVS9Q9BzhnsxtBtnKjKkQ/70JM368+rcOOzTwhRJUQtzjOLPz7UCYF7vEwo5A73aLkv1PBHsGDQEQw4TJg91GSjGdrR3yjq+YrS7248mm8iBIJ6Y59dlhHgVUvqc89KqShHe6s3Eryezv3PqB4jaZ5rZO3NibRRImNyEQ7442zxgnjrN22lQJdSXOJJvx0w==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 216.228.118.233) smtp.rcpttodomain=lists.linux.dev smtp.mailfrom=nvidia.com;
+ dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
+ dkim=none (message not signed); arc=none (0)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=12jBG8GeRw0MxBU1B8TsCob15P0mIFrddKloaOn0CXA=;
- b=S4xW8+Q/LVRU3HKF+t7nXsYyYFE5R5utkE80GjtdTrnFsmi5lmKAP1hiGn9CQI4zFPPURtXFdzxcpQlyOnKUkgsspcPziH+grrNA7R/Wgwgv6FQtV6VeH9yR3BMdcgYZRdSFMWqeLdxBllIrSRco2hCW8Ei4I+mWasGN3BhpPKf0vHYvDIMDitiXhYS2rva2WcrF3ckRxzcdqu8P0osBZIske1umQVhi96cALDjVErqblR3+iWy7TLZ6mP8wDCOdUMs6WW428aolSAxvLLlWU6fNg62kIcNXsED2621qLI4goR7H4YSJtzbEtnrno36zTVNHjtEXNYaQTMGFbK5IfA==
-Received: from SN6PR02MB4157.namprd02.prod.outlook.com (2603:10b6:805:33::23)
- by CY8PR02MB9542.namprd02.prod.outlook.com (2603:10b6:930:78::5) with
+ bh=0Z9n0NujgPG1xScpmEeh1IlWyopUhF+6S7WFmgUkDCM=;
+ b=kjxxnOfIZ8X6ZHGjXppnb3PTIhvRyx4zQ8Ou6AEKRwk/QXNTh3r3PD2NsL/C7UBblQk3yKE+td+SFExUrTct+7+0ERS7Fc6sGAfJntoTLH6YhbwDEQOdbkFucB9EnuVDesXSLWZlkNk0AfpIC32phPchY1b7YudjEuqM307l2BObUg/h71z00taCRxaYx8wQWrxYzb/u6k5lDXFHwAYk+pnmwegSWE3hR3eHztZp4KXnQw7NRyQb4ZM4hFaVDFJzhss+5lSHSPpBakRYtiLSauGJzLcSNZ57nhNEbtvM22P0i2wHpuPSFI5tBOYyeX2vYN30uugItqhs2Cou9rMwAw==
+Received: from MW2PR16CA0063.namprd16.prod.outlook.com (2603:10b6:907:1::40)
+ by DM4PR12MB7550.namprd12.prod.outlook.com (2603:10b6:8:10e::12) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7544.55; Mon, 13 May
- 2024 20:05:32 +0000
-Received: from SN6PR02MB4157.namprd02.prod.outlook.com
- ([fe80::cedd:1e64:8f61:b9df]) by SN6PR02MB4157.namprd02.prod.outlook.com
- ([fe80::cedd:1e64:8f61:b9df%2]) with mapi id 15.20.7544.052; Mon, 13 May 2024
- 20:05:31 +0000
-From: Michael Kelley <mhklinux@outlook.com>
-To: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
-	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-	"iommu@lists.linux.dev" <iommu@lists.linux.dev>, "joro@8bytes.org"
-	<joro@8bytes.org>
-CC: "thomas.lendacky@amd.com" <thomas.lendacky@amd.com>,
-	"vasant.hegde@amd.com" <vasant.hegde@amd.com>, "michael.roth@amd.com"
-	<michael.roth@amd.com>, "jon.grimm@amd.com" <jon.grimm@amd.com>,
-	"rientjes@google.com" <rientjes@google.com>
-Subject: RE: [PATCH 0/9] iommu/amd: Add AMD IOMMU emulation support for
- SEV-SNP guest kernel
-Thread-Topic: [PATCH 0/9] iommu/amd: Add AMD IOMMU emulation support for
- SEV-SNP guest kernel
-Thread-Index: AQHamxKg8G3tDdy39E2idvNw1Py2z7GVp95w
-Date: Mon, 13 May 2024 20:05:31 +0000
-Message-ID:
- <SN6PR02MB4157E795C636EBE75CC806A1D4E22@SN6PR02MB4157.namprd02.prod.outlook.com>
-References: <20240430152430.4245-1-suravee.suthikulpanit@amd.com>
-In-Reply-To: <20240430152430.4245-1-suravee.suthikulpanit@amd.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach:
-X-MS-TNEF-Correlator:
-x-tmn: [Vq07iy0/LrUcj2bJVqhmCeLlQzacMhBo]
-x-ms-publictraffictype: Email
-x-ms-traffictypediagnostic: SN6PR02MB4157:EE_|CY8PR02MB9542:EE_
-x-ms-office365-filtering-correlation-id: 9d1bc4ee-85b2-443d-7627-08dc73880b10
-x-microsoft-antispam:
- BCL:0;ARA:14566002|461199019|1602099003|102099023|440099019|3412199016;
-x-microsoft-antispam-message-info:
- 9nLbprf/QGL/Rjo3T9eEwLxYcoOdUGiH2vhLa8MlEuiOkotZuc2W/vTu9C8GoCmTvuwm9k0s+3J77vwcYmic4kqWLPKsD0mE9juHlhDouJabiWX2yIxOsM3EiY0Ee9BocVhzJXgLutFuWQZJ+ljH7LNt509fmzIQvbcnpPWc9we4BG6IwrUUY03rXx+rur8uTnH5fql+WZgSV1p6sr/a//Id6zQ4JgoLH1+TJnY2LY5ZRK9olYXVCuRJ7GtpXihUJ8lBudeMisi0VRbfXhlkBqty5TSfHsLxhUoi0K22Tgb3XkcoSa+l9oON8cGYB4Cu7Ya8lCNxkFPKPCEGr4q2etgdloZTNFU+GdquZoP23+9uO1jM/GSbk4i79j9yzgiYU8SOa52uoiU7qbxKnU06UVCBr+HvQ9PTIuzavzNOhEgnnQCAyuHs0Ci3/EwGZrW+0Rm+go9+zniE6S1Kup0tE4D+UCuFyf2DBRgHcA8PF5SWMprySRaoC2uzzHAj5mpd4LihT9PBBjyi0L856tAlvmQBmjZdhGLIxff0apoWqjLk8ZXjHguQTktHw8HVfblRFGHDMJvSLqAOQKL2FWto6zpRHqnJuo2/hgjbLBR14pRpdz1PkEVPgpAltG9m2bl+yCqLPP4MtuvBi/qYyxahLL81HokjppowSVUHzbhv0yc=
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0:
- =?us-ascii?Q?BnRaeGBrw04GIJBYlbHlbXPKyBw0CDFGzRB/dBGn7qx9BZ6VagTSvLcWUUGx?=
- =?us-ascii?Q?WBR6BOaT4vLA7wo6Mk2jOAEoYdzzzY+HH6j/83LqKY2ypxz2GB6uvEWOc5Q1?=
- =?us-ascii?Q?ihMLWI4BHvdxNXjLDSTJpUcx2wQNzJCRyCx2FlPYqq6E+OB7sqnj8FI5vpDT?=
- =?us-ascii?Q?ccktvCEQUQBPJhzoIqQigwq/krDto3KxP9ozWCmUq8TCmNMAnXszGFjd8aUf?=
- =?us-ascii?Q?xAr6OL8iGYnF14sDNL/c2iZlfxC0jLA3Y9cAHz15OiJ6rclUu7DQNaYcU0W9?=
- =?us-ascii?Q?Z29dQ+RoWRwZcjFqCEbWN8XOwy8dRyjHQVVtGw6/kgSYUVj6K7YKY/a1NAY6?=
- =?us-ascii?Q?M0N6JV4GW16Up3Q7TxyZc2xZ4SOVyET6kZyJfFE3mLuUXXAuWjmd+1jQGuPK?=
- =?us-ascii?Q?40rTjdT/j8kJ/2x+s4XN/GD0SuvBFjvoyuEJNwwQ/+Tj+NPXxLhaevYPnUeO?=
- =?us-ascii?Q?tcGOjoUQtqyEQy3UxL0PkD1JNOjDSSqVdZgQPNSVTRhPvb35SgqYeKXCjQ7s?=
- =?us-ascii?Q?0d8J0sQ3jUlyHI/SLpLo2JMHGJd0BDPs9jkysHJ02Djd1zZW6umGoL4nPWIK?=
- =?us-ascii?Q?/X/ZjtNT39qxn3qBG/zWynqrJ6MbBMFDY9rt5uXpr7F2b8DUgmKePmlGDVja?=
- =?us-ascii?Q?A5+ZMc6Ncl3uiFetxnnoFjKUPAgLjFQGZ9RTJ7oXjCXJkOmmHrczy7ZQu8dZ?=
- =?us-ascii?Q?6Z2lVRz8jH+XS77PnNsx5WBH7AFSUPELyPo+L11Rj0hetnzfqBTI3QSA8U4i?=
- =?us-ascii?Q?4TsshbFmhArq+OlzQODy/6AoF+pajHC2SjwRsoET13lLHom0fkqb6UCUlmRE?=
- =?us-ascii?Q?/Zf/TPP+znaYlBJ156Y+sMPnz+Hszx4nCfC3eue5QqNviJgN/M8Kta4W94Mt?=
- =?us-ascii?Q?EhIULM1HUTQmQ34nE4FaR3E4eD9zkBnF2gxIuA15tayNNADSdqd9DE9M0Gjb?=
- =?us-ascii?Q?HGIS5RTtEDJ1ovh3u7fWr8cN7YKuUYwWfsCWiz/VqNqYaD6n+AahBeyvLjd6?=
- =?us-ascii?Q?5voSxx3m0X4iHZd33PsUI4L+D82bq1LKYuq0zsVT8l/TreuNk4KdULfQFmEA?=
- =?us-ascii?Q?6m5+XW29WZq9bOFWzV3oA9vgQWQPZd1jguIdn8POkqaQJMiTaa75RUzSYVEx?=
- =?us-ascii?Q?xhbZikIJKAq7YtKi4gFv+09bo3tVYZ+J4IPhkzP4uxjsNA4TeSngS8bPcaG7?=
- =?us-ascii?Q?OtC9u1cBwX+dazSEqy0drgO/ugWFauXv+rambS6CWy0QxAOAuRyeI4nmEt4?=
- =?us-ascii?Q?=3D?=
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+ 2024 20:58:24 +0000
+Received: from MWH0EPF000989E8.namprd02.prod.outlook.com
+ (2603:10b6:907:1:cafe::19) by MW2PR16CA0063.outlook.office365.com
+ (2603:10b6:907:1::40) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7544.55 via Frontend
+ Transport; Mon, 13 May 2024 20:58:24 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.118.233)
+ smtp.mailfrom=nvidia.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=nvidia.com;
+Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
+ 216.228.118.233 as permitted sender) receiver=protection.outlook.com;
+ client-ip=216.228.118.233; helo=mail.nvidia.com; pr=C
+Received: from mail.nvidia.com (216.228.118.233) by
+ MWH0EPF000989E8.mail.protection.outlook.com (10.167.241.135) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.7587.21 via Frontend Transport; Mon, 13 May 2024 20:58:23 +0000
+Received: from drhqmail202.nvidia.com (10.126.190.181) by mail.nvidia.com
+ (10.127.129.6) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1544.4; Mon, 13 May
+ 2024 13:58:09 -0700
+Received: from drhqmail202.nvidia.com (10.126.190.181) by
+ drhqmail202.nvidia.com (10.126.190.181) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.1544.4; Mon, 13 May 2024 13:58:09 -0700
+Received: from nvidia.com (10.127.8.13) by mail.nvidia.com (10.126.190.181)
+ with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1544.4 via Frontend
+ Transport; Mon, 13 May 2024 13:58:06 -0700
+Date: Mon, 13 May 2024 13:58:04 -0700
+From: Nicolin Chen <nicolinc@nvidia.com>
+To: Jason Gunthorpe <jgg@nvidia.com>
+CC: <iommu@lists.linux.dev>, Joerg Roedel <joro@8bytes.org>,
+	<linux-arm-kernel@lists.infradead.org>, Robin Murphy <robin.murphy@arm.com>,
+	Will Deacon <will@kernel.org>, Eric Auger <eric.auger@redhat.com>,
+	Jean-Philippe Brucker <jean-philippe@linaro.org>, Moritz Fischer
+	<mdf@kernel.org>, Michael Shavit <mshavit@google.com>,
+	<patches@lists.linux.dev>, Shameerali Kolothum Thodi
+	<shameerali.kolothum.thodi@huawei.com>
+Subject: Re: [PATCH v7 06/14] iommu/arm-smmu-v3: Do not use
+ master->sva_enable to restrict attaches
+Message-ID: <ZkJ+3MtI5u0XkbfN@nvidia.com>
+References: <0-v7-9597c885796c+d2-smmuv3_newapi_p2b_jgg@nvidia.com>
+ <6-v7-9597c885796c+d2-smmuv3_newapi_p2b_jgg@nvidia.com>
+ <ZkGsr80xDAyVvFMk@nvidia.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-OriginatorOrg: outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: SN6PR02MB4157.namprd02.prod.outlook.com
-X-MS-Exchange-CrossTenant-RMS-PersistedConsumerOrg: 00000000-0000-0000-0000-000000000000
-X-MS-Exchange-CrossTenant-Network-Message-Id: 9d1bc4ee-85b2-443d-7627-08dc73880b10
-X-MS-Exchange-CrossTenant-rms-persistedconsumerorg: 00000000-0000-0000-0000-000000000000
-X-MS-Exchange-CrossTenant-originalarrivaltime: 13 May 2024 20:05:31.7758
+Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: inline
+In-Reply-To: <ZkGsr80xDAyVvFMk@nvidia.com>
+X-NV-OnPremToCloud: ExternallySecured
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: MWH0EPF000989E8:EE_|DM4PR12MB7550:EE_
+X-MS-Office365-Filtering-Correlation-Id: 58bf37ad-7b00-4e80-668a-08dc738f6db0
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam:
+	BCL:0;ARA:13230031|376005|82310400017|36860700004|7416005|1800799015;
+X-Microsoft-Antispam-Message-Info:
+	=?us-ascii?Q?zpBrs59HE/+iB7IY9X3iZg0Xht7NIRc5nAq8b19W2fU3P0Km6MlO3wSOail8?=
+ =?us-ascii?Q?mZquIFllgPdHa0N4Vve5hQ+uwDp9v8QaWF8T4K73700IyLUoWfdMxNgeQTLq?=
+ =?us-ascii?Q?cKNMK+82mkBYeNg+cNwBw+XjnTUXmNXSAfCNNT8sIWSkNCqEknYj0oQ9z48M?=
+ =?us-ascii?Q?LgMSJVDQkssX7L3+Gi/rqSfjLDGsgtiI19THxUgE0qIdymLkvkFbry/NBgs0?=
+ =?us-ascii?Q?KTCTWSYnb5W2tYaS0hqcbd1ce5GZJJ9CzgrMPYD33PLAKROXwVER9NUFEhES?=
+ =?us-ascii?Q?xyxhgyzvwK5f+KZO3WcYeNBKxlmDZGdj+si8ohydMVZIgOuo5NV+YWI2ZthV?=
+ =?us-ascii?Q?Cpjhs8IV7FUhgHrYGxW+yyhADEVk6b2Z3QXiJ3dwucoDv5JDKRedMFipS9a6?=
+ =?us-ascii?Q?KFaVh1DJh6muu3JCi4L7CnuehYX1VAyYrVtIZv89dqm/bqJXdi9hEJKEQqdk?=
+ =?us-ascii?Q?tPQDk78uRpqaZnyNF/omEbJ0EAIBmnLA81FG/tw2vlrn825KvGy3wMw0b3Xf?=
+ =?us-ascii?Q?RIVc73Rwd4/BpyO22VDVOI6gEqcr7ycgDgQ5+heINQ6fd7lLTRXZKY3t+IQC?=
+ =?us-ascii?Q?6XtrfBAvJ7g+DdSAWtmCLcqYBBK/MwS8ncbLWCkYyrat3l4DNvo0Sjzg0i9N?=
+ =?us-ascii?Q?beJFGAcNL5mT2pKgXPuoQ9qMcPCHckFzyXP1YCZSWmCVX1vD7BagR4Nqjzfz?=
+ =?us-ascii?Q?VCCvfIbTahvT3NBJBXIbKFf7r01tOoUx8jzxGEGToxwq0Z/paCoh14JJuimj?=
+ =?us-ascii?Q?Xz4sBo0r2gV2n5opC0w6bql33nbNCVtNschLoq8y+LrESQNWqXymQ8Fs8DZ+?=
+ =?us-ascii?Q?SL9KgT1kZ0xzVnn42q6PEkPAzcsodpft62/RgJAZjxnaz8XTTnYtuboUK+l7?=
+ =?us-ascii?Q?TRBOp4q+ZCbS/QUAmqGsQ8gzQa9TxjwNUAE0fxdUOT4krcXy1vP1uoZX/7dj?=
+ =?us-ascii?Q?IWJGGdnP3fFiT0H2WECQ71nWAXXpnbKd8XSVBP9vwL+8Wv1sA9hsTC5b9Mn/?=
+ =?us-ascii?Q?kBQAOss9U6ScxL66erI8gpn259MEeBqt5ukPUOfD5kiAn2Hagh9Y2CDPJwKK?=
+ =?us-ascii?Q?EFM9KRDNJKNV3HUk6Z54Founr2u1VAHPrsGMtK9SEGBRWk+NGEHtJLscL9sq?=
+ =?us-ascii?Q?p3ucyi3OvP/VU6YVQJRmbfxh1TboF3jre9F029W8L0bkhqUe6/8aBsqgLgKq?=
+ =?us-ascii?Q?4KeQ5w+FbLPY4Gxfsc1PjcdJhRLG6hjwUgMT192EHfFFTc4Tov5TWjGoSlQS?=
+ =?us-ascii?Q?By/u4syBF30VnVfr26z4IUeV2SvZ6S5Z4CSV/oPUPLf+mZePYJopTFqMkfak?=
+ =?us-ascii?Q?3plEUvo9NYqtP4dhvd8Ob7YgRp+5vPOir6MSlU7nHeodw4fM20F4cyQ8PzAm?=
+ =?us-ascii?Q?V+nGY8SqYRgIYf/5lGPY9I70urWz?=
+X-Forefront-Antispam-Report:
+	CIP:216.228.118.233;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc7edge2.nvidia.com;CAT:NONE;SFS:(13230031)(376005)(82310400017)(36860700004)(7416005)(1800799015);DIR:OUT;SFP:1101;
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 13 May 2024 20:58:23.6625
  (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 84df9e7f-e9f6-40af-b435-aaaaaaaaaaaa
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: CY8PR02MB9542
+X-MS-Exchange-CrossTenant-Network-Message-Id: 58bf37ad-7b00-4e80-668a-08dc738f6db0
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.118.233];Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-AuthSource:
+	MWH0EPF000989E8.namprd02.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM4PR12MB7550
 
-From: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com> Sent: Tuesday, =
-April 30, 2024 8:24 AM
->=20
-> To boot a VM w/ x2APIC ID > 255, guest interrupt remapping emulation
-> is required.
+On Sun, May 12, 2024 at 11:01:32PM -0700, Nicolin Chen wrote:
+> On Wed, May 08, 2024 at 03:57:14PM -0300, Jason Gunthorpe wrote:
+> > We no longer need a master->sva_enable to control what attaches are
+> > allowed. Instead we can tell if the attach is legal based on the current
+> > configuration of the master.
+> > 
+> > Keep track of the number of valid CD entries for SSID's in the cd_table
+> > and if the cd_table has been installed in the STE directly so we know what
+> > the configuration is.
+> > 
+> > The attach logic is then made into:
+> >  - SVA bind, check if the CD is installed
+> >  - RID attach of S2, block if SSIDs are used
+> >  - RID attach of IDENTITY/BLOCKING, block if SSIDs are used
+> > 
+> > Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
+> > ---
+> >  .../iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c   |  2 +-
+> >  drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c   | 24 +++++++++----------
+> >  drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h   |  7 ++++++
+> >  3 files changed, 20 insertions(+), 13 deletions(-)
+> > 
+> > diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c
+> > index d31caceb584984..7627cb53da55b9 100644
+> > --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c
+> > +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c
+> > @@ -628,7 +628,7 @@ static int arm_smmu_sva_set_dev_pasid(struct iommu_domain *domain,
+> >  	struct arm_smmu_cd target;
+> >  	int ret;
+> >  
+> > -	if (mm_get_enqcmd_pasid(mm) != id)
+> > +	if (mm_get_enqcmd_pasid(mm) != id || !master->cd_table.in_ste)
+> >  		return -EINVAL;
+> 
+> The in_ste is added in PATCH-2 and the new arm_smmu_set_pasid()
+> in the same patch is also guarded by the in_ste. So, it feels a
+> little more related by moving this check here into PATCH-2 too?
 
-Top-level question:  Is there a reason the MSI extended destination ID mech=
-anism is
-insufficient to avoid the need for interrupt remapping?  (see function poin=
-ter
-"msi_ext_dest_id").  I'm unclear on whether it is or not. If it is not suff=
-icient, perhaps
-you could explain why.
+Actually, I found this in_ste sanity gets removed in PATCH-10.
+I assume we rely on the same sanity in the arm_smmu_set_pasid()
+instead?
 
-> For SEV guest, this can be achieved using an emulated
-> AMD IOMMU.
+If so, this sanity exists already in the arm_smmu_set_pasid()
+in the code that this patch applies to. So, could we just start
+to rely on that here, instead of adding this additional in_ste
+sanity in this patch?
 
-You've used "SEV" here and in several other places.  I think you intend thi=
-s to be
-the more specific "SEV-SNP", and exclude SEV and SEV-ES. For avoid any conf=
-usion,
-I'd suggest using "SEV-SNP" throughout if that's what you mean.
-
-Michael
-
->=20
-> In order to support emulated AMD IOMMU in SEV guest, memory pages used
-> by the guest IOMMU data structures must be in decrypted mode. Also GPAs
-> for these pages must not have the memory encryption bit set.
->=20
-> Testing:
->   - Booting Linux SEV guest w/ 512 vcpus w/ QEMU emulated amd-iommu with
->     qemu-system-x86_64 option: -device amd-iommu,intremap=3Don,xtsup=3Don
->     (emulated devices only for now).
->=20
-> GIT repos:
-> * https://github.com/AMDESE/linux-iommu/tree/iommu_next_sev-iommu-v1
->=20
-> Thanks,
-> Suravee
->=20
-> Suravee Suthikulpanit (9):
->   iommu/amd: Introduce helper functions for managing IOMMU memory
->   iommu/amd: Convert Device Table pointer to use struct amd_iommu_mem
->   iommu/amd: Convert Command Buffer pointer to use struct amd_iommu_mem
->   iommu/amd: Convert Completion-Wait Semaphore pointer to use struct
->     amd_iommu_mem
->   iommu/amd: Convert Event Log pointer to use struct amd_iommu_mem
->   iommu/amd: Convert PPR Log pointer to use the struct amd_iommu_mem
->   iommu/amd: Remove iommu_alloc_4k_pages() helper function
->   iommu/amd: Decrypt interrupt remapping table for AMD IOMMU emulation
->     in SEV guest
->   iommu/amd: Set default domain to IDENTITY_DOMAIN when running in SEV
->     guest
->=20
->  drivers/iommu/amd/amd_iommu.h       |  31 +++++-
->  drivers/iommu/amd/amd_iommu_types.h |  28 ++++--
->  drivers/iommu/amd/init.c            | 144 +++++++++++++++-------------
->  drivers/iommu/amd/iommu.c           | 133 +++++++++++++++++++------
->  drivers/iommu/amd/ppr.c             |  22 +++--
->  5 files changed, 246 insertions(+), 112 deletions(-)
->=20
-> --
-> 2.34.1
->=20
-
+Thanks
+Nicolin
