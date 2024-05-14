@@ -1,184 +1,198 @@
-Received: from NAM04-DM6-obe.outbound.protection.outlook.com (mail-dm6nam04olkn2016.outbound.protection.outlook.com [40.92.45.16])
+Received: from NAM11-DM6-obe.outbound.protection.outlook.com (mail-dm6nam11on2061.outbound.protection.outlook.com [40.107.223.61])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 209D6181BA6
-	for <iommu@lists.linux.dev>; Tue, 14 May 2024 21:35:01 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.92.45.16
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9F867181CFD
+	for <iommu@lists.linux.dev>; Tue, 14 May 2024 22:20:49 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.223.61
 ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1715722504; cv=fail; b=a/ZhRTAFXtyQMgrzFX+8oN3Yzg8nebNTcjIs/9XyAxo9dFl7MEeF4HjTWICBE31dpRnAiPJlTmnN6eAnp9BIf+ua1CkaDZsfplfcGZpmBuXGqOv/MZzajJiNXxkkDzbMYyRUIP3F4euWtDZD1i87d4N/xPeyaQYkQXV6Uwv7qJc=
+	t=1715725251; cv=fail; b=kWSYcX8AEEaRVuD9Z2ogAlBH1/W4ISrFvmKOX1DyFupqioPjTHEiwvSclVhXxfUmyC4hVy7ERawSU2WJKNjBnz3VtBZJLEZn+kW1kya+fX9Z9Mkt+UqGyUypeja6P+pXb9doqySo8HGsOmBt2SceT4CZLOIW6qaQy31wX6uCjBw=
 ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1715722504; c=relaxed/simple;
-	bh=khyZJimhRe/6i2VXus1jLFx8LuzeWYeJSczy3NkzDJA=;
-	h=From:To:CC:Subject:Date:Message-ID:References:In-Reply-To:
-	 Content-Type:MIME-Version; b=UQFtkAviiyss3tev3GMfXUgyYR64l9wVYVurPraSvjHzmQvTDmywqMLvCTPlDniAAnszXmFO6MEFIng8xbPDFqLMY1+VpARTXIqGIslUlWeUV2WJ1Q5DpGVKijCSdyXvwUW9ERTK8cI+sKkl7CqJoJCZ7HyphFXirYrzInjcsyk=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=outlook.com; spf=pass smtp.mailfrom=outlook.com; dkim=pass (2048-bit key) header.d=outlook.com header.i=@outlook.com header.b=gJAxq6lY; arc=fail smtp.client-ip=40.92.45.16
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=outlook.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=outlook.com
+	s=arc-20240116; t=1715725251; c=relaxed/simple;
+	bh=scaNhGZ+IBbkzGgM6rMAhrx4IlUxVU0a/13EQrgMR94=;
+	h=Date:From:To:CC:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=JlLOzPKA+li24skwQ/Vo+Wt1sKcnAzyc5v8GXxHkeFjWw2knZePjgYC2xcN7QSRYu7c2CmkxLL8CJVBGKGyDX+eqGPvtpespWw4cCn4RugII2yF2tEkrWVEfzXqGJ46hUSS0lKg8Fyhzf4LZ07pPdSekE6MO9BEWRB94HJkWKsY=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=rT6T/uD3; arc=fail smtp.client-ip=40.107.223.61
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=outlook.com header.i=@outlook.com header.b="gJAxq6lY"
+	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="rT6T/uD3"
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=NDMkGljFLDCZu1t3hpe+svFrDbRkKSwfMKGtGprC9l6j9Ya3GF9AoWBFbpg627vfn/4OKCQcusU4T4oTmb25w9RiMkKfVW1GeBn0Hpb9lrlXOfJMvnEkxAu4NTo5StN0BgyeYu7FJK6n4HZuekkAmvWIh10fpehCRP3pRh2fAe08VzpYUbIWXLvVxF/dzP3B9MwXmCGo1vdPNI/pqkoQryYxBBZx+BIVDq9YOsrPqB6zNRK0eIqkMazD2mtOj81T4U5QKDl+qIeT47fe12HDqqNFak1Ouf4924iTmKA5gNK5tW3Y/Msqx2HWsjXC7LYZzCjgAvzVVl2iqJWXDPtdvQ==
+ b=lO1vJuhIBLQ3nFzXJpNgrz7cnYk1lgcio8oDYBjW7fKUD1aJkmnnZpxzuIHR9n7Hed6eh5bMUYIRPcTeHIXs00yA7ld/bJOppZNTOojsuda2/QgRE8arDYMwApgE76JYhuCk90XZQKBrGM0MnqueQ/yHTpUeMOnVmahB131RDA+UWmvx+H6rFITThkaEQofvZHi4HJWLqHTNjir12VrIk+in1gEqa8YP6bTWrEtqFsjcBv0iqHcP2yhjlEN6RAGqTUxtup7QPkI88dUqoRFwxq0ziq97sxyRwxfsuz2LMkgb0eeAqtKf3CGs8F7Pm/5sqAK7ly1GNYkS+XzRSohh2Q==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=KacOlsD1THBAX39sIHIiG5ObTJj9X39KDG4UUitcPgk=;
- b=TdQzPNwweiDlYXq2qiWuQiqhtv4cITLkpW6Q+y7X1/hd65BbZUVdxIb5vNgG6rt1VJRO2/U4bv1lRTO3JWYiZ6fRkTf6FEhllxEc4YtNQQbvihh/XjfnSBW2e8mXECcVaGTmeCc/qeLmPqJXPXsQzcbGN4SdMz0w04tC8RAuJc+gyZ9W/rW/ZiOQncwf9gN3BaaYLjKKaSrkpW2sLir4CcPsv7OH3FbWcXQzo/TrQfjRh6okIarh9zGWGYwaqqPpGebeQ8G8vWATfcCethmBGNjBr/F7tnSkJzvvIG1WpMfz5A+W0NQyKUZcUu7nHfU6664gBn7xjuIcvQCdZBEwvw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=none; dmarc=none;
- dkim=none; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=outlook.com;
- s=selector1;
+ bh=jvRQBHIiwdBFgn2W+o0Xeak3LSScd7JZ5d9au2/c6HM=;
+ b=nfpFrEwztC//OKHn1C9pDRNj1oqk6VbZMaqtTRp9/TXY391duDzzH1Ra23TY4zDseHESauMsAKiTqYmf8p3BBQFKS/W0M+od7J9c6akTFWakZ4u3diRF3AlVoV6FGuPVZFweNyRgJ9+WiwaFvkhBB2VuLpZwRoBV+A1d8j0/1tdiEb/65nDcRuOhJELKrOizUmVChkfe+ia6dAmSzY+YFQ/D6sfbSjpQiliLKCjYj89TawUoSuylC9Aq8emwfKha/Bu8GptKfxPejyaCJgz3hoD4fazXfyAy7Iek7lmORyd2LwHVCs5OAvtJxHu4TzX8WPTjZhLCyfZ5f94POZEhCQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 216.228.118.232) smtp.rcpttodomain=kernel.org smtp.mailfrom=nvidia.com;
+ dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
+ dkim=none (message not signed); arc=none (0)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=KacOlsD1THBAX39sIHIiG5ObTJj9X39KDG4UUitcPgk=;
- b=gJAxq6lYnMV9Jh1ukqG1Cks6g6LaIIQkaahMY8tmEUzkVwkDnHR1P1Ivhj1JkbdjlTj/dtv9EKedGAsSCuUXATf6A4qYPh3Bgo6lAl5lK3fRxKocStvZllaz2tukGNxM6+0r6JuxUa1kn/0KNXp4jDxB/NTPsYiZp1CmME/5aN+2GAUO8M+1RvgGFV/KSzGR9TDNgv5Jy91kZ87QopMJNoj2HiZHoExnSWffx2WKslcuqlqwdvpEzOZKEs+yGch4+XyJ1SENj+6Ys/Zsp8wnWjTnVr34dGM858XWVePB9g5Sseb01eG3upmnjkLyzHjL5clbu9yPnXzXazcYygjryQ==
-Received: from SN6PR02MB4157.namprd02.prod.outlook.com (2603:10b6:805:33::23)
- by SA0PR02MB7244.namprd02.prod.outlook.com (2603:10b6:806:ed::5) with
+ bh=jvRQBHIiwdBFgn2W+o0Xeak3LSScd7JZ5d9au2/c6HM=;
+ b=rT6T/uD3TZ8F3erLKWmQ6Jw1vZ9DZay6251bbPSuXQw/5K2B/x2e/WqG5Mhz8LLgK0QLppphu/qm5sXyU8nUh+B/E3Eb6VBDMw9IEFG1yU3am7N3cYFKKiAiJW59i4YucxKX8uMp4A26fSK6WreMTTvQ8UDLQ92d9Mzghin4dAz2aIW9ym3qZYnGGah3AOG0wlgh0YiSYQZ/D2Typ0kAoeBjtte3Cihn/L/mHTcFJ2gBAaR9RRXf4tvcb2hDuNMtM/AFDxgSOPgTPC36m/boCrw8wY2v2Lc80/8wZ5GgEC1JM4rWgAGDzEC7evT4rYPTlt3xQcOSYyTbnPioR67rXw==
+Received: from BN8PR04CA0039.namprd04.prod.outlook.com (2603:10b6:408:d4::13)
+ by DS0PR12MB6438.namprd12.prod.outlook.com (2603:10b6:8:ca::16) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7544.55; Tue, 14 May
- 2024 21:34:59 +0000
-Received: from SN6PR02MB4157.namprd02.prod.outlook.com
- ([fe80::cedd:1e64:8f61:b9df]) by SN6PR02MB4157.namprd02.prod.outlook.com
- ([fe80::cedd:1e64:8f61:b9df%2]) with mapi id 15.20.7544.052; Tue, 14 May 2024
- 21:34:59 +0000
-From: Michael Kelley <mhklinux@outlook.com>
-To: "Suthikulpanit, Suravee" <suravee.suthikulpanit@amd.com>,
-	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-	"iommu@lists.linux.dev" <iommu@lists.linux.dev>, "joro@8bytes.org"
-	<joro@8bytes.org>
-CC: "thomas.lendacky@amd.com" <thomas.lendacky@amd.com>,
-	"vasant.hegde@amd.com" <vasant.hegde@amd.com>, "michael.roth@amd.com"
-	<michael.roth@amd.com>, "jon.grimm@amd.com" <jon.grimm@amd.com>,
-	"rientjes@google.com" <rientjes@google.com>
-Subject: RE: [PATCH 0/9] iommu/amd: Add AMD IOMMU emulation support for
- SEV-SNP guest kernel
-Thread-Topic: [PATCH 0/9] iommu/amd: Add AMD IOMMU emulation support for
- SEV-SNP guest kernel
-Thread-Index: AQHamxKg8G3tDdy39E2idvNw1Py2z7GVp95wgAGEcQCAACJyQA==
-Date: Tue, 14 May 2024 21:34:59 +0000
-Message-ID:
- <SN6PR02MB4157B333B126909197590DE0D4E32@SN6PR02MB4157.namprd02.prod.outlook.com>
-References: <20240430152430.4245-1-suravee.suthikulpanit@amd.com>
- <SN6PR02MB4157E795C636EBE75CC806A1D4E22@SN6PR02MB4157.namprd02.prod.outlook.com>
- <24a4eb65-5e1b-44f9-a8ae-71f5f8f26ceb@amd.com>
-In-Reply-To: <24a4eb65-5e1b-44f9-a8ae-71f5f8f26ceb@amd.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach:
-X-MS-TNEF-Correlator:
-x-tmn: [ENJsy41p8Jcx9TU8k9MHkmSl7RKkklEJ]
-x-ms-publictraffictype: Email
-x-ms-traffictypediagnostic: SN6PR02MB4157:EE_|SA0PR02MB7244:EE_
-x-ms-office365-filtering-correlation-id: a37f4312-c52f-4def-ae7f-08dc745db4a6
-x-microsoft-antispam:
- BCL:0;ARA:14566002|461199019|102099023|3412199016|440099019;
-x-microsoft-antispam-message-info:
- UFFWo04OuN/mOmF5U34QmOHuREGhkZcs0wrqsl2jlOhD+gV8jox1zOWXTHMAKCcd14ftgTlWKqYK874f10j6kQrhKnwxxJVfcYYNsE7Kz/H5pzs7KNKnJ2fKTsDdzkfxxKnNjcBNdj92wwuHMZKByWoyDBE0cWGIiwB+KmveEMvbta7O9yN7pZgZ0MPJ46cfVAfHyUZBPC6myQCpNr2qVVAYrV1+ubfHZfg+nBljalYr+N02Kr0eh7DaDAh5yCrA9a7Ec2DAkN9+dK/JiWvAk1W+BLTpwdifiD+hiJKXNcsob/k3hieGM3y4TKYG+xGqM9FupdHDOTt2CxPIfwN1AKcEcOaapy4esGD0f4PjsRDTB/9twoORQ7sl7R3kQlRQjT1puC/UP/heTN2cLchxzuB0r1dv22Ag66WTLIyuYD2iR+XkLp2tQJa4Y+lw0FlsK0j3P9xZLgWgs9SrG811BDbDmM+eZ1C9sbDaIaBuC2lfoN7X5FtCFv/8Hle2Bufiw5eQ3SgT5ViA4JIgjIW21cmhijTiFhKECpY0F0cOGtb29vo+zPWoUrrjGFZGKdNO
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0:
- =?us-ascii?Q?1Og1Xak9byLLyrNEcFw/R99dkqJmM6Os+jCZv04L9EAnrTgnWquOExik7ZeJ?=
- =?us-ascii?Q?LRkmd3cJ0x9Md7IFDh/OdfL7FS4tZI908PK3EgTqtqwdx/C560NyGW7kBOxH?=
- =?us-ascii?Q?UwOr5dj2+aqDs6cox/6BB9LYU3uiPm1ctB6AA6LmMjRXaDU9b2F6UCIY2caI?=
- =?us-ascii?Q?IMBC9E5D8ICEJklj55jDhEbhhBw/cDozPcULCOjkgYDAPRUkfLRqy9rieQ6g?=
- =?us-ascii?Q?JxAKYJGpyvi8ykNg+6koH/Xk/030v3KPUyrFpTtqM+umpYZEYJJLkhw2YiKR?=
- =?us-ascii?Q?rdvM3F2sd8SzKDGZcKfOehTCcfial7arLkGUG9VbSjBdfEoJHHVB8zJkcSpH?=
- =?us-ascii?Q?ZzslzFLpCkjxhrFsxHJXOMQdlyoVo0lFdKHsn+D12cn9pF8kuymUZrrFdr7e?=
- =?us-ascii?Q?iGMGi4OFo75VfDIqH6IL/ofU8h3+OkxbExEPzhmVTLgEF5xJDt7a76l05zwj?=
- =?us-ascii?Q?rA5p4BbX+2r+vSTB6BS3GJteVxNyIZxJK85nkd5vjaOAt2H+bJYGNhTW6haV?=
- =?us-ascii?Q?0Sca6k078VdWbmbWsNIgIpItAyEvF2v/+4n/WHpahbO1zdOmNWG9KR13UcYG?=
- =?us-ascii?Q?Z5NLIZpGlAjihHhcRiYzBwutWaS37tId2dCHGez6wcerNDsy1cXiRIPw8YxS?=
- =?us-ascii?Q?sg5v1Dgw/8RqIQwOz0MIO0t2ScIKk+f7S60GPdBw+sjfW2aGHsDyWKwoff83?=
- =?us-ascii?Q?XMVmg0MtWMq7NmiSWHtseGn5AfQ6gUshuhU2DQJtDk2qTQbRUJO4tRNuYggw?=
- =?us-ascii?Q?G4Au8oK6PsZX1Zw8gtriqe90MBAJmcXDZtrKAVy7y+pkdthnghP9eQCaLjSz?=
- =?us-ascii?Q?2g26Uh7j78+UdonBfgts0hPNEESXguATV5J/6qL6nmVDeZmXCEE94cTt94YG?=
- =?us-ascii?Q?jq+urO5mvIbu+ImiH8OMvq3N0/V0olrlbOQZUSmF0VUVcXvR9yRZ++xLVvs7?=
- =?us-ascii?Q?Kake3Lf4LwYHgYEpiTT7rGfTsHlw89KjELu6L9IrZSF01ZvbfM8cGLmq257S?=
- =?us-ascii?Q?g2FOVmHyJxv9eWWMqpMK4Hhp0njAWJn0MU0byTns5tnqh8Zk/+AD8MhhbO06?=
- =?us-ascii?Q?ueRkQ2RXFpaJ6d+qpNkU4fBqLmIpaLk1PPizu5mmRPtmiMezL2fQ4wtPIOq4?=
- =?us-ascii?Q?uyftiMrPQqkUeVhYCSNX0iIRjJ3OgbRD11ZUIfBVda9kXWo1/rFugPy62/ZV?=
- =?us-ascii?Q?uswp2Uunm1Lp6AjDHdpDl4lMkPgpdgbNnpMYLDFAEsB00tt16kbt+u9n6bs?=
- =?us-ascii?Q?=3D?=
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+ 2024 22:20:46 +0000
+Received: from BN3PEPF0000B36D.namprd21.prod.outlook.com
+ (2603:10b6:408:d4:cafe::e3) by BN8PR04CA0039.outlook.office365.com
+ (2603:10b6:408:d4::13) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7544.55 via Frontend
+ Transport; Tue, 14 May 2024 22:20:46 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.118.232)
+ smtp.mailfrom=nvidia.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=nvidia.com;
+Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
+ 216.228.118.232 as permitted sender) receiver=protection.outlook.com;
+ client-ip=216.228.118.232; helo=mail.nvidia.com; pr=C
+Received: from mail.nvidia.com (216.228.118.232) by
+ BN3PEPF0000B36D.mail.protection.outlook.com (10.167.243.164) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.7587.0 via Frontend Transport; Tue, 14 May 2024 22:20:45 +0000
+Received: from drhqmail201.nvidia.com (10.126.190.180) by mail.nvidia.com
+ (10.127.129.5) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1544.4; Tue, 14 May
+ 2024 15:20:28 -0700
+Received: from drhqmail201.nvidia.com (10.126.190.180) by
+ drhqmail201.nvidia.com (10.126.190.180) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.1544.4; Tue, 14 May 2024 15:20:27 -0700
+Received: from nvidia.com (10.127.8.11) by mail.nvidia.com (10.126.190.180)
+ with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1544.4 via Frontend
+ Transport; Tue, 14 May 2024 15:20:24 -0700
+Date: Tue, 14 May 2024 15:20:24 -0700
+From: Nicolin Chen <nicolinc@nvidia.com>
+To: Jason Gunthorpe <jgg@nvidia.com>
+CC: <will@kernel.org>, <robin.murphy@arm.com>, <joro@8bytes.org>,
+	<thierry.reding@gmail.com>, <vdumpa@nvidia.com>, <jonathanh@nvidia.com>,
+	<linux-kernel@vger.kernel.org>, <iommu@lists.linux.dev>,
+	<linux-arm-kernel@lists.infradead.org>, <linux-tegra@vger.kernel.org>
+Subject: Re: [PATCH v7 6/6] iommu/tegra241-cmdqv: Limit CMDs for guest owned
+ VINTF
+Message-ID: <ZkPjqDJvkXc84At3@nvidia.com>
+References: <cover.1715147377.git.nicolinc@nvidia.com>
+ <062cf0a1e2b8ec6f068262cc68498b8d72b04bcc.1715147377.git.nicolinc@nvidia.com>
+ <ZkDo9US02pD6vysO@nvidia.com>
+ <ZkE+Fa4BS+LTxvgi@nvidia.com>
+ <ZkOAAdugARILEeBh@nvidia.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-OriginatorOrg: outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: SN6PR02MB4157.namprd02.prod.outlook.com
-X-MS-Exchange-CrossTenant-RMS-PersistedConsumerOrg: 00000000-0000-0000-0000-000000000000
-X-MS-Exchange-CrossTenant-Network-Message-Id: a37f4312-c52f-4def-ae7f-08dc745db4a6
-X-MS-Exchange-CrossTenant-rms-persistedconsumerorg: 00000000-0000-0000-0000-000000000000
-X-MS-Exchange-CrossTenant-originalarrivaltime: 14 May 2024 21:34:59.1032
+Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: inline
+In-Reply-To: <ZkOAAdugARILEeBh@nvidia.com>
+X-NV-OnPremToCloud: ExternallySecured
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: BN3PEPF0000B36D:EE_|DS0PR12MB6438:EE_
+X-MS-Office365-Filtering-Correlation-Id: 7f9ddeaa-2898-4758-3343-08dc74641a03
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam:
+	BCL:0;ARA:13230031|1800799015|376005|36860700004|82310400017;
+X-Microsoft-Antispam-Message-Info:
+	=?us-ascii?Q?5mchgi8Yp2423GphFpcCBjFLzj413/nXfWu5r6/cunx5/rglOkRqluNOENSH?=
+ =?us-ascii?Q?/KXoc7EPx9v8b9iKybKmAMrB/Gs5t08qql0V76/fHMiKKZfw1a9Kax8ISqJK?=
+ =?us-ascii?Q?vlypLUfkUkogPft7Cqb+wXiqg4+3lSi83kPqTSsDW3ywe0sdjxKfHCcdVGfv?=
+ =?us-ascii?Q?Rzto0youdrIlUXxowVOMZGppr8LRmQFP7DLUQO0hKUzdIa1F8W0GOYzhvbW1?=
+ =?us-ascii?Q?fEb7RCsuLFBjBfV4L3NPexCXzI4t575em3/vTWygdjdL5cShjSpp0dKmr6H3?=
+ =?us-ascii?Q?bUFDaxb1H63EwGuShBl5xnq0ozG9AhLflXXFNc+QDSZXthtYxCpzbskWNyP+?=
+ =?us-ascii?Q?J7fwPus5j/O3gtndN9febUeia21KrlUE5KkpQXa9ZnI03wZqcOmgXgO5Ukuf?=
+ =?us-ascii?Q?m49umgLIttlMpL3J9CB72d3Wn8mLyaY4csXdPd6fwzui5p0aJlURTBbTQtl0?=
+ =?us-ascii?Q?Qku0Vv6WvLIf44wmNflPI/2TSlYKry9EVLwZikWfHnoGpDjNl/QDBN2Yuszq?=
+ =?us-ascii?Q?ifDfTBQHj2CKP+DUTWJssMgupEtqUqA44LRY06WnnSsYE+xPkUggq/Bq93X2?=
+ =?us-ascii?Q?DIY0Ny53T1KIrnOHpgGY7mk4Lq7oHkK1kHhwsfYSkBWaXgDExStoSEkEAKFk?=
+ =?us-ascii?Q?SMJ+19Dua3Aiax+/LHYf2kSIYkkZMhPA1hYweKONTY2vQ2SKgc6SN+wRmZG5?=
+ =?us-ascii?Q?oN+7aMLkwN+aXvgpXQLvx3EHLzdAzZGSJe72bkdA2owwasueDNpGzbiokRPj?=
+ =?us-ascii?Q?uka5v0wAVIyiiLEsQOu68wJB+/SmVYodYQ20Ha7j8hxm+C/iF8TXXMhbaj+M?=
+ =?us-ascii?Q?+2q+liPEfP34AQzbstebKH6sU3iZFQI+L05d69CP3EJt07R7z4fQK951emb8?=
+ =?us-ascii?Q?fGGcBO2w3YUxktMLivrxVRSlW/Xs19Xfw4D0gr0HDuDYD1Mzb1AfDcKZXx8Z?=
+ =?us-ascii?Q?X97nYYBFCTh1h8WclYw0E47W4VYStGLQ3kn8jlpj8D5AfJuo2aN30P0P5e1Y?=
+ =?us-ascii?Q?m7u4fL3Ixd1WaX9ZDFP/HIlloftLFUpL4b6lkNswjSnHXrxluBAVojH93Cxt?=
+ =?us-ascii?Q?D8mVtaQVya7ed2kFHuQNFh8GZCUy3SSDp0YycNrdcLktVIlgj2IMqTR/UnVU?=
+ =?us-ascii?Q?4dYMS5tJfV4PQzWI4+VFgGdyCru+0iQlxbcHVYFPS3ycB49kvEj0/DvINGOR?=
+ =?us-ascii?Q?9XSt/Ks1A5rH8nC64DoH7eK1p8i1LXHJglao5RJb9QmLVOkf9PWMnzyoAm2V?=
+ =?us-ascii?Q?FivsqFuPwwiUUPlegFd7Ze10BAvkDa0IIcaNN3hQ0xIjS3DICzFReIVKVeif?=
+ =?us-ascii?Q?lLiZ1LOd3V6QzO+pr38JOXahTNry9B4RQHpiE9DkHTNnxg=3D=3D?=
+X-Forefront-Antispam-Report:
+	CIP:216.228.118.232;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc7edge1.nvidia.com;CAT:NONE;SFS:(13230031)(1800799015)(376005)(36860700004)(82310400017);DIR:OUT;SFP:1101;
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 14 May 2024 22:20:45.9705
  (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 84df9e7f-e9f6-40af-b435-aaaaaaaaaaaa
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SA0PR02MB7244
+X-MS-Exchange-CrossTenant-Network-Message-Id: 7f9ddeaa-2898-4758-3343-08dc74641a03
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.118.232];Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-AuthSource:
+	BN3PEPF0000B36D.namprd21.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DS0PR12MB6438
 
-From: Suthikulpanit, Suravee <suravee.suthikulpanit@amd.com> Sent: Tuesday,=
- May 14, 2024 12:02 PM
->=20
-> On 5/14/2024 3:05 AM, Michael Kelley wrote:
-> > From: Suravee Suthikulpanit<suravee.suthikulpanit@amd.com>  Sent: Tuesd=
-ay, April
-> 30, 2024 8:24 AM
-> >> To boot a VM w/ x2APIC ID > 255, guest interrupt remapping emulation
-> >> is required.
-> >
-> > Top-level question:  Is there a reason the MSI extended destination ID =
-mechanism is
-> > insufficient to avoid the need for interrupt remapping?  (see function =
-pointer
-> > "msi_ext_dest_id").  I'm unclear on whether it is or not. If it is not =
-sufficient, perhaps
-> > you could explain why.
->=20
-> In case of running a Linux VM w/ QEMU/KVM as hypervisor, the
-> qemu-system-x86_64 option kvm-msi-ext-dest-id=3Don would allow booting th=
-e
-> VM w/ x2APIC ID > 255. However, for other hypervisor, it might not
-> support this feature.
+On Tue, May 14, 2024 at 12:15:13PM -0300, Jason Gunthorpe wrote:
+> On Sun, May 12, 2024 at 03:09:25PM -0700, Nicolin Chen wrote:
+> > > > -static struct arm_smmu_cmdq *arm_smmu_get_cmdq(struct arm_smmu_device *smmu)
+> > > > +static struct arm_smmu_cmdq *
+> > > > +arm_smmu_get_cmdq(struct arm_smmu_device *smmu, u8 opcode)
+> > > >  {
+> > > >  	if (arm_smmu_has_tegra241_cmdqv(smmu))
+> > > > -		return tegra241_cmdqv_get_cmdq(smmu);
+> > > > +		return tegra241_cmdqv_get_cmdq(smmu, opcode);
+> > > 
+> > > It is worth a comment descrbing opcode here, I think.. At least the
+> > > nesting invalidation will send mixed batches.
+> > 
+> > Right, this makes the "opcode" look bad, though we know that the
+> > "opcode" in the nesting invalidation doesn't matter because VCMDQ
+> > in that case supports all commands with HYP_OWN=1.
+> 
+> Yeah, it isn't a real problem, it just looks a little messy and
+> should have a small comment someplace at least..
+>  
+> > A CMD_SYNC, on the other hand, is outside the batch struct. And
+> > here is another assumption that CMD_SYNC is always supported by a
+> > VCMDQ..
+> > 
+> > I could clarify the "opcode" here with these assumptions. Or maybe
+> > we should think think of a better alternative?
+> 
+> I don't think it really needs to be more complex, but we should
+> document that invalidation is going to be special and doesn't quite
+> follow this rule.
 
-Two observations:
-1) KVM, Hyper-V, and Xen all have support for MSI extended destination ID.
-Is it reasonable to make it a requirement that any hypervisor supporting
-SEV/SEV-ES/SEV-SNP guests must also support MSI extended destination ID
-if the guest is to run with more than 255 vCPUs?  With that requirement,
-you don't need any interrupt remapping or IOMMU emulation.
+Yea. I just added this:
 
-2) It would help to be more explicit about the basic premise of this patch
-set.  I *think* the idea is that KVM/QEMU already supports an emulated
-AMD IOMMU in a normal VM.  That emulation depends on QEMU having
-access to data structures in guest memory (just like a physical AMD IOMMU
-would).  But with SEV/SEV-ES/SEV-SNP, guest memory is encrypted and
-QEMU doesn't have the access.  So this patch set changes the IOMMU
-related data structures to be allocated in decrypted guest memory.  Of
-course, as Jason has pointed out, this would seem to open the guest to
-security risks from a compromised hypervisor/VMM, negating what
-SEV* is trying to provide as guest confidentiality.
+@@ -333,10 +333,22 @@ static int arm_smmu_cmdq_build_cmd(u64 *cmd, struct arm_smmu_cmdq_ent *ent)
+ 	return 0;
+ }
+ 
+-static struct arm_smmu_cmdq *arm_smmu_get_cmdq(struct arm_smmu_device *smmu)
++static struct arm_smmu_cmdq *
++arm_smmu_get_cmdq(struct arm_smmu_device *smmu, u8 opcode)
+ {
++	/*
++	 * TEGRA241 CMDQV has two modes to execute commands: host and guest.
++	 * The host mode supports all the opcodes, while the guest mode only
++	 * supports a few invalidation ones (check tegra241_vintf_support_cmd)
++	 * and also a CMD_SYNC added by arm_smmu_cmdq_issue_cmdlist(..., true).
++	 *
++	 * Here pass in the representing opcode for either a single command or
++	 * an arm_smmu_cmdq_batch, assuming that this SMMU driver will only add
++	 * same type of commands into a batch as it does today or it will only
++	 * mix supported invalidation commands in a batch.
++	 */
+ 	if (arm_smmu_has_tegra241_cmdqv(smmu))
+-		return tegra241_cmdqv_get_cmdq(smmu);
++		return tegra241_cmdqv_get_cmdq(smmu, opcode);
+ 
+ 	return &smmu->cmdq;
+ }
 
-My #1 above might be a lot less risky from a security perspective.
-
->=20
-> >> For SEV guest, this can be achieved using an emulated
-> >> AMD IOMMU.
-> > You've used "SEV" here and in several other places.  I think you intend=
- this to be
-> > the more specific "SEV-SNP", and exclude SEV and SEV-ES. For avoid any =
-confusion,
-> > I'd suggest using "SEV-SNP" throughout if that's what you mean.
->=20
-> Actually, The CC_ATTR_GUEST_MEM_ENCRYPT attribute is true for all SEV
-> guests, so this will enable IOMMU emulation for all SEV guests.
->=20
-
-If that's the case, I'd suggest updating the Subject: line of this cover le=
-tter
-to not be specific to SEV-SNP, and to call out in the text that's your inte=
-nt
-for the patch set to work for all SEV* flavors.  Also, the commit messages
-throughout the patch set sometimes reference "SNP" and sometimes "SEV".
-That's confusing if your intent is applicability to all SEV* flavors.
-
-Michael
+Thanks
+Nicolin
