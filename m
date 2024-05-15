@@ -1,25 +1,25 @@
 Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 1E4E21553A8
-	for <iommu@lists.linux.dev>; Wed, 15 May 2024 14:59:20 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id F0078156248
+	for <iommu@lists.linux.dev>; Wed, 15 May 2024 15:29:47 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1715785163; cv=none; b=sSaScuRMgkxria8PLcfbBnNrET56o93WEoR7Ar2ff7d3E9SqXfi2CH/RvxW1IO4ICwpp2A44mpOKBDtD10z4V6cgr463glrkVdMVPAGnDKVDr9ZTvsPppdXgX0AAqfM2/Od8fYocY5XkuQo/AqDziVprt7VA5ipcpGVtn4LnU8E=
+	t=1715786990; cv=none; b=LRWUvzy/kVlI+jZCQw0Mw6RIWaw5mFezlainhw0aiaMO6SC0oeyUedKY1nRdQgP9UEb672jii0sCdXobRoJz3ZoxHT44hrPPy8cnpGelaQIf4pB9lavFsiQ7q4P5IhJWJxRRWCjB/hVonLRP127AA7r3aOFEf411cQ+i9eiIAJ0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1715785163; c=relaxed/simple;
-	bh=dne70KVe5rvpkC5ZaTrqZsZ4NhyJhBOKmob9vFvZ0F0=;
+	s=arc-20240116; t=1715786990; c=relaxed/simple;
+	bh=AORFTAhz4PzXJsL3IFqjxymuWeVh9qReMV49AS838a0=;
 	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=iP2ivuVjGygEEAshqAHXdU/t6GQbXljFtI83R/6gzF7V60xVxDTRkZa+iV3/hosNI2iGIqrXBcmfwafArb6HrYqhCuvxqR+xqKjqNSmPNIUoluCUpD0SHQDYruhNk95tBkvnrlC2wx6CC+vJ4kd4p7ewBEFQt4+bTupPdlu8JCM=
+	 In-Reply-To:Content-Type; b=feCya/l6y7GiKyIRazu0PSx2Jp4EGk941I0BBJnSX49ia5UfTzuxPl6wQJ73u3/OcREljYgliKAw7mxjyU18yG9Aqnhhrg2M3ojw64ejX6sxOJSJXTuxxyj2KuVSk9/omJMPtIPnoLI9EZoY5b7xiQR6ANfigGDXpkxcNpaJCSc=
 ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; arc=none smtp.client-ip=217.140.110.172
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
 Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id CA8A81042;
-	Wed, 15 May 2024 07:59:44 -0700 (PDT)
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 7C9A11042;
+	Wed, 15 May 2024 08:30:11 -0700 (PDT)
 Received: from [10.57.5.6] (unknown [10.57.5.6])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id AA1753F7A6;
-	Wed, 15 May 2024 07:59:13 -0700 (PDT)
-Message-ID: <48c39306-c226-4e7f-a013-d679ca80157e@arm.com>
-Date: Wed, 15 May 2024 15:59:13 +0100
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id A4E003F7A6;
+	Wed, 15 May 2024 08:29:45 -0700 (PDT)
+Message-ID: <b348ee57-c461-4546-94dc-1cbdbaf33145@arm.com>
+Date: Wed, 15 May 2024 16:29:45 +0100
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -27,154 +27,60 @@ List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v4 5/7] iommu/dma: Make limit checks self-contained
-To: Jon Hunter <jonathanh@nvidia.com>, Joerg Roedel <joro@8bytes.org>,
- Christoph Hellwig <hch@lst.de>
-Cc: Vineet Gupta <vgupta@kernel.org>, Russell King <linux@armlinux.org.uk>,
- Catalin Marinas <catalin.marinas@arm.com>, Will Deacon <will@kernel.org>,
- Huacai Chen <chenhuacai@kernel.org>, WANG Xuerui <kernel@xen0n.name>,
- Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
- Paul Walmsley <paul.walmsley@sifive.com>, Palmer Dabbelt
- <palmer@dabbelt.com>, Albert Ou <aou@eecs.berkeley.edu>,
- Lorenzo Pieralisi <lpieralisi@kernel.org>, Hanjun Guo
- <guohanjun@huawei.com>, Sudeep Holla <sudeep.holla@arm.com>,
- "K. Y. Srinivasan" <kys@microsoft.com>,
- Haiyang Zhang <haiyangz@microsoft.com>, Wei Liu <wei.liu@kernel.org>,
- Dexuan Cui <decui@microsoft.com>,
- Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
- David Woodhouse <dwmw2@infradead.org>, Lu Baolu <baolu.lu@linux.intel.com>,
- Niklas Schnelle <schnelle@linux.ibm.com>,
- Matthew Rosato <mjrosato@linux.ibm.com>,
- Gerald Schaefer <gerald.schaefer@linux.ibm.com>,
- Jean-Philippe Brucker <jean-philippe@linaro.org>,
- Rob Herring <robh+dt@kernel.org>, Frank Rowand <frowand.list@gmail.com>,
- Marek Szyprowski <m.szyprowski@samsung.com>, Jason Gunthorpe <jgg@ziepe.ca>,
- linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
- linux-acpi@vger.kernel.org, iommu@lists.linux.dev,
- devicetree@vger.kernel.org, Jason Gunthorpe <jgg@nvidia.com>,
- "linux-tegra@vger.kernel.org" <linux-tegra@vger.kernel.org>
-References: <cover.1713523152.git.robin.murphy@arm.com>
- <e28a114243d1e79eb3609aded034f8529521333f.1713523152.git.robin.murphy@arm.com>
- <243d441d-dda8-442a-a495-83bf9725a14c@nvidia.com>
+Subject: Re: [PATCH] iommu/arm-smmu-v3: Skip prefetch cmd for MMU-600, MMU-700
+To: Daniel Mentz <danielmentz@google.com>, iommu@lists.linux.dev
+Cc: Nicolin Chen <nicolinc@nvidia.com>, linux-arm-kernel@lists.infradead.org,
+ Will Deacon <will@kernel.org>, Mostafa Saleh <smostafa@google.com>
+References: <20240513215420.408374-1-danielmentz@google.com>
 From: Robin Murphy <robin.murphy@arm.com>
 Content-Language: en-GB
-In-Reply-To: <243d441d-dda8-442a-a495-83bf9725a14c@nvidia.com>
+In-Reply-To: <20240513215420.408374-1-danielmentz@google.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
 
-Hi Jon,
+Hi Daniel,
 
-On 2024-05-14 2:27 pm, Jon Hunter wrote:
-> Hi Robin,
-> 
-> On 19/04/2024 17:54, Robin Murphy wrote:
->> It's now easy to retrieve the device's DMA limits if we want to check
->> them against the domain aperture, so do that ourselves instead of
->> relying on them being passed through the callchain.
->>
->> Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
->> Tested-by: Hanjun Guo <guohanjun@huawei.com>
->> Signed-off-by: Robin Murphy <robin.murphy@arm.com>
->> ---
->>   drivers/iommu/dma-iommu.c | 21 +++++++++------------
->>   1 file changed, 9 insertions(+), 12 deletions(-)
->>
->> diff --git a/drivers/iommu/dma-iommu.c b/drivers/iommu/dma-iommu.c
->> index a3039005b696..f542eabaefa4 100644
->> --- a/drivers/iommu/dma-iommu.c
->> +++ b/drivers/iommu/dma-iommu.c
->> @@ -660,19 +660,16 @@ static void iommu_dma_init_options(struct 
->> iommu_dma_options *options,
->>   /**
->>    * iommu_dma_init_domain - Initialise a DMA mapping domain
->>    * @domain: IOMMU domain previously prepared by iommu_get_dma_cookie()
->> - * @base: IOVA at which the mappable address space starts
->> - * @limit: Last address of the IOVA space
->>    * @dev: Device the domain is being initialised for
->>    *
->> - * @base and @limit + 1 should be exact multiples of IOMMU page 
->> granularity to
->> - * avoid rounding surprises. If necessary, we reserve the page at 
->> address 0
->> + * If the geometry and dma_range_map include address 0, we reserve 
->> that page
->>    * to ensure it is an invalid IOVA. It is safe to reinitialise a 
->> domain, but
->>    * any change which could make prior IOVAs invalid will fail.
->>    */
->> -static int iommu_dma_init_domain(struct iommu_domain *domain, 
->> dma_addr_t base,
->> -                 dma_addr_t limit, struct device *dev)
->> +static int iommu_dma_init_domain(struct iommu_domain *domain, struct 
->> device *dev)
->>   {
->>       struct iommu_dma_cookie *cookie = domain->iova_cookie;
->> +    const struct bus_dma_region *map = dev->dma_range_map;
->>       unsigned long order, base_pfn;
->>       struct iova_domain *iovad;
->>       int ret;
->> @@ -684,18 +681,18 @@ static int iommu_dma_init_domain(struct 
->> iommu_domain *domain, dma_addr_t base,
->>       /* Use the smallest supported page size for IOVA granularity */
->>       order = __ffs(domain->pgsize_bitmap);
->> -    base_pfn = max_t(unsigned long, 1, base >> order);
->> +    base_pfn = 1;
->>       /* Check the domain allows at least some access to the device... */
->> -    if (domain->geometry.force_aperture) {
->> +    if (map) {
->> +        dma_addr_t base = dma_range_map_min(map);
->>           if (base > domain->geometry.aperture_end ||
->> -            limit < domain->geometry.aperture_start) {
->> +            dma_range_map_max(map) < domain->geometry.aperture_start) {
->>               pr_warn("specified DMA range outside IOMMU capability\n");
->>               return -EFAULT;
->>           }
->>           /* ...then finally give it a kicking to make sure it fits */
->> -        base_pfn = max_t(unsigned long, base_pfn,
->> -                domain->geometry.aperture_start >> order);
->> +        base_pfn = max(base, domain->geometry.aperture_start) >> order;
->>       }
->>       /* start_pfn is always nonzero for an already-initialised domain */
->> @@ -1760,7 +1757,7 @@ void iommu_setup_dma_ops(struct device *dev, u64 
->> dma_base, u64 dma_limit)
->>        * underlying IOMMU driver needs to support via the dma-iommu 
->> layer.
->>        */
->>       if (iommu_is_dma_domain(domain)) {
->> -        if (iommu_dma_init_domain(domain, dma_base, dma_limit, dev))
->> +        if (iommu_dma_init_domain(domain, dev))
->>               goto out_err;
->>           dev->dma_ops = &iommu_dma_ops;
->>       }
-> 
-> 
-> I have noticed some random test failures on Tegra186 and Tegra194 and 
-> bisect is pointing to this commit. Reverting this along with the various 
-> dependencies does fix the problem. On Tegra186 CPU hotplug is failing 
-> and on Tegra194 suspend is failing. Unfortunately, on neither platform 
-> do I see any particular crash but the boards hang somewhere.
+On 2024-05-13 10:54 pm, Daniel Mentz wrote:
+> Arm CoreLink MMU-600 and MMU-700 both silently ignore the
+> CMD_PREFETCH_CONFIG command. Let's not waste cycles adding this command to
+> the command queue if it is ignored anyway.
 
-That is... thoroughly bemusing :/ Not only is there supposed to be no 
-real functional change here - we should merely be recalculating the same 
-information from dev->dma_range_map that the callers were already doing 
-to generate the base/limit arguments - but the act of initially setting 
-up a default domain for a device behind an IOMMU should have no 
-connection whatsoever to suspend and especially not to CPU hotplug.
+It is true that our implementations don't do anything with prefetch 
+commands so far, however this is a valid architectural behaviour, and 
+the intent of the quirk is really for buggy implementations where the 
+commands erroneously fault.
 
-> If you have any ideas on things we can try let me know.
-
-Since the symptom seems inexplicable, I'd throw the usual memory 
-debugging stuff like KASAN at it first. I'd also try 
-"no_console_suspend" to check whether any late output is being missed in 
-the suspend case (and if it's already broken, then any additional issues 
-that may be caused by the console itself hopefully shouldn't matter).
-
-For more base-covering, do you have the "arm64: Properly clean up 
-iommu-dma remnants" fix in there already as well? That bug has bisected 
-to patch #6 each time though, so I do still suspect that what you're 
-seeing is likely something else. It does seem potentially significant 
-that those Tegra platforms are making fairly wide use of dma-ranges, but 
-there's no clear idea forming out of that observation just yet...
+TBH if saving cycles in arm_smmu_attach_dev() matters to you, then 
+you're probably not going to like what's now queued in next that makes 
+it absurdly overcomplicated with loads of indirect function calls...
 
 Thanks,
 Robin.
+
+> Signed-off-by: Daniel Mentz <danielmentz@google.com>
+> ---
+>   drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 4 ++++
+>   1 file changed, 4 insertions(+)
+> 
+> diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+> index aa62f0ecd053..98f1c4b44ef3 100644
+> --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+> +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+> @@ -3684,6 +3684,8 @@ static void arm_smmu_device_iidr_probe(struct arm_smmu_device *smmu)
+>   	case IIDR_IMPLEMENTER_ARM:
+>   		switch (productid) {
+>   		case IIDR_PRODUCTID_ARM_MMU_600:
+> +			/* MMU-600 silently ignores CMD_PREFETCH_CONFIG */
+> +			smmu->options |= ARM_SMMU_OPT_SKIP_PREFETCH;
+>   			/* Arm erratum 1076982 */
+>   			if (variant == 0 && revision <= 2)
+>   				smmu->features &= ~ARM_SMMU_FEAT_SEV;
+> @@ -3692,6 +3694,8 @@ static void arm_smmu_device_iidr_probe(struct arm_smmu_device *smmu)
+>   				smmu->features &= ~ARM_SMMU_FEAT_NESTING;
+>   			break;
+>   		case IIDR_PRODUCTID_ARM_MMU_700:
+> +			/* MMU-700 silently ignores CMD_PREFETCH_CONFIG */
+> +			smmu->options |= ARM_SMMU_OPT_SKIP_PREFETCH;
+>   			/* Arm erratum 2812531 */
+>   			smmu->features &= ~ARM_SMMU_FEAT_BTM;
+>   			smmu->options |= ARM_SMMU_OPT_CMDQ_FORCE_SYNC;
