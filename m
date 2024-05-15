@@ -1,48 +1,25 @@
-Received: from mx0b-0031df01.pphosted.com (mx0b-0031df01.pphosted.com [205.220.180.131])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4072B6214D
-	for <iommu@lists.linux.dev>; Wed, 15 May 2024 13:59:53 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.180.131
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 1E4E21553A8
+	for <iommu@lists.linux.dev>; Wed, 15 May 2024 14:59:20 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1715781595; cv=none; b=utMrNceJgD7DimISzwYs7buEfhMA3ykpdadolgA/vL6/5garUxcvivgmRhwBhb/yNecEimYBo9WYRzpVuCkfSBrLMlc8dRqw8DuMWcWo6oUY2Wdwa9JNleW+M/amDlu7Sh/AtoBYbXuoG09tGfBLZFIVTZCKcyqKrBDBYBiiteA=
+	t=1715785163; cv=none; b=sSaScuRMgkxria8PLcfbBnNrET56o93WEoR7Ar2ff7d3E9SqXfi2CH/RvxW1IO4ICwpp2A44mpOKBDtD10z4V6cgr463glrkVdMVPAGnDKVDr9ZTvsPppdXgX0AAqfM2/Od8fYocY5XkuQo/AqDziVprt7VA5ipcpGVtn4LnU8E=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1715781595; c=relaxed/simple;
-	bh=nNCvn+LTR3HF0HYu1Ms5WNy0wPxDZ1DGc/ApOSFNMas=;
-	h=Message-ID:Date:MIME-Version:Subject:To:CC:References:From:
-	 In-Reply-To:Content-Type; b=FDaFmW+KXCOiO9JBYo0t6LNiTFFjFn1L+sfoAD4kkcb1e74Dj8b5Xf4M1jxq3dlspaOIfD5WbQ0XCLuefl4Z9XpOcAXRB+CofkbV76ucGjRHJVxFlomip2/k76B2xAOmDisrIDo1QFT6FWbgl6fKXVd9g/ey6HIPx8UGPd+ViyA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com; spf=pass smtp.mailfrom=quicinc.com; dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b=cX3oXw54; arc=none smtp.client-ip=205.220.180.131
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=quicinc.com
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b="cX3oXw54"
-Received: from pps.filterd (m0279868.ppops.net [127.0.0.1])
-	by mx0a-0031df01.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 44F90cf6012347;
-	Wed, 15 May 2024 13:59:41 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=quicinc.com; h=
-	message-id:date:mime-version:subject:to:cc:references:from
-	:in-reply-to:content-type:content-transfer-encoding; s=
-	qcppdkim1; bh=z5nmHfaq7fpNC+vzw2j6vpM0SSB3xUrKvCEz2G5i64A=; b=cX
-	3oXw548rkNZvsDHwyD8fsL+ePmfn4tSF8HZ40Bs5H7pjf6svQWECZ0dp9iYwu86R
-	6VDY5awiM6W2UINFqZQZcr2xe9CKk+C9aLdisS1/Kh3slEmyVjf4qCY4qUtX1sEu
-	4EGB0xiSANcf2mFzDQUYqByk9PHnDJ+mTn1mIydoEb6y4C8bAizg7UHT4m2hENoQ
-	YDfal4M/hkL40akKTGHzwMPPjXycj5EgwD4AxDWgDVOHyxG2hA6TElluW8Auq7wc
-	MD0VUeIN9DpKX/0dzVXGxtSiX9AhbnoCqpQxHM1e/bKfmqMsJq8FWz5Y/WrgVQUX
-	/Lb5H35kHp3Fyrw2B7EA==
-Received: from nalasppmta04.qualcomm.com (Global_NAT1.qualcomm.com [129.46.96.20])
-	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 3y3j28npx3-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Wed, 15 May 2024 13:59:40 +0000 (GMT)
-Received: from nalasex01c.na.qualcomm.com (nalasex01c.na.qualcomm.com [10.47.97.35])
-	by NALASPPMTA04.qualcomm.com (8.17.1.5/8.17.1.5) with ESMTPS id 44FDxdTb015592
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Wed, 15 May 2024 13:59:39 GMT
-Received: from [10.214.66.253] (10.80.80.8) by nalasex01c.na.qualcomm.com
- (10.47.97.35) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1544.9; Wed, 15 May
- 2024 06:59:33 -0700
-Message-ID: <0a867cd1-8d99-495e-ae7e-a097fc9c00e9@quicinc.com>
-Date: Wed, 15 May 2024 19:29:29 +0530
+	s=arc-20240116; t=1715785163; c=relaxed/simple;
+	bh=dne70KVe5rvpkC5ZaTrqZsZ4NhyJhBOKmob9vFvZ0F0=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=iP2ivuVjGygEEAshqAHXdU/t6GQbXljFtI83R/6gzF7V60xVxDTRkZa+iV3/hosNI2iGIqrXBcmfwafArb6HrYqhCuvxqR+xqKjqNSmPNIUoluCUpD0SHQDYruhNk95tBkvnrlC2wx6CC+vJ4kd4p7ewBEFQt4+bTupPdlu8JCM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; arc=none smtp.client-ip=217.140.110.172
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id CA8A81042;
+	Wed, 15 May 2024 07:59:44 -0700 (PDT)
+Received: from [10.57.5.6] (unknown [10.57.5.6])
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id AA1753F7A6;
+	Wed, 15 May 2024 07:59:13 -0700 (PDT)
+Message-ID: <48c39306-c226-4e7f-a013-d679ca80157e@arm.com>
+Date: Wed, 15 May 2024 15:59:13 +0100
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -50,117 +27,154 @@ List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v9 3/5] iommu/arm-smmu: introduction of ACTLR for custom
- prefetcher settings
-To: Konrad Dybcio <konrad.dybcio@linaro.org>, Rob Clark <robdclark@gmail.com>
-CC: <will@kernel.org>, <robin.murphy@arm.com>, <joro@8bytes.org>,
-        <dmitry.baryshkov@linaro.org>, <jsnitsel@redhat.com>,
-        <quic_bjorande@quicinc.com>, <mani@kernel.org>,
-        <quic_eberman@quicinc.com>, <robdclark@chromium.org>,
-        <u.kleine-koenig@pengutronix.de>, <robh@kernel.org>,
-        <vladimir.oltean@nxp.com>, <quic_pkondeti@quicinc.com>,
-        <quic_molvera@quicinc.com>, <linux-arm-msm@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>, <iommu@lists.linux.dev>,
-        <linux-kernel@vger.kernel.org>
-References: <20240123144543.9405-1-quic_bibekkum@quicinc.com>
- <20240123144543.9405-4-quic_bibekkum@quicinc.com>
- <CAF6AEGs3_wBNo58EbGicFoQuq8--fDohTGv1JSFgoViygLS5Lg@mail.gmail.com>
- <f2222714-1e00-424e-946d-c314d55541b8@quicinc.com>
- <51b2bd40-888d-4ee4-956f-c5239c5be9e9@linaro.org>
-Content-Language: en-US
-From: Bibek Kumar Patro <quic_bibekkum@quicinc.com>
-In-Reply-To: <51b2bd40-888d-4ee4-956f-c5239c5be9e9@linaro.org>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
+Subject: Re: [PATCH v4 5/7] iommu/dma: Make limit checks self-contained
+To: Jon Hunter <jonathanh@nvidia.com>, Joerg Roedel <joro@8bytes.org>,
+ Christoph Hellwig <hch@lst.de>
+Cc: Vineet Gupta <vgupta@kernel.org>, Russell King <linux@armlinux.org.uk>,
+ Catalin Marinas <catalin.marinas@arm.com>, Will Deacon <will@kernel.org>,
+ Huacai Chen <chenhuacai@kernel.org>, WANG Xuerui <kernel@xen0n.name>,
+ Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
+ Paul Walmsley <paul.walmsley@sifive.com>, Palmer Dabbelt
+ <palmer@dabbelt.com>, Albert Ou <aou@eecs.berkeley.edu>,
+ Lorenzo Pieralisi <lpieralisi@kernel.org>, Hanjun Guo
+ <guohanjun@huawei.com>, Sudeep Holla <sudeep.holla@arm.com>,
+ "K. Y. Srinivasan" <kys@microsoft.com>,
+ Haiyang Zhang <haiyangz@microsoft.com>, Wei Liu <wei.liu@kernel.org>,
+ Dexuan Cui <decui@microsoft.com>,
+ Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
+ David Woodhouse <dwmw2@infradead.org>, Lu Baolu <baolu.lu@linux.intel.com>,
+ Niklas Schnelle <schnelle@linux.ibm.com>,
+ Matthew Rosato <mjrosato@linux.ibm.com>,
+ Gerald Schaefer <gerald.schaefer@linux.ibm.com>,
+ Jean-Philippe Brucker <jean-philippe@linaro.org>,
+ Rob Herring <robh+dt@kernel.org>, Frank Rowand <frowand.list@gmail.com>,
+ Marek Szyprowski <m.szyprowski@samsung.com>, Jason Gunthorpe <jgg@ziepe.ca>,
+ linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+ linux-acpi@vger.kernel.org, iommu@lists.linux.dev,
+ devicetree@vger.kernel.org, Jason Gunthorpe <jgg@nvidia.com>,
+ "linux-tegra@vger.kernel.org" <linux-tegra@vger.kernel.org>
+References: <cover.1713523152.git.robin.murphy@arm.com>
+ <e28a114243d1e79eb3609aded034f8529521333f.1713523152.git.robin.murphy@arm.com>
+ <243d441d-dda8-442a-a495-83bf9725a14c@nvidia.com>
+From: Robin Murphy <robin.murphy@arm.com>
+Content-Language: en-GB
+In-Reply-To: <243d441d-dda8-442a-a495-83bf9725a14c@nvidia.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
-X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
- nalasex01c.na.qualcomm.com (10.47.97.35)
-X-QCInternal: smtphost
-X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
-X-Proofpoint-ORIG-GUID: txihSruCNW1nVPzBJ-XNCpZsT7TjaDCy
-X-Proofpoint-GUID: txihSruCNW1nVPzBJ-XNCpZsT7TjaDCy
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.293,Aquarius:18.0.1039,Hydra:6.0.650,FMLib:17.11.176.26
- definitions=2024-05-15_07,2024-05-15_01,2023-05-22_02
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 adultscore=0 spamscore=0
- impostorscore=0 malwarescore=0 phishscore=0 bulkscore=0 suspectscore=0
- mlxscore=0 clxscore=1015 priorityscore=1501 mlxlogscore=999
- lowpriorityscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.19.0-2405010000 definitions=main-2405150098
 
+Hi Jon,
 
-
-On 5/10/2024 6:32 PM, Konrad Dybcio wrote:
-> On 10.05.2024 2:52 PM, Bibek Kumar Patro wrote:
+On 2024-05-14 2:27 pm, Jon Hunter wrote:
+> Hi Robin,
+> 
+> On 19/04/2024 17:54, Robin Murphy wrote:
+>> It's now easy to retrieve the device's DMA limits if we want to check
+>> them against the domain aperture, so do that ourselves instead of
+>> relying on them being passed through the callchain.
 >>
+>> Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
+>> Tested-by: Hanjun Guo <guohanjun@huawei.com>
+>> Signed-off-by: Robin Murphy <robin.murphy@arm.com>
+>> ---
+>>   drivers/iommu/dma-iommu.c | 21 +++++++++------------
+>>   1 file changed, 9 insertions(+), 12 deletions(-)
 >>
->> On 5/1/2024 12:30 AM, Rob Clark wrote:
->>> On Tue, Jan 23, 2024 at 7:00 AM Bibek Kumar Patro
->>> <quic_bibekkum@quicinc.com> wrote:
->>>>
->>>> Currently in Qualcomm  SoCs the default prefetch is set to 1 which allows
->>>> the TLB to fetch just the next page table. MMU-500 features ACTLR
->>>> register which is implementation defined and is used for Qualcomm SoCs
->>>> to have a custom prefetch setting enabling TLB to prefetch the next set
->>>> of page tables accordingly allowing for faster translations.
->>>>
->>>> ACTLR value is unique for each SMR (Stream matching register) and stored
->>>> in a pre-populated table. This value is set to the register during
->>>> context bank initialisation.
->>>>
->>>> Signed-off-by: Bibek Kumar Patro <quic_bibekkum@quicinc.com>
->>>> ---
+>> diff --git a/drivers/iommu/dma-iommu.c b/drivers/iommu/dma-iommu.c
+>> index a3039005b696..f542eabaefa4 100644
+>> --- a/drivers/iommu/dma-iommu.c
+>> +++ b/drivers/iommu/dma-iommu.c
+>> @@ -660,19 +660,16 @@ static void iommu_dma_init_options(struct 
+>> iommu_dma_options *options,
+>>   /**
+>>    * iommu_dma_init_domain - Initialise a DMA mapping domain
+>>    * @domain: IOMMU domain previously prepared by iommu_get_dma_cookie()
+>> - * @base: IOVA at which the mappable address space starts
+>> - * @limit: Last address of the IOVA space
+>>    * @dev: Device the domain is being initialised for
+>>    *
+>> - * @base and @limit + 1 should be exact multiples of IOMMU page 
+>> granularity to
+>> - * avoid rounding surprises. If necessary, we reserve the page at 
+>> address 0
+>> + * If the geometry and dma_range_map include address 0, we reserve 
+>> that page
+>>    * to ensure it is an invalid IOVA. It is safe to reinitialise a 
+>> domain, but
+>>    * any change which could make prior IOVAs invalid will fail.
+>>    */
+>> -static int iommu_dma_init_domain(struct iommu_domain *domain, 
+>> dma_addr_t base,
+>> -                 dma_addr_t limit, struct device *dev)
+>> +static int iommu_dma_init_domain(struct iommu_domain *domain, struct 
+>> device *dev)
+>>   {
+>>       struct iommu_dma_cookie *cookie = domain->iova_cookie;
+>> +    const struct bus_dma_region *map = dev->dma_range_map;
+>>       unsigned long order, base_pfn;
+>>       struct iova_domain *iovad;
+>>       int ret;
+>> @@ -684,18 +681,18 @@ static int iommu_dma_init_domain(struct 
+>> iommu_domain *domain, dma_addr_t base,
+>>       /* Use the smallest supported page size for IOVA granularity */
+>>       order = __ffs(domain->pgsize_bitmap);
+>> -    base_pfn = max_t(unsigned long, 1, base >> order);
+>> +    base_pfn = 1;
+>>       /* Check the domain allows at least some access to the device... */
+>> -    if (domain->geometry.force_aperture) {
+>> +    if (map) {
+>> +        dma_addr_t base = dma_range_map_min(map);
+>>           if (base > domain->geometry.aperture_end ||
+>> -            limit < domain->geometry.aperture_start) {
+>> +            dma_range_map_max(map) < domain->geometry.aperture_start) {
+>>               pr_warn("specified DMA range outside IOMMU capability\n");
+>>               return -EFAULT;
+>>           }
+>>           /* ...then finally give it a kicking to make sure it fits */
+>> -        base_pfn = max_t(unsigned long, base_pfn,
+>> -                domain->geometry.aperture_start >> order);
+>> +        base_pfn = max(base, domain->geometry.aperture_start) >> order;
+>>       }
+>>       /* start_pfn is always nonzero for an already-initialised domain */
+>> @@ -1760,7 +1757,7 @@ void iommu_setup_dma_ops(struct device *dev, u64 
+>> dma_base, u64 dma_limit)
+>>        * underlying IOMMU driver needs to support via the dma-iommu 
+>> layer.
+>>        */
+>>       if (iommu_is_dma_domain(domain)) {
+>> -        if (iommu_dma_init_domain(domain, dma_base, dma_limit, dev))
+>> +        if (iommu_dma_init_domain(domain, dev))
+>>               goto out_err;
+>>           dev->dma_ops = &iommu_dma_ops;
+>>       }
 > 
-> [...]
 > 
->>>> +
->>>> +               for_each_cfg_sme(cfg, fwspec, j, idx) {
->>>> +                       smr = &smmu->smrs[idx];
->>>> +                       if (smr_is_subset(smr, id, mask)) {
->>>> +                               arm_smmu_cb_write(smmu, cbndx, ARM_SMMU_CB_ACTLR,
->>>> +                                               actlrcfg[i].actlr);
->>>
->>> So, this makes ACTLR look like kind of a FIFO.  But I'm looking at
->>> downstream kgsl's PRR thing (which we'll need to implement vulkan
->>> sparse residency), and it appears to be wanting to set BIT(5) in ACTLR
->>> to enable PRR.
->>>
->>>           val = KGSL_IOMMU_GET_CTX_REG(ctx, KGSL_IOMMU_CTX_ACTLR);
->>>           val |= FIELD_PREP(KGSL_IOMMU_ACTLR_PRR_ENABLE, 1);
->>>           KGSL_IOMMU_SET_CTX_REG(ctx, KGSL_IOMMU_CTX_ACTLR, val);
->>>
->>> Any idea how this works?  And does it need to be done before or after
->>> the ACTLR programming done in this patch?
->>>
->>> BR,
->>> -R
->>>
->>
->> Hi Rob,
->>
->> Can you please help provide some more clarification on the FIFO part? By FIFO are you referring to the storing of ACTLR data in the table?
->>
->> Thanks for pointing to the downstream implementation of kgsl driver for
->> the PRR bit. Since kgsl driver is already handling this PRR bit's
->> setting, this makes setting the PRR BIT(5) by SMMU driver redundant.
-> 
-> The kgsl driver is not present upstream.
-> 
+> I have noticed some random test failures on Tegra186 and Tegra194 and 
+> bisect is pointing to this commit. Reverting this along with the various 
+> dependencies does fix the problem. On Tegra186 CPU hotplug is failing 
+> and on Tegra194 suspend is failing. Unfortunately, on neither platform 
+> do I see any particular crash but the boards hang somewhere.
 
-Right kgsl is not present upstream, it would be better to avoid 
-configuring the PRR bit and can be handled by kgsl directly in downstream.
+That is... thoroughly bemusing :/ Not only is there supposed to be no 
+real functional change here - we should merely be recalculating the same 
+information from dev->dma_range_map that the callers were already doing 
+to generate the base/limit arguments - but the act of initially setting 
+up a default domain for a device behind an IOMMU should have no 
+connection whatsoever to suspend and especially not to CPU hotplug.
 
->> Thanks for bringing up this point.
->> I will send v10 patch series removing this BIT(5) setting from the ACTLR
->> table.
-> 
-> I think it's generally saner to configure the SMMU from the SMMU driver..
+> If you have any ideas on things we can try let me know.
 
-Yes, agree on this. But since PRR bit is not directly related to SMMU
-configuration so I think it would be better to remove this PRR bit
-setting from SMMU driver based on my understanding.
+Since the symptom seems inexplicable, I'd throw the usual memory 
+debugging stuff like KASAN at it first. I'd also try 
+"no_console_suspend" to check whether any late output is being missed in 
+the suspend case (and if it's already broken, then any additional issues 
+that may be caused by the console itself hopefully shouldn't matter).
 
+For more base-covering, do you have the "arm64: Properly clean up 
+iommu-dma remnants" fix in there already as well? That bug has bisected 
+to patch #6 each time though, so I do still suspect that what you're 
+seeing is likely something else. It does seem potentially significant 
+that those Tegra platforms are making fairly wide use of dma-ranges, but 
+there's no clear idea forming out of that observation just yet...
 
-Thanks & regards,
-Bibek
-> 
-> Konrad
+Thanks,
+Robin.
