@@ -1,307 +1,337 @@
-Received: from mail.8bytes.org (mail.8bytes.org [85.214.250.239])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id D7DFD39FC1
-	for <iommu@lists.linux.dev>; Fri, 17 May 2024 09:57:42 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=85.214.250.239
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1715939865; cv=none; b=Ypk9xUgtADnDgH4GHMacOZe1feuwuRn4B8u7Rg3UVRPoNZxnIK4T2LExQKl2JXnFbhaGN3MeeCy9wV7G2km57/EmKzLBeZcq4m0X5/S04Nms/FgEWm5gklmeb5yo9/iMQRU57byUAVVlwiVVxtiqttZp1YM8Ogw0vPJ+5+TTOhU=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1715939865; c=relaxed/simple;
-	bh=Q59QUcYATVoiGnVZA4Y30AzDdBYL5H61GMjEm6yTfSU=;
-	h=Date:From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:
-	 Content-Disposition; b=mnwtu7qRnYXFLu6lw+XDJyMdqmOK8F3NEFL1LEr+xCd+72XmR+XdyssvlOG7u8JXZQ78ffKYeK4iLVV70l7121cq0EOyu6O+GCCcsB9/iLvpTgmlMLNQXGFLnAUtYdtqo255EFcg9paXs1jyQ5yNR0wZLbxynkyN2iTE9dxbNnM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=8bytes.org; spf=pass smtp.mailfrom=8bytes.org; dkim=pass (2048-bit key) header.d=8bytes.org header.i=@8bytes.org header.b=P3HZANmW; arc=none smtp.client-ip=85.214.250.239
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=8bytes.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=8bytes.org
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=8bytes.org header.i=@8bytes.org header.b="P3HZANmW"
-Received: from 8bytes.org (pd9fe9dd8.dip0.t-ipconnect.de [217.254.157.216])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange ECDHE (P-256) server-signature RSA-PSS (2048 bits) server-digest SHA256)
+Received: from NAM10-BN7-obe.outbound.protection.outlook.com (mail-bn7nam10on2058.outbound.protection.outlook.com [40.107.92.58])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.8bytes.org (Postfix) with ESMTPSA id 52B511C0B67;
-	Fri, 17 May 2024 11:57:36 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=8bytes.org;
-	s=default; t=1715939856;
-	bh=Q59QUcYATVoiGnVZA4Y30AzDdBYL5H61GMjEm6yTfSU=;
-	h=Date:From:To:Cc:Subject:From;
-	b=P3HZANmW0HH9Lc7KLo9yS+wowd4UBo+GuETRE1CZHiVQ1uz+uvNAPV1J7Xp0+OWQR
-	 vQ/7aQiM/8z2ZfHoJHjNH05ON+zEQHk+wrSqa1PE0kFsYGV5553C1tZnZH+/wweviM
-	 GpbhLDSmu+TQJPKRtDIkQK8WIeOtnMbLacedOpUKRQORD1+FuIjKO+fkICttDi+IKD
-	 boxv2Os08eV//mBfTQF8rxBjy1U+bUKUmZjXk/xHlpK+byp2e8iVNmMWfihlQlzZZa
-	 vbS1oJ2H/xrx1aXKr+rAnsen9oM4fAbD4G3nc2+P0nO9bZciYLyaC8U2s/hR2qaLxq
-	 /9apKzHdBPOBA==
-Date: Fri, 17 May 2024 11:57:34 +0200
-From: Joerg Roedel <joro@8bytes.org>
-To: Linus Torvalds <torvalds@linux-foundation.org>
-Cc: Will Deacon <will@kernel.org>, linux-kernel@vger.kernel.org,
-	iommu@lists.linux.dev
-Subject: [git pull] IOMMU Updates for Linux v6.10
-Message-ID: <ZkcqDrFmd4ZHv7Qf@8bytes.org>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B81925BAC1
+	for <iommu@lists.linux.dev>; Fri, 17 May 2024 14:22:13 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.92.58
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1715955735; cv=fail; b=c+uN8TFQ4DccY60GqRpNoTK/4RzRMvUMq4e5CsQNinKHbTyGL3PwlEQcTjgQRJFXmzXja1M9li5mg/waNDo2fS8GhzyvfYZl7Rf8L6Ne24hdAjueSNxE1Od6vNXPfX5bSCPre1fDABJ95VYAQAkCgcPo5JgHr3XflMSTqLxTBtc=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1715955735; c=relaxed/simple;
+	bh=fngU33ByadEJddW0Rr+lLUnV4GRikISaTjxK0S/7SUk=;
+	h=Message-ID:Date:Subject:To:Cc:References:From:In-Reply-To:
+	 Content-Type:MIME-Version; b=eRJ5FGd57rGa8j+j7UMUkVglSv+FrrjHK2H9pTlHQB/fip3WkZ2lNuk2aXYLhvkizQZ3N2Xb3JX4SsXeDN3SwCDa0PgJfKOSdeT4tkLAwzAN76douMv+oSOgGJG/Fnf4TqCfO1eRmT9x+FkyecYc3AMHhFM7AlfuDpsRx5WKa2Q=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=sBj7ZTZP; arc=fail smtp.client-ip=40.107.92.58
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="sBj7ZTZP"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=GpbvozE0ELskSbesDC0MOlJExfFWQV2JpDF05shnGo/UJ9rs5iXMooazGTbcu8Mc0+JNl+OJgEG00F66TgP5E1JASgCGmOr3J9dgWRuPikwHP/6PtWHJkwWfpqc+urXNJCsMb4fcQJfGe3YN7Q7qUUYX3VHoFmAypjVQ8cV2iRttlCy2VPHT8dDg262TkjA3t+xkeC1dr9RkIIxJ9v06G0qRte6yJfqSgbUMmrdid83LJGYlC7zzS9dD5+XzAUg9924Wn/aF/kSjs1f0I6upGJeSVdF48q8R+VyHSsR3sFh9ZyX8fmj6Iyp5cw4H2fvH5l5BK+ma/nDKW/EowlRROA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=zSwiecNenrwCJM+14oaiUEsegyXYBBWrRQs6Vc1QA58=;
+ b=OcfeVPv6kpr1fz3zshVTaYTmWAuqSxvGMtlYx2NBm5KBEvz0ZtJwoyHRDUVChSnP9f8OapaY97HbOS5AyDisRQKEauda3lkksJ7rwkDvuhVFxS8g+9wkq/qUHeHVApYkn/KHAj4ZDw61BaMMC1dmRA5jnq6EizKSbuVgb3U7iFxVWzwZBMWkfdWOhqhahGED35YEHIOaJNECLVw70xfijag9zBA7k8t4W4x0xPj7Dus9FxybW2MAzJhnqAaaWFmu9k8xd38TqY8miLW5RUbL6jXim+fRytXsS7KXCmmZDER8/yg5CnonViheRB9JRV2aSBNly5x3TJKMxBy8iQOlxA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=zSwiecNenrwCJM+14oaiUEsegyXYBBWrRQs6Vc1QA58=;
+ b=sBj7ZTZPwh2Uq/YdH8MpEjBx60snF7o4XsSgpjgacp037Sau3tQB/5adH2HF5YQIfL+OrZUKoNj9N52hmoTPS2fL7bQfl0IFn82MM2BbQyNaPkQtvOm825oru54prXNCvFGf+r4Ximn6/O173yfucvwVyPm0weCCsZU6WK9gDJF4tSWUjslWya3VjBMfBwy4aNFYMYuEcmSVd/gLR72LxiDK3HZbP9Q+9pfvKOmP9tBEq4N3ebgzxRAIOHUt1RD5ww34w4Aw5xaYJ6iHte+01q1EVUa1SX9FgAYolPEUgRImSuoegZf+UcbnNUbBgxw/uZKdnK/kp2uixiWgy1FA4g==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nvidia.com;
+Received: from CO6PR12MB5444.namprd12.prod.outlook.com (2603:10b6:5:35e::8) by
+ DS7PR12MB6189.namprd12.prod.outlook.com (2603:10b6:8:9a::17) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.7587.28; Fri, 17 May 2024 14:22:04 +0000
+Received: from CO6PR12MB5444.namprd12.prod.outlook.com
+ ([fe80::ae68:3461:c09b:e6e3]) by CO6PR12MB5444.namprd12.prod.outlook.com
+ ([fe80::ae68:3461:c09b:e6e3%5]) with mapi id 15.20.7587.025; Fri, 17 May 2024
+ 14:22:03 +0000
+Message-ID: <46fc1b7f-7d10-4233-b089-aa173ad3bbeb@nvidia.com>
+Date: Fri, 17 May 2024 15:21:53 +0100
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v4 5/7] iommu/dma: Make limit checks self-contained
+To: Robin Murphy <robin.murphy@arm.com>, Joerg Roedel <joro@8bytes.org>,
+ Christoph Hellwig <hch@lst.de>
+Cc: Vineet Gupta <vgupta@kernel.org>, Russell King <linux@armlinux.org.uk>,
+ Catalin Marinas <catalin.marinas@arm.com>, Will Deacon <will@kernel.org>,
+ Huacai Chen <chenhuacai@kernel.org>, WANG Xuerui <kernel@xen0n.name>,
+ Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
+ Paul Walmsley <paul.walmsley@sifive.com>, Palmer Dabbelt
+ <palmer@dabbelt.com>, Albert Ou <aou@eecs.berkeley.edu>,
+ Lorenzo Pieralisi <lpieralisi@kernel.org>, Hanjun Guo
+ <guohanjun@huawei.com>, Sudeep Holla <sudeep.holla@arm.com>,
+ "K. Y. Srinivasan" <kys@microsoft.com>,
+ Haiyang Zhang <haiyangz@microsoft.com>, Wei Liu <wei.liu@kernel.org>,
+ Dexuan Cui <decui@microsoft.com>,
+ Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
+ David Woodhouse <dwmw2@infradead.org>, Lu Baolu <baolu.lu@linux.intel.com>,
+ Niklas Schnelle <schnelle@linux.ibm.com>,
+ Matthew Rosato <mjrosato@linux.ibm.com>,
+ Gerald Schaefer <gerald.schaefer@linux.ibm.com>,
+ Jean-Philippe Brucker <jean-philippe@linaro.org>,
+ Rob Herring <robh+dt@kernel.org>, Frank Rowand <frowand.list@gmail.com>,
+ Marek Szyprowski <m.szyprowski@samsung.com>, Jason Gunthorpe <jgg@ziepe.ca>,
+ linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+ linux-acpi@vger.kernel.org, iommu@lists.linux.dev,
+ devicetree@vger.kernel.org, Jason Gunthorpe <jgg@nvidia.com>,
+ "linux-tegra@vger.kernel.org" <linux-tegra@vger.kernel.org>
+References: <cover.1713523152.git.robin.murphy@arm.com>
+ <e28a114243d1e79eb3609aded034f8529521333f.1713523152.git.robin.murphy@arm.com>
+ <243d441d-dda8-442a-a495-83bf9725a14c@nvidia.com>
+ <48c39306-c226-4e7f-a013-d679ca80157e@arm.com>
+From: Jon Hunter <jonathanh@nvidia.com>
+Content-Language: en-US
+In-Reply-To: <48c39306-c226-4e7f-a013-d679ca80157e@arm.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
+X-ClientProxiedBy: LO2P265CA0239.GBRP265.PROD.OUTLOOK.COM
+ (2603:10a6:600:b::35) To CO6PR12MB5444.namprd12.prod.outlook.com
+ (2603:10b6:5:35e::8)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: CO6PR12MB5444:EE_|DS7PR12MB6189:EE_
+X-MS-Office365-Filtering-Correlation-Id: 3c2fe087-47ad-4123-2145-08dc767cb8ea
+X-LD-Processed: 43083d15-7273-40c1-b7db-39efd9ccc17a,ExtAddr
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;ARA:13230031|366007|7416005|1800799015|376005;
+X-Microsoft-Antispam-Message-Info:
+	=?utf-8?B?NThEUTNCU25mcDNkS0hNaDBBbS8zYzh3ZXlMRVB0STUzb2VOR0tTOHo0VEp4?=
+ =?utf-8?B?L29ocFQ0R0d3cHlhRzMzVVEwYlVwdFBQS0lYNEUvWEU0R25tT0xvNzVCcysv?=
+ =?utf-8?B?WkNmeEtvQVNUdFZLRkJnbnJBZ1VIYUVCRGRHT1VTcmRUY3orZGdtMjdNOGN3?=
+ =?utf-8?B?UE5lZUgrblY1N3RmeHk2aGlaR1VuakZ6TFZtWUJLQU1PVFJSbWtSQk0ySmFH?=
+ =?utf-8?B?WnNIbWh4LzdWaTVHWVVTYkVud09OWHYzRkJwdW1rWndJdUlWeGFicHA0OVo2?=
+ =?utf-8?B?YzhXdnQ0K2RQbjBKaDcxYUtOS01wQWV3alpOV0xRNkkxREs5M3E0dk9kYjJR?=
+ =?utf-8?B?YXNrVUU2ZVVpS0JJVmV4bkNPRk5KZXhabXRyUXpnSEY4b0hneHJLN29RczA1?=
+ =?utf-8?B?aDBEaVZUWFQ3NWd0OVg4THIyVFFWT2hXak45WEhzRngyeWc0STQrRGNLbU9w?=
+ =?utf-8?B?ejNjNUFhWG9FWjhXR1NyaFd3L3c0UklyZW9MekpIL3FGWmRBNEdkeVBYN2Fv?=
+ =?utf-8?B?QWVVOWFtYmpUUjJ1Q1dRaEFIcDF1aWRKZUVsWmxoVzN4bFpVa1B3YmlUWi92?=
+ =?utf-8?B?SkhmWnEzbjFZRmZuUnFDTHRDb01KSUkzYkNLUzEvbFYwNWpObnRwV1pMTUY5?=
+ =?utf-8?B?dE9xSHc5TUtIOEo0TmpFUEdmWlc3RGtMWXFpOEppeThrMURMNVgwYjZpZTVm?=
+ =?utf-8?B?WElOdUVYZXF6a3ErRllZR1hQUUR2V3VPbjY5aTJrNFQySGs3c3JsVHU2ZWov?=
+ =?utf-8?B?OUdhaTluOXJEUWdEV3VpclVsYi9hNUVtODRPZmU2TDZyTEVXOW14QTVmc2hZ?=
+ =?utf-8?B?VHZTTVZLMnVhd3dxdE1qVjBmbWpyWEprblJrV0pHbGpheUxUYWY2RUdrazFV?=
+ =?utf-8?B?ZzN1ZklzWlpBYXpCcHhEOG1vTGNGa2Zab2RsUElrSUowc1haS2NoUjBrUFNE?=
+ =?utf-8?B?SlhlSnVmQkJGZWVmTVZJZHdpeWNRV2lrSnljUDRJVjAzRUQ5eGxGTjRxR1VT?=
+ =?utf-8?B?b3dpSFljbk1hemxlZmV1K2tITzFIVDhWNzFTUlp3MTliN0Q1NUs3Ym5rNHp6?=
+ =?utf-8?B?WlRzNlJ1OGw4N0NZTTJERlRLSjRCc012TFdiRGRLb2JSRmRjRU1xSzV4Nkxu?=
+ =?utf-8?B?SkFRWGxqdHBkeC92dEhjbjkrQi9DTVBmSmxKYVpWS0lHUWtOUTlIdS9sWmo0?=
+ =?utf-8?B?MUxzakFkbTBJTE9BMDNOUEd3T2cxVnM3citQVnZxZTVNTlZ1VW1FUEFyRXVq?=
+ =?utf-8?B?cFNVaWQ2RytoL3FiTHJZd3FsYThoeFMya280WkxTbWJCcHY4ek9ZSG10TXJr?=
+ =?utf-8?B?U2lnOXZFTTZ2SFpxc1lFM1AzSDYvQTVsbXFTZEhKK0NGQTJPdXhuSWJuYUdC?=
+ =?utf-8?B?ZTFNREdxZkh6emovOXhkNnNMNE5YWG5QRkV3L28xOUxqYVo3NWNhRGJCaXFt?=
+ =?utf-8?B?VEthY3lYejJBeHh2TmdIN3ZQSE9SUDJxalEwK2VnM2ErOC9hdDNxOW83dVFy?=
+ =?utf-8?B?VE1MNmJaTmtrTmJpdDBtakJDR0FrNUg2NHN0dVNtY3ozd1l2VmxkZWZNK2tz?=
+ =?utf-8?B?dklQZHYxQStXN2hYcWcwSGV5Rmw0L0ZSbXh5RFdRSWlNdmsyUjFQTHhYVVo0?=
+ =?utf-8?B?bWFzUnJHQXVSb29LalNqOWNzdzFTemJOQ2FLVDFJNmxmZkdoV2hPd0hKaHJX?=
+ =?utf-8?B?QW4xK1Y4dWJsd2JpanpmRGJqempNMDUvMVpSUHc4MnNaQ2ZCVUV4UUNnPT0=?=
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CO6PR12MB5444.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230031)(366007)(7416005)(1800799015)(376005);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?utf-8?B?c0twRGo2NStGRWxROStYVi9TYlZLeU5DZmJBYVR2T0pyS3BBWTlCR2hmRjZx?=
+ =?utf-8?B?SkgyaVNpSXBWNjRVdldBZDBYQyttRjlNVmVOYnZCZ1JkdzBvZ3h6Z1FBdzdI?=
+ =?utf-8?B?ZjFFODlsT055WTZKR1JmY1BnRGs1Q245NnlBVTB6d3B1elZaVVJFNU53RXN1?=
+ =?utf-8?B?ZlVYV3JlaEtGYXhHOTUyQW9BQVFNK2dYbG1jSjJFaFMyZVRMTEtDNmwveC9D?=
+ =?utf-8?B?dm9tZHZYRnVZQkNWcDhPQ1FYeDF6akxvblVVZTF4YTBsRDQ4Sy9lSDVkQzMy?=
+ =?utf-8?B?ZUxKSmlFaEwvQm96MldiblBGbFdlUWNid1ZxYTJaNmgyTGNGZy9zVG1wYW5j?=
+ =?utf-8?B?bGJ5RTd1NmRuUGJVYUxYaU8yREdLd2hVMXlQaDhmWDcwQ3RTRi9reHEwYXJl?=
+ =?utf-8?B?aWIxcVh0aXBCQXhlKy9nK1BieVF2NTduV2dlTngrdGtrWWFQSVVSWC93bk9R?=
+ =?utf-8?B?M2pKZGRCblllZEhSQ3d4U2llK2tUSSs1MjV4bVY3RGRQeVIxUUhmOERlR0dF?=
+ =?utf-8?B?eldnbXR5LzBmM21hVjBTc1ZvR3F2elpKQjRYRUNTMnRpbDFDalJhcHlwZGc1?=
+ =?utf-8?B?dEo5SytxNFhPYmZLaGRZdndtTEVSV2p5Y0p3cU1ZZkhXVERuNmFkbDB4Q2FV?=
+ =?utf-8?B?d0ZtbmNpSmtWY09Ib1RRWTVmS1U2S3NzMmZEWGNlZUZ5UmNxenZPVWNPYlpJ?=
+ =?utf-8?B?c0hzeTdjUFRESnJQYkdBQi9xK3l2YzdEb240Zk9XUU5LblRXQVZETGVQVFVI?=
+ =?utf-8?B?ZDdoU2lwUUxnYWRyZXFSODAyVUM1dWkxSUh0YmdOcnFNMElXT2dXbE1TbStQ?=
+ =?utf-8?B?VWJvd0RNN2JzVy9EREtjTXFHRUNLWUxDeVRtTXFaaFh5VUhZNGxHOXcyN2xP?=
+ =?utf-8?B?b0YxaFVYMy9ERzNXaHcrckt5NmRaT1ZyRDNnSjVJMjRaeVNYZFhKbWtFMlFT?=
+ =?utf-8?B?SE5wUURKWDVlMmxLazQwSGI2RGVBWUJHcnFTekEza3lCbjRPMEdSSWQ5dzYx?=
+ =?utf-8?B?dklDTmI4b0JrZXBodFF4Tmp3cXJKTHlXSE1wTm5xcVRqTTllaTZidHpRNGtQ?=
+ =?utf-8?B?dU9ZUXdvaHdoejgxWWtOQThiMEJZMWowYWN0M1JFSWxVTEFqR3QvOFBhV0p3?=
+ =?utf-8?B?cjAxTjlQQ3ZJYXltMWFlY1BkTWllVkVMR1pQaEJDcUxycmpwVlVacmI2bU9x?=
+ =?utf-8?B?VmU3WHkxdWtTSEl5NXpxdjYrc3E2QkhDZkdPZUJMbWgvKzR6ZVB0R1NoQ2JK?=
+ =?utf-8?B?SGJselRUYkhJU1pCSjNqK3I3R0hUWEVTQXdTZnlRcnk5VGE3WE1WZGFFOHpU?=
+ =?utf-8?B?RkFpNnlMNmRsVlpnQlRVNW1kcEY5NVFQL2FJWEhuWDVTSWtMUkU1N1Zjd1VL?=
+ =?utf-8?B?Ty9HZnJwR2F3R3lwWUJ6dHdBN2RyMm5xK3NkcTkzVFVjRWU4R2tMK2hONXBp?=
+ =?utf-8?B?NE8rSjZsTWNIVGp4OWNzUFJrd3krczNwazdTaTRLM2lTdHg0ZURaYk9PRzR2?=
+ =?utf-8?B?MDZiSC9kejlFOHFJbWFnV1dJTC9OY1hwUGlJWGNTMjBUa0VyeENkYURLRkI3?=
+ =?utf-8?B?SFF3emVuZnpHZzNnZlgyYUQzWFIxazJnbjBsK3pkZTBJZjRnTm02dXJGc0Mw?=
+ =?utf-8?B?SzM5Qng3eVl0b2ZaU3dNUWRqWWQ0SUw5NENXK1RWWkJkbUdrNk9HRTRISG5D?=
+ =?utf-8?B?aDRraHVtd0lkeXF4MElZcDVXMHdUdWpMT1ozUkhCZnRaMmlHYjB4NG5HdkZx?=
+ =?utf-8?B?M3N5YU5EYk4xNkdqY3BQa2J5bklOREpOQWJQb0pYZzdGLzROT3E1MlFhWlJs?=
+ =?utf-8?B?ZE0wNDg1NEJra1A1b1FOOGcwME9UdDIvTW9GYUN3bmUyVitDWXkrViszMlh5?=
+ =?utf-8?B?R2RvWUlkZENHaExKa3F6MndvQ0U2RllqRk1OekQ0V3o5SlEraDIxeDB0dkVG?=
+ =?utf-8?B?bUNoYTg5MEIrMmJTRmlOYlRaMXYzcUl3eVp4RWZqSHdFWGkvcGdJdmxnd004?=
+ =?utf-8?B?VTZEeHB5ZzBQSWIrR1EzTFdqRkRVMWZBdktzblVSL0llUi9CemN3N3ZUQ0pv?=
+ =?utf-8?B?WlJqbVBVQmNHSFhmYjNnYmVnR1owNlRHRlRWR2JGbFZjSXpvZURaeXRqaXRQ?=
+ =?utf-8?B?VjJLKzNkS201V0RGdDRmVUdJbmpzb1lJR21adkJDZk1TbXp0Yk9DQndXSG51?=
+ =?utf-8?Q?nFuy7lHs3rtqV/ZU0u/N3K/yqWe/3T3TxtZK2OuLlX0c?=
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 3c2fe087-47ad-4123-2145-08dc767cb8ea
+X-MS-Exchange-CrossTenant-AuthSource: CO6PR12MB5444.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 17 May 2024 14:22:03.2448
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: 6qHOxsocpjzqQdfyKEHK1r/qnI0+EjvXnOXsSoWb0FKto1uCk1C9ERBcYjic4e8fBdHZ4r9wGIW6zPOaLZI3pg==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DS7PR12MB6189
 
-Hi Linus,
 
-There is a small and easy to resolve conflict with these changes in
-drivers/acpi/scan.c. Please take the version that comes from the iommu
-tree.  With this being said:
+On 15/05/2024 15:59, Robin Murphy wrote:
+> Hi Jon,
+> 
+> On 2024-05-14 2:27 pm, Jon Hunter wrote:
+>> Hi Robin,
+>>
+>> On 19/04/2024 17:54, Robin Murphy wrote:
+>>> It's now easy to retrieve the device's DMA limits if we want to check
+>>> them against the domain aperture, so do that ourselves instead of
+>>> relying on them being passed through the callchain.
+>>>
+>>> Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
+>>> Tested-by: Hanjun Guo <guohanjun@huawei.com>
+>>> Signed-off-by: Robin Murphy <robin.murphy@arm.com>
+>>> ---
+>>>   drivers/iommu/dma-iommu.c | 21 +++++++++------------
+>>>   1 file changed, 9 insertions(+), 12 deletions(-)
+>>>
+>>> diff --git a/drivers/iommu/dma-iommu.c b/drivers/iommu/dma-iommu.c
+>>> index a3039005b696..f542eabaefa4 100644
+>>> --- a/drivers/iommu/dma-iommu.c
+>>> +++ b/drivers/iommu/dma-iommu.c
+>>> @@ -660,19 +660,16 @@ static void iommu_dma_init_options(struct 
+>>> iommu_dma_options *options,
+>>>   /**
+>>>    * iommu_dma_init_domain - Initialise a DMA mapping domain
+>>>    * @domain: IOMMU domain previously prepared by iommu_get_dma_cookie()
+>>> - * @base: IOVA at which the mappable address space starts
+>>> - * @limit: Last address of the IOVA space
+>>>    * @dev: Device the domain is being initialised for
+>>>    *
+>>> - * @base and @limit + 1 should be exact multiples of IOMMU page 
+>>> granularity to
+>>> - * avoid rounding surprises. If necessary, we reserve the page at 
+>>> address 0
+>>> + * If the geometry and dma_range_map include address 0, we reserve 
+>>> that page
+>>>    * to ensure it is an invalid IOVA. It is safe to reinitialise a 
+>>> domain, but
+>>>    * any change which could make prior IOVAs invalid will fail.
+>>>    */
+>>> -static int iommu_dma_init_domain(struct iommu_domain *domain, 
+>>> dma_addr_t base,
+>>> -                 dma_addr_t limit, struct device *dev)
+>>> +static int iommu_dma_init_domain(struct iommu_domain *domain, struct 
+>>> device *dev)
+>>>   {
+>>>       struct iommu_dma_cookie *cookie = domain->iova_cookie;
+>>> +    const struct bus_dma_region *map = dev->dma_range_map;
+>>>       unsigned long order, base_pfn;
+>>>       struct iova_domain *iovad;
+>>>       int ret;
+>>> @@ -684,18 +681,18 @@ static int iommu_dma_init_domain(struct 
+>>> iommu_domain *domain, dma_addr_t base,
+>>>       /* Use the smallest supported page size for IOVA granularity */
+>>>       order = __ffs(domain->pgsize_bitmap);
+>>> -    base_pfn = max_t(unsigned long, 1, base >> order);
+>>> +    base_pfn = 1;
+>>>       /* Check the domain allows at least some access to the 
+>>> device... */
+>>> -    if (domain->geometry.force_aperture) {
+>>> +    if (map) {
+>>> +        dma_addr_t base = dma_range_map_min(map);
+>>>           if (base > domain->geometry.aperture_end ||
+>>> -            limit < domain->geometry.aperture_start) {
+>>> +            dma_range_map_max(map) < domain->geometry.aperture_start) {
+>>>               pr_warn("specified DMA range outside IOMMU capability\n");
+>>>               return -EFAULT;
+>>>           }
+>>>           /* ...then finally give it a kicking to make sure it fits */
+>>> -        base_pfn = max_t(unsigned long, base_pfn,
+>>> -                domain->geometry.aperture_start >> order);
+>>> +        base_pfn = max(base, domain->geometry.aperture_start) >> order;
+>>>       }
+>>>       /* start_pfn is always nonzero for an already-initialised 
+>>> domain */
+>>> @@ -1760,7 +1757,7 @@ void iommu_setup_dma_ops(struct device *dev, 
+>>> u64 dma_base, u64 dma_limit)
+>>>        * underlying IOMMU driver needs to support via the dma-iommu 
+>>> layer.
+>>>        */
+>>>       if (iommu_is_dma_domain(domain)) {
+>>> -        if (iommu_dma_init_domain(domain, dma_base, dma_limit, dev))
+>>> +        if (iommu_dma_init_domain(domain, dev))
+>>>               goto out_err;
+>>>           dev->dma_ops = &iommu_dma_ops;
+>>>       }
+>>
+>>
+>> I have noticed some random test failures on Tegra186 and Tegra194 and 
+>> bisect is pointing to this commit. Reverting this along with the 
+>> various dependencies does fix the problem. On Tegra186 CPU hotplug is 
+>> failing and on Tegra194 suspend is failing. Unfortunately, on neither 
+>> platform do I see any particular crash but the boards hang somewhere.
+> 
+> That is... thoroughly bemusing :/ Not only is there supposed to be no 
+> real functional change here - we should merely be recalculating the same 
+> information from dev->dma_range_map that the callers were already doing 
+> to generate the base/limit arguments - but the act of initially setting 
+> up a default domain for a device behind an IOMMU should have no 
+> connection whatsoever to suspend and especially not to CPU hotplug.
 
-The following changes since commit a38297e3fb012ddfa7ce0321a7e5a8daeb1872b6:
 
-  Linux 6.9 (2024-05-12 14:12:29 -0700)
+Yes it does look odd, but this is what bisect reported ...
 
-are available in the Git repository at:
+git bisect start
+# good: [a38297e3fb012ddfa7ce0321a7e5a8daeb1872b6] Linux 6.9
+git bisect good a38297e3fb012ddfa7ce0321a7e5a8daeb1872b6
+# bad: [6ba6c795dc73c22ce2c86006f17c4aa802db2a60] Add linux-next specific files for 20240513
+git bisect bad 6ba6c795dc73c22ce2c86006f17c4aa802db2a60
+# good: [29e7f949865a023a21ecdfbd82d68ac697569f34] Merge branch 'main' of git://git.kernel.org/pub/scm/linux/kernel/git/netdev/net-next.git
+git bisect good 29e7f949865a023a21ecdfbd82d68ac697569f34
+# skip: [150e6cc14e51f2a07034106a4529cdaafd812c46] Merge branch 'next' of git://git.kernel.org/pub/scm/linux/kernel/git/dtor/input.git
+git bisect skip 150e6cc14e51f2a07034106a4529cdaafd812c46
+# good: [f5d75327d30af49acf2e4b55f35ce2e6c45d1287] drm/amd/display: Fix invalid Copyright notice
+git bisect good f5d75327d30af49acf2e4b55f35ce2e6c45d1287
+# skip: [f1ec9a9ffc526df7c9523006c2abbb8ea554cdd8] Merge branch 'for-next' of git://git.kernel.org/pub/scm/linux/kernel/git/krzk/linux-dt.git
+git bisect skip f1ec9a9ffc526df7c9523006c2abbb8ea554cdd8
+# bad: [f091e93306e0429ebb7589b9874590b6a9705e64] dma-mapping: Simplify arch_setup_dma_ops()
+git bisect bad f091e93306e0429ebb7589b9874590b6a9705e64
+# good: [91cfd679f9e8b9a7bf2f26adf66eff99dbe2026b] ACPI/IORT: Handle memory address size limits as limits
+git bisect good 91cfd679f9e8b9a7bf2f26adf66eff99dbe2026b
+# bad: [ad4750b07d3462ce29a0c9b1e88b2a1f9795290e] iommu/dma: Make limit checks self-contained
+git bisect bad ad4750b07d3462ce29a0c9b1e88b2a1f9795290e
+# good: [fece6530bf4b59b01a476a12851e07751e73d69f] dma-mapping: Add helpers for dma_range_map bounds
+git bisect good fece6530bf4b59b01a476a12851e07751e73d69f
+# first bad commit: [ad4750b07d3462ce29a0c9b1e88b2a1f9795290e] iommu/dma: Make limit checks self-contained
 
-  git://git.kernel.org/pub/scm/linux/kernel/git/joro/iommu.git tags/iommu-updates-v6.10
+There is a couple skips in there and so I will try this again.
 
-for you to fetch changes up to 2bd5059c6cc04b02073d4d9f57137ab74e1d8e7a:
+>> If you have any ideas on things we can try let me know.
+> 
+> Since the symptom seems inexplicable, I'd throw the usual memory 
+> debugging stuff like KASAN at it first. I'd also try 
+> "no_console_suspend" to check whether any late output is being missed in 
+> the suspend case (and if it's already broken, then any additional issues 
+> that may be caused by the console itself hopefully shouldn't matter).
+> 
+> For more base-covering, do you have the "arm64: Properly clean up 
+> iommu-dma remnants" fix in there already as well? That bug has bisected 
+> to patch #6 each time though, so I do still suspect that what you're 
+> seeing is likely something else. It does seem potentially significant 
+> that those Tegra platforms are making fairly wide use of dma-ranges, but 
+> there's no clear idea forming out of that observation just yet...
 
-  Merge branches 'arm/renesas', 'arm/smmu', 'x86/amd', 'core' and 'x86/vt-d' into next (2024-05-13 14:06:54 +0200)
+I was hoping it was the same issue other people had reported,
+but the fix provided did not help. I have also tried today's
+-next and I am still seeing the issue.
 
-----------------------------------------------------------------
-IOMMU Updates for Linux v6.10
+I should have more time next week to look at this further. Let
+me confirm which change is causing this and add more debug.
 
-Including:
+Jon
 
-	- Core:
-	  - IOMMU memory usage observability - This will make the memory used
-	    for IO page tables explicitly visible.
-	  - Simplify arch_setup_dma_ops()
-
-	- Intel VT-d:
-	  - Consolidate domain cache invalidation
-	  - Remove private data from page fault message
-	  - Allocate DMAR fault interrupts locally
-	  - Cleanup and refactoring
-
-	- ARM-SMMUv2:
-	  - Support for fault debugging hardware on Qualcomm implementations
-	  - Re-land support for the ->domain_alloc_paging() callback
-
-	- ARM-SMMUv3:
-	  - Improve handling of MSI allocation failure
-	  - Drop support for the "disable_bypass" cmdline option
-	  - Major rework of the CD creation code, following on directly from the
-	    STE rework merged last time around.
-	  - Add unit tests for the new STE/CD manipulation logic
-
-	- AMD-Vi:
-	  - Final part of SVA changes with generic IO page fault handling
-
-	- Renesas IPMMU:
-	  - Add support for R8A779H0 hardware
-
-	- A couple smaller fixes and updates across the sub-tree
-
-----------------------------------------------------------------
-Aleksandr Aprelkov (1):
-      iommu/arm-smmu-v3: Free MSIs in case of ENOMEM
-
-Andy Shevchenko (1):
-      iommu/amd: Fix compilation error
-
-Colin Ian King (1):
-      iommu/vt-d: Remove redundant assignment to variable err
-
-Dimitri Sivanich (1):
-      iommu/vt-d: Allocate DMAR fault interrupts locally
-
-Georgi Djakov (5):
-      dt-bindings: iommu: Add Qualcomm TBU
-      iommu/arm-smmu-qcom-debug: Add support for TBUs
-      iommu/arm-smmu: Allow using a threaded handler for context interrupts
-      iommu/arm-smmu-qcom: Use a custom context fault handler for sdm845
-      iommu/arm-smmu-qcom: Use the custom fault handler on more platforms
-
-Jason Gunthorpe (16):
-      iommu/arm-smmu-v3: Do not allow a SVA domain to be set on the wrong PASID
-      iommu/arm-smmu-v3: Do not ATC invalidate the entire domain
-      iommu/arm-smmu-v3: Add a type for the CD entry
-      iommu/arm-smmu: Convert to domain_alloc_paging()
-      iommu: Add ops->domain_alloc_sva()
-      iommu: Add ops->domain_alloc_sva()
-      iommu/arm-smmu-v3: Add an ops indirection to the STE code
-      iommu/arm-smmu-v3: Make CD programming use arm_smmu_write_entry()
-      iommu/arm-smmu-v3: Move the CD generation for S1 domains into a function
-      iommu/arm-smmu-v3: Consolidate clearing a CD table entry
-      iommu/arm-smmu-v3: Make arm_smmu_alloc_cd_ptr()
-      iommu/arm-smmu-v3: Allocate the CD table entry in advance
-      iommu/arm-smmu-v3: Move the CD generation for SVA into a function
-      iommu/arm-smmu-v3: Build the whole CD in arm_smmu_make_s1_cd()
-      iommu/arm-smmu-v3: Add unit tests for arm_smmu_write_entry
-      iommu/arm-smmu-v3: Make the kunit into a module
-
-Jingqi Liu (2):
-      iommu/vt-d: Remove debugfs use of private data field
-      iommu/vt-d: Remove private data use in fault message
-
-Joerg Roedel (4):
-      Merge branch 'iommu/fixes' into x86/amd
-      Merge branch 'memory-observability' into x86/amd
-      Merge tag 'arm-smmu-updates' of git://git.kernel.org/pub/scm/linux/kernel/git/will/linux into arm/smmu
-      Merge branches 'arm/renesas', 'arm/smmu', 'x86/amd', 'core' and 'x86/vt-d' into next
-
-Lu Baolu (13):
-      iommu/vt-d: Remove caching mode check before device TLB flush
-      iommu/vt-d: Add cache tag assignment interface
-      iommu/vt-d: Add cache tag invalidation helpers
-      iommu/vt-d: Add trace events for cache tag interface
-      iommu/vt-d: Use cache_tag_flush_all() in flush_iotlb_all
-      iommu/vt-d: Use cache_tag_flush_range() in tlb_sync
-      iommu/vt-d: Use cache_tag_flush_range_np() in iotlb_sync_map
-      iommu/vt-d: Cleanup use of iommu_flush_iotlb_psi()
-      iommu/vt-d: Use cache_tag_flush_range() in cache_invalidate_user
-      iommu/vt-d: Use cache helpers in arch_invalidate_secondary_tlbs
-      iommu/vt-d: Remove intel_svm_dev
-      iommu/vt-d: Remove struct intel_svm
-      iommu/vt-d: Decouple igfx_off from graphic identity mapping
-
-Pasha Tatashin (11):
-      iommu/vt-d: add wrapper functions for page allocations
-      iommu/dma: use iommu_put_pages_list() to releae freelist
-      iommu/amd: use page allocation function provided by iommu-pages.h
-      iommu/io-pgtable-arm: use page allocation function provided by iommu-pages.h
-      iommu/io-pgtable-dart: use page allocation function provided by iommu-pages.h
-      iommu/exynos: use page allocation function provided by iommu-pages.h
-      iommu/rockchip: use page allocation function provided by iommu-pages.h
-      iommu/sun50i: use page allocation function provided by iommu-pages.h
-      iommu/tegra-smmu: use page allocation function provided by iommu-pages.h
-      iommu: observability of the IOMMU allocations
-      iommu: account IOMMU allocated memory
-
-Robin Murphy (9):
-      iommu/arm-smmu-v3: Retire disable_bypass parameter
-      OF: Retire dma-ranges mask workaround
-      OF: Simplify DMA range calculations
-      ACPI/IORT: Handle memory address size limits as limits
-      dma-mapping: Add helpers for dma_range_map bounds
-      iommu/dma: Make limit checks self-contained
-      iommu/dma: Centralise iommu_setup_dma_ops()
-      dma-mapping: Simplify arch_setup_dma_ops()
-      arm64: Properly clean up iommu-dma remnants
-
-Suravee Suthikulpanit (3):
-      iommu/amd: Move PPR-related functions into ppr.c
-      iommu/amd: Define per-IOMMU iopf_queue
-      iommu/amd: Add support for page response
-
-Thanh Le (1):
-      dt-bindings: iommu: renesas,ipmmu-vmsa: add r8a779h0 support
-
-Uros Bizjak (1):
-      iommu/vt-d: Use try_cmpxchg64{,_local}() in iommu.c
-
-Vasant Hegde (10):
-      iommu/amd: Rename amd_iommu_v2_supported() as amd_iommu_pasid_supported()
-      iommu/amd: Introduce per device DTE update function
-      iommu/amd: Fix PPR interrupt processing logic
-      iommu/amd: Introduce iommu_dev_data.max_pasids
-      iommu/amd: Setup GCR3 table in advance if domain is SVA capable
-      iommu/amd: Enable PCI features based on attached domain capability
-      iommu/amd: Add support for enable/disable IOPF
-      iommu/amd: Initial SVA support for AMD IOMMU
-      iommu/amd: Add SVA domain support
-      iommu/amd: Enable Guest Translation after reading IOMMU feature register
-
-Wei Huang (2):
-      iommu/amd: Add support for enabling/disabling IOMMU features
-      iommu/amd: Add IO page fault notifier handler
-
-Will Deacon (1):
-      iommu/arm-smmu-qcom: Don't build debug features as a kernel module
-
-Yi Liu (2):
-      iommu: Undo pasid attachment only for the devices that have succeeded
-      iommu: Pass domain to remove_dev_pasid() op
-
- Documentation/admin-guide/cgroup-v2.rst            |   2 +-
- .../devicetree/bindings/iommu/qcom,tbu.yaml        |  69 +++
- .../bindings/iommu/renesas,ipmmu-vmsa.yaml         |   1 +
- Documentation/filesystems/proc.rst                 |   4 +-
- arch/arc/mm/dma.c                                  |   3 +-
- arch/arm/mm/dma-mapping-nommu.c                    |   3 +-
- arch/arm/mm/dma-mapping.c                          |  16 +-
- arch/arm64/Kconfig                                 |   1 -
- arch/arm64/mm/dma-mapping.c                        |  13 +-
- arch/loongarch/kernel/dma.c                        |   9 +-
- arch/mips/mm/dma-noncoherent.c                     |   3 +-
- arch/riscv/mm/dma-noncoherent.c                    |   3 +-
- drivers/acpi/arm64/dma.c                           |  17 +-
- drivers/acpi/arm64/iort.c                          |  20 +-
- drivers/acpi/scan.c                                |   7 +-
- drivers/hv/hv_common.c                             |   6 +-
- drivers/iommu/Kconfig                              |  25 +-
- drivers/iommu/amd/Kconfig                          |   3 +
- drivers/iommu/amd/Makefile                         |   2 +-
- drivers/iommu/amd/amd_iommu.h                      |  60 ++-
- drivers/iommu/amd/amd_iommu_types.h                |  33 ++
- drivers/iommu/amd/init.c                           | 177 +++----
- drivers/iommu/amd/io_pgtable.c                     |  13 +-
- drivers/iommu/amd/io_pgtable_v2.c                  |  18 +-
- drivers/iommu/amd/iommu.c                          | 302 +++++++----
- drivers/iommu/amd/pasid.c                          | 198 +++++++
- drivers/iommu/amd/ppr.c                            | 288 +++++++++++
- drivers/iommu/arm/arm-smmu-v3/Makefile             |   2 +
- drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c    | 168 ++++--
- drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-test.c   | 468 +++++++++++++++++
- drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c        | 568 +++++++++++----------
- drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h        |  60 ++-
- drivers/iommu/arm/arm-smmu/arm-smmu-qcom-debug.c   | 496 ++++++++++++++++++
- drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c         |   8 +
- drivers/iommu/arm/arm-smmu/arm-smmu-qcom.h         |   2 +
- drivers/iommu/arm/arm-smmu/arm-smmu.c              |  20 +-
- drivers/iommu/arm/arm-smmu/arm-smmu.h              |   3 +
- drivers/iommu/dma-iommu.c                          |  46 +-
- drivers/iommu/dma-iommu.h                          |  14 +-
- drivers/iommu/exynos-iommu.c                       |  14 +-
- drivers/iommu/intel/Makefile                       |   2 +-
- drivers/iommu/intel/cache.c                        | 419 +++++++++++++++
- drivers/iommu/intel/debugfs.c                      |   7 -
- drivers/iommu/intel/dmar.c                         |  26 +-
- drivers/iommu/intel/iommu.c                        | 383 +++-----------
- drivers/iommu/intel/iommu.h                        |  88 +++-
- drivers/iommu/intel/irq_remapping.c                |  16 +-
- drivers/iommu/intel/nested.c                       |  69 +--
- drivers/iommu/intel/pasid.c                        |  18 +-
- drivers/iommu/intel/perf.h                         |   1 -
- drivers/iommu/intel/svm.c                          | 383 ++++----------
- drivers/iommu/intel/trace.h                        |  97 ++++
- drivers/iommu/io-pgtable-arm.c                     |  15 +-
- drivers/iommu/io-pgtable-dart.c                    |  37 +-
- drivers/iommu/iommu-pages.h                        | 186 +++++++
- drivers/iommu/iommu-sva.c                          |  16 +-
- drivers/iommu/iommu.c                              |  48 +-
- drivers/iommu/irq_remapping.c                      |   5 +-
- drivers/iommu/irq_remapping.h                      |   2 +-
- drivers/iommu/rockchip-iommu.c                     |  14 +-
- drivers/iommu/s390-iommu.c                         |   6 -
- drivers/iommu/sun50i-iommu.c                       |   7 +-
- drivers/iommu/tegra-smmu.c                         |  18 +-
- drivers/iommu/virtio-iommu.c                       |  10 -
- drivers/of/device.c                                |  42 +-
- include/linux/acpi_iort.h                          |   4 +-
- include/linux/dma-direct.h                         |  18 +
- include/linux/dma-map-ops.h                        |   6 +-
- include/linux/dmar.h                               |   2 +-
- include/linux/iommu.h                              |  16 +-
- include/linux/mmzone.h                             |   5 +-
- mm/vmstat.c                                        |   3 +
- 72 files changed, 3536 insertions(+), 1598 deletions(-)
- create mode 100644 Documentation/devicetree/bindings/iommu/qcom,tbu.yaml
- create mode 100644 drivers/iommu/amd/pasid.c
- create mode 100644 drivers/iommu/amd/ppr.c
- create mode 100644 drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-test.c
- create mode 100644 drivers/iommu/intel/cache.c
- create mode 100644 drivers/iommu/iommu-pages.h
-
-Please pull.
-
-Thanks,
-
-	Joerg
+-- 
+nvpublic
