@@ -1,144 +1,150 @@
-Received: from mail-qv1-f45.google.com (mail-qv1-f45.google.com [209.85.219.45])
+Received: from mail-pl1-f177.google.com (mail-pl1-f177.google.com [209.85.214.177])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CB7E013DB96
-	for <iommu@lists.linux.dev>; Fri, 17 May 2024 17:19:50 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.219.45
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AB68D13E02C;
+	Fri, 17 May 2024 17:36:39 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.177
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1715966392; cv=none; b=JeCg8qik5IF9WKxz9GFx3naNkgnDrQEOp9R08p54ly/FfljNKeMF7VhoEHvn5ZO+iu/ATPz+6WcesuHcCTw1ZUdmLMvv/Gt1OsvMRlKylNgnzmZVtr/HFDn3QIlh3QhBtQYia9lL0MmWnkqmX8qzlJjBnbaGlooI9/oJksKuLWw=
+	t=1715967401; cv=none; b=oUQvJyl58VdneJZdI7eWIPZxHt2Kx2ppQr5zzpD566axK+/V0pz6MMlfWvPX/f2+wCqvXDQN5HULBtLDWnkKGJB2OR68znrIEnszJoldrRyxex7Z8ZdWf2ksP/7aCvcCdwq8SawO4nbt0QjKV5zrtd3ec9VQh3gt20QowBfYOTg=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1715966392; c=relaxed/simple;
-	bh=9lqaZiLXVqQKz34hEpjrAlMK+jXub2IrwnL7zPj4nzM=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=hg/oIlqaL8OYAcD99gKiF967XU3deTkfEQXC9SEm37VNQemUD/kr3Kdf1dLj6uXqoBuVVif/Tv384NOMI/FydKi7SYZtmROcRXYbFL8SU/4/kvdhzRQetJCQXqqIxuWjMQuPPnVix4rxsS2XbHRvD7DTtc8fTj3G/m3tzO7RmRk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=chromium.org; spf=pass smtp.mailfrom=chromium.org; dkim=pass (1024-bit key) header.d=chromium.org header.i=@chromium.org header.b=WJNHG40N; arc=none smtp.client-ip=209.85.219.45
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=chromium.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=chromium.org
+	s=arc-20240116; t=1715967401; c=relaxed/simple;
+	bh=l7K75G8hEZf6Nf3Gd+zb5LouEwarRLauIdJPMoFivlA=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=HHDU2a+DAWtPRcmt4C6PNdPbseXKcMelAX2wzvQMYCRqxHPakEdRVvQff3WPguwpodBLpV7fPbdCvZ94NfW0WSvQDuc0Gmbi/M37I2hQcmH6pFp7wlAmn5n+co7hQSDkGkpVMKwa0McBxDQvO/xYNevxFiLG7sf4OWnflrwmeZQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=roeck-us.net; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=hV4w9Iol; arc=none smtp.client-ip=209.85.214.177
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=roeck-us.net
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=chromium.org header.i=@chromium.org header.b="WJNHG40N"
-Received: by mail-qv1-f45.google.com with SMTP id 6a1803df08f44-6a077a861e7so6926136d6.2
-        for <iommu@lists.linux.dev>; Fri, 17 May 2024 10:19:50 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="hV4w9Iol"
+Received: by mail-pl1-f177.google.com with SMTP id d9443c01a7336-1ec486198b6so15118655ad.1;
+        Fri, 17 May 2024 10:36:39 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google; t=1715966389; x=1716571189; darn=lists.linux.dev;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=Rvj+oLK1oxIlGb3spxeAPsEXiUc18MOxDzwp6iBcUmk=;
-        b=WJNHG40NN9a0WAkBPPOi25DtIrA145q74Ie+aWGZxu/rwiEvWW1lK8NuKkf7e/wE7n
-         A/sO7aBvPxiwbNJ76oshlQMq/ezGkuDkMZXJLI60Sg+hdQ1tGh1mFJ+rRvIPODjtTnyB
-         90sObLAji4bM/2iiXpZhzyxY9b7PN0DHvyLn0=
+        d=gmail.com; s=20230601; t=1715967399; x=1716572199; darn=lists.linux.dev;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:sender:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=rzMfxbAB8QJEcJdIySGROcUOqAKXWq8nqUdcExbi1Zk=;
+        b=hV4w9IolMMmjD8XURDWVaLQjDioylnLGDAu1hhBHFjUihgd+Mb1Qc0zDyOEfL/5OW2
+         N0q+Jb8T0WYlKVczlhJuBMV3GRJSEnVsuqUdUz5Cz1PyTzf+UC+fAAvOUHGur2cDfLTa
+         DZ2o2B8PKp5joUL8j2W3k7N7iqFIQRKZoVRG8xvC2+Owmpa+j47EkexsO+h5L6TRZn9/
+         zda93JMR2ZeWeqb6ppLE+Pkr1nuCkFxJ8yZ8NBb9XS9BUN4gpUGfSNoUHeyCq34uSHIR
+         9vCkRPZqgfMqx8QBkODi/Jj87b9+PpNxIaNqir9K/8ljlMFAgIYORnDcI+udkhFzNx46
+         Xd9w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1715966389; x=1716571189;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+        d=1e100.net; s=20230601; t=1715967399; x=1716572199;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:sender:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=Rvj+oLK1oxIlGb3spxeAPsEXiUc18MOxDzwp6iBcUmk=;
-        b=WrejsycVFPQxqKJgTzimdzdX0HcBze3Tyk1Tx3lRbVfu9DnQbNgrd/nsm+DbMtFe7w
-         CHmP+cS1zQ76xi5V+2vI5uCBCbn8EQTofpgKzWx0GzLHLEs6VQJZ1XoU+fqYFBeQ2vFU
-         XoXT4reLV19KzXjZTwlm5yHLp1+8vCAW689Q1bte3I+8nlCc4TUtxaFchetd7umIOJM6
-         hQihOc8q4dcCd2AckVFs4S7RbPXZwdtc64GbXkZF6wI4SBoz6LUBMPAbuFxy0bHxvePv
-         8jgX/hYlzDkrVXcX2K2osc/dntn1Q6ta+gkwOna0MGJBSfTBhJnTT+5bSjKcXFVCgwb7
-         ya7g==
-X-Forwarded-Encrypted: i=1; AJvYcCUnK3HTQ4fHTzMe/9/ONxBs2x/Zku+3GXOP2eFfk1Iua+Bicf53uwLKH8SVvKeaZeoYlkVq7z96jvkqq6psoKPeSC3Is98=
-X-Gm-Message-State: AOJu0Yz1pXdinbEF4pFJdU6XuWRG+X/gwiwl5dc/ZiXjVvRdeJ//i/aC
-	TVdL4ZWxbQ4YHYFtvXKtF5AnVCWryqa3daBwzW0tl7UH86sAj7qvqlTeoWE3qzs9IJcmO2vOKBY
-	=
-X-Google-Smtp-Source: AGHT+IFrGSv7MpXErCS0nMraScbvqzZBXYt8jcuD1GU5lGcN1eArVI3tqZqx9d6xHeSrHouSeB47jA==
-X-Received: by 2002:a05:6214:428d:b0:6a0:cba8:68c5 with SMTP id 6a1803df08f44-6a1682596c0mr276079456d6.60.1715966389012;
-        Fri, 17 May 2024 10:19:49 -0700 (PDT)
-Received: from mail-qt1-f178.google.com (mail-qt1-f178.google.com. [209.85.160.178])
-        by smtp.gmail.com with ESMTPSA id 6a1803df08f44-6a15f1d912dsm87507946d6.123.2024.05.17.10.19.47
-        for <iommu@lists.linux.dev>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 17 May 2024 10:19:48 -0700 (PDT)
-Received: by mail-qt1-f178.google.com with SMTP id d75a77b69052e-43dfe020675so23391cf.0
-        for <iommu@lists.linux.dev>; Fri, 17 May 2024 10:19:47 -0700 (PDT)
-X-Forwarded-Encrypted: i=1; AJvYcCXv7f+dM4EpwZxmGU0b8jqpPOPcDEACPTj6m6UoFVq96yNTzlgkjVhmGEZwj/DFmDiJpzABMagfvejjzsGSvwCOTWTXFCI=
-X-Received: by 2002:a05:622a:410e:b0:43c:554e:b81 with SMTP id
- d75a77b69052e-43e44c22ee8mr3422401cf.23.1715966387328; Fri, 17 May 2024
- 10:19:47 -0700 (PDT)
+        bh=rzMfxbAB8QJEcJdIySGROcUOqAKXWq8nqUdcExbi1Zk=;
+        b=nTKl8nT96H79iL3/IF1R7n2l39WExlcMFYo2ntMJreHkMkPRA9ZSg6VvQcrPeM4qLd
+         WoJZrkJFtCYGs12dnU+Vw7BEJsyOLSknXiD5LhE9KjV5d7/Bfg/uSbrSKUWZ829MP2kJ
+         +RUvUEC34BYOEuqeYDkIDJpnbEzj+s+KSwi7ucDoZYwIaBUYMawj1LPWp38DolKrwG2H
+         o3kzhsTiqKqURqkq6DNTmHG2LmXIaOg8DrezPiSMUig2/1d2VqoAMy4pqyhDOFXjrp7X
+         fFzZzJZmnlyoM7PU9WRqNXccEsLUvqdOgxUElZV5Vb+xo/l/WIntfIuHGYUVF/TjS8rn
+         tRag==
+X-Forwarded-Encrypted: i=1; AJvYcCWrs67oZ6I4koIKZlCdK812MOOkVhDoxSv5+jRUvvU7n2erYMR0S2g15RzB/i0JJj1uhuSYTdoZ9Zb3IZnO18dte79JXF8beI6QXmkfroDQwG5VC63AUR8SFWWypRd+9W3XDaOvSpszqL86iNsFx0+I8F0hM8hrfPl2iFcS8hgC/owrYa6UV81Tuk70xtBIirqCqH4lNK3RpYlCkpH2
+X-Gm-Message-State: AOJu0YxjMcbY9eiLU+ZPjU9Y1xKmYIZfFJHMY8Wgt1iB6eiL5OVmm0L4
+	UPoowJUtvTNO1qDHmGuzynkOPgW0uLvcpfIVkGorBna/WS0Lfp8B
+X-Google-Smtp-Source: AGHT+IHJ9PZtASiLb9HJkYrHy1DRhdQlVEuKbRr0NYIRv4Tx+av91BIA0wx1gBcIQQlm9sd2COIQnQ==
+X-Received: by 2002:a17:90a:9606:b0:2b9:a299:928e with SMTP id 98e67ed59e1d1-2b9a29994c9mr10436893a91.24.1715967398710;
+        Fri, 17 May 2024 10:36:38 -0700 (PDT)
+Received: from server.roeck-us.net ([2600:1700:e321:62f0:329c:23ff:fee3:9d7c])
+        by smtp.gmail.com with ESMTPSA id 98e67ed59e1d1-2b67105666csm15749258a91.8.2024.05.17.10.36.37
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 17 May 2024 10:36:38 -0700 (PDT)
+Sender: Guenter Roeck <groeck7@gmail.com>
+Date: Fri, 17 May 2024 10:36:37 -0700
+From: Guenter Roeck <linux@roeck-us.net>
+To: Steven Rostedt <rostedt@goodmis.org>
+Cc: LKML <linux-kernel@vger.kernel.org>,
+	Linux trace kernel <linux-trace-kernel@vger.kernel.org>,
+	Masami Hiramatsu <mhiramat@kernel.org>,
+	Mathieu Desnoyers <mathieu.desnoyers@efficios.com>,
+	Linus Torvalds <torvalds@linux-foundation.org>,
+	linuxppc-dev@lists.ozlabs.org, kvm@vger.kernel.org,
+	linux-block@vger.kernel.org, linux-cxl@vger.kernel.org,
+	linux-media@vger.kernel.org, dri-devel@lists.freedesktop.org,
+	amd-gfx@lists.freedesktop.org, intel-gfx@lists.freedesktop.org,
+	intel-xe@lists.freedesktop.org, linux-arm-msm@vger.kernel.org,
+	freedreno@lists.freedesktop.org, virtualization@lists.linux.dev,
+	linux-rdma@vger.kernel.org, linux-pm@vger.kernel.org,
+	iommu@lists.linux.dev, linux-tegra@vger.kernel.org,
+	netdev@vger.kernel.org, linux-hyperv@vger.kernel.org,
+	ath10k@lists.infradead.org, linux-wireless@vger.kernel.org,
+	ath11k@lists.infradead.org, ath12k@lists.infradead.org,
+	brcm80211@lists.linux.dev, brcm80211-dev-list.pdl@broadcom.com,
+	linux-usb@vger.kernel.org, linux-bcachefs@vger.kernel.org,
+	linux-nfs@vger.kernel.org, ocfs2-devel@lists.linux.dev,
+	linux-cifs@vger.kernel.org, linux-xfs@vger.kernel.org,
+	linux-edac@vger.kernel.org, selinux@vger.kernel.org,
+	linux-btrfs@vger.kernel.org, linux-erofs@lists.ozlabs.org,
+	linux-f2fs-devel@lists.sourceforge.net, linux-hwmon@vger.kernel.org,
+	io-uring@vger.kernel.org, linux-sound@vger.kernel.org,
+	bpf@vger.kernel.org, linux-wpan@vger.kernel.org,
+	dev@openvswitch.org, linux-s390@vger.kernel.org,
+	tipc-discussion@lists.sourceforge.net,
+	Julia Lawall <Julia.Lawall@inria.fr>
+Subject: Re: [PATCH] tracing/treewide: Remove second parameter of
+ __assign_str()
+Message-ID: <5080f4c5-e0b3-4c2e-9732-f673d7e6ca66@roeck-us.net>
+References: <20240516133454.681ba6a0@rorschach.local.home>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <20240513161343.1.I5db5530070a1335e6cc3c55e056c2a84b1031308@changeid>
- <20240517163742.GA525@willie-the-truck>
-In-Reply-To: <20240517163742.GA525@willie-the-truck>
-From: Doug Anderson <dianders@chromium.org>
-Date: Fri, 17 May 2024 10:19:29 -0700
-X-Gmail-Original-Message-ID: <CAD=FV=UEXjD=w41Hj_gE--DXhkSjNdfPnkc7X=FrZJ5_90Jq0g@mail.gmail.com>
-Message-ID: <CAD=FV=UEXjD=w41Hj_gE--DXhkSjNdfPnkc7X=FrZJ5_90Jq0g@mail.gmail.com>
-Subject: Re: [PATCH] iommu/arm-smmu: Don't disable next-page prefetcher on
- devices it works on
-To: Will Deacon <will@kernel.org>
-Cc: Robin Murphy <robin.murphy@arm.com>, Joerg Roedel <joro@8bytes.org>, 
-	Stephen Boyd <swboyd@chromium.org>, Chen Lin <chen45464546@163.com>, iommu@lists.linux.dev, 
-	linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20240516133454.681ba6a0@rorschach.local.home>
 
-Hi,
+On Thu, May 16, 2024 at 01:34:54PM -0400, Steven Rostedt wrote:
+> From: "Steven Rostedt (Google)" <rostedt@goodmis.org>
+> 
+> [
+>    This is a treewide change. I will likely re-create this patch again in
+>    the second week of the merge window of v6.10 and submit it then. Hoping
+>    to keep the conflicts that it will cause to a minimum.
+> ]
+> 
+> With the rework of how the __string() handles dynamic strings where it
+> saves off the source string in field in the helper structure[1], the
+> assignment of that value to the trace event field is stored in the helper
+> value and does not need to be passed in again.
+> 
+> This means that with:
+> 
+>   __string(field, mystring)
+> 
+> Which use to be assigned with __assign_str(field, mystring), no longer
+> needs the second parameter and it is unused. With this, __assign_str()
+> will now only get a single parameter.
+> 
+> There's over 700 users of __assign_str() and because coccinelle does not
+> handle the TRACE_EVENT() macro I ended up using the following sed script:
+> 
+>   git grep -l __assign_str | while read a ; do
+>       sed -e 's/\(__assign_str([^,]*[^ ,]\) *,[^;]*/\1)/' $a > /tmp/test-file;
+>       mv /tmp/test-file $a;
+>   done
+> 
+> I then searched for __assign_str() that did not end with ';' as those
+> were multi line assignments that the sed script above would fail to catch.
+> 
 
-On Fri, May 17, 2024 at 9:37=E2=80=AFAM Will Deacon <will@kernel.org> wrote=
-:
->
-> Hi Doug,
->
-> On Mon, May 13, 2024 at 04:13:47PM -0700, Douglas Anderson wrote:
-> > On sc7180 trogdor devices we get a scary warning at bootup:
-> >   arm-smmu 15000000.iommu:
-> >   Failed to disable prefetcher [errata #841119 and #826419], check ACR.=
-CACHE_LOCK
-> >
-> > We spent some time trying to figure out how we were going to fix these
-> > errata and whether we needed to do a firmware update. Upon closer
-> > inspection, however, we realized that the errata don't apply to us.
-> > Specifically, the errata document says that for these errata:
-> > * Found in: r0p0
-> > * Fixed in: r2p2
-> >
-> > ...and trogdor devices appear to be running r2p4. That means that they
-> > are unaffected despite the scary warning.
-> >
-> > The issue is that the kernel unconditionally tries to disable the
-> > prefetcher even on unaffected devices and then warns when it's unable
-> > to.
-> >
-> > Let's change the kernel to only disable the prefetcher on affected
-> > devices, which will get rid of the scary warning on devices that are
-> > unaffected. As per the comment the prefetcher is
-> > "not-particularly-beneficial" but it shouldn't hurt to leave it on for
-> > devices where it doesn't cause problems.
-> >
-> > Fixes: f87f6e5b4539 ("iommu/arm-smmu: Warn once when the perfetcher err=
-ata patch fails to apply")
-> > Signed-off-by: Douglas Anderson <dianders@chromium.org>
-> > ---
-> >
-> >  drivers/iommu/arm/arm-smmu/arm-smmu-impl.c | 21 +++++++++++++--------
-> >  1 file changed, 13 insertions(+), 8 deletions(-)
->
->
-> Just curious, but did you see any performance impact (good or bad) as a
-> result of this patch? The next-page prefetcher has always looked a little
-> naive to me and, with a tendency for tiny TLBs in some implementations,
-> there's a possibility it could do more harm than good.
+Building csky:allmodconfig (and others) ... failed
+--------------
+Error log:
+In file included from include/trace/trace_events.h:419,
+                 from include/trace/define_trace.h:102,
+                 from drivers/cxl/core/trace.h:737,
+                 from drivers/cxl/core/trace.c:8:
+drivers/cxl/core/./trace.h:383:1: error: macro "__assign_str" passed 2 arguments, but takes just 1
 
-This patch actually makes no difference on trogdor today other than
-getting rid of the scary warning. Specifically on trogdor the
-ACR.CACHE_LOCK bit seems to be set so the kernel is unable to change
-the setting anyway and has never been able to. We are working on
-figuring out how to fix the firmware and then we have to get a
-firmware spin before we can really see any changes. I'll keep an eye
-out to see if performance numbers change when the firmware uprevs.
+This is with the patch applied on top of v6.9-8410-gff2632d7d08e.
+So far that seems to be the only build failure.
+Introduced with commit 6aec00139d3a8 ("cxl/core: Add region info to
+cxl_general_media and cxl_dram events"). Guess we'll see more of those
+towards the end of the commit window.
 
-BTW: any idea how big of a deal these errata are? We're _just_
-finishing a firmware uprev process and there is always pushback
-against kicking off a new one unless the issue is important. Given
-that we've been living with this issue since devices shipped I'm going
-to assume we don't need to rush a firmware update, but if this is
-really scary and needs to be addressed sooner we can figure that out.
-
--Doug
+Guenter
