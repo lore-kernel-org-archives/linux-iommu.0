@@ -1,181 +1,144 @@
-Received: from NAM10-BN7-obe.outbound.protection.outlook.com (mail-bn7nam10on2077.outbound.protection.outlook.com [40.107.92.77])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-qv1-f45.google.com (mail-qv1-f45.google.com [209.85.219.45])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0A0F813D8BA
-	for <iommu@lists.linux.dev>; Fri, 17 May 2024 17:11:21 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.92.77
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1715965883; cv=fail; b=KLXeXJmgfa+YEq2M2ni1YIWm1bhp4KfFGy9u7rvphv8Mx/+P4Rv8ycQ8MSA8CCRKFy2LRrIhFkBS2W/px3gBAwmSaTzLbN3qYzu/kPZi+rOvvG5uH91x+dyOW/JqEGUjc+zTkhLMtVWsjZy927YPkdm9wzXrAcnKgsNV16CYzfg=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1715965883; c=relaxed/simple;
-	bh=t3yltwot5f7S3vVHDCLiyuB5vTAChN7G5HFGd0k7dq8=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:Content-Type:
-	 Content-Disposition:In-Reply-To:MIME-Version; b=iovYeOpBcwPO0HXG6Utcii22nYSPtt80WopivWI+1hjblUbylZJLnLgrKPa+E+tX2dE484kvpjLwVkM3z6ZfoN0SsQ2gdA1MB1W8gzxp4ex9mEH/AOz11pOtM9dCuk5a6x4sdtc4sDxLrlHGD26tr1lf0j3tmQJQUvCiOHblPMI=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=cCDyj9wr; arc=fail smtp.client-ip=40.107.92.77
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CB7E013DB96
+	for <iommu@lists.linux.dev>; Fri, 17 May 2024 17:19:50 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.219.45
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1715966392; cv=none; b=JeCg8qik5IF9WKxz9GFx3naNkgnDrQEOp9R08p54ly/FfljNKeMF7VhoEHvn5ZO+iu/ATPz+6WcesuHcCTw1ZUdmLMvv/Gt1OsvMRlKylNgnzmZVtr/HFDn3QIlh3QhBtQYia9lL0MmWnkqmX8qzlJjBnbaGlooI9/oJksKuLWw=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1715966392; c=relaxed/simple;
+	bh=9lqaZiLXVqQKz34hEpjrAlMK+jXub2IrwnL7zPj4nzM=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=hg/oIlqaL8OYAcD99gKiF967XU3deTkfEQXC9SEm37VNQemUD/kr3Kdf1dLj6uXqoBuVVif/Tv384NOMI/FydKi7SYZtmROcRXYbFL8SU/4/kvdhzRQetJCQXqqIxuWjMQuPPnVix4rxsS2XbHRvD7DTtc8fTj3G/m3tzO7RmRk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=chromium.org; spf=pass smtp.mailfrom=chromium.org; dkim=pass (1024-bit key) header.d=chromium.org header.i=@chromium.org header.b=WJNHG40N; arc=none smtp.client-ip=209.85.219.45
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=chromium.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=chromium.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="cCDyj9wr"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=hcdHZWrMnYaL7x8qiU+LbrjyFQOBvAz9VAUidd9OKac/8dIiQMja6iJaiSbaWnjo0D7L8Og5tVYZGbobr4gNje5lKxIusSWpQj0cRbOsS2ThPD28g8tMx1q2Roi5NLTpbb8zZxipM4kBTqbjbmMJ2FBQe2lrGcs396+GshG0ptBmJbFCdfsL4sYlN5QxlS0A6KkMs0jT8gA7WGymbmLAP+2bHa8nstYCvostUHlhYPbC8FHS9tBfMEppcTdXE8LJUNYLDMCYQ76PzykLxUFHFp4KjCMDhBgYYD1ADdKO3Awu2tXNqt1cfX7MmpZmVWQFPyePsS2KUwZU7eerQhtnhw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=rWY8js2yIbn1iXvqxLsnyqtuD6Dr+kAnmuS9Cg0MsUQ=;
- b=d4MedcMXBeE6WnpYElyFbxvvhwbrsVvA8vuZcMlq7aqDDgpPqtozL/8KrwK2/A74uj2ayT7vHDEzWtU+H/EwoulQvkgVSPlioG9oSCpfm9GBGozwqP/6pwXhHYHUe7ajmorp6DiY+xOuzlj5K8e8QBATrQyD7gjwvVwF1kZ2sSuAjrlSd2QiwOpBIGfIEU95mAI7pB+aeGwhBF7YTd6N3CAbPFOH8wH6nWxzLEJyDd+0THCYKSBAYooqMTpeQry5vyce+TmpAhHs7BPi25bjmLcBDm6SPOEQKbNLPRhjeb4aHdWk84AJLmpK2x7vW5jxlctK5EZZTY5aCxjfuQVhGQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=rWY8js2yIbn1iXvqxLsnyqtuD6Dr+kAnmuS9Cg0MsUQ=;
- b=cCDyj9wrPyca7fYNk/vppZnvY+Vw+jnoAgMHum3PNI1BkDg3DcISg+J0Yj7sw4FUCMM5M2PwB/HhbVPFHxJ0g6UnfDSJZPtmewafhELRMsmtIB/S+fIrXxS+w4WvP8CDtRogkByd2GUFAVwE5W759CrRPC+SMvi9ru5Uapyz4YPTVnEDZveY4zlkK1VOG/Bx/m5sS4p+OeDGH+9t6G5txVY0W6WmwlPAHG+uO3W52o5JyKd7qq9fixl6ic6ONU1oxlwFuVp+8S0dr5puqGtjvFXPw1+PCvY6CnsK4t4yfJZBLsvuQOF8hlf84U6FX1zPx0RkWrJLuGwhxuEZjzVDMg==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-Received: from DM6PR12MB3849.namprd12.prod.outlook.com (2603:10b6:5:1c7::26)
- by IA0PR12MB8424.namprd12.prod.outlook.com (2603:10b6:208:40c::15) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7544.55; Fri, 17 May
- 2024 17:11:18 +0000
-Received: from DM6PR12MB3849.namprd12.prod.outlook.com
- ([fe80::c296:774b:a5fc:965e]) by DM6PR12MB3849.namprd12.prod.outlook.com
- ([fe80::c296:774b:a5fc:965e%4]) with mapi id 15.20.7587.028; Fri, 17 May 2024
- 17:11:18 +0000
-Date: Fri, 17 May 2024 14:11:17 -0300
-From: Jason Gunthorpe <jgg@nvidia.com>
-To: Alex Williamson <alex.williamson@redhat.com>
-Cc: "Tian, Kevin" <kevin.tian@intel.com>,
-	"Zhao, Yan Y" <yan.y.zhao@intel.com>,
-	"kvm@vger.kernel.org" <kvm@vger.kernel.org>,
-	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-	"x86@kernel.org" <x86@kernel.org>,
-	"iommu@lists.linux.dev" <iommu@lists.linux.dev>,
-	"pbonzini@redhat.com" <pbonzini@redhat.com>,
-	"seanjc@google.com" <seanjc@google.com>,
-	"dave.hansen@linux.intel.com" <dave.hansen@linux.intel.com>,
-	"luto@kernel.org" <luto@kernel.org>,
-	"peterz@infradead.org" <peterz@infradead.org>,
-	"tglx@linutronix.de" <tglx@linutronix.de>,
-	"mingo@redhat.com" <mingo@redhat.com>,
-	"bp@alien8.de" <bp@alien8.de>, "hpa@zytor.com" <hpa@zytor.com>,
-	"corbet@lwn.net" <corbet@lwn.net>,
-	"joro@8bytes.org" <joro@8bytes.org>,
-	"will@kernel.org" <will@kernel.org>,
-	"robin.murphy@arm.com" <robin.murphy@arm.com>,
-	"baolu.lu@linux.intel.com" <baolu.lu@linux.intel.com>,
-	"Liu, Yi L" <yi.l.liu@intel.com>
-Subject: Re: [PATCH 4/5] vfio/type1: Flush CPU caches on DMA pages in
- non-coherent domains
-Message-ID: <20240517171117.GB20229@nvidia.com>
-References: <20240507061802.20184-1-yan.y.zhao@intel.com>
- <20240507062138.20465-1-yan.y.zhao@intel.com>
- <20240509121049.58238a6f.alex.williamson@redhat.com>
- <Zj33cUe7HYOIfj5N@yzhao56-desk.sh.intel.com>
- <20240510105728.76d97bbb.alex.williamson@redhat.com>
- <ZkG9IEQwi7HG3YBk@yzhao56-desk.sh.intel.com>
- <BN9PR11MB52766D78684F6206121590B98CED2@BN9PR11MB5276.namprd11.prod.outlook.com>
- <20240516143159.0416d6c7.alex.williamson@redhat.com>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20240516143159.0416d6c7.alex.williamson@redhat.com>
-X-ClientProxiedBy: YTBP288CA0023.CANP288.PROD.OUTLOOK.COM
- (2603:10b6:b01:14::36) To DM6PR12MB3849.namprd12.prod.outlook.com
- (2603:10b6:5:1c7::26)
+	dkim=pass (1024-bit key) header.d=chromium.org header.i=@chromium.org header.b="WJNHG40N"
+Received: by mail-qv1-f45.google.com with SMTP id 6a1803df08f44-6a077a861e7so6926136d6.2
+        for <iommu@lists.linux.dev>; Fri, 17 May 2024 10:19:50 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google; t=1715966389; x=1716571189; darn=lists.linux.dev;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=Rvj+oLK1oxIlGb3spxeAPsEXiUc18MOxDzwp6iBcUmk=;
+        b=WJNHG40NN9a0WAkBPPOi25DtIrA145q74Ie+aWGZxu/rwiEvWW1lK8NuKkf7e/wE7n
+         A/sO7aBvPxiwbNJ76oshlQMq/ezGkuDkMZXJLI60Sg+hdQ1tGh1mFJ+rRvIPODjtTnyB
+         90sObLAji4bM/2iiXpZhzyxY9b7PN0DHvyLn0=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1715966389; x=1716571189;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=Rvj+oLK1oxIlGb3spxeAPsEXiUc18MOxDzwp6iBcUmk=;
+        b=WrejsycVFPQxqKJgTzimdzdX0HcBze3Tyk1Tx3lRbVfu9DnQbNgrd/nsm+DbMtFe7w
+         CHmP+cS1zQ76xi5V+2vI5uCBCbn8EQTofpgKzWx0GzLHLEs6VQJZ1XoU+fqYFBeQ2vFU
+         XoXT4reLV19KzXjZTwlm5yHLp1+8vCAW689Q1bte3I+8nlCc4TUtxaFchetd7umIOJM6
+         hQihOc8q4dcCd2AckVFs4S7RbPXZwdtc64GbXkZF6wI4SBoz6LUBMPAbuFxy0bHxvePv
+         8jgX/hYlzDkrVXcX2K2osc/dntn1Q6ta+gkwOna0MGJBSfTBhJnTT+5bSjKcXFVCgwb7
+         ya7g==
+X-Forwarded-Encrypted: i=1; AJvYcCUnK3HTQ4fHTzMe/9/ONxBs2x/Zku+3GXOP2eFfk1Iua+Bicf53uwLKH8SVvKeaZeoYlkVq7z96jvkqq6psoKPeSC3Is98=
+X-Gm-Message-State: AOJu0Yz1pXdinbEF4pFJdU6XuWRG+X/gwiwl5dc/ZiXjVvRdeJ//i/aC
+	TVdL4ZWxbQ4YHYFtvXKtF5AnVCWryqa3daBwzW0tl7UH86sAj7qvqlTeoWE3qzs9IJcmO2vOKBY
+	=
+X-Google-Smtp-Source: AGHT+IFrGSv7MpXErCS0nMraScbvqzZBXYt8jcuD1GU5lGcN1eArVI3tqZqx9d6xHeSrHouSeB47jA==
+X-Received: by 2002:a05:6214:428d:b0:6a0:cba8:68c5 with SMTP id 6a1803df08f44-6a1682596c0mr276079456d6.60.1715966389012;
+        Fri, 17 May 2024 10:19:49 -0700 (PDT)
+Received: from mail-qt1-f178.google.com (mail-qt1-f178.google.com. [209.85.160.178])
+        by smtp.gmail.com with ESMTPSA id 6a1803df08f44-6a15f1d912dsm87507946d6.123.2024.05.17.10.19.47
+        for <iommu@lists.linux.dev>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 17 May 2024 10:19:48 -0700 (PDT)
+Received: by mail-qt1-f178.google.com with SMTP id d75a77b69052e-43dfe020675so23391cf.0
+        for <iommu@lists.linux.dev>; Fri, 17 May 2024 10:19:47 -0700 (PDT)
+X-Forwarded-Encrypted: i=1; AJvYcCXv7f+dM4EpwZxmGU0b8jqpPOPcDEACPTj6m6UoFVq96yNTzlgkjVhmGEZwj/DFmDiJpzABMagfvejjzsGSvwCOTWTXFCI=
+X-Received: by 2002:a05:622a:410e:b0:43c:554e:b81 with SMTP id
+ d75a77b69052e-43e44c22ee8mr3422401cf.23.1715966387328; Fri, 17 May 2024
+ 10:19:47 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: DM6PR12MB3849:EE_|IA0PR12MB8424:EE_
-X-MS-Office365-Filtering-Correlation-Id: 863b1499-7d6f-46f8-838a-08dc76945e20
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;ARA:13230031|366007|1800799015|7416005|376005;
-X-Microsoft-Antispam-Message-Info:
-	=?us-ascii?Q?3dglY4jDWOeJ5qTYFopGB9i/Jytlw32d9TM8rOh70eeCKl95hQZ68PbOEcTu?=
- =?us-ascii?Q?2XnC7CHDtthRrlL2ka0yNYQOjQx/631yZp2S0j848FaJyE6CTlnlQJEQwWhO?=
- =?us-ascii?Q?cvb/o6XDdSP/Zq//OT6zk0M90yVB5uUfb8kkGGksfqEW3xg45jQ8kRW3jCaj?=
- =?us-ascii?Q?s77pj02/HdLYXNB9ZNAZSVtcwWtN3X9We33yo3f8e4PDepwX+sTb4W1OIvjs?=
- =?us-ascii?Q?ri/VAiBP9PIS77aY+sBH/CcCy1G1CRCLLNW7Bc4k7WNyf2ircekaI6GTAHZ4?=
- =?us-ascii?Q?2PEugZd9zugVL3g88jxsclW+80VuBoENPLNlxbX1hmvHDjEoOaR4o1cyool/?=
- =?us-ascii?Q?nbm9BJuKZsDdJcasyw4+Lb+xll6+onrcqobaP/+CKd922FpEjWqqo4zDTNZx?=
- =?us-ascii?Q?XtGRicj72a37sP57vXR3Ae3eQdRTvGWr+lfE+ZWKbJoi/pQeEZeBhgdSIb1P?=
- =?us-ascii?Q?yfaP0NcJ3RckL4hiYHUHjuEWc0gamogun7FywFmq4Nia2ZLEhvZw0sBoyb/l?=
- =?us-ascii?Q?T7L3xk7jeOq17qrRPCj8yNXWLtlJ2r08VU2OwHoO7ArEFNSfM0d1amC7i0lz?=
- =?us-ascii?Q?0kWmVbEqxGW6m8gRyOQfc+HK4gqewZ+Be7QpjoZDhLRhy+eULycewszobCdq?=
- =?us-ascii?Q?o5iaW12t4wdQw+oTWSRG8xtO/r4X/ngi5C6Q+5UXpDDZ+VJyO8jLDJKCvSB9?=
- =?us-ascii?Q?t77TQLe3NBCRaiAqLFIQ47sFdpWfOIVteAEOntl1CtK0O6zBjYPK+40Az6SX?=
- =?us-ascii?Q?OX+dAjjo1Mcw8FIC4nSatqCwBF/fJjRcMM/8Ho3Y1Jr/rA47NGI+jojHrlv0?=
- =?us-ascii?Q?eu1Nabs3fox094d3MlpMB75UEJkm9Op/92TNcaATLLeevKc0SEOPkL+/gnJH?=
- =?us-ascii?Q?t7cX+5KifGVsVkVkcrA4e3a7d3w/BIkTbe0a68GEyvctwLG1TMKX8vEEUNd/?=
- =?us-ascii?Q?uIyaK4HplbeiwjSw0vaqYzqz+1q3h+VyGddEWU8keW0GwAA4CtwLCFyIbc9T?=
- =?us-ascii?Q?HIwK+pdPjwZu1HMO6aAeup2qVJdb4ceWMhKUWbqjQV9Zb1uYRKCv0FyIaG45?=
- =?us-ascii?Q?vncqIgzFeO5GE4+z2pmrLi27XXEWibcW41+jJKduWnRkE4vHJFo3lc+5fo62?=
- =?us-ascii?Q?HBt/tyxKpN9KjJglPqD43mnYxzQlIGi3dehH5PbvIXUKzpnnxfiDdGYSgcW1?=
- =?us-ascii?Q?rzoHQ8BwJNctAZNpSoL0vM4e9fBP5lA0Q8FVBqmuwddSmkEVg8p7F1Ga1jNK?=
- =?us-ascii?Q?fQ0t2ds6K8Gxbh2U8ROwNyV/WL74e4dNqkv3XR0SJg=3D=3D?=
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM6PR12MB3849.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230031)(366007)(1800799015)(7416005)(376005);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?us-ascii?Q?FZPxmdGBnD+wr/rxlKDhT+/qA3jBhgTQr0q+msHYzD2tjcymw9MG/oN0O9NM?=
- =?us-ascii?Q?zVJL4C/kKjQeOiMdt/tjKGp8mP1cVa4hm0kgKR32YA1sSkBylHwi0trxNZf4?=
- =?us-ascii?Q?qu9SOTJjvzpZsq6/XbpIkwxPGucTYYenukC+69XEFOm3u+Lwwd0nXOR/k+J0?=
- =?us-ascii?Q?twt5VvA3pPlrJpqXwQtA1ELUEXRu8TfYfN+Rvs2jUbhwsxvlFEyueeI1fo1F?=
- =?us-ascii?Q?Yc9Oeso/IrvO8oXcICTrYB7bMLHV8Cnm9Tb6j691WSr7TbZBbSe6J7pIR0Wc?=
- =?us-ascii?Q?wOkK4eGAwPZygzC9ajZMrvcITKZeyuRkZ//qpJuofnhpNfuVpQ37Y1j4uP6z?=
- =?us-ascii?Q?E3DEgaQ8kCTwu0VVVSHziQSQWDAAJKZhjnxqrcLYbZhu2uYhxoRa47a6tscQ?=
- =?us-ascii?Q?fPV9xRifDgj16i0LK/zB91i+ixcoRdCHOgudeVlTRa2w2swunb/DrUDTSSU+?=
- =?us-ascii?Q?P7CBJS0AOtI3lWWPbwmv39V+OS1Ij86PTq6fMB694VTFSg6VupVFujrJ/pkG?=
- =?us-ascii?Q?Hm+bsc4d9KWXHjeV9fZ2YiABUbAT+PY9MmZk0yKycvmO2lbdNave1sJMP6tO?=
- =?us-ascii?Q?HDBldSZ5P+o+5iHtGNxqwC9WlErAzuS/eehqyaRAPL37bmcny7ZiBSZSEJT6?=
- =?us-ascii?Q?cD9Cifmh+dkpOxXJhAPzbfKkUM1eHmQ1GfwkgHw/e3+jiOwk0i7CyKUJl//C?=
- =?us-ascii?Q?y6eZOoKTR30i9KcNolUAY01PhNO2HYjHtG0wpFCh/0ZG4gj5jAbpjVjTk/jw?=
- =?us-ascii?Q?QgnflLrTXy3y9cfuzuvGBHItodmY8gfUtQlWfsvQF5A1N0r1zrWVZ7z1vinV?=
- =?us-ascii?Q?g8KguhxFMtJgCeYo8yZLuvRf8Pf7lofHey8rL8A+XyDC7z/wCZrXnB9ZOfsz?=
- =?us-ascii?Q?mxZJE4PlSnosxuw8PuQwqPYwjMa2Woelc4ZJwDDgeM6lkYZktdM9GhLnLJFK?=
- =?us-ascii?Q?u14KvSUuXArYUx5V9H0pL3kX8lIkR4AAPRnGFduhXZgtx2G76hZyPpFUOQPa?=
- =?us-ascii?Q?PABPYETRTI7trzcpnC9Yc3Wl/k6+YeAxK1mbo7k8DxS8szoNyOZhMNccA3oU?=
- =?us-ascii?Q?4j8ZdvjVtx8TDlz6fIwk6FcYYRR4xFqQhP7X6vTaLZLn7cMDu9DqnUP6t58A?=
- =?us-ascii?Q?mWsmD090NZPj7E7ZIsCPVASP6adv2iPIueQQntMOAFxWsDDY/sfkSwFLI0YV?=
- =?us-ascii?Q?qJNw4oFf+d86kOXCIWlY89YgcBB3IUXhj30iPN9BT+NMWguEqefM/xE3LwwA?=
- =?us-ascii?Q?V5qHDQIozNtHLHs0hAkiP5UZj5nr3lt4PP5l3KBgh7kzHovykV4MM1eHZU31?=
- =?us-ascii?Q?HNY8HEwUg7gwfJL05igD/leNLmPqYaUWpWFXm87+YqK6pzWQ9Z7Xm1f+O2DG?=
- =?us-ascii?Q?judHUnK0e+3e2gT8WFzetCBqSRzEvGUQYUI9FdpCbc70wtqJrGWlWxTm9d1F?=
- =?us-ascii?Q?K2e1drNrgdZ0Vr3KFMbHo3J8mxtpkDjV5on1dxuj3HO6rb7cKuHIT001f2/3?=
- =?us-ascii?Q?6TggP3t3rQS6T6cp1iD1GcUYCFKHHPWOskvSzzdyddDzxzYf4eCf4a2eqZtA?=
- =?us-ascii?Q?S9zTWlOCVoWrXdqO+WdKT5r6YrJz1UYggJH2qip0?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 863b1499-7d6f-46f8-838a-08dc76945e20
-X-MS-Exchange-CrossTenant-AuthSource: DM6PR12MB3849.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 17 May 2024 17:11:18.7359
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: dFIQsdTditoQIL8aaC1gSOsefQFSg9ykI9rWG65mTgGzle58FFiWkp+Xub6J3zrh
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: IA0PR12MB8424
+References: <20240513161343.1.I5db5530070a1335e6cc3c55e056c2a84b1031308@changeid>
+ <20240517163742.GA525@willie-the-truck>
+In-Reply-To: <20240517163742.GA525@willie-the-truck>
+From: Doug Anderson <dianders@chromium.org>
+Date: Fri, 17 May 2024 10:19:29 -0700
+X-Gmail-Original-Message-ID: <CAD=FV=UEXjD=w41Hj_gE--DXhkSjNdfPnkc7X=FrZJ5_90Jq0g@mail.gmail.com>
+Message-ID: <CAD=FV=UEXjD=w41Hj_gE--DXhkSjNdfPnkc7X=FrZJ5_90Jq0g@mail.gmail.com>
+Subject: Re: [PATCH] iommu/arm-smmu: Don't disable next-page prefetcher on
+ devices it works on
+To: Will Deacon <will@kernel.org>
+Cc: Robin Murphy <robin.murphy@arm.com>, Joerg Roedel <joro@8bytes.org>, 
+	Stephen Boyd <swboyd@chromium.org>, Chen Lin <chen45464546@163.com>, iommu@lists.linux.dev, 
+	linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-On Thu, May 16, 2024 at 02:31:59PM -0600, Alex Williamson wrote:
+Hi,
 
-> Yes, exactly.  Zero'ing the page would obviously reestablish the
-> coherency, but the page could be reallocated without being zero'd and as
-> you describe the owner of that page could then get inconsistent
-> results.  
+On Fri, May 17, 2024 at 9:37=E2=80=AFAM Will Deacon <will@kernel.org> wrote=
+:
+>
+> Hi Doug,
+>
+> On Mon, May 13, 2024 at 04:13:47PM -0700, Douglas Anderson wrote:
+> > On sc7180 trogdor devices we get a scary warning at bootup:
+> >   arm-smmu 15000000.iommu:
+> >   Failed to disable prefetcher [errata #841119 and #826419], check ACR.=
+CACHE_LOCK
+> >
+> > We spent some time trying to figure out how we were going to fix these
+> > errata and whether we needed to do a firmware update. Upon closer
+> > inspection, however, we realized that the errata don't apply to us.
+> > Specifically, the errata document says that for these errata:
+> > * Found in: r0p0
+> > * Fixed in: r2p2
+> >
+> > ...and trogdor devices appear to be running r2p4. That means that they
+> > are unaffected despite the scary warning.
+> >
+> > The issue is that the kernel unconditionally tries to disable the
+> > prefetcher even on unaffected devices and then warns when it's unable
+> > to.
+> >
+> > Let's change the kernel to only disable the prefetcher on affected
+> > devices, which will get rid of the scary warning on devices that are
+> > unaffected. As per the comment the prefetcher is
+> > "not-particularly-beneficial" but it shouldn't hurt to leave it on for
+> > devices where it doesn't cause problems.
+> >
+> > Fixes: f87f6e5b4539 ("iommu/arm-smmu: Warn once when the perfetcher err=
+ata patch fails to apply")
+> > Signed-off-by: Douglas Anderson <dianders@chromium.org>
+> > ---
+> >
+> >  drivers/iommu/arm/arm-smmu/arm-smmu-impl.c | 21 +++++++++++++--------
+> >  1 file changed, 13 insertions(+), 8 deletions(-)
+>
+>
+> Just curious, but did you see any performance impact (good or bad) as a
+> result of this patch? The next-page prefetcher has always looked a little
+> naive to me and, with a tendency for tiny TLBs in some implementations,
+> there's a possibility it could do more harm than good.
 
-I think if we care about the performance of this stuff enough to try
-and remove flushes we'd be better off figuring out how to disable no
-snoop in PCI config space and trust the device not to use it and avoid
-these flushes.
+This patch actually makes no difference on trogdor today other than
+getting rid of the scary warning. Specifically on trogdor the
+ACR.CACHE_LOCK bit seems to be set so the kernel is unable to change
+the setting anyway and has never been able to. We are working on
+figuring out how to fix the firmware and then we have to get a
+firmware spin before we can really see any changes. I'll keep an eye
+out to see if performance numbers change when the firmware uprevs.
 
-iommu enforcement is nice, but at least ARM has been assuming that the
-PCI config space bit is sufficient.
+BTW: any idea how big of a deal these errata are? We're _just_
+finishing a firmware uprev process and there is always pushback
+against kicking off a new one unless the issue is important. Given
+that we've been living with this issue since devices shipped I'm going
+to assume we don't need to rush a firmware update, but if this is
+really scary and needs to be addressed sooner we can figure that out.
 
-Intel/AMD are probably fine here as they will only flush for weird GPU
-cases, but I expect ARM is going to be unhappy.
-
-Jason
+-Doug
