@@ -1,104 +1,93 @@
-Received: from mail-pl1-f202.google.com (mail-pl1-f202.google.com [209.85.214.202])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A051B13E02B
-	for <iommu@lists.linux.dev>; Fri, 17 May 2024 17:38:26 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.202
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5D8F113E40B;
+	Fri, 17 May 2024 17:48:13 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1715967508; cv=none; b=JyJu+TVwTSZ7bABnKe7+sRj2ILvKJ5TWuhAmZieyV4tTO0n7Aq2uJ08vxG7RktmDN52VpH66nZgP/d3GI2ECZkOCWmdSB9bSGfTVdBv9Mo+KMP3Cd8Zay55oWxkcuhET7Pt0AyIRUyilBlLXSF7ngIonkt5HR+irjOLm4p3Rg+M=
+	t=1715968094; cv=none; b=lFnKrgookhOgcn8vA4fQ/6Swm8jZydG2RzUdYhAqQcUnHKNOflsCQ3CJxyAEs2JU11qHOM+zxRO0bGVwUhWuAFepAzvB+hgmGsS2pMca59lL1RJL9zUG27FYOYdnwn+YidGMftMaO7Yz1pDdQ0jVSCFXSqFpR1JUNf09y1MhEj8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1715967508; c=relaxed/simple;
-	bh=tFp0I1ixSIGjk0J3hzcghmx70zj6H8iFP/ZPi1pOWcY=;
-	h=Date:In-Reply-To:Mime-Version:References:Message-ID:Subject:From:
-	 To:Cc:Content-Type; b=iZ/rYVbmEF+bjqCMhBXGjyaNTJcNe5GqZjM14kHfOPWgDrN2KSBXswIsqFCsmJXi+ruiO7Nd4Ndxr/Q5nTiCFhYpmZpM2wD+qkzcbwE2a7kPPlkARY3RQwxGYPLKn4NG7CFl42VjqpGvqMLciu6S944c1ZtQ+qSA9EoSRue3sis=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=flex--tjmercier.bounces.google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=rntvu6OQ; arc=none smtp.client-ip=209.85.214.202
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=flex--tjmercier.bounces.google.com
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="rntvu6OQ"
-Received: by mail-pl1-f202.google.com with SMTP id d9443c01a7336-1ee13ebef37so93960035ad.2
-        for <iommu@lists.linux.dev>; Fri, 17 May 2024 10:38:26 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20230601; t=1715967506; x=1716572306; darn=lists.linux.dev;
-        h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
-         :date:from:to:cc:subject:date:message-id:reply-to;
-        bh=v49Dj+gbnQvzNsVpnYNnWqEQpkDjTigYZ0uaaGS+wzY=;
-        b=rntvu6OQEvcw+x1EcHcg6DKyfcA+EZR++7CDulRZpibUqWKHsQrt0H1Ef+n06RpW3j
-         KnqV2l2kyP1W32YGMR/7wGxhg7LfsLOSyXuVyS24VPVEZR/ZmiLrNkldV6286Z41WoPK
-         T7SJihQHiWwZ5xhSv30HSQwrud3laXU5hW1gwswXkgUMw9z4Y1XohStXJJiQhEdf/o8G
-         PdaI0KlYAcHDo19fFvQ48sJ8PqxtNj1z3+g7wSDKKdnJdD/446mUSpP+ZV8Nuyfc3iXB
-         UmorvToXCAWTQiMYqekeIy48cmF6RGprY4MiYviPoW6sS/EaNKmmms632e8/P4HdIJQz
-         u8Ig==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1715967506; x=1716572306;
-        h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
-         :date:x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=v49Dj+gbnQvzNsVpnYNnWqEQpkDjTigYZ0uaaGS+wzY=;
-        b=ROjq6DpJl1ODDFD5abfKx6HH5hcviQld67s9Zdq6tgryLu+/HPa1h4MqgcaxEfxRXm
-         39/RuznV771wQIYeWCqouPdN2pBUK35knLGBdWxCP3RF1Zp2PLeHh5cbl3FECqaH0wH8
-         OK9VjpLhLTnHzIpnKPhOZ0+sD3Gry9i35TTPDPtA9lWFI0VfGYH3pIcQqAa1A7NVwGTN
-         uQ7poV5NgmSuVOEspH5toUhfAuszbezs7/XcBvKST4LvvILdQ1NJ1yh+FJxGtWWnliu5
-         pd1xC5MHJKD6SBCC8+qqeedG1pbNrsp4WePYQKQdN1MGXV996uk4nxsfbA+BiHtTvrpN
-         Ia+Q==
-X-Gm-Message-State: AOJu0YwqEtJ6fxEu9WtxRB6nXmnt8Da65LtZG1bNRqoTFwjQk/koO/J1
-	ftCcIoxVFhdOfZwSpwUrIMISMxHtMMLelh5KISsUez4vVM2euZRpLg6ID6jUqbNh8LhscE2/cSk
-	fhHfDy+78WmIayg==
-X-Google-Smtp-Source: AGHT+IHLSmcva4cfRRDrPAJHTSjD69JJ2b8EEkFLyON9XgY9LsefdYupK0M6dExJhHVXVKpOWInCESsGLA3vy1s=
-X-Received: from tj-virt.c.googlers.com ([fda3:e722:ac3:cc00:7f:e700:c0a8:5683])
- (user=tjmercier job=sendgmr) by 2002:a17:903:110d:b0:1ea:26bd:fd95 with SMTP
- id d9443c01a7336-1ef43f52f23mr5637345ad.11.1715967505898; Fri, 17 May 2024
- 10:38:25 -0700 (PDT)
-Date: Fri, 17 May 2024 17:38:03 +0000
-In-Reply-To: <20240517173805.4181349-1-tjmercier@google.com>
+	s=arc-20240116; t=1715968094; c=relaxed/simple;
+	bh=gAAJJFKRq7ZuXBKuhjvNoKHrIa1D3KibBfY1qYrv3Ys=;
+	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=YaX6YbjwexKJK35JXhMSWL4SGWOba3YpVqmK90Aprk9dIxmcCy2FA0yhv11mnkhbqAKT0UaGg9FSteQIA6eVq8tHil5EHi2L5fTYnXKlWTjEmqG5rLjnSR3h8R2uTiDVYJB/U1YRBVK2UV4mVh+OGo9EyCAeuc7V75VKBeP6XcI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 424EAC2BD10;
+	Fri, 17 May 2024 17:48:06 +0000 (UTC)
+Date: Fri, 17 May 2024 13:48:34 -0400
+From: Steven Rostedt <rostedt@goodmis.org>
+To: Guenter Roeck <linux@roeck-us.net>
+Cc: LKML <linux-kernel@vger.kernel.org>, Linux trace kernel
+ <linux-trace-kernel@vger.kernel.org>, Masami Hiramatsu
+ <mhiramat@kernel.org>, Mathieu Desnoyers <mathieu.desnoyers@efficios.com>,
+ Linus Torvalds <torvalds@linux-foundation.org>,
+ linuxppc-dev@lists.ozlabs.org, kvm@vger.kernel.org,
+ linux-block@vger.kernel.org, linux-cxl@vger.kernel.org,
+ linux-media@vger.kernel.org, dri-devel@lists.freedesktop.org,
+ amd-gfx@lists.freedesktop.org, intel-gfx@lists.freedesktop.org,
+ intel-xe@lists.freedesktop.org, linux-arm-msm@vger.kernel.org,
+ freedreno@lists.freedesktop.org, virtualization@lists.linux.dev,
+ linux-rdma@vger.kernel.org, linux-pm@vger.kernel.org,
+ iommu@lists.linux.dev, linux-tegra@vger.kernel.org, netdev@vger.kernel.org,
+ linux-hyperv@vger.kernel.org, ath10k@lists.infradead.org,
+ linux-wireless@vger.kernel.org, ath11k@lists.infradead.org,
+ ath12k@lists.infradead.org, brcm80211@lists.linux.dev,
+ brcm80211-dev-list.pdl@broadcom.com, linux-usb@vger.kernel.org,
+ linux-bcachefs@vger.kernel.org, linux-nfs@vger.kernel.org,
+ ocfs2-devel@lists.linux.dev, linux-cifs@vger.kernel.org,
+ linux-xfs@vger.kernel.org, linux-edac@vger.kernel.org,
+ selinux@vger.kernel.org, linux-btrfs@vger.kernel.org,
+ linux-erofs@lists.ozlabs.org, linux-f2fs-devel@lists.sourceforge.net,
+ linux-hwmon@vger.kernel.org, io-uring@vger.kernel.org,
+ linux-sound@vger.kernel.org, bpf@vger.kernel.org,
+ linux-wpan@vger.kernel.org, dev@openvswitch.org,
+ linux-s390@vger.kernel.org, tipc-discussion@lists.sourceforge.net, Julia
+ Lawall <Julia.Lawall@inria.fr>
+Subject: Re: [PATCH] tracing/treewide: Remove second parameter of
+ __assign_str()
+Message-ID: <20240517134834.43e726dd@gandalf.local.home>
+In-Reply-To: <5080f4c5-e0b3-4c2e-9732-f673d7e6ca66@roeck-us.net>
+References: <20240516133454.681ba6a0@rorschach.local.home>
+	<5080f4c5-e0b3-4c2e-9732-f673d7e6ca66@roeck-us.net>
+X-Mailer: Claws Mail 3.20.0git84 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
-Mime-Version: 1.0
-References: <20240517173805.4181349-1-tjmercier@google.com>
-X-Mailer: git-send-email 2.45.0.rc1.225.g2a3ae87e7f-goog
-Message-ID: <20240517173805.4181349-2-tjmercier@google.com>
-Subject: [PATCH v3 2/2] doc: swiotlb: Document SWIOTLB areas parameter
-From: "T.J. Mercier" <tjmercier@google.com>
-To: tjmercier@google.com, Thomas Gleixner <tglx@linutronix.de>, 
-	Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>, 
-	Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org, 
-	"H. Peter Anvin" <hpa@zytor.com>, Jonathan Corbet <corbet@lwn.net>, Tianyu Lan <Tianyu.Lan@microsoft.com>
-Cc: iommu@lists.linux.dev, isaacmanjarres@google.com, robin.murphy@arm.com, 
-	will@kernel.org, joro@8bytes.org, Michael Kelley <mhklinux@outlook.com>, 
-	linux-kernel@vger.kernel.org, linux-doc@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+MIME-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 
-Commit 20347fca71a3 ("swiotlb: split up the global swiotlb lock") added
-the ability to specify the number of SWIOTLB areas, but boot-options.rst
-was not updated as part of that commit. Also adjust the swiotlb option
-syntax to clarify that force and noforce are mutually exclusive.
+On Fri, 17 May 2024 10:36:37 -0700
+Guenter Roeck <linux@roeck-us.net> wrote:
 
-Reported-by: Michael Kelley <mhklinux@outlook.com>
-Fixes: 20347fca71a3 ("swiotlb: split up the global swiotlb lock")
-Signed-off-by: T.J. Mercier <tjmercier@google.com>
----
- Documentation/arch/x86/x86_64/boot-options.rst | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+> Building csky:allmodconfig (and others) ... failed
+> --------------
+> Error log:
+> In file included from include/trace/trace_events.h:419,
+>                  from include/trace/define_trace.h:102,
+>                  from drivers/cxl/core/trace.h:737,
+>                  from drivers/cxl/core/trace.c:8:
+> drivers/cxl/core/./trace.h:383:1: error: macro "__assign_str" passed 2 arguments, but takes just 1
+> 
+> This is with the patch applied on top of v6.9-8410-gff2632d7d08e.
+> So far that seems to be the only build failure.
+> Introduced with commit 6aec00139d3a8 ("cxl/core: Add region info to
+> cxl_general_media and cxl_dram events"). Guess we'll see more of those
+> towards the end of the commit window.
 
-diff --git a/Documentation/arch/x86/x86_64/boot-options.rst b/Documentation/arch/x86/x86_64/boot-options.rst
-index a37139d1752f..d54e636f91f7 100644
---- a/Documentation/arch/x86/x86_64/boot-options.rst
-+++ b/Documentation/arch/x86/x86_64/boot-options.rst
-@@ -287,9 +287,11 @@ iommu options only relevant to the AMD GART hardware IOMMU:
- iommu options only relevant to the software bounce buffering (SWIOTLB) IOMMU
- implementation:
- 
--    swiotlb=<slots>[,force,noforce]
-+    swiotlb=[<slots>][,<areas>][, [force] | [noforce] ]
-       <slots>
-         Prereserve that many 2K slots for the software IO bounce buffering.
-+      <areas>
-+        Number of SWIOTLB areas with their own lock. Must be a power of 2.
-       force
-         Force all IO through the software TLB.
-         Hardware IOMMU implementations can use SWIOTLB bounce buffering in
--- 
-2.45.0.rc1.225.g2a3ae87e7f-goog
+Looks like I made this patch just before this commit was pulled into
+Linus's tree.
 
+Which is why I'll apply and rerun the above again probably on Tuesday of
+next week against Linus's latest.
+
+This patch made it through both an allyesconfig and an allmodconfig, but on
+the commit I had applied it to, which was:
+
+  1b294a1f3561 ("Merge tag 'net-next-6.10' of git://git.kernel.org/pub/scm/linux/kernel/git/netdev/net-next")
+
+I'll be compiling those two builds after I update it then.
+
+-- Steve
