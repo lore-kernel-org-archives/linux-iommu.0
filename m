@@ -1,150 +1,124 @@
-Received: from mail-pl1-f177.google.com (mail-pl1-f177.google.com [209.85.214.177])
+Received: from mail-pj1-f73.google.com (mail-pj1-f73.google.com [209.85.216.73])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AB68D13E02C;
-	Fri, 17 May 2024 17:36:39 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.177
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CC74013DDB6
+	for <iommu@lists.linux.dev>; Fri, 17 May 2024 17:38:13 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.216.73
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1715967401; cv=none; b=oUQvJyl58VdneJZdI7eWIPZxHt2Kx2ppQr5zzpD566axK+/V0pz6MMlfWvPX/f2+wCqvXDQN5HULBtLDWnkKGJB2OR68znrIEnszJoldrRyxex7Z8ZdWf2ksP/7aCvcCdwq8SawO4nbt0QjKV5zrtd3ec9VQh3gt20QowBfYOTg=
+	t=1715967495; cv=none; b=np+Z/l1S5m69b8zaeiJNOxyEEdVfh/sxiPWHNJo6fdC7nFx0YWHU3ISk3y4xGB3HC3vuQA5rl4/gad6K6Rg/eYdmmPZccTT4+sM/wOc9nWpCncSz2HLjILgD5x1YuLrHw8LYkC09TQMSqEi2djDBkVu2Zxhwp9wniC9lYb6La+8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1715967401; c=relaxed/simple;
-	bh=l7K75G8hEZf6Nf3Gd+zb5LouEwarRLauIdJPMoFivlA=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=HHDU2a+DAWtPRcmt4C6PNdPbseXKcMelAX2wzvQMYCRqxHPakEdRVvQff3WPguwpodBLpV7fPbdCvZ94NfW0WSvQDuc0Gmbi/M37I2hQcmH6pFp7wlAmn5n+co7hQSDkGkpVMKwa0McBxDQvO/xYNevxFiLG7sf4OWnflrwmeZQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=roeck-us.net; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=hV4w9Iol; arc=none smtp.client-ip=209.85.214.177
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=roeck-us.net
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1715967495; c=relaxed/simple;
+	bh=BY/hZo13CLwFiuLGXW4iBxh7QnHKbF0uMbcvEEfu4u8=;
+	h=Date:Mime-Version:Message-ID:Subject:From:To:Cc:Content-Type; b=BwEAlB0sVODNl+E0tvawUtL3xIwDgBc8rMJ+5wpYG0twyIt4bACDMo7G5sN2B/n74rGUEWfETPTz8ZyOJYMnUQLUzuFCGU0h1y+bl+q1F5k8NMsc4b9qHFL9aNHoniJg6UepiZ8Oc/8Ft2UsxwzVbYPxUN+4nr3zIakR5RwTHv4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=flex--tjmercier.bounces.google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=ia3q3hAw; arc=none smtp.client-ip=209.85.216.73
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=flex--tjmercier.bounces.google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="hV4w9Iol"
-Received: by mail-pl1-f177.google.com with SMTP id d9443c01a7336-1ec486198b6so15118655ad.1;
-        Fri, 17 May 2024 10:36:39 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="ia3q3hAw"
+Received: by mail-pj1-f73.google.com with SMTP id 98e67ed59e1d1-2ba04ab5e2cso2518804a91.1
+        for <iommu@lists.linux.dev>; Fri, 17 May 2024 10:38:13 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1715967399; x=1716572199; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:sender:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=rzMfxbAB8QJEcJdIySGROcUOqAKXWq8nqUdcExbi1Zk=;
-        b=hV4w9IolMMmjD8XURDWVaLQjDioylnLGDAu1hhBHFjUihgd+Mb1Qc0zDyOEfL/5OW2
-         N0q+Jb8T0WYlKVczlhJuBMV3GRJSEnVsuqUdUz5Cz1PyTzf+UC+fAAvOUHGur2cDfLTa
-         DZ2o2B8PKp5joUL8j2W3k7N7iqFIQRKZoVRG8xvC2+Owmpa+j47EkexsO+h5L6TRZn9/
-         zda93JMR2ZeWeqb6ppLE+Pkr1nuCkFxJ8yZ8NBb9XS9BUN4gpUGfSNoUHeyCq34uSHIR
-         9vCkRPZqgfMqx8QBkODi/Jj87b9+PpNxIaNqir9K/8ljlMFAgIYORnDcI+udkhFzNx46
-         Xd9w==
+        d=google.com; s=20230601; t=1715967493; x=1716572293; darn=lists.linux.dev;
+        h=cc:to:from:subject:message-id:mime-version:date:from:to:cc:subject
+         :date:message-id:reply-to;
+        bh=jzuhfQ6w0AXMfOQGLEmaZLyI3U2s6W3AD5J7+WG1xGA=;
+        b=ia3q3hAwmbxVJS7qvSfIDDI/TebkQNg1kctKNTyQQjCCRx9GUGlOh/fqN6I+gO9G38
+         qWnjSuCdkIHKQB1KK5uwPBSPQj+/ESSDNo/ehBY4gsuz5lVPs5qBYtdC9yM+pi0si5c3
+         XSECAaea2qINtq/UhaFyCL2IpI1BmrF7QX4tXzvnhvf1AZqYJwskTkB4eFVAds/tjr3f
+         gHv9d3b5xSrF+fXgTo0cSoM7RIipiFLX8U1qTCa3UU9DgS9vSR0m96XI9LuXQRs7epKO
+         YJ288LfzyunWD2hOC628VtDbSYkaORAVzrLH60BKIicfu5G8L/HtcjntXTSPUfu17f2z
+         Wx7w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1715967399; x=1716572199;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:sender:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=rzMfxbAB8QJEcJdIySGROcUOqAKXWq8nqUdcExbi1Zk=;
-        b=nTKl8nT96H79iL3/IF1R7n2l39WExlcMFYo2ntMJreHkMkPRA9ZSg6VvQcrPeM4qLd
-         WoJZrkJFtCYGs12dnU+Vw7BEJsyOLSknXiD5LhE9KjV5d7/Bfg/uSbrSKUWZ829MP2kJ
-         +RUvUEC34BYOEuqeYDkIDJpnbEzj+s+KSwi7ucDoZYwIaBUYMawj1LPWp38DolKrwG2H
-         o3kzhsTiqKqURqkq6DNTmHG2LmXIaOg8DrezPiSMUig2/1d2VqoAMy4pqyhDOFXjrp7X
-         fFzZzJZmnlyoM7PU9WRqNXccEsLUvqdOgxUElZV5Vb+xo/l/WIntfIuHGYUVF/TjS8rn
-         tRag==
-X-Forwarded-Encrypted: i=1; AJvYcCWrs67oZ6I4koIKZlCdK812MOOkVhDoxSv5+jRUvvU7n2erYMR0S2g15RzB/i0JJj1uhuSYTdoZ9Zb3IZnO18dte79JXF8beI6QXmkfroDQwG5VC63AUR8SFWWypRd+9W3XDaOvSpszqL86iNsFx0+I8F0hM8hrfPl2iFcS8hgC/owrYa6UV81Tuk70xtBIirqCqH4lNK3RpYlCkpH2
-X-Gm-Message-State: AOJu0YxjMcbY9eiLU+ZPjU9Y1xKmYIZfFJHMY8Wgt1iB6eiL5OVmm0L4
-	UPoowJUtvTNO1qDHmGuzynkOPgW0uLvcpfIVkGorBna/WS0Lfp8B
-X-Google-Smtp-Source: AGHT+IHJ9PZtASiLb9HJkYrHy1DRhdQlVEuKbRr0NYIRv4Tx+av91BIA0wx1gBcIQQlm9sd2COIQnQ==
-X-Received: by 2002:a17:90a:9606:b0:2b9:a299:928e with SMTP id 98e67ed59e1d1-2b9a29994c9mr10436893a91.24.1715967398710;
-        Fri, 17 May 2024 10:36:38 -0700 (PDT)
-Received: from server.roeck-us.net ([2600:1700:e321:62f0:329c:23ff:fee3:9d7c])
-        by smtp.gmail.com with ESMTPSA id 98e67ed59e1d1-2b67105666csm15749258a91.8.2024.05.17.10.36.37
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 17 May 2024 10:36:38 -0700 (PDT)
-Sender: Guenter Roeck <groeck7@gmail.com>
-Date: Fri, 17 May 2024 10:36:37 -0700
-From: Guenter Roeck <linux@roeck-us.net>
-To: Steven Rostedt <rostedt@goodmis.org>
-Cc: LKML <linux-kernel@vger.kernel.org>,
-	Linux trace kernel <linux-trace-kernel@vger.kernel.org>,
-	Masami Hiramatsu <mhiramat@kernel.org>,
-	Mathieu Desnoyers <mathieu.desnoyers@efficios.com>,
-	Linus Torvalds <torvalds@linux-foundation.org>,
-	linuxppc-dev@lists.ozlabs.org, kvm@vger.kernel.org,
-	linux-block@vger.kernel.org, linux-cxl@vger.kernel.org,
-	linux-media@vger.kernel.org, dri-devel@lists.freedesktop.org,
-	amd-gfx@lists.freedesktop.org, intel-gfx@lists.freedesktop.org,
-	intel-xe@lists.freedesktop.org, linux-arm-msm@vger.kernel.org,
-	freedreno@lists.freedesktop.org, virtualization@lists.linux.dev,
-	linux-rdma@vger.kernel.org, linux-pm@vger.kernel.org,
-	iommu@lists.linux.dev, linux-tegra@vger.kernel.org,
-	netdev@vger.kernel.org, linux-hyperv@vger.kernel.org,
-	ath10k@lists.infradead.org, linux-wireless@vger.kernel.org,
-	ath11k@lists.infradead.org, ath12k@lists.infradead.org,
-	brcm80211@lists.linux.dev, brcm80211-dev-list.pdl@broadcom.com,
-	linux-usb@vger.kernel.org, linux-bcachefs@vger.kernel.org,
-	linux-nfs@vger.kernel.org, ocfs2-devel@lists.linux.dev,
-	linux-cifs@vger.kernel.org, linux-xfs@vger.kernel.org,
-	linux-edac@vger.kernel.org, selinux@vger.kernel.org,
-	linux-btrfs@vger.kernel.org, linux-erofs@lists.ozlabs.org,
-	linux-f2fs-devel@lists.sourceforge.net, linux-hwmon@vger.kernel.org,
-	io-uring@vger.kernel.org, linux-sound@vger.kernel.org,
-	bpf@vger.kernel.org, linux-wpan@vger.kernel.org,
-	dev@openvswitch.org, linux-s390@vger.kernel.org,
-	tipc-discussion@lists.sourceforge.net,
-	Julia Lawall <Julia.Lawall@inria.fr>
-Subject: Re: [PATCH] tracing/treewide: Remove second parameter of
- __assign_str()
-Message-ID: <5080f4c5-e0b3-4c2e-9732-f673d7e6ca66@roeck-us.net>
-References: <20240516133454.681ba6a0@rorschach.local.home>
+        d=1e100.net; s=20230601; t=1715967493; x=1716572293;
+        h=cc:to:from:subject:message-id:mime-version:date:x-gm-message-state
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=jzuhfQ6w0AXMfOQGLEmaZLyI3U2s6W3AD5J7+WG1xGA=;
+        b=K4VxzHYnJM+luuOXAtk2odjUTWcsjG5/12Gnx3ZZgh3/sfQvnzL7vTazwepz42NnR5
+         oX6FzWhy9p1UjWo/xg4o68h/JqfSz4EjvpajN5Kl/y97LcyA6SaUdscNhMdoA3WHDZye
+         ZKRYZOn5ifi2pcFtyWdliVJABLPIKaf0q9jQsFYxi0GL5i3csBW5gEsXqh0JRZVcHlCF
+         OAeRG44ZdFAeJUqTrQ5x5TB6I4QiTvyyFfsjRrsk2x8K0MpUvgiWEmd6KR09M22Rvvb4
+         ZVoLUTPMkTf5ZB/BcpGc7iDjhqvResTnZyHY4B2nGXAOFI0/XSiHZ1MnatFKTcPnTRPr
+         7xfw==
+X-Gm-Message-State: AOJu0YwTD7LhpBX+PifaxcdwKOldLlJ2+s/2LdUsDtStqFJAtILQh5GG
+	FzQ1OJoPY142wMYNcI5S8cZTzNSEuNr+uYWAUEeUGtQ1Qk/DIsRTeWav9WI8NJYAv19LCKxJldB
+	MzSb/ZkhVW3tugA==
+X-Google-Smtp-Source: AGHT+IEcSEnhlabGL3MljAexrvTLovRHSHspelEweE+rv/3eEDJNx1P5eiOiDLgxiAyFBGGJIPp91LWn/mkrckE=
+X-Received: from tj-virt.c.googlers.com ([fda3:e722:ac3:cc00:7f:e700:c0a8:5683])
+ (user=tjmercier job=sendgmr) by 2002:a17:90b:2341:b0:2b9:df61:c002 with SMTP
+ id 98e67ed59e1d1-2b9df61c049mr21973a91.3.1715967492100; Fri, 17 May 2024
+ 10:38:12 -0700 (PDT)
+Date: Fri, 17 May 2024 17:38:02 +0000
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20240516133454.681ba6a0@rorschach.local.home>
+Mime-Version: 1.0
+X-Mailer: git-send-email 2.45.0.rc1.225.g2a3ae87e7f-goog
+Message-ID: <20240517173805.4181349-1-tjmercier@google.com>
+Subject: [PATCH v3 1/2] doc: swiotlb: iommu/dma: Clarify swiotlb=force option
+ applies only to dma-direct
+From: "T.J. Mercier" <tjmercier@google.com>
+To: tjmercier@google.com, Jonathan Corbet <corbet@lwn.net>, 
+	Thomas Gleixner <tglx@linutronix.de>, Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>, 
+	Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org, 
+	"H. Peter Anvin" <hpa@zytor.com>
+Cc: iommu@lists.linux.dev, isaacmanjarres@google.com, robin.murphy@arm.com, 
+	will@kernel.org, joro@8bytes.org, Petr Tesarik <petr@tesarici.cz>, 
+	linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 
-On Thu, May 16, 2024 at 01:34:54PM -0400, Steven Rostedt wrote:
-> From: "Steven Rostedt (Google)" <rostedt@goodmis.org>
-> 
-> [
->    This is a treewide change. I will likely re-create this patch again in
->    the second week of the merge window of v6.10 and submit it then. Hoping
->    to keep the conflicts that it will cause to a minimum.
-> ]
-> 
-> With the rework of how the __string() handles dynamic strings where it
-> saves off the source string in field in the helper structure[1], the
-> assignment of that value to the trace event field is stored in the helper
-> value and does not need to be passed in again.
-> 
-> This means that with:
-> 
->   __string(field, mystring)
-> 
-> Which use to be assigned with __assign_str(field, mystring), no longer
-> needs the second parameter and it is unused. With this, __assign_str()
-> will now only get a single parameter.
-> 
-> There's over 700 users of __assign_str() and because coccinelle does not
-> handle the TRACE_EVENT() macro I ended up using the following sed script:
-> 
->   git grep -l __assign_str | while read a ; do
->       sed -e 's/\(__assign_str([^,]*[^ ,]\) *,[^;]*/\1)/' $a > /tmp/test-file;
->       mv /tmp/test-file $a;
->   done
-> 
-> I then searched for __assign_str() that did not end with ';' as those
-> were multi line assignments that the sed script above would fail to catch.
-> 
+IOMMU implementations now sometimes bounce memory through SWIOTLB to
+achieve cacheline alignment [1], or prevent DMA attacks by untrusted
+devices [2]. These uses of SWIOTLB differ conceptually from historical
+use which was a solution to the problem of device addressing
+limitations that prevent DMA to some portion of system memory
+(typically beyond 4 GiB). IOMMUs also solve the problem of device
+addressing limitations and therefore eliminate the need for SWIOTLB for
+that purpose. However as mentioned, IOMMUs can use SWIOTLB for other
+purposes.
 
-Building csky:allmodconfig (and others) ... failed
---------------
-Error log:
-In file included from include/trace/trace_events.h:419,
-                 from include/trace/define_trace.h:102,
-                 from drivers/cxl/core/trace.h:737,
-                 from drivers/cxl/core/trace.c:8:
-drivers/cxl/core/./trace.h:383:1: error: macro "__assign_str" passed 2 arguments, but takes just 1
+The swiotlb=force kernel command line parameter does not impact IOMMU
+related use of SWIOTLB, and that is intentional. IOMMUs cannot be forced
+to use SWIOTLB for all buffers. Update the documentation for the swiotlb
+parameter to clarify that SWIOTLB use can only be forced in scenarios
+where an IOMMU is not involved.
 
-This is with the patch applied on top of v6.9-8410-gff2632d7d08e.
-So far that seems to be the only build failure.
-Introduced with commit 6aec00139d3a8 ("cxl/core: Add region info to
-cxl_general_media and cxl_dram events"). Guess we'll see more of those
-towards the end of the commit window.
+[1] https://lore.kernel.org/all/20230612153201.554742-16-catalin.marinas@arm.com
+[2] https://lore.kernel.org/all/20190906061452.30791-1-baolu.lu@linux.intel.com/
+Signed-off-by: T.J. Mercier <tjmercier@google.com>
+Reviewed-by: Petr Tesarik <petr@tesarici.cz>
+---
+ Documentation/admin-guide/kernel-parameters.txt | 1 +
+ Documentation/arch/x86/x86_64/boot-options.rst  | 3 +++
+ 2 files changed, 4 insertions(+)
 
-Guenter
+diff --git a/Documentation/admin-guide/kernel-parameters.txt b/Documentation/admin-guide/kernel-parameters.txt
+index 213d0719e2b7..84c582ac246c 100644
+--- a/Documentation/admin-guide/kernel-parameters.txt
++++ b/Documentation/admin-guide/kernel-parameters.txt
+@@ -6486,6 +6486,7 @@
+ 				 to a power of 2.
+ 			force -- force using of bounce buffers even if they
+ 			         wouldn't be automatically used by the kernel
++			         where a hardware IOMMU is not involved
+ 			noforce -- Never use bounce buffers (for debugging)
+ 
+ 	switches=	[HW,M68k,EARLY]
+diff --git a/Documentation/arch/x86/x86_64/boot-options.rst b/Documentation/arch/x86/x86_64/boot-options.rst
+index 137432d34109..a37139d1752f 100644
+--- a/Documentation/arch/x86/x86_64/boot-options.rst
++++ b/Documentation/arch/x86/x86_64/boot-options.rst
+@@ -292,6 +292,9 @@ implementation:
+         Prereserve that many 2K slots for the software IO bounce buffering.
+       force
+         Force all IO through the software TLB.
++        Hardware IOMMU implementations can use SWIOTLB bounce buffering in
++        some circumstances, but they cannot be forced to always use them, so
++        this option only has an effect when no hardware IOMMU is involved.
+       noforce
+         Do not initialize the software TLB.
+ 
+-- 
+2.45.0.rc1.225.g2a3ae87e7f-goog
+
