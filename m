@@ -1,229 +1,278 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.17])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id ECDCFD52F
-	for <iommu@lists.linux.dev>; Mon, 20 May 2024 04:59:21 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=198.175.65.17
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1716181163; cv=fail; b=QijkvUU5ygnx744s6CtHoOTBHjS50GHHbV4+rYHtJwZjUdMSPu83qMeh0qgp44guNXsXv/K17iO/jz8hQNuKXrBlk87dMaxBbEOZiK3SE32D/N1UQHfWScmiAWiSYZwppZiMi4hHgkcYlwSQS5TpDueEdqRqhnvISv3fTi4Ot68=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1716181163; c=relaxed/simple;
-	bh=XkAFv6lA0V8KqYlTFuJFIZqJGiUc7FKMj9NL6j4K8jI=;
-	h=From:To:CC:Subject:Date:Message-ID:References:In-Reply-To:
-	 Content-Type:MIME-Version; b=hAGPttiwyjV/FurJp+R4zp+DXmHqQuBdOYucTYOF0PqIE8pcYQbyxbSzEBJAdViyi36hbGLZ1Eb2jqqvmCYQyvs4Vgq9K1m6ulFMOUQlM+Mcxg2q2BdJSDJLXQCjrDTtKiz/RzfI83XWIrFVurG/0tYDUsvsqazzpKRhIEhYICE=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=BGp1DATJ; arc=fail smtp.client-ip=198.175.65.17
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="BGp1DATJ"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1716181162; x=1747717162;
-  h=from:to:cc:subject:date:message-id:references:
-   in-reply-to:content-transfer-encoding:mime-version;
-  bh=XkAFv6lA0V8KqYlTFuJFIZqJGiUc7FKMj9NL6j4K8jI=;
-  b=BGp1DATJy4BxYFM8LFLtyvEP+DfCRKWkhT3UfG1pLlrjyKJ2N1XKK1En
-   ancpZrap597WX4JAwPl/GyuPqHa5stu4yvco1qmM4YLPSKV+7SgsISc3p
-   lzPtALN1iZ6C6KzAdDYm74ZDNwuiWifs6wBFIPfTwh7ZFXCun30j01yHy
-   kURjV7b6H5FM/tKp6OZkH2isWAWu25Kct3uu04ay0Segf97w9wCjC2mNo
-   YkalI66mlim7xXI/+hGJatKdTlhmB+P8KSpD9r48EK5pmDCTh1YgJ58i+
-   XX086kQ6MqBq7i5y9ixCNEXMiK3nicKyXxys5TZ4xKKxvAaiyduZI+opG
-   w==;
-X-CSE-ConnectionGUID: L19WVjg6TWa41+b+vaV4UQ==
-X-CSE-MsgGUID: xsHIUGw/T5aoR75HJYBR9Q==
-X-IronPort-AV: E=McAfee;i="6600,9927,11077"; a="12412959"
-X-IronPort-AV: E=Sophos;i="6.08,174,1712646000"; 
-   d="scan'208";a="12412959"
-Received: from orviesa002.jf.intel.com ([10.64.159.142])
-  by orvoesa109.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 May 2024 21:59:21 -0700
-X-CSE-ConnectionGUID: Usnf5tNZSomss3Jf6bkLmQ==
-X-CSE-MsgGUID: krPKZaawQAOJJ61Wk267tQ==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.08,174,1712646000"; 
-   d="scan'208";a="63232934"
-Received: from fmsmsx602.amr.corp.intel.com ([10.18.126.82])
-  by orviesa002.jf.intel.com with ESMTP/TLS/AES256-GCM-SHA384; 19 May 2024 21:59:21 -0700
-Received: from fmsmsx611.amr.corp.intel.com (10.18.126.91) by
- fmsmsx602.amr.corp.intel.com (10.18.126.82) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.39; Sun, 19 May 2024 21:59:20 -0700
-Received: from fmsmsx602.amr.corp.intel.com (10.18.126.82) by
- fmsmsx611.amr.corp.intel.com (10.18.126.91) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.39; Sun, 19 May 2024 21:59:20 -0700
-Received: from fmsedg602.ED.cps.intel.com (10.1.192.136) by
- fmsmsx602.amr.corp.intel.com (10.18.126.82) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.39 via Frontend Transport; Sun, 19 May 2024 21:59:20 -0700
-Received: from NAM10-MW2-obe.outbound.protection.outlook.com (104.47.55.101)
- by edgegateway.intel.com (192.55.55.71) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.1.2507.39; Sun, 19 May 2024 21:59:19 -0700
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=fcqNJJkamab2OerwGyUEn/TNAPzecR/+E7wiEV6D26mavzv6kVbgIlbfxvbaikC+cH1OEr2FOg9PIYoQaF5dJZh2rpNwLZaq/ADQXaK8smhLYQGeLpb1+MNZbWEqbgt/DK3gQ7U8Eg+25OCgPq9CXAQL3b3FeAZNI+hqhcQg5qjntx9dVM7+KQT9ptIxsk+U1eSnHJ5owpEeI5xDf3AA4W84fJW5MtsBFlC8ln12X7EmY7ujOYltBwPwyusMi1rnHetIDQ3yz8GMVUwrHEdpYYj+YM6q7ktszVTmJsEOGQtCh3XO/Cjz23kNwxtFyrVRwNYpByjp1njt9M8zKPyNFw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=XkAFv6lA0V8KqYlTFuJFIZqJGiUc7FKMj9NL6j4K8jI=;
- b=MCT/sIt6c4dCfW1m2R6I7xnw3VZmm/FXErwgJLpJfUPieyvgmOOUM+D6EFplkR9DearGE7fgTuekdzuA5PRnxwkPea338Gm6uV01GFp4T5tEIvxg696q3YLjAywJWKAALX5qnEqLi/7K4HWyrWRzQU0qMnDMYZoKXojjGrhDDJPFEMbp2463nfkkv7ANVy/HNlBwKxwTYUboY6EfUpG5+AfD68LGhZr5GyMHW0HH1fwrQ1iLX7dSTOvwLti+ObL2QdeAgfHLsrcR3fo1yA0XvFSeFxSeVqcj5dm3Q/ZpdmPLuPhKwJSydMJy+WUuRy3gLJT+PZN+dxjK4NtTJ4AU3g==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
- dkim=pass header.d=intel.com; arc=none
-Received: from BN9PR11MB5276.namprd11.prod.outlook.com (2603:10b6:408:135::18)
- by PH7PR11MB5820.namprd11.prod.outlook.com (2603:10b6:510:133::17) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7587.30; Mon, 20 May
- 2024 04:59:18 +0000
-Received: from BN9PR11MB5276.namprd11.prod.outlook.com
- ([fe80::b576:d3bd:c8e0:4bc1]) by BN9PR11MB5276.namprd11.prod.outlook.com
- ([fe80::b576:d3bd:c8e0:4bc1%5]) with mapi id 15.20.7587.030; Mon, 20 May 2024
- 04:59:18 +0000
-From: "Tian, Kevin" <kevin.tian@intel.com>
-To: Baolu Lu <baolu.lu@linux.intel.com>, Jason Gunthorpe <jgg@ziepe.ca>,
-	"Joerg Roedel" <joro@8bytes.org>, Will Deacon <will@kernel.org>, Robin Murphy
-	<robin.murphy@arm.com>, Jean-Philippe Brucker <jean-philippe@linaro.org>,
-	Nicolin Chen <nicolinc@nvidia.com>, "Liu, Yi L" <yi.l.liu@intel.com>, "Jacob
- Pan" <jacob.jun.pan@linux.intel.com>, Joel Granados <j.granados@samsung.com>
-CC: "iommu@lists.linux.dev" <iommu@lists.linux.dev>,
-	"virtualization@lists.linux-foundation.org"
-	<virtualization@lists.linux-foundation.org>, "linux-kernel@vger.kernel.org"
-	<linux-kernel@vger.kernel.org>
-Subject: RE: [PATCH v5 4/9] iommufd: Add fault and response message
- definitions
-Thread-Topic: [PATCH v5 4/9] iommufd: Add fault and response message
- definitions
-Thread-Index: AQHamw8bLYtOgdprmEKnPZxoJChdq7GX/cMwgAbATwCAANVHUIAAA3eAgAAUQJA=
-Date: Mon, 20 May 2024 04:59:18 +0000
-Message-ID: <BN9PR11MB5276EEE89AB66C0EFB6D4DA88CE92@BN9PR11MB5276.namprd11.prod.outlook.com>
-References: <20240430145710.68112-1-baolu.lu@linux.intel.com>
- <20240430145710.68112-5-baolu.lu@linux.intel.com>
- <BN9PR11MB52762F2AF16AA5833D61AFF68CEC2@BN9PR11MB5276.namprd11.prod.outlook.com>
- <805f3ae2-341e-4255-add8-3f6dd296a556@linux.intel.com>
- <BN9PR11MB5276A68C9DCDA201826714018CE92@BN9PR11MB5276.namprd11.prod.outlook.com>
- <04288162-e5fd-48f3-bb60-a41b4ed2c244@linux.intel.com>
-In-Reply-To: <04288162-e5fd-48f3-bb60-a41b4ed2c244@linux.intel.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach:
-X-MS-TNEF-Correlator:
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=intel.com;
-x-ms-publictraffictype: Email
-x-ms-traffictypediagnostic: BN9PR11MB5276:EE_|PH7PR11MB5820:EE_
-x-ms-office365-filtering-correlation-id: 115653a6-6617-4bf6-b377-08dc78899ab5
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;ARA:13230031|366007|7416005|376005|1800799015|38070700009|921011;
-x-microsoft-antispam-message-info: =?utf-8?B?cThONnJweU1IRFhWZnRXbFpmcTlxQTF0aTI3WkNGRHJjSXUvOGhwYVlwRXBK?=
- =?utf-8?B?WjdwVGhtZHlVVThYdjNpQ3FsT3VOZkErVTdPelBMc3RpeXI0N0d2aktNM3Vj?=
- =?utf-8?B?SG9TNGZLVGZSUjBobGthRDdMdnZZVUt5bFFxRmxsMzdZOVpWVHRxTnMxRGta?=
- =?utf-8?B?SzloV0Nlbm0ybjh4TXJibDA2R1NjUU5HSCtlVzlGNG1ORGpLNkx2SlpFcW1O?=
- =?utf-8?B?TlcvcVJ2R1QvUmhrdlMxbUVRMEk5NGlPeHlQZUNzRGdJbUFmaUlMR1RmNlY4?=
- =?utf-8?B?d2NYN2RNUmgwSGJ5NzgvSG9DREhOQmdWZE45Si9UVER0R1hERzJLeC9ROXhE?=
- =?utf-8?B?YUNNa3FNZnpmTUw4LzA0ejNoaEYxVDFiYU1jSjFiNW1OeGZNaUE4a2ZSL1F0?=
- =?utf-8?B?NkJwSmJvMm96akFEMndnbFQzWlpwTy9LUVdFbHBhSGVQU3dkaUY2V3BINko4?=
- =?utf-8?B?dmc3Yk14azRUT04yM3p5enBlTVNBV0pnazhRTnJnZ2g3YitRWWlnNm1HTUlB?=
- =?utf-8?B?TWUvMjlteEgvUjlmVENtMnRqQ1BjQlFrVDRldGZFWUN3cGYwUThhYkdqLzM2?=
- =?utf-8?B?bGRJbUlXMWM4UGxUMXdsSDRhMG9sSDNGVHFBQ1EyWUdWZTVybnJYd2NObHNt?=
- =?utf-8?B?UmhHejU1UW83SS9rZEVuSGpVUkVyNmVvcktRL0tGdWRBVXVCWmNKS2FzUldD?=
- =?utf-8?B?SldZdy9Zd1E4UDRMeXFlT2QvdUFKRVF1b0FlQ3kwWGNvQkw2VjAyK25pWk5D?=
- =?utf-8?B?TXIvRGNvSWxaY0NvZ2h4YWYyczIwcGs3Vm9lNHl2azFoM1hHS3F5aEw5MCtR?=
- =?utf-8?B?cVFLYVlNbC9ueWs4OGdhVFNvaTlXakovZk1PNjBUZFFESVZ1Ui9CZEtkSVNk?=
- =?utf-8?B?NlZ1K0VtNW9TYVh6TWM1M3JoUzUwN21MNHFWWG9wa284cWxabTlzOE9CeTNM?=
- =?utf-8?B?TVVLNGVkT2JSL1pZNTR1Y0kvNlVwQjQ0UStwbGFpRzI1Sy9uOUY4MVhCVmow?=
- =?utf-8?B?NzlhVHBDNDcxZzEzRTVCZ2M3Wmt0ZkFaYlNhS1RnM25IRlhmamV5dmM0VFhJ?=
- =?utf-8?B?U21ZVEVtMlNwVENPNDU0aHpkcVFDL0NYTDdlV21GUXdzOGlhWWpIYiszOTBw?=
- =?utf-8?B?eCtra3lqWU9sZENqS2FwVXVpZnlwUWNUeThJS1huNENRSTJuQSsyc0krZnJB?=
- =?utf-8?B?T010SzFYY0doMXhzYXN6QVprMGw1WUtmRVV2SDNRR1NiQ2g2S3F3Z2FuWEJQ?=
- =?utf-8?B?TWFYN3lPYW0wMGtTTXR1TVZrU090Y2tsQWJ2Q3VZVm5uSGEyNXUxTERWNlNk?=
- =?utf-8?B?WWV5VG5XL25kdjEydWNKejROVTg3VVlrQVBQMXc4WExwcCt0U1NDZDZMYnhv?=
- =?utf-8?B?SU5aQWJHamZib2V2SlYxM2tuYlY0ZnpGMnZmYWxONVhSQmlGRDQwRVBzZjlk?=
- =?utf-8?B?Zkg0blVUZmM1RFNiQVJxVmVzNmxXMzNybzZuWnlSc01WRGFkcWNxWjhDeUpK?=
- =?utf-8?B?V05NcS8ycm5LODYxY1FmODFEZXdkdzlkUWIxVFVab2ExanNPMzVEZ0xLY1VL?=
- =?utf-8?B?WlhlY3RqWFVVay9aR3dvYzhrSUtMSHAxZDNoU0RJWDd3dEdyczhnWlhGQmNQ?=
- =?utf-8?B?VTczTXQ2aTRJNldwR2p3Z2NTQklPNHF5cFFFSlRsRThLcS85ZmJvcUJlZnNJ?=
- =?utf-8?B?NXpqdStQWDVNV3lhclVjbTBCeFM1RWZ4Q1JTSXZoMHIwOVc1WjU3UVpVS3k4?=
- =?utf-8?Q?QkOQQ6LMD2mADPj4XU=3D?=
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BN9PR11MB5276.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230031)(366007)(7416005)(376005)(1800799015)(38070700009)(921011);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?utf-8?B?S1VRT0ZBbmJLdWNWNEhGRjFXanZEYUkvOElKTWQwTXpKaFVLWThHdDJhV0lN?=
- =?utf-8?B?dnNta2pPODBoRkdNa0VVbSt2eWI1S1FKdHlXYlpVZEpaYmhsT295ejc4RWd5?=
- =?utf-8?B?T1A2YlZhWVlPOFJNNGNHVEdsWFpHUUJKaS9ZRzNqWC9ydTFXd1cxSXNyT3cv?=
- =?utf-8?B?Yk11ZGZ0NnhzY2xwcVJwQnUvbThzNGdyT1MvZE1sR3l2a2J6RjJOQ3Y2TEl3?=
- =?utf-8?B?amRlcVA1eFFmTnFaMHJFTGNzanBXT3VzaVhkbXdDMERablZTQmVkZFhtd1Y1?=
- =?utf-8?B?Y1dVTCtsNndBM0o5UDBlalU3SU9mU0pjU2hyU04raThmWjlXM3ptUitTQ0d0?=
- =?utf-8?B?TW1hQS9CbjluSS9NTE1NdHk2U2tMcDBJa2NWVTZOVXVNL2lsR0o3NStzeFlt?=
- =?utf-8?B?cnRROFd6dG9TQjdIa25vY00rcTRPdFllMkc5UlFSQVJVQWZwR1ZsK21rNkUv?=
- =?utf-8?B?VE9laHp2RVBnVGZQL3dWZUNJSnNXdU45d3FhWlU0blVXNzh4UmJsM3o3Y0JY?=
- =?utf-8?B?UkJFa3NpbjlEN0NEWEpVWWIrcHpBQ09TU0hKZ0htNjg0MXg3NDdWZ3p3a1hC?=
- =?utf-8?B?VDE3VUZuMVVOMGl5dWR1enNQUFhPanZTeUVtd1J3ZVpTS0hYZlByYzdaV0pu?=
- =?utf-8?B?bUZGTzhpSXZ1ZkMxZytUZkRVUlMwUkljbFc4Tno5UXBSNkxhVHY2T295VEFj?=
- =?utf-8?B?TjlRWjdJS0M1Q20va3dyWFY2R1RjVExwMUxPTU8zZ0dBaFZSR28rdFFhSGZO?=
- =?utf-8?B?L0w1UVVYZ1ZZd0JFLzFTaTJCSFdRdnJ6OFpOTUhpVTlKVS9rUlByQWlWV2w1?=
- =?utf-8?B?ckhtMnRTcHFTY1RqNGNWTlRRRlBRSUI0Y01SRlFyUjNmQXF3Y1RmMS9pWVR2?=
- =?utf-8?B?Y0lPeDM5ZldKS2VBcGFMcmxXMGJwWDQxN0kxSzg4MnY5eS9HN2hCVThnRmJH?=
- =?utf-8?B?SUlnZ2syeFArUzJscnZPUDB6TldyUG5zZmhBenNlSjlNQkFNYWZZMjRLdmor?=
- =?utf-8?B?L1dVd0hsRjNqUHRPYjRFcUNhU1FqcFhFNjJjOWlvamtIRjlHanR1bFZ6Wjg0?=
- =?utf-8?B?eFB6M0drMzNwZEhZbDM5YmVNeXRVU3U2NTgvUzA4NkZpcThuekVKTTJ5NWhs?=
- =?utf-8?B?Q2pzMVhXTDBMblYvU01mSldwZDVQS3d1RVkrWUxBN3ExeGNCeUtPL2VOSjc5?=
- =?utf-8?B?SklHVktvbWRSNGVsb0RvdU5LYmdjc1NEdk5Bb3Z2VEJYVWFrYkRZa0xvZzhD?=
- =?utf-8?B?Qk9JQ3dJQWhvMkJqd1hrd1B3QldVdWVWN1F0bjArVzA0SURnOUVNbVdFUEFL?=
- =?utf-8?B?TmFGQjJ1clRhNm9NNStOZU53VkVIWU00aWFFN1pUeU9TYzVTeVMrZXY5bEIz?=
- =?utf-8?B?OG1ReTRPdy8wcmoycXdiVmxkL0owMTRqaDA4MGxBamZRVFNZQkFpak5mV0hz?=
- =?utf-8?B?Y0phczFNNklubjEzdWVkZEhrMksrL3U3eWJlYzlwSGNQeU1nQTd2WlVGK29Y?=
- =?utf-8?B?RUJ0T1pFQjF2c2t1TzNxOFlMREZibmtsYm1KckxXOUJlK0IweCt4Z3NMSnVh?=
- =?utf-8?B?Umo1UWxhT3dvZmtOeFFzY0V1WmZTaEk4amM4Q2VZbmFwN2JVaVVsQmM2L2hw?=
- =?utf-8?B?RGVXK0paTFUrbUtDakgwQ2RneUVHa1FLdk1QZzl1SUJQSEdXK3NmdkdFa2RX?=
- =?utf-8?B?bDRMdnAyeEluM1ZQN3ZOR2QwbDJTVXNDRGdkbWtoRGVwQ1pTc2F0VTh1THBF?=
- =?utf-8?B?ZGdPR2FzNGEwYXlvbHVObGdMVUpZR2ZVNS9nNGlJOU9QdXhiUmRaUE1lRWpO?=
- =?utf-8?B?U2ZTb2czNktZK3JSZ25IdGR3dUdHREF2eTVER2Q0RjNWb2dDWDc3U0dqNVZQ?=
- =?utf-8?B?d0ZJKzBnRlBXOU9hNzJWNTVHc0E1MFFLSVFObk5ZSCs1dzh3SURwTXRRa1hu?=
- =?utf-8?B?RGlqZW5Ga0hlS2hJN0JjZE95R2hQNERUdnNGK2liU0FVcEZBNHRlU28yS1Rz?=
- =?utf-8?B?QkF6T1lYc0RrL2NiQTNFUG92eHQ3RVNZVlQyeVdNLzlVQzhRTW1wYnNFbC83?=
- =?utf-8?B?aEszTnE3RlY1S0tZM0RHMkk0YmxmS1c1Si9ucnFvejFmN0tnWEhNUEhlemVQ?=
- =?utf-8?Q?uDZBEGA0DrJLeF5hihmup8wBM?=
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 91CA714285
+	for <iommu@lists.linux.dev>; Mon, 20 May 2024 10:26:22 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1716200784; cv=none; b=SvWXUjh0obr6Nrg3t/O1e2tY/RJQubLSP4hFuZdUuSTcnmgqchUGbuM+bM7+hiQD13uBkgPiPcwe/OzXWFwCcc2yQfuVlVr/F+taleCuaoB2bM6MWxnKrOII2+1JIempwLyba2JdnCDMjOpqO9IKAq7HLpv0nXkx/VnMjoPEWZQ=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1716200784; c=relaxed/simple;
+	bh=1qB7VBGFkFKCrRZgTuXpSZgFCo9+oaSne3bB3h1ZcpM=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=DZI2GFcGJ7pT4YsOE6Prk29QD92gOU5KYtT91sCjBwGHhtDkg4TkBCwV4th60qUy87Kgi7vYQNeXIEKPNXKEuIq7MoabPK58ATyvYJuxhSA4WiiQKvJBhlh4UWDCFZAD7XGW0GGa8Hc50/U5PdKhpdJDMNiHG/K/Fqgt0ciZ+/I=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; arc=none smtp.client-ip=217.140.110.172
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id C1759FEC;
+	Mon, 20 May 2024 03:26:45 -0700 (PDT)
+Received: from [10.57.37.116] (unknown [10.57.37.116])
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id C36063F766;
+	Mon, 20 May 2024 03:26:11 -0700 (PDT)
+Message-ID: <09fef0af-73ab-46cb-af31-9a10c1e90593@arm.com>
+Date: Mon, 20 May 2024 11:26:04 +0100
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: BN9PR11MB5276.namprd11.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 115653a6-6617-4bf6-b377-08dc78899ab5
-X-MS-Exchange-CrossTenant-originalarrivaltime: 20 May 2024 04:59:18.1002
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 46c98d88-e344-4ed4-8496-4ed7712e255d
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: 3ZQBKnqGOEKgS8rQn1hlQuRuSHr5ua8dTPhraZGyXNegES87bl7RsreCKsEn88CWdYPjd4sP9kQIJon/zaiWAQ==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH7PR11MB5820
-X-OriginatorOrg: intel.com
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v4 5/7] iommu/dma: Make limit checks self-contained
+To: Jerry Snitselaar <jsnitsel@redhat.com>
+Cc: Jon Hunter <jonathanh@nvidia.com>, Joerg Roedel <joro@8bytes.org>,
+ Christoph Hellwig <hch@lst.de>, Vineet Gupta <vgupta@kernel.org>,
+ Russell King <linux@armlinux.org.uk>,
+ Catalin Marinas <catalin.marinas@arm.com>, Will Deacon <will@kernel.org>,
+ Huacai Chen <chenhuacai@kernel.org>, WANG Xuerui <kernel@xen0n.name>,
+ Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
+ Paul Walmsley <paul.walmsley@sifive.com>, Palmer Dabbelt
+ <palmer@dabbelt.com>, Albert Ou <aou@eecs.berkeley.edu>,
+ Lorenzo Pieralisi <lpieralisi@kernel.org>, Hanjun Guo
+ <guohanjun@huawei.com>, Sudeep Holla <sudeep.holla@arm.com>,
+ "K. Y. Srinivasan" <kys@microsoft.com>,
+ Haiyang Zhang <haiyangz@microsoft.com>, Wei Liu <wei.liu@kernel.org>,
+ Dexuan Cui <decui@microsoft.com>,
+ Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
+ David Woodhouse <dwmw2@infradead.org>, Lu Baolu <baolu.lu@linux.intel.com>,
+ Niklas Schnelle <schnelle@linux.ibm.com>,
+ Matthew Rosato <mjrosato@linux.ibm.com>,
+ Gerald Schaefer <gerald.schaefer@linux.ibm.com>,
+ Jean-Philippe Brucker <jean-philippe@linaro.org>,
+ Rob Herring <robh+dt@kernel.org>, Frank Rowand <frowand.list@gmail.com>,
+ Marek Szyprowski <m.szyprowski@samsung.com>, Jason Gunthorpe <jgg@ziepe.ca>,
+ linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+ linux-acpi@vger.kernel.org, iommu@lists.linux.dev,
+ devicetree@vger.kernel.org, Jason Gunthorpe <jgg@nvidia.com>,
+ "linux-tegra@vger.kernel.org" <linux-tegra@vger.kernel.org>
+References: <cover.1713523152.git.robin.murphy@arm.com>
+ <e28a114243d1e79eb3609aded034f8529521333f.1713523152.git.robin.murphy@arm.com>
+ <243d441d-dda8-442a-a495-83bf9725a14c@nvidia.com>
+ <48c39306-c226-4e7f-a013-d679ca80157e@arm.com>
+ <46fc1b7f-7d10-4233-b089-aa173ad3bbeb@nvidia.com>
+ <981c85f3-6d43-4c2b-a440-88bf81a18e55@arm.com>
+ <o7hp34of3rg2fhbzpnbakaxnr24cfdfdrwf6d3hhxdeq4qqisk@6fqlszyvclhs>
+From: Robin Murphy <robin.murphy@arm.com>
+Content-Language: en-GB
+In-Reply-To: <o7hp34of3rg2fhbzpnbakaxnr24cfdfdrwf6d3hhxdeq4qqisk@6fqlszyvclhs>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 
-PiBGcm9tOiBCYW9sdSBMdSA8YmFvbHUubHVAbGludXguaW50ZWwuY29tPg0KPiBTZW50OiBNb25k
-YXksIE1heSAyMCwgMjAyNCAxMTozMyBBTQ0KPiANCj4gT24gNS8yMC8yNCAxMToyNCBBTSwgVGlh
-biwgS2V2aW4gd3JvdGU6DQo+ID4+IEZyb206IEJhb2x1IEx1IDxiYW9sdS5sdUBsaW51eC5pbnRl
-bC5jb20+DQo+ID4+IFNlbnQ6IFN1bmRheSwgTWF5IDE5LCAyMDI0IDEwOjM4IFBNDQo+ID4+DQo+
-ID4+IE9uIDIwMjQvNS8xNSAxNTo0MywgVGlhbiwgS2V2aW4gd3JvdGU6DQo+ID4+Pj4gRnJvbTog
-THUgQmFvbHUgPGJhb2x1Lmx1QGxpbnV4LmludGVsLmNvbT4NCj4gPj4+PiBTZW50OiBUdWVzZGF5
-LCBBcHJpbCAzMCwgMjAyNCAxMDo1NyBQTQ0KPiA+Pj4+DQo+ID4+Pj4gKyAqIEBsZW5ndGg6IGEg
-aGludCBvZiBob3cgbXVjaCBkYXRhIHRoZSByZXF1ZXN0b3IgaXMgZXhwZWN0aW5nIHRvDQo+IGZl
-dGNoLg0KPiA+PiBGb3INCj4gPj4+PiArICogICAgICAgICAgZXhhbXBsZSwgaWYgdGhlIFBSSSBp
-bml0aWF0b3Iga25vd3MgaXQgaXMgZ29pbmcgdG8gZG8gYSAxME1CDQo+ID4+Pj4gKyAqICAgICAg
-ICAgIHRyYW5zZmVyLCBpdCBjb3VsZCBmaWxsIGluIDEwTUIgYW5kIHRoZSBPUyBjb3VsZCBwcmUt
-ZmF1bHQgaW4NCj4gPj4+PiArICogICAgICAgICAgMTBNQiBvZiBJT1ZBLiBJdCdzIGRlZmF1bHQg
-dG8gMCBpZiB0aGVyZSdzIG5vIHN1Y2ggaGludC4NCj4gPj4+DQo+ID4+PiBUaGlzIGlzIG5vdCBj
-bGVhciB0byBtZSBhbmQgSSBkb24ndCByZW1lbWJlciBQQ0llIHNwZWMgZGVmaW5lcyBzdWNoDQo+
-ID4+PiBtZWNoYW5pc20uDQo+ID4+DQo+ID4+IFRoaXMgY2FtZSB1cCBpbiBhIHByZXZpb3VzIGRp
-c2N1c3Npb24uIFdoaWxlIGl0J3Mgbm90IGN1cnJlbnRseSBwYXJ0IG9mDQo+ID4NCj4gPiBDYW4g
-eW91IHByb3ZpZGUgYSBsaW5rIHRvIHRoYXQgZGlzY3Vzc2lvbj8NCj4gDQo+IGh0dHBzOi8vbG9y
-ZS5rZXJuZWwub3JnL2xpbnV4LWlvbW11LzIwMjQwMzIyMTcwNDEwLkdINjY5NzZAemllcGUuY2Ev
-DQo+IA0KDQpXZSBjYW4gYWx3YXlzIGV4dGVuZCB1QVBJIGZvciBuZXcgdXNhZ2VzLCBlLmcuIGhh
-dmluZyBhIG5ldyBmbGFnDQpiaXQgdG8gaW5kaWNhdGUgdGhlIGFkZGl0aW9uYWwgZmlsZWQgZm9y
-IGNhcnJ5aW5nIHRoZSBudW1iZXIgb2YgcGFnZXMuDQpCdXQgcmVxdWlyaW5nIHRoZSB1c2VyIHRv
-IGhhbmRsZSBub24temVybyBsZW5ndGggbm93ICh0aG91Z2ggdHJpdmlhbCkNCmlzIHVubmVjZXNz
-YXJ5IGJ1cmRlbi4NCg0KRG8gd2Ugd2FudCB0aGUgcmVzcG9uc2UgbWVzc2FnZSB0byBhbHNvIGNh
-cnJ5IGEgbGVuZ3RoIGZpZWxkIGkuZS4NCmFsbG93aW5nIHRoZSB1c2VyIHRvIHBhcnRpYWxseSBm
-aXggdGhlIGZhdWx0PyANCg==
+On 2024-05-18 7:31 pm, Jerry Snitselaar wrote:
+> On Fri, May 17, 2024 at 04:03:57PM GMT, Robin Murphy wrote:
+>> On 17/05/2024 3:21 pm, Jon Hunter wrote:
+>>>
+>>> On 15/05/2024 15:59, Robin Murphy wrote:
+>>>> Hi Jon,
+>>>>
+>>>> On 2024-05-14 2:27 pm, Jon Hunter wrote:
+>>>>> Hi Robin,
+>>>>>
+>>>>> On 19/04/2024 17:54, Robin Murphy wrote:
+>>>>>> It's now easy to retrieve the device's DMA limits if we want to check
+>>>>>> them against the domain aperture, so do that ourselves instead of
+>>>>>> relying on them being passed through the callchain.
+>>>>>>
+>>>>>> Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
+>>>>>> Tested-by: Hanjun Guo <guohanjun@huawei.com>
+>>>>>> Signed-off-by: Robin Murphy <robin.murphy@arm.com>
+>>>>>> ---
+>>>>>> ï¿½ drivers/iommu/dma-iommu.c | 21 +++++++++------------
+>>>>>> ï¿½ 1 file changed, 9 insertions(+), 12 deletions(-)
+>>>>>>
+>>>>>> diff --git a/drivers/iommu/dma-iommu.c b/drivers/iommu/dma-iommu.c
+>>>>>> index a3039005b696..f542eabaefa4 100644
+>>>>>> --- a/drivers/iommu/dma-iommu.c
+>>>>>> +++ b/drivers/iommu/dma-iommu.c
+>>>>>> @@ -660,19 +660,16 @@ static void
+>>>>>> iommu_dma_init_options(struct iommu_dma_options *options,
+>>>>>> ï¿½ /**
+>>>>>> ï¿½ï¿½ * iommu_dma_init_domain - Initialise a DMA mapping domain
+>>>>>> ï¿½ï¿½ * @domain: IOMMU domain previously prepared by
+>>>>>> iommu_get_dma_cookie()
+>>>>>> - * @base: IOVA at which the mappable address space starts
+>>>>>> - * @limit: Last address of the IOVA space
+>>>>>> ï¿½ï¿½ * @dev: Device the domain is being initialised for
+>>>>>> ï¿½ï¿½ *
+>>>>>> - * @base and @limit + 1 should be exact multiples of IOMMU
+>>>>>> page granularity to
+>>>>>> - * avoid rounding surprises. If necessary, we reserve the
+>>>>>> page at address 0
+>>>>>> + * If the geometry and dma_range_map include address 0, we
+>>>>>> reserve that page
+>>>>>> ï¿½ï¿½ * to ensure it is an invalid IOVA. It is safe to
+>>>>>> reinitialise a domain, but
+>>>>>> ï¿½ï¿½ * any change which could make prior IOVAs invalid will fail.
+>>>>>> ï¿½ï¿½ */
+>>>>>> -static int iommu_dma_init_domain(struct iommu_domain
+>>>>>> *domain, dma_addr_t base,
+>>>>>> -ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ dma_addr_t limit, struct device *dev)
+>>>>>> +static int iommu_dma_init_domain(struct iommu_domain
+>>>>>> *domain, struct device *dev)
+>>>>>> ï¿½ {
+>>>>>> ï¿½ï¿½ï¿½ï¿½ï¿½ struct iommu_dma_cookie *cookie = domain->iova_cookie;
+>>>>>> +ï¿½ï¿½ï¿½ const struct bus_dma_region *map = dev->dma_range_map;
+>>>>>> ï¿½ï¿½ï¿½ï¿½ï¿½ unsigned long order, base_pfn;
+>>>>>> ï¿½ï¿½ï¿½ï¿½ï¿½ struct iova_domain *iovad;
+>>>>>> ï¿½ï¿½ï¿½ï¿½ï¿½ int ret;
+>>>>>> @@ -684,18 +681,18 @@ static int
+>>>>>> iommu_dma_init_domain(struct iommu_domain *domain,
+>>>>>> dma_addr_t base,
+>>>>>> ï¿½ï¿½ï¿½ï¿½ï¿½ /* Use the smallest supported page size for IOVA granularity */
+>>>>>> ï¿½ï¿½ï¿½ï¿½ï¿½ order = __ffs(domain->pgsize_bitmap);
+>>>>>> -ï¿½ï¿½ï¿½ base_pfn = max_t(unsigned long, 1, base >> order);
+>>>>>> +ï¿½ï¿½ï¿½ base_pfn = 1;
+>>>>>> ï¿½ï¿½ï¿½ï¿½ï¿½ /* Check the domain allows at least some access to the
+>>>>>> device... */
+>>>>>> -ï¿½ï¿½ï¿½ if (domain->geometry.force_aperture) {
+>>>>>> +ï¿½ï¿½ï¿½ if (map) {
+>>>>>> +ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ dma_addr_t base = dma_range_map_min(map);
+>>>>>> ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ if (base > domain->geometry.aperture_end ||
+>>>>>> -ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ limit < domain->geometry.aperture_start) {
+>>>>>> +ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ dma_range_map_max(map) <
+>>>>>> domain->geometry.aperture_start) {
+>>>>>> ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ pr_warn("specified DMA range outside IOMMU
+>>>>>> capability\n");
+>>>>>> ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ return -EFAULT;
+>>>>>> ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ }
+>>>>>> ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ /* ...then finally give it a kicking to make sure it fits */
+>>>>>> -ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ base_pfn = max_t(unsigned long, base_pfn,
+>>>>>> -ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ domain->geometry.aperture_start >> order);
+>>>>>> +ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ base_pfn = max(base,
+>>>>>> domain->geometry.aperture_start) >> order;
+>>>>>> ï¿½ï¿½ï¿½ï¿½ï¿½ }
+>>>>>> ï¿½ï¿½ï¿½ï¿½ï¿½ /* start_pfn is always nonzero for an
+>>>>>> already-initialised domain */
+>>>>>> @@ -1760,7 +1757,7 @@ void iommu_setup_dma_ops(struct device
+>>>>>> *dev, u64 dma_base, u64 dma_limit)
+>>>>>> ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ * underlying IOMMU driver needs to support via the
+>>>>>> dma-iommu layer.
+>>>>>> ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ */
+>>>>>> ï¿½ï¿½ï¿½ï¿½ï¿½ if (iommu_is_dma_domain(domain)) {
+>>>>>> -ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ if (iommu_dma_init_domain(domain, dma_base, dma_limit, dev))
+>>>>>> +ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ if (iommu_dma_init_domain(domain, dev))
+>>>>>> ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ goto out_err;
+>>>>>> ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ dev->dma_ops = &iommu_dma_ops;
+>>>>>> ï¿½ï¿½ï¿½ï¿½ï¿½ }
+>>>>>
+>>>>>
+>>>>> I have noticed some random test failures on Tegra186 and
+>>>>> Tegra194 and bisect is pointing to this commit. Reverting this
+>>>>> along with the various dependencies does fix the problem. On
+>>>>> Tegra186 CPU hotplug is failing and on Tegra194 suspend is
+>>>>> failing. Unfortunately, on neither platform do I see any
+>>>>> particular crash but the boards hang somewhere.
+>>>>
+>>>> That is... thoroughly bemusing :/ Not only is there supposed to be
+>>>> no real functional change here - we should merely be recalculating
+>>>> the same information from dev->dma_range_map that the callers were
+>>>> already doing to generate the base/limit arguments - but the act of
+>>>> initially setting up a default domain for a device behind an IOMMU
+>>>> should have no connection whatsoever to suspend and especially not
+>>>> to CPU hotplug.
+>>>
+>>>
+>>> Yes it does look odd, but this is what bisect reported ...
+>>>
+>>> git bisect start
+>>> # good: [a38297e3fb012ddfa7ce0321a7e5a8daeb1872b6] Linux 6.9
+>>> git bisect good a38297e3fb012ddfa7ce0321a7e5a8daeb1872b6
+>>> # bad: [6ba6c795dc73c22ce2c86006f17c4aa802db2a60] Add linux-next
+>>> specific files for 20240513
+>>> git bisect bad 6ba6c795dc73c22ce2c86006f17c4aa802db2a60
+>>> # good: [29e7f949865a023a21ecdfbd82d68ac697569f34] Merge branch 'main'
+>>> of git://git.kernel.org/pub/scm/linux/kernel/git/netdev/net-next.git
+>>> git bisect good 29e7f949865a023a21ecdfbd82d68ac697569f34
+>>> # skip: [150e6cc14e51f2a07034106a4529cdaafd812c46] Merge branch 'next'
+>>> of git://git.kernel.org/pub/scm/linux/kernel/git/dtor/input.git
+>>> git bisect skip 150e6cc14e51f2a07034106a4529cdaafd812c46
+>>> # good: [f5d75327d30af49acf2e4b55f35ce2e6c45d1287] drm/amd/display: Fix
+>>> invalid Copyright notice
+>>> git bisect good f5d75327d30af49acf2e4b55f35ce2e6c45d1287
+>>> # skip: [f1ec9a9ffc526df7c9523006c2abbb8ea554cdd8] Merge branch
+>>> 'for-next' of
+>>> git://git.kernel.org/pub/scm/linux/kernel/git/krzk/linux-dt.git
+>>> git bisect skip f1ec9a9ffc526df7c9523006c2abbb8ea554cdd8
+>>> # bad: [f091e93306e0429ebb7589b9874590b6a9705e64] dma-mapping: Simplify
+>>> arch_setup_dma_ops()
+>>> git bisect bad f091e93306e0429ebb7589b9874590b6a9705e64
+>>> # good: [91cfd679f9e8b9a7bf2f26adf66eff99dbe2026b] ACPI/IORT: Handle
+>>> memory address size limits as limits
+>>> git bisect good 91cfd679f9e8b9a7bf2f26adf66eff99dbe2026b
+>>> # bad: [ad4750b07d3462ce29a0c9b1e88b2a1f9795290e] iommu/dma: Make limit
+>>> checks self-contained
+>>> git bisect bad ad4750b07d3462ce29a0c9b1e88b2a1f9795290e
+>>> # good: [fece6530bf4b59b01a476a12851e07751e73d69f] dma-mapping: Add
+>>> helpers for dma_range_map bounds
+>>> git bisect good fece6530bf4b59b01a476a12851e07751e73d69f
+>>> # first bad commit: [ad4750b07d3462ce29a0c9b1e88b2a1f9795290e]
+>>> iommu/dma: Make limit checks self-contained
+>>>
+>>> There is a couple skips in there and so I will try this again.
+>>>
+>>>>> If you have any ideas on things we can try let me know.
+>>>>
+>>>> Since the symptom seems inexplicable, I'd throw the usual memory
+>>>> debugging stuff like KASAN at it first. I'd also try
+>>>> "no_console_suspend" to check whether any late output is being
+>>>> missed in the suspend case (and if it's already broken, then any
+>>>> additional issues that may be caused by the console itself hopefully
+>>>> shouldn't matter).
+>>>>
+>>>> For more base-covering, do you have the "arm64: Properly clean up
+>>>> iommu-dma remnants" fix in there already as well? That bug has
+>>>> bisected to patch #6 each time though, so I do still suspect that
+>>>> what you're seeing is likely something else. It does seem
+>>>> potentially significant that those Tegra platforms are making fairly
+>>>> wide use of dma-ranges, but there's no clear idea forming out of
+>>>> that observation just yet...
+>>>
+>>> I was hoping it was the same issue other people had reported,
+>>> but the fix provided did not help. I have also tried today's
+>>> -next and I am still seeing the issue.
+>>>
+>>> I should have more time next week to look at this further. Let
+>>> me confirm which change is causing this and add more debug.
+>>
+>> Thanks. From staring at the code I think I've spotted one subtlety which
+>> may not be quite as intended - can you see if the diff below helps? It
+>> occurs to me that suspend and CPU hotplug may not *cause* the symptom,
+>> but they could certainly stall if one or more relevant CPUs is *already*
+>> stuck in a loop somewhere...
+>>
+>> Thanks,
+>> Robin.
+>>
+>> ----->8-----
+>> diff --git a/drivers/iommu/dma-iommu.c b/drivers/iommu/dma-iommu.c
+>> index 89a53c2f2cf9..85eb1846c637 100644
+>> --- a/drivers/iommu/dma-iommu.c
+>> +++ b/drivers/iommu/dma-iommu.c
+>> @@ -686,6 +686,7 @@ static int iommu_dma_init_domain(struct iommu_domain *domain, struct device *dev
+>>   	/* Check the domain allows at least some access to the device... */
+>>   	if (map) {
+>>   		dma_addr_t base = dma_range_map_min(map);
+>> +		base = max(base, (dma_addr_t)1 << order);
+>>   		if (base > domain->geometry.aperture_end ||
+>>   		    dma_range_map_max(map) < domain->geometry.aperture_start) {
+>>   			pr_warn("specified DMA range outside IOMMU capability\n");
+> 
+> With this in place I no longer see the mapping fail on the nvidia system.
+
+Cheers Jerry, that's reassuring. I'll write up a proper patch shortly - 
+with Monday morning eyes I realise this isn't entirely the right fix for 
+how I messed up here - and hope that my guess was right and it's the 
+source of Jon's issues as well. From experience I know that the effects 
+of the IOVA allocator going wrong can be varied and downright weird...
+
+Thanks,
+Robin.
