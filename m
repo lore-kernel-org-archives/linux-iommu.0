@@ -1,42 +1,50 @@
 Received: from bombadil.infradead.org (bombadil.infradead.org [198.137.202.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8F9B245026;
-	Mon, 20 May 2024 14:05:36 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D57BF45026;
+	Mon, 20 May 2024 14:07:15 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.137.202.133
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1716213940; cv=none; b=cMiUCtiWGn/8r8M9YPHkMQ5bgUtjIDwcIFhHmB5CoLHkV5goKF+VJo4Shhf+RPDo6ymbLxv96x1VfyKawU3DRN6toBnsdcEVi3uTOFXSxQR/KPTDp6c5AZjYTbgGv/qb/pTg82u6lQOaP0/h8wQ6oIfax4l0RkU/4aP9D1joX9Y=
+	t=1716214037; cv=none; b=fFo7hhFcbhd1TaQsgNdI77dvKPpl6U+FuCuvuEjnHVqi7kx0uwVC3eQUB3aZePmaLiePnohksU7X+mOaxBvQ7DEQITkAV4Bqtqr6OypZwlMi2S7di6UKqvibEtBg8nV13eSyPBbn1lsiQUHTWACFwCi9fgTrisKQWMNw6evzta8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1716213940; c=relaxed/simple;
-	bh=ZCB/XT4/i5g7c4Ik2u1T/Pd2N9bQgzM19SbLCGRSfQ8=;
-	h=Date:From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:
-	 Content-Disposition; b=GTYgsN2RxHESDSzCnkMpYsHAaUomhWNO+VB25AUCkhzzF13VJsiNVOfsqL0yucuuyCho/SsWYxRrP6bAXl+cqoFiwAiS4FEib5v+PJ+hAIKxF2F1cA92P0aT8W3R1b+MsaSPl0CAs9ESJgIZmGRwDFOuDAhhuqOJZRFcn6dCJrg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=infradead.org; spf=none smtp.mailfrom=bombadil.srs.infradead.org; dkim=pass (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b=yl0zyrE0; arc=none smtp.client-ip=198.137.202.133
+	s=arc-20240116; t=1716214037; c=relaxed/simple;
+	bh=w4T6LcRjlCHTTZIBTqyyyFIHQt2VX43DOdStKH+dMjo=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=WFLWUfJfl2p/+J2Y+7xaEqlIwqSFkjQ+OTWrEYjESxf7Q+nENKnl6qVLNDoX++mHDgKtR+rwcI3tCNexPZucW/KbS+J43TDreVjnVXhsZ3BwHWGonZdE2IZwNibmR3KIWJc+xmVq/DW39FVSHivMCu8ILj32qsgVRnM5sYRDk7E=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=infradead.org; spf=none smtp.mailfrom=bombadil.srs.infradead.org; dkim=pass (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b=nzXujvLQ; arc=none smtp.client-ip=198.137.202.133
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=infradead.org
 Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=bombadil.srs.infradead.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b="yl0zyrE0"
+	dkim=pass (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b="nzXujvLQ"
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-	d=infradead.org; s=bombadil.20210309; h=Content-Type:MIME-Version:Message-ID:
-	Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
-	Content-Description:In-Reply-To:References;
-	bh=TQIxra1MgAXb7lu/CN8hI1DWPOPjSwrGFScXMMALwKM=; b=yl0zyrE0Q5pvLgOIzkxmRUj2ib
-	kISY/cYkKQZA2TqDtD4SKRTcKPyq4GoHREVOqIBfdTpl3nE17+etMeHmHbXuNFDXtaDtGePI4tg3F
-	va6ewVJARgvoo041FMQy7l0XyW79fYcsi0rqZvFyqNzb4gNXrbu1hmsLVnfa10GowXa8kA/vKAi3O
-	FdaVilbh1CLggI6MXB5Yp3gXihzQ2WxZcHbl8e9QcRJ4wYM27+wXPolZpan106z/0RFpD/QHEVDYJ
-	wQY3G9V5P7sOeTCtbUSn0q/gh2OyOT45ronGxhGtDeu4Foyo0wVwaCN0uNRpAuyjBPRlVrgWDpkXq
-	CJ6HnE+w==;
-Received: from [12.37.163.135] (helo=localhost)
-	by bombadil.infradead.org with esmtpsa (Exim 4.97.1 #2 (Red Hat Linux))
-	id 1s93dv-0000000EfD8-21L3;
-	Mon, 20 May 2024 14:05:35 +0000
-Date: Mon, 20 May 2024 07:05:34 -0700
+	d=infradead.org; s=bombadil.20210309; h=In-Reply-To:Content-Type:MIME-Version
+	:References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+	Content-Transfer-Encoding:Content-ID:Content-Description;
+	bh=wpWEoUMWnFLJr+MkLtPIZ/EXAlokieryuSaCz8a6I3M=; b=nzXujvLQghLXfJUbZl0u3JiQ/V
+	njxgWrULaemEv1rhjj7uGwTNzAM865guFORckfkd4Elr/e93FJxZ7xTyAiIdHg5YdZ5fZ5uXnfPLZ
+	CkqyBZ+Fnjku555e7eD3RcC1Zsq4vNK1IowWSRMEcMyM/9W+5QQhEQob/6fQ6CZLxDh8rF+J2mz7B
+	ne6Lxk1tkPc4pO11ZuBp7Vn+3Cjy+Gsmh1kKjw1cn5zxMQmGVEIK5F3Q+mhhHaOwFlPewXynlVCI6
+	yLaq/aRiNH+FsLzpdW2E0VFX3q2kB5KFtFAoFVn5xw4OdNAZXy5oqxQlyYTJG9vVi3+f7x+gT2JRa
+	Z5hYlxBA==;
+Received: from hch by bombadil.infradead.org with local (Exim 4.97.1 #2 (Red Hat Linux))
+	id 1s93fS-0000000EfNO-3kiZ;
+	Mon, 20 May 2024 14:07:10 +0000
+Date: Mon, 20 May 2024 07:07:10 -0700
 From: Christoph Hellwig <hch@infradead.org>
-To: Linus Torvalds <torvalds@linux-foundation.org>
-Cc: linux-kernel@vger.kernel.org, iommu@lists.linux.dev,
-	netdev@vger.kernel.org
-Subject: [GIT PULL] dma-mapping updates for Linux 6.10
-Message-ID: <ZktYriALqC7ZNQpa@infradead.org>
+To: Yan Zhao <yan.y.zhao@intel.com>
+Cc: kvm@vger.kernel.org, linux-kernel@vger.kernel.org, x86@kernel.org,
+	alex.williamson@redhat.com, jgg@nvidia.com, kevin.tian@intel.com,
+	iommu@lists.linux.dev, pbonzini@redhat.com, seanjc@google.com,
+	dave.hansen@linux.intel.com, luto@kernel.org, peterz@infradead.org,
+	tglx@linutronix.de, mingo@redhat.com, bp@alien8.de, hpa@zytor.com,
+	corbet@lwn.net, joro@8bytes.org, will@kernel.org,
+	robin.murphy@arm.com, baolu.lu@linux.intel.com, yi.l.liu@intel.com,
+	Russell King <linux@armlinux.org.uk>
+Subject: Re: [PATCH 3/5] x86/mm: Introduce and export interface
+ arch_clean_nonsnoop_dma()
+Message-ID: <ZktZDmcNnsHhp4Tm@infradead.org>
+References: <20240507061802.20184-1-yan.y.zhao@intel.com>
+ <20240507062044.20399-1-yan.y.zhao@intel.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -45,76 +53,16 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
+In-Reply-To: <20240507062044.20399-1-yan.y.zhao@intel.com>
 X-SRS-Rewrite: SMTP reverse-path rewritten from <hch@infradead.org> by bombadil.infradead.org. See http://www.infradead.org/rpr.html
 
-Note that the the dma sync optimizations reach into the networking code
-and promptly caused a conflict where the netdev tree constifies the page
-argument to page_pool_dma_sync_for_device and this tree renames that
-function to page_pool_dma_sync_for_device.  The dma-mapping version of
-the merge just works, but you might want to pick the contification
-manually if you think it is useful.
+On Tue, May 07, 2024 at 02:20:44PM +0800, Yan Zhao wrote:
+> Introduce and export interface arch_clean_nonsnoop_dma() to flush CPU
+> caches for memory involved in non-coherent DMAs (DMAs that lack CPU cache
+> snooping).
 
-The following changes since commit e67572cd2204894179d89bd7b984072f19313b03:
+Err, no.  There should really be no exported cache manipulation macros,
+as drivers are almost guaranteed to get this wrong.  I've added
+Russell to the Cc list who has been extremtly vocal about this at least
+for arm.
 
-  Linux 6.9-rc6 (2024-04-28 13:47:24 -0700)
-
-are available in the Git repository at:
-
-  git://git.infradead.org/users/hch/dma-mapping.git tags/dma-mapping-6.10-2024-05-20
-
-for you to fetch changes up to a6016aac5252da9d22a4dc0b98121b0acdf6d2f5:
-
-  dma: fix DMA sync for drivers not calling dma_set_mask*() (2024-05-09 19:00:29 +0200)
-
-----------------------------------------------------------------
-dma-mapping updates for Linux 6.10
-
- - optimize DMA sync calls when they are no-ops (Alexander Lobakin)
- - fix swiotlb padding for untrusted devices (Michael Kelley)
- - add documentation for swiotb (Michael Kelley)
-
-----------------------------------------------------------------
-Alexander Lobakin (8):
-      dma: compile-out DMA sync op calls when not used
-      dma: avoid redundant calls for sync operations
-      iommu/dma: avoid expensive indirect calls for sync operations
-      page_pool: make sure frag API fields don't span between cachelines
-      page_pool: don't use driver-set flags field directly
-      page_pool: check for DMA sync shortcut earlier
-      xsk: use generic DMA sync shortcut instead of a custom one
-      dma: fix DMA sync for drivers not calling dma_set_mask*()
-
-Michael Kelley (3):
-      Documentation/core-api: add swiotlb documentation
-      swiotlb: remove alloc_size argument to swiotlb_tbl_map_single()
-      iommu/dma: fix zeroing of bounce buffer padding used by untrusted devices
-
- Documentation/core-api/index.rst                   |   1 +
- Documentation/core-api/swiotlb.rst                 | 321 +++++++++++++++++++++
- drivers/iommu/dma-iommu.c                          |  34 ++-
- drivers/net/ethernet/engleder/tsnep_main.c         |   2 +-
- drivers/net/ethernet/freescale/dpaa2/dpaa2-xsk.c   |   2 +-
- drivers/net/ethernet/intel/i40e/i40e_xsk.c         |   2 +-
- drivers/net/ethernet/intel/ice/ice_xsk.c           |   2 +-
- drivers/net/ethernet/intel/igc/igc_main.c          |   2 +-
- drivers/net/ethernet/intel/ixgbe/ixgbe_xsk.c       |   2 +-
- .../net/ethernet/mellanox/mlx5/core/en/xsk/rx.c    |   4 +-
- drivers/net/ethernet/mellanox/mlx5/core/en_rx.c    |   2 +-
- drivers/net/ethernet/netronome/nfp/nfd3/xsk.c      |   2 +-
- drivers/net/ethernet/stmicro/stmmac/stmmac_main.c  |   2 +-
- drivers/xen/swiotlb-xen.c                          |   2 +-
- include/linux/device.h                             |   4 +
- include/linux/dma-map-ops.h                        |  12 +
- include/linux/dma-mapping.h                        | 105 +++++--
- include/linux/iova.h                               |   5 +
- include/linux/swiotlb.h                            |   2 +-
- include/net/page_pool/types.h                      |  25 +-
- include/net/xdp_sock_drv.h                         |   7 +-
- include/net/xsk_buff_pool.h                        |  14 +-
- kernel/dma/Kconfig                                 |   5 +
- kernel/dma/mapping.c                               |  69 +++--
- kernel/dma/swiotlb.c                               |  62 +++-
- net/core/page_pool.c                               |  78 +++--
- net/xdp/xsk_buff_pool.c                            |  29 +-
- 27 files changed, 634 insertions(+), 163 deletions(-)
- create mode 100644 Documentation/core-api/swiotlb.rst
