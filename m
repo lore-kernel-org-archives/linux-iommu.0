@@ -1,68 +1,63 @@
-Received: from bombadil.infradead.org (bombadil.infradead.org [198.137.202.133])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D57BF45026;
-	Mon, 20 May 2024 14:07:15 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.137.202.133
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4FF00A2D;
+	Mon, 20 May 2024 17:37:15 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1716214037; cv=none; b=fFo7hhFcbhd1TaQsgNdI77dvKPpl6U+FuCuvuEjnHVqi7kx0uwVC3eQUB3aZePmaLiePnohksU7X+mOaxBvQ7DEQITkAV4Bqtqr6OypZwlMi2S7di6UKqvibEtBg8nV13eSyPBbn1lsiQUHTWACFwCi9fgTrisKQWMNw6evzta8=
+	t=1716226635; cv=none; b=bSf8IoKA3WLpZyBkb7nXc41LCweAOKGDHLJBdmgi7c7B8oobps0AZSGqyx78C/q9cxAgKE+jVCymv05y7KsKwB0gn7cj6ZkvPioZdsHoQMlXlNPNdQNepfTNbm2vx1nW2evxvo/Q+/2c/0WwO7+HYrnUKPr7JmZw0hg2dXV7a1c=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1716214037; c=relaxed/simple;
-	bh=w4T6LcRjlCHTTZIBTqyyyFIHQt2VX43DOdStKH+dMjo=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=WFLWUfJfl2p/+J2Y+7xaEqlIwqSFkjQ+OTWrEYjESxf7Q+nENKnl6qVLNDoX++mHDgKtR+rwcI3tCNexPZucW/KbS+J43TDreVjnVXhsZ3BwHWGonZdE2IZwNibmR3KIWJc+xmVq/DW39FVSHivMCu8ILj32qsgVRnM5sYRDk7E=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=infradead.org; spf=none smtp.mailfrom=bombadil.srs.infradead.org; dkim=pass (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b=nzXujvLQ; arc=none smtp.client-ip=198.137.202.133
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=infradead.org
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=bombadil.srs.infradead.org
+	s=arc-20240116; t=1716226635; c=relaxed/simple;
+	bh=+c35VY+nM47X5XU7nqvHCYGuJZVzvWQ2lXzYGoxUU54=;
+	h=Subject:From:In-Reply-To:References:Message-Id:Date:To:Cc; b=XeWRA8HxYorhoV8gH6pD7ga/xs2deJVdtXeWXiApWdq38L6o5IDuwRtob05ZP2VkVq5/lf4LlIMn17lcVf242xBBPh9ATCikCluA1KhoocKZnw5tJkgXbKcCHnRr8I1rx/V5f+6qR/Y1H74fYvPmzD7I48cAhiR5XiHQE5G4dhI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=h7wFseYL; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b="nzXujvLQ"
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-	d=infradead.org; s=bombadil.20210309; h=In-Reply-To:Content-Type:MIME-Version
-	:References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-	Content-Transfer-Encoding:Content-ID:Content-Description;
-	bh=wpWEoUMWnFLJr+MkLtPIZ/EXAlokieryuSaCz8a6I3M=; b=nzXujvLQghLXfJUbZl0u3JiQ/V
-	njxgWrULaemEv1rhjj7uGwTNzAM865guFORckfkd4Elr/e93FJxZ7xTyAiIdHg5YdZ5fZ5uXnfPLZ
-	CkqyBZ+Fnjku555e7eD3RcC1Zsq4vNK1IowWSRMEcMyM/9W+5QQhEQob/6fQ6CZLxDh8rF+J2mz7B
-	ne6Lxk1tkPc4pO11ZuBp7Vn+3Cjy+Gsmh1kKjw1cn5zxMQmGVEIK5F3Q+mhhHaOwFlPewXynlVCI6
-	yLaq/aRiNH+FsLzpdW2E0VFX3q2kB5KFtFAoFVn5xw4OdNAZXy5oqxQlyYTJG9vVi3+f7x+gT2JRa
-	Z5hYlxBA==;
-Received: from hch by bombadil.infradead.org with local (Exim 4.97.1 #2 (Red Hat Linux))
-	id 1s93fS-0000000EfNO-3kiZ;
-	Mon, 20 May 2024 14:07:10 +0000
-Date: Mon, 20 May 2024 07:07:10 -0700
-From: Christoph Hellwig <hch@infradead.org>
-To: Yan Zhao <yan.y.zhao@intel.com>
-Cc: kvm@vger.kernel.org, linux-kernel@vger.kernel.org, x86@kernel.org,
-	alex.williamson@redhat.com, jgg@nvidia.com, kevin.tian@intel.com,
-	iommu@lists.linux.dev, pbonzini@redhat.com, seanjc@google.com,
-	dave.hansen@linux.intel.com, luto@kernel.org, peterz@infradead.org,
-	tglx@linutronix.de, mingo@redhat.com, bp@alien8.de, hpa@zytor.com,
-	corbet@lwn.net, joro@8bytes.org, will@kernel.org,
-	robin.murphy@arm.com, baolu.lu@linux.intel.com, yi.l.liu@intel.com,
-	Russell King <linux@armlinux.org.uk>
-Subject: Re: [PATCH 3/5] x86/mm: Introduce and export interface
- arch_clean_nonsnoop_dma()
-Message-ID: <ZktZDmcNnsHhp4Tm@infradead.org>
-References: <20240507061802.20184-1-yan.y.zhao@intel.com>
- <20240507062044.20399-1-yan.y.zhao@intel.com>
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="h7wFseYL"
+Received: by smtp.kernel.org (Postfix) with ESMTPS id E3C8FC2BD10;
+	Mon, 20 May 2024 17:37:14 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1716226634;
+	bh=+c35VY+nM47X5XU7nqvHCYGuJZVzvWQ2lXzYGoxUU54=;
+	h=Subject:From:In-Reply-To:References:Date:To:Cc:From;
+	b=h7wFseYLo24P9ZZjRB4bcTxBZ1NhQqs6cvuDtTdfMN3swLH6h5PdnbFHbzDOjGxPe
+	 TKFOZDG82tLaklAPt1ipsftIh/zVsqmEJCsQqU0NHFbIqSNOw4vDc0kKmc8Q7QZKdc
+	 b0JggNKorgM8AEHeacZTmBqrXuCsfE7xlo3Vz4rX45Z9sg/eialupB9bwGbgNrqQeS
+	 JSLtdX+U/RNB9+U3ommInbL+u/gQdRP15wJyB+MWGRfQ3E7BgF4aiDLJEbxVsj0lKU
+	 7QvVDydSsSDq26lA7ZGAAR5Q40uXiAKIR1HSzb8agEulQsSRVDxjELO9XnSrXSwA2H
+	 cCw6m0axLYTsQ==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+	by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id DA240C43332;
+	Mon, 20 May 2024 17:37:14 +0000 (UTC)
+Subject: Re: [GIT PULL] dma-mapping updates for Linux 6.10
+From: pr-tracker-bot@kernel.org
+In-Reply-To: <ZktYriALqC7ZNQpa@infradead.org>
+References: <ZktYriALqC7ZNQpa@infradead.org>
+X-PR-Tracked-List-Id: <linux-kernel.vger.kernel.org>
+X-PR-Tracked-Message-Id: <ZktYriALqC7ZNQpa@infradead.org>
+X-PR-Tracked-Remote: git://git.infradead.org/users/hch/dma-mapping.git tags/dma-mapping-6.10-2024-05-20
+X-PR-Tracked-Commit-Id: a6016aac5252da9d22a4dc0b98121b0acdf6d2f5
+X-PR-Merge-Tree: torvalds/linux.git
+X-PR-Merge-Refname: refs/heads/master
+X-PR-Merge-Commit-Id: daa121128a2d2ac6006159e2c47676e4fcd21eab
+Message-Id: <171622663488.4663.13899900592813092105.pr-tracker-bot@kernel.org>
+Date: Mon, 20 May 2024 17:37:14 +0000
+To: Christoph Hellwig <hch@infradead.org>
+Cc: Linus Torvalds <torvalds@linux-foundation.org>, linux-kernel@vger.kernel.org, iommu@lists.linux.dev, netdev@vger.kernel.org
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20240507062044.20399-1-yan.y.zhao@intel.com>
-X-SRS-Rewrite: SMTP reverse-path rewritten from <hch@infradead.org> by bombadil.infradead.org. See http://www.infradead.org/rpr.html
 
-On Tue, May 07, 2024 at 02:20:44PM +0800, Yan Zhao wrote:
-> Introduce and export interface arch_clean_nonsnoop_dma() to flush CPU
-> caches for memory involved in non-coherent DMAs (DMAs that lack CPU cache
-> snooping).
+The pull request you sent on Mon, 20 May 2024 07:05:34 -0700:
 
-Err, no.  There should really be no exported cache manipulation macros,
-as drivers are almost guaranteed to get this wrong.  I've added
-Russell to the Cc list who has been extremtly vocal about this at least
-for arm.
+> git://git.infradead.org/users/hch/dma-mapping.git tags/dma-mapping-6.10-2024-05-20
 
+has been merged into torvalds/linux.git:
+https://git.kernel.org/torvalds/c/daa121128a2d2ac6006159e2c47676e4fcd21eab
+
+Thank you!
+
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/prtracker.html
