@@ -1,133 +1,101 @@
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9505B1C69C
-	for <iommu@lists.linux.dev>; Tue, 21 May 2024 04:45:49 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=170.10.129.124
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id BB1B171756
+	for <iommu@lists.linux.dev>; Tue, 21 May 2024 10:25:54 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1716266751; cv=none; b=dE1+wMJnffuea/YJTCh+Mp46M/N1CEzAHkOiCISuT0pmIFQNy73voxblvgv85PfJnTnvWuBDJQTr8I3Yn3fPv4Xt2rxuKoWTgxJq4Q/Ch0ppnYcEExACud4d427m71h0v6Fy8w7FmdqgykUT3PEyml4H2BU+hbd5AosgA8On/8c=
+	t=1716287156; cv=none; b=OUgET2DE7V1+VU6HHGgqxRWDnbLsS7qH5b03ZbawCfWW4fcRHun0AQyAgkehTL1xtyR5p18r3X/7o1jNelFK5ruNOEoRw2BLpINO5Q5L6y2XYhwV0yzuWATa/EWopZ6cwi6V5QksgQqLEd/TeOS0zNM9Et1RjwWJXudfVjbBVPw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1716266751; c=relaxed/simple;
-	bh=p3Y9bg7d+YbBIYXEb4Y1aAsTwlznHdS3rV/1bUmAjz8=;
+	s=arc-20240116; t=1716287156; c=relaxed/simple;
+	bh=PzkREHFxftmh9BlfZ0knbcVfRSI6Uv/LfaRce+Dlslk=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 In-Reply-To:Content-Type:Content-Disposition; b=ng2rgAkTrzbKt1yLMBYx1GrlmzDyyXcAfFBWLHukbyt1nUCljjB70QAxmWogivmOrNDQT04EiheYVrYgYKDz8R1rgYW/z5e+Hg8vQaIp2iHuYXI3n7OqhsdfQr73aO/dCdqJ1Wtp7YUV+6AaD1mE09v2k0+t2rDyc3BqKjL8xKU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=redhat.com; spf=pass smtp.mailfrom=redhat.com; dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b=g5pYsOCh; arc=none smtp.client-ip=170.10.129.124
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=redhat.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=redhat.com
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="g5pYsOCh"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-	s=mimecast20190719; t=1716266748;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 in-reply-to:in-reply-to:references:references;
-	bh=xr/Lj/QEJVokUuTusNqYmXna8XGFmwM2A2fm3gIEflI=;
-	b=g5pYsOChPT3axFZ4gTpIfwlcmH6FEDvGbQPieLS4AlVCx/NsB8BGxHr3xqLvwp5qt6K8ec
-	zMYxiNspLTXobhH/1TJJDVmGzH6GFNDZ6ErC4HoBegk/VcwfqfX/SDZnhOZ2WsjqvQ8fp3
-	LAehdERlu+xDZ7L2URM8eWhhvp5uMNI=
-Received: from mail-vk1-f197.google.com (mail-vk1-f197.google.com
- [209.85.221.197]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
- us-mta-573-WcvzOqPKPs6Sprs-meh8KQ-1; Tue, 21 May 2024 00:45:46 -0400
-X-MC-Unique: WcvzOqPKPs6Sprs-meh8KQ-1
-Received: by mail-vk1-f197.google.com with SMTP id 71dfb90a1353d-4df4bf734abso6124160e0c.3
-        for <iommu@lists.linux.dev>; Mon, 20 May 2024 21:45:46 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1716266745; x=1716871545;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=xr/Lj/QEJVokUuTusNqYmXna8XGFmwM2A2fm3gIEflI=;
-        b=uKTgCov/1DYskVTUH9mdjYVjk6L4pITGLZlIYgJcZzsK/nSwgdQp0igiXE8E6vB/cd
-         u0PIyZpZxJbTJcIe6hfAu3LRBNVg/DQOpcM6uK4niNKXMMWrvDtecgd/RpnGJMovg1Gn
-         tazUZGkXRx/wJ73oj1+W0UuLtQUqiff8LQB16319DSvy1GJgPLjIEFhxLra6WgB9McZp
-         gegeyrTLv1ykAwyvXCBeMMocacddNV8EY5WedUJEoTvWjOAvW4UUHae7BcKvrwjHorYe
-         vi5eH6JaN2stp0MyXQK4FZjHr8y4mIiIpAlDxVrYYOD0R/vA5djXZfna+Y8CXyEKACeW
-         1qng==
-X-Forwarded-Encrypted: i=1; AJvYcCXShD8PiA5QqNwLd5SaNm5OgIiV2lVsxwy6xjWiPpGJXyoJVLZCkFhYuqoeyj98nkeKP/+xkA1kWE8JI+Y3I1XnpwXJDd8=
-X-Gm-Message-State: AOJu0Yw9yGppiGHHXp4M6c56dJLnZErkENiJL0vSZRLhaN+/SGxNbR2r
-	HG7I5o7jK5G1tEKXN/gM62zL3r1/fhB5mu3TY0VzCu85wvMqGNY9JsmvlrV3jTcZkUk29qqrR0b
-	pmZevT4ATJjKMJxm75D+kd6RLuO+IjhEc81zvXXtiPllnMVAdqONx
-X-Received: by 2002:a05:6102:f0c:b0:47e:f6f4:ff55 with SMTP id ada2fe7eead31-48077e0b862mr33274799137.20.1716266745668;
-        Mon, 20 May 2024 21:45:45 -0700 (PDT)
-X-Google-Smtp-Source: AGHT+IEZqTatzHAFDg1/LKoHiRtJSPbxNMP2E08/6y7nLNNsNstKTAorXNYaCEOr/mxCeVmpvaha5Q==
-X-Received: by 2002:a05:6102:f0c:b0:47e:f6f4:ff55 with SMTP id ada2fe7eead31-48077e0b862mr33274791137.20.1716266745335;
-        Mon, 20 May 2024 21:45:45 -0700 (PDT)
-Received: from localhost (ip98-179-76-110.ph.ph.cox.net. [98.179.76.110])
-        by smtp.gmail.com with ESMTPSA id d75a77b69052e-43e25735ceesm99142321cf.11.2024.05.20.21.45.44
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 20 May 2024 21:45:44 -0700 (PDT)
-Date: Mon, 20 May 2024 21:45:43 -0700
-From: Jerry Snitselaar <jsnitsel@redhat.com>
-To: Robin Murphy <robin.murphy@arm.com>
-Cc: joro@8bytes.org, iommu@lists.linux.dev, will@kernel.org, 
-	linux-kernel@vger.kernel.org, Jon Hunter <jonathanh@nvidia.com>
-Subject: Re: [PATCH] iommu/dma: Fix domain init
-Message-ID: <jrzrf3vz2rhcrwazsxuljuyhru4mstyzuhjx4uawcfmjlmvipd@lu6usxz22ved>
-References: <721fa6baebb0924aa40db0b8fb86bcb4538434af.1716232484.git.robin.murphy@arm.com>
+	 Content-Type:Content-Disposition:In-Reply-To; b=tiIn4JHG7mcsJwL2G0ewyn0/Qhf6ZP3zsAyOHx4vq2IC+hy/pY/9hWTqKXX6UY3RdoJPc4RYPR3ZXkHPUDGND4jFQbgIk9Lfcn2DIfAb5ikATl5KJ97aIroDyH+5rgVHONKpQfOfKrqsSEIlmuxlYEK662OdEYZSzFM5VADAuxE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; arc=none smtp.client-ip=217.140.110.172
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 1E7D7106F
+	for <iommu@lists.linux.dev>; Tue, 21 May 2024 03:26:18 -0700 (PDT)
+Received: from e110455-lin.cambridge.arm.com (usa-sjc-imap-foss1.foss.arm.com [10.121.207.14])
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPA id D9B7D3F766
+	for <iommu@lists.linux.dev>; Tue, 21 May 2024 03:25:53 -0700 (PDT)
+Date: Tue, 21 May 2024 11:25:31 +0100
+From: "liviu.dudau@arm.com" <liviu.dudau@arm.com>
+To: Sudeep Holla <sudeep.holla@arm.com>
+Cc: Jean-Philippe Brucker <jean-philippe@linaro.org>,
+	Bjorn Helgaas <helgaas@kernel.org>, Vidya Sagar <vidyas@nvidia.com>,
+	"will@kernel.org" <will@kernel.org>,
+	"lpieralisi@kernel.org" <lpieralisi@kernel.org>,
+	"kw@linux.com" <kw@linux.com>, "robh@kernel.org" <robh@kernel.org>,
+	"bhelgaas@google.com" <bhelgaas@google.com>,
+	"krzk+dt@kernel.org" <krzk+dt@kernel.org>,
+	"conor+dt@kernel.org" <conor+dt@kernel.org>,
+	"joro@8bytes.org" <joro@8bytes.org>,
+	"robin.murphy@arm.com" <robin.murphy@arm.com>,
+	Nicolin Chen <nicolinc@nvidia.com>, Ketan Patil <ketanp@nvidia.com>,
+	"linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>,
+	"linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>,
+	"iommu@lists.linux.dev" <iommu@lists.linux.dev>,
+	"devicetree@vger.kernel.org" <devicetree@vger.kernel.org>
+Subject: Re: [PATCH 0/3] Enable PCIe ATS for devicetree boot
+Message-ID: <Zkx2m41lIdaV_WyH@e110455-lin.cambridge.arm.com>
+References: <PH8PR12MB6674391D5067B469B0400C26B8EC2@PH8PR12MB6674.namprd12.prod.outlook.com>
+ <20240515185241.GA2131384@bhelgaas>
+ <20240516073500.GA3563602@myrica>
+ <ZkXi2LCy9ZZkupjM@bogus>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-In-Reply-To: <721fa6baebb0924aa40db0b8fb86bcb4538434af.1716232484.git.robin.murphy@arm.com>
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: redhat.com
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <ZkXi2LCy9ZZkupjM@bogus>
 
-On Mon, May 20, 2024 at 08:14:44PM GMT, Robin Murphy wrote:
-> Despite carefully rewording the kerneldoc to describe the new direct
-> interaction with dma_range_map, it seems I managed to confuse myself in
-> removing the redundant force_aperture check and ended up making the code
-> not do that at all. This led to dma_range_maps inadvertently being able
-> to set iovad->start_pfn = 0, and all the nonsensical chaos which ensues
-> from there. Restore the correct behaviour of constraining base_pfn to
-> the domain aperture regardless of dma_range_map, and not trying to apply
-> dma_range_map constraints to the basic IOVA domain since they will be
-> properly handled with reserved regions later.
+On Thu, May 16, 2024 at 11:41:28AM +0100, Sudeep Holla wrote:
+> On Thu, May 16, 2024 at 08:35:00AM +0100, Jean-Philippe Brucker wrote:
+> > Hi,
+> > 
+> > On Wed, May 15, 2024 at 01:52:41PM -0500, Bjorn Helgaas wrote:
+> > > On Wed, May 15, 2024 at 06:28:15PM +0000, Vidya Sagar wrote:
+> > > > Thanks, Jean for this series.
+> > > > May I know the current status of it?
+> > > > Although it was actively reviewed, I see that its current status is set to 
+> > > > 'Handled Elsewhere' in https://patchwork.kernel.org/project/linux-pci/list/?series=848836&state=*
+> > > > What is the plan to get this series accepted?
+> > > 
+> > > I probably marked it "handled elsewhere" in the PCI patchwork because
+> > > it doesn't touch PCI files (the binding has already been reviewed by
+> > > Rob and Liviu), so I assumed the iommu folks would take the series.
+> > > I don't know how they track patches.
+> > 
+> > Yes I think this can go through the IOMMU tree. Since patch 3 is still
+> > missing an Ack, I'm resendng the series next cycle.
+> > 
 > 
-> Reported-by: Jon Hunter <jonathanh@nvidia.com>
-> Reported-by: Jerry Snitselaar <jsnitsel@redhat.com>
-> Fixes: e28a114243d1 ("iommu/dma: Make limit checks self-contained")
+> Extremely sorry for that, since I saw Liviu on the thread, I assumed he
+> would have acked/reviewed 3/3 as well but now I see that is not the case.
+> That said, you must not delay the change just for the DTS file changes.
+> Anyways I will ack it now.
 
-I'm seeing this upstream as ad4750b07d34 ("iommu/dma: Make limit checks self-contained") now.
+Appologies, I was travelling last week and thought DT changes will be taken
+via Robin.
 
-> Signed-off-by: Robin Murphy <robin.murphy@arm.com>
-> ---
+Best regards,
+Liviu
 
-Tested-by: Jerry Snitselaar <jsnitsel@redhat.com>
-Reviewed-by: Jerry Snitselaar <jsnitsel@redhat.com>
-
->  drivers/iommu/dma-iommu.c | 8 ++++----
->  1 file changed, 4 insertions(+), 4 deletions(-)
 > 
-> diff --git a/drivers/iommu/dma-iommu.c b/drivers/iommu/dma-iommu.c
-> index 89a53c2f2cf9..1ec89ca75c59 100644
-> --- a/drivers/iommu/dma-iommu.c
-> +++ b/drivers/iommu/dma-iommu.c
-> @@ -685,15 +685,15 @@ static int iommu_dma_init_domain(struct iommu_domain *domain, struct device *dev
->  
->  	/* Check the domain allows at least some access to the device... */
->  	if (map) {
-> -		dma_addr_t base = dma_range_map_min(map);
-> -		if (base > domain->geometry.aperture_end ||
-> +		if (dma_range_map_min(map) > domain->geometry.aperture_end ||
->  		    dma_range_map_max(map) < domain->geometry.aperture_start) {
->  			pr_warn("specified DMA range outside IOMMU capability\n");
->  			return -EFAULT;
->  		}
-> -		/* ...then finally give it a kicking to make sure it fits */
-> -		base_pfn = max(base, domain->geometry.aperture_start) >> order;
->  	}
-> +	/* ...then finally give it a kicking to make sure it fits */
-> +	base_pfn = max_t(unsigned long, base_pfn,
-> +			 domain->geometry.aperture_start >> order);
->  
->  	/* start_pfn is always nonzero for an already-initialised domain */
->  	mutex_lock(&cookie->mutex);
-> -- 
-> 2.39.2.101.g768bb238c484.dirty
-> 
+> --
+> Regards,
+> Sudeep
 
+-- 
+====================
+| I would like to |
+| fix the world,  |
+| but they're not |
+| giving me the   |
+ \ source code!  /
+  ---------------
+    ¯\_(ツ)_/¯
