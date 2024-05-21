@@ -1,214 +1,166 @@
-Received: from NAM02-SN1-obe.outbound.protection.outlook.com (mail-sn1nam02on2052.outbound.protection.outlook.com [40.107.96.52])
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 475681BF50
-	for <iommu@lists.linux.dev>; Tue, 21 May 2024 16:07:27 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.96.52
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1716307649; cv=fail; b=Zlp66IJTP0cGdMGOxvkpPZTKNwZ/GtNdmA6igwdunNjtWDbKX+eHlKQsFcmeC63SiuTdIvroGq0k81idLTnRxRvFtip3bl35ghNfCFBYaskmxVRd80kr9+r1zITr2xj/TEXUxy9pInncXs4vQ9wcZXfvK/b/niqavt6MvaJu2YI=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1716307649; c=relaxed/simple;
-	bh=oXDJcqOq5yOT7c30V6beLyjDvoWUn7jVXl6Fzg6blqY=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:Content-Type:
-	 Content-Disposition:In-Reply-To:MIME-Version; b=lmC1U73E189QGBBJF3LmPt1b4QiLPKQLsd9Z5R5R0I8yqPFhmezHMrs0MgGbK9f8Q6j/RV7gmLGD8AVPP/U0MixGei8hk35T7A3lvFizFUL4kCl5bJzohad3edY1e/4ZO8vZwUnv6YvRtqIudHMBxU4fueBkARCOQH80jcWoBHY=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=anQo9Ma0; arc=fail smtp.client-ip=40.107.96.52
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 70CEF757FD
+	for <iommu@lists.linux.dev>; Tue, 21 May 2024 16:21:30 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=170.10.133.124
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1716308492; cv=none; b=YHChF/Uf2ndMO4SBGwNTVK5HYlJM0sej7GMkIfmhLG9sLd4KbdU5Pe2nmo9fBOv8iGGRbDd1kpFBd4XK+fgLKUaPm9x/lFA8JK8aa/O0uc+oTe1HREqqkJP+yPEJ4Mi3y7Ofr0Ms+87NlaZ0pYPx14miy0wktySMFphCK/81ieE=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1716308492; c=relaxed/simple;
+	bh=XS/PoMZ0vohM4lSNeJOQ/OrYk9eYCa2hb4zd9/QLyUg=;
+	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=PoPQReMrYs+lfRP4iHFFNj5PdXuxbuEzZWKLfxNHBi8Tq/w01KXajg/y3FlZmkJEwJSp0ccBSbyT/OBu5iyo8jPQb0MiXTNk2CrjFDicq1umQVPKuGnCPhaHpZJT8bZX59y/CZs1iUfCTPhEobObx38YSE5jFZ9kkbbRnaUK6v0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=redhat.com; spf=pass smtp.mailfrom=redhat.com; dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b=REDvZUZw; arc=none smtp.client-ip=170.10.133.124
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=redhat.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=redhat.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="anQo9Ma0"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=F3sObzLTn3PhIVIHd2Yq0RqvTzJzeV3yRlLeypcYd4lxgCBoz5EEZXxRCnmAbkQ9b9+e0fex7ZfzxpMKmVgkilHbujAKql91AK8ms5A8runQfxyeIhmStgjAAFf6VnW4t9W6l8g+dK+0vUNM+1rPup+oKFQwOrmBQU19D7zLqLnqFxvhJHjMkWfF1KSbTOTmT8Ngif2V4hsfEFFjOOYVZY7jFHWnApFtohXEzZJH9crjrN90n+l6Kpl/L8XFsqmRz8G1QHWnUP1cSU4A54TjlL6DzCqGd+EIQUyh3m5S4bxOuvkoWpH2Btg5rbEkdbRlmd23TLmwDZQLUgbIustNKg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=NC3+Igcayr9K0olomDpHVuN+lMHWwy96W+fTA0nscEo=;
- b=PB00midKY0rK2ahzf9YMqbU3RfDQU/HfdAAPhkq4fbz+4nFkmm5coMpB98QuSYlGPVPmi8IM0+2jlf5COu68/t4yZUwbYBifR708kozc2bJy7t717QJ/taGTqoZEHAchIGkDhohj6rWFt+3f9MmFZLJcM4mWJWwIygJayMNrwUWO6VDBxZw5mS5lYOPyi5IIGamt4tad1merwJxDBD9sTd/VPQK/6bv1yFdQTPC2DL2DvtlNkrTZ8hfSNqWZsli9BnhDd8RsV5dJA6wTFjQJDlhrdKnjSDhvBlHxX8MHM5ydOsIqCGB0AWEiIRy3pm0XLR1iM5KEu5oWyj/K1x6TJg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=NC3+Igcayr9K0olomDpHVuN+lMHWwy96W+fTA0nscEo=;
- b=anQo9Ma0Gtjf1k1njTjtazVnCGaajedzbwxvBqowt05b85DlGTIJzJTMah2KcAv0pljlQSYF619K+CI0qiEglyTbuT9Yx3+RA1eWzQSzaixKi3FY1L8acfJ2foV70Cw1eHtGwOB8LROmF5x1GrGCrrcz986qX6n30L9cwzbaHUtOTuWAebopbCyTItm/9qxuDliDLHT2xFlA7nnSEPrHnZ7BtObD948hMUSWV7ZjuF/xCL0Nfrt7geKcj0+8ndU/DcWOTOQzUoZ7dGP1leUVJtp+fSY9Vjaj7ldzAHUBclE+USh+tScOYHmKzBkcP2GUjwQfevrmsca8SHbXftBaEw==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-Received: from DM6PR12MB3849.namprd12.prod.outlook.com (2603:10b6:5:1c7::26)
- by MN2PR12MB4318.namprd12.prod.outlook.com (2603:10b6:208:1d8::12) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7587.36; Tue, 21 May
- 2024 16:07:15 +0000
-Received: from DM6PR12MB3849.namprd12.prod.outlook.com
- ([fe80::c296:774b:a5fc:965e]) by DM6PR12MB3849.namprd12.prod.outlook.com
- ([fe80::c296:774b:a5fc:965e%4]) with mapi id 15.20.7587.035; Tue, 21 May 2024
- 16:07:15 +0000
-Date: Tue, 21 May 2024 13:07:14 -0300
-From: Jason Gunthorpe <jgg@nvidia.com>
-To: "Tian, Kevin" <kevin.tian@intel.com>
-Cc: Alex Williamson <alex.williamson@redhat.com>,
-	"Vetter, Daniel" <daniel.vetter@intel.com>,
-	"Zhao, Yan Y" <yan.y.zhao@intel.com>,
-	"kvm@vger.kernel.org" <kvm@vger.kernel.org>,
-	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-	"x86@kernel.org" <x86@kernel.org>,
-	"iommu@lists.linux.dev" <iommu@lists.linux.dev>,
-	"pbonzini@redhat.com" <pbonzini@redhat.com>,
-	"seanjc@google.com" <seanjc@google.com>,
-	"dave.hansen@linux.intel.com" <dave.hansen@linux.intel.com>,
-	"luto@kernel.org" <luto@kernel.org>,
-	"peterz@infradead.org" <peterz@infradead.org>,
-	"tglx@linutronix.de" <tglx@linutronix.de>,
-	"mingo@redhat.com" <mingo@redhat.com>,
-	"bp@alien8.de" <bp@alien8.de>, "hpa@zytor.com" <hpa@zytor.com>,
-	"corbet@lwn.net" <corbet@lwn.net>,
-	"joro@8bytes.org" <joro@8bytes.org>,
-	"will@kernel.org" <will@kernel.org>,
-	"robin.murphy@arm.com" <robin.murphy@arm.com>,
-	"baolu.lu@linux.intel.com" <baolu.lu@linux.intel.com>,
-	"Liu, Yi L" <yi.l.liu@intel.com>
+	dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="REDvZUZw"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+	s=mimecast20190719; t=1716308489;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding:
+	 in-reply-to:in-reply-to:references:references;
+	bh=zBkDmR7/UY5pu+K19ObSTfPnyl9pBj1jvfc+LLqjkwU=;
+	b=REDvZUZwUvKeXMqYZ00ETJfJu4dFUuHKmOrwlfGibNMxDQgQzOcR3dOLbpqmDfEFsrWlbs
+	veFWu3ZdCkrectKcd8Rw0Hv9ofFTGz5orsaNCHO+zvIiysBq3uxcw+RUzR9V9PXLg8N9Bb
+	lqrF7kmSKmDFkFu9l3py2JHLJ96qEWY=
+Received: from mail-io1-f69.google.com (mail-io1-f69.google.com
+ [209.85.166.69]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
+ us-mta-486--kVyYccdN1-P1Svp5Qrj9Q-1; Tue, 21 May 2024 12:21:26 -0400
+X-MC-Unique: -kVyYccdN1-P1Svp5Qrj9Q-1
+Received: by mail-io1-f69.google.com with SMTP id ca18e2360f4ac-7e1bcad7693so1338352539f.1
+        for <iommu@lists.linux.dev>; Tue, 21 May 2024 09:21:25 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1716308485; x=1716913285;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:subject:cc:to:from:date:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=zBkDmR7/UY5pu+K19ObSTfPnyl9pBj1jvfc+LLqjkwU=;
+        b=tPBJQooBqXHPCncspZM0E2446orUSI7RQ7e+zbPZnj3RArxjBSd0E9PTg/m60TCNvU
+         /ptJyOuh6YXI7sRp4F6zYnngR3EogitRxO8FoXIU30N3CWvzKHtsHIEtOboGB9yeZ5Z7
+         XDxVSlJ5F+k+OK+pQl1oEdIPAu1YRxWAxMXsCMFxj9XrnIntx2ve/kMIRzePILvHk8J3
+         u6SE7wN2D7aODG5SPaDGQJQDl465OZsgD+S/p0nALmhoWcazRB7AgSApX2aVbqa708io
+         ZbsJUuWH23MndEYN3lLw/2U0y3eGz/etKBQ7sU//sELt47yd1hhNtS4lsNvD8oNkKLhF
+         QOjA==
+X-Forwarded-Encrypted: i=1; AJvYcCUQU1QfhKz/+hmDdE8DSnm6a7pTb2t1Hv31n0VkJs/chL7MiTJkF6EHcgkn2HJ99v+7lL4ETIV+nahPWByhrW/4RX91rU4=
+X-Gm-Message-State: AOJu0YyPQW++NYaCQ3ZTuu6N94d48mYyud9sIbCoL18mPJ6EMzvcnKL6
+	PfwNgyeVXgbrCwxx969ja3GaEQNDKFUBEirsCcffsHEZLXU6qCe2YQUKzbZvB1b4+PhoREP3Q2n
+	CAkPxD4eusBc+lrDHEUl/vXSzs5zBBD2am/ZL1HgUucY2yubkAQkm
+X-Received: by 2002:a5e:9515:0:b0:7e1:83ee:7263 with SMTP id ca18e2360f4ac-7e1b5217d31mr3432548839f.19.1716308485171;
+        Tue, 21 May 2024 09:21:25 -0700 (PDT)
+X-Google-Smtp-Source: AGHT+IFPMptMWyo0jbfKOTtQpGxuYSbiSfgve0+756eiZhQ4Fl8lA8G4jDvEgV+jrxZwDY6cLELV/Q==
+X-Received: by 2002:a5e:9515:0:b0:7e1:83ee:7263 with SMTP id ca18e2360f4ac-7e1b5217d31mr3432546639f.19.1716308484853;
+        Tue, 21 May 2024 09:21:24 -0700 (PDT)
+Received: from redhat.com ([38.15.36.11])
+        by smtp.gmail.com with ESMTPSA id ca18e2360f4ac-7e1be57e690sm615576439f.39.2024.05.21.09.21.23
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 21 May 2024 09:21:24 -0700 (PDT)
+Date: Tue, 21 May 2024 10:21:23 -0600
+From: Alex Williamson <alex.williamson@redhat.com>
+To: Jason Gunthorpe <jgg@nvidia.com>
+Cc: "Tian, Kevin" <kevin.tian@intel.com>, "Vetter, Daniel"
+ <daniel.vetter@intel.com>, "Zhao, Yan Y" <yan.y.zhao@intel.com>,
+ "kvm@vger.kernel.org" <kvm@vger.kernel.org>, "linux-kernel@vger.kernel.org"
+ <linux-kernel@vger.kernel.org>, "x86@kernel.org" <x86@kernel.org>,
+ "iommu@lists.linux.dev" <iommu@lists.linux.dev>, "pbonzini@redhat.com"
+ <pbonzini@redhat.com>, "seanjc@google.com" <seanjc@google.com>,
+ "dave.hansen@linux.intel.com" <dave.hansen@linux.intel.com>,
+ "luto@kernel.org" <luto@kernel.org>, "peterz@infradead.org"
+ <peterz@infradead.org>, "tglx@linutronix.de" <tglx@linutronix.de>,
+ "mingo@redhat.com" <mingo@redhat.com>, "bp@alien8.de" <bp@alien8.de>,
+ "hpa@zytor.com" <hpa@zytor.com>, "corbet@lwn.net" <corbet@lwn.net>,
+ "joro@8bytes.org" <joro@8bytes.org>, "will@kernel.org" <will@kernel.org>,
+ "robin.murphy@arm.com" <robin.murphy@arm.com>, "baolu.lu@linux.intel.com"
+ <baolu.lu@linux.intel.com>, "Liu, Yi L" <yi.l.liu@intel.com>
 Subject: Re: [PATCH 4/5] vfio/type1: Flush CPU caches on DMA pages in
  non-coherent domains
-Message-ID: <20240521160714.GJ20229@nvidia.com>
+Message-ID: <20240521102123.7baaf85a.alex.williamson@redhat.com>
+In-Reply-To: <20240521160714.GJ20229@nvidia.com>
 References: <20240507061802.20184-1-yan.y.zhao@intel.com>
- <20240507062138.20465-1-yan.y.zhao@intel.com>
- <20240509121049.58238a6f.alex.williamson@redhat.com>
- <Zj33cUe7HYOIfj5N@yzhao56-desk.sh.intel.com>
- <20240510105728.76d97bbb.alex.williamson@redhat.com>
- <ZkG9IEQwi7HG3YBk@yzhao56-desk.sh.intel.com>
- <BN9PR11MB52766D78684F6206121590B98CED2@BN9PR11MB5276.namprd11.prod.outlook.com>
- <20240516143159.0416d6c7.alex.williamson@redhat.com>
- <20240517171117.GB20229@nvidia.com>
- <BN9PR11MB5276250B2CF376D15D16FF928CE92@BN9PR11MB5276.namprd11.prod.outlook.com>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <BN9PR11MB5276250B2CF376D15D16FF928CE92@BN9PR11MB5276.namprd11.prod.outlook.com>
-X-ClientProxiedBy: YT3PR01CA0130.CANPRD01.PROD.OUTLOOK.COM
- (2603:10b6:b01:83::13) To DM6PR12MB3849.namprd12.prod.outlook.com
- (2603:10b6:5:1c7::26)
+	<20240507062138.20465-1-yan.y.zhao@intel.com>
+	<20240509121049.58238a6f.alex.williamson@redhat.com>
+	<Zj33cUe7HYOIfj5N@yzhao56-desk.sh.intel.com>
+	<20240510105728.76d97bbb.alex.williamson@redhat.com>
+	<ZkG9IEQwi7HG3YBk@yzhao56-desk.sh.intel.com>
+	<BN9PR11MB52766D78684F6206121590B98CED2@BN9PR11MB5276.namprd11.prod.outlook.com>
+	<20240516143159.0416d6c7.alex.williamson@redhat.com>
+	<20240517171117.GB20229@nvidia.com>
+	<BN9PR11MB5276250B2CF376D15D16FF928CE92@BN9PR11MB5276.namprd11.prod.outlook.com>
+	<20240521160714.GJ20229@nvidia.com>
+X-Mailer: Claws Mail 4.2.0 (GTK 3.24.41; x86_64-redhat-linux-gnu)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: DM6PR12MB3849:EE_|MN2PR12MB4318:EE_
-X-MS-Office365-Filtering-Correlation-Id: 03ada3f0-2e19-4a0d-65f6-08dc79b01533
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;ARA:13230031|376005|1800799015|7416005|366007;
-X-Microsoft-Antispam-Message-Info:
-	=?us-ascii?Q?n5K/M7fZTpq7NTApTyRAawQZ6xqdut5TRMGUaIREvtOaDeCVYII7cm3Yrpl5?=
- =?us-ascii?Q?CYVKCETupmukX11cfbMAxRq22jr0h3RE+pm5iwMwMrw8yGlVexoE812C5w51?=
- =?us-ascii?Q?RchJ+cV723pfnyyxTVScxAShBA5DjUshORDvnW6u80K+t8w9jDeGuuWhmo8r?=
- =?us-ascii?Q?2zf9C9eiVrCkuRgPhA5gwRtrTHxnLCWqDrkWG/NXndqVDoxPZhEJlzXiswVW?=
- =?us-ascii?Q?hAcj5JGZ2NX0wQkt3nZmZpLK+ymmM6SuRw/bvV7I0CJwlLzQOm2rW0WNokxc?=
- =?us-ascii?Q?NMPUtK8Qq0QEj4JRnPrtc8Kzi4HWVc7aka7Pa5sdEazHlhi4c1jqsPbsgYk3?=
- =?us-ascii?Q?drw6STgZjmh5Ta72Xc3tuXqTyKLohEaNH9Cuw7hiqLVFb90xOmsZ/mzwbuhF?=
- =?us-ascii?Q?Ivx1RTayg/2ecQpm5ID5UXOCZ0SkVUE3VDosFOfyDsF1tq3eIOef1ztRsVB1?=
- =?us-ascii?Q?tZKSIY+c4BblSR+RT6Tlov2dcTWxpEnutnTYn7SMHq8M+ZhDea9ptinRUPX9?=
- =?us-ascii?Q?MacuBHF5M8+xsPG318glhMkWAscEWanqZHYCozE6d2F6KGoUDpVIRfUsyMaG?=
- =?us-ascii?Q?caKe+BP8EOJBFLLhUHfcaLB+AQcSOxXVsGw4Z4aRxZuhNgHL4JGA8OBpSsek?=
- =?us-ascii?Q?X6ZGqnjai73kOJmlKtiREtITO8bIeldlxnO4oxdUcRNSoGWFSvdAqPnSqAA+?=
- =?us-ascii?Q?guRTfLa3iyyIX7HZG+JP8p0XPhVfnycJmmqO7TjE10SLcF4DtcDRxwlhFM4v?=
- =?us-ascii?Q?KEgNTtVkHP8/LrcbbByd854jgFmb1kc/9GCThTBCmpZUweDcSiiixKsiXG4W?=
- =?us-ascii?Q?0eyFVOF5XbycfvZvGkuHwlN0dxmdzizozIZw+0jp+nnIj56rNOxz/PTyBe2p?=
- =?us-ascii?Q?ASnXrINtXtm3ACZ0tXiBMZfr6+ixSepaPfzyq4Hb31EL77rZRhW1q1WPwd+0?=
- =?us-ascii?Q?TsuE9fAFPd2NN0qhhMjfb8kYjrE3ulaK8q0naTYL54B6EgBWEgi9weFT8WHV?=
- =?us-ascii?Q?mZbiEKLVapgSVZDoq1dUgDJl+G6mY0D4TceMA+yR+BO/ls2pYcdLHBxenOio?=
- =?us-ascii?Q?olyKXo7pPVOUKxvrMyHvFlLEwAVELp3MGu1bMO1wOtNmL09c02L8x/tfxTy3?=
- =?us-ascii?Q?tatQjrRwGMV/cmxooKcgtHOudyqrKg7l7NefA9KUnv+KBv1vyaNvvx64nnya?=
- =?us-ascii?Q?hTNqRjVaxKY9VYi3co8iYjYu1bsJM1IKaI1GfDq2Ud/OfISDbN5+vD85obrn?=
- =?us-ascii?Q?Wz6BZ2+4BOrYR06rZgr3NI9fGp4qYydVyIImU/sbng=3D=3D?=
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM6PR12MB3849.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230031)(376005)(1800799015)(7416005)(366007);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?us-ascii?Q?xWmnCLUj1nFGw6BewyVgPyufuwP19wyl9oM+pe5Alm12P7ZXCWd8cZn+w64w?=
- =?us-ascii?Q?dzVimAXFN767CQcQRDMGW98tlQ+vlHpL3VXg9mcVqu1r32xkXlnDS5qY3yEA?=
- =?us-ascii?Q?rmSAK7MOuVvm7qQ9qyJO51GJRfyaRgwLc2OyM2VEcJx1dkPNC7FSn5cxjBnK?=
- =?us-ascii?Q?j2WCaM8Ptzt0B9oMxsefQ3GKi4/s4dAF/al5IIF82p/eMqqLg4wJCpCgK5zj?=
- =?us-ascii?Q?pblMCvGtqAbrKwytCYMrcQl3xT8Q8W3D6DwpEUD6csdA9m2cK+bQq+zPmYAg?=
- =?us-ascii?Q?bVZloWJ1vCQUevnnTW/+To0X47XtTrxOl5ot7OvIWy7TpO4jvzEfQsOudcDs?=
- =?us-ascii?Q?oYZqKOwfHd6UrpZBdupk0z8pocs4FBvTw1rf6BiKFfSWMTFv7DjUp989jJtE?=
- =?us-ascii?Q?kXIH7R0o5c847+L/MVReDmmFPZ1OjkGFtdToJWq5ncyAJcR8ncL7WUPtbsQR?=
- =?us-ascii?Q?ySnGVJtqsHKa63/URPacEbpKLfWVZnfBwBTGup9ooUfl1u/9+TFQDfZMjVvO?=
- =?us-ascii?Q?TTKZr8DaZfn5FlW7UsPz+ASB/Af4ktqBC6+pX347aQoTVglDG/ub8l1kiIHi?=
- =?us-ascii?Q?BvPpDJa/63fFowKeKKxr30Fyyd7ekYeaUdVvS1fkS7NdgnVWAVOkam30wiSP?=
- =?us-ascii?Q?xFfZaRfnoCKm1iF+3bhQEgwJrQ7eGY7/rz21bHDjgdgRO3w+/ZaA/qf/KjBc?=
- =?us-ascii?Q?vLhY7xcnTPmmJF1Ik3qFKtA0ZL97VlkP/YZ4k6Rx9DT/n1IGK2ZfV/2xcKhK?=
- =?us-ascii?Q?Paofk6NBJzFqIcBXp6SSqkLhk9u4FGgtg8xBrgnDyxVqVlU3k+39uFraIABC?=
- =?us-ascii?Q?Gkjj5aizTvlx8CVtlgebIPTDaHqvEfS5GcxMr1BURrTCC322ed85Gi8Nepr6?=
- =?us-ascii?Q?u8OHYAAyQ86+xdllpycucRhLOMbqZkP16mzCXcxJZu8cCOKa82vJWii66il5?=
- =?us-ascii?Q?MHGGeZTaNlsr45OvuJhximfSxpTN4beX2jIZT6A7istj3Tln6DY/0YKtI+ph?=
- =?us-ascii?Q?MoIRLR6qYr5SMErCw7foAQUbwS3Igzwafx/ElOTiYKwCIzUfHhMX26tWZeZm?=
- =?us-ascii?Q?BJE2dHiQH0L0jzjwjbTadONqsvOfmojB1zZvfFOzD9AZL66SQIxjSmkBOlC9?=
- =?us-ascii?Q?W9yn8w6OVy/ScLNg/3t+c3kOAw9LqDnFYIlDFyYBQVnZLyttQwFQKixSKSYJ?=
- =?us-ascii?Q?hJZoCZQHLWB0mGZh8JRDWb2tJRUfKp2GYVNEt3gl4qBFM4wzdgqPYvtZIDcj?=
- =?us-ascii?Q?8NVE9wdX5dBS439gw0y7o+JVBID2jzA/p/ZJHoLHD3GVrCmvZlSbLSqjJbOl?=
- =?us-ascii?Q?2rDVt5heZ7RtZ9jgcLD0e3ETRWW+a14aUOwJQuWvrzVtzuWrfknZSXTu4IzI?=
- =?us-ascii?Q?zrRkrcIaJSlqpIB2SvBa00kMHAFMky7lugdnYdFZAvHXU9rPlfztYq5t2ue4?=
- =?us-ascii?Q?9RkkK0yTk3ZJM+tNv9Gun7hQb37ttEw+Sya24JvS3bqv5g+C1S0AJ/Z+G5dI?=
- =?us-ascii?Q?L07PogWv9P7l/zWxbL+xchz1fqrx0j/4qES3kUBqomSFwfkWg+fdPMeN7iUP?=
- =?us-ascii?Q?tjkgy3viyNcqAe38bHqPl2gcTf8inVjdoNi3h+mr?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 03ada3f0-2e19-4a0d-65f6-08dc79b01533
-X-MS-Exchange-CrossTenant-AuthSource: DM6PR12MB3849.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 21 May 2024 16:07:15.7914
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: LofwvGrYrhqrOoecWxv3fVCIY/c8WWolRcK5J2SkibcxaEq2Z4VZDL1ee82JcqAJ
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN2PR12MB4318
+X-Mimecast-Spam-Score: 0
+X-Mimecast-Originator: redhat.com
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 
-On Mon, May 20, 2024 at 02:52:43AM +0000, Tian, Kevin wrote:
-> +Daniel
-> 
-> > From: Jason Gunthorpe <jgg@nvidia.com>
-> > Sent: Saturday, May 18, 2024 1:11 AM
-> > 
-> > On Thu, May 16, 2024 at 02:31:59PM -0600, Alex Williamson wrote:
-> > 
-> > > Yes, exactly.  Zero'ing the page would obviously reestablish the
-> > > coherency, but the page could be reallocated without being zero'd and as
-> > > you describe the owner of that page could then get inconsistent
-> > > results.
-> > 
-> > I think if we care about the performance of this stuff enough to try
-> > and remove flushes we'd be better off figuring out how to disable no
-> > snoop in PCI config space and trust the device not to use it and avoid
-> > these flushes.
-> > 
-> > iommu enforcement is nice, but at least ARM has been assuming that the
-> > PCI config space bit is sufficient.
-> > 
-> > Intel/AMD are probably fine here as they will only flush for weird GPU
-> > cases, but I expect ARM is going to be unhappy.
-> > 
-> 
-> My impression was that Intel GPU is not usable w/o non-coherent DMA,
-> but I don't remember whether it's unusable being a functional breakage
-> or a user experience breakage. e.g. I vaguely recalled that the display
-> engine cannot afford high resolution/high refresh rate using the snoop
-> way so the IOMMU dedicated for the GPU doesn't implement the force
-> snoop capability.
-> 
-> Daniel, can you help explain the behavior of Intel GPU in case nosnoop
-> is disabled in the PCI config space?
-> 
-> Overall it sounds that we are talking about different requirements. For
-> Intel GPU nosnoop is a must but it is not currently done securely so we
-> need add proper flush to fix it, while for ARM looks you don't have a
-> case which relies on nosnoop so finding a way to disable it is more
-> straightforward?
+On Tue, 21 May 2024 13:07:14 -0300
+Jason Gunthorpe <jgg@nvidia.com> wrote:
 
-Intel GPU weirdness should not leak into making other devices
-insecure/slow. If necessary Intel GPU only should get some variant
-override to keep no snoop working.
+> On Mon, May 20, 2024 at 02:52:43AM +0000, Tian, Kevin wrote:
+> > +Daniel
+> >   
+> > > From: Jason Gunthorpe <jgg@nvidia.com>
+> > > Sent: Saturday, May 18, 2024 1:11 AM
+> > > 
+> > > On Thu, May 16, 2024 at 02:31:59PM -0600, Alex Williamson wrote:
+> > >   
+> > > > Yes, exactly.  Zero'ing the page would obviously reestablish the
+> > > > coherency, but the page could be reallocated without being zero'd and as
+> > > > you describe the owner of that page could then get inconsistent
+> > > > results.  
+> > > 
+> > > I think if we care about the performance of this stuff enough to try
+> > > and remove flushes we'd be better off figuring out how to disable no
+> > > snoop in PCI config space and trust the device not to use it and avoid
+> > > these flushes.
+> > > 
+> > > iommu enforcement is nice, but at least ARM has been assuming that the
+> > > PCI config space bit is sufficient.
+> > > 
+> > > Intel/AMD are probably fine here as they will only flush for weird GPU
+> > > cases, but I expect ARM is going to be unhappy.
+> > >   
+> > 
+> > My impression was that Intel GPU is not usable w/o non-coherent DMA,
+> > but I don't remember whether it's unusable being a functional breakage
+> > or a user experience breakage. e.g. I vaguely recalled that the display
+> > engine cannot afford high resolution/high refresh rate using the snoop
+> > way so the IOMMU dedicated for the GPU doesn't implement the force
+> > snoop capability.
+> > 
+> > Daniel, can you help explain the behavior of Intel GPU in case nosnoop
+> > is disabled in the PCI config space?
+> > 
+> > Overall it sounds that we are talking about different requirements. For
+> > Intel GPU nosnoop is a must but it is not currently done securely so we
+> > need add proper flush to fix it, while for ARM looks you don't have a
+> > case which relies on nosnoop so finding a way to disable it is more
+> > straightforward?  
+> 
+> Intel GPU weirdness should not leak into making other devices
+> insecure/slow. If necessary Intel GPU only should get some variant
+> override to keep no snoop working.
+> 
+> It would make alot of good sense if VFIO made the default to disable
+> no-snoop via the config space.
 
-It would make alot of good sense if VFIO made the default to disable
-no-snoop via the config space.
+We can certainly virtualize the config space no-snoop enable bit, but
+I'm not sure what it actually accomplishes.  We'd then be relying on
+the device to honor the bit and not have any backdoors to twiddle the
+bit otherwise (where we know that GPUs often have multiple paths to get
+to config space).  We also then have the question of does the device
+function correctly if we disable no-snoop.  The more secure approach
+might be that we need to do these cache flushes for any IOMMU that
+doesn't maintain coherency, even for no-snoop transactions.  Thanks,
 
-Jason
+Alex
+
