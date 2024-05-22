@@ -1,116 +1,105 @@
-Received: from mail-ed1-f54.google.com (mail-ed1-f54.google.com [209.85.208.54])
+Received: from mail-wr1-f44.google.com (mail-wr1-f44.google.com [209.85.221.44])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 97255B65E
-	for <iommu@lists.linux.dev>; Wed, 22 May 2024 08:07:17 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.54
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5025B78C6E
+	for <iommu@lists.linux.dev>; Wed, 22 May 2024 08:27:35 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.44
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1716365239; cv=none; b=beBfEl7rEy+0OE8YYWpIAMri9e0v4tP3vkd0aNKDbkR93+IakFAzD4y6ygF/yuM1RA+olz1iYXGvtJUsEvOMlKInnuMq1npKIxy9hSxm4J+PwkvPRclFbGnQKlx9EHVZ9zjOFwDx2ztsUQtQjJ+uvth+NJ0gp0EmxEa1YAnHZLQ=
+	t=1716366456; cv=none; b=nxCp9TjWPsYb/L4Edxvrr48zvIQn4zTz85bRXclTmjAZVSiC6JCsCDGbzgr0ujyBtc77LqbNaAjtcG26JFOdG3A8nPArJRfZS2tPdGQXD6A7wU9K2znAyRZGAPUt9H0atdgbo4F2pMJhwjd6CODDGnumZadX/Nr1JsmrWA08mQ0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1716365239; c=relaxed/simple;
-	bh=VrTo7xQk3wunpQg4mIDCXYkOoCzhSbxT4fGAOU8jY1w=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=VGCqln9HW3XEwmHfZxVlGMTJUA2pUf+uVnC9Hq7zCTXhJEk5wqaivlDol7ucwkIpnmBt4nKjMUYGc6wvJ8gP1pALtuWfajr/f5yFI1DVo7fgLMToXeiwtk2KLJw1L+om/AHRTO8SfEyqubJaOWOlEmv0K5Izmgo/RB06LDCtL8A=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ventanamicro.com; spf=pass smtp.mailfrom=ventanamicro.com; dkim=pass (2048-bit key) header.d=ventanamicro.com header.i=@ventanamicro.com header.b=TeM6JtLR; arc=none smtp.client-ip=209.85.208.54
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ventanamicro.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ventanamicro.com
+	s=arc-20240116; t=1716366456; c=relaxed/simple;
+	bh=OmtWAKQ6saASpj2ARv+RA8pwd2Z/VtPuUOeaHHH/InA=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=X/q08u4fBU3ZgbOPiCldhnGUGST3T2wLkbS8sis/FI5Hh+cMFjWtErhO18MuDzsr2pC1XOezqs9n9nEISTHDKtx2tLi5cU2uxApbs2qednKYK1TcwnM8NNOcArjNgoh3XN4mWy2COGMMXLQbizhRioW7c+4QMmzY07ih8/aqh+s=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=hthbdLFj; arc=none smtp.client-ip=209.85.221.44
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=ventanamicro.com header.i=@ventanamicro.com header.b="TeM6JtLR"
-Received: by mail-ed1-f54.google.com with SMTP id 4fb4d7f45d1cf-56e48d0a632so13217162a12.2
-        for <iommu@lists.linux.dev>; Wed, 22 May 2024 01:07:17 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="hthbdLFj"
+Received: by mail-wr1-f44.google.com with SMTP id ffacd0b85a97d-354f14bd80cso85819f8f.1
+        for <iommu@lists.linux.dev>; Wed, 22 May 2024 01:27:34 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ventanamicro.com; s=google; t=1716365236; x=1716970036; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=EjJc7AAlreo5EdXOmmG11eZiUCAvljdqIc2K+uOGIsQ=;
-        b=TeM6JtLRKLg50zZb5emLS0PA2+M1Ivk6fSAXLZmHKEsqLr9+Q1x30Qa4oIConLZlHl
-         GbDmMOXMA4HA6dXcSMHm2gECIMnR3NqDTXl+JLMfREYHuxP/6RJWABUHRr7kmzpHJwEf
-         Vi6oQecpNQXHEMHS8U3lqBrQB30+eiBXcGYSpJkM5BTOl5mt4NTHJNNqfjRfW4C535QE
-         35m7j+I9+BVgHy+5YeOYsUyQW0YYNbxI2bGKsNkr1C5yd89Fi6QudNxZ2HUhDvRYjCcw
-         iiodfH7sYCcDgq4MFZRKK8F1eV1GttW9oroqrbSlSaCa/hrJfWzce7IDIO3LQcpEgRsS
-         zxCg==
+        d=gmail.com; s=20230601; t=1716366453; x=1716971253; darn=lists.linux.dev;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=OIn2hFlLwHZLk8/r/RwHC6tgKkycOicAcOyv0sMfHLA=;
+        b=hthbdLFjeSP82nZpfoSZX15jX1WWEvNbV/6pM2cQblfTLo0ysfFFJUkDKBR+rhIelw
+         3sj7GbcWcjfsO9HMuwMjK8gSiDpyqMi/7nmvbLHi3Zf49VggIRaU5TEXE8YoaXEpGjnF
+         Cbgw9WEm/Zuwe2OlFi/Rc+I3vXPqSzLhsc8rATvIDnNkJ0O1S5xzizedvfAQ8QlcDl+b
+         wuJD3qKMZEzH9Zezo7twTb/8xnEnjcp7cXBrp6rNzil5bX2gRz22oMrdvK2k1X+Zfogw
+         U0zB/nLcLHmcJ6Bcr65vLUAgbjEQp7rtPILPh8SjMSBjPKMPf/QOrZzqq8QciJhiWA8G
+         aR9Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1716365236; x=1716970036;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=EjJc7AAlreo5EdXOmmG11eZiUCAvljdqIc2K+uOGIsQ=;
-        b=mKUjyVYN7XKUYQJ+pTYwA73DedF+j6g9y9K5V7SB3T47wWOOcuepGxMy1AoO8vGmIv
-         93IHd+8QLCpGiMx0G7bjtsLlnpWVFhXP2v8VqLVQh2bQLvmBIO4n4ZeWlJtefmuG3byw
-         BWhdlqrcYGRLzUhOXishFJIVdEi5yX5hj14jGfA+JaxfcQr7DepHLpMa6c+vh0+aWNEF
-         ZbaF6F+/1MXNoFq3SPwzDNSAP7LavbqvK+XnAHXdO4mKMcz7F0kOdrmfEjZ9+/wks9C0
-         F8IjJnZMiV1vlzFuUG6hE/zjpS/U7rnIhxINcFA/oId4Za+T5HL+Ti4OR4+vUzx+E2Nj
-         Ha7g==
-X-Forwarded-Encrypted: i=1; AJvYcCXph0G94WHxsilbwuUp1JMmdm+qinYcpjCt6qXcoiK6iQxsoamS1A3d5x4mcuV77L/CaBaNit8s5VP8iQRDYy02Jou0sfc=
-X-Gm-Message-State: AOJu0YwPyBEPgM+BZrkUzsh8uRO0dC+poroJaFc0oUcoZszegGwvRLoj
-	WesoUD2dDUmMpjT2YvpNkgw+Au/q14/ovVJVOmtxEubSvECzhiLJ3pPvMucFRkY=
-X-Google-Smtp-Source: AGHT+IFxkk46rQN7LJxAzq5cGNXR84hroJkBlxdzGPSkPpe2syhCs/1Mf1/sjeCOL+ArtyBeWNzrvw==
-X-Received: by 2002:a50:ab4b:0:b0:574:ecc4:6b54 with SMTP id 4fb4d7f45d1cf-578329c7ca3mr1206147a12.9.1716365235959;
-        Wed, 22 May 2024 01:07:15 -0700 (PDT)
-Received: from localhost (2001-1ae9-1c2-4c00-20f-c6b4-1e57-7965.ip6.tmcz.cz. [2001:1ae9:1c2:4c00:20f:c6b4:1e57:7965])
-        by smtp.gmail.com with ESMTPSA id 4fb4d7f45d1cf-5733c323887sm18071800a12.89.2024.05.22.01.07.15
+        d=1e100.net; s=20230601; t=1716366453; x=1716971253;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=OIn2hFlLwHZLk8/r/RwHC6tgKkycOicAcOyv0sMfHLA=;
+        b=A0NPbfb+ZF+UPfoeLbElnD1dZD/HpMG8upYbjH//6mEs+DrYS0GqpXgl1GqqjGYcVc
+         RoWpUqsyeqsqleifaZQv2W8gUwzinyNFzNZhmoU14YyCNDOU0/f4O9rwWYUYC3qv+sbo
+         bOyre82eDir6Ov7ZvdaIiEOO0DUWTLhhQIW1Y23/0x+shzuWGYT9rAX9UwSYGm08ZGti
+         aCBP1Qv49dPVtc0jxEZ5+ORqMFWIsLhwRnXs/rOL3f85Yz7KxkaqhV6WZrGao2JhV9BL
+         WoLieXGGL8nvI6jpzEwX+8ELYDZK+px/tc4ApK+MSwnUbAFUf3DkMvVp0QJ9BBHyjCAo
+         7bFQ==
+X-Gm-Message-State: AOJu0Yzc3TOswrr/dYwe8B3hA2KiT3y8SCfIXlpOsHtlf/iSj9akye3+
+	MTbO+smZpu26opOPoFGOh1sdiTbX03GzDFkh9CZePaQTowqYbEXgFSMnpdWVv8g=
+X-Google-Smtp-Source: AGHT+IEAlFXB8gX+a8kBPrsUUXrnREyr2t/5JJo3GMmaa3M1kWcv5IUaodnL7Q584OTuw2KLgCZvpw==
+X-Received: by 2002:a05:6000:2810:b0:354:db7f:a6a8 with SMTP id ffacd0b85a97d-354db7fa7camr699059f8f.55.1716366452466;
+        Wed, 22 May 2024 01:27:32 -0700 (PDT)
+Received: from fedora.iskraemeco.si (84-255-245-182.static.t-2.net. [84.255.245.182])
+        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-3502b79bc0asm33964495f8f.1.2024.05.22.01.27.31
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 22 May 2024 01:07:15 -0700 (PDT)
-Date: Wed, 22 May 2024 10:07:14 +0200
-From: Andrew Jones <ajones@ventanamicro.com>
-To: Tomasz Jeznach <tjeznach@rivosinc.com>
-Cc: Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>, 
-	Robin Murphy <robin.murphy@arm.com>, Paul Walmsley <paul.walmsley@sifive.com>, 
-	Anup Patel <apatel@ventanamicro.com>, devicetree@vger.kernel.org, Conor Dooley <conor+dt@kernel.org>, 
-	Albert Ou <aou@eecs.berkeley.edu>, linux@rivosinc.com, linux-kernel@vger.kernel.org, 
-	Rob Herring <robh+dt@kernel.org>, Sebastien Boeuf <seb@rivosinc.com>, iommu@lists.linux.dev, 
-	Palmer Dabbelt <palmer@dabbelt.com>, Nick Kossifidis <mick@ics.forth.gr>, 
-	Krzysztof Kozlowski <krzk+dt@kernel.org>, linux-riscv@lists.infradead.org, 
-	Lu Baolu <baolu.lu@linux.intel.com>
-Subject: Re: [PATCH v5 7/7] iommu/riscv: Paging domain support
-Message-ID: <20240522-b25680db03b547123f1cd59a@orel>
-References: <cover.1715708679.git.tjeznach@rivosinc.com>
- <1ddb50a47c86d384157a979a7475b45f807ba81e.1715708679.git.tjeznach@rivosinc.com>
+        Wed, 22 May 2024 01:27:31 -0700 (PDT)
+From: Uros Bizjak <ubizjak@gmail.com>
+To: iommu@lists.linux.dev,
+	linux-kernel@vger.kernel.org
+Cc: Uros Bizjak <ubizjak@gmail.com>,
+	Joerg Roedel <joro@8bytes.org>,
+	Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
+	Will Deacon <will@kernel.org>,
+	Robin Murphy <robin.murphy@arm.com>
+Subject: [PATCH 1/3] iommu/amd: Use try_cmpxchg64() in v2_alloc_pte()
+Date: Wed, 22 May 2024 10:26:47 +0200
+Message-ID: <20240522082729.971123-1-ubizjak@gmail.com>
+X-Mailer: git-send-email 2.45.1
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <1ddb50a47c86d384157a979a7475b45f807ba81e.1715708679.git.tjeznach@rivosinc.com>
+Content-Transfer-Encoding: 8bit
 
-On Tue, May 14, 2024 at 11:16:19AM GMT, Tomasz Jeznach wrote:
-...
-> +static int riscv_iommu_bond_link(struct riscv_iommu_domain *domain,
-> +				 struct device *dev)
-> +{
-> +	struct riscv_iommu_device *iommu = dev_to_iommu(dev);
-> +	struct riscv_iommu_bond *bond;
-> +	struct list_head *bonds;
-> +
-> +	bond = kzalloc(sizeof(*bond), GFP_KERNEL);
-> +	if (!bond)
-> +		return -ENOMEM;
-> +	bond->dev = dev;
-> +
-> +	/*
-> +	 * List of devices attached to the domain is arranged based on
-> +	 * managed IOMMU device.
-> +	 */
-> +
-> +	spin_lock(&domain->lock);
-> +	list_for_each_rcu(bonds, &domain->bonds)
-> +		if (dev_to_iommu(list_entry(bonds, struct riscv_iommu_bond, list)->dev) == iommu)
-> +			break;
+Use try_cmpxchg64() instead of cmpxchg64 (*ptr, old, new) != old in
+v2_alloc_pte().  cmpxchg returns success in ZF flag, so this change
+saves a compare after cmpxchg (and related move instruction
+in front of cmpxchg).
 
-We should wrap this list_for_each_rcu() in rcu_read_lock() and
-rcu_read_unlock().
+This is the same improvement as implemented for alloc_pte() in:
 
-Thanks,
-drew
+  commit 0d10fe759117 ("iommu/amd: Use try_cmpxchg64 in alloc_pte and free_clear_pte")
 
-> +	list_add_rcu(&bond->list, bonds);
-> +	spin_unlock(&domain->lock);
-> +
-> +	/* Synchronize with riscv_iommu_iotlb_inval() sequence. See comment below. */
-> +	smp_mb();
-> +
-> +	return 0;
-> +}
+Signed-off-by: Uros Bizjak <ubizjak@gmail.com>
+Cc: Joerg Roedel <joro@8bytes.org>
+Cc: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
+Cc: Will Deacon <will@kernel.org>
+Cc: Robin Murphy <robin.murphy@arm.com>
+---
+ drivers/iommu/amd/io_pgtable_v2.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/drivers/iommu/amd/io_pgtable_v2.c b/drivers/iommu/amd/io_pgtable_v2.c
+index 78ac37c5ccc1..664e91c88748 100644
+--- a/drivers/iommu/amd/io_pgtable_v2.c
++++ b/drivers/iommu/amd/io_pgtable_v2.c
+@@ -158,7 +158,7 @@ static u64 *v2_alloc_pte(int nid, u64 *pgd, unsigned long iova,
+ 
+ 			__npte = set_pgtable_attr(page);
+ 			/* pte could have been changed somewhere. */
+-			if (cmpxchg64(pte, __pte, __npte) != __pte)
++			if (!try_cmpxchg64(pte, &__pte, __npte))
+ 				iommu_free_page(page);
+ 			else if (IOMMU_PTE_PRESENT(__pte))
+ 				*updated = true;
+-- 
+2.45.1
+
