@@ -1,210 +1,353 @@
-Received: from NAM10-DM6-obe.outbound.protection.outlook.com (mail-dm6nam10on2089.outbound.protection.outlook.com [40.107.93.89])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 112B0AD27
-	for <iommu@lists.linux.dev>; Thu, 23 May 2024 14:58:55 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.93.89
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1716476337; cv=fail; b=tvBX3EY97FcrS8eXtswhsyN4gAu+trpiSlrZJOQPtNFOZ0S/dG1+aCdvfSduAy0680WEoVRpdy1uGOH4Z+8V7z8po5A14O9LLMz7Fql5X+stnWD/5ivnPg+Sk6ikjad9XVc0+29FjojFwFdlW8gzSFUt8yYlDUdYcPAdETzIl68=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1716476337; c=relaxed/simple;
-	bh=4K+v5RXO332ltIWF9OAanmyxfQdcNtBamoaQaZpgMs4=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:Content-Type:
-	 Content-Disposition:In-Reply-To:MIME-Version; b=tmr/CVCCzrWN83/5DvVHNPvBgMVVj2YdU0b/Zf0lcUKCGKqhCS7iXCkpwez31LwFqKvEf/xJtllx4Q5tekoHSM/X4SLEmm/rZYuoYdvV1zdav5HBttQuwN0zB5tYT7XT6RuIGHc/K+yuBb10y6OLciSSUZIArpBPG5t4yKmcObE=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=RF2YfXCQ; arc=fail smtp.client-ip=40.107.93.89
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E2C4AAD27;
+	Thu, 23 May 2024 14:59:38 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1716476379; cv=none; b=hhNu2nm6RZw7aznj7QoFlRK/64Y+cN6BB977xr38jo8fWA2b4GSSRbRSh53B8J30lw9cMxea9brYKxT7lSinkYJdUrjQMvCk4VGZOBM8LoerHB4olmlkS1Ec6X02+DlDKzp3TTUkQ7hhLgpoZWnulL6/kRKr3QxM0ebelHM82tE=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1716476379; c=relaxed/simple;
+	bh=AByCXbZWFXkxLRVPN8yk5rxjf2TdytKFei9+qkOPvcU=;
+	h=Date:From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:
+	 Content-Disposition:In-Reply-To; b=TWjzkwX/fQNlkdGvWNMXoTyX1mJ3kNN+9J3+HFQLdCxG7AQ9+WuY5T0ndenUUA/GCd8T3flXayzwnrrG83j05N+Pw4nkFq5ImxRKfGf9QBuvnv88KuQKDB3x5Krxqd53q2HhkrT75RmyBd2RFH7uo9pKACswL3nO+zmLNHQJxkw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=KB/WMy7a; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="RF2YfXCQ"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=DeG/oOIYznhn6rN3vXT1/QuLlqwWvmQtAccCY1W3qkZCQFC/J9kJGWwHj0Ra2/8W5xn1d4VElmS/a9F30uESwpLemAseYNcF7QpUVV0bqcNOuexdS3wR81y77Soy4mkw8IcrlqA/1byuccnlarasWUhuktEJrGcHT/4pofCHgXG+335Hp2bl9DZYqNrgxkQGgAi55m3fY7Ak44fEev8dDD+KYZVUCPrpa9UbXkTVkFPFea3IrB65TOqgN7cTFFD4o2VB43VKG2ajBsZC7QO3WGEKfqDpYIm1FVSOpaU7k3Ju3rBqnzJR6zLJt9+ZhMg/mGGpoOfncFiMDlx91Nln+A==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=Y8++VBg1agQTiGKWOhILE1ijDRpUdZrr8SuE3a/3q8I=;
- b=GKnPMxcWXFkMBi/LzioGxuZ1606q8FWCdsTB2B5QbVGaCFtj4a3v5oFsIzjMY9UQv3Y1zMxc7/ogQqE/hHElP0pi0rI7n6Hj/2BzVtnWmueG8cPT2Tl3obTZkkeTy/vnOULnM/FHc2aLmpTXz9ttqXIRnU08HdJazkuCNKsEVxL4KhWPpFj7DCf2KMEQlyfxkNzAjVxdLKxQr9Ge4pe4yR5mqWgvuZIGBBU/gSbjA9NDbWaqxLn8tU4mO3e95Y4RVTqYyJBCRH8o/RGfjSZEXO2R3OuB/ftBtrT3rkI2T/y994tIv5ymJQFA4EnU0rXa9P5c3eP2DeURL4cjwAvJNg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=Y8++VBg1agQTiGKWOhILE1ijDRpUdZrr8SuE3a/3q8I=;
- b=RF2YfXCQ7jGawjkY4gr5A3NTT7cJ+SgcDfUzD57/+tXdb+G6lTmbOuAz3UVHGBulHsXn0upwEDH5H6gQgl3cJ4ycSH7B4A5tgZBCkWsshBzUN8GWNDAmfaON+k4RZAo74cLxbugnuGaP8r3mvq9Tx9lFGgDlkVmayuLznc9168F9tJMEWVpO5hgpa78IQDUeCjmxYsBZUwEQR4es7TM2RvnFSGEoJMjTkikKhS3JyjqO6P1qRlj4tkjyQAjVIm1wm9nL6ajeN9rfjvWy418/RHFGNCNA+xKNGQN7ioi8x7OKpTA8olWr4INYW9nH6WO6pzashqTIk5/eff9dnmfWmA==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-Received: from DM6PR12MB3849.namprd12.prod.outlook.com (2603:10b6:5:1c7::26)
- by CH3PR12MB8073.namprd12.prod.outlook.com (2603:10b6:610:126::8) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7587.36; Thu, 23 May
- 2024 14:58:50 +0000
-Received: from DM6PR12MB3849.namprd12.prod.outlook.com
- ([fe80::c296:774b:a5fc:965e]) by DM6PR12MB3849.namprd12.prod.outlook.com
- ([fe80::c296:774b:a5fc:965e%4]) with mapi id 15.20.7611.016; Thu, 23 May 2024
- 14:58:50 +0000
-Date: Thu, 23 May 2024 11:58:48 -0300
-From: Jason Gunthorpe <jgg@nvidia.com>
-To: "Tian, Kevin" <kevin.tian@intel.com>
-Cc: Alex Williamson <alex.williamson@redhat.com>,
-	"Vetter, Daniel" <daniel.vetter@intel.com>,
-	"Zhao, Yan Y" <yan.y.zhao@intel.com>,
-	"kvm@vger.kernel.org" <kvm@vger.kernel.org>,
-	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-	"x86@kernel.org" <x86@kernel.org>,
-	"iommu@lists.linux.dev" <iommu@lists.linux.dev>,
-	"pbonzini@redhat.com" <pbonzini@redhat.com>,
-	"seanjc@google.com" <seanjc@google.com>,
-	"dave.hansen@linux.intel.com" <dave.hansen@linux.intel.com>,
-	"luto@kernel.org" <luto@kernel.org>,
-	"peterz@infradead.org" <peterz@infradead.org>,
-	"tglx@linutronix.de" <tglx@linutronix.de>,
-	"mingo@redhat.com" <mingo@redhat.com>,
-	"bp@alien8.de" <bp@alien8.de>, "hpa@zytor.com" <hpa@zytor.com>,
-	"corbet@lwn.net" <corbet@lwn.net>,
-	"joro@8bytes.org" <joro@8bytes.org>,
-	"will@kernel.org" <will@kernel.org>,
-	"robin.murphy@arm.com" <robin.murphy@arm.com>,
-	"baolu.lu@linux.intel.com" <baolu.lu@linux.intel.com>,
-	"Liu, Yi L" <yi.l.liu@intel.com>
-Subject: Re: [PATCH 4/5] vfio/type1: Flush CPU caches on DMA pages in
- non-coherent domains
-Message-ID: <20240523145848.GN20229@nvidia.com>
-References: <20240521160714.GJ20229@nvidia.com>
- <20240521102123.7baaf85a.alex.williamson@redhat.com>
- <20240521163400.GK20229@nvidia.com>
- <20240521121945.7f144230.alex.williamson@redhat.com>
- <20240521183745.GP20229@nvidia.com>
- <BN9PR11MB52769E209C5B978C7094A5C08CEB2@BN9PR11MB5276.namprd11.prod.outlook.com>
- <20240522122939.GT20229@nvidia.com>
- <BN9PR11MB527604CDF2E7FA49176200028CEB2@BN9PR11MB5276.namprd11.prod.outlook.com>
- <20240522233213.GI20229@nvidia.com>
- <BN9PR11MB5276C2DD3F924ED2EB6AD3988CEB2@BN9PR11MB5276.namprd11.prod.outlook.com>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <BN9PR11MB5276C2DD3F924ED2EB6AD3988CEB2@BN9PR11MB5276.namprd11.prod.outlook.com>
-X-ClientProxiedBy: BL1PR13CA0327.namprd13.prod.outlook.com
- (2603:10b6:208:2c1::32) To DM6PR12MB3849.namprd12.prod.outlook.com
- (2603:10b6:5:1c7::26)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="KB/WMy7a"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5469BC32781;
+	Thu, 23 May 2024 14:59:38 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1716476378;
+	bh=AByCXbZWFXkxLRVPN8yk5rxjf2TdytKFei9+qkOPvcU=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:From;
+	b=KB/WMy7awBiH/hsZmt97sBLmrKxGXj9DRZIwl/TRSh99kSGafbvAYEW0iygRkZn4S
+	 BkhvRxQBT+2yd2WpjCxVxYLwoeH+rvigzC38IQ4d9WZsDVec9ZkdlXDqQsJqRc4pAK
+	 vMK5MMUnqIggSmzpC0hwyOJ+8QI0iJ3laDP+1AEYC0XGi5XHwEXgR+8gNhi13B2hSl
+	 8EJhUg37sGYJ136HI2eOBVDeAsgfDHokivhedZrkWQ8Kc7UVshaBxZxSoEH6czTlRS
+	 6JbH9UlT5W73callIPuynNf8ljnC26QhtcI1H4M50V+KoFCAtitfWgTinpLGaEafsO
+	 e17hWKZ4wjkLw==
+Date: Thu, 23 May 2024 09:59:36 -0500
+From: Bjorn Helgaas <helgaas@kernel.org>
+To: Vidya Sagar <vidyas@nvidia.com>
+Cc: corbet@lwn.net, bhelgaas@google.com, galshalom@nvidia.com,
+	leonro@nvidia.com, jgg@nvidia.com, treding@nvidia.com,
+	jonathanh@nvidia.com, mmoshrefjava@nvidia.com, shahafs@nvidia.com,
+	vsethi@nvidia.com, sdonthineni@nvidia.com, jan@nvidia.com,
+	tdave@nvidia.com, linux-doc@vger.kernel.org,
+	linux-pci@vger.kernel.org, linux-kernel@vger.kernel.org,
+	kthota@nvidia.com, mmaddireddy@nvidia.com, sagar.tv@gmail.com,
+	Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
+	Robin Murphy <robin.murphy@arm.com>, iommu@lists.linux.dev
+Subject: Re: [PATCH V3] PCI: Extend ACS configurability
+Message-ID: <20240523145936.GA118272@bhelgaas>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: DM6PR12MB3849:EE_|CH3PR12MB8073:EE_
-X-MS-Office365-Filtering-Correlation-Id: bd185a79-42d0-44f8-31e8-08dc7b38db11
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;ARA:13230031|366007|376005|7416005|1800799015;
-X-Microsoft-Antispam-Message-Info:
-	=?us-ascii?Q?nQ33JfajdpJ67TcklgDgXOGNV/a7ZErihsBtspEihhVuMctI9kItB9zRVexl?=
- =?us-ascii?Q?bNkt0NzXJGltUu752XPzZtBIMoJhLrl3l7uasd1SmNdAmIeZjI8L1qMAQeNR?=
- =?us-ascii?Q?sNONUVwm+nAlNrH4+ytB3aTxdrq8CY1/PUrwcJ9yE5sTg2sgLDA5t7pUkIzU?=
- =?us-ascii?Q?jo8RBx1yajiMoRp1yRCFAoJtqSvsaQa88bcPVKWnEdrl/W1eyU/EYVA70uOg?=
- =?us-ascii?Q?9yTOTrr9+ge5Qa7ADeI7NBp3Z3adj2fe0S8m4tadOrQIGNiNxI3VVTkBbKP6?=
- =?us-ascii?Q?L4ZEbcVQi2STnWIqnWWkf5GY5BWRync9/i49pceLoO/N40RFIKppA2GGHmra?=
- =?us-ascii?Q?h5yyiuSVx2j3yg0GAuMSTCvI/cpGlN6Hx0qJzBtyPxFDNpxsL05JReA7fGh0?=
- =?us-ascii?Q?idat6XwEJWiZMWg232r1YMb4DmduUYT3lztDm3GYsmQKYoH0VMCed8xy5Fpo?=
- =?us-ascii?Q?Wz40un8G+bShOQXo4TSsEXyVTrQuBTPkBj96Aqc1WRroeAp7IPuph791iAjO?=
- =?us-ascii?Q?FD2txq9e4xlXd9fO6+Un1LtUm4yB1+ICB1P1n11q3iXHonGTgN03y7NaZEbx?=
- =?us-ascii?Q?nG+e4im6bqlvm1IZ/7vbWJS5q7yzTv5MJhVWsySgC1XZCL3lmaCEJhCBzoaA?=
- =?us-ascii?Q?nwr7Ua12SfE7jiRfwJq8YZE9/hY5PWVjZU9kcUztYnYxqQ3uYCOcZoYGYNeb?=
- =?us-ascii?Q?IxEsnRPhmsEM01tqiDOTp40aqHS8QYx94vDPTJpIuHycMenTHjZIB4KL2DXi?=
- =?us-ascii?Q?lzKADEAUIorzsCJX+y7uvoIg89UV/3U05oCYeCaelGnW1HfazgCxHtVRxyl8?=
- =?us-ascii?Q?exYYxcJGLTz18/JFrn/2QTBFN7Guwsdv1z5y8Y63+4Xh/9i88B/LclQCiuq8?=
- =?us-ascii?Q?bpaNNbrslDTgs73JzbDCcsUetuQLW+uQ/duXVMt7Z6vX1UuhWfilduF+DDA/?=
- =?us-ascii?Q?YUazL+oKkaGw0q9ChTo68ASsfOHbSrxe4IDG1fGxiIprztiC+W+yX591r/io?=
- =?us-ascii?Q?gyTw/s8ppAJg32auuR8yFIwso2CG+88WZrcTmow4DG0DynWIYQa70JRfeohH?=
- =?us-ascii?Q?N35f5rxen6PsWLDTTv5S+5MuOX2D0cE10xLO8mvs9Kbe/M+gcPpQ4wSsUSXk?=
- =?us-ascii?Q?M88qNooFJnDQhvUWdFpt+74XnXd9OQJU8QAZT/5ROs2eHTBZ8nkCWypOQOkg?=
- =?us-ascii?Q?eOkUP2WCTn13WYTu1f3lANf/iw5GOMLCbbvA3OOwdSE7Pkov0/wNRbBMA4xb?=
- =?us-ascii?Q?B1anv7CrX88Um8ERZKH9ksXonrcNBAZSfkZnl9bm1A=3D=3D?=
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM6PR12MB3849.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230031)(366007)(376005)(7416005)(1800799015);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?us-ascii?Q?fOmzRvcmRcddxcmxr3Gqh5P0PIXCWVZzFnS7xHS3jwePW99YOqn68v+qQcTJ?=
- =?us-ascii?Q?gvqzsjn64mkGAq1a2LU+8GYLvu7i20mi5Nf5yifRfvpSXMpGFCraWE5Pb8Yn?=
- =?us-ascii?Q?yDsL8hmUMzglr5JJ82dwaJWXlakTE0IGHziRKAJ1hkjfes/XWTO75++kzfr3?=
- =?us-ascii?Q?HNSMr/hPsA7h98Q9PSXA820T897YgTUM9n5uRzP+MzbahvoV46GWNChfpnYn?=
- =?us-ascii?Q?Lb7YO+nksSfU0JTuhjlkGslxKcCnFYyecX6MZtNKdor6gdo4535+WCo7fvBS?=
- =?us-ascii?Q?J0jBh78igdZlpcabehxct4aIlRlGkPsneFtpVD1O+EOp+liccd+ShRH1TbuC?=
- =?us-ascii?Q?6p4tIM3gTryenkCOZvtknQNhC1MVymnXKRytkKeS0clnVgRU9K1NsYqGoaRo?=
- =?us-ascii?Q?GmCo2zgolNCX6pnW4KTfa2GE0eSK2YQ5z9hQVYa+TehmzLUm/A1Bn9LPxiDf?=
- =?us-ascii?Q?YR2Ed0c9OVPPLlbG5JyZ3qVqfDsxlgCHl5GmEzXNMO6UPF5CiRu3mYRarELL?=
- =?us-ascii?Q?PE3xwi2oO5khz7C3uDsvC+hjanm+X6HxTagsQTOQEf4zUk0TXMkCfoKq6DiJ?=
- =?us-ascii?Q?aDVmL8p5hdFiHjXqGKBiq70YJ75BXzrYCQgp+eYEnaXa+qCJ70AQN6ktBLPh?=
- =?us-ascii?Q?K9VHD4YFu9OZKrnp/PMMCE0240geD6T8AlsuirHc5N016ZCdmVdryt8B9Hzw?=
- =?us-ascii?Q?Bx/TEzVHWLpAeAVz5EGkqEy06qBeXBZKs+eurq0FH22Khuke1nHuDfhpAKbx?=
- =?us-ascii?Q?iAm4cAf7MzqdMiF+kWPbdf6ehtIMnWo+5ug62b1GC0FRJKsBCeSAPih4FZBU?=
- =?us-ascii?Q?U1onVRwNSFtnjqnIRMfTiXRWZ+GH9KrJYwyTjd9gismKCLJAWsgD1k+xeLoE?=
- =?us-ascii?Q?qKMTWpiGCmwZi45DSYi1G/9DKvnAIUONA+lNjVVU6SwvM8rI5Ck1XwElLUiu?=
- =?us-ascii?Q?mHAUWVqsH0mqwzjbke1WIBNBNqCVxP9JSlLRrdAuiRlCn0muVLUTnZKypuJL?=
- =?us-ascii?Q?UL8UlOvnBl4yVL4VuNke0tbaaQdcaHqKJr/yqexqw7Eaxsu6ZxJ/gegMZZgz?=
- =?us-ascii?Q?vllhG3FxKNC0HN/QofBwdGjZ1OIYbtP2NX6/FXKeyZw+A3vC80z50facoccc?=
- =?us-ascii?Q?bOGwpuOrbVpHwibPSGvT1Gd7kiA3GRh4OkDsVF3Sm8HQ/eRA2NTlAzU0/xC7?=
- =?us-ascii?Q?yDSuEVIG3XOuGgpMxxL+9OFZx/+ivUcgOGFh5POzAw9H5X49UT1SgqVLyz8U?=
- =?us-ascii?Q?0OrkA9nj5rwLqYmJ0KWVZTpv1/BkctyKNyQrJsO0fdQ35HTRv/faqJup4iEM?=
- =?us-ascii?Q?MejJoHAejeMNlLhhaXsUkbgFBKb33k6ZVlTxkH+4FBGlBUl6L6guAqPOb6N8?=
- =?us-ascii?Q?JdDIbm5xNz8KHys0V7KlqIsx2IscX1jzdDj/htveQsdKWRVPPQHOb5icape+?=
- =?us-ascii?Q?x8EhDjFCAdlvb6fmRk4zp/p5EqklVSZL0VHDbnZOiUkZdLoFnGNPzBeFodcI?=
- =?us-ascii?Q?pj7MaEbELHuqvtGBIrtVuQQnBkD/xABchpM9g3elQHt/XWKawtfMmZGxjQn2?=
- =?us-ascii?Q?BtnA+alYtByrd6PgISU=3D?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: bd185a79-42d0-44f8-31e8-08dc7b38db11
-X-MS-Exchange-CrossTenant-AuthSource: DM6PR12MB3849.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 23 May 2024 14:58:50.4825
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: naiJYk7qZ0wOff2k2ot138dQuHyCDf1Pfj/8R06hpXQlvDZSZD+c1bRIvoxnSMcT
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: CH3PR12MB8073
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20240523063528.199908-1-vidyas@nvidia.com>
 
-On Wed, May 22, 2024 at 11:40:58PM +0000, Tian, Kevin wrote:
-> > From: Jason Gunthorpe <jgg@nvidia.com>
-> > Sent: Thursday, May 23, 2024 7:32 AM
-> > 
-> > On Wed, May 22, 2024 at 11:26:21PM +0000, Tian, Kevin wrote:
-> > > > From: Jason Gunthorpe <jgg@nvidia.com>
-> > > > Sent: Wednesday, May 22, 2024 8:30 PM
-> > > >
-> > > > On Wed, May 22, 2024 at 06:24:14AM +0000, Tian, Kevin wrote:
-> > > > > I'm fine to do a special check in the attach path to enable the flush
-> > > > > only for Intel GPU.
-> > > >
-> > > > We already effectively do this already by checking the domain
-> > > > capabilities. Only the Intel GPU will have a non-coherent domain.
-> > > >
-> > >
-> > > I'm confused. In earlier discussions you wanted to find a way to not
-> > > publish others due to the check of non-coherent domain, e.g. some
-> > > ARM SMMU cannot force snoop.
-> > >
-> > > Then you and Alex discussed the possibility of reducing pessimistic
-> > > flushes by virtualizing the PCI NOSNOOP bit.
-> > >
-> > > With that in mind I was thinking whether we explicitly enable this
-> > > flush only for Intel GPU instead of checking non-coherent domain
-> > > in the attach path, since it's the only device with such requirement.
-> > 
-> > I am suggesting to do both checks:
-> >  - If the iommu domain indicates it has force coherency then leave PCI
-> >    no-snoop alone and no flush
-> >  - If the PCI NOSNOOP bit is or can be 0 then no flush
-> >  - Otherwise flush
+[+cc iommu folks]
+
+On Thu, May 23, 2024 at 12:05:28PM +0530, Vidya Sagar wrote:
+> For iommu_groups to form correctly, the ACS settings in the PCIe fabric
+> need to be setup early in the boot process, either via the BIOS or via
+> the kernel disable_acs_redir parameter.
+
+Can you point to the iommu code that is involved here?  It sounds like
+the iommu_groups are built at boot time and are immutable after that?
+
+If we need per-device ACS config that depends on the workload, it
+seems kind of problematic to only be able to specify this at boot
+time.  I guess we would need to reboot if we want to run a workload
+that needs a different config?
+
+Is this the iommu usage model we want in the long term?
+
+> disable_acs_redir allows clearing the RR|CR|EC ACS flags, but the PCIe
+> spec Rev3.0 already defines 7 different ACS related flags with many more
+> useful combinations depending on the fabric design.
+
+If we need a spec citation, I'd rather use r6.x since r3.0 is from
+2010.
+
+> For backward compatibility, leave the 'disable_acs_redir' as is and add
+> a new parameter 'config_acs'so that the user can directly specify the ACS
+> flags to set on a per-device basis. Use a similar syntax to the existing
+> 'resource_alignment'  parameter by using the @ character and have the user
+> specify the ACS flags using a bit encoding. If both 'disable_acs_redir' and
+> 'config_acs' are specified for a particular device, configuration specified
+> through 'config_acs' takes precedence over the other.
 > 
-> How to judge whether PCI NOSNOOP can be 0? If following PCI spec
-> it can always be set to 0 but then we break the requirement for Intel
-> GPU. If we explicitly exempt Intel GPU in 2nd check  then what'd be
-> the value of doing that generic check?
-
-Non-PCI environments still have this problem, and the first check does
-help them since we don't have PCI config space there.
-
-PCI can supply more information (no snoop impossible) and variant
-drivers can add in too (want no snoop)
-
-Jason
+> Signed-off-by: Vidya Sagar <vidyas@nvidia.com>
+> ---
+> v3:
+> * Fixed a documentation issue reported by kernel test bot
+> 
+> v2:
+> * Refactored the code as per Jason's suggestion
+> 
+>  .../admin-guide/kernel-parameters.txt         |  22 +++
+>  drivers/pci/pci.c                             | 148 +++++++++++-------
+>  2 files changed, 112 insertions(+), 58 deletions(-)
+> 
+> diff --git a/Documentation/admin-guide/kernel-parameters.txt b/Documentation/admin-guide/kernel-parameters.txt
+> index 41644336e..b4a8207eb 100644
+> --- a/Documentation/admin-guide/kernel-parameters.txt
+> +++ b/Documentation/admin-guide/kernel-parameters.txt
+> @@ -4456,6 +4456,28 @@
+>  				bridges without forcing it upstream. Note:
+>  				this removes isolation between devices and
+>  				may put more devices in an IOMMU group.
+> +		config_acs=
+> +				Format:
+> +				=<ACS flags>@<pci_dev>[; ...]
+> +				Specify one or more PCI devices (in the format
+> +				specified above) optionally prepended with flags
+> +				and separated by semicolons. The respective
+> +				capabilities will be enabled, disabled or unchanged
+> +				based on what is specified in flags.
+> +				ACS Flags is defined as follows
+> +				bit-0 : ACS Source Validation
+> +				bit-1 : ACS Translation Blocking
+> +				bit-2 : ACS P2P Request Redirect
+> +				bit-3 : ACS P2P Completion Redirect
+> +				bit-4 : ACS Upstream Forwarding
+> +				bit-5 : ACS P2P Egress Control
+> +				bit-6 : ACS Direct Translated P2P
+> +				Each bit can be marked as
+> +				‘0‘ – force disabled
+> +				‘1’ – force enabled
+> +				‘x’ – unchanged.
+> +				Note: this may remove isolation between devices
+> +				and may put more devices in an IOMMU group.
+>  		force_floating	[S390] Force usage of floating interrupts.
+>  		nomio		[S390] Do not use MIO instructions.
+>  		norid		[S390] ignore the RID field and force use of
+> diff --git a/drivers/pci/pci.c b/drivers/pci/pci.c
+> index a607f277c..a46264f83 100644
+> --- a/drivers/pci/pci.c
+> +++ b/drivers/pci/pci.c
+> @@ -887,30 +887,67 @@ void pci_request_acs(void)
+>  }
+>  
+>  static const char *disable_acs_redir_param;
+> +static const char *config_acs_param;
+>  
+> -/**
+> - * pci_disable_acs_redir - disable ACS redirect capabilities
+> - * @dev: the PCI device
+> - *
+> - * For only devices specified in the disable_acs_redir parameter.
+> - */
+> -static void pci_disable_acs_redir(struct pci_dev *dev)
+> +struct pci_acs {
+> +	u16 cap;
+> +	u16 ctrl;
+> +	u16 fw_ctrl;
+> +};
+> +
+> +static void __pci_config_acs(struct pci_dev *dev, struct pci_acs *caps,
+> +			     const char *p, u16 mask, u16 flags)
+>  {
+> +	char *delimit;
+>  	int ret = 0;
+> -	const char *p;
+> -	int pos;
+> -	u16 ctrl;
+>  
+> -	if (!disable_acs_redir_param)
+> +	if (!p)
+>  		return;
+>  
+> -	p = disable_acs_redir_param;
+>  	while (*p) {
+> +		if (!mask) {
+> +			/* Check for ACS flags */
+> +			delimit = strstr(p, "@");
+> +			if (delimit) {
+> +				int end;
+> +				u32 shift = 0;
+> +
+> +				end = delimit - p - 1;
+> +
+> +				while (end > -1) {
+> +					if (*(p + end) == '0') {
+> +						mask |= 1 << shift;
+> +						shift++;
+> +						end--;
+> +					} else if (*(p + end) == '1') {
+> +						mask |= 1 << shift;
+> +						flags |= 1 << shift;
+> +						shift++;
+> +						end--;
+> +					} else if ((*(p + end) == 'x') || (*(p + end) == 'X')) {
+> +						shift++;
+> +						end--;
+> +					} else {
+> +						pci_err(dev, "Invalid ACS flags... Ignoring\n");
+> +						return;
+> +					}
+> +				}
+> +				p = delimit + 1;
+> +			} else {
+> +				pci_err(dev, "ACS Flags missing\n");
+> +				return;
+> +			}
+> +		}
+> +
+> +		if (mask & ~(PCI_ACS_SV | PCI_ACS_TB | PCI_ACS_RR | PCI_ACS_CR |
+> +			    PCI_ACS_UF | PCI_ACS_EC | PCI_ACS_DT)) {
+> +			pci_err(dev, "Invalid ACS flags specified\n");
+> +			return;
+> +		}
+> +
+>  		ret = pci_dev_str_match(dev, p, &p);
+>  		if (ret < 0) {
+> -			pr_info_once("PCI: Can't parse disable_acs_redir parameter: %s\n",
+> -				     disable_acs_redir_param);
+> -
+> +			pr_info_once("PCI: Can't parse acs command line parameter\n");
+>  			break;
+>  		} else if (ret == 1) {
+>  			/* Found a match */
+> @@ -930,56 +967,38 @@ static void pci_disable_acs_redir(struct pci_dev *dev)
+>  	if (!pci_dev_specific_disable_acs_redir(dev))
+>  		return;
+>  
+> -	pos = dev->acs_cap;
+> -	if (!pos) {
+> -		pci_warn(dev, "cannot disable ACS redirect for this hardware as it does not have ACS capabilities\n");
+> -		return;
+> -	}
+> -
+> -	pci_read_config_word(dev, pos + PCI_ACS_CTRL, &ctrl);
+> +	pci_dbg(dev, "ACS mask  = 0x%X\n", mask);
+> +	pci_dbg(dev, "ACS flags = 0x%X\n", flags);
+>  
+> -	/* P2P Request & Completion Redirect */
+> -	ctrl &= ~(PCI_ACS_RR | PCI_ACS_CR | PCI_ACS_EC);
+> +	/* If mask is 0 then we copy the bit from the firmware setting. */
+> +	caps->ctrl = (caps->ctrl & ~mask) | (caps->fw_ctrl & mask);
+> +	caps->ctrl |= flags;
+>  
+> -	pci_write_config_word(dev, pos + PCI_ACS_CTRL, ctrl);
+> -
+> -	pci_info(dev, "disabled ACS redirect\n");
+> +	pci_info(dev, "Configured ACS to 0x%x\n", caps->ctrl);
+>  }
+>  
+>  /**
+>   * pci_std_enable_acs - enable ACS on devices using standard ACS capabilities
+>   * @dev: the PCI device
+> + * @caps: default ACS controls
+>   */
+> -static void pci_std_enable_acs(struct pci_dev *dev)
+> +static void pci_std_enable_acs(struct pci_dev *dev, struct pci_acs *caps)
+>  {
+> -	int pos;
+> -	u16 cap;
+> -	u16 ctrl;
+> -
+> -	pos = dev->acs_cap;
+> -	if (!pos)
+> -		return;
+> -
+> -	pci_read_config_word(dev, pos + PCI_ACS_CAP, &cap);
+> -	pci_read_config_word(dev, pos + PCI_ACS_CTRL, &ctrl);
+> -
+>  	/* Source Validation */
+> -	ctrl |= (cap & PCI_ACS_SV);
+> +	caps->ctrl |= (caps->cap & PCI_ACS_SV);
+>  
+>  	/* P2P Request Redirect */
+> -	ctrl |= (cap & PCI_ACS_RR);
+> +	caps->ctrl |= (caps->cap & PCI_ACS_RR);
+>  
+>  	/* P2P Completion Redirect */
+> -	ctrl |= (cap & PCI_ACS_CR);
+> +	caps->ctrl |= (caps->cap & PCI_ACS_CR);
+>  
+>  	/* Upstream Forwarding */
+> -	ctrl |= (cap & PCI_ACS_UF);
+> +	caps->ctrl |= (caps->cap & PCI_ACS_UF);
+>  
+>  	/* Enable Translation Blocking for external devices and noats */
+>  	if (pci_ats_disabled() || dev->external_facing || dev->untrusted)
+> -		ctrl |= (cap & PCI_ACS_TB);
+> -
+> -	pci_write_config_word(dev, pos + PCI_ACS_CTRL, ctrl);
+> +		caps->ctrl |= (caps->cap & PCI_ACS_TB);
+>  }
+>  
+>  /**
+> @@ -988,23 +1007,33 @@ static void pci_std_enable_acs(struct pci_dev *dev)
+>   */
+>  static void pci_enable_acs(struct pci_dev *dev)
+>  {
+> -	if (!pci_acs_enable)
+> -		goto disable_acs_redir;
+> +	struct pci_acs caps;
+> +	int pos;
+> +
+> +	pos = dev->acs_cap;
+> +	if (!pos)
+> +		return;
+>  
+> -	if (!pci_dev_specific_enable_acs(dev))
+> -		goto disable_acs_redir;
+> +	pci_read_config_word(dev, pos + PCI_ACS_CAP, &caps.cap);
+> +	pci_read_config_word(dev, pos + PCI_ACS_CTRL, &caps.ctrl);
+> +	caps.fw_ctrl = caps.ctrl;
+>  
+> -	pci_std_enable_acs(dev);
+> +	/* If an iommu is present we start with kernel default caps */
+> +	if (pci_acs_enable) {
+> +		if (pci_dev_specific_enable_acs(dev))
+> +			pci_std_enable_acs(dev, &caps);
+> +	}
+>  
+> -disable_acs_redir:
+>  	/*
+> -	 * Note: pci_disable_acs_redir() must be called even if ACS was not
+> -	 * enabled by the kernel because it may have been enabled by
+> -	 * platform firmware.  So if we are told to disable it, we should
+> -	 * always disable it after setting the kernel's default
+> -	 * preferences.
+> +	 * Always apply caps from the command line, even if there is no iommu.
+> +	 * Trust that the admin has a reason to change the ACS settings.
+>  	 */
+> -	pci_disable_acs_redir(dev);
+> +	__pci_config_acs(dev, &caps, disable_acs_redir_param,
+> +			 PCI_ACS_RR | PCI_ACS_CR | PCI_ACS_EC,
+> +			 ~(PCI_ACS_RR | PCI_ACS_CR | PCI_ACS_EC));
+> +	__pci_config_acs(dev, &caps, config_acs_param, 0, 0);
+> +
+> +	pci_write_config_word(dev, pos + PCI_ACS_CTRL, caps.ctrl);
+>  }
+>  
+>  /**
+> @@ -7023,6 +7052,8 @@ static int __init pci_setup(char *str)
+>  				pci_add_flags(PCI_SCAN_ALL_PCIE_DEVS);
+>  			} else if (!strncmp(str, "disable_acs_redir=", 18)) {
+>  				disable_acs_redir_param = str + 18;
+> +			} else if (!strncmp(str, "config_acs=", 11)) {
+> +				config_acs_param = str + 11;
+>  			} else {
+>  				pr_err("PCI: Unknown option `%s'\n", str);
+>  			}
+> @@ -7047,6 +7078,7 @@ static int __init pci_realloc_setup_params(void)
+>  	resource_alignment_param = kstrdup(resource_alignment_param,
+>  					   GFP_KERNEL);
+>  	disable_acs_redir_param = kstrdup(disable_acs_redir_param, GFP_KERNEL);
+> +	config_acs_param = kstrdup(config_acs_param, GFP_KERNEL);
+>  
+>  	return 0;
+>  }
+> -- 
+> 2.25.1
+> 
