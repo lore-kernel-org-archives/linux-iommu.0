@@ -1,196 +1,389 @@
-Received: from NAM10-DM6-obe.outbound.protection.outlook.com (mail-dm6nam10on2080.outbound.protection.outlook.com [40.107.93.80])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-pg1-f182.google.com (mail-pg1-f182.google.com [209.85.215.182])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0EEC413CFAF
-	for <iommu@lists.linux.dev>; Thu, 23 May 2024 10:40:42 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.93.80
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1716460845; cv=fail; b=VEitg/1emZ1iQ/EUrTtVP0tknXATNR+hb5sNswRyO6UH4CRm8axlJWjB9Vnx8cmEA260MX4VnphLoWbHpMWw2PpvsTwIPjIVGhFpldDRr+Uyo+gzsvC4ACt7Y4z5xThYhAX7iR4Mb2P8mf+OkLqu4XIPrRs/EEbQd+azjs7FWrA=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1716460845; c=relaxed/simple;
-	bh=4sGHe7qTSgh4kCYsHZnqHqbO6gqfsgeVmYR62JV+RcY=;
-	h=Message-ID:Date:Subject:To:Cc:References:From:In-Reply-To:
-	 Content-Type:MIME-Version; b=ieXHVzHE8fT+W+L8jjAiUg6jMBsd24COF5rq71dvtnqT+7aT1v89k4D4VSy2yTshdYvDETsG1+a/hmtkn3HR5sV3XUEjtP29lCqAZrMsqYz9FBxxQpEX9n4QlAvX+gcaNj1Z9yNgEQ/urmHdvJrX2G2kzoS/VUaEId8u635pArQ=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com; spf=fail smtp.mailfrom=amd.com; dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b=npU09icX; arc=fail smtp.client-ip=40.107.93.80
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=amd.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7FB0113D896
+	for <iommu@lists.linux.dev>; Thu, 23 May 2024 12:14:39 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.215.182
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1716466481; cv=none; b=Otc/YwcV6FpXikyZkCGzRM8v+sDpnA6SLqt4Np4Wv110T3YaNDDZy+WOXSwOKw7WQEfD5/up47EPgJ8O6F/qOFuspB0/FR3cvIpR8JofrT36Y3nHqRYG0JTCR3rbajTWVPrkTVenfyluSlg4BGaxqyAlAeEZ5i82z2f51YLH9Gk=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1716466481; c=relaxed/simple;
+	bh=xZIpJivLu+N2qKC2v6ld7pqDHFIxvM1aDec54BJF83E=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=INtuBuQ1hA872vQzxM5L8lsc0gGOJYcU2MtPr6tbfGfoCjvCfi25H+iBSk3TwfcOqFv2NK6f+5efm0LESW2CIWPQQQU5pYaqgoSNPx4BJwvzU4gd6+VbTwrWmYuHv0e4aHuS7ULWZdBl/0xB5BpjxTfqt0Apuwse6PfYr65hnu0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=EzG7xHNC; arc=none smtp.client-ip=209.85.215.182
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b="npU09icX"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=U1CzCKQmQ4w5liUSr6mTAYvozjWEm4QycWuMKpBcxol1mRCGmHAsK6af6NghTYnE/T8w/q+kW06IAJm2C3MYH41706AhCYALTo/tQJHLaEYviMmYERyO2RW29pH8yJQ87dPhFuLKt3xqZ+V6rGm4RjKdBTi4Zw4Vcy1F1lXbOE9VZHbS98dAvv4JNzaMBKQVjfcPJSpnXquPzv+gswSzBq/EIhHoUXvu0kdmV7eCDo18ZDu8ct96CVZKYmFepo4Qe/VOP0M9PODErIOVQvUt0Zt82QLPttjkfAbvB9cs5DYQa9+rknGtWrgJnQ4wFl7nZ+uQ+MLmWDCT0lYfOapEGA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=qJPW3P3hjESHaBglB2CrG8PWbM9x7tGg1ozNuEQE56s=;
- b=h5WkL/yA+rZgHvYOSHnIGuUMhT35L0f9ItkGljO2wP5YXkaTk500RKqF/EEVGX0RquhCZlr3PqIcEGOWqEAFFsIrttbCQYt2Oq9O0OxUoJIxpOonXNrJOW+4DSeHDqSNwfeZPvwEv6orETeh/Ojs7Ny6WaKQ8eWRkVOxkaae6U/IVyLZok/Nq1O++lkK3hIjdDRtuv4TmgFed1KrNsY72qAXjqVcXmJcgDDhF9beDN4mKedRnDMKlelph7UbqCdMOk/PH1+rXgIYlApIxZ++wMiUvQbovtw5wK9/nTHvo+yaD4shDCBz3bjTxtbVsh7OAvMwEH8SNoIqaVI0GIz6dg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=amd.com; dmarc=pass action=none header.from=amd.com; dkim=pass
- header.d=amd.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=qJPW3P3hjESHaBglB2CrG8PWbM9x7tGg1ozNuEQE56s=;
- b=npU09icXIlWDdVh8uAGb/vNl/yUZHkqeiWDYo1QWVv8/6mMKuTndJwCs88XIzvyTAC8RqJ+OuRH7wt3qcyFQUV/tHsCB+EECNx+13l1n3l1mjgKZ42XrB1Uyen2x7yD9ULG8eDmNTbwFtNAeJKykxPOE4Yn69jskhKzPPXoMbZk=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=amd.com;
-Received: from DS7PR12MB6048.namprd12.prod.outlook.com (2603:10b6:8:9f::5) by
- IA1PR12MB6483.namprd12.prod.outlook.com (2603:10b6:208:3a8::14) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7611.22; Thu, 23 May
- 2024 10:40:38 +0000
-Received: from DS7PR12MB6048.namprd12.prod.outlook.com
- ([fe80::af7d:5f4f:2139:ebd1]) by DS7PR12MB6048.namprd12.prod.outlook.com
- ([fe80::af7d:5f4f:2139:ebd1%4]) with mapi id 15.20.7587.035; Thu, 23 May 2024
- 10:40:38 +0000
-Message-ID: <bf2ea452-75ea-4091-90fe-c83062729b76@amd.com>
-Date: Thu, 23 May 2024 16:10:28 +0530
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH 1/3] iommu/amd: Use try_cmpxchg64() in v2_alloc_pte()
-To: Uros Bizjak <ubizjak@gmail.com>, iommu@lists.linux.dev,
- linux-kernel@vger.kernel.org
-Cc: Joerg Roedel <joro@8bytes.org>,
- Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
- Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>
-References: <20240522082729.971123-1-ubizjak@gmail.com>
-Content-Language: en-US
-From: Vasant Hegde <vasant.hegde@amd.com>
-In-Reply-To: <20240522082729.971123-1-ubizjak@gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: BMXPR01CA0086.INDPRD01.PROD.OUTLOOK.COM
- (2603:1096:b00:54::26) To DS7PR12MB6048.namprd12.prod.outlook.com
- (2603:10b6:8:9f::5)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="EzG7xHNC"
+Received: by mail-pg1-f182.google.com with SMTP id 41be03b00d2f7-517ab9a4a13so2871657a12.1
+        for <iommu@lists.linux.dev>; Thu, 23 May 2024 05:14:39 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20230601; t=1716466479; x=1717071279; darn=lists.linux.dev;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=S3oL0hJH9iQZa7HT6bN1XrGAdgrVd/JpkMuhPZJ+FSA=;
+        b=EzG7xHNCgztn1Hz6OA62nYQ/gWMuRmX8GyBM551Dn+3/lAKfw0pb77umr0AR/HtKdj
+         vde4kM5vo9Fq4fsDXuSUwBxY9YS+ZHixu0lW8W3nfXVIXFk128qydSEDFEveyyVUWqUS
+         oplkKpa1es95ThJDGx9/qeYffK38ZjevJFnBIPxx+cFMzFD7V0TXtp1GwQyEIcjRf/iI
+         ub7IMg9p+Bmb57Cm9CD7j8N+5LpYqhpPKFPlC8FMQjrCgq557KcEG5CllojUzL+diVvH
+         Ti4t801ScYWyd0DjVTFNSlIRXGb08QyyyPZaYouOnCTxrk31T/nvOsjZ6Y+VnGGxGI8J
+         helg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1716466479; x=1717071279;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=S3oL0hJH9iQZa7HT6bN1XrGAdgrVd/JpkMuhPZJ+FSA=;
+        b=RAN22j3uXLEinOw6T3m/PXHk3bBTm5Ka3q1WyxzE32Ojmc5JFxMDoK4VD0yTlUEF4Z
+         fE/oPhX9AvqP6CBaKNZkLBRFJIlYXOuchYUHyyzvr9umHEf9uqLIUIL3PJyIDEwUOtVD
+         i1HApqEYl5qhZwrOERkMPgtB+36s3fzzHA/IEjNNyEUCMS2vlwkkjOGS//HMGjxf+dXM
+         XGJIKkRo72d9xWQwzr5lme++pfOwcDbgZvuGzH9w1+Mtni1gVnFcZ+ka8ySYi7E4bCT1
+         yQqbeiqr0yH4Cw9QQiIHsXsfkQVYDmafF5EvnPPQsyQH4VoPHkpAfVAq7jjl0PFfXkRz
+         VLww==
+X-Forwarded-Encrypted: i=1; AJvYcCUEAgMo31TjNR0f3wnNkQZwCX7S36u0JGo+AXISJtGsTDOU80c0loZGlYC4tst+sBCSMK9XJhUbbSK7v3r92Otg/YfBdWM=
+X-Gm-Message-State: AOJu0YxOgCJMfLNthTxXhORTNh/RW9UpZLCTq7/0aJ4CEBI4onRDfWWq
+	bxu7NjUPssBnGG1JkLDALXwnknQ1snQHFBcHu62OHAc8q2gNgpkifYgd+4U/ZbLpba9quh5RdNz
+	T7nYnUsGDp1+w+25s4aROIK/I05A=
+X-Google-Smtp-Source: AGHT+IHw9ZZCHWpxNboaptDkdVdr8T+p7xebRwOl0Rjt8m+lhfKDa/C5Cw+D+Bez4Rundj6pGONwEyaKDtN6PK/SNng=
+X-Received: by 2002:a17:90a:c907:b0:2bd:edbe:4e1 with SMTP id
+ 98e67ed59e1d1-2bdedbe0512mr984702a91.31.1716466478558; Thu, 23 May 2024
+ 05:14:38 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: DS7PR12MB6048:EE_|IA1PR12MB6483:EE_
-X-MS-Office365-Filtering-Correlation-Id: 0bdcc1f5-e8e0-490a-6eb3-08dc7b14c911
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;ARA:13230031|376005|1800799015|366007;
-X-Microsoft-Antispam-Message-Info:
-	=?utf-8?B?YWhCdWtCdjVaOUhjMU1CRzRpaVlURHhOcldMYnNjSWlBcHAwd2NuWUJ0V2M5?=
- =?utf-8?B?OUhZaHg0VG95aUtQTG83c1kxa29HbXV6SVlxZGJkc0RkblJNaDJLQzhHRjEr?=
- =?utf-8?B?RFErdnBveUxPQk1uejlDTnFCbmx6K2Izc3Fhc1Z5VE0yTm1BQzNoWVZvditL?=
- =?utf-8?B?OElxaC9CUlpORXEralJINFFtc0tJWHdBZ3Y3SUx2aHlPRGdKUHAzcTZnRmJT?=
- =?utf-8?B?Y1EreGlrcVEweDdTL0dXamtNeVhkSFpNU0dHeUo3YlV4OTBaZ3N6d25RQ2tB?=
- =?utf-8?B?ZSs4ZGJiZ2s3b3ppcDArZFQzSmc0Y3RkUGVJbXVJdXdJRjRQT0lIOTcvMDZD?=
- =?utf-8?B?ejdtMEkwQU4wb1VRaytEcE9VQzJkK2RrRFZ2WXQzZ3lhOXJVUU9VTEtGakN4?=
- =?utf-8?B?Q1JvUmdUOHhRS0lkRFNWeWdYdUs4bjhPdGVGTll3N2RXTEt6U3l0bXp1bURy?=
- =?utf-8?B?UnB4ZlkzcjVoYmFLSll5aGpGSit6aXFPNG9xVUgvY3JhNlBqeWVTYWhkcDN0?=
- =?utf-8?B?bGdYUkJBbFhlTFg3S1lqdWI1NzZWajNGOXo4Rm9HczRiQjc0cnF2RVd6dmNC?=
- =?utf-8?B?WHR1Z2FKdkpGM0hUZDBJUWJqb0RmL1JzUmwyWDhpWVN6RUlBSmkvYlNqWWN0?=
- =?utf-8?B?WmhqSDhBc1dqcURKNWZjTm1QKzZXWGtLOFI5dzVNMWFlaVVoZVY1NDZ6Wmp5?=
- =?utf-8?B?VHd3Nkk3a1Nzd2FXcWZIMlM0K1Nzb0xDaWh3TkEyd1ZIcHl4bDJGNFo2TmZQ?=
- =?utf-8?B?NlN4UXpqb3VlN2pmQWNRRExMcEtUdmNKblpTVWpxdEc3ZmkyVzVFMUlCT29W?=
- =?utf-8?B?NUdYd0RQOHgycGw5ZmF6Ulo2aXIvSXEvMjRwKzdRbmtmZHE1THgraFN6d2pV?=
- =?utf-8?B?VnZ3dFdFbHk4bXk5dXNIMDJPUnBtY092eWZZOHZyK0cvRjc1MkdzeEhnc2Jo?=
- =?utf-8?B?bDRKQjVXc0xSaGRKbmd4TDNKdk9zbHphM3NlOVZUTTYwWFptbkVUSzBCRE9J?=
- =?utf-8?B?MW1SenphQmtSUU0rU1NiUjVEWUxqN2svNjJLcGh0ZWdlZUdSQ1M2Y1pxUnBJ?=
- =?utf-8?B?NGpTdFp3QzJGUTRnTnlaNm5TSmdnTFpsQzIvMXhZL0JNQVJrcXd6SXppOG9w?=
- =?utf-8?B?OU5iUkRUN1ZvU0JSU1hlUjQwcU9EdFd3TklNTXVRQ29WTWRuWHozRnNrRHJj?=
- =?utf-8?B?azhoOXRncXl1SVlrcTVwMjhqRWc2U3B4clJWNEtNMmZtZjhDZGlzVUpDRDBX?=
- =?utf-8?B?OXpSNGQ2Rkpzd3BjMGVRRVFYaWhrQUs3SWtCdzFSRE1iYVRTOE5FSTBZK0ZO?=
- =?utf-8?B?VmVyVmJiQnRFbVRWZHdocDloVHI4aGc5SmVWcEIrV2xzczRXdjdxb2RGNGlt?=
- =?utf-8?B?UFFLdXlGNXl5UEhJS3hlaUg0YXUwelErSmxZNGRkUDBhVlZoVTBsRVB6VmE3?=
- =?utf-8?B?WUJrMmU5a3hnN1ZxYThlZFZOVVczSVU2OHlvRHdwUG9uNWZhbWRvNU5mdENG?=
- =?utf-8?B?NW9hek11d0ZZemFvNmNPbzBFME1FTjBLcTN4d0d0bTJUU1RrTUJyZXJ6ekNY?=
- =?utf-8?B?WlpjQ2FXdnk2ai9paVRLbk13TG1Fd3lNbmpBQVp3Yi9WL0g2b2piR3NoNWZZ?=
- =?utf-8?B?WmlCWmhUeGMxYXY0OHZ0c3Z4QmxITzFSTWNDa09LY2lQbG4vR09PdFlGWGlo?=
- =?utf-8?B?ZDlsTnRXNHdyc0dZMTZodGF6Vmg4c0VsM0Q5L3RoZm9OejFIVkJpR3ZnPT0=?=
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DS7PR12MB6048.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230031)(376005)(1800799015)(366007);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?utf-8?B?a0NGRWhDbXc4Q2NJcERFZEZNdytuZlJlMHFTemdJd1hVMXFvb0w5TEJMNERo?=
- =?utf-8?B?MDNiMmlNclBlK0h2cm9kbEUraEZnVjNKdHFaUlJobEtaSndsOVo2cThoTmFW?=
- =?utf-8?B?TUpRSDYxT092M0ZxRWxEYzVLbGpFYkJydjIyaE5QMlY3WmhJdWVhZXc5Wmls?=
- =?utf-8?B?cUxYRllsdFRtVEQ2dDZBdDl3SW5BcEZNTUhtQ085QzMwRExDVDhodG05czEz?=
- =?utf-8?B?NEV0R0c3NGFhSVo0bmtiRTczbmRNdDRtaDE4d1RzRjlkbWcyUDNtdzRZM0xy?=
- =?utf-8?B?bVRFaytSWXU2VGFtdXhzbW1OYU9sUEFOWlVaSWFlb01tUEc5SmNPSUExTmoy?=
- =?utf-8?B?d3BBNjFSdnd4N2NSVmQxek8zLzVCRldFL21LdlVIa3Y3RTFOKzh4SGtOQ3c3?=
- =?utf-8?B?cU1UalQxMW4wdFNoZ0kvQ01wVzJEQUJtNzRoeG4zcnVzaXNNWjZEWXdmN1pB?=
- =?utf-8?B?U3hndldmNUU2ZlI4Um81bzNVZ3Q4bnBjcHpWQ3JuU2M0S0daZlMrVDhsbGVr?=
- =?utf-8?B?bnhMTU5DOFVMT1NEeWZaNzBiQlhCOW90dUxxRUd6aThUaU5JeDRCbGNZTUlI?=
- =?utf-8?B?TnF2MXlsM3BDcEU0eVRDRi9VWnVKdldHMFdDbHZrSUQ5VStlVDlPN3VxRXMv?=
- =?utf-8?B?bGRmVmlUQ0l0clJ6VmRuOEU0dFdNMzBsWVp1NVQ4RkFkWEdvcXdaYnQ0VFo4?=
- =?utf-8?B?c1NRZTNNWjBYSXVNNXFlK3NXS013dWordzRtUFZadzArOVArU1dIR2VHUE5Y?=
- =?utf-8?B?YXdhN0NSY0I5ZjFmV0w3VWF4V2NmU1NqeWdxTVBlaHFKSlMwbHpHVkl5U05l?=
- =?utf-8?B?Q09aQXEwZXE0RFpFbG9ocS8wQWtrVmpBaDdxeE1ySWFpUERtaTNUUHVCRER6?=
- =?utf-8?B?L0o4K1VzYVFZWmIramd0RFBCY08rYlh4V2xjakRyNzJNUVVDalpZSTF0YlAy?=
- =?utf-8?B?REdnblNzTis5ZjdJOU1iWi9YY0d2b1dGTUM1amdoYU9XaituTjdsRGtsVUJI?=
- =?utf-8?B?azRDK0JXbU9IZks3Z1Z5UEtSb2ZOdklkcytoVXVYY0U1STI1VEFWRktmS2hZ?=
- =?utf-8?B?QnFNUGdPNGVvTUFXeHlsb2daZVdlckFrOHhaN3N4emw2d1JDQ0lXamtRRmlS?=
- =?utf-8?B?cUZ1NzY1L21SMW5TWmxHN2ZyY0xlNEw3azVjOEMvOUhqSnQ3bE01Z0hUdm1p?=
- =?utf-8?B?eEIyTTN6elJQOG12RVR6TkNBdFN2Rnd1N2k5TXpzWXZ4Mk9pRGttOFhSRi84?=
- =?utf-8?B?VE5tcHRpaUd5b2dsdEt3MXVqTTZ2WFZlSDZPb2NyTDd0dnNmclRUZ3dNVGZ3?=
- =?utf-8?B?dXo0QVBTa3dDbVBDZG1wODh0aHU3ZlBIcU9YM2REd2Y3d0g4NnJFMmdPYmNr?=
- =?utf-8?B?NXdiMURadGZ0SXJTSTh1ZEVNbmdOUktQdFRXY1VsNGp3N0c5Z2lmcUJ2VTEx?=
- =?utf-8?B?Zy9udGVkMW1KVzl3RVlOUkZkNHdTbUREa1M0VnhvUGZaTWRyTHVCYXdBUXY3?=
- =?utf-8?B?bnF1RW04MWwxUlNmQnpOd09RL3FOMGVFTlZpcS9Ca0pyL3J3M25TaDg3VTcx?=
- =?utf-8?B?ZzJROHRnbG16Q1dqV2ZNV1lYdXFhTTJ1em1YZ2FjYWJORXg4NWl2aFVaSW5m?=
- =?utf-8?B?cWlpdzRwUlZBRlladGRXYzZSR2dOamhQRGh1UjN2Rk9PbUF2dUJQMDFNaG9z?=
- =?utf-8?B?NVlPT295WlZWem5hamp2SzFRS1g4Q1hHZE9jdEtLRFdvMzhJcCszb1BjQzU0?=
- =?utf-8?B?d040WGFIK3pXdGxTYjdUNjNJbU5tdWdqM0RHcG9pSUcwMFMzdEJsU0NnbS9O?=
- =?utf-8?B?ZHg3MWFwV1dBZE01S1JzdzdPS1M5aHpxK0lnTkNpd0oxZHY0VE5HYUpiQlpV?=
- =?utf-8?B?a2J4NzFzOGViVWQ1enoxUUlrOGVDMmJHbjRXTjFHWXNHZWlhbmcrS0VvNUxF?=
- =?utf-8?B?UldacFIrcU1FU3htdFZqeTB0UGFHMTMvN1VmS0hGZm5LL04zWXZVYjhTRzMr?=
- =?utf-8?B?NGkxeTBOU09WYkpGUXpPZDdZdGFmQTdIZnh1emxKNFFWQVNyWksxd21SWFRi?=
- =?utf-8?B?aUJOS0dwMGt1Nk1qTk0rL21FV2Z4aVlpUDNLdHNZb1Z3YTlsQ1VXSWNlL1Vq?=
- =?utf-8?Q?NcQGix4vz9mMzyhBeLJCU1ScU?=
-X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 0bdcc1f5-e8e0-490a-6eb3-08dc7b14c911
-X-MS-Exchange-CrossTenant-AuthSource: DS7PR12MB6048.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 23 May 2024 10:40:38.6142
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: lZRD6ziPMcUWnaXYFg+CC6MgonJz7G8M5vddpAyU5AZQjNinvOuVC/YOOtuRvrACdWXKYXo++5CG1PiDTtQjpw==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: IA1PR12MB6483
+References: <20240219-topic-rb1_gpu-v2-0-2d3d6a0db040@linaro.org> <20240219-topic-rb1_gpu-v2-5-2d3d6a0db040@linaro.org>
+In-Reply-To: <20240219-topic-rb1_gpu-v2-5-2d3d6a0db040@linaro.org>
+From: Connor Abbott <cwabbott0@gmail.com>
+Date: Thu, 23 May 2024 13:14:26 +0100
+Message-ID: <CACu1E7FTN=kwaDJMNiTmFspALzj2+Q-nvsN5ugi=vz4RdUGvGw@mail.gmail.com>
+Subject: Re: [PATCH v2 5/7] drm/msm/adreno: Add A702 support
+To: Konrad Dybcio <konrad.dybcio@linaro.org>
+Cc: Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>, 
+	Joerg Roedel <joro@8bytes.org>, Rob Herring <robh@kernel.org>, 
+	Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>, Conor Dooley <conor+dt@kernel.org>, 
+	Bjorn Andersson <andersson@kernel.org>, Michael Turquette <mturquette@baylibre.com>, 
+	Stephen Boyd <sboyd@kernel.org>, Rob Clark <robdclark@gmail.com>, 
+	Abhinav Kumar <quic_abhinavk@quicinc.com>, Dmitry Baryshkov <dmitry.baryshkov@linaro.org>, 
+	Sean Paul <sean@poorly.run>, David Airlie <airlied@gmail.com>, Daniel Vetter <daniel@ffwll.ch>, 
+	Marijn Suijten <marijn.suijten@somainline.org>, linux-arm-kernel@lists.infradead.org, 
+	iommu@lists.linux.dev, devicetree@vger.kernel.org, 
+	linux-kernel@vger.kernel.org, Konrad Dybcio <konradybcio@kernel.org>, 
+	linux-arm-msm@vger.kernel.org, linux-clk@vger.kernel.org, 
+	dri-devel@lists.freedesktop.org, freedreno@lists.freedesktop.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-
-
-On 5/22/2024 1:56 PM, Uros Bizjak wrote:
-> Use try_cmpxchg64() instead of cmpxchg64 (*ptr, old, new) != old in
-> v2_alloc_pte().  cmpxchg returns success in ZF flag, so this change
-> saves a compare after cmpxchg (and related move instruction
-> in front of cmpxchg).
-> 
-> This is the same improvement as implemented for alloc_pte() in:
-> 
->   commit 0d10fe759117 ("iommu/amd: Use try_cmpxchg64 in alloc_pte and free_clear_pte")
-> 
-> Signed-off-by: Uros Bizjak <ubizjak@gmail.com>
-> Cc: Joerg Roedel <joro@8bytes.org>
-> Cc: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
-> Cc: Will Deacon <will@kernel.org>
-> Cc: Robin Murphy <robin.murphy@arm.com>
-
-Thanks for fixing it. Looks good to me.
-
-Reviewed-by: Vasant Hegde <vasant.hegde@amd.com>
-
--Vasant
-
+On Fri, Feb 23, 2024 at 9:28=E2=80=AFPM Konrad Dybcio <konrad.dybcio@linaro=
+.org> wrote:
+>
+> The A702 is a weird mix of 600 and 700 series.. Perhaps even a
+> testing ground for some A7xx features with good ol' A6xx silicon.
+> It's basically A610 that's been beefed up with some new registers
+> and hw features (like APRIV!), that was then cut back in size,
+> memory bus and some other ways.
+>
+> Add support for it, tested with QCM2290 / RB1.
+>
+> Signed-off-by: Konrad Dybcio <konrad.dybcio@linaro.org>
 > ---
->  drivers/iommu/amd/io_pgtable_v2.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/drivers/iommu/amd/io_pgtable_v2.c b/drivers/iommu/amd/io_pgtable_v2.c
-> index 78ac37c5ccc1..664e91c88748 100644
-> --- a/drivers/iommu/amd/io_pgtable_v2.c
-> +++ b/drivers/iommu/amd/io_pgtable_v2.c
-> @@ -158,7 +158,7 @@ static u64 *v2_alloc_pte(int nid, u64 *pgd, unsigned long iova,
->  
->  			__npte = set_pgtable_attr(page);
->  			/* pte could have been changed somewhere. */
-> -			if (cmpxchg64(pte, __pte, __npte) != __pte)
-> +			if (!try_cmpxchg64(pte, &__pte, __npte))
->  				iommu_free_page(page);
->  			else if (IOMMU_PTE_PRESENT(__pte))
->  				*updated = true;
+>  drivers/gpu/drm/msm/adreno/a6xx_gpu.c      | 92 ++++++++++++++++++++++++=
++++---
+>  drivers/gpu/drm/msm/adreno/adreno_device.c | 18 ++++++
+>  drivers/gpu/drm/msm/adreno/adreno_gpu.h    | 16 +++++-
+>  3 files changed, 117 insertions(+), 9 deletions(-)
+>
+> diff --git a/drivers/gpu/drm/msm/adreno/a6xx_gpu.c b/drivers/gpu/drm/msm/=
+adreno/a6xx_gpu.c
+> index c9c55e2ea584..2a491a486ca1 100644
+> --- a/drivers/gpu/drm/msm/adreno/a6xx_gpu.c
+> +++ b/drivers/gpu/drm/msm/adreno/a6xx_gpu.c
+> @@ -837,6 +837,65 @@ const struct adreno_reglist a690_hwcg[] =3D {
+>         {}
+>  };
+>
+> +const struct adreno_reglist a702_hwcg[] =3D {
+> +       { REG_A6XX_RBBM_CLOCK_CNTL_SP0, 0x22222222 },
+> +       { REG_A6XX_RBBM_CLOCK_CNTL2_SP0, 0x02222220 },
+> +       { REG_A6XX_RBBM_CLOCK_DELAY_SP0, 0x00000081 },
+> +       { REG_A6XX_RBBM_CLOCK_HYST_SP0, 0x0000f3cf },
+> +       { REG_A6XX_RBBM_CLOCK_CNTL_TP0, 0x22222222 },
+> +       { REG_A6XX_RBBM_CLOCK_CNTL2_TP0, 0x22222222 },
+> +       { REG_A6XX_RBBM_CLOCK_CNTL3_TP0, 0x22222222 },
+> +       { REG_A6XX_RBBM_CLOCK_CNTL4_TP0, 0x00022222 },
+> +       { REG_A6XX_RBBM_CLOCK_DELAY_TP0, 0x11111111 },
+> +       { REG_A6XX_RBBM_CLOCK_DELAY2_TP0, 0x11111111 },
+> +       { REG_A6XX_RBBM_CLOCK_DELAY3_TP0, 0x11111111 },
+> +       { REG_A6XX_RBBM_CLOCK_DELAY4_TP0, 0x00011111 },
+> +       { REG_A6XX_RBBM_CLOCK_HYST_TP0, 0x77777777 },
+> +       { REG_A6XX_RBBM_CLOCK_HYST2_TP0, 0x77777777 },
+> +       { REG_A6XX_RBBM_CLOCK_HYST3_TP0, 0x77777777 },
+> +       { REG_A6XX_RBBM_CLOCK_HYST4_TP0, 0x00077777 },
+> +       { REG_A6XX_RBBM_CLOCK_CNTL_RB0, 0x22222222 },
+> +       { REG_A6XX_RBBM_CLOCK_CNTL2_RB0, 0x01202222 },
+> +       { REG_A6XX_RBBM_CLOCK_CNTL_CCU0, 0x00002220 },
+> +       { REG_A6XX_RBBM_CLOCK_HYST_RB_CCU0, 0x00040f00 },
+> +       { REG_A6XX_RBBM_CLOCK_CNTL_RAC, 0x05522022 },
+> +       { REG_A6XX_RBBM_CLOCK_CNTL2_RAC, 0x00005555 },
+> +       { REG_A6XX_RBBM_CLOCK_DELAY_RAC, 0x00000011 },
+> +       { REG_A6XX_RBBM_CLOCK_HYST_RAC, 0x00445044 },
+> +       { REG_A6XX_RBBM_CLOCK_CNTL_TSE_RAS_RBBM, 0x04222222 },
+> +       { REG_A6XX_RBBM_CLOCK_MODE_VFD, 0x00002222 },
+> +       { REG_A6XX_RBBM_CLOCK_MODE_GPC, 0x02222222 },
+> +       { REG_A6XX_RBBM_CLOCK_DELAY_HLSQ_2, 0x00000002 },
+> +       { REG_A6XX_RBBM_CLOCK_MODE_HLSQ, 0x00002222 },
+> +       { REG_A6XX_RBBM_CLOCK_DELAY_TSE_RAS_RBBM, 0x00004000 },
+> +       { REG_A6XX_RBBM_CLOCK_DELAY_VFD, 0x00002222 },
+> +       { REG_A6XX_RBBM_CLOCK_DELAY_GPC, 0x00000200 },
+> +       { REG_A6XX_RBBM_CLOCK_DELAY_HLSQ, 0x00000000 },
+> +       { REG_A6XX_RBBM_CLOCK_HYST_TSE_RAS_RBBM, 0x00000000 },
+> +       { REG_A6XX_RBBM_CLOCK_HYST_VFD, 0x00000000 },
+> +       { REG_A6XX_RBBM_CLOCK_HYST_GPC, 0x04104004 },
+> +       { REG_A6XX_RBBM_CLOCK_HYST_HLSQ, 0x00000000 },
+> +       { REG_A6XX_RBBM_CLOCK_CNTL_UCHE, 0x22222222 },
+> +       { REG_A6XX_RBBM_CLOCK_HYST_UCHE, 0x00000004 },
+> +       { REG_A6XX_RBBM_CLOCK_DELAY_UCHE, 0x00000002 },
+> +       { REG_A6XX_RBBM_ISDB_CNT, 0x00000182 },
+> +       { REG_A6XX_RBBM_RAC_THRESHOLD_CNT, 0x00000000 },
+> +       { REG_A6XX_RBBM_SP_HYST_CNT, 0x00000000 },
+> +       { REG_A6XX_RBBM_CLOCK_CNTL_GMU_GX, 0x00000222 },
+> +       { REG_A6XX_RBBM_CLOCK_DELAY_GMU_GX, 0x00000111 },
+> +       { REG_A6XX_RBBM_CLOCK_HYST_GMU_GX, 0x00000555 },
+> +       { REG_A6XX_RBBM_CLOCK_CNTL_FCHE, 0x00000222 },
+> +       { REG_A6XX_RBBM_CLOCK_DELAY_FCHE, 0x00000000 },
+> +       { REG_A6XX_RBBM_CLOCK_HYST_FCHE, 0x00000000 },
+> +       { REG_A6XX_RBBM_CLOCK_CNTL_GLC, 0x00222222 },
+> +       { REG_A6XX_RBBM_CLOCK_DELAY_GLC, 0x00000000 },
+> +       { REG_A6XX_RBBM_CLOCK_HYST_GLC, 0x00000000 },
+> +       { REG_A6XX_RBBM_CLOCK_CNTL_MHUB, 0x00000002 },
+> +       { REG_A6XX_RBBM_CLOCK_DELAY_MHUB, 0x00000000 },
+> +       { REG_A6XX_RBBM_CLOCK_HYST_MHUB, 0x00000000 },
+> +       {}
+> +};
+> +
+>  const struct adreno_reglist a730_hwcg[] =3D {
+>         { REG_A6XX_RBBM_CLOCK_CNTL_SP0, 0x02222222 },
+>         { REG_A6XX_RBBM_CLOCK_CNTL2_SP0, 0x02022222 },
+> @@ -968,6 +1027,8 @@ static void a6xx_set_hwcg(struct msm_gpu *gpu, bool =
+state)
+>                 clock_cntl_on =3D 0x8aa8aa02;
+>         else if (adreno_is_a610(adreno_gpu))
+>                 clock_cntl_on =3D 0xaaa8aa82;
+> +       else if (adreno_is_a702(adreno_gpu))
+> +               clock_cntl_on =3D 0xaaaaaa82;
+>         else
+>                 clock_cntl_on =3D 0x8aa8aa82;
+>
+> @@ -989,14 +1050,14 @@ static void a6xx_set_hwcg(struct msm_gpu *gpu, boo=
+l state)
+>                 return;
+>
+>         /* Disable SP clock before programming HWCG registers */
+> -       if (!adreno_is_a610(adreno_gpu) && !adreno_is_a7xx(adreno_gpu))
+> +       if (!adreno_is_a610_family(adreno_gpu) && !adreno_is_a7xx(adreno_=
+gpu))
+>                 gmu_rmw(gmu, REG_A6XX_GPU_GMU_GX_SPTPRAC_CLOCK_CONTROL, 1=
+, 0);
+>
+>         for (i =3D 0; (reg =3D &adreno_gpu->info->hwcg[i], reg->offset); =
+i++)
+>                 gpu_write(gpu, reg->offset, state ? reg->value : 0);
+>
+>         /* Enable SP clock */
+> -       if (!adreno_is_a610(adreno_gpu) && !adreno_is_a7xx(adreno_gpu))
+> +       if (!adreno_is_a610_family(adreno_gpu) && !adreno_is_a7xx(adreno_=
+gpu))
+>                 gmu_rmw(gmu, REG_A6XX_GPU_GMU_GX_SPTPRAC_CLOCK_CONTROL, 0=
+, 1);
+>
+>         gpu_write(gpu, REG_A6XX_RBBM_CLOCK_CNTL, state ? clock_cntl_on : =
+0);
+> @@ -1224,7 +1285,7 @@ static void a6xx_set_cp_protect(struct msm_gpu *gpu=
+)
+>         const u32 *regs =3D a6xx_protect;
+>         unsigned i, count, count_max;
+>
+> -       if (adreno_is_a650(adreno_gpu)) {
+> +       if (adreno_is_a650(adreno_gpu) || adreno_is_a702(adreno_gpu)) {
+>                 regs =3D a650_protect;
+>                 count =3D ARRAY_SIZE(a650_protect);
+>                 count_max =3D 48;
+> @@ -1320,6 +1381,12 @@ static void a6xx_calc_ubwc_config(struct adreno_gp=
+u *gpu)
+>                 gpu->ubwc_config.rgb565_predicator =3D 1;
+>                 gpu->ubwc_config.uavflagprd_inv =3D 2;
+>         }
+> +
+> +       if (adreno_is_a702(gpu)) {
+> +               gpu->ubwc_config.highest_bank_bit =3D 14;
+> +               gpu->ubwc_config.min_acc_len =3D 1;
+> +               gpu->ubwc_config.ubwc_mode =3D 2;
+
+I just noticed, but this is wrong. ubwc_mode is a 1 bit field and what
+this is actually doing is overwriting hbb_lo, making the highest bank
+bit 15 instead of 14.
+
+> +       }
+>  }
+>
+>  static void a6xx_set_ubwc_config(struct msm_gpu *gpu)
+> @@ -1453,7 +1520,7 @@ static bool a6xx_ucode_check_version(struct a6xx_gp=
+u *a6xx_gpu,
+>                 return false;
+>
+>         /* A7xx is safe! */
+> -       if (adreno_is_a7xx(adreno_gpu))
+> +       if (adreno_is_a7xx(adreno_gpu) || adreno_is_a702(adreno_gpu))
+>                 return true;
+>
+>         /*
+> @@ -1671,7 +1738,7 @@ static int hw_init(struct msm_gpu *gpu)
+>         a6xx_set_hwcg(gpu, true);
+>
+>         /* VBIF/GBIF start*/
+> -       if (adreno_is_a610(adreno_gpu) ||
+> +       if (adreno_is_a610_family(adreno_gpu) ||
+>             adreno_is_a640_family(adreno_gpu) ||
+>             adreno_is_a650_family(adreno_gpu) ||
+>             adreno_is_a7xx(adreno_gpu)) {
+> @@ -1705,6 +1772,7 @@ static int hw_init(struct msm_gpu *gpu)
+>         }
+>
+>         if (!(adreno_is_a650_family(adreno_gpu) ||
+> +             adreno_is_a702(adreno_gpu) ||
+>               adreno_is_a730(adreno_gpu))) {
+>                 gmem_range_min =3D adreno_is_a740_family(adreno_gpu) ? SZ=
+_16M : SZ_1M;
+>
+> @@ -1725,7 +1793,7 @@ static int hw_init(struct msm_gpu *gpu)
+>         if (adreno_is_a640_family(adreno_gpu) || adreno_is_a650_family(ad=
+reno_gpu)) {
+>                 gpu_write(gpu, REG_A6XX_CP_ROQ_THRESHOLDS_2, 0x02000140);
+>                 gpu_write(gpu, REG_A6XX_CP_ROQ_THRESHOLDS_1, 0x8040362c);
+> -       } else if (adreno_is_a610(adreno_gpu)) {
+> +       } else if (adreno_is_a610_family(adreno_gpu)) {
+>                 gpu_write(gpu, REG_A6XX_CP_ROQ_THRESHOLDS_2, 0x00800060);
+>                 gpu_write(gpu, REG_A6XX_CP_ROQ_THRESHOLDS_1, 0x40201b16);
+>         } else if (!adreno_is_a7xx(adreno_gpu)) {
+> @@ -1740,13 +1808,18 @@ static int hw_init(struct msm_gpu *gpu)
+>         if (adreno_is_a610(adreno_gpu)) {
+>                 gpu_write(gpu, REG_A6XX_CP_MEM_POOL_SIZE, 48);
+>                 gpu_write(gpu, REG_A6XX_CP_MEM_POOL_DBG_ADDR, 47);
+> +       } else if (adreno_is_a702(adreno_gpu)) {
+> +               gpu_write(gpu, REG_A6XX_CP_MEM_POOL_SIZE, 64);
+> +               gpu_write(gpu, REG_A6XX_CP_MEM_POOL_DBG_ADDR, 63);
+>         } else if (!adreno_is_a7xx(adreno_gpu))
+>                 gpu_write(gpu, REG_A6XX_CP_MEM_POOL_SIZE, 128);
+>
+>         /* Setting the primFifo thresholds default values,
+>          * and vccCacheSkipDis=3D1 bit (0x200) for A640 and newer
+>         */
+> -       if (adreno_is_a690(adreno_gpu))
+> +       if (adreno_is_a702(adreno_gpu))
+> +               gpu_write(gpu, REG_A6XX_PC_DBG_ECO_CNTL, 0x0000c000);
+> +       else if (adreno_is_a690(adreno_gpu))
+>                 gpu_write(gpu, REG_A6XX_PC_DBG_ECO_CNTL, 0x00800200);
+>         else if (adreno_is_a650(adreno_gpu) || adreno_is_a660(adreno_gpu)=
+)
+>                 gpu_write(gpu, REG_A6XX_PC_DBG_ECO_CNTL, 0x00300200);
+> @@ -1786,7 +1859,7 @@ static int hw_init(struct msm_gpu *gpu)
+>                 gpu_write(gpu, REG_A6XX_RBBM_INTERFACE_HANG_INT_CNTL, (1 =
+<< 30) | 0x4fffff);
+>         else if (adreno_is_a619(adreno_gpu))
+>                 gpu_write(gpu, REG_A6XX_RBBM_INTERFACE_HANG_INT_CNTL, (1 =
+<< 30) | 0x3fffff);
+> -       else if (adreno_is_a610(adreno_gpu))
+> +       else if (adreno_is_a610(adreno_gpu) || adreno_is_a702(adreno_gpu)=
+)
+>                 gpu_write(gpu, REG_A6XX_RBBM_INTERFACE_HANG_INT_CNTL, (1 =
+<< 30) | 0x3ffff);
+>         else
+>                 gpu_write(gpu, REG_A6XX_RBBM_INTERFACE_HANG_INT_CNTL, (1 =
+<< 30) | 0x1fffff);
+> @@ -1822,6 +1895,9 @@ static int hw_init(struct msm_gpu *gpu)
+>                 else
+>                         gpu_write(gpu, REG_A6XX_CP_CHICKEN_DBG, 0x1);
+>                 gpu_write(gpu, REG_A6XX_RBBM_GBIF_CLIENT_QOS_CNTL, 0x0);
+> +       } else if (adreno_is_a702(adreno_gpu)) {
+> +               /* Something to do with the HLSQ cluster */
+> +               gpu_write(gpu, REG_A6XX_CP_CHICKEN_DBG, BIT(24));
+>         }
+>
+>         if (adreno_is_a690(adreno_gpu))
+> diff --git a/drivers/gpu/drm/msm/adreno/adreno_device.c b/drivers/gpu/drm=
+/msm/adreno/adreno_device.c
+> index 2ce7d7b1690d..b121abc71338 100644
+> --- a/drivers/gpu/drm/msm/adreno/adreno_device.c
+> +++ b/drivers/gpu/drm/msm/adreno/adreno_device.c
+> @@ -492,6 +492,24 @@ static const struct adreno_info gpulist[] =3D {
+>                 .zapfw =3D "a690_zap.mdt",
+>                 .hwcg =3D a690_hwcg,
+>                 .address_space_size =3D SZ_16G,
+> +       }, {
+> +               .chip_ids =3D ADRENO_CHIP_IDS(0x07000200),
+> +               .family =3D ADRENO_6XX_GEN1, /* NOT a mistake! */
+> +               .fw =3D {
+> +                       [ADRENO_FW_SQE] =3D "a702_sqe.fw",
+> +               },
+> +               .gmem =3D SZ_128K,
+> +               .inactive_period =3D DRM_MSM_INACTIVE_PERIOD,
+> +               .quirks =3D ADRENO_QUIRK_HAS_HW_APRIV,
+> +               .init =3D a6xx_gpu_init,
+> +               .zapfw =3D "a702_zap.mbn",
+> +               .hwcg =3D a702_hwcg,
+> +               .speedbins =3D ADRENO_SPEEDBINS(
+> +                       { 0,   0 },
+> +                       { 236, 1 },
+> +                       { 178, 2 },
+> +                       { 142, 3 },
+> +               ),
+>         }, {
+>                 .chip_ids =3D ADRENO_CHIP_IDS(0x07030001),
+>                 .family =3D ADRENO_7XX_GEN1,
+> diff --git a/drivers/gpu/drm/msm/adreno/adreno_gpu.h b/drivers/gpu/drm/ms=
+m/adreno/adreno_gpu.h
+> index bc14df96feb0..f451881a6ddf 100644
+> --- a/drivers/gpu/drm/msm/adreno/adreno_gpu.h
+> +++ b/drivers/gpu/drm/msm/adreno/adreno_gpu.h
+> @@ -77,7 +77,7 @@ struct adreno_reglist {
+>  };
+>
+>  extern const struct adreno_reglist a612_hwcg[], a615_hwcg[], a630_hwcg[]=
+, a640_hwcg[], a650_hwcg[];
+> -extern const struct adreno_reglist a660_hwcg[], a690_hwcg[], a730_hwcg[]=
+, a740_hwcg[];
+> +extern const struct adreno_reglist a660_hwcg[], a690_hwcg[], a702_hwcg[]=
+, a730_hwcg[], a740_hwcg[];
+>
+>  struct adreno_speedbin {
+>         uint16_t fuse;
+> @@ -382,6 +382,20 @@ static inline int adreno_is_a690(const struct adreno=
+_gpu *gpu)
+>         return gpu->info->chip_ids[0] =3D=3D 0x06090000;
+>  }
+>
+> +static inline int adreno_is_a702(const struct adreno_gpu *gpu)
+> +{
+> +       return gpu->info->chip_ids[0] =3D=3D 0x07000200;
+> +}
+> +
+> +static inline int adreno_is_a610_family(const struct adreno_gpu *gpu)
+> +{
+> +       if (WARN_ON_ONCE(!gpu->info))
+> +               return false;
+> +
+> +       /* TODO: A612 */
+> +       return adreno_is_a610(gpu) || adreno_is_a702(gpu);
+> +}
+> +
+>  /* check for a615, a616, a618, a619 or any a630 derivatives */
+>  static inline int adreno_is_a630_family(const struct adreno_gpu *gpu)
+>  {
+>
+> --
+> 2.43.2
+>
