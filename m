@@ -1,112 +1,141 @@
-Received: from mail-lj1-f182.google.com (mail-lj1-f182.google.com [209.85.208.182])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from madrid.collaboradmins.com (madrid.collaboradmins.com [46.235.227.194])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9F2C414AD2B
-	for <iommu@lists.linux.dev>; Thu, 23 May 2024 13:57:54 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.182
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 677E4433C3
+	for <iommu@lists.linux.dev>; Thu, 23 May 2024 14:36:34 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=46.235.227.194
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1716472676; cv=none; b=HUPaqpqpD3Rnmiid4DxX3z6ItM+l+/+tqC1E8SxiGxKI8bHcaKPmc+NvNUs70eZRPnJMBgoqgryj/5xGwNYhkEIZA2pCXJNnqY8vo+dkWYZqL6dOsOTRuDK4fnX6MbidvRHVNLixIdMIns7rotMPADN2WXV9VbldUIOeIbevfK8=
+	t=1716474996; cv=none; b=aVodoD1xb6O3S9rRbrwQARSZD0vbqqy/wifAsU0w9V9HZAVBUcHzhbysbPdf8StVqiXxiQinMV/bJ8qZoxGF2pQ7xnKY6urgYnnwgi3X1QIdAAyOT6oKiHNB0OwY0ahLrbP51cuFEeq9++vGNzbHRj3eor03w1cR7MSs0Y1EzJM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1716472676; c=relaxed/simple;
-	bh=9x+M+9APIGN3rhHl/tijNJMgK0ojb20CQmY/C3fB0G8=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=lk/slsZN5Bkr+8i8WgVpaX+qnjMlwJD1lxzd4a8yNX6JhuDC3R/8HU/l6xUh9qcwtyFF8KPC6oVGgSK7IbpgZGsqiCoeYdG9SSN5lU9hGVfpzPcVWU5cCEfpRMCizW+lXo7ox9TJ1FQ38cRPA+FaA38SYPd5JJqFu3YFQt5pz1Y=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=SrGE0ZmI; arc=none smtp.client-ip=209.85.208.182
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1716474996; c=relaxed/simple;
+	bh=9sS78x2ZdckMIB2ktWRxsrmJpPyzQYRCURWv7oKVTdE=;
+	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=oPob9SngPjArAsJnwlwgScGam11T9eXedjQKm9tqNBWYudoRR5NFGwMD71H8zyvDy1Ulv858PWdZO3UpokIvrgU34BKfoyzmFX3+r6orTOBWxDR5gGm4/GN3Gpgfzv5YBegAugUjfgTycjVTObTBHPNZs9Fj4h4f3wGUBZIZLOo=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=collabora.com; spf=pass smtp.mailfrom=collabora.com; dkim=pass (2048-bit key) header.d=collabora.com header.i=@collabora.com header.b=uNwBYL7e; arc=none smtp.client-ip=46.235.227.194
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=collabora.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=collabora.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="SrGE0ZmI"
-Received: by mail-lj1-f182.google.com with SMTP id 38308e7fff4ca-2e8a8ff4083so19308771fa.1
-        for <iommu@lists.linux.dev>; Thu, 23 May 2024 06:57:54 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1716472673; x=1717077473; darn=lists.linux.dev;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=OMOUYCMFihJdUjCJHbJ9rJQeq23/qVjfUy+xhBp831s=;
-        b=SrGE0ZmI/d2kWUJZzcep5q6L8VwSj5rbOQUogdvDIvidrB2D/iEjxKPb5r0YsE8h8d
-         /EzAtSwiEFWn1f7fZvA26JtngzGhihV4MfqvBx3o66UklR6Rb5956Z0mMv14XtBbj/k5
-         pXTjVh35zwYnVQXetWT4SNbsUpifClWFz9nbVlHtSoorhN6kb5VNZDKMytByA8S730OI
-         9elecX6N2YLYDgFmGAsKprDWNvL9E39hJ8pRmPYufm2DNYzKZUH1YoAKmrwtNlyMFvue
-         F5aImASKRWFSD231uBi692l9sIkoOAYtWqMxJJ6mpuZgzixs2CIRy5GZQ8sQOp7822z2
-         xyJA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1716472673; x=1717077473;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=OMOUYCMFihJdUjCJHbJ9rJQeq23/qVjfUy+xhBp831s=;
-        b=fJF6w1EmLVAQyGlFSYNF16Zd97WIvxUxk4JzOUMIXb3JvOMnnNru7KOue0ulP/VQJc
-         eUjYxMM5l89PvUGgVeiecoObRb9pjhsNa9MXUn2BBtOhdY+6etrwSvuBNBi/vcWp3vBe
-         vcmdnBD1odvNpPw6gJwo7XJQRHU2WtCAuM7xNn3tMfHbR6VCL5eaKizPA4kwOmtmDsHr
-         GB0+e11ILkdVl98qybzlacmVY83iPUSNiSJrvFiAsRUX8OgWk56wPTYpjvpuqXtQJaKz
-         8LuCnFWH92zr+L+8ilkJxLyJ6yvWl/OKRRRgDFYDyZn5OEze9nnHS4dtHs4bq0cRdVND
-         f1sw==
-X-Gm-Message-State: AOJu0YxQKWKor557GK53UCyaVbpqbxbJmOpDldRMDGN1g9u9/MWXIpgP
-	2cYH61dSHMPtuXVhBfFMh9EFwo1wmkAGbEP+xPccXd4RswCfdiqCoE8p/x9Z0fElCfKOHx3osGV
-	fpMto3tvNTJYhPydoph14EpcF6wk=
-X-Google-Smtp-Source: AGHT+IG1AWvf7EzaCj7fIX4aVnfazLDZAwIEGt9b/u9Mld7qpT6ogzIh7jbUih6lnSJBTd3lTfPQEccB+HOkQQTlk0Q=
-X-Received: by 2002:a2e:9087:0:b0:2e1:c97b:6f25 with SMTP id
- 38308e7fff4ca-2e951b4f30bmr7752721fa.1.1716472672458; Thu, 23 May 2024
- 06:57:52 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=collabora.com header.i=@collabora.com header.b="uNwBYL7e"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
+	s=mail; t=1716474992;
+	bh=9sS78x2ZdckMIB2ktWRxsrmJpPyzQYRCURWv7oKVTdE=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+	b=uNwBYL7eeBCRiwhJoArAWBijyr722eWCnaXDG72gHvyA0Ao3uvd9iqn0XvIygcB47
+	 XWldqcAS/CLL5wX0Yh3O9yVI2WQ0u3vowpL3mr8M69+0Vx/4Y4BHpYh8c7k00cn06d
+	 ysm4kXfzZh2zKimil0ZGPPFqOsoPEgM/rH3uu+xgsdoGTxav3jtwye14fHUGHAHLjx
+	 DP5olZUQaRVi0kyYeEfdUsnCLpawtkGX2vmkut/pvpiuRyTpQx8qz+iNsOd+ys/i+X
+	 5fGZoX/sQ+P+gpQ3bn/pZWUv4mo5eZXSSiU8PdvjKeQt/YZLNCv8J/BVJLQC10INrz
+	 Ebs1cM7S6Rydw==
+Received: from localhost (cola.collaboradmins.com [195.201.22.229])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+	(No client certificate requested)
+	(Authenticated sender: bbrezillon)
+	by madrid.collaboradmins.com (Postfix) with ESMTPSA id BC5F637820FA;
+	Thu, 23 May 2024 14:36:31 +0000 (UTC)
+Date: Thu, 23 May 2024 16:36:30 +0200
+From: Boris Brezillon <boris.brezillon@collabora.com>
+To: Robin Murphy <robin.murphy@arm.com>
+Cc: Ashish Mhetre <amhetre@nvidia.com>, will@kernel.org, joro@8bytes.org,
+ linux-arm-kernel@lists.infradead.org, Rob Clark <robdclark@gmail.com>,
+ vdumpa@nvidia.com, linux-tegra@vger.kernel.org, treding@nvidia.com,
+ jonathanh@nvidia.com, iommu@lists.linux.dev, linux-kernel@vger.kernel.org
+Subject: Re: [RFC PATCH] iommu: Optimize IOMMU UnMap
+Message-ID: <20240523163630.24992c28@collabora.com>
+In-Reply-To: <6b707eb4-5cf3-4b66-8152-5ba252f5df39@arm.com>
+References: <20240523031935.90856-1-amhetre@nvidia.com>
+	<6b707eb4-5cf3-4b66-8152-5ba252f5df39@arm.com>
+Organization: Collabora
+X-Mailer: Claws Mail 4.2.0 (GTK 3.24.41; x86_64-redhat-linux-gnu)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <20240522082729.971123-1-ubizjak@gmail.com> <20240522082729.971123-2-ubizjak@gmail.com>
- <c1892ba9-4eae-40fc-b3ab-73d0f82a74ea@linux.intel.com> <CAFULd4Z=YkV1Hbs4DikPBwO-6rg8tfDLGeacSCnfbC02E5y+Cg@mail.gmail.com>
- <b100a3c4-e5c3-41da-8c02-3a4986b49eec@linux.intel.com>
-In-Reply-To: <b100a3c4-e5c3-41da-8c02-3a4986b49eec@linux.intel.com>
-From: Uros Bizjak <ubizjak@gmail.com>
-Date: Thu, 23 May 2024 15:57:40 +0200
-Message-ID: <CAFULd4aXBAxPS7hXJ_RKMzZu60yTr7gK1m3K8z0yq1mjYn3dyA@mail.gmail.com>
-Subject: Re: [PATCH 2/3] iommu/vt-d: Use try_cmpxchg64() in intel_pasid_get_entry()
-To: Baolu Lu <baolu.lu@linux.intel.com>
-Cc: iommu@lists.linux.dev, linux-kernel@vger.kernel.org, 
-	David Woodhouse <dwmw2@infradead.org>, Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>, 
-	Robin Murphy <robin.murphy@arm.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 
-On Thu, May 23, 2024 at 3:44=E2=80=AFPM Baolu Lu <baolu.lu@linux.intel.com>=
- wrote:
->
-> On 2024/5/23 21:34, Uros Bizjak wrote:
-> >>> +             if (!try_cmpxchg64(&dir[dir_index].val, &tmp,
-> >>> +                                (u64)virt_to_phys(entries) | PASID_P=
-TE_PRESENT)) {
-> >> Above change will cause a dead loop during boot. It should be
-> > No, it is correct as written:
-> >
-> > if (cmpxchg64(*ptr, 0, new))
-> >
-> > can be written as:
-> >
-> > if (cmpxchg64(*ptr, 0, new) !=3D 0)
-> >
-> > this is equivalent to:
-> >
-> > tmp =3D 0ULL;
-> > if (!try_cmpxchg64(*ptr, &tmp, new))
->
-> The return value of both cmpxchg64() and try_cmpxchg64() is the old
-> value that was loaded from the memory location, right?
+On Thu, 23 May 2024 14:41:12 +0100
+Robin Murphy <robin.murphy@arm.com> wrote:
 
-Actually, try_cmpxchg() returns true if successful and false if it fails.
+> On 23/05/2024 4:19 am, Ashish Mhetre wrote:
+> > The current __arm_lpae_unmap() function calls dma_sync() on individual
+> > PTEs after clearing them. By updating the __arm_lpae_unmap() to call
+> > dma_sync() once for all cleared PTEs, the overall performance can be
+> > improved 25% for large buffer sizes.
+> > Below is detailed analysis of average unmap latency(in us) with and
+> > without this optimization obtained by running dma_map_benchmark for
+> > different buffer sizes.
+> > 
+> > Size	Time W/O	Time With	% Improvement
+> > 	Optimization	Optimization
+> > 	(us)		(us)
+> > 
+> > 4KB	3.0		3.1		-3.33
+> > 1MB	250.3		187.9		24.93  
+> 
+> This seems highly suspect - the smallest possible block size is 2MB so a 
+> 1MB unmap should not be affected by this path at all.
+> 
+> > 2MB	493.7		368.7		25.32
+> > 4MB	974.7		723.4		25.78  
+> 
+> I'm guessing this is on Tegra with the workaround to force everything to 
+> PAGE_SIZE? In the normal case a 2MB unmap should be nominally *faster* 
+> than 4KB, since it would also be a single PTE, but with one fewer level 
+> of table to walk to reach it. The 25% figure is rather misleading if 
+> it's only a mitigation of an existing erratum workaround, and the actual 
+> impact on the majority of non-broken systems is unmeasured.
+> 
+> (As an aside, I think that workaround itself is a bit broken, since at 
+> least on Tegra234 with Cortex-A78, PAGE_SIZE could be 16KB which MMU-500 
+> doesn't support.)
+> 
+> > Signed-off-by: Ashish Mhetre <amhetre@nvidia.com>
+> > ---
+> >   drivers/iommu/io-pgtable-arm.c | 34 +++++++++++++++++++++++++---------
+> >   1 file changed, 25 insertions(+), 9 deletions(-)
+> > 
+> > diff --git a/drivers/iommu/io-pgtable-arm.c b/drivers/iommu/io-pgtable-arm.c
+> > index 3d23b924cec1..94094b711cba 100644
+> > --- a/drivers/iommu/io-pgtable-arm.c
+> > +++ b/drivers/iommu/io-pgtable-arm.c
+> > @@ -256,13 +256,15 @@ static void __arm_lpae_sync_pte(arm_lpae_iopte *ptep, int num_entries,
+> >   				   sizeof(*ptep) * num_entries, DMA_TO_DEVICE);
+> >   }
+> >   
+> > -static void __arm_lpae_clear_pte(arm_lpae_iopte *ptep, struct io_pgtable_cfg *cfg)
+> > +static void __arm_lpae_clear_pte(arm_lpae_iopte *ptep, struct io_pgtable_cfg *cfg, int num_entries)
+> >   {
+> > +	int i;
+> >   
+> > -	*ptep = 0;
+> > +	for (i = 0; i < num_entries; i++)
+> > +		ptep[i] = 0;
+> >   
+> >   	if (!cfg->coherent_walk)
+> > -		__arm_lpae_sync_pte(ptep, 1, cfg);
+> > +		__arm_lpae_sync_pte(ptep, num_entries, cfg);
+> >   }
+> >   
+> >   static size_t __arm_lpae_unmap(struct arm_lpae_io_pgtable *data,
+> > @@ -633,13 +635,25 @@ static size_t __arm_lpae_unmap(struct arm_lpae_io_pgtable *data,
+> >   	if (size == ARM_LPAE_BLOCK_SIZE(lvl, data)) {
+> >   		max_entries = ARM_LPAE_PTES_PER_TABLE(data) - unmap_idx_start;
+> >   		num_entries = min_t(int, pgcount, max_entries);
+> > -
+> > -		while (i < num_entries) {
+> > -			pte = READ_ONCE(*ptep);
+> > +		arm_lpae_iopte *pte_flush;
+> > +		int j = 0;
+> > +
+> > +		pte_flush = kvcalloc(num_entries, sizeof(*pte_flush), GFP_ATOMIC);  
+> 
+> kvmalloc() with GFP_ATOMIC isn't valid. However, I'm not sure if there 
+> isn't a more fundamental problem here - Rob, Boris; was it just the map 
+> path, or would any allocation on unmap risk the GPU reclaim deadlock 
+> thing as well?
 
-            tmp =3D 0ULL;
-            if (!try_cmpxchg64(*ptr, &tmp, new))
-
-The logic in the above snippet can be interpreted as:
-
-if we fail to compare *ptr with 0, then:
-
-            iommu_free_page(entries);
-            goto retry;
-
-as intended in the original code.
-
-Thanks,
-Uros.
+Unmap as well, because of the 'split huge page into small pages'
+logic when the unmap region is not aligned on 2MB.
