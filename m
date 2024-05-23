@@ -1,182 +1,170 @@
-Received: from mail-pl1-f172.google.com (mail-pl1-f172.google.com [209.85.214.172])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 971F283A08
-	for <iommu@lists.linux.dev>; Thu, 23 May 2024 21:34:58 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.172
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 31E7F82D9A
+	for <iommu@lists.linux.dev>; Thu, 23 May 2024 22:47:58 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=170.10.129.124
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1716500100; cv=none; b=sCYyU8U5c9FNuJBwxjZ1CL4r2GGpLSpiBh8/JbRMdC61OJzyd9YRY2tMplowIb7v7QhO0HK2jLY3i64hsZPvQU7hIq4D7KEcsXW5+04FlsnYPuAKW80ON9uRSYsHdgNVQIHywVxgHVqtelLmEGrEvRiue9P6Mvlye9P0NADZU/w=
+	t=1716504480; cv=none; b=qNu3r+Ro9yaSnu0htJuwxa/f4jgKK+e4Schhz5vO8UCseBCMa22lafXQTXTYytN0SkPoeGFvOJLJ8i8fhLCBSCTTC/nCTrWhk8TXKyG5rjf5su6m720ofQasdDjvZuf1SdZ2AJ6Ha7trB3kUriY4+hfOkK+w1q3sHAEnyaDhqGY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1716500100; c=relaxed/simple;
-	bh=TtkKeCps0ejierSSi4w3QTlHUP2b6nZhMZC8/xjZifE=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=JwYR/qGFI07gtC3TyXuFtlMopZWW7+DGOYJRXRSYJwgCDTqxJmTNqSgQ8ChmnKyCSTkgJegRcX9clCQDeVuk6m44dDExZgPf2WdougfjA3sR+xEkzJWSKgEng0EQU2Tv0VXBnDRAopsHDz4gu6RAENWZouCnLVg8GMJ21xNZpoU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=PSrROwoN; arc=none smtp.client-ip=209.85.214.172
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1716504480; c=relaxed/simple;
+	bh=HnF8AtU9RwwjN5OY93RQVfOy46JVeOd8hfjNpCw419U=;
+	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=AHUhKYOy0oIjPiASe3fR7YELPGojJMPXxd/sjsNAGwMHSDvcyYB/+BJiWSSQjSrv25NaKKePoJz5lUPEaFJulAX12o3ZLWW/KIkrvFeeZ1lax0qGb8YDE+GcR+RnNnuvpgs+4d6UfimsbVBjdWriFmoSs+82H1KxxLVVWZJACVk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=redhat.com; spf=pass smtp.mailfrom=redhat.com; dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b=hHvfFZPS; arc=none smtp.client-ip=170.10.129.124
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=redhat.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=redhat.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="PSrROwoN"
-Received: by mail-pl1-f172.google.com with SMTP id d9443c01a7336-1f44b5d0c50so1072595ad.2
-        for <iommu@lists.linux.dev>; Thu, 23 May 2024 14:34:58 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1716500098; x=1717104898; darn=lists.linux.dev;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=T7a2uMVZssHO/XdZkFjaZx6Fve2Wj78fROEuqBTUEKo=;
-        b=PSrROwoN7VEPIScPJq4xIExVcjrQiboZ+SbJbS3hVANU+8CTYEN2IkbR6EC+7fVCJE
-         JR1QzC4maa3CUE8uwhQ6b884ZIJ+5eYEEHHbi6O7eUHT0QHN3FTeKmeDwMMrDhZSFwAR
-         JgmDG1YpFeF3t74UfnQ/KLnKyYs58lKwDMd9rJx0N6nKiMMeYBrYg1e3zUfnFaU3zzPv
-         RtrH5fhEqO8E8MrIUOwX2F1cxPjKUtzNr6x3nid0ahasQcWcU5COzOjUIvdtg6D72mrv
-         HrAf2LbSTRMg0Aasdw/tZHwKF0prmqPGjcWPMiSmrLzcusrorZDsG4hhzjdEZgDBaniM
-         /fbg==
+	dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="hHvfFZPS"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+	s=mimecast20190719; t=1716504478;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding:
+	 in-reply-to:in-reply-to:references:references;
+	bh=RbTJpo/tHaM6pFlC2j0n0rj03NY8O+M9Z61btdQH21o=;
+	b=hHvfFZPSFkX637FAAiEQWRFPdm3vjlPoCs4/FPzM45Pgz3Kd+yhP8pZaFztUyE9A93vwPy
+	PYWjAgC9LHAGwRXuA86oV7Cg2X+B4PjDLMC8IaGgTsw+jOiiOzryYmxoLhdUXT549W/22V
+	KrzB/2V1d78IXSJtlxduk2l7fCnQ3wY=
+Received: from mail-io1-f70.google.com (mail-io1-f70.google.com
+ [209.85.166.70]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
+ us-mta-627-F5o7BwfxNw28iA_qNZkrnQ-1; Thu, 23 May 2024 18:47:57 -0400
+X-MC-Unique: F5o7BwfxNw28iA_qNZkrnQ-1
+Received: by mail-io1-f70.google.com with SMTP id ca18e2360f4ac-7e1b65780b7so226465139f.2
+        for <iommu@lists.linux.dev>; Thu, 23 May 2024 15:47:57 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1716500098; x=1717104898;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=T7a2uMVZssHO/XdZkFjaZx6Fve2Wj78fROEuqBTUEKo=;
-        b=S2tKTc9zs4GP0P6M+iWmo5N0IbehRGmmwDcxp694tpb5BG7pU68dp6FGBdmwVAUmUC
-         HXG2Qf94zGuH4KSC2HmQ1RYF4kHH9f9FPnWs2wX89t3DCnN3ueffW2SmUGzngUEvJFLD
-         Zr+DQASAn5oJgUGanu9hcLWgC0kNh9G45V1+i9S8crAiZinvBkD8uiXoE6hGXvMxoSic
-         bTXBl1jODz/GxWexMa+/uxgCFAb3UZv4mgo5e/IOx6v9F4QM9k6zQP4+Emg/9CYBcp88
-         4aNma4F11TI+ADALHw8Rm2DMFUtY1d45ut3n3p80DHS71xVg+0RI3UEj1zremdDPLJ/U
-         8KPQ==
-X-Forwarded-Encrypted: i=1; AJvYcCUs/S48aTgdnjR5FkPXxrIQADUrqIaHceQuMW8aoOPECmdDFuxCXvasuUfSwUsBWBMRJdlz6576Xq2OEykXW3QPHc0ZLuA=
-X-Gm-Message-State: AOJu0YxZKM3KXm72SBt318tnjqJicf9ykjSJ/VgWOk+mpWzH9N+vZAB9
-	OQFwqhr2txj98XSoFTPYJFzU3J1VRLRto3H29JX2PSKWlGK1x+zn
-X-Google-Smtp-Source: AGHT+IHg64GfV68qCaL9nLaV71GpQJxYCS/dHS/c9zQ8wKfbt4plO5szkSRDbRHEZbACBIBwzwC+Ng==
-X-Received: by 2002:a17:902:ea0a:b0:1f2:fd9a:dbf3 with SMTP id d9443c01a7336-1f4486d1fa4mr5743115ad.11.1716500097727;
-        Thu, 23 May 2024 14:34:57 -0700 (PDT)
-Received: from localhost ([2a00:79e1:2e00:1301:e1c5:6354:b45d:8ffc])
-        by smtp.gmail.com with ESMTPSA id d9443c01a7336-1f44c9dd519sm399235ad.298.2024.05.23.14.34.56
+        d=1e100.net; s=20230601; t=1716504476; x=1717109276;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:subject:cc:to:from:date:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=RbTJpo/tHaM6pFlC2j0n0rj03NY8O+M9Z61btdQH21o=;
+        b=tbMoktjSzErRwW7YgTfR1imy93yrn2B6Clk0t9omJ5+B921EC5vmi9Z6VhmNjFnJDb
+         KH+2AjdSkSqJ/i+L2rXNYYSurdnb5A7BQ6Cqzf0F0dG6BukQ2jjDhJ8eX6+ahB5BfyAD
+         pjHxgmR2CoBo+YRIPNejTvU9RI0CRAMRBgSSgbP6gBmKi+nAO7G/nKbkJw+c3QXSb304
+         3nbA/+AmeVk5AqCHq6mkNiLTv/ZFX5wCakA4HlK1OcuVEsm1HlU42+SRu1OdjAOYuw2H
+         Gox9dP9zbXXecgU931uj86D1Zzd+p8/zChV3PuFdcl2SDwGPit3IFIjB/RjvxytK0mop
+         0W9g==
+X-Forwarded-Encrypted: i=1; AJvYcCWGsD/bemVnFNrBUpK5fRu411mpbo3N1FFxiA99X7yVM+PUqvHFEqkd/d65bwKQne9aJFVDkfCsIFhscyHiawPYT4LYCgc=
+X-Gm-Message-State: AOJu0YxjAMvn1v2UaqLnFNydGNjsc/DIi1gsvbpEF0ZfhX/DGZHkIz4j
+	L1yFR57cBpO+CJQs3O6w4axYn8hy/vveGBU3pqK9lElrUCAzZ09pmPUeOH6y4hNlmV9G2GD9ntM
+	9xHILT2WlfBMDzJcB+2q9GKHU9ZShCbXQFHb/uT3i6mGJTRa/qLqcDZqSrS04
+X-Received: by 2002:a05:6602:22cc:b0:7e1:b4b2:d708 with SMTP id ca18e2360f4ac-7e8c471228dmr98231939f.4.1716504475914;
+        Thu, 23 May 2024 15:47:55 -0700 (PDT)
+X-Google-Smtp-Source: AGHT+IHGwOK95xB7bE1bMah1YI57apwlkaazKWEAAxnRnR+UWpM8aA9o2MVc76pMUij1m7seUhPXVw==
+X-Received: by 2002:a05:6602:22cc:b0:7e1:b4b2:d708 with SMTP id ca18e2360f4ac-7e8c471228dmr98228939f.4.1716504475433;
+        Thu, 23 May 2024 15:47:55 -0700 (PDT)
+Received: from redhat.com ([38.15.36.11])
+        by smtp.gmail.com with ESMTPSA id 8926c6da1cb9f-4b03e8298a3sm94292173.18.2024.05.23.15.47.54
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 23 May 2024 14:34:57 -0700 (PDT)
-From: Rob Clark <robdclark@gmail.com>
-To: iommu@lists.linux-foundation.org
-Cc: linux-arm-msm@vger.kernel.org,
-	Stephen Boyd <swboyd@chromium.org>,
-	Rob Clark <robdclark@chromium.org>,
-	Will Deacon <will@kernel.org>,
-	Robin Murphy <robin.murphy@arm.com>,
-	Joerg Roedel <joro@8bytes.org>,
-	Jason Gunthorpe <jgg@ziepe.ca>,
-	Jerry Snitselaar <jsnitsel@redhat.com>,
-	Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-	Rob Herring <robh@kernel.org>,
-	Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
-	linux-arm-kernel@lists.infradead.org (moderated list:ARM SMMU DRIVERS),
-	iommu@lists.linux.dev (open list:IOMMU SUBSYSTEM),
-	linux-kernel@vger.kernel.org (open list)
-Subject: [PATCH] iommu/arm-smmu: Pretty-print context fault related regs
-Date: Thu, 23 May 2024 14:34:47 -0700
-Message-ID: <20240523213452.144108-1-robdclark@gmail.com>
-X-Mailer: git-send-email 2.45.1
+        Thu, 23 May 2024 15:47:54 -0700 (PDT)
+Date: Thu, 23 May 2024 16:47:53 -0600
+From: Alex Williamson <alex.williamson@redhat.com>
+To: Jason Gunthorpe <jgg@nvidia.com>
+Cc: "Tian, Kevin" <kevin.tian@intel.com>, "Vetter, Daniel"
+ <daniel.vetter@intel.com>, "Zhao, Yan Y" <yan.y.zhao@intel.com>,
+ "kvm@vger.kernel.org" <kvm@vger.kernel.org>, "linux-kernel@vger.kernel.org"
+ <linux-kernel@vger.kernel.org>, "x86@kernel.org" <x86@kernel.org>,
+ "iommu@lists.linux.dev" <iommu@lists.linux.dev>, "pbonzini@redhat.com"
+ <pbonzini@redhat.com>, "seanjc@google.com" <seanjc@google.com>,
+ "dave.hansen@linux.intel.com" <dave.hansen@linux.intel.com>,
+ "luto@kernel.org" <luto@kernel.org>, "peterz@infradead.org"
+ <peterz@infradead.org>, "tglx@linutronix.de" <tglx@linutronix.de>,
+ "mingo@redhat.com" <mingo@redhat.com>, "bp@alien8.de" <bp@alien8.de>,
+ "hpa@zytor.com" <hpa@zytor.com>, "corbet@lwn.net" <corbet@lwn.net>,
+ "joro@8bytes.org" <joro@8bytes.org>, "will@kernel.org" <will@kernel.org>,
+ "robin.murphy@arm.com" <robin.murphy@arm.com>, "baolu.lu@linux.intel.com"
+ <baolu.lu@linux.intel.com>, "Liu, Yi L" <yi.l.liu@intel.com>
+Subject: Re: [PATCH 4/5] vfio/type1: Flush CPU caches on DMA pages in
+ non-coherent domains
+Message-ID: <20240523164753.32e714d5.alex.williamson@redhat.com>
+In-Reply-To: <20240523145848.GN20229@nvidia.com>
+References: <20240521160714.GJ20229@nvidia.com>
+	<20240521102123.7baaf85a.alex.williamson@redhat.com>
+	<20240521163400.GK20229@nvidia.com>
+	<20240521121945.7f144230.alex.williamson@redhat.com>
+	<20240521183745.GP20229@nvidia.com>
+	<BN9PR11MB52769E209C5B978C7094A5C08CEB2@BN9PR11MB5276.namprd11.prod.outlook.com>
+	<20240522122939.GT20229@nvidia.com>
+	<BN9PR11MB527604CDF2E7FA49176200028CEB2@BN9PR11MB5276.namprd11.prod.outlook.com>
+	<20240522233213.GI20229@nvidia.com>
+	<BN9PR11MB5276C2DD3F924ED2EB6AD3988CEB2@BN9PR11MB5276.namprd11.prod.outlook.com>
+	<20240523145848.GN20229@nvidia.com>
+X-Mailer: Claws Mail 4.2.0 (GTK 3.24.41; x86_64-redhat-linux-gnu)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+X-Mimecast-Spam-Score: 0
+X-Mimecast-Originator: redhat.com
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 
-From: Rob Clark <robdclark@chromium.org>
+On Thu, 23 May 2024 11:58:48 -0300
+Jason Gunthorpe <jgg@nvidia.com> wrote:
 
-Parse out the bitfields for easier-to-read fault messages.
+> On Wed, May 22, 2024 at 11:40:58PM +0000, Tian, Kevin wrote:
+> > > From: Jason Gunthorpe <jgg@nvidia.com>
+> > > Sent: Thursday, May 23, 2024 7:32 AM
+> > > 
+> > > On Wed, May 22, 2024 at 11:26:21PM +0000, Tian, Kevin wrote:  
+> > > > > From: Jason Gunthorpe <jgg@nvidia.com>
+> > > > > Sent: Wednesday, May 22, 2024 8:30 PM
+> > > > >
+> > > > > On Wed, May 22, 2024 at 06:24:14AM +0000, Tian, Kevin wrote:  
+> > > > > > I'm fine to do a special check in the attach path to enable the flush
+> > > > > > only for Intel GPU.  
+> > > > >
+> > > > > We already effectively do this already by checking the domain
+> > > > > capabilities. Only the Intel GPU will have a non-coherent domain.
+> > > > >  
+> > > >
+> > > > I'm confused. In earlier discussions you wanted to find a way to not
+> > > > publish others due to the check of non-coherent domain, e.g. some
+> > > > ARM SMMU cannot force snoop.
+> > > >
+> > > > Then you and Alex discussed the possibility of reducing pessimistic
+> > > > flushes by virtualizing the PCI NOSNOOP bit.
+> > > >
+> > > > With that in mind I was thinking whether we explicitly enable this
+> > > > flush only for Intel GPU instead of checking non-coherent domain
+> > > > in the attach path, since it's the only device with such requirement.  
+> > > 
+> > > I am suggesting to do both checks:
+> > >  - If the iommu domain indicates it has force coherency then leave PCI
+> > >    no-snoop alone and no flush
+> > >  - If the PCI NOSNOOP bit is or can be 0 then no flush
+> > >  - Otherwise flush  
+> > 
+> > How to judge whether PCI NOSNOOP can be 0? If following PCI spec
+> > it can always be set to 0 but then we break the requirement for Intel
+> > GPU. If we explicitly exempt Intel GPU in 2nd check  then what'd be
+> > the value of doing that generic check?  
+> 
+> Non-PCI environments still have this problem, and the first check does
+> help them since we don't have PCI config space there.
+> 
+> PCI can supply more information (no snoop impossible) and variant
+> drivers can add in too (want no snoop)
 
-Signed-off-by: Rob Clark <robdclark@chromium.org>
----
-Stephen was wanting easier to read fault messages.. so I typed this up.
+I'm not sure I follow either.  Since i915 doesn't set or test no-snoop
+enable, I think we need to assume drivers expect the reset value, so a
+device that supports no-snoop expects to use it, ie. we can't trap on
+no-snoop enable being set, the device is more likely to just operate
+with reduced performance if we surreptitiously clear the bit.
 
- drivers/iommu/arm/arm-smmu/arm-smmu.c | 53 +++++++++++++++++++++++++--
- drivers/iommu/arm/arm-smmu/arm-smmu.h |  5 +++
- 2 files changed, 54 insertions(+), 4 deletions(-)
+The current proposal is to enable flushing based only on the domain
+enforcement of coherency.  I think the augmentation is therefore that
+if the device is PCI and the no-snoop enable bit is zero after reset
+(indicating hardwired to zero), we also don't need to flush.
 
-diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu.c b/drivers/iommu/arm/arm-smmu/arm-smmu.c
-index c572d877b0e1..06712d73519c 100644
---- a/drivers/iommu/arm/arm-smmu/arm-smmu.c
-+++ b/drivers/iommu/arm/arm-smmu/arm-smmu.c
-@@ -411,6 +411,8 @@ static irqreturn_t arm_smmu_context_fault(int irq, void *dev)
- 	unsigned long iova;
- 	struct arm_smmu_domain *smmu_domain = dev;
- 	struct arm_smmu_device *smmu = smmu_domain->smmu;
-+	static DEFINE_RATELIMIT_STATE(rs, DEFAULT_RATELIMIT_INTERVAL,
-+				      DEFAULT_RATELIMIT_BURST);
- 	int idx = smmu_domain->cfg.cbndx;
- 	int ret;
- 
-@@ -425,10 +427,53 @@ static irqreturn_t arm_smmu_context_fault(int irq, void *dev)
- 	ret = report_iommu_fault(&smmu_domain->domain, NULL, iova,
- 		fsynr & ARM_SMMU_FSYNR0_WNR ? IOMMU_FAULT_WRITE : IOMMU_FAULT_READ);
- 
--	if (ret == -ENOSYS)
--		dev_err_ratelimited(smmu->dev,
--		"Unhandled context fault: fsr=0x%x, iova=0x%08lx, fsynr=0x%x, cbfrsynra=0x%x, cb=%d\n",
--			    fsr, iova, fsynr, cbfrsynra, idx);
-+	if (ret == -ENOSYS && __ratelimit(&rs)) {
-+		static const struct {
-+			u32 mask; const char *name;
-+		} fsr_bits[] = {
-+			{ ARM_SMMU_FSR_MULTI,  "MULTI" },
-+			{ ARM_SMMU_FSR_SS,     "SS"    },
-+			{ ARM_SMMU_FSR_UUT,    "UUT"   },
-+			{ ARM_SMMU_FSR_ASF,    "ASF"   },
-+			{ ARM_SMMU_FSR_TLBLKF, "TLBLKF" },
-+			{ ARM_SMMU_FSR_TLBMCF, "TLBMCF" },
-+			{ ARM_SMMU_FSR_EF,     "EF"     },
-+			{ ARM_SMMU_FSR_PF,     "PF"     },
-+			{ ARM_SMMU_FSR_AFF,    "AFF"    },
-+			{ ARM_SMMU_FSR_TF,     "TF"     },
-+		}, fsynr0_bits[] = {
-+			{ ARM_SMMU_FSYNR0_WNR,    "WNR"    },
-+			{ ARM_SMMU_FSYNR0_PNU,    "PNU"    },
-+			{ ARM_SMMU_FSYNR0_IND,    "IND"    },
-+			{ ARM_SMMU_FSYNR0_NSATTR, "NSATTR" },
-+			{ ARM_SMMU_FSYNR0_PTWF,   "PTWF"   },
-+			{ ARM_SMMU_FSYNR0_AFR,    "AFR"    },
-+		};
-+
-+		pr_err("%s %s: Unhandled context fault: fsr=0x%x (",
-+		       dev_driver_string(smmu->dev), dev_name(smmu->dev), fsr);
-+
-+		for (int i = 0, n = 0; i < ARRAY_SIZE(fsr_bits); i++) {
-+			if (fsr & fsr_bits[i].mask) {
-+				pr_cont("%s%s", (n > 0) ? "|" : "", fsr_bits[i].name);
-+				n++;
-+			}
-+		}
-+
-+		pr_cont("), iova=0x%08lx, fsynr=0x%x (S1CBNDX=%u", iova, fsynr,
-+			(fsynr >> 16) & 0xff);
-+
-+		for (int i = 0; i < ARRAY_SIZE(fsynr0_bits); i++) {
-+			if (fsynr & fsynr0_bits[i].mask) {
-+				pr_cont("|%s", fsynr0_bits[i].name);
-+			}
-+		}
-+
-+		pr_cont("|PLVL=%u), cbfrsynra=0x%x, cb=%d\n",
-+			fsynr & 0x3,   /* FSYNR0.PLV */
-+			cbfrsynra, idx);
-+
-+	}
- 
- 	arm_smmu_cb_write(smmu, idx, ARM_SMMU_CB_FSR, fsr);
- 	return IRQ_HANDLED;
-diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu.h b/drivers/iommu/arm/arm-smmu/arm-smmu.h
-index 836ed6799a80..3b051273718b 100644
---- a/drivers/iommu/arm/arm-smmu/arm-smmu.h
-+++ b/drivers/iommu/arm/arm-smmu/arm-smmu.h
-@@ -223,6 +223,11 @@ enum arm_smmu_cbar_type {
- 
- #define ARM_SMMU_CB_FSYNR0		0x68
- #define ARM_SMMU_FSYNR0_WNR		BIT(4)
-+#define ARM_SMMU_FSYNR0_PNU		BIT(5)
-+#define ARM_SMMU_FSYNR0_IND		BIT(6)
-+#define ARM_SMMU_FSYNR0_NSATTR		BIT(8)
-+#define ARM_SMMU_FSYNR0_PTWF		BIT(10)
-+#define ARM_SMMU_FSYNR0_AFR		BIT(11)
- 
- #define ARM_SMMU_CB_FSYNR1		0x6c
- 
--- 
-2.45.1
+I'm not sure the polarity of the variant drive statement above is
+correct.  If the no-snoop enable bit is set after reset, we'd assume
+no-snoop is possible, so the variant driver would only need a way to
+indicate the device doesn't actually use no-snoop.  For that it might
+just virtualize the no-snoop enable setting to vfio-pci-core.  Thanks,
+
+Alex
 
