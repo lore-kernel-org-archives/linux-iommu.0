@@ -1,61 +1,60 @@
-Received: from mail-ej1-f54.google.com (mail-ej1-f54.google.com [209.85.218.54])
+Received: from mail-ej1-f43.google.com (mail-ej1-f43.google.com [209.85.218.43])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DE00D13D27D
-	for <iommu@lists.linux.dev>; Thu, 23 May 2024 07:59:47 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.218.54
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1D8E113D29D
+	for <iommu@lists.linux.dev>; Thu, 23 May 2024 07:59:48 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.218.43
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1716451189; cv=none; b=eFUtjO4tfTIzFVCZySBk+2HDZbizaA8yKS2mLudw6cCzAs57wlSn3IHjSGmpObD5GGC/pzXTLskOJQHjYkX35SQ89kdYSyhdohpgGFEkDBOk0LxpH3EkoORxqeX0vE3cDtk5hHSqfdc6qXg8mR0PfwnMV2Ioke+khxfuBugRdXA=
+	t=1716451191; cv=none; b=uHO0BOQK/Y2ip7KNG8Z4SV5rwP8A5DjbjgehjjCzqnGizu0Wx6Mp4np8iME/PmQ7o5R+B5lsJiuJkmcy84UsySgW2AdtNMBh0BipMMmC9eLU3W2cIY7OnoBAcpIKwLy1PVsjvqXEdQqwpj4pZo1rSVKKrTDWYUH7aE+nJDr6twA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1716451189; c=relaxed/simple;
-	bh=ilS9/urat3r7x1lnhAo5NEEctqUaqIeh25qT8NExnxU=;
+	s=arc-20240116; t=1716451191; c=relaxed/simple;
+	bh=EMPeNyzBpqMjF6F7TP+1J/G1NKheB8Yvdxf4QEA8UKg=;
 	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=SZkDQXFKQtzyLChO/39U6MWHvMbUfYIRumtCGLdj9gf0k9su3+xZTUYQcG41bNyYNidcT3sdX/wknU7OmE4JdqUU+XO4LngL9pHyh5JETT6pXKKyGtE9pEmcOjc0V7m1QWyS017zdBUKyMR2eIl64tN8qoZY9lt7tBuPgWYcjbE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org; spf=pass smtp.mailfrom=linaro.org; dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b=i9exrS0g; arc=none smtp.client-ip=209.85.218.54
+	 In-Reply-To:To:Cc; b=qoPQ7hICY0AZSGJ1RLxLqZ3k+sr6pyxYvQJW5I5ybZdDnYKVPMHZ+CCAVcXyJ4l6SLYJe4QJ0ukrL+2Oue6Wr6JCEoIZKtCb/5DfxckvNwPWbNCuzT87Hki2LOIeKi4JAVDMake3W5JQLUOIR4a6Wfe3rRN5TnI5lQ3/22KJC0A=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org; spf=pass smtp.mailfrom=linaro.org; dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b=ogC8Hrwu; arc=none smtp.client-ip=209.85.218.43
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linaro.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="i9exrS0g"
-Received: by mail-ej1-f54.google.com with SMTP id a640c23a62f3a-a59a387fbc9so1113301966b.1
-        for <iommu@lists.linux.dev>; Thu, 23 May 2024 00:59:47 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="ogC8Hrwu"
+Received: by mail-ej1-f43.google.com with SMTP id a640c23a62f3a-a59a387fbc9so1113303966b.1
+        for <iommu@lists.linux.dev>; Thu, 23 May 2024 00:59:48 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1716451186; x=1717055986; darn=lists.linux.dev;
+        d=linaro.org; s=google; t=1716451187; x=1717055987; darn=lists.linux.dev;
         h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
          :mime-version:subject:date:from:from:to:cc:subject:date:message-id
          :reply-to;
-        bh=1l8AveQIqcO0cLiCCKIDbAyj5545roxssowTDaQ8/wY=;
-        b=i9exrS0gQ2lH/bN8d2nVbPRxHrY5yxAm03Wa0xPw1tWIQDI4ER18AOL1GfHwaRUh2k
-         2gzOrGEqTeukBCzLQVOZOXRbiK6NTFaqyOv7P/qvddp5CmEBWQDybd23H/2TTuTBRlzS
-         Y6MaedoTCIEAta8LZ1LL8GSc34mQr7NXDCcZQvXLjXAh9GuYIn6VJE2txkFIaRhLUiVt
-         fqslUDXDfc1OGgMBwp+POltjI5Tri2odBuEQXneLKVJ+dCt2BSvZLIju91zN2+7W5DJx
-         XO/eYIrsiYVk2IF8dmM5ht5W/60dmoerfXNUKQes7VJLTxANIgDfLSG5/qOH/7MaouxJ
-         iUoQ==
+        bh=xAaEs9RkQ8GaTEt79EKKeWtnQKePqeTaokONVnHxvj4=;
+        b=ogC8HrwugqxnRecDMco7p4x7E1Y55oY6RXQxcO+I3phBarQOMj/s3tWTVnHWUzXhAk
+         fgUdXtZr+8J7dvdm7cttyZ31lmIz+o2KcUwTn5fPZDr8J4kiCiYCB0XXmdm9whR1lfRP
+         TCceLTzyCJISdwTZW5l7C3qvZS8HBDd9YD0Bqz83EXzBqVZx0anroXOMDFQilZ/w5dBk
+         Rd9jonqkeuMAL2NMX6gy56HekTeFSnaGehG6z6lhdHI7zSXkwUYF9fWrbJjN0LLGFLxP
+         uMVv3yEr0DgSCjYK1EPPeV0mWjiRYBFkM/HcaGKoMqNzY/jb0//1h0sPFsbaeotSuBxg
+         83Bw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1716451186; x=1717055986;
+        d=1e100.net; s=20230601; t=1716451187; x=1717055987;
         h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
          :mime-version:subject:date:from:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=1l8AveQIqcO0cLiCCKIDbAyj5545roxssowTDaQ8/wY=;
-        b=Osfcvh9ro9ca4ZGoY7hmQJSfDGn9WDqCciIFR4Fx1gQv9v+Oam7zBceKVQDMF6lIee
-         N/M7i1KLpEB+b4xFiB1+oZHtvs/909RENiqjAa1PbcIGVqDfUgXEhKrCb6l7QwH8Is0U
-         veoj7DUWqdBZWtS95e9TGbgPqpb/UzWlFpbatBgJyuv704pyUGgZDXnYHQsdGvJeL0CN
-         Vue+6D7/RQiJ9a83H30MWfTg8HNhigCWHEEDnaeQ9RMZy3zH7Tpolq+Ai7Af0q7YRxB1
-         3BamHZiHqR/W3oXjzmDA+bo49UlvxRHe04gmOVMluiwg8L5YJ9/6AtQVp9ct4xAll4GP
-         eMeA==
-X-Forwarded-Encrypted: i=1; AJvYcCVuzyL2O5NU2Yg2YfsXr4uTkbQN3QGBdKP1UlX6Civ5aoa8rgbtq+9WO0CG652mckEj91kkhQfi3fIvK/OTRcH5dltYqtQ=
-X-Gm-Message-State: AOJu0YxBewFD1GPMU3mM9TwHFgIsnGOZlwEKAqvwxb4Rdfe60o+0zXTp
-	7jY9418A0PUtaUeEeC78LjWUvOL0VYDHTCpuAFTI4sW0dPQ67oC79suJ57nh6no=
-X-Google-Smtp-Source: AGHT+IHDUDGPoRmhzc1y+HdVOcNh03PVPRDhzhnYtKagrooXx9KHPlgrjlbWS9Y1S4MMVW4mAicMaw==
-X-Received: by 2002:a17:906:8d3:b0:a59:c9ce:338a with SMTP id a640c23a62f3a-a6228055763mr265081166b.2.1716451185963;
-        Thu, 23 May 2024 00:59:45 -0700 (PDT)
+        bh=xAaEs9RkQ8GaTEt79EKKeWtnQKePqeTaokONVnHxvj4=;
+        b=Qxn3sQKmu4E+PdL/oJSdQ7WiuIWhNPlMaJqc1LY1eZjXKugi0xlG6h26qg/QCIGkiy
+         6m7wgaEYP5+zffGA+msIDu+grjKn3CqoDOXvJE94fYWZV+BG4jO+e8dJ+yqj91W6Wp+M
+         yoaYlQRgGQQFRtW4BfG7ovj7z+FdDhy6kxRBRc3g9roy5NX0BsvldSTlIV0ZtIVdIhLl
+         1Nqn9hQeYGsrC/F/A/uozF+UTL4+k3PSiK6kbXa41hzQIIFAz4m75ltHp3RinlabXWCc
+         AOFMseOHugcLfv5e3duIrL49dq+6b4kx/5e19MhN6hIgm3n0Lf3K+8Cyo8Qthf0wSHIY
+         b8eg==
+X-Forwarded-Encrypted: i=1; AJvYcCUXrdvUMTNbhQZ10SsCYbt7S89DSjY8VMPc0QICesIDnmtxRfL/Hbz0gSKl1anGxYMgmdHLeIHV0LzEBQvBhsfH6PXBz2I=
+X-Gm-Message-State: AOJu0YxN0Kc/mTh2Zg47x4LLbRduqR+jhkAz9PhgEz9tFWWlV/0AB483
+	j/zPgK2kWbTu5zCb8jtuAJQzQVV9wJq2nPEdIqbG9zK+MhR6VgJRw5lhopjiQzU=
+X-Google-Smtp-Source: AGHT+IFzIRW5KpKYhr1bcsYmnRmMVcvlJKlZWsXcd8k4uOMAlIusT89UAXldyn+Zj9Kv6XaA2ZHUlw==
+X-Received: by 2002:a17:906:1b1a:b0:a59:9eab:1630 with SMTP id a640c23a62f3a-a6228170ac8mr251396266b.69.1716451187124;
+        Thu, 23 May 2024 00:59:47 -0700 (PDT)
 Received: from [127.0.1.1] ([2a01:e0a:982:cbb0:825d:600a:c16:a973])
-        by smtp.gmail.com with ESMTPSA id a640c23a62f3a-a5ec2a8f320sm719100066b.170.2024.05.23.00.59.44
+        by smtp.gmail.com with ESMTPSA id a640c23a62f3a-a5ec2a8f320sm719100066b.170.2024.05.23.00.59.46
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 23 May 2024 00:59:45 -0700 (PDT)
+        Thu, 23 May 2024 00:59:46 -0700 (PDT)
 From: Neil Armstrong <neil.armstrong@linaro.org>
-Date: Thu, 23 May 2024 09:59:34 +0200
-Subject: [PATCH 2/3] dt-bindings: iommu: qcom,iommu: Add MSM8953 GPU IOMMU
- to SMMUv2 compatibles
+Date: Thu, 23 May 2024 09:59:35 +0200
+Subject: [PATCH 3/3] arm64: dts: qcom: sdm450: add Lenovo Smart Tab M10 DTS
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -64,7 +63,7 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Message-Id: <20240523-topic-sdm450-upstream-tbx605f-v1-2-e52b89133226@linaro.org>
+Message-Id: <20240523-topic-sdm450-upstream-tbx605f-v1-3-e52b89133226@linaro.org>
 References: <20240523-topic-sdm450-upstream-tbx605f-v1-0-e52b89133226@linaro.org>
 In-Reply-To: <20240523-topic-sdm450-upstream-tbx605f-v1-0-e52b89133226@linaro.org>
 To: Bjorn Andersson <andersson@kernel.org>, 
@@ -76,45 +75,334 @@ Cc: linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org,
  linux-kernel@vger.kernel.org, iommu@lists.linux.dev, 
  Neil Armstrong <neil.armstrong@linaro.org>
 X-Mailer: b4 0.12.3
-X-Developer-Signature: v=1; a=openpgp-sha256; l=866;
+X-Developer-Signature: v=1; a=openpgp-sha256; l=7632;
  i=neil.armstrong@linaro.org; h=from:subject:message-id;
- bh=ilS9/urat3r7x1lnhAo5NEEctqUaqIeh25qT8NExnxU=;
- b=owEBbQKS/ZANAwAKAXfc29rIyEnRAcsmYgBmTvdrgwWMsuwD5nqBiyBc1hr/qz7nPDXlwLE6C
- b0zXVm0OcyJAjMEAAEKAB0WIQQ9U8YmyFYF/h30LIt33NvayMhJ0QUCZk73awAKCRB33NvayMhJ
- 0f8aD/9exaigPI5V82THskUmRLc8QOw3F+N765LIxtZ7qjjK4d1h4nmbmOpW+gmbJ62G2XJzr1L
- RAgHHF1HVrR9QdLJc0n11LCmxam08hb6ALcGrG/z9W75bemeVewyTDptxjFplQ00G9yPUbhOJBC
- ecDt5zHVp2J0gZQZHdrLpk94REOlgNKGAxmFye7MY89ZkE0rlQDByKpMM+8LhrOReyr8WzIxpWX
- 33LfDaQz0pUYAdJfcJ8B+A5M3jJbX+XMcS96GRdgNYVPbMZoRn6c7gycqdoFZmRp4NfuAcy8XL7
- ImoZ9QIneF1QYkCrME2j+uSbPKFrcgzApXu1EqEnN7vA0C4frcowKJ8tS9vvzBTEZpUfm7S69xW
- Vxcyoyor9R1FAkx0Xm8pz6rUEx4nyqE7zVbAarrkJD6JrKFj0TeCAAN4t6kS9vAxuTKBenQFqot
- wIxFxfvfiOlBcFO7/+RdkadD7mn0wDm288zZbAMjmcVDDhTwM0kgiMmEexwtDwSERX/6Gcr9vWg
- D4M9j3yMTuDGHZrRko9C708x6e0OagpK96oNWtRvy4gC9p8OpNb6aZ6DOvHEGvBqLurCSJOVDyC
- LQgjS1awT5iC+fnt3N5kKv20bXnop0mDqz46fIrdrrd6sMBPZslKiXrG5olSpYeI9dzHj6V+SMv
- QBKSazFEPds+KLg==
+ bh=EMPeNyzBpqMjF6F7TP+1J/G1NKheB8Yvdxf4QEA8UKg=;
+ b=owEBbQKS/ZANAwAKAXfc29rIyEnRAcsmYgBmTvdssFfIE2msY0iYo5LB2llo4qkeVujTPB5kY
+ 2zhBBjDUCiJAjMEAAEKAB0WIQQ9U8YmyFYF/h30LIt33NvayMhJ0QUCZk73bAAKCRB33NvayMhJ
+ 0Qe5D/9TDRmZl5J334RwgT+Dvm0oC8psBIp6gnDjAWUxn8nSItA9dXih21QkImb2UaA1EtIML+B
+ PaKqAZq8Rx+1YAxdz7btW7F0/cjCD9m/tUUQKkwghsveCZ9sRlIhYP2ObqCVzx7Lhxy1bIoZAw2
+ JfCcOnO9w3Bl7qO2mUqGHzrlhYVnTDs/y2xYI2Uvisz+DnYXD5V2Lv7gaFkFsPFyVjQ6eNBBxhC
+ RFnHXrls+4fB7oQtT0lARnnJrGYzUKAorolOI94klTkb2n8qFRZI6iSS7YZZ0JuQ2FW7c193HfR
+ fZC3W8TYdxVRFVyncYR+h5EvFlXcultJGw1tI80TbIblke2GesbDBH4um4Z7x40BvLfYzjOQndv
+ 3UDwxYYiYBTulPVNnDMMb1R5SRiDdv5pBS96Rsd7qKIYMy9Bzml+0Pc8J07bYmmqrlIvZTbGEe1
+ 8Q9EchtSz7QALsj/egSdEiwA5icrn3lDPW3HrSR4oUfuQ7Ocf9mrznCu00y/zaoV/gPULqP1Z8F
+ qxZr1KLbX5mTQsH68qE0ZoJmbiZbf+uM17Fwr7fXU2RnKfIhrIFJJI5uoPiPkBJr+eA4IcTK+Sf
+ l0UqcCG10jlJOf3sL0yM6KZ2P5omf1jlkvFpP51lUAZicrmlB2QLVUJde6Gjn9TWjd1l+lOtX93
+ psiDbMhkRmxUjrg==
 X-Developer-Key: i=neil.armstrong@linaro.org; a=openpgp;
  fpr=89EC3D058446217450F22848169AB7B1A4CFF8AE
 
-Add MSM8953 compatible string with "qcom,msm-iommu-v2" as fallback
-for the MSM8953 GPU IOMMU which is compatible with Qualcomm's secure
-fw "SMMU v2" implementation.
+This add initial support for the Lenovo Smart Tab M10 (WiFi)
+(model tbx605f) which is a 10.1" tablet by Lenovo based on the
+SDM450 SoC.
+
+It has a 10.1" LCP touch panel, SDCard slot, Volume+Power buttons,
+USB-C port amd front-facing camera (not supported).
+
+The proper LCP Panel support will be added later, for now using the
+simeple-framebuffer with the bootloader-initialized video memory.
 
 Signed-off-by: Neil Armstrong <neil.armstrong@linaro.org>
 ---
- Documentation/devicetree/bindings/iommu/qcom,iommu.yaml | 1 +
- 1 file changed, 1 insertion(+)
+ arch/arm64/boot/dts/qcom/Makefile                  |   1 +
+ arch/arm64/boot/dts/qcom/sdm450-lenovo-tbx605f.dts | 276 +++++++++++++++++++++
+ 2 files changed, 277 insertions(+)
 
-diff --git a/Documentation/devicetree/bindings/iommu/qcom,iommu.yaml b/Documentation/devicetree/bindings/iommu/qcom,iommu.yaml
-index a74eb899c381..571e5746d177 100644
---- a/Documentation/devicetree/bindings/iommu/qcom,iommu.yaml
-+++ b/Documentation/devicetree/bindings/iommu/qcom,iommu.yaml
-@@ -25,6 +25,7 @@ properties:
-           - const: qcom,msm-iommu-v1
-       - items:
-           - enum:
-+              - qcom,msm8953-iommu
-               - qcom,msm8976-iommu
-           - const: qcom,msm-iommu-v2
- 
+diff --git a/arch/arm64/boot/dts/qcom/Makefile b/arch/arm64/boot/dts/qcom/Makefile
+index 7d40ec5e7d21..f163eedd2af2 100644
+--- a/arch/arm64/boot/dts/qcom/Makefile
++++ b/arch/arm64/boot/dts/qcom/Makefile
+@@ -175,6 +175,7 @@ dtb-$(CONFIG_ARCH_QCOM)	+= sc8180x-primus.dtb
+ dtb-$(CONFIG_ARCH_QCOM)	+= sc8280xp-crd.dtb
+ dtb-$(CONFIG_ARCH_QCOM)	+= sc8280xp-lenovo-thinkpad-x13s.dtb
+ dtb-$(CONFIG_ARCH_QCOM)	+= sda660-inforce-ifc6560.dtb
++dtb-$(CONFIG_ARCH_QCOM)	+= sdm450-lenovo-tbx605f.dtb
+ dtb-$(CONFIG_ARCH_QCOM)	+= sdm450-motorola-ali.dtb
+ dtb-$(CONFIG_ARCH_QCOM)	+= sdm630-sony-xperia-ganges-kirin.dtb
+ dtb-$(CONFIG_ARCH_QCOM)	+= sdm630-sony-xperia-nile-discovery.dtb
+diff --git a/arch/arm64/boot/dts/qcom/sdm450-lenovo-tbx605f.dts b/arch/arm64/boot/dts/qcom/sdm450-lenovo-tbx605f.dts
+new file mode 100644
+index 000000000000..175befc02b22
+--- /dev/null
++++ b/arch/arm64/boot/dts/qcom/sdm450-lenovo-tbx605f.dts
+@@ -0,0 +1,276 @@
++// SPDX-License-Identifier: BSD-3-Clause
++/*
++ * Copyright (c) 2024, Neil Armstrong <neil.armstrong@linaro.org>
++ */
++/dts-v1/;
++
++#include "sdm450.dtsi"
++#include "pm8953.dtsi"
++#include "pmi8950.dtsi"
++
++/ {
++	model = "Lenovo Smart Tab M10";
++	compatible = "lenovo,tbx605f", "qcom,sdm450";
++	chassis-type = "tablet";
++
++	chosen {
++		#address-cells = <2>;
++		#size-cells = <2>;
++		ranges;
++
++		framebuffer@90001000 {
++			compatible = "simple-framebuffer";
++			reg = <0 0x90001000 0 (1200 * 1920 * 3)>;
++
++			width = <1200>;
++			height = <1920>;
++			stride = <(1200 * 3)>;
++			format = "r8g8b8";
++
++			power-domains = <&gcc MDSS_GDSC>;
++
++			clocks = <&gcc GCC_MDSS_AHB_CLK>,
++				 <&gcc GCC_MDSS_AXI_CLK>,
++				 <&gcc GCC_MDSS_VSYNC_CLK>,
++				 <&gcc GCC_MDSS_MDP_CLK>,
++				 <&gcc GCC_MDSS_BYTE0_CLK>,
++				 <&gcc GCC_MDSS_PCLK0_CLK>,
++				 <&gcc GCC_MDSS_ESC0_CLK>;
++		};
++	};
++
++	reserved-memory {
++		other_ext_region@0 {
++			no-map;
++			reg = <0x00 0x84500000 0x00 0x2300000>;
++		};
++	};
++
++	gpio-keys {
++		compatible = "gpio-keys";
++		key-volume-up {
++			label = "volume_up";
++			gpios = <&tlmm 85 GPIO_ACTIVE_LOW>;
++			linux,code = <KEY_VOLUMEUP>;
++		};
++	};
++
++	vph_pwr: vph-pwr-regulator {
++		compatible = "regulator-fixed";
++		regulator-name = "vph_pwr";
++		regulator-always-on;
++		regulator-boot-on;
++	};
++};
++
++&hsusb_phy {
++	vdd-supply = <&pm8953_l3>;
++	vdda-pll-supply = <&pm8953_l7>;
++	vdda-phy-dpdm-supply = <&pm8953_l13>;
++
++	status = "okay";
++};
++
++&i2c_3 {
++	status = "okay";
++
++	touchscreen@38 {
++		compatible = "edt,edt-ft5506";
++		reg = <0x38>;
++		interrupt-parent = <&tlmm>;
++		interrupts = <65 IRQ_TYPE_EDGE_FALLING>;
++		vcc-supply = <&pm8953_l10>;
++
++		pinctrl-names = "default";
++		pinctrl-0 = <&ts_int_active &ts_reset_active>;
++
++		reset-gpios = <&tlmm 64 GPIO_ACTIVE_LOW>;
++		touchscreen-size-x = <1200>;
++		touchscreen-size-y = <1920>;
++	};
++};
++
++&pm8953_resin {
++	linux,code = <KEY_VOLUMEDOWN>;
++	status = "okay";
++};
++
++&rpm_requests {
++	regulators {
++		compatible = "qcom,rpm-pm8953-regulators";
++
++		vdd_s1-supply = <&vph_pwr>;
++		vdd_s2-supply = <&vph_pwr>;
++		vdd_s3-supply = <&vph_pwr>;
++		vdd_s4-supply = <&vph_pwr>;
++		vdd_s5-supply = <&vph_pwr>;
++		vdd_s6-supply = <&vph_pwr>;
++		vdd_s7-supply = <&vph_pwr>;
++		vdd_l1-supply = <&pm8953_s3>;
++		vdd_l2_l3-supply = <&pm8953_s3>;
++		vdd_l4_l5_l6_l7_l16_l19-supply = <&pm8953_s4>;
++		vdd_l8_l11_l12_l13_l14_l15-supply = <&vph_pwr>;
++		vdd_l9_l10_l17_l18_l22-supply = <&vph_pwr>;
++
++		pm8953_s1: s1 {
++			regulator-min-microvolt = <870000>;
++			regulator-max-microvolt = <1156000>;
++		};
++
++		pm8953_s3: s3 {
++			regulator-min-microvolt = <1224000>;
++			regulator-max-microvolt = <1224000>;
++		};
++
++		pm8953_s4: s4 {
++			regulator-min-microvolt = <1900000>;
++			regulator-max-microvolt = <2050000>;
++		};
++
++		pm8953_l1: l1 {
++			regulator-min-microvolt = <1000000>;
++			regulator-max-microvolt = <1100000>;
++		};
++
++		pm8953_l2: l2 {
++			regulator-min-microvolt = <975000>;
++			regulator-max-microvolt = <1225000>;
++		};
++
++		pm8953_l3: l3 {
++			regulator-min-microvolt = <925000>;
++			regulator-max-microvolt = <925000>;
++		};
++
++		pm8953_l5: l5 {
++			regulator-min-microvolt = <1800000>;
++			regulator-max-microvolt = <1800000>;
++		};
++
++		pm8953_l6: l6 {
++			regulator-min-microvolt = <1800000>;
++			regulator-max-microvolt = <1800000>;
++		};
++
++		pm8953_l7: l7 {
++			regulator-min-microvolt = <1800000>;
++			regulator-max-microvolt = <1900000>;
++		};
++
++		pm8953_l8: l8 {
++			regulator-min-microvolt = <2900000>;
++			regulator-max-microvolt = <2900000>;
++		};
++
++		pm8953_l9: l9 {
++			regulator-min-microvolt = <3000000>;
++			regulator-max-microvolt = <3300000>;
++		};
++
++		pm8953_l10: l10 {
++			regulator-min-microvolt = <2850000>;
++			regulator-max-microvolt = <2850000>;
++		};
++
++		pm8953_l11: l11 {
++			regulator-min-microvolt = <3300000>;
++			regulator-max-microvolt = <3300000>;
++		};
++
++		pm8953_l12: l12 {
++			regulator-min-microvolt = <2950000>;
++			regulator-max-microvolt = <2950000>;
++		};
++
++		pm8953_l13: l13 {
++			regulator-min-microvolt = <3125000>;
++			regulator-max-microvolt = <3125000>;
++		};
++
++		pm8953_l16: l16 {
++			regulator-min-microvolt = <1800000>;
++			regulator-max-microvolt = <1800000>;
++		};
++
++		pm8953_l17: l17 {
++			regulator-min-microvolt = <2850000>;
++			regulator-max-microvolt = <2850000>;
++		};
++
++		pm8953_l19: l19 {
++			regulator-min-microvolt = <1200000>;
++			regulator-max-microvolt = <1350000>;
++		};
++
++		pm8953_l22: l22 {
++			regulator-min-microvolt = <2800000>;
++			regulator-max-microvolt = <2850000>;
++		};
++
++		pm8953_l23: l23 {
++			regulator-min-microvolt = <975000>;
++			regulator-max-microvolt = <1225000>;
++		};
++	};
++};
++
++&sdhc_1 {
++	vmmc-supply = <&pm8953_l8>;
++	vqmmc-supply = <&pm8953_l5>;
++
++	status = "okay";
++};
++
++&sdhc_2 {
++	vmmc-supply = <&pm8953_l11>;
++	vqmmc-supply = <&pm8953_l12>;
++
++	cd-gpios = <&tlmm 133 GPIO_ACTIVE_LOW>;
++
++	pinctrl-names = "default", "sleep";
++	pinctrl-0 = <&sdc2_clk_on &sdc2_cmd_on &sdc2_data_on &sdc2_cd_off>;
++	pinctrl-1 = <&sdc2_clk_off &sdc2_cmd_off &sdc2_data_off &sdc2_cd_off>;
++
++	status = "okay";
++};
++
++&tlmm {
++	gpio-reserved-ranges = <0 4>, <135 4>;
++
++	ts_int_active: ts-int-active-state {
++		pins = "gpio65";
++		function = "gpio";
++		drive-strength = <8>;
++		bias-pull-up;
++	};
++
++	ts_reset_active: ts-reset-active-state {
++		pins = "gpio64";
++		function = "gpio";
++		drive-strength = <0x08>;
++		bias-pull-up;
++	};
++};
++
++&usb3 {
++	status = "okay";
++};
++
++&usb3_dwc3 {
++	dr_mode = "peripheral";
++};
++
++&wcnss {
++	vddpx-supply = <&pm8953_l5>;
++
++	status = "okay";
++};
++
++&wcnss_iris {
++	compatible = "qcom,wcn3660b";
++
++	vddxo-supply = <&pm8953_l7>;
++	vddrfa-supply = <&pm8953_l19>;
++	vddpa-supply = <&pm8953_l9>;
++	vdddig-supply = <&pm8953_l5>;
++};
 
 -- 
 2.34.1
