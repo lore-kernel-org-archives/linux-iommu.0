@@ -1,389 +1,193 @@
-Received: from mail-pg1-f182.google.com (mail-pg1-f182.google.com [209.85.215.182])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from NAM10-MW2-obe.outbound.protection.outlook.com (mail-mw2nam10on2060.outbound.protection.outlook.com [40.107.94.60])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7FB0113D896
-	for <iommu@lists.linux.dev>; Thu, 23 May 2024 12:14:39 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.215.182
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1716466481; cv=none; b=Otc/YwcV6FpXikyZkCGzRM8v+sDpnA6SLqt4Np4Wv110T3YaNDDZy+WOXSwOKw7WQEfD5/up47EPgJ8O6F/qOFuspB0/FR3cvIpR8JofrT36Y3nHqRYG0JTCR3rbajTWVPrkTVenfyluSlg4BGaxqyAlAeEZ5i82z2f51YLH9Gk=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1716466481; c=relaxed/simple;
-	bh=xZIpJivLu+N2qKC2v6ld7pqDHFIxvM1aDec54BJF83E=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=INtuBuQ1hA872vQzxM5L8lsc0gGOJYcU2MtPr6tbfGfoCjvCfi25H+iBSk3TwfcOqFv2NK6f+5efm0LESW2CIWPQQQU5pYaqgoSNPx4BJwvzU4gd6+VbTwrWmYuHv0e4aHuS7ULWZdBl/0xB5BpjxTfqt0Apuwse6PfYr65hnu0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=EzG7xHNC; arc=none smtp.client-ip=209.85.215.182
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2F95313B5B0
+	for <iommu@lists.linux.dev>; Thu, 23 May 2024 12:48:13 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.94.60
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1716468495; cv=fail; b=K4p3snR5rq/EAfbnry8jhcNunYyxnm0uGKnoBadz1YEGLvJdAhSKpV6xlgpH55U7XBrLlEZxE0cEgOgUZXwreIHFKExfVWmNujcfRsEMmuAhCdOOETMBl3wijjElCsGqtYgX1DSPQByvABXuve2hxhMYsOGOKFAwo++I6cdJsKs=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1716468495; c=relaxed/simple;
+	bh=XmHbtNq9i/3yc9HgvjQc2umk3Kynl5+nP2Mkx9X4DTk=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:Content-Type:
+	 Content-Disposition:In-Reply-To:MIME-Version; b=u6LWFK5mSoiVsKz+dVZ4AO4PrSY4hLhKH/zrbUDhBsuVdSx4aSLV34EW6RzowG+Gh5zureU9hHdqWkPsznTcpY+EhPydE/P0HXjihwgvN6qq44iUmHKYfDNx5ycI20l+oLChRXeufU4OVgGG6fc0RAqPekI4BMBRW2Vf4B75wLI=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=guR7t+aw; arc=fail smtp.client-ip=40.107.94.60
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="EzG7xHNC"
-Received: by mail-pg1-f182.google.com with SMTP id 41be03b00d2f7-517ab9a4a13so2871657a12.1
-        for <iommu@lists.linux.dev>; Thu, 23 May 2024 05:14:39 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1716466479; x=1717071279; darn=lists.linux.dev;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=S3oL0hJH9iQZa7HT6bN1XrGAdgrVd/JpkMuhPZJ+FSA=;
-        b=EzG7xHNCgztn1Hz6OA62nYQ/gWMuRmX8GyBM551Dn+3/lAKfw0pb77umr0AR/HtKdj
-         vde4kM5vo9Fq4fsDXuSUwBxY9YS+ZHixu0lW8W3nfXVIXFk128qydSEDFEveyyVUWqUS
-         oplkKpa1es95ThJDGx9/qeYffK38ZjevJFnBIPxx+cFMzFD7V0TXtp1GwQyEIcjRf/iI
-         ub7IMg9p+Bmb57Cm9CD7j8N+5LpYqhpPKFPlC8FMQjrCgq557KcEG5CllojUzL+diVvH
-         Ti4t801ScYWyd0DjVTFNSlIRXGb08QyyyPZaYouOnCTxrk31T/nvOsjZ6Y+VnGGxGI8J
-         helg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1716466479; x=1717071279;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=S3oL0hJH9iQZa7HT6bN1XrGAdgrVd/JpkMuhPZJ+FSA=;
-        b=RAN22j3uXLEinOw6T3m/PXHk3bBTm5Ka3q1WyxzE32Ojmc5JFxMDoK4VD0yTlUEF4Z
-         fE/oPhX9AvqP6CBaKNZkLBRFJIlYXOuchYUHyyzvr9umHEf9uqLIUIL3PJyIDEwUOtVD
-         i1HApqEYl5qhZwrOERkMPgtB+36s3fzzHA/IEjNNyEUCMS2vlwkkjOGS//HMGjxf+dXM
-         XGJIKkRo72d9xWQwzr5lme++pfOwcDbgZvuGzH9w1+Mtni1gVnFcZ+ka8ySYi7E4bCT1
-         yQqbeiqr0yH4Cw9QQiIHsXsfkQVYDmafF5EvnPPQsyQH4VoPHkpAfVAq7jjl0PFfXkRz
-         VLww==
-X-Forwarded-Encrypted: i=1; AJvYcCUEAgMo31TjNR0f3wnNkQZwCX7S36u0JGo+AXISJtGsTDOU80c0loZGlYC4tst+sBCSMK9XJhUbbSK7v3r92Otg/YfBdWM=
-X-Gm-Message-State: AOJu0YxOgCJMfLNthTxXhORTNh/RW9UpZLCTq7/0aJ4CEBI4onRDfWWq
-	bxu7NjUPssBnGG1JkLDALXwnknQ1snQHFBcHu62OHAc8q2gNgpkifYgd+4U/ZbLpba9quh5RdNz
-	T7nYnUsGDp1+w+25s4aROIK/I05A=
-X-Google-Smtp-Source: AGHT+IHw9ZZCHWpxNboaptDkdVdr8T+p7xebRwOl0Rjt8m+lhfKDa/C5Cw+D+Bez4Rundj6pGONwEyaKDtN6PK/SNng=
-X-Received: by 2002:a17:90a:c907:b0:2bd:edbe:4e1 with SMTP id
- 98e67ed59e1d1-2bdedbe0512mr984702a91.31.1716466478558; Thu, 23 May 2024
- 05:14:38 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="guR7t+aw"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=SwaxdFst3L72Tyydbczdzl3QiQ9O/3Gbi9f7Vzfoc7vNgrV9eaV3RSQ1kS/FEXuvKgqd2uHQmTJR1bgsh/HLoEG7SzQh+B23AhmzU94atnh/vJ5+2gv5/LvLTrnLH749WS732cLaY33TrG5i1rW78Ewzfdt8ZAk7hats5hk+3Sj4IShWz3bZS8D3VHdhwsh4yF3rTgQ3fNQrVKde1oREdpSJT9G5UwJJhV+LtHM04ct4C+2HPiXKol/vLHOn4lYGvVDuaEn6nnEgJrmZDpGeE7bwfuvoHNuoIDY+54fJvONYWMurqwesj88m3T3etPc7OtmRTst/jwosSk6yYaD5LA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=MksDHYz0B/CAQ0GIzrV74cRj56QW0Oy+DoalaBhO1Ok=;
+ b=MfSGpWX+e0jOPgeEKJIcvePEX5k5wQT2UsE3bOyqODpzsIY1wJWqrLtYTMk823o8OE+KFw7hFXbdiq6mFBgdDPTQ3tylUvO/VXaUMOMQ92xwpp+r0jR/cYuac0hSZrS7tCOo3GqKQNW5FgzUUzFabmhWVOhYrfT+pvV9vSNQAcepk5UDwHwwu/vaWiTxAJ+De4GDFNzb4NIBBF3yX5nD8fuz67OvTNcOsadEEoNr/qja2TO2JGaxcGIKmSeV/kZi/lktJsAqZL/slZMihpk9SL1rIZa4J+UxYLzR4itNoxpqaKX1r2n3SPf4w6ZdOcmr+h9hSApJ7y6krKGPwy68EA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=MksDHYz0B/CAQ0GIzrV74cRj56QW0Oy+DoalaBhO1Ok=;
+ b=guR7t+aw7M7YkmpOVFi+okJDBko5Dxbw8elhN3x6LCC9ShyjnlS7He6QOHgvBgQJ+XuGXmgB6ZoGRrA3zD+dNRt75tTHmdIf9mI1zymbUg2V7PTWtCE1uc7c3SFsIFa0p/D6v7n5uM0Rc23EAc3AX7FQxdIrldXt9oAtjp7j+2jcnsYX/8s3phgY+xNp9mUmNgC6wACX7z1wTxOeygB8k7ZegxdrDSXN1Ds7HPftleMlzsMHrzhqQ07f3G+fRCQ7p9+Ctt1fs+Bo0PKy2XovQ9fphaIWaiElMXExLyaW7WsZ0ziIQ7H6QADOgumTfjyTiDNwtMKbAkoBSUq53sCPag==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nvidia.com;
+Received: from DM6PR12MB3849.namprd12.prod.outlook.com (2603:10b6:5:1c7::26)
+ by SN7PR12MB6910.namprd12.prod.outlook.com (2603:10b6:806:262::21) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7587.36; Thu, 23 May
+ 2024 12:48:09 +0000
+Received: from DM6PR12MB3849.namprd12.prod.outlook.com
+ ([fe80::c296:774b:a5fc:965e]) by DM6PR12MB3849.namprd12.prod.outlook.com
+ ([fe80::c296:774b:a5fc:965e%4]) with mapi id 15.20.7611.016; Thu, 23 May 2024
+ 12:48:08 +0000
+Date: Thu, 23 May 2024 09:48:06 -0300
+From: Jason Gunthorpe <jgg@nvidia.com>
+To: Nicolin Chen <nicolinc@nvidia.com>
+Cc: "Tian, Kevin" <kevin.tian@intel.com>,
+	"will@kernel.org" <will@kernel.org>,
+	"robin.murphy@arm.com" <robin.murphy@arm.com>,
+	"suravee.suthikulpanit@amd.com" <suravee.suthikulpanit@amd.com>,
+	"joro@8bytes.org" <joro@8bytes.org>,
+	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+	"iommu@lists.linux.dev" <iommu@lists.linux.dev>,
+	"linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>,
+	"linux-tegra@vger.kernel.org" <linux-tegra@vger.kernel.org>,
+	"Liu, Yi L" <yi.l.liu@intel.com>,
+	"eric.auger@redhat.com" <eric.auger@redhat.com>,
+	"vasant.hegde@amd.com" <vasant.hegde@amd.com>,
+	"jon.grimm@amd.com" <jon.grimm@amd.com>,
+	"santosh.shukla@amd.com" <santosh.shukla@amd.com>,
+	"Dhaval.Giani@amd.com" <Dhaval.Giani@amd.com>,
+	"shameerali.kolothum.thodi@huawei.com" <shameerali.kolothum.thodi@huawei.com>
+Subject: Re: [PATCH RFCv1 00/14] Add Tegra241 (Grace) CMDQV Support (part 2/2)
+Message-ID: <20240523124806.GK20229@nvidia.com>
+References: <cover.1712978212.git.nicolinc@nvidia.com>
+ <BN9PR11MB527641C15DD88FB0C44323D08CEB2@BN9PR11MB5276.namprd11.prod.outlook.com>
+ <20240522164818.GB20229@nvidia.com>
+ <Zk5Lx7IqvnE2q7a7@nvidia.com>
+ <20240522232833.GH20229@nvidia.com>
+ <BN9PR11MB527613C6094EDE9B2732928F8CEB2@BN9PR11MB5276.namprd11.prod.outlook.com>
+ <Zk6zWLcPCc+nWICX@nvidia.com>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <Zk6zWLcPCc+nWICX@nvidia.com>
+X-ClientProxiedBy: MN2PR01CA0041.prod.exchangelabs.com (2603:10b6:208:23f::10)
+ To DM6PR12MB3849.namprd12.prod.outlook.com (2603:10b6:5:1c7::26)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <20240219-topic-rb1_gpu-v2-0-2d3d6a0db040@linaro.org> <20240219-topic-rb1_gpu-v2-5-2d3d6a0db040@linaro.org>
-In-Reply-To: <20240219-topic-rb1_gpu-v2-5-2d3d6a0db040@linaro.org>
-From: Connor Abbott <cwabbott0@gmail.com>
-Date: Thu, 23 May 2024 13:14:26 +0100
-Message-ID: <CACu1E7FTN=kwaDJMNiTmFspALzj2+Q-nvsN5ugi=vz4RdUGvGw@mail.gmail.com>
-Subject: Re: [PATCH v2 5/7] drm/msm/adreno: Add A702 support
-To: Konrad Dybcio <konrad.dybcio@linaro.org>
-Cc: Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>, 
-	Joerg Roedel <joro@8bytes.org>, Rob Herring <robh@kernel.org>, 
-	Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>, Conor Dooley <conor+dt@kernel.org>, 
-	Bjorn Andersson <andersson@kernel.org>, Michael Turquette <mturquette@baylibre.com>, 
-	Stephen Boyd <sboyd@kernel.org>, Rob Clark <robdclark@gmail.com>, 
-	Abhinav Kumar <quic_abhinavk@quicinc.com>, Dmitry Baryshkov <dmitry.baryshkov@linaro.org>, 
-	Sean Paul <sean@poorly.run>, David Airlie <airlied@gmail.com>, Daniel Vetter <daniel@ffwll.ch>, 
-	Marijn Suijten <marijn.suijten@somainline.org>, linux-arm-kernel@lists.infradead.org, 
-	iommu@lists.linux.dev, devicetree@vger.kernel.org, 
-	linux-kernel@vger.kernel.org, Konrad Dybcio <konradybcio@kernel.org>, 
-	linux-arm-msm@vger.kernel.org, linux-clk@vger.kernel.org, 
-	dri-devel@lists.freedesktop.org, freedreno@lists.freedesktop.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: DM6PR12MB3849:EE_|SN7PR12MB6910:EE_
+X-MS-Office365-Filtering-Correlation-Id: 7871fbe5-3267-48ab-5fa5-08dc7b269904
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;ARA:13230031|1800799015|7416005|366007|376005;
+X-Microsoft-Antispam-Message-Info:
+	=?us-ascii?Q?Dc2O9D9knK6MpV+GgcegqPkcm/KE1TIZnCnlXLr6w8MzHqgILMbmVVv+wmoJ?=
+ =?us-ascii?Q?MVAD9oQPctwzrPpA4Grt+lHocMANtqmf2ntxEdEDY+gXk+4UD976yIdueBcy?=
+ =?us-ascii?Q?ttoaDJuClUJJXh7Yw4sL4Sv/dXFvDJ/wogczrSAGfBkLXN9ISnAfnj1Uh8Df?=
+ =?us-ascii?Q?ZLTXTKLur+U0+P7dwRlTPE4vs0BgcQDhkMnJCUEpbxDWPDIFAKo22yLtoHZ9?=
+ =?us-ascii?Q?YgTAistijpdSufYONps+WX+1Sd0l82fICUg6DnSjXbGkoucEg78bwf8f8cTy?=
+ =?us-ascii?Q?PjzcQDE4DhBnE1DcM6Kev17jTqDdY1xshqoUzZNPywhUNArbrNP+Ta0DQFE5?=
+ =?us-ascii?Q?6wK4ATOSaX+g2WTFz2Tj1TxpocETtStlfl3KrXaNYy4oewv05faeeJxKqH4U?=
+ =?us-ascii?Q?DOw0NuJ5zMA1BxaFZzODIzx3dX5ZOskfzypsZaXCrZV/AGEDMdn2cu/jdjrv?=
+ =?us-ascii?Q?IfWjjylAqFnmowbg5V2ljQe1/k7pkpz8n0XsTrc7NIFcjqdk/NvkIkk/3Ie7?=
+ =?us-ascii?Q?jaq0vGv+HhLumwURK5OYP20Bl/AI9iHe/31z3Iho7CzBPfxhyB1KDZkLzX7c?=
+ =?us-ascii?Q?bAkeEJuy43ViFrLTa8i++t2YEB5PvsR6wM/nfL51Uzxmaoqb+CHjWFjtDnjG?=
+ =?us-ascii?Q?S9cZHAwz05pfnJg6DL8D5rimlQjzl+k3oU6stmFSE3R7aQriGRJVKcv8wiqn?=
+ =?us-ascii?Q?Nhl8VAPmnOQqNrKlixq/WFgCK/zPE5IdTanuqfKMWSPpGDPMOGQwTY0NhF0L?=
+ =?us-ascii?Q?2yWykXvemcHWrxMDSbGeU6cGZKEJvUounEWOliPyamV3pGlW6hy8x6QNx3FD?=
+ =?us-ascii?Q?dWBKMH9KMPMGMsVwgI5MWF8/kjBvwEcIYdWz4PGjILugPr4+xcg3oLFyVump?=
+ =?us-ascii?Q?RKJLitVJ3B6B535xl1M8mFlq74hBDmtvch6avaPmpg7D7YDqBfH+qoa9oa+R?=
+ =?us-ascii?Q?84ihMopfmwfujHJnHAsPKxvCe7P9eeIwyCwDt/08SvLPmMza1pI0Msbm7r5C?=
+ =?us-ascii?Q?gNPM1lbZW+i5ackBnjs6/0ruYf1VFKee8E4FoY+EXtbyi0NqunBBqMbP2q/4?=
+ =?us-ascii?Q?knWqjBq5JEm+ggdbtbCB0rsxUW8Y94RaKndUVEywDIb6v7cbIMJv8DvvHELA?=
+ =?us-ascii?Q?Gqhq5Hnmq7sLfWxUyaQsZJG76rabnhn0UIMXkJxRwtcF7nCSlAn13/cOsv9D?=
+ =?us-ascii?Q?wP0xWge03gZLilnvYppC8ssyeMDM1Wjm6cdeWrV7rGn4YvEpkIN9bZXd2Lvp?=
+ =?us-ascii?Q?kE2oNJL++r5RdhszcZFz/IXeyBqQrQJE8mdZ56851Q=3D=3D?=
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM6PR12MB3849.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230031)(1800799015)(7416005)(366007)(376005);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?us-ascii?Q?48jKtD8xmrPe5+ls9+MXRi7UlkGOZG1zwHAxVOd/NdWQsiWF8m0D7NSJc+MH?=
+ =?us-ascii?Q?fvfVGNUOpR9EO6+Slh3hF02FvScRXCHvFZGClvOtmKIo/HjeIK4TMcCZmnVt?=
+ =?us-ascii?Q?9HEoBEnDJ+c7ZyIm5mvzZtGbOy/4WFQg9bMQ/Zr2sM4Mu6GBDmoSbLU2EdlO?=
+ =?us-ascii?Q?JEzVxJWfz66U3ktHy9Sql42DTIFZLyN30nqfzQ4kRcBt9v/JMGZ+1eK1pU4x?=
+ =?us-ascii?Q?U8XRzm6n3YMx7csLg6aw6VmOd/ZtaedR/Oxq5r5T6aAkPdT3N0eoAK79qA8T?=
+ =?us-ascii?Q?BUFHnvgedFGksbANDXF0Lj70tItB/0V2iGsugDtDsUXUK0zq9LvyJUEaQoRF?=
+ =?us-ascii?Q?pgzwZ1hdehqZqOiLoV1pKE2jeKP9rOJiv6kkeXSa/j9SPAT02Vg3KW/+3/9P?=
+ =?us-ascii?Q?qBGqg1raCWu1u7qC9Wzo1RISwvaR3XwwlJrO7xqV2dtvaM/CSGlQ7uEFf7mg?=
+ =?us-ascii?Q?t5kQ0dOnDu4Gr/1UP3RR2g74z77F6R+AlNKYmh4KDEcSSULBSEpGf5lWWkHS?=
+ =?us-ascii?Q?GzkRyXdQIB04hMDfKU+WuBKdg+qqv0GJSgLTi5lJEY0oZozNPb/TfDzDZePf?=
+ =?us-ascii?Q?QU6TQO5rgHQuL3caQdAdN4Osz7yCPnThgf4sueSrEKtdV/O079vtyFdax/IX?=
+ =?us-ascii?Q?9vMcEYGYXkOAo2kmHqTr7+DVhPZNzs41OE/ByXCTrzg6wZqw+QDdVwvHwGic?=
+ =?us-ascii?Q?4ZQ0GoY7Ym85bhgFkuZyc41udQ/e1Yn9/Jae5dGWTn3+ragAboDnFYAxwJ43?=
+ =?us-ascii?Q?ajdKnOO/uYpqYQF0KXY/+BRDSnfp6NBjYQGYcBhOzQ9TSiv+8kRI7GGcCh3i?=
+ =?us-ascii?Q?ZmoXRTLWHK2Qz9qlw0hxBKbjeyrhDP2H2H6vT033FOJUJn3UrGtEXBQA/8O4?=
+ =?us-ascii?Q?lga/HS8KIoMT8lFm32HKaDH90YuakIDmXdIomso9nQ2JI/vRLs/4QLlFR+9r?=
+ =?us-ascii?Q?pViwQg5ZzEHE0rmEHkzVOL67raYXk5As3WhlkH/AEaaVGnnhtk91GUTPSu/f?=
+ =?us-ascii?Q?5L2ces7OfLFW6eVwYG/frpdVUCyb0OKRhQRtms9Q5Udf/3Rl5+x7RNQV2T7V?=
+ =?us-ascii?Q?mmDmr56n5NifFgiL86ySHvGtCXP37XjeiHZFdm1ki02OAi6zLIhQV+1zP7po?=
+ =?us-ascii?Q?xf2HMIFYK/XcFnvc6x146V7uChxVfbvghGmZZJnFDZhpS9heoEYI5v9ko1T8?=
+ =?us-ascii?Q?4ek0YHvPZkX490o8okqtfhiWAkUSGN0/02SyKOoxGyMD0egw6P/5EvjjSTMG?=
+ =?us-ascii?Q?+S2GetJnaxsRUrYos1mq8f9adddi+3bLSt4AHFJCgoNg4mWOAAHgdWM1c9Dk?=
+ =?us-ascii?Q?RlTGdZpJIQfm2Qgxi4oSLkwHNDdEnLeyFnyx74CYi/GVMqZ8mHc2XZVnrauY?=
+ =?us-ascii?Q?nTPRRyTz1VyVHFGZBfSigPUir4NjpqSApslY0Y9FzcmMudfba0sWjIt4R0q2?=
+ =?us-ascii?Q?TESlZFb4jd/O2t9uwascwbipEZRNQKAiLCs8Py3pl7kDNj0adFGyCftsn21F?=
+ =?us-ascii?Q?MXNdYJomyDXin+3Bud+C+BOE9GpbXVJUIAvLHboRq3sp+kgUEgyn2pZ4bHMh?=
+ =?us-ascii?Q?ESdS9zVZ80APnMoh7Vzu7YoMFZwPeWeB+cffkw27?=
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 7871fbe5-3267-48ab-5fa5-08dc7b269904
+X-MS-Exchange-CrossTenant-AuthSource: DM6PR12MB3849.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 23 May 2024 12:48:08.7574
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: 6xK4AE6fdAJEbEJXFjgbBmwtzHIo1X7qO/SsCG9V0jfIJfP9idBuhvWPQhnrUUY7
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SN7PR12MB6910
 
-On Fri, Feb 23, 2024 at 9:28=E2=80=AFPM Konrad Dybcio <konrad.dybcio@linaro=
-.org> wrote:
->
-> The A702 is a weird mix of 600 and 700 series.. Perhaps even a
-> testing ground for some A7xx features with good ol' A6xx silicon.
-> It's basically A610 that's been beefed up with some new registers
-> and hw features (like APRIV!), that was then cut back in size,
-> memory bus and some other ways.
->
-> Add support for it, tested with QCM2290 / RB1.
->
-> Signed-off-by: Konrad Dybcio <konrad.dybcio@linaro.org>
-> ---
->  drivers/gpu/drm/msm/adreno/a6xx_gpu.c      | 92 ++++++++++++++++++++++++=
-+++---
->  drivers/gpu/drm/msm/adreno/adreno_device.c | 18 ++++++
->  drivers/gpu/drm/msm/adreno/adreno_gpu.h    | 16 +++++-
->  3 files changed, 117 insertions(+), 9 deletions(-)
->
-> diff --git a/drivers/gpu/drm/msm/adreno/a6xx_gpu.c b/drivers/gpu/drm/msm/=
-adreno/a6xx_gpu.c
-> index c9c55e2ea584..2a491a486ca1 100644
-> --- a/drivers/gpu/drm/msm/adreno/a6xx_gpu.c
-> +++ b/drivers/gpu/drm/msm/adreno/a6xx_gpu.c
-> @@ -837,6 +837,65 @@ const struct adreno_reglist a690_hwcg[] =3D {
->         {}
->  };
->
-> +const struct adreno_reglist a702_hwcg[] =3D {
-> +       { REG_A6XX_RBBM_CLOCK_CNTL_SP0, 0x22222222 },
-> +       { REG_A6XX_RBBM_CLOCK_CNTL2_SP0, 0x02222220 },
-> +       { REG_A6XX_RBBM_CLOCK_DELAY_SP0, 0x00000081 },
-> +       { REG_A6XX_RBBM_CLOCK_HYST_SP0, 0x0000f3cf },
-> +       { REG_A6XX_RBBM_CLOCK_CNTL_TP0, 0x22222222 },
-> +       { REG_A6XX_RBBM_CLOCK_CNTL2_TP0, 0x22222222 },
-> +       { REG_A6XX_RBBM_CLOCK_CNTL3_TP0, 0x22222222 },
-> +       { REG_A6XX_RBBM_CLOCK_CNTL4_TP0, 0x00022222 },
-> +       { REG_A6XX_RBBM_CLOCK_DELAY_TP0, 0x11111111 },
-> +       { REG_A6XX_RBBM_CLOCK_DELAY2_TP0, 0x11111111 },
-> +       { REG_A6XX_RBBM_CLOCK_DELAY3_TP0, 0x11111111 },
-> +       { REG_A6XX_RBBM_CLOCK_DELAY4_TP0, 0x00011111 },
-> +       { REG_A6XX_RBBM_CLOCK_HYST_TP0, 0x77777777 },
-> +       { REG_A6XX_RBBM_CLOCK_HYST2_TP0, 0x77777777 },
-> +       { REG_A6XX_RBBM_CLOCK_HYST3_TP0, 0x77777777 },
-> +       { REG_A6XX_RBBM_CLOCK_HYST4_TP0, 0x00077777 },
-> +       { REG_A6XX_RBBM_CLOCK_CNTL_RB0, 0x22222222 },
-> +       { REG_A6XX_RBBM_CLOCK_CNTL2_RB0, 0x01202222 },
-> +       { REG_A6XX_RBBM_CLOCK_CNTL_CCU0, 0x00002220 },
-> +       { REG_A6XX_RBBM_CLOCK_HYST_RB_CCU0, 0x00040f00 },
-> +       { REG_A6XX_RBBM_CLOCK_CNTL_RAC, 0x05522022 },
-> +       { REG_A6XX_RBBM_CLOCK_CNTL2_RAC, 0x00005555 },
-> +       { REG_A6XX_RBBM_CLOCK_DELAY_RAC, 0x00000011 },
-> +       { REG_A6XX_RBBM_CLOCK_HYST_RAC, 0x00445044 },
-> +       { REG_A6XX_RBBM_CLOCK_CNTL_TSE_RAS_RBBM, 0x04222222 },
-> +       { REG_A6XX_RBBM_CLOCK_MODE_VFD, 0x00002222 },
-> +       { REG_A6XX_RBBM_CLOCK_MODE_GPC, 0x02222222 },
-> +       { REG_A6XX_RBBM_CLOCK_DELAY_HLSQ_2, 0x00000002 },
-> +       { REG_A6XX_RBBM_CLOCK_MODE_HLSQ, 0x00002222 },
-> +       { REG_A6XX_RBBM_CLOCK_DELAY_TSE_RAS_RBBM, 0x00004000 },
-> +       { REG_A6XX_RBBM_CLOCK_DELAY_VFD, 0x00002222 },
-> +       { REG_A6XX_RBBM_CLOCK_DELAY_GPC, 0x00000200 },
-> +       { REG_A6XX_RBBM_CLOCK_DELAY_HLSQ, 0x00000000 },
-> +       { REG_A6XX_RBBM_CLOCK_HYST_TSE_RAS_RBBM, 0x00000000 },
-> +       { REG_A6XX_RBBM_CLOCK_HYST_VFD, 0x00000000 },
-> +       { REG_A6XX_RBBM_CLOCK_HYST_GPC, 0x04104004 },
-> +       { REG_A6XX_RBBM_CLOCK_HYST_HLSQ, 0x00000000 },
-> +       { REG_A6XX_RBBM_CLOCK_CNTL_UCHE, 0x22222222 },
-> +       { REG_A6XX_RBBM_CLOCK_HYST_UCHE, 0x00000004 },
-> +       { REG_A6XX_RBBM_CLOCK_DELAY_UCHE, 0x00000002 },
-> +       { REG_A6XX_RBBM_ISDB_CNT, 0x00000182 },
-> +       { REG_A6XX_RBBM_RAC_THRESHOLD_CNT, 0x00000000 },
-> +       { REG_A6XX_RBBM_SP_HYST_CNT, 0x00000000 },
-> +       { REG_A6XX_RBBM_CLOCK_CNTL_GMU_GX, 0x00000222 },
-> +       { REG_A6XX_RBBM_CLOCK_DELAY_GMU_GX, 0x00000111 },
-> +       { REG_A6XX_RBBM_CLOCK_HYST_GMU_GX, 0x00000555 },
-> +       { REG_A6XX_RBBM_CLOCK_CNTL_FCHE, 0x00000222 },
-> +       { REG_A6XX_RBBM_CLOCK_DELAY_FCHE, 0x00000000 },
-> +       { REG_A6XX_RBBM_CLOCK_HYST_FCHE, 0x00000000 },
-> +       { REG_A6XX_RBBM_CLOCK_CNTL_GLC, 0x00222222 },
-> +       { REG_A6XX_RBBM_CLOCK_DELAY_GLC, 0x00000000 },
-> +       { REG_A6XX_RBBM_CLOCK_HYST_GLC, 0x00000000 },
-> +       { REG_A6XX_RBBM_CLOCK_CNTL_MHUB, 0x00000002 },
-> +       { REG_A6XX_RBBM_CLOCK_DELAY_MHUB, 0x00000000 },
-> +       { REG_A6XX_RBBM_CLOCK_HYST_MHUB, 0x00000000 },
-> +       {}
-> +};
-> +
->  const struct adreno_reglist a730_hwcg[] =3D {
->         { REG_A6XX_RBBM_CLOCK_CNTL_SP0, 0x02222222 },
->         { REG_A6XX_RBBM_CLOCK_CNTL2_SP0, 0x02022222 },
-> @@ -968,6 +1027,8 @@ static void a6xx_set_hwcg(struct msm_gpu *gpu, bool =
-state)
->                 clock_cntl_on =3D 0x8aa8aa02;
->         else if (adreno_is_a610(adreno_gpu))
->                 clock_cntl_on =3D 0xaaa8aa82;
-> +       else if (adreno_is_a702(adreno_gpu))
-> +               clock_cntl_on =3D 0xaaaaaa82;
->         else
->                 clock_cntl_on =3D 0x8aa8aa82;
->
-> @@ -989,14 +1050,14 @@ static void a6xx_set_hwcg(struct msm_gpu *gpu, boo=
-l state)
->                 return;
->
->         /* Disable SP clock before programming HWCG registers */
-> -       if (!adreno_is_a610(adreno_gpu) && !adreno_is_a7xx(adreno_gpu))
-> +       if (!adreno_is_a610_family(adreno_gpu) && !adreno_is_a7xx(adreno_=
-gpu))
->                 gmu_rmw(gmu, REG_A6XX_GPU_GMU_GX_SPTPRAC_CLOCK_CONTROL, 1=
-, 0);
->
->         for (i =3D 0; (reg =3D &adreno_gpu->info->hwcg[i], reg->offset); =
-i++)
->                 gpu_write(gpu, reg->offset, state ? reg->value : 0);
->
->         /* Enable SP clock */
-> -       if (!adreno_is_a610(adreno_gpu) && !adreno_is_a7xx(adreno_gpu))
-> +       if (!adreno_is_a610_family(adreno_gpu) && !adreno_is_a7xx(adreno_=
-gpu))
->                 gmu_rmw(gmu, REG_A6XX_GPU_GMU_GX_SPTPRAC_CLOCK_CONTROL, 0=
-, 1);
->
->         gpu_write(gpu, REG_A6XX_RBBM_CLOCK_CNTL, state ? clock_cntl_on : =
-0);
-> @@ -1224,7 +1285,7 @@ static void a6xx_set_cp_protect(struct msm_gpu *gpu=
-)
->         const u32 *regs =3D a6xx_protect;
->         unsigned i, count, count_max;
->
-> -       if (adreno_is_a650(adreno_gpu)) {
-> +       if (adreno_is_a650(adreno_gpu) || adreno_is_a702(adreno_gpu)) {
->                 regs =3D a650_protect;
->                 count =3D ARRAY_SIZE(a650_protect);
->                 count_max =3D 48;
-> @@ -1320,6 +1381,12 @@ static void a6xx_calc_ubwc_config(struct adreno_gp=
-u *gpu)
->                 gpu->ubwc_config.rgb565_predicator =3D 1;
->                 gpu->ubwc_config.uavflagprd_inv =3D 2;
->         }
-> +
-> +       if (adreno_is_a702(gpu)) {
-> +               gpu->ubwc_config.highest_bank_bit =3D 14;
-> +               gpu->ubwc_config.min_acc_len =3D 1;
-> +               gpu->ubwc_config.ubwc_mode =3D 2;
+On Wed, May 22, 2024 at 08:09:12PM -0700, Nicolin Chen wrote:
+> On Wed, May 22, 2024 at 11:43:51PM +0000, Tian, Kevin wrote:
+> > > From: Jason Gunthorpe <jgg@nvidia.com>
+> > > Sent: Thursday, May 23, 2024 7:29 AM
+> > > On Wed, May 22, 2024 at 12:47:19PM -0700, Nicolin Chen wrote:
+> > > > Yea, SMMU also has Event Queue and PRI queue. Though I haven't
+> > > > got time to sit down to look at Baolu's work closely, the uAPI
+> > > > seems to be a unified one for all IOMMUs. And though I have no
+> > > > intention to be against that design, yet maybe there could be
+> > > > an alternative in a somewhat HW specific language as we do for
+> > > > invalidation? Or not worth it?
+> > >
+> > > I was thinking not worth it, I expect a gain here is to do as AMD has
+> > > done and make the HW dma the queues directly to guest memory.
+> > >
+> > > IMHO the primary issue with the queues is DOS, as having any shared
+> > > queue across VMs is dangerous in that way. Allowing each VIOMMU to
+> > > have its own private queue and own flow control helps with that.
+> > >
+> > 
+> > and also shorter delivering path with less data copy?
+> 
+> Should I interpret that as a yes for fault report via VQUEUE?
+> 
+> We only have AMD that can HW dma the events to the guest queue
+> memory. Others all need a backward translation of (at least) a
+> physical dev ID to a virtual dev ID. This is now doable in the
+> kernel by the ongoing vdev_id design by the way. So kernel then
+> can write the guest memory directly to report events?
 
-I just noticed, but this is wrong. ubwc_mode is a 1 bit field and what
-this is actually doing is overwriting hbb_lo, making the highest bank
-bit 15 instead of 14.
+I don't think we should get into kernel doing direct access at this
+point, lets focus on basic functionality before we get to
+microoptimizations like that.
 
-> +       }
->  }
->
->  static void a6xx_set_ubwc_config(struct msm_gpu *gpu)
-> @@ -1453,7 +1520,7 @@ static bool a6xx_ucode_check_version(struct a6xx_gp=
-u *a6xx_gpu,
->                 return false;
->
->         /* A7xx is safe! */
-> -       if (adreno_is_a7xx(adreno_gpu))
-> +       if (adreno_is_a7xx(adreno_gpu) || adreno_is_a702(adreno_gpu))
->                 return true;
->
->         /*
-> @@ -1671,7 +1738,7 @@ static int hw_init(struct msm_gpu *gpu)
->         a6xx_set_hwcg(gpu, true);
->
->         /* VBIF/GBIF start*/
-> -       if (adreno_is_a610(adreno_gpu) ||
-> +       if (adreno_is_a610_family(adreno_gpu) ||
->             adreno_is_a640_family(adreno_gpu) ||
->             adreno_is_a650_family(adreno_gpu) ||
->             adreno_is_a7xx(adreno_gpu)) {
-> @@ -1705,6 +1772,7 @@ static int hw_init(struct msm_gpu *gpu)
->         }
->
->         if (!(adreno_is_a650_family(adreno_gpu) ||
-> +             adreno_is_a702(adreno_gpu) ||
->               adreno_is_a730(adreno_gpu))) {
->                 gmem_range_min =3D adreno_is_a740_family(adreno_gpu) ? SZ=
-_16M : SZ_1M;
->
-> @@ -1725,7 +1793,7 @@ static int hw_init(struct msm_gpu *gpu)
->         if (adreno_is_a640_family(adreno_gpu) || adreno_is_a650_family(ad=
-reno_gpu)) {
->                 gpu_write(gpu, REG_A6XX_CP_ROQ_THRESHOLDS_2, 0x02000140);
->                 gpu_write(gpu, REG_A6XX_CP_ROQ_THRESHOLDS_1, 0x8040362c);
-> -       } else if (adreno_is_a610(adreno_gpu)) {
-> +       } else if (adreno_is_a610_family(adreno_gpu)) {
->                 gpu_write(gpu, REG_A6XX_CP_ROQ_THRESHOLDS_2, 0x00800060);
->                 gpu_write(gpu, REG_A6XX_CP_ROQ_THRESHOLDS_1, 0x40201b16);
->         } else if (!adreno_is_a7xx(adreno_gpu)) {
-> @@ -1740,13 +1808,18 @@ static int hw_init(struct msm_gpu *gpu)
->         if (adreno_is_a610(adreno_gpu)) {
->                 gpu_write(gpu, REG_A6XX_CP_MEM_POOL_SIZE, 48);
->                 gpu_write(gpu, REG_A6XX_CP_MEM_POOL_DBG_ADDR, 47);
-> +       } else if (adreno_is_a702(adreno_gpu)) {
-> +               gpu_write(gpu, REG_A6XX_CP_MEM_POOL_SIZE, 64);
-> +               gpu_write(gpu, REG_A6XX_CP_MEM_POOL_DBG_ADDR, 63);
->         } else if (!adreno_is_a7xx(adreno_gpu))
->                 gpu_write(gpu, REG_A6XX_CP_MEM_POOL_SIZE, 128);
->
->         /* Setting the primFifo thresholds default values,
->          * and vccCacheSkipDis=3D1 bit (0x200) for A640 and newer
->         */
-> -       if (adreno_is_a690(adreno_gpu))
-> +       if (adreno_is_a702(adreno_gpu))
-> +               gpu_write(gpu, REG_A6XX_PC_DBG_ECO_CNTL, 0x0000c000);
-> +       else if (adreno_is_a690(adreno_gpu))
->                 gpu_write(gpu, REG_A6XX_PC_DBG_ECO_CNTL, 0x00800200);
->         else if (adreno_is_a650(adreno_gpu) || adreno_is_a660(adreno_gpu)=
-)
->                 gpu_write(gpu, REG_A6XX_PC_DBG_ECO_CNTL, 0x00300200);
-> @@ -1786,7 +1859,7 @@ static int hw_init(struct msm_gpu *gpu)
->                 gpu_write(gpu, REG_A6XX_RBBM_INTERFACE_HANG_INT_CNTL, (1 =
-<< 30) | 0x4fffff);
->         else if (adreno_is_a619(adreno_gpu))
->                 gpu_write(gpu, REG_A6XX_RBBM_INTERFACE_HANG_INT_CNTL, (1 =
-<< 30) | 0x3fffff);
-> -       else if (adreno_is_a610(adreno_gpu))
-> +       else if (adreno_is_a610(adreno_gpu) || adreno_is_a702(adreno_gpu)=
-)
->                 gpu_write(gpu, REG_A6XX_RBBM_INTERFACE_HANG_INT_CNTL, (1 =
-<< 30) | 0x3ffff);
->         else
->                 gpu_write(gpu, REG_A6XX_RBBM_INTERFACE_HANG_INT_CNTL, (1 =
-<< 30) | 0x1fffff);
-> @@ -1822,6 +1895,9 @@ static int hw_init(struct msm_gpu *gpu)
->                 else
->                         gpu_write(gpu, REG_A6XX_CP_CHICKEN_DBG, 0x1);
->                 gpu_write(gpu, REG_A6XX_RBBM_GBIF_CLIENT_QOS_CNTL, 0x0);
-> +       } else if (adreno_is_a702(adreno_gpu)) {
-> +               /* Something to do with the HLSQ cluster */
-> +               gpu_write(gpu, REG_A6XX_CP_CHICKEN_DBG, BIT(24));
->         }
->
->         if (adreno_is_a690(adreno_gpu))
-> diff --git a/drivers/gpu/drm/msm/adreno/adreno_device.c b/drivers/gpu/drm=
-/msm/adreno/adreno_device.c
-> index 2ce7d7b1690d..b121abc71338 100644
-> --- a/drivers/gpu/drm/msm/adreno/adreno_device.c
-> +++ b/drivers/gpu/drm/msm/adreno/adreno_device.c
-> @@ -492,6 +492,24 @@ static const struct adreno_info gpulist[] =3D {
->                 .zapfw =3D "a690_zap.mdt",
->                 .hwcg =3D a690_hwcg,
->                 .address_space_size =3D SZ_16G,
-> +       }, {
-> +               .chip_ids =3D ADRENO_CHIP_IDS(0x07000200),
-> +               .family =3D ADRENO_6XX_GEN1, /* NOT a mistake! */
-> +               .fw =3D {
-> +                       [ADRENO_FW_SQE] =3D "a702_sqe.fw",
-> +               },
-> +               .gmem =3D SZ_128K,
-> +               .inactive_period =3D DRM_MSM_INACTIVE_PERIOD,
-> +               .quirks =3D ADRENO_QUIRK_HAS_HW_APRIV,
-> +               .init =3D a6xx_gpu_init,
-> +               .zapfw =3D "a702_zap.mbn",
-> +               .hwcg =3D a702_hwcg,
-> +               .speedbins =3D ADRENO_SPEEDBINS(
-> +                       { 0,   0 },
-> +                       { 236, 1 },
-> +                       { 178, 2 },
-> +                       { 142, 3 },
-> +               ),
->         }, {
->                 .chip_ids =3D ADRENO_CHIP_IDS(0x07030001),
->                 .family =3D ADRENO_7XX_GEN1,
-> diff --git a/drivers/gpu/drm/msm/adreno/adreno_gpu.h b/drivers/gpu/drm/ms=
-m/adreno/adreno_gpu.h
-> index bc14df96feb0..f451881a6ddf 100644
-> --- a/drivers/gpu/drm/msm/adreno/adreno_gpu.h
-> +++ b/drivers/gpu/drm/msm/adreno/adreno_gpu.h
-> @@ -77,7 +77,7 @@ struct adreno_reglist {
->  };
->
->  extern const struct adreno_reglist a612_hwcg[], a615_hwcg[], a630_hwcg[]=
-, a640_hwcg[], a650_hwcg[];
-> -extern const struct adreno_reglist a660_hwcg[], a690_hwcg[], a730_hwcg[]=
-, a740_hwcg[];
-> +extern const struct adreno_reglist a660_hwcg[], a690_hwcg[], a702_hwcg[]=
-, a730_hwcg[], a740_hwcg[];
->
->  struct adreno_speedbin {
->         uint16_t fuse;
-> @@ -382,6 +382,20 @@ static inline int adreno_is_a690(const struct adreno=
-_gpu *gpu)
->         return gpu->info->chip_ids[0] =3D=3D 0x06090000;
->  }
->
-> +static inline int adreno_is_a702(const struct adreno_gpu *gpu)
-> +{
-> +       return gpu->info->chip_ids[0] =3D=3D 0x07000200;
-> +}
-> +
-> +static inline int adreno_is_a610_family(const struct adreno_gpu *gpu)
-> +{
-> +       if (WARN_ON_ONCE(!gpu->info))
-> +               return false;
-> +
-> +       /* TODO: A612 */
-> +       return adreno_is_a610(gpu) || adreno_is_a702(gpu);
-> +}
-> +
->  /* check for a615, a616, a618, a619 or any a630 derivatives */
->  static inline int adreno_is_a630_family(const struct adreno_gpu *gpu)
->  {
->
-> --
-> 2.43.2
->
+So long as the API could support doing something like that it could be
+done after benchmarking/etc.
+
+Jason
