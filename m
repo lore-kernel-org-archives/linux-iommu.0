@@ -1,44 +1,46 @@
 Received: from mx0b-0031df01.pphosted.com (mx0b-0031df01.pphosted.com [205.220.180.131])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E2D04126F0F
-	for <iommu@lists.linux.dev>; Fri, 24 May 2024 13:19:03 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B62BE127B72
+	for <iommu@lists.linux.dev>; Fri, 24 May 2024 13:19:08 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.180.131
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1716556745; cv=none; b=J0adNbjc08ATrLnL8C6ODOPUWq53fzMGfVdaeWkDKWhEL2pUmRdtRhifrOy98zJCO1l+slVWZeJr+Ic++/qhTkbkwto+3XKntKGsagoq3Ts344Ec6vm3XVvTyMrBe0Ek3rBx+TPXP2a28x8BTbo7B2rE3pH5XEf4ogoK3hGIhKc=
+	t=1716556750; cv=none; b=CAlxA2xBayt8TnlYpXAJyoHvKIiE5asJw4oEbNTciPNtHWTA2djWxhznmJ1Tr4JFnzah4vJTdnIdCWo7XGDRzUkX0dfIbWEeBGxqYoWgruib9wVuqmVJnYBtaSlZQZ3OnY/93sBcYDBB3zSkwkHZPEJd6t2xCEwP9Sgy1c7O76M=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1716556745; c=relaxed/simple;
-	bh=xwQy0LcwhNQIEn/aICdV8U22j7RyzTcdJa+zRxNK684=;
-	h=From:To:CC:Subject:Date:Message-ID:MIME-Version:Content-Type; b=CGUklvHxML6t+WY1QZEC23Zw5cep0m3Br8yiLQrwBk8sPho0eT5/rZK8WR6k36LY75t0NtGebmCLd7tHWVkQOSgHNwgYlWWF+j0XKHXod6VjZyrz9nughhxCn+mT7w1BLnc6WJfRkrvFMjZj5zenKyNYji2irjftBDwX3pgP/2o=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com; spf=pass smtp.mailfrom=quicinc.com; dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b=eXddsbsC; arc=none smtp.client-ip=205.220.180.131
+	s=arc-20240116; t=1716556750; c=relaxed/simple;
+	bh=QGSH8V4RvJlCy3w6Zuc/aUasGLXwb8JkGHWdq4QFWx4=;
+	h=From:To:CC:Subject:Date:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=FaBNBL3+I/B758u6lBcAQZ9UqcT3gB+dOU6WqSbfbgbhFkpta14jVtVTDQiXtmccRjF5pJq2VoaNdqOdnPbrhxjN/3W3x0hpGlR7AKbVjfC4nheQQZkKDsLSspXGkFJ8+5NT9fjccf0jl47RjCxq6M7B7SGmb3XA/NaYUBPol64=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com; spf=pass smtp.mailfrom=quicinc.com; dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b=RGzIMXOW; arc=none smtp.client-ip=205.220.180.131
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=quicinc.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b="eXddsbsC"
+	dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b="RGzIMXOW"
 Received: from pps.filterd (m0279871.ppops.net [127.0.0.1])
-	by mx0a-0031df01.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 44OA0StU022320;
-	Fri, 24 May 2024 13:18:31 GMT
+	by mx0a-0031df01.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 44O9V4KN023987;
+	Fri, 24 May 2024 13:18:52 GMT
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=quicinc.com; h=
-	cc:content-transfer-encoding:content-type:date:from:message-id
-	:mime-version:subject:to; s=qcppdkim1; bh=jtH39QGDRoyjguOfOrP8Vy
-	cq2ZjaqEmzTTqVJ1HQYuw=; b=eXddsbsCWPnBHR5Dtnzp9M2ZFycA/l2KA40Orb
-	hkN9u9LKNQjqn77z5+rH0jx4HJxSihZFZxYN4ncHHUn6mtAq0K+r7CFy6jbSp5mj
-	VdJYMbnAyHVW3cuXenJ2WftTxnhGviCLL5cRyNgRkgOYQj2mOxfYU9CAhSkk3VYV
-	yxuMLXdAhCGXxMYxEMGyd0oI5nb4GKwawR4ryd0Ma6hVcrivTI/J/cabT0L296Bg
-	gf3GbPBIsGcXEdZ0ZMQVA+p28gxURZFPYQNdSD0geiplUoCWNDGWtxr8oKmQh7lz
-	2p5J7y6zNgAa0u2/CC6cJF1jUSQR9kGKHMptY4z4IvhMdG+g==
-Received: from nalasppmta04.qualcomm.com (Global_NAT1.qualcomm.com [129.46.96.20])
-	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 3yaa9u2h05-1
+	cc:content-transfer-encoding:content-type:date:from:in-reply-to
+	:message-id:mime-version:references:subject:to; s=qcppdkim1; bh=
+	KpydeMZELdyr8PpODF/A+z0fJv3G/zqKi8bM1SNf3Fg=; b=RGzIMXOWf59iEeJD
+	SC7n3NxytWNH3PKqptDFEZfp5HBzajAscmtD5anOWd8MwduYQ77nd6uWNQfe+qAF
+	c+CGrXG+thpe6u5hCx+R8BugSz1llEtyKR8IWvHWlaKy9u9Hp83eBFeBOcZiNyym
+	gvvvTvP6n8pU4ZPz+BhFF0duQGg9XTzHHeTI0LBi90PxDIDsP/PeJeDbTuYm6BwL
+	IF+JUfosEqiplsdpC0giiIoyvHBu6YESWfO1DL33SaOFAUDSUlpjtMFtvnuRgFI4
+	+JZruInJ3HGH78uhjzEWiyXvE7I/3uwIzrPaEAh7WvFs0/8LA79MGbRroezCW4A3
+	sacThg==
+Received: from nalasppmta03.qualcomm.com (Global_NAT1.qualcomm.com [129.46.96.20])
+	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 3yaa9u2h0f-1
 	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Fri, 24 May 2024 13:18:31 +0000 (GMT)
+	Fri, 24 May 2024 13:18:52 +0000 (GMT)
 Received: from nalasex01c.na.qualcomm.com (nalasex01c.na.qualcomm.com [10.47.97.35])
-	by NALASPPMTA04.qualcomm.com (8.17.1.5/8.17.1.5) with ESMTPS id 44ODITBd031502
+	by NALASPPMTA03.qualcomm.com (8.17.1.5/8.17.1.5) with ESMTPS id 44ODIo9J005310
 	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Fri, 24 May 2024 13:18:29 GMT
+	Fri, 24 May 2024 13:18:50 GMT
 Received: from hu-bibekkum-hyd.qualcomm.com (10.80.80.8) by
  nalasex01c.na.qualcomm.com (10.47.97.35) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.1544.9; Fri, 24 May 2024 06:18:24 -0700
+ 15.2.1544.9; Fri, 24 May 2024 06:18:45 -0700
 From: Bibek Kumar Patro <quic_bibekkum@quicinc.com>
 To: <robdclark@gmail.com>, <will@kernel.org>, <robin.murphy@arm.com>,
         <joro@8bytes.org>, <jgg@ziepe.ca>, <jsnitsel@redhat.com>,
@@ -48,10 +50,12 @@ To: <robdclark@gmail.com>, <will@kernel.org>, <robin.murphy@arm.com>,
 CC: <iommu@lists.linux.dev>, <linux-arm-msm@vger.kernel.org>,
         <linux-arm-kernel@lists.infradead.org>, <linux-kernel@vger.kernel.org>,
         "Bibek Kumar Patro" <quic_bibekkum@quicinc.com>
-Subject: [PATCH v10 0/5] iommu/arm-smmu: introduction of ACTLR implementation for Qualcomm SoCs
-Date: Fri, 24 May 2024 18:47:55 +0530
-Message-ID: <20240524131800.2288259-1-quic_bibekkum@quicinc.com>
+Subject: [PATCH v10 3/5] iommu/arm-smmu: introduction of ACTLR for custom prefetcher settings
+Date: Fri, 24 May 2024 18:47:58 +0530
+Message-ID: <20240524131800.2288259-4-quic_bibekkum@quicinc.com>
 X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20240524131800.2288259-1-quic_bibekkum@quicinc.com>
+References: <20240524131800.2288259-1-quic_bibekkum@quicinc.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -64,191 +68,195 @@ X-ClientProxiedBy: nasanex01a.na.qualcomm.com (10.52.223.231) To
  nalasex01c.na.qualcomm.com (10.47.97.35)
 X-QCInternal: smtphost
 X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
-X-Proofpoint-GUID: WEW9SrWi5Bh0D8Ag2IUTBnzz3YTog9xQ
-X-Proofpoint-ORIG-GUID: WEW9SrWi5Bh0D8Ag2IUTBnzz3YTog9xQ
+X-Proofpoint-GUID: dG8Og9HJ1sZnUYTbZjxPIB8Jt90h-rED
+X-Proofpoint-ORIG-GUID: dG8Og9HJ1sZnUYTbZjxPIB8Jt90h-rED
 X-Proofpoint-Virus-Version: vendor=baseguard
  engine=ICAP:2.0.293,Aquarius:18.0.1039,Hydra:6.0.650,FMLib:17.12.28.16
  definitions=2024-05-24_04,2024-05-24_01,2024-05-17_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 clxscore=1011 phishscore=0
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 clxscore=1015 phishscore=0
  mlxlogscore=999 priorityscore=1501 bulkscore=0 spamscore=0
  lowpriorityscore=0 malwarescore=0 adultscore=0 impostorscore=0 mlxscore=0
  suspectscore=0 classifier=spam adjust=0 reason=mlx scancount=1
  engine=8.19.0-2405170001 definitions=main-2405240091
 
-This patch series consist of five parts and covers the following:
+Currently in Qualcomm  SoCs the default prefetch is set to 1 which allows
+the TLB to fetch just the next page table. MMU-500 features ACTLR
+register which is implementation defined and is used for Qualcomm SoCs
+to have a custom prefetch setting enabling TLB to prefetch the next set
+of page tables accordingly allowing for faster translations.
 
-1. Re-enable context caching for Qualcomm SoCs to retain prefetcher
-   settings during reset and runtime suspend.
+ACTLR value is unique for each SMR (Stream matching register) and stored
+in a pre-populated table. This value is set to the register during
+context bank initialisation.
 
-2. Remove cfg inside qcom_smmu structure and replace it with single
-   pointer to qcom_smmu_match_data avoiding replication of multiple
-   members from same.
+Reviewed-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+Signed-off-by: Bibek Kumar Patro <quic_bibekkum@quicinc.com>
+---
+ drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c | 61 ++++++++++++++++++++++
+ drivers/iommu/arm/arm-smmu/arm-smmu-qcom.h | 16 +++++-
+ drivers/iommu/arm/arm-smmu/arm-smmu.c      |  5 +-
+ drivers/iommu/arm/arm-smmu/arm-smmu.h      |  5 ++
+ 4 files changed, 84 insertions(+), 3 deletions(-)
 
-3. Introduce intital set of driver changes to implement ACTLR register
-   for custom prefetcher settings in Qualcomm SoCs.
+diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
+index 573c4c9886f1..77c9abffe07d 100644
+--- a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
++++ b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
+@@ -215,10 +215,42 @@ static bool qcom_adreno_can_do_ttbr1(struct arm_smmu_device *smmu)
+ 	return true;
+ }
 
-4. Add ACTLR data and implementation operations for SM8550.
++static void qcom_smmu_set_actlr(struct device *dev, struct arm_smmu_device *smmu, int cbndx,
++		const struct actlr_config *actlrcfg, const size_t num_actlrcfg)
++{
++	struct arm_smmu_master_cfg *cfg = dev_iommu_priv_get(dev);
++	struct iommu_fwspec *fwspec = dev_iommu_fwspec_get(dev);
++	struct arm_smmu_smr *smr;
++	u16 mask;
++	int idx;
++	u16 id;
++	int i;
++	int j;
++
++	for (i = 0; i < num_actlrcfg; i++) {
++		id = actlrcfg[i].sid;
++		mask = actlrcfg[i].mask;
++
++		for_each_cfg_sme(cfg, fwspec, j, idx) {
++			smr = &smmu->smrs[idx];
++			if (smr_is_subset(smr, id, mask)) {
++				arm_smmu_cb_write(smmu, cbndx, ARM_SMMU_CB_ACTLR,
++						actlrcfg[i].actlr);
++				break;
++			}
++		}
++	}
++}
++
+ static int qcom_adreno_smmu_init_context(struct arm_smmu_domain *smmu_domain,
+ 		struct io_pgtable_cfg *pgtbl_cfg, struct device *dev)
+ {
++	struct arm_smmu_device *smmu = smmu_domain->smmu;
++	struct qcom_smmu *qsmmu = to_qcom_smmu(smmu);
++	const struct actlr_variant *actlrvar;
++	int cbndx = smmu_domain->cfg.cbndx;
+ 	struct adreno_smmu_priv *priv;
++	int i;
 
-5. Add ACTLR data and implementation operations for SC7280.
+ 	smmu_domain->cfg.flush_walk_prefer_tlbiasid = true;
 
-Changes in v10 from v9:
- - Added reviewed-by tags 1/5,2/5,3/5.
- Changes incorporated:
- - Remove redundant PRR bit setting from gfx actlr table(patch 4/5,5/5)
-   as this bit needs special handling in the gfx driver along with
-   the associated register settings.
- Link to discussion on PRR bit:
- https://lore.kernel.org/all/f2222714-1e00-424e-946d-c314d55541b8@quicinc.com/
- Link to v9:
- https://lore.kernel.org/all/20240123144543.9405-1-quic_bibekkum@quicinc.com/
+@@ -248,6 +280,18 @@ static int qcom_adreno_smmu_init_context(struct arm_smmu_domain *smmu_domain,
+ 	priv->set_stall = qcom_adreno_smmu_set_stall;
+ 	priv->resume_translation = qcom_adreno_smmu_resume_translation;
 
-Changes in v9 from v8:
- Changes to incorporate suggestions from Konrad as follows:
- - Re-wrap struct members of actlr_variant in patch 4/5,5/5
-   in a cleaner way.
- - Move actlr_config members to the header.
- Link to v8:
- https://lore.kernel.org/all/20240116150411.23876-1-quic_bibekkum@quicinc.com/
++	actlrvar = qsmmu->data->actlrvar;
++	if (!actlrvar)
++		return 0;
++
++	for (i = 0; i < qsmmu->data->num_smmu ; i++) {
++		if (actlrvar[i].io_start == smmu->ioaddr) {
++			qcom_smmu_set_actlr(dev, smmu, cbndx, actlrvar[i].actlrcfg,
++				       actlrvar[i].num_actlrcfg);
++			break;
++		}
++	}
++
+ 	return 0;
+ }
 
-Changes in v8 from v7:
- - Added reviewed-by tags on patch 1/5, 2/5.
- Changes to incorporate suggestions from Pavan and Konrad:
- - Remove non necessary extra lines.
- - Use num_smmu and num_actlrcfg to store the array size and use the
-   same to traverse the table and save on sentinel space along with
-   indentation levels.
- - Refactor blocks containing qcom_smmu_set_actlr to remove block
-   repetition in patch 3/5.
- - Change copyright year from 2023 to 2022-2023 in patch 3/5.
- - Modify qcom_smmu_match_data.actlrvar and actlr_variant.actlrcfg to
-   const pointer to a const resource.
- - use C99 designated initializers and put the address first.
- Link to v7:
- https://lore.kernel.org/all/20240109114220.30243-1-quic_bibekkum@quicinc.com/
+@@ -277,7 +321,24 @@ static const struct of_device_id qcom_smmu_client_of_match[] __maybe_unused = {
+ static int qcom_smmu_init_context(struct arm_smmu_domain *smmu_domain,
+ 		struct io_pgtable_cfg *pgtbl_cfg, struct device *dev)
+ {
++	struct arm_smmu_device *smmu = smmu_domain->smmu;
++	struct qcom_smmu *qsmmu = to_qcom_smmu(smmu);
++	const struct actlr_variant *actlrvar;
++	int cbndx = smmu_domain->cfg.cbndx;
++	int i;
++
+ 	smmu_domain->cfg.flush_walk_prefer_tlbiasid = true;
++	actlrvar = qsmmu->data->actlrvar;
++	if (!actlrvar)
++		return 0;
++
++	for (i = 0; i < qsmmu->data->num_smmu ; i++) {
++		if (actlrvar[i].io_start == smmu->ioaddr) {
++			qcom_smmu_set_actlr(dev, smmu, cbndx, actlrvar[i].actlrcfg,
++				       actlrvar[i].num_actlrcfg);
++			break;
++		}
++	}
 
-Changes in v7 from v6:
- Changes to incorporate suggestions from Dmitry as follows:
- - Use io_start address instead of compatible string to identify the
-   correct instance by comparing with smmu start address and check for
-   which smmu the corresponding actlr table is to be picked.
-Link to v6:
-https://lore.kernel.org/all/20231220133808.5654-1-quic_bibekkum@quicinc.com/
+ 	return 0;
+ }
+diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.h b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.h
+index addc07623c0b..c51817ff4674 100644
+--- a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.h
++++ b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.h
+@@ -1,6 +1,6 @@
+ /* SPDX-License-Identifier: GPL-2.0-only */
+ /*
+- * Copyright (c) 2022, Qualcomm Innovation Center, Inc. All rights reserved.
++ * Copyright (c) 2022-2023, Qualcomm Innovation Center, Inc. All rights reserved.
+  */
 
-Changes in v6 from v5:
- - Remove extra Suggested-by tags.
- - Add return check for arm_mmu500_reset in 1/5 as discussed.
-Link to v5:
-https://lore.kernel.org/all/20231219135947.1623-1-quic_bibekkum@quicinc.com/
+ #ifndef _ARM_SMMU_QCOM_H
+@@ -24,8 +24,22 @@ struct qcom_smmu_config {
+ 	const u32 *reg_offset;
+ };
 
-Changes in v5 from v4:
- New addition:
- - Modify copyright year in arm-smmu-qcom.h to 2023 from 2022.
- Changes to incorporate suggestions from Dmitry as follows:
- - Modify the defines for prefetch in (foo << bar) format
-   as suggested.(FIELD_PREP could not be used in defines
-   is not inside any block/function)
- Changes to incorporate suggestions from Konrad as follows:
- - Shift context caching enablement patch as 1/5 instead of 5/5 to
-   be picked up as independent patch.
- - Fix the codestyle to orient variables in reverse xmas tree format
-   for patch 1/5.
- - Fix variable name in patch 1/5 as suggested.
- Link to v4:
-https://lore.kernel.org/all/20231215101827.30549-1-quic_bibekkum@quicinc.com/
++struct actlr_config {
++	u16 sid;
++	u16 mask;
++	u32 actlr;
++};
++
++struct actlr_variant {
++	const resource_size_t io_start;
++	const struct actlr_config * const actlrcfg;
++	const size_t num_actlrcfg;
++};
++
+ struct qcom_smmu_match_data {
++	const struct actlr_variant * const actlrvar;
+ 	const struct qcom_smmu_config *cfg;
++	const size_t num_smmu;
+ 	const struct arm_smmu_impl *impl;
+ 	const struct arm_smmu_impl *adreno_impl;
+ };
+diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu.c b/drivers/iommu/arm/arm-smmu/arm-smmu.c
+index 87c81f75cf84..f43d417bf7f6 100644
+--- a/drivers/iommu/arm/arm-smmu/arm-smmu.c
++++ b/drivers/iommu/arm/arm-smmu/arm-smmu.c
+@@ -1003,9 +1003,10 @@ static int arm_smmu_find_sme(struct arm_smmu_device *smmu, u16 id, u16 mask)
+ 		 * expect simply identical entries for this case, but there's
+ 		 * no harm in accommodating the generalisation.
+ 		 */
+-		if ((mask & smrs[i].mask) == mask &&
+-		    !((id ^ smrs[i].id) & ~smrs[i].mask))
++
++		if (smr_is_subset(&smrs[i], id, mask))
+ 			return i;
++
+ 		/*
+ 		 * If the new entry has any other overlap with an existing one,
+ 		 * though, then there always exists at least one stream ID
+diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu.h b/drivers/iommu/arm/arm-smmu/arm-smmu.h
+index 4765c6945c34..d9c2ef8c1653 100644
+--- a/drivers/iommu/arm/arm-smmu/arm-smmu.h
++++ b/drivers/iommu/arm/arm-smmu/arm-smmu.h
+@@ -503,6 +503,11 @@ static inline void arm_smmu_writeq(struct arm_smmu_device *smmu, int page,
+ 		writeq_relaxed(val, arm_smmu_page(smmu, page) + offset);
+ }
 
-Changes in v4 from v3:
- New addition:
- - Remove actlrcfg_size and use NULL end element instead to traverse
-   the actlr table, as this would be a cleaner approach by removing
-   redundancy of actlrcfg_size.
- - Renaming of actlr set function to arm_smmu_qcom based proprietary
-   convention.
- - break from loop once sid is found and ACTLR value is initialized
-   in qcom_smmu_set_actlr.
- - Modify the GFX prefetch value separating into 2 sensible defines.
- - Modify comments for prefetch defines as per SMMU-500 TRM.
- Changes to incorporate suggestions from Konrad as follows:
- - Use Reverse-Christmas-tree sorting wherever applicable.
- - Pass arguments directly to arm_smmu_set_actlr instead of creating
-   duplicate variables.
- - Use array indexing instead of direct pointer addressed by new
-   addition of eliminating actlrcfg_size.
- - Switch the HEX value's case from upper to lower case in SC7280
-   actlrcfg table.
- Changes to incorporate suggestions from Dmitry as follows:
- - Separate changes not related to ACTLR support to different commit
-   with patch 5/5.
- - Using pointer to struct for arguments in smr_is_subset().
- Changes to incorporate suggestions from Bjorn as follows:
- - fix the commit message for patch 2/5 to properly document the
-   value space to avoid confusion.
- Fixed build issues reported by kernel test robot [1] for
- arm64-allyesconfig [2].
- [1]: https://lore.kernel.org/all/202312011750.Pwca3TWE-lkp@intel.com/
- [2]:
-https://download.01.org/0day-ci/archive/20231201/202312011750.Pwca3TWE-lkp@intel.com/config
- Link to v3:
-https://lore.kernel.org/all/20231127145412.3981-1-quic_bibekkum@quicinc.com/
-
-Changes in v3 from v2:
- New addition:
- - Include patch 3/4 for adding ACTLR support and data for SC7280.
- - Add driver changes for actlr support in gpu smmu.
- - Add target wise actlr data and implementation ops for gpu smmu.
- Changes to incorporate suggestions from Robin as follows:
- - Match the ACTLR values with individual corresponding SID instead
-   of assuming that any SMR will be programmed to match a superset of
-   the data.
- - Instead of replicating each elements from qcom_smmu_match_data to
-   qcom_smmu structre during smmu device creation, replace the
-   replicated members with qcom_smmu_match_data structure inside
-   qcom_smmu structre and handle the dereference in places that
-   requires them.
- Changes to incorporate suggestions from Dmitry and Konrad as follows:
- - Maintain actlr table inside a single structure instead of
-   nested structure.
- - Rename prefetch defines to more appropriately describe their
-   behavior.
- - Remove SM8550 specific implementation ops and roll back to default
-   qcom_smmu_500_impl implementation ops.
- - Add back the removed comments which are NAK.
- - Fix commit description for patch 4/4.
- Link to v2:
-https://lore.kernel.org/all/20231114135654.30475-1-quic_bibekkum@quicinc.com/
-
-Changes in v2 from v1:
- - Incorporated suggestions on v1 from Dmitry,Konrad,Pratyush.
- - Added defines for ACTLR values.
- - Linked sm8550 implementation structure to corresponding
-   compatible string.
- - Repackaged actlr value set implementation to separate function.
- - Fixed indentation errors.
- - Link to v1:
-https://lore.kernel.org/all/20231103215124.1095-1-quic_bibekkum@quicinc.com/
-
-Changes in v1 from RFC:
- - Incorporated suggestion form Robin on RFC
- - Moved the actlr data table into driver, instead of maintaining
-   it inside soc specific DT and piggybacking on exisiting iommus
-   property (iommu = <SID, MASK, ACTLR>) to set this value during
-   smmu probe.
- - Link to RFC:
-https://lore.kernel.org/all/a01e7e60-6ead-4a9e-ba90-22a8a6bbd03f@quicinc.com/
-
-Bibek Kumar Patro (5):
-  iommu/arm-smmu: re-enable context caching in smmu reset operation
-  iommu/arm-smmu: refactor qcom_smmu structure to include single pointer
-  iommu/arm-smmu: introduction of ACTLR for custom prefetcher settings
-  iommu/arm-smmu: add ACTLR data and support for SM8550
-  iommu/arm-smmu: add ACTLR data and support for SC7280
-
- .../iommu/arm/arm-smmu/arm-smmu-qcom-debug.c  |   2 +-
- drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c    | 223 +++++++++++++++++-
- drivers/iommu/arm/arm-smmu/arm-smmu-qcom.h    |  18 +-
- drivers/iommu/arm/arm-smmu/arm-smmu.c         |   5 +-
- drivers/iommu/arm/arm-smmu/arm-smmu.h         |   5 +
- 5 files changed, 243 insertions(+), 10 deletions(-)
-
++static inline bool smr_is_subset(struct arm_smmu_smr *smrs, u16 id, u16 mask)
++{
++	return (mask & smrs->mask) == mask && !((id ^ smrs->id) & ~smrs->mask);
++}
++
+ #define ARM_SMMU_GR0		0
+ #define ARM_SMMU_GR1		1
+ #define ARM_SMMU_CB(s, n)	((s)->numpage + (n))
 --
 2.34.1
 
