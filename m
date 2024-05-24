@@ -1,152 +1,182 @@
-Received: from mx0b-0031df01.pphosted.com (mx0b-0031df01.pphosted.com [205.220.180.131])
+Received: from NAM11-CO1-obe.outbound.protection.outlook.com (mail-co1nam11on2054.outbound.protection.outlook.com [40.107.220.54])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 888AE129E95
-	for <iommu@lists.linux.dev>; Fri, 24 May 2024 13:19:18 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.180.131
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1716556759; cv=none; b=tFbUhfdBAZOY10esZ2r2/uJs7ZpsvsDwLhlJ7HYsXq1eWplFMp6H8EdYh/JFyBzJDKPHr4ysauLzS34weWKb9iA4ADY/283UaFLB5QCDyIb3EVbctx3WQo/E9yzG0/vT5xETxO4cICzji4OvymvzIJVhNfvJCJbMWIZiyDDocjA=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1716556759; c=relaxed/simple;
-	bh=VYASND7DkjxIdSKvksdElZNKwr1G8BS4C2AWVcyC9ZM=;
-	h=From:To:CC:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=k0KzATHRVC6KSBdy5tpLRH+GADmnhexAZuRNpx643OVsEs8QE5L+/nb9nUngnu8IWr/7Kjk7RqmyCw5Z0mf1XoXqSBOn3raM60JhqTwhjALVij0PMAVgJmrRGl6F00gtQSa8Ed6WnmAfbFeFJ7JGU+BxLpxvXTjwOH7oUFElXek=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com; spf=pass smtp.mailfrom=quicinc.com; dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b=n5w6FbmH; arc=none smtp.client-ip=205.220.180.131
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=quicinc.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A1E88129A9A
+	for <iommu@lists.linux.dev>; Fri, 24 May 2024 13:20:28 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.220.54
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1716556830; cv=fail; b=WM/aX9t4ChsE++gij3apDS41VyyzwcIJl/IdImWDXwBzyNlRtq4WcKw2trF1tVt5CbKYRYu09SOpX5YsASOfoJRYyzl6BnK8IIqI6TmbfCRajgTyykjoJg/Q4lp3zIgn36cUyNN2nKKKVbfgq9TspWGetieRcRrHynHGIzJ5ta0=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1716556830; c=relaxed/simple;
+	bh=MGngmGFps8h6ie1n4VfMbvNPonmhEbAAKWwZkOj2pQk=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:Content-Type:
+	 Content-Disposition:In-Reply-To:MIME-Version; b=Ycaw5z4+kbcRmZyTOFKf1mcT5eCpJvoAxdfeJklbPLe+fbr1vvcwSTr/6xnOEw4eUxUGL+6MT69QDPbPfSRIbEypFuQo6hMt/dOQufErgs303lYyXxGOKItbK7C/beNitFoZUjhoFdLDsMSmZkoyoVHKzTaiFo1VlSfFYEOCTGQ=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=kgmVnNUy; arc=fail smtp.client-ip=40.107.220.54
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b="n5w6FbmH"
-Received: from pps.filterd (m0279870.ppops.net [127.0.0.1])
-	by mx0a-0031df01.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 44O9GDo7004833;
-	Fri, 24 May 2024 13:19:04 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=quicinc.com; h=
-	cc:content-transfer-encoding:content-type:date:from:in-reply-to
-	:message-id:mime-version:references:subject:to; s=qcppdkim1; bh=
-	6gTuD659RBNpe4VbArDAG26UrZnRn8ECIH/vQ20wfOg=; b=n5w6FbmHG0RqjXtJ
-	/YruTIKMv28FyHcTnggWHzOp1we1i2yTdk3Dk4rDjieGzDmufG7tAlz28JSgyqS0
-	388YRv96G2OfQLRqmst5unNOzFOHaaTBpbTEl093jBjD3g5yIoQfnR3h4ckz1NJ+
-	a7Am+UBumX6E3qMOQiSkZy+yLpCV+uRcZk7wGp/P9aZcGx6dfg7aI82B0igHKE19
-	/3KkW65eev16LLR5YmhiOPCtPJsLSINU+ZtU63Wex8JQ3DW3HKatDhVhseDmXido
-	CIbJ8sp7TxakmAuNLtVgoqw7Q4P+aGisAtQm/ieOMp3iuyFWJ/tFv76O7MLmNmVZ
-	dxqJYQ==
-Received: from nalasppmta02.qualcomm.com (Global_NAT1.qualcomm.com [129.46.96.20])
-	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 3yaa96jj4w-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Fri, 24 May 2024 13:19:04 +0000 (GMT)
-Received: from nalasex01c.na.qualcomm.com (nalasex01c.na.qualcomm.com [10.47.97.35])
-	by NALASPPMTA02.qualcomm.com (8.17.1.5/8.17.1.5) with ESMTPS id 44ODJ3am031240
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Fri, 24 May 2024 13:19:03 GMT
-Received: from hu-bibekkum-hyd.qualcomm.com (10.80.80.8) by
- nalasex01c.na.qualcomm.com (10.47.97.35) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.1544.9; Fri, 24 May 2024 06:18:58 -0700
-From: Bibek Kumar Patro <quic_bibekkum@quicinc.com>
-To: <robdclark@gmail.com>, <will@kernel.org>, <robin.murphy@arm.com>,
-        <joro@8bytes.org>, <jgg@ziepe.ca>, <jsnitsel@redhat.com>,
-        <robh@kernel.org>, <krzysztof.kozlowski@linaro.org>,
-        <quic_c_gdjako@quicinc.com>, <dmitry.baryshkov@linaro.org>,
-        <konrad.dybcio@linaro.org>
-CC: <iommu@lists.linux.dev>, <linux-arm-msm@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>, <linux-kernel@vger.kernel.org>,
-        "Bibek Kumar Patro" <quic_bibekkum@quicinc.com>
-Subject: [PATCH v10 5/5] iommu/arm-smmu: add ACTLR data and support for SC7280
-Date: Fri, 24 May 2024 18:48:00 +0530
-Message-ID: <20240524131800.2288259-6-quic_bibekkum@quicinc.com>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20240524131800.2288259-1-quic_bibekkum@quicinc.com>
-References: <20240524131800.2288259-1-quic_bibekkum@quicinc.com>
+	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="kgmVnNUy"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=K7qHOK32ghjxcTFfBBN/Gs+J7qqxAz03X5ovD2TampJ+U+mmMjaXoXQ60iO2ZXtLXQ2pt/5NoNghgpEAHSLplIyXI6/FjXQ7yzsVlJPFe4vyiRqzKZF2yMEWWl0L2Ye8GtTWLKtL8k5u68mbT7YOiAfJfrLWU2APwiAsUEsfzbTjV6ILDh5m2f6qSmx3r54J6of4yn94w+sEALRG9aV9YMYVzeIh4Dct2/sWAbidNkqx5BBcqIF6Q49Xnobt8hgL/1B/Rk7+Te5hYN25/OpQbffjIuoL5f6YpNlujHtmekAGYC7Kb9PdtNbtR03jS4L9PQNaqe+Lr2xQX2c2AbQbNQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=PLu8/ugY0YeG3oL2kvjFML3moIZvhF2Ih6bb5mwQB9A=;
+ b=oSG+2c6yr4Jkwk2b1Nf1WP7BMPOT8hjyAEgWxkKPbYUI7eZ5RZkqTqMo9XNw/Y6sZZW4sJRxFFk5BdzriExZO0jHitUtUOjdESirHbxFETq16msdSvyCFZA+1dJuFm60F6iQ1/Akjp7ScQw8JUyKeRB4L67BtiZEvAqsFH97RUlGDvIDUQD/Qjf0VKC7hByaFEH3PRj/neDeUFUv4HBl8tuFgwx0OxCEIZSQ9M6osWsENvsc4NjwVHdKsxOs41aC9YOXpzOOwMVoMEdotTBgdIWmeskfDuwQkPkY/fpJdqmtPziGw8NznZmao5MkxA1bF5w2Diw/54gm5pZ/9Gbdlw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=PLu8/ugY0YeG3oL2kvjFML3moIZvhF2Ih6bb5mwQB9A=;
+ b=kgmVnNUyPg/CSOyDcp+/ENQknD8/uYOBDpGQX0UgE8oVo8fsCRAlOp2qJieHLCEr/2W7fPnkW18cjaVqoHMexk4eFRlWT2d9ikdUF0qcL8RKuJoO08bwdsL2nriYiExwA8v8b/qmwHYz1DwCBne+RmVDOux68qruv6xF6at8kzDgmB5cIJVu129jfOACrksx5XCwS0xvfHYBFoojA6R1e1hYOfgGIrb/En7hBuWme/AYBVvI2yVURiZPoLDV6d09WdSysHuAG/jCeWIisaH0iV1WQoVqDN+KZEmnod34gFznjBvP01k/iREfUjh2CoPpuLXhuD9oqsyIFjDyaxXGDg==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nvidia.com;
+Received: from DM6PR12MB3849.namprd12.prod.outlook.com (2603:10b6:5:1c7::26)
+ by PH7PR12MB6955.namprd12.prod.outlook.com (2603:10b6:510:1b8::7) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7611.19; Fri, 24 May
+ 2024 13:20:24 +0000
+Received: from DM6PR12MB3849.namprd12.prod.outlook.com
+ ([fe80::c296:774b:a5fc:965e]) by DM6PR12MB3849.namprd12.prod.outlook.com
+ ([fe80::c296:774b:a5fc:965e%4]) with mapi id 15.20.7611.016; Fri, 24 May 2024
+ 13:20:24 +0000
+Date: Fri, 24 May 2024 10:20:23 -0300
+From: Jason Gunthorpe <jgg@nvidia.com>
+To: Nicolin Chen <nicolinc@nvidia.com>
+Cc: "Tian, Kevin" <kevin.tian@intel.com>,
+	"will@kernel.org" <will@kernel.org>,
+	"robin.murphy@arm.com" <robin.murphy@arm.com>,
+	"suravee.suthikulpanit@amd.com" <suravee.suthikulpanit@amd.com>,
+	"joro@8bytes.org" <joro@8bytes.org>,
+	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+	"iommu@lists.linux.dev" <iommu@lists.linux.dev>,
+	"linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>,
+	"linux-tegra@vger.kernel.org" <linux-tegra@vger.kernel.org>,
+	"Liu, Yi L" <yi.l.liu@intel.com>,
+	"eric.auger@redhat.com" <eric.auger@redhat.com>,
+	"vasant.hegde@amd.com" <vasant.hegde@amd.com>,
+	"jon.grimm@amd.com" <jon.grimm@amd.com>,
+	"santosh.shukla@amd.com" <santosh.shukla@amd.com>,
+	"Dhaval.Giani@amd.com" <Dhaval.Giani@amd.com>,
+	"shameerali.kolothum.thodi@huawei.com" <shameerali.kolothum.thodi@huawei.com>
+Subject: Re: [PATCH RFCv1 08/14] iommufd: Add IOMMU_VIOMMU_SET_DEV_ID ioctl
+Message-ID: <20240524132023.GU20229@nvidia.com>
+References: <cover.1712978212.git.nicolinc@nvidia.com>
+ <c97a98a72ee3498c587e5898d6b899553ccd9b27.1712978212.git.nicolinc@nvidia.com>
+ <BN9PR11MB5276A897A5386DFAC9A35F9D8CF42@BN9PR11MB5276.namprd11.prod.outlook.com>
+ <ZlAoN3s96HL7ROth@nvidia.com>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <ZlAoN3s96HL7ROth@nvidia.com>
+X-ClientProxiedBy: YT4PR01CA0174.CANPRD01.PROD.OUTLOOK.COM
+ (2603:10b6:b01:110::18) To DM6PR12MB3849.namprd12.prod.outlook.com
+ (2603:10b6:5:1c7::26)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-ClientProxiedBy: nasanex01a.na.qualcomm.com (10.52.223.231) To
- nalasex01c.na.qualcomm.com (10.47.97.35)
-X-QCInternal: smtphost
-X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
-X-Proofpoint-GUID: qm4KlVUOxpQk-gZDHVmp0XsvZn83cYFY
-X-Proofpoint-ORIG-GUID: qm4KlVUOxpQk-gZDHVmp0XsvZn83cYFY
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.293,Aquarius:18.0.1039,Hydra:6.0.650,FMLib:17.12.28.16
- definitions=2024-05-24_04,2024-05-24_01,2024-05-17_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 impostorscore=0
- malwarescore=0 mlxlogscore=999 spamscore=0 bulkscore=0 phishscore=0
- mlxscore=0 suspectscore=0 lowpriorityscore=0 adultscore=0
- priorityscore=1501 clxscore=1015 classifier=spam adjust=0 reason=mlx
- scancount=1 engine=8.19.0-2405170001 definitions=main-2405240091
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: DM6PR12MB3849:EE_|PH7PR12MB6955:EE_
+X-MS-Office365-Filtering-Correlation-Id: 73aea56d-09c0-4d47-3db2-08dc7bf44526
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;ARA:13230031|366007|7416005|1800799015|376005;
+X-Microsoft-Antispam-Message-Info:
+	=?us-ascii?Q?q1umko8Zv9zLCkldHDEF2yOAeHnArC+gtk57EkUlR8+zfETll52v8ysaF32p?=
+ =?us-ascii?Q?Jt+JNZS3mSNa7Rax7NSH+wNmY6bQr3ZSOtq2bPp5gnhHRndcwS4xy0H7Pior?=
+ =?us-ascii?Q?l5N00i4SLaejDck9aDH6/GpLuZQ2dlDOMgRBh4TIvoHZw9/2lJhmSsUpdE0T?=
+ =?us-ascii?Q?n8/CJlntgEnYg2H8VmNtf2X02yYGvgVeuZmse2dAy9lIkYv6K8vU9OTpihQV?=
+ =?us-ascii?Q?2oXLr62Sj6IEn7rNW4KuJJUnPS2U44W77ROYmB7UW1RVVfkEQ7mMpChfBeGp?=
+ =?us-ascii?Q?lW0YaBeK+fr6S1EejciWYk+TuPunkfmNegYJ/wGE9u786AMWzOLF5EWzRJvL?=
+ =?us-ascii?Q?YRoqInpRYrTOesDqHFIrRxne/cgYQGFHQKR/tiWLiM+ssmmjUr7j1SQNsNtc?=
+ =?us-ascii?Q?9PyEyUnmUKjCzBU3lXTOgdKVu22Bl/AEnSZIbAzElhLPNeLjVg8VXV1l6/uD?=
+ =?us-ascii?Q?+4+ZzI/PjcdrW4QQMiAxU2vyUHT9ZwLrAA6jRxgis8GFmuYPDFHYza7/7fVC?=
+ =?us-ascii?Q?gNe9YAwih8a5xTwFGEIQr9ncdDIWbXFpythKvh61BAZTdsj0qP60n+tSmP8M?=
+ =?us-ascii?Q?+41njHFGB71UZIPFdvERoQ2qMb3OxxXrcTtVDLQ0wE2QdX3Lyz0cm4Cygl8g?=
+ =?us-ascii?Q?OQtnzGyZFuzEcHV82wVXvpS37TMtNCXxTTIOwItBkVfcPYh4eaOjKUCJRO41?=
+ =?us-ascii?Q?qDsa4olNnUxOe3VeMV9DrGq9Gfj1gW5xC4FMIb5dOVkKsa6VptuUhE0f1u3M?=
+ =?us-ascii?Q?McveQW61Ecff4/3Psdglu4eCR6MZLcgKztUV+bqW2B5X2T+xKe8xHdSoyVhm?=
+ =?us-ascii?Q?fMAlv2+vuk64uyLhvn8hBWzLO7l3IEaDEZriDC17vz7EXkZWCjucCnqZSGay?=
+ =?us-ascii?Q?kwkF/rJAR2kgEgtP+C16pRK8JVpvSq0hXCHVoMYnXaP/6SgenUGSk4LdrfbE?=
+ =?us-ascii?Q?1Ije9P+BqP+J0a7gmibgaLJHj3nE8d+8xY1O0Kzp8iahox2UfdL3FA0dSQmc?=
+ =?us-ascii?Q?QZGLTZ0XTM5S9SdeJRRU3zDdQ3EDlii8LbxMzsfig/ce05wzCDJg+MAUwH6J?=
+ =?us-ascii?Q?s6sNNJg6kdjvWNFl/QAMWMQdZCqk1pX3fN03ak1V99Lo7SkAcy/gTIDvzR1K?=
+ =?us-ascii?Q?upOkPtBe4ufZNaQEl95Odg2tFm1/YVwAamtLRPi4QpxdBvOa88wJ3kM/mcfk?=
+ =?us-ascii?Q?G/EQ0rStcrQjCz6OJwjIwZMVjmdBk1n4sTPx5n12gAG95HXaWuEzD2sDQqWv?=
+ =?us-ascii?Q?L0/2OOV32uqB5JYfqmp3wXESdOI8i8G1RZWbxz/9Mg=3D=3D?=
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM6PR12MB3849.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230031)(366007)(7416005)(1800799015)(376005);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?us-ascii?Q?1X6otUY66Jcyv8MrxFErY1aF6wh+SjL5wLW0n4RR0UrHzIpH5RuVjOhXscxQ?=
+ =?us-ascii?Q?Z/kNaa/GW/SKGsmd2gk0XFe5zNuNdAkkzy81eq6dGTTrqyu0N24UVj7aLBCw?=
+ =?us-ascii?Q?2eWmsdNSZo9I3hfUfyvh76z9FFOVtJaZp/U/YDPm4lL0AEm6zsXPj5RLgIly?=
+ =?us-ascii?Q?LzbWE75gxC2YWjL+LZ5Pr/IBUGtWJJo7EbgnX0R9CRtnOc/1/cgx1uBvElm7?=
+ =?us-ascii?Q?b5YZZ+lRQPFbhS7S/8h6tPxdiBp+BY4ywWpvrBLv7yaHyFy6iUWUrxrbcIMV?=
+ =?us-ascii?Q?iafkAoFoc8+1aOOMC0yDOB4B3pArK5w//8svbNEDlZJJNt/nMBlV0LrHfG7g?=
+ =?us-ascii?Q?tmR+RkUUQG0tHj6tZPq3TBv7lEvrls9g8I/lypRvOajdQk0KdvrUYh6O73jP?=
+ =?us-ascii?Q?6wGhF3egouvjmUC/Mnvv72R1sjmAcjiBWvdMBy4EB2ELVvokqGealun0/ECc?=
+ =?us-ascii?Q?frwso6WwP38dTK+4h4auy0dBa6lTzzG4OP/mQttI098RqI2ztsH/hyT1hmNy?=
+ =?us-ascii?Q?6bOAiGxg3HnRMNRji27+HoyHtY1MH92p01oXMumdB4fZsdVz0U+DDl8HeAJr?=
+ =?us-ascii?Q?rj2Xnpsg+3H23hzXmaXAtFfCZno0qjLQQSXWgo5I/hxUI6fnyiKlIamtWwom?=
+ =?us-ascii?Q?pgmf3gstTGBlxo2PtzXiAYUuMNtyg4z84OwDQOC/MwTCM0ftYLqNdQAvtfh/?=
+ =?us-ascii?Q?3XeFr6FB0WZ9dJzxz5pY3SUs5wEOdGbCP+Xt94uLbCYarXKHKI628OOWXJzP?=
+ =?us-ascii?Q?MOaWu8cIeXg/rDpyqQ+i8Z1vpQ9ou5it3h1KATYsIaQcicVEpowUWBnRJalH?=
+ =?us-ascii?Q?yDjFd0J8tRULGUo+sLsY42hgbb5uNqLk3zKuxyEeXTzESZBRmWa3qnw11dz/?=
+ =?us-ascii?Q?L1vamdnFyDL+oRjAQAdG0ShkvRGEsRuBOvEFgZINdcsqfREWOVHTPgEN5zzU?=
+ =?us-ascii?Q?r9LRq6GDF0oEDHwzePjPWJ8NMZNABp0ZUgyhab6taEoiqTTdTHQJ8uHn+zUp?=
+ =?us-ascii?Q?x30tipqpz8eTxyQswI3xTrXA3PQCxdfO1Zb+FV8qZQItG/vO2IF8dEshxt50?=
+ =?us-ascii?Q?rLS9InYi8udf6F64gWZo+hnoVAVN/Da4/vBsjgXZomWAfKGrM12gBiJoscfx?=
+ =?us-ascii?Q?RXV7h87/ktmbYf2pTQGEk09s4viQXwq4h1ots40uEtGz2PvGbFJ3bT1l9Mdc?=
+ =?us-ascii?Q?u04bH8sdE+0ORbp+Fp9VdTmasq6J5ShTI1uM97Ja/pcIH+1D99P5vJjaWxiu?=
+ =?us-ascii?Q?HxfYAE27foa6amJzz/QevTEssuKMVWwBxVwqxdLHmyilSNYbsy/jODB1Nzn5?=
+ =?us-ascii?Q?KcSoszAsZefr2AsjOp66oxYc9I1QKkl6qGou6WvjcwTccRhgudZHp2AjdKXt?=
+ =?us-ascii?Q?vZ0rwUTTf+g0ze7nvPMxx2usyTxsoHyD7GsbUPKDaI5sH0/eshJiqvBny1sP?=
+ =?us-ascii?Q?oZCGDLaE2Scqnxj+/JAL92Xj+6dIpwJj/5jcUtkV2g/LEX+61dlUwPofKKYS?=
+ =?us-ascii?Q?32JWeopzeg9vrw+5GaEM2uN2xd8597OxGcTUreimhqfRHE4+ZDMQkw8pfeWf?=
+ =?us-ascii?Q?6dLX4sc9ieIcOYRx625SzxQfSeDyIGYkEMyQRc8X?=
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 73aea56d-09c0-4d47-3db2-08dc7bf44526
+X-MS-Exchange-CrossTenant-AuthSource: DM6PR12MB3849.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 24 May 2024 13:20:24.3145
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: UjrT/z9dsoj2HcvcRJgsXFhe1Lp3nQvkcCyiMUI61KEb5VxkBuqFTbeAyNkym59w
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH7PR12MB6955
 
-Add ACTLR data table for SC7280 along with support for
-same including SC7280 specific implementation operations.
+On Thu, May 23, 2024 at 10:40:07PM -0700, Nicolin Chen wrote:
+> On Thu, May 23, 2024 at 06:42:56AM +0000, Tian, Kevin wrote:
+> > > From: Nicolin Chen <nicolinc@nvidia.com>
+> > > Sent: Saturday, April 13, 2024 11:47 AM
+> > >
+> > > Introduce a new ioctl to set a per-viommu device virtual id that should be
+> > > linked to the physical device id (or just a struct device pointer).
+> > >
+> > > Since a viommu (user space IOMMU instance) can have multiple devices
+> > 
+> > this is true...
+> > 
+> > > while
+> > > it's not ideal to confine a device to one single user space IOMMU instance
+> > > either, these two shouldn't just do a 1:1 mapping. Add two xarrays in
+> > 
+> > ...but why would one device link to multiple viommu instances?
+> 
+> That's a suggestion from Jason, IIRC, to avoid limiting a device
+> to a single viommu, though I can't find out the source at this
+> moment.
+> 
+> Jason, would you mind shed some light here?
 
-Signed-off-by: Bibek Kumar Patro <quic_bibekkum@quicinc.com>
----
- drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c | 35 +++++++++++++++++++++-
- 1 file changed, 34 insertions(+), 1 deletion(-)
+We could probably do it either way, it just doesn't seem like there is
+a strong reason to limit a device to a single viommu even if in
+practice that is how everyone will use it.
 
-diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
-index b4521471ffe9..8dabc26fa10e 100644
---- a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
-+++ b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
-@@ -29,6 +29,32 @@
- #define PREFETCH_MODERATE	(2 << PREFETCH_SHIFT)
- #define PREFETCH_DEEP		(3 << PREFETCH_SHIFT)
-
-+static const struct actlr_config sc7280_apps_actlr_cfg[] = {
-+	{ 0x0800, 0x24e1, PREFETCH_DEFAULT | CMTLB },
-+	{ 0x2000, 0x0163, PREFETCH_DEFAULT | CMTLB },
-+	{ 0x2080, 0x0461, PREFETCH_DEFAULT | CMTLB },
-+	{ 0x2100, 0x0161, PREFETCH_DEFAULT | CMTLB },
-+	{ 0x0900, 0x0407, PREFETCH_SHALLOW | CPRE | CMTLB },
-+	{ 0x2180, 0x0027, PREFETCH_SHALLOW | CPRE | CMTLB },
-+	{ 0x1000, 0x07ff, PREFETCH_DEEP | CPRE | CMTLB },
-+};
-+
-+static const struct actlr_config sc7280_gfx_actlr_cfg[] = {
-+	{ 0x0000, 0x07ff, PREFETCH_DEEP | CPRE | CMTLB },
-+};
-+
-+static const struct actlr_variant sc7280_actlr[] = {
-+	{
-+		.io_start = 0x15000000,
-+		.actlrcfg = sc7280_apps_actlr_cfg,
-+		.num_actlrcfg = ARRAY_SIZE(sc7280_apps_actlr_cfg)
-+	}, {
-+		.io_start = 0x03da0000,
-+		.actlrcfg = sc7280_gfx_actlr_cfg,
-+		.num_actlrcfg = ARRAY_SIZE(sc7280_gfx_actlr_cfg)
-+	},
-+};
-+
- static const struct actlr_config sm8550_apps_actlr_cfg[] = {
- 	{ 0x18a0, 0x0000, PREFETCH_SHALLOW | CPRE | CMTLB },
- 	{ 0x18e0, 0x0000, PREFETCH_SHALLOW | CPRE | CMTLB },
-@@ -685,6 +711,13 @@ static const struct qcom_smmu_match_data sdm845_smmu_500_data = {
- 	/* Also no debug configuration. */
- };
-
-+static const struct qcom_smmu_match_data sc7280_smmu_500_impl0_data = {
-+	.impl = &qcom_smmu_500_impl,
-+	.adreno_impl = &qcom_adreno_smmu_500_impl,
-+	.cfg = &qcom_smmu_impl0_cfg,
-+	.actlrvar = sc7280_actlr,
-+	.num_smmu = ARRAY_SIZE(sc7280_actlr),
-+};
-
- static const struct qcom_smmu_match_data sm8550_smmu_500_impl0_data = {
- 	.impl = &qcom_smmu_500_impl,
-@@ -711,7 +744,7 @@ static const struct of_device_id __maybe_unused qcom_smmu_impl_of_match[] = {
- 	{ .compatible = "qcom,qdu1000-smmu-500", .data = &qcom_smmu_500_impl0_data  },
- 	{ .compatible = "qcom,sc7180-smmu-500", .data = &qcom_smmu_500_impl0_data },
- 	{ .compatible = "qcom,sc7180-smmu-v2", .data = &qcom_smmu_v2_data },
--	{ .compatible = "qcom,sc7280-smmu-500", .data = &qcom_smmu_500_impl0_data },
-+	{ .compatible = "qcom,sc7280-smmu-500", .data = &sc7280_smmu_500_impl0_data },
- 	{ .compatible = "qcom,sc8180x-smmu-500", .data = &qcom_smmu_500_impl0_data },
- 	{ .compatible = "qcom,sc8280xp-smmu-500", .data = &qcom_smmu_500_impl0_data },
- 	{ .compatible = "qcom,sdm630-smmu-v2", .data = &qcom_smmu_v2_data },
---
-2.34.1
-
+Jason
