@@ -1,58 +1,58 @@
-Received: from mail-lf1-f100.google.com (mail-lf1-f100.google.com [209.85.167.100])
+Received: from mail-wm1-f99.google.com (mail-wm1-f99.google.com [209.85.128.99])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5659041C73
-	for <iommu@lists.linux.dev>; Fri, 24 May 2024 18:28:05 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.100
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3075657CBB
+	for <iommu@lists.linux.dev>; Fri, 24 May 2024 18:28:03 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.99
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1716575289; cv=none; b=U/INXlON4/OGJ2/5LzUmI1imfnwBUqhC4LwiNUjs9YzTE9wIdw7ebipsJZMgCcPks9iOYD1ib1yjgK+kzBj7PKLNrMabSlpkakfVaZn/kfl7nHUZnSFsBn8hY1nqiHYvA+YgSEbaDcE5kB5gvAsP4meOMCnIbhjETCVatExc/u8=
+	t=1716575290; cv=none; b=azpeu/eJnBqnMQZQC47dsFvg+J9mIpgUIt4Z9pOo4CAFah5drRk+3MNDDwMrHuwSC875lmcMEiDFjGHK6C8pgHQ5ZainxS1GMvSHHSoWg1b0QJG+MsXNdw/pya9o/Ea08R8KKSfE3fl/MVK2hptPUnLfCXBoX02yEMKHqQTbAl8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1716575289; c=relaxed/simple;
-	bh=txNXDmI+i52QByifcvV/37TC8rzKbXT7VxR03bSa2jU=;
+	s=arc-20240116; t=1716575290; c=relaxed/simple;
+	bh=WfcHrNiYZ1rUh5ZyFbpbA7wYQtF/ZVKkB0GXxiX6I+E=;
 	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
-	 MIME-Version; b=bAsjp19r4x0HKfTqGGIoNUuA94paUYrI5OHsE1rIoElgO4hlHgDTEmuIgLm0DBSz4Q86FQtpM/eeIOGCum5fRAJKBdfAznFrwmqhuzJArU0RONiHVFjJ+xrVBStumxhm1fcy8kfXY2/LN42PU2cbc2t4NmJqVR6WcT0g3/5yZTk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=raspberrypi.com; spf=pass smtp.mailfrom=raspberrypi.com; dkim=pass (2048-bit key) header.d=raspberrypi.com header.i=@raspberrypi.com header.b=BPfF9Y6W; arc=none smtp.client-ip=209.85.167.100
+	 MIME-Version; b=jR8kSxN3R272gOknyy920NAxF4DCsaWKDsc6BpCDyZS7Sb5zSTPAE68DiYKFL5LTcJgkUyDND01FqKw47yzr3ASqwlHMTWQ8uZCFESwNjPK5G7+UWRSRp10tKn229eRf9ZqjMd+hXG81EygUQyNFGU9hVa85ylOIGg9pdUttbu0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=raspberrypi.com; spf=pass smtp.mailfrom=raspberrypi.com; dkim=pass (2048-bit key) header.d=raspberrypi.com header.i=@raspberrypi.com header.b=DtU3aeUd; arc=none smtp.client-ip=209.85.128.99
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=raspberrypi.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=raspberrypi.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=raspberrypi.com header.i=@raspberrypi.com header.b="BPfF9Y6W"
-Received: by mail-lf1-f100.google.com with SMTP id 2adb3069b0e04-5295dada905so922763e87.1
-        for <iommu@lists.linux.dev>; Fri, 24 May 2024 11:28:04 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=raspberrypi.com header.i=@raspberrypi.com header.b="DtU3aeUd"
+Received: by mail-wm1-f99.google.com with SMTP id 5b1f17b1804b1-420298ff5b1so88863105e9.1
+        for <iommu@lists.linux.dev>; Fri, 24 May 2024 11:28:03 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=raspberrypi.com; s=google; t=1716575281; x=1717180081; darn=lists.linux.dev;
+        d=raspberrypi.com; s=google; t=1716575280; x=1717180080; darn=lists.linux.dev;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=ILGqA7+HzXQqr0Ob8oymTx1wN+C0088/4KfGywkxvSc=;
-        b=BPfF9Y6W1L3OBQqpn/8lWmgUtfC9nm1I6NUkZ2gX42LWzfVVXFS94Td81scuEYi279
-         l6lvK0qZsHbvAQr57Byka8mlIGzaFp8uEKnGo5/3RBXy9RN0NamyszUUC25CFzkN2XKA
-         Dyhee2RCsMcynFqiwbq9vIy/G8WP1s7mzhAdz9JQEBhO0s4H7y4MAyH+Gk500hpH4vhg
-         jF6MVnfpCW+MBpaJg9G0jRs96GEaOkda2KbW9Z924RClOTOmEGh3uUMkFsB8veg7PBXw
-         NtMkP2XM3pvwdkLtKoK3SaIkB9YBs82hv7Ahdg73Kgb8ZIQk5K+fC9fU5qRDEOgNRxqC
-         hVTg==
+        bh=U0fkVyk6q1d4tTjNi28+nVqK2ri87Lnbs7bXh9cTiug=;
+        b=DtU3aeUdjlvX89SsAapnO1cqAHj1221UHLj7KN13VaqfA/PrFRnCJtetdvxubSoUnb
+         9eLcSEWHr5b6TujbdORO9CWUcSdKPyn1p1CggcKYg6ZhTJxaLQyeaBjaXSns7/hGiXdK
+         XNC5kL6vCzGXF1oFil0MK5ZadhgnLRB53nhyuyHmqerEBgRKuMR/vjRFfiQObtG7roHn
+         cEmNSSNmlsjv1XdUTiRswhmL48T2t/7nZrPrOVneA0/FocunuDJTfbkZ0TDWlX1OEulE
+         iXk20Mmke0mWrUBiX8/nJIfp8XhDInfuDEFjzB26DC/Mt95LbB55eCDAkUrSBY3zMhuI
+         NAAQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1716575281; x=1717180081;
+        d=1e100.net; s=20230601; t=1716575280; x=1717180080;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=ILGqA7+HzXQqr0Ob8oymTx1wN+C0088/4KfGywkxvSc=;
-        b=tQKeZpJGgXwqB2JHOv/bYVJDBos0MW9yYMmBWEODHc17hxPBMlpWQ9NzB0gwoU66la
-         xRaBZQ4ezZ50NlU9gcoL6TM4mitT+HVs54O6GcHwoKQlPBP0+4bfLVyqBKEFNIrMk8jw
-         OekLYXS1tLKflwOcsxjTrZgvKUf8Q8AlkCY4DjR/GrvsoNmwtzp3aL0gMBU8Wmznp7aw
-         DzadBjzhW1DCsPNfUXCUiJx8KsEKaokHp9P+BAd2pLt3u9kKdE17PWWdkiDSAD0A6GPJ
-         z6CczNvRig4OaHd9Jl69np9UbULWSEZUom2KF/jOa/L4WNQzUMASbymU6SlaxtbjgvXy
-         yTuw==
-X-Forwarded-Encrypted: i=1; AJvYcCV4PIMhbgriU2ooFEFHhZOBq5dqT6GPbzDsHYuNDzaRTbsdLo50F+PHWhqznK8BUAwSYpehQm17fR5dQ0LokDtqXAtkyxA=
-X-Gm-Message-State: AOJu0YxZVjoqIWmpva8AkQjKl3fAhLTNIilbXAG3dLxI9ysS6YXxr5LF
-	Blzkl5/MJGP+a0YDwSSxxRC8kOg6m5/jiZM2dRwHMUgwDA+pr8htJDLgOnw8rhy740Zchac1iDG
-	ZUESofF3NctB5oE8zI5/AnjIRdJkr7XVI
-X-Google-Smtp-Source: AGHT+IF1+0vxRvmRUWINjGzopDgrgXSdoJO/81rJkJR0w/gJjv8782tLukyv6IUMN4Wu5q+/dPS8x/uZhNPk
-X-Received: by 2002:a05:6512:290:b0:51d:7d4a:517e with SMTP id 2adb3069b0e04-527ef210aa5mr1916182e87.9.1716575281453;
-        Fri, 24 May 2024 11:28:01 -0700 (PDT)
+        bh=U0fkVyk6q1d4tTjNi28+nVqK2ri87Lnbs7bXh9cTiug=;
+        b=DwnBim/bBlFatcYv06GndEgDWcXShuSk2KrD09gaEW2UWNJDlFTDo8a88hQFKW3/4y
+         YordI877s/z/Edr4UztBWw0II5eq2ozdDAVBwioXnMM+1g41ba4g907fe9GzUqeC5HGP
+         TAevtWQCkJk7KAw4vfSugpAYrHVDMS/lM1p55+MmmpsHf+JTXTcoH1bRzdL8TVw62U86
+         tX0t8pB39ZRomawGWuTBSyPq5UZnRffEFCpuRPPbD48LNcXvylcB58OsYZ2kAgQ9JOlr
+         g9M200v/79+nYtxCYBZ5nFb96SIMZyH9FZrJYBM3ffvRfVBfmKNTNyKgFPYeZ1VRM1s8
+         9v6A==
+X-Forwarded-Encrypted: i=1; AJvYcCVXMoXSzGkIs6cg622lbW9LfgOjZHp5BKBfNhEaWDoTCmJGLYJgY7Hw7/+ZH3k4KzE98jiuYcPjLdS+SXjpbn5WClXJMBg=
+X-Gm-Message-State: AOJu0Yw3fmw6EaciqHF4mnf1MX1Z61UNqoMrRygKy+t5GiOxTYHj5GWw
+	t8cvwLLEmZRpErZOafnHH0ri2LsnpVIlWzn5bfkIOFxcm4URT5OrzoPhXEWmYCpkINAAGQzjLEB
+	8pzyddCyrO+bFgc+P042D04Cl9ENDIyW1
+X-Google-Smtp-Source: AGHT+IGBxnWkfl21ZWcAGGbY9pK5CCtvRZEInE2s9wbG2L53cMYgxcodxHXuIlPQ/f02qRVKa1ge9AFPlvFh
+X-Received: by 2002:a05:600c:3152:b0:421:757:4d3e with SMTP id 5b1f17b1804b1-42108a40f7emr33721035e9.16.1716575280608;
+        Fri, 24 May 2024 11:28:00 -0700 (PDT)
 Received: from raspberrypi.com ([188.39.149.98])
-        by smtp-relay.gmail.com with ESMTPS id 38308e7fff4ca-2e95bcd2393sm339921fa.6.2024.05.24.11.28.01
+        by smtp-relay.gmail.com with ESMTPS id 5b1f17b1804b1-42100fb1394sm5457725e9.43.2024.05.24.11.28.00
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 24 May 2024 11:28:01 -0700 (PDT)
+        Fri, 24 May 2024 11:28:00 -0700 (PDT)
 X-Relaying-Domain: raspberrypi.com
 From: Dave Stevenson <dave.stevenson@raspberrypi.com>
 To: Rob Herring <robh@kernel.org>,
@@ -91,9 +91,9 @@ Cc: devicetree@vger.kernel.org,
 	iommu@lists.linux.dev,
 	linux-sound@vger.kernel.org,
 	Dave Stevenson <dave.stevenson@raspberrypi.com>
-Subject: [PATCH 17/18] ASoC: bcm2835-i2s: Use phys addresses for DAI DMA
-Date: Fri, 24 May 2024 19:27:01 +0100
-Message-Id: <20240524182702.1317935-18-dave.stevenson@raspberrypi.com>
+Subject: [PATCH 16/18] drm/vc4: Use phys addresses for slave DMA config
+Date: Fri, 24 May 2024 19:27:00 +0100
+Message-Id: <20240524182702.1317935-17-dave.stevenson@raspberrypi.com>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20240524182702.1317935-1-dave.stevenson@raspberrypi.com>
 References: <20240524182702.1317935-1-dave.stevenson@raspberrypi.com>
@@ -107,69 +107,54 @@ Content-Transfer-Encoding: 8bit
 
 From: Phil Elwell <phil@raspberrypi.com>
 
-Contrary to what struct snd_dmaengine_dai_dma_data suggests, the
-configuration of addresses of DMA slave interfaces should be done in
-CPU physical addresses.
+Slave addresses for DMA are meant to be supplied as physical addresses
+(contrary to what struct snd_dmaengine_dai_dma_data does).
 
 Signed-off-by: Phil Elwell <phil@raspberrypi.com>
 Signed-off-by: Dave Stevenson <dave.stevenson@raspberrypi.com>
 ---
- sound/soc/bcm/bcm2835-i2s.c | 18 ++++--------------
- 1 file changed, 4 insertions(+), 14 deletions(-)
+ drivers/gpu/drm/vc4/vc4_hdmi.c | 15 ++++-----------
+ 1 file changed, 4 insertions(+), 11 deletions(-)
 
-diff --git a/sound/soc/bcm/bcm2835-i2s.c b/sound/soc/bcm/bcm2835-i2s.c
-index 9bda6499e66e..2d0fe53245f0 100644
---- a/sound/soc/bcm/bcm2835-i2s.c
-+++ b/sound/soc/bcm/bcm2835-i2s.c
-@@ -30,7 +30,6 @@
- #include <linux/init.h>
- #include <linux/io.h>
- #include <linux/module.h>
--#include <linux/of_address.h>
- #include <linux/slab.h>
- 
- #include <sound/core.h>
-@@ -830,8 +829,7 @@ static int bcm2835_i2s_probe(struct platform_device *pdev)
- 	struct bcm2835_i2s_dev *dev;
- 	int ret;
- 	void __iomem *base;
+diff --git a/drivers/gpu/drm/vc4/vc4_hdmi.c b/drivers/gpu/drm/vc4/vc4_hdmi.c
+index d30f8e8e8967..c2afd72bd96e 100644
+--- a/drivers/gpu/drm/vc4/vc4_hdmi.c
++++ b/drivers/gpu/drm/vc4/vc4_hdmi.c
+@@ -2696,7 +2696,7 @@ static int vc4_hdmi_audio_init(struct vc4_hdmi *vc4_hdmi)
+ 	struct snd_soc_card *card = &vc4_hdmi->audio.card;
+ 	struct device *dev = &vc4_hdmi->pdev->dev;
+ 	struct platform_device *codec_pdev;
 -	const __be32 *addr;
--	dma_addr_t dma_base;
-+	struct resource *res;
++	struct resource *iomem;
+ 	int index, len;
+ 	int ret;
  
- 	dev = devm_kzalloc(&pdev->dev, sizeof(*dev),
- 			   GFP_KERNEL);
-@@ -846,7 +844,7 @@ static int bcm2835_i2s_probe(struct platform_device *pdev)
- 				     "could not get clk\n");
+@@ -2732,22 +2732,15 @@ static int vc4_hdmi_audio_init(struct vc4_hdmi *vc4_hdmi)
+ 	}
  
- 	/* Request ioarea */
--	base = devm_platform_ioremap_resource(pdev, 0);
-+	base = devm_platform_get_and_ioremap_resource(pdev, 0, &res);
- 	if (IS_ERR(base))
- 		return PTR_ERR(base);
+ 	/*
+-	 * Get the physical address of VC4_HD_MAI_DATA. We need to retrieve
+-	 * the bus address specified in the DT, because the physical address
+-	 * (the one returned by platform_get_resource()) is not appropriate
+-	 * for DMA transfers.
+-	 * This VC/MMU should probably be exposed to avoid this kind of hacks.
++	 * Get the physical address of VC4_HD_MAI_DATA.
+ 	 */
+ 	index = of_property_match_string(dev->of_node, "reg-names", "hd");
+ 	/* Before BCM2711, we don't have a named register range */
+ 	if (index < 0)
+ 		index = 1;
++	iomem = platform_get_resource(vc4_hdmi->pdev, IORESOURCE_MEM, index);
  
-@@ -855,19 +853,11 @@ static int bcm2835_i2s_probe(struct platform_device *pdev)
- 	if (IS_ERR(dev->i2s_regmap))
- 		return PTR_ERR(dev->i2s_regmap);
- 
--	/* Set the DMA address - we have to parse DT ourselves */
--	addr = of_get_address(pdev->dev.of_node, 0, NULL, NULL);
--	if (!addr) {
--		dev_err(&pdev->dev, "could not get DMA-register address\n");
+-	addr = of_get_address(dev->of_node, index, NULL, NULL);
+-	if (!addr)
 -		return -EINVAL;
--	}
--	dma_base = be32_to_cpup(addr);
 -
- 	dev->dma_data[SNDRV_PCM_STREAM_PLAYBACK].addr =
--		dma_base + BCM2835_I2S_FIFO_A_REG;
-+		res->start + BCM2835_I2S_FIFO_A_REG;
+-	vc4_hdmi->audio.dma_data.addr = be32_to_cpup(addr) + mai_data->offset;
++	vc4_hdmi->audio.dma_data.addr = iomem->start + mai_data->offset;
+ 	vc4_hdmi->audio.dma_data.addr_width = DMA_SLAVE_BUSWIDTH_4_BYTES;
+ 	vc4_hdmi->audio.dma_data.maxburst = 2;
  
- 	dev->dma_data[SNDRV_PCM_STREAM_CAPTURE].addr =
--		dma_base + BCM2835_I2S_FIFO_A_REG;
-+		res->start + BCM2835_I2S_FIFO_A_REG;
- 
- 	/* Set the bus width */
- 	dev->dma_data[SNDRV_PCM_STREAM_PLAYBACK].addr_width =
 -- 
 2.34.1
 
