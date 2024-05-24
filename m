@@ -1,64 +1,64 @@
-Received: from mail-qv1-f53.google.com (mail-qv1-f53.google.com [209.85.219.53])
+Received: from mail-qt1-f177.google.com (mail-qt1-f177.google.com [209.85.160.177])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BA93112C475
-	for <iommu@lists.linux.dev>; Fri, 24 May 2024 14:16:59 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.219.53
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 319D712C475
+	for <iommu@lists.linux.dev>; Fri, 24 May 2024 14:24:48 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.160.177
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1716560221; cv=none; b=TlVNHTTXnxfptmnrF8FFMKm8MhoUnjyfGrHX8Zo0MIpqrRp/m5b7zjDz4L4cLUY+SFxYJyfKRGRgJHT8M0WNVf7/NT82qyJOr4l7j/f718UB8z2bsTDrSlBRne+S+4YrjhVNQc1+g/EMdcoEbdKH4X8neGJn8+ykkgltIyzEvNg=
+	t=1716560689; cv=none; b=eIJ6KhoQEbsGR0OlNC+GyDn7UjGULJDM2fcfIgm6xpD9a3Ebffzqr3zefax7LlGKUcWs6sE2jz9JBdOUF25ASpI/LdR0NH95DBTsFdxcENEncfZ4R1qT9n6sGfkFul/ZfISSZ1Ar6KGX14dNw1z2kTvYHS1HoOmk9T1fxflp84A=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1716560221; c=relaxed/simple;
-	bh=801tCOV5OAv0DZm2X9cQ9Ugasii44hxsZOXOquLuSwg=;
+	s=arc-20240116; t=1716560689; c=relaxed/simple;
+	bh=GAKoyrn5jaPJBZhMvzIPnR163kOxc9TRWI2BEHr/EOg=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=kdU9N7YG7LUdbvRx0UqlHwsV8zHX2ZEJhE+veVtOgNrBDmprOxNl9fhcfWQ2r50B3BtsiAGZS3Z3f34H/ZYFAyA3taFtPq8NRV7s/8mn8rUu5R5bT83l/NuFVo2EGy+HdDzler+0Us+3pMlSQ2FRLEhp/O039apDLwEdOcd6aVU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=YA7cj4Sl; arc=none smtp.client-ip=209.85.219.53
+	 Content-Type:Content-Disposition:In-Reply-To; b=lOiZIGmtICLNKolBkghSV8Zk/hgly6V2ufa1LgnD+uT4yFc8Fr7MRWum60sf1jN3mSLlf1CiZnV9RSTHHM/YDk53vpR4giVrzRIPF6tst+X1QiOJ30Svwc7Hpluho05243XhqNcAIpJS5FbtAQzV+HJL9VXA91hveVjdY60sGoE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=VykpIWF3; arc=none smtp.client-ip=209.85.160.177
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="YA7cj4Sl"
-Received: by mail-qv1-f53.google.com with SMTP id 6a1803df08f44-6ab9d9ad0c0so4669286d6.2
-        for <iommu@lists.linux.dev>; Fri, 24 May 2024 07:16:59 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="VykpIWF3"
+Received: by mail-qt1-f177.google.com with SMTP id d75a77b69052e-43df751b5b8so23450921cf.0
+        for <iommu@lists.linux.dev>; Fri, 24 May 2024 07:24:48 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google; t=1716560218; x=1717165018; darn=lists.linux.dev;
+        d=ziepe.ca; s=google; t=1716560687; x=1717165487; darn=lists.linux.dev;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=suZw9oB6HBTqRgA6OrNMLSYpruM3XqODKPk/UHtyCxE=;
-        b=YA7cj4SlAdoo3EjztBUGbGfWyyl3vVeziqttAo4YaGhkTjLQWdwu6eO/t/SpcqYnqe
-         ot7AQo7P5x5COoe7ieHUPZk5928G5miNXpFTM9ZhFYQzeQmxhVJH4PfH0UTAcQfnihgH
-         SSk35SZOflrS+oemkqvCouvMALElMAkE83YYnGtvQzQtAAHXa3QeuM1E3oZgizAvlbal
-         gd2r0CMRBtDnBJ1abI/Ea0AYWDP3YjEqlIj8YCuwhRxLSqt7VW59POZY3o3GyzxEDgVw
-         V0JwuPHH4wo1lkKR/oy7bjEY7qJkfJbsSmOJS3j4UwnOi7QazCFliE9fDh4Ox1Y0V7Zb
-         EOxA==
+        bh=8hYkOeLY4QiEED8wXU9jSl5gIYmutzD/WSLBujMKTRo=;
+        b=VykpIWF3y2EzBp5IiiIqWWFt7dlqO+yPEGBU0jSBN1ujxQiOSnag5mfJZdM7yftmCb
+         zwlH8uVuiw+3qC1E0HLh91LW8eBd6TiY+MmEAFXmpfaraoEWL3YEx7R80B3bO7J3Kr1U
+         TgFAlv53UJ9NLwLQ/H1bLKXw0QyM3y4vB30R/8k/P1t8cc2oWpGce/aQ4PQwbhSJIpol
+         5ynU/LaSvHAXObSEJX61fnbPBWPbLdhfkWicrTG4t59dVMRkHOJ/fX6SV67wq/6K1MTr
+         /ta6d5huHcnepG1IideWLEeENeUolbVcLiH3ILgg4veqDm4t2HMLhb3H0UkK1JALNT1w
+         LFdw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1716560218; x=1717165018;
+        d=1e100.net; s=20230601; t=1716560687; x=1717165487;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=suZw9oB6HBTqRgA6OrNMLSYpruM3XqODKPk/UHtyCxE=;
-        b=Mf8XWgz4YeLXwfXx7HBtaOYLtOH3cHEDiQD9iSppRun2PVifNf1cpmvLSExZZnsvJu
-         YemGf0nADaHHLZuUmDS9NWJescpfecajioKFqy1eNzxvq1SQi9KwFLcr9Iw3vCMCs/5W
-         lpHFnJ9Y2sXOxuIiZF8fMiBLjVHjyllV0Z3DSx7cXuUXjmyDIVoB0hhPvv4TSO9hu6UI
-         boDozL518yjxRqoeP0NM4g/Irez+kLvVRo1LBs13sN08xEeFxiZsT9jvGTv68tg6EwNw
-         y6jywJHHONNi5QcVUkJuhJddUgOeDQsId4o2nGqm4uQNo9cA/0he07FM5dit/ATpW+mM
-         a8rg==
-X-Forwarded-Encrypted: i=1; AJvYcCWRwn3oKf+kqnPLGy5b4DSZjhKDZjfBhy2z7Fus9zCzpnDEsiQLmnjI3u1HWCBlSPjl7x3gkz8PL0Di9WmXpI7L/xrj0cg=
-X-Gm-Message-State: AOJu0YxTeUjVRB7TTfv4GkZW1YfCH9gCb9rathBVvnAB9l41Hbz2+p5c
-	stbV2cP9xWwVlX0JZtcl7v1+4jtHexGUP0w4KB/lmtp8eC3YhKyjnW9dA+N4MyY=
-X-Google-Smtp-Source: AGHT+IGJz8qoEDJMKsE3K/mi44tccE8zp05AFCzKA8aB112w+RpaAl9TlJZS6IYNjZCyNnjlwMPUfw==
-X-Received: by 2002:a05:6214:2f09:b0:6ab:86fe:514c with SMTP id 6a1803df08f44-6abcd0b1f1cmr32057116d6.38.1716560218580;
-        Fri, 24 May 2024 07:16:58 -0700 (PDT)
+        bh=8hYkOeLY4QiEED8wXU9jSl5gIYmutzD/WSLBujMKTRo=;
+        b=A/c+S6nxwLV6Hog4ACUgGrcRCpnxvWnviArWtZHUQFXJum0HswNTbupTxjPn/pCDoH
+         Uv9190nNXdHAIFFSGRmo9iLMkPCZq5yx4xkL+4BXYCAuXf3q+yz+8YVedpJc6B33W4Ri
+         drlrfnxi8CUvTAKQfFT7kqQaL580zj/ybB22PqZaA8kXXrYVnmCpmg1E4z2IPRtTiYa1
+         MtEqIjO2VFSHKqgAN7FPqMMiWFuQCikQSV4Ga1AMmTbfK13BinCUBgMKo21Sfzxwb8Yn
+         JIJ42NnqqVZFg8aYGfwWujBCzKSqYeoR43d170NaHx1sOgMOPFrmrzGMLJ90tj7oYwHQ
+         o/5A==
+X-Forwarded-Encrypted: i=1; AJvYcCXUy6SZBqGSBMWdqayuytF/iQGrw/qlM/SSMHQPWCl4w0uo1zmjBOAz3uec1QIaNsNyCLYm7ikeDHq1gK+pfOhXKlUbJmo=
+X-Gm-Message-State: AOJu0Yw3+gPXURMesfT7pOzKkLYhhz6X9R+Rdi1pT6sG0zhFc9Jj0Pj3
+	a/wvnOEApwBf5YrLD1r8G7B43wx9juPtLixceGODVmc1aDAEGhxZPjoEg1uiqCs=
+X-Google-Smtp-Source: AGHT+IHQjREFVeKjhgG/zBc9srfJFpq4/cK6ER06u+9Acna36n0WAlHDtLFo5xXKXDhG9YwoKONBbQ==
+X-Received: by 2002:ac8:7d81:0:b0:439:d07d:e25f with SMTP id d75a77b69052e-43fafb16fa4mr46187801cf.16.1716560687135;
+        Fri, 24 May 2024 07:24:47 -0700 (PDT)
 Received: from ziepe.ca (hlfxns017vw-142-68-80-239.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.68.80.239])
-        by smtp.gmail.com with ESMTPSA id 6a1803df08f44-6ac070dab0dsm7645576d6.34.2024.05.24.07.16.57
+        by smtp.gmail.com with ESMTPSA id d75a77b69052e-43fb183507asm8326431cf.56.2024.05.24.07.24.46
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 24 May 2024 07:16:58 -0700 (PDT)
+        Fri, 24 May 2024 07:24:46 -0700 (PDT)
 Received: from jgg by wakko with local (Exim 4.95)
 	(envelope-from <jgg@ziepe.ca>)
-	id 1sAVj7-001Jqp-Hy;
-	Fri, 24 May 2024 11:16:57 -0300
-Date: Fri, 24 May 2024 11:16:57 -0300
+	id 1sAVqg-001KtA-6F;
+	Fri, 24 May 2024 11:24:46 -0300
+Date: Fri, 24 May 2024 11:24:46 -0300
 From: Jason Gunthorpe <jgg@ziepe.ca>
-To: Baolu Lu <baolu.lu@linux.intel.com>
-Cc: "Tian, Kevin" <kevin.tian@intel.com>, Joerg Roedel <joro@8bytes.org>,
+To: "Tian, Kevin" <kevin.tian@intel.com>
+Cc: Baolu Lu <baolu.lu@linux.intel.com>, Joerg Roedel <joro@8bytes.org>,
 	Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
 	Jean-Philippe Brucker <jean-philippe@linaro.org>,
 	Nicolin Chen <nicolinc@nvidia.com>,
@@ -68,12 +68,14 @@ Cc: "Tian, Kevin" <kevin.tian@intel.com>, Joerg Roedel <joro@8bytes.org>,
 	"iommu@lists.linux.dev" <iommu@lists.linux.dev>,
 	"virtualization@lists.linux-foundation.org" <virtualization@lists.linux-foundation.org>,
 	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH v5 5/9] iommufd: Add iommufd fault object
-Message-ID: <20240524141657.GO69273@ziepe.ca>
+Subject: Re: [PATCH v5 7/9] iommufd: Associate fault object with
+ iommufd_hw_pgtable
+Message-ID: <20240524142446.GP69273@ziepe.ca>
 References: <20240430145710.68112-1-baolu.lu@linux.intel.com>
- <20240430145710.68112-6-baolu.lu@linux.intel.com>
- <BN9PR11MB52769AC595B6BDA8FB4639258CEC2@BN9PR11MB5276.namprd11.prod.outlook.com>
- <79bacf16-dfa6-42c7-b02d-117985e38472@linux.intel.com>
+ <20240430145710.68112-8-baolu.lu@linux.intel.com>
+ <BN9PR11MB5276A8E898983310B83C399E8CEC2@BN9PR11MB5276.namprd11.prod.outlook.com>
+ <b09f96db-8451-4de9-81c5-312cffdfd4fc@linux.intel.com>
+ <BN9PR11MB5276F07A130CD617777A3AAD8CE92@BN9PR11MB5276.namprd11.prod.outlook.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -82,52 +84,49 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <79bacf16-dfa6-42c7-b02d-117985e38472@linux.intel.com>
+In-Reply-To: <BN9PR11MB5276F07A130CD617777A3AAD8CE92@BN9PR11MB5276.namprd11.prod.outlook.com>
 
-On Mon, May 20, 2024 at 09:24:09AM +0800, Baolu Lu wrote:
-> On 5/15/24 4:37 PM, Tian, Kevin wrote:
-> > > +static ssize_t iommufd_fault_fops_write(struct file *filep, const char __user
-> > > *buf,
-> > > +					size_t count, loff_t *ppos)
-> > > +{
-> > > +	size_t response_size = sizeof(struct iommu_hwpt_page_response);
-> > > +	struct iommufd_fault *fault = filep->private_data;
-> > > +	struct iommu_hwpt_page_response response;
-> > > +	struct iommufd_device *idev = NULL;
-> > > +	struct iopf_group *group;
-> > > +	size_t done = 0;
-> > > +	int rc;
-> > > +
-> > > +	if (*ppos || count % response_size)
-> > > +		return -ESPIPE;
-> > > +
-> > > +	mutex_lock(&fault->mutex);
-> > > +	while (count > done) {
-> > > +		rc = copy_from_user(&response, buf + done, response_size);
-> > > +		if (rc)
-> > > +			break;
-> > > +
-> > > +		if (!idev || idev->obj.id != response.dev_id)
-> > > +			idev = container_of(iommufd_get_object(fault->ictx,
-> > > +							       response.dev_id,
-> > > +
-> > > IOMMUFD_OBJ_DEVICE),
-> > > +					    struct iommufd_device, obj);
-> > > +		if (IS_ERR(idev))
-> > > +			break;
-> > > +
-> > > +		group = xa_erase(&idev->faults, response.cookie);
-> > > +		if (!group)
-> > > +			break;
-> > is 'continue' better?
+On Mon, May 20, 2024 at 03:39:54AM +0000, Tian, Kevin wrote:
+> > From: Baolu Lu <baolu.lu@linux.intel.com>
+> > Sent: Monday, May 20, 2024 10:19 AM
+> > 
+> > On 5/15/24 4:50 PM, Tian, Kevin wrote:
+> > >> From: Lu Baolu <baolu.lu@linux.intel.com>
+> > >> Sent: Tuesday, April 30, 2024 10:57 PM
+> > >>
+> > >> @@ -308,6 +314,19 @@ int iommufd_hwpt_alloc(struct iommufd_ucmd
+> > >> *ucmd)
+> > >>   		goto out_put_pt;
+> > >>   	}
+> > >>
+> > >> +	if (cmd->flags & IOMMU_HWPT_FAULT_ID_VALID) {
+> > >> +		struct iommufd_fault *fault;
+> > >> +
+> > >> +		fault = iommufd_get_fault(ucmd, cmd->fault_id);
+> > >> +		if (IS_ERR(fault)) {
+> > >> +			rc = PTR_ERR(fault);
+> > >> +			goto out_hwpt;
+> > >> +		}
+> > >> +		hwpt->fault = fault;
+> > >> +		hwpt->domain->iopf_handler = iommufd_fault_iopf_handler;
+> > >> +		hwpt->domain->fault_data = hwpt;
+> > >> +	}
+> > >
+> > > this is nesting specific. why not moving it to the nested_alloc()?
+> > 
+> > Nesting is currently a use case for userspace I/O page faults, but this
+> > design should be general enough to support other scenarios as well.
 > 
-> If we can't find a matched iopf group here, it means userspace provided
-> something wrong. The current logic is that we stop here and tell
-> userspace that only part of the faults have been responded to and it
-> should retry the remaining responses with the right message.
+> Do we allow user page table w/o nesting?
+> 
+> What would be a scenario in which the user doesn't manage the
+> page table but still want to handle the I/O page fault? The fault
+> should always be delivered to the owner managing the page table...
 
-The usual fd-ish error handling here should be to return a short write
-(success) and then userspace will retry with the failing entry at the
-start of the buffer and collect the errno.
+userspace always manages the page table, either it updates the IOPTE
+directly in a nest or it calls iommufd map operations.
+
+Ideally the driver will allow PRI on normal cases, although it will
+probably never be used.
 
 Jason
