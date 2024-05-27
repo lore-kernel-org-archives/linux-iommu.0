@@ -1,79 +1,126 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.13])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BC40E61FE1;
-	Mon, 27 May 2024 16:33:58 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BCB6E33C8
+	for <iommu@lists.linux.dev>; Mon, 27 May 2024 23:26:38 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.13
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1716827638; cv=none; b=ajjWKDP+Yl0fwIw4HgXJq6bvOk0RoM3eSkYrkK+pXaNpYcGJ72j9kSEFfLsAS8kpxA7oJlPY7iCuNB0pKEuR8lQwd+zsGKBc2ETqJ+a4hv14+dR9ELMLf/XQMdmyeFDiG7FAfbcxVwQoo8jCebNdyyrHsykLfh7pHzCMa3ELBRA=
+	t=1716852400; cv=none; b=q+pFAMmETzGQpN/R1kpMiLh1oxxa55RDhxaFaNCBDVQz8HFVtxM7YJ01SqSfjv18oUOgr0kbGwFag4IAUsnQOlS7ZDvGTln+mH56jTZmmssphheKr9puReLuDnQzl1Ejpc38/rlVqWyqFwMNAWeILYFZDsQXQObEVY5xf4etl5Q=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1716827638; c=relaxed/simple;
-	bh=FqwLRmZq7+sdJul6dGAtnX2DgoqP9PXXAfeDCFAU9F0=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=V0FAx6hA+6Gj+TWrxtIvuKZ1w7IyUMxJYREa0afsuxo70LXe4hOZkN9DAl0nNiSvUmaDoOsNyO9P3rlXOLFcdxNgQnHDbjQla7vqB6+VyxXRtS8Z8c81rHacCDjWYy/s6b+2twqaChtB8+t3F0nBlq+U9s7JNMHEx1sBI6/U/KE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=WJPYjlpf; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1716852400; c=relaxed/simple;
+	bh=ziUGs70MUhsa3utiTcHful7u5bPjfpCCTk98LwUamcc=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version:Content-Type; b=Cb012mGqz8SQ/NMb8oGN8uD3A7pv9ynEE+cscXFOpbeCx0znunalSeDg+I20A2ipn7gGYlQyZ7WgEIDY1V3N9B8Mv0Uj7bbWAJvL3q5LqH3U25WIf22qH5B7PZeooBjFMqSjWpiYczcOL+oMM1x8jpFqRfheLPRu7Hxnn8rCofI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=jaWyt7+9; arc=none smtp.client-ip=198.175.65.13
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="WJPYjlpf"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 61CD7C2BBFC;
-	Mon, 27 May 2024 16:33:57 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1716827638;
-	bh=FqwLRmZq7+sdJul6dGAtnX2DgoqP9PXXAfeDCFAU9F0=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=WJPYjlpfQfU1/Omo2Hf+yu0gJGY/UyDbMlGw+tPR1grvIwXGPv8YVJxVIZ7Mymkoj
-	 pio6+HfD+hWdU4TwlPSe9XtlJnM8Ix5kRh8jSUPFgUFjtrZZ2YtItH2N95gou//KtY
-	 CKL397Fvt5D8QtnkIxu3091HHRFzaC+gmxv+bTipNF91tZP1p02LnL9y3/1PFbcwE9
-	 z6/aoDbAYv1m4QiCykYoWjFEumHi6X8QkdWyxeatpOnj7h9KT5JxJtR/J6atyzw+Xi
-	 wgUchisEMjGRqxgNyDO5EBwueCVglI/nkflD5NdS04iUC9GNWh0yx7AGujlBg0hp2J
-	 rXVOEsBIuEanw==
-Date: Mon, 27 May 2024 11:33:54 -0500
-From: Bjorn Andersson <andersson@kernel.org>
-To: Neil Armstrong <neil.armstrong@linaro.org>
-Cc: Konrad Dybcio <konrad.dybcio@linaro.org>, 
-	Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>, 
-	Conor Dooley <conor+dt@kernel.org>, Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>, 
-	Robin Murphy <robin.murphy@arm.com>, linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org, 
-	linux-kernel@vger.kernel.org, iommu@lists.linux.dev
-Subject: Re: [PATCH 3/3] arm64: dts: qcom: sdm450: add Lenovo Smart Tab M10
- DTS
-Message-ID: <r243r56bz7nrp2guaqj2n26exdv6y5jyjtoytmceutd3cqbaao@r5xk3qlspwsi>
-References: <20240523-topic-sdm450-upstream-tbx605f-v1-0-e52b89133226@linaro.org>
- <20240523-topic-sdm450-upstream-tbx605f-v1-3-e52b89133226@linaro.org>
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="jaWyt7+9"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1716852399; x=1748388399;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=ziUGs70MUhsa3utiTcHful7u5bPjfpCCTk98LwUamcc=;
+  b=jaWyt7+9TIVAZYp0tuFwB1mW0DyF3Z8xXQ1Nbk+mEEMkNG+Bjamuxu5G
+   L3HOTvJw72o1baZnAsrJJtL7oEGIkpRhk3nMfRfeW3q8wMvoBmFHFu/7d
+   ttsdBC/L8Vx9VVAAu+o8DcS8jjPPamKg9K0Upi2RyCMGsp7l6VOvP8cCe
+   BBRUJzA4b7QKhLNteB8rREnI2SxN2o+CghVbDHHfkLF3g9QvpuUx//wCx
+   dqgK1D3qlJKwlCZplWcTFiBovaCJ7bYnu5/oRKA9dVmaqSZFV3ocvfLLL
+   7tYr+H3snz1uDfN/+6IEK3risWahyW0BzJ1rujjMxm2b1z3m6HLob/ZaY
+   g==;
+X-CSE-ConnectionGUID: AZPMsq+3S821N2TtmGDFmQ==
+X-CSE-MsgGUID: +KPPJsBlRq+sYXOFLqwljw==
+X-IronPort-AV: E=McAfee;i="6600,9927,11085"; a="24303130"
+X-IronPort-AV: E=Sophos;i="6.08,193,1712646000"; 
+   d="scan'208";a="24303130"
+Received: from fmviesa009.fm.intel.com ([10.60.135.149])
+  by orvoesa105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 May 2024 16:26:38 -0700
+X-CSE-ConnectionGUID: j+IfclDoTNmkENST37sIYA==
+X-CSE-MsgGUID: 18KPs6p+QA2u/Zv8xlJ50Q==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.08,193,1712646000"; 
+   d="scan'208";a="34954035"
+Received: from black.fi.intel.com ([10.237.72.28])
+  by fmviesa009.fm.intel.com with ESMTP; 27 May 2024 16:26:35 -0700
+Received: by black.fi.intel.com (Postfix, from userid 1003)
+	id 4A180184; Tue, 28 May 2024 02:26:34 +0300 (EEST)
+From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To: iommu@lists.linux.dev,
+	linux-kernel@vger.kernel.org
+Cc: Robin Murphy <robin.murphy@arm.com>,
+	Joerg Roedel <joro@8bytes.org>,
+	Will Deacon <will@kernel.org>,
+	Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+	=?UTF-8?q?N=C3=ADcolas=20F=20=2E=20R=20=2E=20A=20=2E=20Prado?= <nfraprado@collabora.com>
+Subject: [PATCH v1 1/1] iommu/dma: Make SG mapping and syncing robust against empty tables
+Date: Tue, 28 May 2024 02:26:25 +0300
+Message-ID: <20240527232625.462045-1-andriy.shevchenko@linux.intel.com>
+X-Mailer: git-send-email 2.43.0.rc1.1336.g36b5255a03ac
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20240523-topic-sdm450-upstream-tbx605f-v1-3-e52b89133226@linaro.org>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 
-On Thu, May 23, 2024 at 09:59:35AM GMT, Neil Armstrong wrote:
-> diff --git a/arch/arm64/boot/dts/qcom/sdm450-lenovo-tbx605f.dts b/arch/arm64/boot/dts/qcom/sdm450-lenovo-tbx605f.dts
-[..]
-> +&rpm_requests {
-> +	regulators {
-> +		compatible = "qcom,rpm-pm8953-regulators";
-[..]
-> +		pm8953_l8: l8 {
-> +			regulator-min-microvolt = <2900000>;
-> +			regulator-max-microvolt = <2900000>;
-> +		};
-[..]
-> +		pm8953_l11: l11 {
-> +			regulator-min-microvolt = <3300000>;
-> +			regulator-max-microvolt = <3300000>;
-> +		};
-[..]
-> +	};
-> +};
-> +
-> +&sdhc_1 {
-> +	vmmc-supply = <&pm8953_l8>;
+DMA mapping and syncing API might be called for the empty SG table where
+number of the original entries is 0 and a pointer to SG list may be not
+initialised at all. This all worked until the change to the code that
+started dereferensing SG list without checking the number of the
+original entries against 0. This might lead to the NULL pointer
+dereference if the caller won't perform a preliminary check for that.
+Statistically there are only a few cases in the kernel that do such a
+check. However, any attempt to make it alinged with the rest 99%+ cases
+will be a regression due to above mentioned relatively recent change.
+Instead of asking a caller to perform the checks, just return status quo
+to SG mapping and syncing callbacks, so they won't crash on
+uninitialised SG list.
 
-JFYI. Not ensuring that the vmmc-supply is in HPM mode bitten us
-multiple times in the past. 
+Reported-by: Nícolas F. R. A. Prado <nfraprado@collabora.com>
+Closes: https://lore.kernel.org/all/d3679496-2e4e-4a7c-97ed-f193bd53af1d@notapiano
+Fixes: 861370f49ce4 ("iommu/dma: force bouncing if the size is not cacheline-aligned")
+Fixes: 8cc3bad9d9d6 ("spi: Remove unneded check for orig_nents")
+Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+---
+ drivers/iommu/dma-iommu.c | 9 +++++++++
+ 1 file changed, 9 insertions(+)
 
-Regards,
-Bjorn
+diff --git a/drivers/iommu/dma-iommu.c b/drivers/iommu/dma-iommu.c
+index f731e4b2a417..83c9013aa341 100644
+--- a/drivers/iommu/dma-iommu.c
++++ b/drivers/iommu/dma-iommu.c
+@@ -1108,6 +1108,9 @@ static void iommu_dma_sync_sg_for_cpu(struct device *dev,
+ 	struct scatterlist *sg;
+ 	int i;
+ 
++	if (nelems < 1)
++		return;
++
+ 	if (sg_dma_is_swiotlb(sgl))
+ 		for_each_sg(sgl, sg, nelems, i)
+ 			iommu_dma_sync_single_for_cpu(dev, sg_dma_address(sg),
+@@ -1124,6 +1127,9 @@ static void iommu_dma_sync_sg_for_device(struct device *dev,
+ 	struct scatterlist *sg;
+ 	int i;
+ 
++	if (nelems < 1)
++		return;
++
+ 	if (sg_dma_is_swiotlb(sgl))
+ 		for_each_sg(sgl, sg, nelems, i)
+ 			iommu_dma_sync_single_for_device(dev,
+@@ -1324,6 +1330,9 @@ static int iommu_dma_map_sg_swiotlb(struct device *dev, struct scatterlist *sg,
+ 	struct scatterlist *s;
+ 	int i;
+ 
++	if (nents < 1)
++		return nents;
++
+ 	sg_dma_mark_swiotlb(sg);
+ 
+ 	for_each_sg(sg, s, nents, i) {
+-- 
+2.43.0.rc1.1336.g36b5255a03ac
+
