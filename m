@@ -1,29 +1,29 @@
 Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A5D1F4F201
-	for <iommu@lists.linux.dev>; Tue, 28 May 2024 07:20:06 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 296AC6CDBA
+	for <iommu@lists.linux.dev>; Tue, 28 May 2024 07:20:16 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.176.79.56
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1716880808; cv=none; b=d2VuqQYErnVjbzerBPAIeutZbtKeCLvsfeHjLN8tIrHJBDNAs8DurJa7p/8MlNvWDTAzCNNeiVrtkW9ZVBD0QTht46XnCthm5ybe5RgUBUl7PEkyPCJrmKDu+l+Od8+Z1PRbJNdJ8mceyuAMwERM+utmfyrglYno12H1596xZYo=
+	t=1716880818; cv=none; b=Z/41un8wSPqAQdwPG8oD/Vd/q7Z6UCQei39+bvQqQOOD9/Gjx2C8Xr2re5gRCuTTiVApkL7X3BtJwPs3EtIauEmSAXUb4qrWaPGUouF7xjbk7gPidQHuHCUiZy5JpdBTFTujc0Et2tF5pdiHCbv+PvdAb63pHvQLoNUaBATxFJg=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1716880808; c=relaxed/simple;
-	bh=uGLJdCj4guhWX0nR+9G+zxdvqT9mqK4+5X915xFs0n8=;
+	s=arc-20240116; t=1716880818; c=relaxed/simple;
+	bh=P1GwRF5oM/2H7fovETKZRqtnkZHOKk+ORvxnYFf2wWg=;
 	h=From:To:CC:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=PRUsCGvXIAz+vuVdaChyt3Jo7tUljhLDECmUV+qWuQMyIVJmz+foSTZFzGhWwiT3+U28WOXLg5uNBFPgMvgRmIpxbpoN8jmzEU2o93jUV3pcXXUsCSHY1XNQQPvyjdwTlKRbFdJVt95+2WUf6Yi2GZku7eANnVVfi+DHrN9Idqw=
+	 MIME-Version:Content-Type; b=F2vVPVOgmvhGBTHyMQAcCim82SK7r0XXB/ZgbJQOD81vsz4A6/NVaVRRJiNF1s95lhSPbhM2xRLKwBOq1HZmGmcCHNxH9/1BLRL1xFt146y68yK48jYTsB0dZPn8ftfpLxrUtmc5LUwY+wUu/u17uBRJFgMwP0AWuaDTqBFQQys=
 ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=huawei.com; spf=pass smtp.mailfrom=huawei.com; arc=none smtp.client-ip=185.176.79.56
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=huawei.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=huawei.com
 Received: from mail.maildlp.com (unknown [172.18.186.216])
-	by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4VpP1k3rQxz6J6Xq;
-	Tue, 28 May 2024 15:15:54 +0800 (CST)
+	by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4VpP5c1S5qz6K9C8;
+	Tue, 28 May 2024 15:19:16 +0800 (CST)
 Received: from lhrpeml500005.china.huawei.com (unknown [7.191.163.240])
-	by mail.maildlp.com (Postfix) with ESMTPS id B94C5140CB9;
-	Tue, 28 May 2024 15:20:04 +0800 (CST)
+	by mail.maildlp.com (Postfix) with ESMTPS id 81F32140A90;
+	Tue, 28 May 2024 15:20:15 +0800 (CST)
 Received: from A2303104131.china.huawei.com (10.126.170.13) by
  lhrpeml500005.china.huawei.com (7.191.163.240) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.1.2507.39; Tue, 28 May 2024 08:19:55 +0100
+ 15.1.2507.39; Tue, 28 May 2024 08:20:06 +0100
 From: Shameer Kolothum <shameerali.kolothum.thodi@huawei.com>
 To: <iommu@lists.linux.dev>, <linux-arm-kernel@lists.infradead.org>
 CC: <robin.murphy@arm.com>, <will@kernel.org>, <joro@8bytes.org>,
@@ -31,9 +31,9 @@ CC: <robin.murphy@arm.com>, <will@kernel.org>, <joro@8bytes.org>,
 	<nicolinc@nvidia.com>, <mshavit@google.com>, <eric.auger@redhat.com>,
 	<joao.m.martins@oracle.com>, <jiangkunkun@huawei.com>,
 	<zhukeqian1@huawei.com>, <linuxarm@huawei.com>
-Subject: [PATCH v4 3/7] iommu/arm-smmu-v3: Add support for domain_alloc_user fn
-Date: Tue, 28 May 2024 08:18:27 +0100
-Message-ID: <20240528071831.17560-4-shameerali.kolothum.thodi@huawei.com>
+Subject: [PATCH v4 4/7] iommu/arm-smmu-v3: Add feature detection for HTTU
+Date: Tue, 28 May 2024 08:18:28 +0100
+Message-ID: <20240528071831.17560-5-shameerali.kolothum.thodi@huawei.com>
 X-Mailer: git-send-email 2.12.0.windows.1
 In-Reply-To: <20240528071831.17560-1-shameerali.kolothum.thodi@huawei.com>
 References: <20240528071831.17560-1-shameerali.kolothum.thodi@huawei.com>
@@ -47,80 +47,108 @@ Content-Type: text/plain
 X-ClientProxiedBy: dggems703-chm.china.huawei.com (10.3.19.180) To
  lhrpeml500005.china.huawei.com (7.191.163.240)
 
-This will be used by iommufd for allocating usr managed domains and is
-also required when we add support for iommufd based dirty tracking
-support.
+From: Jean-Philippe Brucker <jean-philippe@linaro.org>
 
+If the SMMU supports it and the kernel was built with HTTU support,
+Probe support for Hardware Translation Table Update (HTTU) which is
+essentially to enable hardware update of access and dirty flags.
+
+Probe and set the smmu::features for Hardware Dirty and Hardware Access
+bits. This is in preparation, to enable it on the context descriptors of
+stage 1 format.
+
+Signed-off-by: Jean-Philippe Brucker <jean-philippe@linaro.org>
+Signed-off-by: Joao Martins <joao.m.martins@oracle.com>
+Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
+Reviewed-by: Ryan Roberts <ryan.roberts@arm.com>
+Reviewed-by: Kevin Tian <kevin.tian@intel.com>
 Signed-off-by: Shameer Kolothum <shameerali.kolothum.thodi@huawei.com>
 ---
- drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 33 +++++++++++++++++++--
- 1 file changed, 31 insertions(+), 2 deletions(-)
+ drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 33 +++++++++++++++++++++
+ drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h |  5 ++++
+ 2 files changed, 38 insertions(+)
 
 diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-index b574a36a7b95..b72a4f68ecd9 100644
+index b72a4f68ecd9..392e7e3601ea 100644
 --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
 +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-@@ -36,6 +36,8 @@ module_param(disable_msipolling, bool, 0444);
- MODULE_PARM_DESC(disable_msipolling,
- 	"Disable MSI-based polling for CMD_SYNC completion.");
- 
-+static struct iommu_ops arm_smmu_ops;
-+
- enum arm_smmu_msi_index {
- 	EVTQ_MSI_INDEX,
- 	GERROR_MSI_INDEX,
-@@ -2715,6 +2717,34 @@ static struct iommu_domain arm_smmu_blocked_domain = {
- 	.ops = &arm_smmu_blocked_ops,
- };
- 
-+static struct iommu_domain *
-+arm_smmu_domain_alloc_user(struct device *dev, u32 flags,
-+			   struct iommu_domain *parent,
-+			   const struct iommu_user_data *user_data)
-+{
-+	struct arm_smmu_master *master = dev_iommu_priv_get(dev);
-+	struct arm_smmu_domain *smmu_domain;
-+	int ret;
-+
-+	if (flags || parent || user_data)
-+		return ERR_PTR(-EINVAL);
-+
-+	smmu_domain = arm_smmu_domain_alloc();
-+	if (!smmu_domain)
-+		return ERR_PTR(-ENOMEM);
-+
-+	smmu_domain->domain.type = IOMMU_DOMAIN_UNMANAGED;
-+	smmu_domain->domain.ops = arm_smmu_ops.default_domain_ops;
-+	ret = arm_smmu_domain_finalise(smmu_domain, master->smmu);
-+	if (ret)
-+		goto err_free;
-+	return &smmu_domain->domain;
-+
-+err_free:
-+	kfree(smmu_domain);
-+	return ERR_PTR(ret);
-+}
-+
- static int arm_smmu_map_pages(struct iommu_domain *domain, unsigned long iova,
- 			      phys_addr_t paddr, size_t pgsize, size_t pgcount,
- 			      int prot, gfp_t gfp, size_t *mapped)
-@@ -2885,8 +2915,6 @@ static void arm_smmu_remove_master(struct arm_smmu_master *master)
- 	kfree(master->streams);
+@@ -3730,6 +3730,29 @@ static void arm_smmu_device_iidr_probe(struct arm_smmu_device *smmu)
+ 	}
  }
  
--static struct iommu_ops arm_smmu_ops;
--
- static struct iommu_device *arm_smmu_probe_device(struct device *dev)
++static void arm_smmu_get_httu(struct arm_smmu_device *smmu, u32 reg)
++{
++	u32 fw_features = smmu->features & (ARM_SMMU_FEAT_HA | ARM_SMMU_FEAT_HD);
++	u32 httu = FIELD_GET(IDR0_HTTU, reg);
++	u32 features = 0;
++
++	switch (httu) {
++	case IDR0_HTTU_ACCESS_DIRTY:
++		features |= ARM_SMMU_FEAT_HD;
++		fallthrough;
++	case IDR0_HTTU_ACCESS:
++		features |= ARM_SMMU_FEAT_HA;
++	}
++
++	if (smmu->dev->of_node)
++		smmu->features |= features;
++	else if (features != fw_features)
++		/* ACPI IORT sets the HTTU bits */
++		dev_warn(smmu->dev,
++			 "IDR0.HTTU(0x%x) overridden by FW configuration (0x%x)\n",
++			  httu, fw_features);
++}
++
+ static int arm_smmu_device_hw_probe(struct arm_smmu_device *smmu)
  {
- 	int ret;
-@@ -3101,6 +3129,7 @@ static struct iommu_ops arm_smmu_ops = {
- 	.blocked_domain		= &arm_smmu_blocked_domain,
- 	.capable		= arm_smmu_capable,
- 	.domain_alloc_paging    = arm_smmu_domain_alloc_paging,
-+	.domain_alloc_user	= arm_smmu_domain_alloc_user,
- 	.domain_alloc_sva       = arm_smmu_sva_domain_alloc,
- 	.probe_device		= arm_smmu_probe_device,
- 	.release_device		= arm_smmu_release_device,
+ 	u32 reg;
+@@ -3790,6 +3813,8 @@ static int arm_smmu_device_hw_probe(struct arm_smmu_device *smmu)
+ 			smmu->features |= ARM_SMMU_FEAT_E2H;
+ 	}
+ 
++	arm_smmu_get_httu(smmu, reg);
++
+ 	/*
+ 	 * The coherency feature as set by FW is used in preference to the ID
+ 	 * register, but warn on mismatch.
+@@ -3985,6 +4010,14 @@ static int arm_smmu_device_acpi_probe(struct platform_device *pdev,
+ 	if (iort_smmu->flags & ACPI_IORT_SMMU_V3_COHACC_OVERRIDE)
+ 		smmu->features |= ARM_SMMU_FEAT_COHERENCY;
+ 
++	switch (FIELD_GET(ACPI_IORT_SMMU_V3_HTTU_OVERRIDE, iort_smmu->flags)) {
++	case IDR0_HTTU_ACCESS_DIRTY:
++		smmu->features |= ARM_SMMU_FEAT_HD;
++		fallthrough;
++	case IDR0_HTTU_ACCESS:
++		smmu->features |= ARM_SMMU_FEAT_HA;
++	}
++
+ 	return 0;
+ }
+ #else
+diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
+index e67ce0f8867f..ac61b4c0a612 100644
+--- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
++++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
+@@ -33,6 +33,9 @@
+ #define IDR0_ASID16			(1 << 12)
+ #define IDR0_ATS			(1 << 10)
+ #define IDR0_HYP			(1 << 9)
++#define IDR0_HTTU			GENMASK(7, 6)
++#define IDR0_HTTU_ACCESS		1
++#define IDR0_HTTU_ACCESS_DIRTY		2
+ #define IDR0_COHACC			(1 << 4)
+ #define IDR0_TTF			GENMASK(3, 2)
+ #define IDR0_TTF_AARCH64		2
+@@ -648,6 +651,8 @@ struct arm_smmu_device {
+ #define ARM_SMMU_FEAT_E2H		(1 << 18)
+ #define ARM_SMMU_FEAT_NESTING		(1 << 19)
+ #define ARM_SMMU_FEAT_ATTR_TYPES_OVR	(1 << 20)
++#define ARM_SMMU_FEAT_HA		(1 << 21)
++#define ARM_SMMU_FEAT_HD		(1 << 22)
+ 	u32				features;
+ 
+ #define ARM_SMMU_OPT_SKIP_PREFETCH	(1 << 0)
 -- 
 2.34.1
 
