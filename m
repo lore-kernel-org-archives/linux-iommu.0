@@ -1,111 +1,113 @@
-Received: from mail-lj1-f179.google.com (mail-lj1-f179.google.com [209.85.208.179])
+Received: from mail-lf1-f46.google.com (mail-lf1-f46.google.com [209.85.167.46])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 15AC0153BD7
-	for <iommu@lists.linux.dev>; Tue, 28 May 2024 09:25:38 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.179
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1EE3616D4FE
+	for <iommu@lists.linux.dev>; Tue, 28 May 2024 12:19:38 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.46
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1716888342; cv=none; b=mHrM+dsCAGSzrIGGeaWthkBemEg0VRuhDeq4wqjBWN90384xoyxEGe3wu1S5bgkVfloPdfQ5JZeA10Dz2FzSgV9YLU2JOvycmN10PJzyY7VrmnpYvhsPV1JjwFVXd4TPwv+C9ptmgbPsisZaBi7YRi6JNRJQdc9BJkAecSwhP00=
+	t=1716898780; cv=none; b=rP9yRKKsplaAAO7DjdkUFs9JsPOGHlQ+ZUcvSboSvmRH5o1P/28axr0eVt1bQevMV2TyFrHPuDv1eYYAMl50IEhgmDzoQMX14FcYj3FGsRLE04A917KsIhDlNr63tp5LuVjncBc/x5UDb2gHfd1vgp7ZmKB1uSRjMk/gaus4x8M=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1716888342; c=relaxed/simple;
-	bh=OsYS7DkCn8nNtCFD65MUYsKRym72b+wJESsGapm9jiE=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=tlN5aJgzW9/3lNyGwKVYgAZrOEZKmDMyXgopw/CRssYGdAh+tN9MkWZTxdhhx4uNS9YAQ6/NLg/cHHEkvVeKHVVBCvk0IARje8Mu3GfNZB7LlON7wkpW4Y3U1SHeNz/Xi+U7cEppdx6hgnrlHodrQWHkrSEY0DO/VbqagGJwvJI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org; spf=pass smtp.mailfrom=linaro.org; dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b=z6uvTEtR; arc=none smtp.client-ip=209.85.208.179
+	s=arc-20240116; t=1716898780; c=relaxed/simple;
+	bh=2I4Qx4+DWic0UT3mZtzbY5yRspiHN1TfRVJkozbFlvY=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=BOOt32IwkMIugI+AijBT+NzFVDHIk4B1QfNz9wMixkqF2TOo3isIYy/TDYz3FHgBfnUAxIHoQFsDEBF66OUJzDlQDSX+noqVsJhG5nikyqqNh9UVLJepIFJfkFEYNRaes36BOBg7c0vX78sMVJ64+0056aIS2FozpaUY4QLMXZo=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org; spf=pass smtp.mailfrom=linaro.org; dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b=QlOoaDXM; arc=none smtp.client-ip=209.85.167.46
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linaro.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="z6uvTEtR"
-Received: by mail-lj1-f179.google.com with SMTP id 38308e7fff4ca-2e96f29884dso5395321fa.0
-        for <iommu@lists.linux.dev>; Tue, 28 May 2024 02:25:38 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="QlOoaDXM"
+Received: by mail-lf1-f46.google.com with SMTP id 2adb3069b0e04-5238b5c080cso885405e87.1
+        for <iommu@lists.linux.dev>; Tue, 28 May 2024 05:19:38 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1716888337; x=1717493137; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=g7gzbi64k1Z/YC0Cdr+2B8FH5cQuGNXkpk1kzN13Mv8=;
-        b=z6uvTEtRc7xA84jhtTGhpVJ1HX9z0Mzdgz83byGPtfIsZ2ogoD8eVLDihU/tTkbsbd
-         IEFy5WQUICYalpYCYe7/inNL3ijyMkU1ggPTzpIT2hYKeCqkLavFy7Fih/fueWn9BAba
-         MdbMuEUyqVk164LdQ1kuVLT+y6GKZ/ejm00B9d4vedRBZ1RVqjigK7yjn2SRwsTMuB/E
-         TZLuGbYiY9r04FNICYGvzT/rH8x5LOS6lAbXxzQiYO6Wj45JfC497eayyAD4Xo/8a7ju
-         fZ4s5A3pTdyUCMXScBXU0utps9AvkcIcBknANcyK5yBghFo6fMCBH9fYUJNZmY51wRwS
-         mNTw==
+        d=linaro.org; s=google; t=1716898777; x=1717503577; darn=lists.linux.dev;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=Hju/dzcDGwp1N89SfT9zfOLpGA1kJ/+7Gbdzfhg30W0=;
+        b=QlOoaDXMDnS/jW75NH0AmN1ETw6nCqnw5yV64MkBPRqZjMe7Un4B1Dc6Qy6PZkoi4q
+         TFexioIiog4ff/6yngkqr2t+P61ihLl0RwyyALaJ6zH6uT4n9aNHzA4u+UShm8t6HwTz
+         DeDRPU1rwp2uz7JTdHGF9xYtfvsTixGVp+oGKDa6+FmVYSYEV6k17sDYjM50VGu3xYSg
+         pM0dQThmIjSnnuEgGZto6Pvaw6PYCizbY22NY4Da5v5SXH+i/4+lSmEHixw/Eplu/98e
+         JDSNSC7Dld8PKlr6Dz6pq3vKugu8+jnEdmIjYw/VkzCkSzgVIyeGOK9QL9j4J8wmqWVl
+         KGYA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1716888337; x=1717493137;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=g7gzbi64k1Z/YC0Cdr+2B8FH5cQuGNXkpk1kzN13Mv8=;
-        b=u72Kh/CzdsWON+6Mu001Xeur2Bcp1BRT/cVguNhpMBud7CWnyKcpxaMsNeEexxb6ZC
-         tCem5h9aNAgyAMmCNdFDGqY53C3iuBh8FJRc2miCkQdYjhB64e/Kc7YCyJgZmQBcUUYe
-         EBNBOlTYIRWd55c6+MZ/XJsi8DPxE+m3SHEuLUzldgVA3AbPRjzbMkSQ0SMqPf/HyvxD
-         gZrggBe+L/7g+eQG5w1HrgPoNShv/zaiUifAq9HxdM2Bbx2Umw4qKSAygifKEN+YQb6/
-         GInmlg6jV2mR4ReDVySsssELTh3ibZcgitjvRsOt9xfYt2fZU59Wt2NTXhyHt+9Kt+3X
-         L/WA==
-X-Forwarded-Encrypted: i=1; AJvYcCWL0/ozX0/b/NPNH3haq/K43gcgMRUm4rLnheCOSIcz4615vMtOb4WclwUWbkCyF0pL3Sck5yJ2witgpzB4Z7unV1+8rUU=
-X-Gm-Message-State: AOJu0Yz1v+r24gmIRVHgNeEb0fZ1jYIMbnbnjyfM4h4YcLqw77nFS+Lp
-	w9hwF6o7+lh9rzdaCepOj4OIvkr+8DjPFoF1TqyYFieGJ/wSg2wlFMJbk6Q/BwE=
-X-Google-Smtp-Source: AGHT+IHp84txR1MlPRb+aUhMu7G2+lw7W/QUySdZsZd9yNkSp9JrXsZVz+sK5xQ4n6Nplmjdc1t8LA==
-X-Received: by 2002:a2e:9ad9:0:b0:2e4:e15d:40b0 with SMTP id 38308e7fff4ca-2e95b2566eemr77100521fa.32.1716888337212;
-        Tue, 28 May 2024 02:25:37 -0700 (PDT)
-Received: from myrica ([2.221.137.100])
-        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-3557a1c9570sm11072618f8f.68.2024.05.28.02.25.36
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 28 May 2024 02:25:36 -0700 (PDT)
-Date: Tue, 28 May 2024 10:25:28 +0100
-From: Jean-Philippe Brucker <jean-philippe@linaro.org>
-To: Lu Baolu <baolu.lu@linux.intel.com>
-Cc: Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
-	Robin Murphy <robin.murphy@arm.com>, Jason Gunthorpe <jgg@ziepe.ca>,
-	Kevin Tian <kevin.tian@intel.com>, iommu@lists.linux.dev,
-	linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 1/1] iommu: Return right value in iommu_sva_bind_device()
-Message-ID: <20240528092528.GA2482616@myrica>
-References: <20240528042528.71396-1-baolu.lu@linux.intel.com>
+        d=1e100.net; s=20230601; t=1716898777; x=1717503577;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=Hju/dzcDGwp1N89SfT9zfOLpGA1kJ/+7Gbdzfhg30W0=;
+        b=NEB3cVDXi0T8gSPb33gerOLm+ykhAwBXCEzE9SlHLzko7Gbz9lYYUlrMGp+AmgGI9r
+         mwtQMliRlO9nRK8QWbJWQNJNsgERsuXRK4XGcWL9GtA/+ck12JN0ebCF+uNcrNSBeb8t
+         qQPXfBzojUXxbaFfKTbQh1idZ5C6b2LDklU5HqrmzOvvCmZg4ZeFg8xAuSZ5OjptmpLw
+         4144ny07Y/US2Qe/7qIMc1IAjzdoVm/CxRrzzUAbEIlISdNV8TK77UYmnAER60dEqRKi
+         +rR4AnkAIqrW2DpRySMwhY4oysAc0SFUw++zl+TzM7AC3nwPLH8YJtdroq2WLRBDFp1r
+         70rA==
+X-Forwarded-Encrypted: i=1; AJvYcCWyhuHDt1S6Ym5cMD58B0oWTsjZu6R/Cc2VkaXW3McSnnOK4uzZ++5xu77wBWVS07GS9h03btJkPpx0Tm3NfOjZyygoEhw=
+X-Gm-Message-State: AOJu0YzeIoI2VP4vg4qTpanRNCXB1/a7PGHP2dmQI4CmgxMumMHwAlAt
+	24UzU7cBbH2WYFU+cg7qgfkP252osaWQa/NxJyzM1BSGzulLoFzll4dtTXtD3rc=
+X-Google-Smtp-Source: AGHT+IHb1zZQ0sL2m4mtu8iyp037bOz4p0I+XuGUCtiG8LAL7GAHOoS34U8irKyS9Nn44UCM5bAh2Q==
+X-Received: by 2002:a05:6512:6c9:b0:520:9775:5d4b with SMTP id 2adb3069b0e04-529641099a8mr10692697e87.13.1716898777293;
+        Tue, 28 May 2024 05:19:37 -0700 (PDT)
+Received: from ?IPV6:2a00:f41:c97:23a9:35bc:df2e:d894:2c76? ([2a00:f41:c97:23a9:35bc:df2e:d894:2c76])
+        by smtp.gmail.com with ESMTPSA id 2adb3069b0e04-52970c32e26sm941501e87.184.2024.05.28.05.19.30
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 28 May 2024 05:19:36 -0700 (PDT)
+Message-ID: <9d26e798-739c-4128-8d34-79725f1b058d@linaro.org>
+Date: Tue, 28 May 2024 14:19:28 +0200
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20240528042528.71396-1-baolu.lu@linux.intel.com>
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH 3/3] arm64: dts: qcom: sdm450: add Lenovo Smart Tab M10
+ DTS
+To: Bjorn Andersson <andersson@kernel.org>,
+ Neil Armstrong <neil.armstrong@linaro.org>
+Cc: Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>,
+ Conor Dooley <conor+dt@kernel.org>, Joerg Roedel <joro@8bytes.org>,
+ Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
+ linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org,
+ linux-kernel@vger.kernel.org, iommu@lists.linux.dev
+References: <20240523-topic-sdm450-upstream-tbx605f-v1-0-e52b89133226@linaro.org>
+ <20240523-topic-sdm450-upstream-tbx605f-v1-3-e52b89133226@linaro.org>
+ <r243r56bz7nrp2guaqj2n26exdv6y5jyjtoytmceutd3cqbaao@r5xk3qlspwsi>
+Content-Language: en-US
+From: Konrad Dybcio <konrad.dybcio@linaro.org>
+In-Reply-To: <r243r56bz7nrp2guaqj2n26exdv6y5jyjtoytmceutd3cqbaao@r5xk3qlspwsi>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-On Tue, May 28, 2024 at 12:25:28PM +0800, Lu Baolu wrote:
-> iommu_sva_bind_device() should return either a sva bond handle or an
-> ERR_PTR value in error cases. Existing drivers (idxd and uacce) only
-> check the return value with IS_ERR(). This could potentially lead to
-> a kernel NULL pointer dereference issue if the function returns NULL
-> instead of an error pointer.
-> 
-> In reality, this doesn't cause any problems because iommu_sva_bind_device()
-> only returns NULL when the kernel is not configured with CONFIG_IOMMU_SVA.
-> In this case, iommu_dev_enable_feature(dev, IOMMU_DEV_FEAT_SVA) will
-> return an error, and the device drivers won't call iommu_sva_bind_device()
-> at all.
-> 
-> Fixes: 26b25a2b98e4 ("iommu: Bind process address spaces to devices")
-> Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
 
-Reviewed-by: Jean-Philippe Brucker <jean-philippe@linaro.org>
 
-> ---
->  include/linux/iommu.h | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
+On 5/27/24 18:33, Bjorn Andersson wrote:
+> On Thu, May 23, 2024 at 09:59:35AM GMT, Neil Armstrong wrote:
+>> diff --git a/arch/arm64/boot/dts/qcom/sdm450-lenovo-tbx605f.dts b/arch/arm64/boot/dts/qcom/sdm450-lenovo-tbx605f.dts
+> [..]
+>> +&rpm_requests {
+>> +	regulators {
+>> +		compatible = "qcom,rpm-pm8953-regulators";
+> [..]
+>> +		pm8953_l8: l8 {
+>> +			regulator-min-microvolt = <2900000>;
+>> +			regulator-max-microvolt = <2900000>;
+>> +		};
+> [..]
+>> +		pm8953_l11: l11 {
+>> +			regulator-min-microvolt = <3300000>;
+>> +			regulator-max-microvolt = <3300000>;
+>> +		};
+> [..]
+>> +	};
+>> +};
+>> +
+>> +&sdhc_1 {
+>> +	vmmc-supply = <&pm8953_l8>;
 > 
-> diff --git a/include/linux/iommu.h b/include/linux/iommu.h
-> index 7bc8dff7cf6d..17b3f36ad843 100644
-> --- a/include/linux/iommu.h
-> +++ b/include/linux/iommu.h
-> @@ -1533,7 +1533,7 @@ struct iommu_domain *iommu_sva_domain_alloc(struct device *dev,
->  static inline struct iommu_sva *
->  iommu_sva_bind_device(struct device *dev, struct mm_struct *mm)
->  {
-> -	return NULL;
-> +	return ERR_PTR(-ENODEV);
->  }
->  
->  static inline void iommu_sva_unbind_device(struct iommu_sva *handle)
-> -- 
-> 2.34.1
-> 
+> JFYI. Not ensuring that the vmmc-supply is in HPM mode bitten us
+> multiple times in the past.
+
+it's not rpmh ;)
+
+Konrad
