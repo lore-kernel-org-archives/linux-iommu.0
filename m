@@ -1,219 +1,163 @@
-Received: from mail-pf1-f169.google.com (mail-pf1-f169.google.com [209.85.210.169])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from NAM11-DM6-obe.outbound.protection.outlook.com (mail-dm6nam11on2066.outbound.protection.outlook.com [40.107.223.66])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AEFA717333E
-	for <iommu@lists.linux.dev>; Tue, 28 May 2024 16:09:18 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.169
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1716912560; cv=none; b=HxE7t4GBLeEQFS+5tXzaxNZs1DxbFP2q8b4coFRMNHm0bmU+tngtARLQZSGKXxC8zWmsRqra30bZ/bt4Anl7gQTJnc9iUIxjCX2D86tizf5gIAXVec+Z+VDhoUgmUhzZPTM/0RSUYZVEGCBX4NBCXKutJBapIxqJKlp5DCUvYM0=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1716912560; c=relaxed/simple;
-	bh=bDYuIgQuv3MhFs8SVJuTlfnd4RnjBYwOgR5EG+5wd58=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=eAHnoSGHqZAuEOQVoebMFVHERI1T3mwoq/jGXxWN8ExR0C5b68IgcMGlRYlppuALwL8Js9LYIceYK/gUH9Vv1FgQGMNF0jzZhOR2WCmFVAQpfulcmrRP+B55Aqv/7/ievNcocaHo4ONh0u1xi2EwGAtYineEm/uTDmFK6eVE+Bs=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org; spf=pass smtp.mailfrom=linaro.org; dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b=u8MgjVk5; arc=none smtp.client-ip=209.85.210.169
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linaro.org
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E697416D4FF
+	for <iommu@lists.linux.dev>; Tue, 28 May 2024 16:40:07 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.223.66
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1716914409; cv=fail; b=qmrUxkI9o4MWCNUGuJ1wuCs6z0EyIlHi34gj5RlGdRhSOeDcoOL/OdT9oOL508N5lMjvghlPxxcmL1mGDrFB7d96Dwlb6IUzrt0D4r94qAAEhKxlSjtn9c0r9MIdsecDNah3h6XZ7fODL+iCALoRg4qgr9j1vxgR1XAZcUVAepA=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1716914409; c=relaxed/simple;
+	bh=VJRhGDWhAZ/zuFYAyc2dGvCErZnPdX2g4WzcMhFA1Oc=;
+	h=From:To:CC:Subject:Date:Message-ID:MIME-Version:Content-Type; b=Bb07Xi+mtjB7urzeJmsTc0rBC6uwXsoFcvMpX6YUPYOx/eZaiCpVdD9tfuQsrtf/Ih2cXG1YdulPJuUi6R2U4tDIeDJpfajf3ElAZPEJNyhXG5CLuds6//fZjZ+fwpw8ALRYltbz8tRCQIhcBuoqxX9vsGYQhk1djbSmLXCQjEI=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com; spf=fail smtp.mailfrom=amd.com; dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b=dnpbt/DV; arc=fail smtp.client-ip=40.107.223.66
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=amd.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="u8MgjVk5"
-Received: by mail-pf1-f169.google.com with SMTP id d2e1a72fcca58-6f966840af7so860964b3a.2
-        for <iommu@lists.linux.dev>; Tue, 28 May 2024 09:09:18 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1716912558; x=1717517358; darn=lists.linux.dev;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=/T5d6c9CKWOo6KiywfsZr/KUsXoqKTqM2ZtZzV03hwQ=;
-        b=u8MgjVk5luMChFeas8ARHBp6ArSiGF8zytYMRozX/gpjdbIZkITx6a31N/ooblJ9br
-         zD/auu9gokhXRqjMBCPLr9yFGdrHZwqYMpQNVMVhU9iGnfMcYVaq3810mvzcnYIfgISZ
-         IuTdA8XXsnZ82cNxyBnSRPa1cNIAGaQ+UroxZNjA4cvF8Nms6Y1Nuwqw1eT9PnUSJDtV
-         RCvnJkMvNNWvHU3Ozz8teTzlOfjE9KxMu+/Yr0xD6x8Og7YB/I62Dlqc8Dft+BZyIbUJ
-         GqJZPlVI9WQZ7K0FVTOtgomcAqPhtxLSBo8Ex2rz1vgQAqkVRpc4XyprE93awJDSPj5D
-         JMWQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1716912558; x=1717517358;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=/T5d6c9CKWOo6KiywfsZr/KUsXoqKTqM2ZtZzV03hwQ=;
-        b=Vc8R6879GYTrPy5BANfOpnAo789WeqmFBAu7stGidrCqpx0AJhK2yjTMI6sSdmBfLq
-         lt1mXsWTc8s3aKcgG+DLmw9w90tSmAIe4tznxsQoAC46E3cqpbamDfHm2N++aqgY8dLT
-         R2Cq0uW0dIcGKkDk0zJV23JT/6Phdvd6e8QM67Xe4uhdWJmpjA1/MYV2ljBGBGsUnK7Y
-         t3On9riefEy8Ec/8UvXTkmV2iIART4B0Gf1p6LEVSifRENsX8NMoObzS4/2u6eUJao63
-         ssKqkA79fD/bAOB7I3buSWSdB7RxoWMPjSWiWNhcguP4FXXYnrH8tzVwPtleJZUrrPwb
-         ZVtw==
-X-Forwarded-Encrypted: i=1; AJvYcCXalsdw55MdIwg+5BJwPEvWcz5w/i9puVhjADefV3QkTnfpnv3+z+ld4bhledXoStIarRNW0d059oY0RCNoJdRWQ01aDfU=
-X-Gm-Message-State: AOJu0Yy8Fr8hurErxcPuzCluNwStW8+puVDygpsVfQOU9Vecybb8VReN
-	MeVO4bbN3l/4lOVp9LYnqotuHzrcLcdN4I5WR9pSjmICy8rpyHy48ZhKwjVKAd7eW5bh36mO5Ui
-	3v36r5UKu3MSYZxjX6TeIEuW5QQumDBTDAinumw==
-X-Google-Smtp-Source: AGHT+IF7Y4UTjK7B9c7gQCgmKZJrzKmO7YzaO50rJedO1tvD04WxzrFxX+TEhHVj+99gHywgOVea6bGHRNcMFkS6QhE=
-X-Received: by 2002:a17:902:d492:b0:1f4:a057:f927 with SMTP id
- d9443c01a7336-1f4a058014cmr62152365ad.45.1716912557839; Tue, 28 May 2024
- 09:09:17 -0700 (PDT)
+	dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b="dnpbt/DV"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=W1drYtIx0YVp0pAubycvNuyy4CV+vB+FSqp7lTlG/DSMl85FcJAZ+sH6kIh67mp7+G3m17QCvW4gvDyzOW+9K7poF39qFj+rGK6/eo4hQRzUB1CrfVGnq1ZJLvnbRDDjSRuA/JRvcb6QcUzFO8G/I5kQOQzMQIwTTVwELlvyRUmV1AZfmJQYIe1dhBlOb6V6yQ/vesH7dgN5szrvVMeJmwax4155T/p1xEZ2aTh5wdH7Y2k+T/s/GOfB/H7DENIMsQbuf63m8ab/kg5JkwPBf2cQhi2+Uo2AXIyRjb0fMXICmQnXyyGVdyiGEPPczuooI8qSocPDV0VJmBzA61TDnw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=tSGGMA2vZzBZSAo2rjJGAiRxcRz0ynsnRpip6bi1Eqc=;
+ b=F53vSPJcqi31igao2tkz3tHQcHUHhJ53mquGd4QxBaru6Dqng5E99zXcexB1XkhcS+d0YQpYzAsNQnvA46biuQJV8D/b2Qf2vGuEh9Otlm5bIeRtjdNrMSxLYdhKKPrQobIlkRtCYOk29WwyHftcwNGPslk418oRvZq35ROxjZwVIoYk52VDNv82fIV8ASoD6vYwQGSmpWsfuDdpOViLzViunsqH8VC5A1wezelABkxAexXJrSTyIqPDmAove98szwMIwSa1usk7aJ2oK3nZz6iCRtDII8YPQpgO98YRtlt6ZekqD5CPqWDXf02u5L6/hKebnfptpGpOIuSKdAdnVw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 165.204.84.17) smtp.rcpttodomain=lists.linux.dev smtp.mailfrom=amd.com;
+ dmarc=pass (p=quarantine sp=quarantine pct=100) action=none
+ header.from=amd.com; dkim=none (message not signed); arc=none (0)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=tSGGMA2vZzBZSAo2rjJGAiRxcRz0ynsnRpip6bi1Eqc=;
+ b=dnpbt/DVkiNOSns334/wONx98Uk8dVwYa0eew9iEP2LxUA975dyaA1SAtILcX3qHXMPfdXR6A0Aez2XRYbROaoPKykkeNdX+Ln9j0RJhjRi3QloyK4S32A/0UYuIvCrY8B+DLg3KGlMMjfQACinT/lc6iPD9rxM9/fo7qWIrwJs=
+Received: from SA0PR11CA0131.namprd11.prod.outlook.com (2603:10b6:806:131::16)
+ by SA1PR12MB6994.namprd12.prod.outlook.com (2603:10b6:806:24d::18) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7611.22; Tue, 28 May
+ 2024 16:40:04 +0000
+Received: from SA2PEPF000015CC.namprd03.prod.outlook.com
+ (2603:10b6:806:131:cafe::41) by SA0PR11CA0131.outlook.office365.com
+ (2603:10b6:806:131::16) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7633.18 via Frontend
+ Transport; Tue, 28 May 2024 16:40:04 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 165.204.84.17)
+ smtp.mailfrom=amd.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=amd.com;
+Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
+ 165.204.84.17 as permitted sender) receiver=protection.outlook.com;
+ client-ip=165.204.84.17; helo=SATLEXMB04.amd.com; pr=C
+Received: from SATLEXMB04.amd.com (165.204.84.17) by
+ SA2PEPF000015CC.mail.protection.outlook.com (10.167.241.202) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.20.7633.15 via Frontend Transport; Tue, 28 May 2024 16:40:04 +0000
+Received: from kali.amd.com (10.180.168.240) by SATLEXMB04.amd.com
+ (10.181.40.145) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2507.35; Tue, 28 May
+ 2024 11:40:00 -0500
+From: Vasant Hegde <vasant.hegde@amd.com>
+To: <iommu@lists.linux.dev>, <joro@8bytes.org>
+CC: <suravee.suthikulpanit@amd.com>, Vasant Hegde <vasant.hegde@amd.com>,
+	Lianbo Jiang <lijiang@redhat.com>, Robin Murphy <robin.murphy@arm.com>
+Subject: [PATCH 1/2] iommu: Take group lock before attaching device in iommu_deferred_attach()
+Date: Tue, 28 May 2024 16:39:39 +0000
+Message-ID: <20240528163940.48789-1-vasant.hegde@amd.com>
+X-Mailer: git-send-email 2.34.1
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <20240123144543.9405-1-quic_bibekkum@quicinc.com>
- <20240123144543.9405-4-quic_bibekkum@quicinc.com> <CAF6AEGs3_wBNo58EbGicFoQuq8--fDohTGv1JSFgoViygLS5Lg@mail.gmail.com>
- <f2222714-1e00-424e-946d-c314d55541b8@quicinc.com> <51b2bd40-888d-4ee4-956f-c5239c5be9e9@linaro.org>
- <0a867cd1-8d99-495e-ae7e-a097fc9c00e9@quicinc.com> <7140cdb8-eda4-4dcd-b5e3-c4acdd01befb@linaro.org>
- <omswcicgc2kqd6gp4bebd43sklfs2wqyaorhfyb2wumoeo6v74@gaay3p5m46xi> <CAF6AEGub2b5SRw7kDUGfKQQ35VSsMkQ9LNExSkyHHczdFa2T4Q@mail.gmail.com>
-In-Reply-To: <CAF6AEGub2b5SRw7kDUGfKQQ35VSsMkQ9LNExSkyHHczdFa2T4Q@mail.gmail.com>
-From: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
-Date: Tue, 28 May 2024 19:09:04 +0300
-Message-ID: <CAA8EJprW8fTf0tWDWq+aVVauJnK0NqBke-JNELm_GMPvoWa7vA@mail.gmail.com>
-Subject: Re: [PATCH v9 3/5] iommu/arm-smmu: introduction of ACTLR for custom
- prefetcher settings
-To: Rob Clark <robdclark@gmail.com>
-Cc: Konrad Dybcio <konrad.dybcio@linaro.org>, Bibek Kumar Patro <quic_bibekkum@quicinc.com>, will@kernel.org, 
-	robin.murphy@arm.com, joro@8bytes.org, jsnitsel@redhat.com, 
-	quic_bjorande@quicinc.com, mani@kernel.org, quic_eberman@quicinc.com, 
-	robdclark@chromium.org, u.kleine-koenig@pengutronix.de, robh@kernel.org, 
-	vladimir.oltean@nxp.com, quic_pkondeti@quicinc.com, quic_molvera@quicinc.com, 
-	linux-arm-msm@vger.kernel.org, linux-arm-kernel@lists.infradead.org, 
-	iommu@lists.linux.dev, linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-ClientProxiedBy: SATLEXMB03.amd.com (10.181.40.144) To SATLEXMB04.amd.com
+ (10.181.40.145)
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: SA2PEPF000015CC:EE_|SA1PR12MB6994:EE_
+X-MS-Office365-Filtering-Correlation-Id: 7b170064-7adb-4337-422d-08dc7f34d37f
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam:
+	BCL:0;ARA:13230031|1800799015|82310400017|36860700004|376005;
+X-Microsoft-Antispam-Message-Info:
+	=?us-ascii?Q?LSDEz70ntbitb+M42HCZC5TnXdY5/TpUmgdvNJzaOwxClSwpg/FyHA4z1FMD?=
+ =?us-ascii?Q?upzgTLJdDdHUqJxpcJ7VSIx6ZIGEbhLmDv/f5jhgRnqcjM9Su9Txwrdfux4W?=
+ =?us-ascii?Q?ZmtsjL1K3k9xYLgxXbMRa7LeNJdoI29JBJPvI5vwxckF0DqDZaJVqQZeUD3N?=
+ =?us-ascii?Q?8bEVhiNhbz+ivD7HMKDCo9B5+qN6Jt6DQ9zHBSAiqWljbeWrDlyAzVGt+UtA?=
+ =?us-ascii?Q?kfDkrhXnjpD4jCSSVpA38psXuBbwBzlJaX/l54zlyMpumQSJIOXwjUGyBO+C?=
+ =?us-ascii?Q?RyAyr6xlcdMwI5EL7y/qi53rVjHXMiWXRxX/pTgcjD5y7OZaMe7wBySiHlBZ?=
+ =?us-ascii?Q?/kUu/RCW2jSes4aSIPorpLKRMciuDhaYgUnxEisU3c+E0kcHRd7iBZ2sU1z2?=
+ =?us-ascii?Q?xw+6jTXIVzBqnuqJ4n81gyQYDZTUhUYtiN/YvW/HVdpnD5Zp+N7pgNCQvmtz?=
+ =?us-ascii?Q?3nc8GeqRFioSkOKqWvk9vhhd0Nz5G8SRlAuME1wZJAhakB8eo8sUgT6OqYjw?=
+ =?us-ascii?Q?6/eIhFdLH6Wi9pYIJwabx6XiAY/0lDBYkJBX5cUQW+q6or0smuLjHs1tf6DQ?=
+ =?us-ascii?Q?xY9dpyKOjKYIixHjDPhVDH6GjiOXwI0rNcbXhNobAIwwmWcEAeRs2z0AFzj+?=
+ =?us-ascii?Q?QyVvoB4/sM+2s48WNTT3SdProN6rSOpUcKex4SAfwMqqbi/89wB4bX+q7jS4?=
+ =?us-ascii?Q?wcR8A5hE/T+1g4uQr2pPCAX62+ntbL0+206hujpNxWyJ1g2EB612lNTcD73A?=
+ =?us-ascii?Q?f3AOlAxlgBPNt0JOn9B/KOoXmpf18F9GVfAYpyE33FQ+0SmgLi8lAzgF8iSg?=
+ =?us-ascii?Q?0pe56qOFmE0IEZZpwb4M1TdO+PS8EtX2/geQjAhjV2ZwbMDaFhIHa5qtPLi1?=
+ =?us-ascii?Q?4HlN25RZk6yIlujlhjwA9cNhT+iDpyyUhvdhRO+ZIgBXuLiCBny0FJMDlMTC?=
+ =?us-ascii?Q?uHaU3oJqOyqv4LMrLt/yU5F2PJxnhxNP0jN44sJX0a+v9rFq/SiAQogOB5vY?=
+ =?us-ascii?Q?nwS6tfGytZYh3whjzI6bCJmNcIGpi+YEB+PeEGtbCO0teSoA7tQkmCLeIqBI?=
+ =?us-ascii?Q?rrX5nVIbl3t/zrH+k9w6RCTI+Z9rgL7dLFyaMOS+7oFmhVDv76OFlV2Tce+w?=
+ =?us-ascii?Q?IgNcTtQwgKpCiHAaq5wiqvEJB2N6UHnzrN6hXqf0bZ9DqDADRKz9lOuyAw/b?=
+ =?us-ascii?Q?vcwNWd8TGjEh0ibz3TnuFvg+S+T6Zlr7Nf/xGADH6FOrgZBzcBorU9PoGyiv?=
+ =?us-ascii?Q?OhxWIdG8jqAmTAQoPCafv8e4g/mRdLmESmBo2VLs2Ix7vkjbTOf1vLI0bCuM?=
+ =?us-ascii?Q?qROQSYICz0/75qEDt653Pa/K0ik9rqo4EM8aqIjfW/0M/tmRYuXUDL14Piif?=
+ =?us-ascii?Q?38RAkrzwX3fiXQSSyT79u/t/LohA?=
+X-Forefront-Antispam-Report:
+	CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB04.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230031)(1800799015)(82310400017)(36860700004)(376005);DIR:OUT;SFP:1101;
+X-OriginatorOrg: amd.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 28 May 2024 16:40:04.2502
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: 7b170064-7adb-4337-422d-08dc7f34d37f
+X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[SATLEXMB04.amd.com]
+X-MS-Exchange-CrossTenant-AuthSource:
+	SA2PEPF000015CC.namprd03.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SA1PR12MB6994
 
-On Tue, 28 May 2024 at 19:08, Rob Clark <robdclark@gmail.com> wrote:
->
-> On Tue, May 28, 2024 at 6:06=E2=80=AFAM Dmitry Baryshkov
-> <dmitry.baryshkov@linaro.org> wrote:
-> >
-> > On Tue, May 28, 2024 at 02:59:51PM +0200, Konrad Dybcio wrote:
-> > >
-> > >
-> > > On 5/15/24 15:59, Bibek Kumar Patro wrote:
-> > > >
-> > > >
-> > > > On 5/10/2024 6:32 PM, Konrad Dybcio wrote:
-> > > > > On 10.05.2024 2:52 PM, Bibek Kumar Patro wrote:
-> > > > > >
-> > > > > >
-> > > > > > On 5/1/2024 12:30 AM, Rob Clark wrote:
-> > > > > > > On Tue, Jan 23, 2024 at 7:00=E2=80=AFAM Bibek Kumar Patro
-> > > > > > > <quic_bibekkum@quicinc.com> wrote:
-> > > > > > > >
-> > > > > > > > Currently in Qualcomm  SoCs the default prefetch is set to =
-1 which allows
-> > > > > > > > the TLB to fetch just the next page table. MMU-500 features=
- ACTLR
-> > > > > > > > register which is implementation defined and is used for Qu=
-alcomm SoCs
-> > > > > > > > to have a custom prefetch setting enabling TLB to prefetch =
-the next set
-> > > > > > > > of page tables accordingly allowing for faster translations=
-.
-> > > > > > > >
-> > > > > > > > ACTLR value is unique for each SMR (Stream matching registe=
-r) and stored
-> > > > > > > > in a pre-populated table. This value is set to the register=
- during
-> > > > > > > > context bank initialisation.
-> > > > > > > >
-> > > > > > > > Signed-off-by: Bibek Kumar Patro <quic_bibekkum@quicinc.com=
->
-> > > > > > > > ---
-> > > > >
-> > > > > [...]
-> > > > >
-> > > > > > > > +
-> > > > > > > > +               for_each_cfg_sme(cfg, fwspec, j, idx) {
-> > > > > > > > +                       smr =3D &smmu->smrs[idx];
-> > > > > > > > +                       if (smr_is_subset(smr, id, mask)) {
-> > > > > > > > +                               arm_smmu_cb_write(smmu, cbn=
-dx, ARM_SMMU_CB_ACTLR,
-> > > > > > > > +                                               actlrcfg[i]=
-.actlr);
-> > > > > > >
-> > > > > > > So, this makes ACTLR look like kind of a FIFO.  But I'm looki=
-ng at
-> > > > > > > downstream kgsl's PRR thing (which we'll need to implement vu=
-lkan
-> > > > > > > sparse residency), and it appears to be wanting to set BIT(5)=
- in ACTLR
-> > > > > > > to enable PRR.
-> > > > > > >
-> > > > > > >           val =3D KGSL_IOMMU_GET_CTX_REG(ctx, KGSL_IOMMU_CTX_=
-ACTLR);
-> > > > > > >           val |=3D FIELD_PREP(KGSL_IOMMU_ACTLR_PRR_ENABLE, 1)=
-;
-> > > > > > >           KGSL_IOMMU_SET_CTX_REG(ctx, KGSL_IOMMU_CTX_ACTLR, v=
-al);
-> > > > > > >
-> > > > > > > Any idea how this works?  And does it need to be done before =
-or after
-> > > > > > > the ACTLR programming done in this patch?
-> > > > > > >
-> > > > > > > BR,
-> > > > > > > -R
-> > > > > > >
-> > > > > >
-> > > > > > Hi Rob,
-> > > > > >
-> > > > > > Can you please help provide some more clarification on the FIFO=
- part? By FIFO are you referring to the storing of ACTLR data in the table?
-> > > > > >
-> > > > > > Thanks for pointing to the downstream implementation of kgsl dr=
-iver for
-> > > > > > the PRR bit. Since kgsl driver is already handling this PRR bit=
-'s
-> > > > > > setting, this makes setting the PRR BIT(5) by SMMU driver redun=
-dant.
-> > > > >
-> > > > > The kgsl driver is not present upstream.
-> > > > >
-> > > >
-> > > > Right kgsl is not present upstream, it would be better to avoid con=
-figuring the PRR bit and can be handled by kgsl directly in downstream.
-> > >
-> > > No! Upstream is not a dumping ground to reduce your technical debt.
-> > >
-> > > There is no kgsl driver upstream, so this ought to be handled here, i=
-n
-> > > the iommu driver (as poking at hardware A from driver B is usually no=
-t good
-> > > practice).
-> >
-> > I'd second the request here. If another driver has to control the
-> > behaviour of another driver, please add corresponding API for that.
->
-> We have adreno_smmu_priv for this purpose ;-)
+Commit 3ab657291638 ("iommu: use the __iommu_attach_device() directly for deferred attach")
+replaced iommu_attach_device() call with __iommu_attach_device(). But
+missed to take group lock. Take lock before attaching device to domain.
 
-Exactly
+Fixes: 3ab657291638 ("iommu: use the __iommu_attach_device() directly for deferred attach")
+Cc: Lianbo Jiang <lijiang@redhat.com>
+Cc: Robin Murphy <robin.murphy@arm.com>
+Signed-off-by: Vasant Hegde <vasant.hegde@amd.com>
+---
+ drivers/iommu/iommu.c | 15 ++++++++++++---
+ 1 file changed, 12 insertions(+), 3 deletions(-)
 
->
-> BR,
-> -R
->
-> > >
-> > > >
-> > > > > > Thanks for bringing up this point.
-> > > > > > I will send v10 patch series removing this BIT(5) setting from =
-the ACTLR
-> > > > > > table.
-> > > > >
-> > > > > I think it's generally saner to configure the SMMU from the SMMU =
-driver..
-> > > >
-> > > > Yes, agree on this. But since PRR bit is not directly related to SM=
-MU
-> > > > configuration so I think it would be better to remove this PRR bit
-> > > > setting from SMMU driver based on my understanding.
-> > >
-> > > Why is it not related? We still don't know what it does.
-> > >
-> > > Konrad
-> >
-> > --
-> > With best wishes
-> > Dmitry
+diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
+index 9df7cc75c1bc..1743dba023b6 100644
+--- a/drivers/iommu/iommu.c
++++ b/drivers/iommu/iommu.c
+@@ -2114,10 +2114,19 @@ EXPORT_SYMBOL_GPL(iommu_attach_device);
+ 
+ int iommu_deferred_attach(struct device *dev, struct iommu_domain *domain)
+ {
+-	if (dev->iommu && dev->iommu->attach_deferred)
+-		return __iommu_attach_device(domain, dev);
++	int ret = 0;
++	struct iommu_group *group = dev->iommu_group;
+ 
+-	return 0;
++	if (!group)
++		return -EINVAL;
++
++	if (dev->iommu && dev->iommu->attach_deferred) {
++		mutex_lock(&group->mutex);
++		ret = __iommu_attach_device(domain, dev);
++		mutex_unlock(&group->mutex);
++	}
++
++	return ret;
+ }
+ 
+ void iommu_detach_device(struct iommu_domain *domain, struct device *dev)
+-- 
+2.31.1
 
-
-
---=20
-With best wishes
-Dmitry
