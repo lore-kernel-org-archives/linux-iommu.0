@@ -1,136 +1,142 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.17])
+Received: from mx0a-002e3701.pphosted.com (mx0a-002e3701.pphosted.com [148.163.147.86])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2BFE21BC57
-	for <iommu@lists.linux.dev>; Wed, 29 May 2024 12:02:40 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.17
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 20F221CD37;
+	Wed, 29 May 2024 13:53:36 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=148.163.147.86
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1716984162; cv=none; b=cyPAcpGG/fgy0+aqaV25KzOyWOpmu/83kgXH3VyJySgqOnH64uUiviVWgDVB0UBmPVH1orh/xIC0s97DdIE0it3dEiJ+I98nEnpWS7iTZan5Bmhspg6eZgpSceZRrblpVra3G87XyN8FbMvqFv8FNaTz9oBD24klu+HMvdxrUmQ=
+	t=1716990819; cv=none; b=QDyG7igP4aGbufkp37Ff/MdgjBtF2HocXRKV4c8EGRQqRCl2IzAIsO+fVrhbfsGTmYkAqxWXguW5lmBfCBQGYN5IfASjvhqxzAPb4am6wqxPU7GxoJMnBCbRoV2NiW5t/4A1HnxlZSS5QnRglszBbPan1XC2NnJq8h5D9N3Rplg=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1716984162; c=relaxed/simple;
-	bh=S6PR7hASefAykUiQJ98a2gkLPejgKFckIybEKFG05rw=;
-	h=Message-ID:Date:MIME-Version:Cc:Subject:To:References:From:
-	 In-Reply-To:Content-Type; b=kjyEdSCJsNtlD39ehOLssXq225SqdVftbMUfEERylnrXCHYddWOnj1G1f7BpIayvGiUz/lZyh/NOjPpdI+qhSIqiTYJGEXgg4Erp2Fh1FZiVZtNOfuNDfwxAAnWTUpPXaJ/V8Pwca6wCyG28GafyZ25Ws9900NTMZSHyufcvU90=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=Kj4tVaPA; arc=none smtp.client-ip=198.175.65.17
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="Kj4tVaPA"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1716984161; x=1748520161;
-  h=message-id:date:mime-version:cc:subject:to:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=S6PR7hASefAykUiQJ98a2gkLPejgKFckIybEKFG05rw=;
-  b=Kj4tVaPA5xH2UwIsll3f9VOLh+mYSHKRgPv/TxAh93nrkrWcQhL6AxmX
-   y+BXAEvfJQOluo/GEH3VpxCS8uJzscwA1Cuc1Ta+M8Ex30uiRmUH52NFc
-   /UzlKLDaiBm61mYZUAh5rd3wdkesh+0ic6dyTLqWh7DlU/55G0oDcVOyR
-   y8tyHNGVGtO6/+cg2S161WUxr8oLF5RVN9hFMFDSYdYHI6LfX30/r1uSo
-   3wTuoRn+mMFnNEYhYONQP/noR5oADiPf/EDCdJrDdltzZgwvW+n6+HQCA
-   VZKwpI+gVMlQiUhXMEzzwpGGPJc2f2GBbJV1IV2mIZJ/Ye2sOr5seKYBu
-   w==;
-X-CSE-ConnectionGUID: GvMUu0qWSuONi9DtCFK52Q==
-X-CSE-MsgGUID: xg0LaguzQbqV+IGaSMqsxg==
-X-IronPort-AV: E=McAfee;i="6600,9927,11087"; a="13509621"
-X-IronPort-AV: E=Sophos;i="6.08,198,1712646000"; 
-   d="scan'208";a="13509621"
-Received: from orviesa003.jf.intel.com ([10.64.159.143])
-  by orvoesa109.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 May 2024 05:02:20 -0700
-X-CSE-ConnectionGUID: bmIch7XpSyGgCPOKiEIJ7g==
-X-CSE-MsgGUID: g95b3E+NTC2z4V13RCkw+g==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.08,198,1712646000"; 
-   d="scan'208";a="40262520"
-Received: from blu2-mobl.ccr.corp.intel.com (HELO [10.124.237.100]) ([10.124.237.100])
-  by ORVIESA003-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 May 2024 05:02:15 -0700
-Message-ID: <a1f2c08a-e92f-4080-b55e-8d6dbd94db78@linux.intel.com>
-Date: Wed, 29 May 2024 20:02:12 +0800
+	s=arc-20240116; t=1716990819; c=relaxed/simple;
+	bh=y26ipyuX/ItBKpPRg/M7phcLUegsUUakBbPT+K6ItPE=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=J1Op3P8sODEQq3IUk3IRta3AGoxkld44ngRfowph90pa3ZraI6/hDsbaXluCp/A6VHFPrxqHHdbu+x7UJUStUWHtG4wBrMP1NzdaLl2doPJMlucd40l7uA31Fnz7LgzmcRFXGUzjn6cn7Trk6o1nstwtP4F1LzpcmSmPk1iQQY8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=hpe.com; spf=pass smtp.mailfrom=hpe.com; arc=none smtp.client-ip=148.163.147.86
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=hpe.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=hpe.com
+Received: from pps.filterd (m0134422.ppops.net [127.0.0.1])
+	by mx0b-002e3701.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 44TAjcFv010057;
+	Wed, 29 May 2024 12:49:39 GMT
+DKIM-Signature: =?UTF-8?Q?v=3D1;_a=3Drsa-sha256;_c=3Drelaxed/relaxed;_d=3Dhpe.com;_h=3Dcc?=
+ =?UTF-8?Q?:content-transfer-encoding:content-type:date:from:in-reply-to:m?=
+ =?UTF-8?Q?essage-id:mime-version:references:subject:to;_s=3Dpps0720;_bh?=
+ =?UTF-8?Q?=3DOkSHme8qRdc1oP9Z1/sJWLvkHwZYfQaTyyjWMYtmqVo=3D;_b=3DoRa/3eYu?=
+ =?UTF-8?Q?LfuflX4ymkmcGxR8NOtDrbujU/fZgZBjCkxSWZbXLJiuZbLyckSiVIk3EVyW_hj?=
+ =?UTF-8?Q?AydiTlGDAPITyoZVZz4D3t+E+yLhY6u9CD5dar/edlSmSFIQsxV13QpGEdGhDap?=
+ =?UTF-8?Q?4fb_sB3G0g9w6/5dqb6Lgsp/4pL0cp2qveKPukVV1CpM2NsMMIpCOCBxeDUCZHh?=
+ =?UTF-8?Q?1GJ7rdznp_N2H8nviRFCfcnRCVil8nXbIlssiMQW8MSsAXg097zQSjUUwFKqsc3?=
+ =?UTF-8?Q?5G3Q05N7MLMw/lt_J/HAjVF9ctGkI8tYR9GZmgIc/iJDi7Z1jvhsT5k0wJWKDo8?=
+ =?UTF-8?Q?X1DSg5R+w/GiFtVbW7RDC_ag=3D=3D_?=
+Received: from p1lg14879.it.hpe.com ([16.230.97.200])
+	by mx0b-002e3701.pphosted.com (PPS) with ESMTPS id 3ye1r59bvy-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Wed, 29 May 2024 12:49:39 +0000
+Received: from p1lg14886.dc01.its.hpecorp.net (unknown [10.119.18.237])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+	(No client certificate requested)
+	by p1lg14879.it.hpe.com (Postfix) with ESMTPS id 63CFF12B5B;
+	Wed, 29 May 2024 12:49:38 +0000 (UTC)
+Received: from hpe.com (unknown [16.231.227.39])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange ECDHE (P-256) server-signature RSA-PSS (2048 bits) server-digest SHA256)
+	(Client did not present a certificate)
+	by p1lg14886.dc01.its.hpecorp.net (Postfix) with ESMTPS id 8936680172C;
+	Wed, 29 May 2024 12:49:36 +0000 (UTC)
+Date: Wed, 29 May 2024 07:49:34 -0500
+From: Dimitri Sivanich <sivanich@hpe.com>
+To: "Tian, Kevin" <kevin.tian@intel.com>
+Cc: Vasant Hegde <vasant.hegde@amd.com>, Yi Zhang <yi.zhang@redhat.com>,
+        Baolu Lu <baolu.lu@linux.intel.com>, Joerg Roedel <joro@8bytes.org>,
+        linux-block <linux-block@vger.kernel.org>,
+        "iommu@lists.linux.dev" <iommu@lists.linux.dev>,
+        Shinichiro Kawasaki <shinichiro.kawasaki@wdc.com>,
+        "suravee.suthikulpanit@amd.com" <suravee.suthikulpanit@amd.com>
+Subject: Re: [bug report][regression] blktests block/008 lead kerne panic at
+ RIP: 0010:amd_iommu_enable_faulting+0x0/0x10
+Message-ID: <ZlckXh4rZ+sWRqXR@hpe.com>
+References: <CAHj4cs9KZJc6Wsp9t0fDc4fDBJB1TmwGT7-8peCGLiqW3J_Fqw@mail.gmail.com>
+ <ZlVk95sNtdkzZ8bE@8bytes.org>
+ <77c7eb43-2321-484d-a1bf-50ddd907db17@amd.com>
+ <80ceceba-ac9c-4ab7-a0e3-bdb9336a86e6@amd.com>
+ <CAHj4cs9W=OEZTPqi6jx4Hinebz8VCJBpngHnr5LO-+xqWMrG2g@mail.gmail.com>
+ <f9252410-a295-4ad5-9925-228119011539@amd.com>
+ <BN9PR11MB5276CBD826F1E95D28B2E30A8CF22@BN9PR11MB5276.namprd11.prod.outlook.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Cc: baolu.lu@linux.intel.com, David Airlie <airlied@gmail.com>,
- Daniel Vetter <daniel@ffwll.ch>, Kalle Valo <kvalo@kernel.org>,
- Bjorn Andersson <andersson@kernel.org>,
- Mathieu Poirier <mathieu.poirier@linaro.org>,
- Alex Williamson <alex.williamson@redhat.com>, mst@redhat.com,
- Jason Wang <jasowang@redhat.com>, Thierry Reding <thierry.reding@gmail.com>,
- Jonathan Hunter <jonathanh@nvidia.com>,
- Mikko Perttunen <mperttunen@nvidia.com>, iommu@lists.linux.dev,
- dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 00/20] iommu: Refactoring domain allocation interface
-To: Yi Liu <yi.l.liu@intel.com>, Joerg Roedel <joro@8bytes.org>,
- Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
- Jason Gunthorpe <jgg@ziepe.ca>, Kevin Tian <kevin.tian@intel.com>
-References: <20240529053250.91284-1-baolu.lu@linux.intel.com>
- <efd902f6-eafc-4a26-8057-bdd9d7d6e535@intel.com>
-Content-Language: en-US
-From: Baolu Lu <baolu.lu@linux.intel.com>
-In-Reply-To: <efd902f6-eafc-4a26-8057-bdd9d7d6e535@intel.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
+In-Reply-To: <BN9PR11MB5276CBD826F1E95D28B2E30A8CF22@BN9PR11MB5276.namprd11.prod.outlook.com>
+X-Proofpoint-ORIG-GUID: 5wU5SyHn4ZLuUtk0lOH_FE5JDykRFw2I
+X-Proofpoint-GUID: 5wU5SyHn4ZLuUtk0lOH_FE5JDykRFw2I
+X-HPE-SCL: -1
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.293,Aquarius:18.0.1039,Hydra:6.0.650,FMLib:17.12.28.16
+ definitions=2024-05-29_07,2024-05-28_01,2024-05-17_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 lowpriorityscore=0
+ bulkscore=0 suspectscore=0 spamscore=0 malwarescore=0 impostorscore=0
+ mlxscore=0 clxscore=1011 priorityscore=1501 phishscore=0 adultscore=0
+ mlxlogscore=871 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2405010000 definitions=main-2405290087
 
-On 2024/5/29 17:03, Yi Liu wrote:
-> On 2024/5/29 13:32, Lu Baolu wrote:
->> The IOMMU subsystem has undergone some changes, including the removal
->> of iommu_ops from the bus structure. Consequently, the existing domain
->> allocation interface, which relies on a bus type argument, is no longer
->> relevant:
->>
->>      struct iommu_domain *iommu_domain_alloc(struct bus_type *bus)
->>
->> This series is designed to refactor the use of this interface. It
->> proposes two new interfaces to replace iommu_domain_alloc():
->>
->> - iommu_user_domain_alloc(): This interface is intended for allocating
->>    iommu domains managed by userspace for device passthrough scenarios,
->>    such as those used by iommufd, vfio, and vdpa. It clearly indicates
->>    that the domain is for user-managed device DMA.
+On Wed, May 29, 2024 at 08:13:42AM +0000, Tian, Kevin wrote:
+> > From: Vasant Hegde <vasant.hegde@amd.com>
+> > Sent: Wednesday, May 29, 2024 2:26 PM
+> > 
+> > Hi Yi,
+> > 
+> > +Dimitri, Lu, Tian.
+> > 
+> > 
+> > On 5/29/2024 11:46 AM, Yi Zhang wrote:
+> > > On Wed, May 29, 2024 at 1:40 AM Vasant Hegde <vasant.hegde@amd.com>
+> > wrote:
+> > >>
+> > >> Hi Yi,
+> > >>
+> > >>
+> > >> On 5/28/2024 11:00 PM, Vasant Hegde wrote:
+> > >>> Hi Yi,
+> > >>>
+> > >>>
+> > >>> On 5/28/2024 10:30 AM, Joerg Roedel wrote:
+> > >>>> Adding Vasant.
+> > >>>>
+> > >>>> On Tue, May 28, 2024 at 10:23:10AM +0800, Yi Zhang wrote:
+> > >>>>> Hello
+> > >>>>> I found this regression panic issue on the latest 6.10-rc1 and it
+> > >>>>> cannot be reproduced on 6.9, please help check and let me know if
+> > you
+> > >>>>> need any info/testing for it, thanks.
+> > >>>
+> > >>> I have tried to reproduce this issue on my system. So far I am not able to
+> > >>> reproduce it.
+> > >>>
+> > >>> Will you be able to bisect the kernel?
+> > >>
+> > >> I see that below patch touched this code path. Can you revert below patch
+> > and
+> > >> test it again?
+> > >
+> > > Yes, the panic cannot be reproduced now after revert this patch.
+> > 
+> > Thanks for verifying. AMD code path (amd_iommu_enable_faulting()) just
+> > return
+> > zero. It doesn't do anything else. I am not familiar with cpuhp_setup_state()
+> > code path.
+> > 
+> > @Dimitri, Can you look into this issue?
+> > 
 > 
-> user paging domain? It looks to me user domain includes the nested domains
-> as well.
-
-Yes, nested domain is a user domain. The iommu driver should implement
-iommu_ops->domain_alloc_user for nested domain allocation.
-
+> -int __init amd_iommu_enable_faulting(void)
+> +int __init amd_iommu_enable_faulting(unsigned int cpu)
 > 
->>    If an IOMMU driver does not implement iommu_ops->domain_alloc_user,
->>    this interface will rollback to the generic paging domain allocation.
->>
->> - iommu_paging_domain_alloc(): This interface is for allocating iommu
->>    domains managed by kernel drivers for kernel DMA purposes. It takes a
->>    device pointer as a parameter, which better reflects the current
->>    design of the IOMMU subsystem.
->>
->> The majority of device drivers currently using iommu_domain_alloc() do
->> so to allocate a domain for a specific device and then attach that
->> domain to the device. These cases can be straightforwardly migrated to
->> the new interfaces.
->>
->> However, there are some drivers with more complex use cases that do
->> not fit neatly into this new scheme. For example:
->>
->> $ git grep "= iommu_domain_alloc"
->> arch/arm/mm/dma-mapping.c:      mapping->domain = 
->> iommu_domain_alloc(bus);
->> drivers/gpu/drm/rockchip/rockchip_drm_drv.c:    private->domain = 
->> iommu_domain_alloc(private->iommu_dev->bus);
->> drivers/gpu/drm/tegra/drm.c:            tegra->domain = 
->> iommu_domain_alloc(&platform_bus_type);
->> drivers/infiniband/hw/usnic/usnic_uiom.c:       pd->domain = domain = 
->> iommu_domain_alloc(dev->bus);
->>
->> This series leave those cases unchanged and keep iommu_domain_alloc()
->> for their usage. But new drivers should not use it anymore.
-> 
-> does it mean there is still domains allocated via iommu_domain_alloc()
-> on VT-d platform?
+> likely it's due to '__init' not being removed...
 
-I think the drivers mentioned above do not run on x86 platforms, or do
-they?
+Yes, agreed.  I will submit a patch with this change soon.
 
-Best regards,
-baolu
