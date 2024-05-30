@@ -1,151 +1,139 @@
-Received: from NAM10-DM6-obe.outbound.protection.outlook.com (mail-dm6nam10on2087.outbound.protection.outlook.com [40.107.93.87])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-yb1-f173.google.com (mail-yb1-f173.google.com [209.85.219.173])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6FBD04D8A1
-	for <iommu@lists.linux.dev>; Thu, 30 May 2024 07:11:45 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.93.87
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1717053107; cv=fail; b=fIAA9UiFAfzLHQcX10XQNnlcQVtL9UKGf1q0yqSs9oV6DgxwiS0T/zSZACZ1BrmhgsG6dq8+P3otGZI0MJAbvlfXJdukXdmRe1HVlupVytsD2IJ01+vu7P40p2TdKyMZTcpSrFgkUY9lJG60vKDoKqUm0/Askkxg1/AAKF9aByY=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1717053107; c=relaxed/simple;
-	bh=BNwheOjgK5JIDoIj4/Y/aUdr6PTA7o4059KYrjMcotU=;
-	h=From:To:CC:Subject:Date:Message-ID:MIME-Version:Content-Type; b=dNS4JgCoYyqAaRLbe33mqBf732pno0bctDxDOI5nShPpr0eAS2UJhGMuQheUjWc2Ugf9jlMyBYZdFvAt2BIdxMk1XeqmHpLksMcn8GBxwgcAIJglFpgF+J5Fqn9ksv0vMK6ZKuzehgx066UCUahBOw11hPLlYxYyAW2mVN659pw=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com; spf=fail smtp.mailfrom=amd.com; dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b=TtpxL6ql; arc=fail smtp.client-ip=40.107.93.87
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=amd.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EE64E14374A
+	for <iommu@lists.linux.dev>; Thu, 30 May 2024 07:58:54 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.219.173
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1717055936; cv=none; b=RcMEhX7nhJrsIlX0MrkfnH8WyrCpJ0RdmDGV4iZ6Y3gnGi7COsWEIeS/NUTDFgJZp9eSrDKdS0tPO7Trd6NfjeyzpVYHLCsx5FHPftqeGptmWLleRAP0RA6t0VACHD6igZ4KKNnqbnXPKWd3D+YjrWP3TA8o58nm2S/15Wc89PI=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1717055936; c=relaxed/simple;
+	bh=lmnS+uhE1B+Xtb3Jn2lTEbYhgqdcwEtClUTNalj/uSg=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=Rsb+y9HMy3ewh7N0/Yqzvw/dJKOK6DUuqGGNWGKMcJHihXkmyRDdB/JCsf2LpvUos/8GnfN+5QzUpZSlxT3g+8zngUdRq562zUlQQTI0FDjd7g5TGOP8xJ3mTOcL0IlNFI3TBdmuwwzOeRpZNJf8J8e8u3DspH+kY4d35LU+E/s=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org; spf=pass smtp.mailfrom=linaro.org; dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b=HmKlWXXN; arc=none smtp.client-ip=209.85.219.173
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linaro.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b="TtpxL6ql"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=DHFqOzVgPEltpSU4RkiSZx1ddLoMReY8oETqqQYWXyw/dSgLu2zCUWMtUUdknU4U5IMOgnFjDpKlNJ497JWbnwAEjF+Sh0kb8VyJBlxO+XHqgY9/Zectxxj8M9vtRWCL2W8mUTi4CJnyM5lzjM4GDolJA4NVuyvdt+8ZuUKAvEeodl7e1YE1QoB49iSY1ZAgCrP3LsCCua/no1aDR1Kt5XSYkBqq0xoLoHv6FifPKwqKJBF7OtLxhoqhbijKmAAgnQ6E7useuitpaIdd8j5VwQOKA1uWcfwFcbc4UhISNdvQfJIy66AZ3ALqSxbryfYlcTTuAT6L/OIhxRbCyAE2Kg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=DJgBCS+ggzmRTo/6tcDOAAPmvApPjcetsC1AHRQVEjA=;
- b=AqABBRiwvBB+EkAh9FcPA0b1SlYcNApPfEaKEGgrcUHfxswQ/rpsAeS/ZZ/KTD571BYVBN7aXr2PtYKrjO6g0Hff0C1/+1mMQSiIqp3MTve4atH7+3XMpcbSgEIjE49aD23VZAzDjadBMsAf5oaFWLrY4TKcPzKq9W4NZwUmPCdEDOjcXdvy5lVf4BGB0r4R9D4oriEpcMn1h+OxP1R+65O5ohMF2fE9AVGf/AZ8w2Z6XaBowuOMTNdztp68/mvc8x9tIgbk5jAYhtUeyZIkVusianGDr29Mejtslve1THKtHhO8AK/vFL1S3302d94LZv31kYaOgawbESCf50tLeA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 165.204.84.17) smtp.rcpttodomain=lists.linux.dev smtp.mailfrom=amd.com;
- dmarc=pass (p=quarantine sp=quarantine pct=100) action=none
- header.from=amd.com; dkim=none (message not signed); arc=none (0)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=DJgBCS+ggzmRTo/6tcDOAAPmvApPjcetsC1AHRQVEjA=;
- b=TtpxL6qlVgNiDxiRjvlEbRvvkps8Yc9DoDXWUWywCrRLi++B1o2iHP+2KBa4Rq2gtIdUFF2o8j26ZxGwiXV14dx6neU7nB+qJZM/pAvJMEVlPbXQHSHSYCYW0In5rtyqNqGuxcHFscbAo5uWkMQjt+mSTEVlYM16SWffobDPqlc=
-Received: from CH0PR03CA0392.namprd03.prod.outlook.com (2603:10b6:610:11b::31)
- by IA0PR12MB7652.namprd12.prod.outlook.com (2603:10b6:208:434::6) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7611.29; Thu, 30 May
- 2024 07:11:42 +0000
-Received: from CH2PEPF0000009C.namprd02.prod.outlook.com
- (2603:10b6:610:11b:cafe::95) by CH0PR03CA0392.outlook.office365.com
- (2603:10b6:610:11b::31) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7633.21 via Frontend
- Transport; Thu, 30 May 2024 07:11:42 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 165.204.84.17)
- smtp.mailfrom=amd.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=amd.com;
-Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
- 165.204.84.17 as permitted sender) receiver=protection.outlook.com;
- client-ip=165.204.84.17; helo=SATLEXMB04.amd.com; pr=C
-Received: from SATLEXMB04.amd.com (165.204.84.17) by
- CH2PEPF0000009C.mail.protection.outlook.com (10.167.244.24) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.20.7633.15 via Frontend Transport; Thu, 30 May 2024 07:11:42 +0000
-Received: from kali.amd.com (10.180.168.240) by SATLEXMB04.amd.com
- (10.181.40.145) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2507.35; Thu, 30 May
- 2024 02:11:39 -0500
-From: Vasant Hegde <vasant.hegde@amd.com>
-To: <iommu@lists.linux.dev>, <joro@8bytes.org>
-CC: <suravee.suthikulpanit@amd.com>, Vasant Hegde <vasant.hegde@amd.com>,
-	Borislav Petkov <bp@alien8.de>, Jean-Christophe Guillain
-	<jean-christophe@guillain.net>
-Subject: [PATCH rc] iommu/amd: Check EFR[EPHSup] bit before enabling PPR
-Date: Thu, 30 May 2024 07:11:18 +0000
-Message-ID: <20240530071118.10297-1-vasant.hegde@amd.com>
-X-Mailer: git-send-email 2.34.1
+	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="HmKlWXXN"
+Received: by mail-yb1-f173.google.com with SMTP id 3f1490d57ef6-dfa682a4025so45011276.2
+        for <iommu@lists.linux.dev>; Thu, 30 May 2024 00:58:54 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google; t=1717055934; x=1717660734; darn=lists.linux.dev;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date:message-id:reply-to;
+        bh=B+oJ9AQU1WwAFE3BTuASvQX6ynujHPOOLDvZ4IBH4iY=;
+        b=HmKlWXXNuoRbCQHkGH5vQVK7DL/qiHvblRXpp0KUnpcqV1K9cAhLjonogJImbHJMMW
+         giImgq3FbETcwbtPbk0RiiMgbso/R/eUg7P6Oip4EDkfSlQyYb/PlKW4T1vyqilBqk+C
+         nfZF6tG3qbYKhF+43UE57q/H/Bs50N8dfbmHJLnm2YEv5XFBPkYqLsjVCOIezNUkE7dA
+         TlzUSUMmVWh/Wc0icfUKm2ZS3CQ03x+5rxVxQkQCCUbKzDVaoHoOHZpyXvOMJPgEE9mb
+         WSV8YkX+jWmKlNNBYQcB4Xg5rihbQod8mAAS8SVc71edmzbLUaTmWTJRY2LqKjAkkNTn
+         F5uw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1717055934; x=1717660734;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=B+oJ9AQU1WwAFE3BTuASvQX6ynujHPOOLDvZ4IBH4iY=;
+        b=ppA3MKaUDVxE7ZZVQjIHduUp2gNYcgvm2sGwHVZcInD9dPc4YKFwF72SxRwC+PJQ6y
+         JvmNqV1FAub0KljKTnOXoPUe6dxEy4NpIjX1coHcXSMunj9TS/5S5JjP7TiINjpzGFFQ
+         wlXQ2/Bbf+j9AoEsoQh0ui4V1Bsbcy7S55gSf8Df6QwZEkXGOPwaKioEybCXln5Cd5t8
+         6rg03Mpa61hxGfYw1YuZvI1fyaHwUcDQQRENlT0jsDC8WP5G9uUR2YwskjZUhljrZOKO
+         5tAbaxZ6RJLA6zaEix5Mv3IKNTLT3AbD0jkn/mR72UuM5o/hC7UxJpxchKrxx24mqMZZ
+         Xf4Q==
+X-Forwarded-Encrypted: i=1; AJvYcCV7RApfjfOq+UhfBuXT3SG9cfOgKu+Cxvyh5clFkriQPIUuIEGS9HP7/dYNLzqxYct4dunbty9qa0/knC1tdKZgXxLNJP0=
+X-Gm-Message-State: AOJu0YwRYDX7Vn6U7AcMmRIiCMxlUtioe5QystViGW4+4/I1yQ1daoEs
+	JHhLUK/jvRkTTyvrDwxaOHAgjmwTSnDL8V9rrI4pyvysEhwfeK8NAikKLytr7lvZPcdsRZz+OT8
+	EhlTMPEbU9C1bcRPyd0nL6QtPJuZqd3JXwStwtw==
+X-Google-Smtp-Source: AGHT+IHWn8jqCUpUtwn4GZB8DSUWhC0pqZv08o7PmbgCc14pEd89tke9BgPzyPGi5xXBW4hatiPVYSqRFMZI/ea2rj8=
+X-Received: by 2002:a25:2e07:0:b0:de5:558c:e9b9 with SMTP id
+ 3f1490d57ef6-dfa5a5bb588mr1579742276.11.1717055933851; Thu, 30 May 2024
+ 00:58:53 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-ClientProxiedBy: SATLEXMB04.amd.com (10.181.40.145) To SATLEXMB04.amd.com
- (10.181.40.145)
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: CH2PEPF0000009C:EE_|IA0PR12MB7652:EE_
-X-MS-Office365-Filtering-Correlation-Id: 135a73e2-335c-40b1-b63d-08dc8077c1d2
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam:
-	BCL:0;ARA:13230031|36860700004|82310400017|1800799015|376005;
-X-Microsoft-Antispam-Message-Info:
-	=?us-ascii?Q?F23dX0bjLs3n/4cLz5d70MlJKmLIrWjoWdg8KvtbTySWN2kVIGg7dIJpwCn3?=
- =?us-ascii?Q?T65BeziHU74LtZKhqfeu0ltQtVvf5P0bogTgaLuzsEFUF3n8JCtz5/va5NLe?=
- =?us-ascii?Q?dq+GfvnuochLAxh8nMe22JVkqVIpG+DHuQY3Z8YLSmDFPqPy+wE+qTZ39yTg?=
- =?us-ascii?Q?XztNxI/YLjgXSAa3QyKtx2OHEBwpMWPYpFCcl99FrxYg7N3GJsG/Sz207oEv?=
- =?us-ascii?Q?WQ1lnViH1YauShQY3Ddz7PjL2yWpFiTfJNjHDruKhYb/MwE9MRI2m0T4admh?=
- =?us-ascii?Q?qgQO1vPIifN6hywMP9vIBOdXa44oZdvDr4pLFuNRdniFlC35/f3Wk1jllDGN?=
- =?us-ascii?Q?gvqnz73F3E8tfOUI8lUHDxiUnt8xYJ3AuY2gj7z1ouwRLUtUxQQQor/fvuon?=
- =?us-ascii?Q?CV4CAPd3Qs6+BuFh2aglzcx8CfEwS+iBA0Rb+0Vok2JMGvoBloPXioIRCLq4?=
- =?us-ascii?Q?YnRPDAOvaDSGR4GpT/HGRo4vmaMkmJISPmXshtdRQR1IKK0bzNrs47k0us7B?=
- =?us-ascii?Q?JHczT09RzX+zVExJswllP/d0Ar4MmhqWNPbigAkXdmbdu1L//RQT7zkw9pL2?=
- =?us-ascii?Q?krJHChDRdzfmHwM33UxHbU0T9tDVnW4xTNTDdi4VZwAW1YODZ9LrvvgpNoED?=
- =?us-ascii?Q?XdfAtoqgfQjMi8AUiyNDj7J5vm7a83RQqyVZsggGRoCt+kI12j7Lnx/X1PX6?=
- =?us-ascii?Q?EDa844CeEA8gBQ+c+BdSeEiVAysR9nG5D5SDyon46qKYsGZuIl61UMBKkmJ0?=
- =?us-ascii?Q?Q6rMOIdPGyzj1+aKxp3QawhMGix0NBTrV5Xdi68nouRSPDyj6l8qJ3jCuE1i?=
- =?us-ascii?Q?ytDwiYI7Ui4DilEYPKT4w+UvoVX3MjNXSPmHIIxJ+zkLPQx0lMXv+tBBa0tj?=
- =?us-ascii?Q?z+K+jx86hFj3dQcE43Ed91PlA2T7oLjZkXxK2hPIRGZmlm5md4Hm+CKe7l7l?=
- =?us-ascii?Q?A0JglS84MIaz78GJ6Fvtz924o/52J0OyRFapj4stravn6aVcrY1E3c2NwOmC?=
- =?us-ascii?Q?wjG+kMmkhzZLCfopW1tS5v+4k7H6zOZgboTfAFdIapzTz6W5E+vwn0z4SVJQ?=
- =?us-ascii?Q?YzLEVO1D4qDgaybvuRWqmpOK8cxcILUKzcIBhOJf/gneys5Uez9EL6Dvare3?=
- =?us-ascii?Q?drr/0DHrd0LgY2Kgt1F/ZMYK4s6ox8nr0PNXkmn/hii2ALs+N10GpCfmctTp?=
- =?us-ascii?Q?tFrqF03Z/hDCVj//+ctBYxqH8y3/Zre/xMy1wZKRfupnQwJbuR9JaUFELIq6?=
- =?us-ascii?Q?d/Q6RYL/2qTca1QkxBVSw8eQhqYEe6O6t5n9xXxBQry+Rl77eRwZAW/3Qgav?=
- =?us-ascii?Q?kI5oLGojdj0LOXFOORJFK24+?=
-X-Forefront-Antispam-Report:
-	CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB04.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230031)(36860700004)(82310400017)(1800799015)(376005);DIR:OUT;SFP:1101;
-X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 30 May 2024 07:11:42.0261
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 135a73e2-335c-40b1-b63d-08dc8077c1d2
-X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[SATLEXMB04.amd.com]
-X-MS-Exchange-CrossTenant-AuthSource:
-	CH2PEPF0000009C.namprd02.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: IA0PR12MB7652
+References: <20240529053250.91284-1-baolu.lu@linux.intel.com>
+ <20240529053250.91284-7-baolu.lu@linux.intel.com> <jd7df7jshswukstxwbfoxuswyltyemdmkx272i5mpldlfsk4t7@ad36olyvmw27>
+ <960bfc23-22b3-48d1-baa6-2707767875c5@linux.intel.com>
+In-Reply-To: <960bfc23-22b3-48d1-baa6-2707767875c5@linux.intel.com>
+From: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+Date: Thu, 30 May 2024 10:58:42 +0300
+Message-ID: <CAA8EJppZU5yy4g85oMWzV_O9Qo91-Cr6d+W9Rz+K+mS6tfU8kw@mail.gmail.com>
+Subject: Re: [PATCH 06/20] drm/msm: Use iommu_paging_domain_alloc()
+To: Baolu Lu <baolu.lu@linux.intel.com>
+Cc: Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>, 
+	Robin Murphy <robin.murphy@arm.com>, Jason Gunthorpe <jgg@ziepe.ca>, Kevin Tian <kevin.tian@intel.com>, 
+	Yi Liu <yi.l.liu@intel.com>, David Airlie <airlied@gmail.com>, Daniel Vetter <daniel@ffwll.ch>, 
+	Kalle Valo <kvalo@kernel.org>, Bjorn Andersson <andersson@kernel.org>, 
+	Mathieu Poirier <mathieu.poirier@linaro.org>, Alex Williamson <alex.williamson@redhat.com>, mst@redhat.com, 
+	Jason Wang <jasowang@redhat.com>, Thierry Reding <thierry.reding@gmail.com>, 
+	Jonathan Hunter <jonathanh@nvidia.com>, Mikko Perttunen <mperttunen@nvidia.com>, iommu@lists.linux.dev, 
+	dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 
-Check for EFR[EPHSup] bit before enabling PPR. This bit must be set
-to enable PPR.
+On Thu, 30 May 2024 at 04:59, Baolu Lu <baolu.lu@linux.intel.com> wrote:
+>
+> On 5/29/24 4:21 PM, Dmitry Baryshkov wrote:
+> > On Wed, May 29, 2024 at 01:32:36PM +0800, Lu Baolu wrote:
+> >> The domain allocated in msm_iommu_new() is for the @dev. Replace
+> >> iommu_domain_alloc() with iommu_paging_domain_alloc() to make it explicit.
+> >>
+> >> Update msm_iommu_new() to always return ERR_PTR in failure cases instead
+> >> of NULL.
+> > Please don't mix unrelated changes, because ...
+> >
+> >> Signed-off-by: Lu Baolu<baolu.lu@linux.intel.com>
+> >> ---
+> >>   drivers/gpu/drm/msm/msm_iommu.c | 8 ++++----
+> >>   1 file changed, 4 insertions(+), 4 deletions(-)
+> >>
+> >> diff --git a/drivers/gpu/drm/msm/msm_iommu.c b/drivers/gpu/drm/msm/msm_iommu.c
+> >> index d5512037c38b..f7e28d4b5f62 100644
+> >> --- a/drivers/gpu/drm/msm/msm_iommu.c
+> >> +++ b/drivers/gpu/drm/msm/msm_iommu.c
+> >> @@ -407,9 +407,9 @@ struct msm_mmu *msm_iommu_new(struct device *dev, unsigned long quirks)
+> >>      struct msm_iommu *iommu;
+> >>      int ret;
+> >>
+> >> -    domain = iommu_domain_alloc(dev->bus);
+> >> -    if (!domain)
+> >> -            return NULL;
+> >> +    domain = iommu_paging_domain_alloc(dev);
+> >> +    if (IS_ERR(domain))
+> >> +            return ERR_CAST(domain);
+> >>
+> >>      iommu_set_pgtable_quirks(domain, quirks);
+> >>
+> >> @@ -441,7 +441,7 @@ struct msm_mmu *msm_iommu_gpu_new(struct device *dev, struct msm_gpu *gpu, unsig
+> >>      struct msm_mmu *mmu;
+> >>
+> >>      mmu = msm_iommu_new(dev, quirks);
+> >> -    if (IS_ERR_OR_NULL(mmu))
+> >> +    if (IS_ERR(mmu))
+> >>              return mmu;
+> > NAK, not having an IOMMU is a poor but legit usecase for some of devices
+> > which don't have IOMMU support yet (for example because of the buggy
+> > implementation for which we were not able to get all the hooks in).
+> >
+> > Please don't break compatibility for existing platforms.
+>
+> Sure. I will remove this line of change. Though I have no idea in which
+> case msm_iommu_new() could return NULL after this patch.
 
-Reported-by: Borislav Petkov <bp@alien8.de>
-Fixes: c4cb23111103 ("iommu/amd: Add support for enable/disable IOPF")
-Closes: https://bugzilla.kernel.org/show_bug.cgi?id=218900
-Tested-by: Borislav Petkov <bp@alien8.de>
-Tested-by: Jean-Christophe Guillain <jean-christophe@guillain.net>
-Signed-off-by: Vasant Hegde <vasant.hegde@amd.com>
----
- drivers/iommu/amd/amd_iommu.h | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+So, even without this chunk you are going to break the no-IOMMU case.
+Please don't. This will result in a regression report and a revert.
 
-diff --git a/drivers/iommu/amd/amd_iommu.h b/drivers/iommu/amd/amd_iommu.h
-index 2fde1302a584..2d5945c982bd 100644
---- a/drivers/iommu/amd/amd_iommu.h
-+++ b/drivers/iommu/amd/amd_iommu.h
-@@ -129,7 +129,8 @@ static inline int check_feature_gpt_level(void)
- static inline bool amd_iommu_gt_ppr_supported(void)
- {
- 	return (check_feature(FEATURE_GT) &&
--		check_feature(FEATURE_PPR));
-+		check_feature(FEATURE_PPR) &&
-+		check_feature(FEATURE_EPHSUP));
- }
- 
- static inline u64 iommu_virt_to_phys(void *vaddr)
+Instead please provide a way for the existing drivers to continue
+working. For example, something like:
+
+if (IS_ERR(mmu) && ERR_PTR(mmu) == -ENODEV))
+    return NULL;
+
+
+
 -- 
-2.31.1
-
+With best wishes
+Dmitry
