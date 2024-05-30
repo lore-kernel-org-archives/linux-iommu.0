@@ -1,167 +1,105 @@
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 7B28B21350
-	for <iommu@lists.linux.dev>; Thu, 30 May 2024 17:59:21 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
+Received: from mx0b-002e3701.pphosted.com (mx0b-002e3701.pphosted.com [148.163.143.35])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9F31E4595D
+	for <iommu@lists.linux.dev>; Thu, 30 May 2024 18:36:29 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=148.163.143.35
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1717091964; cv=none; b=G/QA5QhScUQtDoJKuLoeG4jZy++PbI3t1GgLPe2kKEXN77vxWYGtHPt07YlGJ39lLPKdb3Rp59Aqg/MxRsj2+iUOOXDhOUbwy4eEQRCtkovP4c6Nc80BHiu1sUEyXbjech3sW1jhDrZHZQzCmMyE9zfkg7ryNo3SLiO4aD6lTBI=
+	t=1717094192; cv=none; b=DEc9ge/9y/XglQK1WTPpAD2gcFcI9+88sclcS5OhpUVObKFi9gmYNfA968SMz3fzUV6W84R5KhDAEFDC7PUk0YzR5ElkDm2Ja3QWDowfQeqUXSZqBF57pqKQxPsuvVVXzBX7ov76x4hVkrp81049oE4XR/2A284rbdsFIJ2mdbg=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1717091964; c=relaxed/simple;
-	bh=PflqUtKjJmJPu3D5IoNLbM2Op32gT6oU3jXs1MEadWU=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=WJl8JFtcxfK2qBcyueo/63aULrtRJsKozNccbZkFYeBEr6hI/Dt1oSvXIZ0BKji1UhRhh6ffL5KxQEcnYaF5ofFUsb5kT2Gueev50L22uuOwodtnymBQi6qBiDCTHwaQ5opYF5leWPYT+6AP1RClhfmDeKUSF2jDtT2TCz88vYw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; arc=none smtp.client-ip=217.140.110.172
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 15C161424;
-	Thu, 30 May 2024 10:59:45 -0700 (PDT)
-Received: from [10.1.196.40] (e121345-lin.cambridge.arm.com [10.1.196.40])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 75BA43F641;
-	Thu, 30 May 2024 10:59:18 -0700 (PDT)
-Message-ID: <ac5d8f21-5fb7-4193-9a0b-cdaff39e8493@arm.com>
-Date: Thu, 30 May 2024 18:59:16 +0100
+	s=arc-20240116; t=1717094192; c=relaxed/simple;
+	bh=RNwHdQcUYiTeG5hUBrDS1pUm7v2IHd2A3lb5RBu12MI=;
+	h=Date:From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:
+	 Content-Disposition; b=fr+tZfyzKiFqCpO90DSoyzK2m60T4gi7FrmHLl4yPvCs6kit7pLOMjbl9Bw9ONrolS549NRJoDZvLa59eU2HnNuf2rtbTL6JSDbEOnTKTVUy1j2neWekZ8F7iXcv+k3QI+YAz2VxAb+4Reor++kzP501DCEndNki83iNw9zQhPk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=hpe.com; spf=pass smtp.mailfrom=hpe.com; dkim=pass (2048-bit key) header.d=hpe.com header.i=@hpe.com header.b=ZPfXmtEg; arc=none smtp.client-ip=148.163.143.35
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=hpe.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=hpe.com
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=hpe.com header.i=@hpe.com header.b="ZPfXmtEg"
+Received: from pps.filterd (m0134425.ppops.net [127.0.0.1])
+	by mx0b-002e3701.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 44UFZPBn032085;
+	Thu, 30 May 2024 18:36:09 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=hpe.com;
+ h=cc:content-type:date:from:message-id:mime-version:subject:to; s=pps0720;
+ bh=0U6HffCCQbVDpU0ZFcMNAlCec0e3gES0NCQepInaYBA=;
+ b=ZPfXmtEgj5htOfBURnO9ItNEjA+88dJ9+Ncc3l9T/Y/KmKxQWALTiLdRgyfAKGnl3NyI
+ ZbyA8hcPR448WITmIkvVF8Y6fUsXMWwDgtXBE93KntoEsnl06wrDJubFmiKVYWfGUSlI
+ fEiGsbAZFF191nEopjWAVnT+/ZHAa8K53KvEIBXB/FCNCRpiCG0JIaCx6Bbee1CvlFTk
+ HnfGr6kS27fdhD7xZbBMRFk034ksDMoSywezA7vvyXilYL0niqzzLc7OY0rUd4Nwns92
+ zAvE0pp2+PYchU97SBM+BM+Cnrnxo2jTpDy8Z8Een3ZIY6nAwkiZFSB/a8Jjkgtiiak5 8g== 
+Received: from p1lg14878.it.hpe.com ([16.230.97.204])
+	by mx0b-002e3701.pphosted.com (PPS) with ESMTPS id 3yechy0h2v-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Thu, 30 May 2024 18:36:09 +0000
+Received: from p1lg14886.dc01.its.hpecorp.net (unknown [10.119.18.237])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+	(No client certificate requested)
+	by p1lg14878.it.hpe.com (Postfix) with ESMTPS id 16F6B130D4;
+	Thu, 30 May 2024 18:36:08 +0000 (UTC)
+Received: from hpe.com (unknown [16.231.227.39])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange ECDHE (P-256) server-signature RSA-PSS (2048 bits) server-digest SHA256)
+	(Client did not present a certificate)
+	by p1lg14886.dc01.its.hpecorp.net (Postfix) with ESMTPS id 5ED8A810082;
+	Thu, 30 May 2024 18:36:05 +0000 (UTC)
+Date: Thu, 30 May 2024 13:36:03 -0500
+From: Dimitri Sivanich <sivanich@hpe.com>
+To: Yi Zhang <yi.zhang@redhat.com>, "Tian, Kevin" <kevin.tian@intel.com>,
+        Vasant Hegde <vasant.hegde@amd.com>,
+        Baolu Lu <baolu.lu@linux.intel.com>, Joerg Roedel <joro@8bytes.org>,
+        Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
+        Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
+        David Wang <00107082@163.com>,
+        Shinichiro Kawasaki <shinichiro.kawasaki@wdc.com>,
+        Dimitri Sivanich <sivanich@hpe.com>, iommu@lists.linux.dev
+Cc: linux-kernel@vger.kernel.org, Steve Wahl <steve.wahl@hpe.com>,
+        Russ Anderson <russ.anderson@hpe.com>
+Subject: [PATCH] iommu/amd: Fix panic accessing amd_iommu_enable_faulting
+Message-ID: <ZljHE/R4KLzGU6vx@hpe.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH 00/20] iommu: Refactoring domain allocation interface
-To: Lu Baolu <baolu.lu@linux.intel.com>, Joerg Roedel <joro@8bytes.org>,
- Will Deacon <will@kernel.org>, Jason Gunthorpe <jgg@ziepe.ca>,
- Kevin Tian <kevin.tian@intel.com>
-Cc: Yi Liu <yi.l.liu@intel.com>, David Airlie <airlied@gmail.com>,
- Daniel Vetter <daniel@ffwll.ch>, Kalle Valo <kvalo@kernel.org>,
- Bjorn Andersson <andersson@kernel.org>,
- Mathieu Poirier <mathieu.poirier@linaro.org>,
- Alex Williamson <alex.williamson@redhat.com>, mst@redhat.com,
- Jason Wang <jasowang@redhat.com>, Thierry Reding <thierry.reding@gmail.com>,
- Jonathan Hunter <jonathanh@nvidia.com>,
- Mikko Perttunen <mperttunen@nvidia.com>, iommu@lists.linux.dev,
- dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org
-References: <20240529053250.91284-1-baolu.lu@linux.intel.com>
-From: Robin Murphy <robin.murphy@arm.com>
-Content-Language: en-GB
-In-Reply-To: <20240529053250.91284-1-baolu.lu@linux.intel.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+X-Proofpoint-GUID: Zr1ZavLdYkTSvbOlZ5FyqI86n65-N2MK
+X-Proofpoint-ORIG-GUID: Zr1ZavLdYkTSvbOlZ5FyqI86n65-N2MK
+X-HPE-SCL: -1
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.293,Aquarius:18.0.1039,Hydra:6.0.650,FMLib:17.12.28.16
+ definitions=2024-05-30_13,2024-05-30_01,2024-05-17_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 mlxlogscore=999
+ lowpriorityscore=0 phishscore=0 clxscore=1015 priorityscore=1501
+ mlxscore=0 malwarescore=0 adultscore=0 suspectscore=0 spamscore=0
+ bulkscore=0 impostorscore=0 classifier=spam adjust=0 reason=mlx
+ scancount=1 engine=8.12.0-2405010000 definitions=main-2405300137
 
-On 29/05/2024 6:32 am, Lu Baolu wrote:
-> The IOMMU subsystem has undergone some changes, including the removal
-> of iommu_ops from the bus structure. Consequently, the existing domain
-> allocation interface, which relies on a bus type argument, is no longer
-> relevant:
-> 
->      struct iommu_domain *iommu_domain_alloc(struct bus_type *bus)
-> 
-> This series is designed to refactor the use of this interface. It
-> proposes two new interfaces to replace iommu_domain_alloc():
-> 
-> - iommu_user_domain_alloc(): This interface is intended for allocating
->    iommu domains managed by userspace for device passthrough scenarios,
->    such as those used by iommufd, vfio, and vdpa. It clearly indicates
->    that the domain is for user-managed device DMA.
-> 
->    If an IOMMU driver does not implement iommu_ops->domain_alloc_user,
->    this interface will rollback to the generic paging domain allocation.
-> 
-> - iommu_paging_domain_alloc(): This interface is for allocating iommu
->    domains managed by kernel drivers for kernel DMA purposes. It takes a
->    device pointer as a parameter, which better reflects the current
->    design of the IOMMU subsystem.
-> 
-> The majority of device drivers currently using iommu_domain_alloc() do
-> so to allocate a domain for a specific device and then attach that
-> domain to the device. These cases can be straightforwardly migrated to
-> the new interfaces.
+This fixes a bug introduced by commit d74169ceb0d2 ("iommu/vt-d: Allocate
+DMAR fault interrupts locally").  The panic happens when
+amd_iommu_enable_faulting is called from CPUHP_AP_ONLINE_DYN context.
 
-Ooh, nice! This was rising back up my to-do list as well, but I concur 
-it's rather more straightforward than my version that did devious things 
-to keep the iommu_domain_alloc() name...
+Fixes: d74169ceb0d2 ("iommu/vt-d: Allocate DMAR fault interrupts locally")
+Signed-off-by: Dimitri Sivanich <sivanich@hpe.com>
+Tested-by: Yi Zhang <yi.zhang@redhat.com>
+---
+ drivers/iommu/amd/init.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-> However, there are some drivers with more complex use cases that do
-> not fit neatly into this new scheme. For example:
-> 
-> $ git grep "= iommu_domain_alloc"
-> arch/arm/mm/dma-mapping.c:      mapping->domain = iommu_domain_alloc(bus);
-
-This one's simple enough, the refactor just needs to go one step deeper. 
-I've just rebased and pushed my old patch for that, if you'd like it [1].
-
-> drivers/gpu/drm/rockchip/rockchip_drm_drv.c:    private->domain = iommu_domain_alloc(private->iommu_dev->bus);
-
-Both this one and usnic_uiom_alloc_pd() should be OK - back when I did 
-all the figuring out to clean up iommu_present(), I specifically 
-reworked them into "dev->bus" style as a reminder that it *is* supposed 
-to be the right device for doing this with, even if the attach is a bit 
-more distant.
-
-> drivers/gpu/drm/tegra/drm.c:            tegra->domain = iommu_domain_alloc(&platform_bus_type);
-
-This is the tricky one, where the device to hand may *not* be the right 
-device for IOMMU API use [2]. FWIW my plan was to pull the "walk the 
-platform bus to find any IOMMU-mapped device" trick into this code and 
-use it both to remove the final iommu_present() and for a device-based 
-domain allocation.
-
-> drivers/infiniband/hw/usnic/usnic_uiom.c:       pd->domain = domain = iommu_domain_alloc(dev->bus);
-> 
-> This series leave those cases unchanged and keep iommu_domain_alloc()
-> for their usage. But new drivers should not use it anymore.
-
-I'd certainly be keen for it to be gone ASAP, since I'm seeing 
-increasing demand for supporting multiple IOMMU drivers, and this is the 
-last bus-based thing standing in the way of that.
-
-Thanks,
-Robin.
-
-[1] 
-https://gitlab.arm.com/linux-arm/linux-rm/-/commit/f048cc6a323d8641898025ca96071df7cbe8bd52
-[2] 
-https://lore.kernel.org/linux-iommu/add31812-50d5-6cb0-3908-143c523abd37@collabora.com/
-
-> The whole series is also available on GitHub:
-> https://github.com/LuBaolu/intel-iommu/commits/iommu-domain-allocation-refactor-v1
-> 
-> Lu Baolu (20):
->    iommu: Add iommu_user_domain_alloc() interface
->    iommufd: Use iommu_user_domain_alloc()
->    vfio/type1: Use iommu_paging_domain_alloc()
->    vhost-vdpa: Use iommu_user_domain_alloc()
->    iommu: Add iommu_paging_domain_alloc() interface
->    drm/msm: Use iommu_paging_domain_alloc()
->    drm/nouveau/tegra: Use iommu_paging_domain_alloc()
->    gpu: host1x: Use iommu_paging_domain_alloc()
->    media: nvidia: tegra: Use iommu_paging_domain_alloc()
->    media: venus: firmware: Use iommu_paging_domain_alloc()
->    ath10k: Use iommu_paging_domain_alloc()
->    wifi: ath11k: Use iommu_paging_domain_alloc()
->    remoteproc: Use iommu_paging_domain_alloc()
->    soc/fsl/qbman: Use iommu_paging_domain_alloc()
->    iommu/vt-d: Add helper to allocate paging domain
->    iommu/vt-d: Add domain_alloc_paging support
->    iommu/vt-d: Simplify compatibility check for identity domain
->    iommu/vt-d: Enhance compatibility check for paging domain attach
->    iommu/vt-d: Remove domain_update_iommu_cap()
->    iommu/vt-d: Remove domain_update_iommu_superpage()
-> 
->   include/linux/iommu.h                         |  12 +
->   drivers/gpu/drm/msm/msm_iommu.c               |   8 +-
->   .../drm/nouveau/nvkm/engine/device/tegra.c    |   4 +-
->   drivers/gpu/host1x/dev.c                      |   6 +-
->   drivers/iommu/intel/iommu.c                   | 319 ++++++++----------
->   drivers/iommu/intel/pasid.c                   |  28 +-
->   drivers/iommu/iommu.c                         |  62 ++++
->   drivers/iommu/iommufd/hw_pagetable.c          |  20 +-
->   .../media/platform/nvidia/tegra-vde/iommu.c   |   6 +-
->   drivers/media/platform/qcom/venus/firmware.c  |   6 +-
->   drivers/net/wireless/ath/ath10k/snoc.c        |   6 +-
->   drivers/net/wireless/ath/ath11k/ahb.c         |   6 +-
->   drivers/remoteproc/remoteproc_core.c          |   6 +-
->   drivers/soc/fsl/qbman/qman_portal.c           |   4 +-
->   drivers/vfio/vfio_iommu_type1.c               |   7 +-
->   drivers/vhost/vdpa.c                          |  11 +-
->   16 files changed, 253 insertions(+), 258 deletions(-)
-> 
+diff --git a/drivers/iommu/amd/init.c b/drivers/iommu/amd/init.c
+index a18e74878f68..b02b959d12af 100644
+--- a/drivers/iommu/amd/init.c
++++ b/drivers/iommu/amd/init.c
+@@ -3353,7 +3353,7 @@ int amd_iommu_reenable(int mode)
+ 	return 0;
+ }
+ 
+-int __init amd_iommu_enable_faulting(unsigned int cpu)
++int amd_iommu_enable_faulting(unsigned int cpu)
+ {
+ 	/* We enable MSI later when PCI is initialized */
+ 	return 0;
+-- 
+2.35.3
