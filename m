@@ -1,101 +1,167 @@
-Received: from out-189.mta1.migadu.com (out-189.mta1.migadu.com [95.215.58.189])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D417C1F941
-	for <iommu@lists.linux.dev>; Thu, 30 May 2024 16:06:41 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=95.215.58.189
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 7B28B21350
+	for <iommu@lists.linux.dev>; Thu, 30 May 2024 17:59:21 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1717085203; cv=none; b=dMHv+0t2/J1+S3Z9Ckuhbl9omjB0Z+TG4jzh6hYIMCRQodIIr/dzSgj45OEMvYfOC6PEoOPK+9a64JacLAjSJMHFh4dqAvwOkN2X6p7dWhM81S81FPV3Xv7C5+98f9x8nPAA9hhu6m2LaDv8pEaCJ0AooqpgpzTdM2hWh7S0HpE=
+	t=1717091964; cv=none; b=G/QA5QhScUQtDoJKuLoeG4jZy++PbI3t1GgLPe2kKEXN77vxWYGtHPt07YlGJ39lLPKdb3Rp59Aqg/MxRsj2+iUOOXDhOUbwy4eEQRCtkovP4c6Nc80BHiu1sUEyXbjech3sW1jhDrZHZQzCmMyE9zfkg7ryNo3SLiO4aD6lTBI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1717085203; c=relaxed/simple;
-	bh=igK53oKZs0m3P4rVmp44qLs1z5GN+0iaY7oPimwHm94=;
-	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=PPxnVYVGiOW4itl+6SQaAfPYAtu6/QPk/x5VgUlIPeK7dpJhHx5XgRwtSWDsPJptfLnw8ntWuvFdzBKLl7MSjpsniBtVx6F/avFMV9F1AKCerSbuW6svjTpOSDPSNigGSgQNF/v5IrNdZhieBAgSI8Ptq19qwiAP49b+hX8QqtI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=cknow.org; spf=pass smtp.mailfrom=cknow.org; dkim=pass (2048-bit key) header.d=cknow.org header.i=@cknow.org header.b=wJUjrLy3; arc=none smtp.client-ip=95.215.58.189
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=cknow.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=cknow.org
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=cknow.org header.i=@cknow.org header.b="wJUjrLy3"
-X-Envelope-To: dwmw2@infradead.org
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=cknow.org; s=key1;
-	t=1717085199;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 in-reply-to:in-reply-to:references:references;
-	bh=IkpVVDRX1kDDM7sB/ftX6eW70ixX7+jS9JUBqKb15n0=;
-	b=wJUjrLy3+2YiSEmerSzsjcDhbkaXpdtrpPwmGMMDOZDkItwg70GrvtwzxJK0wKVgh0e7/m
-	3ce3L7Chl6StsARzeBpqpB6y7AdPIMjMgvmEkdbJuu1ttXUSsuJfgWdTOF/bYBpFpu0IbT
-	wePPsWbPsc0sa8cN4HC2lbixG02k3CRNnib99bHrTewWIox6YYQ1Mwa5e4mV/qGwIQHpnk
-	2E1MRk7Ka6tKfqOV+dfQU5pdMauHluYpAJn+0RMyQ0mOi8+DoDcRLmfIh4oaZUbNLcq+yY
-	2CCJ+rkKB7vQiZCMYv6qFuFkgfL4Vnw14SoCvcL29/J/VI+g2q80RJZv9tKDmQ==
-X-Envelope-To: baolu.lu@linux.intel.com
-X-Envelope-To: joro@8bytes.org
-X-Envelope-To: will@kernel.org
-X-Envelope-To: robin.murphy@arm.com
-X-Envelope-To: iommu@lists.linux.dev
-X-Envelope-To: linux-kernel@vger.kernel.org
-X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
-From: Diederik de Haas <didi.debian@cknow.org>
-To: David Woodhouse <dwmw2@infradead.org>,
- Lu Baolu <baolu.lu@linux.intel.com>, Joerg Roedel <joro@8bytes.org>,
- Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>
-Cc: iommu@lists.linux.dev, linux-kernel@vger.kernel.org
-Subject:
- Re: device_def_domain_type documentation header does not match implementation
-Date: Thu, 30 May 2024 18:06:28 +0200
-Message-ID: <4190999.HFuNgkhpQd@bagend>
-Organization: Connecting Knowledge
-In-Reply-To: <32921840-43d6-4ad9-99eb-aac32e67e04c@arm.com>
-References:
- <14311965.TaHA55BQu8@bagend> <32921840-43d6-4ad9-99eb-aac32e67e04c@arm.com>
+	s=arc-20240116; t=1717091964; c=relaxed/simple;
+	bh=PflqUtKjJmJPu3D5IoNLbM2Op32gT6oU3jXs1MEadWU=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=WJl8JFtcxfK2qBcyueo/63aULrtRJsKozNccbZkFYeBEr6hI/Dt1oSvXIZ0BKji1UhRhh6ffL5KxQEcnYaF5ofFUsb5kT2Gueev50L22uuOwodtnymBQi6qBiDCTHwaQ5opYF5leWPYT+6AP1RClhfmDeKUSF2jDtT2TCz88vYw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; arc=none smtp.client-ip=217.140.110.172
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 15C161424;
+	Thu, 30 May 2024 10:59:45 -0700 (PDT)
+Received: from [10.1.196.40] (e121345-lin.cambridge.arm.com [10.1.196.40])
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 75BA43F641;
+	Thu, 30 May 2024 10:59:18 -0700 (PDT)
+Message-ID: <ac5d8f21-5fb7-4193-9a0b-cdaff39e8493@arm.com>
+Date: Thu, 30 May 2024 18:59:16 +0100
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: multipart/signed; boundary="nextPart1915108.mHXZh0l9D7";
- micalg="pgp-sha256"; protocol="application/pgp-signature"
-X-Migadu-Flow: FLOW_OUT
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH 00/20] iommu: Refactoring domain allocation interface
+To: Lu Baolu <baolu.lu@linux.intel.com>, Joerg Roedel <joro@8bytes.org>,
+ Will Deacon <will@kernel.org>, Jason Gunthorpe <jgg@ziepe.ca>,
+ Kevin Tian <kevin.tian@intel.com>
+Cc: Yi Liu <yi.l.liu@intel.com>, David Airlie <airlied@gmail.com>,
+ Daniel Vetter <daniel@ffwll.ch>, Kalle Valo <kvalo@kernel.org>,
+ Bjorn Andersson <andersson@kernel.org>,
+ Mathieu Poirier <mathieu.poirier@linaro.org>,
+ Alex Williamson <alex.williamson@redhat.com>, mst@redhat.com,
+ Jason Wang <jasowang@redhat.com>, Thierry Reding <thierry.reding@gmail.com>,
+ Jonathan Hunter <jonathanh@nvidia.com>,
+ Mikko Perttunen <mperttunen@nvidia.com>, iommu@lists.linux.dev,
+ dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org
+References: <20240529053250.91284-1-baolu.lu@linux.intel.com>
+From: Robin Murphy <robin.murphy@arm.com>
+Content-Language: en-GB
+In-Reply-To: <20240529053250.91284-1-baolu.lu@linux.intel.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
---nextPart1915108.mHXZh0l9D7
-Content-Transfer-Encoding: 7Bit
-Content-Type: text/plain; charset="us-ascii"; protected-headers="v1"
-From: Diederik de Haas <didi.debian@cknow.org>
-Cc: iommu@lists.linux.dev, linux-kernel@vger.kernel.org
-Date: Thu, 30 May 2024 18:06:28 +0200
-Message-ID: <4190999.HFuNgkhpQd@bagend>
-Organization: Connecting Knowledge
-In-Reply-To: <32921840-43d6-4ad9-99eb-aac32e67e04c@arm.com>
-MIME-Version: 1.0
-
-On Thursday, 30 May 2024 17:49:17 CEST Robin Murphy wrote:
-> > But neither updated the documentation header.
+On 29/05/2024 6:32 am, Lu Baolu wrote:
+> The IOMMU subsystem has undergone some changes, including the removal
+> of iommu_ops from the bus structure. Consequently, the existing domain
+> allocation interface, which relies on a bus type argument, is no longer
+> relevant:
 > 
-> TBH it could probably just be deleted now, since the
-> iommu_ops::def_domain_type callback is properly documented in iommu.h,
-> so individual implementations shouldn't need to repeat that. It's also
-> never been actual kerneldoc either, since it's a regular "/*" comment.
-> Feel free to send a patch :)
+>      struct iommu_domain *iommu_domain_alloc(struct bus_type *bus)
+> 
+> This series is designed to refactor the use of this interface. It
+> proposes two new interfaces to replace iommu_domain_alloc():
+> 
+> - iommu_user_domain_alloc(): This interface is intended for allocating
+>    iommu domains managed by userspace for device passthrough scenarios,
+>    such as those used by iommufd, vfio, and vdpa. It clearly indicates
+>    that the domain is for user-managed device DMA.
+> 
+>    If an IOMMU driver does not implement iommu_ops->domain_alloc_user,
+>    this interface will rollback to the generic paging domain allocation.
+> 
+> - iommu_paging_domain_alloc(): This interface is for allocating iommu
+>    domains managed by kernel drivers for kernel DMA purposes. It takes a
+>    device pointer as a parameter, which better reflects the current
+>    design of the IOMMU subsystem.
+> 
+> The majority of device drivers currently using iommu_domain_alloc() do
+> so to allocate a domain for a specific device and then attach that
+> domain to the device. These cases can be straightforwardly migrated to
+> the new interfaces.
 
-I leave that to people who actually know what they're doing (I'm not a C dev).
+Ooh, nice! This was rising back up my to-do list as well, but I concur 
+it's rather more straightforward than my version that did devious things 
+to keep the iommu_domain_alloc() name...
 
-Cheers,
-  Diederik
---nextPart1915108.mHXZh0l9D7
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: This is a digitally signed message part.
-Content-Transfer-Encoding: 7Bit
+> However, there are some drivers with more complex use cases that do
+> not fit neatly into this new scheme. For example:
+> 
+> $ git grep "= iommu_domain_alloc"
+> arch/arm/mm/dma-mapping.c:      mapping->domain = iommu_domain_alloc(bus);
 
------BEGIN PGP SIGNATURE-----
+This one's simple enough, the refactor just needs to go one step deeper. 
+I've just rebased and pushed my old patch for that, if you'd like it [1].
 
-iHUEABYIAB0WIQT1sUPBYsyGmi4usy/XblvOeH7bbgUCZlikBAAKCRDXblvOeH7b
-bsBxAP47912RndyJocsLNJoEMtgERD+mtcFij9xDHF+dH6cfXgEAjHH7PN3HG1To
-57bH4sJEkpYWrgJAGoLMm8LJRjfkwg8=
-=3PQZ
------END PGP SIGNATURE-----
+> drivers/gpu/drm/rockchip/rockchip_drm_drv.c:    private->domain = iommu_domain_alloc(private->iommu_dev->bus);
 
---nextPart1915108.mHXZh0l9D7--
+Both this one and usnic_uiom_alloc_pd() should be OK - back when I did 
+all the figuring out to clean up iommu_present(), I specifically 
+reworked them into "dev->bus" style as a reminder that it *is* supposed 
+to be the right device for doing this with, even if the attach is a bit 
+more distant.
 
+> drivers/gpu/drm/tegra/drm.c:            tegra->domain = iommu_domain_alloc(&platform_bus_type);
 
+This is the tricky one, where the device to hand may *not* be the right 
+device for IOMMU API use [2]. FWIW my plan was to pull the "walk the 
+platform bus to find any IOMMU-mapped device" trick into this code and 
+use it both to remove the final iommu_present() and for a device-based 
+domain allocation.
 
+> drivers/infiniband/hw/usnic/usnic_uiom.c:       pd->domain = domain = iommu_domain_alloc(dev->bus);
+> 
+> This series leave those cases unchanged and keep iommu_domain_alloc()
+> for their usage. But new drivers should not use it anymore.
+
+I'd certainly be keen for it to be gone ASAP, since I'm seeing 
+increasing demand for supporting multiple IOMMU drivers, and this is the 
+last bus-based thing standing in the way of that.
+
+Thanks,
+Robin.
+
+[1] 
+https://gitlab.arm.com/linux-arm/linux-rm/-/commit/f048cc6a323d8641898025ca96071df7cbe8bd52
+[2] 
+https://lore.kernel.org/linux-iommu/add31812-50d5-6cb0-3908-143c523abd37@collabora.com/
+
+> The whole series is also available on GitHub:
+> https://github.com/LuBaolu/intel-iommu/commits/iommu-domain-allocation-refactor-v1
+> 
+> Lu Baolu (20):
+>    iommu: Add iommu_user_domain_alloc() interface
+>    iommufd: Use iommu_user_domain_alloc()
+>    vfio/type1: Use iommu_paging_domain_alloc()
+>    vhost-vdpa: Use iommu_user_domain_alloc()
+>    iommu: Add iommu_paging_domain_alloc() interface
+>    drm/msm: Use iommu_paging_domain_alloc()
+>    drm/nouveau/tegra: Use iommu_paging_domain_alloc()
+>    gpu: host1x: Use iommu_paging_domain_alloc()
+>    media: nvidia: tegra: Use iommu_paging_domain_alloc()
+>    media: venus: firmware: Use iommu_paging_domain_alloc()
+>    ath10k: Use iommu_paging_domain_alloc()
+>    wifi: ath11k: Use iommu_paging_domain_alloc()
+>    remoteproc: Use iommu_paging_domain_alloc()
+>    soc/fsl/qbman: Use iommu_paging_domain_alloc()
+>    iommu/vt-d: Add helper to allocate paging domain
+>    iommu/vt-d: Add domain_alloc_paging support
+>    iommu/vt-d: Simplify compatibility check for identity domain
+>    iommu/vt-d: Enhance compatibility check for paging domain attach
+>    iommu/vt-d: Remove domain_update_iommu_cap()
+>    iommu/vt-d: Remove domain_update_iommu_superpage()
+> 
+>   include/linux/iommu.h                         |  12 +
+>   drivers/gpu/drm/msm/msm_iommu.c               |   8 +-
+>   .../drm/nouveau/nvkm/engine/device/tegra.c    |   4 +-
+>   drivers/gpu/host1x/dev.c                      |   6 +-
+>   drivers/iommu/intel/iommu.c                   | 319 ++++++++----------
+>   drivers/iommu/intel/pasid.c                   |  28 +-
+>   drivers/iommu/iommu.c                         |  62 ++++
+>   drivers/iommu/iommufd/hw_pagetable.c          |  20 +-
+>   .../media/platform/nvidia/tegra-vde/iommu.c   |   6 +-
+>   drivers/media/platform/qcom/venus/firmware.c  |   6 +-
+>   drivers/net/wireless/ath/ath10k/snoc.c        |   6 +-
+>   drivers/net/wireless/ath/ath11k/ahb.c         |   6 +-
+>   drivers/remoteproc/remoteproc_core.c          |   6 +-
+>   drivers/soc/fsl/qbman/qman_portal.c           |   4 +-
+>   drivers/vfio/vfio_iommu_type1.c               |   7 +-
+>   drivers/vhost/vdpa.c                          |  11 +-
+>   16 files changed, 253 insertions(+), 258 deletions(-)
+> 
