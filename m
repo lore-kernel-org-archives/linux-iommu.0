@@ -1,213 +1,194 @@
-Received: from NAM10-MW2-obe.outbound.protection.outlook.com (mail-mw2nam10on2062.outbound.protection.outlook.com [40.107.94.62])
+Received: from mx0b-0031df01.pphosted.com (mx0b-0031df01.pphosted.com [205.220.180.131])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 09B6F6F2F4
-	for <iommu@lists.linux.dev>; Thu, 30 May 2024 08:52:17 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.94.62
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1717059139; cv=fail; b=uePDvD1KhoU5w898hWaEU4jnple60bCviGr/ofBkrqiDDtVXSEtyHEASRn/A6EtR55agYaQtY7i8DEWNoGFEHc4fnbFX8o+/OEmzKhY9ihyuIWY3N3at9jNpwLRAw085o5Hk5aO1r9np7aOnA7jCCJ0x8Jf/5LEhOrN7yJX3DNs=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1717059139; c=relaxed/simple;
-	bh=NNZSrdl2Kg7UKYkaV9g3SCPhkqxNOMlgq7y8iiuCyno=;
-	h=Message-ID:Date:Subject:To:Cc:References:From:In-Reply-To:
-	 Content-Type:MIME-Version; b=MSl/zdpOXvOwF903//vVMfMZE6dTPZ5W2boXrr9o4U16svPiylySw8s8W0g8PaQ7DgBiVXKBOMBgKMp/b2vnqUVaE+8fF04gnnJSq3lhot6jgWiv9qc6FWHL/ax7EfP0YIIr0+p4Q/rpk41FDKC6l+Cr49G8wIM4i+PPz/rss8s=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com; spf=fail smtp.mailfrom=amd.com; dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b=BYjZtNfn; arc=fail smtp.client-ip=40.107.94.62
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=amd.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C6997142E6C
+	for <iommu@lists.linux.dev>; Thu, 30 May 2024 09:22:08 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.180.131
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1717060930; cv=none; b=Rz9dl7rQwSWXNqllEW2LAclPBJZDeHyzTQUAq4x5BFEGfD2QmFHOLE35STcz2PiXleJzPnJujyCUR/lMdhGo2khD54cuA1LMgj8M8rSJBU1aysjpgXFTttAhVqaM2uCbWhgFkNpd/QhN8Pv3VPQQUAvoOrmanZwzuqknKBsyAjM=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1717060930; c=relaxed/simple;
+	bh=eilKX70jYwebgFz+4v6+1vDZqinrMB8ULnIYQMMLOCg=;
+	h=Message-ID:Date:MIME-Version:Subject:To:CC:References:From:
+	 In-Reply-To:Content-Type; b=sQm4HU76/SeMttCSKhhJc6fD9nlw6lTYTDCv9Fdh8pozhIa4sbAxEq6I3F3RlzabzisZnRYSly6fFrb+WHy5q731dc/nk9MGJesBmebSAD5H+chgLNdUkE5VQn72VmY4DOWup+VTkLshdCrVaDg1vGiocBGjQo7fcH9pFhCcOsk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com; spf=pass smtp.mailfrom=quicinc.com; dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b=T++bgKNa; arc=none smtp.client-ip=205.220.180.131
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=quicinc.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b="BYjZtNfn"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=Jd/o1ShdhI/xqiUXZSM+gDhk7li9Q7gLysc0KDqzd4tdMW2zxZy5v86wJNFE7IJnD7AZYfrecvBUkQvu+jFRnN17lUB2I4nBhtKbDA7IR+dvU+KppNlmr+rgJcLbZ97HLwZaSqUaHSeTPLZOyGozgv2J5p+rdDqn0lHXDLm0fxAA+DRy+auwCwWIjUhYlCDAE5x72u/GttqbIbW7Mf6r0lcjfP4u4GWSpz8ZQT8M20XkhRVRd605RbQI8noDDFXnF2P6kdGCp+1ZzdICt1Z0IEiK9XUdbr5RGrsPJ72koHuj4y6X1CkfLq9cbx5eLKADCIKYRgOo+ls2sxe8dDspow==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=8lauZGaPHD3SGJOPpT35zEKhTlWfBuCB8NhQ8CaUaNI=;
- b=H0G+E1BOpBN9z3ZfdejtqZBBOUhxW6Fxh/QaSknqv8+yvJFhxYpnRwEuyGhhy+rtjLJsVCQyv8Vak5QyIVXWjWrXhDl+QD+XyP3cVR9p1mLWIMKrmQTSm/Qhb92AGzRzXSZ2woqL2zYphHRR1Eha8Ni81Sn0gHsC3eSvLIQ1B4IUxpnlgFs9H45WYmHrkEZ55mu+QWxhOoIRPyYBgS2DLSfArMGqkb7TtUFshVE1o6rN2Q3xn/c1O8bnHQgPnPshtyNLHj4CLGczY/Ed/MmXsCabrQ3jsjBcy1TuCzRkmMGZZfw9YUP6xIL9N6n0Mb6Nn4coKqCaKJlJNKfZFvRpSg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=amd.com; dmarc=pass action=none header.from=amd.com; dkim=pass
- header.d=amd.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=8lauZGaPHD3SGJOPpT35zEKhTlWfBuCB8NhQ8CaUaNI=;
- b=BYjZtNfn4tBonqscm8QfevtTuZRQ4x3fYoWJPx9VHdbWXYDvja9tfH3pMXqGrJtFPGyNU1zcjVqOehrjfQgRPkF0ru8l5uShXxqu54bCHwiWSZ3iy8xzNXsVMYKwA7+so7Ev0gtwTh7kMqj9MR6tqFE7cDOHCySw7oB1Vo+JnV4=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=amd.com;
-Received: from DS7PR12MB6048.namprd12.prod.outlook.com (2603:10b6:8:9f::5) by
- CY5PR12MB6432.namprd12.prod.outlook.com (2603:10b6:930:38::8) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.7633.19; Thu, 30 May 2024 08:52:14 +0000
-Received: from DS7PR12MB6048.namprd12.prod.outlook.com
- ([fe80::6318:26e5:357a:74a5]) by DS7PR12MB6048.namprd12.prod.outlook.com
- ([fe80::6318:26e5:357a:74a5%6]) with mapi id 15.20.7633.018; Thu, 30 May 2024
- 08:52:14 +0000
-Message-ID: <fdc3bffa-7149-48a4-949a-dd469c6c2726@amd.com>
-Date: Thu, 30 May 2024 14:22:04 +0530
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH 1/1] iommu: Make iommu_sva_domain_alloc() static
-To: Lu Baolu <baolu.lu@linux.intel.com>, Joerg Roedel <joro@8bytes.org>,
- Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
- Jason Gunthorpe <jgg@ziepe.ca>, Kevin Tian <kevin.tian@intel.com>,
- Jean-Philippe Brucker <jean-philippe@linaro.org>
-Cc: iommu@lists.linux.dev, linux-kernel@vger.kernel.org
-References: <20240528045458.81458-1-baolu.lu@linux.intel.com>
-Content-Language: en-US
-From: Vasant Hegde <vasant.hegde@amd.com>
-In-Reply-To: <20240528045458.81458-1-baolu.lu@linux.intel.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: MA1P287CA0018.INDP287.PROD.OUTLOOK.COM
- (2603:1096:a00:35::27) To DS7PR12MB6048.namprd12.prod.outlook.com
- (2603:10b6:8:9f::5)
+	dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b="T++bgKNa"
+Received: from pps.filterd (m0279869.ppops.net [127.0.0.1])
+	by mx0a-0031df01.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 44U8cujF018733;
+	Thu, 30 May 2024 09:21:57 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=quicinc.com; h=
+	cc:content-transfer-encoding:content-type:date:from:in-reply-to
+	:message-id:mime-version:references:subject:to; s=qcppdkim1; bh=
+	lzMITiOKy7+8Hn0qlaK9jJKIuSFHPPzrWAw/zEg5e3U=; b=T++bgKNaIUOCpCRw
+	gfaJqOcLhfg/kkIrfh3umGAY//JPt0I1xL9HB18vqkQB/wrUU56yJs9VzMpZYcPp
+	4y9XQ5mqUuNnC8H4Li18BurBUK0kYoS9uUkEjzXdakdcdjESH+eNC/DS/oNQZ7OD
+	BTvzEXZuF/atK7wqW3DFXC9lnxgtFPCGXU/Zmxy6giW8sSu+bDoGPJCKmHz2hcFW
+	7SG83kSdzaW72Ftbm1jSLpwlKRsTSFbg+/fklm5zSLdwmjgzlWkMNkwX5qnfUkKM
+	vWnde0LUKOpdhzBEYuOMPu6qolxwFbu1wjhv5D9THrcQMC9Cqsjxt8Pop7nxsda5
+	BnI9Yg==
+Received: from nalasppmta05.qualcomm.com (Global_NAT1.qualcomm.com [129.46.96.20])
+	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 3yba0xbjhx-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Thu, 30 May 2024 09:21:57 +0000 (GMT)
+Received: from nalasex01c.na.qualcomm.com (nalasex01c.na.qualcomm.com [10.47.97.35])
+	by NALASPPMTA05.qualcomm.com (8.17.1.5/8.17.1.5) with ESMTPS id 44U9Lt2S017262
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Thu, 30 May 2024 09:21:55 GMT
+Received: from [10.214.66.253] (10.80.80.8) by nalasex01c.na.qualcomm.com
+ (10.47.97.35) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1544.9; Thu, 30 May
+ 2024 02:21:48 -0700
+Message-ID: <9cda3489-c350-46cf-a1c8-83fd63283849@quicinc.com>
+Date: Thu, 30 May 2024 14:51:40 +0530
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: DS7PR12MB6048:EE_|CY5PR12MB6432:EE_
-X-MS-Office365-Filtering-Correlation-Id: c3da0f2d-4d17-4af9-b650-08dc8085cd14
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;ARA:13230031|1800799015|366007|376005;
-X-Microsoft-Antispam-Message-Info:
-	=?utf-8?B?TGJDQS92ZmtJdXM2VFBlSWs3R2xHK1c2S2Ezd1p4TVQxbENVRU1iQnhSbHpI?=
- =?utf-8?B?aEU0SGY0NEk5UlYvZ1lDVUhzWGRYbEpkL3k1UUxZeU80OTN2UHo4V09hdXZE?=
- =?utf-8?B?Q0Q2MklKS1AvVkE1cDgwanRiUzJiTWRHSE1NTndUZ3llTW4xYm1tU2ZhdGhl?=
- =?utf-8?B?REtuOEtnUjB1SXkyR29nbVlLRUNpWVlpZUh3NkF5bjZ1TSsrNXcya3NaYnJC?=
- =?utf-8?B?eXMxczdqQTZEeU41Wm0zUHZiVzFlZVhYMVpJcTJwcnZnOUpHSHpwR09JUkVm?=
- =?utf-8?B?WGVveEZxR2FOUysyZW5wcU9BRVBRME85czd3WHBSY2wrMllUSzJRRU5BY2NJ?=
- =?utf-8?B?Z0pBM1BSN3NUbUY4Y1JGZy9qOC9LNmYxYkdiMy93M2tNN3ZQbHFVUzVtbkZG?=
- =?utf-8?B?TWcwcTdlb1daTUVJaklCR1NISDNJUStmZTU3Z0M1b0QyZGJ4c2c0ZVZneGZH?=
- =?utf-8?B?cVBrZmxZTkpUb1FNRXFjWGp5ZHNwdmg0amRNZm82aG1vcW1PdmpLaGFRUFpS?=
- =?utf-8?B?Ry9wcHNleVp6NVJRbTZ5ek5yWFQrN2ZwTlNMTHdXVlJ5NkRBMjFUajZXZzFF?=
- =?utf-8?B?dER3L2ZRaW85N2FDMzlrQndpR01CQWRhNllRTmhwc2V1RzlGRzUzbk4wM3kw?=
- =?utf-8?B?WFpvYk5Ra1B2Ykx2Szl0S0wrRUJNQ0FHc2htNkgxSjc5emtYM3BscGtKR2M2?=
- =?utf-8?B?RC9FOHZYRDhzbUJ2c3NEY2lqcTk5ZktMZERTYUhTa1hlK096LzRBQWxUSEkz?=
- =?utf-8?B?ZkJjN1ZoQlJwaHVmWnprNTZKVzVwa0tZeHBDWlZsT25ZZkpSZ2JrQnFqcm13?=
- =?utf-8?B?VnZ1dVNlWmdDZGpkQ2hmY1pGU05GWDJwSmh0UzJpcmhYVXp2MmJaYSthSjhP?=
- =?utf-8?B?VXltNU9iTnpjMURTSTVHQjg2UGRrTDRzN2VWa3VOanl6TXlxdWhBSnRoUWtH?=
- =?utf-8?B?MXNkaUlyU2ExcnhZWnR2WjlXQy9tV3o5bTdLVzJzczV4djlzMnNwclU2Z2pN?=
- =?utf-8?B?dTRUR0JqTkdVa3RBRFRKemRkRjhKUGxEZHRqSVFpL2JIMUFmN3RmREtGamh6?=
- =?utf-8?B?UmZ2bXlqdmIzOWQwcGVURHJzK2R0NjY0UnZDK3o0WTZXMjBNb0s5eGtGUXo3?=
- =?utf-8?B?Z1h4STQ1RktMT0E4SHZ4aWJJUlFmbW5mS0JCb3AzUzQwU1NjdDVYVW96ZU9P?=
- =?utf-8?B?bXpwSUlBeExBL0U4ZkJmNTNCMlNlamQzRWs4OFZSSXU4Y0FVeEMwa2NUcEk4?=
- =?utf-8?B?eFN1bS9oUms0OWc2alNMcTN0QnFuVko4QmtobDRSNGNITHJ1L2g3RlYxMTI3?=
- =?utf-8?B?MWhZOTdUa3YrU1lQL2pPOHRzN3diazRTSWdEN2U1ditCYTBBZC90Y09DNVdS?=
- =?utf-8?B?cUR5VmpUb2xGRWFMUktyNkgyV1MwT1BrZG1ONUFMcHVuMzE4TnZHZHdBUGJW?=
- =?utf-8?B?dnlmVzhvU3pISTJXcmFYZXpOOTZObS95UmNTQW1BKzNWUlhpelhTa2dCR0dS?=
- =?utf-8?B?S2lVQ0MvckM0VjhVaFpQMUkzVUJNVVpSNTMreU01eGdiVkpLRXVEZjJDWG9L?=
- =?utf-8?B?RVdrbnloaXlmeUhnSHJsbUJZQzViMkJCRHF4OVdKOGZpSSttNEZvVHNTbUpq?=
- =?utf-8?B?L3hQV3YxNERpQmxSMUp0Y3V1SEVyQVVMdTlGZE54blFXSWptZE54Z3dOeU51?=
- =?utf-8?B?aUQwL3ZmYVVqU094MFpIakc1RVpLeUhXaHBSMXVFTVdZaXNHbEtDMmRRPT0=?=
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DS7PR12MB6048.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230031)(1800799015)(366007)(376005);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?utf-8?B?QmRlbUNXZjByTDYwZ0xFdlJ1bk9rNXU0WXNiSkF2bUxJSVNkakZpSFpicUJ1?=
- =?utf-8?B?eVIvc1ZQcGM1YXdXSTI3M2pXQWdFNEdTNzM2cWZGVUhJWFQ4RjdqWkc5SVZu?=
- =?utf-8?B?U09PazlvS1VDV1dDWkkvcERYOFJ6ZmJaTE5PR2VsdXBsTno0T3BKNFFxOGw0?=
- =?utf-8?B?L2cycjdXWEl0TlN3VDhlNno1YmVjRERicXBZUXN0VnVCOXBLcnVYRUdwSnQ5?=
- =?utf-8?B?eGNUcE5ibHlFOEVKbTFjaUFib1NjN0NabUlIK2kwR0E5d0RtTUJWVVNSS0dT?=
- =?utf-8?B?ek1EbDJZRm9UL0ZManN3NHYrQS9sNTd3N1dMbFJmS0FnNkRCMEpjekVHSlVx?=
- =?utf-8?B?MHl1YzhzRFNDZWpkbEUrVkxpMHNWLzJhSHlXaWk2SFMzRmtzeUNUNGEvSVdt?=
- =?utf-8?B?eEp2OENtTXZIektqeDJBeEpWOUc3VDFzUzJlakpYVUt6bnRibE9NdVBDR0dY?=
- =?utf-8?B?QnpjdUUvMzEzckYwMElXSDNVQUdRK3NBazhFQzFZaHB3U004SG1QRXo3bDYr?=
- =?utf-8?B?Sk5mMW1abTFlZlgrN3FTbGFZTHMxNGVxMFZyMGFyNkc2L3RWTlFrK2c3OEts?=
- =?utf-8?B?ZWdFcWdUUDE0TDZ4b2sxNUlVZ0FURlJEVlJzYUVDK2JoL2hHZ2dQZm94RnFT?=
- =?utf-8?B?QzFxd2g1WDI0MUV6WjJ1VkxOVEJOR0dQbGl3cXI1RHZXTUs0c2lrSjJZS2tC?=
- =?utf-8?B?Q0dXMnJZVVd0Wm82ZXhLTktMejUyZzFodXVwbi95M0w3Z1FvSUxDbWtYc2hz?=
- =?utf-8?B?NENmS3V2cGtKUjFhRDZQRTFRZnVaOHRleGVkcld1eFBzR1RETnFUOE9mZDF3?=
- =?utf-8?B?dkpCMmY3Q1RFTmxPL0pXLy9mNmV2Rkw5bStWREE0MTNWZUYvdnJHdzhGYkhk?=
- =?utf-8?B?S1NkOVBWdk9HeklCWXNUbjdWdWFleW9vb3k3czhZYktuTlB0OU1MN3JhS21B?=
- =?utf-8?B?VXo3SytyQnQ4UGdhRnZRNHlWdjRiTVhxeE1vSytvNmQwUWw2RlB3T2ZCRFJx?=
- =?utf-8?B?cytBUU5mLzh4Q1VNNURqZVUrMTUwUnZpM0o2STFqUWtGSkE1cXZYenFBQTJZ?=
- =?utf-8?B?U2dRd2lGZzc2djQwalp1Z3VqNVFHN3NWN3IxYmxTRDFQRjFqeDVOVjFSWUZo?=
- =?utf-8?B?MFZPRGg1cUs5U2ZPVS9WaEZxdnd6cW1BSEZFTkRCUnZmT2ZLWk9jc2ltakVT?=
- =?utf-8?B?K1o2R3ZGTjNSTURvN2pNTFZhT2dYNHE3YVBaNlJqaEJEUWcwSlZRbThPM2M1?=
- =?utf-8?B?OVVxTHZnQ1ZXNFNWV0QveTFmRXNBdnBIakJabFBWR0JGWlZwL3MydUZwVit5?=
- =?utf-8?B?Um1sRlVaWlRVWU8rQThSam9zcWF0NlV3TWJKeUNOV0NEd3dRbnRZV1BQNXNW?=
- =?utf-8?B?VGpadXg3b3FSeGZyaTlFRS9IS240RmlPMGJSZFVQbzdEVUNneXZYMFJ0VUlo?=
- =?utf-8?B?YzZHRmozbWVVU3dBN2Q0UllZeW1CbnpocmxmZ1A1WkMxZk14aW4xaGc5a1Fq?=
- =?utf-8?B?M1F6S3dleEdPOGpxNjJaQWVQenQveXE2ckFlRzU2UnVxOEZPVXBreUx6bUdY?=
- =?utf-8?B?SkNsVjdreFpKYjF1UEQ4S3FFZUZpOURDQUdMdnVoNStZZFlveG9RZTNmbUM0?=
- =?utf-8?B?TURxaGZISkl1NTF4cDhoM3RvYmNmWjlaN2Y2OEUzbmZMZzFWTUM2STJPWXBE?=
- =?utf-8?B?TkxaYUZTUG5reThBK004VnFLRHJtREpxTitXZmhvUHV3QWxlbDJudDc5aWFs?=
- =?utf-8?B?ejNDQ1lCUUdESURYUFhWd2lHcWZLWmNodzBqYXkrbmltYnJLS1Z6OVBFR2Rh?=
- =?utf-8?B?Y256Z3Q4cWd3TkhBYWE0NHgzY09odEIyV25obzRUbGE1Wi9FQXRKYWp0cHZG?=
- =?utf-8?B?Y1VkTkFDVFdSaDFxZFJiaHpXZnVCZzlSYzBIYjVMdCtoR2NUdzZiL1AxcGxi?=
- =?utf-8?B?RXFQRTlFRWlRbTFheFVQK2VDTENhR2RWSzB5WHNqRW5LTENBeFNCMDN0RHh1?=
- =?utf-8?B?eHlrZlZiUUV6OFgzQy91dTdUVzVVaWdleWxsNmd6ZlZOY1Q5Z01NWGQ4eVN5?=
- =?utf-8?B?Y0J0bUd2ZXh1eHM0UWFiWHNTTTRGRTBsTk5VaWo4bHJCc0Z6ZDJrQ214KzdI?=
- =?utf-8?Q?f3TqlPjmsLf7h6mA/TXdUVrU/?=
-X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: c3da0f2d-4d17-4af9-b650-08dc8085cd14
-X-MS-Exchange-CrossTenant-AuthSource: DS7PR12MB6048.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 30 May 2024 08:52:14.2963
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: p+kgoNGQihtWsjyx33ROxng//QfzecTK/twSJXSJrPYXwz1NMKRGO0HvjoWQ99QElSOBI2vPx0mZYydvZ8pwOw==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: CY5PR12MB6432
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v9 3/5] iommu/arm-smmu: introduction of ACTLR for custom
+ prefetcher settings
+To: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
+        Konrad Dybcio
+	<konrad.dybcio@linaro.org>
+CC: Rob Clark <robdclark@gmail.com>, <will@kernel.org>, <robin.murphy@arm.com>,
+        <joro@8bytes.org>, <jsnitsel@redhat.com>, <quic_bjorande@quicinc.com>,
+        <mani@kernel.org>, <quic_eberman@quicinc.com>,
+        <robdclark@chromium.org>, <u.kleine-koenig@pengutronix.de>,
+        <robh@kernel.org>, <vladimir.oltean@nxp.com>,
+        <quic_pkondeti@quicinc.com>, <quic_molvera@quicinc.com>,
+        <linux-arm-msm@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>, <iommu@lists.linux.dev>,
+        <linux-kernel@vger.kernel.org>
+References: <20240123144543.9405-1-quic_bibekkum@quicinc.com>
+ <20240123144543.9405-4-quic_bibekkum@quicinc.com>
+ <CAF6AEGs3_wBNo58EbGicFoQuq8--fDohTGv1JSFgoViygLS5Lg@mail.gmail.com>
+ <f2222714-1e00-424e-946d-c314d55541b8@quicinc.com>
+ <51b2bd40-888d-4ee4-956f-c5239c5be9e9@linaro.org>
+ <0a867cd1-8d99-495e-ae7e-a097fc9c00e9@quicinc.com>
+ <7140cdb8-eda4-4dcd-b5e3-c4acdd01befb@linaro.org>
+ <omswcicgc2kqd6gp4bebd43sklfs2wqyaorhfyb2wumoeo6v74@gaay3p5m46xi>
+Content-Language: en-US
+From: Bibek Kumar Patro <quic_bibekkum@quicinc.com>
+In-Reply-To: <omswcicgc2kqd6gp4bebd43sklfs2wqyaorhfyb2wumoeo6v74@gaay3p5m46xi>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 8bit
+X-ClientProxiedBy: nasanex01a.na.qualcomm.com (10.52.223.231) To
+ nalasex01c.na.qualcomm.com (10.47.97.35)
+X-QCInternal: smtphost
+X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
+X-Proofpoint-GUID: B4_Nsh8IhuuQ3TbKjQbkxBq_Tuz1erfA
+X-Proofpoint-ORIG-GUID: B4_Nsh8IhuuQ3TbKjQbkxBq_Tuz1erfA
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.293,Aquarius:18.0.1039,Hydra:6.0.650,FMLib:17.12.28.16
+ definitions=2024-05-30_06,2024-05-28_01,2024-05-17_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 spamscore=0 impostorscore=0
+ mlxlogscore=999 priorityscore=1501 clxscore=1015 bulkscore=0 phishscore=0
+ malwarescore=0 mlxscore=0 adultscore=0 suspectscore=0 lowpriorityscore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.19.0-2405170001
+ definitions=main-2405300069
 
-Hi Lu,
 
-On 5/28/2024 10:24 AM, Lu Baolu wrote:
-> iommu_sva_domain_alloc() is only called in iommu-sva.c, hence make it
-> static.
+
+On 5/28/2024 6:36 PM, Dmitry Baryshkov wrote:
+> On Tue, May 28, 2024 at 02:59:51PM +0200, Konrad Dybcio wrote:
+>>
+>>
+>> On 5/15/24 15:59, Bibek Kumar Patro wrote:
+>>>
+>>>
+>>> On 5/10/2024 6:32 PM, Konrad Dybcio wrote:
+>>>> On 10.05.2024 2:52 PM, Bibek Kumar Patro wrote:
+>>>>>
+>>>>>
+>>>>> On 5/1/2024 12:30 AM, Rob Clark wrote:
+>>>>>> On Tue, Jan 23, 2024 at 7:00 AM Bibek Kumar Patro
+>>>>>> <quic_bibekkum@quicinc.com> wrote:
+>>>>>>>
+>>>>>>> Currently in Qualcomm  SoCs the default prefetch is set to 1 which allows
+>>>>>>> the TLB to fetch just the next page table. MMU-500 features ACTLR
+>>>>>>> register which is implementation defined and is used for Qualcomm SoCs
+>>>>>>> to have a custom prefetch setting enabling TLB to prefetch the next set
+>>>>>>> of page tables accordingly allowing for faster translations.
+>>>>>>>
+>>>>>>> ACTLR value is unique for each SMR (Stream matching register) and stored
+>>>>>>> in a pre-populated table. This value is set to the register during
+>>>>>>> context bank initialisation.
+>>>>>>>
+>>>>>>> Signed-off-by: Bibek Kumar Patro <quic_bibekkum@quicinc.com>
+>>>>>>> ---
+>>>>
+>>>> [...]
+>>>>
+>>>>>>> +
+>>>>>>> +               for_each_cfg_sme(cfg, fwspec, j, idx) {
+>>>>>>> +                       smr = &smmu->smrs[idx];
+>>>>>>> +                       if (smr_is_subset(smr, id, mask)) {
+>>>>>>> +                               arm_smmu_cb_write(smmu, cbndx, ARM_SMMU_CB_ACTLR,
+>>>>>>> +                                               actlrcfg[i].actlr);
+>>>>>>
+>>>>>> So, this makes ACTLR look like kind of a FIFO.  But I'm looking at
+>>>>>> downstream kgsl's PRR thing (which we'll need to implement vulkan
+>>>>>> sparse residency), and it appears to be wanting to set BIT(5) in ACTLR
+>>>>>> to enable PRR.
+>>>>>>
+>>>>>>            val = KGSL_IOMMU_GET_CTX_REG(ctx, KGSL_IOMMU_CTX_ACTLR);
+>>>>>>            val |= FIELD_PREP(KGSL_IOMMU_ACTLR_PRR_ENABLE, 1);
+>>>>>>            KGSL_IOMMU_SET_CTX_REG(ctx, KGSL_IOMMU_CTX_ACTLR, val);
+>>>>>>
+>>>>>> Any idea how this works?  And does it need to be done before or after
+>>>>>> the ACTLR programming done in this patch?
+>>>>>>
+>>>>>> BR,
+>>>>>> -R
+>>>>>>
+>>>>>
+>>>>> Hi Rob,
+>>>>>
+>>>>> Can you please help provide some more clarification on the FIFO part? By FIFO are you referring to the storing of ACTLR data in the table?
+>>>>>
+>>>>> Thanks for pointing to the downstream implementation of kgsl driver for
+>>>>> the PRR bit. Since kgsl driver is already handling this PRR bit's
+>>>>> setting, this makes setting the PRR BIT(5) by SMMU driver redundant.
+>>>>
+>>>> The kgsl driver is not present upstream.
+>>>>
+>>>
+>>> Right kgsl is not present upstream, it would be better to avoid configuring the PRR bit and can be handled by kgsl directly in downstream.
+>>
+>> No! Upstream is not a dumping ground to reduce your technical debt.
+>>
+>> There is no kgsl driver upstream, so this ought to be handled here, in
+>> the iommu driver (as poking at hardware A from driver B is usually not good
+>> practice).
 > 
-> On the other hand, iommu_sva_domain_alloc() should not return NULL anymore
-> after commit <80af5a452024> ("iommu: Add ops->domain_alloc_sva()"), the
-> removal of inline code avoids potential confusion.
+> I'd second the request here. If another driver has to control the
+> behaviour of another driver, please add corresponding API for that.
 > 
-> Fixes: 80af5a452024 ("iommu: Add ops->domain_alloc_sva()")
-> Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
-> ---
->  include/linux/iommu.h     | 8 --------
->  drivers/iommu/iommu-sva.c | 6 ++++--
->  2 files changed, 4 insertions(+), 10 deletions(-)
+
+Ack, I understood this point now. Will add an interface for gfx to carry 
+out the PRR bit implementation through smmu driver.
+
+Thanks & regards,
+Bibek
+
+>>
+>>>
+>>>>> Thanks for bringing up this point.
+>>>>> I will send v10 patch series removing this BIT(5) setting from the ACTLR
+>>>>> table.
+>>>>
+>>>> I think it's generally saner to configure the SMMU from the SMMU driver..
+>>>
+>>> Yes, agree on this. But since PRR bit is not directly related to SMMU
+>>> configuration so I think it would be better to remove this PRR bit
+>>> setting from SMMU driver based on my understanding.
+>>
+>> Why is it not related? We still don't know what it does.
+>>
+>> Konrad
 > 
-> diff --git a/include/linux/iommu.h b/include/linux/iommu.h
-> index 7bc8dff7cf6d..5cdd3d41b87b 100644
-> --- a/include/linux/iommu.h
-> +++ b/include/linux/iommu.h
-> @@ -1527,8 +1527,6 @@ struct iommu_sva *iommu_sva_bind_device(struct device *dev,
->  					struct mm_struct *mm);
->  void iommu_sva_unbind_device(struct iommu_sva *handle);
->  u32 iommu_sva_get_pasid(struct iommu_sva *handle);
-> -struct iommu_domain *iommu_sva_domain_alloc(struct device *dev,
-> -					    struct mm_struct *mm);
->  #else
->  static inline struct iommu_sva *
->  iommu_sva_bind_device(struct device *dev, struct mm_struct *mm)
-> @@ -1553,12 +1551,6 @@ static inline u32 mm_get_enqcmd_pasid(struct mm_struct *mm)
->  }
->  
->  static inline void mm_pasid_drop(struct mm_struct *mm) {}
-> -
-> -static inline struct iommu_domain *
-> -iommu_sva_domain_alloc(struct device *dev, struct mm_struct *mm)
-> -{
-> -	return NULL;
-> -}
->  #endif /* CONFIG_IOMMU_SVA */
->  
->  #ifdef CONFIG_IOMMU_IOPF
-> diff --git a/drivers/iommu/iommu-sva.c b/drivers/iommu/iommu-sva.c
-> index 18a35e798b72..25e581299226 100644
-> --- a/drivers/iommu/iommu-sva.c
-> +++ b/drivers/iommu/iommu-sva.c
-> @@ -10,6 +10,8 @@
->  #include "iommu-priv.h"
->  
->  static DEFINE_MUTEX(iommu_sva_lock);
-> +static struct iommu_domain *iommu_sva_domain_alloc(struct device *dev,
-> +						   struct mm_struct *mm);
-
-If we move move iommu_sva_domain_alloc() before iommu_sva_bind_device() then we
-can avoid this forward declaration.
-
--Vasant
-
