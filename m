@@ -1,144 +1,80 @@
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 9258D18645;
-	Fri, 31 May 2024 11:00:24 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
+Received: from bombadil.infradead.org (bombadil.infradead.org [198.137.202.133])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2CD3B1F608;
+	Fri, 31 May 2024 12:31:57 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.137.202.133
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1717153226; cv=none; b=tElgPIR66e/ETuD+pvysJWsOf/nsVf44vnVhkmhYEadM94Y4GwQMMrk+LVTxH1oXesNrLFwG8JxePy2+QmBdhBmLf6Fh93AdwuCmN5gT4/DQ7wFVPzusy46PI5e1HblHmlO/RQMs4hu2aPP1aEneFawlzTzD/yc+E2nsbdsK2uc=
+	t=1717158718; cv=none; b=u2VsaV/ADx/mvOYsU4SXOoCWNi+Md2+FtexBYATY0BAx4IAOPSekV+Mo4iJO0qz4LbQmQKUC76qTQOWeIsjP5+0SCHkXkVQ77BFlSlrnXDcKaXS3DQoU61mNA+FRXKwxjbEY//HPNm4tcBH4C3zcK7ObvkPsCQIpauXhGlHdT9M=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1717153226; c=relaxed/simple;
-	bh=VVIA86U9f8HFRni8vCep8eKQmRd5Kj819/BFYRPQxU0=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=MIerQOs6JqRaiPzdJ2FQhHSDphsAnXudsMYqXfdYEccVk1edG4J0ABMstJtWcpEZ1vHymiitAr7oV80yV6bxAMYEbdn2I833jOG3Iq8RgGQAMVlpPFxwyDQyyyFbhenjlD+Tqcl6//LBuR1beHG0ydouo6cjc0EGQkd2gRY5Tos=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; arc=none smtp.client-ip=217.140.110.172
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 271591424;
-	Fri, 31 May 2024 04:00:48 -0700 (PDT)
-Received: from [10.57.67.251] (unknown [10.57.67.251])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 90D5E3F792;
-	Fri, 31 May 2024 04:00:21 -0700 (PDT)
-Message-ID: <2bdd8966-5f25-4f2c-9aa9-7bd523b19edc@arm.com>
-Date: Fri, 31 May 2024 12:00:20 +0100
+	s=arc-20240116; t=1717158718; c=relaxed/simple;
+	bh=mRSN4A1Xr0MWy244nHs87T0YauWJGd9D9C7ZFJYIqkM=;
+	h=Date:From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:
+	 Content-Disposition; b=Hy7FmVEMDfpukNui4ku50I7vRmohoMpu++Sjwax3tLWSMEkvMrNC+WEberBH50UdyDfwdU8bYJhNiJtkwNQTxTMaNWanLkg5T5xOH+SneAqycxqc+o+nEt9M48FsLZ+lKKYCNNivZAMCWTStzASe9AWL8XloDjL+a02bb2NWC2Y=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=infradead.org; spf=none smtp.mailfrom=bombadil.srs.infradead.org; dkim=pass (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b=TqfjEPpd; arc=none smtp.client-ip=198.137.202.133
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=infradead.org
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=bombadil.srs.infradead.org
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b="TqfjEPpd"
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+	d=infradead.org; s=bombadil.20210309; h=Content-Type:MIME-Version:Message-ID:
+	Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
+	Content-Description:In-Reply-To:References;
+	bh=FzSajvLdvYD4oT1Gfk0OIFaE8gbg26t3Y2yn0sPe+Ro=; b=TqfjEPpdsL0wce1/6QVLAxmNkq
+	T6mk+o04utYJZX3UxmE3YagVcXqiBytpPlp3B5/jHeugJcKMdcwNt7TNIR1vPDnx7jSnRJuTTODse
+	/EIwHQWNCwbV4HfRcPIsQ9UVFjppGDK+ezuYUnBr+xtq5hVpn3upTN5+obBfVeZvoPEUb5Vg5mM7r
+	oLGJLIAfKJhwx5UoJtv4BXI25jURgR64cmjP9mvOk5LCg3DdWTnfPyg7FVPEnJ8PaZHYlOnaVR7GE
+	0Hrr/LeuJHxs3TQ5za9i+GhPDAvd4FWo1P5S/n4L1ClCeaF2dt3cbEvmGCVLk4Kv3FcP/Qm3mL/Ac
+	UdmHE60Q==;
+Received: from 2a02-8389-2341-5b80-5ba9-f4da-76fa-44a9.cable.dynamic.v6.surfer.at ([2a02:8389:2341:5b80:5ba9:f4da:76fa:44a9] helo=localhost)
+	by bombadil.infradead.org with esmtpsa (Exim 4.97.1 #2 (Red Hat Linux))
+	id 1sD1QJ-0000000ACXv-42zT;
+	Fri, 31 May 2024 12:31:56 +0000
+Date: Fri, 31 May 2024 14:31:52 +0200
+From: Christoph Hellwig <hch@infradead.org>
+To: Linus Torvalds <torvalds@linux-foundation.org>
+Cc: linux-kernel@vger.kernel.org, iommu@lists.linux.dev
+Subject: [GIT PULL] dma-mapping fixes for Linux 6.11
+Message-ID: <ZlnDOBd2X3T4fiev@infradead.org>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH 2/5] iommu: sun50i: allocate page tables from below 4 GiB
-To: Andre Przywara <andre.przywara@arm.com>
-Cc: Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
- Chen-Yu Tsai <wens@csie.org>, Jernej Skrabec <jernej.skrabec@gmail.com>,
- Samuel Holland <samuel@sholland.org>,
- Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley
- <conor+dt@kernel.org>, Rob Herring <robh@kernel.org>,
- Chris Morgan <macromorgan@hotmail.com>, Ryan Walklin <ryan@testtoast.com>,
- iommu@lists.linux.dev, devicetree@vger.kernel.org,
- linux-sunxi@lists.linux.dev, linux-arm-kernel@lists.infradead.org
-References: <20240530233800.27705-1-andre.przywara@arm.com>
- <20240530233800.27705-3-andre.przywara@arm.com>
- <ecdc4d9f-a7b4-45e1-a870-e97cf4922539@arm.com>
- <20240531110241.6b26d072@donnerap.manchester.arm.com>
-From: Robin Murphy <robin.murphy@arm.com>
-Content-Language: en-GB
-In-Reply-To: <20240531110241.6b26d072@donnerap.manchester.arm.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+X-SRS-Rewrite: SMTP reverse-path rewritten from <hch@infradead.org> by bombadil.infradead.org. See http://www.infradead.org/rpr.html
 
-On 2024-05-31 11:02 am, Andre Przywara wrote:
-> On Fri, 31 May 2024 09:37:02 +0100
-> Robin Murphy <robin.murphy@arm.com> wrote:
-> 
-> Hi Robin,
-> 
->> On 2024-05-31 12:37 am, Andre Przywara wrote:
->>> The Allwinner IOMMU is a strict 32-bit device, with the page table root
->>> pointer as well as both level's page tables and also the target addresses
->>> all required to be below 4GB.
->>> The Allwinner H6 SoC only supports 32-bit worth of physical addresses
->>> anyway, so this isn't a problem so far, but the H616 and later SoCs extend
->>> the PA space beyond 32 bit to accommodate more DRAM.
->>> To make sure we stay within the 32-bit PA range required by the IOMMU,
->>> force the memory for the page tables to come from below 4GB. by using
->>> allocations with the DMA32 flag.
->>
->> Uh-oh... what about the output addresses in sun50i_mk_pte()? Limiting
->> its own accesses is OK, but if the IOMMU isn't capable of *mapping* any
->> valid PA for its clients, we can't easily support that.
-> 
-> Right, that's indeed a problem. I was hoping that the DMA32 address limit
-> would somehow be enforced by the IOMMU master devices, so they would never
-> issue addresses above 4GB to the IOMMU in the first place.
-> Would this work if all those devices use a 32-bit DMA mask? Some of those
-> devices might have that limit anyways, but those video devices are not
-> my expertise, so I don't know much details.
+The following changes since commit c760b3725e52403dc1b28644fb09c47a83cacea6:
 
-It's fine to have a 32-bit *input* to the IOMMU - that only affects the 
-IOVA allocation, wherein iommu-dma already considers both the IOMMU 
-domain geometry and the client device's DMA mask to ensure it gives back 
-a usable DMA address. Indeed, plumbing 32-bit devices into a system with 
-a >32-bit PA space is one of the common reasons to have an IOMMU, but it 
-assumes that IOMMU translations are capable of targeting the entire 
-larger PA range.
+  Merge tag 'mm-nonmm-stable-2024-05-22-17-30' of git://git.kernel.org/pub/scm/linux/kernel/git/akpm/mm (2024-05-22 18:59:29 -0700)
 
-> IIUC, atm the incoming PA would be masked down to 32-bit, I guess we should have a
-> WARN_ONCE() there when this happens?
-> The 32-bit limit would only affect boards with exactly 4GB of DRAM (the
-> DRAM controller limit), and it only affects the last GB then, so using
-> DMA32 wouldn't be a terrible limitation, I think.
+are available in the Git repository at:
 
-The problem is when a client driver does, say, a dma_map_single() of 
-some kmalloced buffer which it doesn't control, and which already 
-happens to be at a >32-bit PA; iommu-dma can't make that work for you. 
-At best we'd hope the iommu_map() returns an error and terminally fails 
-the whole DMA mapping operation, at worst the IOMMU driver silently 
-truncates the PA, maps the wrong memory, and all hell breaks loose :(
+  git://git.infradead.org/users/hch/dma-mapping.git tags/dma-mapping-6.10-2024-05-31
 
-Thanks,
-Robin.
+for you to fetch changes up to 82d71b53d7e732ede6028591342bdc80fabfa29f:
 
-> TBH, I picked this up from Jernej, so have to refer to him for further
-> details.
-> 
-> Cheers,
-> Andre
-> 
-> P.S. I agree that a 32-bit only IOMMU sounds somewhat stup^Wweird, but
-> that's what we have. Maybe we would use it just for the VE only then, where
-> it's really helpful to provide the illusion of large physically contiguous
-> buffers.
-> 
->> Thanks,
->> Robin.
->>
->>> Signed-off-by: Andre Przywara <andre.przywara@arm.com>
->>> ---
->>>    drivers/iommu/sun50i-iommu.c | 5 +++--
->>>    1 file changed, 3 insertions(+), 2 deletions(-)
->>>
->>> diff --git a/drivers/iommu/sun50i-iommu.c b/drivers/iommu/sun50i-iommu.c
->>> index dd3f07384624c..c3244db5ac02f 100644
->>> --- a/drivers/iommu/sun50i-iommu.c
->>> +++ b/drivers/iommu/sun50i-iommu.c
->>> @@ -682,7 +682,8 @@ sun50i_iommu_domain_alloc_paging(struct device *dev)
->>>    	if (!sun50i_domain)
->>>    		return NULL;
->>>    
->>> -	sun50i_domain->dt = iommu_alloc_pages(GFP_KERNEL, get_order(DT_SIZE));
->>> +	sun50i_domain->dt = iommu_alloc_pages(GFP_KERNEL | GFP_DMA32,
->>> +					      get_order(DT_SIZE));
->>>    	if (!sun50i_domain->dt)
->>>    		goto err_free_domain;
->>>    
->>> @@ -997,7 +998,7 @@ static int sun50i_iommu_probe(struct platform_device *pdev)
->>>    
->>>    	iommu->pt_pool = kmem_cache_create(dev_name(&pdev->dev),
->>>    					   PT_SIZE, PT_SIZE,
->>> -					   SLAB_HWCACHE_ALIGN,
->>> +					   SLAB_HWCACHE_ALIGN | SLAB_CACHE_DMA32,
->>>    					   NULL);
->>>    	if (!iommu->pt_pool)
->>>    		return -ENOMEM;
-> 
+  Documentation/core-api: correct reference to SWIOTLB_DYNAMIC (2024-05-27 16:52:09 +0200)
+
+----------------------------------------------------------------
+dma-mapping fixes for Linux 6.10
+
+ - dma-mapping benchmark error handling fixes (Fedor Pchelkin)
+ - correct a config symbol reference in the DMA API documentation
+   (Lukas Bulwahn)
+
+----------------------------------------------------------------
+Fedor Pchelkin (4):
+      dma-mapping: benchmark: fix up kthread-related error handling
+      dma-mapping: benchmark: avoid needless copy_to_user if benchmark fails
+      dma-mapping: benchmark: fix node id validation
+      dma-mapping: benchmark: handle NUMA_NO_NODE correctly
+
+Lukas Bulwahn (1):
+      Documentation/core-api: correct reference to SWIOTLB_DYNAMIC
+
+ Documentation/core-api/swiotlb.rst |  2 +-
+ kernel/dma/map_benchmark.c         | 25 ++++++++++++++++---------
+ 2 files changed, 17 insertions(+), 10 deletions(-)
