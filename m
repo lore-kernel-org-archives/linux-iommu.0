@@ -1,50 +1,50 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.17])
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.9])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 343DF4C7B
-	for <iommu@lists.linux.dev>; Fri, 31 May 2024 01:19:15 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.17
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4ACE91171C
+	for <iommu@lists.linux.dev>; Fri, 31 May 2024 01:21:47 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.9
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1717118356; cv=none; b=ZibBq7xyEzuYqO71Csf1YiMZA3+ugEy4lCjc0sIulgO0w7BOTIU6ASRxbPtQMWE+CX1S2dlBmj/We16oZJius/KA2+kN46/cnO2rfqT3GebLdvgLC1VKaF7sReRODjyY8FEL2VY7d6Tao1AT+OlmdfcCMb8yktmqsH6U1OaM+II=
+	t=1717118508; cv=none; b=MLhghcSF2+rAOCgmU93wpM2sUX9WWV4JGVFj7v06rYUNDbQsg89keKdbh9GC3gzrWwYduKMfL39zoql1SufIV9xb0IZDqGjNJjW+xXL2+KeDWal1bCJAV3cpj53mb+vP4GErkUQuTiqIeF1mpn0AaPO3mNMxIPS3jn9A/UhyQO4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1717118356; c=relaxed/simple;
-	bh=LFRDMDUTn01WZjrLsF2FrdVRP8HD0U8X+Q6SBR2aAQ0=;
+	s=arc-20240116; t=1717118508; c=relaxed/simple;
+	bh=oduJrBgxC7GPahDyRFBPQ85EMmHXFVU+B7UUePfvsVo=;
 	h=Message-ID:Date:MIME-Version:Cc:Subject:To:References:From:
-	 In-Reply-To:Content-Type; b=HhSAI+HFSBVa58sScJUzf8TiRhuaCSnmNUmRRSqmovwDcga4KZQJb6diB+hA8mJ3n0owdS8goxPtmWfqATCQjDyiKePvVFDpbBLbBaq6pVfbkYGRDvMCX/+WCI0q343qeIKfNSIb+ElTzCfeIGIE4rMsLq8n5fPeeZCgzx3oOOI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=OhwSnPGD; arc=none smtp.client-ip=198.175.65.17
+	 In-Reply-To:Content-Type; b=lUvV466FpU7lZe69ugK2VUkdSfMtTuT0NZXhnb7QSPu2uCabWs+mym8gPrY+7E83D8a06cNvUaGnLXtcyrXG7FTpS2vpdlAqJHrg9kUaTQgEzbd6+zI3YHuAlTqwRLngkaTB7BBW39XgZhUYyW2yY0r0gckL4M4xqxcUyQyN/H0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=cCRn7uNY; arc=none smtp.client-ip=198.175.65.9
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="OhwSnPGD"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="cCRn7uNY"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1717118356; x=1748654356;
+  t=1717118507; x=1748654507;
   h=message-id:date:mime-version:cc:subject:to:references:
    from:in-reply-to:content-transfer-encoding;
-  bh=LFRDMDUTn01WZjrLsF2FrdVRP8HD0U8X+Q6SBR2aAQ0=;
-  b=OhwSnPGDvOImctGtHWGxg1cFV+Pav3YjXmwFmMkshTlfC/NGwr34NLpj
-   PjGgcNIMo1mN+8jB6TjDTeKbIfrkpWWpuInhWe9esDp1EEHHZlTdXkdld
-   hmDuXGcNjcOMOiZr4NQjjrg1dUToNJl5C684uR8ctIDCVwEVsk3tEtCO4
-   oQOTeXUFMAvBF6Ljw45WhhBOoovHydncxFcMkj4i6yP646kF2djYTeoHV
-   eGdiEHulYk71+Vpp30Kglh77nmg0jIvlHgIl/+Q9fFDhCXyAitGQpydfV
-   X8FmONohW6LbCNx+cIzHbWqYdaXS4JpqQp0/j3lRADQYh+rJd3uCam0++
-   g==;
-X-CSE-ConnectionGUID: H/xRwlG5Qcqm4o+yU9bcBQ==
-X-CSE-MsgGUID: 0bEmesatSQW6w2rg8cnbzg==
-X-IronPort-AV: E=McAfee;i="6600,9927,11088"; a="13771003"
+  bh=oduJrBgxC7GPahDyRFBPQ85EMmHXFVU+B7UUePfvsVo=;
+  b=cCRn7uNYwb++7opeutKEMEtve3gQ5saoOP3lC2d91ABFFa6pnae/XRFy
+   mjHqSzwyGHeX4PYzjUxKsZjrjyCsobIjfdqIIYOpVwE1x/iMN9642erh/
+   cwY1RqB9pC27qdDWs8iCikeXkIFX71z0CJ4ym2xyzNrxgm1reSnr4QMBQ
+   y0GnxIukSSAo+T1iBEG3CqmhIjc7GqQPxn6oky6IJfl2TtUSmlRL9YBvm
+   WY+NXWEWMIKMHalBdGN5rDCTCXBqfGw6qq/MVfgyCZcL7v+vqXQcyc4zQ
+   ugUF7kjuVf6r/TqHYnGBKnWor5cLSobQutZPjuhle8fy2I9E8UNNZMySg
+   A==;
+X-CSE-ConnectionGUID: CWboIetNRIKyQKPXeE434Q==
+X-CSE-MsgGUID: vc9E5hnpTVCoBFs1L9reTQ==
+X-IronPort-AV: E=McAfee;i="6600,9927,11088"; a="36180234"
 X-IronPort-AV: E=Sophos;i="6.08,202,1712646000"; 
-   d="scan'208";a="13771003"
-Received: from fmviesa004.fm.intel.com ([10.60.135.144])
-  by orvoesa109.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 May 2024 18:19:15 -0700
-X-CSE-ConnectionGUID: AcSUE+0cROSDB+Rbre3XqQ==
-X-CSE-MsgGUID: oQQ1JPt2RCKqgao01z8BHA==
+   d="scan'208";a="36180234"
+Received: from orviesa003.jf.intel.com ([10.64.159.143])
+  by orvoesa101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 May 2024 18:21:46 -0700
+X-CSE-ConnectionGUID: knuVU2IfRFWTjds6ES9ncg==
+X-CSE-MsgGUID: KOMsvPMzTfe0JmIFF4SbHQ==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.08,202,1712646000"; 
-   d="scan'208";a="40571285"
+   d="scan'208";a="40921229"
 Received: from unknown (HELO [10.239.159.127]) ([10.239.159.127])
-  by fmviesa004.fm.intel.com with ESMTP; 30 May 2024 18:19:13 -0700
-Message-ID: <b6ebac8d-02f5-4153-b687-a4d40056f697@linux.intel.com>
-Date: Fri, 31 May 2024 09:17:05 +0800
+  by orviesa003.jf.intel.com with ESMTP; 30 May 2024 18:21:45 -0700
+Message-ID: <1333039e-ec61-467e-a0ee-d3cb86e769f5@linux.intel.com>
+Date: Fri, 31 May 2024 09:19:37 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -52,39 +52,52 @@ List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Cc: baolu.lu@linux.intel.com, Robin Murphy <robin.murphy@arm.com>,
- iommu@lists.linux.dev, linux-kernel@vger.kernel.org
+Cc: baolu.lu@linux.intel.com, iommu@lists.linux.dev,
+ linux-kernel@vger.kernel.org
 Subject: Re: device_def_domain_type documentation header does not match
  implementation
-To: Diederik de Haas <didi.debian@cknow.org>,
+To: Robin Murphy <robin.murphy@arm.com>,
+ Diederik de Haas <didi.debian@cknow.org>,
  David Woodhouse <dwmw2@infradead.org>, Joerg Roedel <joro@8bytes.org>,
  Will Deacon <will@kernel.org>
 References: <14311965.TaHA55BQu8@bagend>
+ <32921840-43d6-4ad9-99eb-aac32e67e04c@arm.com>
 Content-Language: en-US
 From: Baolu Lu <baolu.lu@linux.intel.com>
-In-Reply-To: <14311965.TaHA55BQu8@bagend>
+In-Reply-To: <32921840-43d6-4ad9-99eb-aac32e67e04c@arm.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 
-On 5/30/24 9:57 PM, Diederik de Haas wrote:
-> While looking into ``drivers/iommu/intel/iommu.c::device_def_domain_type``
-> function I noticed a discrepancy between the documentation header and the
-> implementation.
+On 5/30/24 11:49 PM, Robin Murphy wrote:
+> On 30/05/2024 2:57 pm, Diederik de Haas wrote:
+>> Hi,
+>>
+>> While looking into 
+>> ``drivers/iommu/intel/iommu.c::device_def_domain_type``
+>> function I noticed a discrepancy between the documentation header and the
+>> implementation.
+>>
+>> ``@startup: true if this is during early boot``
+>> 0e31a7266508 ("iommu/vt-d: Remove startup parameter from
+>> device_def_domain_type()")
+>> removed the ``startup`` function parameter
+>>
+>> returns ``IOMMU_DOMAIN_DMA: device requires a dynamic mapping domain``
+>> 28b41e2c6aeb ("iommu: Move def_domain type check for untrusted device 
+>> into
+>> core")
+>> moved the possible return of ``IOMMU_DOMAIN_DMA`` to 
+>> ``drivers/iommu/iommu.c``
+>>
+>> But neither updated the documentation header.
 > 
-> ``@startup: true if this is during early boot``
-> 0e31a7266508 ("iommu/vt-d: Remove startup parameter from
-> device_def_domain_type()")
-> removed the ``startup`` function parameter
-> 
-> returns ``IOMMU_DOMAIN_DMA: device requires a dynamic mapping domain``
-> 28b41e2c6aeb ("iommu: Move def_domain type check for untrusted device into
-> core")
-> moved the possible return of ``IOMMU_DOMAIN_DMA`` to ``drivers/iommu/iommu.c``
-> 
-> But neither updated the documentation header.
+> TBH it could probably just be deleted now, since the 
+> iommu_ops::def_domain_type callback is properly documented in iommu.h, 
+> so individual implementations shouldn't need to repeat that. It's also 
+> never been actual kerneldoc either, since it's a regular "/*" comment. 
+> Feel free to send a patch 🙂
 
-Yeah, I think the @startup line should be removed. It is irrelevant.
-Others remain good to me.
+Agreed. I will make a patch to remove it later.
 
 Best regards,
 baolu
