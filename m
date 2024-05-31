@@ -1,80 +1,63 @@
-Received: from bombadil.infradead.org (bombadil.infradead.org [198.137.202.133])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2CD3B1F608;
-	Fri, 31 May 2024 12:31:57 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.137.202.133
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 07BD280617;
+	Fri, 31 May 2024 19:20:05 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1717158718; cv=none; b=u2VsaV/ADx/mvOYsU4SXOoCWNi+Md2+FtexBYATY0BAx4IAOPSekV+Mo4iJO0qz4LbQmQKUC76qTQOWeIsjP5+0SCHkXkVQ77BFlSlrnXDcKaXS3DQoU61mNA+FRXKwxjbEY//HPNm4tcBH4C3zcK7ObvkPsCQIpauXhGlHdT9M=
+	t=1717183205; cv=none; b=p4HKGy7QrnUPkPZNW+I8kle2yPhIaNQrpIjqli+rKwwGw+woC8AZ7chDmbyR4unDyvsJAGMa06ibKykJfjT04bHkRDTcjvSe/HvG4lAX+3VxdB2SA6K2xFfMoV29g+q+Jf42xUp+wB9S6RVa9D1+cteqvxf8h09PYMJninLbU6g=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1717158718; c=relaxed/simple;
-	bh=mRSN4A1Xr0MWy244nHs87T0YauWJGd9D9C7ZFJYIqkM=;
-	h=Date:From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:
-	 Content-Disposition; b=Hy7FmVEMDfpukNui4ku50I7vRmohoMpu++Sjwax3tLWSMEkvMrNC+WEberBH50UdyDfwdU8bYJhNiJtkwNQTxTMaNWanLkg5T5xOH+SneAqycxqc+o+nEt9M48FsLZ+lKKYCNNivZAMCWTStzASe9AWL8XloDjL+a02bb2NWC2Y=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=infradead.org; spf=none smtp.mailfrom=bombadil.srs.infradead.org; dkim=pass (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b=TqfjEPpd; arc=none smtp.client-ip=198.137.202.133
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=infradead.org
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=bombadil.srs.infradead.org
+	s=arc-20240116; t=1717183205; c=relaxed/simple;
+	bh=9pc+i7ZzrsHVQYbzSDjM449o7+0EKM7LwpFWicTSX9U=;
+	h=Subject:From:In-Reply-To:References:Message-Id:Date:To:Cc; b=f3Gm7eE+EP7W4HvWS0jb/6eWfCU40/FZkwAvM0e0gfJ0kEWyFglCWYMd+8AweAnpsyS6h1sxkeTzU8FveLukDMdsQ4JgyAK1ao/+adkk+diY4MBhlkKcG5FPWym+NkbBNJ8T1iOA0T/9lMCBYrlPQwSx99QeLN8a8pbxdwgKIaY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=QCivOa3y; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b="TqfjEPpd"
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-	d=infradead.org; s=bombadil.20210309; h=Content-Type:MIME-Version:Message-ID:
-	Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
-	Content-Description:In-Reply-To:References;
-	bh=FzSajvLdvYD4oT1Gfk0OIFaE8gbg26t3Y2yn0sPe+Ro=; b=TqfjEPpdsL0wce1/6QVLAxmNkq
-	T6mk+o04utYJZX3UxmE3YagVcXqiBytpPlp3B5/jHeugJcKMdcwNt7TNIR1vPDnx7jSnRJuTTODse
-	/EIwHQWNCwbV4HfRcPIsQ9UVFjppGDK+ezuYUnBr+xtq5hVpn3upTN5+obBfVeZvoPEUb5Vg5mM7r
-	oLGJLIAfKJhwx5UoJtv4BXI25jURgR64cmjP9mvOk5LCg3DdWTnfPyg7FVPEnJ8PaZHYlOnaVR7GE
-	0Hrr/LeuJHxs3TQ5za9i+GhPDAvd4FWo1P5S/n4L1ClCeaF2dt3cbEvmGCVLk4Kv3FcP/Qm3mL/Ac
-	UdmHE60Q==;
-Received: from 2a02-8389-2341-5b80-5ba9-f4da-76fa-44a9.cable.dynamic.v6.surfer.at ([2a02:8389:2341:5b80:5ba9:f4da:76fa:44a9] helo=localhost)
-	by bombadil.infradead.org with esmtpsa (Exim 4.97.1 #2 (Red Hat Linux))
-	id 1sD1QJ-0000000ACXv-42zT;
-	Fri, 31 May 2024 12:31:56 +0000
-Date: Fri, 31 May 2024 14:31:52 +0200
-From: Christoph Hellwig <hch@infradead.org>
-To: Linus Torvalds <torvalds@linux-foundation.org>
-Cc: linux-kernel@vger.kernel.org, iommu@lists.linux.dev
-Subject: [GIT PULL] dma-mapping fixes for Linux 6.11
-Message-ID: <ZlnDOBd2X3T4fiev@infradead.org>
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="QCivOa3y"
+Received: by smtp.kernel.org (Postfix) with ESMTPS id DDA1CC32786;
+	Fri, 31 May 2024 19:20:04 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1717183204;
+	bh=9pc+i7ZzrsHVQYbzSDjM449o7+0EKM7LwpFWicTSX9U=;
+	h=Subject:From:In-Reply-To:References:Date:To:Cc:From;
+	b=QCivOa3yQPmsJqp6STOf8nXUGQJBWT6nWkNv3MdynIFsmzvf0ypa8Qy8ndsGzE0iK
+	 RCyoOHJKi+ztc43xwc/Bog1fISVrCxexaApoc7JmfLOHoxPcmAVejQ+hwW05kqH3jR
+	 cMESggyrCiL73/887R7rEFYI11Mt4tYgu5HUQgwZL0U3UBWhPIymLJqmbNidZTRDOL
+	 N8moplrS2QX51j7bx5kOQJUnBdN5HTa6yWTGFmgoa/xIr5jyD7D+AtQQbstEOGF+Rf
+	 Z8tMOk05isaLwTmf/PsxTE4Tg90QRgmFSYk1q/jpPcDVcgpOkNYvTn5YheEnGCZwtM
+	 G2JNF0lEc1iIA==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+	by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id C797FC4361B;
+	Fri, 31 May 2024 19:20:04 +0000 (UTC)
+Subject: Re: [GIT PULL] dma-mapping fixes for Linux 6.11
+From: pr-tracker-bot@kernel.org
+In-Reply-To: <ZlnDOBd2X3T4fiev@infradead.org>
+References: <ZlnDOBd2X3T4fiev@infradead.org>
+X-PR-Tracked-List-Id: <iommu.lists.linux.dev>
+X-PR-Tracked-Message-Id: <ZlnDOBd2X3T4fiev@infradead.org>
+X-PR-Tracked-Remote: git://git.infradead.org/users/hch/dma-mapping.git tags/dma-mapping-6.10-2024-05-31
+X-PR-Tracked-Commit-Id: 82d71b53d7e732ede6028591342bdc80fabfa29f
+X-PR-Merge-Tree: torvalds/linux.git
+X-PR-Merge-Refname: refs/heads/master
+X-PR-Merge-Commit-Id: b050496579632f86ee1ef7e7501906db579f3457
+Message-Id: <171718320481.20247.10364979761614234670.pr-tracker-bot@kernel.org>
+Date: Fri, 31 May 2024 19:20:04 +0000
+To: Christoph Hellwig <hch@infradead.org>
+Cc: Linus Torvalds <torvalds@linux-foundation.org>, linux-kernel@vger.kernel.org, iommu@lists.linux.dev
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-X-SRS-Rewrite: SMTP reverse-path rewritten from <hch@infradead.org> by bombadil.infradead.org. See http://www.infradead.org/rpr.html
 
-The following changes since commit c760b3725e52403dc1b28644fb09c47a83cacea6:
+The pull request you sent on Fri, 31 May 2024 14:31:52 +0200:
 
-  Merge tag 'mm-nonmm-stable-2024-05-22-17-30' of git://git.kernel.org/pub/scm/linux/kernel/git/akpm/mm (2024-05-22 18:59:29 -0700)
+> git://git.infradead.org/users/hch/dma-mapping.git tags/dma-mapping-6.10-2024-05-31
 
-are available in the Git repository at:
+has been merged into torvalds/linux.git:
+https://git.kernel.org/torvalds/c/b050496579632f86ee1ef7e7501906db579f3457
 
-  git://git.infradead.org/users/hch/dma-mapping.git tags/dma-mapping-6.10-2024-05-31
+Thank you!
 
-for you to fetch changes up to 82d71b53d7e732ede6028591342bdc80fabfa29f:
-
-  Documentation/core-api: correct reference to SWIOTLB_DYNAMIC (2024-05-27 16:52:09 +0200)
-
-----------------------------------------------------------------
-dma-mapping fixes for Linux 6.10
-
- - dma-mapping benchmark error handling fixes (Fedor Pchelkin)
- - correct a config symbol reference in the DMA API documentation
-   (Lukas Bulwahn)
-
-----------------------------------------------------------------
-Fedor Pchelkin (4):
-      dma-mapping: benchmark: fix up kthread-related error handling
-      dma-mapping: benchmark: avoid needless copy_to_user if benchmark fails
-      dma-mapping: benchmark: fix node id validation
-      dma-mapping: benchmark: handle NUMA_NO_NODE correctly
-
-Lukas Bulwahn (1):
-      Documentation/core-api: correct reference to SWIOTLB_DYNAMIC
-
- Documentation/core-api/swiotlb.rst |  2 +-
- kernel/dma/map_benchmark.c         | 25 ++++++++++++++++---------
- 2 files changed, 17 insertions(+), 10 deletions(-)
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/prtracker.html
