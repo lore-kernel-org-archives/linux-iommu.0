@@ -1,97 +1,144 @@
 Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 7D8A954673;
-	Fri, 31 May 2024 10:24:48 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 9258D18645;
+	Fri, 31 May 2024 11:00:24 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1717151090; cv=none; b=lYK8iHaAjasA40DJWbmycJvoFCQG+Hu+OqxB0ZYu1ZnV29U5qSawYeol7w15ntueTYrTINTzUU0s6D6XjRdfcc5xU1q2+6e6VCtPDpJdnyEkxYsTNTpP+SP9treFMDU9ZOC1K7cIm8yPOG7NeZvaKZb6sxGkObHI05d5WotEvAI=
+	t=1717153226; cv=none; b=tElgPIR66e/ETuD+pvysJWsOf/nsVf44vnVhkmhYEadM94Y4GwQMMrk+LVTxH1oXesNrLFwG8JxePy2+QmBdhBmLf6Fh93AdwuCmN5gT4/DQ7wFVPzusy46PI5e1HblHmlO/RQMs4hu2aPP1aEneFawlzTzD/yc+E2nsbdsK2uc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1717151090; c=relaxed/simple;
-	bh=3iFjX4wt0DJ4oC3/Izl/t6MXl/D5UVlqWwCet2BhxPo=;
-	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=aTRMKQeB/6ni3Rljxzi42kK1eOlXyJj5koYP4R1MbFdFzivSUidehX9BeSp+P/6jzqgcmlQvQhzXIML+8/+cbnTdyZv2sYIUoziDCGkkEY3yVqIMEmVHan1l3beJN30D4MgVoWPdHGWhrRCJSpTyyEutOU95TwKJZp192Ravy2A=
+	s=arc-20240116; t=1717153226; c=relaxed/simple;
+	bh=VVIA86U9f8HFRni8vCep8eKQmRd5Kj819/BFYRPQxU0=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=MIerQOs6JqRaiPzdJ2FQhHSDphsAnXudsMYqXfdYEccVk1edG4J0ABMstJtWcpEZ1vHymiitAr7oV80yV6bxAMYEbdn2I833jOG3Iq8RgGQAMVlpPFxwyDQyyyFbhenjlD+Tqcl6//LBuR1beHG0ydouo6cjc0EGQkd2gRY5Tos=
 ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; arc=none smtp.client-ip=217.140.110.172
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
 Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 1DFA61424;
-	Fri, 31 May 2024 03:25:12 -0700 (PDT)
-Received: from donnerap.manchester.arm.com (usa-sjc-imap-foss1.foss.arm.com [10.121.207.14])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id BBC8C3F641;
-	Fri, 31 May 2024 03:24:45 -0700 (PDT)
-Date: Fri, 31 May 2024 11:24:43 +0100
-From: Andre Przywara <andre.przywara@arm.com>
-To: Robin Murphy <robin.murphy@arm.com>
-Cc: Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>, Chen-Yu
- Tsai <wens@csie.org>, Jernej Skrabec <jernej.skrabec@gmail.com>, Samuel
- Holland <samuel@sholland.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>,
- Conor Dooley <conor+dt@kernel.org>, Rob Herring <robh@kernel.org>, Chris
- Morgan <macromorgan@hotmail.com>, Ryan Walklin <ryan@testtoast.com>,
- iommu@lists.linux.dev, devicetree@vger.kernel.org,
- linux-sunxi@lists.linux.dev, linux-arm-kernel@lists.infradead.org
-Subject: Re: [PATCH 5/5] arm64: dts: allwinner: h616: add IOMMU node
-Message-ID: <20240531112443.319863a3@donnerap.manchester.arm.com>
-In-Reply-To: <adb96c77-fc8b-4be1-b2f7-0a321b7ad593@arm.com>
-References: <20240530233800.27705-1-andre.przywara@arm.com>
-	<20240530233800.27705-6-andre.przywara@arm.com>
-	<bc550e12-7ad6-4592-994d-dca5a95e88ca@arm.com>
-	<20240531103209.7db573c8@donnerap.manchester.arm.com>
-	<adb96c77-fc8b-4be1-b2f7-0a321b7ad593@arm.com>
-Organization: ARM
-X-Mailer: Claws Mail 3.18.0 (GTK+ 2.24.32; aarch64-unknown-linux-gnu)
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 271591424;
+	Fri, 31 May 2024 04:00:48 -0700 (PDT)
+Received: from [10.57.67.251] (unknown [10.57.67.251])
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 90D5E3F792;
+	Fri, 31 May 2024 04:00:21 -0700 (PDT)
+Message-ID: <2bdd8966-5f25-4f2c-9aa9-7bd523b19edc@arm.com>
+Date: Fri, 31 May 2024 12:00:20 +0100
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH 2/5] iommu: sun50i: allocate page tables from below 4 GiB
+To: Andre Przywara <andre.przywara@arm.com>
+Cc: Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
+ Chen-Yu Tsai <wens@csie.org>, Jernej Skrabec <jernej.skrabec@gmail.com>,
+ Samuel Holland <samuel@sholland.org>,
+ Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley
+ <conor+dt@kernel.org>, Rob Herring <robh@kernel.org>,
+ Chris Morgan <macromorgan@hotmail.com>, Ryan Walklin <ryan@testtoast.com>,
+ iommu@lists.linux.dev, devicetree@vger.kernel.org,
+ linux-sunxi@lists.linux.dev, linux-arm-kernel@lists.infradead.org
+References: <20240530233800.27705-1-andre.przywara@arm.com>
+ <20240530233800.27705-3-andre.przywara@arm.com>
+ <ecdc4d9f-a7b4-45e1-a870-e97cf4922539@arm.com>
+ <20240531110241.6b26d072@donnerap.manchester.arm.com>
+From: Robin Murphy <robin.murphy@arm.com>
+Content-Language: en-GB
+In-Reply-To: <20240531110241.6b26d072@donnerap.manchester.arm.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 
-On Fri, 31 May 2024 10:45:41 +0100
-Robin Murphy <robin.murphy@arm.com> wrote:
-
-> On 2024-05-31 10:32 am, Andre Przywara wrote:
-> > On Fri, 31 May 2024 09:42:36 +0100
-> > Robin Murphy <robin.murphy@arm.com> wrote:
-> > 
-> > Hi Robin,
-> >   
-> >> On 2024-05-31 12:38 am, Andre Przywara wrote:  
-> >>> The Allwinner H616 contains a scatter-gather IOMMU connected to some
-> >>> video related devices. It's almost compatible to the one used in the H6,
-> >>> though with minor incompatibilities.
-> >>>
-> >>> Add the DT node describing its resources, so that devices like the video
-> >>> or display engine can connect to it.  
-> >>
-> >> Without also describing those connections, though, having this node
-> >> enabled in the DT means the driver will just bind, block DMA, and
-> >> prevent those devices from working. That's probably not what you want.  
-> > 
-> > The IOMMU manages the Display Engine (DE), the Deinterlacer (DI), the
-> > video engine (VE) and the 2D acceleration engine (G2D).
-> > None of those devices are supported for the H616 in mainline yet, but there
-> > are patches out there for the DE and VE, at least. Especially the video
-> > codecs benefit from scatter-gather, so with this patch they can make use
-> > of it from day one.  
+On 2024-05-31 11:02 am, Andre Przywara wrote:
+> On Fri, 31 May 2024 09:37:02 +0100
+> Robin Murphy <robin.murphy@arm.com> wrote:
 > 
-> Oh, I see - I assumed that stuff like display was more exciting and
+> Hi Robin,
+> 
+>> On 2024-05-31 12:37 am, Andre Przywara wrote:
+>>> The Allwinner IOMMU is a strict 32-bit device, with the page table root
+>>> pointer as well as both level's page tables and also the target addresses
+>>> all required to be below 4GB.
+>>> The Allwinner H6 SoC only supports 32-bit worth of physical addresses
+>>> anyway, so this isn't a problem so far, but the H616 and later SoCs extend
+>>> the PA space beyond 32 bit to accommodate more DRAM.
+>>> To make sure we stay within the 32-bit PA range required by the IOMMU,
+>>> force the memory for the page tables to come from below 4GB. by using
+>>> allocations with the DMA32 flag.
+>>
+>> Uh-oh... what about the output addresses in sun50i_mk_pte()? Limiting
+>> its own accesses is OK, but if the IOMMU isn't capable of *mapping* any
+>> valid PA for its clients, we can't easily support that.
+> 
+> Right, that's indeed a problem. I was hoping that the DMA32 address limit
+> would somehow be enforced by the IOMMU master devices, so they would never
+> issue addresses above 4GB to the IOMMU in the first place.
+> Would this work if all those devices use a 32-bit DMA mask? Some of those
+> devices might have that limit anyways, but those video devices are not
+> my expertise, so I don't know much details.
 
-Yeah, it arguably is, and Jernej had early patches already two years ago,
-I think. However there are some changes in the IP that require some rework
-in the DE driver for proper support, IIUC, so the upstreaming is somewhat
-on hold.
-Of course this didn't prevent Armbian from taking those early patches
-anyway, so a lot of people are not even aware of the problem :-(
+It's fine to have a 32-bit *input* to the IOMMU - that only affects the 
+IOVA allocation, wherein iommu-dma already considers both the IOMMU 
+domain geometry and the client device's DMA mask to ensure it gives back 
+a usable DMA address. Indeed, plumbing 32-bit devices into a system with 
+a >32-bit PA space is one of the common reasons to have an IOMMU, but it 
+assumes that IOMMU translations are capable of targeting the entire 
+larger PA range.
 
-Cheers,
-Andre
+> IIUC, atm the incoming PA would be masked down to 32-bit, I guess we should have a
+> WARN_ONCE() there when this happens?
+> The 32-bit limit would only affect boards with exactly 4GB of DRAM (the
+> DRAM controller limit), and it only affects the last GB then, so using
+> DMA32 wouldn't be a terrible limitation, I think.
 
-> likely to be supported already, so read "can connect to it" in the 
-> present tense. If it's a future "can use it as soon as they are also 
-> supported", then there's no concern, and indeed this is arguably the 
-> ideal order of doing things.
+The problem is when a client driver does, say, a dma_map_single() of 
+some kmalloced buffer which it doesn't control, and which already 
+happens to be at a >32-bit PA; iommu-dma can't make that work for you. 
+At best we'd hope the iommu_map() returns an error and terminally fails 
+the whole DMA mapping operation, at worst the IOMMU driver silently 
+truncates the PA, maps the wrong memory, and all hell breaks loose :(
+
+Thanks,
+Robin.
+
+> TBH, I picked this up from Jernej, so have to refer to him for further
+> details.
 > 
 > Cheers,
-> Robin.
-
+> Andre
+> 
+> P.S. I agree that a 32-bit only IOMMU sounds somewhat stup^Wweird, but
+> that's what we have. Maybe we would use it just for the VE only then, where
+> it's really helpful to provide the illusion of large physically contiguous
+> buffers.
+> 
+>> Thanks,
+>> Robin.
+>>
+>>> Signed-off-by: Andre Przywara <andre.przywara@arm.com>
+>>> ---
+>>>    drivers/iommu/sun50i-iommu.c | 5 +++--
+>>>    1 file changed, 3 insertions(+), 2 deletions(-)
+>>>
+>>> diff --git a/drivers/iommu/sun50i-iommu.c b/drivers/iommu/sun50i-iommu.c
+>>> index dd3f07384624c..c3244db5ac02f 100644
+>>> --- a/drivers/iommu/sun50i-iommu.c
+>>> +++ b/drivers/iommu/sun50i-iommu.c
+>>> @@ -682,7 +682,8 @@ sun50i_iommu_domain_alloc_paging(struct device *dev)
+>>>    	if (!sun50i_domain)
+>>>    		return NULL;
+>>>    
+>>> -	sun50i_domain->dt = iommu_alloc_pages(GFP_KERNEL, get_order(DT_SIZE));
+>>> +	sun50i_domain->dt = iommu_alloc_pages(GFP_KERNEL | GFP_DMA32,
+>>> +					      get_order(DT_SIZE));
+>>>    	if (!sun50i_domain->dt)
+>>>    		goto err_free_domain;
+>>>    
+>>> @@ -997,7 +998,7 @@ static int sun50i_iommu_probe(struct platform_device *pdev)
+>>>    
+>>>    	iommu->pt_pool = kmem_cache_create(dev_name(&pdev->dev),
+>>>    					   PT_SIZE, PT_SIZE,
+>>> -					   SLAB_HWCACHE_ALIGN,
+>>> +					   SLAB_HWCACHE_ALIGN | SLAB_CACHE_DMA32,
+>>>    					   NULL);
+>>>    	if (!iommu->pt_pool)
+>>>    		return -ENOMEM;
+> 
