@@ -1,111 +1,97 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B88A2187554;
-	Fri, 31 May 2024 10:17:42 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 7D8A954673;
+	Fri, 31 May 2024 10:24:48 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1717150662; cv=none; b=CdH17ueglrD52XMwOU7YnRz+Ylw+7iCgqNZCHyRowBpgl2qvmuHyidhB0Q/tBRqTSclcyPIDHazyJrgtuk+vFOCVlA0mgXmQP6h+/Mx6z2SV+Rk9PHem+/Q+naL7Jl8UUR2MvGBrKDRle0TdZD/OHNHhpWOhisydM6y6LrrIAQs=
+	t=1717151090; cv=none; b=lYK8iHaAjasA40DJWbmycJvoFCQG+Hu+OqxB0ZYu1ZnV29U5qSawYeol7w15ntueTYrTINTzUU0s6D6XjRdfcc5xU1q2+6e6VCtPDpJdnyEkxYsTNTpP+SP9treFMDU9ZOC1K7cIm8yPOG7NeZvaKZb6sxGkObHI05d5WotEvAI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1717150662; c=relaxed/simple;
-	bh=IPF7KKhZrun5HUPvd9XQgv9edMKTUhcFncPoMeDroKI=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=LVCv98mBQqA2PNkxBJwzn/oL3yjxFV8ig4+5bZmmw+FlJCjDRwbnpSzyLhicr385u46tQwAOBS045t3kBrHmuvItV3X57cwCri2DP78pI/6U44+AWfjxbJFx4x/i4QJ2faAuhzGSsAfdoRZOl7kNQ6HTG4oj+vy1eMJzHJ/7LXk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=FbrYk5H+; arc=none smtp.client-ip=10.30.226.201
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="FbrYk5H+"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 69C9BC116B1;
-	Fri, 31 May 2024 10:17:38 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1717150662;
-	bh=IPF7KKhZrun5HUPvd9XQgv9edMKTUhcFncPoMeDroKI=;
-	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-	b=FbrYk5H+/Ppe8ITRO8I/LMyUH8wsdltXsf+9yUxXwrB3ISqcEiMr9A5zOHvuaiDoG
-	 rxoZ5+C4+/04g49t1qG/yiKP31AhwkKrWK+2wUvbCjVLWfVc6bYXQnRqmn++nAHf1O
-	 iDDOZuEVOXRDQLU7obuvdzZiXV+LR7haOiUG6blrIYBGRLhZS6+0CHN40p9DigAxQY
-	 btP1GM1bf4EFdDlLuR2c3usk7xwL7nMjEyyNvLWowPLgitAEAG7XTAVkjrW5j+wHw3
-	 FmbpSY7bHK45Yffg2du5wSumJ07p/klxMZWy+hBRY2B30udXA2jKPyiyjB7Ay6/Fdf
-	 OEjllJQH8RORg==
-Message-ID: <e1a68ed1-b286-4a51-8e68-8c8bb2a3913f@kernel.org>
-Date: Fri, 31 May 2024 12:17:35 +0200
+	s=arc-20240116; t=1717151090; c=relaxed/simple;
+	bh=3iFjX4wt0DJ4oC3/Izl/t6MXl/D5UVlqWwCet2BhxPo=;
+	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=aTRMKQeB/6ni3Rljxzi42kK1eOlXyJj5koYP4R1MbFdFzivSUidehX9BeSp+P/6jzqgcmlQvQhzXIML+8/+cbnTdyZv2sYIUoziDCGkkEY3yVqIMEmVHan1l3beJN30D4MgVoWPdHGWhrRCJSpTyyEutOU95TwKJZp192Ravy2A=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; arc=none smtp.client-ip=217.140.110.172
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 1DFA61424;
+	Fri, 31 May 2024 03:25:12 -0700 (PDT)
+Received: from donnerap.manchester.arm.com (usa-sjc-imap-foss1.foss.arm.com [10.121.207.14])
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id BBC8C3F641;
+	Fri, 31 May 2024 03:24:45 -0700 (PDT)
+Date: Fri, 31 May 2024 11:24:43 +0100
+From: Andre Przywara <andre.przywara@arm.com>
+To: Robin Murphy <robin.murphy@arm.com>
+Cc: Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>, Chen-Yu
+ Tsai <wens@csie.org>, Jernej Skrabec <jernej.skrabec@gmail.com>, Samuel
+ Holland <samuel@sholland.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>,
+ Conor Dooley <conor+dt@kernel.org>, Rob Herring <robh@kernel.org>, Chris
+ Morgan <macromorgan@hotmail.com>, Ryan Walklin <ryan@testtoast.com>,
+ iommu@lists.linux.dev, devicetree@vger.kernel.org,
+ linux-sunxi@lists.linux.dev, linux-arm-kernel@lists.infradead.org
+Subject: Re: [PATCH 5/5] arm64: dts: allwinner: h616: add IOMMU node
+Message-ID: <20240531112443.319863a3@donnerap.manchester.arm.com>
+In-Reply-To: <adb96c77-fc8b-4be1-b2f7-0a321b7ad593@arm.com>
+References: <20240530233800.27705-1-andre.przywara@arm.com>
+	<20240530233800.27705-6-andre.przywara@arm.com>
+	<bc550e12-7ad6-4592-994d-dca5a95e88ca@arm.com>
+	<20240531103209.7db573c8@donnerap.manchester.arm.com>
+	<adb96c77-fc8b-4be1-b2f7-0a321b7ad593@arm.com>
+Organization: ARM
+X-Mailer: Claws Mail 3.18.0 (GTK+ 2.24.32; aarch64-unknown-linux-gnu)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH 3/5] dt-bindings: iommu: add new compatible strings
-To: Andre Przywara <andre.przywara@arm.com>, Joerg Roedel <joro@8bytes.org>,
- Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
- Chen-Yu Tsai <wens@csie.org>, Jernej Skrabec <jernej.skrabec@gmail.com>,
- Samuel Holland <samuel@sholland.org>,
- Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley
- <conor+dt@kernel.org>, Rob Herring <robh@kernel.org>
-Cc: Chris Morgan <macromorgan@hotmail.com>, Ryan Walklin
- <ryan@testtoast.com>, iommu@lists.linux.dev, devicetree@vger.kernel.org,
- linux-sunxi@lists.linux.dev, linux-arm-kernel@lists.infradead.org
-References: <20240530233800.27705-1-andre.przywara@arm.com>
- <20240530233800.27705-4-andre.przywara@arm.com>
-From: Krzysztof Kozlowski <krzk@kernel.org>
-Content-Language: en-US
-Autocrypt: addr=krzk@kernel.org; keydata=
- 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 fv0=
-In-Reply-To: <20240530233800.27705-4-andre.przywara@arm.com>
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On 31/05/2024 01:37, Andre Przywara wrote:
-> The Allwinner H616 and A523 contain IOMMU IP very similar to the H6, but
-> use a different reset value for the bypass register, which makes them
-> strictly speaking incompatible.
+On Fri, 31 May 2024 10:45:41 +0100
+Robin Murphy <robin.murphy@arm.com> wrote:
+
+> On 2024-05-31 10:32 am, Andre Przywara wrote:
+> > On Fri, 31 May 2024 09:42:36 +0100
+> > Robin Murphy <robin.murphy@arm.com> wrote:
+> > 
+> > Hi Robin,
+> >   
+> >> On 2024-05-31 12:38 am, Andre Przywara wrote:  
+> >>> The Allwinner H616 contains a scatter-gather IOMMU connected to some
+> >>> video related devices. It's almost compatible to the one used in the H6,
+> >>> though with minor incompatibilities.
+> >>>
+> >>> Add the DT node describing its resources, so that devices like the video
+> >>> or display engine can connect to it.  
+> >>
+> >> Without also describing those connections, though, having this node
+> >> enabled in the DT means the driver will just bind, block DMA, and
+> >> prevent those devices from working. That's probably not what you want.  
+> > 
+> > The IOMMU manages the Display Engine (DE), the Deinterlacer (DI), the
+> > video engine (VE) and the 2D acceleration engine (G2D).
+> > None of those devices are supported for the H616 in mainline yet, but there
+> > are patches out there for the DE and VE, at least. Especially the video
+> > codecs benefit from scatter-gather, so with this patch they can make use
+> > of it from day one.  
 > 
-> Add a new compatible string for the H616, and a version for the A523,
-> falling back to the H616.
+> Oh, I see - I assumed that stuff like display was more exciting and
 
-Acked-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Yeah, it arguably is, and Jernej had early patches already two years ago,
+I think. However there are some changes in the IP that require some rework
+in the DE driver for proper support, IIUC, so the upstreaming is somewhat
+on hold.
+Of course this didn't prevent Armbian from taking those early patches
+anyway, so a lot of people are not even aware of the problem :-(
 
-Best regards,
-Krzysztof
+Cheers,
+Andre
+
+> likely to be supported already, so read "can connect to it" in the 
+> present tense. If it's a future "can use it as soon as they are also 
+> supported", then there's no concern, and indeed this is arguably the 
+> ideal order of doing things.
+> 
+> Cheers,
+> Robin.
 
