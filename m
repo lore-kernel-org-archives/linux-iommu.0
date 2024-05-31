@@ -1,50 +1,50 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.14])
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E36AC57CA2
-	for <iommu@lists.linux.dev>; Fri, 31 May 2024 02:00:07 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.14
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7096D74E3D
+	for <iommu@lists.linux.dev>; Fri, 31 May 2024 02:54:38 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.12
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1717120810; cv=none; b=byaYEkN252QAVGtWU4qJ5r4wXr7KXJsVd+JAJqdC2INyiVWANMFUSEqCqdF9WwqP+LFxPegWRPfNJRfEIuJRzLCMdzflt9C8uluCY3AuyMejFbqLgaOWJQO6MTtikHz5Y+9J2idGLwM02BrC1KI3Y6gcwlqP3dTPxEeh6on9Q/U=
+	t=1717124080; cv=none; b=TxxF6sJGIExmCnHjL3xIslremdSCoorbTNQ6skoF0Qj1YLKTO0Hhrc/sJIH7EtMKfUBzhtcPsv0JGXOGWymWKCD0WxUoO8O/N2IysK+miRe7578VXNOekIUZleh4FjEwH0vTafOLPFVyQHPrTZAKCmk7F2lApuRgomSMxQy3L5Q=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1717120810; c=relaxed/simple;
-	bh=2fUiLAe0vLP2hoMqQ1N3E6uckKGVMNj5dHoJ19Y+sN0=;
+	s=arc-20240116; t=1717124080; c=relaxed/simple;
+	bh=3qoAmgqtvz5n2DFxkNTr1ulFou6xmODb43pmh5+qrGU=;
 	h=Message-ID:Date:MIME-Version:Cc:Subject:To:References:From:
-	 In-Reply-To:Content-Type; b=MN5LFYWEOKgI2UXjtjFTfqnMxpKFp+m02/WTS0OPwBb0hUb6gUnJMigVjDghY9smhi6wF3Cw4tr3m+H1L7KX/nVEbyrtSi6H3TwMs0braNgB5o7Dx8y2kX20/V3H71dqakItNZDqXuCHGWvg9xCXnkH+sgk1XaCAS46srH6VOMg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=kmZL7lZl; arc=none smtp.client-ip=198.175.65.14
+	 In-Reply-To:Content-Type; b=VJzOQu5drrCYqxhCf040CDgjLFmq6RB/ISGWPb76skOgOeB91yzfq5JQQVIuq7CkAXiFlHhR9K3dMWmB4SnCdiX8jCl6WG1GSGubcegPY1M90H+PGX0jGrkGrgdVdf7R9mqZoznyKbQh6xeZAJaYNJE/TEnj7RSKS72Maa+0Zpk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=Mi7WIbfA; arc=none smtp.client-ip=198.175.65.12
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="kmZL7lZl"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="Mi7WIbfA"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1717120808; x=1748656808;
+  t=1717124078; x=1748660078;
   h=message-id:date:mime-version:cc:subject:to:references:
    from:in-reply-to:content-transfer-encoding;
-  bh=2fUiLAe0vLP2hoMqQ1N3E6uckKGVMNj5dHoJ19Y+sN0=;
-  b=kmZL7lZlV2Gm4OBXmcDU1jfoCGjPPJjDYBbJnj+twYdE3LjtyzXcurWQ
-   aS+eZdITfwQXSqRd4BUqxuNNnEBIMyNQaeJ8UqeVWhxYPsIgkwdECDUZi
-   +NMHcYyrZTueDTRlKayHBg44k2V3OJxSoTPkDsyG0CyOn7WPQp2egMDFq
-   TII16fFCDJovpqysA9RT4E7iKMlNpuL12rV9QjWr81FSln8waBARt1lIv
-   u0UyzEQ7EMZB2YFIhGKKu45/0+ZsavHBSqc0/rg817pRtq+rHBDLkfFDR
-   uNX/XGudOGdyF7wakhwTq3SttGgV3blkPEiQaKB6N5azXOT08a70AdLLT
-   A==;
-X-CSE-ConnectionGUID: vYGLPyK8SyezvRCLaN2Jhw==
-X-CSE-MsgGUID: HQzZjlJNTp+zJ/bQstAyyg==
-X-IronPort-AV: E=McAfee;i="6600,9927,11088"; a="17479956"
-X-IronPort-AV: E=Sophos;i="6.08,202,1712646000"; 
-   d="scan'208";a="17479956"
-Received: from orviesa005.jf.intel.com ([10.64.159.145])
-  by orvoesa106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 May 2024 19:00:08 -0700
-X-CSE-ConnectionGUID: U2f5FXHqTNiG/j8alR7vOg==
-X-CSE-MsgGUID: +b1UL6wJRJyLg9EzJxqHvw==
+  bh=3qoAmgqtvz5n2DFxkNTr1ulFou6xmODb43pmh5+qrGU=;
+  b=Mi7WIbfA2QtJZhjofhggdccIwvvQbhPexynK/DY0PlC24WRgZ2MYCPXg
+   toa7DdNgEd+hQ+J91jBguDvgbVBEj0ojVcfJoBAzsQyD1rtzEqVFw3Ope
+   ChBhziKyHsfWb6ZwVvgonCcHtr0vYBmVfYrTRHWItFkPiMa3Obe1wqFAi
+   ZmwGequ4vyG+vpGEHSauBheGGkDzAmj69lchvRa1JSpEWmCZi0GjkW9XW
+   5nWhWVmIZjOpWqQQXtA9kROjmnLH0B3MwvHOfE6Q0SgpaI3QnPhUQXXdh
+   uLzgAoQPqpQnlDzatGOBYuFSqEzE2b83XAx941YTLhCvKlwJIaYlNdvVx
+   Q==;
+X-CSE-ConnectionGUID: 8055vloxS6Oqje+jqH0+kg==
+X-CSE-MsgGUID: QLVuhf6xTMC2rY9GhVQywg==
+X-IronPort-AV: E=McAfee;i="6600,9927,11088"; a="25054817"
+X-IronPort-AV: E=Sophos;i="6.08,203,1712646000"; 
+   d="scan'208";a="25054817"
+Received: from fmviesa006.fm.intel.com ([10.60.135.146])
+  by orvoesa104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 May 2024 19:54:38 -0700
+X-CSE-ConnectionGUID: C4V03CkPTL2PiPlQZwr4rA==
+X-CSE-MsgGUID: BRb7C+xcRqafLJFt/HMIsg==
 X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.08,202,1712646000"; 
-   d="scan'208";a="40936569"
+X-IronPort-AV: E=Sophos;i="6.08,203,1712646000"; 
+   d="scan'208";a="36067256"
 Received: from unknown (HELO [10.239.159.127]) ([10.239.159.127])
-  by orviesa005.jf.intel.com with ESMTP; 30 May 2024 19:00:02 -0700
-Message-ID: <dda59cd5-b227-4f42-a7f2-b9fe03e1b020@linux.intel.com>
-Date: Fri, 31 May 2024 09:57:54 +0800
+  by fmviesa006.fm.intel.com with ESMTP; 30 May 2024 19:54:32 -0700
+Message-ID: <e5543715-a331-4fce-85c9-f4211eb0fab4@linux.intel.com>
+Date: Fri, 31 May 2024 10:52:25 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -52,96 +52,141 @@ List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Cc: baolu.lu@linux.intel.com, Joerg Roedel <joro@8bytes.org>,
- Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
- Jason Gunthorpe <jgg@ziepe.ca>, Kevin Tian <kevin.tian@intel.com>,
- Yi Liu <yi.l.liu@intel.com>, David Airlie <airlied@gmail.com>,
- Daniel Vetter <daniel@ffwll.ch>, Kalle Valo <kvalo@kernel.org>,
- Bjorn Andersson <andersson@kernel.org>,
+Cc: baolu.lu@linux.intel.com, Yi Liu <yi.l.liu@intel.com>,
+ David Airlie <airlied@gmail.com>, Daniel Vetter <daniel@ffwll.ch>,
+ Kalle Valo <kvalo@kernel.org>, Bjorn Andersson <andersson@kernel.org>,
  Mathieu Poirier <mathieu.poirier@linaro.org>,
  Alex Williamson <alex.williamson@redhat.com>, mst@redhat.com,
  Jason Wang <jasowang@redhat.com>, Thierry Reding <thierry.reding@gmail.com>,
  Jonathan Hunter <jonathanh@nvidia.com>,
  Mikko Perttunen <mperttunen@nvidia.com>, iommu@lists.linux.dev,
  dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 06/20] drm/msm: Use iommu_paging_domain_alloc()
-To: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+Subject: Re: [PATCH 00/20] iommu: Refactoring domain allocation interface
+To: Robin Murphy <robin.murphy@arm.com>, Joerg Roedel <joro@8bytes.org>,
+ Will Deacon <will@kernel.org>, Jason Gunthorpe <jgg@ziepe.ca>,
+ Kevin Tian <kevin.tian@intel.com>
 References: <20240529053250.91284-1-baolu.lu@linux.intel.com>
- <20240529053250.91284-7-baolu.lu@linux.intel.com>
- <jd7df7jshswukstxwbfoxuswyltyemdmkx272i5mpldlfsk4t7@ad36olyvmw27>
- <960bfc23-22b3-48d1-baa6-2707767875c5@linux.intel.com>
- <CAA8EJppZU5yy4g85oMWzV_O9Qo91-Cr6d+W9Rz+K+mS6tfU8kw@mail.gmail.com>
+ <ac5d8f21-5fb7-4193-9a0b-cdaff39e8493@arm.com>
 Content-Language: en-US
 From: Baolu Lu <baolu.lu@linux.intel.com>
-In-Reply-To: <CAA8EJppZU5yy4g85oMWzV_O9Qo91-Cr6d+W9Rz+K+mS6tfU8kw@mail.gmail.com>
+In-Reply-To: <ac5d8f21-5fb7-4193-9a0b-cdaff39e8493@arm.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 
-On 5/30/24 3:58 PM, Dmitry Baryshkov wrote:
-> On Thu, 30 May 2024 at 04:59, Baolu Lu<baolu.lu@linux.intel.com>  wrote:
->> On 5/29/24 4:21 PM, Dmitry Baryshkov wrote:
->>> On Wed, May 29, 2024 at 01:32:36PM +0800, Lu Baolu wrote:
->>>> The domain allocated in msm_iommu_new() is for the @dev. Replace
->>>> iommu_domain_alloc() with iommu_paging_domain_alloc() to make it explicit.
->>>>
->>>> Update msm_iommu_new() to always return ERR_PTR in failure cases instead
->>>> of NULL.
->>> Please don't mix unrelated changes, because ...
->>>
->>>> Signed-off-by: Lu Baolu<baolu.lu@linux.intel.com>
->>>> ---
->>>>    drivers/gpu/drm/msm/msm_iommu.c | 8 ++++----
->>>>    1 file changed, 4 insertions(+), 4 deletions(-)
->>>>
->>>> diff --git a/drivers/gpu/drm/msm/msm_iommu.c b/drivers/gpu/drm/msm/msm_iommu.c
->>>> index d5512037c38b..f7e28d4b5f62 100644
->>>> --- a/drivers/gpu/drm/msm/msm_iommu.c
->>>> +++ b/drivers/gpu/drm/msm/msm_iommu.c
->>>> @@ -407,9 +407,9 @@ struct msm_mmu *msm_iommu_new(struct device *dev, unsigned long quirks)
->>>>       struct msm_iommu *iommu;
->>>>       int ret;
->>>>
->>>> -    domain = iommu_domain_alloc(dev->bus);
->>>> -    if (!domain)
->>>> -            return NULL;
->>>> +    domain = iommu_paging_domain_alloc(dev);
->>>> +    if (IS_ERR(domain))
->>>> +            return ERR_CAST(domain);
->>>>
->>>>       iommu_set_pgtable_quirks(domain, quirks);
->>>>
->>>> @@ -441,7 +441,7 @@ struct msm_mmu *msm_iommu_gpu_new(struct device *dev, struct msm_gpu *gpu, unsig
->>>>       struct msm_mmu *mmu;
->>>>
->>>>       mmu = msm_iommu_new(dev, quirks);
->>>> -    if (IS_ERR_OR_NULL(mmu))
->>>> +    if (IS_ERR(mmu))
->>>>               return mmu;
->>> NAK, not having an IOMMU is a poor but legit usecase for some of devices
->>> which don't have IOMMU support yet (for example because of the buggy
->>> implementation for which we were not able to get all the hooks in).
->>>
->>> Please don't break compatibility for existing platforms.
->> Sure. I will remove this line of change. Though I have no idea in which
->> case msm_iommu_new() could return NULL after this patch.
-> So, even without this chunk you are going to break the no-IOMMU case.
-> Please don't. This will result in a regression report and a revert.
+On 5/31/24 1:59 AM, Robin Murphy wrote:
+> On 29/05/2024 6:32 am, Lu Baolu wrote:
+>> The IOMMU subsystem has undergone some changes, including the removal
+>> of iommu_ops from the bus structure. Consequently, the existing domain
+>> allocation interface, which relies on a bus type argument, is no longer
+>> relevant:
+>>
+>>      struct iommu_domain *iommu_domain_alloc(struct bus_type *bus)
+>>
+>> This series is designed to refactor the use of this interface. It
+>> proposes two new interfaces to replace iommu_domain_alloc():
+>>
+>> - iommu_user_domain_alloc(): This interface is intended for allocating
+>>    iommu domains managed by userspace for device passthrough scenarios,
+>>    such as those used by iommufd, vfio, and vdpa. It clearly indicates
+>>    that the domain is for user-managed device DMA.
+>>
+>>    If an IOMMU driver does not implement iommu_ops->domain_alloc_user,
+>>    this interface will rollback to the generic paging domain allocation.
+>>
+>> - iommu_paging_domain_alloc(): This interface is for allocating iommu
+>>    domains managed by kernel drivers for kernel DMA purposes. It takes a
+>>    device pointer as a parameter, which better reflects the current
+>>    design of the IOMMU subsystem.
+>>
+>> The majority of device drivers currently using iommu_domain_alloc() do
+>> so to allocate a domain for a specific device and then attach that
+>> domain to the device. These cases can be straightforwardly migrated to
+>> the new interfaces.
 > 
-> Instead please provide a way for the existing drivers to continue
-> working. For example, something like:
+> Ooh, nice! This was rising back up my to-do list as well, but I concur 
+> it's rather more straightforward than my version that did devious things 
+> to keep the iommu_domain_alloc() name...
 > 
-> if (IS_ERR(mmu) && ERR_PTR(mmu) == -ENODEV))
->      return NULL;
+>> However, there are some drivers with more complex use cases that do
+>> not fit neatly into this new scheme. For example:
+>>
+>> $ git grep "= iommu_domain_alloc"
+>> arch/arm/mm/dma-mapping.c:      mapping->domain = 
+>> iommu_domain_alloc(bus);
+> 
+> This one's simple enough, the refactor just needs to go one step deeper. 
+> I've just rebased and pushed my old patch for that, if you'd like it [1].
 
-Oh I see. msm_iommu_new() returning NULL indicates a no-IOMMU case,
-right? So perhaps we can make it explicit like below?
+Great! With this change, we can safely replace iommu_domain_alloc().
 
-         if (!device_iommu_mapped(dev))
-                 return NULL;
+diff --git a/arch/arm/mm/dma-mapping.c b/arch/arm/mm/dma-mapping.c
+index 52f9c56cc3cb..88c2d68a69c9 100644
+--- a/arch/arm/mm/dma-mapping.c
++++ b/arch/arm/mm/dma-mapping.c
+@@ -1585,9 +1585,11 @@ arm_iommu_create_mapping(struct device *dev, 
+dma_addr_t base, u64 size)
 
-         domain = iommu_paging_domain_alloc(dev);
-         if (IS_ERR(domain))
-                 return ERR_CAST(domain);
+         spin_lock_init(&mapping->lock);
+
+-       mapping->domain = iommu_domain_alloc(dev->bus);
+-       if (!mapping->domain)
++       mapping->domain = iommu_paging_domain_alloc(dev);
++       if (IS_ERR(mapping->domain)) {
++               err = PTR_ERR(mapping->domain);
+                 goto err4;
++       }
+
+         kref_init(&mapping->kref);
+         return mapping;
+
+> 
+>> drivers/gpu/drm/rockchip/rockchip_drm_drv.c:    private->domain = 
+>> iommu_domain_alloc(private->iommu_dev->bus);
+> 
+> Both this one and usnic_uiom_alloc_pd() should be OK - back when I did 
+> all the figuring out to clean up iommu_present(), I specifically 
+> reworked them into "dev->bus" style as a reminder that it *is* supposed 
+> to be the right device for doing this with, even if the attach is a bit 
+> more distant.
+
+Yeah! I will cleanup these two in the next version.
+
+> 
+>> drivers/gpu/drm/tegra/drm.c:            tegra->domain = 
+>> iommu_domain_alloc(&platform_bus_type);
+> 
+> This is the tricky one, where the device to hand may *not* be the right 
+> device for IOMMU API use [2]. FWIW my plan was to pull the "walk the 
+> platform bus to find any IOMMU-mapped device" trick into this code and 
+> use it both to remove the final iommu_present() and for a device-based 
+> domain allocation.
+
+I am not familiar with this driver, so the solution you mentioned above
+is the best option I can think of for now. I will incorporate this into
+the next version.
+
+> 
+>> drivers/infiniband/hw/usnic/usnic_uiom.c:       pd->domain = domain = 
+>> iommu_domain_alloc(dev->bus);
+>>
+>> This series leave those cases unchanged and keep iommu_domain_alloc()
+>> for their usage. But new drivers should not use it anymore.
+> 
+> I'd certainly be keen for it to be gone ASAP, since I'm seeing 
+> increasing demand for supporting multiple IOMMU drivers, and this is the 
+> last bus-based thing standing in the way of that.
+
+Agreed. With all iommu_domain_alloc() removed, iommu_domain_alloc()
+could be dropped.
+
+> 
+> Thanks,
+> Robin.
+> 
+> [1] 
+> https://gitlab.arm.com/linux-arm/linux-rm/-/commit/f048cc6a323d8641898025ca96071df7cbe8bd52
+> [2] 
+> https://lore.kernel.org/linux-iommu/add31812-50d5-6cb0-3908-143c523abd37@collabora.com/
 
 Best regards,
 baolu
