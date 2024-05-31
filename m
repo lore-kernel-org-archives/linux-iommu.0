@@ -1,155 +1,93 @@
-Received: from mail-lj1-f182.google.com (mail-lj1-f182.google.com [209.85.208.182])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DECB9145345
-	for <iommu@lists.linux.dev>; Fri, 31 May 2024 08:30:07 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.182
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 9040F14F9FA;
+	Fri, 31 May 2024 08:37:11 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1717144209; cv=none; b=r9Ofdu0qcM5fv5X65j6RGhpbS34TR/ioelzBAkbPwXCixeM+roH2zwxmikITM9CdVOFQiKdrBv2YAKfCDrYqlJJvE0WRAlR5fvqoxXRFmnwQSVM/v1lH9REsWeo0TORHx0+n8nr7Eb6MPFM/B+XnxWVwTo4d0T84EcgLEn6F1kI=
+	t=1717144633; cv=none; b=MPJIM+ox5samKLKUJiE8tpYqbZLwh4/Oc/f4utFGDJmbKfCs71G6z2s3cfHE/3W9IRyU3PEepV89HMUh4/jqHgUpMdoJdkE8zkbOW9oOfqWCwAf7OIRx8fgeYDqVE6ay1Upq6h7m039/y2b1UA/MIyO5Hx0IXEGb34kp2PM3BxY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1717144209; c=relaxed/simple;
-	bh=JwEvemvtK/1wTfGHg6yJ3qXXIAH7p/eOW9e9F+pMgE0=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=AsFvhZPKYQ3Uv4AEL4TulPH34e33xXzZirrPMVdoELrgfSxiE9cMdH0eVLlZ5NhrZnrK1X2n1Vluw7jyNhgIuD3glJHwmOeEmNJ3dOTGzlAqZLHSHpu06iKTr9tFM77Fx8ruSeHThfhxbMdVigIjSjiEI1e1xP0fzjvfEmu3lKo=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org; spf=pass smtp.mailfrom=linaro.org; dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b=B8IUI6oY; arc=none smtp.client-ip=209.85.208.182
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linaro.org
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="B8IUI6oY"
-Received: by mail-lj1-f182.google.com with SMTP id 38308e7fff4ca-2e95a883101so22619971fa.3
-        for <iommu@lists.linux.dev>; Fri, 31 May 2024 01:30:07 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1717144206; x=1717749006; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=HcAJw5T3D3kyswsNGvVslEG9tp9kD/iRcABuGT3i7lY=;
-        b=B8IUI6oYU9tsShszRucObQuxF2KJJems7YlYj3a3G5BODmVYrutDS9+zZI2nbm5rq/
-         OCY/gxX8oItwBecvDiBVpquAcCI9a+nqv0WuIXF6KeUzyoGv2YhHQ4DOWdbaCupbUQ76
-         d+XlS8zkKDr87ijmdAG8D3W140DfHy0VB7fL66JF19WKI7eDC4yZRg9yv2yrtPy9E4lb
-         LHZgyx/03gqYsoOhFYt7G1qXxHZszQJJfRdpKg4eStLTsa7x+zdAGwv/DDjvLXWYy5R8
-         6ro3R1qzpkiGdC2N/q1c/DyjA97hNDv8GdkTheAkyVe2LL74KjlCGqLldAmmsi1OxnRv
-         fQ3w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1717144206; x=1717749006;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=HcAJw5T3D3kyswsNGvVslEG9tp9kD/iRcABuGT3i7lY=;
-        b=QUtFdvAsYoMME9sOsaPzeRw3zuuaMrH1TP3Rer3Zu0FVyDHpILJIYjclUbxEEt/Hn+
-         Y7gf32jMKGbhdHRhntSiAmZPw3846t85dkH512BA14cG2mXoata/c0Kzau7Vc0ONmD2c
-         cLXzC/szYBg9BJ4wCM2yGE+oC8p3lybUWHDxvaagXt1NgGQaTQUPhU9s1CiYWbrmCslr
-         ogPvY+EjKTmeuKKkNASwfRfk+MKcZSLVUelHzddplCHafEYaIRj2NJNfn8IJ5x8wV0Mg
-         JLsNoKHvfWp+aGL2iwm5b2wg21S1SRTuU/9NrO5tA5ayUNxucUMfhDIJdugAbeA4S/Ce
-         WHyg==
-X-Forwarded-Encrypted: i=1; AJvYcCVm7G4dHrBJnVCdXn5lDsyhBj6DrwJgqxEubUxxWKq1GHqIeupUXCLH325i65LOF3vS85y8x/MUsFweY79VE3Zeu7zHLHQ=
-X-Gm-Message-State: AOJu0Yx5NsPQbCgVDk8yoLddBQ91DLs80iCXWK5ORzzeYaj020t7QMKw
-	WXaa3POErvY7VUSu4yJWgm/ofD9g2ekcd+tXvtPMNii+c5wrgppN+GN0LMVbHBQ=
-X-Google-Smtp-Source: AGHT+IF3eVe9jEydIDWHlerWPOn8og1StxlgIvlxcfACNv4BlCP8zs9gy4BRbJwlet+sV0prmpPQJA==
-X-Received: by 2002:ac2:4d92:0:b0:52b:3f91:fa62 with SMTP id 2adb3069b0e04-52b8958c003mr794238e87.30.1717144205906;
-        Fri, 31 May 2024 01:30:05 -0700 (PDT)
-Received: from eriador.lumag.spb.ru (dzdbxzyyyyyyyyyyyykxt-3.rev.dnainternet.fi. [2001:14ba:a0c3:3a00::227])
-        by smtp.gmail.com with ESMTPSA id 2adb3069b0e04-52b84d8974esm253556e87.256.2024.05.31.01.30.04
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 31 May 2024 01:30:04 -0700 (PDT)
-Date: Fri, 31 May 2024 11:30:02 +0300
-From: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
-To: Baolu Lu <baolu.lu@linux.intel.com>
-Cc: Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>, 
-	Robin Murphy <robin.murphy@arm.com>, Jason Gunthorpe <jgg@ziepe.ca>, 
-	Kevin Tian <kevin.tian@intel.com>, Yi Liu <yi.l.liu@intel.com>, David Airlie <airlied@gmail.com>, 
-	Daniel Vetter <daniel@ffwll.ch>, Kalle Valo <kvalo@kernel.org>, 
-	Bjorn Andersson <andersson@kernel.org>, Mathieu Poirier <mathieu.poirier@linaro.org>, 
-	Alex Williamson <alex.williamson@redhat.com>, mst@redhat.com, Jason Wang <jasowang@redhat.com>, 
-	Thierry Reding <thierry.reding@gmail.com>, Jonathan Hunter <jonathanh@nvidia.com>, 
-	Mikko Perttunen <mperttunen@nvidia.com>, iommu@lists.linux.dev, dri-devel@lists.freedesktop.org, 
-	linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 06/20] drm/msm: Use iommu_paging_domain_alloc()
-Message-ID: <nxd4bnlpu75fdpbehufdorl43ehwkhshah3q5dqjktqfy74yco@55vueuzpaakn>
-References: <20240529053250.91284-1-baolu.lu@linux.intel.com>
- <20240529053250.91284-7-baolu.lu@linux.intel.com>
- <jd7df7jshswukstxwbfoxuswyltyemdmkx272i5mpldlfsk4t7@ad36olyvmw27>
- <960bfc23-22b3-48d1-baa6-2707767875c5@linux.intel.com>
- <CAA8EJppZU5yy4g85oMWzV_O9Qo91-Cr6d+W9Rz+K+mS6tfU8kw@mail.gmail.com>
- <dda59cd5-b227-4f42-a7f2-b9fe03e1b020@linux.intel.com>
+	s=arc-20240116; t=1717144633; c=relaxed/simple;
+	bh=krRVD3UkRnE4YDx4vNs3xr7/v74++jw0AqyhDKkqFB4=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=oyU6TlzCcu/TVGwETXjswPwCb6KAcrMKUe+VW+Zf96rXbzgyqdygFSv2emYyyJPYUjB3yaPnfhbHo2skQBM2i+fNTgOZ+DlUOJAHyqYnRX8rSUKWjSeIMhpNzy+9rOer+3jxy5rUac4Lmxju3feZ8xfL+vSqyU6ylvNaP2SWbWk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; arc=none smtp.client-ip=217.140.110.172
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id D9D6F113E;
+	Fri, 31 May 2024 01:37:34 -0700 (PDT)
+Received: from [10.57.67.251] (unknown [10.57.67.251])
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 481AB3F792;
+	Fri, 31 May 2024 01:37:08 -0700 (PDT)
+Message-ID: <ecdc4d9f-a7b4-45e1-a870-e97cf4922539@arm.com>
+Date: Fri, 31 May 2024 09:37:02 +0100
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <dda59cd5-b227-4f42-a7f2-b9fe03e1b020@linux.intel.com>
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH 2/5] iommu: sun50i: allocate page tables from below 4 GiB
+To: Andre Przywara <andre.przywara@arm.com>, Joerg Roedel <joro@8bytes.org>,
+ Will Deacon <will@kernel.org>, Chen-Yu Tsai <wens@csie.org>,
+ Jernej Skrabec <jernej.skrabec@gmail.com>,
+ Samuel Holland <samuel@sholland.org>,
+ Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley
+ <conor+dt@kernel.org>, Rob Herring <robh@kernel.org>
+Cc: Chris Morgan <macromorgan@hotmail.com>, Ryan Walklin
+ <ryan@testtoast.com>, iommu@lists.linux.dev, devicetree@vger.kernel.org,
+ linux-sunxi@lists.linux.dev, linux-arm-kernel@lists.infradead.org
+References: <20240530233800.27705-1-andre.przywara@arm.com>
+ <20240530233800.27705-3-andre.przywara@arm.com>
+From: Robin Murphy <robin.murphy@arm.com>
+Content-Language: en-GB
+In-Reply-To: <20240530233800.27705-3-andre.przywara@arm.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-On Fri, May 31, 2024 at 09:57:54AM +0800, Baolu Lu wrote:
-> On 5/30/24 3:58 PM, Dmitry Baryshkov wrote:
-> > On Thu, 30 May 2024 at 04:59, Baolu Lu<baolu.lu@linux.intel.com>  wrote:
-> > > On 5/29/24 4:21 PM, Dmitry Baryshkov wrote:
-> > > > On Wed, May 29, 2024 at 01:32:36PM +0800, Lu Baolu wrote:
-> > > > > The domain allocated in msm_iommu_new() is for the @dev. Replace
-> > > > > iommu_domain_alloc() with iommu_paging_domain_alloc() to make it explicit.
-> > > > > 
-> > > > > Update msm_iommu_new() to always return ERR_PTR in failure cases instead
-> > > > > of NULL.
-> > > > Please don't mix unrelated changes, because ...
-> > > > 
-> > > > > Signed-off-by: Lu Baolu<baolu.lu@linux.intel.com>
-> > > > > ---
-> > > > >    drivers/gpu/drm/msm/msm_iommu.c | 8 ++++----
-> > > > >    1 file changed, 4 insertions(+), 4 deletions(-)
-> > > > > 
-> > > > > diff --git a/drivers/gpu/drm/msm/msm_iommu.c b/drivers/gpu/drm/msm/msm_iommu.c
-> > > > > index d5512037c38b..f7e28d4b5f62 100644
-> > > > > --- a/drivers/gpu/drm/msm/msm_iommu.c
-> > > > > +++ b/drivers/gpu/drm/msm/msm_iommu.c
-> > > > > @@ -407,9 +407,9 @@ struct msm_mmu *msm_iommu_new(struct device *dev, unsigned long quirks)
-> > > > >       struct msm_iommu *iommu;
-> > > > >       int ret;
-> > > > > 
-> > > > > -    domain = iommu_domain_alloc(dev->bus);
-> > > > > -    if (!domain)
-> > > > > -            return NULL;
-> > > > > +    domain = iommu_paging_domain_alloc(dev);
-> > > > > +    if (IS_ERR(domain))
-> > > > > +            return ERR_CAST(domain);
-> > > > > 
-> > > > >       iommu_set_pgtable_quirks(domain, quirks);
-> > > > > 
-> > > > > @@ -441,7 +441,7 @@ struct msm_mmu *msm_iommu_gpu_new(struct device *dev, struct msm_gpu *gpu, unsig
-> > > > >       struct msm_mmu *mmu;
-> > > > > 
-> > > > >       mmu = msm_iommu_new(dev, quirks);
-> > > > > -    if (IS_ERR_OR_NULL(mmu))
-> > > > > +    if (IS_ERR(mmu))
-> > > > >               return mmu;
-> > > > NAK, not having an IOMMU is a poor but legit usecase for some of devices
-> > > > which don't have IOMMU support yet (for example because of the buggy
-> > > > implementation for which we were not able to get all the hooks in).
-> > > > 
-> > > > Please don't break compatibility for existing platforms.
-> > > Sure. I will remove this line of change. Though I have no idea in which
-> > > case msm_iommu_new() could return NULL after this patch.
-> > So, even without this chunk you are going to break the no-IOMMU case.
-> > Please don't. This will result in a regression report and a revert.
-> > 
-> > Instead please provide a way for the existing drivers to continue
-> > working. For example, something like:
-> > 
-> > if (IS_ERR(mmu) && ERR_PTR(mmu) == -ENODEV))
-> >      return NULL;
-> 
-> Oh I see. msm_iommu_new() returning NULL indicates a no-IOMMU case,
-> right? So perhaps we can make it explicit like below?
-> 
->         if (!device_iommu_mapped(dev))
->                 return NULL;
-> 
->         domain = iommu_paging_domain_alloc(dev);
->         if (IS_ERR(domain))
->                 return ERR_CAST(domain);
+On 2024-05-31 12:37 am, Andre Przywara wrote:
+> The Allwinner IOMMU is a strict 32-bit device, with the page table root
+> pointer as well as both level's page tables and also the target addresses
+> all required to be below 4GB.
+> The Allwinner H6 SoC only supports 32-bit worth of physical addresses
+> anyway, so this isn't a problem so far, but the H616 and later SoCs extend
+> the PA space beyond 32 bit to accommodate more DRAM.
+> To make sure we stay within the 32-bit PA range required by the IOMMU,
+> force the memory for the page tables to come from below 4GB. by using
+> allocations with the DMA32 flag.
 
-Yes, this should work, thank you.
+Uh-oh... what about the output addresses in sun50i_mk_pte()? Limiting 
+its own accesses is OK, but if the IOMMU isn't capable of *mapping* any 
+valid PA for its clients, we can't easily support that.
 
--- 
-With best wishes
-Dmitry
+Thanks,
+Robin.
+
+> Signed-off-by: Andre Przywara <andre.przywara@arm.com>
+> ---
+>   drivers/iommu/sun50i-iommu.c | 5 +++--
+>   1 file changed, 3 insertions(+), 2 deletions(-)
+> 
+> diff --git a/drivers/iommu/sun50i-iommu.c b/drivers/iommu/sun50i-iommu.c
+> index dd3f07384624c..c3244db5ac02f 100644
+> --- a/drivers/iommu/sun50i-iommu.c
+> +++ b/drivers/iommu/sun50i-iommu.c
+> @@ -682,7 +682,8 @@ sun50i_iommu_domain_alloc_paging(struct device *dev)
+>   	if (!sun50i_domain)
+>   		return NULL;
+>   
+> -	sun50i_domain->dt = iommu_alloc_pages(GFP_KERNEL, get_order(DT_SIZE));
+> +	sun50i_domain->dt = iommu_alloc_pages(GFP_KERNEL | GFP_DMA32,
+> +					      get_order(DT_SIZE));
+>   	if (!sun50i_domain->dt)
+>   		goto err_free_domain;
+>   
+> @@ -997,7 +998,7 @@ static int sun50i_iommu_probe(struct platform_device *pdev)
+>   
+>   	iommu->pt_pool = kmem_cache_create(dev_name(&pdev->dev),
+>   					   PT_SIZE, PT_SIZE,
+> -					   SLAB_HWCACHE_ALIGN,
+> +					   SLAB_HWCACHE_ALIGN | SLAB_CACHE_DMA32,
+>   					   NULL);
+>   	if (!iommu->pt_pool)
+>   		return -ENOMEM;
