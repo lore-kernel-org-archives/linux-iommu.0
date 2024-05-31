@@ -1,85 +1,129 @@
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 7AECF183994;
-	Thu, 30 May 2024 23:39:39 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.11])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 99E66290F
+	for <iommu@lists.linux.dev>; Fri, 31 May 2024 01:01:23 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.11
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1717112380; cv=none; b=eKB9O2qz2pDqxlqx8chLxM4aYsGtSNJnEtLrzypYiQMoRIsAXalfwqBqr4+CSVgQhOECagQK3N0MwTx4F6hswjA4kpewDi6xLn7qm807TbP6CEWvWN//EADIC/0Od3kH+Y+RkMG+uKPxTLp2quGzVlbFp8yXARPbA3pjjjOBOew=
+	t=1717117285; cv=none; b=X5E7WXGNc4c5YcyPUyNH9Ndw2WrGEchMeN+1DIIjKVkgzShTEgZK3VclHvkCh4D29vSKo3jOsshb0m7bYQKJbeRQP/2IE8iHoHy/iJSBmCtx0dHYc1ympoosBPGM7PT6y6HyW9bBnPmzVwumS4fTu4G+saVZ2HYMrAuDOwdVcws=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1717112380; c=relaxed/simple;
-	bh=AXIW0IRoJowGCnFhTWOSCwi/du65BroI9xAdZS8quuc=;
-	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
-	 MIME-Version; b=QhtYeBpkk74ZsetzJHvYL7xJIa6bWYESl0ABZcK/kBV0i/O13oyap2S8FOQqGA4opWlbKIms57zpTxg3Mpxl8Whp+WkQX/6HeSdv8P48e+PDavvlVDxDwiV5zQHpvcDUEEbJwZFtGO/yKYR9845HCG8au8VikF3xUr3wifyfC28=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; arc=none smtp.client-ip=217.140.110.172
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 4D14C1688;
-	Thu, 30 May 2024 16:40:03 -0700 (PDT)
-Received: from localhost.localdomain (usa-sjc-mx-foss1.foss.arm.com [172.31.20.19])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id EF1DE3F792;
-	Thu, 30 May 2024 16:39:36 -0700 (PDT)
-From: Andre Przywara <andre.przywara@arm.com>
-To: Joerg Roedel <joro@8bytes.org>,
-	Will Deacon <will@kernel.org>,
-	Robin Murphy <robin.murphy@arm.com>,
-	Chen-Yu Tsai <wens@csie.org>,
-	Jernej Skrabec <jernej.skrabec@gmail.com>,
-	Samuel Holland <samuel@sholland.org>,
-	Krzysztof Kozlowski <krzk+dt@kernel.org>,
-	Conor Dooley <conor+dt@kernel.org>,
-	Rob Herring <robh@kernel.org>
-Cc: Chris Morgan <macromorgan@hotmail.com>,
-	Ryan Walklin <ryan@testtoast.com>,
-	iommu@lists.linux.dev,
-	devicetree@vger.kernel.org,
-	linux-sunxi@lists.linux.dev,
-	linux-arm-kernel@lists.infradead.org
-Subject: [PATCH 5/5] arm64: dts: allwinner: h616: add IOMMU node
-Date: Fri, 31 May 2024 00:38:00 +0100
-Message-Id: <20240530233800.27705-6-andre.przywara@arm.com>
-X-Mailer: git-send-email 2.35.8
-In-Reply-To: <20240530233800.27705-1-andre.przywara@arm.com>
-References: <20240530233800.27705-1-andre.przywara@arm.com>
+	s=arc-20240116; t=1717117285; c=relaxed/simple;
+	bh=Ok5WtKpA99niKOAeQZIUoy/NxG0jU4SaVokvbGP0n+4=;
+	h=Message-ID:Date:MIME-Version:Cc:Subject:To:References:From:
+	 In-Reply-To:Content-Type; b=G1O3yAiFWFd8oCZH2dBj/yJaGu6y3C85/afamy42dMfj6KQtlAjYHW1IvYUYxRojwFi/9uzynqcFpiH1mTYi+mUZpCmx+zzDU4VRWto24M07x6/8tNic31YonUTcoNbAkAJOD8C4Y5e+YZtnlo8ms0P0q89ZttFpr9RFiDN2Qvk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=SbrIggOf; arc=none smtp.client-ip=198.175.65.11
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="SbrIggOf"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1717117284; x=1748653284;
+  h=message-id:date:mime-version:cc:subject:to:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=Ok5WtKpA99niKOAeQZIUoy/NxG0jU4SaVokvbGP0n+4=;
+  b=SbrIggOf5Fy0NTfZxzZy6BAHjdqom4h0Wi26dxqO6XYwhDuUJDZoFexZ
+   HqXwunGH6HmycVECy07RQLIOJ0qCOcmZsjhtNFCk3Mm0/VzTtL97y+kSb
+   d11RUwREoJDGw32pafk/xUxCvlvBRsHBmDxnVrZUturnMkcxbvjEfASLe
+   7YEn/s1/BRJ/NI5FydJpRjf3shK55jnPC1nZyWB9aFLVvlRkcmFrSYLJy
+   6ehbcMmTNZA/GRgSd0BTf+3nGI/NvAEjSfvzULa8GKOA3ovQKH/C/Sltj
+   lr93MSiLkwzWKKoDDStU0LoqFJeCW60DjDJGqTxK2ttaf2CQk6IyALOSl
+   Q==;
+X-CSE-ConnectionGUID: xatnva3oQ3CtPGzOYtvEAw==
+X-CSE-MsgGUID: 2gGW4aFGQuekInPpjk8bzQ==
+X-IronPort-AV: E=McAfee;i="6600,9927,11088"; a="24207079"
+X-IronPort-AV: E=Sophos;i="6.08,202,1712646000"; 
+   d="scan'208";a="24207079"
+Received: from fmviesa009.fm.intel.com ([10.60.135.149])
+  by orvoesa103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 May 2024 18:01:23 -0700
+X-CSE-ConnectionGUID: ek2BmyUbTJy0FItK1wPepw==
+X-CSE-MsgGUID: 9pojCTkBREqGRr18kKBuyg==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.08,202,1712646000"; 
+   d="scan'208";a="36103816"
+Received: from unknown (HELO [10.239.159.127]) ([10.239.159.127])
+  by fmviesa009.fm.intel.com with ESMTP; 30 May 2024 18:01:20 -0700
+Message-ID: <cb8f4a3f-75f4-436a-96dc-301b6d65a55c@linux.intel.com>
+Date: Fri, 31 May 2024 08:59:13 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla Thunderbird
+Cc: baolu.lu@linux.intel.com, iommu@lists.linux.dev,
+ linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 1/1] iommu: Make iommu_sva_domain_alloc() static
+To: Vasant Hegde <vasant.hegde@amd.com>, Joerg Roedel <joro@8bytes.org>,
+ Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
+ Jason Gunthorpe <jgg@ziepe.ca>, Kevin Tian <kevin.tian@intel.com>,
+ Jean-Philippe Brucker <jean-philippe@linaro.org>
+References: <20240528045458.81458-1-baolu.lu@linux.intel.com>
+ <fdc3bffa-7149-48a4-949a-dd469c6c2726@amd.com>
+Content-Language: en-US
+From: Baolu Lu <baolu.lu@linux.intel.com>
+In-Reply-To: <fdc3bffa-7149-48a4-949a-dd469c6c2726@amd.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-The Allwinner H616 contains a scatter-gather IOMMU connected to some
-video related devices. It's almost compatible to the one used in the H6,
-though with minor incompatibilities.
+On 5/30/24 4:52 PM, Vasant Hegde wrote:
+> On 5/28/2024 10:24 AM, Lu Baolu wrote:
+>> iommu_sva_domain_alloc() is only called in iommu-sva.c, hence make it
+>> static.
+>>
+>> On the other hand, iommu_sva_domain_alloc() should not return NULL anymore
+>> after commit <80af5a452024> ("iommu: Add ops->domain_alloc_sva()"), the
+>> removal of inline code avoids potential confusion.
+>>
+>> Fixes: 80af5a452024 ("iommu: Add ops->domain_alloc_sva()")
+>> Signed-off-by: Lu Baolu<baolu.lu@linux.intel.com>
+>> ---
+>>   include/linux/iommu.h     | 8 --------
+>>   drivers/iommu/iommu-sva.c | 6 ++++--
+>>   2 files changed, 4 insertions(+), 10 deletions(-)
+>>
+>> diff --git a/include/linux/iommu.h b/include/linux/iommu.h
+>> index 7bc8dff7cf6d..5cdd3d41b87b 100644
+>> --- a/include/linux/iommu.h
+>> +++ b/include/linux/iommu.h
+>> @@ -1527,8 +1527,6 @@ struct iommu_sva *iommu_sva_bind_device(struct device *dev,
+>>   					struct mm_struct *mm);
+>>   void iommu_sva_unbind_device(struct iommu_sva *handle);
+>>   u32 iommu_sva_get_pasid(struct iommu_sva *handle);
+>> -struct iommu_domain *iommu_sva_domain_alloc(struct device *dev,
+>> -					    struct mm_struct *mm);
+>>   #else
+>>   static inline struct iommu_sva *
+>>   iommu_sva_bind_device(struct device *dev, struct mm_struct *mm)
+>> @@ -1553,12 +1551,6 @@ static inline u32 mm_get_enqcmd_pasid(struct mm_struct *mm)
+>>   }
+>>   
+>>   static inline void mm_pasid_drop(struct mm_struct *mm) {}
+>> -
+>> -static inline struct iommu_domain *
+>> -iommu_sva_domain_alloc(struct device *dev, struct mm_struct *mm)
+>> -{
+>> -	return NULL;
+>> -}
+>>   #endif /* CONFIG_IOMMU_SVA */
+>>   
+>>   #ifdef CONFIG_IOMMU_IOPF
+>> diff --git a/drivers/iommu/iommu-sva.c b/drivers/iommu/iommu-sva.c
+>> index 18a35e798b72..25e581299226 100644
+>> --- a/drivers/iommu/iommu-sva.c
+>> +++ b/drivers/iommu/iommu-sva.c
+>> @@ -10,6 +10,8 @@
+>>   #include "iommu-priv.h"
+>>   
+>>   static DEFINE_MUTEX(iommu_sva_lock);
+>> +static struct iommu_domain *iommu_sva_domain_alloc(struct device *dev,
+>> +						   struct mm_struct *mm);
+> If we move move iommu_sva_domain_alloc() before iommu_sva_bind_device() then we
+> can avoid this forward declaration.
 
-Add the DT node describing its resources, so that devices like the video
-or display engine can connect to it.
+Yeah, but that means moving 144 lines of code. That's why I went with
+this approach
 
-Signed-off-by: Andre Przywara <andre.przywara@arm.com>
----
- arch/arm64/boot/dts/allwinner/sun50i-h616.dtsi | 9 +++++++++
- 1 file changed, 9 insertions(+)
-
-diff --git a/arch/arm64/boot/dts/allwinner/sun50i-h616.dtsi b/arch/arm64/boot/dts/allwinner/sun50i-h616.dtsi
-index 9c1980e24cb21..44f04619a43ac 100644
---- a/arch/arm64/boot/dts/allwinner/sun50i-h616.dtsi
-+++ b/arch/arm64/boot/dts/allwinner/sun50i-h616.dtsi
-@@ -320,6 +320,15 @@ x32clk_fanout_pin: x32clk-fanout-pin {
- 			};
- 		};
- 
-+		iommu: iommu@30f0000 {
-+			compatible = "allwinner,sun50i-h616-iommu";
-+			reg = <0x030f0000 0x10000>;
-+			interrupts = <GIC_SPI 61 IRQ_TYPE_LEVEL_HIGH>;
-+			clocks = <&ccu CLK_BUS_IOMMU>;
-+			resets = <&ccu RST_BUS_IOMMU>;
-+			#iommu-cells = <1>;
-+		};
-+
- 		gic: interrupt-controller@3021000 {
- 			compatible = "arm,gic-400";
- 			reg = <0x03021000 0x1000>,
--- 
-2.35.8
-
+Best regards,
+baolu
