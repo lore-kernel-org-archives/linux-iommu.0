@@ -1,47 +1,48 @@
 Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.10])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9D91213D2A7
-	for <iommu@lists.linux.dev>; Tue,  4 Jun 2024 01:53:56 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3EC6D13D608
+	for <iommu@lists.linux.dev>; Tue,  4 Jun 2024 01:53:59 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.10
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1717466038; cv=none; b=S20GMdz26RqZY3WTKXuk+BuO3EKLhc71piBlry2nUGxx4kYRTBVjPCoNttSUbHd4G3BOR/mww81GZba1GOLYiJwP18kLeN/dhx/nMfIY6YKKBWwdgZnmv/mH9M4l3O7YNoHV4ENrp/lRVLGIJK03l0s/RnYeFW0x7Z+qfDyuiAg=
+	t=1717466040; cv=none; b=CIP17u+Zfr80NYlCdZdKXKaF3l0kDOwd1u9eXztGSPw2Q1FSjDL9lLzrhj+tt3Cm0p6DQR7FrGp2UWNnDgmfuEGeFX6ZGh5VNN2eEzDbDHdKNp5csnwFCoszoCkdxNbX5mRB207gHIHfGue+uPHtXBTzUyAxilckT8N5S6sXDAc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1717466038; c=relaxed/simple;
-	bh=FDw/JYGsFECGdpr3U7icWMaqh/hY73ji20ol+xtCKUk=;
-	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version; b=JsciptzUJ3YwIy2AqP6Rhy8mLYOLwxTb3bfPQIttci/f/DYDPx4JvpAtZLwlxemqMs+eheJn9eNsq80+gqFZXJ71p6sGqA6I1jcQp2jLt7EloVRFSHX3xoJcMMdjV9/LvXc6Qb5Tw+aso/YJiRr17bjaG0C31+grdr7ptkKzLBQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=icHwdoW+; arc=none smtp.client-ip=192.198.163.10
+	s=arc-20240116; t=1717466040; c=relaxed/simple;
+	bh=WX+m07wt3DtPAOjU2K7TAng/knQriugPLDZHnttGpjU=;
+	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
+	 MIME-Version; b=gSXrDQAXiDWDIs6ou+wuT80IlyBB87V4CRPPg9s6pKRqxsE6VnLSp/RQRYRqMq4u+Kdr3dgGA0QnAAvzaNzzmbdB/oVCBlN1UVnaj9DKo8BI8nWZgs9gWZwKohx+De5BFA+SSUBcWO0pVIs6VPnPqM3FW5xTUMCnGT0qipnbCgs=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=BU589C/v; arc=none smtp.client-ip=192.198.163.10
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="icHwdoW+"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="BU589C/v"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1717466036; x=1749002036;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=FDw/JYGsFECGdpr3U7icWMaqh/hY73ji20ol+xtCKUk=;
-  b=icHwdoW+rcYLvTwyqajAAzwd8oFHSN0N0gZlhnVz3HJTsBF77ClJvXWz
-   aVwUmMjVp8BacY+rwqJ7fmmGHn2Ttng647+vZryW6wbWhU/RbG4lSoGua
-   88UXs+FYGaXVwQvIyl93YV/+Ve1bReKOX2rKiLRYBx+vUd6kHdEYPxhuB
-   l3f2fv86ZSdB1BZ8320abSWnSRAjhHFGIK85wK6bOqH9Uv1HdG7lcxAjK
-   dGsbl4fnNOWaZTXGjKehPR5D9UkS6IxzHZi4tYB2R6Xmw4ypQebXjG44e
-   CCwiSlGZVCgXi7pgkTa3t9ulK1lq7T+y7WoyoR4zt8bp6Q5uFj4mhjI3L
-   A==;
-X-CSE-ConnectionGUID: j6+k9d6yTVadnbWC8F8xsw==
-X-CSE-MsgGUID: PwTbjS2GSmeD56aPo3QE6w==
-X-IronPort-AV: E=McAfee;i="6600,9927,11092"; a="25384821"
+  t=1717466039; x=1749002039;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=WX+m07wt3DtPAOjU2K7TAng/knQriugPLDZHnttGpjU=;
+  b=BU589C/vPAOoNBvrH6WC6U9I2pgPi/J23NzGoZfq/0DuF6GERug4w++U
+   eKdMh+8JZbEm0nqrKQ29GdkuGR+fmJJt26m3B/FtZ5FLeP/S+8nvPG4tF
+   Wv/VXfGfaAP/tnbLnr/iUoQfNgFVIYeXLeUMeqN2LBvGTeKFiblRMUS3Z
+   2KiCMhxuhwc7c9vyopxPzT50lCkj01FMmi1VvYlBXitgVu41wRR2Iyqth
+   pkT4otcdDdMMowIqIv7ZovZM95mKSUWhgMKrEXedbd7pe1WcSPXG81ZOf
+   6SGbd1MKwXRmN3ngEqi26BMbc5VEndmB6fZxAU0II1m08BNF2IsSMM6p8
+   Q==;
+X-CSE-ConnectionGUID: 8APK0dvXQFi3Vaf1dZVBEw==
+X-CSE-MsgGUID: KVgmQTxJSguPBByasMFZMA==
+X-IronPort-AV: E=McAfee;i="6600,9927,11092"; a="25384839"
 X-IronPort-AV: E=Sophos;i="6.08,212,1712646000"; 
-   d="scan'208";a="25384821"
+   d="scan'208";a="25384839"
 Received: from orviesa008.jf.intel.com ([10.64.159.148])
-  by fmvoesa104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Jun 2024 18:53:54 -0700
-X-CSE-ConnectionGUID: puBVw6JySxmadLGN/9Xe0g==
-X-CSE-MsgGUID: tG6p/y8uStKjcWtzoSQveg==
+  by fmvoesa104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Jun 2024 18:53:59 -0700
+X-CSE-ConnectionGUID: H2d7q3d/ToWaibEpldtEew==
+X-CSE-MsgGUID: e4akGPgXS7ya4weofPLdUA==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.08,212,1712646000"; 
-   d="scan'208";a="37661769"
+   d="scan'208";a="37661779"
 Received: from unknown (HELO allen-box.sh.intel.com) ([10.239.159.127])
-  by orviesa008.jf.intel.com with ESMTP; 03 Jun 2024 18:53:49 -0700
+  by orviesa008.jf.intel.com with ESMTP; 03 Jun 2024 18:53:54 -0700
 From: Lu Baolu <baolu.lu@linux.intel.com>
 To: Joerg Roedel <joro@8bytes.org>,
 	Will Deacon <will@kernel.org>,
@@ -64,10 +65,12 @@ Cc: Yi Liu <yi.l.liu@intel.com>,
 	dri-devel@lists.freedesktop.org,
 	linux-kernel@vger.kernel.org,
 	Lu Baolu <baolu.lu@linux.intel.com>
-Subject: [PATCH v2 00/22] iommu: Refactoring domain allocation interface
-Date: Tue,  4 Jun 2024 09:51:12 +0800
-Message-Id: <20240604015134.164206-1-baolu.lu@linux.intel.com>
+Subject: [PATCH v2 01/22] iommu: Add iommu_user_domain_alloc() interface
+Date: Tue,  4 Jun 2024 09:51:13 +0800
+Message-Id: <20240604015134.164206-2-baolu.lu@linux.intel.com>
 X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20240604015134.164206-1-baolu.lu@linux.intel.com>
+References: <20240604015134.164206-1-baolu.lu@linux.intel.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -76,114 +79,104 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-The IOMMU subsystem has undergone some changes, including the removal
-of iommu_ops from the bus structure. Consequently, the existing domain
-allocation interface, which relies on a bus type argument, is no longer
-relevant:
+Commit <909f4abd1097> ("iommu: Add new iommu op to create domains owned
+by userspace") added a dedicated iommu op to allocate a user domain.
+While IOMMUFD has already made use of this callback, other frameworks
+like vfio/type1 and vDPA still use the paging domain allocation interface.
 
-    struct iommu_domain *iommu_domain_alloc(struct bus_type *bus)
+Add a new interface named iommu_user_domain_alloc(), which indicates the
+allocation of a domain for device DMA managed by user space driver. All
+device passthrough frameworks could use this interface for their domain
+allocation.
 
-This series is designed to refactor the use of this interface. It
-proposes two new interfaces to replace iommu_domain_alloc():
+Although it is expected that all iommu drivers could implement their own
+domain_alloc_user ops, most drivers haven't implemented it yet. Rollback
+to the paging domain allocation interface if the iommu driver hasn't
+implemented this op yet.
 
-- iommu_user_domain_alloc(): This interface is intended for allocating
-  iommu domains managed by userspace for device passthrough scenarios,
-  such as those used by iommufd, vfio, and vdpa. It clearly indicates
-  that the domain is for user-managed device DMA.
+Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
+---
+ include/linux/iommu.h |  6 ++++++
+ drivers/iommu/iommu.c | 42 ++++++++++++++++++++++++++++++++++++++++++
+ 2 files changed, 48 insertions(+)
 
-  If an IOMMU driver does not implement iommu_ops->domain_alloc_user,
-  this interface will rollback to the generic paging domain allocation.
-
-- iommu_paging_domain_alloc(): This interface is for allocating iommu
-  domains managed by kernel drivers for kernel DMA purposes. It takes a
-  device pointer as a parameter, which better reflects the current
-  design of the IOMMU subsystem.
-
-The majority of device drivers currently using iommu_domain_alloc() do
-so to allocate a domain for a specific device and then attach that
-domain to the device. These cases can be straightforwardly migrated to
-the new interfaces.
-
-The drm/tegra driver is a bit different in that the device pointer
-passed to the helper, which allocates the iommu domain, is not the one
-that will be used for the kernel DMA API. Move the existing logic in
-iommu_domain_alloc() into the driver to ensure it works as intended.
-
-Now that all consumers of iommu_domain_alloc() have switched to the new
-interfaces, we can finally remove iommu_domain_alloc(). This removal
-paves the way for the IOMMU subsystem to support multiple iommu drivers.
-Additionally, the individual iommu driver implementation for domain
-allocation could also be simplified, as there will always be a valid
-device pointer passed along the path.
-
-The whole series is also available on GitHub:
-https://github.com/LuBaolu/intel-iommu/commits/iommu-domain-allocation-refactor-v2
-
-Change log:
-
-v2:
- - Drop the vt-d patches which implement paging domain support from this
-   series. I will post them in a separate series later.
- - Convert all drivers that call iommu_domain_alloc() to use the new
-   interface and remove iommu_domain_alloc() from the tree.
- - For the drm/msm driver, make the code compatible with the no-IOMMU
-   case.
- - Various cleanups and refinements.
-
-v1: https://lore.kernel.org/linux-iommu/20240529053250.91284-1-baolu.lu@linux.intel.com/
-
-Lu Baolu (21):
-  iommu: Add iommu_user_domain_alloc() interface
-  iommufd: Use iommu_user_domain_alloc()
-  vfio/type1: Use iommu_user_domain_alloc()
-  vhost-vdpa: Use iommu_user_domain_alloc()
-  iommu: Add iommu_paging_domain_alloc() interface
-  drm/msm: Use iommu_paging_domain_alloc()
-  drm/nouveau/tegra: Use iommu_paging_domain_alloc()
-  gpu: host1x: Use iommu_paging_domain_alloc()
-  media: nvidia: tegra: Use iommu_paging_domain_alloc()
-  media: venus: firmware: Use iommu_paging_domain_alloc()
-  ath10k: Use iommu_paging_domain_alloc()
-  wifi: ath11k: Use iommu_paging_domain_alloc()
-  remoteproc: Use iommu_paging_domain_alloc()
-  soc/fsl/qbman: Use iommu_paging_domain_alloc()
-  RDMA/usnic: Use iommu_paging_domain_alloc()
-  iommu/vt-d: Add helper to allocate paging domain
-  ARM: dma-mapping: Use iommu_paging_domain_alloc()
-  drm/rockchip: Use iommu_paging_domain_alloc()
-  drm/tegra: Remove call to iommu_domain_alloc()
-  iommu: Remove iommu_present()
-  iommu: Remove iommu_domain_alloc()
-
-Robin Murphy (1):
-  ARM: dma-mapping: Pass device to arm_iommu_create_mapping()
-
- include/linux/iommu.h                         |  18 +--
- arch/arm/include/asm/dma-iommu.h              |   2 +-
- arch/arm/mm/dma-mapping.c                     |  12 +-
- drivers/gpu/drm/exynos/exynos_drm_dma.c       |   2 +-
- drivers/gpu/drm/msm/msm_iommu.c               |   7 +-
- .../drm/nouveau/nvkm/engine/device/tegra.c    |   4 +-
- drivers/gpu/drm/rockchip/rockchip_drm_drv.c   |  10 +-
- drivers/gpu/drm/tegra/drm.c                   |  34 ++++--
- drivers/gpu/host1x/dev.c                      |   7 +-
- drivers/infiniband/hw/usnic/usnic_uiom.c      |   6 +-
- drivers/iommu/intel/iommu.c                   |  87 +++++++++++++--
- drivers/iommu/iommu.c                         | 103 +++++++++---------
- drivers/iommu/iommufd/hw_pagetable.c          |  20 +---
- drivers/iommu/ipmmu-vmsa.c                    |   3 +-
- drivers/iommu/mtk_iommu_v1.c                  |   3 +-
- .../media/platform/nvidia/tegra-vde/iommu.c   |   7 +-
- drivers/media/platform/qcom/venus/firmware.c  |   6 +-
- drivers/media/platform/ti/omap3isp/isp.c      |   2 +-
- drivers/net/wireless/ath/ath10k/snoc.c        |   6 +-
- drivers/net/wireless/ath/ath11k/ahb.c         |   6 +-
- drivers/remoteproc/remoteproc_core.c          |   6 +-
- drivers/soc/fsl/qbman/qman_portal.c           |   5 +-
- drivers/vfio/vfio_iommu_type1.c               |   7 +-
- drivers/vhost/vdpa.c                          |  14 +--
- 24 files changed, 231 insertions(+), 146 deletions(-)
-
+diff --git a/include/linux/iommu.h b/include/linux/iommu.h
+index 7bc8dff7cf6d..6648b2415474 100644
+--- a/include/linux/iommu.h
++++ b/include/linux/iommu.h
+@@ -780,6 +780,7 @@ extern bool iommu_present(const struct bus_type *bus);
+ extern bool device_iommu_capable(struct device *dev, enum iommu_cap cap);
+ extern bool iommu_group_has_isolated_msi(struct iommu_group *group);
+ extern struct iommu_domain *iommu_domain_alloc(const struct bus_type *bus);
++struct iommu_domain *iommu_user_domain_alloc(struct device *dev, u32 flags);
+ extern void iommu_domain_free(struct iommu_domain *domain);
+ extern int iommu_attach_device(struct iommu_domain *domain,
+ 			       struct device *dev);
+@@ -1086,6 +1087,11 @@ static inline struct iommu_domain *iommu_domain_alloc(const struct bus_type *bus
+ 	return NULL;
+ }
+ 
++static inline struct iommu_domain *iommu_user_domain_alloc(struct device *dev, u32 flags)
++{
++	return ERR_PTR(-ENODEV);
++}
++
+ static inline void iommu_domain_free(struct iommu_domain *domain)
+ {
+ }
+diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
+index 9df7cc75c1bc..f1416892ef8e 100644
+--- a/drivers/iommu/iommu.c
++++ b/drivers/iommu/iommu.c
+@@ -2032,6 +2032,48 @@ struct iommu_domain *iommu_domain_alloc(const struct bus_type *bus)
+ }
+ EXPORT_SYMBOL_GPL(iommu_domain_alloc);
+ 
++/**
++ * iommu_user_domain_alloc() - Allocate a user domain
++ * @dev: device for which the domain is allocated
++ * @flags: iommufd_hwpt_alloc_flags defined in uapi/linux/iommufd.h
++ *
++ * Allocate a user domain which will be managed by a userspace driver. Return
++ * allocated domain if successful, or a ERR pointer for failure.
++ */
++struct iommu_domain *iommu_user_domain_alloc(struct device *dev, u32 flags)
++{
++	struct iommu_domain *domain;
++	const struct iommu_ops *ops;
++
++	if (!dev_has_iommu(dev))
++		return ERR_PTR(-ENODEV);
++
++	ops = dev_iommu_ops(dev);
++	if (ops->domain_alloc_user) {
++		domain = ops->domain_alloc_user(dev, flags, NULL, NULL);
++		if (IS_ERR(domain))
++			return domain;
++
++		domain->type = IOMMU_DOMAIN_UNMANAGED;
++		domain->owner = ops;
++		domain->pgsize_bitmap = ops->pgsize_bitmap;
++		domain->ops = ops->default_domain_ops;
++
++		return domain;
++	}
++
++	/*
++	 * The iommu driver doesn't support domain_alloc_user callback.
++	 * Rollback to a UNMANAGED paging domain which doesn't support
++	 * the allocation flags.
++	 */
++	if (flags)
++		return ERR_PTR(-EOPNOTSUPP);
++
++	return __iommu_domain_alloc(ops, dev, IOMMU_DOMAIN_UNMANAGED);
++}
++EXPORT_SYMBOL_GPL(iommu_user_domain_alloc);
++
+ void iommu_domain_free(struct iommu_domain *domain)
+ {
+ 	if (domain->type == IOMMU_DOMAIN_SVA)
 -- 
 2.34.1
 
