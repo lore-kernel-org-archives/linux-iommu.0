@@ -1,103 +1,99 @@
 Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id B776514658E
-	for <iommu@lists.linux.dev>; Tue,  4 Jun 2024 12:39:27 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id CC7B11465BE
+	for <iommu@lists.linux.dev>; Tue,  4 Jun 2024 12:39:45 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1717504769; cv=none; b=KbOaezEM9heCcvRRQ4dNVNelLlgNYVBczzoq8E9Kyh6BNT8ff/scgzS22R4Qz7dG8t3FTAdtIeypwESxEStKlB9My4SXEBGz6SN0FIKmexdlcBjA50g5D/xSqEBr/Za2u2GSRPN95sbar8QXxeiUX/Ug9PMInzDP++IKNdDOJT0=
+	t=1717504788; cv=none; b=TxCAuacO9TjFqK6G2XygPYanbARTpLcwpP4/55Ahy59ohiDe3XTlA8yE78k3SDZmaV/KTMoUYYGqjH/4MzTDmmF/tK90Pm3gxStQWYFZ4wlqHPGt4qFlcrgocvGbHhWs/CUFB8hjn7WgaUeb9Kn5pjIr8zloKY9nE5z4stFkXVI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1717504769; c=relaxed/simple;
-	bh=CJQznAmjsNRBqVvAYQkJGFd2j6BoG6NkYtH9+N8AqEA=;
-	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version; b=UmLFuPMXO+hXb3wcX4SKQ7SqT6i3TXNeaDyVp1c173CWYixf5mYDcnS6AHtGygqo2sJmpcexPOupOLJXYNQheDgOygdoNDmVQ6IYMEroUWq5JE2PkmMR84/TIkZnckCpK2ANfk1boCZi5Vbb/MhfnQRqLelCct4PZq/dmhg4q9w=
+	s=arc-20240116; t=1717504788; c=relaxed/simple;
+	bh=uTsztnqbT4iOcXiermoEhzWU5FdfFGzOa8AsZ4gZ2Q8=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=rGCxmkwlN3R/D7AOK0I1XKfmH+Zr1XZj3EA6vlDJGwDORfNyO6+H93+MZqRU7KZx6Ke/0ihuBpY0F/wWoFSWmsyP/8nc5BGlUTUDnY5N4CPvupXI5fTG1QZfFa3PQYzEjaZB2CEtf9yLiZ9yMkBf1hITHnwDjIT7r1UmGUW2F3I=
 ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; arc=none smtp.client-ip=217.140.110.172
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
 Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 683761042;
-	Tue,  4 Jun 2024 05:39:51 -0700 (PDT)
-Received: from e121345-lin.cambridge.arm.com (e121345-lin.cambridge.arm.com [10.1.196.40])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPA id 508A33F64C;
-	Tue,  4 Jun 2024 05:39:26 -0700 (PDT)
-From: Robin Murphy <robin.murphy@arm.com>
-To: joro@8bytes.org
-Cc: will@kernel.org,
-	hch@infradead.org,
-	iommu@lists.linux.dev,
-	linux-kernel@vger.kernel.org
-Subject: [PATCH] iommu/dma: Prune redundant pgprot arguments
-Date: Tue,  4 Jun 2024 13:39:09 +0100
-Message-Id: <c2a81b72df59a71a13f8bad94f834e627c4c93dd.1717504749.git.robin.murphy@arm.com>
-X-Mailer: git-send-email 2.39.2.101.g768bb238c484.dirty
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id A57451063;
+	Tue,  4 Jun 2024 05:40:09 -0700 (PDT)
+Received: from [10.1.196.40] (e121345-lin.cambridge.arm.com [10.1.196.40])
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 5E75D3F64C;
+	Tue,  4 Jun 2024 05:39:41 -0700 (PDT)
+Message-ID: <f688bf74-7d12-459c-b8b7-b85aaafc3785@arm.com>
+Date: Tue, 4 Jun 2024 13:39:36 +0100
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH] dma: direct: Optimize the code for the dma_direct_free
+ function
+To: kunyu <kunyu@nfschina.com>, hch@lst.de, m.szyprowski@samsung.com
+Cc: iommu@lists.linux.dev, linux-kernel@vger.kernel.org
+References: <20240604084100.51464-1-kunyu@nfschina.com>
+From: Robin Murphy <robin.murphy@arm.com>
+Content-Language: en-GB
+In-Reply-To: <20240604084100.51464-1-kunyu@nfschina.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-Somewhere amongst previous refactorings, the pgprot value in
-__iommu_dma_alloc_noncontiguous() became entirely unused, and the one
-used in iommu_dma_alloc_remap() can be computed locally rather than by
-its one remaining caller. Clean 'em up.
+On 04/06/2024 9:41 am, kunyu wrote:
+> The 'is_swiotlb-for-alloc' and 'dev_isdma_coherent' judgment functions
+> need to be called multiple times, so they are adjusted to variable
+> judgment, which can improve code conciseness.
+> 
+> Signed-off-by: kunyu <kunyu@nfschina.com>
+> ---
+>   kernel/dma/direct.c | 9 +++++----
+>   1 file changed, 5 insertions(+), 4 deletions(-)
 
-Signed-off-by: Robin Murphy <robin.murphy@arm.com>
----
- drivers/iommu/dma-iommu.c | 16 ++++++----------
- 1 file changed, 6 insertions(+), 10 deletions(-)
+It's hardly concise to add *more* code than was there before... :/
 
-diff --git a/drivers/iommu/dma-iommu.c b/drivers/iommu/dma-iommu.c
-index f731e4b2a417..a30a2f3c8f97 100644
---- a/drivers/iommu/dma-iommu.c
-+++ b/drivers/iommu/dma-iommu.c
-@@ -939,8 +939,7 @@ static struct page **__iommu_dma_alloc_pages(struct device *dev,
-  * but an IOMMU which supports smaller pages might not map the whole thing.
-  */
- static struct page **__iommu_dma_alloc_noncontiguous(struct device *dev,
--		size_t size, struct sg_table *sgt, gfp_t gfp, pgprot_t prot,
--		unsigned long attrs)
-+		size_t size, struct sg_table *sgt, gfp_t gfp, unsigned long attrs)
- {
- 	struct iommu_domain *domain = iommu_get_dma_domain(dev);
- 	struct iommu_dma_cookie *cookie = domain->iova_cookie;
-@@ -1014,15 +1013,14 @@ static struct page **__iommu_dma_alloc_noncontiguous(struct device *dev,
- }
- 
- static void *iommu_dma_alloc_remap(struct device *dev, size_t size,
--		dma_addr_t *dma_handle, gfp_t gfp, pgprot_t prot,
--		unsigned long attrs)
-+		dma_addr_t *dma_handle, gfp_t gfp, unsigned long attrs)
- {
- 	struct page **pages;
- 	struct sg_table sgt;
- 	void *vaddr;
-+	pgprot_t prot = dma_pgprot(dev, PAGE_KERNEL, attrs);
- 
--	pages = __iommu_dma_alloc_noncontiguous(dev, size, &sgt, gfp, prot,
--						attrs);
-+	pages = __iommu_dma_alloc_noncontiguous(dev, size, &sgt, gfp, attrs);
- 	if (!pages)
- 		return NULL;
- 	*dma_handle = sgt.sgl->dma_address;
-@@ -1049,8 +1047,7 @@ static struct sg_table *iommu_dma_alloc_noncontiguous(struct device *dev,
- 	if (!sh)
- 		return NULL;
- 
--	sh->pages = __iommu_dma_alloc_noncontiguous(dev, size, &sh->sgt, gfp,
--						    PAGE_KERNEL, attrs);
-+	sh->pages = __iommu_dma_alloc_noncontiguous(dev, size, &sh->sgt, gfp, attrs);
- 	if (!sh->pages) {
- 		kfree(sh);
- 		return NULL;
-@@ -1619,8 +1616,7 @@ static void *iommu_dma_alloc(struct device *dev, size_t size,
- 
- 	if (gfpflags_allow_blocking(gfp) &&
- 	    !(attrs & DMA_ATTR_FORCE_CONTIGUOUS)) {
--		return iommu_dma_alloc_remap(dev, size, handle, gfp,
--				dma_pgprot(dev, PAGE_KERNEL, attrs), attrs);
-+		return iommu_dma_alloc_remap(dev, size, handle, gfp, attrs);
- 	}
- 
- 	if (IS_ENABLED(CONFIG_DMA_DIRECT_REMAP) &&
--- 
-2.39.2.101.g768bb238c484.dirty
+Personally I don't think shaving a handful of characters off each 
+invocation has any positive impact on readability in this case, while 
+the extra visual indirection, and breaking consistency with the rest of 
+this file, definitely has a negative one.
 
+Also note that these "functions" are already just inline wrappers around 
+a single variable dereference - for my arm64 build at least, this patch 
+has no effect at all on the generated object code, since the compiler 
+can still optimise out the locals (so at least it doesn't make things 
+*worse* by forcing it to allocate a larger stack frame).
+
+Thanks,
+Robin.
+
+> diff --git a/kernel/dma/direct.c b/kernel/dma/direct.c
+> index 4d543b1e9d57..041e316ad4c0 100644
+> --- a/kernel/dma/direct.c
+> +++ b/kernel/dma/direct.c
+> @@ -315,23 +315,24 @@ void dma_direct_free(struct device *dev, size_t size,
+>   		void *cpu_addr, dma_addr_t dma_addr, unsigned long attrs)
+>   {
+>   	unsigned int page_order = get_order(size);
+> +	bool swiotlb_for_alloc = is_swiotlb_for_alloc(dev);
+> +	bool is_dma_coherent = dev_is_dma_coherent(dev);
+>   
+>   	if ((attrs & DMA_ATTR_NO_KERNEL_MAPPING) &&
+> -	    !force_dma_unencrypted(dev) && !is_swiotlb_for_alloc(dev)) {
+> +	    !force_dma_unencrypted(dev) && !swiotlb_for_alloc) {
+>   		/* cpu_addr is a struct page cookie, not a kernel address */
+>   		dma_free_contiguous(dev, cpu_addr, size);
+>   		return;
+>   	}
+>   
+>   	if (IS_ENABLED(CONFIG_ARCH_HAS_DMA_ALLOC) &&
+> -	    !dev_is_dma_coherent(dev) &&
+> -	    !is_swiotlb_for_alloc(dev)) {
+> +	    !is_dma_coherent && !swiotlb_for_alloc) {
+>   		arch_dma_free(dev, size, cpu_addr, dma_addr, attrs);
+>   		return;
+>   	}
+>   
+>   	if (IS_ENABLED(CONFIG_DMA_GLOBAL_POOL) &&
+> -	    !dev_is_dma_coherent(dev)) {
+> +	    !is_dma_coherent) {
+>   		if (!dma_release_from_global_coherent(page_order, cpu_addr))
+>   			WARN_ON_ONCE(1);
+>   		return;
