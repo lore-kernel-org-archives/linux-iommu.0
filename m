@@ -1,151 +1,188 @@
-Received: from NAM04-MW2-obe.outbound.protection.outlook.com (mail-mw2nam04on2042.outbound.protection.outlook.com [40.107.101.42])
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 63010136E2B;
-	Tue,  4 Jun 2024 06:21:07 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.101.42
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1717482068; cv=fail; b=iqa2Hzf4o/5zzg/4x5YLi2E9QNC0S8IF2kWlCfRjDeo0VzznpB0ooG0+fK7CqqiXGKXS9p+8vXsNFiuScL+tigybUhS+DBNqBoGq2kqnpMrv+Xw/KxjQkI8yH+EEaL7GhtcOABBYIDiYwQHKCNNSMC9yA23eRniyNAEg+4CHuGQ=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1717482068; c=relaxed/simple;
-	bh=A9NheWFefkP0Ut2Gt9KZk7TEh1cwJUsB8XazKgC/P0I=;
-	h=Date:From:To:CC:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=nivjZIKtQAGestW7u4jlS6n5gUAN+1D0QPT5wBawGF3JO9eZ3jA3uYJvUdtwVfBTC4aGRBcKUN3ZIpyc2yxioebvvyFtjmwps1ScJGEaKbii8Wzfam4dd3VZz5f31VVqgn1kNcS+5Z8VBof1dKwvQvpmQejb8VUSy10kM5J1MzU=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=Bh3QoHe6; arc=fail smtp.client-ip=40.107.101.42
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8F9712209B
+	for <iommu@lists.linux.dev>; Tue,  4 Jun 2024 07:03:10 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.12
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1717484592; cv=none; b=mimeU4m8b6wkof19XSXL4vuPGItZcN20/O35+nQdux2impwiLYPeqgtbmz9FZnKmV3eaWPFslRY3ecyffol8dnLPS1bejBKJouyGuW3Cl5kTBJMnZmV0UUYsgBXaVpBd6eip7/MVj3wEI9uNjPB7oMakzRcJHB/r+cZowsVwwzc=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1717484592; c=relaxed/simple;
+	bh=FmtZE0QDhnWtssc5nt4OLbqQeX0Q//9bpFfVcjIAA6Y=;
+	h=Message-ID:Date:MIME-Version:Cc:Subject:To:References:From:
+	 In-Reply-To:Content-Type; b=lMVuEBJ5jE0Zue6y1C0BrDlxL4KNWQI/0Cf1iQxBNxrqOxgaqo3iqwwbM6jYx/IZI3rvuvZXnI9LWZBOOAya7dWWURbnmeYw3ALkqpH6SxOwOjIEyHZ9iYKiq+Dl1DPsCjUGEF8EYnUcE/edZrDYVchG1J1nDAV7GcmpK8exhy0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=ZU1RH9Lr; arc=none smtp.client-ip=192.198.163.12
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="Bh3QoHe6"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=UBuX8QUJvpAp7w2q0FyECdNQX/rWFr7JC3VI1q7LeUSyd8DqZlY5himZs2ILbIPQB/KUzPSyBeK1C/53pd6z4LKoJ0vmowyQyyUXNhwDfVWTrHjW5At3dfLcuqPENqQwjNH5eu/TRySf4lqQ6WRGdyKT+Qpvx75TzYs2kGXm+Og+KX5rXA849gixZ6c6c1xt31HrjcriwFhRnyJFyiw2Bsqai+XNLozla52fP3tKstnmJzWHXPPfB9ykcukFe4JLIh3DqnVppaHDiUHe+Xfo/jnlXDKvXRDfv4GPVlPFQ3ElGa9K6ExA3H9RGdgDdTCJex3Uzi53XFiCSblejgAJCA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=f0P9BPsbIiV8Q8xxFUU28BZ51N5F1Dq6g0/AfxRlpAM=;
- b=hVDj4VEPmvwHzKv6+8yDLA/1iuDAE75yNAq6WCuiUF84ACqTcrNGnd31uMuEDdbllUTJ4Banu2+QT5MNkUTRjafCt6Lo97N3K88mKZRw2knHJmll00vd+Zh5mJp5hW30F8xaCrnZt/P3GD0NLu9hnyP/EJ2kp0xTXA3w6Rn2A5PM+OznY//kSOQGfPdovtk1ZEBbU7TVuovC/RlNz1APvs+pPsoBdBec1lBfzh16jpyCb0H57czS82Cgtf+BpEtxO0Gz4pims5Wgp5osT/m6Kg3vvivBghkfUbLBsLNd+xLWDnsi2F/l3fJ7MysmBC5LO6kbfLsvu/s+aeJe9te1Cw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 216.228.117.161) smtp.rcpttodomain=lists.linux.dev smtp.mailfrom=nvidia.com;
- dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
- dkim=none (message not signed); arc=none (0)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=f0P9BPsbIiV8Q8xxFUU28BZ51N5F1Dq6g0/AfxRlpAM=;
- b=Bh3QoHe6dkL4CU9zs2RInJXxkBOCJO8k/MQv7RRa5IpIXTQXdw7HPadRmEaRVGv1VkFM8fjRsItmeNs/JRwH6l+ZuftVHRfI8QAWQXMbby4LfsKrDudVTSTJ3tCI3JTiOG7ofHVLRKk33lCzxRstQ26VaFF6FqlhjqsQULL41qtHvxmbKB5srPCuze/xMKpw/l0lBYYVtysjO3qJGCYJtYYNgMs0aCMFfAItKwL0YzaOPDorf2MbGrwFoWtAT9jKkeKU8u9UNR6XwTome6WS+6/SjUabdK1LFXcxYFeL1NXeLK9eWvRvwEXU+Se/F2o+uEROMT8XYjJW1vy51qyP0g==
-Received: from DS7PR03CA0037.namprd03.prod.outlook.com (2603:10b6:5:3b5::12)
- by CH3PR12MB9252.namprd12.prod.outlook.com (2603:10b6:610:1ba::9) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7633.25; Tue, 4 Jun
- 2024 06:21:04 +0000
-Received: from DS3PEPF0000C37E.namprd04.prod.outlook.com
- (2603:10b6:5:3b5:cafe::3d) by DS7PR03CA0037.outlook.office365.com
- (2603:10b6:5:3b5::12) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7633.30 via Frontend
- Transport; Tue, 4 Jun 2024 06:21:04 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.117.161)
- smtp.mailfrom=nvidia.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=nvidia.com;
-Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 216.228.117.161 as permitted sender) receiver=protection.outlook.com;
- client-ip=216.228.117.161; helo=mail.nvidia.com; pr=C
-Received: from mail.nvidia.com (216.228.117.161) by
- DS3PEPF0000C37E.mail.protection.outlook.com (10.167.23.8) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.7633.15 via Frontend Transport; Tue, 4 Jun 2024 06:21:04 +0000
-Received: from rnnvmail204.nvidia.com (10.129.68.6) by mail.nvidia.com
- (10.129.200.67) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1544.4; Mon, 3 Jun 2024
- 23:20:52 -0700
-Received: from rnnvmail201.nvidia.com (10.129.68.8) by rnnvmail204.nvidia.com
- (10.129.68.6) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1544.4; Mon, 3 Jun 2024
- 23:20:51 -0700
-Received: from Asurada-Nvidia (10.127.8.11) by mail.nvidia.com (10.129.68.8)
- with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1544.4 via Frontend
- Transport; Mon, 3 Jun 2024 23:20:51 -0700
-Date: Mon, 3 Jun 2024 23:20:49 -0700
-From: Nicolin Chen <nicolinc@nvidia.com>
-To: Jason Gunthorpe <jgg@nvidia.com>
-CC: <iommu@lists.linux.dev>, Joerg Roedel <joro@8bytes.org>,
-	<linux-arm-kernel@lists.infradead.org>, Robin Murphy <robin.murphy@arm.com>,
-	Will Deacon <will@kernel.org>, Eric Auger <eric.auger@redhat.com>,
-	Jean-Philippe Brucker <jean-philippe@linaro.org>, Moritz Fischer
-	<mdf@kernel.org>, Michael Shavit <mshavit@google.com>,
-	<patches@lists.linux.dev>, Shameerali Kolothum Thodi
-	<shameerali.kolothum.thodi@huawei.com>
-Subject: Re: [PATCH v8 13/14] iommu/arm-smmu-v3: Allow a PASID to be set when
- RID is IDENTITY/BLOCKED
-Message-ID: <Zl6yQYZe2ifxUY4a@Asurada-Nvidia>
-References: <0-v8-6f85cdc10ce7+563e-smmuv3_newapi_p2b_jgg@nvidia.com>
- <13-v8-6f85cdc10ce7+563e-smmuv3_newapi_p2b_jgg@nvidia.com>
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="ZU1RH9Lr"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1717484591; x=1749020591;
+  h=message-id:date:mime-version:cc:subject:to:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=FmtZE0QDhnWtssc5nt4OLbqQeX0Q//9bpFfVcjIAA6Y=;
+  b=ZU1RH9LrtgwL0PV5gPp6YZ6UoLVJryBrGn84SqSVFE/EKi6aMcoDYDp1
+   bVRW/F6odawXf3ZRaaYMmhdOOPO3N/XoL3bJO6YLHTwQT++jce6vXLcYF
+   esbCL1xwaiNO7Y8xoUlwrptViGVpRtoC6hgNhBk9tz8+lEHApdiLQgVyo
+   WpwHS2t8RLS7t3E/DjB4NUPEtuYpjL6RO1eRR966R+Tsmio5DZcSgXN2X
+   3cTflyRQzk3lh2wIkZZL059u9ZB/nJ7lTkHHR4l/qiCXHpGrR6HY0djqd
+   0r5uepHBkHmU2QVJWVfJC5W4vm3TQzKJQ4VThf3PYrBaN3KPTaApvZZy/
+   g==;
+X-CSE-ConnectionGUID: fXTewDuDRCeSy9jVou7iKg==
+X-CSE-MsgGUID: 2jiAhdSjSW64J6EleKZM/Q==
+X-IronPort-AV: E=McAfee;i="6600,9927,11092"; a="17843702"
+X-IronPort-AV: E=Sophos;i="6.08,213,1712646000"; 
+   d="scan'208";a="17843702"
+Received: from orviesa007.jf.intel.com ([10.64.159.147])
+  by fmvoesa106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Jun 2024 00:03:10 -0700
+X-CSE-ConnectionGUID: MRQ8mHfJTKyKyFvLEmuY2A==
+X-CSE-MsgGUID: VJWzSxe+RWeCmcJRzriSmg==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.08,213,1712646000"; 
+   d="scan'208";a="37776292"
+Received: from unknown (HELO [10.239.159.127]) ([10.239.159.127])
+  by orviesa007.jf.intel.com with ESMTP; 04 Jun 2024 00:03:08 -0700
+Message-ID: <74992544-de5d-40a3-a68d-7a9bcd03ae71@linux.intel.com>
+Date: Tue, 4 Jun 2024 15:01:00 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: inline
-In-Reply-To: <13-v8-6f85cdc10ce7+563e-smmuv3_newapi_p2b_jgg@nvidia.com>
-X-NV-OnPremToCloud: ExternallySecured
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: DS3PEPF0000C37E:EE_|CH3PR12MB9252:EE_
-X-MS-Office365-Filtering-Correlation-Id: 8dbe21e9-4429-4fb1-713a-08dc845e835b
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam:
-	BCL:0;ARA:13230031|1800799015|7416005|376005|36860700004|82310400017;
-X-Microsoft-Antispam-Message-Info:
-	=?us-ascii?Q?d6shlFwYOaEDsIFlurkXArSsWEh5N7aLxTJusz3cJAj8kYbDT1dbDiSoi8dC?=
- =?us-ascii?Q?NkMBsLR7yep+jLswo7fssemtWPAyaG5aNwu7KWhPOKZcoIww5yXRTbKI808G?=
- =?us-ascii?Q?4IFQPY9unnBEfhZg6AJrIUnCgKu/L8nMb1g2hQAO3v9kDAMvY/KFUshDbMf6?=
- =?us-ascii?Q?U7Gnn489sAuntYym1i5d4nWJoTCxXLryCMk9ePJCYYyDeiGLqncPLpZQP8lq?=
- =?us-ascii?Q?B6IJke6Fg8h6t1zJfDjtB400mgEwKAlh5mhGv6lJ1QviorYqSpzknKULnWwC?=
- =?us-ascii?Q?D80XF93yz7lJZHTuBvUfG/baKeb9ClQfWpo/PGTNlKAY75WjjXmS52dV2nRp?=
- =?us-ascii?Q?D4eRXXaj4r35+H4lqQMTtakdmgRZMemTicYmXaX0YQXchaNOBbvApvap+L1E?=
- =?us-ascii?Q?soFMw3tNslCKvjrwuIaaBB40ab65vIfc35G5UKAiEEtqN8dclYKZLEtEMl8C?=
- =?us-ascii?Q?2z45sYWKEyWZlNlJhK0IXZhz6n29OOW48+SFwhKKtje9Ic+66FJLK2C7T/B6?=
- =?us-ascii?Q?sfYh1AcOBGLtm+5L/tcMC5OeAcNGFOkme4AldPjVhq6GTVAm4vY9HwLm1rjg?=
- =?us-ascii?Q?v3qIAuHVQbwrd2L3yNlSw92IaUPWGMJO5CQYpz+jCoUc1h620unOkRj2H35A?=
- =?us-ascii?Q?zWh4FqW5y5iChjF8ldItu2tXU4jevxROhIizjv3sRomNLxEgYX7yDJKceDMs?=
- =?us-ascii?Q?zSWMc1ce+vqbBOXtgATSchkhRuk+TJL0eXpSR90sONk/QoFgET7wr+/OaePl?=
- =?us-ascii?Q?SGm0M5NYvQguoFfbacmLesCSJqti/IT7rAHSyHv8F659KfEf8rAc3K9VQjGs?=
- =?us-ascii?Q?KUhDvQRrpoSHAF1IhJROlRdtDHmyJI07hs6RrwcN1rlGuAD+S9TnB/8cQNnT?=
- =?us-ascii?Q?SNSNdanVnrXP5GOo6S2qTbcGMzthwjgGT3QdRSdvo3Fxs5OxxWMUXVQL31A0?=
- =?us-ascii?Q?PqYKh0FvCG1QesaIgeOvZlAehhQX5nvlF3YfEzO44oJHCRzpY6irE+B/+UCr?=
- =?us-ascii?Q?2cahMka829CFk6+3WC+uHrKJ7+CWY8JHAjQPM4czI21ent9+Wi6JxtuTRiQ0?=
- =?us-ascii?Q?Xvzk5ckVgliggPoyIuWBYsjXy+nzmtsxZBDBZAduS55EM/jIXxzx4FpSqM2L?=
- =?us-ascii?Q?qKUebJBBC5+O1VynsrU5ojPs+rNlG3Ok7ZZID6n8UcnNizLwJwBIlynF2pXe?=
- =?us-ascii?Q?0e0LJHcihNECanEN1UhyVREIE9AbzArLN7b7DtmN9S7s000a7Z6IL4BL/+ba?=
- =?us-ascii?Q?DIvEdsfh0TWCir2epm/WlA5hBo9XF+9dfhrHx02/3l+681RkoBc6Cu504i7H?=
- =?us-ascii?Q?zgogh5OIEip/o3CI9Mhm7RszilWTSZfoX26JIVeP22dWLbn0YoWJJSndzRDU?=
- =?us-ascii?Q?NwS83mEpQh3GrpeC297I2f7CEEdo?=
-X-Forefront-Antispam-Report:
-	CIP:216.228.117.161;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc6edge2.nvidia.com;CAT:NONE;SFS:(13230031)(1800799015)(7416005)(376005)(36860700004)(82310400017);DIR:OUT;SFP:1101;
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 04 Jun 2024 06:21:04.3336
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 8dbe21e9-4429-4fb1-713a-08dc845e835b
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.117.161];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource:
-	DS3PEPF0000C37E.namprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: CH3PR12MB9252
+User-Agent: Mozilla Thunderbird
+Cc: baolu.lu@linux.intel.com, "iommu@lists.linux.dev"
+ <iommu@lists.linux.dev>,
+ "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH 1/2] iommu/vt-d: Support batching IOTLB/dev-IOTLB
+ invalidation commands
+To: "Zhang, Tina" <tina.zhang@intel.com>, "Tian, Kevin" <kevin.tian@intel.com>
+References: <20240517003728.251115-1-tina.zhang@intel.com>
+ <20240517003728.251115-2-tina.zhang@intel.com>
+ <2b390228-190c-4508-b98f-1811c54c9e5c@linux.intel.com>
+ <MW5PR11MB588165376224FEA74A0426D989FF2@MW5PR11MB5881.namprd11.prod.outlook.com>
+ <7440cd36-41e0-4705-a597-f2ce3f841a70@linux.intel.com>
+ <MW5PR11MB58814B632958A5776B6C31FF89F82@MW5PR11MB5881.namprd11.prod.outlook.com>
+Content-Language: en-US
+From: Baolu Lu <baolu.lu@linux.intel.com>
+In-Reply-To: <MW5PR11MB58814B632958A5776B6C31FF89F82@MW5PR11MB5881.namprd11.prod.outlook.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-On Mon, Jun 03, 2024 at 09:15:58PM -0300, Jason Gunthorpe wrote:
-> If the STE doesn't point to the CD table we can upgrade it by
-> reprogramming the STE with the appropriate S1DSS. We may also need to turn
-> on ATS at the same time.
+On 6/4/24 1:59 PM, Zhang, Tina wrote:
+>> -----Original Message-----
+>> From: Baolu Lu<baolu.lu@linux.intel.com>
+>> Sent: Tuesday, June 4, 2024 9:15 AM
+>> To: Zhang, Tina<tina.zhang@intel.com>; Tian, Kevin<kevin.tian@intel.com>
+>> Cc:baolu.lu@linux.intel.com;iommu@lists.linux.dev; linux-
+>> kernel@vger.kernel.org
+>> Subject: Re: [PATCH 1/2] iommu/vt-d: Support batching IOTLB/dev-IOTLB
+>> invalidation commands
+>>
+>> On 6/3/24 3:37 PM, Zhang, Tina wrote:
+>>>> -----Original Message-----
+>>>> From: Baolu Lu<baolu.lu@linux.intel.com>
+>>>> Sent: Sunday, May 19, 2024 5:43 PM
+>>>> To: Zhang, Tina<tina.zhang@intel.com>; Tian,
+>>>> Kevin<kevin.tian@intel.com>
+>>>> Cc:baolu.lu@linux.intel.com;iommu@lists.linux.dev; linux-
+>>>> kernel@vger.kernel.org
+>>>> Subject: Re: [PATCH 1/2] iommu/vt-d: Support batching IOTLB/dev-IOTLB
+>>>> invalidation commands
+>>>>
+>>>> On 5/17/24 8:37 AM, Tina Zhang wrote:
+>>>>> Introduce a new parameter batch_desc to the QI based IOTLB/dev-IOTLB
+>>>>> invalidation operations to support batching invalidation descriptors.
+>>>>> This batch_desc is a pointer to the descriptor entry in a batch cmds
+>>>>> buffer. If the batch_desc is NULL, it indicates that batch
+>>>>> submission is not being used, and descriptors will be submitted individually.
+>>>>>
+>>>>> Also fix an issue reported by checkpatch about "unsigned mask":
+>>>>>            "Prefer 'unsigned int' to bare use of 'unsigned'"
+>>>>>
+>>>>> Signed-off-by: Tina Zhang<tina.zhang@intel.com>
+>>>>> ---
+>>>>>     drivers/iommu/intel/cache.c | 33 +++++++++++-------
+>>>>>     drivers/iommu/intel/dmar.c  | 67 ++++++++++++++++++++-----------------
+>>>>>     drivers/iommu/intel/iommu.c | 27 +++++++++------
+>>>>>     drivers/iommu/intel/iommu.h | 21 ++++++++----
+>>>>>     drivers/iommu/intel/pasid.c | 20 ++++++-----
+>>>>>     5 files changed, 100 insertions(+), 68 deletions(-)
+>>>>>
+>>>>> diff --git a/drivers/iommu/intel/cache.c
+>>>>> b/drivers/iommu/intel/cache.c index e8418cdd8331..dcf5e0e6af17
+>>>>> 100644
+>>>>> --- a/drivers/iommu/intel/cache.c
+>>>>> +++ b/drivers/iommu/intel/cache.c
+>>>>> @@ -278,7 +278,7 @@ void cache_tag_flush_range(struct dmar_domain
+>>>> *domain, unsigned long start,
+>>>>>     		case CACHE_TAG_NESTING_IOTLB:
+>>>>>     			if (domain->use_first_level) {
+>>>>>     				qi_flush_piotlb(iommu, tag->domain_id,
+>>>>> -						tag->pasid, addr, pages, ih);
+>>>>> +						tag->pasid, addr, pages, ih,
+>>>> NULL);
+>>>>>     			} else {
+>>>> I'd like to have all batched descriptors code inside this file to
+>>>> make it easier for maintenance. Perhaps we can add the below
+>>>> infrastructure in the dmar_domain structure together with the cache tag.
+>>> Does it suggest we need to add a batch version of
+>> qi_flush_iotlb/qi_flush_dev_iotlb/qi_flush_piotlb/qi_flush_dev_iotlb_pasid() in
+>> the cache.c file? It doesn't sound like an easy to maintain those functions, does
+>> it?
+>>
+>> Yes. I don't think it's that difficult as the helpers just compose a qi descriptor and
+>> insert it in a local queue. This local queue will be flushed after finishing iterating
+>> all cache tags, or there's no room for more descriptors, or switches to a different
+>> iommu. Have I missed anything?
+> In current VT-d driver, only qi_flush_xxx() functions have the knowledge about how to make IOTLB invalidation descriptors. In qi_flush_xxx() functions, VT-d invalidation descriptors are populated and submitted to hardware immediately.
 > 
-> Keep track if the installed STE is pointing at the cd_table and the ATS
-> state to trigger this path.
+> To support batching command, I think we can have two choices:
+> 1. Extend qi_flush_xxx() functions to support batching descriptors. (Just like the implementation in this version)
+> In this way, the knowledge of populating an IOTLB invalidation descriptor in qi_flush_xxx() is reused. Additional code change is for batching the descriptor command into a buffer.
 > 
-> Tested-by: Nicolin Chen <nicolinc@nvidia.com>
-> Tested-by: Shameer Kolothum <shameerali.kolothum.thodi@huawei.com>
-> Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
- 
-Reviewed-by: Nicolin Chen <nicolinc@nvidia.com>
+> 2. Introduce a new set of interfaces to populate IOTLB descriptors and batch them into a batch buffer.
+> The new set of interfaces is implemented in the cache.c file and we need to copy the knowledge about how to populate IOTLB descriptors from qi_flush_xxx() interfaces into the new interfaces. I hesitated to choose this option because it would duplicate code. Maybe we can generalize the knowledge of populating IOTLB descriptors into lower level interfaces and make the current qi_flush_xxx() and the new set of interfaces call them.
+> 
+> Which option do you think is better?
+
+We can share the common code without changing the current helper
+interfaces. Something like this,
+
+static inline void qi_desc_iotlb(struct intel_iommu *iommu, u16 did, u64 
+addr,
+                                  unsigned int size_order, u64 type,
+                                  struct qi_desc *desc)
+{
+         u8 dw = 0, dr = 0;
+         int ih = 0;
+
+         if (cap_write_drain(iommu->cap))
+                 dw = 1;
+
+         if (cap_read_drain(iommu->cap))
+                 dr = 1;
+
+         desc->qw0 = QI_IOTLB_DID(did) | QI_IOTLB_DR(dr) | QI_IOTLB_DW(dw)
+                 | QI_IOTLB_GRAN(type) | QI_IOTLB_TYPE;
+         desc->qw1 = QI_IOTLB_ADDR(addr) | QI_IOTLB_IH(ih)
+                 | QI_IOTLB_AM(size_order);
+         desc->qw2 = 0;
+         desc->qw3 = 0;
+}
+
+void qi_flush_iotlb(struct intel_iommu *iommu, u16 did, u64 addr,
+                     unsigned int size_order, u64 type)
+{
+         struct qi_desc desc;
+
+         qi_desc_iotlb(iommu, did, addr, size_order, type, &desc)
+         qi_submit_sync(iommu, &desc, 1, 0);
+}
+
+The qi_desc_iotlb() can be used in both batched and non-batched paths.
+Does this work for you?
+
+Best regards,
+baolu
