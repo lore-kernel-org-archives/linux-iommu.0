@@ -1,127 +1,181 @@
-Received: from mx0a-0031df01.pphosted.com (mx0a-0031df01.pphosted.com [205.220.168.131])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-pl1-f176.google.com (mail-pl1-f176.google.com [209.85.214.176])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4E8D31420A0
-	for <iommu@lists.linux.dev>; Tue,  4 Jun 2024 13:40:10 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.168.131
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E86734C91
+	for <iommu@lists.linux.dev>; Tue,  4 Jun 2024 15:01:48 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.176
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1717508411; cv=none; b=iNNVzbn3Ie6E7HLixgdl3x1O0kx2+Ab6y2H/tiKiPL4kBi0JhbIxucR6Xobd9XwytIofqu+tHbLJXCGr0f2wldDAjAo+/+PeoIIKR+mnto/7ZFR6eFIZB58Y4kpMFrgmyUHw/Cf2pEvb5ds/dWlE5jbfk3dPQBwrtCrGHH1oHF8=
+	t=1717513310; cv=none; b=uKeXTg3XgqcEqZ+xsF3HoWpSVciic3fhQgbVEVIFEYzi1wy+KRN8c211BBmN5XGwT8XjMr5k+kOdU5gEfJ83gtAaxg055cAm6o2VL8Kh9Ws07WW4E1DLs1BjaU0u2rj5dcGtd0UqRT3Wx1uQ2IUhY1qwHYKPrwr28C4Ltrq05I8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1717508411; c=relaxed/simple;
-	bh=b8AMxcqWw0P3jOh8p1hb7REjv+Kt3Ihe6OI8G/FSqrY=;
-	h=Message-ID:Date:MIME-Version:Subject:To:CC:References:From:
-	 In-Reply-To:Content-Type; b=sovVvHCEJv6TXT9/SWLY+7fnP+T8O6zHEr4jmn1AdI/HJxHLmrgKKjb8hj7gyxPmQwjvU/pZ+7251VCnk+kB70qEEaHxfnggxKr/bptK31IOaNKAFvn0ONGzn8E0Y0muzkCDQmpA7XjSwlfKyfhMnOVAYXTW7GlJAovitc4gnuk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com; spf=pass smtp.mailfrom=quicinc.com; dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b=QO9SgBOZ; arc=none smtp.client-ip=205.220.168.131
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=quicinc.com
+	s=arc-20240116; t=1717513310; c=relaxed/simple;
+	bh=FBKiAGtmKJHWNrtxjlG2jSJk1wPquEKW9T6nmOhWZEw=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=LeByqQTsJqBOfibDvaQlL5gnOsYOznRElIiD7GppaO9Q+lTcl/muNUqhWuI20ufP9YYAxzFK0IP2rVWk4EXpyAYqvs8N7Kr2sD5KPlj/nq/PpdGouUOJtAgOrjeO2G1JePjVtZhg72+Kgq/gAN27AxkLuWGc1X9uIgr/N5yN4hc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=Qp57faRy; arc=none smtp.client-ip=209.85.214.176
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b="QO9SgBOZ"
-Received: from pps.filterd (m0279863.ppops.net [127.0.0.1])
-	by mx0a-0031df01.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 4548lMfs000933;
-	Tue, 4 Jun 2024 13:39:51 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=quicinc.com; h=
-	cc:content-transfer-encoding:content-type:date:from:in-reply-to
-	:message-id:mime-version:references:subject:to; s=qcppdkim1; bh=
-	g3xKDmGEtE5NY3eQm4y/GHC7J2gBGR92nLzdqVWo5F0=; b=QO9SgBOZQWdcRV/2
-	GmUNDR60B5JL/RFYPJmrnSZ4nPEq1iUBMaxI9Bq0yKMyflUmfUUyUFWyidBp+h2x
-	1CyUul08o9lmPAYSxgMFKaGrcVIZsivPlO5mYS+sgcdOzBtsxn4kduJqPN7pqAsg
-	PKndjQPXQx72PiUUpguB7tPOSoTVafAxQeqSKCeGpYm8BlP/+1kJXsCmT+JRt41Y
-	F+Vm+hZmgDJRRZBY6qQ3Q40vBf1tVjBl9/wd7kWFxB/vjrx3m8MejoPYPdFTdjy3
-	AbMFrt9CKXagNdbVTWMYbLc0Q/NaY8k1L3mYp5za7YUmH4uxb9alg+u3nL1pPRVr
-	r+446A==
-Received: from nalasppmta03.qualcomm.com (Global_NAT1.qualcomm.com [129.46.96.20])
-	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 3yfw5kq2s7-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Tue, 04 Jun 2024 13:39:51 +0000 (GMT)
-Received: from nalasex01a.na.qualcomm.com (nalasex01a.na.qualcomm.com [10.47.209.196])
-	by NALASPPMTA03.qualcomm.com (8.17.1.5/8.17.1.5) with ESMTPS id 454DdosV012590
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Tue, 4 Jun 2024 13:39:50 GMT
-Received: from [10.81.24.74] (10.49.16.6) by nalasex01a.na.qualcomm.com
- (10.47.209.196) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1544.9; Tue, 4 Jun 2024
- 06:39:49 -0700
-Message-ID: <bb8cf06e-4f96-4545-b459-3e70acb50f97@quicinc.com>
-Date: Tue, 4 Jun 2024 06:39:48 -0700
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="Qp57faRy"
+Received: by mail-pl1-f176.google.com with SMTP id d9443c01a7336-1f44b42d1caso43315715ad.0
+        for <iommu@lists.linux.dev>; Tue, 04 Jun 2024 08:01:48 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20230601; t=1717513307; x=1718118107; darn=lists.linux.dev;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=+zzDBNu/Km1bywTdzn1zNJ2Ca7zC5GTmKmM9CZqf88E=;
+        b=Qp57faRyzvZcLoN/5D3bSDPDDg3GkYrbl7YAgUflPTucMeXFaTsvct486iYsJ3BI2y
+         2mQQ/pNiLbF4O+qXAKGKla6mmHTmoV4Gl8Ojl3jk4qBsj7IOjUc3JZhrU1/fQldWHYlx
+         udpfn1gUF4Xb1FPo6IZCh954/pUPpcjWFgnivaereMhA+1+vFG4p//2DBCNxyD+F/6DJ
+         0gCqPXjK5/WtxOCmRE5+b6WrXSlNRtZPcdOrt5QvOhZZlvL816IuOVHRS5TeM9xHozas
+         pFcMCd/kDAF0gOjgAfxVh+gRT/d/AJoG6sO+YaQwwlCjFHPdVwrPUjewdNV5BRU2WaoB
+         76nQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1717513307; x=1718118107;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=+zzDBNu/Km1bywTdzn1zNJ2Ca7zC5GTmKmM9CZqf88E=;
+        b=URXX2cZSN/MJmTbMhIEcOFz9UaRcGQ+jVJo7mArPUioecGb8scu30YZVZNZheTJsha
+         ALBWAn4pX258goYXq7K6lz2oZjz+39NYYnvFhXEb5wwC/CEGvmum6N8DSagfcCd+iGiq
+         u9JmudmBFOdVeqWUTBQrDxyaiGEcFaXqBDUpQwCJbbN92tsI74GO7z6zW/5YZDHmsAvs
+         xWUwHoG1DyxuTELRcNhB26wYoklMreIlkUwD3tgjXDoOTdLt24hWZAQS3sU/G+s+K/Wh
+         sc3HUJdV2rtQsvVeaGBx638S1VXQ6xRR265/kZRrU9kq07YO4WKNPMBikZJFB3oj9dYT
+         b5cw==
+X-Gm-Message-State: AOJu0Yw4VZe4RVeil1JEmtmZ5kJXTQ1xKg4xMEFGdps6O/hkuF+80Yhp
+	Ikkx4UcErqyo1+4dk21sp34AgPjE92f/KkLQw3DcaNSITypLm9a+fCdYRg==
+X-Google-Smtp-Source: AGHT+IF1zgJrv6FVFO4d/uMJ9aDbi7Mhv60qd0JUz/GquNgBBdeZzjzd6K0FINdAHBDxfCTjnp5JGg==
+X-Received: by 2002:a17:902:e846:b0:1f3:4d2:7025 with SMTP id d9443c01a7336-1f6370985fcmr137086895ad.49.1717513301179;
+        Tue, 04 Jun 2024 08:01:41 -0700 (PDT)
+Received: from localhost ([2a00:79e1:2e00:1301:e1c5:6354:b45d:8ffc])
+        by smtp.gmail.com with ESMTPSA id d9443c01a7336-1f6323dd731sm86202895ad.144.2024.06.04.08.01.39
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 04 Jun 2024 08:01:40 -0700 (PDT)
+From: Rob Clark <robdclark@gmail.com>
+To: iommu@lists.linux.dev
+Cc: linux-arm-msm@vger.kernel.org,
+	Stephen Boyd <swboyd@chromium.org>,
+	Rob Clark <robdclark@chromium.org>,
+	Will Deacon <will@kernel.org>,
+	Robin Murphy <robin.murphy@arm.com>,
+	Joerg Roedel <joro@8bytes.org>,
+	Jason Gunthorpe <jgg@ziepe.ca>,
+	Jerry Snitselaar <jsnitsel@redhat.com>,
+	Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+	Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
+	linux-arm-kernel@lists.infradead.org (moderated list:ARM SMMU DRIVERS),
+	linux-kernel@vger.kernel.org (open list)
+Subject: [PATCH] iommu/arm-smmu: Pretty-print context fault related regs
+Date: Tue,  4 Jun 2024 08:01:31 -0700
+Message-ID: <20240604150136.493962-1-robdclark@gmail.com>
+X-Mailer: git-send-email 2.45.1
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v2 11/22] ath10k: Use iommu_paging_domain_alloc()
-Content-Language: en-US
-To: Lu Baolu <baolu.lu@linux.intel.com>, Joerg Roedel <joro@8bytes.org>,
-        Will
- Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
-        Jason
- Gunthorpe <jgg@ziepe.ca>, Kevin Tian <kevin.tian@intel.com>
-CC: Yi Liu <yi.l.liu@intel.com>, David Airlie <airlied@gmail.com>,
-        Daniel
- Vetter <daniel@ffwll.ch>, Kalle Valo <kvalo@kernel.org>,
-        Bjorn Andersson
-	<andersson@kernel.org>,
-        Mathieu Poirier <mathieu.poirier@linaro.org>,
-        Alex
- Williamson <alex.williamson@redhat.com>, <mst@redhat.com>,
-        Jason Wang
-	<jasowang@redhat.com>,
-        Thierry Reding <thierry.reding@gmail.com>,
-        Jonathan
- Hunter <jonathanh@nvidia.com>,
-        Mikko Perttunen <mperttunen@nvidia.com>, <iommu@lists.linux.dev>,
-        <dri-devel@lists.freedesktop.org>, <linux-kernel@vger.kernel.org>,
-        <ath10k@lists.infradead.org>
-References: <20240604015134.164206-1-baolu.lu@linux.intel.com>
- <20240604015134.164206-12-baolu.lu@linux.intel.com>
-From: Jeff Johnson <quic_jjohnson@quicinc.com>
-In-Reply-To: <20240604015134.164206-12-baolu.lu@linux.intel.com>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: nalasex01b.na.qualcomm.com (10.47.209.197) To
- nalasex01a.na.qualcomm.com (10.47.209.196)
-X-QCInternal: smtphost
-X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
-X-Proofpoint-GUID: Md4EIe9lNXys9JP7qqj6UgaTb6nNYv_z
-X-Proofpoint-ORIG-GUID: Md4EIe9lNXys9JP7qqj6UgaTb6nNYv_z
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.293,Aquarius:18.0.1039,Hydra:6.0.680,FMLib:17.12.28.16
- definitions=2024-06-04_05,2024-06-04_01,2024-05-17_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 lowpriorityscore=0
- impostorscore=0 suspectscore=0 malwarescore=0 clxscore=1015 phishscore=0
- mlxscore=0 priorityscore=1501 adultscore=0 bulkscore=0 spamscore=0
- mlxlogscore=999 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.19.0-2405170001 definitions=main-2406040109
+Content-Transfer-Encoding: 8bit
 
-+ath10k list for viibility
+From: Rob Clark <robdclark@chromium.org>
 
-On 6/3/24 18:51, Lu Baolu wrote:
-> An iommu domain is allocated in ath10k_fw_init() and is attached to
-> ar_snoc->fw.dev in the same function. Use iommu_paging_domain_alloc() to
-> make it explicit.
-> 
-> Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
-> ---
->   drivers/net/wireless/ath/ath10k/snoc.c | 6 +++---
->   1 file changed, 3 insertions(+), 3 deletions(-)
-> 
-> diff --git a/drivers/net/wireless/ath/ath10k/snoc.c b/drivers/net/wireless/ath/ath10k/snoc.c
-> index 8530550cf5df..0fe47d51013c 100644
-> --- a/drivers/net/wireless/ath/ath10k/snoc.c
-> +++ b/drivers/net/wireless/ath/ath10k/snoc.c
-> @@ -1635,10 +1635,10 @@ static int ath10k_fw_init(struct ath10k *ar)
->   
->   	ar_snoc->fw.dev = &pdev->dev;
->   
-> -	iommu_dom = iommu_domain_alloc(&platform_bus_type);
-> -	if (!iommu_dom) {
-> +	iommu_dom = iommu_paging_domain_alloc(ar_snoc->fw.dev);
-> +	if (IS_ERR(iommu_dom)) {
->   		ath10k_err(ar, "failed to allocate iommu domain\n");
-> -		ret = -ENOMEM;
-> +		ret = PTR_ERR(iommu_dom);
->   		goto err_unregister;
->   	}
->   
+Parse out the bitfields for easier-to-read fault messages.
+
+Signed-off-by: Rob Clark <robdclark@chromium.org>
+---
+Stephen was wanting easier to read fault messages.. so I typed this up.
+
+Resend with the new iommu list address
+
+ drivers/iommu/arm/arm-smmu/arm-smmu.c | 53 +++++++++++++++++++++++++--
+ drivers/iommu/arm/arm-smmu/arm-smmu.h |  5 +++
+ 2 files changed, 54 insertions(+), 4 deletions(-)
+
+diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu.c b/drivers/iommu/arm/arm-smmu/arm-smmu.c
+index c572d877b0e1..06712d73519c 100644
+--- a/drivers/iommu/arm/arm-smmu/arm-smmu.c
++++ b/drivers/iommu/arm/arm-smmu/arm-smmu.c
+@@ -411,6 +411,8 @@ static irqreturn_t arm_smmu_context_fault(int irq, void *dev)
+ 	unsigned long iova;
+ 	struct arm_smmu_domain *smmu_domain = dev;
+ 	struct arm_smmu_device *smmu = smmu_domain->smmu;
++	static DEFINE_RATELIMIT_STATE(rs, DEFAULT_RATELIMIT_INTERVAL,
++				      DEFAULT_RATELIMIT_BURST);
+ 	int idx = smmu_domain->cfg.cbndx;
+ 	int ret;
+ 
+@@ -425,10 +427,53 @@ static irqreturn_t arm_smmu_context_fault(int irq, void *dev)
+ 	ret = report_iommu_fault(&smmu_domain->domain, NULL, iova,
+ 		fsynr & ARM_SMMU_FSYNR0_WNR ? IOMMU_FAULT_WRITE : IOMMU_FAULT_READ);
+ 
+-	if (ret == -ENOSYS)
+-		dev_err_ratelimited(smmu->dev,
+-		"Unhandled context fault: fsr=0x%x, iova=0x%08lx, fsynr=0x%x, cbfrsynra=0x%x, cb=%d\n",
+-			    fsr, iova, fsynr, cbfrsynra, idx);
++	if (ret == -ENOSYS && __ratelimit(&rs)) {
++		static const struct {
++			u32 mask; const char *name;
++		} fsr_bits[] = {
++			{ ARM_SMMU_FSR_MULTI,  "MULTI" },
++			{ ARM_SMMU_FSR_SS,     "SS"    },
++			{ ARM_SMMU_FSR_UUT,    "UUT"   },
++			{ ARM_SMMU_FSR_ASF,    "ASF"   },
++			{ ARM_SMMU_FSR_TLBLKF, "TLBLKF" },
++			{ ARM_SMMU_FSR_TLBMCF, "TLBMCF" },
++			{ ARM_SMMU_FSR_EF,     "EF"     },
++			{ ARM_SMMU_FSR_PF,     "PF"     },
++			{ ARM_SMMU_FSR_AFF,    "AFF"    },
++			{ ARM_SMMU_FSR_TF,     "TF"     },
++		}, fsynr0_bits[] = {
++			{ ARM_SMMU_FSYNR0_WNR,    "WNR"    },
++			{ ARM_SMMU_FSYNR0_PNU,    "PNU"    },
++			{ ARM_SMMU_FSYNR0_IND,    "IND"    },
++			{ ARM_SMMU_FSYNR0_NSATTR, "NSATTR" },
++			{ ARM_SMMU_FSYNR0_PTWF,   "PTWF"   },
++			{ ARM_SMMU_FSYNR0_AFR,    "AFR"    },
++		};
++
++		pr_err("%s %s: Unhandled context fault: fsr=0x%x (",
++		       dev_driver_string(smmu->dev), dev_name(smmu->dev), fsr);
++
++		for (int i = 0, n = 0; i < ARRAY_SIZE(fsr_bits); i++) {
++			if (fsr & fsr_bits[i].mask) {
++				pr_cont("%s%s", (n > 0) ? "|" : "", fsr_bits[i].name);
++				n++;
++			}
++		}
++
++		pr_cont("), iova=0x%08lx, fsynr=0x%x (S1CBNDX=%u", iova, fsynr,
++			(fsynr >> 16) & 0xff);
++
++		for (int i = 0; i < ARRAY_SIZE(fsynr0_bits); i++) {
++			if (fsynr & fsynr0_bits[i].mask) {
++				pr_cont("|%s", fsynr0_bits[i].name);
++			}
++		}
++
++		pr_cont("|PLVL=%u), cbfrsynra=0x%x, cb=%d\n",
++			fsynr & 0x3,   /* FSYNR0.PLV */
++			cbfrsynra, idx);
++
++	}
+ 
+ 	arm_smmu_cb_write(smmu, idx, ARM_SMMU_CB_FSR, fsr);
+ 	return IRQ_HANDLED;
+diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu.h b/drivers/iommu/arm/arm-smmu/arm-smmu.h
+index 836ed6799a80..3b051273718b 100644
+--- a/drivers/iommu/arm/arm-smmu/arm-smmu.h
++++ b/drivers/iommu/arm/arm-smmu/arm-smmu.h
+@@ -223,6 +223,11 @@ enum arm_smmu_cbar_type {
+ 
+ #define ARM_SMMU_CB_FSYNR0		0x68
+ #define ARM_SMMU_FSYNR0_WNR		BIT(4)
++#define ARM_SMMU_FSYNR0_PNU		BIT(5)
++#define ARM_SMMU_FSYNR0_IND		BIT(6)
++#define ARM_SMMU_FSYNR0_NSATTR		BIT(8)
++#define ARM_SMMU_FSYNR0_PTWF		BIT(10)
++#define ARM_SMMU_FSYNR0_AFR		BIT(11)
+ 
+ #define ARM_SMMU_CB_FSYNR1		0x6c
+ 
+-- 
+2.45.1
 
