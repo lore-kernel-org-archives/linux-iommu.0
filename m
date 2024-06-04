@@ -1,235 +1,246 @@
-Received: from NAM11-BN8-obe.outbound.protection.outlook.com (mail-bn8nam11on2048.outbound.protection.outlook.com [40.107.236.48])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-ed1-f44.google.com (mail-ed1-f44.google.com [209.85.208.44])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DF4D2339AB;
-	Tue,  4 Jun 2024 18:28:37 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.236.48
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1717525719; cv=fail; b=RyXcufToLDF9yTOk3CMDJnfBvAhUnsRYicvhI/CSYaBdWJ8fnT7RC94vJRNzFVIHZwnwMn4c4Np05CUK4EvFbu55Xb9dxdzIqGRo7WRUNKT3aXuy7AHoKd2MofMHcFE1DMD36ErrU4JvtPfAbNWqlNTdC4/5GyjfAtofmmqoi54=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1717525719; c=relaxed/simple;
-	bh=nmDp1GpF34e/OQnLF8pi6+vPFPnOGHzn141TyDPQMNY=;
-	h=Date:From:To:CC:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=ND3N7/FLBIytkMeyfTQgWubf4nUpOoYrKDoEFoICrz9R3xfSuUNnhQa+OsaU3W0X8q0twPoekBOIoqNNn6vPSvfiiyT/QDFkIhqwIEOC3pzJvnuWIW85RbGphxUIg0wLEuruqQ2P/gcUOBMfEUpbTKTvPefINwF+tgfCDVhxK40=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=NaBdEg41; arc=fail smtp.client-ip=40.107.236.48
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6EC2213D88D
+	for <iommu@lists.linux.dev>; Tue,  4 Jun 2024 18:49:27 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.44
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1717526969; cv=none; b=KA4lcQS3bOUhD3NzlGd4xVWtLgHwXhkdJa3j95NH+kqJCc1pOnlSbENLCN2czaIpUVmTGA7LzCk+jBmkC17lC76Cx9zHwt/tRZQOkk0tDhhUDWs1i8E3xfJ8uufAKmmPb8mBNcIEH+5agz7PSJW7hCDPmL9eh+hbC0stxMd9N24=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1717526969; c=relaxed/simple;
+	bh=a1zun8HL6lepv1ujLISq6+xEZ0ZnO4qy/lSJiqqhavo=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=ANWGwA2j9xAYuVLkLLKw/q9L3x4eLRgkTAMf4KXF/0ooxz2ac6iNnW7q3b7mmilrU1cBgYT3mBChyMJS5+KYKAkNLIMaxakjJsGmYoCr60FgwF4ddB0UjSz3bh2fX4PR+3vqSY9KVAloAN6x6o+lYZSZPMp0XuH/QS3tHM87xvg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=nksJllJi; arc=none smtp.client-ip=209.85.208.44
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="NaBdEg41"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=UVIpaGGOCiCW9MsZHQTyJy0da2VQR2UJm82vItmEmfUMX5GIrp3RiIUruYuELCr9xaBndIUvZa7Iy/8A3p7oCHOM218FxXSUPDdJc6inf0al/7bGct1caw1Skox6WH2wXlnYKp0anD2Q72MaEj5PxjrnzWxdj5b3OhHGyps6wR/uFrsp/vkOIk9ZUlFHxBw5hNWjEAJhjREd+fYdw6JT8AnO9XAgo0/y/i/ze2hWf6TNPTKg4aUQkfRpYET5Guk/hxFarXxUD/fyk3MVEsTZss6wFwyMQaQDwNt6zqOgOIzYfsfTpEff660rcjifcGm8ZRX9OmDSUtcD/B5DwuOK+w==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=3vyJ/VDs7m31D7YhudAq497uqi+AfVO/BvbbnuJUPw4=;
- b=cPjJmrF0in8BdoDxyg0gIK/d1/6KG7MkLvOCp5Qk6GSnujEk6V02H7yproFvDm6skl7WOfnf9SB/iSR4GiMCgTq6aR+g2dwgThxY3aHDQwiXjOv6MlmEoXBikCdvRqd6U+bMF8iMiODlS4Khukk0d5pE9mLoWrz7ZQSmZ8Sl72BNTWu8KSRqB2asHBmu+WimKQCdeC9NfLldbMnJ1dd0xWnCwD6VVL9xxz2AL0w63AvL+Qf7kaba1yRZ9zC+ywczfKuPBdFF4sIkRca3/40qWUwzd7XRe2jKQWqdxygSjpsQcQL0FygQtiIB5XZyR4Qz5oKLY+7HjgPhGXMcgJIZOw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 216.228.117.160) smtp.rcpttodomain=lists.linux.dev smtp.mailfrom=nvidia.com;
- dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
- dkim=none (message not signed); arc=none (0)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=3vyJ/VDs7m31D7YhudAq497uqi+AfVO/BvbbnuJUPw4=;
- b=NaBdEg41raMZ1goj7NHZ3dr9gY3v6l3elknlyqDm8UxHujr/mB/UKEQqLs9izz5fdVHDsMhGywEz8ItZljrZxPh72C4arckSoFN5R1QDPeUmNspvRTUBZ3PzSPLEfzUAD8iDUa0TviW2tIDX+qBS1w9dgMh6eydvSokY9FwnJ61J7WvHrN/gyEB1iO+vzUIUtGsxIvqpfAA4FBdBBUQFAUwwvG7E7iSwxcfdvvXIXTUAb+6jcgz645o+3RVWX+4PlPGs3p60aTuBgPs/Z9jCcH5S9b0YC25PLHHNZdsFpR+O15Cp/uW2xtfQYRyR0DuYQnt1FcV69RpahqGMsfvJFQ==
-Received: from BN8PR15CA0012.namprd15.prod.outlook.com (2603:10b6:408:c0::25)
- by PH7PR12MB5654.namprd12.prod.outlook.com (2603:10b6:510:137::21) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7633.22; Tue, 4 Jun
- 2024 18:28:34 +0000
-Received: from BN3PEPF0000B069.namprd21.prod.outlook.com
- (2603:10b6:408:c0:cafe::b1) by BN8PR15CA0012.outlook.office365.com
- (2603:10b6:408:c0::25) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7633.31 via Frontend
- Transport; Tue, 4 Jun 2024 18:28:34 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.117.160)
- smtp.mailfrom=nvidia.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=nvidia.com;
-Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 216.228.117.160 as permitted sender) receiver=protection.outlook.com;
- client-ip=216.228.117.160; helo=mail.nvidia.com; pr=C
-Received: from mail.nvidia.com (216.228.117.160) by
- BN3PEPF0000B069.mail.protection.outlook.com (10.167.243.68) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.7677.0 via Frontend Transport; Tue, 4 Jun 2024 18:28:33 +0000
-Received: from rnnvmail202.nvidia.com (10.129.68.7) by mail.nvidia.com
- (10.129.200.66) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1544.4; Tue, 4 Jun 2024
- 11:28:08 -0700
-Received: from rnnvmail204.nvidia.com (10.129.68.6) by rnnvmail202.nvidia.com
- (10.129.68.7) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1544.4; Tue, 4 Jun 2024
- 11:28:07 -0700
-Received: from Asurada-Nvidia (10.127.8.11) by mail.nvidia.com (10.129.68.6)
- with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1544.4 via Frontend
- Transport; Tue, 4 Jun 2024 11:28:07 -0700
-Date: Tue, 4 Jun 2024 11:28:05 -0700
-From: Nicolin Chen <nicolinc@nvidia.com>
-To: Jason Gunthorpe <jgg@nvidia.com>
-CC: <iommu@lists.linux.dev>, Joerg Roedel <joro@8bytes.org>,
-	<linux-arm-kernel@lists.infradead.org>, Robin Murphy <robin.murphy@arm.com>,
-	Will Deacon <will@kernel.org>, Michael Shavit <mshavit@google.com>,
-	<patches@lists.linux.dev>, Ryan Roberts <ryan.roberts@arm.com>, Mostafa Saleh
-	<smostafa@google.com>
-Subject: Re: [PATCH 1/7] iommu/arm-smmu-v3: Split struct
- arm_smmu_strtab_cfg.strtab
-Message-ID: <Zl9ctWSM6m3gkH5T@Asurada-Nvidia>
-References: <0-v1-1b720dce51d1+4f44-smmuv3_tidy_jgg@nvidia.com>
- <1-v1-1b720dce51d1+4f44-smmuv3_tidy_jgg@nvidia.com>
- <Zl7RFCZhAbI/DzwC@Asurada-Nvidia>
- <20240604125955.GH19897@nvidia.com>
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="nksJllJi"
+Received: by mail-ed1-f44.google.com with SMTP id 4fb4d7f45d1cf-57a677d3d79so215481a12.1
+        for <iommu@lists.linux.dev>; Tue, 04 Jun 2024 11:49:27 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20230601; t=1717526966; x=1718131766; darn=lists.linux.dev;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=Bb27sFgRlG0Tk9BuaJtsYRuhNJ3jYbY3tEhCWfnKOSg=;
+        b=nksJllJiX2xVc1gQFrSSMzqEbeyKOAT5DgYZaKspp702v9SWESuS1ZiP7QvGQYIxnS
+         /EUkov8dD/w+NF+ggfAqSgRQQFJPPT+qKdmS/mzAOCHQM5/RPv3uGFb0QNyZaILpYwLx
+         Zjq6C0fX2zZkajjjt65WCgx55jMl0PmLmWtWz5huU8hb77i7vLIir4xHXdl29VWEHE+m
+         uQ1zMDPYBdARTTVarB+vLyQ4zXwUl1HNVnhrOD2sUNqQ/OqYh5MLTD2oyk48D/2CVT5S
+         qFoDcQYc3yVKaY52cyvA7HD+Ir0PnAA8XCDngORg2cu/dw2duOGyrj0RehRzzBvVU6xh
+         lZlA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1717526966; x=1718131766;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=Bb27sFgRlG0Tk9BuaJtsYRuhNJ3jYbY3tEhCWfnKOSg=;
+        b=lXa9k3GXp1WoHia+qJCRdpZX71CW7dSgDWOdtVXMGd7w2QHMhElRYPmIY1zjH1VAsa
+         ohGPUcpO1YPog3Lcb3bqhxvAV/mlC4g7O4Q3ui5AqJKH1QMuFR3yD9j4WiFucfuWbP/z
+         XDqu9bhjqUd7bOyP8Jjle1WxrEIeEFd9OeawHP7STjvzjKQbhGKjJsJuni246Ti9uoQ4
+         1KLtj+G3vzR3Z1ye2Ktw8xpfSh13fDYYtlMoYoRqoKFcFso9fnMxG+z37v9s9vA3CIM9
+         mqUR96CUVhyXFU/qqF0Z/TMiTd7mnps0SRPhRUBUaAzDQYHD8Y3SsVA3rvDufBi2rUzy
+         rCKg==
+X-Forwarded-Encrypted: i=1; AJvYcCX6SConKaVl9Nvj9WKr6VVZz+CVEYB+GCPNX72Z6hd8/PQPY1RB3A4g8STPCaywovjbTzYmP1SadOEH4+6VPxqFghTzETI=
+X-Gm-Message-State: AOJu0Ywmz4zRj8JA6TZLV0j/GMq06gwbwP41EHLC+7RJmdY0x/XlZ+K5
+	5JGIj7VmbQ64zpdaNeIhx4VCWJ+mFRuye4vHhh817K5x9U4sa69U5eAD757fvRdaiFWW/M8usAJ
+	Q+qoIMymrB1HW5KXGJvwi6KtV2Dk=
+X-Google-Smtp-Source: AGHT+IFWkdL+wQ72daSRO1P7tTzDvc9m9YMF90o5MlhZaIpy3wrX/gSyeDidoV+f0/qTjEPQhAglVyN6XWP5BsXJN00=
+X-Received: by 2002:a50:8a92:0:b0:574:ec3d:262a with SMTP id
+ 4fb4d7f45d1cf-57a8b6a4d4emr430003a12.5.1717526965479; Tue, 04 Jun 2024
+ 11:49:25 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: inline
-In-Reply-To: <20240604125955.GH19897@nvidia.com>
-X-NV-OnPremToCloud: ExternallySecured
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: BN3PEPF0000B069:EE_|PH7PR12MB5654:EE_
-X-MS-Office365-Filtering-Correlation-Id: 3835a1bf-d283-4a2b-ffae-08dc84c42485
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam:
-	BCL:0;ARA:13230031|82310400017|36860700004|376005|1800799015;
-X-Microsoft-Antispam-Message-Info:
-	=?us-ascii?Q?+4PWRLtRoiupg/nbM8o4LGsSsGkCI/r4E4Q/Z1VqPSKRRd//cBCa/kOAkx8X?=
- =?us-ascii?Q?00hsJRywZAOtENrf5R1nf1HBSSvec7GEKqynZg5b/gZlY99jS/RcFHWEUHKE?=
- =?us-ascii?Q?KVqvZe3M3Vop8kouyT/jN2PV3VRDixof0+YFGkfIBVMyj63TXJeRE0df+M1P?=
- =?us-ascii?Q?BVhWIGKy56AvJH+CUWVBWlAI6p5c5/pFWv8nM/t1jQ457K6NqPJP0/QpNrZw?=
- =?us-ascii?Q?DQ0ws5/cs1Xcj5BrMxK1MeJy/a8dwNJVm/i4kBQ/Q2OLmcnwwHSGmEGrUBDt?=
- =?us-ascii?Q?PoMDWY/Cqrcbcu8QoKaZi0Mt1XcSZ5CM2jZs8Y7cElmXcwzu+k4JhmD0+yLs?=
- =?us-ascii?Q?J4J85cGnhAc7oBql7qDNtzaTWC5ohBkSrnUakkyhAT54Jy2A/vOmNIVts9Yh?=
- =?us-ascii?Q?2aD8sIz01CM3ymNHMI8XzdRLdqYnSxauk9zHXutzurUwOYUfozoXt3CjQtaF?=
- =?us-ascii?Q?U32c54ZmsrfxtKwxZn0l7H3mEF4EJtkrHAoZKWt5NRrmEoTYcmd1F43xE11G?=
- =?us-ascii?Q?f4oLYhq/lwLJ5t7MUZtsKvA1HuiTDMGpugt0g5s0nNZBDeAFLupBph+R3gH4?=
- =?us-ascii?Q?9D5Lt2F3POjiEu8dHZ7g1AzMWwIkh7bbJWl/BNP3H8vBnFy7Izk4+Hl3Ju7Y?=
- =?us-ascii?Q?dqGfHjcVXwTiQJAgQjBzsqNc9lRrBpht29e1AxuRYFiz5uf4Z/1AOdWC6RmB?=
- =?us-ascii?Q?fwDg2USlyWXj+t0sWso4I0Fn6OyF5gl79e8lM6snIzs4U/z6rhBIY6yEngVH?=
- =?us-ascii?Q?UGUYprFRfWnJ9gbHtevRnSjbdL/SKDz1qG5pm5k1GZZvdUQX9QB16YEsf9zO?=
- =?us-ascii?Q?67gFC1lU4p1iu3kLoLuJTieFBjsvmW/xMO6cK7xZtPeUGSWSwpC9yuVIavuB?=
- =?us-ascii?Q?QKlOzV3xpzFxU80sHEUqBlMCqaXg6JX36TNtAS2Gg8E0/1dxrmiYj2rZ+2Q1?=
- =?us-ascii?Q?zoDVZANSdy1QwzJJceVhPxy40v1A1J0990BZeQ7m2XKj/pj2dAHugxoMiUZd?=
- =?us-ascii?Q?HAargIjSBUJbEJcMj5b5rRI1yrq1ftWXh+1YERXVFDQqEwj33WBiWyghtGy+?=
- =?us-ascii?Q?u46eLReW6Nuii3YLoYBwPU2Q/HJMfFLRCD0qXegpZ9eYxIKXSzhHRvDBbbLq?=
- =?us-ascii?Q?75fFjoZiL3cXWxy5PaajNkEUibaQuKxLrCpxUTAMT37Io0eUOnuYmf6CcSRC?=
- =?us-ascii?Q?kCuHFpjA915GZXYx4cih7T1Y81r0NFnTM7bYUN4ahHgu7MiP1L0jadGDkB4y?=
- =?us-ascii?Q?uOVUhmWeGTbHl3hQqOPZJNBBaTV7xPmC5pNAJAAMPV6zEOat3Cm6mtWSOxbm?=
- =?us-ascii?Q?cviPPIXXT6gG1oV71sE66TfxC9pKRH9TjwcghERNK+ZZOvyeCq8i/5IbsZzV?=
- =?us-ascii?Q?l0DpUKVJN9B5x7Uipsz30sS2famx?=
-X-Forefront-Antispam-Report:
-	CIP:216.228.117.160;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc6edge1.nvidia.com;CAT:NONE;SFS:(13230031)(82310400017)(36860700004)(376005)(1800799015);DIR:OUT;SFP:1101;
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 04 Jun 2024 18:28:33.8954
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 3835a1bf-d283-4a2b-ffae-08dc84c42485
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.117.160];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource:
-	BN3PEPF0000B069.namprd21.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH7PR12MB5654
+References: <20240123144543.9405-1-quic_bibekkum@quicinc.com>
+ <20240123144543.9405-4-quic_bibekkum@quicinc.com> <CAF6AEGs3_wBNo58EbGicFoQuq8--fDohTGv1JSFgoViygLS5Lg@mail.gmail.com>
+ <f2222714-1e00-424e-946d-c314d55541b8@quicinc.com> <51b2bd40-888d-4ee4-956f-c5239c5be9e9@linaro.org>
+ <0a867cd1-8d99-495e-ae7e-a097fc9c00e9@quicinc.com> <7140cdb8-eda4-4dcd-b5e3-c4acdd01befb@linaro.org>
+ <omswcicgc2kqd6gp4bebd43sklfs2wqyaorhfyb2wumoeo6v74@gaay3p5m46xi>
+ <CAF6AEGub2b5SRw7kDUGfKQQ35VSsMkQ9LNExSkyHHczdFa2T4Q@mail.gmail.com> <9992067e-51c5-4a55-8d66-55a102a001b6@quicinc.com>
+In-Reply-To: <9992067e-51c5-4a55-8d66-55a102a001b6@quicinc.com>
+From: Rob Clark <robdclark@gmail.com>
+Date: Tue, 4 Jun 2024 11:49:13 -0700
+Message-ID: <CAF6AEGsxKwzX6it4vipggOdGqNVzPbwMj6a0h871a=GfwUp0Cg@mail.gmail.com>
+Subject: Re: [PATCH v9 3/5] iommu/arm-smmu: introduction of ACTLR for custom
+ prefetcher settings
+To: Bibek Kumar Patro <quic_bibekkum@quicinc.com>
+Cc: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>, Konrad Dybcio <konrad.dybcio@linaro.org>, 
+	will@kernel.org, robin.murphy@arm.com, joro@8bytes.org, jsnitsel@redhat.com, 
+	quic_bjorande@quicinc.com, mani@kernel.org, quic_eberman@quicinc.com, 
+	robdclark@chromium.org, u.kleine-koenig@pengutronix.de, robh@kernel.org, 
+	vladimir.oltean@nxp.com, quic_pkondeti@quicinc.com, quic_molvera@quicinc.com, 
+	linux-arm-msm@vger.kernel.org, linux-arm-kernel@lists.infradead.org, 
+	iommu@lists.linux.dev, linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-On Tue, Jun 04, 2024 at 09:59:55AM -0300, Jason Gunthorpe wrote:
-> On Tue, Jun 04, 2024 at 01:32:20AM -0700, Nicolin Chen wrote:
-> > On Mon, Jun 03, 2024 at 07:31:27PM -0300, Jason Gunthorpe wrote:
-> > 
-> > > diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
-> > > index 1242a086c9f948..4769780259affc 100644
-> > > --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
-> > > +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
-> > > @@ -612,7 +610,10 @@ struct arm_smmu_s2_cfg {
-> > >  };
-> > >  
-> > >  struct arm_smmu_strtab_cfg {
-> > > -	__le64				*strtab;
-> > > +	union {
-> > > +		struct arm_smmu_ste *linear;
-> > > +		__le64 *l1_desc;
-> > > +	} strtab;
-> > >  	dma_addr_t			strtab_dma;
-> > >  	struct arm_smmu_strtab_l1_desc	*l1_desc;
-> > >  	unsigned int			num_l1_ents;
-> > 
-> > It looks like we have two "l1_desc" ptrs now in the same struct:
-> > 	strtab.l1_desc	// raw level-1 descriptor memory
-> > 	l1_desc		// SW array to store level-2 descriptor memory
-> > 
-> > And it gets a bit more confusing that they even use the same error
-> > prints in arm_smmu_init_strtab_2lvl()...
-> 
-> Yeah, I noticed that too, but failed to come with better names.. The
-> CD has the same issue
-> 
-> strtab.l1_desc is a pointer to the data structure that the HW fetches
-> that is the first level of a 2 level strtab, it stores an encoded
-> dma_addr_t.
-> 
-> cfg.l1_desc is an array of CPU information for each HW L1 entry,
-> eventually just being the CPU pointer to the L2 STE table.
-> 
-> So they are both the l1 array, just one is a CPU pointer and one is a
-> HW/DMA pointer.
-> 
-> Let's call strtab.l1_desc --> strtab.l1_table ?
+On Thu, May 30, 2024 at 2:22=E2=80=AFAM Bibek Kumar Patro
+<quic_bibekkum@quicinc.com> wrote:
+>
+>
+>
+> On 5/28/2024 9:38 PM, Rob Clark wrote:
+> > On Tue, May 28, 2024 at 6:06=E2=80=AFAM Dmitry Baryshkov
+> > <dmitry.baryshkov@linaro.org> wrote:
+> >>
+> >> On Tue, May 28, 2024 at 02:59:51PM +0200, Konrad Dybcio wrote:
+> >>>
+> >>>
+> >>> On 5/15/24 15:59, Bibek Kumar Patro wrote:
+> >>>>
+> >>>>
+> >>>> On 5/10/2024 6:32 PM, Konrad Dybcio wrote:
+> >>>>> On 10.05.2024 2:52 PM, Bibek Kumar Patro wrote:
+> >>>>>>
+> >>>>>>
+> >>>>>> On 5/1/2024 12:30 AM, Rob Clark wrote:
+> >>>>>>> On Tue, Jan 23, 2024 at 7:00=E2=80=AFAM Bibek Kumar Patro
+> >>>>>>> <quic_bibekkum@quicinc.com> wrote:
+> >>>>>>>>
+> >>>>>>>> Currently in Qualcomm  SoCs the default prefetch is set to 1 whi=
+ch allows
+> >>>>>>>> the TLB to fetch just the next page table. MMU-500 features ACTL=
+R
+> >>>>>>>> register which is implementation defined and is used for Qualcom=
+m SoCs
+> >>>>>>>> to have a custom prefetch setting enabling TLB to prefetch the n=
+ext set
+> >>>>>>>> of page tables accordingly allowing for faster translations.
+> >>>>>>>>
+> >>>>>>>> ACTLR value is unique for each SMR (Stream matching register) an=
+d stored
+> >>>>>>>> in a pre-populated table. This value is set to the register duri=
+ng
+> >>>>>>>> context bank initialisation.
+> >>>>>>>>
+> >>>>>>>> Signed-off-by: Bibek Kumar Patro <quic_bibekkum@quicinc.com>
+> >>>>>>>> ---
+> >>>>>
+> >>>>> [...]
+> >>>>>
+> >>>>>>>> +
+> >>>>>>>> +               for_each_cfg_sme(cfg, fwspec, j, idx) {
+> >>>>>>>> +                       smr =3D &smmu->smrs[idx];
+> >>>>>>>> +                       if (smr_is_subset(smr, id, mask)) {
+> >>>>>>>> +                               arm_smmu_cb_write(smmu, cbndx, A=
+RM_SMMU_CB_ACTLR,
+> >>>>>>>> +                                               actlrcfg[i].actl=
+r);
+> >>>>>>>
+> >>>>>>> So, this makes ACTLR look like kind of a FIFO.  But I'm looking a=
+t
+> >>>>>>> downstream kgsl's PRR thing (which we'll need to implement vulkan
+> >>>>>>> sparse residency), and it appears to be wanting to set BIT(5) in =
+ACTLR
+> >>>>>>> to enable PRR.
+> >>>>>>>
+> >>>>>>>            val =3D KGSL_IOMMU_GET_CTX_REG(ctx, KGSL_IOMMU_CTX_ACT=
+LR);
+> >>>>>>>            val |=3D FIELD_PREP(KGSL_IOMMU_ACTLR_PRR_ENABLE, 1);
+> >>>>>>>            KGSL_IOMMU_SET_CTX_REG(ctx, KGSL_IOMMU_CTX_ACTLR, val)=
+;
+> >>>>>>>
+> >>>>>>> Any idea how this works?  And does it need to be done before or a=
+fter
+> >>>>>>> the ACTLR programming done in this patch?
+> >>>>>>>
+> >>>>>>> BR,
+> >>>>>>> -R
+> >>>>>>>
+> >>>>>>
+> >>>>>> Hi Rob,
+> >>>>>>
+> >>>>>> Can you please help provide some more clarification on the FIFO pa=
+rt? By FIFO are you referring to the storing of ACTLR data in the table?
+> >>>>>>
+> >>>>>> Thanks for pointing to the downstream implementation of kgsl drive=
+r for
+> >>>>>> the PRR bit. Since kgsl driver is already handling this PRR bit's
+> >>>>>> setting, this makes setting the PRR BIT(5) by SMMU driver redundan=
+t.
+> >>>>>
+> >>>>> The kgsl driver is not present upstream.
+> >>>>>
+> >>>>
+> >>>> Right kgsl is not present upstream, it would be better to avoid conf=
+iguring the PRR bit and can be handled by kgsl directly in downstream.
+> >>>
+> >>> No! Upstream is not a dumping ground to reduce your technical debt.
+> >>>
+> >>> There is no kgsl driver upstream, so this ought to be handled here, i=
+n
+> >>> the iommu driver (as poking at hardware A from driver B is usually no=
+t good
+> >>> practice).
+> >>
+> >> I'd second the request here. If another driver has to control the
+> >> behaviour of another driver, please add corresponding API for that.
+> >
+> > We have adreno_smmu_priv for this purpose ;-)
+> >
+>
+> Thanks Rob for pointing to this private interface structure between smmu
+> and gpu. I think it's similar to what you're trying to implement here
+> https://lore.kernel.org/all/CAF6AEGtm-KweFdMFvahH1pWmpOq7dW_p0Xe_13aHGWt0=
+jSbg8w@mail.gmail.com/#t
+> I can add an api "set_actlr_prr()" with smmu_domain cookie, page pointer
+> as two parameters. This api then can be used by drm/msm driver to carry
+> out the prr implementation by simply calling this.
+> Would this be okay Rob,Konrad,Dmitry?
+> Let me know if any other suggestions you have in mind as well regarding
+> parameters and placement.
 
-Yea. This seems to be good.
+Hey Bibek, quick question.. is ACTLR preserved across a suspend/resume
+cycle?  Or does it need to be reprogrammed on resume?  And same
+question for these two PRR related regs:
 
-> > The "struct arm_smmu_strtab_l1_desc" seems to be only used at one
-> > place in arm_smmu_init_l2_strtab(). So, how about:
-> 
-> I didn't do it but, it would make some of the maths more obvious 
-> if we encoded the table structure in the types:
-> 
-> struct arm_smmu_strtab_l2_stes {
-> 	struct arm_smmu_ste l2[256];
-> };
+  /* Global SMMU register offsets */
+  #define KGSL_IOMMU_PRR_CFG_LADDR        0x6008
+  #define KGSL_IOMMU_PRR_CFG_UADDR        0x600c
 
-I personally prefer this one, though why 256?
+(ie. high/low 32b of the PRR page)
 
-I was also thinking of an alternative by separating linear/2lvl:
+I was starting to type up a patch to add PRR configuration, but
+depending on whether it interacts with suspend/resume, it might be
+better form arm-smmu-qcom.c to just always enable and configure PRR
+(including allocating a page to have an address to program into
+PRR_CFG_LADDR/UADDR), and instead add an interface to return the PRR
+page?  I think there is no harm in unconditionally configuring PRR for
+gpu smmu.
 
-struct arm_smmu_ste {
-	__le64 data[8];
-};
+BR,
+-R
 
-struct arm_smmu_strtab_linear {
-	struct arm_smmu_ste *ste;
-	dma_addr_t ste_dma;
-};
-
-struct arm_smmu_strtab_l1_desc { // so as to drop TRTAB_L1_DESC_DWORDS
-	__le64 data;
-};
-
-struct arm_smmu_strtab_l2_stes {
-	struct arm_smmu_ste *ste;
-};
-
-struct arm_smmu_strtab_l1 {
-	struct arm_smmu_strtab_l1_desc *l1;
-	dma_addr_t l1_dma;
-	struct arm_smmu_strtab_l2_stes *l2;
-};
-
-struct arm_smmu_device {
-	...
-	union {
-		struct arm_smmu_strtab_linear linear;
-		struct arm_smmu_strtab_l1 l1;
-	} strtab;
-	...
-};
-
-Only arm_smmu_device_reset() really needs strtab_base/_cfg values
-that we could compute them over there, given that there are quite
-amount of smmu->features checking already?
-
-Thanks
-Nicolin
+> Thanks & regards,
+> Bibek
+>
+> > BR,
+> > -R
+> >
+> >>>
+> >>>>
+> >>>>>> Thanks for bringing up this point.
+> >>>>>> I will send v10 patch series removing this BIT(5) setting from the=
+ ACTLR
+> >>>>>> table.
+> >>>>>
+> >>>>> I think it's generally saner to configure the SMMU from the SMMU dr=
+iver..
+> >>>>
+> >>>> Yes, agree on this. But since PRR bit is not directly related to SMM=
+U
+> >>>> configuration so I think it would be better to remove this PRR bit
+> >>>> setting from SMMU driver based on my understanding.
+> >>>
+> >>> Why is it not related? We still don't know what it does.
+> >>>
+> >>> Konrad
+> >>
+> >> --
+> >> With best wishes
+> >> Dmitry
