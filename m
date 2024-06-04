@@ -1,188 +1,120 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.12])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-lj1-f170.google.com (mail-lj1-f170.google.com [209.85.208.170])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8F9712209B
-	for <iommu@lists.linux.dev>; Tue,  4 Jun 2024 07:03:10 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.12
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9A6D213FD9B
+	for <iommu@lists.linux.dev>; Tue,  4 Jun 2024 07:48:28 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.170
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1717484592; cv=none; b=mimeU4m8b6wkof19XSXL4vuPGItZcN20/O35+nQdux2impwiLYPeqgtbmz9FZnKmV3eaWPFslRY3ecyffol8dnLPS1bejBKJouyGuW3Cl5kTBJMnZmV0UUYsgBXaVpBd6eip7/MVj3wEI9uNjPB7oMakzRcJHB/r+cZowsVwwzc=
+	t=1717487310; cv=none; b=Wvk9326JJToW0DWDxoaPnplg0rmb+TMp1tte/a4VukZgQEWjDpxDmNLhMlaefBWJ3ERndHXRQW2grqx/JFsRxMTSSXoVKF+oo6fu95i35/O2Mpbz8DDRQiVUYyur1i8K8w+J0ytlLOr5O/CCWgTMkt1Rx+Lr2DEZ2qz5qRsYGSQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1717484592; c=relaxed/simple;
-	bh=FmtZE0QDhnWtssc5nt4OLbqQeX0Q//9bpFfVcjIAA6Y=;
-	h=Message-ID:Date:MIME-Version:Cc:Subject:To:References:From:
-	 In-Reply-To:Content-Type; b=lMVuEBJ5jE0Zue6y1C0BrDlxL4KNWQI/0Cf1iQxBNxrqOxgaqo3iqwwbM6jYx/IZI3rvuvZXnI9LWZBOOAya7dWWURbnmeYw3ALkqpH6SxOwOjIEyHZ9iYKiq+Dl1DPsCjUGEF8EYnUcE/edZrDYVchG1J1nDAV7GcmpK8exhy0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=ZU1RH9Lr; arc=none smtp.client-ip=192.198.163.12
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
+	s=arc-20240116; t=1717487310; c=relaxed/simple;
+	bh=vCitIq86zHiouZSAKcvxwEFguJ/k1OQJuGOVFY1W6dI=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=d1JBfhXQyi4fdhcYH12uvbiAw6kTbmf48Xwthc0gOoqY78T6ugb4FVO4OzOlhnt4NU1QC7mso2Pb8rvqJdM52vLbtZxDT08K2t8MfpJBjC2Lbj0x/Lb+xESnbopQQO+RD0CoxW7BX3SQQmN19V2uIPbKc9KdDx1gsMX5FrJ7BcI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org; spf=pass smtp.mailfrom=linaro.org; dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b=Fm9v1zLK; arc=none smtp.client-ip=209.85.208.170
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linaro.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="ZU1RH9Lr"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1717484591; x=1749020591;
-  h=message-id:date:mime-version:cc:subject:to:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=FmtZE0QDhnWtssc5nt4OLbqQeX0Q//9bpFfVcjIAA6Y=;
-  b=ZU1RH9LrtgwL0PV5gPp6YZ6UoLVJryBrGn84SqSVFE/EKi6aMcoDYDp1
-   bVRW/F6odawXf3ZRaaYMmhdOOPO3N/XoL3bJO6YLHTwQT++jce6vXLcYF
-   esbCL1xwaiNO7Y8xoUlwrptViGVpRtoC6hgNhBk9tz8+lEHApdiLQgVyo
-   WpwHS2t8RLS7t3E/DjB4NUPEtuYpjL6RO1eRR966R+Tsmio5DZcSgXN2X
-   3cTflyRQzk3lh2wIkZZL059u9ZB/nJ7lTkHHR4l/qiCXHpGrR6HY0djqd
-   0r5uepHBkHmU2QVJWVfJC5W4vm3TQzKJQ4VThf3PYrBaN3KPTaApvZZy/
-   g==;
-X-CSE-ConnectionGUID: fXTewDuDRCeSy9jVou7iKg==
-X-CSE-MsgGUID: 2jiAhdSjSW64J6EleKZM/Q==
-X-IronPort-AV: E=McAfee;i="6600,9927,11092"; a="17843702"
-X-IronPort-AV: E=Sophos;i="6.08,213,1712646000"; 
-   d="scan'208";a="17843702"
-Received: from orviesa007.jf.intel.com ([10.64.159.147])
-  by fmvoesa106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Jun 2024 00:03:10 -0700
-X-CSE-ConnectionGUID: MRQ8mHfJTKyKyFvLEmuY2A==
-X-CSE-MsgGUID: VJWzSxe+RWeCmcJRzriSmg==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.08,213,1712646000"; 
-   d="scan'208";a="37776292"
-Received: from unknown (HELO [10.239.159.127]) ([10.239.159.127])
-  by orviesa007.jf.intel.com with ESMTP; 04 Jun 2024 00:03:08 -0700
-Message-ID: <74992544-de5d-40a3-a68d-7a9bcd03ae71@linux.intel.com>
-Date: Tue, 4 Jun 2024 15:01:00 +0800
+	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="Fm9v1zLK"
+Received: by mail-lj1-f170.google.com with SMTP id 38308e7fff4ca-2eaa80cb573so36962771fa.1
+        for <iommu@lists.linux.dev>; Tue, 04 Jun 2024 00:48:28 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google; t=1717487307; x=1718092107; darn=lists.linux.dev;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=OlJzONumJ7hGmF7Lx8HSrbgepz7pi58FM6gnNMiUIJU=;
+        b=Fm9v1zLKEe5vE8iCsOVA8ykl2zTKuUUEFPZTeBtZyKgHwDsjA/aYSVcJNrn42Cjlv3
+         O/3KuFewtOgqvXw/hBj5Qnb7lVaax5xnb/ykzwkK6SJk4/uui6ufqwjfNtzhv+YOgO4N
+         3d1dPg2eTlTOFj7F3yd2YRCxozQvIBEV801HgGqrOYROmSO3H6TSnYM3dfQAZtwcaRIi
+         uYw2CGQaHi0DW70/aOmjkb910CyBRUpnjm9wjs1wfjbNIac41J7pPtyEBbz7IvspALJ8
+         dPIrboEz2ZA3WYAldv5feZPTJCZuSLm3oM7arNtXLpUKUccpQlKWDcp644NZLMGTwrkk
+         sBAg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1717487307; x=1718092107;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=OlJzONumJ7hGmF7Lx8HSrbgepz7pi58FM6gnNMiUIJU=;
+        b=iTwOOHQ8J1oT8DETPzRhStz7/cereOaG7ptDmL1R2gB6lcVmTA9rMwnOjr+h0jW3Rp
+         Zx5awuwXhO/j31Bz7RkCJrCWazJuiP0IGmwVFAsr0jLp2k14bZEb2IPpl8StRYxKJ+vz
+         sQGhQSRS6o3wDQN+kSB+wsct/jruznvZkEB6mOD4O7oysJj2/W6gbleyCmNZEDwpRH0Q
+         R2zxdTSv0E9LFr3W3vBCnONPo1aq+6bK0HOXLEyozIkl264/YKov+tfYaMtXXtu4ALzm
+         tHo4R1TsuXjb9HycSwRPwEdq5lofErkmdC8hQLN1+ZI7rYRwbs5liKPHURYNg8e+GG7j
+         KYIw==
+X-Forwarded-Encrypted: i=1; AJvYcCUtlK7kndWv8PwA+3nHNW49XutPw6TJK5UVmyA1Fe5SpudZqH6DJVYVxV2JmQt75qAztFIUgwgFaABm/fYL3tFUH2/mH9I=
+X-Gm-Message-State: AOJu0YwRBqX87bEIcDVCy+q4mhYBybasxSy9sSqAeZM39E/NPZ91+pB6
+	Nn0XuIyH9S2uzIohWn0SowwRNxzRBIdIUc1NyxZzDvXL9M5GPjRmPbK9Ku7cRPI=
+X-Google-Smtp-Source: AGHT+IGqL1YJgziLvhDKlAs/q9qv00KwD6G0YPzlvyHwSRHM2CF7Ig4MUCHZdylu6wx8bzJ0XpEuCQ==
+X-Received: by 2002:a19:9110:0:b0:52b:8417:fa95 with SMTP id 2adb3069b0e04-52b896b6e1emr6758126e87.41.1717487306746;
+        Tue, 04 Jun 2024 00:48:26 -0700 (PDT)
+Received: from eriador.lumag.spb.ru (dzdbxzyyyyyyyyyyyykxt-3.rev.dnainternet.fi. [2001:14ba:a0c3:3a00::227])
+        by smtp.gmail.com with ESMTPSA id 2adb3069b0e04-52ba4c99cb8sm142098e87.62.2024.06.04.00.48.25
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 04 Jun 2024 00:48:25 -0700 (PDT)
+Date: Tue, 4 Jun 2024 10:48:23 +0300
+From: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+To: Lu Baolu <baolu.lu@linux.intel.com>
+Cc: Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>, 
+	Robin Murphy <robin.murphy@arm.com>, Jason Gunthorpe <jgg@ziepe.ca>, 
+	Kevin Tian <kevin.tian@intel.com>, Yi Liu <yi.l.liu@intel.com>, David Airlie <airlied@gmail.com>, 
+	Daniel Vetter <daniel@ffwll.ch>, Kalle Valo <kvalo@kernel.org>, 
+	Bjorn Andersson <andersson@kernel.org>, Mathieu Poirier <mathieu.poirier@linaro.org>, 
+	Alex Williamson <alex.williamson@redhat.com>, mst@redhat.com, Jason Wang <jasowang@redhat.com>, 
+	Thierry Reding <thierry.reding@gmail.com>, Jonathan Hunter <jonathanh@nvidia.com>, 
+	Mikko Perttunen <mperttunen@nvidia.com>, iommu@lists.linux.dev, dri-devel@lists.freedesktop.org, 
+	linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2 06/22] drm/msm: Use iommu_paging_domain_alloc()
+Message-ID: <zm65wqngmcji4t4ox6ak7il7p5beup6a2yidytp376gbxkfq2w@duieucwqwj6r>
+References: <20240604015134.164206-1-baolu.lu@linux.intel.com>
+ <20240604015134.164206-7-baolu.lu@linux.intel.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Cc: baolu.lu@linux.intel.com, "iommu@lists.linux.dev"
- <iommu@lists.linux.dev>,
- "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH 1/2] iommu/vt-d: Support batching IOTLB/dev-IOTLB
- invalidation commands
-To: "Zhang, Tina" <tina.zhang@intel.com>, "Tian, Kevin" <kevin.tian@intel.com>
-References: <20240517003728.251115-1-tina.zhang@intel.com>
- <20240517003728.251115-2-tina.zhang@intel.com>
- <2b390228-190c-4508-b98f-1811c54c9e5c@linux.intel.com>
- <MW5PR11MB588165376224FEA74A0426D989FF2@MW5PR11MB5881.namprd11.prod.outlook.com>
- <7440cd36-41e0-4705-a597-f2ce3f841a70@linux.intel.com>
- <MW5PR11MB58814B632958A5776B6C31FF89F82@MW5PR11MB5881.namprd11.prod.outlook.com>
-Content-Language: en-US
-From: Baolu Lu <baolu.lu@linux.intel.com>
-In-Reply-To: <MW5PR11MB58814B632958A5776B6C31FF89F82@MW5PR11MB5881.namprd11.prod.outlook.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20240604015134.164206-7-baolu.lu@linux.intel.com>
 
-On 6/4/24 1:59 PM, Zhang, Tina wrote:
->> -----Original Message-----
->> From: Baolu Lu<baolu.lu@linux.intel.com>
->> Sent: Tuesday, June 4, 2024 9:15 AM
->> To: Zhang, Tina<tina.zhang@intel.com>; Tian, Kevin<kevin.tian@intel.com>
->> Cc:baolu.lu@linux.intel.com;iommu@lists.linux.dev; linux-
->> kernel@vger.kernel.org
->> Subject: Re: [PATCH 1/2] iommu/vt-d: Support batching IOTLB/dev-IOTLB
->> invalidation commands
->>
->> On 6/3/24 3:37 PM, Zhang, Tina wrote:
->>>> -----Original Message-----
->>>> From: Baolu Lu<baolu.lu@linux.intel.com>
->>>> Sent: Sunday, May 19, 2024 5:43 PM
->>>> To: Zhang, Tina<tina.zhang@intel.com>; Tian,
->>>> Kevin<kevin.tian@intel.com>
->>>> Cc:baolu.lu@linux.intel.com;iommu@lists.linux.dev; linux-
->>>> kernel@vger.kernel.org
->>>> Subject: Re: [PATCH 1/2] iommu/vt-d: Support batching IOTLB/dev-IOTLB
->>>> invalidation commands
->>>>
->>>> On 5/17/24 8:37 AM, Tina Zhang wrote:
->>>>> Introduce a new parameter batch_desc to the QI based IOTLB/dev-IOTLB
->>>>> invalidation operations to support batching invalidation descriptors.
->>>>> This batch_desc is a pointer to the descriptor entry in a batch cmds
->>>>> buffer. If the batch_desc is NULL, it indicates that batch
->>>>> submission is not being used, and descriptors will be submitted individually.
->>>>>
->>>>> Also fix an issue reported by checkpatch about "unsigned mask":
->>>>>            "Prefer 'unsigned int' to bare use of 'unsigned'"
->>>>>
->>>>> Signed-off-by: Tina Zhang<tina.zhang@intel.com>
->>>>> ---
->>>>>     drivers/iommu/intel/cache.c | 33 +++++++++++-------
->>>>>     drivers/iommu/intel/dmar.c  | 67 ++++++++++++++++++++-----------------
->>>>>     drivers/iommu/intel/iommu.c | 27 +++++++++------
->>>>>     drivers/iommu/intel/iommu.h | 21 ++++++++----
->>>>>     drivers/iommu/intel/pasid.c | 20 ++++++-----
->>>>>     5 files changed, 100 insertions(+), 68 deletions(-)
->>>>>
->>>>> diff --git a/drivers/iommu/intel/cache.c
->>>>> b/drivers/iommu/intel/cache.c index e8418cdd8331..dcf5e0e6af17
->>>>> 100644
->>>>> --- a/drivers/iommu/intel/cache.c
->>>>> +++ b/drivers/iommu/intel/cache.c
->>>>> @@ -278,7 +278,7 @@ void cache_tag_flush_range(struct dmar_domain
->>>> *domain, unsigned long start,
->>>>>     		case CACHE_TAG_NESTING_IOTLB:
->>>>>     			if (domain->use_first_level) {
->>>>>     				qi_flush_piotlb(iommu, tag->domain_id,
->>>>> -						tag->pasid, addr, pages, ih);
->>>>> +						tag->pasid, addr, pages, ih,
->>>> NULL);
->>>>>     			} else {
->>>> I'd like to have all batched descriptors code inside this file to
->>>> make it easier for maintenance. Perhaps we can add the below
->>>> infrastructure in the dmar_domain structure together with the cache tag.
->>> Does it suggest we need to add a batch version of
->> qi_flush_iotlb/qi_flush_dev_iotlb/qi_flush_piotlb/qi_flush_dev_iotlb_pasid() in
->> the cache.c file? It doesn't sound like an easy to maintain those functions, does
->> it?
->>
->> Yes. I don't think it's that difficult as the helpers just compose a qi descriptor and
->> insert it in a local queue. This local queue will be flushed after finishing iterating
->> all cache tags, or there's no room for more descriptors, or switches to a different
->> iommu. Have I missed anything?
-> In current VT-d driver, only qi_flush_xxx() functions have the knowledge about how to make IOTLB invalidation descriptors. In qi_flush_xxx() functions, VT-d invalidation descriptors are populated and submitted to hardware immediately.
+On Tue, Jun 04, 2024 at 09:51:18AM +0800, Lu Baolu wrote:
+> The domain allocated in msm_iommu_new() is for the @dev. Replace
+> iommu_domain_alloc() with iommu_paging_domain_alloc() to make it explicit.
 > 
-> To support batching command, I think we can have two choices:
-> 1. Extend qi_flush_xxx() functions to support batching descriptors. (Just like the implementation in this version)
-> In this way, the knowledge of populating an IOTLB invalidation descriptor in qi_flush_xxx() is reused. Additional code change is for batching the descriptor command into a buffer.
+> Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
+> ---
+>  drivers/gpu/drm/msm/msm_iommu.c | 7 +++++--
+>  1 file changed, 5 insertions(+), 2 deletions(-)
+
+Acked-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+
+Thank you!
+
 > 
-> 2. Introduce a new set of interfaces to populate IOTLB descriptors and batch them into a batch buffer.
-> The new set of interfaces is implemented in the cache.c file and we need to copy the knowledge about how to populate IOTLB descriptors from qi_flush_xxx() interfaces into the new interfaces. I hesitated to choose this option because it would duplicate code. Maybe we can generalize the knowledge of populating IOTLB descriptors into lower level interfaces and make the current qi_flush_xxx() and the new set of interfaces call them.
+> diff --git a/drivers/gpu/drm/msm/msm_iommu.c b/drivers/gpu/drm/msm/msm_iommu.c
+> index d5512037c38b..2a94e82316f9 100644
+> --- a/drivers/gpu/drm/msm/msm_iommu.c
+> +++ b/drivers/gpu/drm/msm/msm_iommu.c
+> @@ -407,10 +407,13 @@ struct msm_mmu *msm_iommu_new(struct device *dev, unsigned long quirks)
+>  	struct msm_iommu *iommu;
+>  	int ret;
+>  
+> -	domain = iommu_domain_alloc(dev->bus);
+> -	if (!domain)
+> +	if (!device_iommu_mapped(dev))
+>  		return NULL;
+>  
+> +	domain = iommu_paging_domain_alloc(dev);
+> +	if (IS_ERR(domain))
+> +		return ERR_CAST(domain);
+> +
+>  	iommu_set_pgtable_quirks(domain, quirks);
+>  
+>  	iommu = kzalloc(sizeof(*iommu), GFP_KERNEL);
+> -- 
+> 2.34.1
 > 
-> Which option do you think is better?
 
-We can share the common code without changing the current helper
-interfaces. Something like this,
-
-static inline void qi_desc_iotlb(struct intel_iommu *iommu, u16 did, u64 
-addr,
-                                  unsigned int size_order, u64 type,
-                                  struct qi_desc *desc)
-{
-         u8 dw = 0, dr = 0;
-         int ih = 0;
-
-         if (cap_write_drain(iommu->cap))
-                 dw = 1;
-
-         if (cap_read_drain(iommu->cap))
-                 dr = 1;
-
-         desc->qw0 = QI_IOTLB_DID(did) | QI_IOTLB_DR(dr) | QI_IOTLB_DW(dw)
-                 | QI_IOTLB_GRAN(type) | QI_IOTLB_TYPE;
-         desc->qw1 = QI_IOTLB_ADDR(addr) | QI_IOTLB_IH(ih)
-                 | QI_IOTLB_AM(size_order);
-         desc->qw2 = 0;
-         desc->qw3 = 0;
-}
-
-void qi_flush_iotlb(struct intel_iommu *iommu, u16 did, u64 addr,
-                     unsigned int size_order, u64 type)
-{
-         struct qi_desc desc;
-
-         qi_desc_iotlb(iommu, did, addr, size_order, type, &desc)
-         qi_submit_sync(iommu, &desc, 1, 0);
-}
-
-The qi_desc_iotlb() can be used in both batched and non-batched paths.
-Does this work for you?
-
-Best regards,
-baolu
+-- 
+With best wishes
+Dmitry
