@@ -1,31 +1,31 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 03D9D1CA2FA;
-	Wed,  5 Jun 2024 12:04:58 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C3DBD19599E;
+	Wed,  5 Jun 2024 12:05:32 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1717589099; cv=none; b=p2Tlid0QjLjHZ6dAvu0PilZ6vehv9tyEo5nglj9czVHesBidlLoNIrkvrB6yXh7jq3JKxH/HyZUj61BtOb9qTLhq2P1atqzLsiWk4mOMHnfCrvi0+HgM4zhykdehghzu758Vds1lgUHl1XhpBM6/fnrQ45fF9jg7eRp0JeCVl2c=
+	t=1717589133; cv=none; b=hX/HflbD02DDDT4or5B2ouNrCTiq0yzQKXiIJpYmhM69zOh7l8rjEvllN/HyDyIAmV6p4WPXTyIQVC7HSKv/C4kJQDb6/Xv6JLAMzC+gX+bx/FR3PsOGe0W17nRsoBo/yvhGUAQHyPfeHF64QDplLpS3uHYscuK/DbBxPDRZQGA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1717589099; c=relaxed/simple;
-	bh=B3cXj5QRC/Hj3s+cHzQMtqKF+PdRub88qOcV1NmK5CY=;
+	s=arc-20240116; t=1717589133; c=relaxed/simple;
+	bh=+XnIWAAgCcPltNF7UZ57tChLepn3YL0mHPeD8aZhqto=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=CMdQ3E+ObyCcxUG+NBsfdby06uA6O1sa0dRkLPD3zzTPt5iDDh+bzNDuMGSgAoJmxjKzgW+SO0ahwOLLSvBOYNhseyJ5ubtfQiFIrsvfzIR7g1aLAx9tu4WBAzH/TMJAz7+aOLC4m/ii8JXM7clSK0Z8E6Cnuu1NblXQswwdGPU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=gB+c+id8; arc=none smtp.client-ip=10.30.226.201
+	 MIME-Version; b=iFiOphjlFhqztcqad1GC82MLG3IxYutzEeFuKfNCcfdmCjBi5oDipq1/HzBfbWXd0vb+pXHbGoJU/bBWgNUqiG7BudBVAhgt8ujBKQElPGtA9CqqFUiXq15+8eXmRGeZ2YZBjpQ/F+c9FIcSuPG7uSdyjF1S64QYPsk71LYXwc0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=J/4w+0Wk; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="gB+c+id8"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 78409C3277B;
-	Wed,  5 Jun 2024 12:04:57 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="J/4w+0Wk"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3E716C3277B;
+	Wed,  5 Jun 2024 12:05:31 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1717589098;
-	bh=B3cXj5QRC/Hj3s+cHzQMtqKF+PdRub88qOcV1NmK5CY=;
+	s=k20201202; t=1717589132;
+	bh=+XnIWAAgCcPltNF7UZ57tChLepn3YL0mHPeD8aZhqto=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-	b=gB+c+id8lHu3GzymWcwwp9wqJh9P2Jgq96y4UWnk0lEYDfwu6iB8jZmdspwg9hhz+
-	 CxjREY5J9qvDpLWohcvyKoJiUySRLb1XuYIZ5i+yuOhSSrLWzy+qfhD+cUt9fNL3N1
-	 N+kle2fhLhgETwbZPSJM8atN9bmvBhQXA1q8weiv38s9Of1jwyIUPWZz0Uqtt7H5Tm
-	 2aeN5yVrt+iuDo2WUbyh7PUhz13RRWLNB5nerIAywchwzKpmY2D27C36fj4O+mxD4q
-	 sIAnAW0ms64vJZnPHHuWE6DTd927nEGoN/PuIuiO1+ifq1Dmld7wNBdGfGHE5WO+Qc
-	 6NHI6b7X9SxjA==
+	b=J/4w+0WkXTZeG3A/r2HYosyFZYYrcUnY+62U4xg9hkzWi/c5cQj3AX4MjXDciT1zH
+	 cL7h+Fv5im+KTmJ0EZzwYcFtdjrcDafZVI8BzIIZu2gb27c63rzJK1OWphzNjrV9YE
+	 uFeDFvTQ+00p49px1X99SjErH9PSX+KohiWHx+T8i7fzNN3yWs6BGgW/4Zd2236ugU
+	 l7L6ugko2eLARPB8p5/J7YSnxc5yXr4HWa/8YflfxgIR3a3x8RPBAMD+qU/4vRKdIG
+	 DXqHTAqhVhAoQQk6Dqk3ltS2PQ+ZSMcYCkzBr89Eutl0DItv4o1aC8j5OFXXwxmwym
+	 De2CXWl9RVRIQ==
 From: Sasha Levin <sashal@kernel.org>
 To: linux-kernel@vger.kernel.org,
 	stable@vger.kernel.org
@@ -37,12 +37,12 @@ Cc: Fedor Pchelkin <pchelkin@ispras.ru>,
 	chenxiang66@hisilicon.com,
 	m.szyprowski@samsung.com,
 	iommu@lists.linux.dev
-Subject: [PATCH AUTOSEL 6.1 02/14] dma-mapping: benchmark: avoid needless copy_to_user if benchmark fails
-Date: Wed,  5 Jun 2024 08:04:35 -0400
-Message-ID: <20240605120455.2967445-2-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 5.15 02/12] dma-mapping: benchmark: avoid needless copy_to_user if benchmark fails
+Date: Wed,  5 Jun 2024 08:05:12 -0400
+Message-ID: <20240605120528.2967750-2-sashal@kernel.org>
 X-Mailer: git-send-email 2.43.0
-In-Reply-To: <20240605120455.2967445-1-sashal@kernel.org>
-References: <20240605120455.2967445-1-sashal@kernel.org>
+In-Reply-To: <20240605120528.2967750-1-sashal@kernel.org>
+References: <20240605120528.2967750-1-sashal@kernel.org>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -51,7 +51,7 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
-X-stable-base: Linux 6.1.92
+X-stable-base: Linux 5.15.160
 Content-Transfer-Encoding: 8bit
 
 From: Fedor Pchelkin <pchelkin@ispras.ru>
@@ -71,10 +71,10 @@ Signed-off-by: Sasha Levin <sashal@kernel.org>
  1 file changed, 3 insertions(+)
 
 diff --git a/kernel/dma/map_benchmark.c b/kernel/dma/map_benchmark.c
-index 0520a8f4fb1df..30ebfbf756847 100644
+index 9b9af1bd6be31..8d6d802576928 100644
 --- a/kernel/dma/map_benchmark.c
 +++ b/kernel/dma/map_benchmark.c
-@@ -252,6 +252,9 @@ static long map_benchmark_ioctl(struct file *file, unsigned int cmd,
+@@ -275,6 +275,9 @@ static long map_benchmark_ioctl(struct file *file, unsigned int cmd,
  		 * dma_mask changed by benchmark
  		 */
  		dma_set_mask(map->dev, old_dma_mask);
