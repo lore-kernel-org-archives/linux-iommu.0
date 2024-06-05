@@ -1,202 +1,212 @@
-Received: from NAM10-DM6-obe.outbound.protection.outlook.com (mail-dm6nam10on2081.outbound.protection.outlook.com [40.107.93.81])
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C588614B061;
-	Tue,  4 Jun 2024 19:28:33 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.93.81
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1717529315; cv=fail; b=o11D/qsbgXHK6uevnOEBRYUXAgOpMH3uQvkJXWDcU0Fs3UQWo7v9Hc7xNRx5xiswBoG1ZOSxuNTYXIq0HimRdXAmsNOS9790hoMqP4aQJJgXYmrbqpwG2WZ3bbAIrEIbogm9uWA0/utPWC42rKqvNsdLDhEZIKBXTNcrz/IXRDg=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1717529315; c=relaxed/simple;
-	bh=avfpCZJbhx1tkq0V6sA0j2XHhx520LSy4hRUC59uEz4=;
-	h=Date:From:To:CC:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=NiAK8t8I/+q0gdMIek7IN9s6GfcLdHb/oq3KIykAlzShwzSDq5M5L9niN7ZEkvfbVFpN54VmVfs71Oy6/BtuT33KU9AVy/c/k/n/MDu51r4B3dNiRjRDm6a2lRzPUaDRNtPOhNQ563vXzlvy8ndpdnwC+ysBTKhk2dozXiLFggE=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=CP6jPIRZ; arc=fail smtp.client-ip=40.107.93.81
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4610F433A9
+	for <iommu@lists.linux.dev>; Wed,  5 Jun 2024 02:02:23 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.19
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1717552946; cv=none; b=YbU+8bcpfAaC/CNmqgFWxFISJOHX8+cZj198abjqnxXl8MHmrk++6FhH9CkK92lVihHHn5sB+5bmhAf+IN4EyYkLwjwObtozj70N0YacMZEfTK6tOa/RPGaoZ+qK5sz9mC1/YCGdcFyqUxG2CqEcKWrw/wrDkg2Jg89pB92BJHE=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1717552946; c=relaxed/simple;
+	bh=DVudwJDdRkFCO/7DezhJu4C8/HNl1KHfIYtmD/xTOpU=;
+	h=Message-ID:Date:MIME-Version:Cc:Subject:To:References:From:
+	 In-Reply-To:Content-Type; b=lrLH5UY9uICRYr/KXinqmCDp04v77wZokeD91iKCtfcqiBFron19UmoVFsHk8Fv80IuwwUXAEMJgmEcf8OAkRE9zcfyqb2IVMZNH+Tu44GzfcSv5t8UhpEZcTKQAZgZzdslO84x70rnZD9xbqGhz9778cw+OviwCXIab0Mz78Vo=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=BqR2CXy1; arc=none smtp.client-ip=192.198.163.19
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="CP6jPIRZ"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=LFmsX+iuQ9kNDbWX+VnyHeLY1ANVvUW+Do6dLlocMiMvnlsgVjEkiu8ynXvQQdmFO5fSTsqi6KKKHk4K/QQoPj4MhsY12kYIeAypH87GosF9fl3sy45RQ6TAZaNr+1MgLfHwJRP4MtGLJMlG9GIIcYOnIedmQEcb8gfVK4f1idtCG717qkLgwwgo/ykCFxK2BTNPEOR5zh15s4kmNGBkzKL3Jd88Ge2JFBHEQJCIvQTf4vMGSis04duFvHvoKOwh2pN5S2BHxaTdQHuhcAB8za6d96zx4VZaGHz0W54hH+25GVHOklq5W/n8+XImPiSzP5CpAhOjW54E058mq8JDLg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=9joHJZRe1EHrSykf6l+L3IW9VXAefYBhImHlpKTD9bY=;
- b=e2/qdX34Clcu2Om6goFZ+Ipuh5/6P461BN0TmSxJlxHqWs9iuC7SHa2zPIulXpz7G5+x2oVfan8CTwMNgGS7BoryAyyGtJ/0z/ZvRRFT3GoY9FKODHUPPXiL9YMC6frP37Z0+2u8Ru4waIycCcEOBlT+fnetIbeyMttJLG0LmLF1XuzkD8saKLC+xCxd3gOrhus6CeadvUfNMAH6JurqDdazZg+Zf38o1yLwxNAV3JZ2HjuCgwEFQmyes1J5nDtBodCfbdEAtuBozZMXhvDVWTOBfR5WtL7WHE1vi9vzrIJNscyNqT3+GW0Fzatj4e307lh+WrmOU+gAjIgfdXtrqQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 216.228.117.161) smtp.rcpttodomain=lists.linux.dev smtp.mailfrom=nvidia.com;
- dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
- dkim=none (message not signed); arc=none (0)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=9joHJZRe1EHrSykf6l+L3IW9VXAefYBhImHlpKTD9bY=;
- b=CP6jPIRZ+QJMB3eVThPAjVJl531EAJHYMrNeVh6XqT7ohBH5h58oCRshEStH/3f4D0H5mywRTQWctW3EK9hPxplzQ+gs8FhX7EnwV9CYgwCXO2h/LZXmHxxAY7wYWdJg8+8kN4+xgozR9yKeLuGzY80ktcKNze29hwrFrAoLzYgkg/vE5YktYKHlJ2TH4/OkgJi86n1PaDZYMYHbVWNiDYTWUso9IuL7wcNHjEgfeFMvf7jquSgqtpdigYsn79JNJAEUi9WTDME02JnCn3B+paCB51bKe/xnLievhdJ8200jEXIAC7kjphAs9tf2PD6LDrYXreDzF+vf1XFvXoo84w==
-Received: from SA9PR13CA0073.namprd13.prod.outlook.com (2603:10b6:806:23::18)
- by SA3PR12MB8802.namprd12.prod.outlook.com (2603:10b6:806:314::18) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7633.21; Tue, 4 Jun
- 2024 19:28:30 +0000
-Received: from SN1PEPF0002636D.namprd02.prod.outlook.com
- (2603:10b6:806:23:cafe::ad) by SA9PR13CA0073.outlook.office365.com
- (2603:10b6:806:23::18) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7656.16 via Frontend
- Transport; Tue, 4 Jun 2024 19:28:30 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.117.161)
- smtp.mailfrom=nvidia.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=nvidia.com;
-Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 216.228.117.161 as permitted sender) receiver=protection.outlook.com;
- client-ip=216.228.117.161; helo=mail.nvidia.com; pr=C
-Received: from mail.nvidia.com (216.228.117.161) by
- SN1PEPF0002636D.mail.protection.outlook.com (10.167.241.138) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.7633.15 via Frontend Transport; Tue, 4 Jun 2024 19:28:30 +0000
-Received: from rnnvmail202.nvidia.com (10.129.68.7) by mail.nvidia.com
- (10.129.200.67) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1544.4; Tue, 4 Jun 2024
- 12:28:14 -0700
-Received: from rnnvmail203.nvidia.com (10.129.68.9) by rnnvmail202.nvidia.com
- (10.129.68.7) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1544.4; Tue, 4 Jun 2024
- 12:28:14 -0700
-Received: from Asurada-Nvidia (10.127.8.11) by mail.nvidia.com (10.129.68.9)
- with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1544.4 via Frontend
- Transport; Tue, 4 Jun 2024 12:28:13 -0700
-Date: Tue, 4 Jun 2024 12:28:11 -0700
-From: Nicolin Chen <nicolinc@nvidia.com>
-To: Jason Gunthorpe <jgg@nvidia.com>
-CC: <iommu@lists.linux.dev>, Joerg Roedel <joro@8bytes.org>,
-	<linux-arm-kernel@lists.infradead.org>, Robin Murphy <robin.murphy@arm.com>,
-	Will Deacon <will@kernel.org>, Michael Shavit <mshavit@google.com>,
-	<patches@lists.linux.dev>, Ryan Roberts <ryan.roberts@arm.com>, Mostafa Saleh
-	<smostafa@google.com>
-Subject: Re: [PATCH 1/7] iommu/arm-smmu-v3: Split struct
- arm_smmu_strtab_cfg.strtab
-Message-ID: <Zl9qy9XA7Wivk3/J@Asurada-Nvidia>
-References: <0-v1-1b720dce51d1+4f44-smmuv3_tidy_jgg@nvidia.com>
- <1-v1-1b720dce51d1+4f44-smmuv3_tidy_jgg@nvidia.com>
- <Zl7RFCZhAbI/DzwC@Asurada-Nvidia>
- <20240604125955.GH19897@nvidia.com>
- <Zl9ctWSM6m3gkH5T@Asurada-Nvidia>
- <20240604190247.GP19897@nvidia.com>
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="BqR2CXy1"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1717552943; x=1749088943;
+  h=message-id:date:mime-version:cc:subject:to:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=DVudwJDdRkFCO/7DezhJu4C8/HNl1KHfIYtmD/xTOpU=;
+  b=BqR2CXy1+3Jj04Lpa1KPl87ywlpCBAs79nr4RVvkm5njy/0wXhH0hhNl
+   gH14gFdCsCGsIzYyCU5IDoxsTq2hJQH0x6jyw+VWVZ7hJ+f/0M0kDFDXQ
+   fp1ZDdX56owIHQYqFw9qw4zS/Juv+A0x6RmxO6uOz7uzEzmD7sHgH/85o
+   ljhiI/25Le8JXx+Jwa1exWIWkGBZe4vD5qpQEMiQtm1yzXygDUjbAklUI
+   7CBS35Mey2dOzNaIo03mpLv2h42JuBjrk+ajpGlCgOAiawGxmcJW9RMoB
+   +TX+0RRwqcY50evKDTMAllxA63SDIgCzcQDotYWDznYiqdq4m5cMW/DQU
+   w==;
+X-CSE-ConnectionGUID: vlLCGlx0SzuvZpdmECRfGQ==
+X-CSE-MsgGUID: 3kv9/CSnQVSXf7OvNAcz1Q==
+X-IronPort-AV: E=McAfee;i="6600,9927,11093"; a="13942504"
+X-IronPort-AV: E=Sophos;i="6.08,215,1712646000"; 
+   d="scan'208";a="13942504"
+Received: from orviesa006.jf.intel.com ([10.64.159.146])
+  by fmvoesa113.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Jun 2024 19:02:23 -0700
+X-CSE-ConnectionGUID: RItW8yqwTuq9l9wOE2V1jA==
+X-CSE-MsgGUID: e3RctwFJShOkhwUisZR8pg==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.08,215,1712646000"; 
+   d="scan'208";a="37870969"
+Received: from unknown (HELO [10.239.159.127]) ([10.239.159.127])
+  by orviesa006.jf.intel.com with ESMTP; 04 Jun 2024 19:02:17 -0700
+Message-ID: <91a42f46-060a-4430-a10a-7bfded67c4a9@linux.intel.com>
+Date: Wed, 5 Jun 2024 10:00:09 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: inline
-In-Reply-To: <20240604190247.GP19897@nvidia.com>
-X-NV-OnPremToCloud: ExternallySecured
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: SN1PEPF0002636D:EE_|SA3PR12MB8802:EE_
-X-MS-Office365-Filtering-Correlation-Id: 9105699d-39cb-4733-84da-08dc84cc8451
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam:
-	BCL:0;ARA:13230031|82310400017|376005|1800799015|36860700004;
-X-Microsoft-Antispam-Message-Info:
-	=?us-ascii?Q?ku/jUkurqfKu8PE7ddJRWvS2hWMcMiycFvvGDqHC6uVjxKEHXyUa9Yybuhtt?=
- =?us-ascii?Q?FEpDhV1lbh+/O6YCN6QNIOLyX11qtbZuKbTpZbRlGuKCllbo7GaUF28ivX4Y?=
- =?us-ascii?Q?6Z4FYXM/RbFNhfZF3//xo0aSceb65oReEBv/r8cuJfVUosgfmN5xAKs+XGRR?=
- =?us-ascii?Q?DHFCn+0rRILPHn5TaIL3R0/Fv+G8jTImYtaVJKNvEME1QJ+CkgKgnHpzsCby?=
- =?us-ascii?Q?/FN96TGjb0dazMvFOQBEiLzeuJMDsnqqWgief/wZWaT0/RDF7OpxIAMkOWnX?=
- =?us-ascii?Q?rF6Hvm45qF0ZSWUHjKyGyvPgM17xFAMjr63rKIv7YHG88etcR3hHUyrKfIq8?=
- =?us-ascii?Q?46wz0IhspUglv+svW9ILvEGHqdhMgD7CVMnDHMYyIw1LL8om/xlYk6WRMHCR?=
- =?us-ascii?Q?UYv8lRPNX/BM926SW58Z6DesrK95BL4xhldlJVTyktTS375UtOr1CwDJovou?=
- =?us-ascii?Q?s0taOR3fmhB0zpWVf2ZyPnmaj06jS7tugjA2h6b4TYiwcIob2eY9OK+s5+ZT?=
- =?us-ascii?Q?sAteEqW7mTycfykcaINFJE5qYDEa1PXtNzTz8MEOhEc5ae0mrjCOLH8XQZZD?=
- =?us-ascii?Q?IjugxZg3b8VqGQERmH1GXEi6PBdwTqeSsa9d4pxsqKy1AqR9bhctCRGX6/Nk?=
- =?us-ascii?Q?AQYz+5MTWDgWfV8zH0PVA6eaZnJUoKQ6t4ObbUVktYiHEDqGgriZ5CnD1GcB?=
- =?us-ascii?Q?f4kRQhD+B4+5GeFHNbjtnF7a3B2uWsVf6kOb8KFyin3k6JD+ItrkeVNT2QA/?=
- =?us-ascii?Q?nNMqQMxup3aPSu9UtP3tsxW77U4Pbsj4Z5eIa2lRJt0AhB9cyyJ4dWvwdUCL?=
- =?us-ascii?Q?IEIL5FUbhmcfpBpZGtloKu2+EM1YEx8vSRa08LD7DY12sfab1mhuqTedRF8X?=
- =?us-ascii?Q?JsJ3xkQD7sNonNlosdIa0miWaHjiCdmehDM6SEKC7zdFKiXLV45FcHuw43Hr?=
- =?us-ascii?Q?LBciOsbtrlpcKakizMyPaUNGjDd/Xzq0dE/g3DrAEbNKEOyby8ccfFaNv6/t?=
- =?us-ascii?Q?ZpSnfCeomA6FqH2UJafUoeGSfSPQqPtw3rbCca/q5qaevoxH8suaHtZB3aIv?=
- =?us-ascii?Q?BJr8pTiB7UxOLp32xd8rWwkr/Lr/cR3ndEJvDQu7nIrCkesqvwZkUiF6u2uT?=
- =?us-ascii?Q?fGoY8Jgbp01Z5dBMv66MHfXGoAi3EUOb29Ztg4MBUTzsUognnRB3oO+Gmrkn?=
- =?us-ascii?Q?L5G+F8yfR8EBnUUSizSWHb8qiBMgMW/GXelUblZ4vtg80DBKOihOjiLhhBu1?=
- =?us-ascii?Q?CPGa7Fyp8GRwkYuAzRCiaYeagagAIO2PCmcVduQ+NIi3Sm8UMvg2Sdq/Ql9N?=
- =?us-ascii?Q?1MQXWoX75GDTSuaytBsnvSGgN5uqCJi0P6XKXEhJHpVGJYtBve8Ea+4tfLiU?=
- =?us-ascii?Q?V0D0JXM=3D?=
-X-Forefront-Antispam-Report:
-	CIP:216.228.117.161;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc6edge2.nvidia.com;CAT:NONE;SFS:(13230031)(82310400017)(376005)(1800799015)(36860700004);DIR:OUT;SFP:1101;
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 04 Jun 2024 19:28:30.6178
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 9105699d-39cb-4733-84da-08dc84cc8451
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.117.161];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource:
-	SN1PEPF0002636D.namprd02.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SA3PR12MB8802
+User-Agent: Mozilla Thunderbird
+Cc: baolu.lu@linux.intel.com, David Airlie <airlied@gmail.com>,
+ Daniel Vetter <daniel@ffwll.ch>, Kalle Valo <kvalo@kernel.org>,
+ Bjorn Andersson <andersson@kernel.org>,
+ Mathieu Poirier <mathieu.poirier@linaro.org>,
+ Alex Williamson <alex.williamson@redhat.com>, mst@redhat.com,
+ Jason Wang <jasowang@redhat.com>, Thierry Reding <thierry.reding@gmail.com>,
+ Jonathan Hunter <jonathanh@nvidia.com>,
+ Mikko Perttunen <mperttunen@nvidia.com>, iommu@lists.linux.dev,
+ dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2 01/22] iommu: Add iommu_user_domain_alloc() interface
+To: Yi Liu <yi.l.liu@intel.com>, Joerg Roedel <joro@8bytes.org>,
+ Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
+ Jason Gunthorpe <jgg@ziepe.ca>, Kevin Tian <kevin.tian@intel.com>
+References: <20240604015134.164206-1-baolu.lu@linux.intel.com>
+ <20240604015134.164206-2-baolu.lu@linux.intel.com>
+ <445fae9f-ea1e-4864-9f0e-f348c51146a1@intel.com>
+Content-Language: en-US
+From: Baolu Lu <baolu.lu@linux.intel.com>
+In-Reply-To: <445fae9f-ea1e-4864-9f0e-f348c51146a1@intel.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 
-On Tue, Jun 04, 2024 at 04:02:47PM -0300, Jason Gunthorpe wrote:
-> On Tue, Jun 04, 2024 at 11:28:05AM -0700, Nicolin Chen wrote:
-> > On Tue, Jun 04, 2024 at 09:59:55AM -0300, Jason Gunthorpe wrote:
-> > > On Tue, Jun 04, 2024 at 01:32:20AM -0700, Nicolin Chen wrote:
-> > > > On Mon, Jun 03, 2024 at 07:31:27PM -0300, Jason Gunthorpe wrote:
-> > > > The "struct arm_smmu_strtab_l1_desc" seems to be only used at one
-> > > > place in arm_smmu_init_l2_strtab(). So, how about:
-> > > 
-> > > I didn't do it but, it would make some of the maths more obvious 
-> > > if we encoded the table structure in the types:
-> > > 
-> > > struct arm_smmu_strtab_l2_stes {
-> > > 	struct arm_smmu_ste l2[256];
-> > > };
-> > 
-> > I personally prefer this one, though why 256?
+On 6/4/24 4:03 PM, Yi Liu wrote:
+> On 2024/6/4 09:51, Lu Baolu wrote:
+>> Commit <909f4abd1097> ("iommu: Add new iommu op to create domains owned
+>> by userspace") added a dedicated iommu op to allocate a user domain.
+>> While IOMMUFD has already made use of this callback, other frameworks
+>> like vfio/type1 and vDPA still use the paging domain allocation 
+>> interface.
+>>
+>> Add a new interface named iommu_user_domain_alloc(), which indicates the
+>> allocation of a domain for device DMA managed by user space driver. All
+>> device passthrough frameworks could use this interface for their domain
+>> allocation.
+>>
+>> Although it is expected that all iommu drivers could implement their own
+>> domain_alloc_user ops, most drivers haven't implemented it yet. Rollback
+>> to the paging domain allocation interface if the iommu driver hasn't
+>> implemented this op yet.
+>>
+>> Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
+>> ---
+>>   include/linux/iommu.h |  6 ++++++
+>>   drivers/iommu/iommu.c | 42 ++++++++++++++++++++++++++++++++++++++++++
+>>   2 files changed, 48 insertions(+)
+>>
+>> diff --git a/include/linux/iommu.h b/include/linux/iommu.h
+>> index 7bc8dff7cf6d..6648b2415474 100644
+>> --- a/include/linux/iommu.h
+>> +++ b/include/linux/iommu.h
+>> @@ -780,6 +780,7 @@ extern bool iommu_present(const struct bus_type 
+>> *bus);
+>>   extern bool device_iommu_capable(struct device *dev, enum iommu_cap 
+>> cap);
+>>   extern bool iommu_group_has_isolated_msi(struct iommu_group *group);
+>>   extern struct iommu_domain *iommu_domain_alloc(const struct bus_type 
+>> *bus);
+>> +struct iommu_domain *iommu_user_domain_alloc(struct device *dev, u32 
+>> flags);
+>>   extern void iommu_domain_free(struct iommu_domain *domain);
+>>   extern int iommu_attach_device(struct iommu_domain *domain,
+>>                      struct device *dev);
+>> @@ -1086,6 +1087,11 @@ static inline struct iommu_domain 
+>> *iommu_domain_alloc(const struct bus_type *bus
+>>       return NULL;
+>>   }
+>> +static inline struct iommu_domain *iommu_user_domain_alloc(struct 
+>> device *dev, u32 flags)
+>> +{
+>> +    return ERR_PTR(-ENODEV);
+>> +}
+>> +
+>>   static inline void iommu_domain_free(struct iommu_domain *domain)
+>>   {
+>>   }
+>> diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
+>> index 9df7cc75c1bc..f1416892ef8e 100644
+>> --- a/drivers/iommu/iommu.c
+>> +++ b/drivers/iommu/iommu.c
+>> @@ -2032,6 +2032,48 @@ struct iommu_domain *iommu_domain_alloc(const 
+>> struct bus_type *bus)
+>>   }
+>>   EXPORT_SYMBOL_GPL(iommu_domain_alloc);
+>> +/**
+>> + * iommu_user_domain_alloc() - Allocate a user domain
+>> + * @dev: device for which the domain is allocated
+>> + * @flags: iommufd_hwpt_alloc_flags defined in uapi/linux/iommufd.h
+>> + *
+>> + * Allocate a user domain which will be managed by a userspace 
+>> driver. Return
+>> + * allocated domain if successful, or a ERR pointer for failure.
 > 
-> #define STRTAB_SPLIT			8
+> do you want to mention that this is for paging domain allocation?
 
-Oh right! And similarly, "struct arm_smmu_cd l2[1024]".
+You are worrying about its confusion with nesting domain allocation,
+right? My understanding is that if we want a common interface for
+nesting domain allocation, we should make it in another interface. Here,
+the user domain is a paging domain for GVA->HPA mapping, which is common
+across iommufd, vfio, and vdpa.
 
-> > struct arm_smmu_strtab_linear {
-> > 	struct arm_smmu_ste *ste;
-> > 	dma_addr_t ste_dma;
-> > };
-
-> > struct arm_smmu_strtab_l1 {
-> > 	struct arm_smmu_strtab_l1_desc *l1;
 > 
-> num_l1_ents too
-
-Yea, missed that.
-
-> > struct arm_smmu_device {
-> > 	...
-> > 	union {
-> > 		struct arm_smmu_strtab_linear linear;
-> > 		struct arm_smmu_strtab_l1 l1;
-> > 	} strtab;
-> > 	...
-> > };
+>> + */
+>> +struct iommu_domain *iommu_user_domain_alloc(struct device *dev, u32 
+>> flags)
+>> +{
+>> +    struct iommu_domain *domain;
+>> +    const struct iommu_ops *ops;
+>> +
+>> +    if (!dev_has_iommu(dev))
+>> +        return ERR_PTR(-ENODEV);
+>> +
+>> +    ops = dev_iommu_ops(dev);
+>> +    if (ops->domain_alloc_user) {
+>> +        domain = ops->domain_alloc_user(dev, flags, NULL, NULL);
+>> +        if (IS_ERR(domain))
+>> +            return domain;
+>> +
+>> +        domain->type = IOMMU_DOMAIN_UNMANAGED;
+>> +        domain->owner = ops;
+>> +        domain->pgsize_bitmap = ops->pgsize_bitmap;
 > 
-> Yes! That is quite readable and understandable! I was relucant to do
-> much more than just the small change Will asked about, and even that
-> expanded.. Let me see if I can reasonably squeeze that into a small
-> number of patches.
-
-Yea, I hesitated too at the beginning, until I saw Mostafa suggest
-something further.
-
-> > Only arm_smmu_device_reset() really needs strtab_base/_cfg values
-> > that we could compute them over there, given that there are quite
-> > amount of smmu->features checking already?
+> this seems to break the iommufd selftest as the mock driver sets extra
+> bits in the domain->pgsize_bitmap in allocation. Override it may fail
+> something in the testing. you may need to check if domain->pgsize_bitmap
+> is set or use &=.
 > 
-> Certainly could do, but that seems to have less advantage..
+> static struct iommu_domain *mock_domain_alloc_paging(struct device *dev)
+> {
+>      struct mock_dev *mdev = container_of(dev, struct mock_dev, dev);
+>      struct mock_iommu_domain *mock;
+> 
+>      mock = kzalloc(sizeof(*mock), GFP_KERNEL);
+>      if (!mock)
+>          return NULL;
+>      mock->domain.geometry.aperture_start = MOCK_APERTURE_START;
+>      mock->domain.geometry.aperture_end = MOCK_APERTURE_LAST;
+>      mock->domain.pgsize_bitmap = MOCK_IO_PAGE_SIZE;
+>      if (dev && mdev->flags & MOCK_FLAGS_DEVICE_HUGE_IOVA)
+>          mock->domain.pgsize_bitmap |= MOCK_HUGE_PAGE_SIZE;
+>      mock->domain.ops = mock_ops.default_domain_ops;
+>      mock->domain.type = IOMMU_DOMAIN_UNMANAGED;
+>      xa_init(&mock->pfns);
+>      return &mock->domain;
+> }
 
-Well, either way sounds good to me. I was just considering that we
-already did something similar with s1/s2/cd cfg values. Yet, not a
-problem to continue storing these two.
+You are right. I should follow the code in __iommu_domain_alloc()
 
-Thanks
-Nicolin
+         /*
+          * If not already set, assume all sizes by default; the driver
+          * may override this later
+          */
+         if (!domain->pgsize_bitmap)
+                 domain->pgsize_bitmap = ops->pgsize_bitmap;
+
+Does it work?
+
+Best regards,
+baolu
