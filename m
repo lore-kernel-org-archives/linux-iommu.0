@@ -1,56 +1,56 @@
 Received: from mail-qk1-f176.google.com (mail-qk1-f176.google.com [209.85.222.176])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B6C2A1BD026
-	for <iommu@lists.linux.dev>; Wed,  5 Jun 2024 12:23:03 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B018C1D47B1
+	for <iommu@lists.linux.dev>; Wed,  5 Jun 2024 12:23:31 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.222.176
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1717590185; cv=none; b=M6AlhyJN0xzPMjh53BTtSjUef7h9yih8pkCGxU3Sn7yA0jKGj8nyAF9EEb/VgcVXPMxJ828tlAeOnsHn57DWjyMVys2+OE7Mfz3+vACO9wVPBdZJAelmYUa8+oi0mDOJZRNGNqYLSvk0WCqP912rG1cLJ68It1EGCO8SCVn3bSI=
+	t=1717590213; cv=none; b=hCXlCaaZTGn0/hJRCPwATA6wTu0bTuYdk36hlGHjamBxLxmXSPG//vC89PWKGU2D5TXfpPlhRmSnLtonQ5RwY/tvbRgIZ3K1H52e+S1Dnl/fC6yLXoY3cdY1km+/Y/E+QjeJ8W2nouPmm+QX2Y1eSXgCozt22pIg1AauJ8/i1ks=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1717590185; c=relaxed/simple;
-	bh=G2GGb/HXH2TFkT7CxN4l0qD2JCjfrsszwbJsFimRlRg=;
+	s=arc-20240116; t=1717590213; c=relaxed/simple;
+	bh=FvAGxBUOExanQbRwBKA9SQT8Fggkzev4qaTdnbm109k=;
 	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=KqV6Hv15DF5JhpfMKC5/IKtsyYJInrX2U0smWOAcNYN6yXpWF6ssdffx6pR9HUa2sxSG5wJFxTBpIUpyWuKwa4VcdAWD2HPiPNAvaMxWju+Gclqb7yGYh/htZbzJwosg8BTCDDLK31g82CNMrEk5qg7d5zwalKdxj7MALoNDN3A=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=broadcom.com; spf=fail smtp.mailfrom=broadcom.com; dkim=pass (1024-bit key) header.d=broadcom.com header.i=@broadcom.com header.b=YbLG3Xx4; arc=none smtp.client-ip=209.85.222.176
+	 In-Reply-To:Content-Type; b=P0XTleeMMzjYItQsOhGrQJ174CnOBUuRVZBYqeyF9wAUf+uxUS19To6kaLfI1IkI3pjf6yH8nt2cmZPSFgAIJj7XPtoEe9RRHqi1SlhXxZSDD6q3lIDo5qG/wV6qUI7xPRz/NqK/NqGOVWhK/CEMojHFpxtjRASZPtMCmOtHSLg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=broadcom.com; spf=fail smtp.mailfrom=broadcom.com; dkim=pass (1024-bit key) header.d=broadcom.com header.i=@broadcom.com header.b=UpL2xEwR; arc=none smtp.client-ip=209.85.222.176
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=broadcom.com
 Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=broadcom.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=broadcom.com header.i=@broadcom.com header.b="YbLG3Xx4"
-Received: by mail-qk1-f176.google.com with SMTP id af79cd13be357-794ba2d4d82so297410585a.0
-        for <iommu@lists.linux.dev>; Wed, 05 Jun 2024 05:23:03 -0700 (PDT)
+	dkim=pass (1024-bit key) header.d=broadcom.com header.i=@broadcom.com header.b="UpL2xEwR"
+Received: by mail-qk1-f176.google.com with SMTP id af79cd13be357-794ab0f7214so295825585a.3
+        for <iommu@lists.linux.dev>; Wed, 05 Jun 2024 05:23:31 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=broadcom.com; s=google; t=1717590182; x=1718194982; darn=lists.linux.dev;
+        d=broadcom.com; s=google; t=1717590211; x=1718195011; darn=lists.linux.dev;
         h=in-reply-to:autocrypt:from:references:cc:to:subject:user-agent
          :mime-version:date:message-id:from:to:cc:subject:date:message-id
          :reply-to;
-        bh=cEVKENIvxBxlHtRBM/utkR4720JlmqyAqJLQS3LRvKU=;
-        b=YbLG3Xx434JH0e5/J+1fT2uQN4gzcovAJyDNImcSO+H/uXiqdHbNtHgdR+sTSDNfVw
-         kiP6coBWIR+hej4fB4mNY5AB1L7Ae8kVKhgnPh9jsLL/o4vA9IOLRl4XzSTaLroqN79/
-         ieHqZrmKNA/Ceca90aHy9+9jOsVadgkM+8c48=
+        bh=w5ZiZqOSHuLrd/tawI/UtLXpokx3MHTZ5wDCl9h3d78=;
+        b=UpL2xEwRRg/7tTirfROw+r8HGywGkp1jabcvuja75rk3M7WPOfRsqgX1DAUUhBbSG9
+         Zt1TYAoce6JbI2WQWiM36J5A5VU2pW4a3uG2OHdG00gQK2Qx8HqSuhRc2zhIgwGs77VI
+         0OF7ZLcomb3TUsp5CfxWW4ypAoxo72IIbzHr0=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1717590182; x=1718194982;
+        d=1e100.net; s=20230601; t=1717590211; x=1718195011;
         h=in-reply-to:autocrypt:from:references:cc:to:subject:user-agent
          :mime-version:date:message-id:x-gm-message-state:from:to:cc:subject
          :date:message-id:reply-to;
-        bh=cEVKENIvxBxlHtRBM/utkR4720JlmqyAqJLQS3LRvKU=;
-        b=JNx/oesvWeMe90PGIEfhEmW2hyWQ5Nxg7yc+08lnezG63SThrD7Yb51L1LwucqL7i/
-         ob3Bu6r4EUcSjf7s+BH135QFRr2U68jgqXbjtp6KA0xxN+XGFDj6UqO6lrEoPZDNckw1
-         X4yeSc1coFOAxZuhyHgeNq6oB+pFxACYznsUSnqg1iVpLfiHpvXDGqmgSUBee+J1klje
-         VssapNt0td3eTubrCGCtVvHdw3JU7so64/KqjiJ1hKNFw+POjN6hGiyKnHJX5sb7jT4V
-         rUnNv6TxJYIfb0PAwk0tDqOd7Glu1yG43CmYnkkK+JwdJwbIjH7D97yJMCYD6nmwAW+s
-         /odQ==
-X-Forwarded-Encrypted: i=1; AJvYcCXqjBASoy+XuwWuXA/qDSM0Mmx1T8iIRlKvJSJEOqqVci1Hct/AM8ai9sAFwdUNu9IxClcc7atk+k/XBqUU2BhB6JXCNAU=
-X-Gm-Message-State: AOJu0YwlTyivIxuFzfTgDjTkVNXU+vxf+CjHAY+w2PvsOPuh8v4uKxo1
-	drkkG9ewydXP0LHAxu6xRGmCet3jtS7XyZeFQihTsvX3RfAHiTHFJUbgGtMVww==
-X-Google-Smtp-Source: AGHT+IGToDZb9WoifpnuNWwlhT20TqU6iik1R1tkuUbqWYGd9SYIE9jvN+iE/J9OOkOvcSuZdr+SGQ==
-X-Received: by 2002:a05:620a:198e:b0:795:79c:76df with SMTP id af79cd13be357-79523fd1f47mr300730185a.77.1717590182530;
-        Wed, 05 Jun 2024 05:23:02 -0700 (PDT)
+        bh=w5ZiZqOSHuLrd/tawI/UtLXpokx3MHTZ5wDCl9h3d78=;
+        b=TbEBfP+SQDLare3Xd8saQ13ExcTS4niTOWfpIydPBSx2bAQ6yRwv9nSX3dpuz7CWlb
+         P6nr1HSKILg/Jg1nC4YVjFS8BiJr6b++Mcwed9Kn2MHBdZl3xcs92as7hXDZ6yfIuMpN
+         r+9N+P/2KzVelYbo+hQ/QTJq3KMFFV8ANP5rpNJgPN+V0FKQYF3tBk6+SH3GQqfPrBwi
+         g8fV5J6Qb57/wupeXvMY6j9l28PuV7jOeLPEdnzVFoYlt24H1Hi1OuYuq/hQO5VF+LXF
+         nkKDzJc3HihEkiuNdHY7XcQ4aMRDWELXqd3kVlnfeWsoQnXc7NGvshkfCZXaEu3jJ3yJ
+         6CCQ==
+X-Forwarded-Encrypted: i=1; AJvYcCUnJcRQBXdt/SbUEqCegYCHis/2k5bTHryzrUaM0TOvopOfVlOiuEieVRm9ldJXT8Mf2W+vxuc3nI0rwhhzrPCeVXvZHbQ=
+X-Gm-Message-State: AOJu0Yy9DzvI2CENGKKXKa+2hs+MBkLBTqmbRxqq64IAJ6IZjq/zlMAa
+	AJcLsuLyid9fzjoR1cHQ180Au3iRscbJTGgmJvOZuEjJIXwViDvsUkKHtONG6w==
+X-Google-Smtp-Source: AGHT+IHi2TgIK3eoejzwhgG2wkwmVjed2sUowNNhKRGSEarwZx9leY7Faqz98IITLFwkqtOMKuIqWQ==
+X-Received: by 2002:a05:620a:2044:b0:794:f011:7a30 with SMTP id af79cd13be357-79523c26d3cmr244394485a.14.1717590210504;
+        Wed, 05 Jun 2024 05:23:30 -0700 (PDT)
 Received: from [10.230.30.114] ([192.19.223.252])
-        by smtp.gmail.com with ESMTPSA id af79cd13be357-7952d41343esm5099285a.57.2024.06.05.05.22.40
+        by smtp.gmail.com with ESMTPSA id af79cd13be357-7952d41343esm5099285a.57.2024.06.05.05.23.06
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 05 Jun 2024 05:23:01 -0700 (PDT)
-Message-ID: <7339328f-d8da-4057-b669-cc14823913d9@broadcom.com>
-Date: Wed, 5 Jun 2024 14:22:31 +0200
+        Wed, 05 Jun 2024 05:23:29 -0700 (PDT)
+Message-ID: <ea8944b6-28d2-4c4e-9ca9-eb7947a62588@broadcom.com>
+Date: Wed, 5 Jun 2024 14:23:06 +0200
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -58,7 +58,7 @@ List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH 03/18] ARM: dts: bcm283x: Update to use dma-channel-mask
+Subject: Re: [PATCH 13/18] arm: dt: Add dma-ranges to the bcm283x platforms
 To: Dave Stevenson <dave.stevenson@raspberrypi.com>,
  Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>,
  Conor Dooley <conor+dt@kernel.org>,
@@ -82,7 +82,7 @@ Cc: devicetree@vger.kernel.org, linux-rpi-kernel@lists.infradead.org,
  linux-mmc@vger.kernel.org, linux-spi@vger.kernel.org, iommu@lists.linux.dev,
  linux-sound@vger.kernel.org
 References: <20240524182702.1317935-1-dave.stevenson@raspberrypi.com>
- <20240524182702.1317935-4-dave.stevenson@raspberrypi.com>
+ <20240524182702.1317935-14-dave.stevenson@raspberrypi.com>
 From: Florian Fainelli <florian.fainelli@broadcom.com>
 Autocrypt: addr=florian.fainelli@broadcom.com; keydata=
  xsBNBFPAG8ABCAC3EO02urEwipgbUNJ1r6oI2Vr/+uE389lSEShN2PmL3MVnzhViSAtrYxeT
@@ -116,29 +116,30 @@ Autocrypt: addr=florian.fainelli@broadcom.com; keydata=
  MIlnaE6V0U8f5zNHB7Y46yJjjYT/Ds1TJo3pvwevDWPvv6rdBeV07D9s43frUS6xYd1uFxHC
  7dZYWJjZmyUf5evr1W1gCgwLXG0PEi9n3qmz1lelQ8lSocmvxBKtMbX/OKhAfuP/iIwnTsww
  95A2SaPiQZA51NywV8OFgsN0ITl2PlZ4Tp9hHERDe6nQCsNI/Us=
-In-Reply-To: <20240524182702.1317935-4-dave.stevenson@raspberrypi.com>
+In-Reply-To: <20240524182702.1317935-14-dave.stevenson@raspberrypi.com>
 Content-Type: multipart/signed; protocol="application/pkcs7-signature"; micalg=sha-256;
-	boundary="000000000000b9751b061a23a0ab"
+	boundary="00000000000065ec5e061a23a240"
 
---000000000000b9751b061a23a0ab
+--00000000000065ec5e061a23a240
 Content-Language: en-US
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 
 
 
-On 5/24/2024 8:26 PM, Dave Stevenson wrote:
-> Now the driver looks for the common dma-channel-mask property
-> rather than the vendor-specific brcm,dma-channel-mask, update
-> the dt files to follow suit.
-> 
-> Signed-off-by: Dave Stevenson <dave.stevenson@raspberrypi.com>
+On 5/24/2024 8:26 PM, 'Dave Stevenson' via BCM-KERNEL-FEEDBACK-LIST,PDL 
+wrote:
+> In order to use the dma_map_resource for mappings, add the
+> dma-ranges to the relevant DT files.
+
+Subject should be "arm: dts: " prefixed to be consistent with patch #2 
+and prior submissions to those files. With that:
 
 Acked-by: Florian Fainelli <florian.fainelli@broadcom.com>
 -- 
 Florian
 
---000000000000b9751b061a23a0ab
+--00000000000065ec5e061a23a240
 Content-Type: application/pkcs7-signature; name="smime.p7s"
 Content-Transfer-Encoding: base64
 Content-Disposition: attachment; filename="smime.p7s"
@@ -209,14 +210,14 @@ kNGap1mHJ+JngGzZCz+dDiHRQKGpXLxkHX0BvEDZLW6LGOJ83ImrW38YMOo3ZYnCYNHA9qDOakiw
 NxADYvcRBA0ySL6sZpj8BIIhWiXiuusuBmt2Mak2eEv0xDbovE6Z6hYyl/ZnRadbgK/ClgbY3w+O
 AfUXEZ0xggJtMIICaQIBATBrMFsxCzAJBgNVBAYTAkJFMRkwFwYDVQQKExBHbG9iYWxTaWduIG52
 LXNhMTEwLwYDVQQDEyhHbG9iYWxTaWduIEdDQyBSMyBQZXJzb25hbFNpZ24gMiBDQSAyMDIwAgwT
-/D/YSkVckoN0L+QwDQYJYIZIAWUDBAIBBQCggdQwLwYJKoZIhvcNAQkEMSIEID853FVqGAbufoag
-qyHU74mytOPEz0UFyReJtlhkv7qyMBgGCSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcN
-AQkFMQ8XDTI0MDYwNTEyMjMwMlowaQYJKoZIhvcNAQkPMVwwWjALBglghkgBZQMEASowCwYJYIZI
+/D/YSkVckoN0L+QwDQYJYIZIAWUDBAIBBQCggdQwLwYJKoZIhvcNAQkEMSIEIMSuvc1kYt+F1j+9
+DWvF2X+P4hqFlJaeJyG798QFbYQ3MBgGCSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcN
+AQkFMQ8XDTI0MDYwNTEyMjMzMVowaQYJKoZIhvcNAQkPMVwwWjALBglghkgBZQMEASowCwYJYIZI
 AWUDBAEWMAsGCWCGSAFlAwQBAjAKBggqhkiG9w0DBzALBgkqhkiG9w0BAQowCwYJKoZIhvcNAQEH
-MAsGCWCGSAFlAwQCATANBgkqhkiG9w0BAQEFAASCAQCiKOWqeh3FHgxfxeAPOt/R/Wmfi0fu5n8i
-/a2djyXjY7zHVHmviwRmcBwXFfsDLJktR2xOJ8IFMgYebz6OuC+ZThsZuHVepvJP5oouC1ja+N38
-e7kwl6RWGBa5YUACz4UCxm3toadU7VT7QIy/K4tLjowKek9isi0ZHAgoh1yWMKNZMs7iy4+GviOd
-muoTNqJSgPRjsV/vmnixkKBmJ0e1N9RDll49EmIj1G/Rnp45ATbPwOvHQw5xD9uPzkmc8iROJ5i2
-sNbmX+iRzhjYYPn55rqkfB9fzNe1k1/ubCFitI0tlbotcExsSXEMyPsSyotjw008pkd0wlI/nP1D
-oUuo
---000000000000b9751b061a23a0ab--
+MAsGCWCGSAFlAwQCATANBgkqhkiG9w0BAQEFAASCAQBWv04jE3zl81EbNz4+SdSuAMOYwZp4hq6u
+Lq40nPFtBi8R1cEGBaHAebwdPif4A9lsNchjdr0CdUZjM0D1ushPfwF3kCHGFYIAhPJtBiv0x/VX
+yF1+kc4fwRnS6q9501FuMh7mXpNBD8zasGY5yhHPGStwvtR5qxdhuwaWZvIH3DWgwBNN7JDGG4h1
+KmrJeHmcBKTEFRAnhUNHEy8eDAfnYMHSannlgPNg2JLc6ru/MAVg/p/IjO/v/TbFnWwhqdtx7SLo
+wmpAAfs7VIeAGO16Rgqo/BjdLX9sNJyH7auqceBiYyI+zXfHJF42oMQAI50HkVDa1+ZNmo0SWO8t
++gCc
+--00000000000065ec5e061a23a240--
