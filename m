@@ -1,47 +1,51 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6D6A014D28E;
-	Wed,  5 Jun 2024 15:45:55 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4615F155A4E;
+	Wed,  5 Jun 2024 15:45:57 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1717602355; cv=none; b=mLeURxF0Ym/sW2t8dNHUAalArkOYDNxh76HTXV3EWq5i6S1F7+4h0mL6ItQ0y4jpc5xMIvE7uk3+w23dDCDNBFNZK7gTElJ4tFTvpvSbgJhv53afcDMRQYc6XT+otWX56C1dolEmD4Cm5HslCJPrYRtdDYWFsiH/47a3xvqPEeQ=
+	t=1717602358; cv=none; b=gjbtHQnvLCJO0LKLDJS7JAtqbo+rHGs0GcYDGpn4V6dP0jVmnIBeubZ74O05K3WQz3F0dQl5JEtG5Tau+pVFEq8FnMiRabKWyARCKnRP4dXss3XQxfjq5v7CQVGjhgPT/Spog38G3pKMGtwvdm4DKu+tM6PzNBV6834IpeA041g=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1717602355; c=relaxed/simple;
-	bh=9nlpvd/RBQ7zvM1voaUqyGDGzARyaDyKMG/NAiuPlD0=;
+	s=arc-20240116; t=1717602358; c=relaxed/simple;
+	bh=FyldfTzNZPniL6au2gQsSraHX6MskYD8BVPvkrZxxXE=;
 	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=mUuHKfWJFyRVlbx/qMXeB4ug2ZzJIwSsTeFaLtKUQ8M+iX88PBD7dQfkwUwtGtDgTW0TJwjBVd34q02f2NUF6EoEcZoAQ+Ha/4Dfarcnk1bsZa7jZmJI5pamOLr2r65RHC4Jd5uud543KnKajzEEWaY1SXBKmclpHq3uWkHtLhs=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=CNyhLnF5; arc=none smtp.client-ip=10.30.226.201
+	 MIME-Version:Content-Type; b=Py4DwTCiLHhrnUx5updAGxPBLBNDurq6lVCvb5ltfEpQYS7S6oLry71cskgIeSmZ910Le5U9Hcf6e4j7XJmo+uqOQ1bMLcSPgkCUGRdSyZrfLLaTiy4fmBdA6UiJaBu22FsQQmXCF3IXN6TkR2d+MPJmxx54ZGxeKLdro5nE8XA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=DzI1vU88; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="CNyhLnF5"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 48523C4AF0A;
-	Wed,  5 Jun 2024 15:45:53 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="DzI1vU88"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 765F3C3277B;
+	Wed,  5 Jun 2024 15:45:55 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1717602355;
-	bh=9nlpvd/RBQ7zvM1voaUqyGDGzARyaDyKMG/NAiuPlD0=;
+	s=k20201202; t=1717602357;
+	bh=FyldfTzNZPniL6au2gQsSraHX6MskYD8BVPvkrZxxXE=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-	b=CNyhLnF51uW+h4fS9U62w7t+gT7nCS60WbiQUUbLjMXX06IjXpIqKn+fyMItaKjAv
-	 Bmd3tmC6HZB7L7tQSBJz9n+SAqSWl3RXyEPX1qPled8+3LFnqn4HuVzveuDnoTANgD
-	 UvWvlJQA5GQA3Qw2SZ4lhAFE+T6xeRjCdFUQmZj72VOGAz05DDpNJs+PmwNjvBjR+9
-	 0su9upXOaR1KMjrhDqTrGZPus1wM66kdE6UIVY/VFeb4rA8ckwICmdIMLCqXpzcjg9
-	 ag1sfMASVyB57aWi7npzmrv03x6lfiTzOBngncJTpA4Yu0YhhLD+84Ki4jxTGD2XPv
-	 oI0AJn1gMWxgg==
+	b=DzI1vU88LUfKlmlgo32PjDybshwRWjwpWqYUcHfY9ye2SmeiDYHDGIDPYaZErXrpy
+	 ije8AUE7uSBHXWJbP7bx6Gi3gI+HSiwtyXUr3qYzS01/Ps7SA+jQVVqUcVkRj3/AaE
+	 hru7ON9yz+Wv0oVrG4lLlgNJA91BAbTQgy3l4XrOXu2+oAhKMfoITAnoVuej99A4bD
+	 gQSSEoMPoXATDyb0XS/DV2OGgoG7tAqcSI4+7cUeQJ9aJllbDp5Po/N/eDDku5iLWu
+	 Ce23nPhyfVJw6pGpHgLWQH42+UIax3yC54KgLWgz/onMZQkU0yjKM3BcPvZN4tZOfj
+	 FMI7hr4n9kEOw==
 From: Will Deacon <will@kernel.org>
-To: linux-arm-kernel@lists.infradead.org,
+To: robin.murphy@arm.com,
+	linux-arm-kernel@lists.infradead.org,
 	iommu@lists.linux.dev,
-	linux-kernel@vger.kernel.org,
-	Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+	Mostafa Saleh <smostafa@google.com>
 Cc: catalin.marinas@arm.com,
 	kernel-team@android.com,
 	Will Deacon <will@kernel.org>,
-	Robin Murphy <robin.murphy@arm.com>,
-	Joerg Roedel <joro@8bytes.org>
-Subject: Re: [PATCH v1 1/1] iommu/arm-smmu-v3: Use *-y instead of *-objs in Makefile
-Date: Wed,  5 Jun 2024 16:45:45 +0100
-Message-Id: <171759237956.1130890.17283676990623114334.b4-ty@kernel.org>
+	linux-kernel@vger.kernel.org,
+	joro@8bytes.org,
+	nicolinc@nvidia.com,
+	mshavit@google.com,
+	Dan Carpenter <dan.carpenter@linaro.org>,
+	Jason Gunthorpe <jgg@ziepe.ca>
+Subject: Re: [PATCH] iommu/arm-smmu-v3: Avoid uninitialized asid in case of error
+Date: Wed,  5 Jun 2024 16:45:46 +0100
+Message-Id: <171759168166.1126369.9985606897560767685.b4-ty@kernel.org>
 X-Mailer: git-send-email 2.20.1
-In-Reply-To: <20240508151611.1444352-1-andriy.shevchenko@linux.intel.com>
-References: <20240508151611.1444352-1-andriy.shevchenko@linux.intel.com>
+In-Reply-To: <20240604185218.2602058-1-smostafa@google.com>
+References: <20240604185218.2602058-1-smostafa@google.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -51,20 +55,21 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 
-On Wed, 08 May 2024 18:15:55 +0300, Andy Shevchenko wrote:
-> *-objs suffix is reserved rather for (user-space) host programs while
-> usually *-y suffix is used for kernel drivers (although *-objs works
-> for that purpose for now).
+On Tue, 04 Jun 2024 18:52:18 +0000, Mostafa Saleh wrote:
+> Static checker is complaining about the ASID possibly set uninitialized.
+> This only happens in case of error and this value would be ignored anyway.
 > 
-> Let's correct the old usages of *-objs in Makefiles.
-> 
+> A simple fix would be just to initialize the local variable to zero,
+> this path will only be reached on the first attach to a domain where
+> the CD is already initialized to zero.
+> This avoids having to bloat the function with an error path.
 > 
 > [...]
 
 Applied to will (for-joerg/arm-smmu/updates), thanks!
 
-[1/1] iommu/arm-smmu-v3: Use *-y instead of *-objs in Makefile
-      https://git.kernel.org/will/c/16c0bad7ae04
+[1/1] iommu/arm-smmu-v3: Avoid uninitialized asid in case of error
+      https://git.kernel.org/will/c/d3867e714831
 
 Cheers,
 -- 
