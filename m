@@ -1,169 +1,156 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from NAM02-BN1-obe.outbound.protection.outlook.com (mail-bn1nam02on2072.outbound.protection.outlook.com [40.107.212.72])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 771E7196C89
-	for <iommu@lists.linux.dev>; Thu,  6 Jun 2024 15:34:01 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1717688041; cv=none; b=rm7NRc91W+hB29XTh+ICS55ns64uNclf4DUJjXyuAs85lWP5bTrQ04dYnHEyGGjLSYFEqCqHqjI3LuJIkCvOiglsn7WKjKBnGjld64wL6HVnCSj4sYEYqrxcxyxzsELjKrJ6Dx4xNADsjtro3498e5yTUGm6cIwH9Fe41DBwf7w=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1717688041; c=relaxed/simple;
-	bh=0K8GBFSkW4AN3/Sl0e8hqJEwYUcj7GhL4o9uYrZuMNs=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=QP3vXxR40+M9dbt7hJbeX2fgaAztjnVpMESxqbHqtRmiDjX92g25pevIebmELxvj36qNwxC3JUPe9zajD2KLnlz67PVlDtDEW6R6Q0I805fTCZYh3lpMSgwAyjlkJ+ghwK0pxgQY/vTeXgZfRNE4F0J3h7+ZR+pGaYCRLeM+FiM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=q+m0m/hD; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2437F19923A
+	for <iommu@lists.linux.dev>; Thu,  6 Jun 2024 18:11:13 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.212.72
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1717697476; cv=fail; b=pInhTNazpkokxpgKas+HaaUpv4j5J2vP5sjBatNZ8wQieGu/7Clfc9PNc4VYLHUr66iIGaS/4XHYgtUUqt2BFWcAPpWs+4w8i6R3dTYBnr8KVMBrgdRwD3NJNZZD8MHJJpPOneTyz/PhadFtYyICj6bTeITr3/1snGc/KBkTeIs=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1717697476; c=relaxed/simple;
+	bh=KvtFhaLCNnzDyQGpoeqmGkvIws/74+cfUbJkZPhIo80=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:Content-Type:
+	 Content-Disposition:In-Reply-To:MIME-Version; b=ipQoD47Iyun/zNWxMMLZsozLvj2Fm+B6ZWTsj3Dxbk/iU+TkQgYIoyWIiiU0eRfxk4PErmiyMJqMeX8lMohfw5wof/Q4PahsH06O3K82YiS/KtNYulZLbovrpI6/dNDSu2LlBA/QaMoRHOexzhPuaLQ7PR6/Qk7lZVKneA7HmDI=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=bjgnOWWe; arc=fail smtp.client-ip=40.107.212.72
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="q+m0m/hD"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1FEDFC2BD10
-	for <iommu@lists.linux.dev>; Thu,  6 Jun 2024 15:34:01 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1717688041;
-	bh=0K8GBFSkW4AN3/Sl0e8hqJEwYUcj7GhL4o9uYrZuMNs=;
-	h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-	b=q+m0m/hDap6Q+Gvf79W9TSJ5BxkxcLyOWQHEjNJfzm0i/KUM0Fa9rpBxNiC8hEaIO
-	 TbhCC0MbAyvOG9XcO7O0LaxQxoGhDnu4LkwSLIVxQ9JJO/ACBsRukMJTftGc48vH1E
-	 +suwv7DsuARGwdxanEvDdFI+8mBEV4OX3SugRnGOVgPqXCrLBLHJsSQ11TtVB4w7DG
-	 fRJp9Ei3m2o95YbkgZhtFUS+mlYtY+ybykj5Ycyhla0/+5gRXmJEl+ZkkGuND30WhR
-	 itcVrJBfR/D2E7xqsKbeEXZqpHMVE8UzSCL+rvgqjdCDlZm2RlPdNRFj+oOjIEiO06
-	 Z9t6nfwptzMew==
-Received: by mail-lj1-f182.google.com with SMTP id 38308e7fff4ca-2eacd7e7ad7so14056441fa.3
-        for <iommu@lists.linux.dev>; Thu, 06 Jun 2024 08:34:01 -0700 (PDT)
-X-Forwarded-Encrypted: i=1; AJvYcCVQ+4UZrP9wGAMdAGUz2Hd5D8IC+flvbJsuzNXDFAD5LYedMERtxWuUR8kiC3lUB5EnnQIy8RyHDNyxTS2cZzvCYvL4Ju4=
-X-Gm-Message-State: AOJu0YzonB4uWke+wrz4dlCqndiY40FqryZbrr5/Gv/PbggGskoS9MVz
-	9G/MBQZPNr8tr+A53Z0tMXgj6fNvOh4uyJX1u9k51hFHcJ1cEYfLIwMqsxaesAn88aU5XyGOLVm
-	D0zIlE+/C51ETOwwW0cka3Hn5Gg==
-X-Google-Smtp-Source: AGHT+IFXwVRydGZ8W00wKskR1TtWyhH2bfTYh82RbfdTsMpPc96OSXgYmnPF7JWcJPPSEUu5kMdOQoxjLugRZuW1lHo=
-X-Received: by 2002:a05:651c:1502:b0:2ea:c450:ac2 with SMTP id
- 38308e7fff4ca-2eadce3714dmr429241fa.23.1717688039491; Thu, 06 Jun 2024
- 08:33:59 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="bjgnOWWe"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=ARwqgl8qAcDIBxM64NZ1jor3ew8Gb+wW9ESB8vZnGcdt8WGzGPGaGw2bs3GQr1J+Z2289N7nHsa4u66lbhvEQkyQnMcmw8Cfevb4w3a/26lEwV6w4ImrCHl8ccICvSPVILl3uyE8ePxjIAFq0zLpJiJMAzilJP0jxA8rbsuGiIBzV72ONtfQqKJ4WDpmsZNrXfEWw2S7CioSVAWWc3GBeaISTszf1EfFZJvSeyvFA5VbA29TZpNH1wr25QVN6M+Mt4lIybPSR1EgYOaA7xRJZE6YNh+A85EA60rrZfEgyswz7Yxd0DS+t9UtIM/66xIUG99eL1Ca/iTIKo8wFL7xZQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=5q9uxq1E5RqQdYsPczsVDYrpaktyB68etuidAQ0LFE4=;
+ b=gkUn7u9HrFWw4OopNCij9FK0utEp5VnGwvbyCMozGmy9K4zjKXjRkehMCChdp1+RxuS1CmlFsn3a+0ZL46oRxEv2pv1Jc+ShqiVjKu21MGz09iteuhGFoL93EgD9VrX0nom1SvFGUrz1Eoe/6BcBje4DT/X3Xu/xM2/jXXaqbu3cyB5PTtSwH5Rlc9HPFkQEPKZU71IvDbaFvrXXBxd21sytF/ezVAzztnIpemScp7M4yxek3XdfTcxvyVKETEMP40p5RQo8CC90AsByiotL7yC27znSqQw1/YsXqWf4raYU4NfZSQMI+oOqotUkzOMTPiVSWFOGAgJQuBjpxwUqBQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=5q9uxq1E5RqQdYsPczsVDYrpaktyB68etuidAQ0LFE4=;
+ b=bjgnOWWeWHZ9wRW/13IZ8mMz2w+KeWK7A/+gOfZekay1FESzy9SvWRU7FjYoVvIRfsk0Fwrs69wMA48fyzPKo1eG4/gY6VurRxg24k49DrbBYkzVemowWO8LksiyGussOBOhDwJQZEfkiENp3wXQktf9p8Bs8+KfQMB+jxV5ey0aKKebJrsUhoS8EqTIklJ4bBuTM9txoCfNTuJfLjobxvUdgq8g68IJTIahrfuLs4DINensISn0uqaJENy/Fxm4zBeifxuVVSQm5fFrFiCig5JqQpKkECViw3LIIKXAVZrTQ7VTO60l1oSv4N+RVeiuQdM7mDstZnviVT3VRh1GxQ==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nvidia.com;
+Received: from DM6PR12MB3849.namprd12.prod.outlook.com (2603:10b6:5:1c7::26)
+ by CYXPR12MB9318.namprd12.prod.outlook.com (2603:10b6:930:de::22) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7633.34; Thu, 6 Jun
+ 2024 18:11:10 +0000
+Received: from DM6PR12MB3849.namprd12.prod.outlook.com
+ ([fe80::c296:774b:a5fc:965e]) by DM6PR12MB3849.namprd12.prod.outlook.com
+ ([fe80::c296:774b:a5fc:965e%4]) with mapi id 15.20.7633.033; Thu, 6 Jun 2024
+ 18:11:10 +0000
+Date: Thu, 6 Jun 2024 15:08:46 -0300
+From: Jason Gunthorpe <jgg@nvidia.com>
+To: Shameer Kolothum <shameerali.kolothum.thodi@huawei.com>
+Cc: iommu@lists.linux.dev, linux-arm-kernel@lists.infradead.org,
+	robin.murphy@arm.com, will@kernel.org, joro@8bytes.org,
+	ryan.roberts@arm.com, kevin.tian@intel.com, nicolinc@nvidia.com,
+	mshavit@google.com, eric.auger@redhat.com,
+	joao.m.martins@oracle.com, jiangkunkun@huawei.com,
+	zhukeqian1@huawei.com, linuxarm@huawei.com
+Subject: Re: [PATCH v5 1/6] iommu/arm-smmu-v3: Factor out a common domain
+ alloc
+Message-ID: <20240606180846.GE19897@nvidia.com>
+References: <20240606133302.17540-1-shameerali.kolothum.thodi@huawei.com>
+ <20240606133302.17540-2-shameerali.kolothum.thodi@huawei.com>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20240606133302.17540-2-shameerali.kolothum.thodi@huawei.com>
+X-ClientProxiedBy: BLAPR03CA0064.namprd03.prod.outlook.com
+ (2603:10b6:208:329::9) To DM6PR12MB3849.namprd12.prod.outlook.com
+ (2603:10b6:5:1c7::26)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <20240528223650.619532-1-quic_obabatun@quicinc.com>
-In-Reply-To: <20240528223650.619532-1-quic_obabatun@quicinc.com>
-From: Rob Herring <robh@kernel.org>
-Date: Thu, 6 Jun 2024 09:33:47 -0600
-X-Gmail-Original-Message-ID: <CAL_JsqLPznMbqiLXrugB1Qbj3MhMdN9mtbRQFx+94f1F0-JPNA@mail.gmail.com>
-Message-ID: <CAL_JsqLPznMbqiLXrugB1Qbj3MhMdN9mtbRQFx+94f1F0-JPNA@mail.gmail.com>
-Subject: Re: [PATCH v6 0/4] Dynamic Allocation of the reserved_mem array
-To: Oreoluwa Babatunde <quic_obabatun@quicinc.com>
-Cc: saravanak@google.com, hch@lst.de, m.szyprowski@samsung.com, 
-	robin.murphy@arm.com, will@kernel.org, catalin.marinas@arm.com, 
-	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, 
-	iommu@lists.linux.dev, kernel@quicinc.com
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: DM6PR12MB3849:EE_|CYXPR12MB9318:EE_
+X-MS-Office365-Filtering-Correlation-Id: bab5213f-92bc-4a33-a994-08dc86540ae6
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;ARA:13230031|7416005|376005|366007|1800799015;
+X-Microsoft-Antispam-Message-Info:
+	=?us-ascii?Q?SMGJPmOjHF8yjuZvz+bb6LODjv+lYRZB+dXNSIJvndVq/Osjg3w/mcuiwmZ+?=
+ =?us-ascii?Q?eLdwaiApoNl481a8pofEGGzpG4PqahTO5IIUZFN7jLRMyWpADmuAnA78l9TW?=
+ =?us-ascii?Q?NmSwlwNksDDmGNox0QHMbFTx1PSt2N+Vy0foczhw+d+exY/j2ChzmhPE5X2O?=
+ =?us-ascii?Q?PRalWfC2aGbWGGOtd7cu+5+Gd5foFCxT1ioeW71xlZt0tK+k0yixaEONELHM?=
+ =?us-ascii?Q?bqpY/6vR555IC4XWqH2DCiyuQxevZ1H5MP7V3SrtQaScVM02iNkIthm+Bfh9?=
+ =?us-ascii?Q?VjB6+gIcZm6ZRaPeYTYw6AfMBMhA/vf9XrBHlXwrIDTNAJOXwoqO//MmhpUy?=
+ =?us-ascii?Q?u4dxx1/wqcpjtET8QncKvgLyzQJDh1PznCOHwM6ZGjIQuGzCGx8FkPccFD7z?=
+ =?us-ascii?Q?PDpf1cZXOZYqhYi/Fp96U6BSkD+H4xLYu4rkUxxk5d6iI0HtnlUNmIhtdJYH?=
+ =?us-ascii?Q?xtq1/cvxwuLLp8J6Di4gpp5IT2CHOUGLQ58KQcVEGtYGuywvhSem5cLeMFzh?=
+ =?us-ascii?Q?iQrw0xTxQpiOdUG2Or7xiJ2mViRiWtGXSttgbAFnQ1Iw/pC7WaCntpvZmx/9?=
+ =?us-ascii?Q?i3VujedYo8ZVjkNO66XBcOq8QCtdBTPGAeJzwh0pgiJo4seLZaF/c12MvwPS?=
+ =?us-ascii?Q?t8xFJjf6PBA7ar7MZ4cSUWQxBixHMHUqsK8RXC95WgD9yyncLQ/P/VIJh7l5?=
+ =?us-ascii?Q?OKmmGnI4a93yD0QtX5sefjsyH+li7nswlxFHEnMIHeZ7uJo+JwxwN4OvR/0J?=
+ =?us-ascii?Q?AHpKbgsNiLrq54PQJdkKOtdTRz+4EuYOVVnQ22olSrnK7I4FLk18AmzzFynX?=
+ =?us-ascii?Q?p11bNUsh3e1xexNvJ6WIMmZTfVnUjr1Z6rX03ishR9YQzdR//Zfmcc0wDRPF?=
+ =?us-ascii?Q?xbXF03TvivzfKAez1WRyNKCKoXxRCY1Key9QYYKTAELj+qHaIWp2DDFY/HP7?=
+ =?us-ascii?Q?6In2JSZMjDuPgUm2/pyIbbt9pUnHH6BfG6Li9eSJu96bg7xE+rp3eon+7z8C?=
+ =?us-ascii?Q?5P4fDVUOXxb/dBDMBDI6SALnjlDgYm9uQuEZO8fiaxwuzFNVXogrBuzg9I5v?=
+ =?us-ascii?Q?xFN9hzBKd41X0rgBpNy/rS1gQOROiloRBbjklEyVktbymyTBe0sLDhwxPewW?=
+ =?us-ascii?Q?6z4gnxDDHTB/jI8HkBRm1P/QDr6EyjCxiZ475sygIlkPROldZLIezB68b6Hd?=
+ =?us-ascii?Q?WqRbwDdyw+5peML1hxfOx9qntAe3vzB2X6+38+B74FwkaSo+GybxAyG103Aw?=
+ =?us-ascii?Q?OJMX3Hs5RyJXmHYC7YsNHX52XpCMJtSobkrsIwZygLU0ugqgo7DFtX/TVYao?=
+ =?us-ascii?Q?p1cx1NfWapA9dK2mALkJ+qG/?=
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM6PR12MB3849.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230031)(7416005)(376005)(366007)(1800799015);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?us-ascii?Q?4mXYG346ojqXePy8RbbcG9kfmsefi2pctzFA2an9dsREriuA5zrgCAFi/eea?=
+ =?us-ascii?Q?zxHLau1v4L2os3je0tsptJBPABXjQGPpCs6cJRE5iDI3ye5GbieEPSL6GrMu?=
+ =?us-ascii?Q?P8Swu3VyVvZFcyAuvos4Pj/lo6i/AYq/ygXcMfzFUX6TzTv/K29wLsqfw0an?=
+ =?us-ascii?Q?8v02WwESh3tFzTnyV7ViVqwigq+8LXBZxN4vp/xd4x5cGkVBRjKLrc7akv27?=
+ =?us-ascii?Q?xRhGWMA289RnQnZg/izbyt7VB/7eT8VYt76L7YxVuDIv6q6+UElmI1k1WvJc?=
+ =?us-ascii?Q?52ZukhDl8nnX/k2XfCYW9QuqCGO4fcL20zkMLNhr+laeyHkbAHcI4tFhcj+r?=
+ =?us-ascii?Q?MKQ2WP0j4Ke+yPgwDs6MoMVtWutlFb0bLM/zLyGDM7NDghPppOiUinogITOV?=
+ =?us-ascii?Q?zAp2c6cMLZURkc2EOAftba2XwY55cHuwnkXEf0o2iNJlNa5olyGmOE0988IV?=
+ =?us-ascii?Q?jl+mSkHcoUYCWzSQqGk3wDGYsTZuZPHWXbqoHygAaOOg5lxTU6U0b8SOi9I8?=
+ =?us-ascii?Q?Dh2mgYOl5qcesi64gk/dz27ZXnsPtRMBM6xcfGHgOLI09Hrj6b1UhC9aYS5B?=
+ =?us-ascii?Q?vL6iE7/djdEhhQnBw0xkz9o/dHj2H6s8+RmtL8nbot3FDu0jh2rcUWgtWZWd?=
+ =?us-ascii?Q?Z+pGLhoFuHSO7bJERX3MiZuz4L/IE5b2L76mpcpdVQVDtJ9IcgmFGvX/jiBq?=
+ =?us-ascii?Q?x4Aq1vNGEtqHFLttHVd7hTe5XqCNojY/ilJyVd2ik60Z2dhCSjxI7bUB/nNY?=
+ =?us-ascii?Q?ZTjdt0UqrDiqra5IMP1xVJBhxu1pZUlsHMu30AS5NsCW6NtHgXW1sz/79JcF?=
+ =?us-ascii?Q?qXv0U4rKK940oeCMP5OJCFoNroFo7zjSzFhiJKlzkpY7m/tyuhsEq6MeULaV?=
+ =?us-ascii?Q?g5qrgYm2l0aVKmj7xVfOjNVKjPUz/prvzr7QwaHC/GbCbUtaHCTMMkh89DDd?=
+ =?us-ascii?Q?3wLTtEHex7j2eO23PKpHGNNYcZtayVOkgHJ22/I1WLjr5QKXGNXmnpt+nPXA?=
+ =?us-ascii?Q?2cyC3xZyJV+fekg7+QsBjLr2oZkwoQw2CujvgUvu7tt51aSibsCj41slYEvG?=
+ =?us-ascii?Q?NiV85k4yLlmgl0EmAn77ecJ8jThQ/54Cs1JznW7ww9cz1Hq+byra/Av7OE3/?=
+ =?us-ascii?Q?80Ilwb/oalfWeWqTk4SB97g/gn4NSJmU7Dj75VZrkKfJmtAJuLSJ652TIeV3?=
+ =?us-ascii?Q?zWHo0IOqbaeRdaYubI32IYiBcgC3LgEBFP5ff8qO2hnO6NCdT5wdG84gd2Qu?=
+ =?us-ascii?Q?cvCaQB2o3bWsh54QpjokiR+wVSgkG/qund9jDNUFSQ6ethQwrphXmKFa+eeo?=
+ =?us-ascii?Q?9em88qp/PdLKzT8ZilQbtRWs+sB1mAZl7cO9Y5DNWXh2oWTdFvVDCQbiG8bH?=
+ =?us-ascii?Q?DdL5zuF2woRhVwdhBUb1UNsB6BDH3swHl2G4jnhLyKt6K7b1IUYWEZFvToF5?=
+ =?us-ascii?Q?UIcE9JFBZZ17+nSg8HlikM8VbzPvQFrbINfEvi53vGT54URprVKD21wlk9Pg?=
+ =?us-ascii?Q?+Dsf/pw/xpd9rIujKlYNjgY/SgwRk9++Se8n4bWwfIfpzl1YkhgTREc2qmfU?=
+ =?us-ascii?Q?TshsfdwNxgEI74dgp5EMd8uhj3RmUNjrs7u9aVTC?=
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: bab5213f-92bc-4a33-a994-08dc86540ae6
+X-MS-Exchange-CrossTenant-AuthSource: DM6PR12MB3849.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 06 Jun 2024 18:11:09.9718
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: neKA7SxbCQQT2vluLyWJOlIEGt8/45k8Z0aQdDnUgopn+927yYOQnE1KPfM/6o9z
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: CYXPR12MB9318
 
-On Tue, May 28, 2024 at 4:37=E2=80=AFPM Oreoluwa Babatunde
-<quic_obabatun@quicinc.com> wrote:
->
-> The reserved_mem array is used to store data for the different
-> reserved memory regions defined in the DT of a device.  The array
-> stores information such as region name, node reference, start-address,
-> and size of the different reserved memory regions.
->
-> The array is currently statically allocated with a size of
-> MAX_RESERVED_REGIONS(64). This means that any system that specifies a
-> number of reserved memory regions greater than MAX_RESERVED_REGIONS(64)
-> will not have enough space to store the information for all the regions.
->
-> This can be fixed by making the reserved_mem array a dynamically sized
-> array which is allocated using memblock_alloc() based on the exact
-> number of reserved memory regions defined in the DT.
->
-> On architectures such as arm64, memblock allocated memory is not
-> writable until after the page tables have been setup.
-> This is an issue because the current implementation initializes the
-> reserved memory regions and stores their information in the array before
-> the page tables are setup. Hence, dynamically allocating the
-> reserved_mem array and attempting to write information to it at this
-> point will fail.
->
-> Therefore, the allocation of the reserved_mem array will need to be done
-> after the page tables have been setup, which means that the reserved
-> memory regions will also need to wait until after the page tables have
-> been setup to be stored in the array.
->
-> When processing the reserved memory regions defined in the DT, these
-> regions are marked as reserved by calling memblock_reserve(base, size).
-> Where:  base =3D base address of the reserved region.
->         size =3D the size of the reserved memory region.
->
-> Depending on if that region is defined using the "no-map" property,
-> memblock_mark_nomap(base, size) is also called.
->
-> The "no-map" property is used to indicate to the operating system that a
-> mapping of the specified region must NOT be created. This also means
-> that no access (including speculative accesses) is allowed on this
-> region of memory except when it is coming from the device driver that
-> this region of memory is being reserved for.[1]
->
-> Therefore, it is important to call memblock_reserve() and
-> memblock_mark_nomap() on all the reserved memory regions before the
-> system sets up the page tables so that the system does not unknowingly
-> include any of the no-map reserved memory regions in the memory map.
->
-> There are two ways to define how/where a reserved memory region is
-> placed in memory:
-> i) Statically-placed reserved memory regions
-> i.e. regions defined with a set start address and size using the
->      "reg" property in the DT.
-> ii) Dynamically-placed reserved memory regions.
-> i.e. regions defined by specifying a range of addresses where they can
->      be placed in memory using the "alloc_ranges" and "size" properties
->      in the DT.
->
-> The dynamically-placed reserved memory regions get assigned a start
-> address only at runtime. And this needs to  be done before the page
-> tables are setup so that memblock_reserve() and memblock_mark_nomap()
-> can be called on the allocated region as explained above.
-> Since the dynamically allocated reserved_mem array can only available
-> after the page tables have been setup, the information for the
-> dynamically-placed reserved memory regions needs to be stored somewhere
-> temporarily until the reserved_mem array is available.
->
-> Therefore, this series makes use of a temporary static array to store
-> the information of the dynamically-placed reserved memory regions until
-> the reserved_mem array is allocated.
-> Once the reserved_mem array is available, the information is copied over
-> from the temporary array into the reserved_mem array, and the memory for
-> the temporary array is freed back to the system.
->
-> The information for the statically-placed reserved memory regions does
-> not need to be stored in a temporary array because their starting
-> address is already stored in the devicetree.
-> Hence, the only thing that needs to be done for these regions before the
-> page tables are setup is to call memblock_reserve() and
-> memblock_mark_nomap().
-> Once the reserved_mem array is allocated, the information for the
-> statically-placed reserved memory regions is added to the array.
->
-> Note:
-> Because of the use of a temporary array to store the information of the
-> dynamically-placed reserved memory regions, there still exists a
-> limitation of 64 for this particular kind of reserved memory regions.
-> From my observation, these regions are typically small in number and
-> hence I expect this to not be an issue for now.
->
-> Dependency:
-> This series is dependent on the below patchset for proper behavior on
-> the sh architecture. The patch is currently being reviewed by the
-> relevant architecture maintainer and will hopefully be merged soon.
-> https://lore.kernel.org/all/20240520175802.2002183-1-quic_obabatun@quicin=
-c.com/
+On Thu, Jun 06, 2024 at 02:32:57PM +0100, Shameer Kolothum wrote:
+> And use that for arm_smmu_domain_alloc_paging(). This will be useful
+> in a subsequent patch as well where we introduce support for
+> domain_alloc_user().
+> 
+> Signed-off-by: Shameer Kolothum <shameerali.kolothum.thodi@huawei.com>
+> ---
+>  drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 31 ++++++++++++++-------
+>  1 file changed, 21 insertions(+), 10 deletions(-)
 
-Is it really dependent? This series just adds one additional
-allocation before all the reservations are done.
+Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
 
-I've applied this series and ran it thru kernelCI. I'm going to add it
-to next to get some more testing.
-
-I made one change dropping of_reserved_mem_check_root(). That's done
-still with FDT function, so no need to do it twice. Plus, the
-unflattened function doesn't have the restriction. (We could fix the
-FDT version pretty easily because we have a translation function.)
-
-Rob
+Jason
