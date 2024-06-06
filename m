@@ -1,232 +1,228 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.9])
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.10])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 78673EEDB
-	for <iommu@lists.linux.dev>; Thu,  6 Jun 2024 02:49:17 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=192.198.163.9
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1717642159; cv=fail; b=mzT9MnVAiqogwwCXxW04he70jerFcHZCMgzLTpTAYXpRaLS9ffl+2GdtgPo++VzrAOhdPkFcyRteEpfhgzHHNkxwzcrWIgQCpdGMLDRHHuQvG15JJnKpoLldC3SJA7Ani/HHv8s6+hdt9FnGeBqncUsEJV4/plP/Y1Ycge0DQm0=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1717642159; c=relaxed/simple;
-	bh=Qi2QnY8uqpODO2njaVozCrp9L7+ibLvQEy+2/F4BMNQ=;
-	h=Date:From:To:CC:Subject:Message-ID:References:Content-Type:
-	 Content-Disposition:In-Reply-To:MIME-Version; b=cfuYYeBf2MevPG31N+cbuLoisy9arMs1K0tGGjFKDOT3sjoWZLHgNi6H6tH7T/rblIVaWQBg0p5dWcqKeVytzjTbx6jpnX2N/jr7xeQ/k94jC9V46HBLZDmYjZGfBTVO5EKi87dUN4wYKcyZmc63uNCqIAohNegCRU04j/89yjE=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=FURBmeP6; arc=fail smtp.client-ip=192.198.163.9
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1A86A1CAA9
+	for <iommu@lists.linux.dev>; Thu,  6 Jun 2024 03:42:41 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.10
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1717645364; cv=none; b=deAnoE4xoWsnLYDck/eJ3xE7meUT/XtxsMBJcgObhxdYj3WFcjg8/p8o22iYtbIr+k9q9YbaFCy+ZoOC9W2Kr3oX04LH3JgA5FaIHLH4R8OO7zZyed2cWbHA1UCzmrr+w1cPkRZ9l6RQ2B6NmxTIuzdoTSDWSfxddwqWOBT/ug8=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1717645364; c=relaxed/simple;
+	bh=+/KH7Dt/gunYlOnwVVcGKIkZIvdq00WPW2Ix2BGRdk0=;
+	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version; b=dCfR9J2OwTE7mHQy5vwvvFDZtxPgJEWiv1ijIgUopAt7YiF4CGPFTLn1fyaob5aI00LaBSZyvmqZlOboj5E+uep/JqaH7LysqPbBXK/udV7MQzgXj8gHl3BR6NeziYqVVIvkYH81FN6fUO0H5RBRCUpC/s5OyDgvtZdFT3ztCZw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=ZKZbW8ya; arc=none smtp.client-ip=198.175.65.10
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="FURBmeP6"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="ZKZbW8ya"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1717642157; x=1749178157;
-  h=date:from:to:cc:subject:message-id:reply-to:references:
-   in-reply-to:mime-version;
-  bh=Qi2QnY8uqpODO2njaVozCrp9L7+ibLvQEy+2/F4BMNQ=;
-  b=FURBmeP6Okg1F3aw2K/s1PrKY+c4OO2+XugEHsP4ggwygb/3nV0aAUdt
-   AK7oyuMw8jK4TYaa/v2zt/KusBfwniwAV0bBRotJTmnoO6Kt3qHijZ4e2
-   IqbTHkfPt/g4Ez/DRpK/K+xKES7qpnTv9Tvz/rsQSrDZp0vzv4PvyCELP
-   zg2p0ZUjfk4NzqOn/QAgEPZ7eGWpC+rNyEm9uDnxlTtdmCY1ai3HA3fVD
-   Nsea1hV6Dk1LUViU26Ou2my8dJ5Sv7xFa12i/yxWjgu88wVZVpm4PrpvF
-   lfVuHYellJac2tluQuIMtTohVRitMnZFHtHcuUEO8vD5iBraqHChNCMS5
-   g==;
-X-CSE-ConnectionGUID: nx6IFSWxS2yRA9z1MIVwGQ==
-X-CSE-MsgGUID: gZJh9IyISmCKRuIG73/8uQ==
-X-IronPort-AV: E=McAfee;i="6600,9927,11094"; a="24945423"
+  t=1717645362; x=1749181362;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=+/KH7Dt/gunYlOnwVVcGKIkZIvdq00WPW2Ix2BGRdk0=;
+  b=ZKZbW8yaJZ2OIqPZKIi2PgOB+cn8web0FIHvfLAT6ai72uKkxhelsKi6
+   qsc0bBQ+CiqUV6HZ6V2/QJd/UMaZoOzPEfdlG7RtuynJzCkgj9zTSpFIY
+   JxEWdGhY8nfn0Io4sbyBsHQofznSwAj59OMCt6kpqI5WqUvayUgIMWVQJ
+   0nJEFBtR0MLXw0cnLu5bU1EM20qni0e9n+H6wXKHnf/cbuC/aDh0QiCA3
+   yMBdVsadgTr7JxNBo0N62pVNgLfF6AQN+IF/c0B+XS35oxRPhGypVavM3
+   aYhLM2Pc9W/445ihWSdb+8wdaRMyEc5J+7PwfwAmnZ90a1ZbHBBxi2VvZ
+   A==;
+X-CSE-ConnectionGUID: TZeih+zRQmm38s8Z0YYHTw==
+X-CSE-MsgGUID: BglXQ9UFRteII2kSFR72kQ==
+X-IronPort-AV: E=McAfee;i="6600,9927,11094"; a="31790050"
 X-IronPort-AV: E=Sophos;i="6.08,218,1712646000"; 
-   d="scan'208";a="24945423"
-Received: from fmviesa007.fm.intel.com ([10.60.135.147])
-  by fmvoesa103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Jun 2024 19:49:16 -0700
-X-CSE-ConnectionGUID: BTbI+0rzQ3K/HRAZMsyGYQ==
-X-CSE-MsgGUID: Z2MEwGdjT1yUUmf77KINtA==
+   d="scan'208";a="31790050"
+Received: from orviesa001.jf.intel.com ([10.64.159.141])
+  by orvoesa102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Jun 2024 20:42:41 -0700
+X-CSE-ConnectionGUID: eEeBY0UNT3u3DlMV5iHCXw==
+X-CSE-MsgGUID: wAibKvBGQvC4FgeNYjCrig==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.08,218,1712646000"; 
-   d="scan'208";a="37687400"
-Received: from fmsmsx602.amr.corp.intel.com ([10.18.126.82])
-  by fmviesa007.fm.intel.com with ESMTP/TLS/AES256-GCM-SHA384; 05 Jun 2024 19:49:17 -0700
-Received: from fmsmsx611.amr.corp.intel.com (10.18.126.91) by
- fmsmsx602.amr.corp.intel.com (10.18.126.82) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.39; Wed, 5 Jun 2024 19:49:16 -0700
-Received: from fmsmsx610.amr.corp.intel.com (10.18.126.90) by
- fmsmsx611.amr.corp.intel.com (10.18.126.91) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.39; Wed, 5 Jun 2024 19:49:15 -0700
-Received: from fmsedg602.ED.cps.intel.com (10.1.192.136) by
- fmsmsx610.amr.corp.intel.com (10.18.126.90) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.39 via Frontend Transport; Wed, 5 Jun 2024 19:49:15 -0700
-Received: from NAM10-MW2-obe.outbound.protection.outlook.com (104.47.55.49) by
- edgegateway.intel.com (192.55.55.71) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.1.2507.39; Wed, 5 Jun 2024 19:49:15 -0700
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=JM5+HXCiIJrcvl/Ka1+WTLAMl4jY/exwmjRwfFUOR6YgjskJknO72XVCZTJkTwcgAKilFDhikiY0aQmtaudP2dCoRXwbDxFVPP175MxZA/Peg/ldUH0aIDvLiMVy3YDi1iWge6dOUxeiG19A5lfv0PbFH1oMR1aQC2NvAEVpkNiPWj1BWijVQxVFB5OhZreMdESCs2EzjyKcixfAEZmnp0C8MgS0tByH0BI6fJigYw0w27f2+748lPyf3Hiouhc9EyrsdJ39fptLT5hU+EB+qbluKG4u6ki3HuqWZduTtImHBnfiQjQQG+MlHa+qk4YORqHByzYXgLhDUo04C6VrpA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=D7NnYmnQWTD2nVf8q4Gs2zxlQa8i6yEBpPycVnV4yco=;
- b=R5Lc5BftZNe/aUZAjHr9hiEcOLHSatUPwOPAcykp/jr9SMcbBpLWiUDL7pj1iWfr+HPsIVBHDU011vPxDdyHBDqZctIn8HrP+gtaoDNY/KJjomMXY+hDeIq4ci4K3kUnb+Re4Bu1XHOuMzpOtT62nb2afVVUISF0S+kxnKopzOw4PBC9Q8LLv4Y3mzwfiKgkAN7DffuR1uj33fLzpAeGXV+vWMoomETB8JIar7Koo+GnU+be20F9PSl314Pl8U6miTzJE8401KhDOVn4OATqru+kLX0eEWoRXzaOC7xy4Is7kVZ3EbPXUdd6Gaf8WxuLaK8wOnTQZRPcWjcSrvHLzA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
- dkim=pass header.d=intel.com; arc=none
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=intel.com;
-Received: from DS7PR11MB5966.namprd11.prod.outlook.com (2603:10b6:8:71::6) by
- MN2PR11MB4598.namprd11.prod.outlook.com (2603:10b6:208:26f::8) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.7633.33; Thu, 6 Jun 2024 02:49:14 +0000
-Received: from DS7PR11MB5966.namprd11.prod.outlook.com
- ([fe80::e971:d8f4:66c4:12ca]) by DS7PR11MB5966.namprd11.prod.outlook.com
- ([fe80::e971:d8f4:66c4:12ca%6]) with mapi id 15.20.7633.021; Thu, 6 Jun 2024
- 02:49:14 +0000
-Date: Thu, 6 Jun 2024 10:48:10 +0800
-From: Yan Zhao <yan.y.zhao@intel.com>
-To: Jason Gunthorpe <jgg@nvidia.com>
-CC: Christoph Hellwig <hch@infradead.org>, <kvm@vger.kernel.org>,
-	<linux-kernel@vger.kernel.org>, <x86@kernel.org>,
-	<alex.williamson@redhat.com>, <kevin.tian@intel.com>,
-	<iommu@lists.linux.dev>, <pbonzini@redhat.com>, <seanjc@google.com>,
-	<dave.hansen@linux.intel.com>, <luto@kernel.org>, <peterz@infradead.org>,
-	<tglx@linutronix.de>, <mingo@redhat.com>, <bp@alien8.de>, <hpa@zytor.com>,
-	<corbet@lwn.net>, <joro@8bytes.org>, <will@kernel.org>,
-	<robin.murphy@arm.com>, <baolu.lu@linux.intel.com>, <yi.l.liu@intel.com>,
-	Russell King <linux@armlinux.org.uk>
-Subject: Re: [PATCH 3/5] x86/mm: Introduce and export interface
- arch_clean_nonsnoop_dma()
-Message-ID: <ZmEjavnYePBLDbrS@yzhao56-desk.sh.intel.com>
-Reply-To: Yan Zhao <yan.y.zhao@intel.com>
-References: <20240507061802.20184-1-yan.y.zhao@intel.com>
- <20240507062044.20399-1-yan.y.zhao@intel.com>
- <ZktZDmcNnsHhp4Tm@infradead.org>
- <20240521154939.GH20229@nvidia.com>
- <20240521160016.GA2513156@nvidia.com>
- <ZlV7rlmWdU7dJZKo@infradead.org>
- <Zlt6huNJeW8ekJlE@nvidia.com>
-Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: inline
-In-Reply-To: <Zlt6huNJeW8ekJlE@nvidia.com>
-X-ClientProxiedBy: SG2PR02CA0047.apcprd02.prod.outlook.com
- (2603:1096:3:18::35) To DS7PR11MB5966.namprd11.prod.outlook.com
- (2603:10b6:8:71::6)
+   d="scan'208";a="75296815"
+Received: from unknown (HELO allen-box.sh.intel.com) ([10.239.159.127])
+  by orviesa001.jf.intel.com with ESMTP; 05 Jun 2024 20:42:39 -0700
+From: Lu Baolu <baolu.lu@linux.intel.com>
+To: Joerg Roedel <joro@8bytes.org>,
+	Will Deacon <will@kernel.org>,
+	Robin Murphy <robin.murphy@arm.com>,
+	Jason Gunthorpe <jgg@ziepe.ca>,
+	Kevin Tian <kevin.tian@intel.com>
+Cc: iommu@lists.linux.dev,
+	linux-kernel@vger.kernel.org,
+	Lu Baolu <baolu.lu@linux.intel.com>
+Subject: [PATCH] iommu/vt-d: Refactor PCI PRI enabling/disabling callbacks
+Date: Thu,  6 Jun 2024 11:40:19 +0800
+Message-Id: <20240606034019.42795-1-baolu.lu@linux.intel.com>
+X-Mailer: git-send-email 2.34.1
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: DS7PR11MB5966:EE_|MN2PR11MB4598:EE_
-X-MS-Office365-Filtering-Correlation-Id: 24f367d5-d876-4e75-9c4f-08dc85d34004
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;ARA:13230031|1800799015|376005|366007|7416005;
-X-Microsoft-Antispam-Message-Info: =?us-ascii?Q?lW7VzTVOVZsaNWlBxYbD3CuEcstZepyJ74tPA+KgM94LDYxJcD661Hv3gQ3S?=
- =?us-ascii?Q?v9ShY6CVXXg4MtYZv/G/LeSyQFuEerHwY13UqWDmXvF2+/KuiMilCKwakO+s?=
- =?us-ascii?Q?xyl5ZTznFeRxaPJ5sYPfp/BcFuQzLrvsIWH2x8qdzLPgFHdepZxzR2R7eoKa?=
- =?us-ascii?Q?hSqR7PTn8U2re868zwo6WGwDcfU93U5L9M5v9sTq1Ht9szSFKhXIOfpTLJ1A?=
- =?us-ascii?Q?8Fn8q9TJnd7Pl6lZjfkstTooe6l3ZxKBXCAf1uHDBXfr4aAhfM7PLwhZP8IK?=
- =?us-ascii?Q?B6Hg7/3IKE0vNMRYMORL/4rWjRwOxS1LAhSebEKdO3GQRlZu7WAZPCJgGGh5?=
- =?us-ascii?Q?44UV7oepZESLwl4y9IcFUkAU0kelLqEk5EKqzABOxzvIntqA8s+97S/gYQ+5?=
- =?us-ascii?Q?KPL9R9XVK28vsPzHnkFmAOCGcMMklI+17OMTCkxV6a/Y1Vl4FLC0lJzsjKpy?=
- =?us-ascii?Q?ZJwjEZFVuaDsQKWBIE1Dtptoa+5k4DOGQ7QtnxPDwVX6KyAckTXo0behDsk/?=
- =?us-ascii?Q?J0zEE5wAtNwLUyEb4XH32xQqLh2kcc1YZqXErWB3FLCzGVmvpiqRbk2Mazh5?=
- =?us-ascii?Q?Gen+PCpD/gPTQe0qG4TFMuK1QaUIIJBudhWsIqbaBm1L4KpYmx6SN+hWRUQw?=
- =?us-ascii?Q?WPRoNaANywGVTmF9GhaTKAt9fxb+63n4UKdhHq4lGr3Vy2RpDGOBbZ8YHhEg?=
- =?us-ascii?Q?EIZVHEkXJcwjR8QRgHQ5JLblz7u4Vb32nz4ivH18jcdATBcv/xc6fwrldk2t?=
- =?us-ascii?Q?fLHDEFz2FrPyw/gMSo+B4K/MwLiHvrVuYdnPyfiigT1uMVC3niZoVNZFqW9y?=
- =?us-ascii?Q?xbAEdACsvr8IszfOS0BRY6D8eHdJ6yVTbP/JEX/GkWzHV+aIREIAbcsLvA5S?=
- =?us-ascii?Q?ced76sb5ZjZ37lf7nUaXjlHLPNheWKvGlpemlR1TLEVes0HOw8WMr/zmgb75?=
- =?us-ascii?Q?9t5hY22hGM93TTia1ZfdIAZh1XLEy31Ahsi8JEyHvJCAnhnpB/uKeRGr1AK6?=
- =?us-ascii?Q?yMcK0HdBPak1LPhTkqU+gX8qsOREtNV3SGzPDoeLWu46srJhVKn2fsOkKOE1?=
- =?us-ascii?Q?63bGSsWYScuItfrHKIH7z0XNmg3WFBn0mq5M0SfEHmwHQjHCb4BLw2b55WqZ?=
- =?us-ascii?Q?4Xr9MGd9cuT0F7VwaVdGAMiiJLRI2fYEu9Q3EsNUMmuzoht04/Wtx9WQYanf?=
- =?us-ascii?Q?1KIRe3gwXFQlCT1s19jkBQQTGM23zbkK8eOgb2MO3Q+ZSClFBnRMk1BtCaby?=
- =?us-ascii?Q?zbs1rIAHWfmpr2r4iww3iLofBYjaiQbLs0KuYtW+Qg=3D=3D?=
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DS7PR11MB5966.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230031)(1800799015)(376005)(366007)(7416005);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?ON5og7HHBy8IN3KXQKPHFzf0JCIO5DPjH55sjeA8WLjqV0s72TVDDO+7sJfl?=
- =?us-ascii?Q?bwfpiE+3C92uz6dMJ9iwFSbLSRowyADEFfVX3dgrrGX5Dsxi+PDhBwq73GAQ?=
- =?us-ascii?Q?7r3WykIzIoXOX/YNqKm8cahQ1yiAPVPaG8jh0u0gMCXfu2xRYaYN/IV7h1cr?=
- =?us-ascii?Q?1J157YGokMTizeANa/GDaw6CuXRWjF6W3S96pEMJ+vqoEg3ORsLkLC899783?=
- =?us-ascii?Q?5FdxQBSCV3LsxnfPd3hHlw7m/KDZswLKb/BjDC82rPfVwTQNtR7ekhU4Sjmj?=
- =?us-ascii?Q?MuPar/MnLeCMKDNZ2TefQ879pE3HqGoDtO4w/xueUDGpQyiOfCe/go97XdI+?=
- =?us-ascii?Q?hELZ0+HGJVr5YWuFT1oXYb+vUSmcamlK5C9F/A7g8y/c+wpDhdrNguKw+qnl?=
- =?us-ascii?Q?q3ouZKIkTKOTeigRJWuZvJNw1GMcmAiLDmHjqpqOWlXOjLmBcPEXhsYbxVjy?=
- =?us-ascii?Q?8an0fpJAtMrUB5x6I6HdyZqBjUflNqYaJI0EqmXsXfm7CB2ad8FU2IR9ABGM?=
- =?us-ascii?Q?qdBecv3T/NBLIoy/yRUGpY3XZVGgEjuzypYeUi0xyUKyZny1JBslkwKLAJeP?=
- =?us-ascii?Q?J90Q9IUxp1yjZXmiSlwR1Kf4TYlKkyJEfaWfDIrLG5LqJ7R6BxGbBd7MMZaG?=
- =?us-ascii?Q?6x3TJ6zLM+fHbz6j/khepctGTDYXpzOF+/EIN6WD7ds6GTt9CR9EQDO8cu07?=
- =?us-ascii?Q?n4MpZL8RpH4VP4Dydz+nQHSh+cHy1AClTB2X+70cGkTxqcoD/ccAGMlxr9hH?=
- =?us-ascii?Q?VpAZRTKuB49F+lSxM4h/YqWHiwxv3j5X8BTNedYEs1YJDgVEmT64VJNe0xGn?=
- =?us-ascii?Q?JTqwDzLbMpDnHTNmdl1EshgXUjlJGGeNpWx75P9pkaC5fjErGTw/boHmmxWP?=
- =?us-ascii?Q?EHmuEP7eFYbwgLkURhpe7gC35/znTGiV5LVF1m848pmknxWa4k0lt5TtBjev?=
- =?us-ascii?Q?l6XhkITGkeTFCNCi0TF8bGRjXAZYBOnjhRjoLmQSX/qvIkazmdg2gGrzerEd?=
- =?us-ascii?Q?bDnyJ0UFQ6NCcNK58TkV/daVTYKHscR18e6f3iwWXBUEmHH3f153syw3KSDl?=
- =?us-ascii?Q?EkgESmbpZTm+Iql7LOSuan0ZIe4YaTLJZcsqw+8sKzqOvdwNCU/GIkj9sTnN?=
- =?us-ascii?Q?Ap7VEcy7xhpkEb5tXXLuuFRbjSDJ7EC0TgkxJf6FgCDxqBIZB2SoVw2jc0S4?=
- =?us-ascii?Q?qKFg+Jg/jJoNsJ0d/JMrCvAHTAPYyDjCoJzFnvN6pcgeAmsR6sIAN2zTd8yH?=
- =?us-ascii?Q?oO1ZcMlvt1xARjAcGzXzat6ih3sX9HAFKomnucaWxFuUIC6JW2j9tZ6tcEFP?=
- =?us-ascii?Q?Dskm1gypRTb21fj3Ur7kok7qG6L0bzxEZwrHdCfZzUG1D2Y8Cahf0XW2M8FP?=
- =?us-ascii?Q?VxCkAhN1HeHxkNQxgDbBqAvypNAFSMkxqT6Kz6PtLPYo0NaZiLsgcBl3EBQx?=
- =?us-ascii?Q?4u66KC1g+9LlAibxdgqZVj6WTEv7bE8a2qkGlolDOj15wKbuRZWRwbnNWlnA?=
- =?us-ascii?Q?96yJmtUWvyXZyYa1Ves2BcnLuuP1qyYRJQu/NMxH9Ip1R0YU3UQezFsICVUD?=
- =?us-ascii?Q?RL5CloTerL/c+w5YV9uPdAfwpxUmBPPGJR09Jhs3?=
-X-MS-Exchange-CrossTenant-Network-Message-Id: 24f367d5-d876-4e75-9c4f-08dc85d34004
-X-MS-Exchange-CrossTenant-AuthSource: DS7PR11MB5966.namprd11.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 06 Jun 2024 02:49:14.0045
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 46c98d88-e344-4ed4-8496-4ed7712e255d
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: KyaPunXM0qNRzdEubVSH+HXi1JpB5xVl0XIYH57gwWPFe2xeN4cO5vXzTc5B6XwZ2yOkU+y793NqePT4x0UIaw==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN2PR11MB4598
-X-OriginatorOrg: intel.com
+Content-Transfer-Encoding: 8bit
 
-On Sat, Jun 01, 2024 at 04:46:14PM -0300, Jason Gunthorpe wrote:
-> On Mon, May 27, 2024 at 11:37:34PM -0700, Christoph Hellwig wrote:
-> > On Tue, May 21, 2024 at 01:00:16PM -0300, Jason Gunthorpe wrote:
-> > > > > Err, no.  There should really be no exported cache manipulation macros,
-> > > > > as drivers are almost guaranteed to get this wrong.  I've added
-> > > > > Russell to the Cc list who has been extremtly vocal about this at least
-> > > > > for arm.
-> > > > 
-> > > > We could possibly move this under some IOMMU core API (ie flush and
-> > > > map, unmap and flush), the iommu APIs are non-modular so this could
-> > > > avoid the exported symbol.
-> > > 
-> > > Though this would be pretty difficult for unmap as we don't have the
-> > > pfns in the core code to flush. I don't think we have alot of good
-> > > options but to make iommufd & VFIO handle this directly as they have
-> > > the list of pages to flush on the unmap side. Use a namespace?
-> > 
-> > Just have a unmap version that also takes a list of PFNs that you'd
-> > need for non-coherent mappings?
-> 
-> VFIO has never supported that so nothing like that exists yet.. This
-> is sort of the first steps to some very basic support for a
-> non-coherent cache flush in a limited case of a VM that can do its own
-> cache flushing through kvm.
-> 
-> The pfn list is needed for unpin_user_pages() and it has an ugly
-> design where vfio/iommufd read back the pfns seperately from unmap,
-> and they both do it differently without a common range list
-> datastructure here.
-> 
-> So, we'd need to build some new unmap function that returns a pfn list
-> that it internally fetches via the read ops. Then it can do the read,
-> unmap, flush iotlb, flush cache in core code.
-Would the core code flush CPU caches by providing page physical address?
-If yes, do you think it's still necessary to export arch_flush_cache_phys()
-(as what's implemented in this patch)?
+Commit 0095bf83554f8 ("iommu: Improve iopf_queue_remove_device()")
+specified the flow for disabling the PRI on a device. Refactor the
+PRI callbacks in the intel iommu driver to better manage PRI
+enabling and disabling and align it with the device queue interfaces
+in the iommu core.
 
-> 
-> I've been working towards this very slowly as I want to push this
-> stuff down into the io page table walk and remove the significant
-> inefficiency, so it is not throw away work, but it is certainly some
-> notable amount of work to do.
-Will VFIO also be switched to this new unmap interface? Do we need to care
-about backporting?
+Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
+---
+ drivers/iommu/intel/iommu.h |  9 +++++
+ drivers/iommu/intel/iommu.c | 77 ++++++++++++++++++++++++++++++++++---
+ drivers/iommu/intel/pasid.c |  2 -
+ 3 files changed, 81 insertions(+), 7 deletions(-)
 
-And is it possible for VFIO alone to implement in the current proposed way
-in this series as the first step for easier backport?
+diff --git a/drivers/iommu/intel/iommu.h b/drivers/iommu/intel/iommu.h
+index eaf015b4353b..3d5d8f786906 100644
+--- a/drivers/iommu/intel/iommu.h
++++ b/drivers/iommu/intel/iommu.h
+@@ -1047,6 +1047,15 @@ static inline void context_set_sm_pre(struct context_entry *context)
+ 	context->lo |= BIT_ULL(4);
+ }
+ 
++/*
++ * Clear the PRE(Page Request Enable) field of a scalable mode context
++ * entry.
++ */
++static inline void context_clear_sm_pre(struct context_entry *context)
++{
++	context->lo &= ~BIT_ULL(4);
++}
++
+ /* Returns a number of VTD pages, but aligned to MM page size */
+ static inline unsigned long aligned_nrpages(unsigned long host_addr, size_t size)
+ {
+diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
+index 2e9811bf2a4e..2d4b122bcc1c 100644
+--- a/drivers/iommu/intel/iommu.c
++++ b/drivers/iommu/intel/iommu.c
+@@ -4213,6 +4213,57 @@ static int intel_iommu_enable_sva(struct device *dev)
+ 	return 0;
+ }
+ 
++/*
++ * Invalidate the caches for a present-to-present change in a context
++ * table entry according to the Spec 6.5.3.3 (Guidance to Software for
++ * Invalidations).
++ *
++ * Since context entry is not encoded by domain-id when operating in
++ * scalable-mode (refer Section 6.2.1), this performs coarser
++ * invalidation than the domain-selective granularity requested.
++ */
++static void invalidate_present_context_change(struct device_domain_info *info)
++{
++	struct intel_iommu *iommu = info->iommu;
++
++	iommu->flush.flush_context(iommu, 0, 0, 0, DMA_CCMD_GLOBAL_INVL);
++	if (sm_supported(iommu))
++		qi_flush_pasid_cache(iommu, 0, QI_PC_GLOBAL, 0);
++	iommu->flush.flush_iotlb(iommu, 0, 0, 0, DMA_TLB_GLOBAL_FLUSH);
++	__iommu_flush_dev_iotlb(info, 0, MAX_AGAW_PFN_WIDTH);
++}
++
++static int context_flip_pri(struct device_domain_info *info, bool enable)
++{
++	struct intel_iommu *iommu = info->iommu;
++	u8 bus = info->bus, devfn = info->devfn;
++	struct context_entry *context;
++
++	spin_lock(&iommu->lock);
++	if (context_copied(iommu, bus, devfn)) {
++		spin_unlock(&iommu->lock);
++		return -EINVAL;
++	}
++
++	context = iommu_context_addr(iommu, bus, devfn, false);
++	if (!context || !context_present(context)) {
++		spin_unlock(&iommu->lock);
++		return -ENODEV;
++	}
++
++	if (enable)
++		context_set_sm_pre(context);
++	else
++		context_clear_sm_pre(context);
++
++	if (!ecap_coherent(iommu->ecap))
++		clflush_cache_range(context, sizeof(*context));
++	invalidate_present_context_change(info);
++	spin_unlock(&iommu->lock);
++
++	return 0;
++}
++
+ static int intel_iommu_enable_iopf(struct device *dev)
+ {
+ 	struct pci_dev *pdev = dev_is_pci(dev) ? to_pci_dev(dev) : NULL;
+@@ -4242,15 +4293,23 @@ static int intel_iommu_enable_iopf(struct device *dev)
+ 	if (ret)
+ 		return ret;
+ 
++	ret = context_flip_pri(info, true);
++	if (ret)
++		goto err_remove_device;
++
+ 	ret = pci_enable_pri(pdev, PRQ_DEPTH);
+-	if (ret) {
+-		iopf_queue_remove_device(iommu->iopf_queue, dev);
+-		return ret;
+-	}
++	if (ret)
++		goto err_clear_pri;
+ 
+ 	info->pri_enabled = 1;
+ 
+ 	return 0;
++err_clear_pri:
++	context_flip_pri(info, false);
++err_remove_device:
++	iopf_queue_remove_device(iommu->iopf_queue, dev);
++
++	return ret;
+ }
+ 
+ static int intel_iommu_disable_iopf(struct device *dev)
+@@ -4261,6 +4320,15 @@ static int intel_iommu_disable_iopf(struct device *dev)
+ 	if (!info->pri_enabled)
+ 		return -EINVAL;
+ 
++	/* Disable new PRI reception: */
++	context_flip_pri(info, false);
++
++	/*
++	 * Remove device from fault queue and acknowledge all outstanding
++	 * PRQs to the device:
++	 */
++	iopf_queue_remove_device(iommu->iopf_queue, dev);
++
+ 	/*
+ 	 * PCIe spec states that by clearing PRI enable bit, the Page
+ 	 * Request Interface will not issue new page requests, but has
+@@ -4271,7 +4339,6 @@ static int intel_iommu_disable_iopf(struct device *dev)
+ 	 */
+ 	pci_disable_pri(to_pci_dev(dev));
+ 	info->pri_enabled = 0;
+-	iopf_queue_remove_device(iommu->iopf_queue, dev);
+ 
+ 	return 0;
+ }
+diff --git a/drivers/iommu/intel/pasid.c b/drivers/iommu/intel/pasid.c
+index abce19e2ad6f..286a8a7d66f5 100644
+--- a/drivers/iommu/intel/pasid.c
++++ b/drivers/iommu/intel/pasid.c
+@@ -768,8 +768,6 @@ static int context_entry_set_pasid_table(struct context_entry *context,
+ 
+ 	if (info->ats_supported)
+ 		context_set_sm_dte(context);
+-	if (info->pri_supported)
+-		context_set_sm_pre(context);
+ 	if (info->pasid_supported)
+ 		context_set_pasid(context);
+ 
+-- 
+2.34.1
+
