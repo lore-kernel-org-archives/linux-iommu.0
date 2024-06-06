@@ -1,165 +1,169 @@
-Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3699D195F10
-	for <iommu@lists.linux.dev>; Thu,  6 Jun 2024 13:35:14 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.176.79.56
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 771E7196C89
+	for <iommu@lists.linux.dev>; Thu,  6 Jun 2024 15:34:01 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1717680916; cv=none; b=tnQYjm12T12z/HkPNXlHOr9bPa4rgmO/aX4d/HSLZRliHH7cQPyhHmK/qJ3/HBCl2VRcgtzddpk/zKQIdMyyvMJNNwU8vRLZ78KkLR7quPR8yMNgNAwChNCgoEpUFGXbPL0DY/WswAcA94BaCJCsdhVSOBZn2h31E0YwtuF4PdY=
+	t=1717688041; cv=none; b=rm7NRc91W+hB29XTh+ICS55ns64uNclf4DUJjXyuAs85lWP5bTrQ04dYnHEyGGjLSYFEqCqHqjI3LuJIkCvOiglsn7WKjKBnGjld64wL6HVnCSj4sYEYqrxcxyxzsELjKrJ6Dx4xNADsjtro3498e5yTUGm6cIwH9Fe41DBwf7w=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1717680916; c=relaxed/simple;
-	bh=/MXgDGl0EVG6D5RLRjF/9TvipLs3K4pYtiQ74f0bnX8=;
-	h=From:To:CC:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=iyHNPMgTyfpd3lAZ5K3iQG1abSjWr2SqYJO/NdYORHe0OGoppTNe5AzB9HwNeZJepp+9zUH34/Y1wkBcuyugsloTlA+D1tKvkNume3SxHM2A66Sptqg0Rz7PrlW7QxtxdMG5HBuBi9OkGeA0MoILCYgyW7uiZN1hnKwVsx8XaZo=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=huawei.com; spf=pass smtp.mailfrom=huawei.com; arc=none smtp.client-ip=185.176.79.56
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=huawei.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=huawei.com
-Received: from mail.maildlp.com (unknown [172.18.186.231])
-	by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4Vw4wC3y63z6HJbM;
-	Thu,  6 Jun 2024 21:30:51 +0800 (CST)
-Received: from lhrpeml500005.china.huawei.com (unknown [7.191.163.240])
-	by mail.maildlp.com (Postfix) with ESMTPS id D97D4140B63;
-	Thu,  6 Jun 2024 21:35:12 +0800 (CST)
-Received: from A2303104131.china.huawei.com (10.202.227.28) by
- lhrpeml500005.china.huawei.com (7.191.163.240) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.1.2507.39; Thu, 6 Jun 2024 14:35:03 +0100
-From: Shameer Kolothum <shameerali.kolothum.thodi@huawei.com>
-To: <iommu@lists.linux.dev>, <linux-arm-kernel@lists.infradead.org>
-CC: <robin.murphy@arm.com>, <will@kernel.org>, <joro@8bytes.org>,
-	<jgg@nvidia.com>, <ryan.roberts@arm.com>, <kevin.tian@intel.com>,
-	<nicolinc@nvidia.com>, <mshavit@google.com>, <eric.auger@redhat.com>,
-	<joao.m.martins@oracle.com>, <jiangkunkun@huawei.com>,
-	<zhukeqian1@huawei.com>, <linuxarm@huawei.com>
-Subject: [PATCH v5 6/6] iommu/arm-smmu-v3: Enable HTTU for stage1 with io-pgtable mapping
-Date: Thu, 6 Jun 2024 14:33:02 +0100
-Message-ID: <20240606133302.17540-7-shameerali.kolothum.thodi@huawei.com>
-X-Mailer: git-send-email 2.12.0.windows.1
-In-Reply-To: <20240606133302.17540-1-shameerali.kolothum.thodi@huawei.com>
-References: <20240606133302.17540-1-shameerali.kolothum.thodi@huawei.com>
+	s=arc-20240116; t=1717688041; c=relaxed/simple;
+	bh=0K8GBFSkW4AN3/Sl0e8hqJEwYUcj7GhL4o9uYrZuMNs=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=QP3vXxR40+M9dbt7hJbeX2fgaAztjnVpMESxqbHqtRmiDjX92g25pevIebmELxvj36qNwxC3JUPe9zajD2KLnlz67PVlDtDEW6R6Q0I805fTCZYh3lpMSgwAyjlkJ+ghwK0pxgQY/vTeXgZfRNE4F0J3h7+ZR+pGaYCRLeM+FiM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=q+m0m/hD; arc=none smtp.client-ip=10.30.226.201
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="q+m0m/hD"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1FEDFC2BD10
+	for <iommu@lists.linux.dev>; Thu,  6 Jun 2024 15:34:01 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1717688041;
+	bh=0K8GBFSkW4AN3/Sl0e8hqJEwYUcj7GhL4o9uYrZuMNs=;
+	h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+	b=q+m0m/hDap6Q+Gvf79W9TSJ5BxkxcLyOWQHEjNJfzm0i/KUM0Fa9rpBxNiC8hEaIO
+	 TbhCC0MbAyvOG9XcO7O0LaxQxoGhDnu4LkwSLIVxQ9JJO/ACBsRukMJTftGc48vH1E
+	 +suwv7DsuARGwdxanEvDdFI+8mBEV4OX3SugRnGOVgPqXCrLBLHJsSQ11TtVB4w7DG
+	 fRJp9Ei3m2o95YbkgZhtFUS+mlYtY+ybykj5Ycyhla0/+5gRXmJEl+ZkkGuND30WhR
+	 itcVrJBfR/D2E7xqsKbeEXZqpHMVE8UzSCL+rvgqjdCDlZm2RlPdNRFj+oOjIEiO06
+	 Z9t6nfwptzMew==
+Received: by mail-lj1-f182.google.com with SMTP id 38308e7fff4ca-2eacd7e7ad7so14056441fa.3
+        for <iommu@lists.linux.dev>; Thu, 06 Jun 2024 08:34:01 -0700 (PDT)
+X-Forwarded-Encrypted: i=1; AJvYcCVQ+4UZrP9wGAMdAGUz2Hd5D8IC+flvbJsuzNXDFAD5LYedMERtxWuUR8kiC3lUB5EnnQIy8RyHDNyxTS2cZzvCYvL4Ju4=
+X-Gm-Message-State: AOJu0YzonB4uWke+wrz4dlCqndiY40FqryZbrr5/Gv/PbggGskoS9MVz
+	9G/MBQZPNr8tr+A53Z0tMXgj6fNvOh4uyJX1u9k51hFHcJ1cEYfLIwMqsxaesAn88aU5XyGOLVm
+	D0zIlE+/C51ETOwwW0cka3Hn5Gg==
+X-Google-Smtp-Source: AGHT+IFXwVRydGZ8W00wKskR1TtWyhH2bfTYh82RbfdTsMpPc96OSXgYmnPF7JWcJPPSEUu5kMdOQoxjLugRZuW1lHo=
+X-Received: by 2002:a05:651c:1502:b0:2ea:c450:ac2 with SMTP id
+ 38308e7fff4ca-2eadce3714dmr429241fa.23.1717688039491; Thu, 06 Jun 2024
+ 08:33:59 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
+References: <20240528223650.619532-1-quic_obabatun@quicinc.com>
+In-Reply-To: <20240528223650.619532-1-quic_obabatun@quicinc.com>
+From: Rob Herring <robh@kernel.org>
+Date: Thu, 6 Jun 2024 09:33:47 -0600
+X-Gmail-Original-Message-ID: <CAL_JsqLPznMbqiLXrugB1Qbj3MhMdN9mtbRQFx+94f1F0-JPNA@mail.gmail.com>
+Message-ID: <CAL_JsqLPznMbqiLXrugB1Qbj3MhMdN9mtbRQFx+94f1F0-JPNA@mail.gmail.com>
+Subject: Re: [PATCH v6 0/4] Dynamic Allocation of the reserved_mem array
+To: Oreoluwa Babatunde <quic_obabatun@quicinc.com>
+Cc: saravanak@google.com, hch@lst.de, m.szyprowski@samsung.com, 
+	robin.murphy@arm.com, will@kernel.org, catalin.marinas@arm.com, 
+	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, 
+	iommu@lists.linux.dev, kernel@quicinc.com
 Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 8bit
-X-ClientProxiedBy: dggems704-chm.china.huawei.com (10.3.19.181) To
- lhrpeml500005.china.huawei.com (7.191.163.240)
+Content-Transfer-Encoding: quoted-printable
 
-From: Kunkun Jiang <jiangkunkun@huawei.com>
+On Tue, May 28, 2024 at 4:37=E2=80=AFPM Oreoluwa Babatunde
+<quic_obabatun@quicinc.com> wrote:
+>
+> The reserved_mem array is used to store data for the different
+> reserved memory regions defined in the DT of a device.  The array
+> stores information such as region name, node reference, start-address,
+> and size of the different reserved memory regions.
+>
+> The array is currently statically allocated with a size of
+> MAX_RESERVED_REGIONS(64). This means that any system that specifies a
+> number of reserved memory regions greater than MAX_RESERVED_REGIONS(64)
+> will not have enough space to store the information for all the regions.
+>
+> This can be fixed by making the reserved_mem array a dynamically sized
+> array which is allocated using memblock_alloc() based on the exact
+> number of reserved memory regions defined in the DT.
+>
+> On architectures such as arm64, memblock allocated memory is not
+> writable until after the page tables have been setup.
+> This is an issue because the current implementation initializes the
+> reserved memory regions and stores their information in the array before
+> the page tables are setup. Hence, dynamically allocating the
+> reserved_mem array and attempting to write information to it at this
+> point will fail.
+>
+> Therefore, the allocation of the reserved_mem array will need to be done
+> after the page tables have been setup, which means that the reserved
+> memory regions will also need to wait until after the page tables have
+> been setup to be stored in the array.
+>
+> When processing the reserved memory regions defined in the DT, these
+> regions are marked as reserved by calling memblock_reserve(base, size).
+> Where:  base =3D base address of the reserved region.
+>         size =3D the size of the reserved memory region.
+>
+> Depending on if that region is defined using the "no-map" property,
+> memblock_mark_nomap(base, size) is also called.
+>
+> The "no-map" property is used to indicate to the operating system that a
+> mapping of the specified region must NOT be created. This also means
+> that no access (including speculative accesses) is allowed on this
+> region of memory except when it is coming from the device driver that
+> this region of memory is being reserved for.[1]
+>
+> Therefore, it is important to call memblock_reserve() and
+> memblock_mark_nomap() on all the reserved memory regions before the
+> system sets up the page tables so that the system does not unknowingly
+> include any of the no-map reserved memory regions in the memory map.
+>
+> There are two ways to define how/where a reserved memory region is
+> placed in memory:
+> i) Statically-placed reserved memory regions
+> i.e. regions defined with a set start address and size using the
+>      "reg" property in the DT.
+> ii) Dynamically-placed reserved memory regions.
+> i.e. regions defined by specifying a range of addresses where they can
+>      be placed in memory using the "alloc_ranges" and "size" properties
+>      in the DT.
+>
+> The dynamically-placed reserved memory regions get assigned a start
+> address only at runtime. And this needs to  be done before the page
+> tables are setup so that memblock_reserve() and memblock_mark_nomap()
+> can be called on the allocated region as explained above.
+> Since the dynamically allocated reserved_mem array can only available
+> after the page tables have been setup, the information for the
+> dynamically-placed reserved memory regions needs to be stored somewhere
+> temporarily until the reserved_mem array is available.
+>
+> Therefore, this series makes use of a temporary static array to store
+> the information of the dynamically-placed reserved memory regions until
+> the reserved_mem array is allocated.
+> Once the reserved_mem array is available, the information is copied over
+> from the temporary array into the reserved_mem array, and the memory for
+> the temporary array is freed back to the system.
+>
+> The information for the statically-placed reserved memory regions does
+> not need to be stored in a temporary array because their starting
+> address is already stored in the devicetree.
+> Hence, the only thing that needs to be done for these regions before the
+> page tables are setup is to call memblock_reserve() and
+> memblock_mark_nomap().
+> Once the reserved_mem array is allocated, the information for the
+> statically-placed reserved memory regions is added to the array.
+>
+> Note:
+> Because of the use of a temporary array to store the information of the
+> dynamically-placed reserved memory regions, there still exists a
+> limitation of 64 for this particular kind of reserved memory regions.
+> From my observation, these regions are typically small in number and
+> hence I expect this to not be an issue for now.
+>
+> Dependency:
+> This series is dependent on the below patchset for proper behavior on
+> the sh architecture. The patch is currently being reviewed by the
+> relevant architecture maintainer and will hopefully be merged soon.
+> https://lore.kernel.org/all/20240520175802.2002183-1-quic_obabatun@quicin=
+c.com/
 
-If io-pgtable quirk flag indicates support for hardware update of
-dirty state, enable HA/HD bits in the SMMU CD and also set the DBM
-bit in the page descriptor.
+Is it really dependent? This series just adds one additional
+allocation before all the reservations are done.
 
-Now report the dirty page tracking capability of SMMUv3 and
-select IOMMUFD_DRIVER for ARM_SMMU_V3 if IOMMUFD is enabled.
+I've applied this series and ran it thru kernelCI. I'm going to add it
+to next to get some more testing.
 
-Co-developed-by: Keqian Zhu <zhukeqian1@huawei.com>
-Signed-off-by: Keqian Zhu <zhukeqian1@huawei.com>
-Signed-off-by: Kunkun Jiang <jiangkunkun@huawei.com>
-Signed-off-by: Joao Martins <joao.m.martins@oracle.com>
-Reviewed-by: Ryan Roberts <ryan.roberts@arm.com>
-Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
-Signed-off-by: Shameer Kolothum <shameerali.kolothum.thodi@huawei.com>
----
- drivers/iommu/Kconfig                       |  1 +
- drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 15 +++++++++++++++
- drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h |  3 +++
- drivers/iommu/io-pgtable-arm.c              |  5 ++++-
- 4 files changed, 23 insertions(+), 1 deletion(-)
+I made one change dropping of_reserved_mem_check_root(). That's done
+still with FDT function, so no need to do it twice. Plus, the
+unflattened function doesn't have the restriction. (We could fix the
+FDT version pretty easily because we have a translation function.)
 
-diff --git a/drivers/iommu/Kconfig b/drivers/iommu/Kconfig
-index c04584be3089..a82f10054aec 100644
---- a/drivers/iommu/Kconfig
-+++ b/drivers/iommu/Kconfig
-@@ -394,6 +394,7 @@ config ARM_SMMU_V3
- 	select IOMMU_API
- 	select IOMMU_IO_PGTABLE_LPAE
- 	select GENERIC_MSI_IRQ
-+	select IOMMUFD_DRIVER if IOMMUFD
- 	help
- 	  Support for implementations of the ARM System MMU architecture
- 	  version 3 providing translation support to a PCIe root complex.
-diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-index 404f073255b6..d222502b30e6 100644
---- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-+++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-@@ -1335,6 +1335,12 @@ void arm_smmu_make_s1_cd(struct arm_smmu_cd *target,
- 		CTXDESC_CD_0_ASET |
- 		FIELD_PREP(CTXDESC_CD_0_ASID, cd->asid)
- 		);
-+
-+	/* To enable dirty flag update, set both Access flag and dirty state update */
-+	if (pgtbl_cfg->quirks & IO_PGTABLE_QUIRK_ARM_HD)
-+		target->data[0] |= cpu_to_le64(CTXDESC_CD_0_TCR_HA |
-+					       CTXDESC_CD_0_TCR_HD);
-+
- 	target->data[1] = cpu_to_le64(pgtbl_cfg->arm_lpae_s1_cfg.ttbr &
- 				      CTXDESC_CD_1_TTB0_MASK);
- 	target->data[3] = cpu_to_le64(pgtbl_cfg->arm_lpae_s1_cfg.mair);
-@@ -2224,6 +2230,13 @@ static const struct iommu_flush_ops arm_smmu_flush_ops = {
- 	.tlb_add_page	= arm_smmu_tlb_inv_page_nosync,
- };
- 
-+static bool arm_smmu_dbm_capable(struct arm_smmu_device *smmu)
-+{
-+	u32 features = (ARM_SMMU_FEAT_HD | ARM_SMMU_FEAT_COHERENCY);
-+
-+	return (smmu->features & features) == features;
-+}
-+
- /* IOMMU API */
- static bool arm_smmu_capable(struct device *dev, enum iommu_cap cap)
- {
-@@ -2236,6 +2249,8 @@ static bool arm_smmu_capable(struct device *dev, enum iommu_cap cap)
- 	case IOMMU_CAP_NOEXEC:
- 	case IOMMU_CAP_DEFERRED_FLUSH:
- 		return true;
-+	case IOMMU_CAP_DIRTY_TRACKING:
-+		return arm_smmu_dbm_capable(master->smmu);
- 	default:
- 		return false;
- 	}
-diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
-index 3f69ffefe4ee..66ec0d929d98 100644
---- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
-+++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
-@@ -304,6 +304,9 @@ struct arm_smmu_cd {
- #define CTXDESC_CD_0_TCR_IPS		GENMASK_ULL(34, 32)
- #define CTXDESC_CD_0_TCR_TBI0		(1ULL << 38)
- 
-+#define CTXDESC_CD_0_TCR_HA            (1UL << 43)
-+#define CTXDESC_CD_0_TCR_HD            (1UL << 42)
-+
- #define CTXDESC_CD_0_AA64		(1UL << 41)
- #define CTXDESC_CD_0_S			(1UL << 44)
- #define CTXDESC_CD_0_R			(1UL << 45)
-diff --git a/drivers/iommu/io-pgtable-arm.c b/drivers/iommu/io-pgtable-arm.c
-index 2e57e8616387..f5d9fd1f45bf 100644
---- a/drivers/iommu/io-pgtable-arm.c
-+++ b/drivers/iommu/io-pgtable-arm.c
-@@ -440,6 +440,8 @@ static arm_lpae_iopte arm_lpae_prot_to_pte(struct arm_lpae_io_pgtable *data,
- 		pte = ARM_LPAE_PTE_nG;
- 		if (!(prot & IOMMU_WRITE) && (prot & IOMMU_READ))
- 			pte |= ARM_LPAE_PTE_AP_RDONLY;
-+		else if (data->iop.cfg.quirks & IO_PGTABLE_QUIRK_ARM_HD)
-+			pte |= ARM_LPAE_PTE_DBM;
- 		if (!(prot & IOMMU_PRIV))
- 			pte |= ARM_LPAE_PTE_AP_UNPRIV;
- 	} else {
-@@ -929,7 +931,8 @@ arm_64_lpae_alloc_pgtable_s1(struct io_pgtable_cfg *cfg, void *cookie)
- 
- 	if (cfg->quirks & ~(IO_PGTABLE_QUIRK_ARM_NS |
- 			    IO_PGTABLE_QUIRK_ARM_TTBR1 |
--			    IO_PGTABLE_QUIRK_ARM_OUTER_WBWA))
-+			    IO_PGTABLE_QUIRK_ARM_OUTER_WBWA |
-+			    IO_PGTABLE_QUIRK_ARM_HD))
- 		return NULL;
- 
- 	data = arm_lpae_alloc_pgtable(cfg);
--- 
-2.34.1
-
+Rob
