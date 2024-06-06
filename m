@@ -1,168 +1,232 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.21])
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.9])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CAF4FEAF6
-	for <iommu@lists.linux.dev>; Thu,  6 Jun 2024 02:06:58 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.21
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1717639621; cv=none; b=d/8r4UZjuhQBBpKE1Dmkd0graa3WvGkBGV8u7zsxBmqXf1YkK9bf2J6/guBF9dIIEU0HbJsekWjmVtIKNjnzNwAQKTyhOZoE+80QDYFggeoCM4NKL8kUSqchTUz0788XhDHDAJJMCNOxQA51NSSBgS3YFUdsTFAs/ZQbwQeqApc=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1717639621; c=relaxed/simple;
-	bh=O1pxJnfGlDL+o5WOmDo3d+UFg4FCJmMKJsHIxcmUatg=;
-	h=Message-ID:Date:MIME-Version:Cc:Subject:To:References:From:
-	 In-Reply-To:Content-Type; b=aWksBJPg54WQ/VY9r9neHsyVo9TEVvG/pwDxZYVCGriMCHrFZAU1cLavU7fdVWdDP/psftHXDFIXIza2ANzRxqi7LHUXVb3O47C8EbVx0OFfTygcDgvz5a1ogRYrhrz0KoUHxO6RejlN5mBhKmx2KJYx0vv26x33Gt7Z5mrfjP8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=dcA5W7A8; arc=none smtp.client-ip=198.175.65.21
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 78673EEDB
+	for <iommu@lists.linux.dev>; Thu,  6 Jun 2024 02:49:17 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=192.198.163.9
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1717642159; cv=fail; b=mzT9MnVAiqogwwCXxW04he70jerFcHZCMgzLTpTAYXpRaLS9ffl+2GdtgPo++VzrAOhdPkFcyRteEpfhgzHHNkxwzcrWIgQCpdGMLDRHHuQvG15JJnKpoLldC3SJA7Ani/HHv8s6+hdt9FnGeBqncUsEJV4/plP/Y1Ycge0DQm0=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1717642159; c=relaxed/simple;
+	bh=Qi2QnY8uqpODO2njaVozCrp9L7+ibLvQEy+2/F4BMNQ=;
+	h=Date:From:To:CC:Subject:Message-ID:References:Content-Type:
+	 Content-Disposition:In-Reply-To:MIME-Version; b=cfuYYeBf2MevPG31N+cbuLoisy9arMs1K0tGGjFKDOT3sjoWZLHgNi6H6tH7T/rblIVaWQBg0p5dWcqKeVytzjTbx6jpnX2N/jr7xeQ/k94jC9V46HBLZDmYjZGfBTVO5EKi87dUN4wYKcyZmc63uNCqIAohNegCRU04j/89yjE=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=FURBmeP6; arc=fail smtp.client-ip=192.198.163.9
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="dcA5W7A8"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="FURBmeP6"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1717639619; x=1749175619;
-  h=message-id:date:mime-version:cc:subject:to:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=O1pxJnfGlDL+o5WOmDo3d+UFg4FCJmMKJsHIxcmUatg=;
-  b=dcA5W7A8o4hBtZ8CaUXRUNXuPcPBibXJneb8sowSLchtDV0jBxWRbnBt
-   6Et/GH2VEAm30ctZ+RdjyIo2Ax/HX1Dd5HoEMiGyesVy5lixP/kcanj3+
-   YyK2d71v5tlCDGl7Hw4tupzbRwu+EANjuh7BbzYSYzG/wUE7IdaK7TBbO
-   GwDifb5lBtU4ezcaivPLqvQHQ6/18FmmW6s4BwnURrR3Kt7ffQJt2RcVb
-   FbyYKre9Euee2ARUyTZ8xTDWMhOkRcOAc7L01PnSSZ8/Koelp/zoKxP/j
-   EIfxfrPO965ykB/h+ojyRmjO+hcsldYVONPYkqeJ2OyBtN/oMjMF5jDzg
-   w==;
-X-CSE-ConnectionGUID: lhDRodbfSXigJ2+Kf7036w==
-X-CSE-MsgGUID: tDYAdxIpRY2TKFwOmREHvA==
-X-IronPort-AV: E=McAfee;i="6600,9927,11094"; a="14241618"
+  t=1717642157; x=1749178157;
+  h=date:from:to:cc:subject:message-id:reply-to:references:
+   in-reply-to:mime-version;
+  bh=Qi2QnY8uqpODO2njaVozCrp9L7+ibLvQEy+2/F4BMNQ=;
+  b=FURBmeP6Okg1F3aw2K/s1PrKY+c4OO2+XugEHsP4ggwygb/3nV0aAUdt
+   AK7oyuMw8jK4TYaa/v2zt/KusBfwniwAV0bBRotJTmnoO6Kt3qHijZ4e2
+   IqbTHkfPt/g4Ez/DRpK/K+xKES7qpnTv9Tvz/rsQSrDZp0vzv4PvyCELP
+   zg2p0ZUjfk4NzqOn/QAgEPZ7eGWpC+rNyEm9uDnxlTtdmCY1ai3HA3fVD
+   Nsea1hV6Dk1LUViU26Ou2my8dJ5Sv7xFa12i/yxWjgu88wVZVpm4PrpvF
+   lfVuHYellJac2tluQuIMtTohVRitMnZFHtHcuUEO8vD5iBraqHChNCMS5
+   g==;
+X-CSE-ConnectionGUID: nx6IFSWxS2yRA9z1MIVwGQ==
+X-CSE-MsgGUID: gZJh9IyISmCKRuIG73/8uQ==
+X-IronPort-AV: E=McAfee;i="6600,9927,11094"; a="24945423"
 X-IronPort-AV: E=Sophos;i="6.08,218,1712646000"; 
-   d="scan'208";a="14241618"
-Received: from fmviesa008.fm.intel.com ([10.60.135.148])
-  by orvoesa113.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Jun 2024 19:06:59 -0700
-X-CSE-ConnectionGUID: y0WgSW4NQBOS4MM9Agg9Iw==
-X-CSE-MsgGUID: RA+mTl0pQRWQMmAwcw88gg==
+   d="scan'208";a="24945423"
+Received: from fmviesa007.fm.intel.com ([10.60.135.147])
+  by fmvoesa103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Jun 2024 19:49:16 -0700
+X-CSE-ConnectionGUID: BTbI+0rzQ3K/HRAZMsyGYQ==
+X-CSE-MsgGUID: Z2MEwGdjT1yUUmf77KINtA==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.08,218,1712646000"; 
-   d="scan'208";a="37813441"
-Received: from unknown (HELO [10.239.159.127]) ([10.239.159.127])
-  by fmviesa008.fm.intel.com with ESMTP; 05 Jun 2024 19:06:54 -0700
-Message-ID: <75d0e879-a807-420e-bbf6-2ba4238329cf@linux.intel.com>
-Date: Thu, 6 Jun 2024 10:04:44 +0800
+   d="scan'208";a="37687400"
+Received: from fmsmsx602.amr.corp.intel.com ([10.18.126.82])
+  by fmviesa007.fm.intel.com with ESMTP/TLS/AES256-GCM-SHA384; 05 Jun 2024 19:49:17 -0700
+Received: from fmsmsx611.amr.corp.intel.com (10.18.126.91) by
+ fmsmsx602.amr.corp.intel.com (10.18.126.82) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.39; Wed, 5 Jun 2024 19:49:16 -0700
+Received: from fmsmsx610.amr.corp.intel.com (10.18.126.90) by
+ fmsmsx611.amr.corp.intel.com (10.18.126.91) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.39; Wed, 5 Jun 2024 19:49:15 -0700
+Received: from fmsedg602.ED.cps.intel.com (10.1.192.136) by
+ fmsmsx610.amr.corp.intel.com (10.18.126.90) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.39 via Frontend Transport; Wed, 5 Jun 2024 19:49:15 -0700
+Received: from NAM10-MW2-obe.outbound.protection.outlook.com (104.47.55.49) by
+ edgegateway.intel.com (192.55.55.71) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.1.2507.39; Wed, 5 Jun 2024 19:49:15 -0700
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=JM5+HXCiIJrcvl/Ka1+WTLAMl4jY/exwmjRwfFUOR6YgjskJknO72XVCZTJkTwcgAKilFDhikiY0aQmtaudP2dCoRXwbDxFVPP175MxZA/Peg/ldUH0aIDvLiMVy3YDi1iWge6dOUxeiG19A5lfv0PbFH1oMR1aQC2NvAEVpkNiPWj1BWijVQxVFB5OhZreMdESCs2EzjyKcixfAEZmnp0C8MgS0tByH0BI6fJigYw0w27f2+748lPyf3Hiouhc9EyrsdJ39fptLT5hU+EB+qbluKG4u6ki3HuqWZduTtImHBnfiQjQQG+MlHa+qk4YORqHByzYXgLhDUo04C6VrpA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=D7NnYmnQWTD2nVf8q4Gs2zxlQa8i6yEBpPycVnV4yco=;
+ b=R5Lc5BftZNe/aUZAjHr9hiEcOLHSatUPwOPAcykp/jr9SMcbBpLWiUDL7pj1iWfr+HPsIVBHDU011vPxDdyHBDqZctIn8HrP+gtaoDNY/KJjomMXY+hDeIq4ci4K3kUnb+Re4Bu1XHOuMzpOtT62nb2afVVUISF0S+kxnKopzOw4PBC9Q8LLv4Y3mzwfiKgkAN7DffuR1uj33fLzpAeGXV+vWMoomETB8JIar7Koo+GnU+be20F9PSl314Pl8U6miTzJE8401KhDOVn4OATqru+kLX0eEWoRXzaOC7xy4Is7kVZ3EbPXUdd6Gaf8WxuLaK8wOnTQZRPcWjcSrvHLzA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
+ dkim=pass header.d=intel.com; arc=none
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=intel.com;
+Received: from DS7PR11MB5966.namprd11.prod.outlook.com (2603:10b6:8:71::6) by
+ MN2PR11MB4598.namprd11.prod.outlook.com (2603:10b6:208:26f::8) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.7633.33; Thu, 6 Jun 2024 02:49:14 +0000
+Received: from DS7PR11MB5966.namprd11.prod.outlook.com
+ ([fe80::e971:d8f4:66c4:12ca]) by DS7PR11MB5966.namprd11.prod.outlook.com
+ ([fe80::e971:d8f4:66c4:12ca%6]) with mapi id 15.20.7633.021; Thu, 6 Jun 2024
+ 02:49:14 +0000
+Date: Thu, 6 Jun 2024 10:48:10 +0800
+From: Yan Zhao <yan.y.zhao@intel.com>
+To: Jason Gunthorpe <jgg@nvidia.com>
+CC: Christoph Hellwig <hch@infradead.org>, <kvm@vger.kernel.org>,
+	<linux-kernel@vger.kernel.org>, <x86@kernel.org>,
+	<alex.williamson@redhat.com>, <kevin.tian@intel.com>,
+	<iommu@lists.linux.dev>, <pbonzini@redhat.com>, <seanjc@google.com>,
+	<dave.hansen@linux.intel.com>, <luto@kernel.org>, <peterz@infradead.org>,
+	<tglx@linutronix.de>, <mingo@redhat.com>, <bp@alien8.de>, <hpa@zytor.com>,
+	<corbet@lwn.net>, <joro@8bytes.org>, <will@kernel.org>,
+	<robin.murphy@arm.com>, <baolu.lu@linux.intel.com>, <yi.l.liu@intel.com>,
+	Russell King <linux@armlinux.org.uk>
+Subject: Re: [PATCH 3/5] x86/mm: Introduce and export interface
+ arch_clean_nonsnoop_dma()
+Message-ID: <ZmEjavnYePBLDbrS@yzhao56-desk.sh.intel.com>
+Reply-To: Yan Zhao <yan.y.zhao@intel.com>
+References: <20240507061802.20184-1-yan.y.zhao@intel.com>
+ <20240507062044.20399-1-yan.y.zhao@intel.com>
+ <ZktZDmcNnsHhp4Tm@infradead.org>
+ <20240521154939.GH20229@nvidia.com>
+ <20240521160016.GA2513156@nvidia.com>
+ <ZlV7rlmWdU7dJZKo@infradead.org>
+ <Zlt6huNJeW8ekJlE@nvidia.com>
+Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: inline
+In-Reply-To: <Zlt6huNJeW8ekJlE@nvidia.com>
+X-ClientProxiedBy: SG2PR02CA0047.apcprd02.prod.outlook.com
+ (2603:1096:3:18::35) To DS7PR11MB5966.namprd11.prod.outlook.com
+ (2603:10b6:8:71::6)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Cc: baolu.lu@linux.intel.com, David Airlie <airlied@gmail.com>,
- Daniel Vetter <daniel@ffwll.ch>, Kalle Valo <kvalo@kernel.org>,
- Bjorn Andersson <andersson@kernel.org>,
- Mathieu Poirier <mathieu.poirier@linaro.org>,
- Alex Williamson <alex.williamson@redhat.com>, mst@redhat.com,
- Jason Wang <jasowang@redhat.com>, Thierry Reding <thierry.reding@gmail.com>,
- Jonathan Hunter <jonathanh@nvidia.com>,
- Mikko Perttunen <mperttunen@nvidia.com>, iommu@lists.linux.dev,
- dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2 01/22] iommu: Add iommu_user_domain_alloc() interface
-To: Yi Liu <yi.l.liu@intel.com>, Joerg Roedel <joro@8bytes.org>,
- Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
- Jason Gunthorpe <jgg@ziepe.ca>, Kevin Tian <kevin.tian@intel.com>
-References: <20240604015134.164206-1-baolu.lu@linux.intel.com>
- <20240604015134.164206-2-baolu.lu@linux.intel.com>
- <445fae9f-ea1e-4864-9f0e-f348c51146a1@intel.com>
- <91a42f46-060a-4430-a10a-7bfded67c4a9@linux.intel.com>
- <b205bcfb-9972-4e03-9994-62419117d76f@intel.com>
-Content-Language: en-US
-From: Baolu Lu <baolu.lu@linux.intel.com>
-In-Reply-To: <b205bcfb-9972-4e03-9994-62419117d76f@intel.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: DS7PR11MB5966:EE_|MN2PR11MB4598:EE_
+X-MS-Office365-Filtering-Correlation-Id: 24f367d5-d876-4e75-9c4f-08dc85d34004
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;ARA:13230031|1800799015|376005|366007|7416005;
+X-Microsoft-Antispam-Message-Info: =?us-ascii?Q?lW7VzTVOVZsaNWlBxYbD3CuEcstZepyJ74tPA+KgM94LDYxJcD661Hv3gQ3S?=
+ =?us-ascii?Q?v9ShY6CVXXg4MtYZv/G/LeSyQFuEerHwY13UqWDmXvF2+/KuiMilCKwakO+s?=
+ =?us-ascii?Q?xyl5ZTznFeRxaPJ5sYPfp/BcFuQzLrvsIWH2x8qdzLPgFHdepZxzR2R7eoKa?=
+ =?us-ascii?Q?hSqR7PTn8U2re868zwo6WGwDcfU93U5L9M5v9sTq1Ht9szSFKhXIOfpTLJ1A?=
+ =?us-ascii?Q?8Fn8q9TJnd7Pl6lZjfkstTooe6l3ZxKBXCAf1uHDBXfr4aAhfM7PLwhZP8IK?=
+ =?us-ascii?Q?B6Hg7/3IKE0vNMRYMORL/4rWjRwOxS1LAhSebEKdO3GQRlZu7WAZPCJgGGh5?=
+ =?us-ascii?Q?44UV7oepZESLwl4y9IcFUkAU0kelLqEk5EKqzABOxzvIntqA8s+97S/gYQ+5?=
+ =?us-ascii?Q?KPL9R9XVK28vsPzHnkFmAOCGcMMklI+17OMTCkxV6a/Y1Vl4FLC0lJzsjKpy?=
+ =?us-ascii?Q?ZJwjEZFVuaDsQKWBIE1Dtptoa+5k4DOGQ7QtnxPDwVX6KyAckTXo0behDsk/?=
+ =?us-ascii?Q?J0zEE5wAtNwLUyEb4XH32xQqLh2kcc1YZqXErWB3FLCzGVmvpiqRbk2Mazh5?=
+ =?us-ascii?Q?Gen+PCpD/gPTQe0qG4TFMuK1QaUIIJBudhWsIqbaBm1L4KpYmx6SN+hWRUQw?=
+ =?us-ascii?Q?WPRoNaANywGVTmF9GhaTKAt9fxb+63n4UKdhHq4lGr3Vy2RpDGOBbZ8YHhEg?=
+ =?us-ascii?Q?EIZVHEkXJcwjR8QRgHQ5JLblz7u4Vb32nz4ivH18jcdATBcv/xc6fwrldk2t?=
+ =?us-ascii?Q?fLHDEFz2FrPyw/gMSo+B4K/MwLiHvrVuYdnPyfiigT1uMVC3niZoVNZFqW9y?=
+ =?us-ascii?Q?xbAEdACsvr8IszfOS0BRY6D8eHdJ6yVTbP/JEX/GkWzHV+aIREIAbcsLvA5S?=
+ =?us-ascii?Q?ced76sb5ZjZ37lf7nUaXjlHLPNheWKvGlpemlR1TLEVes0HOw8WMr/zmgb75?=
+ =?us-ascii?Q?9t5hY22hGM93TTia1ZfdIAZh1XLEy31Ahsi8JEyHvJCAnhnpB/uKeRGr1AK6?=
+ =?us-ascii?Q?yMcK0HdBPak1LPhTkqU+gX8qsOREtNV3SGzPDoeLWu46srJhVKn2fsOkKOE1?=
+ =?us-ascii?Q?63bGSsWYScuItfrHKIH7z0XNmg3WFBn0mq5M0SfEHmwHQjHCb4BLw2b55WqZ?=
+ =?us-ascii?Q?4Xr9MGd9cuT0F7VwaVdGAMiiJLRI2fYEu9Q3EsNUMmuzoht04/Wtx9WQYanf?=
+ =?us-ascii?Q?1KIRe3gwXFQlCT1s19jkBQQTGM23zbkK8eOgb2MO3Q+ZSClFBnRMk1BtCaby?=
+ =?us-ascii?Q?zbs1rIAHWfmpr2r4iww3iLofBYjaiQbLs0KuYtW+Qg=3D=3D?=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DS7PR11MB5966.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230031)(1800799015)(376005)(366007)(7416005);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?ON5og7HHBy8IN3KXQKPHFzf0JCIO5DPjH55sjeA8WLjqV0s72TVDDO+7sJfl?=
+ =?us-ascii?Q?bwfpiE+3C92uz6dMJ9iwFSbLSRowyADEFfVX3dgrrGX5Dsxi+PDhBwq73GAQ?=
+ =?us-ascii?Q?7r3WykIzIoXOX/YNqKm8cahQ1yiAPVPaG8jh0u0gMCXfu2xRYaYN/IV7h1cr?=
+ =?us-ascii?Q?1J157YGokMTizeANa/GDaw6CuXRWjF6W3S96pEMJ+vqoEg3ORsLkLC899783?=
+ =?us-ascii?Q?5FdxQBSCV3LsxnfPd3hHlw7m/KDZswLKb/BjDC82rPfVwTQNtR7ekhU4Sjmj?=
+ =?us-ascii?Q?MuPar/MnLeCMKDNZ2TefQ879pE3HqGoDtO4w/xueUDGpQyiOfCe/go97XdI+?=
+ =?us-ascii?Q?hELZ0+HGJVr5YWuFT1oXYb+vUSmcamlK5C9F/A7g8y/c+wpDhdrNguKw+qnl?=
+ =?us-ascii?Q?q3ouZKIkTKOTeigRJWuZvJNw1GMcmAiLDmHjqpqOWlXOjLmBcPEXhsYbxVjy?=
+ =?us-ascii?Q?8an0fpJAtMrUB5x6I6HdyZqBjUflNqYaJI0EqmXsXfm7CB2ad8FU2IR9ABGM?=
+ =?us-ascii?Q?qdBecv3T/NBLIoy/yRUGpY3XZVGgEjuzypYeUi0xyUKyZny1JBslkwKLAJeP?=
+ =?us-ascii?Q?J90Q9IUxp1yjZXmiSlwR1Kf4TYlKkyJEfaWfDIrLG5LqJ7R6BxGbBd7MMZaG?=
+ =?us-ascii?Q?6x3TJ6zLM+fHbz6j/khepctGTDYXpzOF+/EIN6WD7ds6GTt9CR9EQDO8cu07?=
+ =?us-ascii?Q?n4MpZL8RpH4VP4Dydz+nQHSh+cHy1AClTB2X+70cGkTxqcoD/ccAGMlxr9hH?=
+ =?us-ascii?Q?VpAZRTKuB49F+lSxM4h/YqWHiwxv3j5X8BTNedYEs1YJDgVEmT64VJNe0xGn?=
+ =?us-ascii?Q?JTqwDzLbMpDnHTNmdl1EshgXUjlJGGeNpWx75P9pkaC5fjErGTw/boHmmxWP?=
+ =?us-ascii?Q?EHmuEP7eFYbwgLkURhpe7gC35/znTGiV5LVF1m848pmknxWa4k0lt5TtBjev?=
+ =?us-ascii?Q?l6XhkITGkeTFCNCi0TF8bGRjXAZYBOnjhRjoLmQSX/qvIkazmdg2gGrzerEd?=
+ =?us-ascii?Q?bDnyJ0UFQ6NCcNK58TkV/daVTYKHscR18e6f3iwWXBUEmHH3f153syw3KSDl?=
+ =?us-ascii?Q?EkgESmbpZTm+Iql7LOSuan0ZIe4YaTLJZcsqw+8sKzqOvdwNCU/GIkj9sTnN?=
+ =?us-ascii?Q?Ap7VEcy7xhpkEb5tXXLuuFRbjSDJ7EC0TgkxJf6FgCDxqBIZB2SoVw2jc0S4?=
+ =?us-ascii?Q?qKFg+Jg/jJoNsJ0d/JMrCvAHTAPYyDjCoJzFnvN6pcgeAmsR6sIAN2zTd8yH?=
+ =?us-ascii?Q?oO1ZcMlvt1xARjAcGzXzat6ih3sX9HAFKomnucaWxFuUIC6JW2j9tZ6tcEFP?=
+ =?us-ascii?Q?Dskm1gypRTb21fj3Ur7kok7qG6L0bzxEZwrHdCfZzUG1D2Y8Cahf0XW2M8FP?=
+ =?us-ascii?Q?VxCkAhN1HeHxkNQxgDbBqAvypNAFSMkxqT6Kz6PtLPYo0NaZiLsgcBl3EBQx?=
+ =?us-ascii?Q?4u66KC1g+9LlAibxdgqZVj6WTEv7bE8a2qkGlolDOj15wKbuRZWRwbnNWlnA?=
+ =?us-ascii?Q?96yJmtUWvyXZyYa1Ves2BcnLuuP1qyYRJQu/NMxH9Ip1R0YU3UQezFsICVUD?=
+ =?us-ascii?Q?RL5CloTerL/c+w5YV9uPdAfwpxUmBPPGJR09Jhs3?=
+X-MS-Exchange-CrossTenant-Network-Message-Id: 24f367d5-d876-4e75-9c4f-08dc85d34004
+X-MS-Exchange-CrossTenant-AuthSource: DS7PR11MB5966.namprd11.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 06 Jun 2024 02:49:14.0045
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 46c98d88-e344-4ed4-8496-4ed7712e255d
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: KyaPunXM0qNRzdEubVSH+HXi1JpB5xVl0XIYH57gwWPFe2xeN4cO5vXzTc5B6XwZ2yOkU+y793NqePT4x0UIaw==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN2PR11MB4598
+X-OriginatorOrg: intel.com
 
-On 6/5/24 2:23 PM, Yi Liu wrote:
-> On 2024/6/5 10:00, Baolu Lu wrote:
->> On 6/4/24 4:03 PM, Yi Liu wrote:
->>> On 2024/6/4 09:51, Lu Baolu wrote:
->>>> Commit <909f4abd1097> ("iommu: Add new iommu op to create domains owned
->>>> by userspace") added a dedicated iommu op to allocate a user domain.
->>>> While IOMMUFD has already made use of this callback, other frameworks
->>>> like vfio/type1 and vDPA still use the paging domain allocation 
->>>> interface.
->>>>
->>>> Add a new interface named iommu_user_domain_alloc(), which indicates 
->>>> the
->>>> allocation of a domain for device DMA managed by user space driver. All
->>>> device passthrough frameworks could use this interface for their domain
->>>> allocation.
->>>>
->>>> Although it is expected that all iommu drivers could implement their 
->>>> own
->>>> domain_alloc_user ops, most drivers haven't implemented it yet. 
->>>> Rollback
->>>> to the paging domain allocation interface if the iommu driver hasn't
->>>> implemented this op yet.
->>>>
->>>> Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
->>>> ---
->>>>   include/linux/iommu.h |  6 ++++++
->>>>   drivers/iommu/iommu.c | 42 ++++++++++++++++++++++++++++++++++++++++++
->>>>   2 files changed, 48 insertions(+)
->>>>
->>>> diff --git a/include/linux/iommu.h b/include/linux/iommu.h
->>>> index 7bc8dff7cf6d..6648b2415474 100644
->>>> --- a/include/linux/iommu.h
->>>> +++ b/include/linux/iommu.h
->>>> @@ -780,6 +780,7 @@ extern bool iommu_present(const struct bus_type 
->>>> *bus);
->>>>   extern bool device_iommu_capable(struct device *dev, enum 
->>>> iommu_cap cap);
->>>>   extern bool iommu_group_has_isolated_msi(struct iommu_group *group);
->>>>   extern struct iommu_domain *iommu_domain_alloc(const struct 
->>>> bus_type *bus);
->>>> +struct iommu_domain *iommu_user_domain_alloc(struct device *dev, 
->>>> u32 flags);
->>>>   extern void iommu_domain_free(struct iommu_domain *domain);
->>>>   extern int iommu_attach_device(struct iommu_domain *domain,
->>>>                      struct device *dev);
->>>> @@ -1086,6 +1087,11 @@ static inline struct iommu_domain 
->>>> *iommu_domain_alloc(const struct bus_type *bus
->>>>       return NULL;
->>>>   }
->>>> +static inline struct iommu_domain *iommu_user_domain_alloc(struct 
->>>> device *dev, u32 flags)
->>>> +{
->>>> +    return ERR_PTR(-ENODEV);
->>>> +}
->>>> +
->>>>   static inline void iommu_domain_free(struct iommu_domain *domain)
->>>>   {
->>>>   }
->>>> diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
->>>> index 9df7cc75c1bc..f1416892ef8e 100644
->>>> --- a/drivers/iommu/iommu.c
->>>> +++ b/drivers/iommu/iommu.c
->>>> @@ -2032,6 +2032,48 @@ struct iommu_domain *iommu_domain_alloc(const 
->>>> struct bus_type *bus)
->>>>   }
->>>>   EXPORT_SYMBOL_GPL(iommu_domain_alloc);
->>>> +/**
->>>> + * iommu_user_domain_alloc() - Allocate a user domain
->>>> + * @dev: device for which the domain is allocated
->>>> + * @flags: iommufd_hwpt_alloc_flags defined in uapi/linux/iommufd.h
->>>> + *
->>>> + * Allocate a user domain which will be managed by a userspace 
->>>> driver. Return
->>>> + * allocated domain if successful, or a ERR pointer for failure.
->>>
->>> do you want to mention that this is for paging domain allocation?
->>
->> You are worrying about its confusion with nesting domain allocation,
->> right?
+On Sat, Jun 01, 2024 at 04:46:14PM -0300, Jason Gunthorpe wrote:
+> On Mon, May 27, 2024 at 11:37:34PM -0700, Christoph Hellwig wrote:
+> > On Tue, May 21, 2024 at 01:00:16PM -0300, Jason Gunthorpe wrote:
+> > > > > Err, no.  There should really be no exported cache manipulation macros,
+> > > > > as drivers are almost guaranteed to get this wrong.  I've added
+> > > > > Russell to the Cc list who has been extremtly vocal about this at least
+> > > > > for arm.
+> > > > 
+> > > > We could possibly move this under some IOMMU core API (ie flush and
+> > > > map, unmap and flush), the iommu APIs are non-modular so this could
+> > > > avoid the exported symbol.
+> > > 
+> > > Though this would be pretty difficult for unmap as we don't have the
+> > > pfns in the core code to flush. I don't think we have alot of good
+> > > options but to make iommufd & VFIO handle this directly as they have
+> > > the list of pages to flush on the unmap side. Use a namespace?
+> > 
+> > Just have a unmap version that also takes a list of PFNs that you'd
+> > need for non-coherent mappings?
 > 
-> yes. As I replied in last version, user_domain is a bit confusing since
-> nested domain is also a user_domain. That's why we introduced the
-> alloc_domain_user op.
+> VFIO has never supported that so nothing like that exists yet.. This
+> is sort of the first steps to some very basic support for a
+> non-coherent cache flush in a limited case of a VM that can do its own
+> cache flushing through kvm.
+> 
+> The pfn list is needed for unpin_user_pages() and it has an ugly
+> design where vfio/iommufd read back the pfns seperately from unmap,
+> and they both do it differently without a common range list
+> datastructure here.
+> 
+> So, we'd need to build some new unmap function that returns a pfn list
+> that it internally fetches via the read ops. Then it can do the read,
+> unmap, flush iotlb, flush cache in core code.
+Would the core code flush CPU caches by providing page physical address?
+If yes, do you think it's still necessary to export arch_flush_cache_phys()
+(as what's implemented in this patch)?
 
-As I discussed with Jason in another reply, I will drop the
-iommu_user_domain_alloc() interface as it is currently iommfd-specific
-only and not generic for a common interface.
+> 
+> I've been working towards this very slowly as I want to push this
+> stuff down into the io page table walk and remove the significant
+> inefficiency, so it is not throw away work, but it is certainly some
+> notable amount of work to do.
+Will VFIO also be switched to this new unmap interface? Do we need to care
+about backporting?
 
-Best regards,
-baolu
+And is it possible for VFIO alone to implement in the current proposed way
+in this series as the first step for easier backport?
