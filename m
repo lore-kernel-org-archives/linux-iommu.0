@@ -1,119 +1,149 @@
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C62B81A270
-	for <iommu@lists.linux.dev>; Fri,  7 Jun 2024 17:56:36 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=170.10.133.124
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3ED32DDC9;
+	Fri,  7 Jun 2024 19:30:58 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1717782998; cv=none; b=DDlxChbqXeAP3Bl+4vKi1B+qLn3Qn7twc+Fgt+/pG3AKKM72uhSZhs2S8jDSipXkERmOTQBqgFSQSmdYU3aM2Jt94lPuFW3fePw56ryPlLNUX6KfnmUUh6UDrG5OKMTlY9UYvTyKWbC1qlisQj3IuMrB2WBXXcOmCRRdbS+kkf0=
+	t=1717788659; cv=none; b=jI+3SQg7yHfWQDJwcAA52/JDN1kZaeNsV4NffZDZ8mQ3QhUypaK2NCvfk/6w5bOey7AofzR+SwZ9NgT5FtozYPIpggwXwRsSXA1Y34ccW6iHoBgdlH3AswmmwOrJg38rJc/hkaHpR8IPxra8KG5R8DyV7J54D+o9zBSVX3JWKKE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1717782998; c=relaxed/simple;
-	bh=de1isALUI6uoVRsEqbYmJH4cywJUZMBwIdGsDgR0zjo=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 In-Reply-To:Content-Type:Content-Disposition; b=G4sxyHQelmxBAW7HQ/yxpVqTYmZznaNTEG+tnU6X9EFlEsn8t+HhSD1WAL+SDUrwFvzD5HxC9PylkYB4z847VCNI/GBsJvNcStJUhiRhoFPCZyejWk2qNYkThxHF6Y2f4Ev7yrv+tas9Zl1pA0jAIheDJ4OvKgQm+djWe8yw9aw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=redhat.com; spf=pass smtp.mailfrom=redhat.com; dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b=Wz8OJoi3; arc=none smtp.client-ip=170.10.133.124
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=redhat.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=redhat.com
+	s=arc-20240116; t=1717788659; c=relaxed/simple;
+	bh=D3j+/yjnNIGv7J2RoQZW6oh/+NmHkvPnpEUbKX+xt1I=;
+	h=Date:From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:
+	 Content-Disposition:In-Reply-To; b=Q7MLo0EDRgC+PhM95geJzIb0LKDUYg/WeuJxoLfviHFywdsFEmUuwmm4uY4M96VZXB9LVXdVtU2/SR92GQctVd1pBRI6WAoKhxgRkwwzKeEZriPfuKrcxyrsF9ZQpBd3pleCzdRcKiODtxFBm/If/RF36gD5BXofYYa+vM74uWY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=nt8k8nv/; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="Wz8OJoi3"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-	s=mimecast20190719; t=1717782995;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 in-reply-to:in-reply-to:references:references;
-	bh=6Dq823qS5qbYnbhJH0kaG14MNgIq+VaZmSgwk/Jjr1s=;
-	b=Wz8OJoi3HsLRdFumF/2i4qeusGe8ERWnAnZ5H/T6SIUIALfLhCoMJQdUBsJaPA9XPq2uUC
-	QZutRHPnylAohD6cGcq2tT2zLIpFKkTZyW65YZhRI4jJFEb1mRk3MCynO1MEbs0E1jbVzu
-	5dJHY1cfLfcfOHY1AVNy5YhWQ4NEhWM=
-Received: from mail-qk1-f200.google.com (mail-qk1-f200.google.com
- [209.85.222.200]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
- us-mta-50-L6rxXjEhO5eDGh_BfPrPtg-1; Fri, 07 Jun 2024 13:56:34 -0400
-X-MC-Unique: L6rxXjEhO5eDGh_BfPrPtg-1
-Received: by mail-qk1-f200.google.com with SMTP id af79cd13be357-795505d8e46so25150385a.1
-        for <iommu@lists.linux.dev>; Fri, 07 Jun 2024 10:56:34 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1717782994; x=1718387794;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=6Dq823qS5qbYnbhJH0kaG14MNgIq+VaZmSgwk/Jjr1s=;
-        b=jjftGKbeCsg5VzCbHX9YI6y8HGOUdVav0R18TkBHlzcxprz2B73CQ+sJlDIbumkWBh
-         MzD//3yUL0WJWHiL+AYYWU0JjQicoX4iPiUboBuswLvV5rItb8W0IdrXFVxEZZYwHTCo
-         sA9bt1GqCvT2uxwz2h7373azaGRqmwo06nQY6lE7ogKjg0AUvb+FmGzIhKhWn2K97B0W
-         WVNMptz5YkRL20TNqSrujVvRKQnPcJUyYqgl+0uBCP1jcHl1dWVaRiJqQE7TWZ09sw8P
-         P0uPZGZxvE7MK/oRQkPPpZy3Y3gjuEBV3lBoo2AHaOk+E3zVjWEjCYbUV0MdHN6jm2TL
-         KSlg==
-X-Forwarded-Encrypted: i=1; AJvYcCWKNoZMJhmhLPtT7CvN/rb4okhhtELaJ/JlzMBdwD6q1AMILF82q+S2guPyX4evzjw4oC3hV4pPqmaIyktiqYwA5/Asj+M=
-X-Gm-Message-State: AOJu0YwXZZoVKcGjw9PTnnua/rC9ny2uxVeu6CmecnLPUC71yWAzKdkb
-	CgLDWDBbmG2HpaZELcWx9FpGbLsBqNm8V37cm+m9kXwtGv2Fo9pAUt6z6bOWRe7kINjyVbkWfwd
-	ubPfpeA1v1aaoVgdsIYfkMilN0Tbb5ZrIVgt10pDFYJPSdSIa/slm
-X-Received: by 2002:a37:e103:0:b0:794:f1f1:804 with SMTP id af79cd13be357-7953c5dc121mr272158085a.52.1717782993888;
-        Fri, 07 Jun 2024 10:56:33 -0700 (PDT)
-X-Google-Smtp-Source: AGHT+IG1jqy09tN4euwVTk1IC+LnZ5WNN+yf+ukRKckgihHaDLqr+dOdWB86hB+p4Vk6oqdI0p2AkQ==
-X-Received: by 2002:a37:e103:0:b0:794:f1f1:804 with SMTP id af79cd13be357-7953c5dc121mr272156285a.52.1717782993550;
-        Fri, 07 Jun 2024 10:56:33 -0700 (PDT)
-Received: from localhost (ip98-179-76-110.ph.ph.cox.net. [98.179.76.110])
-        by smtp.gmail.com with ESMTPSA id af79cd13be357-795330b1f12sm188416785a.95.2024.06.07.10.56.32
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 07 Jun 2024 10:56:32 -0700 (PDT)
-Date: Fri, 7 Jun 2024 10:56:31 -0700
-From: Jerry Snitselaar <jsnitsel@redhat.com>
-To: Joerg Roedel <joro@8bytes.org>
-Cc: Yi Zhang <yi.zhang@redhat.com>, "Tian, Kevin" <kevin.tian@intel.com>, 
-	Vasant Hegde <vasant.hegde@amd.com>, Baolu Lu <baolu.lu@linux.intel.com>, 
-	Dimitri Sivanich <sivanich@hpe.com>, Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>, 
-	Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>, 
-	David Wang <00107082@163.com>, Shinichiro Kawasaki <shinichiro.kawasaki@wdc.com>, 
-	iommu@lists.linux.dev, linux-kernel@vger.kernel.org, Steve Wahl <steve.wahl@hpe.com>, 
-	Russ Anderson <russ.anderson@hpe.com>
-Subject: Re: [PATCH] iommu/amd: Fix panic accessing amd_iommu_enable_faulting
-Message-ID: <lsahbfrt26ysjzgg6p6ezcrf525b25d7nnuqxgis5k6g3zsnzt@qsmzecwdjnen>
-References: <ZljHE/R4KLzGU6vx@hpe.com>
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="nt8k8nv/"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7B38BC2BBFC;
+	Fri,  7 Jun 2024 19:30:58 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1717788658;
+	bh=D3j+/yjnNIGv7J2RoQZW6oh/+NmHkvPnpEUbKX+xt1I=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:From;
+	b=nt8k8nv/j9c0E53eFscg2s+72y2p8Z1M1saOXCrq5RBsOHkjTDdtObZlW5ALXU/Gt
+	 4ShFkTj4ji1MM06yyw3B2Sn2lUlfsVi5VxNXKJLPv1pKO9t/IwPUZh1Q4OPq4gWlw2
+	 TJQb9KxS1YrQwhBzH0GfcjYiNWH5N1rDv9mxqEa9YrLZyphVdtFEP7M95b3b6BEIbM
+	 cVy4tFEVCOfyKRFRR6/8WxTVkK8zc4aYgL/9eJutTEuv0U2wXj3R7N9MA/F7M1kvGV
+	 gL6xkER04J7inUbibhVa87LWNucBGnRkGIB4a4mgx7PhdiDJlZ+SPrVKgKxSWDtlJf
+	 xjve7Ue/M7LCQ==
+Date: Fri, 7 Jun 2024 14:30:55 -0500
+From: Bjorn Helgaas <helgaas@kernel.org>
+To: Vidya Sagar <vidyas@nvidia.com>
+Cc: Jason Gunthorpe <jgg@nvidia.com>, "corbet@lwn.net" <corbet@lwn.net>,
+	"bhelgaas@google.com" <bhelgaas@google.com>,
+	Gal Shalom <galshalom@nvidia.com>,
+	Leon Romanovsky <leonro@nvidia.com>,
+	Thierry Reding <treding@nvidia.com>,
+	Jon Hunter <jonathanh@nvidia.com>,
+	Masoud Moshref Javadi <mmoshrefjava@nvidia.com>,
+	Shahaf Shuler <shahafs@nvidia.com>,
+	Vikram Sethi <vsethi@nvidia.com>,
+	Shanker Donthineni <sdonthineni@nvidia.com>,
+	Jiandi An <jan@nvidia.com>, Tushar Dave <tdave@nvidia.com>,
+	"linux-doc@vger.kernel.org" <linux-doc@vger.kernel.org>,
+	"linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>,
+	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+	Krishna Thota <kthota@nvidia.com>,
+	Manikanta Maddireddy <mmaddireddy@nvidia.com>,
+	"sagar.tv@gmail.com" <sagar.tv@gmail.com>,
+	Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
+	Robin Murphy <robin.murphy@arm.com>,
+	"iommu@lists.linux.dev" <iommu@lists.linux.dev>
+Subject: Re: [PATCH V3] PCI: Extend ACS configurability
+Message-ID: <20240607193055.GA855605@bhelgaas>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-In-Reply-To: <ZljHE/R4KLzGU6vx@hpe.com>
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: redhat.com
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
+In-Reply-To: <PH8PR12MB667431B8552D271F906F8F4BB8FF2@PH8PR12MB6674.namprd12.prod.outlook.com>
 
-On Thu, May 30, 2024 at 01:36:03PM GMT, Dimitri Sivanich wrote:
-> This fixes a bug introduced by commit d74169ceb0d2 ("iommu/vt-d: Allocate
-> DMAR fault interrupts locally").  The panic happens when
-> amd_iommu_enable_faulting is called from CPUHP_AP_ONLINE_DYN context.
-> 
-> Fixes: d74169ceb0d2 ("iommu/vt-d: Allocate DMAR fault interrupts locally")
-> Signed-off-by: Dimitri Sivanich <sivanich@hpe.com>
-> Tested-by: Yi Zhang <yi.zhang@redhat.com>
-> ---
->  drivers/iommu/amd/init.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/drivers/iommu/amd/init.c b/drivers/iommu/amd/init.c
-> index a18e74878f68..b02b959d12af 100644
-> --- a/drivers/iommu/amd/init.c
-> +++ b/drivers/iommu/amd/init.c
-> @@ -3353,7 +3353,7 @@ int amd_iommu_reenable(int mode)
->  	return 0;
->  }
->  
-> -int __init amd_iommu_enable_faulting(unsigned int cpu)
-> +int amd_iommu_enable_faulting(unsigned int cpu)
->  {
->  	/* We enable MSI later when PCI is initialized */
->  	return 0;
-> -- 
-> 2.35.3
+On Mon, Jun 03, 2024 at 07:50:59AM +0000, Vidya Sagar wrote:
+> Hi Bjorn,
+> Could you let me know if Jason's reply answers your question?
+> Please let me know if you are looking for any more information.
 
-Joerg,
+I think we should add some of that content to the commit log.  It
+needs:
 
-Can this get pulled in for the next batch of fixes?
+  - Subject line that advertises some good thing.
 
-Regards,
-Jerry
+  - A description of why users want this.  I have no idea what the
+    actual benefit is, but I'm looking for something at the level of
+    "The default ACS settings put A and B in different IOMMU groups,
+    preventing P2PDMA between them.  If we disable ACS X, A and B will
+    be put in the same group and P2PDMA will work".
 
+  - A primer on how users can affect IOMMU groups by enabling/
+    disabling ACS settings so they can use this without just blind
+    trial and error.  A note that this is immutable except at boot
+    time.
+
+  - A pointer to the code that determines IOMMU groups based on the
+    ACS settings.  Similar to the above, but more useful for
+    developers.
+
+If we assert "for iommu_groups to form correctly ...", a hint about
+why/where this is so would be helpful.
+
+"Correctly" is not quite the right word here; it's just a fact that
+the ACS settings determined at boot time result in certain IOMMU
+groups.  If the user desires different groups, it's not that something
+is "incorrect"; it's just that the user may have to accept less
+isolation to get the desired IOMMU groups.
+
+> > -----Original Message-----
+> > From: Jason Gunthorpe <jgg@nvidia.com>
+> > ...
+> > 
+> > On Thu, May 23, 2024 at 09:59:36AM -0500, Bjorn Helgaas wrote:
+> > > [+cc iommu folks]
+> > >
+> > > On Thu, May 23, 2024 at 12:05:28PM +0530, Vidya Sagar wrote:
+> > > > For iommu_groups to form correctly, the ACS settings in the PCIe
+> > > > fabric need to be setup early in the boot process, either via the
+> > > > BIOS or via the kernel disable_acs_redir parameter.
+> > >
+> > > Can you point to the iommu code that is involved here?  It sounds like
+> > > the iommu_groups are built at boot time and are immutable after that?
+> > 
+> > They are created when the struct device is plugged in. pci_device_group() does the
+> > logic.
+> > 
+> > Notably groups can't/don't change if details like ACS change after the groups are
+> > setup.
+> > 
+> > There are alot of instructions out there telling people to boot their servers and then
+> > manually change the ACS flags with set_pci or something, and these are not good
+> > instructions since it defeats the VFIO group based security mechanisms.
+> > 
+> > > If we need per-device ACS config that depends on the workload, it
+> > > seems kind of problematic to only be able to specify this at boot
+> > > time.  I guess we would need to reboot if we want to run a workload
+> > > that needs a different config?
+> > 
+> > Basically. The main difference I'd see is if the server is a VM host or running bare
+> > metal apps. You can get more efficicenty if you change things for the bare metal case,
+> > and often bare metal will want to turn the iommu off while a VM host often wants
+> > more of it turned on.
+> > 
+> > > Is this the iommu usage model we want in the long term?
+> > 
+> > There is some path to more dynamic behavior here, but it would require separating
+> > groups into two components - devices that are together because they are physically
+> > sharing translation (aliases and things) from devices that are together because they
+> > share a security boundary (ACS).
+> > 
+> > It is more believable we could dynamically change security group assigments for VFIO
+> > than translation group assignment. I don't know anyone interested in this right now -
+> > Alex and I have only talked about it as a possibility a while back.
+> > 
+> > FWIW I don't view patch as excluding more dynamisism in the future, but it is the best
+> > way to work with the current state of affairs, and definitely better than set_pci
+> > instructions.
+> > 
+> > Thanks,
+> > Jason
