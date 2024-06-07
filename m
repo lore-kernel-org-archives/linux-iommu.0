@@ -1,154 +1,106 @@
-Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6490515A86B
-	for <iommu@lists.linux.dev>; Fri,  7 Jun 2024 08:06:51 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=45.249.212.188
+Received: from mail.8bytes.org (mail.8bytes.org [85.214.250.239])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id C9DEF15B151
+	for <iommu@lists.linux.dev>; Fri,  7 Jun 2024 08:51:21 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=85.214.250.239
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1717747614; cv=none; b=bhhd4LChpZUk+7Z8VOJNOusSEGa/h1PCTDaSzlOXHN81DW3eRmpUtN2gwL7fvKgpZ4Qq7QzXtSrAzIJgl7GyJib+/hP9DWze6xBvTGuH5KwcmWqrralQPDcvF/5tIstPqqg6K9Y/OZ97Z1C/0l6RWYJvytLUiUR7sccG9nk5U+o=
+	t=1717750283; cv=none; b=hFJI7d/HGT0/olOeLEnZ9Vg2wpMeqaixCWdD428bG/OAa+4xufnWnKSvhdQODiYANETykYYUvmVx7OOa8NpPSP7zm23itvmwt2wdXctzxkBtRa6ZfgqUkdYHzIraiTWZGV7ldXei+Huf0C9BglUXlo+mwMD45Xj3ghnEx2oMSzM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1717747614; c=relaxed/simple;
-	bh=f8IGrdSExj5SxrMydYUhRWKz6Tj3lz9EgfUGrDsOcE8=;
-	h=From:To:CC:Subject:Date:Message-ID:References:In-Reply-To:
-	 Content-Type:MIME-Version; b=R4VIbza7XyXhF+vcPKOfkiW+RBZpN9PowKlLf6VrIdQ5L4fZzvU6QTJO9mFEctbx7RTTbWB+0mMSOhV6mYXMndYyw6Z9Nsb7SugQMH/YiwvYacSgaIINBpu9xcJcPfProJn4qOacUs8XlQS6Si9y7SpldZaSoQWVfnYVHuausVs=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=huawei.com; spf=pass smtp.mailfrom=huawei.com; arc=none smtp.client-ip=45.249.212.188
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=huawei.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=huawei.com
-Received: from mail.maildlp.com (unknown [172.19.88.194])
-	by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4VwYfC3zmfzdZjq;
-	Fri,  7 Jun 2024 16:05:23 +0800 (CST)
-Received: from dggems704-chm.china.huawei.com (unknown [10.3.19.181])
-	by mail.maildlp.com (Postfix) with ESMTPS id 88DE914037F;
-	Fri,  7 Jun 2024 16:06:48 +0800 (CST)
-Received: from lhrpeml500005.china.huawei.com (7.191.163.240) by
- dggems704-chm.china.huawei.com (10.3.19.181) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.1.2507.39; Fri, 7 Jun 2024 16:04:47 +0800
-Received: from lhrpeml500005.china.huawei.com ([7.191.163.240]) by
- lhrpeml500005.china.huawei.com ([7.191.163.240]) with mapi id 15.01.2507.039;
- Fri, 7 Jun 2024 09:04:45 +0100
-From: Shameerali Kolothum Thodi <shameerali.kolothum.thodi@huawei.com>
-To: Nicolin Chen <nicolinc@nvidia.com>
-CC: "iommu@lists.linux.dev" <iommu@lists.linux.dev>,
-	"linux-arm-kernel@lists.infradead.org"
-	<linux-arm-kernel@lists.infradead.org>, "robin.murphy@arm.com"
-	<robin.murphy@arm.com>, "will@kernel.org" <will@kernel.org>,
-	"joro@8bytes.org" <joro@8bytes.org>, "jgg@nvidia.com" <jgg@nvidia.com>,
-	"ryan.roberts@arm.com" <ryan.roberts@arm.com>, "kevin.tian@intel.com"
-	<kevin.tian@intel.com>, "mshavit@google.com" <mshavit@google.com>,
-	"eric.auger@redhat.com" <eric.auger@redhat.com>, "joao.m.martins@oracle.com"
-	<joao.m.martins@oracle.com>, jiangkunkun <jiangkunkun@huawei.com>, zhukeqian
-	<zhukeqian1@huawei.com>, Linuxarm <linuxarm@huawei.com>
-Subject: RE: [PATCH v5 3/6] iommu/arm-smmu-v3: Add feature detection for HTTU
-Thread-Topic: [PATCH v5 3/6] iommu/arm-smmu-v3: Add feature detection for HTTU
-Thread-Index: AQHauBZ4GMbpI//3skeO1mpud6e6MLG7TJwAgACWzdA=
-Date: Fri, 7 Jun 2024 08:04:45 +0000
-Message-ID: <e4e6c50d181641d086cb3ef1d60b6732@huawei.com>
-References: <20240606133302.17540-1-shameerali.kolothum.thodi@huawei.com>
- <20240606133302.17540-4-shameerali.kolothum.thodi@huawei.com>
- <ZmJB/IjP+RVTKp/5@Asurada-Nvidia>
-In-Reply-To: <ZmJB/IjP+RVTKp/5@Asurada-Nvidia>
-Accept-Language: en-GB, en-US
-Content-Language: en-US
-X-MS-Has-Attach:
-X-MS-TNEF-Correlator:
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+	s=arc-20240116; t=1717750283; c=relaxed/simple;
+	bh=20qPAHxgHw2m0YF3MooU4EHuwN7JhQ7wiuoPVIhylLA=;
+	h=Date:From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:
+	 Content-Disposition; b=a2P2gFVXFTsB+K9Ttoe7atnI+D3Y9p+JsEJmCW8x2KnOxOD51ubG7lh+uT339q7tf7shWhZg9MLdD8f6wvKX76X5ZGXHWps7F1MuFExone6V5/8Vx3CgnKnBULAE/Y68OS1Mn4LBJ9MKH46HXhJLVI8OCSO1aPrR+bV96Wpd9HM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=8bytes.org; spf=pass smtp.mailfrom=8bytes.org; dkim=pass (2048-bit key) header.d=8bytes.org header.i=@8bytes.org header.b=F2pzSoWj; arc=none smtp.client-ip=85.214.250.239
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=8bytes.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=8bytes.org
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=8bytes.org header.i=@8bytes.org header.b="F2pzSoWj"
+Received: from 8bytes.org (pd9fe9dd8.dip0.t-ipconnect.de [217.254.157.216])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange ECDHE (P-256) server-signature RSA-PSS (2048 bits) server-digest SHA256)
+	(No client certificate requested)
+	by mail.8bytes.org (Postfix) with ESMTPSA id 61B311C7D6A;
+	Fri,  7 Jun 2024 10:51:15 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=8bytes.org;
+	s=default; t=1717750275;
+	bh=20qPAHxgHw2m0YF3MooU4EHuwN7JhQ7wiuoPVIhylLA=;
+	h=Date:From:To:Cc:Subject:From;
+	b=F2pzSoWjkIcu6FUPws3u9UC95Z9Ei8YVejgkOXIXsW6LWoxrUCgur/HVGLyduwNvu
+	 CX53t/kYOoPHMKntfyPKA44ncpYdmXNFUQXoDgKiwAL+t4qHp3fbG8qP2PW/bDBaPz
+	 PaUIR6ug+QjbcXOmVS9LvqFX/iBe4XmgLZzfaov+RCEAFdPH8rHRqcw8TC4yuVS+Bc
+	 Ammy+F81XjFp4YkSL4OYNsZ0wyEklN9A/dJ+Zj6MpVPRLfEKrfDEeMaeAql11wW1Cb
+	 bBI0K0xmQskX5lAnoA86kLTU26/cmarU+fSF3uvNqyPA4Xj4/Vdx6NPLUxndi3MkcK
+	 NXOKYOIbKxUsg==
+Date: Fri, 7 Jun 2024 10:51:14 +0200
+From: Joerg Roedel <joro@8bytes.org>
+To: Linus Torvalds <torvalds@linux-foundation.org>
+Cc: Will Deacon <will@kernel.org>, linux-kernel@vger.kernel.org,
+	iommu@lists.linux.dev
+Subject: [git pull] IOMMU Fixes for Linux v6.10-rc2
+Message-ID: <ZmLKAr7RYbL_wP3F@8bytes.org>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 
+Hi Linus,
 
+The following changes since commit c3f38fa61af77b49866b006939479069cd451173:
 
-> -----Original Message-----
-> From: Nicolin Chen <nicolinc@nvidia.com>
-> Sent: Friday, June 7, 2024 12:11 AM
-> To: Shameerali Kolothum Thodi <shameerali.kolothum.thodi@huawei.com>
-> Cc: iommu@lists.linux.dev; linux-arm-kernel@lists.infradead.org;
-> robin.murphy@arm.com; will@kernel.org; joro@8bytes.org;
-> jgg@nvidia.com; ryan.roberts@arm.com; kevin.tian@intel.com;
-> mshavit@google.com; eric.auger@redhat.com; joao.m.martins@oracle.com;
-> jiangkunkun <jiangkunkun@huawei.com>; zhukeqian
-> <zhukeqian1@huawei.com>; Linuxarm <linuxarm@huawei.com>
-> Subject: Re: [PATCH v5 3/6] iommu/arm-smmu-v3: Add feature detection for
-> HTTU
->=20
-> Hi Shameer,
->=20
-> Some nitpicking inline.
+  Linux 6.10-rc2 (2024-06-02 15:44:56 -0700)
 
-Thanks for taking a look Nicolin.
+are available in the Git repository at:
 
->=20
-> On Thu, Jun 06, 2024 at 02:32:59PM +0100, Shameer Kolothum wrote:
->=20
-> > diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-> b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-> > index e30ce55ed1af..c05a74aa52a4 100644
-> > --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-> > +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-> > @@ -3738,6 +3738,29 @@ static void arm_smmu_device_iidr_probe(struct
-> arm_smmu_device *smmu)
-> >         }
-> >  }
-> >
-> > +static void arm_smmu_get_httu(struct arm_smmu_device *smmu, u32
-> reg)
->=20
-> Following the other helper arm_smmu_device_iidr_probe, how about
-> arm_smmu_device_httu_probe?
+  git://git.kernel.org/pub/scm/linux/kernel/git/joro/iommu.git tags/iommu-fixes-v6.10-rc2
 
-Hmm..I don't have any objection per se but "_get_" feels like more simple
-and straightforward to me. Let me know if you feel strongly about this.
-=20
-> And we could pass in FIELD_GET(IDR0_HTTU, reg) too?
+for you to fetch changes up to 526606b0a1998b0791b42c199d53550c3ba724b5:
 
-Same here.
+  iommu/amd: Fix Invalid wait context issue (2024-06-04 14:00:59 +0200)
 
->=20
-> > +{
-> > +       u32 fw_features =3D smmu->features & (ARM_SMMU_FEAT_HA |
-> ARM_SMMU_FEAT_HD);
-> > +       u32 httu =3D FIELD_GET(IDR0_HTTU, reg);
-> > +       u32 features =3D 0;
->=20
-> How about "hw_feats" v.s. "fw_feats"?
+----------------------------------------------------------------
+IOMMU Fixes for Linux v6.10-rc2
 
-Ok.
+Including:
 
->=20
-> > +
-> > +       switch (httu) {
-> > +       case IDR0_HTTU_ACCESS_DIRTY:
-> > +               features |=3D ARM_SMMU_FEAT_HD;
-> > +               fallthrough;
-> > +       case IDR0_HTTU_ACCESS:
-> > +               features |=3D ARM_SMMU_FEAT_HA;
-> > +       }
-> > +
-> > +       if (smmu->dev->of_node)
-> > +               smmu->features |=3D features;
-> > +       else if (features !=3D fw_features)
-> > +               /* ACPI IORT sets the HTTU bits */
-> > +               dev_warn(smmu->dev,
-> > +                        "IDR0.HTTU(0x%x) overridden by FW configuratio=
-n
-> (0x%x)\n",
-> > +                         httu, fw_features);
->=20
-> httu and fw_features have different shifts -- could be odd to see:
-> 	IDR0.HTTU(0x2) overridden by FW configuration (0x600000)
->=20
-> FIELD_GET(ACPI_IORT_SMMU_V3_HTTU_OVERRIDE, iort_smmu->flags)
-> seems
-> to be overcomplicated to reference? So, how about just features?
-> +			"IDR0.HTTU features (0x%x) overridden by FW
-> configuration (0x%x)\n",
+	- Core:
+	  - Make iommu-dma code recognize 'force_aperture' again
+	  - Fix for potential NULL-ptr dereference from iommu_sva_bind_device()
+	    return value
 
-Yes. I think that make sense. Will change.
+	- AMD IOMMU fixes:
+	  - Fix lockdep splat for invalid wait context
+	  - Add feature bit check before enabling PPR
+	  - Make workqueue name fit into buffer
+	  - Fix memory leak in sysfs code
+
+----------------------------------------------------------------
+Kun(llfl) (1):
+      iommu/amd: Fix sysfs leak in iommu init
+
+Lu Baolu (1):
+      iommu: Return right value in iommu_sva_bind_device()
+
+Robin Murphy (1):
+      iommu/dma: Fix domain init
+
+Vasant Hegde (3):
+      iommu/amd: Fix workqueue name
+      iommu/amd: Check EFR[EPHSup] bit before enabling PPR
+      iommu/amd: Fix Invalid wait context issue
+
+ drivers/iommu/amd/amd_iommu.h |  3 ++-
+ drivers/iommu/amd/init.c      |  9 ++++++++
+ drivers/iommu/amd/iommu.c     | 48 +++++++++++++++++++++----------------------
+ drivers/iommu/amd/ppr.c       | 25 +++++-----------------
+ drivers/iommu/dma-iommu.c     |  8 ++++----
+ include/linux/iommu.h         |  2 +-
+ 6 files changed, 45 insertions(+), 50 deletions(-)
+
+Please pull.
 
 Thanks,
-Shameer
+
+	Joerg
