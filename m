@@ -1,172 +1,254 @@
-Received: from NAM10-DM6-obe.outbound.protection.outlook.com (mail-dm6nam10on2079.outbound.protection.outlook.com [40.107.93.79])
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CD85615534D
-	for <iommu@lists.linux.dev>; Fri,  7 Jun 2024 21:21:29 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.93.79
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1717795291; cv=fail; b=TxUuppX/tjC/dDTxGGvvAVEp259h8H0i97e0z3lUh9JZW7epVNHtW96O5XtUuRCSy4OUF1S73hadEGxxyHzDkgglPbt1K7G3poTBsV+ZsGDXpWru6ozrJR2y5TG0gOccj/q4dYJfoj7iCda5mTK5duxmv2SAO3nleYyXnv6dJFc=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1717795291; c=relaxed/simple;
-	bh=r0S59ATIoPnV1nVvYaSBLLmSblnRnZ397mdUjh4DEzw=;
-	h=Date:From:To:CC:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=KaZIqcyC8RqGw3obNMvnASRCfVfgu5H/T2wAn7QBbtTH30lkdQU0l2iUnYVAlzqy4wqxz4ewGjekAm8vO6WsNCOKDg7oEXs5uNpUL7Q55ZyWHuln4soigxoVNYke3KytLqNLvYx7/rm0TkhL4kMrWy7/J5v2I9FWnM2T/MSCR6k=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=Lxs4otqJ; arc=fail smtp.client-ip=40.107.93.79
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D3123D299
+	for <iommu@lists.linux.dev>; Sat,  8 Jun 2024 10:00:51 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.19
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1717840853; cv=none; b=Fg8V1ac+9GaIs+uk/JELd/vbPfRtbr6u+LEuo5ZQEAyTBTi986YNG/r0GibupqnZm/MypJvf+pyRTS5GNoM8+RlKZBB8pi7KJcJQf70XclRqUmUK9ukdU0XVN8K2nhIVjzcEZoprRe+QTIpUZI3fAP0IRhFQBSOCTD5A61n3Bjg=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1717840853; c=relaxed/simple;
+	bh=dD/2qxPjsTYcJBiszw6+m0kwHnKdGtPseKpmC/MTrdk=;
+	h=Message-ID:Date:MIME-Version:Cc:Subject:To:References:From:
+	 In-Reply-To:Content-Type; b=jyNUsaR0yMzykhRFbjozA6eNmw+DQQhM7saxEu8H7kHtCWhQKIYVvBMRCfHGL7VRleShfY/EHI/IXdrX+q1lg14kfAuc10PGErP/zz4OEIuh6XPSWxGKGVWPLdT7WeWTHRlNrJQF5EVdQMUdvi7O7ePCEJ0QxC8r0aCm4RrYLIw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=N8sHOGgm; arc=none smtp.client-ip=192.198.163.19
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="Lxs4otqJ"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=n4hVTaDzGEFZxfRYdK/vkDme3hsbwyvlgOrFth2yyd0d+qrPYKm//9XmP9Eb8NJKpJNB53QiYu06hlf6x44fYj2pSVlXMlCYD3u28l+K9vYvUuY4CCkZiatmtn1fhVSSTlG1M+66JMzrkyYZhJb9ZG0T4cWe3do+llEAIV3Z6JdqevdK7IQSJ5+laX24lndf1JZ/3a/kpGShDnX0aNj9rRdp0/WljX1OrmhwHm5jZeHh9nkZ8ztjK8kwgj/iBVgjm/G/rNYgHLSDzwVRAG1K/wAT+JzTAkeGJH/zHw5dvl3jAnAVzbtWdPE6KJK7PgCHWV5X3ymymc1ecPfS5nzlrQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=KBAXDjMMmSaSdrqqQoxhyQTR19r45OJsmaRhKwzk4Vk=;
- b=QP3IVin58i/mQ2Yfm7tX+pCLapRRknLelKo87ZJl6qG0BTpvKZ65ZdkYZ2GHFc44HbOqU5TXi45EV6mSTkNTZW6GI61dkpCpatCY7rwi6hJ+7RSVPdwBYussuLA37lwgpElYUfLdFavzS8lPsgTyNdCRSjTm1CdJM3b4aH5z9QHJYtxbrQWMwLvDM5wXKGI7Myq+OFmWTsUSUSUhRHPBNdjp3cqCv/2HgNwSJoIw/uLttQxhcc7tpKPgMjpDsbLRuHpjr/mSltBGM7sQvmEGywNhnMcS16McdgZmFJnTHip0DjV7R1We+8pBgCr5peakjcSBEpmdRXZw4ct6BYXIWg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 216.228.117.160) smtp.rcpttodomain=huawei.com smtp.mailfrom=nvidia.com;
- dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
- dkim=none (message not signed); arc=none (0)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=KBAXDjMMmSaSdrqqQoxhyQTR19r45OJsmaRhKwzk4Vk=;
- b=Lxs4otqJC8e+xM/J4eBzzAwcRH5XaGtMhvI9CDqLl2AJHlgDlu4w9glcUb8475put+p4RMSq300GojuEiovnOZLM20XQo89K5DM/lNj+3nfcmN8PRr0uIWz/MHJHWZoH0jnMsN7SGugMZUqhhwlw4llnVinx3/7FNq6eCElcn/tWJmKCwPGirPgK+LAUG4+LARpv0pGFnd9cfA0q0E30VLhcxkAVrU4rM3h8fxl9mdSACzATNR6MSyIU6703iZHQ/74gaX65v3qymJNyGNZDbsJ2C//WrQUrwgCTf7m2vBlBOSaAW08RF0SxAe2XWdGAOkpdtHsrldnb4bMcNooBug==
-Received: from DM6PR06CA0015.namprd06.prod.outlook.com (2603:10b6:5:120::28)
- by CH3PR12MB8284.namprd12.prod.outlook.com (2603:10b6:610:12e::21) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7633.34; Fri, 7 Jun
- 2024 21:21:26 +0000
-Received: from DS1PEPF00017094.namprd03.prod.outlook.com
- (2603:10b6:5:120:cafe::ac) by DM6PR06CA0015.outlook.office365.com
- (2603:10b6:5:120::28) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7656.22 via Frontend
- Transport; Fri, 7 Jun 2024 21:21:26 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.117.160)
- smtp.mailfrom=nvidia.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=nvidia.com;
-Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 216.228.117.160 as permitted sender) receiver=protection.outlook.com;
- client-ip=216.228.117.160; helo=mail.nvidia.com; pr=C
-Received: from mail.nvidia.com (216.228.117.160) by
- DS1PEPF00017094.mail.protection.outlook.com (10.167.17.137) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.7633.15 via Frontend Transport; Fri, 7 Jun 2024 21:21:26 +0000
-Received: from rnnvmail201.nvidia.com (10.129.68.8) by mail.nvidia.com
- (10.129.200.66) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1544.4; Fri, 7 Jun 2024
- 14:21:12 -0700
-Received: from rnnvmail205.nvidia.com (10.129.68.10) by rnnvmail201.nvidia.com
- (10.129.68.8) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1544.4; Fri, 7 Jun 2024
- 14:21:11 -0700
-Received: from Asurada-Nvidia (10.127.8.11) by mail.nvidia.com (10.129.68.10)
- with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1544.4 via Frontend
- Transport; Fri, 7 Jun 2024 14:21:10 -0700
-Date: Fri, 7 Jun 2024 14:21:09 -0700
-From: Nicolin Chen <nicolinc@nvidia.com>
-To: Shameerali Kolothum Thodi <shameerali.kolothum.thodi@huawei.com>
-CC: "iommu@lists.linux.dev" <iommu@lists.linux.dev>,
-	"linux-arm-kernel@lists.infradead.org"
-	<linux-arm-kernel@lists.infradead.org>, "robin.murphy@arm.com"
-	<robin.murphy@arm.com>, "will@kernel.org" <will@kernel.org>,
-	"joro@8bytes.org" <joro@8bytes.org>, "jgg@nvidia.com" <jgg@nvidia.com>,
-	"ryan.roberts@arm.com" <ryan.roberts@arm.com>, "kevin.tian@intel.com"
-	<kevin.tian@intel.com>, "mshavit@google.com" <mshavit@google.com>,
-	"eric.auger@redhat.com" <eric.auger@redhat.com>, "joao.m.martins@oracle.com"
-	<joao.m.martins@oracle.com>, jiangkunkun <jiangkunkun@huawei.com>, zhukeqian
-	<zhukeqian1@huawei.com>, Linuxarm <linuxarm@huawei.com>
-Subject: Re: [PATCH v5 3/6] iommu/arm-smmu-v3: Add feature detection for HTTU
-Message-ID: <ZmN5xZi9Qs/gQLIZ@Asurada-Nvidia>
-References: <20240606133302.17540-1-shameerali.kolothum.thodi@huawei.com>
- <20240606133302.17540-4-shameerali.kolothum.thodi@huawei.com>
- <ZmJB/IjP+RVTKp/5@Asurada-Nvidia>
- <e4e6c50d181641d086cb3ef1d60b6732@huawei.com>
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="N8sHOGgm"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1717840852; x=1749376852;
+  h=message-id:date:mime-version:cc:subject:to:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=dD/2qxPjsTYcJBiszw6+m0kwHnKdGtPseKpmC/MTrdk=;
+  b=N8sHOGgmeJRIE+B7puXuRVfxk3wilCAFtwlXnaqGs9uEMPcGUYI341aa
+   1PJ9vtHljl0spzUhrl/b4Db5G9UjsCnaZPzL4aUrEWRBJezJ9OsikRpwv
+   vqnRFydrePRoUVFGdiDKf9E+p0e8XksbvAqicJbmTj4Rh7jp1sFLFAHjU
+   pGo7ncdl0/gXFf/40Z3fTTQSCzg7ksRBulnCabUKJ5l2QBWsNxHGhFkPS
+   dJg5qie9I0c6IzK1HyvPktY4q2lV45TKOP4OoDjxLZ+n8fOA9zSCXqecQ
+   Of0OKhmdqP+H/kt0QqXHJiIb0FDm+3ZNZaNv6h4LtC05kNm7sLGIdLJSn
+   A==;
+X-CSE-ConnectionGUID: 7B+DuhmgRquDGiEN1oPMvA==
+X-CSE-MsgGUID: ulUB5Ei1S5CmK/jruf4pmQ==
+X-IronPort-AV: E=McAfee;i="6600,9927,11096"; a="14366487"
+X-IronPort-AV: E=Sophos;i="6.08,222,1712646000"; 
+   d="scan'208";a="14366487"
+Received: from orviesa006.jf.intel.com ([10.64.159.146])
+  by fmvoesa113.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Jun 2024 03:00:51 -0700
+X-CSE-ConnectionGUID: lcCbsdoTQd2NporVwlg6GQ==
+X-CSE-MsgGUID: T9NVOjipTtmZfYc9dHtNOQ==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.08,222,1712646000"; 
+   d="scan'208";a="39004890"
+Received: from unknown (HELO [10.239.159.127]) ([10.239.159.127])
+  by orviesa006.jf.intel.com with ESMTP; 08 Jun 2024 03:00:47 -0700
+Message-ID: <a17113d3-500e-45ef-a2d2-747d890c9c5e@linux.intel.com>
+Date: Sat, 8 Jun 2024 17:58:34 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: inline
-In-Reply-To: <e4e6c50d181641d086cb3ef1d60b6732@huawei.com>
-X-NV-OnPremToCloud: ExternallySecured
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: DS1PEPF00017094:EE_|CH3PR12MB8284:EE_
-X-MS-Office365-Filtering-Correlation-Id: d562420f-9c84-4903-7d46-08dc8737ca22
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam:
-	BCL:0;ARA:13230031|7416005|1800799015|376005|82310400017|36860700004;
-X-Microsoft-Antispam-Message-Info:
-	=?us-ascii?Q?9NOTGUtJ/JOuM2DSOQzqxBZDA/lVKIOvSD1hhPl2ZMr4FWFqDU5FcInasW+r?=
- =?us-ascii?Q?Q+UG4GYGgOKS2T4Eyv3lTTGLOmWDm7sb2tKrA/PHfT6O34ruN+/oHEcfQORD?=
- =?us-ascii?Q?fx+uJTZY1OBj0xlr7+bhrZau2I+3BUZD1m5kCSwjjFVQedFv5kjrBi9sP0vm?=
- =?us-ascii?Q?iwA6xQriXsr4eGZslDTAvseYaXKtAmcLeyLzV6rjQLkFhgnSWHbxbvEuGG2S?=
- =?us-ascii?Q?i8F2Kvfe00aQKpFWOwN/36Ro9yOh96tCFTHJJdvjWdwSVOjeEVGc7bXo/tAZ?=
- =?us-ascii?Q?FvB1QmqWIhq8X5GT3FS0V479EjCicYGhJOpoUPNQhPoPHI+bMDcEOIZzo5NI?=
- =?us-ascii?Q?cqRgl8MfyZm3G39QHWeWwL59K+O8ZMc1WuDj+ebea4fAOVUsNG78hV5Q3o1x?=
- =?us-ascii?Q?KVMM6DUd/gqJowZv5/tEZQQcOMY6PHuvQrqKKaRiZdI2Rd3D2MjIiXurmdWz?=
- =?us-ascii?Q?4arPmtP2xCElSoC0qZ9mHVaq20/K5dmDIw9VOZb4/VJO52Z9A6tEcDJnpml8?=
- =?us-ascii?Q?2yRdn2hh0MQeuGhBE/QuS4jrdMo9qGclu2DUbLeR4ERKIGdswPqm1A8MlPU/?=
- =?us-ascii?Q?KlaXO/0hgzeV6NHK3oXq0Y5Y3GbnGyBzeqlKnNo32UcWGehNxvOWKE7kyUsF?=
- =?us-ascii?Q?erz0Gk4SUH6Ec6lz7OQxIUnVPnI9T8UNkDWOKPUj2VEVcCo7oJ5vq9NDLiFS?=
- =?us-ascii?Q?2m49qoZwru+6kK/ovxql39sB6W6ChRvJbKPFfAXwjgTOJDnKgMYAop7EpnzE?=
- =?us-ascii?Q?dzISH58vUaBLsFhDOV8JoGMRaKk71+RppoqO9LHNMmotee45gEY2Ylcyhn8O?=
- =?us-ascii?Q?7ADcIO4q55+8eicG6q9Ze/V3m/s9bMFxx4FEg/Bb+RSpnbqp6mC2N94OPIx/?=
- =?us-ascii?Q?MHxssdeSUMUdUVyFpIdKLLQEU3tE7kOijUEHLVjm2VsZf0R3t8vETvMM12mX?=
- =?us-ascii?Q?7tLBc6+Crys9KoKMTfwKQruXfpErQaApp6IDcAKUKGRt0nLXeLbtEKc/TpgN?=
- =?us-ascii?Q?nG5OGU53lscUWK2PQQFVeXE742JqDGgMw/3OzuDnCEFvIdC72DcO6RDHv1gy?=
- =?us-ascii?Q?7arHQp6FeuBdNmL36D8KZkLuxMrAw1Cw3bMoP4C/qZo67Lvq86FDtaZ/Jytg?=
- =?us-ascii?Q?i2eaBL9Pdb4zvZfVWh+RTsFGGPEJ0veuKzyxUY89ZA6DNXlfy2mo50lXYQJ3?=
- =?us-ascii?Q?su5hFznV/qd8cGrBSblzsNG/j/qZkiRS9weYEZMpgEkM/BJxeXtIrVlPXbH1?=
- =?us-ascii?Q?/7DGb51x0h4BSZtD7OdOn4PvQv6R/BaoGb8qgadA41+fuz+dx46k75e1TfLJ?=
- =?us-ascii?Q?PapwCs4bNgpj9RrAHq34cRlCMLltgpUoH3jYco8C92VRVZhwheeGNZUrWtrE?=
- =?us-ascii?Q?qN/VPSzT/2QGNELq6OUTUvKhkPoF9TF2gnefECs2n4kZXz9mLg=3D=3D?=
-X-Forefront-Antispam-Report:
-	CIP:216.228.117.160;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc6edge1.nvidia.com;CAT:NONE;SFS:(13230031)(7416005)(1800799015)(376005)(82310400017)(36860700004);DIR:OUT;SFP:1101;
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 07 Jun 2024 21:21:26.2570
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: d562420f-9c84-4903-7d46-08dc8737ca22
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.117.160];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource:
-	DS1PEPF00017094.namprd03.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: CH3PR12MB8284
+User-Agent: Mozilla Thunderbird
+Cc: baolu.lu@linux.intel.com, "iommu@lists.linux.dev"
+ <iommu@lists.linux.dev>,
+ "virtualization@lists.linux-foundation.org"
+ <virtualization@lists.linux-foundation.org>,
+ "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH v6 06/10] iommufd: Add iommufd fault object
+To: "Tian, Kevin" <kevin.tian@intel.com>, Jason Gunthorpe <jgg@ziepe.ca>,
+ Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
+ Robin Murphy <robin.murphy@arm.com>,
+ Jean-Philippe Brucker <jean-philippe@linaro.org>,
+ Nicolin Chen <nicolinc@nvidia.com>, "Liu, Yi L" <yi.l.liu@intel.com>,
+ Jacob Pan <jacob.jun.pan@linux.intel.com>,
+ Joel Granados <j.granados@samsung.com>
+References: <20240527040517.38561-1-baolu.lu@linux.intel.com>
+ <20240527040517.38561-7-baolu.lu@linux.intel.com>
+ <BN9PR11MB527615EC664698C340A0CA878CFB2@BN9PR11MB5276.namprd11.prod.outlook.com>
+Content-Language: en-US
+From: Baolu Lu <baolu.lu@linux.intel.com>
+In-Reply-To: <BN9PR11MB527615EC664698C340A0CA878CFB2@BN9PR11MB5276.namprd11.prod.outlook.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-On Fri, Jun 07, 2024 at 08:04:45AM +0000, Shameerali Kolothum Thodi wrote:
-> > On Thu, Jun 06, 2024 at 02:32:59PM +0100, Shameer Kolothum wrote:
-> >
-> > > diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-> > b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-> > > index e30ce55ed1af..c05a74aa52a4 100644
-> > > --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-> > > +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-> > > @@ -3738,6 +3738,29 @@ static void arm_smmu_device_iidr_probe(struct
-> > arm_smmu_device *smmu)
-> > >         }
-> > >  }
-> > >
-> > > +static void arm_smmu_get_httu(struct arm_smmu_device *smmu, u32
-> > reg)
-> >
-> > Following the other helper arm_smmu_device_iidr_probe, how about
-> > arm_smmu_device_httu_probe?
+On 6/7/24 5:17 PM, Tian, Kevin wrote:
+>> From: Lu Baolu <baolu.lu@linux.intel.com>
+>> Sent: Monday, May 27, 2024 12:05 PM
+>>
+>> +static ssize_t iommufd_fault_fops_read(struct file *filep, char __user *buf,
+>> +				       size_t count, loff_t *ppos)
+>> +{
+>> +	size_t fault_size = sizeof(struct iommu_hwpt_pgfault);
+>> +	struct iommufd_fault *fault = filep->private_data;
+>> +	struct iommu_hwpt_pgfault data;
+>> +	struct iommufd_device *idev;
+>> +	struct iopf_group *group;
+>> +	struct iopf_fault *iopf;
+>> +	size_t done = 0;
+>> +	int rc = 0;
+>> +
+>> +	if (*ppos || count % fault_size)
+>> +		return -ESPIPE;
 > 
-> Hmm..I don't have any objection per se but "_get_" feels like more simple
-> and straightforward to me. Let me know if you feel strongly about this.
+> the man page says:
 > 
-> > And we could pass in FIELD_GET(IDR0_HTTU, reg) too?
-> 
-> Same here.
+> "If count is zero, read() returns zero and has no  other  results."
 
-They are not critical. So I'd say keep it as is if you prefer :)
+My understanding is that reading zero bytes is likely to check if a file
+descriptor is valid and ready for reading without actually taking any
+data from it.
 
-Thanks
-Nicolin
+In this code, it just returns 0 and it's compatible with the man page.
+Or, I overlooked anything?
+
+> 
+>> +
+>> +	mutex_lock(&fault->mutex);
+>> +	while (!list_empty(&fault->deliver) && count > done) {
+>> +		group = list_first_entry(&fault->deliver,
+>> +					 struct iopf_group, node);
+>> +
+>> +		if (group->fault_count * fault_size > count - done)
+>> +			break;
+>> +
+>> +		rc = xa_alloc(&fault->response, &group->cookie, group,
+>> +			      xa_limit_32b, GFP_KERNEL);
+>> +		if (rc)
+>> +			break;
+>> +
+>> +		idev = to_iommufd_handle(group->attach_handle)->idev;
+>> +		list_for_each_entry(iopf, &group->faults, list) {
+>> +			iommufd_compose_fault_message(&iopf->fault,
+>> +						      &data, idev,
+>> +						      group->cookie);
+>> +			rc = copy_to_user(buf + done, &data, fault_size);
+>> +			if (rc) {
+> 
+> 'rc' should be converted to -EFAULT.
+
+Yes. I will make it like this:
+
+        if (copy_to_user(buf + done, &data, fault_size)) {
+                xa_erase(&fault->response, group->cookie);
+                rc = -EFAULT;
+                break;
+        }
+
+> 
+>> +				xa_erase(&fault->response, group->cookie);
+>> +				break;
+>> +			}
+>> +			done += fault_size;
+>> +		}
+>> +
+>> +		list_del(&group->node);
+>> +	}
+>> +	mutex_unlock(&fault->mutex);
+>> +
+>> +	return done == 0 ? rc : done;
+> 
+> again this doesn't match the manual:
+> 
+> "On error, -1 is returned, and errno is set appropriately."
+> 
+> it doesn't matter whether 'done' is 0.
+
+I don't quite follow here. The code is doing the following:
+
+- If done == 0, it means nothing has been copied to user space. This
+   could be due to two reasons:
+
+   1) the user read with a count set to 0, or
+   2) a failure case.
+
+   The code returns 0 for the first case and an error number for the
+   second.
+
+- If done != 0, some data has been copied to user space. In this case,
+   the code returns the number of data copied regardless of the value of
+   rc.
+
+> 
+>> +
+>> +static int iommufd_fault_fops_release(struct inode *inode, struct file *filep)
+>> +{
+>> +	struct iommufd_fault *fault = filep->private_data;
+>> +
+>> +	iommufd_ctx_put(fault->ictx);
+>> +	refcount_dec(&fault->obj.users);
+>> +	return 0;
+>> +}
+> 
+> hmm this doesn't sound correct. the context and refcount are
+> acquired in iommufd_fault_alloc() but here they are reverted when
+> the fd is closed...
+
+These two refcounts were requested when the fault object was installed
+to the fault FD.
+
+        filep = anon_inode_getfile("[iommufd-pgfault]", &iommufd_fault_fops,
+                                    fault, O_RDWR);
+         if (IS_ERR(filep)) {
+                 rc = PTR_ERR(filep);
+                 goto out_abort;
+         }
+
+         refcount_inc(&fault->obj.users);
+         iommufd_ctx_get(fault->ictx);
+         fault->filep = filep;
+
+These refcounts must then be released when the FD is released.
+
+>> +
+>> +	filep = anon_inode_getfile("[iommufd-pgfault]",
+>> &iommufd_fault_fops,
+>> +				   fault, O_RDWR);
+>> +	if (IS_ERR(filep)) {
+>> +		rc = PTR_ERR(filep);
+>> +		goto out_abort;
+>> +	}
+>> +
+>> +	refcount_inc(&fault->obj.users);
+>> +	iommufd_ctx_get(fault->ictx);
+>> +	fault->filep = filep;
+> 
+> those 3 lines can be moved after below fdno get. It's reads slightly
+> clearer to put file related work together before getting to the last piece
+> of intiailzation.
+
+The filep is allocated and initialized together.
+
+>> +
+>> +	fdno = get_unused_fd_flags(O_CLOEXEC);
+>> +	if (fdno < 0) {
+>> +		rc = fdno;
+>> +		goto out_fput;
+>> +	}
+>> +
+>> @@ -332,6 +332,7 @@ union ucmd_buffer {
+>>   	struct iommu_ioas_unmap unmap;
+>>   	struct iommu_option option;
+>>   	struct iommu_vfio_ioas vfio_ioas;
+>> +	struct iommu_fault_alloc fault;
+> 
+> alphabetic
+> 
+>> @@ -381,6 +382,8 @@ static const struct iommufd_ioctl_op
+>> iommufd_ioctl_ops[] = {
+>>   		 val64),
+>>   	IOCTL_OP(IOMMU_VFIO_IOAS, iommufd_vfio_ioas, struct
+>> iommu_vfio_ioas,
+>>   		 __reserved),
+>> +	IOCTL_OP(IOMMU_FAULT_QUEUE_ALLOC, iommufd_fault_alloc,
+>> struct iommu_fault_alloc,
+>> +		 out_fault_fd),
+> 
+> ditto
+
+Yes, sure. I wasn't aware of the order.
+
+Best regards,
+baolu
