@@ -1,50 +1,28 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.19])
+Received: from mx3.molgen.mpg.de (mx3.molgen.mpg.de [141.14.17.11])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D3123D299
-	for <iommu@lists.linux.dev>; Sat,  8 Jun 2024 10:00:51 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.19
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0805914F139
+	for <iommu@lists.linux.dev>; Sat,  8 Jun 2024 11:07:51 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=141.14.17.11
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1717840853; cv=none; b=Fg8V1ac+9GaIs+uk/JELd/vbPfRtbr6u+LEuo5ZQEAyTBTi986YNG/r0GibupqnZm/MypJvf+pyRTS5GNoM8+RlKZBB8pi7KJcJQf70XclRqUmUK9ukdU0XVN8K2nhIVjzcEZoprRe+QTIpUZI3fAP0IRhFQBSOCTD5A61n3Bjg=
+	t=1717844876; cv=none; b=q6oNwmqzaWzk1IX7zhGTLRb6lKcZTFrb2iylVRsaKlEqdyznAcHnCf7n6kfOF8/6Xb1iK/tTFEFnxRRQr3rSsVgVGSE4/i2fYZPm46BPbBcFqia7pduxntZdfveu53jnUo98yeKVARlBTeVNyAaGVEOtYTr88blBOi87ffFoulg=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1717840853; c=relaxed/simple;
-	bh=dD/2qxPjsTYcJBiszw6+m0kwHnKdGtPseKpmC/MTrdk=;
-	h=Message-ID:Date:MIME-Version:Cc:Subject:To:References:From:
-	 In-Reply-To:Content-Type; b=jyNUsaR0yMzykhRFbjozA6eNmw+DQQhM7saxEu8H7kHtCWhQKIYVvBMRCfHGL7VRleShfY/EHI/IXdrX+q1lg14kfAuc10PGErP/zz4OEIuh6XPSWxGKGVWPLdT7WeWTHRlNrJQF5EVdQMUdvi7O7ePCEJ0QxC8r0aCm4RrYLIw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=N8sHOGgm; arc=none smtp.client-ip=192.198.163.19
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="N8sHOGgm"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1717840852; x=1749376852;
-  h=message-id:date:mime-version:cc:subject:to:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=dD/2qxPjsTYcJBiszw6+m0kwHnKdGtPseKpmC/MTrdk=;
-  b=N8sHOGgmeJRIE+B7puXuRVfxk3wilCAFtwlXnaqGs9uEMPcGUYI341aa
-   1PJ9vtHljl0spzUhrl/b4Db5G9UjsCnaZPzL4aUrEWRBJezJ9OsikRpwv
-   vqnRFydrePRoUVFGdiDKf9E+p0e8XksbvAqicJbmTj4Rh7jp1sFLFAHjU
-   pGo7ncdl0/gXFf/40Z3fTTQSCzg7ksRBulnCabUKJ5l2QBWsNxHGhFkPS
-   dJg5qie9I0c6IzK1HyvPktY4q2lV45TKOP4OoDjxLZ+n8fOA9zSCXqecQ
-   Of0OKhmdqP+H/kt0QqXHJiIb0FDm+3ZNZaNv6h4LtC05kNm7sLGIdLJSn
-   A==;
-X-CSE-ConnectionGUID: 7B+DuhmgRquDGiEN1oPMvA==
-X-CSE-MsgGUID: ulUB5Ei1S5CmK/jruf4pmQ==
-X-IronPort-AV: E=McAfee;i="6600,9927,11096"; a="14366487"
-X-IronPort-AV: E=Sophos;i="6.08,222,1712646000"; 
-   d="scan'208";a="14366487"
-Received: from orviesa006.jf.intel.com ([10.64.159.146])
-  by fmvoesa113.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Jun 2024 03:00:51 -0700
-X-CSE-ConnectionGUID: lcCbsdoTQd2NporVwlg6GQ==
-X-CSE-MsgGUID: T9NVOjipTtmZfYc9dHtNOQ==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.08,222,1712646000"; 
-   d="scan'208";a="39004890"
-Received: from unknown (HELO [10.239.159.127]) ([10.239.159.127])
-  by orviesa006.jf.intel.com with ESMTP; 08 Jun 2024 03:00:47 -0700
-Message-ID: <a17113d3-500e-45ef-a2d2-747d890c9c5e@linux.intel.com>
-Date: Sat, 8 Jun 2024 17:58:34 +0800
+	s=arc-20240116; t=1717844876; c=relaxed/simple;
+	bh=0rWGcTa2MEDd7Q9eaT+yNU0ZCfGIK2XvrtCzfvdDr8k=;
+	h=Message-ID:Date:MIME-Version:Subject:From:To:Cc:References:
+	 In-Reply-To:Content-Type; b=mQ/T0CppmTImi4nZzN9DfwmDcTZ8VFgb09ZJG/eEpe6sxRfaiZ2U8ul2n0zl4uX2Cjax06s7HNkCPOchNVS/Y23xKJ3goRYG0zcZ4YF001LAbhUsdooGkFCXSbPmdItASelFN8NWo7yAtXGwIZNly7fGskbbouHJFWpsgkNfp40=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=molgen.mpg.de; spf=pass smtp.mailfrom=molgen.mpg.de; arc=none smtp.client-ip=141.14.17.11
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=molgen.mpg.de
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=molgen.mpg.de
+Received: from [192.168.0.2] (ip5f5af290.dynamic.kabel-deutschland.de [95.90.242.144])
+	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
+	 key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+	(No client certificate requested)
+	(Authenticated sender: pmenzel)
+	by mx.molgen.mpg.de (Postfix) with ESMTPSA id 12E6161E5FE01;
+	Sat,  8 Jun 2024 13:07:16 +0200 (CEST)
+Message-ID: <754664f9-ac5b-406e-99bd-1b179ea8333b@molgen.mpg.de>
+Date: Sat, 8 Jun 2024 13:07:15 +0200
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -52,203 +30,112 @@ List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Cc: baolu.lu@linux.intel.com, "iommu@lists.linux.dev"
- <iommu@lists.linux.dev>,
- "virtualization@lists.linux-foundation.org"
- <virtualization@lists.linux-foundation.org>,
- "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH v6 06/10] iommufd: Add iommufd fault object
-To: "Tian, Kevin" <kevin.tian@intel.com>, Jason Gunthorpe <jgg@ziepe.ca>,
- Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
- Robin Murphy <robin.murphy@arm.com>,
- Jean-Philippe Brucker <jean-philippe@linaro.org>,
- Nicolin Chen <nicolinc@nvidia.com>, "Liu, Yi L" <yi.l.liu@intel.com>,
- Jacob Pan <jacob.jun.pan@linux.intel.com>,
- Joel Granados <j.granados@samsung.com>
-References: <20240527040517.38561-1-baolu.lu@linux.intel.com>
- <20240527040517.38561-7-baolu.lu@linux.intel.com>
- <BN9PR11MB527615EC664698C340A0CA878CFB2@BN9PR11MB5276.namprd11.prod.outlook.com>
+Subject: Re: DMAR-IR: IRQ remapping was enabled on dmar6 but we are not in
+ kdump mode
+From: Paul Menzel <pmenzel@molgen.mpg.de>
+To: Baolu Lu <baolu.lu@linux.intel.com>
+Cc: =?UTF-8?B?SsO2cmcgUsO2ZGVs?= <joro@8bytes.org>,
+ Will Deacon <will@kernel.org>, iommu@lists.linux.dev,
+ linux-kernel@vger.kernel.org
+References: <5517f76a-94ad-452c-bae6-34ecc0ec4831@molgen.mpg.de>
+ <433452d0-589a-49c8-8044-dcc93d5be90a@linux.intel.com>
+ <24bf9a11-6abd-4ccf-9ca1-3cf75c45d374@molgen.mpg.de>
+ <42b53bff-4027-4cb6-a457-e26fd62895e5@linux.intel.com>
+ <61ce93c7-e89c-4217-8095-dde9fb01763c@molgen.mpg.de>
+ <7eb01b85-9233-4f21-865e-6d128f39fb46@linux.intel.com>
+ <b12ae551-e7a4-435b-b7ff-368d6c1ae7a1@molgen.mpg.de>
 Content-Language: en-US
-From: Baolu Lu <baolu.lu@linux.intel.com>
-In-Reply-To: <BN9PR11MB527615EC664698C340A0CA878CFB2@BN9PR11MB5276.namprd11.prod.outlook.com>
+In-Reply-To: <b12ae551-e7a4-435b-b7ff-368d6c1ae7a1@molgen.mpg.de>
 Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 
-On 6/7/24 5:17 PM, Tian, Kevin wrote:
->> From: Lu Baolu <baolu.lu@linux.intel.com>
->> Sent: Monday, May 27, 2024 12:05 PM
+Dear Linux folks,
+
+
+Am 15.05.24 um 08:02 schrieb Paul Menzel:
+
+> Am 15.05.24 um 04:13 schrieb Baolu Lu:
+>> On 5/15/24 3:46 AM, Paul Menzel wrote:
+>>> Am 23.01.24 um 01:55 schrieb Baolu Lu:
+>>>> On 2024/1/22 22:53, Paul Menzel wrote:
+>>>>> Am 22.01.24 um 13:38 schrieb Baolu Lu:
+>>>>>> On 2024/1/19 22:45, Paul Menzel wrote:
+>>>>>>>
+>>>>>>> On a Dell PowerEdge T640, Linux 5.9 and 6.6.12 warn about kdump:
+>>>>>>>
+>>>>>>>      [    2.728445] DMAR-IR: IRQ remapping was enabled on dmar6 but we are not in kdump mode
+>>>>>>>      [    2.736544] DMAR-IR: IRQ remapping was enabled on dmar5 but we are not in kdump mode
+>>>>>>>      [    2.744620] DMAR-IR: IRQ remapping was enabled on dmar4 but we are not in kdump mode
+>>>>>>>      [    2.752695] DMAR-IR: IRQ remapping was enabled on dmar3 but we are not in kdump mode
+>>>>>>>      [    2.760774] DMAR-IR: IRQ remapping was enabled on dmar2 but we are not in kdump mode
+>>>>>>>      [    2.768847] DMAR-IR: IRQ remapping was enabled on dmar1 but we are not in kdump mode
+>>>>>>>      [    2.776922] DMAR-IR: IRQ remapping was enabled on dmar0 but we are not in kdump mode
+>>>>>>>      [    2.784999] DMAR-IR: IRQ remapping was enabled on dmar7 but we are not in kdump mode
+>>>>>>>
+>>>>>>> Looking through the logs, this only happens when using kexec to 
+>>>>>>> restart the system.
+>>>>>>
+>>>>>> The code that warned this is,
+>>>>>>
+>>>>>>   599         if (ir_pre_enabled(iommu)) {
+>>>>>>   600                 if (!is_kdump_kernel()) {
+>>>>>>   601                         pr_warn("IRQ remapping was enabled on %s but we are not in kdump mode\n",
+>>>>>>   602                                 iommu->name);
+>>>>>>   603                         clear_ir_pre_enabled(iommu);
+>>>>>>   604                         iommu_disable_irq_remapping(iommu);
+>>>>>>   605                 }
+>>>>>>
+>>>>>> The VT-d interrupt remapping is enabled during boot, but this is not a
+>>>>>> kdump kernel.
+>>>>>>
+>>>>>> Do you mind checking whether the disable interrupt remapping callback
+>>>>>> was called during kexec reboot?
+>>>>>>
+>>>>>> 1121 struct irq_remap_ops intel_irq_remap_ops = {
+>>>>>> 1122         .prepare                = intel_prepare_irq_remapping,
+>>>>>> 1123         .enable                 = intel_enable_irq_remapping,
+>>>>>> 1124         .disable                = disable_irq_remapping,
+>>>>>> 1125         .reenable               = reenable_irq_remapping,
+>>>>>> 1126         .enable_faulting        = enable_drhd_fault_handling,
+>>>>>> 1127 };
+>>>>>
+>>>>> Is there a way to check this without rebuilding the Linux kernel?
+>>>>
+>>>> I am not sure, but you can check whether any messages are dumped in the
+>>>> path of .disable callback? or try to use ftrace?
+>>>
+>>> With
+>>>
+>>> ```
+>>> diff --git a/drivers/iommu/intel/irq_remapping.c 
+>>> b/drivers/iommu/intel/irq_remapping.c
+>>> index 712ebfc9870c6..146f19ae5b5f1 100644
+>>> --- a/drivers/iommu/intel/irq_remapping.c
+>>> +++ b/drivers/iommu/intel/irq_remapping.c
+>>> @@ -1030,6 +1030,7 @@ static void disable_irq_remapping(void)
+>>>       struct dmar_drhd_unit *drhd;
+>>>       struct intel_iommu *iommu = NULL;
+>>>
+>>> +     pr_warn("XXX: Called %s\n", __func__);
+>>>       /*
+>>>        * Disable Interrupt-remapping for all the DRHD's now.
+>>>        */
+>>> ```
+>>>
+>>> I can’t see anything in the logs, so it does not seem to be called.
+>>>
+>>> Can you reproduce the issue?
 >>
->> +static ssize_t iommufd_fault_fops_read(struct file *filep, char __user *buf,
->> +				       size_t count, loff_t *ppos)
->> +{
->> +	size_t fault_size = sizeof(struct iommu_hwpt_pgfault);
->> +	struct iommufd_fault *fault = filep->private_data;
->> +	struct iommu_hwpt_pgfault data;
->> +	struct iommufd_device *idev;
->> +	struct iopf_group *group;
->> +	struct iopf_fault *iopf;
->> +	size_t done = 0;
->> +	int rc = 0;
->> +
->> +	if (*ppos || count % fault_size)
->> +		return -ESPIPE;
+>> How did you reproduce this?
 > 
-> the man page says:
+> On a “server” (with Intel Xeon?), in my case Dell PowerEdge T640 and 
+> Dell PowerEdge R930 (Intel E7-8891 v3), run
 > 
-> "If count is zero, read() returns zero and has no  other  results."
+>      kexec /boot/bzImage --initrd=/boot/grub/initramfs.igz --reuse-cmdline
 
-My understanding is that reading zero bytes is likely to check if a file
-descriptor is valid and ready for reading without actually taking any
-data from it.
+Were you able to fit some cycles into reproducing/analyzing this issue?
 
-In this code, it just returns 0 and it's compatible with the man page.
-Or, I overlooked anything?
 
-> 
->> +
->> +	mutex_lock(&fault->mutex);
->> +	while (!list_empty(&fault->deliver) && count > done) {
->> +		group = list_first_entry(&fault->deliver,
->> +					 struct iopf_group, node);
->> +
->> +		if (group->fault_count * fault_size > count - done)
->> +			break;
->> +
->> +		rc = xa_alloc(&fault->response, &group->cookie, group,
->> +			      xa_limit_32b, GFP_KERNEL);
->> +		if (rc)
->> +			break;
->> +
->> +		idev = to_iommufd_handle(group->attach_handle)->idev;
->> +		list_for_each_entry(iopf, &group->faults, list) {
->> +			iommufd_compose_fault_message(&iopf->fault,
->> +						      &data, idev,
->> +						      group->cookie);
->> +			rc = copy_to_user(buf + done, &data, fault_size);
->> +			if (rc) {
-> 
-> 'rc' should be converted to -EFAULT.
+Kind regards,
 
-Yes. I will make it like this:
-
-        if (copy_to_user(buf + done, &data, fault_size)) {
-                xa_erase(&fault->response, group->cookie);
-                rc = -EFAULT;
-                break;
-        }
-
-> 
->> +				xa_erase(&fault->response, group->cookie);
->> +				break;
->> +			}
->> +			done += fault_size;
->> +		}
->> +
->> +		list_del(&group->node);
->> +	}
->> +	mutex_unlock(&fault->mutex);
->> +
->> +	return done == 0 ? rc : done;
-> 
-> again this doesn't match the manual:
-> 
-> "On error, -1 is returned, and errno is set appropriately."
-> 
-> it doesn't matter whether 'done' is 0.
-
-I don't quite follow here. The code is doing the following:
-
-- If done == 0, it means nothing has been copied to user space. This
-   could be due to two reasons:
-
-   1) the user read with a count set to 0, or
-   2) a failure case.
-
-   The code returns 0 for the first case and an error number for the
-   second.
-
-- If done != 0, some data has been copied to user space. In this case,
-   the code returns the number of data copied regardless of the value of
-   rc.
-
-> 
->> +
->> +static int iommufd_fault_fops_release(struct inode *inode, struct file *filep)
->> +{
->> +	struct iommufd_fault *fault = filep->private_data;
->> +
->> +	iommufd_ctx_put(fault->ictx);
->> +	refcount_dec(&fault->obj.users);
->> +	return 0;
->> +}
-> 
-> hmm this doesn't sound correct. the context and refcount are
-> acquired in iommufd_fault_alloc() but here they are reverted when
-> the fd is closed...
-
-These two refcounts were requested when the fault object was installed
-to the fault FD.
-
-        filep = anon_inode_getfile("[iommufd-pgfault]", &iommufd_fault_fops,
-                                    fault, O_RDWR);
-         if (IS_ERR(filep)) {
-                 rc = PTR_ERR(filep);
-                 goto out_abort;
-         }
-
-         refcount_inc(&fault->obj.users);
-         iommufd_ctx_get(fault->ictx);
-         fault->filep = filep;
-
-These refcounts must then be released when the FD is released.
-
->> +
->> +	filep = anon_inode_getfile("[iommufd-pgfault]",
->> &iommufd_fault_fops,
->> +				   fault, O_RDWR);
->> +	if (IS_ERR(filep)) {
->> +		rc = PTR_ERR(filep);
->> +		goto out_abort;
->> +	}
->> +
->> +	refcount_inc(&fault->obj.users);
->> +	iommufd_ctx_get(fault->ictx);
->> +	fault->filep = filep;
-> 
-> those 3 lines can be moved after below fdno get. It's reads slightly
-> clearer to put file related work together before getting to the last piece
-> of intiailzation.
-
-The filep is allocated and initialized together.
-
->> +
->> +	fdno = get_unused_fd_flags(O_CLOEXEC);
->> +	if (fdno < 0) {
->> +		rc = fdno;
->> +		goto out_fput;
->> +	}
->> +
->> @@ -332,6 +332,7 @@ union ucmd_buffer {
->>   	struct iommu_ioas_unmap unmap;
->>   	struct iommu_option option;
->>   	struct iommu_vfio_ioas vfio_ioas;
->> +	struct iommu_fault_alloc fault;
-> 
-> alphabetic
-> 
->> @@ -381,6 +382,8 @@ static const struct iommufd_ioctl_op
->> iommufd_ioctl_ops[] = {
->>   		 val64),
->>   	IOCTL_OP(IOMMU_VFIO_IOAS, iommufd_vfio_ioas, struct
->> iommu_vfio_ioas,
->>   		 __reserved),
->> +	IOCTL_OP(IOMMU_FAULT_QUEUE_ALLOC, iommufd_fault_alloc,
->> struct iommu_fault_alloc,
->> +		 out_fault_fd),
-> 
-> ditto
-
-Yes, sure. I wasn't aware of the order.
-
-Best regards,
-baolu
+Paul
