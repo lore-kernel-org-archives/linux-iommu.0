@@ -1,138 +1,184 @@
-Received: from mail-io1-f77.google.com (mail-io1-f77.google.com [209.85.166.77])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.13])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D6D6542071
-	for <iommu@lists.linux.dev>; Sun,  9 Jun 2024 13:23:29 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.166.77
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B1ED274055
+	for <iommu@lists.linux.dev>; Mon, 10 Jun 2024 08:58:17 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.13
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1717939411; cv=none; b=k+ZiLEHvDgmTevDISMnI2EwTRSaffK7Is1n2CpF9JUWMfjKpTsMJ6wgLuevmZpWRgywAwMF2Siec0FCVLEplkXkKeACAJ76UbE2P+y2zNt7mA8dQVHbabVtTLGM4wbjxHKwtuDNaaAAC3RXUqM4U9IYoONEiWfFe5rqYXcxW6wc=
+	t=1718009899; cv=none; b=WxQXmtCn4aFLuPJyhDwJoFl6uhWs+N/N8oBpueL7O+hG+wHjWJwuAHpLTMypAQxxLJVpfXBlCKPzCX4DPuyhBl+ysuAbN1Dw3cgJQwqwGpgaO1q8ovgdsb7bhfTOzXcyrTXhIaguf1Jsmj/S+RzgpMA3Og8ctiWTBm6Ka62rWlQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1717939411; c=relaxed/simple;
-	bh=B0r8b/jAHsefhlfdZ48avZFS/6czpF9hmwvgYAEAzU4=;
-	h=MIME-Version:Date:Message-ID:Subject:From:To:Content-Type; b=R3EduGehJ89Bn4I4YhPkg08Qa2FIVc7UYt19ZGk8h6EFJjkqc/OFaytL0BnZlJVTkbh/mA92g2fSXkVtIf/BqUaLj/C1BsTznykAfzAXL+e66FNZbJ8LMqRbe1WE7x5jCApiXHPuLDoh13w3lv0hYpGcSzzkcF1AJTxdehVrsxM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.166.77
-Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com
-Received: by mail-io1-f77.google.com with SMTP id ca18e2360f4ac-7e91ad684e4so444986139f.2
-        for <iommu@lists.linux.dev>; Sun, 09 Jun 2024 06:23:29 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1717939409; x=1718544209;
-        h=to:from:subject:message-id:date:mime-version:x-gm-message-state
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=ndDzAK+vS/lqj0cA5nY0ecgAvAllUyEKdFmgWGwIrws=;
-        b=EOt92qWMnotPY9bxSW9GA33/k0Gc0x68EchkBZIc1Y1W0AxqDgIjfmIJ76klNVD5DE
-         iWZoXNRwkhmfDpZxtmI/TCenOXKK7Ewrl3WSWF0/VjuEmwmNpBkw9suCS0uAWfPD3lab
-         VCLyh+grg9NJsMkakSAqfBN6fliQqB9dkr4nuhQbLsnYxm5u9Ait3A1dl2iRq85OKn3B
-         GDe+q5/syKmEpECqdkR5dIMqY3hPdzHg1S1cSNWTnzVWE2bPHYCDinjMHMZ+MRH+61gu
-         ojq06CWyxYl54j7syn10k4UcB7lQQGq7qij0orpx9KD4LzhBiby7DkAAfFF81SZInFEr
-         pozQ==
-X-Gm-Message-State: AOJu0YyQFxGSQEBiZBYLs46ofYpydI61359J1nVlIqnzZByeFJ3Kh6wq
-	NirUOt+QPkaqg1bvnXVI4W6RlHwgTXcdbNCWvMDfukZlwwy5H09PsdoYJ+p+STQPCjZ2pEuK8c2
-	nxGIEIIfvc7cuNq6dGLRsLeU41RE0PEQH6tMgipAIkj/idWyiDYc4+zoPsQ==
-X-Google-Smtp-Source: AGHT+IEfPa5yFAkh8lwyvR/wMC8EgcDCwA2xWjDIrZ/+eiIrsLv5+QOog+H8tSRnXXiSlpkjmVz3Jr5sCWHka7n8O56AWVgS9Wf8
+	s=arc-20240116; t=1718009899; c=relaxed/simple;
+	bh=0vujK8zNCKvKagqP+H4Q/hFUwMNe4QRoYI5wcH4k1DU=;
+	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version; b=OeKdJDCHKYx4sJqslENRqovmTxkpvvWWabtKey+GPVjoilSUHvGH4/7yS4brVR2aTOW7Mnz7yUMOR/wUc9XuaYkqglboSwqcE2RcT1xaGvunlRa4LOptJUZJKaMbKILmqcPxC4L/8/Xfdn9s363bX0Bfjdh6lViY1tpkhnEsst8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=cP3vc7YY; arc=none smtp.client-ip=192.198.163.13
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="cP3vc7YY"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1718009897; x=1749545897;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=0vujK8zNCKvKagqP+H4Q/hFUwMNe4QRoYI5wcH4k1DU=;
+  b=cP3vc7YYeR7c4mMzApc6KumDA0O+3ffsf/vze5Fp9yFovbzMelFziqbe
+   QABgx3L6KoU/zRK1BcxQ2bE0f/MaO+oYWInAwAMbpDT5VBvuPob47BLBL
+   02AT3GMB1B5O5pIJdyERc8kRjSnGhu/F2lMhCj5eVdAnoxhjddjfhe4Ye
+   MjCEvj/CS6BxXero+mFQMmQqvU5D7SIoKAUgNsYrtPcx48YRI84LnsZZc
+   wWmWt8NXQgcAsPt3XeYVHgojDxQ3Y9rNfhw49w8cBjJAqBzp6Dyj1yGVV
+   datSiCfslXIGp2BAs6g6elhSUcACvI3Z3rSnw9GBcOSWxA9ZPWDRvg5A7
+   g==;
+X-CSE-ConnectionGUID: J+9dJOnNQQqZKewnwPCmKg==
+X-CSE-MsgGUID: LTYO8j08QJqzeYnn0akV5w==
+X-IronPort-AV: E=McAfee;i="6600,9927,11098"; a="17581489"
+X-IronPort-AV: E=Sophos;i="6.08,227,1712646000"; 
+   d="scan'208";a="17581489"
+Received: from fmviesa003.fm.intel.com ([10.60.135.143])
+  by fmvoesa107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Jun 2024 01:58:17 -0700
+X-CSE-ConnectionGUID: DFrvvBhUT0CHyUEqQL0Vhg==
+X-CSE-MsgGUID: ar5nZaOiT0efo7DDRkQyLQ==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.08,227,1712646000"; 
+   d="scan'208";a="43432400"
+Received: from unknown (HELO allen-box.sh.intel.com) ([10.239.159.127])
+  by fmviesa003.fm.intel.com with ESMTP; 10 Jun 2024 01:58:12 -0700
+From: Lu Baolu <baolu.lu@linux.intel.com>
+To: Joerg Roedel <joro@8bytes.org>,
+	Will Deacon <will@kernel.org>,
+	Robin Murphy <robin.murphy@arm.com>,
+	Jason Gunthorpe <jgg@ziepe.ca>,
+	Kevin Tian <kevin.tian@intel.com>
+Cc: Yi Liu <yi.l.liu@intel.com>,
+	David Airlie <airlied@gmail.com>,
+	Daniel Vetter <daniel@ffwll.ch>,
+	Kalle Valo <kvalo@kernel.org>,
+	Bjorn Andersson <andersson@kernel.org>,
+	Mathieu Poirier <mathieu.poirier@linaro.org>,
+	Alex Williamson <alex.williamson@redhat.com>,
+	mst@redhat.com,
+	Jason Wang <jasowang@redhat.com>,
+	Thierry Reding <thierry.reding@gmail.com>,
+	Jonathan Hunter <jonathanh@nvidia.com>,
+	Mikko Perttunen <mperttunen@nvidia.com>,
+	Jeff Johnson <quic_jjohnson@quicinc.com>,
+	ath10k@lists.infradead.org,
+	ath11k@lists.infradead.org,
+	iommu@lists.linux.dev,
+	dri-devel@lists.freedesktop.org,
+	linux-kernel@vger.kernel.org,
+	Lu Baolu <baolu.lu@linux.intel.com>
+Subject: [PATCH v3 00/21] iommu: Refactoring domain allocation interface
+Date: Mon, 10 Jun 2024 16:55:34 +0800
+Message-Id: <20240610085555.88197-1-baolu.lu@linux.intel.com>
+X-Mailer: git-send-email 2.34.1
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-Received: by 2002:a05:6638:4121:b0:4b7:ca39:5869 with SMTP id
- 8926c6da1cb9f-4b7ca395b64mr329855173.6.1717939409024; Sun, 09 Jun 2024
- 06:23:29 -0700 (PDT)
-Date: Sun, 09 Jun 2024 06:23:29 -0700
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <000000000000388410061a74f014@google.com>
-Subject: [syzbot] [iommu?] WARNING in iopt_map_pages
-From: syzbot <syzbot+16073ebbc4c64b819b47@syzkaller.appspotmail.com>
-To: iommu@lists.linux.dev, jgg@ziepe.ca, joro@8bytes.org, kevin.tian@intel.com, 
-	linux-kernel@vger.kernel.org, robin.murphy@arm.com, 
-	syzkaller-bugs@googlegroups.com, will@kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 
-Hello,
+The IOMMU subsystem has undergone some changes, including the removal
+of iommu_ops from the bus structure. Consequently, the existing domain
+allocation interface, which relies on a bus type argument, is no longer
+relevant:
 
-syzbot found the following issue on:
+    struct iommu_domain *iommu_domain_alloc(struct bus_type *bus)
 
-HEAD commit:    32f88d65f01b Merge tag 'linux_kselftest-fixes-6.10-rc3' of..
-git tree:       upstream
-console+strace: https://syzkaller.appspot.com/x/log.txt?x=1360240a980000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=f0e2e3f7ede77526
-dashboard link: https://syzkaller.appspot.com/bug?extid=16073ebbc4c64b819b47
-compiler:       Debian clang version 15.0.6, GNU ld (GNU Binutils for Debian) 2.40
-syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=176155f2980000
-C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=12ef6d64980000
+This series is designed to refactor the use of this interface. It
+proposes a new interface iommu_paging_domain_alloc() to replace
+iommu_domain_alloc(). This interface is for allocating iommu paging
+domains for kernel drivers. It takes a device pointer as a parameter,
+which better reflects the current design of the IOMMU subsystem.
 
-Downloadable assets:
-disk image: https://storage.googleapis.com/syzbot-assets/02b9da12baef/disk-32f88d65.raw.xz
-vmlinux: https://storage.googleapis.com/syzbot-assets/0f0b1ac64a11/vmlinux-32f88d65.xz
-kernel image: https://storage.googleapis.com/syzbot-assets/d97bebf9fd91/bzImage-32f88d65.xz
+The majority of device drivers currently using iommu_domain_alloc() do
+so to allocate a domain for a specific device and then attach that
+domain to the device. These cases can be straightforwardly migrated to
+the new interface.
 
-IMPORTANT: if you fix the issue, please add the following tag to the commit:
-Reported-by: syzbot+16073ebbc4c64b819b47@syzkaller.appspotmail.com
+The drm/tegra driver is a bit different in that the device pointer
+passed to the helper, which allocates the iommu domain, is not the one
+that will be used for the kernel DMA API. Move the existing logic in
+iommu_domain_alloc() into the driver to ensure it works as intended.
 
-------------[ cut here ]------------
-WARNING: CPU: 0 PID: 5091 at drivers/iommu/iommufd/io_pagetable.c:268 iopt_alloc_area_pages drivers/iommu/iommufd/io_pagetable.c:268 [inline]
-WARNING: CPU: 0 PID: 5091 at drivers/iommu/iommufd/io_pagetable.c:268 iopt_map_pages+0xf95/0x1050 drivers/iommu/iommufd/io_pagetable.c:352
-Modules linked in:
-CPU: 0 PID: 5091 Comm: syz-executor391 Not tainted 6.10.0-rc2-syzkaller-00022-g32f88d65f01b #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 04/02/2024
-RIP: 0010:iopt_alloc_area_pages drivers/iommu/iommufd/io_pagetable.c:268 [inline]
-RIP: 0010:iopt_map_pages+0xf95/0x1050 drivers/iommu/iommufd/io_pagetable.c:352
-Code: fc e9 a4 f3 ff ff e8 9a 9f 4b fc 41 be e4 ff ff ff e9 8a f3 ff ff e8 8a 9f 4b fc 90 0f 0b 90 e9 37 f5 ff ff e8 7c 9f 4b fc 90 <0f> 0b 90 e9 68 f3 ff ff 48 c7 c1 6c 78 ad 8f 80 e1 07 80 c1 03 38
-RSP: 0018:ffffc90002d4f9e0 EFLAGS: 00010293
-RAX: ffffffff854a7704 RBX: 00000000ffffffef RCX: ffff88801978bc00
-RDX: 0000000000000000 RSI: 00000000ffffffef RDI: 0000000000000000
-RBP: ffffc90002d4fc50 R08: ffffffff854a7290 R09: ffffffff854a70a2
-R10: 0000000000000002 R11: ffff88801978bc00 R12: ffff888021c4b010
-R13: 0000000000000000 R14: 1ffff920005a9f68 R15: ffffc90002d4fd00
-FS:  0000555563931380(0000) GS:ffff8880b9400000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 00000000005fdeb8 CR3: 0000000073cd8000 CR4: 00000000003506f0
-DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-Call Trace:
- <TASK>
- iommufd_ioas_copy+0x610/0x7b0 drivers/iommu/iommufd/ioas.c:274
- iommufd_fops_ioctl+0x4d9/0x5a0 drivers/iommu/iommufd/main.c:421
- vfs_ioctl fs/ioctl.c:51 [inline]
- __do_sys_ioctl fs/ioctl.c:907 [inline]
- __se_sys_ioctl+0xfc/0x170 fs/ioctl.c:893
- do_syscall_x64 arch/x86/entry/common.c:52 [inline]
- do_syscall_64+0xf3/0x230 arch/x86/entry/common.c:83
- entry_SYSCALL_64_after_hwframe+0x77/0x7f
-RIP: 0033:0x7f83aa0f1b39
-Code: 28 00 00 00 75 05 48 83 c4 28 c3 e8 c1 17 00 00 90 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 b8 ff ff ff f7 d8 64 89 01 48
-RSP: 002b:00007ffdd80781a8 EFLAGS: 00000246 ORIG_RAX: 0000000000000010
-RAX: ffffffffffffffda RBX: 0000000000000000 RCX: 00007f83aa0f1b39
-RDX: 0000000020000140 RSI: 0000000000003b83 RDI: 0000000000000003
-RBP: 00007f83aa1645f0 R08: 0000000000000006 R09: 0000000000000006
-R10: 0000000000000006 R11: 0000000000000246 R12: 0000000000000001
-R13: 431bde82d7b634db R14: 0000000000000001 R15: 0000000000000001
- </TASK>
+Now that all consumers of iommu_domain_alloc() have switched to the new
+interface, we can finally remove iommu_domain_alloc(). This removal
+paves the way for the IOMMU subsystem to support multiple iommu drivers.
+Additionally, the individual iommu driver implementation for domain
+allocation could also be simplified, as there will always be a valid
+device pointer passed along the path.
 
+The whole series is also available on GitHub:
+https://github.com/LuBaolu/intel-iommu/commits/iommu-domain-allocation-refactor-v3
 
----
-This report is generated by a bot. It may contain errors.
-See https://goo.gl/tpsmEJ for more information about syzbot.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
+Change log:
 
-syzbot will keep track of this issue. See:
-https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
+v3:
+ - Remove the proposed iommu_user_domain_alloc() interface.
 
-If the report is already addressed, let syzbot know by replying with:
-#syz fix: exact-commit-title
+v2: https://lore.kernel.org/linux-iommu/20240604015134.164206-1-baolu.lu@linux.intel.com/
+ - Drop the vt-d patches which implement paging domain support from this
+   series. I will post them in a separate series later.
+ - Convert all drivers that call iommu_domain_alloc() to use the new
+   interface and remove iommu_domain_alloc() from the tree.
+ - For the drm/msm driver, make the code compatible with the no-IOMMU
+   case.
+ - Various cleanups and refinements.
 
-If you want syzbot to run the reproducer, reply with:
-#syz test: git://repo/address.git branch-or-commit-hash
-If you attach or paste a git patch, syzbot will apply it before testing.
+v1: https://lore.kernel.org/linux-iommu/20240529053250.91284-1-baolu.lu@linux.intel.com/
 
-If you want to overwrite report's subsystems, reply with:
-#syz set subsystems: new-subsystem
-(See the list of subsystem names on the web dashboard)
+Lu Baolu (20):
+  iommu: Add iommu_paging_domain_alloc() interface
+  iommufd: Use iommu_paging_domain_alloc()
+  vfio/type1: Use iommu_paging_domain_alloc()
+  vhost-vdpa: Use iommu_paging_domain_alloc()
+  drm/msm: Use iommu_paging_domain_alloc()
+  drm/nouveau/tegra: Use iommu_paging_domain_alloc()
+  gpu: host1x: Use iommu_paging_domain_alloc()
+  media: nvidia: tegra: Use iommu_paging_domain_alloc()
+  media: venus: firmware: Use iommu_paging_domain_alloc()
+  wifi: ath10k: Use iommu_paging_domain_alloc()
+  wifi: ath11k: Use iommu_paging_domain_alloc()
+  remoteproc: Use iommu_paging_domain_alloc()
+  soc/fsl/qbman: Use iommu_paging_domain_alloc()
+  RDMA/usnic: Use iommu_paging_domain_alloc()
+  iommu/vt-d: Add helper to allocate paging domain
+  ARM: dma-mapping: Use iommu_paging_domain_alloc()
+  drm/rockchip: Use iommu_paging_domain_alloc()
+  drm/tegra: Remove call to iommu_domain_alloc()
+  iommu: Remove iommu_present()
+  iommu: Remove iommu_domain_alloc()
 
-If the report is a duplicate of another one, reply with:
-#syz dup: exact-subject-of-another-report
+Robin Murphy (1):
+  ARM: dma-mapping: Pass device to arm_iommu_create_mapping()
 
-If you want to undo deduplication, reply with:
-#syz undup
+ include/linux/iommu.h                         | 12 +--
+ arch/arm/include/asm/dma-iommu.h              |  2 +-
+ arch/arm/mm/dma-mapping.c                     | 12 +--
+ drivers/gpu/drm/exynos/exynos_drm_dma.c       |  2 +-
+ drivers/gpu/drm/msm/msm_iommu.c               |  7 +-
+ .../drm/nouveau/nvkm/engine/device/tegra.c    |  4 +-
+ drivers/gpu/drm/rockchip/rockchip_drm_drv.c   | 10 ++-
+ drivers/gpu/drm/tegra/drm.c                   | 34 ++++++--
+ drivers/gpu/host1x/dev.c                      |  7 +-
+ drivers/infiniband/hw/usnic/usnic_uiom.c      |  6 +-
+ drivers/iommu/intel/iommu.c                   | 87 +++++++++++++++++--
+ drivers/iommu/iommu.c                         | 63 +++-----------
+ drivers/iommu/iommufd/hw_pagetable.c          |  7 +-
+ drivers/iommu/ipmmu-vmsa.c                    |  3 +-
+ drivers/iommu/mtk_iommu_v1.c                  |  3 +-
+ .../media/platform/nvidia/tegra-vde/iommu.c   |  7 +-
+ drivers/media/platform/qcom/venus/firmware.c  |  6 +-
+ drivers/media/platform/ti/omap3isp/isp.c      |  2 +-
+ drivers/net/wireless/ath/ath10k/snoc.c        |  6 +-
+ drivers/net/wireless/ath/ath11k/ahb.c         |  6 +-
+ drivers/remoteproc/remoteproc_core.c          |  6 +-
+ drivers/soc/fsl/qbman/qman_portal.c           |  5 +-
+ drivers/vfio/vfio_iommu_type1.c               |  7 +-
+ drivers/vhost/vdpa.c                          | 14 ++-
+ 24 files changed, 183 insertions(+), 135 deletions(-)
+
+-- 
+2.34.1
+
