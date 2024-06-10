@@ -1,48 +1,48 @@
 Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.13])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 02376768EF
-	for <iommu@lists.linux.dev>; Mon, 10 Jun 2024 08:58:52 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EA9B777106
+	for <iommu@lists.linux.dev>; Mon, 10 Jun 2024 08:58:57 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.13
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1718009934; cv=none; b=nwOVSUURI1ZYHSpuDIlt5+OCAhhaASgGQvVPihFz3J6zrQb3gUQ7sNyNwDKyhB4oC2yttxyf4HBDNxTEv1VzjzUIybkbQ24aScvOxKQGq1tRMn3qnQnQKq6YgJOlr05RE39qZHJ5vdukj+K7oCTwzPVfn26hKRcY++bzdAA4baA=
+	t=1718009940; cv=none; b=FTFp6eoFegpz39//OVhcoBbmF8weJlOudB0jXd3iqMPrcVYSj4vmVZhPQpB4EdfugtHQzUw1G7VEsiFScb+P30230bVi0ynArbpC2rBOcwZZjuDrnUmJcRGtG9NrRzSpuI3mndGx+4aHAmbhJJJAF5sBTtchQhSJbgZDQw7Dpuw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1718009934; c=relaxed/simple;
-	bh=3intrfdlq62sPZGdllNzLo1Ahf/WR8/6yPI2eqBXYY8=;
+	s=arc-20240116; t=1718009940; c=relaxed/simple;
+	bh=gcVUdhVM6KwB99b7OFzWjZ/BBZdHQiOtwXYtd2+KA+I=;
 	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
-	 MIME-Version; b=uQlRvFNd5igwACn1nFo9hb6Ug6hRXcjUHavbiO2+Xq4Qk3DTx+9n4ivXyecIISjT244iggfyzjLPMg8NKovgufSMZCrYIsO4UEq68xh/6UBFeeAoqzKVbxQJaVHulr2tquUKtkGPofOmMP4G8Xcj60pMIj3ooUEAq9uE8tm83sw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=GrvelJR8; arc=none smtp.client-ip=192.198.163.13
+	 MIME-Version; b=CsTZF+dt95Lt00tcbxdv1FtUE/fuTbE+iLAlm6VOov1Vy9Q1ufOk0HTvoGuFFYOfFYWy3wPmJ5eXUO1RzuLzpyYXvtNprRxNsLLydF/2Em2H/E6nH2vIwHptMmjnoEnlgGcockF6rV3ROsbZsm2gXiRojsiiHl9kHUqUPBgjZ+Q=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=OpGzbgHV; arc=none smtp.client-ip=192.198.163.13
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="GrvelJR8"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="OpGzbgHV"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1718009933; x=1749545933;
+  t=1718009938; x=1749545938;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=3intrfdlq62sPZGdllNzLo1Ahf/WR8/6yPI2eqBXYY8=;
-  b=GrvelJR8lc4v8Nby6CPs0NUw/nHUGoklKtcPbh4bQaS89AUi+nUodsfU
-   7d7xiW1IQux0rqGb9K/kyFuo3azx3weZFz4TZxAX28vBstTDtbBEmGbLf
-   QZHr7nt28h+T7y+hp26VqvEl5xYWzQkab+ctu16ighOS4koaNfp604siz
-   SpN6gWZr7oCfIWcrZvql8JSpb+LNM6JMps0xEyxGeUJq1A6nv+Ryl864+
-   j1e0YaTXcPL7vkzZq0Z3HorxvsR29WFUgjZpWcZuepAsX5gkFV/cv4dLB
-   Xo5maXEGGU+Wo/Hs3nOna1PcxAcuDEoacoEbi5p4rtgpjeJqMvWYEqZ8L
-   g==;
-X-CSE-ConnectionGUID: Ku0RCdp0Qe6Yf/VMqIE9Iw==
-X-CSE-MsgGUID: j+R8HRCGQFuTIrlIGKdy2A==
-X-IronPort-AV: E=McAfee;i="6600,9927,11098"; a="17581632"
+  bh=gcVUdhVM6KwB99b7OFzWjZ/BBZdHQiOtwXYtd2+KA+I=;
+  b=OpGzbgHVTaxv/WxRsEGzwRMF1eJHaIypUc10IWthhmIRN9hO4xjIBGC8
+   g+Pfo8WCb5E9iiaWeurAiitSYYYV5FblW8ZtWP2UwvZgDNW1CFofNXZi5
+   /ErJPkBkd8PBB1mzrrMtXqINHsJX2RWbpOU/7MJ26oyIyfYvhyg3WsBEJ
+   LNjuZg8uKUPx5Ejs+xzVKIo2nQxDSVDXtzJs/QL8Q5zAQbIWQJfYjYLum
+   1tEMY5zzdMM2ga2l7YXKCojNr//s1zREiGGn3N0TJsBwVhCZPv8QnPl5s
+   d8Dsth8rm4LZFseF4KeM/p3CnkdLmI3zPtdPuKl21f3+Wj8X9QK0yAyZ3
+   A==;
+X-CSE-ConnectionGUID: rRLnJBC8QFqvO3xAKk4uHQ==
+X-CSE-MsgGUID: GRmNYw5/TwmWq2ZgUldFcg==
+X-IronPort-AV: E=McAfee;i="6600,9927,11098"; a="17581651"
 X-IronPort-AV: E=Sophos;i="6.08,227,1712646000"; 
-   d="scan'208";a="17581632"
+   d="scan'208";a="17581651"
 Received: from fmviesa003.fm.intel.com ([10.60.135.143])
-  by fmvoesa107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Jun 2024 01:58:52 -0700
-X-CSE-ConnectionGUID: Ilzg052XTkGNg5Xl4jMrRA==
-X-CSE-MsgGUID: 2uqmD9gJTn61hulUVOHf8A==
+  by fmvoesa107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Jun 2024 01:58:57 -0700
+X-CSE-ConnectionGUID: S518TnLfQLutDzB5t6Znmg==
+X-CSE-MsgGUID: oLlb/Z4oQiiBn2odn2LRRg==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.08,227,1712646000"; 
-   d="scan'208";a="43432549"
+   d="scan'208";a="43432568"
 Received: from unknown (HELO allen-box.sh.intel.com) ([10.239.159.127])
-  by fmviesa003.fm.intel.com with ESMTP; 10 Jun 2024 01:58:48 -0700
+  by fmviesa003.fm.intel.com with ESMTP; 10 Jun 2024 01:58:53 -0700
 From: Lu Baolu <baolu.lu@linux.intel.com>
 To: Joerg Roedel <joro@8bytes.org>,
 	Will Deacon <will@kernel.org>,
@@ -68,9 +68,9 @@ Cc: Yi Liu <yi.l.liu@intel.com>,
 	dri-devel@lists.freedesktop.org,
 	linux-kernel@vger.kernel.org,
 	Lu Baolu <baolu.lu@linux.intel.com>
-Subject: [PATCH v3 07/21] gpu: host1x: Use iommu_paging_domain_alloc()
-Date: Mon, 10 Jun 2024 16:55:41 +0800
-Message-Id: <20240610085555.88197-8-baolu.lu@linux.intel.com>
+Subject: [PATCH v3 08/21] media: nvidia: tegra: Use iommu_paging_domain_alloc()
+Date: Mon, 10 Jun 2024 16:55:42 +0800
+Message-Id: <20240610085555.88197-9-baolu.lu@linux.intel.com>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20240610085555.88197-1-baolu.lu@linux.intel.com>
 References: <20240610085555.88197-1-baolu.lu@linux.intel.com>
@@ -82,31 +82,31 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-An iommu domain is allocated in host1x_iommu_attach() and is attached to
-host->dev. Use iommu_paging_domain_alloc() to make it explicit.
+An iommu domain is allocated in tegra_vde_iommu_init() and is attached to
+vde->dev. Use iommu_paging_domain_alloc() to make it explicit.
 
 Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
 ---
- drivers/gpu/host1x/dev.c | 7 ++++---
+ drivers/media/platform/nvidia/tegra-vde/iommu.c | 7 ++++---
  1 file changed, 4 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/gpu/host1x/dev.c b/drivers/gpu/host1x/dev.c
-index 3a0aaa68ac8d..f86a6b12f24a 100644
---- a/drivers/gpu/host1x/dev.c
-+++ b/drivers/gpu/host1x/dev.c
-@@ -404,9 +404,10 @@ static struct iommu_domain *host1x_iommu_attach(struct host1x *host)
- 		if (err < 0)
- 			goto put_group;
- 
--		host->domain = iommu_domain_alloc(&platform_bus_type);
--		if (!host->domain) {
--			err = -ENOMEM;
-+		host->domain = iommu_paging_domain_alloc(host->dev);
-+		if (IS_ERR(host->domain)) {
-+			err = PTR_ERR(host->domain);
-+			host->domain = NULL;
- 			goto put_cache;
- 		}
+diff --git a/drivers/media/platform/nvidia/tegra-vde/iommu.c b/drivers/media/platform/nvidia/tegra-vde/iommu.c
+index 5521ed3e465f..b1d9d841d944 100644
+--- a/drivers/media/platform/nvidia/tegra-vde/iommu.c
++++ b/drivers/media/platform/nvidia/tegra-vde/iommu.c
+@@ -78,9 +78,10 @@ int tegra_vde_iommu_init(struct tegra_vde *vde)
+ 		arm_iommu_release_mapping(mapping);
+ 	}
+ #endif
+-	vde->domain = iommu_domain_alloc(&platform_bus_type);
+-	if (!vde->domain) {
+-		err = -ENOMEM;
++	vde->domain = iommu_paging_domain_alloc(dev);
++	if (IS_ERR(vde->domain)) {
++		err = PTR_ERR(vde->domain);
++		vde->domain = NULL;
+ 		goto put_group;
+ 	}
  
 -- 
 2.34.1
