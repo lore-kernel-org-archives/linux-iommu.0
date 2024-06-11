@@ -1,214 +1,245 @@
-Received: from mail-qt1-f175.google.com (mail-qt1-f175.google.com [209.85.160.175])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 10FB93B290
-	for <iommu@lists.linux.dev>; Tue, 11 Jun 2024 19:02:54 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.160.175
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D2359171A5;
+	Tue, 11 Jun 2024 19:11:26 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1718132576; cv=none; b=Pbk4qsvN5dBvX+XEXfEZ6TQblTL5N3oLjEgTnqO1KzHTuhEBsgmOBG3mmOkt9I5HRTWQ9XwV27x15ie8+SoZ45qwK3uS8rWzDUe7/okrY/PFekJizIWkoR3AHKVv0LG0ouAhWuvSeeuSmj/qrruOXr0IZpuhvhsabLyD5vwE4OY=
+	t=1718133087; cv=none; b=aAl1mBLtEccDBiNjrVuMmfSNwRvbInlxLbXHO2tF9D41sxlG/A7AEPsyroJNHqW5VWF0l5wkdNG14lokUwC7pt11AccYS2AKJmySuMylc1WAmanDUJ2JnUlr/oIqQPsYs9rpAYYl935mwmcvpc7Y2xkGNRnUnWEu/T2yjjx9+5M=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1718132576; c=relaxed/simple;
-	bh=RIS6P99i8/ouYRhPvVg/OSG179LKXiF0MDZ0AvmtDTI=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=oy1a5effNPEU8qJ02XIML5UsUtaMCQTBavxle2auCOqRvCPosXcepH4wmT/+BcczfTbBVUe+j63ozWrlM1RzFZflpPEtP0tfsgHH4tKOyi6rRoycFxIIVdn+ivLDcOtnlai2xGcVeJVMfNPnSelBknNx3abHSYUpHoVb3pZJEVY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=Z8fcChk9; arc=none smtp.client-ip=209.85.160.175
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1718133087; c=relaxed/simple;
+	bh=VL91sYxrS8ClC4b8/FdOk7/0y+PMB1c26MCrYyZDHlk=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=K/jDjmlCSzn7BIMClUn0K44ejEwcc7jNmGOfYeVZNCQgihyzZTgpyOYxNIeGiQoEMjHZjR3AUnL/Gd0DlEFOKDrpgUZ7fe00um1XaLoP/jaLemcieSOM3Ex6Im/4S4Eil07NauywxHJChXg9MvWSnbx4IDboqCzsoZtnB9gmfSU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=qGeF1z59; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="Z8fcChk9"
-Received: by mail-qt1-f175.google.com with SMTP id d75a77b69052e-44105d65257so10494121cf.1
-        for <iommu@lists.linux.dev>; Tue, 11 Jun 2024 12:02:54 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1718132574; x=1718737374; darn=lists.linux.dev;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=pCLHIpP4L7kT0Gd2rI5jF/Z5JVF4JbWL3evtRJjU49M=;
-        b=Z8fcChk9RDlGi/wqRfBthnSn/C9B2GcLVXwO+u6zsY3+naA7X4rE3BEjYFntXJMh4z
-         WcmVZCbjIptUNK5UydFDcxQVB0+7Bn+doeJSAYAxDN6U4yvYWy+Ix+5+PpOf9pMbMFMA
-         oMT1OoOaib6OJO/S1jDJQ4uApnTZtkoB5+IoS5qotrbaQbDVQna+65baFVhk/zqLwEPe
-         QvsoIvzKnQGKoUihh55uJEiEM2BPIHLevKyFhGuSmW5nbtWLTRYi3WYsfDbLYwmamsZT
-         9fetvwKS/DsIA4xQZnxYetG7VP8s0c12VH5aqr+U/SFhv3gQsbJqkzsmU0wb/r8nEpt6
-         MGQA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1718132574; x=1718737374;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=pCLHIpP4L7kT0Gd2rI5jF/Z5JVF4JbWL3evtRJjU49M=;
-        b=mQQtDehfQdCA3Ude+D04dHdclR6r7gA5jt8kuPLI2Jm3wndXIjkjD4uTq7LcqyG9EB
-         QJNQUwJKQBniY3FKRKaoeVRFv1f23G376h680Jb7bWF4n+Tlx5ndeEptn5PckeJCwsC/
-         igOuILfOuDOtqpit5JNlPgKquiHWv7zNSH1Pq3wOWjbkfxN7ImTdMosGu2u0cvjt5+N0
-         XexB45TzS0X+NdyplewJh/PMZLlk+YjDclCqywmluhgQpKDunOnb8PCRrn0FpEpzmY/v
-         U/8HQA/OZ+k6RKPLwWxwgy2/YaF/I2+EWXIjuVwT3y2p36Uc3u01nZgArueol3i0Y2DW
-         nF7w==
-X-Forwarded-Encrypted: i=1; AJvYcCUmsL9xa5/6hPLrrVeW7hSMMre6xcEpz03Cqud2mDhRpn+yU34yV0uhq9YK9Jfq167QPk76T/X5JbG8ec/PG6gHC9w+aLI=
-X-Gm-Message-State: AOJu0YygraB2+eCpSqNjalMObnCwB5ojMWNUd3Az0Bh6NDTxyPo/NRNp
-	ZzKXecL71WBP0Y87Y91n9TgoyWOHunjhcMekQ6zrM3DYq4wEvd/eciyS5PadXNtjkF2/hgUbL9g
-	8cK1mfavXpTyLjabhsX99XIkD/7A=
-X-Google-Smtp-Source: AGHT+IGSP2VVqjRRz2TZ1caHxDiFbN51sCjnGEO9YadMPHzDxZxvp8SfD4moXFhISu9PeRhnmZVniT7dJVwEYK+RZVE=
-X-Received: by 2002:ac8:5253:0:b0:440:4619:ee75 with SMTP id
- d75a77b69052e-4404619fa0bmr109549121cf.0.1718132573566; Tue, 11 Jun 2024
- 12:02:53 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="qGeF1z59"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E2943C4AF48;
+	Tue, 11 Jun 2024 19:11:25 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1718133086;
+	bh=VL91sYxrS8ClC4b8/FdOk7/0y+PMB1c26MCrYyZDHlk=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=qGeF1z59jrpZ1RnFDkbFTHlzMrh2tlbdyzzMeTbp/apFSEEZTKtHkH+3loP9CksbW
+	 En1EFU2PvaPwg8kwPv58hUH/00Z1iJaK+TYLFlY7jq60EmSHn58BFrPjyBuLSg6kUy
+	 szjRV8n4ki19tOLkxEzrvNUz/1FvmLxUyHFx8FXvupsoPReOnwziyyb2DWhwA8gLT0
+	 rcx8zCFMkZDVxz7DB+vMIFm9V2odi09cuXNc6Wz54by/flNmIEo+NsJWB8ixRZyOOy
+	 ZaePydnV8sQeml50d7Nyw2E27Fj9eEs+p6aDVCIPkBDnMmJmhcJStvrDcHXQWZUDvZ
+	 +Q+PdkPi3MXew==
+Date: Tue, 11 Jun 2024 22:11:21 +0300
+From: Leon Romanovsky <leon@kernel.org>
+To: "Zeng, Oak" <oak.zeng@intel.com>
+Cc: Jason Gunthorpe <jgg@ziepe.ca>, Christoph Hellwig <hch@lst.de>,
+	Robin Murphy <robin.murphy@arm.com>,
+	Marek Szyprowski <m.szyprowski@samsung.com>,
+	Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
+	Chaitanya Kulkarni <chaitanyak@nvidia.com>,
+	"Brost, Matthew" <matthew.brost@intel.com>,
+	"Hellstrom, Thomas" <thomas.hellstrom@intel.com>,
+	Jonathan Corbet <corbet@lwn.net>, Jens Axboe <axboe@kernel.dk>,
+	Keith Busch <kbusch@kernel.org>, Sagi Grimberg <sagi@grimberg.me>,
+	Yishai Hadas <yishaih@nvidia.com>,
+	Shameer Kolothum <shameerali.kolothum.thodi@huawei.com>,
+	"Tian, Kevin" <kevin.tian@intel.com>,
+	Alex Williamson <alex.williamson@redhat.com>,
+	=?iso-8859-1?B?Suly9G1l?= Glisse <jglisse@redhat.com>,
+	Andrew Morton <akpm@linux-foundation.org>,
+	"linux-doc@vger.kernel.org" <linux-doc@vger.kernel.org>,
+	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+	"linux-block@vger.kernel.org" <linux-block@vger.kernel.org>,
+	"linux-rdma@vger.kernel.org" <linux-rdma@vger.kernel.org>,
+	"iommu@lists.linux.dev" <iommu@lists.linux.dev>,
+	"linux-nvme@lists.infradead.org" <linux-nvme@lists.infradead.org>,
+	"kvm@vger.kernel.org" <kvm@vger.kernel.org>,
+	"linux-mm@kvack.org" <linux-mm@kvack.org>,
+	Bart Van Assche <bvanassche@acm.org>,
+	Damien Le Moal <damien.lemoal@opensource.wdc.com>,
+	Amir Goldstein <amir73il@gmail.com>,
+	"josef@toxicpanda.com" <josef@toxicpanda.com>,
+	"Martin K. Petersen" <martin.petersen@oracle.com>,
+	"daniel@iogearbox.net" <daniel@iogearbox.net>,
+	"Williams, Dan J" <dan.j.williams@intel.com>,
+	"jack@suse.com" <jack@suse.com>, Zhu Yanjun <zyjzyj2000@gmail.com>,
+	"Bommu, Krishnaiah" <krishnaiah.bommu@intel.com>,
+	"Ghimiray, Himal Prasad" <himal.prasad.ghimiray@intel.com>
+Subject: Re: [RFC RESEND 00/16] Split IOMMU DMA mapping operation to two steps
+Message-ID: <20240611191121.GD4966@unreal>
+References: <cover.1709635535.git.leon@kernel.org>
+ <SA1PR11MB6991CB2B1398948F4241E51992182@SA1PR11MB6991.namprd11.prod.outlook.com>
+ <20240503164239.GB901876@ziepe.ca>
+ <PH7PR11MB70047236290DC1CFF9150B8592C62@PH7PR11MB7004.namprd11.prod.outlook.com>
+ <20240610161826.GA4966@unreal>
+ <PH7PR11MB7004A071F27B4CF45740B87E92C62@PH7PR11MB7004.namprd11.prod.outlook.com>
+ <20240610172501.GJ791043@ziepe.ca>
+ <PH7PR11MB7004DDE9816D92F690A5C0B692C62@PH7PR11MB7004.namprd11.prod.outlook.com>
+ <20240611154515.GC4966@unreal>
+ <SA1PR11MB69915818E4DC6FFAD620D62C92C72@SA1PR11MB6991.namprd11.prod.outlook.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <20240605121713.3596499-1-quic_bibekkum@quicinc.com> <20240605121713.3596499-7-quic_bibekkum@quicinc.com>
-In-Reply-To: <20240605121713.3596499-7-quic_bibekkum@quicinc.com>
-From: Rob Clark <robdclark@gmail.com>
-Date: Tue, 11 Jun 2024 12:02:39 -0700
-Message-ID: <CAF6AEGtSCfQVtNTmwB4Jkec5rDmZsr59z2717H76kwWu0wovsw@mail.gmail.com>
-Subject: Re: [PATCH v11 6/6] iommu/arm-smmu: add support for PRR bit setup
-To: Bibek Kumar Patro <quic_bibekkum@quicinc.com>
-Cc: will@kernel.org, robin.murphy@arm.com, joro@8bytes.org, jgg@ziepe.ca, 
-	jsnitsel@redhat.com, robh@kernel.org, krzysztof.kozlowski@linaro.org, 
-	quic_c_gdjako@quicinc.com, dmitry.baryshkov@linaro.org, 
-	konrad.dybcio@linaro.org, iommu@lists.linux.dev, 
-	linux-arm-msm@vger.kernel.org, linux-arm-kernel@lists.infradead.org, 
-	linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <SA1PR11MB69915818E4DC6FFAD620D62C92C72@SA1PR11MB6991.namprd11.prod.outlook.com>
 
-On Wed, Jun 5, 2024 at 5:18=E2=80=AFAM Bibek Kumar Patro
-<quic_bibekkum@quicinc.com> wrote:
->
-> Add an adreno-smmu-priv interface for drm/msm to call
-> into arm-smmu-qcom and initiate the PRR bit setup or reset
-> sequence as per request.
->
-> This will be used by GPU side to setup the PRR bit and
-> related configuration registers through adreno-smmu private
-> interface instead of directly poking the smmu hardware.
->
-> Signed-off-by: Bibek Kumar Patro <quic_bibekkum@quicinc.com>
-> ---
->  drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c | 21 +++++++++++++++++++++
->  drivers/iommu/arm/arm-smmu/arm-smmu.h      |  2 ++
->  include/linux/adreno-smmu-priv.h           |  5 ++++-
->  3 files changed, 27 insertions(+), 1 deletion(-)
->
-> diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c b/drivers/iommu/a=
-rm/arm-smmu/arm-smmu-qcom.c
-> index 8dabc26fa10e..2f4ee22f740a 100644
-> --- a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
-> +++ b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
-> @@ -28,6 +28,7 @@
->  #define PREFETCH_SHALLOW       (1 << PREFETCH_SHIFT)
->  #define PREFETCH_MODERATE      (2 << PREFETCH_SHIFT)
->  #define PREFETCH_DEEP          (3 << PREFETCH_SHIFT)
-> +#define GFX_ACTLR_PRR          (1 << 5)
->
->  static const struct actlr_config sc7280_apps_actlr_cfg[] =3D {
->         { 0x0800, 0x24e1, PREFETCH_DEFAULT | CMTLB },
-> @@ -212,6 +213,25 @@ static void qcom_adreno_smmu_resume_translation(cons=
-t void *cookie, bool termina
->         arm_smmu_cb_write(smmu, cfg->cbndx, ARM_SMMU_CB_RESUME, reg);
->  }
->
-> +static void qcom_adreno_smmu_set_actlr_bit(const void *cookie, phys_addr=
-_t page_addr, bool set)
-> +{
+On Tue, Jun 11, 2024 at 06:26:23PM +0000, Zeng, Oak wrote:
+> Thank you Leon. That is helpful.
+> 
+> I also have another very naïve question. I don't understand what is the iova address. I previously thought the iova address space is the same as the dma_address space when iommu is involved. I thought the dma_alloc_iova would allocate some contiguous iova address range and later dma_link_range function would link a physical page to the iova address and return the iova address. In other words, I thought the dma_address is iova address, and the iommu page table translate a dma_address or iova address to the physical address.
 
-_set_actlr_bit() is a bit more of an implementation detail.  Maybe
-_set_prr() would be a better name?
+This is right understanding.
 
-Also, the version of this patch that I typed up (but haven't sent to
-list yet) took a `struct page *` instead of a phys_addr_t.. passing
-NULL would disable PRR, so I didn't need the third arg
+> 
+> But from my print below, my above understanding is obviously wrong: the iova.dma_addr is 0 and the dma_address returned from dma_link_range is none zero... Can you help me what is iova address? Is iova address iommu related? Since dma_link_range returns a non-iova address, does this function allocate the dma-address itself? Is dma-address correlated with iova address?
 
-> +       struct arm_smmu_domain *smmu_domain =3D (void *)cookie;
-> +       struct arm_smmu_cfg *cfg =3D &smmu_domain->cfg;
-> +       struct arm_smmu_device *smmu =3D smmu_domain->smmu;
-> +       u32 reg =3D 0;
-> +
-> +       writel_relaxed(lower_32_bits(page_addr),
-> +                               (void *)smmu->ioaddr + ARM_SMMU_GFX_PRR_C=
-FG_LADDR);
-> +
-> +       writel_relaxed(upper_32_bits(page_addr),
-> +                               (void *)smmu->ioaddr + ARM_SMMU_GFX_PRR_C=
-FG_UADDR);
+This is a combination of two things:
+1. Need to support HMM specific logic
+2. Outcome of v0 version where I implemented dma_link_range() to perform fallback to DMA direct mode. See patch 2 and 3.
+https://lore.kernel.org/all/54a3554639bfb963c9919c5d7c1f449021bebdb3.1709635535.git.leon@kernel.org/
+https://lore.kernel.org/all/f1049f0fc280288ae2f0c1e02388cde91b0f7876.1709635535.git.leon@kernel.org/
 
-I know downstream writes it as upper+lower, but I'd guess we could
-just writeq, couldn't we?
+So dma-iova == 0 means that you are working in direct mode and not with IOMMU, e.g. you can translate from physical address
+to DMA address by simple call to phys_to_dma().
 
-> +
-> +       reg =3D  arm_smmu_cb_read(smmu, cfg->cbndx, ARM_SMMU_CB_ACTLR);
-> +       reg |=3D FIELD_PREP(GFX_ACTLR_PRR, set ? 1 : 0);
+One of the comments was that it is not desired behaviour and I need to
+create separate functions that will be in use only when IOMMU is used.
 
-this won't clear the ENABLE_PRR bit if we try to disable it after
-enabling (unless this bit is read-as-zero
+See the difference between v0 and v1 for dma_link_range() function.
+v0: https://lore.kernel.org/all/f1049f0fc280288ae2f0c1e02388cde91b0f7876.1709635535.git.leon@kernel.org/
+v1: https://git.kernel.org/pub/scm/linux/kernel/git/leon/linux-rdma.git/commit/?h=dma-split-v1&id=5aa29f2620ef86ac58c17a0297929a0b9e8d7790
 
-Also, can we give a name to PRR?  I'm guessing it is something like
-physical-range-remap?
+And HMM variant of dma_link_range() function, which saves from you the
+need to copy/paste same HMM logic from RDMA to DRM.
+https://git.kernel.org/pub/scm/linux/kernel/git/leon/linux-rdma.git/commit/?h=dma-split-v1&id=4d8d8d4fbe7891b1412f03ecaff88bc492e2e4eb
 
-BR,
--R
+Thanks
 
-> +       arm_smmu_cb_write(smmu, cfg->cbndx, ARM_SMMU_CB_ACTLR, reg);
-> +
-> +}
-> +
->  #define QCOM_ADRENO_SMMU_GPU_SID 0
->
->  static bool qcom_adreno_smmu_is_gpu_device(struct device *dev)
-> @@ -384,6 +404,7 @@ static int qcom_adreno_smmu_init_context(struct arm_s=
-mmu_domain *smmu_domain,
->         priv->get_fault_info =3D qcom_adreno_smmu_get_fault_info;
->         priv->set_stall =3D qcom_adreno_smmu_set_stall;
->         priv->resume_translation =3D qcom_adreno_smmu_resume_translation;
-> +       priv->set_actlr_bit =3D qcom_adreno_smmu_set_actlr_bit;
->
->         actlrvar =3D qsmmu->data->actlrvar;
->         if (!actlrvar)
-> diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu.h b/drivers/iommu/arm/ar=
-m-smmu/arm-smmu.h
-> index d9c2ef8c1653..3076bef49e20 100644
-> --- a/drivers/iommu/arm/arm-smmu/arm-smmu.h
-> +++ b/drivers/iommu/arm/arm-smmu/arm-smmu.h
-> @@ -154,6 +154,8 @@ enum arm_smmu_cbar_type {
->  #define ARM_SMMU_SCTLR_M               BIT(0)
->
->  #define ARM_SMMU_CB_ACTLR              0x4
-> +#define ARM_SMMU_GFX_PRR_CFG_LADDR     0x6008
-> +#define ARM_SMMU_GFX_PRR_CFG_UADDR     0x600C
->
->  #define ARM_SMMU_CB_RESUME             0x8
->  #define ARM_SMMU_RESUME_TERMINATE      BIT(0)
-> diff --git a/include/linux/adreno-smmu-priv.h b/include/linux/adreno-smmu=
--priv.h
-> index c637e0997f6d..448e191eeb52 100644
-> --- a/include/linux/adreno-smmu-priv.h
-> +++ b/include/linux/adreno-smmu-priv.h
-> @@ -49,7 +49,9 @@ struct adreno_smmu_fault_info {
->   *                 before set_ttbr0_cfg().  If stalling on fault is enab=
-led,
->   *                 the GPU driver must call resume_translation()
->   * @resume_translation: Resume translation after a fault
-> - *
-> + * @set_actlr_bits: Extendible interface to be used  by GPU to modify th=
-e
-> + *                 ACTLR bits, currently used to intitate PRR bit setup =
-or
-> + *                 reset sequence for ACTLR registers as requested.
->   *
->   * The GPU driver (drm/msm) and adreno-smmu work together for controllin=
-g
->   * the GPU's SMMU instance.  This is by necessity, as the GPU is directl=
-y
-> @@ -67,6 +69,7 @@ struct adreno_smmu_priv {
->      void (*get_fault_info)(const void *cookie, struct adreno_smmu_fault_=
-info *info);
->      void (*set_stall)(const void *cookie, bool enabled);
->      void (*resume_translation)(const void *cookie, bool terminate);
-> +    void (*set_actlr_bit)(const void *cookie, phys_addr_t page_addr, boo=
-l set);
->  };
->
->  #endif /* __ADRENO_SMMU_PRIV_H */
-> --
-> 2.34.1
->
+> 
+> Oak 
+> 
+> > -----Original Message-----
+> > From: Leon Romanovsky <leon@kernel.org>
+> > Sent: Tuesday, June 11, 2024 11:45 AM
+> > To: Zeng, Oak <oak.zeng@intel.com>
+> > Cc: Jason Gunthorpe <jgg@ziepe.ca>; Christoph Hellwig <hch@lst.de>; Robin
+> > Murphy <robin.murphy@arm.com>; Marek Szyprowski
+> > <m.szyprowski@samsung.com>; Joerg Roedel <joro@8bytes.org>; Will
+> > Deacon <will@kernel.org>; Chaitanya Kulkarni <chaitanyak@nvidia.com>;
+> > Brost, Matthew <matthew.brost@intel.com>; Hellstrom, Thomas
+> > <thomas.hellstrom@intel.com>; Jonathan Corbet <corbet@lwn.net>; Jens
+> > Axboe <axboe@kernel.dk>; Keith Busch <kbusch@kernel.org>; Sagi
+> > Grimberg <sagi@grimberg.me>; Yishai Hadas <yishaih@nvidia.com>;
+> > Shameer Kolothum <shameerali.kolothum.thodi@huawei.com>; Tian, Kevin
+> > <kevin.tian@intel.com>; Alex Williamson <alex.williamson@redhat.com>;
+> > Jérôme Glisse <jglisse@redhat.com>; Andrew Morton <akpm@linux-
+> > foundation.org>; linux-doc@vger.kernel.org; linux-kernel@vger.kernel.org;
+> > linux-block@vger.kernel.org; linux-rdma@vger.kernel.org;
+> > iommu@lists.linux.dev; linux-nvme@lists.infradead.org;
+> > kvm@vger.kernel.org; linux-mm@kvack.org; Bart Van Assche
+> > <bvanassche@acm.org>; Damien Le Moal
+> > <damien.lemoal@opensource.wdc.com>; Amir Goldstein
+> > <amir73il@gmail.com>; josef@toxicpanda.com; Martin K. Petersen
+> > <martin.petersen@oracle.com>; daniel@iogearbox.net; Williams, Dan J
+> > <dan.j.williams@intel.com>; jack@suse.com; Zhu Yanjun
+> > <zyjzyj2000@gmail.com>; Bommu, Krishnaiah
+> > <krishnaiah.bommu@intel.com>; Ghimiray, Himal Prasad
+> > <himal.prasad.ghimiray@intel.com>
+> > Subject: Re: [RFC RESEND 00/16] Split IOMMU DMA mapping operation to
+> > two steps
+> > 
+> > On Mon, Jun 10, 2024 at 09:28:04PM +0000, Zeng, Oak wrote:
+> > > Hi Jason, Leon,
+> > >
+> > > I was able to fix the issue from my side. Things work fine now. I got two
+> > questions though:
+> > >
+> > > 1) The value returned from dma_link_range function is not contiguous, see
+> > below print. The "linked pa" is the function return.
+> > > I think dma_map_sgtable API would return some contiguous dma address.
+> > Is the dma-map_sgtable api is more efficient regarding the iommu page table?
+> > i.e., try to use bigger page size, such as use 2M page size when it is possible.
+> > With your new API, does it also have such consideration? I vaguely
+> > remembered Jason mentioned such thing, but my print below doesn't look
+> > like so. Maybe I need to test bigger range (only 16 pages range in the test of
+> > below printing). Comment?
+> > 
+> > My API gives you the flexibility to use any page size you want. You can
+> > use 2M pages instead of 4K pages. The API doesn't enforce any page size.
+> > 
+> > >
+> > > [17584.665126] drm_svm_hmmptr_map_dma_pages iova.dma_addr = 0x0,
+> > linked pa = 18ef3f000
+> > > [17584.665146] drm_svm_hmmptr_map_dma_pages iova.dma_addr = 0x0,
+> > linked pa = 190d00000
+> > > [17584.665150] drm_svm_hmmptr_map_dma_pages iova.dma_addr = 0x0,
+> > linked pa = 190024000
+> > > [17584.665153] drm_svm_hmmptr_map_dma_pages iova.dma_addr = 0x0,
+> > linked pa = 178e89000
+> > >
+> > > 2) in the comment of dma_link_range function, it is said: " @dma_offset
+> > needs to be advanced by the caller with the size of previous page that was
+> > linked + DMA address returned for the previous page".
+> > > Is this description correct? I don't understand the part "+ DMA address
+> > returned for the previous page ".
+> > > In my codes, let's say I call this function to link 10 pages, the first
+> > dma_offset is 0, second is 4k, third 8k. This worked for me. I didn't add the
+> > previously returned dma address.
+> > > Maybe I need more test. But any comment?
+> > 
+> > You did it perfectly right. This is the correct way to advance dma_offset.
+> > 
+> > Thanks
+> > 
+> > >
+> > > Thanks,
+> > > Oak
+> > >
+> > > > -----Original Message-----
+> > > > From: Jason Gunthorpe <jgg@ziepe.ca>
+> > > > Sent: Monday, June 10, 2024 1:25 PM
+> > > > To: Zeng, Oak <oak.zeng@intel.com>
+> > > > Cc: Leon Romanovsky <leon@kernel.org>; Christoph Hellwig
+> > <hch@lst.de>;
+> > > > Robin Murphy <robin.murphy@arm.com>; Marek Szyprowski
+> > > > <m.szyprowski@samsung.com>; Joerg Roedel <joro@8bytes.org>; Will
+> > > > Deacon <will@kernel.org>; Chaitanya Kulkarni <chaitanyak@nvidia.com>;
+> > > > Brost, Matthew <matthew.brost@intel.com>; Hellstrom, Thomas
+> > > > <thomas.hellstrom@intel.com>; Jonathan Corbet <corbet@lwn.net>;
+> > Jens
+> > > > Axboe <axboe@kernel.dk>; Keith Busch <kbusch@kernel.org>; Sagi
+> > > > Grimberg <sagi@grimberg.me>; Yishai Hadas <yishaih@nvidia.com>;
+> > > > Shameer Kolothum <shameerali.kolothum.thodi@huawei.com>; Tian,
+> > Kevin
+> > > > <kevin.tian@intel.com>; Alex Williamson <alex.williamson@redhat.com>;
+> > > > Jérôme Glisse <jglisse@redhat.com>; Andrew Morton <akpm@linux-
+> > > > foundation.org>; linux-doc@vger.kernel.org; linux-
+> > kernel@vger.kernel.org;
+> > > > linux-block@vger.kernel.org; linux-rdma@vger.kernel.org;
+> > > > iommu@lists.linux.dev; linux-nvme@lists.infradead.org;
+> > > > kvm@vger.kernel.org; linux-mm@kvack.org; Bart Van Assche
+> > > > <bvanassche@acm.org>; Damien Le Moal
+> > > > <damien.lemoal@opensource.wdc.com>; Amir Goldstein
+> > > > <amir73il@gmail.com>; josef@toxicpanda.com; Martin K. Petersen
+> > > > <martin.petersen@oracle.com>; daniel@iogearbox.net; Williams, Dan J
+> > > > <dan.j.williams@intel.com>; jack@suse.com; Zhu Yanjun
+> > > > <zyjzyj2000@gmail.com>; Bommu, Krishnaiah
+> > > > <krishnaiah.bommu@intel.com>; Ghimiray, Himal Prasad
+> > > > <himal.prasad.ghimiray@intel.com>
+> > > > Subject: Re: [RFC RESEND 00/16] Split IOMMU DMA mapping operation to
+> > > > two steps
+> > > >
+> > > > On Mon, Jun 10, 2024 at 04:40:19PM +0000, Zeng, Oak wrote:
+> > > > > Thanks Leon and Yanjun for the reply!
+> > > > >
+> > > > > Based on the reply, we will continue use the current version for
+> > > > > test (as it is tested for vfio and rdma). We will switch to v1 once
+> > > > > it is fully tested/reviewed.
+> > > >
+> > > > I'm glad you are finding it useful, one of my interests with this work
+> > > > is to improve all the HMM users.
+> > > >
+> > > > Jason
+> 
