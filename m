@@ -1,178 +1,149 @@
-Received: from mail-pj1-f49.google.com (mail-pj1-f49.google.com [209.85.216.49])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from NAM12-MW2-obe.outbound.protection.outlook.com (mail-mw2nam12on2043.outbound.protection.outlook.com [40.107.244.43])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D2B094C81
-	for <iommu@lists.linux.dev>; Tue, 11 Jun 2024 02:00:45 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.216.49
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1718071247; cv=none; b=JKcuAumF4tB2VMKSFPpE9bioa5u796Ur1ieYdKdU+WcbUsLLpCrLBiJ20UPWUC62OZ6K39z3pqcUg/McdjOBHBvgD4N8syxF/5L7b28i9Avm10xwWUnJHjhoaE1GtpFudMMIV/9xh+GHkHZznMC29B/6zQSnTN0mwRtHGxTUeJs=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1718071247; c=relaxed/simple;
-	bh=+DSf+TQt/ykv0XritXEDrZm1XQB4nWMsT88cdtUciK4=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=cUFLWzH3ebfsyUFdyeyTiamISY/kA5U1swRqG13exKbZocU4zuwciXLxMclbzFYQ9PssyPkG+KjP/zMBngp8y8DCklh3fgyM8TxuLKjWV1nMqVRZaNhYwdQi8BeWCOIQ2QOfRkZFNIf3vB9mjkJZnAh8bchXSN9zKwwgqujdkUs=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=rivosinc.com; spf=pass smtp.mailfrom=rivosinc.com; dkim=pass (2048-bit key) header.d=rivosinc-com.20230601.gappssmtp.com header.i=@rivosinc-com.20230601.gappssmtp.com header.b=YnTxtl0f; arc=none smtp.client-ip=209.85.216.49
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=rivosinc.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=rivosinc.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 507AEAD49;
+	Tue, 11 Jun 2024 02:01:14 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.244.43
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1718071276; cv=fail; b=PcHQ82eUh6JxQXEqtH9BhMTPqLqwiYLMCenbAGPsvd/RpvZqfEEWFpJHj00YimZU8S6Gw1iy8YrWPErhQm75hqUaKHBaikjdJLjptzXiZsmJlzqsSK6kY21Dl2tNsjRjdApnVv1smtiC2wFBFPm3vOdVkLJ67zzF+OL3JOBv8hM=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1718071276; c=relaxed/simple;
+	bh=EtEsNZpMIATnzw5obcBG8/4jg00hHG8LTYNlzwy2H6w=;
+	h=Date:From:To:CC:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=XP7fm4jSg3RRvUKfMVia15Zli2tSgnXIExfq25Y+i7CYmLmpCYBQ2t+Je1NOo83HEZXMTosjYR65OA23dwbZcjpICaSjfwxTKY6TuH7apbQFEMM6+p4oFXF9bng5vmv0JdJ/+ElhZlMDtG2q/5S15305zWXWW6bhPzbD8UxKklQ=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=DLZjyE46; arc=fail smtp.client-ip=40.107.244.43
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=rivosinc-com.20230601.gappssmtp.com header.i=@rivosinc-com.20230601.gappssmtp.com header.b="YnTxtl0f"
-Received: by mail-pj1-f49.google.com with SMTP id 98e67ed59e1d1-2c2f8f73010so1662810a91.1
-        for <iommu@lists.linux.dev>; Mon, 10 Jun 2024 19:00:45 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=rivosinc-com.20230601.gappssmtp.com; s=20230601; t=1718071245; x=1718676045; darn=lists.linux.dev;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=+DSf+TQt/ykv0XritXEDrZm1XQB4nWMsT88cdtUciK4=;
-        b=YnTxtl0fh9fZxdtSbfBi6aNtT8Bej2WDoM4oFdrBqH1ClSwZUDhEuIWhwtqKyBKrqR
-         sIfKVIw64tjQxkuoIJmYExVnBOPoyXpfLawLlTA8Thy5S5cb+RabkRyCY2R2i03BtS64
-         bcy+tg9g/o+Qxmp+0I3aTrB5CAMo9qkRRGOrvf4Ek40ohcR4dSqTNrkEJnuN8v/4esM9
-         nQ+csSGPsyot97R/s6uXsOlTaH81BFqWXX1bV8W8tp12RvPLrNmDX/hPsFy3IFOxA9K9
-         kTOSjdOc/5706xzBcdi/XW3IbJG3fFNW5Y5xrnBEsQIZMymsBPfRPSu08l4Ha54WT9l2
-         NORg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1718071245; x=1718676045;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=+DSf+TQt/ykv0XritXEDrZm1XQB4nWMsT88cdtUciK4=;
-        b=dtJaMseP5cQSFEkjl+s6RV2AqrjoFatJCChh3DchTi05anu4g+KwHfrpCqpsPVPbzu
-         WEBIsTxPeDB9SYW+VEblqbc7HNB91GFJp/Vl0br92KeQ22KZDZ5ghM4uOjmRgIwSXV12
-         XKMErxcy/dfpD7Ib0p9SgAsZ0G2EjC58gznoKxdA5dEfjx4WcWRnl7JY6jnm+bIPIpgQ
-         /ynDECDvrWU9jiW1WzjO9nkKOb4mxHgh52340MmZ6A91742ewK3ORmz5F4KOQ/L7Wi/S
-         6xHc1YB4weGzDJNHkVVnzIcUI4xSC7iGGXIvjNPRIuUiDw89dK5+8CdX7RnhHCkqd/7z
-         duEQ==
-X-Forwarded-Encrypted: i=1; AJvYcCWaZi8d30qX5HrBksV1DSTo5WIcOmYNW4lIKwn3ROvSWj0pBzG/vrBysFZ4HfZOyYbZa4lIKUr8Fg2EyGRh1mQiH1AkSKs=
-X-Gm-Message-State: AOJu0YyTiqYbfSQivI1KqbmsyYobZyfdcmZa2knOjzpga5AGGCEIuj7u
-	6Lq54W+X+TOajdF3UxrBw02fwiG0vckGyqxCWPb1hJSV8AkxCp13Hw91qaNtnh08rwZ+2VIdyFw
-	Qp/a3dzQu7Q5ycvdPr5gF97yhdCzgBspbIzZKnw==
-X-Google-Smtp-Source: AGHT+IFaEf66/Vg3vZYbnuRls+xXc/YHx5d34274xkIrynnlPOHBe1Yws9C0iL9BtwTmDzbsneqNZTkOP1VlcYJjqz4=
-X-Received: by 2002:a17:90a:12c2:b0:2c2:5341:7ed6 with SMTP id
- 98e67ed59e1d1-2c2bcc5a26emr10217116a91.38.1718071245048; Mon, 10 Jun 2024
- 19:00:45 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="DLZjyE46"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=jwMhcOYdstWulnf5UAm8mZEEwc7yjCPP+W1B2RE9AO0kJaI88dt6bwPOkXcQky3B7mrqjtYbt5IaIckXeSF7BljJb7Tq5T/GEwoumUfa2Y/yV9XuTAEOePo5ME+n1ChlZsxV+5IBZsDsOQF5f+1T73eLhdoBHynZ1uGOHrtilibOb1tDC5CG5nFt9R+dqfylsT8ptfLY0Gq/92ghZ7vG9snKRRaxLy98ecGTyfiv6DzATSETpmccQzWY7vFFMOBtGa9T7FjtsWT8qgFrnsfqpBCNu1rWSePJqvfWaHixwqw871HkrtttMcb4E96Ld7DkampM+qMF4cypS2Vwr1g3Ww==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=SmY2EioeeuiIvGDFFpqJowOQZlRVs8i0fHN8cFLqjmY=;
+ b=knYDP/lZ4IygXJbJ0Vxfm4K5yS744Rb80z3wqKp0S917V3nYYSZk+uB4fXklwfOlS353WvzMsCedleSp/L9Awrax9meSXmnJZY9gaarD1yYtqSrAUt0boYomCGDM8dK1Eg6tSNEWO+jL/RcLfEh/5cwDtr+lGXqMDqoIXK6w5J/vMJ/9d2qqorSIy1z169dmbCTUHziSTp3d7Z+yQKxmxDuc/SaVbCC/j8xTilqhSeVAgV/284KDatk0uuK/c2NtyLbGFGD+hIV1Dlfpopbk6k6Sa9w2dooe1irQhqU297xmSknLFt0cyvGtZ68hbfXkbOeBAJnQv9zx0tXAfg/h/w==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 216.228.117.160) smtp.rcpttodomain=lists.linux.dev smtp.mailfrom=nvidia.com;
+ dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
+ dkim=none (message not signed); arc=none (0)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=SmY2EioeeuiIvGDFFpqJowOQZlRVs8i0fHN8cFLqjmY=;
+ b=DLZjyE46EvmaDj4SQKTkHqxzm9HLV3bwZ7ElB0uIsHEJgB4W1CMF+D9wE2Vz9NfihptOVgNNydO926hezXyC+9My0M2UckPXVBiXIQ8H+AOL/lxcMKAwxrzAMspBUdBgvtlPF+26tkiAk+6cUPFkJ9MfNagVL/rh/M3wy6L5nZKZR8FCkJ4u8iXeTvyhqu8BG5nq6uQr/GURslYq5mzIKftBtclcjwC4/7Hj2kAwbXxo6VBV95ANpCACQbRc30TO55gu59dQgVoPQtrAuoDAa0VUfaqeW3hrN4/cJdYKHqn1SCuk4Rllq3TWo7xUAUc2sdnHfqLkfnuB+PDokB8R9A==
+Received: from MN2PR15CA0049.namprd15.prod.outlook.com (2603:10b6:208:237::18)
+ by PH7PR12MB7138.namprd12.prod.outlook.com (2603:10b6:510:1ee::11) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7633.36; Tue, 11 Jun
+ 2024 02:01:11 +0000
+Received: from MN1PEPF0000ECD6.namprd02.prod.outlook.com
+ (2603:10b6:208:237:cafe::33) by MN2PR15CA0049.outlook.office365.com
+ (2603:10b6:208:237::18) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7656.25 via Frontend
+ Transport; Tue, 11 Jun 2024 02:01:11 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.117.160)
+ smtp.mailfrom=nvidia.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=nvidia.com;
+Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
+ 216.228.117.160 as permitted sender) receiver=protection.outlook.com;
+ client-ip=216.228.117.160; helo=mail.nvidia.com; pr=C
+Received: from mail.nvidia.com (216.228.117.160) by
+ MN1PEPF0000ECD6.mail.protection.outlook.com (10.167.242.135) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.7677.15 via Frontend Transport; Tue, 11 Jun 2024 02:01:10 +0000
+Received: from rnnvmail201.nvidia.com (10.129.68.8) by mail.nvidia.com
+ (10.129.200.66) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1544.4; Mon, 10 Jun
+ 2024 19:00:52 -0700
+Received: from rnnvmail204.nvidia.com (10.129.68.6) by rnnvmail201.nvidia.com
+ (10.129.68.8) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1544.4; Mon, 10 Jun
+ 2024 19:00:52 -0700
+Received: from Asurada-Nvidia (10.127.8.10) by mail.nvidia.com (10.129.68.6)
+ with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1544.4 via Frontend
+ Transport; Mon, 10 Jun 2024 19:00:51 -0700
+Date: Mon, 10 Jun 2024 19:00:50 -0700
+From: Nicolin Chen <nicolinc@nvidia.com>
+To: Jason Gunthorpe <jgg@nvidia.com>
+CC: <iommu@lists.linux.dev>, Joerg Roedel <joro@8bytes.org>,
+	<linux-arm-kernel@lists.infradead.org>, Robin Murphy <robin.murphy@arm.com>,
+	Will Deacon <will@kernel.org>, Michael Shavit <mshavit@google.com>,
+	<patches@lists.linux.dev>, Ryan Roberts <ryan.roberts@arm.com>, Mostafa Saleh
+	<smostafa@google.com>
+Subject: Re: [PATCH v2 03/10] iommu/arm-smmu-v3: Add
+ arm_smmu_strtab_l1/2_idx()
+Message-ID: <Zmev0oeUZ7yM2C+B@Asurada-Nvidia>
+References: <0-v2-318ed5f6983b+198f-smmuv3_tidy_jgg@nvidia.com>
+ <3-v2-318ed5f6983b+198f-smmuv3_tidy_jgg@nvidia.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <cover.1716578450.git.tjeznach@rivosinc.com> <e18ec8ac169ae7f76e9044c26d0768e6469bad19.1716578450.git.tjeznach@rivosinc.com>
- <CANXhq0p4gERQeROSCSKqxnRZq9-fGfmROGV8JZyqFaenNpnsLA@mail.gmail.com>
- <20240610174934.GM791043@ziepe.ca> <CAH2o1u4c6ttUWTb1zrc8DScDMuDJJYR-tTHCPYW_3FV4uuQDtA@mail.gmail.com>
- <20240610222051.GO791043@ziepe.ca>
-In-Reply-To: <20240610222051.GO791043@ziepe.ca>
-From: Tomasz Jeznach <tjeznach@rivosinc.com>
-Date: Mon, 10 Jun 2024 19:00:34 -0700
-Message-ID: <CAH2o1u7X2zu42ZYA9wBe4bmCXN9v+d6j9vo5DMifJA3BUew91w@mail.gmail.com>
-Subject: Re: [PATCH v6 5/7] iommu/riscv: Device directory management.
-To: Jason Gunthorpe <jgg@ziepe.ca>
-Cc: Zong Li <zong.li@sifive.com>, Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>, 
-	Robin Murphy <robin.murphy@arm.com>, Paul Walmsley <paul.walmsley@sifive.com>, 
-	Palmer Dabbelt <palmer@dabbelt.com>, Albert Ou <aou@eecs.berkeley.edu>, 
-	Anup Patel <apatel@ventanamicro.com>, Sunil V L <sunilvl@ventanamicro.com>, 
-	Nick Kossifidis <mick@ics.forth.gr>, Sebastien Boeuf <seb@rivosinc.com>, Rob Herring <robh+dt@kernel.org>, 
-	Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, devicetree@vger.kernel.org, 
-	iommu@lists.linux.dev, linux-riscv@lists.infradead.org, 
-	linux-kernel@vger.kernel.org, linux@rivosinc.com, 
-	Lu Baolu <baolu.lu@linux.intel.com>, Jim Shu <jim.shu@sifive.com>, 
-	Vincent Chen <vincent.chen@sifive.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: inline
+In-Reply-To: <3-v2-318ed5f6983b+198f-smmuv3_tidy_jgg@nvidia.com>
+X-NV-OnPremToCloud: ExternallySecured
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: MN1PEPF0000ECD6:EE_|PH7PR12MB7138:EE_
+X-MS-Office365-Filtering-Correlation-Id: 555d244f-a99c-4e96-c18a-08dc89ba5dbc
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam:
+	BCL:0;ARA:13230031|376005|36860700004|1800799015|82310400017;
+X-Microsoft-Antispam-Message-Info:
+	=?us-ascii?Q?+nfbE0BaPwS8zwFnpdS/obndgnmpkbwBNoIjQyO7yZaQl48jQkXrglEmczLd?=
+ =?us-ascii?Q?upWRmSMeTJ1c65pgWZg24AH6iKvyppLPkpcpWHgpGJP3OF3oCTzJ5uTQj3Hi?=
+ =?us-ascii?Q?EuDefjjrtSekB/IHOxurM9qse69CwDZbmy1vrrmt/Mmvos+OC8xclUdmHg4F?=
+ =?us-ascii?Q?PpavbV9orjTPS9GjJUSL6qgdNGoZsinS9Su18EaXqrcdqmlfOpImmhyJBk2p?=
+ =?us-ascii?Q?mdP50yWFS7k67QTOZWfgRJLWjbikH6eoLbgvqzNI/6hPurgPesu1vEgzdbNr?=
+ =?us-ascii?Q?ThAJRcgJdLT7Sgzm8FrSG97/D4qHBCLP9Qq591fgKdYacB8EWJ7f1e4O3DEh?=
+ =?us-ascii?Q?67JaR/6bGXzTHfdJiDqZA0CH0+MCaXxFFT1MZpddFWjFwc6BztiPy9/xnRzH?=
+ =?us-ascii?Q?++LfHnyMWP9Cp6MW7poJw+35SQf5HLiTqUt+7zUcTbx9wBK0YRUm4EsHokzV?=
+ =?us-ascii?Q?Ectva3H2KbNT6VcrHFoLMS/XK74YFuD3bOZv2OFX8SI0PBS2Ik1fnDF1Rx1p?=
+ =?us-ascii?Q?PnUoxXpDkJOdBif07EbA7+4EwtyRbSEtr9k9sQfPvUmy/udBffnNwtYZVXtu?=
+ =?us-ascii?Q?Cf4O6Cb9RuiOEV8w7+68Y3h3xBNAbHTH7RBllOXtpwqMR7/4XEC8oVTpE3A4?=
+ =?us-ascii?Q?+BjZIUdZKAZYNZc+saB4yfoSLNNFnTnhm40pLtH6G8RbxKlLrphHwCty/wjB?=
+ =?us-ascii?Q?RDIJlhIC1unvBPa2pNcbFfefpK53Wo4O8sewOEEg7tdXgCHZ/8KvP4ONXfQ7?=
+ =?us-ascii?Q?6KTuCjv5yn/pzblxE8z0JJ5Ptq8A5pVhpHBP+K+bjBgEmnQW1RcJWK56Zpeh?=
+ =?us-ascii?Q?ZVL33mKRXZe8AAxRjsnnGqdT5Sq+ZwJLE8KWq2F0Yv/5O4WUXoA+nbL+h7Wx?=
+ =?us-ascii?Q?K2WNZR2b2THut+WZqhtCq1mOsdi73fD2uIzoZgo6geRQDr0dGEDtxAZtmyIG?=
+ =?us-ascii?Q?/oS4IpOynDAU0iHmliTiXWtbMrfDh0qwROtoROsT1WKrBwwVIf8IgSBSskKP?=
+ =?us-ascii?Q?1WqFAWZfJmvlaV72IdBckuOHKLYK1NCqPhmI00nRAfsc/YrUs6YAlyx8ZdCR?=
+ =?us-ascii?Q?FNI6VAmyt9GC9AVCpyv6D0l9Yp679/mMibxfQAk3EB7G0iMlcrtEbVDrMfUM?=
+ =?us-ascii?Q?ICSDUc3BpqA0+lV5U7ehzkfWkEmK1sZe39Ex6ruEs3BeoD1wIWYBz1DOEVLf?=
+ =?us-ascii?Q?VZx2Jq744eHoEVkqQ6y8rR+8M2MJXGsfyR1PrsyOXs/iFtalzYicQqrhKSKG?=
+ =?us-ascii?Q?bOPkAZUGzkymNAlonOHJfATzzSxmtBxWuhc5GiYMe7xskwLXkprmlN03qwu8?=
+ =?us-ascii?Q?xRZ2LwTTNPeP5zNfSAORWDRp3/vifa+ONhz/R4XcVF7qs740K4koHaDRrk7/?=
+ =?us-ascii?Q?CP0howLvCY78fi5VKVOfi8hBbeM5xzr5vfPCnBhVRWUnW6wGSg=3D=3D?=
+X-Forefront-Antispam-Report:
+	CIP:216.228.117.160;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc6edge1.nvidia.com;CAT:NONE;SFS:(13230031)(376005)(36860700004)(1800799015)(82310400017);DIR:OUT;SFP:1101;
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 11 Jun 2024 02:01:10.7466
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: 555d244f-a99c-4e96-c18a-08dc89ba5dbc
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.117.160];Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-AuthSource:
+	MN1PEPF0000ECD6.namprd02.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH7PR12MB7138
 
-On Mon, Jun 10, 2024 at 3:20=E2=80=AFPM Jason Gunthorpe <jgg@ziepe.ca> wrot=
-e:
->
-> On Mon, Jun 10, 2024 at 11:48:23AM -0700, Tomasz Jeznach wrote:
-> > > Right, this is why I asked about negative caching.
-> > >
-> > > The VMMs are a prime example of negative caching, in something like
-> > > the SMMU implementation the VMM will cache the V=3D0 STE until they s=
-ee
-> > > an invalidation.
-> > >
-> > > Driving the VMM shadowing/caching entirely off of the standard
-> > > invalidation mechanism is so much better than any other option.
-> > >
-> > > IMHO you should have the RISCV spec revised to allow negative caching
-> > > in any invalidated data structure to permit the typical VMM design
-> > > driven off of shadowing triggered by invalidation commands.
-> > >
-> > > Once the spec permits negative caching then the software would have t=
-o
-> > > invalidate after going V=3D0 -> V=3D1.
-> > >
-> > > Jason
-> >
-> > Allowing negative cacheing by the spec (e.g. for VMM use cases) and
-> > documenting required invalidation sequences would definitely help
-> > here.
->
-> Yes, you probably should really do that.
->
-> > I'm hesitating adding IODIR.INVAL that is not required by the
-> > spec [1],
->
-> If you expect to rapidly revise the spec then you should add it right
-> now so that all SW implementations that exist are
-> conforming. Otherwise you'll have compatability problems when you come
-> to implement nesting.
->
-> Obviously the VMM can't rely on a negative caching technique unless
-> the spec says it can.
->
-> > but this is something that can be controlled by a
-> > capabilities/feature bit once added to the specification or based on
-> > VID:DID of the emulated Risc-V IOMMU.
->
-> I'm not sure it really can. Once you start shipping SW people will run
-> it in a VM and the VMM will have to forever work without negative
-> caching.
->
-> My strong advice is to not expect the VMM trap random pages in guest
-> memory, that is a huge mess to implement and will delay your VMM side.
->
-> > Another option to consider for VMM is to utilize the WARL property of
-> > DDTP, and provide fixed location of the single level DDTP, pointing to
-> > MMIO region, where DDTE updates will result in vmm exit / fault
-> > handler. This will likely not be as efficient as IODIR.INVAL issued
-> > for any DDTE updates.
->
-> I don't know what all those things mean, but if you mean to have the
-> VMM supply faulting MMIO space that the VM is forced to put the DDTE
-> table into, then that would be better. It is still quite abnormal from
-> the VMM side..
->
-> My strong advice is to fix this. It is trivial to add the negative
-> caching language to the spec and will cause insignificant extra work
-> in this driver.
->
-> The gains on at least the ease of VMM implementation and architectural
-> similarity to other arches are well worth the effort. Otherwise I fear
-> it will be a struggle to get nesting support completed :(
->
-> Jason
->
+On Mon, Jun 10, 2024 at 09:31:12PM -0300, Jason Gunthorpe wrote:
+> Don't open code the calculations of the indexes for each level, provide
+> two functions to do that math and call them in all the places. Update all
+> the places computing indexes.
+> 
+> Calculate the L1 table size directly based on the max required index from
+> the cap. Remove STRTAB_L1_SZ_SHIFT in favour of STRTAB_NUM_L2_STES.
+> 
+> Use STRTAB_NUM_L2_STES to replace remaining open coded 1 << STRTAB_SPLIT.
+> 
+> Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
 
-Thanks for the comments, it definitely makes sense.
-
-We will revise the wording in the RISC-V IOMMU spec to note that
-certain implementations may require invalidating commands to be issued
-when making DDT entries valid, and device tree / ACPI may be used to
-report such requirement.
-
-For now, I'll change the implementation to assume negative caching for
-DDTE and will follow up with device tree / driver updates to make the
-invalidation optional when revised specifications will be available.
-
-Best,
-- Tomasz
-
-> --
-> You received this message because you are subscribed to the Google Groups=
- "linux" group.
-> To unsubscribe from this group and stop receiving emails from it, send an=
- email to linux+unsubscribe@rivosinc.com.
-> To view this discussion on the web visit https://groups.google.com/a/rivo=
-sinc.com/d/msgid/linux/20240610222051.GO791043%40ziepe.ca.
-> For more options, visit https://groups.google.com/a/rivosinc.com/d/optout=
-.
+Reviewed-by: Nicolin Chen <nicolinc@nvidia.com>
