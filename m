@@ -1,156 +1,200 @@
-Received: from NAM10-MW2-obe.outbound.protection.outlook.com (mail-mw2nam10on2045.outbound.protection.outlook.com [40.107.94.45])
+Received: from out-172.mta1.migadu.com (out-172.mta1.migadu.com [95.215.58.172])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D0EFA17D363
-	for <iommu@lists.linux.dev>; Wed, 12 Jun 2024 13:54:33 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.94.45
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1718200475; cv=fail; b=AcDkqwSUVHHCYovl3haettBMW0CSYLY9mak0SGV5PR568r9nyui6Lfdx8Kqj71suWUsWuBCL58ef9ItM+pUioaCKQsZj5wmLzndP/pk8OlYRFxho/XJvZ+JtgNuhnlOlPJMfdCBhApIC/V7j5pe1c4nJX5+p5UEo4JN0wORwr6I=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1718200475; c=relaxed/simple;
-	bh=100+TPjQ92lHC3ZBCTRXJk7HY5AiU8eS6PBFbVOfltY=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:Content-Type:
-	 Content-Disposition:In-Reply-To:MIME-Version; b=DkffzVOXm0Ck7Tk4Dn8TjgvalHOUP3DcDzdqrkbxdGgn6ZlA61eqaNG/n9rpgCjOdj+lqdVf1+qveoqDaWPRo3/rgKzbIQVie+6z9VjeVRFFYh30mE/vjX83hSW+nePCqbobt9b+UkPw8jflXd9OY7U3Kp8N54Ax3qAe4uVJKjE=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=SQlheANc; arc=fail smtp.client-ip=40.107.94.45
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A791717E456
+	for <iommu@lists.linux.dev>; Wed, 12 Jun 2024 14:24:26 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=95.215.58.172
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1718202268; cv=none; b=FMhAKKNludwNRgPOegoAlkCVjjUTIjgKLeDwvEd2OEXrhOrx2F64vQsp+Xf2KopJ4I4kHvBntoTChh94owK4r79H6PHjxY9zQzDyrSgaPlYedH2IlDl0r+z3B0RKy9+XFURDpjBby9EiKYxHra5tcOLAn9TaKPTNk1t32l7lBfQ=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1718202268; c=relaxed/simple;
+	bh=hqdCAfu6vTn5//idU2+5pKvAi77w1mVADDY6sbxvcy0=;
+	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=p+bwYmA4KWXD/fiE0AroDh/SyH+HMxjBAWf3Lf7VuOulz5IXq5eqwv/uRWvma7nx/ryiyG38ATQrWEx1DeyzD0OLE/os1pE6GJCKhMFi/kdCF1fmNag4bvq6mMJPi5pTRgTBupjA1KoGah4w7VSokpuxkoKPdTgeKSpU5gU5jrs=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=cknow.org; spf=pass smtp.mailfrom=cknow.org; dkim=pass (2048-bit key) header.d=cknow.org header.i=@cknow.org header.b=lfSuRqIh; arc=none smtp.client-ip=95.215.58.172
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=cknow.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=cknow.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="SQlheANc"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=ceTYghtj15KIH5PLnjbHp9B0woB2mWS66QRECxXVn1u55sRh+4ICmvgvk5W2JwzYEgcLorGZ8pn8AXzUsF2TuE3apFZu6LCKzUSwlCWiI4nSGpgozE7WOrgMm0cnWWrpKkXs9ck2oQJDhLsD3v7nadtLq65mKNH9wOSiygpWrBqmCqXj3hkm+6YtSgJVHTW0DPMYjtiSL84MvBuOqgfL3XBMgz24IfG2KHs4wM9nui20K88jH1TIn8o3fL5foypub+h+50V6yl9LoV9GwHw9BjXUVdsaYsGRz/PZIXw6LZ+IbdTrql8OT8y5RgPlJMFyVxiHTAn2Z0kEU9D2LCzs6g==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=100+TPjQ92lHC3ZBCTRXJk7HY5AiU8eS6PBFbVOfltY=;
- b=dAIC8GucIJFaYpoVbWv46WyPiMffl5QZ+Q24eFEI6SYZmBHXtpyy/bQAjKLNJ7QMJEW7oeATr91XqIG1ds5qZWCy47nTbGJ0ITSiE/mlJsP1qcTV1TZzuD7H5VWzNcPtj1lN3xsML2zyoiNEdtapI8rIVhyp8tNPaM8AqQigxtG0zZpimZ2UXmJ1Hm64upxeXZdV7K957eqdwgtji/MKszKki0fQ2RKKIFW+ff/9LAJuflnKuIVwhTWVL3Ph70KDmmMDndZikitVMJbqLbOb1+0HE2+Wru9xOft3AnToBR38m+LmqSRgpg9qrKEAVCaq45SSk3rDQrA4s2qEkxW+RA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=100+TPjQ92lHC3ZBCTRXJk7HY5AiU8eS6PBFbVOfltY=;
- b=SQlheANcZKw/Q3DuucPOPl70lbWEwr2c5BwcAPZl6TOt6yNDyiZizsjgS+OOOjGXqvys/0HtZYfAodPK6zoz6ndNqScLmw2brb7AedANz5flf8XSkLPYzjjeoeiobB63UjticVoMN1z4rP8ZJ1wXpQoTi9cpqO35GKgYhrzReRXFrVVBKO3isYBr/SSdinSxWwZ9bcFXIuXG7lI07LDGw7CkqMiaLTnq19te41I6eWHWXBNOh21tLBW4cvLasr1zv9TFKwungzqOA9c44W3hDuG9vs4VDUjVGRehQOXGfKz0TIZpMRh6HgpRot6+kGcSmd2MShZ0S+bE73JTfZcxFw==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-Received: from DM6PR12MB3849.namprd12.prod.outlook.com (2603:10b6:5:1c7::26)
- by CH2PR12MB4246.namprd12.prod.outlook.com (2603:10b6:610:a9::18) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7677.20; Wed, 12 Jun
- 2024 13:54:29 +0000
-Received: from DM6PR12MB3849.namprd12.prod.outlook.com
- ([fe80::c296:774b:a5fc:965e]) by DM6PR12MB3849.namprd12.prod.outlook.com
- ([fe80::c296:774b:a5fc:965e%4]) with mapi id 15.20.7633.036; Wed, 12 Jun 2024
- 13:54:29 +0000
-Date: Wed, 12 Jun 2024 10:54:26 -0300
-From: Jason Gunthorpe <jgg@nvidia.com>
-To: Lu Baolu <baolu.lu@linux.intel.com>
-Cc: Kevin Tian <kevin.tian@intel.com>, Joerg Roedel <joro@8bytes.org>,
-	Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
-	Jean-Philippe Brucker <jean-philippe@linaro.org>,
-	Nicolin Chen <nicolinc@nvidia.com>, Yi Liu <yi.l.liu@intel.com>,
-	Jacob Pan <jacob.jun.pan@linux.intel.com>,
-	Joel Granados <j.granados@samsung.com>, iommu@lists.linux.dev,
-	virtualization@lists.linux-foundation.org,
-	linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v6 00/10] IOMMUFD: Deliver IO page faults to user space
-Message-ID: <20240612135426.GA2151677@nvidia.com>
-References: <20240527040517.38561-1-baolu.lu@linux.intel.com>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20240527040517.38561-1-baolu.lu@linux.intel.com>
-X-ClientProxiedBy: MN2PR18CA0015.namprd18.prod.outlook.com
- (2603:10b6:208:23c::20) To DM6PR12MB3849.namprd12.prod.outlook.com
- (2603:10b6:5:1c7::26)
+	dkim=pass (2048-bit key) header.d=cknow.org header.i=@cknow.org header.b="lfSuRqIh"
+X-Envelope-To: joro@8bytes.org
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=cknow.org; s=key1;
+	t=1718202264;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 in-reply-to:in-reply-to:references:references;
+	bh=dpPWUTmJskkL811ZPGgtfh8tQuspDzkS2632APAKQFw=;
+	b=lfSuRqIhAXKLPwhZQmRblMlHj7Tj1mrbpRluGLYCIWYMVK+T2JJkVrdjj43/F9GkV7CMnW
+	UqtxVVjJYdz0rn60ei4ai17cv3isPimZrwn7AaKmTGCDKzsLKHUqLhPGW7Y1nfuqMNdgum
+	98FtYL2kwC0qsfhrDKk/QjUX06GWzb1hkwrTmAX+v39PJl2ySVT6GzjISsGdW2217+eanZ
+	tw0SWvRnexpB7waRtRhcegPFa1GMAJ2O6B11YByjXExKOXB6XbvrWPiXjvCOLjgH00IgCs
+	yWvuGyMRoKbIdmLfU+XBtXXGHUy+XjPu18ZTBT5W/BcUiqdRc8mfE5WHUW4VVw==
+X-Envelope-To: will@kernel.org
+X-Envelope-To: robin.murphy@arm.com
+X-Envelope-To: heiko@sntech.de
+X-Envelope-To: robh@kernel.org
+X-Envelope-To: krzk+dt@kernel.org
+X-Envelope-To: conor+dt@kernel.org
+X-Envelope-To: ogabbay@kernel.org
+X-Envelope-To: tomeu.vizoso@tomeuvizoso.net
+X-Envelope-To: airlied@gmail.com
+X-Envelope-To: daniel@ffwll.ch
+X-Envelope-To: maarten.lankhorst@linux.intel.com
+X-Envelope-To: mripard@kernel.org
+X-Envelope-To: tzimmermann@suse.de
+X-Envelope-To: p.zabel@pengutronix.de
+X-Envelope-To: sumit.semwal@linaro.org
+X-Envelope-To: christian.koenig@amd.com
+X-Envelope-To: linux-rockchip@lists.infradead.org
+X-Envelope-To: iommu@lists.linux.dev
+X-Envelope-To: linux-arm-kernel@lists.infradead.org
+X-Envelope-To: linux-rockchip@lists.infradead.org
+X-Envelope-To: linux-kernel@vger.kernel.org
+X-Envelope-To: devicetree@vger.kernel.org
+X-Envelope-To: dri-devel@lists.freedesktop.org
+X-Envelope-To: linux-media@vger.kernel.org
+X-Envelope-To: linaro-mm-sig@lists.linaro.org
+X-Envelope-To: tomeu@tomeuvizoso.net
+X-Envelope-To: tomeu@tomeuvizoso.net
+X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
+From: Diederik de Haas <didi.debian@cknow.org>
+To: Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
+ Robin Murphy <robin.murphy@arm.com>, Heiko Stuebner <heiko@sntech.de>,
+ Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>,
+ Conor Dooley <conor+dt@kernel.org>, Oded Gabbay <ogabbay@kernel.org>,
+ Tomeu Vizoso <tomeu.vizoso@tomeuvizoso.net>,
+ David Airlie <airlied@gmail.com>, Daniel Vetter <daniel@ffwll.ch>,
+ Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
+ Maxime Ripard <mripard@kernel.org>, Thomas Zimmermann <tzimmermann@suse.de>,
+ Philipp Zabel <p.zabel@pengutronix.de>,
+ Sumit Semwal <sumit.semwal@linaro.org>,
+ Christian =?ISO-8859-1?Q?K=F6nig?= <christian.koenig@amd.com>,
+ linux-rockchip@lists.infradead.org
+Cc: iommu@lists.linux.dev, linux-arm-kernel@lists.infradead.org,
+ linux-rockchip@lists.infradead.org, linux-kernel@vger.kernel.org,
+ devicetree@vger.kernel.org, dri-devel@lists.freedesktop.org,
+ linux-media@vger.kernel.org, linaro-mm-sig@lists.linaro.org,
+ Tomeu Vizoso <tomeu@tomeuvizoso.net>, Tomeu Vizoso <tomeu@tomeuvizoso.net>
+Subject:
+ Re: [PATCH 4/9] arm64: dts: rockchip: Add nodes for NPU and its MMU to
+ rk3588s
+Date: Wed, 12 Jun 2024 16:24:13 +0200
+Message-ID: <2746394.siuavCmBn6@bagend>
+Organization: Connecting Knowledge
+In-Reply-To: <20240612-6-10-rocket-v1-4-060e48eea250@tomeuvizoso.net>
+References:
+ <20240612-6-10-rocket-v1-0-060e48eea250@tomeuvizoso.net>
+ <20240612-6-10-rocket-v1-4-060e48eea250@tomeuvizoso.net>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: DM6PR12MB3849:EE_|CH2PR12MB4246:EE_
-X-MS-Office365-Filtering-Correlation-Id: 317af23a-7b58-492f-0358-08dc8ae72d92
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;ARA:13230032|376006|1800799016|7416006|366008;
-X-Microsoft-Antispam-Message-Info:
-	=?us-ascii?Q?wdhb4rntOohiIvlASN4symHdEARYDxnR1QeXHbr5k0VG9GKEOERj29okSf0J?=
- =?us-ascii?Q?GXDKrI85LEyz1nhs3z+a0CnH9hZNb+qg1AdYye7nKSdl2ZqhYZPcwDpawwbA?=
- =?us-ascii?Q?qil18UFFucmFgi87v7TF97u8Eu6bbwBed3ValK6vefWcg94E43hlZ7LmSm+s?=
- =?us-ascii?Q?mjeRSHknXT1wrJIPfsOsrNfEVuJFzkKTezns8Krz6FcEiDQljJicqWqNNjUq?=
- =?us-ascii?Q?RXcGHc3Xi1yTJb/Ah5deAYQCElOlv+zkOf5aBRMu4zZYpoK5RKFxf/t2arIo?=
- =?us-ascii?Q?TTQmvdHWXXfb62MbSrp4SSbLO0Bkgqw35oZEEFHoiZwVGcsOdDcirKe2N6nY?=
- =?us-ascii?Q?5ypQPF8bx8LXoKLXbFNuHq9JZUKRCI+/OeToAmUxPuooQycIKDkOWzmwoTLQ?=
- =?us-ascii?Q?Kr0qROWTJAx3Oqwinpv3qaTFJUT441X//pLc9f1mSBW6l4M1r/mp3/i34nTm?=
- =?us-ascii?Q?ZB73dlj9rsP41F3xBMdCQ+1kWwjjHeJngiWl8hGr5y6Kop04xaxZIl2jZALc?=
- =?us-ascii?Q?Vdr9pFJhKL6fsCifXevlbNISoUdbF4O/WfdExRqvoFLqUFQyiQceIrvf1lvg?=
- =?us-ascii?Q?c7rs7SiHEDew0KCkpBOvcbuoBld3xQnIDPhpgiYVBxNO78WZ0fvQj1k/6rR4?=
- =?us-ascii?Q?UjFWsFqY9mLei8z1YOb1ufQn94xtOSNslwQofqxTgMVa/6t1z6wlT1OahVN8?=
- =?us-ascii?Q?FT0fCCF7nuyijOly+BRJIwiKHjQhKD1tuO/daEEAEIGMO1wJJTEF/AfGHfD9?=
- =?us-ascii?Q?XMyK1k2nxlYxeZb6XjCRrDKUEAyzUnwdKDvAO2SiIOhnDYo4ap64Mrb9n8Om?=
- =?us-ascii?Q?idqn2TIOlRsdVlE+2PaMt1EAcw7AgJ3I/TPTpyWwVPCc0wP7Q79n/XxIWmmx?=
- =?us-ascii?Q?4R39SM5cHv1ybeUyfbQozIgfZ95pk4+cYSie8eGDT8vdYy77tYaTbrRXEgMy?=
- =?us-ascii?Q?dlr5x+iLj8bM/Wvu2sazLms2Z2WMs9YjxwNyyCtHKWks202QMYC+r7tcWQiO?=
- =?us-ascii?Q?8ujy4nLRTCsHLF+GggfjXsEenJYqOoKlGFg8Y38SOFi1Z3LuKowVkyT/hwwF?=
- =?us-ascii?Q?b2eFVyAtx2zteF8GQdkWcwlG6zS/PFyMpPrL/UEIxfmFG+3KY142Cyuz0Nmq?=
- =?us-ascii?Q?FuqxRHCpg6zXbe2BxPCkeuzLqi2beTz6QvCH5cE3uHHckl+ZEGsdt7xsq/TH?=
- =?us-ascii?Q?lYpt4xoT+Cnj89b6jNUrAYFMdSez+igXfgT3gV0qRcFfyAaNiLFh9ZvB43nA?=
- =?us-ascii?Q?K6bMUCG/OxevI+X2cQ3QzjxcgB5YtNSZux6UTBbAIk5ob9Cjuv6BSfkG7lbM?=
- =?us-ascii?Q?mhwo73fi3hVKGxLUXurbZ4bn?=
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM6PR12MB3849.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230032)(376006)(1800799016)(7416006)(366008);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?us-ascii?Q?nuFzw/YjqajmHWW1E90iS/ZPXPyFfyq1o45fBzfRQp76ebEi44J3cPRaP6fd?=
- =?us-ascii?Q?pxtA1WRHOvIpB1lXJS59b/wE9MFNJbcn0hoRzgL+qqp+2kAZhTLW42sjMeS8?=
- =?us-ascii?Q?Gn1vsLjclcqwg5fLfZ4sLhu6ykUIVBJm1iUQxn8p3izlGXBta/ylCx7yucjH?=
- =?us-ascii?Q?jk9Q9Bwx5I9cFbqAUTLXaNW89VdbdJGSQGYLo27syoTEcvR9WIu/p8Ar61QD?=
- =?us-ascii?Q?Hg1ibzLONW1tbGwbJJ88XgJqfhS5bPKQ0btzSu3WrFVXiIZUt/M93EiNcVBQ?=
- =?us-ascii?Q?wtQvq5YJktnMIpwU1CPnwjlUoOfSZIIqdgjJsUBYXu96gdzBmJ2dvsa68UYv?=
- =?us-ascii?Q?8cFohpYTR33NITwm/eibUPvP33klCzyQ6YQf8lp0hYKDJ6Y7UehWYIb+zwXo?=
- =?us-ascii?Q?Z8fCDx4KKdO4XWXbK+cy0BPrOd5DNoItQujISvx0tHZinIasTzHjq1I+dHTe?=
- =?us-ascii?Q?MZJmDX55qWZ4EsHvKNRnnt5h+zGG85DVkNU2AgvQZx7jqt3fBycpnXu9Zs4l?=
- =?us-ascii?Q?mBPxAGZ3xALs8wyhKwRRXMBWU1P3OH+LfU8jHheXX1ebnahtfHFoE2IuhyqG?=
- =?us-ascii?Q?+EFJL33pIqpdn7tyaYFcbw333XetxeV+sUqhI5daGeuoD9hoTc9w9NoTNYK6?=
- =?us-ascii?Q?tfNH3xDpzSO0aVoL1qJJr3QgeqeCA79KjZE81f85eB0Ui9QgRE/7YGH/z0+D?=
- =?us-ascii?Q?GHMi8SXaiKXIqyhFBS1liA0f12Zzd6BDS/cjZVDmLKtmgnCMhSQhfEZc9SQW?=
- =?us-ascii?Q?bD0GG67DBausme3kSrkDA4h0yGJa0w41Boeo+bZr8cBNoh2xaPwLu+GjSZn0?=
- =?us-ascii?Q?hdLfKukIVX9b2CHDNdWweLpwEiEWWAuzBvsuXsnW6BuwPWmVAiCmg/ny80y8?=
- =?us-ascii?Q?Sjp2Y/xYWWwlt5AZ/FRoSs+4+7obEfqBTOVdzZdabCcm81AGb2w14tYZfohl?=
- =?us-ascii?Q?z/G82/O5V5WKDaERmRDwkhOUYbOiv8S++0zMER7kkL6vvA9cK7qZEyEKwxuc?=
- =?us-ascii?Q?y2M5k7jOlBAbNahfIqPBxlzp+qt6a6x3Y+Uhst24riOqTTCZ3LhWPOD2XfBX?=
- =?us-ascii?Q?/Ve5esYGzGg275yOp0xL+0e+KaB4wYJ2w0RH3Y1TXgDVy7jgzn9UVYmJqiHg?=
- =?us-ascii?Q?TQWrRresBc/7KlEq0hAl+OGZe/di/JLOiG/RgoHY0JwwCsl8sMJnRK1It9NY?=
- =?us-ascii?Q?kyQtC+S3r20r62wRJ2B+h7z2zGBhOdbR8ZCFHzZFRTEZwUTkMHAhdXD5Ud7o?=
- =?us-ascii?Q?KaOw572PAW6nYTChuTvMRBSOEv6nQbnNyaBn/2FWVAUYjCFHDZjbwIh9Knn0?=
- =?us-ascii?Q?gpOM68hDqN8Ebeo1tu19dyQkiJFWO5urmInX8pj3/5SMItNsJi6XXacAz+LI?=
- =?us-ascii?Q?ZNd62FInPrVETTFEW4gI6f/M/3yQsLXN2rl6Joq596igmdi/nvr7AKY+G6e2?=
- =?us-ascii?Q?iar0zSYcHFdKRTu+xDAFeyw5ERlzu9h1TPLA3c8bv6u+tEAsFJxCUXbxw3hs?=
- =?us-ascii?Q?el7kXIshki4E0ZBL7WnHcd+EA0QoXym6sG0pPypt3AIJY8nU6Lo910snE9Wn?=
- =?us-ascii?Q?fd1qMXrsTcZusD0UUdeqXuM7sZv7ELnKbDGD3cXb?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 317af23a-7b58-492f-0358-08dc8ae72d92
-X-MS-Exchange-CrossTenant-AuthSource: DM6PR12MB3849.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 12 Jun 2024 13:54:29.4093
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: RDl9ZOThMbu/pvo0KeoCM9N0H3+AM/1m5Yawczw08b/KbnQj3Xeyyalp7d+v/dPW
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: CH2PR12MB4246
+Content-Type: multipart/signed; boundary="nextPart5733380.qv8PDGWfNk";
+ micalg="pgp-sha256"; protocol="application/pgp-signature"
+X-Migadu-Flow: FLOW_OUT
 
-On Mon, May 27, 2024 at 12:05:07PM +0800, Lu Baolu wrote:
-> This series implements the functionality of delivering IO page faults to
-> user space through the IOMMUFD framework. One feasible use case is the
-> nested translation. Nested translation is a hardware feature that
-> supports two-stage translation tables for IOMMU. The second-stage
-> translation table is managed by the host VMM, while the first-stage
-> translation table is owned by user space. This allows user space to
-> control the IOMMU mappings for its devices.
+--nextPart5733380.qv8PDGWfNk
+Content-Transfer-Encoding: 7Bit
+Content-Type: text/plain; charset="us-ascii"; protected-headers="v1"
+From: Diederik de Haas <didi.debian@cknow.org>
+Date: Wed, 12 Jun 2024 16:24:13 +0200
+Message-ID: <2746394.siuavCmBn6@bagend>
+Organization: Connecting Knowledge
+In-Reply-To: <20240612-6-10-rocket-v1-4-060e48eea250@tomeuvizoso.net>
+MIME-Version: 1.0
 
-This looks pretty close, will you post a v7 with the minor changes?
+Hi,
 
-Thanks,
-Jasno
+On Wednesday, 12 June 2024 15:52:57 CEST Tomeu Vizoso wrote:
+> arch/arm64/boot/dts/rockchip/rk3588s.dtsi | 53
+> +++++++++++++++++++++++++++++++ 1 file changed, 53 insertions(+)
+> 
+> diff --git a/arch/arm64/boot/dts/rockchip/rk3588s.dtsi
+> b/arch/arm64/boot/dts/rockchip/rk3588s.dtsi index
+> 6ac5ac8b48ab..a5d53578c8f6 100644
+> --- a/arch/arm64/boot/dts/rockchip/rk3588s.dtsi
+> +++ b/arch/arm64/boot/dts/rockchip/rk3588s.dtsi
+> @@ -2665,6 +2665,59 @@ gpio4: gpio@fec50000 {
+>                         #interrupt-cells = <2>;
+>                 };
+>         };
+> +
+> +       rknn: npu@fdab0000 {
+> +               compatible = "rockchip,rk3588-rknn", "rockchip,rknn";
+> +               reg = <0x0 0xfdab0000 0x0 0x9000>,
+> +                     <0x0 0xfdac0000 0x0 0x9000>,
+> +                     <0x0 0xfdad0000 0x0 0x9000>;
+> +               interrupts = <GIC_SPI 110 IRQ_TYPE_LEVEL_HIGH 0>,
+> +                            <GIC_SPI 111 IRQ_TYPE_LEVEL_HIGH 0>,
+> +                            <GIC_SPI 112 IRQ_TYPE_LEVEL_HIGH 0>;
+> +               interrupt-names = "npu0_irq", "npu1_irq", "npu2_irq";
+> +               clocks = <&scmi_clk SCMI_CLK_NPU>, <&cru ACLK_NPU0>,
+> +                        <&cru ACLK_NPU1>, <&cru ACLK_NPU2>,
+> +                        <&cru HCLK_NPU0>, <&cru HCLK_NPU1>,
+> +                        <&cru HCLK_NPU2>, <&cru PCLK_NPU_ROOT>;
+> +               clock-names = "clk_npu",
+> +                             "aclk0", "aclk1", "aclk2",
+> +                             "hclk0", "hclk1", "hclk2",
+> +                             "pclk";
+> +               assigned-clocks = <&scmi_clk SCMI_CLK_NPU>;
+> +               assigned-clock-rates = <200000000>;
+> +               resets = <&cru SRST_A_RKNN0>, <&cru SRST_A_RKNN1>, <&cru
+> SRST_A_RKNN2>, +                        <&cru SRST_H_RKNN0>, <&cru
+> SRST_H_RKNN1>, <&cru SRST_H_RKNN2>; +               reset-names =
+> "srst_a0", "srst_a1", "srst_a2",
+> +                             "srst_h0", "srst_h1", "srst_h2";
+> +               power-domains = <&power RK3588_PD_NPUTOP>,
+> +                               <&power RK3588_PD_NPU1>,
+> +                               <&power RK3588_PD_NPU2>;
+> +               power-domain-names = "npu0", "npu1", "npu2";
+> +               iommus = <&rknn_mmu>;
+> +               status = "disabled";
+> +       };
+> +
+> +       rknn_mmu: iommu@fdab9000 {
+> +               compatible = "rockchip,rk3588-iommu";
+> +               reg = <0x0 0xfdab9000 0x0 0x100>,
+> +                     <0x0 0xfdaba000 0x0 0x100>,
+> +                     <0x0 0xfdaca000 0x0 0x100>,
+> +                     <0x0 0xfdada000 0x0 0x100>;
+> +               interrupts = <GIC_SPI 110 IRQ_TYPE_LEVEL_HIGH 0>,
+> +                            <GIC_SPI 111 IRQ_TYPE_LEVEL_HIGH 0>,
+> +                            <GIC_SPI 112 IRQ_TYPE_LEVEL_HIGH 0>;
+> +               interrupt-names = "npu0_mmu", "npu1_mmu", "npu2_mmu";
+> +               clocks = <&cru ACLK_NPU0>, <&cru ACLK_NPU1>, <&cru
+> ACLK_NPU2>, +                        <&cru HCLK_NPU0>, <&cru HCLK_NPU1>,
+> <&cru HCLK_NPU2>; +               clock-names = "aclk0", "aclk1", "aclk2",
+> +                             "iface0", "iface1", "iface2";
+> +               #iommu-cells = <0>;
+> +               power-domains = <&power RK3588_PD_NPUTOP>,
+> +                               <&power RK3588_PD_NPU1>,
+> +                               <&power RK3588_PD_NPU2>;
+> +               power-domain-names = "npu0", "npu1", "npu2";
+> +               status = "disabled";
+> +       };
+
+The nodes should be sorted by address, so these nodes should come between
+pmu: power-management@fd8d8000 {
+and 
+av1d: video-codec@fdc70000 {
+
+Cheers,
+  Diederik
+--nextPart5733380.qv8PDGWfNk
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: This is a digitally signed message part.
+Content-Transfer-Encoding: 7Bit
+
+-----BEGIN PGP SIGNATURE-----
+
+iHUEABYIAB0WIQT1sUPBYsyGmi4usy/XblvOeH7bbgUCZmmvjQAKCRDXblvOeH7b
+bq4nAP0bM7IIJSkR5Cpa0v55rfayhz1GtgK4oP8lmrY/U1t8fQD+Nf56dyaoEOoP
+DY/YRTGxOjhhH6YlVSmtPw3bDw2VTAg=
+=1S9B
+-----END PGP SIGNATURE-----
+
+--nextPart5733380.qv8PDGWfNk--
+
+
+
