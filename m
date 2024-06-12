@@ -1,45 +1,45 @@
-Received: from mail-wm1-f53.google.com (mail-wm1-f53.google.com [209.85.128.53])
+Received: from mail-wm1-f51.google.com (mail-wm1-f51.google.com [209.85.128.51])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5DFBB17F4E2
-	for <iommu@lists.linux.dev>; Wed, 12 Jun 2024 13:53:14 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.53
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9F10017FAD4
+	for <iommu@lists.linux.dev>; Wed, 12 Jun 2024 13:53:18 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.51
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1718200395; cv=none; b=k65Br7Ka6IzKmEs4FBZqQ23SAtJFEzl+0LrtpgFbfnL3O9Jd+A9mQm20cYyGwcpRghkgX1TOAdVA1dYV8mRk8HJkvxXfz/b+ZAkZHIBVIgYqzJXwioiweZgCPSxV1FuzSwABdKvHNF1OkIVWc3i3Okf/P+hG6xtlfIxEXYkOeXk=
+	t=1718200400; cv=none; b=puTrgvNeElrdzbqkel7qXMrYa6pE6Bt0ibCowQdnkjSWxXNWk+dBJXfTRTlNxTU0EZ01J1pHqWy4wdXfJMssXhyo08aUzPYhjhZMjlqYpvr0WWEjxArZs+Cz2a0kHusYIydUULSJy6qF54HCPIIIgAArC8jdzSnWjPUCS5sJ9GU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1718200395; c=relaxed/simple;
-	bh=ETeqjYikvQUmV+JBY0OUQbNcQiW4jGVDEl9xk5l13Cg=;
+	s=arc-20240116; t=1718200400; c=relaxed/simple;
+	bh=fKTM0ttA1uymEDhSl+EKrSTK36fDxBDqjcoAt+gjwK8=;
 	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=dHtZ4KMk6bR6HhgP+7Z6P4liFxWwfGuJFEhJBOcN2U1oFd7uSbpT/VLHEof3V01MmHoWRKvu5056bQvXMhVq8LRQxsHMVtSeVZmU3G6B3xNU0BE3SBQ6KVjzGEkiySooLDo1MLiqCg/C7IwCMUhs8N2JbFhwe2N5m+oTGJJ44+o=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=tomeuvizoso.net; spf=pass smtp.mailfrom=gmail.com; arc=none smtp.client-ip=209.85.128.53
+	 In-Reply-To:To:Cc; b=ogTmu/hh1nrj3WGwShQWTWdLu23nJd8qko9IQFPnhqhCO+pQxHD2fxDiTVZPhsST/NaLTKuc0ECxEWnqXBxbt8Nr+9Y5VFMxPu1GMzKInfaP3+dczhY+418OiCypo0eQQGsTey6X07vZw9YGfEucN+euLVHVoiU0Tv5CkOZnItQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=tomeuvizoso.net; spf=pass smtp.mailfrom=gmail.com; arc=none smtp.client-ip=209.85.128.51
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=tomeuvizoso.net
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
-Received: by mail-wm1-f53.google.com with SMTP id 5b1f17b1804b1-42108856c33so6089485e9.1
-        for <iommu@lists.linux.dev>; Wed, 12 Jun 2024 06:53:14 -0700 (PDT)
+Received: by mail-wm1-f51.google.com with SMTP id 5b1f17b1804b1-42121d27861so58336455e9.0
+        for <iommu@lists.linux.dev>; Wed, 12 Jun 2024 06:53:18 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1718200393; x=1718805193;
+        d=1e100.net; s=20230601; t=1718200397; x=1718805197;
         h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
          :mime-version:subject:date:from:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=0gvlL/3Hh6Rvkzj8HeRV4KajZ/sjiz7m+L1scRmwe5k=;
-        b=rFH5huDOPc3oo/whUkcH41Zszr3LzsSmhJIXq8AMQiLfcSVyyXEhlPyX0gMdjCFpky
-         p1CB+5s/MymbhfgeuIxH5plNFmHVhCjDq/H3KtTXAYWvILEAMjQfi+KRqPDGV3hFIH/Z
-         /T0Y3Q8Dwyde2o0rmGk3ywAniVo7NMTS0igeQy5sqFmxtcMsvJWIATsT/310PHFJlZ63
-         4ysYF1VetoWLbKm1CBf2q8gQDJy2rDHGl6D+vLHG23Uf7/HzKx7SJ8/yvFvMbG0UdROv
-         E8lyEHpHUUnS6upV6zxjQpabEAQzwANfM0mFxgJZn5nNmGNiU8iyZsuznwfGok2wWS4z
-         YJBw==
-X-Gm-Message-State: AOJu0YyYY51qlhp/QYjZnSkIUE/zeK+UTbUZ1iaHJj28OEAyEvEBpdCK
-	ij4Vm0dEX7pMdAMdnz7vA+5esh/Kq6wMR3aC5qJqK/X1fsKMDDJf
-X-Google-Smtp-Source: AGHT+IE2T90QH80rrQ35HgVVqB20gHNtrUAWASa/gbvajU+K3eKydM1CK3LNiNDzGaMzR19vk4V0bw==
-X-Received: by 2002:a05:600c:3b23:b0:421:3249:557e with SMTP id 5b1f17b1804b1-4223c531cf9mr51588135e9.8.1718200392753;
-        Wed, 12 Jun 2024 06:53:12 -0700 (PDT)
+        bh=T7r3kSvbbTjgJVEwctFCbvRTGPSHV3jcoNvncpcvHqY=;
+        b=ccXR9deoOekfHBqVW09hbXKbx/VOSwYkbFRij2yvzOYTtFzVSh3Gq+bpLe8tW3Zuo3
+         GReos8vWng8xxiH2+txu4a1hOHF/P2mTbPNK6K2Ns5Pj3DjdqLlVr7QyrJPXF4uEAA0c
+         Es2YStCFTalMgM1mRbcC9bt5XL0e2TuWpaZjvBPE/XIDx+ZiwxQVGl0Cfu2GCGM/0ARi
+         /+fErqhSrAKerXIm/QBAU3VcE1FiFFk7fejz09+HAeCIDquRqoRwxXaDukuHymiN+Qse
+         /ipOlK0B8Ne13WOVxwLSEZ3xSicsR9p/GgOfe14YWMhSLUN/3YM/wLitSc7oDVxXOgmy
+         Z1uA==
+X-Gm-Message-State: AOJu0Yyn/BEZe3X0caJPZHcPp4aWYHSEI+I0NJ3/RbtIxYz42BrBrh6f
+	8iNGRq6StA/nJaxYjzzYQoKrBWQtnRBLIL+mcEnVek5YJY1lMpI7
+X-Google-Smtp-Source: AGHT+IGUBVZP2NwuY2tIGmEPKUE7vkawNnEjSQW1ugPVM6t6UrOumHBZsDMeIXzxIvdwgzeSUxgDrQ==
+X-Received: by 2002:a05:600c:4ecf:b0:421:7aad:370a with SMTP id 5b1f17b1804b1-422863adb55mr15148235e9.9.1718200396853;
+        Wed, 12 Jun 2024 06:53:16 -0700 (PDT)
 Received: from ramallet.home (cst-prg-45-36.cust.vodafone.cz. [46.135.45.36])
-        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-422871ec9e6sm28201695e9.38.2024.06.12.06.53.11
+        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-422871ec9e6sm28201695e9.38.2024.06.12.06.53.15
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 12 Jun 2024 06:53:12 -0700 (PDT)
+        Wed, 12 Jun 2024 06:53:16 -0700 (PDT)
 From: Tomeu Vizoso <tomeu@tomeuvizoso.net>
-Date: Wed, 12 Jun 2024 15:52:58 +0200
-Subject: [PATCH 5/9] arm64: dts: rockchip: Enable the NPU on quartzpro64
+Date: Wed, 12 Jun 2024 15:53:00 +0200
+Subject: [PATCH 7/9] accel/rocket: Add IOCTL for BO creation
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -48,7 +48,7 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Message-Id: <20240612-6-10-rocket-v1-5-060e48eea250@tomeuvizoso.net>
+Message-Id: <20240612-6-10-rocket-v1-7-060e48eea250@tomeuvizoso.net>
 References: <20240612-6-10-rocket-v1-0-060e48eea250@tomeuvizoso.net>
 In-Reply-To: <20240612-6-10-rocket-v1-0-060e48eea250@tomeuvizoso.net>
 To: Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>, 
@@ -69,32 +69,210 @@ Cc: iommu@lists.linux.dev, linux-arm-kernel@lists.infradead.org,
  Tomeu Vizoso <tomeu@tomeuvizoso.net>
 X-Mailer: b4 0.13.0
 
-Enable the nodes added in a previous commit to the rk3588s device tree.
+This uses the SHMEM DRM helpers and we map right away to the CPU and NPU
+sides, as all buffers are expected to be accessed from both.
 
 Signed-off-by: Tomeu Vizoso <tomeu@tomeuvizoso.net>
 ---
- arch/arm64/boot/dts/rockchip/rk3588-quartzpro64.dts | 8 ++++++++
- 1 file changed, 8 insertions(+)
+ drivers/accel/rocket/Makefile     |  3 +-
+ drivers/accel/rocket/rocket_drv.c |  7 +++-
+ drivers/accel/rocket/rocket_gem.c | 68 +++++++++++++++++++++++++++++++++++++++
+ drivers/accel/rocket/rocket_gem.h | 28 ++++++++++++++++
+ include/uapi/drm/rocket_accel.h   | 24 ++++++++++++++
+ 5 files changed, 128 insertions(+), 2 deletions(-)
 
-diff --git a/arch/arm64/boot/dts/rockchip/rk3588-quartzpro64.dts b/arch/arm64/boot/dts/rockchip/rk3588-quartzpro64.dts
-index b4f22d95ac0e..9afb7efebace 100644
---- a/arch/arm64/boot/dts/rockchip/rk3588-quartzpro64.dts
-+++ b/arch/arm64/boot/dts/rockchip/rk3588-quartzpro64.dts
-@@ -291,6 +291,14 @@ &gpu {
- 	status = "okay";
+diff --git a/drivers/accel/rocket/Makefile b/drivers/accel/rocket/Makefile
+index 73a7280d260c..875cac2243d9 100644
+--- a/drivers/accel/rocket/Makefile
++++ b/drivers/accel/rocket/Makefile
+@@ -5,4 +5,5 @@ obj-$(CONFIG_DRM_ACCEL_ROCKET) := rocket.o
+ rocket-y := \
+ 	rocket_core.o \
+ 	rocket_device.o \
+-	rocket_drv.o
++	rocket_drv.o \
++	rocket_gem.o
+diff --git a/drivers/accel/rocket/rocket_drv.c b/drivers/accel/rocket/rocket_drv.c
+index e339c337fcf9..42196417030e 100644
+--- a/drivers/accel/rocket/rocket_drv.c
++++ b/drivers/accel/rocket/rocket_drv.c
+@@ -11,9 +11,11 @@
+ #include <drm/drm_ioctl.h>
+ #include <drm/drm_accel.h>
+ #include <drm/drm_gem.h>
++#include <drm/rocket_accel.h>
+ 
+ #include "rocket_drv.h"
+ #include "rocket_device.h"
++#include "rocket_gem.h"
+ 
+ static const char * const rk3588_pm_domains[] = { "npu0", "npu1", "npu2" };
+ static const char * const rk3588_resets_a[] = { "srst_a0", "srst_a1", "srst_a2" };
+@@ -58,6 +60,8 @@ rocket_postclose(struct drm_device *dev, struct drm_file *file)
+ static const struct drm_ioctl_desc rocket_drm_driver_ioctls[] = {
+ #define ROCKET_IOCTL(n, func) \
+ 	DRM_IOCTL_DEF_DRV(ROCKET_##n, rocket_ioctl_##func, 0)
++
++	ROCKET_IOCTL(CREATE_BO, create_bo),
  };
  
-+&rknn {
-+	status = "okay";
+ static const struct file_operations rocket_drm_driver_fops = {
+@@ -70,9 +74,10 @@ static const struct file_operations rocket_drm_driver_fops = {
+  * - 1.0 - initial interface
+  */
+ static const struct drm_driver rocket_drm_driver = {
+-	.driver_features	= DRIVER_COMPUTE_ACCEL,
++	.driver_features	= DRIVER_COMPUTE_ACCEL | DRIVER_GEM,
+ 	.open			= rocket_open,
+ 	.postclose		= rocket_postclose,
++	.gem_create_object	= rocket_gem_create_object,
+ 	.ioctls			= rocket_drm_driver_ioctls,
+ 	.num_ioctls		= ARRAY_SIZE(rocket_drm_driver_ioctls),
+ 	.fops			= &rocket_drm_driver_fops,
+diff --git a/drivers/accel/rocket/rocket_gem.c b/drivers/accel/rocket/rocket_gem.c
+new file mode 100644
+index 000000000000..e10eb886f150
+--- /dev/null
++++ b/drivers/accel/rocket/rocket_gem.c
+@@ -0,0 +1,68 @@
++// SPDX-License-Identifier: GPL-2.0
++/* Copyright 2024 Tomeu Vizoso <tomeu@tomeuvizoso.net> */
++
++#include <drm/drm_device.h>
++#include <drm/rocket_accel.h>
++
++#include "rocket_gem.h"
++
++/**
++ * rocket_gem_create_object - Implementation of driver->gem_create_object.
++ * @dev: DRM device
++ * @size: Size in bytes of the memory the object will reference
++ *
++ * This lets the GEM helpers allocate object structs for us, and keep
++ * our BO stats correct.
++ */
++struct drm_gem_object *rocket_gem_create_object(struct drm_device *dev, size_t size)
++{
++	struct rocket_gem_object *obj;
++
++	obj = kzalloc(sizeof(*obj), GFP_KERNEL);
++	if (!obj)
++		return ERR_PTR(-ENOMEM);
++
++	return &obj->base.base;
++}
++
++int rocket_ioctl_create_bo(struct drm_device *dev, void *data, struct drm_file *file)
++{
++	struct drm_rocket_create_bo *args = data;
++	struct drm_gem_shmem_object *shmem_obj;
++	struct rocket_gem_object *rkt_obj;
++	struct drm_gem_object *gem_obj;
++	struct sg_table *sgt;
++	int ret;
++
++	shmem_obj = drm_gem_shmem_create(dev, args->size);
++	if (IS_ERR(shmem_obj))
++		return PTR_ERR(shmem_obj);
++
++	gem_obj = &shmem_obj->base;
++	rkt_obj = to_rocket_bo(gem_obj);
++
++	rkt_obj->size = args->size;
++	rkt_obj->offset = 0;
++	mutex_init(&rkt_obj->mutex);
++
++	ret = drm_gem_handle_create(file, gem_obj, &args->handle);
++	drm_gem_object_put(gem_obj);
++	if (ret)
++		goto err;
++
++	sgt = drm_gem_shmem_get_pages_sgt(shmem_obj);
++	if (IS_ERR(sgt)) {
++		ret = PTR_ERR(sgt);
++		goto err;
++	}
++
++	args->offset = drm_vma_node_offset_addr(&gem_obj->vma_node);
++	args->dma_address = sg_dma_address(shmem_obj->sgt->sgl);
++
++	return 0;
++
++err:
++	drm_gem_shmem_object_free(gem_obj);
++
++	return ret;
++}
+diff --git a/drivers/accel/rocket/rocket_gem.h b/drivers/accel/rocket/rocket_gem.h
+new file mode 100644
+index 000000000000..2cb294f25c19
+--- /dev/null
++++ b/drivers/accel/rocket/rocket_gem.h
+@@ -0,0 +1,28 @@
++/* SPDX-License-Identifier: GPL-2.0 */
++/* Copyright 2024 Tomeu Vizoso <tomeu@tomeuvizoso.net> */
++
++#ifndef __ROCKET_GEM_H__
++#define __ROCKET_GEM_H__
++
++#include <drm/drm_gem_shmem_helper.h>
++#include <drm/drm_mm.h>
++
++struct rocket_gem_object {
++	struct drm_gem_shmem_object base;
++
++	struct mutex mutex;
++	size_t size;
++	u32 offset;
 +};
 +
-+&rknn_mmu {
-+	status = "okay";
-+};
++struct drm_gem_object *rocket_gem_create_object(struct drm_device *dev, size_t size);
 +
- &i2c2 {
- 	status = "okay";
++int rocket_ioctl_create_bo(struct drm_device *dev, void *data, struct drm_file *file);
++
++static inline
++struct  rocket_gem_object *to_rocket_bo(struct drm_gem_object *obj)
++{
++	return container_of(to_drm_gem_shmem_obj(obj), struct rocket_gem_object, base);
++}
++
++#endif
+\ No newline at end of file
+diff --git a/include/uapi/drm/rocket_accel.h b/include/uapi/drm/rocket_accel.h
+index 7a179731ffe4..8338726a83c3 100644
+--- a/include/uapi/drm/rocket_accel.h
++++ b/include/uapi/drm/rocket_accel.h
+@@ -11,6 +11,30 @@
+ extern "C" {
+ #endif
  
++#define DRM_ROCKET_CREATE_BO			0x00
++
++#define DRM_IOCTL_ROCKET_CREATE_BO		DRM_IOWR(DRM_COMMAND_BASE + DRM_ROCKET_CREATE_BO, struct drm_rocket_create_bo)
++
++/**
++ * struct drm_rocket_create_bo - ioctl argument for creating Rocket BOs.
++ *
++ */
++struct drm_rocket_create_bo {
++	__u32 size;
++
++	/** Returned GEM handle for the BO. */
++	__u32 handle;
++
++	/**
++	 * Returned DMA address for the BO in the NPU address space.  This address
++	 * is private to the DRM fd and is valid for the lifetime of the GEM
++	 * handle.
++	 */
++	__u64 dma_address;
++
++	/** Offset into the drm node to use for subsequent mmap call. */
++	__u64 offset;
++};
+ 
+ #if defined(__cplusplus)
+ }
 
 -- 
 2.45.2
