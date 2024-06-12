@@ -1,54 +1,54 @@
 Received: from mail-ed1-f54.google.com (mail-ed1-f54.google.com [209.85.208.54])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A287F394
-	for <iommu@lists.linux.dev>; Wed, 12 Jun 2024 00:31:08 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BB6F2EBB
+	for <iommu@lists.linux.dev>; Wed, 12 Jun 2024 00:37:39 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.54
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1718152270; cv=none; b=GMlYcuLBDH4z/3IugtBfJLf+C4RBZ+ia8MY4cIJmgT0k728qtwRnaooGXrWcf2rnb4dKMcoh1BlolkfghlD/lo7QElCGUCEBcG17tCSwV0ftmyZRIlXrqIUfkcV27Uhfsg3YOAMORXDZILT+lllwutpf0W4F9sh3pN+zR6H3Y38=
+	t=1718152661; cv=none; b=qccAGTcHuWYtrE90jV75dVXYdKV2xq0uFy/FEFboHrWfN2+5DFKLqHLZr44IQs7lbJEKOnQTawMfWfNqCGGIyCTZ+p8WfCuLsZ+vGGulFc+WPx4rhB1ynpyX2RhNZBtDBvCZimmggOAxe19UjQ8q2c9FMPigyzBmfYt6CyPvg0M=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1718152270; c=relaxed/simple;
-	bh=eDEh/Oen7DAJWK7uRkISNRf9YcAHO+uOwB2Trnusrys=;
+	s=arc-20240116; t=1718152661; c=relaxed/simple;
+	bh=CbxB4gsF19wnuHRkxYjRBOGmzgRMjYMbezsZVPYzI/0=;
 	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=fw4IRMyV5pHsBHPIBEOsoQ/onCYXR62MO8lQoD74AEjWnHSztQxr7r7ucuKFOmW5lhW+AR9kSbgqGWH0tZXL6oy8CDdarK6/ojetDXdbZ/yfemJZiFqFQEX0I+zuKTq73FYnDX4wpS3U+vC0f3qyoqc/iOJOH5aKO8vzqn3nXe0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=NsPxSc4W; arc=none smtp.client-ip=209.85.208.54
+	 To:Cc:Content-Type; b=UJaNbdS2y4wSEKB6H4jNViWnN7VPqTbgMHNlZYbp6CXhWSYneOEkesK8V2XeuxRxB5jqAxLmYoc3V48eICEwsu78CugZGcYx0nEnsFkGPLhoUpXBnQMiMmZKekevYZicIzgV8beQw+g/CcvGCKguU9V5VFJ1J3SuTJpZ6qK1eN4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=IzDSRtA+; arc=none smtp.client-ip=209.85.208.54
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="NsPxSc4W"
-Received: by mail-ed1-f54.google.com with SMTP id 4fb4d7f45d1cf-57a16f4b8bfso7940a12.0
-        for <iommu@lists.linux.dev>; Tue, 11 Jun 2024 17:31:08 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="IzDSRtA+"
+Received: by mail-ed1-f54.google.com with SMTP id 4fb4d7f45d1cf-57c8bd6b655so7822a12.0
+        for <iommu@lists.linux.dev>; Tue, 11 Jun 2024 17:37:39 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20230601; t=1718152267; x=1718757067; darn=lists.linux.dev;
+        d=google.com; s=20230601; t=1718152658; x=1718757458; darn=lists.linux.dev;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=oP9KKIbLoya/+52h4fep3MAtzpYBaRZzspTiBl2594Y=;
-        b=NsPxSc4WMR9YNLBT7yq0TKVwHRp6GRafeQkZJZtrzp4fcYrMlg3rJ/Y8gE1kln1Zu2
-         3/sijW8H1T0IPyrpCfqgVg1i5XrR7el9w/LtjKU/P1rBSLWCKns60pywch9bea9y54Jf
-         h747rDQjymhUEda8F3vM8RSYxxv803POaAHIeyCIbXL90QTGCsRrW6KZ9JFSICFmTSF7
-         WAq1UCQ6IaSuwfPO9Zq6wTFInEpm+9tiZ1QShi1o+n4GvlUELZTJnBPoh0wf3zHhlOzs
-         6dqGYw2G9uRl4mwyvhJaiT04BjydllbHSTMiBTK6V6DUmeMMziWlfDilO2vEay8+xdY2
-         xEEw==
+        bh=CbxB4gsF19wnuHRkxYjRBOGmzgRMjYMbezsZVPYzI/0=;
+        b=IzDSRtA+QR1AmYrbaFJ7rGwacFQmR7wj6OkmVh9ICEvHAxEgXFZu5zcZp9RHdin4+G
+         pMEBCR9CNkMGLUVTqdMZ48+mQhBKE0dtO6vRTAaL9Lk+gRjn1xiaHKVcexRP/pUamGbf
+         Moo8JeGWjqmVnqLYLg+w9+S3OeC9INgvwIDTgTHaW2lIGCTzM1CS5F1q2ioxaOrEaCux
+         seo53250gukx9tDG2eLldcSCa57oATHQD1/aO7wGqk+kXzGEiic2XloWAvZn4tsyU7aR
+         76YZ5BaAAN8g/9eaQjakyTlcAbKoj3BrxUPBY+CLSoDfLcc8XVZCuIxhshpKZ0ax4AnA
+         jRZw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1718152267; x=1718757067;
+        d=1e100.net; s=20230601; t=1718152658; x=1718757458;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=oP9KKIbLoya/+52h4fep3MAtzpYBaRZzspTiBl2594Y=;
-        b=KjuAWW+hRWpQn5M9iMlK5/169RzYps1Uklow3SkadtTUrzf0jgna0uhiJaoU03WFW8
-         vKI4W36gGeubCrsXvBGgmuEigwB6fV5Q1iOSrbyg7k8VZpavbgDr4DM3Q+M2cz/OswJc
-         8scsFeCn3BmjlaH102rna1GuLox5QKXaFhkRjXqozdzUee86AMOEvPCIB6IcADVMi4/O
-         XxTPmesslB2Onb1OkXKpB9rqw6vgjdhlwC4mzWMLHzhTzu/ChhOpMe/HRXijUO9DiwiY
-         Wdi+m7L43aq2EMyxB77ldHL4ErJ2jMfq/akJSR0iMClVqEhpQpKWciql2adQf9RNkc0b
-         aO8Q==
-X-Gm-Message-State: AOJu0YyunzUdLZi3mMicNYji8fUdWUfb2o1q7yJBJaeGsrRZgUXlHY4x
-	20Z2wFVRx+r8jiK1ck8rfcW9ozOBIJAeQW6YuEUQp/4NVOkgyVDUB+ahO0CFRir1Uy3EWXxZES4
-	k23VNJrNIfkSmqptXjKrvYwqVjkwxuemGS3+Y
-X-Google-Smtp-Source: AGHT+IFhK3nW1s3vFpcSBj0EEbCcEV49HXRnLV+cBns1nx9+LAzI5Pcqddd/N6HdlI63NBcazatyNT9RnekZ/uQQocc=
-X-Received: by 2002:a05:6402:1d17:b0:57c:57b3:6bb3 with SMTP id
- 4fb4d7f45d1cf-57ca84b8036mr93464a12.6.1718152266688; Tue, 11 Jun 2024
- 17:31:06 -0700 (PDT)
+        bh=CbxB4gsF19wnuHRkxYjRBOGmzgRMjYMbezsZVPYzI/0=;
+        b=f9N8i7l2XehRwQPg2CfhUhGKVNiBtovt6n2p/1KNIaK5scVDUzQiSsK0yPDGy6v+Y3
+         Ap/hpiWf/xpEVmcNr3fZrXG2mvFblGVmFzEiroTaf/+RLT6smsHll4YmbmoWuVCiVr2y
+         7J9OSje4HdQQgJ0Saqxg4j2/2TJKQNfm7rdLeSLN8GH2ByxpKKsVMx/UaJeZnkiLjkwy
+         0iIoMMszNLd4ztsr2RHzSU6h+LQhVtsE91bl2ZtBG8qaKiVy8fYI38+zZ//xbuVV8LVY
+         une8OQbIKF6kAbuTazKLeXgu0eUvHNBEgxX+44b10UhT8SYCPB7oSbDDR2we1c96+KHn
+         umuA==
+X-Gm-Message-State: AOJu0YzSPXvckHKEMw0Uj7VAA7zCjpHQG2UfQ98F3vSv27AJu3SZKvnk
+	DqiX//zPg7rZ9uiACq5P3PQA8AZaR1Ft7bj+Tp1g9nkWKD9zooPM836YNCAfFLMRU37Uc0Hq7Xf
+	df46QKiIcQMDakZJs/xF2Fg8nZE3eX8kLW14T
+X-Google-Smtp-Source: AGHT+IGPogOtYqDEs+7RxuVSqbTRCrwDGOHdpFBNLv9I3kbjcl6SRTnxLsX2Kfx19alhBDTwgj55N42gOEfTZvGQj0A=
+X-Received: by 2002:aa7:cd17:0:b0:572:988f:2f38 with SMTP id
+ 4fb4d7f45d1cf-57ca7fd71e8mr98062a12.6.1718152657843; Tue, 11 Jun 2024
+ 17:37:37 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -58,8 +58,8 @@ MIME-Version: 1.0
 References: <0-v2-318ed5f6983b+198f-smmuv3_tidy_jgg@nvidia.com> <3-v2-318ed5f6983b+198f-smmuv3_tidy_jgg@nvidia.com>
 In-Reply-To: <3-v2-318ed5f6983b+198f-smmuv3_tidy_jgg@nvidia.com>
 From: Daniel Mentz <danielmentz@google.com>
-Date: Tue, 11 Jun 2024 17:30:53 -0700
-Message-ID: <CAE2F3rBJxj=zFmtdGddMdPy9HXVP-cu+MtjaJhrJpjux_GZ6KQ@mail.gmail.com>
+Date: Tue, 11 Jun 2024 17:37:26 -0700
+Message-ID: <CAE2F3rBA-QHBROY9T0eo6HzYkMOs51+xMXHZLSjnz4=D6XEszQ@mail.gmail.com>
 Subject: Re: [PATCH v2 03/10] iommu/arm-smmu-v3: Add arm_smmu_strtab_l1/2_idx()
 To: Jason Gunthorpe <jgg@nvidia.com>
 Cc: iommu@lists.linux.dev, Joerg Roedel <joro@8bytes.org>, 
@@ -72,26 +72,7 @@ Content-Transfer-Encoding: quoted-printable
 
 On Mon, Jun 10, 2024 at 5:31=E2=80=AFPM Jason Gunthorpe <jgg@nvidia.com> wr=
 ote:
->                 dev_warn(smmu->dev,
-> -                        "2-level strtab only covers %u/%u bits of SID\n"=
-,
-> -                        size, smmu->sid_bits);
-> +                        "2-level strtab only covers %u/%u of SIDs\n",
-> +                        cfg->num_l1_ents * STRTAB_NUM_L2_STES,
-> +                        1 << smmu->sid_bits);
+> +static inline unsigned int arm_smmu_strtab_l1_idx(unsigned int sid)
 
-Does this mean it'll change from printing
-
-"2-level strtab only covers 25/32 bits of SID"
-
-to
-
-"2-level strtab only covers 33554432/4294967296 of SIDs"?
-
-I think that's less helpful. I would prefer printing the values in bits.
-
-> +#define STRTAB_NUM_L2_STES (1 << STRTAB_SPLIT)
-> +#define STRTAB_MAX_L1_ENTRIES (1 << 17)
-
-Consider adding some extra white space to nicely align these #defines
-with the rest of this .h file.
+Existing code appears to be exclusively using the data type u32 to
+store StreamIDs.
