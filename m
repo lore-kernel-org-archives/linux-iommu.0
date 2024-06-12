@@ -1,167 +1,343 @@
-Received: from NAM11-BN8-obe.outbound.protection.outlook.com (mail-bn8nam11on2041.outbound.protection.outlook.com [40.107.236.41])
+Received: from mout.gmx.net (mout.gmx.net [212.227.17.20])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 03B4D2F3B
-	for <iommu@lists.linux.dev>; Wed, 12 Jun 2024 18:50:29 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.236.41
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1718218231; cv=fail; b=Ll3+CCEUKNKunUT0iwjW2sD5xSxrUz/vYRQU8MUZA1/d+TELfBvRh9YpY1ZL/5BJXBPtsyFbJri6WseOSJNjLANfNgWhmy56s6Nj4AuoNtgFAK6z/vKsvSEapyZ1jm8he80pEUcLP6dzooi8/D9EmwmaHVmtDVUiHqGaAkWDzbg=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1718218231; c=relaxed/simple;
-	bh=MlLoC0TfpfWGVXkfu0VdYdXLhEuDtvG2Zi/icBBGdWg=;
-	h=Date:From:To:CC:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=hVNkJuUFSXRu3Dn/vo+wFRnMChbpEc+rvVe/MVFxl8dmN11sCNqM4NcBx2BsWwDLQ9NHAZsKzJ3tvaE9SgQ+eJtouqKw1xEd6yFEC6mLXSnY7GbgdKw+AWlx3aoRsJAv+P7UyFjkyzool9iXltCPA6U8v0QOZrdG8sNwTYYepOc=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=FO0yEkUc; arc=fail smtp.client-ip=40.107.236.41
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8053E82860;
+	Wed, 12 Jun 2024 19:44:53 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=212.227.17.20
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1718221496; cv=none; b=CUqhU61KK7brMQBZPvCmlTdtq3fdsdkY60Mf0J/mVuNOr3ykVazC4e4e2ZmEKW2sKF0vuym/q9JK3LZv5koVNlcAZolQnn//mEwWxmKCKlMTZdzAAca3bOVEsD2r2v3V6sm+6uOOoksa0CYqvgV/7hULGpBPMCP22oYMD+U/sIo=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1718221496; c=relaxed/simple;
+	bh=vJp1SDZ8pIanK1GFLVZC/0Pnzfiew1AXbG2Tcgp+wDg=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=piMsuzNBYycbcKBJI2yQyaZsP2ZgnzILFF9qIxZHRIUyWXPEwkBclF2KnjDTw6uPDyVBbKtqtDmXkVxPN6VqS5DcD7ui8O5oRtxHfXFSj3U3/97Cjx3szUCrP5o2Qm8dLBRSXZ6piQ2WGYa+XOoZtcAAt7mcqhwrzaOugf9rMTo=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=gmx.de; spf=pass smtp.mailfrom=gmx.de; dkim=pass (2048-bit key) header.d=gmx.de header.i=friedrich.vock@gmx.de header.b=baG+frdo; arc=none smtp.client-ip=212.227.17.20
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=gmx.de
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmx.de
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="FO0yEkUc"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=mkzWdeAattO/mjopMOtK2DshZWkFeBshrOFMiiinmC6YywbQ8qxMmwKS5o6uKTgTu/ReNPU09H9g5KiqBMuWtXk7PLnLURmWHoRgLzV2GzVtkP6IGfJfTWGzcBGF+kzQHltb/sGZ2QW6OEjGod3+rIkkYT9IZ5B1lWa5qmnbiCaeW8HCJo3GV6lZSAsHBSJ0nZ+vo5Ayr3r5RLjH7O55LUfG9NicqtSKGBszQRBlNCUjH5KUOm6yavxUYXs2NyaS+ZdHQR9xxi0sMYUkkAIzzYh+OaEaytsHgR9SUhljXMcVRsliPfB/8EP2/aHOrAFhJOO2MeSS2RACnTrzpcO97Q==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=Kydp9l523dMWtxJIBrjgLTEhKxJHmdFsfcxzO9NCOfg=;
- b=ICedr66F7tFZ3b+6YpCW1KlF5Bsa6jgQ4zStTyJ0jgshri9gJMYxQrPpzSY+QJpG4JxUU4MnxidU/j7AjtQ4C1dsmx6M/GGfKcbGD9KZOWA7wTWgETEedez5xcB3t4wS2caV6KqJiNGLdNszUooVCEB1mmdVzl4ucGj7K0QeuaUU7zO7DXw8Jm42VqzXx4Tmf3UKPEb+JvaTI6g1ZAJimcHLxJ8O9wUUpwNFNxEVv6kMsJd4nvFFd1I9riJKJcfnB0GPRm9XxGbtOwcraVxjFhYaSL5CCjYYwcO6XNKpG5muIhiy5A+c8sPpkK4oirwwlvAsZAk2DXCzHLgYk/znhw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 216.228.118.232) smtp.rcpttodomain=kernel.org smtp.mailfrom=nvidia.com;
- dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
- dkim=none (message not signed); arc=none (0)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=Kydp9l523dMWtxJIBrjgLTEhKxJHmdFsfcxzO9NCOfg=;
- b=FO0yEkUcCKmYu7V/uP2xiYRx67B9VcDrNdyS+3XGeptf69tEWrDCwFCpWBGdPFIHqJD0KrOtlYvo34z5paVs/dzbh/7AWf64ovdtKnhm3eY1XbZ1FAeLRm/zPiElW61CCw7znKq4SZzVshr0WIOwMC8FN7f+aVvzZZUabwfi3Bx0peJiorwY6/AyGASvioFRtlVmmWbUbR9S9sC/qrIZKbAyyeO1uomQPs2iz8ZRgJaejSP3IhyHhFztbNyb+Fr/1f6MtyxHwsEhEswkNqznCAYgAPmEkFHnwQYaG24TLcq7VS6ejmhJltrGgZHr/Io+a5H7Q021paS6nGtCP7s6iQ==
-Received: from DS7PR06CA0042.namprd06.prod.outlook.com (2603:10b6:8:54::23) by
- DM4PR12MB6376.namprd12.prod.outlook.com (2603:10b6:8:a0::20) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.7677.21; Wed, 12 Jun 2024 18:50:26 +0000
-Received: from DS1PEPF00017097.namprd05.prod.outlook.com
- (2603:10b6:8:54:cafe::7a) by DS7PR06CA0042.outlook.office365.com
- (2603:10b6:8:54::23) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7677.20 via Frontend
- Transport; Wed, 12 Jun 2024 18:50:26 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.118.232)
- smtp.mailfrom=nvidia.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=nvidia.com;
-Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 216.228.118.232 as permitted sender) receiver=protection.outlook.com;
- client-ip=216.228.118.232; helo=mail.nvidia.com; pr=C
-Received: from mail.nvidia.com (216.228.118.232) by
- DS1PEPF00017097.mail.protection.outlook.com (10.167.18.101) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.7677.15 via Frontend Transport; Wed, 12 Jun 2024 18:50:26 +0000
-Received: from drhqmail201.nvidia.com (10.126.190.180) by mail.nvidia.com
- (10.127.129.5) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1544.4; Wed, 12 Jun
- 2024 11:50:11 -0700
-Received: from drhqmail203.nvidia.com (10.126.190.182) by
- drhqmail201.nvidia.com (10.126.190.180) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.1544.4; Wed, 12 Jun 2024 11:50:11 -0700
-Received: from Asurada-Nvidia (10.127.8.10) by mail.nvidia.com
- (10.126.190.182) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1544.4 via Frontend
- Transport; Wed, 12 Jun 2024 11:50:10 -0700
-Date: Wed, 12 Jun 2024 11:50:09 -0700
-From: Nicolin Chen <nicolinc@nvidia.com>
-To: Jason Gunthorpe <jgg@nvidia.com>
-CC: <will@kernel.org>, <robin.murphy@arm.com>, <joro@8bytes.org>,
-	<thierry.reding@gmail.com>, <vdumpa@nvidia.com>, <jonathanh@nvidia.com>,
-	<linux-kernel@vger.kernel.org>, <iommu@lists.linux.dev>,
-	<linux-arm-kernel@lists.infradead.org>, <linux-tegra@vger.kernel.org>
-Subject: Re: [PATCH v8 5/6] iommu/arm-smmu-v3: Add in-kernel support for
- NVIDIA Tegra241 (Grace) CMDQV
-Message-ID: <Zmnt4RL+RcDiwurc@Asurada-Nvidia>
-References: <cover.1716883239.git.nicolinc@nvidia.com>
- <e7dab374702aaac8dc81b95ddf89c94befe409dd.1716883239.git.nicolinc@nvidia.com>
- <20240612122925.GA19897@nvidia.com>
+	dkim=pass (2048-bit key) header.d=gmx.de header.i=friedrich.vock@gmx.de header.b="baG+frdo"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmx.de;
+	s=s31663417; t=1718221456; x=1718826256; i=friedrich.vock@gmx.de;
+	bh=kCfiqnjt/bPpXo7/vLfDlRT2K8nIqWSIueiTsisVfDw=;
+	h=X-UI-Sender-Class:Message-ID:Date:MIME-Version:Subject:To:Cc:
+	 References:From:In-Reply-To:Content-Type:
+	 Content-Transfer-Encoding:cc:content-transfer-encoding:
+	 content-type:date:from:message-id:mime-version:reply-to:subject:
+	 to;
+	b=baG+frdoosFnvTxPbHzfzQXGnPEjs06W5BMELQSX2U5pS2OuHpvlVS1SPSota9yX
+	 sKX+ksSQH8NkL89Kw26LT357DCLBwBlZNW1Nbl+GFjVFxJcfNpfFuzTBa31giqnAc
+	 2+5uNOwsJm0tpagv/frLp0KERyOC0nYQ3TnlhO43bGIIU2e+n3cLViaQQkwKNTUHf
+	 aOEVI5M8NDLj4UHRqUfbfv753qXNMVxb9wJpXZ+vZyvIqMPlqD01RJZVeogbmrSwW
+	 NnjlDslw7jiSfQkuLpQCMQZNqGD8JG20uo1+iSSRMc4Xl6xZfvAtmtqCa0Jy6Uqyv
+	 gZIc/MVdmXcs2ugjpg==
+X-UI-Sender-Class: 724b4f7f-cbec-4199-ad4e-598c01a50d3a
+Received: from [192.168.177.3] ([213.152.117.92]) by mail.gmx.net (mrgmx105
+ [212.227.17.168]) with ESMTPSA (Nemesis) id 1N79yG-1sTJme1Vts-00rStL; Wed, 12
+ Jun 2024 21:44:16 +0200
+Message-ID: <e9eab3c2-1cef-41fb-8bf0-a477dd319b3e@gmx.de>
+Date: Wed, 12 Jun 2024 21:44:12 +0200
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: inline
-In-Reply-To: <20240612122925.GA19897@nvidia.com>
-X-NV-OnPremToCloud: ExternallySecured
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: DS1PEPF00017097:EE_|DM4PR12MB6376:EE_
-X-MS-Office365-Filtering-Correlation-Id: 943b6236-81a6-49bd-cc62-08dc8b1085ee
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam:
-	BCL:0;ARA:13230034|36860700007|376008|1800799018|82310400020;
-X-Microsoft-Antispam-Message-Info:
-	=?us-ascii?Q?DY8CZ9IEe0vtaSeayl9F1nTjyExS54k7hAzC1CCiHeMXMSROwpiVI3Oln9HD?=
- =?us-ascii?Q?LEtaw+IdD9K+e8LtLdw44pV86ZMVUwDSkI+uOPubbiuxAs3NPCYJZ5dPisF3?=
- =?us-ascii?Q?rWuQs1ef9vRs2QfgLWo/aqS0OXWtNwJ9fHiXZQ+OQOaAnisl3XGeAIFDnelF?=
- =?us-ascii?Q?5pDACcwtb4NthWI3Q4w/CXO072tLoLpmlF2rtFgGy74El+/Q9p8ZdrAjNSr+?=
- =?us-ascii?Q?p2RElmxGphYh+zU/bwvA+UhCWfTJZe2Ikabr9EsCtJI7amiC/N0Hyt/MkMVU?=
- =?us-ascii?Q?rtCfiPPPZ2T6iYY0JnBhxTmCl+KVtfDXZsLOZjh24bqWP0+OqKH7xIvzdfBH?=
- =?us-ascii?Q?vE1fbPJ+A8Jcq1tJwN7zDTsVVHyDMCq4evolPb0ByUt2n3CgiEudJODCa1dV?=
- =?us-ascii?Q?9Wxo+x7msC5HxY9bXqGXZXd4OwY8bntmOWhcPw+eTxaWXwe/pJRO0cNEysvI?=
- =?us-ascii?Q?SGSWQDEWOM9dZzTzekaJJhdGO+iWbWl2pgxSKDQl+EdTbIWPuiMXJYUid8Pq?=
- =?us-ascii?Q?LtaW5HHHr7UCiIWdHN0CYNAESwSpE1JDLObGSIpmhQt+1qYM8zrREfXomExK?=
- =?us-ascii?Q?wXmAsVym5cZcfQ5rem5A3MZ1TiO87r9gDzyePD5ZbksaEIIeqmrcAzUheUaX?=
- =?us-ascii?Q?eZk42ErXZ3fW4Jb8ax7f1hTvP8T/viCYQ24SA6ZJVjMEYtarRmoiHHRhoGGr?=
- =?us-ascii?Q?aYm5EtnUAYj2USb1aT5Mnp34cjWB11uSfRrw9eKetXSOXEcPI5REUPczFb5l?=
- =?us-ascii?Q?uYnu+jQuI1drKsQbOXJUvR+X31u0tfPA9U9O/PZHhPLK+My8GZx6Q49iSXR8?=
- =?us-ascii?Q?lXJyQoPBFXxstJBjDEEFD3uxdVvc5HchUDjvOytereS/SnOCDm/cddzSLzpv?=
- =?us-ascii?Q?R/v/ubQR5BW0s06yabVRBLbAf0S/OxjpTcUj2gNH0nHCRG7fiQWWnwC7nv3R?=
- =?us-ascii?Q?Zzdv0uuGu4Qr44Mr/fq15dTes3/u2gSL+awFjMWbX51c0m+ciASyyiFU72js?=
- =?us-ascii?Q?d4GMlz7tuVT4m+XccPsdhpO3oEhE+37Im1Mvy/nC/Z9qPyx5toywJTxX58Do?=
- =?us-ascii?Q?UKdoLl0WIc4DuIziKaLo8mzzWdLQoxhEg1I/g8vBtyDaXx7bxZIWnxCwMN+h?=
- =?us-ascii?Q?7I1048Yy1U11bGenvZ8tLqjJUcvv6SCx6gel3jQWPHtrsAaSFjH3I/IfJYw5?=
- =?us-ascii?Q?Su5U4PplkiE1+oLBK5S6yGeCOI9wNW/wzTh/Aau9Hx+jY3m0HpU+ziETDg/F?=
- =?us-ascii?Q?6rQYH7zramWyJDClx5Zh8Aj9IKBKFjF79fSaZFt4g+sIXtp1BqcmNHwL8fbK?=
- =?us-ascii?Q?ck0r5biOD8mI8JagZNL4/o6pIwgKA/V5wZGOqqYa3rFWaSqJhyYhYDKuxmPb?=
- =?us-ascii?Q?kF+8nAb3QoHXCNtOs52/YWzhWAeFe8LOEe+D4zttEaxfM/NInA=3D=3D?=
-X-Forefront-Antispam-Report:
-	CIP:216.228.118.232;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc7edge1.nvidia.com;CAT:NONE;SFS:(13230034)(36860700007)(376008)(1800799018)(82310400020);DIR:OUT;SFP:1101;
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 12 Jun 2024 18:50:26.1274
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 943b6236-81a6-49bd-cc62-08dc8b1085ee
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.118.232];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource:
-	DS1PEPF00017097.namprd05.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM4PR12MB6376
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH 9/9] accel/rocket: Add IOCTLs for synchronizing memory
+ accesses
+To: Tomeu Vizoso <tomeu@tomeuvizoso.net>, Joerg Roedel <joro@8bytes.org>,
+ Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
+ Heiko Stuebner <heiko@sntech.de>, Rob Herring <robh@kernel.org>,
+ Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley
+ <conor+dt@kernel.org>, Oded Gabbay <ogabbay@kernel.org>,
+ Tomeu Vizoso <tomeu.vizoso@tomeuvizoso.net>, David Airlie
+ <airlied@gmail.com>, Daniel Vetter <daniel@ffwll.ch>,
+ Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
+ Maxime Ripard <mripard@kernel.org>, Thomas Zimmermann <tzimmermann@suse.de>,
+ Philipp Zabel <p.zabel@pengutronix.de>,
+ Sumit Semwal <sumit.semwal@linaro.org>,
+ =?UTF-8?Q?Christian_K=C3=B6nig?= <christian.koenig@amd.com>
+Cc: iommu@lists.linux.dev, linux-arm-kernel@lists.infradead.org,
+ linux-rockchip@lists.infradead.org, linux-kernel@vger.kernel.org,
+ devicetree@vger.kernel.org, dri-devel@lists.freedesktop.org,
+ linux-media@vger.kernel.org, linaro-mm-sig@lists.linaro.org
+References: <20240612-6-10-rocket-v1-0-060e48eea250@tomeuvizoso.net>
+ <20240612-6-10-rocket-v1-9-060e48eea250@tomeuvizoso.net>
+Content-Language: en-US
+From: Friedrich Vock <friedrich.vock@gmx.de>
+Autocrypt: addr=friedrich.vock@gmx.de; keydata=
+ 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
+ f7+xmX0X3AMtWz/15Y+7cPO2
+In-Reply-To: <20240612-6-10-rocket-v1-9-060e48eea250@tomeuvizoso.net>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: quoted-printable
+X-Provags-ID: V03:K1:64DUXvbzAN1e0DJGDaKyj19kGaJ5itxcBVlwNjoBR1NCoP/PVJc
+ LR8OCxdh8f3hHQYVvZRUq/0AtWehfwq/DfBbIjIxBJkiV5m9neTUJK/VniXP5d3GyAoRzkt
+ brmhK+jcsSl1GxwGNJwGx3BtNshKU11ZaKxfMfGNbbgegvWMn835A8CVxFUrFIt2WAvm+pk
+ eg+qphqG0j+/7c+I67hzg==
+X-Spam-Flag: NO
+UI-OutboundReport: notjunk:1;M01:P0:xqFTV1fLAB0=;gEPUI9P8h5BeEFETfNN/eaNzGT8
+ uVIizXC/BBnWEf17hM+iiIfojeJ7VDbd6rccMh7S1t6D64UY4/RVT4MvQAfZn+L7MDDr0KRxl
+ 6C7yaxSGhiq4cbEG8qZLTSdyNg3Y8BVe6SBlsTx0yiOqntBACulQRshB0DZ6Y3EzqRg0cDhjo
+ deijmxJ2cz3D8uG610wgseu9aNGsAU7k7OY2qlQQuDkXDGxOOt+VzVz7IWSo/VBw6WnloLtf/
+ uFqJO5pXaziYjiLJmDxWKMEAtAzZocGn3MEd3RU5AnWFx72+cKlJSvl5m+bGS/AoleixcLArj
+ YfxiCBowV/T8gRx788MLKchiHNcjFVcLJWG/lC6LPPcA854CsfjPmTgGvPEaCH+OpUjqCrRi7
+ gJJDV0P08utfN+XdC86mWMFIIZKlPfMUB88sZVaIIyQDIPsI+ex5bMPXTfHIPj2x4oMPXnT/B
+ qxRQoN5ajZYE3d4gpuPJQIg7yJUYMwVdwNxLjpPMz3xjWDzbLoNbZO8ZyvkulcVy+mhtydtJH
+ e4Ozh3UOhEF3ViFJFk2Gho6VYmMt+uKzOxsa8Ry81bDzYw+rjFQbMXCHPI8uRCcXv0uOiIIEV
+ B0VQye55RU6c9U0bMwOS1GjkNm9TTtOCZgo7gRW3ti3gMabuhG4+Lde+iA+aZLm3vx8dVSmbg
+ cSzJaD+EzM0gMmAyTcUeEasBDz+uUuW5Lx7mx3EQMtgJu9lj1UWI2zoSEYVa5/epn11VZsGNK
+ J8gk/DU53fvyykxxjRNrEo7ChGlh9Jbn3tDmZdj+9kWnqVdlhr6tbGkYto0LUBl7Vj/xRWLy0
+ KpLqenWI/+Q2UBn15v7fM8rhyWgq/dlsma6T3+I1heKOE=
 
-On Wed, Jun 12, 2024 at 09:29:25AM -0300, Jason Gunthorpe wrote:
-> On Tue, May 28, 2024 at 01:09:53AM -0700, Nicolin Chen wrote:
-> 
-> > +/* MMIO helpers */
-> > +#define REG_CMDQV(_cmdqv, _regname) \
-> > +	((_cmdqv)->base + TEGRA241_CMDQV_##_regname)
-> > +#define REG_VINTF(_vintf, _regname) \
-> > +	((_vintf)->base + TEGRA241_VINTF_##_regname)
-> > +#define REG_VCMDQ_PAGE0(_vcmdq, _regname) \
-> > +	((_vcmdq)->page0 + TEGRA241_VCMDQ_##_regname)
-> > +#define REG_VCMDQ_PAGE1(_vcmdq, _regname) \
-> > +	((_vcmdq)->page1 + TEGRA241_VCMDQ_##_regname)
-> 
-> This looks OK now
-> 
-> I didn't see any thing else really important in this patch
-> 
-> Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
-> 
-> > +static inline int cmdqv_write_config(struct tegra241_cmdqv *cmdqv, u32 regval)
-> > +{
-> > +	return tegra241_cmdqv_write_config(cmdqv,
-> > +					   cmdqv->base + TEGRA241_CMDQV_CONFIG,
-> > +					   cmdqv->base + TEGRA241_CMDQV_STATUS,
-> > +					   regval, "CMDQV: ", NULL);
-> 
-> However it would be good to go and fix these case to use the REG_xx
-> macros, I noticed several.
+On 12.06.24 15:53, Tomeu Vizoso wrote:
+> The NPU cores have their own access to the memory bus, and this isn't
+> cache coherent with the CPUs.
+>
+> Add IOCTLs so userspace can mark when the caches need to be flushed, and
+> also when a writer job needs to be waited for before the buffer can be
+> accessed from the CPU.
+>
+> Initially based on the same IOCTLs from the Etnaviv driver.
+>
+> Signed-off-by: Tomeu Vizoso <tomeu@tomeuvizoso.net>
+> ---
+>   drivers/accel/rocket/rocket_drv.c |  2 ++
+>   drivers/accel/rocket/rocket_gem.c | 68 +++++++++++++++++++++++++++++++=
+++++++++
+>   drivers/accel/rocket/rocket_gem.h |  7 +++-
+>   include/uapi/drm/rocket_accel.h   | 20 +++++++++++-
+>   4 files changed, 95 insertions(+), 2 deletions(-)
+>
+> diff --git a/drivers/accel/rocket/rocket_drv.c b/drivers/accel/rocket/ro=
+cket_drv.c
+> index adcb9a685dd8..d41a4f4b330d 100644
+> --- a/drivers/accel/rocket/rocket_drv.c
+> +++ b/drivers/accel/rocket/rocket_drv.c
+> @@ -73,6 +73,8 @@ static const struct drm_ioctl_desc rocket_drm_driver_i=
+octls[] =3D {
+>   	DRM_IOCTL_DEF_DRV(ROCKET_##n, rocket_ioctl_##func, 0)
+>
+>   	ROCKET_IOCTL(CREATE_BO, create_bo),
+> +	ROCKET_IOCTL(PREP_BO, prep_bo),
+> +	ROCKET_IOCTL(FINI_BO, fini_bo),
+>   	ROCKET_IOCTL(SUBMIT, submit),
+>   };
+>
+> diff --git a/drivers/accel/rocket/rocket_gem.c b/drivers/accel/rocket/ro=
+cket_gem.c
+> index e10eb886f150..afacdf91491e 100644
+> --- a/drivers/accel/rocket/rocket_gem.c
+> +++ b/drivers/accel/rocket/rocket_gem.c
+> @@ -2,7 +2,9 @@
+>   /* Copyright 2024 Tomeu Vizoso <tomeu@tomeuvizoso.net> */
+>
+>   #include <drm/drm_device.h>
+> +#include <drm/drm_utils.h>
+>   #include <drm/rocket_accel.h>
+> +#include <linux/dma-mapping.h>
+>
+>   #include "rocket_gem.h"
+>
+> @@ -66,3 +68,69 @@ int rocket_ioctl_create_bo(struct drm_device *dev, vo=
+id *data, struct drm_file *
+>
+>   	return ret;
+>   }
+> +
+> +static inline enum dma_data_direction rocket_op_to_dma_dir(u32 op)
+> +{
+> +	if (op & ROCKET_PREP_READ)
+> +		return DMA_FROM_DEVICE;
+> +	else if (op & ROCKET_PREP_WRITE)
+> +		return DMA_TO_DEVICE;
+> +	else
+> +		return DMA_BIDIRECTIONAL;
 
-Will respin a v9. Thanks!
+Drive-by comment: This logic looks incorrect to me? If op =3D=3D
+ROCKET_PREP_READ | ROCKET_PREP_WRITE, this code will return
+DMA_FROM_DEVICE when it should return DMA_BIDIRECTIONAL.
 
-Nicolin
+The logic would work if it was inverted:
+if (!(op & ROCKET_PREP_WRITE))
+	return DMA_FROM_DEVICE;
+else if (!(op & ROCKET_PREP_READ))
+	return DMA_TO_DEVICE;
+else
+	return DMA_BIDIRECTIONAL;
+
+Thanks,
+Friedrich
+
+> +}
+> +
+> +int rocket_ioctl_prep_bo(struct drm_device *dev, void *data, struct drm=
+_file *file)
+> +{
+> +	struct drm_rocket_prep_bo *args =3D data;
+> +	unsigned long timeout =3D drm_timeout_abs_to_jiffies(args->timeout_ns)=
+;
+> +	struct drm_gem_object *gem_obj;
+> +	struct drm_gem_shmem_object *shmem_obj;
+> +	bool write =3D !!(args->op & ROCKET_PREP_WRITE);
+> +	long ret =3D 0;
+> +
+> +	if (args->op & ~(ROCKET_PREP_READ | ROCKET_PREP_WRITE))
+> +		return -EINVAL;
+> +
+> +	gem_obj =3D drm_gem_object_lookup(file, args->handle);
+> +	if (!gem_obj)
+> +		return -ENOENT;
+> +
+> +	ret =3D dma_resv_wait_timeout(gem_obj->resv, dma_resv_usage_rw(write),
+> +				    true, timeout);
+> +	if (!ret)
+> +		ret =3D timeout ? -ETIMEDOUT : -EBUSY;
+> +
+> +	shmem_obj =3D &to_rocket_bo(gem_obj)->base;
+> +
+> +	dma_sync_sgtable_for_cpu(dev->dev, shmem_obj->sgt, rocket_op_to_dma_di=
+r(args->op));
+> +	to_rocket_bo(gem_obj)->last_cpu_prep_op =3D args->op;
+> +
+> +	drm_gem_object_put(gem_obj);
+> +
+> +	return ret;
+> +}
+> +
+> +int rocket_ioctl_fini_bo(struct drm_device *dev, void *data, struct drm=
+_file *file)
+> +{
+> +	struct drm_rocket_fini_bo *args =3D data;
+> +	struct drm_gem_object *gem_obj;
+> +	struct rocket_gem_object *rkt_obj;
+> +	struct drm_gem_shmem_object *shmem_obj;
+> +
+> +	gem_obj =3D drm_gem_object_lookup(file, args->handle);
+> +	if (!gem_obj)
+> +		return -ENOENT;
+> +
+> +	rkt_obj =3D to_rocket_bo(gem_obj);
+> +	shmem_obj =3D &rkt_obj->base;
+> +
+> +	WARN_ON(rkt_obj->last_cpu_prep_op =3D=3D 0);
+> +
+> +	dma_sync_sgtable_for_device(dev->dev, shmem_obj->sgt,
+> +				    rocket_op_to_dma_dir(rkt_obj->last_cpu_prep_op));
+> +	rkt_obj->last_cpu_prep_op =3D 0;
+> +
+> +	drm_gem_object_put(gem_obj);
+> +
+> +	return 0;
+> +}
+> diff --git a/drivers/accel/rocket/rocket_gem.h b/drivers/accel/rocket/ro=
+cket_gem.h
+> index 2cb294f25c19..9b1c485ec600 100644
+> --- a/drivers/accel/rocket/rocket_gem.h
+> +++ b/drivers/accel/rocket/rocket_gem.h
+> @@ -13,16 +13,21 @@ struct rocket_gem_object {
+>   	struct mutex mutex;
+>   	size_t size;
+>   	u32 offset;
+> +	u32 last_cpu_prep_op;
+>   };
+>
+>   struct drm_gem_object *rocket_gem_create_object(struct drm_device *dev=
+, size_t size);
+>
+>   int rocket_ioctl_create_bo(struct drm_device *dev, void *data, struct =
+drm_file *file);
+>
+> +int rocket_ioctl_prep_bo(struct drm_device *dev, void *data, struct drm=
+_file *file);
+> +
+> +int rocket_ioctl_fini_bo(struct drm_device *dev, void *data, struct drm=
+_file *file);
+> +
+>   static inline
+>   struct  rocket_gem_object *to_rocket_bo(struct drm_gem_object *obj)
+>   {
+>   	return container_of(to_drm_gem_shmem_obj(obj), struct rocket_gem_obje=
+ct, base);
+>   }
+>
+> -#endif
+> \ No newline at end of file
+> +#endif
+> diff --git a/include/uapi/drm/rocket_accel.h b/include/uapi/drm/rocket_a=
+ccel.h
+> index 888c9413e4cd..1539af0af4fe 100644
+> --- a/include/uapi/drm/rocket_accel.h
+> +++ b/include/uapi/drm/rocket_accel.h
+> @@ -12,9 +12,13 @@ extern "C" {
+>   #endif
+>
+>   #define DRM_ROCKET_CREATE_BO			0x00
+> -#define DRM_ROCKET_SUBMIT			0x01
+> +#define DRM_ROCKET_PREP_BO			0x01
+> +#define DRM_ROCKET_FINI_BO			0x02
+> +#define DRM_ROCKET_SUBMIT			0x03
+>
+>   #define DRM_IOCTL_ROCKET_CREATE_BO		DRM_IOWR(DRM_COMMAND_BASE + DRM_RO=
+CKET_CREATE_BO, struct drm_rocket_create_bo)
+> +#define DRM_IOCTL_ROCKET_PREP_BO		DRM_IOW(DRM_COMMAND_BASE + DRM_ROCKET=
+_PREP_BO, struct drm_rocket_prep_bo)
+> +#define DRM_IOCTL_ROCKET_FINI_BO		DRM_IOW(DRM_COMMAND_BASE + DRM_ROCKET=
+_FINI_BO, struct drm_rocket_fini_bo)
+>   #define DRM_IOCTL_ROCKET_SUBMIT			DRM_IOW(DRM_COMMAND_BASE + DRM_ROCKE=
+T_SUBMIT, struct drm_rocket_submit)
+>
+>   /**
+> @@ -38,6 +42,20 @@ struct drm_rocket_create_bo {
+>   	__u64 offset;
+>   };
+>
+> +#define ROCKET_PREP_READ        0x01
+> +#define ROCKET_PREP_WRITE       0x02
+> +
+> +struct drm_rocket_prep_bo {
+> +	__u32 handle;		/* in */
+> +	__u32 op;		/* in, mask of ROCKET_PREP_x */
+> +	__s64 timeout_ns;	/* in */
+> +};
+> +
+> +struct drm_rocket_fini_bo {
+> +	__u32 handle;		/* in */
+> +	__u32 flags;		/* in, placeholder for now, no defined values */
+> +};
+> +
+>   /**
+>    * struct drm_rocket_task - A task to be run on the NPU
+>    *
+>
