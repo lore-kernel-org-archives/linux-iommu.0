@@ -1,50 +1,50 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.14])
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.10])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 177A3132133
-	for <iommu@lists.linux.dev>; Thu, 13 Jun 2024 06:35:08 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.14
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6DE0D1369B0
+	for <iommu@lists.linux.dev>; Thu, 13 Jun 2024 06:42:41 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.10
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1718260510; cv=none; b=kVSF/2PDgVSfISV+ofOtMEElKzwntkD/Rf5OB6OgrVOs2SqVcUX5QlS9SFPWn1QIFDntsyD2HXplsDk9YnJjaFCyGYEBsFi5+JUGXvlgj+wa8yWqxQoG49p8wyRby4uRXGzDtzjdQSscrR0jr94AicVoshEXSsSRpdHSc4g5sKY=
+	t=1718260962; cv=none; b=Fx0qhSnEWizxAjCcLOrYIDn7c0CpTeJZH6T6OreMj0CKl87YiHB7QQgCVSmUQ3hAbarkWBDg5v5IfQkofAGz+jt4qIeydD67B+ril/ilIpoNez2DLr6xprFltQSHwya7KCR4N3zvWqht8qhB433vp8zm5kihrBZbvi44EDryusM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1718260510; c=relaxed/simple;
-	bh=2YW1VcDO5vvDgSqZENQpnOTikqYo3+QOeHpBuHEJ79k=;
+	s=arc-20240116; t=1718260962; c=relaxed/simple;
+	bh=nih8HgDoXnDxJo9FTwV8yzVyB7RsNmA2vKpkgq0mT6g=;
 	h=Message-ID:Date:MIME-Version:Cc:Subject:To:References:From:
-	 In-Reply-To:Content-Type; b=TjFoIz6QI3BYu+5eQRsVsEn/Kk6Q/YfUiKhbjd15pZdF/3CPR8zoyxL6M8huamCFZ1g8LqdQwuZFOP1huTirurJpoX5UmFlBhtwygIZ+Ne9sawnERG9lsNOLRSXcLAHvSmtkV+Ec0HDqUG9BNuqpYK+pbzygZzf02L2WliNMnck=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=dGE89Za5; arc=none smtp.client-ip=198.175.65.14
+	 In-Reply-To:Content-Type; b=QOuj6hPUOV/3BEExAAAU25S75W5l+rwXnex9ukYQrCPgAFVFAEBYdqhmpBYYpS5O9kwMofBUko6Mrpe8EOxSp6TPEz9x2IP+JlwdoWGruICLzpUUzYPfmB+9ims04oZf7tFti1phSi4c1DvnnCM5mNGrlUdZXu20MZKMqb+wxEQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=JjqU0A7u; arc=none smtp.client-ip=198.175.65.10
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="dGE89Za5"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="JjqU0A7u"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1718260509; x=1749796509;
+  t=1718260961; x=1749796961;
   h=message-id:date:mime-version:cc:subject:to:references:
    from:in-reply-to:content-transfer-encoding;
-  bh=2YW1VcDO5vvDgSqZENQpnOTikqYo3+QOeHpBuHEJ79k=;
-  b=dGE89Za5TQg0DkR+uU7MDBQlhQSfQZKn60oE/4g899mT5IIBVqBU4d+q
-   AWW513cPSXKAqrk1Nflr2V3+lbelNma+crpR1nlvShh2puvB0O4IeWEKK
-   pt0ATtOa3e1deO1W/m/KYgqi6Dzcva4zdo6gzlIqPo+BidlB4NeR1htL0
-   X+9ZjmZo7F83WctpYKM3LlgH0cQoxeEpb8pZbNHJ3o9GEjYPNSfeEhP4j
-   wY9vobIHCGvW+uAm3Dj4JnVktIPO27AOFQQxFVwaPYXlu6IiV6xCOXTbm
-   bYt5kK2O3Rh5jQSdIfkUengLC3Oh8VGAe3wsj+KI7ZwjPu4tpFYK+SHCV
-   w==;
-X-CSE-ConnectionGUID: 2SA9bscXSISLMBNaeCfT1Q==
-X-CSE-MsgGUID: jARsrehOQ66v2rtN6727MQ==
-X-IronPort-AV: E=McAfee;i="6700,10204,11101"; a="18881202"
+  bh=nih8HgDoXnDxJo9FTwV8yzVyB7RsNmA2vKpkgq0mT6g=;
+  b=JjqU0A7u7M2alVXh4k2XXNxYR5wHs+PJ5OhGdjKrMn1v7TZtXEgQR032
+   XVyXeIlLr0hWk5qmaZg8BgCtFGomrjblJUDLpRao7HJEbF2gBb5OTjnS5
+   Rm4LJOKvISNo0v89DDnhFeQm5McbslMnzpTtK4T793h0vS0RkrgrrjoCo
+   acpKT6gWLmgsXqNfAvzMnmO7bxZIzzqwK22NNSERXXQT5UDavxSLyB8+u
+   B0b5mjOv+n5Es73zJ4sxBhTVBCdDm0w9Xv7rVCGQsEbcV2qE89ad0fEx1
+   RRO7ya4+Yn7fkfTEcpfsI60861H1DbB2eFZ6YJYEk4opmM/DkU71wJPrR
+   Q==;
+X-CSE-ConnectionGUID: s70fZzc3R/W6ZHnd5Tlmmg==
+X-CSE-MsgGUID: oHnlSwlzRtC0DXiuB3tz7A==
+X-IronPort-AV: E=McAfee;i="6700,10204,11101"; a="32546262"
 X-IronPort-AV: E=Sophos;i="6.08,234,1712646000"; 
-   d="scan'208";a="18881202"
-Received: from fmviesa001.fm.intel.com ([10.60.135.141])
-  by orvoesa106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Jun 2024 23:35:09 -0700
-X-CSE-ConnectionGUID: jdv7yU8XQAu31tmE04AqOg==
-X-CSE-MsgGUID: x3FFM3qqTRWUpMXS9tD9RA==
+   d="scan'208";a="32546262"
+Received: from orviesa004.jf.intel.com ([10.64.159.144])
+  by orvoesa102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Jun 2024 23:42:40 -0700
+X-CSE-ConnectionGUID: nMJpsTrOTnS0VSuRh0vJ5w==
+X-CSE-MsgGUID: I3OWTSD2SEOg9c+X370K5w==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.08,234,1712646000"; 
-   d="scan'208";a="71241593"
+   d="scan'208";a="45167888"
 Received: from unknown (HELO [10.239.159.127]) ([10.239.159.127])
-  by fmviesa001.fm.intel.com with ESMTP; 12 Jun 2024 23:35:05 -0700
-Message-ID: <52144c4e-0421-46ca-bd00-8602c12c901a@linux.intel.com>
-Date: Thu, 13 Jun 2024 14:32:46 +0800
+  by orviesa004.jf.intel.com with ESMTP; 12 Jun 2024 23:42:37 -0700
+Message-ID: <247f231c-3829-49c2-a8d9-11c3cc4b80ca@linux.intel.com>
+Date: Thu, 13 Jun 2024 14:40:18 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -52,71 +52,56 @@ List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Cc: baolu.lu@linux.intel.com, Joerg Roedel <joro@8bytes.org>,
- Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
+Cc: baolu.lu@linux.intel.com, Kevin Tian <kevin.tian@intel.com>,
+ Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
+ Robin Murphy <robin.murphy@arm.com>,
  Jean-Philippe Brucker <jean-philippe@linaro.org>,
- Nicolin Chen <nicolinc@nvidia.com>, "Liu, Yi L" <yi.l.liu@intel.com>,
+ Nicolin Chen <nicolinc@nvidia.com>, Yi Liu <yi.l.liu@intel.com>,
  Jacob Pan <jacob.jun.pan@linux.intel.com>,
- Joel Granados <j.granados@samsung.com>,
- "iommu@lists.linux.dev" <iommu@lists.linux.dev>,
- "virtualization@lists.linux-foundation.org"
- <virtualization@lists.linux-foundation.org>,
- "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+ Joel Granados <j.granados@samsung.com>, iommu@lists.linux.dev,
+ virtualization@lists.linux-foundation.org, linux-kernel@vger.kernel.org
 Subject: Re: [PATCH v6 05/10] iommufd: Add fault and response message
  definitions
-To: Jason Gunthorpe <jgg@ziepe.ca>, "Tian, Kevin" <kevin.tian@intel.com>
+To: Jason Gunthorpe <jgg@ziepe.ca>
 References: <20240527040517.38561-1-baolu.lu@linux.intel.com>
  <20240527040517.38561-6-baolu.lu@linux.intel.com>
- <BN9PR11MB52768F2D79C8FA75280F1FF38CF92@BN9PR11MB5276.namprd11.prod.outlook.com>
- <3ee41c29-46bb-4897-9e93-5982c43736cb@linux.intel.com>
- <BN9PR11MB52764D7EF1EEDA95B694E8B68CFB2@BN9PR11MB5276.namprd11.prod.outlook.com>
- <20240612131946.GT791043@ziepe.ca> <20240612135021.GY791043@ziepe.ca>
+ <20240612135219.GZ791043@ziepe.ca>
 Content-Language: en-US
 From: Baolu Lu <baolu.lu@linux.intel.com>
-In-Reply-To: <20240612135021.GY791043@ziepe.ca>
+In-Reply-To: <20240612135219.GZ791043@ziepe.ca>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 
-On 6/12/24 9:50 PM, Jason Gunthorpe wrote:
-> On Wed, Jun 12, 2024 at 10:19:46AM -0300, Jason Gunthorpe wrote:
->>>> I prefer not to mess the definition of user API data and the kernel
->>>> driver implementation. The kernel driver may change in the future, but
->>>> the user API will remain stable for a long time.
->>> sure it remains stable for reasonable reason. Here we defined some
->>> fields but they are even not used and checked in the kernel. IMHO it
->>> suggests redundant definition. If there is value to keep them, do we
->>> need to at least verify them same as the completion record?
->> They are not here for the kernel, they are here for userspace.
->>
->> A single HWPT and a single fault queue can be attached to multiple
->> devices we need to return the dev_id so that userspace can know which
->> device initiated the PRI. Same with PASID.
->>
->> The only way we could remove them is if we are sure that no vIOMMU
->> requires RID or PASID in the virtual fault queue PRI fault message.. I
->> don't think that is true?
->>
->> Cookie is not a replacement, cookie is an opaque value for the kernel
->> to use to match a response to a request.
-> Oh I got this wrong, the above is the response, yeah we can ditch
-> everything but the cookie, and code right?
+On 6/12/24 9:52 PM, Jason Gunthorpe wrote:
+> On Mon, May 27, 2024 at 12:05:12PM +0800, Lu Baolu wrote:
+>> +/**
+>> + * struct iommu_hwpt_pgfault - iommu page fault data
+>> + * @size: sizeof(struct iommu_hwpt_pgfault)
+>> + * @flags: Combination of enum iommu_hwpt_pgfault_flags
+>> + * @dev_id: id of the originated device
+>> + * @pasid: Process Address Space ID
+>> + * @grpid: Page Request Group Index
+>> + * @perm: Combination of enum iommu_hwpt_pgfault_perm
+>> + * @addr: Fault address
+>> + * @length: a hint of how much data the requestor is expecting to fetch. For
+>> + *          example, if the PRI initiator knows it is going to do a 10MB
+>> + *          transfer, it could fill in 10MB and the OS could pre-fault in
+>> + *          10MB of IOVA. It's default to 0 if there's no such hint.
+>> + * @cookie: kernel-managed cookie identifying a group of fault messages. The
+>> + *          cookie number encoded in the last page fault of the group should
+>> + *          be echoed back in the response message.
+>> + */
+>> +struct iommu_hwpt_pgfault {
+>> +	__u32 size;
+> Given we fail the system call if size is not exactly the right value
+> we should probably drop it here.
 > 
-> struct iommu_hwpt_page_response {
->         __u32 cookie;
->         __u32 code;
-> };
-> 
-> What is the workflow here? We expect the VMM will take the vIOMMU
-> response and match it to a request cookie for the kernel to complete?
+> The ioctl to get the FD can someday specify the format of the fault
+> messages if we need to upgrade. If we want to change it down the road
+> then the old FD will be exactly as it is now, and the user will
+> request a new format FD that only works in whatever the new way is.
 
-The workflow in the host kernel involves looking up the iopf_group using
-the cookie value in the response queue and then responding to the
-iopf_group with the code. Therefore, from the host kernel's perspective,
-it is acceptable if the user only passes the cookie and code in the
-response message.
-
-Since you both agreed that the response message could be simplified, I
-will implement the above structure in the new version.
+Okay, sure!
 
 Best regards,
 baolu
