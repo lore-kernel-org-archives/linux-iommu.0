@@ -1,29 +1,29 @@
 Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8EB32399
-	for <iommu@lists.linux.dev>; Thu, 13 Jun 2024 14:43:10 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AFE66399
+	for <iommu@lists.linux.dev>; Thu, 13 Jun 2024 14:43:21 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.176.79.56
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1718289792; cv=none; b=Gpt1gJxLzTmIJX9Wyh1S2ScZfZRnkyPD299K4rmPgvS7QwlAyEqbFjcdAW38TsUKhi0fReTBD3xSW4dnEX9UqJMc/6xghOen2I2zvr0yjMKxkp5OfPDbSB28gb3Ch3ZNsEwFcvOsRYQUahBwC0bS9+/i/OgHuXrbF8k+i76IBOU=
+	t=1718289803; cv=none; b=aVBAe0DobDp9i8KyEc5Q5s56nXNA8QajiA0AByCc91qmatk3Bai6Il28cyaO1GqEnJGPgond7dQvHR/j97/52Rs5CiwzswVnHyeXO3IkVWfOiMk0X0yi68dPzRZo+cC1EeimNuaHPpW8s7d2Jcm84z6dsP1yc+90HNJEFAWkjYI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1718289792; c=relaxed/simple;
-	bh=qC8y04GhFX4uKfKJP7Cwpg9aYwZDXwdEGXwQcOQUYnI=;
+	s=arc-20240116; t=1718289803; c=relaxed/simple;
+	bh=NPJ9MHLv4q9WBpUxlYMrsosbscRaVyGMWfe0piD3Dfs=;
 	h=From:To:CC:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=gkeBUvPNvjZ7cWuK2FTuAvvP8b4fxPAQU/W/4AKMlGF24lPDMxG+LTMWeFOfuKicK9pzjosMnwajR+v0d09K97f/Iw++qw8tSApGt0etlT5fkPzL0YhAFJvc8PhPqL6ED+zeMPXoNtG9OGc8M5YT3xEhx+Vsp3HrNTtDDM1oTS0=
+	 MIME-Version:Content-Type; b=Qe3aFxu+LkN//bLxhAAAU8KAOMUGT+981M3acFTRlAG0geC6jvDhnCQQNhsCoDCmikRCucyXJcp9k4CG02zH07qEMMdaafUNvIEwJx0jVdQLJ60ANx6qKR80IDKUl/7NJXL8DZ5BQxLibidwoIPsGxG1jzB5PvLsIoxCaZ/hCe0=
 ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=huawei.com; spf=pass smtp.mailfrom=huawei.com; arc=none smtp.client-ip=185.176.79.56
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=huawei.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=huawei.com
-Received: from mail.maildlp.com (unknown [172.18.186.31])
-	by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4W0Q8n47Mfz6H780;
-	Thu, 13 Jun 2024 22:41:45 +0800 (CST)
+Received: from mail.maildlp.com (unknown [172.18.186.231])
+	by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4W0Q902qkgz6H783;
+	Thu, 13 Jun 2024 22:41:56 +0800 (CST)
 Received: from lhrpeml500005.china.huawei.com (unknown [7.191.163.240])
-	by mail.maildlp.com (Postfix) with ESMTPS id 7D949140A70;
-	Thu, 13 Jun 2024 22:43:08 +0800 (CST)
+	by mail.maildlp.com (Postfix) with ESMTPS id 4EAE61400CF;
+	Thu, 13 Jun 2024 22:43:19 +0800 (CST)
 Received: from A2303104131.china.huawei.com (10.202.227.28) by
  lhrpeml500005.china.huawei.com (7.191.163.240) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.1.2507.39; Thu, 13 Jun 2024 15:42:59 +0100
+ 15.1.2507.39; Thu, 13 Jun 2024 15:43:10 +0100
 From: Shameer Kolothum <shameerali.kolothum.thodi@huawei.com>
 To: <iommu@lists.linux.dev>, <linux-arm-kernel@lists.infradead.org>
 CC: <robin.murphy@arm.com>, <will@kernel.org>, <joro@8bytes.org>,
@@ -31,9 +31,9 @@ CC: <robin.murphy@arm.com>, <will@kernel.org>, <joro@8bytes.org>,
 	<kevin.tian@intel.com>, <nicolinc@nvidia.com>, <mshavit@google.com>,
 	<eric.auger@redhat.com>, <joao.m.martins@oracle.com>,
 	<jiangkunkun@huawei.com>, <zhukeqian1@huawei.com>, <linuxarm@huawei.com>
-Subject: [PATCH v6 4/6] iommu/io-pgtable-arm: Add read_and_clear_dirty() support
-Date: Thu, 13 Jun 2024 15:41:47 +0100
-Message-ID: <20240613144149.38672-5-shameerali.kolothum.thodi@huawei.com>
+Subject: [PATCH v6 5/6] iommu/arm-smmu-v3: Add support for dirty tracking in domain alloc
+Date: Thu, 13 Jun 2024 15:41:48 +0100
+Message-ID: <20240613144149.38672-6-shameerali.kolothum.thodi@huawei.com>
 X-Mailer: git-send-email 2.12.0.windows.1
 In-Reply-To: <20240613144149.38672-1-shameerali.kolothum.thodi@huawei.com>
 References: <20240613144149.38672-1-shameerali.kolothum.thodi@huawei.com>
@@ -47,195 +47,257 @@ Content-Type: text/plain
 X-ClientProxiedBy: dggems706-chm.china.huawei.com (10.3.19.183) To
  lhrpeml500005.china.huawei.com (7.191.163.240)
 
-.read_and_clear_dirty() IOMMU domain op takes care of reading the dirty
-bits (i.e. PTE has DBM set and AP[2] clear) and marshalling into a
-bitmap of a given page size.
+From: Joao Martins <joao.m.martins@oracle.com>
 
-While reading the dirty bits we also set the PTE AP[2] bit to mark it
-as writeable-clean depending on read_and_clear_dirty() flags.
+This provides all the infrastructure to enable dirty tracking if the
+hardware has the capability and domain alloc request for it.
 
-PTE states with respect to DBM bit:
+Also, add a device_iommu_capable() check in iommufd core for
+IOMMU_CAP_DIRTY_TRACKING before we request a user domain with dirty
+tracking support.
 
-                       DBM bit        AP[2]("RDONLY" bit)
-1. writable_clean        1                 1
-2. writable_dirty        1                 0
-3. read-only             0                 1
+Please note, we still report no support for IOMMU_CAP_DIRTY_TRACKING
+as it will finally be enabled in a subsequent patch.
 
+Signed-off-by: Joao Martins <joao.m.martins@oracle.com>
 Reviewed-by: Ryan Roberts <ryan.roberts@arm.com>
 Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
+Reviewed-by: Nicolin Chen <nicolinc@nvidia.com>
 Reviewed-by: Kevin Tian <kevin.tian@intel.com>
 Signed-off-by: Shameer Kolothum <shameerali.kolothum.thodi@huawei.com>
 ---
- drivers/iommu/io-pgtable-arm.c | 114 ++++++++++++++++++++++++++++++++-
- 1 file changed, 112 insertions(+), 2 deletions(-)
+ drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 82 +++++++++++++++------
+ drivers/iommu/iommufd/hw_pagetable.c        |  3 +
+ include/linux/io-pgtable.h                  |  3 +
+ 3 files changed, 66 insertions(+), 22 deletions(-)
 
-diff --git a/drivers/iommu/io-pgtable-arm.c b/drivers/iommu/io-pgtable-arm.c
-index 3d23b924cec1..2e57e8616387 100644
---- a/drivers/iommu/io-pgtable-arm.c
-+++ b/drivers/iommu/io-pgtable-arm.c
-@@ -76,6 +76,7 @@
+diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+index 15f77bf2e9b3..c5bb174e6cc3 100644
+--- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
++++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+@@ -27,6 +27,7 @@
+ #include <linux/pci-ats.h>
+ #include <linux/platform_device.h>
+ #include <kunit/visibility.h>
++#include <uapi/linux/iommufd.h>
  
- #define ARM_LPAE_PTE_NSTABLE		(((arm_lpae_iopte)1) << 63)
- #define ARM_LPAE_PTE_XN			(((arm_lpae_iopte)3) << 53)
-+#define ARM_LPAE_PTE_DBM		(((arm_lpae_iopte)1) << 51)
- #define ARM_LPAE_PTE_AF			(((arm_lpae_iopte)1) << 10)
- #define ARM_LPAE_PTE_SH_NS		(((arm_lpae_iopte)0) << 8)
- #define ARM_LPAE_PTE_SH_OS		(((arm_lpae_iopte)2) << 8)
-@@ -85,7 +86,7 @@
+ #include "arm-smmu-v3.h"
+ #include "../../dma-iommu.h"
+@@ -37,6 +38,7 @@ MODULE_PARM_DESC(disable_msipolling,
+ 	"Disable MSI-based polling for CMD_SYNC completion.");
  
- #define ARM_LPAE_PTE_ATTR_LO_MASK	(((arm_lpae_iopte)0x3ff) << 2)
- /* Ignore the contiguous bit for block splitting */
--#define ARM_LPAE_PTE_ATTR_HI_MASK	(((arm_lpae_iopte)6) << 52)
-+#define ARM_LPAE_PTE_ATTR_HI_MASK	(ARM_LPAE_PTE_XN | ARM_LPAE_PTE_DBM)
- #define ARM_LPAE_PTE_ATTR_MASK		(ARM_LPAE_PTE_ATTR_LO_MASK |	\
- 					 ARM_LPAE_PTE_ATTR_HI_MASK)
- /* Software bit for solving coherency races */
-@@ -93,7 +94,11 @@
+ static struct iommu_ops arm_smmu_ops;
++static struct iommu_dirty_ops arm_smmu_dirty_ops;
  
- /* Stage-1 PTE */
- #define ARM_LPAE_PTE_AP_UNPRIV		(((arm_lpae_iopte)1) << 6)
--#define ARM_LPAE_PTE_AP_RDONLY		(((arm_lpae_iopte)2) << 6)
-+#define ARM_LPAE_PTE_AP_RDONLY_BIT	7
-+#define ARM_LPAE_PTE_AP_RDONLY		(((arm_lpae_iopte)1) << \
-+					   ARM_LPAE_PTE_AP_RDONLY_BIT)
-+#define ARM_LPAE_PTE_AP_WR_CLEAN_MASK	(ARM_LPAE_PTE_AP_RDONLY | \
-+					 ARM_LPAE_PTE_DBM)
- #define ARM_LPAE_PTE_ATTRINDX_SHIFT	2
- #define ARM_LPAE_PTE_nG			(((arm_lpae_iopte)1) << 11)
+ enum arm_smmu_msi_index {
+ 	EVTQ_MSI_INDEX,
+@@ -82,7 +84,7 @@ static struct arm_smmu_option_prop arm_smmu_options[] = {
+ };
  
-@@ -139,6 +144,12 @@
+ static int arm_smmu_domain_finalise(struct arm_smmu_domain *smmu_domain,
+-				    struct arm_smmu_device *smmu);
++				    struct arm_smmu_device *smmu, u32 flags);
+ static int arm_smmu_alloc_cd_tables(struct arm_smmu_master *master);
  
- #define iopte_prot(pte)	((pte) & ARM_LPAE_PTE_ATTR_MASK)
+ static void parse_driver_options(struct arm_smmu_device *smmu)
+@@ -2280,7 +2282,7 @@ static struct iommu_domain *arm_smmu_domain_alloc_paging(struct device *dev)
+ 		struct arm_smmu_master *master = dev_iommu_priv_get(dev);
+ 		int ret;
  
-+#define iopte_writeable_dirty(pte)				\
-+	(((pte) & ARM_LPAE_PTE_AP_WR_CLEAN_MASK) == ARM_LPAE_PTE_DBM)
-+
-+#define iopte_set_writeable_clean(ptep)				\
-+	set_bit(ARM_LPAE_PTE_AP_RDONLY_BIT, (unsigned long *)(ptep))
-+
- struct arm_lpae_io_pgtable {
- 	struct io_pgtable	iop;
- 
-@@ -160,6 +171,13 @@ static inline bool iopte_leaf(arm_lpae_iopte pte, int lvl,
- 	return iopte_type(pte) == ARM_LPAE_PTE_TYPE_BLOCK;
+-		ret = arm_smmu_domain_finalise(smmu_domain, master->smmu);
++		ret = arm_smmu_domain_finalise(smmu_domain, master->smmu, 0);
+ 		if (ret) {
+ 			kfree(smmu_domain);
+ 			return ERR_PTR(ret);
+@@ -2346,15 +2348,15 @@ static int arm_smmu_domain_finalise_s2(struct arm_smmu_device *smmu,
  }
  
-+static inline bool iopte_table(arm_lpae_iopte pte, int lvl)
-+{
-+	if (lvl == (ARM_LPAE_MAX_LEVELS - 1))
-+		return false;
-+	return iopte_type(pte) == ARM_LPAE_PTE_TYPE_TABLE;
-+}
-+
- static arm_lpae_iopte paddr_to_iopte(phys_addr_t paddr,
- 				     struct arm_lpae_io_pgtable *data)
+ static int arm_smmu_domain_finalise(struct arm_smmu_domain *smmu_domain,
+-				    struct arm_smmu_device *smmu)
++				    struct arm_smmu_device *smmu, u32 flags)
  {
-@@ -726,6 +744,97 @@ static phys_addr_t arm_lpae_iova_to_phys(struct io_pgtable_ops *ops,
- 	return iopte_to_paddr(pte, data) | iova;
+ 	int ret;
+-	unsigned long ias, oas;
+ 	enum io_pgtable_fmt fmt;
+ 	struct io_pgtable_cfg pgtbl_cfg;
+ 	struct io_pgtable_ops *pgtbl_ops;
+ 	int (*finalise_stage_fn)(struct arm_smmu_device *smmu,
+ 				 struct arm_smmu_domain *smmu_domain);
++	bool enable_dirty = flags & IOMMU_HWPT_ALLOC_DIRTY_TRACKING;
+ 
+ 	/* Restrict the stage to what we can actually support */
+ 	if (!(smmu->features & ARM_SMMU_FEAT_TRANS_S1))
+@@ -2362,17 +2364,31 @@ static int arm_smmu_domain_finalise(struct arm_smmu_domain *smmu_domain,
+ 	if (!(smmu->features & ARM_SMMU_FEAT_TRANS_S2))
+ 		smmu_domain->stage = ARM_SMMU_DOMAIN_S1;
+ 
++	pgtbl_cfg = (struct io_pgtable_cfg) {
++		.pgsize_bitmap	= smmu->pgsize_bitmap,
++		.coherent_walk	= smmu->features & ARM_SMMU_FEAT_COHERENCY,
++		.tlb		= &arm_smmu_flush_ops,
++		.iommu_dev	= smmu->dev,
++	};
++
+ 	switch (smmu_domain->stage) {
+-	case ARM_SMMU_DOMAIN_S1:
+-		ias = (smmu->features & ARM_SMMU_FEAT_VAX) ? 52 : 48;
+-		ias = min_t(unsigned long, ias, VA_BITS);
+-		oas = smmu->ias;
++	case ARM_SMMU_DOMAIN_S1: {
++		unsigned long ias = (smmu->features &
++				     ARM_SMMU_FEAT_VAX) ? 52 : 48;
++
++		pgtbl_cfg.ias = min_t(unsigned long, ias, VA_BITS);
++		pgtbl_cfg.oas = smmu->ias;
++		if (enable_dirty)
++			pgtbl_cfg.quirks |= IO_PGTABLE_QUIRK_ARM_HD;
+ 		fmt = ARM_64_LPAE_S1;
+ 		finalise_stage_fn = arm_smmu_domain_finalise_s1;
+ 		break;
++	}
+ 	case ARM_SMMU_DOMAIN_S2:
+-		ias = smmu->ias;
+-		oas = smmu->oas;
++		if (enable_dirty)
++			return -EOPNOTSUPP;
++		pgtbl_cfg.ias = smmu->ias;
++		pgtbl_cfg.oas = smmu->oas;
+ 		fmt = ARM_64_LPAE_S2;
+ 		finalise_stage_fn = arm_smmu_domain_finalise_s2;
+ 		break;
+@@ -2380,15 +2396,6 @@ static int arm_smmu_domain_finalise(struct arm_smmu_domain *smmu_domain,
+ 		return -EINVAL;
+ 	}
+ 
+-	pgtbl_cfg = (struct io_pgtable_cfg) {
+-		.pgsize_bitmap	= smmu->pgsize_bitmap,
+-		.ias		= ias,
+-		.oas		= oas,
+-		.coherent_walk	= smmu->features & ARM_SMMU_FEAT_COHERENCY,
+-		.tlb		= &arm_smmu_flush_ops,
+-		.iommu_dev	= smmu->dev,
+-	};
+-
+ 	pgtbl_ops = alloc_io_pgtable_ops(fmt, &pgtbl_cfg, smmu_domain);
+ 	if (!pgtbl_ops)
+ 		return -ENOMEM;
+@@ -2396,6 +2403,8 @@ static int arm_smmu_domain_finalise(struct arm_smmu_domain *smmu_domain,
+ 	smmu_domain->domain.pgsize_bitmap = pgtbl_cfg.pgsize_bitmap;
+ 	smmu_domain->domain.geometry.aperture_end = (1UL << pgtbl_cfg.ias) - 1;
+ 	smmu_domain->domain.geometry.force_aperture = true;
++	if (enable_dirty && smmu_domain->stage == ARM_SMMU_DOMAIN_S1)
++		smmu_domain->domain.dirty_ops = &arm_smmu_dirty_ops;
+ 
+ 	ret = finalise_stage_fn(smmu, smmu_domain);
+ 	if (ret < 0) {
+@@ -2600,7 +2609,7 @@ static int arm_smmu_attach_dev(struct iommu_domain *domain, struct device *dev)
+ 	mutex_lock(&smmu_domain->init_mutex);
+ 
+ 	if (!smmu_domain->smmu) {
+-		ret = arm_smmu_domain_finalise(smmu_domain, smmu);
++		ret = arm_smmu_domain_finalise(smmu_domain, smmu, 0);
+ 	} else if (smmu_domain->smmu != smmu)
+ 		ret = -EINVAL;
+ 
+@@ -2731,10 +2740,13 @@ arm_smmu_domain_alloc_user(struct device *dev, u32 flags,
+ 			   const struct iommu_user_data *user_data)
+ {
+ 	struct arm_smmu_master *master = dev_iommu_priv_get(dev);
++	const u32 PAGING_FLAGS = IOMMU_HWPT_ALLOC_DIRTY_TRACKING;
+ 	struct arm_smmu_domain *smmu_domain;
+ 	int ret;
+ 
+-	if (flags || parent || user_data)
++	if (flags & ~PAGING_FLAGS)
++		return ERR_PTR(-EOPNOTSUPP);
++	if (parent || user_data)
+ 		return ERR_PTR(-EOPNOTSUPP);
+ 
+ 	smmu_domain = arm_smmu_domain_alloc_common();
+@@ -2743,7 +2755,7 @@ arm_smmu_domain_alloc_user(struct device *dev, u32 flags,
+ 
+ 	smmu_domain->domain.type = IOMMU_DOMAIN_UNMANAGED;
+ 	smmu_domain->domain.ops = arm_smmu_ops.default_domain_ops;
+-	ret = arm_smmu_domain_finalise(smmu_domain, master->smmu);
++	ret = arm_smmu_domain_finalise(smmu_domain, master->smmu, flags);
+ 	if (ret)
+ 		goto err_free;
+ 	return &smmu_domain->domain;
+@@ -3000,6 +3012,27 @@ static void arm_smmu_release_device(struct device *dev)
+ 	kfree(master);
  }
  
-+struct io_pgtable_walk_data {
-+	struct iommu_dirty_bitmap	*dirty;
-+	unsigned long			flags;
-+	u64				addr;
-+	const u64			end;
-+};
-+
-+static int __arm_lpae_iopte_walk_dirty(struct arm_lpae_io_pgtable *data,
-+				       struct io_pgtable_walk_data *walk_data,
-+				       arm_lpae_iopte *ptep,
-+				       int lvl);
-+
-+static int io_pgtable_visit_dirty(struct arm_lpae_io_pgtable *data,
-+				  struct io_pgtable_walk_data *walk_data,
-+				  arm_lpae_iopte *ptep, int lvl)
-+{
-+	struct io_pgtable *iop = &data->iop;
-+	arm_lpae_iopte pte = READ_ONCE(*ptep);
-+
-+	if (iopte_leaf(pte, lvl, iop->fmt)) {
-+		size_t size = ARM_LPAE_BLOCK_SIZE(lvl, data);
-+
-+		if (iopte_writeable_dirty(pte)) {
-+			iommu_dirty_bitmap_record(walk_data->dirty,
-+						  walk_data->addr, size);
-+			if (!(walk_data->flags & IOMMU_DIRTY_NO_CLEAR))
-+				iopte_set_writeable_clean(ptep);
-+		}
-+		walk_data->addr += size;
-+		return 0;
-+	}
-+
-+	if (WARN_ON(!iopte_table(pte, lvl)))
-+		return -EINVAL;
-+
-+	ptep = iopte_deref(pte, data);
-+	return __arm_lpae_iopte_walk_dirty(data, walk_data, ptep, lvl + 1);
-+}
-+
-+static int __arm_lpae_iopte_walk_dirty(struct arm_lpae_io_pgtable *data,
-+				       struct io_pgtable_walk_data *walk_data,
-+				       arm_lpae_iopte *ptep,
-+				       int lvl)
-+{
-+	u32 idx;
-+	int max_entries, ret;
-+
-+	if (WARN_ON(lvl == ARM_LPAE_MAX_LEVELS))
-+		return -EINVAL;
-+
-+	if (lvl == data->start_level)
-+		max_entries = ARM_LPAE_PGD_SIZE(data) / sizeof(arm_lpae_iopte);
-+	else
-+		max_entries = ARM_LPAE_PTES_PER_TABLE(data);
-+
-+	for (idx = ARM_LPAE_LVL_IDX(walk_data->addr, lvl, data);
-+	     (idx < max_entries) && (walk_data->addr < walk_data->end); ++idx) {
-+		ret = io_pgtable_visit_dirty(data, walk_data, ptep + idx, lvl);
-+		if (ret)
-+			return ret;
-+	}
-+
-+	return 0;
-+}
-+
-+static int arm_lpae_read_and_clear_dirty(struct io_pgtable_ops *ops,
++static int arm_smmu_read_and_clear_dirty(struct iommu_domain *domain,
 +					 unsigned long iova, size_t size,
 +					 unsigned long flags,
 +					 struct iommu_dirty_bitmap *dirty)
 +{
-+	struct arm_lpae_io_pgtable *data = io_pgtable_ops_to_data(ops);
-+	struct io_pgtable_cfg *cfg = &data->iop.cfg;
-+	struct io_pgtable_walk_data walk_data = {
-+		.dirty = dirty,
-+		.flags = flags,
-+		.addr = iova,
-+		.end = iova + size,
-+	};
-+	arm_lpae_iopte *ptep = data->pgd;
-+	int lvl = data->start_level;
++	struct arm_smmu_domain *smmu_domain = to_smmu_domain(domain);
++	struct io_pgtable_ops *ops = smmu_domain->pgtbl_ops;
 +
-+	if (WARN_ON(!size))
-+		return -EINVAL;
-+	if (WARN_ON((iova + size - 1) & ~(BIT(cfg->ias) - 1)))
-+		return -EINVAL;
-+	if (data->iop.fmt != ARM_64_LPAE_S1)
-+		return -EINVAL;
-+
-+	return __arm_lpae_iopte_walk_dirty(data, &walk_data, ptep, lvl);
++	return ops->read_and_clear_dirty(ops, iova, size, flags, dirty);
 +}
 +
- static void arm_lpae_restrict_pgsizes(struct io_pgtable_cfg *cfg)
++static int arm_smmu_set_dirty_tracking(struct iommu_domain *domain,
++				       bool enabled)
++{
++	/*
++	 * Always enabled and the dirty bitmap is cleared prior to
++	 * set_dirty_tracking().
++	 */
++	return 0;
++}
++
+ static struct iommu_group *arm_smmu_device_group(struct device *dev)
  {
- 	unsigned long granule, page_sizes;
-@@ -804,6 +913,7 @@ arm_lpae_alloc_pgtable(struct io_pgtable_cfg *cfg)
- 		.map_pages	= arm_lpae_map_pages,
- 		.unmap_pages	= arm_lpae_unmap_pages,
- 		.iova_to_phys	= arm_lpae_iova_to_phys,
-+		.read_and_clear_dirty = arm_lpae_read_and_clear_dirty,
- 	};
+ 	struct iommu_group *group;
+@@ -3163,6 +3196,11 @@ static struct iommu_ops arm_smmu_ops = {
+ 	}
+ };
  
- 	return data;
++static struct iommu_dirty_ops arm_smmu_dirty_ops = {
++	.read_and_clear_dirty	= arm_smmu_read_and_clear_dirty,
++	.set_dirty_tracking     = arm_smmu_set_dirty_tracking,
++};
++
+ /* Probing and initialisation functions */
+ static int arm_smmu_init_one_queue(struct arm_smmu_device *smmu,
+ 				   struct arm_smmu_queue *q,
+diff --git a/drivers/iommu/iommufd/hw_pagetable.c b/drivers/iommu/iommufd/hw_pagetable.c
+index 33d142f8057d..6d5b2fffeea0 100644
+--- a/drivers/iommu/iommufd/hw_pagetable.c
++++ b/drivers/iommu/iommufd/hw_pagetable.c
+@@ -114,6 +114,9 @@ iommufd_hwpt_paging_alloc(struct iommufd_ctx *ictx, struct iommufd_ioas *ioas,
+ 		return ERR_PTR(-EOPNOTSUPP);
+ 	if (flags & ~valid_flags)
+ 		return ERR_PTR(-EOPNOTSUPP);
++	if ((flags & IOMMU_HWPT_ALLOC_DIRTY_TRACKING) &&
++	    !device_iommu_capable(idev->dev, IOMMU_CAP_DIRTY_TRACKING))
++		return ERR_PTR(-EOPNOTSUPP);
+ 
+ 	hwpt_paging = __iommufd_object_alloc(
+ 		ictx, hwpt_paging, IOMMUFD_OBJ_HWPT_PAGING, common.obj);
+diff --git a/include/linux/io-pgtable.h b/include/linux/io-pgtable.h
+index 86cf1f7ae389..f9a81761bfce 100644
+--- a/include/linux/io-pgtable.h
++++ b/include/linux/io-pgtable.h
+@@ -85,6 +85,8 @@ struct io_pgtable_cfg {
+ 	 *
+ 	 * IO_PGTABLE_QUIRK_ARM_OUTER_WBWA: Override the outer-cacheability
+ 	 *	attributes set in the TCR for a non-coherent page-table walker.
++	 *
++	 * IO_PGTABLE_QUIRK_ARM_HD: Enables dirty tracking in stage 1 pagetable.
+ 	 */
+ 	#define IO_PGTABLE_QUIRK_ARM_NS			BIT(0)
+ 	#define IO_PGTABLE_QUIRK_NO_PERMS		BIT(1)
+@@ -92,6 +94,7 @@ struct io_pgtable_cfg {
+ 	#define IO_PGTABLE_QUIRK_ARM_MTK_TTBR_EXT	BIT(4)
+ 	#define IO_PGTABLE_QUIRK_ARM_TTBR1		BIT(5)
+ 	#define IO_PGTABLE_QUIRK_ARM_OUTER_WBWA		BIT(6)
++	#define IO_PGTABLE_QUIRK_ARM_HD			BIT(7)
+ 	unsigned long			quirks;
+ 	unsigned long			pgsize_bitmap;
+ 	unsigned int			ias;
 -- 
 2.34.1
 
