@@ -1,214 +1,167 @@
-Received: from mx0b-0031df01.pphosted.com (mx0b-0031df01.pphosted.com [205.220.180.131])
+Received: from NAM12-MW2-obe.outbound.protection.outlook.com (mail-mw2nam12on2057.outbound.protection.outlook.com [40.107.244.57])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DCF80441D
-	for <iommu@lists.linux.dev>; Thu, 13 Jun 2024 17:41:52 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.180.131
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1718300514; cv=none; b=EgvRAhAWkJr/Uman7ulSJu00cr14KY3aKUKNUNXj1aOHLq2UEiVmd6QNStLSuaWbQDP/ng/3ddATHnDSqxyRQtK8xo/7S4P90yEUOQ7QKKwLA9FoL6lTb8zhuIDjVen2pU5RvOv+YASLtPsEPFnEnBNSYmyfmfG6Wcsba26kxmE=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1718300514; c=relaxed/simple;
-	bh=15oNmKcf+eMB9AWJk5uvNRYz+3HQHUvhgiNTNRzCBlc=;
-	h=Message-ID:Date:MIME-Version:Subject:To:CC:References:From:
-	 In-Reply-To:Content-Type; b=Gpb8E2rOiQhqFFFiaqg+PbSDb+iwskUAUK5V+wZIf2iaemWc67cSoEPcmCzw6j6FsHqVt7/epQars0uiLwRyz1y6kz1eeTkmLtitqnl06PyDxlYL+NGEgpVOxYtn8CB5+x3x0ZZyRZ5kBDvgsJYvxJtjnqzNqyUnwyf+BzDSb5w=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com; spf=pass smtp.mailfrom=quicinc.com; dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b=a+9T+l6z; arc=none smtp.client-ip=205.220.180.131
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=quicinc.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A6BC86F06A
+	for <iommu@lists.linux.dev>; Thu, 13 Jun 2024 17:50:39 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.244.57
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1718301041; cv=fail; b=XS16ktK+mx1yr7CETmdlFG/GMG32J3rSAQxye3oc9q7m++7HS2hZgbgJKThV42SLfkVAvvJCdSEZiYRxdGgbky+33r48WwB0aq6qGxfZZeCbdh9rKLwNNmQQ07v3OBn/LV53sIICfAlDKQ1DBjcgZXUXlk5jeaKOWKbqaoAPceg=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1718301041; c=relaxed/simple;
+	bh=ORu2C9HvVf5KHw3uuqCUTsK33SridGLvBudDlHiZWDs=;
+	h=Date:From:To:CC:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=WHLsHrXjp5JCgcwlqmzdmFozmbhMrgTlC4rmp2PWRzfkZW0wnsf5JyzfTi50ThWRbT12OjiCSWMvx4Sf7yockqjPY+AeBK+6xEnCn8QI3IkT8Na5Q95DxhxXTXFM6ze/T6zxcAtC5s1vEQAl1RwV10PATRbgM9GKDAWq9f2pm/c=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=GWCbSyd9; arc=fail smtp.client-ip=40.107.244.57
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b="a+9T+l6z"
-Received: from pps.filterd (m0279868.ppops.net [127.0.0.1])
-	by mx0a-0031df01.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 45DF21ws001048;
-	Thu, 13 Jun 2024 17:41:35 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=quicinc.com; h=
-	cc:content-transfer-encoding:content-type:date:from:in-reply-to
-	:message-id:mime-version:references:subject:to; s=qcppdkim1; bh=
-	CtViMt9I6uYaJqMZuxBTafqEYu5i9JpWAcqr8s6qEWY=; b=a+9T+l6zuzYW5XMe
-	2w4GzW8yxA0VQcHMg9w6kRQ2KskcYZoOw24rDjcYvZk2o6KCwtFMMufYaSWCPn4z
-	XeCUsxEIbG2NPGRb3h4/4KChjTD2eowjoKLwbhSXA1ChxyPrUO4OS4nY8uRgphL0
-	0orDHhs+WjFmrZvQ3sxA7q7qakmdIdp7Lg9xmiNPtd26Auw2WUKMh0EbUqfzVdQc
-	z2nOPbWAlWPr9YXQiO0ogSKSOImzQ2MPL1NdO0YVXyty2nBfbxydBQ5fwMHnSb/X
-	T5TZstjSYxfDl3I5TALY5OycufI3MLAtJqtgNES8dTI+ECDvbARFaPtpmcxpqm4f
-	gZgZvw==
-Received: from nalasppmta03.qualcomm.com (Global_NAT1.qualcomm.com [129.46.96.20])
-	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 3yqukc9swf-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Thu, 13 Jun 2024 17:41:34 +0000 (GMT)
-Received: from nalasex01c.na.qualcomm.com (nalasex01c.na.qualcomm.com [10.47.97.35])
-	by NALASPPMTA03.qualcomm.com (8.17.1.19/8.17.1.19) with ESMTPS id 45DHfIQs026271
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Thu, 13 Jun 2024 17:41:18 GMT
-Received: from [10.216.38.28] (10.80.80.8) by nalasex01c.na.qualcomm.com
- (10.47.97.35) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1544.9; Thu, 13 Jun
- 2024 10:41:13 -0700
-Message-ID: <3c5034e9-d834-4ebe-a03d-1a222f8f22ac@quicinc.com>
-Date: Thu, 13 Jun 2024 23:10:57 +0530
+	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="GWCbSyd9"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=HTa2V1d1FmbP5/49QTAo1uCv+HfXZOe1Gc/70v3EBFY7T9ivUA/tWy1lnyrv7weFub54uCNDNRsHPfxhCjATcg6NrP3hDWX3AQcm7XMXNAXUdfUfXwuk6BhNWnG/e/AQpiZeuXDMAuX9XLjJJsK5e+JxVAoaMFLNz56FY3L/Fy7TVdN1rH3eQIZX9sDBGN2Uck5hGOM8QdRz7vyePqNzU9j0/4T+CzlqLbG7JfS201bm514HA12R3ZKki6aMnLu4tVJ8EI5GdriHehYAwyoJno5Mh+bV3QP6Fnd76hWO8oAXPHCN1M9XiyOUvXgz9b4g2TFtNS1XOVJLMl/2Y4Nm+Q==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=45TuE/GLIiHzBKokL/tPaymWOIlQcBj9oih0BIFF86g=;
+ b=XFJAUHkqUBz3lau47Bti+HL6CkQ8Wm1SLCelFfx6ebqk4jOfxARCJxyNkfV53NNWeYVkIXucoNpnm2bWWjBJmvJ72h1VgqprEVin6uBUeEIkySJbzJUmSXKHh0OzKq9PqBIYy8wUW4nEkhGxydI095ki8G7TcnLV8fVpZzO5Ysy0ei+jRS4tEZHgAOtYvpHJPSz/MGov9ww22bb0ROrDUEBqVSmNN7RL5MzwRIRTok9yRr0oJbzkV1lDblGBhjOXLCyyYSOD4SINc/HghpCNp5f5dNh3oDo1n4mnzUCbyXuGdHK0Sd+rRmbDdZyU0reaVaFr4klQG+fUiTPMxEd9qw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 216.228.117.160) smtp.rcpttodomain=huawei.com smtp.mailfrom=nvidia.com;
+ dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
+ dkim=none (message not signed); arc=none (0)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=45TuE/GLIiHzBKokL/tPaymWOIlQcBj9oih0BIFF86g=;
+ b=GWCbSyd9psWv9rHOWa9cQg47cuJRkXIV4CLMA2Zv+RM9odWocPTwSOfL4sG9xG6yZ1jW27ZhKzHnxDHce9TE2iUc7lpeDVOERBysRog4SxYT/tTsMAdaZTxygRErlM6WEdeMTDPe46zujSJ4/BIn8hZEEdeO4nNhiVVuJLnpGfY3N+uiYgEoonGUWhkau/13re56k0NhGMPWVgMiNHcVdzvjVJTnkVWcDacUUhNPD5bsvEdLxFUzmVGEZn2D6uHTaTiuTpR8Fm2DaSUThuYPfSzqTNPC8XQRmKdW+NM3mL4f84+disN7BB1fVntQCzgEkcJ149c6cgMvqIi0B1DAIA==
+Received: from BY3PR04CA0027.namprd04.prod.outlook.com (2603:10b6:a03:217::32)
+ by PH7PR12MB7162.namprd12.prod.outlook.com (2603:10b6:510:201::22) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7633.37; Thu, 13 Jun
+ 2024 17:50:35 +0000
+Received: from SJ5PEPF000001D3.namprd05.prod.outlook.com
+ (2603:10b6:a03:217:cafe::80) by BY3PR04CA0027.outlook.office365.com
+ (2603:10b6:a03:217::32) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7677.25 via Frontend
+ Transport; Thu, 13 Jun 2024 17:50:35 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.117.160)
+ smtp.mailfrom=nvidia.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=nvidia.com;
+Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
+ 216.228.117.160 as permitted sender) receiver=protection.outlook.com;
+ client-ip=216.228.117.160; helo=mail.nvidia.com; pr=C
+Received: from mail.nvidia.com (216.228.117.160) by
+ SJ5PEPF000001D3.mail.protection.outlook.com (10.167.242.55) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.7677.15 via Frontend Transport; Thu, 13 Jun 2024 17:50:34 +0000
+Received: from rnnvmail203.nvidia.com (10.129.68.9) by mail.nvidia.com
+ (10.129.200.66) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1544.4; Thu, 13 Jun
+ 2024 10:50:19 -0700
+Received: from rnnvmail201.nvidia.com (10.129.68.8) by rnnvmail203.nvidia.com
+ (10.129.68.9) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1544.4; Thu, 13 Jun
+ 2024 10:50:18 -0700
+Received: from Asurada-Nvidia (10.127.8.10) by mail.nvidia.com (10.129.68.8)
+ with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1544.4 via Frontend
+ Transport; Thu, 13 Jun 2024 10:50:17 -0700
+Date: Thu, 13 Jun 2024 10:50:16 -0700
+From: Nicolin Chen <nicolinc@nvidia.com>
+To: Shameer Kolothum <shameerali.kolothum.thodi@huawei.com>
+CC: <iommu@lists.linux.dev>, <linux-arm-kernel@lists.infradead.org>,
+	<robin.murphy@arm.com>, <will@kernel.org>, <joro@8bytes.org>,
+	<jgg@nvidia.com>, <ryan.roberts@arm.com>, <mark.rutland@arm.com>,
+	<kevin.tian@intel.com>, <mshavit@google.com>, <eric.auger@redhat.com>,
+	<joao.m.martins@oracle.com>, <jiangkunkun@huawei.com>,
+	<zhukeqian1@huawei.com>, <linuxarm@huawei.com>
+Subject: Re: [PATCH v6 3/6] iommu/arm-smmu-v3: Add feature detection for HTTU
+Message-ID: <ZmsxWOmR13KyLc9S@Asurada-Nvidia>
+References: <20240613144149.38672-1-shameerali.kolothum.thodi@huawei.com>
+ <20240613144149.38672-4-shameerali.kolothum.thodi@huawei.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH 5.15.y] iommu/dma: Trace bounce buffer usage when mapping
- buffers
-To: Greg KH <greg@kroah.com>
-CC: "Isaac J. Manjarres" <isaacmanjarres@google.com>, <stable@vger.kernel.org>,
-        Joerg Roedel <joro@8bytes.org>, Will Deacon
-	<will@kernel.org>,
-        Lu Baolu <baolu.lu@linux.intel.com>, Tom Murphy
-	<murphyt7@tcd.ie>,
-        Saravana Kannan <saravanak@google.com>,
-        Joerg Roedel
-	<jroedel@suse.de>, <kernel-team@android.com>,
-        <iommu@lists.linux-foundation.org>, <iommu@lists.linux.dev>,
-        <linux-kernel@vger.kernel.org>
-References: <2024012226-unmanned-marshy-5819@gregkh>
- <20240122203758.1435127-1-isaacmanjarres@google.com>
- <ZmrKZYJ0+z3mRZXx@hu-bibekkum-hyd.qualcomm.com>
- <2024061311-washable-ranch-abc5@gregkh>
-Content-Language: en-US
-From: Bibek Kumar Patro <quic_bibekkum@quicinc.com>
-In-Reply-To: <2024061311-washable-ranch-abc5@gregkh>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
- nalasex01c.na.qualcomm.com (10.47.97.35)
-X-QCInternal: smtphost
-X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
-X-Proofpoint-GUID: CMqfYVX403d87cHwMaaH4NqU0EGDcSLP
-X-Proofpoint-ORIG-GUID: CMqfYVX403d87cHwMaaH4NqU0EGDcSLP
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.293,Aquarius:18.0.1039,Hydra:6.0.680,FMLib:17.12.28.16
- definitions=2024-06-13_11,2024-06-13_02,2024-05-17_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 priorityscore=1501
- bulkscore=0 phishscore=0 lowpriorityscore=0 adultscore=0 malwarescore=0
- spamscore=0 mlxscore=0 suspectscore=0 mlxlogscore=999 clxscore=1011
- impostorscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.19.0-2405170001 definitions=main-2406130127
+Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: inline
+In-Reply-To: <20240613144149.38672-4-shameerali.kolothum.thodi@huawei.com>
+X-NV-OnPremToCloud: ExternallySecured
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: SJ5PEPF000001D3:EE_|PH7PR12MB7162:EE_
+X-MS-Office365-Filtering-Correlation-Id: c5e67a43-a295-43d3-fb8c-08dc8bd15362
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam:
+	BCL:0;ARA:13230035|36860700008|82310400021|1800799019|7416009|376009;
+X-Microsoft-Antispam-Message-Info:
+	=?us-ascii?Q?zuIm4gP4NjG4NFzSMKk8MG7rZxKS09KiqsA9A72iEQYEMa+DNE3uCK3gYMik?=
+ =?us-ascii?Q?+hGR8LtcZrh5i5Xs9/wGdeTESs+VCc3pgKuRKk8KHTopf5BiyhhUx/noxm+U?=
+ =?us-ascii?Q?IKxcj94hIbf4sRfa2t60bf5m4Ai3lPk6uuY2L+4A7HfopMePqRQ+Ovohl0No?=
+ =?us-ascii?Q?CBI4LX7RdosjfUsLKKh1EEginOspz01J8BgwemD9E2VoS0+JgJxziDTibHPG?=
+ =?us-ascii?Q?fCKoMberfkth5Q/2WzQPY50He8SXSvczeaDpkHa1mHLkjs01r1rmvPqebAio?=
+ =?us-ascii?Q?w2QTHj+8r54MR6ritS5F/rFXrltzudW6kHh9A/27VAulGJLOe0GOtfN/jytB?=
+ =?us-ascii?Q?TB3xCr4gEQz5T8pq+XeRDoJtZSrQuhY1mcJSn42FeIjZ3fY4vf69rVsJgsSz?=
+ =?us-ascii?Q?RhFUq02+zXn7CAE5CwRQZfOauxI6K0VCg7t7vf3szf3TDKcKYE/ZDTt9sDB4?=
+ =?us-ascii?Q?sjr5CGSgAfJE3WVZJsvv8ZVZkFxQ9jMz35zlif0BXeUvZsGxh6/b9Y2Xx36t?=
+ =?us-ascii?Q?scMur4v26UbPt3IaJPOGlM507l7oPr7HonuhaJTL2b3cKEoTyiAeAchr4Mdj?=
+ =?us-ascii?Q?fL8pgdkBx2eHvOkNmV9jkIvPdNj2P6JwC7eTJfGXoPoanG3YLSd7Ozc5bt1l?=
+ =?us-ascii?Q?SngYsUfm7lDCNNgNYuvMAMJYl5/3CRrXhh0lTR+zr6ZPCE+H82rZodo8yf+j?=
+ =?us-ascii?Q?c60MnSStkI37bpbLedE1lVWr34tVD8SInL1le/uu/KiLQK+H7zVuuZjBHzo3?=
+ =?us-ascii?Q?Mf8R4xSoQAoo/Nyw28UUqH8JpVF6eAVzS0qnezckloqWi5dZspUPHpi7opEy?=
+ =?us-ascii?Q?d/msm0r+lmQ41SUJkV9jcA3EatyX1uAvLDZWsABN3A0EEqm/gNbPBPOrVSre?=
+ =?us-ascii?Q?AFl02u6bTv+rkCL2FJFi4ouCRYa+QWZaEx/Ae4aGWezUUYvovgDPIl3TKfF3?=
+ =?us-ascii?Q?z+Gc6K60sVbJlViUwxr6jVBm2BIFHy1jiJIdOyc/zNPs1R3XE47eyNSBBJ23?=
+ =?us-ascii?Q?N4CTKlz+LbBT8iSzmarJ6NNjHPPLngnQrD6EaaBLF/6jgF2KDi77P0rWZlHN?=
+ =?us-ascii?Q?glEdZA78r6zyIGVQ9+nqG/A15zKzuCDVL7W2PKRi1ON5cf/DKIRKFHpsMATU?=
+ =?us-ascii?Q?bHQdD2hFV7QlLivdiX04iI/KzeDPVr9bnRTta6svTuq5tS2vfoSKCy/5ej0U?=
+ =?us-ascii?Q?C6JfttgtOanbx4dmxT91OuYJlttU3mlF4AWIwf7rzHVcS7hfrhoNJ6TWK7N3?=
+ =?us-ascii?Q?4Xeil44TJTy2P0+HoTSpG5KRgCVnjBS3J/QtwHsAAavDnOP1A3GIe0E2KtQr?=
+ =?us-ascii?Q?SKodTANqf6p7nM2Wb17W/SqvtunIpV1iFPPWcwG13urbXbWcYUy4OtuIE4xo?=
+ =?us-ascii?Q?g2yAHI28mF/DcvGXhMZ1YnoIURZd3fsxyLg5OiyNf+2iG2Isxw=3D=3D?=
+X-Forefront-Antispam-Report:
+	CIP:216.228.117.160;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc6edge1.nvidia.com;CAT:NONE;SFS:(13230035)(36860700008)(82310400021)(1800799019)(7416009)(376009);DIR:OUT;SFP:1101;
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 13 Jun 2024 17:50:34.2720
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: c5e67a43-a295-43d3-fb8c-08dc8bd15362
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.117.160];Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-AuthSource:
+	SJ5PEPF000001D3.namprd05.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH7PR12MB7162
 
-
-
-On 6/13/2024 4:45 PM, Greg KH wrote:
-> On Thu, Jun 13, 2024 at 04:01:01PM +0530, Bibek Kumar Patro wrote:
->> On Mon, Jan 22, 2024 at 12:37:54PM -0800, Isaac J. Manjarres wrote:
->>> When commit 82612d66d51d ("iommu: Allow the dma-iommu api to
->>> use bounce buffers") was introduced, it did not add the logic
->>> for tracing the bounce buffer usage from iommu_dma_map_page().
->>>
->>> All of the users of swiotlb_tbl_map_single() trace their bounce
->>> buffer usage, except iommu_dma_map_page(). This makes it difficult
->>> to track SWIOTLB usage from that function. Thus, trace bounce buffer
->>> usage from iommu_dma_map_page().
->>>
->>> Fixes: 82612d66d51d ("iommu: Allow the dma-iommu api to use bounce buffers")
->>> Cc: stable@vger.kernel.org # v5.15+
->>> Cc: Tom Murphy <murphyt7@tcd.ie>
->>> Cc: Lu Baolu <baolu.lu@linux.intel.com>
->>> Cc: Saravana Kannan <saravanak@google.com>
->>> Signed-off-by: Isaac J. Manjarres <isaacmanjarres@google.com>
->>> Link: https://lore.kernel.org/r/20231208234141.2356157-1-isaacmanjarres@google.com
->>> Signed-off-by: Joerg Roedel <jroedel@suse.de>
->>> (cherry picked from commit a63c357b9fd56ad5fe64616f5b22835252c6a76a)
->>> Signed-off-by: Isaac J. Manjarres <isaacmanjarres@google.com>
->>> ---
->>>   drivers/iommu/dma-iommu.c | 3 +++
->>>   1 file changed, 3 insertions(+)
->>>
->>> diff --git a/drivers/iommu/dma-iommu.c b/drivers/iommu/dma-iommu.c
->>> index 48c6f7ff4aef..8cd63e6ccd2c 100644
->>> --- a/drivers/iommu/dma-iommu.c
->>> +++ b/drivers/iommu/dma-iommu.c
->>> @@ -25,6 +25,7 @@
->>>   #include <linux/vmalloc.h>
->>>   #include <linux/crash_dump.h>
->>>   #include <linux/dma-direct.h>
->>> +#include <trace/events/swiotlb.h>
->>>   
->>>   struct iommu_dma_msi_page {
->>>   	struct list_head	list;
->>> @@ -817,6 +818,8 @@ static dma_addr_t iommu_dma_map_page(struct device *dev, struct page *page,
->>>   		void *padding_start;
->>>   		size_t padding_size, aligned_size;
->>>   
->>> +		trace_swiotlb_bounced(dev, phys, size, swiotlb_force);
->>> +
->>
->> Hi, this backported patch trying to access swiotlb_force variable is
->> causing a build conflict where CONFIG_SWIOTLB is not enabled.
->>
->> In file included from kernel/drivers/iommu/dma-iommu.c:28:
->> kernel/include/trace/events/swiotlb.h:15:9: error: declaration of 'enum SWIOTLB_NO_FORCE' will not be visible outside of this function [-Werror,-Wvisibility]
->>                   enum swiotlb_force swiotlb_force),
->>                        ^
->> kernel/include/linux/swiotlb.h:143:23: note: expanded from macro 'swiotlb_force'
->> #define swiotlb_force SWIOTLB_NO_FORCE
->>                        ^
->> In file included from kernel/drivers/iommu/dma-iommu.c:28:
->> kernel/include/trace/events/swiotlb.h:15:9: error: declaration of 'enum SWIOTLB_NO_FORCE' will not be visible outside of this function [-Werror,-Wvisibility]
->> kernel/include/linux/swiotlb.h:143:23: note: expanded from macro 'swiotlb_force'
->> #define swiotlb_force SWIOTLB_NO_FORCE
->>                        ^
->> In file included from kernel/drivers/iommu/dma-iommu.c:28:
->> kernel/include/trace/events/swiotlb.h:15:9: error: declaration of 'enum SWIOTLB_NO_FORCE' will not be visible outside of this function [-Werror,-Wvisibility]
->> kernel/include/linux/swiotlb.h:143:23: note: expanded from macro 'swiotlb_force'
->> #define swiotlb_force SWIOTLB_NO_FORCE
->>                        ^
->> In file included from kernel/drivers/iommu/dma-iommu.c:28:
->> kernel/include/trace/events/swiotlb.h:15:9: error: declaration of 'enum SWIOTLB_NO_FORCE' will not be visible outside of this function [-Werror,-Wvisibility]
->> kernel/include/linux/swiotlb.h:143:23: note: expanded from macro 'swiotlb_force'
->> #define swiotlb_force SWIOTLB_NO_FORCE
->>                        ^
->> kernel/drivers/iommu/dma-iommu.c:865:42: error: argument type 'enum SWIOTLB_NO_FORCE' is incomplete
->>                                         trace_swiotlb_bounced(dev, phys, size, swiotlb_force);
->>                                                                                ^~~~~~~~~~~~~
->> kernel/include/linux/swiotlb.h:143:23: note: expanded from macro 'swiotlb_force'
->> #define swiotlb_force SWIOTLB_NO_FORCE
->>                        ^~~~~~~~~~~~~~~~
->> kernel/include/trace/events/swiotlb.h:15:9: note: forward declaration of 'enum SWIOTLB_NO_FORCE'
->> enum swiotlb_force swiotlb_force),
->>       ^
->> kernel/include/linux/swiotlb.h:143:23: note: expanded from macro 'swiotlb_force'
->> #define swiotlb_force SWIOTLB_NO_FORCE
->>
->> --------------------------------------------------------------------------------------------------------------------------------------------------
->>
->> I have a simple proposed fix which can resolve this compile time conflict when CONFIG_SWIOTLB is disabled.
->>
->> --- a/include/trace/events/swiotlb.h
->> +++ b/include/trace/events/swiotlb.h
->> @@ -7,6 +7,7 @@
->>
->>   #include <linux/tracepoint.h>
->>
->> +#ifdef CONFIG_SWIOTLB
->>   TRACE_EVENT(swiotlb_bounced,
->>
->>          TP_PROTO(struct device *dev,
->> @@ -43,6 +44,9 @@ TRACE_EVENT(swiotlb_bounced,
->>                          { SWIOTLB_FORCE,        "FORCE" },
->>                          { SWIOTLB_NO_FORCE,     "NO_FORCE" }))
->>   );
->> +#else
->> +#define trace_swiotlb_bounced(dev, phys, size, swiotlb_force)
->> +#endif /* CONFIG_SWIOTLB */
->>
->>   #endif /*  _TRACE_SWIOTLB_H */
->>
->>
+On Thu, Jun 13, 2024 at 03:41:46PM +0100, Shameer Kolothum wrote:
+> From: Jean-Philippe Brucker <jean-philippe@linaro.org>
 > 
-> Why not just take whatever change upstream fixes this instead of a
-> one-off change?
+> If the SMMU supports it and the kernel was built with HTTU support,
+> Probe support for Hardware Translation Table Update (HTTU) which is
+> essentially to enable hardware update of access and dirty flags.
 > 
-
-I am currently checking the history on swiotlb_force and how it's
-removed in latest kernel versions. If those changes are applicable on
-this stable branch can we explore backporting those instead of this one-
-off change ?
-
-Thanks & regards,
-Bibek
-
-> thanks
+> Probe and set the smmu::features for Hardware Dirty and Hardware Access
+> bits. This is in preparation, to enable it on the context descriptors of
+> stage 1 format.
 > 
-> greg k-h
+> Signed-off-by: Jean-Philippe Brucker <jean-philippe@linaro.org>
+> Signed-off-by: Joao Martins <joao.m.martins@oracle.com>
+> Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
+> Reviewed-by: Ryan Roberts <ryan.roberts@arm.com>
+> Reviewed-by: Kevin Tian <kevin.tian@intel.com>
+> Signed-off-by: Shameer Kolothum <shameerali.kolothum.thodi@huawei.com>
+
+Reviewed-by: Nicolin Chen <nicolinc@nvidia.com>
+
+> +static void arm_smmu_get_httu(struct arm_smmu_device *smmu, u32 reg)
+> +{
+> +       u32 fw_features = smmu->features & (ARM_SMMU_FEAT_HA | ARM_SMMU_FEAT_HD);
+> +       u32 httu = FIELD_GET(IDR0_HTTU, reg);
+> +       u32 hw_features = 0;
+> +
+> +       switch (httu) {
+
+It seems that we can drop the httu variable too. But it's quite
+unimportant, so let's have it as-is if there is no other reason
+to respin the series.
