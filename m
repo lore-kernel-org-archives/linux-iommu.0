@@ -1,167 +1,232 @@
-Received: from NAM12-MW2-obe.outbound.protection.outlook.com (mail-mw2nam12on2057.outbound.protection.outlook.com [40.107.244.57])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A6BC86F06A
-	for <iommu@lists.linux.dev>; Thu, 13 Jun 2024 17:50:39 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.244.57
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1718301041; cv=fail; b=XS16ktK+mx1yr7CETmdlFG/GMG32J3rSAQxye3oc9q7m++7HS2hZgbgJKThV42SLfkVAvvJCdSEZiYRxdGgbky+33r48WwB0aq6qGxfZZeCbdh9rKLwNNmQQ07v3OBn/LV53sIICfAlDKQ1DBjcgZXUXlk5jeaKOWKbqaoAPceg=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1718301041; c=relaxed/simple;
-	bh=ORu2C9HvVf5KHw3uuqCUTsK33SridGLvBudDlHiZWDs=;
-	h=Date:From:To:CC:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=WHLsHrXjp5JCgcwlqmzdmFozmbhMrgTlC4rmp2PWRzfkZW0wnsf5JyzfTi50ThWRbT12OjiCSWMvx4Sf7yockqjPY+AeBK+6xEnCn8QI3IkT8Na5Q95DxhxXTXFM6ze/T6zxcAtC5s1vEQAl1RwV10PATRbgM9GKDAWq9f2pm/c=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=GWCbSyd9; arc=fail smtp.client-ip=40.107.244.57
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E34EA2F50;
+	Thu, 13 Jun 2024 19:15:37 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1718306138; cv=none; b=EzuA9AZT/fi1M7WuvgklvfEqFSRnsTpLB2hobTW+XUPt/Ng6E82B+qo4xeMq1FxT3U4JMCzUBcpsf+lWKfLqUuAq03BjfnBBPmZqCzK8gA+pQhqTWtMa3nbEJWp96ligESEBCLUDBjiO8N56H7KqEc8W6tSZxflH6fl+Mt7OgCw=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1718306138; c=relaxed/simple;
+	bh=PxaAEnheuEVKucWpehjXgII5Lh2MtTO4KEUYjKFPDkw=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=fvhPNU7EhOb67xRf4bsrKXkVYCTuXNrFTyZcLnTTlv0BUR0DUiKT/Bc8hroNU+izhfe27yF3YHo+8zCF3wJdCxWWLw8JZpBEJPIj08A4p89MUwEJ9Kh1Xs9zpRsTVgO/fq8p+WB9TCUAPMzPlPBbCWL03YWYtbu28QxNkz4QmPU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=gzUl1M7v; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="GWCbSyd9"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=HTa2V1d1FmbP5/49QTAo1uCv+HfXZOe1Gc/70v3EBFY7T9ivUA/tWy1lnyrv7weFub54uCNDNRsHPfxhCjATcg6NrP3hDWX3AQcm7XMXNAXUdfUfXwuk6BhNWnG/e/AQpiZeuXDMAuX9XLjJJsK5e+JxVAoaMFLNz56FY3L/Fy7TVdN1rH3eQIZX9sDBGN2Uck5hGOM8QdRz7vyePqNzU9j0/4T+CzlqLbG7JfS201bm514HA12R3ZKki6aMnLu4tVJ8EI5GdriHehYAwyoJno5Mh+bV3QP6Fnd76hWO8oAXPHCN1M9XiyOUvXgz9b4g2TFtNS1XOVJLMl/2Y4Nm+Q==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=45TuE/GLIiHzBKokL/tPaymWOIlQcBj9oih0BIFF86g=;
- b=XFJAUHkqUBz3lau47Bti+HL6CkQ8Wm1SLCelFfx6ebqk4jOfxARCJxyNkfV53NNWeYVkIXucoNpnm2bWWjBJmvJ72h1VgqprEVin6uBUeEIkySJbzJUmSXKHh0OzKq9PqBIYy8wUW4nEkhGxydI095ki8G7TcnLV8fVpZzO5Ysy0ei+jRS4tEZHgAOtYvpHJPSz/MGov9ww22bb0ROrDUEBqVSmNN7RL5MzwRIRTok9yRr0oJbzkV1lDblGBhjOXLCyyYSOD4SINc/HghpCNp5f5dNh3oDo1n4mnzUCbyXuGdHK0Sd+rRmbDdZyU0reaVaFr4klQG+fUiTPMxEd9qw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 216.228.117.160) smtp.rcpttodomain=huawei.com smtp.mailfrom=nvidia.com;
- dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
- dkim=none (message not signed); arc=none (0)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=45TuE/GLIiHzBKokL/tPaymWOIlQcBj9oih0BIFF86g=;
- b=GWCbSyd9psWv9rHOWa9cQg47cuJRkXIV4CLMA2Zv+RM9odWocPTwSOfL4sG9xG6yZ1jW27ZhKzHnxDHce9TE2iUc7lpeDVOERBysRog4SxYT/tTsMAdaZTxygRErlM6WEdeMTDPe46zujSJ4/BIn8hZEEdeO4nNhiVVuJLnpGfY3N+uiYgEoonGUWhkau/13re56k0NhGMPWVgMiNHcVdzvjVJTnkVWcDacUUhNPD5bsvEdLxFUzmVGEZn2D6uHTaTiuTpR8Fm2DaSUThuYPfSzqTNPC8XQRmKdW+NM3mL4f84+disN7BB1fVntQCzgEkcJ149c6cgMvqIi0B1DAIA==
-Received: from BY3PR04CA0027.namprd04.prod.outlook.com (2603:10b6:a03:217::32)
- by PH7PR12MB7162.namprd12.prod.outlook.com (2603:10b6:510:201::22) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7633.37; Thu, 13 Jun
- 2024 17:50:35 +0000
-Received: from SJ5PEPF000001D3.namprd05.prod.outlook.com
- (2603:10b6:a03:217:cafe::80) by BY3PR04CA0027.outlook.office365.com
- (2603:10b6:a03:217::32) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7677.25 via Frontend
- Transport; Thu, 13 Jun 2024 17:50:35 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.117.160)
- smtp.mailfrom=nvidia.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=nvidia.com;
-Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 216.228.117.160 as permitted sender) receiver=protection.outlook.com;
- client-ip=216.228.117.160; helo=mail.nvidia.com; pr=C
-Received: from mail.nvidia.com (216.228.117.160) by
- SJ5PEPF000001D3.mail.protection.outlook.com (10.167.242.55) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.7677.15 via Frontend Transport; Thu, 13 Jun 2024 17:50:34 +0000
-Received: from rnnvmail203.nvidia.com (10.129.68.9) by mail.nvidia.com
- (10.129.200.66) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1544.4; Thu, 13 Jun
- 2024 10:50:19 -0700
-Received: from rnnvmail201.nvidia.com (10.129.68.8) by rnnvmail203.nvidia.com
- (10.129.68.9) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1544.4; Thu, 13 Jun
- 2024 10:50:18 -0700
-Received: from Asurada-Nvidia (10.127.8.10) by mail.nvidia.com (10.129.68.8)
- with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1544.4 via Frontend
- Transport; Thu, 13 Jun 2024 10:50:17 -0700
-Date: Thu, 13 Jun 2024 10:50:16 -0700
-From: Nicolin Chen <nicolinc@nvidia.com>
-To: Shameer Kolothum <shameerali.kolothum.thodi@huawei.com>
-CC: <iommu@lists.linux.dev>, <linux-arm-kernel@lists.infradead.org>,
-	<robin.murphy@arm.com>, <will@kernel.org>, <joro@8bytes.org>,
-	<jgg@nvidia.com>, <ryan.roberts@arm.com>, <mark.rutland@arm.com>,
-	<kevin.tian@intel.com>, <mshavit@google.com>, <eric.auger@redhat.com>,
-	<joao.m.martins@oracle.com>, <jiangkunkun@huawei.com>,
-	<zhukeqian1@huawei.com>, <linuxarm@huawei.com>
-Subject: Re: [PATCH v6 3/6] iommu/arm-smmu-v3: Add feature detection for HTTU
-Message-ID: <ZmsxWOmR13KyLc9S@Asurada-Nvidia>
-References: <20240613144149.38672-1-shameerali.kolothum.thodi@huawei.com>
- <20240613144149.38672-4-shameerali.kolothum.thodi@huawei.com>
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="gzUl1M7v"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 08D34C2BBFC;
+	Thu, 13 Jun 2024 19:15:37 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1718306137;
+	bh=PxaAEnheuEVKucWpehjXgII5Lh2MtTO4KEUYjKFPDkw=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=gzUl1M7vQrd2T8fS4MvHteaVlR1Jg0QGhIBkzYQ8VNBg0lTX2rpjj0pAC/eLgQY/e
+	 6AQ8nRPOww0PlBfjVxVpfPv9MUz/a0mQzYdvhCAdVq8F4IuRuq8llzgQ03mjrSFBMp
+	 +5mY9eOtmwMrpRXlt0ZSoID0xDfxfeHSYywgaxLNGv6CeG735rEWHy6IGMeMIJIypf
+	 oxzJxsAAuj5LA/6v4XLmFfCiKZWRQQi9QIOcrOCZGCcOykdQ8kub+XLk8yPJGzfQuE
+	 hSFCbKTpsZMyLng1o5+VvInMLoNLXzvLGq8w3AV1ghg3gNmXN1ETemlf7jYNXWkpH6
+	 xNhP+d2XQzwLg==
+Date: Thu, 13 Jun 2024 13:15:35 -0600
+From: Rob Herring <robh@kernel.org>
+To: Tomeu Vizoso <tomeu@tomeuvizoso.net>
+Cc: Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
+	Robin Murphy <robin.murphy@arm.com>,
+	Heiko Stuebner <heiko@sntech.de>,
+	Krzysztof Kozlowski <krzk+dt@kernel.org>,
+	Conor Dooley <conor+dt@kernel.org>,
+	Oded Gabbay <ogabbay@kernel.org>,
+	Tomeu Vizoso <tomeu.vizoso@tomeuvizoso.net>,
+	David Airlie <airlied@gmail.com>, Daniel Vetter <daniel@ffwll.ch>,
+	Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
+	Maxime Ripard <mripard@kernel.org>,
+	Thomas Zimmermann <tzimmermann@suse.de>,
+	Philipp Zabel <p.zabel@pengutronix.de>,
+	Sumit Semwal <sumit.semwal@linaro.org>,
+	Christian =?iso-8859-1?Q?K=F6nig?= <christian.koenig@amd.com>,
+	iommu@lists.linux.dev, linux-arm-kernel@lists.infradead.org,
+	linux-rockchip@lists.infradead.org, linux-kernel@vger.kernel.org,
+	devicetree@vger.kernel.org, dri-devel@lists.freedesktop.org,
+	linux-media@vger.kernel.org, linaro-mm-sig@lists.linaro.org
+Subject: Re: [PATCH 3/9] dt-bindings: mailbox: rockchip,rknn: Add bindings
+Message-ID: <20240613191535.GA2319626-robh@kernel.org>
+References: <20240612-6-10-rocket-v1-0-060e48eea250@tomeuvizoso.net>
+ <20240612-6-10-rocket-v1-3-060e48eea250@tomeuvizoso.net>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20240613144149.38672-4-shameerali.kolothum.thodi@huawei.com>
-X-NV-OnPremToCloud: ExternallySecured
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: SJ5PEPF000001D3:EE_|PH7PR12MB7162:EE_
-X-MS-Office365-Filtering-Correlation-Id: c5e67a43-a295-43d3-fb8c-08dc8bd15362
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam:
-	BCL:0;ARA:13230035|36860700008|82310400021|1800799019|7416009|376009;
-X-Microsoft-Antispam-Message-Info:
-	=?us-ascii?Q?zuIm4gP4NjG4NFzSMKk8MG7rZxKS09KiqsA9A72iEQYEMa+DNE3uCK3gYMik?=
- =?us-ascii?Q?+hGR8LtcZrh5i5Xs9/wGdeTESs+VCc3pgKuRKk8KHTopf5BiyhhUx/noxm+U?=
- =?us-ascii?Q?IKxcj94hIbf4sRfa2t60bf5m4Ai3lPk6uuY2L+4A7HfopMePqRQ+Ovohl0No?=
- =?us-ascii?Q?CBI4LX7RdosjfUsLKKh1EEginOspz01J8BgwemD9E2VoS0+JgJxziDTibHPG?=
- =?us-ascii?Q?fCKoMberfkth5Q/2WzQPY50He8SXSvczeaDpkHa1mHLkjs01r1rmvPqebAio?=
- =?us-ascii?Q?w2QTHj+8r54MR6ritS5F/rFXrltzudW6kHh9A/27VAulGJLOe0GOtfN/jytB?=
- =?us-ascii?Q?TB3xCr4gEQz5T8pq+XeRDoJtZSrQuhY1mcJSn42FeIjZ3fY4vf69rVsJgsSz?=
- =?us-ascii?Q?RhFUq02+zXn7CAE5CwRQZfOauxI6K0VCg7t7vf3szf3TDKcKYE/ZDTt9sDB4?=
- =?us-ascii?Q?sjr5CGSgAfJE3WVZJsvv8ZVZkFxQ9jMz35zlif0BXeUvZsGxh6/b9Y2Xx36t?=
- =?us-ascii?Q?scMur4v26UbPt3IaJPOGlM507l7oPr7HonuhaJTL2b3cKEoTyiAeAchr4Mdj?=
- =?us-ascii?Q?fL8pgdkBx2eHvOkNmV9jkIvPdNj2P6JwC7eTJfGXoPoanG3YLSd7Ozc5bt1l?=
- =?us-ascii?Q?SngYsUfm7lDCNNgNYuvMAMJYl5/3CRrXhh0lTR+zr6ZPCE+H82rZodo8yf+j?=
- =?us-ascii?Q?c60MnSStkI37bpbLedE1lVWr34tVD8SInL1le/uu/KiLQK+H7zVuuZjBHzo3?=
- =?us-ascii?Q?Mf8R4xSoQAoo/Nyw28UUqH8JpVF6eAVzS0qnezckloqWi5dZspUPHpi7opEy?=
- =?us-ascii?Q?d/msm0r+lmQ41SUJkV9jcA3EatyX1uAvLDZWsABN3A0EEqm/gNbPBPOrVSre?=
- =?us-ascii?Q?AFl02u6bTv+rkCL2FJFi4ouCRYa+QWZaEx/Ae4aGWezUUYvovgDPIl3TKfF3?=
- =?us-ascii?Q?z+Gc6K60sVbJlViUwxr6jVBm2BIFHy1jiJIdOyc/zNPs1R3XE47eyNSBBJ23?=
- =?us-ascii?Q?N4CTKlz+LbBT8iSzmarJ6NNjHPPLngnQrD6EaaBLF/6jgF2KDi77P0rWZlHN?=
- =?us-ascii?Q?glEdZA78r6zyIGVQ9+nqG/A15zKzuCDVL7W2PKRi1ON5cf/DKIRKFHpsMATU?=
- =?us-ascii?Q?bHQdD2hFV7QlLivdiX04iI/KzeDPVr9bnRTta6svTuq5tS2vfoSKCy/5ej0U?=
- =?us-ascii?Q?C6JfttgtOanbx4dmxT91OuYJlttU3mlF4AWIwf7rzHVcS7hfrhoNJ6TWK7N3?=
- =?us-ascii?Q?4Xeil44TJTy2P0+HoTSpG5KRgCVnjBS3J/QtwHsAAavDnOP1A3GIe0E2KtQr?=
- =?us-ascii?Q?SKodTANqf6p7nM2Wb17W/SqvtunIpV1iFPPWcwG13urbXbWcYUy4OtuIE4xo?=
- =?us-ascii?Q?g2yAHI28mF/DcvGXhMZ1YnoIURZd3fsxyLg5OiyNf+2iG2Isxw=3D=3D?=
-X-Forefront-Antispam-Report:
-	CIP:216.228.117.160;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc6edge1.nvidia.com;CAT:NONE;SFS:(13230035)(36860700008)(82310400021)(1800799019)(7416009)(376009);DIR:OUT;SFP:1101;
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 13 Jun 2024 17:50:34.2720
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: c5e67a43-a295-43d3-fb8c-08dc8bd15362
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.117.160];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource:
-	SJ5PEPF000001D3.namprd05.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH7PR12MB7162
+In-Reply-To: <20240612-6-10-rocket-v1-3-060e48eea250@tomeuvizoso.net>
 
-On Thu, Jun 13, 2024 at 03:41:46PM +0100, Shameer Kolothum wrote:
-> From: Jean-Philippe Brucker <jean-philippe@linaro.org>
-> 
-> If the SMMU supports it and the kernel was built with HTTU support,
-> Probe support for Hardware Translation Table Update (HTTU) which is
-> essentially to enable hardware update of access and dirty flags.
-> 
-> Probe and set the smmu::features for Hardware Dirty and Hardware Access
-> bits. This is in preparation, to enable it on the context descriptors of
-> stage 1 format.
-> 
-> Signed-off-by: Jean-Philippe Brucker <jean-philippe@linaro.org>
-> Signed-off-by: Joao Martins <joao.m.martins@oracle.com>
-> Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
-> Reviewed-by: Ryan Roberts <ryan.roberts@arm.com>
-> Reviewed-by: Kevin Tian <kevin.tian@intel.com>
-> Signed-off-by: Shameer Kolothum <shameerali.kolothum.thodi@huawei.com>
+On Wed, Jun 12, 2024 at 03:52:56PM +0200, Tomeu Vizoso wrote:
+> Add the bindings for the Neural Processing Unit IP from Rockchip.
 
-Reviewed-by: Nicolin Chen <nicolinc@nvidia.com>
+Subject is wrong. Not a mailbox...
 
-> +static void arm_smmu_get_httu(struct arm_smmu_device *smmu, u32 reg)
-> +{
-> +       u32 fw_features = smmu->features & (ARM_SMMU_FEAT_HA | ARM_SMMU_FEAT_HD);
-> +       u32 httu = FIELD_GET(IDR0_HTTU, reg);
-> +       u32 hw_features = 0;
+> Signed-off-by: Tomeu Vizoso <tomeu@tomeuvizoso.net>
+> ---
+>  .../devicetree/bindings/npu/rockchip,rknn.yaml     | 123 +++++++++++++++++++++
+>  1 file changed, 123 insertions(+)
+> 
+> diff --git a/Documentation/devicetree/bindings/npu/rockchip,rknn.yaml b/Documentation/devicetree/bindings/npu/rockchip,rknn.yaml
+> new file mode 100644
+> index 000000000000..570a4889c11c
+> --- /dev/null
+> +++ b/Documentation/devicetree/bindings/npu/rockchip,rknn.yaml
+> @@ -0,0 +1,123 @@
+> +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
+> +%YAML 1.2
+> +---
+> +$id: http://devicetree.org/schemas/npu/rockchip,rknn.yaml#
+> +$schema: http://devicetree.org/meta-schemas/core.yaml#
 > +
-> +       switch (httu) {
+> +title: Neural Processing Unit IP from Rockchip, based on NVIDIA's NVDLA
+> +
+> +maintainers:
+> +  - Tomeu Vizoso <tomeu@tomeuvizoso.net>
+> +
+> +description: |+
+> +  Rockchip IP for accelerating inference of neural networks, based on NVIDIA's open source NVDLA IP.
 
-It seems that we can drop the httu variable too. But it's quite
-unimportant, so let's have it as-is if there is no other reason
-to respin the series.
+Wrap at 80.
+
+> +
+> +properties:
+> +  compatible:
+> +    items:
+> +      - enum:
+> +          - rockchip,rk3588-rknn
+> +      - const: rockchip,rknn
+
+Is there any evidence this block is 'the same' on multiple chips?
+
+> +
+> +  reg:
+> +    description: Base registers for NPU cores
+> +    minItems: 1
+> +    maxItems: 20
+> +
+> +  interrupts:
+> +    minItems: 1
+> +    maxItems: 20
+> +
+> +  interrupt-names:
+> +    minItems: 1
+> +    maxItems: 20
+> +
+> +  clocks:
+> +    minItems: 1
+> +    maxItems: 20
+> +
+> +  clock-names:
+> +    minItems: 1
+> +    maxItems: 20
+> +
+> +  assigned-clocks:
+> +    maxItems: 1
+> +
+> +  assigned-clock-rates:
+> +    maxItems: 1
+
+You don't need assigned-clocks in schemas.
+
+> +
+> +  resets:
+> +    minItems: 1
+> +    maxItems: 20
+> +
+> +  reset-names:
+> +    minItems: 1
+> +    maxItems: 20
+> +
+> +  power-domains:
+> +    minItems: 1
+> +    maxItems: 20
+> +
+> +  power-domain-names:
+> +    minItems: 1
+> +    maxItems: 20
+> +
+> +  iommus:
+> +    items:
+> +      - description: IOMMU for all cores
+> +
+> +required:
+> +  - compatible
+> +  - reg
+> +  - interrupts
+> +  - interrupt-names
+> +  - clocks
+> +  - clock-names
+> +  - assigned-clocks
+> +  - assigned-clock-rates
+
+And never should be required.
+
+> +  - resets
+> +  - reset-names
+> +  - power-domains
+> +  - power-domain-names
+> +  - iommus
+> +
+> +additionalProperties: false
+> +
+> +examples:
+> +  - |
+> +    #include <dt-bindings/interrupt-controller/arm-gic.h>
+> +
+> +    bus {
+> +        #address-cells = <2>;
+> +        #size-cells = <2>;
+> +
+> +        rknn: npu@fdab0000 {
+> +          compatible = "rockchip,rk3588-rknn", "rockchip,rknn";
+> +          reg = <0x0 0xfdab0000 0x0 0x9000>,
+> +                <0x0 0xfdac0000 0x0 0x9000>,
+> +                <0x0 0xfdad0000 0x0 0x9000>;
+> +          interrupts = <GIC_SPI 110 IRQ_TYPE_LEVEL_HIGH 0>,
+> +                       <GIC_SPI 111 IRQ_TYPE_LEVEL_HIGH 0>,
+> +                       <GIC_SPI 112 IRQ_TYPE_LEVEL_HIGH 0>;
+> +          interrupt-names = "npu0_irq", "npu1_irq", "npu2_irq";
+
+'irq' is redundant. Names with the index are also kind of pointless
+unless they can be not contiguous.
+
+> +          clocks = <&scmi_clk 0>, <&cru 1>,
+> +                   <&cru 2>, <&cru 3>,
+> +                   <&cru 4>, <&cru 5>,
+> +                   <&cru 6>, <&cru 7>;
+> +          clock-names = "clk_npu",
+
+'clk_' is redundant.
+
+> +                  "aclk0", "aclk1", "aclk2",
+> +                  "hclk0", "hclk1", "hclk2",
+> +                  "pclk";
+
+Assuming 0, 1, 2 are cores and may vary, put all the fixed clocks first 
+and then better to do "aclk0", "hclk0", "aclk1", "hclk1",...
+
+> +          assigned-clocks = <&scmi_clk 0>;
+> +          assigned-clock-rates = <200000000>;
+> +          resets = <&cru 0>, <&cru 1>, <&cru 2>,
+> +                   <&cru 3>, <&cru 4>, <&cru 5>;
+> +          reset-names = "srst_a0", "srst_a1", "srst_a2",
+> +                        "srst_h0", "srst_h1", "srst_h2";
+
+And similar order here.
+
+> +          power-domains = <&power 0>, <&power 1>, <&power 2>;
+> +          power-domain-names = "npu0", "npu1", "npu2";
+> +          iommus = <&rknpu_mmu>;
+> +          status = "disabled";
+> +        };
+> +    };
+> +...
+> 
+> -- 
+> 2.45.2
+> 
