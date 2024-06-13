@@ -1,197 +1,113 @@
-Received: from mx0b-0031df01.pphosted.com (mx0b-0031df01.pphosted.com [205.220.180.131])
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.9])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8F108136663
-	for <iommu@lists.linux.dev>; Thu, 13 Jun 2024 10:31:25 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.180.131
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6526314262B;
+	Thu, 13 Jun 2024 10:55:58 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.9
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1718274688; cv=none; b=eXfOCDdADRPU1fG1d2Akzs98yMNuFBpp8Rhb5fdkWrRwbqoi7TKE7suGuUR60/DakgIkIjkKi7Dtd3YCjQY/0ODFVrHijS+SrmjaJLNdP7tjB/hUpFu9M0+kv954HXfEgUBr2EHhdGKIAZV4zya6/LMP3SUoj81ilyNFwkdc95g=
+	t=1718276159; cv=none; b=agf10O9DZkGcli+pSaGtnkxnaqRWbZtMxnhszDCwb+FmAxaiOM686xbxnL8Ye8ARSQuh0d37JiD43THutoTMipVf95dLPM9b+TQNlfylnRjseGpnml3vERjAtjpma66yVY+nNnaj+Vntvdw+o6AztL4Wv4+vQBDXrkBPniVe8qI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1718274688; c=relaxed/simple;
-	bh=XchcFWCNPg1L9cSqAz/t3ciT2SWLAiYs7ywKgxYt7MA=;
-	h=Date:From:To:CC:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=OVP9o9QkjyQ/7kEXk48gV9b/Iw1QbKbLRQkeeenigUr+HW7HDHfCQIwhbhjCj0OABAe+3NoUIYGjtYdHqjX/PxqujQiv80zG8Eq01AggdM/EondNfjagqrb2Qz5flf+iPuS8V2tXo+fd/mZ7IXuiM0oh7+NQTEjZoqIJdNk56N0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com; spf=pass smtp.mailfrom=quicinc.com; dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b=JPSz/nhC; arc=none smtp.client-ip=205.220.180.131
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=quicinc.com
+	s=arc-20240116; t=1718276159; c=relaxed/simple;
+	bh=6b8ovoJTtpRLHBC4ajzYK05o5vyr6KBXY3vrPVEqJ8Q=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=pK3LTToqtET4mq3MDrR9kbFWboUeCys4B+KvvKnLA7FIFrDtomI/TQmHXMxHMPykd56NW1z5yK11udtPqdhrxJIVgeceVINC7L+UlRolajVn43O+Z3AF29vkAZgYP15WlKYt95uF/XeIs45pDLtqo2puYIk++0aC2yf88dbZIgk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=SGMXyFPm; arc=none smtp.client-ip=198.175.65.9
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b="JPSz/nhC"
-Received: from pps.filterd (m0279868.ppops.net [127.0.0.1])
-	by mx0a-0031df01.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 45D6X3XI001981;
-	Thu, 13 Jun 2024 10:31:11 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=quicinc.com; h=
-	cc:content-type:date:from:in-reply-to:message-id:mime-version
-	:references:subject:to; s=qcppdkim1; bh=EBJ2Q92ghG1HkKBLyMMx2+Er
-	jtsQbdw75uRcCN6zc5w=; b=JPSz/nhCuDf32knpFirPBeWxd/N5Wp9T36ZWj5Od
-	SsVPIV3aClF5D+mqG2f+NbH/pjrXcgnYLONcEFEEGnTtVe6+bvZrpaksPFXkTPmi
-	ibJRe5mg9Rs9GeH4WJN8wIHybuBZtCsM/Mns037qpbNuBGsabrozt8WtUFYdXHuD
-	OMW6JmXpMF79qmT8B0X1+YayqFPwe+Aji3KZZ41+OPkg1v79X8sh1AAgXnj9MX2I
-	njg2CtkR6Rid2/bKlDz0SNLYkSRvVh32kRGFMuLJcCO2aHlqcVQ5T+pzEnGNsq9C
-	PVVSYyGlwvCwFBEMjGjOhiu4C19q75AWdYh9U8mWgk/n7Q==
-Received: from nalasppmta03.qualcomm.com (Global_NAT1.qualcomm.com [129.46.96.20])
-	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 3yqukc8k5h-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Thu, 13 Jun 2024 10:31:10 +0000 (GMT)
-Received: from nalasex01c.na.qualcomm.com (nalasex01c.na.qualcomm.com [10.47.97.35])
-	by NALASPPMTA03.qualcomm.com (8.17.1.19/8.17.1.19) with ESMTPS id 45DAV9un025330
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Thu, 13 Jun 2024 10:31:09 GMT
-Received: from hu-bibekkum-hyd.qualcomm.com (10.80.80.8) by
- nalasex01c.na.qualcomm.com (10.47.97.35) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.1544.9; Thu, 13 Jun 2024 03:31:05 -0700
-Date: Thu, 13 Jun 2024 16:01:01 +0530
-From: Bibek Kumar Patro <quic_bibekkum@quicinc.com>
-To: "Isaac J. Manjarres" <isaacmanjarres@google.com>
-CC: <stable@vger.kernel.org>, Joerg Roedel <joro@8bytes.org>,
-        Will Deacon
-	<will@kernel.org>, Lu Baolu <baolu.lu@linux.intel.com>,
-        Tom Murphy
-	<murphyt7@tcd.ie>, Saravana Kannan <saravanak@google.com>,
-        Joerg Roedel
-	<jroedel@suse.de>, <kernel-team@android.com>,
-        <iommu@lists.linux-foundation.org>, <iommu@lists.linux.dev>,
-        <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH 5.15.y] iommu/dma: Trace bounce buffer usage when mapping
- buffers
-Message-ID: <ZmrKZYJ0+z3mRZXx@hu-bibekkum-hyd.qualcomm.com>
-References: <2024012226-unmanned-marshy-5819@gregkh>
- <20240122203758.1435127-1-isaacmanjarres@google.com>
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="SGMXyFPm"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1718276158; x=1749812158;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=6b8ovoJTtpRLHBC4ajzYK05o5vyr6KBXY3vrPVEqJ8Q=;
+  b=SGMXyFPmJnNpYSkYA1J9tKyEGKemxDrRKFSOyqzro8c2J8M7sqFe/JBq
+   RCStm4CPi5aV2UFR4gOYgBGxk/hZ+QQ0DwAnSUtaQKNLxyAFU8+/xpyFV
+   XEJtMLHK6qfrj2sKGP18wCfuKM2wOhorrn25NDO/C7Thl6tZe+68/ZXtR
+   dXmBHrn7T0spguw6UB6kJI2PTgcPDb/C723COO3LHPuzoPtKcu7SwKKfZ
+   9tU9fwShOkapw41iJAkj2vXQD6rjyuyUeMX0zFHuS13X94ND64lNRANXF
+   9hCFWiEA0rybbDLW4AQlwWxpDJLtVscC30WCQhdiqRES3SCNI3uoWExcy
+   A==;
+X-CSE-ConnectionGUID: opYX6GM4TJuSq7F5iYf6jg==
+X-CSE-MsgGUID: CiMJ/AiCRs6byMK4CRJP3Q==
+X-IronPort-AV: E=McAfee;i="6700,10204,11101"; a="37606712"
+X-IronPort-AV: E=Sophos;i="6.08,234,1712646000"; 
+   d="scan'208";a="37606712"
+Received: from orviesa004.jf.intel.com ([10.64.159.144])
+  by orvoesa101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Jun 2024 03:55:58 -0700
+X-CSE-ConnectionGUID: tnrO+fJUQeGyx0/k0IZjWg==
+X-CSE-MsgGUID: bKS/wAsASY+1gpvGdJC2ng==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.08,234,1712646000"; 
+   d="scan'208";a="45228251"
+Received: from lkp-server01.sh.intel.com (HELO 628d7d8b9fc6) ([10.239.97.150])
+  by orviesa004.jf.intel.com with ESMTP; 13 Jun 2024 03:55:51 -0700
+Received: from kbuild by 628d7d8b9fc6 with local (Exim 4.96)
+	(envelope-from <lkp@intel.com>)
+	id 1sHi7R-0002WE-0F;
+	Thu, 13 Jun 2024 10:55:49 +0000
+Date: Thu, 13 Jun 2024 18:55:08 +0800
+From: kernel test robot <lkp@intel.com>
+To: Tomeu Vizoso <tomeu@tomeuvizoso.net>, Joerg Roedel <joro@8bytes.org>,
+	Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
+	Heiko Stuebner <heiko@sntech.de>, Rob Herring <robh@kernel.org>,
+	Krzysztof Kozlowski <krzk@kernel.org>,
+	Conor Dooley <conor+dt@kernel.org>,
+	Oded Gabbay <ogabbay@kernel.org>,
+	Tomeu Vizoso <tomeu.vizoso@tomeuvizoso.net>,
+	David Airlie <airlied@gmail.com>, Daniel Vetter <daniel@ffwll.ch>,
+	Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
+	Maxime Ripard <mripard@kernel.org>,
+	Thomas Zimmermann <tzimmermann@suse.de>,
+	Philipp Zabel <p.zabel@pengutronix.de>,
+	Sumit Semwal <sumit.semwal@linaro.org>,
+	Christian =?iso-8859-1?Q?K=F6nig?= <christian.koenig@amd.com>
+Cc: Paul Gazzillo <paul@pgazz.com>,
+	Necip Fazil Yildiran <fazilyildiran@gmail.com>,
+	oe-kbuild-all@lists.linux.dev, iommu@lists.linux.dev,
+	linux-arm-kernel@lists.infradead.org,
+	linux-rockchip@lists.infradead.org, linux-kernel@vger.kernel.org,
+	devicetree@vger.kernel.org, dri-devel@lists.freedesktop.org,
+	linux-media@vger.kernel.org, linaro-mm-sig@lists.linaro.org
+Subject: Re: [PATCH 6/9] accel/rocket: Add a new driver for Rockchip's NPU
+Message-ID: <202406131802.9chtX0Ci-lkp@intel.com>
+References: <20240612-6-10-rocket-v1-6-060e48eea250@tomeuvizoso.net>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20240122203758.1435127-1-isaacmanjarres@google.com>
-X-ClientProxiedBy: nasanex01a.na.qualcomm.com (10.52.223.231) To
- nalasex01c.na.qualcomm.com (10.47.97.35)
-X-QCInternal: smtphost
-X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
-X-Proofpoint-GUID: ApMcbWOuRM4yF9_N3X1to9QvETfBRKIG
-X-Proofpoint-ORIG-GUID: ApMcbWOuRM4yF9_N3X1to9QvETfBRKIG
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.293,Aquarius:18.0.1039,Hydra:6.0.680,FMLib:17.12.28.16
- definitions=2024-06-13_02,2024-06-13_02,2024-05-17_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 priorityscore=1501
- bulkscore=0 phishscore=0 lowpriorityscore=0 adultscore=0 malwarescore=0
- spamscore=0 mlxscore=0 suspectscore=0 mlxlogscore=999 clxscore=1011
- impostorscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.19.0-2405170001 definitions=main-2406130075
+In-Reply-To: <20240612-6-10-rocket-v1-6-060e48eea250@tomeuvizoso.net>
 
-On Mon, Jan 22, 2024 at 12:37:54PM -0800, Isaac J. Manjarres wrote:
-> When commit 82612d66d51d ("iommu: Allow the dma-iommu api to
-> use bounce buffers") was introduced, it did not add the logic
-> for tracing the bounce buffer usage from iommu_dma_map_page().
-> 
-> All of the users of swiotlb_tbl_map_single() trace their bounce
-> buffer usage, except iommu_dma_map_page(). This makes it difficult
-> to track SWIOTLB usage from that function. Thus, trace bounce buffer
-> usage from iommu_dma_map_page().
-> 
-> Fixes: 82612d66d51d ("iommu: Allow the dma-iommu api to use bounce buffers")
-> Cc: stable@vger.kernel.org # v5.15+
-> Cc: Tom Murphy <murphyt7@tcd.ie>
-> Cc: Lu Baolu <baolu.lu@linux.intel.com>
-> Cc: Saravana Kannan <saravanak@google.com>
-> Signed-off-by: Isaac J. Manjarres <isaacmanjarres@google.com>
-> Link: https://lore.kernel.org/r/20231208234141.2356157-1-isaacmanjarres@google.com
-> Signed-off-by: Joerg Roedel <jroedel@suse.de>
-> (cherry picked from commit a63c357b9fd56ad5fe64616f5b22835252c6a76a)
-> Signed-off-by: Isaac J. Manjarres <isaacmanjarres@google.com>
-> ---
->  drivers/iommu/dma-iommu.c | 3 +++
->  1 file changed, 3 insertions(+)
-> 
-> diff --git a/drivers/iommu/dma-iommu.c b/drivers/iommu/dma-iommu.c
-> index 48c6f7ff4aef..8cd63e6ccd2c 100644
-> --- a/drivers/iommu/dma-iommu.c
-> +++ b/drivers/iommu/dma-iommu.c
-> @@ -25,6 +25,7 @@
->  #include <linux/vmalloc.h>
->  #include <linux/crash_dump.h>
->  #include <linux/dma-direct.h>
-> +#include <trace/events/swiotlb.h>
->  
->  struct iommu_dma_msi_page {
->  	struct list_head	list;
-> @@ -817,6 +818,8 @@ static dma_addr_t iommu_dma_map_page(struct device *dev, struct page *page,
->  		void *padding_start;
->  		size_t padding_size, aligned_size;
->  
-> +		trace_swiotlb_bounced(dev, phys, size, swiotlb_force);
-> +
+Hi Tomeu,
 
-Hi, this backported patch trying to access swiotlb_force variable is
-causing a build conflict where CONFIG_SWIOTLB is not enabled.
+kernel test robot noticed the following build warnings:
 
-In file included from kernel/drivers/iommu/dma-iommu.c:28:
-kernel/include/trace/events/swiotlb.h:15:9: error: declaration of 'enum SWIOTLB_NO_FORCE' will not be visible outside of this function [-Werror,-Wvisibility]
-                 enum swiotlb_force swiotlb_force),
-                      ^
-kernel/include/linux/swiotlb.h:143:23: note: expanded from macro 'swiotlb_force'
-#define swiotlb_force SWIOTLB_NO_FORCE
-                      ^
-In file included from kernel/drivers/iommu/dma-iommu.c:28:
-kernel/include/trace/events/swiotlb.h:15:9: error: declaration of 'enum SWIOTLB_NO_FORCE' will not be visible outside of this function [-Werror,-Wvisibility]
-kernel/include/linux/swiotlb.h:143:23: note: expanded from macro 'swiotlb_force'
-#define swiotlb_force SWIOTLB_NO_FORCE
-                      ^
-In file included from kernel/drivers/iommu/dma-iommu.c:28:
-kernel/include/trace/events/swiotlb.h:15:9: error: declaration of 'enum SWIOTLB_NO_FORCE' will not be visible outside of this function [-Werror,-Wvisibility]
-kernel/include/linux/swiotlb.h:143:23: note: expanded from macro 'swiotlb_force'
-#define swiotlb_force SWIOTLB_NO_FORCE
-                      ^
-In file included from kernel/drivers/iommu/dma-iommu.c:28:
-kernel/include/trace/events/swiotlb.h:15:9: error: declaration of 'enum SWIOTLB_NO_FORCE' will not be visible outside of this function [-Werror,-Wvisibility]
-kernel/include/linux/swiotlb.h:143:23: note: expanded from macro 'swiotlb_force'
-#define swiotlb_force SWIOTLB_NO_FORCE
-                      ^
-kernel/drivers/iommu/dma-iommu.c:865:42: error: argument type 'enum SWIOTLB_NO_FORCE' is incomplete
-                                       trace_swiotlb_bounced(dev, phys, size, swiotlb_force);
-                                                                              ^~~~~~~~~~~~~
-kernel/include/linux/swiotlb.h:143:23: note: expanded from macro 'swiotlb_force'
-#define swiotlb_force SWIOTLB_NO_FORCE
-                      ^~~~~~~~~~~~~~~~
-kernel/include/trace/events/swiotlb.h:15:9: note: forward declaration of 'enum SWIOTLB_NO_FORCE'
-enum swiotlb_force swiotlb_force),
-     ^
-kernel/include/linux/swiotlb.h:143:23: note: expanded from macro 'swiotlb_force'
-#define swiotlb_force SWIOTLB_NO_FORCE
+[auto build test WARNING on 83a7eefedc9b56fe7bfeff13b6c7356688ffa670]
 
---------------------------------------------------------------------------------------------------------------------------------------------------
+url:    https://github.com/intel-lab-lkp/linux/commits/Tomeu-Vizoso/iommu-rockchip-Add-compatible-for-rockchip-rk3588-iommu/20240612-215814
+base:   83a7eefedc9b56fe7bfeff13b6c7356688ffa670
+patch link:    https://lore.kernel.org/r/20240612-6-10-rocket-v1-6-060e48eea250%40tomeuvizoso.net
+patch subject: [PATCH 6/9] accel/rocket: Add a new driver for Rockchip's NPU
+config: arc-kismet-CONFIG_IOMMU_IO_PGTABLE_LPAE-CONFIG_DRM_ACCEL_ROCKET-0-0 (https://download.01.org/0day-ci/archive/20240613/202406131802.9chtX0Ci-lkp@intel.com/config)
+reproduce: (https://download.01.org/0day-ci/archive/20240613/202406131802.9chtX0Ci-lkp@intel.com/reproduce)
 
-I have a simple proposed fix which can resolve this compile time conflict when CONFIG_SWIOTLB is disabled.
+If you fix the issue in a separate patch/commit (i.e. not just a new version of
+the same patch/commit), kindly add following tags
+| Reported-by: kernel test robot <lkp@intel.com>
+| Closes: https://lore.kernel.org/oe-kbuild-all/202406131802.9chtX0Ci-lkp@intel.com/
 
---- a/include/trace/events/swiotlb.h
-+++ b/include/trace/events/swiotlb.h
-@@ -7,6 +7,7 @@
+kismet warnings: (new ones prefixed by >>)
+>> kismet: WARNING: unmet direct dependencies detected for IOMMU_IO_PGTABLE_LPAE when selected by DRM_ACCEL_ROCKET
+   WARNING: unmet direct dependencies detected for IOMMU_IO_PGTABLE_LPAE
+     Depends on [n]: IOMMU_SUPPORT [=y] && (ARM || ARM64 || COMPILE_TEST [=y]) && !GENERIC_ATOMIC64 [=y]
+     Selected by [y]:
+     - DRM_ACCEL_ROCKET [=y] && DRM [=y] && (ARM64 || COMPILE_TEST [=y]) && MMU [=y]
 
- #include <linux/tracepoint.h>
-
-+#ifdef CONFIG_SWIOTLB
- TRACE_EVENT(swiotlb_bounced,
-
-        TP_PROTO(struct device *dev,
-@@ -43,6 +44,9 @@ TRACE_EVENT(swiotlb_bounced,
-                        { SWIOTLB_FORCE,        "FORCE" },
-                        { SWIOTLB_NO_FORCE,     "NO_FORCE" }))
- );
-+#else
-+#define trace_swiotlb_bounced(dev, phys, size, swiotlb_force)
-+#endif /* CONFIG_SWIOTLB */
-
- #endif /*  _TRACE_SWIOTLB_H */
-
-
-Thanks & regards,
-Bibek
-
->  		aligned_size = iova_align(iovad, size);
->  		phys = swiotlb_tbl_map_single(dev, phys, size, aligned_size,
->  					      iova_mask(iovad), dir, attrs);
-> -- 
-> 2.43.0.429.g432eaa2c6b-goog
-> 
+-- 
+0-DAY CI Kernel Test Service
+https://github.com/intel/lkp-tests/wiki
