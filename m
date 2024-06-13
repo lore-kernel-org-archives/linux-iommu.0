@@ -1,243 +1,139 @@
-Received: from madrid.collaboradmins.com (madrid.collaboradmins.com [46.235.227.194])
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4375F622
-	for <iommu@lists.linux.dev>; Thu, 13 Jun 2024 00:05:05 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=46.235.227.194
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BBF9317741;
+	Thu, 13 Jun 2024 02:06:30 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1718237107; cv=none; b=cXitJgd/MEYVdvrOOWraunxT3rtfxU6oZkCnhPkE/RmxLuFJQD2OR0QHa0AW58aw33dbBfj2sS7zmoIMelBwT7a111E48cwuvoyeCl6QPQoqFIpCgx+XrtaEswnAMU6em0rZl9qWvYnUyUsVJkKJNW4iaO28wBN4LVtz1kUNuJM=
+	t=1718244392; cv=none; b=rsQdJDnxalYKy3lerHvExSUp51hQHHUXXDYchxZuXHziaDw2E1UFoy5Os5ZHKy4YmSzLe1oREycOjrBb5DQ2WuoH8NMHULY9iAK4vWM/tXb58lREmBlONlFmo46ma2f+ZHexw8ev+S3icF6hAXHd35RUGdEftlMa8GISR70ZRrw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1718237107; c=relaxed/simple;
-	bh=EgNRkgtKSQMKcbGvUe+V6oqG4AaVX1eRRYE+mhCHvzc=;
+	s=arc-20240116; t=1718244392; c=relaxed/simple;
+	bh=8sFmvQ7Z83X7NLUoXzzUfw6X3sNAVrct6codoq1wV7Q=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=F4UlbdlLQjcIDM3/Zb8es2MA/0dQ9dfrEvFBUV50hYQId04anAV4H5IQx7oMSdqlhi3nxTAAyKblX/AhDhmPvdKc7IrHp/KScDjfBKzhUu9RfnybxvlDr7+8Qitcsaiz1IU1TIu29sKvr9wyJpf53ej4RwQq1RQBInA/IZF3GVU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=collabora.com; spf=pass smtp.mailfrom=collabora.com; dkim=pass (2048-bit key) header.d=collabora.com header.i=@collabora.com header.b=VGWO3s68; arc=none smtp.client-ip=46.235.227.194
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=collabora.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=collabora.com
+	 Content-Type:Content-Disposition:In-Reply-To; b=ahN4vHTQZX/E29ojOqaqH00WW3uXfg6WRp4BA5txMLpg/lDvyU+3df4HZrbnyFQO7fJjZQM+e+yo1hOGwMneVpGFaip7AUaZNz5ohs14bQ9a1f6WljkIJ9uCrTVHnmtMCpZahhy4hYWfY/8MeAIKAjYTT6aTTICD9hNeZTtXyXM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=FeSl3aPj; arc=none smtp.client-ip=198.175.65.18
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=collabora.com header.i=@collabora.com header.b="VGWO3s68"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-	s=mail; t=1718237103;
-	bh=EgNRkgtKSQMKcbGvUe+V6oqG4AaVX1eRRYE+mhCHvzc=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=VGWO3s68lz90z2VBw1rqhyNBsljHnWPPD4vU+WhwzTWyTxa+7Vg6Q6Wp1t/FtYZlw
-	 4g7qz3BIkNmGZ0GGWTo2U9U1ukx6L1bp60KaPD++3hbjnJyOUQgiDTkx0JFsmvm79q
-	 nWuCe/X7rOXxkwnfprLajkmBn+5YrG5jQ/PZccuPgf2XzIp4fyALbJ+FjcwrpSLjTg
-	 bwvARlbxf2ouUdMzLvASzTh7IM5cR6GcjQPgNI9vU2L/K0YRsFYGsSE6dAeNcEwGrk
-	 gtpWxmnztR7mK2uSjufE0qtb9Qtipyaqn+gMlj7XHdz1ndQhje3pPcYzVT8N0dU9et
-	 sM9g7S/FP4AJA==
-Received: from mercury (cola.collaboradmins.com [195.201.22.229])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature RSA-PSS (4096 bits))
-	(No client certificate requested)
-	(Authenticated sender: sre)
-	by madrid.collaboradmins.com (Postfix) with ESMTPSA id 1B7FA3782172;
-	Thu, 13 Jun 2024 00:05:03 +0000 (UTC)
-Received: by mercury (Postfix, from userid 1000)
-	id 8B55A10608F7; Thu, 13 Jun 2024 02:05:02 +0200 (CEST)
-Date: Thu, 13 Jun 2024 02:05:02 +0200
-From: Sebastian Reichel <sebastian.reichel@collabora.com>
-To: Tomeu Vizoso <tomeu@tomeuvizoso.net>
-Cc: Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>, 
-	Robin Murphy <robin.murphy@arm.com>, Heiko Stuebner <heiko@sntech.de>, Rob Herring <robh@kernel.org>, 
-	Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, 
-	Oded Gabbay <ogabbay@kernel.org>, Tomeu Vizoso <tomeu.vizoso@tomeuvizoso.net>, 
-	David Airlie <airlied@gmail.com>, Daniel Vetter <daniel@ffwll.ch>, 
-	Maarten Lankhorst <maarten.lankhorst@linux.intel.com>, Maxime Ripard <mripard@kernel.org>, 
-	Thomas Zimmermann <tzimmermann@suse.de>, Philipp Zabel <p.zabel@pengutronix.de>, 
-	Sumit Semwal <sumit.semwal@linaro.org>, Christian =?utf-8?B?S8O2bmln?= <christian.koenig@amd.com>, 
-	iommu@lists.linux.dev, linux-arm-kernel@lists.infradead.org, 
-	linux-rockchip@lists.infradead.org, linux-kernel@vger.kernel.org, devicetree@vger.kernel.org, 
-	dri-devel@lists.freedesktop.org, linux-media@vger.kernel.org, linaro-mm-sig@lists.linaro.org
-Subject: Re: [PATCH 2/9] iommu/rockchip: Attach multiple power domains
-Message-ID: <ffviz6ak6qsn2reg5y35aerzy7wxfx6fzix6xjyminbhfcguus@clszdjakdcjd>
-References: <20240612-6-10-rocket-v1-0-060e48eea250@tomeuvizoso.net>
- <20240612-6-10-rocket-v1-2-060e48eea250@tomeuvizoso.net>
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="FeSl3aPj"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1718244391; x=1749780391;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=8sFmvQ7Z83X7NLUoXzzUfw6X3sNAVrct6codoq1wV7Q=;
+  b=FeSl3aPjOjZFmnCKj9Sfa4taT7g0EXtP7ZvmJ3dBSfVbZjhjpisYgt/i
+   H1QwLVH4WAf6wWP0DA4vrMmpI/ceWvokH6AeVCEyA9on2Okz8XMQ4CvWd
+   MPkjG7qBcP23BD+/g8HmhLOl6+sAiZu8x+Xk9L4MmM3pvi5ssCk/C5Nsp
+   iRohLlX3Iees3RD6pp2fKjbP7dId1DZpqquKNUa3QeM9bb7pWRLsqn/93
+   um7uRHeiDEwCncXhYnzyYPA6QLHtGQY9de+GHuzPvM2vWH1XPf3BGJ9as
+   NQUuNfzeUdSUPt1u+j44ctJxJ8BkoIVWWe3p99redMnftwDCemYJ1fHF4
+   g==;
+X-CSE-ConnectionGUID: I+cvHZvCSry0HBIqSW0S0Q==
+X-CSE-MsgGUID: RTe88A6fRsylybm7/492Nw==
+X-IronPort-AV: E=McAfee;i="6700,10204,11101"; a="15194290"
+X-IronPort-AV: E=Sophos;i="6.08,234,1712646000"; 
+   d="scan'208";a="15194290"
+Received: from fmviesa005.fm.intel.com ([10.60.135.145])
+  by orvoesa110.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Jun 2024 19:06:30 -0700
+X-CSE-ConnectionGUID: S0kNdoNXTeaDmFV2fIXYpQ==
+X-CSE-MsgGUID: 6aVpmYIvR1+lJTRSNmEW5g==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.08,234,1712646000"; 
+   d="scan'208";a="44427853"
+Received: from lkp-server01.sh.intel.com (HELO 628d7d8b9fc6) ([10.239.97.150])
+  by fmviesa005.fm.intel.com with ESMTP; 12 Jun 2024 19:06:24 -0700
+Received: from kbuild by 628d7d8b9fc6 with local (Exim 4.96)
+	(envelope-from <lkp@intel.com>)
+	id 1sHZr4-000270-15;
+	Thu, 13 Jun 2024 02:06:22 +0000
+Date: Thu, 13 Jun 2024 10:05:59 +0800
+From: kernel test robot <lkp@intel.com>
+To: Tomeu Vizoso <tomeu@tomeuvizoso.net>, Joerg Roedel <joro@8bytes.org>,
+	Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
+	Heiko Stuebner <heiko@sntech.de>, Rob Herring <robh@kernel.org>,
+	Krzysztof Kozlowski <krzk@kernel.org>,
+	Conor Dooley <conor+dt@kernel.org>,
+	Oded Gabbay <ogabbay@kernel.org>,
+	Tomeu Vizoso <tomeu.vizoso@tomeuvizoso.net>,
+	David Airlie <airlied@gmail.com>, Daniel Vetter <daniel@ffwll.ch>,
+	Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
+	Maxime Ripard <mripard@kernel.org>,
+	Thomas Zimmermann <tzimmermann@suse.de>,
+	Philipp Zabel <p.zabel@pengutronix.de>,
+	Sumit Semwal <sumit.semwal@linaro.org>,
+	Christian =?iso-8859-1?Q?K=F6nig?= <christian.koenig@amd.com>
+Cc: oe-kbuild-all@lists.linux.dev, iommu@lists.linux.dev,
+	linux-arm-kernel@lists.infradead.org,
+	linux-rockchip@lists.infradead.org, linux-kernel@vger.kernel.org,
+	devicetree@vger.kernel.org, dri-devel@lists.freedesktop.org,
+	linux-media@vger.kernel.org, linaro-mm-sig@lists.linaro.org
+Subject: Re: [PATCH 6/9] accel/rocket: Add a new driver for Rockchip's NPU
+Message-ID: <202406130901.oiofrkFe-lkp@intel.com>
+References: <20240612-6-10-rocket-v1-6-060e48eea250@tomeuvizoso.net>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-	protocol="application/pgp-signature"; boundary="klltttveuxmaguyk"
-Content-Disposition: inline
-In-Reply-To: <20240612-6-10-rocket-v1-2-060e48eea250@tomeuvizoso.net>
-
-
---klltttveuxmaguyk
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+In-Reply-To: <20240612-6-10-rocket-v1-6-060e48eea250@tomeuvizoso.net>
 
-Hi,
+Hi Tomeu,
 
-On Wed, Jun 12, 2024 at 03:52:55PM GMT, Tomeu Vizoso wrote:
-> IOMMUs with multiple base addresses can also have multiple power
-> domains.
->=20
-> The base framework only takes care of a single power domain, as some
-> devices will need for these power domains to be powered on in a specific
-> order.
->=20
-> Use a helper function to stablish links in the order in which they are
-> in the DT.
->=20
-> This is needed by the IOMMU used by the NPU in the RK3588.
->=20
-> Signed-off-by: Tomeu Vizoso <tomeu@tomeuvizoso.net>
-> ---
+kernel test robot noticed the following build errors:
 
-To me it looks like this is multiple IOMMUs, which should each get
-their own node. I don't see a good reason for merging these
-together.
+[auto build test ERROR on 83a7eefedc9b56fe7bfeff13b6c7356688ffa670]
 
-I will still review this assuming there is one. That would require
-to first of all update the DT binding:
+url:    https://github.com/intel-lab-lkp/linux/commits/Tomeu-Vizoso/iommu-rockchip-Add-compatible-for-rockchip-rk3588-iommu/20240612-215814
+base:   83a7eefedc9b56fe7bfeff13b6c7356688ffa670
+patch link:    https://lore.kernel.org/r/20240612-6-10-rocket-v1-6-060e48eea250%40tomeuvizoso.net
+patch subject: [PATCH 6/9] accel/rocket: Add a new driver for Rockchip's NPU
+config: loongarch-allmodconfig (https://download.01.org/0day-ci/archive/20240613/202406130901.oiofrkFe-lkp@intel.com/config)
+compiler: loongarch64-linux-gcc (GCC) 13.2.0
+reproduce (this is a W=1 build): (https://download.01.org/0day-ci/archive/20240613/202406130901.oiofrkFe-lkp@intel.com/reproduce)
 
-Documentation/devicetree/bindings/iommu/rockchip,iommu.yaml
+If you fix the issue in a separate patch/commit (i.e. not just a new version of
+the same patch/commit), kindly add following tags
+| Reported-by: kernel test robot <lkp@intel.com>
+| Closes: https://lore.kernel.org/oe-kbuild-all/202406130901.oiofrkFe-lkp@intel.com/
 
-1. It does not allow using "power-domain-names" property
-2. It limits the number of allowed power-domains to 1
-3. It limits the number of allowed base addresses to 2
+All errors (new ones prefixed by >>):
 
-Looking at the DT patch you also add more interrupts and clocks,
-which are also limited by the binding. You should see a bunch of
-warnings when you check the DTBS via 'make dtbs_check'
+   In file included from arch/loongarch/include/asm/processor.h:17,
+                    from arch/loongarch/include/asm/thread_info.h:15,
+                    from include/linux/thread_info.h:60,
+                    from include/asm-generic/current.h:6,
+                    from ./arch/loongarch/include/generated/asm/current.h:1,
+                    from include/linux/mutex.h:14,
+                    from include/linux/notifier.h:14,
+                    from include/linux/clk.h:14,
+                    from drivers/accel/rocket/rocket_core.c:6:
+>> arch/loongarch/include/uapi/asm/ptrace.h:25:25: error: expected identifier before '(' token
+      25 | #define PC              (GPR_END + 2)
+         |                         ^
+   drivers/accel/rocket/rocket_registers.h:53:9: note: in expansion of macro 'PC'
+      53 |         PC = 0x00000100,
+         |         ^~
 
->  drivers/iommu/rockchip-iommu.c | 36 ++++++++++++++++++++++++++++++++++++
->  1 file changed, 36 insertions(+)
->=20
-> diff --git a/drivers/iommu/rockchip-iommu.c b/drivers/iommu/rockchip-iomm=
-u.c
-> index f5629515bd78..673b0ebb6262 100644
-> --- a/drivers/iommu/rockchip-iommu.c
-> +++ b/drivers/iommu/rockchip-iommu.c
-> @@ -6,6 +6,8 @@
->   *			Daniel Kurtz <djkurtz@chromium.org>
->   */
-> =20
-> +#include "linux/err.h"
-> +#include "linux/pm_domain.h"
->  #include <linux/clk.h>
->  #include <linux/compiler.h>
->  #include <linux/delay.h>
-> @@ -115,6 +117,7 @@ struct rk_iommu {
->  	struct iommu_device iommu;
->  	struct list_head node; /* entry in rk_iommu_domain.iommus */
->  	struct iommu_domain *domain; /* domain to which iommu is attached */
-> +	struct dev_pm_domain_list *pmdomains;
->  };
-> =20
->  struct rk_iommudata {
-> @@ -1186,6 +1189,7 @@ static int rk_iommu_probe(struct platform_device *p=
-dev)
->  	struct resource *res;
->  	const struct rk_iommu_ops *ops;
->  	int num_res =3D pdev->num_resources;
-> +	int pm_domain_count;
->  	int err, i;
-> =20
->  	iommu =3D devm_kzalloc(dev, sizeof(*iommu), GFP_KERNEL);
-> @@ -1271,6 +1275,35 @@ static int rk_iommu_probe(struct platform_device *=
-pdev)
->  	if (!dma_dev)
->  		dma_dev =3D &pdev->dev;
-> =20
-> +	pm_domain_count =3D of_property_count_strings(iommu->dev->of_node, "pow=
-er-domain-names");
 
-pm_domain_count =3D device_property_string_array_count(iommu->dev, "power-d=
-omain-names");
+vim +25 arch/loongarch/include/uapi/asm/ptrace.h
 
-When possible using device_property_ is prefered, since it allows
-reusing code for systems not using DT.
+803b0fc5c3f2ba Huacai Chen 2022-05-31  16  
+803b0fc5c3f2ba Huacai Chen 2022-05-31  17  /*
+803b0fc5c3f2ba Huacai Chen 2022-05-31  18   * For PTRACE_{POKE,PEEK}USR. 0 - 31 are GPRs,
+803b0fc5c3f2ba Huacai Chen 2022-05-31  19   * 32 is syscall's original ARG0, 33 is PC, 34 is BADVADDR.
+803b0fc5c3f2ba Huacai Chen 2022-05-31  20   */
+803b0fc5c3f2ba Huacai Chen 2022-05-31  21  #define GPR_BASE	0
+803b0fc5c3f2ba Huacai Chen 2022-05-31  22  #define GPR_NUM		32
+803b0fc5c3f2ba Huacai Chen 2022-05-31  23  #define GPR_END		(GPR_BASE + GPR_NUM - 1)
+803b0fc5c3f2ba Huacai Chen 2022-05-31  24  #define ARG0		(GPR_END + 1)
+803b0fc5c3f2ba Huacai Chen 2022-05-31 @25  #define PC		(GPR_END + 2)
+803b0fc5c3f2ba Huacai Chen 2022-05-31  26  #define BADVADDR	(GPR_END + 3)
+803b0fc5c3f2ba Huacai Chen 2022-05-31  27  
 
-> +	if (pm_domain_count > 0) {
-> +		const char **pm_domains =3D kvmalloc_array(pm_domain_count, sizeof(*pm=
-_domains), GFP_KERNEL);
-> +		struct dev_pm_domain_attach_data pm_domain_data =3D {
-> +			.pd_names =3D pm_domains,
-> +			.num_pd_names =3D pm_domain_count,
-> +			.pd_flags =3D PD_FLAG_DEV_LINK_ON,
-> +		};
-> +		int i;
-> +
-> +		if (!pm_domain_data.pd_names) {
-> +			err =3D -ENOMEM;
-> +			goto err_remove_sysfs;
-> +		}
-> +
-> +		for (i =3D 0; i < pm_domain_count; i++) {
-> +			err =3D of_property_read_string_index(iommu->dev->of_node, "power-dom=
-ain-names", i, &pm_domains[i]);
-> +			if (err) {
-> +				kfree(pm_domains);
-> +				goto err_remove_sysfs;
-> +			}
-> +		}
-
-There is a helper to read a string array:
-
-err =3D device_property_read_string_array(iommu->dev, "power-domain-names",=
- pm_domains, pm_domain_count);
-
--- Sebastian
-
-> +
-> +		err =3D dev_pm_domain_attach_list(iommu->dev, &pm_domain_data, &iommu-=
->pmdomains);
-> +		kfree(pm_domains);
-> +		if (err < 0)
-> +			goto err_remove_sysfs;
-> +	}
-> +
->  	pm_runtime_enable(dev);
-> =20
->  	for (i =3D 0; i < iommu->num_irq; i++) {
-> @@ -1292,6 +1325,7 @@ static int rk_iommu_probe(struct platform_device *p=
-dev)
->  	return 0;
->  err_pm_disable:
->  	pm_runtime_disable(dev);
-> +	dev_pm_domain_detach_list(iommu->pmdomains);
->  err_remove_sysfs:
->  	iommu_device_sysfs_remove(&iommu->iommu);
->  err_unprepare_clocks:
-> @@ -1310,6 +1344,8 @@ static void rk_iommu_shutdown(struct platform_devic=
-e *pdev)
->  		devm_free_irq(iommu->dev, irq, iommu);
->  	}
-> =20
-> +	dev_pm_domain_detach_list(iommu->pmdomains);
-> +
->  	pm_runtime_force_suspend(&pdev->dev);
->  }
-> =20
->=20
-> --=20
-> 2.45.2
->=20
->=20
-
---klltttveuxmaguyk
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQIzBAABCgAdFiEE72YNB0Y/i3JqeVQT2O7X88g7+poFAmZqN6sACgkQ2O7X88g7
-+pqVmxAAg7JgRVo1N7aZb+AgIqo70yZ1n7UTJR7CiUdmCaLG0E03/qnaFUfttJqQ
-CGGew5eHLIg83Frbx3+Ksg+G01emakM5YoT0lGHe/sL80Iz+VZAMldIsWxBJ9U6y
-bArvV1dFuXik6ZqYfTQ05KhtY1SfCisXl2BuzxPFSFyMJBPiZS/n2QFFAu3KoNTa
-EKA0I73nytEMoBsk/RmcJdU1wRMI7YgJlkjjIRH/YhzjHJfccyfBP53UemiEo4mV
-ybb+/IqXhUqW3HQk4BYrovTMw2HaLknvR/C7Lz1PdVvOFWX9cStytD9JHZM3XGcn
-PGcDHALBksgsIhgZaos55MgWPPdxwRA6VR0pQTaOzg52vuHShZKjgzQbKzlYLMfb
-UzkEpRbJycI212XVJdwVGH+JhvIr+fd13yjd0RQbdEVUqnIzTBmUTW/CO3kX36Go
-AMmGEg8UEHtZtJqzdtIXNJ9/Ef6iLVXxCNQ4pz6EzSOdKbotE2pUS+jOshcNJlFk
-c3ePBJQ3DtKEWsFh3yGtH5Kg/m/LddhUeVoIMTmSlrz73vDecD2IASEE+of8Mho8
-7y3+c/PqBfzyfPYVaqEFlO+//llf5xDeRLHXOW8Mm1BtIrMgyD/401KD4wj/63By
-bLyO2NRg/FXI4kXtQFjBLq7wLmPxujL+S89RolLYMPbbbkxSlsQ=
-=6VfK
------END PGP SIGNATURE-----
-
---klltttveuxmaguyk--
+-- 
+0-DAY CI Kernel Test Service
+https://github.com/intel/lkp-tests/wiki
