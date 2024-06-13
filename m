@@ -1,117 +1,163 @@
-Received: from madrid.collaboradmins.com (madrid.collaboradmins.com [46.235.227.194])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3981C5A4FD
-	for <iommu@lists.linux.dev>; Thu, 13 Jun 2024 21:48:48 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=46.235.227.194
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8065F1369A1;
+	Thu, 13 Jun 2024 22:05:23 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1718315329; cv=none; b=A3e44RbTzcPMx+nSD2L//kPq4UPIXRRzTUBt4nDcJ5XaX97roA4c7QkepXPPuHgJBMt7j/drDshFsDVi2l0NdCxosxaCqywhceL9z7Mbtn4c1XIG2YF5FGqNWGMPzaus7GXq8JBJ8aGMUTTWWbsWJ0XSHz8JBNMB9Mh2m/UMAqI=
+	t=1718316323; cv=none; b=ggMuIRgR6WhgJ0MM3juyFXxn83mq7kpmLAsrVV9Ic3N5d7eOPZlevxS8Sx5RfAMxLfbcl/PnIISNCDX3QTKv6JYlIvElMracDn6oa9eEUMzqdNki61nT2C0O15df5IyuYGim/xpCiX4opLMTGI5llMKpdWM3eRwvm51UNTX8JWg=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1718315329; c=relaxed/simple;
-	bh=0E5aK+rK+8mWd3EYjuWk54URc/yrnOGrMi4oOy/HQyI=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=dq/NwuFobqsKpyFIREnBpQ/7B/+4LbHkCh1R+ZWd29Re/7FbtnXYAA/X2U5y/oqrfOJhG8hKx6GMyNkVpZOw7Ou3Q0ppyU7LhIHaJhgf3xAelmqX7Nx0EPFt+iPfKuqdWSrP+DNntu05vhr0VcAD3Pu8OsVoMJUIdsfSzSdNGj8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=collabora.com; spf=pass smtp.mailfrom=collabora.com; dkim=pass (2048-bit key) header.d=collabora.com header.i=@collabora.com header.b=D1dsGlfO; arc=none smtp.client-ip=46.235.227.194
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=collabora.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=collabora.com
+	s=arc-20240116; t=1718316323; c=relaxed/simple;
+	bh=4XwUUFpXGjUMAlT5fEHcgWb/wldy2nUCCkGTirUQTUA=;
+	h=Date:From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:
+	 Content-Disposition:In-Reply-To; b=Mi3xxDaXnj8J6cKjOA8orNdKPvzN33khyjezUiiaKzOCr+2OAL7hSwVv1DplQ+uwTmB6Kn4XZ1zzUkCJVCSd7T2EkbosZd/hrAlFqaU73FaJMGPDKrF2QZgJdm3uquV9S/OmKVLP+N8AShqnFIuo+8ItBZTcLHdAVP/AAS5xFhg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=clS1/oGT; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=collabora.com header.i=@collabora.com header.b="D1dsGlfO"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-	s=mail; t=1718315326;
-	bh=0E5aK+rK+8mWd3EYjuWk54URc/yrnOGrMi4oOy/HQyI=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=D1dsGlfOsQMs9j42IllEL504XJcPhi+v4uVHVFUDh9dkLitaQA92h9SgvyHWm9Jy7
-	 CYBkT/f5cvRmgi45ATQGnmHpqoGyiOhn0ObacdtPpyVKklC8r1RAfWsajgT+L4dJ0G
-	 dqD605+2loqPTusv5fDX6nfFTc9uA0yVsnrD+IiZ9AcaCGKQl5moXMv21yes06rTtt
-	 KY72REId3auGznJNeBm6Nde92mF8qEHlAQ4B3h2a4RVqi9FskzzgqaD1UI5IY9OFpO
-	 v9qhbcgeV6KgXt9oTRO4QgDMwwb/rFnBmOBnog6tiYiFKBCl2Okp0QHypUIpOzyOx6
-	 8R7ButkRiVz+A==
-Received: from mercury (cola.collaboradmins.com [195.201.22.229])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature RSA-PSS (4096 bits))
-	(No client certificate requested)
-	(Authenticated sender: sre)
-	by madrid.collaboradmins.com (Postfix) with ESMTPSA id 3F5FB37820CD;
-	Thu, 13 Jun 2024 21:48:46 +0000 (UTC)
-Received: by mercury (Postfix, from userid 1000)
-	id A9EA010608F7; Thu, 13 Jun 2024 23:48:45 +0200 (CEST)
-Date: Thu, 13 Jun 2024 23:48:45 +0200
-From: Sebastian Reichel <sebastian.reichel@collabora.com>
-To: Tomeu Vizoso <tomeu@tomeuvizoso.net>
-Cc: Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>, 
-	Robin Murphy <robin.murphy@arm.com>, Heiko Stuebner <heiko@sntech.de>, Rob Herring <robh@kernel.org>, 
-	Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, 
-	Oded Gabbay <ogabbay@kernel.org>, Tomeu Vizoso <tomeu.vizoso@tomeuvizoso.net>, 
-	David Airlie <airlied@gmail.com>, Daniel Vetter <daniel@ffwll.ch>, 
-	Maarten Lankhorst <maarten.lankhorst@linux.intel.com>, Maxime Ripard <mripard@kernel.org>, 
-	Thomas Zimmermann <tzimmermann@suse.de>, Philipp Zabel <p.zabel@pengutronix.de>, 
-	Sumit Semwal <sumit.semwal@linaro.org>, Christian =?utf-8?B?S8O2bmln?= <christian.koenig@amd.com>, 
-	iommu@lists.linux.dev, linux-arm-kernel@lists.infradead.org, 
-	linux-rockchip@lists.infradead.org, linux-kernel@vger.kernel.org, devicetree@vger.kernel.org, 
-	dri-devel@lists.freedesktop.org, linux-media@vger.kernel.org, linaro-mm-sig@lists.linaro.org
-Subject: Re: [PATCH 5/9] arm64: dts: rockchip: Enable the NPU on quartzpro64
-Message-ID: <mq5clkj2io6vzkawm7s6wvzb6rlk74oyy5lylgivosvyavojms@fppwpj5m3qqw>
-References: <20240612-6-10-rocket-v1-0-060e48eea250@tomeuvizoso.net>
- <20240612-6-10-rocket-v1-5-060e48eea250@tomeuvizoso.net>
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="clS1/oGT"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A5928C2BBFC;
+	Thu, 13 Jun 2024 22:05:22 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1718316323;
+	bh=4XwUUFpXGjUMAlT5fEHcgWb/wldy2nUCCkGTirUQTUA=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:From;
+	b=clS1/oGTP4ddRf1o/Oq/j4zXTYm1nEWAPRkpycGle57SvjaO0Md9s/NIj4BFCSBaA
+	 dxjoSTMhKXu+ZhTKH6vZJod6uzsQpiCd7GcqFF/STbvvqUWmxve80NGQqr/nXlVI/I
+	 in/1yxq+9lkLQAI0tpsTVeyM1BELiyBJ6ZXKCHG/34Qrvlnz8Tutj4AWJ2MEnt7zwY
+	 ugg6wvkMZkVghv0d5Q/vABmYLWg8/iuf9QoS35GSpgxS19XpjFAL3ae8zVMGl0wpU8
+	 8c2PAnFBv3BEe3bD/o4UXKChco6YWA7uqYE77aZutTBdw8pY+swpJ6xjKmkSqLC7Sb
+	 A6AaF/hNo9rwQ==
+Date: Thu, 13 Jun 2024 17:05:20 -0500
+From: Bjorn Helgaas <helgaas@kernel.org>
+To: Jason Gunthorpe <jgg@nvidia.com>
+Cc: Vidya Sagar <vidyas@nvidia.com>, "corbet@lwn.net" <corbet@lwn.net>,
+	"bhelgaas@google.com" <bhelgaas@google.com>,
+	Gal Shalom <galshalom@nvidia.com>,
+	Leon Romanovsky <leonro@nvidia.com>,
+	Thierry Reding <treding@nvidia.com>,
+	Jon Hunter <jonathanh@nvidia.com>,
+	Masoud Moshref Javadi <mmoshrefjava@nvidia.com>,
+	Shahaf Shuler <shahafs@nvidia.com>,
+	Vikram Sethi <vsethi@nvidia.com>,
+	Shanker Donthineni <sdonthineni@nvidia.com>,
+	Jiandi An <jan@nvidia.com>, Tushar Dave <tdave@nvidia.com>,
+	"linux-doc@vger.kernel.org" <linux-doc@vger.kernel.org>,
+	"linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>,
+	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+	Krishna Thota <kthota@nvidia.com>,
+	Manikanta Maddireddy <mmaddireddy@nvidia.com>,
+	"sagar.tv@gmail.com" <sagar.tv@gmail.com>,
+	Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
+	Robin Murphy <robin.murphy@arm.com>,
+	"iommu@lists.linux.dev" <iommu@lists.linux.dev>,
+	Alex Williamson <alex.williamson@redhat.com>
+Subject: Re: [PATCH V3] PCI: Extend ACS configurability
+Message-ID: <20240613220520.GA1085981@bhelgaas>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-	protocol="application/pgp-signature"; boundary="vlxe36ggc7o455an"
-Content-Disposition: inline
-In-Reply-To: <20240612-6-10-rocket-v1-5-060e48eea250@tomeuvizoso.net>
-
-
---vlxe36ggc7o455an
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+In-Reply-To: <20240612232301.GB19897@nvidia.com>
 
-Hi,
+On Wed, Jun 12, 2024 at 08:23:01PM -0300, Jason Gunthorpe wrote:
+> On Wed, Jun 12, 2024 at 04:29:03PM -0500, Bjorn Helgaas wrote:
+> > [+cc Alex since VFIO entered the conversation; thread at
+> > https://lore.kernel.org/r/20240523063528.199908-1-vidyas@nvidia.com]
+> > 
+> > On Mon, Jun 10, 2024 at 08:38:49AM -0300, Jason Gunthorpe wrote:
+> > > On Fri, Jun 07, 2024 at 02:30:55PM -0500, Bjorn Helgaas wrote:
+> > > > "Correctly" is not quite the right word here; it's just a fact that
+> > > > the ACS settings determined at boot time result in certain IOMMU
+> > > > groups.  If the user desires different groups, it's not that something
+> > > > is "incorrect"; it's just that the user may have to accept less
+> > > > isolation to get the desired IOMMU groups.
+> > > 
+> > > That is not quite accurate.. There are HW configurations where ACS
+> > > needs to be a certain way for the HW to work with P2P at all. It isn't
+> > > just an optimization or the user accepts something, if they want P2P
+> > > at all they must get a ACS configuration appropriate for their system.
+> > 
+> > The current wording of "For iommu_groups to form correctly, the ACS
+> > settings in the PCIe fabric need to be setup early" suggests that the
+> > way we currently configure ACS is incorrect in general, regardless of
+> > P2PDMA.
+> 
+> Yes, I'd agree with this. We don't have enough information to
+> configurate it properly in the kernel in an automatic way. We don't
+> know if pairs of devices even have SW enablement to do P2P in the
+> kernel and we don't accurately know what issues the root complex
+> has. All of this information goes into choosing the right ACS bits.
+> 
+> > But my impression is that there's a trade-off between isolation and
+> > the ability to do P2PDMA, and users have different requirements, and
+> > the preference for less isolation/more P2PDMA is no more "correct"
+> > than a preference for more isolation/less P2PDMA.
+> 
+> Sure, that makes sense
+>  
+> > Maybe something like this:
+> > 
+> >   PCIe ACS settings determine how devices are put into iommu_groups.
+> >   The iommu_groups in turn determine which devices can be passed
+> >   through to VMs and whether P2PDMA between them is possible.  The
+> >   iommu_groups are built at enumeration-time and are currently static.
+> 
+> Not quite, the iommu_groups don't have alot to do with the P2P. Even
+> devices in the same kernel group can still have non working P2P.
+> 
+> Maybe:
+> 
+>  PCIe ACS settings control the level of isolation and the possible P2P
+>  paths between devices. With greater isolation the kernel will create
+>  smaller iommu_groups and with less isolation there is more HW that
+>  can achieve P2P transfers. From a virtualization perspective all
+>  devices in the same iommu_group must be assigned to the same VM as
+>  they lack security isolation.
+> 
+>  There is no way for the kernel to automatically know the correct
+>  ACS settings for any given system and workload. Existing command line
+>  options allow only for large scale change, disabling all
+>  isolation, but this is not sufficient for more complex cases.
+> 
+>  Add a kernel command-line option to directly control all the ACS bits
+>  for specific devices, which allows the operator to setup the right
+>  level of isolation to achieve the desired P2P configuration. The
+>  definition is future proof, when new ACS bits are added to the spec
+>  the open syntax can be extended.
+> 
+>  ACS needs to be setup early in the kernel boot as the ACS settings
+>  effect how iommu_groups are formed. iommu_group formation is a one
+>  time event during initial device discovery, changing ACS bits after
+>  kernel boot can result in an inaccurate view of the iommu_groups
+>  compared to the current isolation configuration.
+>  
+>  ACS applies to PCIe Downstream Ports and multi-function devices.
+>  The default ACS settings are strict and deny any direct traffic
+>  between two functions. This results in the smallest iommu_group the
+>  HW can support. Frequently these values result in slow or
+>  non-working P2PDMA.
+> 
+>  ACS offers a range of security choices controlling how traffic is
+>  allowed to go directly between two devices. Some popular choices:
+>    - Full prevention
+>    - Translated requests can be direct, with various options
+>    - Asymetric direct traffic, A can reach B but not the reverse
+>    - All traffic can be direct
+>  Along with some other less common ones for special topologies.
+> 
+>  The intention is that this option would be used with expert knowledge
+>  of the HW capability and workload to achieve the desired
+>  configuration.
 
-On Wed, Jun 12, 2024 at 03:52:58PM GMT, Tomeu Vizoso wrote:
-> Enable the nodes added in a previous commit to the rk3588s device tree.
->=20
-> Signed-off-by: Tomeu Vizoso <tomeu@tomeuvizoso.net>
-> ---
+That all sounds good.  IIUC the current default is full prevention (I
+guess you said that a few paragraphs up).
 
-There is a separate regulator for the NPU. For QuartzPro64, which is
-basically the same as EVB1, it should look like this (obviously the
-"npu-supply" and "sram-supply" need to become part of the binding):
+It's unfortunate that this requires so much expert knowledge to use,
+but I guess we don't really have a good alternative.  The only way I
+can think of to help would be some kind of white paper or examples in
+Documentation/PCI/.
 
-&rknn {
-	npu-supply =3D <&vdd_npu_s0>;
-	sram-supply =3D <&vdd_npu_mem_s0>;
-};
-
-Also the references are supposed to be done alphabetically in the
-DT file (so &rknn should not be added before &i2c).
-
-Greetings,
-
--- Sebastian
-
---vlxe36ggc7o455an
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQIzBAABCgAdFiEE72YNB0Y/i3JqeVQT2O7X88g7+poFAmZraToACgkQ2O7X88g7
-+ppnfQ/+JqtXPucUyRx8LXjWs85ElMTUelkoio7nG3hMKa+kIhgFzXsAklBUmELg
-SeopwGrOOSJCb478Eb3uL3M7BBA31blIKAdDnlpFB4R1iimlnGf6gqTkcQumGc2M
-zkgt/YqBdQ4W5HhLCb21fL87PkHZDTgP0SNQlVg4z9xo2KBVuHZe7gfM0/t5MRhC
-P6euSXEhkSUGHb+gq0LBf0MZnoHF6KWcMSsEXm7u/Sv2ftVrC6SyBDUtAAK7WOce
-DHyytzRfGFjoW8/rkxrkdNnw8eQCLd3LZkWhloahInps1t1o4Npk5/o8zEBjHZyY
-Jk7ocIrRnoiMy47QH0zAwr4VtHl6fhRnaZS/0xwBA7jlIGW96U6bNNJkgw1Wj1b1
-capv5ZDibYnlT0JB2NVs+OocykO4MskKtvn6gng3Bu22sGxQ2zWAT41TtrTzklS1
-WRbcIdHwpvtUSvxbWsfpjVuPCfuaVDPKP3ERnWdSTozQ6rZFTY+JN9/FT+wO/b2h
-V0vPx5d6KvskXRd8nOEdd56gTisxnjBEx2njFoQ3fST/blAJs1N37sYHkxeFQnom
-gvk/hVj1zCZV3h5tC+nYJnPM2s2WD49T4R+TgNrCqwLSr+CydHChFnQsm8h+GaXW
-dRZ3RCqZvDopo0LEKn0BLxGfwFzMU/FUPM37m7o3NQo0xfawtBU=
-=SaHD
------END PGP SIGNATURE-----
-
---vlxe36ggc7o455an--
+Bjorn
