@@ -1,163 +1,190 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from madrid.collaboradmins.com (madrid.collaboradmins.com [46.235.227.194])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8065F1369A1;
-	Thu, 13 Jun 2024 22:05:23 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8645C18C05
+	for <iommu@lists.linux.dev>; Thu, 13 Jun 2024 22:16:45 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=46.235.227.194
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1718316323; cv=none; b=ggMuIRgR6WhgJ0MM3juyFXxn83mq7kpmLAsrVV9Ic3N5d7eOPZlevxS8Sx5RfAMxLfbcl/PnIISNCDX3QTKv6JYlIvElMracDn6oa9eEUMzqdNki61nT2C0O15df5IyuYGim/xpCiX4opLMTGI5llMKpdWM3eRwvm51UNTX8JWg=
+	t=1718317007; cv=none; b=WRnl9sL0LzqsvM6zYtZ2uYyfKpVqmP5Daayoe8Wx2Uh3PJWn+uFsHvE07lRrFfpPmFRAg2lRcYlS1hUfbvbTk0MdSE5ssUmoXhntt2zDA+LlV648F7d9wbZY7V4j1l45RvpM00l9auaHLJiKMP/TNk2vDfxBmYro6boF430SXl4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1718316323; c=relaxed/simple;
-	bh=4XwUUFpXGjUMAlT5fEHcgWb/wldy2nUCCkGTirUQTUA=;
-	h=Date:From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:
-	 Content-Disposition:In-Reply-To; b=Mi3xxDaXnj8J6cKjOA8orNdKPvzN33khyjezUiiaKzOCr+2OAL7hSwVv1DplQ+uwTmB6Kn4XZ1zzUkCJVCSd7T2EkbosZd/hrAlFqaU73FaJMGPDKrF2QZgJdm3uquV9S/OmKVLP+N8AShqnFIuo+8ItBZTcLHdAVP/AAS5xFhg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=clS1/oGT; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1718317007; c=relaxed/simple;
+	bh=H6GHq9+Uf+rJk6Vo53ar+G44bfZAHGauc8k+5SO/pc0=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=Nx/HyTlVxpHB4qhu1SlYlq21nJNue3jYAauwLk7qfHjR1qghO1D6PNe+84sT9RmfRrUOc8cfmI5+qBrGb1hI+OSJORN0Efd5uVbRBNUsml4V+kysN/XCOc0tGyIfHigV6sek+C3nXS3KPD0IJ2mWReohd7BHV3KWLWfAtESLg1w=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=collabora.com; spf=pass smtp.mailfrom=collabora.com; dkim=pass (2048-bit key) header.d=collabora.com header.i=@collabora.com header.b=BosEc/lA; arc=none smtp.client-ip=46.235.227.194
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=collabora.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=collabora.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="clS1/oGT"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A5928C2BBFC;
-	Thu, 13 Jun 2024 22:05:22 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1718316323;
-	bh=4XwUUFpXGjUMAlT5fEHcgWb/wldy2nUCCkGTirUQTUA=;
-	h=Date:From:To:Cc:Subject:In-Reply-To:From;
-	b=clS1/oGTP4ddRf1o/Oq/j4zXTYm1nEWAPRkpycGle57SvjaO0Md9s/NIj4BFCSBaA
-	 dxjoSTMhKXu+ZhTKH6vZJod6uzsQpiCd7GcqFF/STbvvqUWmxve80NGQqr/nXlVI/I
-	 in/1yxq+9lkLQAI0tpsTVeyM1BELiyBJ6ZXKCHG/34Qrvlnz8Tutj4AWJ2MEnt7zwY
-	 ugg6wvkMZkVghv0d5Q/vABmYLWg8/iuf9QoS35GSpgxS19XpjFAL3ae8zVMGl0wpU8
-	 8c2PAnFBv3BEe3bD/o4UXKChco6YWA7uqYE77aZutTBdw8pY+swpJ6xjKmkSqLC7Sb
-	 A6AaF/hNo9rwQ==
-Date: Thu, 13 Jun 2024 17:05:20 -0500
-From: Bjorn Helgaas <helgaas@kernel.org>
-To: Jason Gunthorpe <jgg@nvidia.com>
-Cc: Vidya Sagar <vidyas@nvidia.com>, "corbet@lwn.net" <corbet@lwn.net>,
-	"bhelgaas@google.com" <bhelgaas@google.com>,
-	Gal Shalom <galshalom@nvidia.com>,
-	Leon Romanovsky <leonro@nvidia.com>,
-	Thierry Reding <treding@nvidia.com>,
-	Jon Hunter <jonathanh@nvidia.com>,
-	Masoud Moshref Javadi <mmoshrefjava@nvidia.com>,
-	Shahaf Shuler <shahafs@nvidia.com>,
-	Vikram Sethi <vsethi@nvidia.com>,
-	Shanker Donthineni <sdonthineni@nvidia.com>,
-	Jiandi An <jan@nvidia.com>, Tushar Dave <tdave@nvidia.com>,
-	"linux-doc@vger.kernel.org" <linux-doc@vger.kernel.org>,
-	"linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>,
-	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-	Krishna Thota <kthota@nvidia.com>,
-	Manikanta Maddireddy <mmaddireddy@nvidia.com>,
-	"sagar.tv@gmail.com" <sagar.tv@gmail.com>,
-	Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
-	Robin Murphy <robin.murphy@arm.com>,
-	"iommu@lists.linux.dev" <iommu@lists.linux.dev>,
-	Alex Williamson <alex.williamson@redhat.com>
-Subject: Re: [PATCH V3] PCI: Extend ACS configurability
-Message-ID: <20240613220520.GA1085981@bhelgaas>
+	dkim=pass (2048-bit key) header.d=collabora.com header.i=@collabora.com header.b="BosEc/lA"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
+	s=mail; t=1718317003;
+	bh=H6GHq9+Uf+rJk6Vo53ar+G44bfZAHGauc8k+5SO/pc0=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=BosEc/lA4iOVOZeUH8LC9DYkCcCkQNqnMw22HxRF4RUTLJQ2/W8SHsV1Yc2ZjJcXR
+	 sJLzizZghM2BMJtCs9RwbfbTNU46OzUfxDeUFbbCf4tVGalKPC9zEatLs2S7u6bUR6
+	 xlVS2zemYr7sRArDKxIIIch6K80PCQa8AYck3wiKwAzMKG9H60SM99GhAPVbRjHtm0
+	 sZedgkDlwObcy9bYI9kJCal+xvYBPgmSi2R49nlDqRZKAsRIN5ZMTLW2LTroqyjjck
+	 GEMZD+4pVLKsjD/UDViYb1YHSU24df/ijWRkTrqeEiuriUyXTY0gv2InhK/SV04MEY
+	 hMAILiQXMpCmg==
+Received: from mercury (cola.collaboradmins.com [195.201.22.229])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature RSA-PSS (4096 bits))
+	(No client certificate requested)
+	(Authenticated sender: sre)
+	by madrid.collaboradmins.com (Postfix) with ESMTPSA id 6FCB73780C6C;
+	Thu, 13 Jun 2024 22:16:43 +0000 (UTC)
+Received: by mercury (Postfix, from userid 1000)
+	id DDF9910608F7; Fri, 14 Jun 2024 00:16:42 +0200 (CEST)
+Date: Fri, 14 Jun 2024 00:16:42 +0200
+From: Sebastian Reichel <sebastian.reichel@collabora.com>
+To: Tomeu Vizoso <tomeu@tomeuvizoso.net>
+Cc: Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>, 
+	Robin Murphy <robin.murphy@arm.com>, Heiko Stuebner <heiko@sntech.de>, Rob Herring <robh@kernel.org>, 
+	Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, 
+	Oded Gabbay <ogabbay@kernel.org>, Tomeu Vizoso <tomeu.vizoso@tomeuvizoso.net>, 
+	David Airlie <airlied@gmail.com>, Daniel Vetter <daniel@ffwll.ch>, 
+	Maarten Lankhorst <maarten.lankhorst@linux.intel.com>, Maxime Ripard <mripard@kernel.org>, 
+	Thomas Zimmermann <tzimmermann@suse.de>, Philipp Zabel <p.zabel@pengutronix.de>, 
+	Sumit Semwal <sumit.semwal@linaro.org>, Christian =?utf-8?B?S8O2bmln?= <christian.koenig@amd.com>, 
+	iommu@lists.linux.dev, linux-arm-kernel@lists.infradead.org, 
+	linux-rockchip@lists.infradead.org, linux-kernel@vger.kernel.org, devicetree@vger.kernel.org, 
+	dri-devel@lists.freedesktop.org, linux-media@vger.kernel.org, linaro-mm-sig@lists.linaro.org
+Subject: Re: [PATCH 4/9] arm64: dts: rockchip: Add nodes for NPU and its MMU
+ to rk3588s
+Message-ID: <rrmiv7lwj2refsmmdijwpccniw5chnyoma2gxcueeemxypbodx@mjpdrbqs37ce>
+References: <20240612-6-10-rocket-v1-0-060e48eea250@tomeuvizoso.net>
+ <20240612-6-10-rocket-v1-4-060e48eea250@tomeuvizoso.net>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha512;
+	protocol="application/pgp-signature"; boundary="zspmvcykvofgqjiu"
+Content-Disposition: inline
+In-Reply-To: <20240612-6-10-rocket-v1-4-060e48eea250@tomeuvizoso.net>
+
+
+--zspmvcykvofgqjiu
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20240612232301.GB19897@nvidia.com>
+Content-Transfer-Encoding: quoted-printable
 
-On Wed, Jun 12, 2024 at 08:23:01PM -0300, Jason Gunthorpe wrote:
-> On Wed, Jun 12, 2024 at 04:29:03PM -0500, Bjorn Helgaas wrote:
-> > [+cc Alex since VFIO entered the conversation; thread at
-> > https://lore.kernel.org/r/20240523063528.199908-1-vidyas@nvidia.com]
-> > 
-> > On Mon, Jun 10, 2024 at 08:38:49AM -0300, Jason Gunthorpe wrote:
-> > > On Fri, Jun 07, 2024 at 02:30:55PM -0500, Bjorn Helgaas wrote:
-> > > > "Correctly" is not quite the right word here; it's just a fact that
-> > > > the ACS settings determined at boot time result in certain IOMMU
-> > > > groups.  If the user desires different groups, it's not that something
-> > > > is "incorrect"; it's just that the user may have to accept less
-> > > > isolation to get the desired IOMMU groups.
-> > > 
-> > > That is not quite accurate.. There are HW configurations where ACS
-> > > needs to be a certain way for the HW to work with P2P at all. It isn't
-> > > just an optimization or the user accepts something, if they want P2P
-> > > at all they must get a ACS configuration appropriate for their system.
-> > 
-> > The current wording of "For iommu_groups to form correctly, the ACS
-> > settings in the PCIe fabric need to be setup early" suggests that the
-> > way we currently configure ACS is incorrect in general, regardless of
-> > P2PDMA.
-> 
-> Yes, I'd agree with this. We don't have enough information to
-> configurate it properly in the kernel in an automatic way. We don't
-> know if pairs of devices even have SW enablement to do P2P in the
-> kernel and we don't accurately know what issues the root complex
-> has. All of this information goes into choosing the right ACS bits.
-> 
-> > But my impression is that there's a trade-off between isolation and
-> > the ability to do P2PDMA, and users have different requirements, and
-> > the preference for less isolation/more P2PDMA is no more "correct"
-> > than a preference for more isolation/less P2PDMA.
-> 
-> Sure, that makes sense
->  
-> > Maybe something like this:
-> > 
-> >   PCIe ACS settings determine how devices are put into iommu_groups.
-> >   The iommu_groups in turn determine which devices can be passed
-> >   through to VMs and whether P2PDMA between them is possible.  The
-> >   iommu_groups are built at enumeration-time and are currently static.
-> 
-> Not quite, the iommu_groups don't have alot to do with the P2P. Even
-> devices in the same kernel group can still have non working P2P.
-> 
-> Maybe:
-> 
->  PCIe ACS settings control the level of isolation and the possible P2P
->  paths between devices. With greater isolation the kernel will create
->  smaller iommu_groups and with less isolation there is more HW that
->  can achieve P2P transfers. From a virtualization perspective all
->  devices in the same iommu_group must be assigned to the same VM as
->  they lack security isolation.
-> 
->  There is no way for the kernel to automatically know the correct
->  ACS settings for any given system and workload. Existing command line
->  options allow only for large scale change, disabling all
->  isolation, but this is not sufficient for more complex cases.
-> 
->  Add a kernel command-line option to directly control all the ACS bits
->  for specific devices, which allows the operator to setup the right
->  level of isolation to achieve the desired P2P configuration. The
->  definition is future proof, when new ACS bits are added to the spec
->  the open syntax can be extended.
-> 
->  ACS needs to be setup early in the kernel boot as the ACS settings
->  effect how iommu_groups are formed. iommu_group formation is a one
->  time event during initial device discovery, changing ACS bits after
->  kernel boot can result in an inaccurate view of the iommu_groups
->  compared to the current isolation configuration.
->  
->  ACS applies to PCIe Downstream Ports and multi-function devices.
->  The default ACS settings are strict and deny any direct traffic
->  between two functions. This results in the smallest iommu_group the
->  HW can support. Frequently these values result in slow or
->  non-working P2PDMA.
-> 
->  ACS offers a range of security choices controlling how traffic is
->  allowed to go directly between two devices. Some popular choices:
->    - Full prevention
->    - Translated requests can be direct, with various options
->    - Asymetric direct traffic, A can reach B but not the reverse
->    - All traffic can be direct
->  Along with some other less common ones for special topologies.
-> 
->  The intention is that this option would be used with expert knowledge
->  of the HW capability and workload to achieve the desired
->  configuration.
+Hi,
 
-That all sounds good.  IIUC the current default is full prevention (I
-guess you said that a few paragraphs up).
+On Wed, Jun 12, 2024 at 03:52:57PM GMT, Tomeu Vizoso wrote:
+> See Chapter 36 "RKNN" from the RK3588 TRM (Part 1).
+>=20
+> This is a derivative of NVIDIA's NVDLA, but with its own front-end
+> processor.
+>=20
+> Mostly taken from downstream.
+>=20
+> Signed-off-by: Tomeu Vizoso <tomeu@tomeuvizoso.net>
+> ---
 
-It's unfortunate that this requires so much expert knowledge to use,
-but I guess we don't really have a good alternative.  The only way I
-can think of to help would be some kind of white paper or examples in
-Documentation/PCI/.
+Looking at the TRM I noticed, that this register is not mapped:
 
-Bjorn
+RKNN_global_operation_enable
+Address: Operational Base + offset (0xF008)
+
+-- Sebastian
+
+>  arch/arm64/boot/dts/rockchip/rk3588s.dtsi | 53 +++++++++++++++++++++++++=
+++++++
+>  1 file changed, 53 insertions(+)
+>=20
+> diff --git a/arch/arm64/boot/dts/rockchip/rk3588s.dtsi b/arch/arm64/boot/=
+dts/rockchip/rk3588s.dtsi
+> index 6ac5ac8b48ab..a5d53578c8f6 100644
+> --- a/arch/arm64/boot/dts/rockchip/rk3588s.dtsi
+> +++ b/arch/arm64/boot/dts/rockchip/rk3588s.dtsi
+> @@ -2665,6 +2665,59 @@ gpio4: gpio@fec50000 {
+>  			#interrupt-cells =3D <2>;
+>  		};
+>  	};
+> +
+> +	rknn: npu@fdab0000 {
+> +		compatible =3D "rockchip,rk3588-rknn", "rockchip,rknn";
+> +		reg =3D <0x0 0xfdab0000 0x0 0x9000>,
+> +		      <0x0 0xfdac0000 0x0 0x9000>,
+> +		      <0x0 0xfdad0000 0x0 0x9000>;
+> +		interrupts =3D <GIC_SPI 110 IRQ_TYPE_LEVEL_HIGH 0>,
+> +			     <GIC_SPI 111 IRQ_TYPE_LEVEL_HIGH 0>,
+> +			     <GIC_SPI 112 IRQ_TYPE_LEVEL_HIGH 0>;
+> +		interrupt-names =3D "npu0_irq", "npu1_irq", "npu2_irq";
+> +		clocks =3D <&scmi_clk SCMI_CLK_NPU>, <&cru ACLK_NPU0>,
+> +			 <&cru ACLK_NPU1>, <&cru ACLK_NPU2>,
+> +			 <&cru HCLK_NPU0>, <&cru HCLK_NPU1>,
+> +			 <&cru HCLK_NPU2>, <&cru PCLK_NPU_ROOT>;
+> +		clock-names =3D "clk_npu",
+> +			      "aclk0", "aclk1", "aclk2",
+> +			      "hclk0", "hclk1", "hclk2",
+> +			      "pclk";
+> +		assigned-clocks =3D <&scmi_clk SCMI_CLK_NPU>;
+> +		assigned-clock-rates =3D <200000000>;
+> +		resets =3D <&cru SRST_A_RKNN0>, <&cru SRST_A_RKNN1>, <&cru SRST_A_RKNN=
+2>,
+> +			 <&cru SRST_H_RKNN0>, <&cru SRST_H_RKNN1>, <&cru SRST_H_RKNN2>;
+> +		reset-names =3D "srst_a0", "srst_a1", "srst_a2",
+> +			      "srst_h0", "srst_h1", "srst_h2";
+> +		power-domains =3D <&power RK3588_PD_NPUTOP>,
+> +				<&power RK3588_PD_NPU1>,
+> +				<&power RK3588_PD_NPU2>;
+> +		power-domain-names =3D "npu0", "npu1", "npu2";
+> +		iommus =3D <&rknn_mmu>;
+> +		status =3D "disabled";
+> +	};
+> +
+> +	rknn_mmu: iommu@fdab9000 {
+> +		compatible =3D "rockchip,rk3588-iommu";
+> +		reg =3D <0x0 0xfdab9000 0x0 0x100>,
+> +		      <0x0 0xfdaba000 0x0 0x100>,
+> +		      <0x0 0xfdaca000 0x0 0x100>,
+> +		      <0x0 0xfdada000 0x0 0x100>;
+> +		interrupts =3D <GIC_SPI 110 IRQ_TYPE_LEVEL_HIGH 0>,
+> +			     <GIC_SPI 111 IRQ_TYPE_LEVEL_HIGH 0>,
+> +			     <GIC_SPI 112 IRQ_TYPE_LEVEL_HIGH 0>;
+> +		interrupt-names =3D "npu0_mmu", "npu1_mmu", "npu2_mmu";
+> +		clocks =3D <&cru ACLK_NPU0>, <&cru ACLK_NPU1>, <&cru ACLK_NPU2>,
+> +			 <&cru HCLK_NPU0>, <&cru HCLK_NPU1>, <&cru HCLK_NPU2>;
+> +		clock-names =3D "aclk0", "aclk1", "aclk2",
+> +			      "iface0", "iface1", "iface2";
+> +		#iommu-cells =3D <0>;
+> +		power-domains =3D <&power RK3588_PD_NPUTOP>,
+> +				<&power RK3588_PD_NPU1>,
+> +				<&power RK3588_PD_NPU2>;
+> +		power-domain-names =3D "npu0", "npu1", "npu2";
+> +		status =3D "disabled";
+> +	};
+>  };
+> =20
+>  #include "rk3588s-pinctrl.dtsi"
+>=20
+> --=20
+> 2.45.2
+>=20
+>=20
+
+--zspmvcykvofgqjiu
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAABCgAdFiEE72YNB0Y/i3JqeVQT2O7X88g7+poFAmZrb8cACgkQ2O7X88g7
++pp7Cg/+NCeY7EqR6sVyOOVSi/PrBFnVjcHw6BjQgMwiP8UMdW034jc+YCDpUOtM
+GLyYAe491EldwputLm6HNquT4/ad0/28h0HVzXHKeu6ulTga/j5rNV79GYyDhwTJ
+h+ror+9q3BquIkAjiKc9wPEQyL32hr0eBom8Q1yzPwEcF140VO/StE/YRC+aeZca
+UZ8f4lfJnR8M8TIb7uV4KWIkPDSbJtqxoYWseX5+Z0xDdnkIScgP0MgleLcsJIr5
+m+3OC/Ln+jjRZq5uEaN19gHWeMZS2YJX4q79TYCc/qbztzXQWpahLoMnx7ZahUDN
+Nwb/wQF12rOO4Pxiveex6Z9rkf1PQz/Vy6G1AQM7XQSpZcTt7Qi+bqcuSzKDiBXB
+KDFKOyvbRbRshWrTUTep6IkrL4Y+RIezL9k06JTA6iRX8jcininTf4ZZ8EDpKgJl
++houmNpaxasXiknJfcFltFDKYT09WTLUNaTi7MszTCSt0Spk/dXhHXmcczOWK/Q1
+3aVL56LpdzKZIby//ncK2VZxTZv1eLhEMdTeU5FlvzfyFBU7HwqTfAzyrKOUvu1j
+q0UmDYg7x0w9y/eeBY8BSGF81h223yUb2hg2BDIXJw8fLZQQrnjSnemyBgjtJ0Cn
+Smr9JW2zV38Lq64iR5WiETtr/hrVZe0PiVhyqWGsxS1PRPIGpZ4=
+=qyNK
+-----END PGP SIGNATURE-----
+
+--zspmvcykvofgqjiu--
