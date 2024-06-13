@@ -1,156 +1,214 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from mx0b-0031df01.pphosted.com (mx0b-0031df01.pphosted.com [205.220.180.131])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0E27D14A602;
-	Thu, 13 Jun 2024 17:27:17 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DCF80441D
+	for <iommu@lists.linux.dev>; Thu, 13 Jun 2024 17:41:52 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.180.131
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1718299638; cv=none; b=f7fQHaAmfD2jK60+eXPCKQbHepFjvb6E4C10TZRY6odNbAQxUNZ89ItnfBXTKy18LtiY7DgrkTrr74Cv8Z+CYx1UKP9q0t/D1q8F+nn3YoTuYzKRCNFy2el94ybatyK/KGq/8FEdLr1KoLFgc286Y2FKnXrKD4/DmX1EZV8n+9M=
+	t=1718300514; cv=none; b=EgvRAhAWkJr/Uman7ulSJu00cr14KY3aKUKNUNXj1aOHLq2UEiVmd6QNStLSuaWbQDP/ng/3ddATHnDSqxyRQtK8xo/7S4P90yEUOQ7QKKwLA9FoL6lTb8zhuIDjVen2pU5RvOv+YASLtPsEPFnEnBNSYmyfmfG6Wcsba26kxmE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1718299638; c=relaxed/simple;
-	bh=opDT7KR3b/7zSgo/k+eb6uhV3+Agy5mHhqWVAV0NPaE=;
-	h=Date:Content-Type:MIME-Version:From:To:Cc:In-Reply-To:References:
-	 Message-Id:Subject; b=doMdIiQMu6LazTSC+s50zLLrCOPoiLw8lw5RunbMSkt/KykO4tdsCR4quLwRC03MpmQw88u9SNVuDKrXI5azCv1i8LjPnyiHj0iszDXMUxF8+NcvPEdzwW76JNTnwaekfTVDp8WaDpaL4WwJeZcg0TLWBfAZDHWp/r1U51Apscs=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Y+Bsy4LV; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1718300514; c=relaxed/simple;
+	bh=15oNmKcf+eMB9AWJk5uvNRYz+3HQHUvhgiNTNRzCBlc=;
+	h=Message-ID:Date:MIME-Version:Subject:To:CC:References:From:
+	 In-Reply-To:Content-Type; b=Gpb8E2rOiQhqFFFiaqg+PbSDb+iwskUAUK5V+wZIf2iaemWc67cSoEPcmCzw6j6FsHqVt7/epQars0uiLwRyz1y6kz1eeTkmLtitqnl06PyDxlYL+NGEgpVOxYtn8CB5+x3x0ZZyRZ5kBDvgsJYvxJtjnqzNqyUnwyf+BzDSb5w=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com; spf=pass smtp.mailfrom=quicinc.com; dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b=a+9T+l6z; arc=none smtp.client-ip=205.220.180.131
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=quicinc.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Y+Bsy4LV"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2747AC2BBFC;
-	Thu, 13 Jun 2024 17:27:17 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1718299637;
-	bh=opDT7KR3b/7zSgo/k+eb6uhV3+Agy5mHhqWVAV0NPaE=;
-	h=Date:From:To:Cc:In-Reply-To:References:Subject:From;
-	b=Y+Bsy4LVeheYOVXZrOYJG5COt6xXLdymsCT0DX3EfwzBbiMh5HmUPu6UEHQQ/d9cb
-	 HWzh7yHQZBMwuOm6r0eYA7B/EpAwZkePtqoqInyKSHyoQzpGElhBZFQHBaGXK6UxXO
-	 auYJL3sL6o5d+cyPhTHz77sVqZjWl/LDbb7fPurAjAqOC07EdG5PrhjuTh47GUtDD8
-	 Gi1RhWgovtVdG39zJZX1X5KY3fGAjwb5ybaCQjNMHWSDswavq56ETkw2msQsItJI3K
-	 jaUiRIPeo8L1jONLDopd5pT0Gtg7CmvvDmQq6oSJIurYIUIb5JsWNn39LgDnneESAH
-	 6yfZypumrPUFQ==
-Date: Thu, 13 Jun 2024 11:27:15 -0600
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
+	dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b="a+9T+l6z"
+Received: from pps.filterd (m0279868.ppops.net [127.0.0.1])
+	by mx0a-0031df01.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 45DF21ws001048;
+	Thu, 13 Jun 2024 17:41:35 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=quicinc.com; h=
+	cc:content-transfer-encoding:content-type:date:from:in-reply-to
+	:message-id:mime-version:references:subject:to; s=qcppdkim1; bh=
+	CtViMt9I6uYaJqMZuxBTafqEYu5i9JpWAcqr8s6qEWY=; b=a+9T+l6zuzYW5XMe
+	2w4GzW8yxA0VQcHMg9w6kRQ2KskcYZoOw24rDjcYvZk2o6KCwtFMMufYaSWCPn4z
+	XeCUsxEIbG2NPGRb3h4/4KChjTD2eowjoKLwbhSXA1ChxyPrUO4OS4nY8uRgphL0
+	0orDHhs+WjFmrZvQ3sxA7q7qakmdIdp7Lg9xmiNPtd26Auw2WUKMh0EbUqfzVdQc
+	z2nOPbWAlWPr9YXQiO0ogSKSOImzQ2MPL1NdO0YVXyty2nBfbxydBQ5fwMHnSb/X
+	T5TZstjSYxfDl3I5TALY5OycufI3MLAtJqtgNES8dTI+ECDvbARFaPtpmcxpqm4f
+	gZgZvw==
+Received: from nalasppmta03.qualcomm.com (Global_NAT1.qualcomm.com [129.46.96.20])
+	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 3yqukc9swf-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Thu, 13 Jun 2024 17:41:34 +0000 (GMT)
+Received: from nalasex01c.na.qualcomm.com (nalasex01c.na.qualcomm.com [10.47.97.35])
+	by NALASPPMTA03.qualcomm.com (8.17.1.19/8.17.1.19) with ESMTPS id 45DHfIQs026271
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Thu, 13 Jun 2024 17:41:18 GMT
+Received: from [10.216.38.28] (10.80.80.8) by nalasex01c.na.qualcomm.com
+ (10.47.97.35) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1544.9; Thu, 13 Jun
+ 2024 10:41:13 -0700
+Message-ID: <3c5034e9-d834-4ebe-a03d-1a222f8f22ac@quicinc.com>
+Date: Thu, 13 Jun 2024 23:10:57 +0530
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-From: "Rob Herring (Arm)" <robh@kernel.org>
-To: Tomeu Vizoso <tomeu@tomeuvizoso.net>
-Cc: Maarten Lankhorst <maarten.lankhorst@linux.intel.com>, 
- linux-kernel@vger.kernel.org, Krzysztof Kozlowski <krzk+dt@kernel.org>, 
- Tomeu Vizoso <tomeu.vizoso@tomeuvizoso.net>, iommu@lists.linux.dev, 
- David Airlie <airlied@gmail.com>, Philipp Zabel <p.zabel@pengutronix.de>, 
- Thomas Zimmermann <tzimmermann@suse.de>, Conor Dooley <conor+dt@kernel.org>, 
- Oded Gabbay <ogabbay@kernel.org>, Daniel Vetter <daniel@ffwll.ch>, 
- linux-arm-kernel@lists.infradead.org, Maxime Ripard <mripard@kernel.org>, 
- devicetree@vger.kernel.org, dri-devel@lists.freedesktop.org, 
- linux-rockchip@lists.infradead.org, Robin Murphy <robin.murphy@arm.com>, 
- linux-media@vger.kernel.org, Joerg Roedel <joro@8bytes.org>, 
- Sumit Semwal <sumit.semwal@linaro.org>, linaro-mm-sig@lists.linaro.org, 
- Will Deacon <will@kernel.org>, Heiko Stuebner <heiko@sntech.de>, 
- =?utf-8?q?Christian_K=C3=B6nig?= <christian.koenig@amd.com>
-In-Reply-To: <20240612-6-10-rocket-v1-0-060e48eea250@tomeuvizoso.net>
-References: <20240612-6-10-rocket-v1-0-060e48eea250@tomeuvizoso.net>
-Message-Id: <171829929988.2050064.4076911589675234408.robh@kernel.org>
-Subject: Re: [PATCH 0/9] New DRM accel driver for Rockchip's RKNN NPU
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH 5.15.y] iommu/dma: Trace bounce buffer usage when mapping
+ buffers
+To: Greg KH <greg@kroah.com>
+CC: "Isaac J. Manjarres" <isaacmanjarres@google.com>, <stable@vger.kernel.org>,
+        Joerg Roedel <joro@8bytes.org>, Will Deacon
+	<will@kernel.org>,
+        Lu Baolu <baolu.lu@linux.intel.com>, Tom Murphy
+	<murphyt7@tcd.ie>,
+        Saravana Kannan <saravanak@google.com>,
+        Joerg Roedel
+	<jroedel@suse.de>, <kernel-team@android.com>,
+        <iommu@lists.linux-foundation.org>, <iommu@lists.linux.dev>,
+        <linux-kernel@vger.kernel.org>
+References: <2024012226-unmanned-marshy-5819@gregkh>
+ <20240122203758.1435127-1-isaacmanjarres@google.com>
+ <ZmrKZYJ0+z3mRZXx@hu-bibekkum-hyd.qualcomm.com>
+ <2024061311-washable-ranch-abc5@gregkh>
+Content-Language: en-US
+From: Bibek Kumar Patro <quic_bibekkum@quicinc.com>
+In-Reply-To: <2024061311-washable-ranch-abc5@gregkh>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
+ nalasex01c.na.qualcomm.com (10.47.97.35)
+X-QCInternal: smtphost
+X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
+X-Proofpoint-GUID: CMqfYVX403d87cHwMaaH4NqU0EGDcSLP
+X-Proofpoint-ORIG-GUID: CMqfYVX403d87cHwMaaH4NqU0EGDcSLP
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.293,Aquarius:18.0.1039,Hydra:6.0.680,FMLib:17.12.28.16
+ definitions=2024-06-13_11,2024-06-13_02,2024-05-17_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 priorityscore=1501
+ bulkscore=0 phishscore=0 lowpriorityscore=0 adultscore=0 malwarescore=0
+ spamscore=0 mlxscore=0 suspectscore=0 mlxlogscore=999 clxscore=1011
+ impostorscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.19.0-2405170001 definitions=main-2406130127
 
 
-On Wed, 12 Jun 2024 15:52:53 +0200, Tomeu Vizoso wrote:
-> This series adds a new driver for the NPU that Rockchip includes in its
-> newer SoCs, developed by them on the NVDLA base.
+
+On 6/13/2024 4:45 PM, Greg KH wrote:
+> On Thu, Jun 13, 2024 at 04:01:01PM +0530, Bibek Kumar Patro wrote:
+>> On Mon, Jan 22, 2024 at 12:37:54PM -0800, Isaac J. Manjarres wrote:
+>>> When commit 82612d66d51d ("iommu: Allow the dma-iommu api to
+>>> use bounce buffers") was introduced, it did not add the logic
+>>> for tracing the bounce buffer usage from iommu_dma_map_page().
+>>>
+>>> All of the users of swiotlb_tbl_map_single() trace their bounce
+>>> buffer usage, except iommu_dma_map_page(). This makes it difficult
+>>> to track SWIOTLB usage from that function. Thus, trace bounce buffer
+>>> usage from iommu_dma_map_page().
+>>>
+>>> Fixes: 82612d66d51d ("iommu: Allow the dma-iommu api to use bounce buffers")
+>>> Cc: stable@vger.kernel.org # v5.15+
+>>> Cc: Tom Murphy <murphyt7@tcd.ie>
+>>> Cc: Lu Baolu <baolu.lu@linux.intel.com>
+>>> Cc: Saravana Kannan <saravanak@google.com>
+>>> Signed-off-by: Isaac J. Manjarres <isaacmanjarres@google.com>
+>>> Link: https://lore.kernel.org/r/20231208234141.2356157-1-isaacmanjarres@google.com
+>>> Signed-off-by: Joerg Roedel <jroedel@suse.de>
+>>> (cherry picked from commit a63c357b9fd56ad5fe64616f5b22835252c6a76a)
+>>> Signed-off-by: Isaac J. Manjarres <isaacmanjarres@google.com>
+>>> ---
+>>>   drivers/iommu/dma-iommu.c | 3 +++
+>>>   1 file changed, 3 insertions(+)
+>>>
+>>> diff --git a/drivers/iommu/dma-iommu.c b/drivers/iommu/dma-iommu.c
+>>> index 48c6f7ff4aef..8cd63e6ccd2c 100644
+>>> --- a/drivers/iommu/dma-iommu.c
+>>> +++ b/drivers/iommu/dma-iommu.c
+>>> @@ -25,6 +25,7 @@
+>>>   #include <linux/vmalloc.h>
+>>>   #include <linux/crash_dump.h>
+>>>   #include <linux/dma-direct.h>
+>>> +#include <trace/events/swiotlb.h>
+>>>   
+>>>   struct iommu_dma_msi_page {
+>>>   	struct list_head	list;
+>>> @@ -817,6 +818,8 @@ static dma_addr_t iommu_dma_map_page(struct device *dev, struct page *page,
+>>>   		void *padding_start;
+>>>   		size_t padding_size, aligned_size;
+>>>   
+>>> +		trace_swiotlb_bounced(dev, phys, size, swiotlb_force);
+>>> +
+>>
+>> Hi, this backported patch trying to access swiotlb_force variable is
+>> causing a build conflict where CONFIG_SWIOTLB is not enabled.
+>>
+>> In file included from kernel/drivers/iommu/dma-iommu.c:28:
+>> kernel/include/trace/events/swiotlb.h:15:9: error: declaration of 'enum SWIOTLB_NO_FORCE' will not be visible outside of this function [-Werror,-Wvisibility]
+>>                   enum swiotlb_force swiotlb_force),
+>>                        ^
+>> kernel/include/linux/swiotlb.h:143:23: note: expanded from macro 'swiotlb_force'
+>> #define swiotlb_force SWIOTLB_NO_FORCE
+>>                        ^
+>> In file included from kernel/drivers/iommu/dma-iommu.c:28:
+>> kernel/include/trace/events/swiotlb.h:15:9: error: declaration of 'enum SWIOTLB_NO_FORCE' will not be visible outside of this function [-Werror,-Wvisibility]
+>> kernel/include/linux/swiotlb.h:143:23: note: expanded from macro 'swiotlb_force'
+>> #define swiotlb_force SWIOTLB_NO_FORCE
+>>                        ^
+>> In file included from kernel/drivers/iommu/dma-iommu.c:28:
+>> kernel/include/trace/events/swiotlb.h:15:9: error: declaration of 'enum SWIOTLB_NO_FORCE' will not be visible outside of this function [-Werror,-Wvisibility]
+>> kernel/include/linux/swiotlb.h:143:23: note: expanded from macro 'swiotlb_force'
+>> #define swiotlb_force SWIOTLB_NO_FORCE
+>>                        ^
+>> In file included from kernel/drivers/iommu/dma-iommu.c:28:
+>> kernel/include/trace/events/swiotlb.h:15:9: error: declaration of 'enum SWIOTLB_NO_FORCE' will not be visible outside of this function [-Werror,-Wvisibility]
+>> kernel/include/linux/swiotlb.h:143:23: note: expanded from macro 'swiotlb_force'
+>> #define swiotlb_force SWIOTLB_NO_FORCE
+>>                        ^
+>> kernel/drivers/iommu/dma-iommu.c:865:42: error: argument type 'enum SWIOTLB_NO_FORCE' is incomplete
+>>                                         trace_swiotlb_bounced(dev, phys, size, swiotlb_force);
+>>                                                                                ^~~~~~~~~~~~~
+>> kernel/include/linux/swiotlb.h:143:23: note: expanded from macro 'swiotlb_force'
+>> #define swiotlb_force SWIOTLB_NO_FORCE
+>>                        ^~~~~~~~~~~~~~~~
+>> kernel/include/trace/events/swiotlb.h:15:9: note: forward declaration of 'enum SWIOTLB_NO_FORCE'
+>> enum swiotlb_force swiotlb_force),
+>>       ^
+>> kernel/include/linux/swiotlb.h:143:23: note: expanded from macro 'swiotlb_force'
+>> #define swiotlb_force SWIOTLB_NO_FORCE
+>>
+>> --------------------------------------------------------------------------------------------------------------------------------------------------
+>>
+>> I have a simple proposed fix which can resolve this compile time conflict when CONFIG_SWIOTLB is disabled.
+>>
+>> --- a/include/trace/events/swiotlb.h
+>> +++ b/include/trace/events/swiotlb.h
+>> @@ -7,6 +7,7 @@
+>>
+>>   #include <linux/tracepoint.h>
+>>
+>> +#ifdef CONFIG_SWIOTLB
+>>   TRACE_EVENT(swiotlb_bounced,
+>>
+>>          TP_PROTO(struct device *dev,
+>> @@ -43,6 +44,9 @@ TRACE_EVENT(swiotlb_bounced,
+>>                          { SWIOTLB_FORCE,        "FORCE" },
+>>                          { SWIOTLB_NO_FORCE,     "NO_FORCE" }))
+>>   );
+>> +#else
+>> +#define trace_swiotlb_bounced(dev, phys, size, swiotlb_force)
+>> +#endif /* CONFIG_SWIOTLB */
+>>
+>>   #endif /*  _TRACE_SWIOTLB_H */
+>>
+>>
 > 
-> In its current form, it supports the specific NPU in the RK3588 SoC.
-> 
-> The userspace driver is part of Mesa and an initial draft can be found at:
-> 
-> https://gitlab.freedesktop.org/mesa/mesa/-/merge_requests/29698
-> 
-> Signed-off-by: Tomeu Vizoso <tomeu@tomeuvizoso.net>
-> ---
-> Tomeu Vizoso (9):
->       iommu/rockchip: Add compatible for rockchip,rk3588-iommu
->       iommu/rockchip: Attach multiple power domains
->       dt-bindings: mailbox: rockchip,rknn: Add bindings
->       arm64: dts: rockchip: Add nodes for NPU and its MMU to rk3588s
->       arm64: dts: rockchip: Enable the NPU on quartzpro64
->       accel/rocket: Add a new driver for Rockchip's NPU
->       accel/rocket: Add IOCTL for BO creation
->       accel/rocket: Add job submission IOCTL
->       accel/rocket: Add IOCTLs for synchronizing memory accesses
-> 
->  .../devicetree/bindings/npu/rockchip,rknn.yaml     |  123 +
->  MAINTAINERS                                        |    8 +
->  .../arm64/boot/dts/rockchip/rk3588-quartzpro64.dts |    8 +
->  arch/arm64/boot/dts/rockchip/rk3588s.dtsi          |   53 +
->  drivers/accel/Kconfig                              |    1 +
->  drivers/accel/Makefile                             |    1 +
->  drivers/accel/rocket/Kconfig                       |   13 +
->  drivers/accel/rocket/Makefile                      |   10 +
->  drivers/accel/rocket/rocket_core.c                 |  155 +
->  drivers/accel/rocket/rocket_core.h                 |   48 +
->  drivers/accel/rocket/rocket_device.c               |   39 +
->  drivers/accel/rocket/rocket_device.h               |   40 +
->  drivers/accel/rocket/rocket_drv.c                  |  243 ++
->  drivers/accel/rocket/rocket_drv.h                  |   16 +
->  drivers/accel/rocket/rocket_gem.c                  |  136 +
->  drivers/accel/rocket/rocket_gem.h                  |   33 +
->  drivers/accel/rocket/rocket_job.c                  |  708 ++++
->  drivers/accel/rocket/rocket_job.h                  |   49 +
->  drivers/accel/rocket/rocket_registers.h            | 4449 ++++++++++++++++++++
->  drivers/iommu/rockchip-iommu.c                     |   39 +
->  include/uapi/drm/rocket_accel.h                    |  116 +
->  21 files changed, 6288 insertions(+)
-> ---
-> base-commit: 83a7eefedc9b56fe7bfeff13b6c7356688ffa670
-> change-id: 20240612-6-10-rocket-9316defc14c7
-> 
-> Best regards,
-> --
-> Tomeu Vizoso <tomeu@tomeuvizoso.net>
-> 
-> 
+> Why not just take whatever change upstream fixes this instead of a
+> one-off change?
 > 
 
+I am currently checking the history on swiotlb_force and how it's
+removed in latest kernel versions. If those changes are applicable on
+this stable branch can we explore backporting those instead of this one-
+off change ?
 
-My bot found new DTB warnings on the .dts files added or changed in this
-series.
+Thanks & regards,
+Bibek
 
-Some warnings may be from an existing SoC .dtsi. Or perhaps the warnings
-are fixed by another series. Ultimately, it is up to the platform
-maintainer whether these warnings are acceptable or not. No need to reply
-unless the platform maintainer has comments.
-
-If you already ran DT checks and didn't see these error(s), then
-make sure dt-schema is up to date:
-
-  pip3 install dtschema --upgrade
-
-
-New warnings running 'make CHECK_DTBS=y rockchip/rk3588-quartzpro64.dtb' for 20240612-6-10-rocket-v1-0-060e48eea250@tomeuvizoso.net:
-
-arch/arm64/boot/dts/rockchip/rk3588-quartzpro64.dtb: iommu@fdab9000: compatible: 'oneOf' conditional failed, one must be fixed:
-	['rockchip,rk3588-iommu'] is too short
-	'rockchip,rk3588-iommu' is not one of ['rockchip,iommu', 'rockchip,rk3568-iommu']
-	from schema $id: http://devicetree.org/schemas/iommu/rockchip,iommu.yaml#
-arch/arm64/boot/dts/rockchip/rk3588-quartzpro64.dtb: iommu@fdab9000: reg: [[0, 4255879168, 0, 256], [0, 4255883264, 0, 256], [0, 4255948800, 0, 256], [0, 4256014336, 0, 256]] is too long
-	from schema $id: http://devicetree.org/schemas/iommu/rockchip,iommu.yaml#
-arch/arm64/boot/dts/rockchip/rk3588-quartzpro64.dtb: iommu@fdab9000: interrupts: [[0, 110, 4, 0], [0, 111, 4, 0], [0, 112, 4, 0]] is too long
-	from schema $id: http://devicetree.org/schemas/iommu/rockchip,iommu.yaml#
-arch/arm64/boot/dts/rockchip/rk3588-quartzpro64.dtb: iommu@fdab9000: clocks: [[28, 287], [28, 276], [28, 278], [28, 288], [28, 277], [28, 279]] is too long
-	from schema $id: http://devicetree.org/schemas/iommu/rockchip,iommu.yaml#
-arch/arm64/boot/dts/rockchip/rk3588-quartzpro64.dtb: iommu@fdab9000: clock-names:0: 'aclk' was expected
-	from schema $id: http://devicetree.org/schemas/iommu/rockchip,iommu.yaml#
-arch/arm64/boot/dts/rockchip/rk3588-quartzpro64.dtb: iommu@fdab9000: clock-names:1: 'iface' was expected
-	from schema $id: http://devicetree.org/schemas/iommu/rockchip,iommu.yaml#
-arch/arm64/boot/dts/rockchip/rk3588-quartzpro64.dtb: iommu@fdab9000: clock-names: ['aclk0', 'aclk1', 'aclk2', 'iface0', 'iface1', 'iface2'] is too long
-	from schema $id: http://devicetree.org/schemas/iommu/rockchip,iommu.yaml#
-arch/arm64/boot/dts/rockchip/rk3588-quartzpro64.dtb: iommu@fdab9000: power-domains: [[30, 9], [30, 10], [30, 11]] is too long
-	from schema $id: http://devicetree.org/schemas/iommu/rockchip,iommu.yaml#
-arch/arm64/boot/dts/rockchip/rk3588-quartzpro64.dtb: iommu@fdab9000: 'interrupt-names', 'power-domain-names' do not match any of the regexes: 'pinctrl-[0-9]+'
-	from schema $id: http://devicetree.org/schemas/iommu/rockchip,iommu.yaml#
-
-
-
-
-
+> thanks
+> 
+> greg k-h
