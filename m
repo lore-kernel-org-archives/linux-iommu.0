@@ -1,232 +1,104 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from mx0b-0031df01.pphosted.com (mx0b-0031df01.pphosted.com [205.220.180.131])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E34EA2F50;
-	Thu, 13 Jun 2024 19:15:37 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C054F12D203;
+	Thu, 13 Jun 2024 19:44:31 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.180.131
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1718306138; cv=none; b=EzuA9AZT/fi1M7WuvgklvfEqFSRnsTpLB2hobTW+XUPt/Ng6E82B+qo4xeMq1FxT3U4JMCzUBcpsf+lWKfLqUuAq03BjfnBBPmZqCzK8gA+pQhqTWtMa3nbEJWp96ligESEBCLUDBjiO8N56H7KqEc8W6tSZxflH6fl+Mt7OgCw=
+	t=1718307874; cv=none; b=i28bEkTz0KdDA0gADlM/SkO6CijSA2hq5kSw81lShUp5uuPLXpq4Qm4zYXfCpCMJ3ZakvIE2loRB/dSgU4PKuTJE1zzHyiCfv/PeV5/Zpyp69xlQ5awASe4rmYCnjkndT1++RQZ5SODOvjLgnRoMTMsqLeptrKh+LlNErVhLrxU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1718306138; c=relaxed/simple;
-	bh=PxaAEnheuEVKucWpehjXgII5Lh2MtTO4KEUYjKFPDkw=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=fvhPNU7EhOb67xRf4bsrKXkVYCTuXNrFTyZcLnTTlv0BUR0DUiKT/Bc8hroNU+izhfe27yF3YHo+8zCF3wJdCxWWLw8JZpBEJPIj08A4p89MUwEJ9Kh1Xs9zpRsTVgO/fq8p+WB9TCUAPMzPlPBbCWL03YWYtbu28QxNkz4QmPU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=gzUl1M7v; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1718307874; c=relaxed/simple;
+	bh=KKnENtOFfzWq7Cta8BnILeX+g2sXHNgkU21fCl2QK6Y=;
+	h=From:Date:Subject:MIME-Version:Content-Type:Message-ID:To:CC; b=Vnve5oK4x+wMvnqBAnFEzp6ZEGy9m4pKe4FNYtPFdEq4xX9KP+x93hjrIGS1X7Ht2agk6J9qQUxddTMG773cTAI/jW488C2n6mjSq+4hi6kdmnhyv4NrKn7787AJBrGIToMPwO2XUlFPdadS4TTuy0LzeXD+JQJw8TrDRkbJwXI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com; spf=pass smtp.mailfrom=quicinc.com; dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b=m/2PQDJt; arc=none smtp.client-ip=205.220.180.131
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=quicinc.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="gzUl1M7v"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 08D34C2BBFC;
-	Thu, 13 Jun 2024 19:15:37 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1718306137;
-	bh=PxaAEnheuEVKucWpehjXgII5Lh2MtTO4KEUYjKFPDkw=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=gzUl1M7vQrd2T8fS4MvHteaVlR1Jg0QGhIBkzYQ8VNBg0lTX2rpjj0pAC/eLgQY/e
-	 6AQ8nRPOww0PlBfjVxVpfPv9MUz/a0mQzYdvhCAdVq8F4IuRuq8llzgQ03mjrSFBMp
-	 +5mY9eOtmwMrpRXlt0ZSoID0xDfxfeHSYywgaxLNGv6CeG735rEWHy6IGMeMIJIypf
-	 oxzJxsAAuj5LA/6v4XLmFfCiKZWRQQi9QIOcrOCZGCcOykdQ8kub+XLk8yPJGzfQuE
-	 hSFCbKTpsZMyLng1o5+VvInMLoNLXzvLGq8w3AV1ghg3gNmXN1ETemlf7jYNXWkpH6
-	 xNhP+d2XQzwLg==
-Date: Thu, 13 Jun 2024 13:15:35 -0600
-From: Rob Herring <robh@kernel.org>
-To: Tomeu Vizoso <tomeu@tomeuvizoso.net>
-Cc: Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
-	Robin Murphy <robin.murphy@arm.com>,
-	Heiko Stuebner <heiko@sntech.de>,
-	Krzysztof Kozlowski <krzk+dt@kernel.org>,
-	Conor Dooley <conor+dt@kernel.org>,
-	Oded Gabbay <ogabbay@kernel.org>,
-	Tomeu Vizoso <tomeu.vizoso@tomeuvizoso.net>,
-	David Airlie <airlied@gmail.com>, Daniel Vetter <daniel@ffwll.ch>,
-	Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
-	Maxime Ripard <mripard@kernel.org>,
-	Thomas Zimmermann <tzimmermann@suse.de>,
-	Philipp Zabel <p.zabel@pengutronix.de>,
-	Sumit Semwal <sumit.semwal@linaro.org>,
-	Christian =?iso-8859-1?Q?K=F6nig?= <christian.koenig@amd.com>,
-	iommu@lists.linux.dev, linux-arm-kernel@lists.infradead.org,
-	linux-rockchip@lists.infradead.org, linux-kernel@vger.kernel.org,
-	devicetree@vger.kernel.org, dri-devel@lists.freedesktop.org,
-	linux-media@vger.kernel.org, linaro-mm-sig@lists.linaro.org
-Subject: Re: [PATCH 3/9] dt-bindings: mailbox: rockchip,rknn: Add bindings
-Message-ID: <20240613191535.GA2319626-robh@kernel.org>
-References: <20240612-6-10-rocket-v1-0-060e48eea250@tomeuvizoso.net>
- <20240612-6-10-rocket-v1-3-060e48eea250@tomeuvizoso.net>
+	dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b="m/2PQDJt"
+Received: from pps.filterd (m0279872.ppops.net [127.0.0.1])
+	by mx0a-0031df01.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 45DJGMc8008219;
+	Thu, 13 Jun 2024 19:44:21 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=quicinc.com; h=
+	cc:content-transfer-encoding:content-type:date:from:message-id
+	:mime-version:subject:to; s=qcppdkim1; bh=HnNm1gdtDKZ9IEeruyG/Kd
+	EKveSE1/RzTpjO5vpnTeI=; b=m/2PQDJtH8L9yC2XLhTrNhDWoAFA71PgYxZEXQ
+	Ksc7pLjAbMH465uFm3ys/J2iIXonTI7tEvOBOIxqTKNYP3XvG5brvDI93a2ls+7A
+	aoaHg66PlsUK0xdaB4Nu3UG4Dz8QzDihvu5ZZ24j3XJoS61klF40J4H6YTK7KSvS
+	2rdkh+FFQxa1pYiaLceCsF65D0PyKCOPk0IA/akmh5vvZQojIsN2sYa04IQhqf8c
+	bNteIjWb1XaFRg00e+G99N7nSvmVpqpVq1knsm4Ym25OrWtKpSgyJj+YLaUPD5pM
+	ZJsuRBxnlBTDTH9GumTCN0836XM+B6pZaely8ze1+zKs1ACA==
+Received: from nalasppmta05.qualcomm.com (Global_NAT1.qualcomm.com [129.46.96.20])
+	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 3yr6q5821v-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Thu, 13 Jun 2024 19:44:20 +0000 (GMT)
+Received: from nalasex01a.na.qualcomm.com (nalasex01a.na.qualcomm.com [10.47.209.196])
+	by NALASPPMTA05.qualcomm.com (8.17.1.19/8.17.1.19) with ESMTPS id 45DJiJZX016419
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Thu, 13 Jun 2024 19:44:19 GMT
+Received: from [169.254.0.1] (10.49.16.6) by nalasex01a.na.qualcomm.com
+ (10.47.209.196) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1544.9; Thu, 13 Jun
+ 2024 12:44:19 -0700
+From: Jeff Johnson <quic_jjohnson@quicinc.com>
+Date: Thu, 13 Jun 2024 12:44:17 -0700
+Subject: [PATCH] iommu/arm-smmu-v3: add missing MODULE_DESCRIPTION() macro
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20240612-6-10-rocket-v1-3-060e48eea250@tomeuvizoso.net>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+Message-ID: <20240613-md-arm64-drivers-iommu-arm-arm-smmu-v3-v1-1-0e9f7584a5c8@quicinc.com>
+X-B4-Tracking: v=1; b=H4sIABBMa2YC/x3NzQqDMBAE4FeRPXfBaBDaVyk95GdbF5pYdmsQx
+ Hc38TCHbw4zOygJk8Kj20GosPKSK8ytgzC7/CHkWA1DP9h+MiOmiE7SZDEKFxJFXlJaW3dFG8q
+ IxozW3kOMwTuoYz+hN2/X0fNV7Z0SenE5zG3+y3ndMDn9k8BxnPjO+ViXAAAA
+To: Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
+        "Joerg
+ Roedel" <joro@8bytes.org>
+CC: <linux-arm-kernel@lists.infradead.org>, <iommu@lists.linux.dev>,
+        <linux-kernel@vger.kernel.org>, <kernel-janitors@vger.kernel.org>,
+        "Jeff
+ Johnson" <quic_jjohnson@quicinc.com>
+X-Mailer: b4 0.13.0
+X-ClientProxiedBy: nalasex01c.na.qualcomm.com (10.47.97.35) To
+ nalasex01a.na.qualcomm.com (10.47.209.196)
+X-QCInternal: smtphost
+X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
+X-Proofpoint-GUID: IGjdS6aZAPw3l5LxvoVsknoC0qvZqfzm
+X-Proofpoint-ORIG-GUID: IGjdS6aZAPw3l5LxvoVsknoC0qvZqfzm
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.293,Aquarius:18.0.1039,Hydra:6.0.680,FMLib:17.12.28.16
+ definitions=2024-06-13_12,2024-06-13_02,2024-05-17_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 malwarescore=0 phishscore=0
+ mlxscore=0 clxscore=1015 bulkscore=0 lowpriorityscore=0 spamscore=0
+ impostorscore=0 suspectscore=0 priorityscore=1501 adultscore=0
+ mlxlogscore=999 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.19.0-2405170001 definitions=main-2406130141
 
-On Wed, Jun 12, 2024 at 03:52:56PM +0200, Tomeu Vizoso wrote:
-> Add the bindings for the Neural Processing Unit IP from Rockchip.
+With ARCH=arm64, make allmodconfig && make W=1 C=1 reports:
+WARNING: modpost: missing MODULE_DESCRIPTION() in drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-test.o
 
-Subject is wrong. Not a mailbox...
+Add the missing invocation of the MODULE_DESCRIPTION() macro.
 
-> Signed-off-by: Tomeu Vizoso <tomeu@tomeuvizoso.net>
-> ---
->  .../devicetree/bindings/npu/rockchip,rknn.yaml     | 123 +++++++++++++++++++++
->  1 file changed, 123 insertions(+)
-> 
-> diff --git a/Documentation/devicetree/bindings/npu/rockchip,rknn.yaml b/Documentation/devicetree/bindings/npu/rockchip,rknn.yaml
-> new file mode 100644
-> index 000000000000..570a4889c11c
-> --- /dev/null
-> +++ b/Documentation/devicetree/bindings/npu/rockchip,rknn.yaml
-> @@ -0,0 +1,123 @@
-> +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-> +%YAML 1.2
-> +---
-> +$id: http://devicetree.org/schemas/npu/rockchip,rknn.yaml#
-> +$schema: http://devicetree.org/meta-schemas/core.yaml#
-> +
-> +title: Neural Processing Unit IP from Rockchip, based on NVIDIA's NVDLA
-> +
-> +maintainers:
-> +  - Tomeu Vizoso <tomeu@tomeuvizoso.net>
-> +
-> +description: |+
-> +  Rockchip IP for accelerating inference of neural networks, based on NVIDIA's open source NVDLA IP.
+Signed-off-by: Jeff Johnson <quic_jjohnson@quicinc.com>
+---
+ drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-test.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-Wrap at 80.
+diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-test.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-test.c
+index 315e487fd990..eea554dddaeb 100644
+--- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-test.c
++++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-test.c
+@@ -465,4 +465,5 @@ static struct kunit_suite arm_smmu_v3_test_module = {
+ kunit_test_suites(&arm_smmu_v3_test_module);
+ 
+ MODULE_IMPORT_NS(EXPORTED_FOR_KUNIT_TESTING);
++MODULE_DESCRIPTION("KUnit tests for arm-smmu-v3 driver");
+ MODULE_LICENSE("GPL v2");
 
-> +
-> +properties:
-> +  compatible:
-> +    items:
-> +      - enum:
-> +          - rockchip,rk3588-rknn
-> +      - const: rockchip,rknn
+---
+base-commit: 83a7eefedc9b56fe7bfeff13b6c7356688ffa670
+change-id: 20240613-md-arm64-drivers-iommu-arm-arm-smmu-v3-113449cddcba
 
-Is there any evidence this block is 'the same' on multiple chips?
-
-> +
-> +  reg:
-> +    description: Base registers for NPU cores
-> +    minItems: 1
-> +    maxItems: 20
-> +
-> +  interrupts:
-> +    minItems: 1
-> +    maxItems: 20
-> +
-> +  interrupt-names:
-> +    minItems: 1
-> +    maxItems: 20
-> +
-> +  clocks:
-> +    minItems: 1
-> +    maxItems: 20
-> +
-> +  clock-names:
-> +    minItems: 1
-> +    maxItems: 20
-> +
-> +  assigned-clocks:
-> +    maxItems: 1
-> +
-> +  assigned-clock-rates:
-> +    maxItems: 1
-
-You don't need assigned-clocks in schemas.
-
-> +
-> +  resets:
-> +    minItems: 1
-> +    maxItems: 20
-> +
-> +  reset-names:
-> +    minItems: 1
-> +    maxItems: 20
-> +
-> +  power-domains:
-> +    minItems: 1
-> +    maxItems: 20
-> +
-> +  power-domain-names:
-> +    minItems: 1
-> +    maxItems: 20
-> +
-> +  iommus:
-> +    items:
-> +      - description: IOMMU for all cores
-> +
-> +required:
-> +  - compatible
-> +  - reg
-> +  - interrupts
-> +  - interrupt-names
-> +  - clocks
-> +  - clock-names
-> +  - assigned-clocks
-> +  - assigned-clock-rates
-
-And never should be required.
-
-> +  - resets
-> +  - reset-names
-> +  - power-domains
-> +  - power-domain-names
-> +  - iommus
-> +
-> +additionalProperties: false
-> +
-> +examples:
-> +  - |
-> +    #include <dt-bindings/interrupt-controller/arm-gic.h>
-> +
-> +    bus {
-> +        #address-cells = <2>;
-> +        #size-cells = <2>;
-> +
-> +        rknn: npu@fdab0000 {
-> +          compatible = "rockchip,rk3588-rknn", "rockchip,rknn";
-> +          reg = <0x0 0xfdab0000 0x0 0x9000>,
-> +                <0x0 0xfdac0000 0x0 0x9000>,
-> +                <0x0 0xfdad0000 0x0 0x9000>;
-> +          interrupts = <GIC_SPI 110 IRQ_TYPE_LEVEL_HIGH 0>,
-> +                       <GIC_SPI 111 IRQ_TYPE_LEVEL_HIGH 0>,
-> +                       <GIC_SPI 112 IRQ_TYPE_LEVEL_HIGH 0>;
-> +          interrupt-names = "npu0_irq", "npu1_irq", "npu2_irq";
-
-'irq' is redundant. Names with the index are also kind of pointless
-unless they can be not contiguous.
-
-> +          clocks = <&scmi_clk 0>, <&cru 1>,
-> +                   <&cru 2>, <&cru 3>,
-> +                   <&cru 4>, <&cru 5>,
-> +                   <&cru 6>, <&cru 7>;
-> +          clock-names = "clk_npu",
-
-'clk_' is redundant.
-
-> +                  "aclk0", "aclk1", "aclk2",
-> +                  "hclk0", "hclk1", "hclk2",
-> +                  "pclk";
-
-Assuming 0, 1, 2 are cores and may vary, put all the fixed clocks first 
-and then better to do "aclk0", "hclk0", "aclk1", "hclk1",...
-
-> +          assigned-clocks = <&scmi_clk 0>;
-> +          assigned-clock-rates = <200000000>;
-> +          resets = <&cru 0>, <&cru 1>, <&cru 2>,
-> +                   <&cru 3>, <&cru 4>, <&cru 5>;
-> +          reset-names = "srst_a0", "srst_a1", "srst_a2",
-> +                        "srst_h0", "srst_h1", "srst_h2";
-
-And similar order here.
-
-> +          power-domains = <&power 0>, <&power 1>, <&power 2>;
-> +          power-domain-names = "npu0", "npu1", "npu2";
-> +          iommus = <&rknpu_mmu>;
-> +          status = "disabled";
-> +        };
-> +    };
-> +...
-> 
-> -- 
-> 2.45.2
-> 
