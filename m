@@ -1,53 +1,45 @@
 Received: from mail.8bytes.org (mail.8bytes.org [85.214.250.239])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 8F9CA13DBA4
-	for <iommu@lists.linux.dev>; Thu, 13 Jun 2024 09:10:37 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 2D13313DDBA
+	for <iommu@lists.linux.dev>; Thu, 13 Jun 2024 09:15:02 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=85.214.250.239
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1718269839; cv=none; b=hxk04OyoYyDb47a2I+wcMRu4alLAQnY7CDs01TQgmQGZpig5WOUUZ82MKsk77zsE781vnl50rWUhEONCHHRVWNutGK/ZzsXS1NOXIGVsnxBZ3njeU9IUs7K9XSsGdweWc3/E70eikjWe4Y/+ux6Y2M6Kj1DOK8nrfYsMqH+tgL4=
+	t=1718270104; cv=none; b=agEau+RNOUh+uQFb4WeSKrOgbjZWRHtcacDpvrBSV1PwW5h55gMyJ9VOXMDbXWuhIkwyRgqfjZ62GbCjBm/DjZVP8b0Rg5RK/LZZslpaEuq9S86x09k0feAEkp7qXEfCFsKaD1Z2yfWmgkPLwEYf5+l8UcQRWrbisZ0gQvSenYs=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1718269839; c=relaxed/simple;
-	bh=uwgNIsvKzltZ++YyP8KzyRNwS3DxApijGasjMKyMWAU=;
+	s=arc-20240116; t=1718270104; c=relaxed/simple;
+	bh=bpGRNbBfCqyFGfItJ4k3/3+Ze/L/FmzCPu/d7k2QK9k=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=Qlo3TjYwUqdAdXF1OjxMQlVdJdF2rJ5xq/upb/DAG34KCTGAj1ntg+vTlfAdyxzzgMBSrhTGLvbNvbHSskM924XWwj8Vatpd36lV+WLZWH9ieOjq3/1bTQBuI/GgEZ2qfPMRf9FD5GzMG5Fhp96WTqn9bI6+8QeFVf7ftDKBFdE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=8bytes.org; spf=pass smtp.mailfrom=8bytes.org; dkim=pass (2048-bit key) header.d=8bytes.org header.i=@8bytes.org header.b=TuJjJkej; arc=none smtp.client-ip=85.214.250.239
+	 Content-Type:Content-Disposition:In-Reply-To; b=m6QMF3VPcGj4iIFzMGerUfszeS9gSa40YjdHNc97kuO+93y5Mudp7/DGlNdmU9rkR+gBWPm5mUhkCehAc4I3dvvsv7NW6oHVewQHOuZi7apCte2Xmp5MGQDDhi2tOP2zTfZozRHTsqK5+fDFRWpSm3f/8JbVZQxtUjyklNXp5w0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=8bytes.org; spf=pass smtp.mailfrom=8bytes.org; dkim=pass (2048-bit key) header.d=8bytes.org header.i=@8bytes.org header.b=UHTBUjHo; arc=none smtp.client-ip=85.214.250.239
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=8bytes.org
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=8bytes.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=8bytes.org header.i=@8bytes.org header.b="TuJjJkej"
+	dkim=pass (2048-bit key) header.d=8bytes.org header.i=@8bytes.org header.b="UHTBUjHo"
 Received: from 8bytes.org (pd9fe9dd8.dip0.t-ipconnect.de [217.254.157.216])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange ECDHE (P-256) server-signature RSA-PSS (2048 bits) server-digest SHA256)
 	(No client certificate requested)
-	by mail.8bytes.org (Postfix) with ESMTPSA id 0CA191C8182;
-	Thu, 13 Jun 2024 11:10:36 +0200 (CEST)
+	by mail.8bytes.org (Postfix) with ESMTPSA id 1ECB21C81F5;
+	Thu, 13 Jun 2024 11:15:01 +0200 (CEST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=8bytes.org;
-	s=default; t=1718269836;
-	bh=uwgNIsvKzltZ++YyP8KzyRNwS3DxApijGasjMKyMWAU=;
+	s=default; t=1718270101;
+	bh=bpGRNbBfCqyFGfItJ4k3/3+Ze/L/FmzCPu/d7k2QK9k=;
 	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=TuJjJkejGm0MfLgodYlEkxSB3Ynzcf7M+hp6VHakuN4+1vOgGlqd5oczCJuxEsOGu
-	 WqIkjKEwvX2haQyyUhbamusFUYwCEwIIRCIF6VlNfmtASHzYFmsyKRIG6pNAZcLWAd
-	 pnJcgXXchWIJBOdBNrJSEPf3B6PIWZ9BgiKB50q/eLtIjLHienBaLr1+0JriUp2iwW
-	 xk/7D9LdolUZZ5HhoJPZbmDBRZ1sPVJFbIQcrIIU/1NbVcFDt1gPY6qIkLDBDo8Uvq
-	 6Qd10LFqV3aJzVyIm3o1i+I+IOwZREW/LL6A2t0dHY5MOTvWP1zx9xBezWuv8oVM9D
-	 PNrYHh/Swi8LQ==
-Date: Thu, 13 Jun 2024 11:10:34 +0200
+	b=UHTBUjHosfefB0JjjGbC1Zqu0+8+z3UFWdNufPd4Alr3tWHxUlRIvdZ1lQp+Xrq82
+	 lnHt7nNcem8ME68XtDxOqJouMxUanx2JoVQ9/dzEXDLldkBjfCIXJfpy/X5wTrG9/g
+	 37AYEMYGCnsXCsYtzXiMDDD7pCohfuPmYM9TCsUY7Q5Ouoqd+hCaJzAvuagrXWEoN0
+	 B5b9Eydm2be/N46yMh9sCWfujJIzgRTrxupPlyp6qnvDp5k3XJ4NTxyy8XsPO77FPI
+	 sRfm8+RBZGbTt33QlLaI+6GvKP/ivy3bLrZ+gLYpQfhKyjS/EsK03pQ2pHVJmqaeaC
+	 /Nsr4CJAhJ7OQ==
+Date: Thu, 13 Jun 2024 11:15:00 +0200
 From: Joerg Roedel <joro@8bytes.org>
-To: Rob Clark <robdclark@gmail.com>
-Cc: dri-devel@lists.freedesktop.org, linux-arm-msm@vger.kernel.org,
-	freedreno@lists.freedesktop.org, Will Deacon <will@kernel.org>,
-	Rob Clark <robdclark@chromium.org>,
-	Robin Murphy <robin.murphy@arm.com>, Jason Gunthorpe <jgg@ziepe.ca>,
-	Boris Brezillon <boris.brezillon@collabora.com>,
-	Kevin Tian <kevin.tian@intel.com>,
-	Joao Martins <joao.m.martins@oracle.com>,
-	"moderated list:ARM SMMU DRIVERS" <linux-arm-kernel@lists.infradead.org>,
-	"open list:IOMMU SUBSYSTEM" <iommu@lists.linux.dev>,
-	open list <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH v4 1/2] iommu/io-pgtable-arm: Add way to debug pgtable
- walk
-Message-ID: <Zmq3iqSc8fFV0N-q@8bytes.org>
-References: <20240523175227.117984-1-robdclark@gmail.com>
- <20240523175227.117984-2-robdclark@gmail.com>
+To: Lu Baolu <baolu.lu@linux.intel.com>
+Cc: Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
+	Jason Gunthorpe <jgg@ziepe.ca>, Kevin Tian <kevin.tian@intel.com>,
+	Jean-Philippe Brucker <jean-philippe@linaro.org>,
+	iommu@lists.linux.dev, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 1/1] iommu: Make iommu_sva_domain_alloc() static
+Message-ID: <Zmq4lJCHJSmQ-vJf@8bytes.org>
+References: <20240528045458.81458-1-baolu.lu@linux.intel.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -56,19 +48,21 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20240523175227.117984-2-robdclark@gmail.com>
+In-Reply-To: <20240528045458.81458-1-baolu.lu@linux.intel.com>
 
-On Thu, May 23, 2024 at 10:52:21AM -0700, Rob Clark wrote:
-> From: Rob Clark <robdclark@chromium.org>
+On Tue, May 28, 2024 at 12:54:58PM +0800, Lu Baolu wrote:
+> iommu_sva_domain_alloc() is only called in iommu-sva.c, hence make it
+> static.
 > 
-> Add an io-pgtable method to walk the pgtable returning the raw PTEs that
-> would be traversed for a given iova access.
+> On the other hand, iommu_sva_domain_alloc() should not return NULL anymore
+> after commit <80af5a452024> ("iommu: Add ops->domain_alloc_sva()"), the
+> removal of inline code avoids potential confusion.
 > 
-> Signed-off-by: Rob Clark <robdclark@chromium.org>
+> Fixes: 80af5a452024 ("iommu: Add ops->domain_alloc_sva()")
+> Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
 > ---
->  drivers/iommu/io-pgtable-arm.c | 51 ++++++++++++++++++++++++++++------
->  include/linux/io-pgtable.h     |  4 +++
->  2 files changed, 46 insertions(+), 9 deletions(-)
+>  include/linux/iommu.h     | 8 --------
+>  drivers/iommu/iommu-sva.c | 6 ++++--
+>  2 files changed, 4 insertions(+), 10 deletions(-)
 
-Acked-by: Joerg Roedel <jroedel@suse.de>
-
+Applied, thanks.
