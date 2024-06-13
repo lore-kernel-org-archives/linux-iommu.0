@@ -1,135 +1,122 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.18])
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.7])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A121C3D96D;
-	Thu, 13 Jun 2024 02:27:32 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 59AE312CDB1
+	for <iommu@lists.linux.dev>; Thu, 13 Jun 2024 03:07:24 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.7
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1718245654; cv=none; b=rzYJTfcTp5uY9b5CzXYqW69lgTeO63//7kW9OCRTOXH5My3X1l5vhK/UnvITOuTa92Sxj6mZoYKmCji2Z44M2DMffduAE70i00dXliCJ73zxfdy71a099XUsD6HE6pf/DA9sr50snkMwXwDcBxilg+JBcy6cRomYiFR57kwNNfw=
+	t=1718248045; cv=none; b=qOaZFVXbQsmA9U7u+r/d4Rt0gdeLPcffHz67fwYmuBefvUmI4w6G+saKPGWw1qcxLxruua8sz118/QqDPZIDbLPu85ueO5IOB94ZBY0Vm/SqitIqQM1Cj+50ufbiOyx5+OV68PdnhUuRHKCxJE4SnH8irVo6hB3kNp1+WG6P52c=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1718245654; c=relaxed/simple;
-	bh=Nh2RzwaSTxJgbNfHmt3JRc0uEjv3nRlrnUDcdTPlwq8=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=QZFvqDCAmq5O6Te/G4+IsgEpEh+HE5fDsa82F8ZBIiQlX7W7MIzjfYwtrp9+zE8I4RvUxJAHvFiKRsrWUvZP/wr8QFfk8Sxm0wnIx0B8J3zGaCdnDeEaWCdB2HFvCRtLnYtNj9n+hKsf3/qd/TGhZ76pl43aXvRq0Iln/zpkAZs=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=VqVMf8tG; arc=none smtp.client-ip=192.198.163.18
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	s=arc-20240116; t=1718248045; c=relaxed/simple;
+	bh=OIcere13pVOettULjJywtuj49HytiD3Jo1GU9kFl7kg=;
+	h=Message-ID:Date:MIME-Version:Cc:Subject:To:References:From:
+	 In-Reply-To:Content-Type; b=SttugUaKqqWotaRrE/PafZ/qoMsLIDNIe/LSSEAIjbL3BiFy/FnXsG4ei55aysRLwZ796tHpqUW0FT4uIZeoaRXRjUpywEMT+3f3TiK/8+tHB+q8AVMA58yRBc2P5c0YLv7her7BnWeHiERJiEIhrHM3I4DsZSRhSMBxnJsz0sc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=hcIsf7JK; arc=none smtp.client-ip=192.198.163.7
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="VqVMf8tG"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="hcIsf7JK"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1718245652; x=1749781652;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=Nh2RzwaSTxJgbNfHmt3JRc0uEjv3nRlrnUDcdTPlwq8=;
-  b=VqVMf8tGl0GqyXf6C+Zjq2AeJzt1xBJ84PfSOq3v7Y4ep5FX/UYPtzCy
-   wZ6csTKR3JwYsOeY3bqkkvLXN4JrH4bE/Vg0xUlCwISPKqOh4WVoqI0Sl
-   uNy20oVW98cCuOD9N328bD80BkXnt5dtcCuY4Zg4EKQf18J9zLxLqXGTa
-   gsB+s375A3pv965i/g+gcJeH8SIX6uUjm98enI9q6JMdoBMDKpemc5tla
-   du6VocFv4RmgXGT6fae5ZKq4EXCahJTdxuabawLgBAq1I7glE5XgWyPX0
-   AMxTqPMi6YDj1PnyOcQ3fT/IBdPfwPYtDOEnE1bRg/xenBHy3KjFFMQn2
-   w==;
-X-CSE-ConnectionGUID: jnbrlUh+SmivqpPZyEuycw==
-X-CSE-MsgGUID: quoItFciTIm3lYokErVqjQ==
-X-IronPort-AV: E=McAfee;i="6700,10204,11101"; a="14762590"
+  t=1718248044; x=1749784044;
+  h=message-id:date:mime-version:cc:subject:to:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=OIcere13pVOettULjJywtuj49HytiD3Jo1GU9kFl7kg=;
+  b=hcIsf7JKw87/p+ergjHsQfQDbAbUJS+WQfq0vK/THS7SVkklCVm8Sf9X
+   tiTA8inJH+ei26J5uoMFtl6AqnRsd7KQyLc6NB1okMXVotS1qm0ptdX2B
+   vojaI6YLN+MzW809mIkzSkgVtp0lSoQeZxGddR+oVylIrQxEhYJs27zQr
+   MOW7ZvKVgVvKxnuRJ/L5ws2MjTYJG5GNMithq5JpQ+YnaKZ7JxcBVoqjA
+   bpuElm9cvW39OH+5EZqU2FYdYLFxfQXu35wS2EtHeO/0lCYb6HbrVHRja
+   hIIIfuQJ38MAxDD7ktL61g7GYUr9+RPvSqZ6rYRu080HqTX71ljmzH2Y9
+   Q==;
+X-CSE-ConnectionGUID: XY26W//7QgmWsO4otpxprg==
+X-CSE-MsgGUID: N0WN/Qq2Q++cDpNk/oz4Ww==
+X-IronPort-AV: E=McAfee;i="6700,10204,11101"; a="40449401"
 X-IronPort-AV: E=Sophos;i="6.08,234,1712646000"; 
-   d="scan'208";a="14762590"
-Received: from fmviesa003.fm.intel.com ([10.60.135.143])
-  by fmvoesa112.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Jun 2024 19:27:32 -0700
-X-CSE-ConnectionGUID: Hfsi00ypS3ujyFebs+qM4w==
-X-CSE-MsgGUID: ZXcO7e85TC+r/0EEzcI5Aw==
+   d="scan'208";a="40449401"
+Received: from orviesa010.jf.intel.com ([10.64.159.150])
+  by fmvoesa101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Jun 2024 20:07:19 -0700
+X-CSE-ConnectionGUID: n9i8A+gXSge7LiRP9GEd9w==
+X-CSE-MsgGUID: LLvptQCXTimLNEyV7eOA+g==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.08,234,1712646000"; 
-   d="scan'208";a="44371511"
-Received: from lkp-server01.sh.intel.com (HELO 628d7d8b9fc6) ([10.239.97.150])
-  by fmviesa003.fm.intel.com with ESMTP; 12 Jun 2024 19:27:26 -0700
-Received: from kbuild by 628d7d8b9fc6 with local (Exim 4.96)
-	(envelope-from <lkp@intel.com>)
-	id 1sHaBP-00027m-2g;
-	Thu, 13 Jun 2024 02:27:23 +0000
-Date: Thu, 13 Jun 2024 10:27:17 +0800
-From: kernel test robot <lkp@intel.com>
-To: Tomeu Vizoso <tomeu@tomeuvizoso.net>, Joerg Roedel <joro@8bytes.org>,
-	Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
-	Heiko Stuebner <heiko@sntech.de>, Rob Herring <robh@kernel.org>,
-	Krzysztof Kozlowski <krzk@kernel.org>,
-	Conor Dooley <conor+dt@kernel.org>,
-	Oded Gabbay <ogabbay@kernel.org>,
-	Tomeu Vizoso <tomeu.vizoso@tomeuvizoso.net>,
-	David Airlie <airlied@gmail.com>, Daniel Vetter <daniel@ffwll.ch>,
-	Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
-	Maxime Ripard <mripard@kernel.org>,
-	Thomas Zimmermann <tzimmermann@suse.de>,
-	Philipp Zabel <p.zabel@pengutronix.de>,
-	Sumit Semwal <sumit.semwal@linaro.org>,
-	Christian =?iso-8859-1?Q?K=F6nig?= <christian.koenig@amd.com>
-Cc: oe-kbuild-all@lists.linux.dev, iommu@lists.linux.dev,
-	linux-arm-kernel@lists.infradead.org,
-	linux-rockchip@lists.infradead.org, linux-kernel@vger.kernel.org,
-	devicetree@vger.kernel.org, dri-devel@lists.freedesktop.org,
-	linux-media@vger.kernel.org, linaro-mm-sig@lists.linaro.org
-Subject: Re: [PATCH 6/9] accel/rocket: Add a new driver for Rockchip's NPU
-Message-ID: <202406131022.1JKNS7me-lkp@intel.com>
-References: <20240612-6-10-rocket-v1-6-060e48eea250@tomeuvizoso.net>
+   d="scan'208";a="39911926"
+Received: from unknown (HELO [10.239.159.127]) ([10.239.159.127])
+  by orviesa010.jf.intel.com with ESMTP; 12 Jun 2024 20:07:16 -0700
+Message-ID: <ec07f4f3-d537-4687-bacb-b88af2d2667c@linux.intel.com>
+Date: Thu, 13 Jun 2024 11:04:57 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20240612-6-10-rocket-v1-6-060e48eea250@tomeuvizoso.net>
+User-Agent: Mozilla Thunderbird
+Cc: baolu.lu@linux.intel.com, "Tian, Kevin" <kevin.tian@intel.com>,
+ Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
+ Robin Murphy <robin.murphy@arm.com>,
+ Jean-Philippe Brucker <jean-philippe@linaro.org>,
+ Nicolin Chen <nicolinc@nvidia.com>, "Liu, Yi L" <yi.l.liu@intel.com>,
+ Jacob Pan <jacob.jun.pan@linux.intel.com>,
+ Joel Granados <j.granados@samsung.com>,
+ "iommu@lists.linux.dev" <iommu@lists.linux.dev>,
+ "virtualization@lists.linux-foundation.org"
+ <virtualization@lists.linux-foundation.org>,
+ "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH v6 01/10] iommu: Introduce domain attachment handle
+To: Jason Gunthorpe <jgg@ziepe.ca>
+References: <20240527040517.38561-1-baolu.lu@linux.intel.com>
+ <20240527040517.38561-2-baolu.lu@linux.intel.com>
+ <BN9PR11MB52767B3B1F441D9AA656AC258CF92@BN9PR11MB5276.namprd11.prod.outlook.com>
+ <ae7c05b0-104e-4c71-99aa-fed2a4f209fb@linux.intel.com>
+ <20240612131059.GS791043@ziepe.ca>
+Content-Language: en-US
+From: Baolu Lu <baolu.lu@linux.intel.com>
+In-Reply-To: <20240612131059.GS791043@ziepe.ca>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-Hi Tomeu,
+On 6/12/24 9:10 PM, Jason Gunthorpe wrote:
+> On Thu, Jun 06, 2024 at 01:33:29PM +0800, Baolu Lu wrote:
+> 
+>>> But if certain path (other than iopf) in the iommu core needs to know
+>>> the exact domain pointer then this change breaks it.
+>>
+>> The iommu core should not fetch the domain pointer in paths other than
+>> attach/detach/replace. There is currently no reference counter for an
+>> iommu domain, hence fetching the domain for other purposes will
+>> potentially lead to a use-after-free issue.
+> 
+> If you are doing this then we should get rid of
+> iommu_get_domain_for_dev_pasid, and always return the handle
+> there. Making it clear that all those flows require handles to work.
 
-kernel test robot noticed the following build errors:
+I removed iommu_get_domain_for_dev_pasid() in this series. The iopf
+handling is the only path that requires fetching domain, where we
+requires attach handle to work.
 
-[auto build test ERROR on 83a7eefedc9b56fe7bfeff13b6c7356688ffa670]
+> 
+> But is this really OK? What happened to the patch fixing the error
+> unwind in attach_pasid? Doesn't it always need the domain to undo a
+> failed attach?
 
-url:    https://github.com/intel-lab-lkp/linux/commits/Tomeu-Vizoso/iommu-rockchip-Add-compatible-for-rockchip-rk3588-iommu/20240612-215814
-base:   83a7eefedc9b56fe7bfeff13b6c7356688ffa670
-patch link:    https://lore.kernel.org/r/20240612-6-10-rocket-v1-6-060e48eea250%40tomeuvizoso.net
-patch subject: [PATCH 6/9] accel/rocket: Add a new driver for Rockchip's NPU
-config: s390-allyesconfig (https://download.01.org/0day-ci/archive/20240613/202406131022.1JKNS7me-lkp@intel.com/config)
-compiler: s390-linux-gcc (GCC) 13.2.0
-reproduce (this is a W=1 build): (https://download.01.org/0day-ci/archive/20240613/202406131022.1JKNS7me-lkp@intel.com/reproduce)
+attach_pasid switches from being unassigned to being assigned with a
+real domain, so the unwind operation simply involves calling
+iommu_ops->remove_dev_pasid.
 
-If you fix the issue in a separate patch/commit (i.e. not just a new version of
-the same patch/commit), kindly add following tags
-| Reported-by: kernel test robot <lkp@intel.com>
-| Closes: https://lore.kernel.org/oe-kbuild-all/202406131022.1JKNS7me-lkp@intel.com/
+In the future, probably we will introduce a replace interface for pasid.
+In that scenario, the caller should explicitly pass both the old and new
+domains. If the replace operation fails, the interface will revert to
+the old domain.
 
-All errors (new ones prefixed by >>):
+In my mind, the iommu core should only manage the default domain for
+kernel DMA. All domains that are allocated by domain_alloc interfaces
+should be managed by the callers and passed through the attach/detach
+/replace interfaces.
 
-   In file included from include/linux/clk.h:13,
-                    from drivers/accel/rocket/rocket_drv.c:4:
->> drivers/accel/rocket/rocket_drv.c:213:31: error: 'rocket_pm_ops' undeclared here (not in a function); did you mean 'rocket_probe'?
-     213 |                 .pm = pm_ptr(&rocket_pm_ops),
-         |                               ^~~~~~~~~~~~~
-   include/linux/kernel.h:48:44: note: in definition of macro 'PTR_IF'
-      48 | #define PTR_IF(cond, ptr)       ((cond) ? (ptr) : NULL)
-         |                                            ^~~
-   drivers/accel/rocket/rocket_drv.c:213:23: note: in expansion of macro 'pm_ptr'
-     213 |                 .pm = pm_ptr(&rocket_pm_ops),
-         |                       ^~~~~~
+> 
+> Jason
+> 
 
-
-vim +213 drivers/accel/rocket/rocket_drv.c
-
-   207	
-   208	static struct platform_driver rocket_driver = {
-   209		.probe = rocket_probe,
-   210		.remove_new = rocket_remove,
-   211		.driver	 = {
-   212			.name = "rocket",
- > 213			.pm = pm_ptr(&rocket_pm_ops),
-   214			.of_match_table = dt_match,
-   215		},
-   216	};
-   217	module_platform_driver(rocket_driver);
-   218	
-
--- 
-0-DAY CI Kernel Test Service
-https://github.com/intel/lkp-tests/wiki
+Best regards,
+baolu
