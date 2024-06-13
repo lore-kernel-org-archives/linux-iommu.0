@@ -1,122 +1,156 @@
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 5C8B6146A79
-	for <iommu@lists.linux.dev>; Thu, 13 Jun 2024 16:38:24 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0E27D14A602;
+	Thu, 13 Jun 2024 17:27:17 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1718296706; cv=none; b=dZ4Ni8zUzToXKapq6t6t0d7KlaO0bvbJts+xblth8Zdl8LzJqKMtnBsJ3YE2eRsisEJvZjfDNkfdcAhgZZ4lCverdDxqS/IAcqLgkYq1J1+D+O/JCfW4wOatmoKDTndCvNljQhYNWajwlTjQGzrMdZ32oexEccFodDtPgKnO+Ms=
+	t=1718299638; cv=none; b=f7fQHaAmfD2jK60+eXPCKQbHepFjvb6E4C10TZRY6odNbAQxUNZ89ItnfBXTKy18LtiY7DgrkTrr74Cv8Z+CYx1UKP9q0t/D1q8F+nn3YoTuYzKRCNFy2el94ybatyK/KGq/8FEdLr1KoLFgc286Y2FKnXrKD4/DmX1EZV8n+9M=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1718296706; c=relaxed/simple;
-	bh=aKOhNOdB7ccnzq+ofFI1uzD4Kj+zLwM5PbYdAt6B0RE=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=X4Ihfi/4PTXfui3XsURYhg4PPbaudfsrc0yoZ6nrtBe2v8Alf8/nf+SPs1p866kN8lo3PYZFKDG2uIB1YYmVoPQP3YMkXn23NV6UbSod4jXQarUahzukT5NqnYkHBT9GuOEOhBshL+sutrbEWCs1G+jdg3CdZM53YMw8+qCGIo0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; arc=none smtp.client-ip=217.140.110.172
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 2F821FEC;
-	Thu, 13 Jun 2024 09:38:48 -0700 (PDT)
-Received: from [10.1.196.40] (e121345-lin.cambridge.arm.com [10.1.196.40])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 012363F73B;
-	Thu, 13 Jun 2024 09:38:21 -0700 (PDT)
-Message-ID: <002b6176-41b3-4888-abb1-978399d108b8@arm.com>
-Date: Thu, 13 Jun 2024 17:38:20 +0100
+	s=arc-20240116; t=1718299638; c=relaxed/simple;
+	bh=opDT7KR3b/7zSgo/k+eb6uhV3+Agy5mHhqWVAV0NPaE=;
+	h=Date:Content-Type:MIME-Version:From:To:Cc:In-Reply-To:References:
+	 Message-Id:Subject; b=doMdIiQMu6LazTSC+s50zLLrCOPoiLw8lw5RunbMSkt/KykO4tdsCR4quLwRC03MpmQw88u9SNVuDKrXI5azCv1i8LjPnyiHj0iszDXMUxF8+NcvPEdzwW76JNTnwaekfTVDp8WaDpaL4WwJeZcg0TLWBfAZDHWp/r1U51Apscs=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Y+Bsy4LV; arc=none smtp.client-ip=10.30.226.201
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Y+Bsy4LV"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2747AC2BBFC;
+	Thu, 13 Jun 2024 17:27:17 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1718299637;
+	bh=opDT7KR3b/7zSgo/k+eb6uhV3+Agy5mHhqWVAV0NPaE=;
+	h=Date:From:To:Cc:In-Reply-To:References:Subject:From;
+	b=Y+Bsy4LVeheYOVXZrOYJG5COt6xXLdymsCT0DX3EfwzBbiMh5HmUPu6UEHQQ/d9cb
+	 HWzh7yHQZBMwuOm6r0eYA7B/EpAwZkePtqoqInyKSHyoQzpGElhBZFQHBaGXK6UxXO
+	 auYJL3sL6o5d+cyPhTHz77sVqZjWl/LDbb7fPurAjAqOC07EdG5PrhjuTh47GUtDD8
+	 Gi1RhWgovtVdG39zJZX1X5KY3fGAjwb5ybaCQjNMHWSDswavq56ETkw2msQsItJI3K
+	 jaUiRIPeo8L1jONLDopd5pT0Gtg7CmvvDmQq6oSJIurYIUIb5JsWNn39LgDnneESAH
+	 6yfZypumrPUFQ==
+Date: Thu, 13 Jun 2024 11:27:15 -0600
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v6 1/4] of: reserved_mem: Restruture how the reserved
- memory regions are processed
-To: Conor Dooley <conor@kernel.org>,
- Oreoluwa Babatunde <quic_obabatun@quicinc.com>
-Cc: Mark Brown <broonie@kernel.org>, Nathan Chancellor <nathan@kernel.org>,
- robh@kernel.org, saravanak@google.com, hch@lst.de, m.szyprowski@samsung.com,
- will@kernel.org, catalin.marinas@arm.com, devicetree@vger.kernel.org,
- linux-kernel@vger.kernel.org, iommu@lists.linux.dev, kernel@quicinc.com
-References: <20240528223650.619532-1-quic_obabatun@quicinc.com>
- <20240528223650.619532-2-quic_obabatun@quicinc.com>
- <20240610213403.GA1697364@thelio-3990X>
- <Zmd0Zg7oMneJLyHd@finisterre.sirena.org.uk>
- <cc180d94-6890-4e92-8080-ffd6c1269e6e@quicinc.com>
- <20240613-goldfish-unpicked-1bc9f786aaed@spud>
-From: Robin Murphy <robin.murphy@arm.com>
-Content-Language: en-GB
-In-Reply-To: <20240613-goldfish-unpicked-1bc9f786aaed@spud>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+From: "Rob Herring (Arm)" <robh@kernel.org>
+To: Tomeu Vizoso <tomeu@tomeuvizoso.net>
+Cc: Maarten Lankhorst <maarten.lankhorst@linux.intel.com>, 
+ linux-kernel@vger.kernel.org, Krzysztof Kozlowski <krzk+dt@kernel.org>, 
+ Tomeu Vizoso <tomeu.vizoso@tomeuvizoso.net>, iommu@lists.linux.dev, 
+ David Airlie <airlied@gmail.com>, Philipp Zabel <p.zabel@pengutronix.de>, 
+ Thomas Zimmermann <tzimmermann@suse.de>, Conor Dooley <conor+dt@kernel.org>, 
+ Oded Gabbay <ogabbay@kernel.org>, Daniel Vetter <daniel@ffwll.ch>, 
+ linux-arm-kernel@lists.infradead.org, Maxime Ripard <mripard@kernel.org>, 
+ devicetree@vger.kernel.org, dri-devel@lists.freedesktop.org, 
+ linux-rockchip@lists.infradead.org, Robin Murphy <robin.murphy@arm.com>, 
+ linux-media@vger.kernel.org, Joerg Roedel <joro@8bytes.org>, 
+ Sumit Semwal <sumit.semwal@linaro.org>, linaro-mm-sig@lists.linaro.org, 
+ Will Deacon <will@kernel.org>, Heiko Stuebner <heiko@sntech.de>, 
+ =?utf-8?q?Christian_K=C3=B6nig?= <christian.koenig@amd.com>
+In-Reply-To: <20240612-6-10-rocket-v1-0-060e48eea250@tomeuvizoso.net>
+References: <20240612-6-10-rocket-v1-0-060e48eea250@tomeuvizoso.net>
+Message-Id: <171829929988.2050064.4076911589675234408.robh@kernel.org>
+Subject: Re: [PATCH 0/9] New DRM accel driver for Rockchip's RKNN NPU
 
-On 13/06/2024 5:17 pm, Conor Dooley wrote:
-> On Thu, Jun 13, 2024 at 09:05:18AM -0700, Oreoluwa Babatunde wrote:
->>
->> On 6/10/2024 2:47 PM, Mark Brown wrote:
->>> On Mon, Jun 10, 2024 at 02:34:03PM -0700, Nathan Chancellor wrote:
->>>> On Tue, May 28, 2024 at 03:36:47PM -0700, Oreoluwa Babatunde wrote:
->>>>> fdt_init_reserved_mem() is also now called from within the
->>>>> unflatten_device_tree() function so that this step happens after the
->>>>> page tables have been setup.
->>>>> Signed-off-by: Oreoluwa Babatunde <quic_obabatun@quicinc.com>
->>>> I am seeing a warning when booting aspeed_g5_defconfig in QEMU that I
->>>> bisected to this change in -next as commit a46cccb0ee2d ("of:
->>>> reserved_mem: Restruture how the reserved memory regions are
->>>> processed").
->>> I'm also seeing issues in -next which I bisected to this commit, on the
->>> original Raspberry Pi the cpufreq driver fails to come up and I see
->>> (potentially separate?) backtraces:
->>>
->>> [    0.100390] ------------[ cut here ]------------
->>> [    0.100476] WARNING: CPU: 0 PID: 1 at mm/memory.c:2835 __apply_to_page_range+0xd4/0x2c8
->>> [    0.100637] Modules linked in:
->>> [    0.100665] CPU: 0 PID: 1 Comm: swapper Not tainted 6.10.0-rc2-next-20240607 #1
->>> [    0.100692] Hardware name: BCM2835
->>> [    0.100705] Call trace:
->>> [    0.100727]  unwind_backtrace from show_stack+0x18/0x1c
->>> [    0.100790]  show_stack from dump_stack_lvl+0x38/0x48
->>> [    0.100833]  dump_stack_lvl from __warn+0x8c/0xf4
->>> [    0.100888]  __warn from warn_slowpath_fmt+0x80/0xbc
->>> [    0.100933]  warn_slowpath_fmt from __apply_to_page_range+0xd4/0x2c8
->>> [    0.100983]  __apply_to_page_range from apply_to_page_range+0x20/0x28
->>> [    0.101027]  apply_to_page_range from __dma_remap+0x58/0x88
->>> [    0.101071]  __dma_remap from __alloc_from_contiguous+0x6c/0xa8
->>> [    0.101106]  __alloc_from_contiguous from atomic_pool_init+0x9c/0x1c4
->>> [    0.101169]  atomic_pool_init from do_one_initcall+0x68/0x158
->>> [    0.101223]  do_one_initcall from kernel_init_freeable+0x1ac/0x1f0
->>> [    0.101267]  kernel_init_freeable from kernel_init+0x1c/0x140
->>> [    0.101309]  kernel_init from ret_from_fork+0x14/0x28
->>> [    0.101344] Exception stack(0xdc80dfb0 to 0xdc80dff8)
->>> [    0.101369] dfa0:                                     00000000 00000000 00000000 00000000
->>> [    0.101393] dfc0: 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000
->>> [    0.101414] dfe0: 00000000 00000000 00000000 00000000 00000013 00000000
->>> [    0.101428] ---[ end trace 0000000000000000 ]---
->>>
->>> Full boot log at:
->>>
->>>     https://lava.sirena.org.uk/scheduler/job/374962
->>>
->>> You can see the report of cpufreq not being loaded in the log.
->>>
->>> NFS boots also fail, apparently due to slowness bringing up a Debian
->>> userspace which may well be due to cpufreq isues:
->> Hi Mark & Nathan,
->>
->> Taking a look at this now and will provide a fix soon if
->> needed.
->>
->> At first glance, it looks like there are a couple of WARN_ON*
->> function calls in __apply_to_page_range(). Please could
->> you run faddr2line and tell me which of the WARN_ON*
->> cases we are hitting?
+
+On Wed, 12 Jun 2024 15:52:53 +0200, Tomeu Vizoso wrote:
+> This series adds a new driver for the NPU that Rockchip includes in its
+> newer SoCs, developed by them on the NVDLA base.
 > 
-> That shouldn't be needed, right? The line is in the WARNING: mm/memory.c:2835
-> which, in next-20240607, is: if (WARN_ON_ONCE(pmd_leaf(*pmd))).
+> In its current form, it supports the specific NPU in the RK3588 SoC.
+> 
+> The userspace driver is part of Mesa and an initial draft can be found at:
+> 
+> https://gitlab.freedesktop.org/mesa/mesa/-/merge_requests/29698
+> 
+> Signed-off-by: Tomeu Vizoso <tomeu@tomeuvizoso.net>
+> ---
+> Tomeu Vizoso (9):
+>       iommu/rockchip: Add compatible for rockchip,rk3588-iommu
+>       iommu/rockchip: Attach multiple power domains
+>       dt-bindings: mailbox: rockchip,rknn: Add bindings
+>       arm64: dts: rockchip: Add nodes for NPU and its MMU to rk3588s
+>       arm64: dts: rockchip: Enable the NPU on quartzpro64
+>       accel/rocket: Add a new driver for Rockchip's NPU
+>       accel/rocket: Add IOCTL for BO creation
+>       accel/rocket: Add job submission IOCTL
+>       accel/rocket: Add IOCTLs for synchronizing memory accesses
+> 
+>  .../devicetree/bindings/npu/rockchip,rknn.yaml     |  123 +
+>  MAINTAINERS                                        |    8 +
+>  .../arm64/boot/dts/rockchip/rk3588-quartzpro64.dts |    8 +
+>  arch/arm64/boot/dts/rockchip/rk3588s.dtsi          |   53 +
+>  drivers/accel/Kconfig                              |    1 +
+>  drivers/accel/Makefile                             |    1 +
+>  drivers/accel/rocket/Kconfig                       |   13 +
+>  drivers/accel/rocket/Makefile                      |   10 +
+>  drivers/accel/rocket/rocket_core.c                 |  155 +
+>  drivers/accel/rocket/rocket_core.h                 |   48 +
+>  drivers/accel/rocket/rocket_device.c               |   39 +
+>  drivers/accel/rocket/rocket_device.h               |   40 +
+>  drivers/accel/rocket/rocket_drv.c                  |  243 ++
+>  drivers/accel/rocket/rocket_drv.h                  |   16 +
+>  drivers/accel/rocket/rocket_gem.c                  |  136 +
+>  drivers/accel/rocket/rocket_gem.h                  |   33 +
+>  drivers/accel/rocket/rocket_job.c                  |  708 ++++
+>  drivers/accel/rocket/rocket_job.h                  |   49 +
+>  drivers/accel/rocket/rocket_registers.h            | 4449 ++++++++++++++++++++
+>  drivers/iommu/rockchip-iommu.c                     |   39 +
+>  include/uapi/drm/rocket_accel.h                    |  116 +
+>  21 files changed, 6288 insertions(+)
+> ---
+> base-commit: 83a7eefedc9b56fe7bfeff13b6c7356688ffa670
+> change-id: 20240612-6-10-rocket-9316defc14c7
+> 
+> Best regards,
+> --
+> Tomeu Vizoso <tomeu@tomeuvizoso.net>
+> 
+> 
+> 
 
-Indeed, and the overall implication there would seem to be that, because 
-the dynamic CMA region wasn't allocated and reserved before we created 
-the pagetables, we thus haven't created the pagetables in a shape which 
-can accommodate chopping it out again later. Note that on arm64 at 
-least, this is liable to be hidden by other options like rodata_full and 
-debug_pagealloc - see can_set_direct_map().
 
-Thanks,
-Robin.
+My bot found new DTB warnings on the .dts files added or changed in this
+series.
+
+Some warnings may be from an existing SoC .dtsi. Or perhaps the warnings
+are fixed by another series. Ultimately, it is up to the platform
+maintainer whether these warnings are acceptable or not. No need to reply
+unless the platform maintainer has comments.
+
+If you already ran DT checks and didn't see these error(s), then
+make sure dt-schema is up to date:
+
+  pip3 install dtschema --upgrade
+
+
+New warnings running 'make CHECK_DTBS=y rockchip/rk3588-quartzpro64.dtb' for 20240612-6-10-rocket-v1-0-060e48eea250@tomeuvizoso.net:
+
+arch/arm64/boot/dts/rockchip/rk3588-quartzpro64.dtb: iommu@fdab9000: compatible: 'oneOf' conditional failed, one must be fixed:
+	['rockchip,rk3588-iommu'] is too short
+	'rockchip,rk3588-iommu' is not one of ['rockchip,iommu', 'rockchip,rk3568-iommu']
+	from schema $id: http://devicetree.org/schemas/iommu/rockchip,iommu.yaml#
+arch/arm64/boot/dts/rockchip/rk3588-quartzpro64.dtb: iommu@fdab9000: reg: [[0, 4255879168, 0, 256], [0, 4255883264, 0, 256], [0, 4255948800, 0, 256], [0, 4256014336, 0, 256]] is too long
+	from schema $id: http://devicetree.org/schemas/iommu/rockchip,iommu.yaml#
+arch/arm64/boot/dts/rockchip/rk3588-quartzpro64.dtb: iommu@fdab9000: interrupts: [[0, 110, 4, 0], [0, 111, 4, 0], [0, 112, 4, 0]] is too long
+	from schema $id: http://devicetree.org/schemas/iommu/rockchip,iommu.yaml#
+arch/arm64/boot/dts/rockchip/rk3588-quartzpro64.dtb: iommu@fdab9000: clocks: [[28, 287], [28, 276], [28, 278], [28, 288], [28, 277], [28, 279]] is too long
+	from schema $id: http://devicetree.org/schemas/iommu/rockchip,iommu.yaml#
+arch/arm64/boot/dts/rockchip/rk3588-quartzpro64.dtb: iommu@fdab9000: clock-names:0: 'aclk' was expected
+	from schema $id: http://devicetree.org/schemas/iommu/rockchip,iommu.yaml#
+arch/arm64/boot/dts/rockchip/rk3588-quartzpro64.dtb: iommu@fdab9000: clock-names:1: 'iface' was expected
+	from schema $id: http://devicetree.org/schemas/iommu/rockchip,iommu.yaml#
+arch/arm64/boot/dts/rockchip/rk3588-quartzpro64.dtb: iommu@fdab9000: clock-names: ['aclk0', 'aclk1', 'aclk2', 'iface0', 'iface1', 'iface2'] is too long
+	from schema $id: http://devicetree.org/schemas/iommu/rockchip,iommu.yaml#
+arch/arm64/boot/dts/rockchip/rk3588-quartzpro64.dtb: iommu@fdab9000: power-domains: [[30, 9], [30, 10], [30, 11]] is too long
+	from schema $id: http://devicetree.org/schemas/iommu/rockchip,iommu.yaml#
+arch/arm64/boot/dts/rockchip/rk3588-quartzpro64.dtb: iommu@fdab9000: 'interrupt-names', 'power-domain-names' do not match any of the regexes: 'pinctrl-[0-9]+'
+	from schema $id: http://devicetree.org/schemas/iommu/rockchip,iommu.yaml#
+
+
+
+
+
