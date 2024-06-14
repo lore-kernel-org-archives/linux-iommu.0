@@ -1,54 +1,54 @@
-Received: from mail-pl1-f175.google.com (mail-pl1-f175.google.com [209.85.214.175])
+Received: from mail-pl1-f176.google.com (mail-pl1-f176.google.com [209.85.214.176])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C4ED04778E
-	for <iommu@lists.linux.dev>; Fri, 14 Jun 2024 14:22:33 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.175
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0592B4962E
+	for <iommu@lists.linux.dev>; Fri, 14 Jun 2024 14:22:35 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.176
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1718374956; cv=none; b=WymisaXhvKgxSXfx+YSiWNNhOz+8vQg/pvmxQTYU1mumCvDjQV8A5W7raFavAWEX0b4lX3wh4xdfdWOKBBaGHk8DdZxRDOTwWabMyuTYar6fESMSBAUtsCX2HeYbY3WP4g0Wo3traSqEqG1F0JP/+kGHi5R+1gy0h0f5tgcm14A=
+	t=1718374957; cv=none; b=eJtXZJ81ptFmzNA359bkgZqGAJuxi/26L+SfIddl2aEwAfBgGquXZWy93CzQFTIXHuQscEVqZbeq9NBbvevuvPRUOJF2aFLQaprwdNOVn5f35RGPBdLZAOBlymeAgyZnFB8OtIDXcVkt6NVF6TDUIMo0Sf6k+PmsJnYiaVVcXvk=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1718374956; c=relaxed/simple;
-	bh=7Yb/SMMlZn1tJaUWC6e7+SVPbq9JvQRpG9Rr2Zf6yls=;
-	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References; b=uH5EMnvTCNS5VrlW31jROHxFYXgzLW0/3qwvKvi/5xYeDZ5NGL2EhqOscXSrheWDgwhpAX7Eb1HYjP3vYHIP+83SYie2DRx5U0TXmzH8XekpSPX4hJCSEwVsBr8CFRwh4sZTiPVnShkKFV+iBQUYjb7VpaffyWlCNTfaz5caoJU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=sifive.com; spf=pass smtp.mailfrom=sifive.com; dkim=pass (2048-bit key) header.d=sifive.com header.i=@sifive.com header.b=PHeRzw4h; arc=none smtp.client-ip=209.85.214.175
+	s=arc-20240116; t=1718374957; c=relaxed/simple;
+	bh=Q7a++o7eiwUm8M0irLfARJWMrYHyrc7Ai/QKurMYIDk=;
+	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References; b=k7uoU/xDyx9rCKVmjS9pm2CIMukRqyO9pEWYR7KtdBfTx0QoTpo9U/GveT8u3ce8A24dcnoIzndc7OCCIWTb9V8A5wc+Xp9LL8/MIzN6V3EAeMN7Q6/8BZ8EYvLLJZ+KccVb0U6vDzWhrP8I6h9cdkEyVlH1C56QD4ISs/RT9w8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=sifive.com; spf=pass smtp.mailfrom=sifive.com; dkim=pass (2048-bit key) header.d=sifive.com header.i=@sifive.com header.b=muSsFOBu; arc=none smtp.client-ip=209.85.214.176
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=sifive.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=sifive.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=sifive.com header.i=@sifive.com header.b="PHeRzw4h"
-Received: by mail-pl1-f175.google.com with SMTP id d9443c01a7336-1f6f1677b26so16574105ad.0
-        for <iommu@lists.linux.dev>; Fri, 14 Jun 2024 07:22:33 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=sifive.com header.i=@sifive.com header.b="muSsFOBu"
+Received: by mail-pl1-f176.google.com with SMTP id d9443c01a7336-1f70509b811so16766615ad.1
+        for <iommu@lists.linux.dev>; Fri, 14 Jun 2024 07:22:35 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=sifive.com; s=google; t=1718374953; x=1718979753; darn=lists.linux.dev;
+        d=sifive.com; s=google; t=1718374955; x=1718979755; darn=lists.linux.dev;
         h=references:in-reply-to:message-id:date:subject:cc:to:from:from:to
          :cc:subject:date:message-id:reply-to;
-        bh=BxtO7IOLUtPSQ+XdcXJ6pDuSrhddnSGqhgchDX3PwwI=;
-        b=PHeRzw4hACtnFWhaH/VYnzigPFv/ypi3rtXqUYTidyjgG3BQ6TTfEY0nsyt+4nnoSg
-         2gESZ8dxwu0p4O3VvWceRkxEeVPPU3VTVacoX4z7aiVQI2ne3WCxFb1L2utOhJyFKyE7
-         ATewOPT2U5yrcSCCucqFt0/fh46eJ+K/rqCYZRcx3torvjUiuAfjwNAFN2UV3r3ATax4
-         C+dKJSrOJqc/BQeEq+9JdkF/SQK8szhj+tvG/MVGKl1uOopgyJLA3dGph+eKlGx0NfRa
-         /twk6ZtsIznBOkQ07WKunatCvUZaNvf5sCHGKjlPBMLXL/3Gm0L2phRTK63X+QBhSwHa
-         brMw==
+        bh=wDCzcwoY+7Urqf0z9zEneV8CU/qabdLYOlq0L2NAoPg=;
+        b=muSsFOBuip86tRNCJH1tMsK+0OhZhivnEDqPi3219wlZGIE4AC7sCU+FlguVW5r5ef
+         Q+tqriHWiP9ZYl5b6/8czvelRNvRUm2l0w6cePERTLk2tknCKKJmwFVDNZUfRPqcC7hF
+         GufBPFNZ6CiOhgyqGkxglXYCbiKi5ST7F5Dltq8Jpst6XUUn6mZmB/nO6q2WfXUlV3Ls
+         ReerB3mUJLOu7/qVxUEo1C8staGXzkrtP//MUS53veHJ1DLBXonk+661HeYCr8Mf3AMP
+         +KZBJgsKZ0gOCC1xhvzkXvm63gzXf6XrQ2mYD8PD4bJpCrKi4vZUXbxTjna8VqZ2r4tN
+         7xYA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1718374953; x=1718979753;
+        d=1e100.net; s=20230601; t=1718374955; x=1718979755;
         h=references:in-reply-to:message-id:date:subject:cc:to:from
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=BxtO7IOLUtPSQ+XdcXJ6pDuSrhddnSGqhgchDX3PwwI=;
-        b=Yr1qaPTY9hfyMJj7PMd6K8aZ9GXe4myT/HKBXtz/t/uLTf7GbA+1H+7U1Obs790XtY
-         yS5QKm7IH5ZBJh8L02ewRe6BVtkxnyrfluXMtF5KM6BJnufTzaifzeP/HzjH/TxnFe4H
-         wAuNcSY6sT/vNCe4YTUnrruySwEniJnC/iEfyYNKjmc95p6TTInwKzMsRqAGYr/ODVIk
-         LtKDOHI5qpPOHEQ/C/X+HBQDrenPV9Fr1ZxYnl0gb2Y0T+nFNXekq+gl7dld7s0jxtU+
-         +DL6NQEt3NZ0n0tccg5ySsHC0YvU/kbO1sBpr6suTqVYAa86AGanh1//9X8ITmKJlnmY
-         zaMw==
-X-Forwarded-Encrypted: i=1; AJvYcCW0AGIiAqo5/QB8bi45evfKY5J93Cb5i7/Jq9lGybN/IIDcgml3daZDXy9tTVOakEsmiV3y5M3qUg1Felg1UiTMO4Mx7h8=
-X-Gm-Message-State: AOJu0YxI8x1Z3j3EHYFFuZ7GNZVLzxrRpF/TyV30qCQWgOi3eRqCyQVs
-	lSgkRcN9UqoMUj2qAf9Xz+MGh4Z5kJUm87YyvBpaOYGAyhz9jSV7tml8RNsL9Nk=
-X-Google-Smtp-Source: AGHT+IG11s4ZHx3p3pdh0/8168TEMxbmtzHZ+b6vnWRUAkFpilwyNQyd4ZLsjbcQgl8XVHvD/vsepw==
-X-Received: by 2002:a17:902:cccc:b0:1f7:126:5ba7 with SMTP id d9443c01a7336-1f84e42e7bamr92287235ad.21.1718374952848;
-        Fri, 14 Jun 2024 07:22:32 -0700 (PDT)
+        bh=wDCzcwoY+7Urqf0z9zEneV8CU/qabdLYOlq0L2NAoPg=;
+        b=ZfFTxCzGtJKwRHoqb0yEaMkIWlWaU2V2fheFUcydvmmjkZ0+38iWZD3C0yu9HFdSok
+         xjcIQgDZqVs8Bv82OqsI6ctTrrlXAu0zXs70OL5m4r5tVCL1Lkk1kXoIrHm0XVDPtYt4
+         T6Un6RcpZSqwrf8b237fJW21rXs44FbIZS7b1WNSe2n//pDI3LQlew/xHDTXsucKg0G3
+         mRobV98kMNea7ngNeMjGuben7cdlpuE1wVsHuapLjPahYbLfKhnxIerNuZl/Yl8WFBUo
+         lA6+tSyshGMD4pDU7zL1S6I9hOab1fqwyRbbkhvnnAgqwG2yr5QZtBv7136VxcjOg62I
+         qbsA==
+X-Forwarded-Encrypted: i=1; AJvYcCWiTkJBmFxPUDLiE/lxsTR1zP6cV170cgZmrgPBGLGbkM+yQpOnScXkKPx8t1ozteQ+fIniKeYKfnw3TqH+Mq8qWyNY7RE=
+X-Gm-Message-State: AOJu0Yzgb/n4fEYq5uGmbtJwWruNvU6mOSPv6a2Ah8GYlkY3cHvOL3kl
+	t96sbawsAsXJxtBp4jo2AYEQI/KNXoJoziNW0LTRTQD5Ni56TrUPM5R3O88dzCI=
+X-Google-Smtp-Source: AGHT+IFNWiib9Mbp3WUeDaTWc2pLd5fn9/fMVeRdDHjkyMdQAAUYNKmmTVlC+NReoIyOXuSV1VHXpQ==
+X-Received: by 2002:a17:902:f68e:b0:1f7:2849:183f with SMTP id d9443c01a7336-1f8625c243amr33675115ad.1.1718374955357;
+        Fri, 14 Jun 2024 07:22:35 -0700 (PDT)
 Received: from hsinchu26.internal.sifive.com (59-124-168-89.hinet-ip.hinet.net. [59.124.168.89])
-        by smtp.gmail.com with ESMTPSA id d9443c01a7336-1f855e559d9sm32522005ad.35.2024.06.14.07.22.30
+        by smtp.gmail.com with ESMTPSA id d9443c01a7336-1f855e559d9sm32522005ad.35.2024.06.14.07.22.33
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 14 Jun 2024 07:22:32 -0700 (PDT)
+        Fri, 14 Jun 2024 07:22:35 -0700 (PDT)
 From: Zong Li <zong.li@sifive.com>
 To: joro@8bytes.org,
 	will@kernel.org,
@@ -62,10 +62,10 @@ To: joro@8bytes.org,
 	linux-kernel@vger.kernel.org,
 	iommu@lists.linux.dev,
 	linux-riscv@lists.infradead.org
-Cc: Nicolin Chen <nicolinc@nvidia.com>
-Subject: [RFC PATCH v2 09/10] iommu/dma: Support MSIs through nested domains
-Date: Fri, 14 Jun 2024 22:21:55 +0800
-Message-Id: <20240614142156.29420-10-zong.li@sifive.com>
+Cc: Zong Li <zong.li@sifive.com>
+Subject: [RFC PATCH v2 10/10] iommu:riscv: support nested iommu for get_msi_mapping_domain operation
+Date: Fri, 14 Jun 2024 22:21:56 +0800
+Message-Id: <20240614142156.29420-11-zong.li@sifive.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20240614142156.29420-1-zong.li@sifive.com>
 References: <20240614142156.29420-1-zong.li@sifive.com>
@@ -75,88 +75,40 @@ List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 
-From: Robin Murphy <robin.murphy@arm.com>
+Return the iommu_domain that should hold the MSI cookie.
 
-Currently, iommu-dma is the only place outside of IOMMUFD and drivers
-which might need to be aware of the stage 2 domain encapsulated within
-a nested domain. This would be in the legacy-VFIO-style case where we're
-using host-managed MSIs with an identity mapping at stage 1, where it is
-the underlying stage 2 domain which owns an MSI cookie and holds the
-corresponding dynamic mappings. Hook up the new op to resolve what we
-need from a nested domain.
-
-Signed-off-by: Robin Murphy <robin.murphy@arm.com>
-Signed-off-by: Nicolin Chen <nicolinc@nvidia.com>
+Signed-off-by: Zong Li <zong.li@sifive.com>
 ---
- drivers/iommu/dma-iommu.c | 18 ++++++++++++++++--
- include/linux/iommu.h     |  4 ++++
- 2 files changed, 20 insertions(+), 2 deletions(-)
+ drivers/iommu/riscv/iommu.c | 12 ++++++++++++
+ 1 file changed, 12 insertions(+)
 
-diff --git a/drivers/iommu/dma-iommu.c b/drivers/iommu/dma-iommu.c
-index f731e4b2a417..d4235bb0a427 100644
---- a/drivers/iommu/dma-iommu.c
-+++ b/drivers/iommu/dma-iommu.c
-@@ -1806,6 +1806,20 @@ static struct iommu_dma_msi_page *iommu_dma_get_msi_page(struct device *dev,
- 	return NULL;
+diff --git a/drivers/iommu/riscv/iommu.c b/drivers/iommu/riscv/iommu.c
+index d08eb0a2939e..969a0ba32c9e 100644
+--- a/drivers/iommu/riscv/iommu.c
++++ b/drivers/iommu/riscv/iommu.c
+@@ -1689,10 +1689,22 @@ static int riscv_iommu_cache_invalidate_user(struct iommu_domain *domain,
+ 	return ret;
  }
  
-+/*
-+ * Nested domains may not have an MSI cookie or accept mappings, but they may
-+ * be related to a domain which does, so we let them tell us what they need.
-+ */
-+static struct iommu_domain *iommu_dma_get_msi_mapping_domain(struct device *dev)
++static struct iommu_domain *
++riscv_iommu_get_msi_mapping_domain(struct iommu_domain *domain)
 +{
-+	struct iommu_domain *domain = iommu_get_domain_for_dev(dev);
++	struct riscv_iommu_domain *riscv_domain = iommu_domain_to_riscv(domain);
 +
-+	if (domain && domain->type == IOMMU_DOMAIN_NESTED &&
-+	    domain->ops->get_msi_mapping_domain)
-+		domain = domain->ops->get_msi_mapping_domain(domain);
++	if (riscv_domain->s2)
++		return &riscv_domain->s2->domain;
++
 +	return domain;
 +}
 +
- /**
-  * iommu_dma_prepare_msi() - Map the MSI page in the IOMMU domain
-  * @desc: MSI descriptor, will store the MSI page
-@@ -1816,7 +1830,7 @@ static struct iommu_dma_msi_page *iommu_dma_get_msi_page(struct device *dev,
- int iommu_dma_prepare_msi(struct msi_desc *desc, phys_addr_t msi_addr)
- {
- 	struct device *dev = msi_desc_to_dev(desc);
--	struct iommu_domain *domain = iommu_get_domain_for_dev(dev);
-+	struct iommu_domain *domain = iommu_dma_get_msi_mapping_domain(dev);
- 	struct iommu_dma_msi_page *msi_page;
- 	static DEFINE_MUTEX(msi_prepare_lock); /* see below */
- 
-@@ -1849,7 +1863,7 @@ int iommu_dma_prepare_msi(struct msi_desc *desc, phys_addr_t msi_addr)
- void iommu_dma_compose_msi_msg(struct msi_desc *desc, struct msi_msg *msg)
- {
- 	struct device *dev = msi_desc_to_dev(desc);
--	const struct iommu_domain *domain = iommu_get_domain_for_dev(dev);
-+	const struct iommu_domain *domain = iommu_dma_get_msi_mapping_domain(dev);
- 	const struct iommu_dma_msi_page *msi_page;
- 
- 	msi_page = msi_desc_get_iommu_cookie(desc);
-diff --git a/include/linux/iommu.h b/include/linux/iommu.h
-index 7bc8dff7cf6d..400df9ae7012 100644
---- a/include/linux/iommu.h
-+++ b/include/linux/iommu.h
-@@ -629,6 +629,8 @@ struct iommu_ops {
-  * @enable_nesting: Enable nesting
-  * @set_pgtable_quirks: Set io page table quirks (IO_PGTABLE_QUIRK_*)
-  * @free: Release the domain after use.
-+ * @get_msi_mapping_domain: Return the related iommu_domain that should hold the
-+ *                          MSI cookie and accept mapping(s).
-  */
- struct iommu_domain_ops {
- 	int (*attach_dev)(struct iommu_domain *domain, struct device *dev);
-@@ -659,6 +661,8 @@ struct iommu_domain_ops {
- 				  unsigned long quirks);
- 
- 	void (*free)(struct iommu_domain *domain);
-+	struct iommu_domain *
-+		(*get_msi_mapping_domain)(struct iommu_domain *domain);
+ static const struct iommu_domain_ops riscv_iommu_nested_domain_ops = {
+ 	.attach_dev	= riscv_iommu_attach_dev_nested,
+ 	.free		= riscv_iommu_domain_free_nested,
+ 	.cache_invalidate_user = riscv_iommu_cache_invalidate_user,
++	.get_msi_mapping_domain = riscv_iommu_get_msi_mapping_domain,
  };
  
- /**
+ static int
 -- 
 2.17.1
 
