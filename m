@@ -1,44 +1,42 @@
 Received: from mail.8bytes.org (mail.8bytes.org [85.214.250.239])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id D5C65125BA
-	for <iommu@lists.linux.dev>; Fri, 14 Jun 2024 14:51:52 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 47A1E17BCB
+	for <iommu@lists.linux.dev>; Fri, 14 Jun 2024 14:55:03 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=85.214.250.239
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1718376714; cv=none; b=NGL6B1WPqXcEZwjuxxEI2zZ+2bnrJvxpAMtQ6bTBof0vnYe04jrdlVAnKI3Goh/8S9Z/D+PEFo6MW4eRgg++leYNtVd/8hza2DL8Kxa5c+bX/FrCKWxE8Hk1tllqKCDmQcJla77CHQsuu2TegmL+ZMO9Uz6lr9ser1d82W0M5OM=
+	t=1718376906; cv=none; b=L4XBgd0DcLfbyxDau0VRP2sRB5Tfb/Exs2ZFAWVXQNf8r/1e86BpEKSn1poDdjbZVpHJfTD9GGs4tuSAB/HEi3ILRcOy66zfFMIa5P2rGkoYOduu2Nt4Mhkar0wb7B6gkmJjHwAZxXLSfkIwgtS7pPcOxpmyd/UK4h64bGBjMj4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1718376714; c=relaxed/simple;
-	bh=H4Y1+FoVAIwvnNNM9BRYRY2i6yPu1z0wV9EZRKDv3Aw=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=VTW9rnlRZ1yuNluYGRQA8c+TwqUHC8GdgHGRMmOWikKyxOPARp+dnqq3R/u9Kq/hryn43sw+Yl07QLgIufc2Fk+ZWo8dK5D/OjyUqCnwLWY8+ycxzv7I1w6mDoxZee33vi6r930C/E/vySZV0DcB4Tq+9oWSYVpHj2PLfVhnvx8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=8bytes.org; spf=pass smtp.mailfrom=8bytes.org; dkim=pass (2048-bit key) header.d=8bytes.org header.i=@8bytes.org header.b=iRt2tdM1; arc=none smtp.client-ip=85.214.250.239
+	s=arc-20240116; t=1718376906; c=relaxed/simple;
+	bh=f17+SUwo19p30IJ9Aeu41ZeelWnoAOsHYBEBfgI+G80=;
+	h=Date:From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:
+	 Content-Disposition; b=n8N/iDLWNqna+3qRkwlxk76OoCciDdFDz8dTvWLC9OO3PrLT8/Xm+DkNPi1rKl+2Br/y/ldyYVrEnd7nEwawB1j0cWzX94xaUqHHCRkBa2rg5yqCndUlRKoT9l5+W3MLfTVBdEJ5JlHqvUPER6eacmR1kDO1yWpXCIa5FIB06KY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=8bytes.org; spf=pass smtp.mailfrom=8bytes.org; dkim=pass (2048-bit key) header.d=8bytes.org header.i=@8bytes.org header.b=ZKQKzyCq; arc=none smtp.client-ip=85.214.250.239
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=8bytes.org
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=8bytes.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=8bytes.org header.i=@8bytes.org header.b="iRt2tdM1"
+	dkim=pass (2048-bit key) header.d=8bytes.org header.i=@8bytes.org header.b="ZKQKzyCq"
 Received: from 8bytes.org (pd9fe9dd8.dip0.t-ipconnect.de [217.254.157.216])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange ECDHE (P-256) server-signature RSA-PSS (2048 bits) server-digest SHA256)
 	(No client certificate requested)
-	by mail.8bytes.org (Postfix) with ESMTPSA id BEB771C0BD3;
-	Fri, 14 Jun 2024 16:51:45 +0200 (CEST)
+	by mail.8bytes.org (Postfix) with ESMTPSA id 32DB31C0BD3;
+	Fri, 14 Jun 2024 16:55:02 +0200 (CEST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=8bytes.org;
-	s=default; t=1718376705;
-	bh=H4Y1+FoVAIwvnNNM9BRYRY2i6yPu1z0wV9EZRKDv3Aw=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=iRt2tdM1Auc9elxxqwNyZ4RCqgObVrbn2Y5+9LnMP+P2bbcTJ23lExaOaWmcHTPy0
-	 0Juqrlmb8EQPb7YGJDzmrlwIoAK7ao6jUx3TulW1lTVDtD7FSL8i0WtN0T1lyPwq1S
-	 Pc2eQLhgPBAMDrqOWs6UoDbaL8qN9D5UMA1O1x3YWZdogvE4ngalrQZls0IFQGg5Jk
-	 TJEGbkol4BHvOlEiD0DhVZgmscScxkyj2+D7GQ3LkHopC797prIf5WV27CsLZuzg/w
-	 y+FTL7uGhQRm84LiXPRat+iYwThUScY0DqPzx7eSYV4W+vuCMSBNA3x2xzobZ+HSZU
-	 RHwTxZhkp4o3A==
-Date: Fri, 14 Jun 2024 16:51:44 +0200
+	s=default; t=1718376902;
+	bh=f17+SUwo19p30IJ9Aeu41ZeelWnoAOsHYBEBfgI+G80=;
+	h=Date:From:To:Cc:Subject:From;
+	b=ZKQKzyCqCP2RP96i6wIfxautV6v++FgBLJU1uGOLOjUq4NN8Q09FKVGTOk4beLY9S
+	 /45j7GJ8U01ffjovzuZe4lABbTIZ2Vfg8wqAnCBafxjaiKpInw3WID4OLnJWhHZL0b
+	 VElRWhy+TLr0+fhqmlStH7kjCLJXjg2unuQCmf0EZCQPJ12mBbqL46MRo705Kitr+Z
+	 9LQfEXmWSw2rzINRBKvBq3K2ATpw307N6uDJ2sv+FpsIADpKQG7p2uUsKITLVESVNO
+	 X+hCA3bXPdVMQM+bAmlUx9CWU/EihEZV7I4w9fa22cSWtDBVhCDhUFFV08Cf7D6vip
+	 Mmzr4NHM7tF4g==
+Date: Fri, 14 Jun 2024 16:55:01 +0200
 From: Joerg Roedel <joro@8bytes.org>
-To: Jeff Johnson <quic_jjohnson@quicinc.com>
-Cc: Robin Murphy <robin.murphy@arm.com>, Will Deacon <will@kernel.org>,
-	iommu@lists.linux.dev, linux-kernel@vger.kernel.org,
-	kernel-janitors@vger.kernel.org
-Subject: Re: [PATCH] iommu/iova: add missing MODULE_DESCRIPTION() macro
-Message-ID: <ZmxZAH84bZi-9QaS@8bytes.org>
-References: <20240613-md-arm-drivers-iommu-v1-1-1fe0bd953119@quicinc.com>
+To: Linus Torvalds <torvalds@linux-foundation.org>
+Cc: Will Deacon <will@kernel.org>, linux-kernel@vger.kernel.org,
+	iommu@lists.linux.dev
+Subject: [git pull] IOMMU Fixes for Linux v6.10-rc3
+Message-ID: <ZmxZxT-j1B71PHQp@8bytes.org>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -47,17 +45,38 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20240613-md-arm-drivers-iommu-v1-1-1fe0bd953119@quicinc.com>
 
-On Thu, Jun 13, 2024 at 06:14:36PM -0700, Jeff Johnson wrote:
-> With ARCH=arm, make allmodconfig && make W=1 C=1 reports:
-> WARNING: modpost: missing MODULE_DESCRIPTION() in drivers/iommu/iova.o
-> 
-> Add the missing invocation of the MODULE_DESCRIPTION() macro.
-> 
-> Signed-off-by: Jeff Johnson <quic_jjohnson@quicinc.com>
-> ---
->  drivers/iommu/iova.c | 1 +
->  1 file changed, 1 insertion(+)
+Hi Linus,
 
-Applied, thanks.
+Sorry for sending a single patch, I missed that one last week and it
+fixes a regression which several people reported.
+
+The following changes since commit 83a7eefedc9b56fe7bfeff13b6c7356688ffa670:
+
+  Linux 6.10-rc3 (2024-06-09 14:19:43 -0700)
+
+are available in the Git repository at:
+
+  git://git.kernel.org/pub/scm/linux/kernel/git/joro/iommu.git tags/iommu-fix-v6.10-rc3
+
+for you to fetch changes up to 12243a8115f8583a6bcada7717c01fb164e23c89:
+
+  iommu/amd: Fix panic accessing amd_iommu_enable_faulting (2024-06-13 11:16:05 +0200)
+
+----------------------------------------------------------------
+IOMMU Fix for Linux v6.10-rc3
+
+	AMD-Vi: Fix regression causing panics
+
+----------------------------------------------------------------
+Dimitri Sivanich (1):
+      iommu/amd: Fix panic accessing amd_iommu_enable_faulting
+
+ drivers/iommu/amd/init.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+Please pull.
+
+Thanks,
+
+	Joerg
