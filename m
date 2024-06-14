@@ -1,91 +1,219 @@
-Received: from mail-pj1-f41.google.com (mail-pj1-f41.google.com [209.85.216.41])
+Received: from mail-pl1-f181.google.com (mail-pl1-f181.google.com [209.85.214.181])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 77FFF146D45
-	for <iommu@lists.linux.dev>; Fri, 14 Jun 2024 17:07:14 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.216.41
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 070B319ADAE
+	for <iommu@lists.linux.dev>; Fri, 14 Jun 2024 18:05:40 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.181
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1718384836; cv=none; b=rOUQKQ98ceEfpLKE9lLv36yozT5wNkw5AOEEtIMuqOMreildwEiGtL0q03JzbFtY1RLcEoYq+ze/s0FB5BFDojTO0Fv7Zry4tbRm2eOBOUt5IDF7vlIVZD3AQ6pipSNRxYX1mpRPS9Os9HHbDmhS/Gf2msfhG2i5iIz9QT2Icpw=
+	t=1718388342; cv=none; b=dG/1flzr1wwH0xYVkuEQo2LePa24yccC1MZg5VwN02zf7KKgazyeyfFk3jAsPP5wDKiZYU/Os167kJLUTEFal/SsphjFzlkUuiX92vgVug0sW9bTgj+9zdSbhj63dyaUzbcnTxJd+Yth0GJ0xn9kIGSimPKnBJXZJSK69/3TLWE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1718384836; c=relaxed/simple;
-	bh=Q6U/TdZ2CTp4sXiVMsx5KpxiGQwk2iooiwW5HAl94pM=;
-	h=Date:From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:
-	 Content-Disposition; b=aZUCXKNpS7ctDLeZm7Rd5Qa21LjjBZ8toWo1NrXP1TBeU3PhBhrpNXJiWWP2FjD7P5n9ylzP/QyyMhsx2krybQbhe3XXEr+1RV2U4mQlJvgujll6Te1v4E1MyZo/210usiroXVX1Lg/JIkk90G59HE7OQ09qgnpb3NxB782ai+4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=linux.com; spf=pass smtp.mailfrom=gmail.com; arc=none smtp.client-ip=209.85.216.41
-Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=linux.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
-Received: by mail-pj1-f41.google.com with SMTP id 98e67ed59e1d1-2c2c9199568so2174380a91.0
-        for <iommu@lists.linux.dev>; Fri, 14 Jun 2024 10:07:14 -0700 (PDT)
+	s=arc-20240116; t=1718388342; c=relaxed/simple;
+	bh=hNhj4oQKB9aRCcIq7/rMXhmUVhPaDoni0j2lJhoy2OE=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=HLKZnH5YF4GPgOYorIqkW/TCtgcErOyABjcbYI27PoB6qzKvZmAJpn9AIbL1lPgT1IiXmM9lxmpWllo1YEM47xV2cj94THBDUhilNLxUkaUXBxQrWNkIXuE99vYU1fIxPHqctuziU/+vakIJao6BS3YJly6Ctcr+Y4ipYq4or+I=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org; spf=pass smtp.mailfrom=linaro.org; dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b=z4XilaR6; arc=none smtp.client-ip=209.85.214.181
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linaro.org
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="z4XilaR6"
+Received: by mail-pl1-f181.google.com with SMTP id d9443c01a7336-1f6fd08e0f2so18644075ad.3
+        for <iommu@lists.linux.dev>; Fri, 14 Jun 2024 11:05:40 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google; t=1718388340; x=1718993140; darn=lists.linux.dev;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date:message-id:reply-to;
+        bh=SoNh1tojhGl6DE6Qa2dKAxuaT1KpRubysgC5JHV5d8A=;
+        b=z4XilaR6cXzsx81U3veTuBtw1kfT7Rlm7uDr9yfZzKwZQAxgZOeCiDfj83Ic1acab3
+         7W4kq4fPFS4TzBga1iZEQ/IWmcRZUfjVrthymIOR7LOQCwB/ZJRL1nux2hXQfrpb3JRz
+         BU0+PLCn/PTxmrjEe+LR/TsZMhnEH++3ul923SPCODq2oo+2NWVcN0R1xNhzz8jukJnB
+         zX+9G9PFLzgegGJDX5lkylmrhfluvLs2XVaJ4j09mvhtPaixNfT+sIl4XIbF1mnV7xOW
+         W6FYEd+ElUcfmKbztoQlZVSZ1z735ZGQe690zBeSNqWXN8JHcaoAdh33xsY3a+7WZXVB
+         HiTQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1718384834; x=1718989634;
-        h=content-transfer-encoding:content-disposition:mime-version
-         :message-id:subject:cc:to:from:date:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=GIflfkviGH+bFJjeADGjhBwgRHGZW0prdlPc1tZ3sB4=;
-        b=YxHEm0cM0KIB1d+hKTd2mpKMJmnFOZ8GDB7rroAtL5a1VtSXgovzCGwLf/x5ep6Stq
-         kt3wexgkPv+vUVjg4VT8AYa7Ipxi6MVQvBpuTWIRM/KwIVIzymehh+l+412HWYuZW7d0
-         v36D4AzOXZq+deIZMn2yeHeV4wm3fmJRYHTQSr5/hl/X5WJxFPD9rQFaVylm4CfTu0wK
-         szi2tUIicKn33TKiOu+/2j/AdfRF3mc4FGjR06fJVI1/Ma6B7H8JqRcv+0PaDNYo6qbT
-         iy9t4ZzphGwYkIhxUIrvXtXjM1X35t6sSFayTz21354e9U5gNaJ47zt7EZsU9oPyuWZS
-         PnIw==
-X-Forwarded-Encrypted: i=1; AJvYcCWpk3zCMmbeIL64M7MpJ4MSRcfRWr5MEjheJrAcYES8GJicYOOUXJ7Qnz6KX9LgAmUx/0eTvQv5Lzl6LcSTFnT8Td8jNMA=
-X-Gm-Message-State: AOJu0Yy+YiB8kg1o2K+rNwKquDmQ3YFRd/I5vd76jjM8NApivG+hUAkB
-	NaS/GyqZgXIrO69cQRWmlw4ZEq9CpDhjMylP8QjEWQdX2kGMzZTe
-X-Google-Smtp-Source: AGHT+IHkKzAS1OVpoDPONGBYFKBJxXpBXklCrLiSJ/OEEAJOTdRGDyQUz2ZqCb5TSjox76It/J/lkQ==
-X-Received: by 2002:a17:90b:692:b0:2c4:af82:32af with SMTP id 98e67ed59e1d1-2c4db449cd3mr3149185a91.22.1718384833367;
-        Fri, 14 Jun 2024 10:07:13 -0700 (PDT)
-Received: from localhost (fpd11144dd.ap.nuro.jp. [209.17.68.221])
-        by smtp.gmail.com with ESMTPSA id 41be03b00d2f7-6fedd21591csm2817902a12.14.2024.06.14.10.07.12
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 14 Jun 2024 10:07:12 -0700 (PDT)
-Date: Sat, 15 Jun 2024 02:07:10 +0900
-From: Krzysztof =?utf-8?Q?Wilczy=C5=84ski?= <kw@linux.com>
-To: Linux PCI <linux-pci@vger.kernel.org>,
-	Linux IOMMU <iommu@lists.linux.dev>,
-	Linux KVM <kvm@vger.kernel.org>
-Cc: Alex Williamson <alex.williamson@redhat.com>,
-	Bjorn Helgaas <bhelgaas@google.com>,
-	=?utf-8?B?SsO2cmc=?= Roedel <jroedel@suse.de>,
-	Lorenzo Pieralisi <lpieralisi@kernel.org>
-Subject: The VFIO/IOMMU/PCI MC at LPC 2024 - Call for Papers
-Message-ID: <20240614170710.GA1796784@rocinante>
+        d=1e100.net; s=20230601; t=1718388340; x=1718993140;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=SoNh1tojhGl6DE6Qa2dKAxuaT1KpRubysgC5JHV5d8A=;
+        b=UZbptd1zrXfD4Kpus7KoZLGX08L4ckSTxo9Cm9tg6DWyjfazuFbXozJKNwCfEdwqZu
+         UkuMliou25UTZD/Ycl+XSJiSk3/Sb54KBvtmQhXC4eetZMIIV3UBJZOzhro19p272p2x
+         +ADqKXUzyAcBowGltwUb8mmXvQjFGldyanygZI+3P5z55hq5oad8GBJ44SOF8s9AmpfG
+         jTLx3oK2o+HaqAsbdTgYTMXIUtTs14+5xU+b1FCLVVypDhpjv3sJfxP3SwZjsUqouTBL
+         eqe6U8Pf+4PkultrnJ/16KhI72b2nZUlRTSN50z22mKjbHM+ib6JAJkFKL0W7wE3GFz9
+         +wGA==
+X-Forwarded-Encrypted: i=1; AJvYcCWrYWCXysdRuJJUyD925/PZe3xM//+nurigP8pKc9KGhtnlOqyouFrW5YU/+cRIemmNF5/MdUgeZbgrndIExNBptntGzL4=
+X-Gm-Message-State: AOJu0Ywfm8ldouFx2Wjxl9UIxGXdPv8vsgCKwgEjBsD3WEbuBBLhcbZ9
+	yY6LlzpJ/q78qcgE09vl6RwVqN8uUxgMzDyJU8O5kv5v2A5jbh7Ba2KsifVK5dHSErCWXgFu5aX
+	LhUEWH/LeKBOIpe+MHzL6bGPQ7KHYQfBlARMSaw==
+X-Google-Smtp-Source: AGHT+IGPXck+B6yocgMSj5EK96i63c8Roh0QGWnbr/CvcZMU0FTNUAr3Gy5zR4lrtPFEtUKFUicicx2KMW1qUtU069A=
+X-Received: by 2002:a17:902:e74a:b0:1f6:ebe2:758d with SMTP id
+ d9443c01a7336-1f862900731mr36854965ad.51.1718388340177; Fri, 14 Jun 2024
+ 11:05:40 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
+References: <20240417133731.2055383-1-quic_c_gdjako@quicinc.com> <20240417133731.2055383-6-quic_c_gdjako@quicinc.com>
+In-Reply-To: <20240417133731.2055383-6-quic_c_gdjako@quicinc.com>
+From: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+Date: Fri, 14 Jun 2024 21:05:28 +0300
+Message-ID: <CAA8EJppcXVu72OSo+OiYEiC1HQjP3qCwKMumOsUhcn6Czj0URg@mail.gmail.com>
+Subject: Re: [PATCH v8 5/7] arm64: dts: qcom: sdm845: Add DT nodes for the TBUs
+To: Georgi Djakov <quic_c_gdjako@quicinc.com>
+Cc: will@kernel.org, robin.murphy@arm.com, joro@8bytes.org, 
+	iommu@lists.linux.dev, robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org, 
+	conor+dt@kernel.org, devicetree@vger.kernel.org, andersson@kernel.org, 
+	konrad.dybcio@linaro.org, robdclark@gmail.com, 
+	linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, 
+	linux-arm-msm@vger.kernel.org, quic_cgoldswo@quicinc.com, 
+	quic_sukadev@quicinc.com, quic_pdaly@quicinc.com, quic_sudaraja@quicinc.com, 
+	djakov@kernel.org
+Content-Type: text/plain; charset="UTF-8"
 
-Hello everyone!
+On Wed, 17 Apr 2024 at 16:39, Georgi Djakov <quic_c_gdjako@quicinc.com> wrote:
+>
+> Add the device-tree nodes for the TBUs (translation buffer units) that
+> are present on the sdm845 platforms. The TBUs can be used debug the
+> kernel and provide additional information when a context faults occur.
+>
+> Describe the all registers, clocks, interconnects and power-domain
+> resources that are needed for each of the TBUs.
+>
+> Signed-off-by: Georgi Djakov <quic_c_gdjako@quicinc.com>
 
-The Linux Plumbers Conference returns this year and will take place in
-September in Vienna, Austria.  The conference registration is open, and if
-you plan to attend, make sure to book attendance as soon as possible to
-secure a spot for yourself.
+This patch now prevents interconnect drivers from hitting the sync
+state on SDM845.
+The TBU driver is enabled only when the ARM_SMMU_QCOM_DEBUG is
+enabled, which is not a typical case on a normal system:
 
-More details are available at https://lpc.events.
+[   26.209151] qnoc-sdm845 1500000.interconnect: sync_state() pending
+due to 150c5000.tbu
+[   26.217228] qnoc-sdm845 1620000.interconnect: sync_state() pending
+due to 150c5000.tbu
+[   26.229926] qnoc-sdm845 1500000.interconnect: sync_state() pending
+due to 150c9000.tbu
+[   26.238008] qnoc-sdm845 1620000.interconnect: sync_state() pending
+due to 150c9000.tbu
+[   26.249068] qnoc-sdm845 1740000.interconnect: sync_state() pending
+due to 150cd000.tbu
+[   26.257127] qnoc-sdm845 1740000.interconnect: sync_state() pending
+due to 150d1000.tbu
+[   26.265159] qnoc-sdm845 1740000.interconnect: sync_state() pending
+due to 150d5000.tbu
+[   26.273189] qnoc-sdm845 1500000.interconnect: sync_state() pending
+due to 150d9000.tbu
+[   26.281206] qnoc-sdm845 1620000.interconnect: sync_state() pending
+due to 150d9000.tbu
+[   26.289203] qnoc-sdm845 1500000.interconnect: sync_state() pending
+due to 150dd000.tbu
+[   26.297196] qnoc-sdm845 1620000.interconnect: sync_state() pending
+due to 150dd000.tbu
+[   26.305201] qnoc-sdm845 1500000.interconnect: sync_state() pending
+due to 150e1000.tbu
+[   26.313207] qnoc-sdm845 1620000.interconnect: sync_state() pending
+due to 150e1000.tbu
 
-As it has been a tradition for almost half a decade, the VFIO/IOMMU/PCI
-micro-conference will return to this year's Linux Plumbers Conference!
 
-That said, I am thrilled to announce that the Call for Papers (CfP) is open!
+> ---
+>  arch/arm64/boot/dts/qcom/sdm845.dtsi | 73 ++++++++++++++++++++++++++++
+>  1 file changed, 73 insertions(+)
+>
+> diff --git a/arch/arm64/boot/dts/qcom/sdm845.dtsi b/arch/arm64/boot/dts/qcom/sdm845.dtsi
+> index 2f20be99ee7e..fa9403aad96f 100644
+> --- a/arch/arm64/boot/dts/qcom/sdm845.dtsi
+> +++ b/arch/arm64/boot/dts/qcom/sdm845.dtsi
+> @@ -15,6 +15,7 @@
+>  #include <dt-bindings/dma/qcom-gpi.h>
+>  #include <dt-bindings/firmware/qcom,scm.h>
+>  #include <dt-bindings/gpio/gpio.h>
+> +#include <dt-bindings/interconnect/qcom,icc.h>
+>  #include <dt-bindings/interconnect/qcom,osm-l3.h>
+>  #include <dt-bindings/interconnect/qcom,sdm845.h>
+>  #include <dt-bindings/interrupt-controller/arm-gic.h>
+> @@ -5085,6 +5086,78 @@ apps_smmu: iommu@15000000 {
+>                                      <GIC_SPI 343 IRQ_TYPE_LEVEL_HIGH>;
+>                 };
+>
+> +               anoc_1_tbu: tbu@150c5000 {
+> +                       compatible = "qcom,sdm845-tbu";
+> +                       reg = <0x0 0x150c5000 0x0 0x1000>;
+> +                       interconnects = <&system_noc MASTER_GNOC_SNOC QCOM_ICC_TAG_ACTIVE_ONLY
+> +                                        &config_noc SLAVE_IMEM_CFG QCOM_ICC_TAG_ACTIVE_ONLY>;
+> +                       power-domains = <&gcc HLOS1_VOTE_AGGRE_NOC_MMU_TBU1_GDSC>;
+> +                       qcom,stream-id-range = <&apps_smmu 0x0 0x400>;
+> +               };
+> +
+> +               anoc_2_tbu: tbu@150c9000 {
+> +                       compatible = "qcom,sdm845-tbu";
+> +                       reg = <0x0 0x150c9000 0x0 0x1000>;
+> +                       interconnects = <&system_noc MASTER_GNOC_SNOC QCOM_ICC_TAG_ACTIVE_ONLY
+> +                                        &config_noc SLAVE_IMEM_CFG QCOM_ICC_TAG_ACTIVE_ONLY>;
+> +                       power-domains = <&gcc HLOS1_VOTE_AGGRE_NOC_MMU_TBU2_GDSC>;
+> +                       qcom,stream-id-range = <&apps_smmu 0x400 0x400>;
+> +               };
+> +
+> +               mnoc_hf_0_tbu: tbu@150cd000 {
+> +                       compatible = "qcom,sdm845-tbu";
+> +                       reg = <0x0 0x150cd000 0x0 0x1000>;
+> +                       interconnects = <&mmss_noc MASTER_MDP0 QCOM_ICC_TAG_ACTIVE_ONLY
+> +                                        &mmss_noc SLAVE_MNOC_HF_MEM_NOC QCOM_ICC_TAG_ACTIVE_ONLY>;
+> +                       power-domains = <&gcc HLOS1_VOTE_MMNOC_MMU_TBU_HF0_GDSC>;
+> +                       qcom,stream-id-range = <&apps_smmu 0x800 0x400>;
+> +               };
+> +
+> +               mnoc_hf_1_tbu: tbu@150d1000 {
+> +                       compatible = "qcom,sdm845-tbu";
+> +                       reg = <0x0 0x150d1000 0x0 0x1000>;
+> +                       interconnects = <&mmss_noc MASTER_MDP0 QCOM_ICC_TAG_ACTIVE_ONLY
+> +                                        &mmss_noc SLAVE_MNOC_HF_MEM_NOC QCOM_ICC_TAG_ACTIVE_ONLY>;
+> +                       power-domains = <&gcc HLOS1_VOTE_MMNOC_MMU_TBU_HF1_GDSC>;
+> +                       qcom,stream-id-range = <&apps_smmu 0xc00 0x400>;
+> +               };
+> +
+> +               mnoc_sf_0_tbu: tbu@150d5000 {
+> +                       compatible = "qcom,sdm845-tbu";
+> +                       reg = <0x0 0x150d5000 0x0 0x1000>;
+> +                       interconnects = <&mmss_noc MASTER_CAMNOC_SF QCOM_ICC_TAG_ACTIVE_ONLY
+> +                                        &mmss_noc SLAVE_MNOC_SF_MEM_NOC QCOM_ICC_TAG_ACTIVE_ONLY>;
+> +                       power-domains = <&gcc HLOS1_VOTE_MMNOC_MMU_TBU_SF_GDSC>;
+> +                       qcom,stream-id-range = <&apps_smmu 0x1000 0x400>;
+> +               };
+> +
+> +               compute_dsp_tbu: tbu@150d9000 {
+> +                       compatible = "qcom,sdm845-tbu";
+> +                       reg = <0x0 0x150d9000 0x0 0x1000>;
+> +                       interconnects = <&system_noc MASTER_GNOC_SNOC QCOM_ICC_TAG_ACTIVE_ONLY
+> +                                        &config_noc SLAVE_IMEM_CFG QCOM_ICC_TAG_ACTIVE_ONLY>;
+> +                       qcom,stream-id-range = <&apps_smmu 0x1400 0x400>;
+> +               };
+> +
+> +               adsp_tbu: tbu@150dd000 {
+> +                       compatible = "qcom,sdm845-tbu";
+> +                       reg = <0x0 0x150dd000 0x0 0x1000>;
+> +                       interconnects = <&system_noc MASTER_GNOC_SNOC QCOM_ICC_TAG_ACTIVE_ONLY
+> +                                        &config_noc SLAVE_IMEM_CFG QCOM_ICC_TAG_ACTIVE_ONLY>;
+> +                       power-domains = <&gcc HLOS1_VOTE_AGGRE_NOC_MMU_AUDIO_TBU_GDSC>;
+> +                       qcom,stream-id-range = <&apps_smmu 0x1800 0x400>;
+> +               };
+> +
+> +               anoc_1_pcie_tbu: tbu@150e1000 {
+> +                       compatible = "qcom,sdm845-tbu";
+> +                       reg = <0x0 0x150e1000 0x0 0x1000>;
+> +                       clocks = <&gcc GCC_AGGRE_NOC_PCIE_TBU_CLK>;
+> +                       interconnects = <&system_noc MASTER_GNOC_SNOC QCOM_ICC_TAG_ACTIVE_ONLY
+> +                                        &config_noc SLAVE_IMEM_CFG QCOM_ICC_TAG_ACTIVE_ONLY>;
+> +                       power-domains = <&gcc HLOS1_VOTE_AGGRE_NOC_MMU_PCIE_TBU_GDSC>;
+> +                       qcom,stream-id-range = <&apps_smmu 0x1c00 0x400>;
+> +               };
+> +
+>                 lpasscc: clock-controller@17014000 {
+>                         compatible = "qcom,sdm845-lpasscc";
+>                         reg = <0 0x17014000 0 0x1f004>, <0 0x17300000 0 0x200>;
+>
 
-If you would like to submit a talk for the MC, please follow the process at
-https://lpc.events/event/18/abstracts, selecting "VFIO/IOMMU/PCI MC" from
-the list of available tracks.
 
-The deadline for talk proposal submission is mid-July (15th to be more
-precise), so only a few weeks are left!  Remember: you can submit the
-proposal early and refine it later; there will be time.  So, don't
-hesitate!
-
-You can find the complete MC proposal at:
-
-  https://drive.google.com/file/d/1-1bJHnWCQOLSjhzTU9_bLLLMhX3Tj4hG
-
-Thank you for your help, and see you at the LPC 2024!
-
-	Alex, Bjorn, Jörg, Lorenzo and Krzysztof
+-- 
+With best wishes
+Dmitry
