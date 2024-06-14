@@ -1,119 +1,91 @@
-Received: from mx0a-0031df01.pphosted.com (mx0a-0031df01.pphosted.com [205.220.168.131])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-pj1-f41.google.com (mail-pj1-f41.google.com [209.85.216.41])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 89FDA49638
-	for <iommu@lists.linux.dev>; Fri, 14 Jun 2024 16:40:01 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.168.131
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 77FFF146D45
+	for <iommu@lists.linux.dev>; Fri, 14 Jun 2024 17:07:14 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.216.41
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1718383202; cv=none; b=mPD26Q/ATiUgn3d0HBFzVNRCyfKUjH25e3hAL46+TI1euJhlX8GhLAS029mtGqgLPnA6PlfzyqLkQD15hXkV7ZsK3MWrxhcGuLF+zRjEDkDNiZmqzI+w1gX7/3Y5sD2y5AbC10+B2wbxfIHpkF3UYRdGs9mKklbPJulY/AwO0Pc=
+	t=1718384836; cv=none; b=rOUQKQ98ceEfpLKE9lLv36yozT5wNkw5AOEEtIMuqOMreildwEiGtL0q03JzbFtY1RLcEoYq+ze/s0FB5BFDojTO0Fv7Zry4tbRm2eOBOUt5IDF7vlIVZD3AQ6pipSNRxYX1mpRPS9Os9HHbDmhS/Gf2msfhG2i5iIz9QT2Icpw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1718383202; c=relaxed/simple;
-	bh=3/EpBHFCwFxGp4rZgZ9kAxejp5oyqD5NlW4xxmoqCBI=;
-	h=Message-ID:Date:MIME-Version:Subject:To:CC:References:From:
-	 In-Reply-To:Content-Type; b=sW5mAh+aOjOf6RXhEHiBFpMu++DvuDtTDIVYi4vLb1ivxECbyX8oq+LPirdeG19Jh7dNCVHLKzsgz7GERqnu2psU2SMTJUnC/W+XV2FdL9g2kWfHNybTy/KySPUK7P8QRcl2kqBsZFckvc251d2fQctWLSSFTe6ZyHhqmpvwIQc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com; spf=pass smtp.mailfrom=quicinc.com; dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b=MJPzMklW; arc=none smtp.client-ip=205.220.168.131
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=quicinc.com
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b="MJPzMklW"
-Received: from pps.filterd (m0279866.ppops.net [127.0.0.1])
-	by mx0a-0031df01.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 45E9m9mU032695;
-	Fri, 14 Jun 2024 16:39:46 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=quicinc.com; h=
-	cc:content-transfer-encoding:content-type:date:from:in-reply-to
-	:message-id:mime-version:references:subject:to; s=qcppdkim1; bh=
-	euP53KvYb4OJB4lz2pMwCFHlr8WB3Zw8Vqkw9q4K+yU=; b=MJPzMklWEv2QvVr6
-	dDRImL+6abJwTfPmSY59ATFEY6yWKvHotDZJq0Tr+G45fIazFqYz3OwL/LbjCGQD
-	qCTxWMSXB5yLOx098wRnPCjps3B+vNBaGnCtwVk194//KibcL5Kcx+XMdz1AQggw
-	w1Xd+C0VIxsq57iY0VJiTnHH7KRz/89sVs6aU7Upskv1waehrIZjUaScA1F0U0+z
-	MxQDWi32w6eGcUvusWOlAfFdiTvdsPFZ7ByGtbHI0q1k5vL7jppTjCtLE8JC/lS+
-	fWnbJt3/8Gp7ZjWQwoW5GLUpR52VZ9NFyt/O0KhaDTDVwFMypvWw1k7KVdkS3TRN
-	bQbPPQ==
-Received: from nalasppmta01.qualcomm.com (Global_NAT1.qualcomm.com [129.46.96.20])
-	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 3yr6q2tbcu-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Fri, 14 Jun 2024 16:39:46 +0000 (GMT)
-Received: from nalasex01a.na.qualcomm.com (nalasex01a.na.qualcomm.com [10.47.209.196])
-	by NALASPPMTA01.qualcomm.com (8.17.1.19/8.17.1.19) with ESMTPS id 45EGdjnX013203
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Fri, 14 Jun 2024 16:39:45 GMT
-Received: from [10.226.59.182] (10.80.80.8) by nalasex01a.na.qualcomm.com
- (10.47.209.196) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1544.9; Fri, 14 Jun
- 2024 09:39:43 -0700
-Message-ID: <7e32d69f-7024-01d8-a165-fc00ea60fa90@quicinc.com>
-Date: Fri, 14 Jun 2024 10:39:43 -0600
+	s=arc-20240116; t=1718384836; c=relaxed/simple;
+	bh=Q6U/TdZ2CTp4sXiVMsx5KpxiGQwk2iooiwW5HAl94pM=;
+	h=Date:From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:
+	 Content-Disposition; b=aZUCXKNpS7ctDLeZm7Rd5Qa21LjjBZ8toWo1NrXP1TBeU3PhBhrpNXJiWWP2FjD7P5n9ylzP/QyyMhsx2krybQbhe3XXEr+1RV2U4mQlJvgujll6Te1v4E1MyZo/210usiroXVX1Lg/JIkk90G59HE7OQ09qgnpb3NxB782ai+4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=linux.com; spf=pass smtp.mailfrom=gmail.com; arc=none smtp.client-ip=209.85.216.41
+Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=linux.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+Received: by mail-pj1-f41.google.com with SMTP id 98e67ed59e1d1-2c2c9199568so2174380a91.0
+        for <iommu@lists.linux.dev>; Fri, 14 Jun 2024 10:07:14 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1718384834; x=1718989634;
+        h=content-transfer-encoding:content-disposition:mime-version
+         :message-id:subject:cc:to:from:date:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=GIflfkviGH+bFJjeADGjhBwgRHGZW0prdlPc1tZ3sB4=;
+        b=YxHEm0cM0KIB1d+hKTd2mpKMJmnFOZ8GDB7rroAtL5a1VtSXgovzCGwLf/x5ep6Stq
+         kt3wexgkPv+vUVjg4VT8AYa7Ipxi6MVQvBpuTWIRM/KwIVIzymehh+l+412HWYuZW7d0
+         v36D4AzOXZq+deIZMn2yeHeV4wm3fmJRYHTQSr5/hl/X5WJxFPD9rQFaVylm4CfTu0wK
+         szi2tUIicKn33TKiOu+/2j/AdfRF3mc4FGjR06fJVI1/Ma6B7H8JqRcv+0PaDNYo6qbT
+         iy9t4ZzphGwYkIhxUIrvXtXjM1X35t6sSFayTz21354e9U5gNaJ47zt7EZsU9oPyuWZS
+         PnIw==
+X-Forwarded-Encrypted: i=1; AJvYcCWpk3zCMmbeIL64M7MpJ4MSRcfRWr5MEjheJrAcYES8GJicYOOUXJ7Qnz6KX9LgAmUx/0eTvQv5Lzl6LcSTFnT8Td8jNMA=
+X-Gm-Message-State: AOJu0Yy+YiB8kg1o2K+rNwKquDmQ3YFRd/I5vd76jjM8NApivG+hUAkB
+	NaS/GyqZgXIrO69cQRWmlw4ZEq9CpDhjMylP8QjEWQdX2kGMzZTe
+X-Google-Smtp-Source: AGHT+IHkKzAS1OVpoDPONGBYFKBJxXpBXklCrLiSJ/OEEAJOTdRGDyQUz2ZqCb5TSjox76It/J/lkQ==
+X-Received: by 2002:a17:90b:692:b0:2c4:af82:32af with SMTP id 98e67ed59e1d1-2c4db449cd3mr3149185a91.22.1718384833367;
+        Fri, 14 Jun 2024 10:07:13 -0700 (PDT)
+Received: from localhost (fpd11144dd.ap.nuro.jp. [209.17.68.221])
+        by smtp.gmail.com with ESMTPSA id 41be03b00d2f7-6fedd21591csm2817902a12.14.2024.06.14.10.07.12
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 14 Jun 2024 10:07:12 -0700 (PDT)
+Date: Sat, 15 Jun 2024 02:07:10 +0900
+From: Krzysztof =?utf-8?Q?Wilczy=C5=84ski?= <kw@linux.com>
+To: Linux PCI <linux-pci@vger.kernel.org>,
+	Linux IOMMU <iommu@lists.linux.dev>,
+	Linux KVM <kvm@vger.kernel.org>
+Cc: Alex Williamson <alex.williamson@redhat.com>,
+	Bjorn Helgaas <bhelgaas@google.com>,
+	=?utf-8?B?SsO2cmc=?= Roedel <jroedel@suse.de>,
+	Lorenzo Pieralisi <lpieralisi@kernel.org>
+Subject: The VFIO/IOMMU/PCI MC at LPC 2024 - Call for Papers
+Message-ID: <20240614170710.GA1796784@rocinante>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.6.0
-Subject: Re: [PATCH 9/9] accel/rocket: Add IOCTLs for synchronizing memory
- accesses
-Content-Language: en-US
-To: Tomeu Vizoso <tomeu@tomeuvizoso.net>, Joerg Roedel <joro@8bytes.org>,
-        Will
- Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
-        Heiko Stuebner
-	<heiko@sntech.de>, Rob Herring <robh@kernel.org>,
-        Krzysztof Kozlowski
-	<krzk+dt@kernel.org>,
-        Conor Dooley <conor+dt@kernel.org>, Oded Gabbay
-	<ogabbay@kernel.org>,
-        Tomeu Vizoso <tomeu.vizoso@tomeuvizoso.net>,
-        David
- Airlie <airlied@gmail.com>, Daniel Vetter <daniel@ffwll.ch>,
-        Maarten
- Lankhorst <maarten.lankhorst@linux.intel.com>,
-        Maxime Ripard
-	<mripard@kernel.org>,
-        Thomas Zimmermann <tzimmermann@suse.de>,
-        Philipp Zabel
-	<p.zabel@pengutronix.de>,
-        Sumit Semwal <sumit.semwal@linaro.org>,
-        =?UTF-8?Q?Christian_K=c3=b6nig?= <christian.koenig@amd.com>
-CC: <iommu@lists.linux.dev>, <linux-arm-kernel@lists.infradead.org>,
-        <linux-rockchip@lists.infradead.org>, <linux-kernel@vger.kernel.org>,
-        <devicetree@vger.kernel.org>, <dri-devel@lists.freedesktop.org>,
-        <linux-media@vger.kernel.org>, <linaro-mm-sig@lists.linaro.org>
-References: <20240612-6-10-rocket-v1-0-060e48eea250@tomeuvizoso.net>
- <20240612-6-10-rocket-v1-9-060e48eea250@tomeuvizoso.net>
-From: Jeffrey Hugo <quic_jhugo@quicinc.com>
-In-Reply-To: <20240612-6-10-rocket-v1-9-060e48eea250@tomeuvizoso.net>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: nasanex01a.na.qualcomm.com (10.52.223.231) To
- nalasex01a.na.qualcomm.com (10.47.209.196)
-X-QCInternal: smtphost
-X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
-X-Proofpoint-GUID: 50nkHqkNt-PDRn_5o0klNCIcppNdnO4M
-X-Proofpoint-ORIG-GUID: 50nkHqkNt-PDRn_5o0klNCIcppNdnO4M
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.293,Aquarius:18.0.1039,Hydra:6.0.680,FMLib:17.12.28.16
- definitions=2024-06-14_14,2024-06-14_03,2024-05-17_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 mlxlogscore=840
- malwarescore=0 mlxscore=0 spamscore=0 suspectscore=0 adultscore=0
- impostorscore=0 bulkscore=0 clxscore=1015 phishscore=0 priorityscore=1501
- lowpriorityscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.19.0-2405170001 definitions=main-2406140113
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
 
-On 6/12/2024 7:53 AM, Tomeu Vizoso wrote:
-> diff --git a/include/uapi/drm/rocket_accel.h b/include/uapi/drm/rocket_accel.h
-> index 888c9413e4cd..1539af0af4fe 100644
-> --- a/include/uapi/drm/rocket_accel.h
-> +++ b/include/uapi/drm/rocket_accel.h
-> @@ -12,9 +12,13 @@ extern "C" {
->   #endif
->   
->   #define DRM_ROCKET_CREATE_BO			0x00
-> -#define DRM_ROCKET_SUBMIT			0x01
-> +#define DRM_ROCKET_PREP_BO			0x01
-> +#define DRM_ROCKET_FINI_BO			0x02
-> +#define DRM_ROCKET_SUBMIT			0x03
+Hello everyone!
 
-This looks like a uAPI breaking change.  Shouldn't you have defined 
-SUBMIT as 0x03 from the beginning, or put the new BO ioctls after it?
+The Linux Plumbers Conference returns this year and will take place in
+September in Vienna, Austria.  The conference registration is open, and if
+you plan to attend, make sure to book attendance as soon as possible to
+secure a spot for yourself.
 
+More details are available at https://lpc.events.
+
+As it has been a tradition for almost half a decade, the VFIO/IOMMU/PCI
+micro-conference will return to this year's Linux Plumbers Conference!
+
+That said, I am thrilled to announce that the Call for Papers (CfP) is open!
+
+If you would like to submit a talk for the MC, please follow the process at
+https://lpc.events/event/18/abstracts, selecting "VFIO/IOMMU/PCI MC" from
+the list of available tracks.
+
+The deadline for talk proposal submission is mid-July (15th to be more
+precise), so only a few weeks are left!  Remember: you can submit the
+proposal early and refine it later; there will be time.  So, don't
+hesitate!
+
+You can find the complete MC proposal at:
+
+  https://drive.google.com/file/d/1-1bJHnWCQOLSjhzTU9_bLLLMhX3Tj4hG
+
+Thank you for your help, and see you at the LPC 2024!
+
+	Alex, Bjorn, Jörg, Lorenzo and Krzysztof
