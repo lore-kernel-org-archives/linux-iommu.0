@@ -1,103 +1,94 @@
-Received: from mx0b-0031df01.pphosted.com (mx0b-0031df01.pphosted.com [205.220.180.131])
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4E44B323D;
-	Fri, 14 Jun 2024 01:14:52 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.180.131
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8B316181D00
+	for <iommu@lists.linux.dev>; Fri, 14 Jun 2024 01:19:21 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1718327694; cv=none; b=H1gmmIYF1dKYjcRKr9vhWHw/Mu3y8PeRLm7rt5sA4wZdbWR6MxVNwCl05XpUCtu8YxvxNhBuNDU9Qj3P9p+OqE9mgVgiVr0tvq/uTvqGTITKyqJLzcooXxUq82YCTke6+ruspni89TxS0jsajdcbnZmlFQXcC7z50A1wKaf6EC8=
+	t=1718327963; cv=none; b=W/Ree99hMEY+A6YcpxAWBeZ1huZ5ytTDJAtIEXwhTg60bhzmm6LI/OgRW/+55WPzJ+8mC+vg1BAJQSXejo2fIUcoyAf9F23H4ozy+IQdKlFYn5no/Oa9Uu8yk73vcgpUi73eaTaVMPIBqOlqw9QDe+SrTzeESq4WC+hH7KfO/wQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1718327694; c=relaxed/simple;
-	bh=V2IMhuMCu3TyRK0LHmCZeePh3bxVNr+Pu/PW1YYhuhc=;
-	h=From:Date:Subject:MIME-Version:Content-Type:Message-ID:To:CC; b=DhsTq+ycxUtplp6lSXZDSavqE/3kt8UkCYsCutl1wV7+ImpOjMWaQehfoCUcjLtGNuGXb7FFWtwgyiZx34VpgfyeGKnOTu0lJl9NziZNvy1zkNFQoE5Z012EG0z/5knTXWJzbNv9+sB3vd/O36i6YcrGcYiqHbZdnhifXug6Vp4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com; spf=pass smtp.mailfrom=quicinc.com; dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b=VsEP3uWI; arc=none smtp.client-ip=205.220.180.131
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=quicinc.com
+	s=arc-20240116; t=1718327963; c=relaxed/simple;
+	bh=Y3xFmer/bJb5jwuUcExtgxCX4BjTUCWoKsvdsQB96HE=;
+	h=Message-ID:Date:MIME-Version:Cc:Subject:To:References:From:
+	 In-Reply-To:Content-Type; b=mC+Y8/9yq/xbtHSre3E6vUZKYcI81OihY/8CENgdFEu/xcUO/FsoZ+iNKTEXqbthTKi5AwO1O/OXB8Fdriwkh7sO5NxR2sK6nz/KQBlBbw09jitWTp0cahO4QFsDkBzYFuqxkJwIXTDWSCjhCzqIZigD3p95I5nFr4SUpsJNRZ4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=bxvcHYOA; arc=none smtp.client-ip=198.175.65.18
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b="VsEP3uWI"
-Received: from pps.filterd (m0279868.ppops.net [127.0.0.1])
-	by mx0a-0031df01.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 45DJGPrP018608;
-	Fri, 14 Jun 2024 01:14:38 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=quicinc.com; h=
-	cc:content-transfer-encoding:content-type:date:from:message-id
-	:mime-version:subject:to; s=qcppdkim1; bh=aeYP2djocA0Pnclc8ULdYg
-	aoT7Jq/RKLol49xRNVPA4=; b=VsEP3uWIUWbDIwhxUWpVDMGPIo7j26NODVBevP
-	/KInyRbHMiR0ASyrRkFJ2e45jksut4VfeSYdpsOIPLS1vYizC1poxQ8gYkebzk7O
-	H3b7jnhsKIDumIjXHMPkkN9a+mum9hAf77wyeFZVZUsBsKQnjmGWtsU8nVqvENWr
-	WkFVKu/TRNc3V4uzv6Q4NDTcO3bwYLO+lalbgLOcQNYUG8Hl4waXOVecmuWL2nPL
-	Q2RC+hjkHzYoFG2llwSu9ZMUkFNq/YsxpVtZVRSW3rf1I5M4tOQ++rZjVwn5QeDs
-	MnayWNUtVAaqx/uizFPbzCrPaCGf+t2AEaJvHrD6EkRatkag==
-Received: from nalasppmta01.qualcomm.com (Global_NAT1.qualcomm.com [129.46.96.20])
-	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 3yr6q40pyx-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Fri, 14 Jun 2024 01:14:38 +0000 (GMT)
-Received: from nalasex01a.na.qualcomm.com (nalasex01a.na.qualcomm.com [10.47.209.196])
-	by NALASPPMTA01.qualcomm.com (8.17.1.19/8.17.1.19) with ESMTPS id 45E1Ebj6008387
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Fri, 14 Jun 2024 01:14:37 GMT
-Received: from [169.254.0.1] (10.49.16.6) by nalasex01a.na.qualcomm.com
- (10.47.209.196) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1544.9; Thu, 13 Jun
- 2024 18:14:37 -0700
-From: Jeff Johnson <quic_jjohnson@quicinc.com>
-Date: Thu, 13 Jun 2024 18:14:36 -0700
-Subject: [PATCH] iommu/iova: add missing MODULE_DESCRIPTION() macro
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="bxvcHYOA"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1718327962; x=1749863962;
+  h=message-id:date:mime-version:cc:subject:to:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=Y3xFmer/bJb5jwuUcExtgxCX4BjTUCWoKsvdsQB96HE=;
+  b=bxvcHYOA1Cf0+0dGc46OlEDTW11ps98Jl+GcbiRUVZ7m+p4JYmbH2TSR
+   7thwNGZafpzmUE64R4RQ7ZQEYcv6RpSpjFEzKiTOYYocQtKukPDYqcTHM
+   tdZh8jSTmfOY3BeBsTyZrRbPyB/bu6gU82mFTQjpVG0WtgMwh0HRmBC15
+   zQjpm3y2PC0B/tt/PgiRCr8uruY/sFo9I9H10izD0sNNj/jP20uPmJdkR
+   W0mfCpygDND4U7tSVez2adlk/085ZcHOlWbfUG6EugQS9J/tZFrUA2yWB
+   18cKW3ODA6QrHan7OdPRYnxz2t8wIKwq9UcDJYKTMJyr0MtcxoYs0MFZX
+   A==;
+X-CSE-ConnectionGUID: IlOD+9OuS6awqWfHHx0dQw==
+X-CSE-MsgGUID: roWiaxxUQI64wvZ3Tl1vSA==
+X-IronPort-AV: E=McAfee;i="6700,10204,11102"; a="15346724"
+X-IronPort-AV: E=Sophos;i="6.08,236,1712646000"; 
+   d="scan'208";a="15346724"
+Received: from orviesa010.jf.intel.com ([10.64.159.150])
+  by orvoesa110.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Jun 2024 18:19:22 -0700
+X-CSE-ConnectionGUID: srtDBUcgR/GMQOGdRXhpKQ==
+X-CSE-MsgGUID: B49IlPj3TwGU3zZoYVf2og==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.08,236,1712646000"; 
+   d="scan'208";a="40266698"
+Received: from unknown (HELO [10.239.159.127]) ([10.239.159.127])
+  by orviesa010.jf.intel.com with ESMTP; 13 Jun 2024 18:19:18 -0700
+Message-ID: <1a053b9c-6cbf-4b8c-9d23-731b8a22c747@linux.intel.com>
+Date: Fri, 14 Jun 2024 09:16:58 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
+User-Agent: Mozilla Thunderbird
+Cc: baolu.lu@linux.intel.com, Kevin Tian <kevin.tian@intel.com>,
+ Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
+ Robin Murphy <robin.murphy@arm.com>,
+ Jean-Philippe Brucker <jean-philippe@linaro.org>,
+ Nicolin Chen <nicolinc@nvidia.com>, Yi Liu <yi.l.liu@intel.com>,
+ Jacob Pan <jacob.jun.pan@linux.intel.com>,
+ Joel Granados <j.granados@samsung.com>, iommu@lists.linux.dev,
+ virtualization@lists.linux-foundation.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v6 03/10] iommu: Add attach handle to struct iopf_group
+To: Jason Gunthorpe <jgg@ziepe.ca>
+References: <20240527040517.38561-1-baolu.lu@linux.intel.com>
+ <20240527040517.38561-4-baolu.lu@linux.intel.com>
+ <20240612133732.GW791043@ziepe.ca>
+ <013afe9a-756f-4c85-baa1-977bea6be395@linux.intel.com>
+ <20240613114948.GA791043@ziepe.ca>
+Content-Language: en-US
+From: Baolu Lu <baolu.lu@linux.intel.com>
+In-Reply-To: <20240613114948.GA791043@ziepe.ca>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
-Message-ID: <20240613-md-arm-drivers-iommu-v1-1-1fe0bd953119@quicinc.com>
-X-B4-Tracking: v=1; b=H4sIAHuZa2YC/x3MTQ6CQAxA4auQrm3Cj4zGqxgXnZkiTZzBtEBIC
- Hd3ZPkt3tvBWIUNHtUOyquYTLmguVQQRspvRonF0NbttXZNhykiacKosrIaypTSgoPrbp4dhz7
- coaRf5UG2c/t8FXsyRq+Uw/iffSQvGyaymRWO4wc6O6dFhQAAAA==
-To: Robin Murphy <robin.murphy@arm.com>, Joerg Roedel <joro@8bytes.org>,
-        "Will
- Deacon" <will@kernel.org>
-CC: <iommu@lists.linux.dev>, <linux-kernel@vger.kernel.org>,
-        <kernel-janitors@vger.kernel.org>,
-        Jeff Johnson <quic_jjohnson@quicinc.com>
-X-Mailer: b4 0.13.0
-X-ClientProxiedBy: nalasex01b.na.qualcomm.com (10.47.209.197) To
- nalasex01a.na.qualcomm.com (10.47.209.196)
-X-QCInternal: smtphost
-X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
-X-Proofpoint-GUID: TME4yIMhrSTYVntvxW89zqIlU5eG4TGm
-X-Proofpoint-ORIG-GUID: TME4yIMhrSTYVntvxW89zqIlU5eG4TGm
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.293,Aquarius:18.0.1039,Hydra:6.0.680,FMLib:17.12.28.16
- definitions=2024-06-13_15,2024-06-13_02,2024-05-17_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 mlxlogscore=995 spamscore=0
- lowpriorityscore=0 bulkscore=0 clxscore=1015 priorityscore=1501
- adultscore=0 mlxscore=0 suspectscore=0 impostorscore=0 phishscore=0
- malwarescore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.19.0-2405170001 definitions=main-2406140004
 
-With ARCH=arm, make allmodconfig && make W=1 C=1 reports:
-WARNING: modpost: missing MODULE_DESCRIPTION() in drivers/iommu/iova.o
+On 6/13/24 7:49 PM, Jason Gunthorpe wrote:
+> On Thu, Jun 13, 2024 at 12:23:17PM +0800, Baolu Lu wrote:
+> 
+>>   struct iommu_ops {
+>>          bool (*capable)(struct device *dev, enum iommu_cap);
+>> @@ -600,6 +598,7 @@ struct iommu_ops {
+>>          struct iommu_domain *blocked_domain;
+>>          struct iommu_domain *release_domain;
+>>          struct iommu_domain *default_domain;
+>> +       bool user_pasid_table;
+>>   };
+> Yeah, maybe spell it
+> 
+>    u8 user_pasid_table : 1;
 
-Add the missing invocation of the MODULE_DESCRIPTION() macro.
+Done.
 
-Signed-off-by: Jeff Johnson <quic_jjohnson@quicinc.com>
----
- drivers/iommu/iova.c | 1 +
- 1 file changed, 1 insertion(+)
-
-diff --git a/drivers/iommu/iova.c b/drivers/iommu/iova.c
-index d59d0ea2fd21..16c6adff3eb7 100644
---- a/drivers/iommu/iova.c
-+++ b/drivers/iommu/iova.c
-@@ -1000,4 +1000,5 @@ void iova_cache_put(void)
- EXPORT_SYMBOL_GPL(iova_cache_put);
- 
- MODULE_AUTHOR("Anil S Keshavamurthy <anil.s.keshavamurthy@intel.com>");
-+MODULE_DESCRIPTION("IOMMU I/O Virtual Address management");
- MODULE_LICENSE("GPL");
-
----
-base-commit: 83a7eefedc9b56fe7bfeff13b6c7356688ffa670
-change-id: 20240613-md-arm-drivers-iommu-f637be6ec5c8
-
+Best regards,
+baolu
