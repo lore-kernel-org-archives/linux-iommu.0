@@ -1,22 +1,23 @@
 Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 87CD79457;
-	Sun, 16 Jun 2024 22:42:30 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 2FC266F09C;
+	Sun, 16 Jun 2024 22:42:32 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1718577754; cv=none; b=FWLBCf3Qb8RSmV8i8dzSElFTAa6uD26phGKbw5SPmbIKPYiapiOWhCG3V1SsMJ3D4fUThmR7+8DlsobPsi7021vs2AlBTBzkokac1n6MA/TW7sxhdvj3ty1o+ycFTjhwMOUYsp8oMiXTAcBkmULaylfo9fFgNZ7oH0z51/mjYkw=
+	t=1718577754; cv=none; b=LlVdFXHYpOLL5Sk/k04URu05Cg5EDqJ9Lusc7UO10Bql150LzTPqozPRph5MYxvFYiGvzJGVRcp9i9puYqho3FDKMTWbV30ZPwB92dNrG3mSJ4S1lfaf/31EAkF5kNpu+0AZc4wNIU/pgalh7Xq3mgqJpXW7JLgyOZrYUae5b7Q=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
 	s=arc-20240116; t=1718577754; c=relaxed/simple;
-	bh=5CDWZaMP44AkRBZmWKu0xjffFBosSFrJxoi6TrM1SoY=;
-	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version; b=IShz4kP8QL2pOYopaCUsjUjfy3OIsHNss7nwyryPbdc+qwJoWaRtg61jfzovKuGJ3pw6FKXBTZl1RzhY/t7QxE5F0SOXZsAGx46kmh7al+yL6+79gLQi6A+x6UQUY9qmeHw2AxEXLvbnBCpaWSsg94WvoX12WXB4pJVCxgUTYCQ=
+	bh=55dFZdUChepL5AuEuDIRZdBfjKF4OxW9seruT6eccoA=;
+	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
+	 MIME-Version; b=u8jNSOmvsmPfSxDoHhJFU+NdZUW0RF7m9daB3jYwuKycmK6rQ5y1GEp0qfTRguwyDOzUga9jiOaD1IbA8ETJ2IvA9nM2J5phliBRzvh0I+IUqUr/bxQBr/eT5oeVzBrwCJgAGbbntLXXieXa58l0GOVNmPLZaTGVhwiNyuU87ko=
 ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; arc=none smtp.client-ip=217.140.110.172
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
 Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 90B99DA7;
-	Sun, 16 Jun 2024 15:42:54 -0700 (PDT)
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id E943BFEC;
+	Sun, 16 Jun 2024 15:42:56 -0700 (PDT)
 Received: from localhost.localdomain (usa-sjc-mx-foss1.foss.arm.com [172.31.20.19])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id C60A13F73B;
-	Sun, 16 Jun 2024 15:42:27 -0700 (PDT)
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 2C0413F73B;
+	Sun, 16 Jun 2024 15:42:30 -0700 (PDT)
 From: Andre Przywara <andre.przywara@arm.com>
 To: Joerg Roedel <joro@8bytes.org>,
 	Will Deacon <will@kernel.org>,
@@ -34,10 +35,12 @@ Cc: Chris Morgan <macromorgan@hotmail.com>,
 	devicetree@vger.kernel.org,
 	linux-sunxi@lists.linux.dev,
 	linux-arm-kernel@lists.infradead.org
-Subject: [PATCH v2 0/5] iommu: sun50i: Add Allwinner H616 support
-Date: Sun, 16 Jun 2024 23:40:51 +0100
-Message-Id: <20240616224056.29159-1-andre.przywara@arm.com>
+Subject: [PATCH v2 1/5] iommu: sun50i: clear bypass register
+Date: Sun, 16 Jun 2024 23:40:52 +0100
+Message-Id: <20240616224056.29159-2-andre.przywara@arm.com>
 X-Mailer: git-send-email 2.39.4
+In-Reply-To: <20240616224056.29159-1-andre.przywara@arm.com>
+References: <20240616224056.29159-1-andre.przywara@arm.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -46,53 +49,35 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-Version two of this series adds a check that no physical address larger
-than 4GB makes it into the PTEs: the map_pages() function returns an
-error and prints a warning into dmesg to give users a clue why this
-failed. I haven't tested whether this really happens, or whether the
-32-bit DMA mask of the master devices already prevents this. In the
-worst case this might fail on devices with 4GB of DRAM, but would always
-work on smaller devices, which are arguably under bigger pressure to
-find contiguous PA ranges. Changelog below.
-===========================================
+From: Jernej Skrabec <jernej.skrabec@gmail.com>
 
-The Allwinner H616 contains an IOMMU almost compatible to the one used
-in the H6. The differing default reset value of the bypass register
-makes the two technically incompatible, so use a new DT compatible
-string to be on the safe side.
-The required driver changes can be applied to both variants, so the driver
-is ignorant of the differences between the two for now.
+The Allwinner H6 IOMMU has a bypass register, which allows to circumvent
+the page tables for each possible master. The reset value for this
+register is 0, which disables the bypass.
+The Allwinner H616 IOMMU resets this register to 0x7f, which activates
+the bypass for all masters, which is not what we want.
 
-Change the driver to cope with the new variant in patch 1/5 and 2/5,
-then apply the required devicetree and binding changes in the remaining
-patches.
+Always clear this register to 0, to enforce the usage of page tables,
+and make this driver compatible with the H616 in this respect.
 
-I could just verify that the driver probes and allocates the page table
-from below 4 GB. Others have verified that the driver works with the
-(not yet upstream) video decoder engine, but more tests are surely
-welcome.
+Signed-off-by: Jernej Skrabec <jernej.skrabec@gmail.com>
+Signed-off-by: Andre Przywara <andre.przywara@arm.com>
+---
+ drivers/iommu/sun50i-iommu.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-Cheers,
-Andre.
-
-Changelog v1 .. v2:
-- return error for too large PA in map_pages()
-- add Krzysztof's ACK to the binding patch
-
-Andre Przywara (4):
-  iommu: sun50i: allocate page tables from below 4 GiB
-  dt-bindings: iommu: add new compatible strings
-  iommu: sun50i: Add H616 compatible string
-  arm64: dts: allwinner: h616: add IOMMU node
-
-Jernej Skrabec (1):
-  iommu: sun50i: clear bypass register
-
- .../bindings/iommu/allwinner,sun50i-h6-iommu.yaml |  7 ++++++-
- arch/arm64/boot/dts/allwinner/sun50i-h616.dtsi    |  9 +++++++++
- drivers/iommu/sun50i-iommu.c                      | 15 +++++++++++++--
- 3 files changed, 28 insertions(+), 3 deletions(-)
-
+diff --git a/drivers/iommu/sun50i-iommu.c b/drivers/iommu/sun50i-iommu.c
+index c519b991749d7..dd3f07384624c 100644
+--- a/drivers/iommu/sun50i-iommu.c
++++ b/drivers/iommu/sun50i-iommu.c
+@@ -452,6 +452,7 @@ static int sun50i_iommu_enable(struct sun50i_iommu *iommu)
+ 		    IOMMU_TLB_PREFETCH_MASTER_ENABLE(3) |
+ 		    IOMMU_TLB_PREFETCH_MASTER_ENABLE(4) |
+ 		    IOMMU_TLB_PREFETCH_MASTER_ENABLE(5));
++	iommu_write(iommu, IOMMU_BYPASS_REG, 0);
+ 	iommu_write(iommu, IOMMU_INT_ENABLE_REG, IOMMU_INT_MASK);
+ 	iommu_write(iommu, IOMMU_DM_AUT_CTRL_REG(SUN50I_IOMMU_ACI_NONE),
+ 		    IOMMU_DM_AUT_CTRL_RD_UNAVAIL(SUN50I_IOMMU_ACI_NONE, 0) |
 -- 
 2.39.4
 
