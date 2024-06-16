@@ -1,23 +1,23 @@
 Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 2FC266F09C;
-	Sun, 16 Jun 2024 22:42:32 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id F1B207175B;
+	Sun, 16 Jun 2024 22:42:34 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1718577754; cv=none; b=LlVdFXHYpOLL5Sk/k04URu05Cg5EDqJ9Lusc7UO10Bql150LzTPqozPRph5MYxvFYiGvzJGVRcp9i9puYqho3FDKMTWbV30ZPwB92dNrG3mSJ4S1lfaf/31EAkF5kNpu+0AZc4wNIU/pgalh7Xq3mgqJpXW7JLgyOZrYUae5b7Q=
+	t=1718577756; cv=none; b=pnXg2F4ORFqD3CeZ6KFk2y5BRp+b31PFFGCH8bBcsJe/g8WC+Yb6NzneUHjhGdOQ28TNt4rprPk6ao4h3+LBpD+t/3px0j1DXh4gLyl/yWB/n9cwU9f3rIWh8kMzPq9ERd5tglgg+FgO2k4IZYjUx5Je/xrKMq0RFmlHdh+1Wzw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1718577754; c=relaxed/simple;
-	bh=55dFZdUChepL5AuEuDIRZdBfjKF4OxW9seruT6eccoA=;
+	s=arc-20240116; t=1718577756; c=relaxed/simple;
+	bh=oJy/Zmj5XUU6pKV6Q6Kr678M8yXP0Oor1J7NQ/e3MKc=;
 	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
-	 MIME-Version; b=u8jNSOmvsmPfSxDoHhJFU+NdZUW0RF7m9daB3jYwuKycmK6rQ5y1GEp0qfTRguwyDOzUga9jiOaD1IbA8ETJ2IvA9nM2J5phliBRzvh0I+IUqUr/bxQBr/eT5oeVzBrwCJgAGbbntLXXieXa58l0GOVNmPLZaTGVhwiNyuU87ko=
+	 MIME-Version; b=oiusvZT/wRrebJEaCK//+Wva1d7ZUo6A7nLK2PZpgA7HjTab9Va2AhPdwHXZCZdPuw4mmiN/uIShEa6P+QbdPKf876Uo2PR+7a9N0/AgqMhwla6MjOs7nbAM9YjPMoKFY+1ifOAbuW3UmbCsGaMmsHqYhHrqY+fGJ+xEITCDoM8=
 ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; arc=none smtp.client-ip=217.140.110.172
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
 Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id E943BFEC;
-	Sun, 16 Jun 2024 15:42:56 -0700 (PDT)
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 4E03A1476;
+	Sun, 16 Jun 2024 15:42:59 -0700 (PDT)
 Received: from localhost.localdomain (usa-sjc-mx-foss1.foss.arm.com [172.31.20.19])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 2C0413F73B;
-	Sun, 16 Jun 2024 15:42:30 -0700 (PDT)
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 85D573F73B;
+	Sun, 16 Jun 2024 15:42:32 -0700 (PDT)
 From: Andre Przywara <andre.przywara@arm.com>
 To: Joerg Roedel <joro@8bytes.org>,
 	Will Deacon <will@kernel.org>,
@@ -35,9 +35,9 @@ Cc: Chris Morgan <macromorgan@hotmail.com>,
 	devicetree@vger.kernel.org,
 	linux-sunxi@lists.linux.dev,
 	linux-arm-kernel@lists.infradead.org
-Subject: [PATCH v2 1/5] iommu: sun50i: clear bypass register
-Date: Sun, 16 Jun 2024 23:40:52 +0100
-Message-Id: <20240616224056.29159-2-andre.przywara@arm.com>
+Subject: [PATCH v2 2/5] iommu: sun50i: allocate page tables from below 4 GiB
+Date: Sun, 16 Jun 2024 23:40:53 +0100
+Message-Id: <20240616224056.29159-3-andre.przywara@arm.com>
 X-Mailer: git-send-email 2.39.4
 In-Reply-To: <20240616224056.29159-1-andre.przywara@arm.com>
 References: <20240616224056.29159-1-andre.przywara@arm.com>
@@ -49,35 +49,61 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-From: Jernej Skrabec <jernej.skrabec@gmail.com>
+The Allwinner IOMMU is a strict 32-bit device, with its input addresses,
+the page table root pointer as well as both level's page tables and also
+the target addresses all required to be below 4GB.
+The Allwinner H6 SoC only supports 32-bit worth of physical addresses
+anyway, so this isn't a problem so far, but the H616 and later SoCs extend
+the PA space beyond 32 bit to accommodate more DRAM.
+To make sure we stay within the 32-bit PA range required by the IOMMU,
+force the memory for the page tables to come from below 4GB. by using
+allocations with the DMA32 flag.
+Also reject any attempt to map target addresses beyond 4GB, and print a
+warning to give users a hint while this fails.
 
-The Allwinner H6 IOMMU has a bypass register, which allows to circumvent
-the page tables for each possible master. The reset value for this
-register is 0, which disables the bypass.
-The Allwinner H616 IOMMU resets this register to 0x7f, which activates
-the bypass for all masters, which is not what we want.
-
-Always clear this register to 0, to enforce the usage of page tables,
-and make this driver compatible with the H616 in this respect.
-
-Signed-off-by: Jernej Skrabec <jernej.skrabec@gmail.com>
 Signed-off-by: Andre Przywara <andre.przywara@arm.com>
 ---
- drivers/iommu/sun50i-iommu.c | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/iommu/sun50i-iommu.c | 13 +++++++++++--
+ 1 file changed, 11 insertions(+), 2 deletions(-)
 
 diff --git a/drivers/iommu/sun50i-iommu.c b/drivers/iommu/sun50i-iommu.c
-index c519b991749d7..dd3f07384624c 100644
+index dd3f07384624c..20a07f829085d 100644
 --- a/drivers/iommu/sun50i-iommu.c
 +++ b/drivers/iommu/sun50i-iommu.c
-@@ -452,6 +452,7 @@ static int sun50i_iommu_enable(struct sun50i_iommu *iommu)
- 		    IOMMU_TLB_PREFETCH_MASTER_ENABLE(3) |
- 		    IOMMU_TLB_PREFETCH_MASTER_ENABLE(4) |
- 		    IOMMU_TLB_PREFETCH_MASTER_ENABLE(5));
-+	iommu_write(iommu, IOMMU_BYPASS_REG, 0);
- 	iommu_write(iommu, IOMMU_INT_ENABLE_REG, IOMMU_INT_MASK);
- 	iommu_write(iommu, IOMMU_DM_AUT_CTRL_REG(SUN50I_IOMMU_ACI_NONE),
- 		    IOMMU_DM_AUT_CTRL_RD_UNAVAIL(SUN50I_IOMMU_ACI_NONE, 0) |
+@@ -602,6 +602,14 @@ static int sun50i_iommu_map(struct iommu_domain *domain, unsigned long iova,
+ 	u32 *page_table, *pte_addr;
+ 	int ret = 0;
+ 
++	/* the IOMMU can only handle 32-bit addresses, both input and output */
++	if ((uint64_t)paddr >> 32) {
++		ret = -EINVAL;
++		dev_warn_once(iommu->dev,
++			      "attempt to map address beyond 4GB\n");
++		goto out;
++	}
++
+ 	page_table = sun50i_dte_get_page_table(sun50i_domain, iova, gfp);
+ 	if (IS_ERR(page_table)) {
+ 		ret = PTR_ERR(page_table);
+@@ -682,7 +690,8 @@ sun50i_iommu_domain_alloc_paging(struct device *dev)
+ 	if (!sun50i_domain)
+ 		return NULL;
+ 
+-	sun50i_domain->dt = iommu_alloc_pages(GFP_KERNEL, get_order(DT_SIZE));
++	sun50i_domain->dt = iommu_alloc_pages(GFP_KERNEL | GFP_DMA32,
++					      get_order(DT_SIZE));
+ 	if (!sun50i_domain->dt)
+ 		goto err_free_domain;
+ 
+@@ -997,7 +1006,7 @@ static int sun50i_iommu_probe(struct platform_device *pdev)
+ 
+ 	iommu->pt_pool = kmem_cache_create(dev_name(&pdev->dev),
+ 					   PT_SIZE, PT_SIZE,
+-					   SLAB_HWCACHE_ALIGN,
++					   SLAB_HWCACHE_ALIGN | SLAB_CACHE_DMA32,
+ 					   NULL);
+ 	if (!iommu->pt_pool)
+ 		return -ENOMEM;
 -- 
 2.39.4
 
