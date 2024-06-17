@@ -1,90 +1,192 @@
-Received: from mail-qt1-f172.google.com (mail-qt1-f172.google.com [209.85.160.172])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 22D36168483
-	for <iommu@lists.linux.dev>; Mon, 17 Jun 2024 14:55:23 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.160.172
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 6B8CF154450
+	for <iommu@lists.linux.dev>; Mon, 17 Jun 2024 15:13:45 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1718636124; cv=none; b=fhPH9P7ZhSjA8OwmXV6InDHrKYEEs72X655siLOOPGcbwLMsMTO2+IwcVr7JyjIM/pw/LImQhwv8m+O87o2+OPEFZ/dc8u0bq2Tu4TcVd5nfjM0mrhXUoVBgc9ciCfBiaKuLh5In4iqfTRKkhB1hwntQ7rF5SVkhPjENphrcuqQ=
+	t=1718637227; cv=none; b=Ix2Pt36d+Nmtm0UFyK465HSfuadjx7ZJEC0Hzg7D8Fy638dlKugpdO1KI9lwgTZhYOhZdKvm6XVWrq719HoKeT28ac5wtqZwRy4fYzVBZXamXyDOQVO7I6ytzxsaR/5MIC9zQ7I8lruD73t2zKx7b69h0SSbo21BVnW3UBGvLlc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1718636124; c=relaxed/simple;
-	bh=5HBfKtF6Ab+KJXOhi7rjQP1+URKpGlb2u9ENTfEH5XM=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=SnLonUTVhLVGy1beffxkmGc4A/McgHQz8HoofdJ5TXeIKz/1djGk864MONcr50Mn+Brs9+kFHT6Lrz/uvhlHlHwX+9WOyRKKGA2IuhrtEnnj7CWVWq9cN9h8AfZ6MmOr6rMXWDr50sLSrSdLOnUOO5wNrePa3iibbebxFkx5Yq4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=ZDAXPEq5; arc=none smtp.client-ip=209.85.160.172
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="ZDAXPEq5"
-Received: by mail-qt1-f172.google.com with SMTP id d75a77b69052e-4434fd275aaso9254981cf.0
-        for <iommu@lists.linux.dev>; Mon, 17 Jun 2024 07:55:22 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google; t=1718636122; x=1719240922; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=8gljeJeGxAWnVOsW2sid+gU59meZd1BiHrYVsIx/obU=;
-        b=ZDAXPEq5A6IiGvOEswPCVawbhszRVbV8SRQJMVtBO9E84hbP4qeKY3xqKjWCKBiRPx
-         wuTeqS/BEJheFJGQ7tPnwqaGnlpj0G0eCAh7xfO+E3NBvT/VMjsbzyreDg9iISvrrJBk
-         M+nUMEH+NMe9fB9n4DzuiRzSHoFqA15EGUH+3n8qgFiiE0azWcwa385AiEirUfbkPlL0
-         eGe6kEui3lnYETVbG6Ou5XSIYMwSQ5yW0jLFeSfJHdiyJzIBStE/vSfc1zM0nLSkWCuz
-         fcRncn1N1Z/Csv39lDnxUgc23ckqAAE/b4fXIJg1tNPiYQ/ENLYOADJoBO5YQXo1uaig
-         ILjQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1718636122; x=1719240922;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=8gljeJeGxAWnVOsW2sid+gU59meZd1BiHrYVsIx/obU=;
-        b=Az64cCocetElUcB0DYIod7v9qOJ9YctrsrRKIXDa8Y7srmroOypk18BRNFbcNA6snp
-         WAWFGwlowOE2kYMhzyhsBlqKbBHLgZcFwhx3hu9mGNPq+L2zrw8xx5DI34Rts5yX9wr6
-         luiAG7xrQud2zqZZ4AzFNazVGGy5uVj18/RDGiPpJOcktNT1XKQhi5gl3/m1K3wdh+tq
-         Fzy4x5KFD0cWjMl2FY7gfD5q5aaaS5X6+2SxorCsG41taOv+0L23uanPp8yEmxtsVylJ
-         PFTlvsB+6M/XOJoJpVmARErPJgUHHgNoYurqOWQKXg9T5s1R9bcFPhvz6dS2YFhnuYNK
-         fN8A==
-X-Forwarded-Encrypted: i=1; AJvYcCWW5EmYAnIXRNtdntFKgynPYUIIrka+I05xfOrQCIP4A+nY0JncNtvy725fV4OUwBRs2kG2ORpaDB9gxF31/+BsUudTW6o=
-X-Gm-Message-State: AOJu0YycNoG12QDmSES4G06VoB/NGxEj+OAZJiZB9cKi09wdrCGg1d4i
-	ssWvEF6Fjxez3t3aoVR/+/qqxGVPyIcBZ8ltxg6MJGynfr3zUB4Lgb4mAMWkajM=
-X-Google-Smtp-Source: AGHT+IF2uoGlG3xSUI65+NQXmHPaCbaCWcT/PreTgaYbScCBfAppudiPPRnsNM5lnQZNDfID8Cr2aw==
-X-Received: by 2002:ac8:5e07:0:b0:440:5434:d59e with SMTP id d75a77b69052e-442168aae16mr119117071cf.26.1718636121932;
-        Mon, 17 Jun 2024 07:55:21 -0700 (PDT)
-Received: from ziepe.ca (hlfxns017vw-142-68-80-239.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.68.80.239])
-        by smtp.gmail.com with ESMTPSA id d75a77b69052e-441ef3d89ddsm46912991cf.15.2024.06.17.07.55.21
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 17 Jun 2024 07:55:21 -0700 (PDT)
-Received: from jgg by wakko with local (Exim 4.95)
-	(envelope-from <jgg@ziepe.ca>)
-	id 1sJDlR-008oz2-1P;
-	Mon, 17 Jun 2024 11:55:21 -0300
-Date: Mon, 17 Jun 2024 11:55:21 -0300
-From: Jason Gunthorpe <jgg@ziepe.ca>
-To: Zong Li <zong.li@sifive.com>
-Cc: joro@8bytes.org, will@kernel.org, robin.murphy@arm.com,
-	tjeznach@rivosinc.com, paul.walmsley@sifive.com, palmer@dabbelt.com,
-	aou@eecs.berkeley.edu, kevin.tian@intel.com,
-	linux-kernel@vger.kernel.org, iommu@lists.linux.dev,
-	linux-riscv@lists.infradead.org
-Subject: Re: [RFC PATCH v2 01/10] iommu/riscv: add RISC-V IOMMU PMU support
-Message-ID: <20240617145521.GE791043@ziepe.ca>
-References: <20240614142156.29420-1-zong.li@sifive.com>
- <20240614142156.29420-2-zong.li@sifive.com>
+	s=arc-20240116; t=1718637227; c=relaxed/simple;
+	bh=UL43jVAhdU+OtHdX5bK5r64Vwn48uow1EiUNHTwDAzw=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=DiUTWUPcxhIYTu2V/ECrQyAfwUBjSoA2i+R1c5YPEN0ZFEHNKKxFmT0Hg0HdmLP49blynUH3wSh9S2LI6a9G0yZr10dKc6IhG7oKPWilcEnHKJ61pLkBlBWdzid8tqRHExxcXHHlAy+EMD5uIBZ5yABiradNCieK5cXoMAVZjCc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; arc=none smtp.client-ip=217.140.110.172
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 7D46EDA7;
+	Mon, 17 Jun 2024 08:14:09 -0700 (PDT)
+Received: from [10.1.196.40] (e121345-lin.cambridge.arm.com [10.1.196.40])
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id D132E3F6A8;
+	Mon, 17 Jun 2024 08:13:42 -0700 (PDT)
+Message-ID: <85f5250f-0d50-4aa3-93c9-2008c6ccb8fb@arm.com>
+Date: Mon, 17 Jun 2024 16:13:41 +0100
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20240614142156.29420-2-zong.li@sifive.com>
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v4 1/2] iommu/io-pgtable-arm: Add way to debug pgtable
+ walk
+To: Rob Clark <robdclark@gmail.com>, Will Deacon <will@kernel.org>
+Cc: linux-arm-msm@vger.kernel.org, freedreno@lists.freedesktop.org,
+ Rob Clark <robdclark@chromium.org>, Joerg Roedel <joro@8bytes.org>,
+ Jason Gunthorpe <jgg@ziepe.ca>,
+ Boris Brezillon <boris.brezillon@collabora.com>,
+ Kevin Tian <kevin.tian@intel.com>, Joao Martins <joao.m.martins@oracle.com>,
+ "moderated list:ARM SMMU DRIVERS" <linux-arm-kernel@lists.infradead.org>,
+ "open list:IOMMU SUBSYSTEM" <iommu@lists.linux.dev>,
+ open list <linux-kernel@vger.kernel.org>, dri-devel@lists.freedesktop.org
+References: <20240523175227.117984-1-robdclark@gmail.com>
+ <20240523175227.117984-2-robdclark@gmail.com>
+From: Robin Murphy <robin.murphy@arm.com>
+Content-Language: en-GB
+In-Reply-To: <20240523175227.117984-2-robdclark@gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-On Fri, Jun 14, 2024 at 10:21:47PM +0800, Zong Li wrote:
-> This patch implements the RISC-V IOMMU hardware performance monitor, it
-> includes the counting ans sampling mode.
+On 23/05/2024 6:52 pm, Rob Clark wrote:
+> From: Rob Clark <robdclark@chromium.org>
 > 
-> Specification doesn't define the event ID for counting the number of
-> clock cycles, there is no associated iohpmevt0. But we need an event for
-> counting cycle in perf, reserve the maximum number of event ID for it now.
+> Add an io-pgtable method to walk the pgtable returning the raw PTEs that
+> would be traversed for a given iova access.
 
-Why is this part of the nesting series?
+Have to say I'm a little torn here - with my iommu-dma hat on I'm not 
+super enthusiastic about adding any more overhead to iova_to_phys, but 
+in terms of maintaining io-pgtable I do like the overall shape of the 
+implementation...
 
-Jason
+Will, how much would you hate a compromise of inlining iova_to_phys as 
+the default walk behaviour if cb is NULL? :)
+
+That said, looking at the unmap figures for dma_map_benchmark on a 
+Neoverse N1, any difference I think I see is still well within the 
+noise, so maybe a handful of extra indirect calls isn't really enough to 
+worry about?
+
+Cheers,
+Robin.
+
+> Signed-off-by: Rob Clark <robdclark@chromium.org>
+> ---
+>   drivers/iommu/io-pgtable-arm.c | 51 ++++++++++++++++++++++++++++------
+>   include/linux/io-pgtable.h     |  4 +++
+>   2 files changed, 46 insertions(+), 9 deletions(-)
+> 
+> diff --git a/drivers/iommu/io-pgtable-arm.c b/drivers/iommu/io-pgtable-arm.c
+> index f7828a7aad41..f47a0e64bb35 100644
+> --- a/drivers/iommu/io-pgtable-arm.c
+> +++ b/drivers/iommu/io-pgtable-arm.c
+> @@ -693,17 +693,19 @@ static size_t arm_lpae_unmap_pages(struct io_pgtable_ops *ops, unsigned long iov
+>   				data->start_level, ptep);
+>   }
+>   
+> -static phys_addr_t arm_lpae_iova_to_phys(struct io_pgtable_ops *ops,
+> -					 unsigned long iova)
+> +static int arm_lpae_pgtable_walk(struct io_pgtable_ops *ops, unsigned long iova,
+> +			int (*cb)(void *cb_data, void *pte, int level),
+> +			void *cb_data)
+>   {
+>   	struct arm_lpae_io_pgtable *data = io_pgtable_ops_to_data(ops);
+>   	arm_lpae_iopte pte, *ptep = data->pgd;
+>   	int lvl = data->start_level;
+> +	int ret;
+>   
+>   	do {
+>   		/* Valid IOPTE pointer? */
+>   		if (!ptep)
+> -			return 0;
+> +			return -EFAULT;
+>   
+>   		/* Grab the IOPTE we're interested in */
+>   		ptep += ARM_LPAE_LVL_IDX(iova, lvl, data);
+> @@ -711,22 +713,52 @@ static phys_addr_t arm_lpae_iova_to_phys(struct io_pgtable_ops *ops,
+>   
+>   		/* Valid entry? */
+>   		if (!pte)
+> -			return 0;
+> +			return -EFAULT;
+> +
+> +		ret = cb(cb_data, &pte, lvl);
+> +		if (ret)
+> +			return ret;
+>   
+> -		/* Leaf entry? */
+> +		/* Leaf entry?  If so, we've found the translation */
+>   		if (iopte_leaf(pte, lvl, data->iop.fmt))
+> -			goto found_translation;
+> +			return 0;
+>   
+>   		/* Take it to the next level */
+>   		ptep = iopte_deref(pte, data);
+>   	} while (++lvl < ARM_LPAE_MAX_LEVELS);
+>   
+>   	/* Ran out of page tables to walk */
+> +	return -EFAULT;
+> +}
+> +
+> +struct iova_to_phys_walk_data {
+> +	arm_lpae_iopte pte;
+> +	int level;
+> +};
+> +
+> +static int iova_to_phys_walk_cb(void *cb_data, void *pte, int level)
+> +{
+> +	struct iova_to_phys_walk_data *d = cb_data;
+> +
+> +	d->pte = *(arm_lpae_iopte *)pte;
+> +	d->level = level;
+> +
+>   	return 0;
+> +}
+> +
+> +static phys_addr_t arm_lpae_iova_to_phys(struct io_pgtable_ops *ops,
+> +					 unsigned long iova)
+> +{
+> +	struct arm_lpae_io_pgtable *data = io_pgtable_ops_to_data(ops);
+> +	struct iova_to_phys_walk_data d;
+> +	int ret;
+> +
+> +	ret = arm_lpae_pgtable_walk(ops, iova, iova_to_phys_walk_cb, &d);
+> +	if (ret)
+> +		return 0;
+>   
+> -found_translation:
+> -	iova &= (ARM_LPAE_BLOCK_SIZE(lvl, data) - 1);
+> -	return iopte_to_paddr(pte, data) | iova;
+> +	iova &= (ARM_LPAE_BLOCK_SIZE(d.level, data) - 1);
+> +	return iopte_to_paddr(d.pte, data) | iova;
+>   }
+>   
+>   static void arm_lpae_restrict_pgsizes(struct io_pgtable_cfg *cfg)
+> @@ -807,6 +839,7 @@ arm_lpae_alloc_pgtable(struct io_pgtable_cfg *cfg)
+>   		.map_pages	= arm_lpae_map_pages,
+>   		.unmap_pages	= arm_lpae_unmap_pages,
+>   		.iova_to_phys	= arm_lpae_iova_to_phys,
+> +		.pgtable_walk	= arm_lpae_pgtable_walk,
+>   	};
+>   
+>   	return data;
+> diff --git a/include/linux/io-pgtable.h b/include/linux/io-pgtable.h
+> index 86cf1f7ae389..261b48af068a 100644
+> --- a/include/linux/io-pgtable.h
+> +++ b/include/linux/io-pgtable.h
+> @@ -177,6 +177,7 @@ struct io_pgtable_cfg {
+>    * @map_pages:    Map a physically contiguous range of pages of the same size.
+>    * @unmap_pages:  Unmap a range of virtually contiguous pages of the same size.
+>    * @iova_to_phys: Translate iova to physical address.
+> + * @pgtable_walk: (optional) Perform a page table walk for a given iova.
+>    *
+>    * These functions map directly onto the iommu_ops member functions with
+>    * the same names.
+> @@ -190,6 +191,9 @@ struct io_pgtable_ops {
+>   			      struct iommu_iotlb_gather *gather);
+>   	phys_addr_t (*iova_to_phys)(struct io_pgtable_ops *ops,
+>   				    unsigned long iova);
+> +	int (*pgtable_walk)(struct io_pgtable_ops *ops, unsigned long iova,
+> +			    int (*cb)(void *cb_data, void *pte, int level),
+> +			    void *cb_data);
+>   	int (*read_and_clear_dirty)(struct io_pgtable_ops *ops,
+>   				    unsigned long iova, size_t size,
+>   				    unsigned long flags,
