@@ -1,69 +1,70 @@
-Received: from mail-io1-f54.google.com (mail-io1-f54.google.com [209.85.166.54])
+Received: from mail-io1-f53.google.com (mail-io1-f53.google.com [209.85.166.53])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 59453D27D
-	for <iommu@lists.linux.dev>; Mon, 17 Jun 2024 02:15:24 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.166.54
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 56FE1D27D
+	for <iommu@lists.linux.dev>; Mon, 17 Jun 2024 02:16:28 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.166.53
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1718590527; cv=none; b=h18GYK6mmVIRzjnLTiRybEYc/Ld7mWuUrfh0ZtF1+/gAeWyIzAi7eZGJwvWBwUJ75Mf2Soo1LA2yr38VRXsrFrfqm9bw55yLKo4EoNI2nD0+Kx95RjBmu0sEY8J2L01tKAICXy7drjlqt5eYweufoln5fXbZWIjuvAYYnAtex50=
+	t=1718590589; cv=none; b=ZOFYMqnqIIdGehllhOYh22jAaE0nAq1a7WkAMHWTNWHhwSev2vX8ICxtbrCENgY92zVZe3flxmjY10SdjGgxNQ7m3iW2k5O+vT4ugPbC+GAC763+oCQCr3mu7Jo5+/GMpS0OqoOVezQSCcxbQE7lgxpZCE0r5fumQUbZKp7o90E=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1718590527; c=relaxed/simple;
-	bh=33+gUd0BUh5twg7E+FkXYihWtxidn7jwrrmJRG8qvzY=;
+	s=arc-20240116; t=1718590589; c=relaxed/simple;
+	bh=UBe1Lv7+yYIPYv/ejR+qRz6o9xgdFmnLxhO1bvac0Ys=;
 	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=JQ7uvzBtGvtf9GW1QLud+gKYppLNLdHMdSlmPE8AGOA5ZHZ5u4OG+b//hUh9yrU6VQAbcPMnbVLxpYLKLKqfIqX5znAF6BHwF6AuNLMyac1ZIBAQ+mq+V4csIBT7dwxPASPk2X/dOTX5sBC2g/e/wU1TUFbn4g60nhTFHVQYByY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=sifive.com; spf=pass smtp.mailfrom=sifive.com; dkim=pass (2048-bit key) header.d=sifive.com header.i=@sifive.com header.b=KtXdvD4p; arc=none smtp.client-ip=209.85.166.54
+	 To:Cc:Content-Type; b=jxBTahNuF0lLVWusZqCqgI8e0ZRZto7WHu2pJycDnk0jWblXL4BwnssgM1w/NlP1+Uj17quccuz8igUjRuJPCwh3oWqzDVuRfqMA8bxUlICT60zRizjllFwHhjXI5YXCEsmpazO4zJ8CjzNgiCX6GZJCvN9Z7rmqdHlP2TH7zME=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=sifive.com; spf=pass smtp.mailfrom=sifive.com; dkim=pass (2048-bit key) header.d=sifive.com header.i=@sifive.com header.b=C7GcDl/6; arc=none smtp.client-ip=209.85.166.53
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=sifive.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=sifive.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=sifive.com header.i=@sifive.com header.b="KtXdvD4p"
-Received: by mail-io1-f54.google.com with SMTP id ca18e2360f4ac-7eb7a2f062cso159524239f.0
-        for <iommu@lists.linux.dev>; Sun, 16 Jun 2024 19:15:24 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=sifive.com header.i=@sifive.com header.b="C7GcDl/6"
+Received: by mail-io1-f53.google.com with SMTP id ca18e2360f4ac-7ebe019b9cdso126868939f.0
+        for <iommu@lists.linux.dev>; Sun, 16 Jun 2024 19:16:28 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=sifive.com; s=google; t=1718590523; x=1719195323; darn=lists.linux.dev;
+        d=sifive.com; s=google; t=1718590587; x=1719195387; darn=lists.linux.dev;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=33+gUd0BUh5twg7E+FkXYihWtxidn7jwrrmJRG8qvzY=;
-        b=KtXdvD4pb6nLomhwNqfNLEkMD56HTcB0Y44suNQoQCVlmLxJTvBawVFDz553YdqKjd
-         VLGTFI3v8tmgbOel2DeqT+8sNjNZGwSv3EuveIP2eDomsn597yO6csKKviICxau+iwLA
-         HA1DoJXyshqmVcEzGH4CT1cdBsCSw1hM3hVDuPAWH1ZflTBmRGz60Ne3FZA1z38suCGp
-         stTYUVnxoBdmGa3w3mtDhZUyFzVbPLpZ4UyQE+hKfyuusTIUgJE8LRBdElvO3tnxPI79
-         gIwGciJro48WQZLVeshh26XwnSMJ2EKLbmk6VKpNGYwC8ahKfXfx4k1KffTXtR5KQQu5
-         B/5Q==
+        bh=UBe1Lv7+yYIPYv/ejR+qRz6o9xgdFmnLxhO1bvac0Ys=;
+        b=C7GcDl/6LRrh1LkGJWkDGQXmmYbSU/4cMtmoQwi5bn0rbdZxEqzbnWXZ0dv4QZOXTb
+         6LX/UjUk+st61a32Q1tNexRxt6v2IYsinX5Ouio3+2KoAv+JVjlakxHUti8hJrQ1SU9t
+         f9t4d9baEzmHGgQyPcGFxNiPgdXzVldTv+Ydd5oO5suFfCehcBM0zyL8Uk0tHKrM40m1
+         b/qbDKXEXZRWYS8SI7tBkQjUdp3kK8f5fL8sqnp9EYxyn5bkq89E2pW/1x+W70u/CZZW
+         rREQ0Zz/9E8ArCSYEnrArHAlsrNRZq9vAN47L1kBMaqjGgq3NNzPrI9cWATAzc8L01V6
+         lOcw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1718590523; x=1719195323;
+        d=1e100.net; s=20230601; t=1718590587; x=1719195387;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=33+gUd0BUh5twg7E+FkXYihWtxidn7jwrrmJRG8qvzY=;
-        b=aXmITRcBB8q/DJIkcIjBDT8RXkyxMvwdbb3ofJj1Fv76TizxOwP20gk1+wRNSwZBlJ
-         kVyKAip5oCYSNVXxNH2GPZix3gDOfmPdGw9mOAwHconwgSdafqk8Ur/Sge6/OtlqnPeM
-         WOXp42MCDEymqWdryAbVfPkDhR487HzAeOdLTNeX1bp/OPsUi/AhoYvMsQD8YWHHOgUS
-         Sk5ZvhOxXlrH1sIXga/uZEpVeoA0GyzdqaVbdXYIum5Zi46AIsHc5f4i8lh+7tyXBLAM
-         X43f/4SkwaAI6ao47MgVC0EpLTT86Dp4UFExEI6HvlJsnA1HSDP4GRKeXbCXvNBY21CC
-         Zv/Q==
-X-Forwarded-Encrypted: i=1; AJvYcCUO5z5ne55HKHA8Ipn5+vNcxAN8RkD0+5dDVNbarlCM2A/RJme/JkXZR+1SACiyITH7lrZvL5ag//Ib4V0DMmc5V/PZggc=
-X-Gm-Message-State: AOJu0YyKAH8OUbsjs/3Aw0ggqa4xMfA2HgKq0Tk0zZFsg3vOYBpa0Uxl
-	sAm4zqvp6UKOMpq0UZSfypKx3eB/CIBNdpKIteO/UUWvF2Knv0tv3hHJ9aJPE386Mz0NDUrEih5
-	jRWiCmAM0Rg8zprFQz6iueD+rLE6rP9/JPm9fWg==
-X-Google-Smtp-Source: AGHT+IEXfvyKaGcOxkCTeIcxMYWxqVnan6HZPo3dOL51Q5uIxGPz0RzQEZinChIpjeGp349yqoA/StIWD6aWJiVwPU8=
-X-Received: by 2002:a05:6602:1549:b0:7eb:c972:dee2 with SMTP id
- ca18e2360f4ac-7ebeb4923c5mr971786539f.3.1718590523416; Sun, 16 Jun 2024
- 19:15:23 -0700 (PDT)
+        bh=UBe1Lv7+yYIPYv/ejR+qRz6o9xgdFmnLxhO1bvac0Ys=;
+        b=HbOAYUrEQu+SlOKb+dbQJ3fBy6UCuQqOSUbFuO06ETF+Tg9aTEHOR4z//64kldq0+U
+         45Gq5HaXKcvC4NsN/ZW7pO3gEHRZ18LbyvdCOGpxIN1XtW+XEkTB2/ahe8/E76M2cVix
+         VvG2BRhrB0gwdw6/sHZifHTPDMy5MEJYaPlCY+KWBCW15+1Y/FFozeJSNRScoKbzhO+T
+         HxtCZv/YQSS1Towm0KmBo2zkAablfX2im0U9nGR1gEX+SwV8L/Y3T72uKnPQZcsypheB
+         TAflBcDT8I7GtMMtYg+nhC1WRngl7+xWiJGPkX+nu96mfOecF6XnRhC6WT9s8owhIEdB
+         b+8w==
+X-Forwarded-Encrypted: i=1; AJvYcCVoORXIfcTJF7Zfpf6oqdDoiu2duojjQ7SuuclafY8veFMgNmm2m0yls10k0jhPcRDg1srBfeHJZsTZr8VPll1rHw0exyw=
+X-Gm-Message-State: AOJu0YynoQgurkLa2I2Mu3hhWDiVwUV/gkF+JxProQDwbs3tBH+86+p9
+	74OLeTlAEw74SUSH9rPpsxhE4X3h8svJQrVTAzk8nZoNiPEl5OFUVV8I7aUwwETKLbK6Ng0oVkf
+	NPxgC9/k8dR7aGai0OLTkL9uJQNBABX4WQ/JZ5Q==
+X-Google-Smtp-Source: AGHT+IGjqStvPzq4eQHVMVjSkHpNaFIElfvbz63p0MeN0p8pMu3otddGU/WtwKbFVYh2nVlV+RVSIco/aX28xZYpEKg=
+X-Received: by 2002:a05:6602:3f95:b0:7eb:9697:95c9 with SMTP id
+ ca18e2360f4ac-7ebeaef3ee1mr937068239f.0.1718590587407; Sun, 16 Jun 2024
+ 19:16:27 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <20240614142156.29420-1-zong.li@sifive.com> <20240614142156.29420-10-zong.li@sifive.com>
- <ZmyIASyk5pfm8hwa@Asurada-Nvidia>
-In-Reply-To: <ZmyIASyk5pfm8hwa@Asurada-Nvidia>
+References: <20240614142156.29420-1-zong.li@sifive.com> <20240614142156.29420-9-zong.li@sifive.com>
+ <fb252e35-46e1-48ba-b236-a3296922ffdb@linux.intel.com>
+In-Reply-To: <fb252e35-46e1-48ba-b236-a3296922ffdb@linux.intel.com>
 From: Zong Li <zong.li@sifive.com>
-Date: Mon, 17 Jun 2024 10:15:12 +0800
-Message-ID: <CANXhq0psbMY7B=wBL_K8b5rnsfWaBJk+Ea49BpvLO8Sfwwyz7g@mail.gmail.com>
-Subject: Re: [RFC PATCH v2 09/10] iommu/dma: Support MSIs through nested domains
-To: Nicolin Chen <nicolinc@nvidia.com>
+Date: Mon, 17 Jun 2024 10:16:16 +0800
+Message-ID: <CANXhq0pukeeAEde2i2UDOAU3fhwxf4zx6dzbugU=XGrT7kj+3Q@mail.gmail.com>
+Subject: Re: [RFC PATCH v2 08/10] iommu/riscv: support nested iommu for
+ flushing cache
+To: Baolu Lu <baolu.lu@linux.intel.com>
 Cc: joro@8bytes.org, will@kernel.org, robin.murphy@arm.com, 
 	tjeznach@rivosinc.com, paul.walmsley@sifive.com, palmer@dabbelt.com, 
 	aou@eecs.berkeley.edu, jgg@ziepe.ca, kevin.tian@intel.com, 
@@ -72,30 +73,19 @@ Cc: joro@8bytes.org, will@kernel.org, robin.murphy@arm.com,
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-On Sat, Jun 15, 2024 at 2:12=E2=80=AFAM Nicolin Chen <nicolinc@nvidia.com> =
-wrote:
+On Sat, Jun 15, 2024 at 11:24=E2=80=AFAM Baolu Lu <baolu.lu@linux.intel.com=
+> wrote:
 >
-> On Fri, Jun 14, 2024 at 10:21:55PM +0800, Zong Li wrote:
-> > From: Robin Murphy <robin.murphy@arm.com>
-> >
-> > Currently, iommu-dma is the only place outside of IOMMUFD and drivers
-> > which might need to be aware of the stage 2 domain encapsulated within
-> > a nested domain. This would be in the legacy-VFIO-style case where we'r=
-e
-> > using host-managed MSIs with an identity mapping at stage 1, where it i=
-s
-> > the underlying stage 2 domain which owns an MSI cookie and holds the
-> > corresponding dynamic mappings. Hook up the new op to resolve what we
-> > need from a nested domain.
-> >
-> > Signed-off-by: Robin Murphy <robin.murphy@arm.com>
-> > Signed-off-by: Nicolin Chen <nicolinc@nvidia.com>
+> On 6/14/24 10:21 PM, Zong Li wrote:
+> > This patch implements cache_invalidate_user operation for the userspace
+> > to flush the hardware caches for a nested domain through iommufd.
 >
-> I think there should be your Signed-off line at the end since you
-> act as a submitter :)
+> $ grep "This patch" Documentation/process/submitting-patches.rst
+>
+> Same to other commit messages.
+>
 
-Got it, add it in the next version, thanks.
+Thank you for your tips. I will modify them in the next version.
 
->
-> Thanks
-> Nicolin
+> Best regards,
+> baolu
