@@ -1,86 +1,101 @@
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 23E6D14292;
-	Sun, 16 Jun 2024 22:42:42 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
+Received: from mail-io1-f54.google.com (mail-io1-f54.google.com [209.85.166.54])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 59453D27D
+	for <iommu@lists.linux.dev>; Mon, 17 Jun 2024 02:15:24 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.166.54
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1718577763; cv=none; b=UyusM2rkOlI8tTz6qXT3iOFkyN3MF8hDodNmDra0XVOMZii/PmWPGeNylLbejht2Ccfk1PJjWBL3WWSkVmmlP/beAfruauzTBe4P7WQk7ko/SEtR52TjPjF+e6bBxrSbCNJVw3wn3JFcNB2fe92vFeePqFoRR/RyqUbC2Dq/YDI=
+	t=1718590527; cv=none; b=h18GYK6mmVIRzjnLTiRybEYc/Ld7mWuUrfh0ZtF1+/gAeWyIzAi7eZGJwvWBwUJ75Mf2Soo1LA2yr38VRXsrFrfqm9bw55yLKo4EoNI2nD0+Kx95RjBmu0sEY8J2L01tKAICXy7drjlqt5eYweufoln5fXbZWIjuvAYYnAtex50=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1718577763; c=relaxed/simple;
-	bh=KN6x5172i7v7EwvBGvN87892PPVUUaEyccgKl7iZ1Hc=;
-	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
-	 MIME-Version; b=OZC2CcCygMqyvOd7o2Z/ZUylZgujTk4KYQ/si9UsPwAhaEu+HMBDO97qJHaNZgf/Q9eNuPqmmj+4DyIhup4mVMG0bEbjz9nu6gXlolm1TMvH/RCzQIz/+stVLklrEYSGqTgsyTvIf6FZ0VG/nfrQe8GFu8+Cf08gCKtjtgPlWbE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; arc=none smtp.client-ip=217.140.110.172
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 6A8D015BF;
-	Sun, 16 Jun 2024 15:43:06 -0700 (PDT)
-Received: from localhost.localdomain (usa-sjc-mx-foss1.foss.arm.com [172.31.20.19])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 9F3083F73B;
-	Sun, 16 Jun 2024 15:42:39 -0700 (PDT)
-From: Andre Przywara <andre.przywara@arm.com>
-To: Joerg Roedel <joro@8bytes.org>,
-	Will Deacon <will@kernel.org>,
-	Robin Murphy <robin.murphy@arm.com>,
-	Chen-Yu Tsai <wens@csie.org>,
-	Jernej Skrabec <jernej.skrabec@gmail.com>,
-	Samuel Holland <samuel@sholland.org>,
-	Krzysztof Kozlowski <krzk+dt@kernel.org>,
-	Conor Dooley <conor+dt@kernel.org>,
-	Rob Herring <robh@kernel.org>
-Cc: Chris Morgan <macromorgan@hotmail.com>,
-	Ryan Walklin <ryan@testtoast.com>,
-	Philippe Simons <simons.philippe@gmail.com>,
-	iommu@lists.linux.dev,
-	devicetree@vger.kernel.org,
-	linux-sunxi@lists.linux.dev,
-	linux-arm-kernel@lists.infradead.org
-Subject: [PATCH v2 5/5] arm64: dts: allwinner: h616: add IOMMU node
-Date: Sun, 16 Jun 2024 23:40:56 +0100
-Message-Id: <20240616224056.29159-6-andre.przywara@arm.com>
-X-Mailer: git-send-email 2.39.4
-In-Reply-To: <20240616224056.29159-1-andre.przywara@arm.com>
-References: <20240616224056.29159-1-andre.przywara@arm.com>
+	s=arc-20240116; t=1718590527; c=relaxed/simple;
+	bh=33+gUd0BUh5twg7E+FkXYihWtxidn7jwrrmJRG8qvzY=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=JQ7uvzBtGvtf9GW1QLud+gKYppLNLdHMdSlmPE8AGOA5ZHZ5u4OG+b//hUh9yrU6VQAbcPMnbVLxpYLKLKqfIqX5znAF6BHwF6AuNLMyac1ZIBAQ+mq+V4csIBT7dwxPASPk2X/dOTX5sBC2g/e/wU1TUFbn4g60nhTFHVQYByY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=sifive.com; spf=pass smtp.mailfrom=sifive.com; dkim=pass (2048-bit key) header.d=sifive.com header.i=@sifive.com header.b=KtXdvD4p; arc=none smtp.client-ip=209.85.166.54
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=sifive.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=sifive.com
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=sifive.com header.i=@sifive.com header.b="KtXdvD4p"
+Received: by mail-io1-f54.google.com with SMTP id ca18e2360f4ac-7eb7a2f062cso159524239f.0
+        for <iommu@lists.linux.dev>; Sun, 16 Jun 2024 19:15:24 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=sifive.com; s=google; t=1718590523; x=1719195323; darn=lists.linux.dev;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=33+gUd0BUh5twg7E+FkXYihWtxidn7jwrrmJRG8qvzY=;
+        b=KtXdvD4pb6nLomhwNqfNLEkMD56HTcB0Y44suNQoQCVlmLxJTvBawVFDz553YdqKjd
+         VLGTFI3v8tmgbOel2DeqT+8sNjNZGwSv3EuveIP2eDomsn597yO6csKKviICxau+iwLA
+         HA1DoJXyshqmVcEzGH4CT1cdBsCSw1hM3hVDuPAWH1ZflTBmRGz60Ne3FZA1z38suCGp
+         stTYUVnxoBdmGa3w3mtDhZUyFzVbPLpZ4UyQE+hKfyuusTIUgJE8LRBdElvO3tnxPI79
+         gIwGciJro48WQZLVeshh26XwnSMJ2EKLbmk6VKpNGYwC8ahKfXfx4k1KffTXtR5KQQu5
+         B/5Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1718590523; x=1719195323;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=33+gUd0BUh5twg7E+FkXYihWtxidn7jwrrmJRG8qvzY=;
+        b=aXmITRcBB8q/DJIkcIjBDT8RXkyxMvwdbb3ofJj1Fv76TizxOwP20gk1+wRNSwZBlJ
+         kVyKAip5oCYSNVXxNH2GPZix3gDOfmPdGw9mOAwHconwgSdafqk8Ur/Sge6/OtlqnPeM
+         WOXp42MCDEymqWdryAbVfPkDhR487HzAeOdLTNeX1bp/OPsUi/AhoYvMsQD8YWHHOgUS
+         Sk5ZvhOxXlrH1sIXga/uZEpVeoA0GyzdqaVbdXYIum5Zi46AIsHc5f4i8lh+7tyXBLAM
+         X43f/4SkwaAI6ao47MgVC0EpLTT86Dp4UFExEI6HvlJsnA1HSDP4GRKeXbCXvNBY21CC
+         Zv/Q==
+X-Forwarded-Encrypted: i=1; AJvYcCUO5z5ne55HKHA8Ipn5+vNcxAN8RkD0+5dDVNbarlCM2A/RJme/JkXZR+1SACiyITH7lrZvL5ag//Ib4V0DMmc5V/PZggc=
+X-Gm-Message-State: AOJu0YyKAH8OUbsjs/3Aw0ggqa4xMfA2HgKq0Tk0zZFsg3vOYBpa0Uxl
+	sAm4zqvp6UKOMpq0UZSfypKx3eB/CIBNdpKIteO/UUWvF2Knv0tv3hHJ9aJPE386Mz0NDUrEih5
+	jRWiCmAM0Rg8zprFQz6iueD+rLE6rP9/JPm9fWg==
+X-Google-Smtp-Source: AGHT+IEXfvyKaGcOxkCTeIcxMYWxqVnan6HZPo3dOL51Q5uIxGPz0RzQEZinChIpjeGp349yqoA/StIWD6aWJiVwPU8=
+X-Received: by 2002:a05:6602:1549:b0:7eb:c972:dee2 with SMTP id
+ ca18e2360f4ac-7ebeb4923c5mr971786539f.3.1718590523416; Sun, 16 Jun 2024
+ 19:15:23 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20240614142156.29420-1-zong.li@sifive.com> <20240614142156.29420-10-zong.li@sifive.com>
+ <ZmyIASyk5pfm8hwa@Asurada-Nvidia>
+In-Reply-To: <ZmyIASyk5pfm8hwa@Asurada-Nvidia>
+From: Zong Li <zong.li@sifive.com>
+Date: Mon, 17 Jun 2024 10:15:12 +0800
+Message-ID: <CANXhq0psbMY7B=wBL_K8b5rnsfWaBJk+Ea49BpvLO8Sfwwyz7g@mail.gmail.com>
+Subject: Re: [RFC PATCH v2 09/10] iommu/dma: Support MSIs through nested domains
+To: Nicolin Chen <nicolinc@nvidia.com>
+Cc: joro@8bytes.org, will@kernel.org, robin.murphy@arm.com, 
+	tjeznach@rivosinc.com, paul.walmsley@sifive.com, palmer@dabbelt.com, 
+	aou@eecs.berkeley.edu, jgg@ziepe.ca, kevin.tian@intel.com, 
+	linux-kernel@vger.kernel.org, iommu@lists.linux.dev, 
+	linux-riscv@lists.infradead.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-The Allwinner H616 contains a scatter-gather IOMMU connected to some
-video related devices. It's almost compatible to the one used in the H6,
-though with minor incompatibilities.
+On Sat, Jun 15, 2024 at 2:12=E2=80=AFAM Nicolin Chen <nicolinc@nvidia.com> =
+wrote:
+>
+> On Fri, Jun 14, 2024 at 10:21:55PM +0800, Zong Li wrote:
+> > From: Robin Murphy <robin.murphy@arm.com>
+> >
+> > Currently, iommu-dma is the only place outside of IOMMUFD and drivers
+> > which might need to be aware of the stage 2 domain encapsulated within
+> > a nested domain. This would be in the legacy-VFIO-style case where we'r=
+e
+> > using host-managed MSIs with an identity mapping at stage 1, where it i=
+s
+> > the underlying stage 2 domain which owns an MSI cookie and holds the
+> > corresponding dynamic mappings. Hook up the new op to resolve what we
+> > need from a nested domain.
+> >
+> > Signed-off-by: Robin Murphy <robin.murphy@arm.com>
+> > Signed-off-by: Nicolin Chen <nicolinc@nvidia.com>
+>
+> I think there should be your Signed-off line at the end since you
+> act as a submitter :)
 
-Add the DT node describing its resources, so that devices like the video
-or display engine can connect to it.
+Got it, add it in the next version, thanks.
 
-Signed-off-by: Andre Przywara <andre.przywara@arm.com>
----
- arch/arm64/boot/dts/allwinner/sun50i-h616.dtsi | 9 +++++++++
- 1 file changed, 9 insertions(+)
-
-diff --git a/arch/arm64/boot/dts/allwinner/sun50i-h616.dtsi b/arch/arm64/boot/dts/allwinner/sun50i-h616.dtsi
-index 187663d45ed72..8367b31d03ac0 100644
---- a/arch/arm64/boot/dts/allwinner/sun50i-h616.dtsi
-+++ b/arch/arm64/boot/dts/allwinner/sun50i-h616.dtsi
-@@ -305,6 +305,15 @@ x32clk_fanout_pin: x32clk-fanout-pin {
- 			};
- 		};
- 
-+		iommu: iommu@30f0000 {
-+			compatible = "allwinner,sun50i-h616-iommu";
-+			reg = <0x030f0000 0x10000>;
-+			interrupts = <GIC_SPI 61 IRQ_TYPE_LEVEL_HIGH>;
-+			clocks = <&ccu CLK_BUS_IOMMU>;
-+			resets = <&ccu RST_BUS_IOMMU>;
-+			#iommu-cells = <1>;
-+		};
-+
- 		gic: interrupt-controller@3021000 {
- 			compatible = "arm,gic-400";
- 			reg = <0x03021000 0x1000>,
--- 
-2.39.4
-
+>
+> Thanks
+> Nicolin
