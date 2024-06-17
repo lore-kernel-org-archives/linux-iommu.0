@@ -1,216 +1,211 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.7])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-ed1-f54.google.com (mail-ed1-f54.google.com [209.85.208.54])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 682FE38396
-	for <iommu@lists.linux.dev>; Mon, 17 Jun 2024 07:46:55 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=192.198.163.7
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1718610416; cv=fail; b=KJao0C8Ste9IoCbWE7sgeAGdq/PwQbQhSSrmxV8RXUAbpa+dpXDmu/apYGAEBqf+b11a0TFObjheYV8PVJ6FBb97e1Q5Hl8ATduXVUGSz3vG9hknzZPBFb91xMvQKAYipCaXLeLBXqeFqA2PzeDobxg2h/PFWlG2K95TMZQ+yGw=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1718610416; c=relaxed/simple;
-	bh=/NAgCFF1PcJ7Q90JxItz4sOMhfCVb3QWl70j4oaZCgQ=;
-	h=From:To:CC:Subject:Date:Message-ID:References:In-Reply-To:
-	 Content-Type:MIME-Version; b=JX6qoGHnK0XsFBoyEUmg0jZ+t9CvlO9YKOgMlA4f46yvUSVIbyjHmxJm8T/xBcCBYblzwe7excsZVySZX+H1VU0bCV84xxDVBiUoYkGEUZkicvAOWXgqdmm8f2LL1UXXD1jCDRyKGnsQ/ZEKbDqE/2FSh1mLi+SX9LtYKUEFKeg=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=DZJ6rJge; arc=fail smtp.client-ip=192.198.163.7
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DAF2A6F505
+	for <iommu@lists.linux.dev>; Mon, 17 Jun 2024 10:27:17 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.54
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1718620039; cv=none; b=LyAA075AK91SYqL4KiJ4qBqLOAKvvCzPxj3/SmtMSc2n22L2pKZS24koxbMy/ydbcjRB2bhLqYE3YL0NYrN2zqXjg2QU91qSFuJH2qMLbLGAl0GcYtzR0W6mmbTpYiUL81nMrFRw+SpJWUW/BPhbgh7hFqy6R5usaarD9wfWXAo=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1718620039; c=relaxed/simple;
+	bh=SvwAskc/fCFbqGp3xdpej0VX4LFAyKSwyjET0MIsa04=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=ig+egyZD3aBE8pb6KthOD1FLs65dP35e1UddhXVFMlsiHJZ3ECb5eETUCGeYlDYKIY3m/I5evto6/mz2jfKCcP09U9aOolsEvdCUEBh0vSoqzmjyWxjMDsXm7J0Hkx4fzoqHE25vE+6uXeu5ACyh9h76l/atpK6YWcMqTLqm6XI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=bYq9TDaa; arc=none smtp.client-ip=209.85.208.54
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="DZJ6rJge"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1718610416; x=1750146416;
-  h=from:to:cc:subject:date:message-id:references:
-   in-reply-to:content-transfer-encoding:mime-version;
-  bh=/NAgCFF1PcJ7Q90JxItz4sOMhfCVb3QWl70j4oaZCgQ=;
-  b=DZJ6rJgeDMBS7J8u2OTfaIK+oRKSomXJN4qC1SbxcdvMcdTSchOXpR7Z
-   h4RcQto/frTnBnpWPWSJySRCSmgpIUuZjJPHfwrhoj5yq3lNwFrQx7jvP
-   LrVuDn/+lp00QdfMxgdJ1mOCgPM2xfmFNaF78vZ8udXMGonhRxs4mEcY3
-   4y9phLg61bsR8A0yprrvLrsueeE5iifcBUAWqKt6ANTY1+9vwF3+AEjOz
-   VEioGmUfyJImb8dh53P7qgjF3FDtCttqnCImWl95cDPSeO6/ygy9YHmng
-   wkAUR/Cl28Eg8fnNEFNtoXb3boWpfDYbiYIErZxnNbBeg7poqy9gj3dHe
-   Q==;
-X-CSE-ConnectionGUID: Umt+qI8jTHmPbY/3C7wnjA==
-X-CSE-MsgGUID: dTrA2FPLRC6NfkInKrNwSw==
-X-IronPort-AV: E=McAfee;i="6700,10204,11105"; a="40839208"
-X-IronPort-AV: E=Sophos;i="6.08,244,1712646000"; 
-   d="scan'208";a="40839208"
-Received: from fmviesa008.fm.intel.com ([10.60.135.148])
-  by fmvoesa101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Jun 2024 00:46:55 -0700
-X-CSE-ConnectionGUID: cyOyKlZpRla3+OXttIC92A==
-X-CSE-MsgGUID: 3CfpAjlBSFefhwizCPrA4A==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.08,244,1712646000"; 
-   d="scan'208";a="41051740"
-Received: from fmsmsx601.amr.corp.intel.com ([10.18.126.81])
-  by fmviesa008.fm.intel.com with ESMTP/TLS/AES256-GCM-SHA384; 17 Jun 2024 00:46:54 -0700
-Received: from fmsmsx610.amr.corp.intel.com (10.18.126.90) by
- fmsmsx601.amr.corp.intel.com (10.18.126.81) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.39; Mon, 17 Jun 2024 00:46:54 -0700
-Received: from fmsmsx602.amr.corp.intel.com (10.18.126.82) by
- fmsmsx610.amr.corp.intel.com (10.18.126.90) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.39; Mon, 17 Jun 2024 00:46:54 -0700
-Received: from fmsedg602.ED.cps.intel.com (10.1.192.136) by
- fmsmsx602.amr.corp.intel.com (10.18.126.82) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.39 via Frontend Transport; Mon, 17 Jun 2024 00:46:53 -0700
-Received: from NAM12-DM6-obe.outbound.protection.outlook.com (104.47.59.169)
- by edgegateway.intel.com (192.55.55.71) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.1.2507.39; Mon, 17 Jun 2024 00:46:53 -0700
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=B8999xgxWGGyK5YgDjGxrbKBm+Wcee52CBLE+Hv+kZZOd3BU1t9CjnBI5GQsBodM/3kR1bKoedWh56MveWy8pYzsvdMf39s1xFxyTuqHr50OsyJ3dQGNGNe+8hkKu9rwW76w2IH0xfKelMr+Hgw/vEJg5ml1wKSRHUJ1/W1xCkOLsYwmA3jC6CMgFGlLYrIPhCTBRgtTAyyKN27w4uZcv2HYJqENbdECqfbZ9jimPQlfa/vhn+rtGV9BGOYrgphpE89Gy8NZXthFV4i7idLEJcgkmc60Mwg9woJoICRrS0OWYaxWFySKRQEGAEFtwqB329iBjlEAocD3STho1gAZUg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=/NAgCFF1PcJ7Q90JxItz4sOMhfCVb3QWl70j4oaZCgQ=;
- b=KaAwG5VPiJwmvfACBybrCUEMhiXg6fU3nZWi/FMFYJ7Ixis50MqW1i1yGGWDxCGZ9moJfAYfQMp7hAgQbPVr5GkBSm4lXsX8u151QK1zjfsD/z7ZE6n+91SpT0ox1mRHchn8JenoTw7d4kFsqx18QyKsNBzzGUqvYhck5s6xzCIMJTelsAI40MqGghyD4A3ohBQmDJcjxogkrgqBgoYuv01NHDfdqdFYB1Z5Wvw8w8SZaA1hdnoirW9+Sk09v/Rc5PhlnAoJEv4kJPKC68tWyatdi5MA+ZqoabvfoXac2SOJZsXQZHnRNDPImTl2tCPNY2qXHJdsyZd7u4TVmS0+5g==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
- dkim=pass header.d=intel.com; arc=none
-Received: from BN9PR11MB5276.namprd11.prod.outlook.com (2603:10b6:408:135::18)
- by MN2PR11MB4662.namprd11.prod.outlook.com (2603:10b6:208:263::10) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7677.31; Mon, 17 Jun
- 2024 07:46:47 +0000
-Received: from BN9PR11MB5276.namprd11.prod.outlook.com
- ([fe80::b576:d3bd:c8e0:4bc1]) by BN9PR11MB5276.namprd11.prod.outlook.com
- ([fe80::b576:d3bd:c8e0:4bc1%5]) with mapi id 15.20.7677.030; Mon, 17 Jun 2024
- 07:46:46 +0000
-From: "Tian, Kevin" <kevin.tian@intel.com>
-To: Lu Baolu <baolu.lu@linux.intel.com>, Jason Gunthorpe <jgg@ziepe.ca>,
-	"Joerg Roedel" <joro@8bytes.org>, Will Deacon <will@kernel.org>, Robin Murphy
-	<robin.murphy@arm.com>, Jean-Philippe Brucker <jean-philippe@linaro.org>,
-	Nicolin Chen <nicolinc@nvidia.com>, "Liu, Yi L" <yi.l.liu@intel.com>, "Jacob
- Pan" <jacob.jun.pan@linux.intel.com>, Joel Granados <j.granados@samsung.com>
-CC: "iommu@lists.linux.dev" <iommu@lists.linux.dev>,
-	"virtualization@lists.linux-foundation.org"
-	<virtualization@lists.linux-foundation.org>, "linux-kernel@vger.kernel.org"
-	<linux-kernel@vger.kernel.org>
-Subject: RE: [PATCH v7 00/10] IOMMUFD: Deliver IO page faults to user space
-Thread-Topic: [PATCH v7 00/10] IOMMUFD: Deliver IO page faults to user space
-Thread-Index: AQHav7RxBHks2DgcmEqu2PW4b2jzX7HLlWPg
-Date: Mon, 17 Jun 2024 07:46:46 +0000
-Message-ID: <BN9PR11MB5276C1D9AC4D3147F4594FF88CCD2@BN9PR11MB5276.namprd11.prod.outlook.com>
-References: <20240616061155.169343-1-baolu.lu@linux.intel.com>
-In-Reply-To: <20240616061155.169343-1-baolu.lu@linux.intel.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach:
-X-MS-TNEF-Correlator:
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=intel.com;
-x-ms-publictraffictype: Email
-x-ms-traffictypediagnostic: BN9PR11MB5276:EE_|MN2PR11MB4662:EE_
-x-ms-office365-filtering-correlation-id: 55b7c3a9-1951-4d86-25eb-08dc8ea1a3d6
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;ARA:13230037|7416011|376011|1800799021|366013|38070700015|921017;
-x-microsoft-antispam-message-info: =?us-ascii?Q?gal+3WpE+AaQHRFWW040kHLzuNHryuiMKnN89jEFuVIdTM4WXZfZXC2ZJC4B?=
- =?us-ascii?Q?Jh4RBDtpLFyxwNcMIVccdPoEKYhATqLGEWWmAG8UFtZTCxKRERuwSaaSvwy+?=
- =?us-ascii?Q?Z9fvRlRaSmsJIqSxH5PKIn8L1QTs5AnXbwQM42A14tmk0WGeFTzHj75IOwuj?=
- =?us-ascii?Q?TygQhXVTYtM6Y1I30WVwnMOr8MG0P53Y9zEydAi0sRgMjEi4OMrcZC/Ljniz?=
- =?us-ascii?Q?4VSsK5n2mg/wlZMWYSfNhWyd5tmx57UDKZAtPxxgHf9kCOsaBwCOtBVseCe6?=
- =?us-ascii?Q?2b6q5HpBiiiU02C81dCHSaqM69w+hHaMay5bhIob/vq1iw9YWb2xtIiHh2bt?=
- =?us-ascii?Q?ulxwL5TpaoaV45Ad43RhM6bIojpnYzmzTjh2EyEH72ed/Jy3j/vl/4Ri2hs7?=
- =?us-ascii?Q?k6cYnVtPs7MUDKB7EqfK8DtXgjFt6Hn2SWn+rEBIkmOSfq9mrD2Akia0f7fo?=
- =?us-ascii?Q?Az20vEGs902e8VxjPbr+OlqgxQUszhwKt6Gb6z7VqJGYeW1Rqzur98xJon0B?=
- =?us-ascii?Q?hljjvr4YWU23xcCwQNOEChmDcKjYKn2AL/ZthKk6qTYB+qaVKWhGvpvcReG9?=
- =?us-ascii?Q?myJnjpCh0hFlSEUfxR5At6SvsK+qfzwn2mnkfv+7thH2sc4lzPmVQr9Y4Xko?=
- =?us-ascii?Q?5GMU+ZrEblX5GkQLOlMaMhfNLuGVVydknZWWMdAdA+FeH0yb4IBcETk/xcg+?=
- =?us-ascii?Q?3Ird93dACwbLlbHPR122ti5nwN1JK5i9OlelK+liDSeUf3r0tX1cTNc0wP6r?=
- =?us-ascii?Q?EFwyIcfXpkXSlUrleJvoIauKP9namxDdTpQ8rxzhKjwfif+RCkiTTtUTdu5V?=
- =?us-ascii?Q?bxByg8iyjZiyaKwT/mIMaLVvrO9tPsqqPPY7oTZbaw2lwhEKG65qfmJrIrCW?=
- =?us-ascii?Q?BpoDayv9xIDtd8JEc7DE1Prh4NjecgTaXKZBnGYCgUL+/YwLwquJqxloRmsY?=
- =?us-ascii?Q?L8755KvqOXYV1lahsGcRCDoq86OjiCqMaxqvxPhBB/FdEvi2/kqUmL8vZYoh?=
- =?us-ascii?Q?ZbQEzJQv/Vflpiie2JSqcMhyZMqlp3KACqdyUITQuUqJB2dWHeI4KIOTUwdM?=
- =?us-ascii?Q?L6USfumTHYLqP9RS0VKyHBhv6qX5omlV3Tbnvu44yPCU9Cp9T4mHZhfXFIAI?=
- =?us-ascii?Q?2isUk/xPrhef+oNBm3P7RQU5pgKSnau0BEtQB/V+JcFfJ+nzaYV1mrwNA5m2?=
- =?us-ascii?Q?8aqPb6jxiREGsAHb5SgJ815gIPOd5dtO1z9tJFlB0w5nSrYYwrB4qvnyxkcG?=
- =?us-ascii?Q?jsVp0eK+CHVJICQ196qNPs6jskGQl3uL9zS8xwYNX5b/OHHYrNaDOUUWSTD1?=
- =?us-ascii?Q?HUxBBqgEps8cVhoQgI8UXStGxM5M6Zsf9UyaHnbrDyncRg=3D=3D?=
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BN9PR11MB5276.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230037)(7416011)(376011)(1800799021)(366013)(38070700015)(921017);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?q/mwX+GBbFhyYKZhkicG46WGrdkj1Ub1HsgzZ8i1NT5N832yofxta6/wREFv?=
- =?us-ascii?Q?pz6XcZvb5Y+M2He+2kc1D1DSV+I6fDxUju4Gt13SFnxaas5Xckqb/Pl2+61I?=
- =?us-ascii?Q?POwTTVYxQHlS5IZwA15R+dO9h5FVeMhibQvv2oyUuVwWUJxKnNbSuOXbKcjm?=
- =?us-ascii?Q?2RHq1fPetdlSsCrAl6zA6yWzyWKZACb5by90eu+NP2Z9mftMf+S3AbVsDx6Q?=
- =?us-ascii?Q?Y0ZkjK3BGgxtCHBBm37nQXxOxu2QCvps0pGYHqnUz6MZnZ6ue0Is/4yLIyni?=
- =?us-ascii?Q?0ng+zC4pU9sZV92jZLTI//XdMUY0Sy+1OTbnFwaFdMKQ/UJjok7LAeXltfdI?=
- =?us-ascii?Q?hXov6QoqHdzJNMQyjZmuZNLIvwHTFbpvlLL+xFh1MO2iKFvTpVsZWdNDpAfV?=
- =?us-ascii?Q?4A3eJVMqin1QRMNrZNkjXw/bGgeYbDyK1WPtaLPT5yHU1JuRO8JdUUXMqknU?=
- =?us-ascii?Q?Oo44TVJ9Yo1NPFzGE+SEK+P+DCYpn0cA/YXvsVrp3cZ/aNjNpLpR1jddYeBm?=
- =?us-ascii?Q?1E6g/H1FRLNvY6C4+mhyybh3Khe/KGq8+tJfXauPB9lrNPED99IZlgRs9zti?=
- =?us-ascii?Q?7SA1j1EDPpJRQt36zKk4gF+J3Hq7j1HDL06eX/M4Fw6Gvt/Dgkqh1AVXHpdb?=
- =?us-ascii?Q?4O+gmdkLA3G82laaTIzr8pDAJA5pWc0VCBeR2YfaJucwJx46nJhqUIlJ6eeg?=
- =?us-ascii?Q?+CA2E7BK3bAHWLXSt0GR8oRqGQGHZS5uCbvzCOUZ1M9SqXIRQAWwyYOlz/rd?=
- =?us-ascii?Q?sc/lX4zHgnMNoeq4tc58G1l50RLuW0xcqIp+CivrdupOZkhxYEUQxgKW1QN4?=
- =?us-ascii?Q?h72IKIvdZJbNV6hJMhgWCAawjZDLoSnNIG52Oeig2mz3LX/8w0HgbqksTSoD?=
- =?us-ascii?Q?uCv30lziYg61RXBifxHrXNHmAuKCVQ03wxZt5xk0cT23Lhvh6L6iouAEQHn2?=
- =?us-ascii?Q?ImSH993p0ej5DTllwaEn5arsK3a02q4T7QgVvKEdK/DtHl5LhEeFlLBjfpTx?=
- =?us-ascii?Q?y7H6UAyzliG7jv4hj/8LlMrGTJFw0ZOo9QN738qDipi+0VgV+4RYwmKynrdM?=
- =?us-ascii?Q?TrV73Lh34qqm+37mrko+6Cc5mdMeOONGXJlbNe3aFk0lcnBEMKzhXqX2hGCh?=
- =?us-ascii?Q?eifSR9G48EysLeAvfP3WI9a6xM324Hr1F74SFMeXQkWH0eBFBR5G4Lp+CoCS?=
- =?us-ascii?Q?AipwG7BDLIkLeWEuZYYC2+KQFoHiJ9YstsOmCMzv8PoDXdTAbceUmyyCkf2j?=
- =?us-ascii?Q?GtqzQb48OxJ9oi8NtSsbQrUN3Z/lVrPkom0vJD9CJUnFju/n55KqN/l08INE?=
- =?us-ascii?Q?agQwAjFI4DooxagGBSrCUlkELBHHtMBDzcXaXt4F63qLsJBVuB3ZY6OpH/lu?=
- =?us-ascii?Q?t0hpO0yVeibcrdHiGeMuloLNtpcidWyrSIqyDUpB+qkXB9neFiu/iBTGmf0i?=
- =?us-ascii?Q?2fH7jJQ7klXQt3mY8eaY+D83f3YyXXer6fQY7T6wWXtVsOfNrF+68jKwG63B?=
- =?us-ascii?Q?m1CK4LSrEFqirqoegVzN8J2T93OrKKkycn6OSphh1DdgjhC9glP0dJoRhFQm?=
- =?us-ascii?Q?ziaFfxEJxznf4qICVQxJ0DfjKAx+gzmcWVaJ4DHt?=
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="bYq9TDaa"
+Received: by mail-ed1-f54.google.com with SMTP id 4fb4d7f45d1cf-57c8bd6b655so15467a12.0
+        for <iommu@lists.linux.dev>; Mon, 17 Jun 2024 03:27:17 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20230601; t=1718620036; x=1719224836; darn=lists.linux.dev;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=97HNlrom0vmgCUPq2mVyJqaT77fVYxrQT7MRjlCumz4=;
+        b=bYq9TDaaCLSmUNgl7E1pmHaSgG+5oQaSg/WtGqBgrzDnnLXZpVP/hlJknFHW7UHGss
+         kdaEg/Pl566AfD94PLJL1isMrGMoMC7EW80RQCs1kt9+A7ThULj0Zp0UecaPyaIt0mAV
+         LrZG+Mvlkfxurlka/B2HsSrsHz4vA6fKAPFaNvwQ3RxjPpHizSvxy2sUwUEKxp1qw7Z/
+         pliSGxfc8fzDcCLKZAXmdpZUyKU8AxcBLRKwsR1jxDd6ahEqm8AzeG38yFknOIhmNGQR
+         SLr0WsF/6yXLkHX3yg2GXogCOOe+RHDChmRyxO0b7pC3fbd1y2yFfVZT74HvaDs8WDqk
+         3IfQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1718620036; x=1719224836;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=97HNlrom0vmgCUPq2mVyJqaT77fVYxrQT7MRjlCumz4=;
+        b=YobEGIRN7ADsXY7qA2coXpByJ6mWu2Avpxds7a7ayixYvA2sH9g1wS03P06VHy03og
+         4B0/7jIH23jVMmWrstxLvCN+fkexMGrDqEwYnJ56jJMVXxWmGOFtlUUWsFf5BV7PnOQM
+         2PtZvMGOnc48O82UW8kE13rVFfKwfMfT/XXlnzFgluznekuwbZtnQqFEBXdnHRDDwftp
+         OdUzUfnoGPnyKWePF5XBPyeBnpV0i2ckAMie7FWxIVZ7JPmqKKUDgvrCXlR1B8tjpYOx
+         RG5sf/Ukb8xIWWq+vOPGNYgaIJlnlv8aFtEw+W8QZ89c20mokCckd3/pC46Ez7rW/CZo
+         hO7Q==
+X-Gm-Message-State: AOJu0Yw8OEqe7RhCBdSWMwEF2nRmyfm7GIJsoVJGvTyeHEXqrGIjbzaD
+	P5XMZEGqnrdERfEhodBeNxsQ9U1D6gQ1fdHL8c3f4GaHAFG1RcT39msp5UW6p7/Ur8MCWoFu5zC
+	MnHzTqBfh0ok/L52kvuC5c3IRkbh09mVLiTPs
+X-Google-Smtp-Source: AGHT+IE6YBCU6PK9TX7WgOKq154u5fmiFEOZ+kbbMuOv/cOg6c5dK4O+QtvjUVBauAMglII7sNP483BUPy+TaGxyVb8=
+X-Received: by 2002:a05:6402:50d2:b0:57c:cfa9:837b with SMTP id
+ 4fb4d7f45d1cf-57ccfa98704mr158097a12.0.1718620035876; Mon, 17 Jun 2024
+ 03:27:15 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: BN9PR11MB5276.namprd11.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 55b7c3a9-1951-4d86-25eb-08dc8ea1a3d6
-X-MS-Exchange-CrossTenant-originalarrivaltime: 17 Jun 2024 07:46:46.9321
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 46c98d88-e344-4ed4-8496-4ed7712e255d
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: iPdb+ArN9LHksdm7dpG2NVZAHvTCQ2JJMLdhE1d2lajCcvv8UiVCq/9u/AdSXBaXwQdfrgFmPYmr0oyX0yqzVw==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN2PR11MB4662
-X-OriginatorOrg: intel.com
+References: <20240604150136.493962-1-robdclark@gmail.com>
+In-Reply-To: <20240604150136.493962-1-robdclark@gmail.com>
+From: Pranjal Shrivastava <praan@google.com>
+Date: Mon, 17 Jun 2024 15:57:04 +0530
+Message-ID: <CAN6iL-Qz5--_bE=s8DKMtZFLJuNZca13ageGn48n4W7EKLUEUg@mail.gmail.com>
+Subject: Re: [PATCH] iommu/arm-smmu: Pretty-print context fault related regs
+To: Rob Clark <robdclark@gmail.com>
+Cc: iommu@lists.linux.dev, linux-arm-msm@vger.kernel.org, 
+	Stephen Boyd <swboyd@chromium.org>, Rob Clark <robdclark@chromium.org>, 
+	Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>, Joerg Roedel <joro@8bytes.org>, 
+	Jason Gunthorpe <jgg@ziepe.ca>, Jerry Snitselaar <jsnitsel@redhat.com>, 
+	Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>, 
+	Dmitry Baryshkov <dmitry.baryshkov@linaro.org>, 
+	"moderated list:ARM SMMU DRIVERS" <linux-arm-kernel@lists.infradead.org>, 
+	open list <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-> From: Lu Baolu <baolu.lu@linux.intel.com>
-> Sent: Sunday, June 16, 2024 2:12 PM
->=20
-> This series implements the functionality of delivering IO page faults to
-> user space through the IOMMUFD framework. One feasible use case is the
-> nested translation. Nested translation is a hardware feature that
-> supports two-stage translation tables for IOMMU. The second-stage
-> translation table is managed by the host VMM, while the first-stage
-> translation table is owned by user space. This allows user space to
-> control the IOMMU mappings for its devices.
->=20
-> When an IO page fault occurs on the first-stage translation table, the
-> IOMMU hardware can deliver the page fault to user space through the
-> IOMMUFD framework. User space can then handle the page fault and
-> respond
-> to the device top-down through the IOMMUFD. This allows user space to
-> implement its own IO page fault handling policies.
->=20
-> User space application that is capable of handling IO page faults should
-> allocate a fault object, and bind the fault object to any domain that it
-> is willing to handle the fault generatd for them. On a successful return
-> of fault object allocation, the user can retrieve and respond to page
-> faults by reading or writing to the file descriptor (FD) returned.
->=20
-> The iommu selftest framework has been updated to test the IO page fault
-> delivery and response functionality.
->=20
-> The series and related patches are available on GitHub:
-> https://github.com/LuBaolu/intel-iommu/commits/iommufd-io-pgfault-
-> delivery-v7
->=20
+Hi Rob,
+On Tue, Jun 4, 2024 at 8:32=E2=80=AFPM Rob Clark <robdclark@gmail.com> wrot=
+e:
+>
+> From: Rob Clark <robdclark@chromium.org>
+>
+> Parse out the bitfields for easier-to-read fault messages.
+>
+> Signed-off-by: Rob Clark <robdclark@chromium.org>
+> ---
+> Stephen was wanting easier to read fault messages.. so I typed this up.
+>
+> Resend with the new iommu list address
+>
+>  drivers/iommu/arm/arm-smmu/arm-smmu.c | 53 +++++++++++++++++++++++++--
+>  drivers/iommu/arm/arm-smmu/arm-smmu.h |  5 +++
+>  2 files changed, 54 insertions(+), 4 deletions(-)
+>
+> diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu.c b/drivers/iommu/arm/ar=
+m-smmu/arm-smmu.c
+> index c572d877b0e1..06712d73519c 100644
+> --- a/drivers/iommu/arm/arm-smmu/arm-smmu.c
+> +++ b/drivers/iommu/arm/arm-smmu/arm-smmu.c
+> @@ -411,6 +411,8 @@ static irqreturn_t arm_smmu_context_fault(int irq, vo=
+id *dev)
+>         unsigned long iova;
+>         struct arm_smmu_domain *smmu_domain =3D dev;
+>         struct arm_smmu_device *smmu =3D smmu_domain->smmu;
+> +       static DEFINE_RATELIMIT_STATE(rs, DEFAULT_RATELIMIT_INTERVAL,
+> +                                     DEFAULT_RATELIMIT_BURST);
+>         int idx =3D smmu_domain->cfg.cbndx;
+>         int ret;
+>
+> @@ -425,10 +427,53 @@ static irqreturn_t arm_smmu_context_fault(int irq, =
+void *dev)
+>         ret =3D report_iommu_fault(&smmu_domain->domain, NULL, iova,
+>                 fsynr & ARM_SMMU_FSYNR0_WNR ? IOMMU_FAULT_WRITE : IOMMU_F=
+AULT_READ);
+>
+> -       if (ret =3D=3D -ENOSYS)
+> -               dev_err_ratelimited(smmu->dev,
+> -               "Unhandled context fault: fsr=3D0x%x, iova=3D0x%08lx, fsy=
+nr=3D0x%x, cbfrsynra=3D0x%x, cb=3D%d\n",
+> -                           fsr, iova, fsynr, cbfrsynra, idx);
+> +       if (ret =3D=3D -ENOSYS && __ratelimit(&rs)) {
+> +               static const struct {
+> +                       u32 mask; const char *name;
+> +               } fsr_bits[] =3D {
+> +                       { ARM_SMMU_FSR_MULTI,  "MULTI" },
+> +                       { ARM_SMMU_FSR_SS,     "SS"    },
+> +                       { ARM_SMMU_FSR_UUT,    "UUT"   },
+> +                       { ARM_SMMU_FSR_ASF,    "ASF"   },
+> +                       { ARM_SMMU_FSR_TLBLKF, "TLBLKF" },
+> +                       { ARM_SMMU_FSR_TLBMCF, "TLBMCF" },
+> +                       { ARM_SMMU_FSR_EF,     "EF"     },
+> +                       { ARM_SMMU_FSR_PF,     "PF"     },
+> +                       { ARM_SMMU_FSR_AFF,    "AFF"    },
+> +                       { ARM_SMMU_FSR_TF,     "TF"     },
 
-for the entire series:
+I think we are missing to log the translation scheme i.e. `Format
+bits[10:9]` field of this register as per the SMMUv2 spec. Maybe add
+that too?
 
-Reviewed-by: Kevin Tian <kevin.tian@intel.com>
+> +               }, fsynr0_bits[] =3D {
+> +                       { ARM_SMMU_FSYNR0_WNR,    "WNR"    },
+> +                       { ARM_SMMU_FSYNR0_PNU,    "PNU"    },
+> +                       { ARM_SMMU_FSYNR0_IND,    "IND"    },
+> +                       { ARM_SMMU_FSYNR0_NSATTR, "NSATTR" },
+> +                       { ARM_SMMU_FSYNR0_PTWF,   "PTWF"   },
+> +                       { ARM_SMMU_FSYNR0_AFR,    "AFR"    },
+> +               };
+> +
+> +               pr_err("%s %s: Unhandled context fault: fsr=3D0x%x (",
+> +                      dev_driver_string(smmu->dev), dev_name(smmu->dev),=
+ fsr);
+> +
+> +               for (int i =3D 0, n =3D 0; i < ARRAY_SIZE(fsr_bits); i++)=
+ {
+> +                       if (fsr & fsr_bits[i].mask) {
+> +                               pr_cont("%s%s", (n > 0) ? "|" : "", fsr_b=
+its[i].name);
+> +                               n++;
+> +                       }
+> +               }
+
+Nit: Maybe add a line-wrap here after logging the iova?
+Not trying to sound like a terminal geek, but a full log with pr_cont
+could get very long (> 80 characters).
+So, let's log fsr & iova in one line, fsynr and others in the next.
+
+> +
+> +               pr_cont("), iova=3D0x%08lx, fsynr=3D0x%x (S1CBNDX=3D%u", =
+iova, fsynr,
+> +                       (fsynr >> 16) & 0xff);
+> +
+> +               for (int i =3D 0; i < ARRAY_SIZE(fsynr0_bits); i++) {
+> +                       if (fsynr & fsynr0_bits[i].mask) {
+> +                               pr_cont("|%s", fsynr0_bits[i].name);
+> +                       }
+> +               }
+> +
+> +               pr_cont("|PLVL=3D%u), cbfrsynra=3D0x%x, cb=3D%d\n",
+> +                       fsynr & 0x3,   /* FSYNR0.PLV */
+> +                       cbfrsynra, idx);
+> +
+> +       }
+>
+>         arm_smmu_cb_write(smmu, idx, ARM_SMMU_CB_FSR, fsr);
+>         return IRQ_HANDLED;
+> diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu.h b/drivers/iommu/arm/ar=
+m-smmu/arm-smmu.h
+> index 836ed6799a80..3b051273718b 100644
+> --- a/drivers/iommu/arm/arm-smmu/arm-smmu.h
+> +++ b/drivers/iommu/arm/arm-smmu/arm-smmu.h
+> @@ -223,6 +223,11 @@ enum arm_smmu_cbar_type {
+>
+>  #define ARM_SMMU_CB_FSYNR0             0x68
+>  #define ARM_SMMU_FSYNR0_WNR            BIT(4)
+> +#define ARM_SMMU_FSYNR0_PNU            BIT(5)
+> +#define ARM_SMMU_FSYNR0_IND            BIT(6)
+> +#define ARM_SMMU_FSYNR0_NSATTR         BIT(8)
+> +#define ARM_SMMU_FSYNR0_PTWF           BIT(10)
+> +#define ARM_SMMU_FSYNR0_AFR            BIT(11)
+>
+
+Nit: Worth prefixing these with "CB_" i.e. "ARM_SMMU_CB_FSYNR0_* " to
+avoid confusion with "GFSYNR0".
+
+>  #define ARM_SMMU_CB_FSYNR1             0x6c
+>
+> --
+> 2.45.1
+>
+>
+Thanks,
+Pranjal
