@@ -1,304 +1,124 @@
-Received: from mx0a-0031df01.pphosted.com (mx0a-0031df01.pphosted.com [205.220.168.131])
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.7])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EA4961BDEF
-	for <iommu@lists.linux.dev>; Mon, 17 Jun 2024 19:35:52 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.168.131
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9AD951990BD
+	for <iommu@lists.linux.dev>; Mon, 17 Jun 2024 21:00:05 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.7
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1718652954; cv=none; b=txWN5lXLiyxgSI17QNXjoeCK0t/tS7F5hGdpN2ncu02SmxW8mlF17Xbe5UfkospkhFtUKqo+dZFPhYE3X4hxn128ngKdGV+pkQG9Uapjg66YvO2IjPwDBy/QyV5LEwj0agrXUTkQGyukdwTNtlDLGCZoXQJvF1vFUnmlZwp5Vrk=
+	t=1718658008; cv=none; b=CFt5MrdhmDYH2wDM9Cjg71jS7qQTdc8oUvox3esRKQ2ljjyEkmEDqoULDbWvqKbdIaWqe7MWKkQa9a+u/RaDULDWbF+l4fkGFLvpt6+xoZAiv0jMWatM8mhgLJDe3FoFyzkK1srttvXK2PxCaQ8YnPcbSCco68VJiUYXHXFt+PI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1718652954; c=relaxed/simple;
-	bh=5LCDuNSoORs1LN+gWbAt18oTeKlDeMnuGc+aWySrwYk=;
-	h=From:To:CC:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=cppVyh0GPSL07cKRoAS7L67tn6DmYmZEtT3/2oWD0Nsj6vPzBkxSE1FKYakSfeI0CtC4Gng8HzCU6oaSEzlyKgCf6eFeaMwafRkoE8w9IBEgeJoEafd+mw08m6PLFOJS42KyQV/Ir6UuVj9u4unviEg9B/hcSLv+Xio/K1hDKO4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com; spf=pass smtp.mailfrom=quicinc.com; dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b=egtWXHwH; arc=none smtp.client-ip=205.220.168.131
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=quicinc.com
+	s=arc-20240116; t=1718658008; c=relaxed/simple;
+	bh=WgSLYyErJHoji4fKyM9IQk+BqeeF2YiNgiSt5c2toJQ=;
+	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=YuiVUEJLvdYMNtKVB8wp3bMNuQ6dFU1Xs7YcPI6o66QzvqEsGr4QB2M8o6SrAFiPowYcfTnD2A84KRU491snXo2gOkiICCu2X4ijMvS0lTturMLk5CwHqj1Z0hI8Hjae1qy5xeBTGYtsSQbmeDDPJDwLK9T0A5aeKJMw29Am6cc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=GLX55ZWP; arc=none smtp.client-ip=192.198.163.7
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b="egtWXHwH"
-Received: from pps.filterd (m0279862.ppops.net [127.0.0.1])
-	by mx0a-0031df01.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 45HAeAjB024622;
-	Mon, 17 Jun 2024 19:35:44 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=quicinc.com; h=
-	cc:content-transfer-encoding:content-type:date:from:in-reply-to
-	:message-id:mime-version:references:subject:to; s=qcppdkim1; bh=
-	n38ftMpU9C8qamwfma+gAf6Zymvr8UVC3i4FP76IJQo=; b=egtWXHwHYSVXWVqW
-	Avy7DNxtP+iRcvZ7F9F84PCZJCtnkJNTZoFnK4t884ERSJU7ct/yDux0l/T+7ElK
-	/M4QSapg/Fn13FpCQn//0zy5SolX3TJzUhTdcsUw0SLI9xPx478utS4dMjW1SyuR
-	Fu6GAgpadO1KFEt5BFD+gy8hvJJqqS47j9WOxHQ3tTWXeq1dsQJcH5ahjTGrUbJw
-	ffBb027dzp26XKglqufsmpSQ3I5U/lpbdAn2OwnQ34zSGSvCN/ZKpG0wHS3w+lLD
-	9iNDpVbftnmF7msMVTXeFA3iR3vc5m9ufQifGfmPSYZWoFG+setCJQC+whGKze/d
-	iLxHvA==
-Received: from nalasppmta03.qualcomm.com (Global_NAT1.qualcomm.com [129.46.96.20])
-	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 3ys3qf4kp4-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Mon, 17 Jun 2024 19:35:43 +0000 (GMT)
-Received: from nalasex01b.na.qualcomm.com (nalasex01b.na.qualcomm.com [10.47.209.197])
-	by NALASPPMTA03.qualcomm.com (8.17.1.19/8.17.1.19) with ESMTPS id 45HJZgJ7028531
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Mon, 17 Jun 2024 19:35:42 GMT
-Received: from hu-obabatun-lv.qualcomm.com (10.49.16.6) by
- nalasex01b.na.qualcomm.com (10.47.209.197) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.1544.9; Mon, 17 Jun 2024 12:35:39 -0700
-From: Oreoluwa Babatunde <quic_obabatun@quicinc.com>
-To: <robin.murphy@arm.com>, <broonie@kernel.org>, <conor@kernel.org>,
-        <nathan@kernel.org>, <robh@kernel.org>
-CC: <catalin.marinas@arm.com>, <devicetree@vger.kernel.org>, <hch@lst.de>,
-        <iommu@lists.linux.dev>, <kernel@quicinc.com>,
-        <linux-kernel@vger.kernel.org>, <m.szyprowski@samsung.com>,
-        <quic_obabatun@quicinc.com>, <saravanak@google.com>, <will@kernel.org>
-Subject: [PATCH] of: reserved_mem: Restructure code to call reserved mem init functions earlier
-Date: Mon, 17 Jun 2024 12:33:57 -0700
-Message-ID: <20240617193357.3929092-1-quic_obabatun@quicinc.com>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <002b6176-41b3-4888-abb1-978399d108b8@arm.com>
-References: <002b6176-41b3-4888-abb1-978399d108b8@arm.com>
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="GLX55ZWP"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1718658005; x=1750194005;
+  h=date:from:to:cc:subject:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=WgSLYyErJHoji4fKyM9IQk+BqeeF2YiNgiSt5c2toJQ=;
+  b=GLX55ZWPak7Xj9ssMPpA+EYnFWOdYo7y8NLKUHsPQLdPv5MLcDTKbjv0
+   665kqndJAa15gEjLozzUH5r0z0u9KFsHmmAEkZ9SGe10oI+5tAXpvUqxX
+   TSnDYXpqOOXSVSv6Ers8BLQJRmiO7l1ppXJPkaE9bSnlmpNCU9hc/F546
+   j6ate8yP6e7ZsYIO2shhzIUKZjbX8k/oSg92uHFb3u8+VpnqXVuuQ3eTo
+   8bJLr10XOXXcZ9SiKEZ6zS5pzhwzm6ceoJ+3MIgUwB3lsoDEr6iMynzJz
+   SOTWBpChKk9l6CnzO5kFuTAdIcGZC+1Kb4QBKfTukhFyInqGZRGlgVEaO
+   g==;
+X-CSE-ConnectionGUID: wB86gKbATOq+Yj5y6lcncw==
+X-CSE-MsgGUID: eZKsIEi8QdKNX/eVxMxJRg==
+X-IronPort-AV: E=McAfee;i="6700,10204,11106"; a="40914958"
+X-IronPort-AV: E=Sophos;i="6.08,245,1712646000"; 
+   d="scan'208";a="40914958"
+Received: from fmviesa009.fm.intel.com ([10.60.135.149])
+  by fmvoesa101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Jun 2024 14:00:05 -0700
+X-CSE-ConnectionGUID: XKa3eSioTH28Qfn7IItaBA==
+X-CSE-MsgGUID: fItK/p1OSwu/yH7q6qYLtg==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.08,245,1712646000"; 
+   d="scan'208";a="41412015"
+Received: from jacob-builder.jf.intel.com (HELO jacob-builder) ([10.54.39.125])
+  by fmviesa009-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Jun 2024 14:00:04 -0700
+Date: Mon, 17 Jun 2024 14:05:10 -0700
+From: Jacob Pan <jacob.jun.pan@linux.intel.com>
+To: "Tian, Kevin" <kevin.tian@intel.com>
+Cc: Lu Baolu <baolu.lu@linux.intel.com>, LKML
+ <linux-kernel@vger.kernel.org>, "iommu@lists.linux.dev"
+ <iommu@lists.linux.dev>, "Liu, Yi L" <yi.l.liu@intel.com>, "Kumar, Sanjay
+ K" <sanjay.k.kumar@intel.com>, jacob.jun.pan@linux.intel.com
+Subject: Re: [PATCH] iommu/vt-d: Handle volatile descriptor status read
+Message-ID: <20240617140510.3a405344@jacob-builder>
+In-Reply-To: <BN9PR11MB52765C0508922F9CDEAE7E9D8CCD2@BN9PR11MB5276.namprd11.prod.outlook.com>
+References: <20240607173817.3914600-1-jacob.jun.pan@linux.intel.com>
+	<BN9PR11MB52765C0508922F9CDEAE7E9D8CCD2@BN9PR11MB5276.namprd11.prod.outlook.com>
+Organization: OTC
+X-Mailer: Claws Mail 3.17.5 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-ClientProxiedBy: nalasex01a.na.qualcomm.com (10.47.209.196) To
- nalasex01b.na.qualcomm.com (10.47.209.197)
-X-QCInternal: smtphost
-X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
-X-Proofpoint-GUID: vypRI1pEiUoF6yC72dTSbtfK0hxwGNjA
-X-Proofpoint-ORIG-GUID: vypRI1pEiUoF6yC72dTSbtfK0hxwGNjA
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.293,Aquarius:18.0.1039,Hydra:6.0.680,FMLib:17.12.28.16
- definitions=2024-06-17_14,2024-06-17_01,2024-05-17_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 suspectscore=0 clxscore=1011
- malwarescore=0 spamscore=0 mlxlogscore=999 bulkscore=0 phishscore=0
- lowpriorityscore=0 mlxscore=0 priorityscore=1501 adultscore=0
- impostorscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.19.0-2405170001 definitions=main-2406170151
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 
-After all the reserved memory regions have been added to the
-reserved_mem array, a region specific initialization function is called
-on each of reserved memory regions in a loop to initialize them.
 
-With recent changes made to allow the reserved_mem array be dynamically
-allocated, the cma reserved memory regions are not initialized until
-after the page tables are setup. This causes the warning seen in the
-dump stack below:
+On Mon, 17 Jun 2024 03:04:36 +0000, "Tian, Kevin" <kevin.tian@intel.com>
+wrote:
 
-	WARNING: CPU: 0 PID: 1 at mm/memory.c:2789 __apply_to_page_range+0x360/0x380
-	CPU: 0 PID: 1 Comm: swapper/0 Not tainted 6.10.0-rc1-00007-ga46cccb0ee2d #1
-	Hardware name: Generic DT based system
-	Call trace:
-	unwind_backtrace from show_stack+0x18/0x1c
-	show_stack from dump_stack_lvl+0x54/0x68
-	dump_stack_lvl from __warn+0x74/0x114
-	__warn from warn_slowpath_fmt+0x13c/0x1c0
-	warn_slowpath_fmt from __apply_to_page_range+0x360/0x380
-	__apply_to_page_range from apply_to_page_range+0x24/0x2c
-	apply_to_page_range from __alloc_from_contiguous+0xc4/0x158
-	__alloc_from_contiguous from cma_allocator_alloc+0x3c/0x44
-	cma_allocator_alloc from arch_dma_alloc+0x128/0x2b4
-	arch_dma_alloc from dma_alloc_attrs+0x90/0x150
-	dma_alloc_attrs from drm_gem_dma_create+0xa4/0x13c
-	drm_gem_dma_create from drm_gem_dma_create_with_handle+0x24/0xac
-	drm_gem_dma_create_with_handle from drm_gem_dma_dumb_create+0x44/0x50
-	drm_gem_dma_dumb_create from drm_client_framebuffer_create+0x9c/0x164
-	drm_client_framebuffer_create from drm_fbdev_dma_helper_fb_probe+0x84/0x23c
-	drm_fbdev_dma_helper_fb_probe from __drm_fb_helper_initial_config_and_unlock+0x2e4/0x4f8
-	__drm_fb_helper_initial_config_and_unlock from drm_fbdev_dma_client_hotplug+0x74/0xb8
-	drm_fbdev_dma_client_hotplug from drm_client_register+0x5c/0x98
-	drm_client_register from aspeed_gfx_probe+0x278/0x3c0
-	aspeed_gfx_probe from platform_probe+0x60/0xb8
-	platform_probe from really_probe+0xd4/0x3b4
-	really_probe from __driver_probe_device+0x90/0x1dc
-	__driver_probe_device from driver_probe_device+0x38/0xd0
-	driver_probe_device from __driver_attach+0x118/0x1dc
-	__driver_attach from bus_for_each_dev+0x84/0xd4
-	bus_for_each_dev from bus_add_driver+0xec/0x1f0
-	bus_add_driver from driver_register+0x84/0x11c
-	driver_register from do_one_initcall+0x84/0x1c8
-	do_one_initcall from kernel_init_freeable+0x1a4/0x230
-	kernel_init_freeable from kernel_init+0x1c/0x138
-	kernel_init from ret_from_fork+0x14/0x28
-	Exception stack(0x9f015fb0 to 0x9f015ff8)
-	5fa0:                                     00000000 00000000 00000000 00000000
-	5fc0: 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000
-	5fe0: 00000000 00000000 00000000 00000000 00000013 00000000
-	---[ end trace 0000000000000000 ]---
-	aspeed_gfx 1e6e6000.display: [drm] fb0: aspeed-gfx-drmd frame buffer device
+> > From: Jacob Pan <jacob.jun.pan@linux.intel.com>
+> > Sent: Saturday, June 8, 2024 1:38 AM
+> > 
+> > Queued invalidation wait descriptor status is volatile in that IOMMU
+> > hardware
+> > writes the data upon completion.
+> > 
+> > Use READ_ONCE() to prevent compiler optimizations which ensures memory
+> > reads every time. As a side effect, READ_ONCE() also enforces strict
+> > types and
+> > may add an extra instruction. But it should not have negative
+> > performance impact since we use cpu_relax anyway and the extra time(by
+> > adding an instruction) may allow IOMMU HW request cacheline ownership
+> > easier.  
+> 
+> I didn't get the meaning of the last sentence.
+The wait descriptor is polled by the CPU and written by the IOMMU
+concurrently. The IOMMU needs to have the cacheline ownership before
+writing the status data to signal completion of the wait descriptor.
 
-Hence, restructure the code to initialize the regions as soon as each
-of them are added to the reserved_mem array.
+If the CPU polling loop is very tight, it might make IOMMU request for
+ownership contentious/difficult. Since we already use pause (cpu_relax())
+to ease the contention, adding an additional instruction
 
-Fixes: a46cccb0ee2d ("of: reserved_mem: Restruture how the reserved memory regions are processed")
-Signed-off-by: Oreoluwa Babatunde <quic_obabatun@quicinc.com>
----
- drivers/of/fdt.c             |  2 +-
- drivers/of/of_private.h      |  2 +-
- drivers/of/of_reserved_mem.c | 77 ++++++++++++++++++++----------------
- 3 files changed, 44 insertions(+), 37 deletions(-)
+ mov    (%rax),%eax
 
-diff --git a/drivers/of/fdt.c b/drivers/of/fdt.c
-index 9cde2abd2fc0..ea2dff0478c7 100644
---- a/drivers/of/fdt.c
-+++ b/drivers/of/fdt.c
-@@ -1239,7 +1239,7 @@ void __init unflatten_device_tree(void)
- 	unittest_unflatten_overlay_base();
- 
- 	/* initialize the reserved memory regions */
--	of_init_reserved_mem();
-+	of_scan_reserved_mem_reg_nodes();
- }
- 
- /**
-diff --git a/drivers/of/of_private.h b/drivers/of/of_private.h
-index 01b33c4b1e9f..7412aed903df 100644
---- a/drivers/of/of_private.h
-+++ b/drivers/of/of_private.h
-@@ -181,7 +181,7 @@ static inline struct device_node *__of_get_dma_parent(const struct device_node *
- #endif
- 
- int fdt_scan_reserved_mem(void);
--void of_init_reserved_mem(void);
-+void of_scan_reserved_mem_reg_nodes(void);
- 
- bool of_fdt_device_is_available(const void *blob, unsigned long node);
- 
-diff --git a/drivers/of/of_reserved_mem.c b/drivers/of/of_reserved_mem.c
-index eb54490a0a11..0b1eb34b891e 100644
---- a/drivers/of/of_reserved_mem.c
-+++ b/drivers/of/of_reserved_mem.c
-@@ -97,6 +97,8 @@ static void __init alloc_reserved_mem_array(void)
- 	reserved_mem = new_array;
- }
- 
-+static void __init of_init_reserved_mem_node(struct reserved_mem *rmem);
-+
- /*
-  * of_reserved_mem_save_node() - save fdt node for second pass initialization
-  */
-@@ -115,6 +117,12 @@ static void __init of_reserved_mem_save_node(struct device_node *node, const cha
- 	rmem->base = base;
- 	rmem->size = size;
- 
-+	/*
-+	 * Run the region specific initialization function for the rmem
-+	 * node.
-+	 */
-+	of_init_reserved_mem_node(rmem);
-+
- 	reserved_mem_count++;
- 	return;
- }
-@@ -201,6 +209,8 @@ static int __init __fdt_reserved_mem_check_root(unsigned long node)
- 	return 0;
- }
- 
-+static void __init __rmem_check_for_overlap(void);
-+
- /**
-  * of_scan_reserved_mem_reg_nodes() - Store info for the "reg" defined
-  * reserved memory regions.
-@@ -211,7 +221,7 @@ static int __init __fdt_reserved_mem_check_root(unsigned long node)
-  * size are all stored in the reserved_mem array by calling the
-  * of_reserved_mem_save_node() function.
-  */
--static void __init of_scan_reserved_mem_reg_nodes(void)
-+void __init of_scan_reserved_mem_reg_nodes(void)
- {
- 	struct device_node *node, *child;
- 	phys_addr_t base, size;
-@@ -222,6 +232,13 @@ static void __init of_scan_reserved_mem_reg_nodes(void)
- 		return;
- 	}
- 
-+	/*
-+	 * Before moving forward, allocate the exact size needed for the
-+	 * reserved_mem array and copy all previously saved contents
-+	 * into the new array if successful.
-+	 */
-+	alloc_reserved_mem_array();
-+
- 	for_each_child_of_node(node, child) {
- 		int ret = 0;
- 		const char *uname;
-@@ -246,6 +263,8 @@ static void __init of_scan_reserved_mem_reg_nodes(void)
- 		if (size)
- 			of_reserved_mem_save_node(child, uname, base, size);
- 	}
-+	/* check for overlapping reserved regions */
-+	__rmem_check_for_overlap();
- }
- 
- static int __init __reserved_mem_alloc_size(unsigned long node, const char *uname);
-@@ -526,44 +545,32 @@ static void __init __rmem_check_for_overlap(void)
- }
- 
- /**
-- * of_init_reserved_mem() - allocate and init all saved reserved memory regions
-+ * of_init_reserved_mem_node() - Initialize a saved reserved memory region.
-  */
--void __init of_init_reserved_mem(void)
-+static void __init of_init_reserved_mem_node(struct reserved_mem *rmem)
- {
--	int i;
--
--	alloc_reserved_mem_array();
--
--	of_scan_reserved_mem_reg_nodes();
-+	int err;
-+	bool nomap;
-+	struct device_node *node = rmem->dev_node;
- 
--	/* check for overlapping reserved regions */
--	__rmem_check_for_overlap();
-+	nomap = of_property_present(node, "no-map");
- 
--	for (i = 0; i < reserved_mem_count; i++) {
--		struct reserved_mem *rmem = &reserved_mem[i];
--		struct device_node *node = rmem->dev_node;
--		int err = 0;
--		bool nomap;
--
--		nomap = of_property_present(node, "no-map");
--
--		err = __reserved_mem_init_node(rmem);
--		if (err != 0 && err != -ENOENT) {
--			pr_info("node %s compatible matching fail\n", rmem->name);
--			if (nomap)
--				memblock_clear_nomap(rmem->base, rmem->size);
--			else
--				memblock_phys_free(rmem->base, rmem->size);
--		} else {
--			phys_addr_t end = rmem->base + rmem->size - 1;
--			bool reusable = of_property_present(node, "reusable");
--
--			pr_info("%pa..%pa (%lu KiB) %s %s %s\n",
--				&rmem->base, &end, (unsigned long)(rmem->size / SZ_1K),
--				nomap ? "nomap" : "map",
--				reusable ? "reusable" : "non-reusable",
--				rmem->name ? rmem->name : "unknown");
--		}
-+	err = __reserved_mem_init_node(rmem);
-+	if (err != 0 && err != -ENOENT) {
-+		pr_info("node %s compatible matching fail\n", rmem->name);
-+		if (nomap)
-+			memblock_clear_nomap(rmem->base, rmem->size);
-+		else
-+			memblock_phys_free(rmem->base, rmem->size);
-+	} else {
-+		phys_addr_t end = rmem->base + rmem->size - 1;
-+		bool reusable = of_property_present(node, "reusable");
-+
-+		pr_info("%pa..%pa (%lu KiB) %s %s %s\n",
-+			&rmem->base, &end, (unsigned long)(rmem->size / SZ_1K),
-+			nomap ? "nomap" : "map",
-+			reusable ? "reusable" : "non-reusable",
-+			rmem->name ? rmem->name : "unknown");
- 	}
- }
- 
--- 
-2.34.1
+Will make the cacheline even less contentious since it is just register mov,
+no memory access.
 
+> > 
+> > e.g. gcc 12.3
+> > BEFORE:
+> > 	81 38 ad de 00 00       cmpl   $0x2,(%rax)
+> > 
+> > AFTER (with READ_ONCE())
+> >     772f:       8b 00                   mov    (%rax),%eax
+> >     7731:       3d ad de 00 00          cmp    $0x2,%eax //status data
+> > is 32 bit
+> > 
+> > Signed-off-by: Jacob Pan <jacob.jun.pan@linux.intel.com>  
+> 
+> Do we need a fix tag here?
+I cannot find the exact commit, this is really old code.
+
+> otherwise looks good to me:
+> 
+> Reviewed-by: Kevin Tian <kevin.tian@intel.com>
+
+
+Thanks,
+
+Jacob
