@@ -1,93 +1,94 @@
-Received: from mail-io1-f52.google.com (mail-io1-f52.google.com [209.85.166.52])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.11])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6B0905695
-	for <iommu@lists.linux.dev>; Tue, 18 Jun 2024 01:15:01 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.166.52
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1609D134B1
+	for <iommu@lists.linux.dev>; Tue, 18 Jun 2024 01:38:03 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.11
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1718673302; cv=none; b=jFIspjekifWL3DFZrWHTI3SF/VcWQgkkoPkPN9747oPE9dpulSZRiqno+7nd7JN+t3MvGMEzXh0mYVORjLlFYwB8SyqgfRADzqtwV1EVvHGTJnHjelV1S8bZ/SYOpkW8GwuZUnzWaNHYECDnA+5Ld+C1HTdCkvSocc6OytolFu8=
+	t=1718674685; cv=none; b=n7kIvCeyOLgFof6Lx0uWmXumX/SzdMrZwUD84emPVgMrLgjfVFnvzN3qg3Xrbe2gxu1Y+C74UwEv+NAueAvfqOqpJg6EB17YTRV0A8Y6Nlc4ZbOm3Lkv6xaRMJs8GtpGMImQMa35de8OPZfJKUF7lWzO+E+U5xf4M8uIHWlyDgs=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1718673302; c=relaxed/simple;
-	bh=a7Mw9balXkdXrpGP42GBrIywjp+7pg5Y/72fbcj8y6A=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=OmdwX8nm6Z23vwgMB+C/JWlNLKMBTtBU7E0Q6Xdc93sDm+DnZTtEAR1xHJO6WsiAGA+HI2RO68a4O64uIinZ4RLgQdynxkwsk85cu2AXK27MLMajAaWABN8K8pfzovxn50RDIQ8KOzu7ctqTq7q063thtzKzcJaIAbYlJMa9JAI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=sifive.com; spf=pass smtp.mailfrom=sifive.com; dkim=pass (2048-bit key) header.d=sifive.com header.i=@sifive.com header.b=GRLWSic0; arc=none smtp.client-ip=209.85.166.52
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=sifive.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=sifive.com
+	s=arc-20240116; t=1718674685; c=relaxed/simple;
+	bh=4SfRuGLXuOtfgs+VhCcT8scU2Nzh8VcPuJvjNReQd84=;
+	h=Message-ID:Date:MIME-Version:Cc:Subject:To:References:From:
+	 In-Reply-To:Content-Type; b=FsBM7cQFmqK6NmDsDVDiyELJKv+6ZiSFju8wefdI8lIU3Dj/bffxyO1ZEZj3rrjUVVNk5wopCNs54GkU6FdZbsvs8r/q2j7LYZgxkhg1rTQUsb4ypcgOdfARABn3Wi1ROMUnhUZqKKIzlHniAS2T3YMApyBbsO0HCHqAnR+xGc0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=lI0yUzCH; arc=none smtp.client-ip=192.198.163.11
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=sifive.com header.i=@sifive.com header.b="GRLWSic0"
-Received: by mail-io1-f52.google.com with SMTP id ca18e2360f4ac-7ec2d71059dso87072339f.2
-        for <iommu@lists.linux.dev>; Mon, 17 Jun 2024 18:15:01 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=sifive.com; s=google; t=1718673300; x=1719278100; darn=lists.linux.dev;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=a7Mw9balXkdXrpGP42GBrIywjp+7pg5Y/72fbcj8y6A=;
-        b=GRLWSic0M4ktUvJzqagr7LLRrjNUuhHEzjKhKg5AV6PS3IgJL5U++6/QRmrhviKR+X
-         xfckGVR3uY1fD9Va9QJBmPDREo739627QmcpxuaO3cXcZtX/LKFAFHqD1ZbscRg0/djQ
-         Eu/tWFEBlGDDsfpzBPps1XeT8wSBT2UUSPTaTlbLqF5ASorroBfMnqtSjQvQ1br521e3
-         k6WHJFIXpMU4/8K0uerATfE4OJiz6fX7Zo+iohgda46u9fiKtVW82ioAxFI8Q6SNIrK3
-         Am2sAG39YngvirSCoh8Lid8b+wBNzOU56obWnPDMtEukv4t+pEo8zoW8vpsz5FzhYRvQ
-         bnUA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1718673300; x=1719278100;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=a7Mw9balXkdXrpGP42GBrIywjp+7pg5Y/72fbcj8y6A=;
-        b=dU3sUHhBznhmXPmsd5ehitDN3Pex7XSDa/g4+BmaxIK+KJUdoVFfQHbWFgvz3OcCxI
-         rxnJx26ubRiEo4LOwy2OwHTSWSo3rUmZhCDuhGTZA754Z/UzjL8wprW2wqlBs2fwHqU4
-         I5o/YpmP0LCoDTG2UKGP597ML8IU6eDyfxaabSMgbAAEJSDzyKlyREadgTPLvI1QbBtl
-         TF3ysVEQl8I+pML9gyM5Y6Saan6I/e8AmwFw5KpQXrdMs4sVEPoqyLLjE5B+YACzxeu5
-         27r2Fy423FqCzqkhowk1+nXZCCs73BGUg4SUQ5YFoIL9RF3vKo0HPaum9t3KnHHuE9SP
-         BrNw==
-X-Forwarded-Encrypted: i=1; AJvYcCXCxqmEbLN7hY6J5tgZrkHkce65+SZPPOg8Q0ErvVGBuuiflJvo7O3DvcriCL5Zv+wGtnyuZqBkBcF0g/YiPWMo9NWOAx0=
-X-Gm-Message-State: AOJu0Yy0tSn1ysKf99fNyf9K6Qh6FF9ajJV0x/cvaK7U0vACjvEi5jht
-	Z4ELFIL63c4Z9l465hJC6SRV4gJcdceLDv1O/l/uN4gUHdCuWAtwFJ1jbhdTt4LWAHLaBvb8ejs
-	R2LuFrqkL6zE2xI0hHvCdSdwQK4acvAbFulVgNA==
-X-Google-Smtp-Source: AGHT+IHVk2V/zxfCC+TEYjE1GLUfJe8wd2/UBNvu0XGLc1b3cPwbgU0WKTC0+y5CcD6xobj4+R6Bbm6kIWf56tesqFQ=
-X-Received: by 2002:a05:6602:2dc8:b0:7eb:7df7:461c with SMTP id
- ca18e2360f4ac-7ebeb644d32mr1162260739f.21.1718673300529; Mon, 17 Jun 2024
- 18:15:00 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="lI0yUzCH"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1718674684; x=1750210684;
+  h=message-id:date:mime-version:cc:subject:to:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=4SfRuGLXuOtfgs+VhCcT8scU2Nzh8VcPuJvjNReQd84=;
+  b=lI0yUzCHVwEuF+BzJJIs5kDFHt+SKXTVzeF7RbvzHcRQl19Bz96zfxZx
+   v6/zAGv5akfLG5V7EqFD4V/XFeOJlAx6pbL7xZj4d+PTmlJcC791MfGQz
+   RS15ekdM36JNlW1M4qIIVe5mSvbkZTNt/T4f4RLMcdqzOyWmyHPS+YU/N
+   3FQtq+0BNdd/t2PqnQIs1R5l5l0hhhZpesF37PofiXeoQyeBSl7m/xX6s
+   mNjnnHD1VgeFHz1sLqo383lk6sC6QfZTG7g8OBWpniQU5rOEj9m5lU+Q6
+   hYHT9bwVPaO5MKfRoGU1jJkZ8/xQCXo0/rtJv2v5Zlwc2WyTSUr1yQINQ
+   w==;
+X-CSE-ConnectionGUID: Fn8F8wShQxOkKC1+VHRTIw==
+X-CSE-MsgGUID: FOivSR5FQyWNjggs26XSWA==
+X-IronPort-AV: E=McAfee;i="6700,10204,11106"; a="26158145"
+X-IronPort-AV: E=Sophos;i="6.08,246,1712646000"; 
+   d="scan'208";a="26158145"
+Received: from fmviesa010.fm.intel.com ([10.60.135.150])
+  by fmvoesa105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Jun 2024 18:38:03 -0700
+X-CSE-ConnectionGUID: Ddl5w9urQ/iFSVCmAUcTRg==
+X-CSE-MsgGUID: kIYlmEebQyW7v5j/rRk+lg==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.08,246,1712646000"; 
+   d="scan'208";a="41481150"
+Received: from unknown (HELO [10.239.159.127]) ([10.239.159.127])
+  by fmviesa010.fm.intel.com with ESMTP; 17 Jun 2024 18:38:00 -0700
+Message-ID: <dea1adb9-2980-4c7b-8ddd-c7ed800f983c@linux.intel.com>
+Date: Tue, 18 Jun 2024 09:35:35 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <20240614142156.29420-1-zong.li@sifive.com> <20240614142156.29420-2-zong.li@sifive.com>
- <20240617145521.GE791043@ziepe.ca>
-In-Reply-To: <20240617145521.GE791043@ziepe.ca>
-From: Zong Li <zong.li@sifive.com>
-Date: Tue, 18 Jun 2024 09:14:49 +0800
-Message-ID: <CANXhq0oq=JjwjneJ+S2YtuaaPWdHYHuKrtcm+_Agn4CfjbyfDw@mail.gmail.com>
-Subject: Re: [RFC PATCH v2 01/10] iommu/riscv: add RISC-V IOMMU PMU support
-To: Jason Gunthorpe <jgg@ziepe.ca>
-Cc: joro@8bytes.org, will@kernel.org, robin.murphy@arm.com, 
-	tjeznach@rivosinc.com, paul.walmsley@sifive.com, palmer@dabbelt.com, 
-	aou@eecs.berkeley.edu, kevin.tian@intel.com, linux-kernel@vger.kernel.org, 
-	iommu@lists.linux.dev, linux-riscv@lists.infradead.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+User-Agent: Mozilla Thunderbird
+Cc: baolu.lu@linux.intel.com, "iommu@lists.linux.dev"
+ <iommu@lists.linux.dev>,
+ "virtualization@lists.linux-foundation.org"
+ <virtualization@lists.linux-foundation.org>,
+ "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH v7 03/10] iommu: Add attach handle to struct iopf_group
+To: "Tian, Kevin" <kevin.tian@intel.com>, Jason Gunthorpe <jgg@ziepe.ca>,
+ Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
+ Robin Murphy <robin.murphy@arm.com>,
+ Jean-Philippe Brucker <jean-philippe@linaro.org>,
+ Nicolin Chen <nicolinc@nvidia.com>, "Liu, Yi L" <yi.l.liu@intel.com>,
+ Jacob Pan <jacob.jun.pan@linux.intel.com>,
+ Joel Granados <j.granados@samsung.com>
+References: <20240616061155.169343-1-baolu.lu@linux.intel.com>
+ <20240616061155.169343-4-baolu.lu@linux.intel.com>
+ <BN9PR11MB5276C5ED6E9CEB0B22B0CC108CCD2@BN9PR11MB5276.namprd11.prod.outlook.com>
+Content-Language: en-US
+From: Baolu Lu <baolu.lu@linux.intel.com>
+In-Reply-To: <BN9PR11MB5276C5ED6E9CEB0B22B0CC108CCD2@BN9PR11MB5276.namprd11.prod.outlook.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-On Mon, Jun 17, 2024 at 10:55=E2=80=AFPM Jason Gunthorpe <jgg@ziepe.ca> wro=
-te:
->
-> On Fri, Jun 14, 2024 at 10:21:47PM +0800, Zong Li wrote:
-> > This patch implements the RISC-V IOMMU hardware performance monitor, it
-> > includes the counting ans sampling mode.
-> >
-> > Specification doesn't define the event ID for counting the number of
-> > clock cycles, there is no associated iohpmevt0. But we need an event fo=
-r
-> > counting cycle in perf, reserve the maximum number of event ID for it n=
-ow.
->
-> Why is this part of the nesting series?
+On 6/17/24 3:41 PM, Tian, Kevin wrote:
+>> From: Lu Baolu <baolu.lu@linux.intel.com>
+>> Sent: Sunday, June 16, 2024 2:12 PM
+>>
+>> Add a new IOMMU capability flag, IOMMU_CAP_USER_IOASID_TABLE, which
+>> indicates if the IOMMU driver supports user-managed PASID tables. In the
+>> iopf deliver path, if no attach handle found for the iopf PASID, roll
+>> back to RID domain when the IOMMU driver supports this capability.
+>>
+> 
+> above is stale.
+> 
 
-As you mentioned, it should be a separate patch set, let me submit it
-individually in the next version. Thanks
+Yes. "a new IOMMU capability flag, IOMMU_CAP_USER_IOASID_TABLE" should
+be changed to "a static flag in iommu ops".
 
->
-> Jason
+Best regards,
+baolu
