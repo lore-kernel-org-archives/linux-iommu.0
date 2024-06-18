@@ -1,135 +1,215 @@
-Received: from mail-qk1-f177.google.com (mail-qk1-f177.google.com [209.85.222.177])
+Received: from mail-ed1-f47.google.com (mail-ed1-f47.google.com [209.85.208.47])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 28251153819
-	for <iommu@lists.linux.dev>; Tue, 18 Jun 2024 13:31:29 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.222.177
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C54A213B5B0
+	for <iommu@lists.linux.dev>; Tue, 18 Jun 2024 14:58:05 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.47
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1718717491; cv=none; b=Tp+2i2CuteTmi3nMWyDLU9QwIKiizPc1K+CwmaxcaPbkUBmvoH621y/SY3DKaZjEj9fAeMk0dQENH7CoA6g2LAhlfY/igyWV4GuSI5nfyeUIz2rAwsC5ycPRYgCWnS8udxl0iJf0zAJF4Tftk5zBwcCS/gdLgFpqXwgOP9wCsyY=
+	t=1718722687; cv=none; b=tjZhvxrn6xGhvZoEhKpYe+t3g263FVsYTA80UJitqpqdaUZ+Tx3GacwPvPfc9ZysRclspxZbgS06fFKw3iZexEVW7LEWmbQdVOtT+OELjSvSL4Do+o5vG2HE8eGwUsYGwEF8uwPPuPPNwL3ED07VJmgzrriK+xEedtaZvtLupM4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1718717491; c=relaxed/simple;
-	bh=wsfusqGXRwKjIoEivqEsEsONr7O24Rsc8Ki975XFcE0=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=kz2joQCMXzFLsu0InxLNYgLGQinauKiezriJd2Cn4CdDU1rAhWxTA2QQ2y2GMtaFy+fm4h2CtLEOPl6MYwzOkgQ/0LYYRlF43KZZSiENJcepXlxinypWYau83EcNkWLzBKWCOrYbS2T52CyqkVsTrfA5b3OhkHoJDseoY8KUq4Q=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=PXVE0llz; arc=none smtp.client-ip=209.85.222.177
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
+	s=arc-20240116; t=1718722687; c=relaxed/simple;
+	bh=1ptZqLkMTfxupAwOh4dgqcAstmXsiW9awtMj8r7pD+s=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=BxFADOWEDS05ch2eIqxhR+w9yuvFomEuBfd9kq/4cA1kdOE5Fcw8Zpatk0iHznRGhciHultuznBLUjcAUlwCRbUegbtzTeZ5zorsT3mwvchHpMx4sHA5AbGnxMlMqkiKxyGnWm5gSjBKkKj+XuSB08NeMIpAK2xvoQqEWSYIn80=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=UZWyHbYW; arc=none smtp.client-ip=209.85.208.47
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="PXVE0llz"
-Received: by mail-qk1-f177.google.com with SMTP id af79cd13be357-795ca45c54cso298557185a.0
-        for <iommu@lists.linux.dev>; Tue, 18 Jun 2024 06:31:29 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="UZWyHbYW"
+Received: by mail-ed1-f47.google.com with SMTP id 4fb4d7f45d1cf-57a30dbdb7fso9808698a12.3
+        for <iommu@lists.linux.dev>; Tue, 18 Jun 2024 07:58:05 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google; t=1718717489; x=1719322289; darn=lists.linux.dev;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :mime-version:references:message-id:subject:cc:to:from:date:from:to
-         :cc:subject:date:message-id:reply-to;
-        bh=zxeD/weYzFfAE7AIrut1f14B+OgFZqypLF8nlCdzLh0=;
-        b=PXVE0llzwy3pigV+6R9x8SmENy0cPvvhNcuW12MnK7bUKPFKjSOdmIRZHhiwx47kpI
-         O650u1GzyD6Q34frR8PHXrqm3JF72FXD1tWeGHz7MDpC62VJgNPPBodODDiFGZG/4rS0
-         /qwJHsW8o3jc4rUVcDQ5yaTO6OwLZjBml/sDkCGTOQ+8LD9vad6ulIVzwrPb2NfEKJtX
-         qnsvG2sMz9FreM9Jncz/o3FkfgmEqZRMBUYMmJ08/ndh8qp02be3j2btnIZsTZ27uHS0
-         lDf6NrDvIZLIy3S3Ox/BO6Tt0HyrkbMuLZaqSX78W9KqgJ+FSAefvfIwSrnB3vkG2bqW
-         BPTQ==
+        d=gmail.com; s=20230601; t=1718722684; x=1719327484; darn=lists.linux.dev;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=euIaBgMQ5XrC0hxAR5VdiXGMFM0BZnCPBqtUn7+yuiQ=;
+        b=UZWyHbYWtNxAmr67EVk9gq28vOE9A0sxAPzEZx/vx1PFJHQEPmX21y3VVrdFM3letr
+         4SsnuzMlWrXWz1BnbChabUhsd+iPu/tl6HRjidzoRQai6i9F+FJ6qKTGdoi1S0MT6L1U
+         THthhZfTsc0JrADtpeZlvzdeyIkKzfEVyvmYlqrwxnSY9oFFsYtILQNCxfZFK5kOJHYZ
+         8/KVVAxcvtvWjjO/8XgpqBOkWz7EUFEF7uXeVmTHB2bIkVEFA5KNMy4m7YKNfdXzChJn
+         0PZL3xd1b0adUEUQN6FAKvyMm/xmK0uwnvXWMDyNWtwowuoO3OmHQYRcYWtEafZ8Ct9h
+         GOVw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1718717489; x=1719322289;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :mime-version:references:message-id:subject:cc:to:from:date
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=zxeD/weYzFfAE7AIrut1f14B+OgFZqypLF8nlCdzLh0=;
-        b=uygPNDAmQCAKMXjE3RO9BzTtwUeMg4NlizNTK/s4QqAIfgU+cEROBVWaCBZripXeaZ
-         kv/Yk1tfEL3IrxJIujKKcCh6Wew/6YA8GNhug2ep+JtHP04LppE8zVyk7HlCOwnFnT9B
-         MIQgDxaIfpkABOPPy5sjvkpPh5t/nv/jR6wv4GvccI5IMzEfPPNwvOWKmsCAVFIQu+6p
-         ADOjdTddZJ89EOlJISzv7ErqD5cL+QnlbBNSNvdv1yuohSeKglbf9R5k8Am5ZICzI28X
-         nwzvsHYpUAVxz1mpmf744BV3Z/bx2jKUnpVBI/WXSv1+OFGcgwlzINkqP2CsU0VKED1h
-         p5ng==
-X-Forwarded-Encrypted: i=1; AJvYcCXErdLbi+PS0z2kJbRJ3+XhkYj6sNsuZ8aW2Xd6eQkkuR7WbzNHpmhvrVsOTV7EcjX45nsURM96bD63JGnA5svEhjYWY+I=
-X-Gm-Message-State: AOJu0YyLuIFisc/D2mELcZ+EkcCCHxieU1+TDg++TqYRADk8LtOzM/02
-	CrPEgPLC+dEjZMe4m/fx3SxQl9cbBgDQJ6uFbosbCOjTdxFbP16tdYgQvlwE0jY=
-X-Google-Smtp-Source: AGHT+IEs9n+MhMG27TFEqE4fA0oA04u7oEqN1xSdYw62o33s+eARYgUVYcJ5Gs18tHiwwZoqi9PyIg==
-X-Received: by 2002:a05:620a:29d4:b0:795:6092:154c with SMTP id af79cd13be357-798d2588fe4mr1433106985a.62.1718717488760;
-        Tue, 18 Jun 2024 06:31:28 -0700 (PDT)
-Received: from ziepe.ca (hlfxns017vw-142-68-80-239.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.68.80.239])
-        by smtp.gmail.com with ESMTPSA id af79cd13be357-798ab4c16acsm516821385a.59.2024.06.18.06.31.28
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 18 Jun 2024 06:31:28 -0700 (PDT)
-Received: from jgg by wakko with local (Exim 4.95)
-	(envelope-from <jgg@ziepe.ca>)
-	id 1sJYvn-00FB4h-Kt;
-	Tue, 18 Jun 2024 10:31:27 -0300
-Date: Tue, 18 Jun 2024 10:31:27 -0300
-From: Jason Gunthorpe <jgg@ziepe.ca>
-To: Zong Li <zong.li@sifive.com>
-Cc: Baolu Lu <baolu.lu@linux.intel.com>, joro@8bytes.org, will@kernel.org,
-	robin.murphy@arm.com, tjeznach@rivosinc.com,
-	paul.walmsley@sifive.com, palmer@dabbelt.com, aou@eecs.berkeley.edu,
-	kevin.tian@intel.com, linux-kernel@vger.kernel.org,
-	iommu@lists.linux.dev, linux-riscv@lists.infradead.org
-Subject: Re: [RFC PATCH v2 04/10] iommu/riscv: add iotlb_sync_map operation
- support
-Message-ID: <20240618133127.GF791043@ziepe.ca>
-References: <20240614142156.29420-1-zong.li@sifive.com>
- <20240614142156.29420-5-zong.li@sifive.com>
- <a1a99374-dc40-4d57-9773-e660dc33beb2@linux.intel.com>
- <CANXhq0pQuoriKfHF51fXUtrZLkJBNOCe6M8Z6JbDjoRvbe1nWg@mail.gmail.com>
- <20240617143920.GD791043@ziepe.ca>
- <CANXhq0pXYoeiVMFSGAijo-QHTVoZyM8M_uU4HWsbCwDg2oFPYg@mail.gmail.com>
+        d=1e100.net; s=20230601; t=1718722684; x=1719327484;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=euIaBgMQ5XrC0hxAR5VdiXGMFM0BZnCPBqtUn7+yuiQ=;
+        b=RiV3xc/sXYdLA3NKppffJOIvNXiuKqAgSiYx12kP7MAJd+7qB/x+NydODm495boKVi
+         9hI+nQsNcWa5c47d+mdEb0IXezw2nGmIng20sYvPfe8oGZkdyXD7ma1WrHYfU4KTifzr
+         96sJYZ/fjZVSxKasR/ZiXqFPdBpHP9KBr75yuLhv/wz1dipckqMQyc8AtFC1QDwzRQuY
+         AyvKqA9DXw+QS0wy/PH1w0S+wHlQ2nfcReKG948Jg2I/mT+ABA0FogbVx6LBXYUKsfd3
+         ovs5i9kMCH8+NZF+FOWh5o0kQTMndcGF+uP1UhMalAd+AXXaEVGFnQxUZF7C6qW4+ViP
+         iA/Q==
+X-Gm-Message-State: AOJu0Yw38pBsZsGrVS8tB+4exadKfTuWZ74Muk31W4kNnGp4yraxKZaN
+	/WSQQtC8RBoBDW5Z1hOKttVUybZ7d8cP3za11TpN/6rwLOcBsbSGEVFeFyTlyAD/B0jDuI7cqyc
+	ElpJlBi4F4SKUr3Ik6u3G5AtfndM=
+X-Google-Smtp-Source: AGHT+IEmhog+BWG7FrA97+gLmqkal9WiXByxlXYPuq9mme4/HE5ej0G88ynXv1Nz4ZHJ7s60RtJgodzGJ2R5h2Na1Ac=
+X-Received: by 2002:a50:c05b:0:b0:57c:6b68:3bb1 with SMTP id
+ 4fb4d7f45d1cf-57cbd6a5a83mr7242466a12.42.1718722683856; Tue, 18 Jun 2024
+ 07:58:03 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <CANXhq0pXYoeiVMFSGAijo-QHTVoZyM8M_uU4HWsbCwDg2oFPYg@mail.gmail.com>
+References: <20240604150136.493962-1-robdclark@gmail.com> <6f97a4b4-cdbe-466c-80d4-adc8da305f75@arm.com>
+ <CAF6AEGv+Ge2SD4=j1QhXfG+KkOzvFM+LieCqKuM20YL8gp5PRQ@mail.gmail.com> <80fc63e5-0e79-47b3-91ae-90d7c7bc3f66@arm.com>
+In-Reply-To: <80fc63e5-0e79-47b3-91ae-90d7c7bc3f66@arm.com>
+From: Rob Clark <robdclark@gmail.com>
+Date: Tue, 18 Jun 2024 07:57:51 -0700
+Message-ID: <CAF6AEGuDq=YcyKuTfr1xZtff+VGyeeVWe40E4KEy--umwepcEQ@mail.gmail.com>
+Subject: Re: [PATCH] iommu/arm-smmu: Pretty-print context fault related regs
+To: Robin Murphy <robin.murphy@arm.com>
+Cc: iommu@lists.linux.dev, linux-arm-msm@vger.kernel.org, 
+	Stephen Boyd <swboyd@chromium.org>, Rob Clark <robdclark@chromium.org>, 
+	Will Deacon <will@kernel.org>, Joerg Roedel <joro@8bytes.org>, Jason Gunthorpe <jgg@ziepe.ca>, 
+	Jerry Snitselaar <jsnitsel@redhat.com>, Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>, 
+	Dmitry Baryshkov <dmitry.baryshkov@linaro.org>, 
+	"moderated list:ARM SMMU DRIVERS" <linux-arm-kernel@lists.infradead.org>, 
+	open list <linux-kernel@vger.kernel.org>, Pranjal Shrivastava <praan@google.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-On Tue, Jun 18, 2024 at 11:01:48AM +0800, Zong Li wrote:
-> On Mon, Jun 17, 2024 at 10:39 PM Jason Gunthorpe <jgg@ziepe.ca> wrote:
+On Mon, Jun 17, 2024 at 10:33=E2=80=AFAM Robin Murphy <robin.murphy@arm.com=
+> wrote:
+>
+> On 2024-06-17 5:18 pm, Rob Clark wrote:
+> > On Mon, Jun 17, 2024 at 6:07=E2=80=AFAM Robin Murphy <robin.murphy@arm.=
+com> wrote:
+> >>
+> >> On 04/06/2024 4:01 pm, Rob Clark wrote:
+> >>> From: Rob Clark <robdclark@chromium.org>
+> >>>
+> >>> Parse out the bitfields for easier-to-read fault messages.
+> >>>
+> >>> Signed-off-by: Rob Clark <robdclark@chromium.org>
+> >>> ---
+> >>> Stephen was wanting easier to read fault messages.. so I typed this u=
+p.
+> >>>
+> >>> Resend with the new iommu list address
+> >>>
+> >>>    drivers/iommu/arm/arm-smmu/arm-smmu.c | 53 +++++++++++++++++++++++=
+++--
+> >>>    drivers/iommu/arm/arm-smmu/arm-smmu.h |  5 +++
+> >>>    2 files changed, 54 insertions(+), 4 deletions(-)
+> >>>
+> >>> diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu.c b/drivers/iommu/ar=
+m/arm-smmu/arm-smmu.c
+> >>> index c572d877b0e1..06712d73519c 100644
+> >>> --- a/drivers/iommu/arm/arm-smmu/arm-smmu.c
+> >>> +++ b/drivers/iommu/arm/arm-smmu/arm-smmu.c
+> >>> @@ -411,6 +411,8 @@ static irqreturn_t arm_smmu_context_fault(int irq=
+, void *dev)
+> >>>        unsigned long iova;
+> >>>        struct arm_smmu_domain *smmu_domain =3D dev;
+> >>>        struct arm_smmu_device *smmu =3D smmu_domain->smmu;
+> >>> +     static DEFINE_RATELIMIT_STATE(rs, DEFAULT_RATELIMIT_INTERVAL,
+> >>> +                                   DEFAULT_RATELIMIT_BURST);
+> >>>        int idx =3D smmu_domain->cfg.cbndx;
+> >>>        int ret;
+> >>>
+> >>> @@ -425,10 +427,53 @@ static irqreturn_t arm_smmu_context_fault(int i=
+rq, void *dev)
+> >>>        ret =3D report_iommu_fault(&smmu_domain->domain, NULL, iova,
+> >>>                fsynr & ARM_SMMU_FSYNR0_WNR ? IOMMU_FAULT_WRITE : IOMM=
+U_FAULT_READ);
+> >>>
+> >>> -     if (ret =3D=3D -ENOSYS)
+> >>> -             dev_err_ratelimited(smmu->dev,
+> >>> -             "Unhandled context fault: fsr=3D0x%x, iova=3D0x%08lx, f=
+synr=3D0x%x, cbfrsynra=3D0x%x, cb=3D%d\n",
+> >>> -                         fsr, iova, fsynr, cbfrsynra, idx);
+> >>> +     if (ret =3D=3D -ENOSYS && __ratelimit(&rs)) {
+> >>> +             static const struct {
+> >>> +                     u32 mask; const char *name;
+> >>> +             } fsr_bits[] =3D {
+> >>> +                     { ARM_SMMU_FSR_MULTI,  "MULTI" },
+> >>> +                     { ARM_SMMU_FSR_SS,     "SS"    },
+> >>> +                     { ARM_SMMU_FSR_UUT,    "UUT"   },
+> >>> +                     { ARM_SMMU_FSR_ASF,    "ASF"   },
+> >>> +                     { ARM_SMMU_FSR_TLBLKF, "TLBLKF" },
+> >>> +                     { ARM_SMMU_FSR_TLBMCF, "TLBMCF" },
+> >>> +                     { ARM_SMMU_FSR_EF,     "EF"     },
+> >>> +                     { ARM_SMMU_FSR_PF,     "PF"     },
+> >>> +                     { ARM_SMMU_FSR_AFF,    "AFF"    },
+> >>> +                     { ARM_SMMU_FSR_TF,     "TF"     },
+> >>> +             }, fsynr0_bits[] =3D {
+> >>> +                     { ARM_SMMU_FSYNR0_WNR,    "WNR"    },
+> >>> +                     { ARM_SMMU_FSYNR0_PNU,    "PNU"    },
+> >>> +                     { ARM_SMMU_FSYNR0_IND,    "IND"    },
+> >>> +                     { ARM_SMMU_FSYNR0_NSATTR, "NSATTR" },
+> >>> +                     { ARM_SMMU_FSYNR0_PTWF,   "PTWF"   },
+> >>> +                     { ARM_SMMU_FSYNR0_AFR,    "AFR"    },
+> >>> +             };
+> >>> +
+> >>> +             pr_err("%s %s: Unhandled context fault: fsr=3D0x%x (",
+> >>> +                    dev_driver_string(smmu->dev), dev_name(smmu->dev=
+), fsr);
+> >>> +
+> >>> +             for (int i =3D 0, n =3D 0; i < ARRAY_SIZE(fsr_bits); i+=
++) {
+> >>> +                     if (fsr & fsr_bits[i].mask) {
+> >>> +                             pr_cont("%s%s", (n > 0) ? "|" : "", fsr=
+_bits[i].name);
+> >>
+> >> Given that SMMU faults have a high likelihood of correlating with othe=
+r
+> >> errors, e.g. the initiating device also reporting that it got an abort
+> >> back, this much pr_cont is a recipe for an unreadable mess. Furthermor=
+e,
+> >> just imagine how "helpful" this would be when faults in two contexts a=
+re
+> >> reported by two different CPUs at the same time ;)
 > >
-> > On Mon, Jun 17, 2024 at 09:43:35PM +0800, Zong Li wrote:
+> > It looks like arm_smmu_context_fault() is only used with non-threaded
+> > irq's.  And this fallback is only used if driver doesn't register it's
+> > own fault handler.  So I don't think this will be a problem.
+>
+> You don't think two different IRQs can fire on two different CPUs at the
+> same time (or close to)? It's already bad enough when multiple CPUs
+> panic and one has to pick apart line-by-line interleaving of the
+> registers/stacktraces - imagine how much more utterly unusable that
+> would be with bits of different dumps randomly pr_cont'ed together onto
+> the same line(s)...
+
+_different_ irq's, yes
+
+Anyways, the reason for pr_cont() was that there wasn't another
+reasonable way to decide where separator chars were needed with a
+single pr_err().  I could instead construct a string on stack and
+print that in a single call, but pr_cont() seemed like the more
+reasonable alternative.
+
+BR,
+-R
+
+> Even when unrelated stuff gets interleaved because other CPUs just
+> happen to be calling printk() at the same time for unrelated reasons
+> it's still annoying, and pr_cont makes a bigger mess than not.
+> >> I'd prefer to retain the original message as-is, so there is at least
+> >> still an unambiguous "atomic" view of a fault's entire state, then
+> >> follow it with a decode more in the style of arm64's ESR logging. TBH =
+I
+> >> also wouldn't disapprove of hiding the additional decode behind a
+> >> command-line/runtime parameter, since a fault storm can cripple a syst=
+em
+> >> enough as it is, without making the interrupt handler spend even longe=
+r
+> >> printing to a potentially slow console.
 > >
-> > > I added it for updating the MSI mapping when we change the irq
-> > > affinity of a pass-through device to another vCPU. The RISC-V IOMMU
-> > > spec allows MSI translation to go through the MSI flat table, MRIF, or
-> > > the normal page table. In the case of the normal page table, the MSI
-> > > mapping is created in the second-stage page table, mapping the GPA of
-> > > the guest's supervisor interrupt file to the HPA of host's guest
-> > > interrupt file. This MSI mapping needs to be updated when the HPA of
-> > > host's guest interrupt file is changed.
-> >
-> > It sounds like more thought is needed for the MSI architecture, having
-> > the host read the guest page table to mirror weird MSI stuff seems
-> > kind of wrong..
-> 
-> Perhaps I should rephrase it. Host doesn't read the guest page table.
-> In a RISC-V system, MSIs are directed to a specific privilege level of
-> a specific hart, including a specific virtual hart. In a hart's IMSIC
-> (Incoming MSI Controller), it contains some 'interrupt files' for
-> these specific privilege level harts. For instance, if the target
-> address of MSI is the address of the interrupt file which is for a
-> specific supervisor level hart, then that hart's supervisor mode will
-> receive this MSI. Furthermore, when a hart implements the hypervisor
-> extension, its IMSIC will have interrupt files for virtual harts,
-> called 'guest interrupt files'.
-> We will create the MSI mapping in S2 page table at boot time firstly,
-> the mapping would be GPA of the interrupt file for supervisor level
-> (in guest view, it thinks it use a supervisor level interrupt file) to
-> HPA of the 'guest interrupt file' (in host view, the device should
-> actually use a guest interrupt file). When the vCPU is migrated to
-> another physical hart, the 'guest interrupt files' should be switched
-> to another physical hart's IMSIC's 'guest interrupt file', it means
-> that the HPA of this MSI mapping in S2 page table needs to be updated.
-
-I am vaugely aware of these details, but it is good to hear them again.
-
-However, none of that really explains why this is messing with
-invalidation logic..
-
-If you need to replace MSI pages in the S2 atomicaly as you migrate
-vCPUs then you need a proper replace operation for the io page table.
-
-map is supposed to fail if there are already mappings at that address,
-you can't use it to replace existing mappings with something else.
-
-Jason
+> > It _is_ ratelimited.  But we could perhaps use a higher loglevel (pr_de=
+bug?)
+>
+> Yeah, I'd have no complaint with pr_debug/dev_dbg either, if that suits
+> your use case. True that the ratelimit may typically mitigate the
+> overall impact, but still in the worst case with a sufficiently slow
+> console and/or a sufficiently large amount to print per __ratelimit()
+> call, it can end up being slow enough to stay below the threshold. Don't
+> ask me how I know that :)
+>
+> Thanks,
+> Robin.
