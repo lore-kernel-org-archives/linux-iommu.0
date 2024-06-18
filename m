@@ -1,117 +1,139 @@
-Received: from mail-io1-f54.google.com (mail-io1-f54.google.com [209.85.166.54])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.14])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D5B3719B3FB
-	for <iommu@lists.linux.dev>; Tue, 18 Jun 2024 03:02:00 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.166.54
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8D1BC1B582F;
+	Tue, 18 Jun 2024 08:53:44 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.14
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1718679722; cv=none; b=eJRVGhjS+yoUDT9tkoNAMuJWyG8CrJ25/HeJcZEiwuStBdNkwpuN3J/Robvn4BHMD6nNMUXo4JWioUanwRQ95VTd5Kvru9QG741qWZaKqmfqTrXJGjbX6no/j54CkfuhGZDcLLmOdOvGfqIHHUg/xyTVPzkUuocLhEGhlpdNKng=
+	t=1718700826; cv=none; b=PXHdEQ0n6DVbOioUAbdXttct4Xsu+KpBCm8XL6uycL/f8yIkDmAgamfKxIVlLBKZKhZiHEEQIWEFdeDj0CPermDHeLOca7jt7idAi0IzpxkMXh0u/5txDyjxJrLXqepgvE1Dy0g5pgKJwRsXQ53n6ZEMRHkAzWCuyp/OUuJlZ3c=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1718679722; c=relaxed/simple;
-	bh=voa0fe3SjpggwiHBh/MwhciBY6+FADQBkwBOF/PUA44=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=pWJMeFI0SJ4bK6JiV2EkmXcxVG1cy+xnSXPECdQE1YfmQOGhv02UF/W75i7vz1MiOJ2D33fVKBCm8ugaq2OcEB9K9e1mpL+0JfeNx7tLg3hE1gmTzyKlD+6juKVTKEW7u3cVp0Os7gEeBG1IcThmQ9wCKc4bIyQlOtfA8V4VeYs=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=sifive.com; spf=pass smtp.mailfrom=sifive.com; dkim=pass (2048-bit key) header.d=sifive.com header.i=@sifive.com header.b=Ww/N37+H; arc=none smtp.client-ip=209.85.166.54
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=sifive.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=sifive.com
+	s=arc-20240116; t=1718700826; c=relaxed/simple;
+	bh=inLr6KbNt1wpmZgzN3mepJkqLnEzfLgSGYhEPkdbx3k=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=USOQfHSuagyWY5LOWMjaWhIQHpZy1DlL1VDTEAWQDwVeFwOqEL4J/TFIw2VSPFlTEHOGwI6DJnrAMXUWhviOPQjlb1TzbgDSmd8sjepVXzd9//95gL5DT4lprZRvgX5kv6WnT+AjegKDc09yd0tMTZnOA0URTidoF2rSIWQyZVY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=LkHidpyr; arc=none smtp.client-ip=198.175.65.14
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=sifive.com header.i=@sifive.com header.b="Ww/N37+H"
-Received: by mail-io1-f54.google.com with SMTP id ca18e2360f4ac-7ec07f4170bso90262139f.0
-        for <iommu@lists.linux.dev>; Mon, 17 Jun 2024 20:02:00 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=sifive.com; s=google; t=1718679720; x=1719284520; darn=lists.linux.dev;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=voa0fe3SjpggwiHBh/MwhciBY6+FADQBkwBOF/PUA44=;
-        b=Ww/N37+Hlz4rS9emvto8iYmWnKBjfX67z3KPraGP4N0xFLtNpMd0MVJCbzKNUQrE4x
-         rnu/EIJa7mxpx0ScBRqvwfAWahKd2XsEjwgw2Y6eh0n8VIXzj0G/XvrNou5tWQnjp1Yy
-         wMGE12c20ZVeosxH+Gm+H2cjnztkYw31X6qT1/RsUtnTTtXLTCwtYMdE5bF0qdUGhU+X
-         7e3ObrovjHCBILBO8ckVDT5ni9k2R8INTcyILjKNiU4MNP7nG3nMATXdZi7PMI/KAln0
-         Rk5cLMoIAwR3lcwh3LR3ziu7j6ichPl7zi5lkPvA7My3cqHHeSyjbvGMb+ztvp2RFpsG
-         ogfw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1718679720; x=1719284520;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=voa0fe3SjpggwiHBh/MwhciBY6+FADQBkwBOF/PUA44=;
-        b=BGw47oqtYXapexlhYb4yXYe02SqvFpWB7miG45xg1PlVRCAuNKAFoBZs/UEj3HwLRL
-         X1XUbPD7oF+TLSCGOam0/A0mRbPurXKAEWk77AfjpWum9EhZ/zw6HU/EFugrkLocOjQN
-         y/bWHDw3NPVRCIuqcDTHlNXNmgv0WZHEZ2mkop8jPTcT2o0EnvsrqHKTPyR2CMrpXZet
-         w6QIttSf2p36ddHlRwy9IVGgT0VH4cXpmGXY2VR0snuGaEFHcgqDyUNmMkassd20YlTU
-         w0RUn1HZa+i1h3nxe3vp/zISbA+PzxA4b5FztdbWMhSMTPrQnZ5M4640LktNsYcl6YgN
-         uCQg==
-X-Forwarded-Encrypted: i=1; AJvYcCVpv3oJXyZynDDD5Vbn+7cYsXpCWAEJ/2IuxBmGMNicEIhrPB23bHSXOup6GkwxRkf4NzzAzwo250AdSXEAZL5UfUZw7e8=
-X-Gm-Message-State: AOJu0Yz9M8THIcrUilf7Yf0NKdAZ0vULCc2xHzyjN20TnLPEK+fVQQ5s
-	JyJIuKai0L/zbIZI80ZzMt7WTud5+iCr/asFGSOWs4iMVBnPV9kGpyVDHGJmlMNi8pjIWULQL/w
-	5t432jyCp553jKW0hg/myQvsjjkf3iFA4d7ljjg==
-X-Google-Smtp-Source: AGHT+IHWhSE+k8nI3ATV790kVcdaJx+X2XhzCDCnnNK4GDf4nHYtKrtEPv0N7J1xr51nXArplHNL9b+pWM9XSl88A3Y=
-X-Received: by 2002:a05:6602:3f8a:b0:7eb:b93d:4101 with SMTP id
- ca18e2360f4ac-7ebeb4c0558mr1289632439f.9.1718679719882; Mon, 17 Jun 2024
- 20:01:59 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="LkHidpyr"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1718700825; x=1750236825;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=inLr6KbNt1wpmZgzN3mepJkqLnEzfLgSGYhEPkdbx3k=;
+  b=LkHidpyrFFcmB/zUkNQ01+hnERxOceurz/faaq3kwn+EvAdh1z2AxPEg
+   GBrZ5p1c5fQOp1ecZVaNR5tnlG85j7em0GvzoByVKK0hmBhyRn9oJkI+C
+   37VB+UL2oSm05tYaAvBuigc8yf8+7Ah4xwqsBwz1bjh69ghzcpcTgozNQ
+   5mFIiUOu42sbJsqHyxrKSd3pX5TrHeAHYRAYSZlrKmDAEsTzBoJmdKD1w
+   5G7rIEWIfXJsvwxpzc1EkIAUZYGEiSGWI1jbYI9IvNGOl7IZJqfF6QoMO
+   XFWz2+NSqbbfpR4gUV+BlFqwjvQHm7vaBiGj8njB8j6O8pq0JIYGG6Mg/
+   A==;
+X-CSE-ConnectionGUID: Q8rMcLATR5Sr+tEZ3XoywA==
+X-CSE-MsgGUID: OWdjBxvBTW2w9FN3C617bA==
+X-IronPort-AV: E=McAfee;i="6700,10204,11106"; a="19381976"
+X-IronPort-AV: E=Sophos;i="6.08,247,1712646000"; 
+   d="scan'208";a="19381976"
+Received: from orviesa004.jf.intel.com ([10.64.159.144])
+  by orvoesa106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Jun 2024 01:53:44 -0700
+X-CSE-ConnectionGUID: ofTvMbN6RG+m3RtFFOMdwg==
+X-CSE-MsgGUID: ghl7bUNaRCi9CD8O20IdFQ==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.08,247,1712646000"; 
+   d="scan'208";a="46605639"
+Received: from lkp-server01.sh.intel.com (HELO 68891e0c336b) ([10.239.97.150])
+  by orviesa004.jf.intel.com with ESMTP; 18 Jun 2024 01:53:40 -0700
+Received: from kbuild by 68891e0c336b with local (Exim 4.96)
+	(envelope-from <lkp@intel.com>)
+	id 1sJUav-0005LJ-2z;
+	Tue, 18 Jun 2024 08:53:37 +0000
+Date: Tue, 18 Jun 2024 16:53:26 +0800
+From: kernel test robot <lkp@intel.com>
+To: Oreoluwa Babatunde <quic_obabatun@quicinc.com>, robin.murphy@arm.com,
+	broonie@kernel.org, conor@kernel.org, nathan@kernel.org,
+	robh@kernel.org
+Cc: oe-kbuild-all@lists.linux.dev, catalin.marinas@arm.com,
+	devicetree@vger.kernel.org, hch@lst.de, iommu@lists.linux.dev,
+	kernel@quicinc.com, linux-kernel@vger.kernel.org,
+	m.szyprowski@samsung.com, quic_obabatun@quicinc.com,
+	saravanak@google.com, will@kernel.org
+Subject: Re: [PATCH] of: reserved_mem: Restructure code to call reserved mem
+ init functions earlier
+Message-ID: <202406181626.126X1Nbz-lkp@intel.com>
+References: <20240617193357.3929092-1-quic_obabatun@quicinc.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <20240614142156.29420-1-zong.li@sifive.com> <20240614142156.29420-5-zong.li@sifive.com>
- <a1a99374-dc40-4d57-9773-e660dc33beb2@linux.intel.com> <CANXhq0pQuoriKfHF51fXUtrZLkJBNOCe6M8Z6JbDjoRvbe1nWg@mail.gmail.com>
- <20240617143920.GD791043@ziepe.ca>
-In-Reply-To: <20240617143920.GD791043@ziepe.ca>
-From: Zong Li <zong.li@sifive.com>
-Date: Tue, 18 Jun 2024 11:01:48 +0800
-Message-ID: <CANXhq0pXYoeiVMFSGAijo-QHTVoZyM8M_uU4HWsbCwDg2oFPYg@mail.gmail.com>
-Subject: Re: [RFC PATCH v2 04/10] iommu/riscv: add iotlb_sync_map operation support
-To: Jason Gunthorpe <jgg@ziepe.ca>
-Cc: Baolu Lu <baolu.lu@linux.intel.com>, joro@8bytes.org, will@kernel.org, 
-	robin.murphy@arm.com, tjeznach@rivosinc.com, paul.walmsley@sifive.com, 
-	palmer@dabbelt.com, aou@eecs.berkeley.edu, kevin.tian@intel.com, 
-	linux-kernel@vger.kernel.org, iommu@lists.linux.dev, 
-	linux-riscv@lists.infradead.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20240617193357.3929092-1-quic_obabatun@quicinc.com>
 
-On Mon, Jun 17, 2024 at 10:39=E2=80=AFPM Jason Gunthorpe <jgg@ziepe.ca> wro=
-te:
->
-> On Mon, Jun 17, 2024 at 09:43:35PM +0800, Zong Li wrote:
->
-> > I added it for updating the MSI mapping when we change the irq
-> > affinity of a pass-through device to another vCPU. The RISC-V IOMMU
-> > spec allows MSI translation to go through the MSI flat table, MRIF, or
-> > the normal page table. In the case of the normal page table, the MSI
-> > mapping is created in the second-stage page table, mapping the GPA of
-> > the guest's supervisor interrupt file to the HPA of host's guest
-> > interrupt file. This MSI mapping needs to be updated when the HPA of
-> > host's guest interrupt file is changed.
->
-> It sounds like more thought is needed for the MSI architecture, having
-> the host read the guest page table to mirror weird MSI stuff seems
-> kind of wrong..
->
+Hi Oreoluwa,
 
-Perhaps I should rephrase it. Host doesn't read the guest page table.
-In a RISC-V system, MSIs are directed to a specific privilege level of
-a specific hart, including a specific virtual hart. In a hart's IMSIC
-(Incoming MSI Controller), it contains some 'interrupt files' for
-these specific privilege level harts. For instance, if the target
-address of MSI is the address of the interrupt file which is for a
-specific supervisor level hart, then that hart's supervisor mode will
-receive this MSI. Furthermore, when a hart implements the hypervisor
-extension, its IMSIC will have interrupt files for virtual harts,
-called 'guest interrupt files'.
-We will create the MSI mapping in S2 page table at boot time firstly,
-the mapping would be GPA of the interrupt file for supervisor level
-(in guest view, it thinks it use a supervisor level interrupt file) to
-HPA of the 'guest interrupt file' (in host view, the device should
-actually use a guest interrupt file). When the vCPU is migrated to
-another physical hart, the 'guest interrupt files' should be switched
-to another physical hart's IMSIC's 'guest interrupt file', it means
-that the HPA of this MSI mapping in S2 page table needs to be updated.
+kernel test robot noticed the following build warnings:
 
-> The S2 really needs to have the correct physical MSI pages statically
-> at boot time.
->
-> Jason
+[auto build test WARNING on robh/for-next]
+[also build test WARNING on next-20240617]
+[cannot apply to linus/master v6.10-rc4]
+[If your patch is applied to the wrong git tree, kindly drop us a note.
+And when submitting patch, we suggest to use '--base' as documented in
+https://git-scm.com/docs/git-format-patch#_base_tree_information]
+
+url:    https://github.com/intel-lab-lkp/linux/commits/Oreoluwa-Babatunde/of-reserved_mem-Restructure-code-to-call-reserved-mem-init-functions-earlier/20240618-033815
+base:   https://git.kernel.org/pub/scm/linux/kernel/git/robh/linux.git for-next
+patch link:    https://lore.kernel.org/r/20240617193357.3929092-1-quic_obabatun%40quicinc.com
+patch subject: [PATCH] of: reserved_mem: Restructure code to call reserved mem init functions earlier
+config: i386-buildonly-randconfig-001-20240618 (https://download.01.org/0day-ci/archive/20240618/202406181626.126X1Nbz-lkp@intel.com/config)
+compiler: gcc-13 (Ubuntu 13.2.0-4ubuntu3) 13.2.0
+reproduce (this is a W=1 build): (https://download.01.org/0day-ci/archive/20240618/202406181626.126X1Nbz-lkp@intel.com/reproduce)
+
+If you fix the issue in a separate patch/commit (i.e. not just a new version of
+the same patch/commit), kindly add following tags
+| Reported-by: kernel test robot <lkp@intel.com>
+| Closes: https://lore.kernel.org/oe-kbuild-all/202406181626.126X1Nbz-lkp@intel.com/
+
+All warnings (new ones prefixed by >>):
+
+>> drivers/of/of_reserved_mem.c:551: warning: Function parameter or struct member 'rmem' not described in 'of_init_reserved_mem_node'
+
+
+vim +551 drivers/of/of_reserved_mem.c
+
+ae1add247bf8c2 Mitchel Humpherys  2015-09-15  546  
+3f0c8206644836 Marek Szyprowski   2014-02-28  547  /**
+cb40a192099698 Oreoluwa Babatunde 2024-06-17  548   * of_init_reserved_mem_node() - Initialize a saved reserved memory region.
+3f0c8206644836 Marek Szyprowski   2014-02-28  549   */
+cb40a192099698 Oreoluwa Babatunde 2024-06-17  550  static void __init of_init_reserved_mem_node(struct reserved_mem *rmem)
+3f0c8206644836 Marek Szyprowski   2014-02-28 @551  {
+cb40a192099698 Oreoluwa Babatunde 2024-06-17  552  	int err;
+6f1188b4ac7577 Yue Hu             2020-07-30  553  	bool nomap;
+cb40a192099698 Oreoluwa Babatunde 2024-06-17  554  	struct device_node *node = rmem->dev_node;
+3f0c8206644836 Marek Szyprowski   2014-02-28  555  
+59d2c3cbcb5a47 Oreoluwa Babatunde 2024-05-28  556  	nomap = of_property_present(node, "no-map");
+9dcfee01930e6c Marek Szyprowski   2014-07-14  557  
+d0b8ed47e83a22 pierre Kuo         2019-02-19  558  	err = __reserved_mem_init_node(rmem);
+d0b8ed47e83a22 pierre Kuo         2019-02-19  559  	if (err != 0 && err != -ENOENT) {
+a46cccb0ee2d62 Oreoluwa Babatunde 2024-05-28  560  		pr_info("node %s compatible matching fail\n", rmem->name);
+d0b8ed47e83a22 pierre Kuo         2019-02-19  561  		if (nomap)
+7b25995f5319ad Dong Aisheng       2021-06-11  562  			memblock_clear_nomap(rmem->base, rmem->size);
+3c6867a12a224d Dong Aisheng       2021-06-11  563  		else
+a46cccb0ee2d62 Oreoluwa Babatunde 2024-05-28  564  			memblock_phys_free(rmem->base, rmem->size);
+aeb9267eb6b1df Martin Liu         2023-02-10  565  	} else {
+aeb9267eb6b1df Martin Liu         2023-02-10  566  		phys_addr_t end = rmem->base + rmem->size - 1;
+59d2c3cbcb5a47 Oreoluwa Babatunde 2024-05-28  567  		bool reusable = of_property_present(node, "reusable");
+aeb9267eb6b1df Martin Liu         2023-02-10  568  
+6ee7afbabcee4d Geert Uytterhoeven 2023-02-16  569  		pr_info("%pa..%pa (%lu KiB) %s %s %s\n",
+aeb9267eb6b1df Martin Liu         2023-02-10  570  			&rmem->base, &end, (unsigned long)(rmem->size / SZ_1K),
+aeb9267eb6b1df Martin Liu         2023-02-10  571  			nomap ? "nomap" : "map",
+aeb9267eb6b1df Martin Liu         2023-02-10  572  			reusable ? "reusable" : "non-reusable",
+aeb9267eb6b1df Martin Liu         2023-02-10  573  			rmem->name ? rmem->name : "unknown");
+d0b8ed47e83a22 pierre Kuo         2019-02-19  574  	}
+d0b8ed47e83a22 pierre Kuo         2019-02-19  575  }
+9dcfee01930e6c Marek Szyprowski   2014-07-14  576  
+
+-- 
+0-DAY CI Kernel Test Service
+https://github.com/intel/lkp-tests/wiki
