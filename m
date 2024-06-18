@@ -1,97 +1,198 @@
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BBE6013BC20
-	for <iommu@lists.linux.dev>; Tue, 18 Jun 2024 17:27:43 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=170.10.129.124
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EB0D213DDDF;
+	Tue, 18 Jun 2024 18:26:07 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1718731665; cv=none; b=qhHQb7R/R+tzq66RL3nFi6lh1hy83JVkDpqxwOpMcogaBAQdN5D86LTBXA/ymbh9hbIkcJML6MFKvGaelTfVbqrVg7Op93BOkRs0Zz2zSRxkvv83yypEaUNPSyw/1oIPuX4LLXI3cqsZf23s6Nzs4acXHrgnbyGfueJuTRLYT1I=
+	t=1718735168; cv=none; b=kBIX+iMqPMNSv+T/R1g9Dku5iaf1DmNvePZtinyujXGB3i3bXgKdw+AVgz0n7h9m5qAEFxDfsrXSPYfF2bnEMt49Qe2da72JFyEgU9HbwNLShI9IkDJssNG0mJkp2KJPciZDBHB+VTNbansnr4Jprmz/QrFEy+J0860C9RzGkGc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1718731665; c=relaxed/simple;
-	bh=UcBlVIfyhzyatIBzaGtoXKCPX2Zgj5bWJa/znlgXM9c=;
+	s=arc-20240116; t=1718735168; c=relaxed/simple;
+	bh=eIhKmpC3djJFZ9shjBBZf16rVsZJLfZRd1LV9/wQDMI=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 In-Reply-To:Content-Type:Content-Disposition; b=Wid/qnxkPQbDvlAsX1ceqBz3f9G2reclyY3YSWuQ0TGrE8vtLxIikvIRNiLUpBglFUSEERHXZ5hxsEV8JXZzVtBH5yJ1jPw+S8OISc0SsVTGFxdTec2bok0bm4M3cYyrrXqA7LR41jk2sLjs/C8wTE0cIa40kXLBOOPjB2QCWZQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=redhat.com; spf=pass smtp.mailfrom=redhat.com; dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b=OsI3xF0N; arc=none smtp.client-ip=170.10.129.124
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=redhat.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=redhat.com
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="OsI3xF0N"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-	s=mimecast20190719; t=1718731662;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 in-reply-to:in-reply-to:references:references;
-	bh=KY4cYpr7OGAgBF1z5TUy3J3eXP0t4BCyHmgbv9I9nQk=;
-	b=OsI3xF0NYgGdNFeyypBhHNJ+1sa+x/1B2uNoGmI8glE3+Z9sPJinWl07/CsJ5d3p2o3g/I
-	W2gzE5vNtRdlHoajI5Z2xfFQ11GEwprP+TFjo7kP5WA0E0qaAJEcFK6TqK3btOKISzUvzy
-	kgCakJzi628OnkOekE0szBgKwTcPhV0=
-Received: from mail-qk1-f199.google.com (mail-qk1-f199.google.com
- [209.85.222.199]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
- us-mta-441-W6rVF8KiMZ6HtdVvGYAtgw-1; Tue, 18 Jun 2024 13:27:41 -0400
-X-MC-Unique: W6rVF8KiMZ6HtdVvGYAtgw-1
-Received: by mail-qk1-f199.google.com with SMTP id af79cd13be357-79557d418e0so6352285a.1
-        for <iommu@lists.linux.dev>; Tue, 18 Jun 2024 10:27:41 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1718731661; x=1719336461;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=KY4cYpr7OGAgBF1z5TUy3J3eXP0t4BCyHmgbv9I9nQk=;
-        b=sqP8W9Xs9Fs6n4UfKW29LjNgn198yuHrAl3xFORfLYcD/NdYPbnQrBA+iRwkJZi93R
-         Di5DoWYFTygOdv/sFlsNFInPuIMgtB78J8XiVkRVLP8UQ8s+JkSnRiS6KKIBQBvi9ePS
-         FbaxAFF2yI5fdrdfeDu4BHPhPErAlUvod2XjCg9hyZuCrq/kLOsMYkH5cSUU/ZcmmipU
-         10ebXUYdt0ltOFryqPDmjXaPHICmRu8POPf7WCBnBGhF57YVCnDQK0XIzQFPiYTS9XAE
-         ypMYFFXQFbkHV5IGyoG+d7IEiGmVFDSf0/cPIqkbbJ1HaUt50tfu9KhrwYF5Qmp9JL3S
-         htnA==
-X-Gm-Message-State: AOJu0YwnJmbz3GCv2a1uNuBhzG3X7Dd68efx/6yEOz303zaEVds4rBIM
-	6TnsJUUMo4NqtQ9XEsDZ3EShwcQ+ovS31waWd4yVqlQ0KQnfvFrsWmllyz/cvTQGjyIxiOlyHbw
-	4EZaBHO3deQsSOTVnSIHP6riTJ47IiOuEqfkLVYYodwNOOuxh5Ra0
-X-Received: by 2002:a05:620a:3903:b0:795:2391:bc36 with SMTP id af79cd13be357-79ba76e3bebmr526292085a.21.1718731660843;
-        Tue, 18 Jun 2024 10:27:40 -0700 (PDT)
-X-Google-Smtp-Source: AGHT+IEtXoSVoWCAsjsTzixnT8ic4JjoCi/m7ZDPk1Wd03/TCxy0NULHKDf3CrXQHrcYhg9e3OznWQ==
-X-Received: by 2002:a05:620a:3903:b0:795:2391:bc36 with SMTP id af79cd13be357-79ba76e3bebmr526288985a.21.1718731660497;
-        Tue, 18 Jun 2024 10:27:40 -0700 (PDT)
-Received: from localhost (ip98-179-76-110.ph.ph.cox.net. [98.179.76.110])
-        by smtp.gmail.com with ESMTPSA id d75a77b69052e-441f30f142esm57948651cf.83.2024.06.18.10.27.39
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 18 Jun 2024 10:27:40 -0700 (PDT)
-Date: Tue, 18 Jun 2024 10:27:38 -0700
-From: Jerry Snitselaar <jsnitsel@redhat.com>
-To: Jason Gunthorpe <jgg@nvidia.com>
-Cc: iommu@lists.linux.dev, Joerg Roedel <joro@8bytes.org>, 
-	linux-arm-kernel@lists.infradead.org, Robin Murphy <robin.murphy@arm.com>, 
-	Will Deacon <will@kernel.org>, Eric Auger <eric.auger@redhat.com>, 
-	Jean-Philippe Brucker <jean-philippe@linaro.org>, Moritz Fischer <mdf@kernel.org>, 
-	Michael Shavit <mshavit@google.com>, Nicolin Chen <nicolinc@nvidia.com>, patches@lists.linux.dev, 
-	Shameer Kolothum <shameerali.kolothum.thodi@huawei.com>
-Subject: Re: [PATCH v8 01/14] iommu/arm-smmu-v3: Convert to domain_alloc_sva()
-Message-ID: <736p5z2eubxzg2ikeqbdbs563gouvzfwlxdxalga7cezjv4xqx@jygkrfs6g3ca>
-References: <0-v8-6f85cdc10ce7+563e-smmuv3_newapi_p2b_jgg@nvidia.com>
- <1-v8-6f85cdc10ce7+563e-smmuv3_newapi_p2b_jgg@nvidia.com>
+	 Content-Type:Content-Disposition:In-Reply-To; b=RnalVy1l+BCv/mkh/+Co6TsrZZKwW7vdGdFJiVcVvzDaf9baSXtyMM/6LaXpfgym8L+NeuKwsJ5tlYVsQIm0HoqhuuBiGpO7UkS5AaOkmUyoABH21H15Uz/dk9rgOslKjcMtagE3rMbPMQ8DgiCRHyA7V8vkAjSFrjSP4FpdisU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 716D2C3277B;
+	Tue, 18 Jun 2024 18:26:04 +0000 (UTC)
+Date: Tue, 18 Jun 2024 19:26:02 +0100
+From: Catalin Marinas <catalin.marinas@arm.com>
+To: Baruch Siach <baruch@tkos.co.il>
+Cc: Christoph Hellwig <hch@lst.de>,
+	Marek Szyprowski <m.szyprowski@samsung.com>,
+	Rob Herring <robh@kernel.org>,
+	Saravana Kannan <saravanak@google.com>,
+	Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
+	iommu@lists.linux.dev, devicetree@vger.kernel.org,
+	linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+	linuxppc-dev@lists.ozlabs.org, linux-s390@vger.kernel.org,
+	Petr =?utf-8?B?VGVzYcWZw61r?= <petr@tesarici.cz>,
+	Ramon Fried <ramon@neureality.ai>,
+	Elad Nachman <enachman@marvell.com>
+Subject: Re: [PATCH RFC v2 1/5] dma-mapping: replace zone_dma_bits by
+ zone_dma_limit
+Message-ID: <ZnHROk1Xs7KcR4I0@arm.com>
+References: <cover.1712642324.git.baruch@tkos.co.il>
+ <fda45c91f69e65ec14b9aaec9aa053e6982e5b87.1712642324.git.baruch@tkos.co.il>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-In-Reply-To: <1-v8-6f85cdc10ce7+563e-smmuv3_newapi_p2b_jgg@nvidia.com>
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: redhat.com
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
+In-Reply-To: <fda45c91f69e65ec14b9aaec9aa053e6982e5b87.1712642324.git.baruch@tkos.co.il>
 
-On Mon, Jun 03, 2024 at 09:15:46PM GMT, Jason Gunthorpe wrote:
-> This allows the driver the receive the mm and always a device during
-> allocation. Later patches need this to properly setup the notifier when
-> the domain is first allocated.
+(finally getting around to looking at this series, sorry for the delay)
+
+On Tue, Apr 09, 2024 at 09:17:54AM +0300, Baruch Siach wrote:
+> From: Catalin Marinas <catalin.marinas@arm.com>
 > 
-> Remove ops->domain_alloc() as SVA was the only remaining purpose.
+> Hardware DMA limit might not be power of 2. When RAM range starts above
+> 0, say 4GB, DMA limit of 30 bits should end at 5GB. A single high bit
+> can not encode this limit.
 > 
-> Tested-by: Nicolin Chen <nicolinc@nvidia.com>
-> Tested-by: Shameer Kolothum <shameerali.kolothum.thodi@huawei.com>
-> Reviewed-by: Michael Shavit <mshavit@google.com>
-> Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
+> Use direct phys_addr_t limit address for DMA zone limit.
+> 
+> Following commits will add explicit base address to DMA zone.
+> 
+> ---
+> Catalin,
+> 
+> This is taken almost verbatim from your email:
+> 
+>   https://lore.kernel.org/all/ZZ2HnHJV3gdzu1Aj@arm.com/
+> 
+> Would you provide your sign-off?
 
-Reviewed-by: Jerry Snitselaar <jsnitsel@redhat.com>
+Signed-off-by: Catalin Marinas <catalin.marinas@arm.com>
 
+Thanks for writing a commit log. However, I think more work is needed.
+See below.
+
+> diff --git a/arch/arm64/mm/init.c b/arch/arm64/mm/init.c
+> index 03efd86dce0a..00508c69ca9e 100644
+> --- a/arch/arm64/mm/init.c
+> +++ b/arch/arm64/mm/init.c
+> @@ -113,36 +113,24 @@ static void __init arch_reserve_crashkernel(void)
+>  				    low_size, high);
+>  }
+>  
+> -/*
+> - * Return the maximum physical address for a zone accessible by the given bits
+> - * limit. If DRAM starts above 32-bit, expand the zone to the maximum
+> - * available memory, otherwise cap it at 32-bit.
+> - */
+> -static phys_addr_t __init max_zone_phys(unsigned int zone_bits)
+> +static phys_addr_t __init max_zone_phys(phys_addr_t zone_limit)
+>  {
+> -	phys_addr_t zone_mask = DMA_BIT_MASK(zone_bits);
+> -	phys_addr_t phys_start = memblock_start_of_DRAM();
+> -
+> -	if (phys_start > U32_MAX)
+> -		zone_mask = PHYS_ADDR_MAX;
+> -	else if (phys_start > zone_mask)
+> -		zone_mask = U32_MAX;
+> -
+> -	return min(zone_mask, memblock_end_of_DRAM() - 1) + 1;
+> +	return min(zone_limit, memblock_end_of_DRAM() - 1) + 1;
+>  }
+>  
+>  static void __init zone_sizes_init(void)
+>  {
+>  	unsigned long max_zone_pfns[MAX_NR_ZONES]  = {0};
+> -	unsigned int __maybe_unused acpi_zone_dma_bits;
+> -	unsigned int __maybe_unused dt_zone_dma_bits;
+> -	phys_addr_t __maybe_unused dma32_phys_limit = max_zone_phys(32);
+> +	phys_addr_t __maybe_unused acpi_zone_dma_limit;
+> +	phys_addr_t __maybe_unused dt_zone_dma_limit;
+> +	phys_addr_t __maybe_unused dma32_phys_limit =
+> +		max_zone_phys(DMA_BIT_MASK(32));
+>  
+>  #ifdef CONFIG_ZONE_DMA
+> -	acpi_zone_dma_bits = fls64(acpi_iort_dma_get_max_cpu_address());
+> -	dt_zone_dma_bits = fls64(of_dma_get_max_cpu_address(NULL));
+> -	zone_dma_bits = min3(32U, dt_zone_dma_bits, acpi_zone_dma_bits);
+> -	arm64_dma_phys_limit = max_zone_phys(zone_dma_bits);
+> +	acpi_zone_dma_limit = acpi_iort_dma_get_max_cpu_address();
+> +	dt_zone_dma_limit = of_dma_get_max_cpu_address(NULL);
+> +	zone_dma_limit = min(dt_zone_dma_limit, acpi_zone_dma_limit);
+> +	arm64_dma_phys_limit = max_zone_phys(zone_dma_limit);
+>  	max_zone_pfns[ZONE_DMA] = PFN_DOWN(arm64_dma_phys_limit);
+>  #endif
+>  #ifdef CONFIG_ZONE_DMA32
+
+I think this goes wrong if zone_dma_limit ends up above 32-bit (e.g. no
+restrictive dma-ranges properties) but the start of RAM is below 4G.
+We'd simply reduce ZONE_DMA32 to zero and ZONE_DMA potentially covering
+the whole RAM. Prior to this change, we capped zone_dma_bits to 32 via
+min3(). I think we should maintain this cap if memblock_start_of_DRAM()
+is below 4G.
+
+We could fix this up in max_zone_phys() above:
+
+	if (memblock_start_of_DRAM() < U32_MAX)
+		zone_limit = min(U32_MAX, zone_limit);
+
+	return min(zone_limit, memblock_end_of_DRAM() - 1) + 1;
+
+> diff --git a/kernel/dma/direct.c b/kernel/dma/direct.c
+> index 4d543b1e9d57..3b2ebcd4f576 100644
+> --- a/kernel/dma/direct.c
+> +++ b/kernel/dma/direct.c
+> @@ -20,7 +20,7 @@
+>   * it for entirely different regions. In that case the arch code needs to
+>   * override the variable below for dma-direct to work properly.
+>   */
+> -unsigned int zone_dma_bits __ro_after_init = 24;
+> +phys_addr_t zone_dma_limit __ro_after_init = DMA_BIT_MASK(24);
+>  
+>  static inline dma_addr_t phys_to_dma_direct(struct device *dev,
+>  		phys_addr_t phys)
+> @@ -59,7 +59,7 @@ static gfp_t dma_direct_optimal_gfp_mask(struct device *dev, u64 *phys_limit)
+>  	 * zones.
+>  	 */
+>  	*phys_limit = dma_to_phys(dev, dma_limit);
+> -	if (*phys_limit <= DMA_BIT_MASK(zone_dma_bits))
+> +	if (*phys_limit <= zone_dma_limit)
+>  		return GFP_DMA;
+>  	if (*phys_limit <= DMA_BIT_MASK(32))
+>  		return GFP_DMA32;
+
+It's worth noting that if ZONE_DMA ends up entirely above 32-bit, there
+won't be any ZONE_DMA32. Thinking about it, this could be a potential
+problem. For example, if a device has a 32-bit DMA mask and an offset
+that lifts this into the 32-36G range, the above may fail to set
+GFP_DMA32.
+
+Actually, I think these checks can go wrong even with the current
+implementation, assuming RAM below 4G and no DMA offsets. For example,
+we have two devices, one with a coherent mask of 30 bits, the other 31
+bits. zone_dma_bits would be set to the smaller of the two, so 30 bit
+(as per of_dma_get_max_cpu_address()). For the second device, phys_limit
+would be ((1 << 31) - 1) but that's higher than DMA_BIT_MASK(30) so we
+fail to set GFP_DMA. We do set GFP_DMA32 because of the second test but
+that's not sufficient since that's 32-bit rather than 31-bit as the
+device needs. Similarly if we have some weird device with a 33-bit DMA
+coherent mask but the RAM is addressed by more bits. We'd fail to set
+GFP_DMA32.
+
+Ignoring this patch, I think the checks above in mainline should be
+something like:
+
+	if (*phys_limit < DMA_BIT_MASK(32))
+		return GFP_DMA;
+	if (*phys_limit < memblock_end_of_DRAM())
+		return GFP_DMA32;
+
+IOW, zone_dma_bits is pretty useless for this check IMHO. It gives us
+the minimum hence not sufficient to test for devices that fall between
+ZONE_DMA and ZONE_DMA32 coherent masks.
+
+With your series, the above test wouldn't work since we don't have a
+zone_dma32_limit and zone_dma_limit is above DMA_BIT_MASK(32). We might
+need to introduce zone_dma32_limit and maybe drop zone_dma_limit
+altogether.
+
+-- 
+Catalin
