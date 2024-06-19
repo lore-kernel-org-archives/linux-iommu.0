@@ -1,61 +1,61 @@
-Received: from mail-qk1-f169.google.com (mail-qk1-f169.google.com [209.85.222.169])
+Received: from mail-oa1-f51.google.com (mail-oa1-f51.google.com [209.85.160.51])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 26DFADDBB
-	for <iommu@lists.linux.dev>; Wed, 19 Jun 2024 14:30:17 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.222.169
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 854AC39FD9
+	for <iommu@lists.linux.dev>; Wed, 19 Jun 2024 14:31:17 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.160.51
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1718807419; cv=none; b=ifYaDC467fPxU2ov0zcfEq3n9UWboi95d9AMDcOUGrPgKHvKPGRZZ8PlyJG9pGjhbti6bRSaAolx+kLZ7MsgGQFqsIAzLvI1JOja9W1EzEDBwZkImWSBQf079i82G5aInlD9KgQTUqWjLiCUFPfpqTdgfRVVGySqp/yjAfpqSO0=
+	t=1718807478; cv=none; b=Mi07x+Wv1cXWyBNZWgX9KCv7dCJW1lAwciFT1Hc6JABXGj8rdiS0uwVzH5em/hxQ0wMpp/H1yAV4LQaVJdB4bYTF2pP10i11YcBgMuc2vZdEpvR09/9LbhhrtIP17VngNrwRf2wDseh70bkF3XCjNIPHOaWw3Kye0hR7dNN9Kww=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1718807419; c=relaxed/simple;
-	bh=TjKbxUpEnUKyFS7Yuulo+6m9UXLUpDXtWXUFSK0+KOU=;
+	s=arc-20240116; t=1718807478; c=relaxed/simple;
+	bh=770+EPGxwLYW0ig1HvdUIyfXv5v4k+2z74/pTuATEmQ=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=Us+TLj7Pa3fjK84MbJ/AcGTXDgjyB5So8rrFO+YYMrAXHnqbKvy172sCG6nclJF6bkgNXykvRjm+7oVuhQJKc6ootH0CUmI2mJj7i/ncBoJqzDjNeLG5bX+VqI0PD+gGqwif2zGqHRJ8kFIbjUIYXB+L1N1/Ln4aos23tsczSuY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=Q7ab5mSA; arc=none smtp.client-ip=209.85.222.169
+	 Content-Type:Content-Disposition:In-Reply-To; b=N20BVTMiVLl8nCX5zFPLXqecbuaezVQjuXPMTcHy0jbhVF0EYzJI0ZfGTAGqzhN6S4JvTcEwfw4/AyavcuzlD1OQQMhkBYplN6LSs1SBunh/fjWSdRXD3j0i0f07Dz1EE0iUGy3oXTaP2E+vmXCn64FLs8qDH/78xRo6y0qpeE4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=hyMJFS/H; arc=none smtp.client-ip=209.85.160.51
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="Q7ab5mSA"
-Received: by mail-qk1-f169.google.com with SMTP id af79cd13be357-797fb0b4832so325249885a.0
-        for <iommu@lists.linux.dev>; Wed, 19 Jun 2024 07:30:17 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="hyMJFS/H"
+Received: by mail-oa1-f51.google.com with SMTP id 586e51a60fabf-25982aa59efso756719fac.3
+        for <iommu@lists.linux.dev>; Wed, 19 Jun 2024 07:31:17 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google; t=1718807417; x=1719412217; darn=lists.linux.dev;
+        d=ziepe.ca; s=google; t=1718807476; x=1719412276; darn=lists.linux.dev;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=KkVwYQV/6jkEu0gAJvlVuepnjhHRXhEpVh+YOuYu3ZA=;
-        b=Q7ab5mSANhOlemOWJRbIJmHXhse6fk1rDHvtbFvovGkKmw8N+PDK5MVL7lSViS9BOB
-         82lpCzwJxn+QBCmQ8BfbTcansKutatLcqn+SIbXjoR6XLTbKQgei/g5jP9AuZnqQ0yWA
-         wd+7EjgVZtEYO+wU8xUHj0kabOaOH7cPMQ9Qv99A2mn5BxIPcDmDPHHJqesyOOnytLwa
-         RQ9LvjyIWU9I7rHdmnZcRxiuSRxiZyspJ7zBbKcS4ogQdymDBpa+sCsLUSw4jRS8pPcZ
-         1oK7t2lMbDyCxXU/GXWyRq6yNRMK2hOese8KfJsDiViFfIwTOWvT/nse5oiEXpt3G4MP
-         ypYg==
+        bh=BsT9hgFyZbBGkde271aluLYZILHDBPNQg1gpCGW3N38=;
+        b=hyMJFS/H2xqTw6wihCABGMN7ANtp2oxqqNOSJnLpzWXGW+/PgzAUHVc7YbEb3fPpUH
+         RwFrJC+HJWb7Qz5eYxOxZAOQ3nAKe9laFsgqRd9s8vNPPuaEt670eZPoBY5XrySR5Tm2
+         eJ8vsGFOI8rihCe+3QDiPBKhn7IXaB+5Gl4jWjKkS6Qnid8jHQ9VNh40/ABnBV23dbRF
+         Di6XrZjrZZZ7prm+GVscI4sgyoYPFm5P9YRhznGHX8186+fvZXpq6mAJt5kMSUMkPrJK
+         usddhtm8ruUfn4g+Z4af2+foCkNDWCXyIF7rQPP1XVZZbNBlJ0eAb/kmSLL8zcoBv/Rp
+         fDEw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1718807417; x=1719412217;
+        d=1e100.net; s=20230601; t=1718807476; x=1719412276;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=KkVwYQV/6jkEu0gAJvlVuepnjhHRXhEpVh+YOuYu3ZA=;
-        b=usWubfkDWtKoXnIqcFHr9bK+0q5PHIdcDF+RpHa5zc1TIPos3yR4SIqxGUXbBUdXYP
-         mdnr7cEQ+c1GPYIjqx6JsdS+gzVBrtpSNJdyYT/9+sEY5OxryuBHcxWimzPdRqKxiHTK
-         P0iPsUOc5h0HngqPFhIJ+GnB9Qrn1ChupQnWfGqnQa06kl2ytIrK4d9jX/51WjKz/bxx
-         41i1z9wB7/nXBFJn6HhMYP4KBUGG6JaU6a3hOihptl/pvzTNL3DW1vm+QprdDEVCXhNE
-         D8lPTkZotH9gwPTBDrYacwq7AHl/lajsaB6E0KO5/HedJu0z2GgfIzvw837gDJp3MmS5
-         kYUg==
-X-Forwarded-Encrypted: i=1; AJvYcCVBPzGtvqdMIhTdalzBhBdw1pbkQtZwOmocFkTYrvxATTr7ZdMUAHVu3eFntbd3rc3DqMXh3GbtxMg/AywTBODctweK+jk=
-X-Gm-Message-State: AOJu0YxwsJu/3ltQDD3JffnGZFbQlhnKbu+hX10qF3Croi4P/Xmbc8rq
-	vCw1kn6NTzX00yiwfjcDkaNq+47EVMDRkCD87x66eda3d0QWCr6IEuePBbt+bww=
-X-Google-Smtp-Source: AGHT+IEtPhZvg8s2LGCIdwsd0X9DzLfBviQVD0T9AfPrmuxMxUw2V/bv52uCre/jcfSESaPOk4IESg==
-X-Received: by 2002:a05:620a:4721:b0:795:4fee:81aa with SMTP id af79cd13be357-79bb3e55a93mr284092385a.33.1718807416680;
-        Wed, 19 Jun 2024 07:30:16 -0700 (PDT)
+        bh=BsT9hgFyZbBGkde271aluLYZILHDBPNQg1gpCGW3N38=;
+        b=fb4i4Jxlu/VpyurCAZKQCPLxLZGxidzMXKusex7bgC3J27uNcMzIzhxU3Y9TLtcbHa
+         Z8v5elLFfMf9TxrrE8MYbRTI44JVB1BDXdXAU9QyUZp9or9MAAW4Wlds/Urib8OgMAGx
+         VC7huz6OtEnNf8sbzdLvsfNvXH0I4KE1CLAS0Os/lZGUYtwxm3P+mZz6l5BudMnWKMrA
+         toBGFTO4lEjW1HHmB4J7apj3dMtdEvmdhS0z0UOSmYTcAkF54WLVZHKEWNrp/JM+F+XU
+         pjZwFCpqZkQx5QB64n+F/2PPnKWqCtK4l9grLXBHiKDYMABiCkp+RzZH03hJSiARhX4S
+         jRyQ==
+X-Forwarded-Encrypted: i=1; AJvYcCU8lPM0dTn45okXmgmoxH6xfhsiU1Urp0mJWKcsZDqtT7oqD0SyT+Dis3juiS8N7fXk2BmJMOlYIhxSD/OWQJUYZQNVI+k=
+X-Gm-Message-State: AOJu0Yygt9/VC+xaVisDZcpR3LLwKZWm+LNt1Rrrknopku0iyTMBlLEN
+	x/47ivbYUXIqaHx1p1rlKpSZnrXhL0XV2A/yUEwFBPSsztC/YgtPKLoAdK7ikrA=
+X-Google-Smtp-Source: AGHT+IHZayxzfwc1KZvF4t1SmwGVNV6P/gZQ5Mo6uiPN1/R0ej17zeeigaD/qQOHMYxQZ4opihlAhw==
+X-Received: by 2002:a05:6871:592:b0:24f:ef6b:353e with SMTP id 586e51a60fabf-25c94d106f7mr3066372fac.36.1718807476505;
+        Wed, 19 Jun 2024 07:31:16 -0700 (PDT)
 Received: from ziepe.ca (hlfxns017vw-142-68-80-239.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.68.80.239])
-        by smtp.gmail.com with ESMTPSA id af79cd13be357-79bc1352ab4sm16883085a.70.2024.06.19.07.30.16
+        by smtp.gmail.com with ESMTPSA id 6a1803df08f44-6b2a5bf23f6sm78142956d6.8.2024.06.19.07.31.15
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 19 Jun 2024 07:30:16 -0700 (PDT)
+        Wed, 19 Jun 2024 07:31:15 -0700 (PDT)
 Received: from jgg by wakko with local (Exim 4.95)
 	(envelope-from <jgg@ziepe.ca>)
-	id 1sJwKF-004bBv-Kr;
-	Wed, 19 Jun 2024 11:30:15 -0300
-Date: Wed, 19 Jun 2024 11:30:15 -0300
+	id 1sJwLD-004bUT-Gm;
+	Wed, 19 Jun 2024 11:31:15 -0300
+Date: Wed, 19 Jun 2024 11:31:15 -0300
 From: Jason Gunthorpe <jgg@ziepe.ca>
 To: Lu Baolu <baolu.lu@linux.intel.com>
 Cc: Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
@@ -74,10 +74,11 @@ Cc: Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
 	ath10k@lists.infradead.org, ath11k@lists.infradead.org,
 	iommu@lists.linux.dev, dri-devel@lists.freedesktop.org,
 	linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v3 07/21] gpu: host1x: Use iommu_paging_domain_alloc()
-Message-ID: <20240619143015.GB1091770@ziepe.ca>
+Subject: Re: [PATCH v3 08/21] media: nvidia: tegra: Use
+ iommu_paging_domain_alloc()
+Message-ID: <20240619143115.GC1091770@ziepe.ca>
 References: <20240610085555.88197-1-baolu.lu@linux.intel.com>
- <20240610085555.88197-8-baolu.lu@linux.intel.com>
+ <20240610085555.88197-9-baolu.lu@linux.intel.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -86,16 +87,16 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20240610085555.88197-8-baolu.lu@linux.intel.com>
+In-Reply-To: <20240610085555.88197-9-baolu.lu@linux.intel.com>
 
-On Mon, Jun 10, 2024 at 04:55:41PM +0800, Lu Baolu wrote:
-> An iommu domain is allocated in host1x_iommu_attach() and is attached to
-> host->dev. Use iommu_paging_domain_alloc() to make it explicit.
+On Mon, Jun 10, 2024 at 04:55:42PM +0800, Lu Baolu wrote:
+> An iommu domain is allocated in tegra_vde_iommu_init() and is attached to
+> vde->dev. Use iommu_paging_domain_alloc() to make it explicit.
 > 
 > Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
 > ---
->  drivers/gpu/host1x/dev.c | 7 ++++---
->  1 file changed, 4 insertions(+), 3 deletions(-)
+>  drivers/media/platform/nvidia/tegra-vde/iommu.c | 7 ++++---
+>  1 file changed, 4 insertions(+), 3 
 
 Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
 
