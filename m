@@ -1,162 +1,166 @@
-Received: from mail-ej1-f43.google.com (mail-ej1-f43.google.com [209.85.218.43])
+Received: from mail-vk1-f171.google.com (mail-vk1-f171.google.com [209.85.221.171])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 47B6481728
-	for <iommu@lists.linux.dev>; Wed, 19 Jun 2024 09:29:21 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.218.43
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 411BB79DDB
+	for <iommu@lists.linux.dev>; Wed, 19 Jun 2024 09:33:27 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.171
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1718789363; cv=none; b=JA9q1MbFaFza+ukd6eKOHzBTvHws6K1tPAuGjlPCRcUfkHwnEABc7rJkjCfuYBe3j60Row1yRxrkpoKxQpRIQmi/KJvEfwbhRbFuShkeOk4ijGyyFmfdyHzyL/gxjVG6dfNDruT1rtzhL1Gqg07Z/INcKpcJU0kCYfEviWXVkPc=
+	t=1718789608; cv=none; b=HgejnxyIGHrITCMVb3xzFtJXra7caFywHnXnVNbc+n5jYzSEuLbMemoo+aRJ7KA+3uxnJwxITz8bY4m/as/Q/1TuqE5Ul5/pNBtsuJiPMNFbbrZUwzAVRd4/rmiP/FUyPVc/TnemussiyVfHVgyf5gzF4yEVuaNaYZP0M4muUyU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1718789363; c=relaxed/simple;
-	bh=cv7531rMfIX0TJSEu7BFmlypNRmwdNE0oRm/RjGb3/Q=;
+	s=arc-20240116; t=1718789608; c=relaxed/simple;
+	bh=FFIaWc0A9F8h8RKW1SFHyXQ00lWXXlgI0sFkaQmSwXs=;
 	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=oOx9ENGK9r4xvwuLP4F4QY3/j4vb1IEphzTaOFoNqg++9GIVRZgMvdPgOfMK1njSl/tq9plU+aNjHKjHT5MehHfEWO0qWnz6aJtRdx/+wl3/ijEyh4TkqK0p5ZcehCX/27jH38jdmy4fKmEuXAYRIAHEqhcbIb6Tcq/UFO17pW8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=amarulasolutions.com; spf=pass smtp.mailfrom=amarulasolutions.com; dkim=pass (1024-bit key) header.d=amarulasolutions.com header.i=@amarulasolutions.com header.b=QuGDDQvx; arc=none smtp.client-ip=209.85.218.43
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=amarulasolutions.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=amarulasolutions.com
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=amarulasolutions.com header.i=@amarulasolutions.com header.b="QuGDDQvx"
-Received: by mail-ej1-f43.google.com with SMTP id a640c23a62f3a-a6f7b785a01so437785466b.1
-        for <iommu@lists.linux.dev>; Wed, 19 Jun 2024 02:29:20 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=amarulasolutions.com; s=google; t=1718789359; x=1719394159; darn=lists.linux.dev;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=V60tWSEyq0vsAXnVJoNACpk/lcgOsGBfMMUaz3AVbmM=;
-        b=QuGDDQvxuA+LqhEcZEggdmDYx/Ys+qq/dKPfBlNDZuq2ss5SZznUU+O9YCvD8GNQkS
-         1cZ1AKnqErNu0JStNfDUOLZ8qpIdx/jnQXtwhDlhvZP/iUqkMhoBD4Zkt725iS43fxXR
-         qU9PxDF48n2ZU6P432gngmIHks14WwA2sF+/A=
+	 To:Cc:Content-Type; b=o5/SuGIiwtGqdVEKwhVPnao1JW2U4V+CnKXhP6H3G3t8QUIopNr4Hi8jQEns/rtEaYFLWQL2A6h0AeD7Lb6VvA+KwBbV9I0/d/SKG7fvrgoLBBHCqKRkDa+nqefSGwrYHBwZspHfAXHFgZhgR8nonmNa+HhGxfHXCk+xbKs5fbs=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org; spf=pass smtp.mailfrom=gmail.com; arc=none smtp.client-ip=209.85.221.171
+Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+Received: by mail-vk1-f171.google.com with SMTP id 71dfb90a1353d-4ecf1013d73so1899601e0c.2
+        for <iommu@lists.linux.dev>; Wed, 19 Jun 2024 02:33:26 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1718789359; x=1719394159;
+        d=1e100.net; s=20230601; t=1718789606; x=1719394406;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=V60tWSEyq0vsAXnVJoNACpk/lcgOsGBfMMUaz3AVbmM=;
-        b=pO7i/G3chEDeE18Deb1rwZFR4q/1cBZtixghhlBusYv/IVxtI3kZnblpXAQ7XDN6GM
-         UDb/FK4cWmqfrsTrpRTMsl6K7YMSgYkL4/nngf+9ey0SNm6QfaAVAsjKb7hQ1mb078Pj
-         lxjViv6CftyZTgiFBAtmAtuM7vWICOGoaXkSTuCNMT5+9huxtd7bKp2d1Ffg5XDr82CX
-         hCh1ZMEm1gYo2FHsFwf29lWQ0tCPpXZcnIFMz/a70lrAIj0c0L+ywDH/qYNpFXNZpHTr
-         Fv/clzb18KYYMy//3lP9nSslV3k3tiEpTqSyyTBDxrH1aDu4NIfnYEOP3A5wBuPyYpJO
-         vv/A==
-X-Forwarded-Encrypted: i=1; AJvYcCU+f7fHtoA42D909dl5Or6fKJSn3Y+3BV6nLLPZwU2+Tv8OlRLLGWx4o3DP+Wzhn1eVVVJq7Ac5RntK7c5yo5MJxvopHAc=
-X-Gm-Message-State: AOJu0Yx/U9G82umh0aloXH4/6IOab1DKN9yPQsa/cFNzVoIJbDUOa/ro
-	5XrErnJGVR/mde/nicuWvsueZ4Mrol9tC68fpXlJ9A1beF8FCMNc4EfF6aMWU8o9GuY/ZPJwqN4
-	eBLImQS8ePmf+kw3n1YLxJE3ssD+ofwscsxV4vg==
-X-Google-Smtp-Source: AGHT+IFb76x7Pucfvd16pWEowxfrmojNsl7zxPiv/9dMvlT25uSbZQ+OJ1X3ubz+svkccGvvchtJv/7pS3EQVnBm5Bk=
-X-Received: by 2002:a17:907:a809:b0:a6f:86fe:c495 with SMTP id
- a640c23a62f3a-a6fab7718aemr117097866b.49.1718789359465; Wed, 19 Jun 2024
- 02:29:19 -0700 (PDT)
+        bh=ylDz14lSOjbKuZVwpK1ABbk+/Nwu5W6FcLF+SwegSgI=;
+        b=QgAyW9E2cUwcFxSR+CY1T0Cafv0E0hmLEZ0QNpKMhtcCe1aLWw791Q1Wax/YBCXjK5
+         ROrEqwDVF196SOnorfOpvOi3cpgxfMi3skuybEtBbXfCFwZp1Ol4EYmfaTH+QIrRfxXn
+         5uZaEWFi4T+sQ7Kw9Id0uShUDxZuHAPpqu910ynpM8nQf3NXEk7kDrmZfUrYlienwyJ4
+         y/1fux8dWWTCEPcLsmrAjmA/xu4407baDbJMF7iyzRbspFVUiujfp/WXgpnvX8XpWT8X
+         KUpfupIa/juVhV3s+hacScV5ZpO2HphBlKwjc8s3HopONTv7OYrzlBaXDZpi4TPEMs7L
+         /xsg==
+X-Forwarded-Encrypted: i=1; AJvYcCXoZkH7sOPgYqo4VbjjQfvd35KSwTVLeP6/qVoac572jNSyxis+Dmq386DlcwPJOOuXJlhmQtS76EOhJbjo0YNOdEgr52E=
+X-Gm-Message-State: AOJu0YwiU56WzIMQnl2MugMbvrs0lNEmLxlUtSHSg3SCDclh2jB7/D3u
+	NAy7dkJsHen2u/x9eK7g0iXtaqIn8fcN1b4zzB/GUxJ0XNCKNOs89zfQE5+dx7FP0s4ok41nBb1
+	eZhOF93MBRXxm3YN24CrxDzMypr8=
+X-Google-Smtp-Source: AGHT+IEhl3fxIyD+Vnn2+mk0Z4UcRl0qgybsY+JSw6Z9WTgrQzcoNxzlUjTdLt5z3IQbTtmOu9p9xun8TYymSKy2m08=
+X-Received: by 2002:a05:6122:17a0:b0:4ec:fa1c:decf with SMTP id
+ 71dfb90a1353d-4ef276a8ab6mr2299422e0c.5.1718789605992; Wed, 19 Jun 2024
+ 02:33:25 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <20240619091737.669040-1-albertosecondi@gmail.com> <CAOf5uwk_i5yA+K=riMcP9r4V9FynRBv2+=P98xUMvmvBtJr4Mg@mail.gmail.com>
-In-Reply-To: <CAOf5uwk_i5yA+K=riMcP9r4V9FynRBv2+=P98xUMvmvBtJr4Mg@mail.gmail.com>
-From: Michael Nazzareno Trimarchi <michael@amarulasolutions.com>
-Date: Wed, 19 Jun 2024 11:29:08 +0200
-Message-ID: <CAOf5uwkJxpge=JdtQv_nu7zWaN4weD43kBKqM1qAR4h5tuRjfw@mail.gmail.com>
-Subject: Re: [PATCH] New config added to handle 64-bit systems with 32-bit DMA support
-To: Alberto Secondi <albertosecondi@gmail.com>
-Cc: hch@lst.de, m.szyprowski@samsung.com, robin.murphy@arm.com, 
-	iommu@lists.linux.dev, linux-kernel@vger.kernel.org, 
-	alberto.secondi@abinsula.com, Davide Salaris <davide.salaris@abinsula.com>
+References: <20240619092133.37411-1-yangyicong@huawei.com>
+In-Reply-To: <20240619092133.37411-1-yangyicong@huawei.com>
+From: Barry Song <baohua@kernel.org>
+Date: Wed, 19 Jun 2024 21:33:14 +1200
+Message-ID: <CAGsJ_4yrK=Zx2MR4OxjJLTHsKYWdM7SFhfAcFUSkS9dWgbnLtA@mail.gmail.com>
+Subject: Re: [PATCH] dma-mapping: benchmark: Don't starve others when doing
+ the test
+To: Yicong Yang <yangyicong@huawei.com>
+Cc: chenxiang66@hisilicon.com, hch@lst.de, iommu@lists.linux.dev, 
+	jonathan.cameron@huawei.com, prime.zeng@huawei.com, linuxarm@huawei.com, 
+	yangyicong@hisilicon.com
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-Hi Alberto
-
-On Wed, Jun 19, 2024 at 11:23=E2=80=AFAM Michael Nazzareno Trimarchi
-<michael@amarulasolutions.com> wrote:
+On Wed, Jun 19, 2024 at 9:27=E2=80=AFPM Yicong Yang <yangyicong@huawei.com>=
+ wrote:
 >
-> Hi Alberto
+> From: Yicong Yang <yangyicong@hisilicon.com>
 >
-> On Wed, Jun 19, 2024 at 11:20=E2=80=AFAM Alberto Secondi
-> <albertosecondi@gmail.com> wrote:
-> >
-> > From: Alberto Secondi <alberto.secondi@abinsula.com>
-> >
-> > The kernel assumes that 64-bit systems have 64-bit DMA support through
-> > CONFIG_ARCH_DMA_ADDR_T_64BIT. This is not always true; for example, sev=
-eral
-> > iMX8 systems (verified on iMX8MM and iMX8MP) have DMA with only 32-bit =
-support.
-> > This results in several drivers requesting DMA_BIT_MASK(64), which caus=
-es
-> > malfunctions, particularly when systems have more than 3GB of DRAM (ver=
-ified
-> > with the lan743x driver and iMX8 systems with 4GB of DRAM). Therefore, =
-a new
-> > config ARCH_64BIT_HAS_DMA32_ONLY was added to manage 64-bit systems wit=
-h 32-bit
-> > DMA, which adjusts DMA_BIT_MASK(n) accordingly.
-> >
-> > Signed-off-by: Alberto Secondi <alberto.secondi@abinsula.com>
-> > Co-developed-by: Davide Salaris <davide.salaris@abinsula.com>
-> > ---
-> >  include/linux/dma-mapping.h | 4 ++++
-> >  kernel/dma/Kconfig          | 8 ++++++++
-> >  2 files changed, 12 insertions(+)
-> >
-> > diff --git a/include/linux/dma-mapping.h b/include/linux/dma-mapping.h
-> > index f693aafe221f..629220a777e3 100644
-> > --- a/include/linux/dma-mapping.h
-> > +++ b/include/linux/dma-mapping.h
-> > @@ -74,7 +74,11 @@
-> >   */
-> >  #define DMA_MAPPING_ERROR              (~(dma_addr_t)0)
-> >
-> > +#ifdef CONFIG_ARCH_64BIT_HAS_DMA32_ONLY
-> > +#define DMA_BIT_MASK(n)        (((n) > 32) ? ((1ULL<<(32))-1) : ((1ULL=
-<<(n))-1))
-> > +#else
-> >  #define DMA_BIT_MASK(n)        (((n) =3D=3D 64) ? ~0ULL : ((1ULL<<(n))=
--1))
-> > +#endif
-> >
+> The test thread will start N benchmark kthreads and then schedule out
+> until the test time finished and notify the benchmark kthreads to stop.
+> The benchmark kthreads will keep running until notified to stop.
+> There's a problem with current implementation when the benchmark
+> kthreads number is equal to the CPUs on a non-preemptible kernel:
+> since the scheduler will balance the kthreads across the CPUs and
+> when the test time's out the test thread won't get a chance to be
+> scheduled on any CPU then cannot notify the benchmark kthreads to stop.
 >
-> How can this fit configuration where you want to have one Kernel image
-> for several arm64 machine?
+> This can be easily reproduced on a VM (simulated with 16 CPUs) with
+> PREEMPT_VOLUNTARY:
+> estuary:/mnt$ ./dma_map_benchmark -t 16 -s 1
+>  rcu: INFO: rcu_sched self-detected stall on CPU
+>  rcu:     10-...!: (5221 ticks this GP) idle=3Ded24/1/0x4000000000000000 =
+softirq=3D142/142 fqs=3D0
+>  rcu:     (t=3D5254 jiffies g=3D-559 q=3D45 ncpus=3D16)
+>  rcu: rcu_sched kthread starved for 5255 jiffies! g-559 f0x0 RCU_GP_WAIT_=
+FQS(5) ->state=3D0x0 ->cpu=3D12
+>  rcu:     Unless rcu_sched kthread gets sufficient CPU time, OOM is now e=
+xpected behavior.
+>  rcu: RCU grace-period kthread stack dump:
+>  task:rcu_sched       state:R  running task     stack:0     pid:16    tgi=
+d:16    ppid:2      flags:0x00000008
+>  Call trace
+>   __switch_to+0xec/0x138
+>   __schedule+0x2f8/0x1080
+>   schedule+0x30/0x130
+>   schedule_timeout+0xa0/0x188
+>   rcu_gp_fqs_loop+0x128/0x528
+>   rcu_gp_kthread+0x1c8/0x208
+>   kthread+0xec/0xf8
+>   ret_from_fork+0x10/0x20
+>  Sending NMI from CPU 10 to CPUs 0:
+>  NMI backtrace for cpu 0
+>  CPU: 0 PID: 332 Comm: dma-map-benchma Not tainted 6.10.0-rc1-vanilla-LSE=
+ #8
+>  Hardware name: QEMU KVM Virtual Machine, BIOS 0.0.0 02/06/2015
+>  pstate: 20400005 (nzCv daif +PAN -UAO -TCO -DIT -SSBS BTYPE=3D--)
+>  pc : arm_smmu_cmdq_issue_cmdlist+0x218/0x730
+>  lr : arm_smmu_cmdq_issue_cmdlist+0x488/0x730
+>  sp : ffff80008748b630
+>  x29: ffff80008748b630 x28: 0000000000000000 x27: ffff80008748b780
+>  x26: 0000000000000000 x25: 000000000000bc70 x24: 000000000001bc70
+>  x23: ffff0000c12af080 x22: 0000000000010000 x21: 000000000000ffff
+>  x20: ffff80008748b700 x19: ffff0000c12af0c0 x18: 0000000000010000
+>  x17: 0000000000000001 x16: 0000000000000040 x15: ffffffffffffffff
+>  x14: 0001ffffffffffff x13: 000000000000ffff x12: 00000000000002f1
+>  x11: 000000000001ffff x10: 0000000000000031 x9 : ffff800080b6b0b8
+>  x8 : ffff0000c2a48000 x7 : 000000000001bc71 x6 : 0001800000000000
+>  x5 : 00000000000002f1 x4 : 01ffffffffffffff x3 : 000000000009aaf1
+>  x2 : 0000000000000018 x1 : 000000000000000f x0 : ffff0000c12af18c
+>  Call trace:
+>   arm_smmu_cmdq_issue_cmdlist+0x218/0x730
+>   __arm_smmu_tlb_inv_range+0xe0/0x1a8
+>   arm_smmu_iotlb_sync+0xc0/0x128
+>   __iommu_dma_unmap+0x248/0x320
+>   iommu_dma_unmap_page+0x5c/0xe8
+>   dma_unmap_page_attrs+0x38/0x1d0
+>   map_benchmark_thread+0x118/0x2c0
+>   kthread+0xec/0xf8
+>   ret_from_fork+0x10/0x20
+>
+> Solve this by adding scheduling point in the kthread loop to
+> avoid starving others. This won't affect the test results
+> since we only care about the time consumed by the
+> dma_{map, unmap}_single().
+>
+> Signed-off-by: Yicong Yang <yangyicong@hisilicon.com>
+> ---
+>  kernel/dma/map_benchmark.c | 9 +++++++++
+>  1 file changed, 9 insertions(+)
+>
+> diff --git a/kernel/dma/map_benchmark.c b/kernel/dma/map_benchmark.c
+> index 02205ab53b7e..2da9326c094c 100644
+> --- a/kernel/dma/map_benchmark.c
+> +++ b/kernel/dma/map_benchmark.c
+> @@ -89,6 +89,15 @@ static int map_benchmark_thread(void *data)
+>                 atomic64_add(map_sq, &map->sum_sq_map);
+>                 atomic64_add(unmap_sq, &map->sum_sq_unmap);
+>                 atomic64_inc(&map->loops);
+> +
+> +               /*
+> +                * We may test for a long time so periodically yield the
+> +                * CPU to avoid starve the others, especially on the
+> +                * non-preemptible kernel. This won't affect the test
+> +                * results since we only care about the time consumed by
+> +                * the dma_{map, unmap}_single().
+> +                */
+> +               cond_resched();
+
+We don't care about the time outside of dma_{map, unmap}_single(). However,
+we do care about the concurrency. We use ndelay(map->bparam.dma_trans_ns);
+to simulate DMA transmission. Your code entirely changes the concurrency.
+
+>         }
+>
+>  out:
+> --
+> 2.24.0
 >
 
-I'm not an expert here but:
-
- @coherent_dma_mask: Like dma_mask, but for alloc_coherent mapping as not a=
-ll
- *         hardware supports 64-bit addresses for consistent allocations
- *         such descriptors.
-
-This looks more connected to what you are looking for.
-
-Michael
-
-
-> Michael
->
-> >  #ifdef CONFIG_DMA_API_DEBUG
-> >  void debug_dma_mapping_error(struct device *dev, dma_addr_t dma_addr);
-> > diff --git a/kernel/dma/Kconfig b/kernel/dma/Kconfig
-> > index c06e56be0ca1..0a27eafed808 100644
-> > --- a/kernel/dma/Kconfig
-> > +++ b/kernel/dma/Kconfig
-> > @@ -36,6 +36,14 @@ config NEED_DMA_MAP_STATE
-> >  config ARCH_DMA_ADDR_T_64BIT
-> >         def_bool 64BIT || PHYS_ADDR_T_64BIT
-> >
-> > +config ARCH_64BIT_HAS_DMA32_ONLY
-> > +        bool "64bit System has DMA32 only"
-> > +        depends on ARCH_DMA_ADDR_T_64BIT
-> > +        default n
-> > +       help
-> > +         This enables forcing the maximum DMA_BIT_MASK to 32 bits for
-> > +         64-bit systems that have DMA support limited to 32 bits.
-> > +
-> >  config ARCH_HAS_DMA_SET_MASK
-> >         bool
-> >
-> > --
-> > 2.34.1
-> >
-> >
+Thanks
+Barry
