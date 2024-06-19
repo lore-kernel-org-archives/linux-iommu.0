@@ -1,229 +1,112 @@
-Received: from mail-vk1-f169.google.com (mail-vk1-f169.google.com [209.85.221.169])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4D798763FD
-	for <iommu@lists.linux.dev>; Wed, 19 Jun 2024 10:28:29 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.169
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id AC39A80BE5
+	for <iommu@lists.linux.dev>; Wed, 19 Jun 2024 10:35:53 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1718792911; cv=none; b=RA42hATpyDXLCss3vgO3v1CxD7u0/Fxz6sg+FcfwZXBePyDG76NmK3rNuyNd5V9Gn4jL7xlvz38XDzWeampPgnJemxhQ4Vuyz/fIiu+5EhttNiaLCWV7LbgVdrWwcns+nhYW3zBb3Df3xeI1hAx3UW6SYj9CLOfY5S5NuE92d14=
+	t=1718793355; cv=none; b=mvQ2i1rqyxewmNM64ettkriyMfuCuv7yEUU/mweR9Ce0MkUTVGwKpa9SgHa22FiNOjXIDlScvlBY8FNhYhESu/QG4kJ6hbjfI2wpeAKY8fXhpX4jEaG3YWS4ivOvItepQBiNjE44eEHh6oKZJBbqLQi7OK3pZzIX+oUo0U+Fado=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1718792911; c=relaxed/simple;
-	bh=xerdFqPJeVz5RfrT2OmtpZ7S/Y8Ds0xSagglsBbNfHU=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=BBbiIrE24WrlgLG47WxtAQVOsUbR4JJxyLj1wgr2KHsL1+1q2+PMzDQagjZRhRBYRS+Luzp4sZAn0+d1GiuKwSodHUolHyxLMPpG4NLmizsuAsm0NComs/c8VbpX3vt4CDWj1E2j5dINVXJqgHuck3jUqHVlR/rQHhDfRPXBt94=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org; spf=pass smtp.mailfrom=gmail.com; arc=none smtp.client-ip=209.85.221.169
-Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
-Received: by mail-vk1-f169.google.com with SMTP id 71dfb90a1353d-4ef267f2912so334058e0c.0
-        for <iommu@lists.linux.dev>; Wed, 19 Jun 2024 03:28:29 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1718792908; x=1719397708;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=vsV/PS7CwLrNz7YnyMvaeNBIzbUQwqZIDKo5iSbVpkE=;
-        b=q5eh7Xd0W9vC3uhGLh+mOV52yM1T8v/W/XqDOuN9HrLV8MdtJi8DtkxwziGBtphLhm
-         N7rS1LpJdiuQjSLuaWEunNstQLH8+T4q4DthhyzakuDryXo0a79nd64eGbTAJkeuQqBi
-         J5kOtuXMUXR4v4C78m4EnNT0ptl+5QVp8GviG2MP8gTUcuUuu+cedT//1DiXF/xYxuAQ
-         G6wcuyIFy4/Wfms+/c90qPWxBsIVT3w/MlRlSdY2X1qHYVJ+Y6S5Hsr16zAazRlt3Vkr
-         D9nVExrxTCJbfKAfCd6v28GglHG5ieiOoPTsigztAs/WEdOHamcLQFCVEZl+oiabvvKI
-         ymtw==
-X-Forwarded-Encrypted: i=1; AJvYcCVBQKOCeHlABd9wYPIsGEhPytliSGtDZQ8opdY0dTvLZw64YAU9YJhut0L0rRLJV13AZqpahcHDVIXlO+WNZFXOcls/yvk=
-X-Gm-Message-State: AOJu0YyPZqyg+GZ2z+cfYsZLVrJue6SPOz4mi/zz/p01h6ZWA2x8WOav
-	lkR+ZboVNHPa/0bg/nqSVXNRhyIp1SZS0Ce9rBWgKtz8W8YI/AMyu5rHo7PyYmgnjAVfg7SqbRp
-	P7IYpmu7gBL644Zb3BgXjaYGUwcw=
-X-Google-Smtp-Source: AGHT+IEXlhpbcDeQz8RM1VvfQNGl2XpRsfgdP2sFufz52/DPQmUKe/NfJFej6Z9vZmjfrEUrxA+u3WaDankQndRWlNc=
-X-Received: by 2002:a05:6122:46a6:b0:4ec:fc6b:b473 with SMTP id
- 71dfb90a1353d-4ef1ab2f8famr4777032e0c.8.1718792908156; Wed, 19 Jun 2024
- 03:28:28 -0700 (PDT)
+	s=arc-20240116; t=1718793355; c=relaxed/simple;
+	bh=fgyCnP3qXShl7wfpqmt+wRPrDUtyovAtEM7NSslvPQ0=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=ctOhIx8xXIe09P4UbkZYYtGcTkqirhCKSrr+hHYpy/OCQh+1QCUaIvLpCPydI5IpcH9IJAbwxxRGvTOCnQAOBCMYvHGhVFfYoQ2UO7rLKRdqGjp2nZZJ4gCF2VHWPBIbGL7pX1wQxJv1W1tshKmeS4lbGMWS/go0RjAgnsvd464=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; arc=none smtp.client-ip=217.140.110.172
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id C7F3FDA7;
+	Wed, 19 Jun 2024 03:36:17 -0700 (PDT)
+Received: from [10.57.71.86] (unknown [10.57.71.86])
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id BCDE43F64C;
+	Wed, 19 Jun 2024 03:35:51 -0700 (PDT)
+Message-ID: <0e03afd6-46be-4fc7-a974-bf506d8e503c@arm.com>
+Date: Wed, 19 Jun 2024 11:35:48 +0100
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <20240619092133.37411-1-yangyicong@huawei.com> <CAGsJ_4yrK=Zx2MR4OxjJLTHsKYWdM7SFhfAcFUSkS9dWgbnLtA@mail.gmail.com>
- <eb48b812-587b-080a-2e5a-a2943f51589f@huawei.com>
-In-Reply-To: <eb48b812-587b-080a-2e5a-a2943f51589f@huawei.com>
-From: Barry Song <baohua@kernel.org>
-Date: Wed, 19 Jun 2024 22:28:17 +1200
-Message-ID: <CAGsJ_4yvu+VaRUzKr58ZCbB_17qwkhaiNx8+G2GBNpnHyuGzCQ@mail.gmail.com>
-Subject: Re: [PATCH] dma-mapping: benchmark: Don't starve others when doing
- the test
-To: Yicong Yang <yangyicong@huawei.com>
-Cc: chenxiang66@hisilicon.com, hch@lst.de, iommu@lists.linux.dev, 
-	jonathan.cameron@huawei.com, prime.zeng@huawei.com, yangyicong@hisilicon.com
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH] New config added to handle 64-bit systems with 32-bit DMA
+ support
+To: Alberto Secondi <albertosecondi@gmail.com>, hch@lst.de,
+ m.szyprowski@samsung.com
+Cc: iommu@lists.linux.dev, linux-kernel@vger.kernel.org,
+ alberto.secondi@abinsula.com, Davide Salaris <davide.salaris@abinsula.com>
+References: <20240619091737.669040-1-albertosecondi@gmail.com>
+From: Robin Murphy <robin.murphy@arm.com>
+Content-Language: en-GB
+In-Reply-To: <20240619091737.669040-1-albertosecondi@gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-On Wed, Jun 19, 2024 at 10:03=E2=80=AFPM Yicong Yang <yangyicong@huawei.com=
-> wrote:
->
-> On 2024/6/19 17:33, Barry Song wrote:
-> > On Wed, Jun 19, 2024 at 9:27=E2=80=AFPM Yicong Yang <yangyicong@huawei.=
-com> wrote:
-> >>
-> >> From: Yicong Yang <yangyicong@hisilicon.com>
-> >>
-> >> The test thread will start N benchmark kthreads and then schedule out
-> >> until the test time finished and notify the benchmark kthreads to stop=
-.
-> >> The benchmark kthreads will keep running until notified to stop.
-> >> There's a problem with current implementation when the benchmark
-> >> kthreads number is equal to the CPUs on a non-preemptible kernel:
-> >> since the scheduler will balance the kthreads across the CPUs and
-> >> when the test time's out the test thread won't get a chance to be
-> >> scheduled on any CPU then cannot notify the benchmark kthreads to stop=
-.
-> >>
-> >> This can be easily reproduced on a VM (simulated with 16 CPUs) with
-> >> PREEMPT_VOLUNTARY:
-> >> estuary:/mnt$ ./dma_map_benchmark -t 16 -s 1
-> >>  rcu: INFO: rcu_sched self-detected stall on CPU
-> >>  rcu:     10-...!: (5221 ticks this GP) idle=3Ded24/1/0x40000000000000=
-00 softirq=3D142/142 fqs=3D0
-> >>  rcu:     (t=3D5254 jiffies g=3D-559 q=3D45 ncpus=3D16)
-> >>  rcu: rcu_sched kthread starved for 5255 jiffies! g-559 f0x0 RCU_GP_WA=
-IT_FQS(5) ->state=3D0x0 ->cpu=3D12
-> >>  rcu:     Unless rcu_sched kthread gets sufficient CPU time, OOM is no=
-w expected behavior.
-> >>  rcu: RCU grace-period kthread stack dump:
-> >>  task:rcu_sched       state:R  running task     stack:0     pid:16    =
-tgid:16    ppid:2      flags:0x00000008
-> >>  Call trace
-> >>   __switch_to+0xec/0x138
-> >>   __schedule+0x2f8/0x1080
-> >>   schedule+0x30/0x130
-> >>   schedule_timeout+0xa0/0x188
-> >>   rcu_gp_fqs_loop+0x128/0x528
-> >>   rcu_gp_kthread+0x1c8/0x208
-> >>   kthread+0xec/0xf8
-> >>   ret_from_fork+0x10/0x20
-> >>  Sending NMI from CPU 10 to CPUs 0:
-> >>  NMI backtrace for cpu 0
-> >>  CPU: 0 PID: 332 Comm: dma-map-benchma Not tainted 6.10.0-rc1-vanilla-=
-LSE #8
-> >>  Hardware name: QEMU KVM Virtual Machine, BIOS 0.0.0 02/06/2015
-> >>  pstate: 20400005 (nzCv daif +PAN -UAO -TCO -DIT -SSBS BTYPE=3D--)
-> >>  pc : arm_smmu_cmdq_issue_cmdlist+0x218/0x730
-> >>  lr : arm_smmu_cmdq_issue_cmdlist+0x488/0x730
-> >>  sp : ffff80008748b630
-> >>  x29: ffff80008748b630 x28: 0000000000000000 x27: ffff80008748b780
-> >>  x26: 0000000000000000 x25: 000000000000bc70 x24: 000000000001bc70
-> >>  x23: ffff0000c12af080 x22: 0000000000010000 x21: 000000000000ffff
-> >>  x20: ffff80008748b700 x19: ffff0000c12af0c0 x18: 0000000000010000
-> >>  x17: 0000000000000001 x16: 0000000000000040 x15: ffffffffffffffff
-> >>  x14: 0001ffffffffffff x13: 000000000000ffff x12: 00000000000002f1
-> >>  x11: 000000000001ffff x10: 0000000000000031 x9 : ffff800080b6b0b8
-> >>  x8 : ffff0000c2a48000 x7 : 000000000001bc71 x6 : 0001800000000000
-> >>  x5 : 00000000000002f1 x4 : 01ffffffffffffff x3 : 000000000009aaf1
-> >>  x2 : 0000000000000018 x1 : 000000000000000f x0 : ffff0000c12af18c
-> >>  Call trace:
-> >>   arm_smmu_cmdq_issue_cmdlist+0x218/0x730
-> >>   __arm_smmu_tlb_inv_range+0xe0/0x1a8
-> >>   arm_smmu_iotlb_sync+0xc0/0x128
-> >>   __iommu_dma_unmap+0x248/0x320
-> >>   iommu_dma_unmap_page+0x5c/0xe8
-> >>   dma_unmap_page_attrs+0x38/0x1d0
-> >>   map_benchmark_thread+0x118/0x2c0
-> >>   kthread+0xec/0xf8
-> >>   ret_from_fork+0x10/0x20
-> >>
-> >> Solve this by adding scheduling point in the kthread loop to
-> >> avoid starving others. This won't affect the test results
-> >> since we only care about the time consumed by the
-> >> dma_{map, unmap}_single().
-> >>
-> >> Signed-off-by: Yicong Yang <yangyicong@hisilicon.com>
-> >> ---
-> >>  kernel/dma/map_benchmark.c | 9 +++++++++
-> >>  1 file changed, 9 insertions(+)
-> >>
-> >> diff --git a/kernel/dma/map_benchmark.c b/kernel/dma/map_benchmark.c
-> >> index 02205ab53b7e..2da9326c094c 100644
-> >> --- a/kernel/dma/map_benchmark.c
-> >> +++ b/kernel/dma/map_benchmark.c
-> >> @@ -89,6 +89,15 @@ static int map_benchmark_thread(void *data)
-> >>                 atomic64_add(map_sq, &map->sum_sq_map);
-> >>                 atomic64_add(unmap_sq, &map->sum_sq_unmap);
-> >>                 atomic64_inc(&map->loops);
-> >> +
-> >> +               /*
-> >> +                * We may test for a long time so periodically yield t=
-he
-> >> +                * CPU to avoid starve the others, especially on the
-> >> +                * non-preemptible kernel. This won't affect the test
-> >> +                * results since we only care about the time consumed =
-by
-> >> +                * the dma_{map, unmap}_single().
-> >> +                */
-> >> +               cond_resched();
-> >
-> > We don't care about the time outside of dma_{map, unmap}_single(). Howe=
-ver,
-> > we do care about the concurrency. We use ndelay(map->bparam.dma_trans_n=
-s);
-> > to simulate DMA transmission. Your code entirely changes the concurrenc=
-y.
-> >
->
-> I imagine 2 cases here:
-> 1) If only us running on the CPU, cond_resched() will not make us schedul=
-e out.
-> 2) Otherwise we'll be managed by the scheduler with other tasks. This wil=
-l be more realistic
->    in a system.
->
-> For testing SMMU the case 1) is more general for us. But I don't think in=
- both case
-> the cocurrency will be broke, the test kthreads still running concurrenct=
-ly. But they
-> need to share the cpu time with other threads if we have some other loads=
- in the system.
->
-> The initial idea of this patch is to fix the hangup in the case that the =
-test kthreads
-> number is greater or equal to the CPU numaber. In such case the test kthr=
-eads will be
-> running infinitely since the thread responsible to notify the end of the =
-test cannot
-> be scheduled in a non-preemptible kernel. This is described in the commit=
- message.
+On 2024-06-19 10:17 am, Alberto Secondi wrote:
+> ------ Tessian Warning ------
+> 
+> Be careful, the email's sending address "albertosecondi@gmail[.]com" has never been seen on your company's network before today
+> 
+> This warning message will be removed if you reply to or forward this email to a recipient outside of your organization.
+> 
+> ---- Tessian Warning End ----
+> 
+> From: Alberto Secondi <alberto.secondi@abinsula.com>
+> 
+> The kernel assumes that 64-bit systems have 64-bit DMA support through
+> CONFIG_ARCH_DMA_ADDR_T_64BIT. This is not always true; for example, several
+> iMX8 systems (verified on iMX8MM and iMX8MP) have DMA with only 32-bit support.
+> This results in several drivers requesting DMA_BIT_MASK(64), which causes
+> malfunctions, particularly when systems have more than 3GB of DRAM (verified
+> with the lan743x driver and iMX8 systems with 4GB of DRAM). Therefore, a new
+> config ARCH_64BIT_HAS_DMA32_ONLY was added to manage 64-bit systems with 32-bit
+> DMA, which adjusts DMA_BIT_MASK(n) accordingly.
 
-I guess you mean this,
+No. If a system has devices naturally capable of >32-bit DMA, and memory 
+at >32-bit system physical addresses, but only a 32-bit interconnect in 
+between, that needs to be described properly in Devicetree/ACPI, not 
+hacked around with completely non-portable kernel bodges.
 
-        for (i =3D 0; i < threads; i++) {
-                ret =3D kthread_stop(tsk[i]);
-                if (ret)
-                        goto out;
-        }
+Thanks,
+Robin.
 
-That's what I missed. Sorry about that.
-
-My point is that this is just a test program, not a real workload.
-Therefore, we don't want it to be
-too complex. Allowing others to preempt it changes the degree of
-concurrency, as we are
-intentionally slowing down the DMA map/unmap requests.
-
-However, I agree with your point that we need to ensure the program
-functions correctly
-and does not crash.
-As long as we run the benchmark on an idle system, it should be fine.
-
-Please correct the comment "This won't affect the test results since
-we only care about
-the time consumed by the dma_{map, unmap}_single()"which is actually mislea=
-ding.
-Alternatively, explain the real problem and note that this benchmark
-is intended to run
-on an idle system.
-
-And w/ that,
-
-Acked-by: Barry Song <baohua@kernel.org>
-
->
-
-Thanks
-Barry
+> Signed-off-by: Alberto Secondi <alberto.secondi@abinsula.com>
+> Co-developed-by: Davide Salaris <davide.salaris@abinsula.com>
+> ---
+>   include/linux/dma-mapping.h | 4 ++++
+>   kernel/dma/Kconfig          | 8 ++++++++
+>   2 files changed, 12 insertions(+)
+> 
+> diff --git a/include/linux/dma-mapping.h b/include/linux/dma-mapping.h
+> index f693aafe221f..629220a777e3 100644
+> --- a/include/linux/dma-mapping.h
+> +++ b/include/linux/dma-mapping.h
+> @@ -74,7 +74,11 @@
+>    */
+>   #define DMA_MAPPING_ERROR		(~(dma_addr_t)0)
+>   
+> +#ifdef CONFIG_ARCH_64BIT_HAS_DMA32_ONLY
+> +#define DMA_BIT_MASK(n)	(((n) > 32) ? ((1ULL<<(32))-1) : ((1ULL<<(n))-1))
+> +#else
+>   #define DMA_BIT_MASK(n)	(((n) == 64) ? ~0ULL : ((1ULL<<(n))-1))
+> +#endif
+>   
+>   #ifdef CONFIG_DMA_API_DEBUG
+>   void debug_dma_mapping_error(struct device *dev, dma_addr_t dma_addr);
+> diff --git a/kernel/dma/Kconfig b/kernel/dma/Kconfig
+> index c06e56be0ca1..0a27eafed808 100644
+> --- a/kernel/dma/Kconfig
+> +++ b/kernel/dma/Kconfig
+> @@ -36,6 +36,14 @@ config NEED_DMA_MAP_STATE
+>   config ARCH_DMA_ADDR_T_64BIT
+>   	def_bool 64BIT || PHYS_ADDR_T_64BIT
+>   
+> +config ARCH_64BIT_HAS_DMA32_ONLY
+> +        bool "64bit System has DMA32 only"
+> +        depends on ARCH_DMA_ADDR_T_64BIT
+> +        default n
+> +	help
+> +	  This enables forcing the maximum DMA_BIT_MASK to 32 bits for
+> +	  64-bit systems that have DMA support limited to 32 bits.
+> +
+>   config ARCH_HAS_DMA_SET_MASK
+>   	bool
+>   
