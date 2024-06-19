@@ -1,143 +1,137 @@
-Received: from mail-ej1-f51.google.com (mail-ej1-f51.google.com [209.85.218.51])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from szxga06-in.huawei.com (szxga06-in.huawei.com [45.249.212.32])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 68BF57F490
-	for <iommu@lists.linux.dev>; Wed, 19 Jun 2024 09:23:38 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.218.51
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 575EC7EEFD
+	for <iommu@lists.linux.dev>; Wed, 19 Jun 2024 09:27:16 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=45.249.212.32
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1718789020; cv=none; b=kFHCxb+TTXNA+ao2rOjIBhgj517H1yT30l2awUnoX9q4HCCZ+MBgqnU6zNW1ekG7idJB8o28QFyiTaP2CQ5ChWEu0oiJ+6vEkR1R3r/mRGiQ5VFDSQYkXqDX28F9WeBB+15J2WF8fRkbBuBMU7EWEYck0QIeUSidLP5tMdeN1dk=
+	t=1718789238; cv=none; b=efg9g/uK1PS/ktUI//v2PaC+nW5DnR9nlWjr6DM31MC7TbXmDelMVTdo0HjJjNjm5I/IF/FKaqTEINTJjwucm6bqfq5dzwVNAd/DxhYDD0O6PBCOPgOT0XAOEBTRCz94tY/MdNqJa4ijjdZ+8ojXyGOB1x/uBi/xC87TYp8Myg4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1718789020; c=relaxed/simple;
-	bh=c6mCFLDwnEj0M0yPmsIQCRB4t/fBDoZ4qwONT/Fjbec=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=qIqXDryCPUCchFiiNVSHeYIae2Xmse64/YD2FRQNvW1hPoC2Ie8ZJd+FdBCAcUyHwxxZ60REKBGgNfkr4EL0ZAaTMAWdkWQictyCKgvzg4MJLix36wP9lwmjyAH7sBrAsCPZKzMiSUG6xkE/DeUsi9XxiY53Qp76/GHGO21sjIk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=amarulasolutions.com; spf=pass smtp.mailfrom=amarulasolutions.com; dkim=pass (1024-bit key) header.d=amarulasolutions.com header.i=@amarulasolutions.com header.b=HQi6BQjg; arc=none smtp.client-ip=209.85.218.51
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=amarulasolutions.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=amarulasolutions.com
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=amarulasolutions.com header.i=@amarulasolutions.com header.b="HQi6BQjg"
-Received: by mail-ej1-f51.google.com with SMTP id a640c23a62f3a-a6ef46d25efso777753966b.0
-        for <iommu@lists.linux.dev>; Wed, 19 Jun 2024 02:23:38 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=amarulasolutions.com; s=google; t=1718789017; x=1719393817; darn=lists.linux.dev;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=E02jv30Jn5KEyH9ZDrmzhOXntMuebj1OtVrel1S6NPY=;
-        b=HQi6BQjgT+VjNsnMcghhllK8eYt7N4/3ZXocjHJek1vvTb183l3ICkuv8bv6kLN+jz
-         yxYT2DBKubHcSYek9Sqq0T1CXidh4XWnpaVV19u4ZfmFNN5heSw5zr8u6LHp1T5kk4Ix
-         Nn8EPqVARemv2mIJbhP3wDRONnqkl1JQ6y9jY=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1718789017; x=1719393817;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=E02jv30Jn5KEyH9ZDrmzhOXntMuebj1OtVrel1S6NPY=;
-        b=X+9XtSpv9UraLKloPD5K4WcnogWQDzzx3cn0R+RRzCAnO1PsKW9WZg1/1nQ23qg1qG
-         gcCQrNNUOBs6zw0cNtqTCMrbMhP07f2awn3855QvQj4Ps1sI9GObUtcQ2uemjbyqipfX
-         Ip0vRiGlHGJdSwDWwInHYwGu+6RzFK+RrOZzInnxa3CHZ24Ua4BIye7Y2NWih7tPC0lg
-         15IQuHLjQFj9PSRGSCdLAxcxnay87dAwyON+R+ydMvQ3tb5jWRblHvXUd0I4T3a+zGsD
-         bKTptyp908DFdcb3X3rIgHF41euixeQGnf1kef7YU4kHwjRyRHSSZIK76d2Di9H0iiVC
-         dW0g==
-X-Forwarded-Encrypted: i=1; AJvYcCU/m082o0CYGZHr8pZikBTjY+AtVjgjIHZtbQ10rTDp2fqhmKqH2Zr5kSiu4+ud0ri9mpg1ia7RX4N9VtA7zSOQ/zvW23o=
-X-Gm-Message-State: AOJu0Yy08YBl32fRO+Lu4VxQDgsgSse1T3p9MVrB1wixVOG327nGrC8E
-	DQaTWWAkgCUtsmAGj19FRg6id7sJmq1oS7W21dVgGAqQaUVY1UXtP7Q2tmDEQTFdMRVsVV+FDaQ
-	u0rPCdnQhojx67JIfRBp1H7qgo43Bo7btFOEG9w==
-X-Google-Smtp-Source: AGHT+IFKQvk8lAQ+nFDkshiq3A/6mD+WFlIPkfhgxOHvbp51SeWW3bgS+ClQyEOwinwc3A2jk5hQBWZfiwOzdNFxXfc=
-X-Received: by 2002:a17:906:130a:b0:a6f:97b4:d1a5 with SMTP id
- a640c23a62f3a-a6fab648ac6mr95888166b.40.1718789016391; Wed, 19 Jun 2024
- 02:23:36 -0700 (PDT)
+	s=arc-20240116; t=1718789238; c=relaxed/simple;
+	bh=Cgv203cPQA1JseA3rO405ZorUW3vVFfV40YQYGRcE2Q=;
+	h=From:To:CC:Subject:Date:Message-ID:MIME-Version:Content-Type; b=lQ8fuSG+krwci2e6/aRa3gWnk8r+DVOnNnYTQlBOTx/mpd3zSHWViD7qJy2NSrNMtnTS5rxSgq4I2OyiJz6e4pIeDbD11RJoiml5Cu4fG5L1oS1AE7QarrOinBK0GBU7+xlLoUDrvZhvP0olZTG7XeUjfAvFAAlkWKLHLiZdB9E=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=huawei.com; spf=pass smtp.mailfrom=huawei.com; arc=none smtp.client-ip=45.249.212.32
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=huawei.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=huawei.com
+Received: from mail.maildlp.com (unknown [172.19.163.17])
+	by szxga06-in.huawei.com (SkyGuard) with ESMTP id 4W3ysP2y0lz1xsml;
+	Wed, 19 Jun 2024 17:25:45 +0800 (CST)
+Received: from kwepemd200014.china.huawei.com (unknown [7.221.188.8])
+	by mail.maildlp.com (Postfix) with ESMTPS id C08221A0188;
+	Wed, 19 Jun 2024 17:27:11 +0800 (CST)
+Received: from localhost.localdomain (10.50.165.33) by
+ kwepemd200014.china.huawei.com (7.221.188.8) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.1258.34; Wed, 19 Jun 2024 17:27:11 +0800
+From: Yicong Yang <yangyicong@huawei.com>
+To: <chenxiang66@hisilicon.com>, <hch@lst.de>, <iommu@lists.linux.dev>,
+	<baohua@kernel.org>
+CC: <jonathan.cameron@huawei.com>, <prime.zeng@huawei.com>,
+	<linuxarm@huawei.com>, <yangyicong@hisilicon.com>
+Subject: [PATCH] dma-mapping: benchmark: Don't starve others when doing the test
+Date: Wed, 19 Jun 2024 17:21:33 +0800
+Message-ID: <20240619092133.37411-1-yangyicong@huawei.com>
+X-Mailer: git-send-email 2.31.0
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <20240619091737.669040-1-albertosecondi@gmail.com>
-In-Reply-To: <20240619091737.669040-1-albertosecondi@gmail.com>
-From: Michael Nazzareno Trimarchi <michael@amarulasolutions.com>
-Date: Wed, 19 Jun 2024 11:23:24 +0200
-Message-ID: <CAOf5uwk_i5yA+K=riMcP9r4V9FynRBv2+=P98xUMvmvBtJr4Mg@mail.gmail.com>
-Subject: Re: [PATCH] New config added to handle 64-bit systems with 32-bit DMA support
-To: Alberto Secondi <albertosecondi@gmail.com>
-Cc: hch@lst.de, m.szyprowski@samsung.com, robin.murphy@arm.com, 
-	iommu@lists.linux.dev, linux-kernel@vger.kernel.org, 
-	alberto.secondi@abinsula.com, Davide Salaris <davide.salaris@abinsula.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-ClientProxiedBy: dggems704-chm.china.huawei.com (10.3.19.181) To
+ kwepemd200014.china.huawei.com (7.221.188.8)
 
-Hi Alberto
+From: Yicong Yang <yangyicong@hisilicon.com>
 
-On Wed, Jun 19, 2024 at 11:20=E2=80=AFAM Alberto Secondi
-<albertosecondi@gmail.com> wrote:
->
-> From: Alberto Secondi <alberto.secondi@abinsula.com>
->
-> The kernel assumes that 64-bit systems have 64-bit DMA support through
-> CONFIG_ARCH_DMA_ADDR_T_64BIT. This is not always true; for example, sever=
-al
-> iMX8 systems (verified on iMX8MM and iMX8MP) have DMA with only 32-bit su=
-pport.
-> This results in several drivers requesting DMA_BIT_MASK(64), which causes
-> malfunctions, particularly when systems have more than 3GB of DRAM (verif=
-ied
-> with the lan743x driver and iMX8 systems with 4GB of DRAM). Therefore, a =
-new
-> config ARCH_64BIT_HAS_DMA32_ONLY was added to manage 64-bit systems with =
-32-bit
-> DMA, which adjusts DMA_BIT_MASK(n) accordingly.
->
-> Signed-off-by: Alberto Secondi <alberto.secondi@abinsula.com>
-> Co-developed-by: Davide Salaris <davide.salaris@abinsula.com>
-> ---
->  include/linux/dma-mapping.h | 4 ++++
->  kernel/dma/Kconfig          | 8 ++++++++
->  2 files changed, 12 insertions(+)
->
-> diff --git a/include/linux/dma-mapping.h b/include/linux/dma-mapping.h
-> index f693aafe221f..629220a777e3 100644
-> --- a/include/linux/dma-mapping.h
-> +++ b/include/linux/dma-mapping.h
-> @@ -74,7 +74,11 @@
->   */
->  #define DMA_MAPPING_ERROR              (~(dma_addr_t)0)
->
-> +#ifdef CONFIG_ARCH_64BIT_HAS_DMA32_ONLY
-> +#define DMA_BIT_MASK(n)        (((n) > 32) ? ((1ULL<<(32))-1) : ((1ULL<<=
-(n))-1))
-> +#else
->  #define DMA_BIT_MASK(n)        (((n) =3D=3D 64) ? ~0ULL : ((1ULL<<(n))-1=
-))
-> +#endif
->
+The test thread will start N benchmark kthreads and then schedule out
+until the test time finished and notify the benchmark kthreads to stop.
+The benchmark kthreads will keep running until notified to stop.
+There's a problem with current implementation when the benchmark
+kthreads number is equal to the CPUs on a non-preemptible kernel:
+since the scheduler will balance the kthreads across the CPUs and
+when the test time's out the test thread won't get a chance to be
+scheduled on any CPU then cannot notify the benchmark kthreads to stop.
 
-How can this fit configuration where you want to have one Kernel image
-for several arm64 machine?
+This can be easily reproduced on a VM (simulated with 16 CPUs) with
+PREEMPT_VOLUNTARY:
+estuary:/mnt$ ./dma_map_benchmark -t 16 -s 1
+ rcu: INFO: rcu_sched self-detected stall on CPU
+ rcu:     10-...!: (5221 ticks this GP) idle=ed24/1/0x4000000000000000 softirq=142/142 fqs=0
+ rcu:     (t=5254 jiffies g=-559 q=45 ncpus=16)
+ rcu: rcu_sched kthread starved for 5255 jiffies! g-559 f0x0 RCU_GP_WAIT_FQS(5) ->state=0x0 ->cpu=12
+ rcu:     Unless rcu_sched kthread gets sufficient CPU time, OOM is now expected behavior.
+ rcu: RCU grace-period kthread stack dump:
+ task:rcu_sched       state:R  running task     stack:0     pid:16    tgid:16    ppid:2      flags:0x00000008
+ Call trace
+  __switch_to+0xec/0x138
+  __schedule+0x2f8/0x1080
+  schedule+0x30/0x130
+  schedule_timeout+0xa0/0x188
+  rcu_gp_fqs_loop+0x128/0x528
+  rcu_gp_kthread+0x1c8/0x208
+  kthread+0xec/0xf8
+  ret_from_fork+0x10/0x20
+ Sending NMI from CPU 10 to CPUs 0:
+ NMI backtrace for cpu 0
+ CPU: 0 PID: 332 Comm: dma-map-benchma Not tainted 6.10.0-rc1-vanilla-LSE #8
+ Hardware name: QEMU KVM Virtual Machine, BIOS 0.0.0 02/06/2015
+ pstate: 20400005 (nzCv daif +PAN -UAO -TCO -DIT -SSBS BTYPE=--)
+ pc : arm_smmu_cmdq_issue_cmdlist+0x218/0x730
+ lr : arm_smmu_cmdq_issue_cmdlist+0x488/0x730
+ sp : ffff80008748b630
+ x29: ffff80008748b630 x28: 0000000000000000 x27: ffff80008748b780
+ x26: 0000000000000000 x25: 000000000000bc70 x24: 000000000001bc70
+ x23: ffff0000c12af080 x22: 0000000000010000 x21: 000000000000ffff
+ x20: ffff80008748b700 x19: ffff0000c12af0c0 x18: 0000000000010000
+ x17: 0000000000000001 x16: 0000000000000040 x15: ffffffffffffffff
+ x14: 0001ffffffffffff x13: 000000000000ffff x12: 00000000000002f1
+ x11: 000000000001ffff x10: 0000000000000031 x9 : ffff800080b6b0b8
+ x8 : ffff0000c2a48000 x7 : 000000000001bc71 x6 : 0001800000000000
+ x5 : 00000000000002f1 x4 : 01ffffffffffffff x3 : 000000000009aaf1
+ x2 : 0000000000000018 x1 : 000000000000000f x0 : ffff0000c12af18c
+ Call trace:
+  arm_smmu_cmdq_issue_cmdlist+0x218/0x730
+  __arm_smmu_tlb_inv_range+0xe0/0x1a8
+  arm_smmu_iotlb_sync+0xc0/0x128
+  __iommu_dma_unmap+0x248/0x320
+  iommu_dma_unmap_page+0x5c/0xe8
+  dma_unmap_page_attrs+0x38/0x1d0
+  map_benchmark_thread+0x118/0x2c0
+  kthread+0xec/0xf8
+  ret_from_fork+0x10/0x20
 
-Michael
+Solve this by adding scheduling point in the kthread loop to
+avoid starving others. This won't affect the test results
+since we only care about the time consumed by the
+dma_{map, unmap}_single().
 
->  #ifdef CONFIG_DMA_API_DEBUG
->  void debug_dma_mapping_error(struct device *dev, dma_addr_t dma_addr);
-> diff --git a/kernel/dma/Kconfig b/kernel/dma/Kconfig
-> index c06e56be0ca1..0a27eafed808 100644
-> --- a/kernel/dma/Kconfig
-> +++ b/kernel/dma/Kconfig
-> @@ -36,6 +36,14 @@ config NEED_DMA_MAP_STATE
->  config ARCH_DMA_ADDR_T_64BIT
->         def_bool 64BIT || PHYS_ADDR_T_64BIT
->
-> +config ARCH_64BIT_HAS_DMA32_ONLY
-> +        bool "64bit System has DMA32 only"
-> +        depends on ARCH_DMA_ADDR_T_64BIT
-> +        default n
-> +       help
-> +         This enables forcing the maximum DMA_BIT_MASK to 32 bits for
-> +         64-bit systems that have DMA support limited to 32 bits.
-> +
->  config ARCH_HAS_DMA_SET_MASK
->         bool
->
-> --
-> 2.34.1
->
->
+Signed-off-by: Yicong Yang <yangyicong@hisilicon.com>
+---
+ kernel/dma/map_benchmark.c | 9 +++++++++
+ 1 file changed, 9 insertions(+)
+
+diff --git a/kernel/dma/map_benchmark.c b/kernel/dma/map_benchmark.c
+index 02205ab53b7e..2da9326c094c 100644
+--- a/kernel/dma/map_benchmark.c
++++ b/kernel/dma/map_benchmark.c
+@@ -89,6 +89,15 @@ static int map_benchmark_thread(void *data)
+ 		atomic64_add(map_sq, &map->sum_sq_map);
+ 		atomic64_add(unmap_sq, &map->sum_sq_unmap);
+ 		atomic64_inc(&map->loops);
++
++		/*
++		 * We may test for a long time so periodically yield the
++		 * CPU to avoid starve the others, especially on the
++		 * non-preemptible kernel. This won't affect the test
++		 * results since we only care about the time consumed by
++		 * the dma_{map, unmap}_single().
++		 */
++		cond_resched();
+ 	}
+ 
+ out:
+-- 
+2.24.0
+
