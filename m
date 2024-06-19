@@ -1,61 +1,61 @@
-Received: from mail-qk1-f171.google.com (mail-qk1-f171.google.com [209.85.222.171])
+Received: from mail-qt1-f170.google.com (mail-qt1-f170.google.com [209.85.160.170])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 63BBC1DA4C
-	for <iommu@lists.linux.dev>; Wed, 19 Jun 2024 14:32:06 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.222.171
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C0160F9D4
+	for <iommu@lists.linux.dev>; Wed, 19 Jun 2024 14:37:45 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.160.170
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1718807527; cv=none; b=CM7eBJ/0ZgwlMr+zjsh3PRrpHFZhsEQAJ3ct454puMqjHvlolgvvos3QPsLlc7UWgG98Ldu1b3h3DulqrwQ6TTTF44aLgZWaQOjN+/UzevwPjN0M/pE4I+94FKTluT9ozDDZ6exs9cynQfS1ckHD2H0TplEIueXjvRgG2jGKhTA=
+	t=1718807867; cv=none; b=Olrv6V2vl5YV7kvAKOi3yWhxk/1FzxPNQyIj7966gOKtmiOalAuGwie7VkdQFb/6W1tGj7LRqaimCMPVzsm5kq38TJp25R7Z1OA1V94dwqBQ87B6+opIAbEpKHDy4MUcCuxa2qZ0qpHkHRWvTEVXMPV2ETGQyfhSu9KYe5H244k=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1718807527; c=relaxed/simple;
-	bh=Nk3viGawuArziw5+sHP0ZhUL9Lqm72T1o8iA8Vi8L2k=;
+	s=arc-20240116; t=1718807867; c=relaxed/simple;
+	bh=ZTmS+6pciRWg87tmgTzyQHASaF/mUEBOIG23LnnAXHA=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=P9+qCy0h1cCRe5Fy1z/Rbb0FyoPVqZ0q9Zv7L+MAZg6/PloBnI8SJkyj2ZXiPerlgaYaGfUzEocJDnO6s45yGGvWRAWkQMUBrrxaFldoGG68C5k2HltesVRTgZNPz6BHRddxZSxRWuRjgHZXiXn1mVt2QJDvV0DwAmmxN3EGVZg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=FCob7B0m; arc=none smtp.client-ip=209.85.222.171
+	 Content-Type:Content-Disposition:In-Reply-To; b=O3Xi91yeo6ejpWTt1aoUaQmzP1J03wju/ajs0M/KnwBeDK6iTFNNmFzEF7W34AlGJ3rHwc6gNUo/4Svjh8KkfKJ44BBlBMtMqbDCIsTdvETLkWs3yVH3S5pS0vJIgggvWRMKnSVeoP7Coiu8Ep8LTTPO47cBNJ33FEbFwoX0+As=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=DY0P4wHW; arc=none smtp.client-ip=209.85.160.170
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="FCob7B0m"
-Received: by mail-qk1-f171.google.com with SMTP id af79cd13be357-795fb13b256so71961585a.0
-        for <iommu@lists.linux.dev>; Wed, 19 Jun 2024 07:32:06 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="DY0P4wHW"
+Received: by mail-qt1-f170.google.com with SMTP id d75a77b69052e-4435f782553so22263971cf.3
+        for <iommu@lists.linux.dev>; Wed, 19 Jun 2024 07:37:45 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google; t=1718807525; x=1719412325; darn=lists.linux.dev;
+        d=ziepe.ca; s=google; t=1718807865; x=1719412665; darn=lists.linux.dev;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=3LZUM5jfj4JrQADb+518kXqO9JR2q1Dki1G0Ben/yk4=;
-        b=FCob7B0m7ay4jAf6RVOV0wQVAgPjfeug5r4e6ZolwXLCZs8ApmBLHq/JhiRMlg8Two
-         t3SZv6yFQa0HjlXorKQTm6G7uDC2DxRrmFmqRfIMTRd+UIkjch7nWb7tWtuAHYND9hJd
-         KJSvStJAKiHVNo669VglZhktSM2P2rwPDGD91XO2kbiNU028oTXOxExOFOpMN/LL92qC
-         DAqA+KOnI8zgY+/0aaKnf3iGUuON88j7y2tS/LTCn2obUqW2L14y72kkkFNlvX63pRxN
-         NdmwUJLaLPNxkSCrNOPSQ4bYxgiv/xjPCvxaYQ+zUlTKUg9BUno+VHEpHlZDaffMPV9F
-         xmOQ==
+        bh=wxs6Ot1v7OOmYh1fi+h7d0RjfC3rXsdWHEMpoOwqcEg=;
+        b=DY0P4wHWNReBvtKk4Zf82Ha6r5j+X/2nrWwjQZ7s0A7BD/loUhZV32uzEom215Cfsn
+         yLPZEx2apZ1XTxNS2euJOUxwtY/PrOu6PPUZo5iWwVNrx9+r9kJpewppDektvE4fu7qu
+         qm5EwnSiDWbBa0U6JYMWWaZTaxDoNtndPq+wmSXWsGEjsMUTLc7Phj2DXa4rYoxOi5jb
+         b4NoBYX7RCbiLgOYMJZEvLkiZP7ivctYSHMhJV04FNswyiKJpzYoHAv6PcUk6oZdQ9rS
+         Z+K0NoTPsfDr9KbWSAVKm9/FevgXRK4DsiJS7ir8GGxUtIS5xqie8YT/g8SbH9mBTvlt
+         IOxA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1718807525; x=1719412325;
+        d=1e100.net; s=20230601; t=1718807865; x=1719412665;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=3LZUM5jfj4JrQADb+518kXqO9JR2q1Dki1G0Ben/yk4=;
-        b=C/XJJ2zQjhLqXdiI5OdmIX/+KMNVHrc4hZTvqNyzMoMNzRzpOCIV4pEIaBat1B9uH+
-         /8UYJk1P8pAP9962d24R9zL5JQwdEv/wfKb1Lv/6QTcVZ7C2XI7fewn0CYdqGe7f3imC
-         F83J5fmlazWYKQROuM2z6uFShEpbpi+BUP18uLLpIF/KzzSiJajRdKGFnDexJRmsHWOM
-         Q9MjaI+mXH7laFEV0Q9S4BqSDH/SvPLW1ENCg4GGOIfYUar+1+g/K+qQjW1w+mH0sTsR
-         lfFqdQklviJW8DX7e+ImqKhPdKtUEvrztOMQPs6Zd693ta/d8O9xcJzCMXJq5e9r5cGS
-         hkIw==
-X-Forwarded-Encrypted: i=1; AJvYcCVgcXg4baqztiqfAHxGNmnmoMB9kifnARv/rCdsDz7FNtgPHvFzNpYmOTvujFU7iTbuyHD/+c1AUqzK/q3dihxLf+zWfeQ=
-X-Gm-Message-State: AOJu0YxcPuLnBgqk1X0o1ZRBk7UKxw0JxnmVlvv24R/EbD0bqbodoK4n
-	giCt31de2bok0mvvCCgd55q0CIDYnDM/uKl4Y2jjCVotTgc6zpZuKnBeEzNl1Gs=
-X-Google-Smtp-Source: AGHT+IGuQBogl5nnCa0xO+oPgBraH+EqrP6Ubhg3FSeuAcnXv1sZiKKYgQ7jm2DbFVYX9xP9hURczQ==
-X-Received: by 2002:ad4:5f8b:0:b0:6b0:72ac:b306 with SMTP id 6a1803df08f44-6b2e22d60bdmr86925786d6.1.1718807525299;
-        Wed, 19 Jun 2024 07:32:05 -0700 (PDT)
+        bh=wxs6Ot1v7OOmYh1fi+h7d0RjfC3rXsdWHEMpoOwqcEg=;
+        b=QJiuzAusbcBQcI53tDP+0fkftX32u88Vv/xBtXr/G998t6l1wV605dgSLgeYgIpsJX
+         aYOy65JyTJe2DUXdw2/cngKDlH6i72onGHmza3oygQ/eA4jXglGQPAHnk+SHs+eQsHUs
+         tb75Uqzc6n9q1KqAnDnj8xfdMeYPyzQN6LGl51jqqg6tq7bi2dvM0JAPDGXUxnIqgokQ
+         kCUfb0576mnSdDJcvTusO7jZO4Kn0UcIVL8uBrSVdG4fsqntIQy/P4jKncn/j2YAN7zU
+         q1aRC+DzoTeWwk3E6xRZL8Ee19ZO/bmSqwt0nuSCY49GRB0NHwt9R+n5rf8rLHAdlDie
+         krig==
+X-Forwarded-Encrypted: i=1; AJvYcCWdPj8RkRTvitFbbzlHMDPOIC3KqsuC9ndhtFrxomvvp5L1YLi6MV3rJ9mKBMB4zFs2LdoY8ALVdl9YXnNUmznGfB4LXJM=
+X-Gm-Message-State: AOJu0YycMygbN7Y4uiSrw2HikIq5GtGtX2TP3aFiKLlhCuDL0SgY9D18
+	bO3hwoBtjgc2DF8ophx9/Nbjkaiy73Rhoo+xfIOoWYVK7t7gF4fEkL2TNxwjS9w=
+X-Google-Smtp-Source: AGHT+IE1Mf08qWZZKoMXC3XLTPx+dWna8s01o0jSerjkNHzkfpY1WyFHeXhpxUdgnTBTf9fhG5DGtQ==
+X-Received: by 2002:a05:622a:1985:b0:441:57b3:2d76 with SMTP id d75a77b69052e-444a79c1e37mr30313091cf.23.1718807864728;
+        Wed, 19 Jun 2024 07:37:44 -0700 (PDT)
 Received: from ziepe.ca (hlfxns017vw-142-68-80-239.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.68.80.239])
-        by smtp.gmail.com with ESMTPSA id 6a1803df08f44-6b2a5eb498bsm77913746d6.76.2024.06.19.07.32.04
+        by smtp.gmail.com with ESMTPSA id d75a77b69052e-441f2fcc297sm65510081cf.63.2024.06.19.07.37.44
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 19 Jun 2024 07:32:04 -0700 (PDT)
+        Wed, 19 Jun 2024 07:37:44 -0700 (PDT)
 Received: from jgg by wakko with local (Exim 4.95)
 	(envelope-from <jgg@ziepe.ca>)
-	id 1sJwM0-004bip-ET;
-	Wed, 19 Jun 2024 11:32:04 -0300
-Date: Wed, 19 Jun 2024 11:32:04 -0300
+	id 1sJwRT-004dJu-Li;
+	Wed, 19 Jun 2024 11:37:43 -0300
+Date: Wed, 19 Jun 2024 11:37:43 -0300
 From: Jason Gunthorpe <jgg@ziepe.ca>
 To: Lu Baolu <baolu.lu@linux.intel.com>
 Cc: Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
@@ -74,11 +74,9 @@ Cc: Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
 	ath10k@lists.infradead.org, ath11k@lists.infradead.org,
 	iommu@lists.linux.dev, dri-devel@lists.freedesktop.org,
 	linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v3 09/21] media: venus: firmware: Use
- iommu_paging_domain_alloc()
-Message-ID: <20240619143204.GD1091770@ziepe.ca>
+Subject: Re: [PATCH v3 00/21] iommu: Refactoring domain allocation interface
+Message-ID: <20240619143743.GJ791043@ziepe.ca>
 References: <20240610085555.88197-1-baolu.lu@linux.intel.com>
- <20240610085555.88197-10-baolu.lu@linux.intel.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -87,18 +85,25 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20240610085555.88197-10-baolu.lu@linux.intel.com>
+In-Reply-To: <20240610085555.88197-1-baolu.lu@linux.intel.com>
 
-On Mon, Jun 10, 2024 at 04:55:43PM +0800, Lu Baolu wrote:
-> An iommu domain is allocated in venus_firmware_init() and is attached to
-> core->fw.dev in the same function. Use iommu_paging_domain_alloc() to
-> make it explicit.
-> 
-> Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
-> ---
->  drivers/media/platform/qcom/venus/firmware.c | 6 +++---
->  1 file changed, 3 insertions(+), 3 deletions(-)
+On Mon, Jun 10, 2024 at 04:55:34PM +0800, Lu Baolu wrote:
+> Lu Baolu (20):
+>   iommu: Add iommu_paging_domain_alloc() interface
+>   iommufd: Use iommu_paging_domain_alloc()
+>   vfio/type1: Use iommu_paging_domain_alloc()
+>   drm/msm: Use iommu_paging_domain_alloc()
+>   wifi: ath10k: Use iommu_paging_domain_alloc()
+>   wifi: ath11k: Use iommu_paging_domain_alloc()
+>   RDMA/usnic: Use iommu_paging_domain_alloc()
 
-Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
+Joerg, can you pick at least the above patches for this cycle?
+Hopefully more will get tags and can go as well.
 
+If you want to try for more tags on the rest I suggest Lu can send
+patches to the subsystem trees and hope the maintainers merge them. At
+v6.11-rc5 we declare the remainder unmaintained and you take anything
+that hasn't been merged so we can finish the iommu core work.
+
+Thanks,
 Jason
