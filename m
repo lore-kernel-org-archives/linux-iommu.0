@@ -1,61 +1,37 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.9])
+Received: from szxga03-in.huawei.com (szxga03-in.huawei.com [45.249.212.189])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4256B13AF9
-	for <iommu@lists.linux.dev>; Thu, 20 Jun 2024 06:32:12 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.9
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 603491802E
+	for <iommu@lists.linux.dev>; Thu, 20 Jun 2024 09:34:37 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=45.249.212.189
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1718865134; cv=none; b=mJ2Hr9CIhu7ZvVbmE33tSIu6tN1vDEf5LaV6J7g4T1Z4GH3beNyfpm/HyaRsLAn1e6Y14q7Vam50TjL+iznJ6ZOLwJj7kayLgLzdnsngZMEt1NfWswBKiC0Gl8eUPaFMyDJ2OTCl5hnrwaZFGr1g6FPYPQV6jxeNL5uc1WTBEEI=
+	t=1718876080; cv=none; b=CYz9KD+KsGoUILqEI6sjfLn4MScyQ+0bOa9CJRR4M8eLFX2R2zQ9Z+z2mfXqArh7u7NKvYRdiMraj6W/MUkjCihhFJAzMl476vfoadUU3E3cfI0EaxXnYabMN3RmasUAUfQimGCaCwrriZawnietihWwZMManIl2lQqxYosHD/c=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1718865134; c=relaxed/simple;
-	bh=+Wnn24Xlpa6rae18wbizkFcb2MAtnQ/iXJt1icI1Q0A=;
-	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version; b=Br7ihZBggJLJZIRQA9EwIQWK6ST0k1x4NtFsm376WtsOVMTKxrt1eugii0HACfXx/7U0PtF/4BByQMgRbb/9a1zEOCXtaPLh/SWdDbVFGemrMAn39nnhA2ZPIwzOzHcMcKqxWXGFm+Ea0jwVcei0nRvZSEnIjsZ8OsfKIoFhghI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=MPXYH5HE; arc=none smtp.client-ip=198.175.65.9
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="MPXYH5HE"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1718865133; x=1750401133;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=+Wnn24Xlpa6rae18wbizkFcb2MAtnQ/iXJt1icI1Q0A=;
-  b=MPXYH5HENwPcteHLVYu2ogTCbt0zKP5SFX18kOcJMzR2X5/wp8P5SsD+
-   n1z5BoRX0w19UDHFDdthPSwcWthkBMXsgW/Z5K7lH4RCRxLiKNlQ21WiC
-   mw3/4QbxYPAnwq2se7wISHDUhDfbdZsL08th3BuUPpBC5gMO8M6DUAum5
-   sOJLLRz6pF8ak/DhEjGC0/u/eHLWtJNVR23/atgo5ip4zHxHso+tNQ8Hz
-   Zq/kknFihlRjsJ+S8ChyrZ0qKaTrGdyH/aGGZgIkC1wkYhvjPZUbJfaEw
-   5KN2a9h7SZVN8RePIHVd09BXnQKoI1c62l2wTs7/rf9qIIEzYrJXUS0ni
-   Q==;
-X-CSE-ConnectionGUID: f0Nn4rTwSummv63MOSU+Fw==
-X-CSE-MsgGUID: aeWNLm1qRbyrrviLbTPhIQ==
-X-IronPort-AV: E=McAfee;i="6700,10204,11108"; a="38334030"
-X-IronPort-AV: E=Sophos;i="6.08,251,1712646000"; 
-   d="scan'208";a="38334030"
-Received: from fmviesa009.fm.intel.com ([10.60.135.149])
-  by orvoesa101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Jun 2024 23:32:12 -0700
-X-CSE-ConnectionGUID: 8xLW16KfRteWdLWvkDkhdw==
-X-CSE-MsgGUID: 5cU3Uf+mS5GF7QFugpHoDA==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.08,251,1712646000"; 
-   d="scan'208";a="42242042"
-Received: from unknown (HELO allen-box.sh.intel.com) ([10.239.159.127])
-  by fmviesa009.fm.intel.com with ESMTP; 19 Jun 2024 23:32:09 -0700
-From: Lu Baolu <baolu.lu@linux.intel.com>
-To: Joerg Roedel <joro@8bytes.org>,
-	Will Deacon <will@kernel.org>,
-	Robin Murphy <robin.murphy@arm.com>,
-	Kevin Tian <kevin.tian@intel.com>,
-	Jason Gunthorpe <jgg@ziepe.ca>,
-	Jacek Lawrynowicz <jacek.lawrynowicz@linux.intel.com>
-Cc: iommu@lists.linux.dev,
-	linux-kernel@vger.kernel.org,
-	Lu Baolu <baolu.lu@linux.intel.com>
-Subject: [PATCH v2 1/1] iommu/vt-d: Fix missed device TLB cache tag
-Date: Thu, 20 Jun 2024 14:29:40 +0800
-Message-Id: <20240620062940.201786-1-baolu.lu@linux.intel.com>
-X-Mailer: git-send-email 2.34.1
+	s=arc-20240116; t=1718876080; c=relaxed/simple;
+	bh=FEaM12eT70ei9LMXlJcXv1siTmpjiKS6cujOpvid8FQ=;
+	h=From:To:CC:Subject:Date:Message-ID:MIME-Version:Content-Type; b=ArzUYjueuec8LX995HA9JV8zJ/Sk3O8Q64k0z7Zh1/AF95DtSeNQxPVyX2mCh8P6LKyKHbKWlqb6FCrCg/7f6F4xUANYXUHN3X+IvsICWuGkLZiOKcPUbs6Q9utQJvCJi+ehRqi+UpsMsr0aWKj2F7tx/LNTyg+3wbs7AtMQCLY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=huawei.com; spf=pass smtp.mailfrom=huawei.com; arc=none smtp.client-ip=45.249.212.189
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=huawei.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=huawei.com
+Received: from mail.maildlp.com (unknown [172.19.163.48])
+	by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4W4Zx05NLVzPs22;
+	Thu, 20 Jun 2024 17:31:00 +0800 (CST)
+Received: from kwepemd200014.china.huawei.com (unknown [7.221.188.8])
+	by mail.maildlp.com (Postfix) with ESMTPS id 863C518007A;
+	Thu, 20 Jun 2024 17:34:34 +0800 (CST)
+Received: from localhost.localdomain (10.50.165.33) by
+ kwepemd200014.china.huawei.com (7.221.188.8) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.1258.34; Thu, 20 Jun 2024 17:34:33 +0800
+From: Yicong Yang <yangyicong@huawei.com>
+To: <chenxiang66@hisilicon.com>, <hch@lst.de>, <iommu@lists.linux.dev>,
+	<baohua@kernel.org>
+CC: <jonathan.cameron@huawei.com>, <prime.zeng@huawei.com>,
+	<linuxarm@huawei.com>, <yangyicong@hisilicon.com>
+Subject: [PATCH v2] dma-mapping: benchmark: Don't starve others when doing the test
+Date: Thu, 20 Jun 2024 17:28:55 +0800
+Message-ID: <20240620092855.54581-1-yangyicong@huawei.com>
+X-Mailer: git-send-email 2.31.0
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -63,78 +39,112 @@ List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-ClientProxiedBy: dggems704-chm.china.huawei.com (10.3.19.181) To
+ kwepemd200014.china.huawei.com (7.221.188.8)
 
-When a domain is attached to a device, the required cache tags are
-assigned to the domain so that the related caches can be flushed
-whenever it is needed. The device TLB cache tag is created based
-on whether the ats_enabled field of the device's iommu data is set.
-This creates an ordered dependency between cache tag assignment and
-ATS enabling.
+From: Yicong Yang <yangyicong@hisilicon.com>
 
-The device TLB cache tag would not be created if device's ATS is
-enabled after the cache tag assignment. This causes devices with PCI
-ATS support to malfunction.
+The test thread will start N benchmark kthreads and then schedule out
+until the test time finished and notify the benchmark kthreads to stop.
+The benchmark kthreads will keep running until notified to stop.
+There's a problem with current implementation when the benchmark
+kthreads number is equal to the CPUs on a non-preemptible kernel:
+since the scheduler will balance the kthreads across the CPUs and
+when the test time's out the test thread won't get a chance to be
+scheduled on any CPU then cannot notify the benchmark kthreads to stop.
 
-The ATS control is exclusively owned by the iommu driver. Hence, move
-cache_tag_assign_domain() after PCI ATS enabling to make sure that the
-device TLB cache tag is created for the domain.
+This can be easily reproduced on a VM (simulated with 16 CPUs) with
+PREEMPT_VOLUNTARY:
+estuary:/mnt$ ./dma_map_benchmark -t 16 -s 1
+ rcu: INFO: rcu_sched self-detected stall on CPU
+ rcu:     10-...!: (5221 ticks this GP) idle=ed24/1/0x4000000000000000 softirq=142/142 fqs=0
+ rcu:     (t=5254 jiffies g=-559 q=45 ncpus=16)
+ rcu: rcu_sched kthread starved for 5255 jiffies! g-559 f0x0 RCU_GP_WAIT_FQS(5) ->state=0x0 ->cpu=12
+ rcu:     Unless rcu_sched kthread gets sufficient CPU time, OOM is now expected behavior.
+ rcu: RCU grace-period kthread stack dump:
+ task:rcu_sched       state:R  running task     stack:0     pid:16    tgid:16    ppid:2      flags:0x00000008
+ Call trace
+  __switch_to+0xec/0x138
+  __schedule+0x2f8/0x1080
+  schedule+0x30/0x130
+  schedule_timeout+0xa0/0x188
+  rcu_gp_fqs_loop+0x128/0x528
+  rcu_gp_kthread+0x1c8/0x208
+  kthread+0xec/0xf8
+  ret_from_fork+0x10/0x20
+ Sending NMI from CPU 10 to CPUs 0:
+ NMI backtrace for cpu 0
+ CPU: 0 PID: 332 Comm: dma-map-benchma Not tainted 6.10.0-rc1-vanilla-LSE #8
+ Hardware name: QEMU KVM Virtual Machine, BIOS 0.0.0 02/06/2015
+ pstate: 20400005 (nzCv daif +PAN -UAO -TCO -DIT -SSBS BTYPE=--)
+ pc : arm_smmu_cmdq_issue_cmdlist+0x218/0x730
+ lr : arm_smmu_cmdq_issue_cmdlist+0x488/0x730
+ sp : ffff80008748b630
+ x29: ffff80008748b630 x28: 0000000000000000 x27: ffff80008748b780
+ x26: 0000000000000000 x25: 000000000000bc70 x24: 000000000001bc70
+ x23: ffff0000c12af080 x22: 0000000000010000 x21: 000000000000ffff
+ x20: ffff80008748b700 x19: ffff0000c12af0c0 x18: 0000000000010000
+ x17: 0000000000000001 x16: 0000000000000040 x15: ffffffffffffffff
+ x14: 0001ffffffffffff x13: 000000000000ffff x12: 00000000000002f1
+ x11: 000000000001ffff x10: 0000000000000031 x9 : ffff800080b6b0b8
+ x8 : ffff0000c2a48000 x7 : 000000000001bc71 x6 : 0001800000000000
+ x5 : 00000000000002f1 x4 : 01ffffffffffffff x3 : 000000000009aaf1
+ x2 : 0000000000000018 x1 : 000000000000000f x0 : ffff0000c12af18c
+ Call trace:
+  arm_smmu_cmdq_issue_cmdlist+0x218/0x730
+  __arm_smmu_tlb_inv_range+0xe0/0x1a8
+  arm_smmu_iotlb_sync+0xc0/0x128
+  __iommu_dma_unmap+0x248/0x320
+  iommu_dma_unmap_page+0x5c/0xe8
+  dma_unmap_page_attrs+0x38/0x1d0
+  map_benchmark_thread+0x118/0x2c0
+  kthread+0xec/0xf8
+  ret_from_fork+0x10/0x20
 
-Fixes: 3b1d9e2b2d68 ("iommu/vt-d: Add cache tag assignment interface")
-Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
+Solve this by adding scheduling point in the kthread loop,
+so if there're other threads in the system they may have
+a chance to run, especially the thread to notify the test
+end. However this may degrade the test concurrency so it's
+recommended to run this on an idle system.
+
+Signed-off-by: Yicong Yang <yangyicong@hisilicon.com>
+Acked-by: Barry Song <baohua@kernel.org>
 ---
- drivers/iommu/intel/iommu.c | 20 ++++++++++----------
- 1 file changed, 10 insertions(+), 10 deletions(-)
+Change since v1:
+- Correct the comment and mention the preferred use scenario, per Barry
+Link: https://lore.kernel.org/all/20240619092133.37411-1-yangyicong@huawei.com/
 
-Change log:
-v2:
-- Reverting the order instead of adding unnecessary run-time overhead.
+ kernel/dma/map_benchmark.c | 16 ++++++++++++++++
+ 1 file changed, 16 insertions(+)
 
-v1:
-- https://lore.kernel.org/linux-iommu/20240619015345.182773-1-baolu.lu@linux.intel.com/
-
-diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
-index 2e9811bf2a4e..fd11a080380c 100644
---- a/drivers/iommu/intel/iommu.c
-+++ b/drivers/iommu/intel/iommu.c
-@@ -2114,12 +2114,6 @@ static int dmar_domain_attach_device(struct dmar_domain *domain,
- 	if (ret)
- 		return ret;
- 
--	ret = cache_tag_assign_domain(domain, dev, IOMMU_NO_PASID);
--	if (ret) {
--		domain_detach_iommu(domain, iommu);
--		return ret;
--	}
--
- 	info->domain = domain;
- 	spin_lock_irqsave(&domain->lock, flags);
- 	list_add(&info->link, &domain->devices);
-@@ -2137,15 +2131,21 @@ static int dmar_domain_attach_device(struct dmar_domain *domain,
- 	else
- 		ret = intel_pasid_setup_second_level(iommu, domain, dev, IOMMU_NO_PASID);
- 
--	if (ret) {
--		device_block_translation(dev);
--		return ret;
--	}
-+	if (ret)
-+		goto out_block_translation;
- 
- 	if (sm_supported(info->iommu) || !domain_type_is_si(info->domain))
- 		iommu_enable_pci_caps(info);
- 
-+	ret = cache_tag_assign_domain(domain, dev, IOMMU_NO_PASID);
-+	if (ret)
-+		goto out_block_translation;
+diff --git a/kernel/dma/map_benchmark.c b/kernel/dma/map_benchmark.c
+index 4950e0b622b1..cc19a3efea89 100644
+--- a/kernel/dma/map_benchmark.c
++++ b/kernel/dma/map_benchmark.c
+@@ -89,6 +89,22 @@ static int map_benchmark_thread(void *data)
+ 		atomic64_add(map_sq, &map->sum_sq_map);
+ 		atomic64_add(unmap_sq, &map->sum_sq_unmap);
+ 		atomic64_inc(&map->loops);
 +
- 	return 0;
-+
-+out_block_translation:
-+	device_block_translation(dev);
-+	return ret;
- }
++		/*
++		 * We may test for a long time so periodically check whether
++		 * we need to schedule to avoid starving the others. Otherwise
++		 * we may hangup the kernel in a non-preemptible kernel when
++		 * the test kthreads number >= CPU number, the test kthreads
++		 * will run endless on every CPU since the thread resposible
++		 * for notifying the kthread stop (in do_map_benchmark())
++		 * could not be scheduled.
++		 *
++		 * Note this may degrade the test concurrency since the test
++		 * threads may need to share the CPU time with other load
++		 * in the system. So it's recommended to run this benchmark
++		 * on an idle system.
++		 */
++		cond_resched();
+ 	}
  
- /**
+ out:
 -- 
-2.34.1
+2.24.0
 
