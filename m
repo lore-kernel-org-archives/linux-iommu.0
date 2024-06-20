@@ -1,116 +1,112 @@
-Received: from fout5-smtp.messagingengine.com (fout5-smtp.messagingengine.com [103.168.172.148])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-io1-f41.google.com (mail-io1-f41.google.com [209.85.166.41])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 55B822594;
-	Thu, 20 Jun 2024 09:45:36 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=103.168.172.148
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B8CEE1AAE25;
+	Thu, 20 Jun 2024 10:17:09 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.166.41
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1718876739; cv=none; b=EEBQr9f8wrZcvUVby4f9f9p9bDuys7uuoC8wCffiDfgW+PGQPvl2kbLcmoWIhBi1dYocy8/kc2lfy7OJr7MKxAVOujQDKcKP3+0GYYzUZeWQiY/cAR7wJ4n2/pmKBxthuqoDNi1YFCCtl0Bp836TauJeUVr+DWTguZ6u2gNaj3Y=
+	t=1718878631; cv=none; b=XtZgmBdiJRSmE1ZnRBLvng0PK0XaEoG+ARIpuE97SUfVJYrPLM2ieZiMWdrJkfC+o0kxj8jrmIH6gefh9DODJN34Lg1zdLeY5udD5Kboh1gkzKr1bvjeDueVoiK9BqPNeVpNEIetCOcT5EIREQQeQafOZL7vOOo5ohcXOdqg/jg=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1718876739; c=relaxed/simple;
-	bh=CUc1gDLpC345RTrFQKC24CcXBEu62C/dxC9CC6Wpmgk=;
-	h=MIME-Version:Message-Id:In-Reply-To:References:Date:From:To:Cc:
-	 Subject:Content-Type; b=PDqNJKiTHLIBnZ3zyyTIROpXCqxfk+KfQKL62hKn2dHMV3yZXLQgsmpn/XLlFTyfY5JWpFLq95ZaGjwxI8hP3nY3BlIo2HRE9LV4I6VBjgG/ZT7fvUIYFL2uEOQHs0q3BKr8RrSd+g+GzQdm2IwtBhU+5/Jn0Ovg1AuRmS0A7xE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=testtoast.com; spf=pass smtp.mailfrom=testtoast.com; dkim=pass (2048-bit key) header.d=testtoast.com header.i=@testtoast.com header.b=SW8BwNrm; dkim=pass (2048-bit key) header.d=messagingengine.com header.i=@messagingengine.com header.b=vk7XYibv; arc=none smtp.client-ip=103.168.172.148
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=testtoast.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=testtoast.com
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=testtoast.com header.i=@testtoast.com header.b="SW8BwNrm";
-	dkim=pass (2048-bit key) header.d=messagingengine.com header.i=@messagingengine.com header.b="vk7XYibv"
-Received: from compute5.internal (compute5.nyi.internal [10.202.2.45])
-	by mailfout.nyi.internal (Postfix) with ESMTP id 67F821380591;
-	Thu, 20 Jun 2024 05:45:35 -0400 (EDT)
-Received: from imap47 ([10.202.2.97])
-  by compute5.internal (MEProxy); Thu, 20 Jun 2024 05:45:35 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=testtoast.com;
-	 h=cc:cc:content-type:content-type:date:date:from:from
-	:in-reply-to:in-reply-to:message-id:mime-version:references
-	:reply-to:subject:subject:to:to; s=fm2; t=1718876735; x=
-	1718963135; bh=mUhzbzChIylmEGH0/MJ86mZWNAZXM70UzMOFDHyCHRc=; b=S
-	W8BwNrmyAlxh4M3o6vqcHtvwHb7YD6FXoF6KLuL145oJnEk+e1LUhWovpxMtoM3f
-	rvR1bwJFansf7WeY/xDfqcqUS945fdQxrJsoDI38NkQY38NSqVluhrDDQcbdooEt
-	mJUGLgKyrqKY+Pjq6loRQ+oACSPCCV+ma4wEzEvyIzqFL/yKgVXsbHX4SvRF+bZH
-	GmYj6NVanpdeoUyk10PWGys9EZDrNyt459/F0RYRtHJcgiEf4rWVu9xBX6K85B8a
-	Dxb8gyrSj+BVtbYsFIzNWB32VhckRDF64tqvm5aWTlQ6VmOVvQAg+D42FB/S4ZUE
-	U7MfMI9Nbv3nRFmlaKlbQ==
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-	messagingengine.com; h=cc:cc:content-type:content-type:date:date
-	:feedback-id:feedback-id:from:from:in-reply-to:in-reply-to
-	:message-id:mime-version:references:reply-to:subject:subject:to
-	:to:x-me-proxy:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
-	fm2; t=1718876735; x=1718963135; bh=mUhzbzChIylmEGH0/MJ86mZWNAZX
-	M70UzMOFDHyCHRc=; b=vk7XYibvZm+OT/nXT86A2p7eXQ/lHr4lqzbw6oC+bvng
-	89JObMGFy6Ja9U3r4ibObK7uz72p0NrvNubBH0BuQO29eU6uyBBYmE01/7TXKVpm
-	nAg03shghZLHCB7lL/5wSnTUCD6w5nQFifSJhkfFrmtMWFiqYMnuRry1R44nd7UY
-	bl09EpdGddkdgbVGD7+ckrBntNX+hXyhmCYecUP9M52Nt+80DqlkoRB7qVRZXdXT
-	MVj9NFU6MNDnzoLvakiaZw+hHd324omBxARZDBYfEgEgc5ueQyoq/pxjnsHXNNuY
-	OAtETQdBigz4CIeatsPhUL25L9xP+gVKDXuNoV/6/g==
-X-ME-Sender: <xms:PvpzZpauLmSOstUAwPog9nIXc1bPeIsbPswpUfeeP76F2AbIlYM-Rg>
-    <xme:PvpzZgY2-eZT7fs3JFoSjIYDywFOfeLfYV0bOXBbPEnHBfFUv_wFWojwgTXulfuQ9
-    Ugv8q3fWgIsBkkDXg>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvledrfeefvddgvddtucetufdoteggodetrfdotf
-    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
-    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
-    cujfgurhepofgfggfkjghffffhvfevufgtsehttdertderredtnecuhfhrohhmpedftfih
-    rghnucghrghlkhhlihhnfdcuoehrhigrnhesthgvshhtthhorghsthdrtghomheqnecugg
-    ftrfgrthhtvghrnhephedvveeigedujeeufeegffehhfffveduhfeijefgtdffteelgfet
-    ueevieduieejnecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmrghilhhfrh
-    homheprhihrghnsehtvghsthhtohgrshhtrdgtohhm
-X-ME-Proxy: <xmx:PvpzZr-8jTf_9URxOSVlD4LczVtsMPba6DBeplMNB30Bd8EdtrE92A>
-    <xmx:PvpzZnpj5OXFj_0GW--D1B3VYJTwhkzRANZzBg0TSDMHPRzCHtSy7g>
-    <xmx:PvpzZkq7WdD5v8hyCf_o7bCKwq9mgxeJcXY8WuCy8iuPFJny7RPfow>
-    <xmx:PvpzZtTWl6mKCyJ75JAQDIWg3fpYNT132IU-la1FYIW6INJwn2bKvA>
-    <xmx:P_pzZgaQkX4ibclyEAGzEJJ_nbtEbxDWi4rteQ4yE_6zICkSMfPqN2aF>
-Feedback-ID: idc0145fc:Fastmail
-Received: by mailuser.nyi.internal (Postfix, from userid 501)
-	id A5567A60079; Thu, 20 Jun 2024 05:45:34 -0400 (EDT)
-X-Mailer: MessagingEngine.com Webmail Interface
-User-Agent: Cyrus-JMAP/3.11.0-alpha0-522-ga39cca1d5-fm-20240610.002-ga39cca1d
+	s=arc-20240116; t=1718878631; c=relaxed/simple;
+	bh=I852Ejxeh6UBMbuDlX5f1x21bZJ26MMuC54Ks2Ixqy0=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=CGyeG8ARMVv/KUWOVFCkvWJR+A+dfPp/gkNi7hPyQEhzwPTuNc4Kz3pArkNME+pD0xu7IRS0fffCg8/9+7neXC1CfswL96kiMpfO8rCh2rs21xHrSiZ2pfwUuirCVtFy7U38S1z0et4ZHA5Py6fzw4H6tPp0cpncZJDLfDOJBaA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=csie.org; spf=pass smtp.mailfrom=gmail.com; arc=none smtp.client-ip=209.85.166.41
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=csie.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+Received: by mail-io1-f41.google.com with SMTP id ca18e2360f4ac-7ebe019b9cdso23051939f.0;
+        Thu, 20 Jun 2024 03:17:09 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1718878625; x=1719483425;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :reply-to:in-reply-to:references:mime-version:x-gm-message-state
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=8Ii5+G2KJSVTDisMBcuARMzoZC7l2YVn4JwkkJV90oQ=;
+        b=egUsW0TxBpREF8O944TB2+dxDbHkzPb1wofN+MJC3UIg+tE29SxI/pbYrn75ypGpWv
+         APvr/UEUl91TaysEaAPzJH/QFMlz555wh6vUHino+qr2mg7IOuhZNsog81mF4zx7QOcC
+         8jTIsuwg7KtaPhOtkli7yDu5VE/HkJkB2vlFrVy3JbpDAwBhsjVfwndOWMcp4SZv2efH
+         VErXbL6pmyKCJupUv/QiE++KVfzpmJbCE7PPT0xDYf4kHxELr97rWRoeqnHWVIBTSMNb
+         9rlGaVbGlL8YvIrm/+wMFq48NCaLcA5NWvYwmOBoOAoVRpdUVK+bNPjCP7D+GBj49RbS
+         nlFQ==
+X-Forwarded-Encrypted: i=1; AJvYcCXvuWfguIkU45+vxVNczw0Az9rmFCTl4ROLJjFJpMhj9pMNjRkx2t8RWzzTdsPMD7JlutFJL9rzTkK2pICVn2/WshYhUPfm4U/l0jbEB0xwS7Ec0rOziN721wiKn31rrEHnqA==
+X-Gm-Message-State: AOJu0Yxz1SL7j4D0ogWXaKBrxvvFs57v7wfb6niULb6CMbEFWBnrmoP+
+	mItn4RmdlxFL3D2mcCIey7LObdgIguHLa/70x1FydTsZjNqr7901h/PmKxaRlkBnxw==
+X-Google-Smtp-Source: AGHT+IHvg3jK/b7b7r9mjXrG7N2BceVFYYUJqgc+2ls4R+81Oi1Bk+pcyalpJb24urlqUT/vmH0nuw==
+X-Received: by 2002:a05:6602:1347:b0:7eb:2c80:5329 with SMTP id ca18e2360f4ac-7f13edde6e4mr577442639f.7.1718878625255;
+        Thu, 20 Jun 2024 03:17:05 -0700 (PDT)
+Received: from mail-io1-f47.google.com (mail-io1-f47.google.com. [209.85.166.47])
+        by smtp.gmail.com with ESMTPSA id 8926c6da1cb9f-4b958ee4441sm4175953173.59.2024.06.20.03.17.04
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 20 Jun 2024 03:17:04 -0700 (PDT)
+Received: by mail-io1-f47.google.com with SMTP id ca18e2360f4ac-7ebdb5d9915so22570439f.1;
+        Thu, 20 Jun 2024 03:17:04 -0700 (PDT)
+X-Forwarded-Encrypted: i=1; AJvYcCW9v7AiZIAr/CtnqxwkY5rsYP0UqtB+aCL8slcULGReKY8i8nERCRYTZ2Fs3tWymg9q8YtiPpJVT8mte+tK2dVJP6kkEPPpsEQnne5cZh4PuzdSaMIwDFe2vwSorU4ZP+fb9w==
+X-Received: by 2002:a05:6602:1347:b0:7eb:2c80:5329 with SMTP id
+ ca18e2360f4ac-7f13edde6e4mr577440439f.7.1718878624678; Thu, 20 Jun 2024
+ 03:17:04 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Message-Id: <d02c238c-766b-4463-96a9-dd6373b173bb@app.fastmail.com>
-In-Reply-To: <20240616224056.29159-6-andre.przywara@arm.com>
-References: <20240616224056.29159-1-andre.przywara@arm.com>
- <20240616224056.29159-6-andre.przywara@arm.com>
-Date: Thu, 20 Jun 2024 21:45:13 +1200
-From: "Ryan Walklin" <ryan@testtoast.com>
-To: "Andre Przywara" <andre.przywara@arm.com>,
- "Joerg Roedel" <joro@8bytes.org>, "Will Deacon" <will@kernel.org>,
- "Robin Murphy" <robin.murphy@arm.com>, "Chen-Yu Tsai" <wens@csie.org>,
- "Jernej Skrabec" <jernej.skrabec@gmail.com>,
- "Samuel Holland" <samuel@sholland.org>,
- "Krzysztof Kozlowski" <krzk+dt@kernel.org>,
- "Conor Dooley" <conor+dt@kernel.org>, "Rob Herring" <robh@kernel.org>
-Cc: "Chris Morgan" <macromorgan@hotmail.com>,
- "Philippe Simons" <simons.philippe@gmail.com>, iommu@lists.linux.dev,
- devicetree@vger.kernel.org, linux-sunxi@lists.linux.dev,
- linux-arm-kernel@lists.infradead.org
-Subject: Re: [PATCH v2 5/5] arm64: dts: allwinner: h616: add IOMMU node
-Content-Type: text/plain
+References: <20240616224056.29159-1-andre.przywara@arm.com> <20240616224056.29159-2-andre.przywara@arm.com>
+In-Reply-To: <20240616224056.29159-2-andre.przywara@arm.com>
+Reply-To: wens@csie.org
+From: Chen-Yu Tsai <wens@csie.org>
+Date: Thu, 20 Jun 2024 18:16:49 +0800
+X-Gmail-Original-Message-ID: <CAGb2v66-a+BOB-V5Q+YOS3M=QTZ7VMG73N0yFtRo6p-xh=muTg@mail.gmail.com>
+Message-ID: <CAGb2v66-a+BOB-V5Q+YOS3M=QTZ7VMG73N0yFtRo6p-xh=muTg@mail.gmail.com>
+Subject: Re: [PATCH v2 1/5] iommu: sun50i: clear bypass register
+To: Andre Przywara <andre.przywara@arm.com>
+Cc: Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>, 
+	Robin Murphy <robin.murphy@arm.com>, Jernej Skrabec <jernej.skrabec@gmail.com>, 
+	Samuel Holland <samuel@sholland.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>, 
+	Conor Dooley <conor+dt@kernel.org>, Rob Herring <robh@kernel.org>, 
+	Chris Morgan <macromorgan@hotmail.com>, Ryan Walklin <ryan@testtoast.com>, 
+	Philippe Simons <simons.philippe@gmail.com>, iommu@lists.linux.dev, 
+	devicetree@vger.kernel.org, linux-sunxi@lists.linux.dev, 
+	linux-arm-kernel@lists.infradead.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-Hi Andre,
-
-On Mon, 17 Jun 2024, at 10:40 AM, Andre Przywara wrote:
-> The Allwinner H616 contains a scatter-gather IOMMU connected to some
-> video related devices. It's almost compatible to the one used in the H6,
-> though with minor incompatibilities.
+On Mon, Jun 17, 2024 at 6:42=E2=80=AFAM Andre Przywara <andre.przywara@arm.=
+com> wrote:
 >
-> Add the DT node describing its resources, so that devices like the video
-> or display engine can connect to it.
+> From: Jernej Skrabec <jernej.skrabec@gmail.com>
+>
+> The Allwinner H6 IOMMU has a bypass register, which allows to circumvent
+> the page tables for each possible master. The reset value for this
+> register is 0, which disables the bypass.
+> The Allwinner H616 IOMMU resets this register to 0x7f, which activates
+> the bypass for all masters, which is not what we want.
+>
+> Always clear this register to 0, to enforce the usage of page tables,
+> and make this driver compatible with the H616 in this respect.
+>
+> Signed-off-by: Jernej Skrabec <jernej.skrabec@gmail.com>
+> Signed-off-by: Andre Przywara <andre.przywara@arm.com>
 
-Thanks, tested working with the display engine on an Allwinner H700 device (Anbernic RG35XX Plus).
+Reviewed-by: Chen-Yu Tsai <wens@csie.org>
 
-[    0.038060] iommu: Default domain type: Translated
-[    0.038080] iommu: DMA domain TLB invalidation policy: strict mode
-...
-[    0.175075] sun8i-mixer 1100000.mixer: Adding to iommu group 0
-
-Tested-by: Ryan Walklin <ryan@testtoast.com>
-
-Regards,
-
-Ryan
+> ---
+>  drivers/iommu/sun50i-iommu.c | 1 +
+>  1 file changed, 1 insertion(+)
+>
+> diff --git a/drivers/iommu/sun50i-iommu.c b/drivers/iommu/sun50i-iommu.c
+> index c519b991749d7..dd3f07384624c 100644
+> --- a/drivers/iommu/sun50i-iommu.c
+> +++ b/drivers/iommu/sun50i-iommu.c
+> @@ -452,6 +452,7 @@ static int sun50i_iommu_enable(struct sun50i_iommu *i=
+ommu)
+>                     IOMMU_TLB_PREFETCH_MASTER_ENABLE(3) |
+>                     IOMMU_TLB_PREFETCH_MASTER_ENABLE(4) |
+>                     IOMMU_TLB_PREFETCH_MASTER_ENABLE(5));
+> +       iommu_write(iommu, IOMMU_BYPASS_REG, 0);
+>         iommu_write(iommu, IOMMU_INT_ENABLE_REG, IOMMU_INT_MASK);
+>         iommu_write(iommu, IOMMU_DM_AUT_CTRL_REG(SUN50I_IOMMU_ACI_NONE),
+>                     IOMMU_DM_AUT_CTRL_RD_UNAVAIL(SUN50I_IOMMU_ACI_NONE, 0=
+) |
+> --
+> 2.39.4
+>
