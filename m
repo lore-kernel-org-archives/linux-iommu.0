@@ -1,183 +1,128 @@
-Received: from NAM10-MW2-obe.outbound.protection.outlook.com (mail-mw2nam10on2062.outbound.protection.outlook.com [40.107.94.62])
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 96AB811CA1
-	for <iommu@lists.linux.dev>; Thu, 20 Jun 2024 06:06:20 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.94.62
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1718863582; cv=fail; b=dFFHI3f+C4ZBIEe9ua5U18JPWzt7jSm70Qi1vIp7HCjuH55f/bCLjKPS49y9NtdX/KyyRx7EZ/lgO98HLs4wpVnNpRFoX+fg+Pj6rmdKRq4WQlkSULj087CntaZ/12reMBD23EzU+Is3BFLzRjKYg0a6ah90x5N15jfYoNY1VIg=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1718863582; c=relaxed/simple;
-	bh=+ANRZVYXyMPcMg2XYjRZIfTCAcrgBbOMrSN7n/rYmyQ=;
-	h=From:To:CC:Subject:Date:Message-ID:MIME-Version:Content-Type; b=h1HnoP9FfOnqivTXzE+TzKlepXL5pKw2shI4YV6ksRBWYoARnqsf7Y8t0QyyOlIyltBV3Z0tvIPtMAULzxg4nJNUTMwsDdvp5LzGxuo7D76ep+9UQ8ytD9z0TnqxP/EEUc9ryPK+ViDDddH/n6H1SMupV0JnjAOvt6ggpYLUtJo=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com; spf=fail smtp.mailfrom=amd.com; dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b=K5KYHgyk; arc=fail smtp.client-ip=40.107.94.62
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=amd.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6F40D2B9B8
+	for <iommu@lists.linux.dev>; Thu, 20 Jun 2024 06:27:38 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.19
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1718864859; cv=none; b=jJay0fRsdgr4RVK6sJt1RiG3rJLq40a2dsu9G7gZwkEY/RjlSRN12pGwTQMXcU3g/8IsqN7MKt7HVEfTxkRHLE/Q5JhvIQ1AuLvCaTT8wnBHm3yctp4Cz2kOwtXIzmEG296YEyEcU0Qi/V1sD4LlN00sHWQDOwRwHGjLZu7uTug=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1718864859; c=relaxed/simple;
+	bh=4K30b5dp3sj+V+cw881bFFO4IS728f+ho2gPwsieBCs=;
+	h=Message-ID:Date:MIME-Version:Cc:Subject:To:References:From:
+	 In-Reply-To:Content-Type; b=JMJFi7KCY2M9oyADthf0DuM7Fx1xb+eraqI051wEcHL167y+hz56WsTtQBSGDCXBIB2cQ8XRYE+gdmWBFKRGLv9zc7DDXfNtRFy5qNxcYGmmM7oOoj7j4zsZEgDiD6MHobgFGCAeigyR1BKYgXUiRMHATDsCEyyMy3Ej7K4HPTA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=UhaKJdMV; arc=none smtp.client-ip=198.175.65.19
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b="K5KYHgyk"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=BqSLljft7B51TTQV/7ijXrjC3TxU24bZbIkJHdhIKNBp5PK+P5JV0zC02l24xkW7ONPDOMaceypUcfc7ODWhiHchDBMqvHC5f1yKlWhpg7zv0HebCEo6AJfL/fcO345MIJqkiWgKcg/iHlnWofkpP7JQ0SoJHlQIBJ8RLLGvtZMTJhytuypvHFZXw27VrfmQ/T7Da2285Q0yoLVbm3HRo01M/sOl34Z4GlZcULpomGQBda+Z/sBTyQMTFKRvdtNxFFOsndWMQvBUIH1/j53CY4uBX9KuH3zzaEhFmldr+PyZIhdW0gpLUsbc7679yxqK0mVfz4C3nqN2/++U2ekpLQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=nEAPgUjPwG6e1VnfnZ9LPv4svMb8P/opzYyU4Ua0K2I=;
- b=XUP3QPs/81lBzyqIkfGGjTZFtdIscrJFs+E8+uo4Uwtu3oYTROclkxRrMUZR4WTcfQuUZVbSB9GSVwIQsCk8dxhZdg6QIApkbrceAqQlWxeDY7hfhPDlPCCGdE+IjAfIZ7JJQ8+2VQRDr3s+RjHsPhPY/Y8dE/qUr3vB1TCQ/B3sYpHke0TXkRdWRax12MwCl0PYCuWXY5ol3ies8Tbz2nk0XySWIybFmpI6zFpcAgtR2NomM7GWHkatJ7jFsyPEbenU7Jzqdgfe2sSANHedcYiqfhHmGSecgk7xGZVfFVQ/JXpmdWepUahGHR2hecBWRL43IzCD90VZCW579HEW+Q==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 165.204.84.17) smtp.rcpttodomain=lists.linux.dev smtp.mailfrom=amd.com;
- dmarc=pass (p=quarantine sp=quarantine pct=100) action=none
- header.from=amd.com; dkim=none (message not signed); arc=none (0)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=nEAPgUjPwG6e1VnfnZ9LPv4svMb8P/opzYyU4Ua0K2I=;
- b=K5KYHgykWDwQTqGHXQS+9WaFys5xmNZoL1sDlUdxK60AU+AwsY4uKl1cVhlklThOUDqNo40PHyydlzWeYwK8Tlok7zhicMpG6oAkQ4DReXhkmHxSStl2+YtXMdwbikYRz83nUWKHk7AZOl3m4tnh0FeHxW+5vsCMpGU+DBnGvyw=
-Received: from DS7PR03CA0015.namprd03.prod.outlook.com (2603:10b6:5:3b8::20)
- by DM4PR12MB6565.namprd12.prod.outlook.com (2603:10b6:8:8c::14) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7698.18; Thu, 20 Jun
- 2024 06:06:17 +0000
-Received: from DS3PEPF0000C37C.namprd04.prod.outlook.com
- (2603:10b6:5:3b8:cafe::d8) by DS7PR03CA0015.outlook.office365.com
- (2603:10b6:5:3b8::20) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7677.33 via Frontend
- Transport; Thu, 20 Jun 2024 06:06:16 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 165.204.84.17)
- smtp.mailfrom=amd.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=amd.com;
-Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
- 165.204.84.17 as permitted sender) receiver=protection.outlook.com;
- client-ip=165.204.84.17; helo=SATLEXMB04.amd.com; pr=C
-Received: from SATLEXMB04.amd.com (165.204.84.17) by
- DS3PEPF0000C37C.mail.protection.outlook.com (10.167.23.6) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.20.7677.15 via Frontend Transport; Thu, 20 Jun 2024 06:06:16 +0000
-Received: from kali.amd.com (10.180.168.240) by SATLEXMB04.amd.com
- (10.181.40.145) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2507.39; Thu, 20 Jun
- 2024 01:06:13 -0500
-From: Vasant Hegde <vasant.hegde@amd.com>
-To: <iommu@lists.linux.dev>, <joro@8bytes.org>
-CC: <suravee.suthikulpanit@amd.com>, Vasant Hegde <vasant.hegde@amd.com>,
-	FahHean Lee <fahhean.lee@amd.com>, Dheeraj Kumar Srivastava
-	<dheerajkumar.srivastava@amd.com>, Sairaj Arun Kodilkar
-	<sairaj.arunkodilkar@amd.com>
-Subject: [PATCH rc] iommu/amd: Invalidate cache before removing device from domain list
-Date: Thu, 20 Jun 2024 06:05:52 +0000
-Message-ID: <20240620060552.13984-1-vasant.hegde@amd.com>
-X-Mailer: git-send-email 2.34.1
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="UhaKJdMV"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1718864858; x=1750400858;
+  h=message-id:date:mime-version:cc:subject:to:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=4K30b5dp3sj+V+cw881bFFO4IS728f+ho2gPwsieBCs=;
+  b=UhaKJdMVmRg3vgLXJPg+LUPJw18i/sLBU7Bz94zee3VC6CZ21bWb7CUW
+   Nj3lknqgveaTufZxcAein1bLg4hLk9A084v4JyXxUhkVxgPBJTLB5fymd
+   f3NHh3iXNOjKSDNj/k2n1N+y/1EZha4GQCHIxNZtHhaE2RyohR07V6Qdx
+   vEjFea6DWRKUjtahGUPEJO9RLwrN9K8Lb68jxmNtfLFfq2JprTkERajCD
+   vJn3sIvxTWQrSHiJc37wVgmYJtt++WqfwL8OwZzPasORAvDcE1WIpK32W
+   Ko8tepGiZH+jvmXpjE59djuJf7YsggAi1G+OvhvpiyaAx/cBCDCJq2uSF
+   A==;
+X-CSE-ConnectionGUID: MWLcg+9STCKTKQyv/Kem+w==
+X-CSE-MsgGUID: n/gy/9Q3Tymy/8LDGnV6Fw==
+X-IronPort-AV: E=McAfee;i="6700,10204,11108"; a="15652775"
+X-IronPort-AV: E=Sophos;i="6.08,251,1712646000"; 
+   d="scan'208";a="15652775"
+Received: from orviesa006.jf.intel.com ([10.64.159.146])
+  by orvoesa111.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Jun 2024 23:27:37 -0700
+X-CSE-ConnectionGUID: nWcQuqGATX2PF1ovSj6dzA==
+X-CSE-MsgGUID: LVAjM0a4T6KPM0RxYaGT9Q==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.08,251,1712646000"; 
+   d="scan'208";a="42592334"
+Received: from blu2-mobl.ccr.corp.intel.com (HELO [10.124.229.145]) ([10.124.229.145])
+  by orviesa006-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Jun 2024 23:27:35 -0700
+Message-ID: <8c78f966-539c-4c81-92a6-32d32bb10e8b@linux.intel.com>
+Date: Thu, 20 Jun 2024 14:27:30 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
+User-Agent: Mozilla Thunderbird
+Cc: baolu.lu@linux.intel.com, Joerg Roedel <joro@8bytes.org>,
+ Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
+ Jacek Lawrynowicz <jacek.lawrynowicz@linux.intel.com>,
+ "iommu@lists.linux.dev" <iommu@lists.linux.dev>,
+ "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH 1/1] iommu/vt-d: Fix missed device TLB cache tag
+To: Vasant Hegde <vasant.hegde@amd.com>, "Tian, Kevin"
+ <kevin.tian@intel.com>, Jason Gunthorpe <jgg@ziepe.ca>
+References: <20240619015345.182773-1-baolu.lu@linux.intel.com>
+ <20240619164620.GN791043@ziepe.ca>
+ <1dfb467d-f25a-4270-8a36-a048f061e2aa@linux.intel.com>
+ <BN9PR11MB5276F76798E61D231D861A2F8CC82@BN9PR11MB5276.namprd11.prod.outlook.com>
+ <976d4054-6306-4325-a112-5cf69b0c6f34@linux.intel.com>
+ <bdbb40da-faa5-4321-a58b-5fcffcbc818c@amd.com>
+Content-Language: en-US
+From: Baolu Lu <baolu.lu@linux.intel.com>
+In-Reply-To: <bdbb40da-faa5-4321-a58b-5fcffcbc818c@amd.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-ClientProxiedBy: SATLEXMB04.amd.com (10.181.40.145) To SATLEXMB04.amd.com
- (10.181.40.145)
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: DS3PEPF0000C37C:EE_|DM4PR12MB6565:EE_
-X-MS-Office365-Filtering-Correlation-Id: e070ba88-7db5-46fd-59fc-08dc90ef1884
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam:
-	BCL:0;ARA:13230037|1800799021|376011|36860700010|82310400023;
-X-Microsoft-Antispam-Message-Info:
-	=?us-ascii?Q?VHkUFFmXjkHQ1v0xn/GvkZ16bgUVEjChHpML/3Gx/5ydn8C2QMMD6TD3CWho?=
- =?us-ascii?Q?j2l7JjgoT0E0VhLa4vpFdFKAv0oKqYOLPlokQ365v9zBQv6SrhmbOwFFbJ2E?=
- =?us-ascii?Q?jmoXi4yKvXGjuel2NqTN0vwWMjCV60fwWfEMbY95zTVMXKJKN1N6eZnVf0wS?=
- =?us-ascii?Q?LFj69EfG49xhbaHHjqyTSNKesj1LmMhvs7Sf37PfexbdT3gbsQsqupbc47CY?=
- =?us-ascii?Q?H1tibQcsceRp+yfhc/lQJQr+9v5r6A/TUIirD/Eyhb/eMgNirav6W/5TaUzB?=
- =?us-ascii?Q?/+oBUymxEoSTL/zVDuSigAsyu/1ldeUJIl7/xLkEwHfpql7BozganyvrsL2R?=
- =?us-ascii?Q?y91pO+CYPCzqwoga7GRPtZ2e9V6RDFHHmgczwK2/3gkYR0OrkZBflNe1koIH?=
- =?us-ascii?Q?pghlY1ea6IdMKeUQnjjJ/91l8fRPufBDesAv94LJ5vOWvVUzQwYPSsxEQ2M6?=
- =?us-ascii?Q?Huh16gf+HV4WVKqn860VmXXJqoouZbkFH3Lkg/E+H8E4QAIXQCFebDeRQv5T?=
- =?us-ascii?Q?Av/htoE86/4GHwKMyNlJaPiKD+2MwZWYp5Ggl9d+uWuwaOmBHlbWuX+s1/KT?=
- =?us-ascii?Q?diIxX6Ko2vPQymrYzb/j7cV1G4YV9t7bthHSawwhDhNHyIKOCFPt+r6BRRy7?=
- =?us-ascii?Q?T8XpPEUs4sW0NrvE2zKbJQa1wfTiarsoRomMJw78NPPVh9Cc8GDdME2DA1ym?=
- =?us-ascii?Q?FiKMWQv6rv8IPj0yOiRcbpvGn3rG8vv3D5jNmJ1jvILY9U0cbM6+FCtKkIyc?=
- =?us-ascii?Q?wQgXnlNYKjAV+dX6DL+q8flP9sRVQ+3yvIcF+Yd3qIVj3dQ0OjZrCVoM+C+l?=
- =?us-ascii?Q?t+3N90i9JwEAYuaVFPYAP32xcnEUylW6jCE30KQPRKJUBc9HYUJ0xQ25jxzh?=
- =?us-ascii?Q?XcZFRMKJMVdJqym7WXCsVwZvZAKv17+CRsJT3xhnwr/szs4/WjYH5oNDj6Tx?=
- =?us-ascii?Q?8kdXJXfm6xi2Py4zRPkPSDE2aLlxqus/OiHCC6klZ7lCP4ApQjGiXFnFQmtY?=
- =?us-ascii?Q?bzqXesVVqpQEe1PF2JccatTAMoT8O0I7RD6WIw3DQkWdAFi+Gh0TfTKQznO5?=
- =?us-ascii?Q?XZjaRgCGgfONrasVQlxiG0Px1G2yInfZDQcKob75Ua3Srv6YVa1SL6x+Rm18?=
- =?us-ascii?Q?AAAiEcpBcRTB2w8o3kaJofMQKGjAhxmzPQmLjNj2yzSsTvJF17oOwhU2pqOc?=
- =?us-ascii?Q?SGpFrnGuUV+iJAVr1zHp8S4yUwhij2WjNhMKWNVkN1LT2tRjNiSK3q3ycYYw?=
- =?us-ascii?Q?P3dnMsTkGrxVcWZKCXQvwP2VZMUwTFga7ubSLrlV7HlxEYokXTNXEp5eaQyT?=
- =?us-ascii?Q?BtyReqyDgPmfLdliK8XbxsS0W+VTMB+GYwKyJv0pvtftueF1v4fuljWZfCJ3?=
- =?us-ascii?Q?RTBIEY0o0Y9/UQqsy+0hfUjg9GGDpe4U0IkBrjI/4y2k+9O26Q=3D=3D?=
-X-Forefront-Antispam-Report:
-	CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB04.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230037)(1800799021)(376011)(36860700010)(82310400023);DIR:OUT;SFP:1101;
-X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 20 Jun 2024 06:06:16.1584
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: e070ba88-7db5-46fd-59fc-08dc90ef1884
-X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[SATLEXMB04.amd.com]
-X-MS-Exchange-CrossTenant-AuthSource:
-	DS3PEPF0000C37C.namprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM4PR12MB6565
 
-Commit 87a6f1f22c97 ("iommu/amd: Introduce per-device domain ID to fix
-potential TLB aliasing issue") introduced per device domain ID when
-domain is configured with v2 page table. And in invalidation path, it
-uses per device structure (dev_data->gcr3_info.domid) to get the domain ID.
+On 2024/6/20 13:54, Vasant Hegde wrote:
+> On 6/20/2024 8:43 AM, Baolu Lu wrote:
+>> On 6/20/24 11:04 AM, Tian, Kevin wrote:
+>>>> From: Baolu Lu<baolu.lu@linux.intel.com>
+>>>> Sent: Thursday, June 20, 2024 8:50 AM
+>>>>
+>>>> On 6/20/24 12:46 AM, Jason Gunthorpe wrote:
+>>>>> On Wed, Jun 19, 2024 at 09:53:45AM +0800, Lu Baolu wrote:
+>>>>>> When a domain is attached to a device, the required cache tags are
+>>>>>> assigned to the domain so that the related caches could be flushed
+>>>>>> whenever it is needed. The device TLB cache tag is created selectively
+>>>>>> by checking the ats_enabled field of the device's iommu data. This
+>>>>>> creates an ordered dependency between attach and ATS enabling paths.
+>>>>>>
+>>>>>> The device TLB cache tag will not be created if device's ATS is enabled
+>>>>>> after the domain attachment. This causes some devices, for example
+>>>>>> intel_vpu, to malfunction.
+>>>>> What? How is this even possible?
+>>>>>
+>>>>> ATS is controlled exclusively by the iommu driver, how can it be
+>>>>> changed without the driver knowing??
+>>>> Yes. ATS is currently controlled exclusively by the iommu driver. The
+>>>> intel iommu driver enables PCI/ATS on the probe path after the default
+>>>> domain is attached. That means when the default domain is attached to
+>>>> the device, the ats_supported is set, but ats_enabled is cleared. So the
+>>>> cache tag for the device TLB won't be created.
+>>> I don't quite get why this is specific to the probe path and the default
+>>> domain.
+>> The issue is with the domain attaching device path, not specific to the
+>> probe or default domain.
+>>
+>>> dmar_domain_attach_device()
+>>> {
+>>>      cache_tag_assign_domain();
+>>>      //setup pasid entry for pt/1st/2nd
+>>>      iommu_enable_pci_caps();
+>>> }
+>>>
+>>> seems that for all domain attaches above is coded in a wrong order
+>>> as ats is enabled after the cache tag is assigned.
+>> Yes, exactly. But simply changing the order isn't future-proof,
+>> considering ATS control will eventually be moved out of iommu drivers.
+> [Unrelated to this patch]
+> 
+> You mean ATS setup will be moved to individual device driver? Is there any
+> reason for that?
 
-In detach_device() path, current code tries to invalidate IOMMU cache
-after removing dev_data from domain device list. This means when domain
-is configured with v2 page table, amd_iommu_domain_flush_all() will not be
-able to invalidate cache as device is already removed from domain device
-list.
+Not exactly to individual device drivers, but it should be out of the
+iommu drivers.
 
-This is causing change domain tests (changing domain type from identity to DMA)
-to fail with IO_PAGE_FAULT issue.
+https://lore.kernel.org/linux-iommu/BL1PR12MB51441FC4303BD0442EDB7A9CF7FFA@BL1PR12MB5144.namprd12.prod.outlook.com/
 
-Hence invalidate cache and update DTE before updating data structures.
-
-Reported-by: FahHean Lee <fahhean.lee@amd.com>
-Reported-by: Dheeraj Kumar Srivastava <dheerajkumar.srivastava@amd.com>
-Fixes: 87a6f1f22c97 ("iommu/amd: Introduce per-device domain ID to fix potential TLB aliasing issue")
-Tested-by: Dheeraj Kumar Srivastava <dheerajkumar.srivastava@amd.com>
-Tested-by: Sairaj Arun Kodilkar <sairaj.arunkodilkar@amd.com>
-Tested-by: FahHean Lee <fahhean.lee@amd.com>
-Signed-off-by: Vasant Hegde <vasant.hegde@amd.com>
----
- drivers/iommu/amd/iommu.c | 12 ++++++------
- 1 file changed, 6 insertions(+), 6 deletions(-)
-
-diff --git a/drivers/iommu/amd/iommu.c b/drivers/iommu/amd/iommu.c
-index c2703599bb16..b19e8c0f48fa 100644
---- a/drivers/iommu/amd/iommu.c
-+++ b/drivers/iommu/amd/iommu.c
-@@ -2061,6 +2061,12 @@ static void do_detach(struct iommu_dev_data *dev_data)
- 	struct protection_domain *domain = dev_data->domain;
- 	struct amd_iommu *iommu = get_amd_iommu_from_dev_data(dev_data);
- 
-+	/* Clear DTE and flush the entry */
-+	amd_iommu_dev_update_dte(dev_data, false);
-+
-+	/* Flush IOTLB and wait for the flushes to finish */
-+	amd_iommu_domain_flush_all(domain);
-+
- 	/* Clear GCR3 table */
- 	if (pdom_is_sva_capable(domain))
- 		destroy_gcr3_table(dev_data, domain);
-@@ -2069,12 +2075,6 @@ static void do_detach(struct iommu_dev_data *dev_data)
- 	dev_data->domain = NULL;
- 	list_del(&dev_data->list);
- 
--	/* Clear DTE and flush the entry */
--	amd_iommu_dev_update_dte(dev_data, false);
--
--	/* Flush IOTLB and wait for the flushes to finish */
--	amd_iommu_domain_flush_all(domain);
--
- 	/* decrease reference counters - needs to happen after the flushes */
- 	domain->dev_iommu[iommu->index] -= 1;
- 	domain->dev_cnt                 -= 1;
--- 
-2.31.1
-
+Best regards,
+baolu
