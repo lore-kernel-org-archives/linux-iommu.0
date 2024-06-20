@@ -1,128 +1,140 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.19])
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.9])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6F40D2B9B8
-	for <iommu@lists.linux.dev>; Thu, 20 Jun 2024 06:27:38 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.19
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4256B13AF9
+	for <iommu@lists.linux.dev>; Thu, 20 Jun 2024 06:32:12 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.9
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1718864859; cv=none; b=jJay0fRsdgr4RVK6sJt1RiG3rJLq40a2dsu9G7gZwkEY/RjlSRN12pGwTQMXcU3g/8IsqN7MKt7HVEfTxkRHLE/Q5JhvIQ1AuLvCaTT8wnBHm3yctp4Cz2kOwtXIzmEG296YEyEcU0Qi/V1sD4LlN00sHWQDOwRwHGjLZu7uTug=
+	t=1718865134; cv=none; b=mJ2Hr9CIhu7ZvVbmE33tSIu6tN1vDEf5LaV6J7g4T1Z4GH3beNyfpm/HyaRsLAn1e6Y14q7Vam50TjL+iznJ6ZOLwJj7kayLgLzdnsngZMEt1NfWswBKiC0Gl8eUPaFMyDJ2OTCl5hnrwaZFGr1g6FPYPQV6jxeNL5uc1WTBEEI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1718864859; c=relaxed/simple;
-	bh=4K30b5dp3sj+V+cw881bFFO4IS728f+ho2gPwsieBCs=;
-	h=Message-ID:Date:MIME-Version:Cc:Subject:To:References:From:
-	 In-Reply-To:Content-Type; b=JMJFi7KCY2M9oyADthf0DuM7Fx1xb+eraqI051wEcHL167y+hz56WsTtQBSGDCXBIB2cQ8XRYE+gdmWBFKRGLv9zc7DDXfNtRFy5qNxcYGmmM7oOoj7j4zsZEgDiD6MHobgFGCAeigyR1BKYgXUiRMHATDsCEyyMy3Ej7K4HPTA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=UhaKJdMV; arc=none smtp.client-ip=198.175.65.19
+	s=arc-20240116; t=1718865134; c=relaxed/simple;
+	bh=+Wnn24Xlpa6rae18wbizkFcb2MAtnQ/iXJt1icI1Q0A=;
+	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version; b=Br7ihZBggJLJZIRQA9EwIQWK6ST0k1x4NtFsm376WtsOVMTKxrt1eugii0HACfXx/7U0PtF/4BByQMgRbb/9a1zEOCXtaPLh/SWdDbVFGemrMAn39nnhA2ZPIwzOzHcMcKqxWXGFm+Ea0jwVcei0nRvZSEnIjsZ8OsfKIoFhghI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=MPXYH5HE; arc=none smtp.client-ip=198.175.65.9
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="UhaKJdMV"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="MPXYH5HE"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1718864858; x=1750400858;
-  h=message-id:date:mime-version:cc:subject:to:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=4K30b5dp3sj+V+cw881bFFO4IS728f+ho2gPwsieBCs=;
-  b=UhaKJdMVmRg3vgLXJPg+LUPJw18i/sLBU7Bz94zee3VC6CZ21bWb7CUW
-   Nj3lknqgveaTufZxcAein1bLg4hLk9A084v4JyXxUhkVxgPBJTLB5fymd
-   f3NHh3iXNOjKSDNj/k2n1N+y/1EZha4GQCHIxNZtHhaE2RyohR07V6Qdx
-   vEjFea6DWRKUjtahGUPEJO9RLwrN9K8Lb68jxmNtfLFfq2JprTkERajCD
-   vJn3sIvxTWQrSHiJc37wVgmYJtt++WqfwL8OwZzPasORAvDcE1WIpK32W
-   Ko8tepGiZH+jvmXpjE59djuJf7YsggAi1G+OvhvpiyaAx/cBCDCJq2uSF
-   A==;
-X-CSE-ConnectionGUID: MWLcg+9STCKTKQyv/Kem+w==
-X-CSE-MsgGUID: n/gy/9Q3Tymy/8LDGnV6Fw==
-X-IronPort-AV: E=McAfee;i="6700,10204,11108"; a="15652775"
+  t=1718865133; x=1750401133;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=+Wnn24Xlpa6rae18wbizkFcb2MAtnQ/iXJt1icI1Q0A=;
+  b=MPXYH5HENwPcteHLVYu2ogTCbt0zKP5SFX18kOcJMzR2X5/wp8P5SsD+
+   n1z5BoRX0w19UDHFDdthPSwcWthkBMXsgW/Z5K7lH4RCRxLiKNlQ21WiC
+   mw3/4QbxYPAnwq2se7wISHDUhDfbdZsL08th3BuUPpBC5gMO8M6DUAum5
+   sOJLLRz6pF8ak/DhEjGC0/u/eHLWtJNVR23/atgo5ip4zHxHso+tNQ8Hz
+   Zq/kknFihlRjsJ+S8ChyrZ0qKaTrGdyH/aGGZgIkC1wkYhvjPZUbJfaEw
+   5KN2a9h7SZVN8RePIHVd09BXnQKoI1c62l2wTs7/rf9qIIEzYrJXUS0ni
+   Q==;
+X-CSE-ConnectionGUID: f0Nn4rTwSummv63MOSU+Fw==
+X-CSE-MsgGUID: aeWNLm1qRbyrrviLbTPhIQ==
+X-IronPort-AV: E=McAfee;i="6700,10204,11108"; a="38334030"
 X-IronPort-AV: E=Sophos;i="6.08,251,1712646000"; 
-   d="scan'208";a="15652775"
-Received: from orviesa006.jf.intel.com ([10.64.159.146])
-  by orvoesa111.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Jun 2024 23:27:37 -0700
-X-CSE-ConnectionGUID: nWcQuqGATX2PF1ovSj6dzA==
-X-CSE-MsgGUID: LVAjM0a4T6KPM0RxYaGT9Q==
+   d="scan'208";a="38334030"
+Received: from fmviesa009.fm.intel.com ([10.60.135.149])
+  by orvoesa101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Jun 2024 23:32:12 -0700
+X-CSE-ConnectionGUID: 8xLW16KfRteWdLWvkDkhdw==
+X-CSE-MsgGUID: 5cU3Uf+mS5GF7QFugpHoDA==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.08,251,1712646000"; 
-   d="scan'208";a="42592334"
-Received: from blu2-mobl.ccr.corp.intel.com (HELO [10.124.229.145]) ([10.124.229.145])
-  by orviesa006-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Jun 2024 23:27:35 -0700
-Message-ID: <8c78f966-539c-4c81-92a6-32d32bb10e8b@linux.intel.com>
-Date: Thu, 20 Jun 2024 14:27:30 +0800
+   d="scan'208";a="42242042"
+Received: from unknown (HELO allen-box.sh.intel.com) ([10.239.159.127])
+  by fmviesa009.fm.intel.com with ESMTP; 19 Jun 2024 23:32:09 -0700
+From: Lu Baolu <baolu.lu@linux.intel.com>
+To: Joerg Roedel <joro@8bytes.org>,
+	Will Deacon <will@kernel.org>,
+	Robin Murphy <robin.murphy@arm.com>,
+	Kevin Tian <kevin.tian@intel.com>,
+	Jason Gunthorpe <jgg@ziepe.ca>,
+	Jacek Lawrynowicz <jacek.lawrynowicz@linux.intel.com>
+Cc: iommu@lists.linux.dev,
+	linux-kernel@vger.kernel.org,
+	Lu Baolu <baolu.lu@linux.intel.com>
+Subject: [PATCH v2 1/1] iommu/vt-d: Fix missed device TLB cache tag
+Date: Thu, 20 Jun 2024 14:29:40 +0800
+Message-Id: <20240620062940.201786-1-baolu.lu@linux.intel.com>
+X-Mailer: git-send-email 2.34.1
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Cc: baolu.lu@linux.intel.com, Joerg Roedel <joro@8bytes.org>,
- Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
- Jacek Lawrynowicz <jacek.lawrynowicz@linux.intel.com>,
- "iommu@lists.linux.dev" <iommu@lists.linux.dev>,
- "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH 1/1] iommu/vt-d: Fix missed device TLB cache tag
-To: Vasant Hegde <vasant.hegde@amd.com>, "Tian, Kevin"
- <kevin.tian@intel.com>, Jason Gunthorpe <jgg@ziepe.ca>
-References: <20240619015345.182773-1-baolu.lu@linux.intel.com>
- <20240619164620.GN791043@ziepe.ca>
- <1dfb467d-f25a-4270-8a36-a048f061e2aa@linux.intel.com>
- <BN9PR11MB5276F76798E61D231D861A2F8CC82@BN9PR11MB5276.namprd11.prod.outlook.com>
- <976d4054-6306-4325-a112-5cf69b0c6f34@linux.intel.com>
- <bdbb40da-faa5-4321-a58b-5fcffcbc818c@amd.com>
-Content-Language: en-US
-From: Baolu Lu <baolu.lu@linux.intel.com>
-In-Reply-To: <bdbb40da-faa5-4321-a58b-5fcffcbc818c@amd.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
 
-On 2024/6/20 13:54, Vasant Hegde wrote:
-> On 6/20/2024 8:43 AM, Baolu Lu wrote:
->> On 6/20/24 11:04 AM, Tian, Kevin wrote:
->>>> From: Baolu Lu<baolu.lu@linux.intel.com>
->>>> Sent: Thursday, June 20, 2024 8:50 AM
->>>>
->>>> On 6/20/24 12:46 AM, Jason Gunthorpe wrote:
->>>>> On Wed, Jun 19, 2024 at 09:53:45AM +0800, Lu Baolu wrote:
->>>>>> When a domain is attached to a device, the required cache tags are
->>>>>> assigned to the domain so that the related caches could be flushed
->>>>>> whenever it is needed. The device TLB cache tag is created selectively
->>>>>> by checking the ats_enabled field of the device's iommu data. This
->>>>>> creates an ordered dependency between attach and ATS enabling paths.
->>>>>>
->>>>>> The device TLB cache tag will not be created if device's ATS is enabled
->>>>>> after the domain attachment. This causes some devices, for example
->>>>>> intel_vpu, to malfunction.
->>>>> What? How is this even possible?
->>>>>
->>>>> ATS is controlled exclusively by the iommu driver, how can it be
->>>>> changed without the driver knowing??
->>>> Yes. ATS is currently controlled exclusively by the iommu driver. The
->>>> intel iommu driver enables PCI/ATS on the probe path after the default
->>>> domain is attached. That means when the default domain is attached to
->>>> the device, the ats_supported is set, but ats_enabled is cleared. So the
->>>> cache tag for the device TLB won't be created.
->>> I don't quite get why this is specific to the probe path and the default
->>> domain.
->> The issue is with the domain attaching device path, not specific to the
->> probe or default domain.
->>
->>> dmar_domain_attach_device()
->>> {
->>>      cache_tag_assign_domain();
->>>      //setup pasid entry for pt/1st/2nd
->>>      iommu_enable_pci_caps();
->>> }
->>>
->>> seems that for all domain attaches above is coded in a wrong order
->>> as ats is enabled after the cache tag is assigned.
->> Yes, exactly. But simply changing the order isn't future-proof,
->> considering ATS control will eventually be moved out of iommu drivers.
-> [Unrelated to this patch]
-> 
-> You mean ATS setup will be moved to individual device driver? Is there any
-> reason for that?
+When a domain is attached to a device, the required cache tags are
+assigned to the domain so that the related caches can be flushed
+whenever it is needed. The device TLB cache tag is created based
+on whether the ats_enabled field of the device's iommu data is set.
+This creates an ordered dependency between cache tag assignment and
+ATS enabling.
 
-Not exactly to individual device drivers, but it should be out of the
-iommu drivers.
+The device TLB cache tag would not be created if device's ATS is
+enabled after the cache tag assignment. This causes devices with PCI
+ATS support to malfunction.
 
-https://lore.kernel.org/linux-iommu/BL1PR12MB51441FC4303BD0442EDB7A9CF7FFA@BL1PR12MB5144.namprd12.prod.outlook.com/
+The ATS control is exclusively owned by the iommu driver. Hence, move
+cache_tag_assign_domain() after PCI ATS enabling to make sure that the
+device TLB cache tag is created for the domain.
 
-Best regards,
-baolu
+Fixes: 3b1d9e2b2d68 ("iommu/vt-d: Add cache tag assignment interface")
+Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
+---
+ drivers/iommu/intel/iommu.c | 20 ++++++++++----------
+ 1 file changed, 10 insertions(+), 10 deletions(-)
+
+Change log:
+v2:
+- Reverting the order instead of adding unnecessary run-time overhead.
+
+v1:
+- https://lore.kernel.org/linux-iommu/20240619015345.182773-1-baolu.lu@linux.intel.com/
+
+diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
+index 2e9811bf2a4e..fd11a080380c 100644
+--- a/drivers/iommu/intel/iommu.c
++++ b/drivers/iommu/intel/iommu.c
+@@ -2114,12 +2114,6 @@ static int dmar_domain_attach_device(struct dmar_domain *domain,
+ 	if (ret)
+ 		return ret;
+ 
+-	ret = cache_tag_assign_domain(domain, dev, IOMMU_NO_PASID);
+-	if (ret) {
+-		domain_detach_iommu(domain, iommu);
+-		return ret;
+-	}
+-
+ 	info->domain = domain;
+ 	spin_lock_irqsave(&domain->lock, flags);
+ 	list_add(&info->link, &domain->devices);
+@@ -2137,15 +2131,21 @@ static int dmar_domain_attach_device(struct dmar_domain *domain,
+ 	else
+ 		ret = intel_pasid_setup_second_level(iommu, domain, dev, IOMMU_NO_PASID);
+ 
+-	if (ret) {
+-		device_block_translation(dev);
+-		return ret;
+-	}
++	if (ret)
++		goto out_block_translation;
+ 
+ 	if (sm_supported(info->iommu) || !domain_type_is_si(info->domain))
+ 		iommu_enable_pci_caps(info);
+ 
++	ret = cache_tag_assign_domain(domain, dev, IOMMU_NO_PASID);
++	if (ret)
++		goto out_block_translation;
++
+ 	return 0;
++
++out_block_translation:
++	device_block_translation(dev);
++	return ret;
+ }
+ 
+ /**
+-- 
+2.34.1
+
