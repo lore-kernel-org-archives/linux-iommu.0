@@ -1,63 +1,63 @@
-Received: from mail-lf1-f50.google.com (mail-lf1-f50.google.com [209.85.167.50])
+Received: from mail-lf1-f46.google.com (mail-lf1-f46.google.com [209.85.167.46])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9DE1A1A8C3F;
-	Thu, 20 Jun 2024 10:17:38 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.50
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C9C371A8C05;
+	Thu, 20 Jun 2024 10:17:50 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.46
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1718878660; cv=none; b=juT00rO+1D1YgaT0mDzZqDe7IVWpCDHLpLpBUdwRUpnBNXhmXykbJnrE3G+xJPNyPLdXv0koyrRR2U7QZ94GfvWeanFv3/NohIoLbuRnB3yRgA0NOLXhTRVu2ijMqRWQtM/Pvz7esD7+G6uND2276OqNe5z3gmREdH50RzflHik=
+	t=1718878672; cv=none; b=esZU3cO31QyY7lXtlhVTb2Nrng4JY8PyvwjTsGmwx7J0h6qsrEIyIT7xOn+PZHz6xsZJKOA1RjXgfi1HDGyzOtgBtdW0+FFLzjk0vKH7Yr6kgYfnRm2da9C059s5AZlBBkSR4YeYES6SplaOTlex0plwWhDQOI9lwt8RRpGK2Pw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1718878660; c=relaxed/simple;
-	bh=h7V0DxoSMVHG8VEd6s7x6wFAS8w5u2rt7fpd1rRse9Y=;
+	s=arc-20240116; t=1718878672; c=relaxed/simple;
+	bh=iFWLkh/WpGhcD6WT3wvg3mHpb2fRwPOwZJyeCqo8YKo=;
 	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=g32HeyOZLdAH3ZR2wnHMGa9smfnjhBmafsBZSQWeaMpqW8KDYt9xb6grjCXcHKNLA4z0mcPiycvr2C4JpgwxdvN5wXSBWKKw0BsRfcd7AcWXiXRg1/5D0XD//UabG7X6bIcgWQyj2xyGS6ornyOIvmO9Zv5BBUX8ozYzR44+G60=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=csie.org; spf=pass smtp.mailfrom=gmail.com; arc=none smtp.client-ip=209.85.167.50
+	 To:Cc:Content-Type; b=lZ3RpuoEl/G8Y44k35gsVQzV5T/jlj5z6Z7KNtT/zDRziKGHBHhAcp648YhByBJ3zQDvH51QDTyPnz/glykERtPc+0W/LPPZ5ud/jfvfQZprsg+ifwWeyu9xwzlLgpTVQ3pOg8Ab8qKELmuHn+mXBVfQEl8WVP1bHtYMKyWKTHc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=csie.org; spf=pass smtp.mailfrom=gmail.com; arc=none smtp.client-ip=209.85.167.46
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=csie.org
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
-Received: by mail-lf1-f50.google.com with SMTP id 2adb3069b0e04-5295e488248so878232e87.2;
-        Thu, 20 Jun 2024 03:17:38 -0700 (PDT)
+Received: by mail-lf1-f46.google.com with SMTP id 2adb3069b0e04-52b78ef397bso1610984e87.0;
+        Thu, 20 Jun 2024 03:17:50 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1718878654; x=1719483454;
+        d=1e100.net; s=20230601; t=1718878666; x=1719483466;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :reply-to:in-reply-to:references:mime-version:x-gm-message-state
          :from:to:cc:subject:date:message-id:reply-to;
-        bh=bf8vNA5yuOytQH9oqGaxBvwD+CmbF2hsnog35+f66vs=;
-        b=c1Da/w2SlROrEfayLcsEF283Nq5ylEGgI6LChl7Vhcyj2MkI9kMp8Ho60c9ZZtQqCb
-         8UsYrRigNEX9J/B8e33VbGTVjcTW48sDXCML0CytauvESKZZbAWTqEKcwLJhyrsC1UWq
-         NgyMolirzlO0zUxoFa8QbjYedMZAiSW1XV7rSmcmeOtmB2JAGz6AqXRNL6zo7IYj219S
-         qP2taWOhy+xd0HXn7SOuX7ZinGaVVxA7vew731VsG/zokbH2dFI+HdhEbS8A5gldWqwp
-         XRZ75dFWQrvRKRFJD+FK4SoI+IxX7s48Y+AUy9JF2jD4TCbYGcpHQVUPO7L6VhO5ukbT
-         IfWQ==
-X-Forwarded-Encrypted: i=1; AJvYcCWLkjTb0GKx9ivzlcwN2/T2icz+xRU1nU8fORT9rkNrgQslhVgyNAeffJrKQMdaws8DuVJw+xv1Wfqfdrz4IcQ7Nrh/FoCsbJxC5FMxa1LPNteGfRWhEROYCMuMhyfkpznl3g==
-X-Gm-Message-State: AOJu0YzC+qDmf0g3EiFsxeP3xaat+Oec0Fww0VyY1L9Y0jlN3sPEwDrN
-	ColZhR2GQkfCf+O8nR6l4gCr4nxKorWboygTAB5znWAeGhdhb5dZCjfXJRB0R9U=
-X-Google-Smtp-Source: AGHT+IE4tyOFfBCgwv6PClEL/jO25mQauscTQyN5xPYMofFdSZH5Jqpzl3Ao1LCO8lBauQ74cGUZhw==
-X-Received: by 2002:ac2:523a:0:b0:52b:c23f:9451 with SMTP id 2adb3069b0e04-52ccaa373damr2519686e87.38.1718878654318;
-        Thu, 20 Jun 2024 03:17:34 -0700 (PDT)
-Received: from mail-lj1-f172.google.com (mail-lj1-f172.google.com. [209.85.208.172])
-        by smtp.gmail.com with ESMTPSA id 2adb3069b0e04-52ca2825711sm2008343e87.21.2024.06.20.03.17.32
+        bh=Z1YNyE70SoDdHcH7gkxf765fOcuuSZVUTW9WZEWS85U=;
+        b=PrXqvFCbYw6/h+CWcwvDwMVWZZWZWAc/pspyv6gA/j/5JCKlKqHzSaHXN3S/abJI5q
+         BEwi118cWQku5+axtlcsjMjR3bH8r7tAx2tLuTM32ElfJV64667AuOQ3DiWkzZpjFDNf
+         meQ0tUNhY0qYUYIyhrwgvj1GEew7CcmRrlmWMVZdWKSBTqom5hfL5xzYG50WpzGSsTS1
+         LtWe7l/jz5e9+BLr7GeGzXolTXahQnMllLAHthe3T4nfSbpT8Pp+kzEfk/TcKIYLUE5u
+         /HOaTsDaz5pArbaySHkonz/VeGNx7SzU2y1amxMXtuT002lPO8KuVZJVvrakwRtovEoZ
+         zFHQ==
+X-Forwarded-Encrypted: i=1; AJvYcCWx0r6C64zA6wEz4xSkWemaHtl0gM4JaUjQLZFvECmQH8ZWJ8mF5FKqd3UFTqnBUG6jiHS+EC+Ru2JoU2H3Y14Na5qwMlZu5acu78caSisu4FNBAOiU5gm7vWtwqWoownmy+g==
+X-Gm-Message-State: AOJu0YztuVdDVoMBM/kp9LpysFTWT6UwxIK99tsv2j41bvMB+0m7Smlg
+	QBL1feZ18VRn7pJBJmrHq/TkIiMA6qxtwXfYzYkEEqrtb+K6unB65n3FQxvrhto=
+X-Google-Smtp-Source: AGHT+IFqAHzZXg/joIzsTdOo0VGRk5WC7eQaNyR5KCZ8bUFSVZWi7mc3V354zwWY80i9BQ2hZ8GWjg==
+X-Received: by 2002:a05:6512:3ca1:b0:52b:c2b8:b1d9 with SMTP id 2adb3069b0e04-52cca1ea2c0mr1799800e87.26.1718878666504;
+        Thu, 20 Jun 2024 03:17:46 -0700 (PDT)
+Received: from mail-lf1-f49.google.com (mail-lf1-f49.google.com. [209.85.167.49])
+        by smtp.gmail.com with ESMTPSA id 2adb3069b0e04-52ca30928aasm1991162e87.283.2024.06.20.03.17.46
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 20 Jun 2024 03:17:33 -0700 (PDT)
-Received: by mail-lj1-f172.google.com with SMTP id 38308e7fff4ca-2e95a75a90eso6592061fa.2;
-        Thu, 20 Jun 2024 03:17:32 -0700 (PDT)
-X-Forwarded-Encrypted: i=1; AJvYcCXtM1FFC6iklrbsQeOqLDXOltU9KnhDU0fl4N8etrXQEIDbLF2umgcR4yDcEDo3GXVliXgVAmShNzTn9YlejlR2hCtLc6z4cJlJUIh262cFOeANINhiYzPprSkQvcVuub5YnQ==
-X-Received: by 2002:a2e:3c18:0:b0:2ec:3c55:3056 with SMTP id
- 38308e7fff4ca-2ec3cfe174dmr28682841fa.44.1718878652049; Thu, 20 Jun 2024
- 03:17:32 -0700 (PDT)
+        Thu, 20 Jun 2024 03:17:46 -0700 (PDT)
+Received: by mail-lf1-f49.google.com with SMTP id 2adb3069b0e04-52b78ef397bso1610940e87.0;
+        Thu, 20 Jun 2024 03:17:46 -0700 (PDT)
+X-Forwarded-Encrypted: i=1; AJvYcCULCOU4pE/4eyvWR4+J/lweqrZ+xsJ6RToIGaw1bUHjGl2tsb15G4THDpwoHm5JW8zMVIuck70JlqZ/3wh4jSOQxv9OrjmKB/cTVjhQVM6SPj9rj4eUVVI4qbp3jVVENc+d5A==
+X-Received: by 2002:a05:6512:234f:b0:52b:c140:5d5 with SMTP id
+ 2adb3069b0e04-52cc47cb6d9mr2302277e87.2.1718878666095; Thu, 20 Jun 2024
+ 03:17:46 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <20240616224056.29159-1-andre.przywara@arm.com> <20240616224056.29159-4-andre.przywara@arm.com>
-In-Reply-To: <20240616224056.29159-4-andre.przywara@arm.com>
+References: <20240616224056.29159-1-andre.przywara@arm.com> <20240616224056.29159-5-andre.przywara@arm.com>
+In-Reply-To: <20240616224056.29159-5-andre.przywara@arm.com>
 Reply-To: wens@csie.org
 From: Chen-Yu Tsai <wens@csie.org>
-Date: Thu, 20 Jun 2024 18:17:19 +0800
-X-Gmail-Original-Message-ID: <CAGb2v65-tPgwJW4Yy80nBBkFg7kvtu_50Skd_ZF9gSFNAJzbRg@mail.gmail.com>
-Message-ID: <CAGb2v65-tPgwJW4Yy80nBBkFg7kvtu_50Skd_ZF9gSFNAJzbRg@mail.gmail.com>
-Subject: Re: [PATCH v2 3/5] dt-bindings: iommu: add new compatible strings
+Date: Thu, 20 Jun 2024 18:17:33 +0800
+X-Gmail-Original-Message-ID: <CAGb2v66E50bHCoYpkkcdfd=i57aLGi6Sa+HJMzEzjpYJL3bVOg@mail.gmail.com>
+Message-ID: <CAGb2v66E50bHCoYpkkcdfd=i57aLGi6Sa+HJMzEzjpYJL3bVOg@mail.gmail.com>
+Subject: Re: [PATCH v2 4/5] iommu: sun50i: Add H616 compatible string
 To: Andre Przywara <andre.przywara@arm.com>
 Cc: Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>, 
 	Robin Murphy <robin.murphy@arm.com>, Jernej Skrabec <jernej.skrabec@gmail.com>, 
@@ -73,45 +73,38 @@ Content-Transfer-Encoding: quoted-printable
 On Mon, Jun 17, 2024 at 6:42=E2=80=AFAM Andre Przywara <andre.przywara@arm.=
 com> wrote:
 >
-> The Allwinner H616 and A523 contain IOMMU IP very similar to the H6, but
-> use a different reset value for the bypass register, which makes them
-> strictly speaking incompatible.
+> The IOMMU IP in the Allwinner H616 SoC is *almost* compatible to the H6,
+> but uses a different reset value for the bypass register, and adds some
+> more registers.
 >
-> Add a new compatible string for the H616, and a version for the A523,
-> falling back to the H616.
+> While a driver *can* be written to support both variants (which we in
+> fact do), the hardware itself is not fully compatible, so we require a
+> separate compatible string.
+>
+> Add the new compatible string to the list, but without changing the
+> behaviour, since the driver already supports both variants.
 >
 > Signed-off-by: Andre Przywara <andre.przywara@arm.com>
-> Acked-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 
 Reviewed-by: Chen-Yu Tsai <wens@csie.org>
 
 > ---
->  .../bindings/iommu/allwinner,sun50i-h6-iommu.yaml          | 7 ++++++-
->  1 file changed, 6 insertions(+), 1 deletion(-)
+>  drivers/iommu/sun50i-iommu.c | 1 +
+>  1 file changed, 1 insertion(+)
 >
-> diff --git a/Documentation/devicetree/bindings/iommu/allwinner,sun50i-h6-=
-iommu.yaml b/Documentation/devicetree/bindings/iommu/allwinner,sun50i-h6-io=
-mmu.yaml
-> index e20016f120175..a8409db4a3e3d 100644
-> --- a/Documentation/devicetree/bindings/iommu/allwinner,sun50i-h6-iommu.y=
-aml
-> +++ b/Documentation/devicetree/bindings/iommu/allwinner,sun50i-h6-iommu.y=
-aml
-> @@ -17,7 +17,12 @@ properties:
->        The content of the cell is the master ID.
+> diff --git a/drivers/iommu/sun50i-iommu.c b/drivers/iommu/sun50i-iommu.c
+> index 20a07f829085d..8d8f11854676c 100644
+> --- a/drivers/iommu/sun50i-iommu.c
+> +++ b/drivers/iommu/sun50i-iommu.c
+> @@ -1067,6 +1067,7 @@ static int sun50i_iommu_probe(struct platform_devic=
+e *pdev)
 >
->    compatible:
-> -    const: allwinner,sun50i-h6-iommu
-> +    oneOf:
-> +      - const: allwinner,sun50i-h6-iommu
-> +      - const: allwinner,sun50i-h616-iommu
-> +      - items:
-> +          - const: allwinner,sun55i-a523-iommu
-> +          - const: allwinner,sun50i-h616-iommu
->
->    reg:
->      maxItems: 1
+>  static const struct of_device_id sun50i_iommu_dt[] =3D {
+>         { .compatible =3D "allwinner,sun50i-h6-iommu", },
+> +       { .compatible =3D "allwinner,sun50i-h616-iommu", },
+>         { /* sentinel */ },
+>  };
+>  MODULE_DEVICE_TABLE(of, sun50i_iommu_dt);
 > --
 > 2.39.4
->
 >
