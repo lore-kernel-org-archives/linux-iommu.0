@@ -1,124 +1,456 @@
-Received: from mail-qt1-f174.google.com (mail-qt1-f174.google.com [209.85.160.174])
+Received: from mail-pf1-f182.google.com (mail-pf1-f182.google.com [209.85.210.182])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D18601DFE8
-	for <iommu@lists.linux.dev>; Thu, 20 Jun 2024 14:08:17 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.160.174
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AB7631B3F06
+	for <iommu@lists.linux.dev>; Thu, 20 Jun 2024 17:57:08 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.182
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1718892499; cv=none; b=IKGWE0KqL2FD5HP6Xw8J+eM4yCsCBfwt9Ev2jx5fOcuLNq1+R5Gj8ZCp4EZGaVYN38FSomlbZKXQprFCXV6xnj158GgCgIXrYBKaQXMOplWi6f0n7hdVr9SUvY+a5PfimQq8uQuAMskE308inJBWDNzn4FjUh+tTi6cNfDFG0ds=
+	t=1718906230; cv=none; b=D1AbYhKJDAZYv6/u2xQDmbbVXlPaukwsqii2wQRTGDm0DzmpmQVEXZALdgAgIFVcQW5mZ9xvkmBH1R7ObE5+HMud6yey3ToS/nZZAlcjMs+fxxeBbM9doqibRTctS+/XRfNqOH22tP+3KAW7rTRADIBN2fm1c9qLMHCicXnZb74=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1718892499; c=relaxed/simple;
-	bh=B47SgIqbSB00u221uMK8Vw5yzOxFWsVrlvLPqZEOCxE=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=rU/5yqedumsgs6Zm4eAS/yjgn3RedsSCT9x01tZvxE+zAAdHFrp3xo7sa8nOyEalfAD2QLWEI1tXshHH9JN2A52osfup6rLR9IdEGPL+/48RiPXlZtIYLo2fIrDnqxLxy+Vnnj4S86CBiAG0P9HDm4GRVLf5NHyZGDQPbGmMK+g=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=NbmeYqKQ; arc=none smtp.client-ip=209.85.160.174
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
+	s=arc-20240116; t=1718906230; c=relaxed/simple;
+	bh=+v4jjUj1lwOTsz8Mxp1G6htBOFCIigsWgsHI5ysa1Ss=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=pWjLvqzN/KTRpyj3Xp3sqLFyRnP6GvzI4JJSQDuU0DJjHlLtSuDghSPM6JOVN1sAt4DL4R0dJkhDLexvU3p4Zk/LtWF/icNXQJPjXk1RnPrzUwFduKgp8QTFauVl7gPEh+4YlqCFXuwS7FKVnT6gBm8Mt/ehGi/cj184J1ZWS0Q=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=L9XiNued; arc=none smtp.client-ip=209.85.210.182
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="NbmeYqKQ"
-Received: by mail-qt1-f174.google.com with SMTP id d75a77b69052e-440f035214eso3610271cf.2
-        for <iommu@lists.linux.dev>; Thu, 20 Jun 2024 07:08:17 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="L9XiNued"
+Received: by mail-pf1-f182.google.com with SMTP id d2e1a72fcca58-70601bcfddcso1159912b3a.3
+        for <iommu@lists.linux.dev>; Thu, 20 Jun 2024 10:57:08 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google; t=1718892497; x=1719497297; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=CMDDK90K5EY+TuhzS7B/+ikXyLQKO9WMDlCewe0WKSU=;
-        b=NbmeYqKQ9HBb9PexaTTzBGcvfPb63yk2NQPSjZPhUtJwfUvjhXaQToSw7LG8d3Odjz
-         Jd/REpQ32UQgi1XKxEHIXSMfVM3tLaOjUbPy9f2i6G+H50BORudBBctd3YdYYspzfOpf
-         VFIRuzjgF2h3KEgF+6eEbYzwVGteRTUarHy3hrCj+D6p2AR/NMk0Bid22m8d9onPPIyq
-         mMIG6wP0MLBzARKwILrerL9vuqOW77LM9jtfBya9KkY95bDEIrKGapHAoTZKV0He5h6L
-         MVvkPMARagQUoWc3/eHEK6dC2IUrK90tC+qqcLrokFdjjYkudJ+U5bECIBWq0q4n7cgL
-         Qp9g==
+        d=gmail.com; s=20230601; t=1718906228; x=1719511028; darn=lists.linux.dev;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=W47tS6B8wqIVT2qpvRqiOMMzdBB5xZ547KnoaR9dSwQ=;
+        b=L9XiNuedugjjb1/66SmFGRT09E3a+1SFOuabxntrXTLJcOi/AdKRE4fd8Ty7Qn/VIF
+         UKhXzlOyUT7RDTCjxKOSqlpbq5tvruKfLIIQqv7TxafMZ/TpV3ewle6v3SR2tnTsPjhj
+         eEZ1zGaRsJCVE/tQjt4sp77Ov+lKaO6g2+Op62HRfSSHIeZt5Dw487ym74LdDMDVlxob
+         dfs6UBcazaxYuVTZg48LkJW1L+Gm+qhBN9P9T//XlmKPPcWFN+OMRMwtzjet3SoUB7dt
+         yoeyp61lM2xWnrrnrbx5ZCUXEYoM1pT0M9Rc3U1CO7GBIpHDo9tVvNNupPP/IpYj4ppO
+         AqrQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1718892497; x=1719497297;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=CMDDK90K5EY+TuhzS7B/+ikXyLQKO9WMDlCewe0WKSU=;
-        b=k/iwE3hnnSPcWHhkfeHAqeHvf3w/FkXtACuuB5T/Fxn3Q52RoHo0h/fWEbp1Ijyeig
-         7oy0HOxIiYFRdAsVUwL/UCq+OViSHGSSlY+6tVLReh0KGddV0b4V1Qz/kNLuHlXAPTG7
-         yj10IxCp+bZb0g290/+0qRnFHKjl8wT8TM0ioow6cgrcWRnyuHtOD4CvI0lqWqEuL7bb
-         H2XAidSef9JGbtsELckQrXVvRgHsBPwLvPRPiP7yEz6dSpOQqCheDG96jYWxc1K9dTHU
-         mSuJ6OfPCdH4Woc7FsePDa3V3h4LeHpt0CaGaO6+CKlndNftZtEdwHgmVGUFaQbsq04W
-         jEVw==
-X-Forwarded-Encrypted: i=1; AJvYcCXUN+5GQy/OuXGdzneZlUvaMjfUJlB7EykHLPSDTxa6Q6bV6Hzq1NRGs4PusegGIAFEroFUA2e3eaYeZ8Jb0aPF8kJEPCU=
-X-Gm-Message-State: AOJu0Yygkk1VmHCrtQj4I8amUAOk/zFwcvdSDqbEdIbxCgZ868tKgoQf
-	j9TiF9cqK89RWyujRCqKGbxYUG8qHimA11ibXDQIEBQ9CLGcJI+RHGHrZIeG42s=
-X-Google-Smtp-Source: AGHT+IF4IHIPiAoTsiSHrRXmlCAb4nycBoVhRBEtMZdywLymmZWk3beckDjDTiTYRXH2I5Eb7fWUXg==
-X-Received: by 2002:a05:622a:38a:b0:444:976a:4a86 with SMTP id d75a77b69052e-444a7a890f9mr57015841cf.64.1718892496659;
-        Thu, 20 Jun 2024 07:08:16 -0700 (PDT)
-Received: from ziepe.ca (hlfxns017vw-142-68-80-239.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.68.80.239])
-        by smtp.gmail.com with ESMTPSA id d75a77b69052e-441ef4de0ecsm75638751cf.9.2024.06.20.07.08.15
+        d=1e100.net; s=20230601; t=1718906228; x=1719511028;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=W47tS6B8wqIVT2qpvRqiOMMzdBB5xZ547KnoaR9dSwQ=;
+        b=eKoo15ETBoPfzF+K9M1AJUVNPZqBLvYoW497iZpbhXcCtZ5EXv/jeFQaonxas6Dajl
+         dRmTr8elRasRWm78aVtLIvL8DChtS8zj6hByGQE/PRrE8CXQ8pCEUtnPoCD+bBpkOJvP
+         dbCgO2bB47cWHATrLQZmp5kdmlxMbRQmkujkrekJXtkJs1xipc1fnwM1QX4sb8X3caoD
+         P6gkE1aPzfDXZ10PHY+LtdpexwQzT+xpjP8ij56zosB1DVVMjKZkx5EFyIZSE3tJVNzL
+         GxvBrMVsqHs7CQfFSVvwyzu7enwsCPqe5xUg0+UqYRZeEjLQI+D+4C24QNQaPWtWoT7Y
+         DdnA==
+X-Forwarded-Encrypted: i=1; AJvYcCV3u78u/s57tbU+YOxfRt5IVbrrV+sjZX3U2821o5UWUHtbpusPA45R4ufGUjdbM0brEWwYeL18KmUBX3SbCM3kDl44CyM=
+X-Gm-Message-State: AOJu0YwaezUpA6gNHXMArlUUpBj3KJdjti6fifG8v049hnwY/aenFwEa
+	3mJHMJVeeM+1FcyPoLme6Io22yQZ2LLqQ5rEgT3ADJN4jtptS2H3
+X-Google-Smtp-Source: AGHT+IETPnhQIIAFAn3PVCfwnEc7SkEbk6ro/qDz0Ch8QyPc2IoUZATwJ2GjFRkYml1JLqHQ4RqduQ==
+X-Received: by 2002:a05:6a00:1712:b0:704:12fc:7b30 with SMTP id d2e1a72fcca58-70629c565e1mr5514020b3a.17.1718906227709;
+        Thu, 20 Jun 2024 10:57:07 -0700 (PDT)
+Received: from localhost ([216.228.127.128])
+        by smtp.gmail.com with ESMTPSA id d2e1a72fcca58-705ccb6b11bsm12644924b3a.154.2024.06.20.10.57.06
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 20 Jun 2024 07:08:16 -0700 (PDT)
-Received: from jgg by wakko with local (Exim 4.95)
-	(envelope-from <jgg@ziepe.ca>)
-	id 1sKISV-00B4in-7A;
-	Thu, 20 Jun 2024 11:08:15 -0300
-Date: Thu, 20 Jun 2024 11:08:15 -0300
-From: Jason Gunthorpe <jgg@ziepe.ca>
-To: Vasant Hegde <vasant.hegde@amd.com>
-Cc: Baolu Lu <baolu.lu@linux.intel.com>,
-	"Tian, Kevin" <kevin.tian@intel.com>,
-	Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
+        Thu, 20 Jun 2024 10:57:07 -0700 (PDT)
+From: Yury Norov <yury.norov@gmail.com>
+To: linux-kernel@vger.kernel.org,
+	"David S. Miller" <davem@davemloft.net>,
+	"H. Peter Anvin" <hpa@zytor.com>,
+	"James E.J. Bottomley" <jejb@linux.ibm.com>,
+	"K. Y. Srinivasan" <kys@microsoft.com>,
+	"Md. Haris Iqbal" <haris.iqbal@ionos.com>,
+	Akinobu Mita <akinobu.mita@gmail.com>,
+	Andrew Morton <akpm@linux-foundation.org>,
+	Bjorn Andersson <andersson@kernel.org>,
+	Borislav Petkov <bp@alien8.de>,
+	Chaitanya Kulkarni <kch@nvidia.com>,
+	Christian Brauner <brauner@kernel.org>,
+	Damien Le Moal <damien.lemoal@opensource.wdc.com>,
+	Dave Hansen <dave.hansen@linux.intel.com>,
+	David Disseldorp <ddiss@suse.de>,
+	Edward Cree <ecree.xilinx@gmail.com>,
+	Eric Dumazet <edumazet@google.com>,
+	Fenghua Yu <fenghua.yu@intel.com>,
+	Geert Uytterhoeven <geert@linux-m68k.org>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Gregory Greenman <gregory.greenman@intel.com>,
+	Hans Verkuil <hverkuil@xs4all.nl>,
+	Hans de Goede <hdegoede@redhat.com>,
+	Hugh Dickins <hughd@google.com>,
+	Ingo Molnar <mingo@redhat.com>,
+	Jakub Kicinski <kuba@kernel.org>,
+	Jaroslav Kysela <perex@perex.cz>,
+	Jason Gunthorpe <jgg@ziepe.ca>,
+	Jens Axboe <axboe@kernel.dk>,
+	Jiri Pirko <jiri@resnulli.us>,
+	Jiri Slaby <jirislaby@kernel.org>,
+	Kalle Valo <kvalo@kernel.org>,
+	Karsten Graul <kgraul@linux.ibm.com>,
+	Karsten Keil <isdn@linux-pingi.de>,
+	Kees Cook <keescook@chromium.org>,
+	Leon Romanovsky <leon@kernel.org>,
+	Mark Rutland <mark.rutland@arm.com>,
+	Martin Habets <habetsm.xilinx@gmail.com>,
+	Mauro Carvalho Chehab <mchehab@kernel.org>,
+	Michael Ellerman <mpe@ellerman.id.au>,
+	Michal Simek <monstr@monstr.eu>,
+	Nicholas Piggin <npiggin@gmail.com>,
+	Oliver Neukum <oneukum@suse.com>,
+	Paolo Abeni <pabeni@redhat.com>,
+	Paolo Bonzini <pbonzini@redhat.com>,
+	Peter Zijlstra <peterz@infradead.org>,
+	Ping-Ke Shih <pkshih@realtek.com>,
+	Rich Felker <dalias@libc.org>,
+	Rob Herring <robh@kernel.org>,
 	Robin Murphy <robin.murphy@arm.com>,
-	Jacek Lawrynowicz <jacek.lawrynowicz@linux.intel.com>,
-	"iommu@lists.linux.dev" <iommu@lists.linux.dev>,
-	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH 1/1] iommu/vt-d: Fix missed device TLB cache tag
-Message-ID: <20240620140815.GO791043@ziepe.ca>
-References: <20240619015345.182773-1-baolu.lu@linux.intel.com>
- <20240619164620.GN791043@ziepe.ca>
- <1dfb467d-f25a-4270-8a36-a048f061e2aa@linux.intel.com>
- <BN9PR11MB5276F76798E61D231D861A2F8CC82@BN9PR11MB5276.namprd11.prod.outlook.com>
- <976d4054-6306-4325-a112-5cf69b0c6f34@linux.intel.com>
- <bdbb40da-faa5-4321-a58b-5fcffcbc818c@amd.com>
- <8c78f966-539c-4c81-92a6-32d32bb10e8b@linux.intel.com>
- <657c7e03-91ef-4765-be7c-1f57eb45e467@amd.com>
+	Sean Christopherson <seanjc@google.com>,
+	Shuai Xue <xueshuai@linux.alibaba.com>,
+	Stanislaw Gruszka <stf_xl@wp.pl>,
+	Steven Rostedt <rostedt@goodmis.org>,
+	Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
+	Thomas Gleixner <tglx@linutronix.de>,
+	Valentin Schneider <vschneid@redhat.com>,
+	Vitaly Kuznetsov <vkuznets@redhat.com>,
+	Wenjia Zhang <wenjia@linux.ibm.com>,
+	Will Deacon <will@kernel.org>,
+	Yoshinori Sato <ysato@users.sourceforge.jp>,
+	GR-QLogic-Storage-Upstream@marvell.com,
+	alsa-devel@alsa-project.org,
+	ath10k@lists.infradead.org,
+	dmaengine@vger.kernel.org,
+	iommu@lists.linux.dev,
+	kvm@vger.kernel.org,
+	linux-arm-kernel@lists.infradead.org,
+	linux-arm-msm@vger.kernel.org,
+	linux-block@vger.kernel.org,
+	linux-bluetooth@vger.kernel.org,
+	linux-hyperv@vger.kernel.org,
+	linux-m68k@lists.linux-m68k.org,
+	linux-media@vger.kernel.org,
+	linux-mips@vger.kernel.org,
+	linux-net-drivers@amd.com,
+	linux-pci@vger.kernel.org,
+	linux-rdma@vger.kernel.org,
+	linux-s390@vger.kernel.org,
+	linux-scsi@vger.kernel.org,
+	linux-serial@vger.kernel.org,
+	linux-sh@vger.kernel.org,
+	linux-sound@vger.kernel.org,
+	linux-usb@vger.kernel.org,
+	linux-wireless@vger.kernel.org,
+	linuxppc-dev@lists.ozlabs.org,
+	mpi3mr-linuxdrv.pdl@broadcom.com,
+	netdev@vger.kernel.org,
+	sparclinux@vger.kernel.org,
+	x86@kernel.org
+Cc: Yury Norov <yury.norov@gmail.com>,
+	Alexey Klimov <alexey.klimov@linaro.org>,
+	Bart Van Assche <bvanassche@acm.org>,
+	Jan Kara <jack@suse.cz>,
+	Linus Torvalds <torvalds@linux-foundation.org>,
+	Matthew Wilcox <willy@infradead.org>,
+	Mirsad Todorovac <mirsad.todorovac@alu.unizg.hr>,
+	Rasmus Villemoes <linux@rasmusvillemoes.dk>,
+	Sergey Shtylyov <s.shtylyov@omp.ru>
+Subject: [PATCH v4 00/40] lib/find: add atomic find_bit() primitives
+Date: Thu, 20 Jun 2024 10:56:23 -0700
+Message-ID: <20240620175703.605111-1-yury.norov@gmail.com>
+X-Mailer: git-send-email 2.43.0
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <657c7e03-91ef-4765-be7c-1f57eb45e467@amd.com>
+Content-Transfer-Encoding: 8bit
 
-On Thu, Jun 20, 2024 at 04:19:46PM +0530, Vasant Hegde wrote:
-> >>>> seems that for all domain attaches above is coded in a wrong order
-> >>>> as ats is enabled after the cache tag is assigned.
-> >>> Yes, exactly. But simply changing the order isn't future-proof,
-> >>> considering ATS control will eventually be moved out of iommu drivers.
-> >> [Unrelated to this patch]
-> >>
-> >> You mean ATS setup will be moved to individual device driver? Is there any
-> >> reason for that?
-> > 
-> > Not exactly to individual device drivers, but it should be out of the
-> > iommu drivers.
-> > 
-> > https://lore.kernel.org/linux-iommu/BL1PR12MB51441FC4303BD0442EDB7A9CF7FFA@BL1PR12MB5144.namprd12.prod.outlook.com/
-> 
-> Got it. Thanks.
-> 
-> I remember of this discussion. May be we can provide API from IOMMU driver so
-> that individual driver can enable/disable ATS (like iommu_dev_enable_feature()).
+--- 
 
-But I have a feeling if we do that it should be done by re-attaching
-the domain.
+This v4 moves new API to separate headers, as adding stuff to find.h
+concerns people, particularly Linus. It also adds few more conversions
+alongside other cosmetic changes. See full changelog below.
 
-For instance if you look at how I structued SMMUv3, the ATSness is an
-effective property of the domain type and ATS switches on and off
-dynamically already.
+---
 
-Having an additional input to domain attach "inhibit ats", as a flag
-would be all the support the driver would need to provide for the core
-code to manage this with some kind of global policy.
+Add helpers around test_and_{set,clear}_bit() to allow searching for
+clear or set bits and flipping them atomically.
 
-I would suggest to steer VTD in that direction too and make the ATS
-enable be done on domain attach, and put the first ATS enable in
-attach, not in probe. The logic in smmuv3 would apply just as well to
-VTD, though you'd need the hitless update logic too :)
+Using atomic search primitives allows to implement lockless bitmap
+handling where only individual bits are touched by concurrent processes,
+and where people now have to protect their bitmaps to search for a free
+or set bit due to the lack of atomic searching routines.
 
-Jason
+The typical lock-protected bit allocation may look like this:
+
+	unsigned long alloc_bit()
+	{
+		unsigned long bit;
+
+		spin_lock(bitmap_lock);
+		bit = find_first_zero_bit(bitmap, nbits);
+		if (bit < nbits)
+			__set_bit(bit, bitmap);
+		spin_unlock(bitmap_lock);
+
+		return bit;
+	}
+
+	void free_bit(unsigned long bit)
+	{
+		spin_lock(bitmap_lock);
+		__clear_bit(bit, bitmap);
+		spin_unlock(bitmap_lock);
+	}
+
+Now with atomic find_and_set_bit(), the above can be implemented
+lockless, directly by using it and atomic clear_bit().
+
+Patches 36-40 do this in few places in the kernel where the
+transition is clear. There is likely more candidates for
+refactoring.
+
+The other important case is when people opencode atomic search
+or atomic traverse on the maps with the patterns looking like:
+
+	for (idx = 0; idx < nbits; idx++)
+		if (test_and_clear_bit(idx, bitmap))
+			do_something(idx);
+
+Or like this:
+
+	do {
+		bit = find_first_bit(bitmap, nbits);
+		if (bit >= nbits)
+			return nbits;
+
+	} while (!test_and_clear_bit(bit, bitmap));
+
+	return bit;
+
+In both cases, the opencoded loop may be converted to a single function
+or iterator call. Correspondingly:
+
+	for_each_test_and_clear_bit(idx, bitmap, nbits)
+		do_something(idx);
+
+Or:
+	return find_and_clear_bit(bitmap, nbits);
+
+Obviously, the less routine code people have to write themself, the
+less probability to make a mistake. The patch #33 fixes one such
+mistake.
+
+The new API is not only a handy helpers - it also resolves a non-trivial
+issue of using non-atomic find_bit() together with atomic
+test_and_{set,clear)_bit().
+
+The trick is that find_bit() implies that the bitmap is a regular
+non-volatile piece of memory, and compiler is allowed to use such
+optimization techniques like re-fetching memory instead of caching it.
+
+For example, find_first_bit() is implemented like:
+
+      for (idx = 0; idx * BITS_PER_LONG < sz; idx++) {
+              val = addr[idx];
+              if (val) {
+                      sz = min(idx * BITS_PER_LONG + __ffs(val), sz);
+                      break;
+              }
+      }
+
+On register-memory architectures, like x86, compiler may decide to
+access memory twice - first time to compare against 0, and second time
+to fetch its value to pass it to __ffs().
+
+When running find_first_bit() on volatile memory, the memory may get
+changed in-between, and for instance, it may lead to passing 0 to
+__ffs(), which is an undefined behaviour. This is a potentially
+dangerous call.
+
+find_and_clear_bit() as a wrapper around test_and_clear_bit()
+naturally treats underlying bitmap as a volatile memory and prevents
+compiler from such optimizations.
+
+Now that KCSAN is catching exactly this type of situations and warns on
+undercover memory modifications. We can use it to reveal improper usage
+of find_bit(), and convert it to atomic find_and_*_bit() as appropriate.
+
+In some cases concurrent operations with plain find_bit() are acceptable.
+For example:
+
+ - two threads running find_*_bit(): safe wrt ffs(0) and returns correct
+   value, because underlying bitmap is unchanged;
+ - find_next_bit() in parallel with set or clear_bit(), when modifying
+   a bit prior to the start bit to search: safe and correct;
+ - find_first_bit() in parallel with set_bit(): safe, but may return wrong
+   bit number;
+ - find_first_zero_bit() in parallel with clear_bit(): same as above.
+
+In last 2 cases find_bit() may not return a correct bit number, but
+it may be OK if caller requires any (not exactly the first) set or clear
+bit, correspondingly.
+
+In such cases, KCSAN may be safely silenced with data_race(). But in most
+cases where KCSAN detects concurrency we should carefully review the code
+and likely protect critical sections or switch to atomic find_and_bit(),
+as appropriate.
+
+This patch adds the following atomic primitives:
+
+	find_and_set_bit(addr, nbits);
+	find_and_set_next_bit(addr, nbits, start);
+	...
+
+Here find_and_{set,clear} part refers to the corresponding
+test_and_{set,clear}_bit function. Suffixes like _wrap or _lock
+derive their semantics from corresponding find() or test() functions.
+
+For brevity, the naming omits the fact that we search for zero bit in
+find_and_set, and correspondingly search for set bit in find_and_clear
+functions.
+
+The patch also adds iterators with atomic semantics, like
+for_each_test_and_set_bit(). Here, the naming rule is to simply prefix
+corresponding atomic operation with 'for_each'.
+
+This series is not aimed on performance, but some performance
+implications are considered.
+
+In [1] Jan reported 2% slowdown in a single-thread search test when
+switching find_bit() function to treat bitmaps as volatile arrays. On
+the other hand, kernel robot in the same thread reported +3.7% to the
+performance of will-it-scale.per_thread_ops test.
+
+Assuming that our compilers are sane and generate better code against
+properly annotated data, the above discrepancy doesn't look weird. When
+running on non-volatile bitmaps, plain find_bit() outperforms atomic
+find_and_bit(), and vice-versa.
+
+So, all users of find_bit() API, where heavy concurrency is expected,
+are encouraged to switch to atomic find_and_bit() as appropriate.
+
+The 1st patch of this series adds atomic find_and_bit() API, 2nd adds
+a basic test for new API, and all the following patches spread it over
+the kernel.
+
+[1] https://lore.kernel.org/lkml/634f5fdf-e236-42cf-be8d-48a581c21660@alu.unizg.hr/T/#m3e7341eb3571753f3acf8fe166f3fb5b2c12e615
+
+---
+v1: https://lore.kernel.org/netdev/20231118155105.25678-29-yury.norov@gmail.com/T/
+v2: https://lore.kernel.org/all/20231204185101.ddmkvsr2xxsmoh2u@quack3/T/
+v3: https://lore.kernel.org/linux-pci/ZX4bIisLzpW8c4WM@yury-ThinkPad/T/
+v4:
+ - drop patch v3-24: not needed after null_blk refactoring;
+ - add patch 34: "MIPS: sgi-ip27: optimize alloc_level()";
+ - add patch 35: "uprobes: optimize xol_take_insn_slot()";
+ - add patches 36-40: get rid of locking scheme around bitmaps;
+ - move new API to separate headers, to not bloat bitmap.h @ Linus;
+ - patch #1: adjust comments to allow returning >= @size;
+ - rebase the series on top of current master.
+
+Yury Norov (40):
+  lib/find: add atomic find_bit() primitives
+  lib/find: add test for atomic find_bit() ops
+  lib/sbitmap; optimize __sbitmap_get_word() by using find_and_set_bit()
+  watch_queue: optimize post_one_notification() by using
+    find_and_clear_bit()
+  sched: add cpumask_find_and_set() and use it in __mm_cid_get()
+  mips: sgi-ip30: optimize heart_alloc_int() by using find_and_set_bit()
+  sparc: optimize alloc_msi() by using find_and_set_bit()
+  perf/arm: use atomic find_bit() API
+  drivers/perf: optimize ali_drw_get_counter_idx() by using
+    find_and_set_bit()
+  dmaengine: idxd: optimize perfmon_assign_event()
+  ath10k: optimize ath10k_snoc_napi_poll()
+  wifi: rtw88: optimize the driver by using atomic iterator
+  KVM: x86: hyper-v: optimize and cleanup kvm_hv_process_stimers()
+  PCI: hv: Optimize hv_get_dom_num() by using find_and_set_bit()
+  scsi: core: optimize scsi_evt_emit() by using an atomic iterator
+  scsi: mpi3mr: optimize the driver by using find_and_set_bit()
+  scsi: qedi: optimize qedi_get_task_idx() by using find_and_set_bit()
+  powerpc: optimize arch code by using atomic find_bit() API
+  iommu: optimize subsystem by using atomic find_bit() API
+  media: radio-shark: optimize the driver by using atomic find_bit() API
+  sfc: optimize the driver by using atomic find_bit() API
+  tty: nozomi: optimize interrupt_handler()
+  usb: cdc-acm: optimize acm_softint()
+  RDMA/rtrs: optimize __rtrs_get_permit() by using
+    find_and_set_bit_lock()
+  mISDN: optimize get_free_devid()
+  media: em28xx: cx231xx: optimize drivers by using find_and_set_bit()
+  ethernet: rocker: optimize ofdpa_port_internal_vlan_id_get()
+  bluetooth: optimize cmtp_alloc_block_id()
+  net: smc: optimize smc_wr_tx_get_free_slot_index()
+  ALSA: use atomic find_bit() functions where applicable
+  m68k: optimize get_mmu_context()
+  microblaze: optimize get_mmu_context()
+  sh: mach-x3proto: optimize ilsel_enable()
+  MIPS: sgi-ip27: optimize alloc_level()
+  uprobes: optimize xol_take_insn_slot()
+  scsi: sr: drop locking around SR index bitmap
+  KVM: PPC: Book3s HV: drop locking around kvmppc_uvmem_bitmap
+  wifi: mac80211: drop locking around ntp_fltr_bmap
+  mailbox: bcm-flexrm: simplify locking scheme
+  powerpc/xive: drop locking around IRQ map
+
+ MAINTAINERS                                  |   2 +
+ arch/m68k/include/asm/mmu_context.h          |  12 +-
+ arch/microblaze/include/asm/mmu_context_mm.h |  12 +-
+ arch/mips/sgi-ip27/ip27-irq.c                |  13 +-
+ arch/mips/sgi-ip30/ip30-irq.c                |  13 +-
+ arch/powerpc/kvm/book3s_hv_uvmem.c           |  33 +-
+ arch/powerpc/mm/book3s32/mmu_context.c       |  11 +-
+ arch/powerpc/platforms/pasemi/dma_lib.c      |  46 +--
+ arch/powerpc/platforms/powernv/pci-sriov.c   |  13 +-
+ arch/powerpc/sysdev/xive/spapr.c             |  34 +-
+ arch/sh/boards/mach-x3proto/ilsel.c          |   5 +-
+ arch/sparc/kernel/pci_msi.c                  |  10 +-
+ arch/x86/kvm/hyperv.c                        |  41 +--
+ drivers/dma/idxd/perfmon.c                   |   9 +-
+ drivers/infiniband/ulp/rtrs/rtrs-clt.c       |  16 +-
+ drivers/iommu/arm/arm-smmu/arm-smmu.h        |  11 +-
+ drivers/iommu/msm_iommu.c                    |  19 +-
+ drivers/isdn/mISDN/core.c                    |  10 +-
+ drivers/mailbox/bcm-flexrm-mailbox.c         |  21 +-
+ drivers/media/radio/radio-shark.c            |   6 +-
+ drivers/media/radio/radio-shark2.c           |   6 +-
+ drivers/media/usb/cx231xx/cx231xx-cards.c    |  17 +-
+ drivers/media/usb/em28xx/em28xx-cards.c      |  38 +--
+ drivers/net/ethernet/broadcom/bnxt/bnxt.c    |  18 +-
+ drivers/net/ethernet/rocker/rocker_ofdpa.c   |  12 +-
+ drivers/net/ethernet/sfc/rx_common.c         |   5 +-
+ drivers/net/ethernet/sfc/siena/rx_common.c   |   5 +-
+ drivers/net/ethernet/sfc/siena/siena_sriov.c |  15 +-
+ drivers/net/wireless/ath/ath10k/snoc.c       |  10 +-
+ drivers/net/wireless/realtek/rtw88/pci.c     |   6 +-
+ drivers/net/wireless/realtek/rtw89/pci.c     |   6 +-
+ drivers/pci/controller/pci-hyperv.c          |   8 +-
+ drivers/perf/alibaba_uncore_drw_pmu.c        |  11 +-
+ drivers/perf/arm-cci.c                       |  25 +-
+ drivers/perf/arm-ccn.c                       |  11 +-
+ drivers/perf/arm_dmc620_pmu.c                |  10 +-
+ drivers/perf/arm_pmuv3.c                     |   9 +-
+ drivers/scsi/mpi3mr/mpi3mr_os.c              |  22 +-
+ drivers/scsi/qedi/qedi_main.c                |  10 +-
+ drivers/scsi/scsi_lib.c                      |   8 +-
+ drivers/scsi/sr.c                            |  15 +-
+ drivers/tty/nozomi.c                         |   6 +-
+ drivers/usb/class/cdc-acm.c                  |   6 +-
+ include/linux/cpumask_atomic.h               |  20 ++
+ include/linux/find.h                         |   4 -
+ include/linux/find_atomic.h                  | 324 +++++++++++++++++++
+ kernel/events/uprobes.c                      |  15 +-
+ kernel/sched/sched.h                         |  15 +-
+ kernel/watch_queue.c                         |   7 +-
+ lib/find_bit.c                               |  86 +++++
+ lib/sbitmap.c                                |  47 +--
+ lib/test_bitmap.c                            |  62 ++++
+ net/bluetooth/cmtp/core.c                    |  11 +-
+ net/smc/smc_wr.c                             |  11 +-
+ sound/pci/hda/hda_codec.c                    |   8 +-
+ sound/usb/caiaq/audio.c                      |  14 +-
+ 56 files changed, 747 insertions(+), 493 deletions(-)
+ create mode 100644 include/linux/cpumask_atomic.h
+ create mode 100644 include/linux/find_atomic.h
+
+-- 
+2.43.0
+
