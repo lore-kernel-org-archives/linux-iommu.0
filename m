@@ -1,51 +1,51 @@
 Received: from mx0b-00069f02.pphosted.com (mx0b-00069f02.pphosted.com [205.220.177.32])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 720F28820
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9F45F17B410
 	for <iommu@lists.linux.dev>; Fri, 21 Jun 2024 18:43:35 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.177.32
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1718995417; cv=none; b=kfm7d25+JpvR01w7Ib8d1wH33AFTKpc7XIhJg0mRDsugxm8XMDZvKX4e3Ke1sOCGBMJbAGt6+utKmiBkow36HwoRGc8KgbQlXEOQf4UMDyHco73UeYwqwVOt4cWLWMFF9CCO6BZurx0ElLThJ0eG3lpLI9ixDulYyeOfgaL2buw=
+	t=1718995417; cv=none; b=TuLi9FM6behO7NMBIFNMRexj3sYv2l2xOT3KWPeBkJlwZlCdOQxCGPj5Y3hKHz66hqxDzr0htMTFHk6eoPkcQeuSx+2C9o71JPj+yCzh5b0TpXJIg4rYqm0+0PLETS00XJtPdJVT9qgzuAU+enk7g00GuiCJ2vmiiSX8uL4leZw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
 	s=arc-20240116; t=1718995417; c=relaxed/simple;
-	bh=CSKcMOdT3CJolGBsAOLmEiNUhMsDAP8WmobNMqgEh9g=;
+	bh=EITTOGRtBvv6cz9i2/18rkSPDMcDrQHtpgIyV4qa/8w=;
 	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
-	 MIME-Version; b=EhbMy2rJXSt1YR7gkoFdi+Jf4XAVmodAmBIGyqgeTu1Qx7zBLDOmcSBkG1Rfj6fxiXJ7KWsBYXTXtCO7DrhbpYpKA1AzMjGfuo4hJrXtVeIFY1CiGBSf7uu8le+gL3omudhqUiMv38NMNDF5SYA6Y07Gdr2mLBf/VsFqaLg0Roo=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oracle.com; spf=pass smtp.mailfrom=oracle.com; dkim=pass (2048-bit key) header.d=oracle.com header.i=@oracle.com header.b=GiVEbpSU; arc=none smtp.client-ip=205.220.177.32
+	 MIME-Version; b=dkynLn6DYs+F2gRbR+FlIteVQqpMz4hTctkPHxfH5I3sZ894qkfBqauOBvQ8OywRhNJEEPuUl/bLdjm7/Hs1IXuGtFoFIAy+GCcQLx8VLmfD88MHuCveigzM8YcjayXlqQZrL9uqXnKbySZZ3tuXqx+0xoX5ZQyJ2omllLoCVco=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oracle.com; spf=pass smtp.mailfrom=oracle.com; dkim=pass (2048-bit key) header.d=oracle.com header.i=@oracle.com header.b=WN4wEifn; arc=none smtp.client-ip=205.220.177.32
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oracle.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=oracle.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=oracle.com header.i=@oracle.com header.b="GiVEbpSU"
-Received: from pps.filterd (m0246632.ppops.net [127.0.0.1])
-	by mx0b-00069f02.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 45LEXP2q007613;
-	Fri, 21 Jun 2024 18:43:26 GMT
+	dkim=pass (2048-bit key) header.d=oracle.com header.i=@oracle.com header.b="WN4wEifn"
+Received: from pps.filterd (m0246630.ppops.net [127.0.0.1])
+	by mx0b-00069f02.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 45LEXYr8010289;
+	Fri, 21 Jun 2024 18:43:28 GMT
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=
 	from:to:cc:subject:date:message-id:in-reply-to:references
-	:mime-version:content-transfer-encoding; s=corp-2023-11-20; bh=K
-	2lpA+S0eErle6GP6bB4bBKwYVC8XeIfws30/MLLehc=; b=GiVEbpSUU2ukl5zK4
-	ri5+Uspr9e9tNFOOJI6qHBMgyoDImWeYgIRoJeoSQCiiJZL/GRDOHe6ZkSAAS1+6
-	f/7kf0cISla6IeRY+76IwFUjy2FQjotxgNj0Kd8j2UXGNwQPOK5FhcsErjgXOTX+
-	5OSHfCp1bOU6P5m9Kwtgx3og6GTAIoAmU+NcauCMagWGRMvBZY427fTQDChzV6rd
-	20SQgp9opvdnpgr74Tn7ywIcNNt7zNRAe9m3b3QgvzBRXvXHAmY5iCvkwJ08BU5o
-	uk15sMB6LZSWrvrswK+HaEJeMnED8fsV5Q5jkA77SM4+gXGV5jqQcXSX+WCLUvCr
-	LP/jg==
+	:mime-version:content-transfer-encoding; s=corp-2023-11-20; bh=N
+	eHyuGtPxMKSAxSRJHVvKA7dnyZNFISveRkou6yT+Co=; b=WN4wEifndIV5Bel9j
+	j/is62lmtz09giOZppP1hVxQSWZR7vY66UWHG21f2Vh+tk4dEOMQ0WML+NgwoSfK
+	mNHwVM1yCBM27lwLJaEVVUPbxavPY6gDC05GbjghkwM+lFGYTNn3dMB0MkNFoCiz
+	x6D71zGsRLMJup99qoVxU4mP1BlV+HoPtou/hESQkEQXm+qV8RAyPoupUs5FmSBC
+	TLqTUHJcYbYmHUCdRI1VH+gTtth4VMz5IKF5KZRXpA58uLDzgTHK5xZjCwGMsPX9
+	HFTkXNOY6567bf4UoWkCDQDHYxFi1Fb4V5x4RfUtDv0VnJoB84j370VwBXvf024a
+	E+Z7g==
 Received: from phxpaimrmta01.imrmtpd1.prodappphxaev1.oraclevcn.com (phxpaimrmta01.appoci.oracle.com [138.1.114.2])
-	by mx0b-00069f02.pphosted.com (PPS) with ESMTPS id 3yvrkd2av6-1
+	by mx0b-00069f02.pphosted.com (PPS) with ESMTPS id 3yvrkfaak5-1
 	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-	Fri, 21 Jun 2024 18:43:25 +0000 (GMT)
+	Fri, 21 Jun 2024 18:43:28 +0000 (GMT)
 Received: from pps.filterd (phxpaimrmta01.imrmtpd1.prodappphxaev1.oraclevcn.com [127.0.0.1])
-	by phxpaimrmta01.imrmtpd1.prodappphxaev1.oraclevcn.com (8.17.1.19/8.17.1.19) with ESMTP id 45LIU699040090;
-	Fri, 21 Jun 2024 18:43:24 GMT
+	by phxpaimrmta01.imrmtpd1.prodappphxaev1.oraclevcn.com (8.17.1.19/8.17.1.19) with ESMTP id 45LIZGKQ039419;
+	Fri, 21 Jun 2024 18:43:27 GMT
 Received: from pps.reinject (localhost [127.0.0.1])
-	by phxpaimrmta01.imrmtpd1.prodappphxaev1.oraclevcn.com (PPS) with ESMTPS id 3yvrn4pp0r-1
+	by phxpaimrmta01.imrmtpd1.prodappphxaev1.oraclevcn.com (PPS) with ESMTPS id 3yvrn4pp1r-1
 	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-	Fri, 21 Jun 2024 18:43:24 +0000
+	Fri, 21 Jun 2024 18:43:27 +0000
 Received: from phxpaimrmta01.imrmtpd1.prodappphxaev1.oraclevcn.com (phxpaimrmta01.imrmtpd1.prodappphxaev1.oraclevcn.com [127.0.0.1])
-	by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 45LIhFX8032040;
-	Fri, 21 Jun 2024 18:43:24 GMT
+	by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 45LIhFXA032040;
+	Fri, 21 Jun 2024 18:43:26 GMT
 Received: from joaomart-mac.nl.oracle.com (dhcp-10-175-63-48.vpn.oracle.com [10.175.63.48])
-	by phxpaimrmta01.imrmtpd1.prodappphxaev1.oraclevcn.com (PPS) with ESMTP id 3yvrn4pnuj-4;
-	Fri, 21 Jun 2024 18:43:24 +0000
+	by phxpaimrmta01.imrmtpd1.prodappphxaev1.oraclevcn.com (PPS) with ESMTP id 3yvrn4pnuj-5;
+	Fri, 21 Jun 2024 18:43:26 +0000
 From: Joao Martins <joao.m.martins@oracle.com>
 To: iommu@lists.linux.dev
 Cc: Jason Gunthorpe <jgg@nvidia.com>, Kevin Tian <kevin.tian@intel.com>,
@@ -55,9 +55,9 @@ Cc: Jason Gunthorpe <jgg@nvidia.com>, Kevin Tian <kevin.tian@intel.com>,
         Avihai Horon <avihaih@nvidia.com>,
         Alex Williamson <alex.williamson@redhat.com>,
         Shameerali Kolothum Thodi <shameerali.kolothum.thodi@huawei.com>
-Subject: [PATCH v1 03/10] iommufd/selftest: Add tests for <= u8 bitmap sizes
-Date: Fri, 21 Jun 2024 19:42:47 +0100
-Message-Id: <20240621184254.45477-4-joao.m.martins@oracle.com>
+Subject: [PATCH v1 04/10] iommufd/selftest: Do not record head iova to better match iommu drivers
+Date: Fri, 21 Jun 2024 19:42:48 +0100
+Message-Id: <20240621184254.45477-5-joao.m.martins@oracle.com>
 In-Reply-To: <20240621184254.45477-1-joao.m.martins@oracle.com>
 References: <20240621184254.45477-1-joao.m.martins@oracle.com>
 Precedence: bulk
@@ -71,56 +71,38 @@ X-Proofpoint-Virus-Version: vendor=baseguard
  engine=ICAP:2.0.293,Aquarius:18.0.1039,Hydra:6.0.680,FMLib:17.12.28.16
  definitions=2024-06-21_10,2024-06-21_01,2024-05-17_01
 X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 suspectscore=0 malwarescore=0
- phishscore=0 spamscore=0 mlxlogscore=828 adultscore=0 bulkscore=0
+ phishscore=0 spamscore=0 mlxlogscore=564 adultscore=0 bulkscore=0
  mlxscore=0 classifier=spam adjust=0 reason=mlx scancount=1
  engine=8.12.0-2406180000 definitions=main-2406210136
-X-Proofpoint-GUID: NCCGiPAo7g9Wceg0N-eOUkiW4g8lgiMu
-X-Proofpoint-ORIG-GUID: NCCGiPAo7g9Wceg0N-eOUkiW4g8lgiMu
+X-Proofpoint-ORIG-GUID: CCmldlCDgY9XRUnvZ4vz0AsnCcuE1Cf9
+X-Proofpoint-GUID: CCmldlCDgY9XRUnvZ4vz0AsnCcuE1Cf9
 
-Add more tests for bitmaps smaller than or equal to an u8, though skip the
-tests if the IOVA buffer size is smaller than the mock page size.
+Do not se a hugepage-aligned IOVA for incrementing an IOVA, to better match
+current IOMMU driver implementations. Keep it for IOPTEs where it clears
+all dirty bits for a hugepage even if it is starting from a partial range.
+This is also similar to AMD driver (iommu v1 format) where IOMMU uses
+various subpage PTE data for dirty tracking (for non-standard page sizes).
 
 Signed-off-by: Joao Martins <joao.m.martins@oracle.com>
 ---
- tools/testing/selftests/iommu/iommufd.c | 18 ++++++++++++++++++
- 1 file changed, 18 insertions(+)
+ drivers/iommu/iommufd/selftest.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/tools/testing/selftests/iommu/iommufd.c b/tools/testing/selftests/iommu/iommufd.c
-index 0b04d782a19f..61189215e1ab 100644
---- a/tools/testing/selftests/iommu/iommufd.c
-+++ b/tools/testing/selftests/iommu/iommufd.c
-@@ -1727,6 +1727,12 @@ FIXTURE_SETUP(iommufd_dirty_tracking)
- 	void *vrc;
- 	int rc;
+diff --git a/drivers/iommu/iommufd/selftest.c b/drivers/iommu/iommufd/selftest.c
+index fea60db05c9f..612d6c66813c 100644
+--- a/drivers/iommu/iommufd/selftest.c
++++ b/drivers/iommu/iommufd/selftest.c
+@@ -266,8 +266,8 @@ static int mock_domain_read_and_clear_dirty(struct iommu_domain *domain,
  
-+	if (variant->buffer_size < MOCK_PAGE_SIZE) {
-+		SKIP(return,
-+		     "Skipping buffer_size=%lu, less than MOCK_PAGE_SIZE=%lu",
-+		     variant->buffer_size, MOCK_PAGE_SIZE);
-+	}
-+
- 	self->fd = open("/dev/iommu", O_RDWR);
- 	ASSERT_NE(-1, self->fd);
+ 		/* Clear dirty */
+ 		if (mock_test_and_clear_dirty(mock, head, pgsize, flags))
+-			iommu_dirty_bitmap_record(dirty, head, pgsize);
+-		iova = head + pgsize;
++			iommu_dirty_bitmap_record(dirty, iova, pgsize);
++		iova += pgsize;
+ 	} while (iova < end);
  
-@@ -1779,6 +1785,18 @@ FIXTURE_TEARDOWN(iommufd_dirty_tracking)
- 	teardown_iommufd(self->fd, _metadata);
- }
- 
-+FIXTURE_VARIANT_ADD(iommufd_dirty_tracking, domain_dirty8k)
-+{
-+	/* half of an u8 index bitmap */
-+	.buffer_size = 8UL * 1024UL,
-+};
-+
-+FIXTURE_VARIANT_ADD(iommufd_dirty_tracking, domain_dirty16k)
-+{
-+	/* one u8 index bitmap */
-+	.buffer_size = 16UL * 1024UL,
-+};
-+
- FIXTURE_VARIANT_ADD(iommufd_dirty_tracking, domain_dirty128k)
- {
- 	/* one u32 index bitmap */
+ 	return 0;
 -- 
 2.17.2
 
