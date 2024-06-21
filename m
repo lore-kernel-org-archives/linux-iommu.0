@@ -1,127 +1,111 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.15])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-io1-f52.google.com (mail-io1-f52.google.com [209.85.166.52])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 56FBF42052
-	for <iommu@lists.linux.dev>; Fri, 21 Jun 2024 01:46:59 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.15
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 78A4216C440
+	for <iommu@lists.linux.dev>; Fri, 21 Jun 2024 07:32:58 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.166.52
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1718934420; cv=none; b=Y3PLuIQKWCm9IdlujHawxNLYfO+ed2VHWsM2QxlMH8XC3BCktIXPco8X5nTYgy0ZWW9F3bD+G/gAFG8brV4cEBd0+wRiWwLFXOpF/Tutwox7qXfLxiq4kb9Uyd92TTRCFsdYh3V1zm2QmojOowFJwEDoZt05rm+p+lX39nC1Jyw=
+	t=1718955180; cv=none; b=Zf+LVwXQImWQqf7szMiSWrg5wmcK2iwBT/z8pi8hbMNcIPWu6mYmLq4SchdkWVDIi4jQvjtfSucBtNEZFJPEPrccqsIsl1j0Jo7mwj+cClNHm+ei+Tj0rSkn7DpsbNlNR+/tnYR0lOgOYmzxmAO/DZ0hrXff+kd7QgTjChjwboI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1718934420; c=relaxed/simple;
-	bh=25zlymyI4qwckV9AjPiUYSWvw9kp0mp/jFTYtt1X9a0=;
-	h=Message-ID:Date:MIME-Version:Cc:Subject:To:References:From:
-	 In-Reply-To:Content-Type; b=VUTJwN1GECsMbM9h+bz0kEJS8zCSqUhomZlF5X7B6J1cZwHjbIiuvbmJCQ1bw3y0QUzHT8BhaPW+UcqB39FXkJvKrbnGKETqkhUWhaUk+SkqUz/R0RiLa7TxIQZs0zdwIgwtS/c+5vr2JCjJjPrTNIiHKEAn4T4v7hEaz7gsyrk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=YM+u++pJ; arc=none smtp.client-ip=192.198.163.15
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
+	s=arc-20240116; t=1718955180; c=relaxed/simple;
+	bh=Nc6TqAf/Y2o3KcUZLNmuYOweaa2c9DWtB9Prmytsiy8=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=sah+3HVh7DB4qNTZgaE4rADHHxsGVsFq9Oic3j+X/G3BWdrXFnpuHX44veQpyuILN17weMKYeTUii+7egIxjKD8a3YQ6I+6ZUYa0UnVNdubLIJl7ZyVIGHfzYnt2HIvusEUAORShOpjgyg9I9XhNf25VI8WUHY3J0O7Z6Mbvaa8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=sifive.com; spf=pass smtp.mailfrom=sifive.com; dkim=pass (2048-bit key) header.d=sifive.com header.i=@sifive.com header.b=mNt3hJkT; arc=none smtp.client-ip=209.85.166.52
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=sifive.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=sifive.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="YM+u++pJ"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1718934419; x=1750470419;
-  h=message-id:date:mime-version:cc:subject:to:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=25zlymyI4qwckV9AjPiUYSWvw9kp0mp/jFTYtt1X9a0=;
-  b=YM+u++pJbLo2WoeVn1w1BftFjy2y2iWoYQwF9+myo3dV5wL1mJXKQRyp
-   1zHBquIzgJ3HOpvI313Zs+RRELaX0/C6cwiyaj6UkAVMAX37GjLJme4Nu
-   duOVW2BZuc3BVh9Z1nSMEXwih6esaMieJBmoRVOB8m+IcR9mrv+JkpIre
-   MpMDoAc7dcSDeUhMLxV+zD+TEpI+vVsLhoAfvjeEwF6hWvHsdDCnjJ3Pi
-   DbAymfcF2r1KpkNe9sXsCopEyipX/gbSyDMG0aicbISw3Hri/G+tF7+Ri
-   ZjE0gNURDN8VEHbPdcTusD8lUDMnOm12LeGAAA1gLyHDhojxgakKIvvBJ
-   Q==;
-X-CSE-ConnectionGUID: j68gDm7aRSeCKyzP2Kqyug==
-X-CSE-MsgGUID: OW5S74XpQUmwN19FfapJXQ==
-X-IronPort-AV: E=McAfee;i="6700,10204,11109"; a="16094082"
-X-IronPort-AV: E=Sophos;i="6.08,253,1712646000"; 
-   d="scan'208";a="16094082"
-Received: from fmviesa007.fm.intel.com ([10.60.135.147])
-  by fmvoesa109.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Jun 2024 18:46:59 -0700
-X-CSE-ConnectionGUID: rR4hhHdZQt2vznYhFrwbnA==
-X-CSE-MsgGUID: SfR8aNoPSXuhTw9ZihAZ+Q==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.08,253,1712646000"; 
-   d="scan'208";a="42297214"
-Received: from unknown (HELO [10.239.159.127]) ([10.239.159.127])
-  by fmviesa007.fm.intel.com with ESMTP; 20 Jun 2024 18:46:56 -0700
-Message-ID: <3d709185-2065-4cb8-9d69-a7a34edd249e@linux.intel.com>
-Date: Fri, 21 Jun 2024 09:44:27 +0800
+	dkim=pass (2048-bit key) header.d=sifive.com header.i=@sifive.com header.b="mNt3hJkT"
+Received: by mail-io1-f52.google.com with SMTP id ca18e2360f4ac-7e238fa7b10so65588739f.0
+        for <iommu@lists.linux.dev>; Fri, 21 Jun 2024 00:32:58 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=sifive.com; s=google; t=1718955177; x=1719559977; darn=lists.linux.dev;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=KVfCPcleGZb0eMzqXi7Vsq/j2SxIArSsk0slGEmGrA8=;
+        b=mNt3hJkTFHS0IGl4kkFGDzWL3D9ZQANEoXL4AdnpQIkknrDWFrkzDXaSMSQlDaYOky
+         cwwM/N1rnkCCI5D9m9Mam4XR7+ld4todorJVtBWVU3jQ5shRVbY/335fitH9tslsiMgS
+         pTIblgdrIu6d3cIVPzfXxibU2XgvGq1d9WKP+TJ7Mz9QroMXbJs7pS41KAHdVqXNLvBO
+         +UNF9HZ9s66VPaEiQ+KrOqNWNrT0eHqn9h1/UBQE8D6QZodVj2x+EvB6RK5tfDm86j2U
+         wAqyiDcCIOIi+Lw66gGKAqoLS7zS+6ag0qMmlx5gV+0qOmsG+0VhygTFhnqDPYwhJoYI
+         6tLQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1718955177; x=1719559977;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=KVfCPcleGZb0eMzqXi7Vsq/j2SxIArSsk0slGEmGrA8=;
+        b=uo1wgC8ZRi9vGU8yFPEPXlAb5DN0q+vvJxicLOF66kQuCSi6sTlyad2ubdWtiRJaD7
+         LuyrM6mHjG0j/qzn+MiIE3i1rFeSP8S44cmQuhlVvnMzPoLuWSWeEzGNshrodq6dev+a
+         gcjglOEMCmBzAoP9GlMgv9nGyXDSORwN3mGrzyOCP5ClVNgnKgbxDjfmdbm4FL3kWgfH
+         muVazQlhfsjmMZE1hGjn/7Ua4KM4mNhegyzHN20b6eB8i0VPhboIBB7LV764sEBY73NU
+         dlTCS7JoYCpxP95sB+fe+eG5Bt/t5WjhOtNygxvGQOa4K1e21VVVcLDYi5vxXBxD1LH1
+         en9w==
+X-Forwarded-Encrypted: i=1; AJvYcCX07Oh3gwgE7Y56RNz3c8NMolyw9grofKl9Uy9EKzmFZwlt8kpasnRrm3SMOJmu4YqiCal7IF1WwgrEpkxsWpw6RdxnZPY=
+X-Gm-Message-State: AOJu0Yz3CkJjq9SRBRbehV5cL4dgOGK+JhZ4VTkHwOLzW5jrgv5NyH7p
+	PndNNQc2mHGNFCCWE2J1h3jsbvmaX0e4ei8AhWYFam+FouTPCJWfj+R3T+vRAqmXxs3YFy2ucNd
+	zdpsrzXdj8271QXEE2G06FIqgXlCVztiovX9inQ==
+X-Google-Smtp-Source: AGHT+IEu4dzZYkNTMX3+BfnbcWOAfXALbnMrAKJ+znJ39Y2amlEx+w3//cBWxFx/TUtSBRZyaVePY5uzyySauxGMR6c=
+X-Received: by 2002:a05:6602:2cc5:b0:7eb:af88:1e3a with SMTP id
+ ca18e2360f4ac-7f13ee86867mr811509939f.14.1718955177505; Fri, 21 Jun 2024
+ 00:32:57 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Cc: baolu.lu@linux.intel.com, "Tian, Kevin" <kevin.tian@intel.com>,
- Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
- Robin Murphy <robin.murphy@arm.com>,
- Jacek Lawrynowicz <jacek.lawrynowicz@linux.intel.com>,
- "iommu@lists.linux.dev" <iommu@lists.linux.dev>,
- "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH 1/1] iommu/vt-d: Fix missed device TLB cache tag
-To: Jason Gunthorpe <jgg@ziepe.ca>, Vasant Hegde <vasant.hegde@amd.com>
-References: <20240619015345.182773-1-baolu.lu@linux.intel.com>
- <20240619164620.GN791043@ziepe.ca>
- <1dfb467d-f25a-4270-8a36-a048f061e2aa@linux.intel.com>
- <BN9PR11MB5276F76798E61D231D861A2F8CC82@BN9PR11MB5276.namprd11.prod.outlook.com>
- <976d4054-6306-4325-a112-5cf69b0c6f34@linux.intel.com>
- <bdbb40da-faa5-4321-a58b-5fcffcbc818c@amd.com>
- <8c78f966-539c-4c81-92a6-32d32bb10e8b@linux.intel.com>
- <657c7e03-91ef-4765-be7c-1f57eb45e467@amd.com>
- <20240620140815.GO791043@ziepe.ca>
-Content-Language: en-US
-From: Baolu Lu <baolu.lu@linux.intel.com>
-In-Reply-To: <20240620140815.GO791043@ziepe.ca>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+References: <20240614142156.29420-1-zong.li@sifive.com> <20240614142156.29420-7-zong.li@sifive.com>
+ <20240619154901.GN1091770@ziepe.ca>
+In-Reply-To: <20240619154901.GN1091770@ziepe.ca>
+From: Zong Li <zong.li@sifive.com>
+Date: Fri, 21 Jun 2024 15:32:46 +0800
+Message-ID: <CANXhq0qts90x4L6gOhrAx0dMpX1UbPqEAK6QK9fshgso+Pxk3g@mail.gmail.com>
+Subject: Re: [RFC PATCH v2 06/10] iommu/riscv: support nested iommu for
+ getting iommu hardware information
+To: Jason Gunthorpe <jgg@ziepe.ca>
+Cc: joro@8bytes.org, will@kernel.org, robin.murphy@arm.com, 
+	tjeznach@rivosinc.com, paul.walmsley@sifive.com, palmer@dabbelt.com, 
+	aou@eecs.berkeley.edu, kevin.tian@intel.com, linux-kernel@vger.kernel.org, 
+	iommu@lists.linux.dev, linux-riscv@lists.infradead.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-On 6/20/24 10:08 PM, Jason Gunthorpe wrote:
-> On Thu, Jun 20, 2024 at 04:19:46PM +0530, Vasant Hegde wrote:
->>>>>> seems that for all domain attaches above is coded in a wrong order
->>>>>> as ats is enabled after the cache tag is assigned.
->>>>> Yes, exactly. But simply changing the order isn't future-proof,
->>>>> considering ATS control will eventually be moved out of iommu drivers.
->>>> [Unrelated to this patch]
->>>>
->>>> You mean ATS setup will be moved to individual device driver? Is there any
->>>> reason for that?
->>> Not exactly to individual device drivers, but it should be out of the
->>> iommu drivers.
->>>
->>> https://lore.kernel.org/linux-iommu/BL1PR12MB51441FC4303BD0442EDB7A9CF7FFA@BL1PR12MB5144.namprd12.prod.outlook.com/
->> Got it. Thanks.
->>
->> I remember of this discussion. May be we can provide API from IOMMU driver so
->> that individual driver can enable/disable ATS (like iommu_dev_enable_feature()).
-> But I have a feeling if we do that it should be done by re-attaching
-> the domain.
-> 
-> For instance if you look at how I structued SMMUv3, the ATSness is an
-> effective property of the domain type and ATS switches on and off
-> dynamically already.
-> 
-> Having an additional input to domain attach "inhibit ats", as a flag
-> would be all the support the driver would need to provide for the core
-> code to manage this with some kind of global policy.
-> 
-> I would suggest to steer VTD in that direction too and make the ATS
-> enable be done on domain attach, and put the first ATS enable in
-> attach, not in probe. The logic in smmuv3 would apply just as well to
-> VTD, though you'd need the hitless update logic too 🙂
+On Wed, Jun 19, 2024 at 11:49=E2=80=AFPM Jason Gunthorpe <jgg@ziepe.ca> wro=
+te:
+>
+> On Fri, Jun 14, 2024 at 10:21:52PM +0800, Zong Li wrote:
+> > This patch implements .hw_info operation and the related data
+> > structures for passing the IOMMU hardware capabilities for iommufd.
+> >
+> > Signed-off-by: Zong Li <zong.li@sifive.com>
+> > ---
+> >  drivers/iommu/riscv/iommu.c  | 20 ++++++++++++++++++++
+> >  include/uapi/linux/iommufd.h | 18 ++++++++++++++++++
+> >  2 files changed, 38 insertions(+)
+>
+> Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
+>
+> >  /**
+> >   * enum iommu_hw_info_type - IOMMU Hardware Info Types
+> >   * @IOMMU_HW_INFO_TYPE_NONE: Used by the drivers that do not report ha=
+rdware
+> >   *                           info
+> >   * @IOMMU_HW_INFO_TYPE_INTEL_VTD: Intel VT-d iommu info type
+> > + * @IOMMU_HW_INFO_TYPE_RISCV_IOMMU: RISC-V iommu info type
+> >   */
+>
+> Is there a more formal name than "RISCV IOMMU" here? It seems like you
+> will probably have a RISCV_IOMMU_V2 someday, is that naming OK?
+>
 
-Enabling/Disabling ATS on domain attach seems like a feasible approach.
-The ATS requirement information (required/disallowed/neutral) could be
-included as an opt-in option in the domain attach path. This likely
-applies to PASID attachments and VF/PF devices. The iommu driver
-maintains the per-device ATS refcount and enables it for the first
-request and disables it after the last one. The attachment fails
-accordingly if the hardware capability doesn't match the domain attach
-requirement.
+RISC-V IOMMU currently doesn't have another name. If we are really
+unfortunate enough to need to overhaul the entire structure, maybe we
+can give it another proper name. But personally, RISCV_IOMMU_V2 is
+fine with me.
 
-Perhaps we could further include PRI as a domain attach option,
-indicating that the domain requires IOPF functionality. This would allow
-us to simplify the SVA and IOMMUFD by hiding device and IOMMU details
-within the IOMMU driver.
+I have also taken a look at comments on other patches, please allow me
+a moment to digest that, I will reply to them later. Thanks
 
-Best regards,
-baolu
+> Jason
