@@ -1,127 +1,147 @@
-Received: from mail-qk1-f177.google.com (mail-qk1-f177.google.com [209.85.222.177])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mail187-10.suw11.mandrillapp.com (mail187-10.suw11.mandrillapp.com [198.2.187.10])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 970A915357A
-	for <iommu@lists.linux.dev>; Fri, 21 Jun 2024 12:58:07 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.222.177
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 69B0E6EB7C
+	for <iommu@lists.linux.dev>; Fri, 21 Jun 2024 15:09:09 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.2.187.10
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1718974689; cv=none; b=bE0S+QzilMgVVpbdmzd08WAbNn4H4kiB8qIhBKUJu9SE88XhvPhck/1cOF07LErQ0quqnbEh9rG5DIPSbnjwJfo9IMJCkmv4EgildGHDX3VVZS3sIDa4gpiFaIY92LNKCwmBCinZaVjaMsGCMrw3avoQxkLDOqF/LuLqBIX4/qU=
+	t=1718982551; cv=none; b=GVWYrnOlJYleXsyywJdxCm9JpQrZ0i6mDpbysOxhr9mdUjujcRuoBU+7fvayEKEiscDQp54ce6c5TDpKkYuH2Dt0OdkIeLeUQXn/deidc/B+esVTLrjjMzoJ7bE1K996Uw54CNevnQNgMeJQvzb97x+A0VGY3YrHycYfA7sNLjM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1718974689; c=relaxed/simple;
-	bh=XkE2aXGQ3OEWHgZBCTmUVRQboZ6XByanLbqpezLnWfI=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=jV+FwtfHcIuOUbjfIsjFWICEh/P8FxzABp48cY3tMLk3GjvVPrWORapdexWqzxA/WVY1rnddkWsZoWrx2ILT2ZjhGk7+kr4OqF2vSo/M/xpI6zyhQGXILXyYpEWMWBkvh4AcafvHmy406AFhGLlkanh8F3qOzifoCQ5qvdCpasM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=hdFrm2g1; arc=none smtp.client-ip=209.85.222.177
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
+	s=arc-20240116; t=1718982551; c=relaxed/simple;
+	bh=ZyhlVR6pq1OHkcy+fRhQISyNOfVTZYNFalKZNst49eo=;
+	h=From:Subject:Message-Id:To:Cc:References:In-Reply-To:Date:
+	 MIME-Version:Content-Type; b=HB+Im53m8dOv66RQp75BFWoC+olxX1eFPPV/Zzzgri4+rhlLXRXR90VWVFGSwpBfC09NdxD0LZqXxVng+3EF9rqaxmRPhRAQG4JJhHllZ49N/XM64w8xltpPK9uR6zBQ8NyGaw3DjEw4agZ62NsH3IvRPtdQEoJVD70YmqFt0Vc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=vates.tech; spf=pass smtp.mailfrom=bounce.vates.tech; dkim=pass (2048-bit key) header.d=mandrillapp.com header.i=@mandrillapp.com header.b=gnYPzEPA; dkim=pass (2048-bit key) header.d=vates.tech header.i=teddy.astie@vates.tech header.b=GV1bbXFF; arc=none smtp.client-ip=198.2.187.10
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=vates.tech
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=bounce.vates.tech
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="hdFrm2g1"
-Received: by mail-qk1-f177.google.com with SMTP id af79cd13be357-7955aaf8006so141453285a.1
-        for <iommu@lists.linux.dev>; Fri, 21 Jun 2024 05:58:07 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google; t=1718974686; x=1719579486; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=XkE2aXGQ3OEWHgZBCTmUVRQboZ6XByanLbqpezLnWfI=;
-        b=hdFrm2g1qnwx7b1fpq6fO4v008NnzsUt3M21BCyYs/2TgHwmmud7AvzUdZOxGywmY5
-         4LvOWWhIH5edFeelSywawXNI4paBuF00VB6t86nYv+20Ks/OMm6GjMSM0N4XF5+U9e6U
-         k1HTFz1bYoDZhv0kzcP3Ydqf4CMo4lG3ayWiT0mNp4alJRTqwECf4h5b8kXYoejXVUkV
-         Q7S2gi+t6fBpaFoUM2UXV5l1ogb6omdrivsiU3jcSZQ36a/iqrPhfu1L3wZUg4wZnfM0
-         SNntLwMzYcg63qkWMxfU9c7ZOhFmwJGcNUlCWwfJ0zEsjQT1gJS3n+4N72kPbgvW8bQf
-         nAzQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1718974686; x=1719579486;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=XkE2aXGQ3OEWHgZBCTmUVRQboZ6XByanLbqpezLnWfI=;
-        b=Cvv+stpM8LukujsSmCk/vTjO83nI+2HYm9PbqhZ/vSM9QRwkJvaC/LI+/fuoLS0+Cl
-         sSIPGyqz5EZwRa80rrvIWexMxQ3fB1N3DFxrGUdp0EXAEou33IhUxBOURMCLvC28VC9k
-         Wzya2lZ0tOrMUpJw9qTfi1e3Idpa7MS7iSyP4/V5eiX5pDUtgs9NEPUK90IZrXOOB0eM
-         OsiARzMGdSyUqX5Pun7d5iMa6cP77cSrKLw0/6V1pahqxQFEHWap6selHPox31bd8PQd
-         Up8MHMVZbh0AnC4kLbsWprn0am8feMrVX/ftPIJMsFQ1qV4NR33sWDuYSRBtadscH1TG
-         Dzfw==
-X-Forwarded-Encrypted: i=1; AJvYcCUB+5VlZp/ucyVD8kxVlp1OqCzNkKZJrGk4bYygxbTE+UsqZF0ark8FSCf3fTQ6TZl3zHN8Lz9lHibMChPvWFHPyIhlXuY=
-X-Gm-Message-State: AOJu0Yy9Rz+RVYUa6Ocr2HAGNM5mGCqstXzbkQb3uLvWVP8H6ycjZNb+
-	CNFFIPlpB2BLO0RYaPTKhe+Qg0UamTKmcL5YdR5zQGQqQ5IBdI7LaUQI5AfRdZY=
-X-Google-Smtp-Source: AGHT+IG9jNeBtKv51T5M28R8MsVDZfSjCHGL8xN8o3mydLDx3b7W4tWjsJeePqsv7hRJTtyXM00cbQ==
-X-Received: by 2002:a05:620a:28d1:b0:795:758d:fba4 with SMTP id af79cd13be357-79bb3e5b960mr913512085a.46.1718974686404;
-        Fri, 21 Jun 2024 05:58:06 -0700 (PDT)
-Received: from ziepe.ca (hlfxns017vw-142-68-80-239.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.68.80.239])
-        by smtp.gmail.com with ESMTPSA id af79cd13be357-79bce89a3b1sm84602985a.26.2024.06.21.05.58.05
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 21 Jun 2024 05:58:05 -0700 (PDT)
-Received: from jgg by wakko with local (Exim 4.95)
-	(envelope-from <jgg@ziepe.ca>)
-	id 1sKdq8-00HS0b-Rq;
-	Fri, 21 Jun 2024 09:58:04 -0300
-Date: Fri, 21 Jun 2024 09:58:04 -0300
-From: Jason Gunthorpe <jgg@ziepe.ca>
-To: Baolu Lu <baolu.lu@linux.intel.com>
-Cc: Vasant Hegde <vasant.hegde@amd.com>,
-	"Tian, Kevin" <kevin.tian@intel.com>,
-	Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
-	Robin Murphy <robin.murphy@arm.com>,
-	Jacek Lawrynowicz <jacek.lawrynowicz@linux.intel.com>,
-	"iommu@lists.linux.dev" <iommu@lists.linux.dev>,
-	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH 1/1] iommu/vt-d: Fix missed device TLB cache tag
-Message-ID: <20240621125804.GP791043@ziepe.ca>
-References: <20240619015345.182773-1-baolu.lu@linux.intel.com>
- <20240619164620.GN791043@ziepe.ca>
- <1dfb467d-f25a-4270-8a36-a048f061e2aa@linux.intel.com>
- <BN9PR11MB5276F76798E61D231D861A2F8CC82@BN9PR11MB5276.namprd11.prod.outlook.com>
- <976d4054-6306-4325-a112-5cf69b0c6f34@linux.intel.com>
- <bdbb40da-faa5-4321-a58b-5fcffcbc818c@amd.com>
- <8c78f966-539c-4c81-92a6-32d32bb10e8b@linux.intel.com>
- <657c7e03-91ef-4765-be7c-1f57eb45e467@amd.com>
- <20240620140815.GO791043@ziepe.ca>
- <3d709185-2065-4cb8-9d69-a7a34edd249e@linux.intel.com>
+	dkim=pass (2048-bit key) header.d=mandrillapp.com header.i=@mandrillapp.com header.b="gnYPzEPA";
+	dkim=pass (2048-bit key) header.d=vates.tech header.i=teddy.astie@vates.tech header.b="GV1bbXFF"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=mandrillapp.com;
+	s=mte1; t=1718982548; x=1719243048;
+	bh=lIV/U0ezGsXVmOjqbkafB5BjfIUquJ6q+7BRog7b6qo=;
+	h=From:Subject:Message-Id:To:Cc:References:In-Reply-To:Feedback-ID:
+	 Date:MIME-Version:Content-Type:Content-Transfer-Encoding:CC:Date:
+	 Subject:From;
+	b=gnYPzEPAuHv5IFdfKKkh/CwhCdlAdKKm0Wz8adR7g9EyQug2oplChvNVVVLyi/ZNR
+	 qpyCUa7W4lJlVzsfcKXxnCgwbt03J6ZbvFa3bLp7ZwQo7mMVmgC8BQfcbAvAPhUJap
+	 HkurX0avjtzxSL/iJ02Ed87OdDvZRerd4AGwNALFxoS5kDI7Zh9wMt85tvn3esiou9
+	 L7n0oUUdZH3ahi8tU2dsL9RCqCdWDu4rajY5L2tFdWZ6C46I5kcAbnl2XWRI5K2QTc
+	 THT1AzBQ71mdeEvcaNlPBOFA8VH23K7JWDqBJD4kMgBeE+KHRYw3kxKsXav/7w7Bte
+	 YrvPkD1+9UdUw==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=vates.tech; s=mte1;
+	t=1718982548; x=1719243048; i=teddy.astie@vates.tech;
+	bh=lIV/U0ezGsXVmOjqbkafB5BjfIUquJ6q+7BRog7b6qo=;
+	h=From:Subject:Message-Id:To:Cc:References:In-Reply-To:Feedback-ID:
+	 Date:MIME-Version:Content-Type:Content-Transfer-Encoding:CC:Date:
+	 Subject:From;
+	b=GV1bbXFF1LgGXDJHgJlI0dsXBzt/XQ29AGxzHN17K2TafFRPAAJBhpiDOILQcgrUf
+	 HDhLw8cp6y1FlB/W523p8v6GxkVgVViFcm89+Do0MovrU0XixOXPX1i3vua/scx2k6
+	 Yuz1k13lPAX95jlAEmNj9MiyTZ7gbXPSC0Uqgf16VqEwIiPTTMB0fIx2lDOXpdzstt
+	 +UFeqt40y0z6eqJ5q7grjOkeTKhA0qakRt2rWQlVDiy2UE2IAPOHsFyVTgjmQBsam/
+	 SLyRBnkgzaRgv8dtVf+Qowotmgkx/QDJXUU/g4u98kfcd11h7p6WQortJNVYe6U32p
+	 XSogVqNrxSIPA==
+Received: from pmta09.mandrill.prod.suw01.rsglab.com (localhost [127.0.0.1])
+	by mail187-10.suw11.mandrillapp.com (Mailchimp) with ESMTP id 4W5LNh2FLpz5QkLlV
+	for <iommu@lists.linux.dev>; Fri, 21 Jun 2024 15:09:08 +0000 (GMT)
+From: Teddy Astie <teddy.astie@vates.tech>
+Subject: =?utf-8?Q?Re:=20[RFC=20PATCH]=20iommu/xen:=20Add=20Xen=20PV-IOMMU=20driver?=
+Received: from [37.26.189.201] by mandrillapp.com id 019a5b03f90e4bd8b7a97a415c19f472; Fri, 21 Jun 2024 15:09:08 +0000
+X-Bm-Disclaimer: Yes
+X-Bm-Milter-Handled: 4ffbd6c1-ee69-4e1b-aabd-f977039bd3e2
+X-Bm-Transport-Timestamp: 1718982546557
+Message-Id: <750967b7-252f-4523-872f-64b79358c97c@vates.tech>
+To: Jason Gunthorpe <jgg@ziepe.ca>
+Cc: xen-devel@lists.xenproject.org, iommu@lists.linux.dev, Juergen Gross <jgross@suse.com>, Stefano Stabellini <sstabellini@kernel.org>, Oleksandr Tyshchenko <oleksandr_tyshchenko@epam.com>, Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>, =?utf-8?Q?Marek=20Marczykowski-G=C3=B3recki?= <marmarek@invisiblethingslab.com>
+References: <fe36b8d36ed3bc01c78901bdf7b87a71cb1adaad.1718286176.git.teddy.astie@vates.tech> <20240619163000.GK791043@ziepe.ca>
+In-Reply-To: <20240619163000.GK791043@ziepe.ca>
+X-Native-Encoded: 1
+X-Report-Abuse: =?UTF-8?Q?Please=20forward=20a=20copy=20of=20this=20message,=20including=20all=20headers,=20to=20abuse@mandrill.com.=20You=20can=20also=20report=20abuse=20here:=20https://mandrillapp.com/contact/abuse=3Fid=3D30504962.019a5b03f90e4bd8b7a97a415c19f472?=
+X-Mandrill-User: md_30504962
+Feedback-ID: 30504962:30504962.20240621:md
+Date: Fri, 21 Jun 2024 15:09:08 +0000
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <3d709185-2065-4cb8-9d69-a7a34edd249e@linux.intel.com>
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
 
-On Fri, Jun 21, 2024 at 09:44:27AM +0800, Baolu Lu wrote:
+Hello Jason,
 
-> Enabling/Disabling ATS on domain attach seems like a feasible approach.
-> The ATS requirement information (required/disallowed/neutral) could be
-> included as an opt-in option in the domain attach path. This likely
-> applies to PASID attachments and VF/PF devices. The iommu driver
-> maintains the per-device ATS refcount and enables it for the first
-> request and disables it after the last one. The attachment fails
-> accordingly if the hardware capability doesn't match the domain attach
-> requirement.
+Le 19/06/2024 =C3=A0 18:30, Jason Gunthorpe a =C3=A9crit=C2=A0:
+> On Thu, Jun 13, 2024 at 01:50:22PM +0000, Teddy Astie wrote:
+> 
+>> +struct iommu_domain *xen_iommu_domain_alloc(unsigned type)
+>> +{
+>> +=09struct xen_iommu_domain *domain;
+>> +=09u16 ctx_no;
+>> +=09int ret;
+>> +
+>> +=09if (type & IOMMU_DOMAIN_IDENTITY) {
+>> +=09=09/* use default domain */
+>> +=09=09ctx_no =3D 0;
+> 
+> Please use the new ops, domain_alloc_paging and the static identity domai=
+n.
 
-Yes. if we do this the core code would have to take some
-responsibility to manage ATS and PASID needs together. It is a bit
-tricky potentially, but probably better than having drivers repeat the
-same logic.
+Yes, in the v2, I will use this newer interface.
 
-But it probably does require the drivers actually implement hitless
-replace. I'd imagin a core driven flow is something like:
+I have a question on this new interface : is it valid to not have a 
+identity domain (and "default domain" being blocking); well in the 
+current implementation it doesn't really matter, but at some point, we 
+may want to allow not having it (thus making this driver mandatory).
 
- - Install an identity domain without ATS
- - Decide we want a SVA pasid
- - Replace the identiy domain with the same identity domain and ATS
- - Install the SVA pasid
+> 
+>> +static struct iommu_group *xen_iommu_device_group(struct device *dev)
+>> +{
+>> +=09if (!dev_is_pci(dev))
+>> +=09=09return ERR_PTR(-ENODEV);
+>> +
+> 
+> device_group is only called after probe_device, since you already
+> exclude !pci during probe there is no need for this wrapper, just set
+> the op directly to pci_device_group.
+> 
+>> +=09if (!dev_is_pci(dev))
+>> +=09=09return;
+> 
+> No op is ever called on a non-probed device, remove all these checks.
+>
+> 
+> A paging domain should be the only domain ops that have a populated
+> map so this should be made impossible by construction
+Makes sense, will remove these redundant checks in v2.
 
-(assuming we want some policy like only enable ATS when needed)
+> 
+>> +static void xen_iommu_release_device(struct device *dev)
+>> +{
+>> +=09int ret;
+>> +=09struct pci_dev *pdev;
+>> +=09struct pv_iommu_op op =3D {
+>> +=09=09.subop_id =3D IOMMUOP_reattach_device,
+>> +=09=09.flags =3D 0,
+>> +=09=09.ctx_no =3D 0 /* reattach device back to default context */
+>> +=09};
+> 
+> Consider if you can use release_domain for this, I think this is
+> probably a BLOCKED domain behavior.
 
-> Perhaps we could further include PRI as a domain attach option,
-> indicating that the domain requires IOPF functionality. This would allow
-> us to simplify the SVA and IOMMUFD by hiding device and IOMMU details
-> within the IOMMU driver.
+The goal is to put back all devices where they were at the beginning 
+(the default "context"), which is what release_domain looks like it is 
+doing. Will use it for v2.
 
-This is my desire, if the domain has a fault handler then the driver
-should just make PRI work on attach or fail attach.
+> 
+> Jason
 
-None of the weird feature stuff is needed. We are getting closer, I
-think the SVA enable stuff is almost all NO-OP'd.
+Teddy
 
-Jason
+
+Teddy Astie | Vates XCP-ng Intern
+
+XCP-ng & Xen Orchestra - Vates solutions
+
+web: https://vates.tech
+
