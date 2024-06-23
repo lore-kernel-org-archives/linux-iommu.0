@@ -1,105 +1,102 @@
-Received: from mail-ej1-f49.google.com (mail-ej1-f49.google.com [209.85.218.49])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.18])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B580F5F876
-	for <iommu@lists.linux.dev>; Sat, 22 Jun 2024 22:23:56 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.218.49
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C950C46B5
+	for <iommu@lists.linux.dev>; Sun, 23 Jun 2024 03:24:04 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1719095038; cv=none; b=JukjX57Zkqyr8XWP7iHkGubzvRw8aGNkbXUTRrP7bEBU4ffi8IYtmHNnVXrNd8V/x0njwD49nZC+82Baa3WHSwB7lq7QLj3LGno+JUHfFdyS4rdLhl8NDc6R9/L37nWYUjxdALIHiSE16IgrANdRMR2QCAZ/qhLs43RDF+VfFtE=
+	t=1719113046; cv=none; b=Sd9u3G9polvCccIfLYciJcVt7qVGry6DyCGNXTzQsObmCj74bQG0FgpIh9Aqp9ymVFDFmUoaHpfMjWYJ53PawtDzq3SXQoF1dd7ZuN6lvNR9ewiOn42D5zdSh5e1BSuytDYtbkNZlWD29pEgFSZh8od6QFrtGqfeStZL6c21upg=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1719095038; c=relaxed/simple;
-	bh=EqV1qFCG++Nzhr7AacdvIDDpDmZjV9W7typc/BXWX20=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=baCR93NXdIIxm8Uh47SgVuob5YoKPa0Hckvi3uot4+I4oHmwPazTkSchHNx7e//iD3BxGHJ1pMsTkF3JSh1B+IGCMM1VKj5c/38iqLnM6fihXGOIcyRlJAvrI5j+S+XYTj4GKpbQ8nKdnBX455UtFmvigyZdlvlXVHdxtDm29VI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=hcreINWo; arc=none smtp.client-ip=209.85.218.49
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1719113046; c=relaxed/simple;
+	bh=ZQAdAA6fO1mYmX4GbtwmVh2Kj57oeksFj2+YVnS3DHk=;
+	h=Message-ID:Date:MIME-Version:Cc:Subject:To:References:From:
+	 In-Reply-To:Content-Type; b=m4m4Drn9iWP3MrbA9RjbuppWUpvow/45FqwUYk1lWL/rmNU6zx4a7NI4K1rMO/fU0EaQ10Bww3VZmpHoDERA7/mnnDHztWpUWxOojQGGM+m9lR4g9LXngIiMWbyqyOJ84pfB/TbRZhub8OlzIk7uVzOO2ZqUAIizVh2JeNmCzrg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=SHETXdkS; arc=none smtp.client-ip=198.175.65.18
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="hcreINWo"
-Received: by mail-ej1-f49.google.com with SMTP id a640c23a62f3a-a72477a6096so17208566b.1
-        for <iommu@lists.linux.dev>; Sat, 22 Jun 2024 15:23:56 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1719095035; x=1719699835; darn=lists.linux.dev;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=9caasNtPciKtQdTeYYYLBrHobFYeJt44kO2irBcxd70=;
-        b=hcreINWo6sPmAP+g7Y0CRNMBwLDeG3XwxYtIC1+Wa0UR9PBfpbkvxkSxTCJIVn7e9q
-         /JpDDaEEL/a8XiqKSb7WMifKhRTfWVr7ezRg/WEbSZbJvPyus3BjekL2WKLak55d5T4p
-         ckj77gpZvN90APHR0mCAf3NXyqzi15QV6hZ+Qc/XlgKxTv++9XELm8i4p1k9VAnyKIoL
-         u1U9PXZz0EDpMFEEWsjKyqj+KpT55GEuvnvHfEplP24g0+2G6U7jlcUGpWbbMfGwQBfO
-         61St8Rpoh8Zkmf3g0NM1oL5bJLT/tudX7kt+X932Ce09AX0/meAlQ8X1+yh0I0lhUzIC
-         Fdyg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1719095035; x=1719699835;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=9caasNtPciKtQdTeYYYLBrHobFYeJt44kO2irBcxd70=;
-        b=Uk9NB9VRHJUY3Ld910HRqrF6ZFDuOlBcPA4b9WxDf0e8nPHlcQj6I5cljBPbH0k5K2
-         GdtZVXFu8iDXhjCXsxiGBNB/94ycZnDMPRaCSznwQEqr2CsMYA0mOZNQ0qfy1nfNewqs
-         LeFxd+oAEbdGXgIuGe4vWR8bX3qrjUQ/EkvU2VNq2N+axVG6rHzHE+ttHLpVe9ZsGXaD
-         vrJSF1LnY8MNkVrNy5t4CoNlZxTXyx3gGp4Rvn1DoRn7N6yQqvc37gzWb/RXgvGwtR7R
-         +5Rnew2gEHzDZuGgpeENrQkVep9oxn3GnWyumuZ7x4J6rRl+P63k6xCmegINDN+WstJZ
-         8Y9Q==
-X-Forwarded-Encrypted: i=1; AJvYcCWoiDM1+Ja5GA5T5G6JsrCL+iY0nOxhXu4mMl4RObu4OPLrCAYAzmJjnvlx2MSB6id8JEB5vF358z0th/posR5v0kgd1AI=
-X-Gm-Message-State: AOJu0YywH+Bgwyfg4R1MPEi/X4D+bv0MxHAkQgIstrvAokFcJ/29OUtr
-	sdXMKi8aYFQ95n9HnqmaUXcSb4Me86NkbISD17WYmQPrrjFvGVqlNMd8x9VHCEPK6584FOYK16/
-	twH/tDZOXoct1fLBAoKW9ml+PeVE=
-X-Google-Smtp-Source: AGHT+IEKr2CGX/X++Hn4E16EBYaSb0Q6Q7lHDkmdWRWksxAExg4pWThLuqgYIiIDj6bT7jw2IsluN1TGHXGOQYF6r1E=
-X-Received: by 2002:a17:907:d409:b0:a72:4a48:7e89 with SMTP id
- a640c23a62f3a-a724a488300mr5784666b.26.1719095034815; Sat, 22 Jun 2024
- 15:23:54 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="SHETXdkS"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1719113044; x=1750649044;
+  h=message-id:date:mime-version:cc:subject:to:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=ZQAdAA6fO1mYmX4GbtwmVh2Kj57oeksFj2+YVnS3DHk=;
+  b=SHETXdkS/1XenL4mVXyy4dVlmOr4EjV2rTNs56fx/fxH6Wx05GdWd69K
+   SO4sDPDfM4gHrgdLhDwxVTZ++7cQJNM4bGVxeEYvjNKIyVzYmD4kAn27a
+   uTKeLPCyp7z15o1250JIW95zbh0lyiS67pX2JhhTa6YPuPkbZ5+8ynl2/
+   0GyMIeGINVCEOiewXoi6K3+bzZJKCY9DY4NH+rRimvFIe575hXSdu6xio
+   qb9uEpQ4EcvnvsRhZSPnDFClxT8kIg26X+hP+XYkY+ey1yyH/jgbP+unF
+   Fk06DuhlLPsCMIuwiZ8maqRv5wvkLhIiYTw06vdvl775JCKUraoSo7BIx
+   w==;
+X-CSE-ConnectionGUID: eRpoEktVRWi6e4Wn5iu7tw==
+X-CSE-MsgGUID: rYyulWj8Q76KAFSXVC+6SA==
+X-IronPort-AV: E=McAfee;i="6700,10204,11111"; a="16249327"
+X-IronPort-AV: E=Sophos;i="6.08,259,1712646000"; 
+   d="scan'208";a="16249327"
+Received: from orviesa008.jf.intel.com ([10.64.159.148])
+  by orvoesa110.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Jun 2024 20:24:04 -0700
+X-CSE-ConnectionGUID: mGbhDtelQlS7Rw2zRNd/mQ==
+X-CSE-MsgGUID: ACHECqE7SMuKm7SiobHzuw==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.08,259,1712646000"; 
+   d="scan'208";a="43643808"
+Received: from unknown (HELO [10.239.159.127]) ([10.239.159.127])
+  by orviesa008.jf.intel.com with ESMTP; 22 Jun 2024 20:24:01 -0700
+Message-ID: <4ba90f86-fd14-4d2a-b7a0-c3eaab243565@linux.intel.com>
+Date: Sun, 23 Jun 2024 11:21:29 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <cover.1718994350.git.robin.murphy@arm.com> <0dc14431c8a495e1135fc1d9c4500d4cb96b4e39.1718994350.git.robin.murphy@arm.com>
-In-Reply-To: <0dc14431c8a495e1135fc1d9c4500d4cb96b4e39.1718994350.git.robin.murphy@arm.com>
-From: Andy Shevchenko <andy.shevchenko@gmail.com>
-Date: Sun, 23 Jun 2024 00:23:18 +0200
-Message-ID: <CAHp75VdnoOyKYbaNtr_UKn9NMSzXR1Syn9W7u0qtLgGuwYX6-Q@mail.gmail.com>
-Subject: Re: [PATCH v2 3/4] OF: Simplify of_iommu_configure()
-To: Robin Murphy <robin.murphy@arm.com>
-Cc: Will Deacon <will@kernel.org>, Joerg Roedel <joro@8bytes.org>, linux-acpi@vger.kernel.org, 
-	linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, 
-	iommu@lists.linux.dev, devicetree@vger.kernel.org, 
-	Rob Herring <robh@kernel.org>, Saravana Kannan <saravanak@google.com>, 
-	Lorenzo Pieralisi <lpieralisi@kernel.org>, Hanjun Guo <guohanjun@huawei.com>, 
-	Sudeep Holla <sudeep.holla@arm.com>, "Rafael J. Wysocki" <rafael@kernel.org>, Len Brown <lenb@kernel.org>, 
-	Jean-Philippe Brucker <jean-philippe@linaro.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+User-Agent: Mozilla Thunderbird
+Cc: baolu.lu@linux.intel.com, xen-devel@lists.xenproject.org,
+ iommu@lists.linux.dev, Juergen Gross <jgross@suse.com>,
+ Stefano Stabellini <sstabellini@kernel.org>,
+ Oleksandr Tyshchenko <oleksandr_tyshchenko@epam.com>,
+ Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
+ Robin Murphy <robin.murphy@arm.com>,
+ =?UTF-8?Q?Marek_Marczykowski-G=C3=B3recki?= <marmarek@invisiblethingslab.com>
+Subject: Re: [RFC PATCH] iommu/xen: Add Xen PV-IOMMU driver
+To: Teddy Astie <teddy.astie@vates.tech>, Jason Gunthorpe <jgg@ziepe.ca>
+References: <fe36b8d36ed3bc01c78901bdf7b87a71cb1adaad.1718286176.git.teddy.astie@vates.tech>
+ <20240619163000.GK791043@ziepe.ca>
+ <750967b7-252f-4523-872f-64b79358c97c@vates.tech>
+Content-Language: en-US
+From: Baolu Lu <baolu.lu@linux.intel.com>
+In-Reply-To: <750967b7-252f-4523-872f-64b79358c97c@vates.tech>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 
-On Fri, Jun 21, 2024 at 8:47=E2=80=AFPM Robin Murphy <robin.murphy@arm.com>=
- wrote:
->
-> We no longer have a notion of partially-initialised fwspecs existing,
-> and we also no longer need to use an iommu_ops pointer to return status
-> to of_dma_configure(). Clean up the remains of those, which lends itself
-> to clarifying the logic around the dma_range_map allocation as well.
+On 6/21/24 11:09 PM, Teddy Astie wrote:
+> Le 19/06/2024 à 18:30, Jason Gunthorpe a écrit :
+>> On Thu, Jun 13, 2024 at 01:50:22PM +0000, Teddy Astie wrote:
+>>
+>>> +struct iommu_domain *xen_iommu_domain_alloc(unsigned type)
+>>> +{
+>>> +	struct xen_iommu_domain *domain;
+>>> +	u16 ctx_no;
+>>> +	int ret;
+>>> +
+>>> +	if (type & IOMMU_DOMAIN_IDENTITY) {
+>>> +		/* use default domain */
+>>> +		ctx_no = 0;
+>> Please use the new ops, domain_alloc_paging and the static identity domain.
+> Yes, in the v2, I will use this newer interface.
+> 
+> I have a question on this new interface : is it valid to not have a
+> identity domain (and "default domain" being blocking); well in the
+> current implementation it doesn't really matter, but at some point, we
+> may want to allow not having it (thus making this driver mandatory).
 
-...
+It's valid to not have an identity domain if "default domain being
+blocking" means a paging domain with no mappings.
 
-> +       if (!err && dev->bus)
-> +               err =3D iommu_probe_device(dev);
->
-> +       if (err && err !=3D -EPROBE_DEFER)
-> +               dev_dbg(dev, "Adding to IOMMU failed: %d\n", err);
+In the iommu driver's iommu_ops::def_domain_type callback, just always
+return IOMMU_DOMAIN_DMA, which indicates that the iommu driver doesn't
+support identity translation.
 
-Hmm... I'm wondering if dev_err_probe() can be used here.
-
->         return err;
-
-...
-
-> +       dev_dbg(dev, "device is%sbehind an iommu\n",
-> +               !ret ? " " : " not ");
-
-Why not a positive test?
-
---=20
-With Best Regards,
-Andy Shevchenko
+Best regards,
+baolu
