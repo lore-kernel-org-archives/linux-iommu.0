@@ -1,152 +1,175 @@
-Received: from mail-qk1-f169.google.com (mail-qk1-f169.google.com [209.85.222.169])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from NAM12-BN8-obe.outbound.protection.outlook.com (mail-bn8nam12on2043.outbound.protection.outlook.com [40.107.237.43])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9A73019DF52
-	for <iommu@lists.linux.dev>; Mon, 24 Jun 2024 17:07:49 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.222.169
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1719248871; cv=none; b=BB4URNNmgUTa0733sn9GrnjVyVzFjXBwKcgt+Xatk5rwNFglxbRyP5xB47dq1esmd7A0+/o89nU0gK0K1NlYXXTMhza2g7ruRFN0PkBzqquV+tMigSA4ZHQ2QMa9SOQTNJdz4n4aDRT39KHN94Di6EFf0oDQJ9Zvy1msHPqRHoQ=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1719248871; c=relaxed/simple;
-	bh=VBXelmwPq3wiF7qBgmMcTKUFkHrEePFIDi7+d6fY3pw=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=FKjB5UUAgXMDa2rNVp5iOBeEqahQo9BY5XdkEa/HhZc/HK7r6CKr4GuL4he3fvBvnh9i0AF06xBYkQYgdOPsxfsxx32rmudrA84R9HLoCuuXdZhDJAX7m+/AjzQeWOuj4oXridBiMFYZ7DZRCwCv+FTX41GZLYzFLsGP4gD2nGY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=LgsHr8pU; arc=none smtp.client-ip=209.85.222.169
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A8AA119E819;
+	Mon, 24 Jun 2024 17:12:20 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.237.43
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1719249142; cv=fail; b=Ba0mMJYI3Z9H5FoqrbJXvJtbpxZJI+mUexQAZO8IDVOQOj2rVkTXI9DnZydHWVV1n+GbvV4eDouc4t1xEL9aGJXlGndiAcMf6fStU51VaOcWazv8QGE6M+xk88A9eF0UiH1urwHeD06Xs8qUPWQzesfmQVyF2StDlDLGhz9KI3M=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1719249142; c=relaxed/simple;
+	bh=MuNphmKq+l6wTTtzlfXSRXDLFaTgiIm39spx9l5MdyE=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:Content-Type:
+	 Content-Disposition:In-Reply-To:MIME-Version; b=PTGDOvJ2b6ABy/GsQWE5PLbraX+e8hAU9BPk+JtqkWuAkkfIXB9UyjiYBOqYsces6qQwiVGWRzNd6YVkBXdwpVwImZYAz81Yo6iWmmmS8XVavfIfrRVs/OdHI9CVWYZMLF0JYN8ZebmW4gpg4R7bechzH6sfu9MNKNsJMBLpOiI=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=KcPpl/Dh; arc=fail smtp.client-ip=40.107.237.43
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="LgsHr8pU"
-Received: by mail-qk1-f169.google.com with SMTP id af79cd13be357-797b24b8944so436269285a.0
-        for <iommu@lists.linux.dev>; Mon, 24 Jun 2024 10:07:49 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google; t=1719248868; x=1719853668; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=J81bFInz01FlzzPQYJp5kazzCytEH5/Aa6xJ3+wKyd8=;
-        b=LgsHr8pU3zIvkahe3aAU079Amq3rUZL2G0JCQ0uhFBMzuApJiIZk87p1vgzvxiPqHb
-         WxsveGQ+cwj71yFIwSBfzIk3iKg9+h41LSvLioL0frLnIMp/tD5xDy5bYHcOu4mSxHkS
-         sZ3oMi5yx7iWW1sW7TWMnO+Lvel6qbBG/S1LGnkWo78fRVHoiJfdI7LZpiR5JNG1Xe6s
-         SrUX4MBHuM+l1E2bkL1G3NBcQ+GiJCBteyJWiRS8oFdEuvdIZdrVEZyOzECB+7DqIWQD
-         oop0suCeL0eTQt+/inkb32UOs/u8+Bc77iIRYDeN/2to6eI9cPefZz/0sZuuOvjr+vt6
-         4c3A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1719248868; x=1719853668;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=J81bFInz01FlzzPQYJp5kazzCytEH5/Aa6xJ3+wKyd8=;
-        b=sRJcDcoLmXuuAzYvxwbDm3Wal8XVdA372woXZoS8hwA13i0EIey6DHEB/6fKi5MmZP
-         TnEQRvsj6wOR0AC6tbWhHbvPoLqleUz6aitLAoDP6OnNKiKqJt2SpaycUwkt+8JIX+l9
-         tU8NOWq0arkXXfJ1K+rNTCXzxgo92lyZ00CLGr2+WLsWzb/l4rTiufSY1Vx0JVw4PT+d
-         xX8a4GR21RSalqZoWJKEHZdhQvj1bpeDYCTaCQQLo1yTpaFGW1VxzvP1UMQmHQMMO/9l
-         X2S9T404VU76AmYCzLGgRGR0IAWeJ7X3+G0ZaDCZineclbWyYJ71YMB2o+SIdMALHSDJ
-         TRGQ==
-X-Forwarded-Encrypted: i=1; AJvYcCVn6x2jJNCmh2YxV7rgqGx8igeDziFmqlgu5DOfgGKncwv+kD6rV23mj0CStrNkQl6bUywW3d0/OcHbcdM6viwrebMbOhI=
-X-Gm-Message-State: AOJu0YxDp1SUnPCBTzs+OOplrT3bpj6O7YbaHoZt9k4VL1CnWSZX9xco
-	CNje6eRKOi+UWa6NaP8q9h9rj8ik1bNLzh/qaZ8Ekv9Sjc4yK0yd8V1kNXau+0U=
-X-Google-Smtp-Source: AGHT+IGj656WBafkzOO9TKsI0+a1XWDecmfY7v2QgrUfabIgZc4iU1vVl0Nmh/XQQztbNobrJQYoDQ==
-X-Received: by 2002:ad4:4091:0:b0:6b0:7427:875d with SMTP id 6a1803df08f44-6b53bbb7278mr54410546d6.28.1719248868430;
-        Mon, 24 Jun 2024 10:07:48 -0700 (PDT)
-Received: from ziepe.ca (hlfxns017vw-142-68-80-239.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.68.80.239])
-        by smtp.gmail.com with ESMTPSA id 6a1803df08f44-6b51ed6bc86sm36240656d6.59.2024.06.24.10.07.47
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 24 Jun 2024 10:07:47 -0700 (PDT)
-Received: from jgg by wakko with local (Exim 4.95)
-	(envelope-from <jgg@ziepe.ca>)
-	id 1sLnAR-006N93-DC;
-	Mon, 24 Jun 2024 14:07:47 -0300
-Date: Mon, 24 Jun 2024 14:07:47 -0300
-From: Jason Gunthorpe <jgg@ziepe.ca>
-To: Sean Christopherson <seanjc@google.com>
-Cc: Shameer Kolothum <shameerali.kolothum.thodi@huawei.com>,
-	kvmarm@lists.linux.dev, iommu@lists.linux.dev,
-	linux-arm-kernel@lists.infradead.org, linuxarm@huawei.com,
-	kevin.tian@intel.com, alex.williamson@redhat.com, maz@kernel.org,
-	oliver.upton@linux.dev, will@kernel.org, robin.murphy@arm.com,
-	jean-philippe@linaro.org, jonathan.cameron@huawei.com
-Subject: Re: [RFC PATCH v2 4/7] iommufd: Associate kvm pointer to iommufd ctx
-Message-ID: <20240624170747.GA1515249@ziepe.ca>
-References: <20240208151837.35068-1-shameerali.kolothum.thodi@huawei.com>
- <20240208151837.35068-5-shameerali.kolothum.thodi@huawei.com>
- <20240208154210.GP31743@ziepe.ca>
- <ZnmkbOfWBJHrO2sx@google.com>
+	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="KcPpl/Dh"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=ia7oxXOvdYJ27C5Ac5DACvtlsCsonure13ofV/ahIUsmY6y7lctxd8cCKER4ss2HesfmY8JoiCLe3P86Tg7GcANIKMp/Mukb6EiuPPyri+jlE0JnV7jlq1TBz8Sj03iZVOzeK2tPujew59ZxZOxmJo1PjjVHoj1/iVeoleUCKEJWK+yqVmoxuzvGu47kaf2wHbGPYWSH/Av3T8EIAhupGIEQwanj4GXn7Owohrw4VyImMZxf3iYeb16Ci9o13IwnRhBDl2VYzyTt1L41UeBQKhis8oGvC5Yifsr7U8Wt9Z3APjT6F+8O4OFnPzWniUXwaVRoZpQTbuaVGYcHWhx7fA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=MuNphmKq+l6wTTtzlfXSRXDLFaTgiIm39spx9l5MdyE=;
+ b=dyHaw5VUl76CaoLLaibgCo9BwnA2PabhrLpNLbKoeOSmG+CTgx68t1rp4X6QEucpL7e3XdkkeXRtDJExsV5C4yHXh1jvXgHtISFtHXqqVIPDQr+gMN2tls3Jju0svObtF6lEXUaTq2YAFknPOgwTu7M8ZwEzP5LRd/WXZSu5OV1WLji9QiRsfC5Mrt8/tPrlnhnE/ctF0uOFl8WfaWZWvSVZF3H3AJ51MHChDyd4u9sNS574Njy0Nekw1pmQk8ap7DZAIeQFm1hxKr3LjbZc4q+PWKECqu8qX626oO1fvYgRMIH5hR1AOY7Q3kcOy6sTex8JT1FUyKpBGMLE08iSJg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=MuNphmKq+l6wTTtzlfXSRXDLFaTgiIm39spx9l5MdyE=;
+ b=KcPpl/Dhg7MQ+q05bC/9dGwG5LXwPv22YLI+YWws3NmAeQZagGume5SeSxFyJ5Wc+oOpmCqx34otUefejCLLpH3YZefdzJaV6J/3GRTWnLllEiBgGzkd9Wk3jxpVFwyWKwCcXJ6R/nknVx5QNW9+eDYPQIlFCxeHLX8ZDS1lRDTlTpSdaCM/puXw/6PmqknnMFX+eQmOk5/RdFajXAY8Ywn2OmnFIgNuBrzWRgfqsvQ7bKWh22I3pV8flee4h61qFkr2jvN1dC4es1yKTl5aXn7O9x5Ih1hnEL1aHw0g6uVR0HXGAYVSJTMmySfSUCh1gEOpYC2/4rglddR8xehqDg==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nvidia.com;
+Received: from BY5PR12MB3843.namprd12.prod.outlook.com (2603:10b6:a03:1a4::17)
+ by BL1PR12MB5753.namprd12.prod.outlook.com (2603:10b6:208:390::15) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7698.29; Mon, 24 Jun
+ 2024 17:12:15 +0000
+Received: from BY5PR12MB3843.namprd12.prod.outlook.com
+ ([fe80::efc8:672:884:fafe]) by BY5PR12MB3843.namprd12.prod.outlook.com
+ ([fe80::efc8:672:884:fafe%3]) with mapi id 15.20.7698.025; Mon, 24 Jun 2024
+ 17:12:14 +0000
+Date: Mon, 24 Jun 2024 14:01:07 -0300
+From: Jason Gunthorpe <jgg@nvidia.com>
+To: Michael Shavit <mshavit@google.com>
+Cc: iommu@lists.linux.dev, Joerg Roedel <joro@8bytes.org>,
+	linux-arm-kernel@lists.infradead.org,
+	Robin Murphy <robin.murphy@arm.com>, Will Deacon <will@kernel.org>,
+	Eric Auger <eric.auger@redhat.com>,
+	Jean-Philippe Brucker <jean-philippe@linaro.org>,
+	Moritz Fischer <mdf@kernel.org>, Nicolin Chen <nicolinc@nvidia.com>,
+	patches@lists.linux.dev,
+	Shameerali Kolothum Thodi <shameerali.kolothum.thodi@huawei.com>
+Subject: Re: [PATCH v8 10/14] iommu/arm-smmu-v3: Put the SVA mmu notifier in
+ the smmu_domain
+Message-ID: <20240624170107.GU2494510@nvidia.com>
+References: <0-v8-6f85cdc10ce7+563e-smmuv3_newapi_p2b_jgg@nvidia.com>
+ <10-v8-6f85cdc10ce7+563e-smmuv3_newapi_p2b_jgg@nvidia.com>
+ <CAKHBV27hj5cefib6nx9CM9-9P3N2k=Y2W-FwT06W4OoEFJ_zqA@mail.gmail.com>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAKHBV27hj5cefib6nx9CM9-9P3N2k=Y2W-FwT06W4OoEFJ_zqA@mail.gmail.com>
+X-ClientProxiedBy: MN2PR14CA0009.namprd14.prod.outlook.com
+ (2603:10b6:208:23e::14) To BY5PR12MB3843.namprd12.prod.outlook.com
+ (2603:10b6:a03:1a4::17)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <ZnmkbOfWBJHrO2sx@google.com>
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: BY5PR12MB3843:EE_|BL1PR12MB5753:EE_
+X-MS-Office365-Filtering-Correlation-Id: 65327c30-5e8b-41e7-0620-08dc9470cae3
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;ARA:13230037|366013|376011|7416011|1800799021;
+X-Microsoft-Antispam-Message-Info:
+	=?us-ascii?Q?NgZFTxc9FD59xjSVmoRtW1byrsQT2UBcQElEoTynZ/OoltA0h3+EBjuuBYkO?=
+ =?us-ascii?Q?rf6sJJViWijeHmswLycLt4cGARh2/N9ap94+qfJ2vaLh5C+zfHQm0Do3XLWc?=
+ =?us-ascii?Q?2tEFFIbOE/wTRBW73qXt42jJ2vbySyzOLTSfe7S1hN0XuoBXvUMjbKwXlO7W?=
+ =?us-ascii?Q?xiqNOFXUJozQ8BdH7XVXFDXgtEgskkG6BGT5p6GIxQUP/eoBRfR5NmO+fym1?=
+ =?us-ascii?Q?GYYyAXpekeEfsjcsTPQz9ANdjS+hvR9oKq0WPxFmn2hkyJKXWcziAfsWrWGs?=
+ =?us-ascii?Q?kD3L3p+59ygfGSOYhmzcEHJtkTEtadgDE4CVCGXMA/0AGXmnfuYQSDuKq2YY?=
+ =?us-ascii?Q?L+n8SY8e2MzKRalIFQH+9M4O5AWQX2Bp/8ujCTCDqPLFyoDI+0gZYT+dNYZ7?=
+ =?us-ascii?Q?RUx2XaMhmUbjdBCI4LdyCUiQOSrxvZ0mJuw/ptWtx7N5ZJI33rAw5Gnu55oO?=
+ =?us-ascii?Q?NJJSuHFEsK3ib8CgGPg36CZp7Quby0ixrtUQ1XLS+khzJ9/Fi5Vq/r5/vMKF?=
+ =?us-ascii?Q?FUrrfommqCsoJgx4GgzE9NIylvmIYIy05R+ozOfO/mjb7ALlpzX/UqfxBjdK?=
+ =?us-ascii?Q?Ka41ESRWFAvev+FtwWLSJS73OIwCTwh/VE6I7WojdVmONFC5SKURwOjPXTGF?=
+ =?us-ascii?Q?BWBSsavzsFUKTXj2RTgOlK6O50CUFkXz+OfkZ5yAazVh5uYDyTBN/6tAvMNl?=
+ =?us-ascii?Q?DB2PnjjPT9/Drd+4SHBh3Yi7H4uwdWFszK7WJpMOWwh7ce1Ec74Ct/IhqKaI?=
+ =?us-ascii?Q?SDnMWo7ZRz/3Unqx+pVjeyLZ5EORaeEYYXDobQR55cjoz7Thrv/CkUXST0PI?=
+ =?us-ascii?Q?qWft42MfM/t1LFNByEHCBNqv24LMG2c/0FBWxuHo9j+K0ZFZNFC7a0AA0VI/?=
+ =?us-ascii?Q?TMSeezTVGSowRfBuxNgSUWdMBuYc/nh4N4uk+jPny5DZU8zeTuwF2CBWhBR9?=
+ =?us-ascii?Q?ap0cAp+ZW0T2jHiuw5qEqszzVQGiO9TNKGGFU2/gMNH3G7XAZLql8HfXTD/H?=
+ =?us-ascii?Q?zkHTmFHN7ErRidMjRsi1+knQt0I0IOhsVeJdz+cMQFAGrx5XU19fnPNQCJKY?=
+ =?us-ascii?Q?u6h/WafdzsWcYYj+06oMHTdfe4+Nd+oWC0KfeX47JqXLmGFInAFQ6wiIUxlY?=
+ =?us-ascii?Q?HrFsGkluBCckwjVIMCDr8lC21OlDda/kL3Gqlu35qzsFHqtIVXrU5MORIAG/?=
+ =?us-ascii?Q?gS+/fjVQrJvvRZ8iRIHhDaB/73bGDYPJOFltoRJtLLX87Mzr45psNTHatoVe?=
+ =?us-ascii?Q?XYkMHDeAn/VfpqlCmaPxc4mTYGK5BRDE0KN+AiXqnraA9Bl2pK0zML8NM5yG?=
+ =?us-ascii?Q?Ugs=3D?=
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BY5PR12MB3843.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230037)(366013)(376011)(7416011)(1800799021);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?us-ascii?Q?HJry8gEtArTQ8stmq7KzeZo1PT2VRD5n1fAhV5P1pGOkSjFiqBZ0vRgKPr2R?=
+ =?us-ascii?Q?/Qz7a7uXJ5O7ToGnzZy81Ds7CyellLdcakVs5/MdMVUbtu4edptSjdSm12em?=
+ =?us-ascii?Q?4O607W9zsmqukgNcHBPkS3iRsuUyJ2wEc7zfXRKnttw3yb/hjXp0qftAiQ5d?=
+ =?us-ascii?Q?R6+53ZHMk9XgGTyYdwfARSEojOjDN1z9YFIDTkXcCUGZfJ7VSBCOFx/gZwU9?=
+ =?us-ascii?Q?RE9Qbu4N3GU/C6z79jJr8L2V7auP73MAYJGAPRUbWuNiI+k/BOTvoY207CG0?=
+ =?us-ascii?Q?3U/sHZAMqxz6xO1T5y203A/R/sPX4Qva320uxOklE8aFXneZxkpv1hJv6G/u?=
+ =?us-ascii?Q?0LsO8nLVa3TP/OKknaUHXOvtIGmw8PtQ6II6U2qm/oYNS03M+NqBXmYXKdZJ?=
+ =?us-ascii?Q?nIb8Nm47tvguZoUD0/fUyGwjh5wE4UlBAhhB5u/hI/6QhuymDMcL0DEfHg97?=
+ =?us-ascii?Q?D3RMqHppfJH5YgMOiKXB+Q/WCX+qgSVtUohKGeQhAjFc4c3wpoEqQ4oZsH4m?=
+ =?us-ascii?Q?gwip+jqrqRCCmgBXZ8RSetwM5uplroGKEhLW2qj2YM9t4rDtg+fL/a0SshOV?=
+ =?us-ascii?Q?3I880iLzLdC7lcR6/MqwGQEMrEtsbTMzG+RMGdr8hlXtI2eIygrCeMT0C7Lc?=
+ =?us-ascii?Q?qSVU5LDZUEVY4eWPC2tFWRxZYQjQ955W5KrY5Wtzk+cC2lGhZ9il9hbuBeVB?=
+ =?us-ascii?Q?Wa+uBNFTRC4tZ5hiqrvX2v0YhvlLDyYbo7HlJbSoiwbNwQ7NzYUJ6eIpNM+J?=
+ =?us-ascii?Q?QOL2Mb1mhf4mef5RrlyRohpb+YSn0KAVP3lGg8b07TWZl7JY64pD1Sy1u2p1?=
+ =?us-ascii?Q?FD4cpLdS6ReOQvQlLREUNTsYm9qqfqB6cIct3u0IDSnq2t6aktTFEKmRoOWK?=
+ =?us-ascii?Q?FM1TDA0sBucGbEn8oDzAMAH0GIwNZGA2ieLT1RHJObY05ig/1OQsFh6UsnB6?=
+ =?us-ascii?Q?yJeuN4vgnO4onNFQsWAks2/hoQgmofLZpo+E0ZZJc2/5KZXuZKF1CTvEPoSk?=
+ =?us-ascii?Q?X5qAbhJ9uwL09c6jhbCwGH6QjdNOzRh2jSjo+BWZ1tmcbOcCYEvXAld2qtQC?=
+ =?us-ascii?Q?NGpmxA923SzUXETp7neAYXnmIBvOCavpPIBLYfrh8CAX/44s9R1vmCeWcjj9?=
+ =?us-ascii?Q?Bb8tLV48e/Vh+rlKk6ZvkFoloGRXJ6enp5Zd+OMMrvos64YR4POTuG5+RLrA?=
+ =?us-ascii?Q?9t6a30Yy9/7kkRxOqgwNnfs7XjumUu6mQXp1LIHCDuTdLVJtbHe8rTBULblM?=
+ =?us-ascii?Q?2IWDbrRf8ilvkxSKk6dmlUa6r451fMRTuOJ7eftyn8Y/4kFLgZd7NS9fXJlK?=
+ =?us-ascii?Q?h868X6OrWwcZ9uVkDwjOomPOxlWFNyysavZDOU/OIytkLkumAZtKFe/kdWSF?=
+ =?us-ascii?Q?Cc7ysqbAyP3NJ0NiEDeF29K6b+r1WujI6/yp7sntd182hNfNVRxf96azUL5c?=
+ =?us-ascii?Q?DjTnrigwhujbUWc9P5ZTQG8Ob9GqItGQ1jsHCseMYV+2Ac2zm02QoQrJRKbC?=
+ =?us-ascii?Q?9HDxmlvjFLXROhf5KV6oOJabWqSURbAt82tp4F/P0FRwgmBwwpfclSMUfiYQ?=
+ =?us-ascii?Q?YC/o7WRRsQ8327/TPoKkttVi26zrm/bBflzIUdBS?=
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 65327c30-5e8b-41e7-0620-08dc9470cae3
+X-MS-Exchange-CrossTenant-AuthSource: BY5PR12MB3843.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 24 Jun 2024 17:12:14.2176
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: i4eukalHxjB65B/cc+/70VYtH0ysuHWimiJKUPEGeJONIl60MVKwGVODFfh1fhdX
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BL1PR12MB5753
 
-On Mon, Jun 24, 2024 at 09:53:00AM -0700, Sean Christopherson wrote:
-> > Associating the KVM with the entire iommufd is a big hammer, is this
-> > what we want to do?
-> > 
-> > I know it has to be linked to domain allocation and the coming
-> > "viommu" object, and it is already linked to VFIO.
-> > 
-> > It means we support one KVM per iommufd (which doesn't seem
-> > unreasonable, but also the first time we've had such a limitation)
-> 
-> And if KVM+iommufd come as pairs, wouldn't iommufd_ctx_set_kvm() need to reject
-> attempts to bind devices associated with different KVMs, as opposed to silently
-> ignoring that case?  E.g. something like the below?  Or is there magic elsewhere
-> in the stack that prevents such a scenario?
+On Mon, Jun 24, 2024 at 05:54:42PM +0800, Michael Shavit wrote:
 
-Yes, it would need things like that
+> Can we leave a comment on ASID sharing in the code since it isn't
+> added back until the next patch series? There are references to ASID
+> sharing remaining (and even added in this commit) that don't make
+> sense without this function (e.g "Prevent arm_smmu_share_asid() from
+> trying to change the ASID").
 
-But I think based on other discussions we are likely to tie to the KVM
-to the coming IOMMUFD VIOMMU object, and the KVM will probably be
-provided at object creation time to avoid this issue.
+Yes, I left the comment references because I really do expect it to
+come back soon.
 
-> > Sean would you be OK with this approach considering your other series
-> > to try to make more of this private?
-> 
-> Sorry, I completely missed this.
-> 
-> If kvm_pinned_vmid_{get,put}() are implemented directly by KVM ARM, then I don't
-> have any immediate concerns, as KVM ARM is a long, long way from being able to
-> isolate KVM from the core kernel.  
+My plan, broadly, is to allow the domain's to be shared across smmu
+instances which should introduce the infrastructure to avoid the
+invalidation race in unshare by letting the domain have multiple ASIDs
+at the same time.
 
-I think that is a reasonable thing, I also don't really see VMID as
-being general. We will have to figure out how to ensure that the KVM
-FD we got is an ARM KVM FD..
+After that we would add in vBTM support, this is BTM on systems that
+only support S1 with no S2. This avoids the VMID issue that is
+blocking it while still being useful.
 
-> That said, I find the on-demand pinning to be very odd.  IIUC, if KVM runs out
-> of pinnable VMIDs, attaching a device to the KVM+iommu will fail.  Failing an
-> iommufd operation because of a (potentially transient) KVM resource issue is
-> rather unpleasant.
+pBTM would come after the IOMMUFD VIOMMU support that Nicolin is
+working on as the VIOMMU would be the vehicle to bring in the KVM VMID
+binding from userspace.
 
-It is kind of subtle, but the only thing that will consume VMIDs is
-IOMMUFD operations that are working with nested translation but not
-providing KVMs. This is a pretty small blast radius - ie a specific
-qemu will fail to start - that I think we can tolerate it.
+I can delete the comments too, but then someone will ask why not
+delete all the locking as well. :\
 
-More normal iommu operation will not require VMIDs so things like
-driver attaching/etc is fine.
-
-> And assuming that pinnable VMIDs are a somewhat scarce resource, it wouldn't
-> suprise me if someone wanted to add cgroup integration, e.g. similar to the
-> misc cgroup that's used to manage SEV(-ES) ASIDs on KVM AMD (IIUC, an SEV ASID
-> is analagous to an ARM VMID).
-
-Yeah, but if someone is using such a cgroup then I expect they will
-also have an up to date VMM that doesn't trigger this VMID allocation
-in the first place...
- 
-> Rather than on-demand pinning, would it make sense to have KVM provide an ioctl()
-> (or capability, or VM type) to let userspace pin a VM's VMID?  That would allow
-> for a much saner failure mode, and I suspect would be cleaner in general for iommufd.
-
-The point of this mechanism is to support using this iommufd feature
-without a KVM at all. We could instead prevent this directly 100% of
-the time, but it means that HW with this BTM capability would not run
-the legacy VMMs at all, so I'm not that keen on it..
-
-When a KVM is present then the iommu needs to adopt the VMID of KVM,
-and that should have a mechanism to ensure the VMID is valid so long
-as the IOMMU is using it (eg because the KVM FD is open)
-
+Thanks,
 Jason
