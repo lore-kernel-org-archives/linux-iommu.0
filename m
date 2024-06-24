@@ -1,89 +1,233 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.12])
+Received: from szxga08-in.huawei.com (szxga08-in.huawei.com [45.249.212.255])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 767214963E
-	for <iommu@lists.linux.dev>; Mon, 24 Jun 2024 08:11:29 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.12
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 19B1549656
+	for <iommu@lists.linux.dev>; Mon, 24 Jun 2024 08:51:02 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=45.249.212.255
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1719216690; cv=none; b=KM7kDwleNQjUOZXeEGlmRg479refEgwg8BPo/hmY+rlSutgMqoOKHsfNUmIPNgQsEda0PbNhAlpcPxjhn+gmhPQ5PaoBeGLcSpKRkaSqEjtceCxjhGoEZ/GTu/CH8VMXD9Fp6T3vihMJAVuuxfPNNATTw3AJCdtC8HH/qJnScJk=
+	t=1719219066; cv=none; b=KU/bgtGPRZLMEUETJ6yZiTYCKlih74D/dvuKWSv/ccgSiM/YIYyewdDTSW/3vfNvHSodTd1PS2lvYsQZEpR6NxSBqxL2X2w7KBx/7jR18WIiVUl7DzocZAMhwyxiqQWe12/O3pt5LfqqwwPO0reSxBY4bNyBjTaEFS6NQJFcA+k=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1719216690; c=relaxed/simple;
-	bh=5/3o+1zuQSrtmWhv6M+q+yIZbsryQ+tIgRK0WSHB310=;
-	h=Message-ID:Date:MIME-Version:Cc:Subject:To:References:From:
-	 In-Reply-To:Content-Type; b=Ef8qwKqtzXIoRL0Y/fladdApicmpNnb82c7UPhgPxN8A/3jOglrBMfVAY92BFN0ze2wg4rJY1hYUSIFNSLtGej5Hg6BsN0f3Fnt4bHo2EPFEjNdXGs87+ekRIzSCCy5mb4mcvGx50eg5ALcRWWzB/afbZn4ZvdZtwRMsnnBkYS0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=PggHGIEv; arc=none smtp.client-ip=192.198.163.12
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="PggHGIEv"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1719216689; x=1750752689;
-  h=message-id:date:mime-version:cc:subject:to:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=5/3o+1zuQSrtmWhv6M+q+yIZbsryQ+tIgRK0WSHB310=;
-  b=PggHGIEvb3Z53F6uvSIXk8n2OqUD2wdTBlhQS4NdggutEabeolW8jny/
-   3nT0IlzpVI0zGAZRS+c8OzD+TatvAPcmaz4iNLgrDUFcj21cfPKmK9cyP
-   xtcLyVHoOyMw1UFG+QWY7JxO7kwCQeILG990gex46Mr2kqDWG17bdcBAL
-   8Oxb3TXBFdn/wG3dcYaau+eEMTfGybxdsCN95viuSfxkb6ZkM4193ofZ8
-   XX0+gHoMgVrZ6hDbS+Crw5+dCUnqeJq+0FuZg8idu5MNjgPRIiC/D5Krc
-   Y9AGSsy5yk4Rjmb/19rPZCwg0lVMdbXjcknTd8FOAM2g2hTWlchaio30/
-   Q==;
-X-CSE-ConnectionGUID: XnJioE1nTt+S7bpk9DjpXA==
-X-CSE-MsgGUID: stgiIH5hRF64+RKP1cjqKg==
-X-IronPort-AV: E=McAfee;i="6700,10204,11112"; a="20056092"
-X-IronPort-AV: E=Sophos;i="6.08,261,1712646000"; 
-   d="scan'208";a="20056092"
-Received: from fmviesa004.fm.intel.com ([10.60.135.144])
-  by fmvoesa106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Jun 2024 01:11:29 -0700
-X-CSE-ConnectionGUID: ygUZ6XyEQ2ioYfMvalHL2w==
-X-CSE-MsgGUID: TRjDnuJtQTKqQzi2uNhiow==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.08,261,1712646000"; 
-   d="scan'208";a="47752570"
-Received: from unknown (HELO [10.124.237.100]) ([10.124.237.100])
-  by fmviesa004-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Jun 2024 01:11:26 -0700
-Message-ID: <ba6b6baf-6fe7-4238-91ee-262ac006c25f@linux.intel.com>
-Date: Mon, 24 Jun 2024 16:11:24 +0800
+	s=arc-20240116; t=1719219066; c=relaxed/simple;
+	bh=ka4gIJJHm53QZt1MhqOj80xQuE+i2CksGMCkJZ478ZQ=;
+	h=From:To:CC:Subject:Date:Message-ID:MIME-Version:Content-Type; b=CFW/3W8TsF9yIg0kR/geqX0J4y0ONU37NgfCisv1gm0zan/AQKqc72qmAXSP0F32gPLxaDZMhwErlk6HbMwQ1kWmf4SemzrRzr+O7uc4ma23CXtmHOpgQVkPVfzRntG/FoRHk5IZ73bOUx/ZIENKqy30XsAq6yPFsnXH7fI2vaU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=huawei.com; spf=pass smtp.mailfrom=huawei.com; arc=none smtp.client-ip=45.249.212.255
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=huawei.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=huawei.com
+Received: from mail.maildlp.com (unknown [172.19.163.48])
+	by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4W71lz2kMbz1SDX3;
+	Mon, 24 Jun 2024 16:46:39 +0800 (CST)
+Received: from kwepemf500003.china.huawei.com (unknown [7.202.181.241])
+	by mail.maildlp.com (Postfix) with ESMTPS id B56BB18007C;
+	Mon, 24 Jun 2024 16:51:00 +0800 (CST)
+Received: from huawei.com (10.175.112.208) by kwepemf500003.china.huawei.com
+ (7.202.181.241) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1544.11; Mon, 24 Jun
+ 2024 16:50:59 +0800
+From: Zhang Zekun <zhangzekun11@huawei.com>
+To: <robin.murphy@arm.com>, <joro@8bytes.org>, <will@kernel.org>,
+	<john.g.garry@oracle.com>
+CC: <iommu@lists.linux.dev>, <linux-kernel@vger.kernel.org>,
+	<zhangzekun11@huawei.com>
+Subject: [PATCH] iommu/iova: Bettering utilizing cpu_rcaches in no-strict mode
+Date: Mon, 24 Jun 2024 16:39:52 +0800
+Message-ID: <20240624083952.52612-1-zhangzekun11@huawei.com>
+X-Mailer: git-send-email 2.17.1
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Cc: baolu.lu@linux.intel.com, Will Deacon <will@kernel.org>,
- Robin Murphy <robin.murphy@arm.com>, iommu@lists.linux.dev,
- linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 2/2] iommu/vt-d: Remove hardware automatic ATS dependency
-To: Yi Liu <yi.l.liu@intel.com>, Joerg Roedel <joro@8bytes.org>,
- Kevin Tian <kevin.tian@intel.com>, Jacob Pan <jacob.jun.pan@linux.intel.com>
-References: <20240624052501.253405-1-baolu.lu@linux.intel.com>
- <20240624052501.253405-2-baolu.lu@linux.intel.com>
- <15590835-ed6a-44a5-94b5-663f159653cc@intel.com>
-Content-Language: en-US
-From: Baolu Lu <baolu.lu@linux.intel.com>
-In-Reply-To: <15590835-ed6a-44a5-94b5-663f159653cc@intel.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain
+X-ClientProxiedBy: dggems704-chm.china.huawei.com (10.3.19.181) To
+ kwepemf500003.china.huawei.com (7.202.181.241)
 
-On 2024/6/24 16:06, Yi Liu wrote:
-> On 2024/6/24 13:25, Lu Baolu wrote:
->> If a device is listed in the SATC table with ATC_REQUIRED flag set, it
->> indicates that the device has a functional requirement to enable its ATC
->> (via the ATS capability) for device operation. However, when IOMMU is
->> running in the legacy mode, ATS could be automatically supported by the
->> hardware so that the OS has no need to support the ATS functionality.
-> 
-> It seems like if VT-d hw is operating in legacy mode, ATS is enabled
-> automatically? 
+Currently, when iommu working in no-strict mode, fq_flush_timeout()
+will always try to free iovas on one cpu. Freeing the iovas from all
+cpus on one cpu is not cache-friendly to iova_rcache, because it will
+first filling up the cpu_rcache and then pushing iovas to the depot,
+iovas in the depot will finally goto the underlying rbtree if the
+depot_size is greater than num_online_cpus(). Let fq_flush_timeout()
+freeing iovas on cpus who call dma_unmap* APIs, can decrease the overall
+time caused by fq_flush_timeout() by better utilizing the iova_rcache,
+and minimizing the competition for the iova_rbtree_lock().
 
-Yes.
+Signed-off-by: Zhang Zekun <zhangzekun11@huawei.com>
+---
+ drivers/iommu/dma-iommu.c | 22 +++++++++++++---------
+ drivers/iommu/iova.c      | 21 ++++++++++++++-------
+ include/linux/iova.h      |  7 +++++++
+ 3 files changed, 34 insertions(+), 16 deletions(-)
 
-> This is really suprising. Maybe I got it wrongly. Could you
-> elaborate a bit?
+diff --git a/drivers/iommu/dma-iommu.c b/drivers/iommu/dma-iommu.c
+index 43520e7275cc..217b7c70d06c 100644
+--- a/drivers/iommu/dma-iommu.c
++++ b/drivers/iommu/dma-iommu.c
+@@ -145,7 +145,8 @@ static inline unsigned int fq_ring_add(struct iova_fq *fq)
+ 	return idx;
+ }
+ 
+-static void fq_ring_free_locked(struct iommu_dma_cookie *cookie, struct iova_fq *fq)
++static void fq_ring_free_locked(struct iommu_dma_cookie *cookie, struct iova_fq *fq,
++				int cpu)
+ {
+ 	u64 counter = atomic64_read(&cookie->fq_flush_finish_cnt);
+ 	unsigned int idx;
+@@ -158,20 +159,21 @@ static void fq_ring_free_locked(struct iommu_dma_cookie *cookie, struct iova_fq
+ 			break;
+ 
+ 		iommu_put_pages_list(&fq->entries[idx].freelist);
+-		free_iova_fast(&cookie->iovad,
++		free_iova_fast_cpu(&cookie->iovad,
+ 			       fq->entries[idx].iova_pfn,
+-			       fq->entries[idx].pages);
++			       fq->entries[idx].pages, cpu);
+ 
+ 		fq->head = (fq->head + 1) & fq->mod_mask;
+ 	}
+ }
+ 
+-static void fq_ring_free(struct iommu_dma_cookie *cookie, struct iova_fq *fq)
++static void fq_ring_free(struct iommu_dma_cookie *cookie, struct iova_fq *fq,
++			 int cpu)
+ {
+ 	unsigned long flags;
+ 
+ 	spin_lock_irqsave(&fq->lock, flags);
+-	fq_ring_free_locked(cookie, fq);
++	fq_ring_free_locked(cookie, fq, cpu);
+ 	spin_unlock_irqrestore(&fq->lock, flags);
+ }
+ 
+@@ -191,10 +193,11 @@ static void fq_flush_timeout(struct timer_list *t)
+ 	fq_flush_iotlb(cookie);
+ 
+ 	if (cookie->options.qt == IOMMU_DMA_OPTS_SINGLE_QUEUE) {
+-		fq_ring_free(cookie, cookie->single_fq);
++		cpu = smp_processor_id();
++		fq_ring_free(cookie, cookie->single_fq, cpu);
+ 	} else {
+ 		for_each_possible_cpu(cpu)
+-			fq_ring_free(cookie, per_cpu_ptr(cookie->percpu_fq, cpu));
++			fq_ring_free(cookie, per_cpu_ptr(cookie->percpu_fq, cpu), cpu);
+ 	}
+ }
+ 
+@@ -205,6 +208,7 @@ static void queue_iova(struct iommu_dma_cookie *cookie,
+ 	struct iova_fq *fq;
+ 	unsigned long flags;
+ 	unsigned int idx;
++	int cpu = smp_processor_id();
+ 
+ 	/*
+ 	 * Order against the IOMMU driver's pagetable update from unmapping
+@@ -227,11 +231,11 @@ static void queue_iova(struct iommu_dma_cookie *cookie,
+ 	 * flushed out on another CPU. This makes the fq_full() check below less
+ 	 * likely to be true.
+ 	 */
+-	fq_ring_free_locked(cookie, fq);
++	fq_ring_free_locked(cookie, fq, cpu);
+ 
+ 	if (fq_full(fq)) {
+ 		fq_flush_iotlb(cookie);
+-		fq_ring_free_locked(cookie, fq);
++		fq_ring_free_locked(cookie, fq, cpu);
+ 	}
+ 
+ 	idx = fq_ring_add(fq);
+diff --git a/drivers/iommu/iova.c b/drivers/iommu/iova.c
+index d59d0ea2fd21..46a2188c263b 100644
+--- a/drivers/iommu/iova.c
++++ b/drivers/iommu/iova.c
+@@ -20,7 +20,7 @@
+ 
+ static bool iova_rcache_insert(struct iova_domain *iovad,
+ 			       unsigned long pfn,
+-			       unsigned long size);
++			       unsigned long size, int cpu);
+ static unsigned long iova_rcache_get(struct iova_domain *iovad,
+ 				     unsigned long size,
+ 				     unsigned long limit_pfn);
+@@ -423,12 +423,19 @@ EXPORT_SYMBOL_GPL(alloc_iova_fast);
+ void
+ free_iova_fast(struct iova_domain *iovad, unsigned long pfn, unsigned long size)
+ {
+-	if (iova_rcache_insert(iovad, pfn, size))
++	free_iova_fast_cpu(iovad, pfn, size, smp_processor_id());
++}
++EXPORT_SYMBOL_GPL(free_iova_fast);
++
++void
++free_iova_fast_cpu(struct iova_domain *iovad, unsigned long pfn,
++		   unsigned long size, int cpu)
++{
++	if (iova_rcache_insert(iovad, pfn, size, cpu))
+ 		return;
+ 
+ 	free_iova(iovad, pfn);
+ }
+-EXPORT_SYMBOL_GPL(free_iova_fast);
+ 
+ static void iova_domain_free_rcaches(struct iova_domain *iovad)
+ {
+@@ -762,13 +769,13 @@ EXPORT_SYMBOL_GPL(iova_domain_init_rcaches);
+  */
+ static bool __iova_rcache_insert(struct iova_domain *iovad,
+ 				 struct iova_rcache *rcache,
+-				 unsigned long iova_pfn)
++				 unsigned long iova_pfn, int cpu)
+ {
+ 	struct iova_cpu_rcache *cpu_rcache;
+ 	bool can_insert = false;
+ 	unsigned long flags;
+ 
+-	cpu_rcache = raw_cpu_ptr(rcache->cpu_rcaches);
++	cpu_rcache = per_cpu_ptr(rcache->cpu_rcaches, cpu);
+ 	spin_lock_irqsave(&cpu_rcache->lock, flags);
+ 
+ 	if (!iova_magazine_full(cpu_rcache->loaded)) {
+@@ -799,14 +806,14 @@ static bool __iova_rcache_insert(struct iova_domain *iovad,
+ }
+ 
+ static bool iova_rcache_insert(struct iova_domain *iovad, unsigned long pfn,
+-			       unsigned long size)
++			       unsigned long size, int cpu)
+ {
+ 	unsigned int log_size = order_base_2(size);
+ 
+ 	if (log_size >= IOVA_RANGE_CACHE_MAX_SIZE)
+ 		return false;
+ 
+-	return __iova_rcache_insert(iovad, &iovad->rcaches[log_size], pfn);
++	return __iova_rcache_insert(iovad, &iovad->rcaches[log_size], pfn, cpu);
+ }
+ 
+ /*
+diff --git a/include/linux/iova.h b/include/linux/iova.h
+index d2c4fd923efa..91e4e3d5bcb3 100644
+--- a/include/linux/iova.h
++++ b/include/linux/iova.h
+@@ -93,6 +93,8 @@ struct iova *alloc_iova(struct iova_domain *iovad, unsigned long size,
+ 	bool size_aligned);
+ void free_iova_fast(struct iova_domain *iovad, unsigned long pfn,
+ 		    unsigned long size);
++void free_iova_fast_cpu(struct iova_domain *iovad, unsigned long pfn,
++			unsigned long size, int cpu);
+ unsigned long alloc_iova_fast(struct iova_domain *iovad, unsigned long size,
+ 			      unsigned long limit_pfn, bool flush_rcache);
+ struct iova *reserve_iova(struct iova_domain *iovad, unsigned long pfn_lo,
+@@ -134,6 +136,11 @@ static inline void free_iova_fast(struct iova_domain *iovad,
+ {
+ }
+ 
++static inline void free_iova_fast_cpu(struct iova_domain *iovad, unsigned long pfn,
++				      unsigned long size, int cpu);
++{
++}
++
+ static inline unsigned long alloc_iova_fast(struct iova_domain *iovad,
+ 					    unsigned long size,
+ 					    unsigned long limit_pfn,
+-- 
+2.17.1
 
-It's for backward compatible purpose, but I have no hardware details.
-
-Best regards,
-baolu
