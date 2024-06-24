@@ -1,25 +1,25 @@
 Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 3D56C13B582
-	for <iommu@lists.linux.dev>; Mon, 24 Jun 2024 10:56:08 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 2A6A013776F
+	for <iommu@lists.linux.dev>; Mon, 24 Jun 2024 11:09:27 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1719226570; cv=none; b=oQfCMMKigewALbl8JdzgplehtGSoOBSwJZDWlV8aF5FYeJzqYFqXI+G2J4ITal/GfgfgMS9TaLtZN9K5Bj9VJ2xkhOdv76zOOySnZDGQbZ+fknrIbFdeN88NL4s1T/F2nF9hgeEevabAMEJqsfgQXy5JgMBNRI6r8qXO6O1EsY8=
+	t=1719227370; cv=none; b=rDcNxNQuGx8+UmAWzxognCjMRpcPEIOVwsrJUG+G/IHizL5NCeGNDI0hBB2Fpmf0DAqwcQe0GT5/XPL51hophWWWZp1cwgY6xoE8hWncjmcCZ/Fo2Y4MKfdM374vy8J4Vi8h8wh29sYF1dKbJDDeNpUGBwkroDuobeqZmbBsqYg=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1719226570; c=relaxed/simple;
-	bh=OFyLE1q7WBU8Ccw3gBNY/owYbpctX5c3SO2pO98pqzQ=;
+	s=arc-20240116; t=1719227370; c=relaxed/simple;
+	bh=lLvLGmBL9ObbAsFrqs2bLSwFQlEI0fsUX/vQlv3s7jE=;
 	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=Ur1pLZERWhakA+YaCPrM5qDv2XnHDLypFIveQzvHIgqqjBE01vJQqDIBniW5zGzIMX3HsDVvqp+FxHlPzoS+pvC1txsp/wiQDE/MbFfO4jSdeNdJQERp08/mj3G/cI0y9EFJSwv6WXGWLWgi5c6X+yZ3yn2tCaYVfrLR9g7se0c=
+	 In-Reply-To:Content-Type; b=fw+pgCHrre0me+qsX0ILSU0/xmNTub5AxLt2jcpZ/SiDq4T0w5gi9UEe/+IkDvZY43EycHE5BESZArP1qTlWaDe8kVjqM8swb71YsQ2qI6tDDmemJA52yN71cGXz8APg9JaiQYD1zaCzfvh7Dzc0BHYtTMIcw3Uss6tE57dxvwI=
 ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; arc=none smtp.client-ip=217.140.110.172
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
 Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 86899DA7;
-	Mon, 24 Jun 2024 03:56:32 -0700 (PDT)
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 1DB2DDA7;
+	Mon, 24 Jun 2024 04:09:52 -0700 (PDT)
 Received: from [10.57.74.124] (unknown [10.57.74.124])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 7D86B3F73B;
-	Mon, 24 Jun 2024 03:56:06 -0700 (PDT)
-Message-ID: <5149c162-cf38-4aa4-9e96-27c6897cad36@arm.com>
-Date: Mon, 24 Jun 2024 11:56:01 +0100
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 4C7383F73B;
+	Mon, 24 Jun 2024 04:09:25 -0700 (PDT)
+Message-ID: <4c941977-868a-4bd0-9c57-eb58255d95bf@arm.com>
+Date: Mon, 24 Jun 2024 12:09:23 +0100
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -27,227 +27,58 @@ List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH] iommu/iova: Bettering utilizing cpu_rcaches in no-strict
- mode
-To: Zhang Zekun <zhangzekun11@huawei.com>, joro@8bytes.org, will@kernel.org,
- john.g.garry@oracle.com
-Cc: iommu@lists.linux.dev, linux-kernel@vger.kernel.org
-References: <20240624083952.52612-1-zhangzekun11@huawei.com>
+Subject: Re: [RFC PATCH] iommu/xen: Add Xen PV-IOMMU driver
+To: Baolu Lu <baolu.lu@linux.intel.com>, Teddy Astie
+ <teddy.astie@vates.tech>, Jason Gunthorpe <jgg@ziepe.ca>
+Cc: xen-devel@lists.xenproject.org, iommu@lists.linux.dev,
+ Juergen Gross <jgross@suse.com>, Stefano Stabellini
+ <sstabellini@kernel.org>,
+ Oleksandr Tyshchenko <oleksandr_tyshchenko@epam.com>,
+ Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
+ =?UTF-8?Q?Marek_Marczykowski-G=C3=B3recki?= <marmarek@invisiblethingslab.com>
+References: <fe36b8d36ed3bc01c78901bdf7b87a71cb1adaad.1718286176.git.teddy.astie@vates.tech>
+ <20240619163000.GK791043@ziepe.ca>
+ <750967b7-252f-4523-872f-64b79358c97c@vates.tech>
+ <4ba90f86-fd14-4d2a-b7a0-c3eaab243565@linux.intel.com>
 From: Robin Murphy <robin.murphy@arm.com>
 Content-Language: en-GB
-In-Reply-To: <20240624083952.52612-1-zhangzekun11@huawei.com>
+In-Reply-To: <4ba90f86-fd14-4d2a-b7a0-c3eaab243565@linux.intel.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 
-On 2024-06-24 9:39 am, Zhang Zekun wrote:
-> Currently, when iommu working in no-strict mode, fq_flush_timeout()
-> will always try to free iovas on one cpu. Freeing the iovas from all
-> cpus on one cpu is not cache-friendly to iova_rcache, because it will
-> first filling up the cpu_rcache and then pushing iovas to the depot,
-> iovas in the depot will finally goto the underlying rbtree if the
-> depot_size is greater than num_online_cpus().
+On 2024-06-23 4:21 am, Baolu Lu wrote:
+> On 6/21/24 11:09 PM, Teddy Astie wrote:
+>> Le 19/06/2024 à 18:30, Jason Gunthorpe a écrit :
+>>> On Thu, Jun 13, 2024 at 01:50:22PM +0000, Teddy Astie wrote:
+>>>
+>>>> +struct iommu_domain *xen_iommu_domain_alloc(unsigned type)
+>>>> +{
+>>>> +    struct xen_iommu_domain *domain;
+>>>> +    u16 ctx_no;
+>>>> +    int ret;
+>>>> +
+>>>> +    if (type & IOMMU_DOMAIN_IDENTITY) {
+>>>> +        /* use default domain */
+>>>> +        ctx_no = 0;
+>>> Please use the new ops, domain_alloc_paging and the static identity 
+>>> domain.
+>> Yes, in the v2, I will use this newer interface.
+>>
+>> I have a question on this new interface : is it valid to not have a
+>> identity domain (and "default domain" being blocking); well in the
+>> current implementation it doesn't really matter, but at some point, we
+>> may want to allow not having it (thus making this driver mandatory).
+> 
+> It's valid to not have an identity domain if "default domain being
+> blocking" means a paging domain with no mappings.
+> 
+> In the iommu driver's iommu_ops::def_domain_type callback, just always
+> return IOMMU_DOMAIN_DMA, which indicates that the iommu driver doesn't
+> support identity translation.
 
-That is the design intent - if the excess magazines sit in the depot 
-long enough to be reclaimed then other CPUs didn't want them either. 
-We're trying to minimise the amount of unused cached IOVAs sitting 
-around wasting memory, since IOVA memory consumption has proven to be 
-quite significant on large systems.
-
-As alluded to in the original cover letter, 100ms for IOVA_DEPOT_DELAY 
-was just my arbitrary value of "long enough" to keep the initial 
-implementation straightforward - I do expect that certain workloads 
-might benefit from tuning it differently, but without proof of what they 
-are and what they want, there's little justification for introducing 
-extra complexity and potential user ABI yet.
-
-> Let fq_flush_timeout()
-> freeing iovas on cpus who call dma_unmap* APIs, can decrease the overall
-> time caused by fq_flush_timeout() by better utilizing the iova_rcache,
-> and minimizing the competition for the iova_rbtree_lock().
-
-I would have assumed that a single CPU simply throwing magazines into 
-the depot list from its own percpu cache is quicker, or at least no 
-slower, than doing the same while causing additional contention/sharing 
-by interfering with other percpu caches as well. And where does the 
-rbtree come into that either way? If an observable performance issue 
-actually exists here, I'd like a more detailed breakdown to understand it.
+That's not necessary - if neither ops->identity_domain nor 
+ops->domain_alloc(IOMMU_DOMAIN_IDENTITY) gives a valid domain then we 
+fall back to IOMMU_DOMAIN_DMA anyway.
 
 Thanks,
 Robin.
-
-> Signed-off-by: Zhang Zekun <zhangzekun11@huawei.com>
-> ---
->   drivers/iommu/dma-iommu.c | 22 +++++++++++++---------
->   drivers/iommu/iova.c      | 21 ++++++++++++++-------
->   include/linux/iova.h      |  7 +++++++
->   3 files changed, 34 insertions(+), 16 deletions(-)
-> 
-> diff --git a/drivers/iommu/dma-iommu.c b/drivers/iommu/dma-iommu.c
-> index 43520e7275cc..217b7c70d06c 100644
-> --- a/drivers/iommu/dma-iommu.c
-> +++ b/drivers/iommu/dma-iommu.c
-> @@ -145,7 +145,8 @@ static inline unsigned int fq_ring_add(struct iova_fq *fq)
->   	return idx;
->   }
->   
-> -static void fq_ring_free_locked(struct iommu_dma_cookie *cookie, struct iova_fq *fq)
-> +static void fq_ring_free_locked(struct iommu_dma_cookie *cookie, struct iova_fq *fq,
-> +				int cpu)
->   {
->   	u64 counter = atomic64_read(&cookie->fq_flush_finish_cnt);
->   	unsigned int idx;
-> @@ -158,20 +159,21 @@ static void fq_ring_free_locked(struct iommu_dma_cookie *cookie, struct iova_fq
->   			break;
->   
->   		iommu_put_pages_list(&fq->entries[idx].freelist);
-> -		free_iova_fast(&cookie->iovad,
-> +		free_iova_fast_cpu(&cookie->iovad,
->   			       fq->entries[idx].iova_pfn,
-> -			       fq->entries[idx].pages);
-> +			       fq->entries[idx].pages, cpu);
->   
->   		fq->head = (fq->head + 1) & fq->mod_mask;
->   	}
->   }
->   
-> -static void fq_ring_free(struct iommu_dma_cookie *cookie, struct iova_fq *fq)
-> +static void fq_ring_free(struct iommu_dma_cookie *cookie, struct iova_fq *fq,
-> +			 int cpu)
->   {
->   	unsigned long flags;
->   
->   	spin_lock_irqsave(&fq->lock, flags);
-> -	fq_ring_free_locked(cookie, fq);
-> +	fq_ring_free_locked(cookie, fq, cpu);
->   	spin_unlock_irqrestore(&fq->lock, flags);
->   }
->   
-> @@ -191,10 +193,11 @@ static void fq_flush_timeout(struct timer_list *t)
->   	fq_flush_iotlb(cookie);
->   
->   	if (cookie->options.qt == IOMMU_DMA_OPTS_SINGLE_QUEUE) {
-> -		fq_ring_free(cookie, cookie->single_fq);
-> +		cpu = smp_processor_id();
-> +		fq_ring_free(cookie, cookie->single_fq, cpu);
->   	} else {
->   		for_each_possible_cpu(cpu)
-> -			fq_ring_free(cookie, per_cpu_ptr(cookie->percpu_fq, cpu));
-> +			fq_ring_free(cookie, per_cpu_ptr(cookie->percpu_fq, cpu), cpu);
->   	}
->   }
->   
-> @@ -205,6 +208,7 @@ static void queue_iova(struct iommu_dma_cookie *cookie,
->   	struct iova_fq *fq;
->   	unsigned long flags;
->   	unsigned int idx;
-> +	int cpu = smp_processor_id();
->   
->   	/*
->   	 * Order against the IOMMU driver's pagetable update from unmapping
-> @@ -227,11 +231,11 @@ static void queue_iova(struct iommu_dma_cookie *cookie,
->   	 * flushed out on another CPU. This makes the fq_full() check below less
->   	 * likely to be true.
->   	 */
-> -	fq_ring_free_locked(cookie, fq);
-> +	fq_ring_free_locked(cookie, fq, cpu);
->   
->   	if (fq_full(fq)) {
->   		fq_flush_iotlb(cookie);
-> -		fq_ring_free_locked(cookie, fq);
-> +		fq_ring_free_locked(cookie, fq, cpu);
->   	}
->   
->   	idx = fq_ring_add(fq);
-> diff --git a/drivers/iommu/iova.c b/drivers/iommu/iova.c
-> index d59d0ea2fd21..46a2188c263b 100644
-> --- a/drivers/iommu/iova.c
-> +++ b/drivers/iommu/iova.c
-> @@ -20,7 +20,7 @@
->   
->   static bool iova_rcache_insert(struct iova_domain *iovad,
->   			       unsigned long pfn,
-> -			       unsigned long size);
-> +			       unsigned long size, int cpu);
->   static unsigned long iova_rcache_get(struct iova_domain *iovad,
->   				     unsigned long size,
->   				     unsigned long limit_pfn);
-> @@ -423,12 +423,19 @@ EXPORT_SYMBOL_GPL(alloc_iova_fast);
->   void
->   free_iova_fast(struct iova_domain *iovad, unsigned long pfn, unsigned long size)
->   {
-> -	if (iova_rcache_insert(iovad, pfn, size))
-> +	free_iova_fast_cpu(iovad, pfn, size, smp_processor_id());
-> +}
-> +EXPORT_SYMBOL_GPL(free_iova_fast);
-> +
-> +void
-> +free_iova_fast_cpu(struct iova_domain *iovad, unsigned long pfn,
-> +		   unsigned long size, int cpu)
-> +{
-> +	if (iova_rcache_insert(iovad, pfn, size, cpu))
->   		return;
->   
->   	free_iova(iovad, pfn);
->   }
-> -EXPORT_SYMBOL_GPL(free_iova_fast);
->   
->   static void iova_domain_free_rcaches(struct iova_domain *iovad)
->   {
-> @@ -762,13 +769,13 @@ EXPORT_SYMBOL_GPL(iova_domain_init_rcaches);
->    */
->   static bool __iova_rcache_insert(struct iova_domain *iovad,
->   				 struct iova_rcache *rcache,
-> -				 unsigned long iova_pfn)
-> +				 unsigned long iova_pfn, int cpu)
->   {
->   	struct iova_cpu_rcache *cpu_rcache;
->   	bool can_insert = false;
->   	unsigned long flags;
->   
-> -	cpu_rcache = raw_cpu_ptr(rcache->cpu_rcaches);
-> +	cpu_rcache = per_cpu_ptr(rcache->cpu_rcaches, cpu);
->   	spin_lock_irqsave(&cpu_rcache->lock, flags);
->   
->   	if (!iova_magazine_full(cpu_rcache->loaded)) {
-> @@ -799,14 +806,14 @@ static bool __iova_rcache_insert(struct iova_domain *iovad,
->   }
->   
->   static bool iova_rcache_insert(struct iova_domain *iovad, unsigned long pfn,
-> -			       unsigned long size)
-> +			       unsigned long size, int cpu)
->   {
->   	unsigned int log_size = order_base_2(size);
->   
->   	if (log_size >= IOVA_RANGE_CACHE_MAX_SIZE)
->   		return false;
->   
-> -	return __iova_rcache_insert(iovad, &iovad->rcaches[log_size], pfn);
-> +	return __iova_rcache_insert(iovad, &iovad->rcaches[log_size], pfn, cpu);
->   }
->   
->   /*
-> diff --git a/include/linux/iova.h b/include/linux/iova.h
-> index d2c4fd923efa..91e4e3d5bcb3 100644
-> --- a/include/linux/iova.h
-> +++ b/include/linux/iova.h
-> @@ -93,6 +93,8 @@ struct iova *alloc_iova(struct iova_domain *iovad, unsigned long size,
->   	bool size_aligned);
->   void free_iova_fast(struct iova_domain *iovad, unsigned long pfn,
->   		    unsigned long size);
-> +void free_iova_fast_cpu(struct iova_domain *iovad, unsigned long pfn,
-> +			unsigned long size, int cpu);
->   unsigned long alloc_iova_fast(struct iova_domain *iovad, unsigned long size,
->   			      unsigned long limit_pfn, bool flush_rcache);
->   struct iova *reserve_iova(struct iova_domain *iovad, unsigned long pfn_lo,
-> @@ -134,6 +136,11 @@ static inline void free_iova_fast(struct iova_domain *iovad,
->   {
->   }
->   
-> +static inline void free_iova_fast_cpu(struct iova_domain *iovad, unsigned long pfn,
-> +				      unsigned long size, int cpu);
-> +{
-> +}
-> +
->   static inline unsigned long alloc_iova_fast(struct iova_domain *iovad,
->   					    unsigned long size,
->   					    unsigned long limit_pfn,
