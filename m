@@ -1,233 +1,936 @@
-Received: from szxga08-in.huawei.com (szxga08-in.huawei.com [45.249.212.255])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-qt1-f172.google.com (mail-qt1-f172.google.com [209.85.160.172])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 19B1549656
-	for <iommu@lists.linux.dev>; Mon, 24 Jun 2024 08:51:02 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=45.249.212.255
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1F088134407
+	for <iommu@lists.linux.dev>; Mon, 24 Jun 2024 09:55:21 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.160.172
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1719219066; cv=none; b=KU/bgtGPRZLMEUETJ6yZiTYCKlih74D/dvuKWSv/ccgSiM/YIYyewdDTSW/3vfNvHSodTd1PS2lvYsQZEpR6NxSBqxL2X2w7KBx/7jR18WIiVUl7DzocZAMhwyxiqQWe12/O3pt5LfqqwwPO0reSxBY4bNyBjTaEFS6NQJFcA+k=
+	t=1719222924; cv=none; b=rpRMT3DZpPO6Xb9klcIfvX6CGnKtlvRtq9pH9BiIA4K9Hk6VI7zuPfIqES2+Hwgy5tsNA0iXXfKm7tKPYWcfGs3FygftQuML9saIKYvd3c3Q91XvZuQ6Wb16jaL9x4QUkUWLpAR7LP79gOn+JmPSYKwK5o4AToHBVFnD6R3XpTs=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1719219066; c=relaxed/simple;
-	bh=ka4gIJJHm53QZt1MhqOj80xQuE+i2CksGMCkJZ478ZQ=;
-	h=From:To:CC:Subject:Date:Message-ID:MIME-Version:Content-Type; b=CFW/3W8TsF9yIg0kR/geqX0J4y0ONU37NgfCisv1gm0zan/AQKqc72qmAXSP0F32gPLxaDZMhwErlk6HbMwQ1kWmf4SemzrRzr+O7uc4ma23CXtmHOpgQVkPVfzRntG/FoRHk5IZ73bOUx/ZIENKqy30XsAq6yPFsnXH7fI2vaU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=huawei.com; spf=pass smtp.mailfrom=huawei.com; arc=none smtp.client-ip=45.249.212.255
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=huawei.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=huawei.com
-Received: from mail.maildlp.com (unknown [172.19.163.48])
-	by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4W71lz2kMbz1SDX3;
-	Mon, 24 Jun 2024 16:46:39 +0800 (CST)
-Received: from kwepemf500003.china.huawei.com (unknown [7.202.181.241])
-	by mail.maildlp.com (Postfix) with ESMTPS id B56BB18007C;
-	Mon, 24 Jun 2024 16:51:00 +0800 (CST)
-Received: from huawei.com (10.175.112.208) by kwepemf500003.china.huawei.com
- (7.202.181.241) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1544.11; Mon, 24 Jun
- 2024 16:50:59 +0800
-From: Zhang Zekun <zhangzekun11@huawei.com>
-To: <robin.murphy@arm.com>, <joro@8bytes.org>, <will@kernel.org>,
-	<john.g.garry@oracle.com>
-CC: <iommu@lists.linux.dev>, <linux-kernel@vger.kernel.org>,
-	<zhangzekun11@huawei.com>
-Subject: [PATCH] iommu/iova: Bettering utilizing cpu_rcaches in no-strict mode
-Date: Mon, 24 Jun 2024 16:39:52 +0800
-Message-ID: <20240624083952.52612-1-zhangzekun11@huawei.com>
-X-Mailer: git-send-email 2.17.1
+	s=arc-20240116; t=1719222924; c=relaxed/simple;
+	bh=ootugsjxm3m15IKhSH3pDxWCiDDRJcLha77szeFcY6Q=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=qyOrUIIugYy0zi2l0p6Teju47l5mQVclLUUmE3u9ptNLNZ7wh0ZzyYt88a1kLsJJYzkUKCMDMl7ceKz1LHQJ56K2uoitYHhviVcBmJhIndL4ir6KrWAZPRG0fvukw/ybx93HdtoECfN1KwU/dRtdgDo0yM1dHhTdHjmZyaS7tjE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=Rix8Ufqm; arc=none smtp.client-ip=209.85.160.172
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="Rix8Ufqm"
+Received: by mail-qt1-f172.google.com with SMTP id d75a77b69052e-443580f290dso932341cf.1
+        for <iommu@lists.linux.dev>; Mon, 24 Jun 2024 02:55:21 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20230601; t=1719222921; x=1719827721; darn=lists.linux.dev;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=0Xks0RP/Gil3jwqDmzn+VRs4MPGLQVDwytj+rPU8QDs=;
+        b=Rix8UfqmoCgIghLcIrXbDA/N+2zYH/4Hv+n7wjl1fLA0BDE1OQlumdcG6ObHSlpGkM
+         7YtXjfFXiWu0aK5rn7+cxOCeMPuAcR4qSQOqL1zjJ6lFGpFITnw/6Q5cU3I46+vmO/fc
+         5lyBqk13L0G/f1wozHz4YDMLSzfAqb/nvmvITtf7+RlNi0FAnH+0RpixNDNqbaTCIQij
+         8j4u13ade71KKb7BeB8kOG/bS7wUffLcMLLWgQjdP+84bizMFIFSORPkO1RhWkydV1fz
+         6IMwY1wMVujvajnRi37cSWtW6H5w9iEqirDCIUf4FGwOHY3HgcnhdWqFB6/o62JFqdOt
+         cprw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1719222921; x=1719827721;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=0Xks0RP/Gil3jwqDmzn+VRs4MPGLQVDwytj+rPU8QDs=;
+        b=ZcYQ6rn+9kn092RGARskthPM3BUsQGF76UbhQK8+KRJPIaIlnPNRllQuM/8zvWm9ta
+         0n/GbS4EOqvkCxZippf/2KkM6EA7e9+qRe8wQDGKLSLwLUIb6ixM7C0QdXk5xdtywng9
+         HjX9YM1MSUle1uE5jjLI4j8YNGFPxUmFUa1SBvru6t1c+wn9F80aC2uY8V+qxBasdnox
+         5Sf2raGerxME9yZZX18m0l6UwzUtibFJ1U+lx7fBlFUSQfLMecA1PamHNjo2Z7pDfF7D
+         tPBh2+rbTjukpqYDzVDdSSRUwkKP9U+koJnLHiqwHB/8ZlX28wN2BLTUBvoZmlXcJfsp
+         uTwQ==
+X-Gm-Message-State: AOJu0Yw6NBSVftrNxDUseXFjGYqSIz+WBHwfvOsp0qPL/sg1O3wjiggJ
+	r+Pm0uxy1qzfaNhpynx7CWImd7RV96pydZNRx8fOUm2UGqXtiShmsu+iKpv+F6Fr5noGsll6xf0
+	To9uz8DCf40iQfk8klCDoRxxGQo0Ef2vQzxQR
+X-Google-Smtp-Source: AGHT+IGjyb70B6SDuY6wbgv03PDQBnzlJHXoezrkDksvAWcp/tWgb1al0Y3A+AXmmF09ME9ZvkZTyuBhj4nPA5ao6V4=
+X-Received: by 2002:a05:622a:6fc7:b0:444:e366:3fda with SMTP id
+ d75a77b69052e-444e36643aamr2439491cf.27.1719222920463; Mon, 24 Jun 2024
+ 02:55:20 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-ClientProxiedBy: dggems704-chm.china.huawei.com (10.3.19.181) To
- kwepemf500003.china.huawei.com (7.202.181.241)
+References: <0-v8-6f85cdc10ce7+563e-smmuv3_newapi_p2b_jgg@nvidia.com> <10-v8-6f85cdc10ce7+563e-smmuv3_newapi_p2b_jgg@nvidia.com>
+In-Reply-To: <10-v8-6f85cdc10ce7+563e-smmuv3_newapi_p2b_jgg@nvidia.com>
+From: Michael Shavit <mshavit@google.com>
+Date: Mon, 24 Jun 2024 17:54:42 +0800
+Message-ID: <CAKHBV27hj5cefib6nx9CM9-9P3N2k=Y2W-FwT06W4OoEFJ_zqA@mail.gmail.com>
+Subject: Re: [PATCH v8 10/14] iommu/arm-smmu-v3: Put the SVA mmu notifier in
+ the smmu_domain
+To: Jason Gunthorpe <jgg@nvidia.com>
+Cc: iommu@lists.linux.dev, Joerg Roedel <joro@8bytes.org>, 
+	linux-arm-kernel@lists.infradead.org, Robin Murphy <robin.murphy@arm.com>, 
+	Will Deacon <will@kernel.org>, Eric Auger <eric.auger@redhat.com>, 
+	Jean-Philippe Brucker <jean-philippe@linaro.org>, Moritz Fischer <mdf@kernel.org>, 
+	Nicolin Chen <nicolinc@nvidia.com>, patches@lists.linux.dev, 
+	Shameerali Kolothum Thodi <shameerali.kolothum.thodi@huawei.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-Currently, when iommu working in no-strict mode, fq_flush_timeout()
-will always try to free iovas on one cpu. Freeing the iovas from all
-cpus on one cpu is not cache-friendly to iova_rcache, because it will
-first filling up the cpu_rcache and then pushing iovas to the depot,
-iovas in the depot will finally goto the underlying rbtree if the
-depot_size is greater than num_online_cpus(). Let fq_flush_timeout()
-freeing iovas on cpus who call dma_unmap* APIs, can decrease the overall
-time caused by fq_flush_timeout() by better utilizing the iova_rcache,
-and minimizing the competition for the iova_rbtree_lock().
+On Tue, Jun 4, 2024 at 8:16=E2=80=AFAM Jason Gunthorpe <jgg@nvidia.com> wro=
+te:
+>
+> This removes all the notifier de-duplication logic in the driver and
+> relies on the core code to de-duplicate and allocate only one SVA domain
+> per mm per smmu instance. This naturally gives a 1:1 relationship between
+> SVA domain and mmu notifier.
+>
+> It is a significant simplication of the flow, as we end up with a single
+> struct arm_smmu_domain for each MM and the invalidation can then be
+> shifted to properly use the masters list like S1/S2 do.
+>
+> Remove all of the previous mmu_notifier, bond, shared cd, and cd refcount
+> logic entirely.
+>
+> The logic here is tightly wound together with the unusued BTM
+> support. Since the BTM logic requires holding all the iommu_domains in a
+> global ASID xarray it conflicts with the design to have a single SVA
+> domain per PASID, as multiple SMMU instances will need to have different
+> domains.
+>
+> Following patches resolve this by making the ASID xarray per-instance
+> instead of global. However, converting the BTM code over to this
+> methodology requires many changes.
+>
+> Thus, since ARM_SMMU_FEAT_BTM is never enabled, remove the parts of the
+> BTM support for ASID sharing that interact with SVA as well.
+>
+> A followup series is already working on fully enabling the BTM support,
+> that requires iommufd's VIOMMU feature to bring in the KVM's VMID as
+> well. It will come with an already written patch to bring back the ASID
+> sharing using a per-instance ASID xarray.
+>
+> https://lore.kernel.org/linux-iommu/20240208151837.35068-1-shameerali.kol=
+othum.thodi@huawei.com/
+> https://lore.kernel.org/linux-iommu/26-v6-228e7adf25eb+4155-smmuv3_newapi=
+_p2_jgg@nvidia.com/
+>
+> Tested-by: Nicolin Chen <nicolinc@nvidia.com>
+> Tested-by: Shameer Kolothum <shameerali.kolothum.thodi@huawei.com>
+> Reviewed-by: Nicolin Chen <nicolinc@nvidia.com>
+> Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
+> ---
+>  .../iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c   | 395 +++---------------
+>  drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c   |  69 +--
+>  drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h   |  15 +-
+>  3 files changed, 86 insertions(+), 393 deletions(-)
+>
+> diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c b/drivers/io=
+mmu/arm/arm-smmu-v3/arm-smmu-v3-sva.c
+> index aa033cd65adc5a..a7c36654dee5a5 100644
+> --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c
+> +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c
+> @@ -13,29 +13,9 @@
+>  #include "arm-smmu-v3.h"
+>  #include "../../io-pgtable-arm.h"
+>
+> -struct arm_smmu_mmu_notifier {
+> -       struct mmu_notifier             mn;
+> -       struct arm_smmu_ctx_desc        *cd;
+> -       bool                            cleared;
+> -       refcount_t                      refs;
+> -       struct list_head                list;
+> -       struct arm_smmu_domain          *domain;
+> -};
+> -
+> -#define mn_to_smmu(mn) container_of(mn, struct arm_smmu_mmu_notifier, mn=
+)
+> -
+> -struct arm_smmu_bond {
+> -       struct mm_struct                *mm;
+> -       struct arm_smmu_mmu_notifier    *smmu_mn;
+> -       struct list_head                list;
+> -};
+> -
+> -#define sva_to_bond(handle) \
+> -       container_of(handle, struct arm_smmu_bond, sva)
+> -
+>  static DEFINE_MUTEX(sva_lock);
+>
+> -static void
+> +static void __maybe_unused
+>  arm_smmu_update_s1_domain_cd_entry(struct arm_smmu_domain *smmu_domain)
+>  {
+>         struct arm_smmu_master_domain *master_domain;
+> @@ -58,58 +38,6 @@ arm_smmu_update_s1_domain_cd_entry(struct arm_smmu_dom=
+ain *smmu_domain)
+>         spin_unlock_irqrestore(&smmu_domain->devices_lock, flags);
+>  }
+>
+> -/*
+> - * Check if the CPU ASID is available on the SMMU side. If a private con=
+text
+> - * descriptor is using it, try to replace it.
+> - */
+> -static struct arm_smmu_ctx_desc *
+> -arm_smmu_share_asid(struct mm_struct *mm, u16 asid)
+> -{
+> -       int ret;
+> -       u32 new_asid;
+> -       struct arm_smmu_ctx_desc *cd;
+> -       struct arm_smmu_device *smmu;
+> -       struct arm_smmu_domain *smmu_domain;
+> -
+> -       cd =3D xa_load(&arm_smmu_asid_xa, asid);
+> -       if (!cd)
+> -               return NULL;
+> -
+> -       if (cd->mm) {
+> -               if (WARN_ON(cd->mm !=3D mm))
+> -                       return ERR_PTR(-EINVAL);
+> -               /* All devices bound to this mm use the same cd struct. *=
+/
+> -               refcount_inc(&cd->refs);
+> -               return cd;
+> -       }
+> -
+> -       smmu_domain =3D container_of(cd, struct arm_smmu_domain, cd);
+> -       smmu =3D smmu_domain->smmu;
+> -
+> -       ret =3D xa_alloc(&arm_smmu_asid_xa, &new_asid, cd,
+> -                      XA_LIMIT(1, (1 << smmu->asid_bits) - 1), GFP_KERNE=
+L);
+> -       if (ret)
+> -               return ERR_PTR(-ENOSPC);
+> -       /*
+> -        * Race with unmap: TLB invalidations will start targeting the ne=
+w ASID,
+> -        * which isn't assigned yet. We'll do an invalidate-all on the ol=
+d ASID
+> -        * later, so it doesn't matter.
+> -        */
+> -       cd->asid =3D new_asid;
+> -       /*
+> -        * Update ASID and invalidate CD in all associated masters. There=
+ will
+> -        * be some overlap between use of both ASIDs, until we invalidate=
+ the
+> -        * TLB.
+> -        */
+> -       arm_smmu_update_s1_domain_cd_entry(smmu_domain);
+> -
+> -       /* Invalidate TLB entries previously associated with that context=
+ */
+> -       arm_smmu_tlb_inv_asid(smmu, asid);
+> -
+> -       xa_erase(&arm_smmu_asid_xa, asid);
+> -       return NULL;
+> -}
+> -
 
-Signed-off-by: Zhang Zekun <zhangzekun11@huawei.com>
----
- drivers/iommu/dma-iommu.c | 22 +++++++++++++---------
- drivers/iommu/iova.c      | 21 ++++++++++++++-------
- include/linux/iova.h      |  7 +++++++
- 3 files changed, 34 insertions(+), 16 deletions(-)
+Can we leave a comment on ASID sharing in the code since it isn't
+added back until the next patch series? There are references to ASID
+sharing remaining (and even added in this commit) that don't make
+sense without this function (e.g "Prevent arm_smmu_share_asid() from
+trying to change the ASID").
 
-diff --git a/drivers/iommu/dma-iommu.c b/drivers/iommu/dma-iommu.c
-index 43520e7275cc..217b7c70d06c 100644
---- a/drivers/iommu/dma-iommu.c
-+++ b/drivers/iommu/dma-iommu.c
-@@ -145,7 +145,8 @@ static inline unsigned int fq_ring_add(struct iova_fq *fq)
- 	return idx;
- }
- 
--static void fq_ring_free_locked(struct iommu_dma_cookie *cookie, struct iova_fq *fq)
-+static void fq_ring_free_locked(struct iommu_dma_cookie *cookie, struct iova_fq *fq,
-+				int cpu)
- {
- 	u64 counter = atomic64_read(&cookie->fq_flush_finish_cnt);
- 	unsigned int idx;
-@@ -158,20 +159,21 @@ static void fq_ring_free_locked(struct iommu_dma_cookie *cookie, struct iova_fq
- 			break;
- 
- 		iommu_put_pages_list(&fq->entries[idx].freelist);
--		free_iova_fast(&cookie->iovad,
-+		free_iova_fast_cpu(&cookie->iovad,
- 			       fq->entries[idx].iova_pfn,
--			       fq->entries[idx].pages);
-+			       fq->entries[idx].pages, cpu);
- 
- 		fq->head = (fq->head + 1) & fq->mod_mask;
- 	}
- }
- 
--static void fq_ring_free(struct iommu_dma_cookie *cookie, struct iova_fq *fq)
-+static void fq_ring_free(struct iommu_dma_cookie *cookie, struct iova_fq *fq,
-+			 int cpu)
- {
- 	unsigned long flags;
- 
- 	spin_lock_irqsave(&fq->lock, flags);
--	fq_ring_free_locked(cookie, fq);
-+	fq_ring_free_locked(cookie, fq, cpu);
- 	spin_unlock_irqrestore(&fq->lock, flags);
- }
- 
-@@ -191,10 +193,11 @@ static void fq_flush_timeout(struct timer_list *t)
- 	fq_flush_iotlb(cookie);
- 
- 	if (cookie->options.qt == IOMMU_DMA_OPTS_SINGLE_QUEUE) {
--		fq_ring_free(cookie, cookie->single_fq);
-+		cpu = smp_processor_id();
-+		fq_ring_free(cookie, cookie->single_fq, cpu);
- 	} else {
- 		for_each_possible_cpu(cpu)
--			fq_ring_free(cookie, per_cpu_ptr(cookie->percpu_fq, cpu));
-+			fq_ring_free(cookie, per_cpu_ptr(cookie->percpu_fq, cpu), cpu);
- 	}
- }
- 
-@@ -205,6 +208,7 @@ static void queue_iova(struct iommu_dma_cookie *cookie,
- 	struct iova_fq *fq;
- 	unsigned long flags;
- 	unsigned int idx;
-+	int cpu = smp_processor_id();
- 
- 	/*
- 	 * Order against the IOMMU driver's pagetable update from unmapping
-@@ -227,11 +231,11 @@ static void queue_iova(struct iommu_dma_cookie *cookie,
- 	 * flushed out on another CPU. This makes the fq_full() check below less
- 	 * likely to be true.
- 	 */
--	fq_ring_free_locked(cookie, fq);
-+	fq_ring_free_locked(cookie, fq, cpu);
- 
- 	if (fq_full(fq)) {
- 		fq_flush_iotlb(cookie);
--		fq_ring_free_locked(cookie, fq);
-+		fq_ring_free_locked(cookie, fq, cpu);
- 	}
- 
- 	idx = fq_ring_add(fq);
-diff --git a/drivers/iommu/iova.c b/drivers/iommu/iova.c
-index d59d0ea2fd21..46a2188c263b 100644
---- a/drivers/iommu/iova.c
-+++ b/drivers/iommu/iova.c
-@@ -20,7 +20,7 @@
- 
- static bool iova_rcache_insert(struct iova_domain *iovad,
- 			       unsigned long pfn,
--			       unsigned long size);
-+			       unsigned long size, int cpu);
- static unsigned long iova_rcache_get(struct iova_domain *iovad,
- 				     unsigned long size,
- 				     unsigned long limit_pfn);
-@@ -423,12 +423,19 @@ EXPORT_SYMBOL_GPL(alloc_iova_fast);
- void
- free_iova_fast(struct iova_domain *iovad, unsigned long pfn, unsigned long size)
- {
--	if (iova_rcache_insert(iovad, pfn, size))
-+	free_iova_fast_cpu(iovad, pfn, size, smp_processor_id());
-+}
-+EXPORT_SYMBOL_GPL(free_iova_fast);
-+
-+void
-+free_iova_fast_cpu(struct iova_domain *iovad, unsigned long pfn,
-+		   unsigned long size, int cpu)
-+{
-+	if (iova_rcache_insert(iovad, pfn, size, cpu))
- 		return;
- 
- 	free_iova(iovad, pfn);
- }
--EXPORT_SYMBOL_GPL(free_iova_fast);
- 
- static void iova_domain_free_rcaches(struct iova_domain *iovad)
- {
-@@ -762,13 +769,13 @@ EXPORT_SYMBOL_GPL(iova_domain_init_rcaches);
-  */
- static bool __iova_rcache_insert(struct iova_domain *iovad,
- 				 struct iova_rcache *rcache,
--				 unsigned long iova_pfn)
-+				 unsigned long iova_pfn, int cpu)
- {
- 	struct iova_cpu_rcache *cpu_rcache;
- 	bool can_insert = false;
- 	unsigned long flags;
- 
--	cpu_rcache = raw_cpu_ptr(rcache->cpu_rcaches);
-+	cpu_rcache = per_cpu_ptr(rcache->cpu_rcaches, cpu);
- 	spin_lock_irqsave(&cpu_rcache->lock, flags);
- 
- 	if (!iova_magazine_full(cpu_rcache->loaded)) {
-@@ -799,14 +806,14 @@ static bool __iova_rcache_insert(struct iova_domain *iovad,
- }
- 
- static bool iova_rcache_insert(struct iova_domain *iovad, unsigned long pfn,
--			       unsigned long size)
-+			       unsigned long size, int cpu)
- {
- 	unsigned int log_size = order_base_2(size);
- 
- 	if (log_size >= IOVA_RANGE_CACHE_MAX_SIZE)
- 		return false;
- 
--	return __iova_rcache_insert(iovad, &iovad->rcaches[log_size], pfn);
-+	return __iova_rcache_insert(iovad, &iovad->rcaches[log_size], pfn, cpu);
- }
- 
- /*
-diff --git a/include/linux/iova.h b/include/linux/iova.h
-index d2c4fd923efa..91e4e3d5bcb3 100644
---- a/include/linux/iova.h
-+++ b/include/linux/iova.h
-@@ -93,6 +93,8 @@ struct iova *alloc_iova(struct iova_domain *iovad, unsigned long size,
- 	bool size_aligned);
- void free_iova_fast(struct iova_domain *iovad, unsigned long pfn,
- 		    unsigned long size);
-+void free_iova_fast_cpu(struct iova_domain *iovad, unsigned long pfn,
-+			unsigned long size, int cpu);
- unsigned long alloc_iova_fast(struct iova_domain *iovad, unsigned long size,
- 			      unsigned long limit_pfn, bool flush_rcache);
- struct iova *reserve_iova(struct iova_domain *iovad, unsigned long pfn_lo,
-@@ -134,6 +136,11 @@ static inline void free_iova_fast(struct iova_domain *iovad,
- {
- }
- 
-+static inline void free_iova_fast_cpu(struct iova_domain *iovad, unsigned long pfn,
-+				      unsigned long size, int cpu);
-+{
-+}
-+
- static inline unsigned long alloc_iova_fast(struct iova_domain *iovad,
- 					    unsigned long size,
- 					    unsigned long limit_pfn,
--- 
-2.17.1
 
+>  static u64 page_size_to_cd(void)
+>  {
+>         static_assert(PAGE_SIZE =3D=3D SZ_4K || PAGE_SIZE =3D=3D SZ_16K |=
+|
+> @@ -187,69 +115,6 @@ void arm_smmu_make_sva_cd(struct arm_smmu_cd *target=
+,
+>  }
+>  EXPORT_SYMBOL_IF_KUNIT(arm_smmu_make_sva_cd);
+>
+> -static struct arm_smmu_ctx_desc *arm_smmu_alloc_shared_cd(struct mm_stru=
+ct *mm)
+> -{
+> -       u16 asid;
+> -       int err =3D 0;
+> -       struct arm_smmu_ctx_desc *cd;
+> -       struct arm_smmu_ctx_desc *ret =3D NULL;
+> -
+> -       /* Don't free the mm until we release the ASID */
+> -       mmgrab(mm);
+> -
+> -       asid =3D arm64_mm_context_get(mm);
+> -       if (!asid) {
+> -               err =3D -ESRCH;
+> -               goto out_drop_mm;
+> -       }
+> -
+> -       cd =3D kzalloc(sizeof(*cd), GFP_KERNEL);
+> -       if (!cd) {
+> -               err =3D -ENOMEM;
+> -               goto out_put_context;
+> -       }
+> -
+> -       refcount_set(&cd->refs, 1);
+> -
+> -       mutex_lock(&arm_smmu_asid_lock);
+> -       ret =3D arm_smmu_share_asid(mm, asid);
+> -       if (ret) {
+> -               mutex_unlock(&arm_smmu_asid_lock);
+> -               goto out_free_cd;
+> -       }
+> -
+> -       err =3D xa_insert(&arm_smmu_asid_xa, asid, cd, GFP_KERNEL);
+> -       mutex_unlock(&arm_smmu_asid_lock);
+> -
+> -       if (err)
+> -               goto out_free_asid;
+> -
+> -       cd->asid =3D asid;
+> -       cd->mm =3D mm;
+> -
+> -       return cd;
+> -
+> -out_free_asid:
+> -       arm_smmu_free_asid(cd);
+> -out_free_cd:
+> -       kfree(cd);
+> -out_put_context:
+> -       arm64_mm_context_put(mm);
+> -out_drop_mm:
+> -       mmdrop(mm);
+> -       return err < 0 ? ERR_PTR(err) : ret;
+> -}
+> -
+> -static void arm_smmu_free_shared_cd(struct arm_smmu_ctx_desc *cd)
+> -{
+> -       if (arm_smmu_free_asid(cd)) {
+> -               /* Unpin ASID */
+> -               arm64_mm_context_put(cd->mm);
+> -               mmdrop(cd->mm);
+> -               kfree(cd);
+> -       }
+> -}
+> -
+>  /*
+>   * Cloned from the MAX_TLBI_OPS in arch/arm64/include/asm/tlbflush.h, th=
+is
+>   * is used as a threshold to replace per-page TLBI commands to issue in =
+the
+> @@ -264,8 +129,8 @@ static void arm_smmu_mm_arch_invalidate_secondary_tlb=
+s(struct mmu_notifier *mn,
+>                                                 unsigned long start,
+>                                                 unsigned long end)
+>  {
+> -       struct arm_smmu_mmu_notifier *smmu_mn =3D mn_to_smmu(mn);
+> -       struct arm_smmu_domain *smmu_domain =3D smmu_mn->domain;
+> +       struct arm_smmu_domain *smmu_domain =3D
+> +               container_of(mn, struct arm_smmu_domain, mmu_notifier);
+>         size_t size;
+>
+>         /*
+> @@ -282,34 +147,22 @@ static void arm_smmu_mm_arch_invalidate_secondary_t=
+lbs(struct mmu_notifier *mn,
+>                         size =3D 0;
+>         }
+>
+> -       if (!(smmu_domain->smmu->features & ARM_SMMU_FEAT_BTM)) {
+> -               if (!size)
+> -                       arm_smmu_tlb_inv_asid(smmu_domain->smmu,
+> -                                             smmu_mn->cd->asid);
+> -               else
+> -                       arm_smmu_tlb_inv_range_asid(start, size,
+> -                                                   smmu_mn->cd->asid,
+> -                                                   PAGE_SIZE, false,
+> -                                                   smmu_domain);
+> -       }
+> +       if (!size)
+> +               arm_smmu_tlb_inv_asid(smmu_domain->smmu, smmu_domain->cd.=
+asid);
+> +       else
+> +               arm_smmu_tlb_inv_range_asid(start, size, smmu_domain->cd.=
+asid,
+> +                                           PAGE_SIZE, false, smmu_domain=
+);
+>
+> -       arm_smmu_atc_inv_domain_sva(smmu_domain, mm_get_enqcmd_pasid(mm),=
+ start,
+> -                                   size);
+> +       arm_smmu_atc_inv_domain(smmu_domain, start, size);
+>  }
+>
+>  static void arm_smmu_mm_release(struct mmu_notifier *mn, struct mm_struc=
+t *mm)
+>  {
+> -       struct arm_smmu_mmu_notifier *smmu_mn =3D mn_to_smmu(mn);
+> -       struct arm_smmu_domain *smmu_domain =3D smmu_mn->domain;
+> +       struct arm_smmu_domain *smmu_domain =3D
+> +               container_of(mn, struct arm_smmu_domain, mmu_notifier);
+>         struct arm_smmu_master_domain *master_domain;
+>         unsigned long flags;
+>
+> -       mutex_lock(&sva_lock);
+> -       if (smmu_mn->cleared) {
+> -               mutex_unlock(&sva_lock);
+> -               return;
+> -       }
+> -
+>         /*
+>          * DMA may still be running. Keep the cd valid to avoid C_BAD_CD =
+events,
+>          * but disable translation.
+> @@ -321,25 +174,23 @@ static void arm_smmu_mm_release(struct mmu_notifier=
+ *mn, struct mm_struct *mm)
+>                 struct arm_smmu_cd target;
+>                 struct arm_smmu_cd *cdptr;
+>
+> -               cdptr =3D arm_smmu_get_cd_ptr(master, mm_get_enqcmd_pasid=
+(mm));
+> +               cdptr =3D arm_smmu_get_cd_ptr(master, master_domain->ssid=
+);
+>                 if (WARN_ON(!cdptr))
+>                         continue;
+> -               arm_smmu_make_sva_cd(&target, master, NULL, smmu_mn->cd->=
+asid);
+> -               arm_smmu_write_cd_entry(master, mm_get_enqcmd_pasid(mm), =
+cdptr,
+> +               arm_smmu_make_sva_cd(&target, master, NULL,
+> +                                    smmu_domain->cd.asid);
+> +               arm_smmu_write_cd_entry(master, master_domain->ssid, cdpt=
+r,
+>                                         &target);
+>         }
+>         spin_unlock_irqrestore(&smmu_domain->devices_lock, flags);
+>
+> -       arm_smmu_tlb_inv_asid(smmu_domain->smmu, smmu_mn->cd->asid);
+> -       arm_smmu_atc_inv_domain_sva(smmu_domain, mm_get_enqcmd_pasid(mm),=
+ 0, 0);
+> -
+> -       smmu_mn->cleared =3D true;
+> -       mutex_unlock(&sva_lock);
+> +       arm_smmu_tlb_inv_asid(smmu_domain->smmu, smmu_domain->cd.asid);
+> +       arm_smmu_atc_inv_domain(smmu_domain, 0, 0);
+>  }
+>
+>  static void arm_smmu_mmu_notifier_free(struct mmu_notifier *mn)
+>  {
+> -       kfree(mn_to_smmu(mn));
+> +       kfree(container_of(mn, struct arm_smmu_domain, mmu_notifier));
+>  }
+>
+>  static const struct mmu_notifier_ops arm_smmu_mmu_notifier_ops =3D {
+> @@ -348,115 +199,6 @@ static const struct mmu_notifier_ops arm_smmu_mmu_n=
+otifier_ops =3D {
+>         .free_notifier                  =3D arm_smmu_mmu_notifier_free,
+>  };
+>
+> -/* Allocate or get existing MMU notifier for this {domain, mm} pair */
+> -static struct arm_smmu_mmu_notifier *
+> -arm_smmu_mmu_notifier_get(struct arm_smmu_domain *smmu_domain,
+> -                         struct mm_struct *mm)
+> -{
+> -       int ret;
+> -       struct arm_smmu_ctx_desc *cd;
+> -       struct arm_smmu_mmu_notifier *smmu_mn;
+> -
+> -       list_for_each_entry(smmu_mn, &smmu_domain->mmu_notifiers, list) {
+> -               if (smmu_mn->mn.mm =3D=3D mm) {
+> -                       refcount_inc(&smmu_mn->refs);
+> -                       return smmu_mn;
+> -               }
+> -       }
+> -
+> -       cd =3D arm_smmu_alloc_shared_cd(mm);
+> -       if (IS_ERR(cd))
+> -               return ERR_CAST(cd);
+> -
+> -       smmu_mn =3D kzalloc(sizeof(*smmu_mn), GFP_KERNEL);
+> -       if (!smmu_mn) {
+> -               ret =3D -ENOMEM;
+> -               goto err_free_cd;
+> -       }
+> -
+> -       refcount_set(&smmu_mn->refs, 1);
+> -       smmu_mn->cd =3D cd;
+> -       smmu_mn->domain =3D smmu_domain;
+> -       smmu_mn->mn.ops =3D &arm_smmu_mmu_notifier_ops;
+> -
+> -       ret =3D mmu_notifier_register(&smmu_mn->mn, mm);
+> -       if (ret) {
+> -               kfree(smmu_mn);
+> -               goto err_free_cd;
+> -       }
+> -
+> -       list_add(&smmu_mn->list, &smmu_domain->mmu_notifiers);
+> -       return smmu_mn;
+> -
+> -err_free_cd:
+> -       arm_smmu_free_shared_cd(cd);
+> -       return ERR_PTR(ret);
+> -}
+> -
+> -static void arm_smmu_mmu_notifier_put(struct arm_smmu_mmu_notifier *smmu=
+_mn)
+> -{
+> -       struct mm_struct *mm =3D smmu_mn->mn.mm;
+> -       struct arm_smmu_ctx_desc *cd =3D smmu_mn->cd;
+> -       struct arm_smmu_domain *smmu_domain =3D smmu_mn->domain;
+> -
+> -       if (!refcount_dec_and_test(&smmu_mn->refs))
+> -               return;
+> -
+> -       list_del(&smmu_mn->list);
+> -
+> -       /*
+> -        * If we went through clear(), we've already invalidated, and no
+> -        * new TLB entry can have been formed.
+> -        */
+> -       if (!smmu_mn->cleared) {
+> -               arm_smmu_tlb_inv_asid(smmu_domain->smmu, cd->asid);
+> -               arm_smmu_atc_inv_domain_sva(smmu_domain,
+> -                                           mm_get_enqcmd_pasid(mm), 0, 0=
+);
+> -       }
+> -
+> -       /* Frees smmu_mn */
+> -       mmu_notifier_put(&smmu_mn->mn);
+> -       arm_smmu_free_shared_cd(cd);
+> -}
+> -
+> -static struct arm_smmu_bond *__arm_smmu_sva_bind(struct device *dev,
+> -                                                struct mm_struct *mm)
+> -{
+> -       int ret;
+> -       struct arm_smmu_bond *bond;
+> -       struct arm_smmu_master *master =3D dev_iommu_priv_get(dev);
+> -       struct iommu_domain *domain =3D iommu_get_domain_for_dev(dev);
+> -       struct arm_smmu_domain *smmu_domain;
+> -
+> -       if (!(domain->type & __IOMMU_DOMAIN_PAGING))
+> -               return ERR_PTR(-ENODEV);
+> -       smmu_domain =3D to_smmu_domain(domain);
+> -       if (smmu_domain->stage !=3D ARM_SMMU_DOMAIN_S1)
+> -               return ERR_PTR(-ENODEV);
+> -
+> -       if (!master || !master->sva_enabled)
+> -               return ERR_PTR(-ENODEV);
+> -
+> -       bond =3D kzalloc(sizeof(*bond), GFP_KERNEL);
+> -       if (!bond)
+> -               return ERR_PTR(-ENOMEM);
+> -
+> -       bond->mm =3D mm;
+> -
+> -       bond->smmu_mn =3D arm_smmu_mmu_notifier_get(smmu_domain, mm);
+> -       if (IS_ERR(bond->smmu_mn)) {
+> -               ret =3D PTR_ERR(bond->smmu_mn);
+> -               goto err_free_bond;
+> -       }
+> -
+> -       list_add(&bond->list, &master->bonds);
+> -       return bond;
+> -
+> -err_free_bond:
+> -       kfree(bond);
+> -       return ERR_PTR(ret);
+> -}
+> -
+>  bool arm_smmu_sva_supported(struct arm_smmu_device *smmu)
+>  {
+>         unsigned long reg, fld;
+> @@ -573,11 +315,6 @@ int arm_smmu_master_enable_sva(struct arm_smmu_maste=
+r *master)
+>  int arm_smmu_master_disable_sva(struct arm_smmu_master *master)
+>  {
+>         mutex_lock(&sva_lock);
+> -       if (!list_empty(&master->bonds)) {
+> -               dev_err(master->dev, "cannot disable SVA, device is bound=
+\n");
+> -               mutex_unlock(&sva_lock);
+> -               return -EBUSY;
+> -       }
+>         arm_smmu_master_sva_disable_iopf(master);
+>         master->sva_enabled =3D false;
+>         mutex_unlock(&sva_lock);
+> @@ -594,66 +331,51 @@ void arm_smmu_sva_notifier_synchronize(void)
+>         mmu_notifier_synchronize();
+>  }
+>
+> -void arm_smmu_sva_remove_dev_pasid(struct iommu_domain *domain,
+> -                                  struct device *dev, ioasid_t id)
+> -{
+> -       struct mm_struct *mm =3D domain->mm;
+> -       struct arm_smmu_bond *bond =3D NULL, *t;
+> -       struct arm_smmu_master *master =3D dev_iommu_priv_get(dev);
+> -
+> -       arm_smmu_remove_pasid(master, to_smmu_domain(domain), id);
+> -
+> -       mutex_lock(&sva_lock);
+> -       list_for_each_entry(t, &master->bonds, list) {
+> -               if (t->mm =3D=3D mm) {
+> -                       bond =3D t;
+> -                       break;
+> -               }
+> -       }
+> -
+> -       if (!WARN_ON(!bond)) {
+> -               list_del(&bond->list);
+> -               arm_smmu_mmu_notifier_put(bond->smmu_mn);
+> -               kfree(bond);
+> -       }
+> -       mutex_unlock(&sva_lock);
+> -}
+> -
+>  static int arm_smmu_sva_set_dev_pasid(struct iommu_domain *domain,
+>                                       struct device *dev, ioasid_t id)
+>  {
+> +       struct arm_smmu_domain *smmu_domain =3D to_smmu_domain(domain);
+>         struct arm_smmu_master *master =3D dev_iommu_priv_get(dev);
+> -       struct mm_struct *mm =3D domain->mm;
+> -       struct arm_smmu_bond *bond;
+>         struct arm_smmu_cd target;
+>         int ret;
+>
+> -       if (mm_get_enqcmd_pasid(mm) !=3D id)
+> +       /* Prevent arm_smmu_mm_release from being called while we are att=
+aching */
+> +       if (!mmget_not_zero(domain->mm))
+>                 return -EINVAL;
+>
+> -       mutex_lock(&sva_lock);
+> -       bond =3D __arm_smmu_sva_bind(dev, mm);
+> -       if (IS_ERR(bond)) {
+> -               mutex_unlock(&sva_lock);
+> -               return PTR_ERR(bond);
+> -       }
+> +       /*
+> +        * This does not need the arm_smmu_asid_lock because SVA domains =
+never
+> +        * get reassigned
+> +        */
+> +       arm_smmu_make_sva_cd(&target, master, domain->mm, smmu_domain->cd=
+.asid);
+> +       ret =3D arm_smmu_set_pasid(master, smmu_domain, id, &target);
+>
+> -       arm_smmu_make_sva_cd(&target, master, mm, bond->smmu_mn->cd->asid=
+);
+> -       ret =3D arm_smmu_set_pasid(master, to_smmu_domain(domain), id, &t=
+arget);
+> -       if (ret) {
+> -               list_del(&bond->list);
+> -               arm_smmu_mmu_notifier_put(bond->smmu_mn);
+> -               kfree(bond);
+> -               mutex_unlock(&sva_lock);
+> -               return ret;
+> -       }
+> -       mutex_unlock(&sva_lock);
+> -       return 0;
+> +       mmput(domain->mm);
+> +       return ret;
+>  }
+>
+>  static void arm_smmu_sva_domain_free(struct iommu_domain *domain)
+>  {
+> -       kfree(to_smmu_domain(domain));
+> +       struct arm_smmu_domain *smmu_domain =3D to_smmu_domain(domain);
+> +
+> +       /*
+> +        * Ensure the ASID is empty in the iommu cache before allowing re=
+use.
+> +        */
+> +       arm_smmu_tlb_inv_asid(smmu_domain->smmu, smmu_domain->cd.asid);
+> +
+> +       /*
+> +        * Notice that the arm_smmu_mm_arch_invalidate_secondary_tlbs op =
+can
+> +        * still be called/running at this point. We allow the ASID to be
+> +        * reused, and if there is a race then it just suffers harmless
+> +        * unnecessary invalidation.
+> +        */
+> +       xa_erase(&arm_smmu_asid_xa, smmu_domain->cd.asid);
+> +
+> +       /*
+> +        * Actual free is defered to the SRCU callback
+> +        * arm_smmu_mmu_notifier_free()
+> +        */
+> +       mmu_notifier_put(&smmu_domain->mmu_notifier);
+>  }
+>
+>  static const struct iommu_domain_ops arm_smmu_sva_domain_ops =3D {
+> @@ -667,6 +389,8 @@ struct iommu_domain *arm_smmu_sva_domain_alloc(struct=
+ device *dev,
+>         struct arm_smmu_master *master =3D dev_iommu_priv_get(dev);
+>         struct arm_smmu_device *smmu =3D master->smmu;
+>         struct arm_smmu_domain *smmu_domain;
+> +       u32 asid;
+> +       int ret;
+>
+>         smmu_domain =3D arm_smmu_domain_alloc();
+>         if (IS_ERR(smmu_domain))
+> @@ -675,5 +399,22 @@ struct iommu_domain *arm_smmu_sva_domain_alloc(struc=
+t device *dev,
+>         smmu_domain->domain.ops =3D &arm_smmu_sva_domain_ops;
+>         smmu_domain->smmu =3D smmu;
+>
+> +       ret =3D xa_alloc(&arm_smmu_asid_xa, &asid, smmu_domain,
+> +                      XA_LIMIT(1, (1 << smmu->asid_bits) - 1), GFP_KERNE=
+L);
+> +       if (ret)
+> +               goto err_free;
+> +
+> +       smmu_domain->cd.asid =3D asid;
+> +       smmu_domain->mmu_notifier.ops =3D &arm_smmu_mmu_notifier_ops;
+> +       ret =3D mmu_notifier_register(&smmu_domain->mmu_notifier, mm);
+> +       if (ret)
+> +               goto err_asid;
+> +
+>         return &smmu_domain->domain;
+> +
+> +err_asid:
+> +       xa_erase(&arm_smmu_asid_xa, smmu_domain->cd.asid);
+> +err_free:
+> +       kfree(smmu_domain);
+> +       return ERR_PTR(ret);
+>  }
+> diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/=
+arm/arm-smmu-v3/arm-smmu-v3.c
+> index 24000027253de8..2a845ab6d53b57 100644
+> --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+> +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+> @@ -1439,22 +1439,6 @@ static void arm_smmu_free_cd_tables(struct arm_smm=
+u_master *master)
+>         cd_table->cdtab =3D NULL;
+>  }
+>
+> -bool arm_smmu_free_asid(struct arm_smmu_ctx_desc *cd)
+> -{
+> -       bool free;
+> -       struct arm_smmu_ctx_desc *old_cd;
+> -
+> -       if (!cd->asid)
+> -               return false;
+> -
+> -       free =3D refcount_dec_and_test(&cd->refs);
+> -       if (free) {
+> -               old_cd =3D xa_erase(&arm_smmu_asid_xa, cd->asid);
+> -               WARN_ON(old_cd !=3D cd);
+> -       }
+> -       return free;
+> -}
+> -
+>  /* Stream table manipulation functions */
+>  static void
+>  arm_smmu_write_strtab_l1_desc(__le64 *dst, struct arm_smmu_strtab_l1_des=
+c *desc)
+> @@ -2023,8 +2007,8 @@ static int arm_smmu_atc_inv_master(struct arm_smmu_=
+master *master,
+>         return arm_smmu_cmdq_batch_submit(master->smmu, &cmds);
+>  }
+>
+> -static int __arm_smmu_atc_inv_domain(struct arm_smmu_domain *smmu_domain=
+,
+> -                                    ioasid_t ssid, unsigned long iova, s=
+ize_t size)
+> +int arm_smmu_atc_inv_domain(struct arm_smmu_domain *smmu_domain,
+> +                           unsigned long iova, size_t size)
+>  {
+>         struct arm_smmu_master_domain *master_domain;
+>         int i;
+> @@ -2062,15 +2046,7 @@ static int __arm_smmu_atc_inv_domain(struct arm_sm=
+mu_domain *smmu_domain,
+>                 if (!master->ats_enabled)
+>                         continue;
+>
+> -               /*
+> -                * Non-zero ssid means SVA is co-opting the S1 domain to =
+issue
+> -                * invalidations for SVA PASIDs.
+> -                */
+> -               if (ssid !=3D IOMMU_NO_PASID)
+> -                       arm_smmu_atc_inv_to_cmd(ssid, iova, size, &cmd);
+> -               else
+> -                       arm_smmu_atc_inv_to_cmd(master_domain->ssid, iova=
+, size,
+> -                                               &cmd);
+> +               arm_smmu_atc_inv_to_cmd(master_domain->ssid, iova, size, =
+&cmd);
+>
+>                 for (i =3D 0; i < master->num_streams; i++) {
+>                         cmd.atc.sid =3D master->streams[i].id;
+> @@ -2082,19 +2058,6 @@ static int __arm_smmu_atc_inv_domain(struct arm_sm=
+mu_domain *smmu_domain,
+>         return arm_smmu_cmdq_batch_submit(smmu_domain->smmu, &cmds);
+>  }
+>
+> -static int arm_smmu_atc_inv_domain(struct arm_smmu_domain *smmu_domain,
+> -                                  unsigned long iova, size_t size)
+> -{
+> -       return __arm_smmu_atc_inv_domain(smmu_domain, IOMMU_NO_PASID, iov=
+a,
+> -                                        size);
+> -}
+> -
+> -int arm_smmu_atc_inv_domain_sva(struct arm_smmu_domain *smmu_domain,
+> -                               ioasid_t ssid, unsigned long iova, size_t=
+ size)
+> -{
+> -       return __arm_smmu_atc_inv_domain(smmu_domain, ssid, iova, size);
+> -}
+> -
+>  /* IO_PGTABLE API */
+>  static void arm_smmu_tlb_inv_context(void *cookie)
+>  {
+> @@ -2283,7 +2246,6 @@ struct arm_smmu_domain *arm_smmu_domain_alloc(void)
+>         mutex_init(&smmu_domain->init_mutex);
+>         INIT_LIST_HEAD(&smmu_domain->devices);
+>         spin_lock_init(&smmu_domain->devices_lock);
+> -       INIT_LIST_HEAD(&smmu_domain->mmu_notifiers);
+>
+>         return smmu_domain;
+>  }
+> @@ -2325,7 +2287,7 @@ static void arm_smmu_domain_free_paging(struct iomm=
+u_domain *domain)
+>         if (smmu_domain->stage =3D=3D ARM_SMMU_DOMAIN_S1) {
+>                 /* Prevent SVA from touching the CD while we're freeing i=
+t */
+>                 mutex_lock(&arm_smmu_asid_lock);
+> -               arm_smmu_free_asid(&smmu_domain->cd);
+> +               xa_erase(&arm_smmu_asid_xa, smmu_domain->cd.asid);
+>                 mutex_unlock(&arm_smmu_asid_lock);
+>         } else {
+>                 struct arm_smmu_s2_cfg *cfg =3D &smmu_domain->s2_cfg;
+> @@ -2343,11 +2305,9 @@ static int arm_smmu_domain_finalise_s1(struct arm_=
+smmu_device *smmu,
+>         u32 asid;
+>         struct arm_smmu_ctx_desc *cd =3D &smmu_domain->cd;
+>
+> -       refcount_set(&cd->refs, 1);
+> -
+>         /* Prevent SVA from modifying the ASID until it is written to the=
+ CD */
+>         mutex_lock(&arm_smmu_asid_lock);
+> -       ret =3D xa_alloc(&arm_smmu_asid_xa, &asid, cd,
+> +       ret =3D xa_alloc(&arm_smmu_asid_xa, &asid, smmu_domain,
+>                        XA_LIMIT(1, (1 << smmu->asid_bits) - 1), GFP_KERNE=
+L);
+>         cd->asid        =3D (u16)asid;
+>         mutex_unlock(&arm_smmu_asid_lock);
+> @@ -2835,6 +2795,9 @@ int arm_smmu_set_pasid(struct arm_smmu_master *mast=
+er,
+>
+>         /* The core code validates pasid */
+>
+> +       if (smmu_domain->smmu !=3D master->smmu)
+> +               return -EINVAL;
+> +
+>         if (!master->cd_table.in_ste)
+>                 return -ENODEV;
+>
+> @@ -2856,9 +2819,14 @@ int arm_smmu_set_pasid(struct arm_smmu_master *mas=
+ter,
+>         return ret;
+>  }
+>
+> -void arm_smmu_remove_pasid(struct arm_smmu_master *master,
+> -                          struct arm_smmu_domain *smmu_domain, ioasid_t =
+pasid)
+> +static void arm_smmu_remove_dev_pasid(struct device *dev, ioasid_t pasid=
+,
+> +                                     struct iommu_domain *domain)
+>  {
+> +       struct arm_smmu_master *master =3D dev_iommu_priv_get(dev);
+> +       struct arm_smmu_domain *smmu_domain;
+> +
+> +       smmu_domain =3D to_smmu_domain(domain);
+> +
+>         mutex_lock(&arm_smmu_asid_lock);
+>         arm_smmu_clear_cd(master, pasid);
+>         if (master->ats_enabled)
+> @@ -3129,7 +3097,6 @@ static struct iommu_device *arm_smmu_probe_device(s=
+truct device *dev)
+>
+>         master->dev =3D dev;
+>         master->smmu =3D smmu;
+> -       INIT_LIST_HEAD(&master->bonds);
+>         dev_iommu_priv_set(dev, master);
+>
+>         ret =3D arm_smmu_insert_master(smmu, master);
+> @@ -3311,12 +3278,6 @@ static int arm_smmu_def_domain_type(struct device =
+*dev)
+>         return 0;
+>  }
+>
+> -static void arm_smmu_remove_dev_pasid(struct device *dev, ioasid_t pasid=
+,
+> -                                     struct iommu_domain *domain)
+> -{
+> -       arm_smmu_sva_remove_dev_pasid(domain, dev, pasid);
+> -}
+> -
+>  static struct iommu_ops arm_smmu_ops =3D {
+>         .identity_domain        =3D &arm_smmu_identity_domain,
+>         .blocked_domain         =3D &arm_smmu_blocked_domain,
+> diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h b/drivers/iommu/=
+arm/arm-smmu-v3/arm-smmu-v3.h
+> index 212c18c70fa03e..d175d9eee6c61b 100644
+> --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
+> +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
+> @@ -587,9 +587,6 @@ struct arm_smmu_strtab_l1_desc {
+>
+>  struct arm_smmu_ctx_desc {
+>         u16                             asid;
+> -
+> -       refcount_t                      refs;
+> -       struct mm_struct                *mm;
+>  };
+>
+>  struct arm_smmu_l1_ctx_desc {
+> @@ -712,7 +709,6 @@ struct arm_smmu_master {
+>         bool                            stall_enabled;
+>         bool                            sva_enabled;
+>         bool                            iopf_enabled;
+> -       struct list_head                bonds;
+>         unsigned int                    ssid_bits;
+>  };
+>
+> @@ -741,7 +737,7 @@ struct arm_smmu_domain {
+>         struct list_head                devices;
+>         spinlock_t                      devices_lock;
+>
+> -       struct list_head                mmu_notifiers;
+> +       struct mmu_notifier             mmu_notifier;
+>  };
+
+
+>
+>  /* The following are exposed for testing purposes. */
+> @@ -805,16 +801,13 @@ void arm_smmu_write_cd_entry(struct arm_smmu_master=
+ *master, int ssid,
+>  int arm_smmu_set_pasid(struct arm_smmu_master *master,
+>                        struct arm_smmu_domain *smmu_domain, ioasid_t pasi=
+d,
+>                        const struct arm_smmu_cd *cd);
+> -void arm_smmu_remove_pasid(struct arm_smmu_master *master,
+> -                          struct arm_smmu_domain *smmu_domain, ioasid_t =
+pasid);
+>
+>  void arm_smmu_tlb_inv_asid(struct arm_smmu_device *smmu, u16 asid);
+>  void arm_smmu_tlb_inv_range_asid(unsigned long iova, size_t size, int as=
+id,
+>                                  size_t granule, bool leaf,
+>                                  struct arm_smmu_domain *smmu_domain);
+> -bool arm_smmu_free_asid(struct arm_smmu_ctx_desc *cd);
+> -int arm_smmu_atc_inv_domain_sva(struct arm_smmu_domain *smmu_domain,
+> -                               ioasid_t ssid, unsigned long iova, size_t=
+ size);
+> +int arm_smmu_atc_inv_domain(struct arm_smmu_domain *smmu_domain,
+> +                           unsigned long iova, size_t size);
+>
+>  #ifdef CONFIG_ARM_SMMU_V3_SVA
+>  bool arm_smmu_sva_supported(struct arm_smmu_device *smmu);
+> @@ -826,8 +819,6 @@ bool arm_smmu_master_iopf_supported(struct arm_smmu_m=
+aster *master);
+>  void arm_smmu_sva_notifier_synchronize(void);
+>  struct iommu_domain *arm_smmu_sva_domain_alloc(struct device *dev,
+>                                                struct mm_struct *mm);
+> -void arm_smmu_sva_remove_dev_pasid(struct iommu_domain *domain,
+> -                                  struct device *dev, ioasid_t id);
+>  #else /* CONFIG_ARM_SMMU_V3_SVA */
+>  static inline bool arm_smmu_sva_supported(struct arm_smmu_device *smmu)
+>  {
+> --
+> 2.45.2
+>
+
+Reviewed-by: Michael Shavit <mshavit@google.com>
