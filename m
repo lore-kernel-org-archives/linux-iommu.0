@@ -1,49 +1,74 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-qk1-f175.google.com (mail-qk1-f175.google.com [209.85.222.175])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0857619B3DA;
-	Mon, 24 Jun 2024 15:14:07 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6212319B5A7
+	for <iommu@lists.linux.dev>; Mon, 24 Jun 2024 15:25:37 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.222.175
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1719242048; cv=none; b=lZDTiaQOBuvErrH6Hg+LlLqVM4FbxtY+lRh30VU8iqT1yeMsVKeFe1adA5I6SStZ+Foc3XgpFbtw7qohV3sVt8/3+Z9aFyv5yC4hJNoKTozdSPR++7xBI94ZVnDUYnPS1qH8lbABJY6h4x5rnte5ntEyoxlu9nE03mjOjPW2+I8=
+	t=1719242739; cv=none; b=H7T1rFdca2W+2fiEy/HFrbCZY9T99lY3AAlJNUqhUsWFYh/7aHGFveYgGjSLVGfRFeXlnEGvn2p6/3Bi89tovMSzcBd9KQ2cqfhhHnw3uTPrcSvBK8AfQivWHr/1KiEcn0LTjPVtpV5OdhiwTnCD/nX7iNxjc2z+ELy4ByxiBsM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1719242048; c=relaxed/simple;
-	bh=JrUnbyM+q1c3z7DUj0a7qxZEmOleJaUA+Pprv4ibD0g=;
+	s=arc-20240116; t=1719242739; c=relaxed/simple;
+	bh=uzdHiH3wJkVzFR4Qaz4tfIhboPJvQbpjf2wwWh/W2hU=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=dBhCiR2NzSK2tdx4MBCigs3C9GZr9njla3FrOLrD/4AA6ZcWi8lwfvuccFBdluL71SBop6QH88Y1LmP1bcN8cHHWErgqDSBfvzk1nunGHcm8VPKCx1zhJOIQt6DF/HXh5oNCnFnOE+o0XSsANVe2P75zfdw8LQgN/CIeYsUt0P0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=b2Y8qh2k; arc=none smtp.client-ip=10.30.226.201
+	 Content-Type:Content-Disposition:In-Reply-To; b=VS3mzEpcLYEmyZhHCV+rsbLGTrrY5pWGUDdK1Rnnv7IS8jeyYq70KIkUfTdw8jj8rjYVs7xsQ0CcmD93irmaaqYC1ea+Y5QXFbMkaZvctVw/0/E7789pFsdirTo8BBXQnLxXoMBA2mMzydLyWJhlW9uc40oMUZ32snta5I1zyls=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=Wd9imp6a; arc=none smtp.client-ip=209.85.222.175
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="b2Y8qh2k"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2B460C32789;
-	Mon, 24 Jun 2024 15:14:05 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1719242047;
-	bh=JrUnbyM+q1c3z7DUj0a7qxZEmOleJaUA+Pprv4ibD0g=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=b2Y8qh2kUAE14ni+F6sttsOgX0qSTbQdpBDBuXgf074tDaOKsndopIqOqZ9uWCa0B
-	 BrXaucEOqeIZUwC9oaSjhq7jUU/zpYS9Z+PsSzOFyck7oEasH1mUU2xPxx+YzjM68O
-	 K3QNVUQkn25yMDLQe3dGSWk+XO+1w65xWgKZmNKAVV+s1Gcxy8tjGgw1gHHHF9NE/j
-	 P6vYP6bLXUyyYfjB/7uru8JWVbAHFu7UGqu6URItSy/b3+QpNoRTcdgx+CiH/KYT2W
-	 qYJfklHIpEjOU4XstNt9Xt7YAJberUNKrX+2rj/liCs5hFrUh8qTUlDRt7ofGmjfR9
-	 uJWjt0rj4JBLA==
-Date: Mon, 24 Jun 2024 16:14:01 +0100
-From: Will Deacon <will@kernel.org>
-To: Rob Clark <robdclark@gmail.com>
-Cc: dri-devel@lists.freedesktop.org, linux-arm-msm@vger.kernel.org,
-	freedreno@lists.freedesktop.org, Rob Clark <robdclark@chromium.org>,
-	Robin Murphy <robin.murphy@arm.com>, Joerg Roedel <joro@8bytes.org>,
-	Jason Gunthorpe <jgg@ziepe.ca>,
-	Boris Brezillon <boris.brezillon@collabora.com>,
-	Kevin Tian <kevin.tian@intel.com>,
-	Joao Martins <joao.m.martins@oracle.com>,
-	"moderated list:ARM SMMU DRIVERS" <linux-arm-kernel@lists.infradead.org>,
-	"open list:IOMMU SUBSYSTEM" <iommu@lists.linux.dev>,
-	open list <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH v4 1/2] iommu/io-pgtable-arm: Add way to debug pgtable
- walk
-Message-ID: <20240624151401.GB8706@willie-the-truck>
-References: <20240523175227.117984-1-robdclark@gmail.com>
- <20240523175227.117984-2-robdclark@gmail.com>
+	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="Wd9imp6a"
+Received: by mail-qk1-f175.google.com with SMTP id af79cd13be357-7965d034cedso283477585a.3
+        for <iommu@lists.linux.dev>; Mon, 24 Jun 2024 08:25:37 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=ziepe.ca; s=google; t=1719242736; x=1719847536; darn=lists.linux.dev;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=uzdHiH3wJkVzFR4Qaz4tfIhboPJvQbpjf2wwWh/W2hU=;
+        b=Wd9imp6a/Fzn+HxuEhlrVBkC+QdJ5bDEysXqw5GbF0jVyJPY2xjsA8e2zF3wdoF/sW
+         QJW9eCBdlZvUH1ll2X8fpn7Dwz3T6uwDnpwPWjvGX8MhEfBLv7GG39GVdY0B2wjs6H00
+         rdBSZE46ZGi73DA7evGWyI/eWMmq9c7/ExJYxegWPQz1eM6B9QoZ36F3CVaNCCxow8yt
+         0HBaLUSHw6s/p8sVKblR/YXbDspFOm70I83PLjvDK4yjOmfhu6vY+/FxxV9pGNTig1He
+         NQPPq5z6a4PN5/NJ/LyQH9mkoJuZsOGsKl26paDfq0862q2qGj7kQtw+6s50LXwyyFT0
+         YRzg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1719242736; x=1719847536;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=uzdHiH3wJkVzFR4Qaz4tfIhboPJvQbpjf2wwWh/W2hU=;
+        b=DSZo/xscv+v+u6ucb2Ul7nfzzqRdgxlkywib/LPjvxGlmFMS15X2shamxYp1ggABZX
+         kaiHlrsMlRZwJh7AnNIfj6xcwiilb2xz1URua7+Hu04ZsLaN9Zn7Wfdd9WM1Vc2eeoOz
+         RxXA4FvCUG92LO2MiVdjC+ebBH/M0RFA1ikr//4Unc8wrOY5Aj5BhJzko21Ghy4WyRQ8
+         jX/RbRUziVBpX3yNl/gbe/NRPZ6GMh/FP6t5NLWZYh4mcoE85jJIY8QUeurOWgNr3rTO
+         8JNmXCqgxNL5Yftk/4Ow/jUiAUWwvY8DJO6jIYVPT4Slb3o1Xk4OsviwIbYf5G2nhW88
+         YhUA==
+X-Forwarded-Encrypted: i=1; AJvYcCWPq7+XsL05R3FkzJjRRDjfpE+F2pUqwuUH56sgA5U3SGfcrY4iHNE/1jl/uk9mTkPJmv7TPMyfVVhnsvxlP5wZ0w9UCf8=
+X-Gm-Message-State: AOJu0YxWqSMWQEWLUeyjwCUefPYtvgaNN/jwTZx2T8vB6gKvWwlbCOnn
+	PK+Ji7GEhC4dKrPYb5Sj4qvnLNfW7IcaB3rtv2wVZ+kb+BH2mO04lnBaVAyFboU=
+X-Google-Smtp-Source: AGHT+IFsf+bohILZwZmdM4lOb2KhKfxQ8HdybpNZdym5AOTeXYBBOlOEn9LGVBeqfzHlr0GrIyxCCw==
+X-Received: by 2002:a05:620a:408d:b0:794:9968:6b16 with SMTP id af79cd13be357-79be6f23a36mr672560185a.59.1719242736250;
+        Mon, 24 Jun 2024 08:25:36 -0700 (PDT)
+Received: from ziepe.ca (hlfxns017vw-142-68-80-239.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.68.80.239])
+        by smtp.gmail.com with ESMTPSA id af79cd13be357-79bce8c4736sm322830685a.61.2024.06.24.08.25.35
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 24 Jun 2024 08:25:35 -0700 (PDT)
+Received: from jgg by wakko with local (Exim 4.95)
+	(envelope-from <jgg@ziepe.ca>)
+	id 1sLlZW-0069AY-Ub;
+	Mon, 24 Jun 2024 12:25:34 -0300
+Date: Mon, 24 Jun 2024 12:25:34 -0300
+From: Jason Gunthorpe <jgg@ziepe.ca>
+To: Vasant Hegde <vasant.hegde@amd.com>
+Cc: Robin Murphy <robin.murphy@arm.com>, iommu@lists.linux.dev,
+	joro@8bytes.org, suravee.suthikulpanit@amd.com,
+	Lianbo Jiang <lijiang@redhat.com>
+Subject: Re: [PATCH 1/2] iommu: Take group lock before attaching device in
+ iommu_deferred_attach()
+Message-ID: <20240624152534.GR791043@ziepe.ca>
+References: <20240528163940.48789-1-vasant.hegde@amd.com>
+ <aaf7b619-1826-4db2-aaa6-235a25f46299@arm.com>
+ <029a1733-4e7e-4deb-92d2-874040679bd2@amd.com>
+ <20240610174407.GL791043@ziepe.ca>
+ <1bd088e9-8cb3-476a-b397-4257d3ec1b46@amd.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -52,103 +77,23 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20240523175227.117984-2-robdclark@gmail.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+In-Reply-To: <1bd088e9-8cb3-476a-b397-4257d3ec1b46@amd.com>
 
-On Thu, May 23, 2024 at 10:52:21AM -0700, Rob Clark wrote:
-> From: Rob Clark <robdclark@chromium.org>
-> 
-> Add an io-pgtable method to walk the pgtable returning the raw PTEs that
-> would be traversed for a given iova access.
-> 
-> Signed-off-by: Rob Clark <robdclark@chromium.org>
-> ---
->  drivers/iommu/io-pgtable-arm.c | 51 ++++++++++++++++++++++++++++------
->  include/linux/io-pgtable.h     |  4 +++
->  2 files changed, 46 insertions(+), 9 deletions(-)
-> 
-> diff --git a/drivers/iommu/io-pgtable-arm.c b/drivers/iommu/io-pgtable-arm.c
-> index f7828a7aad41..f47a0e64bb35 100644
-> --- a/drivers/iommu/io-pgtable-arm.c
-> +++ b/drivers/iommu/io-pgtable-arm.c
-> @@ -693,17 +693,19 @@ static size_t arm_lpae_unmap_pages(struct io_pgtable_ops *ops, unsigned long iov
->  				data->start_level, ptep);
->  }
->  
-> -static phys_addr_t arm_lpae_iova_to_phys(struct io_pgtable_ops *ops,
-> -					 unsigned long iova)
-> +static int arm_lpae_pgtable_walk(struct io_pgtable_ops *ops, unsigned long iova,
-> +			int (*cb)(void *cb_data, void *pte, int level),
-> +			void *cb_data)
->  {
->  	struct arm_lpae_io_pgtable *data = io_pgtable_ops_to_data(ops);
->  	arm_lpae_iopte pte, *ptep = data->pgd;
->  	int lvl = data->start_level;
-> +	int ret;
->  
->  	do {
->  		/* Valid IOPTE pointer? */
->  		if (!ptep)
-> -			return 0;
-> +			return -EFAULT;
+On Mon, Jun 24, 2024 at 07:50:46PM +0530, Vasant Hegde wrote:
 
-nit: -ENOENT might be a little better, as we're only checking against a
-NULL entry rather than strictly any faulting entry.
+> It may be good thing to add mutex here.. But if any of the caller of these
+> deferred functions hold spin lock again we will hit the similar issue that I hit
+> with AMD driver.
 
->  		/* Grab the IOPTE we're interested in */
->  		ptep += ARM_LPAE_LVL_IDX(iova, lvl, data);
-> @@ -711,22 +713,52 @@ static phys_addr_t arm_lpae_iova_to_phys(struct io_pgtable_ops *ops,
->  
->  		/* Valid entry? */
->  		if (!pte)
-> -			return 0;
-> +			return -EFAULT;
+My point was that Intel doesn't support non-sleeping attach, it uses
+GFP_KERNEL, that support seems to be a uniquely AMD thing of the major
+drivers.
 
-Same here (and at the end of the function).
+So, I don't see an issue with formalizing the lowest common
+denominator in the core code - the context must be sleepable.
 
-> +
-> +		ret = cb(cb_data, &pte, lvl);
+Presumably things work because the kdump kernels only run drivers that
+reliably trigger first dma from sleepable contexts. Unless there is
+something AMD only that relies on this special behavior??
 
-Since pte is on the stack, rather than pointing into the actual pgtable,
-I think it would be clearer to pass it by value to the callback.
-
-> +		if (ret)
-> +			return ret;
->  
-> -		/* Leaf entry? */
-> +		/* Leaf entry?  If so, we've found the translation */
->  		if (iopte_leaf(pte, lvl, data->iop.fmt))
-> -			goto found_translation;
-> +			return 0;
->  
->  		/* Take it to the next level */
->  		ptep = iopte_deref(pte, data);
->  	} while (++lvl < ARM_LPAE_MAX_LEVELS);
->  
->  	/* Ran out of page tables to walk */
-> +	return -EFAULT;
-> +}
-> +
-> +struct iova_to_phys_walk_data {
-> +	arm_lpae_iopte pte;
-> +	int level;
-> +};
-
-Expanding a little on Robin's suggestion, why don't we drop this structure
-in favour of something more generic:
-
-	struct arm_lpae_walk_data {
-		arm_lpae_iopte ptes[ARM_LPAE_MAX_LEVELS];
-	};
-
-and then do something in the walker like:
-
-	if (cb && !cb(pte, lvl))
-		walk_data->ptes[lvl] = pte;
-
-which could return the physical address at the end, if it reaches a leaf
-entry. That way arm_lpae_iova_to_phys() is just passing a NULL callback
-to the walker and your debug callback just needs to return 0 (i.e. the
-callback is basically just saying whether or not to continue the walk).
-
-Will
+Jason
