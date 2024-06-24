@@ -1,63 +1,66 @@
-Received: from mail-yb1-f201.google.com (mail-yb1-f201.google.com [209.85.219.201])
+Received: from mail-pg1-f202.google.com (mail-pg1-f202.google.com [209.85.215.202])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7CE711A2C11
-	for <iommu@lists.linux.dev>; Mon, 24 Jun 2024 23:28:56 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.219.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id ECD2A1A2FC2
+	for <iommu@lists.linux.dev>; Mon, 24 Jun 2024 23:29:01 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.215.202
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1719271738; cv=none; b=FkSwFJnyPitGiVn2uSeGcF5MzMtcNugmKZ8QGUKSBq4kwdjIkwXDTWNkWBldtF5UFC2s8HUlAJuTzx4XwzWGOd4+k/Yck2VUoGMxRLnrKZo0zYssHM6nkCbCk3g6rTsrwD2kU7dxzK//IB2vf/wJLE9M21sWpvO131rlmUBMLpM=
+	t=1719271743; cv=none; b=GFQvIZH74eEpIN9zrtI4rlQsVQhjNlY/ZzVcLVcTWlp4EvfFQan9kn4TstJU9e61nLqcYaHqF+YK2H9tz8InHLuVrMPBTDcSTW74E2kzoDaRbIIk7lKbhywJK5RGsYvdK+lYgOSe0w7+dXPJQ7JsCWCCX22koLffXWfq3PZ6Kyg=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1719271738; c=relaxed/simple;
-	bh=PoyedOSrLslMpcZQkdr7wxw6LDAVWLOCZchvs+PQ4E0=;
-	h=Date:Mime-Version:Message-ID:Subject:From:To:Cc:Content-Type; b=QFnsk7wz65IFLjKapB9DWJIsK548vdFTOrs4mU+mc0iX7DrYdlZchfUvLGi5zJB0M1fU9texBMuIaRQdIEA+sWIqZ+JzvMTBQtIhQUUGU6n8/uDp3RL0djzX+KI/pNEzwlOARYksLbo3vq0Winj839DMHP0AZmLfGeudIRmgr3Q=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=flex--edliaw.bounces.google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=jViRLprx; arc=none smtp.client-ip=209.85.219.201
+	s=arc-20240116; t=1719271743; c=relaxed/simple;
+	bh=NqMqA7QWqr9/+mHOdPi0hG2A/sBfX5GGxqySZ84bEFo=;
+	h=Date:In-Reply-To:Mime-Version:References:Message-ID:Subject:From:
+	 To:Cc:Content-Type; b=f45qU6+9zCWopIcTu6BNzFq2Hv2gMECBGg/5Mjv30eKySzA+xNTYs9PdIm071IRwNVLHzhvXhjYDoWkwN67YVg8vbWI2JjvnC6W8Jx8SLGB3EhwAzDurV/v927yMMy2VkqHT95WwdQG1HLVMLNup7BkXNYjxlEBNfAnnNia1SaU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=flex--edliaw.bounces.google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=zINWzyOK; arc=none smtp.client-ip=209.85.215.202
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=flex--edliaw.bounces.google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="jViRLprx"
-Received: by mail-yb1-f201.google.com with SMTP id 3f1490d57ef6-dfa73db88dcso9779352276.0
-        for <iommu@lists.linux.dev>; Mon, 24 Jun 2024 16:28:56 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="zINWzyOK"
+Received: by mail-pg1-f202.google.com with SMTP id 41be03b00d2f7-6507e2f0615so6233478a12.1
+        for <iommu@lists.linux.dev>; Mon, 24 Jun 2024 16:29:01 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20230601; t=1719271735; x=1719876535; darn=lists.linux.dev;
-        h=cc:to:from:subject:message-id:mime-version:date:from:to:cc:subject
-         :date:message-id:reply-to;
-        bh=FEnvDY+YQtOlDLldfWY9bO5cHBXotclBQZRJTAhLrGQ=;
-        b=jViRLprx/J1wFgO9zSQpViNf5NH25C26AY5t6i8Vx+Cj/T4FBaSn2JOjF2xEn48Orj
-         0hLfX819KqjpFfZOBrOFwPa+sZ4ldXKEJMZa/vdOoWwrKI/eY8qgKzzjyBZxtX6vuRMT
-         t81FOyQEfm66f3JIyGo4rG8bU04mqYDgOCY/eRQ2UVt6uJKgee/kfcpsQifAA5CeIvlA
-         qyDcDZvF36fQ3sLVKCtnSEnV9vBkMe6Xtf0joN3/xC450Apx3kwGyfeISrwovG5zL5kT
-         PNpLsHjdSXpmMsCRioXimgtIyy+CzUCoCfxcc+Y7p70OQmJWKI2epP/bZGuzK9dUOZhS
-         T+rw==
+        d=google.com; s=20230601; t=1719271741; x=1719876541; darn=lists.linux.dev;
+        h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
+         :date:from:to:cc:subject:date:message-id:reply-to;
+        bh=3FvMNQZepmevKVYCWA5Mvt/tIAvZEAV28z8ZXGZ1r5A=;
+        b=zINWzyOKL2C4M/mUwOtNPHa1CqYytEh7PsBtketUvYBsYgP3OIgNmugByO3m6k1NaL
+         O8ca5C8bVK3qZJCLk+y25Rf18u5HRhLf1qtgPjwLdCw6l4eJ/LdGWwxZZfUItunVJ/wy
+         4kuuh77ellbdAgC9b/loT0zGDqYsgvdVr7m/oNKv+4bX5yYROutbMa9gQTNdsiF94EGV
+         IQzd62d80hLqg9DhARCsIVE1DAU2OjrUarhxCut54VjZYD897F59Gsecs8FXXaYvvyUo
+         /6dGjipxUaFwolzP8Qr7veh2p/9hZL3yAwrNb7zwqGhE/RYdpWdgSSq36d6AsVNXLH3z
+         KK6A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1719271735; x=1719876535;
-        h=cc:to:from:subject:message-id:mime-version:date:x-gm-message-state
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=FEnvDY+YQtOlDLldfWY9bO5cHBXotclBQZRJTAhLrGQ=;
-        b=VHBrgd4u1TOycy/7HCqgdFamIoIAGr8dX022wcJbKYuDFQawTo5qAPlGgRT5Ts2RWC
-         HcZmzCOORW+w/uIppKyTGiYdZWHNye2eD6GwIeSgoxhR3kuDwKL2rvLAeqQlQflWnSLC
-         /6OObq4Mf5UEylD0yCa4053mguT/s2kRX+S8FW9UGls8gGRRqOuMRG6cg5j3reMYYOsb
-         GPWgVVUCB3vcfhERXtaPZ05iWJRNitDORPY2J9fb+kjbaFqvqUw7WS6QQxmFByVKuw4F
-         n8jjzyjlkH8RjISUrWo2LjFvmYg2c5PDesmL835lShtJ8yTWRD447z+JindZM3N7WGcc
-         TNDA==
-X-Forwarded-Encrypted: i=1; AJvYcCUmeSq6x01S8TFa9LtnOqG1+aTOZ9Zz48oifdFVC+5n9Wkho2vt+zQJbUtGqR2RYG0xNc/L7GoxKffYzhzlUDh+K0CLbko=
-X-Gm-Message-State: AOJu0Yx8BUeQWp+XwlqxY5RTuO7MV3jhp9IABYzvKL1iwSMXM2GLjzxR
-	tN6NqVgMlNC4KI/3FyVuzDmPBP9jZoIMv794xnJa+1/yB7TEJXijX2NRotF/kEklvMwFHyKwEST
-	PVg==
-X-Google-Smtp-Source: AGHT+IGo0nBr4OMWeDQdXO7gLmA8943vaa7AUjGpvpzDg1f7Z8BrI79oFtF9sCT7oXO1KDCB6pUDmCcxQng=
+        d=1e100.net; s=20230601; t=1719271741; x=1719876541;
+        h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
+         :date:x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=3FvMNQZepmevKVYCWA5Mvt/tIAvZEAV28z8ZXGZ1r5A=;
+        b=BEb1DubOgiR1k7oEJK5OutPO3oElddQfhZrH9iuug4cJjn/4uZDESM+gc21pn7VPIq
+         AWsg1gJ7lE/AkBTLQvLH8BL8pM9iK6ld4I+DDJ6onyeg+XhHNm9TMIMwNYPiNRvp3e2b
+         bNOqNvnultc+SiIZ5DPkZ0dJM9C7tXA9OH4b3ixcH6d73MxNCUprzKMJqnE6N4YyCis7
+         hkHRun+kN9kL3dfuE/jJm+Tt90bl0eA8oWDzvZcDxn3pXop7KNlDbn4kVqObbCDFBkcw
+         YZPLReKAg03wvejsMMXv31PgtT8OEgnD7ij+49GR1zifnXSdYjmY8WvFWs1n1BHrAmNF
+         L7wA==
+X-Forwarded-Encrypted: i=1; AJvYcCVKFrhuUC9RuXcW9D6n7uuFi7UVOuiM9M8gTtbIyJkJm/OvZPpKGRHZxxLq3T8njrh85Md/I34+Xo3uPWgKh14oCfxekOk=
+X-Gm-Message-State: AOJu0Yyl3eMtDFdDf70H9pYarMTjmiamXsaH+KmlTAMPrjNZ0GhFXp5t
+	PB3oGMId4yHSslAEYmRcrghzo/FSUfE6W1RJDG1vuKpSOaeQjM+DanGjBh0vC9SYxOJ7lG4EeIB
+	Fyw==
+X-Google-Smtp-Source: AGHT+IEk+3lC5zdyxifyt4ii+6a16n1y8uZeO7DOAPkbXtiVBPE0qfgp7g0LpuESyv8BZuXBXF4M/RvaOF4=
 X-Received: from edliaw.c.googlers.com ([fda3:e722:ac3:cc00:24:72f4:c0a8:305d])
- (user=edliaw job=sendgmr) by 2002:a05:6902:1081:b0:dff:4788:ea88 with SMTP id
- 3f1490d57ef6-e0303d692f7mr20462276.0.1719271735356; Mon, 24 Jun 2024 16:28:55
- -0700 (PDT)
-Date: Mon, 24 Jun 2024 23:26:09 +0000
+ (user=edliaw job=sendgmr) by 2002:a05:6a02:4a7:b0:655:199c:eb1b with SMTP id
+ 41be03b00d2f7-71b5fe10537mr20071a12.10.1719271741168; Mon, 24 Jun 2024
+ 16:29:01 -0700 (PDT)
+Date: Mon, 24 Jun 2024 23:26:10 +0000
+In-Reply-To: <20240624232718.1154427-1-edliaw@google.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 Mime-Version: 1.0
+References: <20240624232718.1154427-1-edliaw@google.com>
 X-Mailer: git-send-email 2.45.2.741.gdbec12cfda-goog
-Message-ID: <20240624232718.1154427-1-edliaw@google.com>
-Subject: [PATCH v6 00/13] Centralize _GNU_SOURCE definition into lib.mk
+Message-ID: <20240624232718.1154427-2-edliaw@google.com>
+Subject: [PATCH v6 01/13] selftests/mm: Define _GNU_SOURCE to an empty string
 From: Edward Liaw <edliaw@google.com>
 To: linux-kselftest@vger.kernel.org, Eric Biederman <ebiederm@xmission.com>, 
 	Kees Cook <kees@kernel.org>, Shuah Khan <shuah@kernel.org>, Thomas Gleixner <tglx@linutronix.de>, 
@@ -77,78 +80,27 @@ Cc: linux-kernel@vger.kernel.org, usama.anjum@collabora.com, seanjc@google.com,
 	linux-sgx@vger.kernel.org
 Content-Type: text/plain; charset="UTF-8"
 
-Centralizes the definition of _GNU_SOURCE into lib.mk and addresses all
-resulting macro redefinition warnings.
+Use the more common "#define _GNU_SOURCE" instead of defining it to 1.
+This will prevent redefinition warnings when -D_GNU_SOURCE= is set.
 
-These patches will need to be merged in one shot to avoid redefinition
-warnings.
+Signed-off-by: Edward Liaw <edliaw@google.com>
+---
+ tools/testing/selftests/mm/thuge-gen.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-The initial attempt at this patch was abandoned because it affected
-lines in many source files and caused a large amount of churn. However,
-from earlier discussions, centralizing _GNU_SOURCE is still desireable.
-This attempt limits the changes to 1 source file and 12 Makefiles.
-
-v1: https://lore.kernel.org/linux-kselftest/20240430235057.1351993-1-edliaw@google.com/
-v2: https://lore.kernel.org/linux-kselftest/20240507214254.2787305-1-edliaw@google.com/
- - Add -D_GNU_SOURCE to KHDR_INCLUDES so that it is in a single
-   location.
- - Remove #define _GNU_SOURCE from source code to resolve redefinition
-   warnings.
-v3: https://lore.kernel.org/linux-kselftest/20240509200022.253089-1-edliaw@google.com/
- - Rebase onto linux-next 20240508.
- - Split patches by directory.
- - Add -D_GNU_SOURCE directly to CFLAGS in lib.mk.
- - Delete additional _GNU_SOURCE definitions from source code in
-   linux-next.
- - Delete additional -D_GNU_SOURCE flags from Makefiles.
-v4: https://lore.kernel.org/linux-kselftest/20240510000842.410729-1-edliaw@google.com/
- - Rebase onto linux-next 20240509.
- - Remove Fixes tag from patches that drop _GNU_SOURCE definition.
- - Restore space between comment and includes for selftests/damon.
-v5: https://lore.kernel.org/linux-kselftest/20240522005913.3540131-1-edliaw@google.com/
- - Rebase onto linux-next 20240521
- - Drop initial patches that modify KHDR_INCLUDES.
- - Incorporate Mark Brown's patch to replace static_assert with warning.
- - Don't drop #define _GNU_SOURCE from nolibc and wireguard.
- - Change Makefiles for x86 and vDSO to append to CFLAGS.
-v6:
- - Rewrite patch to use -D_GNU_SOURCE= form in lib.mk.
- - Reduce the amount of churn significantly by allowing definition to
-   coexist with source code macro defines.
-
-
-Edward Liaw (13):
-  selftests/mm: Define _GNU_SOURCE to an empty string
-  selftests: Add -D_GNU_SOURCE= to CFLAGS in lib.mk
-  selftests/net: Append to lib.mk CFLAGS in Makefile
-  selftests/exec: Drop redundant -D_GNU_SOURCE CFLAGS in Makefile
-  selftests/futex: Drop redundant -D_GNU_SOURCE CFLAGS in Makefile
-  selftests/intel_pstate: Drop redundant -D_GNU_SOURCE CFLAGS in
-    Makefile
-  selftests/iommu: Drop redundant -D_GNU_SOURCE CFLAGS in Makefile
-  selftests/kvm: Drop redundant -D_GNU_SOURCE CFLAGS in Makefile
-  selftests/proc: Drop redundant -D_GNU_SOURCE CFLAGS in Makefile
-  selftests/resctrl: Drop redundant -D_GNU_SOURCE CFLAGS in Makefile
-  selftests/ring-buffer: Drop redundant -D_GNU_SOURCE CFLAGS in Makefile
-  selftests/riscv: Drop redundant -D_GNU_SOURCE CFLAGS in Makefile
-  selftests/sgx: Append CFLAGS from lib.mk to HOST_CFLAGS
-
- tools/testing/selftests/exec/Makefile             | 1 -
- tools/testing/selftests/futex/functional/Makefile | 2 +-
- tools/testing/selftests/intel_pstate/Makefile     | 2 +-
- tools/testing/selftests/iommu/Makefile            | 2 --
- tools/testing/selftests/kvm/Makefile              | 2 +-
- tools/testing/selftests/lib.mk                    | 3 +++
- tools/testing/selftests/mm/thuge-gen.c            | 2 +-
- tools/testing/selftests/net/Makefile              | 2 +-
- tools/testing/selftests/net/tcp_ao/Makefile       | 2 +-
- tools/testing/selftests/proc/Makefile             | 1 -
- tools/testing/selftests/resctrl/Makefile          | 2 +-
- tools/testing/selftests/ring-buffer/Makefile      | 1 -
- tools/testing/selftests/riscv/mm/Makefile         | 2 +-
- tools/testing/selftests/sgx/Makefile              | 2 +-
- 14 files changed, 12 insertions(+), 14 deletions(-)
-
---
+diff --git a/tools/testing/selftests/mm/thuge-gen.c b/tools/testing/selftests/mm/thuge-gen.c
+index d50dc71cac32..e4370b79b62f 100644
+--- a/tools/testing/selftests/mm/thuge-gen.c
++++ b/tools/testing/selftests/mm/thuge-gen.c
+@@ -13,7 +13,7 @@
+    sudo ipcs | awk '$1 == "0x00000000" {print $2}' | xargs -n1 sudo ipcrm -m
+    (warning this will remove all if someone else uses them) */
+ 
+-#define _GNU_SOURCE 1
++#define _GNU_SOURCE
+ #include <sys/mman.h>
+ #include <linux/mman.h>
+ #include <stdlib.h>
+-- 
 2.45.2.741.gdbec12cfda-goog
 
