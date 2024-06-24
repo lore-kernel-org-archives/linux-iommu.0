@@ -1,641 +1,154 @@
-Received: from mail134-3.atl141.mandrillapp.com (mail134-3.atl141.mandrillapp.com [198.2.134.3])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D3D6D19AD45
-	for <iommu@lists.linux.dev>; Mon, 24 Jun 2024 14:36:46 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.2.134.3
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0857619B3DA;
+	Mon, 24 Jun 2024 15:14:07 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1719239809; cv=none; b=t0RzWpt0hSbamJUM6b5amC5Ja94slwJKuml+ScUdlAWLOQBB9wV9LRICqiL5upS5A5QakRKdtK07TuXnQlGJEllA96bjeNs2rj/bskxjVkQElkJsabHST7TW4WZKfnbwEfiNj5aO/EQYhkXGT8w2FDjl0UlDtGWcbHJOUiH03MQ=
+	t=1719242048; cv=none; b=lZDTiaQOBuvErrH6Hg+LlLqVM4FbxtY+lRh30VU8iqT1yeMsVKeFe1adA5I6SStZ+Foc3XgpFbtw7qohV3sVt8/3+Z9aFyv5yC4hJNoKTozdSPR++7xBI94ZVnDUYnPS1qH8lbABJY6h4x5rnte5ntEyoxlu9nE03mjOjPW2+I8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1719239809; c=relaxed/simple;
-	bh=i9aP7WDWDbAhTEl98QKeWS/Nk+Di8WIF9pEu+2EHyEo=;
-	h=From:Subject:Message-Id:To:Cc:References:In-Reply-To:Date:
-	 MIME-Version:Content-Type; b=fKK+/Krexp42cFti5nqjTlVUqRmVITjC5MeTaBV62qO0bxJbXSBweE9NvyEUqXyUwRgeJx63dWTCAMbWu0D95/Zy2RY+rMmKkoaSOlVklXbln5mAxhv8LvJY60DCrBlWU/qFbAgYUmOaAJnWqOmaVNRB9KX2D5Jk6iPg+pypZUw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=vates.tech; spf=pass smtp.mailfrom=bounce.vates.tech; dkim=pass (2048-bit key) header.d=mandrillapp.com header.i=@mandrillapp.com header.b=vNADMY8a; dkim=pass (2048-bit key) header.d=vates.tech header.i=teddy.astie@vates.tech header.b=t9lZTdGX; arc=none smtp.client-ip=198.2.134.3
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=vates.tech
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=bounce.vates.tech
+	s=arc-20240116; t=1719242048; c=relaxed/simple;
+	bh=JrUnbyM+q1c3z7DUj0a7qxZEmOleJaUA+Pprv4ibD0g=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=dBhCiR2NzSK2tdx4MBCigs3C9GZr9njla3FrOLrD/4AA6ZcWi8lwfvuccFBdluL71SBop6QH88Y1LmP1bcN8cHHWErgqDSBfvzk1nunGHcm8VPKCx1zhJOIQt6DF/HXh5oNCnFnOE+o0XSsANVe2P75zfdw8LQgN/CIeYsUt0P0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=b2Y8qh2k; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=mandrillapp.com header.i=@mandrillapp.com header.b="vNADMY8a";
-	dkim=pass (2048-bit key) header.d=vates.tech header.i=teddy.astie@vates.tech header.b="t9lZTdGX"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=mandrillapp.com;
-	s=mte1; t=1719239805; x=1719500305;
-	bh=TZaaytuqYIwSbyX0zplkdr+dJA1t8O/nak39rKgZu4U=;
-	h=From:Subject:Message-Id:To:Cc:References:In-Reply-To:Feedback-ID:
-	 Date:MIME-Version:Content-Type:Content-Transfer-Encoding:CC:Date:
-	 Subject:From;
-	b=vNADMY8a8ilLpZP47DqmyR3xwBgyYqE7FqgNcT88J1Nfjb2M30v6/Kh24otdQONfo
-	 zz4VBBXn8XNUxbRn99inusHnY99Z4b6Frk/MY8fIN3jTL7mQkaOMBYykYGpiXswU3o
-	 Q5WWEkQHTA666BJyHJ2znOB/Wiuty8/8xw/+iZTIDsoV7vzWM5xltEFAcMBW92lLbk
-	 VGE7TyJAUBHGajAuhw0bQ3ZPz8BsurSZ6EIhlmLMAfj7fv4h7k2UKofI04fOs2nmWH
-	 /3EyPasS9cndMZby8uEWmdqg5Jix5mL5p3UJ4BtAPqZ50teq6F5cBfFvJtbiaNDzlT
-	 hz7svfqnELXjQ==
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=vates.tech; s=mte1;
-	t=1719239805; x=1719500305; i=teddy.astie@vates.tech;
-	bh=TZaaytuqYIwSbyX0zplkdr+dJA1t8O/nak39rKgZu4U=;
-	h=From:Subject:Message-Id:To:Cc:References:In-Reply-To:Feedback-ID:
-	 Date:MIME-Version:Content-Type:Content-Transfer-Encoding:CC:Date:
-	 Subject:From;
-	b=t9lZTdGXl5EQWQTJw/Goc1ev8P0zsz9sE8foihPlFsjjtaFgggDxTqnA9k4S4gA88
-	 WNYGfastskMEIJOnaMyMscaZgi4QXXnLzluB76wcTLQSSLUk+tvIvP9CQmht//WUvw
-	 SXdAsVWnqhaBy+bfh7yB0UkbxwDdjoH/VO69m3Q2fUqh915mzWs0nlgMzNzPrq1j+G
-	 xXAuD9gP8VROU7SpZWKHOs852/fw4gUH0LciKQIFS3MK/xhHAPxFBU1+TjGFTdsPrM
-	 e/1be1tXpp5QRlK2LbAcryIGTq/SoARpdCBJXoJzY6MrAubpF22yB4ad3TqWHkX1Bf
-	 A/uJuuMH+32lA==
-Received: from pmta10.mandrill.prod.atl01.rsglab.com (localhost [127.0.0.1])
-	by mail134-3.atl141.mandrillapp.com (Mailchimp) with ESMTP id 4W79Wx2zQGzDRHxQ4
-	for <iommu@lists.linux.dev>; Mon, 24 Jun 2024 14:36:45 +0000 (GMT)
-From: Teddy Astie <teddy.astie@vates.tech>
-Subject: =?utf-8?Q?Re:=20[RFC=20PATCH=20v2]=20iommu/xen:=20Add=20Xen=20PV-IOMMU=20driver?=
-Received: from [37.26.189.201] by mandrillapp.com id 74a883a0b7d84bc9b80449287591f6a5; Mon, 24 Jun 2024 14:36:45 +0000
-X-Bm-Disclaimer: Yes
-X-Bm-Milter-Handled: 4ffbd6c1-ee69-4e1b-aabd-f977039bd3e2
-X-Bm-Transport-Timestamp: 1719239803489
-Message-Id: <a04e169d-b38a-43dc-b783-a8af1e1b0468@vates.tech>
-To: Robin Murphy <robin.murphy@arm.com>, xen-devel@lists.xenproject.org, iommu@lists.linux.dev
-Cc: Juergen Gross <jgross@suse.com>, Stefano Stabellini <sstabellini@kernel.org>, Oleksandr Tyshchenko <oleksandr_tyshchenko@epam.com>, Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>, =?utf-8?Q?Marek=20Marczykowski-G=C3=B3recki?= <marmarek@invisiblethingslab.com>
-References: <24d7ec005e77e4e0127995ba6f4ad16f33737fa5.1718981216.git.teddy.astie@vates.tech> <da3ec316-b001-4711-b323-70af3e6bb014@arm.com>
-In-Reply-To: <da3ec316-b001-4711-b323-70af3e6bb014@arm.com>
-X-Native-Encoded: 1
-X-Report-Abuse: =?UTF-8?Q?Please=20forward=20a=20copy=20of=20this=20message,=20including=20all=20headers,=20to=20abuse@mandrill.com.=20You=20can=20also=20report=20abuse=20here:=20https://mandrillapp.com/contact/abuse=3Fid=3D30504962.74a883a0b7d84bc9b80449287591f6a5?=
-X-Mandrill-User: md_30504962
-Feedback-ID: 30504962:30504962.20240624:md
-Date: Mon, 24 Jun 2024 14:36:45 +0000
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="b2Y8qh2k"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2B460C32789;
+	Mon, 24 Jun 2024 15:14:05 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1719242047;
+	bh=JrUnbyM+q1c3z7DUj0a7qxZEmOleJaUA+Pprv4ibD0g=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=b2Y8qh2kUAE14ni+F6sttsOgX0qSTbQdpBDBuXgf074tDaOKsndopIqOqZ9uWCa0B
+	 BrXaucEOqeIZUwC9oaSjhq7jUU/zpYS9Z+PsSzOFyck7oEasH1mUU2xPxx+YzjM68O
+	 K3QNVUQkn25yMDLQe3dGSWk+XO+1w65xWgKZmNKAVV+s1Gcxy8tjGgw1gHHHF9NE/j
+	 P6vYP6bLXUyyYfjB/7uru8JWVbAHFu7UGqu6URItSy/b3+QpNoRTcdgx+CiH/KYT2W
+	 qYJfklHIpEjOU4XstNt9Xt7YAJberUNKrX+2rj/liCs5hFrUh8qTUlDRt7ofGmjfR9
+	 uJWjt0rj4JBLA==
+Date: Mon, 24 Jun 2024 16:14:01 +0100
+From: Will Deacon <will@kernel.org>
+To: Rob Clark <robdclark@gmail.com>
+Cc: dri-devel@lists.freedesktop.org, linux-arm-msm@vger.kernel.org,
+	freedreno@lists.freedesktop.org, Rob Clark <robdclark@chromium.org>,
+	Robin Murphy <robin.murphy@arm.com>, Joerg Roedel <joro@8bytes.org>,
+	Jason Gunthorpe <jgg@ziepe.ca>,
+	Boris Brezillon <boris.brezillon@collabora.com>,
+	Kevin Tian <kevin.tian@intel.com>,
+	Joao Martins <joao.m.martins@oracle.com>,
+	"moderated list:ARM SMMU DRIVERS" <linux-arm-kernel@lists.infradead.org>,
+	"open list:IOMMU SUBSYSTEM" <iommu@lists.linux.dev>,
+	open list <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH v4 1/2] iommu/io-pgtable-arm: Add way to debug pgtable
+ walk
+Message-ID: <20240624151401.GB8706@willie-the-truck>
+References: <20240523175227.117984-1-robdclark@gmail.com>
+ <20240523175227.117984-2-robdclark@gmail.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20240523175227.117984-2-robdclark@gmail.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 
-Hello Robin,
-Thanks for the thourough review.
-
->> diff --git a/drivers/iommu/Kconfig b/drivers/iommu/Kconfig
->> index 0af39bbbe3a3..242cefac77c9 100644
->> --- a/drivers/iommu/Kconfig
->> +++ b/drivers/iommu/Kconfig
->> @@ -480,6 +480,15 @@ config VIRTIO_IOMMU
->> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 Say Y here if you intend to r=
-un this kernel as a guest.
->> +config XEN_IOMMU
->> +=C2=A0=C2=A0=C2=A0 bool "Xen IOMMU driver"
->> +=C2=A0=C2=A0=C2=A0 depends on XEN_DOM0
+On Thu, May 23, 2024 at 10:52:21AM -0700, Rob Clark wrote:
+> From: Rob Clark <robdclark@chromium.org>
 > 
-> Clearly this depends on X86 as well.
+> Add an io-pgtable method to walk the pgtable returning the raw PTEs that
+> would be traversed for a given iova access.
 > 
-Well, I don't intend this driver to be X86-only, even though the current 
-Xen RFC doesn't support ARM (yet). Unless there is a counter-indication 
-for it ?
-
->> +#include <linux/kernel.h>
->> +#include <linux/init.h>
->> +#include <linux/types.h>
->> +#include <linux/iommu.h>
->> +#include <linux/dma-map-ops.h>
+> Signed-off-by: Rob Clark <robdclark@chromium.org>
+> ---
+>  drivers/iommu/io-pgtable-arm.c | 51 ++++++++++++++++++++++++++++------
+>  include/linux/io-pgtable.h     |  4 +++
+>  2 files changed, 46 insertions(+), 9 deletions(-)
 > 
-> Please drop this; it's a driver, not a DMA ops implementation.
-> 
-Sure, in addition to some others unneeded headers.
+> diff --git a/drivers/iommu/io-pgtable-arm.c b/drivers/iommu/io-pgtable-arm.c
+> index f7828a7aad41..f47a0e64bb35 100644
+> --- a/drivers/iommu/io-pgtable-arm.c
+> +++ b/drivers/iommu/io-pgtable-arm.c
+> @@ -693,17 +693,19 @@ static size_t arm_lpae_unmap_pages(struct io_pgtable_ops *ops, unsigned long iov
+>  				data->start_level, ptep);
+>  }
+>  
+> -static phys_addr_t arm_lpae_iova_to_phys(struct io_pgtable_ops *ops,
+> -					 unsigned long iova)
+> +static int arm_lpae_pgtable_walk(struct io_pgtable_ops *ops, unsigned long iova,
+> +			int (*cb)(void *cb_data, void *pte, int level),
+> +			void *cb_data)
+>  {
+>  	struct arm_lpae_io_pgtable *data = io_pgtable_ops_to_data(ops);
+>  	arm_lpae_iopte pte, *ptep = data->pgd;
+>  	int lvl = data->start_level;
+> +	int ret;
+>  
+>  	do {
+>  		/* Valid IOPTE pointer? */
+>  		if (!ptep)
+> -			return 0;
+> +			return -EFAULT;
 
->> +#include <linux/pci.h>
->> +#include <linux/list.h>
->> +#include <linux/string.h>
->> +#include <linux/device/driver.h>
->> +#include <linux/slab.h>
->> +#include <linux/err.h>
->> +#include <linux/printk.h>
->> +#include <linux/stddef.h>
->> +#include <linux/spinlock.h>
->> +#include <linux/minmax.h>
->> +#include <linux/string.h>
->> +#include <asm/iommu.h>
->> +
->> +#include <xen/xen.h>
->> +#include <xen/page.h>
->> +#include <xen/interface/memory.h>
->> +#include <xen/interface/physdev.h>
->> +#include <xen/interface/pv-iommu.h>
->> +#include <asm/xen/hypercall.h>
->> +#include <asm/xen/page.h>
->> +
->> +MODULE_DESCRIPTION("Xen IOMMU driver");
->> +MODULE_AUTHOR("Teddy Astie <teddy.astie@vates.tech>");
->> +MODULE_LICENSE("GPL");
->> +
->> +#define MSI_RANGE_START=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 (0xfe=
-e00000)
->> +#define MSI_RANGE_END=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 (0xfeef=
-ffff)
->> +
->> +#define XEN_IOMMU_PGSIZES=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 (0x1000)
->> +
->> +struct xen_iommu_domain {
->> +=C2=A0=C2=A0=C2=A0 struct iommu_domain domain;
->> +
->> +=C2=A0=C2=A0=C2=A0 u16 ctx_no; /* Xen PV-IOMMU context number */
->> +};
->> +
->> +static struct iommu_device xen_iommu_device;
->> +
->> +static uint32_t max_nr_pages;
->> +static uint64_t max_iova_addr;
->> +
->> +static spinlock_t lock;
-> 
-> Not a great name - usually it's good to name a lock after what it 
-> protects. Although perhaps it is already, since AFAICS this isn't 
-> actually used anywhere anyway.
-> 
+nit: -ENOENT might be a little better, as we're only checking against a
+NULL entry rather than strictly any faulting entry.
 
-Yes, that shouldn't be there.
+>  		/* Grab the IOPTE we're interested in */
+>  		ptep += ARM_LPAE_LVL_IDX(iova, lvl, data);
+> @@ -711,22 +713,52 @@ static phys_addr_t arm_lpae_iova_to_phys(struct io_pgtable_ops *ops,
+>  
+>  		/* Valid entry? */
+>  		if (!pte)
+> -			return 0;
+> +			return -EFAULT;
 
->> +static inline struct xen_iommu_domain *to_xen_iommu_domain(struct 
->> iommu_domain *dom)
->> +{
->> +=C2=A0=C2=A0=C2=A0 return container_of(dom, struct xen_iommu_domain, do=
-main);
->> +}
->> +
->> +static inline u64 addr_to_pfn(u64 addr)
->> +{
->> +=C2=A0=C2=A0=C2=A0 return addr >> 12;
->> +}
->> +
->> +static inline u64 pfn_to_addr(u64 pfn)
->> +{
->> +=C2=A0=C2=A0=C2=A0 return pfn << 12;
->> +}
->> +
->> +bool xen_iommu_capable(struct device *dev, enum iommu_cap cap)
->> +{
->> +=C2=A0=C2=A0=C2=A0 switch (cap) {
->> +=C2=A0=C2=A0=C2=A0 case IOMMU_CAP_CACHE_COHERENCY:
->> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 return true;
-> 
-> Will the PV-IOMMU only ever be exposed on hardware where that really is 
-> always true?
-> 
+Same here (and at the end of the function).
 
-On the hypervisor side, the PV-IOMMU interface always implicitely flush 
-the IOMMU hardware on map/unmap operation, so at the end of the 
-hypercall, the cache should be always coherent IMO.
+> +
+> +		ret = cb(cb_data, &pte, lvl);
 
->> +
->> +static struct iommu_device *xen_iommu_probe_device(struct device *dev)
->> +{
->> +=C2=A0=C2=A0=C2=A0 if (!dev_is_pci(dev))
->> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 return ERR_PTR(-ENODEV);
->> +
->> +=C2=A0=C2=A0=C2=A0 return &xen_iommu_device;
-> 
-> Even emulated PCI devices have to have an (emulated, presumably) IOMMU?
-> 
+Since pte is on the stack, rather than pointing into the actual pgtable,
+I think it would be clearer to pass it by value to the callback.
 
-No and that's indeed one thing to check.
+> +		if (ret)
+> +			return ret;
+>  
+> -		/* Leaf entry? */
+> +		/* Leaf entry?  If so, we've found the translation */
+>  		if (iopte_leaf(pte, lvl, data->iop.fmt))
+> -			goto found_translation;
+> +			return 0;
+>  
+>  		/* Take it to the next level */
+>  		ptep = iopte_deref(pte, data);
+>  	} while (++lvl < ARM_LPAE_MAX_LEVELS);
+>  
+>  	/* Ran out of page tables to walk */
+> +	return -EFAULT;
+> +}
+> +
+> +struct iova_to_phys_walk_data {
+> +	arm_lpae_iopte pte;
+> +	int level;
+> +};
 
->> +}
->> +
->> +static void xen_iommu_probe_finalize(struct device *dev)
->> +{
->> +=C2=A0=C2=A0=C2=A0 set_dma_ops(dev, NULL);
->> +=C2=A0=C2=A0=C2=A0 iommu_setup_dma_ops(dev, 0, max_iova_addr);
-> 
+Expanding a little on Robin's suggestion, why don't we drop this structure
+in favour of something more generic:
 
-That got changed in 6.10, good to know that this code is not required 
-anymore.
+	struct arm_lpae_walk_data {
+		arm_lpae_iopte ptes[ARM_LPAE_MAX_LEVELS];
+	};
 
-> 
->> +}
->> +
->> +static int xen_iommu_map_pages(struct iommu_domain *domain, unsigned 
->> long iova,
->> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
-=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 phys_addr_t paddr, size_t pgsize, s=
-ize_t pgcount,
->> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
-=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 int prot, gfp_t gfp, size_t *mapped=
-)
->> +{
->> +=C2=A0=C2=A0=C2=A0 size_t xen_pg_count =3D (pgsize / XEN_PAGE_SIZE) * p=
-gcount;
-> 
-> You only advertise the one page size, so you'll always get that back, 
-> and this seems a bit redundant.
-> 
+and then do something in the walker like:
 
-Yes
+	if (cb && !cb(pte, lvl))
+		walk_data->ptes[lvl] = pte;
 
->> +=C2=A0=C2=A0=C2=A0 struct xen_iommu_domain *dom =3D to_xen_iommu_domain=
-(domain);
->> +=C2=A0=C2=A0=C2=A0 struct pv_iommu_op op =3D {
->> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 .subop_id =3D IOMMUOP_map_pa=
-ges,
->> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 .flags =3D 0,
->> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 .ctx_no =3D dom->ctx_no
->> +=C2=A0=C2=A0=C2=A0 };
->> +=C2=A0=C2=A0=C2=A0 /* NOTE: paddr is actually bound to pfn, not gfn */
->> +=C2=A0=C2=A0=C2=A0 uint64_t pfn =3D addr_to_pfn(paddr);
->> +=C2=A0=C2=A0=C2=A0 uint64_t dfn =3D addr_to_pfn(iova);
->> +=C2=A0=C2=A0=C2=A0 int ret =3D 0;
->> +
->> +=C2=A0=C2=A0=C2=A0 //pr_info("Mapping to %lx %zu %zu paddr %x\n", iova,=
- pgsize, 
->> pgcount, paddr);
-> 
-> Please try to clean up debugging leftovers before posting the patch (but 
-> also note that there are already tracepoints and debug messages which 
-> can be enabled in the core code to give visibility of most of this.)
-> 
+which could return the physical address at the end, if it reaches a leaf
+entry. That way arm_lpae_iova_to_phys() is just passing a NULL callback
+to the walker and your debug callback just needs to return 0 (i.e. the
+callback is basically just saying whether or not to continue the walk).
 
-Yes
-
->> +
->> +=C2=A0=C2=A0=C2=A0 if (prot & IOMMU_READ)
->> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 op.flags |=3D IOMMU_OP_reada=
-ble;
->> +
->> +=C2=A0=C2=A0=C2=A0 if (prot & IOMMU_WRITE)
->> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 op.flags |=3D IOMMU_OP_write=
-able;
->> +
->> +=C2=A0=C2=A0=C2=A0 while (xen_pg_count) {
-> 
-> Unless you're super-concerned about performance already, you don't 
-> really need to worry about looping here - you can happily return short 
-> as long as you've mapped *something*, and the core code will call you 
-> back again with the remainder. But it also doesn't complicate things 
-> *too* much as it is, so feel free to leave it in if you want to.
-> 
-
-Ok
-
->> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 size_t to_map =3D min(xen_pg=
-_count, max_nr_pages);
->> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 uint64_t gfn =3D pfn_to_gfn(=
-pfn);
->> +
->> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 //pr_info("Mapping %lx-%lx a=
-t %lx-%lx\n", gfn, gfn + to_map - 
->> 1, dfn, dfn + to_map - 1);
->> +
->> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 op.map_pages.gfn =3D gfn;
->> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 op.map_pages.dfn =3D dfn;
->> +
->> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 op.map_pages.nr_pages =3D to=
-_map;
->> +
->> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 ret =3D HYPERVISOR_iommu_op(=
-&op);
->> +
->> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 //pr_info("map_pages.mapped =
-=3D %u\n", op.map_pages.mapped);
->> +
->> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 if (mapped)
->> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 *map=
-ped +=3D XEN_PAGE_SIZE * op.map_pages.mapped;
->> +
->> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 if (ret)
->> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 brea=
-k;
->> +
->> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 xen_pg_count -=3D to_map;
->> +
->> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 pfn +=3D to_map;
->> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 dfn +=3D to_map;
->> +=C2=A0=C2=A0=C2=A0 }
->> +
->> +=C2=A0=C2=A0=C2=A0 return ret;
->> +}
->> +
->> +static size_t xen_iommu_unmap_pages(struct iommu_domain *domain, 
->> unsigned long iova,
->> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
-=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 size_t pgsize, size_t pgcount=
-,
->> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
-=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 struct iommu_iotlb_gather *io=
-tlb_gather)
->> +{
->> +=C2=A0=C2=A0=C2=A0 size_t xen_pg_count =3D (pgsize / XEN_PAGE_SIZE) * p=
-gcount;
->> +=C2=A0=C2=A0=C2=A0 struct xen_iommu_domain *dom =3D to_xen_iommu_domain=
-(domain);
->> +=C2=A0=C2=A0=C2=A0 struct pv_iommu_op op =3D {
->> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 .subop_id =3D IOMMUOP_unmap_=
-pages,
->> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 .ctx_no =3D dom->ctx_no,
->> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 .flags =3D 0,
->> +=C2=A0=C2=A0=C2=A0 };
->> +=C2=A0=C2=A0=C2=A0 uint64_t dfn =3D addr_to_pfn(iova);
->> +=C2=A0=C2=A0=C2=A0 int ret =3D 0;
->> +
->> +=C2=A0=C2=A0=C2=A0 if (WARN(!dom->ctx_no, "Tried to unmap page to defau=
-lt context"))
->> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 return -EINVAL;
-> 
-> This would go hilariously wrong... the return value here is bytes 
-> successfully unmapped, a total failure should return 0.
-
-This check is not useful as the core code is never going to call it on 
-this domain.
-
-> 
->> +=C2=A0=C2=A0=C2=A0 while (xen_pg_count) {
->> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 size_t to_unmap =3D min(xen_=
-pg_count, max_nr_pages);
->> +
->> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 //pr_info("Unmapping %lx-%lx=
-\n", dfn, dfn + to_unmap - 1);
->> +
->> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 op.unmap_pages.dfn =3D dfn;
->> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 op.unmap_pages.nr_pages =3D =
-to_unmap;
->> +
->> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 ret =3D HYPERVISOR_iommu_op(=
-&op);
->> +
->> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 if (ret)
->> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 pr_w=
-arn("Unmap failure (%lx-%lx)\n", dfn, dfn + to_unmap 
->> - 1);
-> 
-> But then how 
->> would it ever happen anyway? Unmap is a domain op, so a domain which 
->> doesn't allow unmapping shouldn't offer it in the first place...
-
-Unmap failing should be exceptionnal, but is possible e.g with 
-transparent superpages (like Xen IOMMU drivers do). Xen drivers folds 
-appropriate contiguous mappings into superpages entries to optimize 
-memory usage and iotlb. However, if you unmap in the middle of a region 
-covered by a superpage entry, this is no longer a valid superpage entry, 
-and you need to allocate and fill the lower levels, which is faillible 
-if lacking memory.
-
-> In this case I'd argue that you really *do* want to return short, in the 
-> hope of propagating the error back up and letting the caller know the 
-> address space is now messed up before things start blowing up even more 
-> if they keep going and subsequently try to map new pages into 
-> not-actually-unmapped VAs.
-
-While mapping on top of another mapping is ok for us (it's just going to 
-override the previous mapping), I definetely agree that having the 
-address space messed up is not good.
-
-> 
->> +
->> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 xen_pg_count -=3D to_unmap;
->> +
->> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 dfn +=3D to_unmap;
->> +=C2=A0=C2=A0=C2=A0 }
->> +
->> +=C2=A0=C2=A0=C2=A0 return pgcount * pgsize;
->> +}
->> +
->> +int xen_iommu_attach_dev(struct iommu_domain *domain, struct device 
->> *dev)
->> +{
->> +=C2=A0=C2=A0=C2=A0 struct pci_dev *pdev;
->> +=C2=A0=C2=A0=C2=A0 struct xen_iommu_domain *dom =3D to_xen_iommu_domain=
-(domain);
->> +=C2=A0=C2=A0=C2=A0 struct pv_iommu_op op =3D {
->> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 .subop_id =3D IOMMUOP_reatta=
-ch_device,
->> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 .flags =3D 0,
->> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 .ctx_no =3D dom->ctx_no,
->> +=C2=A0=C2=A0=C2=A0 };
->> +
->> +=C2=A0=C2=A0=C2=A0 pdev =3D to_pci_dev(dev);
->> +
->> +=C2=A0=C2=A0=C2=A0 op.reattach_device.dev.seg =3D pci_domain_nr(pdev->b=
-us);
->> +=C2=A0=C2=A0=C2=A0 op.reattach_device.dev.bus =3D pdev->bus->number;
->> +=C2=A0=C2=A0=C2=A0 op.reattach_device.dev.devfn =3D pdev->devfn;
->> +
->> +=C2=A0=C2=A0=C2=A0 return HYPERVISOR_iommu_op(&op);
->> +}
->> +
->> +static void xen_iommu_free(struct iommu_domain *domain)
->> +{
->> +=C2=A0=C2=A0=C2=A0 int ret;
->> +=C2=A0=C2=A0=C2=A0 struct xen_iommu_domain *dom =3D to_xen_iommu_domain=
-(domain);
->> +
->> +=C2=A0=C2=A0=C2=A0 if (dom->ctx_no !=3D 0) {
-> 
-> Much like unmap above, this not being true would imply that someone's 
-> managed to go round the back of the core code to get the .free op from a 
-> validly-allocated domain and then pass something other than that domain 
-> to it. Personally I'd consider that a level of brokenness that's not 
-> even worth trying to consider at all, but if you want to go as far as 
-> determining that you *have* clearly been given something you couldn't 
-> have allocated, then trying to kfree() it probably isn't wise either.
-> 
-
-Yes
-
->> +
->> +static int default_domain_attach_dev(struct iommu_domain *domain,
->> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
-=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 struct device *dev)
->> +{
->> +=C2=A0=C2=A0=C2=A0 int ret;
->> +=C2=A0=C2=A0=C2=A0 struct pci_dev *pdev;
->> +=C2=A0=C2=A0=C2=A0 struct pv_iommu_op op =3D {
->> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 .subop_id =3D IOMMUOP_reatta=
-ch_device,
->> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 .flags =3D 0,
->> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 .ctx_no =3D 0 /* reattach de=
-vice back to default context */
->> +=C2=A0=C2=A0=C2=A0 };
->> +
->> +=C2=A0=C2=A0=C2=A0 pdev =3D to_pci_dev(dev);
->> +
->> +=C2=A0=C2=A0=C2=A0 op.reattach_device.dev.seg =3D pci_domain_nr(pdev->b=
-us);
->> +=C2=A0=C2=A0=C2=A0 op.reattach_device.dev.bus =3D pdev->bus->number;
->> +=C2=A0=C2=A0=C2=A0 op.reattach_device.dev.devfn =3D pdev->devfn;
->> +
->> +=C2=A0=C2=A0=C2=A0 ret =3D HYPERVISOR_iommu_op(&op);
->> +
->> +=C2=A0=C2=A0=C2=A0 if (ret)
->> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 pr_warn("Unable to release d=
-evice %p\n", 
->> &op.reattach_device.dev);
->> +
->> +=C2=A0=C2=A0=C2=A0 return ret;
->> +}
->> +
->> +static struct iommu_domain default_domain =3D {
->> +=C2=A0=C2=A0=C2=A0 .ops =3D &(const struct iommu_domain_ops){
->> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 .attach_dev =3D default_doma=
-in_attach_dev
->> +=C2=A0=C2=A0=C2=A0 }
->> +};
-> 
-> Looks like you could make it a static xen_iommu_domain and just use the 
-> normal attach callback? Either way please name it something less 
-> confusing like xen_iommu_identity_domain - "default" is far too 
-> overloaded round here already...
-> 
-
-Yes, although, if in the future, we can have either this domain as 
-identity or blocking/paging depending on some upper level configuration. 
-Should we have both identity and blocking domains, and only setting the 
-relevant one in iommu_ops, or keep this naming.
-
->> +static struct iommu_ops xen_iommu_ops =3D {
->> +=C2=A0=C2=A0=C2=A0 .identity_domain =3D &default_domain,
->> +=C2=A0=C2=A0=C2=A0 .release_domain =3D &default_domain,
->> +=C2=A0=C2=A0=C2=A0 .capable =3D xen_iommu_capable,
->> +=C2=A0=C2=A0=C2=A0 .domain_alloc_paging =3D xen_iommu_domain_alloc_pagi=
-ng,
->> +=C2=A0=C2=A0=C2=A0 .probe_device =3D xen_iommu_probe_device,
->> +=C2=A0=C2=A0=C2=A0 .probe_finalize =3D xen_iommu_probe_finalize,
->> +=C2=A0=C2=A0=C2=A0 .device_group =3D pci_device_group,
->> +=C2=A0=C2=A0=C2=A0 .get_resv_regions =3D xen_iommu_get_resv_regions,
->> +=C2=A0=C2=A0=C2=A0 .pgsize_bitmap =3D XEN_IOMMU_PGSIZES,
->> +=C2=A0=C2=A0=C2=A0 .default_domain_ops =3D &(const struct iommu_domain_=
-ops) {
->> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 .map_pages =3D xen_iommu_map=
-_pages,
->> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 .unmap_pages =3D xen_iommu_u=
-nmap_pages,
->> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 .attach_dev =3D xen_iommu_at=
-tach_dev,
->> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 .iova_to_phys =3D xen_iommu_=
-iova_to_phys,
->> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 .free =3D xen_iommu_free,
->> +=C2=A0=C2=A0=C2=A0 },
->> +};
->> +
->> +int __init xen_iommu_init(void)
->> +{
->> +=C2=A0=C2=A0=C2=A0 int ret;
->> +=C2=A0=C2=A0=C2=A0 struct pv_iommu_op op =3D {
->> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 .subop_id =3D IOMMUOP_query_=
-capabilities
->> +=C2=A0=C2=A0=C2=A0 };
->> +
->> +=C2=A0=C2=A0=C2=A0 if (!xen_domain())
->> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 return -ENODEV;
->> +
->> +=C2=A0=C2=A0=C2=A0 /* Check if iommu_op is supported */
->> +=C2=A0=C2=A0=C2=A0 if (HYPERVISOR_iommu_op(&op) =3D=3D -ENOSYS)
->> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 return -ENODEV; /* No Xen IO=
-MMU hardware */
->> +
->> +=C2=A0=C2=A0=C2=A0 pr_info("Initialising Xen IOMMU driver\n");
->> +=C2=A0=C2=A0=C2=A0 pr_info("max_nr_pages=3D%d\n", op.cap.max_nr_pages);
->> +=C2=A0=C2=A0=C2=A0 pr_info("max_ctx_no=3D%d\n", op.cap.max_ctx_no);
->> +=C2=A0=C2=A0=C2=A0 pr_info("max_iova_addr=3D%llx\n", op.cap.max_iova_ad=
-dr);
->> +
->> +=C2=A0=C2=A0=C2=A0 if (op.cap.max_ctx_no =3D=3D 0) {
->> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 pr_err("Unable to use IOMMU =
-PV driver (no context 
->> available)\n");
->> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 return -ENOTSUPP; /* Unable =
-to use IOMMU PV ? */
->> +=C2=A0=C2=A0=C2=A0 }
->> +
->> +=C2=A0=C2=A0=C2=A0 if (xen_domain_type =3D=3D XEN_PV_DOMAIN)
->> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 /* TODO: In PV domain, due t=
-o the existing pfn-gfn mapping we 
->> need to
->> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 * consider that under =
-certains circonstances, we have :
->> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 *=C2=A0=C2=A0 pfn_to_g=
-fn(x + 1) !=3D pfn_to_gfn(x) + 1
->> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 *
->> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 * In these cases, we w=
-ould want to separate the subop into 
->> several calls.
->> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 * (only doing the grou=
-ped operation when the mapping is 
->> actually contigous)
->> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 * Only map operation w=
-ould be affected, as unmap actually 
->> uses dfn which
->> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 * doesn't have this ki=
-nd of mapping.
->> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 *
->> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 * Force single-page op=
-erations to work arround this issue 
->> for now.
->> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 */
->> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 max_nr_pages =3D 1;
->> +=C2=A0=C2=A0=C2=A0 else
->> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 /* With HVM domains, pfn_to_=
-gfn is identity, there is no 
->> issue regarding this. */
->> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 max_nr_pages =3D op.cap.max_=
-nr_pages;
->> +
->> +=C2=A0=C2=A0=C2=A0 max_iova_addr =3D op.cap.max_iova_addr;
->> +
->> +=C2=A0=C2=A0=C2=A0 spin_lock_init(&lock);
->> +
->> +=C2=A0=C2=A0=C2=A0 ret =3D iommu_device_sysfs_add(&xen_iommu_device, NU=
-LL, NULL, 
->> "xen-iommu");
->> +=C2=A0=C2=A0=C2=A0 if (ret) {
->> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 pr_err("Unable to add Xen IO=
-MMU sysfs\n");
->> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 return ret;
->> +=C2=A0=C2=A0=C2=A0 }
->> +
->> +=C2=A0=C2=A0=C2=A0 ret =3D iommu_device_register(&xen_iommu_device, &xe=
-n_iommu_ops, 
->> NULL);
->> +=C2=A0=C2=A0=C2=A0 if (ret) {
->> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 pr_err("Unable to register X=
-en IOMMU device %d\n", ret);
->> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 iommu_device_sysfs_remove(&x=
-en_iommu_device);
->> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 return ret;
->> +=C2=A0=C2=A0=C2=A0 }
->> +
->> +=C2=A0=C2=A0=C2=A0 /* swiotlb is redundant when IOMMU is active. */
->> +=C2=A0=C2=A0=C2=A0 x86_swiotlb_enable =3D false;
-> 
-> That's not always true, but either way if this is at 
-> module_init/device_initcall time then it's too late to make any 
-> difference anyway.
-> 
-
-Ok
-
->> +
->> +=C2=A0=C2=A0=C2=A0 return 0;
->> +}
->> +
->> +void __exit xen_iommu_fini(void)
->> +{
->> +=C2=A0=C2=A0=C2=A0 pr_info("Unregistering Xen IOMMU driver\n");
->> +
->> +=C2=A0=C2=A0=C2=A0 iommu_device_unregister(&xen_iommu_device);
->> +=C2=A0=C2=A0=C2=A0 iommu_device_sysfs_remove(&xen_iommu_device);
->> +}
-> 
-> This is dead code since the Kconfig is only "bool". Either allow it to 
-> be an actual module (and make sure that works), or drop the pretence 
-> altogether.
-> 
-
-Ok, I though this function was actually a requirement even if it is not 
-a module.
-
-> Thanks,
-> Robin.
-
-Teddy
-
-
-Teddy Astie | Vates XCP-ng Intern
-
-XCP-ng & Xen Orchestra - Vates solutions
-
-web: https://vates.tech
-
+Will
