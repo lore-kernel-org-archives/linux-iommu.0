@@ -1,189 +1,169 @@
-Received: from mail-ed1-f54.google.com (mail-ed1-f54.google.com [209.85.208.54])
+Received: from mail-yb1-f202.google.com (mail-yb1-f202.google.com [209.85.219.202])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2243E1DFEF
-	for <iommu@lists.linux.dev>; Mon, 24 Jun 2024 15:37:39 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.54
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B527F19CD14
+	for <iommu@lists.linux.dev>; Mon, 24 Jun 2024 15:48:56 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.219.202
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1719243462; cv=none; b=fuzgOrASKrX6uZ9y3Fx2RaxPwF7TA9KRbJi6jGTM1t7zJNrsAVV1kIu7DiK9KKKuzhwTa9diaKyeU8nWYCx/GMg1JPwDuQPsPTnGbZF9GHGGykxB75WJd7FASTfQa6ZAu9W9SZi9MNLj1FNq6asVZIT35Fmm3eAyR23pN9fGRCI=
+	t=1719244139; cv=none; b=iggO/qtswcYMuvuOXED7DaULQGtd30hn5VFH4RNAQzogu5RAVd6K+8ok7LBhcQoStcxd4lsH2W/kQwEJrIrDswK2ygFxJhbd6LyYtsEzTlzOLAa895iS5Xyn0wL3O1PYTKC9OaqZpG8gvEy75/KQpOd++dkslQQaSnWPDRIbQv4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1719243462; c=relaxed/simple;
-	bh=Z36F+leuCU/otTunzaT4BJQLU9anN/d01xVBaiT1ZT0=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=INh+0XEe0mzkihgXHNUyRdS0sVq1wDzkT8yCpsR8hL4+3Hbr5rvbTtUVYJmmbuNcsDR8YE4HVzr/g4h5cGBhNYRzeH0zWayx4OI6fql8z1EtQgtG6rVh2XN23ra9M8T+uyJtzzDYTo9d0oQuaaLhSp1gpzIxptMeEKlrZfgfR24=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=GYB2CdUB; arc=none smtp.client-ip=209.85.208.54
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1719244139; c=relaxed/simple;
+	bh=GqaP3vGD7gvrzGgNXX4qO07+i06y1ReV6MZ9SSpLyZk=;
+	h=Date:In-Reply-To:Mime-Version:References:Message-ID:Subject:From:
+	 To:Cc:Content-Type; b=e6CZ175QBVNNblgXIEXcFuBHcfPlYLLHxcxRBqBh0d7KgLaeW+35vmF9tv8Y/kLXMYDagFGjsJXqX17d29oLzSh64+NOQhIscenRAaShYsOjBpLJy1Lc+O4Zi8V77WTX3Q/McpQjmTgipYebSIt8JbtFuNv69lIuxl5sw+P+cqs=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=flex--seanjc.bounces.google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=HtCxv0vb; arc=none smtp.client-ip=209.85.219.202
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=flex--seanjc.bounces.google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="GYB2CdUB"
-Received: by mail-ed1-f54.google.com with SMTP id 4fb4d7f45d1cf-57d044aa5beso5053619a12.2
-        for <iommu@lists.linux.dev>; Mon, 24 Jun 2024 08:37:39 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="HtCxv0vb"
+Received: by mail-yb1-f202.google.com with SMTP id 3f1490d57ef6-dfdff0a9f26so8277845276.1
+        for <iommu@lists.linux.dev>; Mon, 24 Jun 2024 08:48:56 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1719243458; x=1719848258; darn=lists.linux.dev;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=jQc+e+I6ia7/ogMpB2OJkI6aQ1tlYzw7cUiWzpvi62U=;
-        b=GYB2CdUBK/4OpIs33AzDxwW4ScXEKl9dZkWpNnw1SMuifZVysSoNa9WZU/G7LqIM7W
-         mMXlEC+mWoZLB3Z2Njws17JsB/VIdA+7vlEMoKCbU2wBfz38srT56aW/7VTMHhJCAnrb
-         c4Cqv/Vx/tdliJPVtRGNczHDEBTzMyumpAd+Yqj3KETA5PBhN0lAaGkud+kaHhaqqEyX
-         XcvCgNpXPvRfMbAp7dj7bHInx92A+ZPIRtEfedgBs1UrJTqmyo/Ea1zi1EMPdw1VDudX
-         g/MGSLc+Y7pWBvQPRf6EtGg8hGSBD3uz2RKwTa4zvKabIZG/Sn1X6Z1eqmmajGSnpFuP
-         JwvQ==
+        d=google.com; s=20230601; t=1719244136; x=1719848936; darn=lists.linux.dev;
+        h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
+         :date:from:to:cc:subject:date:message-id:reply-to;
+        bh=w0TfFi1A5eAUOELglH+ORGjDb5xIqjGuRnaKSa2m3Gs=;
+        b=HtCxv0vbBmY2+9yHlwyieFyCkaAmqt2tbYogLDk8re7kiKFsyQ3BXCdCqrnkaq8wDc
+         E/ELxBH6x7+TC6aGQeTh1eyZO0SRrQN5kxSa25v2QsAOhml4dyMJLcd9oU5PSJMFubvL
+         yp3+o++UUNWn+gyFlYIBL3MfkJfcAxstrU0HFfewfM6/TpD3gGyJIZNqL4mEzh31Wmi6
+         buWAqJoDAxA6sSDuEy+BXLuO43Ou5z8Wfc9TJTKmjhbsvI4pLk1/tEehdequ6XkkmnJ3
+         YMxlFmFx/FzzIqyNMH3Ue1Md+yiUWpV+isZ8Bhpi1QBYZU0Qsx5RpnZpEUvCM4jTb+ca
+         D2mQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1719243458; x=1719848258;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=jQc+e+I6ia7/ogMpB2OJkI6aQ1tlYzw7cUiWzpvi62U=;
-        b=nuo83V5Vb4mkfS7WyyhlVljQxLCbRRg0jgBcLxU32aQa4CiAzIyohXSsgSDmGQTDD1
-         jmVa3Bma9pWvVVuFgwuBwRvemaiQgsBvWYoZKf1ZuNddpovABmxUUcjPtIfNWU9wiEi0
-         xDFIsWDhUT4KNiqRvDDdyJdZriWKlwQnZKiPiUasBcSOMRET5tSoYFePSkvzC5B2VYUo
-         vg3N0J6ae+xrasUTak+kypwsthp3k7hznwAejSagiknoUHi3Xf+Kffh8KNxbE7aORDQU
-         yot0me3X1HcPTEaFyxP50qS/HAn9uRaF/IiZh+gV5Jtte3FmNU4F1Xa+ELC0J+UdhrKQ
-         Bmxw==
-X-Forwarded-Encrypted: i=1; AJvYcCUvR0/EPDwzAmyh6C4J8/DhvTTckG6YIg976nBgaIjKvKiYu1BLS80MZZYpcaswMYsH/pkxKS0NcFCaSzhixg3FAw75De8=
-X-Gm-Message-State: AOJu0Yyz3HuMg4EaAym2DgziIW7WR5OuMr/+GFvWyoHFaHJmIN9dtl0r
-	iLzThvzmbr8wtMPzMGdb4NCvGPx8GBwXyYKRjX3zVKu+Jy7Tr2xCMcAXGdL4YU4iODvd3tmtjtV
-	IVEVW8w2P2P6z8AtQtGewzxu5Gv4=
-X-Google-Smtp-Source: AGHT+IHEEQxmIHCl7aQptuGI+5uw01VLWA2AyOiSUHqCVl//O6JanrQFmlogbqjX9PEO1AhYjBS3Z5mQrF25LbmaeRY=
-X-Received: by 2002:a50:931a:0:b0:57d:2db9:15e8 with SMTP id
- 4fb4d7f45d1cf-57d4bdcb3bfmr2974167a12.34.1719243458252; Mon, 24 Jun 2024
- 08:37:38 -0700 (PDT)
+        d=1e100.net; s=20230601; t=1719244136; x=1719848936;
+        h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
+         :date:x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=w0TfFi1A5eAUOELglH+ORGjDb5xIqjGuRnaKSa2m3Gs=;
+        b=WE7DCTSkrrWi9CkTX39GfKLc8B/2dPba9OdxYumFQjhIYsuLOyYYwb4s8f8MZVOKuV
+         lK1aZC3qmPvOtuttm8mKoF7AmDBBr546V8yWX2dK8RByLXI7PLLaMbpVQd+RAKoQkGPD
+         pzVNNRoPqPGZ3dMBcNgucdQTS0uG/66F70LYOL2RCgy3LwwEqGt8lMIlwyz4dPS/Aa7E
+         Bmtss1Dhabp5e99j+dwkzhsiUxnDjGHk3fMsjO9Ydtkl2lbK2m7a4MQu4b1/ZhrjLGpM
+         O7p3PIwCD7beVb3arnWXT5mfJUgWxOFlWPvUB1Mz8cIcSsCak0SgkFDy/mc76swPM1AS
+         QNRw==
+X-Forwarded-Encrypted: i=1; AJvYcCXb6AYHpfYMetedOnYlndiFjgOcCVfYNPTcUnFY7Gkw6a8aNjyCO12DFIGN+fKRKUBfvofgGo8W6mtUnUHLdWKQB1YH2Y4=
+X-Gm-Message-State: AOJu0Yw7mEOF/liqqIR/bWqGRkphwcB4f0WwtC5UFQchKu23sEqFLyo4
+	2nT5YJhaJqkxQA1mi4gioASqtDSjwOkthL1XeVCR0cZvgJsrIsp0KisFPYgGajOwtqqBqC1fAZA
+	eJA==
+X-Google-Smtp-Source: AGHT+IF8kv5cg7jBtfLj5KChqQb0E4AVt+N3NAFysUC46dBIyhEpZe/ChMcBWGfHF7p7NpzSNPuuniqMZ0A=
+X-Received: from zagreus.c.googlers.com ([fda3:e722:ac3:cc00:7f:e700:c0a8:5c37])
+ (user=seanjc job=sendgmr) by 2002:a05:6902:705:b0:df4:8ecb:ae57 with SMTP id
+ 3f1490d57ef6-e030108f81cmr16300276.10.1719244135814; Mon, 24 Jun 2024
+ 08:48:55 -0700 (PDT)
+Date: Mon, 24 Jun 2024 08:48:54 -0700
+In-Reply-To: <20240208151837.35068-2-shameerali.kolothum.thodi@huawei.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
-MIME-Version: 1.0
-References: <20240523175227.117984-1-robdclark@gmail.com> <20240523175227.117984-2-robdclark@gmail.com>
- <20240624151401.GB8706@willie-the-truck>
-In-Reply-To: <20240624151401.GB8706@willie-the-truck>
-From: Rob Clark <robdclark@gmail.com>
-Date: Mon, 24 Jun 2024 08:37:26 -0700
-Message-ID: <CAF6AEGttkHPOsO+NSHZeRXiZBxU_26HZyGMjOZ3-Y8NZUgz0gA@mail.gmail.com>
-Subject: Re: [PATCH v4 1/2] iommu/io-pgtable-arm: Add way to debug pgtable walk
-To: Will Deacon <will@kernel.org>
-Cc: dri-devel@lists.freedesktop.org, linux-arm-msm@vger.kernel.org, 
-	freedreno@lists.freedesktop.org, Rob Clark <robdclark@chromium.org>, 
-	Robin Murphy <robin.murphy@arm.com>, Joerg Roedel <joro@8bytes.org>, Jason Gunthorpe <jgg@ziepe.ca>, 
-	Boris Brezillon <boris.brezillon@collabora.com>, Kevin Tian <kevin.tian@intel.com>, 
-	Joao Martins <joao.m.martins@oracle.com>, 
-	"moderated list:ARM SMMU DRIVERS" <linux-arm-kernel@lists.infradead.org>, 
-	"open list:IOMMU SUBSYSTEM" <iommu@lists.linux.dev>, open list <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Mime-Version: 1.0
+References: <20240208151837.35068-1-shameerali.kolothum.thodi@huawei.com> <20240208151837.35068-2-shameerali.kolothum.thodi@huawei.com>
+Message-ID: <ZnmVZo8awnuFdQjz@google.com>
+Subject: Re: [RFC PATCH v2 1/7] KVM: Add generic infrastructure to support
+ pinned VMIDs
+From: Sean Christopherson <seanjc@google.com>
+To: Shameer Kolothum <shameerali.kolothum.thodi@huawei.com>
+Cc: kvmarm@lists.linux.dev, iommu@lists.linux.dev, 
+	linux-arm-kernel@lists.infradead.org, linuxarm@huawei.com, 
+	kevin.tian@intel.com, jgg@ziepe.ca, alex.williamson@redhat.com, 
+	maz@kernel.org, oliver.upton@linux.dev, will@kernel.org, robin.murphy@arm.com, 
+	jean-philippe@linaro.org, jonathan.cameron@huawei.com
+Content-Type: text/plain; charset="us-ascii"
 
-On Mon, Jun 24, 2024 at 8:14=E2=80=AFAM Will Deacon <will@kernel.org> wrote=
-:
->
-> On Thu, May 23, 2024 at 10:52:21AM -0700, Rob Clark wrote:
-> > From: Rob Clark <robdclark@chromium.org>
-> >
-> > Add an io-pgtable method to walk the pgtable returning the raw PTEs tha=
-t
-> > would be traversed for a given iova access.
-> >
-> > Signed-off-by: Rob Clark <robdclark@chromium.org>
-> > ---
-> >  drivers/iommu/io-pgtable-arm.c | 51 ++++++++++++++++++++++++++++------
-> >  include/linux/io-pgtable.h     |  4 +++
-> >  2 files changed, 46 insertions(+), 9 deletions(-)
-> >
-> > diff --git a/drivers/iommu/io-pgtable-arm.c b/drivers/iommu/io-pgtable-=
-arm.c
-> > index f7828a7aad41..f47a0e64bb35 100644
-> > --- a/drivers/iommu/io-pgtable-arm.c
-> > +++ b/drivers/iommu/io-pgtable-arm.c
-> > @@ -693,17 +693,19 @@ static size_t arm_lpae_unmap_pages(struct io_pgta=
-ble_ops *ops, unsigned long iov
-> >                               data->start_level, ptep);
-> >  }
-> >
-> > -static phys_addr_t arm_lpae_iova_to_phys(struct io_pgtable_ops *ops,
-> > -                                      unsigned long iova)
-> > +static int arm_lpae_pgtable_walk(struct io_pgtable_ops *ops, unsigned =
-long iova,
-> > +                     int (*cb)(void *cb_data, void *pte, int level),
-> > +                     void *cb_data)
-> >  {
-> >       struct arm_lpae_io_pgtable *data =3D io_pgtable_ops_to_data(ops);
-> >       arm_lpae_iopte pte, *ptep =3D data->pgd;
-> >       int lvl =3D data->start_level;
-> > +     int ret;
-> >
-> >       do {
-> >               /* Valid IOPTE pointer? */
-> >               if (!ptep)
-> > -                     return 0;
-> > +                     return -EFAULT;
->
-> nit: -ENOENT might be a little better, as we're only checking against a
-> NULL entry rather than strictly any faulting entry.
->
-> >               /* Grab the IOPTE we're interested in */
-> >               ptep +=3D ARM_LPAE_LVL_IDX(iova, lvl, data);
-> > @@ -711,22 +713,52 @@ static phys_addr_t arm_lpae_iova_to_phys(struct i=
-o_pgtable_ops *ops,
-> >
-> >               /* Valid entry? */
-> >               if (!pte)
-> > -                     return 0;
-> > +                     return -EFAULT;
->
-> Same here (and at the end of the function).
->
-> > +
-> > +             ret =3D cb(cb_data, &pte, lvl);
->
-> Since pte is on the stack, rather than pointing into the actual pgtable,
-> I think it would be clearer to pass it by value to the callback.
+On Thu, Feb 08, 2024, Shameer Kolothum wrote:
+> Provide generic helper functions to get/put pinned VMIDs if the arch
+> supports it.
 
-fwiw, I passed it as a void* to avoid the pte size.. although I guess
-it could be a union of all the possible pte types
+IMO, this has no business being in generic KVM.  Multiple architectures have
+constructs that are _similar_ ARM's VMID, but AFAICT the exact semantics are very
+ARM specific.  I.e. odds are very good that the only thing that can actually use
+kvm_pinned_vmid_get() is the SMMU, because the concept won't fit any other
+architecture.
 
-BR,
--R
+The other issue is that other architectures support building KVM as a module,
+which makes it much more difficult to guarantee the safety of these hooks.
 
->
-> > +             if (ret)
-> > +                     return ret;
-> >
-> > -             /* Leaf entry? */
-> > +             /* Leaf entry?  If so, we've found the translation */
-> >               if (iopte_leaf(pte, lvl, data->iop.fmt))
-> > -                     goto found_translation;
-> > +                     return 0;
-> >
-> >               /* Take it to the next level */
-> >               ptep =3D iopte_deref(pte, data);
-> >       } while (++lvl < ARM_LPAE_MAX_LEVELS);
-> >
-> >       /* Ran out of page tables to walk */
-> > +     return -EFAULT;
-> > +}
-> > +
-> > +struct iova_to_phys_walk_data {
-> > +     arm_lpae_iopte pte;
-> > +     int level;
-> > +};
->
-> Expanding a little on Robin's suggestion, why don't we drop this structur=
-e
-> in favour of something more generic:
->
->         struct arm_lpae_walk_data {
->                 arm_lpae_iopte ptes[ARM_LPAE_MAX_LEVELS];
->         };
->
-> and then do something in the walker like:
->
->         if (cb && !cb(pte, lvl))
->                 walk_data->ptes[lvl] =3D pte;
->
-> which could return the physical address at the end, if it reaches a leaf
-> entry. That way arm_lpae_iova_to_phys() is just passing a NULL callback
-> to the walker and your debug callback just needs to return 0 (i.e. the
-> callback is basically just saying whether or not to continue the walk).
->
-> Will
+> Signed-off-by: Shameer Kolothum <shameerali.kolothum.thodi@huawei.com>
+> ---
+>  include/linux/kvm_host.h | 18 ++++++++++++++++++
+>  virt/kvm/Kconfig         |  3 +++
+>  virt/kvm/kvm_main.c      | 23 +++++++++++++++++++++++
+>  3 files changed, 44 insertions(+)
+> 
+> diff --git a/include/linux/kvm_host.h b/include/linux/kvm_host.h
+> index 7e7fd25b09b3..610e239bea46 100644
+> --- a/include/linux/kvm_host.h
+> +++ b/include/linux/kvm_host.h
+> @@ -2311,6 +2311,24 @@ static inline void kvm_handle_signal_exit(struct kvm_vcpu *vcpu)
+>  }
+>  #endif /* CONFIG_KVM_XFER_TO_GUEST_WORK */
+>  
+> +#ifdef CONFIG_HAVE_KVM_PINNED_VMID
+> +int kvm_arch_pinned_vmid_get(struct kvm *kvm);
+> +void kvm_arch_pinned_vmid_put(struct kvm *kvm);
+> +#endif
+> +
+> +#ifdef CONFIG_HAVE_KVM_PINNED_VMID
+> +int kvm_pinned_vmid_get(struct kvm *kvm);
+> +void kvm_pinned_vmid_put(struct kvm *kvm);
+> +#else
+> +static inline int kvm_pinned_vmid_get(struct kvm *kvm)
+> +{
+> +	return -EINVAL;
+> +}
+> +
+> +static inline void kvm_pinned_vmid_put(struct kvm *kvm)
+> +{
+> +}
+> +#endif
+>  /*
+>   * If more than one page is being (un)accounted, @virt must be the address of
+>   * the first page of a block of pages what were allocated together (i.e
+> diff --git a/virt/kvm/Kconfig b/virt/kvm/Kconfig
+> index 184dab4ee871..a3052c8e3ac4 100644
+> --- a/virt/kvm/Kconfig
+> +++ b/virt/kvm/Kconfig
+> @@ -108,3 +108,6 @@ config KVM_GENERIC_PRIVATE_MEM
+>         select KVM_GENERIC_MEMORY_ATTRIBUTES
+>         select KVM_PRIVATE_MEM
+>         bool
+> +
+> +config HAVE_KVM_PINNED_VMID
+> +       bool
+> diff --git a/virt/kvm/kvm_main.c b/virt/kvm/kvm_main.c
+> index 10bfc88a69f7..f84d6da5f464 100644
+> --- a/virt/kvm/kvm_main.c
+> +++ b/virt/kvm/kvm_main.c
+> @@ -3918,6 +3918,29 @@ bool kvm_vcpu_wake_up(struct kvm_vcpu *vcpu)
+>  }
+>  EXPORT_SYMBOL_GPL(kvm_vcpu_wake_up);
+>  
+> +#ifdef CONFIG_HAVE_KVM_PINNED_VMID
+> +int kvm_pinned_vmid_get(struct kvm *kvm)
+> +{
+> +	int ret;
+> +
+> +	if (!kvm_get_kvm_safe(kvm))
+> +		return -ENOENT;
+> +	ret  = kvm_arch_pinned_vmid_get(kvm);
+> +	if (ret < 0)
+> +		kvm_put_kvm(kvm);
+> +
+> +	return ret;
+> +}
+> +EXPORT_SYMBOL_GPL(kvm_pinned_vmid_get);
+> +
+> +void kvm_pinned_vmid_put(struct kvm *kvm)
+> +{
+> +	kvm_arch_pinned_vmid_put(kvm);
+> +	kvm_put_kvm(kvm);
+> +}
+> +EXPORT_SYMBOL_GPL(kvm_pinned_vmid_put);
+> +#endif
+> +
+>  #ifndef CONFIG_S390
+>  /*
+>   * Kick a sleeping VCPU, or a guest VCPU in guest mode, into host kernel mode.
+> -- 
+> 2.34.1
+> 
