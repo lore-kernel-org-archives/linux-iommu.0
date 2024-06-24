@@ -1,205 +1,108 @@
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-qk1-f169.google.com (mail-qk1-f169.google.com [209.85.222.169])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 04122482C1
-	for <iommu@lists.linux.dev>; Mon, 24 Jun 2024 22:00:49 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=170.10.133.124
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C4E4845C1C
+	for <iommu@lists.linux.dev>; Mon, 24 Jun 2024 22:35:37 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.222.169
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1719266451; cv=none; b=AOsnjc8sAjPuEgEH1QqaRE40jVCxzYddDGoVT/y2im3JdHHpS7gajApjQRwlDoMX5z7Jsa45KsLhe+vX96105Q8n15hZbLUbW+CN32K5olyj6RpcU3CPN8NN3hvJjF07gsQmcGruSUU9MqemM0dx+OPb62qVwD7MsPFO2+kDtEk=
+	t=1719268539; cv=none; b=B5E20JiJSDInD826y6khqRPtQcq5t+3XG7vx7dIpgkCF7z+6wX23yrbGCLJPXDxbaVbOpZZh9jRPtEl/cRQ2EyeEoy1ZMSnALo5dLKpF+lFR94rDIzXmaEm0aTIGBExH9s1Nkm2n2tlWGeOlXCQcM0ylWbQit9CGmYHVEg6hj1Y=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1719266451; c=relaxed/simple;
-	bh=2xgvQxfKDYYKHdwbqGr6aj+ZVlY6zEkXkPra0awLJmY=;
+	s=arc-20240116; t=1719268539; c=relaxed/simple;
+	bh=aT2qy8ye9kgiry9WC4F+sGOsviYcZPjeN5uNOxlkGfA=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 In-Reply-To:Content-Type:Content-Disposition; b=Xgwq72dJdLak2KuwWFs9Qao5zE/4/AbyqIZGU2fjmbpunWC5l6iYHPNiYkR+HUI23qSmXAnjTDX89TIw8Uac9HGfF9BpLFzLGRcmovMu0ayd8ty422kXhcDMyzmVyDSRYF1iw+iuNN1CTotHQ5ugYNKCSBD7UVTYd0RNp5r3GR4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=redhat.com; spf=pass smtp.mailfrom=redhat.com; dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b=LwOpgLSi; arc=none smtp.client-ip=170.10.133.124
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=redhat.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=redhat.com
+	 Content-Type:Content-Disposition:In-Reply-To; b=hSARaLnM6I2+i1rGZhuROgTdkFi4H98YsctWDsTod75yc0A3UndTscJg4uCLON3HaDyBbaK/F7DuFoBEATEDKGsVtCa9XUhjYG0qp4Ix3tIfw9wmguwmiwmehSe8v/K9MjYW2oXoDVmrJPESRfDK+Kw9cp9KPuxnuAncxQs2Wqk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=YiJXStyA; arc=none smtp.client-ip=209.85.222.169
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="LwOpgLSi"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-	s=mimecast20190719; t=1719266448;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 in-reply-to:in-reply-to:references:references;
-	bh=1AMy93E/6RDeqTW8YF5j9Etfag3YQAretpuNps4oyD0=;
-	b=LwOpgLSixLJh2/FPG3eEV3ogVryiTsho5LTZzLV/Tun+yEbaLYN77xFRuwWb8aiJmeq5LJ
-	Z2/wBmmMwWVUMwTlLqwKcu+HJtEtMvx9c108WTVzlr/1w52M8QSvSS6HBBqN7iLwFZxCpW
-	+r3RHrr6zNrRGTSZ4CdJy2mh3KfRroY=
-Received: from mail-qv1-f69.google.com (mail-qv1-f69.google.com
- [209.85.219.69]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
- us-mta-68-TCFiZ6rBPKyaG1Fw-eCCfw-1; Mon, 24 Jun 2024 18:00:47 -0400
-X-MC-Unique: TCFiZ6rBPKyaG1Fw-eCCfw-1
-Received: by mail-qv1-f69.google.com with SMTP id 6a1803df08f44-6b50b0270d8so73892356d6.0
-        for <iommu@lists.linux.dev>; Mon, 24 Jun 2024 15:00:46 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="YiJXStyA"
+Received: by mail-qk1-f169.google.com with SMTP id af79cd13be357-7955aaf8006so388529485a.1
+        for <iommu@lists.linux.dev>; Mon, 24 Jun 2024 15:35:37 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=ziepe.ca; s=google; t=1719268536; x=1719873336; darn=lists.linux.dev;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=MtTp+BqiuzS7EIIVZNGGCWhCGJWEUGz0/p9POpsvwrQ=;
+        b=YiJXStyAyiwdbYhVRmEEeZVq3fw2jh5ZkLSVe8AfWvZDWeOFXUap5W99GBIlyryO4R
+         wGfQuKvZHQkt/aef1LIxPn+GJPpw08JZr0XnWSR0TrTzdeeNDk+us8apu7718ut9qp32
+         y4aW8RZH2HKnII4XBKyYIUeZ6aND0rdHVjspjMV0J7WsoYEMqgJGdIRP+Uck2FSh/50M
+         qlQlAx2pmsKZMweyzKj9O71RV/G930XA2LNzSDP/qM8Fj/IM2jsAjbj6d0Seh4zY2fY6
+         dZlLGemMylGS6STbasxt0/1G/NfNdd22f/YCjzoHshAe5ZsJN5VA7emDQHcMShPw1kcz
+         qhZQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1719266446; x=1719871246;
+        d=1e100.net; s=20230601; t=1719268536; x=1719873336;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=1AMy93E/6RDeqTW8YF5j9Etfag3YQAretpuNps4oyD0=;
-        b=UEBbSlimK7BNbeht6OTyuo6iklJ8/5xD0eqSz0g7i2auJcOeLm1yw31rGFjXHZzc3r
-         AJLhuvtjejk78wf2qR7NndmQPrXWacq33fBoetP18Qq5xLP6ZBfzNgI/pR2slbK8YYqz
-         9WxV6XHHQuE9YK9qiEjxlo1nXBadF65/akmpENZFdxsgB/orI0GPkC3mkOUXT+MFagwY
-         SYRTDclIlKyUOSK96gBUhFK5vtoAMtoZebT9NGxWHfdx7RsSvU+isvKkm+ezzOtse4nb
-         1XpGtjHMmalEVKudXj+6EiPy4P0KAw24VFTZF/sAUPQ9FZo/ECQmePcgLeooVLl2Vndo
-         CPmw==
-X-Gm-Message-State: AOJu0YzwCisqjeERZaexIEE0V7nlUPsHP/cCZoWzknbmf27F/y40gcXn
-	snltvBOJQ4NcJcB7DasBg1eax+M2ii1N1DixaAHzsv1F10jzXHYdp3Ja16rI0ha/Q6tBfaPPQca
-	qaOUmjlFSW6pwgkqQG2W0HbqzcXxl04AP8xF5itX26J+8+Q6CBw9K
-X-Received: by 2002:ad4:5d4e:0:b0:6b5:40c:dfcc with SMTP id 6a1803df08f44-6b53bfdc130mr80326156d6.51.1719266446323;
-        Mon, 24 Jun 2024 15:00:46 -0700 (PDT)
-X-Google-Smtp-Source: AGHT+IHGGavFgSVf/NgSKmV4ZpIuyflzpFXwlIpHXShwDcEDTfxV74+uTwR0khPnBobzGqeyJhmziA==
-X-Received: by 2002:ad4:5d4e:0:b0:6b5:40c:dfcc with SMTP id 6a1803df08f44-6b53bfdc130mr80325776d6.51.1719266445870;
-        Mon, 24 Jun 2024 15:00:45 -0700 (PDT)
-Received: from localhost (ip98-179-76-110.ph.ph.cox.net. [98.179.76.110])
-        by smtp.gmail.com with ESMTPSA id 6a1803df08f44-6b51ef4def5sm38033086d6.110.2024.06.24.15.00.45
+        bh=MtTp+BqiuzS7EIIVZNGGCWhCGJWEUGz0/p9POpsvwrQ=;
+        b=BZ20s9QQTr0jhVrmnYGIgCluR/toVDKK11FD4n2hVNviZavGd/9sazUTn4jtKSxuFo
+         CnfzfHX1dFOQkRU4hIla1wfTjE5fqywytRA+45Jeverg9QMPnxS/TezpzftHsumCnUco
+         rBkdTDNql+Yd9M+pEHj1z/n08NevG/3WJV6P7RwAe3DDr1eZ8ucZL3vbOSGCzQAXFypt
+         vGZ1LMWtuUSeHN+EtVV2rQbnaNyOmkZXhG5PJpQTOuN2Os1E9eWYAu4XQZZN/uOW9/92
+         BbZ54vpe/UeoKel+7vPhphgzdeOlKOK9bTGfBX4mK7BBzc/h/S/oCMq0RCgSJfEJohdd
+         UnTg==
+X-Forwarded-Encrypted: i=1; AJvYcCXgRqBIvcUaIk9rkaMpMO3/ZOV48LjgGuirUAI2mN7r3vRq5OV5tnRzhnTImBO6fHrmHnFt2ErKFcxBBjb+ub6OvLTn9fo=
+X-Gm-Message-State: AOJu0Yz3h7wh4Kr7APJfBMWSnctxkYC0tWzfcxARk0RvSrXJtCa+06Zk
+	lEL/BTcCx7lr7bj5YEF9GWgOm3DAkW7hQTt73r0rAith6L8K2yNwLXkigoa4rcY=
+X-Google-Smtp-Source: AGHT+IEt1C3MFNaCsLFJB/VCC9aFQBtXdDV0dColoFeVqztX4eRvEXQuqixZ/9chLmqAWqi9C18PTw==
+X-Received: by 2002:a0c:f8c4:0:b0:6b0:7f83:adad with SMTP id 6a1803df08f44-6b56d379671mr2817056d6.39.1719268536573;
+        Mon, 24 Jun 2024 15:35:36 -0700 (PDT)
+Received: from ziepe.ca (hlfxns017vw-142-68-80-239.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.68.80.239])
+        by smtp.gmail.com with ESMTPSA id 6a1803df08f44-6b5255f441csm33785236d6.113.2024.06.24.15.35.35
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 24 Jun 2024 15:00:45 -0700 (PDT)
-Date: Mon, 24 Jun 2024 15:00:44 -0700
-From: Jerry Snitselaar <jsnitsel@redhat.com>
-To: Jason Gunthorpe <jgg@nvidia.com>
-Cc: iommu@lists.linux.dev, Joerg Roedel <joro@8bytes.org>, 
-	linux-arm-kernel@lists.infradead.org, Robin Murphy <robin.murphy@arm.com>, 
-	Will Deacon <will@kernel.org>, Eric Auger <eric.auger@redhat.com>, 
-	Jean-Philippe Brucker <jean-philippe@linaro.org>, Moritz Fischer <mdf@kernel.org>, 
-	Michael Shavit <mshavit@google.com>, Nicolin Chen <nicolinc@nvidia.com>, patches@lists.linux.dev, 
-	Shameer Kolothum <shameerali.kolothum.thodi@huawei.com>
-Subject: Re: [PATCH v8 00/14] Update SMMUv3 to the modern iommu API (part
- 2b/3)
-Message-ID: <e3hvs7xpbuki7crn6tbyatzcofmk3yayblz5jbagek6urmq6zu@bm2dqfmqdiua>
-References: <0-v8-6f85cdc10ce7+563e-smmuv3_newapi_p2b_jgg@nvidia.com>
+        Mon, 24 Jun 2024 15:35:35 -0700 (PDT)
+Received: from jgg by wakko with local (Exim 4.95)
+	(envelope-from <jgg@ziepe.ca>)
+	id 1sLsHf-007WFC-Cq;
+	Mon, 24 Jun 2024 19:35:35 -0300
+Date: Mon, 24 Jun 2024 19:35:35 -0300
+From: Jason Gunthorpe <jgg@ziepe.ca>
+To: Oliver Upton <oliver.upton@linux.dev>
+Cc: Sean Christopherson <seanjc@google.com>,
+	Shameer Kolothum <shameerali.kolothum.thodi@huawei.com>,
+	kvmarm@lists.linux.dev, iommu@lists.linux.dev,
+	linux-arm-kernel@lists.infradead.org, linuxarm@huawei.com,
+	kevin.tian@intel.com, alex.williamson@redhat.com, maz@kernel.org,
+	will@kernel.org, robin.murphy@arm.com, jean-philippe@linaro.org,
+	jonathan.cameron@huawei.com
+Subject: Re: [RFC PATCH v2 4/7] iommufd: Associate kvm pointer to iommufd ctx
+Message-ID: <20240624223535.GA1781035@ziepe.ca>
+References: <20240208151837.35068-1-shameerali.kolothum.thodi@huawei.com>
+ <20240208151837.35068-5-shameerali.kolothum.thodi@huawei.com>
+ <20240208154210.GP31743@ziepe.ca>
+ <ZnmkbOfWBJHrO2sx@google.com>
+ <20240624170747.GA1515249@ziepe.ca>
+ <Znmy3QPAUIX9SnGx@google.com>
+ <20240624180148.GV791043@ziepe.ca>
+ <ZnnFML-P1dzHdraI@linux.dev>
+ <ZnnJA3ueCXsDtyB7@google.com>
+ <ZnnORmCHrEI0KkGz@linux.dev>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-In-Reply-To: <0-v8-6f85cdc10ce7+563e-smmuv3_newapi_p2b_jgg@nvidia.com>
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: redhat.com
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
+In-Reply-To: <ZnnORmCHrEI0KkGz@linux.dev>
 
-On Mon, Jun 03, 2024 at 09:15:45PM GMT, Jason Gunthorpe wrote:
-> Continuing the work of part 1 and 2a this part focuses on the PASID and
-> SVA code bringing these functional improvements:
-> 
->  - attach_dev failure does not change the HW configuration.
-> 
->  - Full PASID API support including:
->     - S1/SVA domains attached to PASIDs
->     - IDENTITY/BLOCKED/S1 attached to RID
->     - Change of the RID domain while PASIDs are attached
-> 
->  - Streamlined SVA support using the core infrastructure
-> 
->  - Hitless, whenever possible, change between two domains
-> 
-> This requires some reorganizing how the invalidation is tracked, a
-> flexible linked list containing the SSIDs as well as the ATC information
-> is used instead of a single master.
-> 
-> The revised invalidation infrastructure is used to build generic support
-> for attaching any sort of domain to any SSID, including the necessary
-> maintenance of the invalidation list and the global ATS state. This
-> mechansim is used again in part 3 as part of the nesting series.
-> 
-> The ATS ordering is generalized and consolidated so that the PASID flow
-> can use it and put into a form where it is fully hitless, whenever
-> possible. This is necessary as changes to single PASIDs or RIDs can not
-> change global state like ATS without impacting other, still attached,
-> PASIDs or RIDs.
-> 
-> Next simply replace the entire outdated SVA mmu_notifier implementation in
-> one shot and switch it over to the newly created generic PASID layer and
-> generic invalidation logic. This avoids the messy and confusing approach
-> of trying to incrementally untangle this in place. The new code is small
-> and simple enough this is much better than trying to figure out smaller
-> steps.
-> 
-> Once SVA is resting on the consolidate PASID layer it is straightforward
-> to make the PASID interface functionally complete by supporting S1DSS to
-> allow concurrent change of the RID while a PASID is attached and allow
-> supporting PASID over an IDENTIY RID.
-> 
-> This continues to support lazy allocation and installation of the CD table
-> by continuing to use the CFG mode for IDENTITY/BLOCKED when when the PASID
-> table is empty.
-> 
-> Finally enable attaching any S1 domain to a PASID, not just SVA.
-> 
-> It achieves the same goals as the several series from Michael and the
-> S1DSS series from Nicolin that were trying to improve portions of the API.
-> 
-> This is on github:
-> https://github.com/jgunthorpe/linux/commits/smmuv3_newapi
-> 
-> v8:
->  - Rebase on v6.10-rc2
->  - Make arm_smmu_sva_domain_alloc NULL when SVA is disabled so the core
->    code sees a NULL function pointer
->  - Update comments around arm_smmu_attach_prepare()
->  - Rename struct attach_state -> arm_smmu_attach_state and document
->    better, include more common function paramters in state
->  - Consistently use ats_enabled everywhere, replacing disable_ats in state
->  - Move the note about ATS bypass/abort to arm_smmu_attach_prepare()
->  - Remove temporary cd_table.in_ste check in arm_smmu_sva_set_dev_pasid()
->  - Improve comments and clarity of logic in arm_smmu_attach_commit()
->  - Shorten arm_smmu_mmu_notifier_free()
->  - Fix domain -> sid_domain typo in arm_smmu_remove_dev_pasid()
-> v7: https://lore.kernel.org/r/0-v7-9597c885796c+d2-smmuv3_newapi_p2b_jgg@nvidia.com
->  - Second half of the split series
->  - Rebase on Joerg's latest
->  - Accommodate ARM_SMMU_FEAT_ATTR_TYPES_OVR for the S1DSS code
->  - Include the S1DSS kunit tests
->  - Include hunks to adjust the unit tests to API changes from this series
->  - Move 3 BTM related patches out of this series, they can go in the BTM
->    enablement series.
->  - Move the domain_alloc_sva() conversion to the first patch, and rebase
->    on the accepted core code change
->  - Use the new core APIs for the PASID ops
->  - Revise commit messages
-> v6: https://lore.kernel.org/r/0-v6-228e7adf25eb+4155-smmuv3_newapi_p2_jgg@nvidia.com
-> 
-> Cc: Nicolin Chen <nicolinc@nvidia.com>
-> Cc: Michael Shavit <mshavit@google.com>
-> Cc: Jean-Philippe Brucker <jean-philippe@linaro.org>
-> Cc: Shameerali Kolothum Thodi <shameerali.kolothum.thodi@huawei.com>
-> Cc: Eric Auger <eric.auger@redhat.com>
-> Cc: Moritz Fischer <mdf@kernel.org>
-> Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
-> 
-> Jason Gunthorpe (14):
->   iommu/arm-smmu-v3: Convert to domain_alloc_sva()
->   iommu/arm-smmu-v3: Start building a generic PASID layer
->   iommu/arm-smmu-v3: Make smmu_domain->devices into an allocated list
->   iommu/arm-smmu-v3: Make changing domains be hitless for ATS
->   iommu/arm-smmu-v3: Add ssid to struct arm_smmu_master_domain
->   iommu/arm-smmu-v3: Do not use master->sva_enable to restrict attaches
->   iommu/arm-smmu-v3: Thread SSID through the arm_smmu_attach_*()
->     interface
->   iommu/arm-smmu-v3: Make SVA allocate a normal arm_smmu_domain
->   iommu/arm-smmu-v3: Keep track of arm_smmu_master_domain for SVA
->   iommu/arm-smmu-v3: Put the SVA mmu notifier in the smmu_domain
->   iommu/arm-smmu-v3: Allow IDENTITY/BLOCKED to be set while PASID is
->     used
->   iommu/arm-smmu-v3: Test the STE S1DSS functionality
->   iommu/arm-smmu-v3: Allow a PASID to be set when RID is
->     IDENTITY/BLOCKED
->   iommu/arm-smmu-v3: Allow setting a S1 domain to a PASID
-> 
->  .../iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c   | 431 +++-----------
->  .../iommu/arm/arm-smmu-v3/arm-smmu-v3-test.c  | 116 +++-
->  drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c   | 561 ++++++++++++++----
->  drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h   |  52 +-
->  4 files changed, 664 insertions(+), 496 deletions(-)
-> 
-> 
-> base-commit: c3f38fa61af77b49866b006939479069cd451173
-> -- 
-> 2.45.2
-> 
+On Mon, Jun 24, 2024 at 12:51:34PM -0700, Oliver Upton wrote:
 
-Reviewed-by: Jerry Snitselaar <jsnitsel@redhat.com>
+> Having the SMMU participate in broadcast TLB maintenance means TLBI
+> instructions on the CPU invalidate translations in the SMMU, which is
+> useful for SVA usecases. However, if the host is using different VMIDs
+> for the CPU and SMMU, then guest TLBIs no longer match the guest's SMMU
+> context...
+> 
+> Pinning / sharing the VMID between CPU and SMMU is a hard requirement if
+> you advertise BTM support to the guest.
 
+Yes, and the extra detail that the SMMU *must* always have a unique
+VMID for the specific VM, we can't leave it in a state without one.
+
+Meaning there is little purpose to changing the VMID at runtime as you
+can't multiplex more VM's than you have IDs once the SMMU is using it
+anyhow.
+
+Jason
