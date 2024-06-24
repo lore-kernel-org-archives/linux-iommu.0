@@ -1,25 +1,31 @@
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 2A6A013776F
-	for <iommu@lists.linux.dev>; Mon, 24 Jun 2024 11:09:27 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
+Received: from szxga08-in.huawei.com (szxga08-in.huawei.com [45.249.212.255])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6956E13D53B
+	for <iommu@lists.linux.dev>; Mon, 24 Jun 2024 13:13:15 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=45.249.212.255
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1719227370; cv=none; b=rDcNxNQuGx8+UmAWzxognCjMRpcPEIOVwsrJUG+G/IHizL5NCeGNDI0hBB2Fpmf0DAqwcQe0GT5/XPL51hophWWWZp1cwgY6xoE8hWncjmcCZ/Fo2Y4MKfdM374vy8J4Vi8h8wh29sYF1dKbJDDeNpUGBwkroDuobeqZmbBsqYg=
+	t=1719234798; cv=none; b=DqunvcyUT+GeP45+fPz4yCCVs9M2Jl2rVHUbnNjdO6DEkOIyfUJlDOUMcsnVwWM763H+ED1I+B0pIj6Kbvn8Wn+P4INdwyHgfQ9lqrcsIhTc/kaazGB0H/2to0K3RVPyVgpda0+IeXEp4RkqWxhEoXhLuYq7PgwWXyBzb3wUzBU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1719227370; c=relaxed/simple;
-	bh=lLvLGmBL9ObbAsFrqs2bLSwFQlEI0fsUX/vQlv3s7jE=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=fw+pgCHrre0me+qsX0ILSU0/xmNTub5AxLt2jcpZ/SiDq4T0w5gi9UEe/+IkDvZY43EycHE5BESZArP1qTlWaDe8kVjqM8swb71YsQ2qI6tDDmemJA52yN71cGXz8APg9JaiQYD1zaCzfvh7Dzc0BHYtTMIcw3Uss6tE57dxvwI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; arc=none smtp.client-ip=217.140.110.172
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 1DB2DDA7;
-	Mon, 24 Jun 2024 04:09:52 -0700 (PDT)
-Received: from [10.57.74.124] (unknown [10.57.74.124])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 4C7383F73B;
-	Mon, 24 Jun 2024 04:09:25 -0700 (PDT)
-Message-ID: <4c941977-868a-4bd0-9c57-eb58255d95bf@arm.com>
-Date: Mon, 24 Jun 2024 12:09:23 +0100
+	s=arc-20240116; t=1719234798; c=relaxed/simple;
+	bh=oyCpXt6yAyYTSwcQwAZ4p92sZK6DCxmgRGJ7KSlqaNo=;
+	h=Message-ID:Date:MIME-Version:Subject:To:CC:References:From:
+	 In-Reply-To:Content-Type; b=R773D2O4g86w7bZ0qc+yT/ysj7g+53LRUGqvV26AdkmYB6un2bsKEfIoCybL7W/zMqpqgBGF4aHMHjWkyHTpeZD8l4G7jQDGoL0a3/+5l/Tx9JnQdSK2KC+DpFwqXMDpXSvJCplkbLv31NTnHsLuXJ5sTRM7AZygd+x3kjhfaXY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=huawei.com; spf=pass smtp.mailfrom=huawei.com; arc=none smtp.client-ip=45.249.212.255
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=huawei.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=huawei.com
+Received: from mail.maildlp.com (unknown [172.19.163.174])
+	by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4W77ZW3XFGz1SDbN;
+	Mon, 24 Jun 2024 21:08:51 +0800 (CST)
+Received: from kwepemf500003.china.huawei.com (unknown [7.202.181.241])
+	by mail.maildlp.com (Postfix) with ESMTPS id 1941214037B;
+	Mon, 24 Jun 2024 21:13:13 +0800 (CST)
+Received: from [10.174.176.82] (10.174.176.82) by
+ kwepemf500003.china.huawei.com (7.202.181.241) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.1544.11; Mon, 24 Jun 2024 21:13:12 +0800
+Message-ID: <0322849d-dc1f-4e1c-a47a-463f3c301bdc@huawei.com>
+Date: Mon, 24 Jun 2024 21:13:11 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -27,58 +33,82 @@ List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [RFC PATCH] iommu/xen: Add Xen PV-IOMMU driver
-To: Baolu Lu <baolu.lu@linux.intel.com>, Teddy Astie
- <teddy.astie@vates.tech>, Jason Gunthorpe <jgg@ziepe.ca>
-Cc: xen-devel@lists.xenproject.org, iommu@lists.linux.dev,
- Juergen Gross <jgross@suse.com>, Stefano Stabellini
- <sstabellini@kernel.org>,
- Oleksandr Tyshchenko <oleksandr_tyshchenko@epam.com>,
- Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
- =?UTF-8?Q?Marek_Marczykowski-G=C3=B3recki?= <marmarek@invisiblethingslab.com>
-References: <fe36b8d36ed3bc01c78901bdf7b87a71cb1adaad.1718286176.git.teddy.astie@vates.tech>
- <20240619163000.GK791043@ziepe.ca>
- <750967b7-252f-4523-872f-64b79358c97c@vates.tech>
- <4ba90f86-fd14-4d2a-b7a0-c3eaab243565@linux.intel.com>
-From: Robin Murphy <robin.murphy@arm.com>
-Content-Language: en-GB
-In-Reply-To: <4ba90f86-fd14-4d2a-b7a0-c3eaab243565@linux.intel.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+Subject: Re: [PATCH] iommu/iova: Bettering utilizing cpu_rcaches in no-strict
+ mode
+To: Robin Murphy <robin.murphy@arm.com>, <joro@8bytes.org>, <will@kernel.org>,
+	<john.g.garry@oracle.com>
+CC: <iommu@lists.linux.dev>, <linux-kernel@vger.kernel.org>
+References: <20240624083952.52612-1-zhangzekun11@huawei.com>
+ <5149c162-cf38-4aa4-9e96-27c6897cad36@arm.com>
+From: "zhangzekun (A)" <zhangzekun11@huawei.com>
+In-Reply-To: <5149c162-cf38-4aa4-9e96-27c6897cad36@arm.com>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
 Content-Transfer-Encoding: 8bit
+X-ClientProxiedBy: dggems705-chm.china.huawei.com (10.3.19.182) To
+ kwepemf500003.china.huawei.com (7.202.181.241)
 
-On 2024-06-23 4:21 am, Baolu Lu wrote:
-> On 6/21/24 11:09 PM, Teddy Astie wrote:
->> Le 19/06/2024 à 18:30, Jason Gunthorpe a écrit :
->>> On Thu, Jun 13, 2024 at 01:50:22PM +0000, Teddy Astie wrote:
->>>
->>>> +struct iommu_domain *xen_iommu_domain_alloc(unsigned type)
->>>> +{
->>>> +    struct xen_iommu_domain *domain;
->>>> +    u16 ctx_no;
->>>> +    int ret;
->>>> +
->>>> +    if (type & IOMMU_DOMAIN_IDENTITY) {
->>>> +        /* use default domain */
->>>> +        ctx_no = 0;
->>> Please use the new ops, domain_alloc_paging and the static identity 
->>> domain.
->> Yes, in the v2, I will use this newer interface.
->>
->> I have a question on this new interface : is it valid to not have a
->> identity domain (and "default domain" being blocking); well in the
->> current implementation it doesn't really matter, but at some point, we
->> may want to allow not having it (thus making this driver mandatory).
-> 
-> It's valid to not have an identity domain if "default domain being
-> blocking" means a paging domain with no mappings.
-> 
-> In the iommu driver's iommu_ops::def_domain_type callback, just always
-> return IOMMU_DOMAIN_DMA, which indicates that the iommu driver doesn't
-> support identity translation.
 
-That's not necessary - if neither ops->identity_domain nor 
-ops->domain_alloc(IOMMU_DOMAIN_IDENTITY) gives a valid domain then we 
-fall back to IOMMU_DOMAIN_DMA anyway.
+在 2024/6/24 18:56, Robin Murphy 写道:
+> On 2024-06-24 9:39 am, Zhang Zekun wrote:
+>> Currently, when iommu working in no-strict mode, fq_flush_timeout()
+>> will always try to free iovas on one cpu. Freeing the iovas from all
+>> cpus on one cpu is not cache-friendly to iova_rcache, because it will
+>> first filling up the cpu_rcache and then pushing iovas to the depot,
+>> iovas in the depot will finally goto the underlying rbtree if the
+>> depot_size is greater than num_online_cpus().
+> 
+> That is the design intent - if the excess magazines sit in the depot 
+> long enough to be reclaimed then other CPUs didn't want them either. 
+> We're trying to minimise the amount of unused cached IOVAs sitting 
+> around wasting memory, since IOVA memory consumption has proven to be 
+> quite significant on large systems.
+
+Hi, Robin,
+
+It does waste some memory after this change, but since we have been 
+freeing iova on each cpu in strict-mode for years, I think this change 
+seems reasonable to make the iova free logic identical to strict-mode.
+This patch try to make the speed of allcating and freeing iova roughly 
+same by better utilizing the iova_rcache, or we will more likely enter 
+the slowpath. The save of memory consumption is actually at the cost of 
+performance, I am not sure if we need such a optimization for no-strict 
+mode which is mainly used for performance consideration.
+
+> 
+> As alluded to in the original cover letter, 100ms for IOVA_DEPOT_DELAY 
+> was just my arbitrary value of "long enough" to keep the initial 
+> implementation straightforward - I do expect that certain workloads 
+> might benefit from tuning it differently, but without proof of what they 
+> are and what they want, there's little justification for introducing 
+> extra complexity and potential user ABI yet.
+> 
+>> Let fq_flush_timeout()
+>> freeing iovas on cpus who call dma_unmap* APIs, can decrease the overall
+>> time caused by fq_flush_timeout() by better utilizing the iova_rcache,
+>> and minimizing the competition for the iova_rbtree_lock().
+> 
+> I would have assumed that a single CPU simply throwing magazines into 
+> the depot list from its own percpu cache is quicker, or at least no 
+> slower, than doing the same while causing additional contention/sharing 
+> by interfering with other percpu caches as well. And where does the 
+> rbtree come into that either way? If an observable performance issue 
+> actually exists here, I'd like a more detailed breakdown to understand it.
+> 
+> Thanks,
+> Robin.
+> 
+
+This patch is firstly intent to minimize the chance of softlock issue in 
+fq_flush_timeout(), which is already dicribed erarlier in [1], which has 
+beed applied in a commercial kernel[2] for years.
+
+However, the later tests show that this single patch is not enough to 
+fix the softlockup issue, since the root cause of softlockup is the 
+underlying iova_rbtree_lock. In our softlockup scenarios, the average
+time cost to get this spinlock is about 6ms.
+
+[1] https://lkml.org/lkml/2023/2/16/124
+[2] https://gitee.com/openeuler/kernel/tree/OLK-5.10/
 
 Thanks,
-Robin.
+Zekun
