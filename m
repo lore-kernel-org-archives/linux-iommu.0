@@ -1,95 +1,123 @@
-Received: from out-179.mta0.migadu.com (out-179.mta0.migadu.com [91.218.175.179])
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 22DD21EB56
-	for <iommu@lists.linux.dev>; Mon, 24 Jun 2024 19:52:34 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=91.218.175.179
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B4A6349643
+	for <iommu@lists.linux.dev>; Mon, 24 Jun 2024 20:52:06 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=170.10.129.124
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1719258756; cv=none; b=K38rk6pSmqli9RTcPiAoEVEcnBVfcp5q4Me5MmDKfaSzBGLckjd0UZMDmDmpPYn/tUYldtFqTiBeAPP2xqINyCTNaXg3Ccr67/lM7gG9dZ0RcJlJtZO0U9mvfNfoHnVYUuttN80IvJoIVytAr6sGczaXEuL91LeWcpD0NHZXpvA=
+	t=1719262328; cv=none; b=c1d7tJpEzBcEI/wrATdpDo0aINGmRVJhZL+PBxTg3s14jYadpiulm2/MnsW0C43cL9ci8zSPoy0y2MWiPQsVwCu8zC7psx7rrf3RNVYpXcZFW9FH+OtpG3Y1oAR4p34GkSmS7IHheyMN+F6ESYIOglSj8IUy1ggle/3Bh2tenb4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1719258756; c=relaxed/simple;
-	bh=C1yDMOZ8QXAThkUrxm8gWfH0mZlNLXMcyFdQNMvQI7c=;
+	s=arc-20240116; t=1719262328; c=relaxed/simple;
+	bh=4wYnYKBF4yjT/FHb+JBtII+1Z9Wvz8Num1xTnp9STyE=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=O2g5P212XHqPMzhsZ/osIDfGPl8j3sAkLaoibFWbAoItkk+OxbrSYB07rrq9ZubRl5Jkuh22H7FF1zyu2trOW2J70R6FsI3Ml19RSTqd+1qxAvYUmJctu+8rnisjq4DrzkbhhCrOqbbIdGoAFOxWMoe0rLzRHt9T1LMOT1LJ66k=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.dev; spf=pass smtp.mailfrom=linux.dev; dkim=pass (1024-bit key) header.d=linux.dev header.i=@linux.dev header.b=C7lDyln2; arc=none smtp.client-ip=91.218.175.179
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.dev
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.dev
+	 In-Reply-To:Content-Type:Content-Disposition; b=kmo4kDcSqykBCo+sXwEIk5vMttiIQZDtAFmyKTBf9MyusZYXfLXdRUTohxZoMxydDXm6kwD7dZuNkyeXIB940EvjLU1GXK+saC3tLnreIQK5XWdxbry5oiOgGWD2ZIWZt/i/5FmknyFJOWqw64YLTHnqMemF3SIBT0CQsCOyodk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=redhat.com; spf=pass smtp.mailfrom=redhat.com; dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b=TQXu14CA; arc=none smtp.client-ip=170.10.129.124
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=redhat.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=redhat.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linux.dev header.i=@linux.dev header.b="C7lDyln2"
-X-Envelope-To: shameerali.kolothum.thodi@huawei.com
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
-	t=1719258752;
+	dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="TQXu14CA"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+	s=mimecast20190719; t=1719262325;
 	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
 	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding:
 	 in-reply-to:in-reply-to:references:references;
-	bh=JZU8S04DmW37EgvwXoQWCiG/q1Cf8pwLsOrAbOmmLjs=;
-	b=C7lDyln2xa5lWpdBfg8j566giFNeCe0vJGiqnCigrAWHSI8Ur5Uz+6t1ZEMjxIlUi9pQeW
-	OFrzfv1VDagH0QLz6yeROMEqyPFBDxHcVxlog8Ezn2vPB0iDDe7mdyGTHJAW25ol8M2DfT
-	najtYJsuz0Y9+HjheetgopFfOeWOpqc=
-X-Envelope-To: kvmarm@lists.linux.dev
-X-Envelope-To: iommu@lists.linux.dev
-X-Envelope-To: linux-arm-kernel@lists.infradead.org
-X-Envelope-To: linuxarm@huawei.com
-X-Envelope-To: kevin.tian@intel.com
-X-Envelope-To: jgg@ziepe.ca
-X-Envelope-To: alex.williamson@redhat.com
-X-Envelope-To: maz@kernel.org
-X-Envelope-To: will@kernel.org
-X-Envelope-To: robin.murphy@arm.com
-X-Envelope-To: jean-philippe@linaro.org
-X-Envelope-To: jonathan.cameron@huawei.com
-Date: Mon, 24 Jun 2024 12:52:27 -0700
-X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
-From: Oliver Upton <oliver.upton@linux.dev>
-To: Shameerali Kolothum Thodi <shameerali.kolothum.thodi@huawei.com>
-Cc: "kvmarm@lists.linux.dev" <kvmarm@lists.linux.dev>,
-	"iommu@lists.linux.dev" <iommu@lists.linux.dev>,
-	"linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>,
-	Linuxarm <linuxarm@huawei.com>,
-	"kevin.tian@intel.com" <kevin.tian@intel.com>,
-	"jgg@ziepe.ca" <jgg@ziepe.ca>,
-	"alex.williamson@redhat.com" <alex.williamson@redhat.com>,
-	"maz@kernel.org" <maz@kernel.org>,
-	"will@kernel.org" <will@kernel.org>,
-	"robin.murphy@arm.com" <robin.murphy@arm.com>,
-	"jean-philippe@linaro.org" <jean-philippe@linaro.org>,
-	Jonathan Cameron <jonathan.cameron@huawei.com>
-Subject: Re: [RFC PATCH v2 2/7] KVM: arm64: Introduce support to pin VMIDs
-Message-ID: <ZnnOe7v5XQJkevNl@linux.dev>
-References: <20240208151837.35068-1-shameerali.kolothum.thodi@huawei.com>
- <20240208151837.35068-3-shameerali.kolothum.thodi@huawei.com>
- <ZnnHbM0p8amCqkeJ@linux.dev>
- <99b822b154504531b490055bc0f4006c@huawei.com>
+	bh=R+SxFeQgxYEfRt/DxWLY+pylpQxDzaNqFiJEm3jfDys=;
+	b=TQXu14CAkX8wg2IU2o6VLcYwyc31hliuAGhkrJ9aU4stU/OgZ88lQONadQeUyUIzH2y/ox
+	pR7r3w+BVcpCkXi1I5hXp4QQUc4yoCKGsVg79BB9q7p3vu8+gFg4CkuxXB1PWK+MY8ieof
+	sZKDmdJMa1cUc4daB+n3EPJCyM2OLtk=
+Received: from mail-oa1-f72.google.com (mail-oa1-f72.google.com
+ [209.85.160.72]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
+ us-mta-269-jRRnfW7_ONaqz2yIH5rT7A-1; Mon, 24 Jun 2024 16:52:03 -0400
+X-MC-Unique: jRRnfW7_ONaqz2yIH5rT7A-1
+Received: by mail-oa1-f72.google.com with SMTP id 586e51a60fabf-25cb2c198ceso8275789fac.0
+        for <iommu@lists.linux.dev>; Mon, 24 Jun 2024 13:52:03 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1719262323; x=1719867123;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :mime-version:references:message-id:subject:cc:to:from:date
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=R+SxFeQgxYEfRt/DxWLY+pylpQxDzaNqFiJEm3jfDys=;
+        b=d/sUWqhOktx1KzdEeh7V0+xjVUJuwCdb07XzwUmZ8TcJ9swCbdPfXZcyFyB6aHhHdV
+         hclpGZtaYQ9scBzGp1UmZkQpOiVDKLb29v3ZQEKWtSaNwgqmq5qdNvAKnmKdUJtAjK8z
+         GyJ5yeLXf13trXe6gOCuc4945DkESwMo+4+T9gL7hLjtscFSAK2lhFBQc/jsnLvfTXk1
+         RYvHfjO19UI5CnOFD4CkKNTx9WyFhhuqyQUW4F2jAgpHVvCDbSR5ex3J56IkCZTN4hdd
+         a6l8Lp4czRHdICj0xRmVeR9FdIYaWADxcD9JiCaHKtsMvxLpqfUgF8rhBpq32GKcTb+j
+         n3rg==
+X-Gm-Message-State: AOJu0Yyr1bIyb8+LUObaKCo9j05ADlZRkv/piQdA62qu5jkT9xsgUyGj
+	AUkCj4jRcHVp8Euea+f7qpxncmUQl+mDx8x1Uthfl/JvbyaCWm8nPGRZkdIV0F9/JoegYlQNbPU
+	SOitAXUrqrS3iJGdkz4Kv50yvAfNjUlrbSD0ZjEaAntxyCwWZQmM3
+X-Received: by 2002:a05:6870:c14e:b0:259:8b4e:e71a with SMTP id 586e51a60fabf-25cfcf34d87mr7235068fac.46.1719262323201;
+        Mon, 24 Jun 2024 13:52:03 -0700 (PDT)
+X-Google-Smtp-Source: AGHT+IFR2E+VmtRxhRjWRyO2+wTv5YcfQuI/gC4k4rTQSFS1CRFfBNg1iFJ4Q265ABl4Vu/9hpv2UA==
+X-Received: by 2002:a05:6870:c14e:b0:259:8b4e:e71a with SMTP id 586e51a60fabf-25cfcf34d87mr7235054fac.46.1719262322938;
+        Mon, 24 Jun 2024 13:52:02 -0700 (PDT)
+Received: from localhost (ip98-179-76-110.ph.ph.cox.net. [98.179.76.110])
+        by smtp.gmail.com with ESMTPSA id af79cd13be357-79bce93479bsm341814585a.113.2024.06.24.13.52.02
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 24 Jun 2024 13:52:02 -0700 (PDT)
+Date: Mon, 24 Jun 2024 13:52:00 -0700
+From: Jerry Snitselaar <jsnitsel@redhat.com>
+To: Vasant Hegde <vasant.hegde@amd.com>
+Cc: iommu@lists.linux.dev, joro@8bytes.org, suravee.suthikulpanit@amd.com, 
+	=?utf-8?B?QsWCYcW8ZWogU3pjenlnaWXFgg==?= <spaz16@wp.pl>
+Subject: Re: [PATCH rc] iommu/amd: Fix GT feature enablement again
+Message-ID: <jvmjccjobcmsd2xq24x62ovrdwl6gzpwq5bkh5jwbsl4pfb2h5@jyhpbl6oveed>
+References: <20240621101533.20216-1-vasant.hegde@amd.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+In-Reply-To: <20240621101533.20216-1-vasant.hegde@amd.com>
+X-Mimecast-Spam-Score: 0
+X-Mimecast-Originator: redhat.com
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <99b822b154504531b490055bc0f4006c@huawei.com>
-X-Migadu-Flow: FLOW_OUT
+Content-Transfer-Encoding: 8bit
 
-On Mon, Jun 24, 2024 at 07:34:42PM +0000, Shameerali Kolothum Thodi wrote:
-> > > +	raw_spin_lock_irqsave(&cpu_vmid_lock, flags);
-> > > +
-> > > +	vmid = atomic64_read(&kvm_vmid->id);
-> > > +
-> > > +	if (refcount_inc_not_zero(&kvm_vmid->pinned))
-> > > +		goto out_unlock;
-> > > +
-> > > +	if (nr_pinned_vmids >= max_pinned_vmids) {
-> > > +		vmid = 0;
-> > > +		goto out_unlock;
-> > > +	}
-> > 
-> > You need to decrement the refcount in this error path.
+On Fri, Jun 21, 2024 at 10:15:33AM GMT, Vasant Hegde wrote:
+> Current code configures GCR3 even when device is attached to identity
+> domain. So that we can support SVA with identity domain. This means in
+> attach device path it updates Guest Translation related bits in DTE.
 > 
-> Hmm..do we? We are here means refcount is zero, right?
+> Commit de111f6b4f6a ("iommu/amd: Enable Guest Translation after reading
+> IOMMU feature register") missed to enable Control[GT] bit in resume
+> path. Its causing certain laptop to fail to resume after suspend.
+> 
+> This is because we have inconsistency between between control register
+> (GT is disabled) and DTE (where we have enabled guest translation related
+> bits) in resume path. And IOMMU hardware throws ILLEGAL_DEV_TABLE_ENTRY.
+> 
+> Fix it by enabling GT bit in resume path.
+> 
+> Reported-by: Błażej Szczygieł <spaz16@wp.pl>
+> Link: https://bugzilla.kernel.org/show_bug.cgi?id=218975
+> Fixes: de111f6b4f6a ("iommu/amd: Enable Guest Translation after reading IOMMU feature register")
+> Tested-by: Błażej Szczygieł <spaz16@wp.pl>
+> Signed-off-by: Vasant Hegde <vasant.hegde@amd.com>
 
-Durr, I need more caffeine. You're right.
+Reviewed-by: Jerry Snitselaar <jsnitsel@redhat.com>
 
--- 
-Thanks,
-Oliver
+> ---
+>  drivers/iommu/amd/init.c | 1 +
+>  1 file changed, 1 insertion(+)
+> 
+> diff --git a/drivers/iommu/amd/init.c b/drivers/iommu/amd/init.c
+> index 161248067776..c89d85b54a1a 100644
+> --- a/drivers/iommu/amd/init.c
+> +++ b/drivers/iommu/amd/init.c
+> @@ -2743,6 +2743,7 @@ static void early_enable_iommu(struct amd_iommu *iommu)
+>  	iommu_enable_command_buffer(iommu);
+>  	iommu_enable_event_buffer(iommu);
+>  	iommu_set_exclusion_range(iommu);
+> +	iommu_enable_gt(iommu);
+>  	iommu_enable_ga(iommu);
+>  	iommu_enable_xt(iommu);
+>  	iommu_enable_irtcachedis(iommu);
+> -- 
+> 2.31.1
+> 
+
