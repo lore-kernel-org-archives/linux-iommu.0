@@ -1,216 +1,641 @@
-Received: from NAM10-DM6-obe.outbound.protection.outlook.com (mail-dm6nam10on2074.outbound.protection.outlook.com [40.107.93.74])
+Received: from mail134-3.atl141.mandrillapp.com (mail134-3.atl141.mandrillapp.com [198.2.134.3])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4B33A13D8B3
-	for <iommu@lists.linux.dev>; Mon, 24 Jun 2024 14:26:15 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.93.74
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1719239176; cv=fail; b=fnHziPlcZEf5MZf4eaVIbyyiqcqU9n41UPbUGdt5fip3lQ99pdLNkqi75XchuNCTA4e4pAOYpxeK3TeqmnLplc19ePt9p1fy2su+KccPD4KYlg5tTIu6Pw7b69f4cJ2xRdQSzSqWVHBg/OrDL9U8w8OyRmpo/BfRgm5daDcF44s=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1719239176; c=relaxed/simple;
-	bh=oGmDqbGH+Jp5OP4PfaKfc0TvkqR8k80OWRbRcQLdSdE=;
-	h=Message-ID:Date:Subject:To:Cc:References:From:In-Reply-To:
-	 Content-Type:MIME-Version; b=kNlmVWoFzxYWs2iMt+XLGXKVf9HfNNnwpSfETUEouWkqLOhkK3WAdBP2so+YDAm1fUXeFh9QMLqFg5iiuECeJZsf5BMzd4za2aFjzhO2G8PY66vxG44HqaFexSmyForurHu4HdqkRSAzP9umN1W4MG/BFrelAFGoe3m70dJSBG0=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com; spf=fail smtp.mailfrom=amd.com; dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b=ZnALgJNH; arc=fail smtp.client-ip=40.107.93.74
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=amd.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D3D6D19AD45
+	for <iommu@lists.linux.dev>; Mon, 24 Jun 2024 14:36:46 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.2.134.3
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1719239809; cv=none; b=t0RzWpt0hSbamJUM6b5amC5Ja94slwJKuml+ScUdlAWLOQBB9wV9LRICqiL5upS5A5QakRKdtK07TuXnQlGJEllA96bjeNs2rj/bskxjVkQElkJsabHST7TW4WZKfnbwEfiNj5aO/EQYhkXGT8w2FDjl0UlDtGWcbHJOUiH03MQ=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1719239809; c=relaxed/simple;
+	bh=i9aP7WDWDbAhTEl98QKeWS/Nk+Di8WIF9pEu+2EHyEo=;
+	h=From:Subject:Message-Id:To:Cc:References:In-Reply-To:Date:
+	 MIME-Version:Content-Type; b=fKK+/Krexp42cFti5nqjTlVUqRmVITjC5MeTaBV62qO0bxJbXSBweE9NvyEUqXyUwRgeJx63dWTCAMbWu0D95/Zy2RY+rMmKkoaSOlVklXbln5mAxhv8LvJY60DCrBlWU/qFbAgYUmOaAJnWqOmaVNRB9KX2D5Jk6iPg+pypZUw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=vates.tech; spf=pass smtp.mailfrom=bounce.vates.tech; dkim=pass (2048-bit key) header.d=mandrillapp.com header.i=@mandrillapp.com header.b=vNADMY8a; dkim=pass (2048-bit key) header.d=vates.tech header.i=teddy.astie@vates.tech header.b=t9lZTdGX; arc=none smtp.client-ip=198.2.134.3
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=vates.tech
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=bounce.vates.tech
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b="ZnALgJNH"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=nOUIz/OnLKay64/vegWp6PdzstC+AiZ5I3xXWS/RBagRjhOmpn3yvd1HxTB6qKQ7z+w50+XVATQWjpUrOcntAxHL8xKZbKvm9GEDr/us+FDvrISqOpRg0/JWmxTFWqRNMQ/pXvsMX3zdtXm7BXnQToZtWis36aqjoxptRaVSOBJ6t0SFttATNUgYVMFwKU+IodAlkRs+kygGSzWfMEmZrNPujGUGyDClsXg8i0FlNTT7E1DZ1yHeC/rTuPYxexNgy3+hxDtyGmM4I8R0wOhWNqe0jnfw1eovPdJQaAPVQfxLF34LNPFJ4aKBNCiCQKO90FeFf+hLuaJ33iJFn6OLug==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=zxTanFFL7LhaLHUuTyalyKM8z7/iCO8ksosBlNGicRE=;
- b=ItOne/PGNQOo8xh4lua9cfoT1YCQrwYBNDD+esNbk0Y9Rq1mCd75+4fWoJ6TkOwtG0sv/PvJ7P/w8dTsDwKNDYLu5ogDrh3KPE3YfsUqaXlzz/ZUAq9nqViT0MN3tvLemWvI2HJn0jTlwUhbHb2VKKU6TxXZwPvv4YvKVVLWK5ziaATym+l36YO5zfgXNovi2rHzy4Z1nly4bUq249XuHT+pTZl8xkmcCCgnGW87pDBxeNUqYDWAtnzshRiv5BAnPsyNMhJV/dlE1WK/dN+GsJ9avHoo9ANtyDE7khhYATKPXt+w22ywXQMj3WSPLoRfCb3rLy2EgorbHom1ySB4Gg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=amd.com; dmarc=pass action=none header.from=amd.com; dkim=pass
- header.d=amd.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=zxTanFFL7LhaLHUuTyalyKM8z7/iCO8ksosBlNGicRE=;
- b=ZnALgJNHgKmYedHl3Es1giWE736iu+yHIxZudGCooakIKGn3O0Y0AfedYGk28Z6Zo2jV2cjs2IZuI35g7Ij/3xuoNl4nJI5muD347J/I/KMkHydl0ntdHEL+Dys6Q4MEIuM2IBpyAzoNNM9LP1SDmBsaTgTTx9/eiRSYyo1Ha6k=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=amd.com;
-Received: from DS7PR12MB6048.namprd12.prod.outlook.com (2603:10b6:8:9f::5) by
- MN6PR12MB8471.namprd12.prod.outlook.com (2603:10b6:208:473::19) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7698.29; Mon, 24 Jun
- 2024 14:26:12 +0000
-Received: from DS7PR12MB6048.namprd12.prod.outlook.com
- ([fe80::6318:26e5:357a:74a5]) by DS7PR12MB6048.namprd12.prod.outlook.com
- ([fe80::6318:26e5:357a:74a5%7]) with mapi id 15.20.7698.025; Mon, 24 Jun 2024
- 14:26:12 +0000
-Message-ID: <92033ab6-fb55-4206-9cb9-f81b5b6eede6@amd.com>
-Date: Mon, 24 Jun 2024 19:56:03 +0530
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH 1/1] iommu/vt-d: Fix missed device TLB cache tag
-To: Jason Gunthorpe <jgg@ziepe.ca>
-Cc: Baolu Lu <baolu.lu@linux.intel.com>, "Tian, Kevin"
- <kevin.tian@intel.com>, Joerg Roedel <joro@8bytes.org>,
- Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
- Jacek Lawrynowicz <jacek.lawrynowicz@linux.intel.com>,
- "iommu@lists.linux.dev" <iommu@lists.linux.dev>,
- "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-References: <20240619015345.182773-1-baolu.lu@linux.intel.com>
- <20240619164620.GN791043@ziepe.ca>
- <1dfb467d-f25a-4270-8a36-a048f061e2aa@linux.intel.com>
- <BN9PR11MB5276F76798E61D231D861A2F8CC82@BN9PR11MB5276.namprd11.prod.outlook.com>
- <976d4054-6306-4325-a112-5cf69b0c6f34@linux.intel.com>
- <bdbb40da-faa5-4321-a58b-5fcffcbc818c@amd.com>
- <8c78f966-539c-4c81-92a6-32d32bb10e8b@linux.intel.com>
- <657c7e03-91ef-4765-be7c-1f57eb45e467@amd.com>
- <20240620140815.GO791043@ziepe.ca>
-Content-Language: en-US
-From: Vasant Hegde <vasant.hegde@amd.com>
-In-Reply-To: <20240620140815.GO791043@ziepe.ca>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: PN3PEPF00000179.INDPRD01.PROD.OUTLOOK.COM
- (2603:1096:c04::44) To DS7PR12MB6048.namprd12.prod.outlook.com
- (2603:10b6:8:9f::5)
+	dkim=pass (2048-bit key) header.d=mandrillapp.com header.i=@mandrillapp.com header.b="vNADMY8a";
+	dkim=pass (2048-bit key) header.d=vates.tech header.i=teddy.astie@vates.tech header.b="t9lZTdGX"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=mandrillapp.com;
+	s=mte1; t=1719239805; x=1719500305;
+	bh=TZaaytuqYIwSbyX0zplkdr+dJA1t8O/nak39rKgZu4U=;
+	h=From:Subject:Message-Id:To:Cc:References:In-Reply-To:Feedback-ID:
+	 Date:MIME-Version:Content-Type:Content-Transfer-Encoding:CC:Date:
+	 Subject:From;
+	b=vNADMY8a8ilLpZP47DqmyR3xwBgyYqE7FqgNcT88J1Nfjb2M30v6/Kh24otdQONfo
+	 zz4VBBXn8XNUxbRn99inusHnY99Z4b6Frk/MY8fIN3jTL7mQkaOMBYykYGpiXswU3o
+	 Q5WWEkQHTA666BJyHJ2znOB/Wiuty8/8xw/+iZTIDsoV7vzWM5xltEFAcMBW92lLbk
+	 VGE7TyJAUBHGajAuhw0bQ3ZPz8BsurSZ6EIhlmLMAfj7fv4h7k2UKofI04fOs2nmWH
+	 /3EyPasS9cndMZby8uEWmdqg5Jix5mL5p3UJ4BtAPqZ50teq6F5cBfFvJtbiaNDzlT
+	 hz7svfqnELXjQ==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=vates.tech; s=mte1;
+	t=1719239805; x=1719500305; i=teddy.astie@vates.tech;
+	bh=TZaaytuqYIwSbyX0zplkdr+dJA1t8O/nak39rKgZu4U=;
+	h=From:Subject:Message-Id:To:Cc:References:In-Reply-To:Feedback-ID:
+	 Date:MIME-Version:Content-Type:Content-Transfer-Encoding:CC:Date:
+	 Subject:From;
+	b=t9lZTdGXl5EQWQTJw/Goc1ev8P0zsz9sE8foihPlFsjjtaFgggDxTqnA9k4S4gA88
+	 WNYGfastskMEIJOnaMyMscaZgi4QXXnLzluB76wcTLQSSLUk+tvIvP9CQmht//WUvw
+	 SXdAsVWnqhaBy+bfh7yB0UkbxwDdjoH/VO69m3Q2fUqh915mzWs0nlgMzNzPrq1j+G
+	 xXAuD9gP8VROU7SpZWKHOs852/fw4gUH0LciKQIFS3MK/xhHAPxFBU1+TjGFTdsPrM
+	 e/1be1tXpp5QRlK2LbAcryIGTq/SoARpdCBJXoJzY6MrAubpF22yB4ad3TqWHkX1Bf
+	 A/uJuuMH+32lA==
+Received: from pmta10.mandrill.prod.atl01.rsglab.com (localhost [127.0.0.1])
+	by mail134-3.atl141.mandrillapp.com (Mailchimp) with ESMTP id 4W79Wx2zQGzDRHxQ4
+	for <iommu@lists.linux.dev>; Mon, 24 Jun 2024 14:36:45 +0000 (GMT)
+From: Teddy Astie <teddy.astie@vates.tech>
+Subject: =?utf-8?Q?Re:=20[RFC=20PATCH=20v2]=20iommu/xen:=20Add=20Xen=20PV-IOMMU=20driver?=
+Received: from [37.26.189.201] by mandrillapp.com id 74a883a0b7d84bc9b80449287591f6a5; Mon, 24 Jun 2024 14:36:45 +0000
+X-Bm-Disclaimer: Yes
+X-Bm-Milter-Handled: 4ffbd6c1-ee69-4e1b-aabd-f977039bd3e2
+X-Bm-Transport-Timestamp: 1719239803489
+Message-Id: <a04e169d-b38a-43dc-b783-a8af1e1b0468@vates.tech>
+To: Robin Murphy <robin.murphy@arm.com>, xen-devel@lists.xenproject.org, iommu@lists.linux.dev
+Cc: Juergen Gross <jgross@suse.com>, Stefano Stabellini <sstabellini@kernel.org>, Oleksandr Tyshchenko <oleksandr_tyshchenko@epam.com>, Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>, =?utf-8?Q?Marek=20Marczykowski-G=C3=B3recki?= <marmarek@invisiblethingslab.com>
+References: <24d7ec005e77e4e0127995ba6f4ad16f33737fa5.1718981216.git.teddy.astie@vates.tech> <da3ec316-b001-4711-b323-70af3e6bb014@arm.com>
+In-Reply-To: <da3ec316-b001-4711-b323-70af3e6bb014@arm.com>
+X-Native-Encoded: 1
+X-Report-Abuse: =?UTF-8?Q?Please=20forward=20a=20copy=20of=20this=20message,=20including=20all=20headers,=20to=20abuse@mandrill.com.=20You=20can=20also=20report=20abuse=20here:=20https://mandrillapp.com/contact/abuse=3Fid=3D30504962.74a883a0b7d84bc9b80449287591f6a5?=
+X-Mandrill-User: md_30504962
+Feedback-ID: 30504962:30504962.20240624:md
+Date: Mon, 24 Jun 2024 14:36:45 +0000
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: DS7PR12MB6048:EE_|MN6PR12MB8471:EE_
-X-MS-Office365-Filtering-Correlation-Id: 65813613-d495-47cd-0299-08dc945998cc
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;ARA:13230037|376011|1800799021|366013;
-X-Microsoft-Antispam-Message-Info:
-	=?utf-8?B?TjQwZ29XZ2p0TXl5NXZQdm1pb01hc2pkbmlqb1dkQVFscDlHYXEvQ015Vmxa?=
- =?utf-8?B?MlhxQy9hWlB4UGF1TksvVVRBSmVOYjJLWERPN3BuYUFuN2JWUTBMM3J5cTlR?=
- =?utf-8?B?NjAyeEpBTExHaFk4OEJFeGVCenZhOWpaSFh4aEtKVEwydmJGaE8zaGZsMWsx?=
- =?utf-8?B?S08zZWQ0a1FoemxsVzZ6QnhvM1ovRTYwY0s0ZXZlM3hQNHRoVnBpRWVHdjVo?=
- =?utf-8?B?NUVSczRGS0k3T1lDNFNnMDVOdGprNWdOSHBqQ1kzNkREVUFaLzJobHUxUlZo?=
- =?utf-8?B?LzYwRHEvazVaQXhaeFRhWG10dWJjYmlOYUZZNHZINnNDYXVITFFyMTF2UVlh?=
- =?utf-8?B?UVoydzVoQmxEQ0pCL29BU3pCcnVRcmNyWXZPSlVMNi9VdXJ5bG5CclZiaStw?=
- =?utf-8?B?d2J4ZVFpazBSOW1YVEZrcmJkZUZETDZ3aThTVEd0cWN2NWxZWW0zMW05VGs5?=
- =?utf-8?B?S00vNHl6ZllmRTlEcXRCL1c4djFQZXdyb0RhSFA4dHJXVXdpOXk1OWY1d0Jz?=
- =?utf-8?B?Z1ZLOVJRY0pPeDVTWHc5VHhKRitJeHl4ZC94MXlFaWtRSEFFOFdkZkZCbEY2?=
- =?utf-8?B?aDYzVHBnMUZTYmVmL0FjaWZDdEtZSWpyMXcrZy9uYm0zRkN6ajlWRWlkYStR?=
- =?utf-8?B?WjlwaGpZQ21zSy9iREdQY0V4NXV1ck8vcFZwTXl6RGtZY1VObDNjdFR0QmND?=
- =?utf-8?B?ZVB0TVM3NkhndnFOQWVlYmwxYnNYNGlQYVluc2lBZjNjeDBOTFBzaVNmVVZG?=
- =?utf-8?B?VExVakFGbExHaXBDeS9DTWU5U2JaU1Y5Yk0rSHZ1V2pkR0I5Zm10OUQ2NGlD?=
- =?utf-8?B?ME5oL1NsbUdsTUNVTjQ5OGVIdEtUeXdSVlVZUUI0VEhWRG5EOHdtSW14NGdm?=
- =?utf-8?B?SERmVkpZZDVreVd6Y3NUclo5MGV5VGM5bDlrUm4xVHoxalBHbVlqalNZQ1k3?=
- =?utf-8?B?NXhHTmtoRCthMDBMUjZNb0gwa3BHK3VUN05wUXpFeGUvVytHN21TU0YvbUJI?=
- =?utf-8?B?M0V2WGQyWXRhUG15S3pINUk1NXlGeXpzOFI2QzF0bVNJZmhuZzA2K0Irc2d6?=
- =?utf-8?B?MTRadXAwUTJjQ21sengxbWFLL0Vvdm5mUy8wVUovVHJ0RVBackhRZW9MdGdM?=
- =?utf-8?B?UWIwQTkvV2lqV2dXeTlteXhjNHo4QUZuUmtjQTYyT0NiUElHRy9ENDl5Wjlk?=
- =?utf-8?B?ZWJFTE1IWnB0WmJoSE1vVlJmS1QyMElLM1VQZDVyMElpV0dXSzlJeC8yWGZh?=
- =?utf-8?B?bmwzQXBhVlFTaHFHcWpBYmhXNUZRTnhVSllUa3poaXFhVjhlZWd6VWZONTlo?=
- =?utf-8?B?cDdzbnRtaVdCMWRHbzdRbEZNK1MrbHJjMWxYU2dZSnBzSEpCdlh0RlFGUWVD?=
- =?utf-8?B?N0hhOWg4V280SGNYT29vWUp3Y1FWZldrYzFrUWpKNGluNXZDSTVhMU9TQ0ov?=
- =?utf-8?B?a3pCeUxlNTRqNytFaURrUnBTbnJNQ09sOU50SUFORjNPN2xRZzVXWEptQXBO?=
- =?utf-8?B?NVc1MThmaHFpZlJlc0NZOHQ0ZVZHWEc0OEFvVCs3OXhQYnN5ekpCN3VhVmk4?=
- =?utf-8?B?WjJ3V2VmZ2xjQXR2UnNLaDFMaXhRRnkzRzNKa1BISUxjc1R6Z2VDM0xqWTNL?=
- =?utf-8?B?aW9aVUgwWE9idjN6REdTTm1hcHRFeStpUG5MTlVDVlc0ZlZpcmpuUHNya1Jl?=
- =?utf-8?Q?SyRtcpfGmqD1kHIuvV6f?=
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DS7PR12MB6048.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230037)(376011)(1800799021)(366013);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?utf-8?B?c1hoN1Q3NEVnSnB4TDlJYWFZczBiVXloQXJPWUU5LzNEK2RjOVpEVmdnU2p6?=
- =?utf-8?B?Z0QyMExjQWJTMVNXZmVWb0dPQk04M3pCcE1XaGExeWdSV1lyb0xpMVcvV3pD?=
- =?utf-8?B?bDFLVFpGcmNZZVFlUVByODRIUEZVWmhydFQyaEtsZG13TDlJRXFwTkFkSzZP?=
- =?utf-8?B?THV0MkRSTzdvR2VSZmxzUE0yb1kvcWMwSDhhSzRBcHBxSm5SMTBuNlp6bGVq?=
- =?utf-8?B?UEhhRlVaM2RyUHNndjZJWXAyN2ZYTUdJVGxkK2sweHN6SC96ZEdOWVFFb3Zx?=
- =?utf-8?B?Ymt4UEtqNUprTWpzNkZDZUsvNUlRbHZRZStlaWF4UGNLVVlqVXQ5M0RmMTI5?=
- =?utf-8?B?dHBXMDl3cWlhRXMrNXpxRDg1ajRIUTFkTnJmMW9ZQStrQ1ZLbEJuTjRSdEEy?=
- =?utf-8?B?UVFuZElhaFFKOGtQN3NjWjlzK0EwNjVyWkNpazBkU0hWd2hEY21QbTRBS2p3?=
- =?utf-8?B?UE9aNkhOQ3BQNE10bHFyVXlrV0dtN1ZEeXdzaVNGUFV5bWg4ZDlMRml4dGRs?=
- =?utf-8?B?TjZhRE1UL0ZDYStmY0w2RENvcklJQm5ZUUVpQ29JSXVYaytyaFRXWTkydC9x?=
- =?utf-8?B?MFBsQnZQcVJkczh3MVdoU3o5OHEwU3FiTE9tZ2djdVNVK0VzZVNaWHBmVXQr?=
- =?utf-8?B?eE0zN2dBNjJ0Y2VtRHZzRFEvY2V0NEoyOGlIV1Evd2VNa0tBU3ZoM1pkcGNl?=
- =?utf-8?B?WjloNjlxRFBYNmFGbitKNDhEcUlGT2Z1WlpWVGdPcUx4alliSFVLNTFOOHlH?=
- =?utf-8?B?OThsV0RqUWNZeENUSnhXSThuZVIxN0hObWNOR081VHJMa09DL1Q2UkRKaEtX?=
- =?utf-8?B?NWNTL0JGRHZPZ2dhRmMzL1I2MjlNM2RwVnVCdEFTQjdCNjRSNG5kUnY3VjB4?=
- =?utf-8?B?L0pFeWJvNHJHT2tQTldrMHBVQWFmZnk4QnU3cXoxYzNpV3pFL1B6a3Y0Tyti?=
- =?utf-8?B?L1hmSGw1Y3oxSUVvQUY3NTFZSUozTml3K3phNjJ0eTZ1UmFTdkVIcUZJcU9X?=
- =?utf-8?B?REU5dXBOYVR5U284VmFETWY4V3o4aVNpaDlTMGRud2lTUnhXTlNDd1hwOU8v?=
- =?utf-8?B?ZjBZaGNXZHAvMVFQRkgxRzl2OFc4YnBQaDRWbDNBcXBoMmh5QmlwdDhJTnB4?=
- =?utf-8?B?ODFvUTIvYjc4anoxR2N0bENKQ1FreEZzVStNbExiVkNhbDlFV2paTTdWZkJu?=
- =?utf-8?B?YjZlVlRqUGdlNnlmZ2RsK05xVmtiRnUzVjQ0UkJWVHNXUm5lcHU4cW5uN0tL?=
- =?utf-8?B?aFEzM1V3ZEczbVlMMnoxZFI4TFl2VmFaTW1tT2JPcENOOEdVUTJhcHgwTnZU?=
- =?utf-8?B?VjR6aFFTUXhlNTQwMjhYYzlaaSs1NHNLbVpBUnJwaTl0d09sWTlpWjJOUGJx?=
- =?utf-8?B?UXhPVDdQcTRVelFENHlraDA5bDNqM2d5bGZkcm1aYkVSUDFZZUtGaGc4RkdR?=
- =?utf-8?B?ckIvZWFJTmFFQUEwUDBOMytsaDA3alAzRVFPeG1sY1VuMHhZd2d0ZHhMeXY2?=
- =?utf-8?B?VGxQWkhxT0VxTWt2SVpQR2RMNG5IN0tpUXRneHlPaG1VR3FuSnk3UmsvZFgx?=
- =?utf-8?B?NUVvRGo4eXg1b1lwREJ6V1VPK3V1WkdYT0p3eVM4cnloK0RLTHRhb0Q5My9Z?=
- =?utf-8?B?ekxWcnhDakFpN2FsSGZwSmxoV1BMajY1QlZhYlpVUW44RnRqMGFEekluT3o3?=
- =?utf-8?B?WVAvOUpTRlk2endCQW91VFdFT0hINjRFQUV2NjRldWhIa1FWa244R1FVWVp3?=
- =?utf-8?B?OWNDMFI1UlBFcC84VnBiYWErS0NWYjFrcWJuNzAwRVNzR0p3VnQrMnpLSXdv?=
- =?utf-8?B?R2t1SFpkeStNMjRsRXl2aDc4aVlORkJ5UForeWxZOEJiczBVaEVQOStJRnVp?=
- =?utf-8?B?RTYvSXA5WW9oajhtclo5ck5ZakRQNkdWNDhIQ1Z5ZEVWK2VZN1lYQmQ0MkY0?=
- =?utf-8?B?TnFSeThzZDhmT3V3WG9UeGo3UktwTXF3V2haSmZCWlNjSjZYaS95UU5wSjl3?=
- =?utf-8?B?bGx6QmZ2ZVJVUU0wSGFybmVXRFZhRzFpaENGdDRqN1RBcDhqNHQ4bnhwU2RH?=
- =?utf-8?B?Y3dzY2hqYW5JTkRPaXNuRzdmVE9ob1JjbEtGUXJvVFZ1NWxYYy91LzJsSTVs?=
- =?utf-8?Q?G58Ghj4dfUSXu7Mzmxm7Z3z6X?=
-X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 65813613-d495-47cd-0299-08dc945998cc
-X-MS-Exchange-CrossTenant-AuthSource: DS7PR12MB6048.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 24 Jun 2024 14:26:11.9606
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: dm0dndDoqtj4KXGUmEOmY64In54F52moXXEk/lskRzBRwc4JpYHEWXXJ5vPk79yHyl91JE9j1XM9nrB7eQwz5Q==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN6PR12MB8471
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
 
-Jason,
+Hello Robin,
+Thanks for the thourough review.
 
-
-On 6/20/2024 7:38 PM, Jason Gunthorpe wrote:
-> On Thu, Jun 20, 2024 at 04:19:46PM +0530, Vasant Hegde wrote:
->>>>>> seems that for all domain attaches above is coded in a wrong order
->>>>>> as ats is enabled after the cache tag is assigned.
->>>>> Yes, exactly. But simply changing the order isn't future-proof,
->>>>> considering ATS control will eventually be moved out of iommu drivers.
->>>> [Unrelated to this patch]
->>>>
->>>> You mean ATS setup will be moved to individual device driver? Is there any
->>>> reason for that?
->>>
->>> Not exactly to individual device drivers, but it should be out of the
->>> iommu drivers.
->>>
->>> https://lore.kernel.org/linux-iommu/BL1PR12MB51441FC4303BD0442EDB7A9CF7FFA@BL1PR12MB5144.namprd12.prod.outlook.com/
->>
->> Got it. Thanks.
->>
->> I remember of this discussion. May be we can provide API from IOMMU driver so
->> that individual driver can enable/disable ATS (like iommu_dev_enable_feature()).
+>> diff --git a/drivers/iommu/Kconfig b/drivers/iommu/Kconfig
+>> index 0af39bbbe3a3..242cefac77c9 100644
+>> --- a/drivers/iommu/Kconfig
+>> +++ b/drivers/iommu/Kconfig
+>> @@ -480,6 +480,15 @@ config VIRTIO_IOMMU
+>> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 Say Y here if you intend to r=
+un this kernel as a guest.
+>> +config XEN_IOMMU
+>> +=C2=A0=C2=A0=C2=A0 bool "Xen IOMMU driver"
+>> +=C2=A0=C2=A0=C2=A0 depends on XEN_DOM0
 > 
-> But I have a feeling if we do that it should be done by re-attaching
-> the domain.
+> Clearly this depends on X86 as well.
+> 
+Well, I don't intend this driver to be X86-only, even though the current 
+Xen RFC doesn't support ARM (yet). Unless there is a counter-indication 
+for it ?
 
-Right. By default IOMMU will enable the ATS.. But if device driver decides to
-disable it (say due to HW bug), then we have to re-attach domain (in AMD case we
-have to update the DTE and flush the TLB).
+>> +#include <linux/kernel.h>
+>> +#include <linux/init.h>
+>> +#include <linux/types.h>
+>> +#include <linux/iommu.h>
+>> +#include <linux/dma-map-ops.h>
+> 
+> Please drop this; it's a driver, not a DMA ops implementation.
+> 
+Sure, in addition to some others unneeded headers.
 
+>> +#include <linux/pci.h>
+>> +#include <linux/list.h>
+>> +#include <linux/string.h>
+>> +#include <linux/device/driver.h>
+>> +#include <linux/slab.h>
+>> +#include <linux/err.h>
+>> +#include <linux/printk.h>
+>> +#include <linux/stddef.h>
+>> +#include <linux/spinlock.h>
+>> +#include <linux/minmax.h>
+>> +#include <linux/string.h>
+>> +#include <asm/iommu.h>
+>> +
+>> +#include <xen/xen.h>
+>> +#include <xen/page.h>
+>> +#include <xen/interface/memory.h>
+>> +#include <xen/interface/physdev.h>
+>> +#include <xen/interface/pv-iommu.h>
+>> +#include <asm/xen/hypercall.h>
+>> +#include <asm/xen/page.h>
+>> +
+>> +MODULE_DESCRIPTION("Xen IOMMU driver");
+>> +MODULE_AUTHOR("Teddy Astie <teddy.astie@vates.tech>");
+>> +MODULE_LICENSE("GPL");
+>> +
+>> +#define MSI_RANGE_START=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 (0xfe=
+e00000)
+>> +#define MSI_RANGE_END=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 (0xfeef=
+ffff)
+>> +
+>> +#define XEN_IOMMU_PGSIZES=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 (0x1000)
+>> +
+>> +struct xen_iommu_domain {
+>> +=C2=A0=C2=A0=C2=A0 struct iommu_domain domain;
+>> +
+>> +=C2=A0=C2=A0=C2=A0 u16 ctx_no; /* Xen PV-IOMMU context number */
+>> +};
+>> +
+>> +static struct iommu_device xen_iommu_device;
+>> +
+>> +static uint32_t max_nr_pages;
+>> +static uint64_t max_iova_addr;
+>> +
+>> +static spinlock_t lock;
+> 
+> Not a great name - usually it's good to name a lock after what it 
+> protects. Although perhaps it is already, since AFAICS this isn't 
+> actually used anywhere anyway.
+> 
+
+Yes, that shouldn't be there.
+
+>> +static inline struct xen_iommu_domain *to_xen_iommu_domain(struct 
+>> iommu_domain *dom)
+>> +{
+>> +=C2=A0=C2=A0=C2=A0 return container_of(dom, struct xen_iommu_domain, do=
+main);
+>> +}
+>> +
+>> +static inline u64 addr_to_pfn(u64 addr)
+>> +{
+>> +=C2=A0=C2=A0=C2=A0 return addr >> 12;
+>> +}
+>> +
+>> +static inline u64 pfn_to_addr(u64 pfn)
+>> +{
+>> +=C2=A0=C2=A0=C2=A0 return pfn << 12;
+>> +}
+>> +
+>> +bool xen_iommu_capable(struct device *dev, enum iommu_cap cap)
+>> +{
+>> +=C2=A0=C2=A0=C2=A0 switch (cap) {
+>> +=C2=A0=C2=A0=C2=A0 case IOMMU_CAP_CACHE_COHERENCY:
+>> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 return true;
+> 
+> Will the PV-IOMMU only ever be exposed on hardware where that really is 
+> always true?
+> 
+
+On the hypervisor side, the PV-IOMMU interface always implicitely flush 
+the IOMMU hardware on map/unmap operation, so at the end of the 
+hypercall, the cache should be always coherent IMO.
+
+>> +
+>> +static struct iommu_device *xen_iommu_probe_device(struct device *dev)
+>> +{
+>> +=C2=A0=C2=A0=C2=A0 if (!dev_is_pci(dev))
+>> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 return ERR_PTR(-ENODEV);
+>> +
+>> +=C2=A0=C2=A0=C2=A0 return &xen_iommu_device;
+> 
+> Even emulated PCI devices have to have an (emulated, presumably) IOMMU?
+> 
+
+No and that's indeed one thing to check.
+
+>> +}
+>> +
+>> +static void xen_iommu_probe_finalize(struct device *dev)
+>> +{
+>> +=C2=A0=C2=A0=C2=A0 set_dma_ops(dev, NULL);
+>> +=C2=A0=C2=A0=C2=A0 iommu_setup_dma_ops(dev, 0, max_iova_addr);
+> 
+
+That got changed in 6.10, good to know that this code is not required 
+anymore.
 
 > 
-> For instance if you look at how I structued SMMUv3, the ATSness is an
-> effective property of the domain type and ATS switches on and off
-> dynamically already.
+>> +}
+>> +
+>> +static int xen_iommu_map_pages(struct iommu_domain *domain, unsigned 
+>> long iova,
+>> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
+=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 phys_addr_t paddr, size_t pgsize, s=
+ize_t pgcount,
+>> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
+=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 int prot, gfp_t gfp, size_t *mapped=
+)
+>> +{
+>> +=C2=A0=C2=A0=C2=A0 size_t xen_pg_count =3D (pgsize / XEN_PAGE_SIZE) * p=
+gcount;
+> 
+> You only advertise the one page size, so you'll always get that back, 
+> and this seems a bit redundant.
+> 
 
-In AMD case its per device property. We check both IOMMU capability and device
-property before enabling ATS.
+Yes
+
+>> +=C2=A0=C2=A0=C2=A0 struct xen_iommu_domain *dom =3D to_xen_iommu_domain=
+(domain);
+>> +=C2=A0=C2=A0=C2=A0 struct pv_iommu_op op =3D {
+>> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 .subop_id =3D IOMMUOP_map_pa=
+ges,
+>> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 .flags =3D 0,
+>> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 .ctx_no =3D dom->ctx_no
+>> +=C2=A0=C2=A0=C2=A0 };
+>> +=C2=A0=C2=A0=C2=A0 /* NOTE: paddr is actually bound to pfn, not gfn */
+>> +=C2=A0=C2=A0=C2=A0 uint64_t pfn =3D addr_to_pfn(paddr);
+>> +=C2=A0=C2=A0=C2=A0 uint64_t dfn =3D addr_to_pfn(iova);
+>> +=C2=A0=C2=A0=C2=A0 int ret =3D 0;
+>> +
+>> +=C2=A0=C2=A0=C2=A0 //pr_info("Mapping to %lx %zu %zu paddr %x\n", iova,=
+ pgsize, 
+>> pgcount, paddr);
+> 
+> Please try to clean up debugging leftovers before posting the patch (but 
+> also note that there are already tracepoints and debug messages which 
+> can be enabled in the core code to give visibility of most of this.)
+> 
+
+Yes
+
+>> +
+>> +=C2=A0=C2=A0=C2=A0 if (prot & IOMMU_READ)
+>> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 op.flags |=3D IOMMU_OP_reada=
+ble;
+>> +
+>> +=C2=A0=C2=A0=C2=A0 if (prot & IOMMU_WRITE)
+>> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 op.flags |=3D IOMMU_OP_write=
+able;
+>> +
+>> +=C2=A0=C2=A0=C2=A0 while (xen_pg_count) {
+> 
+> Unless you're super-concerned about performance already, you don't 
+> really need to worry about looping here - you can happily return short 
+> as long as you've mapped *something*, and the core code will call you 
+> back again with the remainder. But it also doesn't complicate things 
+> *too* much as it is, so feel free to leave it in if you want to.
+> 
+
+Ok
+
+>> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 size_t to_map =3D min(xen_pg=
+_count, max_nr_pages);
+>> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 uint64_t gfn =3D pfn_to_gfn(=
+pfn);
+>> +
+>> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 //pr_info("Mapping %lx-%lx a=
+t %lx-%lx\n", gfn, gfn + to_map - 
+>> 1, dfn, dfn + to_map - 1);
+>> +
+>> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 op.map_pages.gfn =3D gfn;
+>> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 op.map_pages.dfn =3D dfn;
+>> +
+>> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 op.map_pages.nr_pages =3D to=
+_map;
+>> +
+>> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 ret =3D HYPERVISOR_iommu_op(=
+&op);
+>> +
+>> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 //pr_info("map_pages.mapped =
+=3D %u\n", op.map_pages.mapped);
+>> +
+>> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 if (mapped)
+>> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 *map=
+ped +=3D XEN_PAGE_SIZE * op.map_pages.mapped;
+>> +
+>> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 if (ret)
+>> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 brea=
+k;
+>> +
+>> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 xen_pg_count -=3D to_map;
+>> +
+>> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 pfn +=3D to_map;
+>> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 dfn +=3D to_map;
+>> +=C2=A0=C2=A0=C2=A0 }
+>> +
+>> +=C2=A0=C2=A0=C2=A0 return ret;
+>> +}
+>> +
+>> +static size_t xen_iommu_unmap_pages(struct iommu_domain *domain, 
+>> unsigned long iova,
+>> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
+=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 size_t pgsize, size_t pgcount=
+,
+>> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
+=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 struct iommu_iotlb_gather *io=
+tlb_gather)
+>> +{
+>> +=C2=A0=C2=A0=C2=A0 size_t xen_pg_count =3D (pgsize / XEN_PAGE_SIZE) * p=
+gcount;
+>> +=C2=A0=C2=A0=C2=A0 struct xen_iommu_domain *dom =3D to_xen_iommu_domain=
+(domain);
+>> +=C2=A0=C2=A0=C2=A0 struct pv_iommu_op op =3D {
+>> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 .subop_id =3D IOMMUOP_unmap_=
+pages,
+>> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 .ctx_no =3D dom->ctx_no,
+>> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 .flags =3D 0,
+>> +=C2=A0=C2=A0=C2=A0 };
+>> +=C2=A0=C2=A0=C2=A0 uint64_t dfn =3D addr_to_pfn(iova);
+>> +=C2=A0=C2=A0=C2=A0 int ret =3D 0;
+>> +
+>> +=C2=A0=C2=A0=C2=A0 if (WARN(!dom->ctx_no, "Tried to unmap page to defau=
+lt context"))
+>> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 return -EINVAL;
+> 
+> This would go hilariously wrong... the return value here is bytes 
+> successfully unmapped, a total failure should return 0.
+
+This check is not useful as the core code is never going to call it on 
+this domain.
 
 > 
-> Having an additional input to domain attach "inhibit ats", as a flag
-> would be all the support the driver would need to provide for the core
-> code to manage this with some kind of global policy.
+>> +=C2=A0=C2=A0=C2=A0 while (xen_pg_count) {
+>> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 size_t to_unmap =3D min(xen_=
+pg_count, max_nr_pages);
+>> +
+>> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 //pr_info("Unmapping %lx-%lx=
+\n", dfn, dfn + to_unmap - 1);
+>> +
+>> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 op.unmap_pages.dfn =3D dfn;
+>> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 op.unmap_pages.nr_pages =3D =
+to_unmap;
+>> +
+>> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 ret =3D HYPERVISOR_iommu_op(=
+&op);
+>> +
+>> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 if (ret)
+>> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 pr_w=
+arn("Unmap failure (%lx-%lx)\n", dfn, dfn + to_unmap 
+>> - 1);
+> 
+> But then how 
+>> would it ever happen anyway? Unmap is a domain op, so a domain which 
+>> doesn't allow unmapping shouldn't offer it in the first place...
 
-You mean for attach_dev() ?
+Unmap failing should be exceptionnal, but is possible e.g with 
+transparent superpages (like Xen IOMMU drivers do). Xen drivers folds 
+appropriate contiguous mappings into superpages entries to optimize 
+memory usage and iotlb. However, if you unmap in the middle of a region 
+covered by a superpage entry, this is no longer a valid superpage entry, 
+and you need to allocate and fill the lower levels, which is faillible 
+if lacking memory.
 
-.. and what about PRI and PASID? Don't device driver needs similar interface ?
+> In this case I'd argue that you really *do* want to return short, in the 
+> hope of propagating the error back up and letting the caller know the 
+> address space is now messed up before things start blowing up even more 
+> if they keep going and subsequently try to map new pages into 
+> not-actually-unmapped VAs.
+
+While mapping on top of another mapping is ok for us (it's just going to 
+override the previous mapping), I definetely agree that having the 
+address space messed up is not good.
+
+> 
+>> +
+>> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 xen_pg_count -=3D to_unmap;
+>> +
+>> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 dfn +=3D to_unmap;
+>> +=C2=A0=C2=A0=C2=A0 }
+>> +
+>> +=C2=A0=C2=A0=C2=A0 return pgcount * pgsize;
+>> +}
+>> +
+>> +int xen_iommu_attach_dev(struct iommu_domain *domain, struct device 
+>> *dev)
+>> +{
+>> +=C2=A0=C2=A0=C2=A0 struct pci_dev *pdev;
+>> +=C2=A0=C2=A0=C2=A0 struct xen_iommu_domain *dom =3D to_xen_iommu_domain=
+(domain);
+>> +=C2=A0=C2=A0=C2=A0 struct pv_iommu_op op =3D {
+>> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 .subop_id =3D IOMMUOP_reatta=
+ch_device,
+>> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 .flags =3D 0,
+>> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 .ctx_no =3D dom->ctx_no,
+>> +=C2=A0=C2=A0=C2=A0 };
+>> +
+>> +=C2=A0=C2=A0=C2=A0 pdev =3D to_pci_dev(dev);
+>> +
+>> +=C2=A0=C2=A0=C2=A0 op.reattach_device.dev.seg =3D pci_domain_nr(pdev->b=
+us);
+>> +=C2=A0=C2=A0=C2=A0 op.reattach_device.dev.bus =3D pdev->bus->number;
+>> +=C2=A0=C2=A0=C2=A0 op.reattach_device.dev.devfn =3D pdev->devfn;
+>> +
+>> +=C2=A0=C2=A0=C2=A0 return HYPERVISOR_iommu_op(&op);
+>> +}
+>> +
+>> +static void xen_iommu_free(struct iommu_domain *domain)
+>> +{
+>> +=C2=A0=C2=A0=C2=A0 int ret;
+>> +=C2=A0=C2=A0=C2=A0 struct xen_iommu_domain *dom =3D to_xen_iommu_domain=
+(domain);
+>> +
+>> +=C2=A0=C2=A0=C2=A0 if (dom->ctx_no !=3D 0) {
+> 
+> Much like unmap above, this not being true would imply that someone's 
+> managed to go round the back of the core code to get the .free op from a 
+> validly-allocated domain and then pass something other than that domain 
+> to it. Personally I'd consider that a level of brokenness that's not 
+> even worth trying to consider at all, but if you want to go as far as 
+> determining that you *have* clearly been given something you couldn't 
+> have allocated, then trying to kfree() it probably isn't wise either.
+> 
+
+Yes
+
+>> +
+>> +static int default_domain_attach_dev(struct iommu_domain *domain,
+>> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
+=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 struct device *dev)
+>> +{
+>> +=C2=A0=C2=A0=C2=A0 int ret;
+>> +=C2=A0=C2=A0=C2=A0 struct pci_dev *pdev;
+>> +=C2=A0=C2=A0=C2=A0 struct pv_iommu_op op =3D {
+>> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 .subop_id =3D IOMMUOP_reatta=
+ch_device,
+>> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 .flags =3D 0,
+>> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 .ctx_no =3D 0 /* reattach de=
+vice back to default context */
+>> +=C2=A0=C2=A0=C2=A0 };
+>> +
+>> +=C2=A0=C2=A0=C2=A0 pdev =3D to_pci_dev(dev);
+>> +
+>> +=C2=A0=C2=A0=C2=A0 op.reattach_device.dev.seg =3D pci_domain_nr(pdev->b=
+us);
+>> +=C2=A0=C2=A0=C2=A0 op.reattach_device.dev.bus =3D pdev->bus->number;
+>> +=C2=A0=C2=A0=C2=A0 op.reattach_device.dev.devfn =3D pdev->devfn;
+>> +
+>> +=C2=A0=C2=A0=C2=A0 ret =3D HYPERVISOR_iommu_op(&op);
+>> +
+>> +=C2=A0=C2=A0=C2=A0 if (ret)
+>> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 pr_warn("Unable to release d=
+evice %p\n", 
+>> &op.reattach_device.dev);
+>> +
+>> +=C2=A0=C2=A0=C2=A0 return ret;
+>> +}
+>> +
+>> +static struct iommu_domain default_domain =3D {
+>> +=C2=A0=C2=A0=C2=A0 .ops =3D &(const struct iommu_domain_ops){
+>> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 .attach_dev =3D default_doma=
+in_attach_dev
+>> +=C2=A0=C2=A0=C2=A0 }
+>> +};
+> 
+> Looks like you could make it a static xen_iommu_domain and just use the 
+> normal attach callback? Either way please name it something less 
+> confusing like xen_iommu_identity_domain - "default" is far too 
+> overloaded round here already...
+> 
+
+Yes, although, if in the future, we can have either this domain as 
+identity or blocking/paging depending on some upper level configuration. 
+Should we have both identity and blocking domains, and only setting the 
+relevant one in iommu_ops, or keep this naming.
+
+>> +static struct iommu_ops xen_iommu_ops =3D {
+>> +=C2=A0=C2=A0=C2=A0 .identity_domain =3D &default_domain,
+>> +=C2=A0=C2=A0=C2=A0 .release_domain =3D &default_domain,
+>> +=C2=A0=C2=A0=C2=A0 .capable =3D xen_iommu_capable,
+>> +=C2=A0=C2=A0=C2=A0 .domain_alloc_paging =3D xen_iommu_domain_alloc_pagi=
+ng,
+>> +=C2=A0=C2=A0=C2=A0 .probe_device =3D xen_iommu_probe_device,
+>> +=C2=A0=C2=A0=C2=A0 .probe_finalize =3D xen_iommu_probe_finalize,
+>> +=C2=A0=C2=A0=C2=A0 .device_group =3D pci_device_group,
+>> +=C2=A0=C2=A0=C2=A0 .get_resv_regions =3D xen_iommu_get_resv_regions,
+>> +=C2=A0=C2=A0=C2=A0 .pgsize_bitmap =3D XEN_IOMMU_PGSIZES,
+>> +=C2=A0=C2=A0=C2=A0 .default_domain_ops =3D &(const struct iommu_domain_=
+ops) {
+>> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 .map_pages =3D xen_iommu_map=
+_pages,
+>> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 .unmap_pages =3D xen_iommu_u=
+nmap_pages,
+>> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 .attach_dev =3D xen_iommu_at=
+tach_dev,
+>> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 .iova_to_phys =3D xen_iommu_=
+iova_to_phys,
+>> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 .free =3D xen_iommu_free,
+>> +=C2=A0=C2=A0=C2=A0 },
+>> +};
+>> +
+>> +int __init xen_iommu_init(void)
+>> +{
+>> +=C2=A0=C2=A0=C2=A0 int ret;
+>> +=C2=A0=C2=A0=C2=A0 struct pv_iommu_op op =3D {
+>> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 .subop_id =3D IOMMUOP_query_=
+capabilities
+>> +=C2=A0=C2=A0=C2=A0 };
+>> +
+>> +=C2=A0=C2=A0=C2=A0 if (!xen_domain())
+>> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 return -ENODEV;
+>> +
+>> +=C2=A0=C2=A0=C2=A0 /* Check if iommu_op is supported */
+>> +=C2=A0=C2=A0=C2=A0 if (HYPERVISOR_iommu_op(&op) =3D=3D -ENOSYS)
+>> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 return -ENODEV; /* No Xen IO=
+MMU hardware */
+>> +
+>> +=C2=A0=C2=A0=C2=A0 pr_info("Initialising Xen IOMMU driver\n");
+>> +=C2=A0=C2=A0=C2=A0 pr_info("max_nr_pages=3D%d\n", op.cap.max_nr_pages);
+>> +=C2=A0=C2=A0=C2=A0 pr_info("max_ctx_no=3D%d\n", op.cap.max_ctx_no);
+>> +=C2=A0=C2=A0=C2=A0 pr_info("max_iova_addr=3D%llx\n", op.cap.max_iova_ad=
+dr);
+>> +
+>> +=C2=A0=C2=A0=C2=A0 if (op.cap.max_ctx_no =3D=3D 0) {
+>> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 pr_err("Unable to use IOMMU =
+PV driver (no context 
+>> available)\n");
+>> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 return -ENOTSUPP; /* Unable =
+to use IOMMU PV ? */
+>> +=C2=A0=C2=A0=C2=A0 }
+>> +
+>> +=C2=A0=C2=A0=C2=A0 if (xen_domain_type =3D=3D XEN_PV_DOMAIN)
+>> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 /* TODO: In PV domain, due t=
+o the existing pfn-gfn mapping we 
+>> need to
+>> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 * consider that under =
+certains circonstances, we have :
+>> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 *=C2=A0=C2=A0 pfn_to_g=
+fn(x + 1) !=3D pfn_to_gfn(x) + 1
+>> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 *
+>> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 * In these cases, we w=
+ould want to separate the subop into 
+>> several calls.
+>> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 * (only doing the grou=
+ped operation when the mapping is 
+>> actually contigous)
+>> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 * Only map operation w=
+ould be affected, as unmap actually 
+>> uses dfn which
+>> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 * doesn't have this ki=
+nd of mapping.
+>> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 *
+>> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 * Force single-page op=
+erations to work arround this issue 
+>> for now.
+>> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 */
+>> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 max_nr_pages =3D 1;
+>> +=C2=A0=C2=A0=C2=A0 else
+>> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 /* With HVM domains, pfn_to_=
+gfn is identity, there is no 
+>> issue regarding this. */
+>> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 max_nr_pages =3D op.cap.max_=
+nr_pages;
+>> +
+>> +=C2=A0=C2=A0=C2=A0 max_iova_addr =3D op.cap.max_iova_addr;
+>> +
+>> +=C2=A0=C2=A0=C2=A0 spin_lock_init(&lock);
+>> +
+>> +=C2=A0=C2=A0=C2=A0 ret =3D iommu_device_sysfs_add(&xen_iommu_device, NU=
+LL, NULL, 
+>> "xen-iommu");
+>> +=C2=A0=C2=A0=C2=A0 if (ret) {
+>> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 pr_err("Unable to add Xen IO=
+MMU sysfs\n");
+>> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 return ret;
+>> +=C2=A0=C2=A0=C2=A0 }
+>> +
+>> +=C2=A0=C2=A0=C2=A0 ret =3D iommu_device_register(&xen_iommu_device, &xe=
+n_iommu_ops, 
+>> NULL);
+>> +=C2=A0=C2=A0=C2=A0 if (ret) {
+>> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 pr_err("Unable to register X=
+en IOMMU device %d\n", ret);
+>> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 iommu_device_sysfs_remove(&x=
+en_iommu_device);
+>> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 return ret;
+>> +=C2=A0=C2=A0=C2=A0 }
+>> +
+>> +=C2=A0=C2=A0=C2=A0 /* swiotlb is redundant when IOMMU is active. */
+>> +=C2=A0=C2=A0=C2=A0 x86_swiotlb_enable =3D false;
+> 
+> That's not always true, but either way if this is at 
+> module_init/device_initcall time then it's too late to make any 
+> difference anyway.
+> 
+
+Ok
+
+>> +
+>> +=C2=A0=C2=A0=C2=A0 return 0;
+>> +}
+>> +
+>> +void __exit xen_iommu_fini(void)
+>> +{
+>> +=C2=A0=C2=A0=C2=A0 pr_info("Unregistering Xen IOMMU driver\n");
+>> +
+>> +=C2=A0=C2=A0=C2=A0 iommu_device_unregister(&xen_iommu_device);
+>> +=C2=A0=C2=A0=C2=A0 iommu_device_sysfs_remove(&xen_iommu_device);
+>> +}
+> 
+> This is dead code since the Kconfig is only "bool". Either allow it to 
+> be an actual module (and make sure that works), or drop the pretence 
+> altogether.
+> 
+
+Ok, I though this function was actually a requirement even if it is not 
+a module.
+
+> Thanks,
+> Robin.
+
+Teddy
 
 
--Vasant
+Teddy Astie | Vates XCP-ng Intern
+
+XCP-ng & Xen Orchestra - Vates solutions
+
+web: https://vates.tech
+
