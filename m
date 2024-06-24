@@ -1,138 +1,152 @@
-Received: from mail-qv1-f44.google.com (mail-qv1-f44.google.com [209.85.219.44])
+Received: from mail-yb1-f202.google.com (mail-yb1-f202.google.com [209.85.219.202])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EC3461B964
-	for <iommu@lists.linux.dev>; Mon, 24 Jun 2024 16:32:56 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.219.44
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C7A0519B5A5
+	for <iommu@lists.linux.dev>; Mon, 24 Jun 2024 16:53:02 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.219.202
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1719246778; cv=none; b=iDA3B2nx48OwGWmUH5GLUTOZnKafxGbKf2kTC8o0RAGqQ1puAnfodqV7TE9xzqh/yY0Qx1Xal2H1BbbfWYfrfm9yPLHN0zyb/E8czOwiiVQxg+EurUxuESj1U3y9+G+MJo18PGC1q/A2wzRFemXc38sXw8fy02KHc3ihLsTevZs=
+	t=1719247984; cv=none; b=PG1xzSFfL4qNw14ZYEo/GuqrVU5CXFYZ9OlipUicjgr2N6IXBma9hoiHbrRsGQPK+FzYmAyeY66wMvKoGkRKVrZ6WRdmrfo+C6vLtyC1e/y8xmHST6YpEhdCwDg+8344lvJ49hEpROAB6N95sOc1SAC+JvondmKO+ckIjlDYtIU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1719246778; c=relaxed/simple;
-	bh=pEctCYhfX+txPA9RV0NFZWhrwAagSnrKo2rwosjRRcg=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=MzaB479wyxOroxUx9gGXJ+82yDy74Zfz1tLO2H3CmYKmFM6fL89107x+c9UUv9z8Q1shxzk3Zup26Tw34c25VJ35v7fw5uyqq/qA0MAMWdmLsWXelF189faY+86SyVWldmBcoZX0Cdrv3AQU+obVQFmNgJ61CdKavvcmYaImwAw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=m81+sFWX; arc=none smtp.client-ip=209.85.219.44
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
+	s=arc-20240116; t=1719247984; c=relaxed/simple;
+	bh=CYijBCP3X3CrtBVUy6WjsmMBWxuht0AzG46f4ntl+vI=;
+	h=Date:In-Reply-To:Mime-Version:References:Message-ID:Subject:From:
+	 To:Cc:Content-Type; b=YQSx4m0hl69mWDk+DhE+M4qMGc/klzuCqNLWakNp0NOnESHM9GJW4zX03cVBFDXZj6mseYuTcytDtc6yKvROY/p/WbstV5W0+GlU6AR4/AYUNdD6rR2J8PgbcOxk0KXVAw3bs83MQXgsEXNTE3tpg5wjbNKAgGLgTsvpjxv9+Wc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=flex--seanjc.bounces.google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=CEGR/Whp; arc=none smtp.client-ip=209.85.219.202
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=flex--seanjc.bounces.google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="m81+sFWX"
-Received: by mail-qv1-f44.google.com with SMTP id 6a1803df08f44-6b50aeb2f31so22423506d6.0
-        for <iommu@lists.linux.dev>; Mon, 24 Jun 2024 09:32:56 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="CEGR/Whp"
+Received: by mail-yb1-f202.google.com with SMTP id 3f1490d57ef6-dfeec5da777so8617053276.3
+        for <iommu@lists.linux.dev>; Mon, 24 Jun 2024 09:53:02 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google; t=1719246776; x=1719851576; darn=lists.linux.dev;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :mime-version:references:message-id:subject:cc:to:from:date:from:to
-         :cc:subject:date:message-id:reply-to;
-        bh=YpMz2kHegp9vo5OTJS7oY+W3qVaSD/B67evxfsa33FE=;
-        b=m81+sFWX8tGwaR2H+P8lbLCot1OoZ/i+fe5sDIB8oPIPOILg7iWJCL0SXg7knguAOV
-         Wl/3qBf6Ewg92aW2ysQ2RC7HfXv/XQbAvZCZzyGTWUcxDSMF+wrRkSrgj0rvOx2gCFib
-         S2lCjAI7tO2rEG4l3VCTbXuDpp1htqudKAfauT6SnTtIi25X4x971KrPU9UuJxrYSVj3
-         nENGLnaR7pECXSFz2ZIZoAB5ufNsLPLfn3+SrbvMTjd0RJFvlPbHn79Pxv9P/0/RGMSW
-         KK4oYk8y+cGFTDEpIdVLwXUfuuLKaFO3eFqC90iDl0Zm5EX2e/XlXFLhfnY6t/qiADaA
-         q2Cw==
+        d=google.com; s=20230601; t=1719247982; x=1719852782; darn=lists.linux.dev;
+        h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
+         :date:from:to:cc:subject:date:message-id:reply-to;
+        bh=9iNykJAzove/zf+ZXfa+Ojht8siTvjot0NY03mffCkE=;
+        b=CEGR/WhpsilKto1X4CJ/r83l4KstWqewpJqoQfTl7yKvECAk9V11B6WRxlLDLu1hzo
+         MU+PiDB6cmxJra93JyZAV7qrus29QgTSXgIAgGcweEG7Zs0OvPN939K6zCK22eo74HKC
+         B1oRiZihZ0yFHPi/DsDkpuvMDWNQhlhM64J8DVoilfUOg7Gw/+1ZOSHDzYtin04oYzdp
+         Sd73wP+DqqNZW3MOwZKigOUDxYDkssSqGUgXFyNdlQF+G5BFXV9TpwXmDtjK4moU0R8t
+         v5jBPFX272sGKLOuloq78YJhZyKq9PKgwTLoh/gsrv6PQ4H34U7ju4TUOfHDc2FOoP0e
+         1Q9A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1719246776; x=1719851576;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :mime-version:references:message-id:subject:cc:to:from:date
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=YpMz2kHegp9vo5OTJS7oY+W3qVaSD/B67evxfsa33FE=;
-        b=FM+dXvNszxkYWpqAmREK/96K9/BNBkSe7P82HM5za7WfUzOkA7ouc2Cm6e/beN2v32
-         rTdJRtPzOxfA9jV7IxMlles9Iz505m/NEW/aksQq+pNxicSwJl7yVHUrJQTF8oMmMhyA
-         8bHv1B1SqPk+AhgJBtBUMCXHATCfjttAXI2WEAYh5AYPqeGXa+a3QSuWVWqcAoFvi2zh
-         mfShrJLXuw1aTeAIBOIHHDJGigqjwhRXngxOUkSgbRt4pwi/qEbCgA9FuCcZ01B9CV02
-         efng+vurXQt/x7mhjp59P/aFh+PLkyaNBZzqVXXmusuK5JQ56d725+prA3/uOe414fwW
-         3zIw==
-X-Forwarded-Encrypted: i=1; AJvYcCXePyRAarG7/rWwsn2PHsULOOXunAmuZ0SsgE6cGobqXGsOhly9b3zpPJJBwORfwO8qRvm+yAsT53/6e6WaTLHP9KsgtvY=
-X-Gm-Message-State: AOJu0Yxh4+B1vs0ADrFdyVYtL+poxg8sx8x0sHJ7+RZwAtlwxl2mOLJ1
-	EBHpXLlDOWg6FD0XZf7+gS+7dF9euhLaXdHciZ4MvQ7RojKuwGRGG3FOFWUNx9g=
-X-Google-Smtp-Source: AGHT+IFVDnqWLATdM12qOV0Xx5fReCHDSylxa7RaE0YpsUi44goG84xt3tUjEqTTeXwKdKL1wee4zg==
-X-Received: by 2002:a0c:f585:0:b0:6b5:1c0:381d with SMTP id 6a1803df08f44-6b540aa47d4mr55523686d6.43.1719246775914;
-        Mon, 24 Jun 2024 09:32:55 -0700 (PDT)
-Received: from ziepe.ca (hlfxns017vw-142-68-80-239.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.68.80.239])
-        by smtp.gmail.com with ESMTPSA id 6a1803df08f44-6b534b6fb20sm22033996d6.58.2024.06.24.09.32.55
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 24 Jun 2024 09:32:55 -0700 (PDT)
-Received: from jgg by wakko with local (Exim 4.95)
-	(envelope-from <jgg@ziepe.ca>)
-	id 1sLmcg-006IKk-RH;
-	Mon, 24 Jun 2024 13:32:54 -0300
-Date: Mon, 24 Jun 2024 13:32:54 -0300
-From: Jason Gunthorpe <jgg@ziepe.ca>
-To: Teddy Astie <teddy.astie@vates.tech>
-Cc: Robin Murphy <robin.murphy@arm.com>, xen-devel@lists.xenproject.org,
-	iommu@lists.linux.dev, Juergen Gross <jgross@suse.com>,
-	Stefano Stabellini <sstabellini@kernel.org>,
-	Oleksandr Tyshchenko <oleksandr_tyshchenko@epam.com>,
-	Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
-	Marek =?utf-8?Q?Marczykowski-G=C3=B3recki?= <marmarek@invisiblethingslab.com>
-Subject: Re: [RFC PATCH v2] iommu/xen: Add Xen PV-IOMMU driver
-Message-ID: <20240624163254.GT791043@ziepe.ca>
-References: <24d7ec005e77e4e0127995ba6f4ad16f33737fa5.1718981216.git.teddy.astie@vates.tech>
- <da3ec316-b001-4711-b323-70af3e6bb014@arm.com>
- <a04e169d-b38a-43dc-b783-a8af1e1b0468@vates.tech>
+        d=1e100.net; s=20230601; t=1719247982; x=1719852782;
+        h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
+         :date:x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=9iNykJAzove/zf+ZXfa+Ojht8siTvjot0NY03mffCkE=;
+        b=Mygr5+zl3iSnk+S1ks6k9ltJsAaj8tzx6T+IRPuglo9lkMpHzRqCMl5oppjXIiyY+k
+         UWoKxEbWyy/GfAR4I2DpRkzlxtGMjMjBir/urTuW0LDr3+4pqIi4P2ZdDqmqKYWFtW1K
+         LXAdfvQSKxJibLrrc59jk2/RaPm2jEqBAT09KI9+KOQqmgZYRSmXNFTRTfxZXqyYqVgR
+         CfuL3MVUrgtVN8BjfxaxewV1VHlSBWz6z4wC1rv0ErzufzaLoV3dKjEKlNhkybt086hr
+         qnl5DWf+yNqw1RtBdmgH3IOzLTf1OZK4TonSnDuJbD07a3KTMMB30uONyRRIaLM8k88f
+         AfbA==
+X-Forwarded-Encrypted: i=1; AJvYcCXiykXkhYkUDPN9eGTAyQ6W0tc+4QLtr6W9UaXOo9wC30ghMYuYY8lQoUE3fBtorR5hAG3iUEeehVxjEiQA+MKVznjJTss=
+X-Gm-Message-State: AOJu0YzI9kETaS2yQlIkUhx3irr0ZDf1Ktzf29H9/HzvCpwcKwB87r1w
+	jGcBsZDD4c4jYFE/Y++zgUGiHk/IU15101PTXU0XRQ3alXc7IFYa/eMKGvRyotXWp4OGzoTN7ii
+	hsQ==
+X-Google-Smtp-Source: AGHT+IEPXu/gKdcESrzvh7SoSsa9p93Pm1qfCCz4PS8Ka0QVRbNxNeO8As2woYzjP4FbCutHvtfSiZgzhIQ=
+X-Received: from zagreus.c.googlers.com ([fda3:e722:ac3:cc00:7f:e700:c0a8:5c37])
+ (user=seanjc job=sendgmr) by 2002:a05:6902:2b04:b0:df2:eaac:d811 with SMTP id
+ 3f1490d57ef6-e02fc598947mr18902276.10.1719247981721; Mon, 24 Jun 2024
+ 09:53:01 -0700 (PDT)
+Date: Mon, 24 Jun 2024 09:53:00 -0700
+In-Reply-To: <20240208154210.GP31743@ziepe.ca>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <a04e169d-b38a-43dc-b783-a8af1e1b0468@vates.tech>
+Mime-Version: 1.0
+References: <20240208151837.35068-1-shameerali.kolothum.thodi@huawei.com>
+ <20240208151837.35068-5-shameerali.kolothum.thodi@huawei.com> <20240208154210.GP31743@ziepe.ca>
+Message-ID: <ZnmkbOfWBJHrO2sx@google.com>
+Subject: Re: [RFC PATCH v2 4/7] iommufd: Associate kvm pointer to iommufd ctx
+From: Sean Christopherson <seanjc@google.com>
+To: Jason Gunthorpe <jgg@ziepe.ca>
+Cc: Shameer Kolothum <shameerali.kolothum.thodi@huawei.com>, kvmarm@lists.linux.dev, 
+	iommu@lists.linux.dev, linux-arm-kernel@lists.infradead.org, 
+	linuxarm@huawei.com, kevin.tian@intel.com, alex.williamson@redhat.com, 
+	maz@kernel.org, oliver.upton@linux.dev, will@kernel.org, robin.murphy@arm.com, 
+	jean-philippe@linaro.org, jonathan.cameron@huawei.com
+Content-Type: text/plain; charset="us-ascii"
 
-On Mon, Jun 24, 2024 at 02:36:45PM +0000, Teddy Astie wrote:
-> >> +bool xen_iommu_capable(struct device *dev, enum iommu_cap cap)
-> >> +{
-> >> +    switch (cap) {
-> >> +    case IOMMU_CAP_CACHE_COHERENCY:
-> >> +        return true;
-> >
-> > Will the PV-IOMMU only ever be exposed on hardware where that really is
-> > always true?
-> >
+On Thu, Feb 08, 2024, Jason Gunthorpe wrote:
+> On Thu, Feb 08, 2024 at 03:18:34PM +0000, Shameer Kolothum wrote:
 > 
-> On the hypervisor side, the PV-IOMMU interface always implicitely flush
-> the IOMMU hardware on map/unmap operation, so at the end of the
-> hypercall, the cache should be always coherent IMO.
+> > diff --git a/drivers/iommu/iommufd/iommufd_private.h b/drivers/iommu/iommufd/iommufd_private.h
+> > index 991f864d1f9b..28ede82bb1a6 100644
+> > --- a/drivers/iommu/iommufd/iommufd_private.h
+> > +++ b/drivers/iommu/iommufd/iommufd_private.h
+> > @@ -16,6 +16,7 @@ struct iommu_domain;
+> >  struct iommu_group;
+> >  struct iommu_option;
+> >  struct iommufd_device;
+> > +struct kvm;
+> >  
+> >  struct iommufd_ctx {
+> >  	struct file *file;
+> > @@ -27,6 +28,8 @@ struct iommufd_ctx {
+> >  	/* Compatibility with VFIO no iommu */
+> >  	u8 no_iommu_mode;
+> >  	struct iommufd_ioas *vfio_ioas;
+> > +	/* Associated KVM pointer */
+> > +	struct kvm *kvm;
+> >  };
+> 
+> Associating the KVM with the entire iommufd is a big hammer, is this
+> what we want to do?
+> 
+> I know it has to be linked to domain allocation and the coming
+> "viommu" object, and it is already linked to VFIO.
+> 
+> It means we support one KVM per iommufd (which doesn't seem
+> unreasonable, but also the first time we've had such a limitation)
 
-Cache coherency is a property of the underlying IOMMU HW and reflects
-the ability to prevent generating transactions that would bypass the
-cache.
+And if KVM+iommufd come as pairs, wouldn't iommufd_ctx_set_kvm() need to reject
+attempts to bind devices associated with different KVMs, as opposed to silently
+ignoring that case?  E.g. something like the below?  Or is there magic elsewhere
+in the stack that prevents such a scenario?
 
-On AMD and Intel IOMMU HW this maps to a bit in their PTEs that must
-always be set to claim this capability.
+void iommufd_ctx_set_kvm(struct iommufd_ctx *ictx, struct kvm *kvm)
+{
+	int r = 0;
 
-No ARM SMMU supports it yet.
+	xa_lock(&ictx->objects);
+	if (!ictx->kvm)
+		ictx->kvm = kvm;
+	else if (icxt->kvm != kvm)
+		r = -EINVAL;
+	xa_unlock(&ictx->objects);
+}
 
-If you imagine supporting ARM someday then this can't be a fixed true.
+> The other option would be to pass in the kvm to the individual sub
+> objects.
+> 
+> Kevin?
+> 
+> Sean would you be OK with this approach considering your other series
+> to try to make more of this private?
 
-> Unmap failing should be exceptionnal, but is possible e.g with
-> transparent superpages (like Xen IOMMU drivers do). Xen drivers folds
-> appropriate contiguous mappings into superpages entries to optimize
-> memory usage and iotlb. However, if you unmap in the middle of a region
-> covered by a superpage entry, this is no longer a valid superpage entry,
-> and you need to allocate and fill the lower levels, which is faillible
-> if lacking memory.
+Sorry, I completely missed this.
 
-This doesn't seem necessary. From an IOMMU perspective the contract is
-that whatever gets mapped must be wholly unmapped and the unmap cannot
-fail.
+If kvm_pinned_vmid_{get,put}() are implemented directly by KVM ARM, then I don't
+have any immediate concerns, as KVM ARM is a long, long way from being able to
+isolate KVM from the core kernel.  And if we ever want/need to provide generic
+APIs for propagating state from KVM into iommufd, bundling the KVM file pointer[*]
+with a set of function pointers wouldn't be terribly difficult.
 
-Failing to unmap causes big problems for iommufd and vfio as it is
-about to free to the memory underlying the maps. Nothing good will
-happen after this.
+That said, I find the on-demand pinning to be very odd.  IIUC, if KVM runs out
+of pinnable VMIDs, attaching a device to the KVM+iommu will fail.  Failing an
+iommufd operation because of a (potentially transient) KVM resource issue is
+rather unpleasant.
 
-An implementation should rely on the core code to provide the
-contiguous ranges and not attempt to combine mappings across two
-map_pages() calls. If it does this it can refuse to unmap a slice of a
-superpage, and thus it never has to allocate memory during unmap.
+And assuming that pinnable VMIDs are a somewhat scarce resource, it wouldn't
+suprise me if someone wanted to add cgroup integration, e.g. similar to the
+misc cgroup that's used to manage SEV(-ES) ASIDs on KVM AMD (IIUC, an SEV ASID
+is analagous to an ARM VMID).
 
-> While mapping on top of another mapping is ok for us (it's just going to
-> override the previous mapping), I definetely agree that having the
-> address space messed up is not good.
+Rather than on-demand pinning, would it make sense to have KVM provide an ioctl()
+(or capability, or VM type) to let userspace pin a VM's VMID?  That would allow
+for a much saner failure mode, and I suspect would be cleaner in general for iommufd.
 
-Technically map_pages should fail if it is already populated, but
-nothing should ever do that.
-
-Jason
+[*] https://lore.kernel.org/all/ZXkVSKULLivrMkBl@google.com
