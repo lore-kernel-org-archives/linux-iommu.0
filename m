@@ -1,192 +1,131 @@
-Received: from mail-yb1-f178.google.com (mail-yb1-f178.google.com [209.85.219.178])
+Received: from mail-pf1-f202.google.com (mail-pf1-f202.google.com [209.85.210.202])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3142919FA61
-	for <iommu@lists.linux.dev>; Mon, 24 Jun 2024 17:47:58 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.219.178
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A137E1A00EF
+	for <iommu@lists.linux.dev>; Mon, 24 Jun 2024 17:54:39 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.202
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1719251281; cv=none; b=obIhSnvBkutfEH4gfq+BFGd293JOntlTesSogrAQ6dGLxj+1BC5RHZifaDX5ASN/xWXeVRdNSJXQGF1Kp0uHS2IOw//E5vdH0JkdLsdqdsKJhUTdFjUcjb2BCHr86jHWZ9c7t73bQqrUwSzOFJIbKsa9yuhO6/LF3JBxo0X3RNA=
+	t=1719251681; cv=none; b=RJe18zpOPt01TCZ/id00PvgF4iOpITg8pc/fzpBb43OrZxz60Vbtq3PfeovnnJa6mgpBgt0S/KGUyTNcmlyH70bApEHUjt9UJO8N8DXSjfKMTNGH/AsXZGSSGliBosglEW8Jhm4QBGLph1DyQcH2pGi8IqnkmPyvsAq6zyxBIfI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1719251281; c=relaxed/simple;
-	bh=P1jGE0yj+W9MBcCc+1zGVoDh+/I8AA93BhngLeHVOT8=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=Kq34c6s7cbKfaryTGXagWVL/bXCpwbWv1rsD0cq0e5IxXECfo0CMGZuvTRYY2SfX4jgnYI5RTK88VkWFWQP83hHWY9RO014UMJzqRu0UEeM8FYxeoK3AM0bc52BR+XUcuvGeiYoAan0ndMSYU6ogHuo6zCG4CBXMPjHaXbNC1vs=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=raspberrypi.com; spf=pass smtp.mailfrom=raspberrypi.com; dkim=pass (2048-bit key) header.d=raspberrypi.com header.i=@raspberrypi.com header.b=gdXtFr95; arc=none smtp.client-ip=209.85.219.178
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=raspberrypi.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=raspberrypi.com
+	s=arc-20240116; t=1719251681; c=relaxed/simple;
+	bh=B30pVTPga+iyMMk4UJSZ9j5jSzoQ2mPk3rtT9Pp+HgA=;
+	h=Date:In-Reply-To:Mime-Version:References:Message-ID:Subject:From:
+	 To:Cc:Content-Type; b=T8Y8FAB4tGtSSk157el623HusGcILevLCJ23LRI83QjdAjn0zTRy2e5JznD/V4Ic60Mx5rlqT0wU28VCeeuPtzZsPVfkqogXeUgOKzatSCR4CZRPt11RqTTM+ZF4T643IMbSDZvxJNBTbX7xpsZAKEsWWvVRZh3+DImtiJgJ36Q=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=flex--seanjc.bounces.google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=EvVx6dsg; arc=none smtp.client-ip=209.85.210.202
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=flex--seanjc.bounces.google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=raspberrypi.com header.i=@raspberrypi.com header.b="gdXtFr95"
-Received: by mail-yb1-f178.google.com with SMTP id 3f1490d57ef6-e02748b2402so4919151276.0
-        for <iommu@lists.linux.dev>; Mon, 24 Jun 2024 10:47:58 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="EvVx6dsg"
+Received: by mail-pf1-f202.google.com with SMTP id d2e1a72fcca58-70679e6722aso1248157b3a.1
+        for <iommu@lists.linux.dev>; Mon, 24 Jun 2024 10:54:39 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=raspberrypi.com; s=google; t=1719251278; x=1719856078; darn=lists.linux.dev;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=GD6JszPohU81NGGS/aKdIrLNqexC1KvwW9h5dgcZ2tY=;
-        b=gdXtFr95D4cb652y3+eweFABJectnzatSxa4rRbT1B6Tq+x8WgH4JeSBM/GYcKrLeN
-         jrLyRCwlpGqiQ05Rmfe0IxbjSfZhyRToxlUPynQRBUqWISX3hPH1nsZhioDqIh5V0j1m
-         gmliWZmAxK4cebaMr9P0pHuUUvRP66yG9eKIFk/SJ9AtG4ZTK7jy5cNvDrswnAUcl8+e
-         9uAx4irXGH1CPTSBznEmsG42xgDp63bpxqHvhpZHFP5MH/1vRDEOtJ9pzqIqWkctkbgI
-         8dMsWGzy3rFDmtQlIPcnz+44UlilVMPBOktNWRXHn/FG4neSSQc5UH35Hmj09yI6oBG/
-         RMNw==
+        d=google.com; s=20230601; t=1719251679; x=1719856479; darn=lists.linux.dev;
+        h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
+         :date:from:to:cc:subject:date:message-id:reply-to;
+        bh=/4EG5IaKeVOdRH+r7l7u/Do+csHa3snfvHiixcdXYGk=;
+        b=EvVx6dsgV85WFldogRRMNQ2pNeSCevljWDKK/59npSnvL6l/ex/er+I/u/DKz+0tcS
+         U1/KqZS5cnqoS9h+TWIJmbS4rtIW9JWMWaicmdIhtqDnlETkgQCmRTdgrdBvGE/N2BZR
+         Z1p/oVetnQrmLJLzuWCLIXQJvu7Cr9y+ZkKTDs0qKTyvY5NB3K2GcsM2cFXllkRBL50q
+         oAoOC1ECnrOgI+25jI3lyfUsUawYv3ImWW/ZnZNok+yr3lUFkOa7CC6K8xliSbt9e45N
+         akSjtgF4Fu/+6xl4LTOQBYMtENNTfNs1HCvDwbU23lOhdW394u8KD+MPx+ESLHIaSoaM
+         LArA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1719251278; x=1719856078;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=GD6JszPohU81NGGS/aKdIrLNqexC1KvwW9h5dgcZ2tY=;
-        b=kRobm3/tadfPrezMpfGpKT2I3a6j6F3Ngq2/4wN04TrZlzOEPxWq8yPVfhTdKkuXfb
-         RvDVqYOO2VurqohHEYxq3hGj7XmqNBx0Xvv38I5+WXxy+e8yh7ApwGvH6+oc718NpK5r
-         N11V6xkwwENtvzRCO80ye3mt8/kOWo7PpZtkSK2aMUWnCFq+ZUNGFQqNXMm5tmXnyJQ6
-         vOHEf9sWo/cuQUrz4H4pBXADOIBDnO8FlhF3oLswwPSRcefa/Q3GEFX8tQnxCXzjdI3y
-         PPtMjZjHodQ/HInng9TsqVKE2ComqHZcG2H+xM1aY8pJKEGuPcnu+SZwFodlZdLEnFex
-         SDSQ==
-X-Forwarded-Encrypted: i=1; AJvYcCWcB4GDqYcX1WbQJhlkugEkCQ0mzY+OwuIJ5IPm4sF9oFXwYhvijAl2smfV3OOtB7pxuO1szoBManmopbP5EEln6k4w+w0=
-X-Gm-Message-State: AOJu0Yw0OMJo75auzpqPcr3qJzh5UVp88OPBMvdOgfcJUEUglvIwlkF3
-	SRKPT7YvhAV4VMTJFG5cAmtpB5IxAqEJy3lYMbla+jIfJrei6fUTJgb8E9Hp6bleWihE/aXPLZW
-	SL7Vovl5+GyDBK3wImVT/pXlMLxRmigCj/BHRdQ==
-X-Google-Smtp-Source: AGHT+IEam62Ke7h6aMEIOfZkOn8q0O/x65GpW/b4zmed/2bsjgtR1QeT3Q2l3hKiUKoRuWDKy+pcqMjQukMAFKYFW9Y=
-X-Received: by 2002:a25:291:0:b0:df4:f2d2:fcd6 with SMTP id
- 3f1490d57ef6-e0303fe9b62mr4805338276.44.1719251277992; Mon, 24 Jun 2024
- 10:47:57 -0700 (PDT)
+        d=1e100.net; s=20230601; t=1719251679; x=1719856479;
+        h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
+         :date:x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=/4EG5IaKeVOdRH+r7l7u/Do+csHa3snfvHiixcdXYGk=;
+        b=RXe+erVHKGbqQ/Y9jsGvzX/I+OLlvDFoFpt4ombilSKXDtYYH9e6i2GfwfjK3M4FfF
+         Cy1nsJAF3MSo4zd3eTTrcebapxGDmVP2eICFs1KhyAMju97z0LrNy5kdr9xvXVm/xOM9
+         MMfwrb7eabh5dJ4+VNKMz4zCnhAH1g/zPMMa0oASFSQwgQcEvWTqDsDeGgUfNyWlv+Ms
+         kxofpkftq9uHqP5t0PsWNWaezsydtFZWV1lsomb4gCy6/lmyHyYqwR8GmwTa9hJBP7IZ
+         vQxZ3RolD2yRSjTFoqi69vepqI+9a2gtHOog9aw0mrHq+fwz4jHVZRvIRFl1d6X4yAy6
+         XF5Q==
+X-Forwarded-Encrypted: i=1; AJvYcCXZ9lBl4L0V7+Me7KTgLbnGpWUjhiizrXcp6/b8N0LfbTZQvQUR8oMEHeHQm5cjWvWMaaJ63+Sl2W5FeqKPWaGoYVYzrnY=
+X-Gm-Message-State: AOJu0YyE/9/+9BsdbY/l3CcB8Om5dhFCYtLY+K+nyQFe8a6iD1yzt/3S
+	clCFkw2GqoSvqbsNdEOgc/uLK1TgaxECjrCbz2miNEn2QfVCf0eC0LoNXWK40/KU2fgMfMwMmcJ
+	xow==
+X-Google-Smtp-Source: AGHT+IFwvxf3OsuvZYrUndYb77JYUI7kIwbwA1lAt8ypjyKZ5DTVmQAcQPWwexhhQL7MAR18AQ3i9Y8LGS4=
+X-Received: from zagreus.c.googlers.com ([fda3:e722:ac3:cc00:7f:e700:c0a8:5c37])
+ (user=seanjc job=sendgmr) by 2002:a05:6a00:418b:b0:706:2948:a087 with SMTP id
+ d2e1a72fcca58-70669f71011mr302391b3a.1.1719251678783; Mon, 24 Jun 2024
+ 10:54:38 -0700 (PDT)
+Date: Mon, 24 Jun 2024 10:54:37 -0700
+In-Reply-To: <20240624170747.GA1515249@ziepe.ca>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
-MIME-Version: 1.0
-References: <20240524182702.1317935-1-dave.stevenson@raspberrypi.com>
- <20240524182702.1317935-7-dave.stevenson@raspberrypi.com> <ZmCl7LXbdCwJm/wJ@lizhi-Precision-Tower-5810>
-In-Reply-To: <ZmCl7LXbdCwJm/wJ@lizhi-Precision-Tower-5810>
-From: Dave Stevenson <dave.stevenson@raspberrypi.com>
-Date: Mon, 24 Jun 2024 18:47:41 +0100
-Message-ID: <CAPY8ntCUzU=T_RgJPGvunYXM2Zmd39Kei-qFaoM37-Vc62TyUQ@mail.gmail.com>
-Subject: Re: [PATCH 06/18] dmaengine: bcm2835: make address increment platform independent
-To: Frank Li <Frank.li@nxp.com>
-Cc: Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>, 
-	Conor Dooley <conor+dt@kernel.org>, Florian Fainelli <florian.fainelli@broadcom.com>, 
-	Broadcom internal kernel review list <bcm-kernel-feedback-list@broadcom.com>, Ray Jui <rjui@broadcom.com>, 
-	Scott Branden <sbranden@broadcom.com>, Vinod Koul <vkoul@kernel.org>, 
-	Maxime Ripard <mripard@kernel.org>, Maarten Lankhorst <maarten.lankhorst@linux.intel.com>, 
-	Thomas Zimmermann <tzimmermann@suse.de>, David Airlie <airlied@gmail.com>, Daniel Vetter <daniel@ffwll.ch>, 
-	Ulf Hansson <ulf.hansson@linaro.org>, Mark Brown <broonie@kernel.org>, 
-	Christoph Hellwig <hch@lst.de>, Marek Szyprowski <m.szyprowski@samsung.com>, 
-	Robin Murphy <robin.murphy@arm.com>, Liam Girdwood <lgirdwood@gmail.com>, 
-	Jaroslav Kysela <perex@perex.cz>, Takashi Iwai <tiwai@suse.com>, 
-	Vladimir Murzin <vladimir.murzin@arm.com>, Phil Elwell <phil@raspberrypi.com>, 
-	Stefan Wahren <wahrenst@gmx.net>, Serge Semin <Sergey.Semin@baikalelectronics.ru>, 
-	devicetree@vger.kernel.org, linux-rpi-kernel@lists.infradead.org, 
-	linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, 
-	dmaengine@vger.kernel.org, dri-devel@lists.freedesktop.org, 
-	linux-mmc@vger.kernel.org, linux-spi@vger.kernel.org, iommu@lists.linux.dev, 
-	linux-sound@vger.kernel.org, Stefan Wahren <stefan.wahren@i2se.com>
-Content-Type: text/plain; charset="UTF-8"
+Mime-Version: 1.0
+References: <20240208151837.35068-1-shameerali.kolothum.thodi@huawei.com>
+ <20240208151837.35068-5-shameerali.kolothum.thodi@huawei.com>
+ <20240208154210.GP31743@ziepe.ca> <ZnmkbOfWBJHrO2sx@google.com> <20240624170747.GA1515249@ziepe.ca>
+Message-ID: <Znmy3QPAUIX9SnGx@google.com>
+Subject: Re: [RFC PATCH v2 4/7] iommufd: Associate kvm pointer to iommufd ctx
+From: Sean Christopherson <seanjc@google.com>
+To: Jason Gunthorpe <jgg@ziepe.ca>
+Cc: Shameer Kolothum <shameerali.kolothum.thodi@huawei.com>, kvmarm@lists.linux.dev, 
+	iommu@lists.linux.dev, linux-arm-kernel@lists.infradead.org, 
+	linuxarm@huawei.com, kevin.tian@intel.com, alex.williamson@redhat.com, 
+	maz@kernel.org, oliver.upton@linux.dev, will@kernel.org, robin.murphy@arm.com, 
+	jean-philippe@linaro.org, jonathan.cameron@huawei.com
+Content-Type: text/plain; charset="us-ascii"
 
-Hi Frank
+On Mon, Jun 24, 2024, Jason Gunthorpe wrote:
+> On Mon, Jun 24, 2024 at 09:53:00AM -0700, Sean Christopherson wrote:
+> > If kvm_pinned_vmid_{get,put}() are implemented directly by KVM ARM, then I don't
+> > have any immediate concerns, as KVM ARM is a long, long way from being able to
+> > isolate KVM from the core kernel.  
+> 
+> I think that is a reasonable thing, I also don't really see VMID as
+> being general. We will have to figure out how to ensure that the KVM
+> FD we got is an ARM KVM FD..
 
-Thanks for the review, and sorry for the delay in coming back to this.
+Isn't the caller in ARM specific code?  I was assuming kvm_pinned_vmid_{get,put}()
+would simply not exist for non-ARM builds.
 
-On Wed, 5 Jun 2024 at 18:53, Frank Li <Frank.li@nxp.com> wrote:
->
-> On Fri, May 24, 2024 at 07:26:50PM +0100, Dave Stevenson wrote:
-> > From: Stefan Wahren <stefan.wahren@i2se.com>
-> >
-> > Actually the criteria to increment source & destination address doesn't
-> > based on platform specific bits. It's just the DMA transfer direction which
-> > is translated into the info bits. So introduce two new helper functions
-> > and get the rid of these platform specifics.
-> >
->
-> Fix increment source & destination address depend on the platform drvdata.
+> > That said, I find the on-demand pinning to be very odd.  IIUC, if KVM runs out
+> > of pinnable VMIDs, attaching a device to the KVM+iommu will fail.  Failing an
+> > iommufd operation because of a (potentially transient) KVM resource issue is
+> > rather unpleasant.
+> 
+> It is kind of subtle, but the only thing that will consume VMIDs is
+> IOMMUFD operations that are working with nested translation but not
+> providing KVMs. This is a pretty small blast radius - ie a specific
+> qemu will fail to start - that I think we can tolerate it.
+> 
+> More normal iommu operation will not require VMIDs so things like
+> driver attaching/etc is fine.
+> 
+> > And assuming that pinnable VMIDs are a somewhat scarce resource, it wouldn't
+> > suprise me if someone wanted to add cgroup integration, e.g. similar to the
+> > misc cgroup that's used to manage SEV(-ES) ASIDs on KVM AMD (IIUC, an SEV ASID
+> > is analagous to an ARM VMID).
+> 
+> Yeah, but if someone is using such a cgroup then I expect they will
+> also have an up to date VMM that doesn't trigger this VMID allocation
+> in the first place...
 
-This is not platform drvdata.
+I suspect we're talking about two different things.  Either that, or I am really
+lost.
 
-The code was converting from the generic DMA transfer direction enum
-into the hardware specific bitmask, and then looking at that for
-whether it was using an address increment or not.
-It's more readable, and easier to add in the newer variant of the
-hardware, if we check the generic transfer direction.
+> > Rather than on-demand pinning, would it make sense to have KVM provide an ioctl()
+> > (or capability, or VM type) to let userspace pin a VM's VMID?  That would allow
+> > for a much saner failure mode, and I suspect would be cleaner in general for iommufd.
+> 
+> The point of this mechanism is to support using this iommufd feature
+> without a KVM at all. We could instead prevent this directly 100% of
+> the time, but it means that HW with this BTM capability would not run
+> the legacy VMMs at all, so I'm not that keen on it..
+> 
+> When a KVM is present then the iommu needs to adopt the VMID of KVM,
+> and that should have a mechanism to ensure the VMID is valid so long
+> as the IOMMU is using it (eg because the KVM FD is open)
 
-I've reworded it for V2 as
+Right, and that's what I'm referring to as "on-demand pinning".  For the IOMMU
+to adopt a KVM VMID, the VMID needs to be pinned (or KVM would need to notify
+the IOMMU every time the VMID changed), i.e. every KVM+IOMMU pair pins a VMID
+that is managed by KVM.
 
-"The criteria for whether an address increment is required is based
-solely on the DMA transfer direction. The driver was converting from
-direction into the hardware's "info" bitmask and using that, which
-is therefore dependent on the hardware variant.
-
-Change to using the DMA transfer direction via helper functions
-to remove this hardware specific dependency."
-
-Hopefully makes the situation clearer.
-
-> It should be depend on dma_transfer_direction.
->
-> look like it is bug fixes. Can you add fixes tag.
-
-No, as described above, it's not a bug fix.
-
-  Dave
-
-> > Signed-off-by: Stefan Wahren <wahrenst@gmx.net>
-> > Signed-off-by: Dave Stevenson <dave.stevenson@raspberrypi.com>
-> > ---
-> >  drivers/dma/bcm2835-dma.c | 28 ++++++++++++++++++++++------
-> >  1 file changed, 22 insertions(+), 6 deletions(-)
-> >
-> > diff --git a/drivers/dma/bcm2835-dma.c b/drivers/dma/bcm2835-dma.c
-> > index ef452ebb3c15..d6c5a2762a46 100644
-> > --- a/drivers/dma/bcm2835-dma.c
-> > +++ b/drivers/dma/bcm2835-dma.c
-> > @@ -252,6 +252,24 @@ static u32 bcm2835_dma_prepare_cb_extra(struct bcm2835_chan *c,
-> >       return result;
-> >  }
-> >
-> > +static inline bool need_src_incr(enum dma_transfer_direction direction)
-> > +{
-> > +     return direction != DMA_DEV_TO_MEM;
-> > +}
-> > +
-> > +static inline bool need_dst_incr(enum dma_transfer_direction direction)
-> > +{
-> > +     switch (direction) {
-> > +     case DMA_MEM_TO_MEM:
-> > +     case DMA_DEV_TO_MEM:
-> > +             return true;
-> > +     default:
-> > +             break;
-> > +     }
-> > +
-> > +     return false;
-> > +}
-> > +
-> >  static void bcm2835_dma_free_cb_chain(struct bcm2835_desc *desc)
-> >  {
-> >       size_t i;
-> > @@ -336,10 +354,8 @@ static inline size_t bcm2835_dma_count_frames_for_sg(
-> >   * @cyclic:         it is a cyclic transfer
-> >   * @info:           the default info bits to apply per controlblock
-> >   * @frames:         number of controlblocks to allocate
-> > - * @src:            the src address to assign (if the S_INC bit is set
-> > - *                  in @info, then it gets incremented)
-> > - * @dst:            the dst address to assign (if the D_INC bit is set
-> > - *                  in @info, then it gets incremented)
-> > + * @src:            the src address to assign
-> > + * @dst:            the dst address to assign
-> >   * @buf_len:        the full buffer length (may also be 0)
-> >   * @period_len:     the period length when to apply @finalextrainfo
-> >   *                  in addition to the last transfer
-> > @@ -408,9 +424,9 @@ static struct bcm2835_desc *bcm2835_dma_create_cb_chain(
-> >                       d->cb_list[frame - 1].cb->next = cb_entry->paddr;
-> >
-> >               /* update src and dst and length */
-> > -             if (src && (info & BCM2835_DMA_S_INC))
-> > +             if (src && need_src_incr(direction))
-> >                       src += control_block->length;
-> > -             if (dst && (info & BCM2835_DMA_D_INC))
-> > +             if (dst && need_dst_incr(direction))
-> >                       dst += control_block->length;
-> >
-> >               /* Length of total transfer */
-> > --
-> > 2.34.1
-> >
+Hmm, kvm_arm_pinned_vmid_get() doesn't fail, it just falls back to VMID=0.  Which
+seems odd.
