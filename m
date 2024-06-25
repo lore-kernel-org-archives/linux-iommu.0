@@ -1,161 +1,91 @@
-Received: from mail-ej1-f52.google.com (mail-ej1-f52.google.com [209.85.218.52])
+Received: from mail-lj1-f173.google.com (mail-lj1-f173.google.com [209.85.208.173])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8B21E16FF4D
-	for <iommu@lists.linux.dev>; Tue, 25 Jun 2024 15:36:22 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.218.52
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7B74E16A945;
+	Tue, 25 Jun 2024 16:20:25 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.173
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1719329784; cv=none; b=OTx+FKpK9bCu1xb2l/e2BISD9E8Ic2r5rORbrlUhY8n4hZ0staebUGYhwaZRPh/FeJ7MrJeRKWiTkOwYltB4MDWhXPb5kA5VupOstkDZZautmSjTiihCc3eGZlTA5EUm9CjS1BsGzmy+xkxXfjgrQbNvYpH7n42gQyL3RrJLpMM=
+	t=1719332427; cv=none; b=NHrvEXbibUd4G3azC5FZ/9osvmzWgNp6HR0tAsQD09kroep/GbqNDqE7HK94YpsQb+CM0C/P3HL4YV1FVsri8J/NB+HBGZ38kmS3Wh+I1aUjQM8RzR3f2XRWteqlFw2cssoYdqlNH9IKwEcBm26OEIjFHhZYUkF6TJy6WUIkvQY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1719329784; c=relaxed/simple;
-	bh=cRmziDwgNra4eake5aUYRKgsQh9E0oLGcu/fKvQHGsY=;
+	s=arc-20240116; t=1719332427; c=relaxed/simple;
+	bh=b6/vKsj/PibxcS/6bXxbHOv4LLMxUEm/FlwcfPbufZY=;
 	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=XidHA6cBWPuIZIb3SYkMj/essd44155jY2tGgI7UyS8xua5NlNvsokSo4MD6mbtTMS7lvKygm7YUFFZTxgHNC/eI7FNcDNdht9nnRwCx74FHsCkd/Dji4izQp3G4UYqduoU58tgiQSneeKjAQDndYSCqQlrkaBzaVxM6IdOokjY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=XqyHBhZQ; arc=none smtp.client-ip=209.85.218.52
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+	 To:Cc:Content-Type; b=i14H2o0YSD/DUcR76A/3iQSaxlFnhVOvmaNhnnHTpkt2jXScsxrrhomlgspszmUyKpfIghtD/WaWfPZsWhoqKnHg1ttaSyfLhCAJ+aI2zm16aBQNybWhiR5yQJWeAVpFGVZTluj6d5VgZLq7JbDjIz5fOx7hrBNdvOg2ZXLkX6M=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=csie.org; spf=pass smtp.mailfrom=gmail.com; arc=none smtp.client-ip=209.85.208.173
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=csie.org
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="XqyHBhZQ"
-Received: by mail-ej1-f52.google.com with SMTP id a640c23a62f3a-a6fe7a0cb58so191761166b.1
-        for <iommu@lists.linux.dev>; Tue, 25 Jun 2024 08:36:22 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1719329781; x=1719934581; darn=lists.linux.dev;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=ox1lbjwU21POUzsTNWtq+35PHOWR0ci2ck/cLItWRLY=;
-        b=XqyHBhZQFqRbQBpu7ZP/v6HOSl328mbS6oFOg8mbvawNFqCglqxw8QITgz2M0CHCUr
-         PFqPqxxOjAXVAG5sFGgch25PnnC6i5iY3iIymN9jQpeaM3FxHv+ocrTuFA3TePDdHQiD
-         vm4iF2X0ZQY0q2XRexYlaKFJckCflJwtsWObny8TsF000BOucLFQZRgOnviKan0J9HxH
-         P7A3/tXailN3OqYA/QQP1Xl1rYDf1+GfIYqUe32nL9490FeQbNJUmJu7ZnHQrDWw+JL9
-         2hC5h6g01VclxBcgrlE76NDFhe1zhgY/mjInLNJe2GyRj92m2EcRne+m9ZOzwYNxt2fB
-         g9hA==
+Received: by mail-lj1-f173.google.com with SMTP id 38308e7fff4ca-2ec6635aa43so18643321fa.1;
+        Tue, 25 Jun 2024 09:20:25 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1719329781; x=1719934581;
+        d=1e100.net; s=20230601; t=1719332422; x=1719937222;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=ox1lbjwU21POUzsTNWtq+35PHOWR0ci2ck/cLItWRLY=;
-        b=NVv07bnuQTK7e2lSP26W3k2DZ3QxQxZ2kt7SbSaSYIJtqDqGfjSC+S5K9SKgTEjhU7
-         TGMgPBz791E1sHyD+to/9cHy9dYqRTlWNeAzbYgEjM/qaJxA73/bogxBsxQV15e6DLv7
-         0UOufRRPQo0/H0MRLCwHVeRBWgvx54SpXD0uQIuFx/yZY+6ifkAUkd5vK/m0Y1bPFIrs
-         Q/o9mNviV+zI8J/pCw8hFy3usN0h0njO1Sf646lhQHGknwSRFEn+6xPLxJ5axVbRLa78
-         TlgSf7mspDFR4Z7iBny2mcxTEAFU9F7KbQeCsEyY9b2aq74CGOEbS+ry7QzqRdgyKnZ1
-         u5Hg==
-X-Forwarded-Encrypted: i=1; AJvYcCVVc/djogyz8ci/yVos1JWIhuiXeHx+nM+Mb/bgTMY3u22RLy+ldBoSMxS1kAFSl5Q7AC2GZW6QJB+NsEuR1BVthJmtMtw=
-X-Gm-Message-State: AOJu0YyznvrmoxQRFoB3cHZakpl9nbUbLl7OEv1hKmbHMKImSCDXBDPh
-	6Xlr7kUd87IbZM9nWXEBPQTgimOSqB143ebf6Lk3n1uoZ9IJbwkEk8WMPysiV+PGdqNOTyRq+OX
-	WcHZbkIdwwsvQBXuyG8pWHodVQ6o=
-X-Google-Smtp-Source: AGHT+IHxpsEaiq7s8p8MnTUzi0PLbTnU1MrdrE7dFVtZiMWrVR2nmXkgwgR1pOTuRiNCFznIg23NJHs+fBN4vaKf6Qw=
-X-Received: by 2002:a50:cdd2:0:b0:57c:5f77:1136 with SMTP id
- 4fb4d7f45d1cf-57d4bd8fcf3mr6998806a12.24.1719329780722; Tue, 25 Jun 2024
- 08:36:20 -0700 (PDT)
+         :reply-to:in-reply-to:references:mime-version:x-gm-message-state
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=9MwUhJ3rsg2znZ8HeUs9/evcb9sqY2gLgQOBc97ax+M=;
+        b=SsiZNkpJrx5iTTErsPy9BcL/KkGwBL5dV78TAuQ5D9BJrDSeLOxPI3pvhO4WUG0qE0
+         iDmfvXuqqymhsYdH3G0N3TrHO44oPtXRuDEWZ/aJgnvGNLFaHa5OkXzZjUz6noYx4NFh
+         SJM16nfWshgLrkMlFlq7viXQQ1SMFtgl3foWsIKa0P85K+XDpBbiiwOU4fkT/ub6I08a
+         CQKehVqmKUPtOw+knX38gzvJLexVy/OkFS1qezWKuF0BFZcnt8WfgmYZMFBULgx6skVG
+         /j48KETcYciMYkesJZu/PTxsfab1QpftOfQZOB/UMudAkIiPY0ns+RadlgTgmMv/mO88
+         Co9Q==
+X-Forwarded-Encrypted: i=1; AJvYcCUBND7ShRaPC06YoxGp7B0GRIyaNyP7a5QrPCrQCALoMJPh1e4KEtBBVKBY+hpPsEJamYeAhiaYUx/A2oC65+pUmXioUs9C+AXZIDxIIEPGnezazCE+yFnJ0/MVJXJ5uiLLNw==
+X-Gm-Message-State: AOJu0Yw4EuSQABRJl3g9j9/70BPkroaYT0j7nquswijxv43F8dm7Dj/C
+	EJMumgdWlly5CEG0NEf0wdoSJPAyhSB9ZCJIDjjo5nblf7nWFZXROFItwBza
+X-Google-Smtp-Source: AGHT+IEBXB6y82h4uzfNKSCHuZT5ZjyNq4zEyJs5ZuMbKWANvnGxsREEBPdsraSvuNBHT/SR8pbBCw==
+X-Received: by 2002:a2e:8ed0:0:b0:2ec:839c:b659 with SMTP id 38308e7fff4ca-2ec839d37a2mr3795211fa.41.1719332421770;
+        Tue, 25 Jun 2024 09:20:21 -0700 (PDT)
+Received: from mail-lj1-f170.google.com (mail-lj1-f170.google.com. [209.85.208.170])
+        by smtp.gmail.com with ESMTPSA id 38308e7fff4ca-2ec56001d2fsm9049381fa.65.2024.06.25.09.20.20
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 25 Jun 2024 09:20:21 -0700 (PDT)
+Received: by mail-lj1-f170.google.com with SMTP id 38308e7fff4ca-2ec6635aa43so18642621fa.1;
+        Tue, 25 Jun 2024 09:20:20 -0700 (PDT)
+X-Forwarded-Encrypted: i=1; AJvYcCVgUSiIlsHS2zQjhMQSGIjG0XwcMY8ekINQpbgPGy2tB4HDM0jVxMm1Fhe0+EtLgooNx+sxyAQsbp1h2XkrV/LiymP9PNAo9w4Sbkz85+bM+Ld+xPUiDxyYc9BVe4egPDAmaw==
+X-Received: by 2002:a2e:b0f3:0:b0:2ec:5785:ee94 with SMTP id
+ 38308e7fff4ca-2ec579fefd8mr53735441fa.52.1719332420352; Tue, 25 Jun 2024
+ 09:20:20 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <20240523175227.117984-1-robdclark@gmail.com> <20240523175227.117984-2-robdclark@gmail.com>
- <20240624151401.GB8706@willie-the-truck> <CAF6AEGttkHPOsO+NSHZeRXiZBxU_26HZyGMjOZ3-Y8NZUgz0gA@mail.gmail.com>
- <20240625112703.GA10175@willie-the-truck>
-In-Reply-To: <20240625112703.GA10175@willie-the-truck>
-From: Rob Clark <robdclark@gmail.com>
-Date: Tue, 25 Jun 2024 08:36:08 -0700
-Message-ID: <CAF6AEGu-NxM0HO_sKxu_bhAxMEwOZkisPmoouocvisk6ng_6Bg@mail.gmail.com>
-Subject: Re: [PATCH v4 1/2] iommu/io-pgtable-arm: Add way to debug pgtable walk
-To: Will Deacon <will@kernel.org>
-Cc: dri-devel@lists.freedesktop.org, linux-arm-msm@vger.kernel.org, 
-	freedreno@lists.freedesktop.org, Rob Clark <robdclark@chromium.org>, 
-	Robin Murphy <robin.murphy@arm.com>, Joerg Roedel <joro@8bytes.org>, Jason Gunthorpe <jgg@ziepe.ca>, 
-	Boris Brezillon <boris.brezillon@collabora.com>, Kevin Tian <kevin.tian@intel.com>, 
-	Joao Martins <joao.m.martins@oracle.com>, 
-	"moderated list:ARM SMMU DRIVERS" <linux-arm-kernel@lists.infradead.org>, 
-	"open list:IOMMU SUBSYSTEM" <iommu@lists.linux.dev>, open list <linux-kernel@vger.kernel.org>
+References: <20240616224056.29159-1-andre.przywara@arm.com> <ZnqyDLMzND_qJiOl@8bytes.org>
+In-Reply-To: <ZnqyDLMzND_qJiOl@8bytes.org>
+Reply-To: wens@csie.org
+From: Chen-Yu Tsai <wens@csie.org>
+Date: Wed, 26 Jun 2024 00:20:08 +0800
+X-Gmail-Original-Message-ID: <CAGb2v64M_trcaXzef6=rbWZY-r_sv=bvoHngUeDVWjx+AXTy7g@mail.gmail.com>
+Message-ID: <CAGb2v64M_trcaXzef6=rbWZY-r_sv=bvoHngUeDVWjx+AXTy7g@mail.gmail.com>
+Subject: Re: [PATCH v2 0/5] iommu: sun50i: Add Allwinner H616 support
+To: Joerg Roedel <joro@8bytes.org>
+Cc: Andre Przywara <andre.przywara@arm.com>, Will Deacon <will@kernel.org>, 
+	Robin Murphy <robin.murphy@arm.com>, Jernej Skrabec <jernej.skrabec@gmail.com>, 
+	Samuel Holland <samuel@sholland.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>, 
+	Conor Dooley <conor+dt@kernel.org>, Rob Herring <robh@kernel.org>, 
+	Chris Morgan <macromorgan@hotmail.com>, Ryan Walklin <ryan@testtoast.com>, 
+	Philippe Simons <simons.philippe@gmail.com>, iommu@lists.linux.dev, 
+	devicetree@vger.kernel.org, linux-sunxi@lists.linux.dev, 
+	linux-arm-kernel@lists.infradead.org
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-On Tue, Jun 25, 2024 at 4:27=E2=80=AFAM Will Deacon <will@kernel.org> wrote=
-:
->
-> On Mon, Jun 24, 2024 at 08:37:26AM -0700, Rob Clark wrote:
-> > On Mon, Jun 24, 2024 at 8:14=E2=80=AFAM Will Deacon <will@kernel.org> w=
-rote:
-> > >
-> > > On Thu, May 23, 2024 at 10:52:21AM -0700, Rob Clark wrote:
-> > > > From: Rob Clark <robdclark@chromium.org>
-> > > >
-> > > > Add an io-pgtable method to walk the pgtable returning the raw PTEs=
- that
-> > > > would be traversed for a given iova access.
-> > > >
-> > > > Signed-off-by: Rob Clark <robdclark@chromium.org>
-> > > > ---
-> > > >  drivers/iommu/io-pgtable-arm.c | 51 ++++++++++++++++++++++++++++--=
-----
-> > > >  include/linux/io-pgtable.h     |  4 +++
-> > > >  2 files changed, 46 insertions(+), 9 deletions(-)
-> > > >
-> > > > diff --git a/drivers/iommu/io-pgtable-arm.c b/drivers/iommu/io-pgta=
-ble-arm.c
-> > > > index f7828a7aad41..f47a0e64bb35 100644
-> > > > --- a/drivers/iommu/io-pgtable-arm.c
-> > > > +++ b/drivers/iommu/io-pgtable-arm.c
-> > > > @@ -693,17 +693,19 @@ static size_t arm_lpae_unmap_pages(struct io_=
-pgtable_ops *ops, unsigned long iov
-> > > >                               data->start_level, ptep);
-> > > >  }
-> > > >
-> > > > -static phys_addr_t arm_lpae_iova_to_phys(struct io_pgtable_ops *op=
-s,
-> > > > -                                      unsigned long iova)
-> > > > +static int arm_lpae_pgtable_walk(struct io_pgtable_ops *ops, unsig=
-ned long iova,
-> > > > +                     int (*cb)(void *cb_data, void *pte, int level=
-),
-> > > > +                     void *cb_data)
-> > > >  {
-> > > >       struct arm_lpae_io_pgtable *data =3D io_pgtable_ops_to_data(o=
-ps);
-> > > >       arm_lpae_iopte pte, *ptep =3D data->pgd;
-> > > >       int lvl =3D data->start_level;
-> > > > +     int ret;
-> > > >
-> > > >       do {
-> > > >               /* Valid IOPTE pointer? */
-> > > >               if (!ptep)
-> > > > -                     return 0;
-> > > > +                     return -EFAULT;
-> > >
-> > > nit: -ENOENT might be a little better, as we're only checking against=
- a
-> > > NULL entry rather than strictly any faulting entry.
-> > >
-> > > >               /* Grab the IOPTE we're interested in */
-> > > >               ptep +=3D ARM_LPAE_LVL_IDX(iova, lvl, data);
-> > > > @@ -711,22 +713,52 @@ static phys_addr_t arm_lpae_iova_to_phys(stru=
-ct io_pgtable_ops *ops,
-> > > >
-> > > >               /* Valid entry? */
-> > > >               if (!pte)
-> > > > -                     return 0;
-> > > > +                     return -EFAULT;
-> > >
-> > > Same here (and at the end of the function).
-> > >
-> > > > +
-> > > > +             ret =3D cb(cb_data, &pte, lvl);
-> > >
-> > > Since pte is on the stack, rather than pointing into the actual pgtab=
-le,
-> > > I think it would be clearer to pass it by value to the callback.
-> >
-> > fwiw, I passed it as a void* to avoid the pte size.. although I guess
-> > it could be a union of all the possible pte types
->
-> Can you just get away with a u64?
+Hi Joerg,
 
-yeah, that wfm if you're ok with it
+On Tue, Jun 25, 2024 at 8:03=E2=80=AFPM Joerg Roedel <joro@8bytes.org> wrot=
+e:
+>
+> On Sun, Jun 16, 2024 at 11:40:51PM +0100, Andre Przywara wrote:
+> >  .../bindings/iommu/allwinner,sun50i-h6-iommu.yaml |  7 ++++++-
+> >  arch/arm64/boot/dts/allwinner/sun50i-h616.dtsi    |  9 +++++++++
+> >  drivers/iommu/sun50i-iommu.c                      | 15 +++++++++++++--
+> >  3 files changed, 28 insertions(+), 3 deletions(-)
+>
+> Applied, thanks.
 
-BR,
--R
+Could you back out the last patch? I'd like to take it through the sunxi
+tree, which already has other H616 device tree patches.
+
+
+Thanks
+ChenYu
