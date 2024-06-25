@@ -1,105 +1,128 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.17])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-yb1-f179.google.com (mail-yb1-f179.google.com [209.85.219.179])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9ADD313C818
-	for <iommu@lists.linux.dev>; Tue, 25 Jun 2024 04:41:52 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.17
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 470551474C9
+	for <iommu@lists.linux.dev>; Tue, 25 Jun 2024 07:50:52 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.219.179
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1719290514; cv=none; b=iVahq9kmuJhghpyI4gswXb4EcHIvM02xFkoNAzLTqu+rYuBcf1xjoU0jNSzqNmZqxDSDtBO5ThS1niKf4ucTjO55sSlcWR5iaFjJnawiTfxZU/4AsoUg+kvZ91hzCUx8R1fygELDDFgDfZth9pipB7qecYtL49xEIV9nKY0+eQA=
+	t=1719301854; cv=none; b=ut7FI8+Y4whTKcIAKiutCnaTR43ZyiP6NZq/1casgHtj+WRH50hV/Ry78lGQDEdHdCSsIIAjq7MpNeCPQGXIwffKslwDR+If4bMmEpJqBNhQZhwAnGTrgIi612VR7LUHACOq2+YDU96tKj6iTw56VT+6kkCmu26bqkbGnAwOI+8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1719290514; c=relaxed/simple;
-	bh=AEcb9uoqY+haPLqWfC41LsegM3/wAyvPwHBCs4Y7rZk=;
-	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version; b=AENxlF7ZthGSD5a0OSBej8rLuY1d/blnhDVeYnziIGr2OSwzQf0NyOwH/QYI8141h910ggwYuDFoZk2W2vw35pv4Toi6rhxEw680imesX0MLbliMAdEOnZFOt8pmmRg8XcVC4vBd+dQB9t8KPmjtsFj29HEAAjBFOVHduWZ8CaM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=AesDX6SI; arc=none smtp.client-ip=192.198.163.17
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
+	s=arc-20240116; t=1719301854; c=relaxed/simple;
+	bh=8jxcS8tRiE+LFLUa/aufartj472cje7N8ZY+g8JTF0k=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=DGX84liDV4T3a6K9reFNlrwuTpoKok/ojOWm05ROljsG7pmqempHgvOpG/aJxvgwJV6mB+/zF6o/IiimiE4PbOfRkGwzjkbzhrzq4F6w904MiVnGIGeSwZIxtxklVee77FbMqZ7QdXkCtzmFU+1+f3qPBOhDEhxrirKVHiQgSyA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org; spf=pass smtp.mailfrom=linaro.org; dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b=AosLLykb; arc=none smtp.client-ip=209.85.219.179
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linaro.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="AesDX6SI"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1719290513; x=1750826513;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=AEcb9uoqY+haPLqWfC41LsegM3/wAyvPwHBCs4Y7rZk=;
-  b=AesDX6SIgv8qY3uowqE1y3aAxm5mZnjVeUHF6KvXxpHVeGqf4GaKgt8X
-   wQCPEzfd9hHHP0JNfK4OcalXVw/JtuDFgmySn+JSl/60zKnwJAMv8P6VX
-   Qdm+WqHDKhJ33sJv7gcGibjwFrNvhLmEj33goHJA4EdmvP1n/3R8kKPcs
-   lOuk/ARPKMGCpAJVhfVZB5x0ARnCpUeFaZCKc02zwoGQhlymEQOQqhBcS
-   A0HnHVvucQ7cZGCQZxNeAVRUrBmAyCMDDk4Gkp9vcYZrbtL/xcFKeBWHF
-   MX4YRbgVy1YIIHxw6QOjwgfgNjbxgV0ZCZQyTX3nlq67cPVHNPhdCdl2m
-   Q==;
-X-CSE-ConnectionGUID: i9BYQHOhTLiJxGHj5ZLvFQ==
-X-CSE-MsgGUID: xCnjr42UQ+Gif3XmudBLXw==
-X-IronPort-AV: E=McAfee;i="6700,10204,11113"; a="16164839"
-X-IronPort-AV: E=Sophos;i="6.08,263,1712646000"; 
-   d="scan'208";a="16164839"
-Received: from orviesa010.jf.intel.com ([10.64.159.150])
-  by fmvoesa111.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Jun 2024 21:41:52 -0700
-X-CSE-ConnectionGUID: zgda8c7aSNSRIlf4R2jC8g==
-X-CSE-MsgGUID: 4qs8bsahR3ei6/HzT5LCoA==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.08,263,1712646000"; 
-   d="scan'208";a="43390330"
-Received: from unknown (HELO allen-box.sh.intel.com) ([10.239.159.127])
-  by orviesa010.jf.intel.com with ESMTP; 24 Jun 2024 21:41:49 -0700
-From: Lu Baolu <baolu.lu@linux.intel.com>
-To: Joerg Roedel <joro@8bytes.org>,
-	Kevin Tian <kevin.tian@intel.com>,
-	Yi Liu <yi.l.liu@intel.com>,
-	Jacob Pan <jacob.jun.pan@linux.intel.com>
-Cc: Will Deacon <will@kernel.org>,
-	Robin Murphy <robin.murphy@arm.com>,
-	iommu@lists.linux.dev,
-	linux-kernel@vger.kernel.org,
-	Lu Baolu <baolu.lu@linux.intel.com>,
-	Paul Menzel <pmenzel@molgen.mpg.de>
-Subject: [PATCH 1/1] iommu/vt-d: Downgrade warning for pre-enabled IR
-Date: Tue, 25 Jun 2024 12:39:12 +0800
-Message-Id: <20240625043912.258036-1-baolu.lu@linux.intel.com>
-X-Mailer: git-send-email 2.34.1
+	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="AosLLykb"
+Received: by mail-yb1-f179.google.com with SMTP id 3f1490d57ef6-e02e4eb5c3dso4259623276.3
+        for <iommu@lists.linux.dev>; Tue, 25 Jun 2024 00:50:52 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google; t=1719301851; x=1719906651; darn=lists.linux.dev;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date:message-id:reply-to;
+        bh=0RTZZV3+tH/geYdSF4ruzYz0JFAprmpnlQN133kk76E=;
+        b=AosLLykbqaP80SpxgXo9aW6+UMyDmfRhBpyESshEsE450VvO2VFyz7UFfC1nr6pMxC
+         itPNp6IxorgKBnXdK81Y6QWpDpUyhOxjxPyRQkvWJIZS2uiX9zeNioaGukLZeJBFsyff
+         FH6w2hspU8t6/+jE9WzbyhNoiC22gWGzJKsPlqOR8dOtk/YJHthfHJl5y8O0uWgw3QnQ
+         JGSHX1teXoicd3QMfwMfe8zPbKA1bXu+MDFhVESWwjO9y1RXGxpa/3rOpd5AuEbgMoQK
+         gAOrzokbfdgpYceoKC1b3TDJ/dzmHzQdMhMaO67NSIpSy81XwqhiSYQVbzT6aEKa5Nu2
+         Pr9g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1719301851; x=1719906651;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=0RTZZV3+tH/geYdSF4ruzYz0JFAprmpnlQN133kk76E=;
+        b=FccG3vZFJdkKfeVBWIkPY5YwQ0innMDGAfXRvawqOnvOjxm/rR/unp5+FznfsrwxNZ
+         uzaztmPwm5hsV78/bLCAaVhb6HLW/4XpmZkFutChhtBXI5Jt+NFr24bHdVuD3RC0DNMi
+         QObQpoReoNEtDjvQc+r+yjuLy1LOyJ6e9st3Nbm1N/ft8EEmOXqzG4T9REoX7v6vf4oT
+         SUmCpA+j89M0PuOSp3oah179h1P/pTD1lcPxGxEBqWK9isGYTzb1NuYOK1+WU4EMLBJz
+         t7cMfgZFBOKvyylQQbIxJErvNvB1Zob5KTDbzC52SwXouhOl0RyROZ8a9N7tLF8imLSb
+         GGLw==
+X-Forwarded-Encrypted: i=1; AJvYcCUr2f5v6YMZtVBiMdMas8QCvPDgVpw7LLUWf45bjiCbYCtaluk0BMpgwd8rGLHMbWD6Hyj7/sYk05k7TFjORhUcaEvEIuk=
+X-Gm-Message-State: AOJu0YxBrLEuXI/+dCZKT3SYeuCtebTqi6xvMfkDAI0wDOxU8+Te4dx2
+	mslABdPJFuztn7SBUjAyzRo987ZQJSxiY9suzPKeu9yMdlMPdGLLDwMQYndF+b+NXcfTj503lej
+	6k/bQxmvuFOUtYCrUoOGtSal3C9vjvNxniNOOuw==
+X-Google-Smtp-Source: AGHT+IGQ3OTSR0KC1/SpE/IADAGxFrimSZmnBj4lcnGkw++5Ft8jUp7w1CXLdHosE9cv9AXQbpTdIr7RsWD+lOF76b4=
+X-Received: by 2002:a25:dc0c:0:b0:dfe:2488:c056 with SMTP id
+ 3f1490d57ef6-e02fc29d8d8mr7663761276.23.1719301851256; Tue, 25 Jun 2024
+ 00:50:51 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20240417133731.2055383-1-quic_c_gdjako@quicinc.com>
+ <20240417133731.2055383-6-quic_c_gdjako@quicinc.com> <CAA8EJppcXVu72OSo+OiYEiC1HQjP3qCwKMumOsUhcn6Czj0URg@mail.gmail.com>
+In-Reply-To: <CAA8EJppcXVu72OSo+OiYEiC1HQjP3qCwKMumOsUhcn6Czj0URg@mail.gmail.com>
+From: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+Date: Tue, 25 Jun 2024 10:50:40 +0300
+Message-ID: <CAA8EJpr3GYimirDz39f4n-3hDAxFWzo+9fdY6MAuxaNguouVFg@mail.gmail.com>
+Subject: Re: [PATCH v8 5/7] arm64: dts: qcom: sdm845: Add DT nodes for the TBUs
+To: Georgi Djakov <quic_c_gdjako@quicinc.com>
+Cc: will@kernel.org, robin.murphy@arm.com, joro@8bytes.org, 
+	iommu@lists.linux.dev, robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org, 
+	conor+dt@kernel.org, devicetree@vger.kernel.org, andersson@kernel.org, 
+	konrad.dybcio@linaro.org, robdclark@gmail.com, 
+	linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, 
+	linux-arm-msm@vger.kernel.org, quic_cgoldswo@quicinc.com, 
+	quic_sukadev@quicinc.com, quic_pdaly@quicinc.com, quic_sudaraja@quicinc.com, 
+	djakov@kernel.org
+Content-Type: text/plain; charset="UTF-8"
 
-Emitting a warning is overkill in intel_setup_irq_remapping() since the
-interrupt remapping is pre-enabled. For example, there's no guarantee
-that kexec will explicitly disable interrupt remapping before booting a
-new kernel. As a result, users are seeing warning messages like below
-when they kexec boot a kernel, though there is nothing wrong:
+On Fri, 14 Jun 2024 at 21:05, Dmitry Baryshkov
+<dmitry.baryshkov@linaro.org> wrote:
+>
+> On Wed, 17 Apr 2024 at 16:39, Georgi Djakov <quic_c_gdjako@quicinc.com> wrote:
+> >
+> > Add the device-tree nodes for the TBUs (translation buffer units) that
+> > are present on the sdm845 platforms. The TBUs can be used debug the
+> > kernel and provide additional information when a context faults occur.
+> >
+> > Describe the all registers, clocks, interconnects and power-domain
+> > resources that are needed for each of the TBUs.
+> >
+> > Signed-off-by: Georgi Djakov <quic_c_gdjako@quicinc.com>
+>
+> This patch now prevents interconnect drivers from hitting the sync
+> state on SDM845.
+> The TBU driver is enabled only when the ARM_SMMU_QCOM_DEBUG is
+> enabled, which is not a typical case on a normal system:
 
- DMAR-IR: IRQ remapping was enabled on dmar18 but we are not in kdump mode
- DMAR-IR: IRQ remapping was enabled on dmar17 but we are not in kdump mode
- DMAR-IR: IRQ remapping was enabled on dmar16 but we are not in kdump mode
- ... ...
+Georgi, before I start acting like a bull in a china shop and sending
+reverts, any update from your side?
 
-Downgrade the severity of this message to avoid user confusion.
+>
+> [   26.209151] qnoc-sdm845 1500000.interconnect: sync_state() pending
+> due to 150c5000.tbu
+> [   26.217228] qnoc-sdm845 1620000.interconnect: sync_state() pending
+> due to 150c5000.tbu
+> [   26.229926] qnoc-sdm845 1500000.interconnect: sync_state() pending
+> due to 150c9000.tbu
+> [   26.238008] qnoc-sdm845 1620000.interconnect: sync_state() pending
+> due to 150c9000.tbu
+> [   26.249068] qnoc-sdm845 1740000.interconnect: sync_state() pending
+> due to 150cd000.tbu
+> [   26.257127] qnoc-sdm845 1740000.interconnect: sync_state() pending
+> due to 150d1000.tbu
+> [   26.265159] qnoc-sdm845 1740000.interconnect: sync_state() pending
+> due to 150d5000.tbu
+> [   26.273189] qnoc-sdm845 1500000.interconnect: sync_state() pending
+> due to 150d9000.tbu
+> [   26.281206] qnoc-sdm845 1620000.interconnect: sync_state() pending
+> due to 150d9000.tbu
+> [   26.289203] qnoc-sdm845 1500000.interconnect: sync_state() pending
+> due to 150dd000.tbu
+> [   26.297196] qnoc-sdm845 1620000.interconnect: sync_state() pending
+> due to 150dd000.tbu
+> [   26.305201] qnoc-sdm845 1500000.interconnect: sync_state() pending
+> due to 150e1000.tbu
+> [   26.313207] qnoc-sdm845 1620000.interconnect: sync_state() pending
+> due to 150e1000.tbu
 
-CC: Paul Menzel <pmenzel@molgen.mpg.de>
-Link: https://lore.kernel.org/linux-iommu/5517f76a-94ad-452c-bae6-34ecc0ec4831@molgen.mpg.de/
-Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
----
- drivers/iommu/intel/irq_remapping.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
-
-diff --git a/drivers/iommu/intel/irq_remapping.c b/drivers/iommu/intel/irq_remapping.c
-index e4a70886678c..e090ca07364b 100644
---- a/drivers/iommu/intel/irq_remapping.c
-+++ b/drivers/iommu/intel/irq_remapping.c
-@@ -597,8 +597,8 @@ static int intel_setup_irq_remapping(struct intel_iommu *iommu)
- 
- 	if (ir_pre_enabled(iommu)) {
- 		if (!is_kdump_kernel()) {
--			pr_warn("IRQ remapping was enabled on %s but we are not in kdump mode\n",
--				iommu->name);
-+			pr_info_once("IRQ remapping was enabled on %s but we are not in kdump mode\n",
-+				     iommu->name);
- 			clear_ir_pre_enabled(iommu);
- 			iommu_disable_irq_remapping(iommu);
- 		} else if (iommu_load_old_irte(iommu))
 -- 
-2.34.1
-
+With best wishes
+Dmitry
