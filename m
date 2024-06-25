@@ -1,98 +1,104 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from mx0a-0031df01.pphosted.com (mx0a-0031df01.pphosted.com [205.220.168.131])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D00383B7A8;
-	Tue, 25 Jun 2024 21:25:54 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9440F17D8AA
+	for <iommu@lists.linux.dev>; Tue, 25 Jun 2024 21:43:43 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.168.131
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1719350754; cv=none; b=rHTpBOphwds47aAx/uJtLsN/LgvCmmnH+Xcfwuz3Hs+JaIRCmSuY/mH+V1hDTCHHapzvGxonzI01/n6R3ADLobQdg0qvo5eXVuOjIxA+x+gUpEBW/G7ibnbe/+SM3fmFPWd0MprbWC4+bUV+3PRWDCr1Y/zyBQDVegXMMIxnVy0=
+	t=1719351825; cv=none; b=O/9+KJTr4KQPbFshJMEeWNFXdgvJFRyIFmivKEigJtyFQuhsj15nAUrtVS/0zFS+tIi1unQSIHqN8+rXd8j731SwrjKMh0sW5VYX/IUnRUtUlbiBaO67BNJHvdX6+GuPZfu+xeO5+z7qb2T3nCUgVNvCVcJH0aAgUffQHmRXLr0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1719350754; c=relaxed/simple;
-	bh=2fpgo7wWPpnHiHwgIsqvXf8aq+M/0Mjk/P4VKhmqk9g=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=fnqpxYJ5CFuQpp9s824ZaqPwZJcdFMvw0Zp7AuGIlLzngs3fVO+ZXFTchBVc/UeVlp1vy3hMtROWC21D/2+B6NPaBQiJ+XG4BR0wv7VBy4GyNQu0NUJQ6fnAL/OJzI8MSY9bCjBCxAduDTENLrdk2RBEABk/63OIwZv4IF7BUfI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=oEiDbm9y; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1719351825; c=relaxed/simple;
+	bh=1WLdPZ5yF7oV56dmdSaQ19DXHumn5asxzfhfsCcMH4M=;
+	h=Message-ID:Date:MIME-Version:Subject:To:CC:References:From:
+	 In-Reply-To:Content-Type; b=aUGsSPxFNCIPlnFNJ6QTgWIggaOgRCq6ephKpbhe/hIJaRdlmJcx0eAk+zb1YzqhJzv/pt+X4/X9N5DdDVMKdH1TSYaCi4s5FrKsLpcEQ9VSxmSezHphs1T8S52bTThE+EI0xmf+f1LqjoLTNJo1kHXmaizusBnNlwr4eKeo2C0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com; spf=pass smtp.mailfrom=quicinc.com; dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b=XxJR+tSx; arc=none smtp.client-ip=205.220.168.131
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=quicinc.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="oEiDbm9y"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id AF14EC32781;
-	Tue, 25 Jun 2024 21:25:51 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1719350754;
-	bh=2fpgo7wWPpnHiHwgIsqvXf8aq+M/0Mjk/P4VKhmqk9g=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=oEiDbm9yxknpltYIgrfYLyaP7Bls6wfZZ1GnEI7Xx2/Yc4CpIhBhEiba25HOhokrh
-	 RZj9WDfLXKZFKgdxDjR37qg7Dgr0gmgFpImRkXOkZzU9C5ur/Ji9PZY8mnTlCLqFiQ
-	 KJ+SRXhUsSzeevRs8o4kVel1VKJ+xGOI1MPDSKN5grEsP2+bvodeveJ2SavHisb99P
-	 naEYdMJc+BrqDLJOBfGA9qoe+jTy6nBkWHKgJpq52BYK2d+KWM1ueokIhY3O7S1co0
-	 0l5kx/OkzOdb7vY7oEIFRSSJjNsXbyp70qdHwgOhp4NF4YP9ulhJeMY+OM0GyprFE/
-	 rGheLG9gLYjmg==
-Date: Tue, 25 Jun 2024 22:25:48 +0100
-From: Mark Brown <broonie@kernel.org>
-To: Nathan Chancellor <nathan@kernel.org>
-Cc: Oreoluwa Babatunde <quic_obabatun@quicinc.com>, robh@kernel.org,
-	saravanak@google.com, hch@lst.de, m.szyprowski@samsung.com,
-	robin.murphy@arm.com, will@kernel.org, catalin.marinas@arm.com,
-	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-	iommu@lists.linux.dev, kernel@quicinc.com
-Subject: Re: [PATCH v6 1/4] of: reserved_mem: Restruture how the reserved
- memory regions are processed
-Message-ID: <abab36b4-e9ef-40ff-adbd-fde0f016f3b8@sirena.org.uk>
-References: <20240528223650.619532-1-quic_obabatun@quicinc.com>
- <20240528223650.619532-2-quic_obabatun@quicinc.com>
- <20240610213403.GA1697364@thelio-3990X>
- <Zmd0Zg7oMneJLyHd@finisterre.sirena.org.uk>
+	dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b="XxJR+tSx"
+Received: from pps.filterd (m0279862.ppops.net [127.0.0.1])
+	by mx0a-0031df01.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 45PHV7Xw009082;
+	Tue, 25 Jun 2024 21:43:25 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=quicinc.com; h=
+	cc:content-transfer-encoding:content-type:date:from:in-reply-to
+	:message-id:mime-version:references:subject:to; s=qcppdkim1; bh=
+	1WLdPZ5yF7oV56dmdSaQ19DXHumn5asxzfhfsCcMH4M=; b=XxJR+tSx+V7XX3Oo
+	ISbazRJTFA7PRUzzVDJjm8IJmbxYkwxWEFt5VDIn6W/SR866Vi+3eWJ/B1PFfSaM
+	ertxEyxW48rVxfy7XSr5yxCUg0ZR7RXf4AkM4vom/gED/9QO+k+k1QkeMM3Uj1pi
+	Q29EUXdWaK27NRLsSVy/zvbsckxLv3fb2W6FnrKi34IllLQlAMJ5RqhPhiKQjitU
+	4E2VCaGR3uoZ5wbHnYggC4Qh0yGyOLh9bdvcIPl9MfhUK2aiXm6mUfpRIbTKxXlx
+	aYsIXpfoaWtbUdNLQ94nKtRexCGT3yVnBjdkzmoLKU9lhORtZ2P22IKLKUEWF69C
+	N8HjBw==
+Received: from nalasppmta02.qualcomm.com (Global_NAT1.qualcomm.com [129.46.96.20])
+	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 3ywqcefuxe-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Tue, 25 Jun 2024 21:43:24 +0000 (GMT)
+Received: from nalasex01b.na.qualcomm.com (nalasex01b.na.qualcomm.com [10.47.209.197])
+	by NALASPPMTA02.qualcomm.com (8.17.1.19/8.17.1.19) with ESMTPS id 45PLhNYC004152
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Tue, 25 Jun 2024 21:43:23 GMT
+Received: from [10.110.31.38] (10.80.80.8) by nalasex01b.na.qualcomm.com
+ (10.47.209.197) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1544.9; Tue, 25 Jun
+ 2024 14:43:20 -0700
+Message-ID: <c8dc6827-a757-42cc-8532-314f8da37d3a@quicinc.com>
+Date: Tue, 25 Jun 2024 14:43:11 -0700
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-	protocol="application/pgp-signature"; boundary="laeNYeGrVdu/YCAl"
-Content-Disposition: inline
-In-Reply-To: <Zmd0Zg7oMneJLyHd@finisterre.sirena.org.uk>
-X-Cookie: Some equipment shown is optional.
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v6 1/4] of: reserved_mem: Restruture how the reserved
+ memory regions are processed
+To: Mark Brown <broonie@kernel.org>, Nathan Chancellor <nathan@kernel.org>
+CC: <robh@kernel.org>, <saravanak@google.com>, <hch@lst.de>,
+        <m.szyprowski@samsung.com>, <robin.murphy@arm.com>, <will@kernel.org>,
+        <catalin.marinas@arm.com>, <devicetree@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>, <iommu@lists.linux.dev>,
+        <kernel@quicinc.com>
+References: <20240528223650.619532-1-quic_obabatun@quicinc.com>
+ <20240528223650.619532-2-quic_obabatun@quicinc.com>
+ <20240610213403.GA1697364@thelio-3990X>
+ <Zmd0Zg7oMneJLyHd@finisterre.sirena.org.uk>
+ <abab36b4-e9ef-40ff-adbd-fde0f016f3b8@sirena.org.uk>
+Content-Language: en-US
+From: Oreoluwa Babatunde <quic_obabatun@quicinc.com>
+In-Reply-To: <abab36b4-e9ef-40ff-adbd-fde0f016f3b8@sirena.org.uk>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
+ nalasex01b.na.qualcomm.com (10.47.209.197)
+X-QCInternal: smtphost
+X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
+X-Proofpoint-GUID: -B5O4HLGYcE4HdI0_vGOreeX0PHdrEIO
+X-Proofpoint-ORIG-GUID: -B5O4HLGYcE4HdI0_vGOreeX0PHdrEIO
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.293,Aquarius:18.0.1039,Hydra:6.0.680,FMLib:17.12.28.16
+ definitions=2024-06-25_16,2024-06-25_01,2024-05-17_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 impostorscore=0 clxscore=1015
+ mlxscore=0 lowpriorityscore=0 bulkscore=0 phishscore=0 spamscore=0
+ suspectscore=0 priorityscore=1501 malwarescore=0 mlxlogscore=703
+ adultscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.19.0-2406140001 definitions=main-2406250161
 
 
---laeNYeGrVdu/YCAl
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+On 6/25/2024 2:25 PM, Mark Brown wrote:
+>> I'm also seeing issues in -next which I bisected to this commit, on the
+>> original Raspberry Pi the cpufreq driver fails to come up and I see
+>> (potentially separate?) backtraces:
+> This is still in -next and breaking boot as reported above.
+Hi Mark,
 
-On Mon, Jun 10, 2024 at 10:47:18PM +0100, Mark Brown wrote:
-> On Mon, Jun 10, 2024 at 02:34:03PM -0700, Nathan Chancellor wrote:
-> > On Tue, May 28, 2024 at 03:36:47PM -0700, Oreoluwa Babatunde wrote:
->=20
-> > > fdt_init_reserved_mem() is also now called from within the
-> > > unflatten_device_tree() function so that this step happens after the
-> > > page tables have been setup.
->=20
-> > > Signed-off-by: Oreoluwa Babatunde <quic_obabatun@quicinc.com>
->=20
-> > I am seeing a warning when booting aspeed_g5_defconfig in QEMU that I
-> > bisected to this change in -next as commit a46cccb0ee2d ("of:
-> > reserved_mem: Restruture how the reserved memory regions are
-> > processed").
->=20
-> I'm also seeing issues in -next which I bisected to this commit, on the
-> original Raspberry Pi the cpufreq driver fails to come up and I see
-> (potentially separate?) backtraces:
+I uploaded a fix about a week ago here:
+https://lore.kernel.org/all/20240620001027.2326275-1-quic_obabatun@quicinc.com/
 
-This is still in -next and breaking boot as reported above.
+It is still pending review and expected to be merged if everything
+is okay.
 
---laeNYeGrVdu/YCAl
-Content-Type: application/pgp-signature; name="signature.asc"
+You can use this and see if it works for you. If it does, you can
+also add a 'Tested-by:' tag to help speed things up.
 
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEreZoqmdXGLWf4p/qJNaLcl1Uh9AFAmZ7NdwACgkQJNaLcl1U
-h9CRmgf+MxWrqBIy6qcWxT4vhYq3B4GVJxOVx75T9RjVBoUn4kzuzulvobVPKw8Z
-+oSESmos/Ztwu54PdEcoJgz9sE9bdBEZloJQzNd7bTKrAoaiS0NlWRFNwUIr5veL
-W2VixUC7euUW3rInnaSRktlVGCdcmf9+7xYnfoMD18Ecqy++kSrTSPqCmMKJEvOG
-nRsx4hXrdLyj10h539snjBbuvIcjWC4jfEqaqB5P8H6u9HVQuRP4eMD9cTHK8Mf1
-djdK2W2ZzPa1U+P/6B0ORFloA3Vg4udYMOKP6WBAFFCVY1r1uBrg8nlKt1cnNyT3
-mK9860YyHJk9+HWIFb1skmm6XJ98/A==
-=N6M3
------END PGP SIGNATURE-----
-
---laeNYeGrVdu/YCAl--
+Thank you!
+Oreoluwa
