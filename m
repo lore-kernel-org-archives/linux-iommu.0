@@ -1,148 +1,157 @@
-Received: from mail-yb1-f178.google.com (mail-yb1-f178.google.com [209.85.219.178])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 37273158D75
-	for <iommu@lists.linux.dev>; Tue, 25 Jun 2024 12:59:41 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.219.178
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EFC4A13BC2F;
+	Tue, 25 Jun 2024 13:51:16 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1719320382; cv=none; b=i01HHOqhDuO+g/eGCsu2hkHDcQKF9pJAImeAaYhSiwq85DpwtolWpEsd5JS3zixRgIbI9NLcmYZ5taI8rsdQvB8yibTYp5Yq8DvVXjgrMNmhAQJc4VvAgBOqizo7om7oVF/xl/md2eNW6A7hTjuQR0q9gnO2m/aKzS8h1tZygKc=
+	t=1719323477; cv=none; b=HVJO7PxBevqV7YJnTBSQjM6pBmC4hI5TTTTdkIb9lDwBJs9W3YO5fprTOzFV52FLMXoUVN1TyA80QdSLlWqJpv/Fpjbb75jw7GD6gsGWSb7/81N6v8BnpWJBsveI/6EphIcu5xi3MhmQ6jblTwhaZE/LcFgHH7Kao9L9KMrBnps=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1719320382; c=relaxed/simple;
-	bh=Yp7I2FiVKh+KMKAdM9SGW2FFGeM+i7tZKjv8+TY0Guw=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=CGUMw0ImkJff8mvDOVWJ617FXdoHwb+iuesT/6pmtMvCCxHuf40Zdhbyvt3dU8dVdmpBnlBpEHFrk6+CwY7xVHUIqu3dhooJShPUGESUuRXJFPtjfopEzLHGyyH4IPys0foOxICWy7e+ebZTAq6RYQy3tPbyRVZJ0XZDuHtuZGs=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org; spf=pass smtp.mailfrom=linaro.org; dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b=zkzwQBFo; arc=none smtp.client-ip=209.85.219.178
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linaro.org
+	s=arc-20240116; t=1719323477; c=relaxed/simple;
+	bh=q/n3/6op+yhTcPT/pheshsDsolvSjuhhh2ShF391PQw=;
+	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:To:Cc; b=fq72ONzKZzpaORiFe2Enaz18LvjJBjF4p6lfIYdAZuw5zi1ZRYnIEUSXrMjAVY7Pd6C+dVI5Ybq9BwPfWDWFr4YnFP2fgbIyptcDxJZ9r3dr7BGiLD9a5WOrvvK+RnivOdfUDv0gjh/cp2D8PelYxsiEfMnK3u1NNuXmQXm92mM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Z4EU/FMG; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="zkzwQBFo"
-Received: by mail-yb1-f178.google.com with SMTP id 3f1490d57ef6-e02da9b2db7so5065227276.3
-        for <iommu@lists.linux.dev>; Tue, 25 Jun 2024 05:59:40 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1719320380; x=1719925180; darn=lists.linux.dev;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=g3Ay60vtgcGfFCitsZDB5AKtYOW2UuaM+JMlbTIwmNo=;
-        b=zkzwQBFop+4jJSbcS6ddx1XZmWMd+rxDKQMF/yZJYTdiXyVqh6h1a4acrvfGq9TieB
-         CsucV1GHaDDZ8ByTHi4qYSrzcyE3gF1l+bjspb2/kwcXMfD4frsSMXUtZmM0/A7sb/WE
-         JhHMYeq8bhVJ8vp9SO5FPUdjwndiGS69Y27fUgeBrlb+oecA+N3NRSGBB/CHvPEWovrP
-         W72hFNbC+NmRngRETe5i8SWQhfkTUkNN3gUbHtWMtRmkAJ1yro2CC++RVfKKMVHpN+Zy
-         2ITQSWQpBPaDA6Lwz0/f+G2pAQxoPTgic7gGbgYC/Z6C36PLd3tqrjrsICryfN1A7npX
-         7Uuw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1719320380; x=1719925180;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=g3Ay60vtgcGfFCitsZDB5AKtYOW2UuaM+JMlbTIwmNo=;
-        b=sOBBod7L+IDN4QMmz1GD/ulJb4SnqKwF4XQXYZgFAUgpfWbPyPBRQGxH7NR4sYKD2A
-         33zpj32eTfmZfHBrL5zsaBC3rX3HbwwR1M0546gt+lddRf7fmCaXktsmgq3vdQDavXPC
-         BSKDy7z6OhRNzPjybNCyY+WGcVbHJf8oC2BhTEGR71CouR68MIazjoOUrMa1fMcnmGu4
-         idzRV57fBPm6lR5YvnzZMEGyyc6two7LFewaIALHOd+IZt7lTrbtAmAEZH9fvHIe32Nq
-         CS7jYjVhR1n1vsHMOnO9NhFJKdvlkwkn/W8kcekAdmh2gCqFpgfB9oN/QMiXTJjqCplQ
-         dqnQ==
-X-Forwarded-Encrypted: i=1; AJvYcCVG4Hf5bzfUwZQRnkZG9SVfFimaxMvn4PLUOFZ5afknmAHIo35mvl/V+7Pm4u4g+H/MPXFCs30JUS1CBJi6vcaYZTxQUK8=
-X-Gm-Message-State: AOJu0YwW5UBDi4ZSlG9yX7HwiAQjPPPNoNe1BiOx4UnJ82nxqbpY+ZLv
-	Cw/+wRRECeOwoa6g+w1G7S+eOMB38M33Bbmizwu3O6z/HA+SleC4oUWXNrusYC0acdW18ec37Lc
-	6StJi58uX3Wgrjj58PVabdPtHnK80gJkMRE3Jkw==
-X-Google-Smtp-Source: AGHT+IG/uaVakkrgSD4WKuGcBcbaZo5fAtSTAyu0sxOZcikQA0BHcryR5jI9ISgR3vlev1QYzK5GUigCBoIhwmTN5Pk=
-X-Received: by 2002:a25:69c3:0:b0:e02:bde0:f2ce with SMTP id
- 3f1490d57ef6-e0303f7f157mr6765502276.31.1719320380162; Tue, 25 Jun 2024
- 05:59:40 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Z4EU/FMG"
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 6E2E4C32781;
+	Tue, 25 Jun 2024 13:51:16 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1719323476;
+	bh=q/n3/6op+yhTcPT/pheshsDsolvSjuhhh2ShF391PQw=;
+	h=From:Date:Subject:To:Cc:Reply-To:From;
+	b=Z4EU/FMGm/kMmEwQ5i4CvfRb+9uwMbxo1nb1IEWkXnGzk4znQCoE+fMpxM+r4HafW
+	 Zhk2LO43ZZWYcar2pBJr0Ex062UfCPPSqVpT0zcVzt3cPloT+VSouOH8CjC4cjt+Zg
+	 L9Bg5wh/+skwzJts/RjwgsofNIm5bDHQQDb8AgHFq/dqmOzXxtgrEl91c9FXi0DFOo
+	 FdrYpOMZz94u8yCi5RjnCwJNL5z9Yn9G5hnl8y9DiFED6oDtFN7w61dBjy9quO65sA
+	 Sbrb2WpUMTQBZLUXe12kksvMv+R+DPJJ5MpyzT3+WCdUOznbvwB7pIkuDvQHD1g53L
+	 GvnHO10AbyOBA==
+Received: from aws-us-west-2-korg-lkml-1.web.codeaurora.org (localhost.localdomain [127.0.0.1])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5F4BEC2BBCA;
+	Tue, 25 Jun 2024 13:51:16 +0000 (UTC)
+From: Joel Granados via B4 Relay <devnull+j.granados.samsung.com@kernel.org>
+Date: Tue, 25 Jun 2024 15:49:31 +0200
+Subject: [PATCH] iommu/intel: Enable pci capabilities before assigning
+ cache tags
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <20240417133731.2055383-1-quic_c_gdjako@quicinc.com>
- <20240417133731.2055383-6-quic_c_gdjako@quicinc.com> <CAA8EJppcXVu72OSo+OiYEiC1HQjP3qCwKMumOsUhcn6Czj0URg@mail.gmail.com>
- <CAA8EJpr3GYimirDz39f4n-3hDAxFWzo+9fdY6MAuxaNguouVFg@mail.gmail.com> <3e816509-a12b-4658-85f4-c0d0037c6a64@kernel.org>
-In-Reply-To: <3e816509-a12b-4658-85f4-c0d0037c6a64@kernel.org>
-From: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
-Date: Tue, 25 Jun 2024 15:59:27 +0300
-Message-ID: <CAA8EJpr1G4eq5xJn0z2JQmpXY89UK13uk2BWJCgROsFP_-NkQw@mail.gmail.com>
-Subject: Re: [PATCH v8 5/7] arm64: dts: qcom: sdm845: Add DT nodes for the TBUs
-To: Georgi Djakov <djakov@kernel.org>
-Cc: Georgi Djakov <quic_c_gdjako@quicinc.com>, will@kernel.org, robin.murphy@arm.com, 
-	joro@8bytes.org, iommu@lists.linux.dev, robh+dt@kernel.org, 
-	krzysztof.kozlowski+dt@linaro.org, conor+dt@kernel.org, 
-	devicetree@vger.kernel.org, andersson@kernel.org, konrad.dybcio@linaro.org, 
-	robdclark@gmail.com, linux-arm-kernel@lists.infradead.org, 
-	linux-kernel@vger.kernel.org, linux-arm-msm@vger.kernel.org, 
-	quic_cgoldswo@quicinc.com, quic_sukadev@quicinc.com, quic_pdaly@quicinc.com, 
-	quic_sudaraja@quicinc.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+Message-Id: <20240625-jag-ats_cache_tag_fix-v1-1-67f956e3fa93@samsung.com>
+X-B4-Tracking: v=1; b=H4sIAOrKemYC/x2MQQqAIBAAvxJ7TjCxjL4SIZuuth0qNCKI/p50n
+ IGZBzIlpgxD9UCiizPvW4GmrsAtuEUS7AuDkkrLTrVixSjwzNahW8ieGG3gW3ijzTzL0HrdQ2m
+ PREX/33F63w9DoIeeZwAAAA==
+To: David Woodhouse <dwmw2@infradead.org>, 
+ Lu Baolu <baolu.lu@linux.intel.com>, Joerg Roedel <joro@8bytes.org>, 
+ Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>
+Cc: iommu@lists.linux.dev, linux-kernel@vger.kernel.org, 
+ Joel Granados <j.granados@samsung.com>
+X-Mailer: b4 0.13.0
+X-Developer-Signature: v=1; a=openpgp-sha256; l=2524;
+ i=j.granados@samsung.com; h=from:subject:message-id;
+ bh=ZAV4AO+ksfC2IKBwiprCzqazgh+/Mze5UH1MvGeac1M=;
+ b=owJ4nAHtARL+kA0DAAoBupfNUreWQU8ByyZiAGZ6y1KZp8Fnhxly/H95r0cXWxFevDnL64nWk
+ 8KgwIAI87YOK4kBswQAAQoAHRYhBK5HCVcl5jElzssnkLqXzVK3lkFPBQJmestSAAoJELqXzVK3
+ lkFPgR4L/1Wqva641Q9H+7bm7Eebei8C9OZ7UwJ37Q7XQBrHjd7Fr4SXIeFPpIEoCSBqjWloTs8
+ p53C4mZYNu4WTdd6u6OOeCnkmY3xZm8JBAUxa9QTzI2ufcTcD0I0E/h39rquDStpsb3S9G7q+eS
+ 0x3L1V8SIMxEnTqZgMPsr1VhveV9sW1+zRm09hR5o1qePtHLrtfbllCn1cLWVtr2NvZlunOAZpZ
+ sFFcEdOJuFjpMqEX3+oelrAHGeKHIZ2Ff1V0AMl23oTUseGwlGPoQUspVDlPY3gq4sEuZIGXdm+
+ VSPR2bvQYyBYoqrFDUkWSLuIs7vwwmVMkqbKkesGpQNvd7ZqenKNhshXZh/0cj1tOLZScMBYXnN
+ R1FxdnQGrRiQ8mIrNeeqXAYY95nD7BrcHIbmmGhTvmm7rILpxm5SS1y6OPVxXnApPFFqZvuxdZT
+ UQ5BX7DppjXtrAOPwVBdm/jS8MWWVSUJcmcRQb7d2lo4QJTozAHlofbFDX7Te8uTHdozi7ABxm5
+ Z4=
+X-Developer-Key: i=j.granados@samsung.com; a=openpgp;
+ fpr=F1F8E46D30F0F6C4A45FF4465895FAAC338C6E77
+X-Endpoint-Received: by B4 Relay for j.granados@samsung.com/default with
+ auth_id=70
+X-Original-From: Joel Granados <j.granados@samsung.com>
+Reply-To: j.granados@samsung.com
 
-On Tue, 25 Jun 2024 at 15:57, Georgi Djakov <djakov@kernel.org> wrote:
->
-> On 25.06.24 10:50, Dmitry Baryshkov wrote:
-> > On Fri, 14 Jun 2024 at 21:05, Dmitry Baryshkov
-> > <dmitry.baryshkov@linaro.org> wrote:
-> >>
-> >> On Wed, 17 Apr 2024 at 16:39, Georgi Djakov <quic_c_gdjako@quicinc.com> wrote:
-> >>>
-> >>> Add the device-tree nodes for the TBUs (translation buffer units) that
-> >>> are present on the sdm845 platforms. The TBUs can be used debug the
-> >>> kernel and provide additional information when a context faults occur.
-> >>>
-> >>> Describe the all registers, clocks, interconnects and power-domain
-> >>> resources that are needed for each of the TBUs.
-> >>>
-> >>> Signed-off-by: Georgi Djakov <quic_c_gdjako@quicinc.com>
-> >>
-> >> This patch now prevents interconnect drivers from hitting the sync
-> >> state on SDM845.
-> >> The TBU driver is enabled only when the ARM_SMMU_QCOM_DEBUG is
-> >> enabled, which is not a typical case on a normal system:
-> >
-> > Georgi, before I start acting like a bull in a china shop and sending
-> > reverts, any update from your side?
->
-> Hi Dmitry!
-> Thanks for the report! We can easily add status = "disabled" to the DT
-> nodes, but please give me some time to take a look what would be the best
-> way to handle this, as i was out last week and now i am still catching up.
+From: Joel Granados <j.granados@samsung.com>
 
-I think the simplest thing would be to move the TBU driver to the
-arm-qcom-smmu.c instead of having it in the -debug.c
+Enable the pci capabilities by calling iommu_enable_pci_caps before we
+assign a cache tag. The cache_tag_assign_domain call in
+dmar_domain_attach_device uses the device_domain_info->ats_enabled
+element to decide on the cache_tag_type value. Therefore ats_enabled
+needs to be evaluated before the call to the tag cache assignment.
 
->
-> BR,
-> Georgi
->
-> >
-> >>
-> >> [   26.209151] qnoc-sdm845 1500000.interconnect: sync_state() pending
-> >> due to 150c5000.tbu
-> >> [   26.217228] qnoc-sdm845 1620000.interconnect: sync_state() pending
-> >> due to 150c5000.tbu
-> >> [   26.229926] qnoc-sdm845 1500000.interconnect: sync_state() pending
-> >> due to 150c9000.tbu
-> >> [   26.238008] qnoc-sdm845 1620000.interconnect: sync_state() pending
-> >> due to 150c9000.tbu
-> >> [   26.249068] qnoc-sdm845 1740000.interconnect: sync_state() pending
-> >> due to 150cd000.tbu
-> >> [   26.257127] qnoc-sdm845 1740000.interconnect: sync_state() pending
-> >> due to 150d1000.tbu
-> >> [   26.265159] qnoc-sdm845 1740000.interconnect: sync_state() pending
-> >> due to 150d5000.tbu
-> >> [   26.273189] qnoc-sdm845 1500000.interconnect: sync_state() pending
-> >> due to 150d9000.tbu
-> >> [   26.281206] qnoc-sdm845 1620000.interconnect: sync_state() pending
-> >> due to 150d9000.tbu
-> >> [   26.289203] qnoc-sdm845 1500000.interconnect: sync_state() pending
-> >> due to 150dd000.tbu
-> >> [   26.297196] qnoc-sdm845 1620000.interconnect: sync_state() pending
-> >> due to 150dd000.tbu
-> >> [   26.305201] qnoc-sdm845 1500000.interconnect: sync_state() pending
-> >> due to 150e1000.tbu
-> >> [   26.313207] qnoc-sdm845 1620000.interconnect: sync_state() pending
-> >> due to 150e1000.tbu
-> >
->
+Signed-off-by: Joel Granados <j.granados@samsung.com>
+---
+The "what" and "why" are included in the commit message.
 
+Tried to place cache_tag_assign_domain before the early return in
+"if(dev_is_real_dma_subdevice(dev))". This means that the call to
+iommu_enable_pci_caps landed before the setup functions [1] which is not
+an issue as they seem to be orthogonal (I would like to be proven wrong
+here).
 
+An alternative to this patch would be to use a different way of checking
+if the device is ATS enabled in __cache_tag_assign_domain.
+
+Comments greatly appreciated
+
+Best
+
+joel
+
+[1] setup functions: domain_context_mapping,
+    intel_pasid_setup_pass_through, domain_setup_first_level and
+    intel_pasid_setup_second_level.
+---
+ drivers/iommu/intel/iommu.c | 18 +++++++++---------
+ 1 file changed, 9 insertions(+), 9 deletions(-)
+
+diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
+index 2e9811bf2a4e..ecd79741e67c 100644
+--- a/drivers/iommu/intel/iommu.c
++++ b/drivers/iommu/intel/iommu.c
+@@ -2114,17 +2114,20 @@ static int dmar_domain_attach_device(struct dmar_domain *domain,
+ 	if (ret)
+ 		return ret;
+ 
+-	ret = cache_tag_assign_domain(domain, dev, IOMMU_NO_PASID);
+-	if (ret) {
+-		domain_detach_iommu(domain, iommu);
+-		return ret;
+-	}
+-
+ 	info->domain = domain;
+ 	spin_lock_irqsave(&domain->lock, flags);
+ 	list_add(&info->link, &domain->devices);
+ 	spin_unlock_irqrestore(&domain->lock, flags);
+ 
++	if (sm_supported(info->iommu) || !domain_type_is_si(info->domain))
++		iommu_enable_pci_caps(info);
++
++	ret = cache_tag_assign_domain(domain, dev, IOMMU_NO_PASID);
++	if (ret) {
++		domain_detach_iommu(domain, iommu);
++		return ret;
++	}
++
+ 	if (dev_is_real_dma_subdevice(dev))
+ 		return 0;
+ 
+@@ -2142,9 +2145,6 @@ static int dmar_domain_attach_device(struct dmar_domain *domain,
+ 		return ret;
+ 	}
+ 
+-	if (sm_supported(info->iommu) || !domain_type_is_si(info->domain))
+-		iommu_enable_pci_caps(info);
+-
+ 	return 0;
+ }
+ 
+
+---
+base-commit: f2661062f16b2de5d7b6a5c42a9a5c96326b8454
+change-id: 20240625-jag-ats_cache_tag_fix-d747bb0f5d48
+
+Best regards,
 -- 
-With best wishes
-Dmitry
+Joel Granados <j.granados@samsung.com>
+
+
