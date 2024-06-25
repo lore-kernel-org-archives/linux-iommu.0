@@ -1,104 +1,143 @@
-Received: from mx0a-0031df01.pphosted.com (mx0a-0031df01.pphosted.com [205.220.168.131])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-pf1-f202.google.com (mail-pf1-f202.google.com [209.85.210.202])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9440F17D8AA
-	for <iommu@lists.linux.dev>; Tue, 25 Jun 2024 21:43:43 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.168.131
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 934FF17D88C
+	for <iommu@lists.linux.dev>; Tue, 25 Jun 2024 22:35:00 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.202
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1719351825; cv=none; b=O/9+KJTr4KQPbFshJMEeWNFXdgvJFRyIFmivKEigJtyFQuhsj15nAUrtVS/0zFS+tIi1unQSIHqN8+rXd8j731SwrjKMh0sW5VYX/IUnRUtUlbiBaO67BNJHvdX6+GuPZfu+xeO5+z7qb2T3nCUgVNvCVcJH0aAgUffQHmRXLr0=
+	t=1719354902; cv=none; b=MogeIAgI5goNMDnyAq5YqlxOKHwTBuj1a8DRlXn6YZw935bVuo7w1xCKIzzECLJk16KJ5itHd9/leN1fqO+sbIiY85KOoy63NBqM7z8pYg79DRW8UUv+O2usCrgg+Muibo+a2yo5rE5n5Ye/ZQnTGlY2x3KA+avY3HUvsh+mUCM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1719351825; c=relaxed/simple;
-	bh=1WLdPZ5yF7oV56dmdSaQ19DXHumn5asxzfhfsCcMH4M=;
-	h=Message-ID:Date:MIME-Version:Subject:To:CC:References:From:
-	 In-Reply-To:Content-Type; b=aUGsSPxFNCIPlnFNJ6QTgWIggaOgRCq6ephKpbhe/hIJaRdlmJcx0eAk+zb1YzqhJzv/pt+X4/X9N5DdDVMKdH1TSYaCi4s5FrKsLpcEQ9VSxmSezHphs1T8S52bTThE+EI0xmf+f1LqjoLTNJo1kHXmaizusBnNlwr4eKeo2C0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com; spf=pass smtp.mailfrom=quicinc.com; dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b=XxJR+tSx; arc=none smtp.client-ip=205.220.168.131
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=quicinc.com
+	s=arc-20240116; t=1719354902; c=relaxed/simple;
+	bh=91Z7ox9LiBjORVtCWaAzB8GD58RrfZz+zWI0Wxs5FyY=;
+	h=Date:Mime-Version:Message-ID:Subject:From:To:Cc:Content-Type; b=kXidyBR8NmWjEWM4ir9dcoU5zZUxxiZDnOEI4vinUgTmULCoeTmn2lF9R3It3jsttm4rO90SifMzPvEDnDDXkw4dSan78HPVAD4v5/ZJN3l60hkKiQW/VwEvqVCDwgSTHXIb0xKQL8tCQ03DkruE0FDnBMm5A2y3PDiH2Y1vHI8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=flex--edliaw.bounces.google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=NIqtabpQ; arc=none smtp.client-ip=209.85.210.202
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=flex--edliaw.bounces.google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b="XxJR+tSx"
-Received: from pps.filterd (m0279862.ppops.net [127.0.0.1])
-	by mx0a-0031df01.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 45PHV7Xw009082;
-	Tue, 25 Jun 2024 21:43:25 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=quicinc.com; h=
-	cc:content-transfer-encoding:content-type:date:from:in-reply-to
-	:message-id:mime-version:references:subject:to; s=qcppdkim1; bh=
-	1WLdPZ5yF7oV56dmdSaQ19DXHumn5asxzfhfsCcMH4M=; b=XxJR+tSx+V7XX3Oo
-	ISbazRJTFA7PRUzzVDJjm8IJmbxYkwxWEFt5VDIn6W/SR866Vi+3eWJ/B1PFfSaM
-	ertxEyxW48rVxfy7XSr5yxCUg0ZR7RXf4AkM4vom/gED/9QO+k+k1QkeMM3Uj1pi
-	Q29EUXdWaK27NRLsSVy/zvbsckxLv3fb2W6FnrKi34IllLQlAMJ5RqhPhiKQjitU
-	4E2VCaGR3uoZ5wbHnYggC4Qh0yGyOLh9bdvcIPl9MfhUK2aiXm6mUfpRIbTKxXlx
-	aYsIXpfoaWtbUdNLQ94nKtRexCGT3yVnBjdkzmoLKU9lhORtZ2P22IKLKUEWF69C
-	N8HjBw==
-Received: from nalasppmta02.qualcomm.com (Global_NAT1.qualcomm.com [129.46.96.20])
-	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 3ywqcefuxe-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Tue, 25 Jun 2024 21:43:24 +0000 (GMT)
-Received: from nalasex01b.na.qualcomm.com (nalasex01b.na.qualcomm.com [10.47.209.197])
-	by NALASPPMTA02.qualcomm.com (8.17.1.19/8.17.1.19) with ESMTPS id 45PLhNYC004152
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Tue, 25 Jun 2024 21:43:23 GMT
-Received: from [10.110.31.38] (10.80.80.8) by nalasex01b.na.qualcomm.com
- (10.47.209.197) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1544.9; Tue, 25 Jun
- 2024 14:43:20 -0700
-Message-ID: <c8dc6827-a757-42cc-8532-314f8da37d3a@quicinc.com>
-Date: Tue, 25 Jun 2024 14:43:11 -0700
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="NIqtabpQ"
+Received: by mail-pf1-f202.google.com with SMTP id d2e1a72fcca58-7065df788f6so6695013b3a.3
+        for <iommu@lists.linux.dev>; Tue, 25 Jun 2024 15:35:00 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20230601; t=1719354900; x=1719959700; darn=lists.linux.dev;
+        h=cc:to:from:subject:message-id:mime-version:date:from:to:cc:subject
+         :date:message-id:reply-to;
+        bh=KACPm6o1sF6MfYdPebomXscoE9qCB1ha0g1j4OaH67g=;
+        b=NIqtabpQb8J142NbmKTtRE0WYN9RN2SS72wT6ONTsCo408ne7pnQkM5OD+uHmuUzrT
+         oMG4pV8KM3xyyvBaCKGMa2qa2K+OT2y+i2dGHABIYU7MNZw0WBs+/SeOZwFGtubLVjMo
+         NuPOJS7fX4JvMJ/rwX5cKxCPxWrd/HM699heA+VL3m5voSM5R0oMwIfvk1fh2PdXYn34
+         egN26xwZyY2fiI2FWIRpAGAPQ6OsFO+1kxXIs9CNgF6iD5aKpO7TgK8hEuV0IONI2M3z
+         UZD7u8sXEcBXmVH4+QOdT2XE3bAb2cQ7BKlylHMwDjXfxHJgoagd7fTQd1n13xcOoMbw
+         SGYA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1719354900; x=1719959700;
+        h=cc:to:from:subject:message-id:mime-version:date:x-gm-message-state
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=KACPm6o1sF6MfYdPebomXscoE9qCB1ha0g1j4OaH67g=;
+        b=schl4//ZN0aWP4ylsdaMugyNvVaO4ef9twssF/F61l/Tf9yvSyHA6FOal0rkyWcYv8
+         423jfks2oQHT+V9rk1U+JRgsTCmCS56+cSgPJN9fb8V9+GomgKrIs2E6mUOSxAEoWsn7
+         BxuDVBAepZaDWUq8febOrZ5Iwhh7UNwAJFzq9rQ0RfjoRwvN9lF0AnZxV57zT1Z8wUkZ
+         WIcn4t2D8y0fFhtBmQP+QQLZ8kLLC6y/7oH8xexBlNH0DqCvXpsUI3wqbV4M7w5UtgSI
+         9HHBUo5WGaBoX48YXNi6suRSQUk05vA5rqrpjAXSbejbxLsGXMaSLV4w0v0lNfajk+Rn
+         xpiQ==
+X-Forwarded-Encrypted: i=1; AJvYcCXJs+0ENuWXsQMlJbFZANkY/t0YGjhFEgEqH5e2UjM5y/7J0qfd2OgxdU3qmLalmzzXU6+eHifCAz5nGgL3qr+W54cvbpM=
+X-Gm-Message-State: AOJu0YwWzZ0DcT7+XLw+nOlo/+xs5Yar4/J56zHnZF6hzkPIChjdMRHp
+	ESXb9LtNllHXUvHb35lUD/RxsRm9HO5DcDXnSs41uw8+VhK1+5TeWPMuZdckOXVYTTmDhnOV11n
+	QEQ==
+X-Google-Smtp-Source: AGHT+IFpOX5CcrzFldMsRz/JodHWPPYjtr1mfNvHUywvuU1/bJCVZhZ6TnspYz+fdShAF0CdfuxKj2ZiUg4=
+X-Received: from edliaw.c.googlers.com ([fda3:e722:ac3:cc00:24:72f4:c0a8:305d])
+ (user=edliaw job=sendgmr) by 2002:a05:6a00:3698:b0:706:3f17:ca6 with SMTP id
+ d2e1a72fcca58-706746c2606mr330723b3a.3.1719354899705; Tue, 25 Jun 2024
+ 15:34:59 -0700 (PDT)
+Date: Tue, 25 Jun 2024 22:34:44 +0000
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
-MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v6 1/4] of: reserved_mem: Restruture how the reserved
- memory regions are processed
-To: Mark Brown <broonie@kernel.org>, Nathan Chancellor <nathan@kernel.org>
-CC: <robh@kernel.org>, <saravanak@google.com>, <hch@lst.de>,
-        <m.szyprowski@samsung.com>, <robin.murphy@arm.com>, <will@kernel.org>,
-        <catalin.marinas@arm.com>, <devicetree@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, <iommu@lists.linux.dev>,
-        <kernel@quicinc.com>
-References: <20240528223650.619532-1-quic_obabatun@quicinc.com>
- <20240528223650.619532-2-quic_obabatun@quicinc.com>
- <20240610213403.GA1697364@thelio-3990X>
- <Zmd0Zg7oMneJLyHd@finisterre.sirena.org.uk>
- <abab36b4-e9ef-40ff-adbd-fde0f016f3b8@sirena.org.uk>
-Content-Language: en-US
-From: Oreoluwa Babatunde <quic_obabatun@quicinc.com>
-In-Reply-To: <abab36b4-e9ef-40ff-adbd-fde0f016f3b8@sirena.org.uk>
+Mime-Version: 1.0
+X-Mailer: git-send-email 2.45.2.803.g4e1b14247a-goog
+Message-ID: <20240625223454.1586259-1-edliaw@google.com>
+Subject: [PATCH v7 0/1] Centralize _GNU_SOURCE definition into lib.mk
+From: Edward Liaw <edliaw@google.com>
+To: linux-kselftest@vger.kernel.org, Eric Biederman <ebiederm@xmission.com>, 
+	Kees Cook <kees@kernel.org>, Shuah Khan <shuah@kernel.org>, Thomas Gleixner <tglx@linutronix.de>, 
+	Ingo Molnar <mingo@redhat.com>, Peter Zijlstra <peterz@infradead.org>, 
+	Darren Hart <dvhart@infradead.org>, Davidlohr Bueso <dave@stgolabs.net>, 
+	"=?UTF-8?q?Andr=C3=A9=20Almeida?=" <andrealmeid@igalia.com>, Jason Gunthorpe <jgg@ziepe.ca>, Kevin Tian <kevin.tian@intel.com>, 
+	Paolo Bonzini <pbonzini@redhat.com>, Andrew Morton <akpm@linux-foundation.org>, 
+	"David S. Miller" <davem@davemloft.net>, Eric Dumazet <edumazet@google.com>, 
+	Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>, Fenghua Yu <fenghua.yu@intel.com>, 
+	Reinette Chatre <reinette.chatre@intel.com>, Paul Walmsley <paul.walmsley@sifive.com>, 
+	Palmer Dabbelt <palmer@dabbelt.com>, Albert Ou <aou@eecs.berkeley.edu>, 
+	Jarkko Sakkinen <jarkko@kernel.org>, Dave Hansen <dave.hansen@linux.intel.com>
+Cc: linux-kernel@vger.kernel.org, usama.anjum@collabora.com, seanjc@google.com, 
+	kernel-team@android.com, Edward Liaw <edliaw@google.com>, linux-mm@kvack.org, 
+	iommu@lists.linux.dev, kvm@vger.kernel.org, netdev@vger.kernel.org, 
+	linux-fsdevel@vger.kernel.org, linux-riscv@lists.infradead.org, 
+	linux-sgx@vger.kernel.org
 Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
- nalasex01b.na.qualcomm.com (10.47.209.197)
-X-QCInternal: smtphost
-X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
-X-Proofpoint-GUID: -B5O4HLGYcE4HdI0_vGOreeX0PHdrEIO
-X-Proofpoint-ORIG-GUID: -B5O4HLGYcE4HdI0_vGOreeX0PHdrEIO
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.293,Aquarius:18.0.1039,Hydra:6.0.680,FMLib:17.12.28.16
- definitions=2024-06-25_16,2024-06-25_01,2024-05-17_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 impostorscore=0 clxscore=1015
- mlxscore=0 lowpriorityscore=0 bulkscore=0 phishscore=0 spamscore=0
- suspectscore=0 priorityscore=1501 malwarescore=0 mlxlogscore=703
- adultscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.19.0-2406140001 definitions=main-2406250161
 
+Centralizes the definition of _GNU_SOURCE into lib.mk and addresses all
+resulting macro redefinition warnings.
 
-On 6/25/2024 2:25 PM, Mark Brown wrote:
->> I'm also seeing issues in -next which I bisected to this commit, on the
->> original Raspberry Pi the cpufreq driver fails to come up and I see
->> (potentially separate?) backtraces:
-> This is still in -next and breaking boot as reported above.
-Hi Mark,
+The initial attempt at this patch was abandoned because it affected
+lines in many source files and caused a large amount of churn. However,
+from earlier discussions, centralizing _GNU_SOURCE is still desireable.
+This attempt limits the changes to 1 source file and 14 Makefiles.
 
-I uploaded a fix about a week ago here:
-https://lore.kernel.org/all/20240620001027.2326275-1-quic_obabatun@quicinc.com/
+This is condensed into a single commit to avoid redefinition warnings
+from partial merges.
 
-It is still pending review and expected to be merged if everything
-is okay.
+v1: https://lore.kernel.org/linux-kselftest/20240430235057.1351993-1-edliaw@google.com/
+v2: https://lore.kernel.org/linux-kselftest/20240507214254.2787305-1-edliaw@google.com/
+ - Add -D_GNU_SOURCE to KHDR_INCLUDES so that it is in a single
+   location.
+ - Remove #define _GNU_SOURCE from source code to resolve redefinition
+   warnings.
+v3: https://lore.kernel.org/linux-kselftest/20240509200022.253089-1-edliaw@google.com/
+ - Rebase onto linux-next 20240508.
+ - Split patches by directory.
+ - Add -D_GNU_SOURCE directly to CFLAGS in lib.mk.
+ - Delete additional _GNU_SOURCE definitions from source code in
+   linux-next.
+ - Delete additional -D_GNU_SOURCE flags from Makefiles.
+v4: https://lore.kernel.org/linux-kselftest/20240510000842.410729-1-edliaw@google.com/
+ - Rebase onto linux-next 20240509.
+ - Remove Fixes tag from patches that drop _GNU_SOURCE definition.
+ - Restore space between comment and includes for selftests/damon.
+v5: https://lore.kernel.org/linux-kselftest/20240522005913.3540131-1-edliaw@google.com/
+ - Rebase onto linux-next 20240521
+ - Drop initial patches that modify KHDR_INCLUDES.
+ - Incorporate Mark Brown's patch to replace static_assert with warning.
+ - Don't drop #define _GNU_SOURCE from nolibc and wireguard.
+ - Change Makefiles for x86 and vDSO to append to CFLAGS.
+v6: https://lore.kernel.org/linux-kselftest/20240624232718.1154427-1-edliaw@google.com/
+ - Rewrite patch to use -D_GNU_SOURCE= form in lib.mk.
+ - Reduce the amount of churn significantly by allowing definition to
+   coexist with source code macro defines.
+v7:
+ - Squash patch into a single commit.
 
-You can use this and see if it works for you. If it does, you can
-also add a 'Tested-by:' tag to help speed things up.
+Edward Liaw (1):
+  selftests: Centralize -D_GNU_SOURCE= to CFLAGS in lib.mk
 
-Thank you!
-Oreoluwa
+ tools/testing/selftests/exec/Makefile             | 1 -
+ tools/testing/selftests/futex/functional/Makefile | 2 +-
+ tools/testing/selftests/intel_pstate/Makefile     | 2 +-
+ tools/testing/selftests/iommu/Makefile            | 2 --
+ tools/testing/selftests/kvm/Makefile              | 2 +-
+ tools/testing/selftests/lib.mk                    | 3 +++
+ tools/testing/selftests/mm/thuge-gen.c            | 2 +-
+ tools/testing/selftests/net/Makefile              | 2 +-
+ tools/testing/selftests/net/tcp_ao/Makefile       | 2 +-
+ tools/testing/selftests/proc/Makefile             | 1 -
+ tools/testing/selftests/resctrl/Makefile          | 2 +-
+ tools/testing/selftests/ring-buffer/Makefile      | 1 -
+ tools/testing/selftests/riscv/mm/Makefile         | 2 +-
+ tools/testing/selftests/sgx/Makefile              | 2 +-
+ tools/testing/selftests/tmpfs/Makefile            | 1 -
+ 15 files changed, 12 insertions(+), 15 deletions(-)
+
+--
+2.45.2.803.g4e1b14247a-goog
+
