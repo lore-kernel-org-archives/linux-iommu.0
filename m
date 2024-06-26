@@ -1,186 +1,260 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.17])
+Received: from mail187-10.suw11.mandrillapp.com (mail187-10.suw11.mandrillapp.com [198.2.187.10])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2219117B50F
-	for <iommu@lists.linux.dev>; Wed, 26 Jun 2024 13:08:20 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.17
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AE69A181B86
+	for <iommu@lists.linux.dev>; Wed, 26 Jun 2024 13:40:14 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.2.187.10
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1719407302; cv=none; b=aEnWJH6ED4n5bA2QC5dacMsit6Xy4xyLve5wOVpgDD8l9reB/NLqgVPxGQcA8Om01UbD8REYFj5fbn6vkiW850oHUfRjbPysuoj9xkfnMuAR80pFzZHZ0uJV08ZDjKsXu1q26Gi7aK6AM/Da4ujLBLPF+DRx98z2E4I4TrME15I=
+	t=1719409216; cv=none; b=Uko3Tr/VAlB8/h9NX0Y851n5OvBz1XTVX+v76C3o8hDFgsnK3bQKo6avbEU9HFVBMV0mB+NWKFOnxG6VzC65A4LOSqMEfQRiDFq4I8mS0eruAyd+jglHjnDefuYnHJYzk0mA/jEKd3+izRSMqvqZYLfwDE51DZCaPo4t9179/Ns=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1719407302; c=relaxed/simple;
-	bh=73KR6Ej2ApKphd24Pl1eiILZBGG1dwgteOBL5XjDHQQ=;
-	h=Message-ID:Date:MIME-Version:Cc:Subject:To:References:From:
-	 In-Reply-To:Content-Type; b=Cq4q3KCJhU7b2GrYwGoh/HCiGe9fv/yz4HpXUjKh/m1lGW0826GvSD2ElbaiZIZQKys5pp4+1VVRwFFxyTRQff+HUe7/Gqf6ETov8Ht4oyTLTa1R93MGVJ8gnhtjsncaDw+NwAxn/SGmqc6ilcR85XGjV6ZfCg2ixK5u2qM7sfY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=nSou/nZk; arc=none smtp.client-ip=192.198.163.17
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
+	s=arc-20240116; t=1719409216; c=relaxed/simple;
+	bh=F96SWGREhrIhNj/9I1tSdMv9UQzi7oXm3Qg9+vXzxtI=;
+	h=From:Subject:Message-Id:To:Cc:References:In-Reply-To:Date:
+	 MIME-Version:Content-Type; b=umy7l5Dl+zW+azcw+SA65wNCl8oE70Qh5qqFai3V64kEC4FN7ikxaTIKbMJWdHuzN4TziAlo2dw2LBqSKyLEmHNYTMX2vgVXOCl7rvgF6TYiWuoiodlfoXw0jDThl+xqBEpli6dHrA8dDr+S8/GufmRghXfYXWoeVZUscBY2QCc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=vates.tech; spf=pass smtp.mailfrom=bounce.vates.tech; dkim=pass (2048-bit key) header.d=mandrillapp.com header.i=@mandrillapp.com header.b=Mq8Hs7yc; dkim=pass (2048-bit key) header.d=vates.tech header.i=teddy.astie@vates.tech header.b=vudwB/au; arc=none smtp.client-ip=198.2.187.10
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=vates.tech
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=bounce.vates.tech
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="nSou/nZk"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1719407301; x=1750943301;
-  h=message-id:date:mime-version:cc:subject:to:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=73KR6Ej2ApKphd24Pl1eiILZBGG1dwgteOBL5XjDHQQ=;
-  b=nSou/nZk+omaZ6Dkb+onCkNlW5E9N5AERKGHleUfDxk9Dj1rciQ2WxCN
-   sUApuEW/OY/VmQga+pclAVTjPt+WYLcH1MDLzxvN7KEBbNnzh1iWcVzK3
-   603NoOnubRHUf/UUBkfgPmaoXpswVFVPKflRDZjKZbIEcq69p7ZOqufjj
-   S9UTt2BkuYWeaAGJIz65Ntx4RDZ4EYi6fHvz0vC79a7sYpOwIeOfINFsz
-   8lCUZj61RuyH0N/QzpwLXXAxjoO+V4+n4RPCzDmQUOpr7z9x/JLlq8ERt
-   eee7u6jo/BWxUc3Apo2s+xoq69qELSyaTtqkkbkwpRR7ubsMAenDP0Puw
-   Q==;
-X-CSE-ConnectionGUID: n6gFGYthTKCdo8TrUXVQgw==
-X-CSE-MsgGUID: 75xquK5uRd+b2g2Av18Rew==
-X-IronPort-AV: E=McAfee;i="6700,10204,11114"; a="16356321"
-X-IronPort-AV: E=Sophos;i="6.08,267,1712646000"; 
-   d="scan'208";a="16356321"
-Received: from fmviesa005.fm.intel.com ([10.60.135.145])
-  by fmvoesa111.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Jun 2024 06:05:12 -0700
-X-CSE-ConnectionGUID: np6vIdDzSbetGwSXRpzCEQ==
-X-CSE-MsgGUID: e9ivyvPHR/mafUNCCf65OA==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.08,267,1712646000"; 
-   d="scan'208";a="48445013"
-Received: from blu2-mobl.ccr.corp.intel.com (HELO [10.125.248.220]) ([10.125.248.220])
-  by fmviesa005-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Jun 2024 06:05:10 -0700
-Message-ID: <e3888b78-c787-4a2d-bd43-7dcddc2b5bb9@linux.intel.com>
-Date: Wed, 26 Jun 2024 21:05:07 +0800
+	dkim=pass (2048-bit key) header.d=mandrillapp.com header.i=@mandrillapp.com header.b="Mq8Hs7yc";
+	dkim=pass (2048-bit key) header.d=vates.tech header.i=teddy.astie@vates.tech header.b="vudwB/au"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=mandrillapp.com;
+	s=mte1; t=1719409213; x=1719669713;
+	bh=JHEddISG4C8qf11Zeb09KyLMyQLm7fuVNthb0dV6qkI=;
+	h=From:Subject:Message-Id:To:Cc:References:In-Reply-To:Feedback-ID:
+	 Date:MIME-Version:Content-Type:Content-Transfer-Encoding:CC:Date:
+	 Subject:From;
+	b=Mq8Hs7ycLARiul2BsSSwPeP5OR4um8PD9i76YcI63zkjnq0Bk6J0GfyGT6WlFsZsk
+	 L+bJPjxhZetWxdKbZlxnmMsmL7QZLV7Kbq+b+m9HijP+wE7PoxJhnJBlpv3KjBbftV
+	 V6eKKH3tOXTVa7+lKpd8xX5xZyyBbc3kP22yZo9LMld/fAd1Ayt2bgUJFQsk3LnRg0
+	 cyvH2uDD6pGwbl/B3yUzj7rPnLGqFzs4VOjftsK7GkxtDBTJAPMHxQJSlTZqUqcASP
+	 HiYdNCxVlCao2ozHofwVOUv9kFW6IYMmDsUF6gNT/TDWGo3VK1uAR7OOH1fprEBksV
+	 wH572luYfwmpA==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=vates.tech; s=mte1;
+	t=1719409213; x=1719669713; i=teddy.astie@vates.tech;
+	bh=JHEddISG4C8qf11Zeb09KyLMyQLm7fuVNthb0dV6qkI=;
+	h=From:Subject:Message-Id:To:Cc:References:In-Reply-To:Feedback-ID:
+	 Date:MIME-Version:Content-Type:Content-Transfer-Encoding:CC:Date:
+	 Subject:From;
+	b=vudwB/au3fXMW7xvJ7yVPUQHyZ/fF6k6beOL8RcukZeWA8UwI2LivHrcsV7On7zrT
+	 oBfRNroUgUFN0VZZyo1MJPw42h1ymzK8pUQha8dAKMhbw5jx4JiR8fmff+zhNRz1yt
+	 4AmQ3MbTptWRyFx38r5Kl02uj/qEt9g5+wDapWNHaWBcHXqrethCA/m3E/ydkoOlZ3
+	 rWY4aaNebfK08QRtk0rwesUazAWhDMg0URLFO8dJnac4Gw3fhjIZxxNhSZ88rMZngY
+	 hERyNLVJysRHwFGN6MoRjm5pxMunN6wL2lyRDVdxLEnIE6NBhUmVT2ptt1Mm5ypGv0
+	 1gb1jLO8nyE2g==
+Received: from pmta09.mandrill.prod.suw01.rsglab.com (localhost [127.0.0.1])
+	by mail187-10.suw11.mandrillapp.com (Mailchimp) with ESMTP id 4W8N9n4Jq6z5QkLqk
+	for <iommu@lists.linux.dev>; Wed, 26 Jun 2024 13:40:13 +0000 (GMT)
+From: Teddy Astie <teddy.astie@vates.tech>
+Subject: =?utf-8?Q?Re:=20[RFC=20PATCH=20v2]=20iommu/xen:=20Add=20Xen=20PV-IOMMU=20driver?=
+Received: from [37.26.189.201] by mandrillapp.com id 0c20c01a212c477c9a2d33d8ec909926; Wed, 26 Jun 2024 13:40:13 +0000
+X-Bm-Disclaimer: Yes
+X-Bm-Milter-Handled: 4ffbd6c1-ee69-4e1b-aabd-f977039bd3e2
+X-Bm-Transport-Timestamp: 1719409210959
+Message-Id: <cc5c2e1d-f5bd-47b3-830f-4bb5298ac106@vates.tech>
+To: Robin Murphy <robin.murphy@arm.com>, xen-devel@lists.xenproject.org, iommu@lists.linux.dev
+Cc: Juergen Gross <jgross@suse.com>, Stefano Stabellini <sstabellini@kernel.org>, Oleksandr Tyshchenko <oleksandr_tyshchenko@epam.com>, Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>, =?utf-8?Q?Marek=20Marczykowski-G=C3=B3recki?= <marmarek@invisiblethingslab.com>
+References: <24d7ec005e77e4e0127995ba6f4ad16f33737fa5.1718981216.git.teddy.astie@vates.tech> <da3ec316-b001-4711-b323-70af3e6bb014@arm.com> <a04e169d-b38a-43dc-b783-a8af1e1b0468@vates.tech> <c4dc539b-a71b-4323-aa31-b97b39c633a8@arm.com>
+In-Reply-To: <c4dc539b-a71b-4323-aa31-b97b39c633a8@arm.com>
+X-Native-Encoded: 1
+X-Report-Abuse: =?UTF-8?Q?Please=20forward=20a=20copy=20of=20this=20message,=20including=20all=20headers,=20to=20abuse@mandrill.com.=20You=20can=20also=20report=20abuse=20here:=20https://mandrillapp.com/contact/abuse=3Fid=3D30504962.0c20c01a212c477c9a2d33d8ec909926?=
+X-Mandrill-User: md_30504962
+Feedback-ID: 30504962:30504962.20240626:md
+Date: Wed, 26 Jun 2024 13:40:13 +0000
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Cc: baolu.lu@linux.intel.com, "iommu@lists.linux.dev"
- <iommu@lists.linux.dev>,
- "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH] iommu/vt-d: Refactor PCI PRI enabling/disabling callbacks
-To: "Tian, Kevin" <kevin.tian@intel.com>, Joerg Roedel <joro@8bytes.org>,
- Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
- Jason Gunthorpe <jgg@ziepe.ca>
-References: <20240606034019.42795-1-baolu.lu@linux.intel.com>
- <BN9PR11MB5276E8767AB63378C81130528CD62@BN9PR11MB5276.namprd11.prod.outlook.com>
-Content-Language: en-US
-From: Baolu Lu <baolu.lu@linux.intel.com>
-In-Reply-To: <BN9PR11MB5276E8767AB63378C81130528CD62@BN9PR11MB5276.namprd11.prod.outlook.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
 
-On 2024/6/26 14:53, Tian, Kevin wrote:
->> From: Lu Baolu <baolu.lu@linux.intel.com>
->> Sent: Thursday, June 6, 2024 11:40 AM
+Hello Robin,
+
+Le 26/06/2024 =C3=A0 14:09, Robin Murphy a =C3=A9crit=C2=A0:
+> On 2024-06-24 3:36 pm, Teddy Astie wrote:
+>> Hello Robin,
+>> Thanks for the thourough review.
 >>
->> +/*
->> + * Invalidate the caches for a present-to-present change in a context
->> + * table entry according to the Spec 6.5.3.3 (Guidance to Software for
->> + * Invalidations).
->> + *
->> + * Since context entry is not encoded by domain-id when operating in
->> + * scalable-mode (refer Section 6.2.1), this performs coarser
->> + * invalidation than the domain-selective granularity requested.
->> + */
->> +static void invalidate_present_context_change(struct device_domain_info
->> *info)
->> +{
->> +	struct intel_iommu *iommu = info->iommu;
->> +
->> +	iommu->flush.flush_context(iommu, 0, 0, 0,
->> DMA_CCMD_GLOBAL_INVL);
->> +	if (sm_supported(iommu))
->> +		qi_flush_pasid_cache(iommu, 0, QI_PC_GLOBAL, 0);
->> +	iommu->flush.flush_iotlb(iommu, 0, 0, 0, DMA_TLB_GLOBAL_FLUSH);
->> +	__iommu_flush_dev_iotlb(info, 0, MAX_AGAW_PFN_WIDTH);
->> +}
->> +
+>>>> diff --git a/drivers/iommu/Kconfig b/drivers/iommu/Kconfig
+>>>> index 0af39bbbe3a3..242cefac77c9 100644
+>>>> --- a/drivers/iommu/Kconfig
+>>>> +++ b/drivers/iommu/Kconfig
+>>>> @@ -480,6 +480,15 @@ config VIRTIO_IOMMU
+>>>> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 Say Y here if you int=
+end to run this kernel as a guest.
+>>>> +config XEN_IOMMU
+>>>> +=C2=A0=C2=A0=C2=A0 bool "Xen IOMMU driver"
+>>>> +=C2=A0=C2=A0=C2=A0 depends on XEN_DOM0
+>>>
+>>> Clearly this depends on X86 as well.
+>>>
+>> Well, I don't intend this driver to be X86-only, even though the current
+>> Xen RFC doesn't support ARM (yet). Unless there is a counter-indication
+>> for it ?
 > 
-> this invalidates the entire cache/iotlb for all devices behind this
-> iommu just due to a PRI enable/disable operation on a single
-> device.
+> It's purely practical - even if you drop the asm/iommu.h stuff it would 
+> still break ARM DOM0 builds due to HYPERVISOR_iommu_op() only being 
+> defined for x86. And it's better to add a dependency here to make it 
+> clear what's *currently* supported, than to add dummy code to allow it 
+> to build for ARM if that's not actually tested or usable yet.
 > 
-> No that's way too much. If there is a burden to identify all active
-> DIDs used by this device then pay it and penalize only that device.
 
-You are right. We should not simplify the flow like this.
+Ok, it does exist from the hypervisor side (even though a such Xen build 
+is not possible yet), I suppose I just need to add relevant hypercall 
+interfaces for arm/arm64 in hypercall{.S,.h}.
 
+>>>> +bool xen_iommu_capable(struct device *dev, enum iommu_cap cap)
+>>>> +{
+>>>> +=C2=A0=C2=A0=C2=A0 switch (cap) {
+>>>> +=C2=A0=C2=A0=C2=A0 case IOMMU_CAP_CACHE_COHERENCY:
+>>>> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 return true;
+>>>
+>>> Will the PV-IOMMU only ever be exposed on hardware where that really is
+>>> always true?
+>>>
+>>
+>> On the hypervisor side, the PV-IOMMU interface always implicitely flush
+>> the IOMMU hardware on map/unmap operation, so at the end of the
+>> hypercall, the cache should be always coherent IMO.
 > 
-> btw in concept PRI will not be enabled/disabled when there are
-> PASIDs of this device being actively attached. So at this point
-> there should only be RID with attached domain then we only
-> need to find that DID out and use it to invalidate related caches.
+> As Jason already brought up, this is not about TLBs or anything cached 
+> by the IOMMU itself, it's about the memory type(s) it can create 
+> mappings with. Returning true here says Xen guarantees it can use a 
+> cacheable memory type which will let DMA snoop the CPU caches. 
+> Furthermore, not explicitly handling IOMMU_CACHE in the map_pages op 
+> then also implies that it will *always* do that, so you couldn't 
+> actually get an uncached mapping even if you wanted one.
+> 
 
-The assumption of "PRI will not be enabled/disabled when there are
-PASIDs of this device being actively attached" is not always correct.
-Both the pasid domain attachment and PRI are controlled by the device
-driver and there is no order rules for the drivers.
+Yes, this is a point we are currently discussing on the Xen side.
 
-For example, the idxd driver attaches the default domain to a PASID and
-use it for kernel ENQCMD and use other PASIDs for SVA usage.
+>>>> +=C2=A0=C2=A0=C2=A0 while (xen_pg_count) {
+>>>> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 size_t to_unmap =3D min(xe=
+n_pg_count, max_nr_pages);
+>>>> +
+>>>> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 //pr_info("Unmapping %lx-%=
+lx\n", dfn, dfn + to_unmap - 1);
+>>>> +
+>>>> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 op.unmap_pages.dfn =3D dfn=
+;
+>>>> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 op.unmap_pages.nr_pages =
+=3D to_unmap;
+>>>> +
+>>>> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 ret =3D HYPERVISOR_iommu_o=
+p(&op);
+>>>> +
+>>>> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 if (ret)
+>>>> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 pr=
+_warn("Unmap failure (%lx-%lx)\n", dfn, dfn + to_unmap
+>>>> - 1);
+>>>
+>>> But then how
+>>>> would it ever happen anyway? Unmap is a domain op, so a domain which
+>>>> doesn't allow unmapping shouldn't offer it in the first place...
+>>
+>> Unmap failing should be exceptionnal, but is possible e.g with
+>> transparent superpages (like Xen IOMMU drivers do). Xen drivers folds
+>> appropriate contiguous mappings into superpages entries to optimize
+>> memory usage and iotlb. However, if you unmap in the middle of a region
+>> covered by a superpage entry, this is no longer a valid superpage entry,
+>> and you need to allocate and fill the lower levels, which is faillible
+>> if lacking memory.
+> 
+> OK, so in the worst case you could potentially have a partial unmap 
+> failure if the range crosses a superpage boundary and the end part 
+> happens to have been folded, and Xen doesn't detect and prepare that 
+> allocation until it's already unmapped up to the boundary. If that is 
+> so, does the hypercall interface give any information about partial 
+> failure, or can any error only be taken to mean that some or all of the 
+> given range may or may not have be unmapped now?
 
-I am considering working out a generic helper to handle caches after
-change to a context entry what was present. How do you like below code
-(compiled but not tested)?
+The hypercall interface has op.unmap_page.unmapped to indicate the real 
+amount of pages actually unmapped even in case of error. If it is less 
+than requested initially, it will retry with the remaining part, 
+certainly fail afterward. Although, I have the impression that it is 
+going to fail silently.
 
-/*
-  * Cache invalidations after change in a context table entry that was 
-present
-  * according to the Spec 6.5.3.3 (Guidance to Software for 
-Invalidations). If
-  * IOMMU is in scalable mode and all PASID table entries of the device were
-  * non-present, set affect_domains to true. Otherwise, false.
-  */
-void intel_context_flush_present(struct device_domain_info *info,
-				 struct context_entry *context,
-				 bool affect_domains)
-{
-	struct intel_iommu *iommu = info->iommu;
-	u16 did = context_domain_id(context);
-	struct pasid_entry *pte;
-	int i;
+>>> In this case I'd argue that you really *do* want to return short, in th=
+e
+>>> hope of propagating the error back up and letting the caller know the
+>>> address space is now messed up before things start blowing up even more
+>>> if they keep going and subsequently try to map new pages into
+>>> not-actually-unmapped VAs.
+>>
+>> While mapping on top of another mapping is ok for us (it's just going to
+>> override the previous mapping), I definetely agree that having the
+>> address space messed up is not good.
+> 
+> Oh, indeed, quietly replacing existing PTEs might help paper over errors 
+> in this particular instance, but it does then allow *other* cases to go 
+> wrong in fun and infuriating ways :)
+> 
 
-	assert_spin_locked(&iommu->lock);
+Yes, but I was wrong at my stance. Our hypercall interface doesn't allow 
+mapping on top of another one (it's going to fail with -EADDRINUSE). So 
+unmap failing is still going to cause bad issues.
 
-	/*
-	 * Device-selective context-cache invalidation. The Domain-ID field
-	 * of the Context-cache Invalidate Descriptor is ignored by hardware
-	 * when operating in scalable mode. Therefore the @did value doesn't
-	 * matter in scalable mode.
-	 */
-	iommu->flush.flush_context(iommu, did, PCI_DEVID(info->bus, info->devfn),
-				   DMA_CCMD_MASK_NOBIT, DMA_CCMD_DEVICE_INVL);
+Should iommu_unmap and related code consider the cases where unmapped !=3D 
+size and report it appropriately ? So such cases, if ever happening will 
+be reported louder and not failing silently.
 
-	/*
-	 * For legacy mode:
-	 * - Domain-selective IOTLB invalidation
-	 * - Global Device-TLB invalidation to all affected functions
-	 */
-	if (!sm_supported(iommu)) {
-		iommu->flush.flush_iotlb(iommu, did, 0, 0, DMA_TLB_DSI_FLUSH);
-		__iommu_flush_dev_iotlb(info, 0, MAX_AGAW_PFN_WIDTH);
+>>>> +static struct iommu_domain default_domain =3D {
+>>>> +=C2=A0=C2=A0=C2=A0 .ops =3D &(const struct iommu_domain_ops){
+>>>> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 .attach_dev =3D default_do=
+main_attach_dev
+>>>> +=C2=A0=C2=A0=C2=A0 }
+>>>> +};
+>>>
+>>> Looks like you could make it a static xen_iommu_domain and just use the
+>>> normal attach callback? Either way please name it something less
+>>> confusing like xen_iommu_identity_domain - "default" is far too
+>>> overloaded round here already...
+>>>
+>>
+>> Yes, although, if in the future, we can have either this domain as
+>> identity or blocking/paging depending on some upper level configuration.
+>> Should we have both identity and blocking domains, and only setting the
+>> relevant one in iommu_ops, or keep this naming.
+> 
+> That's something that can be considered if and when it does happen. For 
+> now, if it's going to be pre-mapped as an identity domain, then let's 
+> just treat it as such and keep things straightforward.
+> 
 
-		return;
-	}
+Let's name it xen_iommu_identity_domain.
 
-	/*
-	 * For scalable mode:
-	 * - Domain-selective PASID-cache invalidation to affected domains
-	 * - Domain-selective IOTLB invalidation to affected domains
-	 * - Global Device-TLB invalidation to affected functions
-	 */
-	if (affect_domains) {
-		for (i = 0; i < info->pasid_table->max_pasid; i++) {
-			pte = intel_pasid_get_entry(info->dev, i);
-			if (!pte || !pasid_pte_is_present(pte))
-				continue;
+>>>> +void __exit xen_iommu_fini(void)
+>>>> +{
+>>>> +=C2=A0=C2=A0=C2=A0 pr_info("Unregistering Xen IOMMU driver\n");
+>>>> +
+>>>> +=C2=A0=C2=A0=C2=A0 iommu_device_unregister(&xen_iommu_device);
+>>>> +=C2=A0=C2=A0=C2=A0 iommu_device_sysfs_remove(&xen_iommu_device);
+>>>> +}
+>>>
+>>> This is dead code since the Kconfig is only "bool". Either allow it to
+>>> be an actual module (and make sure that works), or drop the pretence
+>>> altogether.
+>>>
+>>
+>> Ok, I though this function was actually a requirement even if it is not
+>> a module.
+> 
+> No, quite the opposite - even code which is modular doesn't have to 
+> support removal if it doesn't want to.
+> 
 
-			did = pasid_get_domain_id(pte);
-			qi_flush_pasid_cache(iommu, did, QI_PC_ALL_PASIDS, 0);
-			iommu->flush.flush_iotlb(iommu, did, 0, 0, DMA_TLB_DSI_FLUSH);
-		}
-	}
+Ok
 
-	__iommu_flush_dev_iotlb(info, 0, MAX_AGAW_PFN_WIDTH);
-}
+> Thanks,
+> Robin.
 
-Best regards,
-baolu
+Teddy
+
+
+Teddy Astie | Vates XCP-ng Intern
+
+XCP-ng & Xen Orchestra - Vates solutions
+
+web: https://vates.tech
+
