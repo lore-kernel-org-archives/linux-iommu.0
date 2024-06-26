@@ -1,185 +1,298 @@
-Received: from mx0b-0031df01.pphosted.com (mx0b-0031df01.pphosted.com [205.220.180.131])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CCE1E187338
-	for <iommu@lists.linux.dev>; Wed, 26 Jun 2024 14:31:24 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.180.131
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6D6FF185E52;
+	Wed, 26 Jun 2024 15:04:24 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1719412286; cv=none; b=j4Tzhtqa1k3r43cts1EaYxx4/u7zMzBx7Tv8UvjlAkEyfwyyLUaU/2hC6H7GcBp0cI1xIUiKpW6YjJm3GYJT/kHiEyf4kHuapbM/K+NvBV2wPdM9K+5lM4p+DpIWX36Z37f7aDTpznpkLIECgnxm+RV5kU0Nl96UYVnaa3FKaxw=
+	t=1719414264; cv=none; b=idEUqSwafOXFuF2ai6s6dfB22iFwSBvZEV4VwHRsEuQXx/aQz4J+LV7RjMVzrn5nmcuxG7K54c5H/LrGGp7yxoHVwknr0dCA2nWj27UFCZWrZM4wXEU/JlrB14uuFj+WI7uO9rD7GoLSksv16IihicJa830jwLUm3QP1r/4jqbo=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1719412286; c=relaxed/simple;
-	bh=5yx4rtlIXcMHoUTrCBIVwZuaGi22vZ6TVqil3e3VMWU=;
-	h=From:To:CC:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=Hel5zaKadfdZMj3haEs+x05+SDGabBFKpzURTpPmYSEN3zhJcGu8KtpZzlzDs1dYqhpzSLtznscAFKDhweD52dzP1NvO+qU6mjbQ9nVR+rkatv3KD6ygfm7q/CwteC+hTLyma2FT3Hjs13R+MP4LNntvFknLqXOv7r9BR2/xWGs=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com; spf=pass smtp.mailfrom=quicinc.com; dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b=B6wa0njH; arc=none smtp.client-ip=205.220.180.131
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=quicinc.com
+	s=arc-20240116; t=1719414264; c=relaxed/simple;
+	bh=LvSjkiMtpfF+JoR7xWPevIfICzed4j3soaPcrthxPJs=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=ANfpTY8mJk5c51b6jAC93Hs5VI2UvnjcRFxEtJ6mPMiKaZP6wg9yHuYbLbVPlcSactb/a5O2xTqFZFYjq5kRHcOyZEPK5Vb1GHyG0ItTX+mETU+3OC1mglt6bkfuMg+hVmBz7JisauEdZ+eqqsEP+u4PXNjWVfLjceg0rEzASbg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=PAvEfs+R; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b="B6wa0njH"
-Received: from pps.filterd (m0279868.ppops.net [127.0.0.1])
-	by mx0a-0031df01.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 45QAfLL2018773;
-	Wed, 26 Jun 2024 14:31:14 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=quicinc.com; h=
-	cc:content-transfer-encoding:content-type:date:from:in-reply-to
-	:message-id:mime-version:references:subject:to; s=qcppdkim1; bh=
-	nKfV8mPk8lsLzh917jZTQcSv4YuEZEuTOS22Je7XJAI=; b=B6wa0njHeWpfJxUn
-	sIcynyNCRxM+MAbm+MOcqqmXvI+SqSOAeju7YHp+1ySgO3sXDOAMGsOccpxtwuNa
-	3F5W+P1WiE5kiIAivY1LHP5ph1RsLhvHf3UfbskSsM4LGzxygfHQDkD4nB8tiCPt
-	hkOinAQ0dQUnVzJYQlStrUJVhKtDMl3mu8uzmuh8MJd0UW8UCc0xUx5jchdvyY7I
-	7rymh8aAcjOpo3GULZYJN5ttm1qU765x0PS/BcWXIf0V+2mCWbQjz1sniEI3KHNV
-	7+Tza1w6EFAePvpm7krDjaHIwcIJmYKJTP8MwRRWshvBg0r5HlL9s5TYzEF/DRQZ
-	W7fqZw==
-Received: from nalasppmta05.qualcomm.com (Global_NAT1.qualcomm.com [129.46.96.20])
-	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 400f90gysm-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Wed, 26 Jun 2024 14:31:13 +0000 (GMT)
-Received: from nalasex01c.na.qualcomm.com (nalasex01c.na.qualcomm.com [10.47.97.35])
-	by NALASPPMTA05.qualcomm.com (8.17.1.19/8.17.1.19) with ESMTPS id 45QEVCSP023924
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Wed, 26 Jun 2024 14:31:12 GMT
-Received: from hu-bibekkum-hyd.qualcomm.com (10.80.80.8) by
- nalasex01c.na.qualcomm.com (10.47.97.35) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.1544.9; Wed, 26 Jun 2024 07:31:07 -0700
-From: Bibek Kumar Patro <quic_bibekkum@quicinc.com>
-To: <robdclark@gmail.com>, <will@kernel.org>, <robin.murphy@arm.com>,
-        <joro@8bytes.org>, <jgg@ziepe.ca>, <jsnitsel@redhat.com>,
-        <robh@kernel.org>, <krzysztof.kozlowski@linaro.org>,
-        <quic_c_gdjako@quicinc.com>, <dmitry.baryshkov@linaro.org>,
-        <konrad.dybcio@linaro.org>
-CC: <iommu@lists.linux.dev>, <linux-arm-msm@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>, <linux-kernel@vger.kernel.org>,
-        "Bibek Kumar Patro" <quic_bibekkum@quicinc.com>
-Subject: [PATCH v12 6/6] iommu/arm-smmu: add support for PRR bit setup
-Date: Wed, 26 Jun 2024 20:00:20 +0530
-Message-ID: <20240626143020.3682243-7-quic_bibekkum@quicinc.com>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20240626143020.3682243-1-quic_bibekkum@quicinc.com>
-References: <20240626143020.3682243-1-quic_bibekkum@quicinc.com>
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="PAvEfs+R"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1E6D1C2BD10;
+	Wed, 26 Jun 2024 15:04:23 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1719414264;
+	bh=LvSjkiMtpfF+JoR7xWPevIfICzed4j3soaPcrthxPJs=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=PAvEfs+R8vToV4fGpUki2wtbg5kBVoLFrVZh15RJvRjs0XHv0NX1QXjYRE0PyhRGV
+	 5frEpP7UXI1j35Cm/fjmi0EfY8itKiHVvMi5uWao4eibXg24+ClJIpdx1b8F0q/Xrv
+	 sCnNoOxQUJvcvpX6WZwaKveGz5l+TynaBMXgiauYrAm+g4QWEVWdbksyW19B/TROdM
+	 tD85klHfANxVNRdiwv5YMcS+g7FKS67VrCYNPsDXuW1FqZt58CZdJB5yWYlpMNJDSt
+	 KRBMAoFpNQb8AvHNbvTIvEzQHw7CyDRT5uenKZi83/iFbEK5awnp7ydP2ltPFN8VZp
+	 xTVenNqCkw21A==
+Date: Wed, 26 Jun 2024 08:04:21 -0700
+From: Nathan Chancellor <nathan@kernel.org>
+To: Oreoluwa Babatunde <quic_obabatun@quicinc.com>
+Cc: robh@kernel.org, broonie@kernel.org, catalin.marinas@arm.com,
+	conor@kernel.org, devicetree@vger.kernel.org, hch@lst.de,
+	iommu@lists.linux.dev, kernel@quicinc.com,
+	linux-kernel@vger.kernel.org, m.szyprowski@samsung.com,
+	oe-kbuild-all@lists.linux.dev, robin.murphy@arm.com,
+	saravanak@google.com, will@kernel.org
+Subject: Re: [PATCH v2] of: reserved_mem: Restructure code to call reserved
+ mem init functions earlier
+Message-ID: <20240626150421.GA3664@fedora-macbook-air-m2>
+References: <202406181626.126X1Nbz-lkp@intel.com>
+ <20240620001027.2326275-1-quic_obabatun@quicinc.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-ClientProxiedBy: nasanex01a.na.qualcomm.com (10.52.223.231) To
- nalasex01c.na.qualcomm.com (10.47.97.35)
-X-QCInternal: smtphost
-X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
-X-Proofpoint-ORIG-GUID: g9GunnCogbgEISY9TRC3vTybAVZ22hg8
-X-Proofpoint-GUID: g9GunnCogbgEISY9TRC3vTybAVZ22hg8
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.293,Aquarius:18.0.1039,Hydra:6.0.680,FMLib:17.12.28.16
- definitions=2024-06-26_07,2024-06-25_01,2024-05-17_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 clxscore=1015 suspectscore=0
- spamscore=0 malwarescore=0 mlxlogscore=999 mlxscore=0 adultscore=0
- impostorscore=0 lowpriorityscore=0 phishscore=0 priorityscore=1501
- bulkscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.19.0-2406140001 definitions=main-2406260107
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20240620001027.2326275-1-quic_obabatun@quicinc.com>
 
-Add an adreno-smmu-priv interface for drm/msm to call
-into arm-smmu-qcom and initiate the PRR bit setup or reset
-sequence as per request.
+On Wed, Jun 19, 2024 at 05:10:27PM -0700, Oreoluwa Babatunde wrote:
+> After all the reserved memory regions have been added to the
+> reserved_mem array, a region specific initialization function is called
+> on each of reserved memory regions in a loop to initialize them.
+> 
+> With recent changes made to allow the reserved_mem array be dynamically
+> allocated, the cma reserved memory regions are not initialized until
+> after the page tables are setup. This causes the warning seen in the
+> dump stack below:
+> 
+> 	WARNING: CPU: 0 PID: 1 at mm/memory.c:2789 __apply_to_page_range+0x360/0x380
+> 	CPU: 0 PID: 1 Comm: swapper/0 Not tainted 6.10.0-rc1-00007-ga46cccb0ee2d #1
+> 	Hardware name: Generic DT based system
+> 	Call trace:
+> 	unwind_backtrace from show_stack+0x18/0x1c
+> 	show_stack from dump_stack_lvl+0x54/0x68
+> 	dump_stack_lvl from __warn+0x74/0x114
+> 	__warn from warn_slowpath_fmt+0x13c/0x1c0
+> 	warn_slowpath_fmt from __apply_to_page_range+0x360/0x380
+> 	__apply_to_page_range from apply_to_page_range+0x24/0x2c
+> 	apply_to_page_range from __alloc_from_contiguous+0xc4/0x158
+> 	__alloc_from_contiguous from cma_allocator_alloc+0x3c/0x44
+> 	cma_allocator_alloc from arch_dma_alloc+0x128/0x2b4
+> 	arch_dma_alloc from dma_alloc_attrs+0x90/0x150
+> 	dma_alloc_attrs from drm_gem_dma_create+0xa4/0x13c
+> 	drm_gem_dma_create from drm_gem_dma_create_with_handle+0x24/0xac
+> 	drm_gem_dma_create_with_handle from drm_gem_dma_dumb_create+0x44/0x50
+> 	drm_gem_dma_dumb_create from drm_client_framebuffer_create+0x9c/0x164
+> 	drm_client_framebuffer_create from drm_fbdev_dma_helper_fb_probe+0x84/0x23c
+> 	drm_fbdev_dma_helper_fb_probe from __drm_fb_helper_initial_config_and_unlock+0x2e4/0x4f8
+> 	__drm_fb_helper_initial_config_and_unlock from drm_fbdev_dma_client_hotplug+0x74/0xb8
+> 	drm_fbdev_dma_client_hotplug from drm_client_register+0x5c/0x98
+> 	drm_client_register from aspeed_gfx_probe+0x278/0x3c0
+> 	aspeed_gfx_probe from platform_probe+0x60/0xb8
+> 	platform_probe from really_probe+0xd4/0x3b4
+> 	really_probe from __driver_probe_device+0x90/0x1dc
+> 	__driver_probe_device from driver_probe_device+0x38/0xd0
+> 	driver_probe_device from __driver_attach+0x118/0x1dc
+> 	__driver_attach from bus_for_each_dev+0x84/0xd4
+> 	bus_for_each_dev from bus_add_driver+0xec/0x1f0
+> 	bus_add_driver from driver_register+0x84/0x11c
+> 	driver_register from do_one_initcall+0x84/0x1c8
+> 	do_one_initcall from kernel_init_freeable+0x1a4/0x230
+> 	kernel_init_freeable from kernel_init+0x1c/0x138
+> 	kernel_init from ret_from_fork+0x14/0x28
+> 	Exception stack(0x9f015fb0 to 0x9f015ff8)
+> 	5fa0:                                     00000000 00000000 00000000 00000000
+> 	5fc0: 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000
+> 	5fe0: 00000000 00000000 00000000 00000000 00000013 00000000
+> 	---[ end trace 0000000000000000 ]---
+> 	aspeed_gfx 1e6e6000.display: [drm] fb0: aspeed-gfx-drmd frame buffer device
+> 
+> Hence, restructure the code to initialize the regions as soon as each
+> of them are added to the reserved_mem array.
+> 
+> Fixes: a46cccb0ee2d ("of: reserved_mem: Restruture how the reserved memory regions are processed")
+> Signed-off-by: Oreoluwa Babatunde <quic_obabatun@quicinc.com>
 
-This will be used by GPU to setup the PRR bit and related
-configuration registers through adreno-smmu private
-interface instead of directly poking the smmu hardware.
+This resolves the warning that I see and I see no other warnings
+introduced in any of my virtual boot tests.
 
-Suggested-by: Rob Clark <robdclark@gmail.com>
-Signed-off-by: Bibek Kumar Patro <quic_bibekkum@quicinc.com>
----
- drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c | 23 ++++++++++++++++++++++
- drivers/iommu/arm/arm-smmu/arm-smmu.h      |  2 ++
- include/linux/adreno-smmu-priv.h           |  6 +++++-
- 3 files changed, 30 insertions(+), 1 deletion(-)
+Tested-by: Nathan Chancellor <nathan@kernel.org>
 
-diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
-index bd101a161d04..752f909d26b6 100644
---- a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
-+++ b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
-@@ -28,6 +28,7 @@
- #define PREFETCH_SHALLOW	(1 << PREFETCH_SHIFT)
- #define PREFETCH_MODERATE	(2 << PREFETCH_SHIFT)
- #define PREFETCH_DEEP		(3 << PREFETCH_SHIFT)
-+#define GFX_ACTLR_PRR		(1 << 5)
-
- static const struct actlr_config sc7280_apps_actlr_cfg[] = {
- 	{ 0x0800, 0x04e0, PREFETCH_DEFAULT | CMTLB },
-@@ -235,6 +236,27 @@ static void qcom_adreno_smmu_resume_translation(const void *cookie, bool termina
- 	arm_smmu_cb_write(smmu, cfg->cbndx, ARM_SMMU_CB_RESUME, reg);
- }
-
-+static void qcom_adreno_smmu_set_prr(const void *cookie, phys_addr_t page_addr, bool set)
-+{
-+	struct arm_smmu_domain *smmu_domain = (void *)cookie;
-+	struct arm_smmu_cfg *cfg = &smmu_domain->cfg;
-+	struct arm_smmu_device *smmu = smmu_domain->smmu;
-+	u32 reg = 0;
-+
-+	writel_relaxed(lower_32_bits(page_addr),
-+				(void *)smmu->ioaddr + ARM_SMMU_GFX_PRR_CFG_LADDR);
-+
-+	writel_relaxed(upper_32_bits(page_addr),
-+				(void *)smmu->ioaddr + ARM_SMMU_GFX_PRR_CFG_UADDR);
-+
-+	reg =  arm_smmu_cb_read(smmu, cfg->cbndx, ARM_SMMU_CB_ACTLR);
-+	reg &= ~GFX_ACTLR_PRR;
-+	if (set)
-+		reg |= FIELD_PREP(GFX_ACTLR_PRR, 1);
-+	arm_smmu_cb_write(smmu, cfg->cbndx, ARM_SMMU_CB_ACTLR, reg);
-+
-+}
-+
- #define QCOM_ADRENO_SMMU_GPU_SID 0
-
- static bool qcom_adreno_smmu_is_gpu_device(struct device *dev)
-@@ -407,6 +429,7 @@ static int qcom_adreno_smmu_init_context(struct arm_smmu_domain *smmu_domain,
- 	priv->get_fault_info = qcom_adreno_smmu_get_fault_info;
- 	priv->set_stall = qcom_adreno_smmu_set_stall;
- 	priv->resume_translation = qcom_adreno_smmu_resume_translation;
-+	priv->set_prr = qcom_adreno_smmu_set_prr;
-
- 	actlrvar = qsmmu->data->actlrvar;
- 	if (!actlrvar)
-diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu.h b/drivers/iommu/arm/arm-smmu/arm-smmu.h
-index d9c2ef8c1653..3076bef49e20 100644
---- a/drivers/iommu/arm/arm-smmu/arm-smmu.h
-+++ b/drivers/iommu/arm/arm-smmu/arm-smmu.h
-@@ -154,6 +154,8 @@ enum arm_smmu_cbar_type {
- #define ARM_SMMU_SCTLR_M		BIT(0)
-
- #define ARM_SMMU_CB_ACTLR		0x4
-+#define ARM_SMMU_GFX_PRR_CFG_LADDR	0x6008
-+#define ARM_SMMU_GFX_PRR_CFG_UADDR	0x600C
-
- #define ARM_SMMU_CB_RESUME		0x8
- #define ARM_SMMU_RESUME_TERMINATE	BIT(0)
-diff --git a/include/linux/adreno-smmu-priv.h b/include/linux/adreno-smmu-priv.h
-index c637e0997f6d..d6e2ca9f8d8c 100644
---- a/include/linux/adreno-smmu-priv.h
-+++ b/include/linux/adreno-smmu-priv.h
-@@ -49,7 +49,10 @@ struct adreno_smmu_fault_info {
-  *                 before set_ttbr0_cfg().  If stalling on fault is enabled,
-  *                 the GPU driver must call resume_translation()
-  * @resume_translation: Resume translation after a fault
-- *
-+ * @set_prr:	   Extendible interface to be used by GPU to modify the
-+ *		    ACTLR register bits, currently used to configure
-+ *		    Partially-Resident-Region (PRR) feature's
-+ *		    setup and reset sequence as requested.
-  *
-  * The GPU driver (drm/msm) and adreno-smmu work together for controlling
-  * the GPU's SMMU instance.  This is by necessity, as the GPU is directly
-@@ -67,6 +70,7 @@ struct adreno_smmu_priv {
-     void (*get_fault_info)(const void *cookie, struct adreno_smmu_fault_info *info);
-     void (*set_stall)(const void *cookie, bool enabled);
-     void (*resume_translation)(const void *cookie, bool terminate);
-+    void (*set_prr)(const void *cookie, phys_addr_t page_addr, bool set);
- };
-
- #endif /* __ADRENO_SMMU_PRIV_H */
---
-2.34.1
-
+> ---
+> v2:
+> - Fix kernel-doc for of_init_reserved_mem_node() in response to the
+>   below warning from v1:
+>   https://lore.kernel.org/all/202406181626.126X1Nbz-lkp@intel.com/
+> 
+> v1:
+>   https://lore.kernel.org/all/20240617193357.3929092-1-quic_obabatun@quicinc.com/
+> 
+>  drivers/of/fdt.c             |  2 +-
+>  drivers/of/of_private.h      |  2 +-
+>  drivers/of/of_reserved_mem.c | 83 +++++++++++++++++++++---------------
+>  3 files changed, 50 insertions(+), 37 deletions(-)
+> 
+> diff --git a/drivers/of/fdt.c b/drivers/of/fdt.c
+> index 9cde2abd2fc0..ea2dff0478c7 100644
+> --- a/drivers/of/fdt.c
+> +++ b/drivers/of/fdt.c
+> @@ -1239,7 +1239,7 @@ void __init unflatten_device_tree(void)
+>  	unittest_unflatten_overlay_base();
+>  
+>  	/* initialize the reserved memory regions */
+> -	of_init_reserved_mem();
+> +	of_scan_reserved_mem_reg_nodes();
+>  }
+>  
+>  /**
+> diff --git a/drivers/of/of_private.h b/drivers/of/of_private.h
+> index 01b33c4b1e9f..7412aed903df 100644
+> --- a/drivers/of/of_private.h
+> +++ b/drivers/of/of_private.h
+> @@ -181,7 +181,7 @@ static inline struct device_node *__of_get_dma_parent(const struct device_node *
+>  #endif
+>  
+>  int fdt_scan_reserved_mem(void);
+> -void of_init_reserved_mem(void);
+> +void of_scan_reserved_mem_reg_nodes(void);
+>  
+>  bool of_fdt_device_is_available(const void *blob, unsigned long node);
+>  
+> diff --git a/drivers/of/of_reserved_mem.c b/drivers/of/of_reserved_mem.c
+> index eb54490a0a11..b31001728866 100644
+> --- a/drivers/of/of_reserved_mem.c
+> +++ b/drivers/of/of_reserved_mem.c
+> @@ -97,6 +97,8 @@ static void __init alloc_reserved_mem_array(void)
+>  	reserved_mem = new_array;
+>  }
+>  
+> +static void __init of_init_reserved_mem_node(struct reserved_mem *rmem);
+> +
+>  /*
+>   * of_reserved_mem_save_node() - save fdt node for second pass initialization
+>   */
+> @@ -115,6 +117,12 @@ static void __init of_reserved_mem_save_node(struct device_node *node, const cha
+>  	rmem->base = base;
+>  	rmem->size = size;
+>  
+> +	/*
+> +	 * Run the region specific initialization function for the rmem
+> +	 * node.
+> +	 */
+> +	of_init_reserved_mem_node(rmem);
+> +
+>  	reserved_mem_count++;
+>  	return;
+>  }
+> @@ -201,6 +209,8 @@ static int __init __fdt_reserved_mem_check_root(unsigned long node)
+>  	return 0;
+>  }
+>  
+> +static void __init __rmem_check_for_overlap(void);
+> +
+>  /**
+>   * of_scan_reserved_mem_reg_nodes() - Store info for the "reg" defined
+>   * reserved memory regions.
+> @@ -211,7 +221,7 @@ static int __init __fdt_reserved_mem_check_root(unsigned long node)
+>   * size are all stored in the reserved_mem array by calling the
+>   * of_reserved_mem_save_node() function.
+>   */
+> -static void __init of_scan_reserved_mem_reg_nodes(void)
+> +void __init of_scan_reserved_mem_reg_nodes(void)
+>  {
+>  	struct device_node *node, *child;
+>  	phys_addr_t base, size;
+> @@ -222,6 +232,13 @@ static void __init of_scan_reserved_mem_reg_nodes(void)
+>  		return;
+>  	}
+>  
+> +	/*
+> +	 * Before moving forward, allocate the exact size needed for the
+> +	 * reserved_mem array and copy all previously saved contents
+> +	 * into the new array if successful.
+> +	 */
+> +	alloc_reserved_mem_array();
+> +
+>  	for_each_child_of_node(node, child) {
+>  		int ret = 0;
+>  		const char *uname;
+> @@ -246,6 +263,8 @@ static void __init of_scan_reserved_mem_reg_nodes(void)
+>  		if (size)
+>  			of_reserved_mem_save_node(child, uname, base, size);
+>  	}
+> +	/* check for overlapping reserved regions */
+> +	__rmem_check_for_overlap();
+>  }
+>  
+>  static int __init __reserved_mem_alloc_size(unsigned long node, const char *uname);
+> @@ -526,44 +545,38 @@ static void __init __rmem_check_for_overlap(void)
+>  }
+>  
+>  /**
+> - * of_init_reserved_mem() - allocate and init all saved reserved memory regions
+> + * of_init_reserved_mem_node() - Initialize a saved reserved memory region.
+> + * @rmem: reserved_mem object of the memory region to be initialized.
+> + *
+> + * This function is used to call the region specific initialization
+> + * function on the rmem object passed as an argument. The rmem object
+> + * will contain the base address, size, node name, and device_node of
+> + * the reserved memory region to be initialized.
+>   */
+> -void __init of_init_reserved_mem(void)
+> +static void __init of_init_reserved_mem_node(struct reserved_mem *rmem)
+>  {
+> -	int i;
+> -
+> -	alloc_reserved_mem_array();
+> -
+> -	of_scan_reserved_mem_reg_nodes();
+> +	int err;
+> +	bool nomap;
+> +	struct device_node *node = rmem->dev_node;
+>  
+> -	/* check for overlapping reserved regions */
+> -	__rmem_check_for_overlap();
+> +	nomap = of_property_present(node, "no-map");
+>  
+> -	for (i = 0; i < reserved_mem_count; i++) {
+> -		struct reserved_mem *rmem = &reserved_mem[i];
+> -		struct device_node *node = rmem->dev_node;
+> -		int err = 0;
+> -		bool nomap;
+> -
+> -		nomap = of_property_present(node, "no-map");
+> -
+> -		err = __reserved_mem_init_node(rmem);
+> -		if (err != 0 && err != -ENOENT) {
+> -			pr_info("node %s compatible matching fail\n", rmem->name);
+> -			if (nomap)
+> -				memblock_clear_nomap(rmem->base, rmem->size);
+> -			else
+> -				memblock_phys_free(rmem->base, rmem->size);
+> -		} else {
+> -			phys_addr_t end = rmem->base + rmem->size - 1;
+> -			bool reusable = of_property_present(node, "reusable");
+> -
+> -			pr_info("%pa..%pa (%lu KiB) %s %s %s\n",
+> -				&rmem->base, &end, (unsigned long)(rmem->size / SZ_1K),
+> -				nomap ? "nomap" : "map",
+> -				reusable ? "reusable" : "non-reusable",
+> -				rmem->name ? rmem->name : "unknown");
+> -		}
+> +	err = __reserved_mem_init_node(rmem);
+> +	if (err != 0 && err != -ENOENT) {
+> +		pr_info("node %s compatible matching fail\n", rmem->name);
+> +		if (nomap)
+> +			memblock_clear_nomap(rmem->base, rmem->size);
+> +		else
+> +			memblock_phys_free(rmem->base, rmem->size);
+> +	} else {
+> +		phys_addr_t end = rmem->base + rmem->size - 1;
+> +		bool reusable = of_property_present(node, "reusable");
+> +
+> +		pr_info("%pa..%pa (%lu KiB) %s %s %s\n",
+> +			&rmem->base, &end, (unsigned long)(rmem->size / SZ_1K),
+> +			nomap ? "nomap" : "map",
+> +			reusable ? "reusable" : "non-reusable",
+> +			rmem->name ? rmem->name : "unknown");
+>  	}
+>  }
+>  
+> -- 
+> 2.34.1
+> 
