@@ -1,307 +1,276 @@
-Received: from mail-oo1-f41.google.com (mail-oo1-f41.google.com [209.85.161.41])
+Received: from mail-ed1-f46.google.com (mail-ed1-f46.google.com [209.85.208.46])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BB3D218F2F0
-	for <iommu@lists.linux.dev>; Wed, 26 Jun 2024 16:38:47 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.161.41
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 061471862B7
+	for <iommu@lists.linux.dev>; Wed, 26 Jun 2024 18:46:52 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.46
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1719419929; cv=none; b=Cxc77AKC4vuVRc75lk4eztEo/N3mMkrwRa3pMiPhimY9eL+rwFoytVsEtDh4F0vP+NedcLLxzYSH7qPwiAiVRTuDuAdyltKuSd/96HUA9ud9BHJFntQKw2lde8QvTSM9zX4IVuUKbV+cowhth+7VZ9vsGLd2lqhILJfFlr6QUTY=
+	t=1719427616; cv=none; b=o7G0jVNcWpN5jpzHLrhph9dOsomGeOR3b1EL4EQdm7lrdkupv/0bGQdxJU1uZfMlPIRYjLTdF7i4U6MDpIzMPJEbzz4dy4QTZV9qvc54lr7RlZYCXkfCaXwiS2CYWoD24b2q7jgq0P1gdRCfPiH+9LWBQvmM9epUhi37e4uVDnc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1719419929; c=relaxed/simple;
-	bh=Qg1KyEqVbJ9yqKTEMAuBywYLT9R2R4enwl8NoPA/WxE=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=gjuzLhLZE3eozEUcuu0lDqPAPyV46zd4q7enoFwupkFgff+lARU5PQWkhxWsVFoWllWDeQcmXaJeH8yZRWSYKpu9NOwPVhzfhHrbuPOCsysDN/L/4oKyTFyZ0bs4IJaqgBROWPIvQ6jAIc5U7G+XWOP7Uc9CPia1w4P2GEA0/WQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=WPypThrg; arc=none smtp.client-ip=209.85.161.41
+	s=arc-20240116; t=1719427616; c=relaxed/simple;
+	bh=hCP2/cOIMfXKaR4773l0cPM0s+a5YSCE6aMXJzq+FCA=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=MUj6l7jeNriutYHDAdl47RIktLdxYntW41r1NNMWvlX7ryaJ39aXeL/DPfPCkp0VCG3p34zoYXajFMTOdgvX3aMO6B1AH4Z0NIimcpYapiRMgKxRGD917YWD9a01fclT1UiGflVSy18+0LfL83riRYdh5wFbxvE686O+YtoZHLU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=bKXrCjhx; arc=none smtp.client-ip=209.85.208.46
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="WPypThrg"
-Received: by mail-oo1-f41.google.com with SMTP id 006d021491bc7-5c21c68b786so797226eaf.0
-        for <iommu@lists.linux.dev>; Wed, 26 Jun 2024 09:38:47 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="bKXrCjhx"
+Received: by mail-ed1-f46.google.com with SMTP id 4fb4d7f45d1cf-57cbc66a0a6so990247a12.1
+        for <iommu@lists.linux.dev>; Wed, 26 Jun 2024 11:46:52 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1719419926; x=1720024726; darn=lists.linux.dev;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=SWzieAW4a+lvny1okz+Epi3m5sR5cLacEd8KBGZql9g=;
-        b=WPypThrgnFkI+LQgCSzYDE8HSZdK5hgZMJV29euK0gYVN8hcSEbPlPDfPVBBJ0Q2xq
-         YWd9QOMOdF90wNx+SP3sMARDijQo1AyN4xulWdzhK0aXi1LV+QYvEGf1IaMKAkKkzJgk
-         ehIt+D0OhpsNbos9UoTguSRlD/hSHOhqFgJkSqkUF60F7P8YNuWRwbHMfjzPN33j/v0O
-         /VSPkV5Nk0pt97aP571fTuZsYXOrqTHEGaKSE6yh7no8RSz3bRqsC44YSrIV17tRpkOL
-         YnFU5hVSLbNfbKQgJHR3noD/W/Z4QxNVKLYPfhLXFLm9odGd4nJ615l/8ngTMGye+BS1
-         7S5A==
+        d=gmail.com; s=20230601; t=1719427611; x=1720032411; darn=lists.linux.dev;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=05xs0UPmY5E+F63kUKej/aI4513YNXTW11SYkWXrW+o=;
+        b=bKXrCjhxSIyl4x2t4XJZrwxawTPu1H1sursvncLMG7dvl7YyWJolyCpYh1nCJkdrS5
+         N7fHyT51YK2ceAgsGPVSEbocV65QQNndIPJYWG/HYsOZRl4ug0E8DEK31G7jW15KIAEZ
+         ZGBUwwcYxyfqqOZTmpk0zucvyYVixl1GGLIJTdX/eTDuC85Ki1Zs6x8nPRmZZqArOCSa
+         5YHZeLZI6Gy+r3D4B5GkPTb2CM6y3w0iByvEGwrdcNZvIlqGrT8ngDHo5r5c7Qqip+Ty
+         Ioa8ijgcyz3To2bzQdFJvwcwVap3Y+RsNF+dUgVIxlZiMagPgLbdNwsWYHHTKpYa5UJ4
+         0NsA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1719419926; x=1720024726;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=SWzieAW4a+lvny1okz+Epi3m5sR5cLacEd8KBGZql9g=;
-        b=T2ltTtrQX8aXhXCxI0t10ZQ2yQMU4PYZDxUX6Ujor73rVeNB19A3fNKImNIz3izYCv
-         Ks4TTaWBJPXZLCWlBOo+so4se/5JuhFZ+A/rCRXLpFMTek1RYo4rT6btoYsu5cZ2FqLz
-         9JIyfAEp7cktwyhR+X28TMMXgsNiUgjUuEehB16ErapGpG4NYg6pEp/Dk8xTjgVK2zHl
-         iMmSGI2JyL+C550/EHmqsyFOOQF+ZTIT60qq084OPBnJKB2/QZ563bqTc4gIik+valUc
-         JPLy47/RJ46QsS27fdWH+mGjtuDXQokB4i+glcnPS+R3OIdD5VnxZc7GocrVbWvJCbGN
-         SE1Q==
-X-Gm-Message-State: AOJu0YwboJTWCIZEVUxZC0RqjAMH3C0MzAW6Wb8SxaZCbUUG5btIoGNu
-	/hdZEZrYobfsblDLpjL3j24cyQNUf2wNJka4wuPcqfVWIkdYyIonZPAvrw==
-X-Google-Smtp-Source: AGHT+IF32yp5lqZIJHIVEYNwMPOPqn40IzoSCvEsTm7oJ/KwT63/UUbxgksu4RHOILX8ivphZ4mRHA==
-X-Received: by 2002:a05:6358:998d:b0:19f:38a0:f507 with SMTP id e5c5f4694b2df-1a23c02ab11mr1433148055d.5.1719419926096;
-        Wed, 26 Jun 2024 09:38:46 -0700 (PDT)
-Received: from localhost ([2a00:79e1:2e00:1301:e1c5:6354:b45d:8ffc])
-        by smtp.gmail.com with ESMTPSA id 41be03b00d2f7-716ba5b5f58sm8985778a12.73.2024.06.26.09.38.44
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 26 Jun 2024 09:38:44 -0700 (PDT)
-From: Rob Clark <robdclark@gmail.com>
-To: iommu@lists.linux.dev
-Cc: linux-arm-msm@vger.kernel.org,
-	Stephen Boyd <swboyd@chromium.org>,
-	Pranjal Shrivastava <praan@google.com>,
-	Robin Murphy <robin.murphy@arm.com>,
-	Rob Clark <robdclark@chromium.org>,
-	Rob Clark <robdclark@gmail.com>,
-	Will Deacon <will@kernel.org>,
-	Joerg Roedel <joro@8bytes.org>,
-	Jason Gunthorpe <jgg@ziepe.ca>,
-	Jerry Snitselaar <jsnitsel@redhat.com>,
-	Rob Herring <robh@kernel.org>,
-	Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
-	Georgi Djakov <quic_c_gdjako@quicinc.com>,
-	linux-arm-kernel@lists.infradead.org (moderated list:ARM SMMU DRIVERS),
-	linux-kernel@vger.kernel.org (open list)
-Subject: [PATCH v2] iommu/arm-smmu: Pretty-print context fault related regs
-Date: Wed, 26 Jun 2024 09:38:37 -0700
-Message-ID: <20240626163842.205631-1-robdclark@gmail.com>
-X-Mailer: git-send-email 2.45.2
+        d=1e100.net; s=20230601; t=1719427611; x=1720032411;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=05xs0UPmY5E+F63kUKej/aI4513YNXTW11SYkWXrW+o=;
+        b=udq/FFFyaOKTn4DE4sIcOMDVB1MTi/wh/+YAY/1g7a6v28LjiCza05PcPrqyNEV/js
+         0OOdkrqpaFjH85RbIuz9GTRrevi5/wAsEGBJUKdPtN64xrEerzaS656zWqaTtcZtA1Ry
+         LWSuwmAyvgjem4ZK+oaYpII4qyLTvJU1/zSFOMWZH1ejwjvpNH9u/8llceF2dabLIiQZ
+         krflc5BksIsPX0p2fuKt14EXFt9ONaZH03rt12oCOqEKHo3CmwaZdSMdi0ocdQFwwtPn
+         OvqR3nlUv6Gpfrw7RFywkyDUtWPoa5YfZUbmczW72hXKQh+QB3qn0xisdSs+Rfap/hEB
+         3ukA==
+X-Forwarded-Encrypted: i=1; AJvYcCVqJQNt7szxIh2ltLhsNh+awwTRw87oQMLjes8o45OjGitrC6nqVwr2RbdnHMK+Ollfd9GiGXRS6O2O0wx5nZ0HIYQ/6XI=
+X-Gm-Message-State: AOJu0YyjZ4yytqlvRQ9jy/9mWf+GM5Kj7y58GbJ7thY4NRbwz7USVtc8
+	Q0BWg0UiEaNcufdwD6dw8HrqE3t9vfN5RL4/VjQsEUz//WL8/11mlN7+9hYlheo5pt5uBhxxQk/
+	XKiRtUzXPHiG9I84wkLqJwhr523A=
+X-Google-Smtp-Source: AGHT+IEage29NdSXqvdACNgm4MEoYcHlZ/Kmc6Dcz8VCYvHNGZ0kgMyfqB5MA0odYqhcBx1HpvIgMAGBW3xPbx2snB4=
+X-Received: by 2002:a50:a452:0:b0:57c:a4a3:f1fe with SMTP id
+ 4fb4d7f45d1cf-5847c0a639cmr336979a12.17.1719427611109; Wed, 26 Jun 2024
+ 11:46:51 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20240605121713.3596499-1-quic_bibekkum@quicinc.com>
+ <20240605121713.3596499-7-quic_bibekkum@quicinc.com> <CAF6AEGtSCfQVtNTmwB4Jkec5rDmZsr59z2717H76kwWu0wovsw@mail.gmail.com>
+ <ae35bf9b-4401-4a99-abd7-c0d9d399a46b@quicinc.com>
+In-Reply-To: <ae35bf9b-4401-4a99-abd7-c0d9d399a46b@quicinc.com>
+From: Rob Clark <robdclark@gmail.com>
+Date: Wed, 26 Jun 2024 11:46:39 -0700
+Message-ID: <CAF6AEGtDvMR3LNwfMOBa9rNzS4gH0Lb_+AgFJrkALPB2GPh+4Q@mail.gmail.com>
+Subject: Re: [PATCH v11 6/6] iommu/arm-smmu: add support for PRR bit setup
+To: Bibek Kumar Patro <quic_bibekkum@quicinc.com>
+Cc: will@kernel.org, robin.murphy@arm.com, joro@8bytes.org, jgg@ziepe.ca, 
+	jsnitsel@redhat.com, robh@kernel.org, krzysztof.kozlowski@linaro.org, 
+	quic_c_gdjako@quicinc.com, dmitry.baryshkov@linaro.org, 
+	konrad.dybcio@linaro.org, iommu@lists.linux.dev, 
+	linux-arm-msm@vger.kernel.org, linux-arm-kernel@lists.infradead.org, 
+	linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-From: Rob Clark <robdclark@chromium.org>
+On Thu, Jun 13, 2024 at 1:11=E2=80=AFAM Bibek Kumar Patro
+<quic_bibekkum@quicinc.com> wrote:
+>
+>
+>
+> On 6/12/2024 12:32 AM, Rob Clark wrote:
+> > On Wed, Jun 5, 2024 at 5:18=E2=80=AFAM Bibek Kumar Patro
+> > <quic_bibekkum@quicinc.com> wrote:
+> >>
+> >> Add an adreno-smmu-priv interface for drm/msm to call
+> >> into arm-smmu-qcom and initiate the PRR bit setup or reset
+> >> sequence as per request.
+> >>
+> >> This will be used by GPU side to setup the PRR bit and
+> >> related configuration registers through adreno-smmu private
+> >> interface instead of directly poking the smmu hardware.
+> >>
+> >> Signed-off-by: Bibek Kumar Patro <quic_bibekkum@quicinc.com>
+> >> ---
+> >>   drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c | 21 ++++++++++++++++++++=
++
+> >>   drivers/iommu/arm/arm-smmu/arm-smmu.h      |  2 ++
+> >>   include/linux/adreno-smmu-priv.h           |  5 ++++-
+> >>   3 files changed, 27 insertions(+), 1 deletion(-)
+> >>
+> >> diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c b/drivers/iomm=
+u/arm/arm-smmu/arm-smmu-qcom.c
+> >> index 8dabc26fa10e..2f4ee22f740a 100644
+> >> --- a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
+> >> +++ b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
+> >> @@ -28,6 +28,7 @@
+> >>   #define PREFETCH_SHALLOW       (1 << PREFETCH_SHIFT)
+> >>   #define PREFETCH_MODERATE      (2 << PREFETCH_SHIFT)
+> >>   #define PREFETCH_DEEP          (3 << PREFETCH_SHIFT)
+> >> +#define GFX_ACTLR_PRR          (1 << 5)
+> >>
+> >>   static const struct actlr_config sc7280_apps_actlr_cfg[] =3D {
+> >>          { 0x0800, 0x24e1, PREFETCH_DEFAULT | CMTLB },
+> >> @@ -212,6 +213,25 @@ static void qcom_adreno_smmu_resume_translation(c=
+onst void *cookie, bool termina
+> >>          arm_smmu_cb_write(smmu, cfg->cbndx, ARM_SMMU_CB_RESUME, reg);
+> >>   }
+> >>
+> >> +static void qcom_adreno_smmu_set_actlr_bit(const void *cookie, phys_a=
+ddr_t page_addr, bool set)
+> >> +{
+> >
+> > _set_actlr_bit() is a bit more of an implementation detail.  Maybe
+> > _set_prr() would be a better name?
+> >
+>
+> Yes set_prr sounds more explanatory. Infact Initially planned to name it
+> as set_actlr_prr() but later changed it to set_actlr_bit() so to keep
+> this interface extendible.
+> Incase if gfx driver in future wants to control some other ACTLR bit as
+> well along with PRR bit, then we can extend this same interface to
+> handle other bits.
+> So any additional adreno-smmu-priv interface would note be needed, and
+> set_actlr_bit can itself be used for gfx handling of all required ACTLR
+> bits.
+> I think we can name it set_actlr_prr() for now, and later can change the
+> name incase we extend it. What's your thought on this?
 
-Parse out the bitfields for easier-to-read fault messages.
+I think set_prr() or set_acltr_prr() is fine.. we can worry about
+making it more generic if and when there are other ACLTR bits the gpu
+wants to control
 
-Signed-off-by: Rob Clark <robdclark@chromium.org>
----
-I kept with the dev_err, which matches qcom_smmu_context_fault.  It is
-only adding two extra lines, and it is ratelimited.
+> > Also, the version of this patch that I typed up (but haven't sent to
+> > list yet) took a `struct page *` instead of a phys_addr_t.. passing
+> > NULL would disable PRR, so I didn't need the third arg
+> >
+> >> +       struct arm_smmu_domain *smmu_domain =3D (void *)cookie;
+> >> +       struct arm_smmu_cfg *cfg =3D &smmu_domain->cfg;
+> >> +       struct arm_smmu_device *smmu =3D smmu_domain->smmu;
+> >> +       u32 reg =3D 0;
+> >> +
+> >> +       writel_relaxed(lower_32_bits(page_addr),
+> >> +                               (void *)smmu->ioaddr + ARM_SMMU_GFX_PR=
+R_CFG_LADDR);
+> >> +
+> >> +       writel_relaxed(upper_32_bits(page_addr),
+> >> +                               (void *)smmu->ioaddr + ARM_SMMU_GFX_PR=
+R_CFG_UADDR);
+> >
+> > I know downstream writes it as upper+lower, but I'd guess we could
+> > just writeq, couldn't we?
+> >
+>
+> Actually ARM_SMMU_GFX_PRR_CFG_LADDR, ARM_SMMU_GFX_PRR_CFG_UADDR both are
+> separate 32 bit registers. So I think writeq for 64bit write might not
+> work, as these are not 64 bit registers nor these two are separated by
+> 64 aligned address.
 
-I also converted qcom_smmu_context_fault() to use the helpers to do the
-parsing, rather than more or less duplicating.
+ahh, ok
 
- .../iommu/arm/arm-smmu/arm-smmu-qcom-debug.c  | 21 +++---
- drivers/iommu/arm/arm-smmu/arm-smmu.c         | 70 ++++++++++++++++++-
- drivers/iommu/arm/arm-smmu/arm-smmu.h         | 58 +++++++++------
- 3 files changed, 110 insertions(+), 39 deletions(-)
+> >> +
+> >> +       reg =3D  arm_smmu_cb_read(smmu, cfg->cbndx, ARM_SMMU_CB_ACTLR)=
+;
+> >> +       reg |=3D FIELD_PREP(GFX_ACTLR_PRR, set ? 1 : 0);
+> >
+> > this won't clear the ENABLE_PRR bit if we try to disable it after
+> > enabling (unless this bit is read-as-zero
+> >
+>
+> Ah okay right, got it. Thanks for pointing this out.
+> Will take care of this in next version.
+> will use set/reset in side if() instead with different
+> bitwise ops for set and reset.
+>
+>
+> > Also, can we give a name to PRR?  I'm guessing it is something like
+> > physical-range-remap?
+>
+> Yes sure. I checked on this, PRR here actually stands for
+> partially-resident-region.
 
-diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom-debug.c b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom-debug.c
-index 552199cbd9e2..ee7eab273e1a 100644
---- a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom-debug.c
-+++ b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom-debug.c
-@@ -429,22 +429,17 @@ irqreturn_t qcom_smmu_context_fault(int irq, void *dev)
- 		phys_addr_t phys_atos = qcom_smmu_verify_fault(smmu_domain, iova, fsr);
- 
- 		if (__ratelimit(&_rs)) {
-+			char buf[80];
-+
- 			dev_err(smmu->dev,
- 				"Unhandled context fault: fsr=0x%x, iova=0x%08lx, fsynr=0x%x, cbfrsynra=0x%x, cb=%d\n",
- 				fsr, iova, fsynr, cbfrsynra, idx);
--			dev_err(smmu->dev,
--				"FSR    = %08x [%s%s%s%s%s%s%s%s%s], SID=0x%x\n",
--				fsr,
--				(fsr & 0x02) ? "TF " : "",
--				(fsr & 0x04) ? "AFF " : "",
--				(fsr & 0x08) ? "PF " : "",
--				(fsr & 0x10) ? "EF " : "",
--				(fsr & 0x20) ? "TLBMCF " : "",
--				(fsr & 0x40) ? "TLBLKF " : "",
--				(fsr & 0x80) ? "MHF " : "",
--				(fsr & 0x40000000) ? "SS " : "",
--				(fsr & 0x80000000) ? "MULTI " : "",
--				cbfrsynra);
-+
-+			arm_smmu_parse_fsr(buf, fsr);
-+			dev_err(smmu->dev, "FSR: %s\n", buf);
-+
-+			arm_smmu_parse_fsynr0(buf, fsynr);
-+			dev_err(smmu->dev, "FSYNR0: %s\n", buf);
- 
- 			dev_err(smmu->dev,
- 				"soft iova-to-phys=%pa\n", &phys_soft);
-diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu.c b/drivers/iommu/arm/arm-smmu/arm-smmu.c
-index 87c81f75cf84..7f5ca75d5ebe 100644
---- a/drivers/iommu/arm/arm-smmu/arm-smmu.c
-+++ b/drivers/iommu/arm/arm-smmu/arm-smmu.c
-@@ -405,12 +405,67 @@ static const struct iommu_flush_ops arm_smmu_s2_tlb_ops_v1 = {
- 	.tlb_add_page	= arm_smmu_tlb_add_page_s2_v1,
- };
- 
-+void arm_smmu_parse_fsr(char buf[80], u32 fsr)
-+{
-+	static const struct {
-+		u32 mask;
-+		const char *name;
-+	} fsr_bits[] = {
-+		{ ARM_SMMU_CB_FSR_MULTI,  "MULTI"  },
-+		{ ARM_SMMU_CB_FSR_SS,     "SS"     },
-+		{ ARM_SMMU_CB_FSR_UUT,    "UUT"    },
-+		{ ARM_SMMU_CB_FSR_ASF,    "ASF"    },
-+		{ ARM_SMMU_CB_FSR_TLBLKF, "TLBLKF" },
-+		{ ARM_SMMU_CB_FSR_TLBMCF, "TLBMCF" },
-+		{ ARM_SMMU_CB_FSR_EF,     "EF"     },
-+		{ ARM_SMMU_CB_FSR_PF,     "PF"     },
-+		{ ARM_SMMU_CB_FSR_AFF,    "AFF"    },
-+		{ ARM_SMMU_CB_FSR_TF,     "TF"     },
-+	};
-+	char *p = buf;
-+
-+	p += sprintf(p, "FORMAT=%u",
-+		     (u32)FIELD_GET(ARM_SMMU_CB_FSR_FORMAT, fsr));
-+
-+	for (int i = 0; i < ARRAY_SIZE(fsr_bits); i++)
-+		if (fsr & fsr_bits[i].mask)
-+			p += sprintf(p, "|%s", fsr_bits[i].name);
-+}
-+
-+void arm_smmu_parse_fsynr0(char buf[80], u32 fsynr)
-+{
-+	static const struct {
-+		u32 mask;
-+		const char *name;
-+	} fsynr0_bits[] = {
-+		{ ARM_SMMU_CB_FSYNR0_WNR,    "WNR"    },
-+		{ ARM_SMMU_CB_FSYNR0_PNU,    "PNU"    },
-+		{ ARM_SMMU_CB_FSYNR0_IND,    "IND"    },
-+		{ ARM_SMMU_CB_FSYNR0_NSATTR, "NSATTR" },
-+		{ ARM_SMMU_CB_FSYNR0_PTWF,   "PTWF"   },
-+		{ ARM_SMMU_CB_FSYNR0_AFR,    "AFR"    },
-+	};
-+	char *p = buf;
-+
-+	p += sprintf(p, "S1CBNDX=%u",
-+		     (u32)FIELD_GET(ARM_SMMU_CB_FSYNR0_S1CBNDX, fsynr));
-+
-+	for (int i = 0; i < ARRAY_SIZE(fsynr0_bits); i++)
-+		if (fsynr & fsynr0_bits[i].mask)
-+			p += sprintf(p, "|%s", fsynr0_bits[i].name);
-+
-+	p += sprintf(p, "|PLVL=%u",
-+		     (u32)FIELD_GET(ARM_SMMU_CB_FSYNR0_PLVL, fsynr));
-+}
-+
- static irqreturn_t arm_smmu_context_fault(int irq, void *dev)
- {
- 	u32 fsr, fsynr, cbfrsynra;
- 	unsigned long iova;
- 	struct arm_smmu_domain *smmu_domain = dev;
- 	struct arm_smmu_device *smmu = smmu_domain->smmu;
-+	static DEFINE_RATELIMIT_STATE(rs, DEFAULT_RATELIMIT_INTERVAL,
-+				      DEFAULT_RATELIMIT_BURST);
- 	int idx = smmu_domain->cfg.cbndx;
- 	int ret;
- 
-@@ -423,13 +478,22 @@ static irqreturn_t arm_smmu_context_fault(int irq, void *dev)
- 	cbfrsynra = arm_smmu_gr1_read(smmu, ARM_SMMU_GR1_CBFRSYNRA(idx));
- 
- 	ret = report_iommu_fault(&smmu_domain->domain, NULL, iova,
--		fsynr & ARM_SMMU_FSYNR0_WNR ? IOMMU_FAULT_WRITE : IOMMU_FAULT_READ);
-+		fsynr & ARM_SMMU_CB_FSYNR0_WNR ? IOMMU_FAULT_WRITE : IOMMU_FAULT_READ);
-+
-+	if (ret == -ENOSYS && __ratelimit(&rs)) {
-+		char buf[80];
- 
--	if (ret == -ENOSYS)
--		dev_err_ratelimited(smmu->dev,
-+		dev_err(smmu->dev,
- 		"Unhandled context fault: fsr=0x%x, iova=0x%08lx, fsynr=0x%x, cbfrsynra=0x%x, cb=%d\n",
- 			    fsr, iova, fsynr, cbfrsynra, idx);
- 
-+		arm_smmu_parse_fsr(buf, fsr);
-+		dev_err(smmu->dev, "FSR: %s\n", buf);
-+
-+		arm_smmu_parse_fsynr0(buf, fsynr);
-+		dev_err(smmu->dev, "FSYNR0: %s\n", buf);
-+	}
-+
- 	arm_smmu_cb_write(smmu, idx, ARM_SMMU_CB_FSR, fsr);
- 	return IRQ_HANDLED;
- }
-diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu.h b/drivers/iommu/arm/arm-smmu/arm-smmu.h
-index 4765c6945c34..763ea52fca64 100644
---- a/drivers/iommu/arm/arm-smmu/arm-smmu.h
-+++ b/drivers/iommu/arm/arm-smmu/arm-smmu.h
-@@ -196,34 +196,46 @@ enum arm_smmu_cbar_type {
- #define ARM_SMMU_CB_PAR_F		BIT(0)
- 
- #define ARM_SMMU_CB_FSR			0x58
--#define ARM_SMMU_FSR_MULTI		BIT(31)
--#define ARM_SMMU_FSR_SS			BIT(30)
--#define ARM_SMMU_FSR_UUT		BIT(8)
--#define ARM_SMMU_FSR_ASF		BIT(7)
--#define ARM_SMMU_FSR_TLBLKF		BIT(6)
--#define ARM_SMMU_FSR_TLBMCF		BIT(5)
--#define ARM_SMMU_FSR_EF			BIT(4)
--#define ARM_SMMU_FSR_PF			BIT(3)
--#define ARM_SMMU_FSR_AFF		BIT(2)
--#define ARM_SMMU_FSR_TF			BIT(1)
--
--#define ARM_SMMU_FSR_IGN		(ARM_SMMU_FSR_AFF |		\
--					 ARM_SMMU_FSR_ASF |		\
--					 ARM_SMMU_FSR_TLBMCF |		\
--					 ARM_SMMU_FSR_TLBLKF)
--
--#define ARM_SMMU_FSR_FAULT		(ARM_SMMU_FSR_MULTI |		\
--					 ARM_SMMU_FSR_SS |		\
--					 ARM_SMMU_FSR_UUT |		\
--					 ARM_SMMU_FSR_EF |		\
--					 ARM_SMMU_FSR_PF |		\
--					 ARM_SMMU_FSR_TF |		\
-+#define ARM_SMMU_CB_FSR_MULTI		BIT(31)
-+#define ARM_SMMU_CB_FSR_SS		BIT(30)
-+#define ARM_SMMU_CB_FSR_FORMAT		GENMASK(10, 9)
-+#define ARM_SMMU_CB_FSR_UUT		BIT(8)
-+#define ARM_SMMU_CB_FSR_ASF		BIT(7)
-+#define ARM_SMMU_CB_FSR_TLBLKF		BIT(6)
-+#define ARM_SMMU_CB_FSR_TLBMCF		BIT(5)
-+#define ARM_SMMU_CB_FSR_EF		BIT(4)
-+#define ARM_SMMU_CB_FSR_PF		BIT(3)
-+#define ARM_SMMU_CB_FSR_AFF		BIT(2)
-+#define ARM_SMMU_CB_FSR_TF		BIT(1)
-+
-+void arm_smmu_parse_fsr(char buf[80], u32 fsr);
-+
-+#define ARM_SMMU_FSR_IGN		(ARM_SMMU_CB_FSR_AFF |		\
-+					 ARM_SMMU_CB_FSR_ASF |		\
-+					 ARM_SMMU_CB_FSR_TLBMCF |	\
-+					 ARM_SMMU_CB_FSR_TLBLKF)
-+
-+#define ARM_SMMU_FSR_FAULT		(ARM_SMMU_CB_FSR_MULTI |	\
-+					 ARM_SMMU_CB_FSR_SS |		\
-+					 ARM_SMMU_CB_FSR_UUT |		\
-+					 ARM_SMMU_CB_FSR_EF |		\
-+					 ARM_SMMU_CB_FSR_PF |		\
-+					 ARM_SMMU_CB_FSR_TF |		\
- 					 ARM_SMMU_FSR_IGN)
- 
- #define ARM_SMMU_CB_FAR			0x60
- 
- #define ARM_SMMU_CB_FSYNR0		0x68
--#define ARM_SMMU_FSYNR0_WNR		BIT(4)
-+#define ARM_SMMU_CB_FSYNR0_PLVL		GENMASK(1, 0)
-+#define ARM_SMMU_CB_FSYNR0_WNR		BIT(4)
-+#define ARM_SMMU_CB_FSYNR0_PNU		BIT(5)
-+#define ARM_SMMU_CB_FSYNR0_IND		BIT(6)
-+#define ARM_SMMU_CB_FSYNR0_NSATTR	BIT(8)
-+#define ARM_SMMU_CB_FSYNR0_PTWF		BIT(10)
-+#define ARM_SMMU_CB_FSYNR0_AFR		BIT(11)
-+#define ARM_SMMU_CB_FSYNR0_S1CBNDX	GENMASK(23, 16)
-+
-+void arm_smmu_parse_fsynr0(char buf[80], u32 fsynr);
- 
- #define ARM_SMMU_CB_FSYNR1		0x6c
- 
--- 
-2.45.2
+ahh, ok, that makes sense
 
+> So would be better If we add expansion for PRR in a comment ?
+> Because if we expand PRR in variables/defines then wouldn't
+> the names become too long?
+
+Yeah, I was just thinking to mention it in the comment for set_prr()
+
+BR,
+-R
+
+>
+> Thanks & regards,
+> Bibek
+>
+> >
+> > BR,
+> > -R
+> >
+> >> +       arm_smmu_cb_write(smmu, cfg->cbndx, ARM_SMMU_CB_ACTLR, reg);
+> >> +
+> >> +}
+> >> +
+> >>   #define QCOM_ADRENO_SMMU_GPU_SID 0
+> >>
+> >>   static bool qcom_adreno_smmu_is_gpu_device(struct device *dev)
+> >> @@ -384,6 +404,7 @@ static int qcom_adreno_smmu_init_context(struct ar=
+m_smmu_domain *smmu_domain,
+> >>          priv->get_fault_info =3D qcom_adreno_smmu_get_fault_info;
+> >>          priv->set_stall =3D qcom_adreno_smmu_set_stall;
+> >>          priv->resume_translation =3D qcom_adreno_smmu_resume_translat=
+ion;
+> >> +       priv->set_actlr_bit =3D qcom_adreno_smmu_set_actlr_bit;
+> >>
+> >>          actlrvar =3D qsmmu->data->actlrvar;
+> >>          if (!actlrvar)
+> >> diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu.h b/drivers/iommu/arm=
+/arm-smmu/arm-smmu.h
+> >> index d9c2ef8c1653..3076bef49e20 100644
+> >> --- a/drivers/iommu/arm/arm-smmu/arm-smmu.h
+> >> +++ b/drivers/iommu/arm/arm-smmu/arm-smmu.h
+> >> @@ -154,6 +154,8 @@ enum arm_smmu_cbar_type {
+> >>   #define ARM_SMMU_SCTLR_M               BIT(0)
+> >>
+> >>   #define ARM_SMMU_CB_ACTLR              0x4
+> >> +#define ARM_SMMU_GFX_PRR_CFG_LADDR     0x6008
+> >> +#define ARM_SMMU_GFX_PRR_CFG_UADDR     0x600C
+> >>
+> >>   #define ARM_SMMU_CB_RESUME             0x8
+> >>   #define ARM_SMMU_RESUME_TERMINATE      BIT(0)
+> >> diff --git a/include/linux/adreno-smmu-priv.h b/include/linux/adreno-s=
+mmu-priv.h
+> >> index c637e0997f6d..448e191eeb52 100644
+> >> --- a/include/linux/adreno-smmu-priv.h
+> >> +++ b/include/linux/adreno-smmu-priv.h
+> >> @@ -49,7 +49,9 @@ struct adreno_smmu_fault_info {
+> >>    *                 before set_ttbr0_cfg().  If stalling on fault is =
+enabled,
+> >>    *                 the GPU driver must call resume_translation()
+> >>    * @resume_translation: Resume translation after a fault
+> >> - *
+> >> + * @set_actlr_bits: Extendible interface to be used  by GPU to modify=
+ the
+> >> + *                 ACTLR bits, currently used to intitate PRR bit set=
+up or
+> >> + *                 reset sequence for ACTLR registers as requested.
+> >>    *
+> >>    * The GPU driver (drm/msm) and adreno-smmu work together for contro=
+lling
+> >>    * the GPU's SMMU instance.  This is by necessity, as the GPU is dir=
+ectly
+> >> @@ -67,6 +69,7 @@ struct adreno_smmu_priv {
+> >>       void (*get_fault_info)(const void *cookie, struct adreno_smmu_fa=
+ult_info *info);
+> >>       void (*set_stall)(const void *cookie, bool enabled);
+> >>       void (*resume_translation)(const void *cookie, bool terminate);
+> >> +    void (*set_actlr_bit)(const void *cookie, phys_addr_t page_addr, =
+bool set);
+> >>   };
+> >>
+> >>   #endif /* __ADRENO_SMMU_PRIV_H */
+> >> --
+> >> 2.34.1
+> >>
