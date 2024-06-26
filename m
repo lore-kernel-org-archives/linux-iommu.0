@@ -1,101 +1,122 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.15])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-ed1-f49.google.com (mail-ed1-f49.google.com [209.85.208.49])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0CDC4F505
-	for <iommu@lists.linux.dev>; Wed, 26 Jun 2024 01:11:39 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.15
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 36A1BD53B
+	for <iommu@lists.linux.dev>; Wed, 26 Jun 2024 01:21:59 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.49
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1719364301; cv=none; b=Do0/y41huLnt7f1I9XgrqbrYLKBglyFhi7un3mKWG7+hNob3mH8PyZ1vbuWLcza1zhh6GEb7MgOjzWs5Gf7/t9AM8RZquxnjXQ+l7G5sfXn8e2zZ1bpqN0vS+yGqimS+Py4qrBlzeCNpwjMYnrU3es8DOEhPHNRaRRgfLcwfXNs=
+	t=1719364921; cv=none; b=epYsVXb1oQLf8S8o/30ST9q8ojt3VXLSE12huk8G+M6BQ4yV1QaLaS4xhlaoNBXUKJpfSb9HlZtzgxeTU9zFlzZf3a9ISIgYIHB6hfDVnGJRYr1AKaGpdNJ2DJm4uahKsnyfgBO4Zi0fP2ayuX+4AEy3zvQ9JKvgkGYihc2b7N4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1719364301; c=relaxed/simple;
-	bh=OJYkJ1W9WEO78a37/kIPbjQZk8CkmjV0blAWidZa0tM=;
-	h=Message-ID:Date:MIME-Version:Cc:Subject:To:References:From:
-	 In-Reply-To:Content-Type; b=PCvKaPtALo63ZWVFCxqmzdXxV/oPwa9FsAirMPAs5FLsxE7AZKS63hEJSjntdK2dARn55iAaI+YZxCRpzAgxPRUXLYfBWZ8dSKYbocY6xiMU1v8+2rd1PS12GNWqJuzFKwfQUHtQVbfnyeUs6kv740lKMlLra7dR2fBcYo5o16I=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=Cwb54Dy0; arc=none smtp.client-ip=192.198.163.15
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
+	s=arc-20240116; t=1719364921; c=relaxed/simple;
+	bh=UFZ9PY+GDSA9BNrYdHIS8Xjr5b2tAoCZFEY+1AZ/7t0=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=IUOsjh40bklkprwFEFSy2NG6xrHQNfzmisCSY1K/eP7pltdTq9MVi7iW5qk5RkcBNWwfIFVMEDeYzDZmuTnZkjSMyL/iFxVP99uK7llQgL8cncn6uwOGpr4icT0bJ6ikYrco/bq/MEL74IC2R2TOInaFWMs/1jY4kcicN5YE1ro=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=AE3O0toE; arc=none smtp.client-ip=209.85.208.49
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="Cwb54Dy0"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1719364300; x=1750900300;
-  h=message-id:date:mime-version:cc:subject:to:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=OJYkJ1W9WEO78a37/kIPbjQZk8CkmjV0blAWidZa0tM=;
-  b=Cwb54Dy0Kwbw8mQU+Djidu95oO02MnQ60LaQQFmx44XL2tCis7TuEP09
-   KLSy4HUHJ3Xqh+W6sbri45rfnYHMR/x1moDRfx7SPI7V7IB5bgWsfSlU9
-   TnqQBmhZ/ze1ec2BLRs+pOVqqqRkZu83jaCyEP9V3jwOqN8CI/6xQ0/uF
-   ZXTwAigc9PpPpJe6kRlIn8wJvFnalz6jBA77S8KaTtEzZWdLMU5sk/ThV
-   YSOW9MUUyZtTKzg/uxO4OagolYaorI8b8oaxH8AkzMxE6waMpcEheiclB
-   6pvpjq/OKOBaugdGPIsc3+xIlPbvd7GzPXD/RMd/YMQRtQaZxjhdRiLHw
-   g==;
-X-CSE-ConnectionGUID: zGf8d3BMS1uJUmMnDpjYlA==
-X-CSE-MsgGUID: AyOJzPsgSMu9I2J0pt1wTg==
-X-IronPort-AV: E=McAfee;i="6700,10204,11114"; a="16560847"
-X-IronPort-AV: E=Sophos;i="6.08,265,1712646000"; 
-   d="scan'208";a="16560847"
-Received: from fmviesa007.fm.intel.com ([10.60.135.147])
-  by fmvoesa109.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Jun 2024 18:11:39 -0700
-X-CSE-ConnectionGUID: 9hbx//XYRQ2pHhD+puVXcg==
-X-CSE-MsgGUID: eJGexdI+S8+6vrSlqdtCTA==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.08,265,1712646000"; 
-   d="scan'208";a="43696087"
-Received: from unknown (HELO [10.239.159.127]) ([10.239.159.127])
-  by fmviesa007.fm.intel.com with ESMTP; 25 Jun 2024 18:11:37 -0700
-Message-ID: <33c93a17-b888-47a8-be54-8fb0f7fee0ec@linux.intel.com>
-Date: Wed, 26 Jun 2024 09:09:04 +0800
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="AE3O0toE"
+Received: by mail-ed1-f49.google.com with SMTP id 4fb4d7f45d1cf-57a16f4b8bfso4230a12.0
+        for <iommu@lists.linux.dev>; Tue, 25 Jun 2024 18:21:59 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20230601; t=1719364918; x=1719969718; darn=lists.linux.dev;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=MDXzXy/x3VAMGE4telAkJ0AkS3Dvfn3YkfUIsKfqDwQ=;
+        b=AE3O0toEhG2nSf1jaNH07AX8ByLbDxAqH4A6BP1TlNHipNaHZs6I8AkzkI8t4GeCZI
+         uSl+iQGSCOdV/lmw+R/FuCKPwh69Wo2Tv6dzyqXRj4CHomj+48cU2SIcww61sP2PYqfT
+         RmuijaYB3Gi46gVJofo+fOyoFE8uoWlvz36Abr/T2JEXtooW1s6NkOe2s5lj5cZTH8mo
+         3JV2x6BA4FqRlGRuVNsUNSlUG6jSvJ6NlAD4o1fRTRNy8FrO9eEEuUMHPMdxYcN4Jpy7
+         bGcz5VsbUpQPPSzkd4iBvSPpWiEm6GWKUXgSZ4cfF7FQjFMfsHeLqqZBSG00v7Ic8MqV
+         uwPw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1719364918; x=1719969718;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=MDXzXy/x3VAMGE4telAkJ0AkS3Dvfn3YkfUIsKfqDwQ=;
+        b=ds4kGX2j2+guJCIprnzE9AVnyB0j8oY3pR6rVgoxbl0GRbpvh/kl6WjrMOgbvzzFSa
+         6JXXU9v4IREcrcqoCj4jc+rAHccstQivwfN5KE+soR24m1Vgpe50pYWDmeQmAPqoVyOo
+         IMS4WnHTcL1uI9Ne4H5E5oec4F/hIJAz7VkJlwWT0MlB4ojfeE+DB2gbPMV+fJKgZgfW
+         g/k0rCMQiRBTCm8suSqWsFpRYSJIjIt9F7SW8zVaeQi9FVLTq1zesYldE5qrMx0BcHue
+         5sMldIIYttBt7Dd+oXmZu58rlgRW2DByflWSJ6rKzheL0uBhfv1n5BF3601CEkXo/evZ
+         0bjA==
+X-Forwarded-Encrypted: i=1; AJvYcCWm2s3C1QsHDgU2N/4HFNVQY5Et7P1fgwXlByIn2kTvCFyqWAwXcW28D6IvHbSf0x5mzZXPiM2w1dTx3riU4TCz9A6icBE=
+X-Gm-Message-State: AOJu0YzVsBZZhefKmmHeFN74G0nd0FfoScdl5GP2cW2OqYvdI8hZYxKI
+	Pam63Ogz78ryg/bYDT4bLJTIUcUSlLeIr8QkHU7q8+wB5sCA7SFIgSIf4Qw8ko7/mTFQQpisjI9
+	Gh9zD9PiWELw2nFOcVeg437VufeG5W8zzBXNf
+X-Google-Smtp-Source: AGHT+IHX6Dw13lvp9tA5r1Nr3EDVBrqZjzt46+AZrMqkD9VDrFcqyfsc9zQwLVqS3nH7c8fc7LBij/O5GqbVZ/GRwBU=
+X-Received: by 2002:a05:6402:350c:b0:582:f117:548e with SMTP id
+ 4fb4d7f45d1cf-5832c353bf0mr116598a12.0.1719364915083; Tue, 25 Jun 2024
+ 18:21:55 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Cc: baolu.lu@linux.intel.com, iommu@lists.linux.dev,
- linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] iommu/intel: Enable pci capabilities before assigning
- cache tags
-To: j.granados@samsung.com, David Woodhouse <dwmw2@infradead.org>,
- Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
- Robin Murphy <robin.murphy@arm.com>
-References: <20240625-jag-ats_cache_tag_fix-v1-1-67f956e3fa93@samsung.com>
-Content-Language: en-US
-From: Baolu Lu <baolu.lu@linux.intel.com>
-In-Reply-To: <20240625-jag-ats_cache_tag_fix-v1-1-67f956e3fa93@samsung.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+References: <20240624232718.1154427-1-edliaw@google.com> <20240625135234.d52ef77c0d84cb19d37dc44f@linux-foundation.org>
+ <f975fe76-92f4-4af0-a91d-0f3d8938f6b2@linuxfoundation.org> <CAG4es9V0XAqe-eqPgjU+sdRS00VOEr0Xda1Dv-gtfEvqsODjiw@mail.gmail.com>
+In-Reply-To: <CAG4es9V0XAqe-eqPgjU+sdRS00VOEr0Xda1Dv-gtfEvqsODjiw@mail.gmail.com>
+From: Edward Liaw <edliaw@google.com>
+Date: Tue, 25 Jun 2024 18:21:27 -0700
+Message-ID: <CAG4es9WHUSC7qm_6fJjQm5nM_iYEjXO75DWC8e5tzqc7fLEtfw@mail.gmail.com>
+Subject: Re: [PATCH v6 00/13] Centralize _GNU_SOURCE definition into lib.mk
+To: Shuah Khan <skhan@linuxfoundation.org>
+Cc: Andrew Morton <akpm@linux-foundation.org>, linux-kselftest@vger.kernel.org, 
+	Eric Biederman <ebiederm@xmission.com>, Kees Cook <kees@kernel.org>, Shuah Khan <shuah@kernel.org>, 
+	Thomas Gleixner <tglx@linutronix.de>, Ingo Molnar <mingo@redhat.com>, 
+	Peter Zijlstra <peterz@infradead.org>, Darren Hart <dvhart@infradead.org>, 
+	Davidlohr Bueso <dave@stgolabs.net>, =?UTF-8?Q?Andr=C3=A9_Almeida?= <andrealmeid@igalia.com>, 
+	Jason Gunthorpe <jgg@ziepe.ca>, Kevin Tian <kevin.tian@intel.com>, Paolo Bonzini <pbonzini@redhat.com>, 
+	"David S. Miller" <davem@davemloft.net>, Eric Dumazet <edumazet@google.com>, 
+	Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>, Fenghua Yu <fenghua.yu@intel.com>, 
+	Reinette Chatre <reinette.chatre@intel.com>, Paul Walmsley <paul.walmsley@sifive.com>, 
+	Palmer Dabbelt <palmer@dabbelt.com>, Albert Ou <aou@eecs.berkeley.edu>, 
+	Jarkko Sakkinen <jarkko@kernel.org>, Dave Hansen <dave.hansen@linux.intel.com>, 
+	linux-kernel@vger.kernel.org, usama.anjum@collabora.com, seanjc@google.com, 
+	kernel-team@android.com, linux-mm@kvack.org, iommu@lists.linux.dev, 
+	kvm@vger.kernel.org, netdev@vger.kernel.org, linux-fsdevel@vger.kernel.org, 
+	linux-riscv@lists.infradead.org, linux-sgx@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-On 6/25/24 9:49 PM, Joel Granados via B4 Relay wrote:
-> From: Joel Granados<j.granados@samsung.com>
-> 
-> Enable the pci capabilities by calling iommu_enable_pci_caps before we
-> assign a cache tag. The cache_tag_assign_domain call in
-> dmar_domain_attach_device uses the device_domain_info->ats_enabled
-> element to decide on the cache_tag_type value. Therefore ats_enabled
-> needs to be evaluated before the call to the tag cache assignment.
-> 
-> Signed-off-by: Joel Granados<j.granados@samsung.com>
-> ---
-> The "what" and "why" are included in the commit message.
-> 
-> Tried to place cache_tag_assign_domain before the early return in
-> "if(dev_is_real_dma_subdevice(dev))". This means that the call to
-> iommu_enable_pci_caps landed before the setup functions [1] which is not
-> an issue as they seem to be orthogonal (I would like to be proven wrong
-> here).
-> 
-> An alternative to this patch would be to use a different way of checking
-> if the device is ATS enabled in __cache_tag_assign_domain.
-> 
-> Comments greatly appreciated
+On Tue, Jun 25, 2024 at 5:41=E2=80=AFPM Edward Liaw <edliaw@google.com> wro=
+te:
+>
+> On Tue, Jun 25, 2024 at 4:34=E2=80=AFPM Shuah Khan <skhan@linuxfoundation=
+.org> wrote:
+> >
+> > On 6/25/24 14:52, Andrew Morton wrote:
+> > > On Mon, 24 Jun 2024 23:26:09 +0000 Edward Liaw <edliaw@google.com> wr=
+ote:
+> > >
+> > >> Centralizes the definition of _GNU_SOURCE into lib.mk and addresses =
+all
+> > >> resulting macro redefinition warnings.
+> > >>
+> > >> These patches will need to be merged in one shot to avoid redefiniti=
+on
+> > >> warnings.
+> > >
+> > > Yes, please do this as a single patch and resend?
+> >
+> > Since the change is limited to makefiles and one source file
+> > we can manage it with one patch.
+> >
+> > Please send single patch and I will apply to next and we can resolve
+> > conflicts if any before the merge window rolls around.
+>
+> Sounds good, I sent:
+> https://lore.kernel.org/linux-kselftest/20240625223454.1586259-1-edliaw@g=
+oogle.com
 
-Thank you very much for the patch. But we already have a similar patch
-which has been picked by Joerg for 6.10-rc.
+I realized that in this v6 patch, I had accidentally sent it in the
+middle of a rebase, so it's missing the last change to
+selftests/tmpfs.  I've fixed it in v7.
 
-https://lore.kernel.org/linux-iommu/20240620062940.201786-1-baolu.lu@linux.intel.com/
-
-Can you please check whether above patch works for you?
-
-Best regards,
-baolu
+>
+> >
+> > thanks,
+> > -- Shuah
