@@ -1,222 +1,200 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.19])
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.13])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0E60F53364
-	for <iommu@lists.linux.dev>; Wed, 26 Jun 2024 02:36:00 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=198.175.65.19
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1719369363; cv=fail; b=T3DGg1FKhj+wpaisuueuxPQql5i8l0gUPjUbAqeZwopFxgdvBvQZ5lcTXIbWZlQzuG7BejL/I+sUqH/ZG5o5JRzbgz8L3veVPBBxn36RlpJ4GQ6xRni57eKrvQdITIFuuePr2yK+AxszTxqbbafRhxlHfMtiTlW39PjMRUCWaZ4=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1719369363; c=relaxed/simple;
-	bh=OoBz1RBXYHDGV849UOGhKpkp88vGoDSsMdB9CZ8nEC4=;
-	h=From:To:CC:Subject:Date:Message-ID:References:In-Reply-To:
-	 Content-Type:MIME-Version; b=hF9b616FvBsjk48Ki+t33By2MJvXnYfzftanpyBcjxypp2WdOatYZp+2W/IitOlOk3goWSDdnRilJ2nUmZYMz1rjsAQ713HFRdEsaTz/c8816DaR1WKqpllkAWRHXxuO7fXxHKXKmhUupkW9FGuW/e7c/b9x7+FU+Ky9R8K8/vQ=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=az1XMElZ; arc=fail smtp.client-ip=198.175.65.19
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 905A721A0B
+	for <iommu@lists.linux.dev>; Wed, 26 Jun 2024 02:40:02 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.13
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1719369604; cv=none; b=GoRLAIrmhyQWoipdZ5hHKtm6dWmI6B38mwA2vFreOzZ7fR3glbD422c97roSobLTm5OT7r97Pli3T5LuGb5UOdNmzaBLcDTvNpyOdROn8b+78Y7Dsbxuzg0ZIoDedphCy8Ngk3dLQLGwSXcn00p/wri0CMz/5IzVtxR4BZKMfzc=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1719369604; c=relaxed/simple;
+	bh=QcE34O/pgjeaSLIBmO+f57+dDp4VVt67Nf6+waGdvEE=;
+	h=Message-ID:Date:MIME-Version:Cc:Subject:To:References:From:
+	 In-Reply-To:Content-Type; b=rzfXLNIkvKeCVH+eSwQzwVyFGbfpufV8+ytjwk2PxGWk1RVfAN8PaP6szVazhRhm4BOftCHDVtzq+CND5tDe8r6DOfOABPEdz2qiMGXLdY0EcZ0C32TEJg0Jx/VL1XrHg9NRFEYclxNrWcEqycISJI2xx3i29nLWlTb7hnxOSlM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=MvhaJGrv; arc=none smtp.client-ip=198.175.65.13
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="az1XMElZ"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="MvhaJGrv"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1719369361; x=1750905361;
-  h=from:to:cc:subject:date:message-id:references:
-   in-reply-to:content-transfer-encoding:mime-version;
-  bh=OoBz1RBXYHDGV849UOGhKpkp88vGoDSsMdB9CZ8nEC4=;
-  b=az1XMElZUmXc1BVIn0CkKpNfg43f70vmq23IdKvQQ6pSPSu/SY3p9aro
-   nmE3pXGUKLpx1V+jEJ/i4OG5yDDmV9wq1EfuN2ccTS9W2PC0Rg5eV0IuI
-   JWRzWFnAEAtFDn1obPNZcxvdd6MW+w1VYSXHkqel1yzmHQL6sLp55HzdM
-   2kKvyzMWfpfyARRtEHwvXAlGJmSlxq1UQLsrAkuo6shQWHvUomblg3N2a
-   W4FNxXtdezB/DsmNFtsgjhwlW6I2450/85pcXqUGHNUIcX25ix1Q9CHYi
-   QXGa+C898kUmVySJ68B3C8XPtEn0otlhev6Vgc0nJki3V8KSMSzDumwvz
-   g==;
-X-CSE-ConnectionGUID: K+CBrGEqTHCMmlOiXNVdtQ==
-X-CSE-MsgGUID: fXMIEY1OQtS3DWZRmrXFKA==
-X-IronPort-AV: E=McAfee;i="6700,10204,11114"; a="16247119"
+  t=1719369603; x=1750905603;
+  h=message-id:date:mime-version:cc:subject:to:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=QcE34O/pgjeaSLIBmO+f57+dDp4VVt67Nf6+waGdvEE=;
+  b=MvhaJGrvq3r62M8p9pz4z0MW2gRK2yu1uz72y43UeA68hfFC5lgNPfnf
+   ZMPSGDcX1CB/lz0/G5ratFnQ+6ZH8xfR10vJa4ufDQAmcyDM33z8swIbx
+   7dY2AFyNXEXXaNefwX2Z3SdgJup5qFW5GKULCaNcTL+9FFPt+mmcQ6kG1
+   nNE90gqGJ8g3ntVowcAyOJg+W5IO2dudQNDEOo9yGUcz9f0Axl3XPjNMf
+   bRlAHglubD0nUblggSnz1Wz1Ecfl7lE5CTqbamtHj4ybsQ6sU/cU7WS/o
+   G6TKtfvKhdQQ8FT9I7oECzTyaqTvyCeH1PSvy4BPZyVO+VBI6ko3OD0DD
+   A==;
+X-CSE-ConnectionGUID: OnwqdLW+S3CPBsgbSbSv/w==
+X-CSE-MsgGUID: aUDVbXnxTYGsbrX2A/VThA==
+X-IronPort-AV: E=McAfee;i="6700,10204,11114"; a="27563253"
 X-IronPort-AV: E=Sophos;i="6.08,265,1712646000"; 
-   d="scan'208";a="16247119"
-Received: from orviesa006.jf.intel.com ([10.64.159.146])
-  by orvoesa111.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Jun 2024 19:36:00 -0700
-X-CSE-ConnectionGUID: HeA4lggpS+CJs78Jlwasdw==
-X-CSE-MsgGUID: 0NFiUqAtRtWwQpimuDQFew==
+   d="scan'208";a="27563253"
+Received: from orviesa003.jf.intel.com ([10.64.159.143])
+  by orvoesa105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Jun 2024 19:40:02 -0700
+X-CSE-ConnectionGUID: BG7+n+w2RwKjX95fNAyueA==
+X-CSE-MsgGUID: abH/pdleSDyD0UrMzuCfzA==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.08,265,1712646000"; 
-   d="scan'208";a="44281122"
-Received: from fmsmsx603.amr.corp.intel.com ([10.18.126.83])
-  by orviesa006.jf.intel.com with ESMTP/TLS/AES256-GCM-SHA384; 25 Jun 2024 19:35:59 -0700
-Received: from fmsmsx611.amr.corp.intel.com (10.18.126.91) by
- fmsmsx603.amr.corp.intel.com (10.18.126.83) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.39; Tue, 25 Jun 2024 19:35:58 -0700
-Received: from fmsmsx612.amr.corp.intel.com (10.18.126.92) by
- fmsmsx611.amr.corp.intel.com (10.18.126.91) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.39; Tue, 25 Jun 2024 19:35:57 -0700
-Received: from fmsedg601.ED.cps.intel.com (10.1.192.135) by
- fmsmsx612.amr.corp.intel.com (10.18.126.92) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.39 via Frontend Transport; Tue, 25 Jun 2024 19:35:57 -0700
-Received: from NAM11-BN8-obe.outbound.protection.outlook.com (104.47.58.172)
- by edgegateway.intel.com (192.55.55.70) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.1.2507.39; Tue, 25 Jun 2024 19:35:57 -0700
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=UWfQ3ExDzFBRL+imP30k1WpEUNYADvWm9DxBAc8T+lr8VX+nK1y/AYyvPcDdZl/2AYztHJxpcUd9Clv9hat/apYu44F52DcYIxnTo2ibhRWe/XF8zc6Ic6mw0Ove3/97mtYEHEcgBIAAJ8mQCvsWWTtATqJZ48dsfwDSrg3XvSWzL7Mz0HJkEph6I9IrRyvVdqYRsr+fue5CTxbVAfbxIh4ZMnfbb4voCqCumnWwjKJhM6dO05fa8LtjH8WiNu/O+V9wzcWAGoj9EwLMY1BWqJmRC8Xl2WQ7TIY8yvQMkZZFUEb/zdKc34qt3KiNF6JEqwOmyqPmqAXTgaHFn+Ndvg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=OoBz1RBXYHDGV849UOGhKpkp88vGoDSsMdB9CZ8nEC4=;
- b=RvslSks5ZUn5B4HzEtnUytK9s2q9kTwn8mcNB73kYZsGFdAChFUPfyad1Advj8wLK4L9Inlij0YaM6Tmb86MPTOxsAg5PcN+axgC4hGRUZUL4bdT3CQ36cxQddyVzhRVRCU2gHSkzuAYQCRZOFpKpb4bXohAULFej+/xpYG3vDOGZ1Thp6b/Tx0vJGwBKRLwiG2dAmi+FDxKh6CUGr/JSrv1KbfCmeUdpI4/mqWTyxcsKt1cUF8G+bTq++FdH6m1eDcAa160kCfcNBpquQN7eWSqAA6lsnc1JU8uOqaZLGzc05n/iL9iwWTD464U9jlJki2uyptPKM4ee8eNQfaVZg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
- dkim=pass header.d=intel.com; arc=none
-Received: from BN9PR11MB5276.namprd11.prod.outlook.com (2603:10b6:408:135::18)
- by SA2PR11MB5083.namprd11.prod.outlook.com (2603:10b6:806:11b::24) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7698.32; Wed, 26 Jun
- 2024 02:35:55 +0000
-Received: from BN9PR11MB5276.namprd11.prod.outlook.com
- ([fe80::b576:d3bd:c8e0:4bc1]) by BN9PR11MB5276.namprd11.prod.outlook.com
- ([fe80::b576:d3bd:c8e0:4bc1%5]) with mapi id 15.20.7698.025; Wed, 26 Jun 2024
- 02:35:55 +0000
-From: "Tian, Kevin" <kevin.tian@intel.com>
-To: Joao Martins <joao.m.martins@oracle.com>, "iommu@lists.linux.dev"
-	<iommu@lists.linux.dev>
-CC: Jason Gunthorpe <jgg@nvidia.com>, Suravee Suthikulpanit
-	<suravee.suthikulpanit@amd.com>, Lu Baolu <baolu.lu@linux.intel.com>, "Avihai
- Horon" <avihaih@nvidia.com>, Alex Williamson <alex.williamson@redhat.com>,
-	Shameerali Kolothum Thodi <shameerali.kolothum.thodi@huawei.com>
-Subject: RE: [PATCH v1 04/10] iommufd/selftest: Do not record head iova to
- better match iommu drivers
-Thread-Topic: [PATCH v1 04/10] iommufd/selftest: Do not record head iova to
- better match iommu drivers
-Thread-Index: AQHaxAr2EmzDYwL66k2Pz1VycpxiSbHX2PvwgAB/qwCAAQI2UA==
-Date: Wed, 26 Jun 2024 02:35:55 +0000
-Message-ID: <BN9PR11MB52762BE81C4A4E22A916E1658CD62@BN9PR11MB5276.namprd11.prod.outlook.com>
-References: <20240621184254.45477-1-joao.m.martins@oracle.com>
- <20240621184254.45477-5-joao.m.martins@oracle.com>
- <BN9PR11MB5276AB80727CF5521D5F20768CD52@BN9PR11MB5276.namprd11.prod.outlook.com>
- <2d52d4ed-c585-466f-b428-c7ec24713f7d@oracle.com>
-In-Reply-To: <2d52d4ed-c585-466f-b428-c7ec24713f7d@oracle.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach:
-X-MS-TNEF-Correlator:
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=intel.com;
-x-ms-publictraffictype: Email
-x-ms-traffictypediagnostic: BN9PR11MB5276:EE_|SA2PR11MB5083:EE_
-x-ms-office365-filtering-correlation-id: 277a9d74-8135-4156-8dec-08dc9588b45d
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;ARA:13230038|366014|376012|1800799022|38070700016;
-x-microsoft-antispam-message-info: =?utf-8?B?dFZZY2ZSOU1LL09MWjN2OGJidm1CMDNpSy9iMkp1WDFqUisvNEszaUNxUzhW?=
- =?utf-8?B?NW1QZ2Fmd0hMWlFNZ1FqbnU0UHNqaFI1bXhGWkZMcXRQcnlCb2lvNm9MTmdw?=
- =?utf-8?B?M3NvcVg0MkdKSW8xNWhJZ2hqZHVoeWdMWGZENTJobDI4Q3RiNHN3TitTZHlh?=
- =?utf-8?B?VGhjci9QSTNZeTZONFdXOGF3cjBaL045cFdnYkMvU2pBRVdwcEpCb3N3WGFy?=
- =?utf-8?B?aHZzVlAyQ2t0aWtKUTlISFU4SmdKNEE2VG1icGREQWIyRUMrY20xR0p0NU85?=
- =?utf-8?B?Q1ZVcTFnbFdsZUxsNW9jS25rNEc3MmRqbXhMc2RTUFVTamFyVlhyMTNoYmcr?=
- =?utf-8?B?SzZCek5RWktSaEhqY2F3aWZjSTFJaGdvbHdaRU16L1l5aStFNFVaSEtrdGtn?=
- =?utf-8?B?MHZmaWNONG40dU14Yjd5S1AzUFJCbG9CMHRpTXFaNXFDMHVDTEVFSGpJYVpi?=
- =?utf-8?B?UXF2UGdTd2pkMUNOdlhicUwxaEt4MGVZbms5OWdJK0VURHJaN3BuQzQ2Tklv?=
- =?utf-8?B?enFYL2U3bzhmOVpROCtHeFY1Z2Y5c2picFhwb0RwSFB3OVFwQTh0eFVOL051?=
- =?utf-8?B?T2VKSHNlbHpScmlBdkhkYUFpZ3Bmak9FMmF2cklGeXF3Y1J1amdwaCtkYlda?=
- =?utf-8?B?Sm1qYlQyZFhCRUMzanBrbllpWmU4c3JWVzJsNTVOMlZkbTk3YVNNQ0NJTXlL?=
- =?utf-8?B?WnNRM1lZYXZIWm5wcUpQV1dhQTVSc3lLcStMSU5rZ0J0RmJlN24yWTU0SWlL?=
- =?utf-8?B?MCtqTnMydlNka1VxS3lLeFp1dm8yS1JGbVRGTlBBeFc3bkdNc2F0T3B3MFRX?=
- =?utf-8?B?MklNalFQYk1ZelU2THJnQUE1c0xYN2ZJckhESzBqL3BYM1V1d1hTY3B5TzVW?=
- =?utf-8?B?djBzUmFNN3oxZkk0aDU2ZTgyRXJFRkJkNk16eTRUdE5Pb043QnN3UnNjWmJ5?=
- =?utf-8?B?RU96RWR6VWVmd1AxbldhaGtvb2syTlVDZ2ZTTnZyNkFUdTlLRlBsTDNsUEUy?=
- =?utf-8?B?ZUx6dEZ4Zi93R3NISkhBTmJVN1F5dmlEMWQ5cGJia2VZSFpxWklISGZHR2xB?=
- =?utf-8?B?NmtRTWZCU3NpZEI5b21UaGtpRG9EYnl6eXV6QWlIRmFoaUlOb3lWZnd0Wncv?=
- =?utf-8?B?czFuWVNvRzRqbUo5ZllSUnYzSGVsTmY1NEJTaHFTbkVZVjdpaWxhRlgxWWE2?=
- =?utf-8?B?MDNPcW0rWWYrWnR5RTZ2UHlBZnJ1N0JHZTcyaERRUU9la2FoS01LeEZ2cUU5?=
- =?utf-8?B?L1pPVHZYMVBCTnI3c0dsdU5kSWM3MWVHZ1ZkR1Q3eFBscHRHekMwOE11MHhy?=
- =?utf-8?B?S0hVSGhOQVB1T04vblFJaFJXNmxsZXdVRkNsQWx6WmZpMjd3T2pIS2Q3b3Yw?=
- =?utf-8?B?YWwxR2k0K1lQYUhXbTlPeUZrSDJ5TXBpd285UWxJWVNLaXN5bzk0Nk9vMWFI?=
- =?utf-8?B?S1cwdURtOEx2QlN0RnprTFBNYSs4VENHemhUcURTaFYzdUM0bmFNTTlIY1NX?=
- =?utf-8?B?VHNVS0VHY1ZCR0toUjBZcG1BN3NLeDVqeWhMbG9WVTM3ZWNLVFE0clZtMklu?=
- =?utf-8?B?cFpMRnkyeEhzNnQ5TkNEd0dyM2tMWk1nOTQyZmxxUmFXeElyL3VXOXNrL0s0?=
- =?utf-8?B?YzNqbEpyK3ZWaVNHSmkzaWowRTB6cGZwSnNaUk9lT1YzZ2hTYWpDNFp5ck1O?=
- =?utf-8?B?QVVLZ1g4dWU0OTNEaVNraUJVS1RkanQzSnlRZWNuNm15TDhwcVlBNEFnTnRC?=
- =?utf-8?B?Y0grb3hWNUNnai84N29WbS9aT25uS1lhbEY4d1hPM1E3dmpUaUR4U0RHenFP?=
- =?utf-8?Q?b7iJXom6UxX5vMj484Ar13SBnuPaCs3mBD1Ew=3D?=
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BN9PR11MB5276.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230038)(366014)(376012)(1800799022)(38070700016);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?utf-8?B?UCs2YzYzOW9RTVVoWVlqWFhUbVFxMnZFc0dReGRuUEQrcnpyUW9pMzgrU0d3?=
- =?utf-8?B?N3JSb3F2MUh2d21obTF4T01NN3BtZ3pxbTNWNmEwRHU2M251U1ZGUTF5aDlZ?=
- =?utf-8?B?NUN3Sk13WndHVVJwVmNFc0lYekx4NkxWcXQxdWdtRXowaEU4aWVHdXhSRW1I?=
- =?utf-8?B?eG5HM0x1QjRjYis0dGZtQktsSndyd1ZrRm9vRmRmU0MvNlFDckJZRjAzY2xo?=
- =?utf-8?B?d2psb283QXBVRnJrVzJIcXVobHRvL0FJZEpXK0pTMWNtVlVkSjdHSlRxQTEv?=
- =?utf-8?B?RGN6Nm5pQWs3NEZRTldhTWJxRGRKVU11bHlNcVkwZ2M1akFVdmM4VWZTNWlG?=
- =?utf-8?B?TkJsWExKaDFvcUFlUkc5d0xsRVlMOGhNRktmb1NIZU1Dbkp2NmpOQS9zd0I0?=
- =?utf-8?B?eVU3T3FxUG9weCt2ZjRYd0NKRFg3M09qRGwvaDRwaTNIWlVvNHdGczVNcHpU?=
- =?utf-8?B?OW95cXYwRldtR015L3NrdlZaMWNUWlFZZGlFZFQ0bHFKWFRQR2ErMXA2KzRp?=
- =?utf-8?B?TUl2Q2d4TWhiZ1ZZZXBMVFZPa055UktySWVidmtjcWRjSWVvT05JVHFzREhx?=
- =?utf-8?B?UjlteTJ2cWI1TXNoaXVWa0dkNFYxNGZJK1FSU0VQaUZoZEtRQ2hqUTN3Ynh0?=
- =?utf-8?B?ZlFYNzhvd0Jsc1h2T1JSN1gwaW1GZ0NlTnhqUmNpdGhKV1RrSzhoTFZiQVps?=
- =?utf-8?B?YXFTL3V4V0RHR2U1Qmk2YVdwakMrY2h5M1NhNkhuVVNxa09JbUZRbkxvZExn?=
- =?utf-8?B?OHQxeHpCajFtVys0aE4wblBQNlVaR1FmSjFRdDhZQ05vWTBOUmQ3azg0RWJh?=
- =?utf-8?B?TFNrVDA1a1llTlZYNFAzTnkzRHUrYVVyTllhREp2TS9TZ1dsUVBIZ2xsalA1?=
- =?utf-8?B?YmZHR3RMRnU1Ty9mT3grZ1RPSUVIWkdTNS8reUY4Mklha3J3RVV0VWt1UThR?=
- =?utf-8?B?Rkh4a29nVTBtb0g4bDVzdjZHOUJZdmxUemRVN1FOSzB6Q2hQU3UreTBzOWZ5?=
- =?utf-8?B?akNURmNPRlBOL2hHenQ5akYycTdsVXZ5R29WVnliQ3QyTm5KRXg2QkVZSC9C?=
- =?utf-8?B?THp4ZGhERjVQWGZzZ0lsL1J5dEhRSDdvdkRjSUwzMnNNL3dWR0lZQlJLQnNL?=
- =?utf-8?B?Ulgyb0JHYjQ1bzM2OG5sWUpCUitaQXdiUCtGRFUvN2NibXZ1azYrd3V0OVdB?=
- =?utf-8?B?SlAvUllCdzlkTkZhZ25ReDFJSXR3REZ3bjhMcjFJOEtJNFJDT0VxQVFDaWhz?=
- =?utf-8?B?dXJYQjNGQUFxaDhkM3lSVlZmWE9VRlR3ZUpaNGxyWVhJUGE3QVZxbU05MExn?=
- =?utf-8?B?WHB5VzVTdDJIdWZiVzZqdzgrQjY0TUtJNWxQWUJ2UjVzelFvR25oOWJudnJN?=
- =?utf-8?B?QmtYWS9lVExranRxeG51d2t0WHh4MjJuZVVyQ0FBUURMOFJKNTgxdzhIbDFo?=
- =?utf-8?B?cmpnSzBGR2ZnOGJOZ3ZqVzF4T1BlZXg2S3R0dW8xVXVwWmd0NktIUmNMTzNG?=
- =?utf-8?B?SFR4NzBKTHFsQ3FuQndZSU03RWNSalUyWEtHV2xRcGlzVEt5ekZaU1ZnTm5I?=
- =?utf-8?B?SmdLMUFoYWtkalpQRTYyZEovaFJjREpNMmNacnRvamRtckk3anZ2Z0lXZ0x0?=
- =?utf-8?B?TTNWZnE3c1hzOGhpUzZ6Umd6VVBNUGJHYkJwSmxPcDIrWE1yY2ROTGRIN1pK?=
- =?utf-8?B?YXpkckEvTzUrdmlMZ2owakI5SXhNcExQTzdGTEplS3NBTTg2RWE0ZUxsYXVs?=
- =?utf-8?B?MU5LQm96NmYzZlVtbUQ0aGhLdkNiYVQzMm11UkZMUUZFRWphQkRiYTlQbStT?=
- =?utf-8?B?WEozVmpHa1pyZjNUMEZMZWwyRTR1TlhNL25OL0lDU1h4eFQxL3lZdk5vSXJa?=
- =?utf-8?B?V0QyUmh4TlgwZ3JyZTdWYkVoZHNndW5rT1YzNThoTEFMRG9BTW9nU1hzWE14?=
- =?utf-8?B?YjNJUUp4dUNvMllUbFNXNGpYcUNwZ2crenBDeUtGanIzcVRsdzMzQ2JaQmE1?=
- =?utf-8?B?YkpSQ2wrQzFRdFNmOFNqMi9pWVlaMVdnQUZEeTNpaGwwRkVFaW85bG8rZ3pm?=
- =?utf-8?B?YWpYeGh4dzFTNEduK2ZKaHk1K29LVEVOREdJMDhCN2FVWnJGbmszNTdEQWZ1?=
- =?utf-8?Q?FPb9ufc3c64diGPt9DgWh3FcH?=
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+   d="scan'208";a="48770527"
+Received: from unknown (HELO [10.239.159.127]) ([10.239.159.127])
+  by orviesa003.jf.intel.com with ESMTP; 25 Jun 2024 19:39:59 -0700
+Message-ID: <7e1a5185-18c8-470f-9621-b4ddd37c44c1@linux.intel.com>
+Date: Wed, 26 Jun 2024 10:37:26 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: BN9PR11MB5276.namprd11.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 277a9d74-8135-4156-8dec-08dc9588b45d
-X-MS-Exchange-CrossTenant-originalarrivaltime: 26 Jun 2024 02:35:55.3404
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 46c98d88-e344-4ed4-8496-4ed7712e255d
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: dIUvDedt8LHyN1bDMA9ALCfqlqb0aH6u1fhOH1AdtwrxHqPApAYnaVYr9bwyQBQOyG4jqNn9qlcV37BBBfYaQg==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SA2PR11MB5083
-X-OriginatorOrg: intel.com
+User-Agent: Mozilla Thunderbird
+Cc: baolu.lu@linux.intel.com, Will Deacon <will@kernel.org>,
+ Robin Murphy <robin.murphy@arm.com>,
+ "iommu@lists.linux.dev" <iommu@lists.linux.dev>,
+ "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH 2/2] iommu/vt-d: Remove hardware automatic ATS dependency
+To: "Tian, Kevin" <kevin.tian@intel.com>, Joerg Roedel <joro@8bytes.org>,
+ "Liu, Yi L" <yi.l.liu@intel.com>, Jacob Pan <jacob.jun.pan@linux.intel.com>
+References: <20240624052501.253405-1-baolu.lu@linux.intel.com>
+ <20240624052501.253405-2-baolu.lu@linux.intel.com>
+ <BN9PR11MB5276C8112DEF56C11CFC6F198CD52@BN9PR11MB5276.namprd11.prod.outlook.com>
+ <55d50738-cbb6-4bf5-8748-1b1c8c2de21e@linux.intel.com>
+ <BN9PR11MB52769480729491394F4719728CD62@BN9PR11MB5276.namprd11.prod.outlook.com>
+Content-Language: en-US
+From: Baolu Lu <baolu.lu@linux.intel.com>
+In-Reply-To: <BN9PR11MB52769480729491394F4719728CD62@BN9PR11MB5276.namprd11.prod.outlook.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-PiBGcm9tOiBKb2FvIE1hcnRpbnMgPGpvYW8ubS5tYXJ0aW5zQG9yYWNsZS5jb20+DQo+IFNlbnQ6
-IFR1ZXNkYXksIEp1bmUgMjUsIDIwMjQgNzoxMSBQTQ0KPiANCj4gT24gMjUvMDYvMjAyNCAwNDoz
-NSwgVGlhbiwgS2V2aW4gd3JvdGU6DQo+ID4+IEZyb206IEpvYW8gTWFydGlucyA8am9hby5tLm1h
-cnRpbnNAb3JhY2xlLmNvbT4NCj4gPj4gU2VudDogU2F0dXJkYXksIEp1bmUgMjIsIDIwMjQgMjo0
-MyBBTQ0KPiA+Pg0KPiA+PiBEbyBub3Qgc2UgYSBodWdlcGFnZS1hbGlnbmVkIElPVkEgZm9yIGlu
-Y3JlbWVudGluZyBhbiBJT1ZBLCB0byBiZXR0ZXINCj4gPg0KPiA+IHdoYXQgZG9lcyAnc2UnIG1l
-YW4/DQo+ID4NCj4gTWVhbnQgYXMgJ3NldCcNCj4gDQo+ID4+IG1hdGNoDQo+ID4+IGN1cnJlbnQg
-SU9NTVUgZHJpdmVyIGltcGxlbWVudGF0aW9ucy4gS2VlcCBpdCBmb3IgSU9QVEVzIHdoZXJlIGl0
-IGNsZWFycw0KPiA+PiBhbGwgZGlydHkgYml0cyBmb3IgYSBodWdlcGFnZSBldmVuIGlmIGl0IGlz
-IHN0YXJ0aW5nIGZyb20gYSBwYXJ0aWFsIHJhbmdlLg0KPiA+DQo+ID4gdGhlcmUgYXJlIHRocmVl
-ICdpdCcgaW4gdGhpcyBzZW50ZW5jZS4gTm90IHN1cmUgdGhlIGV4YWN0IG9iamVjdCBiZWluZw0K
-PiA+IHJlZmVycmVkIGVhY2guDQo+ID4NCj4gSSBoYXZlIHRoZSBiYWQgaGFiaXQgb2YgdXNpbmcg
-J3dlJyB3aGVuIEkgbWVhbiB0aGUgaW1wZXJhdGl2ZSBmb3JtLCBzbw0KPiB1c3VhbGx5IEkNCj4g
-c2VkIG1hbnVhbGx5IGVhY2ggd2UgdG8gJ2l0Jy4NCj4gDQo+ICdpdCcgaW4gdGhpcyBwYXJhZ3Jh
-cGggYnJvYWRseSByZWZlcnMgdG8gdGhlIGxvZ2ljIG9mIHRoZSBtb2NrIHJlYWRfYW5kX2NsZWFy
-KCkNCj4gaS5lLiByZXBocmFzaW5nIHdvdWxkIGJlLCBrZWVwIHRoZSBsb2dpYyBvZiBjbGVhcmlu
-ZyBhbGwgSU9QVEUgRGlydHkgYml0cyBmb3IgYQ0KPiB3aGlsZSBodWdlcGFnZSwgZXZlbiBpZiB0
-aGUgcmFuZ2UgYmVpbmcgZGlydGllZCBzdGFydHMgZnJvbSBwYXJ0IG9mIHRoZQ0KPiBodWdlcGFn
-ZS4NCg0KdGhpcyBpcyBtdWNoIGVhc2llciB0byB1bmRlcnN0YW5kLiDwn5iKDQoNCj4gDQo+IFdl
-bGwsIG5vdyB0aGF0IEkgc2FpZCBvdXQgbG91ZCBJIGd1ZXNzIHRoZSB0aGlyZCAnaXQnIHdhcyBh
-IGJpdCBtaXNsZWFkaW5nIHdoZXJlDQo+IEkgc2hvdWxkIGhhdmUgdXNlZCAndGhlIElPVkEgcmFu
-Z2UnLg0K
+On 6/26/24 9:53 AM, Tian, Kevin wrote:
+>> From: Baolu Lu <baolu.lu@linux.intel.com>
+>> Sent: Tuesday, June 25, 2024 4:40 PM
+>>
+>> On 2024/6/25 10:32, Tian, Kevin wrote:
+>>>> From: Lu Baolu<baolu.lu@linux.intel.com>
+>>>> Sent: Monday, June 24, 2024 1:25 PM
+>>>>
+>>>> If a device is listed in the SATC table with ATC_REQUIRED flag set, it
+>>>> indicates that the device has a functional requirement to enable its ATC
+>>>> (via the ATS capability) for device operation. However, when IOMMU is
+>>>> running in the legacy mode, ATS could be automatically supported by the
+>>>> hardware so that the OS has no need to support the ATS functionality.
+>>> hmm I don't think "has no need to support" matches...
+>>>
+>>>> This is a backward compatibility feature which enables older OSs. Since
+>>>> Linux VT-d implementation has already supported ATS features for a long
+>>>> time, there is no need to rely on this compatibility hardware. Remove it
+>>>> to make the driver future-proof.
+>>>>
+>>>> Signed-off-by: Lu Baolu<baolu.lu@linux.intel.com>
+>>>> ---
+>>>>    drivers/iommu/intel/iommu.c | 9 +--------
+>>>>    1 file changed, 1 insertion(+), 8 deletions(-)
+>>>>
+>>>> diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
+>>>> index 07e394dfccc1..b63347c8bf5d 100644
+>>>> --- a/drivers/iommu/intel/iommu.c
+>>>> +++ b/drivers/iommu/intel/iommu.c
+>>>> @@ -3056,14 +3056,7 @@ static bool dmar_ats_supported(struct pci_dev
+>>>> *dev, struct intel_iommu *iommu)
+>>>>    	dev = pci_physfn(dev);
+>>>>    	satcu = dmar_find_matched_satc_unit(dev);
+>>>>    	if (satcu)
+>>>> -		/*
+>>>> -		 * This device supports ATS as it is in SATC table.
+>>>> -		 * When IOMMU is in legacy mode, enabling ATS is done
+>>>> -		 * automatically by HW for the device that requires
+>>>> -		 * ATS, hence OS should not enable this device ATS
+>>>> -		 * to avoid duplicated TLB invalidation.
+>>>> -		 */
+>>> ...what above comment tries to convey.
+>>>
+>>> If this comment is valid, it's not about whether the OS itself supports
+>>> ATS. instead it's a requirement for the OS to not manage ATS when
+>>> it's already managed by HW.
+>>>
+>>> Unless there is a way to disable hw management with this change...
+>>
+>> This comment is not correct. The hardware automatic ATS is for older OS
+>> compatible purposes, where the ATS is not aware of by the OS yet, but
+>> ATS is functionally required for some SOC-integrated accelerators.
+>>
+>> The HAS specification for those platforms states that OSs supporting ATS
+>> (so-called enlightened OSs) don't require automatic ATS anymore.
+>>
+>>   From the iommu driver's point of view, automatic ATS is not part of the
+>> VT-d spec and also not enumerable, hence it should be transparent.
+>>
+> 
+> I'm curious how automatic ATS can be disabled otherwise the old
+> comment still makes sense as you will have both HW and SW
+> managing ATS and then duplicated invalidations.
+> 
+> Is there a BIOS option to disable automatic ATS? Then the user will
+> need to know which kernel version supports ATS to decide.
+> 
+> Or is it automatically enabled/disabled based on whether the
+> IOMMU is in legacy or scalable mode? If yes then we may still want
+> to disable SW-managed ATS when the IOMMU is in legacy mode to
+> avoid duplicated invalidations.
+> 
+> btw ATS support was introduced long long time ago:
+> 
+> commit 93a23a7271dfb811b3adb72779054c3a24433112
+> Author: Yu Zhao <yu.zhao@intel.com>
+> Date:   Mon May 18 13:51:37 2009 +0800
+> 
+>      VT-d: support the device IOTLB
+> 
+>      Enable the device IOTLB (i.e. ATS) for both the bare metal and KVM
+>      environments.
+> 
+>      Signed-off-by: Yu Zhao <yu.zhao@intel.com>
+>      Signed-off-by: David Woodhouse <David.Woodhouse@intel.com>
+> 
+> while this hw-managed ATS was supported much later:
+> 
+> commit 97f2f2c5317f55ae3440733a090a96a251da222b
+> Author: Yian Chen <yian.chen@intel.com>
+> Date:   Tue Mar 1 10:01:59 2022 +0800
+> 
+>      iommu/vt-d: Enable ATS for the devices in SATC table
+> 
+>      Starting from Intel VT-d v3.2, Intel platform BIOS can provide additional
+>      SATC table structure. SATC table includes a list of SoC integrated devices
+>      that support ATC (Address translation cache).
+> 
+>      Enabling ATC (via ATS capability) can be a functional requirement for SATC
+>      device operation or optional to enhance device performance/functionality.
+>      This is determined by the bit of ATC_REQUIRED in SATC table. When IOMMU is
+>      working in scalable mode, software chooses to always enable ATS for every
+>      device in SATC table because Intel SoC devices in SATC table are trusted to
+>      use ATS.
+> 
+>      On the other hand, if IOMMU is in legacy mode, ATS of SATC capable devices
+>      can work transparently to software and be automatically enabled by IOMMU
+>      hardware. As the result, there is no need for software to enable ATS on
+>      these devices.
+> 
+>      This also removes dmar_find_matched_atsr_unit() helper as it becomes dead
+>      code now.
+> 
+>      Signed-off-by: Yian Chen <yian.chen@intel.com>
+>      Link: https://lore.kernel.org/r/20220222185416.1722611-1-yian.chen@intel.com
+>      Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
+>      Link: https://lore.kernel.org/r/20220301020159.633356-13-baolu.lu@linux.inte
+>      Signed-off-by: Joerg Roedel <jroedel@suse.de>
+> 
+> That history doesn't appear to support your argument that it's only
+> for old OS which is not aware of ATS...
+
+Software has no means to disable automatic ATS. Therefore it's not
+expected to turn on the ATS in the device while the iommu is in legacy
+mode. I will drop this change.
+
+Best regards,
+baolu
