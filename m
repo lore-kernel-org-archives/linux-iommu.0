@@ -1,260 +1,165 @@
-Received: from mail187-10.suw11.mandrillapp.com (mail187-10.suw11.mandrillapp.com [198.2.187.10])
+Received: from NAM10-DM6-obe.outbound.protection.outlook.com (mail-dm6nam10on2081.outbound.protection.outlook.com [40.107.93.81])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AE69A181B86
-	for <iommu@lists.linux.dev>; Wed, 26 Jun 2024 13:40:14 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.2.187.10
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1719409216; cv=none; b=Uko3Tr/VAlB8/h9NX0Y851n5OvBz1XTVX+v76C3o8hDFgsnK3bQKo6avbEU9HFVBMV0mB+NWKFOnxG6VzC65A4LOSqMEfQRiDFq4I8mS0eruAyd+jglHjnDefuYnHJYzk0mA/jEKd3+izRSMqvqZYLfwDE51DZCaPo4t9179/Ns=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1719409216; c=relaxed/simple;
-	bh=F96SWGREhrIhNj/9I1tSdMv9UQzi7oXm3Qg9+vXzxtI=;
-	h=From:Subject:Message-Id:To:Cc:References:In-Reply-To:Date:
-	 MIME-Version:Content-Type; b=umy7l5Dl+zW+azcw+SA65wNCl8oE70Qh5qqFai3V64kEC4FN7ikxaTIKbMJWdHuzN4TziAlo2dw2LBqSKyLEmHNYTMX2vgVXOCl7rvgF6TYiWuoiodlfoXw0jDThl+xqBEpli6dHrA8dDr+S8/GufmRghXfYXWoeVZUscBY2QCc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=vates.tech; spf=pass smtp.mailfrom=bounce.vates.tech; dkim=pass (2048-bit key) header.d=mandrillapp.com header.i=@mandrillapp.com header.b=Mq8Hs7yc; dkim=pass (2048-bit key) header.d=vates.tech header.i=teddy.astie@vates.tech header.b=vudwB/au; arc=none smtp.client-ip=198.2.187.10
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=vates.tech
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=bounce.vates.tech
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 900DF181BBF
+	for <iommu@lists.linux.dev>; Wed, 26 Jun 2024 13:41:45 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.93.81
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1719409307; cv=fail; b=pAWQE+kZyPfFqjwv/GF/4a7v79sXyJQjIikF29Mm6FAB0CjXW0spim+JkcMqURNLMPnQOZHIJ2uDQXpAsKW2l+hPa0neMM29hHM2nkIPArZFAsASB50EQhINX/PG5NBFbRPTrdneTOmH6zv9wynVwCOBsjznPPFLEYf9QwkYIPs=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1719409307; c=relaxed/simple;
+	bh=8hjDy4m+AR/yyhB/bnUWlf9+EelU/QbA72sPwJRuadA=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:Content-Type:
+	 Content-Disposition:In-Reply-To:MIME-Version; b=DmP3yTdhg17FDl5IUU0icL7UsbnznT3U8y9D36pS7YFubEi4BGnHlDpDgSQK+bk3ufLfVALAaibAHC7lhR6zjXl5WtBOsBIEcfwXC1DzYJysoArlx4ygIe9lQ/sZsWLKxGW8g7g1amQXDl9ESQRrMELDkwa7k+30iIpj4VbgTaw=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=n11Q/S/l; arc=fail smtp.client-ip=40.107.93.81
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=mandrillapp.com header.i=@mandrillapp.com header.b="Mq8Hs7yc";
-	dkim=pass (2048-bit key) header.d=vates.tech header.i=teddy.astie@vates.tech header.b="vudwB/au"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=mandrillapp.com;
-	s=mte1; t=1719409213; x=1719669713;
-	bh=JHEddISG4C8qf11Zeb09KyLMyQLm7fuVNthb0dV6qkI=;
-	h=From:Subject:Message-Id:To:Cc:References:In-Reply-To:Feedback-ID:
-	 Date:MIME-Version:Content-Type:Content-Transfer-Encoding:CC:Date:
-	 Subject:From;
-	b=Mq8Hs7ycLARiul2BsSSwPeP5OR4um8PD9i76YcI63zkjnq0Bk6J0GfyGT6WlFsZsk
-	 L+bJPjxhZetWxdKbZlxnmMsmL7QZLV7Kbq+b+m9HijP+wE7PoxJhnJBlpv3KjBbftV
-	 V6eKKH3tOXTVa7+lKpd8xX5xZyyBbc3kP22yZo9LMld/fAd1Ayt2bgUJFQsk3LnRg0
-	 cyvH2uDD6pGwbl/B3yUzj7rPnLGqFzs4VOjftsK7GkxtDBTJAPMHxQJSlTZqUqcASP
-	 HiYdNCxVlCao2ozHofwVOUv9kFW6IYMmDsUF6gNT/TDWGo3VK1uAR7OOH1fprEBksV
-	 wH572luYfwmpA==
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=vates.tech; s=mte1;
-	t=1719409213; x=1719669713; i=teddy.astie@vates.tech;
-	bh=JHEddISG4C8qf11Zeb09KyLMyQLm7fuVNthb0dV6qkI=;
-	h=From:Subject:Message-Id:To:Cc:References:In-Reply-To:Feedback-ID:
-	 Date:MIME-Version:Content-Type:Content-Transfer-Encoding:CC:Date:
-	 Subject:From;
-	b=vudwB/au3fXMW7xvJ7yVPUQHyZ/fF6k6beOL8RcukZeWA8UwI2LivHrcsV7On7zrT
-	 oBfRNroUgUFN0VZZyo1MJPw42h1ymzK8pUQha8dAKMhbw5jx4JiR8fmff+zhNRz1yt
-	 4AmQ3MbTptWRyFx38r5Kl02uj/qEt9g5+wDapWNHaWBcHXqrethCA/m3E/ydkoOlZ3
-	 rWY4aaNebfK08QRtk0rwesUazAWhDMg0URLFO8dJnac4Gw3fhjIZxxNhSZ88rMZngY
-	 hERyNLVJysRHwFGN6MoRjm5pxMunN6wL2lyRDVdxLEnIE6NBhUmVT2ptt1Mm5ypGv0
-	 1gb1jLO8nyE2g==
-Received: from pmta09.mandrill.prod.suw01.rsglab.com (localhost [127.0.0.1])
-	by mail187-10.suw11.mandrillapp.com (Mailchimp) with ESMTP id 4W8N9n4Jq6z5QkLqk
-	for <iommu@lists.linux.dev>; Wed, 26 Jun 2024 13:40:13 +0000 (GMT)
-From: Teddy Astie <teddy.astie@vates.tech>
-Subject: =?utf-8?Q?Re:=20[RFC=20PATCH=20v2]=20iommu/xen:=20Add=20Xen=20PV-IOMMU=20driver?=
-Received: from [37.26.189.201] by mandrillapp.com id 0c20c01a212c477c9a2d33d8ec909926; Wed, 26 Jun 2024 13:40:13 +0000
-X-Bm-Disclaimer: Yes
-X-Bm-Milter-Handled: 4ffbd6c1-ee69-4e1b-aabd-f977039bd3e2
-X-Bm-Transport-Timestamp: 1719409210959
-Message-Id: <cc5c2e1d-f5bd-47b3-830f-4bb5298ac106@vates.tech>
-To: Robin Murphy <robin.murphy@arm.com>, xen-devel@lists.xenproject.org, iommu@lists.linux.dev
-Cc: Juergen Gross <jgross@suse.com>, Stefano Stabellini <sstabellini@kernel.org>, Oleksandr Tyshchenko <oleksandr_tyshchenko@epam.com>, Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>, =?utf-8?Q?Marek=20Marczykowski-G=C3=B3recki?= <marmarek@invisiblethingslab.com>
-References: <24d7ec005e77e4e0127995ba6f4ad16f33737fa5.1718981216.git.teddy.astie@vates.tech> <da3ec316-b001-4711-b323-70af3e6bb014@arm.com> <a04e169d-b38a-43dc-b783-a8af1e1b0468@vates.tech> <c4dc539b-a71b-4323-aa31-b97b39c633a8@arm.com>
-In-Reply-To: <c4dc539b-a71b-4323-aa31-b97b39c633a8@arm.com>
-X-Native-Encoded: 1
-X-Report-Abuse: =?UTF-8?Q?Please=20forward=20a=20copy=20of=20this=20message,=20including=20all=20headers,=20to=20abuse@mandrill.com.=20You=20can=20also=20report=20abuse=20here:=20https://mandrillapp.com/contact/abuse=3Fid=3D30504962.0c20c01a212c477c9a2d33d8ec909926?=
-X-Mandrill-User: md_30504962
-Feedback-ID: 30504962:30504962.20240626:md
-Date: Wed, 26 Jun 2024 13:40:13 +0000
+	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="n11Q/S/l"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=fzeXpDTIQy2wPzQOK/8XGfIwSz+eT7kNblWS+/16gUD8eey/BvNMAbzUjHwGDraLdNH181pqSXReqsj044EX9cuWmHViUpy/K/OZClWxlp9jo4kGjDe1Rsoqtr3VidS4ZI0uLJ4ZovnHVVUzkUE8bR1HODTU1EdNGH/6XAPPzLuDyvI3WZybnCESfbmCYqXz/4GZzAFfjMefvYfQ9NaKHlVXOKkslBPnn78YntngS4u0YFogeFzA2EXMqsQkCpQmY53ru4dKBbWxQDw3qD+ICefsMMsjDNShukw77pUKKAw1Pva69F940gl0IBi9Rk4jIEQrWaYWxZ6QYML2zg1OHQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=AMsxApVYjEF8oF7HW++dd7IrN/fQmcpOdX0Cgd1LaZI=;
+ b=BmEtK9HTw5mO6jdUJteNO9++kLYkeiIeVO3GkeqmCcNLB15uAFJjeA7eOM6ycAl94MnHCwPKduwv7oURhaWGBeXbjA3tDq+41OD537hWPmyV7wumJ4iLfMMbfr2RGPEDqUrdqn00FOfhgvAYHFzvA6y0cxwoPS1a0l9P01s6j+IUqGrUnOo+pX5olfu8Yp5RqqVJTugNUlcVeH4nO43G8c8KpThlvNkx3Gc+qpXdQA2tnS725dN5Kjqyks/wlfsg0mkTgd/aLY59uWjuSom2ucgt1Ezee8Fju078L0lTNtsrv60VRmaTfOlmKR3JD2FoBqqyk3aMaRRPtLzWB+hrxA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=AMsxApVYjEF8oF7HW++dd7IrN/fQmcpOdX0Cgd1LaZI=;
+ b=n11Q/S/lgj5xF4XxXuoc8pwTG4sIVMhWy7vZU7jT7BKA8FwnV2ebEQhEQqiMKy6o9xrVI2B/9cRL8W0+pE56AiMeXtcywX5ZVYvc/Zdt/l2zQFTU7Ea3cROCLuuZ99byM8enkkih6uEQCg6fZmWZxedA2TfI/hsBeclyXlnh+l540c1+Tz2oLsV/Hzuoqc7qk2pMhA/lPcsuAG+9WGTW2aDEpD26QplZS7XW/+kEjYK10o7uBsKACUZdlAhj0ll/txPoSfZn+XVnb0upVbkiKMdg6gKGfvX9Rj/Sw16BGK2uQZbOCY2DAxQGPqLb3AImPxT39ltZ2geAVcFKoEvRJQ==
+Received: from LV3PR12MB9095.namprd12.prod.outlook.com (2603:10b6:408:1a6::22)
+ by LV2PR12MB6015.namprd12.prod.outlook.com (2603:10b6:408:14f::20) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7698.32; Wed, 26 Jun
+ 2024 13:41:40 +0000
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nvidia.com;
+Received: from DM6PR12MB3849.namprd12.prod.outlook.com (2603:10b6:5:1c7::26)
+ by LV3PR12MB9095.namprd12.prod.outlook.com (2603:10b6:408:1a6::22) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7698.32; Wed, 26 Jun
+ 2024 13:41:39 +0000
+Received: from DM6PR12MB3849.namprd12.prod.outlook.com
+ ([fe80::c296:774b:a5fc:965e]) by DM6PR12MB3849.namprd12.prod.outlook.com
+ ([fe80::c296:774b:a5fc:965e%6]) with mapi id 15.20.7698.025; Wed, 26 Jun 2024
+ 13:41:38 +0000
+Date: Wed, 26 Jun 2024 10:41:37 -0300
+From: Jason Gunthorpe <jgg@nvidia.com>
+To: Joao Martins <joao.m.martins@oracle.com>
+Cc: iommu@lists.linux.dev, Kevin Tian <kevin.tian@intel.com>,
+	Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
+	Lu Baolu <baolu.lu@linux.intel.com>,
+	Avihai Horon <avihaih@nvidia.com>,
+	Alex Williamson <alex.williamson@redhat.com>,
+	Shameerali Kolothum Thodi <shameerali.kolothum.thodi@huawei.com>
+Subject: Re: [PATCH v1 00/10] iommufd/{iova_bitmap,selftest}: Fix dirty
+ hugepages tracking and selftests
+Message-ID: <20240626134137.GF2494510@nvidia.com>
+References: <20240621184254.45477-1-joao.m.martins@oracle.com>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20240621184254.45477-1-joao.m.martins@oracle.com>
+X-ClientProxiedBy: BL1PR13CA0231.namprd13.prod.outlook.com
+ (2603:10b6:208:2bf::26) To DM6PR12MB3849.namprd12.prod.outlook.com
+ (2603:10b6:5:1c7::26)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic:
+	DM6PR12MB3849:EE_|LV3PR12MB9095:EE_|LV2PR12MB6015:EE_
+X-MS-Office365-Filtering-Correlation-Id: 98040660-6220-4380-1c47-08dc95e5b447
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;ARA:13230038|366014|1800799022|376012;
+X-Microsoft-Antispam-Message-Info:
+	=?us-ascii?Q?f9h51iQ5CtuI6rJxAc0XIoM1seElXMFRZQcLlUm2qYKpO6jDlVu9w59V3u7L?=
+ =?us-ascii?Q?1kRfurgUKUjap1aoOmId7FAgn0lbzx8KhPnC01omutxH4/NXI2IPQQjVySFE?=
+ =?us-ascii?Q?JF4k7KuOAfZrzv2VNttM3trmdKB01zRug5ks7OYirqSRQhnxX8RpCLllgjsH?=
+ =?us-ascii?Q?AI+7yZXMgq6sSmMaKuDLbAcGQXUdaEd8lBpPMK2fEUVHWYnpMGZJvHjuSGw/?=
+ =?us-ascii?Q?QWCo4TRRbE0IDnHWAQ/EI2NMY5mqWvmC6F5cilywWWYqiScgqICoVQ19QoAa?=
+ =?us-ascii?Q?jS64pDtbSh20ZGb/yzK1dxb0Z/bf4xw57e8eB1iipNyZk1x6I7f8f5tAOMbS?=
+ =?us-ascii?Q?UDkdgViAWF7pRx6+c4Qtun80ZInrWqfC7hgEqDEYlUHjHaWZOi8mvG3F8p3C?=
+ =?us-ascii?Q?JWZPttnTiUEIVN76iHrkomYpFqejbVbfXGHZ6OedRRtEW8zWDVJ2G0kErokq?=
+ =?us-ascii?Q?Duytru0JaYISDn2Qs5C7qT4JpWvMA+cE8DsMUm6hkzwF6UaZTAGoB0SHuMK4?=
+ =?us-ascii?Q?QCkjenYEa+RDH1Z1E/yJWdMwoHIH0y3YDh/2A4kM8Q64hKj03MkKH998qBEE?=
+ =?us-ascii?Q?GA1KUHW0uvoVy3L9NV2/3U+GIiy3cPHLdw9Azoz/HYfmkLPMY1k7+TeKQzDU?=
+ =?us-ascii?Q?V4lrrCXRsVzRsLgazTpelZl/SQR3IrLxFxDIP0dFUdCIkMi52M33S7Yu0hqI?=
+ =?us-ascii?Q?8BUhIKGuKEwTjNo95sDi7wgFlKyEwHpBhnipE3Ik+y8TF5IpPkcJrMxbvRFX?=
+ =?us-ascii?Q?woy59Rt7QTHGMj76tMgz4mdPFxgsn870yAd+YUUGQWEmbraIYjNv8kTCj4C2?=
+ =?us-ascii?Q?I3C5U6usrVUmXmEh65tenuCzKvukHg08XmELgPmTfmbK1Vay1h+BjRqiGPCo?=
+ =?us-ascii?Q?DiACBUKHCWDzhKM0yQRKcVVXPWr5htQQ1eaQZ673rkV0Mo0xRMce4yvwrQxQ?=
+ =?us-ascii?Q?VoYyQ2+7JafyoGGceZ7Xu+PsZiNxPEuqm5iEzHFckG7XruWDr/dZwiXozF5h?=
+ =?us-ascii?Q?e/HmkgZT26QMuEs+mqs8FjM6d2qx5W2ggW3W2qLlsbh0M7CIDr8HcnPV6X8w?=
+ =?us-ascii?Q?J4wHFvhocHOXmurKARly1ZN96K631/nHmeY2//vjwiLPK4hBDN9Q7eDog9RT?=
+ =?us-ascii?Q?873lLqPQq+9HDMN2GJvn3YOZgDGBNJOGXs2irFYhK2FjVo16B6bPoe+tmZEZ?=
+ =?us-ascii?Q?YtrSDTedXzNEnhUld6OQdH0cr1bj/3/F0T/uRkTQQ/VZHKCUAharsxtZ6uRy?=
+ =?us-ascii?Q?I8SREvAFgjFoEAu+BcbXxgyInFvdzWkbLzolrsKBUxac1ETBqsb9K/YcZscv?=
+ =?us-ascii?Q?kTc=3D?=
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV3PR12MB9095.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230038)(366014)(1800799022)(376012);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?us-ascii?Q?q55CLnHMpn3IgyZ2ERNGkeatU2Cv58LEuYH7qakdntHGz5yN4nPZxP+zQWxW?=
+ =?us-ascii?Q?IRe365d3PrYfVoRIpdt5crVRwmfWVlOFuC4xTyprjtGVyikb4ve3XkE8vNHa?=
+ =?us-ascii?Q?uW+EjtYZR3Mq8R1N/JrwYG3qYaxh9X9y27ExaSoW0t7vTE++ZlpdflLEGAop?=
+ =?us-ascii?Q?z1mLcMP8vAOVuoC3gPg+1x57eovIjO3WGlWbv7gikMnT0M5xgInO6E7zxk7J?=
+ =?us-ascii?Q?oat7LqS0816GgKB1kk1gDPilk0aHNjH5wL8oheFVAkBKC10L0H5lUrToE6iG?=
+ =?us-ascii?Q?kOW7329QG63sa7ovEUnQR6oOC8gZY3wse7YaQbLy8Bj2IMJjQ5jAryYp4g3G?=
+ =?us-ascii?Q?j5sPk7y58o+OhtMyjsnfEdTGPiA2ShSNarbUfjobHXDXZ20aQ7mb1onHs+Ll?=
+ =?us-ascii?Q?5fl35q42UrawN/df8xLi6WjchxUZTVpO+ltAU51QfKPwcZtUzgk3CBk5Smml?=
+ =?us-ascii?Q?DuNoh6i/gVDwRzEdoMbuOEEhlNZYRcJNyw6Z3SvnxIOoRvL6eYdlY09v5/ur?=
+ =?us-ascii?Q?OQzGOMI9vMF0n6jG6Xw9r734s9JDaC+aPi8W7+A1VmgoYwO/K/vuG+wZfb1H?=
+ =?us-ascii?Q?H7oqmCAhPolFjDL6XoHx7+naFmVqe6xjHiHkp4AMhDvnCn5W1kOmyUazQdl3?=
+ =?us-ascii?Q?45e8sYNFkcOxXpjuEoUSH+NtQ3Y7Vyylwh9oXk7uw2TdZkEzWq2TrwoVlj6g?=
+ =?us-ascii?Q?m23NWbv46INiPUSRSV1DMtK4mnHWVnHxAfW/7dolHpviRt9WEAFfNjozli/F?=
+ =?us-ascii?Q?ilhoVF++1BUcv2mCZSYZ+IV+Wqwzbuwp5jLpNQNuPx3TdvGxpfVLF4d/iZ12?=
+ =?us-ascii?Q?GD4taLpQkFiO3+9lcUURrYDrTsM/jGfbkRWrYlbgGUt0bqwQFdiMxxUAc+JN?=
+ =?us-ascii?Q?SBkJnpz3bCmss26ZcRZmJvIsBNRt6hp6GnbHHmRXIA3YcASlWQymCCguWQDO?=
+ =?us-ascii?Q?xGO3QZPcPfNadllyYjrB/EyWVgJk3oB6hxVHUn9CClLc95ZOfCCL60ojDMsw?=
+ =?us-ascii?Q?LHXb9Z7wKo9A1jQPZgvrkrZsXDmhpIuX4HNj+719EzKWdejv0xGKrJskaeiH?=
+ =?us-ascii?Q?oU4I6x3MurqYCnhZF/KLD5h4qRI9eHinK/ZwssxLcnRDfYwwqGJATmoW8xCb?=
+ =?us-ascii?Q?ywDaYp2yvGp5CHMYriizLooLM+ynzvwiZgKRT8gOEV/NGEZwZ/d1xL+9Mtcf?=
+ =?us-ascii?Q?3hbbfDU9ZG0BjzPJxLt3g9IGpGXd3i7n42iHUnqPQOW44JJIyzewTwYhfkL5?=
+ =?us-ascii?Q?M+5p8pKX4pEs9jvJMm/DxkBaeDiA/auIWqht94x1k86mWO0hLZDraH8gZnrv?=
+ =?us-ascii?Q?52EdM+dG2RtacR5OV+r+2P6HjYKDLvu4A5iGJ5I7p6At2rjsSkCjmThZ7g+D?=
+ =?us-ascii?Q?A8AcGTXiKaarsv/wmcfJeT8XkH6j6WnE3on6C+r6OKHzl5QCUxsArk3Nc1PJ?=
+ =?us-ascii?Q?w+fPAdRgWOFMM0iovCiSVgkKQb7NST+qxyfyQSsOVdSJl2T9WuxLnx2daZuu?=
+ =?us-ascii?Q?h4IoNQdv2XOHdkSPrLNPk1xqtmlENlABqgI/8/Eg2jrLYrzIED6lXYqkK9Iv?=
+ =?us-ascii?Q?dGRXa9EMNiSlwpmlzE6OdJ47dv9fgkemrGRJqbPr?=
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 98040660-6220-4380-1c47-08dc95e5b447
+X-MS-Exchange-CrossTenant-AuthSource: DM6PR12MB3849.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 26 Jun 2024 13:41:38.6434
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: jsKqURYFaeQnZ9Lt0pgnyUwQWSsWCuGgg0x1sVMAGGcmSqMiyfKPjg6WAINLd/NU
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: LV2PR12MB6015
 
-Hello Robin,
+On Fri, Jun 21, 2024 at 07:42:44PM +0100, Joao Martins wrote:
+> Joao Martins (10):
+>   iommufd/selftest: Fix dirty bitmap tests with u8 bitmaps
+>   iommufd/selftest: Fix iommufd_test_dirty() to handle <u8 bitmaps
+>   iommufd/selftest: Add tests for <= u8 bitmap sizes
+>   iommufd/selftest: Do not record head iova to better match iommu drivers
+>   iommufd/iova_bitmap: Check iova_bitmap_done() after set ahead
+>   iommufd/iova_bitmap: Cache mapped length in iova_bitmap_map struct
+>   iommufd/iova_bitmap: Move initial pinning to iova_bitmap_for_each()
+>   iommufd/iova_bitmap: Consolidate iova_bitmap_set exit conditionals
+>   iommufd/iova_bitmap: Dynamic pinning on iova_bitmap_set()
+>   iommufd/iova_bitmap: Remove iterator logic
 
-Le 26/06/2024 =C3=A0 14:09, Robin Murphy a =C3=A9crit=C2=A0:
-> On 2024-06-24 3:36 pm, Teddy Astie wrote:
->> Hello Robin,
->> Thanks for the thourough review.
->>
->>>> diff --git a/drivers/iommu/Kconfig b/drivers/iommu/Kconfig
->>>> index 0af39bbbe3a3..242cefac77c9 100644
->>>> --- a/drivers/iommu/Kconfig
->>>> +++ b/drivers/iommu/Kconfig
->>>> @@ -480,6 +480,15 @@ config VIRTIO_IOMMU
->>>> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 Say Y here if you int=
-end to run this kernel as a guest.
->>>> +config XEN_IOMMU
->>>> +=C2=A0=C2=A0=C2=A0 bool "Xen IOMMU driver"
->>>> +=C2=A0=C2=A0=C2=A0 depends on XEN_DOM0
->>>
->>> Clearly this depends on X86 as well.
->>>
->> Well, I don't intend this driver to be X86-only, even though the current
->> Xen RFC doesn't support ARM (yet). Unless there is a counter-indication
->> for it ?
-> 
-> It's purely practical - even if you drop the asm/iommu.h stuff it would 
-> still break ARM DOM0 builds due to HYPERVISOR_iommu_op() only being 
-> defined for x86. And it's better to add a dependency here to make it 
-> clear what's *currently* supported, than to add dummy code to allow it 
-> to build for ARM if that's not actually tested or usable yet.
-> 
+It seems OK, you'll send a v2 with the little updates?
 
-Ok, it does exist from the hypervisor side (even though a such Xen build 
-is not possible yet), I suppose I just need to add relevant hypercall 
-interfaces for arm/arm64 in hypercall{.S,.h}.
-
->>>> +bool xen_iommu_capable(struct device *dev, enum iommu_cap cap)
->>>> +{
->>>> +=C2=A0=C2=A0=C2=A0 switch (cap) {
->>>> +=C2=A0=C2=A0=C2=A0 case IOMMU_CAP_CACHE_COHERENCY:
->>>> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 return true;
->>>
->>> Will the PV-IOMMU only ever be exposed on hardware where that really is
->>> always true?
->>>
->>
->> On the hypervisor side, the PV-IOMMU interface always implicitely flush
->> the IOMMU hardware on map/unmap operation, so at the end of the
->> hypercall, the cache should be always coherent IMO.
-> 
-> As Jason already brought up, this is not about TLBs or anything cached 
-> by the IOMMU itself, it's about the memory type(s) it can create 
-> mappings with. Returning true here says Xen guarantees it can use a 
-> cacheable memory type which will let DMA snoop the CPU caches. 
-> Furthermore, not explicitly handling IOMMU_CACHE in the map_pages op 
-> then also implies that it will *always* do that, so you couldn't 
-> actually get an uncached mapping even if you wanted one.
-> 
-
-Yes, this is a point we are currently discussing on the Xen side.
-
->>>> +=C2=A0=C2=A0=C2=A0 while (xen_pg_count) {
->>>> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 size_t to_unmap =3D min(xe=
-n_pg_count, max_nr_pages);
->>>> +
->>>> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 //pr_info("Unmapping %lx-%=
-lx\n", dfn, dfn + to_unmap - 1);
->>>> +
->>>> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 op.unmap_pages.dfn =3D dfn=
-;
->>>> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 op.unmap_pages.nr_pages =
-=3D to_unmap;
->>>> +
->>>> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 ret =3D HYPERVISOR_iommu_o=
-p(&op);
->>>> +
->>>> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 if (ret)
->>>> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 pr=
-_warn("Unmap failure (%lx-%lx)\n", dfn, dfn + to_unmap
->>>> - 1);
->>>
->>> But then how
->>>> would it ever happen anyway? Unmap is a domain op, so a domain which
->>>> doesn't allow unmapping shouldn't offer it in the first place...
->>
->> Unmap failing should be exceptionnal, but is possible e.g with
->> transparent superpages (like Xen IOMMU drivers do). Xen drivers folds
->> appropriate contiguous mappings into superpages entries to optimize
->> memory usage and iotlb. However, if you unmap in the middle of a region
->> covered by a superpage entry, this is no longer a valid superpage entry,
->> and you need to allocate and fill the lower levels, which is faillible
->> if lacking memory.
-> 
-> OK, so in the worst case you could potentially have a partial unmap 
-> failure if the range crosses a superpage boundary and the end part 
-> happens to have been folded, and Xen doesn't detect and prepare that 
-> allocation until it's already unmapped up to the boundary. If that is 
-> so, does the hypercall interface give any information about partial 
-> failure, or can any error only be taken to mean that some or all of the 
-> given range may or may not have be unmapped now?
-
-The hypercall interface has op.unmap_page.unmapped to indicate the real 
-amount of pages actually unmapped even in case of error. If it is less 
-than requested initially, it will retry with the remaining part, 
-certainly fail afterward. Although, I have the impression that it is 
-going to fail silently.
-
->>> In this case I'd argue that you really *do* want to return short, in th=
-e
->>> hope of propagating the error back up and letting the caller know the
->>> address space is now messed up before things start blowing up even more
->>> if they keep going and subsequently try to map new pages into
->>> not-actually-unmapped VAs.
->>
->> While mapping on top of another mapping is ok for us (it's just going to
->> override the previous mapping), I definetely agree that having the
->> address space messed up is not good.
-> 
-> Oh, indeed, quietly replacing existing PTEs might help paper over errors 
-> in this particular instance, but it does then allow *other* cases to go 
-> wrong in fun and infuriating ways :)
-> 
-
-Yes, but I was wrong at my stance. Our hypercall interface doesn't allow 
-mapping on top of another one (it's going to fail with -EADDRINUSE). So 
-unmap failing is still going to cause bad issues.
-
-Should iommu_unmap and related code consider the cases where unmapped !=3D 
-size and report it appropriately ? So such cases, if ever happening will 
-be reported louder and not failing silently.
-
->>>> +static struct iommu_domain default_domain =3D {
->>>> +=C2=A0=C2=A0=C2=A0 .ops =3D &(const struct iommu_domain_ops){
->>>> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 .attach_dev =3D default_do=
-main_attach_dev
->>>> +=C2=A0=C2=A0=C2=A0 }
->>>> +};
->>>
->>> Looks like you could make it a static xen_iommu_domain and just use the
->>> normal attach callback? Either way please name it something less
->>> confusing like xen_iommu_identity_domain - "default" is far too
->>> overloaded round here already...
->>>
->>
->> Yes, although, if in the future, we can have either this domain as
->> identity or blocking/paging depending on some upper level configuration.
->> Should we have both identity and blocking domains, and only setting the
->> relevant one in iommu_ops, or keep this naming.
-> 
-> That's something that can be considered if and when it does happen. For 
-> now, if it's going to be pre-mapped as an identity domain, then let's 
-> just treat it as such and keep things straightforward.
-> 
-
-Let's name it xen_iommu_identity_domain.
-
->>>> +void __exit xen_iommu_fini(void)
->>>> +{
->>>> +=C2=A0=C2=A0=C2=A0 pr_info("Unregistering Xen IOMMU driver\n");
->>>> +
->>>> +=C2=A0=C2=A0=C2=A0 iommu_device_unregister(&xen_iommu_device);
->>>> +=C2=A0=C2=A0=C2=A0 iommu_device_sysfs_remove(&xen_iommu_device);
->>>> +}
->>>
->>> This is dead code since the Kconfig is only "bool". Either allow it to
->>> be an actual module (and make sure that works), or drop the pretence
->>> altogether.
->>>
->>
->> Ok, I though this function was actually a requirement even if it is not
->> a module.
-> 
-> No, quite the opposite - even code which is modular doesn't have to 
-> support removal if it doesn't want to.
-> 
-
-Ok
-
-> Thanks,
-> Robin.
-
-Teddy
-
-
-Teddy Astie | Vates XCP-ng Intern
-
-XCP-ng & Xen Orchestra - Vates solutions
-
-web: https://vates.tech
-
+Thanks,
+Jason
