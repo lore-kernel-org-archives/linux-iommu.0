@@ -1,102 +1,100 @@
-Received: from NAM10-MW2-obe.outbound.protection.outlook.com (mail-mw2nam10olkn2073.outbound.protection.outlook.com [40.92.42.73])
+Received: from NAM10-BN7-obe.outbound.protection.outlook.com (mail-bn7nam10olkn2032.outbound.protection.outlook.com [40.92.40.32])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 99A33197A91
-	for <iommu@lists.linux.dev>; Thu, 27 Jun 2024 14:59:06 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.92.42.73
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A8C46198A08
+	for <iommu@lists.linux.dev>; Thu, 27 Jun 2024 15:04:39 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.92.40.32
 ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1719500348; cv=fail; b=jYs9JYU6+AKdqndDGvu+sejKiYUVLCcw3JsuL4DGlgKh5mLraXX+i45HWbpfcPr6Wx1/F4M9biRAx6LVuLYXa2t1n5kjJXn1RijH//b0OYqq/MoxI55gtb/6ILrmxw7+vaB/1DynTVLKVMKZI7FBZiLfs8tLRTYzTh9rU23K4OE=
+	t=1719500681; cv=fail; b=t3c7X9ebGHTJKxR4mzICKxBfnos+c4KQWhJzWbJTC97YjxPZ1lr70Dubg4zwuwQqQHZm+HsMD1BMnhJ7RtHQ4ASwDLcLwzEltp0mYISTI22sCAKvaPX9jStLHruFNVuvcHffwS3b5M565c4noGRIdSqp+PpHgVqYihNAfYMZ4xA=
 ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1719500348; c=relaxed/simple;
-	bh=gbRvgSfQE8eEdWQvOPgOrLVx8N4iZK3OJXhc0syicsE=;
+	s=arc-20240116; t=1719500681; c=relaxed/simple;
+	bh=nfGoEgJ3FOYm/QXzy9PWVVk31fZFJYfsp5yvnCh5hjU=;
 	h=From:To:CC:Subject:Date:Message-ID:References:In-Reply-To:
-	 Content-Type:MIME-Version; b=eyHSsrS3ekKGpC976MjgRmevYfoXq4wl6jtXC7NQZ2k66Cti/1pDOjQa/Ke4/ze1PtoSvCAQOnZWdii0fuR3bT//w/lknXz8oil1MsGzL0pt3G6IifKQ4u9ACm6IW2AIhT19/Giv/u9QQeEJuiPzsmn6gRO5xsosigzZ0Ox/QWM=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=outlook.com; spf=pass smtp.mailfrom=outlook.com; dkim=pass (2048-bit key) header.d=outlook.com header.i=@outlook.com header.b=iTF2HFL4; arc=fail smtp.client-ip=40.92.42.73
+	 Content-Type:MIME-Version; b=ozm2Mm462lenXYeyNUVbBPEX0lThFMefVYkubJL/oY5Q18VN7M0EgkQZ+vIymMij+hGhg4iTjFAa3kvHLWnznIBy5kDmQ8xtkYULtvAhXmV98Hwa8RVXmAA/voodoEsvePdOE7Qk9d+dFEApbLyxlzQ0ERlw+cHcUOMw8rMdeQE=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=outlook.com; spf=pass smtp.mailfrom=outlook.com; dkim=pass (2048-bit key) header.d=outlook.com header.i=@outlook.com header.b=f9iOte9B; arc=fail smtp.client-ip=40.92.40.32
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=outlook.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=outlook.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=outlook.com header.i=@outlook.com header.b="iTF2HFL4"
+	dkim=pass (2048-bit key) header.d=outlook.com header.i=@outlook.com header.b="f9iOte9B"
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=kWFRMAIgFA2Z6O/VljRh+SIg7NwvOtQpSPyP18M1JpShlXKqA7R1fdoiIYlIxjy77TQe/bxYd0kWArsCqlZeXzZRRHs1kpE4IbXfNah+Z6bwM+oSGDuCdviMe9LfhmciKeE1JUzsIK1sA0OKd1o5zOzplxKIlLuMXBvW2cDqApI3IPkYhz2LLg15yCHj3ObqQxttYdkRlXXjON9Sro7j1WBP18vmW7yYodB+YFdDbY9bNDNTiF81IAWsWwndcQtWiY6V7iDeM5HTRl0IHsaKtsVldufOYoW6kyy9aGNt+ZyJNFtNwS9ITlbT/wQS6QMpZ7z8JSjdWTmDtr61pH+GZQ==
+ b=junSST0Oet99976p1kU7/GaJlYJroYc6b7SLrTRZt6eolD60vjysh08sFSuJwWJ69EDreIqbdQDbpLYDSgzl7KBLfEBODNxTpXYwFEH/2PTVZV+l1GP3eg5Zb3Fb1nC3z8RdolCN7cMV3NJ/BVyRUz3F2Ff1zwngcNGqRBAjGL0s1GGLtxJVnLewIL2EmCqTui//l5kEl+vhkFNz5m6XCBTr3fnhZsyJgFWGEA/eDGTPjCNJa6LIOt664I30oHLr/mpyH1gxnnBBAyneC0atWng5VIcrLxoheKlzRVshjh/wVy7jM4757zKndit520aMyoeeQA14G2a7e3rvzNMrrg==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=NP/TXAPT9GP0tZ60Pj5MVZ+f2bWwsuKKiNQf1CRtEhY=;
- b=O49P3pTgQ+Ai9vj8spy0AAeTycXE4XNijAc0V2lnFyvKArWfnse0ywvCVIed8guZ8PBnrAPYh4gmDhD7AQ1sAz/HcwrfWD49zj6BiZwguHh1jkhVno9bOMKSKgBe6QtAhUpvIAImhkaZSxT0qX7qA69Hv2V4vIyQU5KzAGJZMJp3Jey9mDC5gHA01V6Q5gqQ1rDgdvCvZRZXDLi7O+IO4zEbcFdpGJATiL/mbxyHykvJ+p5pU5hGdL1WuwFTsI3d8uZGDE8xvaFOj7/0c5uBeIN8BZeuyRXO0MDjOgDBIcYDyll+I1pzssjkVbeiqn4gB5oegPuPAPW0g705QPN8oQ==
+ bh=raNG0jVWFpSJwFielu6FwfYrMP8/HWhkBSOCMgEBgYM=;
+ b=OXeHoEv6nwKM334GfD571hdH3afo5GikHpgA7fN/cC3x7lUyc7eUqkFA3pOvdfqQPDA2v/ZttIht87/7yLndcvaAFIjJc7HexkEa/+lJX0/p41zVvMxruIWK2B37pkIil7v+9MgM2QTJ/TlVeRGcMeun9qp4DPGvRvbVnonVM94+63bn0CGenq61mtDpQbsZFBQm3K64rqPTQVI+K1pjQx2FQK6clIrzSTBkxJ7yQ0BxX5P7WggXkP5/2l9OpcbTqcKr9RekIzS2owv+3QMhkMsfB2nQ/P+OL7JQhf1btqLXycAMvNi7sNdkktGipb4aSyCBFW9VMmZBqkkK095aBA==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=none; dmarc=none;
  dkim=none; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=outlook.com;
  s=selector1;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=NP/TXAPT9GP0tZ60Pj5MVZ+f2bWwsuKKiNQf1CRtEhY=;
- b=iTF2HFL48PS0A8ss+AnIjxysACbDIMtxftRCX2bAgyrGs8l3AC76x74mJrBHUvBzQQXWINV3t0Y2zopl7H6K28b01W87hY6Cml0YYDYhxzCOeVgaq/yeMb2BGu4Rcn1RWiMEoPNehS+XHYvdauKZ0lbWMO/kWoeHY2WaB7RO9hPMgo2iAhlWboKWQ4pJqXaPe5CdlCKj0U+epZDaz49W5F1vPdNlkaGdETM0AXynaEviGZboVc8IuTaK498fI8QscCyMKkYqOoHndqtgCgeVXjdntMZVhIjC+nzCk52XrC9S8uF0xkC2ZQEToZWowslvvZMWFTBQBmuXejbHP5+TVg==
+ bh=raNG0jVWFpSJwFielu6FwfYrMP8/HWhkBSOCMgEBgYM=;
+ b=f9iOte9BsmltkGsn8IdYrqhZX8zwOu4/Y9RLlzjmr6/QavC0p999C6kIvFpy4yL/Unadzh1MYU/56+arIdnHk81gy+GOzsJvuYCZ7Nh0Y0fUhREhc0k3TJX9mhE7gB8Kflwh+J//a1EJsJqVxv0FYt4wlc+3GTCa3AyrsSt2sHpWnVdVxTaE/LikkDmm234qbPMryNwWinmi1kGjCfnZ4GYsBNu9DtGUXuD6aczoOe5XEsb0GFPIbkH+qur75n3iy2Ngb0MgHNtW2gfZ5YPB428ANcqG3QoqIoMitHXuGCy3KTHJqEDl6GKaKTKvKqkH8SmQpIxq4m7rGwj5aC2q6A==
 Received: from SN6PR02MB4157.namprd02.prod.outlook.com (2603:10b6:805:33::23)
- by SA6PR02MB10791.namprd02.prod.outlook.com (2603:10b6:806:440::16) with
+ by IA0PR02MB9702.namprd02.prod.outlook.com (2603:10b6:208:487::7) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7698.32; Thu, 27 Jun
- 2024 14:59:03 +0000
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7698.34; Thu, 27 Jun
+ 2024 15:04:35 +0000
 Received: from SN6PR02MB4157.namprd02.prod.outlook.com
  ([fe80::cedd:1e64:8f61:b9df]) by SN6PR02MB4157.namprd02.prod.outlook.com
  ([fe80::cedd:1e64:8f61:b9df%2]) with mapi id 15.20.7698.033; Thu, 27 Jun 2024
- 14:59:03 +0000
+ 15:04:35 +0000
 From: Michael Kelley <mhklinux@outlook.com>
-To: =?iso-8859-2?Q?Petr_Tesa=F8=EDk?= <petr@tesarici.cz>, "hch@lst.de"
-	<hch@lst.de>
+To: =?iso-8859-2?Q?Petr_Tesa=F8=EDk?= <petr@tesarici.cz>,
+	"mhkelley58@gmail.com" <mhkelley58@gmail.com>
 CC: "robin.murphy@arm.com" <robin.murphy@arm.com>, "joro@8bytes.org"
 	<joro@8bytes.org>, "will@kernel.org" <will@kernel.org>, "jgross@suse.com"
 	<jgross@suse.com>, "sstabellini@kernel.org" <sstabellini@kernel.org>,
-	"oleksandr_tyshchenko@epam.com" <oleksandr_tyshchenko@epam.com>,
-	"m.szyprowski@samsung.com" <m.szyprowski@samsung.com>,
+	"oleksandr_tyshchenko@epam.com" <oleksandr_tyshchenko@epam.com>, "hch@lst.de"
+	<hch@lst.de>, "m.szyprowski@samsung.com" <m.szyprowski@samsung.com>,
 	"iommu@lists.linux.dev" <iommu@lists.linux.dev>,
 	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
 	"xen-devel@lists.xenproject.org" <xen-devel@lists.xenproject.org>
 Subject: RE: [RFC 1/1] swiotlb: Reduce calls to swiotlb_find_pool()
 Thread-Topic: [RFC 1/1] swiotlb: Reduce calls to swiotlb_find_pool()
-Thread-Index: AQHauIjoJBWSrCyO6UWzcncSceBiMLHa1Z9wgABomICAAA3OAIAAhiSg
-Date: Thu, 27 Jun 2024 14:59:03 +0000
+Thread-Index: AQHauIjoJBWSrCyO6UWzcncSceBiMLHbU/+AgACADXA=
+Date: Thu, 27 Jun 2024 15:04:35 +0000
 Message-ID:
- <SN6PR02MB4157E61B49C8435E38AC968DD4D72@SN6PR02MB4157.namprd02.prod.outlook.com>
+ <SN6PR02MB4157CF368284CA48061E35E9D4D72@SN6PR02MB4157.namprd02.prod.outlook.com>
 References: <20240607031421.182589-1-mhklinux@outlook.com>
-	<SN6PR02MB41577686D72E206DB0084E90D4D62@SN6PR02MB4157.namprd02.prod.outlook.com>
-	<20240627060251.GA15590@lst.de>
- <20240627085216.556744c1@meshulam.tesarici.cz>
-In-Reply-To: <20240627085216.556744c1@meshulam.tesarici.cz>
+ <20240627092049.1dbec746@meshulam.tesarici.cz>
+In-Reply-To: <20240627092049.1dbec746@meshulam.tesarici.cz>
 Accept-Language: en-US
 Content-Language: en-US
 X-MS-Has-Attach:
 X-MS-TNEF-Correlator:
-x-tmn: [fWtQtpoQhh9P6n6U/S2eCRH68cq78H5Q]
+x-tmn: [AKhZ4FTPcx0HfZye0qhnHyABc3sw1wYl]
 x-ms-publictraffictype: Email
-x-ms-traffictypediagnostic: SN6PR02MB4157:EE_|SA6PR02MB10791:EE_
-x-ms-office365-filtering-correlation-id: 1ccfd2f8-4b42-48df-fd03-08dc96b9af81
+x-ms-traffictypediagnostic: SN6PR02MB4157:EE_|IA0PR02MB9702:EE_
+x-ms-office365-filtering-correlation-id: edd5232c-f037-4bde-a2e4-08dc96ba7522
 x-microsoft-antispam:
- BCL:0;ARA:14566002|461199028|3412199025|440099028|102099032|56899033;
+ BCL:0;ARA:14566002|461199028|3412199025|440099028|102099032;
 x-microsoft-antispam-message-info:
- BsbSx4tOIOspvZwvADszIlAXUTGXaCRozXth+6JQaQPAn0SfTb35w4X4aObwpY1VaEev85FSzl5DeVowJDUqOaPTofrjz3M2pod2Qg3aawudatsOu+BCTLLqz6PDWOQTJeg2OKjZJ34UOeGDSSiAxsSaZFf7iAPB4zdMGePrPuq1nz1xrJKURIl8gTtbdZrI52csjcZcfegKlfLkhO/J7wlZnh4Gqw+oBVf/KEQOp9Bcuxc+bio7bDr7dCLuW0AiItoK8EKxJFN1GYcF/Q3HriCbc43l7GqiQQ1xuHfK6KooDQ4Oi4i+OkEfo/r/Vnzvz4pNREKUw7b73ktipH0y1im1aOcUiT+3scA/Gn+HyVNPGkh0hFKzt+mkdGrVPoEyoDXpmUiro4efeFbqtsTj2I29i2/bz93uh2HJxjT41TSk2xMjjny3AdLyOzXneeXvcCRRqVdSkVwtBaGyniyjf6ntWJpfMeIsSfu8znmCBw7gTKtH42mC6fSTIIq1COCsJq6teNQOrZgk+zH/rjysDM21Y7kCB3c78vKsRfEMvU379jNApn6Z/kIHUqkvYUd4
+ C4w+6zLY5M7Vk3uroWbqkWyXGC/J79Dm3JF+VD8WwfvRbg6juRPuQm8IhWQNj+zmpc4pKMwvuDJV3V91oAJ7fZSMkw0SkuXgN71A1tuONyrOY2A5qoZ0rU7wV4wEh2Jvq5i9DJE/QWgR8p1hMVT0qx1ix4OhEl+tPPVosUR+HklI9k/Qy90CGkQ3UEdtP1lrvR3YT22WO5/pDotqpu/69fo+7okeDRfIFyxjsHQVQMws1jr2/uPStj1wFuRVRivaKVhZN9HsX6toKK6Vv5sWqXB/A6dpOHOr3hHJZnqLXOAOTnAOy7E1aPkKRqbQQaI8OJ8TFsfX5uDsywyWTvkuekbQaJpejkgjcJSmkHRQnv4yL4y2RIWnxBB0CBIH/5bj4wwvl8+mIYa3nwl/Df4OcUW8qE9aTCVX8ElNlowyw832/Q+bhTdGzBHF0oOmZZSk3H69M91QxJxpMcH2LRUPx5t64Zy6BsIiRxvZoTEfxbG4rtP79E1MmD/WrNMSl/aHIoiJIdGeCp4Qy+3jXcvFNyC+vN/t6uGMfpybgaX4r9Yiu3Hb1g1YmreLYk0g9N4p
 x-ms-exchange-antispam-messagedata-chunkcount: 1
 x-ms-exchange-antispam-messagedata-0:
- =?iso-8859-2?Q?CSY1WfSq/A2Pw+DgMzEvZv3FNFIh0U1azGBe4vhVn9kEzRkImY9cEyN3EG?=
- =?iso-8859-2?Q?3oU9nfVLKvrq1rJeNoeEpzmKZ5+r6MPX5AHc4gqJDjM9hQ4pMDcg7do47T?=
- =?iso-8859-2?Q?Q0UGPye7s/KFYUCCORn++d9kfXGYA8p/toQk5vG+c2403wQPHxuNvOwjg2?=
- =?iso-8859-2?Q?7LVvdoI/3jkwBCiMRBxkkkkCPOXp+3Tb0OjxdpHw9WTkoDJermq4tEDfky?=
- =?iso-8859-2?Q?wj5dV2taBnSYzdcNeXQfS2YyxiyfV0SbX/29m1mML1o+8U5b+jxGFZNfJc?=
- =?iso-8859-2?Q?UkQH6PppfP/rbutqlg2Zt+rRCsZ73s9PgO6gzie5kjyJmL5WEADtxfv6ZM?=
- =?iso-8859-2?Q?ejOgxlI6kukqzhmZl1hvogPw5bYXOJh/yDdjH915joRqsE61V8ONazaf0f?=
- =?iso-8859-2?Q?bSPjvrt2yBIb+83GXEVzpWTc6OYCHshoyFA7JT3F9IoakfaiMuY5y8/gPk?=
- =?iso-8859-2?Q?qjLZHEnj+q5EX0GEAthRN1GX9u88fkUxKbx9GrMicsWpFNjF9x406d2MdO?=
- =?iso-8859-2?Q?jafF5Sd550JjIiJKqRNqs6fInVja4buUergL4EL07/xleiKnMgWKm/Lg4z?=
- =?iso-8859-2?Q?7CFAweA4A/UBjOR2sytWRARLeZf51QKWVG9Shh/IPj79emyuvouDs2/o+e?=
- =?iso-8859-2?Q?3/MewYMCZF5gVGrZWYRLO+hqsyBMSbVxFI2Vb8T11ILzERnHx9rvOpHTE1?=
- =?iso-8859-2?Q?1l5zAKxb9Bhu0KaO07uwMocdAihB9XbVMhzsOCav01gpgQa+Na+NRvlM07?=
- =?iso-8859-2?Q?JECjlfG16pRu2KaSIFAzXLs8uiT+18W11+yd5RlOrPQ9XudkRzGgOBW8fo?=
- =?iso-8859-2?Q?4OBbnx0miojKb24121y3u3MVgeO1R+OO3TnDalErGIZhFMUGPfYRSOh5Jr?=
- =?iso-8859-2?Q?QkpIijPDwnX3ZmlTtSvDfz4wNFwRyhKvCyOfxByEIRpCNNCIr0n7Kp32BU?=
- =?iso-8859-2?Q?CxFJj1YuPBQcqZvzrfdIZAO9JN9m1yjIMr53MRWkxmLxPAay8DF/qnZx61?=
- =?iso-8859-2?Q?PyJrqO7Vf75dWBP/Me/jOavLh6Am+WOlvbQa4gBzvfmDxIPHw8vVYrFS8J?=
- =?iso-8859-2?Q?f5nmJ5Dwv6eGA3TdyvKCN2qqOulw91fHMILp1zeH9JP5y4utoqI/hCpEFS?=
- =?iso-8859-2?Q?oOCL50KWQK9ZsWF3s2lPSuymNsbpAAE6vwkT0+3NtHYzjztDABa4SZxbP9?=
- =?iso-8859-2?Q?y95Zp69A9WKa5SmXHSqrJgXqWWxzq8rG2uT6EQMjErV7KVd7KfhRLvT1YK?=
- =?iso-8859-2?Q?qgOSzR0Ypk40tQAJ6W6ZZcm/Z7JGP0L6uQi7X1VWk=3D?=
+ =?iso-8859-2?Q?TVNMMdrcwSsBtZ9+85O93RYN9thGCKdgW6DFpEwdGDNHimWfW1bHVKMKlm?=
+ =?iso-8859-2?Q?9o3eDUT9g5d/PnTGCTn3B1yopqSeNACJCXTUClJdr3N7iM7pzoLcxNbzct?=
+ =?iso-8859-2?Q?4KHjH9PP4JFJreFu6vBfuZsMj+d8AojebRkCfrx5ocKfxWsnYM1sJwawjY?=
+ =?iso-8859-2?Q?DOnLbOwwr42c6pfLcjcBUn7+ly8n9bnAZxSm5yk6LPTIKTNdS56rhyUutk?=
+ =?iso-8859-2?Q?kFDOJ+uaygp1OvTFoXDUIdcCxyZLArIyUZcrjKLrHBBtyFtG0rP2jdYVF/?=
+ =?iso-8859-2?Q?TMpNLq9thmqc2eIVuZqULCNWNqwhawfoo7gOsMIljfSVGTJpVDLSpMQYcJ?=
+ =?iso-8859-2?Q?tOhoxaCsGg3buoiS3UmxVxrc1kCBTfAMxaH8LGzEgfmrD2WJrSRzxkldcH?=
+ =?iso-8859-2?Q?J+9R9py5O5e0kzAq4WC11CDH5WaId4iWqz8/XSS2SlqvQDMN5oogwB854B?=
+ =?iso-8859-2?Q?WTHqVLHE4FLDDhkPg6YbFX+dPn/2FLVYWh7u0CHjxn3JuzFc1jaaJnUr0F?=
+ =?iso-8859-2?Q?t/fTiJ9STvPUWY2v11rcf3XPRXa5GWThR6mGa8n+3jFFVfk5o0IYWUMy9i?=
+ =?iso-8859-2?Q?MgzgUhrXNIDW2Fg43mziZru2MkUWTbcVBKJ0ZsfYcsZqUXREOwOcPm9k1I?=
+ =?iso-8859-2?Q?w7pOfZa/qI3nNU6hx0SczoIN2NLf+p5y5wgEJE9iQNaxr7VGI4LBoEq8A8?=
+ =?iso-8859-2?Q?0s+W22Gm/lvgGfDwCv3h+Aij2/iBGIAKGmWzuNNe9AWZ4B0UGv3Dc63LRT?=
+ =?iso-8859-2?Q?JFdV1ED27t7sF8yL087Nj3zDwI6coUulRrjuIYsWpF7L+gRZMh1/2nPf4T?=
+ =?iso-8859-2?Q?mtVUd2y/KeiEafeTptsOOe2d+2291rr1UURbkF1wgFOFAkBX1z/LhZgb6k?=
+ =?iso-8859-2?Q?NXO9dkFRvxYEyJYM8EZx9Ev2RReC4yieq/S78VrQOgjkMKkgU2pStdg2ko?=
+ =?iso-8859-2?Q?lNY3/Vtp2VaLsy5Pmh+KtWPKnsm1BuCnhKJzlku1Z68LnNTW7YG7IF8tD4?=
+ =?iso-8859-2?Q?9HhLQnOHSQx+gj5GV+VQ3HvAna4Oa9fydnYmeSbmaI//PkSv/sf0zEluNW?=
+ =?iso-8859-2?Q?cl2WSpWRDVhmS07tD8zJAwYiwTaQ1vg2ltlL57bat5BFpWdLjZ85q3THtX?=
+ =?iso-8859-2?Q?dLyWP43i7RMsnOmpNDlqWxWIbsJmGQpOOUbgOO3BIcgxZFjcbGHe6y/w7Q?=
+ =?iso-8859-2?Q?7AuLf4TDMiTQ6kKMkYLFC6ghsZkOmceH1NwRvOu5S+wVJAtPHXb2WJUWPr?=
+ =?iso-8859-2?Q?UYM7R50V3Rbg64dHQa1aoZjNWAoek57FvkCcqDCnY=3D?=
 Content-Type: text/plain; charset="iso-8859-2"
 Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
@@ -109,35 +107,56 @@ X-OriginatorOrg: outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
 X-MS-Exchange-CrossTenant-AuthSource: SN6PR02MB4157.namprd02.prod.outlook.com
 X-MS-Exchange-CrossTenant-RMS-PersistedConsumerOrg: 00000000-0000-0000-0000-000000000000
-X-MS-Exchange-CrossTenant-Network-Message-Id: 1ccfd2f8-4b42-48df-fd03-08dc96b9af81
+X-MS-Exchange-CrossTenant-Network-Message-Id: edd5232c-f037-4bde-a2e4-08dc96ba7522
 X-MS-Exchange-CrossTenant-rms-persistedconsumerorg: 00000000-0000-0000-0000-000000000000
-X-MS-Exchange-CrossTenant-originalarrivaltime: 27 Jun 2024 14:59:03.7122
+X-MS-Exchange-CrossTenant-originalarrivaltime: 27 Jun 2024 15:04:35.2725
  (UTC)
 X-MS-Exchange-CrossTenant-fromentityheader: Hosted
 X-MS-Exchange-CrossTenant-id: 84df9e7f-e9f6-40af-b435-aaaaaaaaaaaa
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SA6PR02MB10791
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: IA0PR02MB9702
 
-From: Petr Tesa=F8=EDk <petr@tesarici.cz> Sent: Wednesday, June 26, 2024 11=
-:52 PM
->=20
-> Oh, right. The idea is good, but I was not able to reply immediately
-> and then forgot about it.
->=20
-> For the record, I considered an alternative: Call swiotlb_* functions
-> unconditionally and bail out early if the pool is NULL. But it's no
-> good, because is_swiotlb_buffer() can be inlined, so this approach
-> would replace a quick check with a function call. And then there's also
-> swiotlb_tbl_unmap_single()...
->=20
-> I have only a very minor suggestion: Could is_swiotlb_buffer() be
-> renamed now that it no longer returns a bool? OTOH I have no good
-> immediate idea myself.
->
+From: Petr Tesa=F8=EDk <petr@tesarici.cz> Sent: Thursday, June 27, 2024 12:=
+21 AM
 
-Conceptually, it's still being used as a boolean function based on
-whether the return value is NULL.  Renaming it to swiotlb_get_pool()
-more accurately describes the return value, but obscures the
-intent of determining if it is a swiotlb buffer.  I'll think about it.
-Suggestions are welcome.
+[...]
+
+> > @@ -187,10 +169,13 @@ static inline bool is_swiotlb_buffer(struct devic=
+e *dev, phys_addr_t paddr)
+> >  	 * This barrier pairs with smp_mb() in swiotlb_find_slots().
+> >  	 */
+> >  	smp_rmb();
+> > -	return READ_ONCE(dev->dma_uses_io_tlb) &&
+> > -		swiotlb_find_pool(dev, paddr);
+> > +	if (READ_ONCE(dev->dma_uses_io_tlb))
+> > +		return swiotlb_find_pool(dev, paddr);
+> > +	return NULL;
+> >  #else
+> > -	return paddr >=3D mem->defpool.start && paddr < mem->defpool.end;
+> > +	if (paddr >=3D mem->defpool.start && paddr < mem->defpool.end)
+> > +		return &mem->defpool;
+>=20
+> Why are we open-coding swiotlb_find_pool() here? It does not make a
+> difference now, but if swiotlb_find_pool() were to change, both places
+> would have to be updated.
+>=20
+> Does it save a reload from dev->dma_io_tlb_mem? IOW is the compiler
+> unable to optimize it away?
+>=20
+> What about this (functionally identical) variant:
+>=20
+> #ifdef CONFIG_SWIOTLB_DYNAMIC
+> 	smp_rmb();
+> 	if (!READ_ONCE(dev->dma_uses_io_tlb))
+> 		return NULL;
+> #else
+> 	if (paddr < mem->defpool.start || paddr >=3D mem->defpool.end);
+> 		return NULL;
+> #endif
+>=20
+> 	return swiotlb_find_pool(dev, paddr);
+>=20
+
+Yeah, I see your point. I'll try this and see what the generated code
+looks like. It might take me a couple of days to get to it.
 
 Michael
