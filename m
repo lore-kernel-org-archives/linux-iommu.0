@@ -1,50 +1,50 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.9])
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0D1F21487F1
-	for <iommu@lists.linux.dev>; Fri, 28 Jun 2024 09:42:56 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.9
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A04BD153812
+	for <iommu@lists.linux.dev>; Fri, 28 Jun 2024 09:52:12 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.12
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1719567778; cv=none; b=e67KkXuEBnU/KTH8C5jxzHzWY1uqSA5nRYPRn6WnSm6qKF/n23G96WUBMKnIRoBNJHP9WP6qxOGg5GNX+CQtvZnD/mc4J1HdIgF6yTA8KnlFU1F8jvCCtBjamny0+ETK0F+CQte+TeeDMBNjTkk7NXlg2zK3BLxNThbsv4MixjQ=
+	t=1719568334; cv=none; b=ICgvYMmJPhVdiq/hXFoVhN7rlHrGJ7udgWwzy8xDkRaMYz538pwW6ZUgjNXllWOEB0ctL7Hgkhfx9w0zunml9OoHW/eU+J/7HEVfql4iJs54kbcr53NAwbbCmWsadg5gOpbZyd/xz/Hggz2lzLFfD0NHHoPrIO2yf0+45+gRnLI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1719567778; c=relaxed/simple;
-	bh=6ha5d54e0GcaLUjxcEBPjrez8GMnnT78HmshwcpSGjw=;
+	s=arc-20240116; t=1719568334; c=relaxed/simple;
+	bh=bHCsNfwADDIPZKA9xOh9MpedbmFnGolru6X2sK0qgEo=;
 	h=Message-ID:Date:MIME-Version:Cc:Subject:To:References:From:
-	 In-Reply-To:Content-Type; b=dt9I4/XpydZZ90xffeoR67omF8wWckrPnN16dGPxkoGzQbYqgK0Z5i14tkaRB5yZTSaEFENv4y60kKzbglfoOV+7D1i5+d1Dp3+FuLA3meYihYHrLnKXvSmPL7K8qpxZ5JdqPf6XyKdCmOHCjTsrnsp7L6semw/Ox7lLHg8hS3M=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=AK90lhX2; arc=none smtp.client-ip=192.198.163.9
+	 In-Reply-To:Content-Type; b=WZ4SZepr/5Qz/1XNtjNmZi+xPgIl7nOkCB9nCBqBDXfCYLBZNtRbhgsGhTLgKp7389oee8Bqx1Dt2YBegr+Bhk38o287B56vqfGIcjRnZaYHUkRsF9MXgoFRmGp21jcGaKYWLeWPe8VbPQv73f8Vm6PM7EQp4P39LVqc2GW7meo=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=iMxdY2S2; arc=none smtp.client-ip=192.198.163.12
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="AK90lhX2"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="iMxdY2S2"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1719567777; x=1751103777;
+  t=1719568332; x=1751104332;
   h=message-id:date:mime-version:cc:subject:to:references:
    from:in-reply-to:content-transfer-encoding;
-  bh=6ha5d54e0GcaLUjxcEBPjrez8GMnnT78HmshwcpSGjw=;
-  b=AK90lhX2yN1XsmymbOHwN5knED/5i492xe/Zcau5G3LPUEY46MQBsdRU
-   sZb9l5MWuTnga4U/qfczPBR1MTx2kpYbgd2GVlhekGjJ8Ke8T/N925p0z
-   3/dBv3UBBC0JDOxNmKIpnRJXBhRvPURpqmH6ggARwdSjhwUHg9YHfMfPm
-   X89e/Yp/8gBc/wOp7VLA5amLFkxuTFAy+AYGzc6/I1jp95V/636UOgD0J
-   i/00fUSpPmDsGrsVNz5T0KH29zNamr0gVGbKf4qWt2L18jBbjnZpZsAJO
-   siq+Z31UxPDWtNMxumEttnCKz6iTgbqHpqCsrRU0orpptzgiabgVx+vQD
-   g==;
-X-CSE-ConnectionGUID: zYfS5PkOTbiLi0WmXguKIg==
-X-CSE-MsgGUID: CjamQcQGQcGzql3zAJpVGA==
-X-IronPort-AV: E=McAfee;i="6700,10204,11116"; a="27429181"
+  bh=bHCsNfwADDIPZKA9xOh9MpedbmFnGolru6X2sK0qgEo=;
+  b=iMxdY2S2TucPlvky/LNBEMAI88J6ukuxoMDvniGQVV5/D4dFHKfVNXfo
+   Z81rmuiU+J6R/7qkoAo5U4Ijf63FScgn8rcgYHug8J8qTFeeAVFpg12E6
+   yF+q0ftxd7paixn3w3mkUU8OecrY3506uXPZXrHTH094ypie5Jm1UMmm4
+   3z9QBHeVQHg1qsk5hz0yTqvXbFRt9lzV+tqc1aptq/mrLKQuSLZOJRZjH
+   DtzczffNWKGfeAhM2EQQHWp9v6zAReg/AOJ5rHGQlUKMW2H8rp7KCv2Qt
+   X1ywr22gQtzlnP7UhF3PSZWiikrrNGCg4PiDp5h/EM1fwCLU/VpHPQ/5n
+   Q==;
+X-CSE-ConnectionGUID: DsrK7YzHRzS9YB+TYygmhQ==
+X-CSE-MsgGUID: 7WvOWKD6QxGa7F1Z82Sz3g==
+X-IronPort-AV: E=McAfee;i="6700,10204,11116"; a="20617192"
 X-IronPort-AV: E=Sophos;i="6.09,168,1716274800"; 
-   d="scan'208";a="27429181"
-Received: from fmviesa005.fm.intel.com ([10.60.135.145])
-  by fmvoesa103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Jun 2024 02:42:56 -0700
-X-CSE-ConnectionGUID: NHSd8AGmRbGgTl1XkGYuYg==
-X-CSE-MsgGUID: 4c1Ho1dESNiuqqkjBBEE4Q==
+   d="scan'208";a="20617192"
+Received: from orviesa004.jf.intel.com ([10.64.159.144])
+  by fmvoesa106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Jun 2024 02:52:12 -0700
+X-CSE-ConnectionGUID: bGWW7UWTRHSmsbPjZGmFdQ==
+X-CSE-MsgGUID: ZfN95a0LTAqFpPrf5jq7Rg==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.09,168,1716274800"; 
-   d="scan'208";a="49162940"
+   d="scan'208";a="49868937"
 Received: from blu2-mobl.ccr.corp.intel.com (HELO [10.125.248.220]) ([10.125.248.220])
-  by fmviesa005-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Jun 2024 02:42:53 -0700
-Message-ID: <8e2bbc1a-f014-4fd9-bbb9-c6e5e47595f3@linux.intel.com>
-Date: Fri, 28 Jun 2024 17:42:51 +0800
+  by orviesa004-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Jun 2024 02:52:09 -0700
+Message-ID: <d4601f60-a2b9-4660-9b10-d05391e87e77@linux.intel.com>
+Date: Fri, 28 Jun 2024 17:52:06 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -55,28 +55,72 @@ User-Agent: Mozilla Thunderbird
 Cc: baolu.lu@linux.intel.com, alex.williamson@redhat.com,
  robin.murphy@arm.com, eric.auger@redhat.com, nicolinc@nvidia.com,
  kvm@vger.kernel.org, chao.p.peng@linux.intel.com, iommu@lists.linux.dev
-Subject: Re: [PATCH 2/6] iommu/vt-d: Move intel_drain_pasid_prq() into
- intel_pasid_tear_down_entry()
+Subject: Re: [PATCH 3/6] iommu/vt-d: Make helpers support modifying present
+ pasid entry
 To: Yi Liu <yi.l.liu@intel.com>, joro@8bytes.org, jgg@nvidia.com,
  kevin.tian@intel.com
 References: <20240628085538.47049-1-yi.l.liu@intel.com>
- <20240628085538.47049-3-yi.l.liu@intel.com>
+ <20240628085538.47049-4-yi.l.liu@intel.com>
 Content-Language: en-US
 From: Baolu Lu <baolu.lu@linux.intel.com>
-In-Reply-To: <20240628085538.47049-3-yi.l.liu@intel.com>
+In-Reply-To: <20240628085538.47049-4-yi.l.liu@intel.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 
 On 2024/6/28 16:55, Yi Liu wrote:
-> Draining PRQ is needed before repurposing a PASID. It makes sense to invoke
-> it in the intel_pasid_tear_down_entry().
+> To handle domain replacement, set_dev_pasid op needs to modify a present
+> pasid entry. One way is sharing the most logics of remove_dev_pasid() in
+> the beginning of set_dev_pasid() to remove the old config. But this means
+> the set_dev_pasid path needs to rollback to the old config if it fails to
+> set up the new pasid entry. This needs to invoke the set_dev_pasid op of
+> the old domain. It breaks the iommu layering a bit. Another way is
+> implementing the set_dev_pasid() without rollback to old hardware config.
+> This can be achieved by implementing it in the order of preparing the
+> dev_pasid info for the new domain, modify the pasid entry, then undo the
+> dev_pasid info of the old domain, and if failed, undo the dev_pasid info
+> of the new domain. This would keep the old domain unchanged.
+> 
+> Following the second way, needs to make the pasid entry set up helpers
+> support modifying present pasid entry.
+> 
+> Signed-off-by: Yi Liu<yi.l.liu@intel.com>
+> ---
+>   drivers/iommu/intel/pasid.c | 37 ++++++++++++-------------------------
+>   1 file changed, 12 insertions(+), 25 deletions(-)
+> 
+> diff --git a/drivers/iommu/intel/pasid.c b/drivers/iommu/intel/pasid.c
+> index b18eebb479de..5d3a12b081a2 100644
+> --- a/drivers/iommu/intel/pasid.c
+> +++ b/drivers/iommu/intel/pasid.c
+> @@ -314,6 +314,9 @@ int intel_pasid_setup_first_level(struct intel_iommu *iommu,
+>   		return -EINVAL;
+>   	}
+>   
+> +	/* Clear the old configuration if it already exists */
+> +	intel_pasid_tear_down_entry(iommu, dev, pasid, false, true);
+> +
+>   	spin_lock(&iommu->lock);
+>   	pte = intel_pasid_get_entry(dev, pasid);
+>   	if (!pte) {
+> @@ -321,13 +324,6 @@ int intel_pasid_setup_first_level(struct intel_iommu *iommu,
+>   		return -ENODEV;
+>   	}
+>   
+> -	if (pasid_pte_is_present(pte)) {
+> -		spin_unlock(&iommu->lock);
+> -		return -EBUSY;
+> -	}
+> -
+> -	pasid_clear_entry(pte);
+> -
+>   	/* Setup the first level page table pointer: */
+>   	pasid_set_flptr(pte, (u64)__pa(pgd));
 
-Can you please elaborate on the value of this merge?
+The above changes the previous assumption that when a new page table is
+about to be set up on a PASID, there should be no existing one still in
+place.
 
-Draining the PRQ is necessary when PRI is enabled on the device, and a
-page table is about to be removed from the PASID. This might occur in
-conjunction with tearing down a PASID entry, but it seems they are two
-distinct actions.
+Is this a requirement for the replace functionality?
 
 Best regards,
 baolu
