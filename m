@@ -1,99 +1,128 @@
-Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 31E01155738
-	for <iommu@lists.linux.dev>; Fri, 28 Jun 2024 11:30:19 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=210.61.82.184
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 554EE1E898
+	for <iommu@lists.linux.dev>; Fri, 28 Jun 2024 12:23:53 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1719574223; cv=none; b=laW+lcDQ+AU5BcHidnMAE5N34X0XEjgCc0ceNU1wAob1YylZbamHtA6RAn/yKlSnN2kjpVns14vpABTDfVlNQDNybeMNfmBJJZxrR9GOtFsY7HRH9PWJkK38c0GDqIGoN1jWj98vCjA8qrzUwRnW6f5tUGQb+cm15NFtCdW14k0=
+	t=1719577435; cv=none; b=cKRpSX750w5/L9rY0c9Sj8JBY7lnNJf6saflkDAfTKsgB/jkvkYL1HE0/PS+NzqtXaXtUP+SP8ECm/LyAoKhW1oe7zoMo9gVNNCoew1uuN9OIrTomwHVkP9hCw0PixW+4iYbJJ6jE/4bS8sW8VhTMXKBqs+w7E7J7bonIZeB0WA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1719574223; c=relaxed/simple;
-	bh=0EQePSRiBV0bqp1McXfFeQFrK5vwQYcgBf5qhIHPeJY=;
-	h=From:To:CC:Subject:Date:Message-ID:MIME-Version:Content-Type; b=JcO0JicKDBDjpn2fNz1wrHzaE7Gbdbac8WedLNHNrwuH6/4i2jGeJ4cf3AQsUeoEnXt4s9doGTkYg86h1I+h94YP6a5KSy4j9nJhqXVu6gQYTUucOR/LTB9ynPXl20aF+LjTZh2Iwkf9n39ZOElUqPiei6mTEf8Dil1FGheR3nQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=mediatek.com; spf=pass smtp.mailfrom=mediatek.com; dkim=pass (1024-bit key) header.d=mediatek.com header.i=@mediatek.com header.b=Vw3h66Ic; arc=none smtp.client-ip=210.61.82.184
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=mediatek.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=mediatek.com
+	s=arc-20240116; t=1719577435; c=relaxed/simple;
+	bh=GfeJoLbm3e5yZQY6C7I1nB0pzBkzKoxqQ5Y8bG9Dijo=;
+	h=Message-ID:Date:MIME-Version:Cc:Subject:To:References:From:
+	 In-Reply-To:Content-Type; b=B9n1tqMAeB/ZGdQuYoNwPS+cb8yTQJsgQxFwVPNzD6xvWMtzGEFvVCGGIfsmaDQyyT4sFwMe4vuzvP0LhYZBPCxykgwiPirYER1APC/fm1A/JzamSBQjJ9lJODXS91Kn+vWrMJH9sCebr9dUiUjmKIsU0dtKc9CUbSc+rXJlheA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=lsIqZPTQ; arc=none smtp.client-ip=192.198.163.18
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=mediatek.com header.i=@mediatek.com header.b="Vw3h66Ic"
-X-UUID: ca5a569a354111ef99dc3f8fac2c3230-20240628
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=mediatek.com; s=dk;
-	h=Content-Type:MIME-Version:Message-ID:Date:Subject:CC:To:From; bh=+danxBg72kkVWhHZ7NufVUsP5WdRg7pgzK5U7q+oXYY=;
-	b=Vw3h66IcM7Ih/RuLuPAitnpVkOahLYiB1KN0xW0o3rMhMSliiACVhdHUAuNOxVrC/YwAY6B6TEm0/hRokSClEqcj2xLXvwyb/mFIWjvOQAawRaXBqW6CisTgdn+RDpKKIHu4R+L5eS/GgGXJVpMg0mg7u9XA44WxDZgaJHvUPBQ=;
-X-CID-P-RULE: Release_Ham
-X-CID-O-INFO: VERSION:1.1.40,REQID:3f9ccaf6-48d3-45d8-9760-ccb85f6a391f,IP:0,U
-	RL:0,TC:0,Content:0,EDM:0,RT:0,SF:0,FILE:0,BULK:0,RULE:Release_Ham,ACTION:
-	release,TS:0
-X-CID-META: VersionHash:ba885a6,CLOUDID:a147ad44-a117-4f46-a956-71ffeac67bfa,B
-	ulkID:nil,BulkQuantity:0,Recheck:0,SF:102,TC:nil,Content:0,EDM:-3,IP:nil,U
-	RL:0,File:nil,RT:nil,Bulk:nil,QS:nil,BEC:nil,COL:0,OSI:0,OSA:0,AV:0,LES:1,
-	SPR:NO,DKR:0,DKP:0,BRR:0,BRE:0,ARC:0
-X-CID-BVR: 0
-X-CID-BAS: 0,_,0,_
-X-CID-FACTOR: TF_CID_SPAM_SNR
-X-UUID: ca5a569a354111ef99dc3f8fac2c3230-20240628
-Received: from mtkmbs13n2.mediatek.inc [(172.21.101.108)] by mailgw02.mediatek.com
-	(envelope-from <mark-pk.tsai@mediatek.com>)
-	(Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
-	with ESMTP id 1768470028; Fri, 28 Jun 2024 19:30:15 +0800
-Received: from mtkmbs13n2.mediatek.inc (172.21.101.108) by
- mtkmbs10n2.mediatek.inc (172.21.101.183) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.1118.26; Fri, 28 Jun 2024 19:30:13 +0800
-Received: from mtksdccf07.mediatek.inc (172.21.84.99) by
- mtkmbs13n2.mediatek.inc (172.21.101.73) with Microsoft SMTP Server id
- 15.2.1118.26 via Frontend Transport; Fri, 28 Jun 2024 19:30:13 +0800
-From: Mark-PK Tsai <mark-pk.tsai@mediatek.com>
-To: Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>, "Robin
- Murphy" <robin.murphy@arm.com>, Matthias Brugger <matthias.bgg@gmail.com>,
-	AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
-CC: <yj.chiang@mediatek.com>, Mark-PK Tsai <mark-pk.tsai@mediatek.com>,
-	<iommu@lists.linux.dev>, <linux-kernel@vger.kernel.org>,
-	<linux-arm-kernel@lists.infradead.org>, <linux-mediatek@lists.infradead.org>
-Subject: [PATCH] iommu: Remove iommu_sva_unbind_gpasid
-Date: Fri, 28 Jun 2024 19:30:04 +0800
-Message-ID: <20240628113011.3535-1-mark-pk.tsai@mediatek.com>
-X-Mailer: git-send-email 2.18.0
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="lsIqZPTQ"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1719577433; x=1751113433;
+  h=message-id:date:mime-version:cc:subject:to:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=GfeJoLbm3e5yZQY6C7I1nB0pzBkzKoxqQ5Y8bG9Dijo=;
+  b=lsIqZPTQq/5KFL9wW4VcqcNEeZz/H6UuORTnOo9QK+kFVMm5UF8/y750
+   6e2kZ10NtxHtgR2nk+xkdzkD9dHgQmefbWXWvNhdGp2oKUqkrj9leINXp
+   EfncCi+DzKbfECZYaYATN1OTapUt6WjJ5puv+XAGPuuPxXK1oaGut2wbF
+   t5DXcT7/CxCkWwtCO0iKZa96LxpOEycpx9A0uAwQcNk3UDkrLxR9MJ1Ct
+   +DvxwtV0VSCwivjFxhZ97yn3sPSyg8pkSt9v8f05JkjXafoYkIuIBBOOC
+   LhG5V8fMoG2RevxDPgP5IKoy/89Zx5KM5TKgLOh7DV8+GqjHzdVG4ngJw
+   g==;
+X-CSE-ConnectionGUID: T9KzZ36XTHaLa6pEBWRRww==
+X-CSE-MsgGUID: 791wEwwYQyC43s7gcGt4og==
+X-IronPort-AV: E=McAfee;i="6700,10204,11116"; a="16433706"
+X-IronPort-AV: E=Sophos;i="6.09,169,1716274800"; 
+   d="scan'208";a="16433706"
+Received: from orviesa005.jf.intel.com ([10.64.159.145])
+  by fmvoesa112.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Jun 2024 05:23:52 -0700
+X-CSE-ConnectionGUID: z/DtRjCxTVeRFMdT5A4pPA==
+X-CSE-MsgGUID: ElDS3E3mTd6OFz722a3nyw==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.09,169,1716274800"; 
+   d="scan'208";a="49679784"
+Received: from blu2-mobl.ccr.corp.intel.com (HELO [10.125.248.220]) ([10.125.248.220])
+  by orviesa005-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Jun 2024 05:23:51 -0700
+Message-ID: <ece72a5e-e4fa-4fe9-9d03-ad31d7a4b212@linux.intel.com>
+Date: Fri, 28 Jun 2024 20:23:47 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-TM-AS-Product-Ver: SMEX-14.0.0.3152-9.1.1006-23728.005
-X-TM-AS-Result: No-10--1.239400-8.000000
-X-TMASE-MatchedRID: S6zgMyN4g9KGsPek1xLHVnH7HV/mO4UTT9kSL7SwB1hq1Zuz1uJuCNn7
-	b/+Y15IvMm6uZ1zccZcQCEi5k+nQxB8TzIzimOwP0C1sQRfQzEHEQdG7H66TyHEqm8QYBtMOvwY
-	XYCR6VwgLQgZ3u/DVwAgsD3ZCYFN1JDDLO9wvb7dnPqKjSU9SXe7o5tZbWcdZRvCkNdMmYoFxsN
-	4zhBrsExsXRXHy1IH0eZUpm6wun3ba/06NhYDa4wyzCDjlUx89djekYOaiKTo=
-X-TM-AS-User-Approved-Sender: No
-X-TM-AS-User-Blocked-Sender: No
-X-TMASE-Result: 10--1.239400-8.000000
-X-TMASE-Version: SMEX-14.0.0.3152-9.1.1006-23728.005
-X-TM-SNTS-SMTP: 9C659BD85D1E1F99FDEC3C8CB47448B2FD5AFBB33DCB9AD1BC9FAA614F21077D2000:8
-X-MTK: N
+User-Agent: Mozilla Thunderbird
+Cc: baolu.lu@linux.intel.com,
+ Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
+ Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>
+Subject: Re: [RFC] iommu_ops->domain_alloc_paging() enhancement to support AMD
+ IOMMU driver
+To: Vasant Hegde <vasant.hegde@amd.com>, Joerg Roedel <joro@8bytes.org>,
+ Jason Gunthorpe <jgg@ziepe.ca>, "iommu@lists.linux.dev"
+ <iommu@lists.linux.dev>
+References: <7e249bc6-c578-40f0-aca7-835149a0ad39@amd.com>
+Content-Language: en-US
+From: Baolu Lu <baolu.lu@linux.intel.com>
+In-Reply-To: <7e249bc6-c578-40f0-aca7-835149a0ad39@amd.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-This is a left over of commit 0c9f17877891
-("iommu: Remove guest pasid related interfaces and definitions")
+On 2024/6/28 14:43, Vasant Hegde wrote:
+> We are working on adding domain_alloc_paging() support in AMD driver and came
+> across below issue.
+> 
+> BACKGROUND:
+> ============
+> - AMD IOMMU HW has two different page tables : V1 (host page table) and V2
+> (guest page table). Only V2 page table supports PASID and PRI features.
+> 
+> - With V2 page table we have an aliasing issue. Hence we added
+> per-device-domain-id when domain is configured with v2 page table. See upstream
+> commit 87a6f1f22c97 ("iommu/amd: Introduce per-device domain ID to fix potential
+> TLB aliasing issue")
+> 
+> 
+> 
+> PROBLEM :
+> =========
+> With iommu_ops->domain_alloc_paging(dev) API AMD driver will chose best page
+> table based on device capabilities (V2 for PASID capable device and V1 page
+> table for rest of the devices).
+> 
+> But we would like to continue enforcing V1 page table for UNMANAGED domain. As
+> in terms of IOMMU caching, it performs better than V2 page table.
+> 
+> Also while adding SVA in AMD driver Jason mentioned that we should support PASID
+> with UNMANAGED domain. As I understand currently we don't have this feature in
+> upstream but we would like to support it in future. Keeping this use case also
+> in mind, we came up with below two options :
+> 
+>    1 - Pass domain type : domain_alloc_paging(dev, type)
+>     When we add PASID with UNMANAGED domain we need a way to differentiate the
+> domain 'type' (See below attach sample code)
 
-Signed-off-by: Mark-PK Tsai <mark-pk.tsai@mediatek.com>
----
- include/linux/iommu.h | 2 --
- 1 file changed, 2 deletions(-)
+The domain type is not enough for the iommu driver to differentiate
+between device or PASID. For example, a domain of type UNMANAGED could
+be attached to either a device or a PASID. Furthermore, SVA domain is
+not a paging domain.
 
-diff --git a/include/linux/iommu.h b/include/linux/iommu.h
-index 17b3f36ad843..225403cfe614 100644
---- a/include/linux/iommu.h
-+++ b/include/linux/iommu.h
-@@ -785,8 +785,6 @@ extern int iommu_attach_device(struct iommu_domain *domain,
- 			       struct device *dev);
- extern void iommu_detach_device(struct iommu_domain *domain,
- 				struct device *dev);
--extern int iommu_sva_unbind_gpasid(struct iommu_domain *domain,
--				   struct device *dev, ioasid_t pasid);
- extern struct iommu_domain *iommu_get_domain_for_dev(struct device *dev);
- extern struct iommu_domain *iommu_get_dma_domain(struct device *dev);
- extern int iommu_map(struct iommu_domain *domain, unsigned long iova,
--- 
-2.18.0
+>    2 - Introduce new flag for domain_alloc_paging()
+>      Something like :
+>      #define DOMAIN_FLAG_UNMANAGED	0x01
+>      #define DOMAIN_FLAG_UNMANAGED_SVA	0x02
+> 
+>      domain_alloc_paging(dev, flag)
+>      For now we will have 'DOMAIN_PAGING_UNMANAGED'.
 
+Add an allocation flag seems to work. It doesn't indicate any type of
+domain. Instead, it indicates the required iommu feature.
+
+Something like
+
+#define DOMAIN_ALLOC_FLAG_PASID		0x1
+
+means the allocated domain requires PASID to support on both device and
+IOMMU. If the hardware lacks this support, it should return failure.
+
+Best regards,
+baolu
