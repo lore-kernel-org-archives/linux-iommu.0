@@ -1,440 +1,156 @@
-Received: from mail-io1-f41.google.com (mail-io1-f41.google.com [209.85.166.41])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.12])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DFBC014EC52
-	for <iommu@lists.linux.dev>; Fri, 28 Jun 2024 09:03:53 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.166.41
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DACA115099D
+	for <iommu@lists.linux.dev>; Fri, 28 Jun 2024 09:05:59 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.12
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1719565435; cv=none; b=Rd0YDkOYuVIMIt/wlaOn1rNARRf+JI44n5vDQDyM23K7d92Q3o3kS13Z8by0QhrKLSLDvW8+AyOd4WFky/6OWd0J68XVqWsJgPN+7Q5PSNMqQO6QZ67BG7JIFlZncP+nVuKpEidGvV7WaiJw3e9mwGudyBYktQjlqVAwLdzaDMo=
+	t=1719565561; cv=none; b=smab6O+qbGKsLno/vS/8qMXzajNxKo+K+CyJ+fNPR7qT137WHN+Zk1Tgrxie7LIHp9YiqNZkzW9HliOiWfI06U3wLx38Fnq/H+AFfp+6rsOdLpZRETt3x8CwzQQiBC8wXL/d0XQdC+OlifXaO4cWKROZ/ihncQVxbZyJcDV5B6s=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1719565435; c=relaxed/simple;
-	bh=WrLY/BLAwRgn0rVLflR92g+T8aY/Wew1eYHIwQcREVQ=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=cFzsaxEwUj1uq2qEoQxckRlVRmOOmLnaceQC67mVGVDqXD2Nne0SO8yuVmOwCG7nMCGDcy928spnYW8EBgHawon3mDIqcSlM1zNHvYnoLb3CE8QeK4VapW2+jCMojatbSKXVCPdZgo+Gw9vPVjRrIZgXafaMNSDkbyRCGwGWOu0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=sifive.com; spf=pass smtp.mailfrom=sifive.com; dkim=pass (2048-bit key) header.d=sifive.com header.i=@sifive.com header.b=fsTavOsg; arc=none smtp.client-ip=209.85.166.41
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=sifive.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=sifive.com
+	s=arc-20240116; t=1719565561; c=relaxed/simple;
+	bh=TRKYfuD2WUYVwQf8GGp61mD5fLEMIqOQUZVLgnPcros=;
+	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version; b=tzDlMGTYYBatOHlpCVdpsPBq9D3dWMItJruMTCge6XududKl3h2UbJ1EimoLkscv3ieF6tnvKzM9o0yNVj8LtJe+Q4wR2MP2r2QdlEudLsDb0G7PnW4ukkc4rPynfUYf1uO0wCcCX9wTbdyWJIL2TZZFklvokBdu6+0MTKNtBoc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=RrwCsxl5; arc=none smtp.client-ip=192.198.163.12
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=sifive.com header.i=@sifive.com header.b="fsTavOsg"
-Received: by mail-io1-f41.google.com with SMTP id ca18e2360f4ac-7ec2d71059dso13864239f.2
-        for <iommu@lists.linux.dev>; Fri, 28 Jun 2024 02:03:53 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=sifive.com; s=google; t=1719565433; x=1720170233; darn=lists.linux.dev;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=N/za7LeSnjhTm+OzP17ugGn+HzGEABfvFxH0U517Gjo=;
-        b=fsTavOsgcDxQy96Btg9E9JcjM16xnALz0HFcISZJs2NWfLMorNtUnjDOoGi0Q02sqe
-         qUj321JV1JZhR7B1RQ9Tm42o/EsdfYHQGsuXuKSKmOHkBDwKpepH8oBLwq4okXkNxngH
-         eR1gWrV9hLZTEmj5R+7T6is4a3l/y7BoQvrmc60waJy7ah0GoXEcI+mzHJzHdphal9Tf
-         rcrdR58FIjTTnER1/2a6kI6iGV8ylMTG+heDn4ZhsOcBSVBvCSq4FGyPygD16LNX3AV3
-         zLoSnTwHvCL07T5iNUI1hD4g2HD7ej3F4Uih/OZ0+1dhzRHZUOSgjv7uB/jTZ2zlCKR1
-         Y/7g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1719565433; x=1720170233;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=N/za7LeSnjhTm+OzP17ugGn+HzGEABfvFxH0U517Gjo=;
-        b=XcqhVavkfIEaaA+5wzzCJXF/PEfVWRFDsW0iJy5V6tRXbtrJLtmPtRVmt6aDD7oRwY
-         EraWJfNnavxwHoHGWaswaTEbiNpHfbEOSGccndi5Lj89VpGAvgH29djMC3i7BIsgy3pz
-         LMuw9Yp31qr/dSu19biUP8PYDqYNm7YJlyThVzKuKA++OfpwoZ5aHxmFgsKwJJxTewDL
-         WSESs6gwzr/93VFDJ1EiSOIK0ETk/G8R2/JeyUVkwZs20zKv+dXECwHG257u0oFP8VFj
-         Ec34xs5HJffiBm1i40CmS3Vq2MclGp8CyEjEy7GvEXZfNKSLZ1Ak8oWDpQ6DWDmi+da2
-         FbOg==
-X-Forwarded-Encrypted: i=1; AJvYcCXnLnLNjhLBxP48O0rEgrn4mXlR44zmFN8XnLiHi/vd3y0Co86UqK6Uyy0xKXChEadylA4GWROG6GJ5AQjJ7ApNBLSC3p4=
-X-Gm-Message-State: AOJu0YwXT6c/FVYbXhZ1ExPyfBSDqZc436+PCqoWgog4Xc0mMrMXkhQX
-	/D/ejLw1Ra5Etq+0Ge5XW5XEo8YyJRwjGiPE/A13cOH/LFFWyicygfodqTuGfO+OOa0odZccbBO
-	4P5TeIL69hlRHDQUGOnw4D1rB3CoKKmLi9tA59w==
-X-Google-Smtp-Source: AGHT+IGX0ZfX8BF54cMVKU/lpSgCRYHg2pyXsO/XvGxQj5HZhaNwfUPkpzzcQOULoy+umEF984ed0IL7WJjrmM9MD3k=
-X-Received: by 2002:a05:6602:160a:b0:7f3:d326:1fa4 with SMTP id
- ca18e2360f4ac-7f3d3262347mr951857739f.18.1719565432871; Fri, 28 Jun 2024
- 02:03:52 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="RrwCsxl5"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1719565560; x=1751101560;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=TRKYfuD2WUYVwQf8GGp61mD5fLEMIqOQUZVLgnPcros=;
+  b=RrwCsxl5TQPaF4qhnYjQf4MGZAxYPuo+z67JH0vmwuJjTLlcVu63F7Bd
+   cSE+CQk9pz8zI7IEI4W6Qzk3ALLTFwKMScaAgmRHoPcgf6wsnyw1lY55F
+   WXNMlo8aSI18AumvE6avi6+QYtscISMI+sZtoXkALNonuuljj4PNsYRy3
+   IAT/ZGVr7GMSx1J6T2Hydeo+r+xaAl27rBZacRkJJ+OmtgLOuqe0FUvgv
+   XC0lwNzAjH0lSTaWGCH6pUVlIEOjRbRlQDv9rZXIhodeC5PfhctiD6E+9
+   O+MGxzhTWaM1r4aNg3eqVhB1uXYi9+hQi2Cl21iJKbDim49QtFKc+uHxA
+   A==;
+X-CSE-ConnectionGUID: BePvu80eQ/ex0JmjNG0JvQ==
+X-CSE-MsgGUID: rnKoTnbCQOG0PtX2mKVQgw==
+X-IronPort-AV: E=McAfee;i="6700,10204,11116"; a="20613668"
+X-IronPort-AV: E=Sophos;i="6.09,168,1716274800"; 
+   d="scan'208";a="20613668"
+Received: from fmviesa006.fm.intel.com ([10.60.135.146])
+  by fmvoesa106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Jun 2024 02:05:59 -0700
+X-CSE-ConnectionGUID: /eQzefUkTzeV3ou46PgWtw==
+X-CSE-MsgGUID: GbnGfY7BTMydtxRsW/dEuw==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.09,168,1716274800"; 
+   d="scan'208";a="44517036"
+Received: from 984fee00a4c6.jf.intel.com ([10.165.58.231])
+  by fmviesa006.fm.intel.com with ESMTP; 28 Jun 2024 02:05:59 -0700
+From: Yi Liu <yi.l.liu@intel.com>
+To: joro@8bytes.org,
+	jgg@nvidia.com,
+	kevin.tian@intel.com,
+	baolu.lu@linux.intel.com
+Cc: alex.williamson@redhat.com,
+	robin.murphy@arm.com,
+	eric.auger@redhat.com,
+	nicolinc@nvidia.com,
+	kvm@vger.kernel.org,
+	chao.p.peng@linux.intel.com,
+	yi.l.liu@intel.com,
+	iommu@lists.linux.dev,
+	zhenzhong.duan@intel.com,
+	linux-kselftest@vger.kernel.org
+Subject: [PATCH v3 0/7] iommufd support pasid attach/replace
+Date: Fri, 28 Jun 2024 02:05:50 -0700
+Message-Id: <20240628090557.50898-1-yi.l.liu@intel.com>
+X-Mailer: git-send-email 2.34.1
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <20240614142156.29420-1-zong.li@sifive.com> <20240614142156.29420-8-zong.li@sifive.com>
- <20240619160211.GO1091770@ziepe.ca>
-In-Reply-To: <20240619160211.GO1091770@ziepe.ca>
-From: Zong Li <zong.li@sifive.com>
-Date: Fri, 28 Jun 2024 17:03:41 +0800
-Message-ID: <CANXhq0qqrU8xbTecFOcRNLqm2=DbTYsN2YBX5K_O1ha530bu_A@mail.gmail.com>
-Subject: Re: [RFC PATCH v2 07/10] iommu/riscv: support nested iommu for
- creating domains owned by userspace
-To: Jason Gunthorpe <jgg@ziepe.ca>
-Cc: joro@8bytes.org, will@kernel.org, robin.murphy@arm.com, 
-	tjeznach@rivosinc.com, paul.walmsley@sifive.com, palmer@dabbelt.com, 
-	aou@eecs.berkeley.edu, kevin.tian@intel.com, linux-kernel@vger.kernel.org, 
-	iommu@lists.linux.dev, linux-riscv@lists.infradead.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
 
-On Thu, Jun 20, 2024 at 12:02=E2=80=AFAM Jason Gunthorpe <jgg@ziepe.ca> wro=
-te:
->
-> On Fri, Jun 14, 2024 at 10:21:53PM +0800, Zong Li wrote:
-> > This patch implements .domain_alloc_user operation for creating domains
-> > owend by userspace, e.g. through IOMMUFD. Add s2 domain for parent
-> > domain for second stage, s1 domain will be the first stage.
-> >
-> > Don't remove IOMMU private data of dev in blocked domain, because it
-> > holds the user data of device, which is used when attaching device into
-> > s1 domain.
-> >
-> > Signed-off-by: Zong Li <zong.li@sifive.com>
-> > ---
-> >  drivers/iommu/riscv/iommu.c  | 236 ++++++++++++++++++++++++++++++++++-
-> >  include/uapi/linux/iommufd.h |  17 +++
-> >  2 files changed, 252 insertions(+), 1 deletion(-)
-> >
-> > diff --git a/drivers/iommu/riscv/iommu.c b/drivers/iommu/riscv/iommu.c
-> > index 2130106e421f..410b236e9b24 100644
-> > --- a/drivers/iommu/riscv/iommu.c
-> > +++ b/drivers/iommu/riscv/iommu.c
-> > @@ -846,6 +846,8 @@ static int riscv_iommu_iodir_set_mode(struct riscv_=
-iommu_device *iommu,
-> >
-> >  /* This struct contains protection domain specific IOMMU driver data. =
-*/
-> >  struct riscv_iommu_domain {
-> > +     struct riscv_iommu_domain *s2;
-> > +     struct riscv_iommu_device *iommu;
->
-> IMHO you should create a riscv_iommu_domain_nested and not put these
-> here, like ARM did.
->
-> The kernel can't change the nested domain so it can't recieve and
-> distribute invalidations.
+PASID (Process Address Space ID) is a PCIe extension to tag the DMA
+transactions out of a physical device, and most modern IOMMU hardware
+have supported PASID granular address translation. So a PASID-capable
+device can be attached to multiple hwpts (a.k.a. domains), each attachment
+is tagged with a pasid.
 
-Ok, as you mentioned, there are many data elements in that data
-structure won't be used in s1 domain.
+This series is based on a preparation series [1], it first adds a missing
+iommu API to replace domain for a pasid. Based on the iommu pasid attach/
+replace/detach APIs, this series adds iommufd APIs for device drivers to
+attach/replace/detach pasid to/from hwpt per userspace's request, and adds
+selftest to validate the iommufd APIs.
 
->
-> > +/**
-> > + * Nested IOMMU operations
-> > + */
-> > +
-> > +static int riscv_iommu_attach_dev_nested(struct iommu_domain *domain, =
-struct device *dev)
-> > +{
-> > +     struct riscv_iommu_domain *riscv_domain =3D iommu_domain_to_riscv=
-(domain);
-> > +     struct riscv_iommu_device *iommu =3D dev_to_iommu(dev);
-> > +     struct riscv_iommu_info *info =3D dev_iommu_priv_get(dev);
-> > +
-> > +     /*
-> > +      * Add bond to the new domain's list, but don't unlink in current=
- domain.
-> > +      * We need to flush entries in stage-2 page table by iterating th=
-e list.
-> > +      */
-> > +     if (riscv_iommu_bond_link(riscv_domain, dev))
-> > +             return -ENOMEM;
-> > +
-> > +     riscv_iommu_iotlb_inval(riscv_domain, 0, ULONG_MAX);
-> > +     info->dc_user.ta |=3D RISCV_IOMMU_PC_TA_V;
->
-> Seems odd??
->
-> > +     riscv_iommu_iodir_update(iommu, dev, &info->dc_user);
->
-> This will be need some updating to allow changes that don't toggle
-> V=3D0, like in arm.
+The completed code can be found in below link [2]. Heads up! The existing
+iommufd selftest was broken, there was a fix [3] to it, but not been
+upstreamed yet. If want to run the iommufd selftest, please apply that fix.
+Sorry for the inconvenience.
 
-I think the right code snippet is put in 8th patch as you pointed in
-8th patch. I will correct it in next version.
+[1] https://lore.kernel.org/linux-iommu/20240628085538.47049-1-yi.l.liu@intel.com/
+[2] https://github.com/yiliu1765/iommufd/tree/iommufd_pasid
+[3] https://lore.kernel.org/linux-iommu/20240111073213.180020-1-baolu.lu@linux.intel.com/
 
->
-> > +     info->domain =3D riscv_domain;
-> > +
-> > +     return 0;
-> > +}
-> > +
-> > +static void riscv_iommu_domain_free_nested(struct iommu_domain *domain=
-)
-> > +{
-> > +     struct riscv_iommu_domain *riscv_domain =3D iommu_domain_to_riscv=
-(domain);
-> > +     struct riscv_iommu_bond *bond;
-> > +
-> > +     /* Unlink bond in s2 domain, because we link bond both on s1 and =
-s2 domain */
-> > +     list_for_each_entry_rcu(bond, &riscv_domain->s2->bonds, list)
-> > +             riscv_iommu_bond_unlink(riscv_domain->s2, bond->dev);
-> > +
-> > +     if ((int)riscv_domain->pscid > 0)
-> > +             ida_free(&riscv_iommu_pscids, riscv_domain->pscid);
-> > +
-> > +     kfree(riscv_domain);
-> > +}
-> > +
-> > +static const struct iommu_domain_ops riscv_iommu_nested_domain_ops =3D=
- {
-> > +     .attach_dev     =3D riscv_iommu_attach_dev_nested,
-> > +     .free           =3D riscv_iommu_domain_free_nested,
-> > +};
-> > +
-> > +static int
-> > +riscv_iommu_get_dc_user(struct device *dev, struct iommu_hwpt_riscv_io=
-mmu *user_arg)
-> > +{
-> > +     struct iommu_fwspec *fwspec =3D dev_iommu_fwspec_get(dev);
-> > +     struct riscv_iommu_device *iommu =3D dev_to_iommu(dev);
-> > +     struct riscv_iommu_info *info =3D dev_iommu_priv_get(dev);
-> > +     struct riscv_iommu_dc dc;
-> > +     struct riscv_iommu_fq_record event;
-> > +     u64 dc_len =3D sizeof(struct riscv_iommu_dc) >>
-> > +                  (!(iommu->caps & RISCV_IOMMU_CAPABILITIES_MSI_FLAT))=
-;
-> > +     u64 event_len =3D sizeof(struct riscv_iommu_fq_record);
-> > +     void __user *event_user =3D NULL;
-> > +
-> > +     for (int i =3D 0; i < fwspec->num_ids; i++) {
-> > +             event.hdr =3D
-> > +                     FIELD_PREP(RISCV_IOMMU_FQ_HDR_CAUSE, RISCV_IOMMU_=
-FQ_CAUSE_DDT_INVALID) |
-> > +                     FIELD_PREP(RISCV_IOMMU_FQ_HDR_DID, fwspec->ids[i]=
-);
-> > +
-> > +             /* Sanity check DC of stage-1 from user data */
-> > +             if (!user_arg->out_event_uptr || user_arg->event_len !=3D=
- event_len)
-> > +                     return -EINVAL;
->
-> This is not extensible, see below about just inlining it.
->
-> > +             event_user =3D u64_to_user_ptr(user_arg->out_event_uptr);
-> > +
-> > +             if (!user_arg->dc_uptr || user_arg->dc_len !=3D dc_len)
-> > +                     return -EINVAL;
-> > +
-> > +             if (copy_from_user(&dc, u64_to_user_ptr(user_arg->dc_uptr=
-), dc_len))
-> > +                     return -EFAULT;
-> > +
-> > +             if (!(dc.tc & RISCV_IOMMU_DDTE_V)) {
-> > +                     dev_dbg(dev, "Invalid DDT from user data\n");
-> > +                     if (copy_to_user(event_user, &event, event_len))
-> > +                             return -EFAULT;
-> > +             }
->
-> On ARM we are going to support non-valid STEs. It should put the the
-> translation into blocking and ideally emulate translation failure
-> events.
+Change log:
 
-Ok, let me consider this situation in next version.
+v3:
+ - Split the set_dev_pasid op enhancements for domain replacement to be a
+   separate series "Make set_dev_pasid op supportting domain replacement" [1].
+   The below changes are made in the separate series.
+   *) set_dev_pasid() callback should keep the old config if failed to attach to
+      a domain. This simplifies the caller a lot as caller does not need to attach
+      it back to old domain explicitly. This also avoids some corner cases in which
+      the core may do duplicated domain attachment as described in below link (Jason)
+      https://lore.kernel.org/linux-iommu/BN9PR11MB52768C98314A95AFCD2FA6478C0F2@BN9PR11MB5276.namprd11.prod.outlook.com/
+   *) Drop patch 10 of v2 as it's a bug fix and can be submitted separately (Kevin)
+   *) Rebase on top of Baolu's domain_alloc_paging refactor series (Jason)
+ - Drop the attach_data which includes attach_fn and pasid, insteadly passing the
+   pasid through the device attach path. (Jason)
+ - Add a pasid-num-bits property to mock dev to make pasid selftest work (Kevin)
 
->
-> > +
-> > +             if (!dc.fsc || dc.iohgatp) {
-> > +                     dev_dbg(dev, "Wrong page table from user data\n")=
-;
-> > +                     if (copy_to_user(event_user, &event, event_len))
-> > +                             return -EFAULT;
-> > +             }
-> > +
-> > +             /* Save DC of stage-1 from user data */
-> > +             memcpy(&info->dc_user,
-> > +                    riscv_iommu_get_dc(iommu, fwspec->ids[i]),
->
-> This does not seem right, the fwspec shouldn't be part of domain
-> allocation, even arguably for nesting. The nesting domain should
-> represent the user_dc only. Any customization of kernel controlled bits
-> should be done during attach only, nor do I really understand why this
-> is looping over all the fwspecs but only memcpying the last one..
->
+v2: https://lore.kernel.org/linux-iommu/20240412081516.31168-1-yi.l.liu@intel.com/
+ - Domain replace for pasid should be handled in set_dev_pasid() callbacks
+   instead of remove_dev_pasid and call set_dev_pasid afteward in iommu
+   layer (Jason)
+ - Make xarray operations more self-contained in iommufd pasid attach/replace/detach
+   (Jason)
+ - Tweak the dev_iommu_get_max_pasids() to allow iommu driver to populate the
+   max_pasids. This makes the iommufd selftest simpler to meet the max_pasids
+   check in iommu_attach_device_pasid()  (Jason)
 
-The fwspec is used to get the value of current dc, because we want to
-also back up the address of second stage table (i.e. iohgatp), The
-reason is that this value will be cleaned when device is attached to
-the blocking domain, before the device attaches to s1 domain, we can't
-get the original value of iohgatp anymore when attach device to s1
-domain.
-For the issue for only memcpying the last one, I should fix it in next
-version, we might need to allocate the multiple user_dc at runtime,
-because we don't statically know how many id will be used in one
-platform device. does it make sense to you?
+v1: https://lore.kernel.org/kvm/20231127063428.127436-1-yi.l.liu@intel.com/#r
+ - Implemnet iommu_replace_device_pasid() to fall back to the original domain
+   if this replacement failed (Kevin)
+ - Add check in do_attach() to check corressponding attach_fn per the pasid value.
 
-> > +                    sizeof(struct riscv_iommu_dc));
-> > +             info->dc_user.fsc =3D dc.fsc;
-> > +     }
-> > +
-> > +     return 0;
-> > +}
-> > +
-> > +static struct iommu_domain *
-> > +riscv_iommu_domain_alloc_nested(struct device *dev,
-> > +                             struct iommu_domain *parent,
-> > +                             const struct iommu_user_data *user_data)
-> > +{
-> > +     struct riscv_iommu_domain *s2_domain =3D iommu_domain_to_riscv(pa=
-rent);
-> > +     struct riscv_iommu_domain *s1_domain;
-> > +     struct riscv_iommu_device *iommu =3D dev_to_iommu(dev);
-> > +     struct iommu_hwpt_riscv_iommu arg;
-> > +     int ret, va_bits;
-> > +
-> > +     if (user_data->type !=3D IOMMU_HWPT_DATA_RISCV_IOMMU)
-> > +             return ERR_PTR(-EOPNOTSUPP);
-> > +
-> > +     if (parent->type !=3D IOMMU_DOMAIN_UNMANAGED)
-> > +             return ERR_PTR(-EINVAL);
-> > +
-> > +     ret =3D iommu_copy_struct_from_user(&arg,
-> > +                                       user_data,
-> > +                                       IOMMU_HWPT_DATA_RISCV_IOMMU,
-> > +                                       out_event_uptr);
-> > +     if (ret)
-> > +             return ERR_PTR(ret);
-> > +
-> > +     s1_domain =3D kzalloc(sizeof(*s1_domain), GFP_KERNEL);
-> > +     if (!s1_domain)
-> > +             return ERR_PTR(-ENOMEM);
-> > +
-> > +     spin_lock_init(&s1_domain->lock);
-> > +     INIT_LIST_HEAD_RCU(&s1_domain->bonds);
-> > +
-> > +     s1_domain->pscid =3D ida_alloc_range(&riscv_iommu_pscids, 1,
-> > +                                        RISCV_IOMMU_MAX_PSCID, GFP_KER=
-NEL);
-> > +     if (s1_domain->pscid < 0) {
-> > +             iommu_free_page(s1_domain->pgd_root);
-> > +             kfree(s1_domain);
-> > +             return ERR_PTR(-ENOMEM);
-> > +     }
-> > +
-> > +     /* Get device context of stage-1 from user*/
-> > +     ret =3D riscv_iommu_get_dc_user(dev, &arg);
-> > +     if (ret) {
-> > +             kfree(s1_domain);
-> > +             return ERR_PTR(-EINVAL);
-> > +     }
-> > +
-> > +     if (!iommu) {
-> > +             va_bits =3D VA_BITS;
-> > +     } else if (iommu->caps & RISCV_IOMMU_CAPABILITIES_SV57) {
-> > +             va_bits =3D 57;
-> > +     } else if (iommu->caps & RISCV_IOMMU_CAPABILITIES_SV48) {
-> > +             va_bits =3D 48;
-> > +     } else if (iommu->caps & RISCV_IOMMU_CAPABILITIES_SV39) {
-> > +             va_bits =3D 39;
-> > +     } else {
-> > +             dev_err(dev, "cannot find supported page table mode\n");
-> > +             return ERR_PTR(-ENODEV);
-> > +     }
-> > +
-> > +     /*
-> > +      * The ops->domain_alloc_user could be directly called by the iom=
-mufd core,
-> > +      * instead of iommu core. So, this function need to set the defau=
-lt value of
-> > +      * following data member:
-> > +      *  - domain->pgsize_bitmap
-> > +      *  - domain->geometry
-> > +      *  - domain->type
-> > +      *  - domain->ops
-> > +      */
-> > +     s1_domain->s2 =3D s2_domain;
-> > +     s1_domain->iommu =3D iommu;
-> > +     s1_domain->domain.type =3D IOMMU_DOMAIN_NESTED;
-> > +     s1_domain->domain.ops =3D &riscv_iommu_nested_domain_ops;
-> > +     s1_domain->domain.pgsize_bitmap =3D SZ_4K;
-> > +     s1_domain->domain.geometry.aperture_start =3D 0;
-> > +     s1_domain->domain.geometry.aperture_end =3D DMA_BIT_MASK(va_bits =
-- 1);
-> > +     s1_domain->domain.geometry.force_aperture =3D true;
->
-> There is no geometry or page size of nesting domains.
->
+rfc: https://lore.kernel.org/linux-iommu/20230926092651.17041-1-yi.l.liu@intel.com/
 
-Thanks for pointing it out. I will fix it in the next version.
+Regards,
+	Yi Liu
 
-> > +
-> > +     return &s1_domain->domain;
-> > +}
-> > +
-> > +static struct iommu_domain *
-> > +riscv_iommu_domain_alloc_user(struct device *dev, u32 flags,
-> > +                           struct iommu_domain *parent,
-> > +                           const struct iommu_user_data *user_data)
-> > +{
-> > +     struct iommu_domain *domain;
-> > +     struct riscv_iommu_domain *riscv_domain;
-> > +
-> > +     /* Allocate stage-1 domain if it has stage-2 parent domain */
-> > +     if (parent)
-> > +             return riscv_iommu_domain_alloc_nested(dev, parent, user_=
-data);
-> > +
-> > +     if (flags & ~((IOMMU_HWPT_ALLOC_NEST_PARENT | IOMMU_HWPT_ALLOC_DI=
-RTY_TRACKING)))
-> > +             return ERR_PTR(-EOPNOTSUPP);
-> > +
-> > +     if (user_data)
-> > +             return ERR_PTR(-EINVAL);
-> > +
-> > +     /* domain_alloc_user op needs to be fully initialized */
-> > +     domain =3D iommu_domain_alloc(dev->bus);
->
-> Please organize your driver to avoid calling this core function
-> through a pointer and return the correct type from the start so you
-> don't have to cast.
+Yi Liu (7):
+  iommu: Introduce a replace API for device pasid
+  iommufd: Pass pasid through the device attach/replace path
+  iommufd: Support attach/replace hwpt per pasid
+  iommufd/selftest: Add set_dev_pasid and remove_dev_pasid in mock iommu
+  iommufd/selftest: Add a helper to get test device
+  iommufd/selftest: Add test ops to test pasid attach/detach
+  iommufd/selftest: Add coverage for iommufd pasid attach/detach
 
-Ok, let me modify this part. Thanks .
+ drivers/iommu/iommu-priv.h                    |   3 +
+ drivers/iommu/iommu.c                         |  80 ++++++-
+ drivers/iommu/iommufd/Makefile                |   1 +
+ drivers/iommu/iommufd/device.c                |  31 +--
+ drivers/iommu/iommufd/iommufd_private.h       |  15 ++
+ drivers/iommu/iommufd/iommufd_test.h          |  30 +++
+ drivers/iommu/iommufd/pasid.c                 | 157 +++++++++++++
+ drivers/iommu/iommufd/selftest.c              | 206 ++++++++++++++++-
+ include/linux/iommufd.h                       |   6 +
+ tools/testing/selftests/iommu/iommufd.c       | 207 ++++++++++++++++++
+ .../selftests/iommu/iommufd_fail_nth.c        |  28 ++-
+ tools/testing/selftests/iommu/iommufd_utils.h |  78 +++++++
+ 12 files changed, 808 insertions(+), 34 deletions(-)
+ create mode 100644 drivers/iommu/iommufd/pasid.c
 
->
-> > +     if (!domain)
-> > +             return ERR_PTR(-ENOMEM);
-> > +
-> > +     /*
-> > +      * We assume that nest-parent or g-stage only will come here
-> > +      * TODO: Shadow page table doesn't be supported now.
-> > +      *       We currently can't distinguish g-stage and shadow
-> > +      *       page table here. Shadow page table shouldn't be
-> > +      *       put at stage-2.
-> > +      */
-> > +     riscv_domain =3D iommu_domain_to_riscv(domain);
-> > +
-> > +     /* pgd_root may be allocated in .domain_alloc_paging */
-> > +     if (riscv_domain->pgd_root)
-> > +             iommu_free_page(riscv_domain->pgd_root);
->
-> And don't do stuff like this, if domain_alloc didn't do the right
-> stuff then reorganize it so that it does. Most likely pass in a flag
-> that you are allocating the nest so it can setup properly if it is
-> only a small change like this.
+-- 
+2.34.1
 
-Yes, if we don't rely on the original domain allocation, it won't be
-weird as it is now.
-
->
-> > +/**
-> > + * struct iommu_hwpt_riscv_iommu - RISCV IOMMU stage-1 device context =
-table
-> > + *                                 info (IOMMU_HWPT_TYPE_RISCV_IOMMU)
-> > + * @dc_len: Length of device context
-> > + * @dc_uptr: User pointer to the address of device context
-> > + * @event_len: Length of an event record
-> > + * @out_event_uptr: User pointer to the address of event record
-> > + */
-> > +struct iommu_hwpt_riscv_iommu {
-> > +     __aligned_u64 dc_len;
-> > +     __aligned_u64 dc_uptr;
->
-> Do we really want this to be a pointer? ARM just inlined it in the
-> struct, why not do that?
->
-> > +     __aligned_u64 event_len;
-> > +     __aligned_u64 out_event_uptr;
-> > +};
->
-> Similar here too, why not just inline the response memory?
-
-I think we can just inline them, just like what we do in the
-'iommu_hwpt_riscv_iommu_invalidate'. does I understand correctly?
-
->
-> Jason
