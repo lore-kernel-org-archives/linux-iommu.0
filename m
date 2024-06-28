@@ -1,50 +1,25 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.16])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2B24E27733
-	for <iommu@lists.linux.dev>; Fri, 28 Jun 2024 12:33:06 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.16
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id D5E38154433
+	for <iommu@lists.linux.dev>; Fri, 28 Jun 2024 12:39:57 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1719577988; cv=none; b=ipHvvAbEyrLo+HENN12rMsYgFv1K3ETHVbCljfNsBeXA5Gtra8QQjPygyTlX/V6B9bxDpyfZeCKxUoEpi7U7etTlLxkDPD/+rn/FY6P0fuYRi5/WtMAj2K3DUtRlNh+kB8qikJ9OJcS1aoGkVyi63IMPM9NjtrstUA+GqLrOU24=
+	t=1719578400; cv=none; b=naGwCmzJujLFjIr092IDcpSiCsbNE0k7/gidXNYyoNyvAIXos8Lnk2CoL1LcFG3+TYdnCPBv5UxUAWYd3iqE2t98qszt1M7kDbHtW20Jcto8fpxTTa15wlhASWnfgAU+MYi9jeFTtqTSilVB6YDYoWOIjSm1GIViAxqmrs4t6Rc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1719577988; c=relaxed/simple;
-	bh=iP72sjx0dw/MwgE+xmP0d2ItZCoMMkXEZyU0W+SEO5o=;
-	h=Message-ID:Date:MIME-Version:Cc:Subject:To:References:From:
-	 In-Reply-To:Content-Type; b=JVEY4/VuNkE0NfclFibt/Jyrw/+g0rPj9pNMrZc5Yd3VdITyYgDhyDrkLKG/JS3AlUsP0Cdcn6nUE4xo/fPoB/RbTXRUbsLbeOSxnA/ss7yIX7tRYr6enqrI4VV9fpiyv41rkPs683soHH5g2+6Ml5CpGGf1DcW8FNgy3q9Cxvk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=j5H7dNBw; arc=none smtp.client-ip=192.198.163.16
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="j5H7dNBw"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1719577986; x=1751113986;
-  h=message-id:date:mime-version:cc:subject:to:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=iP72sjx0dw/MwgE+xmP0d2ItZCoMMkXEZyU0W+SEO5o=;
-  b=j5H7dNBwT5k8Ju9xJo+tNe0mGaMxEhVwVktQi/ioU9Far072qobBVysA
-   lhZnE1PX8swjsCmE/hfsw3Le12ft338q7SQQ2I9rpx0igsSiPgfDm0SOA
-   OM5Pjddeu/l4kkKuHE7Ez+2ql6Fmqh91hCI8bnJIqPud5l+m3Gof7r0Z7
-   E1QoDwMmQZEh2+w82GhiuyETWo3lRLPXIxLQiG0XXScF3Gsli3QLaWKXX
-   NdsLhiukgMrAlVlaV+HLmfirKpH10aIr0ycqJd28rDuWLANxPJ57o/hto
-   Y/pkYXNbZCdMM8hJGmJqpb4nALIm7aOPwp7+Prei5QQtxT2VZZbEfPZnc
-   Q==;
-X-CSE-ConnectionGUID: yQrzJ07TT6m9Obwb0sigUA==
-X-CSE-MsgGUID: zQNVm34jRWihdrGsOksEQQ==
-X-IronPort-AV: E=McAfee;i="6700,10204,11116"; a="12299777"
-X-IronPort-AV: E=Sophos;i="6.09,169,1716274800"; 
-   d="scan'208";a="12299777"
-Received: from fmviesa006.fm.intel.com ([10.60.135.146])
-  by fmvoesa110.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Jun 2024 05:33:05 -0700
-X-CSE-ConnectionGUID: 8ZksAHdgQ3upAMxwF8GTzw==
-X-CSE-MsgGUID: rZ8Cq3WYRyyuvf5sMQtcqA==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.09,169,1716274800"; 
-   d="scan'208";a="44563171"
-Received: from blu2-mobl.ccr.corp.intel.com (HELO [10.125.248.220]) ([10.125.248.220])
-  by fmviesa006-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Jun 2024 05:33:03 -0700
-Message-ID: <fbede9a0-cfbc-4782-99c1-803f611c28b1@linux.intel.com>
-Date: Fri, 28 Jun 2024 20:33:01 +0800
+	s=arc-20240116; t=1719578400; c=relaxed/simple;
+	bh=UyRqRzbJ9Nie3cIoqfa8TIBdZp5bApSAkz6k3dwlxm4=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=QB4unSt78tm8ZEPJEAhCqRL47PTp8YgoEyk++cVbakwYn0AD+lwMAeQ1M8x39x5PNuhWnqdsi8cUFUwd6RhCFSsHEID1KUL8GW5LwEoH7416q667fjr6Hh7Cht4p2FvYbBLDkEBvyho67QMRam3RDgIuKYVkhJ4tnQCGH3rictQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; arc=none smtp.client-ip=217.140.110.172
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id D7215106F;
+	Fri, 28 Jun 2024 05:40:21 -0700 (PDT)
+Received: from [10.1.196.40] (e121345-lin.cambridge.arm.com [10.1.196.40])
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 79DD13F6A8;
+	Fri, 28 Jun 2024 05:39:54 -0700 (PDT)
+Message-ID: <f2fee806-09bc-4b0a-a77e-3bf12c329ecb@arm.com>
+Date: Fri, 28 Jun 2024 13:39:48 +0100
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -52,54 +27,70 @@ List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Cc: baolu.lu@linux.intel.com, yj.chiang@mediatek.com, iommu@lists.linux.dev,
- linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
- linux-mediatek@lists.infradead.org
-Subject: Re: [PATCH] iommu: Remove iommu_sva_unbind_gpasid
-To: Mark-PK Tsai <mark-pk.tsai@mediatek.com>, Joerg Roedel <joro@8bytes.org>,
- Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
- Matthias Brugger <matthias.bgg@gmail.com>,
- AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
-References: <20240628113011.3535-1-mark-pk.tsai@mediatek.com>
-Content-Language: en-US
-From: Baolu Lu <baolu.lu@linux.intel.com>
-In-Reply-To: <20240628113011.3535-1-mark-pk.tsai@mediatek.com>
+Subject: Re: [PATCH] MAINTAINERS: Update IOMMU tree location
+To: Joerg Roedel <joro@8bytes.org>, iommu@lists.linux.dev
+Cc: Will Deacon <will@kernel.org>, Jason Gunthorpe <jgg@ziepe.ca>,
+ Kevin Tian <kevin.tian@intel.com>, Lu Baolu <baolu.lu@linux.intel.com>,
+ linux-kernel@vger.kernel.org, Joerg Roedel <jroedel@suse.de>
+References: <20240628123132.8690-1-joro@8bytes.org>
+From: Robin Murphy <robin.murphy@arm.com>
+Content-Language: en-GB
+In-Reply-To: <20240628123132.8690-1-joro@8bytes.org>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 
-On 2024/6/28 19:30, Mark-PK Tsai wrote:
-> This is a left over of commit 0c9f17877891
-> ("iommu: Remove guest pasid related interfaces and definitions")
+On 28/06/2024 1:31 pm, Joerg Roedel wrote:
+> From: Joerg Roedel <jroedel@suse.de>
 > 
-> Signed-off-by: Mark-PK Tsai <mark-pk.tsai@mediatek.com>
+> Update the maintainers entries to the new location of the
+> IOMMU tree.
+
+FWIW that's working for me;
+
+Acked-by: Robin Murphy <robin.murphy@arm.com>
+
+> Signed-off-by: Joerg Roedel <jroedel@suse.de>
 > ---
->   include/linux/iommu.h | 2 --
->   1 file changed, 2 deletions(-)
+>   MAINTAINERS | 8 ++++----
+>   1 file changed, 4 insertions(+), 4 deletions(-)
 > 
-> diff --git a/include/linux/iommu.h b/include/linux/iommu.h
-> index 17b3f36ad843..225403cfe614 100644
-> --- a/include/linux/iommu.h
-> +++ b/include/linux/iommu.h
-> @@ -785,8 +785,6 @@ extern int iommu_attach_device(struct iommu_domain *domain,
->   			       struct device *dev);
->   extern void iommu_detach_device(struct iommu_domain *domain,
->   				struct device *dev);
-> -extern int iommu_sva_unbind_gpasid(struct iommu_domain *domain,
-> -				   struct device *dev, ioasid_t pasid);
-
-Not sure why this still remains there. But it seems not alone.
-
-$ git grep iommu_sva_unbind_gpasid
-Documentation/userspace-api/iommu.rst:  int 
-iommu_sva_unbind_gpasid(struct iommu_domain *domain,
-include/linux/iommu.h:extern int iommu_sva_unbind_gpasid(struct 
-iommu_domain *domain,
-
-I believe the document should also be removed.
-
->   extern struct iommu_domain *iommu_get_domain_for_dev(struct device *dev);
->   extern struct iommu_domain *iommu_get_dma_domain(struct device *dev);
->   extern int iommu_map(struct iommu_domain *domain, unsigned long iova,
-
-Best regards,
-baolu
+> diff --git a/MAINTAINERS b/MAINTAINERS
+> index aacccb376c28..c48c9e772517 100644
+> --- a/MAINTAINERS
+> +++ b/MAINTAINERS
+> @@ -1044,7 +1044,7 @@ M:	Joerg Roedel <joro@8bytes.org>
+>   R:	Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
+>   L:	iommu@lists.linux.dev
+>   S:	Maintained
+> -T:	git git://git.kernel.org/pub/scm/linux/kernel/git/joro/iommu.git
+> +T:	git git://git.kernel.org/pub/scm/linux/kernel/git/iommu/linux.git
+>   F:	drivers/iommu/amd/
+>   F:	include/linux/amd-iommu.h
+>   
+> @@ -11156,7 +11156,7 @@ M:	David Woodhouse <dwmw2@infradead.org>
+>   M:	Lu Baolu <baolu.lu@linux.intel.com>
+>   L:	iommu@lists.linux.dev
+>   S:	Supported
+> -T:	git git://git.kernel.org/pub/scm/linux/kernel/git/joro/iommu.git
+> +T:	git git://git.kernel.org/pub/scm/linux/kernel/git/iommu/linux.git
+>   F:	drivers/iommu/intel/
+>   
+>   INTEL IPU3 CSI-2 CIO2 DRIVER
+> @@ -11529,7 +11529,7 @@ IOMMU DMA-API LAYER
+>   M:	Robin Murphy <robin.murphy@arm.com>
+>   L:	iommu@lists.linux.dev
+>   S:	Maintained
+> -T:	git git://git.kernel.org/pub/scm/linux/kernel/git/joro/iommu.git
+> +T:	git git://git.kernel.org/pub/scm/linux/kernel/git/iommu/linux.git
+>   F:	drivers/iommu/dma-iommu.c
+>   F:	drivers/iommu/dma-iommu.h
+>   F:	drivers/iommu/iova.c
+> @@ -11541,7 +11541,7 @@ M:	Will Deacon <will@kernel.org>
+>   R:	Robin Murphy <robin.murphy@arm.com>
+>   L:	iommu@lists.linux.dev
+>   S:	Maintained
+> -T:	git git://git.kernel.org/pub/scm/linux/kernel/git/joro/iommu.git
+> +T:	git git://git.kernel.org/pub/scm/linux/kernel/git/iommu/linux.git
+>   F:	Documentation/devicetree/bindings/iommu/
+>   F:	Documentation/userspace-api/iommu.rst
+>   F:	drivers/iommu/
