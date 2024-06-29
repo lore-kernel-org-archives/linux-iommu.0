@@ -1,95 +1,152 @@
-Received: from mail-il1-f176.google.com (mail-il1-f176.google.com [209.85.166.176])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mx0a-0031df01.pphosted.com (mx0a-0031df01.pphosted.com [205.220.168.131])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 435E61DA3D
-	for <iommu@lists.linux.dev>; Sat, 29 Jun 2024 01:11:56 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.166.176
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8C2053C30
+	for <iommu@lists.linux.dev>; Sat, 29 Jun 2024 01:54:34 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.168.131
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1719623517; cv=none; b=hfx3PxgxGzq30NgkfcpWWx8Ldf9de2SOKB8f6dF2iKeXvcCdFoz4GoMXL+zhLSgTDWhEyL6gzzec0MUve7Eovo6qcb/3QS6f7Ophc2xbiAVyo4B/TA0fJIAG/caTgHgqqWXs4zLalXWyt8PqPIGbxQhQOGaBZi96U7+SS06gUbw=
+	t=1719626076; cv=none; b=qJB/Oy6PbARFTF5V3EV0m9F2vI+e7UFOZiete5C3qdAJ1xefIqWy2/KzdZWV9VfVZkRu/fPemcckP9qiEy1NmYeyI19cDt1aH6MdzVej/mvu4oiqqH+ERLtK0+srRF/dL4Mlr8ukY0BcwVL1SCscqWtV4QNV02eUjV4LhY1vcQU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1719623517; c=relaxed/simple;
-	bh=owo+cNn/TUw6Wew2s0YPnRqOgIVxnweK7ckD+KeIf3A=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=pyMH7UIatXB0wUrMevEqWyDJCgvi6f10Jzj5+g++Q758iH6snWlZD2pHzpKehn3OHkSUDz3Id6BEUxvISpHFidj5Xr+SlDubzXH8BNdAJGvcWBVtlgasty1oBzZ7vx6OmqupXehQQmpbkyNqMa76uDsAXEJltt6jhZQ55xiGqmw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=lMy8gJGB; arc=none smtp.client-ip=209.85.166.176
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
+	s=arc-20240116; t=1719626076; c=relaxed/simple;
+	bh=Fg6PdLl0POAiZcXqhSR/3cus8dCmfzYZanJy1PFyjpk=;
+	h=From:To:CC:Subject:Date:Message-ID:MIME-Version:Content-Type; b=I//u6dSg5xAqZ+imqmbxsua+eg4c/R4GuWMRp1XkG/x56UBSD2WlbDkG6hXw/ZGqwrXyzhokOVJ+IgUf4wULvYzGBCc096gq/Ab1j7jhx93i5Fwn+3KD4je2+fY5R8VeRBkNgEvruShH3uT7l6wGluctzS/6aYcGIsMBZ8Ji7uE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com; spf=pass smtp.mailfrom=quicinc.com; dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b=T11DECJE; arc=none smtp.client-ip=205.220.168.131
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=quicinc.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="lMy8gJGB"
-Received: by mail-il1-f176.google.com with SMTP id e9e14a558f8ab-3737dc4a669so5098785ab.0
-        for <iommu@lists.linux.dev>; Fri, 28 Jun 2024 18:11:56 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google; t=1719623515; x=1720228315; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=rdZPgDV7aIl0J73xlRHxxXH5BwM06TOu62VfOoYuq0w=;
-        b=lMy8gJGBRUvHI59MQTHomLpHCZnidG+TieLKIjcENThv0beoKpOVoFPLIyVh0oPNjd
-         nyA64ESk6v606pUaeTukRjQVVvGtT++SgmPEXfHMWhF6C4sNC0pSoa2x/ZLBRM6psMKL
-         UNj9W8SCKRUPzcG8FEYIV3UxZDgdF+8zW26RUU3/g78WjNWHMUMrj3XMGozvYBUAK6xr
-         AIuhACerI0BiQH56kS4ZlkzyLkr29I3qrg99qK5OmQ1hUMH2BksUqQAQQ5QrfPEjKXc1
-         K9WS0nkJeWBHKmNHJ6WCOo8ORmJCVZdwFSoDzif7ylFKwJ9yG2CqLbay58ZN9RpxlPpz
-         neuQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1719623515; x=1720228315;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=rdZPgDV7aIl0J73xlRHxxXH5BwM06TOu62VfOoYuq0w=;
-        b=LnHUvw4knU3UNh0yT+MYqPdFmyf6ISHK/Ug0uIYV+HSRZjilYSZbKa/NpLfkpZDUyq
-         TWWtW+nf2Btzh5IE+9Zl3EYVMoBbiLbZqRb5LaQgBGq6w6EGeeKg7SUU6tAZSV7igkJx
-         y3oLvMSESy9dU7se7DLzmNBQI3x9TPTnIwfKt/jJQwR1d7E7Yi6Nl9raHidMNCHu3SRF
-         X5ziUJ/4PQIk4VyVpZ21VK8JDj9qZpcrQFOFZ048cC03/s2qUz/sr4hL9ssrxgmdhLC2
-         qrFX5BdGuP4x4/N2r1i2fNl2Vd5MbzazW+XgiKDEYnCXh8k/CwqC+ST7+cSng5lL9xFA
-         bdog==
-X-Forwarded-Encrypted: i=1; AJvYcCUZ0Xns4ij7oux1SlMB9bN3OGXUtAiRAKDzYNdj9tYQZxXO1//hDDeMhT+JYRXkzcBxArKE8tYAgc+cpFklV14ZgEGl788=
-X-Gm-Message-State: AOJu0YxFHayvJm24p6SbmWI62hVUQqSpDd5do+++MedFaRF3Fi/dpKl8
-	lf7GSJOnQhn4AhdNyqnx5IK3yhF4/edLc9mGi5ebXeqVJ5tzg+YHH6V3CSTDk3g=
-X-Google-Smtp-Source: AGHT+IHX2JUaclIoPrHTyWd3NWpAL4bg4r61iFuy9mfBP9il15TCI+aZkWxWAJEJRM9M8Gi0RE+u5w==
-X-Received: by 2002:a92:c24d:0:b0:374:97b4:dbd1 with SMTP id e9e14a558f8ab-3763f633817mr217872295ab.18.1719623515458;
-        Fri, 28 Jun 2024 18:11:55 -0700 (PDT)
-Received: from ziepe.ca ([24.114.37.55])
-        by smtp.gmail.com with ESMTPSA id 41be03b00d2f7-72c69b53be5sm1784142a12.16.2024.06.28.18.11.54
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 28 Jun 2024 18:11:54 -0700 (PDT)
-Received: from jgg by jggl with local (Exim 4.95)
-	(envelope-from <jgg@ziepe.ca>)
-	id 1sNJr9-0004o0-Ot;
-	Fri, 28 Jun 2024 19:14:11 -0300
-Date: Fri, 28 Jun 2024 19:14:11 -0300
-From: Jason Gunthorpe <jgg@ziepe.ca>
-To: Lu Baolu <baolu.lu@linux.intel.com>
-Cc: Kevin Tian <kevin.tian@intel.com>, Joerg Roedel <joro@8bytes.org>,
-	Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
-	Jean-Philippe Brucker <jean-philippe@linaro.org>,
-	Nicolin Chen <nicolinc@nvidia.com>, Yi Liu <yi.l.liu@intel.com>,
-	Jacob Pan <jacob.jun.pan@linux.intel.com>,
-	Joel Granados <j.granados@samsung.com>, iommu@lists.linux.dev,
-	virtualization@lists.linux-foundation.org,
-	linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v7 06/10] iommufd: Add iommufd fault object
-Message-ID: <Zn81szS0G27keAwB@ziepe.ca>
-References: <20240616061155.169343-1-baolu.lu@linux.intel.com>
- <20240616061155.169343-7-baolu.lu@linux.intel.com>
+	dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b="T11DECJE"
+Received: from pps.filterd (m0279864.ppops.net [127.0.0.1])
+	by mx0a-0031df01.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 45SExIdk015121;
+	Sat, 29 Jun 2024 01:54:06 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=quicinc.com; h=
+	cc:content-transfer-encoding:content-type:date:from:message-id
+	:mime-version:subject:to; s=qcppdkim1; bh=LSw/TZ7Oav1VrpzpoEXPd0
+	pkctbcy6cZJu241gwyaoQ=; b=T11DECJEeXyHfNARum0FlwTRaAZDRnufv4BuAr
+	MPSVncI1XB6rN1RdvPikU9XvCHw9YrV9ShB96QTTIOPlfqlHo50Ftlg/Rd+FczVE
+	nOIayMWn5rIa/rnngj9tcZc8goMnuT4fWcHezsY50hAjltVsrRTSngJBIJfRZ4Cy
+	m1VTFQcx88CgDJJHzTQJ9L8Eyy7+Qjr7baZ0Y/Gu4Oj8TVgVS6cK/RfaH//2jCqn
+	xXm7wx+GBZQL49VkKrhwW04Dfur5HLDfXSayvQVu5G0NEQ1Jif5g06jp7p+JH9ME
+	eRBDXWeCpXhFSrGMxqjwXYT3jms/THb5XsTvQ2/MTlq53vVA==
+Received: from nalasppmta05.qualcomm.com (Global_NAT1.qualcomm.com [129.46.96.20])
+	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 3ywqsj1sqg-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Sat, 29 Jun 2024 01:54:06 +0000 (GMT)
+Received: from nalasex01a.na.qualcomm.com (nalasex01a.na.qualcomm.com [10.47.209.196])
+	by NALASPPMTA05.qualcomm.com (8.17.1.19/8.17.1.19) with ESMTPS id 45T1s519017271
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Sat, 29 Jun 2024 01:54:05 GMT
+Received: from hu-akhilpo-hyd.qualcomm.com (10.80.80.8) by
+ nalasex01a.na.qualcomm.com (10.47.209.196) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.1544.9; Fri, 28 Jun 2024 18:53:57 -0700
+From: Akhil P Oommen <quic_akhilpo@quicinc.com>
+To: freedreno <freedreno@lists.freedesktop.org>,
+        <dri-devel@lists.freedesktop.org>, <linux-arm-msm@vger.kernel.org>,
+        "OPEN
+ FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" <devicetree@vger.kernel.org>,
+        Bjorn Andersson <andersson@kernel.org>,
+        Rob Clark <robdclark@gmail.com>,
+        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
+        Konrad Dybcio
+	<konrad.dybcio@linaro.org>,
+        Krzysztof Kozlowski <krzk@kernel.org>,
+        "Will
+ Deacon" <will@kernel.org>
+CC: Akhil P Oommen <quic_akhilpo@quicinc.com>,
+        Abhinav Kumar
+	<quic_abhinavk@quicinc.com>,
+        Conor Dooley <conor+dt@kernel.org>, "Daniel
+ Vetter" <daniel@ffwll.ch>,
+        David Airlie <airlied@gmail.com>, Joerg Roedel
+	<joro@8bytes.org>,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>,
+        "Maarten
+ Lankhorst" <maarten.lankhorst@linux.intel.com>,
+        Marijn Suijten
+	<marijn.suijten@somainline.org>,
+        Maxime Ripard <mripard@kernel.org>, "Rob
+ Herring" <robh@kernel.org>,
+        Robin Murphy <robin.murphy@arm.com>, Sean Paul
+	<sean@poorly.run>,
+        Thomas Zimmermann <tzimmermann@suse.de>, <iommu@lists.linux.dev>,
+        <linux-arm-kernel@lists.infradead.org>, <linux-kernel@vger.kernel.org>
+Subject: [PATCH v2 0/5] Support for Adreno X1-85 GPU
+Date: Sat, 29 Jun 2024 07:19:33 +0530
+Message-ID: <20240629015111.264564-1-quic_akhilpo@quicinc.com>
+X-Mailer: git-send-email 2.45.1
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20240616061155.169343-7-baolu.lu@linux.intel.com>
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
+ nalasex01a.na.qualcomm.com (10.47.209.196)
+X-QCInternal: smtphost
+X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
+X-Proofpoint-ORIG-GUID: 2OGEFCZLGwYLn8DEsMnljkq_2k9Rl8sK
+X-Proofpoint-GUID: 2OGEFCZLGwYLn8DEsMnljkq_2k9Rl8sK
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.293,Aquarius:18.0.1039,Hydra:6.0.680,FMLib:17.12.28.16
+ definitions=2024-06-28_18,2024-06-28_01,2024-05-17_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 spamscore=0 clxscore=1011
+ bulkscore=0 phishscore=0 suspectscore=0 lowpriorityscore=0 malwarescore=0
+ mlxscore=0 impostorscore=0 mlxlogscore=999 priorityscore=1501 adultscore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.19.0-2406140001
+ definitions=main-2406290013
 
-On Sun, Jun 16, 2024 at 02:11:51PM +0800, Lu Baolu wrote:
-> @@ -6,6 +6,7 @@ iommufd-y := \
->  	ioas.o \
->  	main.o \
->  	pages.o \
-> +	fault.o \
->  	vfio_compat.o
+This series adds support for the Adreno X1-85 GPU found in Qualcomm's
+compute series chipset, Snapdragon X1 Elite (x1e80100). In this new
+naming scheme for Adreno GPU, 'X' stands for compute series, '1' denotes
+1st generation and '8' & '5' denotes the tier and the SKU which it
+belongs.
 
-Keep sorted
+X1-85 has major focus on doubling core clock frequency and bandwidth
+throughput. It has a dedicated collapsible Graphics MX rail (gmxc) to
+power the memories and double the number of data channels to improve
+bandwidth to DDR.
 
-Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
+Mesa has the necessary bits present already to support this GPU. We are
+able to bring up Gnome desktop by hardcoding "0xffff43050a01" as
+chipid. Also, verified glxgears and glmark2. We have plans to add the
+new chipid support to Mesa in next few weeks, but these patches can go in
+right away to get included in v6.11.
 
-Jason
+This series is rebased on top of msm-next branch. P3 cherry-picks cleanly on
+qcom/for-next.
+
+P1, P2 & P3 for Rob Clark
+P4 for Will Deacon
+P5 for Bjorn to pick up.
+
+Changes in v2:
+- Minor update to compatible pattern, '[x]' -> 'x'
+- Increased address space size (Rob)
+- Introduced gmu_chipid in a6xx_info (Rob)
+- Improved fallback logic for gmxc (Dmitry)
+- Rebased on top of msm-next
+- Picked a new patch for arm-mmu bindings update
+- Reordered gpu & gmu reg enties to match schema
+
+Akhil P Oommen (5):
+  dt-bindings: display/msm/gmu: Add Adreno X185 GMU
+  drm/msm/adreno: Add support for X185 GPU
+  drm/msm/adreno: Introduce gmu_chipid for a740 & a750
+  dt-bindings: arm-smmu: Add X1E80100 GPU SMMU
+  arm64: dts: qcom: x1e80100: Add gpu support
+
+ .../devicetree/bindings/display/msm/gmu.yaml  |   4 +
+ .../devicetree/bindings/iommu/arm,smmu.yaml   |   3 +-
+ arch/arm64/boot/dts/qcom/x1e80100.dtsi        | 195 ++++++++++++++++++
+ drivers/gpu/drm/msm/adreno/a6xx_catalog.c     |  20 ++
+ drivers/gpu/drm/msm/adreno/a6xx_gmu.c         |  34 +--
+ drivers/gpu/drm/msm/adreno/a6xx_gpu.c         |   2 +-
+ drivers/gpu/drm/msm/adreno/a6xx_gpu.h         |   1 +
+ drivers/gpu/drm/msm/adreno/adreno_gpu.h       |   5 +
+ 8 files changed, 239 insertions(+), 25 deletions(-)
+
+-- 
+2.45.1
+
