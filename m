@@ -1,94 +1,110 @@
-Received: from mail-pl1-f182.google.com (mail-pl1-f182.google.com [209.85.214.182])
+Received: from mail-lj1-f179.google.com (mail-lj1-f179.google.com [209.85.208.179])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3ED7F1F937
-	for <iommu@lists.linux.dev>; Mon,  1 Jul 2024 09:26:11 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.182
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7333C12D1FF
+	for <iommu@lists.linux.dev>; Mon,  1 Jul 2024 10:23:45 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.179
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1719825972; cv=none; b=sHuPnCDZh22BjPM/SihtI4TDlxNDPeCRjEySaYxPYTWfYi7fqmW6Dz0TOAoSxNPgtW/yRgkQiipLVrZUvWw4Yt4COOhDzRGtDyez15D1KNqyAvvl0Q5MbzHxvWjpNO0aeZhs3V7ZkleCPVlAxhkIAYQUIeWjGI2W3vvXMSk2JYw=
+	t=1719829427; cv=none; b=V/t0Mfs3fky4ZLce6eitle/c6BJo1e+s21caAuc8/covBESF4HL0FK1aNaQHYMUrxVZG8rBhpZg3MUHLwCJ+R769nMCQIPf/5LU7S2WSliENt5lQWxg8eITHGPASirwtKG8QgzvVZ2U9jmHUTn2TyMZ1SwWajLPCYA0OW/ggo2A=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1719825972; c=relaxed/simple;
-	bh=CLxBYT6lZAnsn3LJAv/RrK+X+sYbyfslVENO8igDdxM=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=PZuqp39SrH2iejpJH9PWrNoZ/70EyC53kg5okEfTakJCL9U1aInXkNctyDCb/ejetvYnJ6T8tjGrbx1eurI6LD+fx5ngBd3w6Fdl5wvsSXZ2IouLe3iQzywSUthh57X7Zr3fn9Jn8NOriUCoO0k2KDi2SgmxwiW04/YWFVt+IXY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=rivosinc.com; spf=pass smtp.mailfrom=rivosinc.com; dkim=pass (2048-bit key) header.d=rivosinc-com.20230601.gappssmtp.com header.i=@rivosinc-com.20230601.gappssmtp.com header.b=mKYFxHhv; arc=none smtp.client-ip=209.85.214.182
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=rivosinc.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=rivosinc.com
+	s=arc-20240116; t=1719829427; c=relaxed/simple;
+	bh=n94gVyy849dz93qJ6lalONV+LGkG+4MFl8sfuXXQrW4=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=qqH7A2dw//EasD4c43ITlkSj34FDPyytrx60wNe8LVARXZZYk69y7Q6AXzlXmPri0cPiR8YPDLvTva+CVIfBZZ82CU46ZbVOToXD3Oz7ANIoXnC20E12c2o9SwH5xbKH4GvHIb/JE6fY4raqw3Gf6iisOLoau+oMwLa4K0yBtrk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org; spf=pass smtp.mailfrom=linaro.org; dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b=jsveRrzT; arc=none smtp.client-ip=209.85.208.179
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linaro.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=rivosinc-com.20230601.gappssmtp.com header.i=@rivosinc-com.20230601.gappssmtp.com header.b="mKYFxHhv"
-Received: by mail-pl1-f182.google.com with SMTP id d9443c01a7336-1f64ecb1766so13411985ad.1
-        for <iommu@lists.linux.dev>; Mon, 01 Jul 2024 02:26:11 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="jsveRrzT"
+Received: by mail-lj1-f179.google.com with SMTP id 38308e7fff4ca-2ec0f3b9cfeso33370541fa.0
+        for <iommu@lists.linux.dev>; Mon, 01 Jul 2024 03:23:45 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=rivosinc-com.20230601.gappssmtp.com; s=20230601; t=1719825970; x=1720430770; darn=lists.linux.dev;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=CLxBYT6lZAnsn3LJAv/RrK+X+sYbyfslVENO8igDdxM=;
-        b=mKYFxHhvQPLxoSqt60MRkdywHpYpFxpGRGNjFlHLmZQCXA9d5G4RHURPm1r/sURVxB
-         x8OTiTn0IBlB8kVj4ocOGAVlWdB3Z8bJz82R1TpyARilirW/ma5Ei5XcpDZZK4DCJyjw
-         oPUnHrMTwYOLPQso7XwcyDMZeWkUthymWuwk5yW73mebsJlRFPdka0SF/9ZAQ5zQD40Q
-         0YlmuEF7uK2Oh9RyUiSTWFiVGoHItjC2q+/WomVL3kWJ5e2P/wU2jJnjEVFZIo+FUW+O
-         CImSkJacfCg8h9aiI/yV+hMNI1UR4ykv3hB/pdyI06hYhHSu8p+aJ6hqbkFePrGpBKYu
-         LUyg==
+        d=linaro.org; s=google; t=1719829423; x=1720434223; darn=lists.linux.dev;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=xY8d+HAkWfCBetfPMhE7Q4IYxdRfyfvsMH6WlImrlIc=;
+        b=jsveRrzTQ8yrhu3uMziKT/Eo6sDKgkQdWeFamYngLC7aUG+w4iCIuGaPf7M4Hg2FK1
+         pNXOj1qVNaWO8rjNzDMI8FxzsHq24UIepIji5ePVtfHUHOiyRtJGFptts+7PKLGkRSdo
+         ts9Ioi51iuF0p1w4UTlhZnNyDn85jud2rMXyFUFFwYgiF+smN1sEhqJcCHtz1N5Z6ACO
+         xCVqzGoh16APMi+DMKDxHHgDPvQnwStCiBksVFE33dqToxlLP7m3i12kKFFGzSUZdM0w
+         K3VMRf3cS8fTATJF65VzJiXz9T5iv1x8shdaT5LazNbSLE2r8YirdRbtSb5L0CwxY2b9
+         al7A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1719825970; x=1720430770;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=CLxBYT6lZAnsn3LJAv/RrK+X+sYbyfslVENO8igDdxM=;
-        b=d7BLFqKY9eszg1RPvifkWtO2Lz/ckOw+Rj6t2bQvCGhuoxVmtQxgvJFCgzqWi8yeDs
-         d9AhHvXB87lPIhvifFoUfZq6/AsHcEbF2Q1a+wtE8OSUJ0dtulQ8Cc36stCQrdGoMtNT
-         JaaIT2WECbTX6BoKDQ8X8KmrdICgDur+aN5ArYKj2navVlrCjY9R1neg5OK/U/GO3tvJ
-         /Q7ItrAD27pI2n3WYmwl7/8THKBEjgeUC1jtZft0Ci2CFsw4dswleSt4wVVGgNedri7K
-         XlNYp5uSbM0E8cswrB9RJS6ihmZd2yvnyWp6jZzN8mLZDqwuTRPI8Nzj4QHjEL1OJ/u2
-         yHrg==
-X-Forwarded-Encrypted: i=1; AJvYcCX1i2+L4jCFkSgM0gRy5UVKtD8DcHnSZGHge/3TT5BQsYVtPLE/MhXunkcSL3XhDHPDOBzNT1MUUqgevh/JipOW49jqEoQ=
-X-Gm-Message-State: AOJu0YyQGGfCywh8+FIfQyT925QTQlM25W37ILskM0Vp/ghnCsbDrKCG
-	bGCwg52Kigo8hhgc3AIUBDCauqpG64/ZDz7P12WBWZLatc3IQCH/720vF/BVI4OZWbjrXN9U9xk
-	o/LgssISUAhqud0B/kws9x65S8jDtQZcGlmxZpg==
-X-Google-Smtp-Source: AGHT+IFDGkhs/Uqx9rZKsJJeig7rjQkCf5zVJ9PGVd7JKGl0xn5A1rWbgKarqOMg3F9Uak5en6PJWXoJTcb9RkZko7I=
-X-Received: by 2002:a05:6a21:3288:b0:1bd:23c7:ebfb with SMTP id
- adf61e73a8af0-1bef6277352mr4231085637.62.1719825970649; Mon, 01 Jul 2024
- 02:26:10 -0700 (PDT)
+        d=1e100.net; s=20230601; t=1719829423; x=1720434223;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=xY8d+HAkWfCBetfPMhE7Q4IYxdRfyfvsMH6WlImrlIc=;
+        b=dFuwsEaR9ZH5Z6bXeMlpKU0In7/LOC/kricdQJYl8lkyWdmLsbLhEtJ/ZuqWaNE98m
+         zeyULPv7JfSJk2FgrQ/J3nkkM+2mdarhtalzJkkwwhN2kIRYPx+Q7CKL0fzX64C6bWVX
+         JAY4BU+VHLzZrZyDivIFAYS+e6nII8oXIBH5IXxMKzeB45b4xA0jLrDug0b+sDsUgDau
+         nPoom0NeI476oVv9R0L12wKYT448FvgmcxMFK7hbRA0K3O+ZPCmpjkaXpiAsiLmqUdod
+         QMAneNfIRXbGyc5WFwymsLbkJz+SwaKFEz7s2j4F7fXzSE4tiTdakZqpI90KyYQ391Cb
+         phjQ==
+X-Forwarded-Encrypted: i=1; AJvYcCWxsdrhVYkxyEPvL3EIE2OAO55e7YXddJngiDK4dMXK3DWKj+YEz8i4eVmlIc6xrgthNBg0LT4LI0WdcJUop0gGXVrOCa4=
+X-Gm-Message-State: AOJu0YzvxeZLa84F7A744Ii8PB965uiM2IB12Gdvmlk/urE//SA7+Fwl
+	/2vzIO85s6J7cbFmSDPjmOzX4Mrtwg1n/rOAZEZY4ot0byoqwLOXzIg+ZGmEy60=
+X-Google-Smtp-Source: AGHT+IHn1x4/AXOS/KKlqIEGbYUZOI8dBCLD27ZLb+p6WIUGXcMNUx34kmR1UcblCSl1Pa/mlV2OGg==
+X-Received: by 2002:a2e:a912:0:b0:2ec:4d8d:375f with SMTP id 38308e7fff4ca-2ee5e3767fdmr37486211fa.16.1719829423583;
+        Mon, 01 Jul 2024 03:23:43 -0700 (PDT)
+Received: from myrica ([2.221.137.100])
+        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-4256b0621fesm146262315e9.24.2024.07.01.03.23.42
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 01 Jul 2024 03:23:42 -0700 (PDT)
+Date: Mon, 1 Jul 2024 11:24:00 +0100
+From: Jean-Philippe Brucker <jean-philippe@linaro.org>
+To: will@kernel.org, lpieralisi@kernel.org, kw@linux.com, robh@kernel.org,
+	bhelgaas@google.com, krzk+dt@kernel.org, conor+dt@kernel.org,
+	liviu.dudau@arm.com, sudeep.holla@arm.com, joro@8bytes.org
+Cc: robin.murphy@arm.com, nicolinc@nvidia.com, ketanp@nvidia.com,
+	linux-pci@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+	iommu@lists.linux.dev, devicetree@vger.kernel.org
+Subject: Re: [PATCH v2 0/3] Enable PCIe ATS for devicetree boot
+Message-ID: <20240701102400.GA2414@myrica>
+References: <20240607105415.2501934-2-jean-philippe@linaro.org>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <20240701072908.25503-1-luxu.kernel@bytedance.com>
- <20240701072908.25503-2-luxu.kernel@bytedance.com> <CAH2o1u7j6pXhWHL2rBZak6LeXxn_KUbQHjygRGQKuEfS_vmtkQ@mail.gmail.com>
- <CAPYmKFtCzQOOsN7vutoY0MrthtvcGxBqRsbr4ZgMQsaY1CrXHQ@mail.gmail.com> <CAPYmKFs-R4SfjZOMyV5wxjrkV+Eawc-zRWKgAZNFpOezZ6JQDA@mail.gmail.com>
-In-Reply-To: <CAPYmKFs-R4SfjZOMyV5wxjrkV+Eawc-zRWKgAZNFpOezZ6JQDA@mail.gmail.com>
-From: Tomasz Jeznach <tjeznach@rivosinc.com>
-Date: Mon, 1 Jul 2024 11:25:59 +0200
-Message-ID: <CAH2o1u7u3G0NDj_SjPPasNo9pJ2xDpBAE13=aqSG1EhVQyup6Q@mail.gmail.com>
-Subject: Re: [External] Re: [PATCH 1/1] iommu/riscv: Support sharing irq lines
- between iommu queues
-To: Xu Lu <luxu.kernel@bytedance.com>
-Cc: joro@8bytes.org, will@kernel.org, robin.murphy@arm.com, 
-	paul.walmsley@sifive.com, palmer@dabbelt.com, aou@eecs.berkeley.edu, 
-	apatel@ventanamicro.com, sunilvl@ventanamicro.com, iommu@lists.linux.dev, 
-	linux-riscv@lists.infradead.org, linux-kernel@vger.kernel.org, 
-	linux@rivosinc.com, baolu.lu@linux.intel.com, lihangjing@bytedance.com, 
-	xieyongji@bytedance.com
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20240607105415.2501934-2-jean-philippe@linaro.org>
 
-On Mon, Jul 1, 2024 at 11:14=E2=80=AFAM Xu Lu <luxu.kernel@bytedance.com> w=
-rote:
->
-> Oh, I think I understand what you mean now after checking the
-> implementation of riscv_iommu_queue_vec(). I apologize for not
-> understanding the meaning of the code before, please ignore my
-> disturbance.
->
-> Best Regards,
->
-> Xu Lu
+Hi Joerg,
 
-No worries, thanks for checking that path. LMK if there are any other
-problems with the driver.
+On Fri, Jun 07, 2024 at 11:54:13AM +0100, Jean-Philippe Brucker wrote:
+> Before enabling Address Translation Support (ATS) in endpoints, the OS
+> needs to confirm that the Root Complex supports it. Obtain this
+> information from the firmware description since there is no architected
+> method. ACPI provides a bit via IORT tables, so add the devicetree
+> equivalent.
+> 
+> Since v1 [1] I added the review and ack tags, thanks all. This should be
+> ready to go via the IOMMU tree.
 
-Best,
-- Tomasz
+This series enables ATS for devicetree boot, and is needed on an Nvidia
+system: https://lore.kernel.org/linux-arm-kernel/ZeJP6CwrZ2FSbTYm@Asurada-Nvidia/
+
+Would you mind picking it up for v6.11?
+
+Thanks,
+Jean
+
+> 
+> [1] https://lore.kernel.org/all/20240429113938.192706-2-jean-philippe@linaro.org/
+> 
+> Jean-Philippe Brucker (3):
+>   dt-bindings: PCI: generic: Add ats-supported property
+>   iommu/of: Support ats-supported device-tree property
+>   arm64: dts: fvp: Enable PCIe ATS for Base RevC FVP
+> 
+>  .../devicetree/bindings/pci/host-generic-pci.yaml        | 6 ++++++
+>  drivers/iommu/of_iommu.c                                 | 9 +++++++++
+>  arch/arm64/boot/dts/arm/fvp-base-revc.dts                | 1 +
+>  3 files changed, 16 insertions(+)
+> 
+> -- 
+> 2.45.2
+> 
