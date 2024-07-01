@@ -1,68 +1,66 @@
-Received: from NAM12-BN8-obe.outbound.protection.outlook.com (mail-bn8nam12on2073.outbound.protection.outlook.com [40.107.237.73])
+Received: from NAM11-BN8-obe.outbound.protection.outlook.com (mail-bn8nam11on2089.outbound.protection.outlook.com [40.107.236.89])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DDF6614387F
-	for <iommu@lists.linux.dev>; Mon,  1 Jul 2024 10:29:00 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.237.73
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2C089219E4
+	for <iommu@lists.linux.dev>; Mon,  1 Jul 2024 10:48:13 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.236.89
 ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1719829742; cv=fail; b=eGxP1fpeKmuVzWeCWmsnTpnwILrC/ADZw+d1EFE11Z5KQ37ulOexW3daJwtjDBd0JgEccRBwZlixvwuKlDXPiNQv5QVrhD0G+ctSPVN23kls+iI0RqLthpUFJUiz40yUaEALAm8VanotRXJB/kuocs4SJeG7odBg4Z3rPuhXmbw=
+	t=1719830895; cv=fail; b=H1gP15I090fvpAbNof3BhfieELlPVaB77M6edGUAqcVK0Yn979QnQKStd64j/u0jX8ieNqLMCWaD7uiyrlaobeK58Ro0ZPcyaSVQE87C0CQaMVUYKbJiFZ0LePbmYruXFpj8uPEGu9BeNA/Kekr85VZJa0LRJCH4sIhKKgl+bQM=
 ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1719829742; c=relaxed/simple;
-	bh=PHntMlErcPXQRszaXyESMWlhH23yPJrn+NgaN6bd6cc=;
+	s=arc-20240116; t=1719830895; c=relaxed/simple;
+	bh=kvmPxOFEFiZtN3aIZCAEaBhcVa4s1SWLod8skv3sZeI=;
 	h=Message-ID:Date:Subject:To:Cc:References:From:In-Reply-To:
-	 Content-Type:MIME-Version; b=Bg1zwXZHjG5iYEg0abS4QuevY3bhkNc4fBzUEMCP9iVfKkd16dDb1IrpeL7QI/KbRJ942YzzF+EcIchkadT049hxPwN5CmyAsqS7DPs0btwCv/mTr/UUXd2ITTaXLJMBXwy6e4V0ut+LRvjVkraHyQ+JI6EJsNq1dDaPzDFGCTU=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com; spf=fail smtp.mailfrom=amd.com; dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b=UPPwZ5Nk; arc=fail smtp.client-ip=40.107.237.73
+	 Content-Type:MIME-Version; b=Lu5pal1PEMAGHNCZex7440Jt9LiydU6+BVO6SdziY51JPmHMDrzDYEG4jQOftux3k4giw4ax7Fbfh9i0chfd7en0yzayrEQj5qcjNEhPuN1gMGiPac8j7XHkflbeLJx4gKwD7d6lNVceJe8exNoaFTDuGulfSNPFsgXOsbEHmI8=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com; spf=fail smtp.mailfrom=amd.com; dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b=1xLB9z6Z; arc=fail smtp.client-ip=40.107.236.89
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com
 Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=amd.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b="UPPwZ5Nk"
+	dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b="1xLB9z6Z"
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=bmknqOvI/KTxBdr0SCCa8/P/7nggLakswQEOVcFURBJuKxqqK/0VPiHUvEMlq1wMIUhriImc0wbWhItSP65zTyCAUDT2cRNR1EsgX94xEEO6RITW4m9rB65xqjeTJuC0xDLz92N1p+l1QwW138JuiRwp0lsOurgLR+S7cA/mY6gPdCl3/KyinfFCdRdWk4dbN4Dqfq/fAS8+/3obrr/ivvlfKBPScAoillAccYQo7xcfFdtadfsHeh9N9ru9Oq4J5V3s2XBqNGOHOCbNzb+eBHCwOfgTvaX4RB8t7BTFhr/RMia00HiDigXTNleksbR3YEvsespFYfgzvTxhrKsMeg==
+ b=NwLS54ZXqdwLhoj3c8SBc6sCtHTDuzYe2bxm+itNdJo38kt8xenYaLqRylBDJ2EQkRWD58Vnqg/Fu1IpV3+zZmGy/mtXZzJSdPCgaKj44ZHdQh3qDnBgvt9sEywkny47ibBGh33XxKICIaZ31MP4It98w66CiPIr63BH4dp6jJbg5Wmtt0Jlnu1ybnkX+dlQWL6tDBLGzaK7ysfsZlLTpgwwtFGehCFBGDxVBTTHk9LKkCnAWgN7n364qPpeS8knCW++cMKMg6S6g5sMZ1fSyIhmMHPtcGEESf61hj4HFM7+BhCsaZHWKQq4WA+532JiKVc7nyKGdFbapOmuYl1vgw==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=LJCqFVa68cBl2SJUFPa9TvKxDXSC5Mt88o8oOGUTUCw=;
- b=V23Lwjm3oMMepELiD/X85vuiJ587JuusgpVWf+kTPYsmM2PEDLmHKdvVe7djJn98Ki/xsMfPdiCsk6TcHMciZsvYll+x9wJ6j3g0tvWcO6wA+JNNmYEKNxcnT7bZbBSaO7hZwAyoZ02/NlD1CInfsoEycRfVocqTdbOh1MIsfg+u6KNlDHLz/dDS81XuN1VQsC8A6rCWaKxSjV0p2pGUisyDPkZ48bFvcE4rbZI61Tt1VNeR5my3fQi3Ci7cpEt3rn/76MFgQ+RXUzyScAMQANTAOd0WTvYvt4R3jSRo00N8L2KZYwHiYYv9bxyqhlfa8ZsQbh2WBrcXvXiTK+COyQ==
+ bh=fKe3Qe8nEgJvfAAefSFw3dhdUYPEcqAYaswsvqGAIFU=;
+ b=ePI43VghqX86309GUD6rLHZnl8nLZvdNC6FRPRq5BjRBXbDvJD7lZMZe4SAaDIMq3QLXeAAVBQfktp7oBOXjsnCfmACb7Do2shY58jq0v6rj8GpYJREzqWMCqHW+ChbNWLy1S2ycZz4qwu2Tiz87tLL+NTA+cyISqLLKJtqBM3NDlBGUPfr/U3aEjnR5JlR3rhdVn0p5GCPjB6trowRfh8EyWCagL5IFJ1MsxH63+ue3Lgd7A1t5SpIyZTaeXaZrGTKsQ2f9KvfsCOiFuh8Ogu2t8Gk+e7cGE8bepn5t3qgmovLchHpobcMeYbrd4elGLSvxv2+iIajg7ORrze4qSQ==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=amd.com; dmarc=pass action=none header.from=amd.com; dkim=pass
  header.d=amd.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=LJCqFVa68cBl2SJUFPa9TvKxDXSC5Mt88o8oOGUTUCw=;
- b=UPPwZ5NkAURBOVVvaBYm16IqbWanfz5Pi3xFWePSHdKFjX1VgWiQody4+RG/lmS6qewHOUHK1cx4M3zZrLAGjuGJXbrgq64XKeqUYgwZpHPiNzO0qknIr020g7WZ0CTfNTV99JOz2xu2ksAGt/ojiLXuKw/Z0GwhpDsjNN9q6VU=
+ bh=fKe3Qe8nEgJvfAAefSFw3dhdUYPEcqAYaswsvqGAIFU=;
+ b=1xLB9z6ZFjFRWP+mfsSw5GgLWXQkohGca4gByDN97SD30NUHmz8V9s1nnklMdwRTVgBubOOFqmi+1Ti84VsHqUgv5cna8pgqUoBuvoJQB1zscxN5Kf3U/n/pmJwP4NyreKCpdMBwPL7pDgCeHMtzKXUJQ8K+Vl+ZLOLFa0yumFk=
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=amd.com;
 Received: from DS7PR12MB6048.namprd12.prod.outlook.com (2603:10b6:8:9f::5) by
- MW4PR12MB7032.namprd12.prod.outlook.com (2603:10b6:303:1e9::12) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7719.26; Mon, 1 Jul
- 2024 10:28:56 +0000
+ CY8PR12MB8337.namprd12.prod.outlook.com (2603:10b6:930:7d::8) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.7719.26; Mon, 1 Jul 2024 10:48:10 +0000
 Received: from DS7PR12MB6048.namprd12.prod.outlook.com
  ([fe80::6318:26e5:357a:74a5]) by DS7PR12MB6048.namprd12.prod.outlook.com
  ([fe80::6318:26e5:357a:74a5%7]) with mapi id 15.20.7719.029; Mon, 1 Jul 2024
- 10:28:56 +0000
-Message-ID: <bb95c5c6-3441-42fe-a862-d1b68bb0a325@amd.com>
-Date: Mon, 1 Jul 2024 15:58:47 +0530
+ 10:48:10 +0000
+Message-ID: <1f8f04e5-3b70-45de-bd93-e3c96fb0a555@amd.com>
+Date: Mon, 1 Jul 2024 16:18:01 +0530
 User-Agent: Mozilla Thunderbird
 Subject: Re: [RFC] iommu_ops->domain_alloc_paging() enhancement to support AMD
  IOMMU driver
-To: Robin Murphy <robin.murphy@arm.com>, Baolu Lu <baolu.lu@linux.intel.com>,
- Joerg Roedel <joro@8bytes.org>, Jason Gunthorpe <jgg@ziepe.ca>,
- "iommu@lists.linux.dev" <iommu@lists.linux.dev>
-Cc: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
- Will Deacon <will@kernel.org>
+To: Jason Gunthorpe <jgg@ziepe.ca>
+Cc: Joerg Roedel <joro@8bytes.org>,
+ "iommu@lists.linux.dev" <iommu@lists.linux.dev>,
+ Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
+ Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
+ Baolu Lu <baolu.lu@linux.intel.com>
 References: <7e249bc6-c578-40f0-aca7-835149a0ad39@amd.com>
- <ece72a5e-e4fa-4fe9-9d03-ad31d7a4b212@linux.intel.com>
- <903594d3-00c3-42f8-8003-eef30f110510@arm.com>
- <73e03875-cb36-4846-a3e5-c715a4c23869@amd.com>
- <a232872a-be56-4806-a3f6-09c889fa777a@arm.com>
+ <20240628130330.GY791043@ziepe.ca>
+ <26524622-971f-47f5-936e-d0173d342288@amd.com> <Zn77FbsQWmByf16t@ziepe.ca>
 Content-Language: en-US
 From: Vasant Hegde <vasant.hegde@amd.com>
-In-Reply-To: <a232872a-be56-4806-a3f6-09c889fa777a@arm.com>
+In-Reply-To: <Zn77FbsQWmByf16t@ziepe.ca>
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-X-ClientProxiedBy: BM1P287CA0010.INDP287.PROD.OUTLOOK.COM
- (2603:1096:b00:40::20) To DS7PR12MB6048.namprd12.prod.outlook.com
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: BM1P287CA0014.INDP287.PROD.OUTLOOK.COM
+ (2603:1096:b00:40::29) To DS7PR12MB6048.namprd12.prod.outlook.com
  (2603:10b6:8:9f::5)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
@@ -71,146 +69,231 @@ List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: DS7PR12MB6048:EE_|MW4PR12MB7032:EE_
-X-MS-Office365-Filtering-Correlation-Id: 545e9f11-6f43-418a-f346-08dc99b89c58
+X-MS-TrafficTypeDiagnostic: DS7PR12MB6048:EE_|CY8PR12MB8337:EE_
+X-MS-Office365-Filtering-Correlation-Id: bc8b6d69-e62f-4bf9-a3d5-08dc99bb4ca7
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;ARA:13230040|366016|376014|1800799024;
 X-Microsoft-Antispam-Message-Info:
-	=?utf-8?B?ZVgwU2NvUU5mZVkybDFQYmltVUxNdkFoVVhIRWhCSzJidVdLMmpzN1p6dlRo?=
- =?utf-8?B?ZWhORloyNWtmS0JNcWU4cnU4Ujd2WVNZcHBxclJtbEd1V2xDSUlIS1JadWNj?=
- =?utf-8?B?L1pRQkdkeUFPQ1BUaitvQlF2QnpWNVpjaWsvKzlYQWRpbUxSZndldmZBQ1Jh?=
- =?utf-8?B?NHFYcS9CaHI4YVB3Si9MS1MwL092OTZjVUI3VWwxYTF2L2Z1K2lMZDcyakJB?=
- =?utf-8?B?RHAyajJickJrcDBSWG80Yzc1Qlh3N2RBdmx3Z2c2ZmpmRkJveXI3Rnp1aEFH?=
- =?utf-8?B?RE1mUEtsYm9GZTV3Mks0TkZiK2U3OXNIRUZIbFR1YTdidHcwNVJsVGJpcHZB?=
- =?utf-8?B?QVZKYjlFNTNiRlo1SEZUWmplbkNWOUkvblB6QTY4SzEwV2JZKy9rWkRuZUFy?=
- =?utf-8?B?UUV5RWdlRE16Z0pLMmJHcjlZODZoNmFiQ0xDZ0lIc2tqZE1zRG1mOXc2TzBp?=
- =?utf-8?B?NDlwTFpMb3ArYmJNWlRpd2t6VGlGdXREK2FkME4zbE1zdEtNa3VEbHR5TU5I?=
- =?utf-8?B?a2JPOHM3SkxaY1hYT1dTUjBpY1RPRFJ4SmVsTUppKytZdXVTY3BYeFhLTFRu?=
- =?utf-8?B?cXZEQld5OXlWZkVSdnJ6Wkt1ZFowck9TWllMK2N6WHJ2ZXlFS2RmdW4xbXVZ?=
- =?utf-8?B?TGJOd0YxRnd2M3FUUTd6M2JobXNIdi9hRm9VQkdWbHVtV2dWR21VbTZFcjJj?=
- =?utf-8?B?b3lhVHJ2akFNWVNvT1FEVXpBZWtPYmRmdjI5M3dwTDZFcFh2NkdJTURhQWhX?=
- =?utf-8?B?OVQ5djFvRDRpRDdNcEs3SzdyaGdGVzFod3hETDVzMHFMYzA4cjVnUG5WYzNt?=
- =?utf-8?B?NnFmZGFHcEMwaS9KdENqejVSU1RNT1Era0ZObFA5YjJsWmhBQy9HVmRGNTRy?=
- =?utf-8?B?VWlDd1djUU9UZW1YQ3U5djRiQTh4R2NnVHhVNWxHOVZlZGdqNFd6bGZjNDF0?=
- =?utf-8?B?MXdIL29GOUplN1d1bDdjWmFYSW9rZnVxRzFQZXVtbUZwU2JJQVQrZ1Y3ZDFD?=
- =?utf-8?B?eXdwekh4aVlHbHZOS3QrbWVJNkNPV3BZYmZLd2JJYW1KWi92bng3VUpzTEZo?=
- =?utf-8?B?d3U0eVFHZVlxeDhhdjZ1akg4ZndCeXkwakFQZkQvWk42UFJZanRFNFd5Y2NX?=
- =?utf-8?B?ZkdsVVVIQk1BUmxQaTZQc1RjMkxqQXlkWExwTm1pOEYzdkRVWEpPeTZvVERz?=
- =?utf-8?B?MlowNHBJd1AvS29xRjFMYWxCVXlUbG1CU1RNcGt6UTN1bE9rcHBhVVlQdXNW?=
- =?utf-8?B?eUw2amR1MEhDdndIdDJzMGJBcjZQRXE3SE0xT1JoaFB4aTJrQzlSM1NHMkcv?=
- =?utf-8?B?WXJqSmErWTYwaDJ2VjlmbTBtbkNIdTJLZWZBbDkrakRQNWQwOXpOOXhzaW9F?=
- =?utf-8?B?cGErWHBHcCtNNzNtVWpKdGhLWFFpaVNTNlNGcURVN1hiY25HTHNCMmN4MVla?=
- =?utf-8?B?d2tLQjRYczI0UUxocnlBa1FMR3NZaHN1SG5MbW5RTDQ4RFJTaDFBakh3b1hi?=
- =?utf-8?B?QTIvZGZUYmlMZ21OaG82ME9JZnM4TW9mdXY5LzFSSS8xSWNvRVZYRDgyZkkv?=
- =?utf-8?B?c01DVW5RMytsL3ExTkR4TlFPTVg2aDZHbVZia202YkFXNW1zd1ZRNUlOTE5R?=
- =?utf-8?B?TU9RaytwQ3JiTVFFV3UxeCs4WThOSUxGS2U3VGY2bUw5T0UwZjVBcWVhZlk4?=
- =?utf-8?B?M29LSDRGZnFpbWgzcG5kYkVSM2V1SllUUFJDdVZIa280di80b28wVUUyUmpQ?=
- =?utf-8?B?Z0JkcEtQdXJiL0p6b3drMkM5MlNsSUNaYlEvQzcvVjIxWDl2Z2tYT2dndC9U?=
- =?utf-8?B?UGpXVDZ3c2Q4SEtJNVpJdz09?=
+	=?utf-8?B?TTBTNXRGTE9IZ1VhcDhoZ2Z0bWdlU3haaWtrK2JWck5iM2QrMFVHMDEwSkFn?=
+ =?utf-8?B?SHoxS24xSnBDeXN1MDlmcTF4MGxoZUtjeTdhM3BSY0JveFdvbWdFRUtYUis0?=
+ =?utf-8?B?WitBQWh6Z0piOERNNmxwV2I5d3FjcVR6dXdGMkEyakJHbTZIZXROTnJSRWpH?=
+ =?utf-8?B?SlhzVXRtZ0REcDdxMzZkQngwU0prVm5nenZXdXBjbi9ockZ5bGZGZVcySmZ5?=
+ =?utf-8?B?dWRjek9aV0RmSS8vbTVYRm12T3orc1l5Ni9EaEd0UGpBNjVseWY5UkhDYWRF?=
+ =?utf-8?B?UlFvYXRMaEFEajVjQ3ZvNzhLeWh6Vnh3RUhTSnNZZHZWZWl2elZQQnlBenlP?=
+ =?utf-8?B?VXNENXc0eFNiMk05OFFRVVpEaVdqMXNkU0xtaXlpMmtIRTd6T1Voa2F3eFlG?=
+ =?utf-8?B?RERwNWlSSzUvMHA3OTJ0OTF0OFhUeUJ2RTA5bC92cjY4T0NMRmlMZDhFYnJE?=
+ =?utf-8?B?aDY3d3N2YjFFbmhZVGpYdjdkRW16NTBDQXQwdi9nemdTUmdUWG03dWtrNlZP?=
+ =?utf-8?B?Si9RbGlmVkwrTnNhRHhyVzNWbFVBaWtHc3ppeHFld1JzVzZDM1ZsY2t6UEtu?=
+ =?utf-8?B?dmE0aEJ2NjFTdjBYSzd5RXdYNnhzTXN3MHJTcGtIQWc3dUIrTk5iTk1mVDFX?=
+ =?utf-8?B?ZlhtSVdjRjZpMVFrUXhURmFBcVZuUS9vM0E0SFN0cEZsaXBOZGxpcDZQSFdy?=
+ =?utf-8?B?YWxadUJtd1M1cjBRVi9ValB1cG1sUzJNTjB1SDZwUlRva2xGVlRIODBoZ0Vq?=
+ =?utf-8?B?K3NxTFYrZlViZFdaZTBSanA4ZXE2VFYxWHM3cHNjMW1BSWgvcXJPSW44cSt0?=
+ =?utf-8?B?Ulk0NWNIbFg0S3FDc29XNXErU215SHVENmdtNnJFMllvYzlZREZjckdhVlpn?=
+ =?utf-8?B?ZHFWcksrWitGS0FHdzVGSkEzMStuQkd4c1VOWW01V3VCY00rdVNCWHRVd1Bo?=
+ =?utf-8?B?cjVXcmVjQSt0a3JTc3lLbVJkOUlNRGZpb1lIR3Q2NDErWXZuSkh1ZWV2L1Bt?=
+ =?utf-8?B?S2pFbzllWXdYa1BUSDdyMGtISXo1TU1admFTK3J3aFMzOHRTSSt1Tk1ad3Nz?=
+ =?utf-8?B?cDZma3pJU0NqeXFvR0RBQmhWeWtUYjdpZUVIOHRQdTRuWFRTY2Z0OGYyam9q?=
+ =?utf-8?B?NUxmZjlndWM5QnliOEJxZW5ZamMrVmwvdzRXVk1mZ0VKek5QRGNoallRT0hC?=
+ =?utf-8?B?L0c4QTltVmFhUndrc0tjQXB6YWpxN1lFWnk1eDRlNU01RFY2ejhqWnVRK0Mw?=
+ =?utf-8?B?K0huK1BCbXZtT3ZzaERXcnRWY28rMUtLSzEyaVB2VmNlSDU3ZWpNRXdLKzFK?=
+ =?utf-8?B?M3VLR1hYWWJ1YkI3KzFxUzBGZTRXektqcHpwTXYxZURFUWtXeVg1b2tYQklQ?=
+ =?utf-8?B?VEc2MzVjYWo5K2JyYnJvZXpyb1dpTHhhUlR5VzJnZEFYWDZNR3pSWDdIem1C?=
+ =?utf-8?B?WklGeHpqZGxMSXhuUTN4RlphWFErd0NkVC9qdXUwOXlTSnoyOE84ZWdyTmhV?=
+ =?utf-8?B?dE5mejQ0WExOSURVamh5QWZyNzdCUWx0TmFTeXhtVWZaOXQvcmkxMUJYS1Zr?=
+ =?utf-8?B?VGdKa2pPOE5QTllWQnBZbTVweVQyR1VnOU11dE5QclJNM1RNRC9QUE9EMitz?=
+ =?utf-8?B?d09vZktGaXJyN2RvRWcxNGY4SXJBTG9uSHd6YVhFSSsrNEZ0Q3FFcWdwWnIx?=
+ =?utf-8?B?YmsxQy9DamVYd09STm5iZUUydURZUVBxSE5GdFA1UWFOcTFscXpmY2hBb2pC?=
+ =?utf-8?Q?VeoUe49rrTl4FfleZ0=3D?=
 X-Forefront-Antispam-Report:
 	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DS7PR12MB6048.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(366016)(376014)(1800799024);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
 X-MS-Exchange-AntiSpam-MessageData-0:
-	=?utf-8?B?KzR0NE0rUWx6Sk1wT3NFblhBTUFFbDZiZGVLYnp1VFBPbkZoKzgxRzAzQk5t?=
- =?utf-8?B?WEhLMU1obUZzTjBLd0hWNG9IdnZ0dGlPWDBKanZGU1ZWeWt1WDhMdEZuQUE2?=
- =?utf-8?B?dnM5djh5ZThkVXdmQmQwc2M2aTRGYmRTa1ZjajdQbWxBUnlwSjFVOTM0QjEr?=
- =?utf-8?B?UUxVbnRHa0dWdEovVFRCZ2Q2Slc3VWFhUktoKzVtd08xUWJCQ2VoaEo1dXRW?=
- =?utf-8?B?Tjg0V0MzeWdKaGNQMmEySU9NdEQ4YkNpU2ErNTEvaDdJZ3d0UkNPS3l6TDdN?=
- =?utf-8?B?Q1BiUDZjblJGeEpTYzdFcVZnL1FwRzlyVEhic0pSeGxiT2Vmb3Y0OTgyMGNN?=
- =?utf-8?B?d1hpTDJJc001a1I1czJIL0FiQXRhN2dkTXNxTW1EYWJVakI4U1Z4RHpHYU0r?=
- =?utf-8?B?ekdHYzk4blBObnJPdW1uWEJLYjVUUkw5cHMrdnJVTHEydkh2Z3pJMndUSm5n?=
- =?utf-8?B?dU5COUtxaWxlOXVwbUFTNkNuOHhTRlBER0RVd3YvNThuVGQ0M01jOWtIbUd2?=
- =?utf-8?B?WjM0aUxrUmRHNGFEV1F3dmtva05OZTJxZVZSbUR3WjRvME1IbENsQjR5UklT?=
- =?utf-8?B?TGNuVEJvVWdHaGJQWk9Kd0J1OGZYTW44S2x2RWl5cFFOT3BxNWNKb0poR0Ni?=
- =?utf-8?B?V1FWTGRZQngzNUF2NG5ZQnNYNFZZc2NMcVcrLzExUVB6eUtCZi9tZExObjNq?=
- =?utf-8?B?MkFYSCtmVFg5ZjRLOWNtdEdlY0VDclBBSFExVVNpVUZnVHNITnJNOVRibUhC?=
- =?utf-8?B?SlJsdVhsQ3UvcWlsZXNUaXVhU1grYjdvTHE0TTNSSWZmUzVmN2dRbExXVEhm?=
- =?utf-8?B?MmJna3JvUUNLYXcwUTRoSlUzQnZZUGlMR25Dd1c4bnA1by9helJmenh4UE1p?=
- =?utf-8?B?Q2FOaHBVWWRmVjlWaGFZdk9HcDdyVkZCanBqSnY3Q1JqYWZOZ0JSTkMzU2d2?=
- =?utf-8?B?eTRQRU1pdVFDTnhJNWFRWUNDR1BMWWc2bUJuU25jaVB5MkozbDhWeFZnMTU1?=
- =?utf-8?B?TC9KU0hmVTlyNlVIV09nQzlJeThRbCtLcU1PTkdDRHJncStSdWN3QmhEVDNP?=
- =?utf-8?B?MVhKRmJPaFBjZHZhU2x0T3R4eERQbVNib3VoeGhRVEFRa251NE9sdjhLSmlQ?=
- =?utf-8?B?T3k0bXc5dU1JdExiSmloSnppdG5nc3VNaVROaVJXQmRtcWJLcE1DNlpSblFT?=
- =?utf-8?B?UWVwSFpkay9OYWs4cmc0ZFRmWFdqUjgzbnluOWtveXR1MVRCQzBIOUlHNlpJ?=
- =?utf-8?B?ZUMwaUlWQlpUWXV1elFPK0pQMzN0MFRaZlo1TGtLM0M3Rnl5Z3FOcm1sN0s3?=
- =?utf-8?B?UEFyTUdaak9CQXp0Q1phdm0reTdhRGE0RjdIRmZ1dExDNjZNK3dwY2czbUt3?=
- =?utf-8?B?NHpWN2F0UTA5ZUZzMktuYzk1bzEzQTN1dDZNR3p6anZLUTJTT01zMVZyZ1lC?=
- =?utf-8?B?cThtRm40VkNvSE94bDVqUUh6Mkc1eHNic1BGaU1VV3pKTGVDSC9LRFVxUEVN?=
- =?utf-8?B?ZlZqVm9nNlg3NURZaGF3TnZsQkZvUG9LanFwY1hiVUNVaDNYQkJwR0pvUDNv?=
- =?utf-8?B?MW5EYXUyMHRNQ3VhdEZjNmVqTmhlT1lBUUpLVXZFaThIL2ZyNnRjOVNLZXl0?=
- =?utf-8?B?Q3FtLzZXWHB4R1hVZHBMMXhxTlRsc0tDR1J0SEUwVW5ZamprbEZ0bnFQNm9D?=
- =?utf-8?B?eUV6VE1RYnhvak1kdWlBcXV1MjQ5NS8zYWVXZ0lFU0dmeC94T2xiVUdhYk9U?=
- =?utf-8?B?U3R3bnkvdzA3RE1xWGhZYmgzaGFhTjZ1N0dUb0JPQnhKdjJrWkZSL2I5Y2Vl?=
- =?utf-8?B?Yk43aXI0RFMrZ2R0M1JuTGw1Wmd4bXVob01Pb2lZb3RKK0NuZ0I3dzYvcU9v?=
- =?utf-8?B?K013ekJ4M1ZpWmYwZkM3bzN6bEtpOEhLNFlaZ1VEWm5ZbWpzOGdaTHd2TWhY?=
- =?utf-8?B?U1lTQjhkN25nNmR6QXhzQUxjTExacUkrQmUwRVF1amd5ZGIrQVg3bHJHcytl?=
- =?utf-8?B?ek5udVYyMmE1ZU1RQUcySXBaVGRwYlZQY0lVZVMwOGpaVFFNL1pzRXMwazhE?=
- =?utf-8?B?dGl5Szlqd2JMblFzRHczRVAybUs4THJlazA2S3QxTXZPS3dWb2R6QUlrRWtB?=
- =?utf-8?Q?a2xPIHcrv9zNb0bBLSCCCfbUU?=
+	=?utf-8?B?SEJjd210cHdGQ3ptMEpRYVZhSHhwQjAyaHpYOWtFeFdlZGxseDh2RlBBMGR0?=
+ =?utf-8?B?ck9EZys2NEhmWER5eWlvZ1QvN2QxelVxZGxUUEdUUUZwcDc3bExqWHRCUGlk?=
+ =?utf-8?B?MU1vWnBwYmdJYnRiSHNHTkFHYSttQXdoZllMSnRIZ1VhUjlFb1dQN2JRUmN6?=
+ =?utf-8?B?V0hwNy83MzV2eGpaaFhqcFdjQmdWUGRMUG5HTmJhclFaZXdXUmRnTnlZcXdt?=
+ =?utf-8?B?TVA2K3NNTXBCRTZzcVlMOGdwaDVPaVVtdjIzNldyaktsZFZhdjM0Zk5YblFJ?=
+ =?utf-8?B?cTh3S3ArKzZUOUU2QnRXdUk3UnFzclRTWk90bFJBbWgrREQ2V0dXdDdFbXpY?=
+ =?utf-8?B?aG1kRjlLemlFK2Z2TlpUYTdUUVdSYnhyL2Jzd0gvQm05bUl4WWFaNmVsZ2E1?=
+ =?utf-8?B?QkRIQkFlNHp0RFBGdCs4K242UlFPUjFoZEtuMEkyTjg4L3ZkZlVDZFVFS0JJ?=
+ =?utf-8?B?RXljdjBsTG94NkNTUk9lbkdjYTZjRklTeGVPSlAzZWQxbUNpaTJQUERPWE1p?=
+ =?utf-8?B?d1lUQ0VWdllIZkRDcDN1akVQUlM0d0tUV3NjTVFGRE5WbzhjWjhjUlh5UE1i?=
+ =?utf-8?B?L25LVER5WTYvOEN5V1NQeVhJYUpock1OUWJiUEdRTEp3aENqTE0zT3A1RDNP?=
+ =?utf-8?B?bUF3WHlXVnRObjU1ZHdoTWVyTmxjcjdPSHc4L01rWWpBS3NzUVIwR1N6ck9s?=
+ =?utf-8?B?aS9jUU9SVWwxQ0hkc1dYcU8vOURUTS9sTWhYRHBYbjNxTG5USGtMbUFERjEw?=
+ =?utf-8?B?UnkyaVEwb2p1Q1R1bEJaMGNLR0ZlK1pSKzdGSzVIVUszM3dicGxVNDlENDQv?=
+ =?utf-8?B?R2RvOEduMGtzN3E3TEJiK2xyZ1Vya3NIeVlQR1RsYThIV3lzUmNoM1ExdEJC?=
+ =?utf-8?B?Uk0rdmZ2bDVCWmY2NEczTzgvR3JkbFozWHFPR0hvc3lCaW0wWmt2ODZqcGtO?=
+ =?utf-8?B?Tm5Fcys1RG5lOTJYK3hQa1YxK2VqUnJDa3pTMUIwNmtyZWc3cXg1bCtMRkNH?=
+ =?utf-8?B?VC9WOU5XSHF2NzdNR3YySDJ1U1RhZ3V2WXpIWUJYUk9rRUdMM0JncjZ6MUY4?=
+ =?utf-8?B?TEx6bTN3Yk9iZmd0TFlWbEgrMTNVOUwxMUVVeHNJZEFqMGpmcWJZVklmRVBT?=
+ =?utf-8?B?N3pRcnFjTnVHdTdLNU9wMXRHUEJiVkVNRSthc2JTSGV3bldseVdqNFBJeldK?=
+ =?utf-8?B?Z3N2K1ZiZjkyRDExQzUvTnFlNHZPbG9Cb0V0UUFBdXBIbmtOSkl6L2k4Ym9U?=
+ =?utf-8?B?QjNlRkFmUEw2cXpUS3k3cWxSRlUvK092RWFEZHVQcGRYRzFlbG5DdVdkZGNa?=
+ =?utf-8?B?VXFtMzkvQTRRNWQ2RHlOMTZKMGhuSThPYU03Rk41Mjk0ZGxRS2lCRnprZ21t?=
+ =?utf-8?B?S2plS3BSZFJtd05pNmZ3bzdlQWJFSWplSmJxZkRaNU4xV0VhNSsxRHJYRzRS?=
+ =?utf-8?B?S1dFTzk4TEgveEhndlNkcmZ0WktrdHNMNlQxM1JidVlpbDU1N1l2SHZhSEZQ?=
+ =?utf-8?B?cnVaaHQwZXI0eVBBZXZJWnhNNmJRb3JoT1RVZFI1dzBGRnRWd1V0YTlBN3hp?=
+ =?utf-8?B?Y3dEUkhteVlvM2J5YzRvUytPYlE0MUVSQkR1WmFsOGNVQ1lVRCtIL0lBUmds?=
+ =?utf-8?B?K21WVUZtYUxQck5ETGpqVHAyZkRWU3hhZDFtVXpkM0RWWU1MM21KbzJCblpY?=
+ =?utf-8?B?cVZPTmF0MWwyUlR6NlBrOVVnNTF3WWRuOWVpSGJTQVdBQzh2ZkNLRzJENFh5?=
+ =?utf-8?B?UVRBUkN4V0F0NFBoTEh5UVo2OGZpZHdtUUU0UnM1NzA5SE1QU0plQXk4S2tF?=
+ =?utf-8?B?NHgxZHRBajBWWDJCVVhmQU9MVG5mSUd0SWJwUnhaRWJ3K2RST3FqVktwd3Fj?=
+ =?utf-8?B?aHBNNzJ5N1ZJaHJQY0gvSmZ4d3UvVjVqRHlIVnJSeUVad3hJc0FmalJPTytj?=
+ =?utf-8?B?dFdHM1hOR21UN2R3V0ZHY0k4OHZ6dSs0bERvZVppRDl4emN2UDJhQmtJNzgv?=
+ =?utf-8?B?dDFEbTV6MjV0ZlBFbGJvRUN2RG9nUmtwK2tQZVVHRitGV1RpQUtTL1VzUDFx?=
+ =?utf-8?B?YjZQbS9ac0llelUrWFlmNXpTZVpnZFVpVjFvK1huVElzaHlOZktNU3hnNDdo?=
+ =?utf-8?Q?Ikwbes0SFMtSY5u6hy5rB4njg?=
 X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 545e9f11-6f43-418a-f346-08dc99b89c58
+X-MS-Exchange-CrossTenant-Network-Message-Id: bc8b6d69-e62f-4bf9-a3d5-08dc99bb4ca7
 X-MS-Exchange-CrossTenant-AuthSource: DS7PR12MB6048.namprd12.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 01 Jul 2024 10:28:55.9558
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 01 Jul 2024 10:48:10.7423
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: 6D4bZxBWzqZKQZr8ETO8xSjpS0EUSfm2CuWFhad3NBpSTlCYV5mkhwUC95w3Nb5jNByJ5dE5icUGZ6bWBIzcaQ==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MW4PR12MB7032
+X-MS-Exchange-CrossTenant-UserPrincipalName: oWY+Kj+0AoUhIlWs1h3uvqO8Bf7ELtVltaCuk0dAg1YO/Kf/B7UpMCeNKAf5wJ50aV4ssYJrbEWpVMOkTplxaQ==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: CY8PR12MB8337
 
-Hi Robin,
+Joson,
 
 
-On 6/28/2024 11:28 PM, Robin Murphy wrote:
-> On 28/06/2024 6:08 pm, Vasant Hegde wrote:
->> Hi Robin,
+On 6/28/2024 11:34 PM, Jason Gunthorpe wrote:
+> On Fri, Jun 28, 2024 at 11:19:23PM +0530, Vasant Hegde wrote:
+>> Hi Jason,
 >>
->> On 6/28/2024 6:36 PM, Robin Murphy wrote:
->>> On 28/06/2024 1:23 pm, Baolu Lu wrote:
->>>> On 2024/6/28 14:43, Vasant Hegde wrote:
->>>>> We are working on adding domain_alloc_paging() support in AMD driver and came
->>>>> across below issue.
->>>>>
->>
->> .../...
->>
->>>> Add an allocation flag seems to work. It doesn't indicate any type of
->>>> domain. Instead, it indicates the required iommu feature.
+>> On 6/28/2024 6:33 PM, Jason Gunthorpe wrote:
+>>> On Fri, Jun 28, 2024 at 12:13:43PM +0530, Vasant Hegde wrote:
+>>>> Hi All,
 >>>>
->>>> Something like
+>>>> We are working on adding domain_alloc_paging() support in AMD driver and came
+>>>> across below issue.
 >>>>
->>>> #define DOMAIN_ALLOC_FLAG_PASID        0x1
+>>>> BACKGROUND:
+>>>> ============
+>>>> - AMD IOMMU HW has two different page tables : V1 (host page table) and V2
+>>>> (guest page table). Only V2 page table supports PASID and PRI features.
 >>>>
->>>> means the allocated domain requires PASID to support on both device and
->>>> IOMMU. If the hardware lacks this support, it should return failure.
+>>>> - With V2 page table we have an aliasing issue. Hence we added
+>>>> per-device-domain-id when domain is configured with v2 page table. See upstream
+>>>> commit 87a6f1f22c97 ("iommu/amd: Introduce per-device domain ID to fix potential
+>>>> TLB aliasing issue")
 >>>
->>> Yeah, we could do with something sufficiently general, as we'll also have a need
->>> for passing pagetable-format options through to drivers to be able to replace
->>> iommu_set_pgtable_quirks().
+>>> Yes, but IIRC this is a shortcut to developing a proper packing
+>>> algorithm to optimize the IOTLB. HW like this that has aliasing issues
+>>> needs some more complex SW support to get optimal usage.
+>>>
+>>> ie you can share DIDs if devices have a logically equivilant GCR3
+>>> table. Optimizing this is a SW problem inside the driver and should
+>>> not leak out to API.
 >>
->> Sorry. I doubt I understood it completely. You mean to say:
->> Enhance iommu_domain_alloc() such that caller can pass any special quirks they
->> need and then pass those quirk flag along with the other flags we need (like
->> PASID support or not) to indivisual driver? So that at the end we are remove
->> ops->set_pgtable_quirks().
->>
->> Is that what you are thinking or something else?
+>> Its not just SW issue. With V1 page table HW supports variable page size. (not
+>> just fixed 4k, 2M and 1G). So in terms of HW cache management, V1 page table is
+>> better.
 > 
-> Basically, what set_pgtable_quirks does currently will need to be known at
-> domain_alloc_paging time in order to convert arm-smmu to the latter properly.
-> You don't need to worry about the public interface for it just yet, but if we're
-> going to start extending the driver-level interface already then it would be
-> good to plan ahead for what other domain properties we may want to accommodate
-> callers requesting. The things we have as io-pgtable quirks today are definite
-> ones (and those would happen to be OK as simple flags), but it's always seemed
-> like a good idea for callers to be able to indicate their preference for other
-> things like VA size (or even full domain geometry), even perhaps specific
-> io-pgtable formats, such that the IOMMU driver can make the most effective
-> choice about what it actually allocates.
+> Okay, that does make alot of sense.
+> 
+>> Another issue is with VFIO device passthrough and mixed device passthrough (few
+>> w/ PASID and few w/o PASID), type of domain we endup allocating is depends on
+>> the order in which VFIO requested for domain allocation. So its not deterministic.
+> 
+> Yes, VFIO is not good about optimizing disjoint domain types to
+> minimize domain requirements. This probably does need some more
+> work. You have the other problem too where if you attach the non-pasid
+> device first then pasid will be blocked and this is not expected
+> either.
 
-Thanks for explaining. It does make sense to pass enough details to individual
-drivers.
+Right. If we solve the domain allocation issue, then we can fix our attach
+device path to solve this (Yes. It needs code change. But its doable).
+
+> 
+>> By the way, can you point me to your series please?
+> 
+> https://lore.kernel.org/linux-iommu/0-v9-5cd718286059+79186-smmuv3_newapi_p2b_jgg@nvidia.com/
+
+Thanks.
+
+>  
+>>>
+>>>> Please let us know which one is preferred -OR- is there any other better way to
+>>>> handle this.
+>>>
+>>> Neither is really going to work. VFIO will have to assume the user
+>>> will want to use the PASID API and will always request a PASID capable
+>>> domain anyhow.
+>>
+>> Even to make PASID support with VFIO, some way it should communicate the driver
+>> saying like "I need PASID capable domain". So that driver can allocate with
+>> right page table type.
+> 
+> Well, that is already implicit in the fact it asked for the domain from a
+> PASID capable device.
+
+All we need a explicit indication in domain_alloc_paging() saying allocate
+*PASID* capable domain.
+
+> 
+> What we perhaps need is for VFIO to have some way to evaluate a lot of
+> devices together and decide on the best domain configuration for the
+> full set. It prpbably makes little sense to have a v1 page table and
+> then a copy with a v2 page table, for the PASID device.
+> 
+>>> We already have a path where the VFIO userspace can request a v1
+>>> domain by using the NESTING_PARENT flags during user domain
+>>> allocation.
+>>
+>> That's with domain_alloc_user() API right? As I understand that should work fine
+>> for AMD driver.
+> 
+> Yes I expect so.
+
+Thanks.
+
+>  
+>>> But I don't see any option here that doesn't involve userspace itself
+>>> making a request and indicating it wants a degrated VFIO
+>>> functionality.
+>>
+>> That's along an option. We can explore it later.
+> 
+> But there is no later.
+> 
+> Your said your desire is to get a v1 domain even if the device
+> supports PASID, and VFIO will get PASID support likely before you post
+> your patches for this. Yi's work looks almost done to me.
+> 
+> Then VFIO will just request the V2 domain anyhow and you are right
+> back to the starting problem again.
+
+Let me see if I can put together here.
+
+
+- Basically we want domain_alloc_paging() to explicitly tell domain requirement
+(ex: allocate PASID capable UNMANAGED domain)
+  If we do that then we will fix ordering issue I described earlier.
+- Fix attach device path so that for 'PASID capable UNMANAGED domain' :
+  non-PASID capable device will use AMD V2 page table with GCR3[0]
+  PASID capable device will setup its GCR3 table as well and it should work fine.
+
+Net we need a enhancement to domain_alloc_paging(). Otherwise I don't see a way
+to reliable implement things.
+
+Regarding performance impact: Thanks for pointing out. I will start discussion
+in that thread. Lets see if we can come up with something.
+
+But these two can go independently?
 
 -Vasant
+
+> 
+> Given your remarks it may make sense that VIFO disable PASID support
+> by default so that by default AMD does not have a performance
+> regression. You should start discussing this with Alex in Yi's series
+> to come to a decision. It makes sense to me at least.
+> 
+> If that is the choice then the idea of adding some flags/etc would
+> work well.
+> 
+> Jason
