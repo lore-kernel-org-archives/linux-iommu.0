@@ -1,50 +1,40 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.13])
+Received: from madrid.collaboradmins.com (madrid.collaboradmins.com [46.235.227.194])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AC0A141C72
-	for <iommu@lists.linux.dev>; Mon,  1 Jul 2024 05:55:50 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.13
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 11AC422066
+	for <iommu@lists.linux.dev>; Mon,  1 Jul 2024 06:15:33 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=46.235.227.194
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1719813352; cv=none; b=JKtnm7NT+ZjMcvsT5VxRt6BITTyD7G/aZPVkI+UPKkrYeANcV9nvo7EGO0bMBpCzVxwSRGDdnPdQGijHyHL16biT/PC/Dng8oBXBEbL8m0ghtjiRfyGjFWF9TJ5Jvly2uQrc9Mat3+0239Ja8v11WN8XpRBJyzh63IEZVrV7DQI=
+	t=1719814535; cv=none; b=BgtsCZ93vqLd0hAvZ4LslF2FS/p1jQ+WBFyG3nBFyUw2fzx7JjgQi5gw58BTkrs5702sDssOQcT/NWUIbEL4ej9tZ1TUNDrHfjLVxiPaii3kkn07n+4u+KNcXAYgvDeu9TsF9xE9tls09Adw1vWHOOUCNcV03XKv1/Q3MYq90uo=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1719813352; c=relaxed/simple;
-	bh=zoolY0j9tBgKN2MEBj7jMgK5u98hB3qhLdhkSd0qq80=;
+	s=arc-20240116; t=1719814535; c=relaxed/simple;
+	bh=WmI09JaExLOgwIiAfkIPKvdePbKWzCZg6yL6VDCaUN4=;
 	h=Message-ID:Date:MIME-Version:Cc:Subject:To:References:From:
-	 In-Reply-To:Content-Type; b=NryxKfZyAWLXv6osvdGD7fMVGK/AIvjtIKMnFY+MDEjThxVSBJ/48n48A5Z1GWaRim5QQ4NMbNnYEdpTd5MbWhcQwddEDCxFBZP+myV8xygBFRCmNmuwmDuJzuflmNEHj2noyqSXMlXeVqwE2Spxjkym/gyZvnUzVkzndZs0lks=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=QL50/L3Y; arc=none smtp.client-ip=192.198.163.13
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
+	 In-Reply-To:Content-Type; b=izu1CEz78RJoT4Rvy4JoVmrEvOCnpIW3YKKPEzFMDXlQV9OpLejtaMNMWSYFWh1cBXWaOJ3p54RUDJhje45ylFtYhUtNdq4x/EV51VjlV7oJuTi1CY480QZx+hSuhHarSrt/+JgS36nRbk9MjhOChojmhSVDDRSblcY/JYAo/No=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=collabora.com; spf=pass smtp.mailfrom=collabora.com; dkim=pass (2048-bit key) header.d=collabora.com header.i=@collabora.com header.b=RP6AD1v+; arc=none smtp.client-ip=46.235.227.194
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=collabora.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=collabora.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="QL50/L3Y"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1719813350; x=1751349350;
-  h=message-id:date:mime-version:cc:subject:to:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=zoolY0j9tBgKN2MEBj7jMgK5u98hB3qhLdhkSd0qq80=;
-  b=QL50/L3YpB0qMAXuN6WxWNgtzV3EB4bYpTwp/bjLW5nLo/pISs1d5haw
-   xsjzD6qN0HjnFi2NzeLwOXJym/osl+I2DHnN4PNgJY8kIpPc1anc7WgTx
-   uX1Ie/nWAzSYNXiD1V0jVBd5PYa9FkoyrQoI/OxdlJ91GZ/qO8plR+qph
-   yD7NM8Scep7mi+WegZa+r2mVIUKt81v3vQMIUOMRcMXXZD/yxqHn464Jv
-   kwMxFlI6H9ALvjAS3VLKPFPxEQbAAlbqUUwbnnfThX1xkI+N1ocGj26iW
-   kEgl7fMeNR20GyzTdDu76OFQCU3UP5cmgabNch9xFvYhRKxc0fUC3dNw1
-   g==;
-X-CSE-ConnectionGUID: 5nMAhiCUTnCCtwZgXLOqCw==
-X-CSE-MsgGUID: +dYFI+IaRKOUCRNkn4z9sQ==
-X-IronPort-AV: E=McAfee;i="6700,10204,11119"; a="19817036"
-X-IronPort-AV: E=Sophos;i="6.09,175,1716274800"; 
-   d="scan'208";a="19817036"
-Received: from fmviesa005.fm.intel.com ([10.60.135.145])
-  by fmvoesa107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Jun 2024 22:55:17 -0700
-X-CSE-ConnectionGUID: YvK3MWzjQP6f2lsibkttYQ==
-X-CSE-MsgGUID: p91iEwuIRdqyjcfXzEouHA==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.09,175,1716274800"; 
-   d="scan'208";a="49860164"
-Received: from blu2-mobl.ccr.corp.intel.com (HELO [10.124.229.145]) ([10.124.229.145])
-  by fmviesa005-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Jun 2024 22:55:14 -0700
-Message-ID: <7421b923-0bd6-4c9d-81e6-07d954085171@linux.intel.com>
-Date: Mon, 1 Jul 2024 13:55:12 +0800
+	dkim=pass (2048-bit key) header.d=collabora.com header.i=@collabora.com header.b="RP6AD1v+"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
+	s=mail; t=1719814532;
+	bh=WmI09JaExLOgwIiAfkIPKvdePbKWzCZg6yL6VDCaUN4=;
+	h=Date:Cc:Subject:To:References:From:In-Reply-To:From;
+	b=RP6AD1v+j6bPzkD4Qfi/D0Q58GhtnnMPgGqhmQ9YGJX9Jc/5j84eJ7xUBdHZJRzFx
+	 aXPXn39mJWbIX+hF2Rx6HPtqgMK4vfUXHqti+IbFCO5Q8bGEOYciAZVbAvxI1kGzeR
+	 g0TD5c0QDnRR5cYZ0bk02V6Iz6eS/b5EgMh95woV6SkktOdHJgXgDkEDcqIbeyMewD
+	 TfpEAsVSV82X6VPFFcT0pA4AfIytfyCqe6TFWaYlNmT4kY7j1t72YZQc6kzGiHWxze
+	 VlPaDaj3j6O+JFwu31mdPgmr5u8MzDcUXIrceg69E0CyvjyMCcC0aTq021O4QEtL3Z
+	 exwCDx8GCLtyg==
+Received: from [100.113.15.66] (ec2-34-240-57-77.eu-west-1.compute.amazonaws.com [34.240.57.77])
+	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
+	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+	(No client certificate requested)
+	(Authenticated sender: usama.anjum)
+	by madrid.collaboradmins.com (Postfix) with ESMTPSA id AA10E3782065;
+	Mon,  1 Jul 2024 06:15:00 +0000 (UTC)
+Message-ID: <221495d5-1be2-4c71-ab2f-eb145257737a@collabora.com>
+Date: Mon, 1 Jul 2024 11:14:54 +0500
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -52,50 +42,260 @@ List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Cc: baolu.lu@linux.intel.com, Kevin Tian <kevin.tian@intel.com>,
- Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
- Robin Murphy <robin.murphy@arm.com>,
- Jean-Philippe Brucker <jean-philippe@linaro.org>,
- Nicolin Chen <nicolinc@nvidia.com>, Yi Liu <yi.l.liu@intel.com>,
- Jacob Pan <jacob.jun.pan@linux.intel.com>,
- Joel Granados <j.granados@samsung.com>, iommu@lists.linux.dev,
- virtualization@lists.linux-foundation.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v7 07/10] iommufd: Fault-capable hwpt
- attach/detach/replace
-To: Jason Gunthorpe <jgg@ziepe.ca>
-References: <20240616061155.169343-1-baolu.lu@linux.intel.com>
- <20240616061155.169343-8-baolu.lu@linux.intel.com>
- <Zn8oZ80p0p1bHgBC@ziepe.ca>
+Cc: Muhammad Usama Anjum <usama.anjum@collabora.com>,
+ linux-kernel@vger.kernel.org, seanjc@google.com, kernel-team@android.com,
+ linux-mm@kvack.org, iommu@lists.linux.dev, kvm@vger.kernel.org,
+ netdev@vger.kernel.org, linux-fsdevel@vger.kernel.org,
+ linux-riscv@lists.infradead.org, linux-sgx@vger.kernel.org,
+ John Hubbard <jhubbard@nvidia.com>
+Subject: Re: [PATCH v7 1/1] selftests: Centralize -D_GNU_SOURCE= to CFLAGS in
+ lib.mk
+To: Edward Liaw <edliaw@google.com>, linux-kselftest@vger.kernel.org,
+ Eric Biederman <ebiederm@xmission.com>, Kees Cook <kees@kernel.org>,
+ Shuah Khan <shuah@kernel.org>, Thomas Gleixner <tglx@linutronix.de>,
+ Ingo Molnar <mingo@redhat.com>, Peter Zijlstra <peterz@infradead.org>,
+ Darren Hart <dvhart@infradead.org>, Davidlohr Bueso <dave@stgolabs.net>,
+ =?UTF-8?Q?Andr=C3=A9_Almeida?= <andrealmeid@igalia.com>,
+ Jason Gunthorpe <jgg@ziepe.ca>, Kevin Tian <kevin.tian@intel.com>,
+ Paolo Bonzini <pbonzini@redhat.com>,
+ Andrew Morton <akpm@linux-foundation.org>,
+ "David S. Miller" <davem@davemloft.net>, Eric Dumazet <edumazet@google.com>,
+ Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
+ Fenghua Yu <fenghua.yu@intel.com>,
+ Reinette Chatre <reinette.chatre@intel.com>,
+ Paul Walmsley <paul.walmsley@sifive.com>, Palmer Dabbelt
+ <palmer@dabbelt.com>, Albert Ou <aou@eecs.berkeley.edu>,
+ Jarkko Sakkinen <jarkko@kernel.org>,
+ Dave Hansen <dave.hansen@linux.intel.com>
+References: <20240625223454.1586259-1-edliaw@google.com>
+ <20240625223454.1586259-2-edliaw@google.com>
 Content-Language: en-US
-From: Baolu Lu <baolu.lu@linux.intel.com>
-In-Reply-To: <Zn8oZ80p0p1bHgBC@ziepe.ca>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+From: Muhammad Usama Anjum <usama.anjum@collabora.com>
+In-Reply-To: <20240625223454.1586259-2-edliaw@google.com>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 
-On 2024/6/29 5:17, Jason Gunthorpe wrote:
-> On Sun, Jun 16, 2024 at 02:11:52PM +0800, Lu Baolu wrote:
->> +static int iommufd_fault_iopf_enable(struct iommufd_device *idev)
->> +{
->> +	struct device *dev = idev->dev;
->> +	int ret;
->> +
->> +	/*
->> +	 * Once we turn on PCI/PRI support for VF, the response failure code
->> +	 * should not be forwarded to the hardware due to PRI being a shared
->> +	 * resource between PF and VFs. There is no coordination for this
->> +	 * shared capability. This waits for a vPRI reset to recover.
->> +	 */
->> +	if (dev_is_pci(dev) && to_pci_dev(dev)->is_virtfn)
->> +		return -EINVAL;
-> I don't quite get this remark, isn't not supporting PRI on VFs kind of
-> useless? What is the story here?
+On 6/26/24 3:34 AM, Edward Liaw wrote:
+> Centralize the _GNU_SOURCE definition to CFLAGS in lib.mk.  Remove
+> redundant defines from Makefiles that import lib.mk.  Convert any usage
+> of "#define _GNU_SOURCE 1" to "#define _GNU_SOURCE".
+> 
+> This uses the form "-D_GNU_SOURCE=", which is equivalent to
+> "#define _GNU_SOURCE".
+> 
+> Otherwise using "-D_GNU_SOURCE" is equivalent to "-D_GNU_SOURCE=1" and
+> "#define _GNU_SOURCE 1", which is less commonly seen in source code and
+> would require many changes in selftests to avoid redefinition warnings.
+> 
+> Suggested-by: John Hubbard <jhubbard@nvidia.com>
+> Signed-off-by: Edward Liaw <edliaw@google.com>
+Reviewed-by: Muhammad Usama Anjum <usama.anjum@collabora.com>
 
-This remark is trying to explain why attaching an iopf-capable hwpt to a
-VF is not supported for now. The PCI sepc (section 10.4.2.1) states that
-a response failure will disable the PRI on the function. But for PF/VF
-case, the PRI is a shared resource, therefore a response failure on a VF
-might cause iopf on other VFs to malfunction. So, we start from simple
-by not allowing it.
+> ---
+>  tools/testing/selftests/exec/Makefile             | 1 -
+>  tools/testing/selftests/futex/functional/Makefile | 2 +-
+>  tools/testing/selftests/intel_pstate/Makefile     | 2 +-
+>  tools/testing/selftests/iommu/Makefile            | 2 --
+>  tools/testing/selftests/kvm/Makefile              | 2 +-
+>  tools/testing/selftests/lib.mk                    | 3 +++
+>  tools/testing/selftests/mm/thuge-gen.c            | 2 +-
+>  tools/testing/selftests/net/Makefile              | 2 +-
+>  tools/testing/selftests/net/tcp_ao/Makefile       | 2 +-
+>  tools/testing/selftests/proc/Makefile             | 1 -
+>  tools/testing/selftests/resctrl/Makefile          | 2 +-
+>  tools/testing/selftests/ring-buffer/Makefile      | 1 -
+>  tools/testing/selftests/riscv/mm/Makefile         | 2 +-
+>  tools/testing/selftests/sgx/Makefile              | 2 +-
+>  tools/testing/selftests/tmpfs/Makefile            | 1 -
+>  15 files changed, 12 insertions(+), 15 deletions(-)
+> 
+> diff --git a/tools/testing/selftests/exec/Makefile b/tools/testing/selftests/exec/Makefile
+> index ab67d58cfab7..ba012bc5aab9 100644
+> --- a/tools/testing/selftests/exec/Makefile
+> +++ b/tools/testing/selftests/exec/Makefile
+> @@ -1,7 +1,6 @@
+>  # SPDX-License-Identifier: GPL-2.0
+>  CFLAGS = -Wall
+>  CFLAGS += -Wno-nonnull
+> -CFLAGS += -D_GNU_SOURCE
+>  
+>  ALIGNS := 0x1000 0x200000 0x1000000
+>  ALIGN_PIES        := $(patsubst %,load_address.%,$(ALIGNS))
+> diff --git a/tools/testing/selftests/futex/functional/Makefile b/tools/testing/selftests/futex/functional/Makefile
+> index 994fa3468f17..f79f9bac7918 100644
+> --- a/tools/testing/selftests/futex/functional/Makefile
+> +++ b/tools/testing/selftests/futex/functional/Makefile
+> @@ -1,6 +1,6 @@
+>  # SPDX-License-Identifier: GPL-2.0
+>  INCLUDES := -I../include -I../../ $(KHDR_INCLUDES)
+> -CFLAGS := $(CFLAGS) -g -O2 -Wall -D_GNU_SOURCE= -pthread $(INCLUDES) $(KHDR_INCLUDES)
+> +CFLAGS := $(CFLAGS) -g -O2 -Wall -pthread $(INCLUDES) $(KHDR_INCLUDES)
+>  LDLIBS := -lpthread -lrt
+>  
+>  LOCAL_HDRS := \
+> diff --git a/tools/testing/selftests/intel_pstate/Makefile b/tools/testing/selftests/intel_pstate/Makefile
+> index 05d66ef50c97..f45372cb00fe 100644
+> --- a/tools/testing/selftests/intel_pstate/Makefile
+> +++ b/tools/testing/selftests/intel_pstate/Makefile
+> @@ -1,5 +1,5 @@
+>  # SPDX-License-Identifier: GPL-2.0
+> -CFLAGS := $(CFLAGS) -Wall -D_GNU_SOURCE
+> +CFLAGS := $(CFLAGS) -Wall
+>  LDLIBS += -lm
+>  
+>  ARCH ?= $(shell uname -m 2>/dev/null || echo not)
+> diff --git a/tools/testing/selftests/iommu/Makefile b/tools/testing/selftests/iommu/Makefile
+> index 32c5fdfd0eef..fd6477911f24 100644
+> --- a/tools/testing/selftests/iommu/Makefile
+> +++ b/tools/testing/selftests/iommu/Makefile
+> @@ -2,8 +2,6 @@
+>  CFLAGS += -Wall -O2 -Wno-unused-function
+>  CFLAGS += $(KHDR_INCLUDES)
+>  
+> -CFLAGS += -D_GNU_SOURCE
+> -
+>  TEST_GEN_PROGS :=
+>  TEST_GEN_PROGS += iommufd
+>  TEST_GEN_PROGS += iommufd_fail_nth
+> diff --git a/tools/testing/selftests/kvm/Makefile b/tools/testing/selftests/kvm/Makefile
+> index ac280dcba996..4ee37abf70ff 100644
+> --- a/tools/testing/selftests/kvm/Makefile
+> +++ b/tools/testing/selftests/kvm/Makefile
+> @@ -231,7 +231,7 @@ LINUX_TOOL_ARCH_INCLUDE = $(top_srcdir)/tools/arch/$(ARCH)/include
+>  endif
+>  CFLAGS += -Wall -Wstrict-prototypes -Wuninitialized -O2 -g -std=gnu99 \
+>  	-Wno-gnu-variable-sized-type-not-at-end -MD -MP -DCONFIG_64BIT \
+> -	-D_GNU_SOURCE -fno-builtin-memcmp -fno-builtin-memcpy \
+> +	-fno-builtin-memcmp -fno-builtin-memcpy \
+>  	-fno-builtin-memset -fno-builtin-strnlen \
+>  	-fno-stack-protector -fno-PIE -I$(LINUX_TOOL_INCLUDE) \
+>  	-I$(LINUX_TOOL_ARCH_INCLUDE) -I$(LINUX_HDR_PATH) -Iinclude \
+> diff --git a/tools/testing/selftests/lib.mk b/tools/testing/selftests/lib.mk
+> index 7b299ed5ff45..d6edcfcb5be8 100644
+> --- a/tools/testing/selftests/lib.mk
+> +++ b/tools/testing/selftests/lib.mk
+> @@ -196,6 +196,9 @@ endef
+>  clean: $(if $(TEST_GEN_MODS_DIR),clean_mods_dir)
+>  	$(CLEAN)
+>  
+> +# Build with _GNU_SOURCE by default
+> +CFLAGS += -D_GNU_SOURCE=
+> +
+>  # Enables to extend CFLAGS and LDFLAGS from command line, e.g.
+>  # make USERCFLAGS=-Werror USERLDFLAGS=-static
+>  CFLAGS += $(USERCFLAGS)
+> diff --git a/tools/testing/selftests/mm/thuge-gen.c b/tools/testing/selftests/mm/thuge-gen.c
+> index d50dc71cac32..e4370b79b62f 100644
+> --- a/tools/testing/selftests/mm/thuge-gen.c
+> +++ b/tools/testing/selftests/mm/thuge-gen.c
+> @@ -13,7 +13,7 @@
+>     sudo ipcs | awk '$1 == "0x00000000" {print $2}' | xargs -n1 sudo ipcrm -m
+>     (warning this will remove all if someone else uses them) */
+>  
+> -#define _GNU_SOURCE 1
+> +#define _GNU_SOURCE
+>  #include <sys/mman.h>
+>  #include <linux/mman.h>
+>  #include <stdlib.h>
+> diff --git a/tools/testing/selftests/net/Makefile b/tools/testing/selftests/net/Makefile
+> index bc3925200637..8eaffd7a641c 100644
+> --- a/tools/testing/selftests/net/Makefile
+> +++ b/tools/testing/selftests/net/Makefile
+> @@ -1,7 +1,7 @@
+>  # SPDX-License-Identifier: GPL-2.0
+>  # Makefile for net selftests
+>  
+> -CFLAGS =  -Wall -Wl,--no-as-needed -O2 -g
+> +CFLAGS +=  -Wall -Wl,--no-as-needed -O2 -g
+>  CFLAGS += -I../../../../usr/include/ $(KHDR_INCLUDES)
+>  # Additional include paths needed by kselftest.h
+>  CFLAGS += -I../
+> diff --git a/tools/testing/selftests/net/tcp_ao/Makefile b/tools/testing/selftests/net/tcp_ao/Makefile
+> index 522d991e310e..bd88b90b902b 100644
+> --- a/tools/testing/selftests/net/tcp_ao/Makefile
+> +++ b/tools/testing/selftests/net/tcp_ao/Makefile
+> @@ -26,7 +26,7 @@ LIB	:= $(LIBDIR)/libaotst.a
+>  LDLIBS	+= $(LIB) -pthread
+>  LIBDEPS	:= lib/aolib.h Makefile
+>  
+> -CFLAGS	:= -Wall -O2 -g -D_GNU_SOURCE -fno-strict-aliasing
+> +CFLAGS	+= -Wall -O2 -g -fno-strict-aliasing
+>  CFLAGS	+= $(KHDR_INCLUDES)
+>  CFLAGS	+= -iquote ./lib/ -I ../../../../include/
+>  
+> diff --git a/tools/testing/selftests/proc/Makefile b/tools/testing/selftests/proc/Makefile
+> index 6066f607f758..ee424a9f075f 100644
+> --- a/tools/testing/selftests/proc/Makefile
+> +++ b/tools/testing/selftests/proc/Makefile
+> @@ -1,6 +1,5 @@
+>  # SPDX-License-Identifier: GPL-2.0-only
+>  CFLAGS += -Wall -O2 -Wno-unused-function
+> -CFLAGS += -D_GNU_SOURCE
+>  LDFLAGS += -pthread
+>  
+>  TEST_GEN_PROGS :=
+> diff --git a/tools/testing/selftests/resctrl/Makefile b/tools/testing/selftests/resctrl/Makefile
+> index 021863f86053..f408bd6bfc3d 100644
+> --- a/tools/testing/selftests/resctrl/Makefile
+> +++ b/tools/testing/selftests/resctrl/Makefile
+> @@ -1,6 +1,6 @@
+>  # SPDX-License-Identifier: GPL-2.0
+>  
+> -CFLAGS = -g -Wall -O2 -D_FORTIFY_SOURCE=2 -D_GNU_SOURCE
+> +CFLAGS = -g -Wall -O2 -D_FORTIFY_SOURCE=2
+>  CFLAGS += $(KHDR_INCLUDES)
+>  
+>  TEST_GEN_PROGS := resctrl_tests
+> diff --git a/tools/testing/selftests/ring-buffer/Makefile b/tools/testing/selftests/ring-buffer/Makefile
+> index 627c5fa6d1ab..23605782639e 100644
+> --- a/tools/testing/selftests/ring-buffer/Makefile
+> +++ b/tools/testing/selftests/ring-buffer/Makefile
+> @@ -1,7 +1,6 @@
+>  # SPDX-License-Identifier: GPL-2.0
+>  CFLAGS += -Wl,-no-as-needed -Wall
+>  CFLAGS += $(KHDR_INCLUDES)
+> -CFLAGS += -D_GNU_SOURCE
+>  
+>  TEST_GEN_PROGS = map_test
+>  
+> diff --git a/tools/testing/selftests/riscv/mm/Makefile b/tools/testing/selftests/riscv/mm/Makefile
+> index c333263f2b27..4664ed79e20b 100644
+> --- a/tools/testing/selftests/riscv/mm/Makefile
+> +++ b/tools/testing/selftests/riscv/mm/Makefile
+> @@ -3,7 +3,7 @@
+>  # Originally tools/testing/arm64/abi/Makefile
+>  
+>  # Additional include paths needed by kselftest.h and local headers
+> -CFLAGS += -D_GNU_SOURCE -std=gnu99 -I.
+> +CFLAGS += -std=gnu99 -I.
+>  
+>  TEST_GEN_FILES := mmap_default mmap_bottomup
+>  
+> diff --git a/tools/testing/selftests/sgx/Makefile b/tools/testing/selftests/sgx/Makefile
+> index 867f88ce2570..03b5e13b872b 100644
+> --- a/tools/testing/selftests/sgx/Makefile
+> +++ b/tools/testing/selftests/sgx/Makefile
+> @@ -12,7 +12,7 @@ OBJCOPY := $(CROSS_COMPILE)objcopy
+>  endif
+>  
+>  INCLUDES := -I$(top_srcdir)/tools/include
+> -HOST_CFLAGS := -Wall -Werror -g $(INCLUDES) -fPIC
+> +HOST_CFLAGS := -Wall -Werror -g $(INCLUDES) -fPIC $(CFLAGS)
+>  HOST_LDFLAGS := -z noexecstack -lcrypto
+>  ENCL_CFLAGS += -Wall -Werror -static-pie -nostdlib -ffreestanding -fPIE \
+>  	       -fno-stack-protector -mrdrnd $(INCLUDES)
+> diff --git a/tools/testing/selftests/tmpfs/Makefile b/tools/testing/selftests/tmpfs/Makefile
+> index aa11ccc92e5b..3be931e1193f 100644
+> --- a/tools/testing/selftests/tmpfs/Makefile
+> +++ b/tools/testing/selftests/tmpfs/Makefile
+> @@ -1,6 +1,5 @@
+>  # SPDX-License-Identifier: GPL-2.0-only
+>  CFLAGS += -Wall -O2
+> -CFLAGS += -D_GNU_SOURCE
+>  
+>  TEST_GEN_PROGS :=
+>  TEST_GEN_PROGS += bug-link-o-tmpfile
 
-Best regards,
-baolu
+-- 
+BR,
+Muhammad Usama Anjum
