@@ -1,201 +1,108 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.21])
+Received: from bee.tesarici.cz (bee.tesarici.cz [37.205.15.56])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 92C842B9BF
-	for <iommu@lists.linux.dev>; Mon,  1 Jul 2024 05:26:12 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.21
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8844223A0
+	for <iommu@lists.linux.dev>; Mon,  1 Jul 2024 05:47:47 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=37.205.15.56
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1719811574; cv=none; b=czkaWAqS/cwG6KrVbyDmG9Asqaspnyt3jlfMcJiEYZ5dehi2ziGTkPfDLfBwe8/19UsdGN4Ef0WGI5il2TKR5rGZp3RRmKEiHz95f210Lxky6HcRrF1qYN+vg796aOVl3bAwDIAOdZtulEFb+LvxTEkzCrGpcVN/6yL1t9I/LbQ=
+	t=1719812870; cv=none; b=uaQCzO2a1P/FHrQXxpj21g+T8OeidUpV2t6N7KBRyQk7j7XpVUpFqvgK25iVEy4zFWH3/5oweWPXn1TV6erKDLe8Wijb7oC8kFjew/EEnVE+8eKqczk7/joNmNNSEA32hjXy1NqAZDhFTs6jTz+uxO3ZraA7aS+Vs7zPxZP065Q=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1719811574; c=relaxed/simple;
-	bh=/tu68GSOjhmpRwmyMKGYU43GgIJZE1jdm0HqetLJhkM=;
-	h=Message-ID:Date:MIME-Version:Cc:Subject:To:References:From:
-	 In-Reply-To:Content-Type; b=WamVvcLXy8bi9uwUvcHzctRoFiIoOSrEHToYaL1hN6uyMmmgfHIS1iLBu8Ums1tF8VqxqaCqTXG9spynuR+uZLeeBb5KwMdI7aOj+kTxqHi1waWPy14sYUZ34Y/qW5hYrgS8+0PEw9tYf7H6hYd7/h9dSDJfxEn+l+JRZ+dpDd8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=SvhyHZaW; arc=none smtp.client-ip=198.175.65.21
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
+	s=arc-20240116; t=1719812870; c=relaxed/simple;
+	bh=AmVllwoO/PrKVeEIjiMIXHaY1Hf9xdmMoer5gP5Wp/E=;
+	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=bgvDhvwlF7+HaAa2wYdsZYFoNg95nQzYE6Thb+7NeFdXwNEAx0HAlAnysq9J77NQaTZHlQFV2SLSOHCutLsLwX8dCGxdNI/Pj/6hL3v4t5V8xR4LOGQo0jWrI++Uu+lpqGdg8yVKaNb/yTnSjJ2nAaZgkaw28BHuY+Q7UEqHTJk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=tesarici.cz; spf=pass smtp.mailfrom=tesarici.cz; dkim=pass (2048-bit key) header.d=tesarici.cz header.i=@tesarici.cz header.b=w7telH3Y; arc=none smtp.client-ip=37.205.15.56
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=tesarici.cz
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=tesarici.cz
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="SvhyHZaW"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1719811572; x=1751347572;
-  h=message-id:date:mime-version:cc:subject:to:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=/tu68GSOjhmpRwmyMKGYU43GgIJZE1jdm0HqetLJhkM=;
-  b=SvhyHZaW49u0wtt0tSjgHEKIYw1wXM1WmtVlNOD5mrfset3QxWTLEu9U
-   61ECI/x/8PWzeIgjCOwFdCAbm5x5cUIMt86L28AqAJ3mfGBKxBap4EASu
-   LCWGZCWYaVaO2bqspoT5XDxwebF9S9eVBIUjRFiqZVLLEFjEP2P8WBk4u
-   f4qzclP4JwD9wwjC8dDjWZblfGw4dqcKiybSXb5qW40X1HSjfZSrXjOOT
-   lk3GAqHWRBu8eLZTfFXk8sUFjmgD2TzdCYpHMKqSwPSMGFW+AG/XBVVTj
-   LEcowHfN4CDVcODolTx4bY5x2940t3cfc+f0HZOAo4SWGKygLdbxej7kd
-   w==;
-X-CSE-ConnectionGUID: N68xtCETTPWSVfKDrG/Y+w==
-X-CSE-MsgGUID: FNZpYmndQLCW540FBsFyfQ==
-X-IronPort-AV: E=McAfee;i="6700,10204,11119"; a="16865194"
-X-IronPort-AV: E=Sophos;i="6.09,175,1716274800"; 
-   d="scan'208";a="16865194"
-Received: from orviesa009.jf.intel.com ([10.64.159.149])
-  by orvoesa113.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Jun 2024 22:26:11 -0700
-X-CSE-ConnectionGUID: tby6+totTpOKriQkdfBWfg==
-X-CSE-MsgGUID: gpwHDaxBSKexORFIH2ayBA==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.09,175,1716274800"; 
-   d="scan'208";a="45479058"
-Received: from blu2-mobl.ccr.corp.intel.com (HELO [10.124.229.145]) ([10.124.229.145])
-  by orviesa009-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Jun 2024 22:26:09 -0700
-Message-ID: <8f57eb6c-d1da-4638-9b3e-a159dbed9624@linux.intel.com>
-Date: Mon, 1 Jul 2024 13:26:05 +0800
+	dkim=pass (2048-bit key) header.d=tesarici.cz header.i=@tesarici.cz header.b="w7telH3Y"
+Received: from meshulam.tesarici.cz (dynamic-2a00-1028-83b8-1e7a-4427-cc85-6706-c595.ipv6.o2.cz [IPv6:2a00:1028:83b8:1e7a:4427:cc85:6706:c595])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange ECDHE (P-256) server-signature RSA-PSS (2048 bits) server-digest SHA256)
+	(No client certificate requested)
+	by bee.tesarici.cz (Postfix) with ESMTPSA id 8D62F1D0C85;
+	Mon,  1 Jul 2024 07:47:38 +0200 (CEST)
+Authentication-Results: mail.tesarici.cz; dmarc=fail (p=quarantine dis=none) header.from=tesarici.cz
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=tesarici.cz; s=mail;
+	t=1719812858; bh=e8FYNZRZuI5kI/HMQrEY/5s1bjxIxOJVytBhx8+lpm8=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+	b=w7telH3Y2yZsreZaX7KSVk1w+95a7tKP427OnWftl4f6LLVJ9S2TqidF9RqdpPlbH
+	 WVrhcczr8OMR+CX8QIJSYRgg8jTathu3ayX3TH6uigHYGfHOJLpMchcYYoPImGbfUC
+	 Bi2pYXmhxJ5pQ1NyAAioYXA4/fA2DKMut3/ukI3VLX/pPIhN/2seJnL5mwrcy7HFa0
+	 qa9xDy4Z3oEdz/Zl6tOtf16vZaLypjrBmxXNxr1b+rS20/NvHbvhqYKYHIO31Routj
+	 xXg0ar05+IS+/5+xYd3DR1RCy9+1cxFDwBlXJ7Dc/3E+ypRkuKxSDpp+9TLnmx7V4e
+	 9H6Una8P8iusg==
+Date: Mon, 1 Jul 2024 07:47:37 +0200
+From: Petr =?UTF-8?B?VGVzYcWZw61r?= <petr@tesarici.cz>
+To: "hch@lst.de" <hch@lst.de>
+Cc: Michael Kelley <mhklinux@outlook.com>, "robin.murphy@arm.com"
+ <robin.murphy@arm.com>, "joro@8bytes.org" <joro@8bytes.org>,
+ "will@kernel.org" <will@kernel.org>, "jgross@suse.com" <jgross@suse.com>,
+ "sstabellini@kernel.org" <sstabellini@kernel.org>,
+ "oleksandr_tyshchenko@epam.com" <oleksandr_tyshchenko@epam.com>,
+ "m.szyprowski@samsung.com" <m.szyprowski@samsung.com>,
+ "iommu@lists.linux.dev" <iommu@lists.linux.dev>,
+ "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+ "xen-devel@lists.xenproject.org" <xen-devel@lists.xenproject.org>
+Subject: Re: [RFC 1/1] swiotlb: Reduce calls to swiotlb_find_pool()
+Message-ID: <20240701072140.182aa267@meshulam.tesarici.cz>
+In-Reply-To: <20240701043615.GB26372@lst.de>
+References: <20240627060251.GA15590@lst.de>
+	<20240627085216.556744c1@meshulam.tesarici.cz>
+	<SN6PR02MB4157E61B49C8435E38AC968DD4D72@SN6PR02MB4157.namprd02.prod.outlook.com>
+	<20240627152513.GA23497@lst.de>
+	<SN6PR02MB4157D9B1A64FF78461D6A7EDD4D72@SN6PR02MB4157.namprd02.prod.outlook.com>
+	<20240628060129.GA26206@lst.de>
+	<20240628094708.3a454619@meshulam.tesarici.cz>
+	<SN6PR02MB415781789CBD6597142BEC68D4D12@SN6PR02MB4157.namprd02.prod.outlook.com>
+	<20240630055542.GA5379@lst.de>
+	<SN6PR02MB415735CA2F5487AE3FD74FFED4D22@SN6PR02MB4157.namprd02.prod.outlook.com>
+	<20240701043615.GB26372@lst.de>
+X-Mailer: Claws Mail 4.3.0 (GTK 3.24.42; x86_64-suse-linux-gnu)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Cc: baolu.lu@linux.intel.com, Kevin Tian <kevin.tian@intel.com>,
- Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
- Robin Murphy <robin.murphy@arm.com>,
- Jean-Philippe Brucker <jean-philippe@linaro.org>,
- Nicolin Chen <nicolinc@nvidia.com>, Yi Liu <yi.l.liu@intel.com>,
- Jacob Pan <jacob.jun.pan@linux.intel.com>,
- Joel Granados <j.granados@samsung.com>, iommu@lists.linux.dev,
- virtualization@lists.linux-foundation.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v7 08/10] iommufd: Associate fault object with
- iommufd_hw_pgtable
-To: Jason Gunthorpe <jgg@ziepe.ca>
-References: <20240616061155.169343-1-baolu.lu@linux.intel.com>
- <20240616061155.169343-9-baolu.lu@linux.intel.com>
- <Zn81gdjwJBfjXekJ@ziepe.ca>
-Content-Language: en-US
-From: Baolu Lu <baolu.lu@linux.intel.com>
-In-Reply-To: <Zn81gdjwJBfjXekJ@ziepe.ca>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On 2024/6/29 6:13, Jason Gunthorpe wrote:
-> On Sun, Jun 16, 2024 at 02:11:53PM +0800, Lu Baolu wrote:
-> 
->> @@ -308,13 +315,29 @@ int iommufd_hwpt_alloc(struct iommufd_ucmd *ucmd)
->>   		goto out_put_pt;
->>   	}
->>   
->> +	if (cmd->flags & IOMMU_HWPT_FAULT_ID_VALID) {
->> +		struct iommufd_fault *fault;
->> +
->> +		fault = iommufd_get_fault(ucmd, cmd->fault_id);
->> +		if (IS_ERR(fault)) {
->> +			rc = PTR_ERR(fault);
->> +			goto out_hwpt;
->> +		}
->> +		hwpt->fault = fault;
->> +		hwpt->domain->iopf_handler = iommufd_fault_iopf_handler;
->> +		hwpt->domain->fault_data = hwpt;
-> 
-> This is not the right refcounting for a longterm reference... The PT
-> above shows the pattern:
-> 
-> 	pt_obj = iommufd_get_object(ucmd->ictx, cmd->pt_id, IOMMUFD_OBJ_ANY);
-> 	hwpt_paging = iommufd_hwpt_paging_alloc()
->              	refcount_inc(&ioas->obj.users);
-> 
-> 	iommufd_put_object(ucmd->ictx, pt_obj);
-> 
-> Which is to say you need to incr users and then do the put object. And
-> iommufd_object_abort_and_destroy() will always destroy the ref on the
-> fault if the fault is non-null so the error handling will double free.
-> 
-> fail_nth is intended to catch this, but you have to add enough inputs
-> to cover the new cases when you add them, it seems like that is
-> missing in this series. ie add a fault object and hwpt alloc to a
-> fail_nth test and see we execute the iommufd_ucmd_respond() failure
-> path.
+On Mon, 1 Jul 2024 06:36:15 +0200
+"hch@lst.de" <hch@lst.de> wrote:
 
-Yes. I will add below fail_nth case:
-
---- a/tools/testing/selftests/iommu/iommufd_utils.h
-+++ b/tools/testing/selftests/iommu/iommufd_utils.h
-@@ -201,6 +201,12 @@ static int _test_cmd_hwpt_alloc(int fd, __u32 
-device_id, __u32 pt_id, __u32 ft_i
-         ASSERT_EQ(0, _test_cmd_hwpt_alloc(self->fd, device_id, pt_id, 
-fault_id, \
-                                           flags, hwpt_id, data_type, 
-data,      \
-                                           data_len))
-+#define test_err_hwpt_alloc_iopf(_errno, device_id, pt_id, fault_id, 
-flags,     \
-+                                hwpt_id, data_type, data, data_len) 
-        \
-+       EXPECT_ERRNO(_errno, 
-        \
-+                    _test_cmd_hwpt_alloc(self->fd, device_id, pt_id, 
-fault_id, \
-+                                         flags, hwpt_id, data_type, 
-data,      \
-+                                         data_len))
-
-  #define test_cmd_hwpt_check_iotlb(hwpt_id, iotlb_id, expected) 
-         \
-         ({ 
-        \
-diff --git a/tools/testing/selftests/iommu/iommufd.c 
-b/tools/testing/selftests/iommu/iommufd.c
-index 5b0169875a4d..93634e53e95e 100644
---- a/tools/testing/selftests/iommu/iommufd.c
-+++ b/tools/testing/selftests/iommu/iommufd.c
-@@ -338,6 +338,10 @@ TEST_F(iommufd_ioas, alloc_hwpt_nested)
-                                            &nested_hwpt_id[1],
-                                            IOMMU_HWPT_DATA_SELFTEST, &data,
-                                            sizeof(data));
-+               test_err_hwpt_alloc_iopf(ENOENT, self->device_id, 
-parent_hwpt_id,
-+                                        UINT32_MAX, 
-IOMMU_HWPT_FAULT_ID_VALID,
-+                                        &iopf_hwpt_id, 
-IOMMU_HWPT_DATA_SELFTEST,
-+                                        &data, sizeof(data));
-                 test_cmd_hwpt_alloc_iopf(self->device_id, 
-parent_hwpt_id, fault_id,
-                                          IOMMU_HWPT_FAULT_ID_VALID, 
-&iopf_hwpt_id,
-                                          IOMMU_HWPT_DATA_SELFTEST, &data,
-
+> On Sun, Jun 30, 2024 at 02:02:52PM +0000, Michael Kelley wrote:
+> > 1) Rename is_swiotlb_buffer() to swiotlb_find_pool(), since it
+> > now returns a pool.  A NULL return value indicates that the
+> > paddr is not an swiotlb buffer.
+> > 
+> > 2) Similarly, rename is_xen_swiotlb_buffer() to
+> > xen_swiotlb_find_pool()
+> > 
+> > 3) The existing swiotlb_find_pool() has the same function signature,
+> > but it is used only where the paddr is known to be an swiotlb buffer
+> > and hence always succeeds. Rename it to __swiotlb_find_pool() as
+> > the "internal" version of swiotlb_find_pool().  
 > 
-> --- a/drivers/iommu/iommufd/hw_pagetable.c
-> +++ b/drivers/iommu/iommufd/hw_pagetable.c
-> @@ -14,7 +14,7 @@ static void __iommufd_hwpt_destroy(struct iommufd_hw_pagetable *hwpt)
->                  iommu_domain_free(hwpt->domain);
->   
->          if (hwpt->fault)
-> -               iommufd_put_object(hwpt->fault->ictx, &hwpt->fault->obj);
-> +               refcount_dec(&hwpt->fault->obj.users);
->   }
->   
->   void iommufd_hwpt_paging_destroy(struct iommufd_object *obj)
-> @@ -326,18 +326,17 @@ int iommufd_hwpt_alloc(struct iommufd_ucmd *ucmd)
->                  hwpt->fault = fault;
->                  hwpt->domain->iopf_handler = iommufd_fault_iopf_handler;
->                  hwpt->domain->fault_data = hwpt;
-> +               refcount_inc(&fault->obj.users);
-> +               iommufd_put_object(ucmd->ictx, &fault->obj);
->          }
->   
->          cmd->out_hwpt_id = hwpt->obj.id;
->          rc = iommufd_ucmd_respond(ucmd, sizeof(*cmd));
->          if (rc)
-> -               goto out_put_fault;
-> +               goto out_hwpt;
->          iommufd_object_finalize(ucmd->ictx, &hwpt->obj);
->          goto out_unlock;
->   
-> -out_put_fault:
-> -       if (cmd->flags & IOMMU_HWPT_FAULT_ID_VALID)
-> -               iommufd_put_object(ucmd->ictx, &hwpt->fault->obj);
->   out_hwpt:
->          iommufd_object_abort_and_destroy(ucmd->ictx, &hwpt->obj);
->   out_unlock:
+> Sounds good.
+
+Agreed. Most importantly, the "nice" name swiotlb_find_pool() is used
+for external users. The difference between swiotlb_find_pool() and
+__swiotlb_find_pool() is that the former can be used with any device,
+and the latter (internal) only with devices that make some use of
+swiotlb. The main reason to keep them separate is that the internal
+function should not be inlined if CONFIG_SWIOTLB_DYNAMIC=y.
+
+I hope somebody finds my explanation useful when they touch the code
+again in a few years from now. ;-)
+
+> > 4) Do you still want is_swiotlb_buffer() as a trivial wrapper around
+> > the new swiotlb_find_pool(), for use solely in dma_direct_need_sync()
+> > where only a Boolean is needed and not the pool?  
 > 
+> If there is really just a single caller left we can skip the wrapper,
+> otherwise it might be handy.
 
-.. and merge above change to this patch.
+AFAICS dma_direct_need_sync() is the only such place.
 
-Best regards,
-baolu
+Petr T
