@@ -1,117 +1,315 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from out-180.mta1.migadu.com (out-180.mta1.migadu.com [95.215.58.180])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E2D961DFFC;
-	Tue,  2 Jul 2024 14:57:11 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2107A1B47AC
+	for <iommu@lists.linux.dev>; Tue,  2 Jul 2024 15:11:29 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=95.215.58.180
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1719932232; cv=none; b=BTrzdAXOZyFziMdQu/Fulvj7IsJrzUHQ6f+ueWOnxMnv+foS7WjmbsKI6W7Ae88IJViBmPWdBmigE9qpQx58iZll9oRuN+TD8rrrWeJ76vG99zQl1Uz3AGjQhEbTOmBwpScLRuUpHfJz6AftxIk4XjvmgmfdOxvxNzVcOaWR8qM=
+	t=1719933094; cv=none; b=DcJWu5/25SbRfhauS7Rt+YAPzkdCHeJpc6KUK+SuiZlIouJf2nTEYFgN/jXuVeg/Uf1I6cgcMGcpxFJmhhkT6ArVr43cI1qPREQ9FZ37lEUHE3uctkpyzmxAmob2giJbp/Ki6gm1WC+Pjgw7/dNiIIWVZ70UQIQwVAZncMJVWn0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1719932232; c=relaxed/simple;
-	bh=tJJ5oDpsdhd4yOJL5nnPQ6va4IfZoOj+e5qS1B/EmZQ=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=Blr7Qg/dDDsGXYAmX50exOg3NRU5lXORdRsZg9kppfyvbIOAd0j1pugQLk+wsuYElXeguac1kKYiJpcjfurxxHCpeb4L4SXJjUCBj4g4muDkQtBmn3YJ7s7KQWh6sK3wDU5b2cu9YCLYx1Q82nvz1H6sEDAJV4SXRbAPnm6/xCA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=n7DJoo8C; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1719933094; c=relaxed/simple;
+	bh=gir7lGK92/Fa2opJLUsmD7yi84wn7iEDvli+DyJr/6A=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=sAtAlLd+aT1SSEdzjUDPP7MA1gOhIEAOLTAUgqNreowo1IwG84+54iV+OeKXhjE2X68uyaBZEbmV2WenLPVMDz+VdVT1i9Q1CFJSn+fMD+LCVtOc2inEsFSFRfyV7vO6mwg/xmqT0yr1/tWfXiG2K9jvAcizZBotQ4JJCW9sZ3g=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.dev; spf=pass smtp.mailfrom=linux.dev; dkim=pass (1024-bit key) header.d=linux.dev header.i=@linux.dev header.b=c878DGhW; arc=none smtp.client-ip=95.215.58.180
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.dev
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.dev
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="n7DJoo8C"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0E95DC116B1;
-	Tue,  2 Jul 2024 14:57:08 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1719932231;
-	bh=tJJ5oDpsdhd4yOJL5nnPQ6va4IfZoOj+e5qS1B/EmZQ=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=n7DJoo8C3IhVv5Jpg+hODp1pXKtpwYyq719rETqMdrxyi4/yEM4dM5GAOX0gRv8uk
-	 9R1f4p6ZJ4zLqPjG4Ycp/OcWO/JHO+FIpgg4HG9uCUSd8q/+GExkH95t+qxAM8nVhr
-	 2ap+ooyJ0YAzb+Nk7MKLMbAP8loSe5sUcNGfFH4FystXJVGRoiWIn3JhbD8usDJlHl
-	 6ytNK2RRy45FxddMQXE0YR6evC4iDFFHyJjPAGMmHnkH5Dvj7fT6kQFLPBFNvMr1nB
-	 obsC9lmOspEdEHuBiawqpZpTAkZ7r5XU/KqQ0kb9Hv6m/poM1Ns8BQWEM2pIUS35yN
-	 fjolOC4/73sIw==
-Date: Tue, 2 Jul 2024 15:57:05 +0100
-From: Will Deacon <will@kernel.org>
-To: Jason Gunthorpe <jgg@nvidia.com>
-Cc: iommu@lists.linux.dev, Joerg Roedel <joro@8bytes.org>,
-	linux-arm-kernel@lists.infradead.org,
-	Robin Murphy <robin.murphy@arm.com>,
-	Eric Auger <eric.auger@redhat.com>,
-	Jean-Philippe Brucker <jean-philippe@linaro.org>,
-	Jerry Snitselaar <jsnitsel@redhat.com>,
-	Moritz Fischer <mdf@kernel.org>,
-	Michael Shavit <mshavit@google.com>,
-	Nicolin Chen <nicolinc@nvidia.com>, patches@lists.linux.dev,
-	Shameerali Kolothum Thodi <shameerali.kolothum.thodi@huawei.com>
-Subject: Re: [PATCH v9 02/14] iommu/arm-smmu-v3: Start building a generic
- PASID layer
-Message-ID: <20240702145705.GA4135@willie-the-truck>
-References: <0-v9-5cd718286059+79186-smmuv3_newapi_p2b_jgg@nvidia.com>
- <2-v9-5cd718286059+79186-smmuv3_newapi_p2b_jgg@nvidia.com>
+	dkim=pass (1024-bit key) header.d=linux.dev header.i=@linux.dev header.b="c878DGhW"
+X-Envelope-To: mark-pk.tsai@mediatek.com
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
+	t=1719933087;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding:
+	 in-reply-to:in-reply-to:references:references;
+	bh=jsuhCIwX2lHnQpmQXQKzCY+sOzfjRTFPYPQ7y+FMJRE=;
+	b=c878DGhWqM9mpi+EDCykDhJkbM5MxOfvJJKAqu0HOhqbxOCpNfOqkAlqbZzl7SYxuv1BXn
+	1Zr3aBECbeA4OTPvjd8XEJzcQE1ZmiBW90/ay/2vcaXs62+z7fdlgV/kF20XXnCUOYWjKw
+	4XlSs7RxUvxXjuV7sdP3/umS3pbf1XE=
+X-Envelope-To: joro@8bytes.org
+X-Envelope-To: will@kernel.org
+X-Envelope-To: robin.murphy@arm.com
+X-Envelope-To: corbet@lwn.net
+X-Envelope-To: matthias.bgg@gmail.com
+X-Envelope-To: angelogioacchino.delregno@collabora.com
+X-Envelope-To: yj.chiang@mediatek.com
+X-Envelope-To: linux-doc@vger.kernel.org
+X-Envelope-To: linux-kernel@vger.kernel.org
+X-Envelope-To: linux-arm-kernel@lists.infradead.org
+X-Envelope-To: linux-mediatek@lists.infradead.org
+X-Envelope-To: iommu@lists.linux.dev
+X-Envelope-To: zenghui.yu@linux.dev
+Message-ID: <d4081e8e-ec30-4aab-bfd2-39b8ebd41c2b@linux.dev>
+Date: Tue, 2 Jul 2024 23:11:13 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <2-v9-5cd718286059+79186-smmuv3_newapi_p2b_jgg@nvidia.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Subject: Re: [PATCH] docs: iommu: Remove outdated
+ Documentation/userspace-api/iommu.rst
+To: Mark-PK Tsai <mark-pk.tsai@mediatek.com>
+Cc: joro@8bytes.org, Will Deacon <will@kernel.org>, robin.murphy@arm.com,
+ Jonathan Corbet <corbet@lwn.net>, Matthias Brugger <matthias.bgg@gmail.com>,
+ AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>,
+ yj.chiang@mediatek.com, linux-doc@vger.kernel.org,
+ linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+ linux-mediatek@lists.infradead.org, iommu@lists.linux.dev
+References: <20240702120617.26882-1-mark-pk.tsai@mediatek.com>
+Content-Language: en-US
+X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
+From: Zenghui Yu <zenghui.yu@linux.dev>
+In-Reply-To: <20240702120617.26882-1-mark-pk.tsai@mediatek.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Migadu-Flow: FLOW_OUT
 
-On Tue, Jun 25, 2024 at 09:37:33AM -0300, Jason Gunthorpe wrote:
-> Add arm_smmu_set_pasid()/arm_smmu_remove_pasid() which are to be used by
-> callers that already constructed the arm_smmu_cd they wish to program.
+[ +Cc IOMMU maintainers and list ]
+
+On 2024/7/2 20:05, Mark-PK Tsai wrote:
+> The Documentation/userspace-api/iommu.rst file has become outdated due
+> to the removal of associated structures and APIs.
 > 
-> These functions will encapsulate the shared logic to setup a CD entry that
-> will be shared by SVA and S1 domain cases.
+> Specifically, struct such as iommu_cache_invalidate_info and guest
+> pasid related uapi were removed in commit 0c9f17877891 ("iommu:
+> Remove guest pasid related interfaces and definitions").
+> And the corresponding uapi/linux/iommu.h file was removed in
+> commit 00a9bc607043 ("iommu: Move iommu fault data to
+> linux/iommu.h").
 > 
-> Prior fixes had already moved most of this logic up into
-> __arm_smmu_sva_bind(), move it to it's final home.
-> 
-> Following patches will relieve some of the remaining SVA restrictions:
-> 
->  - The RID domain is a S1 domain and has already setup the STE to point to
->    the CD table
->  - The programmed PASID is the mm_get_enqcmd_pasid()
->  - Nothing changes while SVA is running (sva_enable)
-> 
-> SVA invalidation will still iterate over the S1 domain's master list,
-> later patches will resolve that.
-> 
-> Tested-by: Nicolin Chen <nicolinc@nvidia.com>
-> Tested-by: Shameer Kolothum <shameerali.kolothum.thodi@huawei.com>
-> Reviewed-by: Nicolin Chen <nicolinc@nvidia.com>
-> Reviewed-by: Jerry Snitselaar <jsnitsel@redhat.com>
-> Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
+> Signed-off-by: Mark-PK Tsai <mark-pk.tsai@mediatek.com>
 > ---
->  .../iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c   | 57 ++++++++++---------
->  drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c   | 32 ++++++++++-
->  drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h   |  9 ++-
->  3 files changed, 67 insertions(+), 31 deletions(-)
-
-[...]
-
-> @@ -611,10 +599,9 @@ void arm_smmu_sva_remove_dev_pasid(struct iommu_domain *domain,
->  	struct arm_smmu_bond *bond = NULL, *t;
->  	struct arm_smmu_master *master = dev_iommu_priv_get(dev);
->  
-> +	arm_smmu_remove_pasid(master, to_smmu_domain(domain), id);
-> +
->  	mutex_lock(&sva_lock);
+>  Documentation/userspace-api/iommu.rst | 209 --------------------------
+>  MAINTAINERS                           |   1 -
+>  2 files changed, 210 deletions(-)
+>  delete mode 100644 Documentation/userspace-api/iommu.rst
+> 
+> diff --git a/Documentation/userspace-api/iommu.rst b/Documentation/userspace-api/iommu.rst
+> deleted file mode 100644
+> index d3108c1519d5..000000000000
+> --- a/Documentation/userspace-api/iommu.rst
+> +++ /dev/null
+> @@ -1,209 +0,0 @@
+> -.. SPDX-License-Identifier: GPL-2.0
+> -.. iommu:
 > -
-> -	arm_smmu_clear_cd(master, id);
-
-This looks a bit alarming, as you're effectively moving the CD
-modification outside of the critical section. I assume we're relying on
-the iommu group mutex to serialise this in the caller? I can't see any
-consistent locking in the driver for arm_smmu_clear_cd().
-
-As an additional patch, perhaps we should consider documenting what each
-lock in the driver protects and the lock ordering requirements they
-have? We've got a few global locks with generic names and after a few
-rounds of refactoring it's really hard to know who's responsible for
-what, especially now that we have stale comments referring to
-arm_smmu_share_asid(). We've also grown a number of places where we
-drop a lock in the callee and immediately re-take it in the caller,
-which tends to be a source of bugs.
-
-Thanks,
-
-Will
+> -=====================================
+> -IOMMU Userspace API
+> -=====================================
+> -
+> -IOMMU UAPI is used for virtualization cases where communications are
+> -needed between physical and virtual IOMMU drivers. For baremetal
+> -usage, the IOMMU is a system device which does not need to communicate
+> -with userspace directly.
+> -
+> -The primary use cases are guest Shared Virtual Address (SVA) and
+> -guest IO virtual address (IOVA), wherein the vIOMMU implementation
+> -relies on the physical IOMMU and for this reason requires interactions
+> -with the host driver.
+> -
+> -.. contents:: :local:
+> -
+> -Functionalities
+> -===============
+> -Communications of user and kernel involve both directions. The
+> -supported user-kernel APIs are as follows:
+> -
+> -1. Bind/Unbind guest PASID (e.g. Intel VT-d)
+> -2. Bind/Unbind guest PASID table (e.g. ARM SMMU)
+> -3. Invalidate IOMMU caches upon guest requests
+> -4. Report errors to the guest and serve page requests
+> -
+> -Requirements
+> -============
+> -The IOMMU UAPIs are generic and extensible to meet the following
+> -requirements:
+> -
+> -1. Emulated and para-virtualised vIOMMUs
+> -2. Multiple vendors (Intel VT-d, ARM SMMU, etc.)
+> -3. Extensions to the UAPI shall not break existing userspace
+> -
+> -Interfaces
+> -==========
+> -Although the data structures defined in IOMMU UAPI are self-contained,
+> -there are no user API functions introduced. Instead, IOMMU UAPI is
+> -designed to work with existing user driver frameworks such as VFIO.
+> -
+> -Extension Rules & Precautions
+> ------------------------------
+> -When IOMMU UAPI gets extended, the data structures can *only* be
+> -modified in two ways:
+> -
+> -1. Adding new fields by re-purposing the padding[] field. No size change.
+> -2. Adding new union members at the end. May increase the structure sizes.
+> -
+> -No new fields can be added *after* the variable sized union in that it
+> -will break backward compatibility when offset moves. A new flag must
+> -be introduced whenever a change affects the structure using either
+> -method. The IOMMU driver processes the data based on flags which
+> -ensures backward compatibility.
+> -
+> -Version field is only reserved for the unlikely event of UAPI upgrade
+> -at its entirety.
+> -
+> -It's *always* the caller's responsibility to indicate the size of the
+> -structure passed by setting argsz appropriately.
+> -Though at the same time, argsz is user provided data which is not
+> -trusted. The argsz field allows the user app to indicate how much data
+> -it is providing; it's still the kernel's responsibility to validate
+> -whether it's correct and sufficient for the requested operation.
+> -
+> -Compatibility Checking
+> -----------------------
+> -When IOMMU UAPI extension results in some structure size increase,
+> -IOMMU UAPI code shall handle the following cases:
+> -
+> -1. User and kernel has exact size match
+> -2. An older user with older kernel header (smaller UAPI size) running on a
+> -   newer kernel (larger UAPI size)
+> -3. A newer user with newer kernel header (larger UAPI size) running
+> -   on an older kernel.
+> -4. A malicious/misbehaving user passing illegal/invalid size but within
+> -   range. The data may contain garbage.
+> -
+> -Feature Checking
+> -----------------
+> -While launching a guest with vIOMMU, it is strongly advised to check
+> -the compatibility upfront, as some subsequent errors happening during
+> -vIOMMU operation, such as cache invalidation failures cannot be nicely
+> -escalated to the guest due to IOMMU specifications. This can lead to
+> -catastrophic failures for the users.
+> -
+> -User applications such as QEMU are expected to import kernel UAPI
+> -headers. Backward compatibility is supported per feature flags.
+> -For example, an older QEMU (with older kernel header) can run on newer
+> -kernel. Newer QEMU (with new kernel header) may refuse to initialize
+> -on an older kernel if new feature flags are not supported by older
+> -kernel. Simply recompiling existing code with newer kernel header should
+> -not be an issue in that only existing flags are used.
+> -
+> -IOMMU vendor driver should report the below features to IOMMU UAPI
+> -consumers (e.g. via VFIO).
+> -
+> -1. IOMMU_NESTING_FEAT_SYSWIDE_PASID
+> -2. IOMMU_NESTING_FEAT_BIND_PGTBL
+> -3. IOMMU_NESTING_FEAT_BIND_PASID_TABLE
+> -4. IOMMU_NESTING_FEAT_CACHE_INVLD
+> -5. IOMMU_NESTING_FEAT_PAGE_REQUEST
+> -
+> -Take VFIO as example, upon request from VFIO userspace (e.g. QEMU),
+> -VFIO kernel code shall query IOMMU vendor driver for the support of
+> -the above features. Query result can then be reported back to the
+> -userspace caller. Details can be found in
+> -Documentation/driver-api/vfio.rst.
+> -
+> -
+> -Data Passing Example with VFIO
+> -------------------------------
+> -As the ubiquitous userspace driver framework, VFIO is already IOMMU
+> -aware and shares many key concepts such as device model, group, and
+> -protection domain. Other user driver frameworks can also be extended
+> -to support IOMMU UAPI but it is outside the scope of this document.
+> -
+> -In this tight-knit VFIO-IOMMU interface, the ultimate consumer of the
+> -IOMMU UAPI data is the host IOMMU driver. VFIO facilitates user-kernel
+> -transport, capability checking, security, and life cycle management of
+> -process address space ID (PASID).
+> -
+> -VFIO layer conveys the data structures down to the IOMMU driver. It
+> -follows the pattern below::
+> -
+> -   struct {
+> -	__u32 argsz;
+> -	__u32 flags;
+> -	__u8  data[];
+> -   };
+> -
+> -Here data[] contains the IOMMU UAPI data structures. VFIO has the
+> -freedom to bundle the data as well as parse data size based on its own flags.
+> -
+> -In order to determine the size and feature set of the user data, argsz
+> -and flags (or the equivalent) are also embedded in the IOMMU UAPI data
+> -structures.
+> -
+> -A "__u32 argsz" field is *always* at the beginning of each structure.
+> -
+> -For example:
+> -::
+> -
+> -   struct iommu_cache_invalidate_info {
+> -	__u32	argsz;
+> -	#define IOMMU_CACHE_INVALIDATE_INFO_VERSION_1 1
+> -	__u32	version;
+> -	/* IOMMU paging structure cache */
+> -	#define IOMMU_CACHE_INV_TYPE_IOTLB	(1 << 0) /* IOMMU IOTLB */
+> -	#define IOMMU_CACHE_INV_TYPE_DEV_IOTLB	(1 << 1) /* Device IOTLB */
+> -	#define IOMMU_CACHE_INV_TYPE_PASID	(1 << 2) /* PASID cache */
+> -	#define IOMMU_CACHE_INV_TYPE_NR		(3)
+> -	__u8	cache;
+> -	__u8	granularity;
+> -	__u8	padding[6];
+> -	union {
+> -		struct iommu_inv_pasid_info pasid_info;
+> -		struct iommu_inv_addr_info addr_info;
+> -	} granu;
+> -   };
+> -
+> -VFIO is responsible for checking its own argsz and flags. It then
+> -invokes appropriate IOMMU UAPI functions. The user pointers are passed
+> -to the IOMMU layer for further processing. The responsibilities are
+> -divided as follows:
+> -
+> -- Generic IOMMU layer checks argsz range based on UAPI data in the
+> -  current kernel version.
+> -
+> -- Generic IOMMU layer checks content of the UAPI data for non-zero
+> -  reserved bits in flags, padding fields, and unsupported version.
+> -  This is to ensure not breaking userspace in the future when these
+> -  fields or flags are used.
+> -
+> -- Vendor IOMMU driver checks argsz based on vendor flags. UAPI data
+> -  is consumed based on flags. Vendor driver has access to
+> -  unadulterated argsz value in case of vendor specific future
+> -  extensions. Currently, it does not perform the copy_from_user()
+> -  itself. A __user pointer can be provided in some future scenarios
+> -  where there's vendor data outside of the structure definition.
+> -
+> -IOMMU code treats UAPI data in two categories:
+> -
+> -- structure contains vendor data
+> -  (Example: iommu_uapi_cache_invalidate())
+> -
+> -- structure contains only generic data
+> -  (Example: iommu_uapi_sva_bind_gpasid())
+> -
+> -
+> -
+> -Sharing UAPI with in-kernel users
+> ----------------------------------
+> -For UAPIs that are shared with in-kernel users, a wrapper function is
+> -provided to distinguish the callers. For example,
+> -
+> -Userspace caller ::
+> -
+> -  int iommu_uapi_sva_unbind_gpasid(struct iommu_domain *domain,
+> -                                   struct device *dev,
+> -                                   void __user *udata)
+> -
+> -In-kernel caller ::
+> -
+> -  int iommu_sva_unbind_gpasid(struct iommu_domain *domain,
+> -                              struct device *dev, ioasid_t ioasid);
+> diff --git a/MAINTAINERS b/MAINTAINERS
+> index 0748d6bd0c4f..1359ed17337e 100644
+> --- a/MAINTAINERS
+> +++ b/MAINTAINERS
+> @@ -11544,7 +11544,6 @@ L:	iommu@lists.linux.dev
+>  S:	Maintained
+>  T:	git git://git.kernel.org/pub/scm/linux/kernel/git/joro/iommu.git
+>  F:	Documentation/devicetree/bindings/iommu/
+> -F:	Documentation/userspace-api/iommu.rst
+>  F:	drivers/iommu/
+>  F:	include/linux/iommu.h
+>  F:	include/linux/iova.h
