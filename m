@@ -1,121 +1,99 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.11])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9666D1BD005
-	for <iommu@lists.linux.dev>; Tue,  2 Jul 2024 15:52:37 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.11
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7CDA42AD21;
+	Tue,  2 Jul 2024 16:39:16 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1719935559; cv=none; b=HxqvEvpz2CYHf5Zb+D2YillRjHR1taiCNQPD2DavZIqXNFVL08r5l+kh5pEp3onYXQt+loShV/enHrpLqggj/KYmDdKzxhtrt+phzXhO5UIvZ6U/aZx3zGrgErTHecautO2tCXgLdiRcRgUZZJVjJHMhFF1CSH1/RzRkRvY/jlg=
+	t=1719938356; cv=none; b=ZZNSQX84Ozr2SV0bfIHEqDTdeRzL+v03bVhglzPppS4Xx3c3NLj4NgzVRPPKKHTqgs5sJAFij1VXwklkgH9OUyq7Q0bAvFgpZzF9pflxGwHEv+Djv5m/RKytoDJaa+OYVe+gXZOn4xHxhZaEIzyZU3Edf/0O0gULciFNuOBNWXk=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1719935559; c=relaxed/simple;
-	bh=wZPV+CEpgfvPai1e8+Vih+T/KY60zCsNw6OOzvBD2xA=;
-	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=LYiDn4dNqe8uCurGB/sYZclMWJnsc3n2D7Q8wHTXqWnivBkZbJREJVjA2rz7g7FdzbDgDadAMq30G/399UpzCW5okkodlg5ULu6CgQeMZOvBi/0+v4cAP5VxTqCUJ3xQLQvEvJCaZ0l710guPeTup+EGKzvECzbJwSnW2g45ioA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=Tg7f1Ocu; arc=none smtp.client-ip=198.175.65.11
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
+	s=arc-20240116; t=1719938356; c=relaxed/simple;
+	bh=g14jA8QXl5fdAefIcpJfPYFXboQyZ2ZKpm4/Ay9puQU=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=O+Qe1IRuakRtAkAgc7pdRnqi8nIzOyPF88C7OsUSQpj68kF2PRksbStKxC7nJyg98IfaxxRZHn68ySKJxYCn5Wqkl1iIQtrZGz4MU+0F9DvkKSev/ZAtyI2YutOryiChNfBszTFCESLbFSTd0W9LAPORBQBZTe2qTFKSm8t8loI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Eg5+VRGs; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="Tg7f1Ocu"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1719935557; x=1751471557;
-  h=date:from:to:cc:subject:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=wZPV+CEpgfvPai1e8+Vih+T/KY60zCsNw6OOzvBD2xA=;
-  b=Tg7f1Ocu1IwuyGRZcDgZO/55kY74+QmMxo4B22h5uaQX5Kgil6bWyr0e
-   KUFGrmHzgLBG36ovUxq9/u3ipZKjgFiFb146fQ7+NFTC7hRZWEJvbPcW8
-   lobwtv08QMIZ2hZB/JFVayl2nhxl3XWeH+s17+uI+VQlYOOF1wfrpw9ct
-   C0imypvFiE3e52WsUQ5XnJwKnit+COAAD4nQyowT7or+WRs1amy+9Dj4z
-   g+xC7fCVq+Xj6iJtTXldldjWXSWrxwj8qz4sR0rBZDYv1uTmnpwQve/wd
-   RQ/ap0nxTXyZGUDH722qd5wDp6NnY2hkEMX5igmxPUCGyqhddLkL87JTN
-   g==;
-X-CSE-ConnectionGUID: Dxab8CFSQHaS23uhuptbxw==
-X-CSE-MsgGUID: lkImssHERl6XfVlKVyP/hQ==
-X-IronPort-AV: E=McAfee;i="6700,10204,11121"; a="27719998"
-X-IronPort-AV: E=Sophos;i="6.09,178,1716274800"; 
-   d="scan'208";a="27719998"
-Received: from fmviesa005.fm.intel.com ([10.60.135.145])
-  by orvoesa103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Jul 2024 08:52:37 -0700
-X-CSE-ConnectionGUID: +iPT0RxbT4+0+gwNWEGrQg==
-X-CSE-MsgGUID: zviT4DVLRVu1wnVIJoHRLg==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.09,178,1716274800"; 
-   d="scan'208";a="50396978"
-Received: from jacob-builder.jf.intel.com (HELO jacob-builder) ([10.54.39.125])
-  by fmviesa005-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Jul 2024 08:52:36 -0700
-Date: Tue, 2 Jul 2024 08:57:49 -0700
-From: Jacob Pan <jacob.jun.pan@linux.intel.com>
-To: Baolu Lu <baolu.lu@linux.intel.com>
-Cc: Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>, Robin
- Murphy <robin.murphy@arm.com>, Jason Gunthorpe <jgg@ziepe.ca>, Kevin Tian
- <kevin.tian@intel.com>, iommu@lists.linux.dev,
- linux-kernel@vger.kernel.org, jacob.jun.pan@linux.intel.com
-Subject: Re: [PATCH v3 1/2] iommu/vt-d: Add helper to flush caches for
- context change
-Message-ID: <20240702085749.2e2bbea5@jacob-builder>
-In-Reply-To: <28ade99a-13ad-4b01-aff2-711c006856fd@linux.intel.com>
-References: <20240701112317.94022-1-baolu.lu@linux.intel.com>
-	<20240701112317.94022-2-baolu.lu@linux.intel.com>
-	<20240701214128.5523a1ea@jacob-builder>
-	<28ade99a-13ad-4b01-aff2-711c006856fd@linux.intel.com>
-Organization: OTC
-X-Mailer: Claws Mail 3.17.5 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Eg5+VRGs"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AC898C116B1;
+	Tue,  2 Jul 2024 16:39:12 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1719938356;
+	bh=g14jA8QXl5fdAefIcpJfPYFXboQyZ2ZKpm4/Ay9puQU=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=Eg5+VRGsPZ5YNKRWUaL254EhB7j/rKgTDH8DoOvH47JH6lpLPHI8R+oumOj7hphXb
+	 VlPJsPVmiGTJquiX7gWzGNMi6UZ6SWR0n63pppOQDPrrVRLN0WYH79Tw08clcwhJGw
+	 Ovd8nuKU7ARnTIqiarc7FONrrqFOkj1e5KNQpd7/hxmy1MDO8Ybbk2jnDaT6JU8CB4
+	 CIWrMCfmkRCRNuMwUkYLW1AQRvBBH5ioD7KlRaqSOLCtczk8Ug9VBtcsYOU/z91aYD
+	 YX6D74Fji91jOZz5YMBTxQUlBdu/BgFO4JDjLMArlwaTJRVZ63fYzTlGd0k/mqRdYq
+	 TYmG08Ql2R83w==
+Date: Tue, 2 Jul 2024 17:39:09 +0100
+From: Will Deacon <will@kernel.org>
+To: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+Cc: Georgi Djakov <djakov@kernel.org>,
+	Georgi Djakov <quic_c_gdjako@quicinc.com>, robin.murphy@arm.com,
+	joro@8bytes.org, iommu@lists.linux.dev, robh+dt@kernel.org,
+	krzysztof.kozlowski+dt@linaro.org, conor+dt@kernel.org,
+	devicetree@vger.kernel.org, andersson@kernel.org,
+	konrad.dybcio@linaro.org, robdclark@gmail.com,
+	linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+	linux-arm-msm@vger.kernel.org, quic_cgoldswo@quicinc.com,
+	quic_sukadev@quicinc.com, quic_pdaly@quicinc.com,
+	quic_sudaraja@quicinc.com
+Subject: Re: [PATCH v8 5/7] arm64: dts: qcom: sdm845: Add DT nodes for the
+ TBUs
+Message-ID: <20240702163908.GA4635@willie-the-truck>
+References: <20240417133731.2055383-1-quic_c_gdjako@quicinc.com>
+ <20240417133731.2055383-6-quic_c_gdjako@quicinc.com>
+ <CAA8EJppcXVu72OSo+OiYEiC1HQjP3qCwKMumOsUhcn6Czj0URg@mail.gmail.com>
+ <CAA8EJpr3GYimirDz39f4n-3hDAxFWzo+9fdY6MAuxaNguouVFg@mail.gmail.com>
+ <3e816509-a12b-4658-85f4-c0d0037c6a64@kernel.org>
+ <CAA8EJpr1G4eq5xJn0z2JQmpXY89UK13uk2BWJCgROsFP_-NkQw@mail.gmail.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAA8EJpr1G4eq5xJn0z2JQmpXY89UK13uk2BWJCgROsFP_-NkQw@mail.gmail.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 
-
-On Tue, 2 Jul 2024 12:43:41 +0800, Baolu Lu <baolu.lu@linux.intel.com>
-wrote:
-
-> On 2024/7/2 12:41, Jacob Pan wrote:
-> > On Mon,  1 Jul 2024 19:23:16 +0800, Lu Baolu<baolu.lu@linux.intel.com>
-> > wrote:
-> >   
-> >> +	if (flush_domains) {
-> >> +		/*
-> >> +		 * If the IOMMU is running in scalable mode and there
-> >> might
-> >> +		 * be potential PASID translations, the caller should
-> >> hold
-> >> +		 * the lock to ensure that context changes and cache
-> >> flushes
-> >> +		 * are atomic.
-> >> +		 */
-> >> +		assert_spin_locked(&iommu->lock);
-> >> +		for (i = 0; i < info->pasid_table->max_pasid; i++) {
-> >> +			pte = intel_pasid_get_entry(info->dev, i);
-> >> +			if (!pte || !pasid_pte_is_present(pte))
-> >> +				continue;  
-> > Is it worth going through 1M PASIDs just to skip the PASID cache
-> > invalidation? Or just do the flush on all used DIDs unconditionally.  
+On Tue, Jun 25, 2024 at 03:59:27PM +0300, Dmitry Baryshkov wrote:
+> On Tue, 25 Jun 2024 at 15:57, Georgi Djakov <djakov@kernel.org> wrote:
+> >
+> > On 25.06.24 10:50, Dmitry Baryshkov wrote:
+> > > On Fri, 14 Jun 2024 at 21:05, Dmitry Baryshkov
+> > > <dmitry.baryshkov@linaro.org> wrote:
+> > >>
+> > >> On Wed, 17 Apr 2024 at 16:39, Georgi Djakov <quic_c_gdjako@quicinc.com> wrote:
+> > >>>
+> > >>> Add the device-tree nodes for the TBUs (translation buffer units) that
+> > >>> are present on the sdm845 platforms. The TBUs can be used debug the
+> > >>> kernel and provide additional information when a context faults occur.
+> > >>>
+> > >>> Describe the all registers, clocks, interconnects and power-domain
+> > >>> resources that are needed for each of the TBUs.
+> > >>>
+> > >>> Signed-off-by: Georgi Djakov <quic_c_gdjako@quicinc.com>
+> > >>
+> > >> This patch now prevents interconnect drivers from hitting the sync
+> > >> state on SDM845.
+> > >> The TBU driver is enabled only when the ARM_SMMU_QCOM_DEBUG is
+> > >> enabled, which is not a typical case on a normal system:
+> > >
+> > > Georgi, before I start acting like a bull in a china shop and sending
+> > > reverts, any update from your side?
+> >
+> > Hi Dmitry!
+> > Thanks for the report! We can easily add status = "disabled" to the DT
+> > nodes, but please give me some time to take a look what would be the best
+> > way to handle this, as i was out last week and now i am still catching up.
 > 
-> Currently we don't track all domains attached to a device. If such
-> optimization is necessary, perhaps we can add it later.
+> I think the simplest thing would be to move the TBU driver to the
+> arm-qcom-smmu.c instead of having it in the -debug.c
 
-I think it is necessary, because without tracking domain IDs, the code
-above would have duplicated invalidations.
-For example: a device PASID table has the following entries
-	PASID	DomainID
--------------------------
-	100	1
-	200	1
-	300	2
--------------------------
-When a present context entry changes, we need to do:
-qi_flush_pasid_cache(iommu, 1, QI_PC_ALL_PASIDS, 0);
-qi_flush_pasid_cache(iommu, 2, QI_PC_ALL_PASIDS, 0);
+The TBUs aren't used for anything other than debugging, so I'd really
+rather they live with the debug code.
 
-With this code, we do
-qi_flush_pasid_cache(iommu, 1, QI_PC_ALL_PASIDS, 0);
-qi_flush_pasid_cache(iommu, 1, QI_PC_ALL_PASIDS, 0);//duplicated!
-qi_flush_pasid_cache(iommu, 2, QI_PC_ALL_PASIDS, 0);
-
-Thanks,
-
-Jacob
+Will
