@@ -1,93 +1,176 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.12])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 79DD9145326
-	for <iommu@lists.linux.dev>; Tue,  2 Jul 2024 09:07:26 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.12
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A052E15098E;
+	Tue,  2 Jul 2024 09:10:00 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1719911249; cv=none; b=MXU92HFJR1EB96FaIyu3oNxPntkX/J7Za59nqhu8k5P+3O7urPUgoFMz72YqkaK9tRe7vYQ1FFoPuRuTdAqTkfXW2FD9MViz/gLV3nkfzFMkwJEC8ngp2qGlT0oUBCfpQUvFXSeBbVYcIE/N5Rjp0DRf2bj/S5ZprTMc8QQwN0g=
+	t=1719911400; cv=none; b=qUyO8+v2wcmnFRUOhLkMb54/MlKMiqBgklfyV2TcU2PYJhFX6hvhaiaGP65PvJp15luWnZHgaBBOLz0ipGzLWc1deIi6iaIqNAIvi/DA2AQ1ObXWn3PL7LaYhRIG8xy4oKH94+1aa2pPSDvGVID0Remxe9VyA6fSEmpbJQW/XIk=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1719911249; c=relaxed/simple;
-	bh=aAAae3EScws/PyiASBXGrVfTI6KXIgX5vCfvlrHmw6A=;
-	h=Message-ID:Date:MIME-Version:Cc:Subject:To:References:From:
-	 In-Reply-To:Content-Type; b=YpL+cbnqtyQZ5XK8QpcZUF9gprazq4l0gfMKsGHhzlpUBIrgm2YeMYdMykGmmyeNQfjoU3UoCZpfpUOiXZEHF6uFoHk7vEHlpI7Zba8t6inBMLwoQ8GvFW/WdpGduLFH4Mlsq/i9EBOjnoNOkSF0Se5inDZpQrfW737yUfT9RXM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=ZZ59EGsG; arc=none smtp.client-ip=198.175.65.12
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
+	s=arc-20240116; t=1719911400; c=relaxed/simple;
+	bh=7m7ycvlObOhwBqwXJ7IhCV0Ur0RnLzzL6LlvlBs9ibs=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version:Content-Type; b=DBgcPUw5JCgrtUIkqGj5+BDR7bFERFLdOqLK3sHe7up9y36piGamfBnoPqPvi8+SXFY3BJ9fyw/C67ZcJ9EIhUhKhskegDZaRbYa3pkAorzz6lWF4Yp9npNiBpmUu92xEY9858J2Kc4kes2wxHOKZJWwgNMLRb0HrYbgF3E2A8E=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=dB26JZU5; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="ZZ59EGsG"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1719911248; x=1751447248;
-  h=message-id:date:mime-version:cc:subject:to:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=aAAae3EScws/PyiASBXGrVfTI6KXIgX5vCfvlrHmw6A=;
-  b=ZZ59EGsGd37YLol4Nd/oyJPiPf/nT0Q2FLhG8c6GiXnR0MyTDOZMAGnu
-   vudIpJylFhuyuMGyNxWgzjbioHObsxWOe9O3oMs66DlyZ0azlVOtEh5QV
-   QTCiUVO6re5Pu02dF29f5WAZoKw2tvU/xbXKca0wGgl+b1VhN4Gu62yM/
-   nHTn8ePgHbGeQ1EqNl9W4gpSSfr17ucC2ou8SIrpuAoQ+ruNg4edrnUJE
-   dqM6c0D+AwxNjgtFY2nkwSOdGOKRGmKNPQE8OhJj6Xv6V1V2kCnb4e9cV
-   EUQD8GjjZyitBwhLGGDibo4KzNDPoJfXz2rdADLcoNIji90+rjl6RTsEZ
-   Q==;
-X-CSE-ConnectionGUID: Ahn+jEt6QuqQUNiiFNv/PQ==
-X-CSE-MsgGUID: ltiRJKEHQi2vqbmKalnUnQ==
-X-IronPort-AV: E=McAfee;i="6700,10204,11120"; a="28468248"
-X-IronPort-AV: E=Sophos;i="6.09,178,1716274800"; 
-   d="scan'208";a="28468248"
-Received: from orviesa004.jf.intel.com ([10.64.159.144])
-  by orvoesa104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Jul 2024 02:07:26 -0700
-X-CSE-ConnectionGUID: pq2UvnR3Qkq+YZOUiHz1lA==
-X-CSE-MsgGUID: iOMeDIJIQ1q1fzr2ZYHMTA==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.09,178,1716274800"; 
-   d="scan'208";a="51030085"
-Received: from blu2-mobl.ccr.corp.intel.com (HELO [10.124.237.100]) ([10.124.237.100])
-  by orviesa004-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Jul 2024 02:07:25 -0700
-Message-ID: <09af1efa-a9b7-4db1-aa14-da22aeafe7e7@linux.intel.com>
-Date: Tue, 2 Jul 2024 17:07:22 +0800
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="dB26JZU5"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 59C57C116B1;
+	Tue,  2 Jul 2024 09:09:59 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1719911400;
+	bh=7m7ycvlObOhwBqwXJ7IhCV0Ur0RnLzzL6LlvlBs9ibs=;
+	h=From:To:Cc:Subject:Date:From;
+	b=dB26JZU57ZuTptEMWya8/+cYOSUeS28qr3rsacGa7mLuFkZUzsp0HfG6iwE/JIY8+
+	 h/aemJ8UY8V38FCQVV94L8/2jOq9R3HIrF1uMYG+rMnZFN1gJ+8+q7oLfpeasm4qB/
+	 hwtmA9ZJB/OD/ZZsiA7h7seltQo1Kme/l05Jj42tp1Eq9z7YkXN6m1c+YrJmYdH8lp
+	 x2qLTJo+oeJ/uCDts/Qw/p++qhVnpMHUAaTXGI+LottYuu7xm2xTwHF8cP6pt3RS++
+	 seuTs2mmeKPkGl41ZNXo79+tJyKN5xRqqHBNfzwmSGPEe4RBb/iVVvpRXGvbaVZlbC
+	 45eYBIY+Y+TlQ==
+From: Leon Romanovsky <leon@kernel.org>
+To: Jens Axboe <axboe@kernel.dk>,
+	Jason Gunthorpe <jgg@ziepe.ca>,
+	Robin Murphy <robin.murphy@arm.com>,
+	Joerg Roedel <joro@8bytes.org>,
+	Will Deacon <will@kernel.org>,
+	Keith Busch <kbusch@kernel.org>,
+	Christoph Hellwig <hch@lst.de>,
+	"Zeng, Oak" <oak.zeng@intel.com>,
+	Chaitanya Kulkarni <kch@nvidia.com>
+Cc: Sagi Grimberg <sagi@grimberg.me>,
+	Bjorn Helgaas <bhelgaas@google.com>,
+	Logan Gunthorpe <logang@deltatee.com>,
+	Yishai Hadas <yishaih@nvidia.com>,
+	Shameer Kolothum <shameerali.kolothum.thodi@huawei.com>,
+	Kevin Tian <kevin.tian@intel.com>,
+	Alex Williamson <alex.williamson@redhat.com>,
+	Marek Szyprowski <m.szyprowski@samsung.com>,
+	=?UTF-8?q?J=C3=A9r=C3=B4me=20Glisse?= <jglisse@redhat.com>,
+	Andrew Morton <akpm@linux-foundation.org>,
+	linux-block@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	linux-rdma@vger.kernel.org,
+	iommu@lists.linux.dev,
+	linux-nvme@lists.infradead.org,
+	linux-pci@vger.kernel.org,
+	kvm@vger.kernel.org,
+	linux-mm@kvack.org
+Subject: [RFC PATCH v1 00/18] Provide a new two step DMA API mapping API
+Date: Tue,  2 Jul 2024 12:09:30 +0300
+Message-ID: <cover.1719909395.git.leon@kernel.org>
+X-Mailer: git-send-email 2.45.2
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Cc: baolu.lu@linux.intel.com, iommu@lists.linux.dev
-Subject: Re: lack of permission checking with intel-iommu?
-To: Yi Liu <yi.l.liu@intel.com>, Christoph Hellwig <hch@infradead.org>,
- David Woodhouse <dwmw2@infradead.org>
-References: <ZoOwc7O5W0PUeja5@infradead.org> <ZoO0KxkU_JNO0av4@infradead.org>
- <4d84afa1-e2ce-4e1b-8fe3-1d3fb0db2ba0@linux.intel.com>
- <fb388a2b-9ffc-42c5-893c-0c620e6977fc@intel.com>
-Content-Language: en-US
-From: Baolu Lu <baolu.lu@linux.intel.com>
-In-Reply-To: <fb388a2b-9ffc-42c5-893c-0c620e6977fc@intel.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 
-On 2024/7/2 16:47, Yi Liu wrote:
->>>>
->>>> we've recently had an interesting case where a device unexpectedly
->>>> modified a dma buffer passed to it.  On AMD systems this caused iommu
->>>> faults because the buffer was mapped read only (DMA_FROM_DEVICE), but
->>>> on an Intel system everything worked fine as the IOMMU did not trip up
->>>> on the device writes to that buffer.  Any idea why that could sneak
->>>> through?
->>> Sorry if this was confusing, the permission checking is of course about
->>> the device reading from a buffer mapped read-only for the device
->>> (as that is what DMA_FROM_DEVICE is), which on intel still allows it
->>> to read.
->>
->> Is it about IOMMU blocking "device reading from buffer" or "device
->> writing to buffer"?
->>
->> The intel iommu driver might use first-stage translation for kernel DMA.
->> It seems not to block the "device reading from buffer" if I remember it
->> correctly.
-> 
-> does the current kernel use the first-stage page table by default?
+Changelog:
+v1:
+ * Rewrote cover letter
+ * Changed to API as proposed
+   https://lore.kernel.org/linux-rdma/20240322184330.GL66976@ziepe.ca/
+ * Removed IB DMA wrappers and use DMA API directly
+v0: https://lore.kernel.org/all/cover.1709635535.git.leon@kernel.org
+-------------------------------------------------------------------------
 
-Use first-stage page table for kernel DMA by default.
+Currently the only efficient way to map a complex memory description through
+the DMA API is by using the scatterlist APIs. The SG APIs are unique in that
+they efficiently combine the two fundamental operations of sizing and allocating
+a large IOVA window from the IOMMU and processing all the per-address
+swiotlb/flushing/p2p/map details.
 
-Best regards,
-baolu
+This uniqueness has been a long standing pain point as the scatterlist API
+is mandatory, but expensive to use. It prevents any kind of optimization or
+feature improvement (such as avoiding struct page for P2P) due to the impossibility
+of improving the scatterlist.
+
+Several approaches have been explored to expand the DMA API with additional
+scatterlist-like structures (BIO[1], rlist[2]), instead split up the DMA API
+to allow callers to bring their own data structure.
+
+The API is split up into parts:
+ - dma_alloc_iova() / dma_free_iova()
+   To do any pre-allocation required. This is done based on the caller
+   supplying some details about how much IOMMU address space it would need
+   in worst case.
+ - dma_link_range() / dma_unlink_range()
+   Perform the actual mapping into the pre-allocated IOVA. This is very
+   similar to dma_map_page().
+
+A driver will extent its mapping size using its own data structure, such as
+BIO, to request the required IOVA. Then it will iterate directly over it's
+data structure to DMA map each range. The result can then be stored directly
+into the HW specific DMA list. No intermediate scatterlist is required.
+
+In this series, examples of three users are converted to the new API to show
+the benefits. Each user has a unique flow:
+ 1. RDMA ODP is an example of "SVA mirroring" using HMM that needs to
+    dynamically map/unmap large numbers of single pages. This becomes
+    significantly faster in the IOMMU case as the map/unmap is now just
+    a page table walk, the IOVA allocation is pre-computed once. Significant
+    amounts of memory are saved as there is no longer a need to store the
+    dma_addr_t of each page.
+ 2. VFIO PCI live migration code is building a very large "page list"
+    for the device. Instead of allocating a scatter list entry per allocated
+    page it can just allocate an array of 'struct page *', saving a large
+    amount of memory.
+ 3. NVMe PCI demonstrates how a BIO can be converted to a HW scatter
+    list without having to allocate then populate an intermediate SG table.
+
+This step is first along a path to provide alternatives to scatterlist and
+solve some of the abuses and design mistakes, for instance in DMABUF's P2P
+support.
+
+The ODP and VFIO versions are complete and fully tested, they can be the users
+of the new API to merge it. The NVMe requires more work.
+
+[1] https://lore.kernel.org/all/169772852492.5232.17148564580779995849.stgit@klimt.1015granger.net/
+[2] https://lore.kernel.org/all/ZD2lMvprVxu23BXZ@ziepe.ca/
+
+Chaitanya Kulkarni (2):
+  block: export helper to get segment max size
+  nvme-pci: use new dma API
+
+Leon Romanovsky (16):
+  dma-mapping: query DMA memory type
+  dma-mapping: provide an interface to allocate IOVA
+  dma-mapping: check if IOVA can be used
+  dma-mapping: implement link range API
+  mm/hmm: let users to tag specific PFN with DMA mapped bit
+  dma-mapping: provide callbacks to link/unlink HMM PFNs to specific
+    IOVA
+  iommu/dma: Provide an interface to allow preallocate IOVA
+  iommu/dma: Implement link/unlink ranges callbacks
+  RDMA/umem: Preallocate and cache IOVA for UMEM ODP
+  RDMA/umem: Store ODP access mask information in PFN
+  RDMA/core: Separate DMA mapping to caching IOVA and page linkage
+  RDMA/umem: Prevent UMEM ODP creation with SWIOTLB
+  vfio/mlx5: Explicitly use number of pages instead of allocated length
+  vfio/mlx5: Rewrite create mkey flow to allow better code reuse
+  vfio/mlx5: Explicitly store page list
+  vfio/mlx5: Convert vfio to use DMA link API
+
+ block/blk-merge.c                    |   3 +-
+ drivers/infiniband/core/umem_odp.c   | 218 ++++++-----------
+ drivers/infiniband/hw/mlx5/mlx5_ib.h |   1 +
+ drivers/infiniband/hw/mlx5/odp.c     |  44 ++--
+ drivers/iommu/dma-iommu.c            | 142 +++++++++--
+ drivers/nvme/host/pci.c              | 283 ++++++++++++++++------
+ drivers/pci/p2pdma.c                 |   4 +-
+ drivers/vfio/pci/mlx5/cmd.c          | 344 +++++++++++++++------------
+ drivers/vfio/pci/mlx5/cmd.h          |  25 +-
+ drivers/vfio/pci/mlx5/main.c         |  86 +++----
+ include/linux/blk-mq.h               |   3 +
+ include/linux/dma-map-ops.h          |  30 +++
+ include/linux/dma-mapping.h          |  87 +++++++
+ include/linux/hmm.h                  |   4 +
+ include/rdma/ib_umem_odp.h           |  23 +-
+ kernel/dma/mapping.c                 | 290 ++++++++++++++++++++++
+ mm/hmm.c                             |  34 ++-
+ 17 files changed, 1122 insertions(+), 499 deletions(-)
+
+-- 
+2.45.2
+
