@@ -1,57 +1,57 @@
 Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.11])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 770B919DF46
-	for <iommu@lists.linux.dev>; Tue,  2 Jul 2024 13:11:25 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5254519F499
+	for <iommu@lists.linux.dev>; Tue,  2 Jul 2024 13:11:28 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.11
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1719925888; cv=none; b=KFnXKY8VCVFxOJ2YHX55nxo4NykvClmc++cJkUDKNQ4Y54jtCNUlr/g22AQlDeH1KssZPThRkql9Ua5bf9kWwT6u1p4RhNxYewJ8188PN5RfUvpRrzGsPvyRvgf9GeGi73oDMLkPxATSo/E3/2zCgQh5/YaEkiMo1u0rkqkrE0k=
+	t=1719925889; cv=none; b=NuOb1I3sX/214lJrrevsMVMxVkm3QU3Enso237ch4yQaycquW2MTv1PsEcvR/jojd0cud0VfVo3qvL5GMln0/WEEmfQTZgkpQLEw7brUUnqW5zMCwWx3sKNT5XyGiDbPOqWgY4YOCgm2ycsDIAeHWZglOkUQdRinV2mwzAvq0Ks=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1719925888; c=relaxed/simple;
-	bh=+g/siJnzmZoFiX3UTf80ep+rreHDj09IRPBQNzXe1gw=;
+	s=arc-20240116; t=1719925889; c=relaxed/simple;
+	bh=FYr95xHGLyR8gxK+4isyHcMbebbiTUqWfj8JkY18UaI=;
 	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
-	 MIME-Version; b=DiEH6iImmw84Fwtkqcdp6s7/h6DHGSjVHDTe4YPutSl5CxCKNK1NK0vVwZYIVutsoxlglLChUKoOKUpUHZYkpQRNJsIGgfPXwO16AVhlhGb4urg109AiXT3QBxV4A7BEA+42hL/zHOU8P1/9TWZtuEUpRoiAU7EIsfgmyiY68nc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=l4D3PyWy; arc=none smtp.client-ip=198.175.65.11
+	 MIME-Version; b=gNderpBWXAdX8RaQq06dD0r5ZAapQ0b92nn/UmkzVBgMCJJzSc4CmmL2+o8sH02z/C6go53r5WeW6wI1oMqogsBSv59byln6ob7xS9fxk+6fre2HmQmdeSkG9GaVyTq7EP05Iv4GBkozRnvBlfU8sepd9ZAy1wfx+/UW94YLaGw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=Grrw+dCw; arc=none smtp.client-ip=198.175.65.11
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="l4D3PyWy"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="Grrw+dCw"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1719925886; x=1751461886;
+  t=1719925889; x=1751461889;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=+g/siJnzmZoFiX3UTf80ep+rreHDj09IRPBQNzXe1gw=;
-  b=l4D3PyWyVrxuPpvhbZYp+TU9LzjT1JbCbFxWwrz1TXnyrE0VMlf9Jaxo
-   1JKD3T/XyR+qbraPIa5kp/q0XJL4SJzvLJ9w3cyzR8MvWN7hdXVMkxZU2
-   V+jbZtlYv5K2qXzwBEy5n/L9HJk8oKEwiVnxexjf0ty4+P+tn9qIdfQOf
-   KFQE4xZUio4xZCcl7zX6RntDGqQKPJaV+be9vq7f1b0+NbqsY2uug6E4D
-   p2g+iSlXu6P+j0K0FsD7OFMfPlETY9YCuYGKrx7UCKcFNjc5Kfq/pRDvX
-   YhImGnC+mVeuSnXU/5jCfIrw3YRorAxZvc6UYob+8pggFqc6O0rjM8jb2
-   A==;
-X-CSE-ConnectionGUID: WzvEcOxiQtC3k01JXrmfBg==
-X-CSE-MsgGUID: hF5klsWWS/m2Vfb+vRDDbA==
-X-IronPort-AV: E=McAfee;i="6700,10204,11121"; a="27699995"
+  bh=FYr95xHGLyR8gxK+4isyHcMbebbiTUqWfj8JkY18UaI=;
+  b=Grrw+dCw1fiYhgKdDdCS1Jfs5OEXkolUpREcmozvTmgnecQ6cfqYtjUy
+   fYzU+D1QZwReM4f10JQLqryo0+9g3zJzZLd/RbW2hVfIvzpj/ma5paPwE
+   Lrc91h8FZmcSpDtWvUqvQ8z5qwMYxIGZcGCa18wkU7vg+2e2KaEq0O+31
+   udm0VpzkKR0pyGE36SLxMkDFwUwkiZmHP+L9ZMIxDZM+KDszauiDx5GOh
+   nXFdkv9b10LXyJqJSPNyj7MbtIW6HuW+nhIHeUb+1U96asg61FJ97Z41D
+   9oXjIcQbwQuDsGbsdBZmL8mittqoEGpEt8lumCt6qGolcSLOYy2q3C7lr
+   g==;
+X-CSE-ConnectionGUID: jQAJAYDjTVa3xziGBtURQA==
+X-CSE-MsgGUID: 8K3CVaXeSrSVeq7jpic7yw==
+X-IronPort-AV: E=McAfee;i="6700,10204,11121"; a="27700017"
 X-IronPort-AV: E=Sophos;i="6.09,178,1716274800"; 
-   d="scan'208";a="27699995"
+   d="scan'208";a="27700017"
 Received: from fmviesa003.fm.intel.com ([10.60.135.143])
-  by orvoesa103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Jul 2024 06:11:25 -0700
-X-CSE-ConnectionGUID: wLdcj0pCSjqrsCSOpmUzDQ==
-X-CSE-MsgGUID: /RTKjcrDS4C5AmdTfY00PA==
+  by orvoesa103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Jul 2024 06:11:28 -0700
+X-CSE-ConnectionGUID: JssnfPapTwymgI/vKRSGLw==
+X-CSE-MsgGUID: OtleRZBiT+6RnFPyeLh3iA==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.09,178,1716274800"; 
-   d="scan'208";a="50250830"
+   d="scan'208";a="50250844"
 Received: from unknown (HELO allen-box.sh.intel.com) ([10.239.159.127])
-  by fmviesa003.fm.intel.com with ESMTP; 02 Jul 2024 06:11:23 -0700
+  by fmviesa003.fm.intel.com with ESMTP; 02 Jul 2024 06:11:26 -0700
 From: Lu Baolu <baolu.lu@linux.intel.com>
 To: Joerg Roedel <joro@8bytes.org>,
 	Will Deacon <will@kernel.org>
 Cc: Jacob Pan <jacob.jun.pan@linux.intel.com>,
 	iommu@lists.linux.dev,
 	linux-kernel@vger.kernel.org
-Subject: [PATCH 1/7] iommu/vt-d: Handle volatile descriptor status read
-Date: Tue,  2 Jul 2024 21:08:33 +0800
-Message-Id: <20240702130839.108139-2-baolu.lu@linux.intel.com>
+Subject: [PATCH 3/7] iommu/vt-d: Remove control over Execute-Requested requests
+Date: Tue,  2 Jul 2024 21:08:35 +0800
+Message-Id: <20240702130839.108139-4-baolu.lu@linux.intel.com>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20240702130839.108139-1-baolu.lu@linux.intel.com>
 References: <20240702130839.108139-1-baolu.lu@linux.intel.com>
@@ -63,49 +63,105 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-From: Jacob Pan <jacob.jun.pan@linux.intel.com>
+The VT-d specification has removed architectural support of the requests
+with pasid with a value of 1 for Execute-Requested (ER). And the NXE bit
+in the pasid table entry and XD bit in the first-stage paging Entries are
+deprecated accordingly.
 
-Queued invalidation wait descriptor status is volatile in that IOMMU
-hardware writes the data upon completion.
+Remove the programming of these bits to make it consistent with the spec.
 
-Use READ_ONCE() to prevent compiler optimizations which ensures memory
-reads every time. As a side effect, READ_ONCE() also enforces strict
-types and may add an extra instruction. But it should not have negative
-performance impact since we use cpu_relax anyway and the extra time(by
-adding an instruction) may allow IOMMU HW request cacheline ownership
-easier.
-
-e.g. gcc 12.3
-BEFORE:
-	81 38 ad de 00 00       cmpl   $0x2,(%rax)
-
-AFTER (with READ_ONCE())
-    772f:       8b 00                   mov    (%rax),%eax
-    7731:       3d ad de 00 00          cmp    $0x2,%eax
-                                        //status data is 32 bit
-
-Signed-off-by: Jacob Pan <jacob.jun.pan@linux.intel.com>
-Reviewed-by: Kevin Tian <kevin.tian@intel.com>
-Reviewed-by: Yi Liu <yi.l.liu@intel.com>
-Link: https://lore.kernel.org/r/20240607173817.3914600-1-jacob.jun.pan@linux.intel.com
+Suggested-by: Jacob Pan <jacob.jun.pan@linux.intel.com>
 Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
+Reviewed-by: Kevin Tian <kevin.tian@intel.com>
+Link: https://lore.kernel.org/r/20240624032351.249858-1-baolu.lu@linux.intel.com
 ---
- drivers/iommu/intel/dmar.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/iommu/intel/iommu.h |  6 ++----
+ drivers/iommu/intel/pasid.h | 10 ----------
+ drivers/iommu/intel/iommu.c |  4 ++--
+ drivers/iommu/intel/pasid.c |  1 -
+ 4 files changed, 4 insertions(+), 17 deletions(-)
 
-diff --git a/drivers/iommu/intel/dmar.c b/drivers/iommu/intel/dmar.c
-index 304e84949ca7..1c8d3141cb55 100644
---- a/drivers/iommu/intel/dmar.c
-+++ b/drivers/iommu/intel/dmar.c
-@@ -1446,7 +1446,7 @@ int qi_submit_sync(struct intel_iommu *iommu, struct qi_desc *desc,
- 	 */
- 	writel(qi->free_head << shift, iommu->reg + DMAR_IQT_REG);
+diff --git a/drivers/iommu/intel/iommu.h b/drivers/iommu/intel/iommu.h
+index eaf015b4353b..9a3b064126de 100644
+--- a/drivers/iommu/intel/iommu.h
++++ b/drivers/iommu/intel/iommu.h
+@@ -49,7 +49,6 @@
+ #define DMA_FL_PTE_US		BIT_ULL(2)
+ #define DMA_FL_PTE_ACCESS	BIT_ULL(5)
+ #define DMA_FL_PTE_DIRTY	BIT_ULL(6)
+-#define DMA_FL_PTE_XD		BIT_ULL(63)
  
--	while (qi->desc_status[wait_index] != QI_DONE) {
-+	while (READ_ONCE(qi->desc_status[wait_index]) != QI_DONE) {
- 		/*
- 		 * We will leave the interrupts disabled, to prevent interrupt
- 		 * context to queue another cmd while a cmd is already submitted
+ #define DMA_SL_PTE_DIRTY_BIT	9
+ #define DMA_SL_PTE_DIRTY	BIT_ULL(DMA_SL_PTE_DIRTY_BIT)
+@@ -831,11 +830,10 @@ static inline void dma_clear_pte(struct dma_pte *pte)
+ static inline u64 dma_pte_addr(struct dma_pte *pte)
+ {
+ #ifdef CONFIG_64BIT
+-	return pte->val & VTD_PAGE_MASK & (~DMA_FL_PTE_XD);
++	return pte->val & VTD_PAGE_MASK;
+ #else
+ 	/* Must have a full atomic 64-bit read */
+-	return  __cmpxchg64(&pte->val, 0ULL, 0ULL) &
+-			VTD_PAGE_MASK & (~DMA_FL_PTE_XD);
++	return  __cmpxchg64(&pte->val, 0ULL, 0ULL) & VTD_PAGE_MASK;
+ #endif
+ }
+ 
+diff --git a/drivers/iommu/intel/pasid.h b/drivers/iommu/intel/pasid.h
+index da9978fef7ac..dde6d3ba5ae0 100644
+--- a/drivers/iommu/intel/pasid.h
++++ b/drivers/iommu/intel/pasid.h
+@@ -247,16 +247,6 @@ static inline void pasid_set_page_snoop(struct pasid_entry *pe, bool value)
+ 	pasid_set_bits(&pe->val[1], 1 << 23, value << 23);
+ }
+ 
+-/*
+- * Setup No Execute Enable bit (Bit 133) of a scalable mode PASID
+- * entry. It is required when XD bit of the first level page table
+- * entry is about to be set.
+- */
+-static inline void pasid_set_nxe(struct pasid_entry *pe)
+-{
+-	pasid_set_bits(&pe->val[2], 1 << 5, 1 << 5);
+-}
+-
+ /*
+  * Setup the Page Snoop (PGSNP) field (Bit 88) of a scalable mode
+  * PASID entry.
+diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
+index abf0097f899d..1b5519dfa085 100644
+--- a/drivers/iommu/intel/iommu.c
++++ b/drivers/iommu/intel/iommu.c
+@@ -854,7 +854,7 @@ static struct dma_pte *pfn_to_dma_pte(struct dmar_domain *domain,
+ 			domain_flush_cache(domain, tmp_page, VTD_PAGE_SIZE);
+ 			pteval = ((uint64_t)virt_to_dma_pfn(tmp_page) << VTD_PAGE_SHIFT) | DMA_PTE_READ | DMA_PTE_WRITE;
+ 			if (domain->use_first_level)
+-				pteval |= DMA_FL_PTE_XD | DMA_FL_PTE_US | DMA_FL_PTE_ACCESS;
++				pteval |= DMA_FL_PTE_US | DMA_FL_PTE_ACCESS;
+ 
+ 			tmp = 0ULL;
+ 			if (!try_cmpxchg64(&pte->val, &tmp, pteval))
+@@ -1872,7 +1872,7 @@ __domain_mapping(struct dmar_domain *domain, unsigned long iov_pfn,
+ 	attr = prot & (DMA_PTE_READ | DMA_PTE_WRITE | DMA_PTE_SNP);
+ 	attr |= DMA_FL_PTE_PRESENT;
+ 	if (domain->use_first_level) {
+-		attr |= DMA_FL_PTE_XD | DMA_FL_PTE_US | DMA_FL_PTE_ACCESS;
++		attr |= DMA_FL_PTE_US | DMA_FL_PTE_ACCESS;
+ 		if (prot & DMA_PTE_WRITE)
+ 			attr |= DMA_FL_PTE_DIRTY;
+ 	}
+diff --git a/drivers/iommu/intel/pasid.c b/drivers/iommu/intel/pasid.c
+index abce19e2ad6f..aabcdf756581 100644
+--- a/drivers/iommu/intel/pasid.c
++++ b/drivers/iommu/intel/pasid.c
+@@ -333,7 +333,6 @@ int intel_pasid_setup_first_level(struct intel_iommu *iommu,
+ 	pasid_set_domain_id(pte, did);
+ 	pasid_set_address_width(pte, iommu->agaw);
+ 	pasid_set_page_snoop(pte, !!ecap_smpwc(iommu->ecap));
+-	pasid_set_nxe(pte);
+ 
+ 	/* Setup Present and PASID Granular Transfer Type: */
+ 	pasid_set_translation_type(pte, PASID_ENTRY_PGTT_FL_ONLY);
 -- 
 2.34.1
 
