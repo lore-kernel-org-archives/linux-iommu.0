@@ -1,48 +1,49 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4C6A31CCCDA;
-	Tue,  2 Jul 2024 18:44:19 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BC7521CE08C;
+	Tue,  2 Jul 2024 18:44:22 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1719945860; cv=none; b=hfIuuFWKh3gHxFIauNA9AHFCBeCMf0gKOSrFhuP9PIEY5Nxxe+vLyF92HwxY34Rfe0dqJPF6mp6Wzjy8ZHFmixZd5lxCXX0znx3Txer7xPLiAiJqyz0Wh9+qFxn4hQ3H3vLDAIRIApAWSyQxkBxX31N4CKWDb10svZ2FfNx1CAo=
+	t=1719945862; cv=none; b=M5Jv4abCDWDe29me2rW5g2laIXBdGUqMQI6fRBvCRyWwtR2mISRFMDnnAcmwzWCiV4a1h0xT1QOMvBAYPFsQXywU+jFD4thRIcG+8FC/NHjGAUxphRSJ/MRzMk/hLAzoLi0QXlTReaoAMj9bD3ZbzO6K1aqM8RJgq4ATDPM/r3U=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1719945860; c=relaxed/simple;
-	bh=RZj2s6IcInBWDxn4dUQtZNHNAnV78hF4Q74fLUoIFEE=;
+	s=arc-20240116; t=1719945862; c=relaxed/simple;
+	bh=+VYPaSHoBsGAn+u4fC7TOldFkvHGa8TzIynwBLs1h0Y=;
 	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=dJtbuf5Pql3aGdZdmtbOSp2wxwkxdbv8gt6dteuHm+xE8oX4ZzEMm/70ys5u9oXzBT/5PK05rcgdawgAh7S/JnrwayCnSG654Oe/Fq+0RYBhuYQNg9qWYNXuS2OEyZybuhvRii6cIuQ1d7qcFkPmyMblTwzLlX80FDTFnGWJZtY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=BOrOtMAN; arc=none smtp.client-ip=10.30.226.201
+	 MIME-Version:Content-Type; b=oipt5h8hhNymy8MolowSPBRMzKSd0hAyMkVRonUcsOWAxkQMPrU6a0qX6C8nTOF6b1kd+17L5g2d5fYZoPQkJt7EgjyXN2jlbWwFBnRZpIaLMSjgeJ4l9VrX9vqUP4b57cvs2qK/DZ7HFA2qFmkNlK6b1+dVfEtve96T3pKRH04=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=KWnBpUZy; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="BOrOtMAN"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D9F21C116B1;
-	Tue,  2 Jul 2024 18:44:17 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="KWnBpUZy"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3C659C4AF0C;
+	Tue,  2 Jul 2024 18:44:20 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1719945859;
-	bh=RZj2s6IcInBWDxn4dUQtZNHNAnV78hF4Q74fLUoIFEE=;
+	s=k20201202; t=1719945862;
+	bh=+VYPaSHoBsGAn+u4fC7TOldFkvHGa8TzIynwBLs1h0Y=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-	b=BOrOtMANHeQ3RdSvrgOiFCaafm/UnVG9xAaZjdYJf7EHTld/yqkOaZ57ClHeMGu4L
-	 wfGE3eIxZj2mBIu5pwcNKvq8l+LgnE4LHQbmV4XkFY1yqoQ8OHsSn8WN2QWSSU2SxY
-	 3x4HZ6CeBjJ2Vy7dcDGnW7iAxzVkuE1XFAYb9r8WUxF5ei7GT8l8LBRrohoVVvskvk
-	 L9nbgbFnNNBLujdVJs/VhXgPknKhp8oR8vBaFARKjcvQ8XsP3qlbtaVudITc/rpsbE
-	 jPEjobVrodAiuXk4MrW7r1T5Y0rBSclAEDC4BWQ5Ta/ssDKspkwovZD8Ff/KezoTwn
-	 rXuOHrz1j5HaA==
+	b=KWnBpUZyXeLaw5+Chn6PRVtR4pGK3O+5TWwX49X+hP2IMlOvm08x3K65/cP0M39W5
+	 LeOwp33LjzXWy3jAHPE80f6NCFf4N1sNto4MWLTClGDqeYrqOtsKPOqPZJ1giBwOP+
+	 8MxKOAV63iCNU/9a5uG/IGVoR8+Y3GToRymrw1ZYiTbC3EG4lOb2HgTy/lEd1V51vn
+	 go1/2qM1t7k2CLHWLkT2OdIsMeUs2Q3j8SrouhkXmoG0eWmhsg6dR2VhQ8XJU71zy8
+	 28fevgoqpF6GTsM+LVSAGtR7f1RpoRbdG4rjPdpVz2BvfVRLxf3B2hLHTwL8U3MNU+
+	 aFq4vrnC7Cx+A==
 From: Will Deacon <will@kernel.org>
-To: Robin Murphy <robin.murphy@arm.com>,
-	Joerg Roedel <joro@8bytes.org>,
-	Jeff Johnson <quic_jjohnson@quicinc.com>
+To: robdclark@gmail.com,
+	robin.murphy@arm.com,
+	joro@8bytes.org,
+	iommu@lists.linux.dev,
+	Zhenhua Huang <quic_zhenhuah@quicinc.com>
 Cc: catalin.marinas@arm.com,
 	kernel-team@android.com,
 	Will Deacon <will@kernel.org>,
+	linux-arm-msm@vger.kernel.org,
 	linux-arm-kernel@lists.infradead.org,
-	iommu@lists.linux.dev,
-	linux-kernel@vger.kernel.org,
-	kernel-janitors@vger.kernel.org
-Subject: Re: [PATCH] iommu/arm-smmu-v3: add missing MODULE_DESCRIPTION() macro
-Date: Tue,  2 Jul 2024 19:44:00 +0100
-Message-Id: <171993683562.1962160.3064797452781426838.b4-ty@kernel.org>
+	linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] iommu/arm-smmu-qcom: record reason for deferring probe
+Date: Tue,  2 Jul 2024 19:44:01 +0100
+Message-Id: <171993979643.1971775.11685745937828043612.b4-ty@kernel.org>
 X-Mailer: git-send-email 2.20.1
-In-Reply-To: <20240613-md-arm64-drivers-iommu-arm-arm-smmu-v3-v1-1-0e9f7584a5c8@quicinc.com>
-References: <20240613-md-arm64-drivers-iommu-arm-arm-smmu-v3-v1-1-0e9f7584a5c8@quicinc.com>
+In-Reply-To: <1719910870-25079-1-git-send-email-quic_zhenhuah@quicinc.com>
+References: <1719910870-25079-1-git-send-email-quic_zhenhuah@quicinc.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -52,18 +53,18 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 
-On Thu, 13 Jun 2024 12:44:17 -0700, Jeff Johnson wrote:
-> With ARCH=arm64, make allmodconfig && make W=1 C=1 reports:
-> WARNING: modpost: missing MODULE_DESCRIPTION() in drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-test.o
-> 
-> Add the missing invocation of the MODULE_DESCRIPTION() macro.
+On Tue, 02 Jul 2024 17:01:10 +0800, Zhenhua Huang wrote:
+> To avoid deferring probe smmu driver silently, record reason for it.
+> It can be checked through ../debugfs/devices_deferred as well:
+> /sys/kernel/debug# cat devices_deferred
+> 15000000.iommu  arm-smmu: qcom_scm not ready
 > 
 > 
 
 Applied to will (for-joerg/arm-smmu/updates), thanks!
 
-[1/1] iommu/arm-smmu-v3: add missing MODULE_DESCRIPTION() macro
-      https://git.kernel.org/will/c/a35f443d837f
+[1/1] iommu/arm-smmu-qcom: record reason for deferring probe
+      https://git.kernel.org/will/c/9796cf9b3eb9
 
 Cheers,
 -- 
