@@ -1,99 +1,93 @@
-Received: from mx0a-0031df01.pphosted.com (mx0a-0031df01.pphosted.com [205.220.168.131])
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 30ED51A28B;
-	Tue,  2 Jul 2024 09:01:36 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.168.131
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 79DD9145326
+	for <iommu@lists.linux.dev>; Tue,  2 Jul 2024 09:07:26 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.12
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1719910897; cv=none; b=kDd+oAb9YYLg0vGg8qg+ctqpGqRhQ7p/iKslZKpcwDSTE3dDGTCyeIJ97q8DEgO4oPCI7ipEs1EQoe7xnHOiKTD6hQQjkNL9nve1P3LQpCSr1vYpGUpPHeo4vk03QZZ5OqGqirqUZzuX7U60ZDU8pgIC4R4roXOGpRv14ehWcI8=
+	t=1719911249; cv=none; b=MXU92HFJR1EB96FaIyu3oNxPntkX/J7Za59nqhu8k5P+3O7urPUgoFMz72YqkaK9tRe7vYQ1FFoPuRuTdAqTkfXW2FD9MViz/gLV3nkfzFMkwJEC8ngp2qGlT0oUBCfpQUvFXSeBbVYcIE/N5Rjp0DRf2bj/S5ZprTMc8QQwN0g=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1719910897; c=relaxed/simple;
-	bh=Rd4xCULvn7tBPs6tRqk6DKQQ1lIw/zsToCnMWg5EzFk=;
-	h=From:To:CC:Subject:Date:Message-ID:MIME-Version:Content-Type; b=XnSs8M7OlGtFIB/fWzFMA6RkqKZ9nOZZygSX4HHmhtOuOdVGvZWQiICRQ+TP7mw6ZIJnZBXMnl+K6jLy/WTaDw8symv0PnBrpZgD+I6RlA034jGKIlYHldZ7cwt79b+h4lBakaRPClt4I/124jEAn0NdLUf3EyoGziIxvS8nmfk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com; spf=pass smtp.mailfrom=quicinc.com; dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b=mgg7Ohk4; arc=none smtp.client-ip=205.220.168.131
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=quicinc.com
+	s=arc-20240116; t=1719911249; c=relaxed/simple;
+	bh=aAAae3EScws/PyiASBXGrVfTI6KXIgX5vCfvlrHmw6A=;
+	h=Message-ID:Date:MIME-Version:Cc:Subject:To:References:From:
+	 In-Reply-To:Content-Type; b=YpL+cbnqtyQZ5XK8QpcZUF9gprazq4l0gfMKsGHhzlpUBIrgm2YeMYdMykGmmyeNQfjoU3UoCZpfpUOiXZEHF6uFoHk7vEHlpI7Zba8t6inBMLwoQ8GvFW/WdpGduLFH4Mlsq/i9EBOjnoNOkSF0Se5inDZpQrfW737yUfT9RXM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=ZZ59EGsG; arc=none smtp.client-ip=198.175.65.12
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b="mgg7Ohk4"
-Received: from pps.filterd (m0279865.ppops.net [127.0.0.1])
-	by mx0a-0031df01.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 4628IBsv019780;
-	Tue, 2 Jul 2024 09:01:22 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=quicinc.com; h=
-	cc:content-type:date:from:message-id:mime-version:subject:to; s=
-	qcppdkim1; bh=5oUp9HjdbzqCJbBpnTEAe9i/3eQI4P1aO4PcqDLsfHQ=; b=mg
-	g7Ohk4FykRA9sFn5VMDyAP7+gl3Mi2Kfp3u2MWacueKW5sEPB0KHNXE5ZUNlCdhW
-	im1cl/KIUZnf1XCWv9aa4kQz17N0nrNwK+YSXdlkzPuppY+78rxVeGmYqj4skWN6
-	48VB2hZWL4YfteJaA1efY3OLHwZnFh0GnGyeG+8wxxTyin/AM0WSIl44H66ZzeUh
-	tbyhVaBsFhRJW6kUNAL/8lLdXLEh7KpmB40aSJfnE2eS01l0rqhJtag3XdMmvBHQ
-	dEKlSoF4lOl8R6/QN8dY520j/J2nBQpQEfqPLy446gNVqAn0ngkjteAq4/A9I9Nv
-	f305vylTFGuhZ94Aoq7g==
-Received: from nalasppmta04.qualcomm.com (Global_NAT1.qualcomm.com [129.46.96.20])
-	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 40297rq2xm-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Tue, 02 Jul 2024 09:01:22 +0000 (GMT)
-Received: from nalasex01a.na.qualcomm.com (nalasex01a.na.qualcomm.com [10.47.209.196])
-	by NALASPPMTA04.qualcomm.com (8.17.1.19/8.17.1.19) with ESMTPS id 46291LcC020780
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Tue, 2 Jul 2024 09:01:21 GMT
-Received: from zhenhuah-gv.qualcomm.com (10.80.80.8) by
- nalasex01a.na.qualcomm.com (10.47.209.196) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.1544.9; Tue, 2 Jul 2024 02:01:18 -0700
-From: Zhenhua Huang <quic_zhenhuah@quicinc.com>
-To: <robdclark@gmail.com>, <will@kernel.org>, <robin.murphy@arm.com>,
-        <joro@8bytes.org>, <iommu@lists.linux.dev>
-CC: Zhenhua Huang <quic_zhenhuah@quicinc.com>, <linux-arm-msm@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>, <linux-kernel@vger.kernel.org>
-Subject: [PATCH] iommu/arm-smmu-qcom: record reason for deferring probe
-Date: Tue, 2 Jul 2024 17:01:10 +0800
-Message-ID: <1719910870-25079-1-git-send-email-quic_zhenhuah@quicinc.com>
-X-Mailer: git-send-email 2.7.4
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="ZZ59EGsG"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1719911248; x=1751447248;
+  h=message-id:date:mime-version:cc:subject:to:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=aAAae3EScws/PyiASBXGrVfTI6KXIgX5vCfvlrHmw6A=;
+  b=ZZ59EGsGd37YLol4Nd/oyJPiPf/nT0Q2FLhG8c6GiXnR0MyTDOZMAGnu
+   vudIpJylFhuyuMGyNxWgzjbioHObsxWOe9O3oMs66DlyZ0azlVOtEh5QV
+   QTCiUVO6re5Pu02dF29f5WAZoKw2tvU/xbXKca0wGgl+b1VhN4Gu62yM/
+   nHTn8ePgHbGeQ1EqNl9W4gpSSfr17ucC2ou8SIrpuAoQ+ruNg4edrnUJE
+   dqM6c0D+AwxNjgtFY2nkwSOdGOKRGmKNPQE8OhJj6Xv6V1V2kCnb4e9cV
+   EUQD8GjjZyitBwhLGGDibo4KzNDPoJfXz2rdADLcoNIji90+rjl6RTsEZ
+   Q==;
+X-CSE-ConnectionGUID: Ahn+jEt6QuqQUNiiFNv/PQ==
+X-CSE-MsgGUID: ltiRJKEHQi2vqbmKalnUnQ==
+X-IronPort-AV: E=McAfee;i="6700,10204,11120"; a="28468248"
+X-IronPort-AV: E=Sophos;i="6.09,178,1716274800"; 
+   d="scan'208";a="28468248"
+Received: from orviesa004.jf.intel.com ([10.64.159.144])
+  by orvoesa104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Jul 2024 02:07:26 -0700
+X-CSE-ConnectionGUID: pq2UvnR3Qkq+YZOUiHz1lA==
+X-CSE-MsgGUID: iOMeDIJIQ1q1fzr2ZYHMTA==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.09,178,1716274800"; 
+   d="scan'208";a="51030085"
+Received: from blu2-mobl.ccr.corp.intel.com (HELO [10.124.237.100]) ([10.124.237.100])
+  by orviesa004-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Jul 2024 02:07:25 -0700
+Message-ID: <09af1efa-a9b7-4db1-aa14-da22aeafe7e7@linux.intel.com>
+Date: Tue, 2 Jul 2024 17:07:22 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
- nalasex01a.na.qualcomm.com (10.47.209.196)
-X-QCInternal: smtphost
-X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
-X-Proofpoint-ORIG-GUID: vSwIDrJRaZdgNOUJQK7AzlQXacZMoxPy
-X-Proofpoint-GUID: vSwIDrJRaZdgNOUJQK7AzlQXacZMoxPy
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.293,Aquarius:18.0.1039,Hydra:6.0.680,FMLib:17.12.28.16
- definitions=2024-07-02_05,2024-07-02_02,2024-05-17_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 bulkscore=0 mlxlogscore=849
- lowpriorityscore=0 clxscore=1011 mlxscore=0 suspectscore=0 spamscore=0
- adultscore=0 impostorscore=0 malwarescore=0 priorityscore=1501
- phishscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.19.0-2406140001 definitions=main-2407020068
+User-Agent: Mozilla Thunderbird
+Cc: baolu.lu@linux.intel.com, iommu@lists.linux.dev
+Subject: Re: lack of permission checking with intel-iommu?
+To: Yi Liu <yi.l.liu@intel.com>, Christoph Hellwig <hch@infradead.org>,
+ David Woodhouse <dwmw2@infradead.org>
+References: <ZoOwc7O5W0PUeja5@infradead.org> <ZoO0KxkU_JNO0av4@infradead.org>
+ <4d84afa1-e2ce-4e1b-8fe3-1d3fb0db2ba0@linux.intel.com>
+ <fb388a2b-9ffc-42c5-893c-0c620e6977fc@intel.com>
+Content-Language: en-US
+From: Baolu Lu <baolu.lu@linux.intel.com>
+In-Reply-To: <fb388a2b-9ffc-42c5-893c-0c620e6977fc@intel.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 
-To avoid deferring probe smmu driver silently, record reason for it.
-It can be checked through ../debugfs/devices_deferred as well:
-/sys/kernel/debug# cat devices_deferred
-15000000.iommu  arm-smmu: qcom_scm not ready
+On 2024/7/2 16:47, Yi Liu wrote:
+>>>>
+>>>> we've recently had an interesting case where a device unexpectedly
+>>>> modified a dma buffer passed to it.  On AMD systems this caused iommu
+>>>> faults because the buffer was mapped read only (DMA_FROM_DEVICE), but
+>>>> on an Intel system everything worked fine as the IOMMU did not trip up
+>>>> on the device writes to that buffer.  Any idea why that could sneak
+>>>> through?
+>>> Sorry if this was confusing, the permission checking is of course about
+>>> the device reading from a buffer mapped read-only for the device
+>>> (as that is what DMA_FROM_DEVICE is), which on intel still allows it
+>>> to read.
+>>
+>> Is it about IOMMU blocking "device reading from buffer" or "device
+>> writing to buffer"?
+>>
+>> The intel iommu driver might use first-stage translation for kernel DMA.
+>> It seems not to block the "device reading from buffer" if I remember it
+>> correctly.
+> 
+> does the current kernel use the first-stage page table by default?
 
-Signed-off-by: Zhenhua Huang <quic_zhenhuah@quicinc.com>
----
- drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+Use first-stage page table for kernel DMA by default.
 
-diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
-index 25f034677f56..971c6a2e592b 100644
---- a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
-+++ b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
-@@ -469,7 +469,8 @@ static struct arm_smmu_device *qcom_smmu_create(struct arm_smmu_device *smmu,
- 
- 	/* Check to make sure qcom_scm has finished probing */
- 	if (!qcom_scm_is_available())
--		return ERR_PTR(-EPROBE_DEFER);
-+		return ERR_PTR(dev_err_probe(smmu->dev, -EPROBE_DEFER,
-+			"qcom_scm not ready\n"));
- 
- 	qsmmu = devm_krealloc(smmu->dev, smmu, sizeof(*qsmmu), GFP_KERNEL);
- 	if (!qsmmu)
--- 
-2.7.4
-
+Best regards,
+baolu
