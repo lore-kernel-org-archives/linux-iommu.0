@@ -1,47 +1,48 @@
 Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.10])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BDB56537E7
-	for <iommu@lists.linux.dev>; Tue,  2 Jul 2024 06:37:31 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0AC5185934
+	for <iommu@lists.linux.dev>; Tue,  2 Jul 2024 06:37:35 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.10
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1719902254; cv=none; b=mv6MH3+g/gRX4PFJwg91kNjP9SRGk7tyGsW5Wcr1OuotcBAJv4DZ3t35oZf2ScUPkiaXNJufL++YmCw8StzejrgPQxSgUdv43PFbbhhnS1ZXphiqQ0lrYoRzUoKVcKgcKs5jyN6ok0TEnRGwhEf6gG5enUWwDiKwDkWi01SH4Qk=
+	t=1719902256; cv=none; b=jOgYvq3YLD73awouSL5Mq4SOk4lKw5imHQQ1nJ32VQhGj/XwAJUOC8J88JR2YCHldfcZocwYoesXmyWUyeytaMscHRUmGsujHxlZotK6c9IyHOtBGkCQ/bVjQ2yEYzRnCm9kAnmr7JFNYKqv5xgdzkhVvYQQNQ7f6mswcLJu9kk=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1719902254; c=relaxed/simple;
-	bh=ebuYOo3up2lIO+mZ8J6j1N1O2VYAll9pwU9NvDibdg8=;
-	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version; b=Zmfm2my95xAItP4+Sl3ywNAbrvAH7mCvlf3G7SSngvVvpNdIRsKqJ2YkZNn8+Ey0L1EWgtD40ag39OKg83l55cu997rDqKlZtZTGna9nerQOqH3YyWMrwfJHeOEH3aQGd2pNrocOTi6AI5YDpw7lJbChTeE40bDBxSqSEAsB1Qk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=Mw/OW+3i; arc=none smtp.client-ip=192.198.163.10
+	s=arc-20240116; t=1719902256; c=relaxed/simple;
+	bh=BZSDz0KzxucLY0QHtPPPO1kqDaVfkMKtM4/CokGnRhQ=;
+	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
+	 MIME-Version; b=uZemRSvArwE8C8YoOT2Skj+9tkmD73oMi28/IGzphkeP417VWMmL6/fI80c0rqx4/92uN89navDFVgaNkPmY3gNrs8tf98iWyKMp47XAz5VPpdXxooc83CO0XhgXdWsLvpP/iYXgBTECme0uPyf6elxzgMqH0Vcle1ogLF/ohMc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=bsCQrd5v; arc=none smtp.client-ip=192.198.163.10
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="Mw/OW+3i"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="bsCQrd5v"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1719902252; x=1751438252;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=ebuYOo3up2lIO+mZ8J6j1N1O2VYAll9pwU9NvDibdg8=;
-  b=Mw/OW+3iipoJjiO0nYOPvuLAhKedo7IcapHF6EmbRAlsmnRSXvu1hXxf
-   gVQuHN1lu6miTmz7YutJ/GGZI+xqqFAKaZnDSt3Ky/sMe5Eb2QJkNoUBW
-   6cMTlIQrXKbTJMdXx6WvVE0FDj1Au110NnA9eIYr2f2T+RuP+nlTeoCtW
-   gpe8BrjbS/GZf8M8PrK/49XeWdsGsiq0NL08p+o6jC6/ohB0zxSIKZSHA
-   deym5ab8ofHjbWAaoTTrT5Dkq/9dhsi+K03n74bPr9mkND1qKLm075NxT
-   aIjUB8f6vfo3Z6ghZAVYWR4n5B1MIpFD/wusZCjMeGJRAbc3TxN+XFcV4
-   A==;
-X-CSE-ConnectionGUID: qZ8ZKu2qSOSBLQmQST9p5g==
-X-CSE-MsgGUID: UdSDsWppRmau4xPzlLgW+A==
-X-IronPort-AV: E=McAfee;i="6700,10204,11120"; a="28455562"
+  t=1719902255; x=1751438255;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=BZSDz0KzxucLY0QHtPPPO1kqDaVfkMKtM4/CokGnRhQ=;
+  b=bsCQrd5v3Cci82ESh8gtmfB67x3W1ak65IJwOKY1na75K5nq02LsQ+SU
+   9v65AJ/m5qwUZkUiVmVFoH7OEsC7EQ2Gi5NT7LwUI6wsu03mJKdkVdOr3
+   mB2Prridp2P2odd4LaG2VjJdD/E0mBzy/IiNa7XUbiedsHK7Dr47ERMaj
+   1L2fHXDX9oIs20z1dHohhozd4L2T72E+BRvOQVhuY6ooXi9VcZLkAKLVi
+   UfLAg7uyHDvuuAzOgps4sXoJ6hR5GV/GVC98ALPWFWBtFk7BjAbr5zYYX
+   SRQEx5djhwVcHW/YtCb+j/IhW9Ex9g/Nee5hXJCfIi1rBxqddZ/JlvJfa
+   g==;
+X-CSE-ConnectionGUID: CBwBit04Swm7OEt4WQq1fQ==
+X-CSE-MsgGUID: Cu1BS96qTlaMwUo+nFQuBg==
+X-IronPort-AV: E=McAfee;i="6700,10204,11120"; a="28455573"
 X-IronPort-AV: E=Sophos;i="6.09,178,1716274800"; 
-   d="scan'208";a="28455562"
+   d="scan'208";a="28455573"
 Received: from fmviesa003.fm.intel.com ([10.60.135.143])
-  by fmvoesa104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Jul 2024 23:37:31 -0700
-X-CSE-ConnectionGUID: sJdbJ6N6Tya2N9RApR+X5Q==
-X-CSE-MsgGUID: 8zjQDBa8Q3WgslKjkGX/tA==
+  by fmvoesa104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Jul 2024 23:37:35 -0700
+X-CSE-ConnectionGUID: /GQfl16ETLW9bOhKZ8salA==
+X-CSE-MsgGUID: IJj62i/mTGebSDJKVcQ6ww==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.09,178,1716274800"; 
-   d="scan'208";a="50137095"
+   d="scan'208";a="50137111"
 Received: from unknown (HELO allen-box.sh.intel.com) ([10.239.159.127])
-  by fmviesa003.fm.intel.com with ESMTP; 01 Jul 2024 23:37:27 -0700
+  by fmviesa003.fm.intel.com with ESMTP; 01 Jul 2024 23:37:31 -0700
 From: Lu Baolu <baolu.lu@linux.intel.com>
 To: Jason Gunthorpe <jgg@ziepe.ca>,
 	Kevin Tian <kevin.tian@intel.com>,
@@ -56,11 +57,14 @@ To: Jason Gunthorpe <jgg@ziepe.ca>,
 Cc: iommu@lists.linux.dev,
 	virtualization@lists.linux-foundation.org,
 	linux-kernel@vger.kernel.org,
-	Lu Baolu <baolu.lu@linux.intel.com>
-Subject: [PATCH v8 00/10] IOMMUFD: Deliver IO page faults to user space
-Date: Tue,  2 Jul 2024 14:34:34 +0800
-Message-Id: <20240702063444.105814-1-baolu.lu@linux.intel.com>
+	Lu Baolu <baolu.lu@linux.intel.com>,
+	Jason Gunthorpe <jgg@nvidia.com>
+Subject: [PATCH v8 01/10] iommu: Introduce domain attachment handle
+Date: Tue,  2 Jul 2024 14:34:35 +0800
+Message-Id: <20240702063444.105814-2-baolu.lu@linux.intel.com>
 X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20240702063444.105814-1-baolu.lu@linux.intel.com>
+References: <20240702063444.105814-1-baolu.lu@linux.intel.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -69,140 +73,220 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-This series implements the functionality of delivering IO page faults to
-user space through the IOMMUFD framework. One feasible use case is the
-nested translation. Nested translation is a hardware feature that
-supports two-stage translation tables for IOMMU. The second-stage
-translation table is managed by the host VMM, while the first-stage
-translation table is owned by user space. This allows user space to
-control the IOMMU mappings for its devices.
+Currently, when attaching a domain to a device or its PASID, domain is
+stored within the iommu group. It could be retrieved for use during the
+window between attachment and detachment.
 
-When an IO page fault occurs on the first-stage translation table, the
-IOMMU hardware can deliver the page fault to user space through the
-IOMMUFD framework. User space can then handle the page fault and respond
-to the device top-down through the IOMMUFD. This allows user space to
-implement its own IO page fault handling policies.
+With new features introduced, there's a need to store more information
+than just a domain pointer. This information essentially represents the
+association between a domain and a device. For example, the SVA code
+already has a custom struct iommu_sva which represents a bond between
+sva domain and a PASID of a device. Looking forward, the IOMMUFD needs
+a place to store the iommufd_device pointer in the core, so that the
+device object ID could be quickly retrieved in the critical fault handling
+path.
 
-User space application that is capable of handling IO page faults should
-allocate a fault object, and bind the fault object to any domain that it
-is willing to handle the fault generatd for them. On a successful return
-of fault object allocation, the user can retrieve and respond to page
-faults by reading or writing to the file descriptor (FD) returned.
+Introduce domain attachment handle that explicitly represents the
+attachment relationship between a domain and a device or its PASID.
 
-The iommu selftest framework has been updated to test the IO page fault
-delivery and response functionality.
+Co-developed-by: Jason Gunthorpe <jgg@nvidia.com>
+Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
+Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
+Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
+Reviewed-by: Kevin Tian <kevin.tian@intel.com>
+---
+ include/linux/iommu.h     | 18 +++++++++++++++---
+ drivers/dma/idxd/init.c   |  2 +-
+ drivers/iommu/iommu-sva.c | 13 ++++++++-----
+ drivers/iommu/iommu.c     | 26 ++++++++++++++++----------
+ 4 files changed, 40 insertions(+), 19 deletions(-)
 
-The series and related patches are available on GitHub:
-https://github.com/LuBaolu/intel-iommu/commits/iommufd-io-pgfault-delivery-v8
-
-Change log:
-v8:
- - Update an out-of-date commit message.
- - Fix an error unwind issue by storing to a reserved entry.
- - Add a fail_nth selftest case to test iommufd_ucmd_respond() failure
-   path.
- - Fix a refcounting issue in hwpt allocation with fault object.
- - Miscellaneous cleanup.
-
-v7: https://lore.kernel.org/linux-iommu/20240616061155.169343-1-baolu.lu@linux.intel.com/
- - Move the setting of handle.domain into the helpers.
- - Return value of copy_to_user() should be converted to -EFAULT.
- - Add more checks on a fetched dma handle in the sva bind path.
- - Add a constant flag in iommu_ops to replace
-   IOMMU_CAP_USER_IOASID_TABLE.
- - Simplify iommu_hwpt_pgfault and iommu_hwpt_page_response by removing
-   some unnecessary fields.
- - Address the wrong order between dec users and ctx_put in fault FD
-   release path.
- - Miscellaneous cleanup.
-
-v6: https://lore.kernel.org/linux-iommu/20240527040517.38561-1-baolu.lu@linux.intel.com/
- - Refine the attach handle code by shifting the handle allocation to
-   the caller. The caller will then provide the allocated handle to the
-   domain attachment interfaces.
- - Add reference counter in iommufd_fault_iopf_enable/disable() helpers.
- - Fix the return values of fault FD's read/write fops.
- - Add IOMMU_CAP_USER_IOASID_TABLE capability and check it before roll
-   back getting attach_handle to RID.
- - Move the iopf respond queue from iommufd device to iommufd fault.
- - Disallow PRI enablement on SR-IOV VF devices.
- - Miscellaneous cleanup.
-
-v5: https://lore.kernel.org/linux-iommu/20240430145710.68112-1-baolu.lu@linux.intel.com/
- - Removed attach handle reference count from the core. Drivers will now
-   synchronize their use of handles and domain attach/detach.
- - Automatically responds to all outstanding faults in hwpt detach or
-   replace paths.
- - Supports getting a domain-type specific attach handle.
- - Reorganized the series by changing the patch order.
- - Miscellaneous cleanup.
-
-v4: https://lore.kernel.org/linux-iommu/20240403011519.78512-1-baolu.lu@linux.intel.com/
- - Add the iommu domain attachment handle to replace the iopf-specific
-   domain attachment interfaces introduced in the previous v3.
- - Replace the iommu_sva with iommu domain attachment handle.
- - Refine some fields in the fault and response message encoding
-   according to feedback collected during v3 review period.
- - Refine and fix some problems in the fault FD implementation.
- - Miscellaneous cleanup.
-
-v3: https://lore.kernel.org/linux-iommu/20240122073903.24406-1-baolu.lu@linux.intel.com/
- - Add iopf domain attach/detach/replace interfaces to manage the
-   reference counters of hwpt and device, ensuring that both can only be
-   destroyed after all outstanding IOPFs have been responded to. 
- - Relocate the fault handling file descriptor from hwpt to a fault
-   object to enable a single fault handling object to be utilized
-   across multiple domains.
- - Miscellaneous cleanup and performance improvements.
-
-v2: https://lore.kernel.org/linux-iommu/20231026024930.382898-1-baolu.lu@linux.intel.com/
- - Move all iommu refactoring patches into a sparated series and discuss
-   it in a different thread. The latest patch series [v6] is available at
-   https://lore.kernel.org/linux-iommu/20230928042734.16134-1-baolu.lu@linux.intel.com/
- - We discussed the timeout of the pending page fault messages. We
-   agreed that we shouldn't apply any timeout policy for the page fault
-   handling in user space.
-   https://lore.kernel.org/linux-iommu/20230616113232.GA84678@myrica/
- - Jason suggested that we adopt a simple file descriptor interface for
-   reading and responding to I/O page requests, so that user space
-   applications can improve performance using io_uring.
-   https://lore.kernel.org/linux-iommu/ZJWjD1ajeem6pK3I@ziepe.ca/
-
-v1: https://lore.kernel.org/linux-iommu/20230530053724.232765-1-baolu.lu@linux.intel.com/
-
-Lu Baolu (10):
-  iommu: Introduce domain attachment handle
-  iommu: Remove sva handle list
-  iommu: Add attach handle to struct iopf_group
-  iommu: Extend domain attach group with handle support
-  iommufd: Add fault and response message definitions
-  iommufd: Add iommufd fault object
-  iommufd: Fault-capable hwpt attach/detach/replace
-  iommufd: Associate fault object with iommufd_hw_pgtable
-  iommufd/selftest: Add IOPF support for mock device
-  iommufd/selftest: Add coverage for IOPF test
-
- include/linux/iommu.h                         |  41 +-
- drivers/iommu/iommu-priv.h                    |  11 +
- drivers/iommu/iommufd/iommufd_private.h       |  80 ++++
- drivers/iommu/iommufd/iommufd_test.h          |   8 +
- include/uapi/linux/iommufd.h                  | 109 +++++
- tools/testing/selftests/iommu/iommufd_utils.h |  86 +++-
- drivers/dma/idxd/init.c                       |   2 +-
- drivers/iommu/io-pgfault.c                    |  63 +--
- drivers/iommu/iommu-sva.c                     |  42 +-
- drivers/iommu/iommu.c                         | 185 ++++++--
- drivers/iommu/iommufd/device.c                |   7 +-
- drivers/iommu/iommufd/fault.c                 | 433 ++++++++++++++++++
- drivers/iommu/iommufd/hw_pagetable.c          |  38 +-
- drivers/iommu/iommufd/main.c                  |   6 +
- drivers/iommu/iommufd/selftest.c              |  64 +++
- tools/testing/selftests/iommu/iommufd.c       |  22 +
- .../selftests/iommu/iommufd_fail_nth.c        |   2 +-
- drivers/iommu/iommufd/Makefile                |   1 +
- 18 files changed, 1083 insertions(+), 117 deletions(-)
- create mode 100644 drivers/iommu/iommufd/fault.c
-
+diff --git a/include/linux/iommu.h b/include/linux/iommu.h
+index 17b3f36ad843..afc5af0069bb 100644
+--- a/include/linux/iommu.h
++++ b/include/linux/iommu.h
+@@ -989,12 +989,22 @@ struct iommu_fwspec {
+ /* ATS is supported */
+ #define IOMMU_FWSPEC_PCI_RC_ATS			(1 << 0)
+ 
++/*
++ * An iommu attach handle represents a relationship between an iommu domain
++ * and a PASID or RID of a device. It is allocated and managed by the component
++ * that manages the domain and is stored in the iommu group during the time the
++ * domain is attached.
++ */
++struct iommu_attach_handle {
++	struct iommu_domain		*domain;
++};
++
+ /**
+  * struct iommu_sva - handle to a device-mm bond
+  */
+ struct iommu_sva {
++	struct iommu_attach_handle	handle;
+ 	struct device			*dev;
+-	struct iommu_domain		*domain;
+ 	struct list_head		handle_item;
+ 	refcount_t			users;
+ };
+@@ -1052,7 +1062,8 @@ int iommu_device_claim_dma_owner(struct device *dev, void *owner);
+ void iommu_device_release_dma_owner(struct device *dev);
+ 
+ int iommu_attach_device_pasid(struct iommu_domain *domain,
+-			      struct device *dev, ioasid_t pasid);
++			      struct device *dev, ioasid_t pasid,
++			      struct iommu_attach_handle *handle);
+ void iommu_detach_device_pasid(struct iommu_domain *domain,
+ 			       struct device *dev, ioasid_t pasid);
+ struct iommu_domain *
+@@ -1388,7 +1399,8 @@ static inline int iommu_device_claim_dma_owner(struct device *dev, void *owner)
+ }
+ 
+ static inline int iommu_attach_device_pasid(struct iommu_domain *domain,
+-					    struct device *dev, ioasid_t pasid)
++					    struct device *dev, ioasid_t pasid,
++					    struct iommu_attach_handle *handle)
+ {
+ 	return -ENODEV;
+ }
+diff --git a/drivers/dma/idxd/init.c b/drivers/dma/idxd/init.c
+index a7295943fa22..385c488c9cd1 100644
+--- a/drivers/dma/idxd/init.c
++++ b/drivers/dma/idxd/init.c
+@@ -584,7 +584,7 @@ static int idxd_enable_system_pasid(struct idxd_device *idxd)
+ 	 * DMA domain is owned by the driver, it should support all valid
+ 	 * types such as DMA-FQ, identity, etc.
+ 	 */
+-	ret = iommu_attach_device_pasid(domain, dev, pasid);
++	ret = iommu_attach_device_pasid(domain, dev, pasid, NULL);
+ 	if (ret) {
+ 		dev_err(dev, "failed to attach device pasid %d, domain type %d",
+ 			pasid, domain->type);
+diff --git a/drivers/iommu/iommu-sva.c b/drivers/iommu/iommu-sva.c
+index 18a35e798b72..0fb923254062 100644
+--- a/drivers/iommu/iommu-sva.c
++++ b/drivers/iommu/iommu-sva.c
+@@ -99,7 +99,9 @@ struct iommu_sva *iommu_sva_bind_device(struct device *dev, struct mm_struct *mm
+ 
+ 	/* Search for an existing domain. */
+ 	list_for_each_entry(domain, &mm->iommu_mm->sva_domains, next) {
+-		ret = iommu_attach_device_pasid(domain, dev, iommu_mm->pasid);
++		handle->handle.domain = domain;
++		ret = iommu_attach_device_pasid(domain, dev, iommu_mm->pasid,
++						&handle->handle);
+ 		if (!ret) {
+ 			domain->users++;
+ 			goto out;
+@@ -113,7 +115,9 @@ struct iommu_sva *iommu_sva_bind_device(struct device *dev, struct mm_struct *mm
+ 		goto out_free_handle;
+ 	}
+ 
+-	ret = iommu_attach_device_pasid(domain, dev, iommu_mm->pasid);
++	handle->handle.domain = domain;
++	ret = iommu_attach_device_pasid(domain, dev, iommu_mm->pasid,
++					&handle->handle);
+ 	if (ret)
+ 		goto out_free_domain;
+ 	domain->users = 1;
+@@ -124,7 +128,6 @@ struct iommu_sva *iommu_sva_bind_device(struct device *dev, struct mm_struct *mm
+ 	list_add(&handle->handle_item, &mm->iommu_mm->sva_handles);
+ 	mutex_unlock(&iommu_sva_lock);
+ 	handle->dev = dev;
+-	handle->domain = domain;
+ 	return handle;
+ 
+ out_free_domain:
+@@ -147,7 +150,7 @@ EXPORT_SYMBOL_GPL(iommu_sva_bind_device);
+  */
+ void iommu_sva_unbind_device(struct iommu_sva *handle)
+ {
+-	struct iommu_domain *domain = handle->domain;
++	struct iommu_domain *domain = handle->handle.domain;
+ 	struct iommu_mm_data *iommu_mm = domain->mm->iommu_mm;
+ 	struct device *dev = handle->dev;
+ 
+@@ -170,7 +173,7 @@ EXPORT_SYMBOL_GPL(iommu_sva_unbind_device);
+ 
+ u32 iommu_sva_get_pasid(struct iommu_sva *handle)
+ {
+-	struct iommu_domain *domain = handle->domain;
++	struct iommu_domain *domain = handle->handle.domain;
+ 
+ 	return mm_get_enqcmd_pasid(domain->mm);
+ }
+diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
+index 9df7cc75c1bc..a712b0cc3a1d 100644
+--- a/drivers/iommu/iommu.c
++++ b/drivers/iommu/iommu.c
+@@ -3352,16 +3352,17 @@ static void __iommu_remove_group_pasid(struct iommu_group *group,
+  * @domain: the iommu domain.
+  * @dev: the attached device.
+  * @pasid: the pasid of the device.
++ * @handle: the attach handle.
+  *
+  * Return: 0 on success, or an error.
+  */
+ int iommu_attach_device_pasid(struct iommu_domain *domain,
+-			      struct device *dev, ioasid_t pasid)
++			      struct device *dev, ioasid_t pasid,
++			      struct iommu_attach_handle *handle)
+ {
+ 	/* Caller must be a probed driver on dev */
+ 	struct iommu_group *group = dev->iommu_group;
+ 	struct group_device *device;
+-	void *curr;
+ 	int ret;
+ 
+ 	if (!domain->ops->set_dev_pasid)
+@@ -3382,11 +3383,12 @@ int iommu_attach_device_pasid(struct iommu_domain *domain,
+ 		}
+ 	}
+ 
+-	curr = xa_cmpxchg(&group->pasid_array, pasid, NULL, domain, GFP_KERNEL);
+-	if (curr) {
+-		ret = xa_err(curr) ? : -EBUSY;
++	if (handle)
++		handle->domain = domain;
++
++	ret = xa_insert(&group->pasid_array, pasid, handle, GFP_KERNEL);
++	if (ret)
+ 		goto out_unlock;
+-	}
+ 
+ 	ret = __iommu_set_group_pasid(domain, group, pasid);
+ 	if (ret)
+@@ -3414,7 +3416,7 @@ void iommu_detach_device_pasid(struct iommu_domain *domain, struct device *dev,
+ 
+ 	mutex_lock(&group->mutex);
+ 	__iommu_remove_group_pasid(group, pasid, domain);
+-	WARN_ON(xa_erase(&group->pasid_array, pasid) != domain);
++	xa_erase(&group->pasid_array, pasid);
+ 	mutex_unlock(&group->mutex);
+ }
+ EXPORT_SYMBOL_GPL(iommu_detach_device_pasid);
+@@ -3439,15 +3441,19 @@ struct iommu_domain *iommu_get_domain_for_dev_pasid(struct device *dev,
+ {
+ 	/* Caller must be a probed driver on dev */
+ 	struct iommu_group *group = dev->iommu_group;
+-	struct iommu_domain *domain;
++	struct iommu_attach_handle *handle;
++	struct iommu_domain *domain = NULL;
+ 
+ 	if (!group)
+ 		return NULL;
+ 
+ 	xa_lock(&group->pasid_array);
+-	domain = xa_load(&group->pasid_array, pasid);
++	handle = xa_load(&group->pasid_array, pasid);
++	if (handle)
++		domain = handle->domain;
++
+ 	if (type && domain && domain->type != type)
+-		domain = ERR_PTR(-EBUSY);
++		domain = NULL;
+ 	xa_unlock(&group->pasid_array);
+ 
+ 	return domain;
 -- 
 2.34.1
 
