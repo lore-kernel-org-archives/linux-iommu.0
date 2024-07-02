@@ -1,63 +1,81 @@
-Received: from bombadil.infradead.org (bombadil.infradead.org [198.137.202.133])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D203615B13A
-	for <iommu@lists.linux.dev>; Tue,  2 Jul 2024 11:42:26 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.137.202.133
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 82F0B167D8C
+	for <iommu@lists.linux.dev>; Tue,  2 Jul 2024 12:24:04 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1719920550; cv=none; b=E1jThogl/naASD1QpNjKZO6mUtPaMT5Gj9yjWTyJwFTMbL/rhSp2j7X8eV1PShX6AIZr6vj2fQgvPS635IfGrL1jel6KDb62AnXBMfan970YnBLYJgfkalPkoc5xB+dA9Rg/BUrv7nHNpnIEvEQGBZrg0VaNsHVJXaA9c/GUxl4=
+	t=1719923046; cv=none; b=P5KLws3o3VCUIdh9otbB+cxw9LNaazjS1x9FZMvf9NPgiLr3vMUMHzdKxWPh9Sx8sD1UBo+tZ+Xty8aUjKYVuNamNBytBfoOWLcICXxH6gctKlAGMJnnPMsrnEX3e8uQ5bJN6S1fXLszj00dUUV+qNkFbJEaIXcwXQElX4YEGr4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1719920550; c=relaxed/simple;
-	bh=CSDp0Kjf9T+YEv4esT9ENtMXUWkulqNayIL24uir92U=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=AczfICxo5wAq50b8Hnn11PBWSaqOg9Ao6sawFAsZW/kl1DMHPIC7/uDCNQOVYjHptbW1kTQVqIH30nKL4Ib77VB0LOpCciWltfAUTBT4khqSK5kzGIzO7LaaorxUsvLkW3X9mOJlVlmHEaQLYENX+r2wCjB1GS42wFb1rHCromI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=infradead.org; spf=none smtp.mailfrom=bombadil.srs.infradead.org; dkim=pass (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b=W6dVRP/z; arc=none smtp.client-ip=198.137.202.133
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=infradead.org
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=bombadil.srs.infradead.org
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b="W6dVRP/z"
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-	d=infradead.org; s=bombadil.20210309; h=In-Reply-To:Content-Type:MIME-Version
-	:References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-	Content-Transfer-Encoding:Content-ID:Content-Description;
-	bh=2TLZ2EcauKjsbeam016hdYPz0zR3/sGYiF8w/1BurKY=; b=W6dVRP/zFPi/jGY0p4nIVNK5uU
-	l9wq51ERjtpN/SYph8Is+XWQQvXc2zxTnxwpq7ksCF6HkgjQQkfJRq3F3WgHzxqBIXZuHtLosEhc1
-	I1LLtwvNMS6Xr8qc3uzYNHwaPjWDT8JmFK1Ys9sK6Z207+CVlYggRZZ8p2xOZy6r4JJG4VV5mD4f0
-	H+Yj09D/EFXhDh1+/u6CJn4aiOJudECB532Dng8F3nsia8c4yIZMhOh4kQZZLB6opaj9ksPEp7pFk
-	lu0kooCKctrMBGNDrZ/Z5V8SHbNPkIr/iPueDLK2Cwmw74zT7iePkkwdtOxE1BjZRDCEDojTwXW1n
-	9cPhnKVQ==;
-Received: from hch by bombadil.infradead.org with local (Exim 4.97.1 #2 (Red Hat Linux))
-	id 1sObty-00000006Vi5-1Ylw;
-	Tue, 02 Jul 2024 11:42:26 +0000
-Date: Tue, 2 Jul 2024 04:42:26 -0700
-From: Christoph Hellwig <hch@infradead.org>
-To: Baolu Lu <baolu.lu@linux.intel.com>
-Cc: Christoph Hellwig <hch@infradead.org>,
-	David Woodhouse <dwmw2@infradead.org>, iommu@lists.linux.dev
-Subject: Re: lack of permission checking with intel-iommu?
-Message-ID: <ZoPnop_nJGZ2DQTA@infradead.org>
-References: <ZoOwc7O5W0PUeja5@infradead.org>
- <ZoO0KxkU_JNO0av4@infradead.org>
- <4d84afa1-e2ce-4e1b-8fe3-1d3fb0db2ba0@linux.intel.com>
- <ZoO5ZeYtA6qLIs21@infradead.org>
- <0d0c9d4b-b233-4ac8-9a46-9da24f1c5536@linux.intel.com>
+	s=arc-20240116; t=1719923046; c=relaxed/simple;
+	bh=ZlcDNI6pGGDPH5HC2e7A4qlmK/71B8n6Njrvg7BCTg4=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=BIpqYWMS0/kdobXEqYnzIouafMPIKgXPqDihhr/EzvpRyKSOaXUuFXNX5fS6npvyGff7Hd8u/PUPS16cXpNrbxqfsHVjWBkvAIXFmmpf3F0N2OfOrQiTYy099jnUOqoDZNkzA7HRzytd2ofPrREDiI5vvn2tG+otvaq7ash6KkQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; arc=none smtp.client-ip=217.140.110.172
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id EBA4A339;
+	Tue,  2 Jul 2024 05:24:28 -0700 (PDT)
+Received: from [10.1.196.40] (e121345-lin.cambridge.arm.com [10.1.196.40])
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id DE07A3F762;
+	Tue,  2 Jul 2024 05:24:01 -0700 (PDT)
+Message-ID: <eee1f654-3719-4965-a7c2-50039a43b586@arm.com>
+Date: Tue, 2 Jul 2024 13:23:56 +0100
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <0d0c9d4b-b233-4ac8-9a46-9da24f1c5536@linux.intel.com>
-X-SRS-Rewrite: SMTP reverse-path rewritten from <hch@infradead.org> by bombadil.infradead.org. See http://www.infradead.org/rpr.html
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v2 0/4] iommu: Remove iommu_fwspec ops
+To: Saravana Kannan <saravanak@google.com>
+Cc: Will Deacon <will@kernel.org>, Joerg Roedel <joro@8bytes.org>,
+ linux-acpi@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+ linux-kernel@vger.kernel.org, iommu@lists.linux.dev,
+ devicetree@vger.kernel.org, Rob Herring <robh@kernel.org>,
+ Lorenzo Pieralisi <lpieralisi@kernel.org>, Hanjun Guo
+ <guohanjun@huawei.com>, Sudeep Holla <sudeep.holla@arm.com>,
+ "Rafael J. Wysocki" <rafael@kernel.org>, Len Brown <lenb@kernel.org>,
+ Jean-Philippe Brucker <jean-philippe@linaro.org>,
+ Andy Shevchenko <andy.shevchenko@gmail.com>
+References: <cover.1718994350.git.robin.murphy@arm.com>
+ <CAGETcx-nBb43181Rd4HC6HQF-6=XOufA05e8Zda+LBBfhwvagw@mail.gmail.com>
+From: Robin Murphy <robin.murphy@arm.com>
+Content-Language: en-GB
+In-Reply-To: <CAGETcx-nBb43181Rd4HC6HQF-6=XOufA05e8Zda+LBBfhwvagw@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 
-On Tue, Jul 02, 2024 at 05:12:32PM +0800, Baolu Lu wrote:
-> In this case, Intel IOMMU doesn't block device reading as the first-
-> stage page table only grants two types of permissions: Read-only or
-> Read-write. Write-only permission is not available.
+On 21/06/2024 9:51 pm, Saravana Kannan wrote:
+> On Fri, Jun 21, 2024 at 8:46 PM Robin Murphy <robin.murphy@arm.com> wrote:
+>>
+>> v1: https://lore.kernel.org/linux-iommu/cover.1713523251.git.robin.murphy@arm.com
+>>
+>> Hi all,
+>>
+>> Here's v2 of this little cleanup, with acks and the additional cosmetic
+>> tweak suggested by Andy. There were some slightly non-trivial changes in
+>> the rebase so I've left off Jean-Philippe's tested-by from v1, but I've
+>> given it a quick spin on arm64 ACPI and DT and all seems well still.
 > 
-> Do you have a functional requirement for Write-only permission? If so,
-> we can choose the second-stage page table.
+> Hi Robin,
+> 
+> I see in this series you talk about figuring out if a device has a
+> driver that could match. There has been a "can_match" flag in every
+> device that's set if a driver that match it is present, but hasn't
+> probed the device yet (for whatever reason). Just pointing that out in
+> case that makes things a lot easier for you. As of now, we don't
+> handle clearing it when the driver is unregistered, but if that really
+> needs to be handled, that shouldn't be too difficult.
 
-No functional need, but it would have found a device bug.
+Thanks, that's interesting to know. I'm not sure it's directly 
+applicable here since we have the more general case where the IOMMU 
+driver may also be a module that's not even loaded yet. What ultimately 
+matters is whether someone has called iommu_device_register() for a 
+matching IOMMU instance, or may do within a reasonable timeframe, so as 
+long as we can keep relying on fw_devlink and deferred_probe_timeout to 
+do most of the heavy lifting then I'd actually hope we can avoid getting 
+into the low-level details here.
+
+Cheers,
+Robin.
