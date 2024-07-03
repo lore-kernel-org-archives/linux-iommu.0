@@ -1,141 +1,93 @@
-Received: from mx0b-0031df01.pphosted.com (mx0b-0031df01.pphosted.com [205.220.180.131])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 94E274644E
-	for <iommu@lists.linux.dev>; Wed,  3 Jul 2024 03:09:37 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.180.131
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DD41713698F;
+	Wed,  3 Jul 2024 03:37:51 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1719976178; cv=none; b=nT52KN798ITbrViBy9ACnmI6LJBV6QaS8I39CekCCmlEaCO2giRl5Uoz/HFaMlBh/k/gljlVwRnxdVrLlO3gBtaZ66DzkS0eaXxNzeaZ1xxbbkljoH1SDIyHRuZyTN+Ink+ZZu5aBmjv+dAhMhvSzAnRZbrK8D4PyVi+4iTgZSI=
+	t=1719977872; cv=none; b=PzAVICLiXR/9AwWcoYol2vOgl/pUDPIlSpFRtgOxHPf02sCRZ8POzZEjOHAx83LthlNttAdx40KO+xEDCE0Jz45ORZ6XRtkIcW7qYpoAiZZMb9QjXIc0clIMCHp0A+KTXdASWc0j+f0zvDBCPv+lhvm0EJn3LXwOeUKh0khRjAg=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1719976178; c=relaxed/simple;
-	bh=AFF/SyviWOv4DMUMs1dls8f2aaE4qTZxvBo9Qomq+2w=;
-	h=From:To:CC:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=YgdFSp+frCIytd7kfLuHrJozsFDkdSmiXkPX2tT8U0VuoPCzM7dIeTt9LV8lcWL58b5PaNb/CSkM/umHb1+MJPW9hdYYhuWnKgCbXXgkY+IySiGbiZbtUm94MnPO7NFEZyFwJorvLgGv07yiEiYoNYtsfznreR5DkRDT3GsDqUM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com; spf=pass smtp.mailfrom=quicinc.com; dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b=DbkM9FuU; arc=none smtp.client-ip=205.220.180.131
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=quicinc.com
+	s=arc-20240116; t=1719977872; c=relaxed/simple;
+	bh=832WPZNjC2cU1NTJdZRlTwMLNqACMwDQnZTUfdgZRQI=;
+	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=n4UcQlgIOgw25kupUtlMETn201Bce4DjnQdAdxXEYdEi59ZD4Hv6ZGxHv5lUBE/BIktyJYcF42g8sABr2LitpJ+96U5WGFiQelrjIurtOVw56HnfstC+9sXfnuuruyyVwEC/AXT+ToYCemeOI9WxScyZdHKCu177+5tm9wRGK1k=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=uW2P6mGi; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b="DbkM9FuU"
-Received: from pps.filterd (m0279869.ppops.net [127.0.0.1])
-	by mx0a-0031df01.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 462HA2WP007719;
-	Wed, 3 Jul 2024 03:08:10 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=quicinc.com; h=
-	cc:content-transfer-encoding:content-type:date:from:in-reply-to
-	:message-id:mime-version:references:subject:to; s=qcppdkim1; bh=
-	+0lUz2LG9ii0BoYcaWcPP2foe3GGxcF0l4lLyB5+aGY=; b=DbkM9FuUDCvNCjow
-	80qn3qarUSaVeb7VFV4TccMAtIxKP9JcqYJ/dDY9dRzc4jSbk9u+9nh7fsvDs6Mt
-	pjYA7Ur7580bjo3mTtK7TYUDeybNh8r45Mw0qcvtoCKbRCyGXju+pvAh+ZUd8yyh
-	elEYowOpLMiVSi7OjPssnRq5tzS/R1OAwSd2NZ0H5Hd6V6HTE7u6GPYn0wTb4tNC
-	98+A1HBZohciggSe4x1H7/FigW2fwOhFbiRB/wY09B82qfUNEaCHELM6L0oOcak4
-	UGNiB/lwLfzst2LskpN5o0FnuSUz8PHi6SMKaC/QFrk5R4tYIgyBJXXePiOrfQnW
-	B1anPA==
-Received: from nalasppmta02.qualcomm.com (Global_NAT1.qualcomm.com [129.46.96.20])
-	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 402996qja7-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Wed, 03 Jul 2024 03:08:10 +0000 (GMT)
-Received: from nalasex01a.na.qualcomm.com (nalasex01a.na.qualcomm.com [10.47.209.196])
-	by NALASPPMTA02.qualcomm.com (8.17.1.19/8.17.1.19) with ESMTPS id 463388m0007436
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Wed, 3 Jul 2024 03:08:08 GMT
-Received: from tengfan-gv.qualcomm.com (10.80.80.8) by
- nalasex01a.na.qualcomm.com (10.47.209.196) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.1544.9; Tue, 2 Jul 2024 20:07:47 -0700
-From: Tengfei Fan <quic_tengfan@quicinc.com>
-To: <andersson@kernel.org>, <konrad.dybcio@linaro.org>, <robh@kernel.org>,
-        <krzk+dt@kernel.org>, <conor+dt@kernel.org>, <djakov@kernel.org>,
-        <mturquette@baylibre.com>, <sboyd@kernel.org>,
-        <jassisinghbrar@gmail.com>, <herbert@gondor.apana.org.au>,
-        <davem@davemloft.net>, <manivannan.sadhasivam@linaro.org>,
-        <will@kernel.org>, <joro@8bytes.org>, <conor@kernel.org>,
-        <tglx@linutronix.de>, <amitk@kernel.org>, <thara.gopinath@gmail.com>,
-        <linus.walleij@linaro.org>, <wim@linux-watchdog.org>,
-        <linux@roeck-us.net>, <rafael@kernel.org>, <viresh.kumar@linaro.org>,
-        <vkoul@kernel.org>, <edumazet@google.com>, <kuba@kernel.org>,
-        <pabeni@redhat.com>, <mcoquelin.stm32@gmail.com>
-CC: <robimarko@gmail.com>, <quic_gurus@quicinc.com>,
-        <bartosz.golaszewski@linaro.org>, <kishon@kernel.org>,
-        <quic_wcheng@quicinc.com>, <alim.akhtar@samsung.com>,
-        <avri.altman@wdc.com>, <bvanassche@acm.org>, <agross@kernel.org>,
-        <gregkh@linuxfoundation.org>, <quic_tdas@quicinc.com>,
-        <robin.murphy@arm.com>, <daniel.lezcano@linaro.org>,
-        <rui.zhang@intel.com>, <lukasz.luba@arm.com>,
-        <quic_rjendra@quicinc.com>, <ulf.hansson@linaro.org>,
-        <quic_sibis@quicinc.com>, <otto.pflueger@abscue.de>,
-        <quic_rohiagar@quicinc.com>, <luca@z3ntu.xyz>,
-        <neil.armstrong@linaro.org>, <abel.vesa@linaro.org>,
-        <bhupesh.sharma@linaro.org>, <alexandre.torgue@foss.st.com>,
-        <peppe.cavallaro@st.com>, <joabreu@synopsys.com>,
-        <netdev@vger.kernel.org>, <lpieralisi@kernel.org>, <kw@linux.com>,
-        <bhelgaas@google.com>, <ahalaney@redhat.com>,
-        <krzysztof.kozlowski@linaro.org>, <u.kleine-koenig@pengutronix.de>,
-        <dmitry.baryshkov@linaro.org>, <quic_cang@quicinc.com>,
-        <danila@jiaxyga.com>, <quic_nitirawa@quicinc.com>,
-        <mantas@8devices.com>, <athierry@redhat.com>,
-        <quic_kbajaj@quicinc.com>, <quic_bjorande@quicinc.com>,
-        <quic_msarkar@quicinc.com>, <quic_devipriy@quicinc.com>,
-        <quic_tsoni@quicinc.com>, <quic_rgottimu@quicinc.com>,
-        <quic_shashim@quicinc.com>, <quic_kaushalk@quicinc.com>,
-        <quic_tingweiz@quicinc.com>, <quic_aiquny@quicinc.com>,
-        <srinivas.kandagatla@linaro.org>, <linux-arm-msm@vger.kernel.org>,
-        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <linux-pm@vger.kernel.org>, <linux-clk@vger.kernel.org>,
-        <linux-phy@lists.infradead.org>, <linux-crypto@vger.kernel.org>,
-        <linux-scsi@vger.kernel.org>, <linux-usb@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>, <iommu@lists.linux.dev>,
-        <linux-riscv@lists.infradead.org>, <linux-gpio@vger.kernel.org>,
-        <linux-watchdog@vger.kernel.org>, <linux-pci@vger.kernel.org>,
-        <linux-stm32@st-md-mailman.stormreply.com>, <kernel@quicinc.com>,
-        Tengfei Fan <quic_tengfan@quicinc.com>
-Subject: [PATCH 26/47] dt-bindings: clock: qcom-rpmhcc: Add RPMHCC bindings for QCS9100
-Date: Wed, 3 Jul 2024 10:58:29 +0800
-Message-ID: <20240703025850.2172008-27-quic_tengfan@quicinc.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20240703025850.2172008-1-quic_tengfan@quicinc.com>
-References: <20240703025850.2172008-1-quic_tengfan@quicinc.com>
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="uW2P6mGi"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DFD04C116B1;
+	Wed,  3 Jul 2024 03:37:49 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1719977871;
+	bh=832WPZNjC2cU1NTJdZRlTwMLNqACMwDQnZTUfdgZRQI=;
+	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+	b=uW2P6mGinY+vgnxllheTht2kHIOnVn6AF8LR817cLCQSSl26lQNsBQZC3P0483kEu
+	 aYkb+XU2AAsOSzpLt4lIPndZI8f7dq65Uxy3f0k0ZakxH0tcyv+mjhU84ZY0cWMyRj
+	 RUuErauTxXB+ljtzCTI0hDQJZIoGhEwtFwCfRK7YSqp35TaQI/BZbJEcGX9ispTSvd
+	 1cQV+jsmB9HFeYWDlxjHmi0GzJhhjKSnEx7JFUFOCQdZtxXKteSmzx+9aVdeaN8a2O
+	 j4h5qpJwPivQd6F46ZQMg3mLdkojEghuODdJmB1/sT/IDTL3TxywQ6SxZVwD3hAeOJ
+	 X5tGXypFY9FVw==
+From: Bjorn Andersson <andersson@kernel.org>
+To: freedreno <freedreno@lists.freedesktop.org>,
+	dri-devel@lists.freedesktop.org,
+	linux-arm-msm@vger.kernel.org,
+	OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS <devicetree@vger.kernel.org>,
+	Rob Clark <robdclark@gmail.com>,
+	Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
+	Konrad Dybcio <konrad.dybcio@linaro.org>,
+	Krzysztof Kozlowski <krzk@kernel.org>,
+	Will Deacon <will@kernel.org>,
+	Akhil P Oommen <quic_akhilpo@quicinc.com>
+Cc: Abhinav Kumar <quic_abhinavk@quicinc.com>,
+	Conor Dooley <conor+dt@kernel.org>,
+	Daniel Vetter <daniel@ffwll.ch>,
+	David Airlie <airlied@gmail.com>,
+	Joerg Roedel <joro@8bytes.org>,
+	Krzysztof Kozlowski <krzk+dt@kernel.org>,
+	Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
+	Marijn Suijten <marijn.suijten@somainline.org>,
+	Maxime Ripard <mripard@kernel.org>,
+	Rob Herring <robh@kernel.org>,
+	Robin Murphy <robin.murphy@arm.com>,
+	Sean Paul <sean@poorly.run>,
+	Thomas Zimmermann <tzimmermann@suse.de>,
+	iommu@lists.linux.dev,
+	linux-arm-kernel@lists.infradead.org,
+	linux-kernel@vger.kernel.org
+Subject: Re: (subset) [PATCH v2 0/5] Support for Adreno X1-85 GPU
+Date: Tue,  2 Jul 2024 22:37:33 -0500
+Message-ID: <171997785354.348959.17891390714770433970.b4-ty@kernel.org>
+X-Mailer: git-send-email 2.45.2
+In-Reply-To: <20240629015111.264564-1-quic_akhilpo@quicinc.com>
+References: <20240629015111.264564-1-quic_akhilpo@quicinc.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
- nalasex01a.na.qualcomm.com (10.47.209.196)
-X-QCInternal: smtphost
-X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
-X-Proofpoint-GUID: xZ51Rg6JMuvafzFAJhimzPbfgRHaP6KC
-X-Proofpoint-ORIG-GUID: xZ51Rg6JMuvafzFAJhimzPbfgRHaP6KC
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.293,Aquarius:18.0.1039,Hydra:6.0.680,FMLib:17.12.28.16
- definitions=2024-07-02_18,2024-07-02_02,2024-05-17_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 suspectscore=0 adultscore=0
- priorityscore=1501 bulkscore=0 phishscore=0 spamscore=0 lowpriorityscore=0
- impostorscore=0 mlxscore=0 malwarescore=0 clxscore=1015 mlxlogscore=999
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.19.0-2406140001
- definitions=main-2407030022
 
-Add bindings and update documentation for clock rpmh driver on QCS9100
-SoC.
 
-Signed-off-by: Tengfei Fan <quic_tengfan@quicinc.com>
----
- Documentation/devicetree/bindings/clock/qcom,rpmhcc.yaml | 1 +
- 1 file changed, 1 insertion(+)
+On Sat, 29 Jun 2024 07:19:33 +0530, Akhil P Oommen wrote:
+> This series adds support for the Adreno X1-85 GPU found in Qualcomm's
+> compute series chipset, Snapdragon X1 Elite (x1e80100). In this new
+> naming scheme for Adreno GPU, 'X' stands for compute series, '1' denotes
+> 1st generation and '8' & '5' denotes the tier and the SKU which it
+> belongs.
+> 
+> X1-85 has major focus on doubling core clock frequency and bandwidth
+> throughput. It has a dedicated collapsible Graphics MX rail (gmxc) to
+> power the memories and double the number of data channels to improve
+> bandwidth to DDR.
+> 
+> [...]
 
-diff --git a/Documentation/devicetree/bindings/clock/qcom,rpmhcc.yaml b/Documentation/devicetree/bindings/clock/qcom,rpmhcc.yaml
-index ca857942ed6c..63e4b8f8e571 100644
---- a/Documentation/devicetree/bindings/clock/qcom,rpmhcc.yaml
-+++ b/Documentation/devicetree/bindings/clock/qcom,rpmhcc.yaml
-@@ -17,6 +17,7 @@ description: |
- properties:
-   compatible:
-     enum:
-+      - qcom,qcs9100-rpmh-clk
-       - qcom,qdu1000-rpmh-clk
-       - qcom,sa8775p-rpmh-clk
-       - qcom,sc7180-rpmh-clk
+Applied, thanks!
+
+[5/5] arm64: dts: qcom: x1e80100: Add gpu support
+      commit: 721e38301b79a6ee8375cb0ebd586699a7f353e3
+
+Best regards,
 -- 
-2.25.1
-
+Bjorn Andersson <andersson@kernel.org>
