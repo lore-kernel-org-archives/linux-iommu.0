@@ -1,46 +1,46 @@
-Received: from mx0a-0031df01.pphosted.com (mx0a-0031df01.pphosted.com [205.220.168.131])
+Received: from mx0b-0031df01.pphosted.com (mx0b-0031df01.pphosted.com [205.220.180.131])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A015A17C79
-	for <iommu@lists.linux.dev>; Wed,  3 Jul 2024 04:09:22 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.168.131
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9757214290C
+	for <iommu@lists.linux.dev>; Wed,  3 Jul 2024 04:09:38 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.180.131
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1719979763; cv=none; b=M+75yqOTtiWv/XwA246y02K5qhAU30EROkV8Hw6RcxtclHTm95lsSIPZPpMdWt8QfM0mGezwB97T4VIU4RPjEeSPDfkXSUKew2lr5y3NV2Y942/2G/CNapleKnLNBtox36xEB5KS139LMa9p+G4coCeTxi0FVsvtlchKUaPYPbI=
+	t=1719979780; cv=none; b=ZXOUNCk4MyncTMJhGsq/7klHAAoi10v5eu32UF7/fr69T6tjyChjAapAjdhCBPqVHVkt3uEnqcZe2KSvZhdAWd445v4PafUWzGIY2a9OGvrsHSnT4IdNBn4PNr+hEHRVctpAf9eIBsHmwuPUcpriBQG6Wmf/GclmJch8qq9bBbc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1719979763; c=relaxed/simple;
-	bh=bQw9AHkW+r1zSvaUfyj1AzMlM7GAPgR23guhQleKTU0=;
+	s=arc-20240116; t=1719979780; c=relaxed/simple;
+	bh=ZjYpvBu6Iql9RmhRtU2+a4cofMcdQZwdlMpDAXB9y6s=;
 	h=From:To:CC:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=KzLofKlKOe97Bq0eD1YdX2Rkjn3VhUY7XLDNx9MmZ30NSMwmW2n13MzolWYDzx3R0ACxvsRrsaN5n9dmzm4yR8y9cfSG5X8Y9bO1EjhN44D2hegooxsainbvL758bQSkuzLM5zrRgGYD4aIUKd+r22P9WsZNrAgH2Gb795dHER8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com; spf=pass smtp.mailfrom=quicinc.com; dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b=in55VlNO; arc=none smtp.client-ip=205.220.168.131
+	 MIME-Version:Content-Type; b=cd4zPv+R42QOg5iapt3RB4jsvH2iK7wXQo1pPQVhAsOaqtj7Ju9DuBR+oMsdqxydRRvBu51WYwGx/fgBizn8R5PkfjYvrVwtyvnyBgK09JoZKhAE4ZsnyZfVpQP8JlHRSBhoGzqMl4wiCc0e4QUPFVTJmrx1mHLZaW3rf5NivZY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com; spf=pass smtp.mailfrom=quicinc.com; dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b=oqC6jzwj; arc=none smtp.client-ip=205.220.180.131
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=quicinc.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b="in55VlNO"
-Received: from pps.filterd (m0279864.ppops.net [127.0.0.1])
-	by mx0a-0031df01.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 462JEOse030437;
-	Wed, 3 Jul 2024 04:07:52 GMT
+	dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b="oqC6jzwj"
+Received: from pps.filterd (m0279871.ppops.net [127.0.0.1])
+	by mx0a-0031df01.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 462HEOJI004030;
+	Wed, 3 Jul 2024 04:08:12 GMT
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=quicinc.com; h=
 	cc:content-transfer-encoding:content-type:date:from:in-reply-to
 	:message-id:mime-version:references:subject:to; s=qcppdkim1; bh=
-	n+7KkyP8p7ebCgU4HcV4M9wI8I89s4Mc9YI3BIw5wQI=; b=in55VlNOi/bqyhU4
-	Rd9PJgXT+uG7O7sUWFAC02V6LoI30ce8TguTt16InbskHg8vPZOBhdqejVUI3AqT
-	MgBb5LSue2d/8j+a3e1uGkt6YhgfBkB3aq+o/UpvZvooMW9RynW7BV2TNa91xVfZ
-	KCtvg7oxEJcJonPZD22lqJBN0UVaMgHD//SlaTVSrwktcks6T+oF/tdua+kUNQnZ
-	GpbR5MtHKcqzK+ncYhqE1iw6WjJE9wcGDzEr6Mp95DqwZMZA7DbAcA0B9wWfmezN
-	p4wLHKzKLNFaJEXCDrbn7C7FoXdGcOuqJpqGykh1NysGbNkJuLNs3UzXP4Lafoqi
-	aPvsaw==
-Received: from nalasppmta02.qualcomm.com (Global_NAT1.qualcomm.com [129.46.96.20])
-	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 402bejsy8u-1
+	/oSxM1GRn7V3lrTwxdGth+tnKwY/ctZ54CPcSpojck8=; b=oqC6jzwjiQxhjD9/
+	JB6YioUUwIcTzPTq3F5lP9AR0VAhnA0stNxwa7WPqDuk8Az4xRNmQw7KbQeRleAo
+	agJvfQ9Th6iRZtgtTL2zWq0h7THBixekczGGgWa1maMPE9sObYJuVlsxpqCmZNUM
+	M+HZxtVLqJpsRC6tIke7ry4xbFhLOyZ+LYXHZbmQI+qkUfPZCBHUIEgbKb8aUgDe
+	u1oO3tyMQ26Kywjf1+vN0e/sxmv0JVLvhUeVL0Bf8qFiNuH/UnMhQI/8RbMcTCv+
+	URfOZ9JbZVx19XYUVR6QIzkSEN3DT4atwZqjk2tKUBOP0lXMM8wFB/aKT9GwJMnp
+	C8e0fQ==
+Received: from nalasppmta03.qualcomm.com (Global_NAT1.qualcomm.com [129.46.96.20])
+	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 4029uxfkyn-1
 	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Wed, 03 Jul 2024 04:07:52 +0000 (GMT)
+	Wed, 03 Jul 2024 04:08:11 +0000 (GMT)
 Received: from nalasex01a.na.qualcomm.com (nalasex01a.na.qualcomm.com [10.47.209.196])
-	by NALASPPMTA02.qualcomm.com (8.17.1.19/8.17.1.19) with ESMTPS id 46347pMT010271
+	by NALASPPMTA03.qualcomm.com (8.17.1.19/8.17.1.19) with ESMTPS id 46348AEO031141
 	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Wed, 3 Jul 2024 04:07:51 GMT
+	Wed, 3 Jul 2024 04:08:10 GMT
 Received: from tengfan-gv.qualcomm.com (10.80.80.8) by
  nalasex01a.na.qualcomm.com (10.47.209.196) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.1544.9; Tue, 2 Jul 2024 21:07:29 -0700
+ 15.2.1544.9; Tue, 2 Jul 2024 21:07:48 -0700
 From: Tengfei Fan <quic_tengfan@quicinc.com>
 To: <andersson@kernel.org>, <konrad.dybcio@linaro.org>, <robh@kernel.org>,
         <krzk+dt@kernel.org>, <conor+dt@kernel.org>, <djakov@kernel.org>,
@@ -87,9 +87,9 @@ CC: <robimarko@gmail.com>, <quic_gurus@quicinc.com>,
         <linux-watchdog@vger.kernel.org>, <linux-pci@vger.kernel.org>,
         <linux-stm32@st-md-mailman.stormreply.com>, <kernel@quicinc.com>,
         Tengfei Fan <quic_tengfan@quicinc.com>
-Subject: [PATCH 28/47] dt-bindings: power: qcom,rpmpd: document the QCS9100 RPMh Power Domains
-Date: Wed, 3 Jul 2024 11:57:16 +0800
-Message-ID: <20240703035735.2182165-29-quic_tengfan@quicinc.com>
+Subject: [PATCH 29/47] dt-bindings: net: qcom,ethqos: add description for qcs9100
+Date: Wed, 3 Jul 2024 11:57:17 +0800
+Message-ID: <20240703035735.2182165-30-quic_tengfan@quicinc.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20240703035735.2182165-1-quic_tengfan@quicinc.com>
 References: <20240703025850.2172008-1-quic_tengfan@quicinc.com>
@@ -106,36 +106,69 @@ X-ClientProxiedBy: nasanex01a.na.qualcomm.com (10.52.223.231) To
  nalasex01a.na.qualcomm.com (10.47.209.196)
 X-QCInternal: smtphost
 X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
-X-Proofpoint-GUID: xCwslo7TorCoCjejMORzGmT4AWxP0Pti
-X-Proofpoint-ORIG-GUID: xCwslo7TorCoCjejMORzGmT4AWxP0Pti
+X-Proofpoint-GUID: ueGZ7X8pqFhe_-hOlUnvRwXOqryMqAYr
+X-Proofpoint-ORIG-GUID: ueGZ7X8pqFhe_-hOlUnvRwXOqryMqAYr
 X-Proofpoint-Virus-Version: vendor=baseguard
  engine=ICAP:2.0.293,Aquarius:18.0.1039,Hydra:6.0.680,FMLib:17.12.28.16
  definitions=2024-07-02_18,2024-07-02_02,2024-05-17_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 phishscore=0 mlxlogscore=999
- impostorscore=0 spamscore=0 clxscore=1015 mlxscore=0 suspectscore=0
- bulkscore=0 adultscore=0 lowpriorityscore=0 malwarescore=0
- priorityscore=1501 classifier=spam adjust=0 reason=mlx scancount=1
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 mlxlogscore=666
+ priorityscore=1501 impostorscore=0 bulkscore=0 spamscore=0 mlxscore=0
+ clxscore=1015 phishscore=0 malwarescore=0 adultscore=0 lowpriorityscore=0
+ suspectscore=0 classifier=spam adjust=0 reason=mlx scancount=1
  engine=8.19.0-2406140001 definitions=main-2407030028
 
-Document the RPMh Power Domains on the QCS9100 Platform.
+Add the compatible for the MAC controller on qcs9100 platforms. This MAC
+works with a single interrupt so add minItems to the interrupts property.
+The fourth clock's name is different here so change it. Enable relevant
+PHY properties. Add the relevant compatibles to the binding document for
+snps,dwmac as well.
 
 Signed-off-by: Tengfei Fan <quic_tengfan@quicinc.com>
 ---
- Documentation/devicetree/bindings/power/qcom,rpmpd.yaml | 1 +
- 1 file changed, 1 insertion(+)
+ Documentation/devicetree/bindings/net/qcom,ethqos.yaml | 1 +
+ Documentation/devicetree/bindings/net/snps,dwmac.yaml  | 3 +++
+ 2 files changed, 4 insertions(+)
 
-diff --git a/Documentation/devicetree/bindings/power/qcom,rpmpd.yaml b/Documentation/devicetree/bindings/power/qcom,rpmpd.yaml
-index 929b7ef9c1bc..0e5aaca38994 100644
---- a/Documentation/devicetree/bindings/power/qcom,rpmpd.yaml
-+++ b/Documentation/devicetree/bindings/power/qcom,rpmpd.yaml
-@@ -32,6 +32,7 @@ properties:
-           - qcom,msm8998-rpmpd
-           - qcom,qcm2290-rpmpd
-           - qcom,qcs404-rpmpd
-+          - qcom,qcs9100-rpmhpd
-           - qcom,qdu1000-rpmhpd
-           - qcom,qm215-rpmpd
-           - qcom,sa8155p-rpmhpd
+diff --git a/Documentation/devicetree/bindings/net/qcom,ethqos.yaml b/Documentation/devicetree/bindings/net/qcom,ethqos.yaml
+index 6672327358bc..8ab11e00668c 100644
+--- a/Documentation/devicetree/bindings/net/qcom,ethqos.yaml
++++ b/Documentation/devicetree/bindings/net/qcom,ethqos.yaml
+@@ -20,6 +20,7 @@ properties:
+   compatible:
+     enum:
+       - qcom,qcs404-ethqos
++      - qcom,qcs9100-ethqos
+       - qcom,sa8775p-ethqos
+       - qcom,sc8280xp-ethqos
+       - qcom,sm8150-ethqos
+diff --git a/Documentation/devicetree/bindings/net/snps,dwmac.yaml b/Documentation/devicetree/bindings/net/snps,dwmac.yaml
+index 3bab4e1f3fbf..269c21779396 100644
+--- a/Documentation/devicetree/bindings/net/snps,dwmac.yaml
++++ b/Documentation/devicetree/bindings/net/snps,dwmac.yaml
+@@ -67,6 +67,7 @@ properties:
+         - loongson,ls2k-dwmac
+         - loongson,ls7a-dwmac
+         - qcom,qcs404-ethqos
++        - qcom,qcs9100-ethqos
+         - qcom,sa8775p-ethqos
+         - qcom,sc8280xp-ethqos
+         - qcom,sm8150-ethqos
+@@ -582,6 +583,7 @@ allOf:
+               - ingenic,x1600-mac
+               - ingenic,x1830-mac
+               - ingenic,x2000-mac
++              - qcom,qcs9100-ethqos
+               - qcom,sa8775p-ethqos
+               - qcom,sc8280xp-ethqos
+               - snps,dwmac-3.50a
+@@ -639,6 +641,7 @@ allOf:
+               - ingenic,x1830-mac
+               - ingenic,x2000-mac
+               - qcom,qcs404-ethqos
++              - qcom,qcs9100-ethqos
+               - qcom,sa8775p-ethqos
+               - qcom,sc8280xp-ethqos
+               - qcom,sm8150-ethqos
 -- 
 2.25.1
 
