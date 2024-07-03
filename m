@@ -1,46 +1,46 @@
 Received: from mx0b-0031df01.pphosted.com (mx0b-0031df01.pphosted.com [205.220.180.131])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B89F7175AB
-	for <iommu@lists.linux.dev>; Wed,  3 Jul 2024 03:55:57 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F1559BA2D
+	for <iommu@lists.linux.dev>; Wed,  3 Jul 2024 03:56:37 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.180.131
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1719978959; cv=none; b=g10ZA51W5s1N6McrQjZR7z1YS+9D0ksMwwVHBhdXv9QbAzh/roBBmcgxrHFkdFSFzIqw5/vTSSCV1ori7iRQfGEAEK0a9rYpUCAYiSnDsPAsFYSzhyzVyYn7zmPXDHqL7JuDE9zcxJAAIBw6e09sjWAZn7BbbZvwY7l6mcO4sPc=
+	t=1719978999; cv=none; b=eCtN5rYtXP7vXLR/C5Z4i8kWMTkfMdad37VIMcPwjuiNJivFDgNdHeT2h4KW9PWyv5nWTXnR2tV89r1HhMpR64+qHqrz3fsk8ajI5/PgU5H1Jffi13i4XgML9QMQ8pVRfQ52CnGXWI5RJzZpKg3J1di32/Rlv0/7jOwed00kMO8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1719978959; c=relaxed/simple;
-	bh=jgmr8NiU+HabDfqeJfoGLF6PSP4DY7X4wegaFh3sqXk=;
+	s=arc-20240116; t=1719978999; c=relaxed/simple;
+	bh=cws/xrGPFe7T10sc3hzAfOTk/DaskfiVyerDsYOvdyY=;
 	h=From:To:CC:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=jRAa7b95cBaRywh6WHZcHjij7TDwfYwcgBBs4+WKLQXFSr1aklK4Ws5Atf3HN3bHIITvZ+Br1U7skzRurMSsaFSBLB7wz1oTepd86sskRTfL+Q1TENjeZA9CihYu9Ek0cd3bFxzDYYYUDnj5C0fwMhWsmcpDe3Rwm0ZJs0NhWHk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com; spf=pass smtp.mailfrom=quicinc.com; dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b=ODnQJKa2; arc=none smtp.client-ip=205.220.180.131
+	 MIME-Version:Content-Type; b=UVxd4xzoNC7XsHX4B5V29R0uXjaELfVKPvgXHPdRY1kS/WDaBFT3oD0wj4tKyYA52Wg7dFVpjhE0wO62b3vk0INptVusZ12ZZCnhNXAfW7fM63d2AAakUJJNPYOlfUfuSGkeVcplW3/VROkBnTTnQ/KRNOKyf4RGE0zTxW3fmj0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com; spf=pass smtp.mailfrom=quicinc.com; dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b=gXx1eDQ9; arc=none smtp.client-ip=205.220.180.131
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=quicinc.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b="ODnQJKa2"
-Received: from pps.filterd (m0279870.ppops.net [127.0.0.1])
-	by mx0a-0031df01.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 462HED4I032031;
-	Wed, 3 Jul 2024 03:54:33 GMT
+	dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b="gXx1eDQ9"
+Received: from pps.filterd (m0279869.ppops.net [127.0.0.1])
+	by mx0a-0031df01.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 462HE2dw013551;
+	Wed, 3 Jul 2024 03:56:09 GMT
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=quicinc.com; h=
 	cc:content-transfer-encoding:content-type:date:from:in-reply-to
 	:message-id:mime-version:references:subject:to; s=qcppdkim1; bh=
-	bnVh5sxvD8JqdQrxpjsAwgEZkzbp2x+U15Q/Cpl8FTw=; b=ODnQJKa2akbhvQ2Z
-	dMfPivSVzomAFuu2YA7HkKD6PvQwW5x6aZ96DHnA+duHGDZPN88Me3Ft5Y/+1a+i
-	8SBPvnEp+H4f4fSasusqjNrV2AR7AF/X4+buEf8kjWO2WhrDe+DmP166uf2Uh+ye
-	cP5HfVRnYm7lN44cs/DO+Bdnn5EobgKMGw4sFdwqIZT2574nwz9wIlwRzAM6Co5x
-	bKTGDgr0+J87/HLaiqHRIdYyEekfk3nHsbf0imfQ+JUm227c5n2+z4G2mMNhcw6c
-	TbWQCEsNSXI1Rt0qvDd+e1ey8CV9v+DWI1MjnkcKO2oEWDqWfY9X6Tmufyp4UfDW
-	u3pFUw==
+	Jf9Ii4eaknNcA9Ciu0sD0Xkr8UhaDliE4QG2+psEASo=; b=gXx1eDQ91i37oPuV
+	NVe/Qc4pr2SJAuX5MeJpntzUor2zZHn81e9LzzQSujvDyc6GKIQ1t+SYBdbxhVKf
+	gxudZW2V+SRiTq7gHgkL5Lt5D1ZVum5NHFLQNcQMI8vM7XSvLZ5ICY6RNkbWnEta
+	LfC66Vft/t3Uv5vlTVnqF8sIq6f1fhwgnWbjBWw/Braf8/v00ojx2te/krjGp/eJ
+	jvhhHMblcoaJeOMaN5PKSDRxpD+kcgTrPjYOsUCfDsxsRpJzTrbyK2VZWY5DQVA6
+	E2/aCdfKpeQFMx+Dz/gXE26uJ2kxBrnY5gKjUMLz1RpzP+jDcJ204CVX4yq6RKKw
+	pqxf0Q==
 Received: from nalasppmta03.qualcomm.com (Global_NAT1.qualcomm.com [129.46.96.20])
-	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 402abtqk9q-1
+	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 402996qn0d-1
 	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Wed, 03 Jul 2024 03:54:33 +0000 (GMT)
+	Wed, 03 Jul 2024 03:56:08 +0000 (GMT)
 Received: from nalasex01a.na.qualcomm.com (nalasex01a.na.qualcomm.com [10.47.209.196])
-	by NALASPPMTA03.qualcomm.com (8.17.1.19/8.17.1.19) with ESMTPS id 4633sVVZ003548
+	by NALASPPMTA03.qualcomm.com (8.17.1.19/8.17.1.19) with ESMTPS id 4633u7nM009938
 	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Wed, 3 Jul 2024 03:54:31 GMT
+	Wed, 3 Jul 2024 03:56:07 GMT
 Received: from tengfan-gv.qualcomm.com (10.80.80.8) by
  nalasex01a.na.qualcomm.com (10.47.209.196) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.1544.9; Tue, 2 Jul 2024 20:54:10 -0700
+ 15.2.1544.9; Tue, 2 Jul 2024 20:55:45 -0700
 From: Tengfei Fan <quic_tengfan@quicinc.com>
 To: <andersson@kernel.org>, <konrad.dybcio@linaro.org>, <robh@kernel.org>,
         <krzk+dt@kernel.org>, <conor+dt@kernel.org>, <djakov@kernel.org>,
@@ -87,9 +87,9 @@ CC: <robimarko@gmail.com>, <quic_gurus@quicinc.com>,
         <linux-watchdog@vger.kernel.org>, <linux-pci@vger.kernel.org>,
         <linux-stm32@st-md-mailman.stormreply.com>, <kernel@quicinc.com>,
         Tengfei Fan <quic_tengfan@quicinc.com>
-Subject: [PATCH 35/47] phy: qcom-qmp-ufs: Add QCS9100 support
-Date: Wed, 3 Jul 2024 11:51:42 +0800
-Message-ID: <20240703035154.2182083-6-quic_tengfan@quicinc.com>
+Subject: [PATCH 40/47] pinctrl: qcom: add the tlmm driver support for qcs9100 platform
+Date: Wed, 3 Jul 2024 11:51:47 +0800
+Message-ID: <20240703035154.2182083-11-quic_tengfan@quicinc.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20240703035154.2182083-1-quic_tengfan@quicinc.com>
 References: <20240703025850.2172008-1-quic_tengfan@quicinc.com>
@@ -106,39 +106,36 @@ X-ClientProxiedBy: nasanex01a.na.qualcomm.com (10.52.223.231) To
  nalasex01a.na.qualcomm.com (10.47.209.196)
 X-QCInternal: smtphost
 X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
-X-Proofpoint-GUID: LRFvPosQGmHUEpoU4KkgjQpbgg7WApMH
-X-Proofpoint-ORIG-GUID: LRFvPosQGmHUEpoU4KkgjQpbgg7WApMH
+X-Proofpoint-GUID: oTaqILfpg-HDHCdWq_s9Dzds9uyJ8TeB
+X-Proofpoint-ORIG-GUID: oTaqILfpg-HDHCdWq_s9Dzds9uyJ8TeB
 X-Proofpoint-Virus-Version: vendor=baseguard
  engine=ICAP:2.0.293,Aquarius:18.0.1039,Hydra:6.0.680,FMLib:17.12.28.16
  definitions=2024-07-02_18,2024-07-02_02,2024-05-17_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 bulkscore=0
- priorityscore=1501 mlxscore=0 clxscore=1015 suspectscore=0 malwarescore=0
- lowpriorityscore=0 phishscore=0 adultscore=0 spamscore=0 impostorscore=0
- mlxlogscore=999 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.19.0-2406140001 definitions=main-2407030027
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 suspectscore=0 adultscore=0
+ priorityscore=1501 bulkscore=0 phishscore=0 spamscore=0 lowpriorityscore=0
+ impostorscore=0 mlxscore=0 malwarescore=0 clxscore=1015 mlxlogscore=999
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.19.0-2406140001
+ definitions=main-2407030027
 
-Add the tables and constants for init sequences for UFS QMP phy found in
-QCS9100 SoC.
+Add the tlmm driver support for QCS9100 platform.
 
 Signed-off-by: Tengfei Fan <quic_tengfan@quicinc.com>
 ---
- drivers/phy/qualcomm/phy-qcom-qmp-ufs.c | 3 +++
- 1 file changed, 3 insertions(+)
+ drivers/pinctrl/qcom/pinctrl-sa8775p.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/phy/qualcomm/phy-qcom-qmp-ufs.c b/drivers/phy/qualcomm/phy-qcom-qmp-ufs.c
-index a57e8a4657f4..cb72843218cc 100644
---- a/drivers/phy/qualcomm/phy-qcom-qmp-ufs.c
-+++ b/drivers/phy/qualcomm/phy-qcom-qmp-ufs.c
-@@ -2010,6 +2010,9 @@ static const struct of_device_id qmp_ufs_of_match_table[] = {
- 	}, {
- 		.compatible = "qcom,msm8998-qmp-ufs-phy",
- 		.data = &sdm845_ufsphy_cfg,
-+	}, {
-+		.compatible = "qcom,qcs9100-qmp-ufs-phy",
-+		.data = &sa8775p_ufsphy_cfg,
- 	}, {
- 		.compatible = "qcom,sa8775p-qmp-ufs-phy",
- 		.data = &sa8775p_ufsphy_cfg,
+diff --git a/drivers/pinctrl/qcom/pinctrl-sa8775p.c b/drivers/pinctrl/qcom/pinctrl-sa8775p.c
+index 5459c0c681a2..4687e11dfe75 100644
+--- a/drivers/pinctrl/qcom/pinctrl-sa8775p.c
++++ b/drivers/pinctrl/qcom/pinctrl-sa8775p.c
+@@ -1519,6 +1519,7 @@ static int sa8775p_pinctrl_probe(struct platform_device *pdev)
+ }
+ 
+ static const struct of_device_id sa8775p_pinctrl_of_match[] = {
++	{ .compatible = "qcom,qcs9100-tlmm", },
+ 	{ .compatible = "qcom,sa8775p-tlmm", },
+ 	{ },
+ };
 -- 
 2.25.1
 
