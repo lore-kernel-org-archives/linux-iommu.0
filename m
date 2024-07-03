@@ -1,109 +1,137 @@
-Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
+Received: from mx0a-0031df01.pphosted.com (mx0a-0031df01.pphosted.com [205.220.168.131])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C4C36142E73
-	for <iommu@lists.linux.dev>; Wed,  3 Jul 2024 10:20:39 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=45.249.212.187
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8618A16B3A5
+	for <iommu@lists.linux.dev>; Wed,  3 Jul 2024 10:24:17 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.168.131
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1720002041; cv=none; b=fyUk4nQuQSLWFsEhLKD0j9ZL1s06tzWmrkMRQbe4p8U3H8FaeIQqLA434TEn0KiGTdxxb0MaoXGuTcjJCXmI/UlQUTJqx0hEBzHzVkV1DPzAWSmvYXkRKaoDgDt8zVjV5pko4iwJrBl5yLDVwDsB5LCk67S2CJPhyHtUaLIK7AU=
+	t=1720002259; cv=none; b=qSPKz/iTC7Y2949dQirmXpZxN0upmaPTMAKwBMnT7bZe3AzP1kTQHWp8/w9hG6kTjBPmJz+1hUaBZhh+EHniCFAgh9/kVup0yd90HTDcsC+UP4sF2AUx7ET41v2f4u9qdspoTHnoxKfr+p5fJpRT0oLKXzb1oXduhjObWTdhEl0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1720002041; c=relaxed/simple;
-	bh=iJA3/PU+na9Cx0gQmUZsr5u767lNGvT2bvQRlw0JL/Y=;
-	h=From:To:CC:Subject:Date:Message-ID:References:In-Reply-To:
-	 Content-Type:MIME-Version; b=gWRcvrp4nkWqUZ2lLBjVytNTnBaKTho+LpyHdxSDzTqupCdcdJe4jGEeTa8xFDpbj8Fjk1/gjGJ+q2CPjgosYq1ARbzYBghHb6dUzKJc/IWcvSgxMzSv21DyhppZ+58fq5vSiYlJ1XFWjsRQPJQHpx0wf44NAe6a92iuFxfNdu8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=huawei.com; spf=pass smtp.mailfrom=huawei.com; arc=none smtp.client-ip=45.249.212.187
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=huawei.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=huawei.com
-Received: from mail.maildlp.com (unknown [172.19.163.174])
-	by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4WDbJx5sW8zZhRq;
-	Wed,  3 Jul 2024 18:16:01 +0800 (CST)
-Received: from kwepemf500018.china.huawei.com (unknown [7.202.181.5])
-	by mail.maildlp.com (Postfix) with ESMTPS id 44E31140361;
-	Wed,  3 Jul 2024 18:20:35 +0800 (CST)
-Received: from lhrpeml500005.china.huawei.com (7.191.163.240) by
- kwepemf500018.china.huawei.com (7.202.181.5) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.1544.11; Wed, 3 Jul 2024 18:20:34 +0800
-Received: from lhrpeml500005.china.huawei.com ([7.191.163.240]) by
- lhrpeml500005.china.huawei.com ([7.191.163.240]) with mapi id 15.01.2507.039;
- Wed, 3 Jul 2024 11:20:32 +0100
-From: Shameerali Kolothum Thodi <shameerali.kolothum.thodi@huawei.com>
-To: Will Deacon <will@kernel.org>
-CC: "iommu@lists.linux.dev" <iommu@lists.linux.dev>,
-	"linux-arm-kernel@lists.infradead.org"
-	<linux-arm-kernel@lists.infradead.org>, "robin.murphy@arm.com"
-	<robin.murphy@arm.com>, "joro@8bytes.org" <joro@8bytes.org>, "jgg@nvidia.com"
-	<jgg@nvidia.com>, "ryan.roberts@arm.com" <ryan.roberts@arm.com>,
-	"mark.rutland@arm.com" <mark.rutland@arm.com>, "kevin.tian@intel.com"
-	<kevin.tian@intel.com>, "nicolinc@nvidia.com" <nicolinc@nvidia.com>,
-	"mshavit@google.com" <mshavit@google.com>, "eric.auger@redhat.com"
-	<eric.auger@redhat.com>, "joao.m.martins@oracle.com"
-	<joao.m.martins@oracle.com>, jiangkunkun <jiangkunkun@huawei.com>, zhukeqian
-	<zhukeqian1@huawei.com>, Linuxarm <linuxarm@huawei.com>
-Subject: RE: [PATCH v6 0/6] Add IOMMUFD dirty tracking support for SMMUv3
-Thread-Topic: [PATCH v6 0/6] Add IOMMUFD dirty tracking support for SMMUv3
-Thread-Index: AQHavaAtXJbwpOXZKECCEVEjdmiJ9bHj1BwAgAEVujA=
-Date: Wed, 3 Jul 2024 10:20:32 +0000
-Message-ID: <285351de4086438e922d3698e5a86a39@huawei.com>
-References: <20240613144149.38672-1-shameerali.kolothum.thodi@huawei.com>
- <20240702184551.GA5167@willie-the-truck>
-In-Reply-To: <20240702184551.GA5167@willie-the-truck>
-Accept-Language: en-GB, en-US
-Content-Language: en-US
-X-MS-Has-Attach:
-X-MS-TNEF-Correlator:
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
+	s=arc-20240116; t=1720002259; c=relaxed/simple;
+	bh=VlMke9/MAyPWh0km8onK0q3jYF77Mesj4vmu5K7fKAI=;
+	h=Message-ID:Date:MIME-Version:Subject:To:CC:References:From:
+	 In-Reply-To:Content-Type; b=KFx/I8BqA8G3lRZEdCyowW6l39cmmAXytXSxQDOYws87J9uMvX2Cx+bEAV7tK5zCWnI6DbhPqm7scmcc1FGVKEGGVs3g2drEoEdgNZ/AORih6n8luRAoQQ2tMoKhNUjoYDoGkKOMIcizavFUj81/qX2Wu0r/sUtJKLFlZcGvpJs=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com; spf=pass smtp.mailfrom=quicinc.com; dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b=MPBGboiD; arc=none smtp.client-ip=205.220.168.131
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=quicinc.com
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b="MPBGboiD"
+Received: from pps.filterd (m0279863.ppops.net [127.0.0.1])
+	by mx0a-0031df01.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 4634MZEL026763;
+	Wed, 3 Jul 2024 10:22:42 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=quicinc.com; h=
+	cc:content-transfer-encoding:content-type:date:from:in-reply-to
+	:message-id:mime-version:references:subject:to; s=qcppdkim1; bh=
+	WJ4OnCz046UbEw8QxyCK0QrEWS4jubaPabe072kzd94=; b=MPBGboiDw+jAbje8
+	y6LN10YkftB1qyXbDq26qKk2JNyro6pL4GWYFQI/bQ5Qy2c6nEjKu64WNazcJrkF
+	JBm+GQB9jpLmaeQ1BCbsomrTBJRUQDSafJfwKlDoETUZ0h9CJpp+ujSwxjcvAYyr
+	/txFWLk5oEhOeDakAEuYsT7z7K1sn+oXPPUTxyWYFwnwC59WxYFzRVEBOewtRHg/
+	X3Lbz9LepgtMU3QBUFFCCZdvyCfmITPSinamwN52h4SI86SYU4l9xcW9j+ThQNGW
+	K4jU8tI//niKqL7FG3GlC5Z+0T/kfOlVjDmfFVhaiUHVp1jFzcb7WMxtCb4Mekq6
+	FqCI+A==
+Received: from nalasppmta01.qualcomm.com (Global_NAT1.qualcomm.com [129.46.96.20])
+	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 404yjhrspf-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Wed, 03 Jul 2024 10:22:42 +0000 (GMT)
+Received: from nalasex01a.na.qualcomm.com (nalasex01a.na.qualcomm.com [10.47.209.196])
+	by NALASPPMTA01.qualcomm.com (8.17.1.19/8.17.1.19) with ESMTPS id 463AMe3H007270
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Wed, 3 Jul 2024 10:22:40 GMT
+Received: from [10.239.132.204] (10.80.80.8) by nalasex01a.na.qualcomm.com
+ (10.47.209.196) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1544.9; Wed, 3 Jul 2024
+ 03:22:19 -0700
+Message-ID: <ac4830e3-2945-4021-9c2e-0819e26c8069@quicinc.com>
+Date: Wed, 3 Jul 2024 18:22:17 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH 27/47] dt-bindings: cpufreq: cpufreq-qcom-hw: Add QCS9100
+ compatibles
+To: Taniya Das <quic_tdas@quicinc.com>, <andersson@kernel.org>,
+        <konrad.dybcio@linaro.org>, <robh@kernel.org>, <krzk+dt@kernel.org>,
+        <conor+dt@kernel.org>, <djakov@kernel.org>, <mturquette@baylibre.com>,
+        <sboyd@kernel.org>, <jassisinghbrar@gmail.com>,
+        <herbert@gondor.apana.org.au>, <davem@davemloft.net>,
+        <manivannan.sadhasivam@linaro.org>, <will@kernel.org>,
+        <joro@8bytes.org>, <conor@kernel.org>, <tglx@linutronix.de>,
+        <amitk@kernel.org>, <thara.gopinath@gmail.com>,
+        <linus.walleij@linaro.org>, <wim@linux-watchdog.org>,
+        <linux@roeck-us.net>, <rafael@kernel.org>, <viresh.kumar@linaro.org>,
+        <vkoul@kernel.org>, <edumazet@google.com>, <kuba@kernel.org>,
+        <pabeni@redhat.com>, <mcoquelin.stm32@gmail.com>
+CC: <robimarko@gmail.com>, <bartosz.golaszewski@linaro.org>,
+        <kishon@kernel.org>, <quic_wcheng@quicinc.com>,
+        <alim.akhtar@samsung.com>, <avri.altman@wdc.com>, <bvanassche@acm.org>,
+        <agross@kernel.org>, <gregkh@linuxfoundation.org>,
+        <robin.murphy@arm.com>, <daniel.lezcano@linaro.org>,
+        <rui.zhang@intel.com>, <lukasz.luba@arm.com>,
+        <quic_rjendra@quicinc.com>, <ulf.hansson@linaro.org>,
+        <quic_sibis@quicinc.com>, <otto.pflueger@abscue.de>, <luca@z3ntu.xyz>,
+        <neil.armstrong@linaro.org>, <abel.vesa@linaro.org>,
+        <bhupesh.sharma@linaro.org>, <alexandre.torgue@foss.st.com>,
+        <peppe.cavallaro@st.com>, <joabreu@synopsys.com>,
+        <netdev@vger.kernel.org>, <lpieralisi@kernel.org>, <kw@linux.com>,
+        <bhelgaas@google.com>, <ahalaney@redhat.com>,
+        <krzysztof.kozlowski@linaro.org>, <u.kleine-koenig@pengutronix.de>,
+        <dmitry.baryshkov@linaro.org>, <quic_cang@quicinc.com>,
+        <danila@jiaxyga.com>, <quic_nitirawa@quicinc.com>,
+        <mantas@8devices.com>, <athierry@redhat.com>,
+        <quic_kbajaj@quicinc.com>, <quic_bjorande@quicinc.com>,
+        <quic_msarkar@quicinc.com>, <quic_devipriy@quicinc.com>,
+        <quic_tsoni@quicinc.com>, <quic_rgottimu@quicinc.com>,
+        <quic_shashim@quicinc.com>, <quic_kaushalk@quicinc.com>,
+        <quic_tingweiz@quicinc.com>, <quic_aiquny@quicinc.com>,
+        <srinivas.kandagatla@linaro.org>, <linux-arm-msm@vger.kernel.org>,
+        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <linux-pm@vger.kernel.org>, <linux-clk@vger.kernel.org>,
+        <linux-phy@lists.infradead.org>, <linux-crypto@vger.kernel.org>,
+        <linux-scsi@vger.kernel.org>, <linux-usb@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>, <iommu@lists.linux.dev>,
+        <linux-gpio@vger.kernel.org>, <linux-watchdog@vger.kernel.org>,
+        <linux-pci@vger.kernel.org>,
+        <linux-stm32@st-md-mailman.stormreply.com>, <kernel@quicinc.com>
+References: <20240703025850.2172008-1-quic_tengfan@quicinc.com>
+ <20240703035735.2182165-1-quic_tengfan@quicinc.com>
+ <20240703035735.2182165-28-quic_tengfan@quicinc.com>
+ <23303bc2-4fa2-4b28-af5d-2cadf6795b94@quicinc.com>
+From: Tengfei Fan <quic_tengfan@quicinc.com>
+In-Reply-To: <23303bc2-4fa2-4b28-af5d-2cadf6795b94@quicinc.com>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 8bit
+X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
+ nalasex01a.na.qualcomm.com (10.47.209.196)
+X-QCInternal: smtphost
+X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
+X-Proofpoint-GUID: fmqj1c2QtSYfPoaxODgL9LrlxrCldNNV
+X-Proofpoint-ORIG-GUID: fmqj1c2QtSYfPoaxODgL9LrlxrCldNNV
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.293,Aquarius:18.0.1039,Hydra:6.0.680,FMLib:17.12.28.16
+ definitions=2024-07-03_06,2024-07-02_02,2024-05-17_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 phishscore=0 bulkscore=0
+ mlxlogscore=633 clxscore=1015 lowpriorityscore=0 suspectscore=0
+ malwarescore=0 mlxscore=0 priorityscore=1501 adultscore=0 impostorscore=0
+ spamscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.19.0-2406140001 definitions=main-2407030076
 
 
 
-> -----Original Message-----
-> From: Will Deacon <will@kernel.org>
-> Sent: Tuesday, July 2, 2024 7:46 PM
-> To: Shameerali Kolothum Thodi <shameerali.kolothum.thodi@huawei.com>
-> Cc: iommu@lists.linux.dev; linux-arm-kernel@lists.infradead.org;
-> robin.murphy@arm.com; joro@8bytes.org; jgg@nvidia.com;
-> ryan.roberts@arm.com; mark.rutland@arm.com; kevin.tian@intel.com;
-> nicolinc@nvidia.com; mshavit@google.com; eric.auger@redhat.com;
-> joao.m.martins@oracle.com; jiangkunkun <jiangkunkun@huawei.com>;
-> zhukeqian <zhukeqian1@huawei.com>; Linuxarm <linuxarm@huawei.com>
-> Subject: Re: [PATCH v6 0/6] Add IOMMUFD dirty tracking support for
-> SMMUv3
->=20
-> Hey Shameer,
->=20
-> On Thu, Jun 13, 2024 at 03:41:43PM +0100, Shameer Kolothum wrote:
-> > v5 --> v6
-> >  -Minor updates based on Nicolin's feedback.
-> >  -Picked up R-by tags by Jason, Nicolin and Kevin(Thanks!)
-> >
-> > Hi Will,
-> >
-> > Not sure you got a chance to take a look at this=A0series yet. Hopefull=
-y
-> > this will make it for 6.11
->=20
-> This all looks good to me, thanks.
->=20
-> However, it conflicts with some of Jason's stuff that I've pushed out to
-> for-joerg/smmu/updates:
->=20
-> https://git.kernel.org/pub/scm/linux/kernel/git/will/linux.git/log/?h=3Df=
-or-
-> joerg/arm-smmu/updates
->=20
-> Please can you rebase, retest and repost? Hopefully it makes your life
-> even easier as, for example, I don't think you need the first patch at
-> all anymore thanks to "iommu/arm-smmu-v3: Make SVA allocate a normal
-> arm_smmu_domain".
+On 7/3/2024 1:35 PM, Taniya Das wrote:
+> 
+> 
+> On 7/3/2024 9:27 AM, Tengfei Fan wrote:
+>> +              - qcom,qcs9100-cpufreq-epss
+> 
+> This is not required as we already have sa8775p bindings.
 
-Done. Please see the v7 send out just now.
+This is necessary. The reason is same as my reply in patch 41/47.
 
-Thanks,
-Shameer
+> 
+
+-- 
+Thx and BRs,
+Tengfei Fan
