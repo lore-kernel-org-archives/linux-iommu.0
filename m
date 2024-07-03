@@ -1,140 +1,212 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.15])
+Received: from NAM10-BN7-obe.outbound.protection.outlook.com (mail-bn7nam10on2042.outbound.protection.outlook.com [40.107.92.42])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DCB481849C4
-	for <iommu@lists.linux.dev>; Wed,  3 Jul 2024 21:30:26 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.15
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1720042228; cv=none; b=tHKulscmcchULDFC3tdVzyo/mTqZ1Cr5IV7dHY24HFsFwEq7iUfQ5s7y6xvK8H+ic8Xosw7Xf/DrAWhnQK5mX/2xGl+qmpsVYVNSo1Bn941Tw8mlWUdrHYKeJ2u/dOxclxLc2peVs+9TIkUA5RDZIZiMcVBe8OhNsMOlU1nWPAU=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1720042228; c=relaxed/simple;
-	bh=ItEwuW5FSpRgCqnKb7RkC8tFGprMzA77PgMMdX9re00=;
-	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=usdZQRp3q9HvQyySBiBES4CAJJdCNcPJpE1tYyuL5e8WP/RvII03LLgV4jgTTH+RQL1QNgles2KgdXFiKtpfQHZC+dryE7dlL6QVxs/XZxRN157zkXSN4SoaaDbB0o7Q+LmEUDsl6MYrFUoCCoNV+3ofcIoLHSOBPQX8P2XOcA4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=MGzNe3u+; arc=none smtp.client-ip=192.198.163.15
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 65C6217B425
+	for <iommu@lists.linux.dev>; Wed,  3 Jul 2024 23:06:47 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.92.42
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1720048009; cv=fail; b=JKG0Ph6KG9JpISjKZA7nnZVcl8j/+utJKFTGByC7jqswfTTxjJ2RIJv31WSUDMzC932tvr0ZWrQrOyYBd8GjZVANC+KgXv6lBVm4WaSAt9EeQapaTF9+HGhccHX1eTc+4ZmAp3/PCIjL2rbxD6wfhFsvUoQVkevBLIfC71PraPI=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1720048009; c=relaxed/simple;
+	bh=n3rO4D/WPqksRT92c3WjMYe+8nZkj256Z/CXbB333YA=;
+	h=Date:From:To:CC:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=C7jZd4YvycSKxtXKsDt3btQW1Vjcbr8pW09Z+pOatfiHw3+YHFD/4PexBxmLMrDc1xzoyjNxSCBstG+mAGICBa6+tQ4vH8NPAaJUUa90jXR3uPaRMoKoINN2Qx911awr/a6/CRxhB+yyRRZpGLTRzGcoYPvmAi53bR84GzUzQVo=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=IhQqhAmn; arc=fail smtp.client-ip=40.107.92.42
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="MGzNe3u+"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1720042227; x=1751578227;
-  h=date:from:to:cc:subject:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=ItEwuW5FSpRgCqnKb7RkC8tFGprMzA77PgMMdX9re00=;
-  b=MGzNe3u+MPb1cf+nArcrfgCLaE+I4861YqXjXpwA3MqEXdsaa56HVrBg
-   TqGzrP5DORVmmQjXlWmgewfuJVyizDWk6Top172NqpoQDyHlAfXYBylnZ
-   mzNn7VJWHs3m2uVnoTq8I51qsehgG+a2ZOe7YZ2QrvdKP4nmldeUnnQ75
-   L590IOqELaUz+kTKWEmFxR1kS0X0U75OU9Xu2gdAuMY2RpQAUHwrxVBiL
-   mWh/+F8arNmrBEtbLiaYlm35ZTdSplJZ6UtoI9WZNrkfl13Bp63RxrB1L
-   qV2iRbyY1WGYcv6KmG3YDipEVS4b0lbmzZs48ZR1G0Nlwknd+uD9tVerv
-   A==;
-X-CSE-ConnectionGUID: 1ZaCy742RAmWzso5JtC5Mg==
-X-CSE-MsgGUID: B5RCrn1/Rcy/yHYMKQOxXQ==
-X-IronPort-AV: E=McAfee;i="6700,10204,11122"; a="17432710"
-X-IronPort-AV: E=Sophos;i="6.09,183,1716274800"; 
-   d="scan'208";a="17432710"
-Received: from fmviesa006.fm.intel.com ([10.60.135.146])
-  by fmvoesa109.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Jul 2024 14:30:26 -0700
-X-CSE-ConnectionGUID: 6Q02YzsqSby+QTuhpHgV+w==
-X-CSE-MsgGUID: MWG1LX3gRTWV0L9D/kg+MA==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.09,183,1716274800"; 
-   d="scan'208";a="46173348"
-Received: from jacob-builder.jf.intel.com (HELO jacob-builder) ([10.54.39.125])
-  by fmviesa006-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Jul 2024 14:30:26 -0700
-Date: Wed, 3 Jul 2024 14:35:39 -0700
-From: Jacob Pan <jacob.jun.pan@linux.intel.com>
-To: Baolu Lu <baolu.lu@linux.intel.com>
-Cc: Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>, Robin
- Murphy <robin.murphy@arm.com>, Jason Gunthorpe <jgg@ziepe.ca>, Kevin Tian
- <kevin.tian@intel.com>, iommu@lists.linux.dev,
- linux-kernel@vger.kernel.org, jacob.jun.pan@linux.intel.com
-Subject: Re: [PATCH v3 1/2] iommu/vt-d: Add helper to flush caches for
- context change
-Message-ID: <20240703143539.7ea1fac5@jacob-builder>
-In-Reply-To: <1a2f66a2-a867-4203-8a76-dbced80bfeff@linux.intel.com>
-References: <20240701112317.94022-1-baolu.lu@linux.intel.com>
-	<20240701112317.94022-2-baolu.lu@linux.intel.com>
-	<20240701214128.5523a1ea@jacob-builder>
-	<28ade99a-13ad-4b01-aff2-711c006856fd@linux.intel.com>
-	<20240702085749.2e2bbea5@jacob-builder>
-	<1a2f66a2-a867-4203-8a76-dbced80bfeff@linux.intel.com>
-Organization: OTC
-X-Mailer: Claws Mail 3.17.5 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
+	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="IhQqhAmn"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=E0Vfc4oT6YtWdFOVyer7W9yTJkCvXWfTYj5FgcRRWOyO89L3py8LVJNMQHgrgdldA4mrifQuexRuf2MyhHWg8PKpCmiu6xIOkKufqt70ENRB5qzQqdmbE7gBRYzqUXdWxfFO+E87xwMf43kdb/HL45srZGNhZ23c44W9X6wl2ak5gsAWtUIcl+XmdJ7V22g8dE1Iq/h0swtNju2W52R85BVo8j9Ul5PNQYrEFoWrxr4OWIVVyeoQItDiTpYcL7bjG5OE11l9NAgOkkb5RojoIYt1slmUCMuhbT5LUYCbcFYoBqqtz5+dU0H15NG4M/GWh5t6nyL9IkC865dlNmxnmw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=dFypB8QquqIWlG3jKiaHR+nrvsGhowfnkzF/SjFq/T8=;
+ b=JB/Hp75/dbUrbW38e+kK6yESZikSkCQGgybDv4EQ47LQl85LBbCOXkaY+/2dDVFTu7D2qHPJCxlaRvfGeV3mcNefZDzty42012lW+28mDQ1f1F2DYMxFSuCcPmbbRcpPOy3lQBWu2zoXF6ILanMbrjJ6qfty2FmYjG5BJj7tZm/VU/tWIICC6Q0U9lJIWm7p9VbA47FIRCnn+QT0EkzgwrHoKsZMXzJ8cGnzkewGGxdpdVbtZN0o4vq8Okw4jVXwfsd5KuIADl60fyAjYjTSGJbUn7jlYk+bEumDadrxk5V+WmWEYVZjB8BfICnkm3bPUzgoujvLuoSbxK25NiWcuQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 216.228.117.160) smtp.rcpttodomain=linux.intel.com smtp.mailfrom=nvidia.com;
+ dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
+ dkim=none (message not signed); arc=none (0)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=dFypB8QquqIWlG3jKiaHR+nrvsGhowfnkzF/SjFq/T8=;
+ b=IhQqhAmnZFZPmssIo/UAGIk839AfgiMVQ9y12rMcH/J/UZjfD6fTD51ZL5DIMlJdGlMSElgGYb5Hz7KoLFWI912N+EgQwFEjp1BFryLZVycTeVbFtCE3E3ZBTNrhSpBchoJw32/xKQUk+WlDdADkw6Q3uccasDchNxd5AteO9GCewT69Cq4DKgPaNKrINgRnWSa6qZMKAMjzwt0//7sHrdVCRCNv4hh7DcX9/x6mathTwOTZHHq5m9XJb1VvYeDae8tpPnZYg6CKpHU1r8LRcd9gk068zOLGmhWsEu6dS8v9ORlTwemOOocKbfrdpHeYYgh962OJ3DspkQVISdgpWg==
+Received: from BL1PR13CA0110.namprd13.prod.outlook.com (2603:10b6:208:2b9::25)
+ by CY5PR12MB6348.namprd12.prod.outlook.com (2603:10b6:930:f::13) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7719.36; Wed, 3 Jul
+ 2024 23:06:42 +0000
+Received: from BL6PEPF0002256E.namprd02.prod.outlook.com
+ (2603:10b6:208:2b9:cafe::99) by BL1PR13CA0110.outlook.office365.com
+ (2603:10b6:208:2b9::25) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7762.8 via Frontend
+ Transport; Wed, 3 Jul 2024 23:06:42 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.117.160)
+ smtp.mailfrom=nvidia.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=nvidia.com;
+Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
+ 216.228.117.160 as permitted sender) receiver=protection.outlook.com;
+ client-ip=216.228.117.160; helo=mail.nvidia.com; pr=C
+Received: from mail.nvidia.com (216.228.117.160) by
+ BL6PEPF0002256E.mail.protection.outlook.com (10.167.249.36) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.7741.18 via Frontend Transport; Wed, 3 Jul 2024 23:06:42 +0000
+Received: from rnnvmail204.nvidia.com (10.129.68.6) by mail.nvidia.com
+ (10.129.200.66) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1544.4; Wed, 3 Jul 2024
+ 16:06:18 -0700
+Received: from rnnvmail204.nvidia.com (10.129.68.6) by rnnvmail204.nvidia.com
+ (10.129.68.6) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1544.4; Wed, 3 Jul 2024
+ 16:06:18 -0700
+Received: from Asurada-Nvidia (10.127.8.13) by mail.nvidia.com (10.129.68.6)
+ with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1544.4 via Frontend
+ Transport; Wed, 3 Jul 2024 16:06:17 -0700
+Date: Wed, 3 Jul 2024 16:06:15 -0700
+From: Nicolin Chen <nicolinc@nvidia.com>
+To: Lu Baolu <baolu.lu@linux.intel.com>
+CC: Jason Gunthorpe <jgg@ziepe.ca>, Kevin Tian <kevin.tian@intel.com>, "Joerg
+ Roedel" <joro@8bytes.org>, Will Deacon <will@kernel.org>, Robin Murphy
+	<robin.murphy@arm.com>, Jean-Philippe Brucker <jean-philippe@linaro.org>, "Yi
+ Liu" <yi.l.liu@intel.com>, Jacob Pan <jacob.jun.pan@linux.intel.com>, "Joel
+ Granados" <j.granados@samsung.com>, <iommu@lists.linux.dev>,
+	<virtualization@lists.linux-foundation.org>, <linux-kernel@vger.kernel.org>,
+	Jason Gunthorpe <jgg@nvidia.com>
+Subject: Re: [PATCH v8 06/10] iommufd: Add iommufd fault object
+Message-ID: <ZoXZZ2SJ/WdlMJaX@Asurada-Nvidia>
+References: <20240702063444.105814-1-baolu.lu@linux.intel.com>
+ <20240702063444.105814-7-baolu.lu@linux.intel.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: inline
+In-Reply-To: <20240702063444.105814-7-baolu.lu@linux.intel.com>
+X-NV-OnPremToCloud: ExternallySecured
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: BL6PEPF0002256E:EE_|CY5PR12MB6348:EE_
+X-MS-Office365-Filtering-Correlation-Id: 478f0402-6c59-4446-11d4-08dc9bb4cd7d
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam:
+	BCL:0;ARA:13230040|7416014|376014|36860700013|1800799024|82310400026;
+X-Microsoft-Antispam-Message-Info:
+	=?us-ascii?Q?01asFNKhw3TEnyGzj+QTcagAvRPs33I8TUTPCr27Fm/hZh+05BzglDCv+j+Q?=
+ =?us-ascii?Q?vLpikZEd0BzoSy09Oh8vHTFnRCJd3Rf7bEh703hcfoM07GuhgRsvIdavZ1IQ?=
+ =?us-ascii?Q?Fx+VeUk6vomJwEcxF6NFU6qnKEHIaPtP9kU3XOiAE1QCfSMqw+atkdr6GaTd?=
+ =?us-ascii?Q?lTrJ/PrWjbH6mwRk+3vqqF3/qiPGZ7f7S3rRFMK4zdoEx7xEN0WjmnMYV0bV?=
+ =?us-ascii?Q?2vMqzTeOHaVIN5JzoxVTxir2POcyPlUTnUAeWGNMksnfObIu6c4nP/pTWq4G?=
+ =?us-ascii?Q?NkSoc6Qyb+yXga7B7+iZtoFs78Yg3LG2HzerYOwjV9IVArUTr10CTeWvcu+y?=
+ =?us-ascii?Q?g4gQhS5nj3guFIwJAZRAG12BvcQfOe3OLWMCVOdkn729TOsNrY9sECRUOvya?=
+ =?us-ascii?Q?wRK7Z48jk7rbbvm+2jduaTgKLvIyJ2ar+nVZZ0lGrU1Rb87LtImP1DBEknJi?=
+ =?us-ascii?Q?gXDaAgSCG+72gvqRYlRHZz/wjRAxFPYfLm6LOHyySGI3BLPNRpOd7gf7Gcy0?=
+ =?us-ascii?Q?gA5D1DkTwQG3T2KLbVOqgUhOdVb2+eG+AV78X6DldtmZd1+UmxkR81ymgxHJ?=
+ =?us-ascii?Q?2Ktkf4wXVOCgG3mjfOZkVm9PjZyPUrDIdU3JeyzFVkpb5gonf0OFH6lxSwDJ?=
+ =?us-ascii?Q?pl+WHpSmZrRMKBV5/x/5xgleywZ94JkOWp3jBYe3IhPeqLa3uoUZWf+IRgFB?=
+ =?us-ascii?Q?tC1/iXXDL8qrz0GgbDBFH9/lVMhua67mcSjjrroztZ3+OEeyQcCzuchmf4Fs?=
+ =?us-ascii?Q?G1IYeeFwSvhW4yDyVqELzgQddHxpXscT7AnU1q/zW0qNf2VxYn099tCxP21i?=
+ =?us-ascii?Q?HVQJlb/kCiEiPBJRSRv7mHmzUd65DsAGPG4yFSruSQRSMyssARDzt4ymQsII?=
+ =?us-ascii?Q?bnNMR3LtllTec0ucC14rUmWjU/Q7MCPePpvt27X4QiT5b9xT+IDa8TwXC8Za?=
+ =?us-ascii?Q?0SRsjw5qntGoD5ByRfQOppDGok2Ljc84t2bnGVPeuIhrRQ2LbEQ86F4vHCwR?=
+ =?us-ascii?Q?EjaIWjH1rDJ+OCMmvLHpQI4xxT5Pix+7+epm1s3C4WNhX2rBguLmCCA6EVEU?=
+ =?us-ascii?Q?gA4aH6Hc7lZGw7j2+4sZjgD8Cyu2nbIq024mxtXBvILwH2Jb7LbDSCmsx4Bb?=
+ =?us-ascii?Q?k9EtO8KwW2PIvoHjXZywASTH3z/PC0Ch/CRUbjgUegqnTSQlcufbfHpbpFWl?=
+ =?us-ascii?Q?YNwfCxSyxfY0rw8r0zhaiq83VXfXOzNx+YuEjRfFcToN6xFe+pw9CbcLt924?=
+ =?us-ascii?Q?FDr8Kyjfw79EUo+k5AjqocIl84+foimu0AsvX3AcgWpRVZgeGmkjxS3XXDhk?=
+ =?us-ascii?Q?mCjIgGxOcXwybN3WzbEPlW9tt1wqbGgkSI2RpvZZEjeLvdE10IWvWK6CXGRp?=
+ =?us-ascii?Q?efuLIi3zsb+ARsf7DZN1y86s3jaSgCFjLIejACSFC2JQoJuHcq5UdCH6HJ20?=
+ =?us-ascii?Q?9QCSRt/1Ntrm8bgulGNTWPln8/VMwM7L?=
+X-Forefront-Antispam-Report:
+	CIP:216.228.117.160;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc6edge1.nvidia.com;CAT:NONE;SFS:(13230040)(7416014)(376014)(36860700013)(1800799024)(82310400026);DIR:OUT;SFP:1101;
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 03 Jul 2024 23:06:42.1524
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: 478f0402-6c59-4446-11d4-08dc9bb4cd7d
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.117.160];Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-AuthSource:
+	BL6PEPF0002256E.namprd02.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: CY5PR12MB6348
 
+Hi Baolu,
 
-On Wed, 3 Jul 2024 10:49:19 +0800, Baolu Lu <baolu.lu@linux.intel.com>
-wrote:
+On Tue, Jul 02, 2024 at 02:34:40PM +0800, Lu Baolu wrote:
 
-> On 7/2/24 11:57 PM, Jacob Pan wrote:
-> > On Tue, 2 Jul 2024 12:43:41 +0800, Baolu Lu<baolu.lu@linux.intel.com>
-> > wrote:
-> >   
-> >> On 2024/7/2 12:41, Jacob Pan wrote:  
-> >>> On Mon,  1 Jul 2024 19:23:16 +0800, Lu Baolu<baolu.lu@linux.intel.com>
-> >>> wrote:
-> >>>      
-> >>>> +	if (flush_domains) {
-> >>>> +		/*
-> >>>> +		 * If the IOMMU is running in scalable mode and
-> >>>> there might
-> >>>> +		 * be potential PASID translations, the caller
-> >>>> should hold
-> >>>> +		 * the lock to ensure that context changes and cache
-> >>>> flushes
-> >>>> +		 * are atomic.
-> >>>> +		 */
-> >>>> +		assert_spin_locked(&iommu->lock);
-> >>>> +		for (i = 0; i < info->pasid_table->max_pasid; i++) {
-> >>>> +			pte = intel_pasid_get_entry(info->dev, i);
-> >>>> +			if (!pte || !pasid_pte_is_present(pte))
-> >>>> +				continue;  
-> >>> Is it worth going through 1M PASIDs just to skip the PASID cache
-> >>> invalidation? Or just do the flush on all used DIDs unconditionally.  
-> >> Currently we don't track all domains attached to a device. If such
-> >> optimization is necessary, perhaps we can add it later.  
-> > I think it is necessary, because without tracking domain IDs, the code
-> > above would have duplicated invalidations.
-> > For example: a device PASID table has the following entries
-> > 	PASID	DomainID
-> > -------------------------
-> > 	100	1
-> > 	200	1
-> > 	300	2
-> > -------------------------
-> > When a present context entry changes, we need to do:
-> > qi_flush_pasid_cache(iommu, 1, QI_PC_ALL_PASIDS, 0);
-> > qi_flush_pasid_cache(iommu, 2, QI_PC_ALL_PASIDS, 0);
-> > 
-> > With this code, we do
-> > qi_flush_pasid_cache(iommu, 1, QI_PC_ALL_PASIDS, 0);
-> > qi_flush_pasid_cache(iommu, 1, QI_PC_ALL_PASIDS, 0);//duplicated!
-> > qi_flush_pasid_cache(iommu, 2, QI_PC_ALL_PASIDS, 0);  
+> An iommufd fault object provides an interface for delivering I/O page
+> faults to user space. These objects are created and destroyed by user
+> space, and they can be associated with or dissociated from hardware page
+> table objects during page table allocation or destruction.
 > 
-> Yes, this is likely. But currently enabling and disabling PRI happens in
-> driver's probe and release paths. Therefore such duplicate is not so
-> critical.
+> User space interacts with the fault object through a file interface. This
+> interface offers a straightforward and efficient way for user space to
+> handle page faults. It allows user space to read fault messages
+> sequentially and respond to them by writing to the same file. The file
+> interface supports reading messages in poll mode, so it's recommended that
+> user space applications use io_uring to enhance read and write efficiency.
 > 
-> For long term, I have a plan to abstract the domain id into an object so
-> that domains attached to different PASIDs of a device could share a
-> domain id. With that done, we could improve this code by iterating the
-> domain id objects for a device and performing cache invalidation
-> directly.
+> A fault object can be associated with any iopf-capable iommufd_hw_pgtable
+> during the pgtable's allocation. All I/O page faults triggered by devices
+> when accessing the I/O addresses of an iommufd_hw_pgtable are routed
+> through the fault object to user space. Similarly, user space's responses
+> to these page faults are routed back to the iommu device driver through
+> the same fault object.
 
-Sounds good. It might be helpful to add a comment to clarify for others who
-might wonder about the duplicates.
+There is a need for VIOMMU object to report HW fault to VMM. For
+example, a HW-accelerated VCMDQ may encounter HW errors. HW will
+raise an IRQ to the host kernel and the host kernel will forward
+it to the guest. I think we can have a viommu->fault, similar to
+the hwpt->fault introduced by this series. This viommu->fault can
+also benefit nested IOMMU for reporting translation error.
 
-Reviewed-by: Jacob Pan <jacob.jun.pan@linux.intel.com>
+I learned that this hwpt->fault is exclusively for IOPF/PRI. And
+Jason suggested me to add a different one for VIOMMU. Yet, after
+taking a closer look, I found the fault object in this series is
+seemingly quite generic at the uAPI level: its naming/structure,
+and the way how it's allocated and passed to hwpt, despite being
+highly correlated with IOPF in its fops code. So, I feel that we
+might have a chance of reusing it for different fault types:
 
-Thanks,
++enum iommu_fault_type {
++	IOMMU_FAULT_TYPE_HWPT_IOPF,
++	IOMMU_FAULT_TYPE_VIOMMU_IRQ,
++};
 
-Jacob
+ struct iommu_fault_alloc {
+ 	__u32 size;
+ 	__u32 flags;
++	__u32 type;  /* enum iommu_fault_type */
+ 	__u32 out_fault_id;
+ 	__u32 out_fault_fd;
+ };
+
+I understand that this is already v8. So, maybe we can, for now,
+apply the small diff above with an IOMMU_FAULT_TYPE_HWPT_IOPF type
+check in the ioctl handler. And a decoupling for the iopf fops in
+the ioctl handler can come later in the viommu series:
+	switch (type) {
+	case IOMMU_FAULT_TYPE_HWPT_IOPF:
+		filep = anon_inode_getfile("[iommufd-pgfault]",
+					   &iommufd_fault_fops_iopf);
+	case IOMMU_FAULT_TYPE_VIOMMU_IRQ:
+		filep = anon_inode_getfile("[iommufd-viommu-irq]",
+					   &iommufd_fault_fops_viommu);
+	default:
+		return -EOPNOSUPP;
+	}
+
+Since you are the designer here, I think you have a better 10000
+foot view -- maybe I am missing something here implying that the
+fault object can't be really reused by viommu.
+
+Would you mind sharing some thoughts here?
+
+Thanks
+Nic
