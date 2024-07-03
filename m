@@ -1,129 +1,145 @@
-Received: from mail-yw1-f178.google.com (mail-yw1-f178.google.com [209.85.128.178])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mx0a-0031df01.pphosted.com (mx0a-0031df01.pphosted.com [205.220.168.131])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 92EA8140E2E
-	for <iommu@lists.linux.dev>; Wed,  3 Jul 2024 09:55:01 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.178
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9D29C13541F
+	for <iommu@lists.linux.dev>; Wed,  3 Jul 2024 10:05:16 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.168.131
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1720000503; cv=none; b=HfICXvyo7GNAu2OGTTgT+26UKB99eoFfILfy8oeqpBWVIpdl1yUdsFxVjnMJoBqz0ga0C7BcQ0kgavNf5s/XE3txnDLdVZREIouFJ7KlQbSLXgdCYMkIjw47LEW4/GXPzPBpNuSc3ELImGZY7LkbWOsYfaG7N2Bwou9vGh9uT98=
+	t=1720001118; cv=none; b=KIQkQrX+LCXN6e8zRyp//5hFpjXIVKXTL5zMtgjzCskP3oZqyozim7XX9mjN9+3WnH4aAOqsOHajr+F2mCi4ZPlLxyWhix7/TeCMHGgIsTKpaIHtMA8BPGQNmeR54If5FlNORKVOx44jmv8/rDvxcX+OUnawA1m4MILX4cYjhks=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1720000503; c=relaxed/simple;
-	bh=k/+CTBpj1EiCKMxmYiMFK6O7Hti0OmObuybzNT9VcZE=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=DJ0Y5Zv/f2AnmPw4D7GeprzxT9uHVeTiPLK6PXjD+dLm5tzpwrUPeGbEwgWxb1qNKVFx+95XwozVDXJvvhErRUAbNEGr4/T1XLZdM6cn/N6IqWgmTbwxTGIHHHU0FZmom3x6vCheZ+onDVyZ9n6sc29stoWdz17KFAM2idCIxzU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org; spf=pass smtp.mailfrom=linaro.org; dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b=QR7G/rtP; arc=none smtp.client-ip=209.85.128.178
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linaro.org
+	s=arc-20240116; t=1720001118; c=relaxed/simple;
+	bh=btIei9/sNOh68L5VxbSRNJ6/SY9lrijEipZIFbe55Cs=;
+	h=Message-ID:Date:MIME-Version:Subject:To:CC:References:From:
+	 In-Reply-To:Content-Type; b=h46FagUYJqTs3FYbcKndqZ7cpm09yZepYt8oWED1PekXTw3EqxW5bG65i33F75oCDquXHO2FqcE9OrYYainmGI3hn+HnIFDX/Pv/3PB6xT43hk+im72AygS40ztt1LeE7FYSTVEQruvMUytfG+AsHiOwg+pJxCU/eAZSYFR8xSg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com; spf=pass smtp.mailfrom=quicinc.com; dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b=LO3g+rXT; arc=none smtp.client-ip=205.220.168.131
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=quicinc.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="QR7G/rtP"
-Received: by mail-yw1-f178.google.com with SMTP id 00721157ae682-64b3655297aso46643087b3.1
-        for <iommu@lists.linux.dev>; Wed, 03 Jul 2024 02:55:01 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1720000500; x=1720605300; darn=lists.linux.dev;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=KRpouyYlT8w2vDlaWB3dgP182H0ox0N2Q0MheHmPiuY=;
-        b=QR7G/rtPi2pcmaQppXeuKF0s9MAB/tkmLvGZ3gzTxGEwO/sd8fj8eCixs4WBLohJdd
-         KBA8bHwRfJurzkC+D9Rt9Jvvx8PxnVkI4Kh3z9hitJ+lw+G+y/lMq9OsNdxaNDfGK9S0
-         SWgSS9eQ81BqxYIXl1q4vWN8mwjRMuxbYsUBYUWHQHtNzZHqLg5T9nHDfQOrGcSw+R6x
-         e+gTO6+NfpNo+5ZHK5nQJvww3TNUHeXwQPy8S8W/GVw6g9z5rs4PjXfiTmxsazIFAss1
-         Kjc19St5/nkZqTbSW6tERXB7CvpxKFxus0AuqzckSz6ouyv8TI002nTZHC6oiQwTa4cL
-         onCQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1720000500; x=1720605300;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=KRpouyYlT8w2vDlaWB3dgP182H0ox0N2Q0MheHmPiuY=;
-        b=gd+KHAG2OciJVOMXzrZMT5iJ3BTCHXG+Ce0M3WvOQIUY3Zxv+HP1h1PGxzh2UYGQgO
-         U2WnhVSM4EAqta282hYSxQcraSOExV7uUnAFgKUcjVqv5PxJ0xqJXsaObVZ/55thsF0f
-         uOipg69VN0OC/1lCZffRGgOwluL7bNYrY3v5CruVs8K8Bvc3Q/tWEljGrpUCfcctvy7r
-         gVqy88QD6eyJqFb0/gIMqE2a69c0jswLo6q9iY74MHRVjoHEkB8t9t65NyJhXJHwGC++
-         XNsQug8dsu/f5s3U35bLBmsPiJ+w9a14LhowJKBJPEqtaFwrXyHPDoY0J4F7Ni0enOEp
-         xPlQ==
-X-Forwarded-Encrypted: i=1; AJvYcCUyBDfS1QaXrkvYzUJUa1OYYB3chPnh2RGuE2qD6i+8i2DO52dBCly5fdQVjBK/IZ5OTFVFgCk/gYUwNQ9kqYGalYRx9c8=
-X-Gm-Message-State: AOJu0YwxNfBHA5Spon0IbcT16UQhWPgigfKNyUc0CEHT5m5qbdPBo0om
-	EKX/03kB7kBWCdgsF2Qq6J4dAfkhxauYzHwBiV+TsYGFf3UyHlMdISDE02xfbYNboQiMkijphMi
-	4lq1RsUaUDOtDnpf1yyDyTaOBFkJvRCGl7u1ylQ==
-X-Google-Smtp-Source: AGHT+IHoNzBewnWkhcdAH2IejqHRntRYwy/kVJsz9+740G9qHkKMZZR3MQADqefkEA2eUyN1XlgmAmLhG8Zvd2gJPFA=
-X-Received: by 2002:a05:690c:804:b0:64a:7d9b:934 with SMTP id
- 00721157ae682-64c7277c728mr123416777b3.16.1720000500575; Wed, 03 Jul 2024
- 02:55:00 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b="LO3g+rXT"
+Received: from pps.filterd (m0279862.ppops.net [127.0.0.1])
+	by mx0a-0031df01.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 4632V6vL028807;
+	Wed, 3 Jul 2024 10:04:37 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=quicinc.com; h=
+	cc:content-transfer-encoding:content-type:date:from:in-reply-to
+	:message-id:mime-version:references:subject:to; s=qcppdkim1; bh=
+	MTYyEqDPQFUg534+DSkldx2EQ4hiUNnVI33QmvBczZk=; b=LO3g+rXTgZGcl6je
+	Rl00DBC52bV/FNAWASeog2Cru0JsaypLW3GIlbDU7M6yXixixBpgsVS2g2s6hP2o
+	gOg3MVIiGXxM6foWGxKOVE1pNpCDabVLLy7ME1un5mROUZvVVAUGSvRzFcJpYuV7
+	pjwKBkQRG3eBpSiiMK1gx+osblIsz7gUs0nknVyMDFSjRtQBFO17oJABopAwn4KR
+	6MqqXHYgtie84G7tLEvErF4Hcb/C+bXioNXyzOE51JB/+SvPv8DkEyF37FC5fBac
+	mxeUAbIeHw5CyFdS7RkAl0DOQkQVXfm5ynLxaZlU05YfyJ41Z0MTSCICSG3KUucn
+	FjDZgQ==
+Received: from nalasppmta04.qualcomm.com (Global_NAT1.qualcomm.com [129.46.96.20])
+	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 404kctjq2w-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Wed, 03 Jul 2024 10:04:37 +0000 (GMT)
+Received: from nalasex01a.na.qualcomm.com (nalasex01a.na.qualcomm.com [10.47.209.196])
+	by NALASPPMTA04.qualcomm.com (8.17.1.19/8.17.1.19) with ESMTPS id 463A4a3Q012329
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Wed, 3 Jul 2024 10:04:36 GMT
+Received: from [10.239.132.204] (10.80.80.8) by nalasex01a.na.qualcomm.com
+ (10.47.209.196) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1544.9; Wed, 3 Jul 2024
+ 03:04:14 -0700
+Message-ID: <312b699d-1ca4-4a58-877b-af9d91132724@quicinc.com>
+Date: Wed, 3 Jul 2024 18:04:11 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <20240417133731.2055383-1-quic_c_gdjako@quicinc.com>
- <20240417133731.2055383-6-quic_c_gdjako@quicinc.com> <CAA8EJppcXVu72OSo+OiYEiC1HQjP3qCwKMumOsUhcn6Czj0URg@mail.gmail.com>
- <CAA8EJpr3GYimirDz39f4n-3hDAxFWzo+9fdY6MAuxaNguouVFg@mail.gmail.com>
- <3e816509-a12b-4658-85f4-c0d0037c6a64@kernel.org> <CAA8EJpr1G4eq5xJn0z2JQmpXY89UK13uk2BWJCgROsFP_-NkQw@mail.gmail.com>
- <20240702163908.GA4635@willie-the-truck>
-In-Reply-To: <20240702163908.GA4635@willie-the-truck>
-From: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
-Date: Wed, 3 Jul 2024 12:54:48 +0300
-Message-ID: <CAA8EJprGja_L6QXVmfSqoeMKCmSrf-qBeAWNToZDe++AsZ+Nyg@mail.gmail.com>
-Subject: Re: [PATCH v8 5/7] arm64: dts: qcom: sdm845: Add DT nodes for the TBUs
-To: Will Deacon <will@kernel.org>
-Cc: Georgi Djakov <djakov@kernel.org>, Georgi Djakov <quic_c_gdjako@quicinc.com>, robin.murphy@arm.com, 
-	joro@8bytes.org, iommu@lists.linux.dev, robh+dt@kernel.org, 
-	krzysztof.kozlowski+dt@linaro.org, conor+dt@kernel.org, 
-	devicetree@vger.kernel.org, andersson@kernel.org, konrad.dybcio@linaro.org, 
-	robdclark@gmail.com, linux-arm-kernel@lists.infradead.org, 
-	linux-kernel@vger.kernel.org, linux-arm-msm@vger.kernel.org, 
-	quic_cgoldswo@quicinc.com, quic_sukadev@quicinc.com, quic_pdaly@quicinc.com, 
-	quic_sudaraja@quicinc.com
-Content-Type: text/plain; charset="UTF-8"
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH 41/47] clk: qcom: rpmh: Add support for QCS9100 rpmh
+ clocks
+To: Taniya Das <quic_tdas@quicinc.com>, <andersson@kernel.org>,
+        <konrad.dybcio@linaro.org>, <robh@kernel.org>, <krzk+dt@kernel.org>,
+        <conor+dt@kernel.org>, <djakov@kernel.org>, <mturquette@baylibre.com>,
+        <sboyd@kernel.org>, <jassisinghbrar@gmail.com>,
+        <herbert@gondor.apana.org.au>, <davem@davemloft.net>,
+        <manivannan.sadhasivam@linaro.org>, <will@kernel.org>,
+        <joro@8bytes.org>, <conor@kernel.org>, <tglx@linutronix.de>,
+        <amitk@kernel.org>, <thara.gopinath@gmail.com>,
+        <linus.walleij@linaro.org>, <wim@linux-watchdog.org>,
+        <linux@roeck-us.net>, <rafael@kernel.org>, <viresh.kumar@linaro.org>,
+        <vkoul@kernel.org>, <edumazet@google.com>, <kuba@kernel.org>,
+        <pabeni@redhat.com>, <mcoquelin.stm32@gmail.com>
+CC: <robimarko@gmail.com>, <bartosz.golaszewski@linaro.org>,
+        <kishon@kernel.org>, <quic_wcheng@quicinc.com>,
+        <alim.akhtar@samsung.com>, <avri.altman@wdc.com>, <bvanassche@acm.org>,
+        <agross@kernel.org>, <gregkh@linuxfoundation.org>,
+        <robin.murphy@arm.com>, <daniel.lezcano@linaro.org>,
+        <rui.zhang@intel.com>, <lukasz.luba@arm.com>,
+        <quic_rjendra@quicinc.com>, <ulf.hansson@linaro.org>,
+        <quic_sibis@quicinc.com>, <otto.pflueger@abscue.de>, <luca@z3ntu.xyz>,
+        <neil.armstrong@linaro.org>, <abel.vesa@linaro.org>,
+        <bhupesh.sharma@linaro.org>, <alexandre.torgue@foss.st.com>,
+        <peppe.cavallaro@st.com>, <joabreu@synopsys.com>,
+        <netdev@vger.kernel.org>, <lpieralisi@kernel.org>, <kw@linux.com>,
+        <bhelgaas@google.com>, <ahalaney@redhat.com>,
+        <krzysztof.kozlowski@linaro.org>, <u.kleine-koenig@pengutronix.de>,
+        <dmitry.baryshkov@linaro.org>, <quic_cang@quicinc.com>,
+        <danila@jiaxyga.com>, <quic_nitirawa@quicinc.com>,
+        <mantas@8devices.com>, <athierry@redhat.com>,
+        <quic_kbajaj@quicinc.com>, <quic_bjorande@quicinc.com>,
+        <quic_msarkar@quicinc.com>, <quic_devipriy@quicinc.com>,
+        <quic_tsoni@quicinc.com>, <quic_rgottimu@quicinc.com>,
+        <quic_shashim@quicinc.com>, <quic_kaushalk@quicinc.com>,
+        <quic_tingweiz@quicinc.com>, <quic_aiquny@quicinc.com>,
+        <srinivas.kandagatla@linaro.org>, <linux-arm-msm@vger.kernel.org>,
+        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <linux-pm@vger.kernel.org>, <linux-clk@vger.kernel.org>,
+        <linux-phy@lists.infradead.org>, <linux-crypto@vger.kernel.org>,
+        <linux-scsi@vger.kernel.org>, <linux-usb@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>, <iommu@lists.linux.dev>,
+        <linux-gpio@vger.kernel.org>, <linux-watchdog@vger.kernel.org>,
+        <linux-pci@vger.kernel.org>,
+        <linux-stm32@st-md-mailman.stormreply.com>, <kernel@quicinc.com>
+References: <20240703025850.2172008-1-quic_tengfan@quicinc.com>
+ <20240703035154.2182083-1-quic_tengfan@quicinc.com>
+ <20240703035154.2182083-12-quic_tengfan@quicinc.com>
+ <e08b4798-b1fe-4e8a-80a4-716696dfdcd6@quicinc.com>
+From: Tengfei Fan <quic_tengfan@quicinc.com>
+In-Reply-To: <e08b4798-b1fe-4e8a-80a4-716696dfdcd6@quicinc.com>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
+ nalasex01a.na.qualcomm.com (10.47.209.196)
+X-QCInternal: smtphost
+X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
+X-Proofpoint-GUID: tMRDhs9g2i136rzis9EqfAfQCqfDYtjd
+X-Proofpoint-ORIG-GUID: tMRDhs9g2i136rzis9EqfAfQCqfDYtjd
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.293,Aquarius:18.0.1039,Hydra:6.0.680,FMLib:17.12.28.16
+ definitions=2024-07-03_06,2024-07-02_02,2024-05-17_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 phishscore=0 adultscore=0
+ bulkscore=0 mlxlogscore=771 priorityscore=1501 impostorscore=0
+ suspectscore=0 mlxscore=0 lowpriorityscore=0 clxscore=1015 malwarescore=0
+ spamscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.19.0-2406140001 definitions=main-2407030074
 
-On Tue, 2 Jul 2024 at 19:39, Will Deacon <will@kernel.org> wrote:
->
-> On Tue, Jun 25, 2024 at 03:59:27PM +0300, Dmitry Baryshkov wrote:
-> > On Tue, 25 Jun 2024 at 15:57, Georgi Djakov <djakov@kernel.org> wrote:
-> > >
-> > > On 25.06.24 10:50, Dmitry Baryshkov wrote:
-> > > > On Fri, 14 Jun 2024 at 21:05, Dmitry Baryshkov
-> > > > <dmitry.baryshkov@linaro.org> wrote:
-> > > >>
-> > > >> On Wed, 17 Apr 2024 at 16:39, Georgi Djakov <quic_c_gdjako@quicinc.com> wrote:
-> > > >>>
-> > > >>> Add the device-tree nodes for the TBUs (translation buffer units) that
-> > > >>> are present on the sdm845 platforms. The TBUs can be used debug the
-> > > >>> kernel and provide additional information when a context faults occur.
-> > > >>>
-> > > >>> Describe the all registers, clocks, interconnects and power-domain
-> > > >>> resources that are needed for each of the TBUs.
-> > > >>>
-> > > >>> Signed-off-by: Georgi Djakov <quic_c_gdjako@quicinc.com>
-> > > >>
-> > > >> This patch now prevents interconnect drivers from hitting the sync
-> > > >> state on SDM845.
-> > > >> The TBU driver is enabled only when the ARM_SMMU_QCOM_DEBUG is
-> > > >> enabled, which is not a typical case on a normal system:
-> > > >
-> > > > Georgi, before I start acting like a bull in a china shop and sending
-> > > > reverts, any update from your side?
-> > >
-> > > Hi Dmitry!
-> > > Thanks for the report! We can easily add status = "disabled" to the DT
-> > > nodes, but please give me some time to take a look what would be the best
-> > > way to handle this, as i was out last week and now i am still catching up.
-> >
-> > I think the simplest thing would be to move the TBU driver to the
-> > arm-qcom-smmu.c instead of having it in the -debug.c
->
-> The TBUs aren't used for anything other than debugging, so I'd really
-> rather they live with the debug code.
 
-The problem is that not having any driver bound to the TBU devices
-prevents interconnect drivers from hitting the sync state (and thus
-lowering the bandwidth to the requested values).
-Being that late in the development cycle, I think we should fix the
-issue in the fastest way. So I'm close to sending a revert of the DT
-changes. Setting status = "disabled" doesn't qualify as a logical
-change as having TBU units enabled on a platform-to-platform basis
-doesn't make sense.
+
+On 7/3/2024 1:33 PM, Taniya Das wrote:
+> 
+> 
+> On 7/3/2024 9:21 AM, Tengfei Fan wrote:
+>> { .compatible = "qcom,qcs9100-rpmh-clk", .data = &clk_rpmh_sa8775p},
+> 
+> This is not required, we already have sa8775p bindings.
+
+This patch is necessary, and the cover letter provides detailed 
+explanations for why we are making this change.
+
+In this patch series, we are renaming sa8775p.dtsi to qcs9100.dtsi. 
+Additionally, in the coming weeks, the auto team will submit a new 
+sa8775p-related dtsi to upstream.
+
+Within qcs9100.dtsi, we are updating all compatible names from sa8775p-* 
+to qcs9100-*(only have qcs9100-*, remove all sa8775p-*). Consequently, 
+we need to add support for qcs9100-* in the driver as well.
+
 
 -- 
-With best wishes
-Dmitry
+Thx and BRs,
+Tengfei Fan
