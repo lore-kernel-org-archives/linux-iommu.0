@@ -1,145 +1,129 @@
-Received: from mx0a-0031df01.pphosted.com (mx0a-0031df01.pphosted.com [205.220.168.131])
+Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9D29C13541F
-	for <iommu@lists.linux.dev>; Wed,  3 Jul 2024 10:05:16 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.168.131
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AB06F1411C7
+	for <iommu@lists.linux.dev>; Wed,  3 Jul 2024 10:18:24 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.176.79.56
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1720001118; cv=none; b=KIQkQrX+LCXN6e8zRyp//5hFpjXIVKXTL5zMtgjzCskP3oZqyozim7XX9mjN9+3WnH4aAOqsOHajr+F2mCi4ZPlLxyWhix7/TeCMHGgIsTKpaIHtMA8BPGQNmeR54If5FlNORKVOx44jmv8/rDvxcX+OUnawA1m4MILX4cYjhks=
+	t=1720001906; cv=none; b=P9EIKiSoQoWRgm9h05qTI8t2FO3cSYvoIG0O9C2OfevEeBhc/cTcxd7/VAOR1RjTDkoZEg/qbIpagnmcw8+35t28WP9sLCuUaVMMOJYcQtiomOErNJKSoAUlnYYbSOX88uOd0IXmRftrdHmPFkxR8+2KdhttmWU/01vhYIxI134=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1720001118; c=relaxed/simple;
-	bh=btIei9/sNOh68L5VxbSRNJ6/SY9lrijEipZIFbe55Cs=;
-	h=Message-ID:Date:MIME-Version:Subject:To:CC:References:From:
-	 In-Reply-To:Content-Type; b=h46FagUYJqTs3FYbcKndqZ7cpm09yZepYt8oWED1PekXTw3EqxW5bG65i33F75oCDquXHO2FqcE9OrYYainmGI3hn+HnIFDX/Pv/3PB6xT43hk+im72AygS40ztt1LeE7FYSTVEQruvMUytfG+AsHiOwg+pJxCU/eAZSYFR8xSg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com; spf=pass smtp.mailfrom=quicinc.com; dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b=LO3g+rXT; arc=none smtp.client-ip=205.220.168.131
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=quicinc.com
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b="LO3g+rXT"
-Received: from pps.filterd (m0279862.ppops.net [127.0.0.1])
-	by mx0a-0031df01.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 4632V6vL028807;
-	Wed, 3 Jul 2024 10:04:37 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=quicinc.com; h=
-	cc:content-transfer-encoding:content-type:date:from:in-reply-to
-	:message-id:mime-version:references:subject:to; s=qcppdkim1; bh=
-	MTYyEqDPQFUg534+DSkldx2EQ4hiUNnVI33QmvBczZk=; b=LO3g+rXTgZGcl6je
-	Rl00DBC52bV/FNAWASeog2Cru0JsaypLW3GIlbDU7M6yXixixBpgsVS2g2s6hP2o
-	gOg3MVIiGXxM6foWGxKOVE1pNpCDabVLLy7ME1un5mROUZvVVAUGSvRzFcJpYuV7
-	pjwKBkQRG3eBpSiiMK1gx+osblIsz7gUs0nknVyMDFSjRtQBFO17oJABopAwn4KR
-	6MqqXHYgtie84G7tLEvErF4Hcb/C+bXioNXyzOE51JB/+SvPv8DkEyF37FC5fBac
-	mxeUAbIeHw5CyFdS7RkAl0DOQkQVXfm5ynLxaZlU05YfyJ41Z0MTSCICSG3KUucn
-	FjDZgQ==
-Received: from nalasppmta04.qualcomm.com (Global_NAT1.qualcomm.com [129.46.96.20])
-	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 404kctjq2w-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Wed, 03 Jul 2024 10:04:37 +0000 (GMT)
-Received: from nalasex01a.na.qualcomm.com (nalasex01a.na.qualcomm.com [10.47.209.196])
-	by NALASPPMTA04.qualcomm.com (8.17.1.19/8.17.1.19) with ESMTPS id 463A4a3Q012329
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Wed, 3 Jul 2024 10:04:36 GMT
-Received: from [10.239.132.204] (10.80.80.8) by nalasex01a.na.qualcomm.com
- (10.47.209.196) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1544.9; Wed, 3 Jul 2024
- 03:04:14 -0700
-Message-ID: <312b699d-1ca4-4a58-877b-af9d91132724@quicinc.com>
-Date: Wed, 3 Jul 2024 18:04:11 +0800
+	s=arc-20240116; t=1720001906; c=relaxed/simple;
+	bh=FDu+OXXSKzyRcPWnCNko3OrremmIZZRtU5MLfd6aQ9E=;
+	h=From:To:CC:Subject:Date:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=PzKIb+8Kb/VqtuxO5aP/DF65lE43zuqT23vRQrCbRMk4xyIw8/67CYBYIyYJWTa6DYzylObGquNqTwCuPMxYILk/+P4iM9a5dXb++NRPe/2427Z8V7N/jMXFFijH+eomTG4v3xf03NfGsR8qlw6RBOFZ68EP2CQAthFGUOK9YCQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=huawei.com; spf=pass smtp.mailfrom=huawei.com; arc=none smtp.client-ip=185.176.79.56
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=huawei.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=huawei.com
+Received: from mail.maildlp.com (unknown [172.18.186.31])
+	by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4WDbKS3MGHz6K93x;
+	Wed,  3 Jul 2024 18:16:28 +0800 (CST)
+Received: from lhrpeml500005.china.huawei.com (unknown [7.191.163.240])
+	by mail.maildlp.com (Postfix) with ESMTPS id 078F9140B2F;
+	Wed,  3 Jul 2024 18:18:21 +0800 (CST)
+Received: from A2303104131.china.huawei.com (10.203.177.241) by
+ lhrpeml500005.china.huawei.com (7.191.163.240) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.1.2507.39; Wed, 3 Jul 2024 11:18:12 +0100
+From: Shameer Kolothum <shameerali.kolothum.thodi@huawei.com>
+To: <iommu@lists.linux.dev>, <linux-arm-kernel@lists.infradead.org>,
+	<will@kernel.org>
+CC: <robin.murphy@arm.com>, <joro@8bytes.org>, <jgg@nvidia.com>,
+	<ryan.roberts@arm.com>, <kevin.tian@intel.com>, <nicolinc@nvidia.com>,
+	<mshavit@google.com>, <eric.auger@redhat.com>, <joao.m.martins@oracle.com>,
+	<jiangkunkun@huawei.com>, <zhukeqian1@huawei.com>, <linuxarm@huawei.com>
+Subject: [PATCH v7 1/5] iommu/arm-smmu-v3: Add support for domain_alloc_user fn
+Date: Wed, 3 Jul 2024 11:16:00 +0100
+Message-ID: <20240703101604.2576-2-shameerali.kolothum.thodi@huawei.com>
+X-Mailer: git-send-email 2.12.0.windows.1
+In-Reply-To: <20240703101604.2576-1-shameerali.kolothum.thodi@huawei.com>
+References: <20240703101604.2576-1-shameerali.kolothum.thodi@huawei.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH 41/47] clk: qcom: rpmh: Add support for QCS9100 rpmh
- clocks
-To: Taniya Das <quic_tdas@quicinc.com>, <andersson@kernel.org>,
-        <konrad.dybcio@linaro.org>, <robh@kernel.org>, <krzk+dt@kernel.org>,
-        <conor+dt@kernel.org>, <djakov@kernel.org>, <mturquette@baylibre.com>,
-        <sboyd@kernel.org>, <jassisinghbrar@gmail.com>,
-        <herbert@gondor.apana.org.au>, <davem@davemloft.net>,
-        <manivannan.sadhasivam@linaro.org>, <will@kernel.org>,
-        <joro@8bytes.org>, <conor@kernel.org>, <tglx@linutronix.de>,
-        <amitk@kernel.org>, <thara.gopinath@gmail.com>,
-        <linus.walleij@linaro.org>, <wim@linux-watchdog.org>,
-        <linux@roeck-us.net>, <rafael@kernel.org>, <viresh.kumar@linaro.org>,
-        <vkoul@kernel.org>, <edumazet@google.com>, <kuba@kernel.org>,
-        <pabeni@redhat.com>, <mcoquelin.stm32@gmail.com>
-CC: <robimarko@gmail.com>, <bartosz.golaszewski@linaro.org>,
-        <kishon@kernel.org>, <quic_wcheng@quicinc.com>,
-        <alim.akhtar@samsung.com>, <avri.altman@wdc.com>, <bvanassche@acm.org>,
-        <agross@kernel.org>, <gregkh@linuxfoundation.org>,
-        <robin.murphy@arm.com>, <daniel.lezcano@linaro.org>,
-        <rui.zhang@intel.com>, <lukasz.luba@arm.com>,
-        <quic_rjendra@quicinc.com>, <ulf.hansson@linaro.org>,
-        <quic_sibis@quicinc.com>, <otto.pflueger@abscue.de>, <luca@z3ntu.xyz>,
-        <neil.armstrong@linaro.org>, <abel.vesa@linaro.org>,
-        <bhupesh.sharma@linaro.org>, <alexandre.torgue@foss.st.com>,
-        <peppe.cavallaro@st.com>, <joabreu@synopsys.com>,
-        <netdev@vger.kernel.org>, <lpieralisi@kernel.org>, <kw@linux.com>,
-        <bhelgaas@google.com>, <ahalaney@redhat.com>,
-        <krzysztof.kozlowski@linaro.org>, <u.kleine-koenig@pengutronix.de>,
-        <dmitry.baryshkov@linaro.org>, <quic_cang@quicinc.com>,
-        <danila@jiaxyga.com>, <quic_nitirawa@quicinc.com>,
-        <mantas@8devices.com>, <athierry@redhat.com>,
-        <quic_kbajaj@quicinc.com>, <quic_bjorande@quicinc.com>,
-        <quic_msarkar@quicinc.com>, <quic_devipriy@quicinc.com>,
-        <quic_tsoni@quicinc.com>, <quic_rgottimu@quicinc.com>,
-        <quic_shashim@quicinc.com>, <quic_kaushalk@quicinc.com>,
-        <quic_tingweiz@quicinc.com>, <quic_aiquny@quicinc.com>,
-        <srinivas.kandagatla@linaro.org>, <linux-arm-msm@vger.kernel.org>,
-        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <linux-pm@vger.kernel.org>, <linux-clk@vger.kernel.org>,
-        <linux-phy@lists.infradead.org>, <linux-crypto@vger.kernel.org>,
-        <linux-scsi@vger.kernel.org>, <linux-usb@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>, <iommu@lists.linux.dev>,
-        <linux-gpio@vger.kernel.org>, <linux-watchdog@vger.kernel.org>,
-        <linux-pci@vger.kernel.org>,
-        <linux-stm32@st-md-mailman.stormreply.com>, <kernel@quicinc.com>
-References: <20240703025850.2172008-1-quic_tengfan@quicinc.com>
- <20240703035154.2182083-1-quic_tengfan@quicinc.com>
- <20240703035154.2182083-12-quic_tengfan@quicinc.com>
- <e08b4798-b1fe-4e8a-80a4-716696dfdcd6@quicinc.com>
-From: Tengfei Fan <quic_tengfan@quicinc.com>
-In-Reply-To: <e08b4798-b1fe-4e8a-80a4-716696dfdcd6@quicinc.com>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
- nalasex01a.na.qualcomm.com (10.47.209.196)
-X-QCInternal: smtphost
-X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
-X-Proofpoint-GUID: tMRDhs9g2i136rzis9EqfAfQCqfDYtjd
-X-Proofpoint-ORIG-GUID: tMRDhs9g2i136rzis9EqfAfQCqfDYtjd
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.293,Aquarius:18.0.1039,Hydra:6.0.680,FMLib:17.12.28.16
- definitions=2024-07-03_06,2024-07-02_02,2024-05-17_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 phishscore=0 adultscore=0
- bulkscore=0 mlxlogscore=771 priorityscore=1501 impostorscore=0
- suspectscore=0 mlxscore=0 lowpriorityscore=0 clxscore=1015 malwarescore=0
- spamscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.19.0-2406140001 definitions=main-2407030074
+Content-Type: text/plain
+X-ClientProxiedBy: dggems701-chm.china.huawei.com (10.3.19.178) To
+ lhrpeml500005.china.huawei.com (7.191.163.240)
 
+This will be used by iommufd for allocating usr managed domains and is
+also required when we add support for iommufd based dirty tracking
+support.
 
+Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
+Reviewed-by: Nicolin Chen <nicolinc@nvidia.com>
+Reviewed-by: Kevin Tian <kevin.tian@intel.com>
+Signed-off-by: Shameer Kolothum <shameerali.kolothum.thodi@huawei.com>
+---
+ drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 33 +++++++++++++++++++--
+ 1 file changed, 31 insertions(+), 2 deletions(-)
 
-On 7/3/2024 1:33 PM, Taniya Das wrote:
-> 
-> 
-> On 7/3/2024 9:21 AM, Tengfei Fan wrote:
->> { .compatible = "qcom,qcs9100-rpmh-clk", .data = &clk_rpmh_sa8775p},
-> 
-> This is not required, we already have sa8775p bindings.
-
-This patch is necessary, and the cover letter provides detailed 
-explanations for why we are making this change.
-
-In this patch series, we are renaming sa8775p.dtsi to qcs9100.dtsi. 
-Additionally, in the coming weeks, the auto team will submit a new 
-sa8775p-related dtsi to upstream.
-
-Within qcs9100.dtsi, we are updating all compatible names from sa8775p-* 
-to qcs9100-*(only have qcs9100-*, remove all sa8775p-*). Consequently, 
-we need to add support for qcs9100-* in the driver as well.
-
-
+diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+index fbb7eb152d82..c616a38ecf28 100644
+--- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
++++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+@@ -36,6 +36,8 @@ module_param(disable_msipolling, bool, 0444);
+ MODULE_PARM_DESC(disable_msipolling,
+ 	"Disable MSI-based polling for CMD_SYNC completion.");
+ 
++static struct iommu_ops arm_smmu_ops;
++
+ enum arm_smmu_msi_index {
+ 	EVTQ_MSI_INDEX,
+ 	GERROR_MSI_INDEX,
+@@ -3020,6 +3022,34 @@ static struct iommu_domain arm_smmu_blocked_domain = {
+ 	.ops = &arm_smmu_blocked_ops,
+ };
+ 
++static struct iommu_domain *
++arm_smmu_domain_alloc_user(struct device *dev, u32 flags,
++			   struct iommu_domain *parent,
++			   const struct iommu_user_data *user_data)
++{
++	struct arm_smmu_master *master = dev_iommu_priv_get(dev);
++	struct arm_smmu_domain *smmu_domain;
++	int ret;
++
++	if (flags || parent || user_data)
++		return ERR_PTR(-EOPNOTSUPP);
++
++	smmu_domain = arm_smmu_domain_alloc();
++	if (!smmu_domain)
++		return ERR_PTR(-ENOMEM);
++
++	smmu_domain->domain.type = IOMMU_DOMAIN_UNMANAGED;
++	smmu_domain->domain.ops = arm_smmu_ops.default_domain_ops;
++	ret = arm_smmu_domain_finalise(smmu_domain, master->smmu);
++	if (ret)
++		goto err_free;
++	return &smmu_domain->domain;
++
++err_free:
++	kfree(smmu_domain);
++	return ERR_PTR(ret);
++}
++
+ static int arm_smmu_map_pages(struct iommu_domain *domain, unsigned long iova,
+ 			      phys_addr_t paddr, size_t pgsize, size_t pgcount,
+ 			      int prot, gfp_t gfp, size_t *mapped)
+@@ -3190,8 +3220,6 @@ static void arm_smmu_remove_master(struct arm_smmu_master *master)
+ 	kfree(master->streams);
+ }
+ 
+-static struct iommu_ops arm_smmu_ops;
+-
+ static struct iommu_device *arm_smmu_probe_device(struct device *dev)
+ {
+ 	int ret;
+@@ -3399,6 +3427,7 @@ static struct iommu_ops arm_smmu_ops = {
+ 	.capable		= arm_smmu_capable,
+ 	.domain_alloc_paging    = arm_smmu_domain_alloc_paging,
+ 	.domain_alloc_sva       = arm_smmu_sva_domain_alloc,
++	.domain_alloc_user	= arm_smmu_domain_alloc_user,
+ 	.probe_device		= arm_smmu_probe_device,
+ 	.release_device		= arm_smmu_release_device,
+ 	.device_group		= arm_smmu_device_group,
 -- 
-Thx and BRs,
-Tengfei Fan
+2.34.1
+
