@@ -1,48 +1,50 @@
-Received: from mx0a-0031df01.pphosted.com (mx0a-0031df01.pphosted.com [205.220.168.131])
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A4F73D2F5
-	for <iommu@lists.linux.dev>; Thu,  4 Jul 2024 01:14:51 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.168.131
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D3F8018637
+	for <iommu@lists.linux.dev>; Thu,  4 Jul 2024 03:02:35 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1720055693; cv=none; b=q7IHUlsMns4EruERze4qMEr+daV5RkaH8zRRoBL9cSWkXI25jWPuhdG+QmOEEUqPi5ARnBOFUfZhw81aez3RtQsuQVo+8/72oP8T2mBfkHoc7wxQKAccmsMWc58ENDw+5GdhdvEjqbHhUhBSEr3QCk1BdrEfvgQAajg50P32Nbk=
+	t=1720062157; cv=none; b=Kj2XgvRjI1RgE8dBPt8eytu8Dx1M37XAqv0CIFeViKaxrgblRQrbiDmHieEkBSgH9TuDabReCZA0RgJsZW+Har3SHzZqan7aKWzG2jBOwWCapWsAp2O4CcNg5mZBJMl195NRzoqPYzuwjqvsyCz6nVge6UZGSW7m1WHZP09zwGk=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1720055693; c=relaxed/simple;
-	bh=rMBJ1PmabKWenqjBIEI5AJNNZs15S+sLP8qDr93PA78=;
-	h=Message-ID:Date:MIME-Version:Subject:To:CC:References:From:
-	 In-Reply-To:Content-Type; b=QgW/dtw4b2Pfww6fwU79i3VmezPHalRMK6ZOJBmz4UBBxhthdsLXJtj2TBkjH4Bky0aJ6aA4RF5fIrDON7xHA+4FZrye0oiQarA1/O/BNLXSa+e2JL9YOxrUROG8v5GawePkhf0gJzdwv2aaMIBhgvVGN9dEdfaB/xWSPXoftmU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com; spf=pass smtp.mailfrom=quicinc.com; dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b=I0UgO50r; arc=none smtp.client-ip=205.220.168.131
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=quicinc.com
+	s=arc-20240116; t=1720062157; c=relaxed/simple;
+	bh=+kcZ1X9JjlxsvYhu42cGMpuRp/ZGcCJLflR2cd6Au/8=;
+	h=Message-ID:Date:MIME-Version:Cc:Subject:To:References:From:
+	 In-Reply-To:Content-Type; b=bQLQ4YlZrrZAfJH3TSWA2ugaOE6zGbLLWr+PYb+jkgGpTukfzoilrYQTsVJvNlajTMMXRw31OY2j4l4QnpKYoRQZTiJBC9q71dHntHQGG48jCEIVFtDxCD0OIl2OaY0IbFzY+ZZDEtzq6WhCWN8tK+LxnHLiS0u8g2arVfltq/E=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=Bl3zAErQ; arc=none smtp.client-ip=198.175.65.18
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b="I0UgO50r"
-Received: from pps.filterd (m0279866.ppops.net [127.0.0.1])
-	by mx0a-0031df01.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 463J5REs004615;
-	Thu, 4 Jul 2024 01:14:23 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=quicinc.com; h=
-	cc:content-transfer-encoding:content-type:date:from:in-reply-to
-	:message-id:mime-version:references:subject:to; s=qcppdkim1; bh=
-	uRpXLfcsvuxp+p8SsgPzPXaUhVpL09CJ831wMJ2Y/vg=; b=I0UgO50rDrjeRMJF
-	BILIdUuwdLmbrSNFIfaTFtwmz/KxMj7Dr6CWyrNVYFR0TFK8Y5yzTbDVbOCv5vEy
-	CR1zZtsFcUGSEiHucqt04C6VOIk7bXUZL9ciyCgE5LRCW/mmjBzqzBI+9PkFWx90
-	ZyNCgKv1Hb+HsiZs5zKItolFMIsURCjHg+RhnXW6j4kIVi4Xo2MPbz5ve5e/jayg
-	l8qtMhya6USe188vSIG2yyCNddQSRJxXlrblHfo8Zz3nPJRYJwI5lXEOq++PbpTe
-	Da6XnoIOhmWzfwIsVmhuhwfea12Ni235a9aIxG0PY/fidynTiw7q/iIpYMXM621n
-	xXSQkQ==
-Received: from nalasppmta02.qualcomm.com (Global_NAT1.qualcomm.com [129.46.96.20])
-	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 405cg28gk6-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Thu, 04 Jul 2024 01:14:23 +0000 (GMT)
-Received: from nalasex01a.na.qualcomm.com (nalasex01a.na.qualcomm.com [10.47.209.196])
-	by NALASPPMTA02.qualcomm.com (8.17.1.19/8.17.1.19) with ESMTPS id 4641EMjB015598
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Thu, 4 Jul 2024 01:14:22 GMT
-Received: from [10.239.132.204] (10.80.80.8) by nalasex01a.na.qualcomm.com
- (10.47.209.196) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1544.9; Wed, 3 Jul 2024
- 18:14:01 -0700
-Message-ID: <f4162b7f-d957-4dd6-90a0-f65c1cbc213a@quicinc.com>
-Date: Thu, 4 Jul 2024 09:13:59 +0800
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="Bl3zAErQ"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1720062156; x=1751598156;
+  h=message-id:date:mime-version:cc:subject:to:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=+kcZ1X9JjlxsvYhu42cGMpuRp/ZGcCJLflR2cd6Au/8=;
+  b=Bl3zAErQl42izIzPM3FTI9zo1U14ah4dGqsmO8REmj9WeyBXHs7MoiFZ
+   lx3vUFyRvIkYt+50COZ5a1FAyhgOkVCXhTsRmZaakytYNtLC48AX3AIgD
+   pAHgN0L5dejrdbULDg6K0JIa5LYtWGbKjSJDN3fpI+htiDLWPPaJ2WNrg
+   25W2H6yQdvVT+YzXy+ehMwSjELvnBhqGEO2WYdj/GAJR9O8jKYOJZHq6f
+   I9znLik5At2bztvHN2ejCrL3qMwo8md/1AaZhISNPCHy1wJKSJq5ibeuV
+   CvbCj1JhI9BZGSihEY+dFjRM2GSihaZuCeL1CJfXcGd7gqClVYZRL7y5P
+   Q==;
+X-CSE-ConnectionGUID: 13CPflNrSKiNxQdNDSKWJA==
+X-CSE-MsgGUID: Y78HijJeTjG5ZChIVegOWQ==
+X-IronPort-AV: E=McAfee;i="6700,10204,11122"; a="17459194"
+X-IronPort-AV: E=Sophos;i="6.09,183,1716274800"; 
+   d="scan'208";a="17459194"
+Received: from orviesa002.jf.intel.com ([10.64.159.142])
+  by orvoesa110.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Jul 2024 20:02:36 -0700
+X-CSE-ConnectionGUID: ry6BGg4WQ02kI5AnyNuMqA==
+X-CSE-MsgGUID: dJblXAP8QI2e5VpUwXL21g==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.09,183,1716274800"; 
+   d="scan'208";a="77188479"
+Received: from unknown (HELO [10.239.159.127]) ([10.239.159.127])
+  by orviesa002.jf.intel.com with ESMTP; 03 Jul 2024 20:02:32 -0700
+Message-ID: <309e37d1-6066-4ba1-b30c-402a3c3e7c76@linux.intel.com>
+Date: Thu, 4 Jul 2024 10:59:45 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -50,143 +52,115 @@ List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH 29/47] dt-bindings: net: qcom,ethqos: add description for
- qcs9100
-To: Andrew Halaney <ahalaney@redhat.com>
-CC: <andersson@kernel.org>, <konrad.dybcio@linaro.org>, <robh@kernel.org>,
-        <krzk+dt@kernel.org>, <conor+dt@kernel.org>, <djakov@kernel.org>,
-        <mturquette@baylibre.com>, <sboyd@kernel.org>,
-        <jassisinghbrar@gmail.com>, <herbert@gondor.apana.org.au>,
-        <davem@davemloft.net>, <manivannan.sadhasivam@linaro.org>,
-        <will@kernel.org>, <joro@8bytes.org>, <conor@kernel.org>,
-        <tglx@linutronix.de>, <amitk@kernel.org>, <thara.gopinath@gmail.com>,
-        <linus.walleij@linaro.org>, <wim@linux-watchdog.org>,
-        <linux@roeck-us.net>, <rafael@kernel.org>, <viresh.kumar@linaro.org>,
-        <vkoul@kernel.org>, <edumazet@google.com>, <kuba@kernel.org>,
-        <pabeni@redhat.com>, <mcoquelin.stm32@gmail.com>,
-        <robimarko@gmail.com>, <bartosz.golaszewski@linaro.org>,
-        <kishon@kernel.org>, <quic_wcheng@quicinc.com>,
-        <alim.akhtar@samsung.com>, <avri.altman@wdc.com>, <bvanassche@acm.org>,
-        <agross@kernel.org>, <gregkh@linuxfoundation.org>,
-        <quic_tdas@quicinc.com>, <robin.murphy@arm.com>,
-        <daniel.lezcano@linaro.org>, <rui.zhang@intel.com>,
-        <lukasz.luba@arm.com>, <quic_rjendra@quicinc.com>,
-        <ulf.hansson@linaro.org>, <quic_sibis@quicinc.com>,
-        <otto.pflueger@abscue.de>, <luca@z3ntu.xyz>,
-        <neil.armstrong@linaro.org>, <abel.vesa@linaro.org>,
-        <bhupesh.sharma@linaro.org>, <alexandre.torgue@foss.st.com>,
-        <peppe.cavallaro@st.com>, <joabreu@synopsys.com>,
-        <netdev@vger.kernel.org>, <lpieralisi@kernel.org>, <kw@linux.com>,
-        <bhelgaas@google.com>, <krzysztof.kozlowski@linaro.org>,
-        <u.kleine-koenig@pengutronix.de>, <dmitry.baryshkov@linaro.org>,
-        <quic_cang@quicinc.com>, <danila@jiaxyga.com>,
-        <quic_nitirawa@quicinc.com>, <mantas@8devices.com>,
-        <athierry@redhat.com>, <quic_kbajaj@quicinc.com>,
-        <quic_bjorande@quicinc.com>, <quic_msarkar@quicinc.com>,
-        <quic_devipriy@quicinc.com>, <quic_tsoni@quicinc.com>,
-        <quic_rgottimu@quicinc.com>, <quic_shashim@quicinc.com>,
-        <quic_kaushalk@quicinc.com>, <quic_tingweiz@quicinc.com>,
-        <quic_aiquny@quicinc.com>, <srinivas.kandagatla@linaro.org>,
-        <linux-arm-msm@vger.kernel.org>, <devicetree@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, <linux-pm@vger.kernel.org>,
-        <linux-clk@vger.kernel.org>, <linux-phy@lists.infradead.org>,
-        <linux-crypto@vger.kernel.org>, <linux-scsi@vger.kernel.org>,
-        <linux-usb@vger.kernel.org>, <linux-arm-kernel@lists.infradead.org>,
-        <iommu@lists.linux.dev>, <linux-gpio@vger.kernel.org>,
-        <linux-watchdog@vger.kernel.org>, <linux-pci@vger.kernel.org>,
-        <linux-stm32@st-md-mailman.stormreply.com>, <kernel@quicinc.com>
-References: <20240703025850.2172008-1-quic_tengfan@quicinc.com>
- <20240703025850.2172008-30-quic_tengfan@quicinc.com>
- <u5ekupjqvgoehkl76pv7ljyqqzbnnyh6ci2dilfxfkcdvdy3dp@ehdujhkul7ow>
-From: Tengfei Fan <quic_tengfan@quicinc.com>
-In-Reply-To: <u5ekupjqvgoehkl76pv7ljyqqzbnnyh6ci2dilfxfkcdvdy3dp@ehdujhkul7ow>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
+Cc: baolu.lu@linux.intel.com, Jason Gunthorpe <jgg@ziepe.ca>,
+ Kevin Tian <kevin.tian@intel.com>, Joerg Roedel <joro@8bytes.org>,
+ Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
+ Jean-Philippe Brucker <jean-philippe@linaro.org>, Yi Liu
+ <yi.l.liu@intel.com>, Jacob Pan <jacob.jun.pan@linux.intel.com>,
+ Joel Granados <j.granados@samsung.com>, iommu@lists.linux.dev,
+ virtualization@lists.linux-foundation.org, linux-kernel@vger.kernel.org,
+ Jason Gunthorpe <jgg@nvidia.com>
+Subject: Re: [PATCH v8 06/10] iommufd: Add iommufd fault object
+To: Nicolin Chen <nicolinc@nvidia.com>
+References: <20240702063444.105814-1-baolu.lu@linux.intel.com>
+ <20240702063444.105814-7-baolu.lu@linux.intel.com>
+ <ZoXZZ2SJ/WdlMJaX@Asurada-Nvidia>
+Content-Language: en-US
+From: Baolu Lu <baolu.lu@linux.intel.com>
+In-Reply-To: <ZoXZZ2SJ/WdlMJaX@Asurada-Nvidia>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
- nalasex01a.na.qualcomm.com (10.47.209.196)
-X-QCInternal: smtphost
-X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
-X-Proofpoint-GUID: 2ToY-VFWJVX4PxSXMxm7v7m6lN_KrTeg
-X-Proofpoint-ORIG-GUID: 2ToY-VFWJVX4PxSXMxm7v7m6lN_KrTeg
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.293,Aquarius:18.0.1039,Hydra:6.0.680,FMLib:17.12.28.16
- definitions=2024-07-03_18,2024-07-03_01,2024-05-17_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 lowpriorityscore=0
- adultscore=0 spamscore=0 mlxscore=0 bulkscore=0 mlxlogscore=915
- malwarescore=0 priorityscore=1501 impostorscore=0 suspectscore=0
- phishscore=0 clxscore=1015 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.19.0-2406140001 definitions=main-2407040008
 
+On 7/4/24 7:06 AM, Nicolin Chen wrote:
+> Hi Baolu,
 
+Hi Nicolin,
 
-On 7/3/2024 11:09 PM, Andrew Halaney wrote:
-> On Wed, Jul 03, 2024 at 10:58:32AM GMT, Tengfei Fan wrote:
->> Add the compatible for the MAC controller on qcs9100 platforms. This MAC
->> works with a single interrupt so add minItems to the interrupts property.
->> The fourth clock's name is different here so change it. Enable relevant
->> PHY properties. Add the relevant compatibles to the binding document for
->> snps,dwmac as well.
+> On Tue, Jul 02, 2024 at 02:34:40PM +0800, Lu Baolu wrote:
 > 
-> This description doesn't match what was done in this patch, its what
-> Bart did when he made changes to add the sa8775 changes. Please consider
-> using a blurb indicating that this is the same SoC as sa8775p, just with
-> different firmware strategies or something along those lines?
-
-I will update this commit message as you suggested.
-
+>> An iommufd fault object provides an interface for delivering I/O page
+>> faults to user space. These objects are created and destroyed by user
+>> space, and they can be associated with or dissociated from hardware page
+>> table objects during page table allocation or destruction.
+>>
+>> User space interacts with the fault object through a file interface. This
+>> interface offers a straightforward and efficient way for user space to
+>> handle page faults. It allows user space to read fault messages
+>> sequentially and respond to them by writing to the same file. The file
+>> interface supports reading messages in poll mode, so it's recommended that
+>> user space applications use io_uring to enhance read and write efficiency.
+>>
+>> A fault object can be associated with any iopf-capable iommufd_hw_pgtable
+>> during the pgtable's allocation. All I/O page faults triggered by devices
+>> when accessing the I/O addresses of an iommufd_hw_pgtable are routed
+>> through the fault object to user space. Similarly, user space's responses
+>> to these page faults are routed back to the iommu device driver through
+>> the same fault object.
+> There is a need for VIOMMU object to report HW fault to VMM. For
+> example, a HW-accelerated VCMDQ may encounter HW errors. HW will
+> raise an IRQ to the host kernel and the host kernel will forward
+> it to the guest. I think we can have a viommu->fault, similar to
+> the hwpt->fault introduced by this series. This viommu->fault can
+> also benefit nested IOMMU for reporting translation error.
 > 
->>
->> Signed-off-by: Tengfei Fan <quic_tengfan@quicinc.com>
->> ---
->>   Documentation/devicetree/bindings/net/qcom,ethqos.yaml | 1 +
->>   Documentation/devicetree/bindings/net/snps,dwmac.yaml  | 3 +++
->>   2 files changed, 4 insertions(+)
->>
->> diff --git a/Documentation/devicetree/bindings/net/qcom,ethqos.yaml b/Documentation/devicetree/bindings/net/qcom,ethqos.yaml
->> index 6672327358bc..8ab11e00668c 100644
->> --- a/Documentation/devicetree/bindings/net/qcom,ethqos.yaml
->> +++ b/Documentation/devicetree/bindings/net/qcom,ethqos.yaml
->> @@ -20,6 +20,7 @@ properties:
->>     compatible:
->>       enum:
->>         - qcom,qcs404-ethqos
->> +      - qcom,qcs9100-ethqos
->>         - qcom,sa8775p-ethqos
->>         - qcom,sc8280xp-ethqos
->>         - qcom,sm8150-ethqos
->> diff --git a/Documentation/devicetree/bindings/net/snps,dwmac.yaml b/Documentation/devicetree/bindings/net/snps,dwmac.yaml
->> index 3bab4e1f3fbf..269c21779396 100644
->> --- a/Documentation/devicetree/bindings/net/snps,dwmac.yaml
->> +++ b/Documentation/devicetree/bindings/net/snps,dwmac.yaml
->> @@ -67,6 +67,7 @@ properties:
->>           - loongson,ls2k-dwmac
->>           - loongson,ls7a-dwmac
->>           - qcom,qcs404-ethqos
->> +        - qcom,qcs9100-ethqos
->>           - qcom,sa8775p-ethqos
->>           - qcom,sc8280xp-ethqos
->>           - qcom,sm8150-ethqos
->> @@ -582,6 +583,7 @@ allOf:
->>                 - ingenic,x1600-mac
->>                 - ingenic,x1830-mac
->>                 - ingenic,x2000-mac
->> +              - qcom,qcs9100-ethqos
->>                 - qcom,sa8775p-ethqos
->>                 - qcom,sc8280xp-ethqos
->>                 - snps,dwmac-3.50a
->> @@ -639,6 +641,7 @@ allOf:
->>                 - ingenic,x1830-mac
->>                 - ingenic,x2000-mac
->>                 - qcom,qcs404-ethqos
->> +              - qcom,qcs9100-ethqos
->>                 - qcom,sa8775p-ethqos
->>                 - qcom,sc8280xp-ethqos
->>                 - qcom,sm8150-ethqos
->> -- 
->> 2.25.1
->>
+> I learned that this hwpt->fault is exclusively for IOPF/PRI. And
+> Jason suggested me to add a different one for VIOMMU. Yet, after
+> taking a closer look, I found the fault object in this series is
+> seemingly quite generic at the uAPI level: its naming/structure,
+> and the way how it's allocated and passed to hwpt, despite being
+> highly correlated with IOPF in its fops code. So, I feel that we
+> might have a chance of reusing it for different fault types:
 > 
+> +enum iommu_fault_type {
+> +	IOMMU_FAULT_TYPE_HWPT_IOPF,
+> +	IOMMU_FAULT_TYPE_VIOMMU_IRQ,
+> +};
+> 
+>   struct iommu_fault_alloc {
+>   	__u32 size;
+>   	__u32 flags;
+> +	__u32 type;  /* enum iommu_fault_type */
+>   	__u32 out_fault_id;
+>   	__u32 out_fault_fd;
+>   };
+> 
+> I understand that this is already v8. So, maybe we can, for now,
+> apply the small diff above with an IOMMU_FAULT_TYPE_HWPT_IOPF type
+> check in the ioctl handler. And a decoupling for the iopf fops in
+> the ioctl handler can come later in the viommu series:
+> 	switch (type) {
+> 	case IOMMU_FAULT_TYPE_HWPT_IOPF:
+> 		filep = anon_inode_getfile("[iommufd-pgfault]",
+> 					   &iommufd_fault_fops_iopf);
+> 	case IOMMU_FAULT_TYPE_VIOMMU_IRQ:
+> 		filep = anon_inode_getfile("[iommufd-viommu-irq]",
+> 					   &iommufd_fault_fops_viommu);
+> 	default:
+> 		return -EOPNOSUPP;
+> 	}
+> 
+> Since you are the designer here, I think you have a better 10000
+> foot view -- maybe I am missing something here implying that the
+> fault object can't be really reused by viommu.
+> 
+> Would you mind sharing some thoughts here?
 
--- 
-Thx and BRs,
-Tengfei Fan
+I think this is a choice between "two different objects" vs. "same
+object with different FD interfaces". If I understand it correctly, your
+proposal of unrecoverable fault delivery is not limited to vcmdq, but
+generic to all unrecoverable events that userspace should be aware of
+when the passed-through device is affected.
+
+ From a hardware architecture perspective, the interfaces for
+unrecoverable events don't always match the page faults. For example,
+VT-d architecture defines a PR queue for page faults, but uses a
+register set to report unrecoverable events. The 'reason', 'request id'
+and 'pasid' fields of the register set indicate what happened on the
+hardware. New unrecoverable events will not be reported until the
+previous one has been fetched.
+
+With the above being said, I have no strong opinions between these two
+choices. Jason and Kevin should have more insights.
+
+Thanks,
+baolu
