@@ -1,82 +1,58 @@
-Received: from vps0.lunn.ch (vps0.lunn.ch [156.67.10.101])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 459E11B29CD;
-	Thu,  4 Jul 2024 16:04:23 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=156.67.10.101
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2B5EDA20;
+	Thu,  4 Jul 2024 17:16:08 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1720109064; cv=none; b=dtotdWw6xNKVeLbu9nkBsgl+d+Ed+1vwQeHAagnj/e11FE65YnwU6qlhWO9BGGh57KKu/4TV+ENUh768lDIG/SqPxv9e66cSOD/382TzdLqDlrU56elUvJWfSxf3PVKVoS21PCxC75KusaT0wmia6/RCBJfaLdayoKyefWf4LC8=
+	t=1720113368; cv=none; b=p+6vB3T7+FYdSI83BE/iskMHeukX6UcZzT0dzn9jfj3v2C5PRxfAvhzaSysVSQiDn8yjDJPFJDK8mAhUwJfs9lhAHT9mpqBWEC89vgWTFHrVQYhFnN6twsyaN9DmR99vd8/J82X4sYrWeHgi55h4onmYlk63dyVMTOvpDxt4TIw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1720109064; c=relaxed/simple;
-	bh=1+toRJY35/129MSR44qFWaryqVoiascuVBFB3NmaZ/M=;
+	s=arc-20240116; t=1720113368; c=relaxed/simple;
+	bh=pNA8/Q/+goKs7oTKt+a3Cw9yHcXIncdaNs7gbU3axuo=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=Tvy2tcntNmsqvvyfx7GRr4698K+UJKCPlS582UAIpLc0LbyuwfhuvStqlafx/vfeO2vBDPvFSJpXbYjJKO0E8g7YPCjOsPQRamI2/vrn/+eLnpWPL2KDaxbDaOIOwKwvCJwFuYZm/Oj01MidtxcDaio519FI6guNC5V/3e7Swkk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=lunn.ch; spf=pass smtp.mailfrom=lunn.ch; dkim=pass (1024-bit key) header.d=lunn.ch header.i=@lunn.ch header.b=uctUXtst; arc=none smtp.client-ip=156.67.10.101
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=lunn.ch
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=lunn.ch
+	 Content-Type:Content-Disposition:In-Reply-To; b=fBUia8SHkmAOliNqojRLTQThukET53mIvX5tr+DV+G7FISNT7JUNypgOOPLSq1TonrE71ArH83tmNzOhPO6FxSMzJJ7q9uPcspqbIyNZ8PvdSOR2ahICWPgTj4KpPIY3+fGsxb6fmSceueM7vpUce2qLjt4TP8fiPyq/z/S1MQk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=CaAwoQJr; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=lunn.ch header.i=@lunn.ch header.b="uctUXtst"
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-	s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-	References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-	Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-	Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-	bh=NUvYT0Apw8SqjInlbdvt2ov0pZsd3AGE3tETszdRDzg=; b=uctUXtstqOdYStp1RAdEevee8A
-	og2m1rbeRGyNCyWKUOMtyM5AqIVxQFyxOPDwVFm9FnkbszNQ36vazTBa9yXYKCDMQBhsJURhhsCMA
-	j1mTGX2YuuLQQvVFM9F5PJp4GaLgK5ASkZXssZl/rnBc5yDOus60fNPX7zh7xaHLB3Ec=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-	(envelope-from <andrew@lunn.ch>)
-	id 1sPOvS-001pKc-Qp; Thu, 04 Jul 2024 18:03:14 +0200
-Date: Thu, 4 Jul 2024 18:03:14 +0200
-From: Andrew Lunn <andrew@lunn.ch>
-To: Tengfei Fan <quic_tengfan@quicinc.com>
-Cc: Andrew Halaney <ahalaney@redhat.com>, andersson@kernel.org,
-	konrad.dybcio@linaro.org, robh@kernel.org, krzk+dt@kernel.org,
-	conor+dt@kernel.org, djakov@kernel.org, mturquette@baylibre.com,
-	sboyd@kernel.org, jassisinghbrar@gmail.com,
-	herbert@gondor.apana.org.au, davem@davemloft.net,
-	manivannan.sadhasivam@linaro.org, will@kernel.org, joro@8bytes.org,
-	conor@kernel.org, tglx@linutronix.de, amitk@kernel.org,
-	thara.gopinath@gmail.com, linus.walleij@linaro.org,
-	wim@linux-watchdog.org, linux@roeck-us.net, rafael@kernel.org,
-	viresh.kumar@linaro.org, vkoul@kernel.org, edumazet@google.com,
-	kuba@kernel.org, pabeni@redhat.com, mcoquelin.stm32@gmail.com,
-	robimarko@gmail.com, bartosz.golaszewski@linaro.org,
-	kishon@kernel.org, quic_wcheng@quicinc.com, alim.akhtar@samsung.com,
-	avri.altman@wdc.com, bvanassche@acm.org, agross@kernel.org,
-	gregkh@linuxfoundation.org, quic_tdas@quicinc.com,
-	robin.murphy@arm.com, daniel.lezcano@linaro.org,
-	rui.zhang@intel.com, lukasz.luba@arm.com, quic_rjendra@quicinc.com,
-	ulf.hansson@linaro.org, quic_sibis@quicinc.com,
-	otto.pflueger@abscue.de, luca@z3ntu.xyz, neil.armstrong@linaro.org,
-	abel.vesa@linaro.org, bhupesh.sharma@linaro.org,
-	alexandre.torgue@foss.st.com, peppe.cavallaro@st.com,
-	joabreu@synopsys.com, netdev@vger.kernel.org, lpieralisi@kernel.org,
-	kw@linux.com, bhelgaas@google.com, krzysztof.kozlowski@linaro.org,
-	u.kleine-koenig@pengutronix.de, dmitry.baryshkov@linaro.org,
-	quic_cang@quicinc.com, danila@jiaxyga.com,
-	quic_nitirawa@quicinc.com, mantas@8devices.com, athierry@redhat.com,
-	quic_kbajaj@quicinc.com, quic_bjorande@quicinc.com,
-	quic_msarkar@quicinc.com, quic_devipriy@quicinc.com,
-	quic_tsoni@quicinc.com, quic_rgottimu@quicinc.com,
-	quic_shashim@quicinc.com, quic_kaushalk@quicinc.com,
-	quic_tingweiz@quicinc.com, quic_aiquny@quicinc.com,
-	srinivas.kandagatla@linaro.org, linux-arm-msm@vger.kernel.org,
-	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-	linux-pm@vger.kernel.org, linux-clk@vger.kernel.org,
-	linux-phy@lists.infradead.org, linux-crypto@vger.kernel.org,
-	linux-scsi@vger.kernel.org, linux-usb@vger.kernel.org,
-	linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev,
-	linux-gpio@vger.kernel.org, linux-watchdog@vger.kernel.org,
-	linux-pci@vger.kernel.org, linux-stm32@st-md-mailman.stormreply.com,
-	kernel@quicinc.com
-Subject: Re: [PATCH 29/47] dt-bindings: net: qcom,ethqos: add description for
- qcs9100
-Message-ID: <add1bdda-2321-4c47-91ef-299f99385bc8@lunn.ch>
-References: <20240703025850.2172008-1-quic_tengfan@quicinc.com>
- <20240703025850.2172008-30-quic_tengfan@quicinc.com>
- <u5ekupjqvgoehkl76pv7ljyqqzbnnyh6ci2dilfxfkcdvdy3dp@ehdujhkul7ow>
- <f4162b7f-d957-4dd6-90a0-f65c1cbc213a@quicinc.com>
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="CaAwoQJr"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 33CBDC3277B;
+	Thu,  4 Jul 2024 17:16:07 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1720113368;
+	bh=pNA8/Q/+goKs7oTKt+a3Cw9yHcXIncdaNs7gbU3axuo=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=CaAwoQJrZLArTEOfKusmY+hI3dr6PuiWIDAGemB23zwQ/bD7VJTzy3rb1U9K40ZyB
+	 /otipiTe+bwUNsaC6ZuVc/FviZm+4xAk2xQacK3lQNi9b9C6Rc7h/wCI7BS0VScrsf
+	 4tpxSoBJ33RZtNcI49felKJ65GDyJxoFFc0vfS3DWE0TZBsc0CA7zajLlHMMZq2nJ1
+	 BWwTxUhNOiJTR9T9zELEmujZkVJUUwVvWzO3p2r1Bum7+UJPdGxvl/n/B2MHdq+XCm
+	 MP6AVd9901F70GjDlGUnmWKECr+ExRRv6xOr2s0RZ4V/pVSadlxpSNJHRlLbIQ94pP
+	 b/fDR1hY0KIrA==
+Date: Thu, 4 Jul 2024 20:16:02 +0300
+From: Leon Romanovsky <leon@kernel.org>
+To: Robin Murphy <robin.murphy@arm.com>
+Cc: Jens Axboe <axboe@kernel.dk>, Jason Gunthorpe <jgg@ziepe.ca>,
+	Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
+	Keith Busch <kbusch@kernel.org>, Christoph Hellwig <hch@lst.de>,
+	"Zeng, Oak" <oak.zeng@intel.com>,
+	Chaitanya Kulkarni <kch@nvidia.com>,
+	Sagi Grimberg <sagi@grimberg.me>,
+	Bjorn Helgaas <bhelgaas@google.com>,
+	Logan Gunthorpe <logang@deltatee.com>,
+	Yishai Hadas <yishaih@nvidia.com>,
+	Shameer Kolothum <shameerali.kolothum.thodi@huawei.com>,
+	Kevin Tian <kevin.tian@intel.com>,
+	Alex Williamson <alex.williamson@redhat.com>,
+	Marek Szyprowski <m.szyprowski@samsung.com>,
+	=?iso-8859-1?B?Suly9G1l?= Glisse <jglisse@redhat.com>,
+	Andrew Morton <akpm@linux-foundation.org>,
+	linux-block@vger.kernel.org, linux-kernel@vger.kernel.org,
+	linux-rdma@vger.kernel.org, iommu@lists.linux.dev,
+	linux-nvme@lists.infradead.org, linux-pci@vger.kernel.org,
+	kvm@vger.kernel.org, linux-mm@kvack.org
+Subject: Re: [RFC PATCH v1 18/18] nvme-pci: use new dma API
+Message-ID: <20240704171602.GE95824@unreal>
+References: <cover.1719909395.git.leon@kernel.org>
+ <47eb0510b0a6aa52d9f5665d75fa7093dd6af53f.1719909395.git.leon@kernel.org>
+ <249ec228-4ffd-4121-bd51-f4a19275fee1@arm.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -85,29 +61,86 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <f4162b7f-d957-4dd6-90a0-f65c1cbc213a@quicinc.com>
+In-Reply-To: <249ec228-4ffd-4121-bd51-f4a19275fee1@arm.com>
 
-On Thu, Jul 04, 2024 at 09:13:59AM +0800, Tengfei Fan wrote:
+On Thu, Jul 04, 2024 at 04:23:47PM +0100, Robin Murphy wrote:
+> On 02/07/2024 10:09 am, Leon Romanovsky wrote:
+> [...]
+> > +static inline dma_addr_t nvme_dma_link_page(struct page *page,
+> > +					   unsigned int poffset,
+> > +					   unsigned int len,
+> > +					   struct nvme_iod *iod)
+> >   {
+> > -	int i;
+> > -	struct scatterlist *sg;
+> > +	struct dma_iova_attrs *iova = &iod->dma_map->iova;
+> > +	struct dma_iova_state *state = &iod->dma_map->state;
+> > +	dma_addr_t dma_addr;
+> > +	int ret;
+> > +
+> > +	if (iod->dma_map->use_iova) {
+> > +		phys_addr_t phys = page_to_phys(page) + poffset;
 > 
-> 
-> On 7/3/2024 11:09 PM, Andrew Halaney wrote:
-> > On Wed, Jul 03, 2024 at 10:58:32AM GMT, Tengfei Fan wrote:
-> > > Add the compatible for the MAC controller on qcs9100 platforms. This MAC
-> > > works with a single interrupt so add minItems to the interrupts property.
-> > > The fourth clock's name is different here so change it. Enable relevant
-> > > PHY properties. Add the relevant compatibles to the binding document for
-> > > snps,dwmac as well.
-> > 
-> > This description doesn't match what was done in this patch, its what
-> > Bart did when he made changes to add the sa8775 changes. Please consider
-> > using a blurb indicating that this is the same SoC as sa8775p, just with
-> > different firmware strategies or something along those lines?
-> 
-> I will update this commit message as you suggested.
+> Yeah, there's no way this can possibly work. You can't do the
+> dev_use_swiotlb() check up-front based on some overall DMA operation size,
+> but then build that operation out of arbitrarily small fragments of
+> different physical pages that *could* individually need bouncing to not
+> break coherency.
 
-Hi Andrew, Tengfei
+This is exactly how dma_map_sg() works. It checks in advance all SG and
+proceeds with bounce buffer if needed. In our case all checks which
+exists in dev_use_sg_swiotlb() will give "false". In v0, Christoph said
+that NVMe guarantees alignment, which is only one "dynamic" check in
+that function.
 
-Please trim emails when replying to just the needed context.
+   600 static bool dev_use_sg_swiotlb(struct device *dev, struct scatterlist *sg,
+   601                                int nents, enum dma_data_direction dir)
+   602 {
+   603         struct scatterlist *s;
+   604         int i;
+   605
+   606         if (!IS_ENABLED(CONFIG_SWIOTLB))
+   607                 return false;
+   608
+   609         if (dev_is_untrusted(dev))
+   610                 return true;
+   611
+   612         /*
+   613          * If kmalloc() buffers are not DMA-safe for this device and
+   614          * direction, check the individual lengths in the sg list. If any
+   615          * element is deemed unsafe, use the swiotlb for bouncing.
+   616          */
+   617         if (!dma_kmalloc_safe(dev, dir)) {
+   618                 for_each_sg(sg, s, nents, i)
+   619                         if (!dma_kmalloc_size_aligned(s->length))
+   620                                 return true;
+   621         }
+   622
+   623         return false;
+   624 }
+
+   ...
+  1338 static int iommu_dma_map_sg(struct device *dev, struct scatterlist *sg,
+  1339                 int nents, enum dma_data_direction dir, unsigned long attrs)
+  ...
+  1360         if (dev_use_sg_swiotlb(dev, sg, nents, dir))                          
+  1361                 return iommu_dma_map_sg_swiotlb(dev, sg, nents, dir, attrs);   
 
 Thanks
-	Andrew
+
+> 
+> Thanks,
+> Robin.
+> 
+> > +
+> > +		dma_addr = state->iova->addr + state->range_size;
+> > +		ret = dma_link_range(&iod->dma_map->state, phys, len);
+> > +		if (ret)
+> > +			return DMA_MAPPING_ERROR;
+> > +	} else {
+> > +		dma_addr = dma_map_page_attrs(iova->dev, page, poffset, len,
+> > +					      iova->dir, iova->attrs);
+> > +	}
+> > +	return dma_addr;
+> > +}
+> 
