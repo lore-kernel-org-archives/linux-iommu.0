@@ -1,212 +1,151 @@
-Received: from NAM10-BN7-obe.outbound.protection.outlook.com (mail-bn7nam10on2042.outbound.protection.outlook.com [40.107.92.42])
+Received: from mx0b-0031df01.pphosted.com (mx0b-0031df01.pphosted.com [205.220.180.131])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 65C6217B425
-	for <iommu@lists.linux.dev>; Wed,  3 Jul 2024 23:06:47 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.92.42
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1720048009; cv=fail; b=JKG0Ph6KG9JpISjKZA7nnZVcl8j/+utJKFTGByC7jqswfTTxjJ2RIJv31WSUDMzC932tvr0ZWrQrOyYBd8GjZVANC+KgXv6lBVm4WaSAt9EeQapaTF9+HGhccHX1eTc+4ZmAp3/PCIjL2rbxD6wfhFsvUoQVkevBLIfC71PraPI=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1720048009; c=relaxed/simple;
-	bh=n3rO4D/WPqksRT92c3WjMYe+8nZkj256Z/CXbB333YA=;
-	h=Date:From:To:CC:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=C7jZd4YvycSKxtXKsDt3btQW1Vjcbr8pW09Z+pOatfiHw3+YHFD/4PexBxmLMrDc1xzoyjNxSCBstG+mAGICBa6+tQ4vH8NPAaJUUa90jXR3uPaRMoKoINN2Qx911awr/a6/CRxhB+yyRRZpGLTRzGcoYPvmAi53bR84GzUzQVo=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=IhQqhAmn; arc=fail smtp.client-ip=40.107.92.42
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5548779DC
+	for <iommu@lists.linux.dev>; Thu,  4 Jul 2024 00:58:54 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.180.131
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1720054736; cv=none; b=Eq7n2KEA81S01iTAkpoTtcJRjz9mLnapN+GME3o/uifafsJr8nLcSDW7Z3Y/0bKPZjF7ovw/JnHx4fNx1fhMUMB6+NBMotVE/U+1+V2yA2kC659BImcd9mUfJ5IO32dkEpxsuRz452jWwHWJy0o7dAEZ+heXLJBLjsWwGSdF0+E=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1720054736; c=relaxed/simple;
+	bh=uGkt73nDgGqWhK7coLd29VBDAnB/RU/avdNFQwiqkeA=;
+	h=Message-ID:Date:MIME-Version:Subject:To:CC:References:From:
+	 In-Reply-To:Content-Type; b=QYmtGzFtGUb6EfZIsLfvx9bVMcYVdTswVA5KhhDgOf5rjlhaOkMCDNIQSmk0gdVzMlux0LMrSM1ljEOvntZbSEECbWY5ZUD3x6+HuNXOWIWD7rU1NQUmH7bk7HGg5WKnIhnIwzikdWJlyQRCzL6FELAvRrJ3Bx6y3TyggAHldVU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com; spf=pass smtp.mailfrom=quicinc.com; dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b=fbaaApgw; arc=none smtp.client-ip=205.220.180.131
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=quicinc.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="IhQqhAmn"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=E0Vfc4oT6YtWdFOVyer7W9yTJkCvXWfTYj5FgcRRWOyO89L3py8LVJNMQHgrgdldA4mrifQuexRuf2MyhHWg8PKpCmiu6xIOkKufqt70ENRB5qzQqdmbE7gBRYzqUXdWxfFO+E87xwMf43kdb/HL45srZGNhZ23c44W9X6wl2ak5gsAWtUIcl+XmdJ7V22g8dE1Iq/h0swtNju2W52R85BVo8j9Ul5PNQYrEFoWrxr4OWIVVyeoQItDiTpYcL7bjG5OE11l9NAgOkkb5RojoIYt1slmUCMuhbT5LUYCbcFYoBqqtz5+dU0H15NG4M/GWh5t6nyL9IkC865dlNmxnmw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=dFypB8QquqIWlG3jKiaHR+nrvsGhowfnkzF/SjFq/T8=;
- b=JB/Hp75/dbUrbW38e+kK6yESZikSkCQGgybDv4EQ47LQl85LBbCOXkaY+/2dDVFTu7D2qHPJCxlaRvfGeV3mcNefZDzty42012lW+28mDQ1f1F2DYMxFSuCcPmbbRcpPOy3lQBWu2zoXF6ILanMbrjJ6qfty2FmYjG5BJj7tZm/VU/tWIICC6Q0U9lJIWm7p9VbA47FIRCnn+QT0EkzgwrHoKsZMXzJ8cGnzkewGGxdpdVbtZN0o4vq8Okw4jVXwfsd5KuIADl60fyAjYjTSGJbUn7jlYk+bEumDadrxk5V+WmWEYVZjB8BfICnkm3bPUzgoujvLuoSbxK25NiWcuQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 216.228.117.160) smtp.rcpttodomain=linux.intel.com smtp.mailfrom=nvidia.com;
- dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
- dkim=none (message not signed); arc=none (0)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=dFypB8QquqIWlG3jKiaHR+nrvsGhowfnkzF/SjFq/T8=;
- b=IhQqhAmnZFZPmssIo/UAGIk839AfgiMVQ9y12rMcH/J/UZjfD6fTD51ZL5DIMlJdGlMSElgGYb5Hz7KoLFWI912N+EgQwFEjp1BFryLZVycTeVbFtCE3E3ZBTNrhSpBchoJw32/xKQUk+WlDdADkw6Q3uccasDchNxd5AteO9GCewT69Cq4DKgPaNKrINgRnWSa6qZMKAMjzwt0//7sHrdVCRCNv4hh7DcX9/x6mathTwOTZHHq5m9XJb1VvYeDae8tpPnZYg6CKpHU1r8LRcd9gk068zOLGmhWsEu6dS8v9ORlTwemOOocKbfrdpHeYYgh962OJ3DspkQVISdgpWg==
-Received: from BL1PR13CA0110.namprd13.prod.outlook.com (2603:10b6:208:2b9::25)
- by CY5PR12MB6348.namprd12.prod.outlook.com (2603:10b6:930:f::13) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7719.36; Wed, 3 Jul
- 2024 23:06:42 +0000
-Received: from BL6PEPF0002256E.namprd02.prod.outlook.com
- (2603:10b6:208:2b9:cafe::99) by BL1PR13CA0110.outlook.office365.com
- (2603:10b6:208:2b9::25) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7762.8 via Frontend
- Transport; Wed, 3 Jul 2024 23:06:42 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.117.160)
- smtp.mailfrom=nvidia.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=nvidia.com;
-Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 216.228.117.160 as permitted sender) receiver=protection.outlook.com;
- client-ip=216.228.117.160; helo=mail.nvidia.com; pr=C
-Received: from mail.nvidia.com (216.228.117.160) by
- BL6PEPF0002256E.mail.protection.outlook.com (10.167.249.36) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.7741.18 via Frontend Transport; Wed, 3 Jul 2024 23:06:42 +0000
-Received: from rnnvmail204.nvidia.com (10.129.68.6) by mail.nvidia.com
- (10.129.200.66) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1544.4; Wed, 3 Jul 2024
- 16:06:18 -0700
-Received: from rnnvmail204.nvidia.com (10.129.68.6) by rnnvmail204.nvidia.com
- (10.129.68.6) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1544.4; Wed, 3 Jul 2024
- 16:06:18 -0700
-Received: from Asurada-Nvidia (10.127.8.13) by mail.nvidia.com (10.129.68.6)
- with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1544.4 via Frontend
- Transport; Wed, 3 Jul 2024 16:06:17 -0700
-Date: Wed, 3 Jul 2024 16:06:15 -0700
-From: Nicolin Chen <nicolinc@nvidia.com>
-To: Lu Baolu <baolu.lu@linux.intel.com>
-CC: Jason Gunthorpe <jgg@ziepe.ca>, Kevin Tian <kevin.tian@intel.com>, "Joerg
- Roedel" <joro@8bytes.org>, Will Deacon <will@kernel.org>, Robin Murphy
-	<robin.murphy@arm.com>, Jean-Philippe Brucker <jean-philippe@linaro.org>, "Yi
- Liu" <yi.l.liu@intel.com>, Jacob Pan <jacob.jun.pan@linux.intel.com>, "Joel
- Granados" <j.granados@samsung.com>, <iommu@lists.linux.dev>,
-	<virtualization@lists.linux-foundation.org>, <linux-kernel@vger.kernel.org>,
-	Jason Gunthorpe <jgg@nvidia.com>
-Subject: Re: [PATCH v8 06/10] iommufd: Add iommufd fault object
-Message-ID: <ZoXZZ2SJ/WdlMJaX@Asurada-Nvidia>
-References: <20240702063444.105814-1-baolu.lu@linux.intel.com>
- <20240702063444.105814-7-baolu.lu@linux.intel.com>
+	dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b="fbaaApgw"
+Received: from pps.filterd (m0279870.ppops.net [127.0.0.1])
+	by mx0a-0031df01.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 463HXxnI031975;
+	Thu, 4 Jul 2024 00:58:19 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=quicinc.com; h=
+	cc:content-transfer-encoding:content-type:date:from:in-reply-to
+	:message-id:mime-version:references:subject:to; s=qcppdkim1; bh=
+	k+v8hKKqQzTQAKxChzMkw5arZNejlV7Pr3r0pQa7uSw=; b=fbaaApgwtTd9tOjm
+	fQQjkj/uPIbngXgbJZoorsNdKf4g5zh2SG669zZk/xPJjtVPnnp5ZI5q0v3PZrjc
+	kbjxGJ/Bt9E3Wi75TORyL5+qbPWTrR3kX29GmjmzAQQmcE4q//M7i1S+GAEC3r4G
+	Y/49M+SDBS4mYPazmgeZwKsrvXrrBaziYUE6ca3+dUIwgfpISL7mWKjL1ikkptDL
+	loswFddKfw/4OriGjCPtmkU09doCsqG69nkmYAe4y6fJB3lBacwlcJsQWupYiBtX
+	VHrrCcED+ywxMB3sDZbz9F8B6CXlF9+qa0pAGlkljLPVLuh2OuGstcnM1PWgfsmP
+	retbDA==
+Received: from nalasppmta02.qualcomm.com (Global_NAT1.qualcomm.com [129.46.96.20])
+	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 402abtt5h4-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Thu, 04 Jul 2024 00:58:19 +0000 (GMT)
+Received: from nalasex01a.na.qualcomm.com (nalasex01a.na.qualcomm.com [10.47.209.196])
+	by NALASPPMTA02.qualcomm.com (8.17.1.19/8.17.1.19) with ESMTPS id 4640wH94001093
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Thu, 4 Jul 2024 00:58:17 GMT
+Received: from [10.239.132.204] (10.80.80.8) by nalasex01a.na.qualcomm.com
+ (10.47.209.196) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1544.9; Wed, 3 Jul 2024
+ 17:57:56 -0700
+Message-ID: <fa63aa02-6a62-417a-a946-9ecd2d6071e6@quicinc.com>
+Date: Thu, 4 Jul 2024 08:57:54 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: inline
-In-Reply-To: <20240702063444.105814-7-baolu.lu@linux.intel.com>
-X-NV-OnPremToCloud: ExternallySecured
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: BL6PEPF0002256E:EE_|CY5PR12MB6348:EE_
-X-MS-Office365-Filtering-Correlation-Id: 478f0402-6c59-4446-11d4-08dc9bb4cd7d
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|7416014|376014|36860700013|1800799024|82310400026;
-X-Microsoft-Antispam-Message-Info:
-	=?us-ascii?Q?01asFNKhw3TEnyGzj+QTcagAvRPs33I8TUTPCr27Fm/hZh+05BzglDCv+j+Q?=
- =?us-ascii?Q?vLpikZEd0BzoSy09Oh8vHTFnRCJd3Rf7bEh703hcfoM07GuhgRsvIdavZ1IQ?=
- =?us-ascii?Q?Fx+VeUk6vomJwEcxF6NFU6qnKEHIaPtP9kU3XOiAE1QCfSMqw+atkdr6GaTd?=
- =?us-ascii?Q?lTrJ/PrWjbH6mwRk+3vqqF3/qiPGZ7f7S3rRFMK4zdoEx7xEN0WjmnMYV0bV?=
- =?us-ascii?Q?2vMqzTeOHaVIN5JzoxVTxir2POcyPlUTnUAeWGNMksnfObIu6c4nP/pTWq4G?=
- =?us-ascii?Q?NkSoc6Qyb+yXga7B7+iZtoFs78Yg3LG2HzerYOwjV9IVArUTr10CTeWvcu+y?=
- =?us-ascii?Q?g4gQhS5nj3guFIwJAZRAG12BvcQfOe3OLWMCVOdkn729TOsNrY9sECRUOvya?=
- =?us-ascii?Q?wRK7Z48jk7rbbvm+2jduaTgKLvIyJ2ar+nVZZ0lGrU1Rb87LtImP1DBEknJi?=
- =?us-ascii?Q?gXDaAgSCG+72gvqRYlRHZz/wjRAxFPYfLm6LOHyySGI3BLPNRpOd7gf7Gcy0?=
- =?us-ascii?Q?gA5D1DkTwQG3T2KLbVOqgUhOdVb2+eG+AV78X6DldtmZd1+UmxkR81ymgxHJ?=
- =?us-ascii?Q?2Ktkf4wXVOCgG3mjfOZkVm9PjZyPUrDIdU3JeyzFVkpb5gonf0OFH6lxSwDJ?=
- =?us-ascii?Q?pl+WHpSmZrRMKBV5/x/5xgleywZ94JkOWp3jBYe3IhPeqLa3uoUZWf+IRgFB?=
- =?us-ascii?Q?tC1/iXXDL8qrz0GgbDBFH9/lVMhua67mcSjjrroztZ3+OEeyQcCzuchmf4Fs?=
- =?us-ascii?Q?G1IYeeFwSvhW4yDyVqELzgQddHxpXscT7AnU1q/zW0qNf2VxYn099tCxP21i?=
- =?us-ascii?Q?HVQJlb/kCiEiPBJRSRv7mHmzUd65DsAGPG4yFSruSQRSMyssARDzt4ymQsII?=
- =?us-ascii?Q?bnNMR3LtllTec0ucC14rUmWjU/Q7MCPePpvt27X4QiT5b9xT+IDa8TwXC8Za?=
- =?us-ascii?Q?0SRsjw5qntGoD5ByRfQOppDGok2Ljc84t2bnGVPeuIhrRQ2LbEQ86F4vHCwR?=
- =?us-ascii?Q?EjaIWjH1rDJ+OCMmvLHpQI4xxT5Pix+7+epm1s3C4WNhX2rBguLmCCA6EVEU?=
- =?us-ascii?Q?gA4aH6Hc7lZGw7j2+4sZjgD8Cyu2nbIq024mxtXBvILwH2Jb7LbDSCmsx4Bb?=
- =?us-ascii?Q?k9EtO8KwW2PIvoHjXZywASTH3z/PC0Ch/CRUbjgUegqnTSQlcufbfHpbpFWl?=
- =?us-ascii?Q?YNwfCxSyxfY0rw8r0zhaiq83VXfXOzNx+YuEjRfFcToN6xFe+pw9CbcLt924?=
- =?us-ascii?Q?FDr8Kyjfw79EUo+k5AjqocIl84+foimu0AsvX3AcgWpRVZgeGmkjxS3XXDhk?=
- =?us-ascii?Q?mCjIgGxOcXwybN3WzbEPlW9tt1wqbGgkSI2RpvZZEjeLvdE10IWvWK6CXGRp?=
- =?us-ascii?Q?efuLIi3zsb+ARsf7DZN1y86s3jaSgCFjLIejACSFC2JQoJuHcq5UdCH6HJ20?=
- =?us-ascii?Q?9QCSRt/1Ntrm8bgulGNTWPln8/VMwM7L?=
-X-Forefront-Antispam-Report:
-	CIP:216.228.117.160;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc6edge1.nvidia.com;CAT:NONE;SFS:(13230040)(7416014)(376014)(36860700013)(1800799024)(82310400026);DIR:OUT;SFP:1101;
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 03 Jul 2024 23:06:42.1524
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 478f0402-6c59-4446-11d4-08dc9bb4cd7d
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.117.160];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource:
-	BL6PEPF0002256E.namprd02.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: CY5PR12MB6348
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH 00/47] arm64: qcom: dts: add QCS9100 support
+To: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+CC: <andersson@kernel.org>, <konrad.dybcio@linaro.org>, <robh@kernel.org>,
+        <krzk+dt@kernel.org>, <conor+dt@kernel.org>, <djakov@kernel.org>,
+        <mturquette@baylibre.com>, <sboyd@kernel.org>,
+        <jassisinghbrar@gmail.com>, <herbert@gondor.apana.org.au>,
+        <davem@davemloft.net>, <manivannan.sadhasivam@linaro.org>,
+        <will@kernel.org>, <joro@8bytes.org>, <conor@kernel.org>,
+        <tglx@linutronix.de>, <amitk@kernel.org>, <thara.gopinath@gmail.com>,
+        <linus.walleij@linaro.org>, <wim@linux-watchdog.org>,
+        <linux@roeck-us.net>, <rafael@kernel.org>, <viresh.kumar@linaro.org>,
+        <vkoul@kernel.org>, <edumazet@google.com>, <kuba@kernel.org>,
+        <pabeni@redhat.com>, <mcoquelin.stm32@gmail.com>,
+        <robimarko@gmail.com>, <quic_gurus@quicinc.com>,
+        <bartosz.golaszewski@linaro.org>, <kishon@kernel.org>,
+        <quic_wcheng@quicinc.com>, <alim.akhtar@samsung.com>,
+        <avri.altman@wdc.com>, <bvanassche@acm.org>, <agross@kernel.org>,
+        <gregkh@linuxfoundation.org>, <quic_tdas@quicinc.com>,
+        <robin.murphy@arm.com>, <daniel.lezcano@linaro.org>,
+        <rui.zhang@intel.com>, <lukasz.luba@arm.com>,
+        <quic_rjendra@quicinc.com>, <ulf.hansson@linaro.org>,
+        <quic_sibis@quicinc.com>, <otto.pflueger@abscue.de>,
+        <quic_rohiagar@quicinc.com>, <luca@z3ntu.xyz>,
+        <neil.armstrong@linaro.org>, <abel.vesa@linaro.org>,
+        <bhupesh.sharma@linaro.org>, <alexandre.torgue@foss.st.com>,
+        <peppe.cavallaro@st.com>, <joabreu@synopsys.com>,
+        <netdev@vger.kernel.org>, <lpieralisi@kernel.org>, <kw@linux.com>,
+        <bhelgaas@google.com>, <ahalaney@redhat.com>,
+        <krzysztof.kozlowski@linaro.org>, <u.kleine-koenig@pengutronix.de>,
+        <quic_cang@quicinc.com>, <danila@jiaxyga.com>,
+        <quic_nitirawa@quicinc.com>, <mantas@8devices.com>,
+        <athierry@redhat.com>, <quic_kbajaj@quicinc.com>,
+        <quic_bjorande@quicinc.com>, <quic_msarkar@quicinc.com>,
+        <quic_devipriy@quicinc.com>, <quic_tsoni@quicinc.com>,
+        <quic_rgottimu@quicinc.com>, <quic_shashim@quicinc.com>,
+        <quic_kaushalk@quicinc.com>, <quic_tingweiz@quicinc.com>,
+        <quic_aiquny@quicinc.com>, <srinivas.kandagatla@linaro.org>,
+        <linux-arm-msm@vger.kernel.org>, <devicetree@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>, <linux-pm@vger.kernel.org>,
+        <linux-clk@vger.kernel.org>, <linux-phy@lists.infradead.org>,
+        <linux-crypto@vger.kernel.org>, <linux-scsi@vger.kernel.org>,
+        <linux-usb@vger.kernel.org>, <linux-arm-kernel@lists.infradead.org>,
+        <iommu@lists.linux.dev>, <linux-riscv@lists.infradead.org>,
+        <linux-gpio@vger.kernel.org>, <linux-watchdog@vger.kernel.org>,
+        <linux-pci@vger.kernel.org>,
+        <linux-stm32@st-md-mailman.stormreply.com>, <kernel@quicinc.com>
+References: <20240703025850.2172008-1-quic_tengfan@quicinc.com>
+ <20240703035735.2182165-1-quic_tengfan@quicinc.com>
+ <43nktnqp6mthafojiph7ouzfchmudtht634gtxwg7gmutb5l7y@a5j27mpl7d23>
+From: Tengfei Fan <quic_tengfan@quicinc.com>
+In-Reply-To: <43nktnqp6mthafojiph7ouzfchmudtht634gtxwg7gmutb5l7y@a5j27mpl7d23>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: nasanex01a.na.qualcomm.com (10.52.223.231) To
+ nalasex01a.na.qualcomm.com (10.47.209.196)
+X-QCInternal: smtphost
+X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
+X-Proofpoint-GUID: 0KuPc1MkWau3uWN3TtPR5ge92T_hyVGL
+X-Proofpoint-ORIG-GUID: 0KuPc1MkWau3uWN3TtPR5ge92T_hyVGL
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.293,Aquarius:18.0.1039,Hydra:6.0.680,FMLib:17.12.28.16
+ definitions=2024-07-03_18,2024-07-03_01,2024-05-17_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 bulkscore=0
+ priorityscore=1501 mlxscore=0 clxscore=1015 suspectscore=0 malwarescore=0
+ lowpriorityscore=0 phishscore=0 adultscore=0 spamscore=0 impostorscore=0
+ mlxlogscore=894 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.19.0-2406140001 definitions=main-2407040006
 
-Hi Baolu,
 
-On Tue, Jul 02, 2024 at 02:34:40PM +0800, Lu Baolu wrote:
 
-> An iommufd fault object provides an interface for delivering I/O page
-> faults to user space. These objects are created and destroyed by user
-> space, and they can be associated with or dissociated from hardware page
-> table objects during page table allocation or destruction.
+On 7/3/2024 6:33 PM, Dmitry Baryshkov wrote:
+> On Wed, Jul 03, 2024 at 11:56:48AM GMT, Tengfei Fan wrote:
+>> Introduce support for the QCS9100 SoC device tree (DTSI) and the
+>> QCS9100 RIDE board DTS. The QCS9100 is a variant of the SA8775p.
+>> While the QCS9100 platform is still in the early design stage, the
+>> QCS9100 RIDE board is identical to the SA8775p RIDE board, except it
+>> mounts the QCS9100 SoC instead of the SA8775p SoC.
 > 
-> User space interacts with the fault object through a file interface. This
-> interface offers a straightforward and efficient way for user space to
-> handle page faults. It allows user space to read fault messages
-> sequentially and respond to them by writing to the same file. The file
-> interface supports reading messages in poll mode, so it's recommended that
-> user space applications use io_uring to enhance read and write efficiency.
+> Your patch series includes a second copy of your patches, wich have
+> different Message-IDs:
 > 
-> A fault object can be associated with any iopf-capable iommufd_hw_pgtable
-> during the pgtable's allocation. All I/O page faults triggered by devices
-> when accessing the I/O addresses of an iommufd_hw_pgtable are routed
-> through the fault object to user space. Similarly, user space's responses
-> to these page faults are routed back to the iommu device driver through
-> the same fault object.
+> 20240703035735.2182165-1-quic_tengfan@quicinc.com vs
+> 20240703025850.2172008-1-quic_tengfan@quicinc.com
+> 
+> Please consider switching to the b4 tool or just
+> checking what is being sent.
+> 
 
-There is a need for VIOMMU object to report HW fault to VMM. For
-example, a HW-accelerated VCMDQ may encounter HW errors. HW will
-raise an IRQ to the host kernel and the host kernel will forward
-it to the guest. I think we can have a viommu->fault, similar to
-the hwpt->fault introduced by this series. This viommu->fault can
-also benefit nested IOMMU for reporting translation error.
+This is because I encountered a "Connection timed out" error while 
+sending this patch series using "git send-email". I wanted to add 
+"--in-reply-to=" git paramater to resend the patches that haven't been 
+pushed yet, which resulted in this second copy error result.
 
-I learned that this hwpt->fault is exclusively for IOPF/PRI. And
-Jason suggested me to add a different one for VIOMMU. Yet, after
-taking a closer look, I found the fault object in this series is
-seemingly quite generic at the uAPI level: its naming/structure,
-and the way how it's allocated and passed to hwpt, despite being
-highly correlated with IOPF in its fops code. So, I feel that we
-might have a chance of reusing it for different fault types:
+I'll following your suggestion and use the b4 tool when sending the new 
+version patch series to avoid similar error.
 
-+enum iommu_fault_type {
-+	IOMMU_FAULT_TYPE_HWPT_IOPF,
-+	IOMMU_FAULT_TYPE_VIOMMU_IRQ,
-+};
-
- struct iommu_fault_alloc {
- 	__u32 size;
- 	__u32 flags;
-+	__u32 type;  /* enum iommu_fault_type */
- 	__u32 out_fault_id;
- 	__u32 out_fault_fd;
- };
-
-I understand that this is already v8. So, maybe we can, for now,
-apply the small diff above with an IOMMU_FAULT_TYPE_HWPT_IOPF type
-check in the ioctl handler. And a decoupling for the iopf fops in
-the ioctl handler can come later in the viommu series:
-	switch (type) {
-	case IOMMU_FAULT_TYPE_HWPT_IOPF:
-		filep = anon_inode_getfile("[iommufd-pgfault]",
-					   &iommufd_fault_fops_iopf);
-	case IOMMU_FAULT_TYPE_VIOMMU_IRQ:
-		filep = anon_inode_getfile("[iommufd-viommu-irq]",
-					   &iommufd_fault_fops_viommu);
-	default:
-		return -EOPNOSUPP;
-	}
-
-Since you are the designer here, I think you have a better 10000
-foot view -- maybe I am missing something here implying that the
-fault object can't be really reused by viommu.
-
-Would you mind sharing some thoughts here?
-
-Thanks
-Nic
+-- 
+Thx and BRs,
+Tengfei Fan
