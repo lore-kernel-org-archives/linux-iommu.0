@@ -1,61 +1,55 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5DC377E9;
-	Thu,  4 Jul 2024 13:18:44 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9EEE01ABC25;
+	Thu,  4 Jul 2024 13:53:09 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1720099125; cv=none; b=Cd3Oq5FROlN2cmWhNuf6CWLbi+G/3Yqp9irgCUD27yC2o+JDLUMzi99Lw5Sa7FFT6ABbO4J1dAgIDWA/o+rj6dx6pdyWHV9QUmAjNC9v3xs5MtIWSwWzVcPrWDhsdE7WGaZua8F5SQyP8AfhtwUoBzlehEfVRk7NosE7gVNkX28=
+	t=1720101190; cv=none; b=oshiUTn80JOp55N2HbGB97i3Zr6c+bZlNB8EAWyvPkwBpLoAGGBwKwyxDf04LnmjonHNfw8pH8GD+ypKZVPdoTCoh8vJDgbK3tP1mSsCSQ2QGA8ZGPnq+0TeAd9a0/snL0vpFwPYlYuyEEjyiottxyv26Qco65R700TOC9yeh/w=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1720099125; c=relaxed/simple;
-	bh=nkzC1R2Sn6KADvFNDPp0hrnIwln3xVG+eb9R42IPSdQ=;
+	s=arc-20240116; t=1720101190; c=relaxed/simple;
+	bh=eQz2IBKd/Q7hCL1YjwIbirGf/hcd4Pso5HkourWlFN8=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=VsSMcTzcsbyiGYoOpFqQH4/YM3fyL9SB7SHhF+aWCkS//437E/E9pPZWigixewpzn/P9N462CeAWLWNHpMXpz0Ti7r1V0dh3O9RBJYqMJuZ6382D0UR20xjJ6DPlYJaihfpiojqnqMvBV78Qk556H7FT+OIvxjUVFS78lQ8jDZE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=D/KR/8A6; arc=none smtp.client-ip=10.30.226.201
+	 Content-Type:Content-Disposition:In-Reply-To; b=U0+jmAM/FwxC7frzaqNg/WKQtftg1x0rq2uCcNRKSGNyc3NRG4fbOIUFYJGTPKsA0J6kr1pYWIxLGUWanfVKXTXzbLJkL/krTtQDNIeWpee++4vbh2U3ol/hXm0kLLWtFejsdGZIp4rk7b4GyaqgBtfz3jbL0ZexYRp//KGEK8o=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=XxI1lfv8; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="D/KR/8A6"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0368AC3277B;
-	Thu,  4 Jul 2024 13:18:43 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="XxI1lfv8"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3EF1AC3277B;
+	Thu,  4 Jul 2024 13:53:04 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1720099124;
-	bh=nkzC1R2Sn6KADvFNDPp0hrnIwln3xVG+eb9R42IPSdQ=;
+	s=k20201202; t=1720101189;
+	bh=eQz2IBKd/Q7hCL1YjwIbirGf/hcd4Pso5HkourWlFN8=;
 	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=D/KR/8A6xd5D4R/wyMmVXVBhTLC00uoxpBMQxG4XlqhIi5KAQVaC2WfSC/JKuTQBK
-	 kEFxwYczrrp8jHD/rU7Io7O7FanCrAZSqBu/PdOnbPEDswb3D7N14ui//u++auZfNR
-	 SUqz2Rl1HBcmgvgZwCQlOkR19edRQbzDh6tI/mypTJD/RTH4hYtagEvYh76WNN1/VY
-	 UCe/SDCeqqwlLAKAvWNk+uJtnN8vjygt8Gaomlc3u7lhSQZuSImjGamtHE5l/qm9H/
-	 l7cdU0pdx3G3PZZgD6CMT+HJGLLMzzhXBkWp2c6sJY4t+AJp3EHJFmV84AgiTky6jN
-	 DmhQgo4POHvOw==
-Date: Thu, 4 Jul 2024 16:18:39 +0300
-From: Leon Romanovsky <leon@kernel.org>
-To: Christoph Hellwig <hch@lst.de>
-Cc: Jens Axboe <axboe@kernel.dk>, Jason Gunthorpe <jgg@ziepe.ca>,
-	Robin Murphy <robin.murphy@arm.com>, Joerg Roedel <joro@8bytes.org>,
-	Will Deacon <will@kernel.org>, Keith Busch <kbusch@kernel.org>,
-	"Zeng, Oak" <oak.zeng@intel.com>,
-	Chaitanya Kulkarni <kch@nvidia.com>,
-	Sagi Grimberg <sagi@grimberg.me>,
-	Bjorn Helgaas <bhelgaas@google.com>,
-	Logan Gunthorpe <logang@deltatee.com>,
-	Yishai Hadas <yishaih@nvidia.com>,
-	Shameer Kolothum <shameerali.kolothum.thodi@huawei.com>,
-	Kevin Tian <kevin.tian@intel.com>,
+	b=XxI1lfv80rJr1/7yGA95ZgA6CrbvweUqIvqiuT+zxsy9TX1ELTFYRkh+Om5FfvySF
+	 5tnVPH8EUJhdjVlF72YJiBiCmvE4rjE+vYF+VyoZoWWr10m/Z54aZX3SmdRHUqFlqe
+	 Q3VX52GRIRKUrAc+18kBK18UjNQfqAQdvSiWavQjFgz95e7tLq7Sl06OTz6YxpthPK
+	 aqYUSEWs4dOfQPE5wpWbqxuhBB0RW8TrF5/TyXZKbd00ypWocDnYibNw+WGF7sj+Il
+	 WO49vWsPz9I4WJIa6FgAqLc9l9+XQLye7cjdkS23vbjuczwn7WJj5DZEh2hbyD15c3
+	 gSFfx8okA3upA==
+Date: Thu, 4 Jul 2024 14:53:01 +0100
+From: Will Deacon <will@kernel.org>
+To: "Michael S. Tsirkin" <mst@redhat.com>
+Cc: Lu Baolu <baolu.lu@linux.intel.com>, Joerg Roedel <joro@8bytes.org>,
+	Robin Murphy <robin.murphy@arm.com>, Jason Gunthorpe <jgg@ziepe.ca>,
+	Kevin Tian <kevin.tian@intel.com>, Yi Liu <yi.l.liu@intel.com>,
+	David Airlie <airlied@gmail.com>, Daniel Vetter <daniel@ffwll.ch>,
+	Kalle Valo <kvalo@kernel.org>,
+	Bjorn Andersson <andersson@kernel.org>,
+	Mathieu Poirier <mathieu.poirier@linaro.org>,
 	Alex Williamson <alex.williamson@redhat.com>,
-	Marek Szyprowski <m.szyprowski@samsung.com>,
-	=?iso-8859-1?B?Suly9G1l?= Glisse <jglisse@redhat.com>,
-	Andrew Morton <akpm@linux-foundation.org>,
-	linux-block@vger.kernel.org, linux-kernel@vger.kernel.org,
-	linux-rdma@vger.kernel.org, iommu@lists.linux.dev,
-	linux-nvme@lists.infradead.org, linux-pci@vger.kernel.org,
-	kvm@vger.kernel.org, linux-mm@kvack.org
-Subject: Re: [RFC PATCH v1 00/18] Provide a new two step DMA API mapping API
-Message-ID: <20240704131839.GD95824@unreal>
-References: <cover.1719909395.git.leon@kernel.org>
- <20240703054238.GA25366@lst.de>
- <20240703105253.GA95824@unreal>
- <20240703143530.GA30857@lst.de>
- <20240703155114.GB95824@unreal>
- <20240704074855.GA26913@lst.de>
+	Jason Wang <jasowang@redhat.com>,
+	Thierry Reding <thierry.reding@gmail.com>,
+	Jonathan Hunter <jonathanh@nvidia.com>,
+	Mikko Perttunen <mperttunen@nvidia.com>,
+	Jeff Johnson <quic_jjohnson@quicinc.com>,
+	ath10k@lists.infradead.org, ath11k@lists.infradead.org,
+	iommu@lists.linux.dev, dri-devel@lists.freedesktop.org,
+	linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v3 04/21] vhost-vdpa: Use iommu_paging_domain_alloc()
+Message-ID: <20240704135300.GA7854@willie-the-truck>
+References: <20240610085555.88197-1-baolu.lu@linux.intel.com>
+ <20240610085555.88197-5-baolu.lu@linux.intel.com>
+ <20240703123146-mutt-send-email-mst@kernel.org>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -64,55 +58,21 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20240704074855.GA26913@lst.de>
+In-Reply-To: <20240703123146-mutt-send-email-mst@kernel.org>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 
-On Thu, Jul 04, 2024 at 09:48:56AM +0200, Christoph Hellwig wrote:
-> On Wed, Jul 03, 2024 at 06:51:14PM +0300, Leon Romanovsky wrote:
-> > If we put aside this issue, do you think that the proposed API is the right one?
+On Wed, Jul 03, 2024 at 12:32:06PM -0400, Michael S. Tsirkin wrote:
+> On Mon, Jun 10, 2024 at 04:55:38PM +0800, Lu Baolu wrote:
+> > Replace iommu_domain_alloc() with iommu_paging_domain_alloc().
+> > 
+> > Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
 > 
-> I haven't look at it in detail yet, but from a quick look there is a
-> few things to note:
-> 
-> 
-> 1) The amount of code needed in nvme worries me a bit.  Now NVMe a messy
-> driver due to the stupid PRPs vs just using SGLs, but needing a fair
-> amount of extra boilerplate code in drivers is a bit of a warning sign.
-> I plan to look into this to see if I can help on improving it, but for
-> that I need a working version first.
-
-Chaitanya is working on this and I'll join him to help on next Sunday,
-after I'll return to the office from my sick leave/
-
+> Acked-by: Michael S. Tsirkin <mst@redhat.com>
 > 
 > 
-> 2) The amount of seemingly unrelated global headers pulled into other
-> global headers.  Some of this might just be sloppiness, e.g. I can't
-> see why dma-mapping.h would actually need iommu.h to start with,
-> but pci.h in dma-map-ops.h is a no-go.
+> I assume it's merged with the rest of the stuff, right?
 
-pci.h was pulled because I needed to call to pci_p2pdma_map_type()
-in dma_can_use_iova().
+Sure, I can grab this one in the iommu tree. It has to go along with
+the patch adding iommu_paging_domain_alloc() anyway.
 
-> 
-> 3) which brings me to real layering violations.  dev_is_untrusted and
-> dev_use_swiotlb are DMA API internals, no way I'd ever want to expose
-> them. dma-map-ops.h is a semi-internal header only for implementations
-> of the dma ops (as very clearly documented at the top of that file),
-> it must not be included by drivers.  Same for swiotlb.h.
-
-These item shouldn't worry you and will be changed in the final version.
-They are outcome of patch "RDMA/umem: Prevent UMEM ODP creation with SWIOTLB".
-https://lore.kernel.org/all/d18c454636bf3cfdba9b66b7cc794d713eadc4a5.1719909395.git.leon@kernel.org/
-
-All HMM users need such "prevention" so it will be moved to a common place.
-
-> 
-> Not quite as concerning, but doing an indirect call for each map
-> through dma_map_ops in addition to the iommu ops is not every efficient.
-> We've through for a while to allow direct calls to dma-iommu similar
-> how we do direct calls to dma-direct from the core mapping.c code.
-> This might be a good time to do that as a prep step for this work.
-
-Sure, no problem, will start in parallel to work on this.
-
-> 
+Will
