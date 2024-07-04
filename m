@@ -1,85 +1,204 @@
-Received: from verein.lst.de (verein.lst.de [213.95.11.211])
+Received: from mx0a-0031df01.pphosted.com (mx0a-0031df01.pphosted.com [205.220.168.131])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A79161A0AEA
-	for <iommu@lists.linux.dev>; Thu,  4 Jul 2024 07:49:03 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=213.95.11.211
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 13B51748F
+	for <iommu@lists.linux.dev>; Thu,  4 Jul 2024 09:12:51 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.168.131
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1720079345; cv=none; b=AGs7ij/xR1djEhQQQCowh8ylEdHuJSNbEczNx2cqBAdVZDeaV89Qflgv5KZE7eLWfwBuMez0Q64gJnOfUvoxlm9QuZ9OjlKBlQyE1928IHPOREC5ugccTeEHTobqIE5azA30KrIxPkXBW4hLNE+hxtdAnnn1V/9/fva7JAdqscM=
+	t=1720084373; cv=none; b=FOGX0vNkVdPrkKEw4MIsy793W7uIJpZ+uJQBLE4tq57x5Sx47v+Rxg1UfTPsXXZrO9N5dBWgIVJm8p66oOZ32Bunam1YNVZwkfO2L3Ar0+XEcjOBIAQXcQbqDhoayHoUb4Oeld/Jde0PKPN+w7/7yw9TO1E/qM0Ou9t9LD6IgQ0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1720079345; c=relaxed/simple;
-	bh=FXyIm8BUSs84k8MRehwyXAfw5xJzi4jT6joRNBHNI+M=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=L+WhsXfcNXzm1hi5OwIu/A4uoYih80ee3L42dPuBnnEHTZTucpMyo+8y+8RK3RN+HqQz/gXlbxKbwXIlmDFbPFUpi7Z99B3aQRNW9GQ/kwtHoVI//JMXSyRWJCZDuHFx5WekoM17nrHi5MtZ4PxkvtY6lzpr5V0mcmYZwJr38xk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=lst.de; spf=pass smtp.mailfrom=lst.de; arc=none smtp.client-ip=213.95.11.211
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=lst.de
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=lst.de
-Received: by verein.lst.de (Postfix, from userid 2407)
-	id 52B5468AA6; Thu,  4 Jul 2024 09:48:56 +0200 (CEST)
-Date: Thu, 4 Jul 2024 09:48:56 +0200
-From: Christoph Hellwig <hch@lst.de>
-To: Leon Romanovsky <leon@kernel.org>
-Cc: Christoph Hellwig <hch@lst.de>, Jens Axboe <axboe@kernel.dk>,
-	Jason Gunthorpe <jgg@ziepe.ca>, Robin Murphy <robin.murphy@arm.com>,
-	Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
-	Keith Busch <kbusch@kernel.org>, "Zeng, Oak" <oak.zeng@intel.com>,
-	Chaitanya Kulkarni <kch@nvidia.com>,
-	Sagi Grimberg <sagi@grimberg.me>,
-	Bjorn Helgaas <bhelgaas@google.com>,
-	Logan Gunthorpe <logang@deltatee.com>,
-	Yishai Hadas <yishaih@nvidia.com>,
-	Shameer Kolothum <shameerali.kolothum.thodi@huawei.com>,
-	Kevin Tian <kevin.tian@intel.com>,
-	Alex Williamson <alex.williamson@redhat.com>,
-	Marek Szyprowski <m.szyprowski@samsung.com>,
-	=?iso-8859-1?B?Suly9G1l?= Glisse <jglisse@redhat.com>,
-	Andrew Morton <akpm@linux-foundation.org>,
-	linux-block@vger.kernel.org, linux-kernel@vger.kernel.org,
-	linux-rdma@vger.kernel.org, iommu@lists.linux.dev,
-	linux-nvme@lists.infradead.org, linux-pci@vger.kernel.org,
-	kvm@vger.kernel.org, linux-mm@kvack.org
-Subject: Re: [RFC PATCH v1 00/18] Provide a new two step DMA API mapping API
-Message-ID: <20240704074855.GA26913@lst.de>
-References: <cover.1719909395.git.leon@kernel.org> <20240703054238.GA25366@lst.de> <20240703105253.GA95824@unreal> <20240703143530.GA30857@lst.de> <20240703155114.GB95824@unreal>
+	s=arc-20240116; t=1720084373; c=relaxed/simple;
+	bh=OYLPfV+8NtDWkziPQDKG29MfY5TjzbBDOQq/oZSSnmI=;
+	h=Message-ID:Date:MIME-Version:Subject:To:CC:References:From:
+	 In-Reply-To:Content-Type; b=C6it90r8Lw94+cPFV6mVSWUQeyyKaGivVQqxeGasoH1iXE0/VWFcOmj2TnZ4MWOV0S7+z34HIHtrram2ktGF54V5Np++kK6Nssa4dn5BtkCAxzlhYjho7UmD2LQQrXOQjOfhP82EtO1b/jRqnpNIY6DpzMgcK75H9wzgFy3zrHY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com; spf=pass smtp.mailfrom=quicinc.com; dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b=lsozSrId; arc=none smtp.client-ip=205.220.168.131
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=quicinc.com
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b="lsozSrId"
+Received: from pps.filterd (m0279862.ppops.net [127.0.0.1])
+	by mx0a-0031df01.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 4644Hvpl028769;
+	Thu, 4 Jul 2024 09:12:36 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=quicinc.com; h=
+	cc:content-transfer-encoding:content-type:date:from:in-reply-to
+	:message-id:mime-version:references:subject:to; s=qcppdkim1; bh=
+	jG0Ib8Vn317l2flbKFBoO2J1QolULszJacV0GDH3cRw=; b=lsozSrId1LkKQpOe
+	wUOv51LWOdGuFHeocdddqO+vnwh7+jzRKxljoktjzA1D2AhQI7x9TvsKP0s1HKFD
+	XS92xqa9rnBa5M/bpbwp3B+WcinILEZEpVmOXoqMoHXzDqiMPkKaKONhW4hmAAiA
+	1oCvCrMt7/iBC6H4cUyM4DuSFL0NwuGEzQYsFsedUztKnoLqTzlDwxCUTXptfjiE
+	P/I2z8QITw1ROlUFA8ZbpES7xGyBLseVMUof6i26SEyuv8Gckutwc5NUmJ5F58aA
+	6ODt7qQsrlLg2rRponLkAkvSzwUUGLrAfah1k4YAeZIKe7WUBhzFrYL40jCyc6MJ
+	YUd2zg==
+Received: from nalasppmta05.qualcomm.com (Global_NAT1.qualcomm.com [129.46.96.20])
+	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 404kctn7vs-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Thu, 04 Jul 2024 09:12:35 +0000 (GMT)
+Received: from nalasex01c.na.qualcomm.com (nalasex01c.na.qualcomm.com [10.47.97.35])
+	by NALASPPMTA05.qualcomm.com (8.17.1.19/8.17.1.19) with ESMTPS id 4649CYxb013234
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Thu, 4 Jul 2024 09:12:34 GMT
+Received: from [10.214.66.253] (10.80.80.8) by nalasex01c.na.qualcomm.com
+ (10.47.97.35) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1544.9; Thu, 4 Jul 2024
+ 02:12:30 -0700
+Message-ID: <6ad2e62d-8672-4b64-848a-6634d7a9410e@quicinc.com>
+Date: Thu, 4 Jul 2024 14:42:27 +0530
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20240703155114.GB95824@unreal>
-User-Agent: Mutt/1.5.17 (2007-11-01)
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v13 4/6] iommu/arm-smmu: add ACTLR data and support for
+ SM8550
+To: Will Deacon <will@kernel.org>
+CC: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>, <robdclark@gmail.com>,
+        <robin.murphy@arm.com>, <joro@8bytes.org>, <jgg@ziepe.ca>,
+        <jsnitsel@redhat.com>, <robh@kernel.org>,
+        <krzysztof.kozlowski@linaro.org>, <quic_c_gdjako@quicinc.com>,
+        <konrad.dybcio@linaro.org>, <iommu@lists.linux.dev>,
+        <linux-arm-msm@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>, <linux-kernel@vger.kernel.org>
+References: <20240628140435.1652374-1-quic_bibekkum@quicinc.com>
+ <20240628140435.1652374-5-quic_bibekkum@quicinc.com>
+ <ueuhu5xfzp2rnuxzeqqd6cho476adidztgx7oq2tbiufauv6h4@obblpxvqwnno>
+ <6da77880-2ba4-4b02-8b3e-cb0fbd0a9daf@quicinc.com>
+ <20240703130209.GA5750@willie-the-truck>
+Content-Language: en-US
+From: Bibek Kumar Patro <quic_bibekkum@quicinc.com>
+In-Reply-To: <20240703130209.GA5750@willie-the-truck>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 8bit
+X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
+ nalasex01c.na.qualcomm.com (10.47.97.35)
+X-QCInternal: smtphost
+X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
+X-Proofpoint-GUID: e2Sxmnfg0-J0NMOvYal-1fw0fJpnlbN3
+X-Proofpoint-ORIG-GUID: e2Sxmnfg0-J0NMOvYal-1fw0fJpnlbN3
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.293,Aquarius:18.0.1039,Hydra:6.0.680,FMLib:17.12.28.16
+ definitions=2024-07-04_05,2024-07-03_01,2024-05-17_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 phishscore=0 adultscore=0
+ bulkscore=0 mlxlogscore=999 priorityscore=1501 impostorscore=0
+ suspectscore=0 mlxscore=0 lowpriorityscore=0 clxscore=1015 malwarescore=0
+ spamscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.19.0-2406140001 definitions=main-2407040063
 
-On Wed, Jul 03, 2024 at 06:51:14PM +0300, Leon Romanovsky wrote:
-> If we put aside this issue, do you think that the proposed API is the right one?
-
-I haven't look at it in detail yet, but from a quick look there is a
-few things to note:
 
 
-1) The amount of code needed in nvme worries me a bit.  Now NVMe a messy
-driver due to the stupid PRPs vs just using SGLs, but needing a fair
-amount of extra boilerplate code in drivers is a bit of a warning sign.
-I plan to look into this to see if I can help on improving it, but for
-that I need a working version first.
+On 7/3/2024 6:32 PM, Will Deacon wrote:
+> On Wed, Jul 03, 2024 at 05:45:23PM +0530, Bibek Kumar Patro wrote:
+>>
+>>
+>> On 7/2/2024 12:04 AM, Dmitry Baryshkov wrote:
+>>> On Fri, Jun 28, 2024 at 07:34:33PM GMT, Bibek Kumar Patro wrote:
+>>>> Add ACTLR data table for SM8550 along with support for
+>>>> same including SM8550 specific implementation operations.
+>>>>
+>>>> Signed-off-by: Bibek Kumar Patro <quic_bibekkum@quicinc.com>
+>>>> ---
+>>>>    drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c | 89 ++++++++++++++++++++++
+>>>>    1 file changed, 89 insertions(+)
+>>>>
+>>>> diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
+>>>> index 77c9abffe07d..b4521471ffe9 100644
+>>>> --- a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
+>>>> +++ b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
+>>>> @@ -23,6 +23,85 @@
+>>>>
+>>>>    #define CPRE			(1 << 1)
+>>>>    #define CMTLB			(1 << 0)
+>>>> +#define PREFETCH_SHIFT		8
+>>>> +#define PREFETCH_DEFAULT	0
+>>>> +#define PREFETCH_SHALLOW	(1 << PREFETCH_SHIFT)
+>>>> +#define PREFETCH_MODERATE	(2 << PREFETCH_SHIFT)
+>>>> +#define PREFETCH_DEEP		(3 << PREFETCH_SHIFT)
+>>>> +
+>>>> +static const struct actlr_config sm8550_apps_actlr_cfg[] = {
+>>>> +	{ 0x18a0, 0x0000, PREFETCH_SHALLOW | CPRE | CMTLB },
+>>>> +	{ 0x18e0, 0x0000, PREFETCH_SHALLOW | CPRE | CMTLB },
+>>>> +	{ 0x0800, 0x0020, PREFETCH_DEFAULT | CMTLB },
+>>>> +	{ 0x1800, 0x00c0, PREFETCH_DEFAULT | CMTLB },
+>>>> +	{ 0x1820, 0x0000, PREFETCH_DEFAULT | CMTLB },
+>>>> +	{ 0x1860, 0x0000, PREFETCH_DEFAULT | CMTLB },
+>>>> +	{ 0x0c01, 0x0020, PREFETCH_DEEP | CPRE | CMTLB },
+>>>
+>>> - Please keep the list sorted
+>>
+>> Sure Dmitry, will sort this list in reverse-christmas-tree order
+>> in next iteration. Thanks for this input.
+>>
+>>> - Please comment, which devices use these settings.
+>>
+>> As discussed in earlier versions of this patch, these table entries
+>> are kind of just blind values for SMMU device, where SMMU do not have
+>> idea on which SID belong to which client. During probe time when the
+>> clients' Stream-ID has corresponding ACTLR entry then the driver would
+>> set value in register.
+> 
+> I'm still firmly of the opinion that this stuff needs a higher-level
+> description in the device-tree and should not be hard-coded in the driver
+> like this. It's not just a list of opaque values; it describes
+> SoC-specific topological information that should not be this rigid.
+> 
 
+As per my understanding since ACTLR register is an implementation
+defined register,
+so I think the placement can also depend on factor of how these
+registers are used?
 
-2) The amount of seemingly unrelated global headers pulled into other
-global headers.  Some of this might just be sloppiness, e.g. I can't
-see why dma-mapping.h would actually need iommu.h to start with,
-but pci.h in dma-map-ops.h is a no-go.
+For Qualcomm SoCs, it stores prefetch values for each client, improving
+performance without defining hardware design.
+Even without setting this value, clients on these Stream-IDs would still
+function, albeit with reduced performance.
 
-3) which brings me to real layering violations.  dev_is_untrusted and
-dev_use_swiotlb are DMA API internals, no way I'd ever want to expose
-them. dma-map-ops.h is a semi-internal header only for implementations
-of the dma ops (as very clearly documented at the top of that file),
-it must not be included by drivers.  Same for swiotlb.h.
+The SteamID/Mask pair in first two columns <which is a SoC topology> is
+only used as reference to find preferred prefetch setting for the
+corresponding client on this StreamID
 
-Not quite as concerning, but doing an indirect call for each map
-through dma_map_ops in addition to the iommu ops is not every efficient.
-We've through for a while to allow direct calls to dma-iommu similar
-how we do direct calls to dma-direct from the core mapping.c code.
-This might be a good time to do that as a prep step for this work.
+To refer initial discussion and Robin's thoughts on device-tree approach
+for this property which we proposed as a part of RFC:
+https://lore.kernel.org/all/a01e7e60-6ead-4a9e-ba90-22a8a6bbd03f@quicinc.com/
 
+" On 9/18/2023 4:49 PM, Robin Murphy wrote: "
+ >
+ > At the very least this would need to be in a implementation-specific
+ > backend, since everything about ACTLR is implementation-defined; there
+ > could be bits in there that the driver needs to manage itself and
+ > clients have absolutely no business overriding (e.g. the MMU-500 errata
+ > workarounds). The generic driver can't know what's valid, nor what the
+ > consequences are of not being able to satisfy a particular setting. Then
+ > there's still the question of what if two clients ask for different
+ > settings but want to attach to the same context?
+ >
+ > It's also questionable whether this would belong in DT at all, since it
+ > has a bit of a smell of software policv about it.
+ >
+ > If it could be
+ > sufficiently justified then it would need a proper binding proposal, and
+ > "write this opaque value into this register" type properties are
+ > generally not approved of.
+ >
+ > Thanks,
+ > Robin.
+ >
+
+So as per the initial discussions it felt right to have this data stored
+inside driver.
+One potential downside is that the driver file could become cluttered
+with this data, but this can be mitigated by storing the table in a
+separate file if necessary.
+
+For use cases or vendor that implement the ACTLR register differently,
+deeply involving SoC topology values or defining hardware design
+(something similar to Stream Matching Register),then it might be more
+appropriate to place it in the devicetree?
+
+This is just my understanding. I’d appreciate your further thoughts on 
+this - Will, Robin, Dmitry, Rob.
+
+Thanks & regards,
+Bibek
+
+> Will
