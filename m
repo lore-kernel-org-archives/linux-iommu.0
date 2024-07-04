@@ -1,146 +1,248 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from NAM10-MW2-obe.outbound.protection.outlook.com (mail-mw2nam10on2070.outbound.protection.outlook.com [40.107.94.70])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2B5EDA20;
-	Thu,  4 Jul 2024 17:16:08 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1720113368; cv=none; b=p+6vB3T7+FYdSI83BE/iskMHeukX6UcZzT0dzn9jfj3v2C5PRxfAvhzaSysVSQiDn8yjDJPFJDK8mAhUwJfs9lhAHT9mpqBWEC89vgWTFHrVQYhFnN6twsyaN9DmR99vd8/J82X4sYrWeHgi55h4onmYlk63dyVMTOvpDxt4TIw=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1720113368; c=relaxed/simple;
-	bh=pNA8/Q/+goKs7oTKt+a3Cw9yHcXIncdaNs7gbU3axuo=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=fBUia8SHkmAOliNqojRLTQThukET53mIvX5tr+DV+G7FISNT7JUNypgOOPLSq1TonrE71ArH83tmNzOhPO6FxSMzJJ7q9uPcspqbIyNZ8PvdSOR2ahICWPgTj4KpPIY3+fGsxb6fmSceueM7vpUce2qLjt4TP8fiPyq/z/S1MQk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=CaAwoQJr; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CAA6E137750
+	for <iommu@lists.linux.dev>; Thu,  4 Jul 2024 23:19:13 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.94.70
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1720135155; cv=fail; b=RkB3YQ12X/S0PTOIF9Myv21jPCBxLSdB81zWBdkKse9Aaltk8emUrjyp08eaPgYQFMAz//gfRUf4QO9NT9RpV+keGnb7tkKTeHxsmcszYP9+XJppW3DN0C1W6yndc2XiYlLIB8jlGKWU2KIm/aCMyuuDBR7tFJkQX9l/tCYjJjE=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1720135155; c=relaxed/simple;
+	bh=lzXfi9ZflQSFvZYdLvpzIdw/echpmjiY+zo6edEzVbk=;
+	h=Date:From:To:CC:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=rlNXP1cWYB7WNN85h0h1dkvKdJDprlgs2rzcrpSPq16RZF+2LipodnX2d07UsgE3Okyrp9WN6PaIdFx7Gd6UzJKclXs529oHtG6u4DQQBKwElNGwxn8lbV3Js6ps5UVjfB5KmvrEMBl1dROqA6VkV0y708MPguq4L5RzyYRJcig=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=ImfJbMA8; arc=fail smtp.client-ip=40.107.94.70
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="CaAwoQJr"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 33CBDC3277B;
-	Thu,  4 Jul 2024 17:16:07 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1720113368;
-	bh=pNA8/Q/+goKs7oTKt+a3Cw9yHcXIncdaNs7gbU3axuo=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=CaAwoQJrZLArTEOfKusmY+hI3dr6PuiWIDAGemB23zwQ/bD7VJTzy3rb1U9K40ZyB
-	 /otipiTe+bwUNsaC6ZuVc/FviZm+4xAk2xQacK3lQNi9b9C6Rc7h/wCI7BS0VScrsf
-	 4tpxSoBJ33RZtNcI49felKJ65GDyJxoFFc0vfS3DWE0TZBsc0CA7zajLlHMMZq2nJ1
-	 BWwTxUhNOiJTR9T9zELEmujZkVJUUwVvWzO3p2r1Bum7+UJPdGxvl/n/B2MHdq+XCm
-	 MP6AVd9901F70GjDlGUnmWKECr+ExRRv6xOr2s0RZ4V/pVSadlxpSNJHRlLbIQ94pP
-	 b/fDR1hY0KIrA==
-Date: Thu, 4 Jul 2024 20:16:02 +0300
-From: Leon Romanovsky <leon@kernel.org>
-To: Robin Murphy <robin.murphy@arm.com>
-Cc: Jens Axboe <axboe@kernel.dk>, Jason Gunthorpe <jgg@ziepe.ca>,
-	Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
-	Keith Busch <kbusch@kernel.org>, Christoph Hellwig <hch@lst.de>,
-	"Zeng, Oak" <oak.zeng@intel.com>,
-	Chaitanya Kulkarni <kch@nvidia.com>,
-	Sagi Grimberg <sagi@grimberg.me>,
-	Bjorn Helgaas <bhelgaas@google.com>,
-	Logan Gunthorpe <logang@deltatee.com>,
-	Yishai Hadas <yishaih@nvidia.com>,
-	Shameer Kolothum <shameerali.kolothum.thodi@huawei.com>,
-	Kevin Tian <kevin.tian@intel.com>,
-	Alex Williamson <alex.williamson@redhat.com>,
-	Marek Szyprowski <m.szyprowski@samsung.com>,
-	=?iso-8859-1?B?Suly9G1l?= Glisse <jglisse@redhat.com>,
-	Andrew Morton <akpm@linux-foundation.org>,
-	linux-block@vger.kernel.org, linux-kernel@vger.kernel.org,
-	linux-rdma@vger.kernel.org, iommu@lists.linux.dev,
-	linux-nvme@lists.infradead.org, linux-pci@vger.kernel.org,
-	kvm@vger.kernel.org, linux-mm@kvack.org
-Subject: Re: [RFC PATCH v1 18/18] nvme-pci: use new dma API
-Message-ID: <20240704171602.GE95824@unreal>
-References: <cover.1719909395.git.leon@kernel.org>
- <47eb0510b0a6aa52d9f5665d75fa7093dd6af53f.1719909395.git.leon@kernel.org>
- <249ec228-4ffd-4121-bd51-f4a19275fee1@arm.com>
+	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="ImfJbMA8"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=LWUPN5D543G2W8RNS2PMsfiCjxK7BIpmtis6BbQeYwgWW9CUkv1K/d4Nx+w8B7YOYB2DannZqt6szlkUOUFjI3b33Xai2eYYqzTNumnWjhkRdc6r+ud+mBk/LBdyI/Q5pYqr8e/gNSxBuXEn1YRWrxl4pkmXtcMm598aKaRVzQhOgSbnMYAmSQddACQQt88XheKrZUoZpiWgBjUGlk0x+o7nMljlRfCWRnXpC44UortsFviAEcwawwUk7/em8ZO8ucfG1ZxKNOi/FwGx/enpDgrJY4yKxv0jJxJ/Ed2fSRtKwuSNZqswpYhiEfqUWmcuanWn128V3WiXNE3te6JHRA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=ilbMOsbd+a1Wf0jibFOMfvmsZO77LBBjB/STe/h1tZ8=;
+ b=l366e4wUPljWIzKvZNMMzAwJPrI/R6oELILZkWtKtmnYOF7Mf0/B+WwF63x6IX9c51C1dpj9Cv7s4Gpqjr3fv8bvD+1WaQPvZFD6+lknZGs+Z12eSHJq5Hu/xL2T09kIuiCGXWgphx6AyBzLs83D+UbXQ625DZ04G0x+DXcyyNOBajaW017glDa2Tbe01eCGrtDgeuNblyHS7gip1XHVExUaKWibslLPeT2UCsnkydQQ5XNTxXD7ofgODw8Insy72KzRMsO8otbw/qxxQe4Y/l06q1ySGWt4q4r6H6mbu2kYxlQw5NLei0nffcOWSgvpLqx7O7SEll0VJkCt01012g==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 216.228.117.160) smtp.rcpttodomain=intel.com smtp.mailfrom=nvidia.com;
+ dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
+ dkim=none (message not signed); arc=none (0)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=ilbMOsbd+a1Wf0jibFOMfvmsZO77LBBjB/STe/h1tZ8=;
+ b=ImfJbMA8ZUWP53Xd1qlUmmIs1PgxoukhkQIW+SU9cmDMSfShdOfv4DTXQybuF7z4dodN8EQtqnZSW98KmmDdEl81SEhc0hCH/RDw7fjG3xUMF0elMhbFrFr8Yfppg49+I2HgDFGYMWYPgJQI/ueHR2+a5pgnjIVu3ZWfsrrBfZO2WDrxlV1+4AMMTzuPtxx1JkDR9ogYSDh2kkfouCvSriiltjE3GPG5yPp4TXNpbmZipLPRYYQUw9/EwqcV2wFC4AEUqDVjUGNNmSrJC80xkGtGzJ8AohFeHFWVHtGdXXZ2DA2SPJOnZgOVcFgmIA6zHz3z7ZrjX0pBk0JInHgXzw==
+Received: from MN2PR14CA0025.namprd14.prod.outlook.com (2603:10b6:208:23e::30)
+ by DS7PR12MB8229.namprd12.prod.outlook.com (2603:10b6:8:ea::21) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7741.26; Thu, 4 Jul
+ 2024 23:19:08 +0000
+Received: from BL6PEPF00020E60.namprd04.prod.outlook.com
+ (2603:10b6:208:23e:cafe::d6) by MN2PR14CA0025.outlook.office365.com
+ (2603:10b6:208:23e::30) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7741.30 via Frontend
+ Transport; Thu, 4 Jul 2024 23:19:07 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.117.160)
+ smtp.mailfrom=nvidia.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=nvidia.com;
+Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
+ 216.228.117.160 as permitted sender) receiver=protection.outlook.com;
+ client-ip=216.228.117.160; helo=mail.nvidia.com; pr=C
+Received: from mail.nvidia.com (216.228.117.160) by
+ BL6PEPF00020E60.mail.protection.outlook.com (10.167.249.21) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.7741.18 via Frontend Transport; Thu, 4 Jul 2024 23:19:07 +0000
+Received: from rnnvmail204.nvidia.com (10.129.68.6) by mail.nvidia.com
+ (10.129.200.66) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1544.4; Thu, 4 Jul 2024
+ 16:18:55 -0700
+Received: from rnnvmail201.nvidia.com (10.129.68.8) by rnnvmail204.nvidia.com
+ (10.129.68.6) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1544.4; Thu, 4 Jul 2024
+ 16:18:54 -0700
+Received: from Asurada-Nvidia (10.127.8.13) by mail.nvidia.com (10.129.68.8)
+ with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1544.4 via Frontend
+ Transport; Thu, 4 Jul 2024 16:18:53 -0700
+Date: Thu, 4 Jul 2024 16:18:52 -0700
+From: Nicolin Chen <nicolinc@nvidia.com>
+To: "Tian, Kevin" <kevin.tian@intel.com>, Baolu Lu <baolu.lu@linux.intel.com>
+CC: Jason Gunthorpe <jgg@ziepe.ca>, Joerg Roedel <joro@8bytes.org>, "Will
+ Deacon" <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
+	"Jean-Philippe Brucker" <jean-philippe@linaro.org>, "Liu, Yi L"
+	<yi.l.liu@intel.com>, "Jacob Pan" <jacob.jun.pan@linux.intel.com>, Joel
+ Granados <j.granados@samsung.com>, "iommu@lists.linux.dev"
+	<iommu@lists.linux.dev>, "virtualization@lists.linux-foundation.org"
+	<virtualization@lists.linux-foundation.org>, "linux-kernel@vger.kernel.org"
+	<linux-kernel@vger.kernel.org>, Jason Gunthorpe <jgg@nvidia.com>
+Subject: Re: [PATCH v8 06/10] iommufd: Add iommufd fault object
+Message-ID: <Zoct3LVVHhDNbPBT@Asurada-Nvidia>
+References: <20240702063444.105814-1-baolu.lu@linux.intel.com>
+ <20240702063444.105814-7-baolu.lu@linux.intel.com>
+ <ZoXZZ2SJ/WdlMJaX@Asurada-Nvidia>
+ <309e37d1-6066-4ba1-b30c-402a3c3e7c76@linux.intel.com>
+ <ZoY01iLmzoV4fIPG@Asurada-Nvidia>
+ <BN9PR11MB52769E10ED0741F5ED3E5B668CDE2@BN9PR11MB5276.namprd11.prod.outlook.com>
+ <fc7f5bb1-25b7-4a5f-8d6b-1fa17b1af534@linux.intel.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset="us-ascii"
 Content-Disposition: inline
-In-Reply-To: <249ec228-4ffd-4121-bd51-f4a19275fee1@arm.com>
+In-Reply-To: <fc7f5bb1-25b7-4a5f-8d6b-1fa17b1af534@linux.intel.com>
+X-NV-OnPremToCloud: ExternallySecured
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: BL6PEPF00020E60:EE_|DS7PR12MB8229:EE_
+X-MS-Office365-Filtering-Correlation-Id: 8c9e9666-84ed-44c5-86b2-08dc9c7fb41c
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam:
+	BCL:0;ARA:13230040|376014|7416014|82310400026|36860700013|1800799024;
+X-Microsoft-Antispam-Message-Info:
+	=?us-ascii?Q?XJkvCbTmxGadi7sMc3SD0aPusH/ZxGFFpnyp6u5tIcEpeU8KVG4LTMP91TAd?=
+ =?us-ascii?Q?v1d1Ny0j3DUHQJxQVSaUvAN82y7Wp6Eg8Ex1ZHp+zmdszrcDrujrfeGKFu2U?=
+ =?us-ascii?Q?9WoVjxvTjPDQlzhL+kEqeTwz/trLmEv6znS1QABcNYW5i1oULPRR/eiwZ534?=
+ =?us-ascii?Q?zTn3/buHqYSVinFA/EuEXjwnn5SgxlqHZMPfWSvGIZ+KOc1svjf7hbIkczyY?=
+ =?us-ascii?Q?njiUJq3V27fPNGKy8pC07RvgVL6ToBlLUytu20PF8FbcZC0SSawnmKUYzkVS?=
+ =?us-ascii?Q?LljgucBvxr9D27ajMm4q9lslA1YwEQPHvtDLHNKeqm/O75o7F4I5YYnJJw15?=
+ =?us-ascii?Q?BsKsAeDSsYw6dRPthA4Ltf+Rirs5nGNKE8H638E7UfvU3ll2P/hi1bhm/UaT?=
+ =?us-ascii?Q?Xdmogz4EXtYIDYHTr7UGzRBvf9Qt37Sl3mYZ0jBfCH+zd5PMD0pcbflkwu98?=
+ =?us-ascii?Q?ibyd38E2GqR4uIWxGH6zdTOslKpUJtLSvF3g7tZQyCO+lR0fil04rNFDdvdB?=
+ =?us-ascii?Q?IT+42xpANzAWUE1916cLYB8KGy8BftF6G7hQQMJag1YVp0ARkATOXofUVMSh?=
+ =?us-ascii?Q?9/Gs6PsON6PlDcCI/eJcAkG2fGUxmOlYwa3Z1b0goElxV/HGi2GbLIp8xbAI?=
+ =?us-ascii?Q?buD1Q1TnhoWLKZxlHESTLr4Nx/xcViAYEjKLmMN1VXm4JiDjLE3GMZt5bSRT?=
+ =?us-ascii?Q?5AWzJ0KL7qDrlQ7qREbE4KptRFGJJY6LolkjNEWUkPabc6LHuT2LpCkl3UNe?=
+ =?us-ascii?Q?g3gDoiORl6Xn0BM0gfSagTPFsHuq2FA5GbMNCwWl+ZadzHZw/CTdkhUKl+KC?=
+ =?us-ascii?Q?9r7feTi9w222tbhULzbQEioE+AS/V8+kHgoyZYxnpUZQVBf2fcco68RG53xf?=
+ =?us-ascii?Q?WYEHqqpWI9884O2W8GuFWiD5VHP5+7Jusnb2UgakYYHhBPMRT0W2CgtmKTut?=
+ =?us-ascii?Q?EKErUjCcn1OVJYRDqvAT5EQsGj+gMTg3nGBHrLqGd0K0f2S0KaONijDEDRJF?=
+ =?us-ascii?Q?teTO1BjNidnKPb1kNI2WriFe3XCAbI6/cqtEqYmb80yAFxSADXoLCsXeOPdU?=
+ =?us-ascii?Q?w7uyUngD/FJ709h80NMPlWzMzT5+EdWlYblkbSi4o/kzfQOLRLQtWk29sfLW?=
+ =?us-ascii?Q?CK9F7gl3HsSN43sdj5jdl8VCgSBH25DQpkPJJ7Q1AnAwsZDacenU7cK9J+gc?=
+ =?us-ascii?Q?XFX2LZNCUoztthm6ott9LvTprxpkBUCY+b4JulokkW2v5m6iBZSbSsAQ0VB/?=
+ =?us-ascii?Q?nMlRlrNR5qxsTQrKZJGSTXz5YkZLsIeIjwT8NMZPankxC2Di6UueY+JQhzaB?=
+ =?us-ascii?Q?joTJqkf7aYLwKBZUFQd/XRf97eEoV5FCs48DSw7mo4O3yXvP759wZh31wOpg?=
+ =?us-ascii?Q?7Iey7O+cghubd8pZH0RafiHl0x6HUITYTCBscr+3wqEyLZE0DTlxgjygGBFH?=
+ =?us-ascii?Q?291zdaePAxVOWaTCze+WFE4F3lUfah6c?=
+X-Forefront-Antispam-Report:
+	CIP:216.228.117.160;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc6edge1.nvidia.com;CAT:NONE;SFS:(13230040)(376014)(7416014)(82310400026)(36860700013)(1800799024);DIR:OUT;SFP:1101;
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 04 Jul 2024 23:19:07.4284
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: 8c9e9666-84ed-44c5-86b2-08dc9c7fb41c
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.117.160];Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-AuthSource:
+	BL6PEPF00020E60.namprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DS7PR12MB8229
 
-On Thu, Jul 04, 2024 at 04:23:47PM +0100, Robin Murphy wrote:
-> On 02/07/2024 10:09 am, Leon Romanovsky wrote:
-> [...]
-> > +static inline dma_addr_t nvme_dma_link_page(struct page *page,
-> > +					   unsigned int poffset,
-> > +					   unsigned int len,
-> > +					   struct nvme_iod *iod)
-> >   {
-> > -	int i;
-> > -	struct scatterlist *sg;
-> > +	struct dma_iova_attrs *iova = &iod->dma_map->iova;
-> > +	struct dma_iova_state *state = &iod->dma_map->state;
-> > +	dma_addr_t dma_addr;
-> > +	int ret;
-> > +
-> > +	if (iod->dma_map->use_iova) {
-> > +		phys_addr_t phys = page_to_phys(page) + poffset;
+On Thu, Jul 04, 2024 at 03:32:32PM +0800, Baolu Lu wrote:
+> On 2024/7/4 14:37, Tian, Kevin wrote:
+> > > From: Nicolin Chen<nicolinc@nvidia.com>
+> > > Sent: Thursday, July 4, 2024 1:36 PM
+> > > 
+> > > On Thu, Jul 04, 2024 at 10:59:45AM +0800, Baolu Lu wrote:
+> > > > > On Tue, Jul 02, 2024 at 02:34:40PM +0800, Lu Baolu wrote:
+> > > > > 
+> > > > > +enum iommu_fault_type {
+> > > > > +     IOMMU_FAULT_TYPE_HWPT_IOPF,
+> > > > > +     IOMMU_FAULT_TYPE_VIOMMU_IRQ,
+> > > > > +};
+> > > > > 
+> > > > >    struct iommu_fault_alloc {
+> > > > >        __u32 size;
+> > > > >        __u32 flags;
+> > > > > +     __u32 type;  /* enum iommu_fault_type */
+> > > > >        __u32 out_fault_id;
+> > > > >        __u32 out_fault_fd;
+> > and need a new reserved field for alignment.
+
+Hmm, what's the reason for enforcing a 64-bit alignment to an
+all-u32 struct though? I thought we need a reserved field only
+for padding. The struct iommu_ioas_alloc has three u32 members
+for example?
+
+> > > > >    };
+> > > > > 
+> > > > > I understand that this is already v8. So, maybe we can, for now,
+> > > > > apply the small diff above with an IOMMU_FAULT_TYPE_HWPT_IOPF
+> > > type
+> > > > > check in the ioctl handler. And a decoupling for the iopf fops in
+> > > > > the ioctl handler can come later in the viommu series:
+> > > > >        switch (type) {
+> > > > >        case IOMMU_FAULT_TYPE_HWPT_IOPF:
+> > > > >                filep = anon_inode_getfile("[iommufd-pgfault]",
+> > > > >                                           &iommufd_fault_fops_iopf);
+> > > > >        case IOMMU_FAULT_TYPE_VIOMMU_IRQ:
+> > > > >                filep = anon_inode_getfile("[iommufd-viommu-irq]",
+> > > > >                                           &iommufd_fault_fops_viommu);
+> > > > >        default:
+> > > > >                return -EOPNOSUPP;
+> > > > >        }
+> > > > > 
+> > > > > Since you are the designer here, I think you have a better 10000
+> > > > > foot view -- maybe I am missing something here implying that the
+> > > > > fault object can't be really reused by viommu.
+> > > > > 
+> > > > > Would you mind sharing some thoughts here?
+> > > > I think this is a choice between "two different objects" vs. "same
+> > > > object with different FD interfaces". If I understand it correctly, your
+> > > > proposal of unrecoverable fault delivery is not limited to vcmdq, but
+> > > > generic to all unrecoverable events that userspace should be aware of
+> > > > when the passed-through device is affected.
+> > > It's basically IRQ forwarding, not confined to unrecoverable
+> > > faults. For example, a VCMDQ used by the guest kernel would
+> > > raise an HW IRQ if the guest kernel issues an illegal command
+> > > to the HW Queue assigned to it. The host kernel will receive
+> > > the IRQ, so it needs a way to forward it to the VM for guest
+> > > kernel to recover the HW queue.
+> > > 
+> > > The way that we define the structure can follow what we have
+> > > for hwpt_alloc/invalidate uAPIs, i.e. driver data/event. And
+> > > such an event can carry unrecoverable translation faults too.
+> > > SMMU at least reports DMA translation faults using an eventQ
+> > > in its own native language.
+> > > 
+> > > >  From a hardware architecture perspective, the interfaces for
+> > > > unrecoverable events don't always match the page faults. For example,
+> > > > VT-d architecture defines a PR queue for page faults, but uses a
+> > > > register set to report unrecoverable events. The 'reason', 'request id'
+> > > > and 'pasid' fields of the register set indicate what happened on the
+> > > > hardware. New unrecoverable events will not be reported until the
+> > > > previous one has been fetched.
+> > > Understood. I don't think we can share the majority pieces in
+> > > the fault.c. Just the "IOMMU_FAULT_QUEUE_ALLOC" ioctl itself
+> > > looks way too general to be limited to page-fault usage only.
+> > > So, I feel we can share, for example:
+> > >      IOMMU_FAULT_QUEUE_ALLOC (type=hwpt_iopf) -> fault_id=1
+> > >      IOMMU_HWPT_ALLOC (fault_id=1) -> hwpt_id=2
+> > >      IOMMU_FAULT_QUEUE_ALLOC (type=viommu_irq) -> fault_id=3
+> > >      IOMMU_VIOMMU_ALLOC (fault_id=2) -> viommu_id=4
+> > > The handler will direct to different fops as I drafted in my
+> > > previous mail.
+> > > 
+> > > > With the above being said, I have no strong opinions between these two
+> > > > choices. Jason and Kevin should have more insights.
+> > > Thanks. Jason is out of office this week, so hopefully Kevin
+> > > may shed some light. I personally feel that we don't need to
+> > > largely update this series until we add VIOMMU. Yet, it would
+> > > be convenient if we add a "type" in the uAPI with this series.
+> > > 
+> > This is ok to me.
 > 
-> Yeah, there's no way this can possibly work. You can't do the
-> dev_use_swiotlb() check up-front based on some overall DMA operation size,
-> but then build that operation out of arbitrarily small fragments of
-> different physical pages that *could* individually need bouncing to not
-> break coherency.
-
-This is exactly how dma_map_sg() works. It checks in advance all SG and
-proceeds with bounce buffer if needed. In our case all checks which
-exists in dev_use_sg_swiotlb() will give "false". In v0, Christoph said
-that NVMe guarantees alignment, which is only one "dynamic" check in
-that function.
-
-   600 static bool dev_use_sg_swiotlb(struct device *dev, struct scatterlist *sg,
-   601                                int nents, enum dma_data_direction dir)
-   602 {
-   603         struct scatterlist *s;
-   604         int i;
-   605
-   606         if (!IS_ENABLED(CONFIG_SWIOTLB))
-   607                 return false;
-   608
-   609         if (dev_is_untrusted(dev))
-   610                 return true;
-   611
-   612         /*
-   613          * If kmalloc() buffers are not DMA-safe for this device and
-   614          * direction, check the individual lengths in the sg list. If any
-   615          * element is deemed unsafe, use the swiotlb for bouncing.
-   616          */
-   617         if (!dma_kmalloc_safe(dev, dir)) {
-   618                 for_each_sg(sg, s, nents, i)
-   619                         if (!dma_kmalloc_size_aligned(s->length))
-   620                                 return true;
-   621         }
-   622
-   623         return false;
-   624 }
-
-   ...
-  1338 static int iommu_dma_map_sg(struct device *dev, struct scatterlist *sg,
-  1339                 int nents, enum dma_data_direction dir, unsigned long attrs)
-  ...
-  1360         if (dev_use_sg_swiotlb(dev, sg, nents, dir))                          
-  1361                 return iommu_dma_map_sg_swiotlb(dev, sg, nents, dir, attrs);   
-
-Thanks
-
+> So
 > 
-> Thanks,
-> Robin.
-> 
-> > +
-> > +		dma_addr = state->iova->addr + state->range_size;
-> > +		ret = dma_link_range(&iod->dma_map->state, phys, len);
-> > +		if (ret)
-> > +			return DMA_MAPPING_ERROR;
-> > +	} else {
-> > +		dma_addr = dma_map_page_attrs(iova->dev, page, poffset, len,
-> > +					      iova->dir, iova->attrs);
-> > +	}
-> > +	return dma_addr;
-> > +}
-> 
+> Nicolin, perhaps can you please cook an additional patch on top of this
+> series and post it for further review?
+
+Thank you both for the inputs. Yea, so long as we merge them
+in the same cycle, it won't be a uAPI breakage. I will draft
+an incremental one. And Jason can make a final call.
+
+Nicolin
