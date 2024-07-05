@@ -1,419 +1,145 @@
-Received: from mail-lj1-f172.google.com (mail-lj1-f172.google.com [209.85.208.172])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6EBCF146A8A
-	for <iommu@lists.linux.dev>; Fri,  5 Jul 2024 13:05:17 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.172
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4D0C414C59C
+	for <iommu@lists.linux.dev>; Fri,  5 Jul 2024 13:42:28 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=170.10.129.124
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1720184719; cv=none; b=EavImADWWPIZPo+1s4YrgxDtdBomk1A5Dyc+l8M79qJga2NwSwzXmFRLIkip2MemXrYRH/OArjTPxyUqt3KkFww2kWKZCCuzwUsB+P0J6yTRVJ9LwD0dqtzT83RNI7nY97gd34UgNjQL3BzGjtVePyLur7Jjl3WVBXVhXNZpNgo=
+	t=1720186950; cv=none; b=njjJ5EahPeXmwtW72ezixbUudl/8ne9eWwgMEN2N5xmaLlZnpL8rZXSREbQGl3U2cu2ApFn9RXppReImhzrjUBL4WuBauMiaxtoVxH0Z/9/KiHehO9O5dmzc9h9uyQhXZ/yFar4UEQoJb8iVrNxUSCPHOghlPxfS0oxLY/8TuCk=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1720184719; c=relaxed/simple;
-	bh=wBzyCGvZlXrGtucgZe5QgnlabcM77Tfn3Q0JRN4Rovo=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=u4H35wFeJSeSdJ0zvl02lsqi+IEITInji7RP6Ts/DUFByxyNYI21mS2V9BhE7BSUgfdGGK/yNOudxJ+uGG9hzKwlLb5o1du95RlUXBwynWHbkRHPGOQ8U0mOkzCncNJlXIPwpMMByl3kiU7DA5l7r2sTtQO8ytJF41nb6YMW7so=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=hb/+SADe; arc=none smtp.client-ip=209.85.208.172
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1720186950; c=relaxed/simple;
+	bh=xAiLtazfBXSZFhUCuJv5iLA8GUS2Erahe3O/6nbCjGE=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 In-Reply-To:Content-Type:Content-Disposition; b=qxEDWBcTUbV333noT9HNpKew+1I+gYEy3/M3IenSv7d4R7CxKPqmweFZEy1OYB5aWhVh0fwAAqrqeFAb1MDkK7E3GjfxThRfFGYAbSl+j06opi8vAd9W0v7VEPKRjK3fqmdAWWJRee+WiM7kM4rqB//GPu03QtNlncoYBijTl5s=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=redhat.com; spf=pass smtp.mailfrom=redhat.com; dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b=bpWpiZWt; arc=none smtp.client-ip=170.10.129.124
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=redhat.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=redhat.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="hb/+SADe"
-Received: by mail-lj1-f172.google.com with SMTP id 38308e7fff4ca-2ebe785b234so17545231fa.1
-        for <iommu@lists.linux.dev>; Fri, 05 Jul 2024 06:05:17 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1720184715; x=1720789515; darn=lists.linux.dev;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=/Kq2UKMfyZSG8CmSMNXs7gnYEo7SViN3yYFQkgYUzKI=;
-        b=hb/+SADenWOItpp0wsc+OdlSncTuxqPfZ1ljquYZtp1Knwlpej/g5TrbrTolARggop
-         /K+gysMKOUzs4tqzCp0ehIhjEGR3n4b3mtFiYUA3vref714ERvW8ElWjs4Cf42L2Wvhu
-         FW6A54mDCbHr9JXjdgaEg93HIujh/J4hsv0Tklo9kDjPV6nAs1riFI+9PLYChmMRShnm
-         FG8DmXqG0rwnZcHokSlVzqI3786/hSeSX4J6wHQoG1nTGiCLPRYU1RdjL91qSlZYzNu/
-         u/Hcof+7VkBkZm14de8IwtAxxwywhf6zNie90Td3z2//bY93lCXm6lAfXnrE0nXjdQ6k
-         8Ikg==
+	dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="bpWpiZWt"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+	s=mimecast20190719; t=1720186947;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 in-reply-to:in-reply-to:references:references;
+	bh=lNWQiXa5WTonO6VnFXHoZW4uvs/niJejriJYafDuJeE=;
+	b=bpWpiZWtGij1UUtfdU8lo/VBPlZfJZBgH5ziz7t0RvheZGq/0IgI/1AS3c2TAMF6Ivp+yZ
+	siXFJZMR9y4pIWaaRPvJEePB0u4N/HkuekY66gXr00j9aCtjCUNjouYubmr9RdTtAqNFMj
+	JcxJ+Kog6hrcDU48UmIjUmN+P3ob5d0=
+Received: from mail-qk1-f198.google.com (mail-qk1-f198.google.com
+ [209.85.222.198]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
+ us-mta-653-FmtF85zvPVKItoW38fkDCg-1; Fri, 05 Jul 2024 09:42:25 -0400
+X-MC-Unique: FmtF85zvPVKItoW38fkDCg-1
+Received: by mail-qk1-f198.google.com with SMTP id af79cd13be357-79ef85570d8so102143385a.1
+        for <iommu@lists.linux.dev>; Fri, 05 Jul 2024 06:42:25 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1720184715; x=1720789515;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=/Kq2UKMfyZSG8CmSMNXs7gnYEo7SViN3yYFQkgYUzKI=;
-        b=BNim0gnQFGYAzBHRxioNBwZkrw5MGgR5JvMj4gAY6YAXUcnbxuh6jS1ilMACoR8q0s
-         IDZBmVgmJetbVTErKeCZLbYwgZaq/OlqEM03oIFC4LfQj+GQef86dhZpDzg2f+iQkm55
-         8X6u366DLMFHWgk1VSwQ54I/ljT44+Cupqayw5VgxOh1gZamHhUI3es0S1I7e4fTT9Cz
-         rvqTWEv7lzlB2KiIFpUssMFbZbQFsT4BqT0tNr92B/eYm7BPZbGjlYWmJvVWoGibSC8/
-         pWUGjOlo8AMAuZ13/aHROD9Tz0/ATGWrzjrZHuCorgpx4fhZnaR4ffKFGdR18KMGonc6
-         WyiQ==
-X-Forwarded-Encrypted: i=1; AJvYcCVhGTKPhT6iGQG7ME5fregaK62Z1rYgq2dFEhal1VJP939eBPWFFu0d6vhwVwMOMH6Vrv8/SNX7Ps6t6mCTQ3DLcvSOHTU=
-X-Gm-Message-State: AOJu0Yw0RXwM47sVw5rZPFH8O0hClEXVEzbJ4j1C8dJaGvdCJn7rz5M/
-	RQXmeVqct5Vf8uV75uInBDLrM+x030F5ERKCW1pHrcAneKwUZ5yd
-X-Google-Smtp-Source: AGHT+IFa5r5ZKGcjLyiUMDN8L/oSRNvhombRkJzjuV9r/itwTc5sVm9f2Y2DKblhSa3bPwC2+LYr9w==
-X-Received: by 2002:a2e:8017:0:b0:2ee:46ec:60bc with SMTP id 38308e7fff4ca-2ee8ed62914mr28303561fa.27.1720184714805;
-        Fri, 05 Jul 2024 06:05:14 -0700 (PDT)
-Received: from ?IPV6:2001:678:a5c:1202:4fb5:f16a:579c:6dcb? (soda.int.kasm.eu. [2001:678:a5c:1202:4fb5:f16a:579c:6dcb])
-        by smtp.gmail.com with ESMTPSA id 38308e7fff4ca-2ee96a836b8sm1497511fa.102.2024.07.05.06.05.13
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 05 Jul 2024 06:05:14 -0700 (PDT)
-Message-ID: <986361f4-f000-4129-8214-39f2fb4a90da@gmail.com>
-Date: Fri, 5 Jul 2024 15:05:12 +0200
+        d=1e100.net; s=20230601; t=1720186945; x=1720791745;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=lNWQiXa5WTonO6VnFXHoZW4uvs/niJejriJYafDuJeE=;
+        b=LAxdZ+h1Q8YRm/yJfOOr3QWxLuZvfAW9EWiWJwS5h//2LQMZj06mX5WOWaGoDXRh+t
+         38wdYibZ0Hx2ZoXqwGJfAdQirmDRqe2VRyrQXKhUDOMMiul87LGQIvw5mEcdJpJbj372
+         nXZaXbMQq4ABB/6otBMTSezvW9bFB4NIE85RuPmkalpG+mpIU1osU2eWlp8ppDPmCEYL
+         EIfNJFk75k0kBllwpru8T99oduqoqi/D1C/6iZNQ1oFd53bocZ3IjoDzk0jY0Wp5BJJY
+         1vX4lf/fNc/mIdC5UDIQum5ZsXRZ47M3XGEOkz1cXMIskbT1zQoP0C+Jatndxx2EUhoF
+         9c8g==
+X-Forwarded-Encrypted: i=1; AJvYcCVf6e0wpQs4Ss+n69oIsgCGCOzzJYhAfQD20aP07kx2mF934D3VS5YTGQBEalsNaA60ROb36qQGMUWm5ptSO6IxymDlgag=
+X-Gm-Message-State: AOJu0YyB3/y3N8XAT5iH1n6UX78NprZWzH9DlqI+7s2LyK9ogAZzZe2Z
+	OgenOLcxT/xRMr068lrSj/0v4W1oJWcH71/rTBAbEI3vlvBZDVAHAnm+M+vTBod3OGcKrpHC682
+	PTIbmZJl+Vx3hhDSxIC3Sz8D5Grw72M6KwRGlG94s2x69x/ye9aps
+X-Received: by 2002:a05:620a:13d2:b0:79d:7e5a:d044 with SMTP id af79cd13be357-79eef4c0f06mr737796685a.28.1720186944972;
+        Fri, 05 Jul 2024 06:42:24 -0700 (PDT)
+X-Google-Smtp-Source: AGHT+IHzRoLCo4GeRRFCdesL0t0J6Xc2rhP3ZGCRDtPGGaxotQxYNzT1wzmgDzK5ccFskQ+43Nbdxg==
+X-Received: by 2002:a05:620a:13d2:b0:79d:7e5a:d044 with SMTP id af79cd13be357-79eef4c0f06mr737789985a.28.1720186944583;
+        Fri, 05 Jul 2024 06:42:24 -0700 (PDT)
+Received: from x1gen2nano ([2600:1700:1ff0:d0e0::b])
+        by smtp.gmail.com with ESMTPSA id af79cd13be357-79d69299b81sm773174785a.71.2024.07.05.06.42.21
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 05 Jul 2024 06:42:24 -0700 (PDT)
+Date: Fri, 5 Jul 2024 08:42:19 -0500
+From: Andrew Halaney <ahalaney@redhat.com>
+To: Andrew Lunn <andrew@lunn.ch>
+Cc: Tengfei Fan <quic_tengfan@quicinc.com>, andersson@kernel.org, 
+	konrad.dybcio@linaro.org, robh@kernel.org, krzk+dt@kernel.org, conor+dt@kernel.org, 
+	djakov@kernel.org, mturquette@baylibre.com, sboyd@kernel.org, 
+	jassisinghbrar@gmail.com, herbert@gondor.apana.org.au, davem@davemloft.net, 
+	manivannan.sadhasivam@linaro.org, will@kernel.org, joro@8bytes.org, conor@kernel.org, 
+	tglx@linutronix.de, amitk@kernel.org, thara.gopinath@gmail.com, 
+	linus.walleij@linaro.org, wim@linux-watchdog.org, linux@roeck-us.net, rafael@kernel.org, 
+	viresh.kumar@linaro.org, vkoul@kernel.org, edumazet@google.com, kuba@kernel.org, 
+	pabeni@redhat.com, mcoquelin.stm32@gmail.com, robimarko@gmail.com, 
+	bartosz.golaszewski@linaro.org, kishon@kernel.org, quic_wcheng@quicinc.com, 
+	alim.akhtar@samsung.com, avri.altman@wdc.com, bvanassche@acm.org, agross@kernel.org, 
+	gregkh@linuxfoundation.org, quic_tdas@quicinc.com, robin.murphy@arm.com, 
+	daniel.lezcano@linaro.org, rui.zhang@intel.com, lukasz.luba@arm.com, 
+	quic_rjendra@quicinc.com, ulf.hansson@linaro.org, quic_sibis@quicinc.com, 
+	otto.pflueger@abscue.de, luca@z3ntu.xyz, neil.armstrong@linaro.org, abel.vesa@linaro.org, 
+	bhupesh.sharma@linaro.org, alexandre.torgue@foss.st.com, peppe.cavallaro@st.com, 
+	joabreu@synopsys.com, netdev@vger.kernel.org, lpieralisi@kernel.org, kw@linux.com, 
+	bhelgaas@google.com, krzysztof.kozlowski@linaro.org, u.kleine-koenig@pengutronix.de, 
+	dmitry.baryshkov@linaro.org, quic_cang@quicinc.com, danila@jiaxyga.com, 
+	quic_nitirawa@quicinc.com, mantas@8devices.com, athierry@redhat.com, 
+	quic_kbajaj@quicinc.com, quic_bjorande@quicinc.com, quic_msarkar@quicinc.com, 
+	quic_devipriy@quicinc.com, quic_tsoni@quicinc.com, quic_rgottimu@quicinc.com, 
+	quic_shashim@quicinc.com, quic_kaushalk@quicinc.com, quic_tingweiz@quicinc.com, 
+	quic_aiquny@quicinc.com, srinivas.kandagatla@linaro.org, linux-arm-msm@vger.kernel.org, 
+	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, linux-pm@vger.kernel.org, 
+	linux-clk@vger.kernel.org, linux-phy@lists.infradead.org, linux-crypto@vger.kernel.org, 
+	linux-scsi@vger.kernel.org, linux-usb@vger.kernel.org, linux-arm-kernel@lists.infradead.org, 
+	iommu@lists.linux.dev, linux-gpio@vger.kernel.org, linux-watchdog@vger.kernel.org, 
+	linux-pci@vger.kernel.org, linux-stm32@st-md-mailman.stormreply.com, kernel@quicinc.com
+Subject: Re: [PATCH 29/47] dt-bindings: net: qcom,ethqos: add description for
+ qcs9100
+Message-ID: <gt35pxlulfowpbca3sb6nf5ble4lhq3kolmjyc275vtdcmeixx@gkctewz6tbwv>
+References: <20240703025850.2172008-1-quic_tengfan@quicinc.com>
+ <20240703025850.2172008-30-quic_tengfan@quicinc.com>
+ <u5ekupjqvgoehkl76pv7ljyqqzbnnyh6ci2dilfxfkcdvdy3dp@ehdujhkul7ow>
+ <f4162b7f-d957-4dd6-90a0-f65c1cbc213a@quicinc.com>
+ <add1bdda-2321-4c47-91ef-299f99385bc8@lunn.ch>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v6 3/4] of: reserved_mem: Use unflatten_devicetree APIs to
- scan reserved memory nodes
-To: Oreoluwa Babatunde <quic_obabatun@quicinc.com>, robh@kernel.org,
- saravanak@google.com, hch@lst.de, m.szyprowski@samsung.com,
- robin.murphy@arm.com, will@kernel.org, catalin.marinas@arm.com
-Cc: devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
- iommu@lists.linux.dev, kernel@quicinc.com
-References: <20240528223650.619532-1-quic_obabatun@quicinc.com>
- <20240528223650.619532-4-quic_obabatun@quicinc.com>
-Content-Language: en-US, sv-SE
-From: Klara Modin <klarasmodin@gmail.com>
-In-Reply-To: <20240528223650.619532-4-quic_obabatun@quicinc.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+In-Reply-To: <add1bdda-2321-4c47-91ef-299f99385bc8@lunn.ch>
+X-Mimecast-Spam-Score: 0
+X-Mimecast-Originator: redhat.com
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 
-Hi,
-
-On 2024-05-29 00:36, Oreoluwa Babatunde wrote:
-> The unflatten_devicetree APIs have been setup and are available to be
-> used by the time the fdt_init_reserved_mem() function is called.
-> Since the unflatten_devicetree APIs are a more efficient way of scanning
-> through the DT nodes, switch to using these APIs to facilitate the rest
-> of the reserved memory processing.
-
-With this patch series, I've observed significantly less memory 
-available to userspace on my Raspberry Pi 1 and 3.
-
-I see this message on the kernel console:
-Jul  4 23:13:49 bonnet kernel: OF: reserved mem: 0x1b000000..0x1effffff 
-(65536 KiB) map non-reusable linux
-
-where it was previously marked as reusable:
-Jul  4 22:23:22 bonnet kernel: OF: reserved mem: 0x1b000000..0x1effffff 
-(65536 KiB) map reusable linux,cma
-
-If I look at bcm283x.dtsi, it definitely has the reusable property.
-
-I've below pointed out the snippet I think could be suspicous.
-
+On Thu, Jul 04, 2024 at 06:03:14PM GMT, Andrew Lunn wrote:
+> On Thu, Jul 04, 2024 at 09:13:59AM +0800, Tengfei Fan wrote:
+> > 
+> > 
+> > On 7/3/2024 11:09 PM, Andrew Halaney wrote:
+> > > On Wed, Jul 03, 2024 at 10:58:32AM GMT, Tengfei Fan wrote:
+> > > > Add the compatible for the MAC controller on qcs9100 platforms. This MAC
+> > > > works with a single interrupt so add minItems to the interrupts property.
+> > > > The fourth clock's name is different here so change it. Enable relevant
+> > > > PHY properties. Add the relevant compatibles to the binding document for
+> > > > snps,dwmac as well.
+> > > 
+> > > This description doesn't match what was done in this patch, its what
+> > > Bart did when he made changes to add the sa8775 changes. Please consider
+> > > using a blurb indicating that this is the same SoC as sa8775p, just with
+> > > different firmware strategies or something along those lines?
+> > 
+> > I will update this commit message as you suggested.
 > 
-> Signed-off-by: Oreoluwa Babatunde <quic_obabatun@quicinc.com>
-> ---
->   drivers/of/of_reserved_mem.c    | 93 ++++++++++++++++++++-------------
->   include/linux/of_reserved_mem.h |  2 +-
->   kernel/dma/coherent.c           | 10 ++--
->   kernel/dma/contiguous.c         |  8 +--
->   kernel/dma/swiotlb.c            | 10 ++--
->   5 files changed, 72 insertions(+), 51 deletions(-)
+> Hi Andrew, Tengfei
 > 
-> diff --git a/drivers/of/of_reserved_mem.c b/drivers/of/of_reserved_mem.c
-> index 113d593ea031..05283cd24c3b 100644
-> --- a/drivers/of/of_reserved_mem.c
-> +++ b/drivers/of/of_reserved_mem.c
-> @@ -14,6 +14,7 @@
->   #include <linux/err.h>
->   #include <linux/libfdt.h>
->   #include <linux/of.h>
-> +#include <linux/of_address.h>
->   #include <linux/of_fdt.h>
->   #include <linux/of_platform.h>
->   #include <linux/mm.h>
-> @@ -99,7 +100,7 @@ static void __init alloc_reserved_mem_array(void)
->   /*
->    * fdt_reserved_mem_save_node() - save fdt node for second pass initialization
->    */
-> -static void __init fdt_reserved_mem_save_node(unsigned long node, const char *uname,
-> +static void __init fdt_reserved_mem_save_node(struct device_node *node, const char *uname,
->   					      phys_addr_t base, phys_addr_t size)
->   {
->   	struct reserved_mem *rmem = &reserved_mem[reserved_mem_count];
-> @@ -109,7 +110,7 @@ static void __init fdt_reserved_mem_save_node(unsigned long node, const char *un
->   		return;
->   	}
->   
-> -	rmem->fdt_node = node;
-> +	rmem->dev_node = node;
->   	rmem->name = uname;
->   	rmem->base = base;
->   	rmem->size = size;
-> @@ -178,11 +179,11 @@ static int __init __reserved_mem_reserve_reg(unsigned long node,
->   }
->   
->   /*
-> - * __reserved_mem_check_root() - check if #size-cells, #address-cells provided
-> + * __fdt_reserved_mem_check_root() - check if #size-cells, #address-cells provided
->    * in /reserved-memory matches the values supported by the current implementation,
->    * also check if ranges property has been provided
->    */
-> -static int __init __reserved_mem_check_root(unsigned long node)
-> +static int __init __fdt_reserved_mem_check_root(unsigned long node)
->   {
->   	const __be32 *prop;
->   
-> @@ -200,6 +201,35 @@ static int __init __reserved_mem_check_root(unsigned long node)
->   	return 0;
->   }
->   
-> +/*
-> + * of_reserved_mem_check_root() - check if #size-cells, #address-cells provided
-> + * in /reserved-memory matches the values supported by the current implementation,
-> + * also check if ranges property has been provided
-> + */
-> +static int __init of_reserved_mem_check_root(struct device_node *node)
-> +{
-> +	u32 prop;
-> +	int ret;
-> +
-> +	ret = of_property_read_u32(node, "#size-cells", &prop);
-> +	if (ret)
-> +		return ret;
-> +
-> +	if (prop != dt_root_size_cells)
-> +		return -EINVAL;
-> +
-> +	ret = of_property_read_u32(node, "#address-cells", &prop);
-> +	if (ret)
-> +		return ret;
-> +
-> +	if (prop != dt_root_addr_cells)
-> +		return -EINVAL;
-> +
-> +	if (!of_property_present(node, "ranges"))
-> +		return -EINVAL;
-> +	return 0;
-> +}
-> +
->   /**
->    * fdt_scan_reserved_mem_reg_nodes() - Store info for the "reg" defined
->    * reserved memory regions.
-> @@ -212,41 +242,40 @@ static int __init __reserved_mem_check_root(unsigned long node)
->    */
->   static void __init fdt_scan_reserved_mem_reg_nodes(void)
->   {
-> -	int t_len = (dt_root_addr_cells + dt_root_size_cells) * sizeof(__be32);
-> -	const void *fdt = initial_boot_params;
-> +	struct device_node *node, *child;
->   	phys_addr_t base, size;
-> -	const __be32 *prop;
-> -	int node, child;
-> -	int len;
->   
-> -	node = fdt_path_offset(fdt, "/reserved-memory");
-> -	if (node < 0) {
-> +	node = of_find_node_by_path("/reserved-memory");
-> +	if (!node) {
->   		pr_info("Reserved memory: No reserved-memory node in the DT\n");
->   		return;
->   	}
->   
-> -	if (__reserved_mem_check_root(node)) {
-> +	if (of_reserved_mem_check_root(node)) {
->   		pr_err("Reserved memory: unsupported node format, ignoring\n");
->   		return;
->   	}
->   
-> -	fdt_for_each_subnode(child, fdt, node) {
-> +	for_each_child_of_node(node, child) {
-> +		int ret = 0;
->   		const char *uname;
-> +		struct resource res;
-> +		struct reserved_mem *rmem;
->   
-> -		prop = of_get_flat_dt_prop(child, "reg", &len);
-> -		if (!prop)
-> -			continue;
-> -		if (!of_fdt_device_is_available(fdt, child))
-> +		if (!of_device_is_available(child))
->   			continue;
->   
-> -		uname = fdt_get_name(fdt, child, NULL);
-> -		if (len && len % t_len != 0) {
-> -			pr_err("Reserved memory: invalid reg property in '%s', skipping node.\n",
-> -			       uname);
-> +		ret = of_address_to_resource(child, 0, &res);
-> +		if (ret) {
-> +			rmem = of_reserved_mem_lookup(child);
-> +			if (rmem)
-> +				rmem->dev_node = child;
->   			continue;
->   		}
-> -		base = dt_mem_next_cell(dt_root_addr_cells, &prop);
-> -		size = dt_mem_next_cell(dt_root_size_cells, &prop);
-> +		uname = of_node_full_name(child);
-> +
-> +		base = res.start;
-> +		size = res.end - res.start + 1;
->   
->   		if (size)
->   			fdt_reserved_mem_save_node(child, uname, base, size);
-> @@ -269,7 +298,7 @@ int __init fdt_scan_reserved_mem(void)
->   	if (node < 0)
->   		return -ENODEV;
->   
-> -	if (__reserved_mem_check_root(node) != 0) {
-> +	if (__fdt_reserved_mem_check_root(node) != 0) {
->   		pr_err("Reserved memory: unsupported node format, ignoring\n");
->   		return -EINVAL;
->   	}
-> @@ -447,7 +476,7 @@ static int __init __reserved_mem_alloc_size(unsigned long node, const char *unam
->   		       uname, (unsigned long)(size / SZ_1M));
->   		return -ENOMEM;
->   	}
+> Please trim emails when replying to just the needed context.
+> 
 
+Sorry, I'm always a little guilty of this. In this case I didn't trim
+since the patch was small and trimming the diff out would then make it
+tough to see how my comment about the description relates to the body of
+the patch. But I'll try and trim when appropriate. Just replying here to
+explain myself as this isn't the first time I've been suggested to trim
+more aggressively and I don't want folks to think I'm completely ignoring them.
 
-> -	fdt_reserved_mem_save_node(node, uname, base, size);
-> +	fdt_reserved_mem_save_node(NULL, uname, base, size);
+Thanks,
+Andrew
 
-This could perhaps be suspicious?
-
-The above message seems to come from of_init_reserved_mem_node when
-called from of_reserved_mem_save_node when called from here. This would 
-mean that the node is not actually saved to rmem and thus not marked 
-reusable?
-
-
->   	return 0;
->   }
->   
-> @@ -467,7 +496,7 @@ static int __init __reserved_mem_init_node(struct reserved_mem *rmem)
->   		reservedmem_of_init_fn initfn = i->data;
->   		const char *compat = i->compatible;
->   
-> -		if (!of_flat_dt_is_compatible(rmem->fdt_node, compat))
-> +		if (!of_device_is_compatible(rmem->dev_node, compat))
->   			continue;
->   
->   		ret = initfn(rmem);
-> @@ -500,11 +529,6 @@ static int __init __rmem_cmp(const void *a, const void *b)
->   	if (ra->size > rb->size)
->   		return 1;
->   
-> -	if (ra->fdt_node < rb->fdt_node)
-> -		return -1;
-> -	if (ra->fdt_node > rb->fdt_node)
-> -		return 1;
-> -
->   	return 0;
->   }
->   
-> @@ -551,11 +575,11 @@ void __init fdt_init_reserved_mem(void)
->   
->   	for (i = 0; i < reserved_mem_count; i++) {
->   		struct reserved_mem *rmem = &reserved_mem[i];
-> -		unsigned long node = rmem->fdt_node;
-> +		struct device_node *node = rmem->dev_node;
->   		int err = 0;
->   		bool nomap;
->   
-> -		nomap = of_get_flat_dt_prop(node, "no-map", NULL) != NULL;
-> +		nomap = of_property_present(node, "no-map");
->   
->   		err = __reserved_mem_init_node(rmem);
->   		if (err != 0 && err != -ENOENT) {
-> @@ -566,8 +590,7 @@ void __init fdt_init_reserved_mem(void)
->   				memblock_phys_free(rmem->base, rmem->size);
->   		} else {
->   			phys_addr_t end = rmem->base + rmem->size - 1;
-> -			bool reusable =
-> -				(of_get_flat_dt_prop(node, "reusable", NULL)) != NULL;
-> +			bool reusable = of_property_present(node, "reusable");
->   
->   			pr_info("%pa..%pa (%lu KiB) %s %s %s\n",
->   				&rmem->base, &end, (unsigned long)(rmem->size / SZ_1K),
-> diff --git a/include/linux/of_reserved_mem.h b/include/linux/of_reserved_mem.h
-> index e338282da652..769b8f67c8d3 100644
-> --- a/include/linux/of_reserved_mem.h
-> +++ b/include/linux/of_reserved_mem.h
-> @@ -10,7 +10,7 @@ struct reserved_mem_ops;
->   
->   struct reserved_mem {
->   	const char			*name;
-> -	unsigned long			fdt_node;
-> +	struct device_node              *dev_node;
->   	const struct reserved_mem_ops	*ops;
->   	phys_addr_t			base;
->   	phys_addr_t			size;
-> diff --git a/kernel/dma/coherent.c b/kernel/dma/coherent.c
-> index ff5683a57f77..8f99586204fb 100644
-> --- a/kernel/dma/coherent.c
-> +++ b/kernel/dma/coherent.c
-> @@ -362,20 +362,18 @@ static const struct reserved_mem_ops rmem_dma_ops = {
->   
->   static int __init rmem_dma_setup(struct reserved_mem *rmem)
->   {
-> -	unsigned long node = rmem->fdt_node;
-> +	struct device_node *node = rmem->dev_node;
->   
-> -	if (of_get_flat_dt_prop(node, "reusable", NULL))
-> +	if (of_property_present(node, "reusable"))
->   		return -EINVAL;
->   
-> -#ifdef CONFIG_ARM
-> -	if (!of_get_flat_dt_prop(node, "no-map", NULL)) {
-> +	if (IS_ENABLED(CONFIG_ARM) && !of_property_present(node, "no-map")) {
->   		pr_err("Reserved memory: regions without no-map are not yet supported\n");
->   		return -EINVAL;
->   	}
-> -#endif
->   
->   #ifdef CONFIG_DMA_GLOBAL_POOL
-> -	if (of_get_flat_dt_prop(node, "linux,dma-default", NULL)) {
-> +	if (of_property_present(node, "linux,dma-default")) {
->   		WARN(dma_reserved_default_memory,
->   		     "Reserved memory: region for default DMA coherent area is redefined\n");
->   		dma_reserved_default_memory = rmem;
-> diff --git a/kernel/dma/contiguous.c b/kernel/dma/contiguous.c
-> index 055da410ac71..450e9e4be79c 100644
-> --- a/kernel/dma/contiguous.c
-> +++ b/kernel/dma/contiguous.c
-> @@ -456,8 +456,8 @@ static const struct reserved_mem_ops rmem_cma_ops = {
->   
->   static int __init rmem_cma_setup(struct reserved_mem *rmem)
->   {
-> -	unsigned long node = rmem->fdt_node;
-> -	bool default_cma = of_get_flat_dt_prop(node, "linux,cma-default", NULL);
-> +	struct device_node *node = rmem->dev_node;
-> +	bool default_cma = of_property_read_bool(node, "linux,cma-default");
->   	struct cma *cma;
->   	int err;
->   
-> @@ -467,8 +467,8 @@ static int __init rmem_cma_setup(struct reserved_mem *rmem)
->   		return -EBUSY;
->   	}
->   
-> -	if (!of_get_flat_dt_prop(node, "reusable", NULL) ||
-> -	    of_get_flat_dt_prop(node, "no-map", NULL))
-> +	if (!of_property_present(node, "reusable") ||
-> +	    of_property_present(node, "no-map"))
->   		return -EINVAL;
->   
->   	if (!IS_ALIGNED(rmem->base | rmem->size, CMA_MIN_ALIGNMENT_BYTES)) {
-> diff --git a/kernel/dma/swiotlb.c b/kernel/dma/swiotlb.c
-> index fe1ccb53596f..9949ddc14272 100644
-> --- a/kernel/dma/swiotlb.c
-> +++ b/kernel/dma/swiotlb.c
-> @@ -1859,12 +1859,12 @@ static const struct reserved_mem_ops rmem_swiotlb_ops = {
->   
->   static int __init rmem_swiotlb_setup(struct reserved_mem *rmem)
->   {
-> -	unsigned long node = rmem->fdt_node;
-> +	struct device_node *node = rmem->dev_node;
->   
-> -	if (of_get_flat_dt_prop(node, "reusable", NULL) ||
-> -	    of_get_flat_dt_prop(node, "linux,cma-default", NULL) ||
-> -	    of_get_flat_dt_prop(node, "linux,dma-default", NULL) ||
-> -	    of_get_flat_dt_prop(node, "no-map", NULL))
-> +	if (of_property_present(node, "reusable") ||
-> +	    of_property_present(node, "linux,cma-default") ||
-> +	    of_property_present(node, "linux,dma-default") ||
-> +	    of_property_present(node, "no-map"))
->   		return -EINVAL;
->   
->   	rmem->ops = &rmem_swiotlb_ops;
-
-Regards,
-Klara Modin
