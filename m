@@ -1,57 +1,31 @@
-Received: from mail-pf1-f180.google.com (mail-pf1-f180.google.com [209.85.210.180])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from verein.lst.de (verein.lst.de [213.95.11.211])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6085C6FC2
-	for <iommu@lists.linux.dev>; Sat,  6 Jul 2024 03:24:34 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.180
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EA22F1B813
+	for <iommu@lists.linux.dev>; Sat,  6 Jul 2024 05:50:29 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=213.95.11.211
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1720236275; cv=none; b=DRLjP8vBCFLVCbSB2lUOj+GA3zX+Q198bB6Uoe0Ey/bUTz1SVwcEhj9iI35RmKOn0N25W+am8Zwc6EjiOzdoSg2NEFfSIq38e0TPMb+zs2BBLEsrpliROYjikZtLPWNnB5htP1Ve8twJb4Jai54VHRMyWEYlGjnwc9Tmj/zFJik=
+	t=1720245032; cv=none; b=bLmnYwhBmayzDXg4w6YMV33rI8DG4NNPDCFShXo/teIS0b2F0i9cZEsvDTcrJcsCQCUsAlQ5M75aELl+jhUVySP7ZUOlkBwMD9NkWiUGXDu60fCqVijwDOl0Eu+oBtM821bTNB8avwsKih4zbfOjB8IwcvrgVkMmE4sDTqaVqvM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1720236275; c=relaxed/simple;
-	bh=Hb5PgMHh9aLvQi1yuVN4GWqNjsdDKqaYmaMQZ/b+tiE=;
+	s=arc-20240116; t=1720245032; c=relaxed/simple;
+	bh=9FgKDI1vWPPIpa7qarPrIPzRFay07tA7eVY6mECQzVI=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=dtL7SxBXQrEKlXAGrsxofzGCTaURQ7tV4aS4ULdZN3RqY/whhoEXbgaQvBDeXhWGuBPPaGtTQenENUjydfPRPiP2LdhVTDTThL4DT7zHw6u9kYmjyAlMf2E1BggDxj1pIiv83hKAQphTYi269lVqjpTH09QXjEOtUQ2wfyZUiXQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=linux.com; spf=pass smtp.mailfrom=gmail.com; arc=none smtp.client-ip=209.85.210.180
-Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=linux.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
-Received: by mail-pf1-f180.google.com with SMTP id d2e1a72fcca58-701b0b0be38so1715945b3a.0
-        for <iommu@lists.linux.dev>; Fri, 05 Jul 2024 20:24:34 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1720236274; x=1720841074;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=9Pb7EbDUVGH98ibgR3s40PMLBJFydYTcIKO50p0umcU=;
-        b=ryTfiQcG2wECQeRFECG3edD1Ycz+Vh2l5tBSpbhr7v+6s3rPD62vXIOVvK2dkqOg5m
-         XHGs72QgFlUtG/Ta4j/VHp3hR+JV3jDwIPhKqEkDY8rpXbcHW1UEwmpajrPNma6+kWkN
-         aoDZRsS9b1Dg6N6+BHHTwEUJfd8LZBrmk5Qu1noycwM7JN7YZKLfwJ7zHjammn8CLW3v
-         UcdNM5exJJSr4+2B3bczmcIBjenraBHhc90XDCB/RAIRpks+Q/9H/bsPzVZ5FHO9G987
-         kOBIoMR7t7ug6E3ybv05qaPWcsIdzzHtNv2qzGNMiqP44BkJLFHxVvNjs4R6ZGXvQObP
-         ZLCA==
-X-Forwarded-Encrypted: i=1; AJvYcCUn9uXuMLukV9KCG1/9Sb3eJyROImOCXpGuuAdEW9OrxRv7Mohx1b514y5dsvcdxCNKa/6ztw/Q9vJsun+xzn+wvSiwstc=
-X-Gm-Message-State: AOJu0YwI6GYQmbbzxidPMjisgoBhrs9efDxqXFGz+7dXCdI6MlXc5llg
-	WlwNKODrSamYA38spMbFr12P3INA6RFvi4CT1Zwxc2mj4gA6enj2
-X-Google-Smtp-Source: AGHT+IFURMNMv3i2QDNgjzV+meNyec/XNEWMDIioYfNtMKTQgCJfyraBJJkOdc75XnBjTu8O+vWrCQ==
-X-Received: by 2002:a05:6a00:170d:b0:704:24fb:11c6 with SMTP id d2e1a72fcca58-70b0094a6c0mr6154295b3a.12.1720236273403;
-        Fri, 05 Jul 2024 20:24:33 -0700 (PDT)
-Received: from localhost (fpd11144dd.ap.nuro.jp. [209.17.68.221])
-        by smtp.gmail.com with ESMTPSA id d2e1a72fcca58-70afeb4186esm3967297b3a.41.2024.07.05.20.24.32
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 05 Jul 2024 20:24:33 -0700 (PDT)
-Date: Sat, 6 Jul 2024 12:24:31 +0900
-From: Krzysztof =?utf-8?Q?Wilczy=C5=84ski?= <kw@linux.com>
-To: Jean-Philippe Brucker <jean-philippe@linaro.org>
-Cc: will@kernel.org, lpieralisi@kernel.org, robh@kernel.org,
-	bhelgaas@google.com, krzk+dt@kernel.org, conor+dt@kernel.org,
-	liviu.dudau@arm.com, sudeep.holla@arm.com, joro@8bytes.org,
-	robin.murphy@arm.com, nicolinc@nvidia.com, ketanp@nvidia.com,
-	linux-pci@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-	iommu@lists.linux.dev, devicetree@vger.kernel.org
-Subject: Re: [PATCH v2 1/3] dt-bindings: PCI: generic: Add ats-supported
- property
-Message-ID: <20240706032431.GH1195499@rocinante>
-References: <20240607105415.2501934-2-jean-philippe@linaro.org>
- <20240607105415.2501934-3-jean-philippe@linaro.org>
+	 Content-Type:Content-Disposition:In-Reply-To; b=o+t9gYlcPh6Tf12AZWLwAlcI0oXGcaraR7PMOu8deCxeooanPhXAyx3zTv9m2VHhT6LIohJzhoYb4gshM6GYLu1DM+WPjF/jEaUvhEyRrXD36qYemfrf35m194S8r5n2mwt6x92ERGhJ3EngCWaJRz/UzXyxVpgwUmzK/K52iso=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=lst.de; spf=pass smtp.mailfrom=lst.de; arc=none smtp.client-ip=213.95.11.211
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=lst.de
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=lst.de
+Received: by verein.lst.de (Postfix, from userid 2407)
+	id AB6C868D0E; Sat,  6 Jul 2024 07:50:19 +0200 (CEST)
+Date: Sat, 6 Jul 2024 07:50:19 +0200
+From: Christoph Hellwig <hch@lst.de>
+To: mhklinux@outlook.com
+Cc: robin.murphy@arm.com, joro@8bytes.org, will@kernel.org, jgross@suse.com,
+	sstabellini@kernel.org, oleksandr_tyshchenko@epam.com, hch@lst.de,
+	m.szyprowski@samsung.com, petr@tesarici.cz, iommu@lists.linux.dev,
+	linux-kernel@vger.kernel.org, xen-devel@lists.xenproject.org
+Subject: Re: [PATCH v2 1/1] swiotlb: Reduce swiotlb pool lookups
+Message-ID: <20240706055019.GA13280@lst.de>
+References: <20240701165746.1358-1-mhklinux@outlook.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -60,26 +34,52 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20240607105415.2501934-3-jean-philippe@linaro.org>
+In-Reply-To: <20240701165746.1358-1-mhklinux@outlook.com>
+User-Agent: Mutt/1.5.17 (2007-11-01)
 
-Hello,
 
-> Add a way for firmware to tell the OS that ATS is supported by the PCI
-> root complex. An endpoint with ATS enabled may send Translation Requests
-> and Translated Memory Requests, which look just like Normal Memory
-> Requests with a non-zero AT field. So a root controller that ignores the
-> AT field may simply forward the request to the IOMMU as a Normal Memory
-> Request, which could end badly. In any case, the endpoint will be
-> unusable.
-> 
-> The ats-supported property allows the OS to only enable ATS in endpoints
-> if the root controller can handle ATS requests. Only add the property to
-> pcie-host-ecam-generic for the moment. For non-generic root controllers,
-> availability of ATS can be inferred from the compatible string.
+Hi Michael,
 
-Applied to dt-bindings, thank you!
+I like the idea behind this, but can you respin it to avoid some of
+the added code duplication.  We have a lot of this pattern:
 
-[1/1] dt-bindings: PCI: generic: Add ats-supported property
-      https://git.kernel.org/pci/pci/c/631b2e7318d45
+	pool = swiotlb_find_pool(dev, paddr);
+	if (pool)
+		swiotlb_foo(dev, ...
 
-	Krzysztof
+duplicated in all three swiotlb users.  If we rename the original
+swiotlb_foo to __swiotlb_foo and add a little inline wrapper this is
+de-duplicated and also avoids exposing swiotlb_find_pool to the
+callers.
+
+If we then stub out swiotlb_find_pool to return NULL for !CONFIG_SWIOTLB,
+we also don't need extra stubs for all the __swiotlb_ helpers as the
+compiler will eliminate the calls as dead code.
+
+I might be missing something, but what is the reason for using the
+lower-level __swiotlb_find_pool in swiotlb_map and xen_swiotlb_map_page?
+I can't see a reason why the simple checks in swiotlb_find_pool itself
+are either wrong or a performance problem there.  Because if we don't
+need these separate calls we can do away with __swiotlb_find_pool
+for !CONFIG_SWIOTLB_DYNAMIC and simplify swiotlb_find_pool quite
+a bit like this:
+
+	...
+
+	if (!mem)
+		return NULL;
+
+	if (IS_ENABLED(CONFIG_SWIOTLB_DYNAMIC)) {
+		smp_rmb(); 
+		if (!READ_ONCE(dev->dma_uses_io_tlb))
+			return NULL;
+		return __swiotlb_find_pool(dev, paddr);
+	}
+
+	if (paddr < mem->defpool.start || paddr >= mem->defpool.end)
+		return NULL;
+	return &dev->dma_io_tlb_mem->defpool;
+
+
+While you're at it please fix the > 80 character lines as this patch
+is adding plenty.
