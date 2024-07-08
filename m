@@ -1,158 +1,85 @@
-Received: from mx0b-0031df01.pphosted.com (mx0b-0031df01.pphosted.com [205.220.180.131])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EBD64364A9
-	for <iommu@lists.linux.dev>; Mon,  8 Jul 2024 07:48:00 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.180.131
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4E2C83F9F9;
+	Mon,  8 Jul 2024 09:36:37 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1720424882; cv=none; b=QGF0OLgA+w+Og0Y/PB1rok2SZdv3K9QAB00jREQrruxojoqwG7e6uHg4N8nPDv8PzI9ti/NcD9eAFHd/RNQqfEzAsVrJP0SFDUFnq3AThB4bfSpM//3QLsFkzyaewd1VKcYe3PFmnMIq/llNeQpj3gSq9+ELi+ioXAvMho61TOo=
+	t=1720431398; cv=none; b=jGE8Gw/EfdITj11g2ZlS6mgAP+lBrhnJCUrJZn493gj5eR4qJpeBZaNe+U3NxrbA7+U7Um9W2CPMx2YJVxoiHVCnqePKMHknKQAC7OwMOMh4568pWcPx5h+hsjDErTAAC8mJmdqRo/9FsllKH+EtnCJ88ODd9DF9Kz7/qIdJnuM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1720424882; c=relaxed/simple;
-	bh=rVBEw98YsMl1OrcDCG36qiCr3u6VVUckw8754YjmETM=;
-	h=Message-ID:Date:MIME-Version:Subject:To:CC:References:From:
-	 In-Reply-To:Content-Type; b=ZF7xBM9rVbFqF1fg0xobwaUVPqXwitw4A3FeLpbjkiD5DpOdV4TcS6FQhE02OThP45fsWTSdh/qrvlMcMkj/2e8TvpS65ApMH9cYDYOnVHAMETW2LIdFFES+XB7loGbGfGTIe7YCCe02Qrt49v3DoIbe4P2QM6WX/NpVa4VoLCE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com; spf=pass smtp.mailfrom=quicinc.com; dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b=C8H2jH4K; arc=none smtp.client-ip=205.220.180.131
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=quicinc.com
+	s=arc-20240116; t=1720431398; c=relaxed/simple;
+	bh=Xiw5vB0052Gl+ZR1KcxMzIPi0K4sjO2ctTIPiltoYm4=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=EyXlfywUWzohuYRbpDjo56TGSS0uMjE4pAM6jBUkwGpqNtJPLT7axR2bFP9n6qqKz6K5A4mkM3Ycwh+uqqcc/tRiqNRuLF+uOJ4NcmEcJjA05Gtwe/ML1B/OmWq8fMcnPAfjHOwF8/qTfFANk2/fynpEjIwg3Ly7t55WShzJSDA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=nD71evyH; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b="C8H2jH4K"
-Received: from pps.filterd (m0279868.ppops.net [127.0.0.1])
-	by mx0a-0031df01.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 4680W7K6001325;
-	Mon, 8 Jul 2024 07:47:33 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=quicinc.com; h=
-	cc:content-transfer-encoding:content-type:date:from:in-reply-to
-	:message-id:mime-version:references:subject:to; s=qcppdkim1; bh=
-	i/uQYDKEprLvHhEtr15EIS+2LOUqtGYnciWz60brKUQ=; b=C8H2jH4Knqhy89w5
-	tqFeDHt6hlPjff5e1i7KCwZo3309m1ap0ZNrD071Jn3uzlSG4v8v8ewYLJdEZfSN
-	GJKKa99eekiaKcrdXjGyHuw/urdVYF1HTEn5VOepVeCoQJY/20W67edgOXEOm2ad
-	o5Di4F6Eyu3IiRTyHrfCbn8k5PNjzMrHSWG/ukDEc0gLDpLuz9CWXEhHlXKmeBCm
-	EqOtmEZH6+iDvMofCTH0bsR4YLVKoA1+nUHfxZYMdaxWJIGgulKB/vrGdGTndQXJ
-	gKxKzCsX8TvAJoMIGoy/02L8yfqMVZqhYfIx4jgQGbJdkR0BY62oStU0Jr5fgmdl
-	O3+5ow==
-Received: from nalasppmta03.qualcomm.com (Global_NAT1.qualcomm.com [129.46.96.20])
-	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 406we8txv0-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Mon, 08 Jul 2024 07:47:33 +0000 (GMT)
-Received: from nalasex01a.na.qualcomm.com (nalasex01a.na.qualcomm.com [10.47.209.196])
-	by NALASPPMTA03.qualcomm.com (8.17.1.19/8.17.1.19) with ESMTPS id 4687lV2H006833
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Mon, 8 Jul 2024 07:47:31 GMT
-Received: from [10.239.132.204] (10.80.80.8) by nalasex01a.na.qualcomm.com
- (10.47.209.196) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1544.9; Mon, 8 Jul 2024
- 00:47:09 -0700
-Message-ID: <1b32168b-7d1c-4b18-b4f3-a4979232b515@quicinc.com>
-Date: Mon, 8 Jul 2024 15:47:06 +0800
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="nD71evyH"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B69F8C116B1;
+	Mon,  8 Jul 2024 09:36:34 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1720431397;
+	bh=Xiw5vB0052Gl+ZR1KcxMzIPi0K4sjO2ctTIPiltoYm4=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=nD71evyHcTYyqnKhYOjZ2rvE1kNbKK4fnjwv9H9/q4Gl4v77btpI0VPjF5Axl9uxQ
+	 zf6kWsNDkwMq3R/ag7pDQ3aQnkKN6QAosSO/GatB5xms1cHhBP9NfbM4sFW7DiYnPx
+	 irzKjsb2C6DVkaGGQ0j3WkLeMJE27TFQOOkFhxoMnck7JKfbarrXcEy3q/y/MHPiBQ
+	 0VFEB5KFEKtkNZLvbKTAgqYbo2rfyPNP5kH1Le9VrjSKh80LCf8+lXwpNgyTZke2Rc
+	 5//FidY4WjFL3DuCymBmccvJMLfqgvNBdG4jPHKE1cIegjJ9v888E39LlJlN6TnBUA
+	 52ibJZjxn41bg==
+Date: Mon, 8 Jul 2024 10:36:31 +0100
+From: Will Deacon <will@kernel.org>
+To: Krzysztof =?utf-8?Q?Wilczy=C5=84ski?= <kw@linux.com>
+Cc: Jean-Philippe Brucker <jean-philippe@linaro.org>, lpieralisi@kernel.org,
+	robh@kernel.org, bhelgaas@google.com, krzk+dt@kernel.org,
+	conor+dt@kernel.org, liviu.dudau@arm.com, sudeep.holla@arm.com,
+	joro@8bytes.org, robin.murphy@arm.com, nicolinc@nvidia.com,
+	ketanp@nvidia.com, linux-pci@vger.kernel.org,
+	linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev,
+	devicetree@vger.kernel.org
+Subject: Re: [PATCH v2 1/3] dt-bindings: PCI: generic: Add ats-supported
+ property
+Message-ID: <20240708093630.GA11302@willie-the-truck>
+References: <20240607105415.2501934-2-jean-philippe@linaro.org>
+ <20240607105415.2501934-3-jean-philippe@linaro.org>
+ <20240706032431.GH1195499@rocinante>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH 00/47] arm64: qcom: dts: add QCS9100 support
-To: Conor Dooley <conor.dooley@microchip.com>,
-        Krzysztof Kozlowski
-	<krzk@kernel.org>
-CC: <andersson@kernel.org>, <konrad.dybcio@linaro.org>, <robh@kernel.org>,
-        <krzk+dt@kernel.org>, <conor+dt@kernel.org>, <djakov@kernel.org>,
-        <mturquette@baylibre.com>, <sboyd@kernel.org>,
-        <jassisinghbrar@gmail.com>, <herbert@gondor.apana.org.au>,
-        <davem@davemloft.net>, <manivannan.sadhasivam@linaro.org>,
-        <will@kernel.org>, <joro@8bytes.org>, <conor@kernel.org>,
-        <tglx@linutronix.de>, <amitk@kernel.org>, <thara.gopinath@gmail.com>,
-        <linus.walleij@linaro.org>, <wim@linux-watchdog.org>,
-        <linux@roeck-us.net>, <rafael@kernel.org>, <viresh.kumar@linaro.org>,
-        <vkoul@kernel.org>, <edumazet@google.com>, <kuba@kernel.org>,
-        <pabeni@redhat.com>, <mcoquelin.stm32@gmail.com>,
-        <robimarko@gmail.com>, <quic_gurus@quicinc.com>,
-        <bartosz.golaszewski@linaro.org>, <kishon@kernel.org>,
-        <quic_wcheng@quicinc.com>, <alim.akhtar@samsung.com>,
-        <avri.altman@wdc.com>, <bvanassche@acm.org>, <agross@kernel.org>,
-        <gregkh@linuxfoundation.org>, <quic_tdas@quicinc.com>,
-        <robin.murphy@arm.com>, <daniel.lezcano@linaro.org>,
-        <rui.zhang@intel.com>, <lukasz.luba@arm.com>,
-        <quic_rjendra@quicinc.com>, <ulf.hansson@linaro.org>,
-        <quic_sibis@quicinc.com>, <otto.pflueger@abscue.de>,
-        <quic_rohiagar@quicinc.com>, <luca@z3ntu.xyz>,
-        <neil.armstrong@linaro.org>, <abel.vesa@linaro.org>,
-        <bhupesh.sharma@linaro.org>, <alexandre.torgue@foss.st.com>,
-        <peppe.cavallaro@st.com>, <joabreu@synopsys.com>,
-        <netdev@vger.kernel.org>, <lpieralisi@kernel.org>, <kw@linux.com>,
-        <bhelgaas@google.com>, <ahalaney@redhat.com>,
-        <krzysztof.kozlowski@linaro.org>, <u.kleine-koenig@pengutronix.de>,
-        <dmitry.baryshkov@linaro.org>, <quic_cang@quicinc.com>,
-        <danila@jiaxyga.com>, <quic_nitirawa@quicinc.com>,
-        <mantas@8devices.com>, <athierry@redhat.com>,
-        <quic_kbajaj@quicinc.com>, <quic_bjorande@quicinc.com>,
-        <quic_msarkar@quicinc.com>, <quic_devipriy@quicinc.com>,
-        <quic_tsoni@quicinc.com>, <quic_rgottimu@quicinc.com>,
-        <quic_shashim@quicinc.com>, <quic_kaushalk@quicinc.com>,
-        <quic_tingweiz@quicinc.com>, <quic_aiquny@quicinc.com>,
-        <srinivas.kandagatla@linaro.org>, <linux-arm-msm@vger.kernel.org>,
-        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <linux-pm@vger.kernel.org>, <linux-clk@vger.kernel.org>,
-        <linux-phy@lists.infradead.org>, <linux-crypto@vger.kernel.org>,
-        <linux-scsi@vger.kernel.org>, <linux-usb@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>, <iommu@lists.linux.dev>,
-        <linux-riscv@lists.infradead.org>, <linux-gpio@vger.kernel.org>,
-        <linux-watchdog@vger.kernel.org>, <linux-pci@vger.kernel.org>,
-        <linux-stm32@st-md-mailman.stormreply.com>, <kernel@quicinc.com>
-References: <20240703025850.2172008-1-quic_tengfan@quicinc.com>
- <20240703035735.2182165-1-quic_tengfan@quicinc.com>
- <7417fd8c-e852-45ee-bac9-d92921036e2f@kernel.org>
- <20240703-manager-armless-b13b18c79192@wendy>
-From: Tengfei Fan <quic_tengfan@quicinc.com>
-In-Reply-To: <20240703-manager-armless-b13b18c79192@wendy>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
- nalasex01a.na.qualcomm.com (10.47.209.196)
-X-QCInternal: smtphost
-X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
-X-Proofpoint-ORIG-GUID: WJaCcFF2njxbbZhKA7uiH0ECQvUaDd6U
-X-Proofpoint-GUID: WJaCcFF2njxbbZhKA7uiH0ECQvUaDd6U
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.293,Aquarius:18.0.1039,Hydra:6.0.680,FMLib:17.12.28.16
- definitions=2024-07-08_02,2024-07-05_01,2024-05-17_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 adultscore=0 impostorscore=0
- bulkscore=0 spamscore=0 suspectscore=0 lowpriorityscore=0 phishscore=0
- priorityscore=1501 mlxlogscore=999 malwarescore=0 mlxscore=0 clxscore=1011
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.19.0-2406140001
- definitions=main-2407080059
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20240706032431.GH1195499@rocinante>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 
+Hi Krzysztof,
 
-
-On 7/3/2024 2:28 PM, Conor Dooley wrote:
-> On Wed, Jul 03, 2024 at 06:45:00AM +0200, Krzysztof Kozlowski wrote:
->> On 03/07/2024 05:56, Tengfei Fan wrote:
->>> Introduce support for the QCS9100 SoC device tree (DTSI) and the
->>> QCS9100 RIDE board DTS. The QCS9100 is a variant of the SA8775p.
->>> While the QCS9100 platform is still in the early design stage, the
->>> QCS9100 RIDE board is identical to the SA8775p RIDE board, except it
->>> mounts the QCS9100 SoC instead of the SA8775p SoC.
->>
->> The same huge patchset, to huge number of recipients was sent twice.
->> First, sorry, this is way too big. Second, it has way too many
->> recipients, but this is partially a result of first point. Only
->> partially because you put here dozen of totally unrelated emails. Sorry,
->> that does not make even sense. See form letter at the end how this
->> works. Third, sending it to everyone twice is a way to annoy them off
->> twice... Fourth,
->>
->> Please split your work and do not cc dozen of unrelated folks.
+On Sat, Jul 06, 2024 at 12:24:31PM +0900, Krzysztof Wilczyński wrote:
+> > Add a way for firmware to tell the OS that ATS is supported by the PCI
+> > root complex. An endpoint with ATS enabled may send Translation Requests
+> > and Translated Memory Requests, which look just like Normal Memory
+> > Requests with a non-zero AT field. So a root controller that ignores the
+> > AT field may simply forward the request to the IOMMU as a Normal Memory
+> > Request, which could end badly. In any case, the endpoint will be
+> > unusable.
+> > 
+> > The ats-supported property allows the OS to only enable ATS in endpoints
+> > if the root controller can handle ATS requests. Only add the property to
+> > pcie-host-ecam-generic for the moment. For non-generic root controllers,
+> > availability of ATS can be inferred from the compatible string.
 > 
-> One of the extra recipients is cos that of that patch I sent adding the
-> cache bindings to the cache entry, forgetting that that would CC the
-> riscv list on all cache bindings. I modified that patch to drop the riscv
-> list from the entry.
+> Applied to dt-bindings, thank you!
 > 
-> Cheers,
-> Conor.
+> [1/1] dt-bindings: PCI: generic: Add ats-supported property
+>       https://git.kernel.org/pci/pci/c/631b2e7318d45
 
+FWIW: I already picked this up in the IOMMU tree last week. If you need
+it to avoid a conflict, then you can pull from the pci/ats branch:
 
-Thank you, Conor!
+https://git.kernel.org/pub/scm/linux/kernel/git/iommu/linux.git/commit/?h=pci/ats&id=40929e8e5449a18bc98baf7a907dd6674bd60049
 
--- 
-Thx and BRs,
-Tengfei Fan
+Cheers,
+
+Will
