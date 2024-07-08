@@ -1,148 +1,127 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-yb1-f180.google.com (mail-yb1-f180.google.com [209.85.219.180])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 60D6C74077
-	for <iommu@lists.linux.dev>; Mon,  8 Jul 2024 23:45:38 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A30CA3A27B
+	for <iommu@lists.linux.dev>; Mon,  8 Jul 2024 23:57:23 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.219.180
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1720482338; cv=none; b=qA5JYem4qwgS/ilV61czkTbbeH4DCnzMDQwWpn6m0uFjsL+xaNhjtQCml8FEEi0NJDtCoqzMngWUy1LQ9mfr+B9+Wsd/kC94iMn5GiYvtz3sZtRHQhg+8ZFNY9dXiqDRmfCL071qRogbxJYuuhFK8VpNyfBsiZOikPgMjS4HkvY=
+	t=1720483045; cv=none; b=f9bX2LtgN8xQj0/9rS0JOo8GEbx5Yx28moC32P5S45Z5s+38XXIUgrGjtSfcGjPqSk37yvywf/ffaoSbxusulXp8/wFkBFHf5sG8Y3owCTxz/KMtKrpZJQGToDUv9f81xP42QWMNc491IYzxr2JJggGbtbiUo+Ka7hvkwKUcTJ0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1720482338; c=relaxed/simple;
-	bh=WqB5mcEHwiCIHO2AodxjmxYg6envP+/XTNIhdG5D+Gg=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=Q/u8r1FX9hhHjKlTaudxQCqBhp42+3FaE0TXV4KEC4cinCTzZ4gsqgwpvVMXQRxGLfRdpxCx9tTrBUL/c0m/lKE2L1U5TiHkq300xP/dYV0Diu8NWLNBPufDVf205uh1h4V/fOVvEEbsxtaV9rbhr4bptKMTdbQctRBuAEPmfkE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Qs/zcZI4; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1720483045; c=relaxed/simple;
+	bh=p7iQjHJ2M5dwP07IVo/MoA0+Dlglnl6jpSoHPFEK4Mk=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=V9K3esKMNBpM/0ckNQTfK88wzSg3sxhS8vthNlYyXVAW/8bo8Iyi6XuWh7r5AdvmRzVvPoR8cwIKtUHakw8MRD9ZQbNQ2tD3xq+2jmfvSi2iZgSkXXuEMjF2q+21pfqp5MFQCKjZvMppeyNWSKuBiPx9kde0O8FgmA/Mz+qjVQs=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=DH++N1Hw; arc=none smtp.client-ip=209.85.219.180
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Qs/zcZI4"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D295EC4AF0F
-	for <iommu@lists.linux.dev>; Mon,  8 Jul 2024 23:45:37 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1720482337;
-	bh=WqB5mcEHwiCIHO2AodxjmxYg6envP+/XTNIhdG5D+Gg=;
-	h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-	b=Qs/zcZI4QGLJGiJy64tsy8MMYvRXyXJdPDctlgPbVTZkl9n61vmplTE6ce7XLfNuv
-	 aF0SA98VKqz0ogKbWOezbeWiSajmdo+K1tOVua0vlurvnZGR81SGpUlvXQt7C2TB97
-	 wzh2/RlBDKu9WZ7BVX41yi9vx3Phznfpv99QmWemvV7z5nRU6bQQRbPB/Ogr+XZmWr
-	 pa1U73IYd7Z0gAQIjdo7OZexbM3mxE1XtM0zo34bqAaIDqteB7ei/silQ9TKUNBLjn
-	 BjGvZDtX0WaMQsU0rIvXCw9U/HP5NSO1M4n6h1ZzZlcmveUEwrin9ivRjlc3FDzZUu
-	 bBA30jwlLKd0g==
-Received: by mail-lf1-f49.google.com with SMTP id 2adb3069b0e04-52ea33671ffso4123671e87.3
-        for <iommu@lists.linux.dev>; Mon, 08 Jul 2024 16:45:37 -0700 (PDT)
-X-Forwarded-Encrypted: i=1; AJvYcCW+WUjZecxMWVhxQGrZPvGDuX17cEHp5qJmWuxRpATtS6ic0W3mzPIcDdHRCda6v3eq8o1zl6gNncqWKIeKLV6I7b7W4t8=
-X-Gm-Message-State: AOJu0YxKeXf6NDQ06TIWJQTNYJ16p2NWa+v+lii6iReOKob6OnFbN+E2
-	eHsTUrlxGqMrKm73i5edWf6exAkbgXaCY2AkcYcFQMxzRLV6eJrDe9T7+8nh6UqNFX5qmDxfkW9
-	NzaMp4l6MRqF337nfLeW5+OO82w==
-X-Google-Smtp-Source: AGHT+IEKV5wyLcV1ycT2TnwArtJJGSVvXo4evQIYo01RZ05YOMAGpPEpsNQdQXNMhV0FFsl4PP9NkeD2EVDivivCbNQ=
-X-Received: by 2002:a05:6512:29e:b0:52c:d80e:55a5 with SMTP id
- 2adb3069b0e04-52eb99a35d4mr362953e87.41.1720482336134; Mon, 08 Jul 2024
- 16:45:36 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="DH++N1Hw"
+Received: by mail-yb1-f180.google.com with SMTP id 3f1490d57ef6-df4d5d0b8d0so4423732276.2
+        for <iommu@lists.linux.dev>; Mon, 08 Jul 2024 16:57:23 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=ziepe.ca; s=google; t=1720483042; x=1721087842; darn=lists.linux.dev;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=w81yhK/4eC4FICM5BdCB5730Wjijfv+GUBmbab3qDKE=;
+        b=DH++N1HwxDek7HjLT+ZhtgfGSmKkAsdtF4s0P1I7lQwKK4SnQOrBten21zJagQ5snw
+         Uk4gZJMZfvx6JZMnuTFrg2CTzeJ78pls3b8vtN2qlYriuYGRm7BswGLYez9sN5/XRfxc
+         OeZFMWeKlOEkSwTex8tbzYe6jTOT7/3XgbanarKdmnUe3mdats0kNrzGiy2ZvAHO27nl
+         ndmGROEFieweg/5sQXncuWkkLz8TcUHE417TgWN/iAfKdfObHvmRVK4c6GCDQjTiRCET
+         iTm4Igv42usKv0uYP+z31laCu65Q7eNYTludYkMLT/D1cJ4lR3wTdv/g7Ul+zNd+FuvM
+         KSvw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1720483042; x=1721087842;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=w81yhK/4eC4FICM5BdCB5730Wjijfv+GUBmbab3qDKE=;
+        b=B21BrsR4rtYg/kAwbXZJqpQF6q7Hqlulzu9AyJ0vFUVqp+V2iMl4NdRpy7hyNhi5ev
+         SCiUBXKRJbXxY292mwMmkjx5S+VEvt1YDxP76Eejz3DOb2pamuGSfDLGlJzZ9CDDswK0
+         OrgIGkoSKflCH/IXkbjY5WoyyA7RbuNgB/iDKe0woztTNwUOgIQs/BaZrHl1WOJZImy5
+         ekKFVW9Il31nuip7+uUUnBwpUBxWKkHG0psqukUagQ1AQ+zfht1CULe1Zhy0T+K+a/Lp
+         4UW566iUA2wuAC3W+mvpHv6u9mVxzvmkB5VG0brZP0fcmCZ/9ksPMlLWzFP7JQgewewO
+         GnmA==
+X-Forwarded-Encrypted: i=1; AJvYcCVTg1E1EAD+aWiOV5oARRxO3Xt6zJ8pN95kIT/6hYqheBeIFh9b1LAO+6Q7KQRZyJI0uPwdhupGgjWTE/U3EmPq232JN4Q=
+X-Gm-Message-State: AOJu0Ywq9pK9rQJTGat285CcjC6NOWXeMxLSIksQzvO2kLp0D+a+ZaqJ
+	khuAJmZuoFO9/IjGPHlsnbQgjD9pdLnTtN5T9+lLTNrlOEFXD9ZxfnK8xtODXp0=
+X-Google-Smtp-Source: AGHT+IFVd0YPFm+CFj+OFAbn4VlgzR0c7GB9Ja/EMJb3su7krIj2ap0s4sP+8C7C1jj96rzmX8e+3g==
+X-Received: by 2002:a25:d694:0:b0:e03:b14e:350f with SMTP id 3f1490d57ef6-e041b125e84mr1427037276.50.1720483042570;
+        Mon, 08 Jul 2024 16:57:22 -0700 (PDT)
+Received: from ziepe.ca (hlfxns017vw-142-68-80-239.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.68.80.239])
+        by smtp.gmail.com with ESMTPSA id 6a1803df08f44-6b61ba8ad1esm3902106d6.105.2024.07.08.16.57.21
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 08 Jul 2024 16:57:22 -0700 (PDT)
+Received: from jgg by wakko with local (Exim 4.95)
+	(envelope-from <jgg@ziepe.ca>)
+	id 1sQyET-0014tP-5Q;
+	Mon, 08 Jul 2024 20:57:21 -0300
+Date: Mon, 8 Jul 2024 20:57:21 -0300
+From: Jason Gunthorpe <jgg@ziepe.ca>
+To: Christoph Hellwig <hch@lst.de>
+Cc: Leon Romanovsky <leon@kernel.org>, Jens Axboe <axboe@kernel.dk>,
+	Robin Murphy <robin.murphy@arm.com>, Joerg Roedel <joro@8bytes.org>,
+	Will Deacon <will@kernel.org>, Keith Busch <kbusch@kernel.org>,
+	"Zeng, Oak" <oak.zeng@intel.com>,
+	Chaitanya Kulkarni <kch@nvidia.com>,
+	Sagi Grimberg <sagi@grimberg.me>,
+	Bjorn Helgaas <bhelgaas@google.com>,
+	Logan Gunthorpe <logang@deltatee.com>,
+	Yishai Hadas <yishaih@nvidia.com>,
+	Shameer Kolothum <shameerali.kolothum.thodi@huawei.com>,
+	Kevin Tian <kevin.tian@intel.com>,
+	Alex Williamson <alex.williamson@redhat.com>,
+	Marek Szyprowski <m.szyprowski@samsung.com>,
+	=?utf-8?B?SsOpcsO0bWU=?= Glisse <jglisse@redhat.com>,
+	Andrew Morton <akpm@linux-foundation.org>,
+	linux-block@vger.kernel.org, linux-kernel@vger.kernel.org,
+	linux-rdma@vger.kernel.org, iommu@lists.linux.dev,
+	linux-nvme@lists.infradead.org, linux-pci@vger.kernel.org,
+	kvm@vger.kernel.org, linux-mm@kvack.org
+Subject: Re: [RFC PATCH v1 00/18] Provide a new two step DMA API mapping API
+Message-ID: <20240708235721.GF14050@ziepe.ca>
+References: <cover.1719909395.git.leon@kernel.org>
+ <20240705063910.GA12337@lst.de>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <20240528223650.619532-1-quic_obabatun@quicinc.com>
- <20240528223650.619532-4-quic_obabatun@quicinc.com> <986361f4-f000-4129-8214-39f2fb4a90da@gmail.com>
- <4905e651-4c37-4fb4-bbc1-af9633013134@gmail.com> <1684910a-54e2-4df5-a076-de9c2de4277b@quicinc.com>
-In-Reply-To: <1684910a-54e2-4df5-a076-de9c2de4277b@quicinc.com>
-From: Rob Herring <robh@kernel.org>
-Date: Mon, 8 Jul 2024 17:45:23 -0600
-X-Gmail-Original-Message-ID: <CAL_JsqLU6z5huedWcrBkP0utLH3=y-zZa0jen1K_LJfFsTXVBQ@mail.gmail.com>
-Message-ID: <CAL_JsqLU6z5huedWcrBkP0utLH3=y-zZa0jen1K_LJfFsTXVBQ@mail.gmail.com>
-Subject: Re: [PATCH v6 3/4] of: reserved_mem: Use unflatten_devicetree APIs to
- scan reserved memory nodes
-To: Oreoluwa Babatunde <quic_obabatun@quicinc.com>
-Cc: Klara Modin <klarasmodin@gmail.com>, saravanak@google.com, hch@lst.de, 
-	m.szyprowski@samsung.com, robin.murphy@arm.com, will@kernel.org, 
-	catalin.marinas@arm.com, devicetree@vger.kernel.org, 
-	linux-kernel@vger.kernel.org, iommu@lists.linux.dev, kernel@quicinc.com
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20240705063910.GA12337@lst.de>
 
-On Mon, Jul 8, 2024 at 5:12=E2=80=AFPM Oreoluwa Babatunde
-<quic_obabatun@quicinc.com> wrote:
->
->
-> On 7/5/2024 8:38 AM, Klara Modin wrote:
-> > On 2024-07-05 15:05, Klara Modin wrote:
-> >> Hi,
-> >>
-> >> On 2024-05-29 00:36, Oreoluwa Babatunde wrote:
-> >>> The unflatten_devicetree APIs have been setup and are available to be
-> >>> used by the time the fdt_init_reserved_mem() function is called.
-> >>> Since the unflatten_devicetree APIs are a more efficient way of scann=
-ing
-> >>> through the DT nodes, switch to using these APIs to facilitate the re=
-st
-> >>> of the reserved memory processing.
-> >>
-> >> With this patch series, I've observed significantly less memory availa=
-ble to userspace on my Raspberry Pi 1 and 3.
-> >>
-> >> I see this message on the kernel console:
-> >> Jul  4 23:13:49 bonnet kernel: OF: reserved mem: 0x1b000000..0x1efffff=
-f (65536 KiB) map non-reusable linux
-> >>
-> >> where it was previously marked as reusable:
-> >> Jul  4 22:23:22 bonnet kernel: OF: reserved mem: 0x1b000000..0x1efffff=
-f (65536 KiB) map reusable linux,cma
-> >>
-> >> If I look at bcm283x.dtsi, it definitely has the reusable property.
-> >>
-> >> I've below pointed out the snippet I think could be suspicous.
-> >>
-> >>>
-> >>> Signed-off-by: Oreoluwa Babatunde <quic_obabatun@quicinc.com>
-> >>> ---
-> >>>   drivers/of/of_reserved_mem.c    | 93 ++++++++++++++++++++----------=
----
-> >>>   include/linux/of_reserved_mem.h |  2 +-
-> >>>   kernel/dma/coherent.c           | 10 ++--
-> >>>   kernel/dma/contiguous.c         |  8 +--
-> >>>   kernel/dma/swiotlb.c            | 10 ++--
-> >>>   5 files changed, 72 insertions(+), 51 deletions(-)
-> >>>
-> >>> diff --git a/drivers/of/of_reserved_mem.c b/drivers/of/of_reserved_me=
-m.c
-> >>> index 113d593ea031..05283cd24c3b 100644
-> >>> --- a/drivers/of/of_reserved_mem.c
-> >>> +++ b/drivers/of/of_reserved_mem.c
-> >
-> >>> @@ -447,7 +476,7 @@ static int __init __reserved_mem_alloc_size(unsig=
-ned long node, const char *unam
-> >>>                  uname, (unsigned long)(size / SZ_1M));
-> >>>           return -ENOMEM;
-> >>>       }
-> >>
-> >>
-> >>> -    fdt_reserved_mem_save_node(node, uname, base, size);
-> >>> +    fdt_reserved_mem_save_node(NULL, uname, base, size);
-> >>
-> >> This could perhaps be suspicious?
-> >>
-> >> The above message seems to come from of_init_reserved_mem_node when
-> >> called from of_reserved_mem_save_node when called from here. This woul=
-d mean that the node is not actually saved to rmem and thus not marked reus=
-able?
-> >>
-> >>
-> >>>       return 0;
-> >>>   }
-> >
-> >>
-> >> Regards,
-> >> Klara Modin
-> >
-> > Attaching kernel logs of old and new behavior, and my config for refere=
-nce.
-> Hi Klara,
->
-> Thanks for pointing this out. I have uploaded a fix here:
-> https://lore.kernel.org/all/20240708230613.448846-1-quic_obabatun@quicinc=
-.com/
+On Fri, Jul 05, 2024 at 08:39:10AM +0200, Christoph Hellwig wrote:
+> Review from the NVMe driver consumer perspective.  I think if all these
+> were implement we'd probably end up with less code than before the
+> conversion.
 
-Sorry, but I'm not taking reverts of half the series. I've dropped it
-all for 6.11.
+One of the topics that came up with at LSF is what to do with the
+dma_memory_type data?
 
-Rob
+The concept here was that the new DMA API would work on same-type
+memory only, meaning the caller would have to split up by type.
+
+I understand the block stack already does this using P2P and !P2P, but
+that isn't quite enough here as we want to split principally based on
+IOMMU or !IOMMU.
+
+Today that boils down to splitting based on a few things, like
+grouping encrypted memory, and grouping by P2P provider.
+
+So the idea was the "struct dma_memory_type" would encapsulate
+whatever grouping was needed and the block layer would drive its
+splitting on this, same structs can be merged.
+
+I didn't notice this got included in this RFC..
+
+The trivial option is to store the dma_memory_type per-BIO and drive
+the de-duplication like that. The other could be to derive it from
+first entry in the bio_vect every time a new page is added.
+
+This same-type design is one of the key elements of this API
+arrangement - for RDMA I expect we will need a data structure storing
+a list of types with a list of pages, and we will DMA map type by
+type.
+
+Jason
