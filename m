@@ -1,163 +1,90 @@
-Received: from mx0b-0031df01.pphosted.com (mx0b-0031df01.pphosted.com [205.220.180.131])
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.9])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AC6E7257D;
-	Tue,  9 Jul 2024 13:39:57 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.180.131
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D7B9219D8B3
+	for <iommu@lists.linux.dev>; Tue,  9 Jul 2024 15:29:37 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.9
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1720532399; cv=none; b=OrJqfFepwN33wAx8HcR67tP6i302Oh+851EmApIYVKdbyru5NXf9KjmoicZlgaHHwSLculA+y+pWu0UmLwvqP5Yoknrzy4aZxGuWyrcjvzU5jFwM/PM3bEnjaliTtqxkrDB2q3mB458WTPWpJdqcpfVOCJK8JrqMy/h12fzNeGY=
+	t=1720538979; cv=none; b=RR5s2TZkLg9tKb+f3MYF7bXjSnr4VRC7ZN22rPtLDugNxUe+TA4i5FJ52sxjUTSaf3dlT7zRI+uEqFlz1HLmFCL4ixd9fhGPEu010pPxOZzYDXoySCU6EGWQuHKTt2tSGoP7VyKvEJYqcf+3+T+pi1E7YasG5fFdjB6vlt1aC1w=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1720532399; c=relaxed/simple;
-	bh=pEqZPA3brG0X1DeQ/hKoP5t8PhQXhaH4bJOO1sjrisE=;
-	h=From:Date:Subject:MIME-Version:Content-Type:Message-ID:To:CC; b=ZfdUu7ydn68IHFK5gKUbig4JlRLf+IV80KuF9ZEriovyoKvUedSG7zQX6EZaxGf4bariCWmI43JUlNhy6IAIROsVxYPD0bV3nL2maCJII3tzRaiZbs3m9ljYZTaZZ4bMY0XQga3OiyZriILsAVs6QlFQ1pftgyw6AG2OxRz7j0E=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com; spf=pass smtp.mailfrom=quicinc.com; dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b=dOVs2VD/; arc=none smtp.client-ip=205.220.180.131
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=quicinc.com
+	s=arc-20240116; t=1720538979; c=relaxed/simple;
+	bh=MgOFKuoS0gbsBlC2yXiG9tpNMfshnXGRtR3CrLdH7uw=;
+	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version; b=LTuLR16fSPzt8skus1xxtPCxCyeyLxhMyPiO2dyzSDk3BHFK81tPl0osfQkXmtfRi4ZZ3LR7LYyG3NLApwoM1gffbrmQjCbCGKagd4yE3kjxZ0GuNpUBFCC5VwrccbWuD+7EJi6MH1ob5ScxhINv2OKfsgzcRVcd2tit0X9z/OA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=EYuYPWzv; arc=none smtp.client-ip=198.175.65.9
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b="dOVs2VD/"
-Received: from pps.filterd (m0279868.ppops.net [127.0.0.1])
-	by mx0a-0031df01.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 469BjxWn002542;
-	Tue, 9 Jul 2024 13:39:47 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=quicinc.com; h=
-	cc:content-transfer-encoding:content-type:date:from:message-id
-	:mime-version:subject:to; s=qcppdkim1; bh=UuAQd3i9NQXtfqcRgoA4dr
-	2GW+khV0gNyh9TparQ09w=; b=dOVs2VD/uVETPCgHBRpEZg5aMO1/2yQAisYBgY
-	uzzJpyvYjgaCVR0NQ2Zrbu+yXnYjqzKZHMETGaz0q6v/9zhCRVaZUkubgAcFZQvi
-	yA46/EtrpPXK1wPdxubvWuVTm9xQUpxWhbZzP5RvPQYgKWUzTCDaAeV8ZlhwVLiC
-	ueeoh4A8/fn2UI3uQsV97pDsXRBGtUiQSdSu4s6bOwY6+5sVgbm5Zn/ITP+JhmLe
-	5PL7yR2Piak00CheINC1yC6dWnvPP3U2IBJ3qXKWKdN78L2/qAhulYi0F5UehBlg
-	FOQX3232+huaBz+C0eP9Y/eK1QvJ1AOtSHIRMCA+nmS0gDnA==
-Received: from nalasppmta05.qualcomm.com (Global_NAT1.qualcomm.com [129.46.96.20])
-	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 406we8xfwt-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Tue, 09 Jul 2024 13:39:46 +0000 (GMT)
-Received: from nalasex01a.na.qualcomm.com (nalasex01a.na.qualcomm.com [10.47.209.196])
-	by NALASPPMTA05.qualcomm.com (8.17.1.19/8.17.1.19) with ESMTPS id 469DdjEq019159
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Tue, 9 Jul 2024 13:39:45 GMT
-Received: from tengfan-gv.ap.qualcomm.com (10.80.80.8) by
- nalasex01a.na.qualcomm.com (10.47.209.196) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.1544.9; Tue, 9 Jul 2024 06:39:39 -0700
-From: Tengfei Fan <quic_tengfan@quicinc.com>
-Date: Tue, 9 Jul 2024 21:39:29 +0800
-Subject: [PATCH v2] dt-bindings: arm-smmu: Document QCS9100 SMMU
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="EYuYPWzv"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1720538978; x=1752074978;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=MgOFKuoS0gbsBlC2yXiG9tpNMfshnXGRtR3CrLdH7uw=;
+  b=EYuYPWzvIhn6XrrSisLpGeyydmsBoSjuozBvfZwKYRegPDCeFVvxp8ME
+   HJAs23nP/uKHVmAamx05RxAL+Ilzwqskut9BWIdY2bXIs+3Ak9yN0BiCl
+   cocVqISwWQsfGMJ/1Z3f0CTLX8YUofPBJUDLr/XnuMYiJ+kPFy3ACF2aO
+   6NI1npHwlMcKyK8p5aq2fyS6KnVulmMJun9heU9jtcrupID1eQgYjhSg7
+   gxDWcXmW5Za2NEck25vNFrZ8OF0o6SHEmvPEtlx7e5AKdTsj5H5Ym2LSK
+   zPelmQY4KOm0gR2EllMVha1e7xIkku8tKI1sHVrgofFwi5ItP2FG95bB9
+   g==;
+X-CSE-ConnectionGUID: GxODDX44SwittOiHFDgsYw==
+X-CSE-MsgGUID: 5BvD4eK7TeiFR7RayUW0Ww==
+X-IronPort-AV: E=McAfee;i="6700,10204,11128"; a="40321129"
+X-IronPort-AV: E=Sophos;i="6.09,195,1716274800"; 
+   d="scan'208";a="40321129"
+Received: from orviesa008.jf.intel.com ([10.64.159.148])
+  by orvoesa101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Jul 2024 08:29:38 -0700
+X-CSE-ConnectionGUID: DvTxw2R/T+6eVbNLFu7Gnw==
+X-CSE-MsgGUID: dfMqfnn/TX6p9RnDbEFa4g==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.09,195,1716274800"; 
+   d="scan'208";a="48618931"
+Received: from unknown (HELO allen-box.sh.intel.com) ([10.239.159.127])
+  by orviesa008.jf.intel.com with ESMTP; 09 Jul 2024 08:29:35 -0700
+From: Lu Baolu <baolu.lu@linux.intel.com>
+To: Joerg Roedel <joro@8bytes.org>,
+	Will Deacon <will@kernel.org>,
+	Robin Murphy <robin.murphy@arm.com>,
+	Kevin Tian <kevin.tian@intel.com>,
+	Louis Maliyam <louispm@google.com>
+Cc: iommu@lists.linux.dev,
+	linux-kernel@vger.kernel.org,
+	Lu Baolu <baolu.lu@linux.intel.com>
+Subject: [PATCH v2 0/2] iommu/vt-d: Fix aligned pages for cache invalidation
+Date: Tue,  9 Jul 2024 23:26:41 +0800
+Message-Id: <20240709152643.28109-1-baolu.lu@linux.intel.com>
+X-Mailer: git-send-email 2.34.1
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
-Message-ID: <20240709-document_qcs9100_smmu_compatible-v2-1-599161b7d5c8@quicinc.com>
-X-B4-Tracking: v=1; b=H4sIAJA9jWYC/zXNQQ6DIBRF0a0YxsV8sFbsqPtoDKGI+pMKCmjaG
- PdeNOnwvMG7GwnGownknm3EmxUDOpvALxnRg7K9odgmEw78ChXUtHV6GY2NctahZgAyjOMitRs
- nFfH1NlSU/FapVhcCapJuJm86/JyJZ5M8YIjOf8/iyo71f14AL0UJOWcVBxCU0XlBLaOxfafs4
- wBanacWafZ9/wGa9Y2RvAAAAA==
-To: Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
-        "Joerg
- Roedel" <joro@8bytes.org>, Rob Herring <robh@kernel.org>,
-        Krzysztof Kozlowski
-	<krzk+dt@kernel.org>,
-        Conor Dooley <conor+dt@kernel.org>
-CC: <kernel@quicinc.com>, <linux-arm-kernel@lists.infradead.org>,
-        <iommu@lists.linux.dev>, <devicetree@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, Tengfei Fan <quic_tengfan@quicinc.com>
-X-Mailer: b4 0.15-dev-a66ce
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1720532379; l=2893;
- i=quic_tengfan@quicinc.com; s=20240709; h=from:subject:message-id;
- bh=pEqZPA3brG0X1DeQ/hKoP5t8PhQXhaH4bJOO1sjrisE=;
- b=ojdpUaq84qQ4Nt8snyVyOEvJQ6I+ui21dEczpz0lfFvORhtIViE4VTJViQPG/FuD/Dz6OF5N+
- /N2ysU+YHcMAGcJk8mea2ggQxlNC6P1Q7F8UihpCW7myNBZDY5uKqBk
-X-Developer-Key: i=quic_tengfan@quicinc.com; a=ed25519;
- pk=4VjoTogHXJhZUM9XlxbCAcZ4zmrLeuep4dfOeKqQD0c=
-X-ClientProxiedBy: nasanex01a.na.qualcomm.com (10.52.223.231) To
- nalasex01a.na.qualcomm.com (10.47.209.196)
-X-QCInternal: smtphost
-X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
-X-Proofpoint-ORIG-GUID: O_oSWRkSF8T_POK6t7yNNlWlNVMHVcgK
-X-Proofpoint-GUID: O_oSWRkSF8T_POK6t7yNNlWlNVMHVcgK
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.293,Aquarius:18.0.1039,Hydra:6.0.680,FMLib:17.12.28.16
- definitions=2024-07-09_03,2024-07-09_01,2024-05-17_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 adultscore=0 impostorscore=0
- bulkscore=0 spamscore=0 suspectscore=0 lowpriorityscore=0 phishscore=0
- priorityscore=1501 mlxlogscore=850 malwarescore=0 mlxscore=0 clxscore=1015
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.19.0-2406140001
- definitions=main-2407090087
+Content-Transfer-Encoding: 8bit
 
-Document the SMMU on the QCS9100 platform.
-QCS9100 is drived from SA8775p. Currently, both the QCS9100 and SA8775p
-platform use non-SCMI resource. In the future, the SA8775p platform will
-move to use SCMI resources and it will have new sa8775p-related device
-tree. Consequently, introduce "qcom,qcs9100-smmu-500" to describe
-non-SCMI based SMMU.
+The aligned pages for cache invalidation returned by
+calculate_psi_aligned_address() are incorrect if the start pfn is not
+aligned, which can lead to cache inconsistencies when qi_flush_piotlb()
+uses the number of pages to flush caches for the first-stage
+translation.
 
-Signed-off-by: Tengfei Fan <quic_tengfan@quicinc.com>
----
-Introduce support for the QCS9100 SoC device tree (DTSI) and the
-QCS9100 RIDE board DTS. The QCS9100 is a variant of the SA8775p.
-While the QCS9100 platform is still in the early design stage, the
-QCS9100 RIDE board is identical to the SA8775p RIDE board, except it
-mounts the QCS9100 SoC instead of the SA8775p SoC.
+Fix this by updating the aligned pages once the address mask is adjusted.
 
-The QCS9100 SoC DTSI is directly renamed from the SA8775p SoC DTSI, and
-all the compatible strings will be updated from "SA8775p" to "QCS9100".
-The QCS9100 device tree patches will be pushed after all the device tree
-bindings and device driver patches are reviewed.
+Change log:
 
-The final dtsi will like:
-https://lore.kernel.org/linux-arm-msm/20240703025850.2172008-3-quic_tengfan@quicinc.com/
+v2:
+ - Add a new fix to Limit max address mask to MAX_AGAW_PFN_WIDTH.
 
-The detailed cover letter reference:
-https://lore.kernel.org/linux-arm-msm/20240703025850.2172008-1-quic_tengfan@quicinc.com/
----
-Changes in v2:
-  - Split huge patch series into different patch series according to
-    subsytems
-  - Update patch commit message
+v1: https://lore.kernel.org/linux-iommu/20240708121417.18705-1-baolu.lu@linux.intel.com/
 
-prevous disscussion here:
-[1] v1: https://lore.kernel.org/linux-arm-msm/20240703025850.2172008-1-quic_tengfan@quicinc.com/
----
- Documentation/devicetree/bindings/iommu/arm,smmu.yaml | 3 +++
- 1 file changed, 3 insertions(+)
+Lu Baolu (2):
+  iommu/vt-d: Limit max address mask to MAX_AGAW_PFN_WIDTH
+  iommu/vt-d: Fix aligned pages in calculate_psi_aligned_address()
 
-diff --git a/Documentation/devicetree/bindings/iommu/arm,smmu.yaml b/Documentation/devicetree/bindings/iommu/arm,smmu.yaml
-index 5c130cf06a21..82b7e1d40ce0 100644
---- a/Documentation/devicetree/bindings/iommu/arm,smmu.yaml
-+++ b/Documentation/devicetree/bindings/iommu/arm,smmu.yaml
-@@ -36,6 +36,7 @@ properties:
-         items:
-           - enum:
-               - qcom,qcm2290-smmu-500
-+              - qcom,qcs9100-smmu-500
-               - qcom,qdu1000-smmu-500
-               - qcom,sa8775p-smmu-500
-               - qcom,sc7180-smmu-500
-@@ -84,6 +85,7 @@ properties:
-         items:
-           - enum:
-               - qcom,qcm2290-smmu-500
-+              - qcom,qcs9100-smmu-500
-               - qcom,sa8775p-smmu-500
-               - qcom,sc7280-smmu-500
-               - qcom,sc8280xp-smmu-500
-@@ -385,6 +387,7 @@ allOf:
-         compatible:
-           contains:
-             enum:
-+              - qcom,qcs9100-smmu-500
-               - qcom,sa8775p-smmu-500
-               - qcom,sc7280-smmu-500
-               - qcom,sc8280xp-smmu-500
+ drivers/iommu/intel/cache.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
----
-base-commit: 0b58e108042b0ed28a71cd7edf5175999955b233
-change-id: 20240709-document_qcs9100_smmu_compatible-85267adc3809
-
-Best regards,
 -- 
-Tengfei Fan <quic_tengfan@quicinc.com>
+2.34.1
 
