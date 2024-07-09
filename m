@@ -1,75 +1,59 @@
-Received: from out203-205-221-155.mail.qq.com (out203-205-221-155.mail.qq.com [203.205.221.155])
+Received: from verein.lst.de (verein.lst.de [213.95.11.211])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E58AB80603
-	for <iommu@lists.linux.dev>; Tue,  9 Jul 2024 09:36:19 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=203.205.221.155
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BD985157E61
+	for <iommu@lists.linux.dev>; Tue,  9 Jul 2024 11:14:35 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=213.95.11.211
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1720517783; cv=none; b=JJSNtNpf5zeuH2DGQ4iKQl1JM6Y4o79aqMp6kqEyzp8rwbvAu6+RKq3sL1tRWI/vF9Sm54VhkqBgKADds3BV8A6bDM36gNOjt38LouYusgOq1/5T5kzwQBb0odfOCBC5bX2/fbcrvPxL96R9PyQEhD6ZUDiUGfc7VVN4o3Wj4Ck=
+	t=1720523678; cv=none; b=GpcVFHXVQimbb1lOHUyIFxI9mWe4lia4hjSVWbutyXeek/xki9ZhIVaKwdsEqrnbiBIX54JoR12wLwqThqh7hqN69CgXqhO1pnr8DyaTiKMSmEG7zOVrrxkVRsCzMrio66QDvLnj7h57i7lVojzsPVS1Bmo15wlmjpyymglN6v8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1720517783; c=relaxed/simple;
-	bh=oqJ+mJ6dM5EbmUcUW5tcynAuL3T4tVBHkDNXFnlAU2M=;
-	h=Message-ID:Content-Type:Mime-Version:Subject:From:In-Reply-To:
-	 Date:Cc:References:To; b=Zss6F7UJKtMwh3A4uNWpFNNgq/lhTDIP4FQL9tzi2XhTr6XBAWu+DlKEWt4Xaw5scj+jl8AguG0PpIlSESQwBrZl+m8DWVIcQk6ouvdxgH8pL/9FoV5q3pl9hN1P4DlpP2K42+f3cw3UeQKIWJOp9L1Un22oj7vMxQdIzJy/j/Q=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=cyyself.name; spf=none smtp.mailfrom=cyyself.name; dkim=pass (1024-bit key) header.d=qq.com header.i=@qq.com header.b=eHyu9g6R; arc=none smtp.client-ip=203.205.221.155
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=cyyself.name
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=cyyself.name
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=qq.com header.i=@qq.com header.b="eHyu9g6R"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=qq.com; s=s201512;
-	t=1720517771; bh=oqJ+mJ6dM5EbmUcUW5tcynAuL3T4tVBHkDNXFnlAU2M=;
-	h=Subject:From:In-Reply-To:Date:Cc:References:To;
-	b=eHyu9g6RjxNsivAn+L+TL44+cz0djr+CGiApYeXv9E+LbaZ2s1idRamPhrI2XlZIH
-	 4rHTqbxWPTUhDUorXWlIFXdMs5gruwqU/Z55sLExARPr+ST/RzhXFuEP+VXxMELB2H
-	 QyShsyFGnzmi8T/CmJ0v+ywNPu0StCjCd9+qVgCg=
-Received: from smtpclient.apple ([2408:8207:18a1:c8bf:34:94bd:a685:19f9])
-	by newxmesmtplogicsvrsza15-1.qq.com (NewEsmtp) with SMTP
-	id 77A306FB; Tue, 09 Jul 2024 17:29:58 +0800
-X-QQ-mid: xmsmtpt1720517398t0xp3eojx
-Message-ID: <tencent_F870B162CE439C1B8BF87E0511B4071CF909@qq.com>
-X-QQ-XMAILINFO: MB5+LsFw85Nob845YVBRs6nw06NN5zgus+jzrRiDE3NY8ArzR3nzwmQqCRaCzs
-	 350oLiWVdy1XkLiCP+3Q+sEtRgpwkixUu2T4EoGevgqC8/DFP1XgFsb5Fg5i8XBwot8BnttvKRVo
-	 jPgAG0gLgwQteJ8VHK2KEQ5nWT/WxbEYVorDQvnhI5SDkFNpF+BEV+X+iV1bEN4mBQcrKzP5d0lh
-	 x7APRPP94sH6Z1o2ezT2eInMavqIMZ8wUaMVJe3Ej8BG6bZvyPoe+WbKwEuWDpYk82t3bd8Pvdjh
-	 9EZMn1BOZCwbflwWG+m1Vf0Odr4GhXgqgytXAlwVxI7OOZhQhuqOsMGGHsTO2SR3webomOeN3TcU
-	 Hc2+eGQBSllytU0SAUpJ/kCucaR1ptuK4srwHpp5cgQlZc5F7C8e6w4hI7kSi6/QW6YYA4Tc1zRR
-	 LIeglbMRsRB30qyCWHBR9X2bMMnDqH5yESi8JTW3kaouaHEv14T35qXCKHV1rstAW3Jy5T4tiUSb
-	 DTdi+uaa1HFketSiPNt+IKvnci4xB6rDAKsgh4tj7BvUPudIN8uN3IDhyWPxhjLQSjqqrqGz+t/V
-	 OFoWU0lTbzd04BqTJty61Kce+l4Tl6eE0l9ZoGOVTdzH2dj5jfV3NNyFWp2t3RY7DVfG6gTc1TrI
-	 fETVh52XNKN5l96Oy18G58z9p2SdvwJ5RjE3+48YRHU2+P4wnf5WSBxrz34/1MiBrWtFQC+ZJZhZ
-	 eOg5RJJ9pX5sTEBy10OgX2hlXYXpIqLLnafU0/aHMUK4HOdsyc9T/Gv3/v4vMUtqiOVrrYYuP5lu
-	 n9cuv75l2C3a4GDt5XDxpKL1ZVOSsATwzhlOy3kS/7WBU/Y52dREynJSh6tr5R5Q1PTC/PDwq5t+
-	 UPTOVefFLq/jSod3lUMW0Tbcwu+FvbdEWwQniVp7T/V/ZFDqvqTMM8lM7Hs6BgsyICzdkGiM2uJX
-	 WwW5F1DTo5J9+lMzx+DskqpjXKr55wsF0rk9G5kW9ZIAyFK1ndIQ0oTzaQHpf1p/SnvEMxLU4=
-X-QQ-XMRINFO: MSVp+SPm3vtS1Vd6Y4Mggwc=
-Content-Type: text/plain;
-	charset=us-ascii
+	s=arc-20240116; t=1720523678; c=relaxed/simple;
+	bh=79+Ybb6l7EsckyfcPFYID1dTZBjtHp3IDtd7E4iYaAE=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=A7BtnfH+JhK6Pxko0aiMDaMT7CBoWc0dQz2XFFRz8JCbVuEBvIR0ejYQksr/jYZIkxlptlMDYJtnftU1ocF0FPZ5N+8v+EqpYWvMZ1C2NNzAR8mXjXmGdwcfvwlb3Tf+z95PIlJOhOkNFAOvGrU6ZNxF/mnIFVp7aGEKnCU0C9I=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=lst.de; spf=pass smtp.mailfrom=lst.de; arc=none smtp.client-ip=213.95.11.211
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=lst.de
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=lst.de
+Received: by verein.lst.de (Postfix, from userid 2407)
+	id 3B21268BEB; Tue,  9 Jul 2024 13:14:26 +0200 (CEST)
+Date: Tue, 9 Jul 2024 13:14:25 +0200
+From: Christoph Hellwig <hch@lst.de>
+To: Yangyu Chen <cyy@cyyself.name>
+Cc: iommu@lists.linux.dev, linux-kernel@vger.kernel.org,
+	Christoph Hellwig <hch@lst.de>,
+	Marek Szyprowski <m.szyprowski@samsung.com>,
+	Robin Murphy <robin.murphy@arm.com>
+Subject: Re: [PATCH -fixes] dma-direct: only reference
+ arch_dma_set_uncached symbol when usable
+Message-ID: <20240709111425.GA4421@lst.de>
+References: <tencent_5E4637BE7BC1256D39C73ADCA118BD908507@qq.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
-Mime-Version: 1.0 (Mac OS X Mail 16.0 \(3774.600.62\))
-Subject: Re: [PATCH -fixes] dma-direct: only reference arch_dma_set_uncached
- symbol when usable
-From: Yangyu Chen <cyy@cyyself.name>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 In-Reply-To: <tencent_5E4637BE7BC1256D39C73ADCA118BD908507@qq.com>
-Date: Tue, 9 Jul 2024 17:29:46 +0800
-Cc: Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
- Christoph Hellwig <hch@lst.de>,
- Marek Szyprowski <m.szyprowski@samsung.com>,
- Robin Murphy <robin.murphy@arm.com>
-Content-Transfer-Encoding: quoted-printable
-X-OQ-MSGID: <317289C5-F247-4C00-B889-E93A1101D1B1@cyyself.name>
-References: <tencent_5E4637BE7BC1256D39C73ADCA118BD908507@qq.com>
-To: iommu@lists.linux.dev
-X-Mailer: Apple Mail (2.3774.600.62)
+User-Agent: Mutt/1.5.17 (2007-11-01)
 
-Now, I think fixing in another patch [1] might be better. If that gets =
-merged, I think we can ignore this.
+On Tue, Jul 09, 2024 at 04:32:48PM +0800, Yangyu Chen wrote:
+> The arch_dma_set_uncached symbol is only used when the architecture
+> provides it. However, many architectures do not provide it, and the
+> code currently relies on compiler optimization to cut the unnecessary
+> code. When the compiler fails to optimize it, the code will reference
+> the symbol and cause a link error. I found this bug when developing
+> some new extensions for RISC-V on LLVM.
+> 
+> This patch adds a check to avoid the reference to the symbol when it is
+> not provided.
 
-[1] =
-https://lore.kernel.org/linux-iommu/tencent_A5ED71472ADCAF18F59085464CBE23=
-C12A07@qq.com/
+arch_dma_set_uncached is only called from dma_direct_alloc when the
+set_uncached variable is set to true.   The variable is only set to
+true if CONFIG_ARCH_HAS_DMA_SET_UNCACHED is set.
 
+Are you running the compiler without basic optimizations? Because even
+the most basic compile time constant propagation would make it
+unreachable
 
