@@ -1,46 +1,32 @@
 Received: from verein.lst.de (verein.lst.de [213.95.11.211])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AAA0D12C54B
-	for <iommu@lists.linux.dev>; Tue,  9 Jul 2024 06:20:19 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4E8F81386B4
+	for <iommu@lists.linux.dev>; Tue,  9 Jul 2024 06:23:37 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=213.95.11.211
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1720506022; cv=none; b=UcuMemkjmLodUt7mPXbdx0ObXC/nIPyxQi46zvsts8/1IvQ3muht4z8xWdVRdpzPpKWK+MVGZmzP0Zt2iArLp1m4rsvm0hFrjVKIrLIFV4dsxpx81a6zxw+g3srXxAzEzKmWu1SI7sE4tMSGuw5ZTIp8ZOKIM8kPmUpijijyEIY=
+	t=1720506218; cv=none; b=ffCdv9s3P+ZIRiLHEE0EZ7YZG2UoQk0rKtuj3yNGjEMNyhBkqqYwsbnvBzDgqEKb4WPB9/mu9ZZ532F6NhnuxjL9ZJJNlAA1JHrI7aYswVsUUAAOP65HhKM3CJe81/YmwRq3BYsn+y7IcZv6daBoBETdZ2FuV4OIDHdDmWAicsM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1720506022; c=relaxed/simple;
-	bh=mdrqaCREQW/1Ifa3b72PBPKrXbPhXkFTrlxv2FA9lIs=;
+	s=arc-20240116; t=1720506218; c=relaxed/simple;
+	bh=A72kLY51Bpg+5otSirYm6AN3gn+A7uMf3c/GkxF0rUw=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=LmgN6wVj7mXsjen9/AJffe9xxlUBVB/17PZMGwxrJ89tYODnuFFbDITajV/8X93zQ03pQjoi9YCvSvhvFoQhpB5jSnJR4ED/oQ+yoRMn+HkVZGBIKmpHCbAoFdUfIWt5rjXxwjL9WeXPu6I/SLE6mIr+AIQhBXhGST8BPwn2518=
+	 Content-Type:Content-Disposition:In-Reply-To; b=uRRdb+ZDyPVt6O9m+no6li4QSVvSRVcQ02jlbx2bxIdgM4co6NQOJR48EyaS1wA3vvdDS/e8kYBCiK7Nqe9zGu6dBrfJKWtOXrdWgwUa8FjOCILzZXnOJU62uNPmjVVMMnFWSBCLsQ55R+CRpYQwiFk2vxJu2VWFFNxgykOxh/s=
 ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=lst.de; spf=pass smtp.mailfrom=lst.de; arc=none smtp.client-ip=213.95.11.211
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=lst.de
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=lst.de
 Received: by verein.lst.de (Postfix, from userid 2407)
-	id 7595068AFE; Tue,  9 Jul 2024 08:20:15 +0200 (CEST)
-Date: Tue, 9 Jul 2024 08:20:15 +0200
+	id 7525968AFE; Tue,  9 Jul 2024 08:23:33 +0200 (CEST)
+Date: Tue, 9 Jul 2024 08:23:33 +0200
 From: Christoph Hellwig <hch@lst.de>
-To: Jason Gunthorpe <jgg@ziepe.ca>
-Cc: Christoph Hellwig <hch@lst.de>, Leon Romanovsky <leon@kernel.org>,
-	Jens Axboe <axboe@kernel.dk>, Robin Murphy <robin.murphy@arm.com>,
-	Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
-	Keith Busch <kbusch@kernel.org>, "Zeng, Oak" <oak.zeng@intel.com>,
-	Chaitanya Kulkarni <kch@nvidia.com>,
-	Sagi Grimberg <sagi@grimberg.me>,
-	Bjorn Helgaas <bhelgaas@google.com>,
-	Logan Gunthorpe <logang@deltatee.com>,
-	Yishai Hadas <yishaih@nvidia.com>,
-	Shameer Kolothum <shameerali.kolothum.thodi@huawei.com>,
-	Kevin Tian <kevin.tian@intel.com>,
-	Alex Williamson <alex.williamson@redhat.com>,
-	Marek Szyprowski <m.szyprowski@samsung.com>,
-	=?iso-8859-1?B?Suly9G1l?= Glisse <jglisse@redhat.com>,
-	Andrew Morton <akpm@linux-foundation.org>,
-	linux-block@vger.kernel.org, linux-kernel@vger.kernel.org,
-	linux-rdma@vger.kernel.org, iommu@lists.linux.dev,
-	linux-nvme@lists.infradead.org, linux-pci@vger.kernel.org,
-	kvm@vger.kernel.org, linux-mm@kvack.org
-Subject: Re: [RFC PATCH v1 00/18] Provide a new two step DMA API mapping API
-Message-ID: <20240709062015.GB16180@lst.de>
-References: <cover.1719909395.git.leon@kernel.org> <20240705063910.GA12337@lst.de> <20240708235721.GF14050@ziepe.ca>
+To: Yicong Yang <yangyicong@huawei.com>
+Cc: chenxiang66@hisilicon.com, hch@lst.de, iommu@lists.linux.dev,
+	baohua@kernel.org, jonathan.cameron@huawei.com,
+	prime.zeng@huawei.com, linuxarm@huawei.com,
+	yangyicong@hisilicon.com
+Subject: Re: [PATCH v2] dma-mapping: benchmark: Don't starve others when
+ doing the test
+Message-ID: <20240709062333.GA16797@lst.de>
+References: <20240620092855.54581-1-yangyicong@huawei.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -49,14 +35,10 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20240708235721.GF14050@ziepe.ca>
+In-Reply-To: <20240620092855.54581-1-yangyicong@huawei.com>
 User-Agent: Mutt/1.5.17 (2007-11-01)
 
-On Mon, Jul 08, 2024 at 08:57:21PM -0300, Jason Gunthorpe wrote:
-> I understand the block stack already does this using P2P and !P2P, but
-> that isn't quite enough here as we want to split principally based on
-> IOMMU or !IOMMU.
+Thanks,
 
-Except for the powerpc bypass IOMMU or not is a global decision,
-and the bypass is per I/O.  So I'm not sure what else you want there?
+applied to the dma-mapping tree for 6.11.
 
