@@ -1,190 +1,367 @@
-Received: from NAM04-DM6-obe.outbound.protection.outlook.com (mail-dm6nam04on2068.outbound.protection.outlook.com [40.107.102.68])
+Received: from mx0b-0031df01.pphosted.com (mx0b-0031df01.pphosted.com [205.220.180.131])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B68E31B86ED;
-	Tue,  9 Jul 2024 19:42:16 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.102.68
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1720554138; cv=fail; b=TXhh7rpr7oOqEOETskw3U3Pm/bpD05uIa/AT3zKlllKynKlzpdX7B/wa8DjRp2yEOt2af+eC0JIGuTJbb1XS61UcQfOwgo1ocMYYENGXSt7HwQrBvm8I9ARuDLYXik7j3IJhHVqu4WUUf22btIc+FrygOc2jmqR3p/BGXNLioUg=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1720554138; c=relaxed/simple;
-	bh=wMN4Rp2cHUb5Pp7ElDUtW5BMfZJJ2K9+x4s0L1tb0MY=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:Content-Type:
-	 Content-Disposition:In-Reply-To:MIME-Version; b=jRdnL4MHynnIqEcIOGcXF30qGnUoWV8PTuNxqRsYe0dwW5IQI1c5IdxKs0iWiQR32RW69ufcaOYb1tCg+Th3PBfb7UB/Wq5cwWwaOW1a45CtoPQbGnX513wbGinm75j0XkDexhK3SWFrT1iqiCyNKPSZaSo1jmcDchsZcU0wuvM=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=UBdM2z3a; arc=fail smtp.client-ip=40.107.102.68
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D37BA1B86ED
+	for <iommu@lists.linux.dev>; Tue,  9 Jul 2024 19:43:09 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.180.131
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1720554192; cv=none; b=j973i+ETImsvBKkflweQfwmO+khIZXTy+vCWi0wJ6UaF1BrWCVuqNWRWJ/RSyl6Q2dRtHZu0FU6EuhCc0TSiwu6icR1AS+sCK0t6lfR8l4Ly/lCgvtlQuapLO90RZOtPNVpIO3tx0/CT+uBvDGo9YkdMeagC1hv9azlRW7190xo=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1720554192; c=relaxed/simple;
+	bh=RvOlExSgqLrGFUdcuzQYGTCp4dWoYzHkyKE/qRhVM54=;
+	h=Message-ID:Date:MIME-Version:Subject:To:CC:References:From:
+	 In-Reply-To:Content-Type; b=GPxhxxTgwOD4PofUWTMSB4UxoqADIUU3X/B9cPb2m754y+1DQUSg8OOrV5kbKxTIqpS6cMXszKfhPIfFkmvMKoThGNowZCMX4drKCdlc6w3yn8MbaDDisevyCDAxePHx1pv/cp2h6tJFfPT7V1n9uecpnbp2CNTE6EHzUmKsBTg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com; spf=pass smtp.mailfrom=quicinc.com; dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b=gCtHaKps; arc=none smtp.client-ip=205.220.180.131
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=quicinc.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="UBdM2z3a"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=Th2O7l4HDzbFn8Nf0P9SEdWecMwWysVn6Hetpiy/LiWqS5Vl0bTY2doVN5XAEPvZduYrnIP0RB9Vyl1u0YiPkeXt1dSGTO1qofoUrL1eW4A7/5eAm4L70KVjz9zIxB9hnKUJE49RmfGVwdlFznqR8E2PM4Gy1wXXZGU9JpzFZyJ9K9CPt0FsIajNKaAOBHoUKDH+wT+PbcqksBSUMAelt5wItNM0RWIFDLqToBXwli6Ec0XWyhoBRI+cW1NZx595jtH97N0INy5grr2PQwIYvOoMr3UL+5IKdqjUBjsLHhj2czSprvZ52wHxk7HTlihpem00gPuFjMZlzQoiKxqdmQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=s/pytN89AWWhXNCE0U5mWTXfA9gVrY9aDKHOAoKa/rA=;
- b=iipRJ7z02dHtpcKmOrX3FxKiq2fVtwidY1GBsPfVbQl4nORpZw5sRQcl0L2Qf9+y+BjB6AteToyyWb3ctazD7Y1vE5t5BpEMPEPqn8Kh4KMPSBHe79yaXMYePtv8H++VgI7EjBWbc4ehE/CBctK2f8k/FRzxnaZ+5ixF1lnaz2g5BGT6jkBCHB/a8V/Pupzj3RXN0eQ3bQv3/8WzezTqt+sAtt5+b9+2mTrZDEOsJ5aKJUD8OfW74WOEp5WuFZ/KU55sFHjtVmnUmojXYvFBv4st9bB0RYZ1uWsZLHhkD/1dRov02q6FtL85lzZDI7z0qzkPfnWjbkU/wRo6Ktd8LQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=s/pytN89AWWhXNCE0U5mWTXfA9gVrY9aDKHOAoKa/rA=;
- b=UBdM2z3ag1LtX+cSkbNfLAGbxjdZn6CdXrJMifbFicAYjWzRCYs7ITLCB3jHL0H0s3lscco8PPZi2w/oRh0BreAZkBL3hk9oCl76GKlCfbB0EfLgEub3KjNhVOQwj5MWNLZu84VJ1+3G/f0ceE6vPDIrW4OVO9zOWQauVOJoaN9rtUNsD3tKX1dLQuQVE1/wShdH9STEvdi1Zsgkt2J2UB74KL4FLRIDEpLw2w0ELANRZFrMwgT5bjfizUaf/hnWpMLBulA2Afi/OlLZ0e55ufF8CGNiWYyPd9LTYo17bEZQumh7Ccy32JUzfC/lofUQCgANczrzTWdEilEsAzjHsw==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-Received: from DM6PR12MB3849.namprd12.prod.outlook.com (2603:10b6:5:1c7::26)
- by DM4PR12MB6280.namprd12.prod.outlook.com (2603:10b6:8:a2::11) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7741.35; Tue, 9 Jul
- 2024 19:42:12 +0000
-Received: from DM6PR12MB3849.namprd12.prod.outlook.com
- ([fe80::c296:774b:a5fc:965e]) by DM6PR12MB3849.namprd12.prod.outlook.com
- ([fe80::c296:774b:a5fc:965e%5]) with mapi id 15.20.7741.033; Tue, 9 Jul 2024
- 19:42:12 +0000
-Date: Tue, 9 Jul 2024 16:42:10 -0300
-From: Jason Gunthorpe <jgg@nvidia.com>
-To: Will Deacon <will@kernel.org>
-Cc: iommu@lists.linux.dev, Joerg Roedel <joro@8bytes.org>,
-	linux-arm-kernel@lists.infradead.org,
-	Robin Murphy <robin.murphy@arm.com>,
-	Michael Shavit <mshavit@google.com>,
-	Nicolin Chen <nicolinc@nvidia.com>, patches@lists.linux.dev,
-	Ryan Roberts <ryan.roberts@arm.com>,
-	Mostafa Saleh <smostafa@google.com>
-Subject: Re: [PATCH v2 05/10] iommu/arm-smmu-v3: Reorganize struct
- arm_smmu_strtab_cfg
-Message-ID: <20240709194210.GM107163@nvidia.com>
-References: <0-v2-318ed5f6983b+198f-smmuv3_tidy_jgg@nvidia.com>
- <5-v2-318ed5f6983b+198f-smmuv3_tidy_jgg@nvidia.com>
- <20240702184616.GC5167@willie-the-truck>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20240702184616.GC5167@willie-the-truck>
-X-ClientProxiedBy: BLAPR03CA0108.namprd03.prod.outlook.com
- (2603:10b6:208:32a::23) To DM6PR12MB3849.namprd12.prod.outlook.com
- (2603:10b6:5:1c7::26)
+	dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b="gCtHaKps"
+Received: from pps.filterd (m0279869.ppops.net [127.0.0.1])
+	by mx0a-0031df01.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 469BjmPF003736;
+	Tue, 9 Jul 2024 19:42:54 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=quicinc.com; h=
+	cc:content-transfer-encoding:content-type:date:from:in-reply-to
+	:message-id:mime-version:references:subject:to; s=qcppdkim1; bh=
+	bO3nFpIPD4uhhj45z8f6wI1wAfE/zBNq0Tos+DSCiZ8=; b=gCtHaKpsVXMe8QgU
+	UCxfUJigwCrFw307YOla0Ro1VI2xjNxUE6gpaN7/fr4jAaTzJT80F25snyTE/I20
+	ZEg+Nsr+mOZsj3sqxsGJRFM1KDLwqMxKKA7TsGVHI0hX5Rrmn7iYYpqtXZUKN+DI
+	gAZvrj30Mpjfnf+NGU1W72DrFW1VHFmNseSfxTwmHxViC4nmn/bSq9i8xo/Gi4NH
+	xZ2/BPI7AuU0KVpigDLgm/deEV4nzt7J0uaotFHiQAXX6pdbcRxplEjRTYdZqHof
+	J1oaHKXQABJjiA2r3VnUVK0sgbReBlZgvxh1MiwWSm0FAdkjDm1FfvUZIG7IJTac
+	ukfQRQ==
+Received: from nalasppmta01.qualcomm.com (Global_NAT1.qualcomm.com [129.46.96.20])
+	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 408w0raav4-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Tue, 09 Jul 2024 19:42:54 +0000 (GMT)
+Received: from nalasex01c.na.qualcomm.com (nalasex01c.na.qualcomm.com [10.47.97.35])
+	by NALASPPMTA01.qualcomm.com (8.17.1.19/8.17.1.19) with ESMTPS id 469JgriX010456
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Tue, 9 Jul 2024 19:42:53 GMT
+Received: from [10.216.0.255] (10.80.80.8) by nalasex01c.na.qualcomm.com
+ (10.47.97.35) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1544.9; Tue, 9 Jul 2024
+ 12:42:47 -0700
+Message-ID: <9509f256-04a4-4907-98fc-148c5087d74d@quicinc.com>
+Date: Wed, 10 Jul 2024 01:12:39 +0530
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: DM6PR12MB3849:EE_|DM4PR12MB6280:EE_
-X-MS-Office365-Filtering-Correlation-Id: c2151e65-2638-4b7b-4b03-08dca04f3a43
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;ARA:13230040|376014|1800799024|366016;
-X-Microsoft-Antispam-Message-Info:
-	=?us-ascii?Q?tVZuKoa21VNwWJNwgy2TPgXUi68dfr0cTIAWxXN04OBGhXAmKxQzfqCGodzq?=
- =?us-ascii?Q?bHkfh60SFM4AediOvySV/NvFvfPBMA+h67pkgxtZ+qWNrdrPTI7Tc7mS8ojq?=
- =?us-ascii?Q?CtrjuuPNFb6kn10QF+q2t+27MEZB06Gu8MN6OAi7zqowq/cdE7Ege/iZrmtp?=
- =?us-ascii?Q?0lUQ9dws00VBP/8B+d5crBRmP2gCLb52abV6W2B0LIvO3KkmtiC24x6VIBPC?=
- =?us-ascii?Q?fz4Y9RPVAtio6RpCYoRqCcVoMViijUVKo4TqqXemyWWMA2l7HqEr0ZZX/RV1?=
- =?us-ascii?Q?BiYNEGqIOUGuBKqdKWN7pqxh1+Lb34PTxB0wQSC7Uu7ULJO2ohD3CmAqyplj?=
- =?us-ascii?Q?rJtfbuNQtGwlY9gW1NZGwPPXjEWDt3Z1Jq2YA+Je3O+kjFgGEqCK6dD30cbP?=
- =?us-ascii?Q?TKEI/9IvCVvsJqjfpMA43vGNfhC3NrfHi3XE+RYE8qoJEnAc7AC/61hz6Vlp?=
- =?us-ascii?Q?FLzQR/B9ritY/0dv9EvkkaKCbCOlTKjLLceg5likWZ/wWjO7ngF9PKGx8YS6?=
- =?us-ascii?Q?Ztoy7A2jtwYWu8tghI8O22KNgdts76V9WKB9fJH3363MHGOwF+2sDgPHrIwD?=
- =?us-ascii?Q?XS2LQqd8GFg8ERHW+U85ApCeXcftXSjyJFl5RuBeck5DEI3/hnlWdGgmHuB6?=
- =?us-ascii?Q?NK9awvnaQ8N7xZD2uv7cODDMF47sijnKoTvUJQdxXG+tRCWN1RmwjRVBMdmA?=
- =?us-ascii?Q?a1SEYxgcQTaoZNqWeq1i914zcf3WqeclBFQRIuGde2CuboMpNJVtWcf/z0wb?=
- =?us-ascii?Q?AiepyNa4+q9iZjyM//j9Ov7z8AclvuQByzf8U/UHnUrmoJbCETB56eVZ2By1?=
- =?us-ascii?Q?nGk1IehfCytMTxEVJc6kl+v//bVjtZam/OCPk+1udMeFTJIRmvcw8paSYTTw?=
- =?us-ascii?Q?elUDMqevyC3NyuPe9sMdrspZ1c6A2iy1xcT/sbNPG06Rq5LrgYY3gf5c5KkF?=
- =?us-ascii?Q?kr0jaTu6L4BQTS1ruAnz/OyELeUDGy7qs/FCnB5FPo5cxGVqX63ukx6+pxXG?=
- =?us-ascii?Q?qIGhf5Ev4/drzfZtnJKSytn1QE7Udvt2ikkc9uALRwZwsjkuSyk06JZLYl3O?=
- =?us-ascii?Q?ZbGaVrOX4z2gcHAr4FUOT1mA20VDbQa8Vg4P4Dmh99CGVcZBP1ldZzjq3SL1?=
- =?us-ascii?Q?GPatk29Bzz8SSdLx8d+QTD6mO4+gAyiYPTiHwQ2PaATuYSABMhsDGdk++LA9?=
- =?us-ascii?Q?kGQyf3uvT1zkYyNqvONKp9myKuz9ke6cZz+YfG2fzH+mi/Bc8Fjt9ZGZPprQ?=
- =?us-ascii?Q?UfbfT7uGwHOwktZUud6JSbNyOj7rBgySNIK2rQ8bSOS0L+hnD+jaw5VdSyCe?=
- =?us-ascii?Q?vcOrs6YBYOmboDVvoaHWeiBNyPsakTiUDME+T+/VauXvbg=3D=3D?=
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM6PR12MB3849.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(376014)(1800799024)(366016);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?us-ascii?Q?z1/0iiib+NCoWsHgnz1OBb8T3C2W/+0eNCBK3pPwye9YYqFgLpKzHA4yxJcK?=
- =?us-ascii?Q?n8U7r3wXv7jtO49CI1B+0Gc+eAoYkR1rK2qbVC/fcllNDQUiQ9E9sgDXvQRT?=
- =?us-ascii?Q?BNHzUX10Nj4k+IUDA2YlLDO4/Z3hk3IinhwTnA+mbitQaY578ZOw11MYLwBT?=
- =?us-ascii?Q?/Gwu0wYOrmpECb4J/wNa6JVIHHLSofUcMJB2D8qVprEz99el2cQYHuVLVIeC?=
- =?us-ascii?Q?NpmrguP2I5pg/MQv6YURPB2GNxcMoCnuNsS/hu5G3+qH+kG1wNwoTn2+1MMG?=
- =?us-ascii?Q?WqOFes37eB9Y4bmEupKVcQiDS2VGPGkL35+RsgQ+PiWg4Mf0TOl9z9bAnmX/?=
- =?us-ascii?Q?DqiebKzZFU1yi+3zrRGxiaApHCR+9S1JrfZ8nFOqkVA/Yy9UMZgUk8Dj07dn?=
- =?us-ascii?Q?h39wGEPQ7V5o81FooixIsm/2zlOy/x3iUCn9oR9VDn60VYCTQ4FDsuUKriVO?=
- =?us-ascii?Q?YHe4vCBO0PLqvHkVNP1NkT+G1HtRNTH51VaTuxMcT+VRC1vYMzImIywQln61?=
- =?us-ascii?Q?jUB1zV3Ap+PfTpAIpF86+eJfcMskO3yyl+AzAp6trSQlCffocK72hB4n6Ogu?=
- =?us-ascii?Q?xGy8hKp0gqJgOKBAYICcVZMs/A4ed4V69aCBCSbc7oRQ2cYiCJnFTpRVxpAc?=
- =?us-ascii?Q?SbBgM1RAJPm9VwgsDU1EsWR9j4WMkqaMW3cesEJTB3ztxPakxiwYl8pN/PNN?=
- =?us-ascii?Q?yVOF63NFH5GMQPy5BBY3t8t7331892uyGGVlsfsbDl3d8PcXYrsM9ypR1x27?=
- =?us-ascii?Q?+xhEUjgdfRI1HeDYNAqdcvxugidmy9+aUHkdjCiJeG8e+/yk7JJvLmoKWJqM?=
- =?us-ascii?Q?sDX1UoJNfq0lHsbbjL9dBB6V1lZOQGPf5a1Ja6DQlq8gtb/2TgPO5G81nDgf?=
- =?us-ascii?Q?x79LfZSEPK0CiaaInjmVPr5YmIKsrZp5LIT7e5CKgADnl/ShDIzflZXOOKNg?=
- =?us-ascii?Q?zQlzho6+2UfVZExtI1gNM9lRlWrzzqy4UonqC8nwPGldmiS4Jm69QLOhiu3z?=
- =?us-ascii?Q?IsVyt3zfOKMTLq67WeCVk3POQ8K/LJEDxSaMPZdInmHPCgvAFsXSNc4zl6mz?=
- =?us-ascii?Q?0E9AIDJga1EjDEX7DHDmQaI/Tm6hD4MeQAZm/V1nwtiHBApuiyP04kuxMnYs?=
- =?us-ascii?Q?gu/9fcz2VuWR9YJP2hUQ/NfiMT7Zdco5NWv7RCLHWUQDqUB8l9oDyMs/O45Z?=
- =?us-ascii?Q?HS34FPGtFTZKgdKlirOlCBs/Rk1y6sMHriexgcLLmJ20PweMorYC7lmiiEX0?=
- =?us-ascii?Q?fIPkdyOv7rbYvSlYOw3RPzYpQ0BHDeh+Mydth+jeZLERnt/w5F/EYFbD1ORL?=
- =?us-ascii?Q?REGi6ZWXgs8FOzjUV0pmyKSqArSU6UE4avOUU/qNpFlMqaBS+0MiS7ZFVssz?=
- =?us-ascii?Q?ujr4acoFyg7Q2MnzV/rS9824r+i4LGdPs+pX3EtGaRcVl44CJU45NovpaUPK?=
- =?us-ascii?Q?Pp8yKjEHv45cZRx760wqOoWg2soglcHASmZbuT5njoefMQdBjRZBkYmQs+SC?=
- =?us-ascii?Q?Gxq85NCEL7RAZtaVL6ub+0oB/R6IWvz7wPXr9eFdBR5SfDgf41QQzSZwtEJr?=
- =?us-ascii?Q?iDN9VJ+ehB7XZNRBKaaFpy2fAJj5/4jawr4omkR0?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: c2151e65-2638-4b7b-4b03-08dca04f3a43
-X-MS-Exchange-CrossTenant-AuthSource: DM6PR12MB3849.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 09 Jul 2024 19:42:12.1355
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: fwRcTjR2FrBP8sw+KAEH4bCgHZ/l0lJdy2EI42e4x0NuqBTNTjt8NswbRzKDSGoa
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM4PR12MB6280
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v13 6/6] iommu/arm-smmu: add support for PRR bit setup
+To: Rob Clark <robdclark@gmail.com>
+CC: <will@kernel.org>, <robin.murphy@arm.com>, <joro@8bytes.org>,
+        <jgg@ziepe.ca>, <jsnitsel@redhat.com>, <robh@kernel.org>,
+        <krzysztof.kozlowski@linaro.org>, <quic_c_gdjako@quicinc.com>,
+        <dmitry.baryshkov@linaro.org>, <konrad.dybcio@linaro.org>,
+        <iommu@lists.linux.dev>, <linux-arm-msm@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>, <linux-kernel@vger.kernel.org>,
+        "Rob
+ Clark" <robdclark@chromium.org>
+References: <20240628140435.1652374-1-quic_bibekkum@quicinc.com>
+ <20240628140435.1652374-7-quic_bibekkum@quicinc.com>
+ <CAF6AEGvroi8rJimFv95tkWmRFa5_aTpBJ7GFcRAuZpLGdSyEYQ@mail.gmail.com>
+ <0650ba0a-4453-4e2d-8a76-0f396ac1999c@quicinc.com>
+ <CAF6AEGv_9e-TDW1r0N4-db6pY_aV_EZFqrpNbATVS5Vy6+fs1g@mail.gmail.com>
+ <4a5f54c7-120e-427d-8a0a-9fb83e13a72e@quicinc.com>
+ <CAF6AEGtrtFNxDWtuADA4oOHhZJ=dJZcGaJ1XLFJt4fe4Xp=pTA@mail.gmail.com>
+ <3b7c05b1-8f36-4c81-a55c-dbb467314099@quicinc.com>
+ <CAF6AEGuRKU+DkL0-b3xdR1R45_MiiKQYRRXEXYz-xohu8rUaEQ@mail.gmail.com>
+ <CAF6AEGtbw06-gOSvX9gAbi=SA801gmD3_8c5xkOU-G9g2qKptQ@mail.gmail.com>
+Content-Language: en-US
+From: Bibek Kumar Patro <quic_bibekkum@quicinc.com>
+In-Reply-To: <CAF6AEGtbw06-gOSvX9gAbi=SA801gmD3_8c5xkOU-G9g2qKptQ@mail.gmail.com>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 8bit
+X-ClientProxiedBy: nasanex01a.na.qualcomm.com (10.52.223.231) To
+ nalasex01c.na.qualcomm.com (10.47.97.35)
+X-QCInternal: smtphost
+X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
+X-Proofpoint-ORIG-GUID: mcvZStmybJXjWKkuEiJKA26JWMdqSUL9
+X-Proofpoint-GUID: mcvZStmybJXjWKkuEiJKA26JWMdqSUL9
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.293,Aquarius:18.0.1039,Hydra:6.0.680,FMLib:17.12.28.16
+ definitions=2024-07-09_08,2024-07-09_01,2024-05-17_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 clxscore=1011 adultscore=0
+ impostorscore=0 lowpriorityscore=0 malwarescore=0 mlxlogscore=999
+ phishscore=0 spamscore=0 priorityscore=1501 bulkscore=0 suspectscore=0
+ mlxscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.19.0-2406140001 definitions=main-2407090133
 
-On Tue, Jul 02, 2024 at 07:46:16PM +0100, Will Deacon wrote:
-> On Mon, Jun 10, 2024 at 09:31:14PM -0300, Jason Gunthorpe wrote:
-> > The members here are being used for both the linear and the 2 level case,
-> > with the meaning of each item slightly different in the two cases.
-> > 
-> > Split it into a clean union where both cases have their own struct with
-> > their own logical names and correct types.
-> > 
-> > Adjust all the users to detect linear/2lvl and use the right sub structure
-> > and types consistently.
-> > 
-> > Remove STRTAB_STE_DWORDS by changing the last places to use
-> > sizeof(struct arm_smmu_ste).
-> > 
-> > Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
-> > ---
-> >  drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 79 ++++++++++-----------
-> >  drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h | 26 +++----
-> >  2 files changed, 51 insertions(+), 54 deletions(-)
+
+
+On 7/4/2024 9:28 PM, Rob Clark wrote:
+> On Thu, Jul 4, 2024 at 7:46 AM Rob Clark <robdclark@gmail.com> wrote:
+>>
+>> On Wed, Jul 3, 2024 at 4:38 AM Bibek Kumar Patro
+>> <quic_bibekkum@quicinc.com> wrote:
+>>>
+>>>
+>>>
+>>> On 7/2/2024 2:01 AM, Rob Clark wrote:
+>>>> On Mon, Jul 1, 2024 at 4:01 AM Bibek Kumar Patro
+>>>> <quic_bibekkum@quicinc.com> wrote:
+>>>>>
+>>>>>
+>>>>>
+>>>>> On 6/28/2024 9:14 PM, Rob Clark wrote:
+>>>>>> On Fri, Jun 28, 2024 at 8:10 AM Bibek Kumar Patro
+>>>>>> <quic_bibekkum@quicinc.com> wrote:
+>>>>>>>
+>>>>>>>
+>>>>>>>
+>>>>>>> On 6/28/2024 7:47 PM, Rob Clark wrote:
+>>>>>>>> On Fri, Jun 28, 2024 at 7:05 AM Bibek Kumar Patro
+>>>>>>>> <quic_bibekkum@quicinc.com> wrote:
+>>>>>>>>>
+>>>>>>>>> Add an adreno-smmu-priv interface for drm/msm to call
+>>>>>>>>> into arm-smmu-qcom and initiate the PRR bit setup or reset
+>>>>>>>>> sequence as per request.
+>>>>>>>>>
+>>>>>>>>> This will be used by GPU to setup the PRR bit and related
+>>>>>>>>> configuration registers through adreno-smmu private
+>>>>>>>>> interface instead of directly poking the smmu hardware.
+>>>>>>>>>
+>>>>>>>>> Suggested-by: Rob Clark <robdclark@gmail.com>
+>>>>>>>>> Signed-off-by: Bibek Kumar Patro <quic_bibekkum@quicinc.com>
+>>>>>>>>> ---
+>>>>>>>>>      drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c | 23 ++++++++++++++++++++++
+>>>>>>>>>      drivers/iommu/arm/arm-smmu/arm-smmu.h      |  2 ++
+>>>>>>>>>      include/linux/adreno-smmu-priv.h           |  6 +++++-
+>>>>>>>>>      3 files changed, 30 insertions(+), 1 deletion(-)
+>>>>>>>>>
+>>>>>>>>> diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
+>>>>>>>>> index bd101a161d04..64571a1c47b8 100644
+>>>>>>>>> --- a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
+>>>>>>>>> +++ b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
+>>>>>>>>> @@ -28,6 +28,7 @@
+>>>>>>>>>      #define PREFETCH_SHALLOW       (1 << PREFETCH_SHIFT)
+>>>>>>>>>      #define PREFETCH_MODERATE      (2 << PREFETCH_SHIFT)
+>>>>>>>>>      #define PREFETCH_DEEP          (3 << PREFETCH_SHIFT)
+>>>>>>>>> +#define GFX_ACTLR_PRR          (1 << 5)
+>>>>>>>>>
+>>>>>>>>>      static const struct actlr_config sc7280_apps_actlr_cfg[] = {
+>>>>>>>>>             { 0x0800, 0x04e0, PREFETCH_DEFAULT | CMTLB },
+>>>>>>>>> @@ -235,6 +236,27 @@ static void qcom_adreno_smmu_resume_translation(const void *cookie, bool termina
+>>>>>>>>>             arm_smmu_cb_write(smmu, cfg->cbndx, ARM_SMMU_CB_RESUME, reg);
+>>>>>>>>>      }
+>>>>>>>>>
+>>>>>>>>> +static void qcom_adreno_smmu_set_prr(const void *cookie, phys_addr_t page_addr, bool set)
+>>>>>>>>> +{
+>>>>>>>>> +       struct arm_smmu_domain *smmu_domain = (void *)cookie;
+>>>>>>>>> +       struct arm_smmu_cfg *cfg = &smmu_domain->cfg;
+>>>>>>>>> +       struct arm_smmu_device *smmu = smmu_domain->smmu;
+>>>>>>>>> +       u32 reg = 0;
+>>>>>>>>> +
+>>>>>>>>> +       writel_relaxed(lower_32_bits(page_addr),
+>>>>>>>>> +                               smmu->base + ARM_SMMU_GFX_PRR_CFG_LADDR);
+>>>>>>>>> +
+>>>>>>>>> +       writel_relaxed(upper_32_bits(page_addr),
+>>>>>>>>> +                               smmu->base + ARM_SMMU_GFX_PRR_CFG_UADDR);
+>>>>>>>>> +
+>>>>>>>>> +       reg =  arm_smmu_cb_read(smmu, cfg->cbndx, ARM_SMMU_CB_ACTLR);
+>>>>>>>>> +       reg &= ~GFX_ACTLR_PRR;
+>>>>>>>>> +       if (set)
+>>>>>>>>> +               reg |= FIELD_PREP(GFX_ACTLR_PRR, 1);
+>>>>>>>>> +       arm_smmu_cb_write(smmu, cfg->cbndx, ARM_SMMU_CB_ACTLR, reg);
+>>>>>>>>> +
+>>>>>>>>
+>>>>>>>> nit, extra line
+>>>>>>>>
+>>>>>>>
+>>>>>>> Ack, will remove this. Thanks for pointing out.
+>>>>>>>
+>>>>>>>> Also, if you passed a `struct page *` instead, then you could drop the
+>>>>>>>> bool param, ie. passing NULL for the page would disable PRR.  But I
+>>>>>>>> can go either way if others have a strong preference for phys_addr_t.
+>>>>>>>>
+>>>>>>>
+>>>>>>> Oh okay, this looks simple to reset the prr bit.
+>>>>>>> But since this page is allocated and is used inside gfx driver
+>>>>>>> before being utilized for prr bit operation, would it be safe for
+>>>>>>> drm/gfx driver to keep a reference to this page in smmu driver?
+>>>>>>>
+>>>>>>> Since we only need the page address for configuring the
+>>>>>>> CFG_UADDR/CFG_LADDR registers so passed the phys_addr_t.
+>>>>>>
+>>>>>> I don't think the smmu driver needs to keep a reference to the page..
+>>>>>> we can just say it is the responsibility of the drm driver to call
+>>>>>> set_prr(NULL) before freeing the page
+>>>>>>
+>>>>>
+>>>>> That makes sense. If we go by this NULL page method to disable the PRR,
+>>>>> we would have to set the address registers to reset value as well.
+>>>>>
+>>>>> The sequence would be like the following as per my understaning:
+>>>>> - Check if it's NULL page
+>>>>> - Set the PRR_CFG_UADDR/PRR_CFG_LADDR to reset values i.e - 0x0 for
+>>>>>      these registers
+>>>>> - Reset the PRR bit in actlr register
+>>>>>
+>>>>> Similar to this snippet:
+>>>>>
+>>>>> #PRR_RESET_ADDR 0x0
+>>>>>
+>>>>> --------------
+>>>>> reg =  arm_smmu_cb_read(smmu, cfg->cbndx, ARM_SMMU_CB_ACTLR);
+>>>>> reg &= ~GFX_ACTLR_PRR;
+>>>>> arm_smmu_cb_write(smmu, cfg->cbndx, ARM_SMMU_CB_ACTLR, reg);
+>>>>>
+>>>>> if (!prr_page) {
+>>>>>           writel_relaxed(PRR_RESET_ADDR,
+>>>>>                           smmu->base + ARM_SMMU_GFX_PRR_CFG_LADDR);
+>>>>>           writel_relaxed(PRR_RESET_ADDR),
+>>>>>                            smmu->base + ARM_SMMU_GFX_PRR_CFG_UADDR);
+>>>>>           return;
+>>>>> }
+>>>>>
+>>>>>
+>>>>> writel_relaxed(lower_32_bits(page_to_phys(prr_page)),
+>>>>>                   smmu->base + ARM_SMMU_GFX_PRR_CFG_LADDR);
+>>>>>
+>>>>> writel_relaxed(upper_32_bits(page_to_phys(prr_page)),
+>>>>>                   smmu->base + ARM_SMMU_GFX_PRR_CFG_UADDR);
+>>>>>
+>>>>> reg |= FIELD_PREP(GFX_ACTLR_PRR, 1);
+>>>>> arm_smmu_cb_write(smmu, cfg->cbndx, ARM_SMMU_CB_ACTLR, reg);
+>>>>> -----------------
+>>>>>
+>>>>> If looks good, will implement the same in next version.
+>>>>
+>>>> yeah, that looks like it could work..
+>>>>
+>>>> you probably don't need to zero out the PRR_CFG_*ADDR when disabling,
+>>>> and probably could avoid double writing ACTLR, but that is getting
+>>>> into bikeshedding
+>>>>
+>>>
+>>> Actually Rob, since you rightly pointed this out.
+>>> I crosschecked again on these registers.
+>>> PRR_CFG_*ADDR is a global register in SMMU space but
+>>> ACTLR register including PRR bit is a per-domain register.
+>>> There might also be a situation where PRR feature need to be
+>>> disabled or enabled separately for each domain.
+>>> So I think it would be cleaner to have two apis, set_prr_addr(),
+>>> set_prr_bit().
+>>> set_prr_addr() will be used only to set this PRR_CFG_*ADDR
+>>> register by passing a 'struct page *'
+>>> set_prr_bit() will be used as a switch for PRR feature,
+>>> where required smmu_domain will be passed along with
+>>> the bool value to set/reset the PRR bit depending on which this
+>>> feature will be enabled/disabled for the selected domain.
+>>
+>> on a related note, adreno has been using arm-smmu for a number of
+>> generations, I guess not all support PRR?  The drm driver will need to
+>> know whether PRR is supported (and expose that to userspace to let the
+>> UMD know whether to expose certain extensions).  How should this work?
 > 
-> [...]
+> So, I noticed in the x1e80100.dtsi that there is a gpu_prr_mem
+> reserved section..  maybe we should be connecting this to the smmu
+> driver in dt, and using that to detect presence of PRR?  Ie. the smmu
+> driver would configure PRR_CFG_*ADDR based on the reserved mem, and
+> the interface to drm would just be to enable/disable PRR, returning an
+> error code if the reserved mem section isn't there.
 > 
-> > diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
-> > index 1418f21f5db6a0..8b58a30ebeb06b 100644
-> > --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
-> > +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
-> > @@ -204,10 +204,8 @@
-> >  #define STRTAB_L1_DESC_SPAN		GENMASK_ULL(4, 0)
-> >  #define STRTAB_L1_DESC_L2PTR_MASK	GENMASK_ULL(51, 6)
-> >  
-> > -#define STRTAB_STE_DWORDS		8
-> > -
-> >  struct arm_smmu_ste {
-> > -	__le64 data[STRTAB_STE_DWORDS];
-> > +	__le64 data[8];
-> >  };
+> This simplifies the interface, and handles the question of how to
+> detect if PRR is supported.
 > 
-> I'm not seeing the improvement here.
+> BR,
+> -R
+> 
 
-Are you just asking to keep STRTAB_STE_DWORDS to use only for data[]?
+As I checked gpu_prr_mem reserved mem section is not used for mobile
+targets hence not present for other DT only compute targets like
+x1e80100.dtsi has the same. PRR looks to be smmu version specific
+property.
+This feature is present in all the targets using SMMU-500,
+I am still checking for targets using versions prior to smmu-500.
+Then maybe we can use the smmu compatible string itself (e.g.
+qcom,smmu-500 && qcom,adreno-smmu) to connect to smmu driver for
+checking the presence of PRR ?
+And if the compatible string is different then we can return the
+error code signifying PRR feature is not supported on the particular
+smmu version.
 
-I seem to recall a reviewer asked for this - but it can stay with no
-issue. Let me know.
+Thanks & regards,
+Bibek
 
-Jason
+>> BR,
+>> -R
+>>
+>>> Thanks & regards,
+>>> Bibek
+>>>
+>>>> BR,
+>>>> -R
+>>>>
+>>>>>
+>>>>> Thanks & regards,
+>>>>> Bibek
+>>>>>
+>>>>>> BR,
+>>>>>> -R
+>>>>>>
+>>>>>>>> Otherwise, lgtm
+>>>>>>>>
+>>>>>>>> BR,
+>>>>>>>> -R
+>>>>>>>>
+>>>>>>>
+>>>>>>> Thanks & regards,
+>>>>>>> Bibek
+>>>>>>>
+>>>>>>>>> +}
+>>>>>>>>> +
+>>>>>>>>>      #define QCOM_ADRENO_SMMU_GPU_SID 0
+>>>>>>>>>
+>>>>>>>>>      static bool qcom_adreno_smmu_is_gpu_device(struct device *dev)
+>>>>>>>>> @@ -407,6 +429,7 @@ static int qcom_adreno_smmu_init_context(struct arm_smmu_domain *smmu_domain,
+>>>>>>>>>             priv->get_fault_info = qcom_adreno_smmu_get_fault_info;
+>>>>>>>>>             priv->set_stall = qcom_adreno_smmu_set_stall;
+>>>>>>>>>             priv->resume_translation = qcom_adreno_smmu_resume_translation;
+>>>>>>>>> +       priv->set_prr = qcom_adreno_smmu_set_prr;
+>>>>>>>>>
+>>>>>>>>>             actlrvar = qsmmu->data->actlrvar;
+>>>>>>>>>             if (!actlrvar)
+>>>>>>>>> diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu.h b/drivers/iommu/arm/arm-smmu/arm-smmu.h
+>>>>>>>>> index d9c2ef8c1653..3076bef49e20 100644
+>>>>>>>>> --- a/drivers/iommu/arm/arm-smmu/arm-smmu.h
+>>>>>>>>> +++ b/drivers/iommu/arm/arm-smmu/arm-smmu.h
+>>>>>>>>> @@ -154,6 +154,8 @@ enum arm_smmu_cbar_type {
+>>>>>>>>>      #define ARM_SMMU_SCTLR_M               BIT(0)
+>>>>>>>>>
+>>>>>>>>>      #define ARM_SMMU_CB_ACTLR              0x4
+>>>>>>>>> +#define ARM_SMMU_GFX_PRR_CFG_LADDR     0x6008
+>>>>>>>>> +#define ARM_SMMU_GFX_PRR_CFG_UADDR     0x600C
+>>>>>>>>>
+>>>>>>>>>      #define ARM_SMMU_CB_RESUME             0x8
+>>>>>>>>>      #define ARM_SMMU_RESUME_TERMINATE      BIT(0)
+>>>>>>>>> diff --git a/include/linux/adreno-smmu-priv.h b/include/linux/adreno-smmu-priv.h
+>>>>>>>>> index c637e0997f6d..d6e2ca9f8d8c 100644
+>>>>>>>>> --- a/include/linux/adreno-smmu-priv.h
+>>>>>>>>> +++ b/include/linux/adreno-smmu-priv.h
+>>>>>>>>> @@ -49,7 +49,10 @@ struct adreno_smmu_fault_info {
+>>>>>>>>>       *                 before set_ttbr0_cfg().  If stalling on fault is enabled,
+>>>>>>>>>       *                 the GPU driver must call resume_translation()
+>>>>>>>>>       * @resume_translation: Resume translation after a fault
+>>>>>>>>> - *
+>>>>>>>>> + * @set_prr:      Extendible interface to be used by GPU to modify the
+>>>>>>>>> + *                 ACTLR register bits, currently used to configure
+>>>>>>>>> + *                 Partially-Resident-Region (PRR) feature's
+>>>>>>>>> + *                 setup and reset sequence as requested.
+>>>>>>>>>       *
+>>>>>>>>>       * The GPU driver (drm/msm) and adreno-smmu work together for controlling
+>>>>>>>>>       * the GPU's SMMU instance.  This is by necessity, as the GPU is directly
+>>>>>>>>> @@ -67,6 +70,7 @@ struct adreno_smmu_priv {
+>>>>>>>>>          void (*get_fault_info)(const void *cookie, struct adreno_smmu_fault_info *info);
+>>>>>>>>>          void (*set_stall)(const void *cookie, bool enabled);
+>>>>>>>>>          void (*resume_translation)(const void *cookie, bool terminate);
+>>>>>>>>> +    void (*set_prr)(const void *cookie, phys_addr_t page_addr, bool set);
+>>>>>>>>>      };
+>>>>>>>>>
+>>>>>>>>>      #endif /* __ADRENO_SMMU_PRIV_H */
+>>>>>>>>> --
+>>>>>>>>> 2.34.1
+>>>>>>>>>
