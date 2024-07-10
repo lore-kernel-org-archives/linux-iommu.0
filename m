@@ -1,56 +1,56 @@
-Received: from mail-io1-f41.google.com (mail-io1-f41.google.com [209.85.166.41])
+Received: from mail-il1-f181.google.com (mail-il1-f181.google.com [209.85.166.181])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2D365192B7F
-	for <iommu@lists.linux.dev>; Wed, 10 Jul 2024 15:48:43 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.166.41
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 19246194AED
+	for <iommu@lists.linux.dev>; Wed, 10 Jul 2024 15:58:47 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.166.181
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1720626526; cv=none; b=SMcyoAg3ALQtj/okl3iiRwUECuK3LdVHyDSeQNjOsVs4UzSgPbOXZQFRvMWLrQbOsFW+6pzgnNext0JYjkl3zYvVnkXPF9y9z8m9tQrLBT7uF5IDFcIf1ItIyPhmP+XwBhKapBRAqe9dW0M+MZDWp7vRNr3y5SUb2gdjyRJ+yhM=
+	t=1720627129; cv=none; b=NLI+HzeZB91108h2bWeoypVqnrgHLICErHUuHcCn3XYyl7Npi232VczIoOWzzpk+9otZ4uVkFKJNxRjzjvNPZyiewGcbrEXWJ1J2qkwU/CSk24zIR5ZH0sjUhjAhunIsAHfH67qG+TUEpcJkeDQzogBV1VOBY536FQtccBpapnk=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1720626526; c=relaxed/simple;
-	bh=iorRHs1FfFnnoZBWAuEPvxWAQCRVQH5UaGIKV9cGMW0=;
+	s=arc-20240116; t=1720627129; c=relaxed/simple;
+	bh=glBPvWkFzLQfz8TsVq9rjy/MlGkv6G8RoVIA3mtxWlI=;
 	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=uHD4YtyP7c/YntMng7DVOdixSPCmTPXHuy7rBxo5oVPzkFVICHSZudQo7CLbHzsHcam3wyeEmUVTjuo0uICn2AArLvBnOLIeCEHd8W5bYtx+AIeOiBH1JHS9311zhmZeECR3AsoarJUD8ro8vvHwoBCM7cGe8gAmIHltOSH80gY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linuxfoundation.org; spf=pass smtp.mailfrom=linuxfoundation.org; dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b=WQH9UjyZ; arc=none smtp.client-ip=209.85.166.41
+	 In-Reply-To:Content-Type; b=U1f43Jv5cU85TDzgoZjtUEGma9575SuJKMkHm1StHrjV63oSJ4XWnGKi/RX+RcuN1Hzu0Az01u6StHDtXQUAA8f9TXv34JngyeYHufW+mUtviO57HphS7u+4TIB2IqD7j444IhcuT5h+pVUrkw5aM6bNe0Sb9atbH94jxlzLuxk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linuxfoundation.org; spf=pass smtp.mailfrom=linuxfoundation.org; dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b=SSF0Falm; arc=none smtp.client-ip=209.85.166.181
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linuxfoundation.org
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linuxfoundation.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b="WQH9UjyZ"
-Received: by mail-io1-f41.google.com with SMTP id ca18e2360f4ac-7f976f18955so11668239f.0
-        for <iommu@lists.linux.dev>; Wed, 10 Jul 2024 08:48:43 -0700 (PDT)
+	dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b="SSF0Falm"
+Received: by mail-il1-f181.google.com with SMTP id e9e14a558f8ab-375deacb3e1so2906595ab.3
+        for <iommu@lists.linux.dev>; Wed, 10 Jul 2024 08:58:47 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linuxfoundation.org; s=google; t=1720626523; x=1721231323; darn=lists.linux.dev;
+        d=linuxfoundation.org; s=google; t=1720627127; x=1721231927; darn=lists.linux.dev;
         h=content-transfer-encoding:in-reply-to:from:content-language
          :references:cc:to:subject:user-agent:mime-version:date:message-id
          :from:to:cc:subject:date:message-id:reply-to;
-        bh=LS47NwTHSzZjUEoROwPuK2RM3LnHChBCx0vrrpQXSqA=;
-        b=WQH9UjyZV1jlCBgLVTjJ7Ghtp/UPmzmcYvguaDU0i/xFCFIyBc5ibblPwgEPmp0uOX
-         F8Xs+3bH7GMo+gH14bmOY8oukegu+/57iebyRzV8yzeK+HpUsI5K6F0NdBYODumuggD8
-         lOWlKL1PEseeuUrczSH3TtAA9tknHLu4kjNBU=
+        bh=fGy2kaPZRr3hHhlJ6VMkV6cbieMFPeP7bwQHrR7G1rM=;
+        b=SSF0FalmwD98y0yKkdgkuwaPQKq3x9I1aLjw0KJdqvXBZxpweqLj21AtsYSXUl4PFo
+         TFt6Wvi50Ec3Ncjj87N0X4msUX+XOmYtPVu4MJEMBFxQDcjyKXzkZAUr0Wfjd/QJfHhZ
+         6JxTmcgb9mCuVNnrmTB1bZ6y42SCWwaQH+KvQ=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1720626523; x=1721231323;
+        d=1e100.net; s=20230601; t=1720627127; x=1721231927;
         h=content-transfer-encoding:in-reply-to:from:content-language
          :references:cc:to:subject:user-agent:mime-version:date:message-id
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=LS47NwTHSzZjUEoROwPuK2RM3LnHChBCx0vrrpQXSqA=;
-        b=vi6J/5oP6dhPOKwYueJPZtm3iYFvvnMkQIhTGK1rOvlWZ5wvoqcDOCfhrjX/VavLZk
-         sDRu2bGwIvUpQyCZWZJeVVQ/ez2h3yrNRuIkp0huwODr6PMPT3JdzqE6s8Qxq4yKn9Sp
-         fFLapQMjOWk2aBj1wqpt0KqYJepiEEJcrnJSuJlU0obQVPbwuFl/pOYc8Awi7OKyvLQu
-         GzzBgvPxV98QcvsG9dpTLl/t91w5oHQkI6kA650wOV6YBfwh2RL9KqTWjaFHo1tgN74P
-         FbavFpwzOvxcyql4DLsJ/QrpsrcV54UoSirSh/4yVJ0BVcjPnOtCa4TLLROuo1Gq9rqQ
-         2UCw==
-X-Forwarded-Encrypted: i=1; AJvYcCW+RzsgyXnXp2dt12ffN9nYm7R+mtT3uT3DyiilHzMXdVJVXs9TfCnIue+3CnVidbAIFAQQz5lpnwEnjrUf+2huHn6nrCM=
-X-Gm-Message-State: AOJu0Yw8cFrUFmugkkVqxuTzNJl1IVVDxs0wmoNCYpC5RQ+53v0tlaVO
-	ROXpheo6w4untguJ20FMIQE2YvgG5M4ldpjSLR84tOeNpufWXBGOSHtoemZF5Uk=
-X-Google-Smtp-Source: AGHT+IFRD6fL3OQ1OLKpghMhlBlympGGayGAHOv8YbYdzU4CyToyqM5gp8L/0wFHUzroGW6XGt//dA==
-X-Received: by 2002:a05:6602:6103:b0:7f6:85d1:f81a with SMTP id ca18e2360f4ac-80004dea088mr658795739f.2.1720626523218;
-        Wed, 10 Jul 2024 08:48:43 -0700 (PDT)
+        bh=fGy2kaPZRr3hHhlJ6VMkV6cbieMFPeP7bwQHrR7G1rM=;
+        b=Sa4OZ0nO8YeY5VK5eRV4TgKsixhWgYcULo0TCN6qpyv00n//usp0BrFwHqb8DF3I+l
+         cHNnyq6agQZhGC8rjsMLgEk6TMHovAk98ghsskqxuHWa5yJuM+GB1NKSsQY0J9vYw7p+
+         N/CVnG7f6MUdXbMkk2MecUkqiq9W0Y65G0XDHO1u87H7iMT/9EdzNO3wJhsIEBfZAKab
+         y3PY98CfsnbUe4L23W57Oi/ETmsjOi8MnYKWUtTocuYWGRixfGGKxV32zVqqVEblHr4R
+         14p5vo/EVlfaKFnEBW2lEzL7uzOkyLw8+J/qkGbASvl8UdqyNSQrVAU379/qZsUfihOy
+         iNyg==
+X-Forwarded-Encrypted: i=1; AJvYcCX32i2moAjkn3k7TPMPYT+Lt+9cWdABRJ8iI/uyKugrMZ6Xvv5MbiB3mHQCTTJJcjIQ3FCafoHNb3kjI5jGOTJGvwO0NcM=
+X-Gm-Message-State: AOJu0YwKd1lcDEWb6XKLRcrhPPjYfPP4/NpFIoVovUIhC47WTCthII1y
+	pTBD/sJe5Ysiubkv32/uGdrBzkgALgypHfpIiWPxBm4/D4UOeEyhAp68wXS5ub8=
+X-Google-Smtp-Source: AGHT+IEgwRKV9JwE1SccNSo0JaXpaHOih6A9ET3LUZTOXD99a4Jq1dI6/XLx3p/8L3bMkmdBqFqAHw==
+X-Received: by 2002:a05:6e02:1066:b0:382:774e:a820 with SMTP id e9e14a558f8ab-38a54366279mr62388965ab.0.1720627127323;
+        Wed, 10 Jul 2024 08:58:47 -0700 (PDT)
 Received: from [192.168.1.128] ([38.175.170.29])
-        by smtp.gmail.com with ESMTPSA id 8926c6da1cb9f-4c0b1bf8601sm1222131173.105.2024.07.10.08.48.42
+        by smtp.gmail.com with ESMTPSA id e9e14a558f8ab-38a4b870e83sm10117595ab.55.2024.07.10.08.58.46
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 10 Jul 2024 08:48:42 -0700 (PDT)
-Message-ID: <0fcefad8-540f-487e-b5b6-b78009bf5d9b@linuxfoundation.org>
-Date: Wed, 10 Jul 2024 09:48:42 -0600
+        Wed, 10 Jul 2024 08:58:47 -0700 (PDT)
+Message-ID: <a3b43a5b-0e32-4ab0-a387-cf58b76525eb@linuxfoundation.org>
+Date: Wed, 10 Jul 2024 09:58:46 -0600
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -58,50 +58,41 @@ List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH] selftests/dma:Fix a resource leak
+Subject: Re: [PATCH] selftests/dma:remove unused variable
 To: Zhu Jun <zhujun2@cmss.chinamobile.com>, shuah@kernel.org
 Cc: chenxiang66@hisilicon.com, iommu@lists.linux.dev,
  linux-kselftest@vger.kernel.org, linux-kernel@vger.kernel.org,
  Shuah Khan <skhan@linuxfoundation.org>
-References: <20240710063045.5308-1-zhujun2@cmss.chinamobile.com>
+References: <20240710065759.5988-1-zhujun2@cmss.chinamobile.com>
 Content-Language: en-US
 From: Shuah Khan <skhan@linuxfoundation.org>
-In-Reply-To: <20240710063045.5308-1-zhujun2@cmss.chinamobile.com>
+In-Reply-To: <20240710065759.5988-1-zhujun2@cmss.chinamobile.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 
-On 7/10/24 00:30, Zhu Jun wrote:
-> The opened file should be closed in main(), otherwise resource
-> leak will occur that this problem was discovered by reading code
+On 7/10/24 00:57, Zhu Jun wrote:
+> The variable are never referenced in the code, just remove it
+> that this problem was discovered by reading code
 > 
 > Signed-off-by: Zhu Jun <zhujun2@cmss.chinamobile.com>
 > ---
->   tools/testing/selftests/dma/dma_map_benchmark.c | 3 +++
->   1 file changed, 3 insertions(+)
+>   tools/testing/selftests/dma/dma_map_benchmark.c | 1 -
+>   1 file changed, 1 deletion(-)
 > 
 > diff --git a/tools/testing/selftests/dma/dma_map_benchmark.c b/tools/testing/selftests/dma/dma_map_benchmark.c
-> index 5c997f17fcbd..3fcea00961c0 100644
+> index 3fcea00961c0..c91b485ca99a 100644
 > --- a/tools/testing/selftests/dma/dma_map_benchmark.c
 > +++ b/tools/testing/selftests/dma/dma_map_benchmark.c
-> @@ -114,6 +114,7 @@ int main(int argc, char **argv)
->   	map.granule = granule;
+> @@ -33,7 +33,6 @@ int main(int argc, char **argv)
+>   	int granule = 1;
 >   
->   	if (ioctl(fd, cmd, &map)) {
-> +		close(fd);
->   		perror("ioctl");
->   		exit(1);
->   	}
-> @@ -125,5 +126,7 @@ int main(int argc, char **argv)
->   	printf("average unmap latency(us):%.1f standard deviation:%.1f\n",
->   			map.avg_unmap_100ns/10.0, map.unmap_stddev/10.0);
+>   	int cmd = DMA_MAP_BENCHMARK;
+> -	char *p;
 >   
-> +	close(fd);
-> +
->   	return 0;
->   }
+>   	while ((opt = getopt(argc, argv, "t:s:n:b:d:x:g:")) != -1) {
+>   		switch (opt) {
 
-Files get closed when this process exits. There is no need
-to make this change.
+Applied to linux-kselftest next for Linux 6.11-rc1.
 
 thanks,
 -- Shuah
