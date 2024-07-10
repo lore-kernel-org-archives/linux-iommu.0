@@ -1,48 +1,51 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id ED3AD191496;
-	Wed, 10 Jul 2024 12:39:10 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CF44A1922E3;
+	Wed, 10 Jul 2024 12:39:13 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1720615151; cv=none; b=OlM3VpC9uq4mIiyqE/ZoFdndxwzEpE4IKL0/uMNQn9D84EusjLqIhltXZ85FLZzvIl5jojkiK/M6vj2rotRrwnVrPZcLfDvl/PcOQozZXUqxPHzGgoccGsfNlBrdudzBie1Weqq6ZO6Iy1JnrIZ0wgyA7dEh+K3l5fb8Z9kaStc=
+	t=1720615153; cv=none; b=YHQdF1yzcJTbc3iOAQtbAGaV21yhjKrO2Wa/JxlTfVmD1oZnsrIMqXMLOxIPBUQmCdaSjBK1EtwMwrgCIDkzpqy3lGHFH+7pjsW82vyjR4vbia8HbVy6023yBhNghFxbS7gIFmLujyR4S55uGMF1TM9MovN7W/zSfCLkFff7AbI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1720615151; c=relaxed/simple;
-	bh=Pkl0N61cIs16sTy1Os3VUMkDmIplUrRbwQp3A+pBqhE=;
+	s=arc-20240116; t=1720615153; c=relaxed/simple;
+	bh=TY4sY5oPjVbGQAENFz0Pqdu8obOb5jPNxo+VfH0FRYI=;
 	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=I8sppV8gfIeWKtm4S5FU440NnNVwloxw/iIZXVwo/ECcsS3ch+v5+8Fco3eP+gBj5WMEvn4tnobeCXx2F61+pKqqvjJPfKPEasrwxBeSjvimolHFPmgjVtyQXaiDcVlHBQu4t8RhhoN6qI7zJ1SV7h+Q2PeXEQ7yQrGCG3dMCVY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=kF0X6NM5; arc=none smtp.client-ip=10.30.226.201
+	 MIME-Version:Content-Type; b=h4ZdYNKQlJ9KNuJQT3OW33rM2+h5UvmXSbzW2FJfO91e8vFDZBvbg1fzbXJtwg85fiu7QkxGtR5bHWU9JGWSJnaEQeoA6o7FzshCoD1WmqedZJ3EhlXlzHlVyhmfrNFJZshZANMSDEZDDjIRCotpLkSKZTzIH+A8x5/9C1mdg5c=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=NgOTl8Hi; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="kF0X6NM5"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A5897C32786;
-	Wed, 10 Jul 2024 12:39:08 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="NgOTl8Hi"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0AA14C32782;
+	Wed, 10 Jul 2024 12:39:10 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1720615150;
-	bh=Pkl0N61cIs16sTy1Os3VUMkDmIplUrRbwQp3A+pBqhE=;
+	s=k20201202; t=1720615153;
+	bh=TY4sY5oPjVbGQAENFz0Pqdu8obOb5jPNxo+VfH0FRYI=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-	b=kF0X6NM5ZQ6RVrRPG917AZ8uI6AafaDCw3KdxlvPfNpNvKLlldS1zjMwHH702yM2g
-	 Tb8Df5XunssFakljELmc/lNx0NNP95YO2XXJONWcPsJ21WGww+UWjatLAEy/iWPrIl
-	 AIJy8x9ZQ4gBb57r0G1NQKUOCcX2LPlNWyY8eRX0Sihz5K68hYpdjv5shzK670Niif
-	 UU8L68Nug/l4hn6Fzgt372IRMtrgAtJ+NOZMFPuAJIRqprwERICtOiuV3BwsVTyrzv
-	 z44X1Vk7rjrirBw23CQ9nmW80ZBbzo1ZObOKx8SqD9MM2ftz+4CNHZRavkRyBgaq+0
-	 Ic+b9wDlLGHqQ==
+	b=NgOTl8Hi98oOvg9/W8Zhn7iI6SoavNvy3cQuT63uzjYmFDgFKVGivaW4FNiSIRyOb
+	 JtXVwLpk6GXGfW/dT5gM1LbCS3bEuLZlIpv/TAqwB3vWKbza4D/N7EkdrtdYpq7wgP
+	 AsBBz3a0qdT4PxCW8DxubFhNUhuc6C8rgaAqNBY9D0hDR7/RNYQtktiUdg3/HFoCUn
+	 gGIU5ckQFjUs8HYEj979XYtrwpZltRIq4iCSrp94khyE53NFHqs2BIm6Z4IJhub3YM
+	 5rEPIEdbkvP2BHZDtXGAdoM+4ZfjRawQ+b7+zTUx+XAVEJiz+FRe6I5TFKAdO8v5jz
+	 6jFOKgBN8jOTA==
 From: Will Deacon <will@kernel.org>
 To: Joerg Roedel <joro@8bytes.org>,
 	Robin Murphy <robin.murphy@arm.com>,
-	Kevin Tian <kevin.tian@intel.com>,
-	Louis Maliyam <louispm@google.com>,
-	Lu Baolu <baolu.lu@linux.intel.com>
+	Rob Herring <robh@kernel.org>,
+	Krzysztof Kozlowski <krzk+dt@kernel.org>,
+	Conor Dooley <conor+dt@kernel.org>,
+	David Heidelberg <david@ixit.cz>
 Cc: catalin.marinas@arm.com,
 	kernel-team@android.com,
 	Will Deacon <will@kernel.org>,
 	iommu@lists.linux.dev,
-	linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2 0/2] iommu/vt-d: Fix aligned pages for cache invalidation
-Date: Wed, 10 Jul 2024 13:39:03 +0100
-Message-Id: <172061321610.624103.9680592794561118105.b4-ty@kernel.org>
+	devicetree@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	linux-arm-msm@vger.kernel.org
+Subject: Re: [PATCH v7] dt-bindings: iommu: Convert msm,iommu-v0 to yaml
+Date: Wed, 10 Jul 2024 13:39:04 +0100
+Message-Id: <172061359238.625684.18062139914170368860.b4-ty@kernel.org>
 X-Mailer: git-send-email 2.20.1
-In-Reply-To: <20240709152643.28109-1-baolu.lu@linux.intel.com>
-References: <20240709152643.28109-1-baolu.lu@linux.intel.com>
+In-Reply-To: <20240705221520.109540-1-david@ixit.cz>
+References: <20240705221520.109540-1-david@ixit.cz>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -52,23 +55,17 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 
-On Tue, 09 Jul 2024 23:26:41 +0800, Lu Baolu wrote:
-> The aligned pages for cache invalidation returned by
-> calculate_psi_aligned_address() are incorrect if the start pfn is not
-> aligned, which can lead to cache inconsistencies when qi_flush_piotlb()
-> uses the number of pages to flush caches for the first-stage
-> translation.
+On Fri, 05 Jul 2024 15:14:54 -0700, David Heidelberg wrote:
+> Convert Qualcomm IOMMU v0 implementation to yaml format.
 > 
-> Fix this by updating the aligned pages once the address mask is adjusted.
+> iommus part being ommited for the other bindings, as mdp4 one.
 > 
-> [...]
+> 
 
-Applied to iommu (intel/vt-d), thanks!
+Applied to iommu (qualcomm/msm), thanks!
 
-[1/2] iommu/vt-d: Limit max address mask to MAX_AGAW_PFN_WIDTH
-      https://git.kernel.org/iommu/c/c420a2b4e8be
-[2/2] iommu/vt-d: Fix aligned pages in calculate_psi_aligned_address()
-      https://git.kernel.org/iommu/c/0a3f6b346301
+[1/1] dt-bindings: iommu: Convert msm,iommu-v0 to yaml
+      https://git.kernel.org/iommu/c/b577060ac7ba
 
 Cheers,
 -- 
