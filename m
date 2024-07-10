@@ -1,98 +1,409 @@
-Received: from mail-il1-f181.google.com (mail-il1-f181.google.com [209.85.166.181])
+Received: from mail-ed1-f49.google.com (mail-ed1-f49.google.com [209.85.208.49])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 19246194AED
-	for <iommu@lists.linux.dev>; Wed, 10 Jul 2024 15:58:47 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.166.181
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DB67F34545
+	for <iommu@lists.linux.dev>; Wed, 10 Jul 2024 17:02:02 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.49
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1720627129; cv=none; b=NLI+HzeZB91108h2bWeoypVqnrgHLICErHUuHcCn3XYyl7Npi232VczIoOWzzpk+9otZ4uVkFKJNxRjzjvNPZyiewGcbrEXWJ1J2qkwU/CSk24zIR5ZH0sjUhjAhunIsAHfH67qG+TUEpcJkeDQzogBV1VOBY536FQtccBpapnk=
+	t=1720630924; cv=none; b=aBkJKTX/0hkoZn660z6k5tyWUYt3+Gvegyd1jGOSZuiA1zyTZcsLAdlV69CEQKb3RIO3WQizfY+aPHLy3zNbeeIKl/4adA1ZVPfjlmAINiV5YCBZ7rmniOczk3D3ETLtjMjv+UbKOK3VkCxiN975GC6wNDCLE6+WrVwkkhBBzAo=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1720627129; c=relaxed/simple;
-	bh=glBPvWkFzLQfz8TsVq9rjy/MlGkv6G8RoVIA3mtxWlI=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=U1f43Jv5cU85TDzgoZjtUEGma9575SuJKMkHm1StHrjV63oSJ4XWnGKi/RX+RcuN1Hzu0Az01u6StHDtXQUAA8f9TXv34JngyeYHufW+mUtviO57HphS7u+4TIB2IqD7j444IhcuT5h+pVUrkw5aM6bNe0Sb9atbH94jxlzLuxk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linuxfoundation.org; spf=pass smtp.mailfrom=linuxfoundation.org; dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b=SSF0Falm; arc=none smtp.client-ip=209.85.166.181
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linuxfoundation.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linuxfoundation.org
+	s=arc-20240116; t=1720630924; c=relaxed/simple;
+	bh=XDf8T7tHVGX/6Obokb8t6erXQew85OJgKpZAYEd3FTc=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=nRw0IjY4vHdszhKIpR3WoVd8AWhvoNUikkSXpydRrRsXsIW5KoFAFZduP/B0veF5gjopjC/bHvOsHJLPBTU+K8QS9qwOXLcXcQ4UXr4DNUK63dt6TIXxO/uUWemCHtDs64ITf1OIQrJ1ciCm2+94/KqwISSh6vZIJIQNFEGDUMc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=ni4H3oMF; arc=none smtp.client-ip=209.85.208.49
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b="SSF0Falm"
-Received: by mail-il1-f181.google.com with SMTP id e9e14a558f8ab-375deacb3e1so2906595ab.3
-        for <iommu@lists.linux.dev>; Wed, 10 Jul 2024 08:58:47 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="ni4H3oMF"
+Received: by mail-ed1-f49.google.com with SMTP id 4fb4d7f45d1cf-58ba3e37feeso9005973a12.3
+        for <iommu@lists.linux.dev>; Wed, 10 Jul 2024 10:02:02 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linuxfoundation.org; s=google; t=1720627127; x=1721231927; darn=lists.linux.dev;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=fGy2kaPZRr3hHhlJ6VMkV6cbieMFPeP7bwQHrR7G1rM=;
-        b=SSF0FalmwD98y0yKkdgkuwaPQKq3x9I1aLjw0KJdqvXBZxpweqLj21AtsYSXUl4PFo
-         TFt6Wvi50Ec3Ncjj87N0X4msUX+XOmYtPVu4MJEMBFxQDcjyKXzkZAUr0Wfjd/QJfHhZ
-         6JxTmcgb9mCuVNnrmTB1bZ6y42SCWwaQH+KvQ=
+        d=gmail.com; s=20230601; t=1720630921; x=1721235721; darn=lists.linux.dev;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=KyrCTE4zQDmUcT1RGchb60vzE51Dwc7Fv+z7Cbw0d6o=;
+        b=ni4H3oMFok4j7tTMSeK0tqlsPcCVdmMMpvKV/DZiiIORG5qOzE8jQUj9p7l76qbvwu
+         Cz7g95/MfVLfd1ayVGPvgbzMSusQew+ZQYQW8SvaEqL157bXG/497m6TQwbTB/bgoFQc
+         lOTkv7aIlWAANvvqxWeEMJaCJxcziZlkdvHFrNAvfIcSCGqpRVCEX1AlL1YMrdwTyuVV
+         pp6fZ81mqf0EJ5556RUyOYDhLnBQps8ya/JTAxCRKA9ssFc49N6F5VTQRpcFtqg5IANe
+         ULJBz4Wd89BL2+KBv5UwQFUD3cre/FNPsWC8eNhY8y62GVIVufy06/L+hajs1kjrsP/m
+         ZXMA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1720627127; x=1721231927;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=fGy2kaPZRr3hHhlJ6VMkV6cbieMFPeP7bwQHrR7G1rM=;
-        b=Sa4OZ0nO8YeY5VK5eRV4TgKsixhWgYcULo0TCN6qpyv00n//usp0BrFwHqb8DF3I+l
-         cHNnyq6agQZhGC8rjsMLgEk6TMHovAk98ghsskqxuHWa5yJuM+GB1NKSsQY0J9vYw7p+
-         N/CVnG7f6MUdXbMkk2MecUkqiq9W0Y65G0XDHO1u87H7iMT/9EdzNO3wJhsIEBfZAKab
-         y3PY98CfsnbUe4L23W57Oi/ETmsjOi8MnYKWUtTocuYWGRixfGGKxV32zVqqVEblHr4R
-         14p5vo/EVlfaKFnEBW2lEzL7uzOkyLw8+J/qkGbASvl8UdqyNSQrVAU379/qZsUfihOy
-         iNyg==
-X-Forwarded-Encrypted: i=1; AJvYcCX32i2moAjkn3k7TPMPYT+Lt+9cWdABRJ8iI/uyKugrMZ6Xvv5MbiB3mHQCTTJJcjIQ3FCafoHNb3kjI5jGOTJGvwO0NcM=
-X-Gm-Message-State: AOJu0YwKd1lcDEWb6XKLRcrhPPjYfPP4/NpFIoVovUIhC47WTCthII1y
-	pTBD/sJe5Ysiubkv32/uGdrBzkgALgypHfpIiWPxBm4/D4UOeEyhAp68wXS5ub8=
-X-Google-Smtp-Source: AGHT+IEgwRKV9JwE1SccNSo0JaXpaHOih6A9ET3LUZTOXD99a4Jq1dI6/XLx3p/8L3bMkmdBqFqAHw==
-X-Received: by 2002:a05:6e02:1066:b0:382:774e:a820 with SMTP id e9e14a558f8ab-38a54366279mr62388965ab.0.1720627127323;
-        Wed, 10 Jul 2024 08:58:47 -0700 (PDT)
-Received: from [192.168.1.128] ([38.175.170.29])
-        by smtp.gmail.com with ESMTPSA id e9e14a558f8ab-38a4b870e83sm10117595ab.55.2024.07.10.08.58.46
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 10 Jul 2024 08:58:47 -0700 (PDT)
-Message-ID: <a3b43a5b-0e32-4ab0-a387-cf58b76525eb@linuxfoundation.org>
-Date: Wed, 10 Jul 2024 09:58:46 -0600
+        d=1e100.net; s=20230601; t=1720630921; x=1721235721;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=KyrCTE4zQDmUcT1RGchb60vzE51Dwc7Fv+z7Cbw0d6o=;
+        b=r4leTBxhIW20jfh5aNVZJ0kzr5wJtudCWOYQIa5/oxRg7hz3l1iEiDq4zlwli26uUe
+         J2Gc9husIMjJjP3vxLotJtAkKGcRQ3p74Z6yjkOJyGOpd6rdPubATgCjDQLkhzmeOuOm
+         HR0Qa9gB7WxgxhpjK18Ac26iL8Pui+3CDw72U/9r8UcbGtKNddqq8TofKpLsP71cpPaw
+         LQwjZN/tCVrKUuUCTZa6s1NFQ/ZoZfQtKbiLd5er4Soqd9557B0WZKsrS8T7RAO9Yi95
+         HHaSyr3l4Pn69KK4nmM4E9++xdUmez5K8kE3FkTC1o30bOg0JcBGrwWOF1e/GGrY8Bqx
+         YOBw==
+X-Forwarded-Encrypted: i=1; AJvYcCVaxSPsRaySUPwx+mrv/gk8195z9LIkUOIrhi1LnyMxwlkoJ7l6Z8Ap+BBN9K2RyjwhGGnXqtLX9tqpB69v/A10NabKgoM=
+X-Gm-Message-State: AOJu0Ywq6xLc1SwUGL7JhybEgsvYxnKWBF9Adm1DmG8vnITMaKeARko/
+	ExyHjYpJUuRXJKeudU/LOBZ3BfSLALPn7LwCkh3C8xIcPBFpgC0TiDSKJ72f8ozavjuYe8SY3/2
+	TB2MXrc6Cm3LTqtMZl/RC3tVMEp0=
+X-Google-Smtp-Source: AGHT+IF8vPqBaKN9Y6UVuGZrPIuYnA9NmKXaDxOwLanVUwszBNsrzWwmWEHDZ1rud17Z1g+5zdNjXhrZxe7I8d1mFcw=
+X-Received: by 2002:a05:6402:520c:b0:57d:57c:ce99 with SMTP id
+ 4fb4d7f45d1cf-594ba997567mr4738656a12.2.1720630920627; Wed, 10 Jul 2024
+ 10:02:00 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH] selftests/dma:remove unused variable
-To: Zhu Jun <zhujun2@cmss.chinamobile.com>, shuah@kernel.org
-Cc: chenxiang66@hisilicon.com, iommu@lists.linux.dev,
- linux-kselftest@vger.kernel.org, linux-kernel@vger.kernel.org,
- Shuah Khan <skhan@linuxfoundation.org>
-References: <20240710065759.5988-1-zhujun2@cmss.chinamobile.com>
-Content-Language: en-US
-From: Shuah Khan <skhan@linuxfoundation.org>
-In-Reply-To: <20240710065759.5988-1-zhujun2@cmss.chinamobile.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+References: <20240628140435.1652374-1-quic_bibekkum@quicinc.com>
+ <20240628140435.1652374-7-quic_bibekkum@quicinc.com> <CAF6AEGvroi8rJimFv95tkWmRFa5_aTpBJ7GFcRAuZpLGdSyEYQ@mail.gmail.com>
+ <0650ba0a-4453-4e2d-8a76-0f396ac1999c@quicinc.com> <CAF6AEGv_9e-TDW1r0N4-db6pY_aV_EZFqrpNbATVS5Vy6+fs1g@mail.gmail.com>
+ <4a5f54c7-120e-427d-8a0a-9fb83e13a72e@quicinc.com> <CAF6AEGtrtFNxDWtuADA4oOHhZJ=dJZcGaJ1XLFJt4fe4Xp=pTA@mail.gmail.com>
+ <3b7c05b1-8f36-4c81-a55c-dbb467314099@quicinc.com> <CAF6AEGuRKU+DkL0-b3xdR1R45_MiiKQYRRXEXYz-xohu8rUaEQ@mail.gmail.com>
+ <CAF6AEGtbw06-gOSvX9gAbi=SA801gmD3_8c5xkOU-G9g2qKptQ@mail.gmail.com> <9509f256-04a4-4907-98fc-148c5087d74d@quicinc.com>
+In-Reply-To: <9509f256-04a4-4907-98fc-148c5087d74d@quicinc.com>
+From: Rob Clark <robdclark@gmail.com>
+Date: Wed, 10 Jul 2024 10:01:48 -0700
+Message-ID: <CAF6AEGuLwZ0yFGWMKX-O1VjQB2M57K+CsyJ=7PCKXE=b=VsSNg@mail.gmail.com>
+Subject: Re: [PATCH v13 6/6] iommu/arm-smmu: add support for PRR bit setup
+To: Bibek Kumar Patro <quic_bibekkum@quicinc.com>
+Cc: will@kernel.org, robin.murphy@arm.com, joro@8bytes.org, jgg@ziepe.ca, 
+	jsnitsel@redhat.com, robh@kernel.org, krzysztof.kozlowski@linaro.org, 
+	quic_c_gdjako@quicinc.com, dmitry.baryshkov@linaro.org, 
+	konrad.dybcio@linaro.org, iommu@lists.linux.dev, 
+	linux-arm-msm@vger.kernel.org, linux-arm-kernel@lists.infradead.org, 
+	linux-kernel@vger.kernel.org, Rob Clark <robdclark@chromium.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-On 7/10/24 00:57, Zhu Jun wrote:
-> The variable are never referenced in the code, just remove it
-> that this problem was discovered by reading code
-> 
-> Signed-off-by: Zhu Jun <zhujun2@cmss.chinamobile.com>
-> ---
->   tools/testing/selftests/dma/dma_map_benchmark.c | 1 -
->   1 file changed, 1 deletion(-)
-> 
-> diff --git a/tools/testing/selftests/dma/dma_map_benchmark.c b/tools/testing/selftests/dma/dma_map_benchmark.c
-> index 3fcea00961c0..c91b485ca99a 100644
-> --- a/tools/testing/selftests/dma/dma_map_benchmark.c
-> +++ b/tools/testing/selftests/dma/dma_map_benchmark.c
-> @@ -33,7 +33,6 @@ int main(int argc, char **argv)
->   	int granule = 1;
->   
->   	int cmd = DMA_MAP_BENCHMARK;
-> -	char *p;
->   
->   	while ((opt = getopt(argc, argv, "t:s:n:b:d:x:g:")) != -1) {
->   		switch (opt) {
+On Tue, Jul 9, 2024 at 12:43=E2=80=AFPM Bibek Kumar Patro
+<quic_bibekkum@quicinc.com> wrote:
+>
+>
+>
+> On 7/4/2024 9:28 PM, Rob Clark wrote:
+> > On Thu, Jul 4, 2024 at 7:46=E2=80=AFAM Rob Clark <robdclark@gmail.com> =
+wrote:
+> >>
+> >> On Wed, Jul 3, 2024 at 4:38=E2=80=AFAM Bibek Kumar Patro
+> >> <quic_bibekkum@quicinc.com> wrote:
+> >>>
+> >>>
+> >>>
+> >>> On 7/2/2024 2:01 AM, Rob Clark wrote:
+> >>>> On Mon, Jul 1, 2024 at 4:01=E2=80=AFAM Bibek Kumar Patro
+> >>>> <quic_bibekkum@quicinc.com> wrote:
+> >>>>>
+> >>>>>
+> >>>>>
+> >>>>> On 6/28/2024 9:14 PM, Rob Clark wrote:
+> >>>>>> On Fri, Jun 28, 2024 at 8:10=E2=80=AFAM Bibek Kumar Patro
+> >>>>>> <quic_bibekkum@quicinc.com> wrote:
+> >>>>>>>
+> >>>>>>>
+> >>>>>>>
+> >>>>>>> On 6/28/2024 7:47 PM, Rob Clark wrote:
+> >>>>>>>> On Fri, Jun 28, 2024 at 7:05=E2=80=AFAM Bibek Kumar Patro
+> >>>>>>>> <quic_bibekkum@quicinc.com> wrote:
+> >>>>>>>>>
+> >>>>>>>>> Add an adreno-smmu-priv interface for drm/msm to call
+> >>>>>>>>> into arm-smmu-qcom and initiate the PRR bit setup or reset
+> >>>>>>>>> sequence as per request.
+> >>>>>>>>>
+> >>>>>>>>> This will be used by GPU to setup the PRR bit and related
+> >>>>>>>>> configuration registers through adreno-smmu private
+> >>>>>>>>> interface instead of directly poking the smmu hardware.
+> >>>>>>>>>
+> >>>>>>>>> Suggested-by: Rob Clark <robdclark@gmail.com>
+> >>>>>>>>> Signed-off-by: Bibek Kumar Patro <quic_bibekkum@quicinc.com>
+> >>>>>>>>> ---
+> >>>>>>>>>      drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c | 23 ++++++++++=
+++++++++++++
+> >>>>>>>>>      drivers/iommu/arm/arm-smmu/arm-smmu.h      |  2 ++
+> >>>>>>>>>      include/linux/adreno-smmu-priv.h           |  6 +++++-
+> >>>>>>>>>      3 files changed, 30 insertions(+), 1 deletion(-)
+> >>>>>>>>>
+> >>>>>>>>> diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c b/drive=
+rs/iommu/arm/arm-smmu/arm-smmu-qcom.c
+> >>>>>>>>> index bd101a161d04..64571a1c47b8 100644
+> >>>>>>>>> --- a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
+> >>>>>>>>> +++ b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
+> >>>>>>>>> @@ -28,6 +28,7 @@
+> >>>>>>>>>      #define PREFETCH_SHALLOW       (1 << PREFETCH_SHIFT)
+> >>>>>>>>>      #define PREFETCH_MODERATE      (2 << PREFETCH_SHIFT)
+> >>>>>>>>>      #define PREFETCH_DEEP          (3 << PREFETCH_SHIFT)
+> >>>>>>>>> +#define GFX_ACTLR_PRR          (1 << 5)
+> >>>>>>>>>
+> >>>>>>>>>      static const struct actlr_config sc7280_apps_actlr_cfg[] =
+=3D {
+> >>>>>>>>>             { 0x0800, 0x04e0, PREFETCH_DEFAULT | CMTLB },
+> >>>>>>>>> @@ -235,6 +236,27 @@ static void qcom_adreno_smmu_resume_transl=
+ation(const void *cookie, bool termina
+> >>>>>>>>>             arm_smmu_cb_write(smmu, cfg->cbndx, ARM_SMMU_CB_RES=
+UME, reg);
+> >>>>>>>>>      }
+> >>>>>>>>>
+> >>>>>>>>> +static void qcom_adreno_smmu_set_prr(const void *cookie, phys_=
+addr_t page_addr, bool set)
+> >>>>>>>>> +{
+> >>>>>>>>> +       struct arm_smmu_domain *smmu_domain =3D (void *)cookie;
+> >>>>>>>>> +       struct arm_smmu_cfg *cfg =3D &smmu_domain->cfg;
+> >>>>>>>>> +       struct arm_smmu_device *smmu =3D smmu_domain->smmu;
+> >>>>>>>>> +       u32 reg =3D 0;
+> >>>>>>>>> +
+> >>>>>>>>> +       writel_relaxed(lower_32_bits(page_addr),
+> >>>>>>>>> +                               smmu->base + ARM_SMMU_GFX_PRR_C=
+FG_LADDR);
+> >>>>>>>>> +
+> >>>>>>>>> +       writel_relaxed(upper_32_bits(page_addr),
+> >>>>>>>>> +                               smmu->base + ARM_SMMU_GFX_PRR_C=
+FG_UADDR);
+> >>>>>>>>> +
+> >>>>>>>>> +       reg =3D  arm_smmu_cb_read(smmu, cfg->cbndx, ARM_SMMU_CB=
+_ACTLR);
+> >>>>>>>>> +       reg &=3D ~GFX_ACTLR_PRR;
+> >>>>>>>>> +       if (set)
+> >>>>>>>>> +               reg |=3D FIELD_PREP(GFX_ACTLR_PRR, 1);
+> >>>>>>>>> +       arm_smmu_cb_write(smmu, cfg->cbndx, ARM_SMMU_CB_ACTLR, =
+reg);
+> >>>>>>>>> +
+> >>>>>>>>
+> >>>>>>>> nit, extra line
+> >>>>>>>>
+> >>>>>>>
+> >>>>>>> Ack, will remove this. Thanks for pointing out.
+> >>>>>>>
+> >>>>>>>> Also, if you passed a `struct page *` instead, then you could dr=
+op the
+> >>>>>>>> bool param, ie. passing NULL for the page would disable PRR.  Bu=
+t I
+> >>>>>>>> can go either way if others have a strong preference for phys_ad=
+dr_t.
+> >>>>>>>>
+> >>>>>>>
+> >>>>>>> Oh okay, this looks simple to reset the prr bit.
+> >>>>>>> But since this page is allocated and is used inside gfx driver
+> >>>>>>> before being utilized for prr bit operation, would it be safe for
+> >>>>>>> drm/gfx driver to keep a reference to this page in smmu driver?
+> >>>>>>>
+> >>>>>>> Since we only need the page address for configuring the
+> >>>>>>> CFG_UADDR/CFG_LADDR registers so passed the phys_addr_t.
+> >>>>>>
+> >>>>>> I don't think the smmu driver needs to keep a reference to the pag=
+e..
+> >>>>>> we can just say it is the responsibility of the drm driver to call
+> >>>>>> set_prr(NULL) before freeing the page
+> >>>>>>
+> >>>>>
+> >>>>> That makes sense. If we go by this NULL page method to disable the =
+PRR,
+> >>>>> we would have to set the address registers to reset value as well.
+> >>>>>
+> >>>>> The sequence would be like the following as per my understaning:
+> >>>>> - Check if it's NULL page
+> >>>>> - Set the PRR_CFG_UADDR/PRR_CFG_LADDR to reset values i.e - 0x0 for
+> >>>>>      these registers
+> >>>>> - Reset the PRR bit in actlr register
+> >>>>>
+> >>>>> Similar to this snippet:
+> >>>>>
+> >>>>> #PRR_RESET_ADDR 0x0
+> >>>>>
+> >>>>> --------------
+> >>>>> reg =3D  arm_smmu_cb_read(smmu, cfg->cbndx, ARM_SMMU_CB_ACTLR);
+> >>>>> reg &=3D ~GFX_ACTLR_PRR;
+> >>>>> arm_smmu_cb_write(smmu, cfg->cbndx, ARM_SMMU_CB_ACTLR, reg);
+> >>>>>
+> >>>>> if (!prr_page) {
+> >>>>>           writel_relaxed(PRR_RESET_ADDR,
+> >>>>>                           smmu->base + ARM_SMMU_GFX_PRR_CFG_LADDR);
+> >>>>>           writel_relaxed(PRR_RESET_ADDR),
+> >>>>>                            smmu->base + ARM_SMMU_GFX_PRR_CFG_UADDR)=
+;
+> >>>>>           return;
+> >>>>> }
+> >>>>>
+> >>>>>
+> >>>>> writel_relaxed(lower_32_bits(page_to_phys(prr_page)),
+> >>>>>                   smmu->base + ARM_SMMU_GFX_PRR_CFG_LADDR);
+> >>>>>
+> >>>>> writel_relaxed(upper_32_bits(page_to_phys(prr_page)),
+> >>>>>                   smmu->base + ARM_SMMU_GFX_PRR_CFG_UADDR);
+> >>>>>
+> >>>>> reg |=3D FIELD_PREP(GFX_ACTLR_PRR, 1);
+> >>>>> arm_smmu_cb_write(smmu, cfg->cbndx, ARM_SMMU_CB_ACTLR, reg);
+> >>>>> -----------------
+> >>>>>
+> >>>>> If looks good, will implement the same in next version.
+> >>>>
+> >>>> yeah, that looks like it could work..
+> >>>>
+> >>>> you probably don't need to zero out the PRR_CFG_*ADDR when disabling=
+,
+> >>>> and probably could avoid double writing ACTLR, but that is getting
+> >>>> into bikeshedding
+> >>>>
+> >>>
+> >>> Actually Rob, since you rightly pointed this out.
+> >>> I crosschecked again on these registers.
+> >>> PRR_CFG_*ADDR is a global register in SMMU space but
+> >>> ACTLR register including PRR bit is a per-domain register.
+> >>> There might also be a situation where PRR feature need to be
+> >>> disabled or enabled separately for each domain.
+> >>> So I think it would be cleaner to have two apis, set_prr_addr(),
+> >>> set_prr_bit().
+> >>> set_prr_addr() will be used only to set this PRR_CFG_*ADDR
+> >>> register by passing a 'struct page *'
+> >>> set_prr_bit() will be used as a switch for PRR feature,
+> >>> where required smmu_domain will be passed along with
+> >>> the bool value to set/reset the PRR bit depending on which this
+> >>> feature will be enabled/disabled for the selected domain.
+> >>
+> >> on a related note, adreno has been using arm-smmu for a number of
+> >> generations, I guess not all support PRR?  The drm driver will need to
+> >> know whether PRR is supported (and expose that to userspace to let the
+> >> UMD know whether to expose certain extensions).  How should this work?
+> >
+> > So, I noticed in the x1e80100.dtsi that there is a gpu_prr_mem
+> > reserved section..  maybe we should be connecting this to the smmu
+> > driver in dt, and using that to detect presence of PRR?  Ie. the smmu
+> > driver would configure PRR_CFG_*ADDR based on the reserved mem, and
+> > the interface to drm would just be to enable/disable PRR, returning an
+> > error code if the reserved mem section isn't there.
+> >
+> > This simplifies the interface, and handles the question of how to
+> > detect if PRR is supported.
+> >
+> > BR,
+> > -R
+> >
+>
+> As I checked gpu_prr_mem reserved mem section is not used for mobile
+> targets hence not present for other DT only compute targets like
+> x1e80100.dtsi has the same. PRR looks to be smmu version specific
+> property.
 
-Applied to linux-kselftest next for Linux 6.11-rc1.
+I only see it in gpu_prr_mem in x1e80100.dtsi, but not documented
+anywhere.  I'm only assuming based on the name that it is intended to
+be for PRR (but not sure why it is larger than 0x1000).  Are the
+PRR_CFG_*ADDR regs programmed by the fw (and access blocked in EL1) on
+this device?
 
-thanks,
--- Shuah
+As far as other DT, we haven't enabled PRR anywhere yet.  I think it
+would be perfectly valid to require a new reserved-memory node to
+enable PRR.
+
+> This feature is present in all the targets using SMMU-500,
+> I am still checking for targets using versions prior to smmu-500.
+> Then maybe we can use the smmu compatible string itself (e.g.
+> qcom,smmu-500 && qcom,adreno-smmu) to connect to smmu driver for
+> checking the presence of PRR ?
+
+If there is a clean break, such as all smmu-500 have PRR and all
+smmu-v2 do not, then it would be reasonable to use the compat strings.
+If not, I think we need a different way.
+
+BR,
+-R
+
+> And if the compatible string is different then we can return the
+> error code signifying PRR feature is not supported on the particular
+> smmu version.
+>
+> Thanks & regards,
+> Bibek
+>
+> >> BR,
+> >> -R
+> >>
+> >>> Thanks & regards,
+> >>> Bibek
+> >>>
+> >>>> BR,
+> >>>> -R
+> >>>>
+> >>>>>
+> >>>>> Thanks & regards,
+> >>>>> Bibek
+> >>>>>
+> >>>>>> BR,
+> >>>>>> -R
+> >>>>>>
+> >>>>>>>> Otherwise, lgtm
+> >>>>>>>>
+> >>>>>>>> BR,
+> >>>>>>>> -R
+> >>>>>>>>
+> >>>>>>>
+> >>>>>>> Thanks & regards,
+> >>>>>>> Bibek
+> >>>>>>>
+> >>>>>>>>> +}
+> >>>>>>>>> +
+> >>>>>>>>>      #define QCOM_ADRENO_SMMU_GPU_SID 0
+> >>>>>>>>>
+> >>>>>>>>>      static bool qcom_adreno_smmu_is_gpu_device(struct device *=
+dev)
+> >>>>>>>>> @@ -407,6 +429,7 @@ static int qcom_adreno_smmu_init_context(st=
+ruct arm_smmu_domain *smmu_domain,
+> >>>>>>>>>             priv->get_fault_info =3D qcom_adreno_smmu_get_fault=
+_info;
+> >>>>>>>>>             priv->set_stall =3D qcom_adreno_smmu_set_stall;
+> >>>>>>>>>             priv->resume_translation =3D qcom_adreno_smmu_resum=
+e_translation;
+> >>>>>>>>> +       priv->set_prr =3D qcom_adreno_smmu_set_prr;
+> >>>>>>>>>
+> >>>>>>>>>             actlrvar =3D qsmmu->data->actlrvar;
+> >>>>>>>>>             if (!actlrvar)
+> >>>>>>>>> diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu.h b/drivers/io=
+mmu/arm/arm-smmu/arm-smmu.h
+> >>>>>>>>> index d9c2ef8c1653..3076bef49e20 100644
+> >>>>>>>>> --- a/drivers/iommu/arm/arm-smmu/arm-smmu.h
+> >>>>>>>>> +++ b/drivers/iommu/arm/arm-smmu/arm-smmu.h
+> >>>>>>>>> @@ -154,6 +154,8 @@ enum arm_smmu_cbar_type {
+> >>>>>>>>>      #define ARM_SMMU_SCTLR_M               BIT(0)
+> >>>>>>>>>
+> >>>>>>>>>      #define ARM_SMMU_CB_ACTLR              0x4
+> >>>>>>>>> +#define ARM_SMMU_GFX_PRR_CFG_LADDR     0x6008
+> >>>>>>>>> +#define ARM_SMMU_GFX_PRR_CFG_UADDR     0x600C
+> >>>>>>>>>
+> >>>>>>>>>      #define ARM_SMMU_CB_RESUME             0x8
+> >>>>>>>>>      #define ARM_SMMU_RESUME_TERMINATE      BIT(0)
+> >>>>>>>>> diff --git a/include/linux/adreno-smmu-priv.h b/include/linux/a=
+dreno-smmu-priv.h
+> >>>>>>>>> index c637e0997f6d..d6e2ca9f8d8c 100644
+> >>>>>>>>> --- a/include/linux/adreno-smmu-priv.h
+> >>>>>>>>> +++ b/include/linux/adreno-smmu-priv.h
+> >>>>>>>>> @@ -49,7 +49,10 @@ struct adreno_smmu_fault_info {
+> >>>>>>>>>       *                 before set_ttbr0_cfg().  If stalling on=
+ fault is enabled,
+> >>>>>>>>>       *                 the GPU driver must call resume_transla=
+tion()
+> >>>>>>>>>       * @resume_translation: Resume translation after a fault
+> >>>>>>>>> - *
+> >>>>>>>>> + * @set_prr:      Extendible interface to be used by GPU to mo=
+dify the
+> >>>>>>>>> + *                 ACTLR register bits, currently used to conf=
+igure
+> >>>>>>>>> + *                 Partially-Resident-Region (PRR) feature's
+> >>>>>>>>> + *                 setup and reset sequence as requested.
+> >>>>>>>>>       *
+> >>>>>>>>>       * The GPU driver (drm/msm) and adreno-smmu work together =
+for controlling
+> >>>>>>>>>       * the GPU's SMMU instance.  This is by necessity, as the =
+GPU is directly
+> >>>>>>>>> @@ -67,6 +70,7 @@ struct adreno_smmu_priv {
+> >>>>>>>>>          void (*get_fault_info)(const void *cookie, struct adre=
+no_smmu_fault_info *info);
+> >>>>>>>>>          void (*set_stall)(const void *cookie, bool enabled);
+> >>>>>>>>>          void (*resume_translation)(const void *cookie, bool te=
+rminate);
+> >>>>>>>>> +    void (*set_prr)(const void *cookie, phys_addr_t page_addr,=
+ bool set);
+> >>>>>>>>>      };
+> >>>>>>>>>
+> >>>>>>>>>      #endif /* __ADRENO_SMMU_PRIV_H */
+> >>>>>>>>> --
+> >>>>>>>>> 2.34.1
+> >>>>>>>>>
