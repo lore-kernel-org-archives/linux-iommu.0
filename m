@@ -1,89 +1,75 @@
-Received: from verein.lst.de (verein.lst.de [213.95.11.211])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D7C58664C6
-	for <iommu@lists.linux.dev>; Wed, 10 Jul 2024 06:27:09 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=213.95.11.211
+Received: from cmccmta1.chinamobile.com (cmccmta4.chinamobile.com [111.22.67.137])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id A95981B86FC
+	for <iommu@lists.linux.dev>; Wed, 10 Jul 2024 06:30:52 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=111.22.67.137
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1720592831; cv=none; b=mY1mhx5a3lJwY0PGN222sh4err9i4fSVEDWS+G/7HJmReq7g7tYtsKSWZvyIA2NT0/ahqIbZramJx/Q/nbUp9cKSV7Zh9GeCXp85KKNIlFd8PNA12AmMiEuLzVkH05IwBxFqeM1/1U6ylGQb8Bz/HfIHA7Cn6xwUzR07hrlg+ww=
+	t=1720593060; cv=none; b=XQAcHrBYEBg9SAVJC7BIPtzH3azm8MSDmODpC7LI/3T0f+sYyTGg/5mHv6Yk7wssDf5W2FuYgaeY1IyTvcJE6XvUgbkPSSokhVr9JqyjyNF+R/ydFVowYDCOkZUNbVHM89iicTWPWJSnIAPRtM/xLbnQTu9xsSSPAwKoh4WAEo8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1720592831; c=relaxed/simple;
-	bh=66r1q88ch9VtoTiN4TFn3SCBV6+FPnySmnxU4V8acQo=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=R56wJfGn+Pnf4P4PxwRsm5z8p584MGTshFW2MEIq7Y3/Nj+nb1arDDIv98rfbAMy0SdHbKEFIOdjOwhkKuxCBtIMc9sjC7u+pM8QmFkLr3EhQK3ClzjzzIL7aHN8dz+K0a0NW4yfh3xHaUcc4BMIi7ybU5kZqd1cabtcJbGPl34=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=lst.de; spf=pass smtp.mailfrom=lst.de; arc=none smtp.client-ip=213.95.11.211
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=lst.de
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=lst.de
-Received: by verein.lst.de (Postfix, from userid 2407)
-	id 5C935227A87; Wed, 10 Jul 2024 08:27:04 +0200 (CEST)
-Date: Wed, 10 Jul 2024 08:27:04 +0200
-From: Christoph Hellwig <hch@lst.de>
-To: Jason Gunthorpe <jgg@ziepe.ca>
-Cc: Christoph Hellwig <hch@lst.de>, Leon Romanovsky <leon@kernel.org>,
-	Jens Axboe <axboe@kernel.dk>, Robin Murphy <robin.murphy@arm.com>,
-	Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
-	Keith Busch <kbusch@kernel.org>, "Zeng, Oak" <oak.zeng@intel.com>,
-	Chaitanya Kulkarni <kch@nvidia.com>,
-	Sagi Grimberg <sagi@grimberg.me>,
-	Bjorn Helgaas <bhelgaas@google.com>,
-	Logan Gunthorpe <logang@deltatee.com>,
-	Yishai Hadas <yishaih@nvidia.com>,
-	Shameer Kolothum <shameerali.kolothum.thodi@huawei.com>,
-	Kevin Tian <kevin.tian@intel.com>,
-	Alex Williamson <alex.williamson@redhat.com>,
-	Marek Szyprowski <m.szyprowski@samsung.com>,
-	=?iso-8859-1?B?Suly9G1l?= Glisse <jglisse@redhat.com>,
-	Andrew Morton <akpm@linux-foundation.org>,
-	linux-block@vger.kernel.org, linux-kernel@vger.kernel.org,
-	linux-rdma@vger.kernel.org, iommu@lists.linux.dev,
-	linux-nvme@lists.infradead.org, linux-pci@vger.kernel.org,
-	kvm@vger.kernel.org, linux-mm@kvack.org
-Subject: Re: [RFC PATCH v1 00/18] Provide a new two step DMA API mapping API
-Message-ID: <20240710062704.GA25953@lst.de>
-References: <cover.1719909395.git.leon@kernel.org> <20240703054238.GA25366@lst.de> <20240703105253.GA95824@unreal> <20240703143530.GA30857@lst.de> <20240703155114.GB95824@unreal> <20240704074855.GA26913@lst.de> <20240708165238.GE14050@ziepe.ca> <20240709061721.GA16180@lst.de> <20240709185315.GM14050@ziepe.ca>
+	s=arc-20240116; t=1720593060; c=relaxed/simple;
+	bh=sM6KFWH6gfzQ94i0OID2kqBYu4u4wpOqFm2ESjUAg1I=;
+	h=From:To:Cc:Subject:Date:Message-Id; b=n6k+OFFePvFTnQlSkod5FVWCS53s9M94Q2+MbLhdYpLC/BSHCPbc/H41+wKb+IWKexcVc4WAj0ITLhqvKqkLVWI9A3GM99vEPlDpfpG+Rka35NKfpoki2EF8MTmtW6LrGbdwID9wn+DzYhgaL3T4hGNtkS2MLdNMrn+CDQGlNNI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=cmss.chinamobile.com; spf=pass smtp.mailfrom=cmss.chinamobile.com; arc=none smtp.client-ip=111.22.67.137
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=cmss.chinamobile.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=cmss.chinamobile.com
+X-RM-TagInfo: emlType=0                                       
+X-RM-SPAM-FLAG:00000000
+Received:from spf.mail.chinamobile.com (unknown[10.188.0.87])
+	by rmmx-syy-dmz-app04-12004 (RichMail) with SMTP id 2ee4668e2a99ef2-fa7e1;
+	Wed, 10 Jul 2024 14:30:50 +0800 (CST)
+X-RM-TRANSID:2ee4668e2a99ef2-fa7e1
+X-RM-TagInfo: emlType=0                                       
+X-RM-SPAM-FLAG:00000000
+Received:from ubuntu.localdomain (unknown[10.54.5.255])
+	by rmsmtp-syy-appsvr04-12004 (RichMail) with SMTP id 2ee4668e2a99679-de188;
+	Wed, 10 Jul 2024 14:30:49 +0800 (CST)
+X-RM-TRANSID:2ee4668e2a99679-de188
+From: Zhu Jun <zhujun2@cmss.chinamobile.com>
+To: shuah@kernel.org
+Cc: zhujun2@cmss.chinamobile.com,
+	chenxiang66@hisilicon.com,
+	iommu@lists.linux.dev,
+	linux-kselftest@vger.kernel.org,
+	linux-kernel@vger.kernel.org
+Subject: [PATCH] selftests/dma:Fix a resource leak
+Date: Tue,  9 Jul 2024 23:30:45 -0700
+Message-Id: <20240710063045.5308-1-zhujun2@cmss.chinamobile.com>
+X-Mailer: git-send-email 2.17.1
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20240709185315.GM14050@ziepe.ca>
-User-Agent: Mutt/1.5.17 (2007-11-01)
 
-On Tue, Jul 09, 2024 at 03:53:15PM -0300, Jason Gunthorpe wrote:
-> > That whole thing of course opens the question if we want a pure
-> > in-memory version of the dma_addr_t/len tuple.  IMHO that is the best
-> > way to migrate and allows to share code easily.  We can look into ways
-> > to avoiding that more for drivers that care, but most drivers are
-> > probably best serve with it to keep the code simple and make the
-> > conversion easier.
-> 
-> My feeling has been that this RFC is the low level interface and we
-> can bring our own data structure on top.
->
-> It would probably make sense to build a scatterlist v2 on top of this
-> that has an in-memory dma_addr_t/len list close to today
+The opened file should be closed in main(), otherwise resource
+leak will occur that this problem was discovered by reading code
 
-Yes, the usage of the dma_vec would be in a higher layer.  But I'd
-really like to see it from the beginning.
+Signed-off-by: Zhu Jun <zhujun2@cmss.chinamobile.com>
+---
+ tools/testing/selftests/dma/dma_map_benchmark.c | 3 +++
+ 1 file changed, 3 insertions(+)
 
-> . Yes it costs
-> a memory allocation, or a larger initial allocation, but many places
-> may not really care. Block drivers have always allocated a SGL, for
-> instance.
+diff --git a/tools/testing/selftests/dma/dma_map_benchmark.c b/tools/testing/selftests/dma/dma_map_benchmark.c
+index 5c997f17fcbd..3fcea00961c0 100644
+--- a/tools/testing/selftests/dma/dma_map_benchmark.c
++++ b/tools/testing/selftests/dma/dma_map_benchmark.c
+@@ -114,6 +114,7 @@ int main(int argc, char **argv)
+ 	map.granule = granule;
+ 
+ 	if (ioctl(fd, cmd, &map)) {
++		close(fd);
+ 		perror("ioctl");
+ 		exit(1);
+ 	}
+@@ -125,5 +126,7 @@ int main(int argc, char **argv)
+ 	printf("average unmap latency(us):%.1f standard deviation:%.1f\n",
+ 			map.avg_unmap_100ns/10.0, map.unmap_stddev/10.0);
+ 
++	close(fd);
++
+ 	return 0;
+ }
+-- 
+2.17.1
 
-Except for those optimizing for snall transfer of a single segment
-(like nvme). 
 
-> My main take away was that we should make the dma_ops interface
-> simpler and more general so we can have this choice instead of welding
-> a single datastructure through everything.
-
-Yes, I don't think the dma_vec should be the low-level interface.
-I think a low-level interface based on physical address is the right
-one.  I'll see what I can do to move the single segment map interface
-to be physical address based instead of page based so that we can
-unify them.
 
