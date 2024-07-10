@@ -1,38 +1,38 @@
-Received: from cmccmta1.chinamobile.com (cmccmta4.chinamobile.com [111.22.67.137])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id A95981B86FC
-	for <iommu@lists.linux.dev>; Wed, 10 Jul 2024 06:30:52 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=111.22.67.137
+Received: from cmccmta3.chinamobile.com (cmccmta6.chinamobile.com [111.22.67.139])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 6E86A824B3
+	for <iommu@lists.linux.dev>; Wed, 10 Jul 2024 06:58:03 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=111.22.67.139
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1720593060; cv=none; b=XQAcHrBYEBg9SAVJC7BIPtzH3azm8MSDmODpC7LI/3T0f+sYyTGg/5mHv6Yk7wssDf5W2FuYgaeY1IyTvcJE6XvUgbkPSSokhVr9JqyjyNF+R/ydFVowYDCOkZUNbVHM89iicTWPWJSnIAPRtM/xLbnQTu9xsSSPAwKoh4WAEo8=
+	t=1720594689; cv=none; b=OE8XXIfCFSuW4QLwqBKvUL/mAroxpPcdiYKqRBNrrYpk87eVEssQqYpHEEH3nLm+EehSF9vuQ3GH/7vbB4rtCx8HiExCdL6EBYHyxny68AGtrwjh2Z6hEH85XTkTQJazKiYhqRU1Y964RtzOINCDdxDerb0dGT2zwstxSDibuec=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1720593060; c=relaxed/simple;
-	bh=sM6KFWH6gfzQ94i0OID2kqBYu4u4wpOqFm2ESjUAg1I=;
-	h=From:To:Cc:Subject:Date:Message-Id; b=n6k+OFFePvFTnQlSkod5FVWCS53s9M94Q2+MbLhdYpLC/BSHCPbc/H41+wKb+IWKexcVc4WAj0ITLhqvKqkLVWI9A3GM99vEPlDpfpG+Rka35NKfpoki2EF8MTmtW6LrGbdwID9wn+DzYhgaL3T4hGNtkS2MLdNMrn+CDQGlNNI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=cmss.chinamobile.com; spf=pass smtp.mailfrom=cmss.chinamobile.com; arc=none smtp.client-ip=111.22.67.137
+	s=arc-20240116; t=1720594689; c=relaxed/simple;
+	bh=fYPEXmI/LBSoVmcAiF9CNVOmJ6j5dnKxaStvmGwt1Ew=;
+	h=From:To:Cc:Subject:Date:Message-Id; b=n9HK+zB92ujlbVsaREYFeCDnThBDFWsMalButiya3nLQc9mNoJ21TyRUUSU/gp9rp33uuJz6z0Nb55HIziulit46auHM8PkHIHwPs1XnMZL3+YleKThsbLKEm4aNjKNNhjKidBUU20PzW0L3y8vnV2Q69stLH2ZPZE/oqb9D/e4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=cmss.chinamobile.com; spf=pass smtp.mailfrom=cmss.chinamobile.com; arc=none smtp.client-ip=111.22.67.139
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=cmss.chinamobile.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=cmss.chinamobile.com
 X-RM-TagInfo: emlType=0                                       
 X-RM-SPAM-FLAG:00000000
 Received:from spf.mail.chinamobile.com (unknown[10.188.0.87])
-	by rmmx-syy-dmz-app04-12004 (RichMail) with SMTP id 2ee4668e2a99ef2-fa7e1;
-	Wed, 10 Jul 2024 14:30:50 +0800 (CST)
-X-RM-TRANSID:2ee4668e2a99ef2-fa7e1
+	by rmmx-syy-dmz-app09-12009 (RichMail) with SMTP id 2ee9668e30f81e2-301e2;
+	Wed, 10 Jul 2024 14:58:01 +0800 (CST)
+X-RM-TRANSID:2ee9668e30f81e2-301e2
 X-RM-TagInfo: emlType=0                                       
 X-RM-SPAM-FLAG:00000000
 Received:from ubuntu.localdomain (unknown[10.54.5.255])
-	by rmsmtp-syy-appsvr04-12004 (RichMail) with SMTP id 2ee4668e2a99679-de188;
-	Wed, 10 Jul 2024 14:30:49 +0800 (CST)
-X-RM-TRANSID:2ee4668e2a99679-de188
+	by rmsmtp-syy-appsvr02-12002 (RichMail) with SMTP id 2ee2668e30f8765-e00fc;
+	Wed, 10 Jul 2024 14:58:01 +0800 (CST)
+X-RM-TRANSID:2ee2668e30f8765-e00fc
 From: Zhu Jun <zhujun2@cmss.chinamobile.com>
 To: shuah@kernel.org
-Cc: zhujun2@cmss.chinamobile.com,
-	chenxiang66@hisilicon.com,
+Cc: chenxiang66@hisilicon.com,
+	zhujun2@cmss.chinamobile.com,
 	iommu@lists.linux.dev,
 	linux-kselftest@vger.kernel.org,
 	linux-kernel@vger.kernel.org
-Subject: [PATCH] selftests/dma:Fix a resource leak
-Date: Tue,  9 Jul 2024 23:30:45 -0700
-Message-Id: <20240710063045.5308-1-zhujun2@cmss.chinamobile.com>
+Subject: [PATCH] selftests/dma:remove unused variable
+Date: Tue,  9 Jul 2024 23:57:59 -0700
+Message-Id: <20240710065759.5988-1-zhujun2@cmss.chinamobile.com>
 X-Mailer: git-send-email 2.17.1
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
@@ -40,34 +40,26 @@ List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 
-The opened file should be closed in main(), otherwise resource
-leak will occur that this problem was discovered by reading code
+The variable are never referenced in the code, just remove it
+that this problem was discovered by reading code
 
 Signed-off-by: Zhu Jun <zhujun2@cmss.chinamobile.com>
 ---
- tools/testing/selftests/dma/dma_map_benchmark.c | 3 +++
- 1 file changed, 3 insertions(+)
+ tools/testing/selftests/dma/dma_map_benchmark.c | 1 -
+ 1 file changed, 1 deletion(-)
 
 diff --git a/tools/testing/selftests/dma/dma_map_benchmark.c b/tools/testing/selftests/dma/dma_map_benchmark.c
-index 5c997f17fcbd..3fcea00961c0 100644
+index 3fcea00961c0..c91b485ca99a 100644
 --- a/tools/testing/selftests/dma/dma_map_benchmark.c
 +++ b/tools/testing/selftests/dma/dma_map_benchmark.c
-@@ -114,6 +114,7 @@ int main(int argc, char **argv)
- 	map.granule = granule;
+@@ -33,7 +33,6 @@ int main(int argc, char **argv)
+ 	int granule = 1;
  
- 	if (ioctl(fd, cmd, &map)) {
-+		close(fd);
- 		perror("ioctl");
- 		exit(1);
- 	}
-@@ -125,5 +126,7 @@ int main(int argc, char **argv)
- 	printf("average unmap latency(us):%.1f standard deviation:%.1f\n",
- 			map.avg_unmap_100ns/10.0, map.unmap_stddev/10.0);
+ 	int cmd = DMA_MAP_BENCHMARK;
+-	char *p;
  
-+	close(fd);
-+
- 	return 0;
- }
+ 	while ((opt = getopt(argc, argv, "t:s:n:b:d:x:g:")) != -1) {
+ 		switch (opt) {
 -- 
 2.17.1
 
