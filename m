@@ -1,60 +1,50 @@
-Received: from mail-ej1-f50.google.com (mail-ej1-f50.google.com [209.85.218.50])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.12])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D8B098BFD
-	for <iommu@lists.linux.dev>; Wed, 10 Jul 2024 22:01:24 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.218.50
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 42B4745014
+	for <iommu@lists.linux.dev>; Thu, 11 Jul 2024 04:45:06 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.12
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1720648886; cv=none; b=kY5Y3GaHzf/myd0rjce97U815VPJszS45yqISmkJL1OUQSfeCFUCJUAnly8S/26Ieg0liyHj++R+JlYlo4UEYKWqfEbo9XutEIuRdKfaGnHsP4CLzGS7Sv9LOVJ+MHch5nA+TZo14+GN/FBFv+s3IvadfQHFyBh81h/FhD7KI9M=
+	t=1720673107; cv=none; b=gnQd0DF4Ll0PaH8W24t3AyzBUSyNMCGNsQ8qlSenV6raiv/I8Kz4ZIsXZOMnrGe11LgIhfSUA01qUSv49CNvA1uq2g79xVm2zzb7BMS7kL/h4tFuyAHWzqus/OjbV5IiTKQIoqJjOH4Ack0+kStSrT0fS7h0E0Z9USbxj6AsnEY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1720648886; c=relaxed/simple;
-	bh=0/ZsPcsndPYqDvEZoLQtpd2fDcgR8R9jtx5n2cpHTfw=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=GkcdIGpb7JqsXVMbQI/GVXC3obyrZCQfL1bTYxjDNxNq9kD1vnrYzauvvPKe5wTQLqHMBfTOuP4OKb9PWL0N8wT4CK6jJVa9Ff55+7WWNE4e5yti2ienoW8K+Q8dCOtKTBtiDvNRJS1Cw97tYKfCj2zGZb8MSsNudex25D3SBR0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org; spf=pass smtp.mailfrom=linaro.org; dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b=awG5mcBb; arc=none smtp.client-ip=209.85.218.50
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linaro.org
+	s=arc-20240116; t=1720673107; c=relaxed/simple;
+	bh=SLE8iv1gS/925bWtDCRkm6vcnRWpUcxElWCPVPn23FQ=;
+	h=Message-ID:Date:MIME-Version:Cc:Subject:To:References:From:
+	 In-Reply-To:Content-Type; b=KBFUpqTqJDpzfzyhjcVP1gMaekC6EhKCQhPWdhinH8jIfJ0MdRHN8NCxgNlDg5YkfJC4RjkRP4KSaKWX9o6DZwUALqlKCen814NWHoLaWktmNKEVGnKxy9X9df5CBKut1YxL663qtKQ3x6oufZao/0HmrDk9ArBACBjsff6RCJM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=Ucg8wWPp; arc=none smtp.client-ip=192.198.163.12
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="awG5mcBb"
-Received: by mail-ej1-f50.google.com with SMTP id a640c23a62f3a-a77baa87743so24764366b.3
-        for <iommu@lists.linux.dev>; Wed, 10 Jul 2024 15:01:24 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1720648883; x=1721253683; darn=lists.linux.dev;
-        h=content-transfer-encoding:in-reply-to:autocrypt:from
-         :content-language:references:cc:to:subject:user-agent:mime-version
-         :date:message-id:from:to:cc:subject:date:message-id:reply-to;
-        bh=zf1pp9dOgmxGyQBYWisVbbmnW9QAhbQOazYQx/2Fl7w=;
-        b=awG5mcBb+L7wABiXiH11PVfCUVgAKph57pF5VxNmqHZ1uLYZqvPOy2Neo9ZCByVuqY
-         1Eli2clKVEYcBzXFkSGPyVkiqh17yUkHvf/AnWPaIn5FayocnN21pddg2vmkHUi/6nC2
-         +SqvdNDo+dgSP+V9M0uQAgE3RVFichA0KTyADDAQ8dFLHB6VnHQO18mm3U5KfaLEhqHa
-         at2pKCVgF3N4OnHLBdl1EVP7Zs3GrUZ5n1OdXnD9WQd6HPrxKwqA/7JwT0am0x+URBsa
-         KpMGyF3MSPZBHLv9fd7xgcfNgdwph5XAU06K/61lkjdxx3fjK79B0b3Di1eCGLhJaMgZ
-         vfiw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1720648883; x=1721253683;
-        h=content-transfer-encoding:in-reply-to:autocrypt:from
-         :content-language:references:cc:to:subject:user-agent:mime-version
-         :date:message-id:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=zf1pp9dOgmxGyQBYWisVbbmnW9QAhbQOazYQx/2Fl7w=;
-        b=Rr9TRX8yuAUS/lQBKU7OppIkdq4XoBHwEqz/coHfwjxB0hNo3fNSlDRjjHMdsuhyE2
-         /MXcNlKFXOK01JZOXvFVD5TAb+t7W1hcHgEUF4PfcEDlBJI3/K2d8oWe0bbKCIJx+ijs
-         dW4CBctLVFRRR7/++aJA0HZKIHr6qWn8FiIuAnAD1w+pAZbvISE5806bFSgZSynpwlgP
-         pOB2+oCcnHJrpvMqmeouaUNhl+Fk56uMffaEmbkhLWICJK+s1SyW1uEa/2+kzhcpahWF
-         j8i2RigunV7mrp4Pbko8f+mxxOFdw3mY3UmzuObp08Nhl9gMCObRxYDE29aVnyGLq7bZ
-         ljYg==
-X-Forwarded-Encrypted: i=1; AJvYcCWdTng7MSezWmU6O9oBcNpZLcsL6CbL1Cwi1UQ9lFrNV0jfCWnJEAQXXWhj6wOXDU1xDmbEhnTv2znhH3OHRqbLxSlS3Hs=
-X-Gm-Message-State: AOJu0YyhHcmWQpWoD4HkmsFt3NvlmqoagiSX2VwAGAXf5wiundH3Hodu
-	yzDmX0TXwRNydzXwnVjcwfEYdhv3JPimhUUHHjnIApcb+rbdAPAAL9oVKeGQnmU=
-X-Google-Smtp-Source: AGHT+IF4jq8yt4jQDz/VDWCfZu27ZsRCQpuF/N2TiFiwqjAXZchm3oBEIHNy84eHP2CV5+WZrCx7hg==
-X-Received: by 2002:a17:907:e90:b0:a6f:4e1f:e613 with SMTP id a640c23a62f3a-a780b6feffemr629317166b.37.1720648882916;
-        Wed, 10 Jul 2024 15:01:22 -0700 (PDT)
-Received: from [192.168.105.194] (078088045245.garwolin.vectranet.pl. [78.88.45.245])
-        by smtp.gmail.com with ESMTPSA id a640c23a62f3a-a780a855f09sm193561366b.164.2024.07.10.15.01.20
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 10 Jul 2024 15:01:22 -0700 (PDT)
-Message-ID: <f4994451-9dc4-4d25-b544-49531709e76d@linaro.org>
-Date: Thu, 11 Jul 2024 00:01:19 +0200
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="Ucg8wWPp"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1720673106; x=1752209106;
+  h=message-id:date:mime-version:cc:subject:to:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=SLE8iv1gS/925bWtDCRkm6vcnRWpUcxElWCPVPn23FQ=;
+  b=Ucg8wWPpspoAv8fFOCZBaRcxUZNsWY8h03MzCwsfh0xj3L7WRVKrqcHK
+   94wY0iI0u1DXd4JQsILuL7OWeSEW2CL+kkiXzacZEZYgCNpiot5my3Qqu
+   PqYIMuHLTIs5MjpECoh6ocNWQGiPaUe/vtcLEiqRd9lS+yoTPOUi2tag4
+   Jh6Ce056I/SRSF+2MOoWNYqiLFcDhe+ZvkPA+4GYWgHstYq/fkKFCo5qO
+   fADB9Ki+CG0GqP5zhLCRlKpHnxZyxYFqdZo9UPB+FZR+91ZFzUSrwWiHs
+   FWuvk5W1ktuEmG8wwRuQusZgyRE3fdNE+8lqUnx52ebHJgD+6V8eZErbB
+   A==;
+X-CSE-ConnectionGUID: BB45KKu+RdmogzLFEl29lg==
+X-CSE-MsgGUID: 1ds0DuEnQUex8tcv+ebJQQ==
+X-IronPort-AV: E=McAfee;i="6700,10204,11129"; a="21903982"
+X-IronPort-AV: E=Sophos;i="6.09,199,1716274800"; 
+   d="scan'208";a="21903982"
+Received: from orviesa004.jf.intel.com ([10.64.159.144])
+  by fmvoesa106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Jul 2024 21:45:06 -0700
+X-CSE-ConnectionGUID: E6ssgs+dSTayW9Q3JUCXmg==
+X-CSE-MsgGUID: NY4EQmyVSNaQ1mBLcLGioQ==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.09,199,1716274800"; 
+   d="scan'208";a="53613772"
+Received: from unknown (HELO [10.239.159.127]) ([10.239.159.127])
+  by orviesa004.jf.intel.com with ESMTP; 10 Jul 2024 21:45:02 -0700
+Message-ID: <9b3b05c0-b43a-4a56-b885-f79ef9efb38b@linux.intel.com>
+Date: Thu, 11 Jul 2024 12:42:11 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -62,80 +52,79 @@ List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v13 6/6] iommu/arm-smmu: add support for PRR bit setup
-To: Rob Clark <robdclark@gmail.com>,
- Bibek Kumar Patro <quic_bibekkum@quicinc.com>
-Cc: will@kernel.org, robin.murphy@arm.com, joro@8bytes.org, jgg@ziepe.ca,
- jsnitsel@redhat.com, robh@kernel.org, krzysztof.kozlowski@linaro.org,
- quic_c_gdjako@quicinc.com, dmitry.baryshkov@linaro.org,
- iommu@lists.linux.dev, linux-arm-msm@vger.kernel.org,
- linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
- Rob Clark <robdclark@chromium.org>
-References: <20240628140435.1652374-1-quic_bibekkum@quicinc.com>
- <20240628140435.1652374-7-quic_bibekkum@quicinc.com>
- <CAF6AEGvroi8rJimFv95tkWmRFa5_aTpBJ7GFcRAuZpLGdSyEYQ@mail.gmail.com>
- <0650ba0a-4453-4e2d-8a76-0f396ac1999c@quicinc.com>
- <CAF6AEGv_9e-TDW1r0N4-db6pY_aV_EZFqrpNbATVS5Vy6+fs1g@mail.gmail.com>
- <4a5f54c7-120e-427d-8a0a-9fb83e13a72e@quicinc.com>
- <CAF6AEGtrtFNxDWtuADA4oOHhZJ=dJZcGaJ1XLFJt4fe4Xp=pTA@mail.gmail.com>
- <3b7c05b1-8f36-4c81-a55c-dbb467314099@quicinc.com>
- <CAF6AEGuRKU+DkL0-b3xdR1R45_MiiKQYRRXEXYz-xohu8rUaEQ@mail.gmail.com>
- <CAF6AEGtbw06-gOSvX9gAbi=SA801gmD3_8c5xkOU-G9g2qKptQ@mail.gmail.com>
- <9509f256-04a4-4907-98fc-148c5087d74d@quicinc.com>
- <CAF6AEGuLwZ0yFGWMKX-O1VjQB2M57K+CsyJ=7PCKXE=b=VsSNg@mail.gmail.com>
+Cc: baolu.lu@linux.intel.com, "iommu@lists.linux.dev"
+ <iommu@lists.linux.dev>,
+ "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH 3/3] iommu: Convert response code from failure to invalid
+To: "Tian, Kevin" <kevin.tian@intel.com>, Jason Gunthorpe <jgg@ziepe.ca>,
+ Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
+ Robin Murphy <robin.murphy@arm.com>, Nicolin Chen <nicolinc@nvidia.com>,
+ "Liu, Yi L" <yi.l.liu@intel.com>
+References: <20240710083341.44617-1-baolu.lu@linux.intel.com>
+ <20240710083341.44617-4-baolu.lu@linux.intel.com>
+ <BN9PR11MB5276EC68D1BBB52C9E6DDE558CA42@BN9PR11MB5276.namprd11.prod.outlook.com>
 Content-Language: en-US
-From: Konrad Dybcio <konrad.dybcio@linaro.org>
-Autocrypt: addr=konrad.dybcio@linaro.org; keydata=
- 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
- izWDgYvmBE8=
-In-Reply-To: <CAF6AEGuLwZ0yFGWMKX-O1VjQB2M57K+CsyJ=7PCKXE=b=VsSNg@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+From: Baolu Lu <baolu.lu@linux.intel.com>
+In-Reply-To: <BN9PR11MB5276EC68D1BBB52C9E6DDE558CA42@BN9PR11MB5276.namprd11.prod.outlook.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-On 10.07.2024 7:01 PM, Rob Clark wrote:
-> On Tue, Jul 9, 2024 at 12:43 PM Bibek Kumar Patro
-> <quic_bibekkum@quicinc.com> wrote:
+On 7/10/24 5:56 PM, Tian, Kevin wrote:
+>> From: Lu Baolu <baolu.lu@linux.intel.com>
+>> Sent: Wednesday, July 10, 2024 4:34 PM
+>>
+>> In the iopf deliver path, iommu_report_device_fault() currently responds
+>> a code of "Response Failure" to the hardware if it can't find a suitable
+>> iopf-capable domain where the page faults should be handled. The Response
+>> Failure is defined in PCI spec (section 10.4.2.1) as a catastrophic error,
+>> and the device will disable PRI for the function.
+>>
+>> Failing to dispatch a set of fault messages is not a catastrophic error
+>> and the iommu core has no code to recover the PRI once it is disabled.
+>>
+>> Replace it with a response code of "Invalid Response".
+>>
+>> Fixes: b554e396e51c ("iommu: Make iopf_group_response() return void")
+>> Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
+>> ---
+>>   drivers/iommu/io-pgfault.c | 2 +-
+>>   1 file changed, 1 insertion(+), 1 deletion(-)
+>>
+>> diff --git a/drivers/iommu/io-pgfault.c b/drivers/iommu/io-pgfault.c
+>> index cd679c13752e..b8270ee5dcdb 100644
+>> --- a/drivers/iommu/io-pgfault.c
+>> +++ b/drivers/iommu/io-pgfault.c
+>> @@ -229,7 +229,7 @@ void iommu_report_device_fault(struct device *dev,
+>> struct iopf_fault *evt)
+>>   err_abort:
+>>   	dev_warn_ratelimited(dev, "iopf with pasid %d aborted\n",
+>>   			     fault->prm.pasid);
+>> -	iopf_group_response(group, IOMMU_PAGE_RESP_FAILURE);
+>> +	iopf_group_response(group, IOMMU_PAGE_RESP_INVALID);
+>>   	if (group == &abort_group)
+>>   		__iopf_free_group(group);
+>>   	else
+> 
+> this doesn't match the spec words on the use of INVALID:
+> 
+>    One or more pages within the associated PRG do not exist or
+>    requests access privilege(s) that cannot be granted. Unless the
+>    page mapping associated with the Function is altered, re-issuance
+>    of the associated request will never result in success.
+> 
+> this situation is not related to the permission of page mapping. Instead
+> it's a global problem applying to all functions submitting page requests
+> at this moment.
+> 
+> Though using FAILURE affects more functions sharing the PRI interface,
+> it also proactively avoids adding more in-fly requests to worsen the
+> low memory situation.
+> 
+> So none of the options looks perfect to me, but the existing code
+> responding FAILURE is more aligned to the spec?
 
-[...]
+Fair enough. Perhaps we can keep the existing code as-is unless any real
+issues arise.
 
-> If there is a clean break, such as all smmu-500 have PRR and all
-> smmu-v2 do not, then it would be reasonable to use the compat strings.
-> If not, I think we need a different way.
-
-if (a reserved-memory region is passed in dt) {
-	init_prr()
-}
-
-Konrad
+Thanks,
+baolu
