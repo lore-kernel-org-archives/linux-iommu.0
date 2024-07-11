@@ -1,96 +1,142 @@
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id A0A2418E20
-	for <iommu@lists.linux.dev>; Thu, 11 Jul 2024 20:09:16 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
+Received: from mail-qt1-f169.google.com (mail-qt1-f169.google.com [209.85.160.169])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 434E41A0719
+	for <iommu@lists.linux.dev>; Thu, 11 Jul 2024 23:21:48 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.160.169
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1720728559; cv=none; b=avycWAzjgZeHSy+nmjyVj+u0PclZT84KlRMfpOD4bdrZL38QOxDNR1AiTBCQa5JuExsv/dS5RMRJFlOwqsV3aXUyswG3GlXojycJ+hXT1+pmhapzwm/QQ2NEXkKYUu/saa9eHGdHPl8nU2J32hv0FefqKfz9mKMO6BPEUBHB328=
+	t=1720740109; cv=none; b=jSxpeZeffbgpZUT71fSdyGn+fZe5A9iI3RKK8GWB7VtwBd592WwmmblKNeN4e/KdyrBKsnJ80x4exU8FDrXqgDAVlwGcY4xO3JSyd7XIBQrGyQE/DiFSWibFb4jgO3lAGVPrTmFym1+eGa9xJ++jmfcuYGTnR68iOyPhAItpt7U=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1720728559; c=relaxed/simple;
-	bh=IQEMcvQA4q5UdFL8E3k7bSfozbC0sE/EVwt+B8J4d+g=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=I7NS/l8E9obC/akwNjeoVl4l4sirvJK3EseJ/4shoDB7qTLH47BAWZWpe0TeNKJmFLlBb4G/XdIALccBzuNlby7DwAYs2omT/Krwqh9ZYTgtbrPoDNI7OGZmHPd4PNsXkJEKrr8Lh3WuDWQZGThb2vlCYTV7CYgcZ9HdWLe1arA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; arc=none smtp.client-ip=217.140.110.172
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id EAF421007;
-	Thu, 11 Jul 2024 13:09:40 -0700 (PDT)
-Received: from [10.57.91.215] (unknown [10.57.91.215])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id A365E3F762;
-	Thu, 11 Jul 2024 13:09:13 -0700 (PDT)
-Message-ID: <455ccc97-11bd-456d-92b3-b7c8fe4c8d9a@arm.com>
-Date: Thu, 11 Jul 2024 21:08:49 +0100
+	s=arc-20240116; t=1720740109; c=relaxed/simple;
+	bh=yBzw/fpawDv/KPcPaY2/FkE3DGz3iFhkQCMcidhYJy0=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=WTDoXEWj4/cVPtyOIzzigmV11YJJFBio5t+0nvv1Qsayh71YxCmyk7zseKpdoENk7n3P4sQLaajCkONv8MEivYpSqLDxp9qPeEoYskwEd/zXH+1PLeSSsjHzDzzROcTqpLxUsGWe0Uu8U/n7Q1QzLn9WUQ/ctr8tlUxF1cX9dyM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=DLSLiCs3; arc=none smtp.client-ip=209.85.160.169
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="DLSLiCs3"
+Received: by mail-qt1-f169.google.com with SMTP id d75a77b69052e-447fd75f9aeso7553271cf.1
+        for <iommu@lists.linux.dev>; Thu, 11 Jul 2024 16:21:48 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=ziepe.ca; s=google; t=1720740107; x=1721344907; darn=lists.linux.dev;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=iA5EkoKdOMHWMqTqv30k2JtFjPGSRguy2LMuZP+mDPQ=;
+        b=DLSLiCs3nq3uUN7coJNeTMsHMwWzUgkQFT19iiBxXppt5MuUXZ+61H+14LL8RJQsVf
+         Uz9u3eHQn8hodHJImjaNrVRkMWxh6iLlJFuFQKnj9xZjxVQKmm419XmH+iccheBv9hfo
+         kbtnjY7wTKFcppOurnMACFYGsuPyHLOKF009gcF4GY1KOUr2yncoqhusTQkT7C0zy77t
+         WUEYQ3CLS6NUcwbxzsJSNGJatglDHuRHiqNNo5cxd5CYDGbfFBnkPgC38UkDPPguqBxn
+         5jgZoxtr0E1QVhNBXeI/FvrTsKOJ4OoOosXRkTmKtq3L5GKjRLr6iRYW7+hunhPfyMQC
+         qBWw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1720740107; x=1721344907;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=iA5EkoKdOMHWMqTqv30k2JtFjPGSRguy2LMuZP+mDPQ=;
+        b=u31kgfZ8k6T0fvFJolmjupWzqPVK+4D9sGseiydcwbSV+LiOWo/JS/2RJmQFES/79D
+         XHX6etf/Fk5rwPVdQJtqy47GcG2OO3nQ11JsaCe9Y8sj+I7LoaXTJD+gjPhGR5/C6221
+         1XapuJr/KDndSLVvsXFZIZFAjF9ddwRLXSJxt/w5IFi/nyYsJtWCcDnOSKydpHtbuqxB
+         3QFV4sEcfefqpDz2KQpevhV3B1wsWj28gEs/lPlOrY4WJIGx3VHZruL43yDuzdSxHXyj
+         9+Ow5FJnY5jkw0n7teafF1wfqJq1xdedF+G85mAKG7IXuEGzMwmoA10BeeV4hL8nCXS5
+         hCmw==
+X-Forwarded-Encrypted: i=1; AJvYcCV1ae6ZK2mCj6zD2HkwFZxZu8xrIoUaWdkp0WSnqJ+62Ac6Ujj4Ml+kOqtO9h/GLB6p4xzuV/Tfye8//Gyt6iFyBiWhhro=
+X-Gm-Message-State: AOJu0YxfMtf0H1DBOnamiBRe9DINQuIGlQoD5MEQ8lwujqB1gtid9+fo
+	CqM/3l8Qy16n2FzK4ThwcUwD0D/mtEXI/lrGVkrVhh7fhwoecRSP2WBDD6eHlD4=
+X-Google-Smtp-Source: AGHT+IE3EReOFfP9Gp9yOBbEQdd9ZoxHQTHmzRvm3onKx9Jai/yPhMccTCjhIICDfGTUxTuCo6A+VA==
+X-Received: by 2002:a05:6214:1c83:b0:6b0:6a57:c982 with SMTP id 6a1803df08f44-6b61bcff6edmr121290886d6.28.1720740107241;
+        Thu, 11 Jul 2024 16:21:47 -0700 (PDT)
+Received: from ziepe.ca ([128.77.69.90])
+        by smtp.gmail.com with ESMTPSA id 6a1803df08f44-6b61ba7a437sm29827036d6.85.2024.07.11.16.21.46
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 11 Jul 2024 16:21:46 -0700 (PDT)
+Received: from jgg by wakko with local (Exim 4.95)
+	(envelope-from <jgg@ziepe.ca>)
+	id 1sS36e-00FPgi-P3;
+	Thu, 11 Jul 2024 20:21:44 -0300
+Date: Thu, 11 Jul 2024 20:21:44 -0300
+From: Jason Gunthorpe <jgg@ziepe.ca>
+To: Christoph Hellwig <hch@lst.de>
+Cc: Leon Romanovsky <leon@kernel.org>, Jens Axboe <axboe@kernel.dk>,
+	Robin Murphy <robin.murphy@arm.com>, Joerg Roedel <joro@8bytes.org>,
+	Will Deacon <will@kernel.org>, Keith Busch <kbusch@kernel.org>,
+	"Zeng, Oak" <oak.zeng@intel.com>,
+	Chaitanya Kulkarni <kch@nvidia.com>,
+	Sagi Grimberg <sagi@grimberg.me>,
+	Bjorn Helgaas <bhelgaas@google.com>,
+	Logan Gunthorpe <logang@deltatee.com>,
+	Yishai Hadas <yishaih@nvidia.com>,
+	Shameer Kolothum <shameerali.kolothum.thodi@huawei.com>,
+	Kevin Tian <kevin.tian@intel.com>,
+	Alex Williamson <alex.williamson@redhat.com>,
+	Marek Szyprowski <m.szyprowski@samsung.com>,
+	=?utf-8?B?SsOpcsO0bWU=?= Glisse <jglisse@redhat.com>,
+	Andrew Morton <akpm@linux-foundation.org>,
+	linux-block@vger.kernel.org, linux-kernel@vger.kernel.org,
+	linux-rdma@vger.kernel.org, iommu@lists.linux.dev,
+	linux-nvme@lists.infradead.org, linux-pci@vger.kernel.org,
+	kvm@vger.kernel.org, linux-mm@kvack.org
+Subject: Re: [RFC PATCH v1 00/18] Provide a new two step DMA API mapping API
+Message-ID: <20240711232144.GQ14050@ziepe.ca>
+References: <cover.1719909395.git.leon@kernel.org>
+ <20240703054238.GA25366@lst.de>
+ <20240703105253.GA95824@unreal>
+ <20240703143530.GA30857@lst.de>
+ <20240703155114.GB95824@unreal>
+ <20240704074855.GA26913@lst.de>
+ <20240708165238.GE14050@ziepe.ca>
+ <20240709061721.GA16180@lst.de>
+ <20240709185315.GM14050@ziepe.ca>
+ <20240710062704.GA25953@lst.de>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH 2/2] dma: Add IOMMU static calls with clear default ops
-To: Leon Romanovsky <leon@kernel.org>
-Cc: Christoph Hellwig <hch@lst.de>, Joerg Roedel <joro@8bytes.org>,
- Will Deacon <will@kernel.org>, Marek Szyprowski <m.szyprowski@samsung.com>,
- Jason Gunthorpe <jgg@nvidia.com>, linux-kernel@vger.kernel.org,
- iommu@lists.linux.dev
-References: <98d1821780028434ff55b5d2f1feea287409fbc4.1720693745.git.leon@kernel.org>
- <f2b699aea8fff5589a674da2a567fd593ed2d386.1720693745.git.leon@kernel.org>
- <28309b7f-9809-452f-95fe-3448c15bdf1b@arm.com>
- <20240711185741.GC1815706@unreal>
-From: Robin Murphy <robin.murphy@arm.com>
-Content-Language: en-GB
-In-Reply-To: <20240711185741.GC1815706@unreal>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20240710062704.GA25953@lst.de>
 
-On 2024-07-11 7:57 pm, Leon Romanovsky wrote:
-> On Thu, Jul 11, 2024 at 07:23:20PM +0100, Robin Murphy wrote:
->> On 11/07/2024 11:38 am, Leon Romanovsky wrote:
->>> From: Leon Romanovsky <leonro@nvidia.com>
->>>
->>> Most of the IOMMU drivers are using the same DMA operations, which are
->>> default ones implemented in drivers/iomem/dma-iomem.c. So it makes sense
->>> to properly set them as a default with direct call without need to
->>> perform function pointer dereference.
->>>
->>> During system initialization, the IOMMU driver can set its own DMA and
->>> in such case, the default DMA operations will be overridden.
->>
->> I'm going to guess you don't actually mean "IOMMU drivers" in the usual
->> sense of drivers/iommu/, but rather "arch DMA ops (which often, but not
->> always, involve some sort of IOMMU)."
+On Wed, Jul 10, 2024 at 08:27:04AM +0200, Christoph Hellwig wrote:
+> On Tue, Jul 09, 2024 at 03:53:15PM -0300, Jason Gunthorpe wrote:
+> > > That whole thing of course opens the question if we want a pure
+> > > in-memory version of the dma_addr_t/len tuple.  IMHO that is the best
+> > > way to migrate and allows to share code easily.  We can look into ways
+> > > to avoiding that more for drivers that care, but most drivers are
+> > > probably best serve with it to keep the code simple and make the
+> > > conversion easier.
+> > 
+> > My feeling has been that this RFC is the low level interface and we
+> > can bring our own data structure on top.
+> >
+> > It would probably make sense to build a scatterlist v2 on top of this
+> > that has an in-memory dma_addr_t/len list close to today
 > 
-> Yes, you are right. I used word "drivers" as a general term to describe
-> everything that implements their own ->map_page() callback.
-> 
->>
->> If so, I'd much rather see this done properly, i.e. hook everything up
->> similarly to dma-direct and be able to drop CONFIG_DMA_OPS for "modern"
->> dma-direct/iommu-dma architectures entirely. Furthermore the implementation
->> here isn't right - not only is it not conceptually appropriate to make
->> iommu-dma responsibile for proxying random arch DMA ops, but in practial
->> terms it's just plain broken, since the architectures which still have their
->> own DMA ops also don't use iommu-dma, so this is essentially disabling the
->> entire streaming DMA API on ARM/PowerPC/etc.
-> 
-> Sorry but I'm not sure that I understood your reply. Can you please clarify
-> what does it mean broken in this context?
-> 
-> All archs have one of the following options:
-> 1. No DMA ops -> for them dma_map_direct() will return True and they
-> never will enter into IOMMU path.
-> 2. Have DMA ops but without .map_page() -> they will use default IOMMU
-> 3. Have DMA ops with .map_page() -> they will use their own implementation
+> Yes, the usage of the dma_vec would be in a higher layer.  But I'd
+> really like to see it from the beginning.
 
-Urgh, sorry, let that instead be a lesson in not adding needless layers 
-of indirection that are named as confusingly as possible, then. Seems I 
-saw stubs plus static inline wrappers, managed to misread dma_iommu_* 
-vs. iommu_dma_*, and jump to the wrong conclusion of what was stubbed 
-out, not least since that was the only interpretation in which adding an 
-extra layer of inline wrappers would seem necessary in the first place. 
-If these dma_iommu_* functions serve no purpose other than to make the 
-code even more of a maze of twisty little passages, all alike, then 
-please just feed them to a grue instead.
+Well, lets start with agreeing on this layer's API and be confident it
+can succeed.
 
-Thanks,
-Robin.
+Then I'd say to look at RDMA as it is a logical place to build such a
+data structure and we can build something that at least does what RDMA
+needs.
+
+I need something anyhow to plumb through to DMABUF and over to iommufd
+and VFIO, can't skip out on it :)
+
+> Yes, I don't think the dma_vec should be the low-level interface.
+> I think a low-level interface based on physical address is the right
+> one.  I'll see what I can do to move the single segment map interface
+> to be physical address based instead of page based so that we can
+> unify them.
+
+Yeah, I've been talking to Matthew explaining that starting at the DMA
+API makes the most sense and lets remove mandatory struct page
+entanglements there. Then we can start to examine other layers. Having
+a consistent option in the DMA API to be physically based with a
+memory type fits with that plan.
+
+Jason
