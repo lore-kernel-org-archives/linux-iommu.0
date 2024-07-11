@@ -1,75 +1,71 @@
-Received: from mail-yb1-f178.google.com (mail-yb1-f178.google.com [209.85.219.178])
+Received: from mail-qk1-f171.google.com (mail-qk1-f171.google.com [209.85.222.171])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 60248158DAC
-	for <iommu@lists.linux.dev>; Thu, 11 Jul 2024 23:37:33 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.219.178
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1A40215AD95
+	for <iommu@lists.linux.dev>; Thu, 11 Jul 2024 23:39:53 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.222.171
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1720741056; cv=none; b=mAqJBsepTYg1ElnAmOSzQkqY6x3t9H6rJ/zbuCAU71U643/qQRKWag97DRxVt+2pcSyo83xfbjseyNf6rcbgkKG49o1bppV0lWHcDpTTwI2ZccuEq8nW6aR5yqeZWPgVB0HEE1oLfIIqI13I6aEiTC2gKbq4Hzytu6V9PJdzTMo=
+	t=1720741195; cv=none; b=XjhYCNjjdKsDsOneUy6syJN4qYlIxMa7wjBWvE5ge4xYFrdE63p+/4z1r1rCU07Tj49+pmTGcB4YxekjFBRvYy2M414U4M2MByOSEDh08Ub3AfTqogEvVCBw+xX4OimfTLXmFSMQZc0w3Dv+9LU0tipkqVf0IpAoxRCAe9uyyPI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1720741056; c=relaxed/simple;
-	bh=2nqbbEAsVwbmaZoW7HNnsobSTISWs4X9BhTkCvVZ4rI=;
+	s=arc-20240116; t=1720741195; c=relaxed/simple;
+	bh=AaZXRsdVn2tvLYsDOVlyTZEChQrM/esAH6DERNhXAfI=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=XJYZ8/xUIBMVqc4QNyZXjoJWczvN5SSrguYMZjErnvero4W4/xJKM+AtZLF6Y9V9i/hz68Pf2rFtza1FoArzwk5bToBkddf1n5GiAVFIb8tGcdL3y3dF+I6Xovu4ycV8so1vqwJK9Z0FeTjtNhYSgxBiieV1etYO8j7j3vyonzY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=OmLtkUy+; arc=none smtp.client-ip=209.85.219.178
+	 Content-Type:Content-Disposition:In-Reply-To; b=HgcaMlOV2mDkvwIpW5Ps8T5XE2lR7+uHPBchpyAJJMR3t5vWIjR6/CbVEL8daqhK23w4XDoWkyHYbbxkY9qjzS0Lhme0IZ30tV0Gq5YEshQ+gfPtU4XuhEf3ymBQmzWxuBpguvQQIRRv3hWPwQ5eGxMpe+cpdH7z4Q09QEDXNqQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=fDGxygTu; arc=none smtp.client-ip=209.85.222.171
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="OmLtkUy+"
-Received: by mail-yb1-f178.google.com with SMTP id 3f1490d57ef6-e035ecb35ffso1379889276.2
-        for <iommu@lists.linux.dev>; Thu, 11 Jul 2024 16:37:33 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="fDGxygTu"
+Received: by mail-qk1-f171.google.com with SMTP id af79cd13be357-7a05b4fa525so114169085a.1
+        for <iommu@lists.linux.dev>; Thu, 11 Jul 2024 16:39:53 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google; t=1720741052; x=1721345852; darn=lists.linux.dev;
+        d=ziepe.ca; s=google; t=1720741193; x=1721345993; darn=lists.linux.dev;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=X+KdXhfnlGfYruNnuxczBUgWH1eqq9zVhnZGK1VHbw0=;
-        b=OmLtkUy+OG0PE5kYZwJJozencKmESUXxx8CFmi5ReuU2g7GMV0W/IE3YhzT/qfyZ1q
-         a/dQJ8wJGaX6/DrXwGXSWEVxGyKslIJXpMKGGvgBOv3jXkr/Q9JhBSaW/rI6JyhcJDMw
-         to8WfzJYHJ5VQnQ3sbVSUKLIpEBEIho2gJhSmMRwLtT1xdUDsz3edXv/x6lH30aH3eT9
-         /1aBbJo4ZBMC6/O767LPfKdJubt4ZvZHvHNyx17CRW2uVXPwAvV9Gvc8LX50Tr47ZSa6
-         0sHfQ1tswt+NhTO4J41fH/5ghy4CEO90ynAcqNBQuj1ofrp+gCdwD5j1SFsOLJp8tvT4
-         LQbA==
+        bh=IFVrrIHp8Vup92boS3hFd9PYBN8YKvRYBK43QitxZkA=;
+        b=fDGxygTuQcnZ/cokAEMK/YXmGwJDEY9rfdgK1maqAbr7rt7M1k4ZBAPYmsY+pWx6uu
+         oKq1N/bGCWgyI2eOl040Lq4OJ23ckUvrhxzmsknzsLY8+KSaAKtVpFZeJLrzG26fMeS2
+         nyBwdY41nqJZXDLgXSaJAnnExjIe7dMBreyMc6W0m9pxciv8VX0OZW394MmGK6OkBQ8t
+         f0NtziNsj6KJn1ERRuYUrI+m3pb/QG/xf0oO5v/OTf1eXh0xtQ2qkKfyI/v5br1Nb3Dx
+         2ognFakLh/tffN7LibuIvSu3ccTDAtICZuLwRsSv41hym7zd613GCg6o9JENyADCQiKG
+         Zj8A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1720741052; x=1721345852;
+        d=1e100.net; s=20230601; t=1720741193; x=1721345993;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=X+KdXhfnlGfYruNnuxczBUgWH1eqq9zVhnZGK1VHbw0=;
-        b=HuAUkhv4CtzXiLxvmVSlAGFiu2B+J4A4Lx/rDMb+MhBtURY0WuU6RNdhJtVn5I++pC
-         wbtTcL1UeJLFRAyTPTR4uyZdDsTrwpuNzHBAfI4RC5v6jHyEKlEaVTqj8Yp3HdGkIUbL
-         vP0u1v/fDbj4Jog6eNHbB5u6FPP+dC97wSrMHqsGbFjZJzSe/y6cVKBvKC0QSx7PNWrO
-         RDrhFrVi/sEJ891B1mrGKzlEzn7ZQVmsgpwZtNqRmhQX2C1ATXKFzPWsOW/CXs+mGdKJ
-         xvwNDrYzyfpMy8+cBgcAFVoKh7Ykfivk5S9uwLAlhvDqHQmpQLm9h9WiW16nszdI6t+o
-         YqtA==
-X-Forwarded-Encrypted: i=1; AJvYcCXpsOLlhg6OmiHLVqeXVmWpkUEssyo5Wjnv8+ggykpaX/NWlyZRHmECbXrNWdYRH83rKOdLBWTaVQ4p5XZlH/+fxMXUK6s=
-X-Gm-Message-State: AOJu0YwM13Z7mBt6HB2kDdZ6oK4YYQwImUAKhaxz0I28lC6Xu/n+nJQJ
-	trgogXaVCUDtG7yoclz2tdiWJM216Uj8NO+ypWiBqCeovX5Nb2R5zM/hoyqmaq9X389Als+ctuq
-	TQ2o=
-X-Google-Smtp-Source: AGHT+IE2w1iEvTJQgL110JqQwHO+CGC/PXq7/sUcslpRneSFJpeAVANOPh84CWfAbXtIrXm5qsA1pg==
-X-Received: by 2002:a25:9902:0:b0:e03:a248:7dd3 with SMTP id 3f1490d57ef6-e041b061cb3mr11759264276.23.1720741052384;
-        Thu, 11 Jul 2024 16:37:32 -0700 (PDT)
+        bh=IFVrrIHp8Vup92boS3hFd9PYBN8YKvRYBK43QitxZkA=;
+        b=DgCANzA+F0dLP2q+KNjDbJ+eKAuF74P4LOIBP3P/SMa7/V8YqEuMSbfu2ltF8IGEWJ
+         LzMqbBO0YgwFIl9rsAMfofHP4PmMuU67GXqWp4KDGII683y+MA49eIr96bGT4dhXnpD2
+         2j7d3S37lUKXto5/m0isHtWeXamc2WkLumZLqh1PWGmYGYEBSfHvOnaDlhFrONe24c/w
+         GlHapxD8Sq3Ouw6Znde0NYQPW4zrZMJv/Qm6b39twk5WrzK3bJJLUJnpnPNESUMwJXxJ
+         /jXFJIleWiVnJWtyoz9V6xdIYv6XOCyDfR7VXbF3SOA6AprO2FlKQ8broAJyd6XXsCEW
+         BD8g==
+X-Forwarded-Encrypted: i=1; AJvYcCUdn8bXTsiKhli0d5X+1W8/o2Atco6MYgXekTGqrko1cEhfxxiCa8znj2OSDP0UAwcqCNsCTDX/y9s6765KCc5r3XT6B4o=
+X-Gm-Message-State: AOJu0Yy4BW+SLPhsJswocHF/twukmXtN9nVVOIRqayI2sRd2ey2SjjHg
+	1nA2XSEJa5+Og2xDbudfQUX2smMhZBhxJGyYku5nihT3QYMS+RO2YS1Q6ACvSmw=
+X-Google-Smtp-Source: AGHT+IEvE6NFq20imkRuEEO3x8KpVY70FapRhLgTh97KHKQPOyxmkDqYb4gFKM6bc2M6nmkv7zlTvQ==
+X-Received: by 2002:a05:620a:4611:b0:795:60ba:76e9 with SMTP id af79cd13be357-7a152fbcbfcmr290215985a.4.1720741193036;
+        Thu, 11 Jul 2024 16:39:53 -0700 (PDT)
 Received: from ziepe.ca ([128.77.69.90])
-        by smtp.gmail.com with ESMTPSA id 6a1803df08f44-6b61b9d606csm30110476d6.36.2024.07.11.16.37.31
+        by smtp.gmail.com with ESMTPSA id af79cd13be357-79f18ff827csm341798685a.4.2024.07.11.16.39.51
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 11 Jul 2024 16:37:31 -0700 (PDT)
+        Thu, 11 Jul 2024 16:39:51 -0700 (PDT)
 Received: from jgg by wakko with local (Exim 4.95)
 	(envelope-from <jgg@ziepe.ca>)
-	id 1sS3Lu-00FSPx-5b;
-	Thu, 11 Jul 2024 20:37:30 -0300
-Date: Thu, 11 Jul 2024 20:37:30 -0300
+	id 1sS3OA-00FTEK-Qs;
+	Thu, 11 Jul 2024 20:39:50 -0300
+Date: Thu, 11 Jul 2024 20:39:50 -0300
 From: Jason Gunthorpe <jgg@ziepe.ca>
-To: "Tian, Kevin" <kevin.tian@intel.com>
-Cc: Lu Baolu <baolu.lu@linux.intel.com>, Joerg Roedel <joro@8bytes.org>,
+To: Lu Baolu <baolu.lu@linux.intel.com>
+Cc: Kevin Tian <kevin.tian@intel.com>, Joerg Roedel <joro@8bytes.org>,
 	Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
-	Nicolin Chen <nicolinc@nvidia.com>,
-	"Liu, Yi L" <yi.l.liu@intel.com>,
-	"iommu@lists.linux.dev" <iommu@lists.linux.dev>,
-	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH 3/3] iommu: Convert response code from failure to invalid
-Message-ID: <20240711233730.GT14050@ziepe.ca>
+	Nicolin Chen <nicolinc@nvidia.com>, Yi Liu <yi.l.liu@intel.com>,
+	iommu@lists.linux.dev, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 2/3] iommufd: Add check on user response code
+Message-ID: <20240711233950.GU14050@ziepe.ca>
 References: <20240710083341.44617-1-baolu.lu@linux.intel.com>
- <20240710083341.44617-4-baolu.lu@linux.intel.com>
- <BN9PR11MB5276EC68D1BBB52C9E6DDE558CA42@BN9PR11MB5276.namprd11.prod.outlook.com>
+ <20240710083341.44617-3-baolu.lu@linux.intel.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -78,70 +74,45 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <BN9PR11MB5276EC68D1BBB52C9E6DDE558CA42@BN9PR11MB5276.namprd11.prod.outlook.com>
+In-Reply-To: <20240710083341.44617-3-baolu.lu@linux.intel.com>
 
-On Wed, Jul 10, 2024 at 09:56:34AM +0000, Tian, Kevin wrote:
-> > From: Lu Baolu <baolu.lu@linux.intel.com>
-> > Sent: Wednesday, July 10, 2024 4:34 PM
-> > 
-> > In the iopf deliver path, iommu_report_device_fault() currently responds
-> > a code of "Response Failure" to the hardware if it can't find a suitable
-> > iopf-capable domain where the page faults should be handled. The Response
-> > Failure is defined in PCI spec (section 10.4.2.1) as a catastrophic error,
-> > and the device will disable PRI for the function.
-> > 
-> > Failing to dispatch a set of fault messages is not a catastrophic error
-> > and the iommu core has no code to recover the PRI once it is disabled.
-> > 
-> > Replace it with a response code of "Invalid Response".
-> > 
-> > Fixes: b554e396e51c ("iommu: Make iopf_group_response() return void")
-> > Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
-> > ---
-> >  drivers/iommu/io-pgfault.c | 2 +-
-> >  1 file changed, 1 insertion(+), 1 deletion(-)
-> > 
-> > diff --git a/drivers/iommu/io-pgfault.c b/drivers/iommu/io-pgfault.c
-> > index cd679c13752e..b8270ee5dcdb 100644
-> > --- a/drivers/iommu/io-pgfault.c
-> > +++ b/drivers/iommu/io-pgfault.c
-> > @@ -229,7 +229,7 @@ void iommu_report_device_fault(struct device *dev,
-> > struct iopf_fault *evt)
-> >  err_abort:
-> >  	dev_warn_ratelimited(dev, "iopf with pasid %d aborted\n",
-> >  			     fault->prm.pasid);
-> > -	iopf_group_response(group, IOMMU_PAGE_RESP_FAILURE);
-> > +	iopf_group_response(group, IOMMU_PAGE_RESP_INVALID);
-> >  	if (group == &abort_group)
-> >  		__iopf_free_group(group);
-> >  	else
+On Wed, Jul 10, 2024 at 04:33:40PM +0800, Lu Baolu wrote:
+> The response code from user space is only allowed to be SUCCESS or
+> INVALID. All other values are treated by the device as a response
+> code of Response Failure according to PCI spec, section 10.4.2.1.
+> This response disables the Page Request Interface for the Function.
 > 
-> this doesn't match the spec words on the use of INVALID:
+> Add a check in iommufd_fault_fops_write() to avoid invalid response
+> code.
 > 
->   One or more pages within the associated PRG do not exist or
->   requests access privilege(s) that cannot be granted. Unless the
->   page mapping associated with the Function is altered, re-issuance
->   of the associated request will never result in success.
+> Fixes: 07838f7fd529 ("iommufd: Add iommufd fault object")
+> Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
+> ---
+>  drivers/iommu/iommufd/fault.c | 6 ++++++
+>  1 file changed, 6 insertions(+)
 > 
-> this situation is not related to the permission of page mapping. Instead
-> it's a global problem applying to all functions submitting page requests
-> at this moment.
-> 
-> Though using FAILURE affects more functions sharing the PRI interface,
-> it also proactively avoids adding more in-fly requests to worsen the
-> low memory situation.
-> 
-> So none of the options looks perfect to me, but the existing code
-> responding FAILURE is more aligned to the spec?
+> diff --git a/drivers/iommu/iommufd/fault.c b/drivers/iommu/iommufd/fault.c
+> index 54d6cd20a673..044b9b97da31 100644
+> --- a/drivers/iommu/iommufd/fault.c
+> +++ b/drivers/iommu/iommufd/fault.c
+> @@ -305,6 +305,12 @@ static ssize_t iommufd_fault_fops_write(struct file *filep, const char __user *b
+>  		if (rc)
+>  			break;
+>  
+> +		if (response.code != IOMMUFD_PAGE_RESP_SUCCESS &&
+> +		    response.code != IOMMUFD_PAGE_RESP_INVALID) {
+> +			rc = -EINVAL;
+> +			break;
+> +		}
 
-Yeah, I don't know what to do here either, I guess the system is going
-to explode if you OOM during this stage.
 
-If it is some problem we'd probably have to preallocate this memory in
-a pool and rate limite the number of PRIs we allow open at once, using
-INVALID to create some back pressure. Seems wild.
+I added this:
 
-Lets keep it as FAILURE for now, or at least it can be rediscussed
-another time.
+		static_assert(IOMMUFD_PAGE_RESP_SUCCESS ==
+			      IOMMU_PAGE_RESP_SUCCESS);
+		static_assert(IOMMUFD_PAGE_RESP_INVALID ==
+			      IOMMU_PAGE_RESP_INVALID);
+
+As well
 
 Jason
