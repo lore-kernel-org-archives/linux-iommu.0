@@ -1,50 +1,50 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.19])
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.16])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 490D1567D
-	for <iommu@lists.linux.dev>; Fri, 12 Jul 2024 01:43:18 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.19
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8CFDD29AF
+	for <iommu@lists.linux.dev>; Fri, 12 Jul 2024 02:21:03 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.16
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1720748599; cv=none; b=BNN1QfUCl+u38gsQbMmvMYWpGwtohyt7QqnS5xWk1gCOOQ3tGzcu62GF9RH8dHVVNmZM74j1tY2UdkRFBqveIAz5rlXYPv/Z6cPNSsOKjCKixQctVgoE1XOcdmNl4OqAujwVlhfcXRMZTjoobGRdTcBTuONjbgp5FZp+voZ/+Bs=
+	t=1720750865; cv=none; b=qGQc3FBbZcQgZYmA51AkjFt8Y6JDCDwnFFqaltBqCDDfFfB4PkuAKYWCoC/R5gccJbgg+xVFyhoDKWfqAMv3Bgm/O15lZgEcr5yUx2uk+pFucCGLce/fqUolSYvK1HLV+vHtTTGlPGaOdMjsxhxPf5VrmExPU/lQijasY+hXMpM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1720748599; c=relaxed/simple;
-	bh=Qs8snwVjLvbCvsKZo4DAwGXwoc+Pb9ZkyH0ihWbcFTI=;
+	s=arc-20240116; t=1720750865; c=relaxed/simple;
+	bh=CCH+P/d7gcwJZFhUZsXfkwYLJNyamCRgz7eWF7CJZTk=;
 	h=Message-ID:Date:MIME-Version:Cc:Subject:To:References:From:
-	 In-Reply-To:Content-Type; b=g+WylJvO8o2l1RKfLZzglsGPh2j+xnHf3rIhPeLiPpFzP9A54dOQejqhbPZZo4aEytN7UL9+uBZgRKksRX1oYuUxtt0cuZJk34WhHVRIOQLINWvROhTSdI2U6CaYc3sni476pj1yQNAwEOKGYcztJ/SKy3BHJWWayLwLz7ebnqs=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=fQ/wMdcG; arc=none smtp.client-ip=198.175.65.19
+	 In-Reply-To:Content-Type; b=ArfdJbCCePum5kkRflSUrhjbmR22p9BJqxhH0Ol8yUvUuOVcrooiakB2oAyDHYee4T4h2jBtZZvfKx8z6Vds0S2mXvSmtBeZfTqdlnWDFspLFWQy3XjwCsdr4NlfxEcy3tM3d8spNLZ2KGjyyr4e1O5hf6ZdSR/mV3z7oolROBs=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=ZUxIfl2v; arc=none smtp.client-ip=198.175.65.16
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="fQ/wMdcG"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="ZUxIfl2v"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1720748598; x=1752284598;
+  t=1720750863; x=1752286863;
   h=message-id:date:mime-version:cc:subject:to:references:
    from:in-reply-to:content-transfer-encoding;
-  bh=Qs8snwVjLvbCvsKZo4DAwGXwoc+Pb9ZkyH0ihWbcFTI=;
-  b=fQ/wMdcGvFpwEk7B19yHFUQ/fJJzncVHtXoBsFmkxEJihO1mu14Q8Iwu
-   edUgiDTJbpdQL+ofZXt1IKFy/UVrX3XPptoRx+Ib5jcxvjydytJOEPt3+
-   GhCdUXyCNYylYA7wVdf7L2fSC8sa9dEJ4arnm7HHUBTn1JPqcqzrYQG0w
-   V4PFClHRuHwCyUz+zk/D1UZozq6VPbMJL/wxrRwHXLsgbXtmEZb62q8ne
-   O2j4xY+4JdG1NiSxLfas8W5RD2Lg1AStwAXwsa59lCwwxTXZrrBrjy7cE
-   aUPNljq66aK6SPuVZ7VzDvRKtDpEIeDMoKExZFxdt+WvknuuDIboHp/fS
-   g==;
-X-CSE-ConnectionGUID: 4T9Gz3nSQB6JwmGR8hpYhw==
-X-CSE-MsgGUID: +hK2fqolREeZIeTa9jdQKQ==
-X-IronPort-AV: E=McAfee;i="6700,10204,11130"; a="18017948"
-X-IronPort-AV: E=Sophos;i="6.09,201,1716274800"; 
-   d="scan'208";a="18017948"
-Received: from orviesa009.jf.intel.com ([10.64.159.149])
-  by orvoesa111.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Jul 2024 18:42:50 -0700
-X-CSE-ConnectionGUID: 9sr7lJJCQt+1HnPBuO61Dg==
-X-CSE-MsgGUID: D/5K5hKdQ1ejwHjOGH/HHA==
+  bh=CCH+P/d7gcwJZFhUZsXfkwYLJNyamCRgz7eWF7CJZTk=;
+  b=ZUxIfl2vb/RTYE7nqDGGDpkYciHX0FZ22rz0KagmkEUgguuT35NmG+qr
+   wwXfZzAFMsCnbyoaQbrWQl4LTaG8s0RJ2zaS+mrV4DUW4hvoW3hKSz1aP
+   i5kNWFkFuZLmP55GYmJuXh0Ga+3Mo5A2PrvssJ3W/3YEH+Zh9G/U7k6/X
+   CsFzQEo68TGc0jNxZfVbH7X9IptRF6av5PwW8cHb6gxVDJN2jkwX8HL8N
+   POrBnc58Utax3JrPi1aYNHfPF8hMAR5vMZq3mUMp0B3r5PVD5DT6DfZnR
+   3ltF4l8besiRBLy3uPQ8nYxiDlRk63P7nXhCubJQwD7rjGSswCsmXcqQp
+   w==;
+X-CSE-ConnectionGUID: 4ZGuPVNVTl2qYsXJvy9m/g==
+X-CSE-MsgGUID: tyGL5uVaQ4eeoGrC8IjV/g==
+X-IronPort-AV: E=McAfee;i="6700,10204,11130"; a="18317511"
+X-IronPort-AV: E=Sophos;i="6.09,202,1716274800"; 
+   d="scan'208";a="18317511"
+Received: from fmviesa009.fm.intel.com ([10.60.135.149])
+  by orvoesa108.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Jul 2024 19:21:00 -0700
+X-CSE-ConnectionGUID: L7t/y8bWSiyqo8UpTs9FRw==
+X-CSE-MsgGUID: f28kfW5MSEyBo9OS0RnZuA==
 X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.09,201,1716274800"; 
-   d="scan'208";a="48849974"
+X-IronPort-AV: E=Sophos;i="6.09,202,1716274800"; 
+   d="scan'208";a="48779504"
 Received: from unknown (HELO [10.239.159.127]) ([10.239.159.127])
-  by orviesa009.jf.intel.com with ESMTP; 11 Jul 2024 18:42:47 -0700
-Message-ID: <f75d4ce8-d4e2-414b-b3c4-76abef779eb4@linux.intel.com>
-Date: Fri, 12 Jul 2024 09:39:54 +0800
+  by fmviesa009.fm.intel.com with ESMTP; 11 Jul 2024 19:20:59 -0700
+Message-ID: <8674561d-f14d-4735-aa86-24032e67c928@linux.intel.com>
+Date: Fri, 12 Jul 2024 10:18:06 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -52,56 +52,76 @@ List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Cc: baolu.lu@linux.intel.com, Joerg Roedel <joro@8bytes.org>,
- "iommu@lists.linux.dev" <iommu@lists.linux.dev>,
- Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
- Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>
-Subject: Re: [RFC] iommu_ops->domain_alloc_paging() enhancement to support AMD
- IOMMU driver
-To: Yi Liu <yi.l.liu@intel.com>, Vasant Hegde <vasant.hegde@amd.com>,
- Jason Gunthorpe <jgg@ziepe.ca>
-References: <7e249bc6-c578-40f0-aca7-835149a0ad39@amd.com>
- <20240628130330.GY791043@ziepe.ca>
- <26524622-971f-47f5-936e-d0173d342288@amd.com> <Zn77FbsQWmByf16t@ziepe.ca>
- <1f8f04e5-3b70-45de-bd93-e3c96fb0a555@amd.com> <ZoLmyOzOVYGLKjmn@ziepe.ca>
- <68d300af-4d3d-497e-9338-d99dbf88dd21@amd.com>
- <8bfc6cb7-d2d7-4d4c-9970-f4f207fb54b4@intel.com>
- <4ffc953f-4968-46c7-b6a0-b7b2fc454564@amd.com>
- <71880aa8-adb9-4f3f-ba9a-7862e8d30b46@intel.com>
+Cc: baolu.lu@linux.intel.com, iommu@lists.linux.dev
+Subject: Re: [bug report] iommufd: Fault-capable hwpt attach/detach/replace
+To: Dan Carpenter <dan.carpenter@linaro.org>
+References: <8bb4f37a-4514-4dea-aabb-7380be303895@stanley.mountain>
 Content-Language: en-US
 From: Baolu Lu <baolu.lu@linux.intel.com>
-In-Reply-To: <71880aa8-adb9-4f3f-ba9a-7862e8d30b46@intel.com>
+In-Reply-To: <8bb4f37a-4514-4dea-aabb-7380be303895@stanley.mountain>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 
-On 7/11/24 9:56 PM, Yi Liu wrote:
-> 
->> For UNMANAGED domain (like vfio-pci), we would need a indication from 
->> core layer
->> saying whether we want to allocate PASID capable domain or not. So that
->> internally we can allocate appropriate page table type.
->>
->> That means from VFIO layer we need to pass this detail to IOMMU layer.
->> For this part, I will start watching your patch. May be we can start 
->> discussion
->> in that thread itself.
->>
-> 
-> yeah. Looks like you need to pass a hint to iommu driver for domain
-> allocation. For the usage vfio+iommufd, it is fine as the domain_alloc_user
-> accepts a flag. For legacy vfio (using vfio iommu type1) usage, it's a bit
-> tough as the domain allocation is within kernel, userspace does not have
-> any input on it so far. And vfio type1 does not expose the domain concept
-> to userspace, it only exposes container which is kind of an address space
-> object. This means no good way for userspace to control the domain
-> allocation.
-> 
-> If it's only a matter when PASID is enabled, perhaps we can skip vfio iommu
-> type1 as it is not supposed to support PASID.
+On 7/12/24 2:35 AM, Dan Carpenter wrote:
+> Hello Lu Baolu,
 
-As we have already agreed that new features should go through IOMMUFD
-and vfio/type1 is only kept for legacy compatible purpose, I don't think
-we need to carry any PASID bits in the vifo path. Did I miss anything?
+Hi Dan,
+
+> 
+> Commit b7d8833677ba ("iommufd: Fault-capable hwpt
+> attach/detach/replace") from Jul 2, 2024 (linux-next), leads to the
+> following Smatch static checker warning:
+> 
+> 	drivers/iommu/iommufd/fault.c:131 iommufd_device_get_attach_handle()
+> 	warn: 'handle' is an error pointer or valid
+> 
+> drivers/iommu/iommufd/fault.c
+>     125  static struct iommufd_attach_handle *
+>     126  iommufd_device_get_attach_handle(struct iommufd_device *idev)
+>     127  {
+>     128          struct iommu_attach_handle *handle;
+>     129
+>     130          handle = iommu_attach_handle_get(idev->igroup->group, IOMMU_NO_PASID, 0);
+>     131          if (!handle)
+> 
+> This should be if (IS_ERR(handle)) return NULL;
+
+Yes. Good catch. I will send a formal patch to Jason.
+
+> 
+>     132                  return NULL;
+>     133
+>     134          return to_iommufd_handle(handle);
+>     135  }
+>     136
+>     137  void iommufd_fault_domain_detach_dev(struct iommufd_hw_pagetable *hwpt,
+>     138                                       struct iommufd_device *idev)
+>     139  {
+>     140          struct iommufd_attach_handle *handle;
+>     141
+>     142          handle = iommufd_device_get_attach_handle(idev);
+> 
+> Do we need to check for NULL here as well?
+
+I don't think we need a check here as we have the code below...
+
+         if (hwpt->fault)
+                 iommufd_fault_domain_detach_dev(hwpt, idev);
+
+...to ensure we are detaching an iopf-capable domain. This code should
+be paired with iommufd_fault_domain_attach_dev(). Otherwise, there must
+be a more severe problem. A NULL kernel pointer deference warning here
+would be a good indication of such a problem.
+
+> 
+>     143          iommu_detach_group_handle(hwpt->domain, idev->igroup->group);
+>     144          iommufd_auto_response_faults(hwpt, handle);
+>     145          iommufd_fault_iopf_disable(idev);
+>     146          kfree(handle);
+>     147  }
+> 
+> regards,
+> dan carpenter
 
 Thanks,
 baolu
