@@ -1,162 +1,94 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.11])
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.9])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CFCEC947A
-	for <iommu@lists.linux.dev>; Fri, 12 Jul 2024 02:57:07 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.11
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2762333E1
+	for <iommu@lists.linux.dev>; Fri, 12 Jul 2024 03:01:17 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.9
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1720753029; cv=none; b=oqS87spnDWqqg5wU4J5kHHnupAoQMoI8rmo2uQ/O9Hq47WS5ipbHjc/95tAw6Vb0aJB9BiyYMJjxhyWLfm/tP8VEFBAIFKNdsYAjjxAGWICUaJ4SHVFxwtgqsh5z3zDZxCFDOEqWYSaHt19VrnuXr2rW1Fo5Q+6B//Cdb/J18IY=
+	t=1720753279; cv=none; b=Kn93EwMeo/UWlD0vBrw3IGBuy0M/ES+1zZO7PsqtMekmt8YcmXsOBO7R76ueXqxzKwW0GDiSftUQXFVgCbxoB1GJXtYP6eqSfSObCTp5YMZ3jtzWNG2xIo0XKyGxR0eoqMP6o91dfnTnWVKOzmENavba0/noTxwODJkx7r2Ljmk=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1720753029; c=relaxed/simple;
-	bh=FYo0BamwG4FGl/+5ft6++Keb8TRPabI7ieLWG9opyyA=;
-	h=Message-ID:Date:MIME-Version:Cc:Subject:To:References:From:
-	 In-Reply-To:Content-Type; b=HE/nqDcaW2XwGeGFJbrR6uIg2H6HAUTw7iX4rkuuwQ7xZI7Ddfqte8Uv/ZBMDpwFSicfOX7VoI8In5kG1nqIgRtp92tXFCsakxYoPF+lPZtGmlw8wnicpDUxmSH0nmjFQo2guzclKenzCHg3xDYa9Q0D03cu1caxUxEFfAZMovM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=cvzfR1Ch; arc=none smtp.client-ip=198.175.65.11
+	s=arc-20240116; t=1720753279; c=relaxed/simple;
+	bh=0aEJlDLMG5ZH5CZ9fGepo3Rd17RwlIFau4Z3BJD8RuY=;
+	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version; b=VkQdVWpgZUsoBKnEQF2A3iybkJ6+9Uiib0VCO8+En8tZGtZC/hAhWL0TjByZlKkc9nrkau5FoqUh5u/6i/I9lb0ty7vlqPRLAtMDQ3x1N22RSXTMUEh/C0HemIZUlSEVoN3W+BxCtOOCSjqVEUid3R8JhiirI/kGr3y1drIeqAg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=ljYWY0zj; arc=none smtp.client-ip=198.175.65.9
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="cvzfR1Ch"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="ljYWY0zj"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1720753028; x=1752289028;
-  h=message-id:date:mime-version:cc:subject:to:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=FYo0BamwG4FGl/+5ft6++Keb8TRPabI7ieLWG9opyyA=;
-  b=cvzfR1ChqI3jm6D+ILuixI1hj+b80QnD0pZGRYKUA48Hc/blLaVKp7LB
-   +PdO1VcLi89IySIHfjxQySbZCckfws/UO2Ln5HJlZKucn/8673M83+Fdd
-   6nPsullEIc0w1zBSzplyNzhAxrnXh+f8doiUHnToeaQ1bmcpM7+ZIkPjE
-   /xzfSHyOUwee3NSgjvuFdGS+vg/AD5Ye/J9hFw/Plq3oZdRLnv23rWMNF
-   43mqZlmFaPKG9lXIjfKv8Z9DJ+aJngp485LGyvYJyRKuJPRVigx4f2CDz
-   F7OnpnyFYlUAdSJBQEU3asqlVipiKBwTFS/ly+lDjqdgoLBQpFeUdn20P
-   A==;
-X-CSE-ConnectionGUID: qfOm+cTASuyjS3zQkh82rw==
-X-CSE-MsgGUID: 6HUbpTI9SkigGCfveeppig==
-X-IronPort-AV: E=McAfee;i="6700,10204,11130"; a="28770288"
+  t=1720753277; x=1752289277;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=0aEJlDLMG5ZH5CZ9fGepo3Rd17RwlIFau4Z3BJD8RuY=;
+  b=ljYWY0zjaWWqwj5G45X2e4vBiUjh0+gP0nBskTGw5ikmiOYeL5MDP/Pj
+   fXI48MdZFSw1FMc3KPRggj0dqTVtvkpybVEL1WRrPZVk2h5C3S90AyeRn
+   ZyohXH+iOSLChxCYU5/kbtxuHW0O9dX6G4bWfW+25KZ5GR4Gdvj/KryY7
+   GYwxsbjQOc+re2Z+qd8KxgImPTOqIVRflX6/ZNSbPSIJWYXMRkOohpY8M
+   xi9VQJh7Gt1aaxA8jSe4IhyD/kKZ45PURxXIvsHjXZKB+os7SZAwPt808
+   2Sl4ObTiMC+Kl33zLVcCKUcOvf9XEo+BDumZZHEOmEL4HVXHeWiPG7fqJ
+   w==;
+X-CSE-ConnectionGUID: h/r+YOqdTqapjeN9Ombl6g==
+X-CSE-MsgGUID: Hf5mJx3YSJK0UcTMkkTDQg==
+X-IronPort-AV: E=McAfee;i="6700,10204,11130"; a="40701100"
 X-IronPort-AV: E=Sophos;i="6.09,202,1716274800"; 
-   d="scan'208";a="28770288"
-Received: from fmviesa009.fm.intel.com ([10.60.135.149])
-  by orvoesa103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Jul 2024 19:57:07 -0700
-X-CSE-ConnectionGUID: A1+mpcN3QbapRwjBt84bpQ==
-X-CSE-MsgGUID: KlvtoFbRQF6riYJo+sFl4A==
+   d="scan'208";a="40701100"
+Received: from fmviesa007.fm.intel.com ([10.60.135.147])
+  by orvoesa101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Jul 2024 20:01:16 -0700
+X-CSE-ConnectionGUID: tEflH6Q+Rqe5jncCIYnZrA==
+X-CSE-MsgGUID: 2lTr02FLTGOMQHsZiRqyZw==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.09,202,1716274800"; 
-   d="scan'208";a="48785504"
-Received: from unknown (HELO [10.239.159.127]) ([10.239.159.127])
-  by fmviesa009.fm.intel.com with ESMTP; 11 Jul 2024 19:57:04 -0700
-Message-ID: <b4758476-6de2-4d3e-91b2-10599a37d00e@linux.intel.com>
-Date: Fri, 12 Jul 2024 10:54:11 +0800
+   d="scan'208";a="48688004"
+Received: from unknown (HELO allen-box.sh.intel.com) ([10.239.159.127])
+  by fmviesa007.fm.intel.com with ESMTP; 11 Jul 2024 20:01:14 -0700
+From: Lu Baolu <baolu.lu@linux.intel.com>
+To: Jason Gunthorpe <jgg@ziepe.ca>,
+	Kevin Tian <kevin.tian@intel.com>,
+	Dan Carpenter <dan.carpenter@linaro.org>
+Cc: iommu@lists.linux.dev,
+	linux-kernel@vger.kernel.org,
+	Lu Baolu <baolu.lu@linux.intel.com>
+Subject: [PATCH 1/1] iommufd: Fix error pointer checking
+Date: Fri, 12 Jul 2024 10:58:19 +0800
+Message-Id: <20240712025819.63147-1-baolu.lu@linux.intel.com>
+X-Mailer: git-send-email 2.34.1
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Cc: baolu.lu@linux.intel.com, Kevin Tian <kevin.tian@intel.com>,
- Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
- Robin Murphy <robin.murphy@arm.com>, Nicolin Chen <nicolinc@nvidia.com>,
- Yi Liu <yi.l.liu@intel.com>, iommu@lists.linux.dev,
- linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 2/3] iommufd: Add check on user response code
-To: Jason Gunthorpe <jgg@ziepe.ca>
-References: <20240710083341.44617-1-baolu.lu@linux.intel.com>
- <20240710083341.44617-3-baolu.lu@linux.intel.com>
- <20240711233950.GU14050@ziepe.ca>
-Content-Language: en-US
-From: Baolu Lu <baolu.lu@linux.intel.com>
-In-Reply-To: <20240711233950.GU14050@ziepe.ca>
-Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
 
-On 7/12/24 7:39 AM, Jason Gunthorpe wrote:
-> On Wed, Jul 10, 2024 at 04:33:40PM +0800, Lu Baolu wrote:
->> The response code from user space is only allowed to be SUCCESS or
->> INVALID. All other values are treated by the device as a response
->> code of Response Failure according to PCI spec, section 10.4.2.1.
->> This response disables the Page Request Interface for the Function.
->>
->> Add a check in iommufd_fault_fops_write() to avoid invalid response
->> code.
->>
->> Fixes: 07838f7fd529 ("iommufd: Add iommufd fault object")
->> Signed-off-by: Lu Baolu<baolu.lu@linux.intel.com>
->> ---
->>   drivers/iommu/iommufd/fault.c | 6 ++++++
->>   1 file changed, 6 insertions(+)
->>
->> diff --git a/drivers/iommu/iommufd/fault.c b/drivers/iommu/iommufd/fault.c
->> index 54d6cd20a673..044b9b97da31 100644
->> --- a/drivers/iommu/iommufd/fault.c
->> +++ b/drivers/iommu/iommufd/fault.c
->> @@ -305,6 +305,12 @@ static ssize_t iommufd_fault_fops_write(struct file *filep, const char __user *b
->>   		if (rc)
->>   			break;
->>   
->> +		if (response.code != IOMMUFD_PAGE_RESP_SUCCESS &&
->> +		    response.code != IOMMUFD_PAGE_RESP_INVALID) {
->> +			rc = -EINVAL;
->> +			break;
->> +		}
-> 
-> I added this:
-> 
-> 		static_assert(IOMMUFD_PAGE_RESP_SUCCESS ==
-> 			      IOMMU_PAGE_RESP_SUCCESS);
-> 		static_assert(IOMMUFD_PAGE_RESP_INVALID ==
-> 			      IOMMU_PAGE_RESP_INVALID);
+Smatch static checker reported below warning:
 
-Above change cause below build warning:
+    drivers/iommu/iommufd/fault.c:131 iommufd_device_get_attach_handle()
+    warn: 'handle' is an error pointer or valid
 
-drivers/iommu/iommufd/fault.c: In function ‘iommufd_fault_fops_write’:
-drivers/iommu/iommufd/fault.c:308:57: warning: comparison between ‘enum 
-iommufd_page_response_code’ and ‘enum iommu_page_response_code’ 
-[-Wenum-compare]
-   308 |                 static_assert(IOMMUFD_PAGE_RESP_SUCCESS ==
-       |                                                         ^~
-./include/linux/build_bug.h:78:56: note: in definition of macro 
-‘__static_assert’
-    78 | #define __static_assert(expr, msg, ...) _Static_assert(expr, msg)
-       |                                                        ^~~~
-drivers/iommu/iommufd/fault.c:308:17: note: in expansion of macro 
-‘static_assert’
-   308 |                 static_assert(IOMMUFD_PAGE_RESP_SUCCESS ==
-       |                 ^~~~~~~~~~~~~
-drivers/iommu/iommufd/fault.c:310:57: warning: comparison between ‘enum 
-iommufd_page_response_code’ and ‘enum iommu_page_response_code’ 
-[-Wenum-compare]
-   310 |                 static_assert(IOMMUFD_PAGE_RESP_INVALID ==
-       |                                                         ^~
-./include/linux/build_bug.h:78:56: note: in definition of macro 
-‘__static_assert’
-    78 | #define __static_assert(expr, msg, ...) _Static_assert(expr, msg)
-       |                                                        ^~~~
-drivers/iommu/iommufd/fault.c:310:17: note: in expansion of macro 
-‘static_assert’
-   310 |                 static_assert(IOMMUFD_PAGE_RESP_INVALID ==
-       |                 ^~~~~~~~~~~~~
+Fix it by checking 'handle' with IS_ERR().
 
-Perhaps convert them to 'int' before compare?
+Fixes: b7d8833677ba ("iommufd: Fault-capable hwpt attach/detach/replace")
+Reported-by: Dan Carpenter <dan.carpenter@linaro.org>
+Closes: https://lore.kernel.org/linux-iommu/8bb4f37a-4514-4dea-aabb-7380be303895@stanley.mountain/
+Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
+---
+ drivers/iommu/iommufd/fault.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/drivers/iommu/iommufd/fault.c b/drivers/iommu/iommufd/fault.c
-index 29f522819759..a643d5c7c535 100644
+index e6bda84865f0..29f522819759 100644
 --- a/drivers/iommu/iommufd/fault.c
 +++ b/drivers/iommu/iommufd/fault.c
-@@ -305,10 +305,10 @@ static ssize_t iommufd_fault_fops_write(struct 
-file *filep, const char __user *b
-                 if (rc)
-                         break;
+@@ -128,7 +128,7 @@ iommufd_device_get_attach_handle(struct iommufd_device *idev)
+ 	struct iommu_attach_handle *handle;
+ 
+ 	handle = iommu_attach_handle_get(idev->igroup->group, IOMMU_NO_PASID, 0);
+-	if (!handle)
++	if (IS_ERR(handle))
+ 		return NULL;
+ 
+ 	return to_iommufd_handle(handle);
+-- 
+2.34.1
 
--               static_assert(IOMMUFD_PAGE_RESP_SUCCESS ==
--                             IOMMU_PAGE_RESP_SUCCESS);
--               static_assert(IOMMUFD_PAGE_RESP_INVALID ==
--                             IOMMU_PAGE_RESP_INVALID);
-+               static_assert((int)IOMMUFD_PAGE_RESP_SUCCESS ==
-+                             (int)IOMMU_PAGE_RESP_SUCCESS);
-+               static_assert((int)IOMMUFD_PAGE_RESP_INVALID ==
-+                             (int)IOMMU_PAGE_RESP_INVALID);
-                 if (response.code != IOMMUFD_PAGE_RESP_SUCCESS &&
-                     response.code != IOMMUFD_PAGE_RESP_INVALID) {
-                         rc = -EINVAL;
-
-Thanks,
-baolu
