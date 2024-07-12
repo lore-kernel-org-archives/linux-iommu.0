@@ -1,25 +1,25 @@
 Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id DE7368F58
-	for <iommu@lists.linux.dev>; Fri, 12 Jul 2024 14:21:58 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 0F88A172BD2
+	for <iommu@lists.linux.dev>; Fri, 12 Jul 2024 15:12:49 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1720794120; cv=none; b=lYXeUVTSNJB0fBYD1uvDpHmDbQ+j/7fUGPaTVPdgyn45xKKoZ7bWmaqxWs8YryRbCxiMJW5ejCe57oMsCKtQDb45pk3RuzWpSCTpAujg9rueMRui1k8eIStsFbQX2b/fRV11heK62EvNKISxlRA8ocoHp6igzmx7AByKoCaXTEc=
+	t=1720797172; cv=none; b=M+bujBudx22eN7QDnhYw2nMkRHIsl+l5j8GTPsmh69SS/atNJ9JcFND2YgKMJ8umsT4KOQsgcW11Meeb+C76yYWv706ZOESg5a9xohpAVHNUzSw3A0OIoOrd9bUePsEf6inq9AjH8un308AaLy8ayJPS7m5UFaXJMqsItiDnn/c=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1720794120; c=relaxed/simple;
-	bh=AOCTVOykXxp8O33pHLastWcGGS7kbEmCQtC6F8e5bfw=;
+	s=arc-20240116; t=1720797172; c=relaxed/simple;
+	bh=1g6hm+dbeZR9A81JxRMmgTByW4LZcvi65oAxHzKpZxs=;
 	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=OCtCmSyVjpBq8ASKsAg5LOeAaWxlQqbR9xp/j98HrzjLR7yEdsjYphwutV1+w2mQMx0MdDrO+0ac9tmw5QI7vsrYdmfcZYl46KsaZr1GCDlz4cNJy/9nCIbx5Tt7odCQ2cAbSYKmNXFhatFsK9iSxVdcfqJsAe7iJG9EDFjrsP8=
+	 In-Reply-To:Content-Type; b=Vt2OnDzh/iO8A3PEuwurXZwbuUICqnNMW+Tuc44fX+j1Qws1b2YkRfqjFYSB2el2HAixvBNetCB1ppCvUwOa/U0iA/qa09WiqsLBqATWLBKXDI+TWkfUT2QrhEOgwK1C97s//tyFEa7dvOtn0C4p81Nljj2J2gGlPZsYMRdA9nE=
 ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; arc=none smtp.client-ip=217.140.110.172
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
 Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 9BBE61042;
-	Fri, 12 Jul 2024 07:22:23 -0700 (PDT)
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 62E921007;
+	Fri, 12 Jul 2024 08:13:14 -0700 (PDT)
 Received: from [10.1.196.40] (e121345-lin.cambridge.arm.com [10.1.196.40])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 34BDC3F766;
-	Fri, 12 Jul 2024 07:21:57 -0700 (PDT)
-Message-ID: <7ba30992-78aa-49e5-98bb-75c6b7ae8ce9@arm.com>
-Date: Fri, 12 Jul 2024 15:21:55 +0100
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 384753F762;
+	Fri, 12 Jul 2024 08:12:48 -0700 (PDT)
+Message-ID: <7f930d79-2309-4b94-a187-0707c6d5b9e8@arm.com>
+Date: Fri, 12 Jul 2024 16:12:43 +0100
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -27,87 +27,65 @@ List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH 2/2] dma: Add IOMMU static calls with clear default ops
-To: Leon Romanovsky <leon@kernel.org>
-Cc: Christoph Hellwig <hch@lst.de>, Joerg Roedel <joro@8bytes.org>,
- Will Deacon <will@kernel.org>, Marek Szyprowski <m.szyprowski@samsung.com>,
- Jason Gunthorpe <jgg@nvidia.com>, linux-kernel@vger.kernel.org,
- iommu@lists.linux.dev
-References: <98d1821780028434ff55b5d2f1feea287409fbc4.1720693745.git.leon@kernel.org>
- <f2b699aea8fff5589a674da2a567fd593ed2d386.1720693745.git.leon@kernel.org>
- <28309b7f-9809-452f-95fe-3448c15bdf1b@arm.com>
- <20240711185741.GC1815706@unreal>
- <455ccc97-11bd-456d-92b3-b7c8fe4c8d9a@arm.com>
- <20240712055004.GE1815706@unreal>
+Subject: Re: [RFC] iommu_ops->domain_alloc_paging() enhancement to support AMD
+ IOMMU driver
+To: Jason Gunthorpe <jgg@ziepe.ca>
+Cc: Yi Liu <yi.l.liu@intel.com>, Vasant Hegde <vasant.hegde@amd.com>,
+ Joerg Roedel <joro@8bytes.org>, "iommu@lists.linux.dev"
+ <iommu@lists.linux.dev>,
+ Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
+ Will Deacon <will@kernel.org>, Baolu Lu <baolu.lu@linux.intel.com>
+References: <26524622-971f-47f5-936e-d0173d342288@amd.com>
+ <Zn77FbsQWmByf16t@ziepe.ca> <1f8f04e5-3b70-45de-bd93-e3c96fb0a555@amd.com>
+ <ZoLmyOzOVYGLKjmn@ziepe.ca> <68d300af-4d3d-497e-9338-d99dbf88dd21@amd.com>
+ <8bfc6cb7-d2d7-4d4c-9970-f4f207fb54b4@intel.com>
+ <20240709182303.GK14050@ziepe.ca>
+ <3eff5c86-8b5d-491a-955e-794198350ec3@intel.com>
+ <20240711234917.GW14050@ziepe.ca>
+ <35ff9f32-ae60-4124-9ced-42f82c2b4f93@arm.com>
+ <20240712135326.GD14050@ziepe.ca>
 From: Robin Murphy <robin.murphy@arm.com>
 Content-Language: en-GB
-In-Reply-To: <20240712055004.GE1815706@unreal>
+In-Reply-To: <20240712135326.GD14050@ziepe.ca>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 
-On 12/07/2024 6:50 am, Leon Romanovsky wrote:
-> On Thu, Jul 11, 2024 at 09:08:49PM +0100, Robin Murphy wrote:
->> On 2024-07-11 7:57 pm, Leon Romanovsky wrote:
->>> On Thu, Jul 11, 2024 at 07:23:20PM +0100, Robin Murphy wrote:
->>>> On 11/07/2024 11:38 am, Leon Romanovsky wrote:
->>>>> From: Leon Romanovsky <leonro@nvidia.com>
->>>>>
->>>>> Most of the IOMMU drivers are using the same DMA operations, which are
->>>>> default ones implemented in drivers/iomem/dma-iomem.c. So it makes sense
->>>>> to properly set them as a default with direct call without need to
->>>>> perform function pointer dereference.
->>>>>
->>>>> During system initialization, the IOMMU driver can set its own DMA and
->>>>> in such case, the default DMA operations will be overridden.
->>>>
->>>> I'm going to guess you don't actually mean "IOMMU drivers" in the usual
->>>> sense of drivers/iommu/, but rather "arch DMA ops (which often, but not
->>>> always, involve some sort of IOMMU)."
+On 12/07/2024 2:53 pm, Jason Gunthorpe wrote:
+> On Fri, Jul 12, 2024 at 02:40:37PM +0100, Robin Murphy wrote:
+>>>> BTW. SVA domain shall not be attached to RID I suppose. This should
+>>>> be a common restriction across vendors. Do you think it is valuable
+>>>> to let iommu core block such an attempt?
 >>>
->>> Yes, you are right. I used word "drivers" as a general term to describe
->>> everything that implements their own ->map_page() callback.
->>>
->>>>
->>>> If so, I'd much rather see this done properly, i.e. hook everything up
->>>> similarly to dma-direct and be able to drop CONFIG_DMA_OPS for "modern"
->>>> dma-direct/iommu-dma architectures entirely. Furthermore the implementation
->>>> here isn't right - not only is it not conceptually appropriate to make
->>>> iommu-dma responsibile for proxying random arch DMA ops, but in practial
->>>> terms it's just plain broken, since the architectures which still have their
->>>> own DMA ops also don't use iommu-dma, so this is essentially disabling the
->>>> entire streaming DMA API on ARM/PowerPC/etc.
->>>
->>> Sorry but I'm not sure that I understood your reply. Can you please clarify
->>> what does it mean broken in this context?
->>>
->>> All archs have one of the following options:
->>> 1. No DMA ops -> for them dma_map_direct() will return True and they
->>> never will enter into IOMMU path.
->>> 2. Have DMA ops but without .map_page() -> they will use default IOMMU
->>> 3. Have DMA ops with .map_page() -> they will use their own implementation
+>>> Yeah, maybe.
 >>
->> Urgh, sorry, let that instead be a lesson in not adding needless layers of
->> indirection that are named as confusingly as possible, then. Seems I saw
->> stubs plus static inline wrappers, managed to misread dma_iommu_* vs.
->> iommu_dma_*, and jump to the wrong conclusion of what was stubbed out, not
->> least since that was the only interpretation in which adding an extra layer
->> of inline wrappers would seem necessary in the first place. If these
->> dma_iommu_* functions serve no purpose other than to make the code even more
->> of a maze of twisty little passages, all alike, then please just feed them
->> to a grue instead.
+>> There's no functional reason to disallow it for Arm SMMUs, at least, so it's
+>> something that could potentially want relaxing back to per-driver in
+>> future.
 > 
-> This is done to keep layering similar to existing in DMA subsystem. We
-> have special files and calls to dma-direct, it looks natural to have
-> special files and call to dma-iommu. It is not nice to call to drivers/iommu
-> from kernel/dma/mapping.c
+> I think everyone can technically do SVA as everyone should be able to
+> do PRI on the RID. We want PRI on RID anyhow for unpinned guest KVM
+> support someday.
+> 
+> My specific "maybe" was because SVA is troublesome for MSI, on ARM we
+> won't have an ITS page mapped for instance.
 
-That's where I firmly disagree. In the DMA API aspect, iommu-dma is 
-exactly a peer of dma-direct, however it lives in drivers/iommu for 
-practical reasons because it's more closely coupled to IOMMU API 
-internals in all other aspects of its implementation. TBH what I'd 
-really like is a private interface between mapping.c and dma-iommu.c 
-which doesn't expose internal details via include/linux/ at all, but 
-*that's* a level that I think people may rightfully start to object to.
+Yeah, I think the trick for that is going to be to require the device to 
+be happy with shoving any kernel-owned mappings (MSIs, firmware, etc.) 
+into the TTB1 range.
+
+>> I've heard murmurings over the years about potential use-cases for SVA with
+>> platform and/or non-PASID PCI devices, but never anything concrete for
+>> existing hardware. I imagine we can expect to see more SVA-interested
+>> on-chip accelerators in future, but whether they'll all be nice and support
+>> Substreams (i.e. "platform PASIDs") is the question...
+> 
+> So I guess they don't send MSI down those special stream ids? It makes
+> sense as a use case to me.
+
+Indeed I'd hope that people follow the intuitive usage model and MSIs 
+are sent without a SubstreamID, but I guess we're just going to have to 
+wait and see what gets built. Of course, the one real SSID-capable 
+device I *have* seen so far still only has wired interrupts anyway...
 
 Thanks,
 Robin.
