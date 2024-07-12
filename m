@@ -1,96 +1,83 @@
-Received: from mail-pj1-f44.google.com (mail-pj1-f44.google.com [209.85.216.44])
+Received: from mail-pf1-f179.google.com (mail-pf1-f179.google.com [209.85.210.179])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7AB3F7E76D
-	for <iommu@lists.linux.dev>; Fri, 12 Jul 2024 07:06:00 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.216.44
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6A36013DDB9
+	for <iommu@lists.linux.dev>; Fri, 12 Jul 2024 07:06:04 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.179
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1720767961; cv=none; b=Ve8NsO1vlIXViM/VjEGDYCWq3tZEdsIMeGv+E+fhvvlcpF6AkxjaDo07iOONT25UWFO4VbAKnVCmp+vsQlmd7ReuaIG5sqEd41218awFug33K4i6AzGhVoskvlPjZXihQXI+Q7J3E3vBLSmmr7Ipu6AXdfiqK9O7dgSjxxfKojw=
+	t=1720767965; cv=none; b=GgKutyTZF22AX9j/2sO7ycYjEVCc0UnGkxeENBwtre/iPABam7nFlp+JNBpQ8rj8hUzlcP6UF5fBS9kNaq8lU/+cdqV/7s3ZtVvAE/9WNuSK6Cl8u0jMC96on9NVBizygtmFb3fmEoNMbpoBctftmKYreQCUJvRzkFXbplOrcas=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1720767961; c=relaxed/simple;
-	bh=6+M+15Jtqb9r9vxu2BWFpc7n1m87DlN2aD2RS8uf2FU=;
+	s=arc-20240116; t=1720767965; c=relaxed/simple;
+	bh=qn060LLjQ/iIKiEBOyhqceipwLz6Rtb/XZdaXblpksE=;
 	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=rBko1XieR5e4lZwXAIFPe1l8uP0jEkiINqtDTqdXwHEivBddDcvXY5tGsV6/wLaLt+TwzWxrDh9K8GZpJj0V80uL7eQX+l/rz++aI4XQIN0Ar9YQknYT2DFu+33k4Rs6W1sMzJxH1OC54NIbxlkW5q7PpeHoC/QVf9dfdIC5epo=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=U9J8TfTR; arc=none smtp.client-ip=209.85.216.44
+	 To:Cc:Content-Type; b=Oq+gfWLFMUOfNLZiERDxKkenbS2YXo1gv9NWIhleV9746bRtbJDWzVyjOzcnRnIFl2AnVtt/m9es585i/Ac5S3oNN1eRt9bgu5I1vPO3Irv/0VUwz2XopSEbWt5/73kyNdpShc/ZTSxF02uTHbadSqED9zRnzalOeDe6qgH5+7I=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=VXrJjZ82; arc=none smtp.client-ip=209.85.210.179
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="U9J8TfTR"
-Received: by mail-pj1-f44.google.com with SMTP id 98e67ed59e1d1-2ca4649ad49so1295224a91.1
-        for <iommu@lists.linux.dev>; Fri, 12 Jul 2024 00:06:00 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="VXrJjZ82"
+Received: by mail-pf1-f179.google.com with SMTP id d2e1a72fcca58-70b4267ccfcso1503937b3a.3
+        for <iommu@lists.linux.dev>; Fri, 12 Jul 2024 00:06:04 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20230601; t=1720767960; x=1721372760; darn=lists.linux.dev;
+        d=google.com; s=20230601; t=1720767964; x=1721372764; darn=lists.linux.dev;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=6+M+15Jtqb9r9vxu2BWFpc7n1m87DlN2aD2RS8uf2FU=;
-        b=U9J8TfTRTd2mFxZ86SWCLbUsQyHsWPq6fe+qo0vQTX4MwYdLx2zc+M74HoOsD3P8S2
-         VQRSgajOXFZ+loFtXKAnXvk58jwi9/GABV8qyzd4p/Wh+rRav1Of5xEWXz9jsRG04yjR
-         wLIcL94bEqQO4cE4395k3GbP6yZ2WOtS7xp9t840VoMQFWO99tgnXsMK1sd6CrgYBi0K
-         TPpDnJG0jxEcanHXnOqgiARX4pPHeRy1/pCCftUCJl2lR2+Tu9pu4JswAbq5ejJHLIY0
-         373tTqlHKA5HzkMqDfFte2n6NeJSN4NzdeyW8k++q/+1UdH4XZdQt4EbeChiDKWNop+S
-         pPPw==
+        bh=qn060LLjQ/iIKiEBOyhqceipwLz6Rtb/XZdaXblpksE=;
+        b=VXrJjZ82VWan5CeGFUbAtHBoy6UkHva2Ka7DaH9FFZCeN4kyNR5wasQuS3Oh330y0D
+         79VndgdTjbXY7uAMi0iVpH7lN1xjFQZBXJIvuPzLiLNps81RIUHCmfHHqZn3pgvBX55s
+         MpmCelMZ0CBI6bUF/Wy+RZknQo6algzqmZjuWP6Bx5VNeRypz92vjEEw6OZn/oTu+Opc
+         nOWZ/OBoCsqFt23ICBVKWcc8tQv0FOgrt/UH5wAlQ/t4T9P7zELm/aLtax69mMz35MsW
+         9dJYlHRA97sed+20Rtkze/aJKbRKKJMMb35wMtejuBKzCHI2e6UEsF+rZ6/3QGbw9hIv
+         T7BA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1720767960; x=1721372760;
+        d=1e100.net; s=20230601; t=1720767964; x=1721372764;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=6+M+15Jtqb9r9vxu2BWFpc7n1m87DlN2aD2RS8uf2FU=;
-        b=ra2clmM+3NTUpzkBKm5TBqxCMmfAzMZxR9DzR0bx2qLvNlDxVhMaIWqWLsPnBFZfYC
-         xbtDuWjXuFalW4oCj0ZhJVeqJM3CHY1PFdhSYXAHfIHkNrmyvaeEcb6L21YNHG+faULl
-         LTZl91nN5Eld1JGs5Czmq3y5LocPU/wJjm8BeHmuXOZASNsNFaTD+vJx0GZkLHVGp2MX
-         zje2FUvN+VpByv5zG+CnwJ0/H1OEF/UBlOVL7M11SL1v47KUE0VMS5CqB8ByK5av+pcz
-         t+KblAVIxUFyBfufpYahXYvHpxGDspHDaT/SH4Cr6IkYVZcerNvLElZ6PXCtL1wg/zK6
-         ZYlA==
-X-Forwarded-Encrypted: i=1; AJvYcCW69ulFBlUCcEoeiqmkhJFywoIjdkQ71MT4KWaW4XG06auW2mQUpPckS2R/9fq5hUXyjUaII/kkHqSWU+v8HGlzpzxVKrA=
-X-Gm-Message-State: AOJu0YyX9WQ3PBvHBs4gEEDRm/ulMx5x9KOeYNFHFsf9Prt2mTXqUMmd
-	y5nORs/K9HbIbzvWcvZ50mdI66OoE7wjFICIbs7nBTJuWNuyIqZ0kPa6A9809PYptqnSxACwfOq
-	IcfJCuB95TwmT2Jszg9TDQ1pT8ID2SCmIppTP
-X-Google-Smtp-Source: AGHT+IHA6cMwwcGt/hYxQqxC+XLWB1NWuPeNr+1qD7Xfm36w7VO6oEsb2keJWQBU+9mFLJ6Ez3xKy6D3cbgPnLqBHNA=
-X-Received: by 2002:a17:90a:66c7:b0:2c9:815a:80cb with SMTP id
- 98e67ed59e1d1-2ca35c69b06mr8978501a91.21.1720767959437; Fri, 12 Jul 2024
- 00:05:59 -0700 (PDT)
+        bh=qn060LLjQ/iIKiEBOyhqceipwLz6Rtb/XZdaXblpksE=;
+        b=RVLpbzKt+ynQhP5Vv1OR7hoyCpG1P4uYBD5MYj5fp4vL8+FuUROMNnRMnwcliypsOq
+         gIdGpRAbxqKFx3E1/OCiZiYbGq2hDvLcTgYHTQG2JzrR1Vbe7iK5fwSsxqjC/iURccVN
+         xn5iSnTDmHzwxQW9Eoe3dvOMOF7RE71fjOS8mrE9ykWXTXbDPpDuGCIQXdMdzyq4sGsR
+         RjvUwmhPFyZbELK+ZSHp/vHWy1/rzEFuhnC3BArmY239WyXhKdYYYdoKcBpYsiXXF2Pa
+         LQOX+q0Ay19JZTBIAfBt9izxY9zAQxH3faV/zNAQcZVhKTwpWpVvYBItZYVjQB/IYEDB
+         K09g==
+X-Forwarded-Encrypted: i=1; AJvYcCV3E3ylbKzGG/NYEwvb7QJ4Qqq3gbIMfvSods3DeEKZapkl13XQ3g52PLzh9VeDUvzq9mmfEbLhxxk7hXUTElajzpqPcqQ=
+X-Gm-Message-State: AOJu0YxcKvBkk6S5Ylegp/8AiIXgiBSy/g6BTf73eRUvWGLOTQsiyNln
+	S3vUT+FSPnZr5b0sC+4sphD+BoBI+6K2mYY8jDVMnhydJ0H0ZOE2gSKSFXv5g1WmFPKygGkWAli
+	6DnFHiWzKOz7xssOoeeIljvE+BOxjsFZix7Hw
+X-Google-Smtp-Source: AGHT+IHF+IQNF+84R2HuQm4DaRBIt08wyUhggtbfIGujMYkHCproHjLzYh38/DIH/rrwybPiylXk6nxfOaVGpxQqxvA=
+X-Received: by 2002:a05:6a21:3393:b0:1c2:8d22:c6a6 with SMTP id
+ adf61e73a8af0-1c2982158c3mr12336608637.8.1720767963426; Fri, 12 Jul 2024
+ 00:06:03 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <20240709234913.2749386-1-pandoh@google.com> <BN9PR11MB5276C05D3B3B8821420BBD6E8CA42@BN9PR11MB5276.namprd11.prod.outlook.com>
-In-Reply-To: <BN9PR11MB5276C05D3B3B8821420BBD6E8CA42@BN9PR11MB5276.namprd11.prod.outlook.com>
+References: <20240709234913.2749386-1-pandoh@google.com> <b3401333-76d3-415a-b2e4-b148c44b13f3@linux.intel.com>
+In-Reply-To: <b3401333-76d3-415a-b2e4-b148c44b13f3@linux.intel.com>
 From: Jon Pan-Doh <pandoh@google.com>
-Date: Fri, 12 Jul 2024 00:05:48 -0700
-Message-ID: <CAMC_AXWbG_6DSOekjjoUnzPCR3UpS1P_p1AL7kLHO=AnVEhHtg@mail.gmail.com>
+Date: Fri, 12 Jul 2024 00:05:52 -0700
+Message-ID: <CAMC_AXXy+2Fc8RcGGFh0abL0BRLHwnR-9BmypFNCJpVuPoHmJg@mail.gmail.com>
 Subject: Re: [PATCH] iommu/vt-d: Fix identity map bounds in si_domain_init()
-To: "Tian, Kevin" <kevin.tian@intel.com>
-Cc: David Woodhouse <dwmw2@infradead.org>, Lu Baolu <baolu.lu@linux.intel.com>, 
+To: Baolu Lu <baolu.lu@linux.intel.com>
+Cc: David Woodhouse <dwmw2@infradead.org>, Kevin Tian <kevin.tian@intel.com>, 
 	Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>, 
-	"H. Peter Anvin" <hpa@linux.intel.com>, Tejun Heo <tj@kernel.org>, 
-	"iommu@lists.linux.dev" <iommu@lists.linux.dev>, 
-	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Sudheer Dantuluri <dantuluris@google.com>, 
+	"H. Peter Anvin" <hpa@linux.intel.com>, Tejun Heo <tj@kernel.org>, iommu@lists.linux.dev, 
+	linux-kernel@vger.kernel.org, Sudheer Dantuluri <dantuluris@google.com>, 
 	Gary Zibrat <gzibrat@google.com>
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-On Tue, Jul 9, 2024 at 5:49=E2=80=AFPM Tian, Kevin <kevin.tian@intel.com> w=
-rote:
-> s/aas/as/
+On Tue, Jul 9, 2024 at 7:45=E2=80=AFPM Baolu Lu <baolu.lu@linux.intel.com> =
+wrote:
+> Do you mind telling me on which platform did you test this fix? My
+> understanding is that modern VT-d hardware supports hardware pass
+> through mode, hence this piece of code won't be executed anymore.
 
-Ack.
-
-> > Fixes: 5dfe8660a3d7 ("bootmem: Replace work_with_active_regions() with
-> > for_each_mem_pfn_range()")
->
-> this doesn't appear to be the original commit introducing this bug.
->
-> Even the old work_with_active_regions() way used exclusive end_pfn
-> while it's not adjusted when calling iommu_domain_identity_map().
-
-Oops. I did not look far enough back. I believe the correct tag is
-
-Fixes: c5395d5c4a82 ("intel-iommu: Clean up iommu_domain_identity_map()")
-
-I'll send out a v2 once Baolu's comments are addressed.
+We tested it in a VM using an emulated vIOMMU setup. Hope that helps.
 
 Thanks,
 Jon
