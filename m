@@ -1,129 +1,113 @@
-Received: from mail-oi1-f178.google.com (mail-oi1-f178.google.com [209.85.167.178])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4D1C317108E
-	for <iommu@lists.linux.dev>; Fri, 12 Jul 2024 13:55:41 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.178
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id DE7368F58
+	for <iommu@lists.linux.dev>; Fri, 12 Jul 2024 14:21:58 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1720792542; cv=none; b=rwXwm3LDsz0THJsMrf3fexxM84hP+61cDKx/LkwKD3142toV43Ghg5KU7vII+L/pPcsRZKPixSfNtaetxun6tGZAluOzIuaOdQa5sHSN8lJOBHlk9yuKDbgcdvL/JahJtOLaGTWX0MDjjYv1tmRu2eBDEGS6gkVBh5I8IfWK7kY=
+	t=1720794120; cv=none; b=lYXeUVTSNJB0fBYD1uvDpHmDbQ+j/7fUGPaTVPdgyn45xKKoZ7bWmaqxWs8YryRbCxiMJW5ejCe57oMsCKtQDb45pk3RuzWpSCTpAujg9rueMRui1k8eIStsFbQX2b/fRV11heK62EvNKISxlRA8ocoHp6igzmx7AByKoCaXTEc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1720792542; c=relaxed/simple;
-	bh=OX1cNcAqitW8bA119S8Tgq+XqWBhTQluMLuFXQwd+7w=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=SVCvI17ZFoR9qlACJ8kA+eRmtq3L3Dear3c+8UbdbTH1VcnnDlYYB6RlxSaC5toMmYyvI/o8GQ5cKYgYclZj/PmKIEO3iOmCAoLftNxGY3/jbC0l36T0DEPBtaOXidFKAAIjywo21RNtxErg7ElWSMp5Bpk6imIEnK2AvAs1lJ8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org; spf=pass smtp.mailfrom=linaro.org; dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b=aiGp1bCc; arc=none smtp.client-ip=209.85.167.178
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linaro.org
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="aiGp1bCc"
-Received: by mail-oi1-f178.google.com with SMTP id 5614622812f47-3d9dfc7c5f6so910411b6e.0
-        for <iommu@lists.linux.dev>; Fri, 12 Jul 2024 06:55:41 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1720792540; x=1721397340; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=vEg9gQ+TETol+cKWiqjwfBqevFIwNAUK9xvVwDmLtqk=;
-        b=aiGp1bCcMYEz+94dDymjJBIHo9rruuGToLC0iYN3HXQ8gy14k39uFZjMKAIVClOxnq
-         YZ9+o5+d5vCK7lpKEKCNEPOjODcUT2cOHXAr8vP/vosFAw3GJ5Y6HxJYHq/iDmKS5Skn
-         vcjpPA3dU2MDegWpN4TwhU7Wj4w6MhC23N+IyIWDWiLCoOiLS06abtZh2NLD2pS/EXGC
-         XRI/whSSzEsA2D5KfrgD349N86ZIdrhqcCCHmu4r59/ReALAlQOLApIOnhv/OQ+l5ti/
-         1lgIP6w/d0xqQ30rSwGhI/udZCXcYemZPSJkLGH7bjlJfdYrXE3I1jx8it33iU0bhHao
-         TTdA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1720792540; x=1721397340;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=vEg9gQ+TETol+cKWiqjwfBqevFIwNAUK9xvVwDmLtqk=;
-        b=Og9RwPRWS8VsdMkx+BnwxwKZkoCcvR9P9KYNfQsWyVNV0DbJFa20Dw/VkVcLd3ZsIQ
-         R+1CRrTkMM2ocUftU81cxS3ocYqMepEI6Qb9eHiIEEomRnvZOZc9yB5HiwYuKJU17MG9
-         mco+E/n2Eg/PkrFDNspBE2eoHOwADnlhSD6ApS90Mzcq7Hn6Rln7HcTYmWmkWYpFPVIs
-         fLH6r5QeW/fWiN9T3jDitClWHCWnrC+TRN6c9gOdx3BPDcKx016X3+Z/86M4LApyCqDX
-         5nqrAx0vUKgoHWWsBUXcMdcnMkcS5WsAcgvxh79if6LB1f8L+XjTRndEs2hNWFt7jpLQ
-         agvQ==
-X-Gm-Message-State: AOJu0YwP4eFHNTeGirAPfimDYLNneFAqIbvU4C8uObLnA1AuwT46P2Lx
-	MKxa0zzLbxxB3YiJJVdweYzq873zY6YKxExh7e6v4MlbH2nx7nv5KU89Xt3mqSncwuDVKQd6hUP
-	A
-X-Google-Smtp-Source: AGHT+IFXUPKAMC0B69FckapVuEiezLzO4gCnS/WZNsYCZIMqdwRuMCqfYLcU8BBS/WGN90c0lzfxsQ==
-X-Received: by 2002:a05:6870:459a:b0:25d:f8ac:187a with SMTP id 586e51a60fabf-25eaec60046mr8459594fac.49.1720792540302;
-        Fri, 12 Jul 2024 06:55:40 -0700 (PDT)
-Received: from localhost ([2603:8080:b800:f700::17c0])
-        by smtp.gmail.com with ESMTPSA id 586e51a60fabf-25eaa225461sm2172853fac.45.2024.07.12.06.55.39
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 12 Jul 2024 06:55:39 -0700 (PDT)
-Date: Fri, 12 Jul 2024 08:55:37 -0500
-From: Dan Carpenter <dan.carpenter@linaro.org>
-To: Baolu Lu <baolu.lu@linux.intel.com>
-Cc: iommu@lists.linux.dev
-Subject: Re: [bug report] iommufd: Fault-capable hwpt attach/detach/replace
-Message-ID: <e9379818-8aa9-4395-a7f4-22d8c5d7b16f@suswa.mountain>
-References: <8bb4f37a-4514-4dea-aabb-7380be303895@stanley.mountain>
- <8674561d-f14d-4735-aa86-24032e67c928@linux.intel.com>
+	s=arc-20240116; t=1720794120; c=relaxed/simple;
+	bh=AOCTVOykXxp8O33pHLastWcGGS7kbEmCQtC6F8e5bfw=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=OCtCmSyVjpBq8ASKsAg5LOeAaWxlQqbR9xp/j98HrzjLR7yEdsjYphwutV1+w2mQMx0MdDrO+0ac9tmw5QI7vsrYdmfcZYl46KsaZr1GCDlz4cNJy/9nCIbx5Tt7odCQ2cAbSYKmNXFhatFsK9iSxVdcfqJsAe7iJG9EDFjrsP8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; arc=none smtp.client-ip=217.140.110.172
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 9BBE61042;
+	Fri, 12 Jul 2024 07:22:23 -0700 (PDT)
+Received: from [10.1.196.40] (e121345-lin.cambridge.arm.com [10.1.196.40])
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 34BDC3F766;
+	Fri, 12 Jul 2024 07:21:57 -0700 (PDT)
+Message-ID: <7ba30992-78aa-49e5-98bb-75c6b7ae8ce9@arm.com>
+Date: Fri, 12 Jul 2024 15:21:55 +0100
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <8674561d-f14d-4735-aa86-24032e67c928@linux.intel.com>
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH 2/2] dma: Add IOMMU static calls with clear default ops
+To: Leon Romanovsky <leon@kernel.org>
+Cc: Christoph Hellwig <hch@lst.de>, Joerg Roedel <joro@8bytes.org>,
+ Will Deacon <will@kernel.org>, Marek Szyprowski <m.szyprowski@samsung.com>,
+ Jason Gunthorpe <jgg@nvidia.com>, linux-kernel@vger.kernel.org,
+ iommu@lists.linux.dev
+References: <98d1821780028434ff55b5d2f1feea287409fbc4.1720693745.git.leon@kernel.org>
+ <f2b699aea8fff5589a674da2a567fd593ed2d386.1720693745.git.leon@kernel.org>
+ <28309b7f-9809-452f-95fe-3448c15bdf1b@arm.com>
+ <20240711185741.GC1815706@unreal>
+ <455ccc97-11bd-456d-92b3-b7c8fe4c8d9a@arm.com>
+ <20240712055004.GE1815706@unreal>
+From: Robin Murphy <robin.murphy@arm.com>
+Content-Language: en-GB
+In-Reply-To: <20240712055004.GE1815706@unreal>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-On Fri, Jul 12, 2024 at 10:18:06AM +0800, Baolu Lu wrote:
-> On 7/12/24 2:35 AM, Dan Carpenter wrote:
-> > Hello Lu Baolu,
+On 12/07/2024 6:50 am, Leon Romanovsky wrote:
+> On Thu, Jul 11, 2024 at 09:08:49PM +0100, Robin Murphy wrote:
+>> On 2024-07-11 7:57 pm, Leon Romanovsky wrote:
+>>> On Thu, Jul 11, 2024 at 07:23:20PM +0100, Robin Murphy wrote:
+>>>> On 11/07/2024 11:38 am, Leon Romanovsky wrote:
+>>>>> From: Leon Romanovsky <leonro@nvidia.com>
+>>>>>
+>>>>> Most of the IOMMU drivers are using the same DMA operations, which are
+>>>>> default ones implemented in drivers/iomem/dma-iomem.c. So it makes sense
+>>>>> to properly set them as a default with direct call without need to
+>>>>> perform function pointer dereference.
+>>>>>
+>>>>> During system initialization, the IOMMU driver can set its own DMA and
+>>>>> in such case, the default DMA operations will be overridden.
+>>>>
+>>>> I'm going to guess you don't actually mean "IOMMU drivers" in the usual
+>>>> sense of drivers/iommu/, but rather "arch DMA ops (which often, but not
+>>>> always, involve some sort of IOMMU)."
+>>>
+>>> Yes, you are right. I used word "drivers" as a general term to describe
+>>> everything that implements their own ->map_page() callback.
+>>>
+>>>>
+>>>> If so, I'd much rather see this done properly, i.e. hook everything up
+>>>> similarly to dma-direct and be able to drop CONFIG_DMA_OPS for "modern"
+>>>> dma-direct/iommu-dma architectures entirely. Furthermore the implementation
+>>>> here isn't right - not only is it not conceptually appropriate to make
+>>>> iommu-dma responsibile for proxying random arch DMA ops, but in practial
+>>>> terms it's just plain broken, since the architectures which still have their
+>>>> own DMA ops also don't use iommu-dma, so this is essentially disabling the
+>>>> entire streaming DMA API on ARM/PowerPC/etc.
+>>>
+>>> Sorry but I'm not sure that I understood your reply. Can you please clarify
+>>> what does it mean broken in this context?
+>>>
+>>> All archs have one of the following options:
+>>> 1. No DMA ops -> for them dma_map_direct() will return True and they
+>>> never will enter into IOMMU path.
+>>> 2. Have DMA ops but without .map_page() -> they will use default IOMMU
+>>> 3. Have DMA ops with .map_page() -> they will use their own implementation
+>>
+>> Urgh, sorry, let that instead be a lesson in not adding needless layers of
+>> indirection that are named as confusingly as possible, then. Seems I saw
+>> stubs plus static inline wrappers, managed to misread dma_iommu_* vs.
+>> iommu_dma_*, and jump to the wrong conclusion of what was stubbed out, not
+>> least since that was the only interpretation in which adding an extra layer
+>> of inline wrappers would seem necessary in the first place. If these
+>> dma_iommu_* functions serve no purpose other than to make the code even more
+>> of a maze of twisty little passages, all alike, then please just feed them
+>> to a grue instead.
 > 
-> Hi Dan,
-> 
-> > 
-> > Commit b7d8833677ba ("iommufd: Fault-capable hwpt
-> > attach/detach/replace") from Jul 2, 2024 (linux-next), leads to the
-> > following Smatch static checker warning:
-> > 
-> > 	drivers/iommu/iommufd/fault.c:131 iommufd_device_get_attach_handle()
-> > 	warn: 'handle' is an error pointer or valid
-> > 
-> > drivers/iommu/iommufd/fault.c
-> >     125  static struct iommufd_attach_handle *
-> >     126  iommufd_device_get_attach_handle(struct iommufd_device *idev)
-> >     127  {
-> >     128          struct iommu_attach_handle *handle;
-> >     129
-> >     130          handle = iommu_attach_handle_get(idev->igroup->group, IOMMU_NO_PASID, 0);
-> >     131          if (!handle)
-> > 
-> > This should be if (IS_ERR(handle)) return NULL;
-> 
-> Yes. Good catch. I will send a formal patch to Jason.
-> 
-> > 
-> >     132                  return NULL;
-> >     133
-> >     134          return to_iommufd_handle(handle);
-> >     135  }
-> >     136
-> >     137  void iommufd_fault_domain_detach_dev(struct iommufd_hw_pagetable *hwpt,
-> >     138                                       struct iommufd_device *idev)
-> >     139  {
-> >     140          struct iommufd_attach_handle *handle;
-> >     141
-> >     142          handle = iommufd_device_get_attach_handle(idev);
-> > 
-> > Do we need to check for NULL here as well?
-> 
-> I don't think we need a check here as we have the code below...
-> 
->         if (hwpt->fault)
->                 iommufd_fault_domain_detach_dev(hwpt, idev);
-> 
-> ...to ensure we are detaching an iopf-capable domain. This code should
-> be paired with iommufd_fault_domain_attach_dev(). Otherwise, there must
-> be a more severe problem. A NULL kernel pointer deference warning here
-> would be a good indication of such a problem.
-> 
+> This is done to keep layering similar to existing in DMA subsystem. We
+> have special files and calls to dma-direct, it looks natural to have
+> special files and call to dma-iommu. It is not nice to call to drivers/iommu
+> from kernel/dma/mapping.c
 
-Ah.  Thanks for looking.
+That's where I firmly disagree. In the DMA API aspect, iommu-dma is 
+exactly a peer of dma-direct, however it lives in drivers/iommu for 
+practical reasons because it's more closely coupled to IOMMU API 
+internals in all other aspects of its implementation. TBH what I'd 
+really like is a private interface between mapping.c and dma-iommu.c 
+which doesn't expose internal details via include/linux/ at all, but 
+*that's* a level that I think people may rightfully start to object to.
 
-regards,
-dan carpenter
-
+Thanks,
+Robin.
