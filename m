@@ -1,778 +1,169 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from NAM11-CO1-obe.outbound.protection.outlook.com (mail-co1nam11on2068.outbound.protection.outlook.com [40.107.220.68])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7818B18A926;
-	Mon, 15 Jul 2024 11:44:25 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1721043866; cv=none; b=MARW8PjRAAH3R/4CDFTazTwahiJKBFhA1dcOX45EC9uZ6ISgdkC7cvSwa+c0MlvqrWR0VgkCVUPskvAyzQV6Kn2aW2AI+3gh/T/AjeuV+H6iRcP4RiNaSWwDPtw8Ywsn2c0QNAvXx2ecFxHt2/kPfPxbikVEqqf4Fy+ENrpIf7g=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1721043866; c=relaxed/simple;
-	bh=JE65uwv/OTH31KturmPU2y019f6OOeVXWP2eXp733as=;
-	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=O0Tsdow6fSDpwgSDbNfrqEqMfvXKBInHDc9QowvmFpZGP8n+GW4ZfEYNWEntXkYj5zht78OLDeO6PqxtluUbiwAZRApU1+8x8oLAPKB2iRVM84wNVEwvA0S8l60idTMOmtVEiAiqIamSkdbFptgkjuvkbH8fYbHInWGHDFTev9k=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Rk3WzMGv; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7A92E18E757
+	for <iommu@lists.linux.dev>; Mon, 15 Jul 2024 12:16:14 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.220.68
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1721045776; cv=fail; b=mDM93s7EZE0SUX6mLKWaWdNW707z5vH+xrP2oCL0qe22DD3dfX+fjyWKEJ9Tec+s7lFq/zieT6yS/3t3m+75aW3+vIkGeoWaFTRjHA6/n+3fekhIacRxzxjRyzDQFzf8tW2Yf1e55EXrh/6R7B2R4Uu/3wFgmpbr7Bcz63mxqmc=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1721045776; c=relaxed/simple;
+	bh=7ewjxak3boNfl57AFlYYGwQkngSzsduesWKHjMYOBt8=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:Content-Type:
+	 Content-Disposition:In-Reply-To:MIME-Version; b=GCWjLF0qSj5/z5HfFf9noghZ5k1CN+NcjSx3YljSpwM9u7FObDR4fc/DMWaVwMSIf+v/bzQuin4zSOih5ei3AW5JvBIWfjYV9mIVK4UPwYUfEy1rLwCuepNMPO3DMLsYJFUXDMUAKypej9kh/08Re933mHOJbm3G9BNoxMaCVhI=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=juP2jXP5; arc=fail smtp.client-ip=40.107.220.68
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Rk3WzMGv"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2CAC4C4AF0B;
-	Mon, 15 Jul 2024 11:44:23 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1721043864;
-	bh=JE65uwv/OTH31KturmPU2y019f6OOeVXWP2eXp733as=;
-	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-	b=Rk3WzMGvd5x+iaYah9gNEdzScvX8k4XqqzEPzAXNXveiLVVq82XbUhdw+XTmZdDtj
-	 0CHksT+V7eRcmnrpzA4W4qN3zP1pNnB/P+B6ayvaNGwmkD4XlYjM+ZTjd6NMe1OV1Y
-	 ug0+MN6Jow4VIZKleaWmNyjvCeSieOHezupV/gyrimpn6UQNIo4Xi875S/hzbRfMYE
-	 a9itLod4fd8RLXCm9tx8c8vw1AC/k/fSaUDBz2nfZU7XPE6fe+/Lvk3HGJApux+6HK
-	 feRVLu4Y/YlryHm6PkIrLAljpGdteK3f8Bq9Zz0lQUQMGQ6ShFHQkiTApj17oO2HKl
-	 Z5qRpaEYWAtAg==
-From: Leon Romanovsky <leon@kernel.org>
-To: Christoph Hellwig <hch@lst.de>,
-	Robin Murphy <robin.murphy@arm.com>,
-	Joerg Roedel <joro@8bytes.org>,
-	Will Deacon <will@kernel.org>,
-	Marek Szyprowski <m.szyprowski@samsung.com>
-Cc: Leon Romanovsky <leonro@nvidia.com>,
-	Easwar Hariharan <eahariha@linux.microsoft.com>,
-	linux-kernel@vger.kernel.org,
-	iommu@lists.linux.dev,
-	Jason Gunthorpe <jgg@nvidia.com>
-Subject: [PATCH v1 2/2] dma: Add IOMMU static calls with clear default ops
-Date: Mon, 15 Jul 2024 14:44:03 +0300
-Message-ID: <7758cbe20bfd34506d943bb93097565b9c4dced4.1721041611.git.leon@kernel.org>
-X-Mailer: git-send-email 2.45.2
-In-Reply-To: <cover.1721041611.git.leon@kernel.org>
-References: <cover.1721041611.git.leon@kernel.org>
+	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="juP2jXP5"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=Hh/v6Y0Ro1kGcj2VfQft3BkP6z/6ntb3KdDHVJJy7hDHBzuYuGxGVj+AQX3c1u9cR9haPSF8W/H2oaTIJWT2DOfuDB/U2GSG8GirYuk3qbG0IWavAklq/eGdkpkDYIAuj29PJaLOFs1mWc4mr+QNkiGV9ZwiekMOJTy/zikSDu5hWkvpHKl+4yCJAHqtoXcGzciKESHR3ShYfo3bjazFekwHcZ+7soeJYpDt753mEWOlKvWbeFkvBI6HWjPLo8ZJWQqWLIO0340YVqywfCmXBR7hnXqbgpKOGhzxa17L+4nYDf04s+5yIqsHbQ5MEPTqd7k7tNWfdZuxsxkdJMEzgQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=t735E922QjYACC5ipKtqqdBA8a2GYcntIPBOsiogXsY=;
+ b=qqePi7rdx7qViZ1zwuGKal5EYqbI8YAbHi/JvsgruDkQ1Y+l3nLskjO2Fj5sVqV6+7Me3qA48nBQpbIpdYN8uip8t98vWdEYovjoq5BbEN88NWAIOxbE+d9++0qt/89yOd9CiNMfNcGXrZi6WdGZd/03msYsqDhped6NTCOuLiZks1WBnnpaYPNv76eQXDBZaBOnQV8jfKiH6GZ27KZWVaVxh3ddu9KDDFNk9qS7449dvDcWh5fQq6rTg8mGTP+QjEGQBiD8JeU7bequRcvVfe8Rldiz3Wf7xe7VWA2rDeIEV7s7CdkTTlgjA6VJgfxZWLwhEMOrL6mj5qGL/q4SKA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=t735E922QjYACC5ipKtqqdBA8a2GYcntIPBOsiogXsY=;
+ b=juP2jXP5QzEYO3CdXvRMGDr+15sXJgNXVC4x6xjSVKsmtXJvxYu/AXzdsVNhztNzZ0ZIV0i0CyMiRHCOnjfgRmuzB6UJ0M5+VeQ8oLi9UjmRuZcnkOk2xD5a0vfLl3MX0+KU0MmziZPLVxk8RA8+/AjVox5duQKwHN0rPTIjWLmOVmo2FdCZQDPDHy2R2qDC9p6w/f+545ZLM7JN3XxKN6FUYFwHMdyOktBQN7XgSWZo/dobZ4pMZ4rVu4PyxSpYNWb0lciSCUjo5XBw+yxmE6wALBDdzZruNk0k4+B4q4mqzlCE4gLYgpMhLbGph4tbtU2Gb8IkJQNZ7JG9KSooww==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nvidia.com;
+Received: from DM6PR12MB3849.namprd12.prod.outlook.com (2603:10b6:5:1c7::26)
+ by PH7PR12MB8779.namprd12.prod.outlook.com (2603:10b6:510:26b::8) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7762.28; Mon, 15 Jul
+ 2024 12:16:09 +0000
+Received: from DM6PR12MB3849.namprd12.prod.outlook.com
+ ([fe80::c296:774b:a5fc:965e]) by DM6PR12MB3849.namprd12.prod.outlook.com
+ ([fe80::c296:774b:a5fc:965e%4]) with mapi id 15.20.7762.027; Mon, 15 Jul 2024
+ 12:16:09 +0000
+Date: Mon, 15 Jul 2024 09:16:07 -0300
+From: Jason Gunthorpe <jgg@nvidia.com>
+To: Yi Liu <yi.l.liu@intel.com>
+Cc: joro@8bytes.org, kevin.tian@intel.com, baolu.lu@linux.intel.com,
+	alex.williamson@redhat.com, robin.murphy@arm.com,
+	eric.auger@redhat.com, nicolinc@nvidia.com, kvm@vger.kernel.org,
+	chao.p.peng@linux.intel.com, iommu@lists.linux.dev
+Subject: Re: [PATCH 0/6] Make set_dev_pasid op supportting domain replacement
+Message-ID: <20240715121607.GR1482543@nvidia.com>
+References: <20240628085538.47049-1-yi.l.liu@intel.com>
+ <20240711183727.GK1482543@nvidia.com>
+ <f05200e4-fcec-404e-9a5f-6eaadfbc362b@intel.com>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <f05200e4-fcec-404e-9a5f-6eaadfbc362b@intel.com>
+X-ClientProxiedBy: MN0PR02CA0026.namprd02.prod.outlook.com
+ (2603:10b6:208:530::7) To DM6PR12MB3849.namprd12.prod.outlook.com
+ (2603:10b6:5:1c7::26)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: DM6PR12MB3849:EE_|PH7PR12MB8779:EE_
+X-MS-Office365-Filtering-Correlation-Id: f6382145-ae1e-479e-c077-08dca4c7e8c3
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;ARA:13230040|1800799024|366016|7416014|376014;
+X-Microsoft-Antispam-Message-Info:
+	=?us-ascii?Q?4MC0dgkKuuYYHsz/HgNkB70QhC6xTnaX4lGmUgp1z3ZsUKEiKuEVnrgwo2mO?=
+ =?us-ascii?Q?Ye23Zz+6Fbo90/lJiDdgnU6kcz1oYTjIumXO/HIOPZcANaAI4zNugarEtoR1?=
+ =?us-ascii?Q?Qrjn/NmhwfljSPmnEVRHx0k0kl/J+q7gFEOcpmClOv0vNW62VV3ta/4XdMGB?=
+ =?us-ascii?Q?TnJdZCrN1EVOSYCEYeO3kJ8jDi/qBVWsn/lTMZ1Gff+IBEomI/qNDlXbWio3?=
+ =?us-ascii?Q?D1PNh2q5CrI85avLIQ9ODOMe1CByowOSIHz7gXyXf+iYbgE+N55H2rJbI2gR?=
+ =?us-ascii?Q?josvAzkeuzTQXRsKdH44A1MWE5FiuVFTfIPvQzuxuAQE7lqo2ZH3ca1k0hJc?=
+ =?us-ascii?Q?mkyUsSqMR9bwgiilcqKUYQVDwETiCQodIzoUUzKdG+DIpNt5HoWjJeG18xhg?=
+ =?us-ascii?Q?Wb+6I2/QEbjTOic4dewvhR/t4Jvxo8kiR9zBmdH+LKHiGpA8Ruhep7864+GJ?=
+ =?us-ascii?Q?bxwMoLLLnShE2EdJb3r5BAf+7lRDPeClib7Pg8IvGPYI7odhP9aW4wQfTaKq?=
+ =?us-ascii?Q?T0V+budMwlzoUqMdw6iv6H3WtZAOe6KnsK2K9yoFMKpG7wG7yUITlnvY0t9Y?=
+ =?us-ascii?Q?c2plHu6p9A8993/MmDvPT0BuJeNmHZ1+hIDvUxyVE9pRFZ4E0Vt+mYWm2Fh4?=
+ =?us-ascii?Q?E1SB5bLe/v4RIQmFdK13T097qGNnJKGooOHqVUwK2uL+4NIYu4CC/JDWlhXO?=
+ =?us-ascii?Q?yT9O5i5reeEPhWgVAqLqdKogf982fxo12d3vlE2DUHK0Y3IWxx4kwz0B9Qw6?=
+ =?us-ascii?Q?VhjzoCEQFd/C70woGkA5VihtVOsvPSlb7o0id5x1sLwucYeIaeuGyUkSFI0Q?=
+ =?us-ascii?Q?HWHxyv9081nOLvJeez2mpxPft/1mhA5UgqusLeXyTYIFZHXVfJquLTjpNiqL?=
+ =?us-ascii?Q?TiwF10eudUDig6pzZCG4pKDaSHJJiC8ROPzidctXlZ0G0bZrDSdLB2oJ/5Tg?=
+ =?us-ascii?Q?Ufk9fJ9si8JQwTTZAA3yGIJGuWieZc43vblFKV4ZY/c4FqoW5gN96gpKae2V?=
+ =?us-ascii?Q?88gLmTCZ0RbkVYLFQoUUVl3zSspKuDCpHS1L04OQLi8HkprNRLTFSQVI9FwA?=
+ =?us-ascii?Q?BQjhD6n88TY3o1h5UsvsmAzNErgK4PfERs71haSqxbbB0wUtAn3rTavwjcrp?=
+ =?us-ascii?Q?bAPy+bsokfJ/JviPYTYS2b5bOzggpql9R0Bzib1qORJEcSFnqC5tMNl1P2Ie?=
+ =?us-ascii?Q?VPla+5KB5tK9paToUAgTqLfSU4xgx3tB0BoVCZQ3rFvad3r3CFv4tb4B9WNQ?=
+ =?us-ascii?Q?shdpXa7vz8XDIKcrtqiCMb1sq6Vnu4/CtTBtBPtQzXWMxI2QUQmQzoq0bEtD?=
+ =?us-ascii?Q?5rO5wlbMJa0df4daxEcO+ACG2Qgdmc9Erx7mj3oOaLn/hg=3D=3D?=
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM6PR12MB3849.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(1800799024)(366016)(7416014)(376014);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?us-ascii?Q?L5mtgynkVhq0h99Uzi3f6I9huvGc9AxbS6dp3+gAEqALG9KlyiY4Izb01YIT?=
+ =?us-ascii?Q?lR81YGBquXyd8kseM97PjVgZ0Kgdvt0igI3fqAZgYAjn89T9pSEMut5BgNTR?=
+ =?us-ascii?Q?UwLbroAX7vjy4bAo5ZyPoyshFNBD2twoHDEBCtmntyDbigMi7mICWO6yk4uT?=
+ =?us-ascii?Q?kpofLsn2kEuSD9DDg4H6zB+/hwjTtdXrN5gAzmJ9c3rjdKM6XwQt2+f0i+kQ?=
+ =?us-ascii?Q?Le/dHaTIHE5etXKCSWebAuTjuLCF3ORR3s7hQ3lcirhwaiSays91ZdXa6bqV?=
+ =?us-ascii?Q?GWd06xJdP1mYkjMom07QXIzffw51YnHXZcmfv/dG2AYuw2J97BxxtQwjoLgT?=
+ =?us-ascii?Q?FkURW+H/zLSqcsnh/t8wDTMYh6x2B9sNnY539JLxZEaxv1uvTOW+JRS60bds?=
+ =?us-ascii?Q?skc1NGZKmvCTvW+xAFz7zIIoTbGZC6qGrmqmeDoUAkSICnQ8ug2WNakNK+H3?=
+ =?us-ascii?Q?vT5a+ybcy5NEYMxlH7z2vz2gPnr051CNRb+9YS7Pr6gixi/inWQRgIE3HG80?=
+ =?us-ascii?Q?/cjQEBXzcuL+yHVAGpPjuGN6bm9uqww7k+LlR5tfuLbFJ/XJDEFfji/VWP9u?=
+ =?us-ascii?Q?KxkF+hCLe8M076vOaIw4ocVneN3+mY6GOTgpW/hBm3aFX3uYINT14YBw4Eqy?=
+ =?us-ascii?Q?ZaT6pCW3R4OZEiRzFZ8JdEzWh6o6h6ezcPBdBn3F8KGj+Ok43tai2r5OLBQA?=
+ =?us-ascii?Q?HwQ/U/VzsrAR9ERhl3MwdnTNL/fn60/F0qcu80zTEsro8yKc/ZBMdYDPQgsy?=
+ =?us-ascii?Q?q4qCcR+3728EpPe0sxWleHwTfVtGl6xiXQWF9wcjK3d+Ff1XgLpyKGIJ4GzF?=
+ =?us-ascii?Q?NBbiec83f7dXAyD9vVq4e4GMXQhtG0CUXFLeL82UGcxYBbjiINc9vgAdZjBE?=
+ =?us-ascii?Q?jt+qUIFgI16wVFsWSP2+aSE/+VVxDc4BZcjGD0FsPFtfjXv58fIqBr0y+ZpL?=
+ =?us-ascii?Q?+zEO1QErzzgiMmQZnqNgoYxz+ksoey5Sia1ALJUlvqnccmqVGxV5fIjQc31N?=
+ =?us-ascii?Q?HaLJwQ3UMPkLDp+RbCk+fTvUwJ2bFdAlKPxhoeHjZpj+4tfyUDRq9dOzdpkI?=
+ =?us-ascii?Q?op90Q+me3KhltDr99UJMOD0jD90Sq+qhBArvCsLwobhklGV8sZwzty/tmBQ+?=
+ =?us-ascii?Q?6DZysDqOGh9pLRd1oevoDnO+M8Ao31bJQDt8vYF4uDf6Rjt+5wJGxle5LIDs?=
+ =?us-ascii?Q?U5QwU79hfC8ghBNuuwgRwdwnhCha6/Czt4zXcA5/yprJaD403rwSXHY0xn09?=
+ =?us-ascii?Q?K5LacNGCbL9vI6xvGrZs0fqz0YRfWsxbRoZlKilCOSLZEoD7SdtM/JRVYZ5X?=
+ =?us-ascii?Q?F89rH8M5qXwsujCdoOfzemJMqJ2xMsYxiFojdDd6+26vrkBwRNSpW9NBc+XZ?=
+ =?us-ascii?Q?P68QQ1TJmAr8o2AW3HCM4MG0jnwlopJMn8vrZ1CDw+kYMBe0WJtrLFSlJC+L?=
+ =?us-ascii?Q?wWAPlAym5rEQMlr3MIGQ1ocLlpQ3BqopjQPuw6vxQIrVq1pXLGEAWMaOfEI6?=
+ =?us-ascii?Q?GfTcoH3OsAulepFfu0hhJXfbQNOfUtmyAnVMlR5HsVjGyIAQPVqsI5YZXbwU?=
+ =?us-ascii?Q?eTHLhxMSoI5ycMOosnI=3D?=
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: f6382145-ae1e-479e-c077-08dca4c7e8c3
+X-MS-Exchange-CrossTenant-AuthSource: DM6PR12MB3849.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 15 Jul 2024 12:16:09.2124
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: MhMYt0BFRKKlXhpjV70j3mWjGCd2bgNduXzWIWdM3XBWUurnP+p72YAamSiRi2pV
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH7PR12MB8779
 
-From: Leon Romanovsky <leonro@nvidia.com>
+On Mon, Jul 15, 2024 at 04:11:43PM +0800, Yi Liu wrote:
+> On 2024/7/12 02:37, Jason Gunthorpe wrote:
+> > On Fri, Jun 28, 2024 at 01:55:32AM -0700, Yi Liu wrote:
+> > > This splits the preparation works of the iommu and the Intel iommu driver
+> > > out from the iommufd pasid attach/replace series. [1]
+> > > 
+> > > To support domain replacement, the definition of the set_dev_pasid op
+> > > needs to be enhanced. Meanwhile, the existing set_dev_pasid callbacks
+> > > should be extended as well to suit the new definition.
+> > > 
+> > > pasid attach/replace is mandatory on Intel VT-d given the PASID table
+> > > locates in the physical address space hence must be managed by the kernel,
+> > > both for supporting vSVA and coming SIOV. But it's optional on ARM/AMD
+> > > which allow configuring the PASID/CD table either in host physical address
+> > > space or nested on top of an GPA address space. This series only extends
+> > > the Intel iommu driver as the minimal requirement.
+> > 
+> > Sicne this will be pushed to the next cyle that will have my ARM code
+> > the smmuv3 will need to be updated too. It is already prepped to
+> > support replace, just add this please:
+> 
+> thanks. So your related series has made the internal helpers to support
+> domain replacement in set_dev_pasid path. The below diff just passes the
+> old_domain across the helpers. Is it? Just to double confirm with you. :)
 
-Most of the arch DMA ops (which often, but not  always, involve
-some sort of IOMMU) are using the same DMA operations. These DMA
-operations are default ones implemented in drivers/iomem/dma-iommu.c.
+Yes
 
-So let's make sure to call them directly without need to perform function
-pointers dereference.
-
-During system initialization, the arch can set its own DMA and in such case,
-the default DMA operations will be overridden.
-
-Signed-off-by: Leon Romanovsky <leonro@nvidia.com>
----
- MAINTAINERS                 |   1 +
- drivers/iommu/dma-iommu.c   | 108 ++++++++++-------------
- include/linux/dma-map-ops.h |   3 +
- include/linux/iommu-dma.h   | 169 ++++++++++++++++++++++++++++++++++++
- kernel/dma/mapping.c        |  69 +++++++++++++--
- 5 files changed, 282 insertions(+), 68 deletions(-)
- create mode 100644 include/linux/iommu-dma.h
-
-diff --git a/MAINTAINERS b/MAINTAINERS
-index da5352dbd4f3..1e64be463da7 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -11544,6 +11544,7 @@ T:	git git://git.kernel.org/pub/scm/linux/kernel/git/iommu/linux.git
- F:	Documentation/devicetree/bindings/iommu/
- F:	Documentation/userspace-api/iommu.rst
- F:	drivers/iommu/
-+F:	include/linux/iommu-dma.h
- F:	include/linux/iommu.h
- F:	include/linux/iova.h
- F:	include/linux/of_iommu.h
-diff --git a/drivers/iommu/dma-iommu.c b/drivers/iommu/dma-iommu.c
-index 43520e7275cc..91911be61a81 100644
---- a/drivers/iommu/dma-iommu.c
-+++ b/drivers/iommu/dma-iommu.c
-@@ -17,6 +17,7 @@
- #include <linux/gfp.h>
- #include <linux/huge_mm.h>
- #include <linux/iommu.h>
-+#include <linux/iommu-dma.h>
- #include <linux/iova.h>
- #include <linux/irq.h>
- #include <linux/list_sort.h>
-@@ -1039,9 +1040,9 @@ static void *iommu_dma_alloc_remap(struct device *dev, size_t size,
- 	return NULL;
- }
- 
--static struct sg_table *iommu_dma_alloc_noncontiguous(struct device *dev,
--		size_t size, enum dma_data_direction dir, gfp_t gfp,
--		unsigned long attrs)
-+struct sg_table *iommu_dma_alloc_noncontiguous(struct device *dev, size_t size,
-+					       enum dma_data_direction dir,
-+					       gfp_t gfp, unsigned long attrs)
- {
- 	struct dma_sgt_handle *sh;
- 
-@@ -1058,8 +1059,9 @@ static struct sg_table *iommu_dma_alloc_noncontiguous(struct device *dev,
- 	return &sh->sgt;
- }
- 
--static void iommu_dma_free_noncontiguous(struct device *dev, size_t size,
--		struct sg_table *sgt, enum dma_data_direction dir)
-+void iommu_dma_free_noncontiguous(struct device *dev, size_t size,
-+				  struct sg_table *sgt,
-+				  enum dma_data_direction dir)
- {
- 	struct dma_sgt_handle *sh = sgt_handle(sgt);
- 
-@@ -1069,8 +1071,8 @@ static void iommu_dma_free_noncontiguous(struct device *dev, size_t size,
- 	kfree(sh);
- }
- 
--static void iommu_dma_sync_single_for_cpu(struct device *dev,
--		dma_addr_t dma_handle, size_t size, enum dma_data_direction dir)
-+void iommu_dma_sync_single_for_cpu(struct device *dev, dma_addr_t dma_handle,
-+				   size_t size, enum dma_data_direction dir)
- {
- 	phys_addr_t phys;
- 
-@@ -1085,8 +1087,8 @@ static void iommu_dma_sync_single_for_cpu(struct device *dev,
- 		swiotlb_sync_single_for_cpu(dev, phys, size, dir);
- }
- 
--static void iommu_dma_sync_single_for_device(struct device *dev,
--		dma_addr_t dma_handle, size_t size, enum dma_data_direction dir)
-+void iommu_dma_sync_single_for_device(struct device *dev, dma_addr_t dma_handle,
-+				      size_t size, enum dma_data_direction dir)
- {
- 	phys_addr_t phys;
- 
-@@ -1101,9 +1103,8 @@ static void iommu_dma_sync_single_for_device(struct device *dev,
- 		arch_sync_dma_for_device(phys, size, dir);
- }
- 
--static void iommu_dma_sync_sg_for_cpu(struct device *dev,
--		struct scatterlist *sgl, int nelems,
--		enum dma_data_direction dir)
-+void iommu_dma_sync_sg_for_cpu(struct device *dev, struct scatterlist *sgl,
-+			       int nelems, enum dma_data_direction dir)
- {
- 	struct scatterlist *sg;
- 	int i;
-@@ -1117,9 +1118,8 @@ static void iommu_dma_sync_sg_for_cpu(struct device *dev,
- 			arch_sync_dma_for_cpu(sg_phys(sg), sg->length, dir);
- }
- 
--static void iommu_dma_sync_sg_for_device(struct device *dev,
--		struct scatterlist *sgl, int nelems,
--		enum dma_data_direction dir)
-+void iommu_dma_sync_sg_for_device(struct device *dev, struct scatterlist *sgl,
-+				  int nelems, enum dma_data_direction dir)
- {
- 	struct scatterlist *sg;
- 	int i;
-@@ -1134,9 +1134,9 @@ static void iommu_dma_sync_sg_for_device(struct device *dev,
- 			arch_sync_dma_for_device(sg_phys(sg), sg->length, dir);
- }
- 
--static dma_addr_t iommu_dma_map_page(struct device *dev, struct page *page,
--		unsigned long offset, size_t size, enum dma_data_direction dir,
--		unsigned long attrs)
-+dma_addr_t iommu_dma_map_page(struct device *dev, struct page *page,
-+			      unsigned long offset, size_t size,
-+			      enum dma_data_direction dir, unsigned long attrs)
- {
- 	phys_addr_t phys = page_to_phys(page) + offset;
- 	bool coherent = dev_is_dma_coherent(dev);
-@@ -1194,8 +1194,9 @@ static dma_addr_t iommu_dma_map_page(struct device *dev, struct page *page,
- 	return iova;
- }
- 
--static void iommu_dma_unmap_page(struct device *dev, dma_addr_t dma_handle,
--		size_t size, enum dma_data_direction dir, unsigned long attrs)
-+void iommu_dma_unmap_page(struct device *dev, dma_addr_t dma_handle,
-+			  size_t size, enum dma_data_direction dir,
-+			  unsigned long attrs)
- {
- 	struct iommu_domain *domain = iommu_get_dma_domain(dev);
- 	phys_addr_t phys;
-@@ -1348,8 +1349,8 @@ static int iommu_dma_map_sg_swiotlb(struct device *dev, struct scatterlist *sg,
-  * impedance-matching, to be able to hand off a suitably-aligned list,
-  * but still preserve the original offsets and sizes for the caller.
-  */
--static int iommu_dma_map_sg(struct device *dev, struct scatterlist *sg,
--		int nents, enum dma_data_direction dir, unsigned long attrs)
-+int iommu_dma_map_sg(struct device *dev, struct scatterlist *sg, int nents,
-+		     enum dma_data_direction dir, unsigned long attrs)
- {
- 	struct iommu_domain *domain = iommu_get_dma_domain(dev);
- 	struct iommu_dma_cookie *cookie = domain->iova_cookie;
-@@ -1468,8 +1469,8 @@ static int iommu_dma_map_sg(struct device *dev, struct scatterlist *sg,
- 	return ret;
- }
- 
--static void iommu_dma_unmap_sg(struct device *dev, struct scatterlist *sg,
--		int nents, enum dma_data_direction dir, unsigned long attrs)
-+void iommu_dma_unmap_sg(struct device *dev, struct scatterlist *sg, int nents,
-+			enum dma_data_direction dir, unsigned long attrs)
- {
- 	dma_addr_t end = 0, start;
- 	struct scatterlist *tmp;
-@@ -1518,16 +1519,18 @@ static void iommu_dma_unmap_sg(struct device *dev, struct scatterlist *sg,
- 		__iommu_dma_unmap(dev, start, end - start);
- }
- 
--static dma_addr_t iommu_dma_map_resource(struct device *dev, phys_addr_t phys,
--		size_t size, enum dma_data_direction dir, unsigned long attrs)
-+dma_addr_t iommu_dma_map_resource(struct device *dev, phys_addr_t phys,
-+				  size_t size, enum dma_data_direction dir,
-+				  unsigned long attrs)
- {
- 	return __iommu_dma_map(dev, phys, size,
- 			dma_info_to_prot(dir, false, attrs) | IOMMU_MMIO,
- 			dma_get_mask(dev));
- }
- 
--static void iommu_dma_unmap_resource(struct device *dev, dma_addr_t handle,
--		size_t size, enum dma_data_direction dir, unsigned long attrs)
-+void iommu_dma_unmap_resource(struct device *dev, dma_addr_t handle,
-+			      size_t size, enum dma_data_direction dir,
-+			      unsigned long attrs)
- {
- 	__iommu_dma_unmap(dev, handle, size);
- }
-@@ -1563,8 +1566,8 @@ static void __iommu_dma_free(struct device *dev, size_t size, void *cpu_addr)
- 		dma_free_contiguous(dev, page, alloc_size);
- }
- 
--static void iommu_dma_free(struct device *dev, size_t size, void *cpu_addr,
--		dma_addr_t handle, unsigned long attrs)
-+void iommu_dma_free(struct device *dev, size_t size, void *cpu_addr,
-+		    dma_addr_t handle, unsigned long attrs)
- {
- 	__iommu_dma_unmap(dev, handle, size);
- 	__iommu_dma_free(dev, size, cpu_addr);
-@@ -1607,8 +1610,8 @@ static void *iommu_dma_alloc_pages(struct device *dev, size_t size,
- 	return NULL;
- }
- 
--static void *iommu_dma_alloc(struct device *dev, size_t size,
--		dma_addr_t *handle, gfp_t gfp, unsigned long attrs)
-+void *iommu_dma_alloc(struct device *dev, size_t size, dma_addr_t *handle,
-+		      gfp_t gfp, unsigned long attrs)
- {
- 	bool coherent = dev_is_dma_coherent(dev);
- 	int ioprot = dma_info_to_prot(DMA_BIDIRECTIONAL, coherent, attrs);
-@@ -1642,9 +1645,9 @@ static void *iommu_dma_alloc(struct device *dev, size_t size,
- 	return cpu_addr;
- }
- 
--static int iommu_dma_mmap(struct device *dev, struct vm_area_struct *vma,
--		void *cpu_addr, dma_addr_t dma_addr, size_t size,
--		unsigned long attrs)
-+int iommu_dma_mmap(struct device *dev, struct vm_area_struct *vma,
-+		   void *cpu_addr, dma_addr_t dma_addr, size_t size,
-+		   unsigned long attrs)
- {
- 	unsigned long nr_pages = PAGE_ALIGN(size) >> PAGE_SHIFT;
- 	unsigned long pfn, off = vma->vm_pgoff;
-@@ -1673,9 +1676,9 @@ static int iommu_dma_mmap(struct device *dev, struct vm_area_struct *vma,
- 			       vma->vm_page_prot);
- }
- 
--static int iommu_dma_get_sgtable(struct device *dev, struct sg_table *sgt,
--		void *cpu_addr, dma_addr_t dma_addr, size_t size,
--		unsigned long attrs)
-+int iommu_dma_get_sgtable(struct device *dev, struct sg_table *sgt,
-+			  void *cpu_addr, dma_addr_t dma_addr, size_t size,
-+			  unsigned long attrs)
- {
- 	struct page *page;
- 	int ret;
-@@ -1700,19 +1703,19 @@ static int iommu_dma_get_sgtable(struct device *dev, struct sg_table *sgt,
- 	return ret;
- }
- 
--static unsigned long iommu_dma_get_merge_boundary(struct device *dev)
-+unsigned long iommu_dma_get_merge_boundary(struct device *dev)
- {
- 	struct iommu_domain *domain = iommu_get_dma_domain(dev);
- 
- 	return (1UL << __ffs(domain->pgsize_bitmap)) - 1;
- }
- 
--static size_t iommu_dma_opt_mapping_size(void)
-+size_t iommu_dma_opt_mapping_size(void)
- {
- 	return iova_rcache_range();
- }
- 
--static size_t iommu_dma_max_mapping_size(struct device *dev)
-+size_t iommu_dma_max_mapping_size(struct device *dev)
- {
- 	if (dev_is_untrusted(dev))
- 		return swiotlb_max_mapping_size(dev);
-@@ -1722,28 +1725,7 @@ static size_t iommu_dma_max_mapping_size(struct device *dev)
- 
- static const struct dma_map_ops iommu_dma_ops = {
- 	.flags			= DMA_F_PCI_P2PDMA_SUPPORTED |
--				  DMA_F_CAN_SKIP_SYNC,
--	.alloc			= iommu_dma_alloc,
--	.free			= iommu_dma_free,
--	.alloc_pages_op		= dma_common_alloc_pages,
--	.free_pages		= dma_common_free_pages,
--	.alloc_noncontiguous	= iommu_dma_alloc_noncontiguous,
--	.free_noncontiguous	= iommu_dma_free_noncontiguous,
--	.mmap			= iommu_dma_mmap,
--	.get_sgtable		= iommu_dma_get_sgtable,
--	.map_page		= iommu_dma_map_page,
--	.unmap_page		= iommu_dma_unmap_page,
--	.map_sg			= iommu_dma_map_sg,
--	.unmap_sg		= iommu_dma_unmap_sg,
--	.sync_single_for_cpu	= iommu_dma_sync_single_for_cpu,
--	.sync_single_for_device	= iommu_dma_sync_single_for_device,
--	.sync_sg_for_cpu	= iommu_dma_sync_sg_for_cpu,
--	.sync_sg_for_device	= iommu_dma_sync_sg_for_device,
--	.map_resource		= iommu_dma_map_resource,
--	.unmap_resource		= iommu_dma_unmap_resource,
--	.get_merge_boundary	= iommu_dma_get_merge_boundary,
--	.opt_mapping_size	= iommu_dma_opt_mapping_size,
--	.max_mapping_size       = iommu_dma_max_mapping_size,
-+				  DMA_F_CAN_SKIP_SYNC | DMA_F_USE_DEFAULT_IOMMU,
- };
- 
- void iommu_setup_dma_ops(struct device *dev)
-diff --git a/include/linux/dma-map-ops.h b/include/linux/dma-map-ops.h
-index 02a1c825896b..2192c0840a7d 100644
---- a/include/linux/dma-map-ops.h
-+++ b/include/linux/dma-map-ops.h
-@@ -20,9 +20,12 @@ struct iommu_ops;
-  * handle PCI P2PDMA pages in the map_sg/unmap_sg operation.
-  * DMA_F_CAN_SKIP_SYNC: DMA sync operations can be skipped if the device is
-  * coherent and it's not an SWIOTLB buffer.
-+ * DMA_F_USE_DEFAULT_IOMMU: The dma_map_ops implementation can use the default
-+ * IOMMU for the device and doesn't need to use function pointers.
-  */
- #define DMA_F_PCI_P2PDMA_SUPPORTED     (1 << 0)
- #define DMA_F_CAN_SKIP_SYNC            (1 << 1)
-+#define DMA_F_USE_DEFAULT_IOMMU        (1 << 2)
- 
- struct dma_map_ops {
- 	unsigned int flags;
-diff --git a/include/linux/iommu-dma.h b/include/linux/iommu-dma.h
-new file mode 100644
-index 000000000000..622232fc9510
---- /dev/null
-+++ b/include/linux/iommu-dma.h
-@@ -0,0 +1,169 @@
-+/* SPDX-License-Identifier: GPL-2.0 */
-+/*
-+ * Copyright (c) 2024, NVIDIA CORPORATION & AFFILIATES. All rights reserved
-+ *
-+ * DMA operations that map physical memory through IOMMU.
-+ */
-+#ifndef _LINUX_IOMMU_DMA_H
-+#define _LINUX_IOMMU_DMA_H
-+
-+#include <linux/dma-direction.h>
-+
-+#ifdef CONFIG_IOMMU_DMA
-+dma_addr_t iommu_dma_map_page(struct device *dev, struct page *page,
-+			      unsigned long offset, size_t size,
-+			      enum dma_data_direction dir, unsigned long attrs);
-+void iommu_dma_unmap_page(struct device *dev, dma_addr_t dma_handle,
-+			  size_t size, enum dma_data_direction dir,
-+			  unsigned long attrs);
-+int iommu_dma_map_sg(struct device *dev, struct scatterlist *sg, int nents,
-+		     enum dma_data_direction dir, unsigned long attrs);
-+void iommu_dma_unmap_sg(struct device *dev, struct scatterlist *sg, int nents,
-+			enum dma_data_direction dir, unsigned long attrs);
-+void *iommu_dma_alloc(struct device *dev, size_t size, dma_addr_t *handle,
-+		      gfp_t gfp, unsigned long attrs);
-+int iommu_dma_mmap(struct device *dev, struct vm_area_struct *vma,
-+		   void *cpu_addr, dma_addr_t dma_addr,
-+		   size_t size, unsigned long attrs);
-+int iommu_dma_get_sgtable(struct device *dev, struct sg_table *sgt,
-+			  void *cpu_addr, dma_addr_t dma_addr, size_t size,
-+			  unsigned long attrs);
-+unsigned long iommu_dma_get_merge_boundary(struct device *dev);
-+size_t iommu_dma_opt_mapping_size(void);
-+size_t iommu_dma_max_mapping_size(struct device *dev);
-+void iommu_dma_free(struct device *dev, size_t size, void *cpu_addr,
-+		    dma_addr_t handle, unsigned long attrs);
-+dma_addr_t iommu_dma_map_resource(struct device *dev, phys_addr_t phys,
-+				  size_t size, enum dma_data_direction dir,
-+				  unsigned long attrs);
-+void iommu_dma_unmap_resource(struct device *dev, dma_addr_t handle,
-+			      size_t size, enum dma_data_direction dir,
-+			      unsigned long attrs);
-+struct sg_table *iommu_dma_alloc_noncontiguous(struct device *dev, size_t size,
-+					       enum dma_data_direction dir,
-+					       gfp_t gfp, unsigned long attrs);
-+void iommu_dma_free_noncontiguous(struct device *dev, size_t size,
-+				  struct sg_table *sgt,
-+				  enum dma_data_direction dir);
-+void iommu_dma_sync_single_for_cpu(struct device *dev, dma_addr_t dma_handle,
-+				   size_t size, enum dma_data_direction dir);
-+void iommu_dma_sync_single_for_device(struct device *dev, dma_addr_t dma_handle,
-+				      size_t size, enum dma_data_direction dir);
-+void iommu_dma_sync_sg_for_cpu(struct device *dev, struct scatterlist *sgl,
-+			       int nelems, enum dma_data_direction dir);
-+void iommu_dma_sync_sg_for_device(struct device *dev, struct scatterlist *sgl,
-+				  int nelems, enum dma_data_direction dir);
-+#else
-+static inline dma_addr_t iommu_dma_map_page(struct device *dev,
-+					    struct page *page,
-+					    unsigned long offset, size_t size,
-+					    enum dma_data_direction dir,
-+					    unsigned long attrs)
-+{
-+	return DMA_MAPPING_ERROR;
-+}
-+static inline void iommu_dma_unmap_page(struct device *dev,
-+					dma_addr_t dma_handle, size_t size,
-+					enum dma_data_direction dir,
-+					unsigned long attrs)
-+{
-+}
-+static inline int iommu_dma_map_sg(struct device *dev, struct scatterlist *sg,
-+				   int nents, enum dma_data_direction dir,
-+				   unsigned long attrs)
-+{
-+	return -EINVAL;
-+}
-+static inline void iommu_dma_unmap_sg(struct device *dev,
-+				      struct scatterlist *sg, int nents,
-+				      enum dma_data_direction dir,
-+				      unsigned long attrs)
-+{
-+}
-+static inline void *iommu_dma_alloc(struct device *dev, size_t size,
-+				    dma_addr_t *handle, gfp_t gfp,
-+				    unsigned long attrs)
-+{
-+	return NULL;
-+}
-+static inline int iommu_dma_mmap(struct device *dev, struct vm_area_struct *vma,
-+				 void *cpu_addr, dma_addr_t dma_addr,
-+				 size_t size, unsigned long attrs)
-+{
-+	return -EINVAL;
-+}
-+static inline int iommu_dma_get_sgtable(struct device *dev,
-+					struct sg_table *sgt, void *cpu_addr,
-+					dma_addr_t dma_addr, size_t size,
-+					unsigned long attrs)
-+{
-+	return -EINVAL;
-+}
-+static inline unsigned long iommu_dma_get_merge_boundary(struct device *dev)
-+{
-+	return 0;
-+}
-+static inline size_t iommu_dma_opt_mapping_size(void)
-+{
-+	return 0;
-+}
-+static inline size_t iommu_dma_max_mapping_size(struct device *dev)
-+{
-+	return 0;
-+}
-+static inline void iommu_dma_free(struct device *dev, size_t size,
-+				  void *cpu_addr, dma_addr_t handle,
-+				  unsigned long attrs)
-+{
-+}
-+static inline dma_addr_t iommu_dma_map_resource(struct device *dev,
-+						phys_addr_t phys, size_t size,
-+						enum dma_data_direction dir,
-+						unsigned long attrs)
-+{
-+	return DMA_MAPPING_ERROR;
-+}
-+static inline void iommu_dma_unmap_resource(struct device *dev,
-+					    dma_addr_t handle, size_t size,
-+					    enum dma_data_direction dir,
-+					    unsigned long attrs)
-+{
-+}
-+static inline struct sg_table *
-+iommu_dma_alloc_noncontiguous(struct device *dev, size_t size,
-+			      enum dma_data_direction dir, gfp_t gfp,
-+			      unsigned long attrs)
-+{
-+	return NULL;
-+}
-+static inline void iommu_dma_free_noncontiguous(struct device *dev, size_t size,
-+						struct sg_table *sgt,
-+						enum dma_data_direction dir)
-+{
-+}
-+static inline void iommu_dma_sync_single_for_cpu(struct device *dev,
-+						 dma_addr_t dma_handle,
-+						 size_t size,
-+						 enum dma_data_direction dir)
-+{
-+}
-+static inline void iommu_dma_sync_single_for_device(struct device *dev,
-+						    dma_addr_t dma_handle,
-+						    size_t size,
-+						    enum dma_data_direction dir)
-+{
-+}
-+static inline void iommu_dma_sync_sg_for_cpu(struct device *dev,
-+					     struct scatterlist *sgl,
-+					     int nelems,
-+					     enum dma_data_direction dir)
-+{
-+}
-+static inline void iommu_dma_sync_sg_for_device(struct device *dev,
-+						struct scatterlist *sgl,
-+						int nelems,
-+						enum dma_data_direction dir)
-+{
-+}
-+#endif /* CONFIG_IOMMU_DMA */
-+#endif /* _LINUX_IOMMU_DMA_H */
-diff --git a/kernel/dma/mapping.c b/kernel/dma/mapping.c
-index 6832fd6f0796..1892c254b9d9 100644
---- a/kernel/dma/mapping.c
-+++ b/kernel/dma/mapping.c
-@@ -8,6 +8,7 @@
- #include <linux/memblock.h> /* for max_pfn */
- #include <linux/acpi.h>
- #include <linux/dma-map-ops.h>
-+#include <linux/iommu-dma.h>
- #include <linux/export.h>
- #include <linux/gfp.h>
- #include <linux/kmsan.h>
-@@ -144,6 +145,14 @@ static inline bool dma_map_direct(struct device *dev,
- 	return dma_go_direct(dev, *dev->dma_mask, ops);
- }
- 
-+static inline bool dma_is_default_iommu(const struct dma_map_ops *ops)
-+{
-+	if (!ops)
-+		return false;
-+
-+	return ops->flags & DMA_F_USE_DEFAULT_IOMMU;
-+}
-+
- dma_addr_t dma_map_page_attrs(struct device *dev, struct page *page,
- 		size_t offset, size_t size, enum dma_data_direction dir,
- 		unsigned long attrs)
-@@ -159,6 +168,8 @@ dma_addr_t dma_map_page_attrs(struct device *dev, struct page *page,
- 	if (dma_map_direct(dev, ops) ||
- 	    arch_dma_map_page_direct(dev, page_to_phys(page) + offset + size))
- 		addr = dma_direct_map_page(dev, page, offset, size, dir, attrs);
-+	else if (dma_is_default_iommu(ops))
-+		addr = iommu_dma_map_page(dev, page, offset, size, dir, attrs);
- 	else
- 		addr = ops->map_page(dev, page, offset, size, dir, attrs);
- 	kmsan_handle_dma(page, offset, size, dir);
-@@ -177,6 +188,8 @@ void dma_unmap_page_attrs(struct device *dev, dma_addr_t addr, size_t size,
- 	if (dma_map_direct(dev, ops) ||
- 	    arch_dma_unmap_page_direct(dev, addr + size))
- 		dma_direct_unmap_page(dev, addr, size, dir, attrs);
-+	else if (dma_is_default_iommu(ops))
-+		iommu_dma_unmap_page(dev, addr, size, dir, attrs);
- 	else
- 		ops->unmap_page(dev, addr, size, dir, attrs);
- 	debug_dma_unmap_page(dev, addr, size, dir);
-@@ -197,6 +210,8 @@ static int __dma_map_sg_attrs(struct device *dev, struct scatterlist *sg,
- 	if (dma_map_direct(dev, ops) ||
- 	    arch_dma_map_sg_direct(dev, sg, nents))
- 		ents = dma_direct_map_sg(dev, sg, nents, dir, attrs);
-+	else if (dma_is_default_iommu(ops))
-+		ents = iommu_dma_map_sg(dev, sg, nents, dir, attrs);
- 	else
- 		ents = ops->map_sg(dev, sg, nents, dir, attrs);
- 
-@@ -291,6 +306,8 @@ void dma_unmap_sg_attrs(struct device *dev, struct scatterlist *sg,
- 	if (dma_map_direct(dev, ops) ||
- 	    arch_dma_unmap_sg_direct(dev, sg, nents))
- 		dma_direct_unmap_sg(dev, sg, nents, dir, attrs);
-+	else if (dma_is_default_iommu(ops))
-+		iommu_dma_unmap_sg(dev, sg, nents, dir, attrs);
- 	else
- 		ops->unmap_sg(dev, sg, nents, dir, attrs);
- }
-@@ -309,6 +326,8 @@ dma_addr_t dma_map_resource(struct device *dev, phys_addr_t phys_addr,
- 
- 	if (dma_map_direct(dev, ops))
- 		addr = dma_direct_map_resource(dev, phys_addr, size, dir, attrs);
-+	else if (dma_is_default_iommu(ops))
-+		addr = iommu_dma_map_resource(dev, phys_addr, size, dir, attrs);
- 	else if (ops->map_resource)
- 		addr = ops->map_resource(dev, phys_addr, size, dir, attrs);
- 
-@@ -323,8 +342,12 @@ void dma_unmap_resource(struct device *dev, dma_addr_t addr, size_t size,
- 	const struct dma_map_ops *ops = get_dma_ops(dev);
- 
- 	BUG_ON(!valid_dma_direction(dir));
--	if (!dma_map_direct(dev, ops) && ops->unmap_resource)
--		ops->unmap_resource(dev, addr, size, dir, attrs);
-+	if (!dma_map_direct(dev, ops)) {
-+		if (dma_is_default_iommu(ops))
-+			iommu_dma_unmap_resource(dev, addr, size, dir, attrs);
-+		else if (ops->unmap_resource)
-+			ops->unmap_resource(dev, addr, size, dir, attrs);
-+	}
- 	debug_dma_unmap_resource(dev, addr, size, dir);
- }
- EXPORT_SYMBOL(dma_unmap_resource);
-@@ -338,6 +361,8 @@ void __dma_sync_single_for_cpu(struct device *dev, dma_addr_t addr, size_t size,
- 	BUG_ON(!valid_dma_direction(dir));
- 	if (dma_map_direct(dev, ops))
- 		dma_direct_sync_single_for_cpu(dev, addr, size, dir);
-+	else if (dma_is_default_iommu(ops))
-+		iommu_dma_sync_single_for_cpu(dev, addr, size, dir);
- 	else if (ops->sync_single_for_cpu)
- 		ops->sync_single_for_cpu(dev, addr, size, dir);
- 	debug_dma_sync_single_for_cpu(dev, addr, size, dir);
-@@ -352,6 +377,8 @@ void __dma_sync_single_for_device(struct device *dev, dma_addr_t addr,
- 	BUG_ON(!valid_dma_direction(dir));
- 	if (dma_map_direct(dev, ops))
- 		dma_direct_sync_single_for_device(dev, addr, size, dir);
-+	else if (dma_is_default_iommu(ops))
-+		iommu_dma_sync_single_for_device(dev, addr, size, dir);
- 	else if (ops->sync_single_for_device)
- 		ops->sync_single_for_device(dev, addr, size, dir);
- 	debug_dma_sync_single_for_device(dev, addr, size, dir);
-@@ -366,6 +393,8 @@ void __dma_sync_sg_for_cpu(struct device *dev, struct scatterlist *sg,
- 	BUG_ON(!valid_dma_direction(dir));
- 	if (dma_map_direct(dev, ops))
- 		dma_direct_sync_sg_for_cpu(dev, sg, nelems, dir);
-+	else if (dma_is_default_iommu(ops))
-+		iommu_dma_sync_sg_for_cpu(dev, sg, nelems, dir);
- 	else if (ops->sync_sg_for_cpu)
- 		ops->sync_sg_for_cpu(dev, sg, nelems, dir);
- 	debug_dma_sync_sg_for_cpu(dev, sg, nelems, dir);
-@@ -380,6 +409,8 @@ void __dma_sync_sg_for_device(struct device *dev, struct scatterlist *sg,
- 	BUG_ON(!valid_dma_direction(dir));
- 	if (dma_map_direct(dev, ops))
- 		dma_direct_sync_sg_for_device(dev, sg, nelems, dir);
-+	else if (dma_is_default_iommu(ops))
-+		iommu_dma_sync_sg_for_device(dev, sg, nelems, dir);
- 	else if (ops->sync_sg_for_device)
- 		ops->sync_sg_for_device(dev, sg, nelems, dir);
- 	debug_dma_sync_sg_for_device(dev, sg, nelems, dir);
-@@ -446,6 +477,9 @@ int dma_get_sgtable_attrs(struct device *dev, struct sg_table *sgt,
- 	if (dma_alloc_direct(dev, ops))
- 		return dma_direct_get_sgtable(dev, sgt, cpu_addr, dma_addr,
- 				size, attrs);
-+	if (dma_is_default_iommu(ops))
-+		return iommu_dma_get_sgtable(dev, sgt, cpu_addr, dma_addr,
-+				size, attrs);
- 	if (!ops->get_sgtable)
- 		return -ENXIO;
- 	return ops->get_sgtable(dev, sgt, cpu_addr, dma_addr, size, attrs);
-@@ -482,6 +516,8 @@ bool dma_can_mmap(struct device *dev)
- 
- 	if (dma_alloc_direct(dev, ops))
- 		return dma_direct_can_mmap(dev);
-+	if (dma_is_default_iommu(ops))
-+		return true;
- 	return ops->mmap != NULL;
- }
- EXPORT_SYMBOL_GPL(dma_can_mmap);
-@@ -508,6 +544,9 @@ int dma_mmap_attrs(struct device *dev, struct vm_area_struct *vma,
- 	if (dma_alloc_direct(dev, ops))
- 		return dma_direct_mmap(dev, vma, cpu_addr, dma_addr, size,
- 				attrs);
-+	if (dma_is_default_iommu(ops))
-+		return iommu_dma_mmap(dev, vma, cpu_addr, dma_addr, size,
-+				      attrs);
- 	if (!ops->mmap)
- 		return -ENXIO;
- 	return ops->mmap(dev, vma, cpu_addr, dma_addr, size, attrs);
-@@ -559,6 +598,8 @@ void *dma_alloc_attrs(struct device *dev, size_t size, dma_addr_t *dma_handle,
- 
- 	if (dma_alloc_direct(dev, ops))
- 		cpu_addr = dma_direct_alloc(dev, size, dma_handle, flag, attrs);
-+	else if (dma_is_default_iommu(ops))
-+		cpu_addr = iommu_dma_alloc(dev, size, dma_handle, flag, attrs);
- 	else if (ops->alloc)
- 		cpu_addr = ops->alloc(dev, size, dma_handle, flag, attrs);
- 	else
-@@ -591,6 +632,8 @@ void dma_free_attrs(struct device *dev, size_t size, void *cpu_addr,
- 	debug_dma_free_coherent(dev, size, cpu_addr, dma_handle);
- 	if (dma_alloc_direct(dev, ops))
- 		dma_direct_free(dev, size, cpu_addr, dma_handle, attrs);
-+	else if (dma_is_default_iommu(ops))
-+		iommu_dma_free(dev, size, cpu_addr, dma_handle, attrs);
- 	else if (ops->free)
- 		ops->free(dev, size, cpu_addr, dma_handle, attrs);
- }
-@@ -611,6 +654,8 @@ static struct page *__dma_alloc_pages(struct device *dev, size_t size,
- 	size = PAGE_ALIGN(size);
- 	if (dma_alloc_direct(dev, ops))
- 		return dma_direct_alloc_pages(dev, size, dma_handle, dir, gfp);
-+	if (dma_is_default_iommu(ops))
-+		return dma_common_alloc_pages(dev, size, dma_handle, dir, gfp);
- 	if (!ops->alloc_pages_op)
- 		return NULL;
- 	return ops->alloc_pages_op(dev, size, dma_handle, dir, gfp);
-@@ -635,6 +680,8 @@ static void __dma_free_pages(struct device *dev, size_t size, struct page *page,
- 	size = PAGE_ALIGN(size);
- 	if (dma_alloc_direct(dev, ops))
- 		dma_direct_free_pages(dev, size, page, dma_handle, dir);
-+	else if (dma_is_default_iommu(ops))
-+		dma_common_free_pages(dev, size, page, dma_handle, dir);
- 	else if (ops->free_pages)
- 		ops->free_pages(dev, size, page, dma_handle, dir);
- }
-@@ -697,6 +744,8 @@ struct sg_table *dma_alloc_noncontiguous(struct device *dev, size_t size,
- 
- 	if (ops && ops->alloc_noncontiguous)
- 		sgt = ops->alloc_noncontiguous(dev, size, dir, gfp, attrs);
-+	else if (dma_is_default_iommu(ops))
-+		sgt = iommu_dma_alloc_noncontiguous(dev, size, dir, gfp, attrs);
- 	else
- 		sgt = alloc_single_sgt(dev, size, dir, gfp);
- 
-@@ -725,6 +774,8 @@ void dma_free_noncontiguous(struct device *dev, size_t size,
- 	debug_dma_unmap_sg(dev, sgt->sgl, sgt->orig_nents, dir);
- 	if (ops && ops->free_noncontiguous)
- 		ops->free_noncontiguous(dev, size, sgt, dir);
-+	else if (dma_is_default_iommu(ops))
-+		iommu_dma_free_noncontiguous(dev, size, sgt, dir);
- 	else
- 		free_single_sgt(dev, size, sgt, dir);
- }
-@@ -865,6 +916,8 @@ size_t dma_max_mapping_size(struct device *dev)
- 
- 	if (dma_map_direct(dev, ops))
- 		size = dma_direct_max_mapping_size(dev);
-+	else if (dma_is_default_iommu(ops))
-+		size = iommu_dma_max_mapping_size(dev);
- 	else if (ops && ops->max_mapping_size)
- 		size = ops->max_mapping_size(dev);
- 
-@@ -877,9 +930,10 @@ size_t dma_opt_mapping_size(struct device *dev)
- 	const struct dma_map_ops *ops = get_dma_ops(dev);
- 	size_t size = SIZE_MAX;
- 
--	if (ops && ops->opt_mapping_size)
-+	if (dma_is_default_iommu(ops))
-+		size = iommu_dma_opt_mapping_size();
-+	else if (ops && ops->opt_mapping_size)
- 		size = ops->opt_mapping_size();
--
- 	return min(dma_max_mapping_size(dev), size);
- }
- EXPORT_SYMBOL_GPL(dma_opt_mapping_size);
-@@ -888,7 +942,12 @@ unsigned long dma_get_merge_boundary(struct device *dev)
- {
- 	const struct dma_map_ops *ops = get_dma_ops(dev);
- 
--	if (!ops || !ops->get_merge_boundary)
-+	if (!ops)
-+		return 0;	/* can't merge */
-+	if (dma_is_default_iommu(ops))
-+		return iommu_dma_get_merge_boundary(dev);
-+
-+	if (!ops->get_merge_boundary)
- 		return 0;	/* can't merge */
- 
- 	return ops->get_merge_boundary(dev);
--- 
-2.45.2
-
+Jason
