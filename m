@@ -1,457 +1,218 @@
-Received: from mail-ed1-f54.google.com (mail-ed1-f54.google.com [209.85.208.54])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.10])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 43E6A548E0
-	for <iommu@lists.linux.dev>; Mon, 15 Jul 2024 20:07:48 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.54
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1721074071; cv=none; b=sMsWdoCQlHUKKBalgm3Us7GCQQ6noMPBRrhX9TJapRp6hXcS7Td6v9/RncopKOZ4r8AuLsyK+0E2hVVJOEOCzvYJ3siyAXdpl/yKoQRAgEhvbNUCajGLNVVz2XSyZbFAsd1TohMoib8ypxA/CuI/RddaVtFfuYkU4akg3Kh08to=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1721074071; c=relaxed/simple;
-	bh=smNoOR1WfG8U0nJ9uwY1nKMtiBp2xaLK64Na6SVXqlM=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=fwHvQpw1TwrcFWLflo7rHmmgR/4iFXszx24bsFLmNMrVleFLZmeKqYOe3jC1G5Q85NRu1JtJ2oc7ier5aRhG074rfSwUdR30TT8XDgRux8lCWT/G8xssRR0hGKjgmWemqPsnZffh4+eyTUU0w9lyj7Y01T252VRO8xjaAjTV8sQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=ZNDc6xbX; arc=none smtp.client-ip=209.85.208.54
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CA3CF6FBE
+	for <iommu@lists.linux.dev>; Tue, 16 Jul 2024 02:03:30 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=198.175.65.10
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1721095412; cv=fail; b=Xab5S7vYrb+F8HeZpImJai5ud0ZauZBip6G7HLh4sHb6dVrc2JBPW64GeS5IA9NdkLPsZp34Ir/MGjNg8cyvRCeHP2NMKsXxNnJYswHWa7qwy1SjfnAk69+1FNJMul9cdZ44j0YLcnrbDzkrOY2t9+wljkqgcIb4vUgbU0zwAWQ=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1721095412; c=relaxed/simple;
+	bh=oFeC7SSVlC/STRezheH9zt0talG3xIN0rbID7Vv1bhA=;
+	h=Message-ID:Date:Subject:To:CC:References:From:In-Reply-To:
+	 Content-Type:MIME-Version; b=q2q8c6leM9Gsi81T+moP42kOINTpO9Ad/VsZOXCgR8cNLeXWiV8K1jU6FXqpNshGCXgWyKktJf1x1LQ9Qe8f/NttDHzOJXnv/ViWACObHGVWVllF5xohwBdlxtKJibOJ5ObfepOHdmouaEU8u0prKnhlBqIPuIvfMWOG8x5lLc8=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=nl+p98I/; arc=fail smtp.client-ip=198.175.65.10
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="ZNDc6xbX"
-Received: by mail-ed1-f54.google.com with SMTP id 4fb4d7f45d1cf-595856e2332so6225642a12.1
-        for <iommu@lists.linux.dev>; Mon, 15 Jul 2024 13:07:47 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1721074066; x=1721678866; darn=lists.linux.dev;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=dFcPtfKIWUo+oou6jTVAoopedeIN0y6MfDYKdozdUY4=;
-        b=ZNDc6xbXBESRNT4jy0K8mVnsFSfAZ7C/L+HFW9uK1ymbmvn/7NLmoiqY1r/JXsWjEt
-         KgXZ2aqyQvufLEDctk/61eEkRQf46XzFQPTzkWoPSh4dzcWKzi1dj2v7QHsYf14lpglY
-         RaUsplxeD8JOydGjEQhoih/hoDmTnWOE1dZp5IzXxTdbWJ2tAOanlEMFFfjhwt46IvUK
-         TIa0fS57mc/4L+7GUg4s7rHPzTDQb1g8dTypn3WBM9jaMEPdpYPSYw57bBa/iwHLzgBq
-         Vo/9GMZY1e8ucojgQfROlHmCEKOXaacIAoFYGyvN5GZdOchtG7jM0Gr1Yc/BAytlwl33
-         iE8A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1721074066; x=1721678866;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=dFcPtfKIWUo+oou6jTVAoopedeIN0y6MfDYKdozdUY4=;
-        b=AmgUIIOtUfVW+FYpAOR4XXG3XlmZ7eyD7Shq0Xq1cVZbfCiq+00ryg7A65rQy/wI4m
-         bddPvoisQu0z3OrEGxYHxA3Pdkw8FNBtIOlcxs/VXNudc/mcmcNHKm6or03u1Gbf1FI1
-         8RrjOEm/8RUpfIDxzEaWCjutkKUHtspIkWO31ObTzPIKTUyrpiNbqueIcIjill10a0sw
-         kQgdls6t/kAtEVnCg2IHGltGDYDiomcMcmXi91BypP55eDSr4h3s4b/dnr44dRToIegs
-         N8IvleY954dUWGLXPzhjtWEAx5qEcUUbsdcCS4ftJot7Im9IoreHgpNrRVmV140XUVvl
-         SmQw==
-X-Forwarded-Encrypted: i=1; AJvYcCW93j5j/TMTwl/duloRYcAxG7nFBjJXQ6fSifneCdhmgLsvobGFzLyUXZ2R/VDrDDaEJTihkgJuZ1siPx+LDEaL0Wr9CUE=
-X-Gm-Message-State: AOJu0YxeeMi4nDDXZzN7ezt4ZTC/Bq82rROjgimkxi0e2Va1PcAJ5AIC
-	nTnarEJLfEZ3foVYmavLXTxjhzVqcQFPROWLlK28pzLLQeljmUNoeNysUzQ2a6U1plWYfAXBsmw
-	4yKA3cXWIw34k1mwXdiMSy6OpkGs=
-X-Google-Smtp-Source: AGHT+IF4dqWiiEvCQQPUbtuUSNGA0DiOxqxNR6ObGUUaH1SmHhMLQhxrPQsJ2kyJ8tLapSPLJttezXo6iXC6qVd49NY=
-X-Received: by 2002:a05:6402:278f:b0:57c:7486:3f7d with SMTP id
- 4fb4d7f45d1cf-59e97812082mr707453a12.19.1721074066441; Mon, 15 Jul 2024
- 13:07:46 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="nl+p98I/"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1721095411; x=1752631411;
+  h=message-id:date:subject:to:cc:references:from:
+   in-reply-to:content-transfer-encoding:mime-version;
+  bh=oFeC7SSVlC/STRezheH9zt0talG3xIN0rbID7Vv1bhA=;
+  b=nl+p98I/ZpqA6wtwwen1uFnv4hZTJvyc4NxJvKA5RQYwHjir/5quQdnS
+   kXp+vqiGKJi5MflKnqp0pVI9YEAbXfS3y9Y+9JK5LMQqS6L0QxY/eo0y8
+   p4yTxdnZsMTxh6mw6tIDYNjApOC+1ZO4IGfQy7gFcb+LisCFe7B7NNk5h
+   QZ+6Qz0+n9imviUtsp1EYuls3KWzEe8mJFjWsM6fC9cSIPnOT3bPMBrZU
+   3Hv7cJq0/aTTA+pFq6iO3uWmNE7j/HjxeFqkzWdWS5v9gDtcMc6FPpC8j
+   iNpozqSA5rq5e+WJYV+PK9QFJOYGJJC+hBlaf6gOy7loJUraUfyhIPbDr
+   A==;
+X-CSE-ConnectionGUID: ZFYXxVPkSYGSrdn+6hV3kg==
+X-CSE-MsgGUID: addulr6FS8i9Zg+Bi7suhw==
+X-IronPort-AV: E=McAfee;i="6700,10204,11134"; a="35942149"
+X-IronPort-AV: E=Sophos;i="6.09,211,1716274800"; 
+   d="scan'208";a="35942149"
+Received: from fmviesa008.fm.intel.com ([10.60.135.148])
+  by orvoesa102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Jul 2024 19:03:31 -0700
+X-CSE-ConnectionGUID: rzjCXUctTDip60Dq4ml9DA==
+X-CSE-MsgGUID: xnaB1GN4TO2G98NaTlsLTg==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.09,211,1716274800"; 
+   d="scan'208";a="49769809"
+Received: from fmsmsx601.amr.corp.intel.com ([10.18.126.81])
+  by fmviesa008.fm.intel.com with ESMTP/TLS/AES256-GCM-SHA384; 15 Jul 2024 19:03:30 -0700
+Received: from fmsmsx610.amr.corp.intel.com (10.18.126.90) by
+ fmsmsx601.amr.corp.intel.com (10.18.126.81) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.39; Mon, 15 Jul 2024 19:03:29 -0700
+Received: from fmsedg601.ED.cps.intel.com (10.1.192.135) by
+ fmsmsx610.amr.corp.intel.com (10.18.126.90) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.39 via Frontend Transport; Mon, 15 Jul 2024 19:03:29 -0700
+Received: from NAM04-DM6-obe.outbound.protection.outlook.com (104.47.73.41) by
+ edgegateway.intel.com (192.55.55.70) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.1.2507.39; Mon, 15 Jul 2024 19:03:29 -0700
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=FgYLCrlQlkttusCDb2iH6gosrdpE3lNmK7zjBz2ViDttaM2FFNcT/XdKgd106TcY4hgKnXWIPHXTIUcXgD/dBn+QgmtDjidfM8mdUyzZ37CqqFPunlBKwUtYMjvN288vx2FHiakE9UH1LyHuZ+UkQIq7r6/9gzQ+9+BUkmDZ2ck5Yn/tMTQFglP/oUEqsQbMbsW+hQFtYowtdly7NuCzjfTxz/WLkNpFP+hmBqaFKVy3HhUJeNXGvUPIhJrNZqp5661Qar/O4nvU5tGHf3L1gRHHY7zPqmL4rD79g6n/VBfNdrC56DO1KhVC1rf8vG0kM1RamWfUE0Z7I6lQ5dFIpw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=kddNt/Q5wq/38E8OYWyAwrKuWh1AHlj3Ot1eSF7K/Io=;
+ b=Z2pd7VXekzVw2AUzK2Vot8ixmpIJynIFW02p3J7co2fHkmEZfTTrEG2hGagtzChulDcag20vJn0Q2TN0OYS+HRwFoB8NXWgHKaRZ9jWN9NrGFE3RaxjheXgYfxI9TVCrWGKoO8p+w5a342PSrewg/yxXcfd897KIbcdW4nIT9J6Ek8yyEp5ksnYTHCI+zw1pZKBAWXtMQYS4e1By3L39Ov9mvwwuw3xiG3SpqjaWreS63JzNXL1P8BV8FpLZe7uZRN1Sfi2yb0XIXekerUQDD9GGm/v3BJAAUGhZx5X2OdtvIeeE/shq9jwpYYTXPdur4At3yFE9cmsY0CRVOibeNw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
+ dkim=pass header.d=intel.com; arc=none
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=intel.com;
+Received: from DS0PR11MB7529.namprd11.prod.outlook.com (2603:10b6:8:141::20)
+ by LV8PR11MB8560.namprd11.prod.outlook.com (2603:10b6:408:1e7::15) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7762.29; Tue, 16 Jul
+ 2024 02:03:27 +0000
+Received: from DS0PR11MB7529.namprd11.prod.outlook.com
+ ([fe80::d244:15cd:1060:941a]) by DS0PR11MB7529.namprd11.prod.outlook.com
+ ([fe80::d244:15cd:1060:941a%4]) with mapi id 15.20.7762.027; Tue, 16 Jul 2024
+ 02:03:27 +0000
+Message-ID: <b81ade0e-fb1d-435c-9372-25032bb7b59b@intel.com>
+Date: Tue, 16 Jul 2024 10:07:23 +0800
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH 0/6] Make set_dev_pasid op supportting domain replacement
+To: Jason Gunthorpe <jgg@nvidia.com>
+CC: "Tian, Kevin" <kevin.tian@intel.com>, "joro@8bytes.org" <joro@8bytes.org>,
+	"baolu.lu@linux.intel.com" <baolu.lu@linux.intel.com>,
+	"alex.williamson@redhat.com" <alex.williamson@redhat.com>,
+	"robin.murphy@arm.com" <robin.murphy@arm.com>, "eric.auger@redhat.com"
+	<eric.auger@redhat.com>, "nicolinc@nvidia.com" <nicolinc@nvidia.com>,
+	"kvm@vger.kernel.org" <kvm@vger.kernel.org>, "chao.p.peng@linux.intel.com"
+	<chao.p.peng@linux.intel.com>, "iommu@lists.linux.dev"
+	<iommu@lists.linux.dev>
+References: <20240628085538.47049-1-yi.l.liu@intel.com>
+ <BN9PR11MB5276F74566E3CBE666FCD3BB8CA42@BN9PR11MB5276.namprd11.prod.outlook.com>
+ <20240711184119.GL1482543@nvidia.com>
+ <a3848458-b41c-4ef1-ae0e-28bf5f3ad43c@intel.com>
+ <20240715121946.GT1482543@nvidia.com>
+Content-Language: en-US
+From: Yi Liu <yi.l.liu@intel.com>
+In-Reply-To: <20240715121946.GT1482543@nvidia.com>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: SI1PR02CA0030.apcprd02.prod.outlook.com
+ (2603:1096:4:1f4::8) To DS0PR11MB7529.namprd11.prod.outlook.com
+ (2603:10b6:8:141::20)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <20240628140435.1652374-1-quic_bibekkum@quicinc.com>
- <20240628140435.1652374-7-quic_bibekkum@quicinc.com> <CAF6AEGvroi8rJimFv95tkWmRFa5_aTpBJ7GFcRAuZpLGdSyEYQ@mail.gmail.com>
- <0650ba0a-4453-4e2d-8a76-0f396ac1999c@quicinc.com> <CAF6AEGv_9e-TDW1r0N4-db6pY_aV_EZFqrpNbATVS5Vy6+fs1g@mail.gmail.com>
- <4a5f54c7-120e-427d-8a0a-9fb83e13a72e@quicinc.com> <CAF6AEGtrtFNxDWtuADA4oOHhZJ=dJZcGaJ1XLFJt4fe4Xp=pTA@mail.gmail.com>
- <3b7c05b1-8f36-4c81-a55c-dbb467314099@quicinc.com> <CAF6AEGuRKU+DkL0-b3xdR1R45_MiiKQYRRXEXYz-xohu8rUaEQ@mail.gmail.com>
- <CAF6AEGtbw06-gOSvX9gAbi=SA801gmD3_8c5xkOU-G9g2qKptQ@mail.gmail.com>
- <9509f256-04a4-4907-98fc-148c5087d74d@quicinc.com> <CAF6AEGuLwZ0yFGWMKX-O1VjQB2M57K+CsyJ=7PCKXE=b=VsSNg@mail.gmail.com>
- <3382aaca-4ca1-46e5-a445-dcb115ff206f@quicinc.com>
-In-Reply-To: <3382aaca-4ca1-46e5-a445-dcb115ff206f@quicinc.com>
-From: Rob Clark <robdclark@gmail.com>
-Date: Mon, 15 Jul 2024 13:07:34 -0700
-Message-ID: <CAF6AEGu0uH7GuNb3SJVk0cPDUwkYZ6NTG1ze+wmc1OjsaownwA@mail.gmail.com>
-Subject: Re: [PATCH v13 6/6] iommu/arm-smmu: add support for PRR bit setup
-To: Bibek Kumar Patro <quic_bibekkum@quicinc.com>
-Cc: will@kernel.org, robin.murphy@arm.com, joro@8bytes.org, jgg@ziepe.ca, 
-	jsnitsel@redhat.com, robh@kernel.org, krzysztof.kozlowski@linaro.org, 
-	quic_c_gdjako@quicinc.com, dmitry.baryshkov@linaro.org, 
-	konrad.dybcio@linaro.org, iommu@lists.linux.dev, 
-	linux-arm-msm@vger.kernel.org, linux-arm-kernel@lists.infradead.org, 
-	linux-kernel@vger.kernel.org, Rob Clark <robdclark@chromium.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: DS0PR11MB7529:EE_|LV8PR11MB8560:EE_
+X-MS-Office365-Filtering-Correlation-Id: 30435daf-56d9-4476-f9b4-08dca53b7b59
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;ARA:13230040|1800799024|366016|7416014|376014;
+X-Microsoft-Antispam-Message-Info: =?utf-8?B?NGNVSE5KWXBpOVVaQk1LRWJmVEx6OW9zRHpDTzF1QjhwM0Q2aVZ3YU40ekt5?=
+ =?utf-8?B?YzlUekRnTDFlUThramZXUGpjVC80eEVpd2xBUmVnajNweEg2SStUaE5TRHFB?=
+ =?utf-8?B?dG8zUC8wazRrbXl6UE1QRTNUenNLSU83VWdYWEoyV1FlRmw0c1F1eDc2MGtq?=
+ =?utf-8?B?N1BLZjRJTG8zdzV3cjJQWEVpRm8yeXN4YUlFSW5peDI4K3FFUzF2WE1JdFUr?=
+ =?utf-8?B?cVI1Z3FsT0tTV1AzbEo0R3ltb2NzaTVnbG5UWmpLaXMzaUZWTm5EdkJoRjB1?=
+ =?utf-8?B?aEJqbHRYeVh5bXVsV1RBUUZYUDJHcTN4cTBlczRscTZ1VmtadUQ4eGUrYkpm?=
+ =?utf-8?B?eEN1K2xZS1VOeXlmRThVTUYwalpVZzY0ZmcrbkphbkZsVk1NWkNNYzYrdUUw?=
+ =?utf-8?B?RzJqcTNHcXVSZFNGejc2TnJxWnJEa1ViamUwVU8rcHZtWmdqYThYU2tCUTE5?=
+ =?utf-8?B?OFUyTXFITFBGVThucWZQK2tLRVNlRy9VSFNzUUtJbkZIMnRSOTQ0U2c5VmNp?=
+ =?utf-8?B?NG9kMVMwTGRqQ0s2QW9IaVlybU9GblUwZ2pkYU1RaStDc1lZN0RlZmdGcHJ1?=
+ =?utf-8?B?WTZvbDZWL1lwb3IyK2d3Y2dQbitBcWxXNEY0NzBhMXFQWXAwb0Vsb2ZoTnNj?=
+ =?utf-8?B?bmJ6QkkyVHZiMGZIM1BpQUx1M0ZHT2Y1eWlIRHRVd2h6MXdpTUlVZkNTTU85?=
+ =?utf-8?B?YTNua0taNDhGK3R4VEEwaml1N25Ob3NUZDdaL2RnWlZtekpGL1VHZW1yUzFy?=
+ =?utf-8?B?SjVDdDlCcmpNeUNkc0tZOG5LdjB1ZHZQem5EZ3JkbnRpNjl3TEtaMC8rWENW?=
+ =?utf-8?B?MHh4U3hKNXViVGdNZjMxMUYxYjU0SHBvQTVGeW5jZWpTdWZUd3ljazZvbXF1?=
+ =?utf-8?B?SUplOVlKbHQ0MHVRK283WGg5RWxFeDRzTFpzTWJ1RWJlSUJzVDlHek43Si9t?=
+ =?utf-8?B?ZEhicjJScWVFUEF0dkhCcjlVZm4ydFNZZG1tQktiN29WM2ZzMUtpZnFwaHlu?=
+ =?utf-8?B?c0lCbWlCWUNBWkZ0TXhicEtyNjVrN1Fhc0F3UHREd1FwZXF3dkNOVDNHa3JK?=
+ =?utf-8?B?WlNnSk9jNnh3Q3hvYks3UHMvV2hBcHl0YnF5OWlDOWR3N01yYmdkaUVVc3E0?=
+ =?utf-8?B?WkYzZ1loOHBZT1JsaThTQlZzbWtRZ0I5Q0NQMGpWSlcwLzd1N053eld5N0w3?=
+ =?utf-8?B?eXRRbTNjMW1aNnRUSUFMNExkS3gxSmFTbmtxWVd4UDduQy94N3JkaC9HWDVw?=
+ =?utf-8?B?d2VaNngxK0RWdm5hMHBlNFoxbVZzaHhpRnNDMU5QdlppMjVVZjdJR20xcllv?=
+ =?utf-8?B?bzIxU1dzYlRYaVF1blI5ZEZRRTV4YUUwK0VDZ1R4d2JiazJxUjlyQnBSZStJ?=
+ =?utf-8?B?UEhlWEhieGV5T2wwNEF2eVJrYm53UzRuUDF5WUlMaloyOGdlRVhjNnB1VW5P?=
+ =?utf-8?B?anovVDZjVzA2WFROcEtDaXFHYUpZbFpaN2tnYWJWbnM0aFpZZ051RjRSb2x1?=
+ =?utf-8?B?NjNQY1B5a0tBeHQzMXBYSjUxSHc0RVhJLzA0YXFRcTdpcURDL0gxelhCbEtr?=
+ =?utf-8?B?SUVwOU9lWG1NNnhRQXBkb01yY2ZZNFd2QUZHWmNKTE94RUFvdjNuZzF4QWJO?=
+ =?utf-8?B?emRycm1KM2F5MlRkUTRpaGI2Mm5kT1NSUURtVS9Ub0JYNjNxUUpSSFpmOStM?=
+ =?utf-8?B?V1RNSXEvc2ZrYkRJQnJLRE5wN2Y0aXN6UDMvS2hIUjBKSzlVRjA1NVYvRG9q?=
+ =?utf-8?B?eVVQN3N2SlAvWkFyazF6SWVvMWVzcEhRc1dyY1FaSGhGZlZ2R1FoOEZVU2Vy?=
+ =?utf-8?B?alBuazZIelBBVDB1RjJWQT09?=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DS0PR11MB7529.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(1800799024)(366016)(7416014)(376014);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?TG9scVpMNXoxYUFId0pYaDVVT1lKMkpHaHZmOCtoME9UTnFxeEdpbnVRc2hG?=
+ =?utf-8?B?R21YMVQyV2IyOTZZTWRCeVZOUEJkSTNCVzVKcFpWOU90VkdMYzRycVlLOWU4?=
+ =?utf-8?B?Um04dW96NzBjRFZkZmVBdVFKQ3ZxWjMwWS9LL1RQSDZSZ0JsMDRMVHRIY2hQ?=
+ =?utf-8?B?dlQvNE5heGt4Wks2R1UyanRUUWxBZC9zcDNLZUdLOStsTFVudFhNNnBrNjFh?=
+ =?utf-8?B?dThCcURjTWhVYk8wby9sM0RyKy80c2RCWUZhM0FqL3RUaE5VOC9DNWlWcUs1?=
+ =?utf-8?B?VXl0eUdMZDYxNGFrU2M5eFlPaDBxTVRqclFMazFFUGhBdGRzeTZQKzJTSTFP?=
+ =?utf-8?B?TTIzYnlUZGdydXNwUTBLOERLSUZVbVVCZE5WUTAxRjdnUTRQRys1bjBCdEln?=
+ =?utf-8?B?RldKc2Fxa2NpazNaeWsySENnS1VScHFrNzdBUkNuUzJQZ3dVTXlkeEsxd0Zu?=
+ =?utf-8?B?NjluOGcwOEJBVDF2TW56eUZRTzhtak5rWW9KNXhhRllwT241aDlQZFpwWHQr?=
+ =?utf-8?B?V2tMbFlCNkZ4RnhiMnhMcTZJbjluWmRUR0NpQ0tZK3dhckFRLzhRdnlCVFNZ?=
+ =?utf-8?B?d2NXSXJBVHhDRExQR0pRYlQ0Y25iZXNPVjMwTVRQRk0zRlgyZldYVDJZYWZn?=
+ =?utf-8?B?RjIwL0ZCTFI5OTI2NFlGUXVQbnVwLzZWR2tQblFucFA5Vi9YZWtaTnZSNEE0?=
+ =?utf-8?B?TnM3bFBpaXpzcUUyTzdocWtkcmV3UnhGcmZUdlRHQ292UTZhK1VNT0djR043?=
+ =?utf-8?B?NE1NWjRka1A2b2J0dmI0YXdxazZ1R3pPLzJrTlFMd2VndnB2U1NVUXhQZHR4?=
+ =?utf-8?B?Zk5qeURLMFZuZHFzVjNORTJDakp4eEY0YWhzODI0QkNSSUh4ZFpIMkhYYU1Q?=
+ =?utf-8?B?dnYvbFhOQ2c5M1N2Y01ZT3dFY0xoYmh4V3FrUno0R2k3UFJVaUZBNUc2aURz?=
+ =?utf-8?B?RzZyTDJ6VGxob2JDNFhHZVVKSE9wbE84cVFnTVVWUzFTN3dEMWdYOEJJSW5E?=
+ =?utf-8?B?bmFRR09VS1VxcWhta3RPMGFOWDQvUnZjWHhSamNucHRTWjNLcXNueS9CcnNZ?=
+ =?utf-8?B?M3NIUS9wNUdreFpNNkFBM0VmbVV6aXRqaWlGM29SMGhVVEp2YUh2citnRjc2?=
+ =?utf-8?B?UkN1UXFvNFFwZXhSUkR3eFlvakduZlhRbzMxS05YQ0tlOUhsUVlxbm5nWEhD?=
+ =?utf-8?B?ODEzcEdjaVV3OVhHejhzdmxnUk5aWHNpQ0J5NjFoTXF1SU1QV0pMbmxiM3dw?=
+ =?utf-8?B?ZG5wU0ZqKzg5dFJ1SWJWb2N6KzcreW5Od29rSWRMZkx4VU5DdjB6WFRGU1g2?=
+ =?utf-8?B?d0lkYS9aYnVIaUpZbCtKYmtxZjlVbjQ3dmRkZnU0SllyMEVVWFI5N3VkODZn?=
+ =?utf-8?B?ekJlbGNRS0IrU2g1QlVORk9jdU1ZazVlbDlIYVlXZ3h5a2c4MUt4eGJTaUNk?=
+ =?utf-8?B?dWtSVXdTWTBidEdjY09CNVhjcWlEZjVJRjFwNzlodzFJSUQ3NjJRWDRXWlVG?=
+ =?utf-8?B?VlRvUVIrZERIQ1hQb3MxT1UyWGxnUUR4bXZFTSt2T1FDUmFkZHl2ZlZJWGVO?=
+ =?utf-8?B?K0pKTGNrNVdlcTd5c3BsejVwSnFaaFBJQVBUNExGL1RRQjh6bEw3MU9FUXVw?=
+ =?utf-8?B?K1hUS0Y1c1NGdmFXVWYwSDBBWFo1blg2RHVBaU5HQVpwS2MxaEpydUhGckhU?=
+ =?utf-8?B?UG5HWUZSYWNmb3N3UWpiWmQvZGI1ZFJJZkhHNWhISmhoTWNtc3dmeUxQZjEy?=
+ =?utf-8?B?TWhXVGVGWlhoY0pVQ0dENkg0QS9UZmFVb1JleGFWaW84SE1yakhCbFZnb1Fv?=
+ =?utf-8?B?cnVYNDVla3lkd0s3cXdKazNOOW9ScHJibmRmWjRocHQzSEFIbkJSeXZUTUpa?=
+ =?utf-8?B?MXE4ZHlJbFNjblhRRzV6OWxpQ1ZoVlR3MGVJalQ1QU82VHBMYS9qNVMzaXc3?=
+ =?utf-8?B?Zm45Rmh4TDltd1g5KzN4ZHd0aHMzWXlGWFBMa2M3bVFsMFM3R3ZwVTZDcGJv?=
+ =?utf-8?B?SE16dG1kMTNSbFdHaXFMM2Y3N0FqKzlieU5jVkZLUm5mUnFnTnl6NWdGZFhZ?=
+ =?utf-8?B?RVZrSEh5Y0RRRmVqM1VablVWaG11NTVNM0VqU05aYkVTOE1hdHU2Z0h2Z3Nq?=
+ =?utf-8?Q?0VwrYjDxv2FdmVnL3mz52+6a7?=
+X-MS-Exchange-CrossTenant-Network-Message-Id: 30435daf-56d9-4476-f9b4-08dca53b7b59
+X-MS-Exchange-CrossTenant-AuthSource: DS0PR11MB7529.namprd11.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 16 Jul 2024 02:03:27.4568
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 46c98d88-e344-4ed4-8496-4ed7712e255d
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: 9jpIcPWT9ZyP2QmG5RyjRqVSXbZ7H8+onqfx9RD5mKAtScPjuzV/XmcQIYYJRpZbKq1zmKHNTPFHOLaWkbni3g==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: LV8PR11MB8560
+X-OriginatorOrg: intel.com
 
-On Mon, Jul 15, 2024 at 4:00=E2=80=AFAM Bibek Kumar Patro
-<quic_bibekkum@quicinc.com> wrote:
->
->
->
-> On 7/10/2024 10:31 PM, Rob Clark wrote:
-> > On Tue, Jul 9, 2024 at 12:43=E2=80=AFPM Bibek Kumar Patro
-> > <quic_bibekkum@quicinc.com> wrote:
-> >>
-> >>
-> >>
-> >> On 7/4/2024 9:28 PM, Rob Clark wrote:
-> >>> On Thu, Jul 4, 2024 at 7:46=E2=80=AFAM Rob Clark <robdclark@gmail.com=
-> wrote:
-> >>>>
-> >>>> On Wed, Jul 3, 2024 at 4:38=E2=80=AFAM Bibek Kumar Patro
-> >>>> <quic_bibekkum@quicinc.com> wrote:
-> >>>>>
-> >>>>>
-> >>>>>
-> >>>>> On 7/2/2024 2:01 AM, Rob Clark wrote:
-> >>>>>> On Mon, Jul 1, 2024 at 4:01=E2=80=AFAM Bibek Kumar Patro
-> >>>>>> <quic_bibekkum@quicinc.com> wrote:
-> >>>>>>>
-> >>>>>>>
-> >>>>>>>
-> >>>>>>> On 6/28/2024 9:14 PM, Rob Clark wrote:
-> >>>>>>>> On Fri, Jun 28, 2024 at 8:10=E2=80=AFAM Bibek Kumar Patro
-> >>>>>>>> <quic_bibekkum@quicinc.com> wrote:
-> >>>>>>>>>
-> >>>>>>>>>
-> >>>>>>>>>
-> >>>>>>>>> On 6/28/2024 7:47 PM, Rob Clark wrote:
-> >>>>>>>>>> On Fri, Jun 28, 2024 at 7:05=E2=80=AFAM Bibek Kumar Patro
-> >>>>>>>>>> <quic_bibekkum@quicinc.com> wrote:
-> >>>>>>>>>>>
-> >>>>>>>>>>> Add an adreno-smmu-priv interface for drm/msm to call
-> >>>>>>>>>>> into arm-smmu-qcom and initiate the PRR bit setup or reset
-> >>>>>>>>>>> sequence as per request.
-> >>>>>>>>>>>
-> >>>>>>>>>>> This will be used by GPU to setup the PRR bit and related
-> >>>>>>>>>>> configuration registers through adreno-smmu private
-> >>>>>>>>>>> interface instead of directly poking the smmu hardware.
-> >>>>>>>>>>>
-> >>>>>>>>>>> Suggested-by: Rob Clark <robdclark@gmail.com>
-> >>>>>>>>>>> Signed-off-by: Bibek Kumar Patro <quic_bibekkum@quicinc.com>
-> >>>>>>>>>>> ---
-> >>>>>>>>>>>       drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c | 23 +++++++=
-+++++++++++++++
-> >>>>>>>>>>>       drivers/iommu/arm/arm-smmu/arm-smmu.h      |  2 ++
-> >>>>>>>>>>>       include/linux/adreno-smmu-priv.h           |  6 +++++-
-> >>>>>>>>>>>       3 files changed, 30 insertions(+), 1 deletion(-)
-> >>>>>>>>>>>
-> >>>>>>>>>>> diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c b/dri=
-vers/iommu/arm/arm-smmu/arm-smmu-qcom.c
-> >>>>>>>>>>> index bd101a161d04..64571a1c47b8 100644
-> >>>>>>>>>>> --- a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
-> >>>>>>>>>>> +++ b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
-> >>>>>>>>>>> @@ -28,6 +28,7 @@
-> >>>>>>>>>>>       #define PREFETCH_SHALLOW       (1 << PREFETCH_SHIFT)
-> >>>>>>>>>>>       #define PREFETCH_MODERATE      (2 << PREFETCH_SHIFT)
-> >>>>>>>>>>>       #define PREFETCH_DEEP          (3 << PREFETCH_SHIFT)
-> >>>>>>>>>>> +#define GFX_ACTLR_PRR          (1 << 5)
-> >>>>>>>>>>>
-> >>>>>>>>>>>       static const struct actlr_config sc7280_apps_actlr_cfg[=
-] =3D {
-> >>>>>>>>>>>              { 0x0800, 0x04e0, PREFETCH_DEFAULT | CMTLB },
-> >>>>>>>>>>> @@ -235,6 +236,27 @@ static void qcom_adreno_smmu_resume_tran=
-slation(const void *cookie, bool termina
-> >>>>>>>>>>>              arm_smmu_cb_write(smmu, cfg->cbndx, ARM_SMMU_CB_=
-RESUME, reg);
-> >>>>>>>>>>>       }
-> >>>>>>>>>>>
-> >>>>>>>>>>> +static void qcom_adreno_smmu_set_prr(const void *cookie, phy=
-s_addr_t page_addr, bool set)
-> >>>>>>>>>>> +{
-> >>>>>>>>>>> +       struct arm_smmu_domain *smmu_domain =3D (void *)cooki=
-e;
-> >>>>>>>>>>> +       struct arm_smmu_cfg *cfg =3D &smmu_domain->cfg;
-> >>>>>>>>>>> +       struct arm_smmu_device *smmu =3D smmu_domain->smmu;
-> >>>>>>>>>>> +       u32 reg =3D 0;
-> >>>>>>>>>>> +
-> >>>>>>>>>>> +       writel_relaxed(lower_32_bits(page_addr),
-> >>>>>>>>>>> +                               smmu->base + ARM_SMMU_GFX_PRR=
-_CFG_LADDR);
-> >>>>>>>>>>> +
-> >>>>>>>>>>> +       writel_relaxed(upper_32_bits(page_addr),
-> >>>>>>>>>>> +                               smmu->base + ARM_SMMU_GFX_PRR=
-_CFG_UADDR);
-> >>>>>>>>>>> +
-> >>>>>>>>>>> +       reg =3D  arm_smmu_cb_read(smmu, cfg->cbndx, ARM_SMMU_=
-CB_ACTLR);
-> >>>>>>>>>>> +       reg &=3D ~GFX_ACTLR_PRR;
-> >>>>>>>>>>> +       if (set)
-> >>>>>>>>>>> +               reg |=3D FIELD_PREP(GFX_ACTLR_PRR, 1);
-> >>>>>>>>>>> +       arm_smmu_cb_write(smmu, cfg->cbndx, ARM_SMMU_CB_ACTLR=
-, reg);
-> >>>>>>>>>>> +
-> >>>>>>>>>>
-> >>>>>>>>>> nit, extra line
-> >>>>>>>>>>
-> >>>>>>>>>
-> >>>>>>>>> Ack, will remove this. Thanks for pointing out.
-> >>>>>>>>>
-> >>>>>>>>>> Also, if you passed a `struct page *` instead, then you could =
-drop the
-> >>>>>>>>>> bool param, ie. passing NULL for the page would disable PRR.  =
-But I
-> >>>>>>>>>> can go either way if others have a strong preference for phys_=
-addr_t.
-> >>>>>>>>>>
-> >>>>>>>>>
-> >>>>>>>>> Oh okay, this looks simple to reset the prr bit.
-> >>>>>>>>> But since this page is allocated and is used inside gfx driver
-> >>>>>>>>> before being utilized for prr bit operation, would it be safe f=
-or
-> >>>>>>>>> drm/gfx driver to keep a reference to this page in smmu driver?
-> >>>>>>>>>
-> >>>>>>>>> Since we only need the page address for configuring the
-> >>>>>>>>> CFG_UADDR/CFG_LADDR registers so passed the phys_addr_t.
-> >>>>>>>>
-> >>>>>>>> I don't think the smmu driver needs to keep a reference to the p=
-age..
-> >>>>>>>> we can just say it is the responsibility of the drm driver to ca=
-ll
-> >>>>>>>> set_prr(NULL) before freeing the page
-> >>>>>>>>
-> >>>>>>>
-> >>>>>>> That makes sense. If we go by this NULL page method to disable th=
-e PRR,
-> >>>>>>> we would have to set the address registers to reset value as well=
-.
-> >>>>>>>
-> >>>>>>> The sequence would be like the following as per my understaning:
-> >>>>>>> - Check if it's NULL page
-> >>>>>>> - Set the PRR_CFG_UADDR/PRR_CFG_LADDR to reset values i.e - 0x0 f=
-or
-> >>>>>>>       these registers
-> >>>>>>> - Reset the PRR bit in actlr register
-> >>>>>>>
-> >>>>>>> Similar to this snippet:
-> >>>>>>>
-> >>>>>>> #PRR_RESET_ADDR 0x0
-> >>>>>>>
-> >>>>>>> --------------
-> >>>>>>> reg =3D  arm_smmu_cb_read(smmu, cfg->cbndx, ARM_SMMU_CB_ACTLR);
-> >>>>>>> reg &=3D ~GFX_ACTLR_PRR;
-> >>>>>>> arm_smmu_cb_write(smmu, cfg->cbndx, ARM_SMMU_CB_ACTLR, reg);
-> >>>>>>>
-> >>>>>>> if (!prr_page) {
-> >>>>>>>            writel_relaxed(PRR_RESET_ADDR,
-> >>>>>>>                            smmu->base + ARM_SMMU_GFX_PRR_CFG_LADD=
-R);
-> >>>>>>>            writel_relaxed(PRR_RESET_ADDR),
-> >>>>>>>                             smmu->base + ARM_SMMU_GFX_PRR_CFG_UAD=
-DR);
-> >>>>>>>            return;
-> >>>>>>> }
-> >>>>>>>
-> >>>>>>>
-> >>>>>>> writel_relaxed(lower_32_bits(page_to_phys(prr_page)),
-> >>>>>>>                    smmu->base + ARM_SMMU_GFX_PRR_CFG_LADDR);
-> >>>>>>>
-> >>>>>>> writel_relaxed(upper_32_bits(page_to_phys(prr_page)),
-> >>>>>>>                    smmu->base + ARM_SMMU_GFX_PRR_CFG_UADDR);
-> >>>>>>>
-> >>>>>>> reg |=3D FIELD_PREP(GFX_ACTLR_PRR, 1);
-> >>>>>>> arm_smmu_cb_write(smmu, cfg->cbndx, ARM_SMMU_CB_ACTLR, reg);
-> >>>>>>> -----------------
-> >>>>>>>
-> >>>>>>> If looks good, will implement the same in next version.
-> >>>>>>
-> >>>>>> yeah, that looks like it could work..
-> >>>>>>
-> >>>>>> you probably don't need to zero out the PRR_CFG_*ADDR when disabli=
-ng,
-> >>>>>> and probably could avoid double writing ACTLR, but that is getting
-> >>>>>> into bikeshedding
-> >>>>>>
-> >>>>>
-> >>>>> Actually Rob, since you rightly pointed this out.
-> >>>>> I crosschecked again on these registers.
-> >>>>> PRR_CFG_*ADDR is a global register in SMMU space but
-> >>>>> ACTLR register including PRR bit is a per-domain register.
-> >>>>> There might also be a situation where PRR feature need to be
-> >>>>> disabled or enabled separately for each domain.
-> >>>>> So I think it would be cleaner to have two apis, set_prr_addr(),
-> >>>>> set_prr_bit().
-> >>>>> set_prr_addr() will be used only to set this PRR_CFG_*ADDR
-> >>>>> register by passing a 'struct page *'
-> >>>>> set_prr_bit() will be used as a switch for PRR feature,
-> >>>>> where required smmu_domain will be passed along with
-> >>>>> the bool value to set/reset the PRR bit depending on which this
-> >>>>> feature will be enabled/disabled for the selected domain.
-> >>>>
-> >>>> on a related note, adreno has been using arm-smmu for a number of
-> >>>> generations, I guess not all support PRR?  The drm driver will need =
-to
-> >>>> know whether PRR is supported (and expose that to userspace to let t=
-he
-> >>>> UMD know whether to expose certain extensions).  How should this wor=
-k?
-> >>>
-> >>> So, I noticed in the x1e80100.dtsi that there is a gpu_prr_mem
-> >>> reserved section..  maybe we should be connecting this to the smmu
-> >>> driver in dt, and using that to detect presence of PRR?  Ie. the smmu
-> >>> driver would configure PRR_CFG_*ADDR based on the reserved mem, and
-> >>> the interface to drm would just be to enable/disable PRR, returning a=
-n
-> >>> error code if the reserved mem section isn't there.
-> >>>
-> >>> This simplifies the interface, and handles the question of how to
-> >>> detect if PRR is supported.
-> >>>
-> >>> BR,
-> >>> -R
-> >>>
-> >>
-> >> As I checked gpu_prr_mem reserved mem section is not used for mobile
-> >> targets hence not present for other DT only compute targets like
-> >> x1e80100.dtsi has the same. PRR looks to be smmu version specific
-> >> property.
-> >
-> > I only see it in gpu_prr_mem in x1e80100.dtsi, but not documented
-> > anywhere.  I'm only assuming based on the name that it is intended to
-> > be for PRR (but not sure why it is larger than 0x1000).  Are the
-> > PRR_CFG_*ADDR regs programmed by the fw (and access blocked in EL1) on
-> > this device?
-> >
->
-> As I checked, if the drm/gfx driver allocates the page for drm, then
-> this reserved-memory region is not required.
->
-> PRR_CFG_*ADDR regs have read and write access in EL1 only for this
-> device, behavior is same as other devices as well. These are not
-> programmed by fw.
+On 2024/7/15 20:19, Jason Gunthorpe wrote:
+> On Mon, Jul 15, 2024 at 04:23:07PM +0800, Yi Liu wrote:
+>>> Then the description is sort of like
+>>>
+>>> Replace is useful for iommufd/VFIO to provide perfect HW emulation in
+>>> case the VM is expecting to be able to change a PASID on the fly. As
+>>> AMD will only support PASID in VM's using nested translation where we
+>>> don't use the set_dev_pasid API leave it disabled for now.
+>>
+>> Does it apply to SMMUv3 as well? IIRC. ARM SMMUv3 also has the CD table
+>> (a.k.a PASID table) within the guest. And I think this is the major reason
+>> for your above statement. right?
+> 
+> It does, but it also supports replace so no need to explain why we
+> don't enable it :)
 
-If there is any device which _doesn't_ have EL1 access to these regs,
-I think going the reserved memory route seems more future proof?
-Otherwise we later on have to deal with two different ways to do
-things.  But I'm not sure if there is any such device or risk.
+got it. :)
 
-BR,
--R
-
-> > As far as other DT, we haven't enabled PRR anywhere yet.  I think it
-> > would be perfectly valid to require a new reserved-memory node to
-> > enable PRR.
-> >
->
-> As mentioned above reserved-memory region is not required if gfx/drm
-> allocates the page.
->
-> >> This feature is present in all the targets using SMMU-500,
-> >> I am still checking for targets using versions prior to smmu-500.
-> >> Then maybe we can use the smmu compatible string itself (e.g.
-> >> qcom,smmu-500 && qcom,adreno-smmu) to connect to smmu driver for
-> >> checking the presence of PRR ?
-> >
-> > If there is a clean break, such as all smmu-500 have PRR and all
-> > smmu-v2 do not, then it would be reasonable to use the compat strings.
-> > If not, I think we need a different way.
-> >
->
-> Yes, from SMMU block perspective PRR bit is present for ACTLR register
-> on targets with MMU-500, so feature support is available. So I think we
-> can just use the mmu-500 compatible string.
->
-> Thanks & regards,
-> Bibek
->
-> > BR,
-> > -R
-> >
-> >> And if the compatible string is different then we can return the
-> >> error code signifying PRR feature is not supported on the particular
-> >> smmu version.
-> >>
-> >> Thanks & regards,
-> >> Bibek
-> >>
-> >>>> BR,
-> >>>> -R
-> >>>>
-> >>>>> Thanks & regards,
-> >>>>> Bibek
-> >>>>>
-> >>>>>> BR,
-> >>>>>> -R
-> >>>>>>
-> >>>>>>>
-> >>>>>>> Thanks & regards,
-> >>>>>>> Bibek
-> >>>>>>>
-> >>>>>>>> BR,
-> >>>>>>>> -R
-> >>>>>>>>
-> >>>>>>>>>> Otherwise, lgtm
-> >>>>>>>>>>
-> >>>>>>>>>> BR,
-> >>>>>>>>>> -R
-> >>>>>>>>>>
-> >>>>>>>>>
-> >>>>>>>>> Thanks & regards,
-> >>>>>>>>> Bibek
-> >>>>>>>>>
-> >>>>>>>>>>> +}
-> >>>>>>>>>>> +
-> >>>>>>>>>>>       #define QCOM_ADRENO_SMMU_GPU_SID 0
-> >>>>>>>>>>>
-> >>>>>>>>>>>       static bool qcom_adreno_smmu_is_gpu_device(struct devic=
-e *dev)
-> >>>>>>>>>>> @@ -407,6 +429,7 @@ static int qcom_adreno_smmu_init_context(=
-struct arm_smmu_domain *smmu_domain,
-> >>>>>>>>>>>              priv->get_fault_info =3D qcom_adreno_smmu_get_fa=
-ult_info;
-> >>>>>>>>>>>              priv->set_stall =3D qcom_adreno_smmu_set_stall;
-> >>>>>>>>>>>              priv->resume_translation =3D qcom_adreno_smmu_re=
-sume_translation;
-> >>>>>>>>>>> +       priv->set_prr =3D qcom_adreno_smmu_set_prr;
-> >>>>>>>>>>>
-> >>>>>>>>>>>              actlrvar =3D qsmmu->data->actlrvar;
-> >>>>>>>>>>>              if (!actlrvar)
-> >>>>>>>>>>> diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu.h b/drivers/=
-iommu/arm/arm-smmu/arm-smmu.h
-> >>>>>>>>>>> index d9c2ef8c1653..3076bef49e20 100644
-> >>>>>>>>>>> --- a/drivers/iommu/arm/arm-smmu/arm-smmu.h
-> >>>>>>>>>>> +++ b/drivers/iommu/arm/arm-smmu/arm-smmu.h
-> >>>>>>>>>>> @@ -154,6 +154,8 @@ enum arm_smmu_cbar_type {
-> >>>>>>>>>>>       #define ARM_SMMU_SCTLR_M               BIT(0)
-> >>>>>>>>>>>
-> >>>>>>>>>>>       #define ARM_SMMU_CB_ACTLR              0x4
-> >>>>>>>>>>> +#define ARM_SMMU_GFX_PRR_CFG_LADDR     0x6008
-> >>>>>>>>>>> +#define ARM_SMMU_GFX_PRR_CFG_UADDR     0x600C
-> >>>>>>>>>>>
-> >>>>>>>>>>>       #define ARM_SMMU_CB_RESUME             0x8
-> >>>>>>>>>>>       #define ARM_SMMU_RESUME_TERMINATE      BIT(0)
-> >>>>>>>>>>> diff --git a/include/linux/adreno-smmu-priv.h b/include/linux=
-/adreno-smmu-priv.h
-> >>>>>>>>>>> index c637e0997f6d..d6e2ca9f8d8c 100644
-> >>>>>>>>>>> --- a/include/linux/adreno-smmu-priv.h
-> >>>>>>>>>>> +++ b/include/linux/adreno-smmu-priv.h
-> >>>>>>>>>>> @@ -49,7 +49,10 @@ struct adreno_smmu_fault_info {
-> >>>>>>>>>>>        *                 before set_ttbr0_cfg().  If stalling=
- on fault is enabled,
-> >>>>>>>>>>>        *                 the GPU driver must call resume_tran=
-slation()
-> >>>>>>>>>>>        * @resume_translation: Resume translation after a faul=
-t
-> >>>>>>>>>>> - *
-> >>>>>>>>>>> + * @set_prr:      Extendible interface to be used by GPU to =
-modify the
-> >>>>>>>>>>> + *                 ACTLR register bits, currently used to co=
-nfigure
-> >>>>>>>>>>> + *                 Partially-Resident-Region (PRR) feature's
-> >>>>>>>>>>> + *                 setup and reset sequence as requested.
-> >>>>>>>>>>>        *
-> >>>>>>>>>>>        * The GPU driver (drm/msm) and adreno-smmu work togeth=
-er for controlling
-> >>>>>>>>>>>        * the GPU's SMMU instance.  This is by necessity, as t=
-he GPU is directly
-> >>>>>>>>>>> @@ -67,6 +70,7 @@ struct adreno_smmu_priv {
-> >>>>>>>>>>>           void (*get_fault_info)(const void *cookie, struct a=
-dreno_smmu_fault_info *info);
-> >>>>>>>>>>>           void (*set_stall)(const void *cookie, bool enabled)=
-;
-> >>>>>>>>>>>           void (*resume_translation)(const void *cookie, bool=
- terminate);
-> >>>>>>>>>>> +    void (*set_prr)(const void *cookie, phys_addr_t page_add=
-r, bool set);
-> >>>>>>>>>>>       };
-> >>>>>>>>>>>
-> >>>>>>>>>>>       #endif /* __ADRENO_SMMU_PRIV_H */
-> >>>>>>>>>>> --
-> >>>>>>>>>>> 2.34.1
-> >>>>>>>>>>>
+-- 
+Regards,
+Yi Liu
