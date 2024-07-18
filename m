@@ -1,249 +1,261 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.11])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 62C8974058;
-	Thu, 18 Jul 2024 07:04:11 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1721286251; cv=none; b=CfUxKSe3aKaYaOVa/YB+EzohlHyqQhXXTZ7XpHAuVGUt9cvPGqZerbzynbIoVuXcI9qdPeKoaCaMq71SE/FQOvhPyVCpBnLF2PgI9PqFFkexbTNN9M6ERIQ7xIudnA6xIOr2AvFdsq6aXIXX6LpeTCqeBFeRbyk8vBM72BrXWRw=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1721286251; c=relaxed/simple;
-	bh=pAIKRUOe4rqwHdGMj8JeiKi4lyWdhmkJFpi2cWSoqW4=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=lAxzBDuUeKwY0SRVeK+C+abd+DqPGVpzDpg2rLnsga2i22Nc/sA7BB67o8rBTWniOeImtMhdmdJPdr1kQ/Ty4TmihvcIx3EKALAhRBd+IUG/rEGcXBSpo8eEgTBYFRicZt7a+ElNxfSO/KOXjc13tgS2ZXd+3mtGSuGvWGQXzYU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=o0zyEpA0; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F26041C36
+	for <iommu@lists.linux.dev>; Thu, 18 Jul 2024 08:27:47 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=198.175.65.11
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1721291269; cv=fail; b=IAKQ/12x+cHGi/6X2K13YxLtxMIyXtUP+sc1nxYjFCUyRJfdMp4wxR4ErAO9XlCsxRTSyhtCaL4XZ4qr7Ft11K7kIA0TJ1rXOxkvOBr4c3gATSBNHhzj8dHtkLfH6tvFlYMm1pi9yuLWwC2mnUY5SFs0tmF69WQE/uu9c+OCkhg=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1721291269; c=relaxed/simple;
+	bh=lWL3N/SwqG/MPd/k6iEp/wcuumN5NMSAfGELJtu/U9U=;
+	h=From:To:CC:Subject:Date:Message-ID:References:In-Reply-To:
+	 Content-Type:MIME-Version; b=bLyE84pIk+TPA+gQYaqevrZleioMxPki/Sn8mb9AjCmVf/xG54dif6sLikiuPzVcVIRZ7COh71BDDUuMStSeTq7t4HfCrq7NMLoGJbL1I5lgKPySThW+tAV9IfTCd4wrA3SZ+eDlCQY5257Xk3ciQwuZ2FqnOFItwAvzJJBJX3E=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=k077ANfY; arc=fail smtp.client-ip=198.175.65.11
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="o0zyEpA0"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 58487C116B1;
-	Thu, 18 Jul 2024 07:04:10 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1721286250;
-	bh=pAIKRUOe4rqwHdGMj8JeiKi4lyWdhmkJFpi2cWSoqW4=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=o0zyEpA03KDfPUPqxa8E0tRYAieqTSVOLhMT1QkWTyfDO0HCIexuYbbCfWmXu7nJI
-	 mNt3GdjTWLEcVOD1BbGxSc91b5IbzbL7oA0WZdPjwtlJfSV2h1/4oRdRmw6oIqAuxa
-	 UAuCQkU04Vo8uZApACdt1rIf6V9O+h91qCwVY/7PauzWy3F+3c98btHRAKJKXiuXn5
-	 Fnorbk0QsSg2Z7QnFaOmtsz8XSsKBHCr/+LVNbxlhChjYid8c5izz1L4xF//KDQqUq
-	 +o0JwH4kEGmwYId5ravPpOk+CkUyo/s1AoSW86DkuZmrrVAqS+qNJ+DnL/DQrMSFAx
-	 tvH/PPrTfmHKA==
-Date: Thu, 18 Jul 2024 10:04:06 +0300
-From: Leon Romanovsky <leon@kernel.org>
-To: Christoph Hellwig <hch@lst.de>
-Cc: Robin Murphy <robin.murphy@arm.com>, Joerg Roedel <joro@8bytes.org>,
-	Will Deacon <will@kernel.org>,
-	Marek Szyprowski <m.szyprowski@samsung.com>,
-	Easwar Hariharan <eahariha@linux.microsoft.com>,
-	linux-kernel@vger.kernel.org, iommu@lists.linux.dev,
-	Jason Gunthorpe <jgg@nvidia.com>
-Subject: Re: [PATCH v2 2/2] dma: add IOMMU static calls with clear default ops
-Message-ID: <20240718070406.GK5630@unreal>
-References: <cover.1721219730.git.leon@kernel.org>
- <dd34bf3ecef252b4910d70aa21ff5273b5e8b19b.1721219730.git.leon@kernel.org>
- <20240718034854.GA31912@lst.de>
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="k077ANfY"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1721291268; x=1752827268;
+  h=from:to:cc:subject:date:message-id:references:
+   in-reply-to:content-transfer-encoding:mime-version;
+  bh=lWL3N/SwqG/MPd/k6iEp/wcuumN5NMSAfGELJtu/U9U=;
+  b=k077ANfYdt4dWIXv9xqDXTV2w/CLDpP9RiqfKS2ykLEOV4cMubIg90Ol
+   mtQe2NrLJxxwtnvdHhxUOpd+/zWDKrTLUbagSVTXdUlIrbvkNddnPS0bv
+   X+MftXPSCcaywBoafYO5dTYEdVDV3b0t7jzllGS6NiaLqt0+OJsvTftjj
+   N/o2amnIoeplsNMVJ8sOtR/wesO7xW3PwbA6TvYJCZDn/R4VN/cFpdWyN
+   fYoTZyoe57MtcNsGFT2tZEk2bdjAtr37djLJozUjf2Hf6SuC5EEOuNPHV
+   mwDjEIBQs87PGcs90ppEzsmv9yrD679Q4ZPeDMy3XiC6c9ScwBnfHbsye
+   A==;
+X-CSE-ConnectionGUID: kcm+MHDpQd2ddGFIbD+QTA==
+X-CSE-MsgGUID: NC8Jy6MqTTWp25deI5ylSg==
+X-IronPort-AV: E=McAfee;i="6700,10204,11136"; a="29419828"
+X-IronPort-AV: E=Sophos;i="6.09,217,1716274800"; 
+   d="scan'208";a="29419828"
+Received: from fmviesa007.fm.intel.com ([10.60.135.147])
+  by orvoesa103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Jul 2024 01:27:48 -0700
+X-CSE-ConnectionGUID: rv+BtFxLRymnhrhuBgkOZw==
+X-CSE-MsgGUID: 57muWBqVTK6ZBA5QcQB41A==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.09,217,1716274800"; 
+   d="scan'208";a="50444146"
+Received: from orsmsx603.amr.corp.intel.com ([10.22.229.16])
+  by fmviesa007.fm.intel.com with ESMTP/TLS/AES256-GCM-SHA384; 18 Jul 2024 01:27:47 -0700
+Received: from orsmsx611.amr.corp.intel.com (10.22.229.24) by
+ ORSMSX603.amr.corp.intel.com (10.22.229.16) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.39; Thu, 18 Jul 2024 01:27:46 -0700
+Received: from orsmsx612.amr.corp.intel.com (10.22.229.25) by
+ ORSMSX611.amr.corp.intel.com (10.22.229.24) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.39; Thu, 18 Jul 2024 01:27:46 -0700
+Received: from ORSEDG602.ED.cps.intel.com (10.7.248.7) by
+ orsmsx612.amr.corp.intel.com (10.22.229.25) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.39 via Frontend Transport; Thu, 18 Jul 2024 01:27:46 -0700
+Received: from NAM02-BN1-obe.outbound.protection.outlook.com (104.47.51.47) by
+ edgegateway.intel.com (134.134.137.103) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.1.2507.39; Thu, 18 Jul 2024 01:27:45 -0700
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=SNf/BUykiiDbLUYUKEuHXyFC8sqqY7E0ON5VJSfT54PR7j7NLmHzCw+UI8YnbBPGJgOSD307mhyKt8rJu39fMxp6QwuND66xsTjQYA54F64KUQOCv3I/HK3PAgYtdNijR98zK0ybaYzW7OM14s0vGNCvlDftOlchu1YQAfi6Iogh7WH17ccxLCJFCVtj6uex7O7iRpP/Z2HpTQGIx+67lgKGqyhR0g8IFrZybg3hJ8E/VERUWgOxyKtnPBZg53QCGGNQNnTr3NU4gs2mt0EUE9cztmDT3lTZimGeERmFw+iFCpm+ZOXz2kS6RkYgoHfWJ37hN3UR2kvJ1Pi1maoU9w==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=z01AwvGEHfbnspdpLXOUHb+jrWrlH1O96XvSBQRZD4A=;
+ b=oHGrPu13imezOEaHvDVUWMJ3SS9BhhvNAuFRmaKe4a0AGvJlm4KncwycEYajcNnqyubt39Ba2T1mNdzJM6OPy8p2Rg//1i9NHC3DrbzQbSI3JZgR+KrfyXL/8I+Ti61MWmVlr6nNimlmSoKrmnuh9lV5/tUVjT8FDrTsQEOFtw/irAOQzN0WdMXDKob7WKgkJ14ltqzNjcu/KbKHsxz113cAUC6suV3qvlQfzN0ZTDEZdxNqmauXzcOTXRAbC/YOFC4ouBVGw7+tECpTu9nDBIpvA7/AXnzm0j3OCcBSNrY4Ji8/qDE5sDv68oVEvMAUrs9l94fBrTGsJJq0ODIEZA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
+ dkim=pass header.d=intel.com; arc=none
+Received: from BN9PR11MB5276.namprd11.prod.outlook.com (2603:10b6:408:135::18)
+ by PH8PR11MB6706.namprd11.prod.outlook.com (2603:10b6:510:1c5::15) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7762.28; Thu, 18 Jul
+ 2024 08:27:42 +0000
+Received: from BN9PR11MB5276.namprd11.prod.outlook.com
+ ([fe80::b576:d3bd:c8e0:4bc1]) by BN9PR11MB5276.namprd11.prod.outlook.com
+ ([fe80::b576:d3bd:c8e0:4bc1%3]) with mapi id 15.20.7784.016; Thu, 18 Jul 2024
+ 08:27:42 +0000
+From: "Tian, Kevin" <kevin.tian@intel.com>
+To: "Liu, Yi L" <yi.l.liu@intel.com>, "joro@8bytes.org" <joro@8bytes.org>,
+	"jgg@nvidia.com" <jgg@nvidia.com>, "baolu.lu@linux.intel.com"
+	<baolu.lu@linux.intel.com>
+CC: "alex.williamson@redhat.com" <alex.williamson@redhat.com>,
+	"robin.murphy@arm.com" <robin.murphy@arm.com>, "eric.auger@redhat.com"
+	<eric.auger@redhat.com>, "nicolinc@nvidia.com" <nicolinc@nvidia.com>,
+	"kvm@vger.kernel.org" <kvm@vger.kernel.org>, "chao.p.peng@linux.intel.com"
+	<chao.p.peng@linux.intel.com>, "iommu@lists.linux.dev"
+	<iommu@lists.linux.dev>, "Duan, Zhenzhong" <zhenzhong.duan@intel.com>,
+	"linux-kselftest@vger.kernel.org" <linux-kselftest@vger.kernel.org>
+Subject: RE: [PATCH v3 1/7] iommu: Introduce a replace API for device pasid
+Thread-Topic: [PATCH v3 1/7] iommu: Introduce a replace API for device pasid
+Thread-Index: AQHayTprRlqY/WmeSEKYr6B757/3V7H8RTRQ
+Date: Thu, 18 Jul 2024 08:27:42 +0000
+Message-ID: <BN9PR11MB5276B4AF6321A083C3C2D2648CAC2@BN9PR11MB5276.namprd11.prod.outlook.com>
+References: <20240628090557.50898-1-yi.l.liu@intel.com>
+ <20240628090557.50898-2-yi.l.liu@intel.com>
+In-Reply-To: <20240628090557.50898-2-yi.l.liu@intel.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach:
+X-MS-TNEF-Correlator:
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=intel.com;
+x-ms-publictraffictype: Email
+x-ms-traffictypediagnostic: BN9PR11MB5276:EE_|PH8PR11MB6706:EE_
+x-ms-office365-filtering-correlation-id: 8a277c00-0b56-40e1-ddd7-08dca7037e5d
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;ARA:13230040|366016|7416014|376014|1800799024|38070700018;
+x-microsoft-antispam-message-info: =?us-ascii?Q?F7HPSegbRvqLn32o5sAtuvLlSXr+gktsMLq7IPvq0rD05D56JsHVqFXbrs4f?=
+ =?us-ascii?Q?YFQyH7wUUpCGoSuJVrgk6eUNkc9H5ok2mRPhQtnHEespmm1IQ5qcQU9WMyhC?=
+ =?us-ascii?Q?Wb2IL6rJlF7QbpZcgnVexcEPRyE4ptZhQgvxfqCU3lEfCeCmX+Vxr75mESSa?=
+ =?us-ascii?Q?1P3nPH8mR3IwfBvBOlxeuX92Cpuuo8APNVk8x8tKy9nWtqAkvcl5OChIaXlQ?=
+ =?us-ascii?Q?m2bxplClqMB7lykohJlPehF9/AcgcP6kdZlam15SHWsbZj0iFtOnXQAD+yq2?=
+ =?us-ascii?Q?8VAdRqi/BNyMOQN6yTairz8r6IFwM4bX6u1GYRh3VcAe9L/Pt+L0dovJOla3?=
+ =?us-ascii?Q?BscHtkkq6I0wGObA/ke/5q14S5gLhojqjYtTcYYP3IE6OWyzS+vw4v1exQyB?=
+ =?us-ascii?Q?MqmCZPEXLOt/KKHmoIoJCRAHMWYJTWnKbxd9nU5/O/Rlp35lvPllB4UUjgSP?=
+ =?us-ascii?Q?dmdi3a+vwBZdWTV/DpQfC75DEdvJRmmY1QbtbiWijLTP525jVdAoeobHZQB4?=
+ =?us-ascii?Q?lzmtqsFEf6OoMck0gFGI3tySznm/IVt1g99i5WuqL7PWkrU3PMeU2u/6SNUV?=
+ =?us-ascii?Q?TiZ+49Vnpw1hJM7w+vsKBs8Ob6fVJE1A+pvUzJuLmRh/1Ot0cEcEHjt4G3S9?=
+ =?us-ascii?Q?FiIXjFEZvDFnkvGlLJVXB9IfLyZVrzLmfVVK12kC4LWyoG4c7yn3rKAHh3yZ?=
+ =?us-ascii?Q?/la+RE2Qf9bdKKfsA2tO7N8AjcaPMNdZHzHVJAOrm7oUb4+i7l+Wzmc4Uhug?=
+ =?us-ascii?Q?rVpABL2ea2xBn252zluC8aj9peoNoim3tSsfuGtIe9wd8S8fUwKeVTbhIwOY?=
+ =?us-ascii?Q?VSb4JQgXO7q/g4lN0gYjwnZ3Rnm72hRDcMnWXOWwtqfsQKdJC2bjm7zb7N4b?=
+ =?us-ascii?Q?3e8aKbnwuBGeqt8byBygSCtmnBCNA0myGHLUdEsll2lgCmHCSCyVAD6+f1Yt?=
+ =?us-ascii?Q?N9JCv7Iz1KYeZ1r0N+QUy9RCaHgzFV4Bs3P4wc/d6/jsauxK/tfiVc8XpAk5?=
+ =?us-ascii?Q?rLYkZ7Zx998r+KNvdzaDjQLwouew5QF5SKk4xJaVGj9vQ/YZ5fGO3DHsauJk?=
+ =?us-ascii?Q?IKdrloBWUnMBJHO0GYFbd2InAVFVFZmzSNyvi/tBCIJd1WJbd+N6LxYdh4EK?=
+ =?us-ascii?Q?JT7eelvXwn/gOJr81zVPBaiL21kw8cYOtK9RKVJ2NScmju27R9cXybn/DcCr?=
+ =?us-ascii?Q?ozVdJ1wg6PoOefNNTRjVgt4IutHKpLpOK7PBCg605UL/XpXy+7uowYIerdT9?=
+ =?us-ascii?Q?MhJk+pR7ROhzgAQNMyqwX4Q1X1tJl6bcklvT5jbdV7rMa75DA4KUjTUqgwLt?=
+ =?us-ascii?Q?sWEus9vlb3eoe2tx7+Yzt/ew2qeD0tiwLTB4nS4c/hGqMRI4DN/PjynyaGSC?=
+ =?us-ascii?Q?R9wwOJkwnkT4WuIvSKAlDT+nq6zQ1wre9tZasHghU1LiIkdf7g=3D=3D?=
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BN9PR11MB5276.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(366016)(7416014)(376014)(1800799024)(38070700018);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?kb9YAU5RySFaYqjTZkCx1mHhYxQBcQaMI6a5AD4QN2oTSnVIXtQvL8faCYw3?=
+ =?us-ascii?Q?UK/ZwqX/uhMTiyVmSDKOdFSnJFXC1p0QGecVGlQtTBi5KfLMyy1y2FRfCMWx?=
+ =?us-ascii?Q?ouPynA/QNAj0EieoA7b8wX58auruN+ScxC3C9noleRVYK6JuUYUTf4VYOU+Z?=
+ =?us-ascii?Q?AnpOE0yPCVkH1t0yCLQT5L8Y2xHg6gSNlwfID/ouWdfZ4m0XdCI1RY47vK7T?=
+ =?us-ascii?Q?5hcmP5MSybNEN1PMzbUqxlkG5FrOQJkZqNzS6IOMb7SzTbVxm3g2kvCANjit?=
+ =?us-ascii?Q?QzBmO4hPBuqdSDXko9LYhWYkV/VM/SJc4pCj8QTlpLdemnYYfNuZTtEa9gw8?=
+ =?us-ascii?Q?MPXF6BwWO1f/8l1LdIxDgZtrJJ4ZfB8Cn/zHQVXgfhHRoK3pvA2/U4p0Qpm4?=
+ =?us-ascii?Q?xEgGtGJQmV9Fj7ppdqiP/THbhy7bf7EX14JV3W5eH7YGybvJOu3sovlUAJHa?=
+ =?us-ascii?Q?KUZjhDZZItDLcgDTJh6klhFkj59qGDWnNP11QYFgnYU/OgwemLFDx5oegAqw?=
+ =?us-ascii?Q?N/rr2Wr+lFZRxArcIZQ9pkG3WaJz4TyV/i18tZ+MoFGnaETgTyffAwED0Ru7?=
+ =?us-ascii?Q?U8iTTDrURWy8aZdkFhRPriB4oHv70DJstlPYBsMYeVT7nO/RIQVugumdgWDQ?=
+ =?us-ascii?Q?h6uw+9pe5vLJ0e1rkYELbiIZ3ZWlyIulVZcdRMd8O9ybt2IcMudL2MaLfjQ4?=
+ =?us-ascii?Q?3HTujW8mpFk+ohP/C0tuZtf04ZQoo39E5gFg13lUXCc5S9NQct7CZFvQMClo?=
+ =?us-ascii?Q?gKZGiI2iujlZT16qUFdKkWhs/QFC1JI1lrt4eqXGaWx7LHkc2XXgvlw2yZkC?=
+ =?us-ascii?Q?CIh57yzUaR7m9ydxI8oZr35AJqEV2AjJeF1TM5aLbh+3eCAXgtiV77zFTzo2?=
+ =?us-ascii?Q?GxCjIe2ZOlJwvu4IAmxLpwGgVWr0Q8GwW7FqEyNJvPnwgoYnRy60mmwO+MBv?=
+ =?us-ascii?Q?hWjiQMZJsIJqYbKp2BydNjw/vTQ9IYEC9llwTLRLx7a6gkASuDhVpt507+L9?=
+ =?us-ascii?Q?tMhdDvEif/9o/glZLY4Cegaco3aQIG1WrVH8jEZZqQhRP6p9cX0TIXEJEGM2?=
+ =?us-ascii?Q?g7VECjEso3kdTD9KjRqu5oV1qLaEU++EZ4pjhNyQSWyCZm5v4Y7HVE8ROycb?=
+ =?us-ascii?Q?Dj/dYs3gbxG2caI2o+pZNd9yWqBWxyjLayagX1XDH/F1eLW0XKB6Xe2XQyX0?=
+ =?us-ascii?Q?KRjph9vuQytsUMznIQvYaEKn1ZAlBEt+otL8NR719pqW6kbZmM1GsErQ/gzZ?=
+ =?us-ascii?Q?3t3atbH0jHkkpwOua9sfEkAdl7ge3GOsDihYOYaLQ4IGznHchM0VBp/wfU/5?=
+ =?us-ascii?Q?4CjlK0hIkAycn8day7kKMgVxztr871JguBuXxQbilx1VZhs+SL8PesBU1K/S?=
+ =?us-ascii?Q?szPL0upYFRTcDZLCDppkFo/w6FIWyFMN+FLCEFb2HxcnuYN+Vo+qlsA61df+?=
+ =?us-ascii?Q?QsiK8oNikQeaB5e4de6vKOalauJw7+vb+fI/QYxITaAeG7cE2rdPtVcLRsli?=
+ =?us-ascii?Q?AL3su2/WAmQ9WAJMKDfpA4WwGhxLz2pGpek6ydUaDl99vtMM8BN7HodKbVGR?=
+ =?us-ascii?Q?pCUL9sb76ls1njw0oGwKO/ozP8Sn6jGu9o8dMNsH?=
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20240718034854.GA31912@lst.de>
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: BN9PR11MB5276.namprd11.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 8a277c00-0b56-40e1-ddd7-08dca7037e5d
+X-MS-Exchange-CrossTenant-originalarrivaltime: 18 Jul 2024 08:27:42.6562
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 46c98d88-e344-4ed4-8496-4ed7712e255d
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: ypfPgXWI5G+5q9YjCSmWlaBgNOPqN84GvNtjp25bM/KFTxpL/h+RUmkhg5iwT5CLQBAJLHcB3hGQPgQZZ4HHnQ==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH8PR11MB6706
+X-OriginatorOrg: intel.com
 
-On Thu, Jul 18, 2024 at 05:48:54AM +0200, Christoph Hellwig wrote:
-> On Wed, Jul 17, 2024 at 03:37:11PM +0300, Leon Romanovsky wrote:
-> > From: Leon Romanovsky <leonro@nvidia.com>
-> > 
-> > Most of the arch DMA ops (which often, but not  always, involve
-> > some sort of IOMMU) are using the same DMA operations. These DMA
-> > operations are default ones implemented in drivers/iomem/dma-iommu.c.
-> 
-> I'm not sure I agree with the exact wording.  There's tons of arch DMA
-> ops not in any way tied to dma-iommu (or the iommu subsystem, but not
-> dma-iommu like the arm32 ones), but for all modern platforms dma-iommu
-> is what actually matters.
+> From: Liu, Yi L <yi.l.liu@intel.com>
+> Sent: Friday, June 28, 2024 5:06 PM
+>=20
+> @@ -3289,7 +3290,20 @@ static int __iommu_set_group_pasid(struct
+> iommu_domain *domain,
+>=20
+>  		if (device =3D=3D last_gdev)
+>  			break;
+> -		ops->remove_dev_pasid(device->dev, pasid, domain);
+> +		/* If no old domain, undo the succeeded devices/pasid */
+> +		if (!old) {
+> +			ops->remove_dev_pasid(device->dev, pasid, domain);
+> +			continue;
+> +		}
+> +
+> +		/*
+> +		 * Rollback the succeeded devices/pasid to the old domain.
+> +		 * And it is a driver bug to fail attaching with a previously
+> +		 * good domain.
+> +		 */
+> +		if (WARN_ON(old->ops->set_dev_pasid(old, device->dev,
+> +						    pasid, domain)))
+> +			ops->remove_dev_pasid(device->dev, pasid, domain);
 
-I can change to any other wording, whatever you think is better.
+I wonder whether @remove_dev_pasid() can be replaced by having
+blocking_domain support @set_dev_pasid?
 
-> 
-> > Signed-off-by: Leon Romanovsky <leonro@nvidia.com>
-> > Signed-off-by: Leon Romanovsky <leon@kernel.org>
-> 
-> A double-signoff for the same person is a bit weird, isn't it?
+> +int iommu_replace_device_pasid(struct iommu_domain *domain,
+> +			       struct device *dev, ioasid_t pasid)
+> +{
+> +	/* Caller must be a probed driver on dev */
+> +	struct iommu_group *group =3D dev->iommu_group;
+> +	void *curr;
+> +	int ret;
+> +
+> +	if (!domain->ops->set_dev_pasid)
+> +		return -EOPNOTSUPP;
+> +
+> +	if (!group)
+> +		return -ENODEV;
+> +
+> +	if (!dev_has_iommu(dev) || dev_iommu_ops(dev) !=3D domain-
+> >owner ||
+> +	    pasid =3D=3D IOMMU_NO_PASID)
+> +		return -EINVAL;
+> +
+> +	mutex_lock(&group->mutex);
+> +	/*
+> +	 * The recorded domain is inconsistent with the domain pasid is
+> +	 * actually attached until pasid is attached to the new domain.
+> +	 * This has race condition with the paths that do not hold
+> +	 * group->mutex. E.g. the Page Request forwarding.
+> +	 */
 
-Sorry about that, it is a mistake in my tooling.
+so?
 
-> 
-> >  	struct iommu_domain *domain = iommu_get_domain_for_dev(dev);
-> > @@ -1756,10 +1733,10 @@ void iommu_setup_dma_ops(struct device *dev)
-> >  	if (iommu_is_dma_domain(domain)) {
-> >  		if (iommu_dma_init_domain(domain, dev))
-> >  			goto out_err;
-> > +		dev->dma_iommu = true;
-> > +	} else if (dev->dma_iommu) {
-> >  		/* Clean up if we've switched *from* a DMA domain */
-> > +		dev->dma_iommu = false;
-> >  	}
-> 
-> Strictly speaking we can no remove the if part of the else if above.
-> Or reword this a bit to:
-> 
-> 	dev->dma_iommu = iommu_is_dma_domain(domain);
-> 	if (dev->dma_iommu && iommu_dma_init_domain(domain, dev))
-> 		goto out_err;
+> +	curr =3D xa_store(&group->pasid_array, pasid, domain, GFP_KERNEL);
+> +	if (!curr) {
+> +		xa_erase(&group->pasid_array, pasid);
+> +		ret =3D -EINVAL;
+> +		goto out_unlock;
+> +	}
+> +
+> +	ret =3D xa_err(curr);
+> +	if (ret)
+> +		goto out_unlock;
+> +
+> +	if (curr =3D=3D domain)
+> +		goto out_unlock;
+> +
+> +	ret =3D __iommu_set_group_pasid(domain, group, pasid, curr);
+> +	if (ret)
+> +		WARN_ON(domain !=3D xa_store(&group->pasid_array, pasid,
+> +					   curr, GFP_KERNEL));
 
-I'll change
-
-> 
-> > diff --git a/include/linux/device.h b/include/linux/device.h
-> > index ace039151cb8..7fa1e40b617a 100644
-> > --- a/include/linux/device.h
-> > +++ b/include/linux/device.h
-> > @@ -822,6 +822,9 @@ struct device {
-> >  #ifdef CONFIG_DMA_NEED_SYNC
-> >  	bool			dma_skip_sync:1;
-> >  #endif
-> > +#ifdef CONFIG_IOMMU_DMA
-> > +	bool			dma_iommu : 1;
-> > +#endif
-> 
-> The kerneldoc above should be updated to describe this field.
-
-Will do
-
-> Please also add the maintainers of this file to the next round.
-
-I added them, there is no special maintainer for include/linux/device.h file:
-➜  kernel git:(dma-static-calls-v2) ✗ ./scripts/get_maintainer.pl --git-min-percent 100 /tmp/e/v2-0002-dma-add-IOMMU-static-calls-with-clear-default-ops.patch
-Joerg Roedel <joro@8bytes.org> (maintainer:IOMMU SUBSYSTEM)
-Will Deacon <will@kernel.org> (maintainer:IOMMU SUBSYSTEM)
-Robin Murphy <robin.murphy@arm.com> (reviewer:IOMMU SUBSYSTEM)
-Christoph Hellwig <hch@lst.de> (supporter:DMA MAPPING HELPERS)
-Marek Szyprowski <m.szyprowski@samsung.com> (supporter:DMA MAPPING HELPERS)
-linux-kernel@vger.kernel.org (open list)
-iommu@lists.linux.dev (open list:IOMMU SUBSYSTEM)
-
-Whom should I add?
-
-> 
-> > +static inline bool dma_is_default_iommu(struct device *dev)
-> > +{
-> > +#ifdef CONFIG_IOMMU_DMA
-> > +	return dev->dma_iommu;
-> > +#else
-> > +	return false;
-> > +#endif
-> > +}
-> 
-> The normal style would be to move the ifdefs outside the helper
-> function.
-
-I think you are talking about the style of functions declarations in
-header files. This function is inside c-file and it is much easier
-to write it this way. 
-
-
-> Also maybe name this use_dma_iommu?
-
-Sure, I'll change it.
-
-> 
-> >  static bool dma_go_direct(struct device *dev, dma_addr_t mask,
-> >  		const struct dma_map_ops *ops)
-> >  {
-> > +	WARN_ON_ONCE(ops && dma_is_default_iommu(dev));
-> 
-> I'd prefer to keep this out of the fast path and only do it in
-> say dma_set_mask.  And fail the call while we're at it.
-
-I will add it to dma_supported().
-
-> 
-> > +	if (likely(!ops) && !dma_is_default_iommu(dev))
-> 
-> The likely should cover both conditions.
-
-Sure
-
-> 
-> >  		return true;
-> > +
-> >  #ifdef CONFIG_DMA_OPS_BYPASS
-> > +	WARN_ON_ONCE(dev->dma_ops_bypass && dma_is_default_iommu(dev));
-> >  	if (dev->dma_ops_bypass)
-> 
-> Let's skip this and think about it if we ever use the bypass for
-> something that is not powerpc with it's own dma ops.
-
-I wanted to catch misconfigurations, but I can remove it. Is this what
-you are suggesting?
-
-  126 static bool dma_go_direct(struct device *dev, dma_addr_t mask, 
-  127                 const struct dma_map_ops *ops)                
-  128 {                                                            
-  129         if (likely(!ops && !dma_is_default_iommu(dev)))     
-  130                 return true;                               
-  131                                                           
-  132         if (dma_is_default_iommu(dev))    
-  133                 return false;
-  134                             
-  135 #ifdef CONFIG_DMA_OPS_BYPASS 
-  136         if (dev->dma_ops_bypass)
-  137                 return min_not_zero(mask, dev->bus_dma_limit) >= 
-  138                             dma_direct_get_required_mask(dev);  
-  139 #endif                                                         
-  140         return false;                                         
-  141 }         
-
-> 
-> > @@ -323,8 +346,12 @@ void dma_unmap_resource(struct device *dev, dma_addr_t addr, size_t size,
-> >  	const struct dma_map_ops *ops = get_dma_ops(dev);
-> >  
-> >  	BUG_ON(!valid_dma_direction(dir));
-> > -	if (!dma_map_direct(dev, ops) && ops->unmap_resource)
-> > -		ops->unmap_resource(dev, addr, size, dir, attrs);
-> > +	if (!dma_map_direct(dev, ops)) {
-> > +		if (dma_is_default_iommu(dev))
-> > +			iommu_dma_unmap_resource(dev, addr, size, dir, attrs);
-> > +		else if (ops->unmap_resource)
-> > +			ops->unmap_resource(dev, addr, size, dir, attrs);
-> > +	}
-> 
-> I'd prefer to order this as:
-> 
-> 	if (dma_map_direct(dev, ops))
-> 		; /* nothing to do: uncached and no swiotlb */
-> 	else if (use_dma_iommu(dev))
-> 		iommu_dma_unmap_resource(dev, addr, size, dir, attrs);
-> 	else if (ops->unmap_resource)
-> 		ops->unmap_resource(dev, addr, size, dir, attrs);
-
-I will change.
-
-> 
-> > +	return (!ops || dma_is_default_iommu(dev));
-> 
-> dma_is_default_iommu implies !ops, so the second condition is
-> redundant.
-
-Right
-
-> 
-> >  EXPORT_SYMBOL_GPL(dma_opt_mapping_size);
-> > @@ -888,7 +943,12 @@ unsigned long dma_get_merge_boundary(struct device *dev)
-> >  {
-> >  	const struct dma_map_ops *ops = get_dma_ops(dev);
-> >  
-> > +	if (!ops)
-> > +		return 0;	/* can't merge */
-> > +	if (dma_is_default_iommu(dev))
-> > +		return iommu_dma_get_merge_boundary(dev);
-> 
-> The second check needs to move up here.
-
-Right, will fix.
-
-I'll send v3 after weekend.
-
-Thanks
+above can follow Jason's suggestion to iommu_group_replace_domain ()
+in Baolu's series, i.e. doing a xa_reserve() first.
