@@ -1,170 +1,70 @@
-Received: from NAM12-DM6-obe.outbound.protection.outlook.com (mail-dm6nam12on2044.outbound.protection.outlook.com [40.107.243.44])
+Received: from verein.lst.de (verein.lst.de [213.95.11.211])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8BEB816D313
-	for <iommu@lists.linux.dev>; Mon, 22 Jul 2024 11:56:13 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.243.44
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1721649375; cv=fail; b=fpgvxQTJGZfs+IYnRd3RfWuNQCafQC1FWFQWiXIkA+gETSkz4y5950G7alJPawvSVYkyD+KOtkGdKtwkTh1k47Vgm+jfclnT+1+gIgF5jrdfxDw/Kt/iWJd7qI+YRITeSrhgyCe7g5eqMs4hNsXlgdCfPH4lIiX4ua/fCjxdFJ0=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1721649375; c=relaxed/simple;
-	bh=lnYRGkYb1q+BKwsOtsjIr3TVjg5x8zOXcPamrOYs1iU=;
-	h=From:To:CC:Subject:Date:Message-ID:MIME-Version:Content-Type; b=QnUwgKNqYCNQ34ZYkZ/XndmSOqhtAJNK7Za2ktwpe5hYYjncKfc0W1kuTk8/r2MPF4BEEDOssc8jnM8S5klWQNc6cULX7p2JwmHWo1DtNRZpIrceVoM5nHmS60Er2mpwBPp80gqxVpgktCBXfemtrWNhrPryZ3grvWETnNcOU5M=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com; spf=fail smtp.mailfrom=amd.com; dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b=F1P9xS8d; arc=fail smtp.client-ip=40.107.243.44
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=amd.com
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b="F1P9xS8d"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=OA9+Ae+tBkqx4Pdyf3foZSuCfry7hjwd/byfapytzydTURcrab/OnKbUxZlsiAaXcz4cDTbLsroPy8euSImaL/yy9pbLKtbWamDVK1cZYjeMhp8boeMCQQ2/YnBubWl+6W0U+iB1Hryjp6PEmK/YgT+hINi1TrQQ56ZpATgpA8MTm8JulWY6UDFdQhFbJtW87yMWQNQCt/S5OlJUoWfsPknAxSoGwK+rVQmS1lY2BR+sZNDy1yMoX00FjM6F+xcwgbC8J02NxdhJSo1JZmEYEqHmvIwfIGMJtEdmdIDy8rZgjRctFP32EncWHBxBI9yHh9OqZaqiCUbgW5isbRJolQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=vN/T23azQPZ6Bc7uGCChMnJzI7UNyiaTeCgEwHYC1Cg=;
- b=kOlhUsqY3YBtdAyNANXH6/ezfEXu2RaAZNKUFf7B9EX6C4YPLk/MCloH1U4+6yVLexQA6mW1NVxnBoV7jmMdPfWhPMcqQAyUGAQWEHIWRK43+4kAhLMV32ITHizFemrVjXjpqOEEo3LryBAsUQYYZmIyCj2KEH53J21Nt+BVd3dIoV3v0mcjzG5sRqDUfMl067wSoEHDp8vHwVoKBJNksnb2O0jO5R2yprFA/KWpZtJAUwUfR/m3kN6V9C/XamOpcKvtI9uUA99za+ZIyqQxsNq+szzBaTQ91Baenusx12C8Hp9POF0M/iht6hR/4HTamyWc5yFyqp7UoWigdZviWg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 165.204.84.17) smtp.rcpttodomain=lists.linux.dev smtp.mailfrom=amd.com;
- dmarc=pass (p=quarantine sp=quarantine pct=100) action=none
- header.from=amd.com; dkim=none (message not signed); arc=none (0)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=vN/T23azQPZ6Bc7uGCChMnJzI7UNyiaTeCgEwHYC1Cg=;
- b=F1P9xS8dYg3Qx1O6avPEi75BI+aAoByPG33BGN92Geo4Q3+J/aITBosL+bexnX8he4Lk54swMMAalk2V32gjzcrnJBkEiC/kV1UKGiBF3sWAN4ggm/c1TzO8YKLnNH9Kqmr4t/1Q4xVhTlKbhP0588EgilO6ipKD0kCOpXiHSmk=
-Received: from BN9PR03CA0519.namprd03.prod.outlook.com (2603:10b6:408:131::14)
- by CY5PR12MB6105.namprd12.prod.outlook.com (2603:10b6:930:2a::9) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7784.19; Mon, 22 Jul
- 2024 11:56:10 +0000
-Received: from BL02EPF0001A0FF.namprd03.prod.outlook.com
- (2603:10b6:408:131:cafe::76) by BN9PR03CA0519.outlook.office365.com
- (2603:10b6:408:131::14) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7762.29 via Frontend
- Transport; Mon, 22 Jul 2024 11:56:09 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 165.204.84.17)
- smtp.mailfrom=amd.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=amd.com;
-Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
- 165.204.84.17 as permitted sender) receiver=protection.outlook.com;
- client-ip=165.204.84.17; helo=SATLEXMB04.amd.com; pr=C
-Received: from SATLEXMB04.amd.com (165.204.84.17) by
- BL02EPF0001A0FF.mail.protection.outlook.com (10.167.242.106) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.20.7784.11 via Frontend Transport; Mon, 22 Jul 2024 11:56:09 +0000
-Received: from kali.amd.com (10.180.168.240) by SATLEXMB04.amd.com
- (10.181.40.145) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2507.39; Mon, 22 Jul
- 2024 06:56:07 -0500
-From: Vasant Hegde <vasant.hegde@amd.com>
-To: <iommu@lists.linux.dev>, <joro@8bytes.org>
-CC: <will@kernel.org>, <robin.murphy@arm.com>,
-	<suravee.suthikulpanit@amd.com>, Vasant Hegde <vasant.hegde@amd.com>
-Subject: [PATCH] iommu: Add support to change domain to blocked domain via sysfs
-Date: Mon, 22 Jul 2024 11:55:53 +0000
-Message-ID: <20240722115553.6005-1-vasant.hegde@amd.com>
-X-Mailer: git-send-email 2.34.1
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3558A16D9A5
+	for <iommu@lists.linux.dev>; Mon, 22 Jul 2024 15:10:41 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=213.95.11.211
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1721661044; cv=none; b=fLI3J0iIIOZ+786fAvID3G0t+UhtpsOIuVLUFF9TxlvqN41Xb1+lt2PVX1DPMahfzcHo8Bp+9LTj9BRBfnNVVx6ed6UwAL4d2xBB3oPE6q9D1uo3UFHxT5ZDTtadMmc9bh2M6gINwLBHFduZFrCJ2UnxdvUhE6vba/DPoFa7c9s=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1721661044; c=relaxed/simple;
+	bh=h0avLBh1l9SpGT34z41LHtNgE3HKNHjT+leiPk8F7lM=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=X+Sfpz9VS283QH1TKA2z6lmulg3VyoMbBsZYugyfap73k0Fy7c7oP8MBUaJ8b0P7PvsXR2zZZztdCzd9O0ILkU89adhyiyKg49NkCumWhYvHGgnXjtE7f4A0pXE4Z2yBdub73BHJjN9ks00Xr8AGkKLXZ/zA3FQ+j2lBHXNVBvo=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=lst.de; spf=pass smtp.mailfrom=lst.de; arc=none smtp.client-ip=213.95.11.211
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=lst.de
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=lst.de
+Received: by verein.lst.de (Postfix, from userid 2407)
+	id 1E0D968C7B; Mon, 22 Jul 2024 17:10:38 +0200 (CEST)
+Date: Mon, 22 Jul 2024 17:10:37 +0200
+From: Christoph Hellwig <hch@lst.de>
+To: Leon Romanovsky <leon@kernel.org>
+Cc: Christoph Hellwig <hch@lst.de>, Robin Murphy <robin.murphy@arm.com>,
+	Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
+	Marek Szyprowski <m.szyprowski@samsung.com>,
+	Leon Romanovsky <leonro@nvidia.com>,
+	Easwar Hariharan <eahariha@linux.microsoft.com>,
+	linux-kernel@vger.kernel.org, iommu@lists.linux.dev,
+	Jason Gunthorpe <jgg@nvidia.com>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Subject: Re: [PATCH v3 2/2] dma: add IOMMU static calls with clear default
+ ops
+Message-ID: <20240722151037.GA25001@lst.de>
+References: <cover.1721547902.git.leon@kernel.org> <bf0b200d4600edd9d6d12168e89f9f3abd6b9789.1721547902.git.leon@kernel.org>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-ClientProxiedBy: SATLEXMB04.amd.com (10.181.40.145) To SATLEXMB04.amd.com
- (10.181.40.145)
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: BL02EPF0001A0FF:EE_|CY5PR12MB6105:EE_
-X-MS-Office365-Filtering-Correlation-Id: b2d72c2e-d5a0-4c9a-3959-08dcaa4546e2
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|1800799024|36860700013|376014|82310400026;
-X-Microsoft-Antispam-Message-Info:
-	=?us-ascii?Q?RG8z5J77SiyVT88calnu+V6ppLPyAHzK7TO3wpzBlVJCnykO+AQa6KQTcX4J?=
- =?us-ascii?Q?9+1uXL/XZeazUbI9ZDafvxE70uKxSK2CLQGJ4k8QePErr9CLD2H1KmNA4Iho?=
- =?us-ascii?Q?LCHJZSjywWSbzgWdldRUm2d1jZ0OiWhomJALtgtS5UASOMFcz33+2mbCaau5?=
- =?us-ascii?Q?34HvHH75Mu94Co6SLQfLwGojY1jckLM7WBhXO8/fCnsTdePFPaf24TrsCMkS?=
- =?us-ascii?Q?k1FV6CO2UiZyGvZbGpS/5VCTrBqkXkvh3btaPzG6hTjZDd7baxmMK2phJ6hc?=
- =?us-ascii?Q?TEoNwRHJ0PWCVCgjCN7dalMLbvw91GhvG4Ne2jIk+FecGc6XFYrO3siLEEgP?=
- =?us-ascii?Q?ONnNBy6iZhYTHxYEc2gGZYKMadsWfjFeJVsDsvM2RZA9bUs1bVFMiOS3uqQ1?=
- =?us-ascii?Q?yOaGhdqW0IhW/VBS0s/lYxB2aOgM0SZULKqfCBImA7RfVIK1463N1KfNA8tz?=
- =?us-ascii?Q?f8KfaMyGLWinpvVQGA2Z1Vn2IbyKjDaDsVQViGBPsx/gGjSgBFJ0FWn3//Hs?=
- =?us-ascii?Q?kkvIuiXkA3r4Y01FPYoy3Pev6rbC0uHrz2r9RAgROkcUanp5oRM2xjWJ3dA5?=
- =?us-ascii?Q?Wrv4JoC0PuK6By9u61JaBv056IIVLsWcDrMYyTvkEojBF25sWWdsN0A3WDSC?=
- =?us-ascii?Q?vfYzAmJF7MVC+7enuWI0k0AFf3DtFpdHRzTuQ6zudA7rJEmE5j95E6RoPIFv?=
- =?us-ascii?Q?sSntPfhXAV2CwexpVcHLDVC4te0MdXRa4anBsypzrI5RslGrY09K/yBnO+Rz?=
- =?us-ascii?Q?H4FVPlLnYXFZSmZ4zTXB2ttdOAfWwB6pJeW8KZI/gkVd2e7Gv/fY13K0eZ3J?=
- =?us-ascii?Q?5dZUUPc/mKyunHzKY0ocguRA9kS7mMwTV7we802DG18nGDe8ZnrRo6mqK1S5?=
- =?us-ascii?Q?sl63rRIKCoJ+HteCdKVs0V5FmnhTyPBpH3tQDz0xuAmWkaj112iXjooGKZyr?=
- =?us-ascii?Q?SKSc7NWRubSOnzeZB2nmy8DDpR4WhcmKKEPLQliJSpyVO/G1VHk65MLOZlW6?=
- =?us-ascii?Q?4gQS7P7w4QRTymm4IEpQJMP+g2IYrjCoM7etKB6/C8Q02rfsr9GqQtCl774N?=
- =?us-ascii?Q?hKjdaOE6lT87HrjlWD2yFfqGKGIjEd4xlNQmOu5facF9i48unbMB/Tc643dj?=
- =?us-ascii?Q?tGTXJq11ok/hnTwtI2DZQgChazjVM6qXCc0IRFpH3ywQXIUgdgUF0kYP5Vr8?=
- =?us-ascii?Q?hMzfXZ0AJAHwm5VZhlHWcECa7vL+59dMaq5nnaSMx/HG8ye6LHFkYYPVWRDE?=
- =?us-ascii?Q?XDv8yCx/+bBIXth1TDW0FpTy6IF3cPrdz5Cezj1w5cdwb+i/c6T8O05AxfAf?=
- =?us-ascii?Q?2YFsWWx9pirtZ2kQkwcj6BM2OX9dFm4vs0vbelBQKd7LjIyANTVlXmd48oL2?=
- =?us-ascii?Q?KOjDfE9MndxqvzPNp5zDg7fc5780fccviSZ4+rwAYyNVi1KCMg8hzGqkMTfb?=
- =?us-ascii?Q?AAvZ2idiQn5mx74nsDA1s/EKzrK0p0NY?=
-X-Forefront-Antispam-Report:
-	CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB04.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230040)(1800799024)(36860700013)(376014)(82310400026);DIR:OUT;SFP:1101;
-X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 22 Jul 2024 11:56:09.7839
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: b2d72c2e-d5a0-4c9a-3959-08dcaa4546e2
-X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[SATLEXMB04.amd.com]
-X-MS-Exchange-CrossTenant-AuthSource:
-	BL02EPF0001A0FF.namprd03.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: CY5PR12MB6105
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <bf0b200d4600edd9d6d12168e89f9f3abd6b9789.1721547902.git.leon@kernel.org>
+User-Agent: Mutt/1.5.17 (2007-11-01)
 
-Add support to change default domain to 'blocked' domain. This is useful
-for debugging.
+On Sun, Jul 21, 2024 at 10:49:11AM +0300, Leon Romanovsky wrote:
+> -static void iommu_dma_free_noncontiguous(struct device *dev, size_t size,
+> -		struct sg_table *sgt, enum dma_data_direction dir)
+> +void iommu_dma_free_noncontiguous(struct device *dev, size_t size,
+> +				  struct sg_table *sgt,
+> +				  enum dma_data_direction dir)
 
-iommu_group_show_type() has support to display 'blocked' domain type.
+Why are you reformatting these to a much less readable coding style?
 
-Signed-off-by: Vasant Hegde <vasant.hegde@amd.com>
----
- drivers/iommu/iommu.c | 2 ++
- include/linux/iommu.h | 3 ++-
- 2 files changed, 4 insertions(+), 1 deletion(-)
+> +static inline struct page *
+> +dma_common_alloc_pages(struct device *dev, size_t size, dma_addr_t *dma_handle,
+> +		       enum dma_data_direction dir, gfp_t gfp)
+> +{
+> +	return NULL;
+> +}
+> +static inline void dma_common_free_pages(struct device *dev, size_t size,
+> +					 struct page *vaddr,
+> +					 dma_addr_t dma_handle,
+> +					 enum dma_data_direction dir)
+> +{
+> +}
 
-diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-index 9df7cc75c1bc..5fd6afd9090f 100644
---- a/drivers/iommu/iommu.c
-+++ b/drivers/iommu/iommu.c
-@@ -3041,6 +3041,8 @@ static ssize_t iommu_group_store_type(struct iommu_group *group,
- 		req_type = IOMMU_DOMAIN_DMA;
- 	else if (sysfs_streq(buf, "DMA-FQ"))
- 		req_type = IOMMU_DOMAIN_DMA_FQ;
-+	else if (sysfs_streq(buf, "blocked"))
-+		req_type = IOMMU_DOMAIN_BLOCKED;
- 	else if (sysfs_streq(buf, "auto"))
- 		req_type = 0;
- 	else
-diff --git a/include/linux/iommu.h b/include/linux/iommu.h
-index 17b3f36ad843..2741c35a6788 100644
---- a/include/linux/iommu.h
-+++ b/include/linux/iommu.h
-@@ -169,6 +169,7 @@ struct iommu_domain_geometry {
- 
- #define __IOMMU_DOMAIN_NESTED	(1U << 6)  /* User-managed address space nested
- 					      on a stage-2 translation        */
-+#define __IOMMU_DOMAIN_BLOCKED	(1U << 7)  /* Blocked domain */
- 
- #define IOMMU_DOMAIN_ALLOC_FLAGS ~__IOMMU_DOMAIN_DMA_FQ
- /*
-@@ -189,7 +190,7 @@ struct iommu_domain_geometry {
-  *	IOMMU_DOMAIN_PLATFORM	- Legacy domain for drivers that do their own
-  *				  dma_api stuff. Do not use in new drivers.
-  */
--#define IOMMU_DOMAIN_BLOCKED	(0U)
-+#define IOMMU_DOMAIN_BLOCKED	(__IOMMU_DOMAIN_BLOCKED)
- #define IOMMU_DOMAIN_IDENTITY	(__IOMMU_DOMAIN_PT)
- #define IOMMU_DOMAIN_UNMANAGED	(__IOMMU_DOMAIN_PAGING)
- #define IOMMU_DOMAIN_DMA	(__IOMMU_DOMAIN_PAGING |	\
--- 
-2.31.1
+dma-iommu very much depends on these.  So we'll need to also
+build ops_helpers.o if dma-iommu is enabled.  So we'll probably need
+a separate Kconfig option for it that the various users select.
 
