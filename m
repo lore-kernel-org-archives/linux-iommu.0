@@ -1,81 +1,74 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 45AA2156F40;
-	Tue, 23 Jul 2024 16:11:43 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 949B915748F;
+	Tue, 23 Jul 2024 16:33:13 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1721751103; cv=none; b=iHhCKhqJJJsvml29upPREiaV7MJRDnltC8+F77bHC37ZzouDnRBUtbdyTo+PPzQUvJ4r8M/pbJpeAnidNXgvGrc86hLMOB5VzEnNk/FQgnAGWDjDMt3t/FuSA1RMcJkPnjcufI03Di7lSjnv7gbqBjrKgMI0GTVgt2Uyi9ILeIQ=
+	t=1721752393; cv=none; b=h8eE/cD5IXyUTFZzrheHf2sh0lnq+LiEB1aM92b+Hb+nFx/PthpDSX67HJ82qlwgXNpww6ghJmEki4B2aRTSPLZttrQdudn0vVbHnkz0RMNuu0qNOaKeKBvUcA+bdnFXmFbM5ilQyIem+IzbyojV5xk9lpOmtRQlNswy6PI5XbM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1721751103; c=relaxed/simple;
-	bh=Rg5CipCPIHQRoPzpjEq0aFBHW+/3CFYbxXP82VdhUmE=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=l6USISr6n0KAvNTlV4Ieh8GoE4Sp5hgo+FfB/MsyKIOlTFMIrWQCdqBlQwXSEwbujaemm+ZOLDJbEqv9WK/51+N/P2NJcLcSBUDy9+NlTsw2QkCplZSJers264paART52KeQnc+mkGXqqvSSYix2Lec8RJpEcc1uzKxg/KPZLsc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=uHalo0AW; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1721752393; c=relaxed/simple;
+	bh=h2amE+cISJ5VM5DpX9zxzkBkmuG5qBqHMGjFwxa6q+8=;
+	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=HU/JmJnmkfcLxK2zoPtdTLemFD6gLcEOhxEgcFfXewMDUmwLqR5Me3SlhW3DVGMNgq953XS4VkNxDEqOQqfmgKPC0HJxk/Ejzn+l8PO1d6AP2LTgb3iE3i9vhXPm8wOj9rE7K8tNZAn3Qwz2jIdA2AnWYeh/T6zZQv/LojsGYPM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=mu8bvCtS; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="uHalo0AW"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 39FC3C4AF0C;
-	Tue, 23 Jul 2024 16:11:41 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="mu8bvCtS"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 314CEC4AF0A;
+	Tue, 23 Jul 2024 16:33:11 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1721751102;
-	bh=Rg5CipCPIHQRoPzpjEq0aFBHW+/3CFYbxXP82VdhUmE=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=uHalo0AWSgLrfxFvHvIWkCCyxOfeqgHTeD7LqZrZpXOGPWTXpe/DEM7ebNK1Eveem
-	 1BxggTpRhDyaSw6FVUpZ85yd0IVsPzt94ttvdgvbRghDbuzOACqUjda8Kv/6S1ErI9
-	 oBFTCoDSpjY0WqVLdCKgRyvT7kW/MNl3kMZq0+U94syAEHhLUJZQvkbXzC4NDwdzH+
-	 /7IuxITIq15RcIJQCVa2eNnaCnZWBGkzHGIlyjspr0AYU+e8AF8/JtcNTeGJFCFm9k
-	 jpyAhXoAASFmdtxCH+aL3GFanh2hmuvtvIwNwdkOkBQcy8PCNCVtIpLwi8haESvH/v
-	 zrqXxMaJfzXbw==
-Date: Tue, 23 Jul 2024 17:11:37 +0100
+	s=k20201202; t=1721752393;
+	bh=h2amE+cISJ5VM5DpX9zxzkBkmuG5qBqHMGjFwxa6q+8=;
+	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+	b=mu8bvCtSCYFr7gTHmffIgc8SzPEQ+WIEe5Jqx96h6UzaXG5ySz3ol96VPRXgFdc2m
+	 gGsciqJj2qqVEXY0b7DQGYZwQ9WZ0XE2gMVO5p4UlZ1u2wjy1A1bLMCCitqHj5fqtH
+	 nthwrw0y3I0EkblHii1MvnZ2Y2uNRnj/vEgWJEGD24Qz4YhEY4O7QuiE/nX2sPbk8j
+	 4DtrmHYk72NiT7qpQDceNlhw47XmcXbfRmaVMR3E36+I1TjbnHcxuYJZmdVwfPcowd
+	 5rmYl4GT//FqK0PtptFByBy1F+nGIv/dqU4RH1+ivTo/6BQf+ikmoSOWJDmAXQv41u
+	 /x255xkaCZB5g==
 From: Will Deacon <will@kernel.org>
-To: Ashish Mhetre <amhetre@nvidia.com>
-Cc: thierry.reding@gmail.com, vdumpa@nvidia.com, robin.murphy@arm.com,
-	joro@8bytes.org, linux-tegra@vger.kernel.org,
-	linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev,
-	linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] iommu: arm-smmu: Fix Tegra workaround for PAGE_SIZE
- mappings
-Message-ID: <20240723161137.GB26546@willie-the-truck>
-References: <20240717072145.107412-1-amhetre@nvidia.com>
+To: Joerg Roedel <joro@8bytes.org>,
+	Chunyan Zhang <zhang.lyra@gmail.com>,
+	Artem Chernyshev <artem.chernyshev@red-soft.ru>
+Cc: catalin.marinas@arm.com,
+	kernel-team@android.com,
+	Will Deacon <will@kernel.org>,
+	Robin Murphy <robin.murphy@arm.com>,
+	iommu@lists.linux.dev,
+	linux-kernel@vger.kernel.org,
+	lvc-project@linuxtesting.org
+Subject: Re: [PATCH] iommu: sprd: Avoid NULL deref in sprd_iommu_hw_en
+Date: Tue, 23 Jul 2024 17:33:06 +0100
+Message-Id: <172175096929.2359500.17694398675089174396.b4-ty@kernel.org>
+X-Mailer: git-send-email 2.20.1
+In-Reply-To: <20240716125522.3690358-1-artem.chernyshev@red-soft.ru>
+References: <20240716125522.3690358-1-artem.chernyshev@red-soft.ru>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20240717072145.107412-1-amhetre@nvidia.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
 
-On Wed, Jul 17, 2024 at 07:21:45AM +0000, Ashish Mhetre wrote:
-> PAGE_SIZE can be 16KB for Tegra which is not supported by MMU-500 on
-> both Tegra194 and Tegra234. So, use 4KB mappings when PAGE_SIZE is 16KB.
+On Tue, 16 Jul 2024 15:55:14 +0300, Artem Chernyshev wrote:
+> In sprd_iommu_cleanup() before calling function sprd_iommu_hw_en()
+> dom->sdev is equal to NULL, which leads to null dereference.
 > 
-> Signed-off-by: Ashish Mhetre <amhetre@nvidia.com>
-> ---
->  drivers/iommu/arm/arm-smmu/arm-smmu-nvidia.c | 5 +++--
->  1 file changed, 3 insertions(+), 2 deletions(-)
+> Found by Linux Verification Center (linuxtesting.org) with SVACE.
 > 
-> diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu-nvidia.c b/drivers/iommu/arm/arm-smmu/arm-smmu-nvidia.c
-> index 4b2994b6126d..bb621a94f6fe 100644
-> --- a/drivers/iommu/arm/arm-smmu/arm-smmu-nvidia.c
-> +++ b/drivers/iommu/arm/arm-smmu/arm-smmu-nvidia.c
-> @@ -273,11 +273,12 @@ static int nvidia_smmu_init_context(struct arm_smmu_domain *smmu_domain,
->  	 * release of PMD entry and avoid translations seeing stale PMD entry in
->  	 * walk cache.
->  	 * Fix this by limiting the page mappings to PAGE_SIZE on Tegra194 and
-> -	 * Tegra234.
-> +	 * Tegra234. Use 4K page mappings if PAGE_SIZE is 16K as MMU500 doesn't
-> +	 * support it.
->  	 */
->  	if (of_device_is_compatible(np, "nvidia,tegra234-smmu") ||
->  	    of_device_is_compatible(np, "nvidia,tegra194-smmu")) {
-> -		smmu->pgsize_bitmap = PAGE_SIZE;
-> +		smmu->pgsize_bitmap = (PAGE_SIZE == SZ_16K) ? SZ_4K : PAGE_SIZE;
+> 
 
-Perhaps it would be more robust to do a read-modify-write of the
-pgsize_bitmap, preserving all the page-sizes that are <= PAGE_SIZE (i.e.
-and it with something like GENMASK(PAGE_SHIFT, 0)?
+Applied to iommu (next), thanks!
 
+[1/1] iommu: sprd: Avoid NULL deref in sprd_iommu_hw_en
+      https://git.kernel.org/iommu/c/630482ee0653
+
+Cheers,
+-- 
 Will
+
+https://fixes.arm64.dev
+https://next.arm64.dev
+https://will.arm64.dev
