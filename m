@@ -1,68 +1,67 @@
-Received: from mail-qv1-f53.google.com (mail-qv1-f53.google.com [209.85.219.53])
+Received: from mail-qt1-f170.google.com (mail-qt1-f170.google.com [209.85.160.170])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BA3BD13D882
-	for <iommu@lists.linux.dev>; Tue, 23 Jul 2024 12:48:49 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.219.53
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 42D1444C97
+	for <iommu@lists.linux.dev>; Tue, 23 Jul 2024 13:03:27 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.160.170
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1721738932; cv=none; b=lA9WDl/MWVa+dz4osgx5V0uak5YEt/2oCtvbT6S1F8osLMEWIsUIpeugf5YHnrB6TOoHb3zfmihicg9CUQBHn45L5wNSqXzZs4+1WwJiqVVZBvAqrGNL4mkMBnx0Yy/iy+fpykKcJ7W8oDnyn3UWKhm4a2+HONPCvfIkvR9h0nA=
+	t=1721739810; cv=none; b=JEW2igcBCqf+eBtBQIp1dJeVRJhJwUpLMIapbGc1DuMZhDPACqjPttTYG76+XxFU4qeEuGWopcn32MWtGrAjRJ14OZDMCyZV0ZyWvfXY5EGH+wNlD7lD0iL+KhZ+WoYCi2H0ZbRsdfKZfVnPick583pa/Uk3OqRhrjJPLbUnaMk=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1721738932; c=relaxed/simple;
-	bh=wOnEDwriZwx7rcrgs7goLJqWn3w6wpuD6g0gePLwJz4=;
+	s=arc-20240116; t=1721739810; c=relaxed/simple;
+	bh=D8+jbkXwAtyO3GjYouh0mfosiTK2S3DmtFxKi72njpc=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=KmTwfB/1TVxCdtkaxZVIvzxWfnUbogVId67CUYEwUvBmTHshl8obYJFtIr95Ii1lBZ4htAVl7Eg7tRNYV9mjck6ZIfuC3s6jqWcSHQaQAknCeKekgSdOxe9uUoFLM3Kc0tx72yc+Y1xzv8K7tC7YmZibFjY/h+ygKQNhWAQjiSE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=jXwkk+TQ; arc=none smtp.client-ip=209.85.219.53
+	 Content-Type:Content-Disposition:In-Reply-To; b=hAUlsNKqGvvQ607SdS+SACE8c6VUKn++E+nyY0RVz04tez5Qi3ArUqgFkMNUjuMuspqE0J6hWnVhqrEovNBWCnbbA93XbVrYJcOp7DMmf2nL4PCjaeKPkQpxTfXgjjyPf0peDQybcdkaM35nDeMNBrby89F3ADKCw08Kx3hbBUc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=c7xCL/h5; arc=none smtp.client-ip=209.85.160.170
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="jXwkk+TQ"
-Received: by mail-qv1-f53.google.com with SMTP id 6a1803df08f44-6b79fc76d03so31884846d6.1
-        for <iommu@lists.linux.dev>; Tue, 23 Jul 2024 05:48:49 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="c7xCL/h5"
+Received: by mail-qt1-f170.google.com with SMTP id d75a77b69052e-44c2c4ccb7aso39103231cf.1
+        for <iommu@lists.linux.dev>; Tue, 23 Jul 2024 06:03:27 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google; t=1721738928; x=1722343728; darn=lists.linux.dev;
+        d=ziepe.ca; s=google; t=1721739807; x=1722344607; darn=lists.linux.dev;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=citEK9Go0HIAzipsNA6lBMcHdejRwaj6BfJz7T/qnx4=;
-        b=jXwkk+TQcWNO4TYOt2HoeojHNuwGkacasaJZwIZG6tR7TtecFWfQo0mQXc4Q9YUWzE
-         90L2dq09OZd/gbZWXPsyDSj2yu0d5OnDdAwmBCRFAwN1/EfLi5eqlstRYbyBah6/XYnH
-         THgp/6XK9MIi1IFn5THAB82YgcLTg4j4KwM3IVDxtmRsu1s4t/ZNLoKROmmKHbpX4Jj6
-         JyXeK0zNpr2+G8mKFiBg55jSyJQDnU6SWYZ+x7SXGyCKswChR8yHrtZFl4SE5esIQOb9
-         iZWYszFqRKfEEH4HYMA1NGgte+NJaBYPyeHLU9wmaOacgPqVH1eT553Q9iZAdvMax9Mo
-         9c6w==
+        bh=44OX+Twfo4X5VVnBAv9LEB3DxW5Rn7PIWjxY2sHLWvY=;
+        b=c7xCL/h5Ami2tVVWeF+TpUQNgvMXsUyD9V1g7zxGfDYVig/P9fvPnXUSPgJWpC3dma
+         1dVuWkLqmSHVANjhHyi+mBwAfnHrovj2tMYmdpkKuLS6aSXUp0J8rFWpm4Rd9jx2omfR
+         IKByvYTTiqdcOKkwHFkKfth6dUwL5aAifY8nVDK0XzElP1H16nutLU28dRrpg7rp1srl
+         Lt5h/FU6Jn57hHOaEwxV2Ut2oqvZUCQPwTbRrUD1+GfNUfnyIpFNo1YvT7rdumx1M5E5
+         W/z5NHSFepeoOkxRD/bOYyV+Jpef3GYTHjY1opETHNs7Qa0rMCJV1xfcol1Keht1U4+g
+         0D3A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1721738928; x=1722343728;
+        d=1e100.net; s=20230601; t=1721739807; x=1722344607;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=citEK9Go0HIAzipsNA6lBMcHdejRwaj6BfJz7T/qnx4=;
-        b=Sy4NC5ThED0WNA6ruLsDgBSah4ytrolhraOaeCMQS/UrrkXbEOzjSWRIEs8M+doDL5
-         tx9YOE/lfgCZdSE1malfq3do6RaRijKFYmIZHckieybN1V+J5AcA4tIdl+kT0of+uvqW
-         NUUcDxmvTrUXp+0l4gBN/83hb4zxQZb74J6H/AN3s5+Hf0dbzLxnT61OMA6FHQIqRNwc
-         cA4Dgql16BxgWRbCI4NkwORBoBcUad8n163TeIYW6MSTkx/8KMEHyYoxQxIiDXo9Voog
-         L/OZIcB0AKPASdroKU5wVdvX1xwuTVPmRMxxUlUWCFCgiWzCY6WMxtoLJ13Ra+3Nd5Zr
-         0V6Q==
-X-Gm-Message-State: AOJu0YybNoR8z1qTND7Ker32uBhkKMb/CJtFr/+Q1LdaY9KNNhUedHvG
-	rIaBcfwyHyYsaVxtXJEsRJvRenVCjKygYcWzsRcDSlPRpghxEvBRK15bimafq5c=
-X-Google-Smtp-Source: AGHT+IEX96lHdd0DWkn0FXEyNT+jCN0/cyM7mvneY6HnU7zwgVDWg/LIVInpvM/dab3JWaoHnjPjPA==
-X-Received: by 2002:ad4:5ba9:0:b0:6b7:a8ef:e366 with SMTP id 6a1803df08f44-6b981a0930cmr33696166d6.9.1721738928555;
-        Tue, 23 Jul 2024 05:48:48 -0700 (PDT)
+        bh=44OX+Twfo4X5VVnBAv9LEB3DxW5Rn7PIWjxY2sHLWvY=;
+        b=m4zJUbB2X6tVKcHK10UHUV7H2EYQTQxUo/R+7ILKQ5QDwq6sqK9hizp96KD5z61JHZ
+         UXESfv5+C0YtEgr61pIA4oxa5PWleRaZeGZM6viCMYJcabhEmPKGqUbnQMwup2J1pG6J
+         dQevhuVEcl6gF7bvQ2RJ9AqTpbjImV/+Aia1IU4I2TUI+Yqg0p7jZbfeKum7dSY5vlrF
+         vhgfOIHALmZ/aERxg+TpATjQJ2BnhuVA0aP7SzlZvlSs2C0Atsee3iyOSj9GY4XwCWez
+         eKdm3Rtk5Nxg09lRoYlkQe+zC5E2hJ15Bj9LQ5d8/p4CmWSImQdeCk9trS9BT1gt15MG
+         +WRg==
+X-Gm-Message-State: AOJu0YzvIIJKnR7G2BskZIVFTef2upXTLMVjUZ/xct7lBqzJB7q9W2Zv
+	oNM1stWSjnaGwM12WnLIMymA5HmSBAAErBtY2Gx+SybZQpCOfRlcGEJccLIsnGM=
+X-Google-Smtp-Source: AGHT+IGPKNyerRKJhIoclkJPu1oz4Szc8bzFByjAZPJ5qm2TKETgeVKXdyVBkgt+9xaq6mysls4dlw==
+X-Received: by 2002:a05:622a:11d6:b0:447:dd66:8004 with SMTP id d75a77b69052e-44fc814b03emr34089421cf.27.1721739806745;
+        Tue, 23 Jul 2024 06:03:26 -0700 (PDT)
 Received: from ziepe.ca (hlfxns017vw-142-68-80-239.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.68.80.239])
-        by smtp.gmail.com with ESMTPSA id d75a77b69052e-44f9cdbce43sm43109371cf.87.2024.07.23.05.48.47
+        by smtp.gmail.com with ESMTPSA id d75a77b69052e-44fb68ff9cfsm21516471cf.72.2024.07.23.06.03.25
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 23 Jul 2024 05:48:47 -0700 (PDT)
+        Tue, 23 Jul 2024 06:03:26 -0700 (PDT)
 Received: from jgg by wakko with local (Exim 4.95)
 	(envelope-from <jgg@ziepe.ca>)
-	id 1sWEwh-003boP-2B;
-	Tue, 23 Jul 2024 09:48:47 -0300
-Date: Tue, 23 Jul 2024 09:48:47 -0300
+	id 1sWFAr-003fqR-4L;
+	Tue, 23 Jul 2024 10:03:25 -0300
+Date: Tue, 23 Jul 2024 10:03:25 -0300
 From: Jason Gunthorpe <jgg@ziepe.ca>
-To: Steve Sistare <steven.sistare@oracle.com>
-Cc: iommu@lists.linux.dev, Kevin Tian <kevin.tian@intel.com>,
-	Alex Williamson <alex.williamson@redhat.com>,
-	Cornelia Huck <cohuck@redhat.com>
-Subject: Re: [RFC V1 0/4] iommufd live update
-Message-ID: <20240723124847.GI14050@ziepe.ca>
-References: <1721501805-86928-1-git-send-email-steven.sistare@oracle.com>
+To: Vasant Hegde <vasant.hegde@amd.com>
+Cc: iommu@lists.linux.dev, joro@8bytes.org, will@kernel.org,
+	robin.murphy@arm.com, suravee.suthikulpanit@amd.com
+Subject: Re: [PATCH] iommu/amd: Add blocked domain support
+Message-ID: <20240723130325.GJ14050@ziepe.ca>
+References: <20240722115452.5976-1-vasant.hegde@amd.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -71,45 +70,18 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <1721501805-86928-1-git-send-email-steven.sistare@oracle.com>
+In-Reply-To: <20240722115452.5976-1-vasant.hegde@amd.com>
 
-On Sat, Jul 20, 2024 at 11:56:40AM -0700, Steve Sistare wrote:
-> Live update is a technique wherein an application saves its state, launches
-> an updated version of itself, and restores its state.  Clients of the
-> application experience a brief suspension of service, on the order of
-> 100's of milliseconds, but are otherwise unaffected.
+On Mon, Jul 22, 2024 at 11:54:52AM +0000, Vasant Hegde wrote:
+> Create global blocked domain with attach device ops. It will clear the
+> DTE so that all DMA from device will be aborted.
 > 
-> Define the IOMMU_IOAS_CHANGE_PROCESS ioctl to allow management and use
-> of an iommufd device to be transferred from one process to another.  The
-> application is responsible for transferring the device descriptor to the new
-> process, eg either by preservation across fork and exec or via SCM_RIGHTS.
-> 
-> All memory objects that were mapped for iommufd DMA in the old process
-> must also be mapped in the new process, but they may have different virtual
-> addresses in the new.  The application passes an array of new addresses to
-> IOMMU_IOAS_CHANGE_PROCESS, and it atomically updates everything to the current
-> process, grabbing the new mm, transferring pinned page counts, and recording
-> new virtual addresses.
-> 
-> If the application directly exec's the new version of itself, it must take
-> special care if the mappings may be accessed by kernel threads, such as by
-> vfio mdevs.  The original process must fork an identical caretaker
-> process which calls VFIO_IOAS_CHANGE_PROCESS to take temporary ownership
-> of the mappings without changing VA's.  The original process then exec's
-> its successor, which calls VFIO_IOAS_CHANGE_PROCESS with new VA's to take
-> ownership from the caretaker.  
-> 
-> Thanks to Jason Gunthorpe for code and ideas in this series.
-> 
-> This is implemented in QEMU by the patch series "Live update: iommufd"
->   https://lore.kernel.org/qemu-devel   (to be posted shortly)
-> 
-> Steve Sistare (4):
->   iommufd: Export do_update_pinned
->   iommufd: Lock all objects
->   iommufd: Add IOMMU_IOAS_CHANGE_PROCESS
->   iommufd: update VA
+> Signed-off-by: Vasant Hegde <vasant.hegde@amd.com>
+> Reviewed-by: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
+> ---
+>  drivers/iommu/amd/iommu.c | 24 ++++++++++++++++++++++++
+>  1 file changed, 24 insertions(+)
 
-Oh, this should also be covered in the iommufd selftests..
+Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
 
 Jason
