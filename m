@@ -1,51 +1,59 @@
-Received: from verein.lst.de (verein.lst.de [213.95.11.211])
+Received: from bombadil.infradead.org (bombadil.infradead.org [198.137.202.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 54E5C17C6B
-	for <iommu@lists.linux.dev>; Mon, 22 Jul 2024 23:16:34 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=213.95.11.211
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 693617F;
+	Tue, 23 Jul 2024 00:06:06 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.137.202.133
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1721690198; cv=none; b=XYaFWfxKmH+pqUeQjgQT0YlLjqsmQ3jU5RQk8G8c/htj7KkiIUroEgqqZzIbPulvn62CwYusGldnlniHZsuvwIhpbHM1zE4fisXNTZmZw4iMV2Tp8hlCBW5hgtyvq3/BFG43q0NNhV/Z4AYq+nByf18eJekcRg++lheio/BzXZg=
+	t=1721693167; cv=none; b=nWPteBzQ+Uiy8vtPgkVlHjrbq4WQYN5VAOSSY7AFBclSQlE0z+J/7IcXikI+ehUwexJmORv7KBu2BRcvjDAcUmd7Hr3iSJpHAKsCg8iNBupDjJ0apqEjsHClpfPcxZYaYydTL1brsFeUm15EIYdRnm86Gbd5hifxWLxPJV50Pko=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1721690198; c=relaxed/simple;
-	bh=TcvdJXVJKv7io3GIC8QJ7ec05t1nrM9xp5W9TPsqRRg=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=BKxbuvNayU1t9R8rSZ0617XuHNKYrhtVFXs5XGSZlBDN9D15dl83v+vFMkFSRzf7DKoW/Hd/nwlSQKw3oSw+5fnFtoMuG6xptni5BZgjkAGXXJeZZS8zJzAQW3RPDCEwc9yQVEwNeZ9CBc3ekLFFxKZ6hjpv/f1iUegrnEf5U/4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=lst.de; spf=pass smtp.mailfrom=lst.de; arc=none smtp.client-ip=213.95.11.211
+	s=arc-20240116; t=1721693167; c=relaxed/simple;
+	bh=WjSUx3GvKl5CUSPY08WsFk5F3w7X1b1z+ZsrzLhYna0=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=OCOsPKbr1WwKiz/8LOyuZ8hiktlRF9+5EOWIIT47Er8oxWmblnsw40wvpgc7sL/xcnH57UHwe3MaF1mcVkCR4gElW/UuNet8WDA87jqzB1C/IagEvDdOPce5eY6nmLGoGSzZlk/tUpIE+i/2eM3hr/vo8cZW4x3n8G130zFGnJ0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=lst.de; spf=none smtp.mailfrom=bombadil.srs.infradead.org; dkim=pass (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b=1rCoElHV; arc=none smtp.client-ip=198.137.202.133
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=lst.de
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=lst.de
-Received: by verein.lst.de (Postfix, from userid 2407)
-	id D340F68CFE; Tue, 23 Jul 2024 01:16:30 +0200 (CEST)
-Date: Tue, 23 Jul 2024 01:16:30 +0200
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=bombadil.srs.infradead.org
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b="1rCoElHV"
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+	d=infradead.org; s=bombadil.20210309; h=Content-Transfer-Encoding:
+	MIME-Version:Message-ID:Date:Subject:Cc:To:From:Sender:Reply-To:Content-Type:
+	Content-ID:Content-Description:In-Reply-To:References;
+	bh=qTtqCPrHTO1wHZhUdAhy0D5VNvnq1HqrB1rWUw1+V/k=; b=1rCoElHVJJMrvrPyWpTy+V0CAQ
+	c+pX5BAeZAd6FT0mdvd43MlA85tGrG+trR/YYfqqvjAsksB+xQlmEUN0HWXv0dCd9T6u5XJ8/m9cv
+	mAH6wxBm21McIOROMwHCpCamXx6MGJawd4b123QzTglltxBCzLwvMOhhUjrnU/VcVSHQw6CENaBko
+	Caa8liEjiW1oleIc0xaezjHKHLDVe1Jfi7+1yMvcinALs2orY4TyiFEnufBbgRfcgA8uEnMOlWtg7
+	EHa0trcFOlpBDRSsMBgEpWVGrp57ejXcP8XmMBTSdD9fxft86qspr5PMMII3Vqyh+p6q4ykcA7B8z
+	Z6Uj2C0g==;
+Received: from [64.141.80.140] (helo=localhost)
+	by bombadil.infradead.org with esmtpsa (Exim 4.97.1 #2 (Red Hat Linux))
+	id 1sW32b-0000000AvOp-0KDU;
+	Tue, 23 Jul 2024 00:06:05 +0000
 From: Christoph Hellwig <hch@lst.de>
-To: Leon Romanovsky <leon@kernel.org>
-Cc: Christoph Hellwig <hch@lst.de>, Robin Murphy <robin.murphy@arm.com>,
-	Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
-	Marek Szyprowski <m.szyprowski@samsung.com>,
-	Easwar Hariharan <eahariha@linux.microsoft.com>,
-	linux-kernel@vger.kernel.org, iommu@lists.linux.dev,
-	Jason Gunthorpe <jgg@nvidia.com>,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Subject: Re: [PATCH v3 2/2] dma: add IOMMU static calls with clear default
- ops
-Message-ID: <20240722231630.GA3184@lst.de>
-References: <cover.1721547902.git.leon@kernel.org> <bf0b200d4600edd9d6d12168e89f9f3abd6b9789.1721547902.git.leon@kernel.org> <20240722151037.GA25001@lst.de> <20240722154458.GA7022@unreal> <20240722154929.GA26317@lst.de> <20240722160555.GB7022@unreal>
+To: Robin Murphy <robin.murphy@arm.com>,
+	Marek Szyprowski <m.szyprowski@samsung.com>
+Cc: iommu@lists.linux.dev,
+	linux-kernel@vger.kernel.org
+Subject: remove the dma_set_{max_seg_size,seg_boundary,min_align_mask} return value
+Date: Mon, 22 Jul 2024 17:05:54 -0700
+Message-ID: <20240723000604.241443-1-hch@lst.de>
+X-Mailer: git-send-email 2.43.0
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20240722160555.GB7022@unreal>
-User-Agent: Mutt/1.5.17 (2007-11-01)
+Content-Transfer-Encoding: 8bit
+X-SRS-Rewrite: SMTP reverse-path rewritten from <hch@infradead.org> by bombadil.infradead.org. See http://www.infradead.org/rpr.html
 
-On Mon, Jul 22, 2024 at 07:05:55PM +0300, Leon Romanovsky wrote:
-> Should I need to reformat the code to your preferred style?
-> I can do it, but it will be manual work :(.
+Hi all,
 
-Just keep it as it was. And preferably also follow the style in
-dma-iommu.h.  In the worst case I can just fix it up when applying
-the patch.
+the above three functions can only return errors if the bus code failed
+to allocate the dma_parms structure, which is a grave error that won't
+get us far.  Thus remove the pointless return values, that so far have
+fortunately been mostly ignored, but which the cleanup brigade now wants
+to check for for no good reason.
 
+I'd love to get this in after -rc1 so that we can catch any of those
+cleanups that might be queued up for this merge window.
