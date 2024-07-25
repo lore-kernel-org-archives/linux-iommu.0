@@ -1,91 +1,75 @@
-Received: from mail.tkos.co.il (wiki.tkos.co.il [84.110.109.230])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 43D61198E69
-	for <iommu@lists.linux.dev>; Thu, 25 Jul 2024 11:56:34 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=84.110.109.230
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8B4C326281;
+	Thu, 25 Jul 2024 12:43:06 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1721908596; cv=none; b=WW1DEH/DwWTaeE15B2tDiI6cdI2h3ZsnFO0dVU+RA8vr4byfvhqjQlAPmE80VOXQGrqv62jv1lL/JgFG9CxXpmqCRjAKSS4qIVZkYDMXqgve811rdlnuWcjyQRd5DIzgdGcrf12KS7LSGBtitoYg2YHdVp9mT4jS9dXgWo4+ulE=
+	t=1721911386; cv=none; b=iOUeScpoj9DtQGB/x0iKh3TsRpidiym1WrLpOQUamu11FE2GtKwKwUFTasYawetbhwqSLz5gftymIlxtiaBtvPLJ+b6r02vdi6MbNz1nzmcuYP7mYF6c4HlV2pZsb4xzpJkx/eM1vDWSYFlT7K0jh8H8CzSJ2A6GafZ5+j7MoB4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1721908596; c=relaxed/simple;
-	bh=yE1dvBcrEBKnorpECP4pOnlN7nPfgUokWU3jR2HlwE8=;
-	h=From:To:Cc:Subject:In-Reply-To:References:Date:Message-ID:
-	 MIME-Version:Content-Type; b=s/f5x6fYVVUy8HTc2pmWlwZ6xiAATQGSiiztkt71a10NY5a+B/gyorKm73fKvq805f90jB7v+EVH6aM33Y9lZKNZ0GxLgfywta9a1aScIeg2CSu3iNY4sjtQ7CKEtowN8Nr4xMIVtAzA1E98LFyDf9j5fXgd/0HfFSvRVwSR33A=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=tkos.co.il; spf=pass smtp.mailfrom=tkos.co.il; dkim=pass (2048-bit key) header.d=tkos.co.il header.i=@tkos.co.il header.b=bizVwSo2; arc=none smtp.client-ip=84.110.109.230
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=tkos.co.il
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=tkos.co.il
+	s=arc-20240116; t=1721911386; c=relaxed/simple;
+	bh=tC43HF5shSRy1Qp9aEL/m7tJcGEGxkURSW88ynoN5XU=;
+	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=LC7LmhKH2vL1jWh0+xiW6J9iaCcGFEJO1YFMP3KCkRRXLlrTMfIndQav3KXgRF2F/Wuq024Lyotxtbqu8rvYBBNgSW/U3SKYmqDiqzRHbQNQjuXhDZwWuMz3+/ThRHQu2JJeBR08oU9FHn9F2cx1FjGjyKhgHcsh59vo2DpzOes=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=XT/Lh4B5; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=tkos.co.il header.i=@tkos.co.il header.b="bizVwSo2"
-Received: from localhost (unknown [10.0.8.2])
-	by mail.tkos.co.il (Postfix) with ESMTP id 284E14404C3;
-	Thu, 25 Jul 2024 14:47:51 +0300 (IDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=tkos.co.il;
-	s=default; t=1721908071;
-	bh=yE1dvBcrEBKnorpECP4pOnlN7nPfgUokWU3jR2HlwE8=;
-	h=From:To:Cc:Subject:In-Reply-To:References:Date:From;
-	b=bizVwSo2WQmGu0wUpHnYrd0vmUJZSj2EFi5MQvsuSsHcUPIlfFUeav8XA1ADfxEht
-	 swspOZXXy6Ab7EMunaOnm8NHsgOT9449191hCTw2/CpoAtwSwSaAwbieaI7844BSro
-	 ptDyP9e+pI/vXYmBCpx+M0RmTU+Lr81JVG8wPU3ZSwi4+YXygklxhz7lCo6Gusy58K
-	 seXAU/M/7An4QuSEy4KgL1CDRjrevZeRuLYxoakcQey6W84qW98DoLWlQoXDC09PaI
-	 4x/s1EdCLdeCgMg6IPGd80vPUq/70SWVPgWUFJSRDxadbEb9i2o8jR+4Mi0NXSi22V
-	 /YANXGITTzdfw==
-From: Baruch Siach <baruch@tkos.co.il>
-To: Catalin Marinas <catalin.marinas@arm.com>
-Cc: Christoph Hellwig <hch@lst.de>,  Marek Szyprowski
- <m.szyprowski@samsung.com>,  Rob Herring <robh@kernel.org>,  Saravana
- Kannan <saravanak@google.com>,  Will Deacon <will@kernel.org>,  Robin
- Murphy <robin.murphy@arm.com>,  iommu@lists.linux.dev,
-  devicetree@vger.kernel.org,  linux-arm-kernel@lists.infradead.org,
-  linux-kernel@vger.kernel.org,  linuxppc-dev@lists.ozlabs.org,
-  linux-s390@vger.kernel.org,  Petr =?utf-8?B?VGVzYcWZw61r?=
- <petr@tesarici.cz>,  Ramon
- Fried <ramon@neureality.ai>,  Elad Nachman <enachman@marvell.com>
-Subject: Re: [PATCH RFC v2 2/5] of: get dma area lower limit
-In-Reply-To: <ZnH-VU2iz9Q2KLbr@arm.com> (Catalin Marinas's message of "Tue, 18
-	Jun 2024 22:38:29 +0100")
-References: <cover.1712642324.git.baruch@tkos.co.il>
-	<230ea13ef8e9f576df849e1b03406184ca890ba8.1712642324.git.baruch@tkos.co.il>
-	<ZnH-VU2iz9Q2KLbr@arm.com>
-Date: Thu, 25 Jul 2024 14:49:01 +0300
-Message-ID: <87cyn1k7yq.fsf@tarshish>
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="XT/Lh4B5"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 226FCC116B1;
+	Thu, 25 Jul 2024 12:43:03 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1721911386;
+	bh=tC43HF5shSRy1Qp9aEL/m7tJcGEGxkURSW88ynoN5XU=;
+	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+	b=XT/Lh4B5uF0w84Fk+Mswy75DQppXHRZTGI0GQPw55xdMn+kFSHSYI052KZtH8o8pw
+	 urHYvsRHa2romZV6EDoDOZn2jTL4hDKE7bgyRITaP89FKpJd5wLi3n8WeikFziC8IO
+	 0tu9EVb1kmeeq+ckDCMOLPDKaef1nA1CTwg41z6/AkcrFItcO8jS5I2QaPzAWFvkRN
+	 uzYx2KzkGHymBf/lf4KFrJmlBf8f0XTeXeZ6EvRqglMi2N17WlPzIjaIJgOwCtt2ru
+	 9uXaw+SqHf9bkLnHi4s4+aeRlariaqtCY4Wq8xnP7Ezhjh4XY9RgR0gP6ElCKTy4x2
+	 RDsiUT8NELpfw==
+From: Will Deacon <will@kernel.org>
+To: thierry.reding@gmail.com,
+	vdumpa@nvidia.com,
+	robin.murphy@arm.com,
+	joro@8bytes.org,
+	Ashish Mhetre <amhetre@nvidia.com>
+Cc: catalin.marinas@arm.com,
+	kernel-team@android.com,
+	Will Deacon <will@kernel.org>,
+	linux-tegra@vger.kernel.org,
+	linux-arm-kernel@lists.infradead.org,
+	iommu@lists.linux.dev,
+	linux-kernel@vger.kernel.org
+Subject: Re: [PATCH V2] iommu: arm-smmu: Fix Tegra workaround for PAGE_SIZE mappings
+Date: Thu, 25 Jul 2024 13:42:59 +0100
+Message-Id: <172190932508.3262642.13562592827305317735.b4-ty@kernel.org>
+X-Mailer: git-send-email 2.20.1
+In-Reply-To: <20240724173132.219978-1-amhetre@nvidia.com>
+References: <20240724173132.219978-1-amhetre@nvidia.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
 
-Hi Catalin,
+On Wed, 24 Jul 2024 17:31:32 +0000, Ashish Mhetre wrote:
+> PAGE_SIZE can be 16KB for Tegra which is not supported by MMU-500 on
+> both Tegra194 and Tegra234. Retain only valid granularities from
+> pgsize_bitmap which would either be 4KB or 64KB.
+> 
+> 
 
-On Tue, Jun 18 2024, Catalin Marinas wrote:
-> On Tue, Apr 09, 2024 at 09:17:55AM +0300, Baruch Siach wrote:
->> of_dma_get_max_cpu_address() returns the highest CPU address that
->> devices can use for DMA. The implicit assumption is that all CPU
->> addresses below that limit are suitable for DMA. However the
->> 'dma-ranges' property this code uses also encodes a lower limit for DMA
->> that is potentially non zero.
->> 
->> Rename to of_dma_get_cpu_limits(), and extend to retrieve also the lower
->> limit for the same 'dma-ranges' property describing the high limit.
->
-> I don't understand the reason for the lower limit. The way the Linux
-> zones work is that ZONE_DMA always starts from the start of the RAM. It
-> doesn't matter whether it's 0 or not, you'd not allocate below the start
-> of RAM anyway. If you have a device that cannot use the bottom of the
-> RAM, it is pretty broken and not supported by Linux.
+Applied to iommu (next), thanks!
 
-I won't argue with that assertion. My target system RAM happens to start
-at that the lower end of devices DMA zone, so I'm fine with skipping
-this patch.
+[1/1] iommu: arm-smmu: Fix Tegra workaround for PAGE_SIZE mappings
+      https://git.kernel.org/iommu/c/726d4f528dbc
 
-Just curious. What is the inherent limitation that prevents Linux from
-supporting DMA zone with lower limit above RAM start?
-
-Thanks,
-baruch
-
+Cheers,
 -- 
-                                                     ~. .~   Tk Open Systems
-=}------------------------------------------------ooO--U--Ooo------------{=
-   - baruch@tkos.co.il - tel: +972.52.368.4656, http://www.tkos.co.il -
+Will
+
+https://fixes.arm64.dev
+https://next.arm64.dev
+https://will.arm64.dev
