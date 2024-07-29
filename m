@@ -1,36 +1,35 @@
 Received: from mail.tkos.co.il (mail.tkos.co.il [84.110.109.230])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D7F1D144D34
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D7EDB144D31
 	for <iommu@lists.linux.dev>; Mon, 29 Jul 2024 10:51:56 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=84.110.109.230
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1722250319; cv=none; b=eeE4/cN4E985qUnUUqSuxCaTmG4fJoF7o+dut02V4UmyYQMDI3nwBDjXUHdc/wYvk6Ufj3ibHfzKa40mDUYlz/qhEkdB6cUr7mo9+3ezMaasrdWjPXsfYbgPmjqiUVyQlsBo0Rw2PGGSMB8z8c7aUcorwBEJCLb2SL0GQov6Q2U=
+	t=1722250319; cv=none; b=TpT1DIaDzlijGDWFnolooWHjMF6tb0Tx808Sn/dAgCwKLw6WYhIP/ldzXK+U5EUjZ3qxdlb8FITI9MBnRvKjOBueCKQrZAp4mULGfiQ2uE18uLzBNGAq+6RaTbIVjhXLo5UNXKyye3AuluufI3L8S4Lfj1z/Lh/sfZbL8xpwfxw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
 	s=arc-20240116; t=1722250319; c=relaxed/simple;
-	bh=Za3ndOc802AihmgHa1yG/1ah7Y+qALAilhokvJR5l6o=;
-	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=getJERRzb4l41ITIhPVWw6AOeiWx+sjDvquCg792hDVIiM/PV+qlOhfJaFD4cwks+Jq/QMhrJE60Qmb+14bj0OMusDvVEdZJwn8Uhlml8E3ZKjsPeQpzns28R7diMNnnsxwN2mgllv5YJz9l2vem6ouMpL2TuZjdq24n+WDuhqQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=tkos.co.il; spf=pass smtp.mailfrom=tkos.co.il; dkim=pass (2048-bit key) header.d=tkos.co.il header.i=@tkos.co.il header.b=sqYrURUN; arc=none smtp.client-ip=84.110.109.230
+	bh=fW3seKu3qSWQ63GvanpzjS9o30g/c8HO+hDOTWVeunY=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=bKJQhSRV3MyscU9jMi3jWhzvuCczFSM/5HxDS+JgbH+XdbSBSyTXFWCeEJ6fb5eY3rKju1aP19XoW4aEy1iH598dfFJPwBVm3laRZ4/8SLEWvmwPOuZ/HcwU8yeWtCXI12Vw4ZrSD5dFIkEALg9dIiJzd0erJeuRNKn653u+5dA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=tkos.co.il; spf=pass smtp.mailfrom=tkos.co.il; dkim=pass (2048-bit key) header.d=tkos.co.il header.i=@tkos.co.il header.b=oxb6c/Eu; arc=none smtp.client-ip=84.110.109.230
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=tkos.co.il
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=tkos.co.il
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=tkos.co.il header.i=@tkos.co.il header.b="sqYrURUN"
+	dkim=pass (2048-bit key) header.d=tkos.co.il header.i=@tkos.co.il header.b="oxb6c/Eu"
 Received: from tarshish.tkos.co.il (unknown [10.0.8.2])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.tkos.co.il (Postfix) with ESMTPS id 9C11D440822;
+	by mail.tkos.co.il (Postfix) with ESMTPS id 5C85044077F;
 	Mon, 29 Jul 2024 13:50:32 +0300 (IDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=tkos.co.il;
 	s=default; t=1722250232;
-	bh=Za3ndOc802AihmgHa1yG/1ah7Y+qALAilhokvJR5l6o=;
-	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-	b=sqYrURUNeVzskJP5y542ZUwGS+Yuc8/B6oLImG2wmK1bofHj9wdMUUCE+ZNo3QwtV
-	 C9couwt2AgMZhgvSGDZhKyrVYGTfNYoxhTIjl+YEdDsYUq7vT/52VuqzjF2Frp1Uvr
-	 wLubP/hRfj5O5ezNtoG6/ej+TSbNf5hpEAl4UsAbSCd2ZvvqgyOzobLzNjS35zVPMH
-	 vs1JX+wzlRu7zbGJqLEaaF0nfp1tefez3QpSt1mBhVPrbyUZk19dmMWSpLg7wtuD9W
-	 JSYE9nfzIc6YtLFlQCsttUXpM3a7cjfkVN80+tYDYZVVzYdqWMzKnVHrr79LwyZeDz
-	 6UTsuJtIJu/QA==
+	bh=fW3seKu3qSWQ63GvanpzjS9o30g/c8HO+hDOTWVeunY=;
+	h=From:To:Cc:Subject:Date:From;
+	b=oxb6c/Eu6R3lnFbBk1ATcjrT04NEVWB9QlcbuP6HUW8mgWd+gF1a/nKIokODTXVEa
+	 OPq8XiyDhAxh7nRm91I3O5m+7MK740rLnMhBRvbhasdMcwGkbi26eNM/wG5j4zx6kg
+	 RUo7n483hb7jswtzULahoaXd3+3arO6GytgHs/6b3Sr7Pv5lBZptycGtoF2RzPY+oR
+	 hnpqgsVLqN8b3fvK4wTH0IzCg5Srw5G0QnQdFHmIbO7LBBDAHHpSTMe/xSTfjVKt/A
+	 ouC0R5aURB3/Sn2fLU2NJut7AYOriSMaeAYYf4ywM42DhNjkBh6oEknuwRbvGmBvjo
+	 30+SvOeUXew4A==
 From: Baruch Siach <baruch@tkos.co.il>
 To: Christoph Hellwig <hch@lst.de>,
 	Marek Szyprowski <m.szyprowski@samsung.com>,
@@ -46,12 +45,10 @@ Cc: Baruch Siach <baruch@tkos.co.il>,
 	=?UTF-8?q?Petr=20Tesa=C5=99=C3=ADk?= <petr@tesarici.cz>,
 	Ramon Fried <ramon@neureality.ai>,
 	Elad Nachman <enachman@marvell.com>
-Subject: [PATCH v3 1/3] dma-mapping: improve DMA zone selection
-Date: Mon, 29 Jul 2024 13:51:24 +0300
-Message-ID: <fe2e245ba534fc3cee9890ba12d1da13084e67a5.1722249878.git.baruch@tkos.co.il>
+Subject: [PATCH v3 0/3] dma: support DMA zone starting above 4GB
+Date: Mon, 29 Jul 2024 13:51:23 +0300
+Message-ID: <cover.1722249878.git.baruch@tkos.co.il>
 X-Mailer: git-send-email 2.43.0
-In-Reply-To: <cover.1722249878.git.baruch@tkos.co.il>
-References: <cover.1722249878.git.baruch@tkos.co.il>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -60,43 +57,67 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-When device DMA limit does not fit in DMA32 zone it should use DMA zone,
-even when DMA zone is stricter than needed.
+DMA zones code assumes that DMA lower limit is zero. When there is no RAM 
+below 4GB, arm64 platform code sets DMA/DMA32 zone limits to cover the entire 
+RAM[0].
 
-Same goes for devices that can't allocate from the entire normal zone.
-Limit to DMA32 in that case.
+My target platform has RAM starting at 32GB. Devices with 30-bit DMA mask are 
+mapped to 1GB at the bottom of RAM, between 32GB - 33GB. DMA zone over the 
+entire RAM breaks DMA allocation for these devices.
 
-Reported-by: Catalin Marinas <catalin.marinas@arm.com>
-Signed-off-by: Baruch Siach <baruch@tkos.co.il>
----
- kernel/dma/direct.c | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+In response to a previous RFC hack[1] Catalin Marinas suggested to add a
+separate offset value as base address for the DMA zone, and then refined the 
+suggestion to use start of RAM[3]. This RFC series attempts to implement that 
+suggestion.
 
-diff --git a/kernel/dma/direct.c b/kernel/dma/direct.c
-index 4480a3cd92e0..3b4be4ca3b08 100644
---- a/kernel/dma/direct.c
-+++ b/kernel/dma/direct.c
-@@ -4,7 +4,7 @@
-  *
-  * DMA operations that map physical memory directly without using an IOMMU.
-  */
--#include <linux/memblock.h> /* for max_pfn */
-+#include <linux/memblock.h>
- #include <linux/export.h>
- #include <linux/mm.h>
- #include <linux/dma-map-ops.h>
-@@ -59,9 +59,9 @@ static gfp_t dma_direct_optimal_gfp_mask(struct device *dev, u64 *phys_limit)
- 	 * zones.
- 	 */
- 	*phys_limit = dma_to_phys(dev, dma_limit);
--	if (*phys_limit <= DMA_BIT_MASK(zone_dma_bits))
-+	if (*phys_limit < DMA_BIT_MASK(32))
- 		return GFP_DMA;
--	if (*phys_limit <= DMA_BIT_MASK(32))
-+	if (*phys_limit < memblock_end_of_DRAM())
- 		return GFP_DMA32;
- 	return 0;
- }
+With this series applied, the DMA zone covers the right RAM range for my 
+platform.
+
+v3:
+
+  * Rebase on v6.11-rc1.
+
+  * Drop zone_dma_base. Use memblock_start_of_DRAM() instead.
+
+  * Drop DT patches. Low DMA range limit no longer needed.
+
+  * Add patch to improve dma_direct_optimal_gfp_mask() heuristics as Catalin 
+    suggested.
+
+RFC v2:
+
+  * Add patch from Catalin[2] changing zone_dma_bits to zone_dma_limit to 
+    simplify subsequent patches
+
+  * Test on real hardware
+
+RFC v1: https://lore.kernel.org/all/cover.1703683642.git.baruch@tkos.co.il/
+
+[0] See commit 791ab8b2e3db ("arm64: Ignore any DMA offsets in the 
+    max_zone_phys() calculation")
+
+[1] https://lore.kernel.org/all/9af8a19c3398e7dc09cfc1fbafed98d795d9f83e.1699464622.git.baruch@tkos.co.il/
+
+[2] https://lore.kernel.org/all/ZZ2HnHJV3gdzu1Aj@arm.com/
+
+[3] https://lore.kernel.org/all/ZnH-VU2iz9Q2KLbr@arm.com/
+
+Baruch Siach (2):
+  dma-mapping: improve DMA zone selection
+  dma-direct: use RAM start to offset zone_dma_limit
+
+Catalin Marinas (1):
+  dma-mapping: replace zone_dma_bits by zone_dma_limit
+
+ arch/arm64/mm/init.c       | 34 +++++++++++++---------------------
+ arch/powerpc/mm/mem.c      |  9 ++++-----
+ arch/s390/mm/init.c        |  2 +-
+ include/linux/dma-direct.h |  2 +-
+ kernel/dma/direct.c        | 15 ++++++++-------
+ kernel/dma/pool.c          |  3 ++-
+ kernel/dma/swiotlb.c       |  4 ++--
+ 7 files changed, 31 insertions(+), 38 deletions(-)
+
 -- 
 2.43.0
 
