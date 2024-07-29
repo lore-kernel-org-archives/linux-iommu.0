@@ -1,45 +1,47 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 51AF4548F7;
-	Mon, 29 Jul 2024 14:07:41 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2492613C9A7;
+	Mon, 29 Jul 2024 15:34:09 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1722262061; cv=none; b=aMYtqln8OirpwYPn3wHHLmJ7F3qMD356suPn4ssONMURw/IGbl0rv42XrZC137JkT1aawZ0/IglMkVD7CD14IC6N/kJjfH0tgoQ0VnGYk95dQNS+Q+SdpclCOKaGa8nxbZ+9tGK1aLDHKUsBYuNc7M6xP0GvSDT1atPFNhL1UFo=
+	t=1722267251; cv=none; b=b9IF+gLFh2olhKddhd5QAS1GELdNB4pI2/ckqA5jPHCHTo8FyE2MkUTQk0MzFzaPV9ejRn5SA8cLk4DBE/PAYucCqDL5Pb/QIE8hQHsnQ5kgy69OVYy5FyokqBeytuphPXgg3Me1QHFPDumQGxf5GjpQlZf4VMXU+LMjCj0tFjE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1722262061; c=relaxed/simple;
-	bh=kXviRuKSqni0oHqZdGwFlfHuW6TUVx6nqymgVOMCiA0=;
+	s=arc-20240116; t=1722267251; c=relaxed/simple;
+	bh=mzYFMovn+k7oVAsF37f/0receWM06j5IkQ9VA/yeUSY=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=hwvXvaWp0xtvV/Xw52KMoiiIBxVFfdhkHsGP/3L9WPxV6MhKvHpRglacwnnr0KnBmOAEd6XjF+9jnTvA6+giccQEA5/fDwMdlsuEuJM2Ztt4NlP7QwSDt6Qjch7NXBdHw/hMMqx8bZdSJcH1xFKNyYfiw85dyS19cUnrpjuLAlk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=CZBfRKx8; arc=none smtp.client-ip=10.30.226.201
+	 Content-Type:Content-Disposition:In-Reply-To; b=k7Bz5ytA7EVxFKE6NO1nwNv/27NkJECuIluD8gn5MRPKI8Tn0Bq9ND99YZlpOqmOcgL0vuu/E+H2O1QcZguqQOaQ65ZcFmHQmaRDhxJf3kDYG24JRBlJbBmeD1q6Amr9Zx8ZGl4Qwc9xYrfM5NXY2ZfBzY07TBcMAkQKvcTwwWg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=WFTE+tIv; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="CZBfRKx8"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 518E7C32786;
-	Mon, 29 Jul 2024 14:07:39 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="WFTE+tIv"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5E773C32786;
+	Mon, 29 Jul 2024 15:34:09 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1722262060;
-	bh=kXviRuKSqni0oHqZdGwFlfHuW6TUVx6nqymgVOMCiA0=;
+	s=k20201202; t=1722267249;
+	bh=mzYFMovn+k7oVAsF37f/0receWM06j5IkQ9VA/yeUSY=;
 	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=CZBfRKx8nSrWM3SJdYaEJ8gjpQ31d+xcuwONlxCLJRCk0hx8PP2/LYCPwYDTVtMeA
-	 DUPsUloBPQWvCqh1NvV5S+HpxKaPv+qS0TULbtm8ZXJjCvBRwwKDr7DmwxIDtLFvqk
-	 jcZvaY4xsd1sbCJYAS4oIveoUSuTQBHpq6m1d3UVb6o/E6aX7GTiGsTQPX3sBVtyj0
-	 00h5Tf6WceLoce1jYEr5+bnsYMCxxgQedcqfgzXI6IDkrchlfFz5/O9IvAZj01+2Ly
-	 GAR3ET1QQtj5KEYO9TGwB08h/ja7gnjGinGGJ4iF/9V3VNLI3VRizne+dNxGALs3IT
-	 9porIYFk2X3Aw==
-Date: Mon, 29 Jul 2024 17:07:36 +0300
-From: Leon Romanovsky <leon@kernel.org>
-To: Mostafa Saleh <smostafa@google.com>
-Cc: Christoph Hellwig <hch@lst.de>, Robin Murphy <robin.murphy@arm.com>,
-	Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
-	Marek Szyprowski <m.szyprowski@samsung.com>,
-	Easwar Hariharan <eahariha@linux.microsoft.com>,
-	linux-kernel@vger.kernel.org, iommu@lists.linux.dev,
-	Jason Gunthorpe <jgg@nvidia.com>
-Subject: Re: [PATCH v2 2/2] dma: add IOMMU static calls with clear default ops
-Message-ID: <20240729140736.GC5669@unreal>
-References: <cover.1721219730.git.leon@kernel.org>
- <dd34bf3ecef252b4910d70aa21ff5273b5e8b19b.1721219730.git.leon@kernel.org>
- <ZqeN6MP4o2JNLcUz@google.com>
+	b=WFTE+tIvunFR1D9DNkIqF55hQDwc3o0SIrQXCY63uadpyNrUK9i9Ve8Mo6yEuVuIr
+	 7+ZnWNChbJYYU+5kVHH0FiCKcRj76aLrBfD2MCZKJErMj7ktvMfx6KIis+kAELmq2v
+	 uewS370vaUQgIHEFCHKKo/5u5weNvwx8ghVBcq9m4tT+9dX5xRl756+lmbYgjNqDjx
+	 L68QbFr6R6HKwzxAIDAkDUZqmaS5DPoFD6zk1XYcRKNDwz+eVHS/EyHm5Gs3J6NMxG
+	 E1aCpNVUpWSp9z/p0pGVfxpD5lNyaKICJAdkYEdQ/l8f8B88NyANpKVYIoCGXKYYTU
+	 I3zn9rriTNlEQ==
+Date: Mon, 29 Jul 2024 10:34:08 -0500
+From: "Rob Herring (Arm)" <robh@kernel.org>
+To: Konrad Dybcio <konrad.dybcio@linaro.org>
+Cc: Marijn Suijten <marijn.suijten@somainline.org>,
+	Konrad Dybcio <konradybcio@kernel.org>, devicetree@vger.kernel.org,
+	freedreno@lists.freedesktop.org, linux-remoteproc@vger.kernel.org,
+	linux-pm@vger.kernel.org, iommu@lists.linux.dev,
+	Bjorn Andersson <andersson@kernel.org>,
+	Conor Dooley <conor+dt@kernel.org>, linux-arm-msm@vger.kernel.org,
+	dri-devel@lists.freedesktop.org, linux-clk@vger.kernel.org,
+	Krzysztof Kozlowski <krzk+dt@kernel.org>,
+	linux-kernel@vger.kernel.org, linux-gpio@vger.kernel.org
+Subject: Re: [PATCH 3/3] dt-bindings: Batch-update Konrad Dybcio's email
+Message-ID: <172226724571.728425.2439563101739958891.robh@kernel.org>
+References: <20240726-topic-konrad_email-v1-0-f94665da2919@kernel.org>
+ <20240726-topic-konrad_email-v1-3-f94665da2919@kernel.org>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -48,30 +50,40 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <ZqeN6MP4o2JNLcUz@google.com>
+In-Reply-To: <20240726-topic-konrad_email-v1-3-f94665da2919@kernel.org>
 
-On Mon, Jul 29, 2024 at 12:41:12PM +0000, Mostafa Saleh wrote:
-> Hi Leon,
+
+On Fri, 26 Jul 2024 13:18:25 +0200, Konrad Dybcio wrote:
+> Use my @kernel.org address everywhere.
 > 
-> On Wed, Jul 17, 2024 at 03:37:11PM +0300, Leon Romanovsky wrote:
-> > From: Leon Romanovsky <leonro@nvidia.com>
-> > 
-> > Most of the arch DMA ops (which often, but not  always, involve
-> > some sort of IOMMU) are using the same DMA operations. These DMA
-> > operations are default ones implemented in drivers/iomem/dma-iommu.c.
-> > 
-> > So let's make sure to call them directly without need to perform function
-> > pointers dereference.
+> Signed-off-by: Konrad Dybcio <konradybcio@kernel.org>
+> ---
+>  Documentation/devicetree/bindings/clock/qcom,dispcc-sm6350.yaml         | 2 +-
+>  Documentation/devicetree/bindings/clock/qcom,gcc-msm8994.yaml           | 2 +-
+>  Documentation/devicetree/bindings/clock/qcom,gcc-sm6125.yaml            | 2 +-
+>  Documentation/devicetree/bindings/clock/qcom,gcc-sm6350.yaml            | 2 +-
+>  Documentation/devicetree/bindings/clock/qcom,sm6115-gpucc.yaml          | 2 +-
+>  Documentation/devicetree/bindings/clock/qcom,sm6125-gpucc.yaml          | 2 +-
+>  Documentation/devicetree/bindings/clock/qcom,sm6350-camcc.yaml          | 2 +-
+>  Documentation/devicetree/bindings/clock/qcom,sm6375-dispcc.yaml         | 2 +-
+>  Documentation/devicetree/bindings/clock/qcom,sm6375-gcc.yaml            | 2 +-
+>  Documentation/devicetree/bindings/clock/qcom,sm6375-gpucc.yaml          | 2 +-
+>  Documentation/devicetree/bindings/clock/qcom,sm8350-videocc.yaml        | 2 +-
+>  Documentation/devicetree/bindings/clock/qcom,sm8450-gpucc.yaml          | 2 +-
+>  Documentation/devicetree/bindings/display/msm/qcom,sm6375-mdss.yaml     | 2 +-
+>  .../devicetree/bindings/display/panel/asus,z00t-tm5p5-nt35596.yaml      | 2 +-
+>  Documentation/devicetree/bindings/display/panel/sony,td4353-jdi.yaml    | 2 +-
+>  Documentation/devicetree/bindings/interconnect/qcom,sc7280-rpmh.yaml    | 2 +-
+>  Documentation/devicetree/bindings/interconnect/qcom,sc8280xp-rpmh.yaml  | 2 +-
+>  Documentation/devicetree/bindings/interconnect/qcom,sm8450-rpmh.yaml    | 2 +-
+>  Documentation/devicetree/bindings/iommu/qcom,iommu.yaml                 | 2 +-
+>  Documentation/devicetree/bindings/pinctrl/qcom,mdm9607-tlmm.yaml        | 2 +-
+>  Documentation/devicetree/bindings/pinctrl/qcom,sm6350-tlmm.yaml         | 2 +-
+>  Documentation/devicetree/bindings/pinctrl/qcom,sm6375-tlmm.yaml         | 2 +-
+>  Documentation/devicetree/bindings/remoteproc/qcom,rpm-proc.yaml         | 2 +-
+>  Documentation/devicetree/bindings/soc/qcom/qcom,rpm-master-stats.yaml   | 2 +-
+>  24 files changed, 24 insertions(+), 24 deletions(-)
 > 
-> Just out of curiosity, is there any observed improvement from that?
-> As from my experience the DMA-IOMMU path is quite dense so it won't
-> be senstive to such micro-optimizations.
 
-DMA-IOMMU no, but NVMe driver which uses DMA-API in datapath will
-potentially benefit from this change.
+Applied, thanks!
 
-I personally used this change to simplify my "DMA split ... " series [1].
-
-[1] https://git.kernel.org/pub/scm/linux/kernel/git/leon/linux-rdma.git/log/?h=dma-split-v2
-
-Thanks
