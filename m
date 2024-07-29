@@ -1,238 +1,164 @@
-Received: from mail-wm1-f48.google.com (mail-wm1-f48.google.com [209.85.128.48])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from NAM11-DM6-obe.outbound.protection.outlook.com (mail-dm6nam11on2047.outbound.protection.outlook.com [40.107.223.47])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A29DC79B8E
-	for <iommu@lists.linux.dev>; Mon, 29 Jul 2024 11:45:36 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.48
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1722253539; cv=none; b=JELDM8Lijb7vrPEGRrTwsXEbhPzl8F8g4LtlT5Qk0r3V4qdTO/C8F5kBrEpk1QG/0zAeW3N/cPGDp8aisoeXzuSo9mK41Img2KJIjp0TpkTS52c/Jc68iHboPmEb4iDeLawZCxfXVHZhNIk21Tbfxr8IVXKdmpDKCTnnpMMZVrQ=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1722253539; c=relaxed/simple;
-	bh=A10ZdrRPrnXJf2K8fH9tF/ys9uEanUwC8oG0ctp3CtI=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=SkCWO7o8L0bgL+hxXIDlnWulympVornWXwRy9DAhzMg2uEKMiPWJWq4wzKkIHIpsf9xJfMBcYrMsrhYza+U6+f0LEGs+I8PLP8/EQhUvfC9zzfeYuWme2RzmAI3xKsBhuJ5OaHbQuBLo5r9OfLWorQRMqmlojl5wXY7cBJxS+sA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=G7LsiOHl; arc=none smtp.client-ip=209.85.128.48
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 425AB145FE1
+	for <iommu@lists.linux.dev>; Mon, 29 Jul 2024 12:35:38 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.223.47
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1722256541; cv=fail; b=eRK+Rrczb0ng7t2f5qp/KgnDEiM0alW3zfb09jKPkDaiyG/s5V96ORdMX/7TtWi1Gokq9aSDLAG0qyUjl2D9MCJnU+ghurW+6+yaIYXykE7a2AmXSGHAVcaYB+T/M/aPXiyWBwX0Q/e9XcLM9sMj4I7kF89IAXhT8KNZQ1Dfviw=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1722256541; c=relaxed/simple;
+	bh=o5MLfR/0AwpZte2TYrvdm6BeSvtI/tAlDbkUxWW9hIo=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:Content-Type:
+	 Content-Disposition:In-Reply-To:MIME-Version; b=WpeidozoMR06T0pj97lCxYvyirtBFfX78NOHfnZm1NTXXZe5WJcMW1t4EL5qE1XnXAkNhsPcUrgoQgpx0+RtmN0s3wDJZXEkYiFNxs1K2SpOZCr7iso5mbkurOHq9VD3yHCFbAqe6b6Vr1dBHvqUN6nnKUic5KqdsH3MJE++oh4=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=hjb/xZHb; arc=fail smtp.client-ip=40.107.223.47
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="G7LsiOHl"
-Received: by mail-wm1-f48.google.com with SMTP id 5b1f17b1804b1-42807cb6afdso54215e9.1
-        for <iommu@lists.linux.dev>; Mon, 29 Jul 2024 04:45:36 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20230601; t=1722253535; x=1722858335; darn=lists.linux.dev;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :mime-version:references:message-id:subject:cc:to:from:date:from:to
-         :cc:subject:date:message-id:reply-to;
-        bh=Po1n89LJvram5HEqYwMALsMwnThZhO0DVQ6rc50fxBE=;
-        b=G7LsiOHlapBni1gKI5DrxQXQ9bLBEpaYW/WGID/xlAfZwZUhS4hCMmkL5WcLNa19qZ
-         aQat0SX15ZZMTzORmxYf4Feo5re8CWMo+kizquNjpMS1MfQ0Fe3Szyh969LEYurS/voz
-         lYkehFP6z49vuVoN6k/YGYdcCO+9rdfAdLX5kQRWSIGOuQnCd+Xlq8XggzoySjbqcJ83
-         GHNUYFMIWkFaizi0XnuiTAxZR90trCN86p7nE6Y1bOa1PgcR1BJaR//WeQ5kSD/FnYGT
-         hUPXdJ6l3sXX69my3/2H2VhZJ5Gt3AWRmb4IkzwhfahNDrGb6u6bRIAe95aHlFeFpDdD
-         VGlw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1722253535; x=1722858335;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :mime-version:references:message-id:subject:cc:to:from:date
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=Po1n89LJvram5HEqYwMALsMwnThZhO0DVQ6rc50fxBE=;
-        b=WC5KtczAaUFZ3biCibryQIoMcphKOMjZXYc9naHQhBNNqQ2SxlQbMlJguySCX1NSHD
-         wFfI+rgnvG/8xetIpYbhBn6oQ5RsN2mc3pZdlgt8b7GqbzKZhjzlEDfzum0nMUwDdY2m
-         kwGXIFlGWT+S5jbUdYgBcZiTBdT4S5tLf33Qpr0KQ62289+6Aiz9GFjufEk8OZsCVGEO
-         rT10fFLiccxQAXDlRS+IxBxy4gZ4+lyf45Twx6Yyu0xO6qBRomDIEmeAHglDlqjk5dOb
-         aBXeZGjF0ItqKMccjP22i801yrEXUOFMlZQNcHlr/FLGLTql7RFNzpjFAhd2POcmrXbE
-         L7Wg==
-X-Forwarded-Encrypted: i=1; AJvYcCXRgHZ20dPDR//PicByPHS06HgBsnBfAVxBVL0GpsNrmmoMpbNYMMB+aBbUAmfG7eptG6RARPVR8mavd0OMRNEK4lY8ya4=
-X-Gm-Message-State: AOJu0Yx0yLD6wmXL9KLYmcM+oMeNq63HmwN0RMzg4vJVfqsLaisAgYRN
-	7pzlc3Tw8UBdgI1aUadpOwT0ToJmfHupPrItfw2PoUDkaSTxdXNjqH6ua+j7vQ==
-X-Google-Smtp-Source: AGHT+IF9lmrrr4mU6SQTATPg4BGae20+2RN2oYvd82uqtDRGSOWYN9hk+RN/G33dubnGu66mSB8E8A==
-X-Received: by 2002:a05:600c:3c96:b0:426:8ee5:3e9c with SMTP id 5b1f17b1804b1-4280b142f23mr4818455e9.6.1722253534535;
-        Mon, 29 Jul 2024 04:45:34 -0700 (PDT)
-Received: from google.com (180.232.140.34.bc.googleusercontent.com. [34.140.232.180])
-        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-4280574003bsm171998655e9.17.2024.07.29.04.45.33
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 29 Jul 2024 04:45:34 -0700 (PDT)
-Date: Mon, 29 Jul 2024 11:45:30 +0000
-From: Mostafa Saleh <smostafa@google.com>
-To: Rob Clark <robdclark@gmail.com>
-Cc: dri-devel@lists.freedesktop.org, linux-arm-msm@vger.kernel.org,
-	freedreno@lists.freedesktop.org, iommu@lists.linux.dev,
-	Will Deacon <will@kernel.org>, Rob Clark <robdclark@chromium.org>,
-	Joerg Roedel <jroedel@suse.de>, Robin Murphy <robin.murphy@arm.com>,
-	Joerg Roedel <joro@8bytes.org>, Jason Gunthorpe <jgg@ziepe.ca>,
-	Lu Baolu <baolu.lu@linux.intel.com>,
-	Kevin Tian <kevin.tian@intel.com>,
-	Boris Brezillon <boris.brezillon@collabora.com>,
-	Joao Martins <joao.m.martins@oracle.com>,
-	"moderated list:ARM SMMU DRIVERS" <linux-arm-kernel@lists.infradead.org>,
-	open list <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH v6 1/2] iommu/io-pgtable-arm: Add way to debug pgtable
- walk
-Message-ID: <ZqeA2tq5Nw4zvqwD@google.com>
-References: <20240717163627.43423-1-robdclark@gmail.com>
- <20240717163627.43423-2-robdclark@gmail.com>
+	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="hjb/xZHb"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=E6O/CIOVxLcysLvDLEAS/SQFN8gJgkq32aGSF9Me8jxvuOLGCiXl4v6WF4TH3xL6nb0fM1PYNyGF041eRrTHhuzLVrc8pDi4ChCGMNueBJzRAYA4G0jTc3GAKs4gvduOL4bMNjkgzLilxCepd9u62pMFJODSjHjOmiZdnn7DvjXJQiwKfn5DNicQft+2Udc1m+0vjF0q2P5TLqckoohBpcaRRLqKNtG9uT9ipH48WHTYu3sEBwLJGwN67npJzZDmH+T5ykNn/ANp8KjzhQl5mhLvVW4v00z0UcB7ffssCdheP0Zi1LF+N6tEjj3MptHpT4J35UctPphKrRV2kAH3Mg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=Zm7/vVFe2jClmonlTM6NNLq82LzA1wLnFxqpixscz1g=;
+ b=jHCrd2NV987ttzBIGJRpGnyd6KB7VmevFYLdp2VDwnf8qVj1u0poykV7sZ7P60wqvO05F4DUQRilnTffmQHW0aJoweO8TECfjZRZk6X3q9+Hfrhb2SUe63D3GSWupOwxKHYa1TVzd/UwN+ye8aRv8cMrdxkEuLzl7dP4qhafOdaFD9+bQtBImY7dPWQCns2bq5Ji59QF6YMyjyoVmP1da941Rzia0xMx09zElJxQdPkiIfQFEXSgzY7sc09vZV7oMuxgmwEZV+9BkI1xH1GMV8RGF/ojEnyvWqFyaaqkCSaJDErIoG6g4QpQkLQxpWrw6Dh6DU+Wo3qX+Hi/4kW5yQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=Zm7/vVFe2jClmonlTM6NNLq82LzA1wLnFxqpixscz1g=;
+ b=hjb/xZHbu6qoxRuCIA3MQ5nR+EjoT/Wa89UnKg+wANw3hxKYl+/6k1NFQvtNrib95HKoqWJhomHvaRwSf5Fd0Qpy7pcskhShIvGXiZVgK2h88GLpk3+zM5Y5K2KT0eyPvglm7z2prxo8Bf03x6zmDaZEzq0MdI1Vc0xAtaFPUiiXqhrth6sSKR9l1JA18uSRRp99a0Y1jubV+THv7b64ZFUGwBY0GJpW6blmx6CUw4gWFFa7VKceoZAwkSMMmtui4lFeb8yDK/w2Tcrvi8SMn60uUYr/nck7SjccZE2SB5EyAxgVb2RssO1pMIqwndjCEptobNp39TmwgJQnHht/Yw==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nvidia.com;
+Received: from DM6PR12MB3849.namprd12.prod.outlook.com (2603:10b6:5:1c7::26)
+ by SN7PR12MB8770.namprd12.prod.outlook.com (2603:10b6:806:34b::21) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7807.26; Mon, 29 Jul
+ 2024 12:35:35 +0000
+Received: from DM6PR12MB3849.namprd12.prod.outlook.com
+ ([fe80::c296:774b:a5fc:965e]) by DM6PR12MB3849.namprd12.prod.outlook.com
+ ([fe80::c296:774b:a5fc:965e%4]) with mapi id 15.20.7807.026; Mon, 29 Jul 2024
+ 12:35:35 +0000
+Date: Mon, 29 Jul 2024 09:35:34 -0300
+From: Jason Gunthorpe <jgg@nvidia.com>
+To: Nicolin Chen <nicolinc@nvidia.com>
+Cc: "Liu, Yi L" <yi.l.liu@intel.com>, "Tian, Kevin" <kevin.tian@intel.com>,
+	"iommu@lists.linux.dev" <iommu@lists.linux.dev>,
+	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH] iommufd/device: Fix hwpt at err_unresv in
+ iommufd_device_do_replace()
+Message-ID: <20240729123534.GA3371438@nvidia.com>
+References: <20240718050130.1956804-1-nicolinc@nvidia.com>
+ <BN9PR11MB5276718A6C5A02FC53D7E9C38CAC2@BN9PR11MB5276.namprd11.prod.outlook.com>
+ <ZqbV4KY+H+tdpIhs@Asurada-Nvidia>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <ZqbV4KY+H+tdpIhs@Asurada-Nvidia>
+X-ClientProxiedBy: BL1P223CA0008.NAMP223.PROD.OUTLOOK.COM
+ (2603:10b6:208:2c4::13) To DM6PR12MB3849.namprd12.prod.outlook.com
+ (2603:10b6:5:1c7::26)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20240717163627.43423-2-robdclark@gmail.com>
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: DM6PR12MB3849:EE_|SN7PR12MB8770:EE_
+X-MS-Office365-Filtering-Correlation-Id: f6236801-7ef4-45ae-42c3-08dcafcaf1ac
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;ARA:13230040|366016|1800799024|376014;
+X-Microsoft-Antispam-Message-Info:
+	=?us-ascii?Q?8+QZG8JfxI1h1vqLPIKBB4HFXONYQUoCtTRjvcphTUTFdLXtrXm6MS0S04Ml?=
+ =?us-ascii?Q?SGn0jxg3b3cENjTRlQ0/GA7VKvCoxasAQ76IWueJ4pN9U28A5jqc1l8jPzV8?=
+ =?us-ascii?Q?4qtvDpU7RBlToU8WEUSWI2ZvhCMByzHwBWUOwind1SdYGgMnWm7zhk3iLJwY?=
+ =?us-ascii?Q?1O6Jq4SdgOnJ+kY5RwYFa7gKLR/8EbvW7nsW/06PBiMoIVm6TJq8WN7xwed+?=
+ =?us-ascii?Q?CMJZ3OTpshyFq19BoWMvA29QsupzJ1dbs0up76B7IFS+1cWapdLE6ZAU2ztJ?=
+ =?us-ascii?Q?myeuRSEmQ16FxukszTJO1t7xdN2oHhgJiMep/bSMudiV7/Tmwta5n0wZfWCM?=
+ =?us-ascii?Q?n7ZavGyqv8VG58AANqRXZRDe+PC+F8sSMcul+137lpaJfrfCMBG8fpI2UxCf?=
+ =?us-ascii?Q?9e0SuJYMVUDLL6+YGuTgskaSpXynDx8A0ggD8//SDQSMO7Vj78rzPeA5Ir5F?=
+ =?us-ascii?Q?aIB81uWg7jT93XDcKRJ0Gwu1ypZQj6gbkR5zTY8p1+fRMaSKkXdAieXQKHZa?=
+ =?us-ascii?Q?jYoKdgSBPe9J6dynS67HDEu/9TgCfSnAWTHv96kdlIEohnnkSLdi0HxQ5sZU?=
+ =?us-ascii?Q?4TQibGECTSA3Ln84BGeEvtp7zhpJeDgXSyUr/GFJUAdKPCDk7uQdthf6jEbv?=
+ =?us-ascii?Q?id5xjt40PNVhjE5Ed0SFExjo0OxMeaCe6wf9GcSQJ6jRby/hE7GOmR6w/OMQ?=
+ =?us-ascii?Q?brlf9e2ws/ykQnTvpxMDSm88HXbP757ct+YgcY3EXOvLOOmQqqKft8l6XMN3?=
+ =?us-ascii?Q?5tYHpgO2tlwh/IBTTnn1zA6Cn1kVWYzJy2Cz++9wQEmCqRR2GsB0r2sLeYZb?=
+ =?us-ascii?Q?DtPUKJKJGE9GFgsE47Rv5i0OwptskL3VASpuqOD3ukAcOQsaH1xtloT1H9BC?=
+ =?us-ascii?Q?ZDItAWKjFvHb8SVa6ZDxcK+AtuY88vSPAIwoVanuqH0ZUr0qzknb9oBv002r?=
+ =?us-ascii?Q?rKcaQnAPMc07neA2WlGFTrGnkoWicpZ4slGmxYS3Ii058O4IQo6aW8tGYoK2?=
+ =?us-ascii?Q?LKCo31BdFi4uyChtm8erOLk+rGdQYsUpYxVJNA+E3xdohySePkOxeSOm8Fll?=
+ =?us-ascii?Q?f/LgjrJ3pCvtORS80OVijfe68AZmwjOwiSmMhIj7IR5s86BvEjxV+DFrLNoB?=
+ =?us-ascii?Q?tm0JAg7kk8QH3jzv3YHkbNFf3DmAPS/dV6Doz85HjSbXlrH1t78bHLpklS42?=
+ =?us-ascii?Q?6XRd3DKurwXbtSQwt1dv5H7Zz6/PhQx9mHyAQN4+K1mdMna0PWem4FDCPjY4?=
+ =?us-ascii?Q?lRKS9SO49WAz8KNl1ovYOjLo0nD+aXZl4HsQz8srtT+ixmxBlpnG6f1pHV1f?=
+ =?us-ascii?Q?P305Fq9Hny00s3yql6tRcEb7mY/R+C2PTYQHygYTbsGsIA=3D=3D?=
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM6PR12MB3849.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(366016)(1800799024)(376014);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?us-ascii?Q?tHSmbzAgj+vzt+kJzVlwPL+O/y2hpYexypCazmU+oDdmfQX0qjeuUs+g+rpW?=
+ =?us-ascii?Q?Z4IEnoO0eN8X5nLf7gw2Cb+F2SHMbZZsV8xtWguCoR0ZsLGjBALskj8X+nE9?=
+ =?us-ascii?Q?loflrFxksElJr+9v8COih9HrOytoyueHHjZSp9zCdZNnA/gafgCn9bYhC1d0?=
+ =?us-ascii?Q?e4GGebMtHaeuhysnWfSRkErMnkFQieSza+qbZsm0qTug/zAAi8EWorW4hpfb?=
+ =?us-ascii?Q?1sn6/LbCYzMaHyp+NTDi9gbQQz8mQnpKZ/hCgYdJVwPol5FYG3vjIDv+tuRA?=
+ =?us-ascii?Q?f3fmjL76/TWpm34yr7A5TPCiknb5GmzfOHY4BpUnFeLgOxcYODVM61ePFVX8?=
+ =?us-ascii?Q?6fcDW6mImtdqrsBUsNwIIggjH+u4RdTCJVAfhScl+RAL3B9hwbqetttK3AEJ?=
+ =?us-ascii?Q?b6/OfjiHXmwWSE21QiduydAj2h4kyYrgsUMi7Niq/+5Kl0lwoZGbmv4GKJDB?=
+ =?us-ascii?Q?MQ3dpqPMkeDHtwtZoSiaZ3D8Klnrv12nOLwjAJYirEB9sqbNa3gPT/XJPNBc?=
+ =?us-ascii?Q?1+7X9bIwuYdZw4so+Z46pcyb57KZfUTEGpTI3rSii6Zwbcsohp0+MU65VQK9?=
+ =?us-ascii?Q?l3HujinZXucCujmtd6IhA9cP3vwzYybjC7T6+e1nuE5TX3slNRfWoTcz/ikl?=
+ =?us-ascii?Q?HHuucOeMnuwgrGtA5Qi3TqqB9+17MBDvmVCWlRhdzXlyMAgjwDSZBteWM3PR?=
+ =?us-ascii?Q?+Q5LS86IHZioCKCIoZdkG8EvR0FVFMs1AqE9bUN1YJGlor6MS4J5R+wl2zpk?=
+ =?us-ascii?Q?gr0rcR5bXWFGxXOF6IG5BlAd0UZ5IvkL8QewK+Y/gTrJLI9EsISYQmbsvrmN?=
+ =?us-ascii?Q?H91bVntaAMOHd0CF4FoLd8XH2QN5J6I6gyvHaemFW/ZKjhz/RKYoP806hr6D?=
+ =?us-ascii?Q?6qj2XxUfxW4XHKJ0ZiAUuhR8aefP5VTdlBdD6H6RtsCZQq/KNCYIadBmWojS?=
+ =?us-ascii?Q?LmzhLdRIQHFLnpy5R2I7Ex8eOWzfu5unJZ7hkQBltGgCXViu1NFxg/VeozOE?=
+ =?us-ascii?Q?JcHufFpsEeiflpMmtq7F73CuOt5dtktM6JwcZGPtOYy+zGxq2gNprJTD1VNO?=
+ =?us-ascii?Q?+8l6QL4YrTxttLcmkIfJjVfL+IaSmpoXM7WdlkcnpkUSpLFCxZr3kKjzFNaI?=
+ =?us-ascii?Q?U2iH1dXnMGHhcvWw+oAsC3GsUzQtFrz3SjDXY1o9ZfJOndl98/qEJm0D519Y?=
+ =?us-ascii?Q?vDEBSCsHQTHa0ShLhv518Wb6QWsU0HPnPqX57/p7Jzc37gpuI1/UVriD9YE4?=
+ =?us-ascii?Q?WXxfw54dUHsq+Tc/YdQr7pRz/2/xKc8MIFzBZANINKEaFctrcw23oZwynaFR?=
+ =?us-ascii?Q?kCC9wxoOQWNyH/KNbABejOf6wCxXBfYQGErfn18zq8rrXb6uycrD6D8qV2mE?=
+ =?us-ascii?Q?M8J20GQus3Vg2sjCc3wuNXaXUI3vEUbdyl75hxHlWATyj9ByWB9g0XKYXcWK?=
+ =?us-ascii?Q?vYNxnwHPjA6BtiVo0er/bm4Ih0DCKTV+NB5IzacRTWmLHssnsYGsyBDntSbR?=
+ =?us-ascii?Q?IWrakABX4y5pc5mDDneCX/TtaKIvSp/Wa3ZeqJA1PsJv2nU3DoNogzV214zh?=
+ =?us-ascii?Q?d1jpOr1eTOpfcoLBTP0qjS9qFcSn1IGZyhNWwlmy?=
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: f6236801-7ef4-45ae-42c3-08dcafcaf1ac
+X-MS-Exchange-CrossTenant-AuthSource: DM6PR12MB3849.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 29 Jul 2024 12:35:35.4054
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: kS9ytb/cle+k557Slx+JK5VHbKKOGbS3FgHweBNp713tCtTANTzJSEGqYr7WnIuI
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SN7PR12MB8770
 
-Hi Rob,
-
-On Wed, Jul 17, 2024 at 09:36:21AM -0700, Rob Clark wrote:
-> From: Rob Clark <robdclark@chromium.org>
+On Sun, Jul 28, 2024 at 04:36:00PM -0700, Nicolin Chen wrote:
+> On Thu, Jul 18, 2024 at 05:13:38AM +0000, Tian, Kevin wrote:
+>  
+> > > From: Nicolin Chen <nicolinc@nvidia.com>
+> > > Sent: Thursday, July 18, 2024 1:02 PM
+> > >
+> > > The rewind routine should remove the reserved iovas added to the new
+> > > hwpt.
+> > >
+> > > Fixes: 89db31635c87 ("iommufd: Derive iommufd_hwpt_paging from
+> > > iommufd_hw_pagetable")
+> > > Cc: stable@vger.kernel.org
+> > > Signed-off-by: Nicolin Chen <nicolinc@nvidia.com>
+> > 
+> > Reviewed-by: Kevin Tian <kevin.tian@intel.com>
 > 
-> Add an io-pgtable method to walk the pgtable returning the raw PTEs that
-> would be traversed for a given iova access.
+> Jason, it seems that we haven't merged this patch, right?
 > 
-> Signed-off-by: Rob Clark <robdclark@chromium.org>
-> Acked-by: Joerg Roedel <jroedel@suse.de>
-> 
-> ---
->  drivers/iommu/io-pgtable-arm.c | 36 +++++++++++++++++++++++++---------
->  include/linux/io-pgtable.h     | 17 ++++++++++++++++
->  2 files changed, 44 insertions(+), 9 deletions(-)
-> 
-> diff --git a/drivers/iommu/io-pgtable-arm.c b/drivers/iommu/io-pgtable-arm.c
-> index 3d23b924cec1..e70803940b46 100644
-> --- a/drivers/iommu/io-pgtable-arm.c
-> +++ b/drivers/iommu/io-pgtable-arm.c
-> @@ -690,9 +690,11 @@ static size_t arm_lpae_unmap_pages(struct io_pgtable_ops *ops, unsigned long iov
->  				data->start_level, ptep);
->  }
->  
-> -static phys_addr_t arm_lpae_iova_to_phys(struct io_pgtable_ops *ops,
-> -					 unsigned long iova)
-> +static int arm_lpae_pgtable_walk(struct io_pgtable_ops *ops,
-> +				 unsigned long iova,
-> +				 void *_wd)
->  {
-> +	struct arm_lpae_io_pgtable_walk_data *wd = _wd;
->  	struct arm_lpae_io_pgtable *data = io_pgtable_ops_to_data(ops);
->  	arm_lpae_iopte pte, *ptep = data->pgd;
->  	int lvl = data->start_level;
-> @@ -700,7 +702,7 @@ static phys_addr_t arm_lpae_iova_to_phys(struct io_pgtable_ops *ops,
->  	do {
->  		/* Valid IOPTE pointer? */
->  		if (!ptep)
-> -			return 0;
-> +			return -ENOENT;
->  
->  		/* Grab the IOPTE we're interested in */
->  		ptep += ARM_LPAE_LVL_IDX(iova, lvl, data);
-> @@ -708,22 +710,37 @@ static phys_addr_t arm_lpae_iova_to_phys(struct io_pgtable_ops *ops,
->  
->  		/* Valid entry? */
->  		if (!pte)
-> -			return 0;
-> +			return -ENOENT;
->  
-> -		/* Leaf entry? */
-> +		wd->ptes[wd->level++] = pte;
-> +
-> +		/* Leaf entry?  If so, we've found the translation */
->  		if (iopte_leaf(pte, lvl, data->iop.fmt))
-> -			goto found_translation;
-> +			return 0;
->  
->  		/* Take it to the next level */
->  		ptep = iopte_deref(pte, data);
->  	} while (++lvl < ARM_LPAE_MAX_LEVELS);
->  
->  	/* Ran out of page tables to walk */
-> -	return 0;
-> +	return -ENOENT;
-> +}
-> +
-> +static phys_addr_t arm_lpae_iova_to_phys(struct io_pgtable_ops *ops,
-> +					 unsigned long iova)
-> +{
-> +	struct arm_lpae_io_pgtable *data = io_pgtable_ops_to_data(ops);
-> +	struct arm_lpae_io_pgtable_walk_data wd = {};
-> +	int ret, lvl;
-> +
-> +	ret = arm_lpae_pgtable_walk(ops, iova, &wd);
-> +	if (ret)
-> +		return 0;
-> +
-> +	lvl = wd.level + data->start_level;
->  
-> -found_translation:
->  	iova &= (ARM_LPAE_BLOCK_SIZE(lvl, data) - 1);
-> -	return iopte_to_paddr(pte, data) | iova;
-> +	return iopte_to_paddr(wd.ptes[wd.level - 1], data) | iova;
->  }
->  
->  static void arm_lpae_restrict_pgsizes(struct io_pgtable_cfg *cfg)
-> @@ -804,6 +821,7 @@ arm_lpae_alloc_pgtable(struct io_pgtable_cfg *cfg)
->  		.map_pages	= arm_lpae_map_pages,
->  		.unmap_pages	= arm_lpae_unmap_pages,
->  		.iova_to_phys	= arm_lpae_iova_to_phys,
-> +		.pgtable_walk	= arm_lpae_pgtable_walk,
->  	};
->  
->  	return data;
-> diff --git a/include/linux/io-pgtable.h b/include/linux/io-pgtable.h
-> index 86cf1f7ae389..df6f6e58310c 100644
-> --- a/include/linux/io-pgtable.h
-> +++ b/include/linux/io-pgtable.h
-> @@ -171,12 +171,28 @@ struct io_pgtable_cfg {
->  	};
->  };
->  
-> +/**
-> + * struct arm_lpae_io_pgtable_walk_data - information from a pgtable walk
-> + *
-> + * @ptes:     The recorded PTE values from the walk
-> + * @level:    The level of the last PTE
-> + *
-> + * @level also specifies the last valid index in @ptes
-> + */
-> +struct arm_lpae_io_pgtable_walk_data {
-> +	u64 ptes[4];
+> It still applies against v6.11-rc1. So no need of respin.
 
-I don’t see a reason to save the whole walk for iova_to_phys,
-I see that the DRM driver uses those next, but I am worried that
-won’t scale, a callback mechanism sounds better.
+Yes, I will pick it for the rc1 cycle
 
-Also, there is a page table walker recently added to io-pagtable-arm,
-for dirty bit tracking:
-https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/drivers/iommu/io-pgtable-arm.c?id=4fe88fd8b4aecb7f9680bf898811db76b94095a9
-
-I’d suggest consolidating those into one walker where each caller
-has its own logic in a callback.
-
-Thanks,
-Mostafa
-
-> +	int level;
-> +};
-> +
->  /**
->   * struct io_pgtable_ops - Page table manipulation API for IOMMU drivers.
->   *
->   * @map_pages:    Map a physically contiguous range of pages of the same size.
->   * @unmap_pages:  Unmap a range of virtually contiguous pages of the same size.
->   * @iova_to_phys: Translate iova to physical address.
-> + * @pgtable_walk: (optional) Perform a page table walk for a given iova.  The
-> + *                type for the wd parameter is specific to pgtable type, as
-> + *                the PTE size and number of levels differs per pgtable type.
->   *
->   * These functions map directly onto the iommu_ops member functions with
->   * the same names.
-> @@ -190,6 +206,7 @@ struct io_pgtable_ops {
->  			      struct iommu_iotlb_gather *gather);
->  	phys_addr_t (*iova_to_phys)(struct io_pgtable_ops *ops,
->  				    unsigned long iova);
-> +	int (*pgtable_walk)(struct io_pgtable_ops *ops, unsigned long iova, void *wd);
->  	int (*read_and_clear_dirty)(struct io_pgtable_ops *ops,
->  				    unsigned long iova, size_t size,
->  				    unsigned long flags,
-> -- 
-> 2.45.2
-> 
+Jason
