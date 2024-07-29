@@ -1,140 +1,96 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.15])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-lf1-f41.google.com (mail-lf1-f41.google.com [209.85.167.41])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0E0E218A92F;
-	Mon, 29 Jul 2024 20:21:04 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.15
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F22E018A95A
+	for <iommu@lists.linux.dev>; Mon, 29 Jul 2024 20:24:27 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.41
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1722284467; cv=none; b=F8vEAshbHqTdOm7FJnY4S7wIT1lJqLmlVd1zEfcS1RFfd91v3Qt8SNpwSVeO/dg1NZThku7dZBHNc+RIgK2CBA1Mr6cecv4PyJYWVZvKihkwbxcaHnBAUENLM90E3NRPZUvvP/Lhf246bkO87SoiNzg1Y8TwIADABLXeZIGsczI=
+	t=1722284670; cv=none; b=fDnpMJkhibE4kbRG3JxAZxhF2RRhaWsYibmRyE8G9T/Pm7j8J49d94nNDLbmRtuQkoi4BPE3Y1BUTPS5sRtARSuV9srINAvMFOpcRXcOPKuTD7LzkDyb0fkb62Fkdut+vO7P3dqkRLj17NT3RwpkLSL6TbJxhouwIqErfEw8zJA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1722284467; c=relaxed/simple;
-	bh=9MnFmbMMl4welPbAXfEJprTWfaQmhfFar1+EgR/YeEY=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=b2CIAuQTkwnF9BdSojdrdrc48nJockfOtP6dEUOFwZcl7QYaAuAdzXrTJ+5WI7niINzH1jEWZySGu+1t8SkWsQj26AE8cZrpXjz0qu95oCqThKnoBT5Q1f67rD0aAdEh7TQVpAj39X/4+Y7fS45rnJW/4657NYDL67BH8AkZT18=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=hb9ok3mQ; arc=none smtp.client-ip=192.198.163.15
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	s=arc-20240116; t=1722284670; c=relaxed/simple;
+	bh=rdtey877Tkd/46YFhZ1VoOmDbFw/LnCm8ZrWiClZ/Uc=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=SqlYSHsmAzNKwWel9J6t1n1HoDm+/mlODjn1EWYbB2Qme4b2wH27CTTRiEyKmWSC52cP8CXkqhwymhP9s0mHE6G4SOgy7NE+h5kZ3bbrpJOoZhN65W/iNp6/qFWDXN808bn5yT4yTqS2rBqnHl0DO3yafj385BxVQe88zQxOyhA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=freebox.fr; spf=pass smtp.mailfrom=freebox.fr; dkim=pass (2048-bit key) header.d=freebox-fr.20230601.gappssmtp.com header.i=@freebox-fr.20230601.gappssmtp.com header.b=1KnqB2No; arc=none smtp.client-ip=209.85.167.41
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=freebox.fr
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=freebox.fr
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="hb9ok3mQ"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1722284465; x=1753820465;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=9MnFmbMMl4welPbAXfEJprTWfaQmhfFar1+EgR/YeEY=;
-  b=hb9ok3mQENQK+H/9ucltGEdkCYsyE6kKtgS8gkjv/sI4RXgjZsZUXlu3
-   22CbZQ7hL/ZqI/E47wvt676cI5gzuMLh1gUgOjklgqrb79FB1Z4Jec76W
-   iojp0F2wjBrso65J6a83FWyzfYuZhwbrs0fH+H/Y5BmBbNjyRE5oy/KOT
-   bfAstKt0ryujA4FyhQ3+/XxwoCv/dbqhiGVJv84IIlc+zBiXwRkttAWYz
-   mh2OLUGMU5/dIl2Q1JkZYh/IdmnkbIDSTXyl31YTWQPfWOgTGMJgPq3Ri
-   JMOm29PL8bM5Z3TRPxxoYyXqhkNL+xbkdjLKcBnIjkVBBhwa2SCdIjCsu
-   g==;
-X-CSE-ConnectionGUID: T3/YA03MSi6LVzJx0upgRw==
-X-CSE-MsgGUID: Om8TopFKS46meWH5IKb+BA==
-X-IronPort-AV: E=McAfee;i="6700,10204,11148"; a="20222982"
-X-IronPort-AV: E=Sophos;i="6.09,246,1716274800"; 
-   d="scan'208";a="20222982"
-Received: from fmviesa001.fm.intel.com ([10.60.135.141])
-  by fmvoesa109.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Jul 2024 13:21:04 -0700
-X-CSE-ConnectionGUID: JMsHV9crROu7a5Rx0cgJEA==
-X-CSE-MsgGUID: NRpEEVfCSs2EuHroYVXk+g==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.09,246,1716274800"; 
-   d="scan'208";a="85050208"
-Received: from lkp-server01.sh.intel.com (HELO 68891e0c336b) ([10.239.97.150])
-  by fmviesa001.fm.intel.com with ESMTP; 29 Jul 2024 13:21:01 -0700
-Received: from kbuild by 68891e0c336b with local (Exim 4.96)
-	(envelope-from <lkp@intel.com>)
-	id 1sYWra-000s2F-2j;
-	Mon, 29 Jul 2024 20:20:58 +0000
-Date: Tue, 30 Jul 2024 04:20:51 +0800
-From: kernel test robot <lkp@intel.com>
-To: Baruch Siach <baruch@tkos.co.il>, Christoph Hellwig <hch@lst.de>,
-	Marek Szyprowski <m.szyprowski@samsung.com>,
-	Catalin Marinas <catalin.marinas@arm.com>,
-	Will Deacon <will@kernel.org>
-Cc: llvm@lists.linux.dev, oe-kbuild-all@lists.linux.dev,
-	linux-s390@vger.kernel.org, Baruch Siach <baruch@tkos.co.il>,
-	Ramon Fried <ramon@neureality.ai>,
-	Petr =?utf-8?B?VGVzYcWZw61r?= <petr@tesarici.cz>,
-	Robin Murphy <robin.murphy@arm.com>, linux-kernel@vger.kernel.org,
-	iommu@lists.linux.dev, Elad Nachman <enachman@marvell.com>,
-	linuxppc-dev@lists.ozlabs.org, linux-arm-kernel@lists.infradead.org
-Subject: Re: [PATCH v3 2/3] dma-mapping: replace zone_dma_bits by
- zone_dma_limit
-Message-ID: <202407300338.oaUo6jtB-lkp@intel.com>
-References: <053fa4806a2c63efcde80caca473a8b670a2701c.1722249878.git.baruch@tkos.co.il>
+	dkim=pass (2048-bit key) header.d=freebox-fr.20230601.gappssmtp.com header.i=@freebox-fr.20230601.gappssmtp.com header.b="1KnqB2No"
+Received: by mail-lf1-f41.google.com with SMTP id 2adb3069b0e04-52fc4388a64so6602737e87.1
+        for <iommu@lists.linux.dev>; Mon, 29 Jul 2024 13:24:27 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=freebox-fr.20230601.gappssmtp.com; s=20230601; t=1722284666; x=1722889466; darn=lists.linux.dev;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=rdtey877Tkd/46YFhZ1VoOmDbFw/LnCm8ZrWiClZ/Uc=;
+        b=1KnqB2Nocip81502iaRe3PbJ7H/eNaAVEjSmG8eXQ76uRRKjOhgf/dboFjkc19mj2b
+         uClK/92zt0f9g85YCbjkVddAZxl08kMOYDi4vKjstX5KsRn1wxNXJ6yDkX3FsdfT04ty
+         52G9ZxapMc8AwcaMqtfOTCfnqkUL0iF0qzG04nmCCPUXmloQITEHk7hJvFZ1zC7bu0UW
+         EjkgWrMo8wGI0meaJnDpsLAiDaRU3HeWzgwN20ae16G2vNM8yvZjt9gMrlN3bYK1lnOH
+         JtRUKS0RS5F94KJOHCc47vVJhGKVQIWdyTev4dcJxnlwKL1EEe6T9SN78AwVtnYiHqmw
+         cjLw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1722284666; x=1722889466;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=rdtey877Tkd/46YFhZ1VoOmDbFw/LnCm8ZrWiClZ/Uc=;
+        b=oOQNBcyKvEUBhDPTtrCmvqdozUVhkISlzTC5hIgEpMAMKwFkJdQeVXGyIiM/klXMQQ
+         uACpCRp71MLlw6Cb1tvHbZXTM/NF/jdVcbJxzUTrzJZG+hYcz6hskf1IS8Wd/G9usMRF
+         eYJPcv+IEGXAEDwTPA0ZFKzZcBoCkElZAUgMIdIcQAWj+xKF3MWUGHEsqrpWasEghzv4
+         X7vlYeFljFpZkHZkpR6+Qw2ESkbbBHlIUeucxQ3O1LMGt96CzRTf4PPl309g6W9sP9DB
+         cnjHLYrMFQdI9A2t9/gw2rQpapX45NpvqjS6ZSSIKKZa1vE+8C7nCBYMvKX+WMZn/BF3
+         bgBg==
+X-Forwarded-Encrypted: i=1; AJvYcCX26YESE/GyM8PYwbr6UigaWY7RdlcH0jAcyfrlHO+Tmpu7fB6la2v2SSjufHtku9fa1Ob7rifwWAaU7o5FdH3XyhjcoRU=
+X-Gm-Message-State: AOJu0YxEc6JvsSo4iMoplJo1kP/OuUv2HCv/azkWrf+NxO7NoK5P8grH
+	MrQDCeCuKjgYboKaREvJWAD1FeFo+hTFVqvT9gEtBHNMuqkNbNWJHOdRPO8FJJTpUUfdnp/RjRo
+	FiqljEt3kwr1UTfbYlBl40f8uPEz+Q4ZSixptAg==
+X-Google-Smtp-Source: AGHT+IEOZr+HLd9MQ7+mXaujoCZMSeDtg1O5d6zpUpb59H/Z0WdC+L2shVJzjomOtwk8xRjMMtxTnNpKgm8KKoVbBtI=
+X-Received: by 2002:a05:6512:3ba9:b0:52c:859c:91dd with SMTP id
+ 2adb3069b0e04-5309b270551mr6262249e87.5.1722284665710; Mon, 29 Jul 2024
+ 13:24:25 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <053fa4806a2c63efcde80caca473a8b670a2701c.1722249878.git.baruch@tkos.co.il>
+References: <b3ae8239-4e75-4ff0-b722-dda0b940a5fb@freebox.fr>
+In-Reply-To: <b3ae8239-4e75-4ff0-b722-dda0b940a5fb@freebox.fr>
+From: Pierre-Hugues Husson <phhusson@freebox.fr>
+Date: Mon, 29 Jul 2024 22:24:14 +0200
+Message-ID: <CAPYYAFO+Y_Xd5zti3coc239y+wFP_NfZXMr+EWbj2OV9F6aK6w@mail.gmail.com>
+Subject: Re: Firmware / Hypervisor / TZ kills Linux for touching at context
+ bank registers
+To: Marc Gonzalez <mgonzalez@freebox.fr>
+Cc: Rob Clark <robdclark@gmail.com>, Konrad Dybcio <konrad.dybcio@linaro.org>, 
+	Bjorn Andersson <andersson@kernel.org>, Will Deacon <will@kernel.org>, 
+	Robin Murphy <robin.murphy@arm.com>, iommu@lists.linux.dev, 
+	MSM <linux-arm-msm@vger.kernel.org>, 
+	Linux ARM <linux-arm-kernel@lists.infradead.org>, 
+	Dmitry Baryshkov <dmitry.baryshkov@linaro.org>, Arnaud Vrac <avrac@freebox.fr>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-Hi Baruch,
+On Mon, Jul 29, 2024 at 6:40=E2=80=AFPM Marc Gonzalez <mgonzalez@freebox.fr=
+> wrote:
+>
+> In my specific case, we just need to avoid using CB 12,
+> because it is reserved by the FW under Linux.
 
-kernel test robot noticed the following build warnings:
+Additionally, the way the vendor kernel handles that is by removing
+the reset-on-probe ,
+and by checking the state of each context bank on-boot.
+So it creates on Linux boot a list of used context banks to never use.
+This doesn't sound ideal because modprobe-rmmod loops could leak
+context banks, but I think it's a reasonable behavior, as long as it's
+gated with a device-tree flag.
 
-[auto build test WARNING on arm64/for-next/core]
-[also build test WARNING on powerpc/next powerpc/fixes s390/features linus/master v6.11-rc1 next-20240729]
-[If your patch is applied to the wrong git tree, kindly drop us a note.
-And when submitting patch, we suggest to use '--base' as documented in
-https://git-scm.com/docs/git-format-patch#_base_tree_information]
+Alternatively the way AngeloGioacchino did it (by hard-coding the CB)
+could be kept as-is, but with a small tweak to help developers:
+When doing the resets, log which CBs were in setup/valid state, so the
+next developer hitting this issue has some pointers as to what to look
+for.
 
-url:    https://github.com/intel-lab-lkp/linux/commits/Baruch-Siach/dma-mapping-improve-DMA-zone-selection/20240729-211018
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/arm64/linux.git for-next/core
-patch link:    https://lore.kernel.org/r/053fa4806a2c63efcde80caca473a8b670a2701c.1722249878.git.baruch%40tkos.co.il
-patch subject: [PATCH v3 2/3] dma-mapping: replace zone_dma_bits by zone_dma_limit
-config: arm-allnoconfig (https://download.01.org/0day-ci/archive/20240730/202407300338.oaUo6jtB-lkp@intel.com/config)
-compiler: clang version 20.0.0git (https://github.com/llvm/llvm-project ccae7b461be339e717d02f99ac857cf0bc7d17fc)
-reproduce (this is a W=1 build): (https://download.01.org/0day-ci/archive/20240730/202407300338.oaUo6jtB-lkp@intel.com/reproduce)
-
-If you fix the issue in a separate patch/commit (i.e. not just a new version of
-the same patch/commit), kindly add following tags
-| Reported-by: kernel test robot <lkp@intel.com>
-| Closes: https://lore.kernel.org/oe-kbuild-all/202407300338.oaUo6jtB-lkp@intel.com/
-
-All warnings (new ones prefixed by >>):
-
-   In file included from kernel/dma/direct.c:7:
-   In file included from include/linux/memblock.h:12:
-   In file included from include/linux/mm.h:2253:
-   include/linux/vmstat.h:514:36: warning: arithmetic between different enumeration types ('enum node_stat_item' and 'enum lru_list') [-Wenum-enum-conversion]
-     514 |         return node_stat_name(NR_LRU_BASE + lru) + 3; // skip "nr_"
-         |                               ~~~~~~~~~~~ ^ ~~~
->> kernel/dma/direct.c:23:46: warning: implicit conversion from 'unsigned long long' to 'phys_addr_t' (aka 'unsigned int') changes value from 18446744073709551615 to 4294967295 [-Wconstant-conversion]
-      23 | phys_addr_t zone_dma_limit __ro_after_init = DMA_BIT_MASK(24);
-         |             ~~~~~~~~~~~~~~                   ^~~~~~~~~~~~~~~~
-   include/linux/dma-mapping.h:77:40: note: expanded from macro 'DMA_BIT_MASK'
-      77 | #define DMA_BIT_MASK(n) (((n) == 64) ? ~0ULL : ((1ULL<<(n))-1))
-         |                                        ^~~~~
-   2 warnings generated.
-
-
-vim +23 kernel/dma/direct.c
-
-   > 7	#include <linux/memblock.h>
-     8	#include <linux/export.h>
-     9	#include <linux/mm.h>
-    10	#include <linux/dma-map-ops.h>
-    11	#include <linux/scatterlist.h>
-    12	#include <linux/pfn.h>
-    13	#include <linux/vmalloc.h>
-    14	#include <linux/set_memory.h>
-    15	#include <linux/slab.h>
-    16	#include "direct.h"
-    17	
-    18	/*
-    19	 * Most architectures use ZONE_DMA for the first 16 Megabytes, but some use
-    20	 * it for entirely different regions. In that case the arch code needs to
-    21	 * override the variable below for dma-direct to work properly.
-    22	 */
-  > 23	phys_addr_t zone_dma_limit __ro_after_init = DMA_BIT_MASK(24);
-    24	
-
--- 
-0-DAY CI Kernel Test Service
-https://github.com/intel/lkp-tests/wiki
+Regards,
