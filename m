@@ -1,228 +1,395 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.8])
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6FA5416D4E6
-	for <iommu@lists.linux.dev>; Wed, 31 Jul 2024 07:50:59 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=192.198.163.8
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1722412261; cv=fail; b=rGB8mMAoqp0CEuy2FliLDfeD34Xmxh8u/b68ADxY7DsXITdpdfUEqHmvIZRqTK5l7f6tKAoEaPeIA1Z7NOU/EzPcm/NqgbeqOhvIfB8hXeqgV6/4yM0qqE0o6HUTn/WV4akZcxq2l0AI7wvp6RNnWVAuuOaXp8eoLoK8toffgJQ=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1722412261; c=relaxed/simple;
-	bh=/ULR+3xbApWQVIvRu8VOntB4k7KNq5KzIt+hWslgZNo=;
-	h=From:To:CC:Subject:Date:Message-ID:References:In-Reply-To:
-	 Content-Type:MIME-Version; b=ln/yG1xysF8UJOh602m8KX7MCgQheqhqZ6uUWGSktMjznPn5FROEwUIxo7IVAHolFcutf0hMTvxGjJn3XmSbVZ3bdTAo5ZIMRE5W3AjfQ8sg6KLGKAmfRKtXSKHhGdu43yjKkdV5Iwk+UNJ7QyjdEYAGOnb/V90C4d+TWSFjB/E=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=kjdjbhwQ; arc=fail smtp.client-ip=192.198.163.8
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3A8601AC443
+	for <iommu@lists.linux.dev>; Wed, 31 Jul 2024 17:04:42 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=170.10.133.124
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1722445485; cv=none; b=qXknxS440tU4+4HfTrAql8vhXbH+kbNMeg6sgzmxH9HKtU8ja/9LYdVlxB335g2wPbDYYIX7r7NWq5w6nwLmL4bEzFfSUdewJbTgpDZY3Bm5FWvig65542ZxnkwP9GRYqoqBSn6omjyyKsMpRXBn+eWxcSwxQioYCj0baNAUk8k=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1722445485; c=relaxed/simple;
+	bh=m87xK56yFr1TC7o//iwXmX6182f06/FzjjQFbeK/Y0Q=;
+	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=rfw536ZEBwuUKpDb5Pqy3awk1Xzbv/ei8O/KioXEzSQpxnTCvc/TnCRPOmy3zEHBaCIiXW0tL4hSk64W2q8zkPxiTLf+auLHLhiJ5esg5/eTg4aMQrJgFA64hM777Fnv+xkr9f8v6uo1bCzREfgQsBs0fXibvfvO7wmUSlsrP/8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=redhat.com; spf=pass smtp.mailfrom=redhat.com; dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b=hSDpPVfY; arc=none smtp.client-ip=170.10.133.124
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=redhat.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=redhat.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="kjdjbhwQ"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1722412259; x=1753948259;
-  h=from:to:cc:subject:date:message-id:references:
-   in-reply-to:content-transfer-encoding:mime-version;
-  bh=/ULR+3xbApWQVIvRu8VOntB4k7KNq5KzIt+hWslgZNo=;
-  b=kjdjbhwQX88AhAQ7w6JEFInFy55ZbDIpu4dRWBYIrgAygKBn8vE9B4gk
-   p778oknIfd0AM9Vcj9ZfMW/HOBYE93VHEkTRm2udOA7gxD0CcpMbECIGy
-   PG/l6dVuKV3ufxRF2BL9AymVAk/VpABe9gZRx/03VqCZ3T9OgqzpKxSAK
-   P4e1FAx8uiJBjicPZyi25IBx1j1xY/nCrGEg4PkB47ZPGf4FK8hr1zcqB
-   F151g+swxUPYNpnaD77if20n7ay0ZfMcyR2pPjYDhpICunNr7L65Z82u2
-   u4bMX8TBBF7qElCTPmIg54Xa5nGR8IEOnvswTweSzz9Nw4TY33IeyFmQL
-   A==;
-X-CSE-ConnectionGUID: ODQnjiagR2WjBYJvvkORVg==
-X-CSE-MsgGUID: eSk8k8R0RCq/besjPSaEeA==
-X-IronPort-AV: E=McAfee;i="6700,10204,11149"; a="37787209"
-X-IronPort-AV: E=Sophos;i="6.09,250,1716274800"; 
-   d="scan'208";a="37787209"
-Received: from orviesa006.jf.intel.com ([10.64.159.146])
-  by fmvoesa102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 31 Jul 2024 00:50:59 -0700
-X-CSE-ConnectionGUID: HDkZvC4/QEKklLZuQRlI9A==
-X-CSE-MsgGUID: UKT8UHr/QpikR3ILFEq74A==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.09,250,1716274800"; 
-   d="scan'208";a="54852719"
-Received: from fmsmsx602.amr.corp.intel.com ([10.18.126.82])
-  by orviesa006.jf.intel.com with ESMTP/TLS/AES256-GCM-SHA384; 31 Jul 2024 00:50:59 -0700
-Received: from fmsmsx610.amr.corp.intel.com (10.18.126.90) by
- fmsmsx602.amr.corp.intel.com (10.18.126.82) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.39; Wed, 31 Jul 2024 00:50:57 -0700
-Received: from fmsedg602.ED.cps.intel.com (10.1.192.136) by
- fmsmsx610.amr.corp.intel.com (10.18.126.90) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.39 via Frontend Transport; Wed, 31 Jul 2024 00:50:57 -0700
-Received: from NAM02-BN1-obe.outbound.protection.outlook.com (104.47.51.46) by
- edgegateway.intel.com (192.55.55.71) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.1.2507.39; Wed, 31 Jul 2024 00:50:57 -0700
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=ZuuM3XsME3exI2lJDvDDTvEGeecwpFvnoPdTsW6HvyHJzWKlWsoHg7UMmG6stHxDJQUkT+W5EEykftvn3m7nWEchIBjKlSMSXM2L3KQSQr2KePrXsJDoF0o3kxzXSGGtiWphc9AOiGkyddjIX9gqpHrLpcbfPEZO01hfDoa0Q5dfg7kw3RXUWEayLK3I5fJz5q5+6/T+BzzJaMcOl2Kw3F33FkTWY2ughSyisfb6Cghw5vfwI+lxxeCeHRa42dd1AwEdWsIfRRmvPxV/QASLlmpy6IIr3bvpwNgx8cLmzg6GiRwX34+dAz7J9n3IBFm6ULXbSgSVLKTtuuiQkBTUyA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=/ULR+3xbApWQVIvRu8VOntB4k7KNq5KzIt+hWslgZNo=;
- b=kkymZlUPU7fNhft3YZEQafqBiRXbSucekQOyytMFvcmnkjCZVOCSBdghzkG5TUMirT5LkpA7nqB3oXmbT6jQ3EkUcCDZfDUQHde3BapgfSNKX7s+5672oaikAShFiqK86/NTBAJy3+MGlIS6pQfYPut7nwVA89P8kSVKijg+p4KvHObzIgzj93S5AzZjBSYHZHwyuQCAyE/yrqT+rkX6XZDZhnyeoy7zQNfGmrSRIqnsXgC+rK2voj3jIJo0sdJzMZ24N3e9YSf0qag/hqNgjWjnGR8Ik2PZK2T94FlIOSzaozWlXFrW1n740kVFBrRljI7raitLUvZq5Gn9XpI1kg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
- dkim=pass header.d=intel.com; arc=none
-Received: from BN9PR11MB5276.namprd11.prod.outlook.com (2603:10b6:408:135::18)
- by PH7PR11MB6329.namprd11.prod.outlook.com (2603:10b6:510:1ff::7) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7807.27; Wed, 31 Jul
- 2024 07:50:54 +0000
-Received: from BN9PR11MB5276.namprd11.prod.outlook.com
- ([fe80::b576:d3bd:c8e0:4bc1]) by BN9PR11MB5276.namprd11.prod.outlook.com
- ([fe80::b576:d3bd:c8e0:4bc1%3]) with mapi id 15.20.7807.026; Wed, 31 Jul 2024
- 07:50:54 +0000
-From: "Tian, Kevin" <kevin.tian@intel.com>
-To: Nicolin Chen <nicolinc@nvidia.com>, Jason Gunthorpe <jgg@nvidia.com>
-CC: "Liu, Yi L" <yi.l.liu@intel.com>, "iommu@lists.linux.dev"
-	<iommu@lists.linux.dev>, "linux-kernel@vger.kernel.org"
-	<linux-kernel@vger.kernel.org>
-Subject: RE: [PATCH] iommufd: Enforce IOMMU_RESV_SW_MSI upon hwpt_paging
- allocation
-Thread-Topic: [PATCH] iommufd: Enforce IOMMU_RESV_SW_MSI upon hwpt_paging
- allocation
-Thread-Index: AQHa4UkZdMuTQ3BgnUqTgvFTxUSDHrIOBpsAgAAcOgCAAlZEcA==
-Date: Wed, 31 Jul 2024 07:50:53 +0000
-Message-ID: <BN9PR11MB5276B125671FEC70EDAFF50C8CB12@BN9PR11MB5276.namprd11.prod.outlook.com>
-References: <20240728235106.2435208-1-nicolinc@nvidia.com>
- <20240729182446.GH3371438@nvidia.com> <Zqf2HFUf/75hRcUU@Asurada-Nvidia>
-In-Reply-To: <Zqf2HFUf/75hRcUU@Asurada-Nvidia>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach:
-X-MS-TNEF-Correlator:
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=intel.com;
-x-ms-publictraffictype: Email
-x-ms-traffictypediagnostic: BN9PR11MB5276:EE_|PH7PR11MB6329:EE_
-x-ms-office365-filtering-correlation-id: 13db5218-c4df-49d7-5d67-08dcb135814b
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;ARA:13230040|366016|376014|1800799024|38070700018;
-x-microsoft-antispam-message-info: =?us-ascii?Q?jkGJzvNuyCgmJEXX/ElPTgsY9jBImYV/HKRJGtUHxc5GkzwKpHub6WoaHrsD?=
- =?us-ascii?Q?pwFdbhvHvOy2e/1C3sxfJulEFfaLxEwtpj5rfOg+SN4/E+/1+I5cBE+E7DLo?=
- =?us-ascii?Q?GUAf+0bfIcduGjrdFB5oVmtCZ2QDoZITBtIJImRNEgG6fHqbJnLYfbcn3JDh?=
- =?us-ascii?Q?PhD1nbomEjiGhTY2KwMHq9w1yaKdqKmYSLqDf52P8kxNMBLI6AKkFkN8wD4F?=
- =?us-ascii?Q?8mzcfPrxUdGLJJ4c4+svNV7SLF71xsKish/ij9IBVaDgT8t7ncnbjH85a+/E?=
- =?us-ascii?Q?mq6IB4FC+TvEKWiKtL64Uk8RELDBSruKLsayYHqYtWcbZiAWY/PAdmVGuAtV?=
- =?us-ascii?Q?rP+zpWmZynoaIYP/C4cKZEamXknsk+g/HDzG7bmO6R4dOMZkHt/K3V9P3yev?=
- =?us-ascii?Q?uBlZyNzlCPGEz7gO2l4bF7QlKBBJDZI5Xj8/N/SPxvx+BnuJq+D2tF5Rt4tM?=
- =?us-ascii?Q?qtxQ8USkgkQWk3sbZq9VwQfGmX33YvzE8OWUqSbWXdvFJGtDpLaqoJ0Jd/Qq?=
- =?us-ascii?Q?xrDhG8zVUc46KRCNClBtvi1GrOgwurG+86pkITxBKd5Imq/bGwicflofyems?=
- =?us-ascii?Q?9TbeO05xhMHpwZMnNPlJi42Eb/Bfe4Nh9m3JLuJQsGw8VTI1VMCHPAaRlwF+?=
- =?us-ascii?Q?EsqUO/tew8n2n4DkgGcYkYrmJtPCcPKOI3QrQWW8u83da0PYJRmui0DLNAUG?=
- =?us-ascii?Q?dusrUVgOOnMoeKowIsrxfb6H4OCme5RT+VcBQ/wo1LtF18XQ5gtkcdNpz4T4?=
- =?us-ascii?Q?eeFy/WkBQvx6PYWkAC0n2azq0pn8Pg6nJQqz3wecjqhuHYsWHDlTIVISTQXa?=
- =?us-ascii?Q?o+1WTNUNjTPNzXBlPGmK4A7FOhLLpR+qDWbgAI0QYhHdCXfDu43GCIIPf0oR?=
- =?us-ascii?Q?3LlQfaM6ajqFkEm/CEswiHl6NYXdYgZAjmXPTczsAES3QvJD5Cg6trSUHZGA?=
- =?us-ascii?Q?Qknm0E11FhYIF+7hAhJWTZZJmWC8J0GwoxdayJ6z4l+2W4GF0+CwAbZbRU96?=
- =?us-ascii?Q?DvvqU9KQpHEH0x/2SoU3vlMYRlwH8pkZd0LKi+DAwEYeEMaFA/4RuL5rXNwe?=
- =?us-ascii?Q?ch8rDDm8+G7gUzButvOWNBpymeHxc5g2v0xIf84ItnJ1AniNJ+B9QGBc8MGQ?=
- =?us-ascii?Q?ow94+vlVRS7+zHzgh8STHmJIE61dqGtmzPQ49RHB7Nxn0Lj3Rq65lhpxThJQ?=
- =?us-ascii?Q?mYVBx+tNpYsK5fQczdscvuNf6XQDC1x/UfklxEy3nQyqYkGiahKTIA7WYsNW?=
- =?us-ascii?Q?b4C2WnGr5JVUyjHnllGgcZDIlBiOYVAFKiVTczGJ2vnkjzwKRNTlY4TREObG?=
- =?us-ascii?Q?kEbIT/Hjz8eRK395Y5bFWctZqPjaUUb4Z1v43yXi5UTI7QXc6Ak/k74qCJr1?=
- =?us-ascii?Q?mOd2ijyn0OrqAa4GL3w7A4t/3TpBUIBmHicTaXch8VqoJppqzw=3D=3D?=
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BN9PR11MB5276.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(366016)(376014)(1800799024)(38070700018);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?YM2d8TxQnnbN6uHUODmfONvN+wrs2i/svoWrD48ktZ+yD7irTmZrG/rR2s8B?=
- =?us-ascii?Q?ZbANuF6KLcqYsEhI3jf1bSeNO6mpJSTeGh534zHhudWyN8I68PC2VCQR8Kbs?=
- =?us-ascii?Q?TVMwExCgOQopk4siPYWHXd/Lz4XeLDVwxc/C3q7uehx1MEMNFas0y4N5GHIb?=
- =?us-ascii?Q?ZPi4Al/5mQk4bSXoVKNpOP455S4DEtHkElgnwDyBjdemOpxumfmWEgYVSjOi?=
- =?us-ascii?Q?ZDsyc2X/spiDD5IctivwS/SVMUt0WHUGtbtdYxENQeR8f0kz3F69IixgI/Cc?=
- =?us-ascii?Q?pHRGfQ9MiRXVqASYBa4pKlxSEd4tiQ7ym0YI3nOopUeyAiA6ztcmPphbSlNI?=
- =?us-ascii?Q?qbIXRr5mM51Zd2ssHDj/QX2/9JjTHUFw0dCZlxKwQtMmup9syw7tkECi6K4E?=
- =?us-ascii?Q?+CR0+z7udgraucNd8wl8qanxQ6fxIE8wJkmdZKO33mz7mTRd7t5hm9Ee65uo?=
- =?us-ascii?Q?nB8dW+ANBrrK3xbt7kTYHuvbixJC0jGa8iigwFxRVM7o4OKd3eFWs3OdtamA?=
- =?us-ascii?Q?2DFB9SYHxMLGs8JHqwswAdhYc7lFoE8erDVDlMMym0bvoiyRf33LFQ7NxSus?=
- =?us-ascii?Q?+B40uLWlIK1Sv90gPwlrciB1ruHpTHDbwglYBwp/Z5XnBDoLpTebJ3MTSLkB?=
- =?us-ascii?Q?zq1tnmyB9KI0zlyse9Md3PGSTqs4bHf3DoqTHDkzzsVicOWcPzN2BDK/j7tB?=
- =?us-ascii?Q?tniVqr+Rxm1sK6Y571jmyQekaDZZ01sF191Q1AVAJJ7qkCEw4lkH8mK7uKS3?=
- =?us-ascii?Q?2Akr0Z12g01MQab/Nh4eJA1Zqr26PS6PDYNGo/AqYV9gLS/Lz1IrStEMxJ3u?=
- =?us-ascii?Q?Ibt2Yh+GJBKUg6h9CSjVL7K9YMOt7YnZKD3SKG9z6zBeCHGOruLQ/Yqfrloy?=
- =?us-ascii?Q?j1v4VuTxtxe3MxL5Nnt6IuAD6U4qTQMLqoQVOR2GEBrnt43YsPPNdLXEHNq7?=
- =?us-ascii?Q?mDn0ld21ZAYTCL/M0H41dEBCrDtpehyDTMWSXKiUMOZpdJqpQY1sJtt3yLGb?=
- =?us-ascii?Q?Ke1SalX3MiUqUtwo4eY20FAjJGus44abBrWWRJXRzY1di01g+Z/39KTsPqOy?=
- =?us-ascii?Q?MxNB84V7sdAZVZEeiKC/BGPphKlu+077lgdCrB9luzvTX+cyIdqizryqIof0?=
- =?us-ascii?Q?MJCRWAAN9VPWn2Gqx5/Hcc+9+dbya4692J+rFnFwLTmvOmRbuR8Fc53VTepP?=
- =?us-ascii?Q?UU0kfiH7D+IQTj32yJU6pilIrGJ2AKZu5PUei5C1moDp5nGrjf/jyTZNeVc2?=
- =?us-ascii?Q?C7BnuXR0p1YUx5pEVJ2piJeq2Ps8sFhA/yYk5tqNvJjSYCqn4cnzuoKCrLZf?=
- =?us-ascii?Q?VrN5Jtpabyd7dtj/iOxv21SbStWQU3L4j4fwTjQwKNDDteir/4SRDEOz8uwE?=
- =?us-ascii?Q?uFJamTIvkH2zkb3ZiVWxIp+Vw2XHTCqAwp6hCZNuV81n43b1FocNg/0YBZa8?=
- =?us-ascii?Q?O6jTQh2dMg4U6Gg5mq6S/nNufw/A2YCfXMwnZwwEI9J5Gia+f6ugk3fgNXt7?=
- =?us-ascii?Q?DkpcS9a0tpuRmUzShktbMv7j8zL58kDwfhO6Np/v3wFh+W9iXrhd3sQeDs0C?=
- =?us-ascii?Q?tF4BtN8Nwy2n24k2UbrWT1f1XOs+7FB7854AF2WP?=
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+	dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="hSDpPVfY"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+	s=mimecast20190719; t=1722445482;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding:
+	 in-reply-to:in-reply-to:references:references;
+	bh=h1ouC8/orPuHRKQfRRI7RoQT0OOkVorA7V7PiXZQIdA=;
+	b=hSDpPVfY82OdELitOficXpVkL+KvlwK8gpc1O8UUZEBwPu1S9SvoWTpMeJHnYcnImBq8Uj
+	W4isbC2PB4GGsmqkImd/4YxxlRAtKY6Hh3a556fwC0twF3RHoGoADt1VLC9V0XNVfNOm+u
+	3/wAdR24WiDOkJBQYXPiAvEBSLC/O38=
+Received: from mail-il1-f199.google.com (mail-il1-f199.google.com
+ [209.85.166.199]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
+ us-mta-682-1vsiHcmKOWe0_QFQpk_EkA-1; Wed, 31 Jul 2024 13:04:40 -0400
+X-MC-Unique: 1vsiHcmKOWe0_QFQpk_EkA-1
+Received: by mail-il1-f199.google.com with SMTP id e9e14a558f8ab-39a17513a7eso100425445ab.1
+        for <iommu@lists.linux.dev>; Wed, 31 Jul 2024 10:04:40 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1722445480; x=1723050280;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:subject:cc:to:from:date:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=h1ouC8/orPuHRKQfRRI7RoQT0OOkVorA7V7PiXZQIdA=;
+        b=vR+rIL6LtZTjQ4ogO2P3tQNcLsYAXeRrNgndXHBejv4pOLwg+wMhEPCFzmapi7dAp1
+         CPs/zyKzXi+lqJgLazABCsFgNCH5wWmWcZJ85jeLeA9CtLQSM/ymbXFxU/V3GagvYOFD
+         LMk/qCuGRwAzRu0bBOqUITMr0lnLgHSlYne3Pp3m+Pn5D9kLL6oqElzDrZurmHuod/OZ
+         sIAuW52Zc2+Gpxeci4+s48ZkHFSjBRmpOgdpEbgNy7s72rPfAN2ujh931OT5H2HQk338
+         u7drxnLDkty7vdCMs+hcJn65gho7bbEzxewLJ14G/aJpSdd8zqDbBoyohvL4EvA+gMn9
+         U09A==
+X-Forwarded-Encrypted: i=1; AJvYcCVDgnn5c7Ua232DJPps102El/ILFb8S6M2K/Wdmu6CZyzUj/8DiGgLm7OnZe3PM02ovU+ABZicG5mqcjzWqCHlVaesiTRw=
+X-Gm-Message-State: AOJu0YwTMFUsiz4ozSWWca+Tl+LIwrWh6oInzFnfEioaymhAOYySzLdn
+	oXnMb0gV8sM+ERCZ5mQmlEJjY9n+3MOEesDOrUoX4w6CqhfsJFNk94YW0EkQS0FtRWSTPA7W4u2
+	zFjAR+JN9FXa0VVq4tEXpEkTfYPRrWRjm9mzOSQ7He5gcWlazGfy9
+X-Received: by 2002:a05:6e02:1526:b0:374:a781:64b9 with SMTP id e9e14a558f8ab-39aec2e536bmr188516995ab.13.1722445479505;
+        Wed, 31 Jul 2024 10:04:39 -0700 (PDT)
+X-Google-Smtp-Source: AGHT+IF902HF8tpem7zLZ9Z74C0eR3H3b56lrOKTVf+enUH/SQxiNWR9VdFY09KPQbUMU3a1BsL3tg==
+X-Received: by 2002:a05:6e02:1526:b0:374:a781:64b9 with SMTP id e9e14a558f8ab-39aec2e536bmr188516165ab.13.1722445478827;
+        Wed, 31 Jul 2024 10:04:38 -0700 (PDT)
+Received: from redhat.com ([38.15.36.11])
+        by smtp.gmail.com with ESMTPSA id e9e14a558f8ab-39a23108185sm56151605ab.88.2024.07.31.10.04.37
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 31 Jul 2024 10:04:38 -0700 (PDT)
+Date: Wed, 31 Jul 2024 11:04:36 -0600
+From: Alex Williamson <alex.williamson@redhat.com>
+To: "Tian, Kevin" <kevin.tian@intel.com>
+Cc: Jason Gunthorpe <jgg@nvidia.com>, "Liu, Yi L" <yi.l.liu@intel.com>,
+ "joro@8bytes.org" <joro@8bytes.org>, "robin.murphy@arm.com"
+ <robin.murphy@arm.com>, "eric.auger@redhat.com" <eric.auger@redhat.com>,
+ "nicolinc@nvidia.com" <nicolinc@nvidia.com>, "kvm@vger.kernel.org"
+ <kvm@vger.kernel.org>, "chao.p.peng@linux.intel.com"
+ <chao.p.peng@linux.intel.com>, "iommu@lists.linux.dev"
+ <iommu@lists.linux.dev>, "baolu.lu@linux.intel.com"
+ <baolu.lu@linux.intel.com>, "Duan, Zhenzhong" <zhenzhong.duan@intel.com>,
+ "Pan, Jacob jun" <jacob.jun.pan@intel.com>, =?UTF-8?B?Q8OpZHJpYw==?= Le
+ Goater <clg@redhat.com>
+Subject: Re: [PATCH v2 0/4] vfio-pci support pasid attach/detach
+Message-ID: <20240731110436.7a569ce0.alex.williamson@redhat.com>
+In-Reply-To: <BN9PR11MB5276D184783C687B0B1B6FE68CB12@BN9PR11MB5276.namprd11.prod.outlook.com>
+References: <20240419103550.71b6a616.alex.williamson@redhat.com>
+	<BN9PR11MB52766862E17DF94F848575248C112@BN9PR11MB5276.namprd11.prod.outlook.com>
+	<20240423120139.GD194812@nvidia.com>
+	<BN9PR11MB5276B3F627368E869ED828558C112@BN9PR11MB5276.namprd11.prod.outlook.com>
+	<20240424001221.GF941030@nvidia.com>
+	<20240424122437.24113510.alex.williamson@redhat.com>
+	<20240424183626.GT941030@nvidia.com>
+	<20240424141349.376bdbf9.alex.williamson@redhat.com>
+	<20240426141117.GY941030@nvidia.com>
+	<20240426141354.1f003b5f.alex.williamson@redhat.com>
+	<20240429174442.GJ941030@nvidia.com>
+	<BN9PR11MB5276C4EF3CFB6075C7FC60AC8CAA2@BN9PR11MB5276.namprd11.prod.outlook.com>
+	<20240730113517.27b06160.alex.williamson@redhat.com>
+	<BN9PR11MB5276D184783C687B0B1B6FE68CB12@BN9PR11MB5276.namprd11.prod.outlook.com>
+X-Mailer: Claws Mail 4.3.0 (GTK 3.24.43; x86_64-redhat-linux-gnu)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: BN9PR11MB5276.namprd11.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 13db5218-c4df-49d7-5d67-08dcb135814b
-X-MS-Exchange-CrossTenant-originalarrivaltime: 31 Jul 2024 07:50:53.9933
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 46c98d88-e344-4ed4-8496-4ed7712e255d
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: qPcPbFjDd20a5+Sds0p3fo1ABZwgO+BF8dfVAtKhJ+5ZoaZvWfE/LKXthqEb94bV7s5LtX6+7yWGEL/cCuQEBQ==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH7PR11MB6329
-X-OriginatorOrg: intel.com
+X-Mimecast-Spam-Score: 0
+X-Mimecast-Originator: redhat.com
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 
-> From: Nicolin Chen <nicolinc@nvidia.com>
-> Sent: Tuesday, July 30, 2024 4:06 AM
->=20
-> On Mon, Jul 29, 2024 at 03:24:46PM -0300, Jason Gunthorpe wrote:
-> > On Sun, Jul 28, 2024 at 04:51:06PM -0700, Nicolin Chen wrote:
-> > > IOMMU_RESV_SW_MSI is a unique region defined by an IOMMU driver.
-> Though it
-> > > is eventually used by a device for address translation to an MSI loca=
-tion
-> > > (including nested cases), practically it is a universal region across=
- all
-> > > domains allocated for the IOMMU that defines it.
+On Wed, 31 Jul 2024 05:15:25 +0000
+"Tian, Kevin" <kevin.tian@intel.com> wrote:
+
+> > From: Alex Williamson <alex.williamson@redhat.com>
+> > Sent: Wednesday, July 31, 2024 1:35 AM
+> > 
+> > On Wed, 24 Jul 2024 02:26:20 +0000
+> > "Tian, Kevin" <kevin.tian@intel.com> wrote:
+> >   
+> > > > From: Jason Gunthorpe <jgg@nvidia.com>
+> > > > Sent: Tuesday, April 30, 2024 1:45 AM
+> > > >
+> > > > On Fri, Apr 26, 2024 at 02:13:54PM -0600, Alex Williamson wrote:  
+> > > > > Regarding "if we accept that text file configuration should be
+> > > > > something the VMM supports", I'm not on board with this yet, so
+> > > > > applying it to PASID discussion seems premature.  
+> > > >
+> > > > Sure, I'm just explaining a way this could all fit together.
+> > > >  
 > > >
-> > > Currently IOMMUFD core fetches and reserves the region during an
-> attach to
-> > > an hwpt_paging. It works with a hwpt_paging-only case, but might not
-> work
-> > > with a nested case where a device could directly attach to a hwpt_nes=
-ted,
-> > > bypassing the hwpt_paging attachment.
-> >
-> > Well, it does this because the attach is the only place where we have
-> > *all* the devices available.
-> >
-> > Doing it doing allocation means you get only one device.
-> >
-> > So, I'd imagine more like we allocate the MSI region during allocation
-> > for the device specific during allocation
-> >
-> > But continue to enforce that every attached device also has its MSI
-> > region allocated.. Which probably just means checking that the
-> > driver's reported MSI address is the same as the address during
-> > allocation?
->=20
-> The idea here is to treat IOMMU_RESV_SW_MSI as a per-IOMMU thing
-> v.s. a per-device thing, because it's defined by SW for an IOMMU
-> that doesn't have a HW MSI window. In another word, devices don't
-> really matter, so long as we know which IOMMU that can be decided
-> by any "one device".
->=20
+> > > Thinking more along this direction.
+> > >
+> > > I'm not sure how long it will take to standardize such text files and
+> > > share them across VMMs. We may need a way to move in steps in
+> > > Qemu to unblock the kernel development toward that end goal, e.g.
+> > > first accepting a pasid option plus user-specified offset (if offset
+> > > unspecified then auto-pick one in cap holes). Later when the text
+> > > file is ready then such per-cap options can be deprecated.  
+> > 
+> > Planned obsolescence is a hard sell.
+> >   
+> > > This simple way won't fix the migration issue, but at least it's on
+> > > par with physical caps (i.e. fail the migration if offset mismatched
+> > > between dest/src) and both will be fixed when the text file model
+> > > is ready.
+> > >
+> > > Then look at what uAPI is required to report the vPASID cap.
+> > >
+> > > In earlier discussion it's leaning toward extending GET_HW_INFO
+> > > in iommufd given both iommu/pci support are required to get
+> > > PASID working and iommu driver will not report such support until
+> > > pasid has been enabled in both iommu/pci. With that there is no
+> > > need to further report PASID in vfio-pci.
+> > >
+> > > But there may be other caps which are shared between VF and
+> > > PF while having nothing to do with the iommu. e.g. the Device
+> > > Serial Number extended cap (permitted but not recommended
+> > > in VF). If there is a need to report such cap on VF which doesn't
+> > > implement it to userspace, a vfio uAPI (device_feature or a new
+> > > one dedicated to synthetical vcap) appears to be inevitable.
+> > >
+> > > So I wonder whether we leave this part untouched until a real
+> > > demand comes or use vpasid to formalize that uAPI to be forward
+> > > looking. If in the end such uAPI will exist then it's a bit weird to
+> > > have PASID escaped (especially when vfio-pci already reports
+> > > PRI/ATS  which have iommu dependency too in vconfig).
+> > >
+> > > In concept the Qemu logic will be clearer if any PCI caps (real
+> > > or synthesized) is always conveyed via vfio-pci while iommufd is
+> > > for identifying a viommu cap.  
+> > 
+> > There are so many moving pieces here and the discussion trailed off a
+> > long time ago.  I have trouble keeping all the relevant considerations
+> > in my head, so let me try to enumerate them, please correct/add.  
+> 
+> Thanks for the summary!
+> 
+> > 
+> >  - The PASID capability cannot be implemented on VFs per the PCIe spec.
+> >    All VFs share the PF PASID configuration.  This also implies that
+> >    the VF PASID capability is essentially emulated since the VF driver
+> >    cannot manipulate the PF PASID directly.
+> > 
+> >  - VFIO does not currently expose the PASID capability for PFs, nor
+> >    does anything construct a vPASID capability for VFs.
+> > 
+> >  - The PASID capability is only useful in combination with a vIOMMU
+> >    with PASID support, which does not yet exist in QEMU.
+> > 
+> >  - Some devices are known to place registers in configuration space,
+> >    outside of the capability chains, which historically makes it
+> >    difficult to place a purely virtual capability without potentially
+> >    masking such hidden registers.  Current virtual capabilities are
+> >    placed at vendor defined fixed locations to avoid conflicts.
+> > 
+> >  - There is some expectation that otherwise compatible devices may
+> >    not present identical capability chains, for example devices running
+> >    different firmware or devices from different vendors implementing a
+> >    standard register ABI (virtio) where capability chain layout is not
+> >    standardized.
+> > 
+> >  - There have been arguments that the layout of device capabilities is
+> >    a policy choice, where both the kernel and libvirt traditionally try
+> >    to avoid making policy decisions.
+> > 
+> >  - Seamless live migration of devices requires that configuration space
+> >    remains at least consistent, if not identical for much of it.  
+> 
+> I didn't quite get it. I thought being consistent means fully identical
+> config space from guest p.o.v.
 
-The problem is that the entire reserved region interface in IOMMU is
-per-device, leaving the room that though IOMMU_RESV_SW_MSI
-is per-IOMMU on existing platforms there might be a new
-implementation future with per-device difference.
+See for example:
 
-Then we'll have trouble in the callers which assume a specific type
-is per-IOMMU.
+https://gitlab.com/qemu-project/qemu/-/commit/187716feeba406b5a3879db66a7bafd687472a1f 
 
-If we really want to go this route I wonder whether a per-IOMMU
-get_resv_regions() API should first exist then there is a clear definition
-what types are per-IOMMU and what are not.
+The layout of config space and most of the contents therein need to be
+identical, but there are arguably elements that could be volatile which
+only need to be consistent.
+
+> >    Capability offsets cannot change during live migration.  This leads
+> >    to the text file reference above, which is essentially just the
+> >    notion that if the VMM defines the capability layout in config
+> >    space, it would need to do so via a static reference, independent of
+> >    the layout of the physical device and we might want to share that
+> >    among multiple VMMs.
+> > 
+> >  - For a vfio-pci device to support live migration it must be enabled
+> >    to do so by a vfio-pci variant driver.
+> > 
+> >  - We've discussed in the community and seem to have a consensus that a
+> >    DVSEC (Designated Vendor Specific Extended Capability) could be
+> >    defined to describe unused configuration space.  Such a DVSEC could
+> >    be implemented natively by the device or supplied by a vfio-pci
+> >    variant driver.  There is currently no definition of such a DVSEC.  
+> 
+> I'm not sure whether DVSEC is still that necessary if the direction is
+> to go userspace-defined layout. In a synthetic world the unused
+> physical space doesn't really matter.
+> 
+> So this consensus IMHO was better placed under the umbrella of
+> the other direction having the kernel define the layout.
+
+I agree that we don't seem to be headed in a direction that requires
+this, but I just wanted to include that there was a roughly agreed upon
+way for devices and variant drivers to annotate unused config space
+ranges for higher levels.  If we head in a direction where the VMM
+chooses an offset for the PASID capability, we need to keep track of
+whether this DVSEC comes to fruition and how that affects the offset
+that QEMU might choose.
+
+> > So what are we trying to accomplish here.  PASID is the first
+> > non-device specific virtual capability that we'd like to insert into
+> > the VM view of the capability chain.  It won't be the last.
+> > 
+> >  - Do we push the policy of defining the capability offset to the user?  
+> 
+> Looks yes as I didn't see a strong argument for the opposite way.
+
+It's a policy choice though, so where and how is it implemented?  It
+works fine for those of us willing to edit xml or launch VMs by command
+line, but libvirt isn't going to sign up to insert a policy choice for
+a device.  If we get to even higher level tools, does anything that
+wants to implement PASID support required a vendor operator driver to
+make such policy choices (btw, I'm just throwing out the "operator"
+term as if I know what it means, I don't).
+
+> >  - Do we do some hand waving that devices supporting PASID shouldn't
+> >    have hidden registers and therefore the VMM can simply find a gap?  
+> 
+> I assume 'handwaving' doesn't mean any measure in code to actually
+> block those devices (as doing so likely requires certain denylist based on
+> device/vendor ID but then why not going a step further to also hard
+> code an offset?). It's more a try-and-fail model where vPASID is opted
+> in via a cmdline parameter then a device with hidden registers may
+> misbehave if the VMM happens to find a conflict gap. And the impact
+> is restricted only to a new setup where the user is interested in
+> PASID  to opt hence can afford diagnostics effort to figure out the restriction.
+
+If you want to hard code an offset then we're effectively introducing a
+device specific quirk to enable PASID support.  I thought we wanted
+this to work generically for any device exposing PASID, therefore I was
+thinking more of "find a gap" as the default strategy with quirks used
+to augment the resulting offset where necessary.
+
+I'd also be careful about command line parameters.  I think we require
+one for the vIOMMU to enable PASID support, but I'd prefer to avoid one
+on the vfio-pci device, instead simply enabling support when both the
+vIOMMU support is enabled and the device is detected to support it.
+Each command line option requires support in the upper level tools to
+enable it.
+
+> >  - Do we ask the hardware vendor or variant driver to insert a DVSEC to
+> >    identify available config space?  
+> 
+> As said I don't think it's necessary if leaving the policy to the user
+
+Leaving the policy to the user is essentially just kicking the can down
+the road and I don't know where that policy actually gets implemented
+in a cloud, production environment.  I think it would align with QEMU
+practices if the user could override a default policy on the command
+line, but ultimately if we want to keep the policy decision out of the
+kernel then the defaults probably need to be implemented in QEMU.
+
+> >  - Do we handle this as just another device quirk, where we maintain a
+> >    table of supported devices and vPASID offset for each?
+> > 
+> >  - Do we consider this an inflection point where the VMM entirely takes
+> >    over the layout of the capability spaces to impose a stable
+> >    migration layout?  On what basis do we apply that inflection?
+> > 
+> >  - Also, do we require the same policy for both standard and extended
+> >    capability chains?  
+> 
+> suppose yes.
+> 
+> > 
+> > I understand the desire to make some progress, but QEMU relies on
+> > integration with management tools, so a temporary option for a user to
+> > specify a PASID offset in isolation sounds like a non-starter to me.
+> > 
+> > This might be a better sell if the user interface allowed fully
+> > defining the capability chain layout from the command line and this
+> > interface would continue to exist and supersede how the VMM might
+> > otherwise define the capability chain when used.  A fully user defined
+> > layout would be complicated though, so I think there would still be a
+> > desire for QEMU to consume or define a consistent policy itself.
+> > 
+> > Even if QEMU defines the layout for a device, there may be multiple
+> > versions of that device.  For example, maybe we just add PASID now, but
+> > at some point we decide that we do want to replicate the PF serial
+> > number capability.  At that point we have versions of the device which
+> > would need to be tied to versions of the machine and maybe also
+> > selected via a profile switch on the device command line.
+> > 
+> > If we want to simplify this, maybe we do just look at whether the
+> > vIOMMU is configured for PASID support and if the device supports it,  
+> 
+> and this is related to the open which I raised in last mail - whether we
+> want to report the PASID support both in iommufd and vfio-pci uAPI.
+> 
+> My impression is yes as there may be requirement of exposing a virtual
+> capability which doesn't rely on the IOMMU.
+
+What's the purpose of reporting PASID via both iommufd and vfio-pci?  I
+agree that there will be capabilities related to the iommufd and
+capabilities only related to the device, but I disagree that that
+provides justification to report PASID via both uAPIs.  Are we also
+going to ask iommufd to report that a device has an optional serial
+number capability?  It clearly doesn't make sense for iommufd to be
+involved with that, so why does it make sense for vfio-pci to be
+involved in reporting something that is more iommufd specific?
+
+> > then we just look for a gap and add the capability.  If we end up with
+> > different results between source and target for migration, then
+> > migration will fail.  Possibly we end up with a quirk table to override
+> > the default placement of specific capabilities on specific devices.  
+> 
+> emm how does a quirk table work with devices having volatile config
+> space layout cross FW versions? Can VMM assigned with a VF be able
+> to check the FW version of the PF?
+
+If the VMM can't find the same gap between source and destination then
+a quirk could make sure that the PASID offset is consistent.  But also
+if the VMM doesn't find the same gap then that suggests the config
+space is already different and not only the offset of the PASID
+capability will need to be fixed via a quirk, so then we're into
+quirking the entire capability space for the device.
+
+The VMM should not be assumed to have any additional privileges beyond
+what we provide it through the vfio device and iommufd interface.
+Testing anything about the PF would require access on the host that
+won't work in more secure environments.  Therefore if we can't
+consistently place the PASID for a device, we probably need to quirk it
+based on the vendor/device IDs or sub-IDs or we need to rely on a
+management implied policy such as a device profile option on the QEMU
+command line or maybe different classes of the vfio-pci driver in QEMU.
+
+> > That might evolve into a lookup for where we place all capabilities,
+> > which essentially turns into the "file" where the VMM defines the entire
+> > layout for some devices.  
+> 
+> Overall this sounds a feasible path to move forward - starting with
+> the VMM to find the gap automatically if a new PASID option is
+> opted in. Devices with hidden registers may fail. Devices with volatile
+> config space due to FW upgrade or cross vendors may fail to migrate.
+> Then evolving it to the file-based scheme, and there is time to discuss
+> any intermediate improvement (fixed quirks, cmdline offset, etc.) in
+> between.
+
+As above, let's be careful about introducing unnecessary command line
+options, especially if we expect support for them in higher level
+tools.  If we place the PASID somewhere that makes the device not work,
+then disabling PASID on the vIOMMU should resolve that.  It won't be a
+regression, it will only be an incompatibility with a new feature.
+That incompatibility may require a quirk to resolve to have the PASID
+placed somewhere else.  If the PASID is placed at different offsets
+based on device firmware or vendor then the location of the PASID alone
+isn't the only thing preventing migration and we'll need to introduce
+code for the VMM to take ownership of the capability layout at that
+point.  Thanks,
+
+Alex
+
