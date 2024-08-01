@@ -1,99 +1,75 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8F56613AA2D;
-	Thu,  1 Aug 2024 01:24:27 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CB745149012;
+	Thu,  1 Aug 2024 03:20:02 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1722475467; cv=none; b=FfxZGOYU5XiWZn0GvJKDCCvppu2SUZu9eG+Eu4AwEOJzaIaXCo7QJ98qJlOt8HeSpcK6o6B4o6d0PHX/C1/Tduj134Hkx7kQcnzxwyLL7pupUFI2NTRuRJpBijr6B4ztngbvPxIkX3az5xvVEGbmqiqT8ycpG/4687f2+Nwp6Bs=
+	t=1722482403; cv=none; b=EZjyQReZH95sEjb7KcSFwvDgfiLMCjf8OYCsV2eJheR7MZ7gk+fHsG8WYj4Nk7bnCAHXYicLizf0UqJLW9tKTtacbwZ6wV/DlHOIHEKWgYX/IDShDGbcMoqWATm41di83qfq8IadHasoNRrXVyPaHk4JvHyJ8xzEWkxtMkPLX/Q=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1722475467; c=relaxed/simple;
-	bh=Pgpqo4RtxVJ1ue8DwjL2l0l2UL9ejI31ZTKHWsBrk4Q=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=Dq2OwA7S1jIfir6der6dsrP8L1KAJlTfq6QP4CQ/ucCAkIGdyNRjQFrdDL11ze8csPvFx8GhHGKRDRIwHr0RnNlbohryOEbwvvmLrvEwZbdDB+sICMRjrReigMyUDo7cIfG08PjtbB5JcRzBl9SiDs3cuJE3DuVZ8qjNYtSVJO8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=XVZIR7ZC; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1722482403; c=relaxed/simple;
+	bh=BvIdfDclaFLw7RpmEnVouQK1tmMNfr0+G9FNeexH9b0=;
+	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=eJ0qNiIKTm8PlBA1vrqVqiIt5RA6g4mr7D4BJbiJF4OayNGRkGKLquxq3ie5TtV7V9bg1c5LKePSakQScof+2u8vOfYeOapfdoTJ58ce4romu4txTF8470roT6hcInvp8nYClyUDXLZ9KSowUvJYXk6zzUQjhUuvCvamAAReEds=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=hLaPU8qx; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="XVZIR7ZC"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1FD22C116B1;
-	Thu,  1 Aug 2024 01:24:26 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="hLaPU8qx"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7FF0CC4AF0F;
+	Thu,  1 Aug 2024 03:20:01 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1722475467;
-	bh=Pgpqo4RtxVJ1ue8DwjL2l0l2UL9ejI31ZTKHWsBrk4Q=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=XVZIR7ZCGTG0w41hQSmLUNL6cZMuc0xp588STEletZW6rGg2Zw5ATIgyJNDcnVReb
-	 B3EfWzjWskItTFqdGEFqKaNkyGttT9TLBlQWyu/w8Tuxs0k3bHkwZd0cu+hd+HJiBM
-	 TLWeLNnPzjvU1idP/yzgeefl8ZzJqv2fdNIoFW2QL9yRXpPiUWdGcYIxH9/tq99yFQ
-	 xlNDkZrz9RPWiLvSDiSFXG1SG7k6RBe2KkK8hixvDn+6BA8ozx+ajPaXfsgWLA8nel
-	 7BEThuYora+MdjBceQZNxXOF5muIGxkG3oYUZNn0HCWNcoz+pncWSlk+9RsOGJ4U29
-	 oEus3plyggpmg==
-Date: Wed, 31 Jul 2024 18:24:24 -0700
-From: Nathan Chancellor <nathan@kernel.org>
-To: Christoph Hellwig <hch@lst.de>
-Cc: kernel test robot <lkp@intel.com>, Baruch Siach <baruch@tkos.co.il>,
-	Marek Szyprowski <m.szyprowski@samsung.com>,
-	Catalin Marinas <catalin.marinas@arm.com>,
-	Will Deacon <will@kernel.org>, llvm@lists.linux.dev,
-	oe-kbuild-all@lists.linux.dev, linux-s390@vger.kernel.org,
-	Ramon Fried <ramon@neureality.ai>,
-	Petr =?utf-8?B?VGVzYcWZw61r?= <petr@tesarici.cz>,
-	Robin Murphy <robin.murphy@arm.com>, linux-kernel@vger.kernel.org,
-	iommu@lists.linux.dev, Elad Nachman <enachman@marvell.com>,
-	linuxppc-dev@lists.ozlabs.org, linux-arm-kernel@lists.infradead.org
-Subject: Re: [PATCH v3 2/3] dma-mapping: replace zone_dma_bits by
- zone_dma_limit
-Message-ID: <20240801012424.GA1640480@thelio-3990X>
-References: <053fa4806a2c63efcde80caca473a8b670a2701c.1722249878.git.baruch@tkos.co.il>
- <202407300338.oaUo6jtB-lkp@intel.com>
- <20240730021208.GA8272@thelio-3990X>
- <20240730153450.GA30021@lst.de>
+	s=k20201202; t=1722482402;
+	bh=BvIdfDclaFLw7RpmEnVouQK1tmMNfr0+G9FNeexH9b0=;
+	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+	b=hLaPU8qxHA3u+fzhT1R0k2gU2WZyt8+l7tTrivnC7aKHacBi/sT0132YIzncQoTAR
+	 QZ3d11/n2WGaBq/Nf4kqOckVOUe97gOu85haofWwQ4MtqzbM2SUGKGgC9z7y6+eG0s
+	 URdkX+86/PKiMhDiyUYBob9ol88UncUzHiE8zub2QMvR0P2TPCzJjFy4Of4WRWWIdc
+	 d6y3NHKb1hrj+ciA78+aK2JUZH7qXcwvhwRKoRGEUTPkJ5SQl2j7UkrZxTj2DPXXxH
+	 iWfkCEPuI2/BPRKzuGlm6bu6D9cjYSTxgAt0QnXVrChgx5HCNdWMVnKtasslAqXEuV
+	 vPX3Hj26ZqIsA==
+From: Bjorn Andersson <andersson@kernel.org>
+To: Rob Herring <robh@kernel.org>,
+	Krzysztof Kozlowski <krzk+dt@kernel.org>,
+	Conor Dooley <conor+dt@kernel.org>,
+	Konrad Dybcio <konradybcio@kernel.org>
+Cc: Marijn Suijten <marijn.suijten@somainline.org>,
+	linux-kernel@vger.kernel.org,
+	linux-arm-msm@vger.kernel.org,
+	linux-clk@vger.kernel.org,
+	devicetree@vger.kernel.org,
+	dri-devel@lists.freedesktop.org,
+	freedreno@lists.freedesktop.org,
+	linux-pm@vger.kernel.org,
+	iommu@lists.linux.dev,
+	linux-gpio@vger.kernel.org,
+	linux-remoteproc@vger.kernel.org
+Subject: Re: (subset) [PATCH 0/3] Update Konrad Dybcio's email addresses
+Date: Wed, 31 Jul 2024 22:19:45 -0500
+Message-ID: <172248238591.319692.676661290519182446.b4-ty@kernel.org>
+X-Mailer: git-send-email 2.45.2
+In-Reply-To: <20240726-topic-konrad_email-v1-0-f94665da2919@kernel.org>
+References: <20240726-topic-konrad_email-v1-0-f94665da2919@kernel.org>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20240730153450.GA30021@lst.de>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
 
-On Tue, Jul 30, 2024 at 05:34:50PM +0200, Christoph Hellwig wrote:
-> On Mon, Jul 29, 2024 at 07:12:08PM -0700, Nathan Chancellor wrote:
-> > >          |             ~~~~~~~~~~~~~~                   ^~~~~~~~~~~~~~~~
-> > >    include/linux/dma-mapping.h:77:40: note: expanded from macro 'DMA_BIT_MASK'
-> > >       77 | #define DMA_BIT_MASK(n) (((n) == 64) ? ~0ULL : ((1ULL<<(n))-1))
-> > >          |                                        ^~~~~
-> > >    2 warnings generated.
-> > 
-> > FWIW, this is likely a false positive due to an issue in Clang with the
-> > control flow graph for global variables:
-> > 
-> > https://github.com/ClangBuiltLinux/linux/issues/92
-> > 
-> > DMA_BIT_MASK() has been the biggest offender :/ If there is any way to
-> > refactor this code to avoid this, that would be great (as that has been
-> > one of our longest outstanding issues and getting it fixed in the
-> > compiler does not seem super easy at this point).
+
+On Fri, 26 Jul 2024 13:18:22 +0200, Konrad Dybcio wrote:
+> Patch 3 should probably go straight to Rob's dt-bindings tree
 > 
-> I have no idea what you'd want changed here, but I'll happily take
-> patches.
+> 
 
-Unfortunately, I am not sure either... I do not see anything obviously,
-so perhaps it could just be avoided with the __diag() infrastructure?
+Applied, thanks!
 
-diff --git a/kernel/dma/direct.c b/kernel/dma/direct.c
-index 3dbc0b89d6fb..b58e7eb9c8f1 100644
---- a/kernel/dma/direct.c
-+++ b/kernel/dma/direct.c
-@@ -20,7 +20,12 @@
-  * it for entirely different regions. In that case the arch code needs to
-  * override the variable below for dma-direct to work properly.
-  */
-+__diag_push();
-+__diag_ignore(clang, 13, "-Wconstant-conversion",
-+	      "Clang incorrectly thinks the n == 64 case in DMA_BIT_MASK() can happen here,"
-+	      "which would truncate with a 32-bit phys_addr_t");
- phys_addr_t zone_dma_limit __ro_after_init = DMA_BIT_MASK(24);
-+__diag_pop();
- 
- static inline dma_addr_t phys_to_dma_direct(struct device *dev,
- 		phys_addr_t phys)
+[1/3] mailmap: Add an entry for Konrad Dybcio
+      commit: 72c93f3e0dcdc05fceafcb32e79352a45716d181
+[2/3] MAINTAINERS: Update Konrad Dybcio's email address
+      commit: fce6a1eefb2a1db706fa17ca21e3e7107811d2e8
+
+Best regards,
+-- 
+Bjorn Andersson <andersson@kernel.org>
