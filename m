@@ -1,125 +1,99 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 583D01BF308;
-	Thu,  1 Aug 2024 00:17:04 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8F56613AA2D;
+	Thu,  1 Aug 2024 01:24:27 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1722471424; cv=none; b=N3KOrmjX7PhH49w5uN46ay8oE/0IekjWjnuY/4cuPenF1pDgDg9j6sDmrXyrWOPmF70AQQ6z2h0aZsWLAlgIEw/mpPpMl92Bz9x+iPPU1QKX/71YvGbmfPntu203FEYOnwnyzyhD5CdJJ/d0tK3g8HS18KKJWWVYRhdXvT3Vno0=
+	t=1722475467; cv=none; b=FfxZGOYU5XiWZn0GvJKDCCvppu2SUZu9eG+Eu4AwEOJzaIaXCo7QJ98qJlOt8HeSpcK6o6B4o6d0PHX/C1/Tduj134Hkx7kQcnzxwyLL7pupUFI2NTRuRJpBijr6B4ztngbvPxIkX3az5xvVEGbmqiqT8ycpG/4687f2+Nwp6Bs=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1722471424; c=relaxed/simple;
-	bh=Cu9u7/IC/vzqe1yfpc+sjG23kEBqYrFG0a0R4YHkCa4=;
-	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=EsKAlyZSB7sCAQ7mpaAS5f80FL8Q123Q+9qN6us7qXVQorWTu9JbFuaWLsIMAf3jCSyDmLREnyRt0h7YjhiMSQhFnlxcnVdCW+LvfjFL2vC6NR7iQXWvV8tAGNfcGLoW+d0dBJAUqUhV7lTHxanuNInqbHCozDrW9h/oy6GfxMI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=c4DFNPgc; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1722475467; c=relaxed/simple;
+	bh=Pgpqo4RtxVJ1ue8DwjL2l0l2UL9ejI31ZTKHWsBrk4Q=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=Dq2OwA7S1jIfir6der6dsrP8L1KAJlTfq6QP4CQ/ucCAkIGdyNRjQFrdDL11ze8csPvFx8GhHGKRDRIwHr0RnNlbohryOEbwvvmLrvEwZbdDB+sICMRjrReigMyUDo7cIfG08PjtbB5JcRzBl9SiDs3cuJE3DuVZ8qjNYtSVJO8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=XVZIR7ZC; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="c4DFNPgc"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BBB24C116B1;
-	Thu,  1 Aug 2024 00:17:02 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="XVZIR7ZC"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1FD22C116B1;
+	Thu,  1 Aug 2024 01:24:26 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1722471424;
-	bh=Cu9u7/IC/vzqe1yfpc+sjG23kEBqYrFG0a0R4YHkCa4=;
-	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-	b=c4DFNPgcCmrNRB7Jo45QkQicBPXl+Q2H522FxHoHdpwI6HxmZDFifs6SugmgtM1jG
-	 BDaRz3qSegkNLtiJhcJZCgYBdWAbBuGybjLBn2Ih2UBxW9g5FHm4hDg6l/SVc3TdzJ
-	 eDYTDe0WS+H303or0iGBlwjj4Y2rkHhNhWLCuWI35glJNqodN8udiLOluuvEuu8fyy
-	 FxLBAzhb+eEnxGqyd6MPWOA7JUa+4FWUxXXVgp/UeMq3pm2rLaxPlfq7TRtzJMVc2b
-	 GK+T1wIWLjGjRrmUeZchD2vEs65YtEt9fygCWiJS/g+YqqSI07Wyx7hiWA1ZhKCxRF
-	 /2T2k7+LH9glA==
-From: Sasha Levin <sashal@kernel.org>
-To: linux-kernel@vger.kernel.org,
-	stable@vger.kernel.org
-Cc: Andre Przywara <andre.przywara@arm.com>,
-	Chen-Yu Tsai <wens@csie.org>,
-	Joerg Roedel <jroedel@suse.de>,
-	Sasha Levin <sashal@kernel.org>,
-	joro@8bytes.org,
-	will@kernel.org,
-	jernej.skrabec@gmail.com,
-	samuel@sholland.org,
-	iommu@lists.linux.dev,
-	linux-arm-kernel@lists.infradead.org,
-	linux-sunxi@lists.linux.dev
-Subject: [PATCH AUTOSEL 6.10 093/121] iommu: sun50i: allocate page tables from below 4 GiB
-Date: Wed, 31 Jul 2024 20:00:31 -0400
-Message-ID: <20240801000834.3930818-93-sashal@kernel.org>
-X-Mailer: git-send-email 2.43.0
-In-Reply-To: <20240801000834.3930818-1-sashal@kernel.org>
-References: <20240801000834.3930818-1-sashal@kernel.org>
+	s=k20201202; t=1722475467;
+	bh=Pgpqo4RtxVJ1ue8DwjL2l0l2UL9ejI31ZTKHWsBrk4Q=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=XVZIR7ZCGTG0w41hQSmLUNL6cZMuc0xp588STEletZW6rGg2Zw5ATIgyJNDcnVReb
+	 B3EfWzjWskItTFqdGEFqKaNkyGttT9TLBlQWyu/w8Tuxs0k3bHkwZd0cu+hd+HJiBM
+	 TLWeLNnPzjvU1idP/yzgeefl8ZzJqv2fdNIoFW2QL9yRXpPiUWdGcYIxH9/tq99yFQ
+	 xlNDkZrz9RPWiLvSDiSFXG1SG7k6RBe2KkK8hixvDn+6BA8ozx+ajPaXfsgWLA8nel
+	 7BEThuYora+MdjBceQZNxXOF5muIGxkG3oYUZNn0HCWNcoz+pncWSlk+9RsOGJ4U29
+	 oEus3plyggpmg==
+Date: Wed, 31 Jul 2024 18:24:24 -0700
+From: Nathan Chancellor <nathan@kernel.org>
+To: Christoph Hellwig <hch@lst.de>
+Cc: kernel test robot <lkp@intel.com>, Baruch Siach <baruch@tkos.co.il>,
+	Marek Szyprowski <m.szyprowski@samsung.com>,
+	Catalin Marinas <catalin.marinas@arm.com>,
+	Will Deacon <will@kernel.org>, llvm@lists.linux.dev,
+	oe-kbuild-all@lists.linux.dev, linux-s390@vger.kernel.org,
+	Ramon Fried <ramon@neureality.ai>,
+	Petr =?utf-8?B?VGVzYcWZw61r?= <petr@tesarici.cz>,
+	Robin Murphy <robin.murphy@arm.com>, linux-kernel@vger.kernel.org,
+	iommu@lists.linux.dev, Elad Nachman <enachman@marvell.com>,
+	linuxppc-dev@lists.ozlabs.org, linux-arm-kernel@lists.infradead.org
+Subject: Re: [PATCH v3 2/3] dma-mapping: replace zone_dma_bits by
+ zone_dma_limit
+Message-ID: <20240801012424.GA1640480@thelio-3990X>
+References: <053fa4806a2c63efcde80caca473a8b670a2701c.1722249878.git.baruch@tkos.co.il>
+ <202407300338.oaUo6jtB-lkp@intel.com>
+ <20240730021208.GA8272@thelio-3990X>
+ <20240730153450.GA30021@lst.de>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-stable: review
-X-Patchwork-Hint: Ignore
-X-stable-base: Linux 6.10.2
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20240730153450.GA30021@lst.de>
 
-From: Andre Przywara <andre.przywara@arm.com>
+On Tue, Jul 30, 2024 at 05:34:50PM +0200, Christoph Hellwig wrote:
+> On Mon, Jul 29, 2024 at 07:12:08PM -0700, Nathan Chancellor wrote:
+> > >          |             ~~~~~~~~~~~~~~                   ^~~~~~~~~~~~~~~~
+> > >    include/linux/dma-mapping.h:77:40: note: expanded from macro 'DMA_BIT_MASK'
+> > >       77 | #define DMA_BIT_MASK(n) (((n) == 64) ? ~0ULL : ((1ULL<<(n))-1))
+> > >          |                                        ^~~~~
+> > >    2 warnings generated.
+> > 
+> > FWIW, this is likely a false positive due to an issue in Clang with the
+> > control flow graph for global variables:
+> > 
+> > https://github.com/ClangBuiltLinux/linux/issues/92
+> > 
+> > DMA_BIT_MASK() has been the biggest offender :/ If there is any way to
+> > refactor this code to avoid this, that would be great (as that has been
+> > one of our longest outstanding issues and getting it fixed in the
+> > compiler does not seem super easy at this point).
+> 
+> I have no idea what you'd want changed here, but I'll happily take
+> patches.
 
-[ Upstream commit 7b9331a3ae93adfae54c6a56d23513e1f7db5dcb ]
+Unfortunately, I am not sure either... I do not see anything obviously,
+so perhaps it could just be avoided with the __diag() infrastructure?
 
-The Allwinner IOMMU is a strict 32-bit device, with its input addresses,
-the page table root pointer as well as both level's page tables and also
-the target addresses all required to be below 4GB.
-The Allwinner H6 SoC only supports 32-bit worth of physical addresses
-anyway, so this isn't a problem so far, but the H616 and later SoCs extend
-the PA space beyond 32 bit to accommodate more DRAM.
-To make sure we stay within the 32-bit PA range required by the IOMMU,
-force the memory for the page tables to come from below 4GB. by using
-allocations with the DMA32 flag.
-Also reject any attempt to map target addresses beyond 4GB, and print a
-warning to give users a hint while this fails.
-
-Signed-off-by: Andre Przywara <andre.przywara@arm.com>
-Reviewed-by: Chen-Yu Tsai <wens@csie.org>
-Link: https://lore.kernel.org/r/20240616224056.29159-3-andre.przywara@arm.com
-Signed-off-by: Joerg Roedel <jroedel@suse.de>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- drivers/iommu/sun50i-iommu.c | 13 +++++++++++--
- 1 file changed, 11 insertions(+), 2 deletions(-)
-
-diff --git a/drivers/iommu/sun50i-iommu.c b/drivers/iommu/sun50i-iommu.c
-index c519b991749d7..b5221579c9815 100644
---- a/drivers/iommu/sun50i-iommu.c
-+++ b/drivers/iommu/sun50i-iommu.c
-@@ -601,6 +601,14 @@ static int sun50i_iommu_map(struct iommu_domain *domain, unsigned long iova,
- 	u32 *page_table, *pte_addr;
- 	int ret = 0;
+diff --git a/kernel/dma/direct.c b/kernel/dma/direct.c
+index 3dbc0b89d6fb..b58e7eb9c8f1 100644
+--- a/kernel/dma/direct.c
++++ b/kernel/dma/direct.c
+@@ -20,7 +20,12 @@
+  * it for entirely different regions. In that case the arch code needs to
+  * override the variable below for dma-direct to work properly.
+  */
++__diag_push();
++__diag_ignore(clang, 13, "-Wconstant-conversion",
++	      "Clang incorrectly thinks the n == 64 case in DMA_BIT_MASK() can happen here,"
++	      "which would truncate with a 32-bit phys_addr_t");
+ phys_addr_t zone_dma_limit __ro_after_init = DMA_BIT_MASK(24);
++__diag_pop();
  
-+	/* the IOMMU can only handle 32-bit addresses, both input and output */
-+	if ((uint64_t)paddr >> 32) {
-+		ret = -EINVAL;
-+		dev_warn_once(iommu->dev,
-+			      "attempt to map address beyond 4GB\n");
-+		goto out;
-+	}
-+
- 	page_table = sun50i_dte_get_page_table(sun50i_domain, iova, gfp);
- 	if (IS_ERR(page_table)) {
- 		ret = PTR_ERR(page_table);
-@@ -681,7 +689,8 @@ sun50i_iommu_domain_alloc_paging(struct device *dev)
- 	if (!sun50i_domain)
- 		return NULL;
- 
--	sun50i_domain->dt = iommu_alloc_pages(GFP_KERNEL, get_order(DT_SIZE));
-+	sun50i_domain->dt = iommu_alloc_pages(GFP_KERNEL | GFP_DMA32,
-+					      get_order(DT_SIZE));
- 	if (!sun50i_domain->dt)
- 		goto err_free_domain;
- 
-@@ -996,7 +1005,7 @@ static int sun50i_iommu_probe(struct platform_device *pdev)
- 
- 	iommu->pt_pool = kmem_cache_create(dev_name(&pdev->dev),
- 					   PT_SIZE, PT_SIZE,
--					   SLAB_HWCACHE_ALIGN,
-+					   SLAB_HWCACHE_ALIGN | SLAB_CACHE_DMA32,
- 					   NULL);
- 	if (!iommu->pt_pool)
- 		return -ENOMEM;
--- 
-2.43.0
-
+ static inline dma_addr_t phys_to_dma_direct(struct device *dev,
+ 		phys_addr_t phys)
