@@ -1,247 +1,462 @@
-Received: from NAM10-DM6-obe.outbound.protection.outlook.com (mail-dm6nam10on2080.outbound.protection.outlook.com [40.107.93.80])
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.15])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 047373EA7B
-	for <iommu@lists.linux.dev>; Thu,  1 Aug 2024 03:34:59 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.93.80
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 42B8316DC1C
+	for <iommu@lists.linux.dev>; Thu,  1 Aug 2024 07:45:47 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=192.198.163.15
 ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1722483301; cv=fail; b=i3Xtpspp3KZPVw1VMA0AMajtS8KKU7IQS2o1R91e0jOIOfX2p6XtBqrymmNiRZ6uiU6ciApbsrfZV67wO+N9UVssFo6hASrcYYdPxeqGdd2Aej7W+4CJeLwvollvckMLjCk+PJe7HAPtVGYNxa1LqizBaw5jbqqFoQr+UJpiK24=
+	t=1722498350; cv=fail; b=t39J/fRhz6BNRaLlRP0OLTUgnkQScywwlLBy5lkQxG2hZNrdY/6uhAVve2LeG9frujv3+0caI8RwChnj6xTBxD9AcjId290ErZsMMMYQfRIUnfK6Ax1xpgW3/haLaIB7ocTPInx9tQV8JbYl1h4jnaIeDByRc3V6999YyCKKuyc=
 ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1722483301; c=relaxed/simple;
-	bh=HGFLKL20xRPOOHQ9sfEYVvCUWB52rNg5J5OjRVZSkkc=;
-	h=From:To:CC:Subject:Date:Message-ID:MIME-Version:Content-Type; b=FnYRRmpFCLob8rxAzmN3KHsMDHQx6ahV0KtxwnoLbtjEHVzIurhyCKzAA3cwRVRK8t1WbIrS1Awz8HT6oCvD7G7YSGkmgkM5YtTKyWyWfwVsMIowqvPKVApXydmIb+WGmsJKaIheeUY36WBZhqRdPUsUqqr+iwIKB3Z43jDvJtg=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=DAnzzZ1I; arc=fail smtp.client-ip=40.107.93.80
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
+	s=arc-20240116; t=1722498350; c=relaxed/simple;
+	bh=2elq0fy6t+ENQSsmNIgqfRPbvWjQeS9A1L+/NKRc1xA=;
+	h=From:To:CC:Subject:Date:Message-ID:References:In-Reply-To:
+	 Content-Type:MIME-Version; b=peSiJcjq/zvYYUoZJLT3YKhdEKxyvmXfuqmmFkXZi+beLRmVLIYt2t5ISFbyhTSE+xcoBclAzFAdb7z2e4Fk3dyjSBNhqfNMEP6GUqynGDqiayqKW0Ynegr2fPt/Zk+IQP7Kf9YQkz4jsIxwB0Pd9m+oIK83tTHyanA9cbQ+eTk=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=IzVOn76F; arc=fail smtp.client-ip=192.198.163.15
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="DAnzzZ1I"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="IzVOn76F"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1722498348; x=1754034348;
+  h=from:to:cc:subject:date:message-id:references:
+   in-reply-to:content-transfer-encoding:mime-version;
+  bh=2elq0fy6t+ENQSsmNIgqfRPbvWjQeS9A1L+/NKRc1xA=;
+  b=IzVOn76FoPsdE9ssGoV283V4AZLyVcHi8aZyFkEB30YTZnZqGBgL3FBQ
+   FzDY9jNlqBnJwEkuqkjPULgtveMloTCclvvUPpwZaE0m9OeomabrZKlVV
+   cs3w9qB3bYjNXHb0ZX2tPucU+cYQ2yfJ1b3Lg0FTshSW/+XFfWaQFT3I3
+   1pHxVqqCXBdOCt7IK5ZOGJP2VOlg6WBK/fA7RF7TWUNLL0DlFWCn/pKJ9
+   0lnZrfHGXAJtQs7IZaYGtemR4yMnt4/B2rRt6CHaxOA8WYjhe+84EeCoP
+   HnUJ/PaszG7l/qvsFkkciNKxBLxS7P00bmxxyD9uv8jHPYfwH8+R41t7m
+   g==;
+X-CSE-ConnectionGUID: VwTz4Tw4RviIQo28+AVQLA==
+X-CSE-MsgGUID: kit2FploSt6pjk5qHxUgjg==
+X-IronPort-AV: E=McAfee;i="6700,10204,11150"; a="20592783"
+X-IronPort-AV: E=Sophos;i="6.09,253,1716274800"; 
+   d="scan'208";a="20592783"
+Received: from fmviesa004.fm.intel.com ([10.60.135.144])
+  by fmvoesa109.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Aug 2024 00:45:48 -0700
+X-CSE-ConnectionGUID: eef2+05iTJm0DTcPoUasdw==
+X-CSE-MsgGUID: H0iXmQXPQySsjxSlNPjPJw==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.09,253,1716274800"; 
+   d="scan'208";a="59601985"
+Received: from orsmsx602.amr.corp.intel.com ([10.22.229.15])
+  by fmviesa004.fm.intel.com with ESMTP/TLS/AES256-GCM-SHA384; 01 Aug 2024 00:45:47 -0700
+Received: from orsmsx612.amr.corp.intel.com (10.22.229.25) by
+ ORSMSX602.amr.corp.intel.com (10.22.229.15) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.39; Thu, 1 Aug 2024 00:45:46 -0700
+Received: from orsmsx603.amr.corp.intel.com (10.22.229.16) by
+ ORSMSX612.amr.corp.intel.com (10.22.229.25) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.39; Thu, 1 Aug 2024 00:45:46 -0700
+Received: from orsedg603.ED.cps.intel.com (10.7.248.4) by
+ orsmsx603.amr.corp.intel.com (10.22.229.16) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.39 via Frontend Transport; Thu, 1 Aug 2024 00:45:46 -0700
+Received: from NAM12-DM6-obe.outbound.protection.outlook.com (104.47.59.169)
+ by edgegateway.intel.com (134.134.137.100) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.1.2507.39; Thu, 1 Aug 2024 00:45:46 -0700
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=w9DqrOwHommZwbku86hVDiWSmcR0ACildfInQ5j7ZI0yVtwkU8YMaEmfZlBcAQeuMHWTncpSQRTXZBE5h/mnzlvi66e1/eTaXk/kD/yRHWgr5Q6UHE9GpNxs0pVkxLENawXp80XrDXiosXjcjVZJHb3fh7/NTTb4YczFahEf01yI0iDQZeQO3EC3V48j44IQTyam/chsywoWLUvuZzRHQSG1JP6vhX7mEL6tmuAV8d1XMMyd/7euc3Ypldli7YVZDZgCd/htd0I5wqlNKOMPINl1CyDnA9CzjKEZvyQL5HAOUvxx0T0euO9DErjVIoCFIo+V3vmeZs4JfjU8QH5/RA==
+ b=k1SoDEI33IB4UxK9u11IxJyFeyG8jGNiYRhTSSa6B5rqKD79rWCg0P6osQ5B600PdrtwQDrpmUWTacnx/tI3kfadDsgTUotpM1mLjrfSoXjWF2nDxxwd0STEDOcp1+ZakmJoqigEm8YPImAeWDHM5/V0iG7FTL0/4VWpFm+nYW5RRzKOzCGeeLZK36MX64L+q4anSeQih9rhWxDg1bRAx2XZc+kbS0+Hu2YKfH1wlH49mjT4iBVkDBjIT0ZncjmJC2aSCSkah78JA+btKh1bOin/VuMOdROgGNfsUyIxW3osfy7027Y5m1VT+IXLD8FCNYzshNgAcL4VCdrSMf9L5g==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector10001;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=0lRD+KA6N48RPZUXEFLwVI5yQ0lmlX3wTX8bv1psiTU=;
- b=p7QbrSHzKGUMGA+NkgSybTSb2PAvUal1NjnBfXyZhEBDaAaFQ/p+tXN5fe+LAJ8eWkq0SYzA7aLvfa7gM9I+3uvgyhoZ+hsTFg4WTM9E8+N/Ow7eUqpAdVF/4aaxHPJ+lViouXaQrIYRfXEb6De+ZqMp1xp40B7IquZvoqoTZ0JZcpsyb/2H9KU1Ur84T8LyUoVdJZKxYQ4FNQlmw2jQQS2pJW+4hZ6GthqTxRjDsrO5SulHTSpu7imeYOcUk/wrRYN7YDvx3vlioX3jhsjUtHfrhDFtk9FlyRUJhw/pxmE7r8oFipu5CIkka7ehnHSBSRhnXgrDbwTqRcgT2qLXAw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 216.228.117.161) smtp.rcpttodomain=kernel.org smtp.mailfrom=nvidia.com;
- dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
- dkim=none (message not signed); arc=none (0)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=0lRD+KA6N48RPZUXEFLwVI5yQ0lmlX3wTX8bv1psiTU=;
- b=DAnzzZ1IpBwZCIccAHo2fOBRD89gpfwGGa2IKjdfmCt3l9nfjNAIY58b6shtOtExdnxBMgYEMEQ40hg9alKC36EW4e/rqbO/JlSV0eQpsPaaozS/iIB9fTmJrN9tlsrI76nARnDt9L8noiyzGvRpKXiRe1hJ/Y/pcs/jqs8G0o0MrhuBHf4PNTXyRhjjRV5yOiF8MzOkfFbWzgduoNnxcW5E7HhzsAwX1Holfj0pwNm2RDZL/oCrzWl7SgtBM4JEMxlPCRiB5xH1Y9lr9juqT3hK7h6bm6qVmpX+59q05rSnceXRAnpRyaJf3HFhUKngYlwHF88zNtbRBe5aS+3IQw==
-Received: from BYAPR02CA0011.namprd02.prod.outlook.com (2603:10b6:a02:ee::24)
- by CH3PR12MB9219.namprd12.prod.outlook.com (2603:10b6:610:197::20) with
+ bh=cOxZa/S2fr8dL9YoKxzAxHSiV04Q2zhjlQNnY+5+p3Q=;
+ b=BI+QDhtKGGX5ZNBMXRrPRqFEclbHdY+DQNnlY9RIrJ6iunf4fj1v3M7bfklA9deN6MK4hbTzZV2c/eyLMvgwe3m5G1ncBoPegNQHF7xqbdiCmiZCZKjRxPocY27jfdLijmnYW6N5J4N89aJFrA9K9DlMnxe//BySSeiYfSI5MYXgLFz4Qso0NRkTxuKUy0AytsnIqi0hhU4LcPShgzPxun97Wm3BGmNz0LEAFUXFi7cgKHvhNm2BV/q16jMXUNSU/Hb8oFj812brJ5rKxL7Pt0UMu9TUWOK7qknt7KCcBMBzCFT90MzD6/gVFfR+F1Q051ML0JcUG9LSRYPGF8I6PQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
+ dkim=pass header.d=intel.com; arc=none
+Received: from BN9PR11MB5276.namprd11.prod.outlook.com (2603:10b6:408:135::18)
+ by CH0PR11MB5267.namprd11.prod.outlook.com (2603:10b6:610:e2::17) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7828.21; Thu, 1 Aug
- 2024 03:34:55 +0000
-Received: from CO1PEPF000044F3.namprd05.prod.outlook.com
- (2603:10b6:a02:ee:cafe::30) by BYAPR02CA0011.outlook.office365.com
- (2603:10b6:a02:ee::24) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7784.34 via Frontend
- Transport; Thu, 1 Aug 2024 03:34:53 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.117.161)
- smtp.mailfrom=nvidia.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=nvidia.com;
-Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 216.228.117.161 as permitted sender) receiver=protection.outlook.com;
- client-ip=216.228.117.161; helo=mail.nvidia.com; pr=C
-Received: from mail.nvidia.com (216.228.117.161) by
- CO1PEPF000044F3.mail.protection.outlook.com (10.167.241.73) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.7828.19 via Frontend Transport; Thu, 1 Aug 2024 03:34:53 +0000
-Received: from rnnvmail202.nvidia.com (10.129.68.7) by mail.nvidia.com
- (10.129.200.67) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1544.4; Wed, 31 Jul
- 2024 20:34:38 -0700
-Received: from rnnvmail204.nvidia.com (10.129.68.6) by rnnvmail202.nvidia.com
- (10.129.68.7) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1544.4; Wed, 31 Jul
- 2024 20:34:37 -0700
-Received: from build-amhetre-20240731T045122751.internal (10.127.8.10) by
- mail.nvidia.com (10.129.68.6) with Microsoft SMTP Server id 15.2.1544.4 via
- Frontend Transport; Wed, 31 Jul 2024 20:34:37 -0700
-From: Ashish Mhetre <amhetre@nvidia.com>
-To: <will@kernel.org>, <robin.murphy@arm.com>, <joro@8bytes.org>
-CC: <linux-arm-kernel@lists.infradead.org>, <iommu@lists.linux.dev>,
-	<linux-kernel@vger.kernel.org>, <linux-tegra@vger.kernel.org>, Ashish Mhetre
-	<amhetre@nvidia.com>
-Subject: [PATCH V2 1/2] iommu: Optimize IOMMU UnMap
-Date: Thu, 1 Aug 2024 03:34:31 +0000
-Message-ID: <20240801033432.106837-1-amhetre@nvidia.com>
-X-Mailer: git-send-email 2.25.1
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7807.28; Thu, 1 Aug
+ 2024 07:45:44 +0000
+Received: from BN9PR11MB5276.namprd11.prod.outlook.com
+ ([fe80::b576:d3bd:c8e0:4bc1]) by BN9PR11MB5276.namprd11.prod.outlook.com
+ ([fe80::b576:d3bd:c8e0:4bc1%3]) with mapi id 15.20.7828.021; Thu, 1 Aug 2024
+ 07:45:43 +0000
+From: "Tian, Kevin" <kevin.tian@intel.com>
+To: Alex Williamson <alex.williamson@redhat.com>
+CC: Jason Gunthorpe <jgg@nvidia.com>, "Liu, Yi L" <yi.l.liu@intel.com>,
+	"joro@8bytes.org" <joro@8bytes.org>, "robin.murphy@arm.com"
+	<robin.murphy@arm.com>, "eric.auger@redhat.com" <eric.auger@redhat.com>,
+	"nicolinc@nvidia.com" <nicolinc@nvidia.com>, "kvm@vger.kernel.org"
+	<kvm@vger.kernel.org>, "chao.p.peng@linux.intel.com"
+	<chao.p.peng@linux.intel.com>, "iommu@lists.linux.dev"
+	<iommu@lists.linux.dev>, "baolu.lu@linux.intel.com"
+	<baolu.lu@linux.intel.com>, "Duan, Zhenzhong" <zhenzhong.duan@intel.com>,
+	"Pan, Jacob jun" <jacob.jun.pan@intel.com>,
+	=?iso-8859-1?Q?C=E9dric_Le_Goater?= <clg@redhat.com>
+Subject: RE: [PATCH v2 0/4] vfio-pci support pasid attach/detach
+Thread-Topic: [PATCH v2 0/4] vfio-pci support pasid attach/detach
+Thread-Index: AQHajLJtgFipqDFp5kGVxfWLZ+e8jbFqmBhwgACbmQCAANtx0IAAWtiAgACzNgCAAAsdMIAAnMyAgADCDYCAAJZRIIAAuGoAgAWh6eCAAFrQgIAAvzfAgAAM8ICAATEtgIAAA00AgAAbNoCAAr9fgIAAZVAAgASNTwCAhOTNIIALrw6AgACT05CAAPXvAIAA2q0A
+Date: Thu, 1 Aug 2024 07:45:43 +0000
+Message-ID: <BN9PR11MB5276BEBDDD6720C2FEFD4B718CB22@BN9PR11MB5276.namprd11.prod.outlook.com>
+References: <20240419103550.71b6a616.alex.williamson@redhat.com>
+	<BN9PR11MB52766862E17DF94F848575248C112@BN9PR11MB5276.namprd11.prod.outlook.com>
+	<20240423120139.GD194812@nvidia.com>
+	<BN9PR11MB5276B3F627368E869ED828558C112@BN9PR11MB5276.namprd11.prod.outlook.com>
+	<20240424001221.GF941030@nvidia.com>
+	<20240424122437.24113510.alex.williamson@redhat.com>
+	<20240424183626.GT941030@nvidia.com>
+	<20240424141349.376bdbf9.alex.williamson@redhat.com>
+	<20240426141117.GY941030@nvidia.com>
+	<20240426141354.1f003b5f.alex.williamson@redhat.com>
+	<20240429174442.GJ941030@nvidia.com>
+	<BN9PR11MB5276C4EF3CFB6075C7FC60AC8CAA2@BN9PR11MB5276.namprd11.prod.outlook.com>
+	<20240730113517.27b06160.alex.williamson@redhat.com>
+	<BN9PR11MB5276D184783C687B0B1B6FE68CB12@BN9PR11MB5276.namprd11.prod.outlook.com>
+ <20240731110436.7a569ce0.alex.williamson@redhat.com>
+In-Reply-To: <20240731110436.7a569ce0.alex.williamson@redhat.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach:
+X-MS-TNEF-Correlator:
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=intel.com;
+x-ms-publictraffictype: Email
+x-ms-traffictypediagnostic: BN9PR11MB5276:EE_|CH0PR11MB5267:EE_
+x-ms-office365-filtering-correlation-id: e7d36952-6be0-4268-dd9a-08dcb1fdf2d6
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;ARA:13230040|1800799024|7416014|376014|366016|38070700018;
+x-microsoft-antispam-message-info: =?iso-8859-1?Q?PoW3IIYcAfFw5u+a9WcG8oi7hRtMAjEfc/EXruziT0K3uw7qZG22XLX1aL?=
+ =?iso-8859-1?Q?L7Vk+DtJobctbszTCJ16TbWNs1wcXQ1HT/niSWtBGj4OPGczxyogZPawaA?=
+ =?iso-8859-1?Q?cgayuQeB/VyxVvg/Mb06cekBI9lXUTOyHGUOajSjXmmtruviMUC3a4RiV6?=
+ =?iso-8859-1?Q?oDtrCelytXPbsQG6jVl+r7mIdgV6Pukgse1TcichH6yKS/AmjcvT9yOJpN?=
+ =?iso-8859-1?Q?R3Wcd0jhanw8RSp/h6dscq6UxOt580gPWOnm3sIR7GjdAtYkH3OOy0zcDa?=
+ =?iso-8859-1?Q?5Mv7u1iLd1mKIvkzV9aDbjoZJtQaj2wALSLOCUmtqdfN7O9JBa83aCZ0H4?=
+ =?iso-8859-1?Q?QS44U3FKgLNIHwjIzoox623Se8wxsKW+nYm1BWiwkEB1Y68q4spj9mKI4v?=
+ =?iso-8859-1?Q?lcFyEP/nvCP5Jeua7u/KkyI2rJeI3zg797JH5Ck1KHlRkff1TYMhlds4tM?=
+ =?iso-8859-1?Q?it0RvJVkhP/dL5tpIqz+rgYhh2GVB+XGfBs0vU/zaRJS0T2Xp5BeEUzvGD?=
+ =?iso-8859-1?Q?xgAn+kHn1bOJp59ss1EO1cFD8vdfarXRolWqke2TMbwrvAPuYAcCPKAcPk?=
+ =?iso-8859-1?Q?BIWeobCnoVZ1qpedAeNuWA9kNggkPeFKLG7Ft+XEpRCg0751dm7Qmkeq4A?=
+ =?iso-8859-1?Q?QUIiY7B9gylmgr19bIhhFc03UOJhGy9hvdT8XK2xG//Ju40F+WZ53ipWO+?=
+ =?iso-8859-1?Q?Kesk1t7G/EwlViAgmRJT0v375EGhvYMQ6D33Siu9juXnYWnkOJnSm9/+GZ?=
+ =?iso-8859-1?Q?79PJ8efzqt5klomiS/IzGtIThWvn6ZYF0pCWefPiO9uLKLQkOFm0/Gmev3?=
+ =?iso-8859-1?Q?YKGCzz3J+KlM8nag1UessQy/Ve9SGapMW0gAM8VdDOcpbtIWwiAIsWF24K?=
+ =?iso-8859-1?Q?ngucUXC+Mikvm6uMnwANBHmUnli8dYJaBndBxqbuiHDQDrQHkWmHwQnZeA?=
+ =?iso-8859-1?Q?EFkUEIPnfbsxyvzyfApIGSVJyH82a5nE7tzgHNpBYaOynDMx5CgyNp30+8?=
+ =?iso-8859-1?Q?/et+KgH6Pi/YjG96BMca2qs5zy/bWmAtzV+/cnrmxN79hBozV71a4LJxoU?=
+ =?iso-8859-1?Q?GW5rSdZpzldotOqaKGiNKYUfmUxnfQzxZLVKPNJUcF89JwQkHKH2LfXpKJ?=
+ =?iso-8859-1?Q?Z3nzao/O9SnubwpBgblbqvT3OmgBpbki8Pk5ARf3Q0XtjMvlI9Gw1PCXtC?=
+ =?iso-8859-1?Q?/QjD77EdxR3YbIgwUq3OtjaY3vc9a8tFXzXISDYZU7F1/xlBtDYxQ3fskp?=
+ =?iso-8859-1?Q?6RGdtEpp8gyR2hFDNyfIerWgxj/qpessr1TKJuJLGL3EcAcGrp22islBPc?=
+ =?iso-8859-1?Q?EcG8oaAMYWzb3gFqFToQoMArQvwBsVzERz040gD157CkFrslcugvlfDRp1?=
+ =?iso-8859-1?Q?YosFEGJYA44qzJYuH9NXg1C0VP4N18+qh6hulZ4wv0WjfpfD4OJ90=3D?=
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BN9PR11MB5276.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(1800799024)(7416014)(376014)(366016)(38070700018);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?iso-8859-1?Q?El7VxaftxRTeJse8NuteFg/igCsqG7staZ1+MrAe4mA88MNxfbBugXRoGU?=
+ =?iso-8859-1?Q?O4mDgwOIJWfWjAYt3wYGtkPvUemY4dne84PtpuMiyzktSWdcEj9UvXU1K+?=
+ =?iso-8859-1?Q?Zm6MCS0LyydgWocUjolVh5b85TqJOhvE0w8+59/z//L1tgoxAWuxQtZbLI?=
+ =?iso-8859-1?Q?K+c4mch1jE0QiWElQVZa8Kjuo0zQarMD7Zr5cTK5gN+Ll06VSBxg8XNDds?=
+ =?iso-8859-1?Q?9d9j3XBCb6sAez6rbZMGTK/vuAijRfPAelaeNqfl0r1He2aZTAvzUc+lrj?=
+ =?iso-8859-1?Q?VEx1QvV46JO68h8Z7crCdMy9i4iHH1my/b49XPiWAXLqkpGgE+esnA4n5b?=
+ =?iso-8859-1?Q?5kL85uQ2WeWGJ6FSr6YhNNOSAgzHimQRWzclXKd2XGWyFiTZjh4Rs19HQZ?=
+ =?iso-8859-1?Q?2aMT3fQhD/xmfla0zgkQrnDpcdx2KxWD+9CLBiz4087T73/Dwb4UFpX8OZ?=
+ =?iso-8859-1?Q?broKWhPFpERzzJ1ksbBr67KOQ+9GF7T849jtKfvXzQJndQnwAUs5f6HyJK?=
+ =?iso-8859-1?Q?Ijio2Tqrhle8HoaaxxX6Pl+5fcBNW/HvSgFsNFTJwT8CoIC3+fDU559SPv?=
+ =?iso-8859-1?Q?uNOzRnqul7nbD6WV87u32Un4oZqsg6V2vQUNfaj/7k5d25VxblASjq2dSt?=
+ =?iso-8859-1?Q?V6lr0qvZa5QjA+ndMhEMuSkqxuJPoYxtGYcsnyiUD4GVO8uOtrCkonqrTP?=
+ =?iso-8859-1?Q?e55VN+cautk/Ilb8pRRzqiHZWsjOEP+rL0Ajh5Lq8TpM7DK1rTOn9nuAwP?=
+ =?iso-8859-1?Q?YwHKDlkISJRwiDNIuTh+p098p0Bmym/RZ3zoLXJB2voiTFtM8gNVdIIaAV?=
+ =?iso-8859-1?Q?4zweUbLEGgXVqe9pyATZOp1Y1IyfSTfHhZDMOC//zX0wpKYvIsTGLT6ZaQ?=
+ =?iso-8859-1?Q?/Z3OJvi6uHcxANMPLAbXxfk7hnVUw0KlZxdjzyR/HHa10hHt2mQZDh2IAt?=
+ =?iso-8859-1?Q?Vye9fLAfUoFbrk4s0MGdnN58b56rUudBuyv3S4CeiehCnrLduUdocSUKS/?=
+ =?iso-8859-1?Q?HaTsepzGCOQihAr8MHqwrowlMkEviDH//cb9/ZYcD6j1/FJxBjfQSBmjqJ?=
+ =?iso-8859-1?Q?DYleW7h4ECt9o/eDi1y7+GK57JrWtdhkkA79dl7oIziSdjrTLjX6JXp0Jg?=
+ =?iso-8859-1?Q?o9bzNyp1ZMiW21oeE7EKDEXEu7/uXaAQJ0775thbxHeCd57GzjjR5O+6wN?=
+ =?iso-8859-1?Q?NrliOk0KIPqVnF/FoTTh3SrXvrdVUr8pPvqMtMgClxmirXGrC3LiSkWZWw?=
+ =?iso-8859-1?Q?WDg9eeYEH0NM/agROeBJDmqlnWsCh0plKZcsquXf1y8am5V8sEX0ue8Rlb?=
+ =?iso-8859-1?Q?UwuzD3Bi1IgXYVKyxGsQYZYIbTYfB8iKwFiiyudMuQLo5OW2BrAAGxKnC7?=
+ =?iso-8859-1?Q?20zl9l/9yB/ND0kGN8FJX8A7L02FqB0GDwjgEIobYvPeVmlKEeCecDOSya?=
+ =?iso-8859-1?Q?7cxWGLgpAgHV7VYRLuL4YwhZf0pA+Twz+P+xW5nwkSogf3yVNLm5EkLvl4?=
+ =?iso-8859-1?Q?vlwQTCx5+TdyfPwc1xyWLQYHjuclF7Ftik3buGZKoghYASiaD2/qRwlHCJ?=
+ =?iso-8859-1?Q?DVFsRPLI1k7mnFbXM78OnAe/Wu0q84wpafRzA7UrK6hOnNhUMD4dor9SHz?=
+ =?iso-8859-1?Q?f8b34zD/A6u3pWeLkv7TXPOLLrQ8blDwye?=
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-NVConfidentiality: public
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-NV-OnPremToCloud: ExternallySecured
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: CO1PEPF000044F3:EE_|CH3PR12MB9219:EE_
-X-MS-Office365-Filtering-Correlation-Id: 2c4a8e52-7064-4897-8f24-08dcb1dae834
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|376014|36860700013|82310400026|1800799024;
-X-Microsoft-Antispam-Message-Info:
-	=?us-ascii?Q?LdnogwXBDhJIaWKS1nupdOhgxtkENnZ3ffdUFNZHmQVcOmnnuzTolEOwjypo?=
- =?us-ascii?Q?KxKYmfWgVTpGu85G7aIPEy/KMGJEplLFL2OGcClxp8w+ELNMAmQVmmOCmXv9?=
- =?us-ascii?Q?5tJLuEaMkihVN2g8gW949yezhKDaB++88dWSkkJRO/kg5W0nd0Rhi2Gtn8rf?=
- =?us-ascii?Q?PELkGsJOUF2Q4ho+kOoRqa25NFZ3NUq9U9c8ZmmkJF1+WqRBic05q+92NZWU?=
- =?us-ascii?Q?vRFYJSiqlIuCw303KGQHHK0aMf5ulbkD0Yp3+QvhviMujjNUzsXYRggTozRa?=
- =?us-ascii?Q?AzTOY6gTTY7pU3UtevjznWIjm0GLaAIFtpGXqwaF8l3RmOHedZY1936cnvrY?=
- =?us-ascii?Q?ZaIFsIzDQuKvaBYK+TnJZlzHMA77XrPbYXQoWT8MFFz+TWwqyMcNfcx6ql7j?=
- =?us-ascii?Q?VXRryUnloMt+k+aXdP2eSKbyYe5nJD8ihlq8E2BYZBGPQ0ru72j6oFrmnjMl?=
- =?us-ascii?Q?bisM7STlGB4l6cBA1vOjHUXRkSQDQkIzou6AxPYmyZj6Cs5ArukWbianNCDX?=
- =?us-ascii?Q?ssxvKqM6yN1IyYZpl35QGsaFrEVszi5RbuJIl9GjY39TDaGoe+htMwkOQuKw?=
- =?us-ascii?Q?Hift5PJtNSxxIpC8WG1rlas14oyV+F7j9cRUFKhmhFIfqRcoR9WGQ+tUGfza?=
- =?us-ascii?Q?pe7dhBqj8wkbDPldNaWmi9sItxsqthwOvD3zpYvGsIJPV3Ol3v/UO6qeHroB?=
- =?us-ascii?Q?BEZ3Iclg/MnpUaTvssefeiqSBl9u151iQeyz2w8n/Y4qLoR2gHUGF9T3OU7M?=
- =?us-ascii?Q?TIiN36QUMLtFtyPs0y3QI30rk+aiGvQp6OLVvZQr2r3qB+NpsxwvggYGhGuk?=
- =?us-ascii?Q?PRWF1bXmX5EJBfhQ8mZ/sfIxcHHYrYLUaf05aPKh8JJ8zNhZugkc/OrRWPHC?=
- =?us-ascii?Q?QpabV+gHuCTPYVNQeCD8i4kmlOkR5uCoSkHffLEqRX1KWSPXmFNY38n4IAm9?=
- =?us-ascii?Q?2Z3A/V42UejSXG2GhKJ7bjLiTWsjrDtCyt1DhGtwVjnK45R0vcvi3J733zAM?=
- =?us-ascii?Q?sCB3SS7VnGCfG/12hnh/F/sXLcldod4psDbdEZRdOW+DxUcYp6vh2MIA1kxX?=
- =?us-ascii?Q?J9eR1cZ1v2j9VFdxpO+tRXTyMmZW5+KHnVFfPAAP/4hpoOQow1GcYJAI70Fy?=
- =?us-ascii?Q?1Nwt/Hinn2RZnGrWsmMaC15BbsmhFx4LMQmwFBQYkiMSD5VZ1FITJKd5C8y+?=
- =?us-ascii?Q?c6OjzHDOl8yLSdc2ioTLzpz5OgATceA5FJFYzv6FLYxWAqpb5lZXXg6SwP8z?=
- =?us-ascii?Q?o379hUljo39XtMjGwhB2zgbjE4gGZYeDTcVVUODHuNs6gOGL6NroppkDmvdb?=
- =?us-ascii?Q?S69sID52AGeW6q51g5PvDyQWVJT7fEOw9B8pwrbVBtPD9tqj949pT/OYqfuN?=
- =?us-ascii?Q?G64/QdJ7NsLS7Y+olPzlkio8B9tZpsrai8ObRG/9mF1hbm4ZTWfRAafZzSP0?=
- =?us-ascii?Q?rHUgXzcFL6JdZW4YZJyGyzopIKz/uAld?=
-X-Forefront-Antispam-Report:
-	CIP:216.228.117.161;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc6edge2.nvidia.com;CAT:NONE;SFS:(13230040)(376014)(36860700013)(82310400026)(1800799024);DIR:OUT;SFP:1101;
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 01 Aug 2024 03:34:53.5732
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: BN9PR11MB5276.namprd11.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: e7d36952-6be0-4268-dd9a-08dcb1fdf2d6
+X-MS-Exchange-CrossTenant-originalarrivaltime: 01 Aug 2024 07:45:43.8654
  (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 2c4a8e52-7064-4897-8f24-08dcb1dae834
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.117.161];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource:
-	CO1PEPF000044F3.namprd05.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: CH3PR12MB9219
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 46c98d88-e344-4ed4-8496-4ed7712e255d
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: d/ZV1o6E7ZSkdupYQcnUnerX1QJ87JUvDtuiix9FLuWqKUH9dMiLkq5jIZwkAAWyK9If0n1N6N5l7hSv4KLDAw==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: CH0PR11MB5267
+X-OriginatorOrg: intel.com
 
-The current __arm_lpae_unmap() function calls dma_sync() on individual
-PTEs after clearing them. Overall unmap performance can be improved by
-around 25% for large buffer sizes by combining the syncs for adjacent
-leaf entries.
-Optimize the unmap time by clearing all the leaf entries and issuing a
-single dma_sync() for them.
-Below is detailed analysis of average unmap latency(in us) with and
-without this optimization obtained by running dma_map_benchmark for
-different buffer sizes.
+> From: Alex Williamson <alex.williamson@redhat.com>
+> Sent: Thursday, August 1, 2024 1:05 AM
+>=20
+> On Wed, 31 Jul 2024 05:15:25 +0000
+> "Tian, Kevin" <kevin.tian@intel.com> wrote:
+>=20
+> > > From: Alex Williamson <alex.williamson@redhat.com>
+> > > Sent: Wednesday, July 31, 2024 1:35 AM
+> > >
+> > >  - Seamless live migration of devices requires that configuration spa=
+ce
+> > >    remains at least consistent, if not identical for much of it.
+> >
+> > I didn't quite get it. I thought being consistent means fully identical
+> > config space from guest p.o.v.
+>=20
+> See for example:
+>=20
+> https://gitlab.com/qemu-project/qemu/-
+> /commit/187716feeba406b5a3879db66a7bafd687472a1f
 
-		UnMap Latency(us)
-Size	Without		With		% gain with
-	optimiztion	optimization	optimization
+Thanks!
 
-4KB	3		3		0
-8KB	4		3.8		5
-16KB	6.1		5.4		11.48
-32KB	10.2		8.5		16.67
-64KB	18.5		14.9		19.46
-128KB	35		27.5		21.43
-256KB	67.5		52.2		22.67
-512KB	127.9		97.2		24.00
-1MB	248.6		187.4		24.62
-2MB	65.5		65.5		0
-4MB	119.2		119		0.17
+>=20
+> The layout of config space and most of the contents therein need to be
+> identical, but there are arguably elements that could be volatile which
+> only need to be consistent.
 
-Signed-off-by: Ashish Mhetre <amhetre@nvidia.com>
----
-Changes in V2:
-- Updated the commit message to be imperative.
-- Fixed ptep at incorrect index getting cleared for non-leaf entries.
----
- drivers/iommu/io-pgtable-arm.c | 34 +++++++++++++++++++++-------------
- 1 file changed, 21 insertions(+), 13 deletions(-)
+hmm IMHO it's more that the guest doesn't care volatile content in that
+field instead of the guest view being strictly consistent. Probably I
+don't really understand the meaning of consistency in this context...
 
-diff --git a/drivers/iommu/io-pgtable-arm.c b/drivers/iommu/io-pgtable-arm.c
-index f5d9fd1f45bf..32401948b980 100644
---- a/drivers/iommu/io-pgtable-arm.c
-+++ b/drivers/iommu/io-pgtable-arm.c
-@@ -274,13 +274,15 @@ static void __arm_lpae_sync_pte(arm_lpae_iopte *ptep, int num_entries,
- 				   sizeof(*ptep) * num_entries, DMA_TO_DEVICE);
- }
- 
--static void __arm_lpae_clear_pte(arm_lpae_iopte *ptep, struct io_pgtable_cfg *cfg)
-+static void __arm_lpae_clear_pte(arm_lpae_iopte *ptep, struct io_pgtable_cfg *cfg, int num_entries)
- {
-+	int i;
- 
--	*ptep = 0;
-+	for (i = 0; i < num_entries; i++)
-+		ptep[i] = 0;
- 
- 	if (!cfg->coherent_walk)
--		__arm_lpae_sync_pte(ptep, 1, cfg);
-+		__arm_lpae_sync_pte(ptep, num_entries, cfg);
- }
- 
- static size_t __arm_lpae_unmap(struct arm_lpae_io_pgtable *data,
-@@ -635,9 +637,10 @@ static size_t __arm_lpae_unmap(struct arm_lpae_io_pgtable *data,
- 			       unsigned long iova, size_t size, size_t pgcount,
- 			       int lvl, arm_lpae_iopte *ptep)
- {
-+	bool gather_queued;
- 	arm_lpae_iopte pte;
- 	struct io_pgtable *iop = &data->iop;
--	int i = 0, num_entries, max_entries, unmap_idx_start;
-+	int i = 0, j = 0, num_entries, max_entries, unmap_idx_start;
- 
- 	/* Something went horribly wrong and we ran out of page table */
- 	if (WARN_ON(lvl == ARM_LPAE_MAX_LEVELS))
-@@ -652,28 +655,33 @@ static size_t __arm_lpae_unmap(struct arm_lpae_io_pgtable *data,
- 	/* If the size matches this level, we're in the right place */
- 	if (size == ARM_LPAE_BLOCK_SIZE(lvl, data)) {
- 		max_entries = ARM_LPAE_PTES_PER_TABLE(data) - unmap_idx_start;
-+		gather_queued = iommu_iotlb_gather_queued(gather);
- 		num_entries = min_t(int, pgcount, max_entries);
- 
--		while (i < num_entries) {
--			pte = READ_ONCE(*ptep);
-+		/* Find and handle non-leaf entries */
-+		for (i = 0; i < num_entries; i++) {
-+			pte = READ_ONCE(ptep[i]);
- 			if (WARN_ON(!pte))
- 				break;
- 
--			__arm_lpae_clear_pte(ptep, &iop->cfg);
--
- 			if (!iopte_leaf(pte, lvl, iop->fmt)) {
-+				__arm_lpae_clear_pte(&ptep[i], &iop->cfg, 1);
-+
- 				/* Also flush any partial walks */
- 				io_pgtable_tlb_flush_walk(iop, iova + i * size, size,
- 							  ARM_LPAE_GRANULE(data));
- 				__arm_lpae_free_pgtable(data, lvl + 1, iopte_deref(pte, data));
--			} else if (!iommu_iotlb_gather_queued(gather)) {
--				io_pgtable_tlb_add_page(iop, gather, iova + i * size, size);
- 			}
--
--			ptep++;
--			i++;
- 		}
- 
-+		/* Clear the remaining entries */
-+		if (i)
-+			__arm_lpae_clear_pte(ptep, &iop->cfg, i);
-+
-+		if (!gather_queued)
-+			for (j = 0; j < i; j++)
-+				io_pgtable_tlb_add_page(iop, gather, iova + j * size, size);
-+
- 		return i * size;
- 	} else if (iopte_leaf(pte, lvl, iop->fmt)) {
- 		/*
--- 
-2.25.1
+btw that fix claims:
 
+  "
+  Here consistency could mean that VSC format should be same on
+  source and destination, however actual Vendor Specific Info may
+  not be byte-to-byte identical.
+  "
+
+Does it apply to all devices supporting VSC? It's OK for NVDIA vGPU
+but I'm not sure whether some vendor driver might be sensitive to
+byte-to-byte consistency in VSC.
+
+> > >
+> > >  - We've discussed in the community and seem to have a consensus that=
+ a
+> > >    DVSEC (Designated Vendor Specific Extended Capability) could be
+> > >    defined to describe unused configuration space.  Such a DVSEC coul=
+d
+> > >    be implemented natively by the device or supplied by a vfio-pci
+> > >    variant driver.  There is currently no definition of such a DVSEC.
+> >
+> > I'm not sure whether DVSEC is still that necessary if the direction is
+> > to go userspace-defined layout. In a synthetic world the unused
+> > physical space doesn't really matter.
+> >
+> > So this consensus IMHO was better placed under the umbrella of
+> > the other direction having the kernel define the layout.
+>=20
+> I agree that we don't seem to be headed in a direction that requires
+> this, but I just wanted to include that there was a roughly agreed upon
+> way for devices and variant drivers to annotate unused config space
+> ranges for higher levels.  If we head in a direction where the VMM
+> chooses an offset for the PASID capability, we need to keep track of
+> whether this DVSEC comes to fruition and how that affects the offset
+> that QEMU might choose.
+
+Yes. We can keep this option in case there is a demand, especially
+if the file-based synthesized scheme won't be built in one day and
+we need a default policy in VMM.
+
+>=20
+> > > So what are we trying to accomplish here.  PASID is the first
+> > > non-device specific virtual capability that we'd like to insert into
+> > > the VM view of the capability chain.  It won't be the last.
+> > >
+> > >  - Do we push the policy of defining the capability offset to the use=
+r?
+> >
+> > Looks yes as I didn't see a strong argument for the opposite way.
+>=20
+> It's a policy choice though, so where and how is it implemented?  It
+> works fine for those of us willing to edit xml or launch VMs by command
+> line, but libvirt isn't going to sign up to insert a policy choice for
+> a device.  If we get to even higher level tools, does anything that
+> wants to implement PASID support required a vendor operator driver to
+> make such policy choices (btw, I'm just throwing out the "operator"
+> term as if I know what it means, I don't).
+
+I had a rough feeling that there might be other usages requiring such
+vendor plugin, e.g. provisioning VF/ADI may require vendor specific
+configurations, but not really an expert in this area.
+
+Overall I feel most of our discussions so far are about VMM-auto-
+find-offset vs. file-based-policy-scheme which both belong to
+user-defined policy, suggesting that we all agreed to drop the other
+way having kernel define the offset (plus in-kernel quirks, etc.)?
+
+Even the said DVSEC is to assist such user-defined direction.
+
+>=20
+> > >  - Do we do some hand waving that devices supporting PASID shouldn't
+> > >    have hidden registers and therefore the VMM can simply find a gap?
+> >
+> > I assume 'handwaving' doesn't mean any measure in code to actually
+> > block those devices (as doing so likely requires certain denylist based=
+ on
+> > device/vendor ID but then why not going a step further to also hard
+> > code an offset?). It's more a try-and-fail model where vPASID is opted
+> > in via a cmdline parameter then a device with hidden registers may
+> > misbehave if the VMM happens to find a conflict gap. And the impact
+> > is restricted only to a new setup where the user is interested in
+> > PASID  to opt hence can afford diagnostics effort to figure out the
+> restriction.
+>=20
+> If you want to hard code an offset then we're effectively introducing a
+> device specific quirk to enable PASID support.  I thought we wanted
+> this to work generically for any device exposing PASID, therefore I was
+> thinking more of "find a gap" as the default strategy with quirks used
+> to augment the resulting offset where necessary.
+>=20
+> I'd also be careful about command line parameters.  I think we require
+> one for the vIOMMU to enable PASID support, but I'd prefer to avoid one
+> on the vfio-pci device, instead simply enabling support when both the
+> vIOMMU support is enabled and the device is detected to support it.
+> Each command line option requires support in the upper level tools to
+> enable it.
+
+Make sense. btw will there be a requirement that the user wants to
+disable PASID even if the device supports it, e.g. for testing purpose
+or to workaround a HW errata disclosed after host driver claims the
+support in an old kernel?
+
+> > >
+> > > I understand the desire to make some progress, but QEMU relies on
+> > > integration with management tools, so a temporary option for a user t=
+o
+> > > specify a PASID offset in isolation sounds like a non-starter to me.
+> > >
+> > > This might be a better sell if the user interface allowed fully
+> > > defining the capability chain layout from the command line and this
+> > > interface would continue to exist and supersede how the VMM might
+> > > otherwise define the capability chain when used.  A fully user define=
+d
+> > > layout would be complicated though, so I think there would still be a
+> > > desire for QEMU to consume or define a consistent policy itself.
+> > >
+> > > Even if QEMU defines the layout for a device, there may be multiple
+> > > versions of that device.  For example, maybe we just add PASID now, b=
+ut
+> > > at some point we decide that we do want to replicate the PF serial
+> > > number capability.  At that point we have versions of the device whic=
+h
+> > > would need to be tied to versions of the machine and maybe also
+> > > selected via a profile switch on the device command line.
+> > >
+> > > If we want to simplify this, maybe we do just look at whether the
+> > > vIOMMU is configured for PASID support and if the device supports it,
+> >
+> > and this is related to the open which I raised in last mail - whether w=
+e
+> > want to report the PASID support both in iommufd and vfio-pci uAPI.
+> >
+> > My impression is yes as there may be requirement of exposing a virtual
+> > capability which doesn't rely on the IOMMU.
+>=20
+> What's the purpose of reporting PASID via both iommufd and vfio-pci?  I
+> agree that there will be capabilities related to the iommufd and
+> capabilities only related to the device, but I disagree that that
+> provides justification to report PASID via both uAPIs.  Are we also
+> going to ask iommufd to report that a device has an optional serial
+> number capability?  It clearly doesn't make sense for iommufd to be
+
+Certainly no. My point was that vfio-pci/iommufd each reports its
+own capability set. They may overlap but this fact just matches the
+physical world.
+
+> involved with that, so why does it make sense for vfio-pci to be
+> involved in reporting something that is more iommufd specific?
+
+It doesn't matter which one involves more. It's more akin to the
+physical world.
+
+btw vfio-pci already reports ATS/PRI which both rely on iommufd
+in vconfig space. Throwing PASID alone to iommufd uAPI lacks of a
+good justification for why it's special.
+
+I envision an extension to vfio device feature or a new vfio uAPI
+for reporting virtual capabilities as augment to the ones filled in
+vconfig space.=20
+
+>=20
+> > > then we just look for a gap and add the capability.  If we end up wit=
+h
+> > > different results between source and target for migration, then
+> > > migration will fail.  Possibly we end up with a quirk table to overri=
+de
+> > > the default placement of specific capabilities on specific devices.
+> >
+> > emm how does a quirk table work with devices having volatile config
+> > space layout cross FW versions? Can VMM assigned with a VF be able
+> > to check the FW version of the PF?
+>=20
+> If the VMM can't find the same gap between source and destination then
+> a quirk could make sure that the PASID offset is consistent.  But also
+> if the VMM doesn't find the same gap then that suggests the config
+> space is already different and not only the offset of the PASID
+> capability will need to be fixed via a quirk, so then we're into
+> quirking the entire capability space for the device.
+
+yes. So the quirk table is more for fixing the functional gap (i.e. not
+overlap with a hidden register) instead of for migration. As long as
+a device can function correctly with it, the virtual caps fall into the
+same restriction as physical caps in migration i.e. upon inconsistent
+layout between src/dest we'll need separate way to synthesize the
+entire space.
+
+>=20
+> The VMM should not be assumed to have any additional privileges beyond
+> what we provide it through the vfio device and iommufd interface.
+> Testing anything about the PF would require access on the host that
+> won't work in more secure environments.  Therefore if we can't
+> consistently place the PASID for a device, we probably need to quirk it
+> based on the vendor/device IDs or sub-IDs or we need to rely on a
+> management implied policy such as a device profile option on the QEMU
+> command line or maybe different classes of the vfio-pci driver in QEMU.
+>=20
+> > > That might evolve into a lookup for where we place all capabilities,
+> > > which essentially turns into the "file" where the VMM defines the ent=
+ire
+> > > layout for some devices.
+> >
+> > Overall this sounds a feasible path to move forward - starting with
+> > the VMM to find the gap automatically if a new PASID option is
+> > opted in. Devices with hidden registers may fail. Devices with volatile
+> > config space due to FW upgrade or cross vendors may fail to migrate.
+> > Then evolving it to the file-based scheme, and there is time to discuss
+> > any intermediate improvement (fixed quirks, cmdline offset, etc.) in
+> > between.
+>=20
+> As above, let's be careful about introducing unnecessary command line
+> options, especially if we expect support for them in higher level
+> tools.  If we place the PASID somewhere that makes the device not work,
+> then disabling PASID on the vIOMMU should resolve that.  It won't be a
+
+vIOMMU is per-platform then it applies to all devices behind, including
+those which don't have a problem with auto-selected offset. Not sure
+whether one would want to continue enabling PASID for other devices
+or should stop immediately to find a quirk for the problematic one and
+then resume.
+
+> regression, it will only be an incompatibility with a new feature.
+> That incompatibility may require a quirk to resolve to have the PASID
+> placed somewhere else.  If the PASID is placed at different offsets
+> based on device firmware or vendor then the location of the PASID alone
+> isn't the only thing preventing migration and we'll need to introduce
+> code for the VMM to take ownership of the capability layout at that
+> point.  Thanks,
+>=20
+
+Yes, the migration issue might be solved in a separate track as it applies
+to both physical and virtual capabilities.
