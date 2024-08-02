@@ -1,374 +1,170 @@
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+Received: from NAM02-SN1-obe.outbound.protection.outlook.com (mail-sn1nam02on2070.outbound.protection.outlook.com [40.107.96.70])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 912E715C153
-	for <iommu@lists.linux.dev>; Fri,  2 Aug 2024 18:25:37 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=170.10.133.124
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1722623139; cv=none; b=gk8mCOOxrA9TaxJSslM4ihjYDCFeqX2hMnQY4edYMrlJxTLvlIFI649EooVwYNtfmXWf917fQr9xPWhUMPehfOpF7d3NEJjQaoKZeZPO/zMsNeYwq7BiMEztMIMH68xkue2V6CeruweM8SJEguItjvSC9Q4Ezwbk/LiUz5fR0OQ=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1722623139; c=relaxed/simple;
-	bh=BEFw9QfyhQAWdGLLxA+IIVlNqm5JGfj1yDpXYxrDxzQ=;
-	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=RU+CWIJ9fbsd+/vLW7Ccd1qwgAyK6bgnShYUQhYZs4padP+bKJ185BFG6VrjSeysdI0aD81/k0Kj/wlWFvJk3L0mLicX459WnfJ93+Hxj2aTuJ6SsrstAN2AV3OiaWjmXsg+dXNL1OAZAZXM6BGClq/Yjj/N1DTb9GW1M/boJdU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=redhat.com; spf=pass smtp.mailfrom=redhat.com; dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b=c79X4MuN; arc=none smtp.client-ip=170.10.133.124
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=redhat.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=redhat.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 316FD1EA8D
+	for <iommu@lists.linux.dev>; Fri,  2 Aug 2024 21:24:15 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.96.70
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1722633857; cv=fail; b=F6IVsqlEhk479Z8tnRstyXHLmefH7xoP0YCE4dHx8syluJjLeCOYAG0zM1rc2DR/v6zGFMg01K14d4p4mWbk4yoi17NbrjBOgZALxNyJm5Q/hwyGLsrgqN2SBXlZmbmPb9MhJw7ptO3a+sApQ6ueYk5bzM8vuXCSjEFinVDVdVo=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1722633857; c=relaxed/simple;
+	bh=F2+zpI359Nn51duoBDfuQS369GkNkqGWoyT7hPThwhI=;
+	h=From:To:CC:Subject:Date:Message-ID:MIME-Version:Content-Type; b=FTmkHDlkgQYA6ItSCxfCgVCouLGd2JUJFLgBp9Vf6GEO4BbMfBjuNJYbaCJfie/Y/FaJ6MJxNuH3eT2/3RYZm4nWv54yydXIoOgLHuW3xc9WPLJnJqQQvBqzbMrqAL0xZ47kPvejG4KczHYzLywuUtkN/E8kFvr0kcqDFua7Q50=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=H6IqNMES; arc=fail smtp.client-ip=40.107.96.70
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="c79X4MuN"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-	s=mimecast20190719; t=1722623136;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references;
-	bh=/s33u1cyS9l5gqjpJrKkR+wJ6Bba5lqX/XxacKFWx9M=;
-	b=c79X4MuNJ7fqiDp35RBlQxwfzCX0mTTcloxcmYopPYXFe0R5jwnidq/sWIBeNW6+HTKjaV
-	DJko1gU+mjePyaoXpD5A6WKtLOfMVDvwvsP/opM1WfNMFFR3wfDgqBNn8qlraIuSzjOhln
-	ceVzU80CtlwVtWNHdpASInbuBzvR8N8=
-Received: from mail-il1-f198.google.com (mail-il1-f198.google.com
- [209.85.166.198]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
- us-mta-668-pk6rlR8hNiiAK8vxgYiYgw-1; Fri, 02 Aug 2024 14:25:33 -0400
-X-MC-Unique: pk6rlR8hNiiAK8vxgYiYgw-1
-Received: by mail-il1-f198.google.com with SMTP id e9e14a558f8ab-39a143db6c4so119678295ab.1
-        for <iommu@lists.linux.dev>; Fri, 02 Aug 2024 11:25:33 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1722623132; x=1723227932;
-        h=content-transfer-encoding:mime-version:organization:references
-         :in-reply-to:message-id:subject:cc:to:from:date:x-gm-message-state
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=/s33u1cyS9l5gqjpJrKkR+wJ6Bba5lqX/XxacKFWx9M=;
-        b=KePqlCRZnQJhrZrghHfvV8hEX59yZe0pZawvQfVV6BfF70DHGDLlr0cRfHcT1vVd31
-         2w+Azbhc8duYAH8C5bjlUNIYJvLTkDZ9F88B4q2YwbcZmUzsS74ybAvm/0AcPwI2RZqy
-         cR2oxXFk5sWlxjeUGsBHxeNjDOXV1K4eajv1KvFwSjS+1Gdcg2tWgS51fIlJHUr/H0Oc
-         vvbHW3qUVC64dZKQfAdovKy4GtVGu+QYh3z7p5/vN2290qYEUfs8VcazpLF69WWBKnEq
-         rlB3A2VOIor7ua417o7i8YxQ1eee2HV2lc5RBRYASC5Fk4bW8IylIcyd8+VQXXEBft+q
-         Wbog==
-X-Forwarded-Encrypted: i=1; AJvYcCXdMo1SXCxCPHyKJEwQ6kgeHPwpaFDQGX/ZYUpzh9HeUqvob416+i08IOBVpdGCJggI4ondWez6Lu6rIQSG0kechiZBWpg=
-X-Gm-Message-State: AOJu0YwkoIBkEPH3Exvg8N4ukB0FnHh97mRZhqocMZoVtJKgKNjzavu3
-	X7KG5jJdTsgL1yoHWIw3K08d9gD2fA+odmMEmtJk3U7kmwHDtqlZqbrsxECwVPedAglP2oSkBPF
-	qiFIYhQqyB9KrOygDZiv76PBtugTtt/Y27PvvOgWo2q92FBodgR7B
-X-Received: by 2002:a92:d451:0:b0:396:c825:4db6 with SMTP id e9e14a558f8ab-39b1fc2ed8fmr50145105ab.26.1722623132530;
-        Fri, 02 Aug 2024 11:25:32 -0700 (PDT)
-X-Google-Smtp-Source: AGHT+IH25oImWddpW5am2xEEU9lYROzp4ymyugBOGoylb9q/oiCsiCRyr2iPzEPnFChpGaHN4lUIGQ==
-X-Received: by 2002:a92:d451:0:b0:396:c825:4db6 with SMTP id e9e14a558f8ab-39b1fc2ed8fmr50144655ab.26.1722623131897;
-        Fri, 02 Aug 2024 11:25:31 -0700 (PDT)
-Received: from redhat.com ([38.15.36.11])
-        by smtp.gmail.com with ESMTPSA id e9e14a558f8ab-39b20aa9da4sm9202045ab.23.2024.08.02.11.25.30
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 02 Aug 2024 11:25:31 -0700 (PDT)
-Date: Fri, 2 Aug 2024 12:25:28 -0600
-From: Alex Williamson <alex.williamson@redhat.com>
-To: "Tian, Kevin" <kevin.tian@intel.com>
-Cc: Jason Gunthorpe <jgg@nvidia.com>, "Liu, Yi L" <yi.l.liu@intel.com>,
- "joro@8bytes.org" <joro@8bytes.org>, "robin.murphy@arm.com"
- <robin.murphy@arm.com>, "eric.auger@redhat.com" <eric.auger@redhat.com>,
- "nicolinc@nvidia.com" <nicolinc@nvidia.com>, "kvm@vger.kernel.org"
- <kvm@vger.kernel.org>, "chao.p.peng@linux.intel.com"
- <chao.p.peng@linux.intel.com>, "iommu@lists.linux.dev"
- <iommu@lists.linux.dev>, "baolu.lu@linux.intel.com"
- <baolu.lu@linux.intel.com>, "Duan, Zhenzhong" <zhenzhong.duan@intel.com>,
- "Pan, Jacob jun" <jacob.jun.pan@intel.com>, =?UTF-8?B?Q8OpZHJpYw==?= Le
- Goater <clg@redhat.com>
-Subject: Re: [PATCH v2 0/4] vfio-pci support pasid attach/detach
-Message-ID: <20240802122528.329814a7.alex.williamson@redhat.com>
-In-Reply-To: <BN9PR11MB5276BEBDDD6720C2FEFD4B718CB22@BN9PR11MB5276.namprd11.prod.outlook.com>
-References: <20240419103550.71b6a616.alex.williamson@redhat.com>
-	<BN9PR11MB52766862E17DF94F848575248C112@BN9PR11MB5276.namprd11.prod.outlook.com>
-	<20240423120139.GD194812@nvidia.com>
-	<BN9PR11MB5276B3F627368E869ED828558C112@BN9PR11MB5276.namprd11.prod.outlook.com>
-	<20240424001221.GF941030@nvidia.com>
-	<20240424122437.24113510.alex.williamson@redhat.com>
-	<20240424183626.GT941030@nvidia.com>
-	<20240424141349.376bdbf9.alex.williamson@redhat.com>
-	<20240426141117.GY941030@nvidia.com>
-	<20240426141354.1f003b5f.alex.williamson@redhat.com>
-	<20240429174442.GJ941030@nvidia.com>
-	<BN9PR11MB5276C4EF3CFB6075C7FC60AC8CAA2@BN9PR11MB5276.namprd11.prod.outlook.com>
-	<20240730113517.27b06160.alex.williamson@redhat.com>
-	<BN9PR11MB5276D184783C687B0B1B6FE68CB12@BN9PR11MB5276.namprd11.prod.outlook.com>
-	<20240731110436.7a569ce0.alex.williamson@redhat.com>
-	<BN9PR11MB5276BEBDDD6720C2FEFD4B718CB22@BN9PR11MB5276.namprd11.prod.outlook.com>
-Organization: Red Hat
+	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="H6IqNMES"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=NXXBh9hjDFAO4mZNdXaaZzGa/mGGA9tfHiMUyTAYnoHTakaq63DaVbiNZ9EU5p9+mFcoL/hEcGqoODUtbyUaDA0hqK1hSXMsnPbNwfjnYy9Nzjzi1GljPH5KndenmRBR/hITLLKqom0A/IIlVDJ+ROLe1gxGhymgOrQWEq+8HAEmakyP923oVQ4XjmsA2XOnLMKhWvXGvuzpXpPqY4hcOmZ+VXCexvsDMFwB366WL3EAHzk9f4naqekbH+KbHuB0hOLpfBu4xGsuRGqg/LhBCkB0pb39qk7cjgVcRrsy/PZVHUrpviUdm2+MxaceHFLayoXc6jppE5tdD8KR0RczhQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=kMaiPw17zw2a+L6QZ1aihZannvNM+ViH6sZ/89cuKDk=;
+ b=fU2fQB5fPogYK+rKMrLuUYLuh2rz1aTfkEgv2zoryZTAzaqmSHqo0Zn1Mjy4EasfQy5TFDR/Ebm3IbogTQ11Swow83dTrTOddQPe55d818V23SBT1rTiOx/0XoGNXEa4AstRQddG9Eb3VxAOEgj62Jqw2+p1cplRp+bVVCHBIbMrr1J8en5NCwBdz0v+jB06diLr3rTZG5dM7WxjGduYNrl5QVUxugT4Ygv2+ISju8YQ/yni/khuBlZYwrAWe36O6Zt8Aj469kLMuxm4tXj4bvFddTUtCs0eO+1EHjEkh6ZozAyfoJcHv6qqRwPJjeKETzTc+/7mXwxnP2bRJ212ZA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 216.228.117.161) smtp.rcpttodomain=intel.com smtp.mailfrom=nvidia.com;
+ dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
+ dkim=none (message not signed); arc=none (0)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=kMaiPw17zw2a+L6QZ1aihZannvNM+ViH6sZ/89cuKDk=;
+ b=H6IqNMESb7zanyKio1LragkzC9QC6ivV7+Wzv4dLEyoYZ1a6z0e5ogN730tV8AkTRZw7WCT0ixWewkHcYXmsKTke0Um6TT6IPHU0Ca46CUsyBfbFt+iL5TX8B23dVieAcxaZCnzfiyLzZ2XqGQVcxu4wNvxf9BGQYjXs2TbUgdtZC/l5IIiiAn99RjaO8ouKdioPXr95BqPHpoBy2rdasyOJODkS5vN0JmnG1GXHpAlnkDoTHjb9QviXpfUlTxLXmfQvC+zTG/7H3StPG9SPkQz/kuJSmQ0dHPjzz8B4Mr4Id4sTJvrDRhLm0BgYFlWCTmll4iU/FI1dWlM7knHEtw==
+Received: from BN9PR03CA0031.namprd03.prod.outlook.com (2603:10b6:408:fb::6)
+ by SN7PR12MB6930.namprd12.prod.outlook.com (2603:10b6:806:262::5) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7807.28; Fri, 2 Aug
+ 2024 21:24:12 +0000
+Received: from BN2PEPF000044A8.namprd04.prod.outlook.com
+ (2603:10b6:408:fb:cafe::8b) by BN9PR03CA0031.outlook.office365.com
+ (2603:10b6:408:fb::6) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7828.21 via Frontend
+ Transport; Fri, 2 Aug 2024 21:24:11 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.117.161)
+ smtp.mailfrom=nvidia.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=nvidia.com;
+Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
+ 216.228.117.161 as permitted sender) receiver=protection.outlook.com;
+ client-ip=216.228.117.161; helo=mail.nvidia.com; pr=C
+Received: from mail.nvidia.com (216.228.117.161) by
+ BN2PEPF000044A8.mail.protection.outlook.com (10.167.243.102) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.7828.19 via Frontend Transport; Fri, 2 Aug 2024 21:24:11 +0000
+Received: from rnnvmail203.nvidia.com (10.129.68.9) by mail.nvidia.com
+ (10.129.200.67) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1544.4; Fri, 2 Aug 2024
+ 14:24:01 -0700
+Received: from rnnvmail205.nvidia.com (10.129.68.10) by rnnvmail203.nvidia.com
+ (10.129.68.9) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1544.4; Fri, 2 Aug 2024
+ 14:24:01 -0700
+Received: from Asurada-Nvidia.nvidia.com (10.127.8.9) by mail.nvidia.com
+ (10.129.68.10) with Microsoft SMTP Server id 15.2.1544.4 via Frontend
+ Transport; Fri, 2 Aug 2024 14:24:00 -0700
+From: Nicolin Chen <nicolinc@nvidia.com>
+To: <jgg@nvidia.com>, <kevin.tian@intel.com>
+CC: <robin.murphy@arm.com>, <joro@8bytes.org>, <will@kernel.org>,
+	<shuah@kernel.org>, <iommu@lists.linux.dev>, <linux-kernel@vger.kernel.org>,
+	<linux-kselftest@vger.kernel.org>
+Subject: [PATCH 0/3] iommufd: Add selftest coverage for reserved IOVAs
+Date: Fri, 2 Aug 2024 14:23:45 -0700
+Message-ID: <cover.1722633199.git.nicolinc@nvidia.com>
+X-Mailer: git-send-email 2.43.0
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: redhat.com
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-NV-OnPremToCloud: ExternallySecured
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: BN2PEPF000044A8:EE_|SN7PR12MB6930:EE_
+X-MS-Office365-Filtering-Correlation-Id: 900f24a0-1364-44db-1805-08dcb33973d8
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam:
+	BCL:0;ARA:13230040|36860700013|1800799024|376014|82310400026;
+X-Microsoft-Antispam-Message-Info:
+	=?us-ascii?Q?v+G70+FB26eKxko2J6rfE1pp/iIkqLHNyuxa1o8Zow8sQk8TCr0aCIaBU0RZ?=
+ =?us-ascii?Q?PHFTORKoRSbvbewGnnX6Tl0CVQemOIOKRiFblEEJR2oi6EZTGsCUp8sGuma0?=
+ =?us-ascii?Q?cIIqdde2ozxDCphCVWlY0B4pwOeqtMOABJblokEvnN0BqKVIAxd6hUi6fZl8?=
+ =?us-ascii?Q?v9zqvBgXTclDjyHgS+06UjUkqF7RPvs65hsHl8UhXX5ySoKL6SA96dkUL5pJ?=
+ =?us-ascii?Q?1MkKw60uD8EFE8kw8gEe6eGXULVF7CZ/epSIhn4iI7EOF+pET6t9P44HLPFT?=
+ =?us-ascii?Q?xDsE9Ys0uX3bFj11Efo9sb6HhSbj+b+FCiXLUufPa87mvjb040IuhruQEHun?=
+ =?us-ascii?Q?7F6giCt87vd6WpYzGDAxP+alPdf+ouVchu3Ppdhj4GuNIFKqLhzyeKdpDmNI?=
+ =?us-ascii?Q?iEqtUrbCD9SQfCebLYh1RWS9Slh7Z/MQ3MQThwamR4jhHbvlNwjBaV046ZaW?=
+ =?us-ascii?Q?gO48qPtt+iiH+vIGfYP64JYJ1FiIsOi4NgwaSy/8MK5RniIsE1bxjbL8wFLm?=
+ =?us-ascii?Q?mVQ+kof5lXlNlaqXexgRrW+PLs1vFjiObxq42JAWVfmHaLyBeiOepgbhi/46?=
+ =?us-ascii?Q?aYPH+PEw9tvx0kpOxFK2rjPmIt2aCgsQJSB4QSvvYqaTj7DBo3IJBVpRuWfL?=
+ =?us-ascii?Q?05k1GJKxhMZPWTnj9ahW7KdmjCWxvEhwpUfdIQ2oW0Ox0nnKR93qNdcPxF9+?=
+ =?us-ascii?Q?JkwjHxL29qSLHG6r/ZiWOLphpEu8vrldkioAqfc8ooDAY8aIfHICtwkgoOYy?=
+ =?us-ascii?Q?aS5h4JJInlDW5BnvBaxe1gafjz7EqNCFekmTOfb3uuRfhgLY+ZHR+NSvFr7S?=
+ =?us-ascii?Q?AKwPiQUTD/gK45IRrYcBCTPX3yIBVNCxyucuqKRqSNXt/pLGy+MLvgoe51o2?=
+ =?us-ascii?Q?T7y5Zd9/pVojUsMVuLe/J3eV+Yt17I/x+vLvD5e3PPEi1yhhRY9soQe3sbh1?=
+ =?us-ascii?Q?eXP3HOyvwk/G0DBa695ljm1u3x8JQ9OPkB0B9uLU/yT8nTlw3QDbn/DZ6uuu?=
+ =?us-ascii?Q?s++RbXQw2VUAAdI0cTPwu2/JOyGlxxRPT/q/kEJo39sbAP2y0W13IQGru43s?=
+ =?us-ascii?Q?OxALVrceslKkg9ALOrZ/bCEotSkGNrmjYRR2MyQHGZSTKp7O5QQ8qU45fsmn?=
+ =?us-ascii?Q?JLCe2zraeewswR6u6zDK/b/6DoyUVfd4ZVdRDnH58Ec9TQUnkwdVoItYQH1r?=
+ =?us-ascii?Q?gbSVqJ+YgXoUSXpJGU243PKrHEvm00bgde5b4c5Jgg1zwskJGfElkITOLj4P?=
+ =?us-ascii?Q?sos131h5gjZohjqOQwBcSB2SjPm/BygKrPsGw7jS3vdBTtI1uRSp+SQ3hBot?=
+ =?us-ascii?Q?V80Xeku1OtZzPqWsZKJznKod725g4zn+QYe+wbv5eUc8eC3RbCPzWAaExXf5?=
+ =?us-ascii?Q?H1Hax6haOhYyvB5zcB9QQ9lEna4wrAG/ofIT0B2yrMbyvjww+Wsu+fm9/HG6?=
+ =?us-ascii?Q?vK2yPKOKZsh9ovHzMvcWu7TnZRpNUDu/?=
+X-Forefront-Antispam-Report:
+	CIP:216.228.117.161;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc6edge2.nvidia.com;CAT:NONE;SFS:(13230040)(36860700013)(1800799024)(376014)(82310400026);DIR:OUT;SFP:1101;
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 02 Aug 2024 21:24:11.6411
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: 900f24a0-1364-44db-1805-08dcb33973d8
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.117.161];Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-AuthSource:
+	BN2PEPF000044A8.namprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SN7PR12MB6930
 
-On Thu, 1 Aug 2024 07:45:43 +0000
-"Tian, Kevin" <kevin.tian@intel.com> wrote:
+This adds a small series to cover the reserved-IOVA change:
+https://lore.kernel.org/all/20240802053458.2754673-1-nicolinc@nvidia.com/
 
-> > From: Alex Williamson <alex.williamson@redhat.com>
-> > Sent: Thursday, August 1, 2024 1:05 AM
-> > 
-> > On Wed, 31 Jul 2024 05:15:25 +0000
-> > "Tian, Kevin" <kevin.tian@intel.com> wrote:
-> >   
-> > > > From: Alex Williamson <alex.williamson@redhat.com>
-> > > > Sent: Wednesday, July 31, 2024 1:35 AM
-> > > >
-> > > >  - Seamless live migration of devices requires that configuration space
-> > > >    remains at least consistent, if not identical for much of it.  
-> > >
-> > > I didn't quite get it. I thought being consistent means fully identical
-> > > config space from guest p.o.v.  
-> > 
-> > See for example:
-> > 
-> > https://gitlab.com/qemu-project/qemu/-
-> > /commit/187716feeba406b5a3879db66a7bafd687472a1f  
-> 
-> Thanks!
-> 
-> > 
-> > The layout of config space and most of the contents therein need to be
-> > identical, but there are arguably elements that could be volatile which
-> > only need to be consistent.  
-> 
-> hmm IMHO it's more that the guest doesn't care volatile content in that
-> field instead of the guest view being strictly consistent. Probably I
-> don't really understand the meaning of consistency in this context...
-> 
-> btw that fix claims:
-> 
->   "
->   Here consistency could mean that VSC format should be same on
->   source and destination, however actual Vendor Specific Info may
->   not be byte-to-byte identical.
->   "
-> 
-> Does it apply to all devices supporting VSC? It's OK for NVDIA vGPU
-> but I'm not sure whether some vendor driver might be sensitive to
-> byte-to-byte consistency in VSC.
+PATCH-1 is an optional cleanup. PATCH-2 is an essential infrastructure
+for PATCH-3 to verify the loopback for IOMMU_RESV_SW_MSI.
 
-It applies to all VSC capabilities.  The argument is that there is no
-standard definition of the content here therefore QEMU has no authority
-to impose a policy on the contents.
- 
-> > > >
-> > > >  - We've discussed in the community and seem to have a consensus that a
-> > > >    DVSEC (Designated Vendor Specific Extended Capability) could be
-> > > >    defined to describe unused configuration space.  Such a DVSEC could
-> > > >    be implemented natively by the device or supplied by a vfio-pci
-> > > >    variant driver.  There is currently no definition of such a DVSEC.  
-> > >
-> > > I'm not sure whether DVSEC is still that necessary if the direction is
-> > > to go userspace-defined layout. In a synthetic world the unused
-> > > physical space doesn't really matter.
-> > >
-> > > So this consensus IMHO was better placed under the umbrella of
-> > > the other direction having the kernel define the layout.  
-> > 
-> > I agree that we don't seem to be headed in a direction that requires
-> > this, but I just wanted to include that there was a roughly agreed upon
-> > way for devices and variant drivers to annotate unused config space
-> > ranges for higher levels.  If we head in a direction where the VMM
-> > chooses an offset for the PASID capability, we need to keep track of
-> > whether this DVSEC comes to fruition and how that affects the offset
-> > that QEMU might choose.  
-> 
-> Yes. We can keep this option in case there is a demand, especially
-> if the file-based synthesized scheme won't be built in one day and
-> we need a default policy in VMM.
-> 
-> >   
-> > > > So what are we trying to accomplish here.  PASID is the first
-> > > > non-device specific virtual capability that we'd like to insert into
-> > > > the VM view of the capability chain.  It won't be the last.
-> > > >
-> > > >  - Do we push the policy of defining the capability offset to the user?  
-> > >
-> > > Looks yes as I didn't see a strong argument for the opposite way.  
-> > 
-> > It's a policy choice though, so where and how is it implemented?  It
-> > works fine for those of us willing to edit xml or launch VMs by command
-> > line, but libvirt isn't going to sign up to insert a policy choice for
-> > a device.  If we get to even higher level tools, does anything that
-> > wants to implement PASID support required a vendor operator driver to
-> > make such policy choices (btw, I'm just throwing out the "operator"
-> > term as if I know what it means, I don't).  
-> 
-> I had a rough feeling that there might be other usages requiring such
-> vendor plugin, e.g. provisioning VF/ADI may require vendor specific
-> configurations, but not really an expert in this area.
-> 
-> Overall I feel most of our discussions so far are about VMM-auto-
-> find-offset vs. file-based-policy-scheme which both belong to
-> user-defined policy, suggesting that we all agreed to drop the other
-> way having kernel define the offset (plus in-kernel quirks, etc.)?
-> 
-> Even the said DVSEC is to assist such user-defined direction.
+You can find this series applied on the other two earlier patches here:
+https://github.com/nicolinc/iommufd/commits/iommufd_selftest_sw_msi/
 
-To me a "user defined policy" is placing an option on the command line
-and requiring the user, or some higher level authority representing the
-user, to provide the policy.  If it's done by the VMM then we're saying
-QEMU owns the policy but it might be overridden by the user via a
-command line argument or modifying the policy file consumed by QEMU.
- 
-> > > >  - Do we do some hand waving that devices supporting PASID shouldn't
-> > > >    have hidden registers and therefore the VMM can simply find a gap?  
-> > >
-> > > I assume 'handwaving' doesn't mean any measure in code to actually
-> > > block those devices (as doing so likely requires certain denylist based on
-> > > device/vendor ID but then why not going a step further to also hard
-> > > code an offset?). It's more a try-and-fail model where vPASID is opted
-> > > in via a cmdline parameter then a device with hidden registers may
-> > > misbehave if the VMM happens to find a conflict gap. And the impact
-> > > is restricted only to a new setup where the user is interested in
-> > > PASID  to opt hence can afford diagnostics effort to figure out the  
-> > restriction.
-> > 
-> > If you want to hard code an offset then we're effectively introducing a
-> > device specific quirk to enable PASID support.  I thought we wanted
-> > this to work generically for any device exposing PASID, therefore I was
-> > thinking more of "find a gap" as the default strategy with quirks used
-> > to augment the resulting offset where necessary.
-> > 
-> > I'd also be careful about command line parameters.  I think we require
-> > one for the vIOMMU to enable PASID support, but I'd prefer to avoid one
-> > on the vfio-pci device, instead simply enabling support when both the
-> > vIOMMU support is enabled and the device is detected to support it.
-> > Each command line option requires support in the upper level tools to
-> > enable it.  
-> 
-> Make sense. btw will there be a requirement that the user wants to
-> disable PASID even if the device supports it, e.g. for testing purpose
-> or to workaround a HW errata disclosed after host driver claims the
-> support in an old kernel?
+Thanks
+Nicolin
 
-We can make use of "experimental options", ie. "x-" prefixed options,
-in QEMU for this.  These are useful for debugging but will not be
-considered for support by higher level tools nor do we consider them to
-have a stable ABI.
+Nicolin Chen (2):
+  iommufd: Reorder include files
+  iommufd/selftest: Add coverage for reserved IOVAs
 
-> > > > I understand the desire to make some progress, but QEMU relies on
-> > > > integration with management tools, so a temporary option for a user to
-> > > > specify a PASID offset in isolation sounds like a non-starter to me.
-> > > >
-> > > > This might be a better sell if the user interface allowed fully
-> > > > defining the capability chain layout from the command line and this
-> > > > interface would continue to exist and supersede how the VMM might
-> > > > otherwise define the capability chain when used.  A fully user defined
-> > > > layout would be complicated though, so I think there would still be a
-> > > > desire for QEMU to consume or define a consistent policy itself.
-> > > >
-> > > > Even if QEMU defines the layout for a device, there may be multiple
-> > > > versions of that device.  For example, maybe we just add PASID now, but
-> > > > at some point we decide that we do want to replicate the PF serial
-> > > > number capability.  At that point we have versions of the device which
-> > > > would need to be tied to versions of the machine and maybe also
-> > > > selected via a profile switch on the device command line.
-> > > >
-> > > > If we want to simplify this, maybe we do just look at whether the
-> > > > vIOMMU is configured for PASID support and if the device supports it,  
-> > >
-> > > and this is related to the open which I raised in last mail - whether we
-> > > want to report the PASID support both in iommufd and vfio-pci uAPI.
-> > >
-> > > My impression is yes as there may be requirement of exposing a virtual
-> > > capability which doesn't rely on the IOMMU.  
-> > 
-> > What's the purpose of reporting PASID via both iommufd and vfio-pci?  I
-> > agree that there will be capabilities related to the iommufd and
-> > capabilities only related to the device, but I disagree that that
-> > provides justification to report PASID via both uAPIs.  Are we also
-> > going to ask iommufd to report that a device has an optional serial
-> > number capability?  It clearly doesn't make sense for iommufd to be  
-> 
-> Certainly no. My point was that vfio-pci/iommufd each reports its
-> own capability set. They may overlap but this fact just matches the
-> physical world.
-> 
-> > involved with that, so why does it make sense for vfio-pci to be
-> > involved in reporting something that is more iommufd specific?  
-> 
-> It doesn't matter which one involves more. It's more akin to the
-> physical world.
-> 
-> btw vfio-pci already reports ATS/PRI which both rely on iommufd
-> in vconfig space. Throwing PASID alone to iommufd uAPI lacks of a
-> good justification for why it's special.
-> 
-> I envision an extension to vfio device feature or a new vfio uAPI
-> for reporting virtual capabilities as augment to the ones filled in
-> vconfig space. 
+Robin Murphy (1):
+  iommu/dma: Support MSIs through nested domains
 
-Should ATS and PRI be reported through vfio-pci or should we just turn
-them off to be more like PASID?  Maybe the issue simply hasn't arisen
-yet because we don't have vIOMMU support and with that support QEMU
-might need to filter out those capabilities and look elsewhere.
-Anyway, iommufd and vfio-pci should not duplicate each other here.
+ drivers/iommu/dma-iommu.c                     | 18 +++-
+ drivers/iommu/iommufd/device.c                |  4 +-
+ drivers/iommu/iommufd/fault.c                 |  4 +-
+ drivers/iommu/iommufd/io_pagetable.c          |  8 +-
+ drivers/iommu/iommufd/io_pagetable.h          |  2 +-
+ drivers/iommu/iommufd/ioas.c                  |  2 +-
+ drivers/iommu/iommufd/iommufd_private.h       |  9 +-
+ drivers/iommu/iommufd/iommufd_test.h          |  6 +-
+ drivers/iommu/iommufd/iova_bitmap.c           |  2 +-
+ drivers/iommu/iommufd/main.c                  |  8 +-
+ drivers/iommu/iommufd/pages.c                 | 10 +--
+ drivers/iommu/iommufd/selftest.c              | 86 ++++++++++++++++++-
+ include/linux/iommu.h                         |  4 +
+ include/linux/iommufd.h                       |  4 +-
+ include/uapi/linux/iommufd.h                  |  2 +-
+ tools/testing/selftests/iommu/iommufd_utils.h |  9 ++
+ 16 files changed, 144 insertions(+), 34 deletions(-)
 
-> > > > then we just look for a gap and add the capability.  If we end up with
-> > > > different results between source and target for migration, then
-> > > > migration will fail.  Possibly we end up with a quirk table to override
-> > > > the default placement of specific capabilities on specific devices.  
-> > >
-> > > emm how does a quirk table work with devices having volatile config
-> > > space layout cross FW versions? Can VMM assigned with a VF be able
-> > > to check the FW version of the PF?  
-> > 
-> > If the VMM can't find the same gap between source and destination then
-> > a quirk could make sure that the PASID offset is consistent.  But also
-> > if the VMM doesn't find the same gap then that suggests the config
-> > space is already different and not only the offset of the PASID
-> > capability will need to be fixed via a quirk, so then we're into
-> > quirking the entire capability space for the device.  
-> 
-> yes. So the quirk table is more for fixing the functional gap (i.e. not
-> overlap with a hidden register) instead of for migration. As long as
-> a device can function correctly with it, the virtual caps fall into the
-> same restriction as physical caps in migration i.e. upon inconsistent
-> layout between src/dest we'll need separate way to synthesize the
-> entire space.
-
-Yes.
-
-> > The VMM should not be assumed to have any additional privileges beyond
-> > what we provide it through the vfio device and iommufd interface.
-> > Testing anything about the PF would require access on the host that
-> > won't work in more secure environments.  Therefore if we can't
-> > consistently place the PASID for a device, we probably need to quirk it
-> > based on the vendor/device IDs or sub-IDs or we need to rely on a
-> > management implied policy such as a device profile option on the QEMU
-> > command line or maybe different classes of the vfio-pci driver in QEMU.
-> >   
-> > > > That might evolve into a lookup for where we place all capabilities,
-> > > > which essentially turns into the "file" where the VMM defines the entire
-> > > > layout for some devices.  
-> > >
-> > > Overall this sounds a feasible path to move forward - starting with
-> > > the VMM to find the gap automatically if a new PASID option is
-> > > opted in. Devices with hidden registers may fail. Devices with volatile
-> > > config space due to FW upgrade or cross vendors may fail to migrate.
-> > > Then evolving it to the file-based scheme, and there is time to discuss
-> > > any intermediate improvement (fixed quirks, cmdline offset, etc.) in
-> > > between.  
-> > 
-> > As above, let's be careful about introducing unnecessary command line
-> > options, especially if we expect support for them in higher level
-> > tools.  If we place the PASID somewhere that makes the device not work,
-> > then disabling PASID on the vIOMMU should resolve that.  It won't be a  
-> 
-> vIOMMU is per-platform then it applies to all devices behind, including
-> those which don't have a problem with auto-selected offset. Not sure
-> whether one would want to continue enabling PASID for other devices
-> or should stop immediately to find a quirk for the problematic one and
-> then resume.
-
-I'm not sure if this is a real issue, we're talking about a VM, not a
-server.  If a user wants PASID support and it's incompatible with a
-device, the device can be excluded from the VM or we can have an
-experimental option on the vfio-pci device in QEMU as a workaround.  I
-don't think this is something we need to plumb up through the tool
-stack.  Thanks,
-
-Alex
+-- 
+2.43.0
 
