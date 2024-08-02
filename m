@@ -1,64 +1,58 @@
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 3630A1DAC6C
-	for <iommu@lists.linux.dev>; Fri,  2 Aug 2024 11:53:04 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
+Received: from mail.8bytes.org (mail.8bytes.org [85.214.250.239])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id C5C131E2894;
+	Fri,  2 Aug 2024 13:59:57 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=85.214.250.239
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1722599585; cv=none; b=jJee8CHz9Lwlg72ya+kVMo5UgSgdr+MtghJoW7xP/FG2avW0/g04a40WYx4sW/BcvvqCNTrtzBA1TJODlA3Tj/faKTMG2HlraT0u78HB12kIoVUQxsI5NHNAZLtxn17wdMaC71jIRtXZ5qRYVXSfhG9yJZQEY8J4cA+riBdHgLE=
+	t=1722607200; cv=none; b=EIh9PX567tot+/kwNE4FVUbXSYPweCTELI/Uw5u0rHSb3QyjGr9Dn9JF+6wceTDF/j7N6UeQLjor8DfV6wNXomYTQsIRg0yTgBWD+vyK/qJMnWSlpbTpKWLthVWPOZJabWycI46KXSKYDRZfeKMrWHdETMourXEvWnHkEiqBH9k=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1722599585; c=relaxed/simple;
-	bh=VtrIb/aM40OrfdoFkua0eNuGrPU3kuqPoVMYQQrQhaU=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=UkzXvGPvL1q3UeRhGZ/WmjjncZHHO9QyE6Pq4HWOeHUukeY4+x9JUqdNhWdYwkdKqKwhsdiZ8qDuV6w7Q/gR4jcvbnUtVQyO/KW1tLPAH9zmZw86ra6KUGiYJdc3UF6PmCNDEyoNCIHfAHCMVmSrd7GF1FkqizHRWPTw1hh6vr4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; arc=none smtp.client-ip=217.140.110.172
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 13EE01007;
-	Fri,  2 Aug 2024 04:53:29 -0700 (PDT)
-Received: from [10.1.196.40] (e121345-lin.cambridge.arm.com [10.1.196.40])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id D6F6F3F64C;
-	Fri,  2 Aug 2024 04:53:02 -0700 (PDT)
-Message-ID: <a1a07edf-9ab2-4121-a230-0d06bda3bf3d@arm.com>
-Date: Fri, 2 Aug 2024 12:53:01 +0100
+	s=arc-20240116; t=1722607200; c=relaxed/simple;
+	bh=EeHisQoJvRHNuhbJues0OBjMZm1RIQx7uM8MGkBztS4=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=BQ9PAeCUnbEYg/x/XCx1jnWiFQtjswK9L26lGY+U80epiYYuSUKQD79Dh865GJjPeE1usMWWNRGq/pgLl3CLRugXwkLemPVVo9shjnpbGbtXzMVhplhTbwP9ovTKvwX7977HgXc+m9Np8YMNhjnGGxhBhDUh4OUkLo9dUfcXmFA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=8bytes.org; spf=pass smtp.mailfrom=8bytes.org; dkim=pass (2048-bit key) header.d=8bytes.org header.i=@8bytes.org header.b=OR+6+zwq; arc=none smtp.client-ip=85.214.250.239
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=8bytes.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=8bytes.org
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=8bytes.org header.i=@8bytes.org header.b="OR+6+zwq"
+Received: from 8bytes.org (pd9fe9dd8.dip0.t-ipconnect.de [217.254.157.216])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange ECDHE (P-256) server-signature RSA-PSS (2048 bits) server-digest SHA256)
+	(No client certificate requested)
+	by mail.8bytes.org (Postfix) with ESMTPSA id 401062A4C5B;
+	Fri,  2 Aug 2024 15:59:56 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=8bytes.org;
+	s=default; t=1722607196;
+	bh=EeHisQoJvRHNuhbJues0OBjMZm1RIQx7uM8MGkBztS4=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=OR+6+zwq1HkdsXEUKRTOyfR5ajUE0GuYYbfJtPyAWFUx56c28vNfGOT8IllqoqPaV
+	 yxcLVIaSAHrP+6fzzIsKTfQi2SMmPFYMkG1jnyzgKomvowbsAX6dNW07/zqgglO1Ug
+	 LbqqzH7OC6lA4lfC4LeeD26L/hLFnehG3KVppBne3gXxzx/srOCcP2cGGf2/CA9ozO
+	 qxV/h6PaikjqgmO6+9vEcNqgDHiuiEMkpwIqLSzUoV293bCxEI9O9uvNTsPO5PlhFW
+	 Q7Zk1IiRCjxSlgUVY+EdqeDuDAElwHXAaivIBFZZb0+KT8Kb0TxexKFGFRwoeWx6EI
+	 CR5dT64lrIo/w==
+Date: Fri, 2 Aug 2024 15:59:55 +0200
+From: Joerg Roedel <joro@8bytes.org>
+To: Jason Gunthorpe <jgg@nvidia.com>
+Cc: iommu@lists.linux.dev, Robin Murphy <robin.murphy@arm.com>,
+	Will Deacon <will@kernel.org>, Lu Baolu <baolu.lu@linux.intel.com>,
+	Barak Biber <bbiber@nvidia.com>, Joerg Roedel <jroedel@suse.de>,
+	Kevin Tian <kevin.tian@intel.com>, patches@lists.linux.dev
+Subject: Re: [PATCH rc] iommu: Restore lost return in
+ iommu_report_device_fault()
+Message-ID: <ZqzmW3_A6FOVn1x_@8bytes.org>
+References: <0-v1-e7153d9c8cee+1c6-iommu_fault_fix_jgg@nvidia.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH 2/3] dma-mapping: don't return errors from
- dma_set_seg_boundary
-To: Christoph Hellwig <hch@lst.de>
-Cc: Marek Szyprowski <m.szyprowski@samsung.com>, iommu@lists.linux.dev,
- linux-kernel@vger.kernel.org
-References: <20240723000604.241443-1-hch@lst.de>
- <CGME20240723000611eucas1p10986fd51e848a1ee948e71608c26192b@eucas1p1.samsung.com>
- <20240723000604.241443-3-hch@lst.de>
- <5895603b-945f-4b05-991c-76b590094354@samsung.com>
- <d54f486d-36ae-4668-b314-27137bc4d832@arm.com> <20240801133353.GA1846@lst.de>
-From: Robin Murphy <robin.murphy@arm.com>
-Content-Language: en-GB
-In-Reply-To: <20240801133353.GA1846@lst.de>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <0-v1-e7153d9c8cee+1c6-iommu_fault_fix_jgg@nvidia.com>
 
-On 01/08/2024 2:33 pm, Christoph Hellwig wrote:
-> On Thu, Aug 01, 2024 at 01:36:01PM +0100, Robin Murphy wrote:
->> I guess I assumed that the old block layer bodges in this area had been
->> cleaned up already - perhaps it *is* high time for whatever's left to grow
->> a proper understanding of whether a block device actually does its own DMA
->> or not.
-> 
-> Can you point to a discussion on that?  The concepts here don't make
-> quite sense to me.
+On Thu, Aug 01, 2024 at 09:26:04AM -0300, Jason Gunthorpe wrote:
+>  drivers/iommu/io-pgfault.c | 1 +
+>  1 file changed, 1 insertion(+)
 
-No specific discussion, I just have a vague memory of hacks in the USB 
-layer when I first started looking at this stuff 10 years ago... From a 
-bit of digging to try to remind myself, I'm fairly sure that must have 
-been the block bounce related stuff, which you cleaned up in 
-6eb0233ec2d0 ("usb: don't inherity DMA properties for USB devices") a 
-while back.
-
-Cheers,
-Robin.
+Applied, thanks.
