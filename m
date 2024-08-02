@@ -1,81 +1,88 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.16])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AFC7B8825;
-	Fri,  2 Aug 2024 00:00:45 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A059A8F48;
+	Fri,  2 Aug 2024 00:31:12 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.16
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1722556845; cv=none; b=CY2TNB9l+M0FhbVqblsXT9XcHaa5BjeipnQh5tlf5/SM85bwgkxOLv+j1rYolB71WTlVe71iuF5IA5JyCf2cUvXnhAUSHko9Sh3XvdyuMCmckamgseuL67Il2ABoecg/nUkMfNQh48o4KgaMXnPIasbDcQjmwF/mppQPYFHoNSU=
+	t=1722558674; cv=none; b=qFw6g6ZfFQknltk95/aLyUcCnS3lIvWnlYR2KIYYCs/w1HoFR/RVF34uykVbXjRvSFMUNB8nm2wZnx4pLKJ9qXnX0Z8Sw55T3pkWzyPBKP0dym/jDfeaZeOsQnS4fCbcRDE9tkkokYTl2GFPVisOk0X9qDShCwPGJkaw+Tj//n4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1722556845; c=relaxed/simple;
-	bh=s9DRmZAOjs8AFVIVEvu7ZHkhOe+Yhnnol1+u2YrsI4w=;
-	h=Date:From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:
-	 Content-Disposition:In-Reply-To; b=CQs0aCx7K+lxqsPQuerT3sQW+F5adcYQopXEm7IbTViASbnKv23ZwlA0V13+i+7ifCc+LrgUt31jv2yxD8Engc2hjoLVtKEpEzBk9GxqiZMi7miaCJSE8MtPl0OByHIvkjx2Clyb2ZmJg7gNnX3EMPFOMrOs7VyWLD2RWk5snyM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=oDTBVVFH; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1722558674; c=relaxed/simple;
+	bh=09rU4cKV5xSZ6w5W11KW05/CAox2w3nPN/lle6wpPV4=;
+	h=Message-ID:Date:MIME-Version:Cc:Subject:To:References:From:
+	 In-Reply-To:Content-Type; b=lEGa3TduqZcxOj9iK71QESILvgT/3z4XAICKnNqlC9cC0NHzE9OuIrFtWutIMfegVl3ZZ7SND68gQ/r6X0z/tSl6tnUDZpkH+1r+BIe/Sb1MluWNxKCFkwED2msVKnJg0FfC+jT9clAc1ZQlyQxegC+VEDWczgOattfXPoRM8cM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=likUKz32; arc=none smtp.client-ip=198.175.65.16
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="oDTBVVFH"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id F2B54C32786;
-	Fri,  2 Aug 2024 00:00:43 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1722556845;
-	bh=s9DRmZAOjs8AFVIVEvu7ZHkhOe+Yhnnol1+u2YrsI4w=;
-	h=Date:From:To:Cc:Subject:In-Reply-To:From;
-	b=oDTBVVFHbNgvAsqzccEjJwB3Gxz1M7zwtaO75XU4AJ3GbWZT8F6Qs47EQkH4Ea3SS
-	 X1D1s1EsQTP2UIC4JI9Bd4HJ61jTjUDAC82yYwzhtFCLCjqUcyhJj4bpCeFJREhFXq
-	 7mWDjpcPmD38iJ/4Dcv5WpiApvrGIlOaw2DPgSekOLLEjAUoaUhpq3I78JGhBiyUfF
-	 4WBbM6hcgXxi7Z6WIynbpghAcdU6DEc8nBhygyqvVLmCcu+ucEN6bgSLKfJ1xNHerI
-	 lD3cB913uRGQbB0UTZZ1udq8kawz9D2pMEgNROnCGK+RrovM23UuNIwtPJtP6Axlft
-	 C1wjYApIs7ktA==
-Date: Thu, 1 Aug 2024 19:00:42 -0500
-From: Bjorn Helgaas <helgaas@kernel.org>
-To: steven <steven_ygui@163.com>
-Cc: linux-pci@vger.kernel.org, Will Deacon <will@kernel.org>,
-	Robin Murphy <robin.murphy@arm.com>, Joerg Roedel <joro@8bytes.org>,
-	linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev,
-	Vidya Sagar <vidyas@nvidia.com>,
-	Pavan Kondeti <quic_pkondeti@quicinc.com>
-Subject: Re: does dtb not support pci acs enable?
-Message-ID: <20240802000042.GA129381@bhelgaas>
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="likUKz32"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1722558672; x=1754094672;
+  h=message-id:date:mime-version:cc:subject:to:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=09rU4cKV5xSZ6w5W11KW05/CAox2w3nPN/lle6wpPV4=;
+  b=likUKz32XyQgmjKCo58xI5N6uPD0P5CgkrWcOEzqjG0S/0/z32tvgskT
+   PQe51qN25NO4mepsrTa4/OqgSC079lQwbyzvceeWztuD5bf609oQ4IvIP
+   4Mrvn5mwmtEldYWlQNrUxNje09oVGo16daR9urRG4hXNrcqEI8TQIMZEz
+   p0Szmzi6yajxl0w70b4A6MBKvDmyc3TRxSLQ4BSxBFLQ2CpUbUuBQkXMl
+   ajeAFBm3GKpAImv5CenfDG1yKnc0/EON3BlUBpTTk3BKljITi4cE1czOP
+   /L0bcuNPJoZ2ceBIG9q8BXM+i+6L1u4jI8xmCxso6B+AB8lNIAyBCS1A0
+   Q==;
+X-CSE-ConnectionGUID: eTJkmuHrRcWA/0RVhDPdrA==
+X-CSE-MsgGUID: U2vyuw9KTO2NbP6wUZSPBg==
+X-IronPort-AV: E=McAfee;i="6700,10204,11151"; a="20712805"
+X-IronPort-AV: E=Sophos;i="6.09,256,1716274800"; 
+   d="scan'208";a="20712805"
+Received: from fmviesa005.fm.intel.com ([10.60.135.145])
+  by orvoesa108.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Aug 2024 17:31:02 -0700
+X-CSE-ConnectionGUID: 0jFRttO2QE6KJnncKTyhWA==
+X-CSE-MsgGUID: dic4eW+dTaGTyuCOmzqzBA==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.09,256,1716274800"; 
+   d="scan'208";a="59552497"
+Received: from blu2-mobl.ccr.corp.intel.com (HELO [10.124.238.251]) ([10.124.238.251])
+  by fmviesa005-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Aug 2024 17:31:00 -0700
+Message-ID: <c31ca390-b29b-4795-a223-a985ef62dc44@linux.intel.com>
+Date: Fri, 2 Aug 2024 08:30:57 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20240801234356.GA128584@bhelgaas>
+User-Agent: Mozilla Thunderbird
+Cc: baolu.lu@linux.intel.com, Barak Biber <bbiber@nvidia.com>,
+ Joerg Roedel <jroedel@suse.de>, Kevin Tian <kevin.tian@intel.com>,
+ patches@lists.linux.dev
+Subject: Re: [PATCH rc] iommu: Restore lost return in
+ iommu_report_device_fault()
+To: Jason Gunthorpe <jgg@nvidia.com>, iommu@lists.linux.dev,
+ Joerg Roedel <joro@8bytes.org>, Robin Murphy <robin.murphy@arm.com>,
+ Will Deacon <will@kernel.org>
+References: <0-v1-e7153d9c8cee+1c6-iommu_fault_fix_jgg@nvidia.com>
+Content-Language: en-US
+From: Baolu Lu <baolu.lu@linux.intel.com>
+In-Reply-To: <0-v1-e7153d9c8cee+1c6-iommu_fault_fix_jgg@nvidia.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-On Thu, Aug 01, 2024 at 06:43:59PM -0500, Bjorn Helgaas wrote:
-> [+cc ARM, IOMMU folks; I don't know the answer, but maybe they do]
+On 2024/8/1 20:26, Jason Gunthorpe wrote:
+> From: Barak Biber<bbiber@nvidia.com>
+> 
+> When iommu_report_device_fault gets called with a partial fault it is
+> supposed to collect the fault into the group and then return.
+> 
+> Instead the return was accidently deleted which results in trying to
+> process the fault and an eventual crash.
+> 
+> Deleting the return was a typo, put it back.
+> 
+> Fixes: 3dfa64aecbaf ("iommu: Make iommu_report_device_fault() return void")
+> Signed-off-by: Barak Biber<bbiber@nvidia.com>
+> Signed-off-by: Jason Gunthorpe<jgg@nvidia.com>
 
-[+cc Vidya, Pavan, also see this recent thread:
-https://lore.kernel.org/r/PH8PR12MB667446D4A4CAD6E0A2F488B5B83F2@PH8PR12MB6674.namprd12.prod.outlook.com]
+Reviewed-by: Lu Baolu <baolu.lu@linux.intel.com>
 
-> On Fri, Jul 19, 2024 at 11:01:11PM +0800, steven wrote:
-> > Hello,
-> > 
-> > I am a new person in PCI, I am trying to do something for iommu
-> > group on arm64 platform, I found if I boot the linux (5.10 kernel)
-> > kernel using UEFI + ACPI, it will work correctly. But if I boot it
-> > using UEFI + DTB, the iommu group not work, only one group present.
-> > 
-> > I read the code, found that pci_acs_enable is set to 1 during
-> > acpi_init, but I can not find any code for dtb booting, so it will
-> > return "disable_acs_redir " during call pci_enable_acs. 
-> >
-> > static void pci_enable_acs(struct pci_dev *dev)
-> > {
-> >     if (!pci_acs_enable)
-> >         goto disable_acs_redir;
-> > 
-> >     if (!pci_dev_specific_enable_acs(dev))
-> >         goto disable_acs_redir;
-> > 
-> >     pci_std_enable_acs(dev);
-> > 
-> > 
-> > 
-> > 
-> > SO, is it not support in dtb?
-> > 
+Thanks,
+baolu
