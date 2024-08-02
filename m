@@ -1,99 +1,64 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 220871C2312;
-	Fri,  2 Aug 2024 09:37:43 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 3630A1DAC6C
+	for <iommu@lists.linux.dev>; Fri,  2 Aug 2024 11:53:04 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1722591464; cv=none; b=nj9I3+3L/Zdu6IU3Z84wBJ2V1F5sQCRFzc116qQdVOkjM3IId3Gb9jFcUMuINuivi6s11RY0ceutLch21KNH9Cgc4ruWdIWhskAJb9I3cPEWM2W+lNsR1yNfzSy0Lk3lIIui5W3KB0/GdUEI3BLdHfpI3SBjBWP4nZa1oj4X3rc=
+	t=1722599585; cv=none; b=jJee8CHz9Lwlg72ya+kVMo5UgSgdr+MtghJoW7xP/FG2avW0/g04a40WYx4sW/BcvvqCNTrtzBA1TJODlA3Tj/faKTMG2HlraT0u78HB12kIoVUQxsI5NHNAZLtxn17wdMaC71jIRtXZ5qRYVXSfhG9yJZQEY8J4cA+riBdHgLE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1722591464; c=relaxed/simple;
-	bh=ltOSUPsZibGklzCT+726uDqpI/gR+HZvRJVWnku4cnU=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=i21sYO1AR40qpQegvDZvNHpFajyzKDN18buW2hdIp0wJoG7GPjsgnTefQOZ0ISjQIIq8ND5EG5PgH+SpxvQs46stF3Qq+5qOiW/20r/swPlBkYpHIfVUXPKZQPahw107ziv24YznRQNlb5PNAKPq9XvMRkgwOsEjd/ydPsuOWiQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3C709C32782;
-	Fri,  2 Aug 2024 09:37:41 +0000 (UTC)
-Date: Fri, 2 Aug 2024 10:37:38 +0100
-From: Catalin Marinas <catalin.marinas@arm.com>
-To: Baruch Siach <baruch@tkos.co.il>
-Cc: Christoph Hellwig <hch@lst.de>,
-	Marek Szyprowski <m.szyprowski@samsung.com>,
-	Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
-	iommu@lists.linux.dev, linux-arm-kernel@lists.infradead.org,
-	linux-kernel@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
-	linux-s390@vger.kernel.org,
-	Petr =?utf-8?B?VGVzYcWZw61r?= <petr@tesarici.cz>,
-	Ramon Fried <ramon@neureality.ai>,
-	Elad Nachman <enachman@marvell.com>
-Subject: Re: [PATCH v5 2/3] dma: replace zone_dma_bits by zone_dma_limit
-Message-ID: <Zqyo4qjPRHUeUfS5@arm.com>
-References: <cover.1722578375.git.baruch@tkos.co.il>
- <5821a1b2eb82847ccbac0945da040518d6f6f16b.1722578375.git.baruch@tkos.co.il>
+	s=arc-20240116; t=1722599585; c=relaxed/simple;
+	bh=VtrIb/aM40OrfdoFkua0eNuGrPU3kuqPoVMYQQrQhaU=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=UkzXvGPvL1q3UeRhGZ/WmjjncZHHO9QyE6Pq4HWOeHUukeY4+x9JUqdNhWdYwkdKqKwhsdiZ8qDuV6w7Q/gR4jcvbnUtVQyO/KW1tLPAH9zmZw86ra6KUGiYJdc3UF6PmCNDEyoNCIHfAHCMVmSrd7GF1FkqizHRWPTw1hh6vr4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; arc=none smtp.client-ip=217.140.110.172
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 13EE01007;
+	Fri,  2 Aug 2024 04:53:29 -0700 (PDT)
+Received: from [10.1.196.40] (e121345-lin.cambridge.arm.com [10.1.196.40])
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id D6F6F3F64C;
+	Fri,  2 Aug 2024 04:53:02 -0700 (PDT)
+Message-ID: <a1a07edf-9ab2-4121-a230-0d06bda3bf3d@arm.com>
+Date: Fri, 2 Aug 2024 12:53:01 +0100
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <5821a1b2eb82847ccbac0945da040518d6f6f16b.1722578375.git.baruch@tkos.co.il>
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH 2/3] dma-mapping: don't return errors from
+ dma_set_seg_boundary
+To: Christoph Hellwig <hch@lst.de>
+Cc: Marek Szyprowski <m.szyprowski@samsung.com>, iommu@lists.linux.dev,
+ linux-kernel@vger.kernel.org
+References: <20240723000604.241443-1-hch@lst.de>
+ <CGME20240723000611eucas1p10986fd51e848a1ee948e71608c26192b@eucas1p1.samsung.com>
+ <20240723000604.241443-3-hch@lst.de>
+ <5895603b-945f-4b05-991c-76b590094354@samsung.com>
+ <d54f486d-36ae-4668-b314-27137bc4d832@arm.com> <20240801133353.GA1846@lst.de>
+From: Robin Murphy <robin.murphy@arm.com>
+Content-Language: en-GB
+In-Reply-To: <20240801133353.GA1846@lst.de>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-On Fri, Aug 02, 2024 at 09:03:47AM +0300, Baruch Siach wrote:
-> diff --git a/kernel/dma/direct.c b/kernel/dma/direct.c
-> index 3b4be4ca3b08..62b36fda44c9 100644
-> --- a/kernel/dma/direct.c
-> +++ b/kernel/dma/direct.c
-> @@ -20,7 +20,7 @@
->   * it for entirely different regions. In that case the arch code needs to
->   * override the variable below for dma-direct to work properly.
->   */
-> -unsigned int zone_dma_bits __ro_after_init = 24;
-> +u64 zone_dma_limit __ro_after_init = DMA_BIT_MASK(24);
+On 01/08/2024 2:33 pm, Christoph Hellwig wrote:
+> On Thu, Aug 01, 2024 at 01:36:01PM +0100, Robin Murphy wrote:
+>> I guess I assumed that the old block layer bodges in this area had been
+>> cleaned up already - perhaps it *is* high time for whatever's left to grow
+>> a proper understanding of whether a block device actually does its own DMA
+>> or not.
+> 
+> Can you point to a discussion on that?  The concepts here don't make
+> quite sense to me.
 
-u64 here makes sense even if it may be larger than phys_addr_t. It
-matches the phys_limit type in the swiotlb code. The compilers should no
-longer complain.
+No specific discussion, I just have a vague memory of hacks in the USB 
+layer when I first started looking at this stuff 10 years ago... From a 
+bit of digging to try to remind myself, I'm fairly sure that must have 
+been the block bounce related stuff, which you cleaned up in 
+6eb0233ec2d0 ("usb: don't inherity DMA properties for USB devices") a 
+while back.
 
-> diff --git a/kernel/dma/pool.c b/kernel/dma/pool.c
-> index d10613eb0f63..7b04f7575796 100644
-> --- a/kernel/dma/pool.c
-> +++ b/kernel/dma/pool.c
-> @@ -70,9 +70,9 @@ static bool cma_in_zone(gfp_t gfp)
->  	/* CMA can't cross zone boundaries, see cma_activate_area() */
->  	end = cma_get_base(cma) + size - 1;
->  	if (IS_ENABLED(CONFIG_ZONE_DMA) && (gfp & GFP_DMA))
-> -		return end <= DMA_BIT_MASK(zone_dma_bits);
-> +		return end <= zone_dma_limit;
->  	if (IS_ENABLED(CONFIG_ZONE_DMA32) && (gfp & GFP_DMA32))
-> -		return end <= DMA_BIT_MASK(32);
-> +		return end <= max(DMA_BIT_MASK(32), zone_dma_limit);
->  	return true;
->  }
->  
-> diff --git a/kernel/dma/swiotlb.c b/kernel/dma/swiotlb.c
-> index 043b0ecd3e8d..bb51bd5335ad 100644
-> --- a/kernel/dma/swiotlb.c
-> +++ b/kernel/dma/swiotlb.c
-> @@ -450,9 +450,9 @@ int swiotlb_init_late(size_t size, gfp_t gfp_mask,
->  	if (!remap)
->  		io_tlb_default_mem.can_grow = true;
->  	if (IS_ENABLED(CONFIG_ZONE_DMA) && (gfp_mask & __GFP_DMA))
-> -		io_tlb_default_mem.phys_limit = DMA_BIT_MASK(zone_dma_bits);
-> +		io_tlb_default_mem.phys_limit = zone_dma_limit;
->  	else if (IS_ENABLED(CONFIG_ZONE_DMA32) && (gfp_mask & __GFP_DMA32))
-> -		io_tlb_default_mem.phys_limit = DMA_BIT_MASK(32);
-> +		io_tlb_default_mem.phys_limit = max(DMA_BIT_MASK(32), zone_dma_limit);
->  	else
->  		io_tlb_default_mem.phys_limit = virt_to_phys(high_memory - 1);
->  #endif
-
-These two look correct to me now and it's the least intrusive (the
-alternative would have been a zone_dma32_limit). The arch code, however,
-needs to ensure that zone_dma_limit can always support 32-bit devices
-even if it is above 4GB (with the relevant dma offsets in place for such
-devices).
-
--- 
-Catalin
+Cheers,
+Robin.
