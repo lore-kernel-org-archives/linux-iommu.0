@@ -1,237 +1,359 @@
-Received: from NAM04-DM6-obe.outbound.protection.outlook.com (mail-dm6nam04on2060.outbound.protection.outlook.com [40.107.102.60])
+Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8B55C1494D7
-	for <iommu@lists.linux.dev>; Mon,  5 Aug 2024 08:41:35 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.102.60
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1722847297; cv=fail; b=Z1Xp+2H/cb9K7laATdv/DRVywWe0D1kZK4nvd8hpR+31dSiVak8xpSqJjpHBAxijJfxx2t7Ivk2zF64uA5nldEX/C5OIYTM5+8ICL/b0jo8y4R9igonjI/6N/Jx5pxXAOcFCVE6z8fPgORLDTWELEXe7AmLKCvd8+fm73mzz/zU=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1722847297; c=relaxed/simple;
-	bh=a7qc3vWuAYXMVhxWFJbifjBCFXgcSuUbLTUiVW8E0EQ=;
-	h=From:To:CC:Subject:Date:Message-ID:MIME-Version:Content-Type; b=bw7dIIrsBmfXrhWToxrsCHrbLb8h9XDIBVPkjjpD+o4B5SpIB+jea09lnYiVeNkCxJXnm6VO03qAjxy66eA81e4LTqiJyj4/QdcVV6pszHM8hxQ8UC3y12kQtInLtLXI7liETNB79BdtXZ9azG6t3jkHKwr+YxmDlLpMKPjsPbc=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=KwSKUz+2; arc=fail smtp.client-ip=40.107.102.60
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="KwSKUz+2"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=hc3EbP0b1vV11DQ+wIdg1XsB8rJf68GMeygqbnFyC8OG9K/shCQ5Ag0GCfHfTmE0C0W5ZN/u51uzF4gZq0FgHulMQlnTZAYyNpO6IPD5150lreiUBlO8hWPYS/3MG5uQttcKnmIudhuYYCBedapQW8KfWhJ+umJRlzleTfSxON+06LIxa1Lsutczd2RzNBIsE8Jo19NlkvMBxm1b9g6FHghXk9hcrkr3MwSvmLSZdPeMWgZZytA6mkVkO84FhEt+G/mYlScS/LgpNpoGZhxzcwX14EVx4ueNLA9tvV7Wrtz0QGQkpyF8689rW4L/47VNkp61qrfyPWAVAWO6PO91wA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=xitUoTGIc82ePwIx8xZjID0iCFB+jLcIBK5/GWqdCAQ=;
- b=nZmZzhqKvIz/jAHzr3EUuQXlMpB7hgZIrWKD8G8q64w2UNGlmygtjZG4wnBB+wljzFV6dEsTRYIQs1wtqL+aLCTo0fNVkawCx+hqvLq4YdPPtvzJ0lMvjlH6kpcuKlgs9y2GvVt/T+DvYsmerlXhTzb2OPMnnzhlHw9BBtaPDHIWerqXePlF6d0EbyunBWWmPNu7fs6wQR9g9EDVtIIoWqo2XAbQQMuFhtwU0pzHfVa1/kEhx1Yr1mIkG09csGCtEC467h6fhli0ruIwjdLEsIIDe+e0GMpC2S3mqGKMtEka+48MxLqHFMRJkrOAlMA86Za8Cf/jF77YkPyB0le+ag==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 216.228.117.161) smtp.rcpttodomain=kernel.org smtp.mailfrom=nvidia.com;
- dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
- dkim=none (message not signed); arc=none (0)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=xitUoTGIc82ePwIx8xZjID0iCFB+jLcIBK5/GWqdCAQ=;
- b=KwSKUz+229dUvs77azJ5HeUG9kO5T1MDdkCvazY9VKUj3dhqWxL8ewUwK7l94UCNmOuoIb2ye8ETM97QNVi7FxUiKvKSZVP+sfNi+iv42x9OrVB1NUUCegnU/4kXGeVlpmVaLNOpQ8o5eo8C3AvUnX967ddfAZWq7jKDK2i0IuiQXYE2sHDh11MBi7Cyz7sYhJPi78F5DmOGhHwZvRSJY/AzGVzdwH9s92rStFY/nQC1RvK9cCbYaaSXRerhWgDkDdDKDgNq2fsE35rJFjoIhl+lyNIRbhubZc1O8dxnzzIORLX9Pd+sY3tI/D/xsJ+8iWsrzuiFZW5awwdBZLVTbg==
-Received: from SA9P221CA0009.NAMP221.PROD.OUTLOOK.COM (2603:10b6:806:25::14)
- by PH7PR12MB9253.namprd12.prod.outlook.com (2603:10b6:510:30d::18) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7828.26; Mon, 5 Aug
- 2024 08:41:31 +0000
-Received: from SA2PEPF00003AE7.namprd02.prod.outlook.com
- (2603:10b6:806:25:cafe::54) by SA9P221CA0009.outlook.office365.com
- (2603:10b6:806:25::14) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7828.22 via Frontend
- Transport; Mon, 5 Aug 2024 08:41:31 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.117.161)
- smtp.mailfrom=nvidia.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=nvidia.com;
-Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 216.228.117.161 as permitted sender) receiver=protection.outlook.com;
- client-ip=216.228.117.161; helo=mail.nvidia.com; pr=C
-Received: from mail.nvidia.com (216.228.117.161) by
- SA2PEPF00003AE7.mail.protection.outlook.com (10.167.248.7) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.7828.19 via Frontend Transport; Mon, 5 Aug 2024 08:41:31 +0000
-Received: from rnnvmail203.nvidia.com (10.129.68.9) by mail.nvidia.com
- (10.129.200.67) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1544.4; Mon, 5 Aug 2024
- 01:41:18 -0700
-Received: from rnnvmail201.nvidia.com (10.129.68.8) by rnnvmail203.nvidia.com
- (10.129.68.9) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1544.4; Mon, 5 Aug 2024
- 01:41:17 -0700
-Received: from build-amhetre-20240731T045122751.internal (10.127.8.10) by
- mail.nvidia.com (10.129.68.8) with Microsoft SMTP Server id 15.2.1544.4 via
- Frontend Transport; Mon, 5 Aug 2024 01:41:17 -0700
-From: Ashish Mhetre <amhetre@nvidia.com>
-To: <will@kernel.org>, <robin.murphy@arm.com>, <joro@8bytes.org>
-CC: <linux-arm-kernel@lists.infradead.org>, <iommu@lists.linux.dev>,
-	<linux-kernel@vger.kernel.org>, <linux-tegra@vger.kernel.org>, Ashish Mhetre
-	<amhetre@nvidia.com>
-Subject: [PATCH V3] iommu: Optimize IOMMU UnMap
-Date: Mon, 5 Aug 2024 08:41:06 +0000
-Message-ID: <20240805084106.214584-1-amhetre@nvidia.com>
-X-Mailer: git-send-email 2.25.1
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E24F51547F1
+	for <iommu@lists.linux.dev>; Mon,  5 Aug 2024 12:13:24 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=45.249.212.188
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1722860008; cv=none; b=ql0RGaLwMNEfmV8cYtT6EG2Gz1QXXsRcdu0pw+J0ebsbaKSHQbSkbgWFIJjhh+QJthdT30S3CSu6phybjBRNMet/hOzWQP7DNMqBygHjDLWW4BOjPDkgIBd7w2XKuHsq6swT5v0oy0L9Acn6PbbY30Y/RmHG1SGi3PaDQtjOWb8=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1722860008; c=relaxed/simple;
+	bh=xDfcxY/ms6YBxFl6JZriXdo+9JcnpiGfry0Ktt/nnMI=;
+	h=Subject:To:CC:References:From:Message-ID:Date:MIME-Version:
+	 In-Reply-To:Content-Type; b=Y42cIHfr+r67FkWpYbkc4Jn8cH9rzbNiM7IstRH4DJuijm+5V1fqcNf7TFrGg7gfHW2ttSAFK9WYqu9F1vxdw7P6iEhJxoki5WRiaOTI4HAsC+k9T6DV+3iJ2TCPR/JAQopq7eBn47QaC0MifOxywyKQhGJ9AkdQ5d9tC7mvsbY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=huawei.com; spf=pass smtp.mailfrom=huawei.com; arc=none smtp.client-ip=45.249.212.188
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=huawei.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=huawei.com
+Received: from mail.maildlp.com (unknown [172.19.163.174])
+	by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4WcwJx0TdCzfZmw;
+	Mon,  5 Aug 2024 20:11:29 +0800 (CST)
+Received: from kwepemm600007.china.huawei.com (unknown [7.193.23.208])
+	by mail.maildlp.com (Postfix) with ESMTPS id F37C8140109;
+	Mon,  5 Aug 2024 20:13:21 +0800 (CST)
+Received: from [10.174.176.125] (10.174.176.125) by
+ kwepemm600007.china.huawei.com (7.193.23.208) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.1.2507.39; Mon, 5 Aug 2024 20:13:20 +0800
+Subject: Re: [bug report] iommu/arm-smmu-v3: Event cannot be printed in some
+ scenarios
+To: Pranjal Shrivastava <praan@google.com>, Baolu Lu
+	<baolu.lu@linux.intel.com>
+CC: Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>, Joerg
+ Roedel <joro@8bytes.org>, Jason Gunthorpe <jgg@ziepe.ca>, Nicolin Chen
+	<nicolinc@nvidia.com>, Michael Shavit <mshavit@google.com>, Mostafa Saleh
+	<smostafa@google.com>, "moderated list:ARM SMMU DRIVERS"
+	<linux-arm-kernel@lists.infradead.org>, <iommu@lists.linux.dev>,
+	<linux-kernel@vger.kernel.org>, <wanghaibin.wang@huawei.com>,
+	<yuzenghui@huawei.com>, <tangnianyao@huawei.com>
+References: <6147caf0-b9a0-30ca-795e-a1aa502a5c51@huawei.com>
+ <7d5a8b86-6f0d-50ef-1b2f-9907e447c9fc@huawei.com>
+ <20240724102417.GA27376@willie-the-truck>
+ <c2f6163e-47f0-4dce-b077-7751816be62f@linux.intel.com>
+ <CAN6iL-QvE29-t4B+Ucg+AYMPhr9cqDa8xGj9oz_MAO5uyZyX2g@mail.gmail.com>
+From: Kunkun Jiang <jiangkunkun@huawei.com>
+Message-ID: <5e8e6857-44c9-40a1-f86a-b8b5aae65bfb@huawei.com>
+Date: Mon, 5 Aug 2024 20:13:09 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.8.1
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-NVConfidentiality: public
+In-Reply-To: <CAN6iL-QvE29-t4B+Ucg+AYMPhr9cqDa8xGj9oz_MAO5uyZyX2g@mail.gmail.com>
+Content-Type: text/plain; charset="utf-8"; format=flowed
 Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-NV-OnPremToCloud: ExternallySecured
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: SA2PEPF00003AE7:EE_|PH7PR12MB9253:EE_
-X-MS-Office365-Filtering-Correlation-Id: 6d31d4af-bf4b-4792-a6b1-08dcb52a67e7
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|36860700013|82310400026|376014|1800799024;
-X-Microsoft-Antispam-Message-Info:
-	=?us-ascii?Q?AuS+gMk4ZRTGVwJr4TGfctTBky1h+mj/juOpxX9IEhX3wEkLvCw/RpYtFAtx?=
- =?us-ascii?Q?qMpZpRL3EOZXAu9G5SLGuHRqvEIC9akK/zhCTkaE8qamhJQVpD6iR9ji92VT?=
- =?us-ascii?Q?yZzDJaFepNKbHyzXW9DJ8qUfbG0l8zYunrNErmxTpVzEBF0Hx0MY2oT3jBoA?=
- =?us-ascii?Q?omvICcN07n4FXAj893+LLp8+98Db3v2YCXQ6xwjWiZP6qPgcfsyUbkTzDNG1?=
- =?us-ascii?Q?DNU7Vr82LOkB3dDc/9p1o3Du6EOzwtXgfkfmF0huKW2zowueIFT8LR1a6HLC?=
- =?us-ascii?Q?Fs+0DaH/bBaFF43baYtmfssC3mA9ESyJYYfeoG3KG0zZgUrF2Yk9602k3QRG?=
- =?us-ascii?Q?7iQMo48Y5PVrMML0ODUgfsxulauTDbZ8A9HoF1UwJysKDpF9V1N/L2jPh8m3?=
- =?us-ascii?Q?Z04cJreJZdgdOx+vvgmDrwLwETMr6NcUj+3adJyHG7t7wHLOfiBWBAwMQkqe?=
- =?us-ascii?Q?OUvkO30e2ZcTlxWuIcl4gtJKuVqfFYU5GFne9enteRPO0F8y0JGPYJZ3FYZK?=
- =?us-ascii?Q?lPfeUT8UUOhLsKZqwS8eopvFRNebpr0YTyuM65UvEivxocZKQXVc8SPD0A7d?=
- =?us-ascii?Q?+W+aQZEFo9DeikTD+Fj6/If2j2mxQzJAB4ibyr1u9AstFFRhcQnMVKw1gAP6?=
- =?us-ascii?Q?7xZT1AQjEtk19lQYRBFAs6ExzNuEfYsjQqJ6FDCGVlvHpI2omI/a0mWGSRo7?=
- =?us-ascii?Q?0nmYj+p0RdToDv3k/7bam4vRjXcsd/CO3+eS1eogss7dpIrzzlEsneVS6ZJS?=
- =?us-ascii?Q?OCWMb8iTVEBQybd4OPe1HztdsQ6sHXiV9iUHBZzkmyCoQLvUcPObLguokMbk?=
- =?us-ascii?Q?Dksn3YITe74fg7ASCDUHl6g/WVphFOc7RU97sCV+KinehiaC6xHeKR+PjAfj?=
- =?us-ascii?Q?eVcuaWnuFvWzIwoI7+cAzt1G4yQWsYcIcFQv3Eg0Xqy+2oK6E1O9rFYT3CDS?=
- =?us-ascii?Q?eA9n+5ikFgUY1p2YiB21pFeTkep27SooPa4yqNA5nqe+9M+qjo8t1Ykof8lZ?=
- =?us-ascii?Q?f4pGf8qAoHWHJYF4I4mqwiSJFQPxY+jYhlKfCt2byjebMvaYn9u2WPb5erGP?=
- =?us-ascii?Q?I1Jkw2QMORjwkGx3uLy9jDJnGy3jehL3pNUatTpJ71OqiP49LfggfLVljHC1?=
- =?us-ascii?Q?xiLXi1ZoWFfobW1cRxE9alqegovktBU6eDqAJINaBGuy/BaQFwCfuLtn4T9v?=
- =?us-ascii?Q?3p7+IRxZK55nRVO67eu1CDdZ5Rl/RRExTfklXM7Lx8CUZoe2JVlB3QGpKUH5?=
- =?us-ascii?Q?o/pTkytgn8R+mN1GzgdDTyXRI7w9GLZm1A2y0EL8vXGNYwL5vtRoYtHMBxJj?=
- =?us-ascii?Q?ebnCZPmbDyildsMNXj4tpZ+KYVS6zIifybouuZ9Zn6iP92rnltCOzs7XSXcu?=
- =?us-ascii?Q?ZWVo82XIti24cajY3UqGGJVtDW4jFsLJTFfFd/dpnA2AkaZWB+wdamO9gTI5?=
- =?us-ascii?Q?HcPqzl3htAWaJVrO7K+Qn0O00TeeXn38?=
-X-Forefront-Antispam-Report:
-	CIP:216.228.117.161;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc6edge2.nvidia.com;CAT:NONE;SFS:(13230040)(36860700013)(82310400026)(376014)(1800799024);DIR:OUT;SFP:1101;
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 05 Aug 2024 08:41:31.5006
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 6d31d4af-bf4b-4792-a6b1-08dcb52a67e7
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.117.161];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource:
-	SA2PEPF00003AE7.namprd02.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH7PR12MB9253
+Content-Language: en-US
+X-ClientProxiedBy: dggems703-chm.china.huawei.com (10.3.19.180) To
+ kwepemm600007.china.huawei.com (7.193.23.208)
 
-The current __arm_lpae_unmap() function calls dma_sync() on individual
-PTEs after clearing them. Overall unmap performance can be improved by
-around 25% for large buffer sizes by combining the syncs for adjacent
-leaf entries.
-Optimize the unmap time by clearing all the leaf entries and issuing a
-single dma_sync() for them.
-Below is detailed analysis of average unmap latency(in us) with and
-without this optimization obtained by running dma_map_benchmark for
-different buffer sizes.
+Hi,
 
-		UnMap Latency(us)
-Size	Without		With		% gain with
-	optimiztion	optimization	optimization
+On 2024/8/2 22:38, Pranjal Shrivastava wrote:
+> Hey,
+> On Mon, Jul 29, 2024 at 11:02 AM Baolu Lu <baolu.lu@linux.intel.com> wrote:
+>> On 2024/7/24 18:24, Will Deacon wrote:
+>>> On Wed, Jul 24, 2024 at 05:22:59PM +0800, Kunkun Jiang wrote:
+>>>> On 2024/7/24 9:42, Kunkun Jiang wrote:
+>>>>> drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+>>>>> 1797                 while (!queue_remove_raw(q, evt)) {
+>>>>> 1798                         u8 id = FIELD_GET(EVTQ_0_ID, evt[0]);
+>>>>> 1799
+>>>>> 1800                         ret = arm_smmu_handle_evt(smmu, evt);
+>>>>> 1801                         if (!ret || !__ratelimit(&rs))
+>>>>> 1802                                 continue;
+>>>>> 1803
+>>>>> 1804                         dev_info(smmu->dev, "event 0x%02x
+>>>>> received:\n", id);
+>>>>> 1805                         for (i = 0; i < ARRAY_SIZE(evt); ++i)
+>>>>> 1806                                 dev_info(smmu->dev, "\t0x%016llx\n",
+>>>>> 1807                                          (unsigned long
+>>>>> long)evt[i]);
+>>>>> 1808
+>>>>> 1809                         cond_resched();
+>>>>> 1810                 }
+>>>>>
+>>>>> The smmu-v3 driver cannot print event information when "ret" is 0.
+>>>>> Unfortunately due to commit 3dfa64aecbaf
+>>>>> ("iommu: Make iommu_report_device_fault() return void"), the default
+>>>>> return value in arm_smmu_handle_evt() is 0. Maybe a trace should
+>>>>> be added here?
+>>>> Additional explanation. Background introduction:
+>>>> 1.A device(VF) is passthrough(VFIO-PCI) to a VM.
+>>>> 2.The SMMU has the stall feature.
+>>>> 3.Modified guest device driver to generate an event.
+>>>>
+>>>> This event handling process is as follows:
+>>>> arm_smmu_evtq_thread
+>>>>       ret = arm_smmu_handle_evt
+>>>>           iommu_report_device_fault
+>>>>               iopf_param = iopf_get_dev_fault_param(dev);
+>>>>               // iopf is not enabled.
+>>>> // No RESUME will be sent!
+>>>>               if (WARN_ON(!iopf_param))
+>>>>                   return;
+>>>>       if (!ret || !__ratelimit(&rs))
+>>>>           continue;
+>>>>
+>>>> In this scenario, the io page-fault capability is not enabled.
+>>>> There are two problems here:
+>>>> 1. The event information is not printed.
+>>>> 2. The entire device(PF level) is stalled,not just the current
+>>>> VF. This affects other normal VFs.
+>>> Oh, so that stall is probably also due to b554e396e51c ("iommu: Make
+>>> iopf_group_response() return void"). I agree that we need a way to
+>>> propagate error handling back to the driver in the case that
+>>> 'iopf_param' is NULL, otherwise we're making the unexpected fault
+>>> considerably more problematic than it needs to be.
+>>>
+>>> Lu -- can we add the -ENODEV return back in the case that
+>>> iommu_report_device_fault() doesn't even find a 'iommu_fault_param' for
+>>> the device?
+>> Yes, of course. The commit b554e396e51c was added to consolidate the
+>> drivers' auto response code in the core with the assumption that driver
+>> only needs to call iommu_report_device_fault() for reporting an iopf.
+>>
+> I had a go at taking Jason's diff and implementing the suggestions in
+> this thread.
+> Kunkun -- please can you see if this fixes the problem for you?
+Okay, I'll test it as soon as I can.
 
-4KB	3		3		0
-8KB	4		3.8		5
-16KB	6.1		5.4		11.48
-32KB	10.2		8.5		16.67
-64KB	18.5		14.9		19.46
-128KB	35		27.5		21.43
-256KB	67.5		52.2		22.67
-512KB	127.9		97.2		24.00
-1MB	248.6		187.4		24.62
-2MB	65.5		65.5		0
-4MB	119.2		119		0.17
-
-Signed-off-by: Ashish Mhetre <amhetre@nvidia.com>
----
-Changes in V2:
-- Updated the commit message to be imperative.
-- Fixed ptep at incorrect index getting cleared for non-leaf entries.
-
-Changes in V3:
-- Used loop-local variables and removed redundant function variables.
-- Added check for zero-sized dma_sync in __arm_lpae_clear_pte().
-- Merged both patches into this single patch by adding check for a
-  NULL gather in __arm_lpae_unmap() itself.
----
- drivers/iommu/io-pgtable-arm.c | 31 +++++++++++++++++--------------
- 1 file changed, 17 insertions(+), 14 deletions(-)
-
-diff --git a/drivers/iommu/io-pgtable-arm.c b/drivers/iommu/io-pgtable-arm.c
-index f5d9fd1f45bf..6fecf3d9fe67 100644
---- a/drivers/iommu/io-pgtable-arm.c
-+++ b/drivers/iommu/io-pgtable-arm.c
-@@ -274,13 +274,13 @@ static void __arm_lpae_sync_pte(arm_lpae_iopte *ptep, int num_entries,
- 				   sizeof(*ptep) * num_entries, DMA_TO_DEVICE);
- }
- 
--static void __arm_lpae_clear_pte(arm_lpae_iopte *ptep, struct io_pgtable_cfg *cfg)
-+static void __arm_lpae_clear_pte(arm_lpae_iopte *ptep, struct io_pgtable_cfg *cfg, int num_entries)
- {
-+	for (int i = 0; i < num_entries; i++)
-+		ptep[i] = 0;
- 
--	*ptep = 0;
--
--	if (!cfg->coherent_walk)
--		__arm_lpae_sync_pte(ptep, 1, cfg);
-+	if (!cfg->coherent_walk && num_entries)
-+		__arm_lpae_sync_pte(ptep, num_entries, cfg);
- }
- 
- static size_t __arm_lpae_unmap(struct arm_lpae_io_pgtable *data,
-@@ -654,26 +654,29 @@ static size_t __arm_lpae_unmap(struct arm_lpae_io_pgtable *data,
- 		max_entries = ARM_LPAE_PTES_PER_TABLE(data) - unmap_idx_start;
- 		num_entries = min_t(int, pgcount, max_entries);
- 
--		while (i < num_entries) {
--			pte = READ_ONCE(*ptep);
-+		/* Find and handle non-leaf entries */
-+		for (i = 0; i < num_entries; i++) {
-+			pte = READ_ONCE(ptep[i]);
- 			if (WARN_ON(!pte))
- 				break;
- 
--			__arm_lpae_clear_pte(ptep, &iop->cfg);
--
- 			if (!iopte_leaf(pte, lvl, iop->fmt)) {
-+				__arm_lpae_clear_pte(&ptep[i], &iop->cfg, 1);
-+
- 				/* Also flush any partial walks */
- 				io_pgtable_tlb_flush_walk(iop, iova + i * size, size,
- 							  ARM_LPAE_GRANULE(data));
- 				__arm_lpae_free_pgtable(data, lvl + 1, iopte_deref(pte, data));
--			} else if (!iommu_iotlb_gather_queued(gather)) {
--				io_pgtable_tlb_add_page(iop, gather, iova + i * size, size);
- 			}
--
--			ptep++;
--			i++;
- 		}
- 
-+		/* Clear the remaining entries */
-+		__arm_lpae_clear_pte(ptep, &iop->cfg, i);
-+
-+		if (gather && !iommu_iotlb_gather_queued(gather))
-+			for (int j = 0; j < i; j++)
-+				io_pgtable_tlb_add_page(iop, gather, iova + j * size, size);
-+
- 		return i * size;
- 	} else if (iopte_leaf(pte, lvl, iop->fmt)) {
- 		/*
--- 
-2.25.1
-
+Thanks,
+Kunkun Jiang
+> Lu -- it looks like the intel ->page_response callback doesn't expect
+> a NULL event
+> pointer, so for now I return immediately in that case as we did in v6.7.
+>
+>> Thanks,
+>> baolu
+>>
+> Thanks,
+> Pranjal
+>
+> diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+> b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+> index a31460f9f3d4..ed2b106e02dd 100644
+> --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+> +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+> @@ -1777,7 +1777,7 @@ static int arm_smmu_handle_evt(struct
+> arm_smmu_device *smmu, u64 *evt)
+>    goto out_unlock;
+>    }
+>
+> - iommu_report_device_fault(master->dev, &fault_evt);
+> + ret = iommu_report_device_fault(master->dev, &fault_evt);
+>   out_unlock:
+>    mutex_unlock(&smmu->streams_mutex);
+>    return ret;
+> diff --git a/drivers/iommu/intel/svm.c b/drivers/iommu/intel/svm.c
+> index 0e3a9b38bef2..7684e7562584 100644
+> --- a/drivers/iommu/intel/svm.c
+> +++ b/drivers/iommu/intel/svm.c
+> @@ -532,6 +532,9 @@ void intel_svm_page_response(struct device *dev,
+> struct iopf_fault *evt,
+>    bool last_page;
+>    u16 sid;
+>
+> + if (!evt)
+> + return;
+> +
+>    prm = &evt->fault.prm;
+>    sid = PCI_DEVID(bus, devfn);
+>    pasid_present = prm->flags & IOMMU_FAULT_PAGE_REQUEST_PASID_VALID;
+> diff --git a/drivers/iommu/io-pgfault.c b/drivers/iommu/io-pgfault.c
+> index 7c9011992d3f..0c3b2125563e 100644
+> --- a/drivers/iommu/io-pgfault.c
+> +++ b/drivers/iommu/io-pgfault.c
+> @@ -113,6 +113,57 @@ static struct iopf_group *iopf_group_alloc(struct
+> iommu_fault_param *iopf_param,
+>    return group;
+>   }
+>
+> +static struct iommu_attach_handle *find_fault_handler(struct device *dev,
+> +                                                     struct iopf_fault *evt)
+> +{
+> +       struct iommu_fault *fault = &evt->fault;
+> +       struct iommu_attach_handle *attach_handle;
+> +
+> +       if (fault->prm.flags & IOMMU_FAULT_PAGE_REQUEST_PASID_VALID) {
+> +               attach_handle = iommu_attach_handle_get(dev->iommu_group,
+> +                                                       fault->prm.pasid, 0);
+> +               if (IS_ERR(attach_handle)) {
+> +                       const struct iommu_ops *ops = dev_iommu_ops(dev);
+> +
+> +                       if (!ops->user_pasid_table)
+> +                               return NULL;
+> +
+> +                       /*
+> +                        * The iommu driver for this device supports user-
+> +                        * managed PASID table. Therefore page faults for
+> +                        * any PASID should go through the NESTING domain
+> +                        * attached to the device RID.
+> +                        */
+> +                       attach_handle = iommu_attach_handle_get(
+> +                               dev->iommu_group, IOMMU_NO_PASID,
+> +                               IOMMU_DOMAIN_NESTED);
+> +                       if (IS_ERR(attach_handle))
+> +                               return NULL;
+> +               }
+> +       } else {
+> +               attach_handle = iommu_attach_handle_get(dev->iommu_group,
+> +                                                       IOMMU_NO_PASID, 0);
+> +               if (IS_ERR(attach_handle))
+> +                       return NULL;
+> +       }
+> +
+> +       if (!attach_handle->domain->iopf_handler)
+> +               return NULL;
+> +       return attach_handle;
+> +}
+> +
+> +static void iopf_error_response(struct device *dev, struct iommu_fault *fault)
+> +{
+> + const struct iommu_ops *ops = dev_iommu_ops(dev);
+> + struct iommu_page_response resp = {
+> + .pasid = fault->prm.pasid,
+> + .grpid = fault->prm.grpid,
+> + .code = IOMMU_PAGE_RESP_INVALID
+> + };
+> +
+> + ops->page_response(dev, NULL, &resp);
+> +}
+> +
+>   /**
+>    * iommu_report_device_fault() - Report fault event to device driver
+>    * @dev: the device
+> @@ -153,16 +204,25 @@ static struct iopf_group
+> *iopf_group_alloc(struct iommu_fault_param *iopf_param,
+>    * hardware has been set to block the page faults) and the pending page faults
+>    * have been flushed.
+>    */
+> -void iommu_report_device_fault(struct device *dev, struct iopf_fault *evt)
+> +int iommu_report_device_fault(struct device *dev, struct iopf_fault *evt)
+>   {
+> + struct iommu_attach_handle *attach_handle;
+>    struct iommu_fault *fault = &evt->fault;
+>    struct iommu_fault_param *iopf_param;
+>    struct iopf_group abort_group = {};
+>    struct iopf_group *group;
+>
+> + attach_handle = find_fault_handler(dev, evt);
+> + if (!attach_handle)
+> + goto err_bad_iopf;
+> +
+> + /*
+> + * Something has gone wrong if a fault capable domain is attached but no
+> + * iopf_param is setup
+> + */
+>    iopf_param = iopf_get_dev_fault_param(dev);
+>    if (WARN_ON(!iopf_param))
+> - return;
+> + goto err_bad_iopf;
+>
+>    if (!(fault->prm.flags & IOMMU_FAULT_PAGE_REQUEST_LAST_PAGE)) {
+>    report_partial_fault(iopf_param, fault);
+> @@ -182,38 +242,7 @@ void iommu_report_device_fault(struct device
+> *dev, struct iopf_fault *evt)
+>    if (group == &abort_group)
+>    goto err_abort;
+>
+> - if (fault->prm.flags & IOMMU_FAULT_PAGE_REQUEST_PASID_VALID) {
+> - group->attach_handle = iommu_attach_handle_get(dev->iommu_group,
+> -       fault->prm.pasid,
+> -       0);
+> - if (IS_ERR(group->attach_handle)) {
+> - const struct iommu_ops *ops = dev_iommu_ops(dev);
+> -
+> - if (!ops->user_pasid_table)
+> - goto err_abort;
+> -
+> - /*
+> - * The iommu driver for this device supports user-
+> - * managed PASID table. Therefore page faults for
+> - * any PASID should go through the NESTING domain
+> - * attached to the device RID.
+> - */
+> - group->attach_handle =
+> - iommu_attach_handle_get(dev->iommu_group,
+> - IOMMU_NO_PASID,
+> - IOMMU_DOMAIN_NESTED);
+> - if (IS_ERR(group->attach_handle))
+> - goto err_abort;
+> - }
+> - } else {
+> - group->attach_handle =
+> - iommu_attach_handle_get(dev->iommu_group, IOMMU_NO_PASID, 0);
+> - if (IS_ERR(group->attach_handle))
+> - goto err_abort;
+> - }
+> -
+> - if (!group->attach_handle->domain->iopf_handler)
+> - goto err_abort;
+> + group->attach_handle = attach_handle;
+>
+>    /*
+>    * On success iopf_handler must call iopf_group_response() and
+> @@ -222,7 +251,7 @@ void iommu_report_device_fault(struct device *dev,
+> struct iopf_fault *evt)
+>    if (group->attach_handle->domain->iopf_handler(group))
+>    goto err_abort;
+>
+> - return;
+> + return 0;
+>
+>   err_abort:
+>    dev_warn_ratelimited(dev, "iopf with pasid %d aborted\n",
+> @@ -232,6 +261,14 @@ void iommu_report_device_fault(struct device
+> *dev, struct iopf_fault *evt)
+>    __iopf_free_group(group);
+>    else
+>    iopf_free_group(group);
+> +
+> + return 0;
+> +
+> +err_bad_iopf:
+> + if (fault->type == IOMMU_FAULT_PAGE_REQ)
+> + iopf_error_response(dev, fault);
+> +
+> + return -EINVAL;
+>   }
+>   EXPORT_SYMBOL_GPL(iommu_report_device_fault);
+>
+> diff --git a/include/linux/iommu.h b/include/linux/iommu.h
+> index d87f9cbfc01e..062156a8d87b 100644
+> --- a/include/linux/iommu.h
+> +++ b/include/linux/iommu.h
+> @@ -1561,7 +1561,7 @@ struct iopf_queue *iopf_queue_alloc(const char *name);
+>   void iopf_queue_free(struct iopf_queue *queue);
+>   int iopf_queue_discard_partial(struct iopf_queue *queue);
+>   void iopf_free_group(struct iopf_group *group);
+> -void iommu_report_device_fault(struct device *dev, struct iopf_fault *evt);
+> +int iommu_report_device_fault(struct device *dev, struct iopf_fault *evt);
+>   void iopf_group_response(struct iopf_group *group,
+>    enum iommu_page_response_code status);
+>   #else
+> @@ -1599,9 +1599,10 @@ static inline void iopf_free_group(struct
+> iopf_group *group)
+>   {
+>   }
+>
+> -static inline void
+> +static inline int
+>   iommu_report_device_fault(struct device *dev, struct iopf_fault *evt)
+>   {
+> + return -ENODEV;
+>   }
+>
+>   static inline void iopf_group_response(struct iopf_group *group,
+> .
