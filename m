@@ -1,162 +1,64 @@
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 3006D158DD8
-	for <iommu@lists.linux.dev>; Mon,  5 Aug 2024 12:54:03 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 004492C6BD;
+	Mon,  5 Aug 2024 13:40:44 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1722862446; cv=none; b=Sb7C5pbmrRM/NLVgaBkWFPm44coYdaxv1EgCxvwCTbg5S7ynGNRAIYB65g3SkNmXnWzW/KnCH3E6urWDvHOqPWIJtB5IKVOqNzyvs3FuyjvcRx8e8gJumsh/kDqLofcT6grn7pvBt9EoONG9uEtangwZYnoK4WFWDvigwS8HWTE=
+	t=1722865245; cv=none; b=ikPSZSxATC9lG7MuwqH7Dz/xcLLHH3pyzSJnkXt807VOyugntnMaKhWwOq66CfnL/sOwhB8B+Y1p7Iq2T83xaHO3jK3kKItImrqf5eyKm+mAIAEvD4FQXzehV7tWzFJantin6dXrSeXVfT+kVsJu1nSaAgBKf+fgS9Erg11zbtQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1722862446; c=relaxed/simple;
-	bh=B9eCEAPPmf7hUoQFzUOAQPgCN7JCyf6R8EFxIMMn/O8=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=aX7L3q5IC1DosEQ5zwKY6HxPHBU2h4L03AzAM38++rfuDLiX1rGCA0uJfYi1DhaDzwu52DHYQD5qA2LLnR9UAFSUE08S6OQqxZihd630R5xH7Cn7KO5j4IIvELR8CIHXkBqOQqq8WaNtvXFPma8tlWh6WeYj0NJr/usnTbVaRCA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; arc=none smtp.client-ip=217.140.110.172
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 0ED9E143D;
-	Mon,  5 Aug 2024 05:54:29 -0700 (PDT)
-Received: from [10.1.196.40] (e121345-lin.cambridge.arm.com [10.1.196.40])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 5D7633F5A1;
-	Mon,  5 Aug 2024 05:54:01 -0700 (PDT)
-Message-ID: <190d5a15-d6bf-47d6-be86-991853b7b51d@arm.com>
-Date: Mon, 5 Aug 2024 13:53:58 +0100
+	s=arc-20240116; t=1722865245; c=relaxed/simple;
+	bh=XY+dscO9tTyktveRJky0Xx7/WBsaLA+Ui51Oy0cLUDc=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=uInt4lgSZ/cNwUQu9iJalJXsQfi7wfZAJTrod9T/N3BuQFP3Jv/hUqNGFe2nM36Bm8OUWYAGVvv8LfM4rSxjInvI7faWl7yTqOYG17o8qeTGgMGd5DIfYFMeWudl4SL2CRzwZUcpVC4r51z3MkbdjF7I3ict1wtUI4nG4FlyTpo=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=C3BQJDYY; arc=none smtp.client-ip=10.30.226.201
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="C3BQJDYY"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BDE7BC32782;
+	Mon,  5 Aug 2024 13:40:42 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1722865244;
+	bh=XY+dscO9tTyktveRJky0Xx7/WBsaLA+Ui51Oy0cLUDc=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=C3BQJDYYx66efgPjMKURA+QQYAxvi0RIAhGRCzgLJ2L1AHbFimYq3qUHtzffd2x9l
+	 BRs21lCgh73vlRdRTqiuHjBQvmoEYZodIS5ZugI7CgzzhkzXdScWM8FxN4THztm8KC
+	 r+UqkerC5BXyjCAZRKNv3VT6L5jVv4MxCl8ZXKVB3G79hfGT0lEGL7sl269MFx3K8H
+	 dLnqcC9srRu7/fdl8jVpV9+seYxPE3g+iRYLhfXp4eJr/m5h8/pL8w0S9MH3gXE4Yq
+	 WFG/avuc0uK53O3UyLiHvFv2nYNVqH5qt5awDzMIWBSsJdO4ZZK/UkPZjtFfGxhk7n
+	 Ci83Kquml7mzA==
+Date: Mon, 5 Aug 2024 14:40:39 +0100
+From: Will Deacon <will@kernel.org>
+To: Bjorn Helgaas <helgaas@kernel.org>
+Cc: steven <steven_ygui@163.com>, linux-pci@vger.kernel.org,
+	Robin Murphy <robin.murphy@arm.com>, Joerg Roedel <joro@8bytes.org>,
+	linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev,
+	Vidya Sagar <vidyas@nvidia.com>,
+	Pavan Kondeti <quic_pkondeti@quicinc.com>
+Subject: Re: does dtb not support pci acs enable?
+Message-ID: <20240805134038.GA9669@willie-the-truck>
+References: <20240801234356.GA128584@bhelgaas>
+ <20240802000042.GA129381@bhelgaas>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [BUG REPORT]net: page_pool: kernel crash at
- iommu_get_dma_domain+0xc/0x20
-To: Yunsheng Lin <linyunsheng@huawei.com>,
- Somnath Kotur <somnath.kotur@broadcom.com>,
- Jesper Dangaard Brouer <hawk@kernel.org>
-Cc: Yonglong Liu <liuyonglong@huawei.com>,
- "David S. Miller" <davem@davemloft.net>, Jakub Kicinski <kuba@kernel.org>,
- pabeni@redhat.com, ilias.apalodimas@linaro.org, netdev@vger.kernel.org,
- linux-kernel@vger.kernel.org, Alexander Duyck <alexander.duyck@gmail.com>,
- Alexei Starovoitov <ast@kernel.org>, "shenjian (K)" <shenjian15@huawei.com>,
- Salil Mehta <salil.mehta@huawei.com>, joro@8bytes.org, will@kernel.org,
- iommu@lists.linux.dev
-References: <0e54954b-0880-4ebc-8ef0-13b3ac0a6838@huawei.com>
- <8743264a-9700-4227-a556-5f931c720211@huawei.com>
- <e980d20f-ea8a-43e3-8d3f-179a269b5956@kernel.org>
- <CAOBf=musxZcjYNHjdD+MGp0y6epnNO5ryC6JgeAJbP6YQ+sVUA@mail.gmail.com>
- <ad84acd2-36ba-433c-bdf7-c16c0d992e1c@huawei.com>
-From: Robin Murphy <robin.murphy@arm.com>
-Content-Language: en-GB
-In-Reply-To: <ad84acd2-36ba-433c-bdf7-c16c0d992e1c@huawei.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20240802000042.GA129381@bhelgaas>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 
-On 05/08/2024 1:19 pm, Yunsheng Lin wrote:
-> On 2024/7/31 16:42, Somnath Kotur wrote:
->> On Tue, Jul 30, 2024 at 10:51 PM Jesper Dangaard Brouer <hawk@kernel.org> wrote:
->>>
+On Thu, Aug 01, 2024 at 07:00:42PM -0500, Bjorn Helgaas wrote:
+> On Thu, Aug 01, 2024 at 06:43:59PM -0500, Bjorn Helgaas wrote:
+> > [+cc ARM, IOMMU folks; I don't know the answer, but maybe they do]
 > 
-> +cc iommu maintainers and list
-> 
->>>
->>> On 30/07/2024 15.08, Yonglong Liu wrote:
->>>> I found a bug when running hns3 driver with page pool enabled, the log
->>>> as below:
->>>>
->>>> [ 4406.956606] Unable to handle kernel NULL pointer dereference at
->>>> virtual address 00000000000000a8
->>>
->>> struct iommu_domain *iommu_get_dma_domain(struct device *dev)
->>> {
->>>          return dev->iommu_group->default_domain;
->>> }
->>>
->>> $ pahole -C iommu_group --hex | grep default_domain
->>>          struct iommu_domain *      default_domain;   /*  0xa8   0x8 */
->>>
->>> Looks like iommu_group is a NULL pointer (that when deref member
->>> 'default_domain' cause this fault).
->>>
->>>
->>>> [ 4406.965379] Mem abort info:
->>>> [ 4406.968160]   ESR = 0x0000000096000004
->>>> [ 4406.971906]   EC = 0x25: DABT (current EL), IL = 32 bits
->>>> [ 4406.977218]   SET = 0, FnV = 0
->>>> [ 4406.980258]   EA = 0, S1PTW = 0
->>>> [ 4406.983404]   FSC = 0x04: level 0 translation fault
->>>> [ 4406.988273] Data abort info:
->>>> [ 4406.991154]   ISV = 0, ISS = 0x00000004, ISS2 = 0x00000000
->>>> [ 4406.996632]   CM = 0, WnR = 0, TnD = 0, TagAccess = 0
->>>> [ 4407.001681]   GCS = 0, Overlay = 0, DirtyBit = 0, Xs = 0
->>>> [ 4407.006985] user pgtable: 4k pages, 48-bit VAs, pgdp=0000202828326000
->>>> [ 4407.013430] [00000000000000a8] pgd=0000000000000000,
->>>> p4d=0000000000000000
->>>> [ 4407.020212] Internal error: Oops: 0000000096000004 [#1] PREEMPT SMP
->>>> [ 4407.026454] Modules linked in: hclgevf xt_CHECKSUM ipt_REJECT
->>>> nf_reject_ipv4 ip6table_mangle ip6table_nat iptable_mangle
->>>> ip6table_filter ip6_tables hns_roce_hw_v2 hns3 hclge hnae3 xt_addrtype
->>>> iptable_filter xt_conntrack overlay arm_spe_pmu arm_smmuv3_pmu
->>>> hisi_uncore_hha_pmu hisi_uncore_ddrc_pmu hisi_uncore_l3c_pmu
->>>> hisi_uncore_pmu fuse rpcrdma ib_isert iscsi_target_mod ib_iser libiscsi
->>>> scsi_transport_iscsi crct10dif_ce hisi_sec2 hisi_hpre hisi_zip
->>>> hisi_sas_v3_hw xhci_pci sbsa_gwdt hisi_qm hisi_sas_main hisi_dma
->>>> xhci_pci_renesas uacce libsas [last unloaded: hnae3]
->>>> [ 4407.076027] CPU: 48 PID: 610 Comm: kworker/48:1
->>>> [ 4407.093343] Workqueue: events page_pool_release_retry
->>>> [ 4407.098384] pstate: 60400009 (nZCv daif +PAN -UAO -TCO -DIT -SSBS
->>>> BTYPE=--)
->>>> [ 4407.105316] pc : iommu_get_dma_domain+0xc/0x20
->>>> [ 4407.109744] lr : iommu_dma_unmap_page+0x38/0xe8
->>>> [ 4407.114255] sp : ffff80008bacbc80
->>>> [ 4407.117554] x29: ffff80008bacbc80 x28: 0000000000000000 x27:
->>>> ffffc31806be7000
->>>> [ 4407.124659] x26: ffff2020002b6ac0 x25: 0000000000000000 x24:
->>>> 0000000000000002
->>>> [ 4407.131762] x23: 0000000000000022 x22: 0000000000001000 x21:
->>>> 00000000fcd7c000
->>>> [ 4407.138865] x20: ffff0020c9882800 x19: ffff0020856f60c8 x18:
->>>> ffff8000d3503c58
->>>> [ 4407.145968] x17: 0000000000000000 x16: 1fffe00419521061 x15:
->>>> 0000000000000001
->>>> [ 4407.153073] x14: 0000000000000003 x13: 00000401850ae012 x12:
->>>> 000006b10004e7fb
->>>> [ 4407.160177] x11: 0000000000000067 x10: 0000000000000c70 x9 :
->>>> ffffc3180405cd20
->>>> [ 4407.167280] x8 : fefefefefefefeff x7 : 0000000000000001 x6 :
->>>> 0000000000000010
->>>> [ 4407.174382] x5 : ffffc3180405cce8 x4 : 0000000000000022 x3 :
->>>> 0000000000000002
->>>> [ 4407.181485] x2 : 0000000000001000 x1 : 00000000fcd7c000 x0 :
->>>> 0000000000000000
->>>> [ 4407.188589] Call trace:
->>>> [ 4407.191027]  iommu_get_dma_domain+0xc/0x20
->>>> [ 4407.195105]  dma_unmap_page_attrs+0x38/0x1d0
->>>> [ 4407.199361]  page_pool_return_page+0x48/0x180
->>>> [ 4407.203699]  page_pool_release+0xd4/0x1f0
->>>> [ 4407.207692]  page_pool_release_retry+0x28/0xe8
->>>
->>> I suspect that the DMA IOMMU part was deallocated and freed by the
->>> driver even-though page_pool still have inflight packets.
->> When you say driver, which 'driver' do you mean?
->> I suspect this could be because of the VF instance going away with
->> this cmd - disable the vf: echo 0 >
->> /sys/class/net/eno1/device/sriov_numvfs, what do you think?
->>>
->>> The page_pool bumps refcnt via get_device() + put_device() on the DMA
->>> 'struct device', to avoid it going away, but I guess there is also some
->>> IOMMU code that we need to make sure doesn't go away (until all inflight
->>> pages are returned) ???
-> 
-> I guess the above is why thing went wrong here, the question is which
-> IOMMU code need to be called here to stop them from going away.
+> [+cc Vidya, Pavan, also see this recent thread:
+> https://lore.kernel.org/r/PH8PR12MB667446D4A4CAD6E0A2F488B5B83F2@PH8PR12MB6674.namprd12.prod.outlook.com]
 
-This looks like the wrong device is being passed to dma_unmap_page() - 
-if a device had an IOMMU DMA domain at the point when the DMA mapping 
-was create, then neither that domain nor its group can legitimately have 
-disappeared while that device still had a driver bound. Or if it *was* 
-the right device, but it's already had device_del() called on it, then 
-you have a fundamental lifecycle problem - a device with no driver bound 
-should not be passed to the DMA API, much less a dead device that's 
-already been removed from its parent bus.
+Specifically, it would be great to know if the diff from Pavan at the
+end of that thread [1] helps you, Steven.
 
-Thanks,
-Robin.
+Will
+
+[1] https://lore.kernel.org/r/f551eecc-33fa-4729-b004-64a532493705@quicinc.com
