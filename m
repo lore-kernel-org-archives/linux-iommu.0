@@ -1,95 +1,136 @@
-Received: from szxga03-in.huawei.com (szxga03-in.huawei.com [45.249.212.189])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-qv1-f44.google.com (mail-qv1-f44.google.com [209.85.219.44])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6BAA62A1CF
-	for <iommu@lists.linux.dev>; Tue,  6 Aug 2024 11:54:38 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=45.249.212.189
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AB6151BDAA3
+	for <iommu@lists.linux.dev>; Tue,  6 Aug 2024 12:34:55 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.219.44
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1722945280; cv=none; b=G0jF8fh+c+6sDHavkvMFcQmn6p1pXk61HPk9/oIBJ7nYNOINp39L/2QjdDGlu6YHW26mot5CKR+imWS/1alP6zDNIi6MFigMYU1fXh7emTWd100JB3MUXKue4FB1ZFzkWQrfbT8ztGEH14dWGN3CHO+rDcbqFzCb5ds99dYkl78=
+	t=1722947697; cv=none; b=S6rWWBwaL0RdGmU0YVF69MvYzNczqSGj50HcVwkxbkKpeEZWrrTd0V3dWi04R87nJkx4aP1cwndlo0E+6o7OVUKmND241UwNwb5XtR1JZScRek+agMqBTRZF/n+UBuo49zLCDRQ8Ay4hP5HDMXOlxSV/zC4d2/sk6Zp0ERec3As=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1722945280; c=relaxed/simple;
-	bh=Yykmez3ZYSmGq8BR/9ZQu5BlXfIo1K5NXYINP8pOyh8=;
-	h=Message-ID:Date:MIME-Version:Subject:To:CC:References:From:
-	 In-Reply-To:Content-Type; b=j8pI2Q4LJF+uycX6VBx4YPN7DHeJTLPvjqjittoXcpRoX5SCw2c5h5vB5hXfBSCQCVlQvuYXT6yMAg3HrpFN4tvwfHwXTL34UchAIdlDrVZ8WafWEUa+/mrp8FvIPIral+NX4r2YO5sRa1Th8nXHUdKDF/JBDR+xBTEm+5py7aU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=huawei.com; spf=pass smtp.mailfrom=huawei.com; arc=none smtp.client-ip=45.249.212.189
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=huawei.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=huawei.com
-Received: from mail.maildlp.com (unknown [172.19.163.252])
-	by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4WdWnq70VFzQp2C;
-	Tue,  6 Aug 2024 19:50:07 +0800 (CST)
-Received: from dggpemf200006.china.huawei.com (unknown [7.185.36.61])
-	by mail.maildlp.com (Postfix) with ESMTPS id 9DA501800A0;
-	Tue,  6 Aug 2024 19:54:33 +0800 (CST)
-Received: from [10.67.120.129] (10.67.120.129) by
- dggpemf200006.china.huawei.com (7.185.36.61) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.1544.11; Tue, 6 Aug 2024 19:54:33 +0800
-Message-ID: <5b0415ff-9bbe-4553-89d6-17d12fd44b47@huawei.com>
-Date: Tue, 6 Aug 2024 19:54:33 +0800
+	s=arc-20240116; t=1722947697; c=relaxed/simple;
+	bh=r8rmV4jgeMJkmzZ2MBVxQuEVVb5Pmne7D+T5M4+W2X0=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=O7skBAopSmSIO77rtkrND4k9JeNErfMYxeDa3JidZqdlb+Y+jdTGpo88uP30iFPojU4zUsCFKIHWcx1L7pzQY9frePAQpojHgeIWBS1oYHo8ICmMH/lAWx3a5KSgdsgoU2XXl7ceW1DnSDh8APptSKgHsQ3pjNcB+YtnErrG3Do=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=SsN0qMLM; arc=none smtp.client-ip=209.85.219.44
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="SsN0qMLM"
+Received: by mail-qv1-f44.google.com with SMTP id 6a1803df08f44-6bba6ced3d4so2266786d6.2
+        for <iommu@lists.linux.dev>; Tue, 06 Aug 2024 05:34:55 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=ziepe.ca; s=google; t=1722947694; x=1723552494; darn=lists.linux.dev;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :mime-version:references:message-id:subject:cc:to:from:date:from:to
+         :cc:subject:date:message-id:reply-to;
+        bh=tT87GVmE4PazQcQpqemDvL8DBN7ES24yAzLyZIfJhqQ=;
+        b=SsN0qMLMsHef3xH9SwOSzsHo124ROs3ok3ddZQzPsBaajt5skpf4Bw+NvHpY9RAN/j
+         HXIh0fkbH0De2Ae8u8jJzssiSlUE7pa8Og/0+LZB4nn/kQ897Q/5RbhkrMl5marK8WLK
+         NwBn8eulBnXXi1yJRzO3DrLokNVSRMJaPTi0Nb7qGbA0CGTG11I3RTl0wW0jhtYRXvno
+         6E7gLlVRIlgY8TjO0Dnmc357mhGNAXfFAtJn0nJ68z6s8oUmEOVYcRm6vpa6TpvJRh+u
+         /+ZH6Z32R+kPjl1zENDPEzaiPEpAsa7LuzAs/mr95lmgZ5a1hqcIT+n8xlES3S1ni8zr
+         wNhw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1722947694; x=1723552494;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :mime-version:references:message-id:subject:cc:to:from:date
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=tT87GVmE4PazQcQpqemDvL8DBN7ES24yAzLyZIfJhqQ=;
+        b=RG5NL6jv8UlLngu8jG6id9mMyuFSJSai/ufPl6KGNH1PxtBnfUAQWGObmm2tStGSc+
+         9W8gcvY4VqFK/3eeThI4aDx7asxxDW/zmNcN+eIzKkxLq1m2TwdvbUcG+3LZl5A/iDWA
+         YvOQ4i60CHXhTRGYQcrPTe25aHYxMXxhVioyNRw7EAqf8r5CXxo5CwM00sFoCVxQyjan
+         S/On8ExrWd37qLntmyszVSbBL7KMddKnG5XRgtfuvzUicGBGYqYrCX16GXp8yIwqJUmz
+         ys2WMybt99hVjVXGUuuy3t1xkPf72Nc7zCim0ihCg3yXfuW9/EKqmkjwt3JwVoRHtjNL
+         Vz6A==
+X-Forwarded-Encrypted: i=1; AJvYcCV5WcqH+ryS0eggxcFHYY4jB7s8vSMhu7UQhbakgSiMpLG+N4NNksBYf6MHeNT/7zQBlARE4mXwZhf8FDxbrLeCOy09jVU=
+X-Gm-Message-State: AOJu0YyBgzurtT57W/gfyolYAQohjA+idL58zrxvPlzNf0N21psLODgU
+	RSgawQlG6fcAUANFV83QO9BwtgJMmEGABwRqDGRu16hcxQR/dyyIRrvC0NirEbA=
+X-Google-Smtp-Source: AGHT+IGmYQFj1ribzYl9gphX3skOBCcH3cNPrQ+MYzDmvPNBOyJNFL/h/6Y5NFSlQz+sUvZygGTpHw==
+X-Received: by 2002:a05:6214:4389:b0:6b5:4865:948f with SMTP id 6a1803df08f44-6bb983fc1bamr126034186d6.27.1722947694339;
+        Tue, 06 Aug 2024 05:34:54 -0700 (PDT)
+Received: from ziepe.ca (hlfxns017vw-142-68-80-239.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.68.80.239])
+        by smtp.gmail.com with ESMTPSA id 6a1803df08f44-6bba1527214sm41599216d6.116.2024.08.06.05.34.53
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 06 Aug 2024 05:34:53 -0700 (PDT)
+Received: from jgg by wakko with local (Exim 4.95)
+	(envelope-from <jgg@ziepe.ca>)
+	id 1sbJOu-00EH65-RA;
+	Tue, 06 Aug 2024 09:34:52 -0300
+Date: Tue, 6 Aug 2024 09:34:52 -0300
+From: Jason Gunthorpe <jgg@ziepe.ca>
+To: Vasant Hegde <vasant.hegde@amd.com>
+Cc: Baolu Lu <baolu.lu@linux.intel.com>, iommu@lists.linux.dev,
+	joro@8bytes.org, will@kernel.org, robin.murphy@arm.com,
+	suravee.suthikulpanit@amd.com, yi.l.liu@intel.com
+Subject: Re: [PATCH RFCv2] iommu: Add domain type and flag to
+ domain_alloc_paging()
+Message-ID: <20240806123452.GE676757@ziepe.ca>
+References: <20240801144523.11803-1-vasant.hegde@amd.com>
+ <8e531f39-9d14-4d3b-8a52-c2e8ca026f9e@linux.intel.com>
+ <098008f7-2b3e-405a-a096-947e5df560e6@amd.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [BUG REPORT]net: page_pool: kernel crash at
- iommu_get_dma_domain+0xc/0x20
-To: Robin Murphy <robin.murphy@arm.com>, Somnath Kotur
-	<somnath.kotur@broadcom.com>, Jesper Dangaard Brouer <hawk@kernel.org>
-CC: Yonglong Liu <liuyonglong@huawei.com>, "David S. Miller"
-	<davem@davemloft.net>, Jakub Kicinski <kuba@kernel.org>, <pabeni@redhat.com>,
-	<ilias.apalodimas@linaro.org>, <netdev@vger.kernel.org>,
-	<linux-kernel@vger.kernel.org>, Alexander Duyck <alexander.duyck@gmail.com>,
-	Alexei Starovoitov <ast@kernel.org>, "shenjian (K)" <shenjian15@huawei.com>,
-	Salil Mehta <salil.mehta@huawei.com>, <joro@8bytes.org>, <will@kernel.org>,
-	<iommu@lists.linux.dev>
-References: <0e54954b-0880-4ebc-8ef0-13b3ac0a6838@huawei.com>
- <8743264a-9700-4227-a556-5f931c720211@huawei.com>
- <e980d20f-ea8a-43e3-8d3f-179a269b5956@kernel.org>
- <CAOBf=musxZcjYNHjdD+MGp0y6epnNO5ryC6JgeAJbP6YQ+sVUA@mail.gmail.com>
- <ad84acd2-36ba-433c-bdf7-c16c0d992e1c@huawei.com>
- <190d5a15-d6bf-47d6-be86-991853b7b51d@arm.com>
-Content-Language: en-US
-From: Yunsheng Lin <linyunsheng@huawei.com>
-In-Reply-To: <190d5a15-d6bf-47d6-be86-991853b7b51d@arm.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: dggems706-chm.china.huawei.com (10.3.19.183) To
- dggpemf200006.china.huawei.com (7.185.36.61)
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <098008f7-2b3e-405a-a096-947e5df560e6@amd.com>
 
-On 2024/8/5 20:53, Robin Murphy wrote:
->>>>
->>>> The page_pool bumps refcnt via get_device() + put_device() on the DMA
->>>> 'struct device', to avoid it going away, but I guess there is also some
->>>> IOMMU code that we need to make sure doesn't go away (until all inflight
->>>> pages are returned) ???
->>
->> I guess the above is why thing went wrong here, the question is which
->> IOMMU code need to be called here to stop them from going away.
-> 
-> This looks like the wrong device is being passed to dma_unmap_page() - if a device had an IOMMU DMA domain at the point when the DMA mapping was create, then neither that domain nor its group can legitimately have disappeared while that device still had a driver bound. Or if it *was* the right device, but it's already had device_del() called on it, then you have a fundamental lifecycle problem - a device with no driver bound should not be passed to the DMA API, much less a dead device that's already been removed from its parent bus.
+On Fri, Aug 02, 2024 at 11:23:52AM +0530, Vasant Hegde wrote:
 
-Yes, the device *was* the right device, And it's already had device_del()
-called on it.
-page_pool tries to call get_device() on the DMA 'struct device' to avoid the
-above lifecycle problem, it seems get_device() does not stop device_del()
-from being called, and that is where we have the problem here:
-https://elixir.bootlin.com/linux/v6.11-rc2/source/net/core/page_pool.c#L269
+> >> +    struct iommu_domain *(*domain_alloc_paging)(struct device *dev,
+> >> +                            u32 iommu_domain_type, u32 flags);
+> > 
+> > I still can't see a value to pass the domain type in this callback.
+> > Different domain could have different domain allocation callback, hence
+> > the domain type has already been implied.
 
-The above happens because driver with page_pool support may hand over
-page still with dma mapping to network stack and try to reuse that page
-after network stack is done with it and passes it back to page_pool to avoid
-the penalty of dma mapping/unmapping. With all the caching in the network
-stack, some pages may be held in the network stack without returning to the
-page_pool soon enough, and with VF disable causing the driver unbound, the
-page_pool does not stop the driver from doing it's unbounding work, instead
-page_pool uses workqueue to check if there is some pages coming back from the
-network stack periodically, if there is any, it will do the dma unmmapping
-related cleanup work.
++1
 
+> > For the paging domain, there should be no difference between DMA and
+> > UNMNANAGED from iommu driver's point of view.
 > 
-> Thanks,
-> Robin.
+> That's true. Its all paging domain. But we need a way to indicate the desired
+> capability like PASID.
+ 
+> I thoughts we can use `type` for allocating domain and then `flag` to pass the
+> quirks. Otherwise we have to club everything in `flags` itself.
 > 
+> Something like below works ?
 > 
+>   - DMA-API domain : flag - DOMAIN_ALLOC_FLAG_PASID
+>     If both device and IOMMU supports PASID it will allocate PASID capable
+>     domain (Like AMD case domain with V2 page table). Else it will alloate
+>     non-pasid capable domain (In AMD case it will be domain with v1 page table).
+
+This is a much larger problem. The DMA API domain is created way early
+before any drivers are bound. If it doesn't support PASID then no
+drivers will get to use PASID at all.
+
+You'd need to figure out some way to switch the DMA API domain on the
+fly around when a PASID wanting driver binds. This might be reasonable
+since PASID devices tend to need single device groups to work at all
+and we could conceivably switch the group under driver control during
+early binding.
+
+For now we expect that the DMA API domain will support PASID if the
+underyling device supports PASID, that is the only way this can work
+today. Meaning domain_alloc_paging() must always return something that
+can enable PASID.
+
+>   - UNMANAGED domain : Do not pass *_PASID support flag
+>     Since PASID flag is *not* passed, driver will decide best suitable page
+>     table (in AMD case, we will allocate V1 page table)
+
+And here this is only VFIO. When you figure out with Alex and Yi how
+VFIO will decide to do PASID or not then pass that indication through
+the existing flag argument on domain_alloc_user(). At least this is
+pretty simple.
+
+But as I said before, the important thing from your perspective is
+that VFIO does not default-on PASID support!
+
+Jason
