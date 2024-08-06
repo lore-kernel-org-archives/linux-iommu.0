@@ -1,290 +1,396 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.10])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 110631BCA1B
-	for <iommu@lists.linux.dev>; Tue,  6 Aug 2024 08:25:39 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=192.198.163.10
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1722932741; cv=fail; b=RABhOauigKeQcxul2DaVlgecJFQbPlfg4kJjukXTE/fIkp0ElfdUPefmjnfrRil+drACY2HWcTpLkKlJA7nj2s3R+AVnY3cKehHD/BkS5lm7Ix/PlJ5VGQVOUCV8dUQzXRsso1ZygDRVLzIxAoeB2zm4NhEbG/b4ZXZcP+/Qe58=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1722932741; c=relaxed/simple;
-	bh=6kw1ufUhd7TmcdSv05MOt5fZJ8Nndwtya5jPEmW0gCA=;
-	h=From:To:CC:Subject:Date:Message-ID:References:In-Reply-To:
-	 Content-Type:MIME-Version; b=YUARNdoTu79rz+61XVrWIutlvovn1i7CCqNwS96itQCK7JTCdEFyvp68eI5kdsJAZgCshLjLjmve/kfqsjQPad6izvwmKmvUn9KFmRX8YJFtcAvXcE28fuRwgwQ2uv8YbZHSFHt9hX1WHKPIC6tN9X8VCir1kyEvDBdyO4IqEYI=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=iOQ3S99E; arc=fail smtp.client-ip=192.198.163.10
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7030CF4FA;
+	Tue,  6 Aug 2024 09:51:36 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1722937896; cv=none; b=SyD4YZqoTWAVnEFAiZWmk9jLtmBMovSIbslihoMLGhhrxpD5O4u+2dcNg2IJIMIvKu//j5/d/KY5vX/aGVTZrX9VvpPaViQp0UJw7T4mePu0v88StoiiBfZ9TKvJMEgwW876lOHE0qx9Qo6kxNUQB08wzz6ZGPxGoJV44CDBu5M=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1722937896; c=relaxed/simple;
+	bh=rFZ5BVoG5sE3sYKVXHYIEXX+iy+2/CjVVn9kYPvqLpQ=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=ZyX781MmyEk8T/g+itTEhiElKd4DQWNJDe7KEOyjYDgZPoij072XsqOFU4zzcH9rVNnWZlTFHyhx7rlWIaJu+NyiXNC3Xe5hXLZdFC+GgK1KkxvsPLUWpI+p1jVVGhk6Acueq4grEnLfwiZp++pRIiHD2o3Qg374aGNEt6yFVi4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=uo+oBi2B; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="iOQ3S99E"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1722932740; x=1754468740;
-  h=from:to:cc:subject:date:message-id:references:
-   in-reply-to:content-transfer-encoding:mime-version;
-  bh=6kw1ufUhd7TmcdSv05MOt5fZJ8Nndwtya5jPEmW0gCA=;
-  b=iOQ3S99Elb3Hkr3P8yNpHlnxI72sVBpesnzjclGFEdYwqlnIA1m9xQjI
-   l9rAfynwD9zaaKbIeFQvP6MzPV5WPr4DztvKHNY2gUkcQpxha0cOgIqKg
-   zntjEV/fATI46xdmhp1QYkrIEG0NGztml9hl8ngolBujnKHFjc1tcuz0F
-   ZJjomemGdjOZGQ985Ht5r2Pm6jjiFrH+g/57P0NzY6ZLHe6P5CvA3Zvf9
-   jefvTlcJhbEoVrbjRHLv8iaypZVqV1ntrJUnrfF0ruKwQC9mWvRUU/1ib
-   +Cn5cPJQRTj9EO6w2ic+BDI1ahNUkKlGjk4WXP/bEbqCg/+i7VLSNWYVl
-   A==;
-X-CSE-ConnectionGUID: BkU1jpNUTnSz/Z+7ndjCAg==
-X-CSE-MsgGUID: kcTQhB0FSEaJlAo20Ngp7A==
-X-IronPort-AV: E=McAfee;i="6700,10204,11155"; a="32338072"
-X-IronPort-AV: E=Sophos;i="6.09,267,1716274800"; 
-   d="scan'208";a="32338072"
-Received: from fmviesa010.fm.intel.com ([10.60.135.150])
-  by fmvoesa104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Aug 2024 01:25:39 -0700
-X-CSE-ConnectionGUID: Cq166OByRFqNDQQDt8eNnA==
-X-CSE-MsgGUID: V8yg5wDqQ8aMTNvLWLBP8Q==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.09,267,1716274800"; 
-   d="scan'208";a="56528507"
-Received: from fmsmsx603.amr.corp.intel.com ([10.18.126.83])
-  by fmviesa010.fm.intel.com with ESMTP/TLS/AES256-GCM-SHA384; 06 Aug 2024 01:25:37 -0700
-Received: from fmsmsx611.amr.corp.intel.com (10.18.126.91) by
- fmsmsx603.amr.corp.intel.com (10.18.126.83) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.39; Tue, 6 Aug 2024 01:25:36 -0700
-Received: from fmsmsx612.amr.corp.intel.com (10.18.126.92) by
- fmsmsx611.amr.corp.intel.com (10.18.126.91) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.39; Tue, 6 Aug 2024 01:25:36 -0700
-Received: from fmsedg601.ED.cps.intel.com (10.1.192.135) by
- fmsmsx612.amr.corp.intel.com (10.18.126.92) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.39 via Frontend Transport; Tue, 6 Aug 2024 01:25:36 -0700
-Received: from NAM10-DM6-obe.outbound.protection.outlook.com (104.47.58.100)
- by edgegateway.intel.com (192.55.55.70) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.1.2507.39; Tue, 6 Aug 2024 01:25:35 -0700
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=bmEJ2FGELqQZWT0QGc+aYRc+6NJAxF0HeRQvq0roV28PCP0pamzT++vo4LMRegy60oR4hxXuQJ8zHzWJfQnV+iFSvdD/UhOSkTVVRFTBooQF2vPrrzgkM39CyvDSy5C0yApqHy0ydJvxfUYwsZAAsPsl9eyvQYNlKQLgyvCA+QOu+WTgUezyo/qrTJVtUQvlizCwBqXYjxd21D7NCxguZQBrsx+f+7nSdaaIoOty6+yFNjAau6yAQJGd9o7/p0DJKQ1F5PfJuTxFxrCGcGcvZ/8r4E13/ktmG1YwrEtNSAcU3WdgLSEK/PoC9DYfx4HmIMe9NcDmQ5MguxW2WtwnZg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=LqwwwZNC7oWmhY8qFXTOYHtRmoEEns9S8RSuPH5dyXc=;
- b=XxlrvrKw0a9xxT3EE0EWeB64jd7lW1OIjeAiQ+y3ThGasDouD/3M+dyopOq+mimpXr1mUShzgpnCsWyhegC84AOk8Yyl1lyQ5+3zVwhkIQhnXP0pqbPcaHgTmOGWfvkcXHJIyZ3XSIjaVeAZsMfIiSLf6dzJWAYGGsYx78CZ5U/1LIjeDnRRR4qeIPVeDAlTsiMxzwTJyIQda0uV8lpZYIwa0M+rWURRMICW7iN1xuH83h7PouXhdyihyZSDRZHRIuoO1uLJLH/Aqdzmn/4p7G++TAIAJTBH/Fc/8AcZB5gWHO5UjxQAyKTIU0qNzi5lSeLetppRBKYLMGKh1KgU3A==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
- dkim=pass header.d=intel.com; arc=none
-Received: from BN9PR11MB5276.namprd11.prod.outlook.com (2603:10b6:408:135::18)
- by SJ0PR11MB5168.namprd11.prod.outlook.com (2603:10b6:a03:2dc::7) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7828.28; Tue, 6 Aug
- 2024 08:25:33 +0000
-Received: from BN9PR11MB5276.namprd11.prod.outlook.com
- ([fe80::b576:d3bd:c8e0:4bc1]) by BN9PR11MB5276.namprd11.prod.outlook.com
- ([fe80::b576:d3bd:c8e0:4bc1%3]) with mapi id 15.20.7828.023; Tue, 6 Aug 2024
- 08:25:33 +0000
-From: "Tian, Kevin" <kevin.tian@intel.com>
-To: Nicolin Chen <nicolinc@nvidia.com>, "jgg@nvidia.com" <jgg@nvidia.com>
-CC: "robin.murphy@arm.com" <robin.murphy@arm.com>, "joro@8bytes.org"
-	<joro@8bytes.org>, "will@kernel.org" <will@kernel.org>, "shuah@kernel.org"
-	<shuah@kernel.org>, "iommu@lists.linux.dev" <iommu@lists.linux.dev>,
-	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-	"linux-kselftest@vger.kernel.org" <linux-kselftest@vger.kernel.org>
-Subject: RE: [PATCH v2 2/3] iommu/dma: Support MSIs through nested domains
-Thread-Topic: [PATCH v2 2/3] iommu/dma: Support MSIs through nested domains
-Thread-Index: AQHa5Tymvv0QPh+hX0iHTvry+ddr+7IZ6L5A
-Date: Tue, 6 Aug 2024 08:25:33 +0000
-Message-ID: <BN9PR11MB5276E59FBD67B1119B3E2A858CBF2@BN9PR11MB5276.namprd11.prod.outlook.com>
-References: <cover.1722644866.git.nicolinc@nvidia.com>
- <b1b8ff9c716f22f524be0313ad12e5c6d10f5bd4.1722644866.git.nicolinc@nvidia.com>
-In-Reply-To: <b1b8ff9c716f22f524be0313ad12e5c6d10f5bd4.1722644866.git.nicolinc@nvidia.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach:
-X-MS-TNEF-Correlator:
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=intel.com;
-x-ms-publictraffictype: Email
-x-ms-traffictypediagnostic: BN9PR11MB5276:EE_|SJ0PR11MB5168:EE_
-x-ms-office365-filtering-correlation-id: bbfa5edb-ad19-4aa6-f74e-08dcb5f1573a
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;ARA:13230040|376014|366016|1800799024|38070700018;
-x-microsoft-antispam-message-info: =?us-ascii?Q?XTrp2SdbuJ8nIpVER4CDGKufG66aUGdxxZ6hTjFiPg/8Rda0HBbEprqNqlnl?=
- =?us-ascii?Q?4oRGMqlNYC89OL337SLzwvE7P0vLyVK/YIdyg3OthQaM2eLEpyuhkLNW1lHX?=
- =?us-ascii?Q?14GotYS6DbMtgJlujDXb2qpttWpJHO2NlKB0bMaQluWMF8ozaiUFBJKLqr1T?=
- =?us-ascii?Q?QzPx4Saa4RrPxQsgxhqMKqBkolDxnrece0GbtfdwVKxqWBftkBUFhicnDNKu?=
- =?us-ascii?Q?WIsB9hFn9Ytsf/L5FGFEmJ2QA+YZO2/TFwZ17bEZhnk61JNnDPTQHb3HfEWm?=
- =?us-ascii?Q?yJYEQFpBSb8K5Ff6D9Aqce/hsdUsNLoxbOcs8ZXPOYIAWumyQvZAuKfPvhbc?=
- =?us-ascii?Q?TYSxsmpP+gnJOnz61XW+t7oyegP4g51qIMs3cyHLDGz+IAbHmzQDicGAK/7X?=
- =?us-ascii?Q?UNkeXWLLHsbjUiH/YOozZXaAfVXLQP7Kq+ezAG5dIjwFG6gxAnxquQ+TWWX3?=
- =?us-ascii?Q?4FLn8eWh5+cOOAq84cKZuthVWkOrG0SnJ/3B6alAIY29bIDiltuouRBCER4R?=
- =?us-ascii?Q?7dXcrhhM2TMvsX1ego5rNqRopNEyeEmgLk3M4W8ijVmqBzATAsavWDPTSn6f?=
- =?us-ascii?Q?fPH2f9DuuLYX8M7YSvCNFcs2hXCjutGORJvxzZtn0B4HkmifmFm2bsMUZoWR?=
- =?us-ascii?Q?KH8O3yRCUc+YPs5kyQkYwPeoeTkkZTU4oManZ9vPo1dIa6QsbmbhdMc73uac?=
- =?us-ascii?Q?i7EHTAeO2RLR4oEjzpYMlfLlXYLIc4oSwh7k/R/ckjPAIQe0l/JgweRuIIha?=
- =?us-ascii?Q?Q+/VxOHSj0aEX/rmlsFuzfd8R/6lBHPttzPW25t2/nLZj5g3rd7HXDhkF6HQ?=
- =?us-ascii?Q?ftO2LSB76QgmkOQx4LbPWSCZAiaLvDML9YyaGxDlk9yHLrpbwGvRPM0XaNFH?=
- =?us-ascii?Q?EbIIPAdKHYDaMp8LiJY9c/7m2O9qkE5dnQkCtnsAhWqcRAusQWidaKQ4Lccm?=
- =?us-ascii?Q?39BFAM6VXYU+feG/4vaRAIgBbJrHoR8MFMk/7B8nfi04Ug27t5Jay6qz8Fyt?=
- =?us-ascii?Q?e5sXQQlPDJN+lP/8jGL8ajCkDlhbl3g/tiV/o5Av+hX9CWU7paLey6gg/8rg?=
- =?us-ascii?Q?kDI9xjVOrD02OS/aOC3ah0d0X8YyTwMvXq5snAEFJKnHfVoWkWhERc+VIvCT?=
- =?us-ascii?Q?XZRV86rQV12cX5C1hbnRvcn2HYH+iP+Rlj4y3KuUy+h4mPbPammNHr9BvqjR?=
- =?us-ascii?Q?5Tn7z8MXbCKyiSZmJ8L+lhW8mmHGMLHY47aULdi2k475Z7kW65FRzqbCCqzf?=
- =?us-ascii?Q?03szSC/2WcT096eW69Th8VY4vLGGWyaWXi7k97xx9uwuWqof0K2Gpu5QBSc6?=
- =?us-ascii?Q?Ypn511GSlcNVehIIlTZ75FFEdatJk7sqToUIkfzXi5QobBVgq39O1OBLljYf?=
- =?us-ascii?Q?mxAnKk9cCHPeGmOx5iK4Xc2ka8NaR/BbolvrYYEQG7reG5Lkbw=3D=3D?=
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BN9PR11MB5276.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(376014)(366016)(1800799024)(38070700018);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?RRds9/V46UwLIdaQbb1dIvq03+2J/Ph8UNJGbgnBQNRwN9dUsuwf68N8+T/a?=
- =?us-ascii?Q?epiPPbqeOEXunAZg1aOrdVqgrTd2WedWCWc3RkahFiDAj5km+KBjggKWOjSq?=
- =?us-ascii?Q?pEu+6RUnh/celQomDjPDs5Bf7FhtKilZuXRM3KfNnlaQUdDuyQb80n6aJ4Dl?=
- =?us-ascii?Q?5kc+OScFSQTQw1L2KWZgRmWoMqc5DTTn9/Y7YcxnmGBB0nqN0qVrLv3i/tWn?=
- =?us-ascii?Q?y5tWORmJkJqlR4ZGA9KyzIxhKGaqP7xJFn6RK1wP4N+DgH5A4hw/q1CYaVWb?=
- =?us-ascii?Q?NzmwfU3z0+4WeNlMYlq5o9/lKz+oy6QCG3aVG9EqTJR1bKv2GItXeRizw52d?=
- =?us-ascii?Q?U47aJ9lanp32v+/QUyXc1uTrY2Bk8OBtK0L5R747uhFSevPNYA4hVBJTzsL7?=
- =?us-ascii?Q?E4hOhOWDbZM7/iMn1zSSAp08iCTLbhxDpm05xKcJbEu3JdvgUfuDgcQdCYZK?=
- =?us-ascii?Q?uvh4Ygq068r/43vgqALtTQfHkG8dXCwrmJU/Bld/gtcOiU349qIiIOCDb4m6?=
- =?us-ascii?Q?CEl8FLfhQl7JxOZ3SKBI86unqs6WekbxyPTVS6rHtGC77/Kuv+Z8KRi6ByBH?=
- =?us-ascii?Q?hdArYANUuFbRDKr/6B2sXCHO9Xc/jM6CEtZa6jty6tr8ZffU6F/vuCsxfLF0?=
- =?us-ascii?Q?ylxZxxQBUJfsRuEZGZ1BzrkY3q8JTBt1SRER6Ax52E0o2FCLL2WY3jB7b0e/?=
- =?us-ascii?Q?b5jqFfN63itLHNWOi74Cqoxe7BNE6IzOnYuxC6piou6pbwOuh/hT/ub5mjfG?=
- =?us-ascii?Q?Ews3LIeWEuVf/CcbuWJ2kJ+9+prnHNH4JT7YdbEGprtbFDu8VZcRDYeBmLmn?=
- =?us-ascii?Q?8VDO32ADaiE7A4DjnLSir3lou10kA1dyr5K3S7uyoZIDiSnxpRSNNP62eTji?=
- =?us-ascii?Q?Laro+wQaNBudwDj0ZNSLg2DNeD+ABP3s1TxUgbJc5FKi+tsvgPTRvM/666W3?=
- =?us-ascii?Q?kC1eRKLH9yZ8J+6TIM7Tl876oszhhtZ9/Dc0RBEW+ICpFvl0CB7VL8SIpC88?=
- =?us-ascii?Q?QvzEqea441p3KsgWuIO/7GkxiBFo55J7ysS5AXh66rzs2Rmna/la8AjP8HE0?=
- =?us-ascii?Q?vOAY06kvd1qpGJOlQRpvzVkm6DbNZWSL7Kbsj5njJm6T2AK6Vps36n1IzNw2?=
- =?us-ascii?Q?Z7p8PlA/KpoBSCW8J0NtIVODNIhEazMZVJpjncg9swJJe2Ai5G+i+ss9T3+9?=
- =?us-ascii?Q?owr+du5TghAP5vGaQ5K7kXCg9g4waxiIgARlwJvIIjEfgxd3Lau32Yg4SOB1?=
- =?us-ascii?Q?d9bO0wHb3xqfUR4Qqc20mXHUqVrcUpZt6h5K8L+ws5/9HoFsqIerrJIV5Y4O?=
- =?us-ascii?Q?RFWsFzGEbYghB4Q1MbsAJxhej8UEHPvcKGmFcvdzF1i8Z32nxKq0LLQvVnPF?=
- =?us-ascii?Q?k95q7cqyKLklFg3h7BZZK0RYuUGcTzMYVwjWplnkcmCCprlVbJUIWyhIIf+e?=
- =?us-ascii?Q?hCiQeiKKNPBLvLn+2XbtfV5/7/UQmguMwCGLnfQwCr59YpEbRMJl7jFH+Lo+?=
- =?us-ascii?Q?tnmdKDWJTKxKHKqGFJGMC2Hbc6LxCU8Homw4ALk+RFKmb4UQRSg0i7w2J5/D?=
- =?us-ascii?Q?aDksviK2mfWHd0NtxLZCW1P6pnmtJ/n6dm+q3rst?=
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="uo+oBi2B"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1BE46C32786;
+	Tue,  6 Aug 2024 09:51:32 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1722937895;
+	bh=rFZ5BVoG5sE3sYKVXHYIEXX+iy+2/CjVVn9kYPvqLpQ=;
+	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+	b=uo+oBi2ByVjwsslyGoaeNZ69Bj0FQW5pKn2mtJ8oXR5mCbnkTbWM8t62w1psHAkEa
+	 dk7hIz6dH8e+Tm8sNLCZyleUU8F3M+JYvqWfr5Fui1mwPceCW7CVJ1RukWVX0/jZbQ
+	 FC9kxAPI3EtTfSD9pxvLxWLmNO9qoDsVWsTml9JIj4YLcRSqrvebScSbytb313kj86
+	 OZWF+CPTCKxAFp9ncKgA5gHIwf9j03dLMMPidydLqEoJwB6GLbqINj8UorY9YPiexg
+	 ZRDx5EF5l7ycEjNU49vwuFvc4kykO7EJ8JWdsaPRn+oaZGX/Z8DO0A21bDcOfqTaWs
+	 nmfGPTsf+ykAw==
+Message-ID: <8067f204-1380-4d37-8ffd-007fc6f26738@kernel.org>
+Date: Tue, 6 Aug 2024 11:51:31 +0200
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: BN9PR11MB5276.namprd11.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: bbfa5edb-ad19-4aa6-f74e-08dcb5f1573a
-X-MS-Exchange-CrossTenant-originalarrivaltime: 06 Aug 2024 08:25:33.4622
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 46c98d88-e344-4ed4-8496-4ed7712e255d
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: dij3yGevUlMrzP6t4KYJwgdQsrIwAvAt93/wEZ3nOqDGuBGqX179b3bKk8Stvln7ASnbjVGlTzR5yv870ZifVg==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SJ0PR11MB5168
-X-OriginatorOrg: intel.com
+User-Agent: Mozilla Thunderbird
+Subject: Re: [BUG REPORT]net: page_pool: kernel crash at
+ iommu_get_dma_domain+0xc/0x20
+To: Yonglong Liu <liuyonglong@huawei.com>,
+ Somnath Kotur <somnath.kotur@broadcom.com>
+Cc: "David S. Miller" <davem@davemloft.net>, Jakub Kicinski
+ <kuba@kernel.org>, pabeni@redhat.com, ilias.apalodimas@linaro.org,
+ netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+ Alexander Duyck <alexander.duyck@gmail.com>,
+ Alexei Starovoitov <ast@kernel.org>, linyunsheng <linyunsheng@huawei.com>,
+ "shenjian (K)" <shenjian15@huawei.com>, Salil Mehta
+ <salil.mehta@huawei.com>, iommu@lists.linux.dev,
+ Jean-Philippe Brucker <jean-philippe@linaro.org>, linux-acpi@vger.kernel.org
+References: <0e54954b-0880-4ebc-8ef0-13b3ac0a6838@huawei.com>
+ <8743264a-9700-4227-a556-5f931c720211@huawei.com>
+ <e980d20f-ea8a-43e3-8d3f-179a269b5956@kernel.org>
+ <CAOBf=musxZcjYNHjdD+MGp0y6epnNO5ryC6JgeAJbP6YQ+sVUA@mail.gmail.com>
+ <d385bdba-65a0-4776-b950-9e62392f5115@huawei.com>
+ <f09f7df6-9d5e-410d-8409-006c3b6e995a@huawei.com>
+Content-Language: en-US
+From: Jesper Dangaard Brouer <hawk@kernel.org>
+In-Reply-To: <f09f7df6-9d5e-410d-8409-006c3b6e995a@huawei.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 
-> From: Nicolin Chen <nicolinc@nvidia.com>
-> Sent: Saturday, August 3, 2024 8:32 AM
->=20
-> From: Robin Murphy <robin.murphy@arm.com>
->=20
-> Currently, iommu-dma is the only place outside of IOMMUFD and drivers
-> which might need to be aware of the stage 2 domain encapsulated within
-> a nested domain. This would be in the legacy-VFIO-style case where we're
 
-why is it a legacy-VFIO-style? We only support nested in IOMMUFD.
+Cc. IOMMU list+maintainers, question below...
 
-> using host-managed MSIs with an identity mapping at stage 1, where it is
-> the underlying stage 2 domain which owns an MSI cookie and holds the
-> corresponding dynamic mappings. Hook up the new op to resolve what we
-> need from a nested domain.
->=20
-> Signed-off-by: Robin Murphy <robin.murphy@arm.com>
-> Signed-off-by: Nicolin Chen <nicolinc@nvidia.com>
-> ---
->  drivers/iommu/dma-iommu.c | 18 ++++++++++++++++--
->  include/linux/iommu.h     |  4 ++++
->  2 files changed, 20 insertions(+), 2 deletions(-)
->=20
-> diff --git a/drivers/iommu/dma-iommu.c b/drivers/iommu/dma-iommu.c
-> index 7b1dfa0665df6..05e04934a5f81 100644
-> --- a/drivers/iommu/dma-iommu.c
-> +++ b/drivers/iommu/dma-iommu.c
-> @@ -1799,6 +1799,20 @@ static struct iommu_dma_msi_page
-> *iommu_dma_get_msi_page(struct device *dev,
->  	return NULL;
->  }
->=20
-> +/*
-> + * Nested domains may not have an MSI cookie or accept mappings, but
-> they may
-> + * be related to a domain which does, so we let them tell us what they n=
-eed.
-> + */
-> +static struct iommu_domain
-> *iommu_dma_get_msi_mapping_domain(struct device *dev)
-> +{
-> +	struct iommu_domain *domain =3D iommu_get_domain_for_dev(dev);
+
+On 02/08/2024 04.06, Yonglong Liu wrote:
+> 
+> On 2024/7/31 19:32, Yonglong Liu wrote:
+>>
+>> On 2024/7/31 16:42, Somnath Kotur wrote:
+>>> On Tue, Jul 30, 2024 at 10:51 PM Jesper Dangaard Brouer 
+>>> <hawk@kernel.org> wrote:
+>>>>
+>>>>
+>>>> On 30/07/2024 15.08, Yonglong Liu wrote:
+>>>>> I found a bug when running hns3 driver with page pool enabled, the log
+>>>>> as below:
+>>>>>
+>>>>> [ 4406.956606] Unable to handle kernel NULL pointer dereference at
+>>>>> virtual address 00000000000000a8
+>>>> struct iommu_domain *iommu_get_dma_domain(struct device *dev)
+>>>> {
+>>>>          return dev->iommu_group->default_domain;
+>>>> }
+>>>>
+>>>> $ pahole -C iommu_group --hex | grep default_domain
+>>>>          struct iommu_domain *      default_domain;   /* 0xa8   0x8 */
+>>>>
+>>>> Looks like iommu_group is a NULL pointer (that when deref member
+>>>> 'default_domain' cause this fault).
+>>>>
+>>>>
+>>>>> [ 4406.965379] Mem abort info:
+>>>>> [ 4406.968160]   ESR = 0x0000000096000004
+>>>>> [ 4406.971906]   EC = 0x25: DABT (current EL), IL = 32 bits
+>>>>> [ 4406.977218]   SET = 0, FnV = 0
+>>>>> [ 4406.980258]   EA = 0, S1PTW = 0
+>>>>> [ 4406.983404]   FSC = 0x04: level 0 translation fault
+>>>>> [ 4406.988273] Data abort info:
+>>>>> [ 4406.991154]   ISV = 0, ISS = 0x00000004, ISS2 = 0x00000000
+>>>>> [ 4406.996632]   CM = 0, WnR = 0, TnD = 0, TagAccess = 0
+>>>>> [ 4407.001681]   GCS = 0, Overlay = 0, DirtyBit = 0, Xs = 0
+>>>>> [ 4407.006985] user pgtable: 4k pages, 48-bit VAs, 
+>>>>> pgdp=0000202828326000
+>>>>> [ 4407.013430] [00000000000000a8] pgd=0000000000000000,
+>>>>> p4d=0000000000000000
+>>>>> [ 4407.020212] Internal error: Oops: 0000000096000004 [#1] PREEMPT SMP
+>>>>> [ 4407.026454] Modules linked in: hclgevf xt_CHECKSUM ipt_REJECT
+>>>>> nf_reject_ipv4 ip6table_mangle ip6table_nat iptable_mangle
+>>>>> ip6table_filter ip6_tables hns_roce_hw_v2 hns3 hclge hnae3 xt_addrtype
+>>>>> iptable_filter xt_conntrack overlay arm_spe_pmu arm_smmuv3_pmu
+>>>>> hisi_uncore_hha_pmu hisi_uncore_ddrc_pmu hisi_uncore_l3c_pmu
+>>>>> hisi_uncore_pmu fuse rpcrdma ib_isert iscsi_target_mod ib_iser 
+>>>>> libiscsi
+>>>>> scsi_transport_iscsi crct10dif_ce hisi_sec2 hisi_hpre hisi_zip
+>>>>> hisi_sas_v3_hw xhci_pci sbsa_gwdt hisi_qm hisi_sas_main hisi_dma
+>>>>> xhci_pci_renesas uacce libsas [last unloaded: hnae3]
+>>>>> [ 4407.076027] CPU: 48 PID: 610 Comm: kworker/48:1
+>>>>> [ 4407.093343] Workqueue: events page_pool_release_retry
+>>>>> [ 4407.098384] pstate: 60400009 (nZCv daif +PAN -UAO -TCO -DIT -SSBS
+>>>>> BTYPE=--)
+>>>>> [ 4407.105316] pc : iommu_get_dma_domain+0xc/0x20
+>>>>> [ 4407.109744] lr : iommu_dma_unmap_page+0x38/0xe8
+>>>>> [ 4407.114255] sp : ffff80008bacbc80
+>>>>> [ 4407.117554] x29: ffff80008bacbc80 x28: 0000000000000000 x27:
+>>>>> ffffc31806be7000
+>>>>> [ 4407.124659] x26: ffff2020002b6ac0 x25: 0000000000000000 x24:
+>>>>> 0000000000000002
+>>>>> [ 4407.131762] x23: 0000000000000022 x22: 0000000000001000 x21:
+>>>>> 00000000fcd7c000
+>>>>> [ 4407.138865] x20: ffff0020c9882800 x19: ffff0020856f60c8 x18:
+>>>>> ffff8000d3503c58
+>>>>> [ 4407.145968] x17: 0000000000000000 x16: 1fffe00419521061 x15:
+>>>>> 0000000000000001
+>>>>> [ 4407.153073] x14: 0000000000000003 x13: 00000401850ae012 x12:
+>>>>> 000006b10004e7fb
+>>>>> [ 4407.160177] x11: 0000000000000067 x10: 0000000000000c70 x9 :
+>>>>> ffffc3180405cd20
+>>>>> [ 4407.167280] x8 : fefefefefefefeff x7 : 0000000000000001 x6 :
+>>>>> 0000000000000010
+>>>>> [ 4407.174382] x5 : ffffc3180405cce8 x4 : 0000000000000022 x3 :
+>>>>> 0000000000000002
+>>>>> [ 4407.181485] x2 : 0000000000001000 x1 : 00000000fcd7c000 x0 :
+>>>>> 0000000000000000
+>>>>> [ 4407.188589] Call trace:
+>>>>> [ 4407.191027]  iommu_get_dma_domain+0xc/0x20
+>>>>> [ 4407.195105]  dma_unmap_page_attrs+0x38/0x1d0
+>>>>> [ 4407.199361]  page_pool_return_page+0x48/0x180
+>>>>> [ 4407.203699]  page_pool_release+0xd4/0x1f0
+>>>>> [ 4407.207692]  page_pool_release_retry+0x28/0xe8
+>>>> I suspect that the DMA IOMMU part was deallocated and freed by the
+>>>> driver even-though page_pool still have inflight packets.
+>>> When you say driver, which 'driver' do you mean?
+>>> I suspect this could be because of the VF instance going away with
+>>> this cmd - disable the vf: echo 0 >
+>>> /sys/class/net/eno1/device/sriov_numvfs, what do you think?
+>>
+>> I found that this happen when the vf enabled and running some packets, 
+>> below is more infomation:
+>>
+>>
+>> [ 4391.596558] pci 0000:7d:01.0: page_pool_release_retry() stalled 
+>> pool shutdown: id 1145, 33 inflight 906 sec
+>> [ 4397.111484] hns3 0000:bd:00.0: SRIOV setting: 0
+>> [ 4397.118155] hns3 0000:bd:01.0 enp189s0f0v0: link down
+>> [ 4397.416623] hns3 0000:bd:01.0: finished uninitializing hclgevf driver
+>> [ 4397.480572] pci 0000:7d:01.0: page_pool_release_retry() stalled 
+>> pool shutdown: id 1279, 98 inflight 362 sec
+>> [ 4400.948362] hns3 0000:7d:00.0: SRIOV setting: 1
+>> [ 4401.060569] pci 0000:7d:01.0: [19e5:a22f] type 00 class 0x020000 
+>> PCIe Endpoint
+>> [ 4401.067795] pci 0000:7d:01.0: enabling Extended Tags
+>> [ 4401.073090] hns3 0000:7d:01.0: Adding to iommu group 48
+>> [ 4401.078494] hns3 0000:7d:01.0: enabling device (0000 -> 0002)
+>> [ 4401.084348] hns3 0000:7d:01.0: The firmware version is 1.20.0.17
+>> [ 4401.102911] hns3 0000:7d:01.0: finished initializing hclgevf driver
+>> [ 4401.111212] hns3 0000:7d:01.0: using random MAC address 
+>> da:**:**:**:a3:47
+>> [ 4401.138375] hns3 0000:7d:01.0 eno1v0: renamed from eth0
+>> [ 4403.939449] hns3 0000:7d:01.0 eno1v0: link up
+>> [ 4403.940237] 8021q: adding VLAN 0 to HW filter on device eno1v0
+>> [ 4406.956606] Unable to handle kernel NULL pointer dereference at 
+>> virtual address 00000000000000a8
+>>
+>>
+>> another log:
+>>
+>> [11550.197002] hns3 0000:bd:01.0 enp189s0f0v0: link up
+>> [11550.197034] hns3 0000:bd:01.0 enp189s0f0v0: net open
+>> [11550.206910] 8021q: adding VLAN 0 to HW filter on device enp189s0f0v0
+>> [11564.872929] page_pool_release_retry() stalled pool shutdown: id 
+>> 2330, 99 inflight 60 sec
+>> [11568.353723] hns3 0000:bd:01.0 enp189s0f0v0: net stop
+>> [11568.360723] hns3 0000:bd:01.0 enp189s0f0v0: link down
+>> [11568.519899] hns3 0000:bd:01.0 enp189s0f0v0: link up
+>> [11568.519935] hns3 0000:bd:01.0 enp189s0f0v0: net open
+>> [11568.529840] 8021q: adding VLAN 0 to HW filter on device enp189s0f0v0
+>> [11589.640930] page_pool_release_retry() stalled pool shutdown: id 
+>> 1996, 50 inflight 2054 sec
+>> [11592.554875] hns3 0000:bd:01.0 enp189s0f0v0: net stop
+>> [11592.560930] hns3 0000:bd:01.0 enp189s0f0v0: link down
+>> [11596.684935] pci 0000:7d:01.0: [19e5:a22f] type 00 class 0x020000 
+>> PCIe Endpoint
+>> [11596.692140] pci 0000:7d:01.0: enabling Extended Tags
+>> [11596.697324] hns3 0000:7d:01.0: Adding to iommu group 48
+>> [11596.702988] hns3 0000:7d:01.0: enabling device (0000 -> 0002)
+>> [11596.708808] hns3 0000:7d:01.0: The firmware version is 1.20.0.17
+>> [11596.727263] hns3 0000:7d:01.0: finished initializing hclgevf driver
+>> [11596.735561] hns3 0000:7d:01.0: using random MAC address 
+>> 72:**:**:**:55:d7
+>> [11596.760621] hns3 0000:7d:01.0 eno1v0: renamed from eth0
+>> [11599.545341] hns3 0000:7d:01.0 eno1v0: link up
+>> [11599.545409] hns3 0000:7d:01.0 eno1v0: net open
+>> [11599.554858] 8021q: adding VLAN 0 to HW filter on device eno1v0
+>> [11608.908922] Unable to handle kernel NULL pointer dereference at 
+>> virtual address 00000000000000a8
+>>
+> I adds more debug info, and found that:
+> 
+> [ 4573.356891] pci 0000:7d:01.0: page_pool_release_retry() stalled pool 
+> shutdown: id 1046, 82 inflight 60 sec, iommu_group=0x0
+> 
+> The iommu_group will release whether the page_pool is using it or not, 
+> so if once page_pool_return_page() was called(why does this occur when 
+> the device is reloaded and packets are transmitted?) , this crash will 
+> happen.
+> 
+> I try the follow patch, but doesn't work :(
+> 
+
+The idea of taking a refcnt on IOMMU to avoid dev->iommu_group getting
+freed, make sense to me.
+
+The question is if API iommu_group_get() and iommu_group_put() is the
+correct API to use in this case?
+
+> diff --git a/net/core/page_pool.c b/net/core/page_pool.c
+> index f4444b4e39e6..d03a87407ca8 100644
+> --- a/net/core/page_pool.c
+> +++ b/net/core/page_pool.c
+> @@ -21,6 +21,7 @@
+>   #include <linux/poison.h>
+>   #include <linux/ethtool.h>
+>   #include <linux/netdevice.h>
+> +#include <linux/iommu.h>
+> 
+
+The page_pool already have a system/workqueue that waits for inflight
+"packet" pages, and calls struct device API get_device() and put_device().
+
+Why didn't the patch add code together with struct device API?
+Like this:
+
+$ git diff
+diff --git a/net/core/page_pool.c b/net/core/page_pool.c
+index 2abe6e919224..686ff1d31aff 100644
+--- a/net/core/page_pool.c
++++ b/net/core/page_pool.c
+@@ -265,8 +265,10 @@ static int page_pool_init(struct page_pool *pool,
+         /* Driver calling page_pool_create() also call 
+page_pool_destroy() */
+         refcount_set(&pool->user_cnt, 1);
+
+-       if (pool->dma_map)
++       if (pool->dma_map) {
++               iommu_group_get(pool->p.dev);
+                 get_device(pool->p.dev);
++       }
+
+         return 0;
+  }
+@@ -275,8 +277,10 @@ static void page_pool_uninit(struct page_pool *pool)
+  {
+         ptr_ring_cleanup(&pool->ring, NULL);
+
+-       if (pool->dma_map)
++       if (pool->dma_map) {
++               iommu_group_put(pool->p.dev->iommu_group);
+                 put_device(pool->p.dev);
++       }
+
+
+--Jesper
+
+>   #include <trace/events/page_pool.h>
+>  > @@ -306,6 +307,9 @@ page_pool_create_percpu(const struct
+> page_pool_params *params, int cpuid)
+>          if (err)
+>                  goto err_uninit;
+> 
+> +       if (pool->dma_map)
+> +               iommu_group_get(pool->p.dev);
 > +
-> +	if (domain && domain->type =3D=3D IOMMU_DOMAIN_NESTED &&
-> +	    domain->ops->get_msi_mapping_domain)
-
-I'm not sure the core should restrict it to the NESTED type. Given
-there is a new domain ops any type restriction can be handled
-inside the callback. Anyway the driver should register the op
-for a domain only when there is a need.=20
-
-> +		domain =3D domain->ops->get_msi_mapping_domain(domain);
-> +	return domain;
-> +}
-> +
->  /**
->   * iommu_dma_prepare_msi() - Map the MSI page in the IOMMU domain
->   * @desc: MSI descriptor, will store the MSI page
-> @@ -1809,7 +1823,7 @@ static struct iommu_dma_msi_page
-> *iommu_dma_get_msi_page(struct device *dev,
->  int iommu_dma_prepare_msi(struct msi_desc *desc, phys_addr_t msi_addr)
->  {
->  	struct device *dev =3D msi_desc_to_dev(desc);
-> -	struct iommu_domain *domain =3D iommu_get_domain_for_dev(dev);
-> +	struct iommu_domain *domain =3D
-> iommu_dma_get_msi_mapping_domain(dev);
->  	struct iommu_dma_msi_page *msi_page;
->  	static DEFINE_MUTEX(msi_prepare_lock); /* see below */
->=20
-> @@ -1842,7 +1856,7 @@ int iommu_dma_prepare_msi(struct msi_desc
-> *desc, phys_addr_t msi_addr)
->  void iommu_dma_compose_msi_msg(struct msi_desc *desc, struct msi_msg
-> *msg)
->  {
->  	struct device *dev =3D msi_desc_to_dev(desc);
-> -	const struct iommu_domain *domain =3D
-> iommu_get_domain_for_dev(dev);
-> +	const struct iommu_domain *domain =3D
-> iommu_dma_get_msi_mapping_domain(dev);
->  	const struct iommu_dma_msi_page *msi_page;
->=20
->  	msi_page =3D msi_desc_get_iommu_cookie(desc);
-> diff --git a/include/linux/iommu.h b/include/linux/iommu.h
-> index 4d47f2c333118..69ed76f9c3ec4 100644
-> --- a/include/linux/iommu.h
-> +++ b/include/linux/iommu.h
-> @@ -638,6 +638,8 @@ struct iommu_ops {
->   * @enable_nesting: Enable nesting
->   * @set_pgtable_quirks: Set io page table quirks (IO_PGTABLE_QUIRK_*)
->   * @free: Release the domain after use.
-> + * @get_msi_mapping_domain: Return the related iommu_domain that
-> should hold the
-> + *                          MSI cookie and accept mapping(s).
->   */
->  struct iommu_domain_ops {
->  	int (*attach_dev)(struct iommu_domain *domain, struct device *dev);
-> @@ -668,6 +670,8 @@ struct iommu_domain_ops {
->  				  unsigned long quirks);
->=20
->  	void (*free)(struct iommu_domain *domain);
-> +	struct iommu_domain *
-> +		(*get_msi_mapping_domain)(struct iommu_domain
-> *domain);
->  };
->=20
->  /**
-> --
-> 2.43.0
->=20
-
+>          return pool;
+> 
+>   err_uninit:
+> @@ -974,8 +978,11 @@ static int page_pool_release(struct page_pool *pool)
+> 
+>          page_pool_scrub(pool);
+>          inflight = page_pool_inflight(pool, true);
+> -       if (!inflight)
+> +       if (!inflight) {
+>                  __page_pool_destroy(pool);
+> +               if (pool->dma_map)
+> + iommu_group_put(pool->p.dev->iommu_group);
+> +       }
+> 
+>          return inflight;
+>   }
+> 
+> 
+>>>> The page_pool bumps refcnt via get_device() + put_device() on the DMA
+>>>> 'struct device', to avoid it going away, but I guess there is also some
+>>>> IOMMU code that we need to make sure doesn't go away (until all 
+>>>> inflight
+>>>> pages are returned) ???
+>>>>
+>>>>
+>>>>> [ 4407.212119] process_one_work+0x164/0x3e0
+>>>>> [ 4407.216116]  worker_thread+0x310/0x420
+>>>>> [ 4407.219851]  kthread+0x120/0x130
+>>>>> [ 4407.223066]  ret_from_fork+0x10/0x20
+>>>>> [ 4407.226630] Code: ffffc318 aa1e03e9 d503201f f9416c00 (f9405400)
+>>>>> [ 4407.232697] ---[ end trace 0000000000000000 ]---
+>>>>>
+>>>>>
+>>>>> The hns3 driver use page pool like this, just call once when the 
+>>>>> driver
+>>>>> initialize:
+>>>>>
+>>>>> static void hns3_alloc_page_pool(struct hns3_enet_ring *ring)
+>>>>> {
+>>>>>       struct page_pool_params pp_params = {
+>>>>>           .flags = PP_FLAG_DMA_MAP | PP_FLAG_PAGE_FRAG |
+>>>>>                   PP_FLAG_DMA_SYNC_DEV,
+>>>>>           .order = hns3_page_order(ring),
+>>>>>           .pool_size = ring->desc_num * hns3_buf_size(ring) /
+>>>>>                   (PAGE_SIZE << hns3_page_order(ring)),
+>>>>>           .nid = dev_to_node(ring_to_dev(ring)),
+>>>>>           .dev = ring_to_dev(ring),
+>>>>>           .dma_dir = DMA_FROM_DEVICE,
+>>>>>           .offset = 0,
+>>>>>           .max_len = PAGE_SIZE << hns3_page_order(ring),
+>>>>>       };
+>>>>>
+>>>>>       ring->page_pool = page_pool_create(&pp_params);
+>>>>>       if (IS_ERR(ring->page_pool)) {
+>>>>>           dev_warn(ring_to_dev(ring), "page pool creation failed: 
+>>>>> %ld\n",
+>>>>>                PTR_ERR(ring->page_pool));
+>>>>>           ring->page_pool = NULL;
+>>>>>       }
+>>>>> }
+>>>>>
+>>>>> And call page_pool_destroy(ring->page_pool)  when the driver 
+>>>>> uninitialized.
+>>>>>
+>>>>>
+>>>>> We use two devices, the net port connect directory, and the step of 
+>>>>> the
+>>>>> test case like below:
+>>>>>
+>>>>> 1. enable a vf of '7d:00.0':  echo 1 >
+>>>>> /sys/class/net/eno1/device/sriov_numvfs
+>>>>>
+>>>>> 2. use iperf to produce some flows(the problem happens to the side 
+>>>>> which
+>>>>> runs 'iperf -s')
+>>>>>
+>>>>> 3. use ifconfig down/up to the vf
+>>>>>
+>>>>> 4. kill iperf
+>>>>>
+>>>>> 5. disable the vf: echo 0 > /sys/class/net/eno1/device/sriov_numvfs
+>>>>>
+>>>>> 6. run 1~5 with another port bd:00.0
+>>>>>
+>>>>> 7. repeat 1~6
+>>>>>
+>>>>>
+>>>>> And when running this test case, we can found another related 
+>>>>> message (I
+>>>>> replaced pr_warn() to dev_warn()):
+>>>>>
+>>>>> pci 0000:7d:01.0: page_pool_release_retry() stalled pool shutdown: id
+>>>>> 949, 98 inflight 1449 sec
+>>>>>
+>>>>>
+>>>>> Even when stop the traffic, stop the test case, disable the vf, this
+>>>>> message is still being printed.
+>>>>>
+>>>>> We must run the test case for about two hours to reproduce the 
+>>>>> problem.
+>>>>> Is there some advise to solve or debug the problem?
+>>>>>
+>>
