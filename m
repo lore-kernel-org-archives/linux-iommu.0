@@ -1,165 +1,83 @@
-Received: from shelob.surriel.com (shelob.surriel.com [96.67.55.147])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-yw1-f173.google.com (mail-yw1-f173.google.com [209.85.128.173])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0E1EE17AE04;
-	Tue,  6 Aug 2024 15:57:10 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=96.67.55.147
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 03CB52E414
+	for <iommu@lists.linux.dev>; Tue,  6 Aug 2024 15:57:58 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.173
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1722959847; cv=none; b=EPJydW9tMC383fjF304jyef0JiiCqHfDaHuu83cY7vjLSbqRlmqugupmabnki0lGALEOT96rcIw01BP5gdQM+ndUjWW5iGRxinrtUHYIhd7jo3ydF56StBkNlsvKYbRyk+q5aOWKsT6o904TUsk1BpWb2TpPFUXgpoCUYgZcIy8=
+	t=1722959880; cv=none; b=K/t/NFQt9DUy+8nQAuLouDjDwth8DvjlrG3s6rVAnZHZLEz0l/zGmhU8J64a1JW72DjzdGwYYuvTpqXAmS7qLqd4RyU+pZwfZcxiFkJGCNSrOvjuQ0oopfmVKG9UjnlYNR9EFlYZ8oaGfLT/oftMZ8cacTFDAe3QMH4AxlXUWho=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1722959847; c=relaxed/simple;
-	bh=4y59cmwKy8ewrerx0Lu2UI7C8fPfBRGwHv1Y8RZeLnc=;
-	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=Dhqf355iz4cUGWr31IU9lAtPkLFhrE4uYcYWeq0lwtHPpiz3h/3AOoP37l8m0rMhxh7sXhboJScr+dcP1c/ArYYKhDiyCW++01kHqk/s5DIr3Wp2Dk7d/ZBn0/2kUkrg2iZ8dz83bHz+ORVazAFUGHmBmybbLQAEVWJd+8wQ8ZQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=surriel.com; spf=pass smtp.mailfrom=shelob.surriel.com; arc=none smtp.client-ip=96.67.55.147
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=surriel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=shelob.surriel.com
-Received: from [2601:18c:9101:a8b6:6e0b:84ff:fee2:98bb] (helo=imladris.surriel.com)
-	by shelob.surriel.com with esmtpsa  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-	(Exim 4.97.1)
-	(envelope-from <riel@shelob.surriel.com>)
-	id 1sbMYH-0000000025n-41JN;
-	Tue, 06 Aug 2024 11:56:45 -0400
-Date: Tue, 6 Aug 2024 11:56:45 -0400
-From: Rik van Riel <riel@surriel.com>
-To: Christoph Hellwig <hch@lst.de>
-Cc: Breno Leitao <leitao@debian.org>, kernel-team@meta.com,
- linux-kernel@vger.kernel.org, iommu@lists.linux.dev, Marek Szyprowski
- <m.szyprowski@samsung.com>, Robin Murphy <robin.murphy@arm.com>
-Subject: [PATCH v2] dma,debug: avoid deadlock between dma debug vs printk
- and netcons
-Message-ID: <20240806115645.2e82d38a@imladris.surriel.com>
-In-Reply-To: <20240806123838.GA9975@lst.de>
-References: <20240805140844.6a863c76@imladris.surriel.com>
-	<20240806123838.GA9975@lst.de>
-X-Mailer: Claws Mail 4.3.0 (GTK 3.24.41; x86_64-redhat-linux-gnu)
+	s=arc-20240116; t=1722959880; c=relaxed/simple;
+	bh=Jmc/m/Z9EeCZ+Y6BMTBP0mKo2qFrjPj4TA4GMteOokk=;
+	h=MIME-Version:From:Date:Message-ID:Subject:To:Content-Type; b=QgbUSD2s7iV0EGWWO2LUVxGd/QdF+E9rn/b0ZBATZq2i00lwbE6NVOSPorrSx+yvY/YIjMcOgygQ9+rZiqhlznplAB1HCQ+EuN6iiqpwgJneItHKyBzewj/3j3yoQDm4kT5GD6N9LrcI59XR1VNBHmiO/wOyK8qc9zMJafwq6Tw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=HFEYiMbA; arc=none smtp.client-ip=209.85.128.173
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="HFEYiMbA"
+Received: by mail-yw1-f173.google.com with SMTP id 00721157ae682-691bb56eb65so6674707b3.0
+        for <iommu@lists.linux.dev>; Tue, 06 Aug 2024 08:57:58 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20230601; t=1722959878; x=1723564678; darn=lists.linux.dev;
+        h=to:subject:message-id:date:from:mime-version:from:to:cc:subject
+         :date:message-id:reply-to;
+        bh=Jmc/m/Z9EeCZ+Y6BMTBP0mKo2qFrjPj4TA4GMteOokk=;
+        b=HFEYiMbAse3zNfOCblYC8ndo5U78p5IXNnnXcrI97cQz9BA4aksx72Pt6Dp1/wsSOh
+         ny0FhBugTNO7sCTKq0bsWm7z24EeSI4wD3wbI4RapK7ZR2wCU+0OldC+2Ud7XsCmhM2W
+         j9aEzyVyt9WyD7tDGKSeaUoKo54cx3323HOHlV6x1Wd07uNBNaw5RubapjpmYG/1l+np
+         gqPZFNJQWjYPdtHShRqOPHKFlqZ4OgMLyMls8iIE98a+bL2XQBTOw8FxrRrdHgKpt1OE
+         xXjwOgS/5Tj7F/l5NAwaKlZFTFPkyenRWDV5EqsRyRSoHRaMPNeCKPsq4olAYsnN0Lsj
+         1rYg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1722959878; x=1723564678;
+        h=to:subject:message-id:date:from:mime-version:x-gm-message-state
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=Jmc/m/Z9EeCZ+Y6BMTBP0mKo2qFrjPj4TA4GMteOokk=;
+        b=Y2P5RUhHrebBYxK1QQKDsrAzzQmK1gnIVlENwMtcIOLN7RKtQcV1YJEZkoktVnK5lo
+         JxvWDGWhjee96nRUGf2eYKOzbWQTQ3fH4XsYhOMlT1RhK73ORKy2mbY7aYMYPIT1RzNO
+         yditDygkJL9BByAET7zFQC9bKqfsdU5aviUHUja0IdBXjlgoKiNE9gI/Qfx5xNIOenrz
+         xfFprHqDJdCa1Flh8/gzqeyRiPkHbj/voG5UCCwL+49k5AppDYpHPhv2yLoCH1fuZTD4
+         uO7xsrRIiOSwKxm3iTEc0emXutL4yH1Rze7ogsKKjoNu9+xV3vyTnB+DzDXPjixweRpo
+         IUSg==
+X-Gm-Message-State: AOJu0Ywy3Igjz3pXhQGM0CcQQkkUu9rxUu7IQi3CQ9JkCDCmfvlaliLq
+	x7jeFY0AB1JyWtx3oZ+UisacC9iFz6YxRiH0kd7XJKOutFT1BzCgijKlJ6ysYZFXAfhi9qUtn1k
+	EgpdTia53bR+vYA61ftEl8nNsNHbsRwQP
+X-Google-Smtp-Source: AGHT+IH47vCiIyNM6NvlRnkDBM6cmoAkuc7lb7UDByYz2G48OozkL60BkgcvQIF4DhgxZfjj5b/cVpuZPAaZ5gxt+qE=
+X-Received: by 2002:a81:8604:0:b0:61b:e645:3e94 with SMTP id
+ 00721157ae682-6895f7fa554mr171130027b3.5.1722959877900; Tue, 06 Aug 2024
+ 08:57:57 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: quoted-printable
-Sender: riel@surriel.com
+From: Chathura Rajapaksha <chathura.abeyrathne.lk@gmail.com>
+Date: Tue, 6 Aug 2024 11:57:47 -0400
+Message-ID: <CAD7mqrxe5PwL-BZSyPQq8V2oOHZ+-fazDF2Mn44YLUabYi7qYA@mail.gmail.com>
+Subject: Feasibility of having per-device permanently-mapped DMA buffers for networking
+To: iommu@lists.linux.dev
+Content-Type: text/plain; charset="UTF-8"
 
-On Tue, 6 Aug 2024 14:38:38 +0200
-Christoph Hellwig <hch@lst.de> wrote:
+Hi All,
 
-> This looks reasonable, but please add a comment here to explain why
-> this is using __GFP_NOWARN so that future readers don't have to wonder
-> about it and look into git history.
+I came across this paper published in ASPLOS 2018
+https://www.cs.tau.ac.il/~mad/publications/asplos2018-damn.pdf
 
-Good point, added below. Thank you!
+In a brief summary, the paper proposes maintaining a set of permanently
+mapped pages per networking device and using these pages for networking
+DMA. The proposed solution claims to provide similar security to the
+Linux strict IOMMU invalidation mode while demonstrating similar network
+throughput to the deferred invalidation mode.
 
-----8<----
-=46rom c5e76a5f8d80411b2eac84e2335291c289c2ba01 Mon Sep 17 00:00:00 2001
-From: Rik van Riel <riel@surriel.com>
-Date: Mon, 5 Aug 2024 13:54:51 -0400
-Subject: [PATCH] dma,debug: avoid deadlock between dma debug vs printk and =
-netcons
+It also addresses the subpage vulnerability as data belonging to different
+devices (and the kernel) will not be co-located on the same page.
 
-Currently the dma debugging code can end up indirectly calling
-printk under the radix_lock. This happens when a radix tree node
-allocation fails.
+I was wondering why this idea (or a similar concept) is not implemented
+in the mainline Linux kernel as the results in the paper look promising for
+high throughput networking.
+Are there any feasibility concerns related to this concept/implementation?
 
-This is a problem because the printk code, when used together
-with netcons, can end up inside the dma debugging code while
-trying to transmit a message over netcons.
-
-This creates the possibility of either a circular deadlock
-on the same CPU, with that CPU trying to grab the radix_lock
-twice, or an ABBA deadlock between different CPUs, where one
-CPU grabs the console lock first and then waits for the
-radix_lock, while the other CPU is holding the radix_lock
-and is waiting for the console lock.
-
-The trace captured by lockdep is of the ABBA variant.
-
--> #2 (&dma_entry_hash[i].lock){-.-.}-{2:2}:
-                  _raw_spin_lock_irqsave+0x5a/0x90
-                  debug_dma_map_page+0x79/0x180
-                  dma_map_page_attrs+0x1d2/0x2f0
-                  bnxt_start_xmit+0x8c6/0x1540
-                  netpoll_start_xmit+0x13f/0x180
-                  netpoll_send_skb+0x20d/0x320
-                  netpoll_send_udp+0x453/0x4a0
-                  write_ext_msg+0x1b9/0x460
-                  console_flush_all+0x2ff/0x5a0
-                  console_unlock+0x55/0x180
-                  vprintk_emit+0x2e3/0x3c0
-                  devkmsg_emit+0x5a/0x80
-                  devkmsg_write+0xfd/0x180
-                  do_iter_readv_writev+0x164/0x1b0
-                  vfs_writev+0xf9/0x2b0
-                  do_writev+0x6d/0x110
-                  do_syscall_64+0x80/0x150
-                  entry_SYSCALL_64_after_hwframe+0x4b/0x53
-
--> #0 (console_owner){-.-.}-{0:0}:
-                  __lock_acquire+0x15d1/0x31a0
-                  lock_acquire+0xe8/0x290
-                  console_flush_all+0x2ea/0x5a0
-                  console_unlock+0x55/0x180
-                  vprintk_emit+0x2e3/0x3c0
-                  _printk+0x59/0x80
-                  warn_alloc+0x122/0x1b0
-                  __alloc_pages_slowpath+0x1101/0x1120
-                  __alloc_pages+0x1eb/0x2c0
-                  alloc_slab_page+0x5f/0x150
-                  new_slab+0x2dc/0x4e0
-                  ___slab_alloc+0xdcb/0x1390
-                  kmem_cache_alloc+0x23d/0x360
-                  radix_tree_node_alloc+0x3c/0xf0
-                  radix_tree_insert+0xf5/0x230
-                  add_dma_entry+0xe9/0x360
-                  dma_map_page_attrs+0x1d2/0x2f0
-                  __bnxt_alloc_rx_frag+0x147/0x180
-                  bnxt_alloc_rx_data+0x79/0x160
-                  bnxt_rx_skb+0x29/0xc0
-                  bnxt_rx_pkt+0xe22/0x1570
-                  __bnxt_poll_work+0x101/0x390
-                  bnxt_poll+0x7e/0x320
-                  __napi_poll+0x29/0x160
-                  net_rx_action+0x1e0/0x3e0
-                  handle_softirqs+0x190/0x510
-                  run_ksoftirqd+0x4e/0x90
-                  smpboot_thread_fn+0x1a8/0x270
-                  kthread+0x102/0x120
-                  ret_from_fork+0x2f/0x40
-                  ret_from_fork_asm+0x11/0x20
-
-This bug is more likely than it seems, because when one
-CPU has run out of memory, chances are the other has too.
-
-The good news is, this bug is hidden behind the
-CONFIG_DMA_API_DEBUG, so not many users are likely to
-trigger it.
-
-Signed-off-by: Rik van Riel <riel@surriel.com>
-Reported-by: Konstantin Ovsepian <ovs@meta.com>
----
- kernel/dma/debug.c | 5 ++++-
- 1 file changed, 4 insertions(+), 1 deletion(-)
-
-diff --git a/kernel/dma/debug.c b/kernel/dma/debug.c
-index a6e3792b15f8..0d68cb7c21b3 100644
---- a/kernel/dma/debug.c
-+++ b/kernel/dma/debug.c
-@@ -416,8 +416,11 @@ static unsigned long long phys_addr(struct dma_debug_e=
-ntry *entry)
-  * dma_active_cacheline entry to track per event.  dma_map_sg(), on the
-  * other hand, consumes a single dma_debug_entry, but inserts 'nents'
-  * entries into the tree.
-+ *
-+ * Use __GFP_NOWARN because the printk from an OOM, to netcons, could end
-+ * up right back in the DMA debugging code, leading to a deadlock.
-  */
--static RADIX_TREE(dma_active_cacheline, GFP_ATOMIC);
-+static RADIX_TREE(dma_active_cacheline, GFP_ATOMIC | __GFP_NOWARN);
- static DEFINE_SPINLOCK(radix_lock);
- #define ACTIVE_CACHELINE_MAX_OVERLAP ((1 << RADIX_TREE_MAX_TAGS) - 1)
- #define CACHELINE_PER_PAGE_SHIFT (PAGE_SHIFT - L1_CACHE_SHIFT)
---=20
-2.45.2
-
+Thanks in advance.
+Best regards,
+Chathura
