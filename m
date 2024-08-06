@@ -1,48 +1,48 @@
 Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7C803383A2
-	for <iommu@lists.linux.dev>; Tue,  6 Aug 2024 02:43:23 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CD6E12AE99
+	for <iommu@lists.linux.dev>; Tue,  6 Aug 2024 02:43:25 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.19
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1722912205; cv=none; b=BHWIjCrAYqChP1EkQ4HmMqt8ExJHSsoYEcnaWNlkaOY5zQeExYqpgvaBCEtEeQcbZbI7jB46CN3xsSp0dHKdDx4H1nlIvzYKWPaL01pIqpV2ZxgdED0O/6lkv3TEquH94w1JAk790nqtQ7kRr8LZknqeh1s5/EvbXsPQ1X0I0mg=
+	t=1722912207; cv=none; b=bw3RyRXZHvqYxhwt97IpXphwM7osI14nf2O9u1Gyhhq6Hc/m0t3rJnczuK+zAEmjOaKkkXGYHqP/MvQObw6CGEagfgOh0bBFhQQ86162qgJPWnKPTQMKVcEwnLgftXviXWsGuOspgbfnjm0i9LUqB8zELADoRSrCYl4FWW0ywBI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1722912205; c=relaxed/simple;
-	bh=h/DVCRTfMTrs5WILT1m9EibX0xteVcKQVQ0yKI2cSQw=;
+	s=arc-20240116; t=1722912207; c=relaxed/simple;
+	bh=BKDP/l/ykYrd+su1McxY6adYnlMLl4k2S1MoqpKDU7E=;
 	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
-	 MIME-Version; b=IcrO/FgcLmq7eb+vIbtL/cQX3I+QqRb5bcsD4avY07LBkYu0njx8pxZHIbel0pIAB/tYFjc6MNPwSQQVysxoohynoCoO4g4lhmsaBvXnUfdyHUdACLAO0sAamFiAm4lsi8n6rt+6lPE63/d3dnkdKvhvL8Nwn5XRetrzuQAwZ2g=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=dHyPfCKr; arc=none smtp.client-ip=198.175.65.19
+	 MIME-Version; b=OdEAI6yrTGoTSEO1Xpz17E9Tli0AlLTImRY35zWdhEyZoxzn7kqFEtB1UnaMLq8FiO3T+vZFFd3iK2OYpahD/HQvsULtcS9zgH0V6M2MBjt6gbGXe+pGRCdkYkhZuL+xiHjQ360Zm4t+iAproVX81icXf1pUF+k7Hv++2o72wGs=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=dPJX37v6; arc=none smtp.client-ip=198.175.65.19
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="dHyPfCKr"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="dPJX37v6"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1722912203; x=1754448203;
+  t=1722912206; x=1754448206;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=h/DVCRTfMTrs5WILT1m9EibX0xteVcKQVQ0yKI2cSQw=;
-  b=dHyPfCKrJ+jyZ7Ss7vKGrtV24Yvn9JIr8t//faj/ZAag5M+ky4gTCMds
-   ZAjqDpm5V8jfkKh4Oozx4f7I62LmnsePPFwiDaSM02xBuwxp1IRndQIP7
-   etA7m7gDe9uuITE7GVYK1gnYUr8432wdlpmpiiTV/OLgVi/IKREpNzkjK
-   cGVr0Y1Nnln1MZPF1CKwFztnUMJIolpDSaSBop30Ua0poxIWghVfThb02
-   LQOelKCymrUrlQ9nIqNLhSRHG1S8G51NVlgSIXIVxAhayDJAlVG59iwRm
-   DFrqUF4efccbHs/r150g439ZWnl7R8O7lgxr3BWuAYvmmWwB+3IzpPyQT
-   g==;
-X-CSE-ConnectionGUID: UCBOilspR72f9TyEvdh0Fw==
-X-CSE-MsgGUID: xCSQUY+MT7yJ9CZUh0K++g==
-X-IronPort-AV: E=McAfee;i="6700,10204,11155"; a="20756288"
+  bh=BKDP/l/ykYrd+su1McxY6adYnlMLl4k2S1MoqpKDU7E=;
+  b=dPJX37v6igVl5hja4X5d2PBatEeIPXCy2o/8pDws8a8s1Vdpon82ual2
+   xrTR+1ryBAq5kjXgmp8PnzCbN9a0GqrBMCSu2gqvRhhNHdObL7MbsNn6j
+   ih37ZcY6wuk2Mu9t8ME24Jn6+0m07JCmDWCNsd/TrsMbJEOuCtJCSNc+U
+   +Vn6SOqeiO5kI3f40JyFDCXjD5zNaXNP2zWmCK60kxBhNQwHdjzK0piK1
+   nglV5f/vSFBqBxkF57S43SQQvjwUf7uLKhcvHeq5G4SZ/dlgKt2prHXZQ
+   sYcDyxBZ/O+JCQoSxyZU0CvTHkwZBQEeUaDRM+YwNJvi91cI//Jc7Epmn
+   A==;
+X-CSE-ConnectionGUID: x3cpNPxLSzq2ZBttCjTyQg==
+X-CSE-MsgGUID: 1nTDhc3xQmG0tlBd8gl2gg==
+X-IronPort-AV: E=McAfee;i="6700,10204,11155"; a="20756297"
 X-IronPort-AV: E=Sophos;i="6.09,266,1716274800"; 
-   d="scan'208";a="20756288"
+   d="scan'208";a="20756297"
 Received: from orviesa006.jf.intel.com ([10.64.159.146])
-  by orvoesa111.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Aug 2024 19:43:23 -0700
-X-CSE-ConnectionGUID: /IjjgwfKRXewN8Fg+SoAfg==
-X-CSE-MsgGUID: n3jv0f6ZT3+U3UEbhxrfjA==
+  by orvoesa111.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Aug 2024 19:43:26 -0700
+X-CSE-ConnectionGUID: 9V5IqpnMTdyShbtqBoWYIA==
+X-CSE-MsgGUID: BCfQxyQBSY+zMxk5ZLKzKQ==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.09,266,1716274800"; 
-   d="scan'208";a="56572535"
+   d="scan'208";a="56572538"
 Received: from allen-box.sh.intel.com ([10.239.159.127])
-  by orviesa006.jf.intel.com with ESMTP; 05 Aug 2024 19:43:21 -0700
+  by orviesa006.jf.intel.com with ESMTP; 05 Aug 2024 19:43:24 -0700
 From: Lu Baolu <baolu.lu@linux.intel.com>
 To: Joerg Roedel <joro@8bytes.org>,
 	Will Deacon <will@kernel.org>,
@@ -52,9 +52,9 @@ To: Joerg Roedel <joro@8bytes.org>,
 Cc: iommu@lists.linux.dev,
 	linux-kernel@vger.kernel.org,
 	Lu Baolu <baolu.lu@linux.intel.com>
-Subject: [PATCH v3 5/7] iommu/vt-d: Factor out helpers from domain_context_mapping_one()
-Date: Tue,  6 Aug 2024 10:39:39 +0800
-Message-Id: <20240806023941.93454-6-baolu.lu@linux.intel.com>
+Subject: [PATCH v3 6/7] iommu/vt-d: Add support for static identity domain
+Date: Tue,  6 Aug 2024 10:39:40 +0800
+Message-Id: <20240806023941.93454-7-baolu.lu@linux.intel.com>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20240806023941.93454-1-baolu.lu@linux.intel.com>
 References: <20240806023941.93454-1-baolu.lu@linux.intel.com>
@@ -66,140 +66,135 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-Extract common code from domain_context_mapping_one() into new helpers,
-making it reusable by other functions such as the upcoming identity domain
-implementation. No intentional functional changes.
+Software determines VT-d hardware support for passthrough translation by
+inspecting the capability register. If passthrough translation is not
+supported, the device is instructed to use DMA domain for its default
+domain.
+
+Add a global static identity domain with guaranteed attach semantics for
+IOMMUs that support passthrough translation mode.
 
 Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
 ---
- drivers/iommu/intel/iommu.c | 99 ++++++++++++++++++++++---------------
- 1 file changed, 58 insertions(+), 41 deletions(-)
+ drivers/iommu/intel/iommu.c | 102 ++++++++++++++++++++++++++++++++++++
+ 1 file changed, 102 insertions(+)
 
 diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
-index f37c8c3cba3c..2ac56e2355e1 100644
+index 2ac56e2355e1..9e7b4159e53f 100644
 --- a/drivers/iommu/intel/iommu.c
 +++ b/drivers/iommu/intel/iommu.c
-@@ -1631,6 +1631,61 @@ static void domain_exit(struct dmar_domain *domain)
- 	kfree(domain);
- }
+@@ -4570,9 +4570,111 @@ static const struct iommu_dirty_ops intel_dirty_ops = {
+ 	.read_and_clear_dirty = intel_iommu_read_and_clear_dirty,
+ };
  
-+/*
-+ * For kdump cases, old valid entries may be cached due to the
-+ * in-flight DMA and copied pgtable, but there is no unmapping
-+ * behaviour for them, thus we need an explicit cache flush for
-+ * the newly-mapped device. For kdump, at this point, the device
-+ * is supposed to finish reset at its driver probe stage, so no
-+ * in-flight DMA will exist, and we don't need to worry anymore
-+ * hereafter.
-+ */
-+static void copied_context_tear_down(struct intel_iommu *iommu,
-+				     struct context_entry *context,
-+				     u8 bus, u8 devfn)
++static int context_setup_pass_through(struct device *dev, u8 bus, u8 devfn)
 +{
-+	u16 did_old;
++	struct device_domain_info *info = dev_iommu_priv_get(dev);
++	struct intel_iommu *iommu = info->iommu;
++	struct context_entry *context;
 +
-+	if (!context_copied(iommu, bus, devfn))
-+		return;
-+
-+	assert_spin_locked(&iommu->lock);
-+
-+	did_old = context_domain_id(context);
-+	context_clear_entry(context);
-+
-+	if (did_old < cap_ndoms(iommu->cap)) {
-+		iommu->flush.flush_context(iommu, did_old,
-+					   (((u16)bus) << 8) | devfn,
-+					   DMA_CCMD_MASK_NOBIT,
-+					   DMA_CCMD_DEVICE_INVL);
-+		iommu->flush.flush_iotlb(iommu, did_old, 0, 0,
-+					 DMA_TLB_DSI_FLUSH);
++	spin_lock(&iommu->lock);
++	context = iommu_context_addr(iommu, bus, devfn, 1);
++	if (!context) {
++		spin_unlock(&iommu->lock);
++		return -ENOMEM;
 +	}
 +
-+	clear_context_copied(iommu, bus, devfn);
-+}
-+
-+/*
-+ * It's a non-present to present mapping. If hardware doesn't cache
-+ * non-present entry we only need to flush the write-buffer. If the
-+ * _does_ cache non-present entries, then it does so in the special
-+ * domain #0, which we have to flush:
-+ */
-+static void context_present_cache_flush(struct intel_iommu *iommu, u16 did,
-+					u8 bus, u8 devfn)
-+{
-+	if (cap_caching_mode(iommu->cap)) {
-+		iommu->flush.flush_context(iommu, 0,
-+					   (((u16)bus) << 8) | devfn,
-+					   DMA_CCMD_MASK_NOBIT,
-+					   DMA_CCMD_DEVICE_INVL);
-+		iommu->flush.flush_iotlb(iommu, did, 0, 0, DMA_TLB_DSI_FLUSH);
-+	} else {
-+		iommu_flush_write_buffer(iommu);
++	if (context_present(context) && !context_copied(iommu, bus, devfn)) {
++		spin_unlock(&iommu->lock);
++		return 0;
 +	}
-+}
 +
- static int domain_context_mapping_one(struct dmar_domain *domain,
- 				      struct intel_iommu *iommu,
- 				      u8 bus, u8 devfn)
-@@ -1659,31 +1714,9 @@ static int domain_context_mapping_one(struct dmar_domain *domain,
- 	if (context_present(context) && !context_copied(iommu, bus, devfn))
- 		goto out_unlock;
- 
--	/*
--	 * For kdump cases, old valid entries may be cached due to the
--	 * in-flight DMA and copied pgtable, but there is no unmapping
--	 * behaviour for them, thus we need an explicit cache flush for
--	 * the newly-mapped device. For kdump, at this point, the device
--	 * is supposed to finish reset at its driver probe stage, so no
--	 * in-flight DMA will exist, and we don't need to worry anymore
--	 * hereafter.
--	 */
--	if (context_copied(iommu, bus, devfn)) {
--		u16 did_old = context_domain_id(context);
--
--		if (did_old < cap_ndoms(iommu->cap)) {
--			iommu->flush.flush_context(iommu, did_old,
--						   (((u16)bus) << 8) | devfn,
--						   DMA_CCMD_MASK_NOBIT,
--						   DMA_CCMD_DEVICE_INVL);
--			iommu->flush.flush_iotlb(iommu, did_old, 0, 0,
--						 DMA_TLB_DSI_FLUSH);
--		}
--
--		clear_context_copied(iommu, bus, devfn);
--	}
--
 +	copied_context_tear_down(iommu, context, bus, devfn);
- 	context_clear_entry(context);
++	context_clear_entry(context);
++	context_set_domain_id(context, FLPT_DEFAULT_DID);
 +
- 	context_set_domain_id(context, did);
- 
- 	if (translation != CONTEXT_TT_PASS_THROUGH) {
-@@ -1719,23 +1752,7 @@ static int domain_context_mapping_one(struct dmar_domain *domain,
- 	context_set_present(context);
- 	if (!ecap_coherent(iommu->ecap))
- 		clflush_cache_range(context, sizeof(*context));
--
--	/*
--	 * It's a non-present to present mapping. If hardware doesn't cache
--	 * non-present entry we only need to flush the write-buffer. If the
--	 * _does_ cache non-present entries, then it does so in the special
--	 * domain #0, which we have to flush:
--	 */
--	if (cap_caching_mode(iommu->cap)) {
--		iommu->flush.flush_context(iommu, 0,
--					   (((u16)bus) << 8) | devfn,
--					   DMA_CCMD_MASK_NOBIT,
--					   DMA_CCMD_DEVICE_INVL);
--		iommu->flush.flush_iotlb(iommu, did, 0, 0, DMA_TLB_DSI_FLUSH);
--	} else {
--		iommu_flush_write_buffer(iommu);
--	}
--
-+	context_present_cache_flush(iommu, did, bus, devfn);
- 	ret = 0;
- 
- out_unlock:
++	/*
++	 * In pass through mode, AW must be programmed to indicate the largest
++	 * AGAW value supported by hardware. And ASR is ignored by hardware.
++	 */
++	context_set_address_width(context, iommu->msagaw);
++	context_set_translation_type(context, CONTEXT_TT_PASS_THROUGH);
++	context_set_fault_enable(context);
++	context_set_present(context);
++	if (!ecap_coherent(iommu->ecap))
++		clflush_cache_range(context, sizeof(*context));
++	context_present_cache_flush(iommu, FLPT_DEFAULT_DID, bus, devfn);
++	spin_unlock(&iommu->lock);
++
++	return 0;
++}
++
++static int context_setup_pass_through_cb(struct pci_dev *pdev, u16 alias, void *data)
++{
++	struct device *dev = data;
++
++	if (dev != &pdev->dev)
++		return 0;
++
++	return context_setup_pass_through(dev, PCI_BUS_NUM(alias), alias & 0xff);
++}
++
++static int device_setup_pass_through(struct device *dev)
++{
++	struct device_domain_info *info = dev_iommu_priv_get(dev);
++
++	if (!dev_is_pci(dev))
++		return context_setup_pass_through(dev, info->bus, info->devfn);
++
++	return pci_for_each_dma_alias(to_pci_dev(dev),
++				      context_setup_pass_through_cb, dev);
++}
++
++static int identity_domain_attach_dev(struct iommu_domain *domain, struct device *dev)
++{
++	struct device_domain_info *info = dev_iommu_priv_get(dev);
++	struct intel_iommu *iommu = info->iommu;
++	int ret;
++
++	device_block_translation(dev);
++
++	if (dev_is_real_dma_subdevice(dev))
++		return 0;
++
++	if (sm_supported(iommu)) {
++		ret = intel_pasid_setup_pass_through(iommu, dev, IOMMU_NO_PASID);
++		if (!ret)
++			iommu_enable_pci_caps(info);
++	} else {
++		ret = device_setup_pass_through(dev);
++	}
++
++	return ret;
++}
++
++static int identity_domain_set_dev_pasid(struct iommu_domain *domain,
++					 struct device *dev, ioasid_t pasid)
++{
++	struct device_domain_info *info = dev_iommu_priv_get(dev);
++	struct intel_iommu *iommu = info->iommu;
++
++	if (!pasid_supported(iommu) || dev_is_real_dma_subdevice(dev))
++		return -EOPNOTSUPP;
++
++	return intel_pasid_setup_pass_through(iommu, dev, pasid);
++}
++
++static struct iommu_domain identity_domain = {
++	.type = IOMMU_DOMAIN_IDENTITY,
++	.ops = &(const struct iommu_domain_ops) {
++		.attach_dev	= identity_domain_attach_dev,
++		.set_dev_pasid	= identity_domain_set_dev_pasid,
++	},
++};
++
+ const struct iommu_ops intel_iommu_ops = {
+ 	.blocked_domain		= &blocking_domain,
+ 	.release_domain		= &blocking_domain,
++	.identity_domain	= &identity_domain,
+ 	.capable		= intel_iommu_capable,
+ 	.hw_info		= intel_iommu_hw_info,
+ 	.domain_alloc		= intel_iommu_domain_alloc,
 -- 
 2.34.1
 
