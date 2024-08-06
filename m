@@ -1,266 +1,142 @@
-Received: from mx0b-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-qk1-f169.google.com (mail-qk1-f169.google.com [209.85.222.169])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 432C71BD009
-	for <iommu@lists.linux.dev>; Tue,  6 Aug 2024 13:45:37 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=148.163.158.5
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4F3FD1D54FE
+	for <iommu@lists.linux.dev>; Tue,  6 Aug 2024 13:50:20 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.222.169
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1722951940; cv=none; b=f3fWqmSXVgfMOcIVaVULgD0alCJ1su5YOHJXwVvRmFA0mih5dHxMbjEFqaPJncT4uIEuhtLm3vhTg8w8wDmyIcros4JCloM8FXhki/OPwkSRnNka5DmowvuXesvctsJ3n2SK5E3H4eUzoBWhTla3ING0H2Al4K8Rdhd746uO4Bs=
+	t=1722952222; cv=none; b=oPk7bxCMFi9FCDG2OBBO1KWf66lQSdwK3afjGFHDeP4lMEkv65yN6RVOZjCBYYYMJ7L8r0Pt7pjK/21amLTLqalX5PTydab9PkeYKybHHpZTpx050gVF8CUq3AThceS3bTSBzIw9Kt0s64y9urh9O6nqxteRc6bmoXgXgn+MQDk=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1722951940; c=relaxed/simple;
-	bh=/O6gOazGAAxZLA8J+7h5p+EN9RuzNwHNrZWDPz0D6VM=;
-	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:To:Cc; b=JbWD/WgO/7H6ASDVO9udYqD0XU1DKW6cIT+O50CqvTXQlqPr4379btdOPKO6JRuuiRRil6CwkWP3A5JdzcCXugqnJGp5plR2tkNFlihi7wU+moARuTpoaoFlYjmr3l2GBAR3DhYtNgi3fqAUUtdv5LpVGMPisUXYTz8gLyMdJXM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.ibm.com; spf=pass smtp.mailfrom=linux.ibm.com; dkim=pass (2048-bit key) header.d=ibm.com header.i=@ibm.com header.b=kQ0Ya4OQ; arc=none smtp.client-ip=148.163.158.5
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.ibm.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.ibm.com
+	s=arc-20240116; t=1722952222; c=relaxed/simple;
+	bh=6LTC6KOfM2FqDhCDfpj0QbTSvrl9G+TDtoFrlfco60A=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=ImeqfVGdFQkCqHvFTkZKe5YIYoVLHJvwOLMRMPY+C1RrrbMrSRr+7GJrmOZoYAdFZrpJylkRde7ofodYsAHL5zDiKUq9sGuVWH43X3eriRSYv8DYZWXMkF3vnzMyA3k+goqUoHfdWHenENV4KCFv5iH6K7wKPRnsDx74FD52e6A=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=pLYSx4JQ; arc=none smtp.client-ip=209.85.222.169
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=ibm.com header.i=@ibm.com header.b="kQ0Ya4OQ"
-Received: from pps.filterd (m0353722.ppops.net [127.0.0.1])
-	by mx0a-001b2d01.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 476DLeEQ009143;
-	Tue, 6 Aug 2024 13:45:31 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=from
-	:date:subject:mime-version:content-type
-	:content-transfer-encoding:message-id:to:cc; s=pp1; bh=frDMpRJa9
-	nFQdr0/6cy9hz3L1rHXcvTkwMFBF+bYqrw=; b=kQ0Ya4OQ5PipQ7Y4hBRS8z2bv
-	Mmq5xuzCTHNOAzqR0Sq1GqFfc0uq2wNMzdRoH1RbBWTGkv7MLXmi96T6x3iNgob7
-	DeukS2EhCv/52wkXHIHr4FHeBmyQwzxUq6Y+ycjZuy33kzQav2vy7opyXhmgH0L4
-	G/qEEOaE/qw9XmK5mN7aNv+qWbO43QxEjgZm9wOmLMNGc5eH21HaZT2jL7OtUAgT
-	cotzZcSQctlNiJc53H+WWpA7eKydm+nOmXZcM0r7Jd3j3H+ol8ex3pZjuZaGCkxi
-	MS999/B/csguwWZzBeq45rMl/PQSwPrSU0hVdRKj20Axp3M4QLpPkE0McArvg==
-Received: from ppma22.wdc07v.mail.ibm.com (5c.69.3da9.ip4.static.sl-reverse.com [169.61.105.92])
-	by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 40uma803r4-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Tue, 06 Aug 2024 13:45:31 +0000 (GMT)
-Received: from pps.filterd (ppma22.wdc07v.mail.ibm.com [127.0.0.1])
-	by ppma22.wdc07v.mail.ibm.com (8.17.1.19/8.17.1.19) with ESMTP id 476BABj1024334;
-	Tue, 6 Aug 2024 13:45:30 GMT
-Received: from smtprelay03.wdc07v.mail.ibm.com ([172.16.1.70])
-	by ppma22.wdc07v.mail.ibm.com (PPS) with ESMTPS id 40sy90m1k3-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Tue, 06 Aug 2024 13:45:30 +0000
-Received: from smtpav01.wdc07v.mail.ibm.com (smtpav01.wdc07v.mail.ibm.com [10.39.53.228])
-	by smtprelay03.wdc07v.mail.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 476DjRF025625286
-	(version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-	Tue, 6 Aug 2024 13:45:29 GMT
-Received: from smtpav01.wdc07v.mail.ibm.com (unknown [127.0.0.1])
-	by IMSVA (Postfix) with ESMTP id 8D8E458059;
-	Tue,  6 Aug 2024 13:45:27 +0000 (GMT)
-Received: from smtpav01.wdc07v.mail.ibm.com (unknown [127.0.0.1])
-	by IMSVA (Postfix) with ESMTP id F32935806A;
-	Tue,  6 Aug 2024 13:45:24 +0000 (GMT)
-Received: from tuxmaker.boeblingen.de.ibm.com (unknown [9.152.85.9])
-	by smtpav01.wdc07v.mail.ibm.com (Postfix) with ESMTP;
-	Tue,  6 Aug 2024 13:45:24 +0000 (GMT)
-From: Niklas Schnelle <schnelle@linux.ibm.com>
-Date: Tue, 06 Aug 2024 15:45:15 +0200
-Subject: [PATCH] iommu/s390: Implement blocking domain
+	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="pLYSx4JQ"
+Received: by mail-qk1-f169.google.com with SMTP id af79cd13be357-7a1d7a544e7so32305885a.3
+        for <iommu@lists.linux.dev>; Tue, 06 Aug 2024 06:50:20 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=ziepe.ca; s=google; t=1722952219; x=1723557019; darn=lists.linux.dev;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=W2kNYFdUzIZckzr3QKa/r5YhJFKngLkpH0UbHOtP19M=;
+        b=pLYSx4JQFJrJ29XnlRA69dQtVFV+JN8suTkxJfwPkL5PJ7DTxBoNOGI9iSKzMKYra4
+         VU7aWt8Og1WBTMhA0LiBjFA24+N5i3GStHbeSrmMbn5ejPOVA5lJlwpWUXy/2NY0AxgX
+         nurFCNMKe85mG+FTDXYIWNOF74/uA4pCz0P559gLMizndgSkKlKQVbzv84qr5Cxc3Gl3
+         rs0kKYvl8YEHh/oVW0StgUzUFLkkRq1WHUYlpvQo5apWzgJ+RGhEBtc/xAEmwNBwPQMF
+         dVYuXV6nuB+YeHwYo1/OoP5r/2fq8R2bjEaWWrRQCWD4Mw/ChCjd8//y8np7HNlgzHCM
+         6jEA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1722952219; x=1723557019;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=W2kNYFdUzIZckzr3QKa/r5YhJFKngLkpH0UbHOtP19M=;
+        b=Vi/CsOO9OxIULtHgVRZ0uk3ayPXD0DlPsLLXZJqqU4SXB7Hs0UKFIY/ir5qTFFbOWO
+         HMb+3E5r5WY+ipzo1OOsWJrW8Fbhi6GCjk3CSkDzBtoNOGWwSeszl+1J5/RBHbfUq1hj
+         43+aj/JWxz3hsqil0ebUZnxh6e8suuQRuoUjr2g+gaxEeJ2UJrp7pVr/He/rtCNdgZ+n
+         JSZWdlDKpqMyEfhUMJ9nen1PMFPV+3VN813dzJXEae6HZRMBEn61AUycKRnXokQ79qpn
+         TrV7wxhwEGZW511B2JUEEecAkUALTmSxJmefZ4i6Fl5S5A0UjBFV3JaR1oIB+1EEhJJo
+         Jt3g==
+X-Forwarded-Encrypted: i=1; AJvYcCVDNFIImZrW3Y+8qTaqpgBMpSZR4RNRR+gpPMnRcox7EXq0XzC0LgEoQjSyTYo7zjNg8aGHb7lL27cJwbAnwNXGjQcuo9U=
+X-Gm-Message-State: AOJu0YxYDJ2Gffc5rUxmqth2gFwBMGVdbD7s5gV6l/wDauAu/oyTC7tP
+	Kkbew65JriAcP6mZEXmrG1+m0rR+Voae3ws3I9Oe+QKS3UMZ+tABOdmx+lXrnWU=
+X-Google-Smtp-Source: AGHT+IHqC7IQzqpRtpOcSymyY4bbd60+LtteUtikK/WR3ibSVlPRK4KDS/XBqGxQqzXhSC6ZYtfu2Q==
+X-Received: by 2002:a05:620a:4408:b0:7a2:a1d:d3f9 with SMTP id af79cd13be357-7a34eed1938mr1841795985a.6.1722952219216;
+        Tue, 06 Aug 2024 06:50:19 -0700 (PDT)
+Received: from ziepe.ca (hlfxns017vw-142-68-80-239.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.68.80.239])
+        by smtp.gmail.com with ESMTPSA id af79cd13be357-7a34f772dc7sm457935385a.94.2024.08.06.06.50.18
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 06 Aug 2024 06:50:18 -0700 (PDT)
+Received: from jgg by wakko with local (Exim 4.95)
+	(envelope-from <jgg@ziepe.ca>)
+	id 1sbKZt-00Ebl5-PA;
+	Tue, 06 Aug 2024 10:50:17 -0300
+Date: Tue, 6 Aug 2024 10:50:17 -0300
+From: Jason Gunthorpe <jgg@ziepe.ca>
+To: Robin Murphy <robin.murphy@arm.com>
+Cc: Yunsheng Lin <linyunsheng@huawei.com>,
+	Somnath Kotur <somnath.kotur@broadcom.com>,
+	Jesper Dangaard Brouer <hawk@kernel.org>,
+	Yonglong Liu <liuyonglong@huawei.com>,
+	"David S. Miller" <davem@davemloft.net>,
+	Jakub Kicinski <kuba@kernel.org>, pabeni@redhat.com,
+	ilias.apalodimas@linaro.org, netdev@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	Alexander Duyck <alexander.duyck@gmail.com>,
+	Alexei Starovoitov <ast@kernel.org>,
+	"shenjian (K)" <shenjian15@huawei.com>,
+	Salil Mehta <salil.mehta@huawei.com>, joro@8bytes.org,
+	will@kernel.org, iommu@lists.linux.dev
+Subject: Re: [BUG REPORT]net: page_pool: kernel crash at
+ iommu_get_dma_domain+0xc/0x20
+Message-ID: <20240806135017.GG676757@ziepe.ca>
+References: <0e54954b-0880-4ebc-8ef0-13b3ac0a6838@huawei.com>
+ <8743264a-9700-4227-a556-5f931c720211@huawei.com>
+ <e980d20f-ea8a-43e3-8d3f-179a269b5956@kernel.org>
+ <CAOBf=musxZcjYNHjdD+MGp0y6epnNO5ryC6JgeAJbP6YQ+sVUA@mail.gmail.com>
+ <ad84acd2-36ba-433c-bdf7-c16c0d992e1c@huawei.com>
+ <190d5a15-d6bf-47d6-be86-991853b7b51d@arm.com>
+ <5b0415ff-9bbe-4553-89d6-17d12fd44b47@huawei.com>
+ <ae995d55-daa9-4060-85fa-31b4f725a17d@arm.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
-Message-Id: <20240806-blocking_domain-v1-1-8abc18e37e52@linux.ibm.com>
-X-B4-Tracking: v=1; b=H4sIAOoosmYC/x3MQQqAIBBA0avErBNsKImuEhFqkw2VhkIE4d2Tl
- m/x/wuJIlOCoXoh0s2Jgy9o6grspr0jwUsxoMRW9lIJcwS7s3fzEk7NXmBnlMXVKq0QSnVFWvn
- 5j+OU8weYHwdHYQAAAA==
-To: Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
-        Robin Murphy <robin.murphy@arm.com>,
-        Matthew Rosato <mjrosato@linux.ibm.com>,
-        Gerald Schaefer <gerald.schaefer@linux.ibm.com>
-Cc: Gerd Bayer <gbayer@linux.ibm.com>, Heiko Carstens <hca@linux.ibm.com>,
-        Vasily Gorbik <gor@linux.ibm.com>,
-        Alexander Gordeev <agordeev@linux.ibm.com>,
-        Sven Schnelle <svens@linux.ibm.com>, Joerg Roedel <jroedel@suse.de>,
-        iommu@lists.linux.dev, linux-kernel@vger.kernel.org,
-        linux-s390@vger.kernel.org, Niklas Schnelle <schnelle@linux.ibm.com>
-X-Mailer: b4 0.13.0
-X-Developer-Signature: v=1; a=openpgp-sha256; l=6030;
- i=schnelle@linux.ibm.com; h=from:subject:message-id;
- bh=/O6gOazGAAxZLA8J+7h5p+EN9RuzNwHNrZWDPz0D6VM=;
- b=owGbwMvMwCX2Wz534YHOJ2GMp9WSGNI2abyTPb79wKe0bYnifz7c7ngbPbGD5e3+3XpK4Wfsv
- c9bM7BxdZSyMIhxMciKKbIs6nL2W1cwxXRPUH8HzBxWJpAhDFycAjARLlNGhpuTXxy9VZk28/Jv
- j3tHa7f2Oygf423Y/Cyr85d25ZZ13SsZ/ies7rHtUlT+nhliKX8lf2Znd8QqDXHH7/5LFz79oWW
- QzgcA
-X-Developer-Key: i=schnelle@linux.ibm.com; a=openpgp;
- fpr=9DB000B2D2752030A5F72DDCAFE43F15E8C26090
-X-TM-AS-GCONF: 00
-X-Proofpoint-ORIG-GUID: PqdCjSsG9b9gNfEAzym0p3kSxVVMWTtx
-X-Proofpoint-GUID: PqdCjSsG9b9gNfEAzym0p3kSxVVMWTtx
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.293,Aquarius:18.0.1039,Hydra:6.0.680,FMLib:17.12.28.16
- definitions=2024-08-06_11,2024-08-06_01,2024-05-17_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 clxscore=1011 spamscore=0
- lowpriorityscore=0 priorityscore=1501 phishscore=0 bulkscore=0
- mlxlogscore=554 adultscore=0 suspectscore=0 mlxscore=0 malwarescore=0
- impostorscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.19.0-2407110000 definitions=main-2408060093
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <ae995d55-daa9-4060-85fa-31b4f725a17d@arm.com>
 
-This fixes a crash when surprise hot-unplugging a PCI device. This crash
-happens because during hot-unplug __iommu_group_set_domain_nofail()
-attaching the default domain fails when the platform no longer
-recognizes the device as it has already been removed and we end up with
-a NULL domain pointer and UAF. This is exactly the case referred to in
-the second comment in __iommu_device_set_domain() and just as stated
-there if we can instead attach the blocking domain the UAF is prevented
-as this can handle the already removed device. Implement the blocking
-domain to use this handling. This would still leave us with a warning
-for a failed attach. As failing to attach when the device is no longer
-present is expected behavior turn this into an explicit -ENODEV error
-and don't warn for it. Also change the error return for a NULL zdev to
--EIO as we don't want to ignore this case that would be a serious bug.
+On Tue, Aug 06, 2024 at 01:50:08PM +0100, Robin Murphy wrote:
+> On 06/08/2024 12:54 pm, Yunsheng Lin wrote:
+> > On 2024/8/5 20:53, Robin Murphy wrote:
+> > > > > > 
+> > > > > > The page_pool bumps refcnt via get_device() + put_device() on the DMA
+> > > > > > 'struct device', to avoid it going away, but I guess there is also some
+> > > > > > IOMMU code that we need to make sure doesn't go away (until all inflight
+> > > > > > pages are returned) ???
+> > > > 
+> > > > I guess the above is why thing went wrong here, the question is which
+> > > > IOMMU code need to be called here to stop them from going away.
+> > > 
+> > > This looks like the wrong device is being passed to dma_unmap_page() - if a device had an IOMMU DMA domain at the point when the DMA mapping was create, then neither that domain nor its group can legitimately have disappeared while that device still had a driver bound. Or if it *was* the right device, but it's already had device_del() called on it, then you have a fundamental lifecycle problem - a device with no driver bound should not be passed to the DMA API, much less a dead device that's already been removed from its parent bus.
+> > 
+> > Yes, the device *was* the right device, And it's already had device_del()
+> > called on it.
+> > page_pool tries to call get_device() on the DMA 'struct device' to avoid the
+> > above lifecycle problem, it seems get_device() does not stop device_del()
+> > from being called, and that is where we have the problem here:
+> > https://elixir.bootlin.com/linux/v6.11-rc2/source/net/core/page_pool.c#L269
+> > 
+> > The above happens because driver with page_pool support may hand over
+> > page still with dma mapping to network stack and try to reuse that page
+> > after network stack is done with it and passes it back to page_pool to avoid
+> > the penalty of dma mapping/unmapping. With all the caching in the network
+> > stack, some pages may be held in the network stack without returning to the
+> > page_pool soon enough, and with VF disable causing the driver unbound, the
+> > page_pool does not stop the driver from doing it's unbounding work, instead
+> > page_pool uses workqueue to check if there is some pages coming back from the
+> > network stack periodically, if there is any, it will do the dma unmmapping
+> > related cleanup work.
+> 
+> OK, that sounds like a more insidious problem - it's not just IOMMU stuff,
+> in general the page pool should not be holding and using the device pointer
+> after the device has already been destroyed. Even without an IOMMU,
+> attempting DMA unmaps after the driver has already unbound may leak
+> resources or at worst corrupt memory. Fundamentally, the page pool code
+> cannot allow DMA mappings to outlive the driver they belong to.
 
-Fixes: c76c067e488c ("s390/pci: Use dma-iommu layer")
-Signed-off-by: Niklas Schnelle <schnelle@linux.ibm.com>
----
-Note: I somewhat suspect this to be related to the following discussion
-or at least we have seen the same backtraces in reports that we suspect
-to be caused by the issue fixed with this patch. In the case I was able
-to reproduce with vfio-pci pass-through to a KVM guest I got a different
-trace though.
++1
 
-Organizational note: I'll be on vacation starting Thursday. Matt will
-then take over and sent new revisions as necessary.
----
- drivers/iommu/iommu.c      |  7 ++++--
- drivers/iommu/s390-iommu.c | 55 ++++++++++++++++++++++++++++++++++++++--------
- 2 files changed, 51 insertions(+), 11 deletions(-)
+There is more that gets broken here if these basic driver model rules
+are not followed!
 
-diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-index ed6c5cb60c5a..91b3b23bf55c 100644
---- a/drivers/iommu/iommu.c
-+++ b/drivers/iommu/iommu.c
-@@ -119,8 +119,11 @@ static int __iommu_group_set_domain(struct iommu_group *group,
- static void __iommu_group_set_domain_nofail(struct iommu_group *group,
- 					    struct iommu_domain *new_domain)
- {
--	WARN_ON(__iommu_group_set_domain_internal(
--		group, new_domain, IOMMU_SET_DOMAIN_MUST_SUCCEED));
-+	int ret = __iommu_group_set_domain_internal(
-+		group, new_domain, IOMMU_SET_DOMAIN_MUST_SUCCEED);
-+
-+	/* Allow attach to fail when the device is gone */
-+	WARN_ON(ret && ret != -ENODEV);
- }
- 
- static int iommu_setup_default_domain(struct iommu_group *group,
-diff --git a/drivers/iommu/s390-iommu.c b/drivers/iommu/s390-iommu.c
-index d8eaa7ea380b..3d8b5fe9a555 100644
---- a/drivers/iommu/s390-iommu.c
-+++ b/drivers/iommu/s390-iommu.c
-@@ -33,6 +33,8 @@ struct s390_domain {
- 	struct rcu_head		rcu;
- };
- 
-+static struct s390_domain s390_blocking_domain;
-+
- static inline unsigned int calc_rtx(dma_addr_t ptr)
- {
- 	return ((unsigned long)ptr >> ZPCI_RT_SHIFT) & ZPCI_INDEX_MASK;
-@@ -376,12 +378,21 @@ static void s390_iommu_detach_device(struct iommu_domain *domain,
- 	struct zpci_dev *zdev = to_zpci_dev(dev);
- 	unsigned long flags;
- 
-+	/*
-+	 * The static blocking domain doesn't need to track devices nor
-+	 * does it have an IOAT registered. As there is no harm
-+	 * in keeping zdev->s390_domain set to blocking until
-+	 * it is overwritten detach is a no-op.
-+	 */
-+	if (s390_domain->domain.type == IOMMU_DOMAIN_BLOCKED)
-+		return;
-+
- 	spin_lock_irqsave(&s390_domain->list_lock, flags);
- 	list_del_rcu(&zdev->iommu_list);
- 	spin_unlock_irqrestore(&s390_domain->list_lock, flags);
- 
- 	zpci_unregister_ioat(zdev, 0);
--	zdev->s390_domain = NULL;
-+	zdev->s390_domain = &s390_blocking_domain;
- 	zdev->dma_table = NULL;
- }
- 
-@@ -395,7 +406,7 @@ static int s390_iommu_attach_device(struct iommu_domain *domain,
- 	int cc;
- 
- 	if (!zdev)
--		return -ENODEV;
-+		return -EIO;
- 
- 	if (WARN_ON(domain->geometry.aperture_start > zdev->end_dma ||
- 		domain->geometry.aperture_end < zdev->start_dma))
-@@ -403,16 +414,16 @@ static int s390_iommu_attach_device(struct iommu_domain *domain,
- 
- 	if (zdev->s390_domain)
- 		s390_iommu_detach_device(&zdev->s390_domain->domain, dev);
--
-+	/*
-+	 * Detach set the blocking domain. If we fail now DMA remains blocked
-+	 * and the blocking domain attached.
-+	 */
- 	cc = zpci_register_ioat(zdev, 0, zdev->start_dma, zdev->end_dma,
- 				virt_to_phys(s390_domain->dma_table), &status);
--	/*
--	 * If the device is undergoing error recovery the reset code
--	 * will re-establish the new domain.
--	 */
--	if (cc && status != ZPCI_PCI_ST_FUNC_NOT_AVAIL)
-+	if (cc == 3 || status == ZPCI_PCI_ST_FUNC_NOT_AVAIL)
-+		return -ENODEV;
-+	else if (cc)
- 		return -EIO;
--
- 	zdev->dma_table = s390_domain->dma_table;
- 	zdev->s390_domain = s390_domain;
- 
-@@ -702,6 +713,30 @@ struct zpci_iommu_ctrs *zpci_get_iommu_ctrs(struct zpci_dev *zdev)
- 	return &zdev->s390_domain->ctrs;
- }
- 
-+static int blocking_domain_attach_device(struct iommu_domain *domain,
-+					 struct device *dev)
-+{
-+	struct s390_domain *s390_domain = to_s390_domain(domain);
-+	struct zpci_dev *zdev = to_zpci_dev(dev);
-+	unsigned long flags;
-+
-+	if (!zdev)
-+		return 0;
-+
-+	/* Detach sets the blocking domain */
-+	if (zdev->s390_domain)
-+		s390_iommu_detach_device(&zdev->s390_domain->domain, dev);
-+	return 0;
-+}
-+
-+static struct s390_domain s390_blocking_domain = {
-+	.domain = {
-+		.type = IOMMU_DOMAIN_BLOCKED,
-+		.ops = &(const struct iommu_domain_ops) {
-+			.attach_dev	= blocking_domain_attach_device,
-+	}}
-+};
-+
- int zpci_init_iommu(struct zpci_dev *zdev)
- {
- 	u64 aperture_size;
-@@ -777,6 +812,8 @@ static int __init s390_iommu_init(void)
- subsys_initcall(s390_iommu_init);
- 
- static const struct iommu_ops s390_iommu_ops = {
-+	.blocked_domain		= &s390_blocking_domain.domain,
-+	.release_domain		= &s390_blocking_domain.domain,
- 	.capable = s390_iommu_capable,
- 	.domain_alloc_paging = s390_domain_alloc_paging,
- 	.probe_device = s390_iommu_probe_device,
+netdev must fix this by waiting during driver remove until all this DMA
+activity is finished somehow.
 
----
-base-commit: de9c2c66ad8e787abec7c9d7eff4f8c3cdd28aed
-change-id: 20240806-blocking_domain-25b6c2fc6a62
-
-Best regards,
--- 
-Niklas Schnelle
-
+Jason
