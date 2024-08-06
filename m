@@ -1,144 +1,131 @@
-Received: from mail-wr1-f42.google.com (mail-wr1-f42.google.com [209.85.221.42])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.19])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2B445A20
-	for <iommu@lists.linux.dev>; Tue,  6 Aug 2024 00:40:02 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.42
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 80905BA34
+	for <iommu@lists.linux.dev>; Tue,  6 Aug 2024 02:43:12 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.19
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1722904803; cv=none; b=Arr0nZTNwjkGJDPGkDTNL+jjp+KAa3T7iCog8ZYAKDZ/50SrgxsV5kro8AtnxymVsJdUpboQVcuEtWa9PoHF149fiV1nTlFLiFpHpfhSnPybyPgXIzknXGxjILrzFE2iNMKQNPG1SzeaIglx0MStQuCxoKz2va+n9xjpj/ccL1k=
+	t=1722912194; cv=none; b=maWSpAz+VKVq80zYXLZatCzrChhIVNYMF5djjWe4G+rUd9addrCOtva8P4nKD5u1+m8A0KOEzSlYH846bBLwx7FoIJ3Y/RT2Evqwnjb/rmb8ji5Ebu+QRrhipQYxRGUjibK6IyJ706fTfOxcfMnUfdiJ4KYbdGaOZef2UG53a2I=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1722904803; c=relaxed/simple;
-	bh=fRR3DATEsRrbV2lk8KRxjtv1/FxWvxec6i6bzpLg/mA=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=V8we7MZh4JsAi8+62ub3JxhcouQXmEy1HkT4ZBKIFbYOQdb3eQzw2rBf2jUp/XUttWY5oj9+sjA4cWWNcDYNzCmWBuI2hpd99CLF6bihsXNCjBrvZYrx2e+UhRjp9aMjfYw93247WlT+B/I96kwgEJVa4JE7qx7V3qXYKxHBo+s=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=lPPzYSq3; arc=none smtp.client-ip=209.85.221.42
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1722912194; c=relaxed/simple;
+	bh=8ikBy/tLCc+vKeAiQwAsjkffCbEbddVM4RZBSOSSBeY=;
+	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version; b=A5gPt3flj/8IidbkCtzH8M1D4Y08ck+htptGoztBx9FquA0cxN2zK5/HWEUFJgPTVpH7SiO0isbMd4XPsniKNROsOqVtFlQOWtZ/aLUwh6cBNXY/a0tdkKzygzSwctyQHODTC7+HaNWEt0HLRYLK5L5paT0qc1KnrSu1lOKj8f8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=hIeukoio; arc=none smtp.client-ip=198.175.65.19
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="lPPzYSq3"
-Received: by mail-wr1-f42.google.com with SMTP id ffacd0b85a97d-36868fcb919so108575f8f.2
-        for <iommu@lists.linux.dev>; Mon, 05 Aug 2024 17:40:01 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1722904800; x=1723509600; darn=lists.linux.dev;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=fRR3DATEsRrbV2lk8KRxjtv1/FxWvxec6i6bzpLg/mA=;
-        b=lPPzYSq358j2LGtEpV2WvEIRg75RfEZZG3Fw81/Lo93e9e9bERP7uU2BavtvLvV1/S
-         FOgM34ObrleiqpR1+96bs3SNWcTA5Hun7W/X60pMmLX8a9Vy53hRKgBVM07X4jN0NVHc
-         F5ztyfqs/yE2yvBiOOW0T5m4HnQPvC5bIsC78DirU/yIZJCWCN58ISj8A5uDPF5gfP5R
-         Z5AYsBbJds3jIaXmE2zMzWw1ZhZlkGViiA5Hr8nAxreNGvCf52ecSXzXH2P9p6RU58Jn
-         ib7mKgygByBAtHTxr0scxRTrW5tZZsMmknY7uD1dijpsd/au31uTOhmpaAkJffAtcI9e
-         IcFw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1722904800; x=1723509600;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=fRR3DATEsRrbV2lk8KRxjtv1/FxWvxec6i6bzpLg/mA=;
-        b=nOxyHnW9l5UxrnjVGLEfd792meRu73HkGjBICNBLQk+G16f5n9t4h9UdKLhx8vDWUr
-         rVREIAaOzGa7RcIEmNhKmBVV5ytI03j8zJCGlA0kdZD5efxgPjrUOsRzpGzgYGbB2gvC
-         JHWWIqTHdXteCybJygEOBPoSb/vl7NeivmdCHnSnKfk4TiLqXIaVgZw7WoIQHN4fC1Fv
-         bN+Mo3rPbHp20fO1DLleuVuHUYmF48vLaE3FxiTR7jOr4phk5Cv0FcFhUKno+n4Edymb
-         1shSCW/lQHCmWXzZpFnnXrUtacB7b8BOeh32h3DJKmx8q451vSQAzjXCZjwk9Y46ksHO
-         aeSA==
-X-Forwarded-Encrypted: i=1; AJvYcCVtiohrbWNG/LbwD2Xc7Zd2+mgMBz7sdJjAm6A49M8j/XJj1lXYTL8LHPOdHqzIhqlntzAme+pKqyx0B24dVOoJtAXEl2I=
-X-Gm-Message-State: AOJu0YzOca3BXL3nSMZuAYdrAjIwtlwfatot70Ob+ZE+WeG2MebT6OJT
-	wGngj/d4JBEnNbRtlRsYqdo0Q+I73RvHPP6ywBD3JHVrO9JdCQ3nbTOZEouM/T7n4dVCZHrhW45
-	oImkGBl9ISbnAPQfWu9Cv0mvFcVc=
-X-Google-Smtp-Source: AGHT+IEQwDIjU1uPDtehVAQaw1/z3fKCHW7xjJpO2iSqDasNkhxHmMjofXQkPJJAKw0wBpE4lz/mcTzeUCXMSbOYxuo=
-X-Received: by 2002:a05:6000:4028:b0:366:e7e2:13c8 with SMTP id
- ffacd0b85a97d-36bbc0f7a96mr13980593f8f.11.1722904800170; Mon, 05 Aug 2024
- 17:40:00 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="hIeukoio"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1722912192; x=1754448192;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=8ikBy/tLCc+vKeAiQwAsjkffCbEbddVM4RZBSOSSBeY=;
+  b=hIeukoio/QBOA4OtRyE8zznB9j0gtDRFAWkbgwo8QUYTf3lNOdrfuDLM
+   eQq26vjvabidkqxTd474kyz/YGWBUMkCDgMzxRXMfcwDkqO1gXcZ/Cr9h
+   7igR3+evHVtQtJg/AC+zNM8VrZ3zVjxFgoV1BgUYf1cEYNHZYtnVWaj7H
+   IzdoCTkaINxRTgtAfkaKwQ9IhICvNvKaieeNt/aX7Pt14B7kKF/50UPZo
+   GIbEGDnyEfQG4FfvocGJdm9qTh28N07qKhmwg6fTSaZVOAnve1oKOTPZa
+   A2PsfRv5k/ZL6qyjhb0GtWWY+mqxFh/gG4YaTdF3w/Cs1mP28TIjwPVgZ
+   A==;
+X-CSE-ConnectionGUID: gJHX7jibSaajZ0NcOs8h0Q==
+X-CSE-MsgGUID: GjbUy6dASdCBCNKL1uGNAQ==
+X-IronPort-AV: E=McAfee;i="6700,10204,11155"; a="20756249"
+X-IronPort-AV: E=Sophos;i="6.09,266,1716274800"; 
+   d="scan'208";a="20756249"
+Received: from orviesa006.jf.intel.com ([10.64.159.146])
+  by orvoesa111.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Aug 2024 19:43:12 -0700
+X-CSE-ConnectionGUID: GbRGz6+4SmmFDSV48u5t1A==
+X-CSE-MsgGUID: n1TJ2T7SSLCTw/+xLlAmFw==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.09,266,1716274800"; 
+   d="scan'208";a="56572509"
+Received: from allen-box.sh.intel.com ([10.239.159.127])
+  by orviesa006.jf.intel.com with ESMTP; 05 Aug 2024 19:43:10 -0700
+From: Lu Baolu <baolu.lu@linux.intel.com>
+To: Joerg Roedel <joro@8bytes.org>,
+	Will Deacon <will@kernel.org>,
+	Robin Murphy <robin.murphy@arm.com>,
+	Jason Gunthorpe <jgg@ziepe.ca>,
+	Kevin Tian <kevin.tian@intel.com>
+Cc: iommu@lists.linux.dev,
+	linux-kernel@vger.kernel.org,
+	Lu Baolu <baolu.lu@linux.intel.com>
+Subject: [PATCH v3 0/7] iommu/vt-d: Convert to use static identity domain
+Date: Tue,  6 Aug 2024 10:39:34 +0800
+Message-Id: <20240806023941.93454-1-baolu.lu@linux.intel.com>
+X-Mailer: git-send-email 2.34.1
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <0e54954b-0880-4ebc-8ef0-13b3ac0a6838@huawei.com>
- <8743264a-9700-4227-a556-5f931c720211@huawei.com> <CAKgT0Uf4xBJDLMxa3awSnzgZvbb-LN82APkPi7uVpWw+j7wqRA@mail.gmail.com>
- <8d4b6398-1b7d-4c14-b390-0456a6158681@huawei.com>
-In-Reply-To: <8d4b6398-1b7d-4c14-b390-0456a6158681@huawei.com>
-From: Alexander Duyck <alexander.duyck@gmail.com>
-Date: Tue, 6 Aug 2024 06:09:23 +0530
-Message-ID: <CAKgT0Ue1+wvoFzymvMhUvbbSTRgW8=qYySkH80KqRKHCXdHWPg@mail.gmail.com>
-Subject: Re: [BUG REPORT]net: page_pool: kernel crash at iommu_get_dma_domain+0xc/0x20
-To: Yunsheng Lin <linyunsheng@huawei.com>
-Cc: Yonglong Liu <liuyonglong@huawei.com>, "David S. Miller" <davem@davemloft.net>, 
-	Jakub Kicinski <kuba@kernel.org>, pabeni@redhat.com, hawk@kernel.org, 
-	ilias.apalodimas@linaro.org, netdev@vger.kernel.org, 
-	linux-kernel@vger.kernel.org, Alexei Starovoitov <ast@kernel.org>, 
-	"shenjian (K)" <shenjian15@huawei.com>, Salil Mehta <salil.mehta@huawei.com>, iommu@lists.linux.dev
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
 
-On Mon, Aug 5, 2024 at 6:20=E2=80=AFPM Yunsheng Lin <linyunsheng@huawei.com=
-> wrote:
->
-> On 2024/8/3 0:38, Alexander Duyck wrote:
->
-> ...
->
-> >
-> > The issue as I see it is that we aren't unmapping the pages when we
-> > call page_pool_destroy. There need to be no pages remaining with a DMA
-> > unmapping needed *after* that is called. Otherwise we will see this
-> > issue regularly.
-> >
-> > What we probably need to look at doing is beefing up page_pool_release
-> > to add a step that will take an additional reference on the inflight
-> > pages, then call __page_pool_put_page to switch them to a reference
-> > counted page.
->
-> I am not sure if I understand what you meant about, did you mean making
-> page_pool_destroy() synchronously wait for the all in-flight pages to
-> come back before returning to driver?
+Intel's IOMMU driver used a special domain called 1:1 mapping domain to
+support the domain of type IOMMU_DOMAIN_IDENTITY, which enables device
+drivers to directly utilize physical addresses for DMA access despite
+the presence of IOMMU units.
 
-Part of the issue is the device appears to be removed from the iommu
-before all the pages have been unmap. To fix that we would either need
-to unmap all the pages or force the kernel to wait until all of the
-pages have been unmapped before the device can be removed from the
-iommu group.
+The implementation of the 1:1 mapping domain is influenced by hardware
+differences. While modern Intel VT-d implementations support hardware
+passthrough translation mode, earlier versions lacked this feature,
+which requires a more complex implementation approach.
 
-> >
-> > Seems like the worst case scenario is that we are talking about having
-> > to walk the page table to do the above for any inflight pages but it
->
-> Which page table are we talking about here?
+The 1:1 mapping domain for earlier hardware was implemented by associating
+a DMA domain with an IOVA (IO Virtual Address) equivalent to the
+physical address. While, for most hardware supporting passthrough mode,
+simply setting the hardware's passthrough mode is sufficient. These two
+modes were merged together in si_domain, which is a special DMA domain
+sharing the domain ops of an ordinary DMA domain.
 
-The internal memory being managed by the kernel in the form of struct
-page. Basically we would need to walk through all the struct page
-entries and if they are setup to use the page_pool we are freeing we
-would have to force them out of the pool.
+As the iommu core has evolved, it has introduced global static identity
+domain with "never fail" attach semantics. This means that the domain is
+always available and cannot fail to attach. The iommu driver now assigns
+this domain directly at iommu_ops->identity_domain instead of allocating
+it through the domain allocation interface.
 
-> > would certainly be a much more deterministic amount of time needed to
-> > do that versus waiting on a page that may or may not return.
-> >
-> > Alternatively a quick hack that would probably also address this would
-> > be to clear poll->dma_map in page_pool_destroy or maybe in
->
-> It seems we may need to clear pool->dma_sync too, and there may be some
-> time window between clearing and checking/dma_unmap?
+This converts the Intel IOMMU driver to embrace the global static
+identity domain. For early legacy hardwares that don't support
+passthrough translation mode, ask the iommu core to use a DMA type of
+default domain. For modern hardwares that support passthrough
+translation mode, implement a static global identity domain.
 
-That is a possibility. However for many platforms dma_sync is a no-op.
+The whole series is also available at
 
-> > page_pool_unreg_netdev so that any of those residual mappings would
-> > essentially get leaked, but we wouldn't have to worry about trying to
-> > unmap while the device doesn't exist.
->
-> But how does the page_pool know if it is just the normal unloading proces=
-sing
-> without VF disabling where the device still exists or it is the abnormal =
-one
-> caused by the VF disabling where the device will disappear? If it is the =
-first
-> one, does it cause resource leaking problem for iommu if some calling for=
- iommu
-> is skipped?
+https://github.com/LuBaolu/intel-iommu/commits/vtd-static-identity-domain-v3
 
-It wouldn't. Basically we would have to do this for any page pool that
-is being destroyed with pages left in-flight. That is why the
-preference would likely be to stall for some time and hope that the
-pages get unmapped on their own, and then if they can't we would need
-to force this process to kick in so we don't spend forever.
+Change log:
+v3:
+ - Kevin worried that some graphic devices might still require identity
+   domain. Forcing DMA domain for those drivers might break the existing
+   functionality.
+   https://lore.kernel.org/linux-iommu/BN9PR11MB52761FF9AB496B422596DDDF8C8AA@BN9PR11MB5276.namprd11.prod.outlook.com/
+
+   After confirmed with the graphic community, we decouple "igfx_off"
+   kernel command from graphic identity mapping with the following commits:
+   ba00196ca41c ("iommu/vt-d: Decouple igfx_off from graphic identity mapping")
+   4b8d18c0c986 ("iommu/vt-d: Remove INTEL_IOMMU_BROKEN_GFX_WA").
+
+v2: https://lore.kernel.org/linux-iommu/20231205012203.244584-1-baolu.lu@linux.intel.com/
+ - Re-orgnize the patches by removing 1:1 mappings before implementing
+   global static domain.
+
+v1: https://lore.kernel.org/linux-iommu/20231120112944.142741-1-baolu.lu@linux.intel.com/ 
+
+Lu Baolu (7):
+  iommu/vt-d: Require DMA domain if hardware not support passthrough
+  iommu/vt-d: Remove identity mappings from si_domain
+  iommu/vt-d: Always reserve a domain ID for identity setup
+  iommu/vt-d: Prepare for global static identity domain
+  iommu/vt-d: Factor out helpers from domain_context_mapping_one()
+  iommu/vt-d: Add support for static identity domain
+  iommu/vt-d: Cleanup si_domain
+
+ drivers/iommu/intel/iommu.c | 434 +++++++++++++++++-------------------
+ 1 file changed, 201 insertions(+), 233 deletions(-)
+
+-- 
+2.34.1
+
