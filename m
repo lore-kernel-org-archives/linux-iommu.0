@@ -1,48 +1,48 @@
 Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5F792C2E9
-	for <iommu@lists.linux.dev>; Tue,  6 Aug 2024 02:43:19 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4AF7F2B9C6
+	for <iommu@lists.linux.dev>; Tue,  6 Aug 2024 02:43:21 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.19
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1722912200; cv=none; b=oAMDA2+OWIQcIrat3lY8vJhM4TH47p+QhXRneu6m6xcC7nFL33lNQ1LBCkWbEgVUtFoBwkbC/oLuQEREZLp5+8GxdS31lxpyGeFXh8QjOJPIaLxnEFHwT+u62zm0PCMBBUs6GZGeoG5S7tjdYwZZ8awB4ZaMDsPfOIzlOH3GjKE=
+	t=1722912202; cv=none; b=ppaAvR+XuJ1eDbj3vhx84pLGysNGgavemYfF08QcAWkzEChnWKalrfDED+bHV+3fj85461ZXxUowYWLgspoKEXqnsWiW+3t5TO/uO3oEJ+o91udc7fhJRw5nS2MD/PhxBVPOKIWrQqyN84biARNfzNTv6AaFoPU7yo/GFf6ZTN4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1722912200; c=relaxed/simple;
-	bh=xxfqT0qNL14nNG0EUpV3NkFQXJRIeyYHuEM9FexqDo4=;
+	s=arc-20240116; t=1722912202; c=relaxed/simple;
+	bh=VvUjxvijcivH0pOPCUJicXjduLFqJW9qUOw2HGLvGnE=;
 	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
-	 MIME-Version; b=Crp4GPufntDbCkQlzArbexeVIJdtWt/5Syo/rJPEY9DdM5MiIP3PHF/9KrsWXCm6mAhObytW6/E+PpzVvQcjtyd0CcXUjg4vcTyrF/OSTzmm3x91ZlqLonIwo/eB7mmNSmqr9yU7tr86imq8QSKvKlDHa+c9GsZinz4k69amULk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=jm9IO5qV; arc=none smtp.client-ip=198.175.65.19
+	 MIME-Version; b=QFyYquKALCWJsgOSovwcYRjMqyC26Gt57x5tdhtCEKqyD0bfspaExrnIf8eS/1ARzy/OseaAucy9eiZxzzcy2NgSqx/vWvjB+MGT/yuJBsUr7RYlbEeaRb6Kvz6NbWmB4l64ldg/yznbxCsEMMJ8PNn5iRcALl2SkMmKeP5IT30=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=FHATSVgJ; arc=none smtp.client-ip=198.175.65.19
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="jm9IO5qV"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="FHATSVgJ"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1722912199; x=1754448199;
+  t=1722912201; x=1754448201;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=xxfqT0qNL14nNG0EUpV3NkFQXJRIeyYHuEM9FexqDo4=;
-  b=jm9IO5qVqvAhDrm+eKkWes5/VXELrtT36yI2SZS3F5vHd095deN8welf
-   huww/DgJ+l/3yyw9Y0cuSs92cJiUpK9vT8YEW7X4XfA13sECLycMXuLyU
-   zi/RGJFV4/tj/VBvATYy26VKyGCaVqWROg4AHJbLf767JIDxBroHL9mmZ
-   mEZGt3NN32AlYs6MxL93osj9laF9+lnbEJkqUUzgy3qTFlK1fslS33lYe
-   VcFBxbOQ+pu+2M1142lzEU6hLSKOruTvh+D5VkNP4oJ70jvd68F66vj36
-   wRxrIEBELrE9CO+8o2GEwU+VrMkL9+ngJq/ltk9XGbiy2BsqgUHueGqPO
+  bh=VvUjxvijcivH0pOPCUJicXjduLFqJW9qUOw2HGLvGnE=;
+  b=FHATSVgJG6dDFnaQDCfuAN9rmfFy4erpMnvLKox3HhkBGaYV08iQsjc/
+   55Bhmb7BlPvjIwBnVNVIzmvJzyaNaOm1qqA+3nbL818m15ICDw56wLazH
+   Ewk1pRVFRft8RdgmF7P5i7lxMs+gBu2MgJLZwdLsZfN52xW3lmOk70FPp
+   Bin5eoXqK91Zm0j5/DohQSNDMKHDFRlJBoazdvbZDVAgemevYCr6yzIUA
+   HM0C6kSR+ozs7Y0vy2TE1MwUn6tKL3UYzDj5ijYhwKlkQmpug33Cifjtu
+   CdCq8RXmWob+EdUjgFITo/oMoR3goVqhnqzx9cN/k1GoRLfU4oLDEEfq8
    Q==;
-X-CSE-ConnectionGUID: lt0C9fWlT0qNFL9aRetwlg==
-X-CSE-MsgGUID: 9V/RRCm4TQiaEmiwntjuFA==
-X-IronPort-AV: E=McAfee;i="6700,10204,11155"; a="20756276"
+X-CSE-ConnectionGUID: sQA9xOQoQrCIeYPjBqcr3A==
+X-CSE-MsgGUID: jCd60+NnS725Go5XiS+GlQ==
+X-IronPort-AV: E=McAfee;i="6700,10204,11155"; a="20756282"
 X-IronPort-AV: E=Sophos;i="6.09,266,1716274800"; 
-   d="scan'208";a="20756276"
+   d="scan'208";a="20756282"
 Received: from orviesa006.jf.intel.com ([10.64.159.146])
-  by orvoesa111.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Aug 2024 19:43:19 -0700
-X-CSE-ConnectionGUID: /1agKx6MQLiGItPn6qZLkQ==
-X-CSE-MsgGUID: Sq7BaKgIRnSmAZwxKyiZQg==
+  by orvoesa111.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Aug 2024 19:43:21 -0700
+X-CSE-ConnectionGUID: 37kGIGI3STG+A/xThK0ADw==
+X-CSE-MsgGUID: Q0oysaFfQQKIS3bonZEuvA==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.09,266,1716274800"; 
-   d="scan'208";a="56572526"
+   d="scan'208";a="56572529"
 Received: from allen-box.sh.intel.com ([10.239.159.127])
-  by orviesa006.jf.intel.com with ESMTP; 05 Aug 2024 19:43:17 -0700
+  by orviesa006.jf.intel.com with ESMTP; 05 Aug 2024 19:43:19 -0700
 From: Lu Baolu <baolu.lu@linux.intel.com>
 To: Joerg Roedel <joro@8bytes.org>,
 	Will Deacon <will@kernel.org>,
@@ -52,9 +52,9 @@ To: Joerg Roedel <joro@8bytes.org>,
 Cc: iommu@lists.linux.dev,
 	linux-kernel@vger.kernel.org,
 	Lu Baolu <baolu.lu@linux.intel.com>
-Subject: [PATCH v3 3/7] iommu/vt-d: Always reserve a domain ID for identity setup
-Date: Tue,  6 Aug 2024 10:39:37 +0800
-Message-Id: <20240806023941.93454-4-baolu.lu@linux.intel.com>
+Subject: [PATCH v3 4/7] iommu/vt-d: Prepare for global static identity domain
+Date: Tue,  6 Aug 2024 10:39:38 +0800
+Message-Id: <20240806023941.93454-5-baolu.lu@linux.intel.com>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20240806023941.93454-1-baolu.lu@linux.intel.com>
 References: <20240806023941.93454-1-baolu.lu@linux.intel.com>
@@ -66,32 +66,55 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-We will use a global static identity domain. Reserve a static domain ID
-for it.
+With the static identity domain in place, the domain field of per-device
+iommu driver data can be either a pointer to a DMA translation domain, or
+NULL, indicating that the static identity domain is attached. Refactor
+the code to prepare for this change.
 
 Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
 ---
- drivers/iommu/intel/iommu.c | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+ drivers/iommu/intel/iommu.c | 12 +++++++++---
+ 1 file changed, 9 insertions(+), 3 deletions(-)
 
 diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
-index 723ea9f3f501..c019fb3b3e78 100644
+index c019fb3b3e78..f37c8c3cba3c 100644
 --- a/drivers/iommu/intel/iommu.c
 +++ b/drivers/iommu/intel/iommu.c
-@@ -1440,10 +1440,10 @@ static int iommu_init_domains(struct intel_iommu *iommu)
- 	 * entry for first-level or pass-through translation modes should
- 	 * be programmed with a domain id different from those used for
- 	 * second-level or nested translation. We reserve a domain id for
--	 * this purpose.
-+	 * this purpose. This domain id is also used for identity domain
-+	 * in legacy mode.
- 	 */
--	if (sm_supported(iommu))
--		set_bit(FLPT_DEFAULT_DID, iommu->domain_ids);
-+	set_bit(FLPT_DEFAULT_DID, iommu->domain_ids);
+@@ -1270,6 +1270,9 @@ void domain_update_iotlb(struct dmar_domain *domain)
+ 	bool has_iotlb_device = false;
+ 	unsigned long flags;
  
- 	return 0;
- }
++	if (!domain)
++		return;
++
+ 	spin_lock_irqsave(&domain->lock, flags);
+ 	list_for_each_entry(info, &domain->devices, link) {
+ 		if (info->ats_enabled) {
+@@ -3706,11 +3709,9 @@ int prepare_domain_attach_device(struct iommu_domain *domain,
+ static int intel_iommu_attach_device(struct iommu_domain *domain,
+ 				     struct device *dev)
+ {
+-	struct device_domain_info *info = dev_iommu_priv_get(dev);
+ 	int ret;
+ 
+-	if (info->domain)
+-		device_block_translation(dev);
++	device_block_translation(dev);
+ 
+ 	ret = prepare_domain_attach_device(domain, dev);
+ 	if (ret)
+@@ -4321,6 +4322,11 @@ static void intel_iommu_remove_dev_pasid(struct device *dev, ioasid_t pasid,
+ 	struct intel_iommu *iommu = info->iommu;
+ 	unsigned long flags;
+ 
++	if (domain->type == IOMMU_DOMAIN_IDENTITY) {
++		intel_pasid_tear_down_entry(iommu, dev, pasid, false);
++		return;
++	}
++
+ 	spin_lock_irqsave(&dmar_domain->lock, flags);
+ 	list_for_each_entry(curr, &dmar_domain->dev_pasids, link_domain) {
+ 		if (curr->dev == dev && curr->pasid == pasid) {
 -- 
 2.34.1
 
