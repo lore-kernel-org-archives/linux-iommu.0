@@ -1,72 +1,73 @@
-Received: from mail-ot1-f48.google.com (mail-ot1-f48.google.com [209.85.210.48])
+Received: from mail-qv1-f42.google.com (mail-qv1-f42.google.com [209.85.219.42])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7F8D9487BF
-	for <iommu@lists.linux.dev>; Tue,  6 Aug 2024 17:05:31 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.48
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4B01A481D5
+	for <iommu@lists.linux.dev>; Tue,  6 Aug 2024 17:06:55 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.219.42
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1722963935; cv=none; b=sT3YbzXCKJlqgOaIdfEBNf555aWfvMHscL5/XqC9fasittKJmYJVN0Bs0+LlXjzEs1ntdW0QWl+0NtkOBPuHQLI6GVSjvuq0QoY/OKzGabxU8lSqUSqcQNyehvzTJyPS+77Vkpj55fManVUI2qP1gTTeNJK7pVOn4nLssSs0TMc=
+	t=1722964016; cv=none; b=XlDTp5J4PmZ7KVRTuqKEbBi35qp3EymvUCck9zRQoEzxf+WUBWfRfo4H4rIC6viSmJmX2OUYZmMETcpYmk/ZAvksrp/ewlqWNtp600PvhjXP8rRE6yHsNuyfkAKE2eneqlACyn5b11MvqQmNGyzr25mqwRU2o3bYXOQPuKTWNXI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1722963935; c=relaxed/simple;
-	bh=yGvpZoh5vCSJK/qbn8LcdrNoO2Wx65yHXP8tJqegytQ=;
+	s=arc-20240116; t=1722964016; c=relaxed/simple;
+	bh=pYXWVAixb0TGzW0+4z41mcpkWJcYtHb79k2+mXUZ5kY=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=P3m6fz92r9K7A7ExxJoE6VZ/tY7KjpTiExIaXRGa5CdsH7/oaV9QpVCTmcxkCtqgYdswQnYYZTLyqYGCi8cjxCJ1R4Ropxg/M5ZPjB52IrHEtLIDTZRizQ6WAvzsKcaQ2gxRnufboW0leuBtepuZph54gpCgbPkQEko71RVF3ak=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=kOnO5Eo8; arc=none smtp.client-ip=209.85.210.48
+	 Content-Type:Content-Disposition:In-Reply-To; b=cDo2UKzX6vQI9GXnuh/1w93YrwCrz+m/hlDUmqysvtGGbVG32qhLykiI1AC5Ap72HhBbCqFcHDFuqE1vPN7t1okQhihBm59dcf64TJFooQPtaXP4PpKmVwGSg9R2DAPdX4Fn5X88OWmwu+KFjfloEJXB18oWBxr3dt+XVLP69cs=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=iY5tFPnn; arc=none smtp.client-ip=209.85.219.42
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="kOnO5Eo8"
-Received: by mail-ot1-f48.google.com with SMTP id 46e09a7af769-7094468d392so509383a34.0
-        for <iommu@lists.linux.dev>; Tue, 06 Aug 2024 10:05:31 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="iY5tFPnn"
+Received: by mail-qv1-f42.google.com with SMTP id 6a1803df08f44-6bb687c3cceso4323236d6.0
+        for <iommu@lists.linux.dev>; Tue, 06 Aug 2024 10:06:55 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google; t=1722963930; x=1723568730; darn=lists.linux.dev;
+        d=ziepe.ca; s=google; t=1722964014; x=1723568814; darn=lists.linux.dev;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=3FF/1bBloQvKewzJ9i4AR99oRC5uWACaYmjJ4UN+yhI=;
-        b=kOnO5Eo8EvYfmK1x5o1j81K91sM3KqPvdtl1JwKirydXTJ1H7Kb8u2SMLJ6EmHqBoS
-         hD+tu3h9KTk68Fuiw6GNp7PeUbZhyug9ZR3VzrBB/pTVAk8fZG+KKEyWnYiIRQPaaI29
-         vEpnkVbU2q3ZhQkN8gURLN+AF3uFuVU97f5HtvvzymDQzth/yTTRBgAwYfSgOqtronj8
-         eydDCIN/rmHzXjujmHNCAuHv+S6G4KnNVwSvDCTc4qYFBkeT/6vw5MyINhu+TXmQIzZI
-         Se299FnNWbX4Gfg7dqoc5oSQctPjZ3tYEloj1ZSVgYuTJJjPexYX8MsIxErVgQnbmgDK
-         N4YQ==
+        bh=ZupS7pfQdW0meLSGlAB6m+Zc0i+CePa5pRy6YLAKXQ4=;
+        b=iY5tFPnnMqwsALcKWh7lbmlqXFSFiAKh7kttpxqfVTEifQfGCBLJZAiy+yQConn03N
+         sWenYvli/TXPzXpIrYdH6iJAOmB6OKEeC4plyUKJZFUmn38oqHX4Bei/qh/7FQyTMw9W
+         +4zvsC00HSZi6cHRBIqiSWZZELT4y/kEEQF1xW42MWBnTug7+ljtUwz0Pnkurm85ASgg
+         aJc2ZkXlYJ0Zu9Nr91Qe+VeOYWP7VBgfNbPWpBJwajIBBkryc0QhnVw8zF8vSern0N9Q
+         OVkXgrTNZvbX2mBk61+pcARn+HWn5Ul7Sgd+0CRLWC3NTXdq1gO835HziuK4773kJceN
+         5HJg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1722963930; x=1723568730;
+        d=1e100.net; s=20230601; t=1722964014; x=1723568814;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=3FF/1bBloQvKewzJ9i4AR99oRC5uWACaYmjJ4UN+yhI=;
-        b=T5DxEkKjcgj8G7aWZEqwMwilzxnxzfEe2NaFCUvUzED6j7qzklo+EJwwlcPIK21PcE
-         lKwrLkUT4DzpS8JhN+uJM15Nt/nQZ5FMuMlv96COshBTyFSIAM/N/l8jmv6J6pwXEljP
-         lU17HMtFICp70tp6necgUsQYpA7a2GTOcTglnvLoqAQOpyS2WljeC2pgtOflPc4OlU8m
-         X5FsF/T7rnwngaj/3k1DEgCb8QS9h791XAO/k0y82UIo8vE+nS+99hV228sQbrWKb4qw
-         FjwCzjJf7HDy3h8mb2c/xOplR2UztzgNJghjd/3e6w+pCEc9ZP7M7b3qRvBFBgIGoUxT
-         HHsQ==
-X-Forwarded-Encrypted: i=1; AJvYcCWsy5RuTQq8HfSnyrRwGshCFzMhYweuP57/WMdREPili1wXHrHzfNq2QG+G1ZNUJGYQgONbu6Kec5gWvqCv4OEPP4tntt4=
-X-Gm-Message-State: AOJu0YzMXaDat8r432Jg3iaE51mVbbtu10XU6ZVHrVY7AbZ2K+QE2J84
-	FJMqRflMrS4MQoKKF7TstB6TX45rWMVn5IUItni9WuUQy7ER+JowKohbTuW0eMM=
-X-Google-Smtp-Source: AGHT+IEfBFlT4KzSQTpw4KAX++80DJzKla5Md85qMeUYrxRTC3yZCZpkl1YY0dnUlf481tT88r1k6g==
-X-Received: by 2002:a05:6830:380d:b0:709:472d:f342 with SMTP id 46e09a7af769-709b3201792mr21629352a34.6.1722963930227;
-        Tue, 06 Aug 2024 10:05:30 -0700 (PDT)
+        bh=ZupS7pfQdW0meLSGlAB6m+Zc0i+CePa5pRy6YLAKXQ4=;
+        b=qgXpQ2cEQGN01kjtDUj5AUahm7tKONF71inaYJ/pwPT9dHd74Jg37pN3sNon/kopiJ
+         vs3RnPWVpyZkvft+IB7OGD28lFC7s1wOA4ibvmIbHVxTMUNZSOFjyxuOtrYFlBHSMRP8
+         zXqFnHBPVDcOCbR13qyFED3Z9dgY5btYnI3YwlPdOewXBK+U7Gk3Vo237Jj7+QLSgdL0
+         Z79R6Cj86KcbH1RZszB5JuTgdB05im5VNKl2lVYysvvM3qGzfHpnUHvcwMFlDaUjfIDD
+         pZkt183NUP/E9gvGRLU5Ncz3D5+laHXJ2zVOJTJuCnPSN0czxkD3/zfI5RricINL6oCK
+         /6AA==
+X-Forwarded-Encrypted: i=1; AJvYcCWq5YalliHmnMoTQVSsb9TLzL/d/UrhNk0xU2LSGDxgN+jaFDtsjMB7evlRGjlRk0b3/q8LMaQzUEy0yWNZlN5HXzNc/qI=
+X-Gm-Message-State: AOJu0YxpDNq5DC5pNACNhqmqDNzMOvRwyO0n62zfdUjtJ1/avo6qMzeX
+	PfynzFRfAzODIcHIWk7ipyGRDxOx5Q5XwzpBMsM3c3bgR5D453sdaxut0CaXifm6uPNdiHViEHW
+	i
+X-Google-Smtp-Source: AGHT+IFmWGNv3wd4KVGiX2u4W4ZqwihouWJ7Lf6SWUySvG5saWPfrszb6atjhcfd6w1r+BLQVZDajA==
+X-Received: by 2002:a05:6214:4985:b0:6b5:e1fb:68ee with SMTP id 6a1803df08f44-6bb983b8d74mr214316966d6.25.1722964014192;
+        Tue, 06 Aug 2024 10:06:54 -0700 (PDT)
 Received: from ziepe.ca (hlfxns017vw-142-68-80-239.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.68.80.239])
-        by smtp.gmail.com with ESMTPSA id 6a1803df08f44-6bb9c79744esm48125606d6.40.2024.08.06.10.05.29
+        by smtp.gmail.com with ESMTPSA id 6a1803df08f44-6bb9c76f8ccsm48546856d6.4.2024.08.06.10.06.53
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 06 Aug 2024 10:05:29 -0700 (PDT)
+        Tue, 06 Aug 2024 10:06:53 -0700 (PDT)
 Received: from jgg by wakko with local (Exim 4.95)
 	(envelope-from <jgg@ziepe.ca>)
-	id 1sbNcn-00FTSc-AN;
-	Tue, 06 Aug 2024 14:05:29 -0300
-Date: Tue, 6 Aug 2024 14:05:29 -0300
+	id 1sbNe9-00FTrp-6p;
+	Tue, 06 Aug 2024 14:06:53 -0300
+Date: Tue, 6 Aug 2024 14:06:53 -0300
 From: Jason Gunthorpe <jgg@ziepe.ca>
 To: Lu Baolu <baolu.lu@linux.intel.com>
 Cc: Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
 	Robin Murphy <robin.murphy@arm.com>,
 	Kevin Tian <kevin.tian@intel.com>, iommu@lists.linux.dev,
 	linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v3 2/7] iommu/vt-d: Remove identity mappings from
- si_domain
-Message-ID: <20240806170529.GK676757@ziepe.ca>
+Subject: Re: [PATCH v3 3/7] iommu/vt-d: Always reserve a domain ID for
+ identity setup
+Message-ID: <20240806170653.GL676757@ziepe.ca>
 References: <20240806023941.93454-1-baolu.lu@linux.intel.com>
- <20240806023941.93454-3-baolu.lu@linux.intel.com>
+ <20240806023941.93454-4-baolu.lu@linux.intel.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -75,24 +76,36 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20240806023941.93454-3-baolu.lu@linux.intel.com>
+In-Reply-To: <20240806023941.93454-4-baolu.lu@linux.intel.com>
 
-On Tue, Aug 06, 2024 at 10:39:36AM +0800, Lu Baolu wrote:
-> As the driver has enforced DMA domains for devices managed by an IOMMU
-> hardware that doesn't support passthrough translation mode, there is no
-> need for static identity mappings in the si_domain. Remove the identity
-> mapping code to avoid dead code.
+On Tue, Aug 06, 2024 at 10:39:37AM +0800, Lu Baolu wrote:
+> We will use a global static identity domain. Reserve a static domain ID
+> for it.
 > 
 > Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
 > ---
->  drivers/iommu/intel/iommu.c | 122 ++----------------------------------
->  1 file changed, 4 insertions(+), 118 deletions(-)
+>  drivers/iommu/intel/iommu.c | 6 +++---
+>  1 file changed, 3 insertions(+), 3 deletions(-)
+> 
+> diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
+> index 723ea9f3f501..c019fb3b3e78 100644
+> --- a/drivers/iommu/intel/iommu.c
+> +++ b/drivers/iommu/intel/iommu.c
+> @@ -1440,10 +1440,10 @@ static int iommu_init_domains(struct intel_iommu *iommu)
+>  	 * entry for first-level or pass-through translation modes should
+>  	 * be programmed with a domain id different from those used for
+>  	 * second-level or nested translation. We reserve a domain id for
+> -	 * this purpose.
+> +	 * this purpose. This domain id is also used for identity domain
+> +	 * in legacy mode.
+>  	 */
+> -	if (sm_supported(iommu))
+> -		set_bit(FLPT_DEFAULT_DID, iommu->domain_ids);
+> +	set_bit(FLPT_DEFAULT_DID, iommu->domain_ids);
+
+That should probablyturn into an IDA someday, it would likely be more
+memory efficient than bitmap_zalloc()
 
 Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
-
-I always wondered why this was so fine grained, I would have expected
-it to work on blocks of 512 x 1G, once you allocate a memory for the
-1G table level you may as well fill it with identity IOPTEs. The only
-optimization point is how many blocks of 512x1G are needed..
 
 Jason
