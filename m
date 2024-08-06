@@ -1,164 +1,144 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.10])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-wr1-f42.google.com (mail-wr1-f42.google.com [209.85.221.42])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2CA6C29A1
-	for <iommu@lists.linux.dev>; Tue,  6 Aug 2024 00:09:32 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.10
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2B445A20
+	for <iommu@lists.linux.dev>; Tue,  6 Aug 2024 00:40:02 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.42
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1722902974; cv=none; b=TvMf9CV2TMKpW6OQmO7+ZnRDYW5mjXJupmsj34WX51HvgM4l5cwDQJlzroCoXO2bdLXjq/g7TcagYTA8eCZ5QrqZrQ7yR9NZJB+Rr1jc7kSPXZ49tF94RSSexSsqO0GSdnhnccwONyPAxjb9K2M2jMYF090YEzEDsLk6ck/LzAs=
+	t=1722904803; cv=none; b=Arr0nZTNwjkGJDPGkDTNL+jjp+KAa3T7iCog8ZYAKDZ/50SrgxsV5kro8AtnxymVsJdUpboQVcuEtWa9PoHF149fiV1nTlFLiFpHpfhSnPybyPgXIzknXGxjILrzFE2iNMKQNPG1SzeaIglx0MStQuCxoKz2va+n9xjpj/ccL1k=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1722902974; c=relaxed/simple;
-	bh=QGYJ7DgsY5F9LBDwcmkATvyG2daQNLbHe+euRgQ464k=;
-	h=Message-ID:Date:MIME-Version:Cc:Subject:To:References:From:
-	 In-Reply-To:Content-Type; b=cet81b6NXus+omRpn7Rl2EFL9Szrbu7+MNuZYy8cgLzGeoLLwLzN8qSfUGIFX6ASb92urYJrdnqGfcHaSMfgpYsBX6cJC5atzSvUUOrN2WAzZyilv7jg6SKZ4/ANUqFICiALTfSF1Fh0fwLPzSQYPsmC1PTuRwN4AcLPvR7jTfI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=lsxeTx6X; arc=none smtp.client-ip=198.175.65.10
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
+	s=arc-20240116; t=1722904803; c=relaxed/simple;
+	bh=fRR3DATEsRrbV2lk8KRxjtv1/FxWvxec6i6bzpLg/mA=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=V8we7MZh4JsAi8+62ub3JxhcouQXmEy1HkT4ZBKIFbYOQdb3eQzw2rBf2jUp/XUttWY5oj9+sjA4cWWNcDYNzCmWBuI2hpd99CLF6bihsXNCjBrvZYrx2e+UhRjp9aMjfYw93247WlT+B/I96kwgEJVa4JE7qx7V3qXYKxHBo+s=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=lPPzYSq3; arc=none smtp.client-ip=209.85.221.42
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="lsxeTx6X"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1722902973; x=1754438973;
-  h=message-id:date:mime-version:cc:subject:to:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=QGYJ7DgsY5F9LBDwcmkATvyG2daQNLbHe+euRgQ464k=;
-  b=lsxeTx6XRRE3EQ4oj3zRcg842TCVCGbRSmB8wUenbdtels6K7o4iiA4Z
-   G/wSGZKOpjUww4+6++bSzpyRldo5HOrM70LSlBVvMIajLNkDUCeBBATY8
-   lIrzDH5x+PoG6kD1wdrq/W4Dju/cQqkZFNOtr1HjZ8h+hAiHzbXVoocZK
-   /dpwp2QH2ELGckeY4DIuXJ22jsDQF+G4Q2lvb3Oayiw/zkdnpGpQKIex6
-   NCi7dPEFkTtVbzmf2ojyIVesPJBUMRVxFfaHWpvOdeWXQj8rIz8uxlWk/
-   zTzSRUDJNR2vAFhK2QYv0pSaeTdivN6h+lC/gHJLhCTlU5eimtjP/1xI+
-   w==;
-X-CSE-ConnectionGUID: M+Wgut8/Qqe/mA19DyLHmQ==
-X-CSE-MsgGUID: Zac8Ku84S0CsCE320hWi7g==
-X-IronPort-AV: E=McAfee;i="6700,10204,11155"; a="38348389"
-X-IronPort-AV: E=Sophos;i="6.09,266,1716274800"; 
-   d="scan'208";a="38348389"
-Received: from fmviesa009.fm.intel.com ([10.60.135.149])
-  by orvoesa102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Aug 2024 17:09:33 -0700
-X-CSE-ConnectionGUID: gXo9lAvsTK6FFdmTeNzY5w==
-X-CSE-MsgGUID: VAFTA9alSLicwxlBfg3oMQ==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.09,266,1716274800"; 
-   d="scan'208";a="56260351"
-Received: from blu2-mobl.ccr.corp.intel.com (HELO [10.124.240.228]) ([10.124.240.228])
-  by fmviesa009-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Aug 2024 17:09:28 -0700
-Message-ID: <bc992d69-da3a-41c7-bee9-81c469fb592d@linux.intel.com>
-Date: Tue, 6 Aug 2024 08:09:26 +0800
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="lPPzYSq3"
+Received: by mail-wr1-f42.google.com with SMTP id ffacd0b85a97d-36868fcb919so108575f8f.2
+        for <iommu@lists.linux.dev>; Mon, 05 Aug 2024 17:40:01 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20230601; t=1722904800; x=1723509600; darn=lists.linux.dev;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=fRR3DATEsRrbV2lk8KRxjtv1/FxWvxec6i6bzpLg/mA=;
+        b=lPPzYSq358j2LGtEpV2WvEIRg75RfEZZG3Fw81/Lo93e9e9bERP7uU2BavtvLvV1/S
+         FOgM34ObrleiqpR1+96bs3SNWcTA5Hun7W/X60pMmLX8a9Vy53hRKgBVM07X4jN0NVHc
+         F5ztyfqs/yE2yvBiOOW0T5m4HnQPvC5bIsC78DirU/yIZJCWCN58ISj8A5uDPF5gfP5R
+         Z5AYsBbJds3jIaXmE2zMzWw1ZhZlkGViiA5Hr8nAxreNGvCf52ecSXzXH2P9p6RU58Jn
+         ib7mKgygByBAtHTxr0scxRTrW5tZZsMmknY7uD1dijpsd/au31uTOhmpaAkJffAtcI9e
+         IcFw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1722904800; x=1723509600;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=fRR3DATEsRrbV2lk8KRxjtv1/FxWvxec6i6bzpLg/mA=;
+        b=nOxyHnW9l5UxrnjVGLEfd792meRu73HkGjBICNBLQk+G16f5n9t4h9UdKLhx8vDWUr
+         rVREIAaOzGa7RcIEmNhKmBVV5ytI03j8zJCGlA0kdZD5efxgPjrUOsRzpGzgYGbB2gvC
+         JHWWIqTHdXteCybJygEOBPoSb/vl7NeivmdCHnSnKfk4TiLqXIaVgZw7WoIQHN4fC1Fv
+         bN+Mo3rPbHp20fO1DLleuVuHUYmF48vLaE3FxiTR7jOr4phk5Cv0FcFhUKno+n4Edymb
+         1shSCW/lQHCmWXzZpFnnXrUtacB7b8BOeh32h3DJKmx8q451vSQAzjXCZjwk9Y46ksHO
+         aeSA==
+X-Forwarded-Encrypted: i=1; AJvYcCVtiohrbWNG/LbwD2Xc7Zd2+mgMBz7sdJjAm6A49M8j/XJj1lXYTL8LHPOdHqzIhqlntzAme+pKqyx0B24dVOoJtAXEl2I=
+X-Gm-Message-State: AOJu0YzOca3BXL3nSMZuAYdrAjIwtlwfatot70Ob+ZE+WeG2MebT6OJT
+	wGngj/d4JBEnNbRtlRsYqdo0Q+I73RvHPP6ywBD3JHVrO9JdCQ3nbTOZEouM/T7n4dVCZHrhW45
+	oImkGBl9ISbnAPQfWu9Cv0mvFcVc=
+X-Google-Smtp-Source: AGHT+IEQwDIjU1uPDtehVAQaw1/z3fKCHW7xjJpO2iSqDasNkhxHmMjofXQkPJJAKw0wBpE4lz/mcTzeUCXMSbOYxuo=
+X-Received: by 2002:a05:6000:4028:b0:366:e7e2:13c8 with SMTP id
+ ffacd0b85a97d-36bbc0f7a96mr13980593f8f.11.1722904800170; Mon, 05 Aug 2024
+ 17:40:00 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Cc: baolu.lu@linux.intel.com, Kunkun Jiang <jiangkunkun@huawei.com>,
- Robin Murphy <robin.murphy@arm.com>, Joerg Roedel <joro@8bytes.org>,
- Jason Gunthorpe <jgg@ziepe.ca>, Nicolin Chen <nicolinc@nvidia.com>,
- Michael Shavit <mshavit@google.com>, Mostafa Saleh <smostafa@google.com>,
- "moderated list:ARM SMMU DRIVERS" <linux-arm-kernel@lists.infradead.org>,
- iommu@lists.linux.dev, linux-kernel@vger.kernel.org,
- wanghaibin.wang@huawei.com, yuzenghui@huawei.com, tangnianyao@huawei.com
-Subject: Re: [bug report] iommu/arm-smmu-v3: Event cannot be printed in some
- scenarios
-To: Pranjal Shrivastava <praan@google.com>, Will Deacon <will@kernel.org>
-References: <6147caf0-b9a0-30ca-795e-a1aa502a5c51@huawei.com>
- <7d5a8b86-6f0d-50ef-1b2f-9907e447c9fc@huawei.com>
- <20240724102417.GA27376@willie-the-truck>
- <c2f6163e-47f0-4dce-b077-7751816be62f@linux.intel.com>
- <CAN6iL-QvE29-t4B+Ucg+AYMPhr9cqDa8xGj9oz_MAO5uyZyX2g@mail.gmail.com>
- <5e8e6857-44c9-40a1-f86a-b8b5aae65bfb@huawei.com>
- <20240805123001.GB9326@willie-the-truck> <ZrDwolC6oXN44coq@google.com>
-Content-Language: en-US
-From: Baolu Lu <baolu.lu@linux.intel.com>
-In-Reply-To: <ZrDwolC6oXN44coq@google.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+References: <0e54954b-0880-4ebc-8ef0-13b3ac0a6838@huawei.com>
+ <8743264a-9700-4227-a556-5f931c720211@huawei.com> <CAKgT0Uf4xBJDLMxa3awSnzgZvbb-LN82APkPi7uVpWw+j7wqRA@mail.gmail.com>
+ <8d4b6398-1b7d-4c14-b390-0456a6158681@huawei.com>
+In-Reply-To: <8d4b6398-1b7d-4c14-b390-0456a6158681@huawei.com>
+From: Alexander Duyck <alexander.duyck@gmail.com>
+Date: Tue, 6 Aug 2024 06:09:23 +0530
+Message-ID: <CAKgT0Ue1+wvoFzymvMhUvbbSTRgW8=qYySkH80KqRKHCXdHWPg@mail.gmail.com>
+Subject: Re: [BUG REPORT]net: page_pool: kernel crash at iommu_get_dma_domain+0xc/0x20
+To: Yunsheng Lin <linyunsheng@huawei.com>
+Cc: Yonglong Liu <liuyonglong@huawei.com>, "David S. Miller" <davem@davemloft.net>, 
+	Jakub Kicinski <kuba@kernel.org>, pabeni@redhat.com, hawk@kernel.org, 
+	ilias.apalodimas@linaro.org, netdev@vger.kernel.org, 
+	linux-kernel@vger.kernel.org, Alexei Starovoitov <ast@kernel.org>, 
+	"shenjian (K)" <shenjian15@huawei.com>, Salil Mehta <salil.mehta@huawei.com>, iommu@lists.linux.dev
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-On 2024/8/5 23:32, Pranjal Shrivastava wrote:
-> On Mon, Aug 05, 2024 at 01:30:01PM +0100, Will Deacon wrote:
->> On Mon, Aug 05, 2024 at 08:13:09PM +0800, Kunkun Jiang wrote:
->>> On 2024/8/2 22:38, Pranjal Shrivastava wrote:
->>>> Hey,
->>>> On Mon, Jul 29, 2024 at 11:02 AM Baolu Lu<baolu.lu@linux.intel.com>  wrote:
->>>>> On 2024/7/24 18:24, Will Deacon wrote:
->>>>>> On Wed, Jul 24, 2024 at 05:22:59PM +0800, Kunkun Jiang wrote:
->>>>>>> On 2024/7/24 9:42, Kunkun Jiang wrote:
->>>>>>>> drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
->>>>>>>> 1797                 while (!queue_remove_raw(q, evt)) {
->>>>>>>> 1798                         u8 id = FIELD_GET(EVTQ_0_ID, evt[0]);
->>>>>>>> 1799
->>>>>>>> 1800                         ret = arm_smmu_handle_evt(smmu, evt);
->>>>>>>> 1801                         if (!ret || !__ratelimit(&rs))
->>>>>>>> 1802                                 continue;
->>>>>>>> 1803
->>>>>>>> 1804                         dev_info(smmu->dev, "event 0x%02x
->>>>>>>> received:\n", id);
->>>>>>>> 1805                         for (i = 0; i < ARRAY_SIZE(evt); ++i)
->>>>>>>> 1806                                 dev_info(smmu->dev, "\t0x%016llx\n",
->>>>>>>> 1807                                          (unsigned long
->>>>>>>> long)evt[i]);
->>>>>>>> 1808
->>>>>>>> 1809                         cond_resched();
->>>>>>>> 1810                 }
->>>>>>>>
->>>>>>>> The smmu-v3 driver cannot print event information when "ret" is 0.
->>>>>>>> Unfortunately due to commit 3dfa64aecbaf
->>>>>>>> ("iommu: Make iommu_report_device_fault() return void"), the default
->>>>>>>> return value in arm_smmu_handle_evt() is 0. Maybe a trace should
->>>>>>>> be added here?
->>>>>>> Additional explanation. Background introduction:
->>>>>>> 1.A device(VF) is passthrough(VFIO-PCI) to a VM.
->>>>>>> 2.The SMMU has the stall feature.
->>>>>>> 3.Modified guest device driver to generate an event.
->>>>>>>
->>>>>>> This event handling process is as follows:
->>>>>>> arm_smmu_evtq_thread
->>>>>>>        ret = arm_smmu_handle_evt
->>>>>>>            iommu_report_device_fault
->>>>>>>                iopf_param = iopf_get_dev_fault_param(dev);
->>>>>>>                // iopf is not enabled.
->>>>>>> // No RESUME will be sent!
->>>>>>>                if (WARN_ON(!iopf_param))
->>>>>>>                    return;
->>>>>>>        if (!ret || !__ratelimit(&rs))
->>>>>>>            continue;
->>>>>>>
->>>>>>> In this scenario, the io page-fault capability is not enabled.
->>>>>>> There are two problems here:
->>>>>>> 1. The event information is not printed.
->>>>>>> 2. The entire device(PF level) is stalled,not just the current
->>>>>>> VF. This affects other normal VFs.
->>>>>> Oh, so that stall is probably also due to b554e396e51c ("iommu: Make
->>>>>> iopf_group_response() return void"). I agree that we need a way to
->>>>>> propagate error handling back to the driver in the case that
->>>>>> 'iopf_param' is NULL, otherwise we're making the unexpected fault
->>>>>> considerably more problematic than it needs to be.
->>>>>>
->>>>>> Lu -- can we add the -ENODEV return back in the case that
->>>>>> iommu_report_device_fault() doesn't even find a 'iommu_fault_param' for
->>>>>> the device?
->>>>> Yes, of course. The commit b554e396e51c was added to consolidate the
->>>>> drivers' auto response code in the core with the assumption that driver
->>>>> only needs to call iommu_report_device_fault() for reporting an iopf.
->>>>>
->>>> I had a go at taking Jason's diff and implementing the suggestions in
->>>> this thread.
->>>> Kunkun -- please can you see if this fixes the problem for you?
->>> Okay, I'll test it as soon as I can.
->> It looks like the diff sent by Pranjal has whitespace mangling, so I
->> don't think you'll be able to apply it.
->>
->> Pranjal -- please can you send an unmangled version? If you want to test
->> out your mail setup, I'm happy to be a guinea pig so you don't spam the
->> mailing lists!
-> Ugh, apologies for that, something went wrong with my client.
-> Kunkun -- Please let me know if this fixes the problem.
-> Lu -- It looks like the intel->page_response callback doesn't expect a
-> NULL event, so, for now, I immediately return in that case. LMK what you
-> think?
+On Mon, Aug 5, 2024 at 6:20=E2=80=AFPM Yunsheng Lin <linyunsheng@huawei.com=
+> wrote:
+>
+> On 2024/8/3 0:38, Alexander Duyck wrote:
+>
+> ...
+>
+> >
+> > The issue as I see it is that we aren't unmapping the pages when we
+> > call page_pool_destroy. There need to be no pages remaining with a DMA
+> > unmapping needed *after* that is called. Otherwise we will see this
+> > issue regularly.
+> >
+> > What we probably need to look at doing is beefing up page_pool_release
+> > to add a step that will take an additional reference on the inflight
+> > pages, then call __page_pool_put_page to switch them to a reference
+> > counted page.
+>
+> I am not sure if I understand what you meant about, did you mean making
+> page_pool_destroy() synchronously wait for the all in-flight pages to
+> come back before returning to driver?
 
-That's okay. We had such check there before the refactoring.
+Part of the issue is the device appears to be removed from the iommu
+before all the pages have been unmap. To fix that we would either need
+to unmap all the pages or force the kernel to wait until all of the
+pages have been unmapped before the device can be removed from the
+iommu group.
 
-Thanks,
-baolu
+> >
+> > Seems like the worst case scenario is that we are talking about having
+> > to walk the page table to do the above for any inflight pages but it
+>
+> Which page table are we talking about here?
+
+The internal memory being managed by the kernel in the form of struct
+page. Basically we would need to walk through all the struct page
+entries and if they are setup to use the page_pool we are freeing we
+would have to force them out of the pool.
+
+> > would certainly be a much more deterministic amount of time needed to
+> > do that versus waiting on a page that may or may not return.
+> >
+> > Alternatively a quick hack that would probably also address this would
+> > be to clear poll->dma_map in page_pool_destroy or maybe in
+>
+> It seems we may need to clear pool->dma_sync too, and there may be some
+> time window between clearing and checking/dma_unmap?
+
+That is a possibility. However for many platforms dma_sync is a no-op.
+
+> > page_pool_unreg_netdev so that any of those residual mappings would
+> > essentially get leaked, but we wouldn't have to worry about trying to
+> > unmap while the device doesn't exist.
+>
+> But how does the page_pool know if it is just the normal unloading proces=
+sing
+> without VF disabling where the device still exists or it is the abnormal =
+one
+> caused by the VF disabling where the device will disappear? If it is the =
+first
+> one, does it cause resource leaking problem for iommu if some calling for=
+ iommu
+> is skipped?
+
+It wouldn't. Basically we would have to do this for any page pool that
+is being destroyed with pages left in-flight. That is why the
+preference would likely be to stall for some time and hope that the
+pages get unmapped on their own, and then if they can't we would need
+to force this process to kick in so we don't spend forever.
