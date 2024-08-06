@@ -1,142 +1,176 @@
-Received: from mail-qk1-f169.google.com (mail-qk1-f169.google.com [209.85.222.169])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from NAM10-BN7-obe.outbound.protection.outlook.com (mail-bn7nam10on2048.outbound.protection.outlook.com [40.107.92.48])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4F3FD1D54FE
-	for <iommu@lists.linux.dev>; Tue,  6 Aug 2024 13:50:20 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.222.169
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1722952222; cv=none; b=oPk7bxCMFi9FCDG2OBBO1KWf66lQSdwK3afjGFHDeP4lMEkv65yN6RVOZjCBYYYMJ7L8r0Pt7pjK/21amLTLqalX5PTydab9PkeYKybHHpZTpx050gVF8CUq3AThceS3bTSBzIw9Kt0s64y9urh9O6nqxteRc6bmoXgXgn+MQDk=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1722952222; c=relaxed/simple;
-	bh=6LTC6KOfM2FqDhCDfpj0QbTSvrl9G+TDtoFrlfco60A=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=ImeqfVGdFQkCqHvFTkZKe5YIYoVLHJvwOLMRMPY+C1RrrbMrSRr+7GJrmOZoYAdFZrpJylkRde7ofodYsAHL5zDiKUq9sGuVWH43X3eriRSYv8DYZWXMkF3vnzMyA3k+goqUoHfdWHenENV4KCFv5iH6K7wKPRnsDx74FD52e6A=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=pLYSx4JQ; arc=none smtp.client-ip=209.85.222.169
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8F1951D61B7
+	for <iommu@lists.linux.dev>; Tue,  6 Aug 2024 13:55:04 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.92.48
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1722952506; cv=fail; b=LyBOw/QQzQrPd1t7ZNO6ik+97D5leGr+IrZ/AMXCbh+Po9ZGeATdl7T0vIJyiUiRL+fnC9Zbmk4qyKS2lyz22wV9ef4b1uSx49I3Sk/eNlEmbX3HEpYIhZKIToxGMhoGQ+yMrjxPRtASoLxuwVhbv+oGPFc/vZiuDsrpHy4p2NU=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1722952506; c=relaxed/simple;
+	bh=PgTrdWGBdId6Zkldrh9mVG0FBRkAnhKVsgAXzXXF9co=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:Content-Type:
+	 Content-Disposition:In-Reply-To:MIME-Version; b=TCTAy+Q9Wz0KNmjEl61JDtnMqeTtty+HElwjbq04ptYfS7plNClQ85UaEE+4IuzBB93BjrTPLLr3da8Ri/k0H6aLEHi8latax3haMjG2kWaMgBSfTPZYZ4J40eutrwZdEzEj0Ki3R6z0AdKpyjkUpdJOXmH9yr9/K6JjjTeLxDk=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=fGLGL3rW; arc=fail smtp.client-ip=40.107.92.48
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="pLYSx4JQ"
-Received: by mail-qk1-f169.google.com with SMTP id af79cd13be357-7a1d7a544e7so32305885a.3
-        for <iommu@lists.linux.dev>; Tue, 06 Aug 2024 06:50:20 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google; t=1722952219; x=1723557019; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=W2kNYFdUzIZckzr3QKa/r5YhJFKngLkpH0UbHOtP19M=;
-        b=pLYSx4JQFJrJ29XnlRA69dQtVFV+JN8suTkxJfwPkL5PJ7DTxBoNOGI9iSKzMKYra4
-         VU7aWt8Og1WBTMhA0LiBjFA24+N5i3GStHbeSrmMbn5ejPOVA5lJlwpWUXy/2NY0AxgX
-         nurFCNMKe85mG+FTDXYIWNOF74/uA4pCz0P559gLMizndgSkKlKQVbzv84qr5Cxc3Gl3
-         rs0kKYvl8YEHh/oVW0StgUzUFLkkRq1WHUYlpvQo5apWzgJ+RGhEBtc/xAEmwNBwPQMF
-         dVYuXV6nuB+YeHwYo1/OoP5r/2fq8R2bjEaWWrRQCWD4Mw/ChCjd8//y8np7HNlgzHCM
-         6jEA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1722952219; x=1723557019;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=W2kNYFdUzIZckzr3QKa/r5YhJFKngLkpH0UbHOtP19M=;
-        b=Vi/CsOO9OxIULtHgVRZ0uk3ayPXD0DlPsLLXZJqqU4SXB7Hs0UKFIY/ir5qTFFbOWO
-         HMb+3E5r5WY+ipzo1OOsWJrW8Fbhi6GCjk3CSkDzBtoNOGWwSeszl+1J5/RBHbfUq1hj
-         43+aj/JWxz3hsqil0ebUZnxh6e8suuQRuoUjr2g+gaxEeJ2UJrp7pVr/He/rtCNdgZ+n
-         JSZWdlDKpqMyEfhUMJ9nen1PMFPV+3VN813dzJXEae6HZRMBEn61AUycKRnXokQ79qpn
-         TrV7wxhwEGZW511B2JUEEecAkUALTmSxJmefZ4i6Fl5S5A0UjBFV3JaR1oIB+1EEhJJo
-         Jt3g==
-X-Forwarded-Encrypted: i=1; AJvYcCVDNFIImZrW3Y+8qTaqpgBMpSZR4RNRR+gpPMnRcox7EXq0XzC0LgEoQjSyTYo7zjNg8aGHb7lL27cJwbAnwNXGjQcuo9U=
-X-Gm-Message-State: AOJu0YxYDJ2Gffc5rUxmqth2gFwBMGVdbD7s5gV6l/wDauAu/oyTC7tP
-	Kkbew65JriAcP6mZEXmrG1+m0rR+Voae3ws3I9Oe+QKS3UMZ+tABOdmx+lXrnWU=
-X-Google-Smtp-Source: AGHT+IHqC7IQzqpRtpOcSymyY4bbd60+LtteUtikK/WR3ibSVlPRK4KDS/XBqGxQqzXhSC6ZYtfu2Q==
-X-Received: by 2002:a05:620a:4408:b0:7a2:a1d:d3f9 with SMTP id af79cd13be357-7a34eed1938mr1841795985a.6.1722952219216;
-        Tue, 06 Aug 2024 06:50:19 -0700 (PDT)
-Received: from ziepe.ca (hlfxns017vw-142-68-80-239.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.68.80.239])
-        by smtp.gmail.com with ESMTPSA id af79cd13be357-7a34f772dc7sm457935385a.94.2024.08.06.06.50.18
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 06 Aug 2024 06:50:18 -0700 (PDT)
-Received: from jgg by wakko with local (Exim 4.95)
-	(envelope-from <jgg@ziepe.ca>)
-	id 1sbKZt-00Ebl5-PA;
-	Tue, 06 Aug 2024 10:50:17 -0300
-Date: Tue, 6 Aug 2024 10:50:17 -0300
-From: Jason Gunthorpe <jgg@ziepe.ca>
-To: Robin Murphy <robin.murphy@arm.com>
-Cc: Yunsheng Lin <linyunsheng@huawei.com>,
-	Somnath Kotur <somnath.kotur@broadcom.com>,
-	Jesper Dangaard Brouer <hawk@kernel.org>,
-	Yonglong Liu <liuyonglong@huawei.com>,
-	"David S. Miller" <davem@davemloft.net>,
-	Jakub Kicinski <kuba@kernel.org>, pabeni@redhat.com,
-	ilias.apalodimas@linaro.org, netdev@vger.kernel.org,
-	linux-kernel@vger.kernel.org,
-	Alexander Duyck <alexander.duyck@gmail.com>,
-	Alexei Starovoitov <ast@kernel.org>,
-	"shenjian (K)" <shenjian15@huawei.com>,
-	Salil Mehta <salil.mehta@huawei.com>, joro@8bytes.org,
-	will@kernel.org, iommu@lists.linux.dev
-Subject: Re: [BUG REPORT]net: page_pool: kernel crash at
- iommu_get_dma_domain+0xc/0x20
-Message-ID: <20240806135017.GG676757@ziepe.ca>
-References: <0e54954b-0880-4ebc-8ef0-13b3ac0a6838@huawei.com>
- <8743264a-9700-4227-a556-5f931c720211@huawei.com>
- <e980d20f-ea8a-43e3-8d3f-179a269b5956@kernel.org>
- <CAOBf=musxZcjYNHjdD+MGp0y6epnNO5ryC6JgeAJbP6YQ+sVUA@mail.gmail.com>
- <ad84acd2-36ba-433c-bdf7-c16c0d992e1c@huawei.com>
- <190d5a15-d6bf-47d6-be86-991853b7b51d@arm.com>
- <5b0415ff-9bbe-4553-89d6-17d12fd44b47@huawei.com>
- <ae995d55-daa9-4060-85fa-31b4f725a17d@arm.com>
+	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="fGLGL3rW"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=uhByoFoVthAiyMV4dVJe1eBnl0CvkP369bSM9fCVgwqoR/ifSKt0KnJlcT01MWdt2GSpUe55Wr7TRhDkSfqsr8ZfBifKLigFhbxDLe9+2vXE7RAHQgmpx+KDKGxs4mDkk6S0Z1WsvU00iqSRriS6/i93ulPnXccAOmu563bmzd/BWN3lpICFJi7mZVYEWusoyHl9urjZdPwLFjcwQDhOFbXbfBIF1vPWoJy/HhoEHHJQ3yBD4TOYO9rCX8xgk352MKiXCIEG8ZUhqNiKQHzk//WlxMtjB0D0ZozC1KG6d7kNsKBTkOMUzmeXrzwJJgT1XCcLdw9E6q+eVqbGCmwRbg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=PrmGm/AsHPzMOT3JW1KgID6ZPOCL1XIRfDwSnq0xOZo=;
+ b=aC1wPrrHqeGDKLOAmasYHXNtygAjqSc/LVvzlRVCqsaiq4Is0mqc1WPP3Oy2TQaSLAIB3ccxlxsxvruRlRu/MFXABqe+cFAqxnR9isUxswDBhbsn59Bm+IBJBUBmk6KsAFNjiV3NBEKqUZErS50K3HV+S5GsZlDD4DOif+9Tx0zMOYZSm4zKMV7Ffu4LEMSmA7W6Q8H1APRoGXroGmd1aVCg0ZvHkJ3sLVypdpSFMd1rOytnEJyaBtIak0xbgdyWCU3zbu4FcbF/TBUAWaocWdTA4ROQIlfxmCyeDAbBSY9EbAlSUwUObgBOfca0AWDGwkA6S6b970onPI7zapsSOA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=PrmGm/AsHPzMOT3JW1KgID6ZPOCL1XIRfDwSnq0xOZo=;
+ b=fGLGL3rW5oWBJZCLzFuQ81skDRz0d/O3ijJ0RjqCkFbzdQBBXCHG4kvv58jv5xjUcR74HJvPb0sfGvLyxFFPHuQCBswMzxm32Gb+Ch4XmCRAKZxXTqhv9Y2CFOG3pTZN7vUkjfnTz78SKlTJtZW8cTQrOh/xSQbweag32/aq9Cs3ipk0ZQXmtwKgnk+x7/Fk0fG2CKcR4Q39oc0nYnuqvh0Cr5SS77Q9n/x6RWRtMP24w/ysFCjIBI/ji3DR91cTaKOVyMznxsWJcFL2LGDrZJOlSOXvMoiohhBWZPg5HBveKeP21EoEdkkpN3jpuXX52Ysa5LAG8hEK5t22yW64TQ==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nvidia.com;
+Received: from CH3PR12MB7763.namprd12.prod.outlook.com (2603:10b6:610:145::10)
+ by DM6PR12MB4220.namprd12.prod.outlook.com (2603:10b6:5:21d::7) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7828.27; Tue, 6 Aug
+ 2024 13:55:00 +0000
+Received: from CH3PR12MB7763.namprd12.prod.outlook.com
+ ([fe80::8b63:dd80:c182:4ce8]) by CH3PR12MB7763.namprd12.prod.outlook.com
+ ([fe80::8b63:dd80:c182:4ce8%3]) with mapi id 15.20.7849.008; Tue, 6 Aug 2024
+ 13:55:00 +0000
+Date: Tue, 6 Aug 2024 10:54:59 -0300
+From: Jason Gunthorpe <jgg@nvidia.com>
+To: Alex Williamson <alex.williamson@redhat.com>,
+	Vasant Hegde <vasant.hegde@amd.com>
+Cc: "Tian, Kevin" <kevin.tian@intel.com>, "Liu, Yi L" <yi.l.liu@intel.com>,
+	"joro@8bytes.org" <joro@8bytes.org>,
+	"robin.murphy@arm.com" <robin.murphy@arm.com>,
+	"eric.auger@redhat.com" <eric.auger@redhat.com>,
+	"nicolinc@nvidia.com" <nicolinc@nvidia.com>,
+	"kvm@vger.kernel.org" <kvm@vger.kernel.org>,
+	"chao.p.peng@linux.intel.com" <chao.p.peng@linux.intel.com>,
+	"iommu@lists.linux.dev" <iommu@lists.linux.dev>,
+	"baolu.lu@linux.intel.com" <baolu.lu@linux.intel.com>,
+	"Duan, Zhenzhong" <zhenzhong.duan@intel.com>,
+	"Pan, Jacob jun" <jacob.jun.pan@intel.com>,
+	=?utf-8?Q?C=C3=A9dric?= Le Goater <clg@redhat.com>
+Subject: Re: [PATCH v2 0/4] vfio-pci support pasid attach/detach
+Message-ID: <20240806135459.GL478300@nvidia.com>
+References: <20240424122437.24113510.alex.williamson@redhat.com>
+ <20240424183626.GT941030@nvidia.com>
+ <20240424141349.376bdbf9.alex.williamson@redhat.com>
+ <20240426141117.GY941030@nvidia.com>
+ <20240426141354.1f003b5f.alex.williamson@redhat.com>
+ <20240429174442.GJ941030@nvidia.com>
+ <BN9PR11MB5276C4EF3CFB6075C7FC60AC8CAA2@BN9PR11MB5276.namprd11.prod.outlook.com>
+ <20240730113517.27b06160.alex.williamson@redhat.com>
+ <BN9PR11MB5276D184783C687B0B1B6FE68CB12@BN9PR11MB5276.namprd11.prod.outlook.com>
+ <20240731110436.7a569ce0.alex.williamson@redhat.com>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20240731110436.7a569ce0.alex.williamson@redhat.com>
+X-ClientProxiedBy: MN2PR19CA0006.namprd19.prod.outlook.com
+ (2603:10b6:208:178::19) To CH3PR12MB7763.namprd12.prod.outlook.com
+ (2603:10b6:610:145::10)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <ae995d55-daa9-4060-85fa-31b4f725a17d@arm.com>
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: CH3PR12MB7763:EE_|DM6PR12MB4220:EE_
+X-MS-Office365-Filtering-Correlation-Id: c8f5c13d-f107-4883-d591-08dcb61f5d0b
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;ARA:13230040|1800799024|366016|376014|7416014;
+X-Microsoft-Antispam-Message-Info:
+	=?us-ascii?Q?H+IBr4lQrE7hzq8bkEfe8po+EGYpfnfeOVGFtehHgpbIfiCR6XeD8/WL+FOH?=
+ =?us-ascii?Q?rVj47Daj8sPIlpBbhtIJN+KisDX/d66HqMo4zgjti3MKllriYT8+PxHLQxnl?=
+ =?us-ascii?Q?fCLdmK93bF2mAtjL5xrIN/FawGwRlIYBMDISndwinAIgbqmr83J/m1SKCyaF?=
+ =?us-ascii?Q?BFPbUmwYZZAQIwLcHsmbIlPOR4pN47qIRfI25l7gsfDpHBWqYYmAwT0CI3Bs?=
+ =?us-ascii?Q?0a+Nr3OGvnxs4Upv0MdueYbpC+7soBaTfojppcDU4oSiPJSZfuAadMFs8A8Z?=
+ =?us-ascii?Q?il85bM+2ov67q05ur6rFUTH0zHzJEyYfGP7uPJvvkJbGL+UE3Ttiftwv0h7M?=
+ =?us-ascii?Q?HNHNPjdQknTqRuHqPbQWZ+Q4fFo0sKkFMI4mNnK0t0D2x9Ot6r87fuqZUAo1?=
+ =?us-ascii?Q?1O3PRY8A++ioXAEBqRx1XNuk9DRAidU2cyUnErXYpvWlkchZgS/0aSeQMwdI?=
+ =?us-ascii?Q?xpsg7MhzmyfhMqWqHtX4G1qEGu80e9TGHCMhljq4W00H7zD07I1rW0aX1zJq?=
+ =?us-ascii?Q?QKjqD7hdiIqlWKWGe/SDh5RXxI+Bt9Y8iROLcsLGIyBScxJGidxAKSncldCr?=
+ =?us-ascii?Q?9XUtXljRJQkihkY4PTLSfxsOM4gyYoWrvuwRHc64AZkA17MKVL0KTvpnYQ5V?=
+ =?us-ascii?Q?pxMqQVBc23isTBal6PfkXrdD6G9su9clRVOuC/6cHK1tL/xwZ6y+BmTP474g?=
+ =?us-ascii?Q?m+4GJOboTjta7qtamWQRsENwAQjrcN9mLpmgqIpp+2zNYdC5VWHltsz5DnM1?=
+ =?us-ascii?Q?QBspdmpFeArjUTDEkjK4IboJ5cm0YXdoNoAIp9ru62mz5ty7X1ewsjZVglnE?=
+ =?us-ascii?Q?feRg3vt5VBFFhb9rCHOEcEMorXRe9WUxd/KU/P6Yjo8kLl7K+8jyeMte9Sn1?=
+ =?us-ascii?Q?NsadYzFXRjiGtB9UHS9x3D/bR/WlJt3GfCN0NCwsVX040Eedia+DP6CXv2zL?=
+ =?us-ascii?Q?PuMap4okW3RDWIyxxWf7I35qQVmV6a3jpEAN+FmzncHj0ERyr6OXZIm9jv3/?=
+ =?us-ascii?Q?Erd9ZCp795bn2HH8D7gnzd4rYStOVZWmAaFnK4aal7oMR6NgJRriTmjNBayi?=
+ =?us-ascii?Q?6xqpdTFpR7kybhPlUzCXXxuk5DNToOqN395CIQeIuivD7mtS1A+9KWMWUjAE?=
+ =?us-ascii?Q?b7ifeuuX8q0RU6WCsu9sHYrWS7ORNeODTyXqoXk/gQDyWpw2Mbn/GYkG5rU4?=
+ =?us-ascii?Q?nFBA+ABI09qoOhr84Vcig4Xr05cAkwGqluU1NK3/3sB/7FfTZYLCe2LTaAIR?=
+ =?us-ascii?Q?62uZkD2afYssJj8DBNvzlR+WCHBic+ktU3AUhTXxhz3XsQlbGjUOL17c4EoF?=
+ =?us-ascii?Q?/DRArGSIko4NMPA73cnHmH40kWvqTVBtaniCE8qnnBRriw=3D=3D?=
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CH3PR12MB7763.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(1800799024)(366016)(376014)(7416014);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?us-ascii?Q?od4zaTjCOX1fklcIi0I8bUbactnrK8iovQZfiBdSuFKi/rwz0aJOlEdEFGbG?=
+ =?us-ascii?Q?QA1S4oKkwv3JMkgfrrtl4Bm6V8sgLXWGDsIa2D5kF5TEgxycOb6RiawTmLhJ?=
+ =?us-ascii?Q?v6YqpZAPRhVYarMh7eiijv2xAOk773zym+rQbLaN79yNBQp9s4w9NJf/5Vdx?=
+ =?us-ascii?Q?dnZpv/WfBH1TdTXJg6oqPatbPRWOGfaN69GfUPVr0Colccxn80v6y78U14dt?=
+ =?us-ascii?Q?OZjW/43ZsVLVG3u+IBAdBV/vNLcaj8ihxG0aeAefuDCAnhQx1uyXk2x89V8v?=
+ =?us-ascii?Q?LkYBOhvOYDHFQJgAlX/DgDavNaTioT6K5jG80en0jtrL1qYyR+aR/wIKGS3z?=
+ =?us-ascii?Q?2vVZ59oR+bNfi4azkuHeLqIApauQ5ER/dWx2jeZjEDXgGXsu97I4bfddkK+/?=
+ =?us-ascii?Q?h5GcKRPAhar1ek2Kl04YdIsh5/EppcpKcUNh7BMqh+L65yLd8lBaorjAB1rI?=
+ =?us-ascii?Q?nDsHLVIdvBYrExzBmBia+Ty7n4KpqscrKWJijTQ87nvsyn3r1Pv8nyg+2n7P?=
+ =?us-ascii?Q?gDEWbSdzZ2GaJw6+iFUpioZK4WtuqdykOP+82x/5eT9HNRIURL6rk676xmoY?=
+ =?us-ascii?Q?hwNFqzO1uUAK1cPc4t7+gr8Stwj+N5fU85pyBAB6v50W+auCwO3FitbERcBk?=
+ =?us-ascii?Q?XxcdL1OPtX/wJuW6r3JFWKWulyeLoe7GD6VKYLHRfAA7Fw8ADMF94aPNtLGy?=
+ =?us-ascii?Q?KOl/B5aS07zIjanRip0YXa6GC34FkVUfWSAVtbuODHiNP05V7NBlPIDYuqyL?=
+ =?us-ascii?Q?XvsDuJdWjnX5LEsV8qkDaT1p8UOKLuLKmi3a0903lhZ12MbeV2dbL1Uj58Kr?=
+ =?us-ascii?Q?/3iCNx4eLFKj1NMOlgxNLXPXhZ1ingxzIisvRTW1w20FJrJYs+d2rC51ec3d?=
+ =?us-ascii?Q?sWbaOgDXK04t0qAkL7umqUWfTEnj/rXlKxdNZJB54wD4yKTY4D/qfN4REbeG?=
+ =?us-ascii?Q?jo7ss+sKKGASoQQDGS1rT9QbVLDLw2BFA62mlFBNDpc9zsEI52vQF6rS76LL?=
+ =?us-ascii?Q?G+FjMAnCisHxrI/QjHjnblhGNlnbOpb3Q04jop2alTVD69w3k/y6KHZ6y3Xd?=
+ =?us-ascii?Q?gkM5CnCGfQULTYlEHbYlXK75P/rDLof1tA/1duoyARgpiXjWnPPCug6kzi7M?=
+ =?us-ascii?Q?6JJgpvRr6eImnS8nr6VOwJOlc4Ledo9bhHQVrKJP78zUS/vTPrK0sZXSYz0p?=
+ =?us-ascii?Q?7GYR4Kb7KtD2RoX7HeoaFFS0WG2mStupR77STwblQE8SCIm3ST4oO6Fs5nB6?=
+ =?us-ascii?Q?tm2iuuRkgR60UJjnuAWJJMxkLWBB0pfzWIwOxQTFFIcWQIZwD18JXXle3jQ8?=
+ =?us-ascii?Q?h4ikOUq0ttO3ZNuQMWtH28OIeVUkeLYBoTpvBLJMX3aID4232RZhWLJh5j4J?=
+ =?us-ascii?Q?gUY1p6ldhkntxGgW3A4sxYIgOCz0xNY2XHX0B79AGs1F+eWD7reLjeoI4bqr?=
+ =?us-ascii?Q?FDICyxzMczYK8g/TTRArg2Ql+46+wrrMTBx4k4JxMptditTne2XAeJ/VZjFu?=
+ =?us-ascii?Q?fiKz0SgvyvezyqzpXYBe3qMfGGGk3tbxBjbBEIN28nanV4vyxhFtFMqCoPgk?=
+ =?us-ascii?Q?YXpKqBf74azzY47jpb8=3D?=
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: c8f5c13d-f107-4883-d591-08dcb61f5d0b
+X-MS-Exchange-CrossTenant-AuthSource: CH3PR12MB7763.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 06 Aug 2024 13:55:00.3119
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: ormW+JXRFo46h//tV/UHwpUoluagiyf151spFjtl9h5Iawuw4xUiHZIrBqvHDsUu
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR12MB4220
 
-On Tue, Aug 06, 2024 at 01:50:08PM +0100, Robin Murphy wrote:
-> On 06/08/2024 12:54 pm, Yunsheng Lin wrote:
-> > On 2024/8/5 20:53, Robin Murphy wrote:
-> > > > > > 
-> > > > > > The page_pool bumps refcnt via get_device() + put_device() on the DMA
-> > > > > > 'struct device', to avoid it going away, but I guess there is also some
-> > > > > > IOMMU code that we need to make sure doesn't go away (until all inflight
-> > > > > > pages are returned) ???
-> > > > 
-> > > > I guess the above is why thing went wrong here, the question is which
-> > > > IOMMU code need to be called here to stop them from going away.
-> > > 
-> > > This looks like the wrong device is being passed to dma_unmap_page() - if a device had an IOMMU DMA domain at the point when the DMA mapping was create, then neither that domain nor its group can legitimately have disappeared while that device still had a driver bound. Or if it *was* the right device, but it's already had device_del() called on it, then you have a fundamental lifecycle problem - a device with no driver bound should not be passed to the DMA API, much less a dead device that's already been removed from its parent bus.
-> > 
-> > Yes, the device *was* the right device, And it's already had device_del()
-> > called on it.
-> > page_pool tries to call get_device() on the DMA 'struct device' to avoid the
-> > above lifecycle problem, it seems get_device() does not stop device_del()
-> > from being called, and that is where we have the problem here:
-> > https://elixir.bootlin.com/linux/v6.11-rc2/source/net/core/page_pool.c#L269
-> > 
-> > The above happens because driver with page_pool support may hand over
-> > page still with dma mapping to network stack and try to reuse that page
-> > after network stack is done with it and passes it back to page_pool to avoid
-> > the penalty of dma mapping/unmapping. With all the caching in the network
-> > stack, some pages may be held in the network stack without returning to the
-> > page_pool soon enough, and with VF disable causing the driver unbound, the
-> > page_pool does not stop the driver from doing it's unbounding work, instead
-> > page_pool uses workqueue to check if there is some pages coming back from the
-> > network stack periodically, if there is any, it will do the dma unmmapping
-> > related cleanup work.
-> 
-> OK, that sounds like a more insidious problem - it's not just IOMMU stuff,
-> in general the page pool should not be holding and using the device pointer
-> after the device has already been destroyed. Even without an IOMMU,
-> attempting DMA unmaps after the driver has already unbound may leak
-> resources or at worst corrupt memory. Fundamentally, the page pool code
-> cannot allow DMA mappings to outlive the driver they belong to.
+On Wed, Jul 31, 2024 at 11:04:36AM -0600, Alex Williamson wrote:
 
-+1
+> I'd also be careful about command line parameters.  I think we require
+> one for the vIOMMU to enable PASID support, but I'd prefer to avoid one
+> on the vfio-pci device, instead simply enabling support when both the
+> vIOMMU support is enabled and the device is detected to support it.
+> Each command line option requires support in the upper level tools to
+> enable it.
 
-There is more that gets broken here if these basic driver model rules
-are not followed!
+FWIW AMD seems to have an issue here where if they don't intend to use
+PASID then they get a bunch more performance if they leave it turned
+off. 
 
-netdev must fix this by waiting during driver remove until all this DMA
-activity is finished somehow.
+So cases like no vIOMMU, or a vIOMMU with no PASID capability, should
+automatically tell the kernel to disable PASID support for the
+device. These decisions needs to be made when the HWPT's are first
+allocated.
 
 Jason
