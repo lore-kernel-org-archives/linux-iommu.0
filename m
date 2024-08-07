@@ -1,50 +1,50 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.20])
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D9A4E1E7A58
-	for <iommu@lists.linux.dev>; Wed,  7 Aug 2024 13:38:07 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.20
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B6A1917AE12
+	for <iommu@lists.linux.dev>; Wed,  7 Aug 2024 13:44:47 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.12
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1723037889; cv=none; b=jI9Q/DkV4tcrk3pJC//rM3M0AQyFtO2UdEn3LsodICMTlxP+aS4yYMo4CsfbnVCizCaTxS7s6NeBVcj6I3cMxn1fII1sndBFtEQjv+c2XSBtKbFg/3iEtqlNUlcTbdHBgg+anPLqqe6t/LhmJjYge1s03TLhUPGHDz7mjzn4nro=
+	t=1723038289; cv=none; b=d20nUOOXECetW2wq9UJRb44jk6JZUC0YDeavoQVtxN+pjCTmWnLEag+5bLDHHrhTM5bUWziULGh6WDbDN32acTRSVluQTANv3723jFlIXA5ZP0EqfqY1YOtZ1SFFfGatJFSIXROFAexrNv5KXNVgSuJuWnA1bvkLWOWpaRydDfc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1723037889; c=relaxed/simple;
-	bh=8E+5rwum8fVy4BEAqRKNZbtya7ZImyQ0RcqP3Uspdew=;
+	s=arc-20240116; t=1723038289; c=relaxed/simple;
+	bh=YbiRuZqFbYuSNax1zoWq9R2X/At7541H2Uhgv1dAU0Y=;
 	h=Message-ID:Date:MIME-Version:Cc:Subject:To:References:From:
-	 In-Reply-To:Content-Type; b=meWFgAO32Oo1ojn0SKzDpt1+NqrheHV7N5bFmVb6wFqf9IDnYXYAputL5bs2W26WX4lkn83wI/2HG0Q5dKjMBDDxhqfLwAHOTG2nGFf7sXpP/CJrcNO16Ri90GU9/yzbzuPHiK9bFrKoBvTe2lzxFbGe70faHOVElgsyb1DrJd4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=NXo/A0Lb; arc=none smtp.client-ip=198.175.65.20
+	 In-Reply-To:Content-Type; b=tLtYxfoGGf5OZE8sjBz9aIrSeqkqI2axWor1aeBJLQ7KKKdpFTtRYAtMpsVTrURG6tuy138aHABnrXlzO6QuJVBLb4LCFwM1cPaJ/dUeZ1OIgppr8jWRTMzxeGEO8ObFGou79/Erh7gXQm3EQ2E1jfCcdc66ObDMrCmYjfvUfMU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=kg7JPJio; arc=none smtp.client-ip=192.198.163.12
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="NXo/A0Lb"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="kg7JPJio"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1723037888; x=1754573888;
+  t=1723038288; x=1754574288;
   h=message-id:date:mime-version:cc:subject:to:references:
    from:in-reply-to:content-transfer-encoding;
-  bh=8E+5rwum8fVy4BEAqRKNZbtya7ZImyQ0RcqP3Uspdew=;
-  b=NXo/A0LbOfQDx+S+WwfYj6HDWiWex25+OBB9mpdi7IZTXt55yt5wMbLV
-   AqPiCTv9p6dOPVMDkvSvQ7DfJ1ef0yMfPt6WvjIF15ai2mY60i/XO7S20
-   zXqYNEg0RMaTA7FN1Ousb0PBVT2UN/px/d1Yi8vD06tuOF3zGzq/zKZy7
-   9jnV+FDqO/SoJ5sx22TBkjtTXZgo+YldUW1QL9NP8inbJyH4w0KkppHkn
-   av+1jECRrU9xZIBHVZfZVN5xpkYn3wmjGWA1NzU6EOkO0iurTWD4DLHrq
-   8DB4wvYz53tbqNOHs4ssoZs++HE2xtvbWaqm3zaGcmfhWRs7GsPTgLqCH
+  bh=YbiRuZqFbYuSNax1zoWq9R2X/At7541H2Uhgv1dAU0Y=;
+  b=kg7JPJioDSajkiJ1T2qEr/jv/cF/ZXNu/XUZwidKQ2VkJ6vyd7XCJz3K
+   2/pPGWF4ka6fx9JMBxLs7bAQXXT26t27zuL7WzRRB74uaH4btk/NyfIGJ
+   0u9V7rVrZlMt+cnRp6l7+sIEBmTXkQFPZdnejJe0r58cNEPe4ap4S930/
+   lOs21r8baXq4ZAqQ1GSNSKm3BV9Z9UNkYyHFpvCUDhQSRACWmhJu1wvCL
+   d6frukUn5x0BqfsvFAJ4XHtQL1E9fFcj+QNxgNkMVvs1PJHHaF6TGyt6/
+   7WuUsWAQEfNrbLAxUwWvgW2MjFBjJQXBoE9Esp6LD2goD5upGHxhjM99F
    g==;
-X-CSE-ConnectionGUID: W/qXCktFSHS+WzUn+G0t6w==
-X-CSE-MsgGUID: +FP8P2Z/RK2yGy8s1krLxw==
-X-IronPort-AV: E=McAfee;i="6700,10204,11157"; a="20920635"
+X-CSE-ConnectionGUID: PtGAYqyjRbuxczZR0rsN1A==
+X-CSE-MsgGUID: nLktdJy4QfizbippbWQ8qg==
+X-IronPort-AV: E=McAfee;i="6700,10204,11157"; a="24984725"
 X-IronPort-AV: E=Sophos;i="6.09,270,1716274800"; 
-   d="scan'208";a="20920635"
-Received: from fmviesa002.fm.intel.com ([10.60.135.142])
-  by orvoesa112.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Aug 2024 06:38:07 -0700
-X-CSE-ConnectionGUID: 5PWdJycfQFWPmloguS5tDg==
-X-CSE-MsgGUID: tnL82JK3RZS+CCuKL+HC0g==
+   d="scan'208";a="24984725"
+Received: from orviesa001.jf.intel.com ([10.64.159.141])
+  by fmvoesa106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Aug 2024 06:44:47 -0700
+X-CSE-ConnectionGUID: 2OUDSPMBTLq9rTym9ACm1Q==
+X-CSE-MsgGUID: JD/ng8w9QLatwK/968S6vw==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.09,270,1716274800"; 
-   d="scan'208";a="80103515"
-Received: from menghaix-mobl.ccr.corp.intel.com (HELO [10.124.229.145]) ([10.124.229.145])
-  by fmviesa002-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Aug 2024 06:38:05 -0700
-Message-ID: <d70c2de2-c0c9-49cb-bbc7-773fd615067f@linux.intel.com>
-Date: Wed, 7 Aug 2024 21:38:02 +0800
+   d="scan'208";a="94432182"
+Received: from blu2-mobl.ccr.corp.intel.com (HELO [10.124.229.145]) ([10.124.229.145])
+  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Aug 2024 06:44:45 -0700
+Message-ID: <4d273959-5925-4df5-929a-88cd5c31748a@linux.intel.com>
+Date: Wed, 7 Aug 2024 21:44:42 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -56,61 +56,65 @@ Cc: baolu.lu@linux.intel.com, Joerg Roedel <joro@8bytes.org>,
  Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
  Kevin Tian <kevin.tian@intel.com>, iommu@lists.linux.dev,
  linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v3 3/7] iommu/vt-d: Always reserve a domain ID for
- identity setup
+Subject: Re: [PATCH v3 4/7] iommu/vt-d: Prepare for global static identity
+ domain
 To: Jason Gunthorpe <jgg@ziepe.ca>
 References: <20240806023941.93454-1-baolu.lu@linux.intel.com>
- <20240806023941.93454-4-baolu.lu@linux.intel.com>
- <20240806170653.GL676757@ziepe.ca>
- <59eb2544-1c85-4fde-87be-4d97e1f0a246@linux.intel.com>
- <20240807120913.GC8473@ziepe.ca>
+ <20240806023941.93454-5-baolu.lu@linux.intel.com>
+ <20240806171236.GM676757@ziepe.ca>
+ <9aa9e93e-915e-4c6d-9adb-b7d5facdf3bc@linux.intel.com>
+ <20240807121712.GD8473@ziepe.ca>
 Content-Language: en-US
 From: Baolu Lu <baolu.lu@linux.intel.com>
-In-Reply-To: <20240807120913.GC8473@ziepe.ca>
+In-Reply-To: <20240807121712.GD8473@ziepe.ca>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 
-On 2024/8/7 20:09, Jason Gunthorpe wrote:
-> On Wed, Aug 07, 2024 at 02:19:57PM +0800, Baolu Lu wrote:
->> On 2024/8/7 1:06, Jason Gunthorpe wrote:
->>> On Tue, Aug 06, 2024 at 10:39:37AM +0800, Lu Baolu wrote:
->>>> We will use a global static identity domain. Reserve a static domain ID
->>>> for it.
->>>>
->>>> Signed-off-by: Lu Baolu<baolu.lu@linux.intel.com>
->>>> ---
->>>>    drivers/iommu/intel/iommu.c | 6 +++---
->>>>    1 file changed, 3 insertions(+), 3 deletions(-)
->>>>
+On 2024/8/7 20:17, Jason Gunthorpe wrote:
+> On Wed, Aug 07, 2024 at 02:41:39PM +0800, Baolu Lu wrote:
+>> On 2024/8/7 1:12, Jason Gunthorpe wrote:
+>>> On Tue, Aug 06, 2024 at 10:39:38AM +0800, Lu Baolu wrote:
 >>>> diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
->>>> index 723ea9f3f501..c019fb3b3e78 100644
+>>>> index c019fb3b3e78..f37c8c3cba3c 100644
 >>>> --- a/drivers/iommu/intel/iommu.c
 >>>> +++ b/drivers/iommu/intel/iommu.c
->>>> @@ -1440,10 +1440,10 @@ static int iommu_init_domains(struct intel_iommu *iommu)
->>>>    	 * entry for first-level or pass-through translation modes should
->>>>    	 * be programmed with a domain id different from those used for
->>>>    	 * second-level or nested translation. We reserve a domain id for
->>>> -	 * this purpose.
->>>> +	 * this purpose. This domain id is also used for identity domain
->>>> +	 * in legacy mode.
->>>>    	 */
->>>> -	if (sm_supported(iommu))
->>>> -		set_bit(FLPT_DEFAULT_DID, iommu->domain_ids);
->>>> +	set_bit(FLPT_DEFAULT_DID, iommu->domain_ids);
->>> That should probablyturn into an IDA someday, it would likely be more
->>> memory efficient than bitmap_zalloc()
->> I have tried to. But I failed to find a suitable ida interface to
->> calculate the count of allocated domain IDs to replace bitmap_weight()
->> in below code.
-> For something debugging like that just use
->    idr_for_each_entry()
->       count++;
+>>>> @@ -1270,6 +1270,9 @@ void domain_update_iotlb(struct dmar_domain *domain)
+>>>>    	bool has_iotlb_device = false;
+>>>>    	unsigned long flags;
+>>>> +	if (!domain)
+>>>> +		return;
+>>>> +
+>>> This seems really strange, maybe wrong..
+>>>
+>>> The only callers that could take advantage are
+>>> iommu_enable_pci_caps()/iommu_disable_pci_caps()
+>> Yes.
+>>
+>> When the PCI ATS status changes, the domain attached to the device
+>> should have its domain->has_iotlb_device flag updated.
+>>
+>> The global static identity domain is a dummy domain without a
+>> corresponding dmar_domain structure. Consequently, the device's
+>> info->domain will be NULL. This is why a check is necessary.
+> I get it, but you can't have ATS turned on at all if you can push the
+> invalidations. So it seems like something is missing to enforce that
+> with the identity domains.
+> 
+>>> So I looked at this and, uh, who even reads domain->has_iotlb_device ?
+>> The has_iotlb_device flag indicates whether a domain is attached to
+>> devices with ATS enabled. If a domain lacks this flag, no device TBLs
+>> need to be invalidated during unmap operations. This optimization avoids
+>> unnecessary looping through all attached devices.
+> Not any more, that was removed in commit 06792d067989 ("iommu/vt-d:
+> Cleanup use of iommu_flush_iotlb_psi()")
 
-Yeah! It works.
+Yeah! How stupid I was! It's actually a dead code after the
+implementation of cache tags.
 
-> It is a weird thing to put in sysfs in the first place...
+> 
+> This compiles, so you should do this instead:
 
-Agreed. But it has been there for years. :-)
+Yes. I will cleanup this in a separated patch.
 
 Thanks,
 baolu
