@@ -1,177 +1,105 @@
-Received: from bee.tesarici.cz (bee.tesarici.cz [37.205.15.56])
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.10])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B672C77107
-	for <iommu@lists.linux.dev>; Wed,  7 Aug 2024 14:30:25 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=37.205.15.56
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C023512E1E9;
+	Wed,  7 Aug 2024 16:41:07 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.10
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1723041027; cv=none; b=ZByHehASYIRGs7nXO4srgznK92KVphHni14nRIkpuxlztxaeFnXcdrAtNf8I2C85EceMCw3o2DnhOUgtA2tI7Xx5bZ/73jVZS4kMUoFcpyZO541u13WPWVSNti5VSgh32pCGyaooD4Ji2VOg8H984zQm2gi6sWczyL1WyaK9zu0=
+	t=1723048870; cv=none; b=apVkN2pEZnLGBjrrvSPBTXOmo6Rc5q7JjTuYfDJTlw34wM2GnGsurXqfqRFlCWPVIit+DU/QjftGw/zNxqhyRaq+Z1vHs6hpBmoe6LEYCQiP+OoNlC0+nf5wRkRWJxYsrddApdC+OWJvMYworvCvS4AiQhpRV7j8vwexHmzYb8g=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1723041027; c=relaxed/simple;
-	bh=QzPepkmn5t3sttqjso+RrxDl7XmkJR9GRm1RfLnXD5w=;
-	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=CN/RndXNsIshcJlFKZMwcdVf5AIPxywBlIEnXP7nbAizctwbKr5+qi7fgKH3f3WwRHywxDs5qc4gEP1jQofybWf+3N4pmwf/HeoLGxL9eZRLgjem0mAGdF01F2wtwCqt5tQiFj1S0GkphdFN9IbqfwQ6Q4jUbf2HLbxWiqZHQgA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=tesarici.cz; spf=pass smtp.mailfrom=tesarici.cz; dkim=pass (2048-bit key) header.d=tesarici.cz header.i=@tesarici.cz header.b=K1dxIE0F; arc=none smtp.client-ip=37.205.15.56
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=tesarici.cz
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=tesarici.cz
+	s=arc-20240116; t=1723048870; c=relaxed/simple;
+	bh=4h5RvzUHfWFOedWWLMmqE+khKK848X9NVyUEjTPnYMo=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=hB8U8WWGJrNWOGXy2oAYkvD2lKRJl2y7C62HtpNdCFeXWNbEMCLGtZf0uRLruh2mikxOKPUboajC7e560LlN2tNLRlbXo6y5PsBWahu8IOamjXhMTaxiegyqdrU9Md5R+FO0kvIZr3zICEmF1FVvAYxp9nonmh8Yxm38YWcsx4M=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=FZ4aW0fT; arc=none smtp.client-ip=192.198.163.10
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=tesarici.cz header.i=@tesarici.cz header.b="K1dxIE0F"
-Received: from mordecai.tesarici.cz (dynamic-2a00-1028-83b8-1e7a-3010-3bd6-8521-caf1.ipv6.o2.cz [IPv6:2a00:1028:83b8:1e7a:3010:3bd6:8521:caf1])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange ECDHE (P-256) server-signature RSA-PSS (2048 bits) server-digest SHA256)
-	(No client certificate requested)
-	by bee.tesarici.cz (Postfix) with ESMTPSA id F2E101D075D;
-	Wed,  7 Aug 2024 16:30:23 +0200 (CEST)
-Authentication-Results: mail.tesarici.cz; dmarc=fail (p=quarantine dis=none) header.from=tesarici.cz
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=tesarici.cz; s=mail;
-	t=1723041024; bh=XAUy83SIsEkQWYxz3O+tVWcw2Qdh3or1+I8QyhdW1Ag=;
-	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-	b=K1dxIE0FMMd+6gq7o8Dd512aiISXSgpu78zkPa7RXq8GCuFL7cwj17FMXIMD5ohSD
-	 iZpudqWW352ZAXTIxcuHOq73sa8nkQLd54b/qRwqMXOkGn+R867ChpSLkky2fCKSXm
-	 GPk9eMk7rPSZ+vqPUzzfB0Llgf/366Y1n80SLTdjCdpdBSjcw5sY44f0qhv9LTOnWY
-	 lDBFgNaWYmEO2LKBpHllA7AHNYNnkAnYBcvLQxBFX1T4xB3uPxR1gaxjkLYWKIYG6O
-	 qi80YmPalbqthWACc4tyrrpRtEDAm/jDmR5JXZzSz3/IxBFa6TDpOCiB7jayThH7Ux
-	 pA8NNipy0wowA==
-Date: Wed, 7 Aug 2024 16:30:19 +0200
-From: Petr =?UTF-8?B?VGVzYcWZw61r?= <petr@tesarici.cz>
-To: Baruch Siach <baruch@tkos.co.il>
-Cc: Christoph Hellwig <hch@lst.de>, Marek Szyprowski
- <m.szyprowski@samsung.com>, Catalin Marinas <catalin.marinas@arm.com>, Will
- Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
- iommu@lists.linux.dev, linux-arm-kernel@lists.infradead.org,
- linux-kernel@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
- linux-s390@vger.kernel.org, Ramon Fried <ramon@neureality.ai>, Elad Nachman
- <enachman@marvell.com>
-Subject: Re: [PATCH v5 2/3] dma: replace zone_dma_bits by zone_dma_limit
-Message-ID: <20240807163019.3dddd2ad@mordecai.tesarici.cz>
-In-Reply-To: <5821a1b2eb82847ccbac0945da040518d6f6f16b.1722578375.git.baruch@tkos.co.il>
-References: <cover.1722578375.git.baruch@tkos.co.il>
-	<5821a1b2eb82847ccbac0945da040518d6f6f16b.1722578375.git.baruch@tkos.co.il>
-X-Mailer: Claws Mail 4.3.0 (GTK 3.24.42; x86_64-suse-linux-gnu)
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="FZ4aW0fT"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1723048868; x=1754584868;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=4h5RvzUHfWFOedWWLMmqE+khKK848X9NVyUEjTPnYMo=;
+  b=FZ4aW0fTVqZn3KANUghB1WV+jGFOC3CodFczOHdapt6+UrRr6O+eK3fv
+   RRxukjaqaS5b8+AEX9EVCLvBYwahFJQCAVy6GCRgtNAvVanCx55rI2jDe
+   2PjklpOnzfA0wMGo858Cc2k9vjkvFjFZUcPyldxyOKRtJSs3KGpmzjoRI
+   aj+wQuy7UWfMuYtI8ep0oQBhFn5gj1KDUb/7tOkCZ/YxiLEtemrJwZ8jq
+   G4hjcdGX3omM4/EACoMu/iEbXP48q/0e+lhMN6KB84weCFTlq6rznhgLM
+   DcZY3Xzf5Z8jEAJgyuxnSZfW9u97kIZ+uwYdtE/rKasNMIYeOIwuQg1aa
+   Q==;
+X-CSE-ConnectionGUID: 2hdij+PrQ8iV13mhwi87+w==
+X-CSE-MsgGUID: YMfEEtRuTPSbvIOwrP+5rQ==
+X-IronPort-AV: E=McAfee;i="6700,10204,11157"; a="32534695"
+X-IronPort-AV: E=Sophos;i="6.09,270,1716274800"; 
+   d="scan'208";a="32534695"
+Received: from fmviesa006.fm.intel.com ([10.60.135.146])
+  by fmvoesa104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Aug 2024 09:41:07 -0700
+X-CSE-ConnectionGUID: oje+9h1LQQ6ES8HD5dwD4g==
+X-CSE-MsgGUID: 8xgeh91mSDq9bHZDnaf5+w==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.09,270,1716274800"; 
+   d="scan'208";a="56581731"
+Received: from unknown (HELO b6bf6c95bbab) ([10.239.97.151])
+  by fmviesa006.fm.intel.com with ESMTP; 07 Aug 2024 09:41:04 -0700
+Received: from kbuild by b6bf6c95bbab with local (Exim 4.96)
+	(envelope-from <lkp@intel.com>)
+	id 1sbjif-0005Ye-2d;
+	Wed, 07 Aug 2024 16:41:01 +0000
+Date: Thu, 8 Aug 2024 00:40:54 +0800
+From: kernel test robot <lkp@intel.com>
+To: Baruch Siach <baruch@tkos.co.il>, Christoph Hellwig <hch@lst.de>,
+	Marek Szyprowski <m.szyprowski@samsung.com>,
+	Catalin Marinas <catalin.marinas@arm.com>,
+	Will Deacon <will@kernel.org>
+Cc: oe-kbuild-all@lists.linux.dev, Baruch Siach <baruch@tkos.co.il>,
+	Robin Murphy <robin.murphy@arm.com>, iommu@lists.linux.dev,
+	linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+	linuxppc-dev@lists.ozlabs.org, linux-s390@vger.kernel.org,
+	Petr =?utf-8?B?VGVzYcWZw61r?= <petr@tesarici.cz>,
+	Ramon Fried <ramon@neureality.ai>,
+	Elad Nachman <enachman@marvell.com>
+Subject: Re: [PATCH v5 1/3] dma: improve DMA zone selection
+Message-ID: <202408080035.rXXbb5Yc-lkp@intel.com>
+References: <5200f289af1a9b80dfd329b6ed3d54e1d4a02876.1722578375.git.baruch@tkos.co.il>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <5200f289af1a9b80dfd329b6ed3d54e1d4a02876.1722578375.git.baruch@tkos.co.il>
 
-On Fri,  2 Aug 2024 09:03:47 +0300
-Baruch Siach <baruch@tkos.co.il> wrote:
+Hi Baruch,
 
-> From: Catalin Marinas <catalin.marinas@arm.com>
-> 
-> Hardware DMA limit might not be power of 2. When RAM range starts above
-> 0, say 4GB, DMA limit of 30 bits should end at 5GB. A single high bit
-> can not encode this limit.
-> 
-> Use plain address for DMA zone limit.
-> 
-> Since DMA zone can now potentially span beyond 4GB physical limit of
-> DMA32, make sure to use DMA zone for GFP_DMA32 allocations in that case.
-> 
-> Signed-off-by: Catalin Marinas <catalin.marinas@arm.com>
-> Co-developed-by: Baruch Siach <baruch@tkos.co.il>
-> Signed-off-by: Baruch Siach <baruch@tkos.co.il>
-> ---
->  arch/arm64/mm/init.c       | 30 +++++++++++++++---------------
->  arch/powerpc/mm/mem.c      |  9 ++++-----
->  arch/s390/mm/init.c        |  2 +-
->  include/linux/dma-direct.h |  2 +-
->  kernel/dma/direct.c        |  4 ++--
->  kernel/dma/pool.c          |  4 ++--
->  kernel/dma/swiotlb.c       |  4 ++--
->  7 files changed, 27 insertions(+), 28 deletions(-)
-> 
-> diff --git a/arch/arm64/mm/init.c b/arch/arm64/mm/init.c
-> index 9b5ab6818f7f..c45e2152ca9e 100644
-> --- a/arch/arm64/mm/init.c
-> +++ b/arch/arm64/mm/init.c
-> @@ -115,35 +115,35 @@ static void __init arch_reserve_crashkernel(void)
->  }
->  
->  /*
-> - * Return the maximum physical address for a zone accessible by the given bits
-> - * limit. If DRAM starts above 32-bit, expand the zone to the maximum
-> + * Return the maximum physical address for a zone given its limit.
-> + * If DRAM starts above 32-bit, expand the zone to the maximum
->   * available memory, otherwise cap it at 32-bit.
->   */
-> -static phys_addr_t __init max_zone_phys(unsigned int zone_bits)
-> +static phys_addr_t __init max_zone_phys(phys_addr_t zone_limit)
->  {
-> -	phys_addr_t zone_mask = DMA_BIT_MASK(zone_bits);
->  	phys_addr_t phys_start = memblock_start_of_DRAM();
->  
->  	if (phys_start > U32_MAX)
-> -		zone_mask = PHYS_ADDR_MAX;
-> -	else if (phys_start > zone_mask)
-> -		zone_mask = U32_MAX;
-> +		zone_limit = PHYS_ADDR_MAX;
-> +	else if (phys_start > zone_limit)
-> +		zone_limit = U32_MAX;
->  
-> -	return min(zone_mask, memblock_end_of_DRAM() - 1) + 1;
-> +	return min(zone_limit, memblock_end_of_DRAM() - 1) + 1;
->  }
->  
->  static void __init zone_sizes_init(void)
->  {
->  	unsigned long max_zone_pfns[MAX_NR_ZONES]  = {0};
-> -	unsigned int __maybe_unused acpi_zone_dma_bits;
-> -	unsigned int __maybe_unused dt_zone_dma_bits;
-> -	phys_addr_t __maybe_unused dma32_phys_limit = max_zone_phys(32);
-> +	phys_addr_t __maybe_unused acpi_zone_dma_limit;
-> +	phys_addr_t __maybe_unused dt_zone_dma_limit;
-> +	phys_addr_t __maybe_unused dma32_phys_limit =
-> +		max_zone_phys(DMA_BIT_MASK(32));
->  
->  #ifdef CONFIG_ZONE_DMA
-> -	acpi_zone_dma_bits = fls64(acpi_iort_dma_get_max_cpu_address());
-> -	dt_zone_dma_bits = fls64(of_dma_get_max_cpu_address(NULL));
-> -	zone_dma_bits = min3(32U, dt_zone_dma_bits, acpi_zone_dma_bits);
-> -	arm64_dma_phys_limit = max_zone_phys(zone_dma_bits);
-> +	acpi_zone_dma_limit = acpi_iort_dma_get_max_cpu_address();
-> +	dt_zone_dma_limit = of_dma_get_max_cpu_address(NULL);
-> +	zone_dma_limit = min(dt_zone_dma_limit, acpi_zone_dma_limit);
-> +	arm64_dma_phys_limit = max_zone_phys(zone_dma_limit);
->  	max_zone_pfns[ZONE_DMA] = PFN_DOWN(arm64_dma_phys_limit);
->  #endif
->  #ifdef CONFIG_ZONE_DMA32
-> diff --git a/arch/powerpc/mm/mem.c b/arch/powerpc/mm/mem.c
-> index d325217ab201..342c006cc1b8 100644
-> --- a/arch/powerpc/mm/mem.c
-> +++ b/arch/powerpc/mm/mem.c
-> @@ -216,7 +216,7 @@ static int __init mark_nonram_nosave(void)
->   * everything else. GFP_DMA32 page allocations automatically fall back to
->   * ZONE_DMA.
->   *
-> - * By using 31-bit unconditionally, we can exploit zone_dma_bits to inform the
-> + * By using 31-bit unconditionally, we can exploit zone_dma_limit to inform the
->   * generic DMA mapping code.  32-bit only devices (if not handled by an IOMMU
->   * anyway) will take a first dip into ZONE_NORMAL and get otherwise served by
->   * ZONE_DMA.
-> @@ -252,13 +252,12 @@ void __init paging_init(void)
->  	 * powerbooks.
->  	 */
->  	if (IS_ENABLED(CONFIG_PPC32))
-> -		zone_dma_bits = 30;
-> +		zone_dma_limit = DMA_BIT_MASK(30);
->  	else
-> -		zone_dma_bits = 31;
-> +		zone_dma_limit = DMA_BIT_MASK(31);
->  
->  #ifdef CONFIG_ZONE_DMA
-> -	max_zone_pfns[ZONE_DMA]	= min(max_low_pfn,
-> -				      1UL << (zone_dma_bits - PAGE_SHIFT));
-> +	max_zone_pfns[ZONE_DMA]	= min(max_low_pfn, zone_dma_limit >> PAGE_SHIFT);
+kernel test robot noticed the following build warnings:
 
-No big deal, but this is off by one. DMA_BIT_MASK() returns the highest
-address that can be represented with the given number of bits, whereas
-max_zone_pfns[] contains the lowest PFN that is NOT contained in the
-zone.
+[auto build test WARNING on 8400291e289ee6b2bf9779ff1c83a291501f017b]
 
-Rest of the patch looks perfect.
+url:    https://github.com/intel-lab-lkp/linux/commits/Baruch-Siach/dma-improve-DMA-zone-selection/20240803-074651
+base:   8400291e289ee6b2bf9779ff1c83a291501f017b
+patch link:    https://lore.kernel.org/r/5200f289af1a9b80dfd329b6ed3d54e1d4a02876.1722578375.git.baruch%40tkos.co.il
+patch subject: [PATCH v5 1/3] dma: improve DMA zone selection
+config: csky-randconfig-001-20240807 (https://download.01.org/0day-ci/archive/20240808/202408080035.rXXbb5Yc-lkp@intel.com/config)
+compiler: csky-linux-gcc (GCC) 14.1.0
+reproduce (this is a W=1 build): (https://download.01.org/0day-ci/archive/20240808/202408080035.rXXbb5Yc-lkp@intel.com/reproduce)
 
-Petr T
+If you fix the issue in a separate patch/commit (i.e. not just a new version of
+the same patch/commit), kindly add following tags
+| Reported-by: kernel test robot <lkp@intel.com>
+| Closes: https://lore.kernel.org/oe-kbuild-all/202408080035.rXXbb5Yc-lkp@intel.com/
+
+All warnings (new ones prefixed by >>, old ones prefixed by <<):
+
+WARNING: modpost: vmlinux: section mismatch in reference: dma_direct_optimal_gfp_mask+0x46 (section: .text) -> memblock_end_of_DRAM (section: .init.text)
+>> WARNING: modpost: vmlinux: section mismatch in reference: sg_page.isra.0+0x1c (section: .text) -> memblock_end_of_DRAM (section: .init.text)
+WARNING: modpost: missing MODULE_DESCRIPTION() in kernel/locking/test-ww_mutex.o
+WARNING: modpost: missing MODULE_DESCRIPTION() in drivers/clk/imx/clk-imxrt1050.o
+WARNING: modpost: missing MODULE_DESCRIPTION() in drivers/devfreq/governor_performance.o
+
+-- 
+0-DAY CI Kernel Test Service
+https://github.com/intel/lkp-tests/wiki
