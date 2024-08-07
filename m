@@ -1,283 +1,329 @@
-Received: from NAM10-MW2-obe.outbound.protection.outlook.com (mail-mw2nam10on2067.outbound.protection.outlook.com [40.107.94.67])
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D8E0713A276
-	for <iommu@lists.linux.dev>; Wed,  7 Aug 2024 16:52:13 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.94.67
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1723049535; cv=fail; b=itBHnnVJj/clbhdkd/rOr7Dsnv/adxJmptV2pGKBPBVLeQKvX0mzDPsHuNDa9VqqK6p2I/o/ZoyvjiiuV2Ak7uiZ06QQ2XzB65epAzMJP+MujtilgEYUNWbr/4b83xW9HPh6EFvb+dPukUpPMvd3XL2XhbgIH3WTVjUB+eInHX0=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1723049535; c=relaxed/simple;
-	bh=All1+rrMZESQEsrQ1ICMLLgc/dmClgHngllmc6OwcSU=;
-	h=Message-ID:Date:Subject:To:Cc:References:From:In-Reply-To:
-	 Content-Type:MIME-Version; b=SQ+JRcyEOccnMIFD1/RQLVziayO0OEAuievrs87ebbfKadspZWbBL9aDW5zr9/OavOBbfS8+nXBYFogK3NC7HSvvbnyiFe4R9oG3f/ihkxwl3IrWe6lWmunaPTIff2nE1cwbbvi7R/h7XnFK7B6ia5PBXPX+UvCVABcCPqTMh9A=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com; spf=fail smtp.mailfrom=amd.com; dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b=xkVATJHp; arc=fail smtp.client-ip=40.107.94.67
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=amd.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7486B12A14C
+	for <iommu@lists.linux.dev>; Wed,  7 Aug 2024 17:53:04 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=170.10.129.124
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1723053187; cv=none; b=f31IefVBItipwZgTj3yeVcFWnW7gpBBg1KSiVQCciJjfy2IuSoL67HplpYkSvpZPY+rILSju4s7RfahHFLiTFYidRo1moTa/jAkAeiWwAXigkbPJLPul1/MfwivbanE1C4eWneZIPhgdXKRdIOk47Sn39SxMkPPrGwUkDoTo1Q8=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1723053187; c=relaxed/simple;
+	bh=t5wbH7clFvn0JIYCLCBxSG6G44woONTv4AuVyV8vFR4=;
+	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=E1chJYpKqIbBkm+PJAqla+JZs65TERJrJa0vz2tEqauFpdyunBDBUjLn7SHQF0VBT0hLpuu/QavnFsQudKGVq4MZYaNJh+UIZNDWmmfIy+b6VUX8Z6Ime1/Jf+6PHKjpChWUypv93Twe4+2vRXiE+CwCrFQxC1/KwetCOmQhi/s=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=redhat.com; spf=pass smtp.mailfrom=redhat.com; dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b=WuHwfqsL; arc=none smtp.client-ip=170.10.129.124
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=redhat.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=redhat.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b="xkVATJHp"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=BF2eB503Ho+8SNCV20WooRmBgEqAdSV92X0To1O7XQQLAlJH4FvJDnFBuumoXv3YX8iuXXZTfChZcFLxKig01UcKWXfv7Jlo1+Xiyvoy1d6MzG+AOroapRC8PESibSHLQgGT8o2R5RdH8p8sr/KuFwcXjrKLnBMr3D8paQ6wRRQA/egvDWTA9z1l5chMrBg787CJOcrJ+iI365jKLGKut4mvlNoXV/JG3sCoIn0NXYNj9DvsJtRgSIfQYB8D03MuCPtZjmsG/rIj6QNyMj8WNIO2PaMrcfuPE8FeLtgpZNFtWMKlken8nL+ndFJ4Nh2KY8cjSFf3h++m7ShstRCmHg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=MywLclNzHud90SKysex2lgtXuqqlVsQ3kgyOY/2rHAQ=;
- b=BVKc7g4RPL3Ljysb+KfncoGl5n7OUuIM6SIxD8NH/Cu4MNyDJ8Uo0BlVzPR3VVfHR1K6NMM6IKYSQEGrHZJJ3W0Psz4uNLCghruzjbllZpkdD7RaoNcbLXWai0I9MEV/uDKBBPV/PfYqloRg3F22iQWfqn0T1GsEaVx0NajhsvQuXAZIWKcw9ttFfcqUct6rR/qT5UxU/ta3dGD8m1I6uZ+xXo5Gr/urShJ0ex/cRVHltPVAMWSll2kuJoBAU7KyqCvBg/TWZt7R70B3z0J0T1v/GrLtZ9osm1MoAitfcCvw1kr36Wts1ddfZgrWJx54pOeZpKw2MWN3hwqqeqcLAg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=amd.com; dmarc=pass action=none header.from=amd.com; dkim=pass
- header.d=amd.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=MywLclNzHud90SKysex2lgtXuqqlVsQ3kgyOY/2rHAQ=;
- b=xkVATJHpkmhZZmbX/98rOgf5qbeX2RreMbS4nqouovT89njGksq7R71nr5tnGmOdliTtZsG8Ejb/HP4/HN1ceeg/Ttnednes+goQYLttwqvwrn+iSkKfVh7pntrhTHzBV/DHPEh+RNw+367ERKz3+vdnc+jemr+xGYAHEGV2hSg=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=amd.com;
-Received: from DS7PR12MB6048.namprd12.prod.outlook.com (2603:10b6:8:9f::5) by
- DS7PR12MB6309.namprd12.prod.outlook.com (2603:10b6:8:96::19) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.7828.30; Wed, 7 Aug 2024 16:52:11 +0000
-Received: from DS7PR12MB6048.namprd12.prod.outlook.com
- ([fe80::6318:26e5:357a:74a5]) by DS7PR12MB6048.namprd12.prod.outlook.com
- ([fe80::6318:26e5:357a:74a5%4]) with mapi id 15.20.7849.008; Wed, 7 Aug 2024
- 16:52:10 +0000
-Message-ID: <e5da0709-86d3-4b45-82cc-d995a2686afa@amd.com>
-Date: Wed, 7 Aug 2024 22:22:00 +0530
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH RFCv2] iommu: Add domain type and flag to
- domain_alloc_paging()
-To: Jason Gunthorpe <jgg@ziepe.ca>
-Cc: Baolu Lu <baolu.lu@linux.intel.com>, iommu@lists.linux.dev,
- joro@8bytes.org, will@kernel.org, robin.murphy@arm.com,
- suravee.suthikulpanit@amd.com, yi.l.liu@intel.com,
- Alex Williamson <alex.williamson@redhat.com>
-References: <20240801144523.11803-1-vasant.hegde@amd.com>
- <8e531f39-9d14-4d3b-8a52-c2e8ca026f9e@linux.intel.com>
- <098008f7-2b3e-405a-a096-947e5df560e6@amd.com>
- <20240806123452.GE676757@ziepe.ca>
- <6b197aac-c38f-4e6e-9d32-d74e1a5b3968@amd.com>
- <20240806173230.GS676757@ziepe.ca>
- <bbe564b6-5079-4973-8678-1068a53ddf70@amd.com>
- <20240807135915.GF8473@ziepe.ca>
-Content-Language: en-US
-From: Vasant Hegde <vasant.hegde@amd.com>
-In-Reply-To: <20240807135915.GF8473@ziepe.ca>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: MA1P287CA0017.INDP287.PROD.OUTLOOK.COM
- (2603:1096:a00:35::36) To DS7PR12MB6048.namprd12.prod.outlook.com
- (2603:10b6:8:9f::5)
+	dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="WuHwfqsL"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+	s=mimecast20190719; t=1723053183;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding:
+	 in-reply-to:in-reply-to:references:references;
+	bh=5OTU43BXems8BWwJog+i+i1DtbtsaJJ3jepqCq69baI=;
+	b=WuHwfqsLxeyTl1FYpaLUlRyFO+UqHS8oNwLrmijfcyAb42iO7ZcDFn12qTlGLt9KaLCSCL
+	/J33ceGJtc69lqt6Lgayn5GtS0FXVFoELJznV+aaRsRYFeCGmEmISEfR2aIsj11Hx6qq44
+	srsUVAyuNEY+zojxJ0M+tDT/ccRv7zY=
+Received: from mail-il1-f197.google.com (mail-il1-f197.google.com
+ [209.85.166.197]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
+ us-mta-329-73Wmg-V9Nfi83JjRqJJTzg-1; Wed, 07 Aug 2024 13:53:02 -0400
+X-MC-Unique: 73Wmg-V9Nfi83JjRqJJTzg-1
+Received: by mail-il1-f197.google.com with SMTP id e9e14a558f8ab-39b3cd1813aso1513985ab.0
+        for <iommu@lists.linux.dev>; Wed, 07 Aug 2024 10:53:01 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1723053181; x=1723657981;
+        h=content-transfer-encoding:mime-version:organization:references
+         :in-reply-to:message-id:subject:cc:to:from:date:x-gm-message-state
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=5OTU43BXems8BWwJog+i+i1DtbtsaJJ3jepqCq69baI=;
+        b=RoQcB1/erroXoWSGC7sPX3lq29ik4JTot8i7lJywLGHuCvZAbwlV9AMQI+WdZ1wQoJ
+         2Q+OdJIM0LhdUH77A860SsKz/keJnD7OwvXEdg50owkMsk4zmdeJiCGzC9I2Okv97kJ2
+         7xMBN5+xMgMGwuWpxqdaPEyD6TKIGvpR9L2of1IscwZO+e3/2nTUnUG49CFgZJlf6dcf
+         81gJn+GutGOyXdQ9gyQ5ELH/hDkF0ext1ow+8eP3lp9ES/Cu0r00jxt2/3/xA6nD0PZK
+         PBNt1P5/jRQypmtPIowvzqIpSVhGgLvx2DFjHpwWElDlif/yA9j8PmOlBkv1n0a5+dE6
+         QoDQ==
+X-Forwarded-Encrypted: i=1; AJvYcCUakysLPqCBsZXjDUGKw9krFuqPb4Pc53q4QcL8mMC2sNVX70IkuzEoDwkMwpXgwQdyqIz6enH7Od8Q1wlNVnsdkVrzYjU=
+X-Gm-Message-State: AOJu0YxhOhURh+XG2CkLQLzH3g+6oWSRLqBNE06nQ+mFX2oMy1v1eOHF
+	TM7f8Guq7bYUS+UawqFnzwNdOYyd6U0F5x1OwyfW3/RVCHwmi82JdU5mAA9BbBJ3le8zzab5GEp
+	cQ0Ee2ZJy2EwsZKDHvDdZgN1dbWb/4wxbWLjLYtWjXOi1mu1rf4V7
+X-Received: by 2002:a92:d591:0:b0:39a:1d8d:fc9d with SMTP id e9e14a558f8ab-39b1fc2c25bmr204811565ab.22.1723053181253;
+        Wed, 07 Aug 2024 10:53:01 -0700 (PDT)
+X-Google-Smtp-Source: AGHT+IGIWUkWSt8Mu7A05GM84emJ9GlYiu9iaBP7+3m58n7dLXedikXoz/vMsyWspToWqOki8Dz7Vg==
+X-Received: by 2002:a92:d591:0:b0:39a:1d8d:fc9d with SMTP id e9e14a558f8ab-39b1fc2c25bmr204811385ab.22.1723053180771;
+        Wed, 07 Aug 2024 10:53:00 -0700 (PDT)
+Received: from redhat.com ([38.15.36.11])
+        by smtp.gmail.com with ESMTPSA id e9e14a558f8ab-39b20aaaff3sm46514795ab.27.2024.08.07.10.52.59
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 07 Aug 2024 10:53:00 -0700 (PDT)
+Date: Wed, 7 Aug 2024 11:52:59 -0600
+From: Alex Williamson <alex.williamson@redhat.com>
+To: Jason Gunthorpe <jgg@nvidia.com>
+Cc: acpica-devel@lists.linux.dev, Hanjun Guo <guohanjun@huawei.com>,
+ iommu@lists.linux.dev, Joerg Roedel <joro@8bytes.org>, Kevin Tian
+ <kevin.tian@intel.com>, kvm@vger.kernel.org, Len Brown <lenb@kernel.org>,
+ linux-acpi@vger.kernel.org, linux-arm-kernel@lists.infradead.org, Lorenzo
+ Pieralisi <lpieralisi@kernel.org>, "Rafael J. Wysocki" <rafael@kernel.org>,
+ Robert Moore <robert.moore@intel.com>, Robin Murphy <robin.murphy@arm.com>,
+ Sudeep Holla <sudeep.holla@arm.com>, Will Deacon <will@kernel.org>, Eric
+ Auger <eric.auger@redhat.com>, Jean-Philippe Brucker
+ <jean-philippe@linaro.org>, Moritz Fischer <mdf@kernel.org>, Michael Shavit
+ <mshavit@google.com>, Nicolin Chen <nicolinc@nvidia.com>,
+ patches@lists.linux.dev, Shameerali Kolothum Thodi
+ <shameerali.kolothum.thodi@huawei.com>
+Subject: Re: [PATCH 1/8] vfio: Remove VFIO_TYPE1_NESTING_IOMMU
+Message-ID: <20240807115259.5b286a8d.alex.williamson@redhat.com>
+In-Reply-To: <1-v1-54e734311a7f+14f72-smmuv3_nesting_jgg@nvidia.com>
+References: <0-v1-54e734311a7f+14f72-smmuv3_nesting_jgg@nvidia.com>
+	<1-v1-54e734311a7f+14f72-smmuv3_nesting_jgg@nvidia.com>
+Organization: Red Hat
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: DS7PR12MB6048:EE_|DS7PR12MB6309:EE_
-X-MS-Office365-Filtering-Correlation-Id: 7af3a0e3-ad9b-4cb3-6d58-08dcb70147b3
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;ARA:13230040|376014|366016|1800799024;
-X-Microsoft-Antispam-Message-Info:
-	=?utf-8?B?SXFlY3ZpM0srSytSdGxWcEJQOSt0aWMzYVh1c1Z0ZmZSOFJzT1E0MTZvYWx6?=
- =?utf-8?B?N3BYaFhIMmIxZk4rZUJ5cVpoaWVoQWhBb09qdVpZU1ArdXJnUXh3aEF1SXZM?=
- =?utf-8?B?NGlWeUt5MjZYL01rZVFXQWNKODJ4bXBqZlRpZzZDRkxOb1FiT2RLa1djMmR6?=
- =?utf-8?B?WUJGWC9YN2ZGYVcxbXlSbDl4RHh1ZlJDYkNKeVRwSjRtUlkwWXhaNmdMcVhE?=
- =?utf-8?B?Y20zR1ErT0dYU0toeWFvVGdJQUVDcGl1RjBsdHNSMnFBNXNiWWppQ3RGQXdZ?=
- =?utf-8?B?T0x3ZkRnU0hNSEVFVE5FNmw1a3BuWGNIb050OG9td0V5NXRnSmRIbEVacXFi?=
- =?utf-8?B?TU5OMnFHUnU1dXE3VGVHREdOU2MvSVhENXVVVis1TjRHejF4bzF4U2YyaEdn?=
- =?utf-8?B?cG1vQ1h1R25Zdy9zSHF6T1RTbUhJUExjYXJyTlBpb3VSZUNHam10dVNzNE8w?=
- =?utf-8?B?TzBxV28rY2dKdEJxZG00RHd0Wm53anVhSkFKRDhBMlU0cFFiVk1pL0Vta0Z1?=
- =?utf-8?B?SFhmSTRDdVNrekQvU3JBUkJXbjYwMktZdkdFSW5PNU9sSVFwM243aEJxeWlG?=
- =?utf-8?B?Z05SQkZEaGg0K2dzZHVYVDQzV3p5Zy92eVB4TWtYTEQzODUyYmpxclRkamRK?=
- =?utf-8?B?cGRvZlQrNUhoSWIxM0RuSXYrMXJPTXY1a1JnQWtJQ1h6VjJBa3B4OVlSQ0Zj?=
- =?utf-8?B?ZktEMEpSSVRBb0xBSDBML1RZLzNVRDVtY3N6TDZ3eFhTWmg3Mm9rWnB5VW5J?=
- =?utf-8?B?cm1DNnJXSDVFTWZVQ0FxVCs1SGNvSlNtK1pRNC8vRHhRQWxGOEZ4TkdzZW92?=
- =?utf-8?B?VERNRnlTTTJwWlh5UjlZbE9XS2ZaazR2UHBoeHM4a3FYbFhHRWYrNy91UDVD?=
- =?utf-8?B?aFdOL1lHSG9UMUEvcllmL0hQM1FMSG5rVFE5K3lrSzE0UlZ3TnFhMUU2S3or?=
- =?utf-8?B?VitDM1grTUM2VU1iZjBSVGVwcTdHYkY2SXl0dTJKb3dORW1LVGYzdGlyNTFx?=
- =?utf-8?B?eVhiblFRS3hheGNnM2h4VEZWSnYvaWlZRis3NFZ0QXFDQTdPaDVhMDVRU0pT?=
- =?utf-8?B?MFlQQkJwZERRS2ZLeStOd3ZFQmhuV2F1OXk2OCsxZU5Qa3pCMzB0QmdPV1I0?=
- =?utf-8?B?Q1BSNklnb1FQdUs0c1puOTJKSUZqZzhwVGp2Y3NuZUdYSnFUT1FDeFR1emda?=
- =?utf-8?B?S0puQ0FQNWMrTkNHNXZ1MUJ3bFdmNkM4cm5mRFBTbzVjeGxZV21ZTGZmUHNw?=
- =?utf-8?B?S3hoRkdDZFdYOXlncTZBYmNKVzlaU2xZbUxFSTh3MHNSVmpuNkRFME1PZlYr?=
- =?utf-8?B?d2IvMmxwaFVrLzZOYzF2UjdlKzllMmd6TFZ4WmFyOG8ybFpCYWIvSWdqWHdI?=
- =?utf-8?B?ZDV1K2wxemJlT3RDZlByNEpMOTVUeFprYlNTZUhQTHBGenMwS1JQRHRGVU93?=
- =?utf-8?B?cFVMd0JyZmdjZE5tN004K0JqczNVRkdKbmI0aklLQjNwbEM2M2w2amxtajFy?=
- =?utf-8?B?QkZFbWFIblNKQytUMU9YeU5tYjhWKzBqRnp1WWR4RERONVNpVDgvc1B6TU5V?=
- =?utf-8?B?S1o3TzNEY0pGVHhuNDNPbThzblEybjlNa1hIdkNOUVhrUVFuRUFMQlJVSXpx?=
- =?utf-8?B?NjBuMDZnRXlsTENjQjNhSmNGemVjZ0wxL3dENjhuNFJVeVJDQ1YvSXJFdnVw?=
- =?utf-8?B?TEdneDJPVHRzUDRrTVgzaHBQdXIzRnRtUklyT2E4ekM5WkhGVHdrZWhUYUE0?=
- =?utf-8?B?TzdCWUlqWnNQTE5IK1pQYXFqQWJuQWtrRUozRTNCUEwwb3hyMUhSQ01OZklI?=
- =?utf-8?B?RWhIb3V5dldxbDdRZHN6QT09?=
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DS7PR12MB6048.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(376014)(366016)(1800799024);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?utf-8?B?K0duRDgvOVNoemp6czhUN1NEUkdXUHVROS9MNHJ4T3lCOU5ETkVoeUpoUDNV?=
- =?utf-8?B?bXJReUxoSklzcTZTaWNCOGw0SUpyRWVnU0tQUnFIYnpLaTh1SXZTN083OC95?=
- =?utf-8?B?RFZ4VWV4UU5QckRhU25NQTlzaFNzTnNNNFdzdktjYW5GYnZVVEZzdGxEMFpQ?=
- =?utf-8?B?U0k5T1I3VVpDZWRUelZNRFN2YWhYT0t5NUhQYlNUdGR3S2xLL3ZWMGhuSmhi?=
- =?utf-8?B?RkxFK3J5bDdyelI5aEs3MU9CWFFVQlFRbGJBMk9SK01wSGwrUXF2Zkllbk5H?=
- =?utf-8?B?REovNWlvNitJU0E5MGhoVE8wQ25GZlpIOG5Xem9tVjZlTVd3OXBML1lsUmR2?=
- =?utf-8?B?Y09tb3JoTFFYa00yektuK1dSNE8wemFpQUFlODhaTmRvOFVpS2xFSW9XRW5P?=
- =?utf-8?B?SzVZZ0piZit6ZlVpR0RXSlhJMEtWR1pVanU1d3hFUytldzBJVm9lSm01eC9S?=
- =?utf-8?B?dDhpZVdsNTZaWDRGalU2QlRnb2kvQ010MWt5THJ0QkFHV3AvemprcjJhUmU1?=
- =?utf-8?B?Qzc2N2ZDcEtmemtCZWtMLzhJRHVocllUVE16cXFvaFhJRzBCLzJxb1Z1cUxQ?=
- =?utf-8?B?Mk5aYmhNaE8wYWNuMXNJQ0RuZnJRRDRiUm5vd2VuTW83bE1EWUhYZ3JZY0VF?=
- =?utf-8?B?d1JiVjBhYUx2TG9NMnF2MTVHaTlQaUs2WCtvTE1aZWcyYU85dmlvVm9OL2Rx?=
- =?utf-8?B?WkphQkFPcDFVNnBvYmN3a0RvMnJMNXdQZkNUd016NFBDU1VlRUJIMHB0WVly?=
- =?utf-8?B?bFlsczlpREpxTXRFTndqM1pZRUF1NlBUREMraVJBVENyUXd6dU4rQUdUZjRN?=
- =?utf-8?B?WEc4ZTJkMWpUN3BQblpSTkdYamI4N25yOFUrMGMrN2MwbWVsd2VkQVdPRlBV?=
- =?utf-8?B?dXBmTkZhYlZ6OFg0aDRXVnp1TGpDZDVoZVBLaHZ4b2ZkR1NGcm5QT3ltZDRX?=
- =?utf-8?B?bnFQUWh1U0NJRW1xakJ5R3ZSamdiZzZ3cDYyN1dOWUplOUp0RTJ5aXNPZUlG?=
- =?utf-8?B?UHN0OGRyTzgrMTUySXJiK1M5QXFmbEFGUDhJdC9DVGJ0K1E4UkphTTN3V2My?=
- =?utf-8?B?dkRneDNxbSsxUnJPOWtLbTNnd09rUGNUWDA1WVhZUUlDYjJGUVplaXJEdm5K?=
- =?utf-8?B?Z2RnWjlEakNaL0hCbmZTM3ZaakNtdWtrTkhZREpGd2FnV2dvSkV4aXdwQXB5?=
- =?utf-8?B?L1QvdUVMeWhtNVlkM1R5eDBEYUR2dXBoVDA3QWhSaWQxeXdrY1E5TVBmQ1E3?=
- =?utf-8?B?RWpZTFFlckpoUkVYNW1NNUEzaWcxbWR0dmczRUlNK1lHaFliYndQWktjcUJy?=
- =?utf-8?B?WHdQNXlwbGozTjNKaUtveHRJSkgrOWFLY0ZYSHNpNGlBM0JSVnptNThUQkZz?=
- =?utf-8?B?c3BKQWZhQ1Mwb2FYc25ES280Q1Z1Si8wTjFzS3hiQWJQZnBpb2FDTE9CY1FO?=
- =?utf-8?B?M1JiMmRMSkgvQm0zU2NEeFVlSDhkdkRPQ1JRTDhPbW5tWHYyeWwva0NXZmdj?=
- =?utf-8?B?bFpmWWtIRlp2MTJFTCtoRlAxaDhSRmxwU2l4YVdEQTY1TlRLYStjNC9HclVx?=
- =?utf-8?B?Wk1POXZ2eFZ6d1I2QkVXMVdTNXdrdjNGU1l0UmNNUDBjSGorY1ZGYXRmUm85?=
- =?utf-8?B?QXRYNkFGZi9vb3laTXVxY1hUQU1mRzFGek4yVVJNc01POWVtbGs1NzAzcm51?=
- =?utf-8?B?YkhIWTZpeXIybXRyYXloWmpnM0xaaWZjSE45aHFoUi9BcGV4NCtNaVc2elNY?=
- =?utf-8?B?SXVWS0xFTzRvZ2hQZS96MENjUy80QXVaTXQ5RytEYVdtR2hCdVFDUEVCYkp0?=
- =?utf-8?B?VUlVUStaRkc1Z0llL3V5YmUyYnhHdkh6UjNVN0RCZkEwMEFFWElmbGh0T1dh?=
- =?utf-8?B?MW91cHJGMWpZZkNKRkF2bzljZkhvcEhlL04xUTN2SVNHSHU3QVNlaWhOSENW?=
- =?utf-8?B?bnB0eFVHRndsS2w1djJjZFZ6MmFNbE9RV1grT3p3WTRpNms4WjRPSEVQOGt3?=
- =?utf-8?B?a0VucDVKazc3U3ptRFdhRHFWQXpjQzhVVzJNTjZkNFIzTWJxYVI4WWwxSTNC?=
- =?utf-8?B?WVhFbWFWbHdaQm9GOXlmM0w5YmoyZXVKS3dLN0RaNnhyTmFDUlVra2h5SG5K?=
- =?utf-8?Q?AM1E/NvjIvWCLCKRyMv4nl8fj?=
-X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 7af3a0e3-ad9b-4cb3-6d58-08dcb70147b3
-X-MS-Exchange-CrossTenant-AuthSource: DS7PR12MB6048.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 07 Aug 2024 16:52:10.8881
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: YfVbUtJUBXpypyfK4wsfJbslTA3P0vZElqu8BGr1qxAY9lOtLIwpPIN/+4IllQZlXidUhv98W8ws/wko7jWucw==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DS7PR12MB6309
+X-Mimecast-Spam-Score: 0
+X-Mimecast-Originator: redhat.com
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 
-Jason,
+On Tue,  6 Aug 2024 20:41:14 -0300
+Jason Gunthorpe <jgg@nvidia.com> wrote:
 
-
-On 8/7/2024 7:29 PM, Jason Gunthorpe wrote:
-> On Wed, Aug 07, 2024 at 03:00:50PM +0530, Vasant Hegde wrote:
->>
->> commit 312c2a99897937834f6a679b6f9956288e8c93de
->> Author: Vasant Hegde <vasant.hegde@amd.com>
->> Date:   Wed Aug 7 14:42:24 2024 +0530
->>
->>     vfio: User iommu_ops->domain_alloc_user() to allocate IOMMU domain
->>
->>     - Include uapi/linux/iommufd.h in vfio_iommu_type1.c so that we can use
->>       HWPT flags.
->>     - Move dev_iommu_ops() from iommu-priv.h to linux/iommu.h
->>
->>     Signed-off-by: Vasant Hegde <vasant.hegde@amd.com>
+> This control causes the ARM SMMU drivers to choose a stage 2
+> implementation for the IO pagetable (vs the stage 1 usual default),
+> however this choice has no significant visible impact to the VFIO
+> user. Further qemu never implemented this and no other userspace user is
+> known.
 > 
-> Yeah, this seems like a good start
+> The original description in commit f5c9ecebaf2a ("vfio/iommu_type1: add
+> new VFIO_TYPE1_NESTING_IOMMU IOMMU type") suggested this was to "provide
+> SMMU translation services to the guest operating system" however the rest
+> of the API to set the guest table pointer for the stage 1 and manage
+> invalidation was never completed, or at least never upstreamed, rendering
+> this part useless dead code.
 > 
->> @@ -2134,8 +2135,14 @@ static void vfio_iommu_iova_insert_copy(struct vfio_iommu
->> *iommu,
->>  static int vfio_iommu_domain_alloc(struct device *dev, void *data)
->>  {
->>  	struct iommu_domain **domain = data;
->> +	const struct iommu_ops *ops = dev_iommu_ops(dev);
->> +	u32 flags = 0;
->> +
->> +	if (ops->domain_alloc_user)
->> +		*domain = ops->domain_alloc_user(dev, flags, NULL, NULL);
->> +	else
->> +		*domain = iommu_paging_domain_alloc(dev);
+> Upstream has now settled on iommufd as the uAPI for controlling nested
+> translation. Choosing the stage 2 implementation should be done by through
+> the IOMMU_HWPT_ALLOC_NEST_PARENT flag during domain allocation.
 > 
-> I suggest to wrapper this in a EXPORT_SYMBOL rather than expose
-> dev_iommu_ops ?
+> Remove VFIO_TYPE1_NESTING_IOMMU and everything under it including the
+> enable_nesting iommu_domain_op.
+> 
+> Just in-case there is some userspace using this continue to treat
+> requesting it as a NOP, but do not advertise support any more.
+> 
+> Signed-off-by: Nicolin Chen <nicolinc@nvidia.com>
+> Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
+> ---
+>  drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 16 ----------------
+>  drivers/iommu/arm/arm-smmu/arm-smmu.c       | 16 ----------------
+>  drivers/iommu/iommu.c                       | 10 ----------
+>  drivers/iommu/iommufd/vfio_compat.c         |  7 +------
+>  drivers/vfio/vfio_iommu_type1.c             | 12 +-----------
+>  include/linux/iommu.h                       |  3 ---
+>  include/uapi/linux/vfio.h                   |  2 +-
+>  7 files changed, 3 insertions(+), 63 deletions(-)
 
-Sure. We can do that.
+I think we should also wait for Eric's ack on this when he's back in
+the office, but
 
-> 
->> @@ -359,11 +359,14 @@ struct iommu_vfio_ioas {
->>   *                                   enforced on device attachment
->>   * @IOMMU_HWPT_FAULT_ID_VALID: The fault_id field of hwpt allocation data is
->>   *                             valid.
->> + * @IOMMU_HWPT_ALLOC_PASID : If set, allocate a HWPT that support PASID
->> + *
->>   */
-> 
-> Needs more words, maybe even two flags?
-> 
->  @IOMMU_HWPT_ALLOC_DEV_PASID: When the domain is used on a device,
->  with no PASID, the device will support later attaching a PASID as
->  well. Some HW requires a specific domain format on the device to
->  allow PASID to work.
-
-I will add this.
-
-> 
->  @IOMMU_HWPT_ALLOC_PASID: The domain can be used as a PASID. The
->  domain attached to the device must have also been allocated with
->  IOMMU_HWPT_ALLOC_DEV_PASID.
-
-Why do we need this flag? Previous one is already allocated PASID capable
-domain. Is this similar to SVA domain?
-
-> 
-> And then we'd want to enforce this rule in iommufd to force userspace
-> to use the flags properly. Otherwise AMD will be permanently broken :\
-> 
-> I'm guessing that userspace will never want to share a PASID domain
-> and a device domain, and current iommu HW will treat both flags as the
-> same functionality (use the AMD v2 domain)
-> 
-> Yi will need to accomodate these flags in his series..
-> 
-> SMMUv3 support would look like this:
-
-Thanks! I will put it as part of this series.
-
-
-@Baolu, Do we need to make any changes to intel driver?
+Acked-by: Alex Williamson <alex.williamson@redhat.com>
 
 > 
 > diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-> index 9bc50bded5af72..c2e46a352d6b09 100644
+> index e5db5325f7eaed..531125f231b662 100644
 > --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
 > +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-> @@ -3052,7 +3052,9 @@ arm_smmu_domain_alloc_user(struct device *dev, u32 flags,
->                            const struct iommu_user_data *user_data)
+> @@ -3331,21 +3331,6 @@ static struct iommu_group *arm_smmu_device_group(struct device *dev)
+>  	return group;
+>  }
+>  
+> -static int arm_smmu_enable_nesting(struct iommu_domain *domain)
+> -{
+> -	struct arm_smmu_domain *smmu_domain = to_smmu_domain(domain);
+> -	int ret = 0;
+> -
+> -	mutex_lock(&smmu_domain->init_mutex);
+> -	if (smmu_domain->smmu)
+> -		ret = -EPERM;
+> -	else
+> -		smmu_domain->stage = ARM_SMMU_DOMAIN_S2;
+> -	mutex_unlock(&smmu_domain->init_mutex);
+> -
+> -	return ret;
+> -}
+> -
+>  static int arm_smmu_of_xlate(struct device *dev,
+>  			     const struct of_phandle_args *args)
 >  {
->         struct arm_smmu_master *master = dev_iommu_priv_get(dev);
-> -       const u32 PAGING_FLAGS = IOMMU_HWPT_ALLOC_DIRTY_TRACKING;
-> +       const u32 PAGING_FLAGS = IOMMU_HWPT_ALLOC_DIRTY_TRACKING |
-> +                                IOMMU_HWPT_ALLOC_DEV_PASID |
-> +                                IOMMU_HWPT_ALLOC_PASID;
->         struct arm_smmu_domain *smmu_domain;
->         int ret;
+> @@ -3467,7 +3452,6 @@ static struct iommu_ops arm_smmu_ops = {
+>  		.flush_iotlb_all	= arm_smmu_flush_iotlb_all,
+>  		.iotlb_sync		= arm_smmu_iotlb_sync,
+>  		.iova_to_phys		= arm_smmu_iova_to_phys,
+> -		.enable_nesting		= arm_smmu_enable_nesting,
+>  		.free			= arm_smmu_domain_free_paging,
+>  	}
+>  };
+> diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu.c b/drivers/iommu/arm/arm-smmu/arm-smmu.c
+> index 723273440c2118..38dad1fd53b80a 100644
+> --- a/drivers/iommu/arm/arm-smmu/arm-smmu.c
+> +++ b/drivers/iommu/arm/arm-smmu/arm-smmu.c
+> @@ -1558,21 +1558,6 @@ static struct iommu_group *arm_smmu_device_group(struct device *dev)
+>  	return group;
+>  }
 >  
-> @@ -3065,6 +3067,14 @@ arm_smmu_domain_alloc_user(struct device *dev, u32 flags,
->         if (!smmu_domain)
->                 return ERR_PTR(-ENOMEM);
+> -static int arm_smmu_enable_nesting(struct iommu_domain *domain)
+> -{
+> -	struct arm_smmu_domain *smmu_domain = to_smmu_domain(domain);
+> -	int ret = 0;
+> -
+> -	mutex_lock(&smmu_domain->init_mutex);
+> -	if (smmu_domain->smmu)
+> -		ret = -EPERM;
+> -	else
+> -		smmu_domain->stage = ARM_SMMU_DOMAIN_NESTED;
+> -	mutex_unlock(&smmu_domain->init_mutex);
+> -
+> -	return ret;
+> -}
+> -
+>  static int arm_smmu_set_pgtable_quirks(struct iommu_domain *domain,
+>  		unsigned long quirks)
+>  {
+> @@ -1656,7 +1641,6 @@ static struct iommu_ops arm_smmu_ops = {
+>  		.flush_iotlb_all	= arm_smmu_flush_iotlb_all,
+>  		.iotlb_sync		= arm_smmu_iotlb_sync,
+>  		.iova_to_phys		= arm_smmu_iova_to_phys,
+> -		.enable_nesting		= arm_smmu_enable_nesting,
+>  		.set_pgtable_quirks	= arm_smmu_set_pgtable_quirks,
+>  		.free			= arm_smmu_domain_free,
+>  	}
+> diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
+> index ed6c5cb60c5aee..9da63d57a53cd7 100644
+> --- a/drivers/iommu/iommu.c
+> +++ b/drivers/iommu/iommu.c
+> @@ -2723,16 +2723,6 @@ static int __init iommu_init(void)
+>  }
+>  core_initcall(iommu_init);
 >  
-> +       if (flags & (IOMMU_HWPT_ALLOC_DEV_PASID | IOMMU_HWPT_ALLOC_PASID)) {
-> +               if (!(master->smmu->features & ARM_SMMU_FEAT_TRANS_S1)) {
-> +                       ret = -EOPNOTSUPP;
-> +                       goto err_free;
-> +               }
-> +               smmu_domain->stage = ARM_SMMU_DOMAIN_S1;
-> +       }
-> +
->         smmu_domain->domain.type = IOMMU_DOMAIN_UNMANAGED;
->         smmu_domain->domain.ops = arm_smmu_ops.default_domain_ops;
->         ret = arm_smmu_domain_finalise(smmu_domain, master->smmu, flags);
-> 
-> (though this will clash with the nesting series I just sent)
-
-If your series goes first then I can rebase it. Lets see.
-
--Vasant
+> -int iommu_enable_nesting(struct iommu_domain *domain)
+> -{
+> -	if (domain->type != IOMMU_DOMAIN_UNMANAGED)
+> -		return -EINVAL;
+> -	if (!domain->ops->enable_nesting)
+> -		return -EINVAL;
+> -	return domain->ops->enable_nesting(domain);
+> -}
+> -EXPORT_SYMBOL_GPL(iommu_enable_nesting);
+> -
+>  int iommu_set_pgtable_quirks(struct iommu_domain *domain,
+>  		unsigned long quirk)
+>  {
+> diff --git a/drivers/iommu/iommufd/vfio_compat.c b/drivers/iommu/iommufd/vfio_compat.c
+> index a3ad5f0b6c59dd..514aacd6400949 100644
+> --- a/drivers/iommu/iommufd/vfio_compat.c
+> +++ b/drivers/iommu/iommufd/vfio_compat.c
+> @@ -291,12 +291,7 @@ static int iommufd_vfio_check_extension(struct iommufd_ctx *ictx,
+>  	case VFIO_DMA_CC_IOMMU:
+>  		return iommufd_vfio_cc_iommu(ictx);
+>  
+> -	/*
+> -	 * This is obsolete, and to be removed from VFIO. It was an incomplete
+> -	 * idea that got merged.
+> -	 * https://lore.kernel.org/kvm/0-v1-0093c9b0e345+19-vfio_no_nesting_jgg@nvidia.com/
+> -	 */
+> -	case VFIO_TYPE1_NESTING_IOMMU:
+> +	case __VFIO_RESERVED_TYPE1_NESTING_IOMMU:
+>  		return 0;
+>  
+>  	/*
+> diff --git a/drivers/vfio/vfio_iommu_type1.c b/drivers/vfio/vfio_iommu_type1.c
+> index 0960699e75543e..13cf6851cc2718 100644
+> --- a/drivers/vfio/vfio_iommu_type1.c
+> +++ b/drivers/vfio/vfio_iommu_type1.c
+> @@ -72,7 +72,6 @@ struct vfio_iommu {
+>  	uint64_t		pgsize_bitmap;
+>  	uint64_t		num_non_pinned_groups;
+>  	bool			v2;
+> -	bool			nesting;
+>  	bool			dirty_page_tracking;
+>  	struct list_head	emulated_iommu_groups;
+>  };
+> @@ -2199,12 +2198,6 @@ static int vfio_iommu_type1_attach_group(void *iommu_data,
+>  		goto out_free_domain;
+>  	}
+>  
+> -	if (iommu->nesting) {
+> -		ret = iommu_enable_nesting(domain->domain);
+> -		if (ret)
+> -			goto out_domain;
+> -	}
+> -
+>  	ret = iommu_attach_group(domain->domain, group->iommu_group);
+>  	if (ret)
+>  		goto out_domain;
+> @@ -2545,9 +2538,7 @@ static void *vfio_iommu_type1_open(unsigned long arg)
+>  	switch (arg) {
+>  	case VFIO_TYPE1_IOMMU:
+>  		break;
+> -	case VFIO_TYPE1_NESTING_IOMMU:
+> -		iommu->nesting = true;
+> -		fallthrough;
+> +	case __VFIO_RESERVED_TYPE1_NESTING_IOMMU:
+>  	case VFIO_TYPE1v2_IOMMU:
+>  		iommu->v2 = true;
+>  		break;
+> @@ -2642,7 +2633,6 @@ static int vfio_iommu_type1_check_extension(struct vfio_iommu *iommu,
+>  	switch (arg) {
+>  	case VFIO_TYPE1_IOMMU:
+>  	case VFIO_TYPE1v2_IOMMU:
+> -	case VFIO_TYPE1_NESTING_IOMMU:
+>  	case VFIO_UNMAP_ALL:
+>  		return 1;
+>  	case VFIO_UPDATE_VADDR:
+> diff --git a/include/linux/iommu.h b/include/linux/iommu.h
+> index 4d47f2c3331185..15d7657509f662 100644
+> --- a/include/linux/iommu.h
+> +++ b/include/linux/iommu.h
+> @@ -635,7 +635,6 @@ struct iommu_ops {
+>   * @enforce_cache_coherency: Prevent any kind of DMA from bypassing IOMMU_CACHE,
+>   *                           including no-snoop TLPs on PCIe or other platform
+>   *                           specific mechanisms.
+> - * @enable_nesting: Enable nesting
+>   * @set_pgtable_quirks: Set io page table quirks (IO_PGTABLE_QUIRK_*)
+>   * @free: Release the domain after use.
+>   */
+> @@ -663,7 +662,6 @@ struct iommu_domain_ops {
+>  				    dma_addr_t iova);
+>  
+>  	bool (*enforce_cache_coherency)(struct iommu_domain *domain);
+> -	int (*enable_nesting)(struct iommu_domain *domain);
+>  	int (*set_pgtable_quirks)(struct iommu_domain *domain,
+>  				  unsigned long quirks);
+>  
+> @@ -846,7 +844,6 @@ extern void iommu_group_put(struct iommu_group *group);
+>  extern int iommu_group_id(struct iommu_group *group);
+>  extern struct iommu_domain *iommu_group_default_domain(struct iommu_group *);
+>  
+> -int iommu_enable_nesting(struct iommu_domain *domain);
+>  int iommu_set_pgtable_quirks(struct iommu_domain *domain,
+>  		unsigned long quirks);
+>  
+> diff --git a/include/uapi/linux/vfio.h b/include/uapi/linux/vfio.h
+> index 2b68e6cdf1902f..c8dbf8219c4fcb 100644
+> --- a/include/uapi/linux/vfio.h
+> +++ b/include/uapi/linux/vfio.h
+> @@ -35,7 +35,7 @@
+>  #define VFIO_EEH			5
+>  
+>  /* Two-stage IOMMU */
+> -#define VFIO_TYPE1_NESTING_IOMMU	6	/* Implies v2 */
+> +#define __VFIO_RESERVED_TYPE1_NESTING_IOMMU	6	/* Implies v2 */
+>  
+>  #define VFIO_SPAPR_TCE_v2_IOMMU		7
+>  
 
