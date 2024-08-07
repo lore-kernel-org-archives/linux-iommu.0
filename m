@@ -1,94 +1,118 @@
-Received: from mail-qt1-f179.google.com (mail-qt1-f179.google.com [209.85.160.179])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8BE031E2101
-	for <iommu@lists.linux.dev>; Wed,  7 Aug 2024 12:33:37 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.160.179
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 2C830155C83
+	for <iommu@lists.linux.dev>; Wed,  7 Aug 2024 13:13:11 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1723034019; cv=none; b=MfUs3YfkwQyNAkXiuWoUlyZiIIuFA+2QwSPKz1t3BKyuBx6GmxXqOzPArZTyZesQ3p3wh1sQCRv+Ckm1unnoFLIh44QHVh2Se2pMKA6aNvPcGIsJQ7Xa5dq/VMfqHko2bkqHe4MOw6urUf2jaT6EkAfgCARaIHjNu2I469gcNcs=
+	t=1723036393; cv=none; b=gicvE8sAky+srz8pltqkTvMIWc3qu+IulM5e+kYy63TQ1WUsnC34Ds3lgtRzv7mfKErfEfPa8mDdocFXmYWeGDnCwxoqcz4vMmaESKI+wRRymbRHfUeGYaXC91MUDsx2t21xcis0IrdXPyqqhaaFmQHfWhmqAPSozcyoKn8cIO8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1723034019; c=relaxed/simple;
-	bh=cZTz1rtqq0BJgnMRbCe88pCug4d1Vy8MfxR+z41Acnc=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=kowAXDvjufEF5SiAOh0/07PS6RSp/2X7du6KoLN2vXeQgg1uJBQHrWwHBI9ciRGrLeN8Mzn46SSu8xU5ILlu0K9UnxuPZTAlpyOYUpbyW9JNnnGfUPUwo/TbxAbh6KBrTZsaP77NvH+HKBffbFpLWGYkDy1lll/pRxyZsh5C6Oo=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=eIMQHq2f; arc=none smtp.client-ip=209.85.160.179
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="eIMQHq2f"
-Received: by mail-qt1-f179.google.com with SMTP id d75a77b69052e-44feaa08040so8685511cf.2
-        for <iommu@lists.linux.dev>; Wed, 07 Aug 2024 05:33:37 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google; t=1723034016; x=1723638816; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=cZTz1rtqq0BJgnMRbCe88pCug4d1Vy8MfxR+z41Acnc=;
-        b=eIMQHq2f/wbeACCiiyZ3Rxke3R3tt+a+/AgGJRihWUlnubUDkqLXZRE8TSDVVL+TO9
-         9l8/kOmAN7PuquoFKbXAl1oYqaWONq6r/E49/40wBm6DZTFt/qU3j/6jA/xhSXIxb+ur
-         htFwNGvv6SDEQG/L9d4+RvLGoaDWnTXMT2GHYwYTEen+7vVS8eqCMiUfVs6lxDpmW+3M
-         ycXumu4Ub1kb1YyGl1WNxenU0pH+Wb7QhYmQOywntxRoSp3BZbD9EEz+iMgbgCXE0mnX
-         iLTfQanSMB8IdHrtLgsphRBasbrjfIWm7LJ73bYt8gcWkQrJQA28+1cSqUjyAPfyPQ80
-         iP3w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1723034016; x=1723638816;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=cZTz1rtqq0BJgnMRbCe88pCug4d1Vy8MfxR+z41Acnc=;
-        b=HW2Q3CAYAKZO+6AlRrul43mm29nbGiWT0vdeNqH2rq565nFSDTguRc7k5/A40qdxmR
-         tD9IcACNcXG9Z49x7PqDxPKiSpMQ0fkAJjsSmL6lKaCg1GNh77QO18BdwAn1JqXL9tcx
-         cBxBwZLaGKH/ZE6fjtetUSyi2IbB1zm/rKuARlh+1sJ9PZFlyi+YfOuJsNhwfBZPAQTF
-         +ppr7pkMow2MCuXz7ygoHlffnVeWWREmHscz0xPIJmkWfF3yYj4ZEAyyAcvmBbKR2oft
-         KyLuUwPmnIwxucEVDDpUBDb1sEXVLurLMxnvpIT3znx0c4/L8a1CPUNEmDSP7xBprUYn
-         J7LQ==
-X-Forwarded-Encrypted: i=1; AJvYcCXQeqPdQfdAXDhrmgMHmDLpZqRuVtJ5EhbmzLz3ELjq7hHFJQGDLDBTg3Zv+Us1hlkJC6vJMseKq6dwgctrQkz7J3/WzA0=
-X-Gm-Message-State: AOJu0Yy2mDWhxYWVcpuXsLwhatkGOIGP3Sk5cQRY3s3CDwt8IF7qLxIS
-	glGIMkcC3bLgwejkgz2navCKGRG676GtHjnlCNhO24nJwOQjZHd2ELYjq/jjM3s=
-X-Google-Smtp-Source: AGHT+IE5FEbOjSf6Ld8l1Wma2w5ma1HbuFnR60MrGvNqKPBGouU+RjyCiZWYqcctzesBWiDh34A/7A==
-X-Received: by 2002:a05:622a:153:b0:447:e8f5:b2d1 with SMTP id d75a77b69052e-45189326c5emr226028221cf.53.1723034016340;
-        Wed, 07 Aug 2024 05:33:36 -0700 (PDT)
-Received: from ziepe.ca ([128.77.69.90])
-        by smtp.gmail.com with ESMTPSA id d75a77b69052e-451c87fc919sm4389161cf.96.2024.08.07.05.33.35
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 07 Aug 2024 05:33:35 -0700 (PDT)
-Received: from jgg by wakko with local (Exim 4.95)
-	(envelope-from <jgg@ziepe.ca>)
-	id 1sbfrC-001p0y-KM;
-	Wed, 07 Aug 2024 09:33:34 -0300
-Date: Wed, 7 Aug 2024 09:33:34 -0300
-From: Jason Gunthorpe <jgg@ziepe.ca>
-To: Baolu Lu <baolu.lu@linux.intel.com>
-Cc: Vasant Hegde <vasant.hegde@amd.com>, iommu@lists.linux.dev,
-	joro@8bytes.org, will@kernel.org, robin.murphy@arm.com,
-	suravee.suthikulpanit@amd.com, yi.l.liu@intel.com
-Subject: Re: [PATCH RFCv2] iommu: Add domain type and flag to
- domain_alloc_paging()
-Message-ID: <20240807123334.GE8473@ziepe.ca>
-References: <20240801144523.11803-1-vasant.hegde@amd.com>
- <8e531f39-9d14-4d3b-8a52-c2e8ca026f9e@linux.intel.com>
- <098008f7-2b3e-405a-a096-947e5df560e6@amd.com>
- <20240806123452.GE676757@ziepe.ca>
- <6b197aac-c38f-4e6e-9d32-d74e1a5b3968@amd.com>
- <20240806173230.GS676757@ziepe.ca>
- <2c537d82-c511-4367-8a5c-29122745326d@linux.intel.com>
+	s=arc-20240116; t=1723036393; c=relaxed/simple;
+	bh=BoXscPyzBzbdrvYWn9imZDwwSoLJ7n9LTaWuvNOYrWM=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=EElsSS2EYszeRCThNIXxHW87yfOY2/kBBEL6hRoLhYxSJ7jKt5RO0yID+yqFCYKDFbQBEmgkkYrioCmayRXrlpDVmnVNsSglaBHGxdBUAJ4ZFUGVMPpc1lNMbpNDDqsib0nxm75boWVxMfbdzlB2qEsQ8HcsyAruvYEBSSgS2hE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; arc=none smtp.client-ip=217.140.110.172
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 69630FEC;
+	Wed,  7 Aug 2024 06:13:36 -0700 (PDT)
+Received: from [10.57.48.153] (unknown [10.57.48.153])
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id BCDBE3F5A1;
+	Wed,  7 Aug 2024 06:13:08 -0700 (PDT)
+Message-ID: <8230985e-1581-411f-895c-b49065234520@arm.com>
+Date: Wed, 7 Aug 2024 14:13:06 +0100
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <2c537d82-c511-4367-8a5c-29122745326d@linux.intel.com>
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v5 1/3] dma: improve DMA zone selection
+To: Baruch Siach <baruch@tkos.co.il>, Christoph Hellwig <hch@lst.de>,
+ Marek Szyprowski <m.szyprowski@samsung.com>,
+ Catalin Marinas <catalin.marinas@arm.com>, Will Deacon <will@kernel.org>
+Cc: iommu@lists.linux.dev, linux-arm-kernel@lists.infradead.org,
+ linux-kernel@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
+ linux-s390@vger.kernel.org, =?UTF-8?B?UGV0ciBUZXNhxZnDrWs=?=
+ <petr@tesarici.cz>, Ramon Fried <ramon@neureality.ai>,
+ Elad Nachman <enachman@marvell.com>
+References: <cover.1722578375.git.baruch@tkos.co.il>
+ <5200f289af1a9b80dfd329b6ed3d54e1d4a02876.1722578375.git.baruch@tkos.co.il>
+From: Robin Murphy <robin.murphy@arm.com>
+Content-Language: en-GB
+In-Reply-To: <5200f289af1a9b80dfd329b6ed3d54e1d4a02876.1722578375.git.baruch@tkos.co.il>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-On Wed, Aug 07, 2024 at 01:49:02PM +0800, Baolu Lu wrote:
+On 2024-08-02 7:03 am, Baruch Siach wrote:
+> When device DMA limit does not fit in DMA32 zone it should use DMA zone,
+> even when DMA zone is stricter than needed.
+> 
+> Same goes for devices that can't allocate from the entire normal zone.
+> Limit to DMA32 in that case.
 
-> Convert paging domain to user domain allocation appears to be a
-> reasonable solution. But I think it's not VFIO-only, vhost-vdpa is
-> another case, right?
+Per the bot report this only works for CONFIG_ARCH_KEEP_MEMBLOCK, 
+however the whole concept looks wrong anyway. The logic here is that 
+we're only forcing a particular zone if there's *no* chance of the 
+higher zone being usable. For example, ignoring offsets for simplicity, 
+if we have a 40-bit DMA mask then we *do* want to initially try 
+allocating from ZONE_NORMAL even if max_pfn is above 40 bits, since we 
+still might get a usable allocation from between 32 and 40 bits, and if 
+we don't, then we'll fall back to retrying from the DMA zone(s) anyway.
 
-I suspect vhost-vdpa doesn't use PCI devices with a PASID cap.
+I'm not sure if the rest of the series functionally depends on this 
+change, but I think it would be too needlessly restrictive in the 
+general case to be justified.
 
-Hopefully they will support iommufd before that becomes an issue :)
+Thanks,
+Robin.
 
-Jason
+> Reported-by: Catalin Marinas <catalin.marinas@arm.com>
+> Reviewed-by: Catalin Marinas <catalin.marinas@arm.com>
+> Signed-off-by: Baruch Siach <baruch@tkos.co.il>
+> ---
+>   kernel/dma/direct.c  | 6 +++---
+>   kernel/dma/swiotlb.c | 4 ++--
+>   2 files changed, 5 insertions(+), 5 deletions(-)
+> 
+> diff --git a/kernel/dma/direct.c b/kernel/dma/direct.c
+> index 4480a3cd92e0..3b4be4ca3b08 100644
+> --- a/kernel/dma/direct.c
+> +++ b/kernel/dma/direct.c
+> @@ -4,7 +4,7 @@
+>    *
+>    * DMA operations that map physical memory directly without using an IOMMU.
+>    */
+> -#include <linux/memblock.h> /* for max_pfn */
+> +#include <linux/memblock.h>
+>   #include <linux/export.h>
+>   #include <linux/mm.h>
+>   #include <linux/dma-map-ops.h>
+> @@ -59,9 +59,9 @@ static gfp_t dma_direct_optimal_gfp_mask(struct device *dev, u64 *phys_limit)
+>   	 * zones.
+>   	 */
+>   	*phys_limit = dma_to_phys(dev, dma_limit);
+> -	if (*phys_limit <= DMA_BIT_MASK(zone_dma_bits))
+> +	if (*phys_limit < DMA_BIT_MASK(32))
+>   		return GFP_DMA;
+> -	if (*phys_limit <= DMA_BIT_MASK(32))
+> +	if (*phys_limit < memblock_end_of_DRAM())
+>   		return GFP_DMA32;
+>   	return 0;
+>   }
+> diff --git a/kernel/dma/swiotlb.c b/kernel/dma/swiotlb.c
+> index df68d29740a0..043b0ecd3e8d 100644
+> --- a/kernel/dma/swiotlb.c
+> +++ b/kernel/dma/swiotlb.c
+> @@ -629,9 +629,9 @@ static struct page *swiotlb_alloc_tlb(struct device *dev, size_t bytes,
+>   	}
+>   
+>   	gfp &= ~GFP_ZONEMASK;
+> -	if (phys_limit <= DMA_BIT_MASK(zone_dma_bits))
+> +	if (phys_limit < DMA_BIT_MASK(32))
+>   		gfp |= __GFP_DMA;
+> -	else if (phys_limit <= DMA_BIT_MASK(32))
+> +	else if (phys_limit < memblock_end_of_DRAM())
+>   		gfp |= __GFP_DMA32;
+>   
+>   	while (IS_ERR(page = alloc_dma_pages(gfp, bytes, phys_limit))) {
