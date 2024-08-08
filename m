@@ -1,336 +1,257 @@
-Received: from mail-oi1-f169.google.com (mail-oi1-f169.google.com [209.85.167.169])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3881B18EFD6
-	for <iommu@lists.linux.dev>; Thu,  8 Aug 2024 17:02:50 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.169
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A355E1F19A
+	for <iommu@lists.linux.dev>; Thu,  8 Aug 2024 17:05:52 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=148.163.156.1
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1723136571; cv=none; b=SjVrpIfUdy/nHCFhD6Ri/1OoJeuKOSuRpGHkYZVr/4b5U3MQvgkwhbe57RVLq3aIeMOhaXmmCyxlv1mboo9WDlmL+nVYUPV1nCq9RSTF8iZTZwHLBd5Z7EWj6PlW/mL/9NLkPZ99dYWsPz9Z7ZLtA5AeQNmTVIlQO32qJNZBITA=
+	t=1723136756; cv=none; b=DMFxowcuqlCj4gPgakyZ7cTGJg6hoxRU/644MaeDvYFKgZkzTJ3XGLoY1mpO4stqx1SyNJYVXvETJVAnl93sx+FQ8orduhDOJsuq9oqjxjCiYgnndVPoGOhZiaMuKZ9Smm+qG34uAUiUiRec5Fch3psvI9tESyapjd8UOy5iDtY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1723136571; c=relaxed/simple;
-	bh=Qie1VXxEbR6wPvVHaQ4xDFbr377DcfR014QfK2iKOJ8=;
-	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:To:Cc; b=Qteq/JwwgjAozKeury+zCwc89eoaYLDgZ+k2T0SW3OntE3yqhQI32LF1/kvZrjIj1yiNPplDL0ulFcnifRccfjbmG5NcOLzx0t4Tqym3rv7BvGGSJvCQPMnsD988mARJi3m+gqrxI7QZqUQQgN1gpksH7Ur9UUDJWc/t53tyR1U=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=chromium.org; spf=pass smtp.mailfrom=chromium.org; dkim=pass (1024-bit key) header.d=chromium.org header.i=@chromium.org header.b=RvS36vbe; arc=none smtp.client-ip=209.85.167.169
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=chromium.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=chromium.org
+	s=arc-20240116; t=1723136756; c=relaxed/simple;
+	bh=KKt5dGvczCSpcSGyLA/w7pIAU09EpP5zg7eXHigoRlA=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=tie71DBdzy56WODEO/2+nfIQs6vNCG1kwkTRH9JPLEeKMUF5mo+n77LXiitJPz6md3k6wDYPmwsRMWCBzaFVkMENSjbDASRzXKp6LQzq0hljhbPw0OZ5vMMCEG0RumtQx/F/xtuwpZKunB8GW0TA4N9Y9H+LI1GQ8n6OFtI10Rk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.ibm.com; spf=pass smtp.mailfrom=linux.ibm.com; dkim=pass (2048-bit key) header.d=ibm.com header.i=@ibm.com header.b=JRFA6P+/; arc=none smtp.client-ip=148.163.156.1
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.ibm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.ibm.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=chromium.org header.i=@chromium.org header.b="RvS36vbe"
-Received: by mail-oi1-f169.google.com with SMTP id 5614622812f47-3daf0e73a5bso970154b6e.0
-        for <iommu@lists.linux.dev>; Thu, 08 Aug 2024 10:02:50 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google; t=1723136569; x=1723741369; darn=lists.linux.dev;
-        h=cc:to:message-id:content-transfer-encoding:mime-version:subject
-         :date:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=tnm4IZp9BOFX/7ai0UmZ2uPZFN91S/3iwZ4ZNMA3KWI=;
-        b=RvS36vbeVK/325xSvP4mD3d7B7A5w5A0OCSJs6QVMT0HtgWhMMfTGxPGTKmNxxeKxb
-         70mRUwZ+wT94jmaXpIqrTyoShMOPkeZ4vAd3wOj0SqmmlnZcCNE2JbLIFzCAx7V9oHLK
-         su5xRoR+5iPh9MMsyfC7lz8evwv5H6+RjRbXQ=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1723136569; x=1723741369;
-        h=cc:to:message-id:content-transfer-encoding:mime-version:subject
-         :date:from:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=tnm4IZp9BOFX/7ai0UmZ2uPZFN91S/3iwZ4ZNMA3KWI=;
-        b=HsDefsvxhrjpOxeRI1E84gKwSkrhb9H++f9t2CtpCvxqLZzjF/TsA5cGdyX8GCrjnW
-         Qt0ePNpQ0Ck9xyv54fusMok8iM02gi19HEEYSijUP+S0jVmO68Ek8gTWQoAenF9576EW
-         1vFkwrVpdDPklthGANYnla/E8IYE/CjENz5t0HhP4xZrSU83G9DUJ5YqJihx1KxmOdwN
-         LbRBm3LHbAwgc9HmOqMZjHgWLLVpggJqbrgTM4p0DSr5Ji5r6f6O5cAAo63Vd3dkR4Zo
-         aZ7s7f5+yG8kAJIfHjd22WiqiVEpsNa/r+j36uFPJ7ekIVBR7WgVwxQrnC5nt/IeRNaV
-         G6og==
-X-Forwarded-Encrypted: i=1; AJvYcCWPBcIAqDiObKA6ydGmEmzOKxsznpMzfJKaxcz3AGRHhH/yFgwjDGajBQ1ePbiyyoWce85zfM0E9aJpAk5qDQaamojRb00=
-X-Gm-Message-State: AOJu0YxZn8HUBJgPqbsyo74qf20KXimFQ3M1EvLDiJvE9NO67SqGSypo
-	qTVe3LJGcBEInmNSdeqJJ8mUuMNtJo+mfUGD72ZmP/tLwUee85G2r/3EDRbTczwyH0j12qHaFdw
-	=
-X-Google-Smtp-Source: AGHT+IF9PaStG81fRUHBiHKskkVjyHYOtTPaUZ1Nb+A26EGvcb+VOEkXPa7I47PHEDnAspxrFwoZRA==
-X-Received: by 2002:a05:6808:2185:b0:3d9:2b45:1585 with SMTP id 5614622812f47-3dc3b42dea6mr2373864b6e.22.1723136562244;
-        Thu, 08 Aug 2024 10:02:42 -0700 (PDT)
-Received: from spinny.c.googlers.com (39.119.74.34.bc.googleusercontent.com. [34.74.119.39])
-        by smtp.gmail.com with ESMTPSA id a1e0cc1a2514c-83c07df5517sm1867706241.14.2024.08.08.10.02.41
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 08 Aug 2024 10:02:41 -0700 (PDT)
-From: Esther Shimanovich <eshimanovich@chromium.org>
-Date: Thu, 08 Aug 2024 17:02:16 +0000
-Subject: [PATCH v2] PCI: Detect and trust built-in Thunderbolt chips
+	dkim=pass (2048-bit key) header.d=ibm.com header.i=@ibm.com header.b="JRFA6P+/"
+Received: from pps.filterd (m0353727.ppops.net [127.0.0.1])
+	by mx0a-001b2d01.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 478CaYl2010832;
+	Thu, 8 Aug 2024 17:05:43 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=
+	message-id:date:mime-version:subject:to:cc:references:from
+	:in-reply-to:content-type:content-transfer-encoding; s=pp1; bh=C
+	jICzhJg3JDGr91/MDwlUKmoReoHKNNM1dLXQCMAeJ0=; b=JRFA6P+/f6zZ5lht5
+	xwBN2StyAPPAdN9v8NeJg6H9WJxzgdTFvxH1bnXVR3LCfl1qmY13xIl0r41ApRfz
+	D4gaVeTxOMOjKYpEK3EY3E25tpXp014flrz7fXnC8hDZRTVmdb4tP5ltltrm9jvm
+	j6D83z3TUbZjF70fJ904Q1STyBMFlib430onrqOkBkEZv67yRSrmr7Q68iS91Doq
+	2sthotw2HU4OkpJxM4yY3Hoicv33643KW/rV7VdDFi1RI6TIbwi33kbu94TMKFl3
+	pjo5HBU4kkfBKwCSMfwGPq2KcFcbbn3mZNr+Pb25m3K1JYtAAqKZ0fs4XXSmbVj/
+	+m4mg==
+Received: from ppma11.dal12v.mail.ibm.com (db.9e.1632.ip4.static.sl-reverse.com [50.22.158.219])
+	by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 40vwkbgr7s-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Thu, 08 Aug 2024 17:05:43 +0000 (GMT)
+Received: from pps.filterd (ppma11.dal12v.mail.ibm.com [127.0.0.1])
+	by ppma11.dal12v.mail.ibm.com (8.17.1.19/8.17.1.19) with ESMTP id 478GmmZR030238;
+	Thu, 8 Aug 2024 17:05:42 GMT
+Received: from smtprelay06.wdc07v.mail.ibm.com ([172.16.1.73])
+	by ppma11.dal12v.mail.ibm.com (PPS) with ESMTPS id 40t1k3eyt6-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Thu, 08 Aug 2024 17:05:42 +0000
+Received: from smtpav05.wdc07v.mail.ibm.com (smtpav05.wdc07v.mail.ibm.com [10.39.53.232])
+	by smtprelay06.wdc07v.mail.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 478H5cuG7799314
+	(version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+	Thu, 8 Aug 2024 17:05:40 GMT
+Received: from smtpav05.wdc07v.mail.ibm.com (unknown [127.0.0.1])
+	by IMSVA (Postfix) with ESMTP id B51A558065;
+	Thu,  8 Aug 2024 17:05:38 +0000 (GMT)
+Received: from smtpav05.wdc07v.mail.ibm.com (unknown [127.0.0.1])
+	by IMSVA (Postfix) with ESMTP id 0323158068;
+	Thu,  8 Aug 2024 17:05:37 +0000 (GMT)
+Received: from [9.61.42.196] (unknown [9.61.42.196])
+	by smtpav05.wdc07v.mail.ibm.com (Postfix) with ESMTP;
+	Thu,  8 Aug 2024 17:05:36 +0000 (GMT)
+Message-ID: <0abe7286-ae33-4637-b0ea-f1f2e352eb21@linux.ibm.com>
+Date: Thu, 8 Aug 2024 13:05:36 -0400
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH] iommu/s390: Implement blocking domain
+To: Jason Gunthorpe <jgg@ziepe.ca>, Niklas Schnelle <schnelle@linux.ibm.com>
+Cc: Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
+        Robin Murphy <robin.murphy@arm.com>,
+        Gerald Schaefer <gerald.schaefer@linux.ibm.com>,
+        Gerd Bayer <gbayer@linux.ibm.com>, Heiko Carstens <hca@linux.ibm.com>,
+        Vasily Gorbik <gor@linux.ibm.com>,
+        Alexander Gordeev
+ <agordeev@linux.ibm.com>,
+        Sven Schnelle <svens@linux.ibm.com>, Joerg Roedel <jroedel@suse.de>,
+        iommu@lists.linux.dev, linux-kernel@vger.kernel.org,
+        linux-s390@vger.kernel.org
+References: <20240806-blocking_domain-v1-1-8abc18e37e52@linux.ibm.com>
+ <20240808134451.GC1985367@ziepe.ca>
+Content-Language: en-US
+From: Matthew Rosato <mjrosato@linux.ibm.com>
+In-Reply-To: <20240808134451.GC1985367@ziepe.ca>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-Message-Id: <20240808-trust-tbt-fix-v2-1-2e34a05a9186@chromium.org>
-X-B4-Tracking: v=1; b=H4sIABf6tGYC/3WMyw6CMBAAf4Xs2TVQykNP/ofhUMsW9gAl20I0h
- H+3cvc4k8zsEEiYAtyzHYQ2DuznBOqSgR3NPBBynxhUrnTe5jVGWUPE+Iro+I2VK8vG9TeyrYH
- ULEJJn79nl3jkEL18zv1W/Oy/01ZggU1pqHJa131lHnYUP/E6Xb0M0B3H8QViBaZrrQAAAA==
-To: Bjorn Helgaas <bhelgaas@google.com>, Rajat Jain <rajatja@google.com>, 
- "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>
-Cc: Mario Limonciello <mario.limonciello@amd.com>, iommu@lists.linux.dev, 
- Lukas Wunner <lukas@wunner.de>, 
- Mika Westerberg <mika.westerberg@linux.intel.com>, 
- linux-pci@vger.kernel.org, linux-kernel@vger.kernel.org, 
- Esther Shimanovich <eshimanovich@chromium.org>
-X-Mailer: b4 0.13.0
+X-TM-AS-GCONF: 00
+X-Proofpoint-GUID: MfO4kFm-HwXWXQ0cGAKeSoUKnYj2i1CD
+X-Proofpoint-ORIG-GUID: MfO4kFm-HwXWXQ0cGAKeSoUKnYj2i1CD
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.293,Aquarius:18.0.1039,Hydra:6.0.680,FMLib:17.12.28.16
+ definitions=2024-08-08_17,2024-08-07_01,2024-05-17_01
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 bulkscore=0 mlxscore=0
+ priorityscore=1501 clxscore=1011 lowpriorityscore=0 adultscore=0
+ impostorscore=0 suspectscore=0 mlxlogscore=925 phishscore=0 spamscore=0
+ malwarescore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.19.0-2407110000 definitions=main-2408080118
 
-Some computers with CPUs that lack Thunderbolt features use discrete
-Thunderbolt chips to add Thunderbolt functionality. These Thunderbolt
-chips are located within the chassis; between the root port labeled
-ExternalFacingPort and the USB-C port.
+On 8/8/24 9:44 AM, Jason Gunthorpe wrote:
+> On Tue, Aug 06, 2024 at 03:45:15PM +0200, Niklas Schnelle wrote:
+>> This fixes a crash when surprise hot-unplugging a PCI device. This crash
+>> happens because during hot-unplug __iommu_group_set_domain_nofail()
+>> attaching the default domain fails when the platform no longer
+>> recognizes the device as it has already been removed and we end up with
+>> a NULL domain pointer and UAF.
+> 
+> Huh?
+> 
+> A device can't be removed before telling the iommu subsystem about
+> it. How did the domain become NULL asynchronously while the iommu side
+> thought it was still alive?? That seems like the main bug here..
+> 
 
-These Thunderbolt PCIe devices should be labeled as fixed and trusted,
-as they are built into the computer. Otherwise, security policies that
-rely on those flags may have unintended results, such as preventing
-USB-C ports from enumerating.
+Nilkas is away for a while, so I'll take this over -- So, peeling back the onion on this patch, it's actually trying to solve a few things simultaneously. 
 
-Detect the above scenario through the process of elimination.
+Since c76c067e488c ("s390/pci: Use dma-iommu layer"), we stopped checking for a NULL zdev->s390_domain during s390_iommu_release_device.  This causes a crash specifically if the last attach_device call failed (we exit on -EIO with a NULL zdev->s390_domain).  I suppose we could also fix the specific crash by restoring the NULL check in s390_iommu_release_device, but this seems like a band-aid and I'm concerned that there's more lurking here when get to this state...  So instead implementing the blocking domain ensures we always fall back to it when attach fails, so we no longer can have that NULL pointer during iommu_release_device / always have at bare-minimum the blocked domain attached (once I address your probe_device comment below).
 
-1) Integrated Thunderbolt host controllers already have Thunderbolt
-   implemented, so anything outside their external facing root port is
-   removable and untrusted.
 
-   Detect them using the following properties:
+>> Note: I somewhat suspect this to be related to the following discussion
+>> or at least we have seen the same backtraces in reports that we suspect
+>> to be caused by the issue fixed with this patch.
+> 
+> No, it shouldn't be. That bug is because the netstack is continuing to
+> use a struct device with the DMA API after the device driver has been
+> removed. That is just illegal.> 
 
-     - Most integrated host controllers have the usb4-host-interface
-       ACPI property, as described here:
-Link: https://learn.microsoft.com/en-us/windows-hardware/drivers/pci/dsd-for-pcie-root-ports#mapping-native-protocols-pcie-displayport-tunneled-through-usb4-to-usb4-host-routers
+I wonder if the presence of a blocking domain masks it somehow.  We just happened to notice that we were unable to reproduce a similar backtrace once a blocking domain was implemented;  I'll have to go back to the repro scenario and have a closer look.
 
-     - Integrated Thunderbolt PCIe root ports before Alder Lake do not
-       have the usb4-host-interface ACPI property. Identify those with
-       their PCI IDs instead.
-
-2) If a root port does not have integrated Thunderbolt capabilities, but
-   has the ExternalFacingPort ACPI property, that means the manufacturer
-   has opted to use a discrete Thunderbolt host controller that is
-   built into the computer.
-
-   This host controller can be identified by virtue of being located
-   directly below an external-facing root port that lacks integrated
-   Thunderbolt. Label it as trusted and fixed.
-
-   Everything downstream from it is untrusted and removable.
-
-The ExternalFacingPort ACPI property is described here:
-Link: https://learn.microsoft.com/en-us/windows-hardware/drivers/pci/dsd-for-pcie-root-ports#identifying-externally-exposed-pcie-root-ports
-
-Suggested-by: Mika Westerberg <mika.westerberg@linux.intel.com>
-Signed-off-by: Esther Shimanovich <eshimanovich@chromium.org>
----
-While working with devices that have discrete Thunderbolt chips, I
-noticed that their internal TBT chips are inaccurately labeled as
-untrusted and removable.
-
-I've observed that this issue impacts all computers with internal,
-discrete Intel JHL Thunderbolt chips, such as JHL6240, JHL6340, JHL6540,
-and JHL7540, across multiple device manufacturers such as Lenovo, Dell,
-and HP.
-
-This affects the execution of any downstream security policy that
-relies on the "untrusted" or "removable" flags.
-
-I initially submitted a quirk to resolve this, which was too small in
-scope, and after some discussion, Mika proposed a more thorough fix:
-https://lore.kernel.org/lkml/20240510052616.GC4162345@black.fi.intel.com/#r
-I refactored it and am submitting as a new patch.
----
-Changes in v2:
-- I clarified some comments, and made minor fixins
-- I also added a more detailed description of implementation into the
-  commit message
-- Added Cc recipients Mike recommended
-- Link to v1: https://lore.kernel.org/r/20240806-trust-tbt-fix-v1-1-73ae5f446d5a@chromium.org
----
- drivers/pci/probe.c | 151 +++++++++++++++++++++++++++++++++++++++++++++++++---
- 1 file changed, 144 insertions(+), 7 deletions(-)
-
-diff --git a/drivers/pci/probe.c b/drivers/pci/probe.c
-index b14b9876c030..8a98c4ef5511 100644
---- a/drivers/pci/probe.c
-+++ b/drivers/pci/probe.c
-@@ -1629,16 +1629,149 @@ static void set_pcie_thunderbolt(struct pci_dev *dev)
- 		dev->is_thunderbolt = 1;
- }
+>> diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
+>> index ed6c5cb60c5a..91b3b23bf55c 100644
+>> --- a/drivers/iommu/iommu.c
+>> +++ b/drivers/iommu/iommu.c
+>> @@ -119,8 +119,11 @@ static int __iommu_group_set_domain(struct iommu_group *group,
+>>  static void __iommu_group_set_domain_nofail(struct iommu_group *group,
+>>  					    struct iommu_domain *new_domain)
+>>  {
+>> -	WARN_ON(__iommu_group_set_domain_internal(
+>> -		group, new_domain, IOMMU_SET_DOMAIN_MUST_SUCCEED));
+>> +	int ret = __iommu_group_set_domain_internal(
+>> +		group, new_domain, IOMMU_SET_DOMAIN_MUST_SUCCEED);
+>> +
+>> +	/* Allow attach to fail when the device is gone */
+>> +	WARN_ON(ret && ret != -ENODEV);
+>>  }
+> 
+> Like this doesn't really make sense. Until the iommu subystem removes
+> the device from the group it really cannot be "gone".
  
-+/*
-+ * Checks if pdev is part of a PCIe switch that is directly below the
-+ * specified bridge.
-+ */
-+static bool pcie_switch_directly_under(struct pci_dev *bridge,
-+				       struct pci_dev *pdev)
-+{
-+	struct pci_dev *parent = pci_upstream_bridge(pdev);
-+
-+	/* If the device doesn't have a parent, it's not under anything.*/
-+	if (!parent)
-+		return false;
-+
-+	/*
-+	 * If the device has a PCIe type, check if it is below the
-+	 * corresponding PCIe switch components (if applicable). Then check
-+	 * if its upstream port is directly beneath the specified bridge.
-+	 */
-+	switch (pci_pcie_type(pdev)) {
-+	case PCI_EXP_TYPE_UPSTREAM:
-+		if (parent == bridge)
-+			return true;
-+		break;
-+
-+	case PCI_EXP_TYPE_DOWNSTREAM:
-+		if (pci_pcie_type(parent) == PCI_EXP_TYPE_UPSTREAM) {
-+			parent = pci_upstream_bridge(parent);
-+			if (parent == bridge)
-+				return true;
-+		}
-+		break;
-+
-+	case PCI_EXP_TYPE_ENDPOINT:
-+		if (pci_pcie_type(parent) == PCI_EXP_TYPE_DOWNSTREAM) {
-+			parent = pci_upstream_bridge(parent);
-+			if (parent && pci_pcie_type(parent) == PCI_EXP_TYPE_UPSTREAM) {
-+				parent = pci_upstream_bridge(parent);
-+				if (parent == bridge)
-+					return true;
-+			}
-+		}
-+		break;
-+	}
-+
-+	return false;
-+}
-+
-+static bool pcie_has_usb4_host_interface(struct pci_dev *pdev)
-+{
-+	struct fwnode_handle *fwnode;
-+
-+	/*
-+	 * For USB4, the tunneled PCIe root or downstream ports are marked
-+	 * with the "usb4-host-interface" ACPI property, so we look for
-+	 * that first. This should cover most cases.
-+	 */
-+	fwnode = fwnode_find_reference(dev_fwnode(&pdev->dev),
-+				       "usb4-host-interface", 0);
-+	if (!IS_ERR(fwnode)) {
-+		fwnode_handle_put(fwnode);
-+		return true;
-+	}
-+
-+	/*
-+	 * Any integrated Thunderbolt 3/4 PCIe root ports from Intel
-+	 * before Alder Lake do not have the "usb4-host-interface"
-+	 * property so we use their PCI IDs instead. All these are
-+	 * tunneled. This list is not expected to grow.
-+	 */
-+	if (pdev->vendor == PCI_VENDOR_ID_INTEL) {
-+		switch (pdev->device) {
-+		/* Ice Lake Thunderbolt 3 PCIe Root Ports */
-+		case 0x8a1d:
-+		case 0x8a1f:
-+		case 0x8a21:
-+		case 0x8a23:
-+		/* Tiger Lake-LP Thunderbolt 4 PCIe Root Ports */
-+		case 0x9a23:
-+		case 0x9a25:
-+		case 0x9a27:
-+		case 0x9a29:
-+		/* Tiger Lake-H Thunderbolt 4 PCIe Root Ports */
-+		case 0x9a2b:
-+		case 0x9a2d:
-+		case 0x9a2f:
-+		case 0x9a31:
-+			return true;
-+		}
-+	}
-+
-+	return false;
-+}
-+
-+static bool pcie_is_tunneled(struct pci_dev *pdev)
-+{
-+	struct pci_dev *parent, *root;
-+
-+	parent = pci_upstream_bridge(pdev);
-+	/* If pdev doesn't have a parent, then there's no way it is tunneled.*/
-+	if (!parent)
-+		return false;
-+
-+	root = pcie_find_root_port(pdev);
-+	/* If pdev doesn't have a root, then there's no way it is tunneled.*/
-+	if (!root)
-+		return false;
-+
-+	/* Internal PCIe devices are not tunneled. */
-+	if (!root->external_facing)
-+		return false;
-+
-+	/* Anything directly behind a "usb4-host-interface" is tunneled. */
-+	if (pcie_has_usb4_host_interface(parent))
-+		return true;
-+
-+	/*
-+	 * Check if this is a discrete Thunderbolt/USB4 controller that is
-+	 * directly behind the non-USB4 PCIe Root Port marked as
-+	 * "ExternalFacingPort". These PCIe devices are used to add Thunderbolt
-+	 * capabilities to CPUs that lack integrated Thunderbolt.
-+	 * These are not behind a PCIe tunnel.
-+	 */
-+	if (pcie_switch_directly_under(root, pdev))
-+		return false;
-+
-+	/* PCIe devices after the discrete chip are tunneled. */
-+	return true;
-+}
-+
- static void set_pcie_untrusted(struct pci_dev *dev)
- {
--	struct pci_dev *parent;
-+	struct pci_dev *parent = pci_upstream_bridge(dev);
- 
-+	if (!parent)
-+		return;
- 	/*
--	 * If the upstream bridge is untrusted we treat this device
-+	 * If the upstream bridge is untrusted we treat this device as
- 	 * untrusted as well.
- 	 */
--	parent = pci_upstream_bridge(dev);
--	if (parent && (parent->untrusted || parent->external_facing))
-+	if (parent->untrusted)
-+		dev->untrusted = true;
-+
-+	if (pcie_is_tunneled(dev))
- 		dev->untrusted = true;
- }
- 
-@@ -1646,8 +1779,10 @@ static void pci_set_removable(struct pci_dev *dev)
- {
- 	struct pci_dev *parent = pci_upstream_bridge(dev);
- 
-+	if (!parent)
-+		return;
- 	/*
--	 * We (only) consider everything downstream from an external_facing
-+	 * We (only) consider everything tunneled below an external_facing
- 	 * device to be removable by the user. We're mainly concerned with
- 	 * consumer platforms with user accessible thunderbolt ports that are
- 	 * vulnerable to DMA attacks, and we expect those ports to be marked by
-@@ -1657,8 +1792,10 @@ static void pci_set_removable(struct pci_dev *dev)
- 	 * accessible to user / may not be removed by end user, and thus not
- 	 * exposed as "removable" to userspace.
- 	 */
--	if (parent &&
--	    (parent->external_facing || dev_is_removable(&parent->dev)))
-+	if (dev_is_removable(&parent->dev))
-+		dev_set_removable(&dev->dev, DEVICE_REMOVABLE);
-+
-+	if (pcie_is_tunneled(dev))
- 		dev_set_removable(&dev->dev, DEVICE_REMOVABLE);
- }
- 
+The device isn't actually gone from the perspective of the kernel so much as known to be in the process of going way / in a state where we know that DMA is no longer possible.
 
----
-base-commit: 3f386cb8ee9f04ff4be164ca7a1d0ef3f81f7374
-change-id: 20240806-trust-tbt-fix-5f337fd9ec8a
+> The hypervisor could fail attachment because the hypervisor has
+> already fenced the device. Sure, that make sense, but it is not really
+> that the device is gone from a Linux perspective, it is just now in a
+> forced-blocked state.
 
-Best regards,
--- 
-Esther Shimanovich <eshimanovich@chromium.org>
+Yes.  So, once we implement the blocking domain, no more crashes and we always fall back to the static blocking domain.  But, if the device were unceremoniously switched off while bound to vfio we would still get WARNed from __iommu_group_set_domain_nofail, because attempts to hand the device back from vfio->dma-iommu (e.g. _iommu_release_dma_ownership) are unable to attach the requested default domain and instead fall back to the blocking domain because we've effectively already fenced the device.  That is specifically what this change to drivers/iommu/iommu.c was attempting to resolve.
+
+What about we fix the crash and implement the s390 blocking domain with this patch but drop this change to drivers/iommu/iommu.c.  This leaves us still hitting WARNs in this case for now, but then I would still like to try to sort that out as a follow-on so that we eventually can handle this DMA-owned+force-blocked scenario cleanly.
+
+> 
+> Like Lu says, if we need to add a new flow for devices that are now
+> force-blocking and cannot be changed then it will need its own error
+> code.
+Makes sense.
+
+> 
+> But what is the backtrace that runs into this warn on? VFIO exiting
+> and trying to put the device back to the DMA API?
+
+Yes, exactly
+
+[  198.067373] ------------[ cut here ]------------
+[  198.067377] WARNING: CPU: 44 PID: 394 at drivers/iommu/iommu.c:122 __iommu_release_dma_ownership+0x72/0x80
+[  198.067386] Modules linked in: macvtap macvlan tap vfio_pci vfio_pci_core irqbypass kvm sunrpc s390_trng eadm_sch tape_34xx tape tape_class vfio_ccw mdev vfio_iommu_type1 vfio zcrypt_cex4 sch_fq_codel loop configfs nfnetlink lcs ctcm fsm ghash_s390 prng chacha_s390 libchacha aes_s390 des_s390 libdes sha3_512_s390 sha3_256_s390 nvme sha512_s390 sha256_s390 nvme_core sha1_s390 sha_common zfcp scsi_transport_fc 8021q garp pkey zcrypt rng_core autofs4
+[  198.067424] CPU: 44 UID: 0 PID: 394 Comm: kmcheck Not tainted 6.11.0-rc2 #111
+[  198.067427] Hardware name: IBM 3906 M05 780 (LPAR)
+[  198.067429] Krnl PSW : 0704c00180000000 000002bbfc744576 (__iommu_release_dma_ownership+0x76/0x80)
+[  198.067433]            R:0 T:1 IO:1 EX:1 Key:0 M:1 W:0 P:0 AS:3 CC:0 PM:0 RI:0 EA:3
+[  198.067437] Krnl GPRS: 0000000000000290 0000000000000000 fffffffffffffffb 000001b386842098
+[  198.067439]            0000000000000000 000001b3865b5c00 000000000000255b 000002bb7c586068
+[  198.067442]            000001b3ab82a018 000001b7ff0af6c0 000001b5d0e4af68 000001b5d0e4af00
+[  198.067444]            000001b389772300 0000023bffe33e28 000002bbfc744560 0000023bffe339d0
+[  198.067452] Krnl Code: 000002bbfc744568: f0a0000407fe	srp	4(11,%r0),2046,0
+                          000002bbfc74456e: 47000700		bc	0,1792
+                         #000002bbfc744572: af000000		mc	0,0
+                         >000002bbfc744576: a7f4fff8		brc	15,000002bbfc744566
+                          000002bbfc74457a: 0707		bcr	0,%r7
+                          000002bbfc74457c: 0707		bcr	0,%r7
+                          000002bbfc74457e: 0707		bcr	0,%r7
+                          000002bbfc744580: c0040025f71c	brcl	0,000002bbfcc033b8
+[  198.067468] Call Trace:
+[  198.067482]  [<000002bbfc744576>] __iommu_release_dma_ownership+0x76/0x80 
+[  198.067486] ([<000002bbfc744560>] __iommu_release_dma_ownership+0x60/0x80)
+[  198.067488]  [<000002bbfc7445b8>] iommu_group_release_dma_owner+0x38/0x50 
+[  198.067491]  [<000002bb7c2a1e24>] vfio_group_detach_container+0x154/0x180 [vfio] 
+[  198.067500]  [<000002bb7c2a0d88>] vfio_device_remove_group+0xd8/0x140 [vfio] 
+[  198.067505]  [<000002bb7c5648b4>] vfio_pci_core_unregister_device+0x34/0x80 [vfio_pci_core] 
+[  198.067513]  [<000002bb7c5841cc>] vfio_pci_remove+0x2c/0x40 [vfio_pci] 
+[  198.067517]  [<000002bbfc6ec7bc>] pci_device_remove+0x3c/0x90 
+[  198.067520]  [<000002bbfc75dda4>] device_release_driver_internal+0x1b4/0x260 
+[  198.067527]  [<000002bbfc6e2844>] pci_stop_bus_device+0x94/0xc0 
+[  198.067531]  [<000002bbfc6e2b66>] pci_stop_and_remove_bus_device+0x26/0x40 
+[  198.067534]  [<000002bbfc6e2bb0>] pci_stop_and_remove_bus_device_locked+0x30/0x40 
+[  198.067537]  [<000002bbfbde2838>] zpci_bus_remove_device+0x68/0xb0 
+[  198.067541]  [<000002bbfbde0780>] __zpci_event_availability+0x250/0x3a0 
+[  198.067543]  [<000002bbfc7e4528>] chsc_process_crw+0x2a8/0x2c0 
+[  198.067548]  [<000002bbfc7ec690>] crw_collect_info+0x2e0/0x360 
+[  198.067550]  [<000002bbfbe15bde>] kthread+0x11e/0x130 
+[  198.067556]  [<000002bbfbd930ec>] __ret_from_fork+0x3c/0x60 
+[  198.067558]  [<000002bbfcb233aa>] ret_from_fork+0xa/0x38 
+[  198.067564] Last Breaking-Event-Address:
+[  198.067565]  [<000002bbfc744560>] __iommu_release_dma_ownership+0x60/0x80
+[  198.067569] ---[ end trace 0000000000000000 ]---
+
+
+
+> 
+> Though I feel like more is needed here if you expect to allow the
+> nofail version of this to actually fail.. For instance a force-blocked
+> device should block driver binding through the dma_owner APIs.
+
+Yeah, that makes sense too. 
+
+> 
+>> +static int blocking_domain_attach_device(struct iommu_domain *domain,
+>> +					 struct device *dev)
+>> +{
+>> +	struct s390_domain *s390_domain = to_s390_domain(domain);
+>> +	struct zpci_dev *zdev = to_zpci_dev(dev);
+>> +	unsigned long flags;
+>> +
+>> +	if (!zdev)
+>> +		return 0;
+>> +
+>> +	/* Detach sets the blocking domain */
+>> +	if (zdev->s390_domain)
+>> +		s390_iommu_detach_device(&zdev->s390_domain->domain, dev);
+> 
+> When I've done these conversions on other drivers it was the case that
+> zdev->s390_domain is never NULL. Instead probe_device immediately
+> starts it as a blocking_domain or fails to probe.
+
+Good point, I'll look at setting in probe.
+
+> 
+> This way we don't ever have the ill defined notion of NULL here.
+> 
+>> @@ -777,6 +812,8 @@ static int __init s390_iommu_init(void)
+>>  subsys_initcall(s390_iommu_init);
+>>  
+>>  static const struct iommu_ops s390_iommu_ops = {
+>> +	.blocked_domain		= &s390_blocking_domain.domain,
+>> +	.release_domain		= &s390_blocking_domain.domain,
+> 
+> If you set release_domain then remove s390_iommu_release_device(), it
+> is the same code.
+> 
+
+Oh I see, via blocking_domain_attach_device.  Agree
 
