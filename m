@@ -1,178 +1,106 @@
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 7AFDC18C911
-	for <iommu@lists.linux.dev>; Thu,  8 Aug 2024 12:38:51 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
+Received: from mail-qk1-f179.google.com (mail-qk1-f179.google.com [209.85.222.179])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 28EE718CC11
+	for <iommu@lists.linux.dev>; Thu,  8 Aug 2024 13:08:17 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.222.179
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1723120733; cv=none; b=q8yeH86BAM810YEVC8Fdsd28XwDV3QsUwnH7D4Ic4AMzrJZY9/Ps03jvmmwe0EOwD9eYjIoBTa09fe5EKSUHJBK6WIEoBwF/8cLKrqGWspwgG1h59fX3N98uBjBZBT3nXwluuTA0XnF7o1qNBmQ/JY9Af3T1GJzJwfDqw9ILM9A=
+	t=1723122500; cv=none; b=YMj2L2D84nr1HJnhQjt6jRWNw+3oJKDK+0dUZ9zQqYoUUP/G2Ubwt9fBtj37h/aJWdHya8DZhEAi84rFhBKQRhS7GDEJDTEDJXEd5umwma+GrIN5mSFo3SBTZz/UIUqbvOFF9uzWOYV+iT3E+Od44Z5NJYH6fVK4OMAONU376F8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1723120733; c=relaxed/simple;
-	bh=GcvSFJMKHLhNFNdb66dJFFYuo+iitWi4Lo3O6EpjwWo=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=BUdvVZ94+OFYXsIU386WYWzle4UU8XzAQuQEZ9lkSPZYrkGeIoihCJ2rCcJjc8KKrHv6HLT5wxAQmkOQlQ/w3GACoRvWBNpeARWEzMV9wJBCSvO/ZtG3q5m0K5h5VrcZ6MKiFbFXAgGCju6zSkYuao1fFQVo3K9hMpNP833aTbQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; arc=none smtp.client-ip=217.140.110.172
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 6E407FEC;
-	Thu,  8 Aug 2024 05:39:16 -0700 (PDT)
-Received: from [10.1.196.40] (e121345-lin.cambridge.arm.com [10.1.196.40])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 50E703F766;
-	Thu,  8 Aug 2024 05:38:49 -0700 (PDT)
-Message-ID: <6da4f216-594b-4c51-848c-86e281402820@arm.com>
-Date: Thu, 8 Aug 2024 13:38:44 +0100
+	s=arc-20240116; t=1723122500; c=relaxed/simple;
+	bh=3veunKM8nIt0HqNk1/nTOxdI95E1p0XMNGx+GTTRbzw=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=SzwibvsnADlxnQC+i8cABqoWVMgnjW+Z5yMz9K2YiAs8c9oVagqUcSOTV9opa52qdJrUV74E1ksVn/ESint01mVC29mgBMu8c+IbB/XfMBZ7JpnXub8kf6UZTBjXG/QmgBWeCL7thUQbR0HM3WFS71TN/l1a4E8XfUrcwggjz0A=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=aTocG7mv; arc=none smtp.client-ip=209.85.222.179
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="aTocG7mv"
+Received: by mail-qk1-f179.google.com with SMTP id af79cd13be357-7a1d81dc0beso57617785a.2
+        for <iommu@lists.linux.dev>; Thu, 08 Aug 2024 06:08:17 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=ziepe.ca; s=google; t=1723122497; x=1723727297; darn=lists.linux.dev;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=nlfi3jmFTXPt+oEKMAh63QSvPGG0kU6p8K291my08Oo=;
+        b=aTocG7mvumO5UHBlamD/I5wR++L5n0u97P3tpFGuQLv9xlMvlzEGaAZ0T652hBlduK
+         gXjq41Z9mhBxB34uGttHsOMVY31CAX3sdDlynNlq65rdYm2xTENi0Es/f6m+Hz//TvSf
+         w8hXljJ0e+pU+5Z1TZ3ZQXiTRWTa7c0UudC2eT/6tT+c3ayUfBxPRbVmUp+QEUsWb5mw
+         mZXL6ch2qN5Xr2QME4lcTpvD5X15CjAk+SUPhoPfkP7pJ7y/04bfzhGiWRMkWQ65kZct
+         06NuATH/tAcLhCHgEzhIgcOhDTsxNn6FxijLDpfXzzVtj+Q92kWp0a4rfrOOmetwr88F
+         6WGQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1723122497; x=1723727297;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=nlfi3jmFTXPt+oEKMAh63QSvPGG0kU6p8K291my08Oo=;
+        b=mELHDOZTbYkqPkN6M7T2xs457HhrQ4k/vEmQjTFEFUFnkdSaK/COLzD6CMfM39MVfU
+         LMJLj7rknHwLdS8RfsU8TChImhC3x9O9yh7QXWZUDx116cqz7luXfPKK9dqvJwYAuL0t
+         o8f4psN4ohAWw6U2IhBUHo3rM1qs59temn0MxO5wy/t7J2kuIJqmRaqdcs9Fk78o6XY3
+         IB0pHYZWcuGQ0Gy9P1zyvWE0ipvoxGygtnm5koglkBi0i3Fw4UgtaN9lPsXiC6GJgDrk
+         TfAX08I752PZukbugUGHIJfQdMW/XT6hGNwpwmjTbwntxiDqGxQ3YOBhRfivSC0G5sF0
+         KmjA==
+X-Forwarded-Encrypted: i=1; AJvYcCWtsWozDIMx9aell1zI/qf4dBNC2vmoKGKphXUs6YrDx5KL+ghpMAKLgzXFjwwwiw6c/HbZoXrnV6wp0hi1ZoYoVSeO38k=
+X-Gm-Message-State: AOJu0YyKLiPQ7VYfMxEN9aR3pKQ2Vd/YYR/unABYFf4BhbJUZEZ9Xgh4
+	QSiyZCZDgV4tHZl2yLQI+Gh5bzUTS8/ec76yOf+k7L0Zr9/2ZNlF3coChCve7Vo=
+X-Google-Smtp-Source: AGHT+IE5nXKMUXHOd3VpBUaSyAn22UZbXraCMae36xDzYJq2BlLnirSaBMnaT7Xccw7tYsnDT5Qz8A==
+X-Received: by 2002:a05:620a:4002:b0:79d:7cfb:884e with SMTP id af79cd13be357-7a3817abbe5mr238928685a.4.1723122496776;
+        Thu, 08 Aug 2024 06:08:16 -0700 (PDT)
+Received: from ziepe.ca ([128.77.69.90])
+        by smtp.gmail.com with ESMTPSA id af79cd13be357-7a3785e2ae3sm158403585a.37.2024.08.08.06.08.15
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 08 Aug 2024 06:08:15 -0700 (PDT)
+Received: from jgg by wakko with local (Exim 4.95)
+	(envelope-from <jgg@ziepe.ca>)
+	id 1sc2sI-008tMD-Cx;
+	Thu, 08 Aug 2024 10:08:14 -0300
+Date: Thu, 8 Aug 2024 10:08:14 -0300
+From: Jason Gunthorpe <jgg@ziepe.ca>
+To: Vasant Hegde <vasant.hegde@amd.com>
+Cc: Baolu Lu <baolu.lu@linux.intel.com>, iommu@lists.linux.dev,
+	joro@8bytes.org, will@kernel.org, robin.murphy@arm.com,
+	suravee.suthikulpanit@amd.com, yi.l.liu@intel.com,
+	Alex Williamson <alex.williamson@redhat.com>
+Subject: Re: [PATCH RFCv2] iommu: Add domain type and flag to
+ domain_alloc_paging()
+Message-ID: <20240808130814.GA1985367@ziepe.ca>
+References: <8e531f39-9d14-4d3b-8a52-c2e8ca026f9e@linux.intel.com>
+ <098008f7-2b3e-405a-a096-947e5df560e6@amd.com>
+ <20240806123452.GE676757@ziepe.ca>
+ <6b197aac-c38f-4e6e-9d32-d74e1a5b3968@amd.com>
+ <20240806173230.GS676757@ziepe.ca>
+ <bbe564b6-5079-4973-8678-1068a53ddf70@amd.com>
+ <20240807135915.GF8473@ziepe.ca>
+ <e5da0709-86d3-4b45-82cc-d995a2686afa@amd.com>
+ <20240807182947.GI8473@ziepe.ca>
+ <20240808011629.GJ8473@ziepe.ca>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v2 2/3] iommu/dma: Support MSIs through nested domains
-To: "Tian, Kevin" <kevin.tian@intel.com>, Nicolin Chen <nicolinc@nvidia.com>,
- "jgg@nvidia.com" <jgg@nvidia.com>
-Cc: "joro@8bytes.org" <joro@8bytes.org>, "will@kernel.org" <will@kernel.org>,
- "shuah@kernel.org" <shuah@kernel.org>,
- "iommu@lists.linux.dev" <iommu@lists.linux.dev>,
- "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
- "linux-kselftest@vger.kernel.org" <linux-kselftest@vger.kernel.org>
-References: <cover.1722644866.git.nicolinc@nvidia.com>
- <b1b8ff9c716f22f524be0313ad12e5c6d10f5bd4.1722644866.git.nicolinc@nvidia.com>
- <BN9PR11MB5276E59FBD67B1119B3E2A858CBF2@BN9PR11MB5276.namprd11.prod.outlook.com>
-From: Robin Murphy <robin.murphy@arm.com>
-Content-Language: en-GB
-In-Reply-To: <BN9PR11MB5276E59FBD67B1119B3E2A858CBF2@BN9PR11MB5276.namprd11.prod.outlook.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20240808011629.GJ8473@ziepe.ca>
 
-On 06/08/2024 9:25 am, Tian, Kevin wrote:
->> From: Nicolin Chen <nicolinc@nvidia.com>
->> Sent: Saturday, August 3, 2024 8:32 AM
->>
->> From: Robin Murphy <robin.murphy@arm.com>
->>
->> Currently, iommu-dma is the only place outside of IOMMUFD and drivers
->> which might need to be aware of the stage 2 domain encapsulated within
->> a nested domain. This would be in the legacy-VFIO-style case where we're
+On Wed, Aug 07, 2024 at 10:16:29PM -0300, Jason Gunthorpe wrote:
+> On Wed, Aug 07, 2024 at 03:29:47PM -0300, Jason Gunthorpe wrote:
+> > > @Baolu, Do we need to make any changes to intel driver?
+> > 
+> > I think Intel ignores this issue, they have nice HW and their RID can
+> > use both of their supported domain formats in all cases.
 > 
-> why is it a legacy-VFIO-style? We only support nested in IOMMUFD.
+> On second thought it does need to accept, but ignore the new flags..
 
-Because with proper nesting we ideally shouldn't need the host-managed 
-MSI mess at all, which all stems from the old VFIO paradigm of 
-completely abstracting interrupts from userspace. I'm still hoping 
-IOMMUFD can grow its own interface for efficient MSI passthrough, where 
-the VMM can simply map the physical MSI doorbell into whatever IPA (GPA) 
-it wants it to appear at in the S2 domain, then whatever the guest does 
-with S1 it can program the MSI address into the endpoint accordingly 
-without us having to fiddle with it.
+And probably HW that does not support PASID should reject the
+IOMMU_HWPT_ALLOC_PASID flag at least.
 
-FWIW, apart from IOMMUFD, we may also end up wanting something along 
-those lines for Arm CCA (if non-Secure proxying of T=1 MSIs becomes an 
-unavoidable thing).
+Maybe IOMMU_HWPT_ALLOC_DEV_PASID can be reasonably ignored if the HW
+doesn't support PASID.
 
->> using host-managed MSIs with an identity mapping at stage 1, where it is
->> the underlying stage 2 domain which owns an MSI cookie and holds the
->> corresponding dynamic mappings. Hook up the new op to resolve what we
->> need from a nested domain.
->>
->> Signed-off-by: Robin Murphy <robin.murphy@arm.com>
->> Signed-off-by: Nicolin Chen <nicolinc@nvidia.com>
->> ---
->>   drivers/iommu/dma-iommu.c | 18 ++++++++++++++++--
->>   include/linux/iommu.h     |  4 ++++
->>   2 files changed, 20 insertions(+), 2 deletions(-)
->>
->> diff --git a/drivers/iommu/dma-iommu.c b/drivers/iommu/dma-iommu.c
->> index 7b1dfa0665df6..05e04934a5f81 100644
->> --- a/drivers/iommu/dma-iommu.c
->> +++ b/drivers/iommu/dma-iommu.c
->> @@ -1799,6 +1799,20 @@ static struct iommu_dma_msi_page
->> *iommu_dma_get_msi_page(struct device *dev,
->>   	return NULL;
->>   }
->>
->> +/*
->> + * Nested domains may not have an MSI cookie or accept mappings, but
->> they may
->> + * be related to a domain which does, so we let them tell us what they need.
->> + */
->> +static struct iommu_domain
->> *iommu_dma_get_msi_mapping_domain(struct device *dev)
->> +{
->> +	struct iommu_domain *domain = iommu_get_domain_for_dev(dev);
->> +
->> +	if (domain && domain->type == IOMMU_DOMAIN_NESTED &&
->> +	    domain->ops->get_msi_mapping_domain)
-> 
-> I'm not sure the core should restrict it to the NESTED type. Given
-> there is a new domain ops any type restriction can be handled
-> inside the callback. Anyway the driver should register the op
-> for a domain only when there is a need.
+That would mean the SMMUv3 hunk I sent doesn't have quite the right
+validation.
 
-Nested should remain the only case where domains are chained together 
-such that the VFIO MSI cookie may be hiding somewhere else. This is 
-effectively documenting that implementing the callback for any other 
-domain type would be a bad smell. Much like how the mapping-related ops 
-are explicitly short-circuited for non-paging domain types.
-
-Thanks,
-Robin.
-
->> +		domain = domain->ops->get_msi_mapping_domain(domain);
->> +	return domain;
->> +}
->> +
->>   /**
->>    * iommu_dma_prepare_msi() - Map the MSI page in the IOMMU domain
->>    * @desc: MSI descriptor, will store the MSI page
->> @@ -1809,7 +1823,7 @@ static struct iommu_dma_msi_page
->> *iommu_dma_get_msi_page(struct device *dev,
->>   int iommu_dma_prepare_msi(struct msi_desc *desc, phys_addr_t msi_addr)
->>   {
->>   	struct device *dev = msi_desc_to_dev(desc);
->> -	struct iommu_domain *domain = iommu_get_domain_for_dev(dev);
->> +	struct iommu_domain *domain =
->> iommu_dma_get_msi_mapping_domain(dev);
->>   	struct iommu_dma_msi_page *msi_page;
->>   	static DEFINE_MUTEX(msi_prepare_lock); /* see below */
->>
->> @@ -1842,7 +1856,7 @@ int iommu_dma_prepare_msi(struct msi_desc
->> *desc, phys_addr_t msi_addr)
->>   void iommu_dma_compose_msi_msg(struct msi_desc *desc, struct msi_msg
->> *msg)
->>   {
->>   	struct device *dev = msi_desc_to_dev(desc);
->> -	const struct iommu_domain *domain =
->> iommu_get_domain_for_dev(dev);
->> +	const struct iommu_domain *domain =
->> iommu_dma_get_msi_mapping_domain(dev);
->>   	const struct iommu_dma_msi_page *msi_page;
->>
->>   	msi_page = msi_desc_get_iommu_cookie(desc);
->> diff --git a/include/linux/iommu.h b/include/linux/iommu.h
->> index 4d47f2c333118..69ed76f9c3ec4 100644
->> --- a/include/linux/iommu.h
->> +++ b/include/linux/iommu.h
->> @@ -638,6 +638,8 @@ struct iommu_ops {
->>    * @enable_nesting: Enable nesting
->>    * @set_pgtable_quirks: Set io page table quirks (IO_PGTABLE_QUIRK_*)
->>    * @free: Release the domain after use.
->> + * @get_msi_mapping_domain: Return the related iommu_domain that
->> should hold the
->> + *                          MSI cookie and accept mapping(s).
->>    */
->>   struct iommu_domain_ops {
->>   	int (*attach_dev)(struct iommu_domain *domain, struct device *dev);
->> @@ -668,6 +670,8 @@ struct iommu_domain_ops {
->>   				  unsigned long quirks);
->>
->>   	void (*free)(struct iommu_domain *domain);
->> +	struct iommu_domain *
->> +		(*get_msi_mapping_domain)(struct iommu_domain
->> *domain);
->>   };
->>
->>   /**
->> --
->> 2.43.0
->>
-> 
+Jason
