@@ -1,69 +1,94 @@
-Received: from szxga06-in.huawei.com (szxga06-in.huawei.com [45.249.212.32])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 62CD618E034
-	for <iommu@lists.linux.dev>; Thu,  8 Aug 2024 14:08:32 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=45.249.212.32
+Received: from linux.microsoft.com (linux.microsoft.com [13.77.154.182])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 868C412FB0A
+	for <iommu@lists.linux.dev>; Thu,  8 Aug 2024 16:40:27 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=13.77.154.182
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1723126115; cv=none; b=BVEcokbuMpeyGsO31y+QGtNXpTTZfHGaSwcgnuK5lHjOogx7CnX9oOUaYnixg2EjfHDfrZ69ecFDUPPceoWL3pTQUI0l4ETDloyyk/g/SUAjxd0uL0fwhjTF71VS85ppq2SVFrjcu4Th1039D1JCgFC6nvKtkCx3BcKjhCcEyDw=
+	t=1723135228; cv=none; b=sL0OO5CgpHh6aSkAwMqCz1ge2ZsaiN+bqrhLmgxC+y80eJlp/dm6YXY77lVTki5xb0AGTbXaE1Hb6QnS0l7aHUHuNV0sxcPbNloqVK5OFQFOt+iEKpCNw8ccXIxw2dWbpdwoV8w4slO9retuYYIGnIwQ4ZRy3oEJg8VFoEggvPg=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1723126115; c=relaxed/simple;
-	bh=ftysCDxdrnWKxwFrSTDJOz3hoaatgTbR/7+r+kDiN+g=;
-	h=From:To:CC:Subject:Date:Message-ID:MIME-Version:Content-Type; b=beFmYVTS79bVk7e9TGIa+l2hlgNvimSsfBijliON+P9MxtNJumBw+qqnqrwTlBJrC5g7VnHOUbQq6IBW/B07ns25TVh3wqJ4FF8GkJgdR7BTH2BcEIgn7LijiwvaErnShj8AsJrTptrswcQJuwgGiJ55+Eb8jORuTzGDHq+zvs0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=huawei.com; spf=pass smtp.mailfrom=huawei.com; arc=none smtp.client-ip=45.249.212.32
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=huawei.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=huawei.com
-Received: from mail.maildlp.com (unknown [172.19.88.214])
-	by szxga06-in.huawei.com (SkyGuard) with ESMTP id 4WfpkT1Vhgz1xv13;
-	Thu,  8 Aug 2024 22:06:41 +0800 (CST)
-Received: from dggpemf500002.china.huawei.com (unknown [7.185.36.57])
-	by mail.maildlp.com (Postfix) with ESMTPS id 06C481A016C;
-	Thu,  8 Aug 2024 22:08:30 +0800 (CST)
-Received: from huawei.com (10.175.101.6) by dggpemf500002.china.huawei.com
- (7.185.36.57) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1544.11; Thu, 8 Aug
- 2024 22:08:29 +0800
-From: Yue Haibing <yuehaibing@huawei.com>
-To: <joro@8bytes.org>, <will@kernel.org>, <robin.murphy@arm.com>,
-	<jgg@ziepe.ca>, <baolu.lu@linux.intel.com>
-CC: <iommu@lists.linux.dev>, <linux-kernel@vger.kernel.org>,
-	<yuehaibing@huawei.com>
-Subject: [PATCH -next] iommu: Remove unused declaration iommu_sva_unbind_gpasid()
-Date: Thu, 8 Aug 2024 22:06:19 +0800
-Message-ID: <20240808140619.2498535-1-yuehaibing@huawei.com>
-X-Mailer: git-send-email 2.34.1
+	s=arc-20240116; t=1723135228; c=relaxed/simple;
+	bh=tJHROCF5FIFH333VZcXU5J5IzhpJm677qL7yxSNpeu4=;
+	h=Message-ID:Date:MIME-Version:Cc:Subject:To:References:From:
+	 In-Reply-To:Content-Type; b=P0wvuLfMaahDyXH+99kA54JaedEVpp9ktQ02DMR4OBEsX+fp75GFFS7VmlQbbcQ6l6OILhNd4NpKr2dONFhAbT/SKzHR2AQjKmyllNSGDY6fh4A7rUzpvuGlT/PiFJcl+XfvwBR+0mseNLFIWhbyJLqPHqP/SS8plzxsWfKaqMA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com; spf=pass smtp.mailfrom=linux.microsoft.com; dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b=PzG10cld; arc=none smtp.client-ip=13.77.154.182
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.microsoft.com
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b="PzG10cld"
+Received: from [100.65.224.131] (unknown [20.236.10.163])
+	by linux.microsoft.com (Postfix) with ESMTPSA id 7F15220B7165;
+	Thu,  8 Aug 2024 09:40:26 -0700 (PDT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com 7F15220B7165
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
+	s=default; t=1723135227;
+	bh=pNSyKAAFSaByPF2gZY6jQTEMrj9M3d4OIOtRITHeq2M=;
+	h=Date:Cc:Subject:To:References:From:In-Reply-To:From;
+	b=PzG10cldv/Tk+MgEh4nS+eROzyXE6w8cgUoROcA4GmIs13++8agdcClHJjbxidRRy
+	 nkoLbnPDXPxTaCyWCFmNBbexGH1nWJtNJwXe1emvT9Q8Pka/vPOatVx7jRmy1v2nf/
+	 XmiFwcy3ncserwcahCn4oKWurg9NWbyTkVFcVNEo=
+Message-ID: <7dfff1ba-44a6-465a-a47c-d344ef00c6d5@linux.microsoft.com>
+Date: Thu, 8 Aug 2024 09:40:25 -0700
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-ClientProxiedBy: dggems705-chm.china.huawei.com (10.3.19.182) To
- dggpemf500002.china.huawei.com (7.185.36.57)
+User-Agent: Mozilla Thunderbird
+Cc: eahariha@linux.microsoft.com, Tomasz Jeznach <tjeznach@rivosinc.com>,
+ Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
+ Robin Murphy <robin.murphy@arm.com>, Paul Walmsley
+ <paul.walmsley@sifive.com>, Palmer Dabbelt <palmer@dabbelt.com>,
+ Albert Ou <aou@eecs.berkeley.edu>, Anup Patel <apatel@ventanamicro.com>,
+ Sunil V L <sunilvl@ventanamicro.com>, Nick Kossifidis <mick@ics.forth.gr>,
+ Sebastien Boeuf <seb@rivosinc.com>, Rob Herring <robh+dt@kernel.org>,
+ Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley
+ <conor+dt@kernel.org>, devicetree@vger.kernel.org, iommu@lists.linux.dev,
+ linux-riscv@lists.infradead.org, linux-kernel@vger.kernel.org,
+ linux@rivosinc.com, Lu Baolu <baolu.lu@linux.intel.com>,
+ Zong Li <zong.li@sifive.com>
+Subject: Re: [PATCH v8 7/7] iommu/riscv: Paging domain support
+To: Jason Gunthorpe <jgg@ziepe.ca>
+References: <cover.1718388908.git.tjeznach@rivosinc.com>
+ <bdd1e0547e01d012bf40c5e33b752e77c6663c90.1718388909.git.tjeznach@rivosinc.com>
+ <389da90e-df78-4ea4-8453-ae2080a68956@linux.microsoft.com>
+ <20240808131432.GB1985367@ziepe.ca>
+Content-Language: en-US
+From: Easwar Hariharan <eahariha@linux.microsoft.com>
+In-Reply-To: <20240808131432.GB1985367@ziepe.ca>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 
-Commit 0c9f17877891 ("iommu: Remove guest pasid related interfaces and definitions")
-removed the implementation but leave declaration.
+On 8/8/2024 6:14 AM, Jason Gunthorpe wrote:
+> On Tue, Aug 06, 2024 at 12:24:40PM -0700, Easwar Hariharan wrote:
+>> On 6/14/2024 10:27 PM, Tomasz Jeznach wrote:
+>>
+>>> @@ -856,7 +1473,7 @@ static struct iommu_domain riscv_iommu_identity_domain = {
+>>>  
+>>>  static int riscv_iommu_device_domain_type(struct device *dev)
+>>>  {
+>>> -	return IOMMU_DOMAIN_IDENTITY;
+>>> +	return 0;
+>>>  }
+>>
+>> <snip>
+>> Sorry for the drive by comment, I just happen to be in the nearby code
+>> context.
+>>
+>> Nit: It may be better to use IOMMU_DOMAIN_BLOCKED here for readability
+>> rather than the bare value.
+> 
+> It is weird and confusing, but 0 means "I have nothing to add" not
+> BLOCKED.
+> 
+> You can't return BLOCKED from this op right now..
+> 
+> Jason
 
-Signed-off-by: Yue Haibing <yuehaibing@huawei.com>
----
- include/linux/iommu.h | 2 --
- 1 file changed, 2 deletions(-)
+Ok, that's weird and confusing as you say. I went back and looked at the
+kerneldoc for iommu_ops and it IS called out, but it's confusing that a
+function named get_default_domain_type() can return a value that's a
+valid domain type but isn't treated as one.
 
-diff --git a/include/linux/iommu.h b/include/linux/iommu.h
-index 4d47f2c33311..04cbdae0052e 100644
---- a/include/linux/iommu.h
-+++ b/include/linux/iommu.h
-@@ -795,8 +795,6 @@ extern int iommu_attach_device(struct iommu_domain *domain,
- 			       struct device *dev);
- extern void iommu_detach_device(struct iommu_domain *domain,
- 				struct device *dev);
--extern int iommu_sva_unbind_gpasid(struct iommu_domain *domain,
--				   struct device *dev, ioasid_t pasid);
- extern struct iommu_domain *iommu_get_domain_for_dev(struct device *dev);
- extern struct iommu_domain *iommu_get_dma_domain(struct device *dev);
- extern int iommu_map(struct iommu_domain *domain, unsigned long iova,
--- 
-2.34.1
+This was useful to fill in my mental model, thanks!
 
+Easwar
