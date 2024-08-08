@@ -1,93 +1,185 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.9])
+Received: from bee.tesarici.cz (bee.tesarici.cz [37.205.15.56])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 027E433E8
-	for <iommu@lists.linux.dev>; Thu,  8 Aug 2024 05:01:36 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.9
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9F3BC189F2F
+	for <iommu@lists.linux.dev>; Thu,  8 Aug 2024 09:35:08 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=37.205.15.56
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1723093298; cv=none; b=GUHBcAf+2Nxt/Xfjm6jCA7Aw4OyznARc1opX4058j78PJ+Pq+Uur6RTTOqOtdeVsJ7mErzb/UhPidbsd751hTnwERtBW/WkdRTcO7JWonJs0wo7w9KvGikwvPrRGJNDT2H2oueKdCq/44o4KywkqQOb4/wTjqiGlpwhlywfKOZw=
+	t=1723109712; cv=none; b=E/h29in2kvlpIMVrmuUPCKScq0/JF9p3RoNbcak3wtYnCbsawv0bjg3DCkRDR4QoNc6Muv5y/Mgy2OOxJhqbpVisiF4k6x8OIc9vVVXEnubdx9uPh1Bg9DZjaz8BCewg9shat3GRlR9aZO3cwYF6svxom8F9tDCnXODu/6hlgu4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1723093298; c=relaxed/simple;
-	bh=G3sgS5q4eiVEN7w6r8N3dkLqx6e0gncm6B4Vd/IoTl8=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=n/NZ+FkRkgo42T2KAQcUXAEiZcmha49+YS9fUmrzl2DmK3PIiDT4oVZPWSZ+oUmOibRWRuKoblNXo3AVdSsi6ybGYgEEcOxYtUyAqUzaBSI5cJPIFfrpO1RHe7BTbwFj9imzjA7/9qAKLOsGGeUQGcaKkTA8pD9okWq1aTVjOSk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=TDAvEHEy; arc=none smtp.client-ip=198.175.65.9
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
+	s=arc-20240116; t=1723109712; c=relaxed/simple;
+	bh=BPdEyns2vofExNibOqC2X1gKKZcLa3X3/0PaHKqnnX8=;
+	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=roAYCeEkv3lPg0jL9YghFvu6/wmrLI9/ir/adol3mXl53UZ680l88DvyCSvFRahdmeb8zOY/CApIidWnQ5l22N+wLyOBYjTWE7nmpG6VQcqlWgv+F9pTToN0IeUGE/eDgfhFAF1Nsvb+spetKH/+ay6Q2he+g6aWqVxdLXt4/68=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=tesarici.cz; spf=pass smtp.mailfrom=tesarici.cz; dkim=pass (2048-bit key) header.d=tesarici.cz header.i=@tesarici.cz header.b=qGrIUqr7; arc=none smtp.client-ip=37.205.15.56
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=tesarici.cz
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=tesarici.cz
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="TDAvEHEy"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1723093297; x=1754629297;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:content-transfer-encoding:in-reply-to;
-  bh=G3sgS5q4eiVEN7w6r8N3dkLqx6e0gncm6B4Vd/IoTl8=;
-  b=TDAvEHEyqfpPoxMGAthzgTZmMlGY6tdCwJ8KBENBIWV5Ml4VWKZSMu0r
-   8j6U/XbYB13TBXpuYjNj4JMkcu08hMBXHU+79YNfdXInELI6+Bl21qzFY
-   1esQJe8Xv0lign+WKXr5eFu0BrftdU/zFPW9/1az4OxSiscQjIDfVRQ18
-   Fdtv4B+kZfCj6QtfEiq4FsN9OPxjSw1h09MXKt3y7cuXWiEGwAXCOu2AR
-   538OwllMT0Lqttw0SnHIGzkZfwWSxrlmHmolYzA4D5/ZoBDwxOpxNy/w+
-   a//m7DpIz/qI8pyhC4hmZ7CjciZy7QT/SW6+XWe3k4zUDZoa5eBg3XP0u
-   w==;
-X-CSE-ConnectionGUID: gJYcJ9n1SLa7SmkjKXumeA==
-X-CSE-MsgGUID: dqGq2XeeQey8OOgB26pJ0w==
-X-IronPort-AV: E=McAfee;i="6700,10204,11157"; a="43717898"
-X-IronPort-AV: E=Sophos;i="6.09,272,1716274800"; 
-   d="scan'208";a="43717898"
-Received: from fmviesa007.fm.intel.com ([10.60.135.147])
-  by orvoesa101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Aug 2024 22:01:35 -0700
-X-CSE-ConnectionGUID: r0UJzV/LTQ6j+1OzkVBtPA==
-X-CSE-MsgGUID: +B++XpNVS9u15drNbjLKJg==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.09,272,1716274800"; 
-   d="scan'208";a="56766182"
-Received: from black.fi.intel.com ([10.237.72.28])
-  by fmviesa007.fm.intel.com with ESMTP; 07 Aug 2024 22:01:32 -0700
-Received: by black.fi.intel.com (Postfix, from userid 1001)
-	id A1B91206; Thu, 08 Aug 2024 08:01:29 +0300 (EEST)
-Date: Thu, 8 Aug 2024 08:01:29 +0300
-From: Mika Westerberg <mika.westerberg@linux.intel.com>
-To: Esther Shimanovich <eshimanovich@chromium.org>
-Cc: Bjorn Helgaas <bhelgaas@google.com>, Rajat Jain <rajatja@google.com>,
-	"Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
-	Lukas Wunner <lukas@wunner.de>, linux-pci@vger.kernel.org,
-	linux-kernel@vger.kernel.org, iommu@lists.linux.dev,
-	Mario Limonciello <mario.limonciello@amd.com>
-Subject: Re: [PATCH] PCI: Detect and trust built-in TBT chips
-Message-ID: <20240808050129.GH1532424@black.fi.intel.com>
-References: <20240806-trust-tbt-fix-v1-1-73ae5f446d5a@chromium.org>
- <20240807071740.GF1532424@black.fi.intel.com>
- <CA+Y6NJE0QB-W7hBOD_S1XwoSosg3Hh1FH0a8Um16g3Ex_1V9=w@mail.gmail.com>
+	dkim=pass (2048-bit key) header.d=tesarici.cz header.i=@tesarici.cz header.b="qGrIUqr7"
+Received: from mordecai.tesarici.cz (dynamic-2a00-1028-83b8-1e7a-3010-3bd6-8521-caf1.ipv6.o2.cz [IPv6:2a00:1028:83b8:1e7a:3010:3bd6:8521:caf1])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange ECDHE (P-256) server-signature RSA-PSS (2048 bits) server-digest SHA256)
+	(No client certificate requested)
+	by bee.tesarici.cz (Postfix) with ESMTPSA id 0482F1D0273;
+	Thu,  8 Aug 2024 11:35:06 +0200 (CEST)
+Authentication-Results: mail.tesarici.cz; dmarc=fail (p=quarantine dis=none) header.from=tesarici.cz
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=tesarici.cz; s=mail;
+	t=1723109706; bh=OrVMJm9n5L+C5eEnO6iB+J7yRVKHj0t1YZskeASy1vU=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+	b=qGrIUqr7i5bJWaSfTsv9tVZkeF2nUb+btmsHGvceU/OqrPMDCC6tzRa7qpZdMrbp2
+	 wZ0J2RYYk5B+LLRupaWcJRZ1OY5z6+PAX+pljiOMbu0rLsw8ywJkpMmc68F/Q9mJ2Q
+	 HxVfp3ufqLO+NhlJwFU8ZybuXwZq+ycpvAvtJy68oSHYCiJcOJz9gzOVt4yCKhcNU8
+	 n0Yjd6KXn8ZrEyQq41vNblLCejTpMrK1nVJdusLskvv5a3Dhpvhn1G8fksnfTtL7Gu
+	 CX+iM7h+PqddUEy3HRsCO+a/els+D8+xGOaLU5gSs8ejrkrFQRYnqlRQ3oUai/0psF
+	 vthRYpAiZOFDg==
+Date: Thu, 8 Aug 2024 11:35:01 +0200
+From: Petr =?UTF-8?B?VGVzYcWZw61r?= <petr@tesarici.cz>
+To: Catalin Marinas <catalin.marinas@arm.com>
+Cc: Baruch Siach <baruch@tkos.co.il>, Christoph Hellwig <hch@lst.de>, Marek
+ Szyprowski <m.szyprowski@samsung.com>, Will Deacon <will@kernel.org>, Robin
+ Murphy <robin.murphy@arm.com>, iommu@lists.linux.dev,
+ linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+ linuxppc-dev@lists.ozlabs.org, linux-s390@vger.kernel.org, Ramon Fried
+ <ramon@neureality.ai>, Elad Nachman <enachman@marvell.com>
+Subject: Re: [PATCH v5 2/3] dma: replace zone_dma_bits by zone_dma_limit
+Message-ID: <20240808113501.4fde4cb0@mordecai.tesarici.cz>
+In-Reply-To: <ZrO5okGUljTc9E7N@arm.com>
+References: <cover.1722578375.git.baruch@tkos.co.il>
+	<5821a1b2eb82847ccbac0945da040518d6f6f16b.1722578375.git.baruch@tkos.co.il>
+	<Zqyo4qjPRHUeUfS5@arm.com>
+	<20240807161938.5729b656@mordecai.tesarici.cz>
+	<ZrO5okGUljTc9E7N@arm.com>
+X-Mailer: Claws Mail 4.3.0 (GTK 3.24.42; x86_64-suse-linux-gnu)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <CA+Y6NJE0QB-W7hBOD_S1XwoSosg3Hh1FH0a8Um16g3Ex_1V9=w@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 
-On Wed, Aug 07, 2024 at 05:15:36PM -0400, Esther Shimanovich wrote:
-> On Wed, Aug 7, 2024 at 3:17 AM Mika Westerberg
-> <mika.westerberg@linux.intel.com> wrote:
-> >
-> > I suggest opening the heuristic here a bit more.
-> 
-> Could you clarify what you mean by "opening the heuristic"?
-> What details should I remove?
+On Wed, 7 Aug 2024 19:14:58 +0100
+Catalin Marinas <catalin.marinas@arm.com> wrote:
 
-I mean not to remove anything but open up how we "detect" the built-in
-controlllers.
+> On Wed, Aug 07, 2024 at 04:19:38PM +0200, Petr Tesa=C5=99=C3=ADk wrote:
+> > On Fri, 2 Aug 2024 10:37:38 +0100
+> > Catalin Marinas <catalin.marinas@arm.com> wrote: =20
+> > > On Fri, Aug 02, 2024 at 09:03:47AM +0300, Baruch Siach wrote: =20
+> > > > diff --git a/kernel/dma/direct.c b/kernel/dma/direct.c
+> > > > index 3b4be4ca3b08..62b36fda44c9 100644
+> > > > --- a/kernel/dma/direct.c
+> > > > +++ b/kernel/dma/direct.c
+> > > > @@ -20,7 +20,7 @@
+> > > >   * it for entirely different regions. In that case the arch code n=
+eeds to
+> > > >   * override the variable below for dma-direct to work properly.
+> > > >   */
+> > > > -unsigned int zone_dma_bits __ro_after_init =3D 24;
+> > > > +u64 zone_dma_limit __ro_after_init =3D DMA_BIT_MASK(24);   =20
+> > >=20
+> > > u64 here makes sense even if it may be larger than phys_addr_t. It
+> > > matches the phys_limit type in the swiotlb code. The compilers should=
+ no
+> > > longer complain. =20
+> >=20
+> > FTR I have never quite understood why phys_limit is u64, but u64 was
+> > already used all around the place when I first looked into swiotlb.
+> >  =20
+> > > > diff --git a/kernel/dma/pool.c b/kernel/dma/pool.c
+> > > > index d10613eb0f63..7b04f7575796 100644
+> > > > --- a/kernel/dma/pool.c
+> > > > +++ b/kernel/dma/pool.c
+> > > > @@ -70,9 +70,9 @@ static bool cma_in_zone(gfp_t gfp)
+> > > >  	/* CMA can't cross zone boundaries, see cma_activate_area() */
+> > > >  	end =3D cma_get_base(cma) + size - 1;
+> > > >  	if (IS_ENABLED(CONFIG_ZONE_DMA) && (gfp & GFP_DMA))
+> > > > -		return end <=3D DMA_BIT_MASK(zone_dma_bits);
+> > > > +		return end <=3D zone_dma_limit;
+> > > >  	if (IS_ENABLED(CONFIG_ZONE_DMA32) && (gfp & GFP_DMA32))
+> > > > -		return end <=3D DMA_BIT_MASK(32);
+> > > > +		return end <=3D max(DMA_BIT_MASK(32), zone_dma_limit);
+> > > >  	return true;
+> > > >  }
+> > > > =20
+> > > > diff --git a/kernel/dma/swiotlb.c b/kernel/dma/swiotlb.c
+> > > > index 043b0ecd3e8d..bb51bd5335ad 100644
+> > > > --- a/kernel/dma/swiotlb.c
+> > > > +++ b/kernel/dma/swiotlb.c
+> > > > @@ -450,9 +450,9 @@ int swiotlb_init_late(size_t size, gfp_t gfp_ma=
+sk,
+> > > >  	if (!remap)
+> > > >  		io_tlb_default_mem.can_grow =3D true;
+> > > >  	if (IS_ENABLED(CONFIG_ZONE_DMA) && (gfp_mhttps://lpc.events/event=
+/18/contributions/1776/ask & __GFP_DMA))
+> > > > -		io_tlb_default_mem.phys_limit =3D DMA_BIT_MASK(zone_dma_bits);
+> > > > +		io_tlb_default_mem.phys_limit =3D zone_dma_limit;
+> > > >  	else if (IS_ENABLED(CONFIG_ZONE_DMA32) && (gfp_mask & __GFP_DMA32=
+))
+> > > > -		io_tlb_default_mem.phys_limit =3D DMA_BIT_MASK(32);
+> > > > +		io_tlb_default_mem.phys_limit =3D max(DMA_BIT_MASK(32), zone_dma=
+_limit);
+> > > >  	else
+> > > >  		io_tlb_default_mem.phys_limit =3D virt_to_phys(high_memory - 1);
+> > > >  #endif   =20
+> > >=20
+> > > These two look correct to me now and it's the least intrusive (the
+> > > alternative would have been a zone_dma32_limit). The arch code, howev=
+er,
+> > > needs to ensure that zone_dma_limit can always support 32-bit devices
+> > > even if it is above 4GB (with the relevant dma offsets in place for s=
+uch
+> > > devices). =20
+> >=20
+> > Just to make sure, the DMA zone (if present) must map to at most 32-bit
+> > bus address space (possibly behind a bridge). Is that what you're
+> > saying? =20
+>=20
+> No exactly. What I'm trying to say is that on arm64 zone_dma_limit can
+> go beyond DMA_BIT_MASK(32) when the latter is treated as a CPU address.
+> In such cases, ZONE_DMA32 is empty.
+>=20
+> TBH, this code is confusing and not entirely suitable for a system where
+> the CPU address offsets are not 0. The device::dma_coherent_mask is
+> about the bus address range and phys_limit is calculated correctly in
+> functions like dma_direct_optimal_gfp_mask(). But that's about it w.r.t.
+> DMA bit masks because zone_dma_bits and DMA_BIT_MASK(32) are assumed to
+> be about the CPU address ranges in some cases (in other cases
+> DMA_BIT_MASK() is used to initialise dma_coherent_mask, so more of a bus
+> address).
 
-> And add the links to
-> > the Microsoft firmware document somewhere. These:
-> >
-> > https://learn.microsoft.com/en-us/windows-hardware/drivers/pci/dsd-for-pcie-root-ports#mapping-native-protocols-pcie-displayport-tunneled-through-usb4-to-usb4-host-routers
-> > https://learn.microsoft.com/en-us/windows-hardware/drivers/pci/dsd-for-pcie-root-ports#identifying-externally-exposed-pcie-root-ports
-> 
-> Is it good enough to have them in the commit message? Or should they
-> be linked in probe.c?
+Yes, I know.
 
-IMHO they can be in the commit message.
+> On the platform Baruch is trying to fix, RAM starts at 32GB and ZONE_DMA
+> should end at 33GB. That's 30-bit mask in bus address terms but
+> something not a power of two for the CPU address, hence the
+> zone_dma_limit introduced here.
+
+Yes, I was watching the discussion.
+
+> With ZONE_DMA32, since all the DMA code assumes that ZONE_DMA32 ends at
+> 4GB CPU address, it doesn't really work for such platforms. If there are
+> 32-bit devices with a corresponding CPU address offset, ZONE_DMA32
+> should end at 36GB on Baruch's platform. But to simplify things, we just
+> ignore this on arm64 and make ZONE_DMA32 empty.
+
+Ah. That makes sense. It also seems to support my theory that Linux
+memory zones are an obsolete concept and should be replaced by a
+different mechanism.
+
+> In some cases where we have the device structure we could instead do a
+> dma_to_phys(DMA_BIT_MASK(32)) but not in the two cases above. I guess if
+> we really want to address this properly, we'd need to introduce a
+> zone_dma32_limit that's initialised by the arch code. For arm64, I'm
+> happy with just having an empty ZONE_DMA32 on such platforms.
+
+The obvious caveat is that zone boundaries are system-wide, but the
+mapping between bus addresses and CPU addresses depends on the device
+structure. After all, that's why dma_to_phys takes the device as a
+parameter... In fact, a system may have multiple busses behind
+different bridges with a different offset applied by each.
+
+FYI I want to make more people aware of these issues at this year's
+Plumbers, see https://lpc.events/event/18/contributions/1776/
+
+Petr T
