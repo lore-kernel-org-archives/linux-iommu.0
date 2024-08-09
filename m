@@ -1,124 +1,201 @@
-Received: from mx0a-0031df01.pphosted.com (mx0a-0031df01.pphosted.com [205.220.168.131])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BC9622F56
-	for <iommu@lists.linux.dev>; Fri,  9 Aug 2024 18:57:07 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.168.131
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3737115921B;
+	Fri,  9 Aug 2024 19:10:52 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1723229829; cv=none; b=nVufFhMO3TA97ikvabOS+tDgKOSZGjPCB6L02039FAxilFVNz+0Gjjj/NtrbpEpf7Wi2ZxPWKuGMrxobyjgK9E9Imlta4p7ry7bdMeG3HoGDNBGvHwls7Jj7m8rl0Hr4uRd5blM3E0Tkt5En2Xnx07Tv16qZQpkRTq2GNA8zEmw=
+	t=1723230653; cv=none; b=S4E5v7f+WV999I6VqQkI1XgZf9Y1HvZya8aLSDmO1+hAHGgM6DNBYcXc0PvZWR52uI2xDzuhPQN0/8EtBOwCuWgvR+IciZ3b3DXA/a1ZpQN7z3w5GRJfpVGuyQBCCFZEJj34Flw6TPDam4G5YQz8kGnalP9wFmCtJkvkVc+imi4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1723229829; c=relaxed/simple;
-	bh=nvFn7mAb0Twh6vUcncc5orvAoBjxgOO3JfZOwABh1rI=;
-	h=Message-ID:Date:MIME-Version:Subject:To:CC:References:From:
-	 In-Reply-To:Content-Type; b=tHTl6T6TObUrMg6mS5TU/beQrOUmmk3nBHIhKSwgrc+kizn1vQxvYdIS5/dz6lM4sa/Yg8as/vwNd0qeHZyxD/U/pSHc3XCbUNFH/rlGv/DLj0PATZlVqhWCvR8h97CUdKKBS4usb+yBDXDHZOICCZLHp7drmNuZYYfHJi+xQo8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com; spf=pass smtp.mailfrom=quicinc.com; dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b=joI7c/oa; arc=none smtp.client-ip=205.220.168.131
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=quicinc.com
+	s=arc-20240116; t=1723230653; c=relaxed/simple;
+	bh=xI5Rbfi+pxcRJzLQc5ic3pdeHhvxFHNMZb8wh/45EZ0=;
+	h=Date:From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:
+	 Content-Disposition:In-Reply-To; b=ZNrdaGm8QHbHPM5evbwB6l+YJxYvn3RbwYqylxccUAFSyLPTsADYxmSHlBP+GFLnD+tTfxsVX/3pgUNVNCdqo2IXXxAbdeDCM/gcn7OT2dUwLmxDwAATvt1v3m/aB/ja5OAksnfL2VcGq6Fni+USXUj8JDTRQTcYORQzBQwunjk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=RBJi1Q/8; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b="joI7c/oa"
-Received: from pps.filterd (m0279865.ppops.net [127.0.0.1])
-	by mx0a-0031df01.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 479HfQcj005995;
-	Fri, 9 Aug 2024 18:57:00 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=quicinc.com; h=
-	cc:content-transfer-encoding:content-type:date:from:in-reply-to
-	:message-id:mime-version:references:subject:to; s=qcppdkim1; bh=
-	nvFn7mAb0Twh6vUcncc5orvAoBjxgOO3JfZOwABh1rI=; b=joI7c/oaibUEdfuP
-	bsCgeSJCrk2VKvmu4rZw5kOqaAoRijtZ+qZilWYSrtE8l8sK0puAXOcGTOFjI84Y
-	Nqe6dzO46HGOK9F2kxDK4rfmR/4ExrMQFBjyULqKMp1Pfv3wYdAehLrxR/X/dWEZ
-	iMJsIAaJgMu9+IsUCIR4KaMz+7FVcojQ/PwQ9PJkYnSDUztCNs/AhSvicc0jP2Fr
-	aHcSsytLQnKxCcR0h1k4DSAPpz7TqRAP0OuS4IUG0TtVEab5tSlTLa97mCj+AcYn
-	Mt60nNXPYEcSGgmQpUvXWXIspCGCNuDxOmPQ38m74l1oGivCZ3tlIgOj8CHOg/3T
-	L2hNiA==
-Received: from nalasppmta03.qualcomm.com (Global_NAT1.qualcomm.com [129.46.96.20])
-	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 40weqf9p8x-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Fri, 09 Aug 2024 18:57:00 +0000 (GMT)
-Received: from nalasex01b.na.qualcomm.com (nalasex01b.na.qualcomm.com [10.47.209.197])
-	by NALASPPMTA03.qualcomm.com (8.17.1.19/8.17.1.19) with ESMTPS id 479IuxZD008155
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Fri, 9 Aug 2024 18:56:59 GMT
-Received: from [10.110.12.164] (10.80.80.8) by nalasex01b.na.qualcomm.com
- (10.47.209.197) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1544.9; Fri, 9 Aug 2024
- 11:56:55 -0700
-Message-ID: <1bece984-6f5f-41ad-b785-03803f6a2037@quicinc.com>
-Date: Fri, 9 Aug 2024 11:56:50 -0700
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="RBJi1Q/8"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8A8F8C32782;
+	Fri,  9 Aug 2024 19:10:52 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1723230652;
+	bh=xI5Rbfi+pxcRJzLQc5ic3pdeHhvxFHNMZb8wh/45EZ0=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:From;
+	b=RBJi1Q/8quzblW4+FN960AoXuXHmEhNfbm9HZpN2JIzI2CqfcBTTnCpSde+mQMyWM
+	 obSIfu8PqQCiHx2ESCdA1YIffLyG1BokpNr7zizU7NVriAPGPY0uL3Ecy2RRePi6Wh
+	 cWXQIG4MPoZMzVajNEROuIsLFo+UtKH3t48IFY81Pu6DbKO1AtxfTtMuG+aolKJ/45
+	 eXeEl7OixN1aFoFsRPpxwrsT/Yjh7TO6TreBz22Qulj2KfgrlCAeUTdjoR39e1goSI
+	 QkcZmW2we3hNqn4CjDAEoVtrpAYLQN278jTiMG1lkCudLR4sxlFCB/bgGYrrOhLMLM
+	 0aYj99n6+5nMw==
+Date: Fri, 9 Aug 2024 14:10:50 -0500
+From: Bjorn Helgaas <helgaas@kernel.org>
+To: Jason Gunthorpe <jgg@nvidia.com>
+Cc: Lu Baolu <baolu.lu@linux.intel.com>,
+	Bjorn Helgaas <bhelgaas@google.com>,
+	David Woodhouse <dwmw2@infradead.org>, iommu@lists.linux.dev,
+	Joerg Roedel <joro@8bytes.org>, kvm@vger.kernel.org,
+	linux-arm-kernel@lists.infradead.org, linux-pci@vger.kernel.org,
+	Robin Murphy <robin.murphy@arm.com>,
+	Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
+	Will Deacon <will@kernel.org>, patches@lists.linux.dev
+Subject: Re: [PATCH] iommu: Allow ATS to work on VFs when the PF uses IDENTITY
+Message-ID: <20240809191050.GA206627@bhelgaas>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH 0/4] Revert use of Unflatten_devicetree APIs from
- reserved_mem
-To: Klara Modin <klarasmodin@gmail.com>
-CC: <robh@kernel.org>, <saravanak@google.com>, <aisheng.dong@nxp.com>,
-        <hch@lst.de>, <m.szyprowski@samsung.com>, <robin.murphy@arm.com>,
-        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <iommu@lists.linux.dev>, <will@kernel.org>, <catalin.marinas@arm.com>,
-        <kernel@quicinc.com>
-References: <20240708230613.448846-1-quic_obabatun@quicinc.com>
- <CABq1_vjvPeF-h19-H99q5D1u7wvtbRPoKKqroMJFaMb+yUFLgg@mail.gmail.com>
-Content-Language: en-US
-From: Oreoluwa Babatunde <quic_obabatun@quicinc.com>
-In-Reply-To: <CABq1_vjvPeF-h19-H99q5D1u7wvtbRPoKKqroMJFaMb+yUFLgg@mail.gmail.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
- nalasex01b.na.qualcomm.com (10.47.209.197)
-X-QCInternal: smtphost
-X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
-X-Proofpoint-ORIG-GUID: 0KIsqVITAaWxApNfnxic84WONq5N2WVz
-X-Proofpoint-GUID: 0KIsqVITAaWxApNfnxic84WONq5N2WVz
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.293,Aquarius:18.0.1039,Hydra:6.0.680,FMLib:17.12.28.16
- definitions=2024-08-09_15,2024-08-07_01,2024-05-17_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 clxscore=1015 mlxscore=0
- spamscore=0 phishscore=0 lowpriorityscore=0 malwarescore=0 adultscore=0
- mlxlogscore=999 suspectscore=0 bulkscore=0 priorityscore=1501
- impostorscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.19.0-2407110000 definitions=main-2408090137
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <0-v1-0fb4d2ab6770+7e706-ats_vf_jgg@nvidia.com>
 
+On Wed, Aug 07, 2024 at 03:19:20PM -0300, Jason Gunthorpe wrote:
+> PCI ATS has a global Smallest Translation Unit field that is located in
+> the PF but shared by all of the VFs.
+> 
+> The expectation is that the STU will be set to the root port's global STU
+> capability which is driven by the IO page table configuration of the iommu
+> HW. Today it becomes set when the iommu driver first enables ATS.
+> 
+> Thus, to enable ATS on the VF, the PF must have already had the correct
+> STU programmed, even if ATS is off on the PF.
+> 
+> Unfortunately the PF only programs the STU when the PF enables ATS. The
+> iommu drivers tend to leave ATS disabled when IDENTITY translation is
+> being used.
+> 
+> Thus we can get into a state where the PF is setup to use IDENTITY with
+> the DMA API while the VF would like to use VFIO with a PAGING domain and
+> have ATS turned on. This fails because the PF never loaded a PAGING domain
+> and so it never setup the STU, and the VF can't do it.
+> 
+> The simplest solution is to have the iommu driver set the ATS STU when it
+> probes the device. This way the ATS STU is loaded immediately at boot time
+> to all PFs and there is no issue when a VF comes to use it.
+> 
+> Add a new call pci_prepare_ats() which should be called by iommu drivers
+> in their probe_device() op for every PCI device if the iommu driver
+> supports ATS. This will setup the STU based on whatever page size
+> capability the iommu HW has.
+> 
+> Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
+> ---
+>  drivers/iommu/amd/iommu.c                   |  3 ++
+>  drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c |  6 ++++
+>  drivers/iommu/intel/iommu.c                 |  1 +
+>  drivers/pci/ats.c                           | 33 +++++++++++++++++++++
+>  include/linux/pci-ats.h                     |  1 +
+>  5 files changed, 44 insertions(+)
 
-On 7/9/2024 4:30 AM, Klara Modin wrote:
-> Hi,
->
-> Den tis 9 juli 2024 kl 01:06 skrev Oreoluwa Babatunde
-> <quic_obabatun@quicinc.com>:
->> With recent changes made to initialize the cma regions before the page
->> tables are setup, commit f2a524d9ef5b ("of: reserved_mem: Restructure
->> code to call reserved mem init functions earlier"), an issue was
->> introduced where the initialization of the cma regions fail and are
->> initialized as "non-reusable" regions instead of "reusable". [1], [2]
->>
->> This issue occurs because the device_node of the regions are not yet
->> created by the time the cma regions are being initialized.
->>
->> The cma regions need to be initialized before the page tables are setup
->> for them to be configured correctly as was realized in [3].
->>
->> Hence, since the unflatten_devicetree APIs are not available until after
->> the page tables have been setup, revert back to using the fdt APIs. This
->> makes it possible to store a reference to each cma node in the
->> reserved_mem array by the time it is needed in the init function.
->>
->> [1] https://lore.kernel.org/all/DU0PR04MB9299C3EC247E1FE2C373440F80DE2@DU0PR04MB9299.eurprd04.prod.outlook.com/
->>
->> [2] https://lore.kernel.org/all/986361f4-f000-4129-8214-39f2fb4a90da@gmail.com/
->>
->> [3] https://lore.kernel.org/all/20240610213403.GA1697364@thelio-3990X/
->>
-> These reverts also fixes the issue for me. Feel free to CC me when you
-> decide to send the next version if you want and I can retest it.
->
-> Regards,
-> Tested-by: Klara Modin <klarasmodin@gmail.com>
-Hi Klara,
+For the pci/ats.c change:
 
-I have uploaded a new version of this patch set and cc'ed you on it.
-Please help me retest to see if it still works for you.
-https://lore.kernel.org/all/20240809184814.2703050-1-quic_obabatun@quicinc.com/
+Acked-by: Bjorn Helgaas <bhelgaas@google.com>
 
-Thank you!
-Oreoluwa
+Happy to merge via PCI if the IOMMU folks ack it, but the behavior
+change is more important on the IOMMU side, so maybe it makes more
+sense to merge there.
+
+> diff --git a/drivers/iommu/amd/iommu.c b/drivers/iommu/amd/iommu.c
+> index b19e8c0f48fa25..98054497d343bc 100644
+> --- a/drivers/iommu/amd/iommu.c
+> +++ b/drivers/iommu/amd/iommu.c
+> @@ -2203,6 +2203,9 @@ static struct iommu_device *amd_iommu_probe_device(struct device *dev)
+>  
+>  	iommu_completion_wait(iommu);
+>  
+> +	if (dev_is_pci(dev))
+> +		pci_prepare_ats(to_pci_dev(dev), PAGE_SHIFT);
+> +
+>  	return iommu_dev;
+>  }
+>  
+> diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+> index a31460f9f3d421..9bc50bded5af72 100644
+> --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+> +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+> @@ -3295,6 +3295,12 @@ static struct iommu_device *arm_smmu_probe_device(struct device *dev)
+>  	    smmu->features & ARM_SMMU_FEAT_STALL_FORCE)
+>  		master->stall_enabled = true;
+>  
+> +	if (dev_is_pci(dev)) {
+> +		unsigned int stu = __ffs(smmu->pgsize_bitmap);
+> +
+> +		pci_prepare_ats(to_pci_dev(dev), stu);
+> +	}
+> +
+>  	return &smmu->iommu;
+>  
+>  err_free_master:
+> diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
+> index 9ff8b83c19a3e2..ad81db026ab236 100644
+> --- a/drivers/iommu/intel/iommu.c
+> +++ b/drivers/iommu/intel/iommu.c
+> @@ -4091,6 +4091,7 @@ static struct iommu_device *intel_iommu_probe_device(struct device *dev)
+>  
+>  	dev_iommu_priv_set(dev, info);
+>  	if (pdev && pci_ats_supported(pdev)) {
+> +		pci_prepare_ats(pdev, VTD_PAGE_SHIFT);
+>  		ret = device_rbtree_insert(iommu, info);
+>  		if (ret)
+>  			goto free;
+> diff --git a/drivers/pci/ats.c b/drivers/pci/ats.c
+> index c570892b209095..87fa03540b8a21 100644
+> --- a/drivers/pci/ats.c
+> +++ b/drivers/pci/ats.c
+> @@ -47,6 +47,39 @@ bool pci_ats_supported(struct pci_dev *dev)
+>  }
+>  EXPORT_SYMBOL_GPL(pci_ats_supported);
+>  
+> +/**
+> + * pci_prepare_ats - Setup the PS for ATS
+> + * @dev: the PCI device
+> + * @ps: the IOMMU page shift
+> + *
+> + * This must be done by the IOMMU driver on the PF before any VFs are created to
+> + * ensure that the VF can have ATS enabled.
+> + *
+> + * Returns 0 on success, or negative on failure.
+> + */
+> +int pci_prepare_ats(struct pci_dev *dev, int ps)
+> +{
+> +	u16 ctrl;
+> +
+> +	if (!pci_ats_supported(dev))
+> +		return -EINVAL;
+> +
+> +	if (WARN_ON(dev->ats_enabled))
+> +		return -EBUSY;
+> +
+> +	if (ps < PCI_ATS_MIN_STU)
+> +		return -EINVAL;
+> +
+> +	if (dev->is_virtfn)
+> +		return 0;
+> +
+> +	dev->ats_stu = ps;
+> +	ctrl = PCI_ATS_CTRL_STU(dev->ats_stu - PCI_ATS_MIN_STU);
+> +	pci_write_config_word(dev, dev->ats_cap + PCI_ATS_CTRL, ctrl);
+> +	return 0;
+> +}
+> +EXPORT_SYMBOL_GPL(pci_prepare_ats);
+> +
+>  /**
+>   * pci_enable_ats - enable the ATS capability
+>   * @dev: the PCI device
+> diff --git a/include/linux/pci-ats.h b/include/linux/pci-ats.h
+> index df54cd5b15db09..d98929c86991be 100644
+> --- a/include/linux/pci-ats.h
+> +++ b/include/linux/pci-ats.h
+> @@ -8,6 +8,7 @@
+>  /* Address Translation Service */
+>  bool pci_ats_supported(struct pci_dev *dev);
+>  int pci_enable_ats(struct pci_dev *dev, int ps);
+> +int pci_prepare_ats(struct pci_dev *dev, int ps);
+>  void pci_disable_ats(struct pci_dev *dev);
+>  int pci_ats_queue_depth(struct pci_dev *dev);
+>  int pci_ats_page_aligned(struct pci_dev *dev);
+> 
+> base-commit: e7153d9c8cee2f17fdcd011509860717bfa91423
+> -- 
+> 2.46.0
+> 
