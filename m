@@ -1,125 +1,144 @@
-Received: from mail-qk1-f176.google.com (mail-qk1-f176.google.com [209.85.222.176])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from szxga07-in.huawei.com (szxga07-in.huawei.com [45.249.212.35])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 62AB618C93F
-	for <iommu@lists.linux.dev>; Fri,  9 Aug 2024 13:44:57 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.222.176
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7E29A195FEC;
+	Fri,  9 Aug 2024 14:26:23 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=45.249.212.35
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1723211099; cv=none; b=hanocPbhL4LtAW3gzotCyw19J7AnP8EmhTGoik27jvm/URnZOeegIc4aWmhA4bpcLVlAtGb/1VdhitItdRhlgcocRdHezLxM2FeRze1WfwBYYeahIWpupK/fzN9k5OImvN2mDDkvYtXdu/j5iknh4HNCTu8ns34ZwSMzQkdu2rg=
+	t=1723213586; cv=none; b=Je+XtvmiWV03l53NaRwCg9g0m8bYftUeBtm1+TtzBATcG74R8+F0w2WEUfmVUyMleBwuJW/fQI0Uk7KDedHd9cK/OMYfCKeehPNmY6jAb3gOyqxEGLCraN5ST9qCPyvtGGqPBdfo7eK2AU011EsDsWrORSMZWH2NKqk/q0+Ea6k=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1723211099; c=relaxed/simple;
-	bh=lfxFFCjGgOna6xYDbtOYH6f2MARGQmsMZj6hUNKN6cU=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=jyMR8recQNmYZfnsz5psT3nV5X39oWQA03XVOp2nI/rcQJNsTjixChzO9y/N1vzHwi2C4TZAuz3UG7gDKyW2Dd6KMo4eEdkCVmYCv94lqfy5ghrGhyO5sSNZu8Z5Xds5lyhMmTnbwbh1gfZ84hW++Njp19OarX47cwyqEULTKNY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=ZB5GmqLN; arc=none smtp.client-ip=209.85.222.176
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="ZB5GmqLN"
-Received: by mail-qk1-f176.google.com with SMTP id af79cd13be357-7a3574acafeso98959985a.1
-        for <iommu@lists.linux.dev>; Fri, 09 Aug 2024 06:44:57 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google; t=1723211096; x=1723815896; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=jjlkycOAnzdKLAvtpyBjt8K41iqV3nWLtNN86kHVzeo=;
-        b=ZB5GmqLNy+zaZxQWYwLbohwuPjNxOF0vJMr9gvRzbdhE2FnvjDeTVS2qoR3rJxYAlM
-         NYKLYgV8fVPAlZRpbiSebFCCSeWYFIYYkPrVA8bSPYktLF/kS9OMseGKVpZD1qk8U7UB
-         rfXU2KQQIYwjJ1rWaq/wKlppqeb9Nm+vKdGK1DhSQBB1MtwWiCiecOpeH3bf9vJ5HfKY
-         VLRZsjxIk4wjRqsV59kybqd4O5rCKjrQ//bdyoJlARt7sVRhlC9zRA3eGzznMnY87vQT
-         GITUQrGJMSFLO4LPofIRGVq7Wx23Tm6aW6jCsTxchovP2rDvJhOhqEIaLI7Cn1BJXSzq
-         ie/A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1723211096; x=1723815896;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=jjlkycOAnzdKLAvtpyBjt8K41iqV3nWLtNN86kHVzeo=;
-        b=qD1deG3wD09WpxY6YTpooev5iJSJoEF6yXJLQGkePBc0hsfS5gjoobAzwceYViH2Sa
-         PkljXKq4uw8l7cY4Sd9+2cmhnyBNedtzJM6qjwL+7ANhbAcNXDLK9WHXGssE11NlZFGs
-         0wx6kIrQV1rMDd5IFOZ2I5gkkjSHB1dbyMVKg7Y9ISpibIwIVmDlnB72ZD+SS5nmIliM
-         t+Loy6L/z7lJQj8LKT+l6kjHrZ8DxIW4bLtxp8lQ3oSJkTjmfUspgevNkHwa9+YMZfSU
-         d4IcK1ROpaQ1ge5I3aHOnDJ6CWa8nQhZ+d1O0NdW986tWFe1yCTpoO2CF16BTY7+b9Wo
-         hF3Q==
-X-Forwarded-Encrypted: i=1; AJvYcCXXjtpuKhXIaMiGAh6EtrxKMQ87svBrxmF/MN68Q2EyW+3AHo2wZ9ezgiWoi0coB27i/jZ/EPutNGxqb4gqbFuYNUn4B/0=
-X-Gm-Message-State: AOJu0YyDaCwmMVsxeKddm/CdY5hbMZB0jJdBfDRp1wU4JqGEFuRHrRkI
-	sZ0dusQxEaggmRN720qRc6pjv3ec6Zi0wy5+YT2xDWN2U9eqW/CSZYwa0iuWNlg=
-X-Google-Smtp-Source: AGHT+IGPXbnSq+IV8VMI+tqJFX9O7YQDExFPgw8VrqP3MY4y5QmRx6szguaaILLYbvWGrcAoYWQ2lw==
-X-Received: by 2002:a05:620a:1a8d:b0:79d:7246:ea67 with SMTP id af79cd13be357-7a4c17c45c7mr211957685a.33.1723211096191;
-        Fri, 09 Aug 2024 06:44:56 -0700 (PDT)
-Received: from ziepe.ca ([128.77.69.90])
-        by smtp.gmail.com with ESMTPSA id af79cd13be357-7a3786c1cc5sm262562885a.104.2024.08.09.06.44.55
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 09 Aug 2024 06:44:55 -0700 (PDT)
-Received: from jgg by wakko with local (Exim 4.95)
-	(envelope-from <jgg@ziepe.ca>)
-	id 1scPvK-00G8gU-AU;
-	Fri, 09 Aug 2024 10:44:54 -0300
-Date: Fri, 9 Aug 2024 10:44:54 -0300
-From: Jason Gunthorpe <jgg@ziepe.ca>
-To: Vasant Hegde <vasant.hegde@amd.com>
-Cc: Baolu Lu <baolu.lu@linux.intel.com>, iommu@lists.linux.dev,
-	joro@8bytes.org, will@kernel.org, robin.murphy@arm.com,
-	suravee.suthikulpanit@amd.com, yi.l.liu@intel.com,
-	Alex Williamson <alex.williamson@redhat.com>
-Subject: Re: [PATCH RFCv2] iommu: Add domain type and flag to
- domain_alloc_paging()
-Message-ID: <20240809134454.GF1985367@ziepe.ca>
-References: <20240806123452.GE676757@ziepe.ca>
- <6b197aac-c38f-4e6e-9d32-d74e1a5b3968@amd.com>
- <20240806173230.GS676757@ziepe.ca>
- <bbe564b6-5079-4973-8678-1068a53ddf70@amd.com>
- <20240807135915.GF8473@ziepe.ca>
- <e5da0709-86d3-4b45-82cc-d995a2686afa@amd.com>
- <20240807182947.GI8473@ziepe.ca>
- <20240808011629.GJ8473@ziepe.ca>
- <20240808130814.GA1985367@ziepe.ca>
- <11b95737-e0d5-43de-80ba-69923ee8b249@amd.com>
+	s=arc-20240116; t=1723213586; c=relaxed/simple;
+	bh=BRSycxJtSK6+TNSeWc0Ke0HnnZcJoST+YtczCHXVm0w=;
+	h=From:To:CC:Subject:Date:Message-ID:References:In-Reply-To:
+	 Content-Type:MIME-Version; b=tNO1eSi3/Q+Y/lUSIeO4ThPKLXeT9I0MxxAS6e1GS/HwRrJMZS5CGdwhBggmpS95kcHripYbW4F9Qz3wYAF3WoGttA6hCDLFYKozaKOZBRe2fhzdho57tnQk3iCnK9xCFgifygkdQz2xqmdfTVbPMVoNkQz6brsgrgNrHfb4uu8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=huawei.com; spf=pass smtp.mailfrom=huawei.com; arc=none smtp.client-ip=45.249.212.35
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=huawei.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=huawei.com
+Received: from mail.maildlp.com (unknown [172.19.88.163])
+	by szxga07-in.huawei.com (SkyGuard) with ESMTP id 4WgR1628Bqz1S76l;
+	Fri,  9 Aug 2024 22:21:30 +0800 (CST)
+Received: from dggpemf500002.china.huawei.com (unknown [7.185.36.57])
+	by mail.maildlp.com (Postfix) with ESMTPS id 626F818002B;
+	Fri,  9 Aug 2024 22:26:16 +0800 (CST)
+Received: from lhrpeml500005.china.huawei.com (7.191.163.240) by
+ dggpemf500002.china.huawei.com (7.185.36.57) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.1544.11; Fri, 9 Aug 2024 22:26:15 +0800
+Received: from lhrpeml500005.china.huawei.com ([7.191.163.240]) by
+ lhrpeml500005.china.huawei.com ([7.191.163.240]) with mapi id 15.01.2507.039;
+ Fri, 9 Aug 2024 15:26:13 +0100
+From: Shameerali Kolothum Thodi <shameerali.kolothum.thodi@huawei.com>
+To: Jason Gunthorpe <jgg@nvidia.com>, "acpica-devel@lists.linux.dev"
+	<acpica-devel@lists.linux.dev>, Alex Williamson <alex.williamson@redhat.com>,
+	"Guohanjun (Hanjun Guo)" <guohanjun@huawei.com>, "iommu@lists.linux.dev"
+	<iommu@lists.linux.dev>, Joerg Roedel <joro@8bytes.org>, Kevin Tian
+	<kevin.tian@intel.com>, "kvm@vger.kernel.org" <kvm@vger.kernel.org>, "Len
+ Brown" <lenb@kernel.org>, "linux-acpi@vger.kernel.org"
+	<linux-acpi@vger.kernel.org>, "linux-arm-kernel@lists.infradead.org"
+	<linux-arm-kernel@lists.infradead.org>, Lorenzo Pieralisi
+	<lpieralisi@kernel.org>, "Rafael J. Wysocki" <rafael@kernel.org>, "Robert
+ Moore" <robert.moore@intel.com>, Robin Murphy <robin.murphy@arm.com>, "Sudeep
+ Holla" <sudeep.holla@arm.com>, Will Deacon <will@kernel.org>
+CC: Eric Auger <eric.auger@redhat.com>, Jean-Philippe Brucker
+	<jean-philippe@linaro.org>, Moritz Fischer <mdf@kernel.org>, Michael Shavit
+	<mshavit@google.com>, Nicolin Chen <nicolinc@nvidia.com>,
+	"patches@lists.linux.dev" <patches@lists.linux.dev>
+Subject: RE: [PATCH 2/8] iommu/arm-smmu-v3: Use S2FWB when available
+Thread-Topic: [PATCH 2/8] iommu/arm-smmu-v3: Use S2FWB when available
+Thread-Index: AQHa6FotZjxW0m4zQk+YUXvVQrNfTbIe/kcw
+Date: Fri, 9 Aug 2024 14:26:13 +0000
+Message-ID: <5af45a0c060c487fb41983c434de0ec6@huawei.com>
+References: <0-v1-54e734311a7f+14f72-smmuv3_nesting_jgg@nvidia.com>
+ <2-v1-54e734311a7f+14f72-smmuv3_nesting_jgg@nvidia.com>
+In-Reply-To: <2-v1-54e734311a7f+14f72-smmuv3_nesting_jgg@nvidia.com>
+Accept-Language: en-GB, en-US
+Content-Language: en-US
+X-MS-Has-Attach:
+X-MS-TNEF-Correlator:
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <11b95737-e0d5-43de-80ba-69923ee8b249@amd.com>
 
-On Fri, Aug 09, 2024 at 12:13:47PM +0530, Vasant Hegde wrote:
-> Jason,
-> 
-> 
-> On 8/8/2024 6:38 PM, Jason Gunthorpe wrote:
-> > On Wed, Aug 07, 2024 at 10:16:29PM -0300, Jason Gunthorpe wrote:
-> >> On Wed, Aug 07, 2024 at 03:29:47PM -0300, Jason Gunthorpe wrote:
-> >>>> @Baolu, Do we need to make any changes to intel driver?
-> >>>
-> >>> I think Intel ignores this issue, they have nice HW and their RID can
-> >>> use both of their supported domain formats in all cases.
-> >>
-> >> On second thought it does need to accept, but ignore the new flags..
-> > 
-> > And probably HW that does not support PASID should reject the
-> > IOMMU_HWPT_ALLOC_PASID flag at least.
-> 
-> 
-> You mean error out if IOMMU or device doesnot support PASID?
 
-Just the iommu, yes.
 
-Like in AMD terms if there is no AMDv2 page table support then fail
-it.
+> -----Original Message-----
+> From: Jason Gunthorpe <jgg@nvidia.com>
+> Sent: Wednesday, August 7, 2024 12:41 AM
+> To: acpica-devel@lists.linux.dev; Alex Williamson
+> <alex.williamson@redhat.com>; Guohanjun (Hanjun Guo)
+> <guohanjun@huawei.com>; iommu@lists.linux.dev; Joerg Roedel
+> <joro@8bytes.org>; Kevin Tian <kevin.tian@intel.com>; kvm@vger.kernel.org=
+;
+> Len Brown <lenb@kernel.org>; linux-acpi@vger.kernel.org; linux-arm-
+> kernel@lists.infradead.org; Lorenzo Pieralisi <lpieralisi@kernel.org>; Ra=
+fael J.
+> Wysocki <rafael@kernel.org>; Robert Moore <robert.moore@intel.com>; Robin
+> Murphy <robin.murphy@arm.com>; Sudeep Holla <sudeep.holla@arm.com>;
+> Will Deacon <will@kernel.org>
+> Cc: Eric Auger <eric.auger@redhat.com>; Jean-Philippe Brucker <jean-
+> philippe@linaro.org>; Moritz Fischer <mdf@kernel.org>; Michael Shavit
+> <mshavit@google.com>; Nicolin Chen <nicolinc@nvidia.com>;
+> patches@lists.linux.dev; Shameerali Kolothum Thodi
+> <shameerali.kolothum.thodi@huawei.com>
+> Subject: [PATCH 2/8] iommu/arm-smmu-v3: Use S2FWB when available
+>=20
+> Force Write Back (FWB) changes how the S2 IOPTE's MemAttr field
+> works. When S2FWB is supported and enabled the IOPTE will force cachable
+> access to IOMMU_CACHE memory and deny cachable access otherwise.
+>=20
+> This is not especially meaningful for simple S2 domains, it apparently
+> doesn't even force PCI no-snoop access to be coherent.
+>=20
+> However, when used with a nested S1, FWB has the effect of preventing the
+> guest from choosing a MemAttr that would cause ordinary DMA to bypass the
+> cache. Consistent with KVM we wish to deny the guest the ability to becom=
+e
+> incoherent with cached memory the hypervisor believes is cachable so we
+> don't have to flush it.
+>=20
+> Turn on S2FWB whenever the SMMU supports it and use it for all S2
+> mappings.
+>=20
+> Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
+> ---
+>  drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c |  6 ++++++
+>  drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h |  3 +++
+>  drivers/iommu/io-pgtable-arm.c              | 24 +++++++++++++++++----
+>  include/linux/io-pgtable.h                  |  2 ++
+>  4 files changed, 31 insertions(+), 4 deletions(-)
+>=20
+> diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+> b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+> index 531125f231b662..7fe1e27d11586c 100644
+> --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+> +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+> @@ -1612,6 +1612,8 @@ void arm_smmu_make_s2_domain_ste(struct
+> arm_smmu_ste *target,
+>  		FIELD_PREP(STRTAB_STE_1_EATS,
+>  			   ats_enabled ? STRTAB_STE_1_EATS_TRANS : 0));
+>=20
+> +	if (smmu->features & ARM_SMMU_FEAT_S2FWB)
+> +		target->data[1] |=3D cpu_to_le64(STRTAB_STE_1_S2FWB);
+>  	if (smmu->features & ARM_SMMU_FEAT_ATTR_TYPES_OVR)
+>  		target->data[1] |=3D
+> cpu_to_le64(FIELD_PREP(STRTAB_STE_1_SHCFG,
+>=20
+> STRTAB_STE_1_SHCFG_INCOMING));
+> @@ -2400,6 +2402,8 @@ static int arm_smmu_domain_finalise(struct
+> arm_smmu_domain *smmu_domain,
+>  		pgtbl_cfg.oas =3D smmu->oas;
+>  		fmt =3D ARM_64_LPAE_S2;
+>  		finalise_stage_fn =3D arm_smmu_domain_finalise_s2;
+> +		if (smmu->features & ARM_SMMU_FEAT_S2FWB)
+> +			pgtbl_cfg.quirks |=3D IO_PGTABLE_QUIRK_ARM_S2FWB;
 
-> > Maybe IOMMU_HWPT_ALLOC_DEV_PASID can be reasonably ignored if the HW
-> > doesn't support PASID.
->  
-> You mean make it as optional flag? Meaning if HW doesn't support PASID then
-> still allocate a domain without PASID capability?
+This probably requires an update in arm_64_lpae_alloc_pgtable_s2() quirks c=
+heck.
 
-Yes, for the RID domain it seems harmless to ignore, I'm not really
-sure on this though.
-
-Otherwise we'd want to report pasid support through a INFO return so
-userspace knows if it should specify this flag.
-
-Jason
+Thanks,
+Shameer
