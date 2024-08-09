@@ -1,106 +1,150 @@
-Received: from mail-pl1-f170.google.com (mail-pl1-f170.google.com [209.85.214.170])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D1DB4383B1
-	for <iommu@lists.linux.dev>; Fri,  9 Aug 2024 17:27:22 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.170
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 9D3CD3770D
+	for <iommu@lists.linux.dev>; Fri,  9 Aug 2024 17:43:52 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1723224444; cv=none; b=a+A4T5u+k4xhQm15nPlwfCwakHTvwN3vr/4Cw6jioKvOgjjo9DkvFKO1MuQ+ptxntr3RJ8fUq6lZxdgeQcacrfulXe1uaL7cdzk5y15sJWhqVkcpFO6AiUL74fb6nodZ/wHWUSYndHiKpz2SRnxtUc59VAbE7BXUKXMudR7XisY=
+	t=1723225434; cv=none; b=AlOzw1P2T1XFeQQNzb+9uPS0iiuNW+Jc13cNM5cbqRObZuF/bxlE67EuLcw8lyZDWpqtoNSW1ahEZ/inHm2DVdiy8jPVuYPukicqFXlAYup+6csxFRAC/geoxo/2kXXCUt6hyriNxqNH+Ut3yHhztko5tmAryascre7LnlVDqJw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1723224444; c=relaxed/simple;
-	bh=FlHstR73F4adrjgCHMFGjSYm9SWWKnD0W2zVjuzFlJk=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=cVtFeD/gDpMZk0Cj0Jbk37TOpFkhxsf5lkeRNHPYQaroOw+EGy7M061f7lHnA1cLM/8k9SbMxdzj4BxuJvxF1RrmCdtc3nmuAjEHn7JilEy1BiaSDv6CKxzVa2ysURMnxl5JvEYv2FSP8SjhKajPKv2GQUnMuOZgGj+oyZRuWm4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=Eyo7T0zY; arc=none smtp.client-ip=209.85.214.170
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="Eyo7T0zY"
-Received: by mail-pl1-f170.google.com with SMTP id d9443c01a7336-1fee6435a34so19978545ad.0
-        for <iommu@lists.linux.dev>; Fri, 09 Aug 2024 10:27:22 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1723224441; x=1723829241; darn=lists.linux.dev;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=WQPvShp7okcQ7JAAqXTExHsdJANgIA/pYy+7v5WQOgw=;
-        b=Eyo7T0zYYsYcdmU2VVVMmYRgDHVKVp8sFetMbnu9kB8WpYHOR0dnb3N72/LUohwbM6
-         59QBF2jwb02OgGgXoagwITEW265UeajWRZ/TfH8TmxnPoHWyC1g5AJQVNpTrnfeq0hoN
-         cM2LJub2NjF5jdyqrvBTeT0uy7aLw9GEVfcSYTOx4kXZWOheyTZbYq0WGA+fevp7FZOQ
-         73x7fDFSVXpUCO+oJ7pcQVg0cvOVpCvtNjFdcBbpaQ7MW7ZB2xsZu2GfGrW+8LUXtx7m
-         hPLH7zZvqtcNglM/bj6n3BjilavrSAdB6vo4sJy/YmvkDTgxAYMfxmog3KW5cZbMc2LL
-         32nw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1723224441; x=1723829241;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=WQPvShp7okcQ7JAAqXTExHsdJANgIA/pYy+7v5WQOgw=;
-        b=vEJ16rj20eCpQgxxBkpe4lQXTdS7EVdrBWw8Smu0CRujnhtzFtEdClhJy4f+nwk1cR
-         ZqVIEmdFHoBd3oQZO0gdUQqImN2cgpAuAj8x1OPHKAa1xv+9Lwobh8pxrz4GS3+RxzGy
-         xoN17VMyp4SRqmCsIm7QKCQlMe7iOLfWDeyqNDBtahjCbHmyg8KEYPD8Khf1XHW6gMM8
-         peh2N51oNiWXXSp66A2tWU8llU5uU36frlPW2X4UFpMNT3Im1yMt+XMwJWWJCS2S3F5u
-         Zt3RFxioluayCC/yVn3EKrG+TYhi6lxYlbGkey9rLo4IOtWbuwzXdO7T5XoTzRIpNU6i
-         WEZw==
-X-Gm-Message-State: AOJu0YzIrEi1Ns88YZIWoRBa52XvdBTVXs+C2mRaKjy20XxsT2kPWBdp
-	CxsbWGybcR01NuvzJfSvh4UKws7MySG1vcZSYBvfLe9pzQpVvgKPTZEaXw==
-X-Google-Smtp-Source: AGHT+IEkjgGPg89j21Z6sTTJq8iGEXpSiujWsxC7JsiG4AHSF1ZSDSAZTLb4PrewOtx7fnimA5C9Jg==
-X-Received: by 2002:a17:903:2308:b0:1fb:8cab:ccc9 with SMTP id d9443c01a7336-200ae5cf9aemr27913985ad.45.1723224441376;
-        Fri, 09 Aug 2024 10:27:21 -0700 (PDT)
-Received: from localhost ([2a00:79e1:2e00:1301:12e9:d196:a1e9:ab67])
-        by smtp.gmail.com with ESMTPSA id d9443c01a7336-200bba0db27sm56455ad.239.2024.08.09.10.27.20
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 09 Aug 2024 10:27:20 -0700 (PDT)
-From: Rob Clark <robdclark@gmail.com>
-To: iommu@lists.linux.dev
-Cc: Rob Clark <robdclark@chromium.org>,
-	Will Deacon <will@kernel.org>,
-	Robin Murphy <robin.murphy@arm.com>,
-	Joerg Roedel <joro@8bytes.org>,
-	Jason Gunthorpe <jgg@ziepe.ca>,
-	Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-	Georgi Djakov <quic_c_gdjako@quicinc.com>,
-	Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
-	Pranjal Shrivastava <praan@google.com>,
-	linux-arm-kernel@lists.infradead.org (moderated list:ARM SMMU DRIVERS),
-	linux-kernel@vger.kernel.org (open list)
-Subject: [PATCH] iommu/arm-smmu: Un-demote unhandled-fault msg
-Date: Fri,  9 Aug 2024 10:27:14 -0700
-Message-ID: <20240809172716.10275-1-robdclark@gmail.com>
-X-Mailer: git-send-email 2.46.0
+	s=arc-20240116; t=1723225434; c=relaxed/simple;
+	bh=cM/0CrQLED8CsE5zqK/fBlp7UuuJHwRTMRWCvCDrJxk=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=rO+vItfaagGelcXB2HLAB35MhI4W11k8qBDCJUPHHgGX4dLerg2ic0yK93TRBBCtzqa81S8rmiO0LmQawiUHpP9fSMkpcp8t+aK/Dva7Wz6r8mQKz7Iyd25zaiUnRK6nGicovzqQzD0Zc8oFD6Qjs7kSL/Yi8+2izM6+RVrpbUo=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; arc=none smtp.client-ip=217.140.110.172
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id BBA3A13D5;
+	Fri,  9 Aug 2024 10:44:17 -0700 (PDT)
+Received: from [10.57.46.232] (unknown [10.57.46.232])
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 35A9B3F6A8;
+	Fri,  9 Aug 2024 10:43:50 -0700 (PDT)
+Message-ID: <f4c4a142-d0bb-44c5-8bb9-56136c8f7cf2@arm.com>
+Date: Fri, 9 Aug 2024 18:43:47 +0100
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v2 2/3] iommu/dma: Support MSIs through nested domains
+To: "Tian, Kevin" <kevin.tian@intel.com>, Nicolin Chen <nicolinc@nvidia.com>
+Cc: "jgg@nvidia.com" <jgg@nvidia.com>, "joro@8bytes.org" <joro@8bytes.org>,
+ "will@kernel.org" <will@kernel.org>, "shuah@kernel.org" <shuah@kernel.org>,
+ "iommu@lists.linux.dev" <iommu@lists.linux.dev>,
+ "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+ "linux-kselftest@vger.kernel.org" <linux-kselftest@vger.kernel.org>
+References: <cover.1722644866.git.nicolinc@nvidia.com>
+ <b1b8ff9c716f22f524be0313ad12e5c6d10f5bd4.1722644866.git.nicolinc@nvidia.com>
+ <BN9PR11MB5276E59FBD67B1119B3E2A858CBF2@BN9PR11MB5276.namprd11.prod.outlook.com>
+ <6da4f216-594b-4c51-848c-86e281402820@arm.com>
+ <ZrVN05VylFq8lK4q@Asurada-Nvidia>
+ <BN9PR11MB5276D9387CB50D58E4A7585F8CBA2@BN9PR11MB5276.namprd11.prod.outlook.com>
+From: Robin Murphy <robin.murphy@arm.com>
+Content-Language: en-GB
+In-Reply-To: <BN9PR11MB5276D9387CB50D58E4A7585F8CBA2@BN9PR11MB5276.namprd11.prod.outlook.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-From: Rob Clark <robdclark@chromium.org>
+On 2024-08-09 9:00 am, Tian, Kevin wrote:
+>> From: Nicolin Chen <nicolinc@nvidia.com>
+>> Sent: Friday, August 9, 2024 7:00 AM
+>>
+>> On Thu, Aug 08, 2024 at 01:38:44PM +0100, Robin Murphy wrote:
+>>> On 06/08/2024 9:25 am, Tian, Kevin wrote:
+>>>>> From: Nicolin Chen <nicolinc@nvidia.com>
+>>>>> Sent: Saturday, August 3, 2024 8:32 AM
+>>>>>
+>>>>> From: Robin Murphy <robin.murphy@arm.com>
+>>>>>
+>>>>> Currently, iommu-dma is the only place outside of IOMMUFD and
+>> drivers
+>>>>> which might need to be aware of the stage 2 domain encapsulated
+>> within
+>>>>> a nested domain. This would be in the legacy-VFIO-style case where
+>> we're
+>>>>
+>>>> why is it a legacy-VFIO-style? We only support nested in IOMMUFD.
+>>>
+>>> Because with proper nesting we ideally shouldn't need the host-managed
+>>> MSI mess at all, which all stems from the old VFIO paradigm of
+>>> completely abstracting interrupts from userspace. I'm still hoping
+>>> IOMMUFD can grow its own interface for efficient MSI passthrough, where
+>>> the VMM can simply map the physical MSI doorbell into whatever IPA (GPA)
+>>> it wants it to appear at in the S2 domain, then whatever the guest does
+>>> with S1 it can program the MSI address into the endpoint accordingly
+>>> without us having to fiddle with it.
+>>
+>> Hmm, until now I wasn't so convinced myself that it could work as I
+>> was worried about the data. But having a second thought, since the
+>> host configures the MSI, it can still set the correct data. What we
+>> only need is to change the MSI address from a RMRed IPA/gIOVA to a
+>> real gIOVA of the vITS page.
+>>
+>> I did a quick hack to test that loop. MSI in the guest still works
+>> fine without having the RMR node in its IORT. Sweet!
+>>
+>> To go further on this path, we will need the following changes:
+>> - MSI configuration in the host (via a VFIO_IRQ_SET_ACTION_TRIGGER
+>>    hypercall) should set gIOVA instead of fetching from msi_cookie.
+>>    That hypercall doesn't forward an address currently, since host
+>>    kernel pre-sets the msi_cookie. So, we need a way to forward the
+>>    gIOVA to kernel and pack it into the msi_msg structure. I haven't
+>>    read the VFIO PCI code thoroughly, yet wonder if we could just
+>>    let the guest program the gIOVA to the PCI register and fall it
+>>    through to the hardware, so host kernel handling that hypercall
+>>    can just read it back from the register?
+>> - IOMMUFD should provide VMM a way to tell the gPA (or directly +
+>>    GITS_TRANSLATER?). Then kernel should do the stage-2 mapping. I
+>>    have talked to Jason about this a while ago, and we have a few
+>>    thoughts how to implement it. But eventually, I think we still
+>>    can't avoid a middle man like msi_cookie to associate the gPA in
+>>    IOMMUFD to PA in irqchip?
+> 
+> Probably a new IOMMU_DMA_MSI_COOKIE_USER type which uses
+> GPA (passed in in ALLOC_HWPT for a nested_parent type) as IOVA
+> in iommu_dma_get_msi_page()?
 
-Previously this was dev_err_ratelimited() but it got changed to a
-ratelimited dev_dbg().  Change it back to dev_err().
+No, the whole point is to get away from cookies and having to keep track 
+of things in the kernel that can and should just be simple regular 
+user-owned S2 mappings.
 
-Fixes: d525b0af0c3b ("iommu/arm-smmu: Pretty-print context fault related regs")
-Signed-off-by: Rob Clark <robdclark@chromium.org>
----
-We have crash telemetry watching for "Unhandled context fault", so we
-want to preserve this error msg.
+>> One more concern is the MSI window size. VMM sets up a MSI region
+>> that must fit the hardware window size. Most of ITS versions have
+>> only one page size but one of them can have multiple pages? What
+>> if vITS is one-page size while the underlying pITS has multiple?
+>>
+>> My understanding of the current kernel-defined 1MB size is also a
+>> hard-coding window to potential fit all cases, since IOMMU code in
+>> the code can just eyeball what's going on in the irqchip subsystem
+>> and adjust accordingly if someday it needs to. But VMM can't?
 
- drivers/iommu/arm/arm-smmu/arm-smmu.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+The existing design is based around the kernel potentially having to 
+stuff multiple different mappings for different devices into the MSI 
+hole in a single domain, since VFIO userspace is allowed to do wacky 
+things like emulate INTx using an underlying physical MSI, so there may 
+not be any actual vITS region in the VM IPA space at all. I think that 
+was also why it ended up being a fake reserved region exposed by the 
+SMMU drivers rather than relying on userspace to say where to put it - 
+making things look superficially a bit more x86-like meant fewer changes 
+to userspace, which I think by now we can consider a tasty slice of 
+technical debt.
 
-diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu.c b/drivers/iommu/arm/arm-smmu/arm-smmu.c
-index 723273440c21..8321962b3714 100644
---- a/drivers/iommu/arm/arm-smmu/arm-smmu.c
-+++ b/drivers/iommu/arm/arm-smmu/arm-smmu.c
-@@ -417,7 +417,7 @@ void arm_smmu_read_context_fault_info(struct arm_smmu_device *smmu, int idx,
- void arm_smmu_print_context_fault_info(struct arm_smmu_device *smmu, int idx,
- 				       const struct arm_smmu_context_fault_info *cfi)
- {
--	dev_dbg(smmu->dev,
-+	dev_err(smmu->dev,
- 		"Unhandled context fault: fsr=0x%x, iova=0x%08lx, fsynr=0x%x, cbfrsynra=0x%x, cb=%d\n",
- 		cfi->fsr, cfi->iova, cfi->fsynr, cfi->cbfrsynra, idx);
- 
--- 
-2.46.0
+For a dedicated "MSI passthrough" model where, in parallel to IOMMU 
+nesting, the abstraction is thinner and userspace is in on the game of 
+knowingly emulating a GIC ITS backed by a GIC ITS, I'd imagine it could 
+be pretty straightforward, at least conceptually. Userspace has 
+something like an IOAS_MAP_MSI(device, IOVA) to indicate where it's 
+placing a vITS to which it wants that device's MSIs to be able to go, 
+the kernel resolves the PA from the IRQ layer and maps it, job done. If 
+userspace wants to associate two devices with the same vITS when they 
+have different physical ITSes, either we split the IOAS into two HWPTs 
+to hold the different mappings, or we punt it back to userspace to 
+resolve at the IOAS level.
 
+Or I guess the really cheeky version is the IRQ layer exposes its own 
+thing for userspace to mmap the ITS, then it can call a literal IOAS_MAP 
+on that mapping... :D
+
+Thanks,
+Robin.
