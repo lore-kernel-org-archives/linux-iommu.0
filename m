@@ -1,58 +1,59 @@
 Received: from mail-ej1-f46.google.com (mail-ej1-f46.google.com [209.85.218.46])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EE19D14D711
-	for <iommu@lists.linux.dev>; Mon, 12 Aug 2024 05:52:32 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BF282149012
+	for <iommu@lists.linux.dev>; Mon, 12 Aug 2024 05:54:55 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.218.46
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1723441955; cv=none; b=Qsmo/JWSrbzxxeE8bhSuAAUw217Zd9hhcc5n4yynCZFNXQ8QNuaAa2Yl6vsglpTMhO9OERN3A/cZg42uFugJmiA+YeKMQ0lsc6DKd8lRYHy42IxAENVsV22kgYQLPjPB7Mrg/2izrawhE4fzdm8nbKWVujLkwU41jfQQ9RecOYA=
+	t=1723442098; cv=none; b=Ns59iye+Uv+ai4g5W3pR2QTNIf9Jdzb/VrUz9ZI5Kv2M2391fkdpxrSlY6DPcNYVpxyWQVX3cMEQBJ0kj1mOydynqC2JCIzScr3Rjp8Gxf1r8mppmz8+VMiFSxvM4wK83hnvkKn/LU4mhzFD9vDV2NRliSfyk4lygnElwS3CkVs=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1723441955; c=relaxed/simple;
-	bh=+jF/0UHCz+92Kn5b+ZdcYKfaZPYw3KWvlAIdXWehlHo=;
+	s=arc-20240116; t=1723442098; c=relaxed/simple;
+	bh=OWFPyLk9qijbZylrTVEw9W4riew8091W+ugBuLpyJX4=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=GplOPLjLVcS9zpIoot+5d+IevYAyqzRclLbXNg3TSDQjByM4PAgeQ9X7/xKCj1nALCqIFdRPsDCD8zZL+ASA9sHIcBM6gc15S2WnRSYLT9Y4cwFXOczvoTsW+lehG7A3lytPm47GuY1+4OqeygMeyafBZGWpERQtoJefS+E1AGI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com; spf=pass smtp.mailfrom=suse.com; dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b=R3tRRXVS; arc=none smtp.client-ip=209.85.218.46
+	 MIME-Version:Content-Type; b=tVJoIbGiHQJ+1PhI+Jj7kAJDUoPuyWo+Df/DKfqRG9D1UHXEG/bssSjoIG5Sd5WdPB7Ou0hd9FkEtw20ZR9y82P6HELXoxmqLUotP92KuEKY883TS5UcI9dsuaJHwKEJfuRqInP4ljnDrpSxHfvyarqvMbx+v5/JxuvcSk9eV5Y=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com; spf=pass smtp.mailfrom=suse.com; dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b=JDwRQhJc; arc=none smtp.client-ip=209.85.218.46
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=suse.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b="R3tRRXVS"
-Received: by mail-ej1-f46.google.com with SMTP id a640c23a62f3a-a7d89bb07e7so412481266b.3
-        for <iommu@lists.linux.dev>; Sun, 11 Aug 2024 22:52:32 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b="JDwRQhJc"
+Received: by mail-ej1-f46.google.com with SMTP id a640c23a62f3a-a7a94478a4eso795739166b.1
+        for <iommu@lists.linux.dev>; Sun, 11 Aug 2024 22:54:55 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=suse.com; s=google; t=1723441951; x=1724046751; darn=lists.linux.dev;
+        d=suse.com; s=google; t=1723442094; x=1724046894; darn=lists.linux.dev;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:subject:cc:to:from:date:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=xLZ35+IU8yTpW/0qUhS27F2h1YLsbUiAnfQoXC1WVeQ=;
-        b=R3tRRXVSPRbi8hYhGnqkuLujbjoRG4OoLLTfhl5RwfdvDrjG9shSOZnGvLQKZLn1Wu
-         1M0XlcyNa3WKIHe57OD9xMcxFjdRVXdrjWKgtiYSQJYM5FHp8RJqPseAjO9l3YJh3ivl
-         6w+YZYpabf8+cS90GCjzpafUHdic9t1SccHew7W10eocxC4reED/2X7r5Lh8vkgedn6P
-         pAFlWg1nxFP16gAULZwb+v1snXP6U2JEhIQKp+nU+/tMCGAfpBQ7XWfSmHp12xBwgz0X
-         Uru2nm2ZoOiu129daYUQt1w2K8hKR4Z/UgRC5RbZ3tS6q9GKyVzngB2BzOEsRrFegVjA
-         kIQw==
+        bh=xYo1INLOq156Qw62vGRe5A8jAlkKQVGuSnU9/QE+v7o=;
+        b=JDwRQhJcBIJZjJVlKgtkY6+qzSlU7sdAVLVoYIWCXxN3AP1WO6ZBKIOljGfWJ6KAjT
+         l3vPkKjirEwbd/CyJKFCbIF8d9YfSVH+c/MdtLiIpY/o0mBBXQfrj2Fg3FBpnMWYNNxE
+         dy1SY9iLBQ/gSb0On8lWi97Rs4OryErUdLEbRNthH4YXPfqkWZ3kVSbhJFRReFbPkZ5W
+         wWCGDHJjdajt7aIeQ2D0IQQSHajGx504ycGwKAip9kOXaDnb54uCxvZfFS6DQf76eSTc
+         RgrR79lcuQXDApyNEO+sVc8V819QWcCjkwyA8mR2eQkIN+kGD2DqQ7r2ZKvKywrWS0F7
+         PyIA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1723441951; x=1724046751;
+        d=1e100.net; s=20230601; t=1723442094; x=1724046894;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:subject:cc:to:from:date:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=xLZ35+IU8yTpW/0qUhS27F2h1YLsbUiAnfQoXC1WVeQ=;
-        b=ozEY2EqpYyfMcRwF7IsuO5AX6Szf65PR+4iplK+odm2/BLrLjJJlugPFQB9qBfolyS
-         TtSRBdJ8hlNKjbhviTHEfHvJTQxFOQqBoM0HRP3wmo3TRkPjp0+uhmn7vpPgo3HngU1u
-         xaZiZOMY8lEoWrtzhINK6jUgu8vgzREPfLQkd3ERdKERKXYQtLBzm5q+R2odrayw6yvb
-         LksLLe6RrZMCyET81wyHYGBmQ2l4VnX322NDFgipvvLvaSZBxjGpVZzXCEMzKlrAcsPr
-         l6h5VfygjMkZZIb3xg31zTsMpUvQTobv1oGk+PL4VgPeoBlSEDfQdmXGSPl21WllZN79
-         dUXA==
-X-Forwarded-Encrypted: i=1; AJvYcCVWLezMhOTuyNJObvTKXIW2AZt8A5jB7rpGt/03+sf4shZ4uOaEv59jajp+QcaNxcUGNjdtwlz02SWgY2dM5fai2PV6C04=
-X-Gm-Message-State: AOJu0YxUcDe6qihWu/v3fiKK9M5ky3yKLMMAl03PqX7lHZRGHUz0KBsA
-	QHdd/j2dslnw9pOtxMH0NValkLEkyc4hsRRBnXIZsGv+wFHLweHQ1rMCgJSGMiM=
-X-Google-Smtp-Source: AGHT+IFMvEB3G12c8wLUv6Tbdwb0/ALbjS7/MCfQmLzvHgcVkX7XPyPkeillfb+dwuofuhmb3Ikxng==
-X-Received: by 2002:a17:907:846:b0:a7a:bae8:f29e with SMTP id a640c23a62f3a-a80aa5dae5bmr689141666b.29.1723441951081;
-        Sun, 11 Aug 2024 22:52:31 -0700 (PDT)
+        bh=xYo1INLOq156Qw62vGRe5A8jAlkKQVGuSnU9/QE+v7o=;
+        b=UPPaMH2L4ydqadAzzf9+eyvCMyPa1K3RbitQE5H2X7kj9QjkLoHZstKPWbp4CxKEE7
+         eVrdBOWTBFW+QvmWdl0RE4DD5/0OUQK+tscLHDgtfY8wElWD4gdSqQ9O7PFpyx8BBihg
+         MGJRSM+4iTf1QukhGlQBElBnDPznzqiv0sD8RXTBSK8jVtzW6mAMrWeEdJ5ZCu1yijf6
+         nXgAXhHYTC1UV8xF2/YV9BqxXeBAwRCYU3BZQZ7sza00KLFT/by3kI78YT8YMMVQqyBJ
+         VUz7Reb2gGrLcXelkkujY23ZGL6Fvd/pJD23ng3IMmYEVJW1t9byC1PdbjGxxAKMKtAK
+         o2lw==
+X-Forwarded-Encrypted: i=1; AJvYcCXlo3S3fAALBPbA42T0atFplh5kc2zY1w7nSvX4NYCxUyXZ+yoIq3G5u4bC0Fo/x60LxR1Qt+Chjt3nZNbOjwXCTs/u6U8=
+X-Gm-Message-State: AOJu0Yw1HwBQRLwJADQFNtgs8kO6KuI7tlUpGCotBfKSzq2+nmBFgi3w
+	LJVeYNgE2/FPo5xs0WTDFJRxgZYCbGjPGczh24BYVcrHNWCtPbyA7gOdnqOn1Ibk7j4Ip68izmh
+	EmgI=
+X-Google-Smtp-Source: AGHT+IEWJlWulwINR2mvPDA0F+GzST96BiyVI1VBUqXaw2VqDuwlnso7Bu+sdLf7W/E58YfrQZmfvQ==
+X-Received: by 2002:a17:906:478a:b0:a73:9037:fdf5 with SMTP id a640c23a62f3a-a80ab75a8d2mr689304566b.6.1723442094028;
+        Sun, 11 Aug 2024 22:54:54 -0700 (PDT)
 Received: from mordecai.tesarici.cz (dynamic-2a00-1028-83b8-1e7a-3010-3bd6-8521-caf1.ipv6.o2.cz. [2a00:1028:83b8:1e7a:3010:3bd6:8521:caf1])
-        by smtp.gmail.com with ESMTPSA id a640c23a62f3a-a80bb11c75asm200467366b.97.2024.08.11.22.52.30
+        by smtp.gmail.com with ESMTPSA id a640c23a62f3a-a80bb243d78sm198422366b.224.2024.08.11.22.54.53
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 11 Aug 2024 22:52:30 -0700 (PDT)
-Date: Mon, 12 Aug 2024 07:52:29 +0200
+        Sun, 11 Aug 2024 22:54:53 -0700 (PDT)
+Date: Mon, 12 Aug 2024 07:54:52 +0200
 From: Petr Tesarik <ptesarik@suse.com>
 To: Baruch Siach <baruch@tkos.co.il>
 Cc: Christoph Hellwig <hch@lst.de>, Marek Szyprowski
@@ -62,12 +63,11 @@ Cc: Christoph Hellwig <hch@lst.de>, Marek Szyprowski
  linux-kernel@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
  linux-s390@vger.kernel.org, Ramon Fried <ramon@neureality.ai>, Elad Nachman
  <enachman@marvell.com>, Petr =?UTF-8?B?VGVzYcWZw61r?= <petr@tesarici.cz>
-Subject: Re: [PATCH v6 RESED 1/2] dma: replace zone_dma_bits by
- zone_dma_limit
-Message-ID: <20240812075229.7caf7bab@mordecai.tesarici.cz>
-In-Reply-To: <17c067618b93e5d71f19c37826d54db4299621a3.1723359916.git.baruch@tkos.co.il>
+Subject: Re: [PATCH v6 RESED 2/2] arm64: support DMA zone above 4GB
+Message-ID: <20240812075452.4ef3eef5@mordecai.tesarici.cz>
+In-Reply-To: <70d2c447b6dbf472b8e7fec5804deddc12692aab.1723359916.git.baruch@tkos.co.il>
 References: <cover.1723359916.git.baruch@tkos.co.il>
-	<17c067618b93e5d71f19c37826d54db4299621a3.1723359916.git.baruch@tkos.co.il>
+	<70d2c447b6dbf472b8e7fec5804deddc12692aab.1723359916.git.baruch@tkos.co.il>
 X-Mailer: Claws Mail 4.3.0 (GTK 3.24.42; x86_64-suse-linux-gnu)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
@@ -78,221 +78,75 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On Sun, 11 Aug 2024 10:09:35 +0300
+On Sun, 11 Aug 2024 10:09:36 +0300
 Baruch Siach <baruch@tkos.co.il> wrote:
 
 > From: Catalin Marinas <catalin.marinas@arm.com>
 > 
-> Hardware DMA limit might not be power of 2. When RAM range starts above
-> 0, say 4GB, DMA limit of 30 bits should end at 5GB. A single high bit
-> can not encode this limit.
+> Commit 791ab8b2e3db ("arm64: Ignore any DMA offsets in the
+> max_zone_phys() calculation") made arm64 DMA/DMA32 zones span the entire
+> RAM when RAM starts above 32-bits. This breaks hardware with DMA area
+> that start above 32-bits. But the commit log says that "we haven't
+> noticed any such hardware". It turns out that such hardware does exist.
 > 
-> Use plain address for DMA zone limit.
+> One such platform has RAM starting at 32GB with an internal bus that has
+> the following DMA limits:
 > 
-> Since DMA zone can now potentially span beyond 4GB physical limit of
-> DMA32, make sure to use DMA zone for GFP_DMA32 allocations in that case.
+>   #address-cells = <2>;
+>   #size-cells = <2>;
+>   dma-ranges = <0x00 0xc0000000 0x08 0x00000000 0x00 0x40000000>;
+> 
+> That is, devices under this bus see 1GB of DMA range between 3GB-4GB in
+> their address space. This range is mapped to CPU memory at 32GB-33GB.
+> With current code DMA allocations for devices under this bus are not
+> limited to DMA area, leading to run-time allocation failure.
+> 
+> This commit reinstates DMA zone at the bottom of RAM. The result is DMA
+> zone that properly reflects the hardware constraints as follows:
+> 
+> [    0.000000] Zone ranges:
+> [    0.000000]   DMA      [mem 0x0000000800000000-0x000000083fffffff]
+> [    0.000000]   DMA32    empty
+> [    0.000000]   Normal   [mem 0x0000000840000000-0x0000000bffffffff]
 > 
 > Signed-off-by: Catalin Marinas <catalin.marinas@arm.com>
-> Co-developed-by: Baruch Siach <baruch@tkos.co.il>
+> [baruch: split off the original patch]
 > Signed-off-by: Baruch Siach <baruch@tkos.co.il>
 
-LGTM.
+Note that I'm not an Arm64 maintainer, so the value of my review is
+limited, but AFAICS this change should work as intended.
 
 Reviewed-by: Petr Tesarik <ptesarik@suse.com>
 
 Petr T
 
 > ---
->  arch/arm64/mm/init.c       | 30 +++++++++++++++---------------
->  arch/powerpc/mm/mem.c      |  5 ++++-
->  arch/s390/mm/init.c        |  2 +-
->  include/linux/dma-direct.h |  2 +-
->  kernel/dma/direct.c        |  6 +++---
->  kernel/dma/pool.c          |  4 ++--
->  kernel/dma/swiotlb.c       |  6 +++---
->  7 files changed, 29 insertions(+), 26 deletions(-)
+>  arch/arm64/mm/init.c | 12 ------------
+>  1 file changed, 12 deletions(-)
 > 
 > diff --git a/arch/arm64/mm/init.c b/arch/arm64/mm/init.c
-> index 9b5ab6818f7f..c45e2152ca9e 100644
+> index c45e2152ca9e..bfb10969cbf0 100644
 > --- a/arch/arm64/mm/init.c
 > +++ b/arch/arm64/mm/init.c
-> @@ -115,35 +115,35 @@ static void __init arch_reserve_crashkernel(void)
+> @@ -114,20 +114,8 @@ static void __init arch_reserve_crashkernel(void)
+>  				    low_size, high);
 >  }
 >  
->  /*
-> - * Return the maximum physical address for a zone accessible by the given bits
-> - * limit. If DRAM starts above 32-bit, expand the zone to the maximum
-> + * Return the maximum physical address for a zone given its limit.
-> + * If DRAM starts above 32-bit, expand the zone to the maximum
->   * available memory, otherwise cap it at 32-bit.
->   */
-> -static phys_addr_t __init max_zone_phys(unsigned int zone_bits)
-> +static phys_addr_t __init max_zone_phys(phys_addr_t zone_limit)
+> -/*
+> - * Return the maximum physical address for a zone given its limit.
+> - * If DRAM starts above 32-bit, expand the zone to the maximum
+> - * available memory, otherwise cap it at 32-bit.
+> - */
+>  static phys_addr_t __init max_zone_phys(phys_addr_t zone_limit)
 >  {
-> -	phys_addr_t zone_mask = DMA_BIT_MASK(zone_bits);
->  	phys_addr_t phys_start = memblock_start_of_DRAM();
->  
->  	if (phys_start > U32_MAX)
-> -		zone_mask = PHYS_ADDR_MAX;
-> -	else if (phys_start > zone_mask)
-> -		zone_mask = U32_MAX;
-> +		zone_limit = PHYS_ADDR_MAX;
-> +	else if (phys_start > zone_limit)
-> +		zone_limit = U32_MAX;
->  
-> -	return min(zone_mask, memblock_end_of_DRAM() - 1) + 1;
-> +	return min(zone_limit, memblock_end_of_DRAM() - 1) + 1;
+> -	phys_addr_t phys_start = memblock_start_of_DRAM();
+> -
+> -	if (phys_start > U32_MAX)
+> -		zone_limit = PHYS_ADDR_MAX;
+> -	else if (phys_start > zone_limit)
+> -		zone_limit = U32_MAX;
+> -
+>  	return min(zone_limit, memblock_end_of_DRAM() - 1) + 1;
 >  }
 >  
->  static void __init zone_sizes_init(void)
->  {
->  	unsigned long max_zone_pfns[MAX_NR_ZONES]  = {0};
-> -	unsigned int __maybe_unused acpi_zone_dma_bits;
-> -	unsigned int __maybe_unused dt_zone_dma_bits;
-> -	phys_addr_t __maybe_unused dma32_phys_limit = max_zone_phys(32);
-> +	phys_addr_t __maybe_unused acpi_zone_dma_limit;
-> +	phys_addr_t __maybe_unused dt_zone_dma_limit;
-> +	phys_addr_t __maybe_unused dma32_phys_limit =
-> +		max_zone_phys(DMA_BIT_MASK(32));
->  
->  #ifdef CONFIG_ZONE_DMA
-> -	acpi_zone_dma_bits = fls64(acpi_iort_dma_get_max_cpu_address());
-> -	dt_zone_dma_bits = fls64(of_dma_get_max_cpu_address(NULL));
-> -	zone_dma_bits = min3(32U, dt_zone_dma_bits, acpi_zone_dma_bits);
-> -	arm64_dma_phys_limit = max_zone_phys(zone_dma_bits);
-> +	acpi_zone_dma_limit = acpi_iort_dma_get_max_cpu_address();
-> +	dt_zone_dma_limit = of_dma_get_max_cpu_address(NULL);
-> +	zone_dma_limit = min(dt_zone_dma_limit, acpi_zone_dma_limit);
-> +	arm64_dma_phys_limit = max_zone_phys(zone_dma_limit);
->  	max_zone_pfns[ZONE_DMA] = PFN_DOWN(arm64_dma_phys_limit);
->  #endif
->  #ifdef CONFIG_ZONE_DMA32
-> diff --git a/arch/powerpc/mm/mem.c b/arch/powerpc/mm/mem.c
-> index d325217ab201..05b7f702b3f7 100644
-> --- a/arch/powerpc/mm/mem.c
-> +++ b/arch/powerpc/mm/mem.c
-> @@ -216,7 +216,7 @@ static int __init mark_nonram_nosave(void)
->   * everything else. GFP_DMA32 page allocations automatically fall back to
->   * ZONE_DMA.
->   *
-> - * By using 31-bit unconditionally, we can exploit zone_dma_bits to inform the
-> + * By using 31-bit unconditionally, we can exploit zone_dma_limit to inform the
->   * generic DMA mapping code.  32-bit only devices (if not handled by an IOMMU
->   * anyway) will take a first dip into ZONE_NORMAL and get otherwise served by
->   * ZONE_DMA.
-> @@ -230,6 +230,7 @@ void __init paging_init(void)
->  {
->  	unsigned long long total_ram = memblock_phys_mem_size();
->  	phys_addr_t top_of_ram = memblock_end_of_DRAM();
-> +	int zone_dma_bits;
->  
->  #ifdef CONFIG_HIGHMEM
->  	unsigned long v = __fix_to_virt(FIX_KMAP_END);
-> @@ -256,6 +257,8 @@ void __init paging_init(void)
->  	else
->  		zone_dma_bits = 31;
->  
-> +	zone_dma_limit = DMA_BIT_MASK(zone_dma_bits);
-> +
->  #ifdef CONFIG_ZONE_DMA
->  	max_zone_pfns[ZONE_DMA]	= min(max_low_pfn,
->  				      1UL << (zone_dma_bits - PAGE_SHIFT));
-> diff --git a/arch/s390/mm/init.c b/arch/s390/mm/init.c
-> index ddcd39ef4346..91fc2b91adfc 100644
-> --- a/arch/s390/mm/init.c
-> +++ b/arch/s390/mm/init.c
-> @@ -97,7 +97,7 @@ void __init paging_init(void)
->  
->  	vmem_map_init();
->  	sparse_init();
-> -	zone_dma_bits = 31;
-> +	zone_dma_limit = DMA_BIT_MASK(31);
->  	memset(max_zone_pfns, 0, sizeof(max_zone_pfns));
->  	max_zone_pfns[ZONE_DMA] = virt_to_pfn(MAX_DMA_ADDRESS);
->  	max_zone_pfns[ZONE_NORMAL] = max_low_pfn;
-> diff --git a/include/linux/dma-direct.h b/include/linux/dma-direct.h
-> index edbe13d00776..d7e30d4f7503 100644
-> --- a/include/linux/dma-direct.h
-> +++ b/include/linux/dma-direct.h
-> @@ -12,7 +12,7 @@
->  #include <linux/mem_encrypt.h>
->  #include <linux/swiotlb.h>
->  
-> -extern unsigned int zone_dma_bits;
-> +extern u64 zone_dma_limit;
->  
->  /*
->   * Record the mapping of CPU physical to DMA addresses for a given region.
-> diff --git a/kernel/dma/direct.c b/kernel/dma/direct.c
-> index 4480a3cd92e0..f2ba074a6a54 100644
-> --- a/kernel/dma/direct.c
-> +++ b/kernel/dma/direct.c
-> @@ -20,7 +20,7 @@
->   * it for entirely different regions. In that case the arch code needs to
->   * override the variable below for dma-direct to work properly.
->   */
-> -unsigned int zone_dma_bits __ro_after_init = 24;
-> +u64 zone_dma_limit __ro_after_init = DMA_BIT_MASK(24);
->  
->  static inline dma_addr_t phys_to_dma_direct(struct device *dev,
->  		phys_addr_t phys)
-> @@ -59,7 +59,7 @@ static gfp_t dma_direct_optimal_gfp_mask(struct device *dev, u64 *phys_limit)
->  	 * zones.
->  	 */
->  	*phys_limit = dma_to_phys(dev, dma_limit);
-> -	if (*phys_limit <= DMA_BIT_MASK(zone_dma_bits))
-> +	if (*phys_limit <= zone_dma_limit)
->  		return GFP_DMA;
->  	if (*phys_limit <= DMA_BIT_MASK(32))
->  		return GFP_DMA32;
-> @@ -580,7 +580,7 @@ int dma_direct_supported(struct device *dev, u64 mask)
->  	 * part of the check.
->  	 */
->  	if (IS_ENABLED(CONFIG_ZONE_DMA))
-> -		min_mask = min_t(u64, min_mask, DMA_BIT_MASK(zone_dma_bits));
-> +		min_mask = min_t(u64, min_mask, zone_dma_limit);
->  	return mask >= phys_to_dma_unencrypted(dev, min_mask);
->  }
->  
-> diff --git a/kernel/dma/pool.c b/kernel/dma/pool.c
-> index d10613eb0f63..7b04f7575796 100644
-> --- a/kernel/dma/pool.c
-> +++ b/kernel/dma/pool.c
-> @@ -70,9 +70,9 @@ static bool cma_in_zone(gfp_t gfp)
->  	/* CMA can't cross zone boundaries, see cma_activate_area() */
->  	end = cma_get_base(cma) + size - 1;
->  	if (IS_ENABLED(CONFIG_ZONE_DMA) && (gfp & GFP_DMA))
-> -		return end <= DMA_BIT_MASK(zone_dma_bits);
-> +		return end <= zone_dma_limit;
->  	if (IS_ENABLED(CONFIG_ZONE_DMA32) && (gfp & GFP_DMA32))
-> -		return end <= DMA_BIT_MASK(32);
-> +		return end <= max(DMA_BIT_MASK(32), zone_dma_limit);
->  	return true;
->  }
->  
-> diff --git a/kernel/dma/swiotlb.c b/kernel/dma/swiotlb.c
-> index df68d29740a0..abcf3fa63a56 100644
-> --- a/kernel/dma/swiotlb.c
-> +++ b/kernel/dma/swiotlb.c
-> @@ -450,9 +450,9 @@ int swiotlb_init_late(size_t size, gfp_t gfp_mask,
->  	if (!remap)
->  		io_tlb_default_mem.can_grow = true;
->  	if (IS_ENABLED(CONFIG_ZONE_DMA) && (gfp_mask & __GFP_DMA))
-> -		io_tlb_default_mem.phys_limit = DMA_BIT_MASK(zone_dma_bits);
-> +		io_tlb_default_mem.phys_limit = zone_dma_limit;
->  	else if (IS_ENABLED(CONFIG_ZONE_DMA32) && (gfp_mask & __GFP_DMA32))
-> -		io_tlb_default_mem.phys_limit = DMA_BIT_MASK(32);
-> +		io_tlb_default_mem.phys_limit = max(DMA_BIT_MASK(32), zone_dma_limit);
->  	else
->  		io_tlb_default_mem.phys_limit = virt_to_phys(high_memory - 1);
->  #endif
-> @@ -629,7 +629,7 @@ static struct page *swiotlb_alloc_tlb(struct device *dev, size_t bytes,
->  	}
->  
->  	gfp &= ~GFP_ZONEMASK;
-> -	if (phys_limit <= DMA_BIT_MASK(zone_dma_bits))
-> +	if (phys_limit <= zone_dma_limit)
->  		gfp |= __GFP_DMA;
->  	else if (phys_limit <= DMA_BIT_MASK(32))
->  		gfp |= __GFP_DMA32;
 
