@@ -1,76 +1,78 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.17])
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.14])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A5FC31547E2
-	for <iommu@lists.linux.dev>; Mon, 12 Aug 2024 07:05:43 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.17
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CD7D213E40F
+	for <iommu@lists.linux.dev>; Mon, 12 Aug 2024 07:14:12 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.14
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1723446345; cv=none; b=tuyFNXgYtg2l/M4Bb4pHcCoUhIabCTGuc1SJuAItMcZ8/owBn3c8RJprjbVnOZW02tC5Ne5X7/PX8pks7CtEpJ3YVV7jpZUVwRAiE8Hvgz6SQ2/pfUnaQsCS0gxETCIJJsh17C97+zEJFsg9z5aPoVe+ERYyUsk/vCfFiexk4zw=
+	t=1723446854; cv=none; b=tczw5ZT99zaEdfS2l9xrA1oEl4EcPvN09x4XBmBAHpSLxnM6x9+wL6fBUkRbfBlWZGYauEstQHmieSvim3TqFMC8I+qpCB0BuPZNLpOev2YeQcn3Uet83Z5uhISDN1m+L8d9ESp2UNP1qjvQCArn5fPYJvD0sx8TeDyOkEJaI6A=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1723446345; c=relaxed/simple;
-	bh=X0ZSpA6pYNtVglGXUJ8Hdn3nA3Sm4FX8yT8TZxIbhck=;
-	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
-	 MIME-Version; b=RyPmGloDhcqxRmGqTXh1Ar/byygQAA6LRjuHXS/+UNdUbo0OP0LuyzCYYqqetgJlTKfQ1WPQEOMscVCBCg732pt4n1QXx8ZHi4PV+CWARpvwRKKmIEFwndHC9ShqQFezgO+e/FMahJ+Gz//3+NuTc9scQF1KXkelvKWxoZQx5rc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=diBuGuSf; arc=none smtp.client-ip=192.198.163.17
+	s=arc-20240116; t=1723446854; c=relaxed/simple;
+	bh=2W/be8VISRZC7fVoJ9VGu3iMrIsNaD0YF4i34a1dFE4=;
+	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version; b=Hi1jiEp482Y8fczYkru+oS53uT45E9M0clsiPrzeHgcB9Zv9Md52v8KcEGcC5NUFvM0loIA9M14dYhijbEQdfz82dS3/jBF+BVbin9VM/6l7vkgDHyaZwpp4pPfeuBmM3K/0inovoLjBYCXRHdPI4Nx7KT5B2UOB1VYLbasMIQM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=R56Zd5iG; arc=none smtp.client-ip=192.198.163.14
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="diBuGuSf"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="R56Zd5iG"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1723446344; x=1754982344;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=X0ZSpA6pYNtVglGXUJ8Hdn3nA3Sm4FX8yT8TZxIbhck=;
-  b=diBuGuSfEQLQfqfskCsLaWuVSmSp/VwNCJJ/BJuDsAsVEdbdOaZBQDo3
-   Cl1GzXcTCka1QrDgoGxRciEDYUporqSfJyg3BijnEu+gjhIr3e/8rP7NW
-   Uk0LQSIwDfQmEixvF+tqGFWuqeml1xHCdzXSNUBHtsCy855UGDQ3A2fcR
-   sxRfV7oxHWbD04oz4stwge5etKCxGu4S2+9T7nkX/Zd3cWBgFQJJqJGn1
-   hg/JPMgBeysFz5lLDgDNEsxmvqftDgAAuN/uXAq7CyvByJ6S8lHPk7s18
-   tHYx9V5Fg/W+ptR1w0rSpReI6bHIhfKs8nN2awZ2ou22lR2WU+CC4n09o
-   w==;
-X-CSE-ConnectionGUID: CaLG+k0vQYqRMLE5nVlkkA==
-X-CSE-MsgGUID: 3PZ/rFMEROedsonB3neSmg==
-X-IronPort-AV: E=McAfee;i="6700,10204,11161"; a="21418187"
+  t=1723446853; x=1754982853;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=2W/be8VISRZC7fVoJ9VGu3iMrIsNaD0YF4i34a1dFE4=;
+  b=R56Zd5iGKYcoDTzZpVbxZJRuAhRSHaMpGDDN01Na6WgPSaRoYAPmvlQZ
+   hp1gmqFluhh4EgSio8eXNYSy0eViq1dCJVVZtI1/nRcdgSCj0PI7nxfSx
+   OWGm8F0FXJ75cFLdtgPYzAYBFMqpA/tchRfDGGFrFFZnNVbUz8ls+SYqj
+   F3k/pLWMgXCUgMAqF3i9p9nNTl8LM+NcK7daxTQVcmjceXMF6sFe8LzQT
+   DClw8M4qlW6sWjY8xiy9fsyf2HuvMym+CdxLsX3I5fQsVCwq1jdzO2285
+   RWUtZRlRu1z5bbCRpTIKQSMYYPGiw7YGyujqKBTzZzbFK/t6NsBil4tY4
+   A==;
+X-CSE-ConnectionGUID: m7c7l7Q1Qka5/Jonha8mJw==
+X-CSE-MsgGUID: em0PrOxMQ+WaYVJ3IaaIbg==
+X-IronPort-AV: E=McAfee;i="6700,10204,11161"; a="21711533"
 X-IronPort-AV: E=Sophos;i="6.09,282,1716274800"; 
-   d="scan'208";a="21418187"
-Received: from orviesa010.jf.intel.com ([10.64.159.150])
-  by fmvoesa111.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Aug 2024 00:05:43 -0700
-X-CSE-ConnectionGUID: B1d9f9FpScSKBHKsscuddg==
-X-CSE-MsgGUID: 4UYjLl2eTyOw7y8yheaagw==
+   d="scan'208";a="21711533"
+Received: from fmviesa007.fm.intel.com ([10.60.135.147])
+  by fmvoesa108.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Aug 2024 00:14:11 -0700
+X-CSE-ConnectionGUID: OLEmc47wRB6veAq2mjcdLw==
+X-CSE-MsgGUID: r/FxCR4NT760l1EVOg/r5A==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.09,282,1716274800"; 
-   d="scan'208";a="58070144"
+   d="scan'208";a="57823793"
 Received: from allen-box.sh.intel.com ([10.239.159.127])
-  by orviesa010.jf.intel.com with ESMTP; 12 Aug 2024 00:05:39 -0700
+  by fmviesa007.fm.intel.com with ESMTP; 12 Aug 2024 00:14:06 -0700
 From: Lu Baolu <baolu.lu@linux.intel.com>
-To: Russell King <linux@armlinux.org.uk>,
-	Inki Dae <inki.dae@samsung.com>,
-	Seung-Woo Kim <sw0312.kim@samsung.com>,
-	Kyungmin Park <kyungmin.park@samsung.com>,
+To: Karol Herbst <kherbst@redhat.com>,
+	Lyude Paul <lyude@redhat.com>,
+	Danilo Krummrich <dakr@redhat.com>,
 	David Airlie <airlied@gmail.com>,
 	Daniel Vetter <daniel@ffwll.ch>,
-	Krzysztof Kozlowski <krzk@kernel.org>,
-	Alim Akhtar <alim.akhtar@samsung.com>,
+	Thierry Reding <thierry.reding@gmail.com>,
+	Jonathan Hunter <jonathanh@nvidia.com>,
+	Sandy Huang <hjc@rock-chips.com>,
+	Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
+	Maxime Ripard <mripard@kernel.org>,
+	Thomas Zimmermann <tzimmermann@suse.de>,
+	Mikko Perttunen <mperttunen@nvidia.com>,
 	Joerg Roedel <joro@8bytes.org>,
 	Will Deacon <will@kernel.org>,
 	Robin Murphy <robin.murphy@arm.com>,
 	Jason Gunthorpe <jgg@ziepe.ca>,
 	Kevin Tian <kevin.tian@intel.com>
-Cc: Yi Liu <yi.l.liu@intel.com>,
-	iommu@lists.linux.dev,
+Cc: dri-devel@lists.freedesktop.org,
+	nouveau@lists.freedesktop.org,
+	linux-tegra@vger.kernel.org,
 	linux-arm-kernel@lists.infradead.org,
+	linux-rockchip@lists.infradead.org,
 	linux-media@vger.kernel.org,
-	dri-devel@lists.freedesktop.org,
+	iommu@lists.linux.dev,
 	linux-kernel@vger.kernel.org,
-	Lu Baolu <baolu.lu@linux.intel.com>,
-	Jason Gunthorpe <jgg@nvidia.com>
-Subject: [PATCH 2/2] ARM: dma-mapping: Use iommu_paging_domain_alloc()
-Date: Mon, 12 Aug 2024 15:02:02 +0800
-Message-Id: <20240812070202.9366-2-baolu.lu@linux.intel.com>
+	Lu Baolu <baolu.lu@linux.intel.com>
+Subject: [PATCH 1/3] drm/nouveau/tegra: Use iommu_paging_domain_alloc()
+Date: Mon, 12 Aug 2024 15:10:32 +0800
+Message-Id: <20240812071034.9443-1-baolu.lu@linux.intel.com>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20240812070202.9366-1-baolu.lu@linux.intel.com>
-References: <20240812070202.9366-1-baolu.lu@linux.intel.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -79,34 +81,31 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-Since arm_iommu_create_mapping() now accepts the device, let's replace
-iommu_domain_alloc() with iommu_paging_domain_alloc() to retire the former.
+In nvkm_device_tegra_probe_iommu(), a paging domain is allocated for @dev
+and attached to it on success. Use iommu_paging_domain_alloc() to make it
+explicit.
 
 Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
-Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
-Link: https://lore.kernel.org/r/20240610085555.88197-18-baolu.lu@linux.intel.com
+Link: https://lore.kernel.org/r/20240610085555.88197-7-baolu.lu@linux.intel.com
 ---
- arch/arm/mm/dma-mapping.c | 6 ++++--
- 1 file changed, 4 insertions(+), 2 deletions(-)
+ drivers/gpu/drm/nouveau/nvkm/engine/device/tegra.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/arch/arm/mm/dma-mapping.c b/arch/arm/mm/dma-mapping.c
-index 52f9c56cc3cb..88c2d68a69c9 100644
---- a/arch/arm/mm/dma-mapping.c
-+++ b/arch/arm/mm/dma-mapping.c
-@@ -1585,9 +1585,11 @@ arm_iommu_create_mapping(struct device *dev, dma_addr_t base, u64 size)
+diff --git a/drivers/gpu/drm/nouveau/nvkm/engine/device/tegra.c b/drivers/gpu/drm/nouveau/nvkm/engine/device/tegra.c
+index 87caa4a72921..763c4c2925f9 100644
+--- a/drivers/gpu/drm/nouveau/nvkm/engine/device/tegra.c
++++ b/drivers/gpu/drm/nouveau/nvkm/engine/device/tegra.c
+@@ -120,8 +120,8 @@ nvkm_device_tegra_probe_iommu(struct nvkm_device_tegra *tdev)
+ 	mutex_init(&tdev->iommu.mutex);
  
- 	spin_lock_init(&mapping->lock);
+ 	if (device_iommu_mapped(dev)) {
+-		tdev->iommu.domain = iommu_domain_alloc(&platform_bus_type);
+-		if (!tdev->iommu.domain)
++		tdev->iommu.domain = iommu_paging_domain_alloc(dev);
++		if (IS_ERR(tdev->iommu.domain))
+ 			goto error;
  
--	mapping->domain = iommu_domain_alloc(dev->bus);
--	if (!mapping->domain)
-+	mapping->domain = iommu_paging_domain_alloc(dev);
-+	if (IS_ERR(mapping->domain)) {
-+		err = PTR_ERR(mapping->domain);
- 		goto err4;
-+	}
- 
- 	kref_init(&mapping->kref);
- 	return mapping;
+ 		/*
 -- 
 2.34.1
 
