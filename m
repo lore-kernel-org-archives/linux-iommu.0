@@ -1,73 +1,64 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.13])
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1358C15886B
-	for <iommu@lists.linux.dev>; Mon, 12 Aug 2024 07:24:44 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.13
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 08F1915098A
+	for <iommu@lists.linux.dev>; Mon, 12 Aug 2024 07:29:18 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1723447485; cv=none; b=pmDwv/FtbfDfgiUe6N39RX1ZX5uWMMwOPxPPILrBMENtQ2LougQT0Dgt6cjpB9c8KtU3OTgQjRyk2nRD1AKw8pqUdOMOlHqj5Q7D5/7ey+TYoL5LnL+80ldx3PSe3hsuu3P8CvsvxHqxLCo0QeyXgT2Kjptc0FZgmwYOMXk2Gf4=
+	t=1723447760; cv=none; b=IDkTBdPzWOjR5Eoi2JAreqYuh6oZ9aQRt+K2/9bJFW1k6n+3Fk06alpUuRkTsHo42FP5WYFjeDysJJoajOQuFEbGMIfGhlCoF/DuG4jAzYgYhh++N9vTP6RM1OuoBWGjGrP48+Xg+uZPHuxsPfIRKVgOvyqkD3stZPnlKDPoC9I=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1723447485; c=relaxed/simple;
-	bh=M4WD08AFJfwxIMKP9dD+34UuQOtKj8NZVES++ZlP7r8=;
-	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
-	 MIME-Version; b=dNaAmHvY0vUxnH0PF+w8qg2UuDC5WGOA04lglx9sGjjgdkNNAcd29vvi37X5YibfPKpps3UXh/pdq8j3TqGsymqvuqLK/pUyYlJKgMmRtm+C3FVgnJRsUoI65nwx6ETisHFAqd7e14xaiacNeBhD10BNA/lg4AM6ylL/pvuBfmc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=DSL2YLOf; arc=none smtp.client-ip=198.175.65.13
+	s=arc-20240116; t=1723447760; c=relaxed/simple;
+	bh=e0LBAejigITG9AP6jtpikNxNxU3HNaCX57Mb/ZLuVkc=;
+	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version; b=c7dv86bhCNYDXbr5h8sO6jEYoYdwfalYNDdFDnLyx+dDpFGv7tpvEIzzWKcYm5/cQOB39/zK+jRVKYY2q2Fq+mo5M3h77jcPGqCJB0xPMUr+q5V1BJXpuIQnYyMUfJcqezVLU5OxxyGL3bIm3d9rXUP91p8Bow8tR0pubtaUXtM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=dJfSQ1r1; arc=none smtp.client-ip=198.175.65.18
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="DSL2YLOf"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="dJfSQ1r1"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1723447484; x=1754983484;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=M4WD08AFJfwxIMKP9dD+34UuQOtKj8NZVES++ZlP7r8=;
-  b=DSL2YLOf62XpwOMeibz9FN1+mUA+53bL5Ap5tj05g5//CDdoOTMpIasf
-   yjJzrvgoFzKQAiLd25S+RNLi/NXtFIgbb8tm3JusfV6cAXsGgnoAppSWG
-   ozukNA7ZB9XJA9RPE8gaZ+sg1BVsw2vxce4YIhSaK3oSay3dQhlfV3E64
-   Bjf+JUU1aOU0sxLWfmRV2xW0tDzsoOiK79ikN0LIqeGTZPpFZSr1nWAB5
-   DfGBkbjUz6/lgTc9em1wHojNFTyTmzgi80mURZHmB/+dvARcofeGN43mX
-   /s9JKsOFfETw8y35d6gJ0JaX05C8VFNRUYxyraE6nt/6hg7QgUkBkX/nH
+  t=1723447759; x=1754983759;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=e0LBAejigITG9AP6jtpikNxNxU3HNaCX57Mb/ZLuVkc=;
+  b=dJfSQ1r1PQxn0kdisNIVNlr2zQyQyWQAPOaSLW1/l4UJnvo31y7plJRg
+   pJ/7jVOALVKSnTMwBP1rD2FMARVAsJNoqf/5q9o9PLB6I9xz9ycIdim6D
+   0jaw/D+sIVRObPrEUfHX77vupl3hekIg+rLVqdGSNT3fVkRl72HYe1+mf
+   8fOtFtgh9mYIRqVKnL7sjC93exxqZrTPkuvJkFyIMeiJDnpD3c+pEEZq6
+   B9BQfJ0rA/NoPrpMw/1cplPunCsLzmlN92Fx0LzdaE40DSsvvz5ZLN2Kz
+   Fa31QAPDn8PIXJLhdf7F2pRltbaxYe+svNlF2MAR2BqxdF04LQtAbHNUl
    Q==;
-X-CSE-ConnectionGUID: DMsznj/mQqCYgyJ21T6LZw==
-X-CSE-MsgGUID: MvyEEgZuQGGqFPsuf+efGg==
-X-IronPort-AV: E=McAfee;i="6700,10204,11161"; a="32691593"
+X-CSE-ConnectionGUID: mw/6wyBgRJKgmAqjf3JPeQ==
+X-CSE-MsgGUID: TGhqGwV+T1aTflRXV3gsWA==
+X-IronPort-AV: E=McAfee;i="6700,10204,11161"; a="21686647"
 X-IronPort-AV: E=Sophos;i="6.09,282,1716274800"; 
-   d="scan'208";a="32691593"
-Received: from fmviesa004.fm.intel.com ([10.60.135.144])
-  by orvoesa105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Aug 2024 00:24:44 -0700
-X-CSE-ConnectionGUID: LhQxLe41QF2DxBJXFNM/Ww==
-X-CSE-MsgGUID: x1X5zubTSTiooV29cneh8g==
+   d="scan'208";a="21686647"
+Received: from orviesa008.jf.intel.com ([10.64.159.148])
+  by orvoesa110.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Aug 2024 00:29:10 -0700
+X-CSE-ConnectionGUID: ftLXCe6zSOeVfNj73MeBtA==
+X-CSE-MsgGUID: Haii5Zw9R/2Xjpz6GDYbrA==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.09,282,1716274800"; 
-   d="scan'208";a="62829623"
+   d="scan'208";a="58894812"
 Received: from allen-box.sh.intel.com ([10.239.159.127])
-  by fmviesa004.fm.intel.com with ESMTP; 12 Aug 2024 00:24:39 -0700
+  by orviesa008.jf.intel.com with ESMTP; 12 Aug 2024 00:29:06 -0700
 From: Lu Baolu <baolu.lu@linux.intel.com>
-To: Dmitry Osipenko <digetx@gmail.com>,
-	Mauro Carvalho Chehab <mchehab@kernel.org>,
-	Thierry Reding <thierry.reding@gmail.com>,
-	Jonathan Hunter <jonathanh@nvidia.com>,
-	Stanimir Varbanov <stanimir.k.varbanov@gmail.com>,
-	Vikash Garodia <quic_vgarodia@quicinc.com>,
+To: Christophe Leroy <christophe.leroy@csgroup.eu>,
 	Joerg Roedel <joro@8bytes.org>,
 	Will Deacon <will@kernel.org>,
 	Robin Murphy <robin.murphy@arm.com>,
 	Jason Gunthorpe <jgg@ziepe.ca>,
 	Kevin Tian <kevin.tian@intel.com>
-Cc: linux-media@vger.kernel.org,
-	linux-tegra@vger.kernel.org,
-	linux-arm-msm@vger.kernel.org,
+Cc: linuxppc-dev@lists.ozlabs.org,
+	linux-arm-kernel@lists.infradead.org,
 	iommu@lists.linux.dev,
 	linux-kernel@vger.kernel.org,
 	Lu Baolu <baolu.lu@linux.intel.com>,
 	Jason Gunthorpe <jgg@nvidia.com>
-Subject: [PATCH 2/2] media: venus: firmware: Use iommu_paging_domain_alloc()
-Date: Mon, 12 Aug 2024 15:21:05 +0800
-Message-Id: <20240812072105.9578-2-baolu.lu@linux.intel.com>
+Subject: [PATCH 1/1] soc/fsl/qbman: Use iommu_paging_domain_alloc()
+Date: Mon, 12 Aug 2024 15:25:27 +0800
+Message-Id: <20240812072527.9660-1-baolu.lu@linux.intel.com>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20240812072105.9578-1-baolu.lu@linux.intel.com>
-References: <20240812072105.9578-1-baolu.lu@linux.intel.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -76,35 +67,35 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-An iommu domain is allocated in venus_firmware_init() and is attached to
-core->fw.dev in the same function. Use iommu_paging_domain_alloc() to
-make it explicit.
+An iommu domain is allocated in portal_set_cpu() and is attached to
+pcfg->dev in the same function.
+
+Use iommu_paging_domain_alloc() to make it explicit.
 
 Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
 Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
-Link: https://lore.kernel.org/r/20240610085555.88197-10-baolu.lu@linux.intel.com
+Link: https://lore.kernel.org/r/20240610085555.88197-14-baolu.lu@linux.intel.com
 ---
- drivers/media/platform/qcom/venus/firmware.c | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+ drivers/soc/fsl/qbman/qman_portal.c | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/media/platform/qcom/venus/firmware.c b/drivers/media/platform/qcom/venus/firmware.c
-index fe7da2b30482..66a18830e66d 100644
---- a/drivers/media/platform/qcom/venus/firmware.c
-+++ b/drivers/media/platform/qcom/venus/firmware.c
-@@ -316,10 +316,10 @@ int venus_firmware_init(struct venus_core *core)
+diff --git a/drivers/soc/fsl/qbman/qman_portal.c b/drivers/soc/fsl/qbman/qman_portal.c
+index e23b60618c1a..456ef5d5c199 100644
+--- a/drivers/soc/fsl/qbman/qman_portal.c
++++ b/drivers/soc/fsl/qbman/qman_portal.c
+@@ -48,9 +48,10 @@ static void portal_set_cpu(struct qm_portal_config *pcfg, int cpu)
+ 	struct device *dev = pcfg->dev;
+ 	int ret;
  
- 	core->fw.dev = &pdev->dev;
- 
--	iommu_dom = iommu_domain_alloc(&platform_bus_type);
--	if (!iommu_dom) {
-+	iommu_dom = iommu_paging_domain_alloc(core->fw.dev);
-+	if (IS_ERR(iommu_dom)) {
- 		dev_err(core->fw.dev, "Failed to allocate iommu domain\n");
--		ret = -ENOMEM;
-+		ret = PTR_ERR(iommu_dom);
- 		goto err_unregister;
+-	pcfg->iommu_domain = iommu_domain_alloc(&platform_bus_type);
+-	if (!pcfg->iommu_domain) {
++	pcfg->iommu_domain = iommu_paging_domain_alloc(dev);
++	if (IS_ERR(pcfg->iommu_domain)) {
+ 		dev_err(dev, "%s(): iommu_domain_alloc() failed", __func__);
++		pcfg->iommu_domain = NULL;
+ 		goto no_iommu;
  	}
- 
+ 	ret = fsl_pamu_configure_l1_stash(pcfg->iommu_domain, cpu);
 -- 
 2.34.1
 
