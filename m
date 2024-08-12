@@ -1,274 +1,298 @@
-Received: from NAM12-BN8-obe.outbound.protection.outlook.com (mail-bn8nam12on2079.outbound.protection.outlook.com [40.107.237.79])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-ej1-f46.google.com (mail-ej1-f46.google.com [209.85.218.46])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 959B3139CFE
-	for <iommu@lists.linux.dev>; Mon, 12 Aug 2024 04:23:42 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.237.79
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1723436625; cv=fail; b=PCtJoC+V6VxAaeCpCyXV60KtW9KQaqMffiwaZndrLCBr5m2nZat86zLwZX7xtE8fBPaLkHoCLsjffl5iTkDng0SldsBVsL/nGB5mWyf8Cq+QDhkeryKGMNEPbhS6U+Tzc+c/CTf5s3VI4ZErSQU3Jg/6ZlfKzZsxGWJ34k7VnkE=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1723436625; c=relaxed/simple;
-	bh=0vKOIx+/LH457okytopGQguUZEh5lYVBZK7ig4dbXHY=;
-	h=Message-ID:Date:Subject:To:Cc:References:From:In-Reply-To:
-	 Content-Type:MIME-Version; b=Itqp17WhNILKk3PaFGnvQqrukS1aH52kCE1k3Xa6ziXnJsFPc7xc5Y5EMjgZMLy9lKdzVVPEglTep9vaF9VghybMB7VgcTzIuOj6CGbv+jCbFvNsUl14C66fXFzSEzLqjMVzr8ZCDz50Rcrpmto8wPJIdCT71NOqVZ88TMumcfc=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=jMF7dyN+; arc=fail smtp.client-ip=40.107.237.79
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EE19D14D711
+	for <iommu@lists.linux.dev>; Mon, 12 Aug 2024 05:52:32 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.218.46
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1723441955; cv=none; b=Qsmo/JWSrbzxxeE8bhSuAAUw217Zd9hhcc5n4yynCZFNXQ8QNuaAa2Yl6vsglpTMhO9OERN3A/cZg42uFugJmiA+YeKMQ0lsc6DKd8lRYHy42IxAENVsV22kgYQLPjPB7Mrg/2izrawhE4fzdm8nbKWVujLkwU41jfQQ9RecOYA=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1723441955; c=relaxed/simple;
+	bh=+jF/0UHCz+92Kn5b+ZdcYKfaZPYw3KWvlAIdXWehlHo=;
+	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=GplOPLjLVcS9zpIoot+5d+IevYAyqzRclLbXNg3TSDQjByM4PAgeQ9X7/xKCj1nALCqIFdRPsDCD8zZL+ASA9sHIcBM6gc15S2WnRSYLT9Y4cwFXOczvoTsW+lehG7A3lytPm47GuY1+4OqeygMeyafBZGWpERQtoJefS+E1AGI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com; spf=pass smtp.mailfrom=suse.com; dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b=R3tRRXVS; arc=none smtp.client-ip=209.85.218.46
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=suse.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="jMF7dyN+"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=EdlTQcaRwSVVoLZRXschvSWec3giXdnS9ZSnqo+lq1Oe6UROlOYNec39ICpoFnCyDbWv0CMLtkTN9M6UmGbYb/15BUc536ToOCSM89gxLOOlUtKwr7Am5GWJrYw0KGkh9HHg70R/fKbx81lzffwkDnDyan1yO+MocyGyd2C0pFEv0YH9GsI52zAbuT6Rqq/BifVbpBZwq0CwNzDaM70tHKAMmaSZZvrCPq/093YCBMHA91kUOPaawVynYMzhx5vp2gDZiFzkNP6K74G0xH4PGeRIaSlwQ3xL4ADia5XXPdu0invkcvJFrZK6w8G1MzwR2kSlwyPyy7yN7nGTbOSkJQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=Bzt+NfQ8ejNxUcFIO21AQAq7JJPlAnq1NcmxdYMxNo4=;
- b=QEG058OCjqbaNQEXBZ/KxEZW8PJFLnrN1+Fm3hbs6KZhwRX1VLHv2I0mgjqN/oVC8iW/2myH/QvOkq5q32KQko/LM49xILiQAEgbM71W8Sz0tW8MyzOYVNIgGMpNZUz7aySXs7uqY03lYvd2mLSqIGyEX6BZIUeLB5f3ehQqo5imAEriTI4qdNOPK3+TabFyTEROijZ6GaoSQ7v8LJpCnRA8wJ6TvHwj7dsVckKqY4A1tASoetFdqtxr9fymxZO6GU4w7/qCwN3vphTwSPjd4bLazoy0BLNqIUzSw8GuPMw40Za4cMy8Hn7sA9HUJ1gjcx2+/e2ZQBEwF2hw/EsFyQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=Bzt+NfQ8ejNxUcFIO21AQAq7JJPlAnq1NcmxdYMxNo4=;
- b=jMF7dyN+a/4oxpq0bv5F24oCHL22rk1M2stFKilT8hzsEwSpJOhaCjiBXfPRIe1JyWooUv3Qk6JnTasW6G/JTOswj97wcj0+cUP7oHBK8XYhLfmmGQHjfwT49hxoCysN9Apb4ReLxBY2p4t77i5SWlCTNk76OJgMJVRO99oEbR4f3Gcy1qirxEDDizi+uXerG1VVIZf+FusSsFCy+OV7HQWUzU5zw2PvwzF7AGyH4ZLprnjTozkVRs2QYncpWYR00m81VPNXm6euwxv0PBLNZstEgIKpJwEOZvgbyEvJB5CADotB+EhvszOoDQbH2ZPcKOEDo9bPzzRcdWNZsQKp2A==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-Received: from BL3PR12MB9052.namprd12.prod.outlook.com (2603:10b6:208:3bb::14)
- by DS0PR12MB6533.namprd12.prod.outlook.com (2603:10b6:8:c2::10) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7849.20; Mon, 12 Aug
- 2024 04:23:38 +0000
-Received: from BL3PR12MB9052.namprd12.prod.outlook.com
- ([fe80::d7e1:595e:d907:90d3]) by BL3PR12MB9052.namprd12.prod.outlook.com
- ([fe80::d7e1:595e:d907:90d3%5]) with mapi id 15.20.7849.019; Mon, 12 Aug 2024
- 04:23:38 +0000
-Message-ID: <2696ea8f-1b36-4c14-8ac0-70803de2680c@nvidia.com>
-Date: Mon, 12 Aug 2024 09:53:33 +0530
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH V4] iommu/io-pgtable-arm: Optimise non-coherent unmap
-To: will@kernel.org, robin.murphy@arm.com, joro@8bytes.org
-Cc: linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev,
- linux-kernel@vger.kernel.org, linux-tegra@vger.kernel.org
-References: <20240806105135.218089-1-amhetre@nvidia.com>
-Content-Language: en-US
-From: Ashish Mhetre <amhetre@nvidia.com>
-In-Reply-To: <20240806105135.218089-1-amhetre@nvidia.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: PN3PR01CA0009.INDPRD01.PROD.OUTLOOK.COM
- (2603:1096:c01:95::17) To BL3PR12MB9052.namprd12.prod.outlook.com
- (2603:10b6:208:3bb::14)
+	dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b="R3tRRXVS"
+Received: by mail-ej1-f46.google.com with SMTP id a640c23a62f3a-a7d89bb07e7so412481266b.3
+        for <iommu@lists.linux.dev>; Sun, 11 Aug 2024 22:52:32 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=suse.com; s=google; t=1723441951; x=1724046751; darn=lists.linux.dev;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:subject:cc:to:from:date:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=xLZ35+IU8yTpW/0qUhS27F2h1YLsbUiAnfQoXC1WVeQ=;
+        b=R3tRRXVSPRbi8hYhGnqkuLujbjoRG4OoLLTfhl5RwfdvDrjG9shSOZnGvLQKZLn1Wu
+         1M0XlcyNa3WKIHe57OD9xMcxFjdRVXdrjWKgtiYSQJYM5FHp8RJqPseAjO9l3YJh3ivl
+         6w+YZYpabf8+cS90GCjzpafUHdic9t1SccHew7W10eocxC4reED/2X7r5Lh8vkgedn6P
+         pAFlWg1nxFP16gAULZwb+v1snXP6U2JEhIQKp+nU+/tMCGAfpBQ7XWfSmHp12xBwgz0X
+         Uru2nm2ZoOiu129daYUQt1w2K8hKR4Z/UgRC5RbZ3tS6q9GKyVzngB2BzOEsRrFegVjA
+         kIQw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1723441951; x=1724046751;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:subject:cc:to:from:date:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=xLZ35+IU8yTpW/0qUhS27F2h1YLsbUiAnfQoXC1WVeQ=;
+        b=ozEY2EqpYyfMcRwF7IsuO5AX6Szf65PR+4iplK+odm2/BLrLjJJlugPFQB9qBfolyS
+         TtSRBdJ8hlNKjbhviTHEfHvJTQxFOQqBoM0HRP3wmo3TRkPjp0+uhmn7vpPgo3HngU1u
+         xaZiZOMY8lEoWrtzhINK6jUgu8vgzREPfLQkd3ERdKERKXYQtLBzm5q+R2odrayw6yvb
+         LksLLe6RrZMCyET81wyHYGBmQ2l4VnX322NDFgipvvLvaSZBxjGpVZzXCEMzKlrAcsPr
+         l6h5VfygjMkZZIb3xg31zTsMpUvQTobv1oGk+PL4VgPeoBlSEDfQdmXGSPl21WllZN79
+         dUXA==
+X-Forwarded-Encrypted: i=1; AJvYcCVWLezMhOTuyNJObvTKXIW2AZt8A5jB7rpGt/03+sf4shZ4uOaEv59jajp+QcaNxcUGNjdtwlz02SWgY2dM5fai2PV6C04=
+X-Gm-Message-State: AOJu0YxUcDe6qihWu/v3fiKK9M5ky3yKLMMAl03PqX7lHZRGHUz0KBsA
+	QHdd/j2dslnw9pOtxMH0NValkLEkyc4hsRRBnXIZsGv+wFHLweHQ1rMCgJSGMiM=
+X-Google-Smtp-Source: AGHT+IFMvEB3G12c8wLUv6Tbdwb0/ALbjS7/MCfQmLzvHgcVkX7XPyPkeillfb+dwuofuhmb3Ikxng==
+X-Received: by 2002:a17:907:846:b0:a7a:bae8:f29e with SMTP id a640c23a62f3a-a80aa5dae5bmr689141666b.29.1723441951081;
+        Sun, 11 Aug 2024 22:52:31 -0700 (PDT)
+Received: from mordecai.tesarici.cz (dynamic-2a00-1028-83b8-1e7a-3010-3bd6-8521-caf1.ipv6.o2.cz. [2a00:1028:83b8:1e7a:3010:3bd6:8521:caf1])
+        by smtp.gmail.com with ESMTPSA id a640c23a62f3a-a80bb11c75asm200467366b.97.2024.08.11.22.52.30
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 11 Aug 2024 22:52:30 -0700 (PDT)
+Date: Mon, 12 Aug 2024 07:52:29 +0200
+From: Petr Tesarik <ptesarik@suse.com>
+To: Baruch Siach <baruch@tkos.co.il>
+Cc: Christoph Hellwig <hch@lst.de>, Marek Szyprowski
+ <m.szyprowski@samsung.com>, Catalin Marinas <catalin.marinas@arm.com>, Will
+ Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
+ iommu@lists.linux.dev, linux-arm-kernel@lists.infradead.org,
+ linux-kernel@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
+ linux-s390@vger.kernel.org, Ramon Fried <ramon@neureality.ai>, Elad Nachman
+ <enachman@marvell.com>, Petr =?UTF-8?B?VGVzYcWZw61r?= <petr@tesarici.cz>
+Subject: Re: [PATCH v6 RESED 1/2] dma: replace zone_dma_bits by
+ zone_dma_limit
+Message-ID: <20240812075229.7caf7bab@mordecai.tesarici.cz>
+In-Reply-To: <17c067618b93e5d71f19c37826d54db4299621a3.1723359916.git.baruch@tkos.co.il>
+References: <cover.1723359916.git.baruch@tkos.co.il>
+	<17c067618b93e5d71f19c37826d54db4299621a3.1723359916.git.baruch@tkos.co.il>
+X-Mailer: Claws Mail 4.3.0 (GTK 3.24.42; x86_64-suse-linux-gnu)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: BL3PR12MB9052:EE_|DS0PR12MB6533:EE_
-X-MS-Office365-Filtering-Correlation-Id: a143ad09-f665-4983-ca13-08dcba868a04
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;ARA:13230040|1800799024|366016|376014;
-X-Microsoft-Antispam-Message-Info:
-	=?utf-8?B?VFk0SERYVmVYMDEyT1RsQkMvVnJ2bzlXRUlVUVgvR1RrcEQzbVFRZE5jYnQ5?=
- =?utf-8?B?VGdKRThYL0VrNGtFTDVhWW43YnBWMzBucTF2anZEUlNtWFJ5Mk1FN2ZlTVNN?=
- =?utf-8?B?eWYwQUVXNjU0VEhBYjltREp2aE9OazJINUVENXptWkpNakdIbjBQUDFFOTNa?=
- =?utf-8?B?MTdLZ3dIYzNYK0dVdzlFWmJvK3dLc0lGZUdwR1N0Z2dYVmhuRnZidjZSMHF0?=
- =?utf-8?B?ZEt1OFFDbG5rSzhINXNESTN4OWZzYmJISStXZWk4V1BUbU41dGI1c3o2aGx0?=
- =?utf-8?B?RU1MUlBGdENWb0NNemRBN3dqalVHb2tlMll2aTFpYXFoTzJpclBFVE9MdjFX?=
- =?utf-8?B?aDBZRXpNU25LR2U0aE9LaDI3MzdzNWVMSDkrQ21ucHdBS0FpS2Ztb0hDV2cw?=
- =?utf-8?B?WEZUVU90eFBPS1RtS0pXS3NWL21tbU9tM1ZLZ2h5R2JLelJocEszMzd1MFkw?=
- =?utf-8?B?TVh2cWQ3RU5Md1YzNU5PanJUMnZuQktqN0ttaDNTdHJrVkFNRVA4bGxYaDZY?=
- =?utf-8?B?SERUQWJNcmZQeGxZbzlqUGpXTjB1azJ4dFlwWW1KNENobnZBbmJxd3p5K28w?=
- =?utf-8?B?L3d0NGp0M1Z3MmRZVCtsMWdXaFQ2bUlYeDZ4ekRDQ3BySis1Vjg2MVhBaHQ2?=
- =?utf-8?B?V3pJbWx3VmQrVjN0VDBHZHFxQ3NvZVVpYXVpakZoeUNWSC91dk9SaTlOdXZN?=
- =?utf-8?B?T2M5T2JwOUtwNVlPaVZUTVdPK2pwMGZuNTVHd0R1b1ZLZWRCN2h6UkdybWll?=
- =?utf-8?B?V3FjS1dEenV0QXhyZXRCcStIN2lBT2tzcHNkc0h3REtHRG81eDMzdzZnYWNm?=
- =?utf-8?B?WmpiNk14VTkvY3BBRVgxYTJpUEJraFlxWjM0T0RpSUZqUEUwSjVmVFBsMWR1?=
- =?utf-8?B?YndLMkU1elJJUEtWcWFscXZxUXJpQjJPekxxdHhHS2NYUDRGeXNlSkJuWDZL?=
- =?utf-8?B?cEVtcVZxdlNKaDlxK1Y2NjJ1R2VMV0taWmM0VkFGbmhYM3JBQnl2NmlZY3dk?=
- =?utf-8?B?V2g5THRwWjZucFNjeWwwQ3BLU29sSlgwakN6MzRMLzlwRXVHcnB2dmdpeDVw?=
- =?utf-8?B?TkdXRk1UUDNVdzVaamNiZFh4ZXNHb3hOTDF6YUJuaUFRL2Rsb016LzZWMXZ1?=
- =?utf-8?B?eFVIMS9Tdi96ekFkQ3RncVJRZDFFRDQweVVjYjkyN3dXTUpxSWdETkJlMGhs?=
- =?utf-8?B?TkRES25uUU10WVhZaXdJYTdlS0dyTm55V1lyRW9vZnpRUFI1WGpMc2ZocjR1?=
- =?utf-8?B?bnkzN0djSUo4OVlWNE1BN1F0ai9MZVIyWmFYTXZ6ZVE2WC9TUDNuZlFaNER6?=
- =?utf-8?B?a1MvUW1wWDNaY2ZBeUFTYlU2S3hGMVpreldJa0VwL3ZNaVByQm90ZzRTaWdZ?=
- =?utf-8?B?YzFSdWVmNHFSblN3Z04xdkhvN1NTd1NzTzVhSTZoZDRxOXB3cnVqVDVxM1A0?=
- =?utf-8?B?cEJrR0k3RlVpWm5IcG9ZQ3FhdmNTKzdkcUZseHViclZhbkhNaWFwRWQycEVh?=
- =?utf-8?B?Wm02TWplMGFJakVjWXMrR3pjalBRM3NFNmYvdGlNcjRQK2o5Wlo4T2VhVlY1?=
- =?utf-8?B?aGhCMXorckpMNEYvOXBoaTJjalIwNGNJdHJaRE9DRHUxSHlsRE5OcmprMzJx?=
- =?utf-8?B?TGlWWjNZcWptVC9ZRDNoN0JUSmpGYVpjVlFCUzczUzJvQ1BaYlMzdGxYbk1W?=
- =?utf-8?B?ZEFMdHpIMldJRzMwaHpmWlZJWXJ2SmtzZXl6WDV3djZOWHJKTHNYVFROYk1s?=
- =?utf-8?B?NTNNNzJxZFlvT2ZsMWFiMFpSaHQvMkV4UzhSVHFBajBIbzZBMUNiRTFPOW92?=
- =?utf-8?B?YXBnQ0kxb1UrR0daZmJUQT09?=
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BL3PR12MB9052.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(1800799024)(366016)(376014);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?utf-8?B?SG0yNzY2Nm5PQzNld0FSVjQvR1lSTmtZcDYwZFE1djVUMkdWT0FNUTdVcThD?=
- =?utf-8?B?eWdDdXB4VnNlak1JbDBwWXpWNzZNQkEzaFFwckVQUHJjZjNpTzNPWFB0Y0Zq?=
- =?utf-8?B?THRvcHg1Y25HVFMyZGJ1SWY4ZUNsZjI1Z0gyaWlBUjF1c0pzRlE1eHpPU2RT?=
- =?utf-8?B?elV5OUZaVEYrTFhhYW9FaEV5bjBuVnZ4Z2QrVDhVbjhDS2VzKzRYam9jZnV4?=
- =?utf-8?B?ZTdCK3lhblRtV3ptWW9xci8rOXY0QWVHWFBwbTk1L3YvOHVPR2ZxeENFK3U2?=
- =?utf-8?B?RmNZRGFtWHpnTW1jYW1hNWpBdEhVdzJaV056MmJucUhlbmhJSWFWOFhuYUZ2?=
- =?utf-8?B?TnM1NzNWMmNsdTJkY0NkUWlUMjQxSWJvbDdtZUMyNFFCZGxUeW00QlNuOVRo?=
- =?utf-8?B?WkhMNDViaUZEZ3RDWjZBTnF4V0NINnhMSHJ1WUJoQXhwdjdkdDR1cnFzQzc0?=
- =?utf-8?B?VGNWNnlPdTFXQzJMekdMYWxBRjkvOVorbmVmV0xTbE1UQjFwUTBlQS82ZUVT?=
- =?utf-8?B?VktocXRpOWVZQ29WNDAxTVZXY3J1ZU1tQmNzTVNYN0FlSDVvMkFpOXBxT04z?=
- =?utf-8?B?MnRHWkQxMVR0L2VlTmoxaTlLdS90Vmx0U0crZWtFR2FwOVZvZDNGbFZJTSt4?=
- =?utf-8?B?dmo0NndRNHFLVlpvQkFRRjB4WC9tTllZWE1HOFBndEFQSUM5TmRMd1NGTnlS?=
- =?utf-8?B?Q2R2VXViMTh4ZE5TWHB0OU9acCt2WHBzTUh2eDdNODhWSlY0VWEyUWU5bkJY?=
- =?utf-8?B?eVNJSnJHWXpsdkljYllTeHJqZnk3Q0I3aUN3VDRsMDA3VHlZT3duSHlqQWJL?=
- =?utf-8?B?Ykd2M01CN1dYV1B2QTczS2pNZFlaV1dUOVNLWW5lWEpsbVBuRTZlWDZnZjZR?=
- =?utf-8?B?OUkvMFBBMW03ME9SdDI3VHc4Z1AwWmJCUTFjRnUxRTZuUlBqNTBaeTFkNlZ6?=
- =?utf-8?B?ZWwrQkRVbVNHb1NjZzU4SDMvUFRabllpdEQzQ2pydVFXSHNFWDFoSDdERkRw?=
- =?utf-8?B?ZHlmd1RWRDE4OEVSUGZ3NXFsaWFocmJMTERZV0wvbGhCZWlmWE1VcVhNUFp5?=
- =?utf-8?B?dVFMRFFqcTdjeldlV2lqVEtXeS9YS1hGRWxCT3pIS3htQ2VtUGJBRi9PbzM1?=
- =?utf-8?B?VEYyZm1mT2hrempXRHdjeUNITCtXUDZYZXR5Nm94aXRMRktKc09reWwvNVRn?=
- =?utf-8?B?Smo3Y0xsN1dvYktaSjJmdkZQcmVnU3ZFL09MS0paQlNFYW1hWlN1WDhRMHVy?=
- =?utf-8?B?S2RjekRrV2w2cjFTdTlvd3doOC9TWUdjb3N4Y0FQTDVmNzdwL0VsMU5uV0pm?=
- =?utf-8?B?SXlLdUNXRDVjTGNwT3dINnNmc3VUdW1VSTB2NXp0bVlDRUJUY3NTajhJUDFX?=
- =?utf-8?B?TzM3OWVPNjhXVkh2MDgramlaWlp5S200YXdLcGw1QWZURFJmZjJvREJhZmtv?=
- =?utf-8?B?aUJhanBxS0x6UjJDREk3U05EY05JSmVqZERFSlRrWmViMzExYTRPQ1VjY0NB?=
- =?utf-8?B?ck1SUFVjbmljem43LzJDOXB2VHk0N0FDTlJVRUhjSm51NGcxdjJtUVJJRW12?=
- =?utf-8?B?QUpleXZXZlVwRmcxSFFoNnM2Z0t3b205RmM2NnlKdGNlL0xyYms5d25zb2VB?=
- =?utf-8?B?THVheTgwTURpVWJMMlYrdVVOSFNwMUVDUmV6K1AzVUMyWENwY1gvM0FIaGRj?=
- =?utf-8?B?dXZDS29UdlZWNWVLb3A5QXZ0dm5aeFI5N0gxYUUvdUorb2YycStjRnNiSm9n?=
- =?utf-8?B?c2NtLzhrUGhsbDFWbGdCdlpET2NUaEQ5YTBYWU5ObmkrS2tYaWN5RU5ZejNp?=
- =?utf-8?B?eUdYTXBkQUFGWDg5Wk0wdnF2VDR0SUd4d1lySGlSVlBFakgveTZIVStlbTVM?=
- =?utf-8?B?MWQyc3M5d0tCM0N5eDZZN1FULzU2NHZqNGFMMTkxS1JjaWZSc3lOdmNkMmhl?=
- =?utf-8?B?ZFRxekNCNmZldHk5bDdRcnZtQmpPYVFvY0ovV1VLQmJmQ21aT01VaWhrWmpH?=
- =?utf-8?B?bEVtMnhjSmVSTHNaT1FRNkZQWTVoS0FyNEUyazNidUJueWVRQzAxUDA0S3Ja?=
- =?utf-8?B?bmJSR1Q4VzFtZXZWVlc1ZXRBWlBSWlVVREZTQkU2UjBiMVRBVEU5VTZaWG1G?=
- =?utf-8?Q?lY7jZo41bTPzS+4fHgUi67MLl?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: a143ad09-f665-4983-ca13-08dcba868a04
-X-MS-Exchange-CrossTenant-AuthSource: BL3PR12MB9052.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 12 Aug 2024 04:23:38.6485
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: 8RMGUyyLpMzoIOAN0JUzXnZXPNZAVOzonhOoz3j7Gkc8FC7ptUZZsjF/3c/R+3mOFzzpS9qmGad7kkkeyW6pRg==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DS0PR12MB6533
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 
+On Sun, 11 Aug 2024 10:09:35 +0300
+Baruch Siach <baruch@tkos.co.il> wrote:
 
-On 8/6/2024 4:21 PM, Ashish Mhetre wrote:
-> The current __arm_lpae_unmap() function calls dma_sync() on individual
-> PTEs after clearing them. Overall unmap performance can be improved by
-> around 25% for large buffer sizes by combining the syncs for adjacent
-> leaf entries.
-> Optimize the unmap time by clearing all the leaf entries and issuing a
-> single dma_sync() for them.
-> Below is detailed analysis of average unmap latency(in us) with and
-> without this optimization obtained by running dma_map_benchmark for
-> different buffer sizes.
->
-> 		UnMap Latency(us)
-> Size	Without		With		% gain with
-> 	optimiztion	optimization	optimization
->
-> 4KB	3		3		0
-> 8KB	4		3.8		5
-> 16KB	6.1		5.4		11.48
-> 32KB	10.2		8.5		16.67
-> 64KB	18.5		14.9		19.46
-> 128KB	35		27.5		21.43
-> 256KB	67.5		52.2		22.67
-> 512KB	127.9		97.2		24.00
-> 1MB	248.6		187.4		24.62
-> 2MB	65.5		65.5		0
-> 4MB	119.2		119		0.17
->
-> Reviewed-by: Robin Murphy <robin.murphy@arm.com>
-> Signed-off-by: Ashish Mhetre <amhetre@nvidia.com>
+> From: Catalin Marinas <catalin.marinas@arm.com>
+> 
+> Hardware DMA limit might not be power of 2. When RAM range starts above
+> 0, say 4GB, DMA limit of 30 bits should end at 5GB. A single high bit
+> can not encode this limit.
+> 
+> Use plain address for DMA zone limit.
+> 
+> Since DMA zone can now potentially span beyond 4GB physical limit of
+> DMA32, make sure to use DMA zone for GFP_DMA32 allocations in that case.
+> 
+> Signed-off-by: Catalin Marinas <catalin.marinas@arm.com>
+> Co-developed-by: Baruch Siach <baruch@tkos.co.il>
+> Signed-off-by: Baruch Siach <baruch@tkos.co.il>
+
+LGTM.
+
+Reviewed-by: Petr Tesarik <ptesarik@suse.com>
+
+Petr T
+
 > ---
-> Changes in V2:
-> - Updated the commit message to be imperative.
-> - Fixed ptep at incorrect index getting cleared for non-leaf entries.
->
-> Changes in V3:
-> - Used loop-local variables and removed redundant function variables.
-> - Added check for zero-sized dma_sync in __arm_lpae_clear_pte().
-> - Merged both patches into this single patch by adding check for a
->    NULL gather in __arm_lpae_unmap() itself.
->
-> Changes in V4:
-> - Updated the subject in commit message to correctly reflect the changes
->    made in this patch.
-> ---
->   drivers/iommu/io-pgtable-arm.c | 31 +++++++++++++++++--------------
->   1 file changed, 17 insertions(+), 14 deletions(-)
->
-> diff --git a/drivers/iommu/io-pgtable-arm.c b/drivers/iommu/io-pgtable-arm.c
-> index f5d9fd1f45bf..6fecf3d9fe67 100644
-> --- a/drivers/iommu/io-pgtable-arm.c
-> +++ b/drivers/iommu/io-pgtable-arm.c
-> @@ -274,13 +274,13 @@ static void __arm_lpae_sync_pte(arm_lpae_iopte *ptep, int num_entries,
->   				   sizeof(*ptep) * num_entries, DMA_TO_DEVICE);
->   }
->   
-> -static void __arm_lpae_clear_pte(arm_lpae_iopte *ptep, struct io_pgtable_cfg *cfg)
-> +static void __arm_lpae_clear_pte(arm_lpae_iopte *ptep, struct io_pgtable_cfg *cfg, int num_entries)
->   {
-> +	for (int i = 0; i < num_entries; i++)
-> +		ptep[i] = 0;
->   
-> -	*ptep = 0;
-> -
-> -	if (!cfg->coherent_walk)
-> -		__arm_lpae_sync_pte(ptep, 1, cfg);
-> +	if (!cfg->coherent_walk && num_entries)
-> +		__arm_lpae_sync_pte(ptep, num_entries, cfg);
->   }
->   
->   static size_t __arm_lpae_unmap(struct arm_lpae_io_pgtable *data,
-> @@ -654,26 +654,29 @@ static size_t __arm_lpae_unmap(struct arm_lpae_io_pgtable *data,
->   		max_entries = ARM_LPAE_PTES_PER_TABLE(data) - unmap_idx_start;
->   		num_entries = min_t(int, pgcount, max_entries);
->   
-> -		while (i < num_entries) {
-> -			pte = READ_ONCE(*ptep);
-> +		/* Find and handle non-leaf entries */
-> +		for (i = 0; i < num_entries; i++) {
-> +			pte = READ_ONCE(ptep[i]);
->   			if (WARN_ON(!pte))
->   				break;
->   
-> -			__arm_lpae_clear_pte(ptep, &iop->cfg);
-> -
->   			if (!iopte_leaf(pte, lvl, iop->fmt)) {
-> +				__arm_lpae_clear_pte(&ptep[i], &iop->cfg, 1);
+>  arch/arm64/mm/init.c       | 30 +++++++++++++++---------------
+>  arch/powerpc/mm/mem.c      |  5 ++++-
+>  arch/s390/mm/init.c        |  2 +-
+>  include/linux/dma-direct.h |  2 +-
+>  kernel/dma/direct.c        |  6 +++---
+>  kernel/dma/pool.c          |  4 ++--
+>  kernel/dma/swiotlb.c       |  6 +++---
+>  7 files changed, 29 insertions(+), 26 deletions(-)
+> 
+> diff --git a/arch/arm64/mm/init.c b/arch/arm64/mm/init.c
+> index 9b5ab6818f7f..c45e2152ca9e 100644
+> --- a/arch/arm64/mm/init.c
+> +++ b/arch/arm64/mm/init.c
+> @@ -115,35 +115,35 @@ static void __init arch_reserve_crashkernel(void)
+>  }
+>  
+>  /*
+> - * Return the maximum physical address for a zone accessible by the given bits
+> - * limit. If DRAM starts above 32-bit, expand the zone to the maximum
+> + * Return the maximum physical address for a zone given its limit.
+> + * If DRAM starts above 32-bit, expand the zone to the maximum
+>   * available memory, otherwise cap it at 32-bit.
+>   */
+> -static phys_addr_t __init max_zone_phys(unsigned int zone_bits)
+> +static phys_addr_t __init max_zone_phys(phys_addr_t zone_limit)
+>  {
+> -	phys_addr_t zone_mask = DMA_BIT_MASK(zone_bits);
+>  	phys_addr_t phys_start = memblock_start_of_DRAM();
+>  
+>  	if (phys_start > U32_MAX)
+> -		zone_mask = PHYS_ADDR_MAX;
+> -	else if (phys_start > zone_mask)
+> -		zone_mask = U32_MAX;
+> +		zone_limit = PHYS_ADDR_MAX;
+> +	else if (phys_start > zone_limit)
+> +		zone_limit = U32_MAX;
+>  
+> -	return min(zone_mask, memblock_end_of_DRAM() - 1) + 1;
+> +	return min(zone_limit, memblock_end_of_DRAM() - 1) + 1;
+>  }
+>  
+>  static void __init zone_sizes_init(void)
+>  {
+>  	unsigned long max_zone_pfns[MAX_NR_ZONES]  = {0};
+> -	unsigned int __maybe_unused acpi_zone_dma_bits;
+> -	unsigned int __maybe_unused dt_zone_dma_bits;
+> -	phys_addr_t __maybe_unused dma32_phys_limit = max_zone_phys(32);
+> +	phys_addr_t __maybe_unused acpi_zone_dma_limit;
+> +	phys_addr_t __maybe_unused dt_zone_dma_limit;
+> +	phys_addr_t __maybe_unused dma32_phys_limit =
+> +		max_zone_phys(DMA_BIT_MASK(32));
+>  
+>  #ifdef CONFIG_ZONE_DMA
+> -	acpi_zone_dma_bits = fls64(acpi_iort_dma_get_max_cpu_address());
+> -	dt_zone_dma_bits = fls64(of_dma_get_max_cpu_address(NULL));
+> -	zone_dma_bits = min3(32U, dt_zone_dma_bits, acpi_zone_dma_bits);
+> -	arm64_dma_phys_limit = max_zone_phys(zone_dma_bits);
+> +	acpi_zone_dma_limit = acpi_iort_dma_get_max_cpu_address();
+> +	dt_zone_dma_limit = of_dma_get_max_cpu_address(NULL);
+> +	zone_dma_limit = min(dt_zone_dma_limit, acpi_zone_dma_limit);
+> +	arm64_dma_phys_limit = max_zone_phys(zone_dma_limit);
+>  	max_zone_pfns[ZONE_DMA] = PFN_DOWN(arm64_dma_phys_limit);
+>  #endif
+>  #ifdef CONFIG_ZONE_DMA32
+> diff --git a/arch/powerpc/mm/mem.c b/arch/powerpc/mm/mem.c
+> index d325217ab201..05b7f702b3f7 100644
+> --- a/arch/powerpc/mm/mem.c
+> +++ b/arch/powerpc/mm/mem.c
+> @@ -216,7 +216,7 @@ static int __init mark_nonram_nosave(void)
+>   * everything else. GFP_DMA32 page allocations automatically fall back to
+>   * ZONE_DMA.
+>   *
+> - * By using 31-bit unconditionally, we can exploit zone_dma_bits to inform the
+> + * By using 31-bit unconditionally, we can exploit zone_dma_limit to inform the
+>   * generic DMA mapping code.  32-bit only devices (if not handled by an IOMMU
+>   * anyway) will take a first dip into ZONE_NORMAL and get otherwise served by
+>   * ZONE_DMA.
+> @@ -230,6 +230,7 @@ void __init paging_init(void)
+>  {
+>  	unsigned long long total_ram = memblock_phys_mem_size();
+>  	phys_addr_t top_of_ram = memblock_end_of_DRAM();
+> +	int zone_dma_bits;
+>  
+>  #ifdef CONFIG_HIGHMEM
+>  	unsigned long v = __fix_to_virt(FIX_KMAP_END);
+> @@ -256,6 +257,8 @@ void __init paging_init(void)
+>  	else
+>  		zone_dma_bits = 31;
+>  
+> +	zone_dma_limit = DMA_BIT_MASK(zone_dma_bits);
 > +
->   				/* Also flush any partial walks */
->   				io_pgtable_tlb_flush_walk(iop, iova + i * size, size,
->   							  ARM_LPAE_GRANULE(data));
->   				__arm_lpae_free_pgtable(data, lvl + 1, iopte_deref(pte, data));
-> -			} else if (!iommu_iotlb_gather_queued(gather)) {
-> -				io_pgtable_tlb_add_page(iop, gather, iova + i * size, size);
->   			}
-> -
-> -			ptep++;
-> -			i++;
->   		}
->   
-> +		/* Clear the remaining entries */
-> +		__arm_lpae_clear_pte(ptep, &iop->cfg, i);
-> +
-> +		if (gather && !iommu_iotlb_gather_queued(gather))
-> +			for (int j = 0; j < i; j++)
-> +				io_pgtable_tlb_add_page(iop, gather, iova + j * size, size);
-> +
->   		return i * size;
->   	} else if (iopte_leaf(pte, lvl, iop->fmt)) {
->   		/*
-
-Hi all,
-
-Can you please review this patch and provide feedback?
-
-Thanks,
-Ashish Mhetre
+>  #ifdef CONFIG_ZONE_DMA
+>  	max_zone_pfns[ZONE_DMA]	= min(max_low_pfn,
+>  				      1UL << (zone_dma_bits - PAGE_SHIFT));
+> diff --git a/arch/s390/mm/init.c b/arch/s390/mm/init.c
+> index ddcd39ef4346..91fc2b91adfc 100644
+> --- a/arch/s390/mm/init.c
+> +++ b/arch/s390/mm/init.c
+> @@ -97,7 +97,7 @@ void __init paging_init(void)
+>  
+>  	vmem_map_init();
+>  	sparse_init();
+> -	zone_dma_bits = 31;
+> +	zone_dma_limit = DMA_BIT_MASK(31);
+>  	memset(max_zone_pfns, 0, sizeof(max_zone_pfns));
+>  	max_zone_pfns[ZONE_DMA] = virt_to_pfn(MAX_DMA_ADDRESS);
+>  	max_zone_pfns[ZONE_NORMAL] = max_low_pfn;
+> diff --git a/include/linux/dma-direct.h b/include/linux/dma-direct.h
+> index edbe13d00776..d7e30d4f7503 100644
+> --- a/include/linux/dma-direct.h
+> +++ b/include/linux/dma-direct.h
+> @@ -12,7 +12,7 @@
+>  #include <linux/mem_encrypt.h>
+>  #include <linux/swiotlb.h>
+>  
+> -extern unsigned int zone_dma_bits;
+> +extern u64 zone_dma_limit;
+>  
+>  /*
+>   * Record the mapping of CPU physical to DMA addresses for a given region.
+> diff --git a/kernel/dma/direct.c b/kernel/dma/direct.c
+> index 4480a3cd92e0..f2ba074a6a54 100644
+> --- a/kernel/dma/direct.c
+> +++ b/kernel/dma/direct.c
+> @@ -20,7 +20,7 @@
+>   * it for entirely different regions. In that case the arch code needs to
+>   * override the variable below for dma-direct to work properly.
+>   */
+> -unsigned int zone_dma_bits __ro_after_init = 24;
+> +u64 zone_dma_limit __ro_after_init = DMA_BIT_MASK(24);
+>  
+>  static inline dma_addr_t phys_to_dma_direct(struct device *dev,
+>  		phys_addr_t phys)
+> @@ -59,7 +59,7 @@ static gfp_t dma_direct_optimal_gfp_mask(struct device *dev, u64 *phys_limit)
+>  	 * zones.
+>  	 */
+>  	*phys_limit = dma_to_phys(dev, dma_limit);
+> -	if (*phys_limit <= DMA_BIT_MASK(zone_dma_bits))
+> +	if (*phys_limit <= zone_dma_limit)
+>  		return GFP_DMA;
+>  	if (*phys_limit <= DMA_BIT_MASK(32))
+>  		return GFP_DMA32;
+> @@ -580,7 +580,7 @@ int dma_direct_supported(struct device *dev, u64 mask)
+>  	 * part of the check.
+>  	 */
+>  	if (IS_ENABLED(CONFIG_ZONE_DMA))
+> -		min_mask = min_t(u64, min_mask, DMA_BIT_MASK(zone_dma_bits));
+> +		min_mask = min_t(u64, min_mask, zone_dma_limit);
+>  	return mask >= phys_to_dma_unencrypted(dev, min_mask);
+>  }
+>  
+> diff --git a/kernel/dma/pool.c b/kernel/dma/pool.c
+> index d10613eb0f63..7b04f7575796 100644
+> --- a/kernel/dma/pool.c
+> +++ b/kernel/dma/pool.c
+> @@ -70,9 +70,9 @@ static bool cma_in_zone(gfp_t gfp)
+>  	/* CMA can't cross zone boundaries, see cma_activate_area() */
+>  	end = cma_get_base(cma) + size - 1;
+>  	if (IS_ENABLED(CONFIG_ZONE_DMA) && (gfp & GFP_DMA))
+> -		return end <= DMA_BIT_MASK(zone_dma_bits);
+> +		return end <= zone_dma_limit;
+>  	if (IS_ENABLED(CONFIG_ZONE_DMA32) && (gfp & GFP_DMA32))
+> -		return end <= DMA_BIT_MASK(32);
+> +		return end <= max(DMA_BIT_MASK(32), zone_dma_limit);
+>  	return true;
+>  }
+>  
+> diff --git a/kernel/dma/swiotlb.c b/kernel/dma/swiotlb.c
+> index df68d29740a0..abcf3fa63a56 100644
+> --- a/kernel/dma/swiotlb.c
+> +++ b/kernel/dma/swiotlb.c
+> @@ -450,9 +450,9 @@ int swiotlb_init_late(size_t size, gfp_t gfp_mask,
+>  	if (!remap)
+>  		io_tlb_default_mem.can_grow = true;
+>  	if (IS_ENABLED(CONFIG_ZONE_DMA) && (gfp_mask & __GFP_DMA))
+> -		io_tlb_default_mem.phys_limit = DMA_BIT_MASK(zone_dma_bits);
+> +		io_tlb_default_mem.phys_limit = zone_dma_limit;
+>  	else if (IS_ENABLED(CONFIG_ZONE_DMA32) && (gfp_mask & __GFP_DMA32))
+> -		io_tlb_default_mem.phys_limit = DMA_BIT_MASK(32);
+> +		io_tlb_default_mem.phys_limit = max(DMA_BIT_MASK(32), zone_dma_limit);
+>  	else
+>  		io_tlb_default_mem.phys_limit = virt_to_phys(high_memory - 1);
+>  #endif
+> @@ -629,7 +629,7 @@ static struct page *swiotlb_alloc_tlb(struct device *dev, size_t bytes,
+>  	}
+>  
+>  	gfp &= ~GFP_ZONEMASK;
+> -	if (phys_limit <= DMA_BIT_MASK(zone_dma_bits))
+> +	if (phys_limit <= zone_dma_limit)
+>  		gfp |= __GFP_DMA;
+>  	else if (phys_limit <= DMA_BIT_MASK(32))
+>  		gfp |= __GFP_DMA32;
 
