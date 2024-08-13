@@ -1,153 +1,183 @@
-Received: from mail-pl1-f172.google.com (mail-pl1-f172.google.com [209.85.214.172])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mx0b-0031df01.pphosted.com (mx0b-0031df01.pphosted.com [205.220.180.131])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 816146BFC0
-	for <iommu@lists.linux.dev>; Tue, 13 Aug 2024 07:20:25 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.172
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F14288485;
+	Tue, 13 Aug 2024 07:56:42 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.180.131
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1723533628; cv=none; b=rIoR46QGl9AjTIA/ExrcdvhlmzbkOJpiMcRbXemJU0ZjCsNIU9BeOiN298m/WSqf/OVXDJ1H7MhpaJWQjE5pG1FTvnUOOMXZkfdMWeOtxuutfi9Ce4bbS72s6RXCxInbAfDwNEMijDKSNjXRUe7jHe4JV+tR+FDC6W5jN8LjhMM=
+	t=1723535804; cv=none; b=sPrICbXEMfXCc7CuFP9Ak75SfUblKmalJCh20twcZ9kGY0/NKdHg24CxZWqOtV3GlSICeX+aMqt5uFmmx5r1ULkakhRenMuXN0+2NH0KS7jmT4JRW2i7a3d2XmUxl4IB9kT7U0U0pxV1AGz5ovGC/su5mSismgk+Dd3guROciM0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1723533628; c=relaxed/simple;
-	bh=UN0ZpGxw47ixND5peqiv9fX6/ccnQ6AxWsy9hjTfGfI=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=Uc3TqlGneduHPBAV2+s04j1pspv7RdTiLGFBHMT+f4VUwcaz/tRUsyIqXcGAk1u8iNnenElLjDsYDDz1NMuG3oOGg9qnk6bdcxUuvyHaTbSiTW6ubZuGUv322MlMXUrR4I4VUuFSluy5EZwwWM6Nx4WS8SONWyZlac/rZT6+utg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=xv6JXucX; arc=none smtp.client-ip=209.85.214.172
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
+	s=arc-20240116; t=1723535804; c=relaxed/simple;
+	bh=CuolsEvLRiLP6iFRnAtWEnHXHVPNiug2hq17U4nw3Fk=;
+	h=Message-ID:Date:MIME-Version:Subject:To:CC:References:From:
+	 In-Reply-To:Content-Type; b=o0CRs+8K5rxZL42xmq0eTc1ILNRSB2BF1nhutl/9A7FwQyjosz6PwN/itkI8WnBsfQA3QaTTHE+MTjlf/qKZavLISKq4zf4fWQm7DlkJFMPqoX+s1SipB3ntvlm2PxLpDLfb7Z8fsDu31WlAiMTBdN7FGhv1Ngoq8bmm/2tN10I=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com; spf=pass smtp.mailfrom=quicinc.com; dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b=cNKHli/K; arc=none smtp.client-ip=205.220.180.131
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=quicinc.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="xv6JXucX"
-Received: by mail-pl1-f172.google.com with SMTP id d9443c01a7336-1fd7509397bso63455ad.0
-        for <iommu@lists.linux.dev>; Tue, 13 Aug 2024 00:20:25 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20230601; t=1723533625; x=1724138425; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=JRqfFafHF5XewBUoy5tZuHbvr8oDZuevEuG5wBULNKA=;
-        b=xv6JXucXoeNF8zAeNtIAd93YEhNXaaEsfjsY00gI73AYgGTB+Hkp/AdCNFccxbYDT0
-         11parQnK9W8nAClSXgFO2uD0rMv1EqeCiV8I9f+hSi0PEd5ernC8Rb6e0D7m4gXr914A
-         tGdM/FhUctJ1Wbp93Qryy4YsC+WdyB+HueJ48AWVbknKlRoRhZMVSOyJzcMf8MtqsYn3
-         p8632ja0CUn0/I/gSznl2gnBMVE9wR8UJCQZvBTxuNh7CoWhXQNmBs6GmeC6X1bbZZXm
-         q3z6p7kk18kfmlcT0Y80Zz59zM53V3BTtQymadIF/PgB9upHXVC4pGUKpt+SPldGuepb
-         FuEg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1723533625; x=1724138425;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=JRqfFafHF5XewBUoy5tZuHbvr8oDZuevEuG5wBULNKA=;
-        b=Taes/0fKjPl867LZafYenI5+vGVKPGSjojaWSAOELGxi742nBGQ5t2Azf9Gm7VdjpE
-         6eXc/tjzsSX5X+qJ8ypARXl+BQqnkCeQcXaC1Icx+y5ABoN/13SDgTdpOEohd0U0FikJ
-         pJKcJP5Zc7phl9UWXUZxj+vIIh9g6nSLpZONxGv1w0rlAuU7Idj+pCTY0/FbTQmqYRIp
-         B+ywS9DBpsK/Qb1N5Nm2weFfLx1wSTL1eqbgBMYJCtlAKwfWCjYz6bQYiUIrELG3Rq7o
-         fHiHVhvNTlWrNs2tulIm3FoMf6DrHDzFtd6onGos+TWjKHOmuc7CeQV2Ht+Li4F9eZCD
-         GMqg==
-X-Forwarded-Encrypted: i=1; AJvYcCX84FRVTfYcZHUbz4xAR9PciTnV0cY5gIK4xwouuMymcgzinCSqiTtiUnLboF+MAZ/Q0sVl8wZtARVsT8psoNDZXquZeRU=
-X-Gm-Message-State: AOJu0YwDImHx66nsHoSC2GiTpdG1FdtwsGPV75v9W5BvicWNRQbHoiVW
-	i4KGG0W4Tyqp/jpBwGZsE2XS/ER673GdvcUNmpf/TawNL25U4lu8gQ8r1HFrLA==
-X-Google-Smtp-Source: AGHT+IH3c19ieOFuxpG9Od28VUkUNWd5p7w4JT1Tcj/IJODP0Cw03Yuz3owloBqLlS4SpQoR2wasig==
-X-Received: by 2002:a17:903:646:b0:1f9:d111:8a1e with SMTP id d9443c01a7336-201ccbc957emr1049735ad.26.1723533624423;
-        Tue, 13 Aug 2024 00:20:24 -0700 (PDT)
-Received: from google.com (202.141.197.35.bc.googleusercontent.com. [35.197.141.202])
-        by smtp.gmail.com with ESMTPSA id d9443c01a7336-201cd12f5d5sm7442055ad.19.2024.08.13.00.20.20
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 13 Aug 2024 00:20:23 -0700 (PDT)
-Date: Tue, 13 Aug 2024 07:20:14 +0000
-From: Pranjal Shrivastava <praan@google.com>
-To: Zhenhua Huang <quic_zhenhuah@quicinc.com>
-Cc: robdclark@gmail.com, will@kernel.org, robin.murphy@arm.com,
-	joro@8bytes.org, iommu@lists.linux.dev,
-	linux-arm-msm@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-	linux-kernel@vger.kernel.org, quic_c_gdjako@quicinc.com,
-	dmitry.baryshkov@linaro.org
-Subject: Re: [PATCH 1/1] iommu/arm-smmu-qcom: remove runtime pm enabling for
- TBU driver
-Message-ID: <ZrsJLqTnq6tG2xp4@google.com>
-References: <1722335443-30080-1-git-send-email-quic_zhenhuah@quicinc.com>
- <ZroNUGkKuC1L7Qfr@google.com>
- <cca690c3-916e-43b6-b2a5-eca4f2eb838e@quicinc.com>
+	dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b="cNKHli/K"
+Received: from pps.filterd (m0279868.ppops.net [127.0.0.1])
+	by mx0a-0031df01.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 47D2evNm012717;
+	Tue, 13 Aug 2024 07:56:30 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=quicinc.com; h=
+	cc:content-transfer-encoding:content-type:date:from:in-reply-to
+	:message-id:mime-version:references:subject:to; s=qcppdkim1; bh=
+	0PlMolErtoFP8CfRHuM+/XHS0z4d1Y7nlgBTHug4gbI=; b=cNKHli/KYWCImpyt
+	vY4dZQXURKN7nHls3G8wKyPkG37b3cWKmXGp2G/yPtGZ9bNX9lpiFR0Yl/jnWoZ9
+	9jlkw0D1ZONU6xq0yYmaVbN2Rp8vtw/i436nAr0yXmj94zfR1M98nPm0pEZ1qTSX
+	yWkTgduRmFFY8Ir9EmXN7QfFJGV/4ohrXvs1JMp5KLiacC7hJhUS3VQpwnRXZzgJ
+	3ytqARpL+r2di9d92TWpSx9FgbsiYg7uScEk0XN0QCPL7S5DSurNas3F6yZuS7DK
+	Ug+P6GZXVxhZB18qOgfu4FOjxTQolt/xdO5m9ExDOLq03VhQBJ9t64tRXYL+8EhH
+	y45qmA==
+Received: from nalasppmta03.qualcomm.com (Global_NAT1.qualcomm.com [129.46.96.20])
+	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 40yxwv0kuh-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Tue, 13 Aug 2024 07:56:30 +0000 (GMT)
+Received: from nalasex01a.na.qualcomm.com (nalasex01a.na.qualcomm.com [10.47.209.196])
+	by NALASPPMTA03.qualcomm.com (8.18.1.2/8.18.1.2) with ESMTPS id 47D7uSMd013544
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Tue, 13 Aug 2024 07:56:28 GMT
+Received: from [10.239.132.245] (10.80.80.8) by nalasex01a.na.qualcomm.com
+ (10.47.209.196) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1544.9; Tue, 13 Aug
+ 2024 00:56:26 -0700
+Message-ID: <dee2f394-c9c5-4099-8e05-ce0c8756887b@quicinc.com>
+Date: Tue, 13 Aug 2024 15:56:23 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <cca690c3-916e-43b6-b2a5-eca4f2eb838e@quicinc.com>
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH 1/1] iommu/arm-smmu-qcom: remove runtime pm enabling for
+ TBU driver
+To: Pranjal Shrivastava <praan@google.com>
+CC: <robdclark@gmail.com>, <will@kernel.org>, <robin.murphy@arm.com>,
+        <joro@8bytes.org>, <iommu@lists.linux.dev>,
+        <linux-arm-msm@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>, <linux-kernel@vger.kernel.org>,
+        <quic_c_gdjako@quicinc.com>, <dmitry.baryshkov@linaro.org>
+References: <1722335443-30080-1-git-send-email-quic_zhenhuah@quicinc.com>
+ <ZroNUGkKuC1L7Qfr@google.com>
+ <cca690c3-916e-43b6-b2a5-eca4f2eb838e@quicinc.com>
+ <ZrsJLqTnq6tG2xp4@google.com>
+Content-Language: en-US
+From: Zhenhua Huang <quic_zhenhuah@quicinc.com>
+In-Reply-To: <ZrsJLqTnq6tG2xp4@google.com>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
+ nalasex01a.na.qualcomm.com (10.47.209.196)
+X-QCInternal: smtphost
+X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
+X-Proofpoint-GUID: N1_QYba_QmHkO8ZYoQALFYM_LNDAWse3
+X-Proofpoint-ORIG-GUID: N1_QYba_QmHkO8ZYoQALFYM_LNDAWse3
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.293,Aquarius:18.0.1039,Hydra:6.0.680,FMLib:17.12.28.16
+ definitions=2024-08-12_12,2024-08-13_01,2024-05-17_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 mlxscore=0 lowpriorityscore=0
+ mlxlogscore=999 suspectscore=0 phishscore=0 malwarescore=0 clxscore=1015
+ spamscore=0 adultscore=0 impostorscore=0 priorityscore=1501 bulkscore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.19.0-2407110000
+ definitions=main-2408130056
 
-On Tue, Aug 13, 2024 at 10:37:33AM +0800, Zhenhua Huang wrote:
-> 
-> 
-> On 2024/8/12 21:25, Pranjal Shrivastava wrote:
-> > On Tue, Jul 30, 2024 at 06:30:43PM +0800, Zhenhua Huang wrote:
-> > > TBU driver has no runtime pm support now, adding pm_runtime_enable()
-> > > seems to be useless. Remove it.
-> > > 
-> > > Signed-off-by: Zhenhua Huang <quic_zhenhuah@quicinc.com>
-> > > ---
-> > >   drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c | 6 ------
-> > >   1 file changed, 6 deletions(-)
-> > > 
-> > > diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
-> > > index 36c6b36ad4ff..aff2fe1fda13 100644
-> > > --- a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
-> > > +++ b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
-> > > @@ -566,7 +566,6 @@ static struct acpi_platform_list qcom_acpi_platlist[] = {
-> > >   static int qcom_smmu_tbu_probe(struct platform_device *pdev)
-> > >   {
-> > > -	struct device *dev = &pdev->dev;
-> > >   	int ret;
-> > >   	if (IS_ENABLED(CONFIG_ARM_SMMU_QCOM_DEBUG)) {
-> > > @@ -575,11 +574,6 @@ static int qcom_smmu_tbu_probe(struct platform_device *pdev)
-> > >   			return ret;
-> > >   	}
-> > > -	if (dev->pm_domain) {
-> > > -		pm_runtime_set_active(dev);
-> > > -		pm_runtime_enable(dev);
-> > 
-> > I assumed that this was required to avoid the TBU from being powered
-> > down? If so, then I think we shall move it under the
-> 
-> Hi Pranjal,
-> 
-> In my sense, this was giving the TBU ability to power down when
-> necessary(through pm callbacks)? While I haven't seen any RPM impl for TBU
-> device.. hence having the doubt..
-> 
-> Thanks,
-> Zhenhua
 
-Apologies for being unclear. I just meant to ask if there was a reason
-to add pm_runtime_set_active & enable in the tbu probe previously? And I
-*assumed* that it was to set the device state as RPM_ACTIVE to avoid it
-being RPM_SUSPENDED after enabling pm_runtime. 
 
-I agree that there are no pm_runtime_suspend/resume calls within the TBU
-driver. I'm just trying to understand why was pm_runtime enabled here
-earlier (since it's not implemented) in order to ensure that removing it
-doesn't cause further troubles?
+On 2024/8/13 15:20, Pranjal Shrivastava wrote:
+> On Tue, Aug 13, 2024 at 10:37:33AM +0800, Zhenhua Huang wrote:
+>>
+>>
+>> On 2024/8/12 21:25, Pranjal Shrivastava wrote:
+>>> On Tue, Jul 30, 2024 at 06:30:43PM +0800, Zhenhua Huang wrote:
+>>>> TBU driver has no runtime pm support now, adding pm_runtime_enable()
+>>>> seems to be useless. Remove it.
+>>>>
+>>>> Signed-off-by: Zhenhua Huang <quic_zhenhuah@quicinc.com>
+>>>> ---
+>>>>    drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c | 6 ------
+>>>>    1 file changed, 6 deletions(-)
+>>>>
+>>>> diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
+>>>> index 36c6b36ad4ff..aff2fe1fda13 100644
+>>>> --- a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
+>>>> +++ b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
+>>>> @@ -566,7 +566,6 @@ static struct acpi_platform_list qcom_acpi_platlist[] = {
+>>>>    static int qcom_smmu_tbu_probe(struct platform_device *pdev)
+>>>>    {
+>>>> -	struct device *dev = &pdev->dev;
+>>>>    	int ret;
+>>>>    	if (IS_ENABLED(CONFIG_ARM_SMMU_QCOM_DEBUG)) {
+>>>> @@ -575,11 +574,6 @@ static int qcom_smmu_tbu_probe(struct platform_device *pdev)
+>>>>    			return ret;
+>>>>    	}
+>>>> -	if (dev->pm_domain) {
+>>>> -		pm_runtime_set_active(dev);
+>>>> -		pm_runtime_enable(dev);
+>>>
+>>> I assumed that this was required to avoid the TBU from being powered
+>>> down? If so, then I think we shall move it under the
+>>
+>> Hi Pranjal,
+>>
+>> In my sense, this was giving the TBU ability to power down when
+>> necessary(through pm callbacks)? While I haven't seen any RPM impl for TBU
+>> device.. hence having the doubt..
+>>
+>> Thanks,
+>> Zhenhua
+> 
+> Apologies for being unclear. I just meant to ask if there was a reason
+> to add pm_runtime_set_active & enable in the tbu probe previously? And I
 
-I see Georgi added it as a part of
-https://lore.kernel.org/all/20240704010759.507798-1-quic_c_gdjako@quicinc.com/
+It's also my doubt and hope Georgi can help clarify :)
+Actually I assume this part of codes was copied from arm-smmu driver
+https://elixir.bootlin.com/linux/v6.11-rc3/source/drivers/iommu/arm/arm-smmu/arm-smmu.c#L2264 
+.. but for TBU, seems no user ?
 
-But I'm unsure why was it required to fix that bug?
+> *assumed* that it was to set the device state as RPM_ACTIVE to avoid it
+> being RPM_SUSPENDED after enabling pm_runtime
+
+Yeah, it's normal sequence from doc: 
+https://elixir.bootlin.com/linux/v6.11-rc3/source/Documentation/power/runtime_pm.rst#L574
 
 > 
-> > previous if condition, i.e. CONFIG_ARM_SMMU_QCOM_DEBUG?
-> > 
-> > If not, we can remove it give that the TBU would be powered ON as needed
-> > 
-> > > -	}
-> > > -
-> > >   	return 0;
-> > >   }
-> > > -- 
-> > > 2.7.4
-> > > 
-> > > 
-> > 
-> > Thanks,
-> > Pranjal
+> I agree that there are no pm_runtime_suspend/resume calls within the TBU
+> driver. I'm just trying to understand why was pm_runtime enabled here
+> earlier (since it's not implemented) in order to ensure that removing it
+> doesn't cause further troubles?
+
+See above my assumption, need Georgi to comment but.
+
+> 
+> I see Georgi added it as a part of
+> https://lore.kernel.org/all/20240704010759.507798-1-quic_c_gdjako@quicinc.com/
+> 
+> But I'm unsure why was it required to fix that bug?
+
+I'm just thinking it is dead code and want to see if my understanding is 
+correct.
 
 Thanks,
-Pranjal
+Zhenhua
+
+> 
+>>
+>>> previous if condition, i.e. CONFIG_ARM_SMMU_QCOM_DEBUG?
+>>>
+>>> If not, we can remove it give that the TBU would be powered ON as needed
+>>>
+>>>> -	}
+>>>> -
+>>>>    	return 0;
+>>>>    }
+>>>> -- 
+>>>> 2.7.4
+>>>>
+>>>>
+>>>
+>>> Thanks,
+>>> Pranjal
+> 
+> Thanks,
+> Pranjal
