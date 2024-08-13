@@ -1,43 +1,48 @@
 Received: from mail.8bytes.org (mail.8bytes.org [85.214.250.239])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 2BBE9168C20
-	for <iommu@lists.linux.dev>; Tue, 13 Aug 2024 08:51:27 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 0B3E136B11;
+	Tue, 13 Aug 2024 08:52:24 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=85.214.250.239
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1723539090; cv=none; b=QgrzWboasiwlvT5wHdInDX0l40xnRZUHHEv8BaiXFloiavKC9J6ewjnGNxYxhlQRebbbCn7dLFDlXvRKc1YBq5wS0sodOngQDgfhdub1s9whv5eyM+lbqR8tTURxHHZaC12tiDN4s8B1KT8C5tAWeFkYnXRbGa6OEskZ2U33Hu4=
+	t=1723539146; cv=none; b=fEgcBlwuFT4ugwnJZLeXe4UFXkV/0hWBYdp8o4vu7ZHkQHx3KTOvU0Y+GOTygMDWORAb8xPY82xs4biuhuYPG5TbiCfA1ID9vJsbgFqesv7DFVZcYTPyMWT+5oIX9Ejw4QuczIsJUpcNc/R78A1LR1b3k2AcPmdoLS4FWaKRxZA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1723539090; c=relaxed/simple;
-	bh=SmLMiiKEtiBMsHkITQJ0wLTxfVkKF8noZpD+Hik+pvE=;
+	s=arc-20240116; t=1723539146; c=relaxed/simple;
+	bh=YMj67aL6wIKEzLDPFc93NrmMN0mrzP4ToduOyz628Qs=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=qDdVeNjXD2iqGDQT2NmK4twiHaDvLz+6chCqEBabkeJ6tTA1T/V2Q7JUbeIvcT9PSz+ZwGXrviUDqJvXX4J8tgKrEEtaUrbbL0BNPxsO0mtgbEfJYIF5PweKgXJ5K+irKPdLBp+deFgt+E6YWBCQvk7CuL8ZULBIaVqR5WUCixo=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=8bytes.org; spf=pass smtp.mailfrom=8bytes.org; dkim=pass (2048-bit key) header.d=8bytes.org header.i=@8bytes.org header.b=ZAm5uQ+P; arc=none smtp.client-ip=85.214.250.239
+	 Content-Type:Content-Disposition:In-Reply-To; b=sBBlFgia0H9nHEM+F1dArNpc7attv1g+Isw5r6E2EBTnm6dpYFOp+abOANRcdttJKZ9TrxP6tmotNV7GfyssxYCnIKi6LPSZhCO2TbkSIvRxMldRH8LdFXxEPqUq4Kt4qlhW0Cf1n+dP/4asZ+dc9b0zGQNZeFLjrcjJiLRrsNk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=8bytes.org; spf=pass smtp.mailfrom=8bytes.org; dkim=pass (2048-bit key) header.d=8bytes.org header.i=@8bytes.org header.b=ieUQMxe0; arc=none smtp.client-ip=85.214.250.239
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=8bytes.org
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=8bytes.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=8bytes.org header.i=@8bytes.org header.b="ZAm5uQ+P"
+	dkim=pass (2048-bit key) header.d=8bytes.org header.i=@8bytes.org header.b="ieUQMxe0"
 Received: from 8bytes.org (pd9fe9dd8.dip0.t-ipconnect.de [217.254.157.216])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange ECDHE (P-256) server-signature RSA-PSS (2048 bits) server-digest SHA256)
 	(No client certificate requested)
-	by mail.8bytes.org (Postfix) with ESMTPSA id 2BC6F2A5885;
-	Tue, 13 Aug 2024 10:44:50 +0200 (CEST)
+	by mail.8bytes.org (Postfix) with ESMTPSA id 06BAA2A50EF;
+	Tue, 13 Aug 2024 10:52:24 +0200 (CEST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=8bytes.org;
-	s=default; t=1723538690;
-	bh=SmLMiiKEtiBMsHkITQJ0wLTxfVkKF8noZpD+Hik+pvE=;
+	s=default; t=1723539144;
+	bh=YMj67aL6wIKEzLDPFc93NrmMN0mrzP4ToduOyz628Qs=;
 	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=ZAm5uQ+PXbTaCFZ3hNzM4tSj/vEG+xff5hUhDoC93qFQrEbQenq2V+1YG0E+utcQL
-	 Ph+L9pcUoLJ75VAfl1pPR1cB4GkDGNPI2Z6yhsRwfHLc6coID8//OKxhEcQsIZsvEU
-	 LhAh9aeU/ME1i7EjSzkU0/gkW9liAA5ojP6te9y+ILy9RZN6L/pZGRbzi6YfxxlhFK
-	 pPR48OwxrpNDZ/9pWUyHbrsZPiP8s/+c1u0KSvhLL7lDbZDAD/K0TiUyxBevsXFsMr
-	 ZYBjuTkKlB88iuuSUV4lUdiM3h5z/aNqHTcNFaPQ/DK751NcCC+MMgWJKthtHpB0wU
-	 P7pQF1FVi1JIg==
-Date: Tue, 13 Aug 2024 10:44:49 +0200
+	b=ieUQMxe0HigcQJaqZh3zZsFiLkq0a1eBi2t5Pzt3YFymmi01Ww7+zL7cQPyhBKe00
+	 Tv+IxDclbBH33noPMUZuJQ9t6T0YDDv95L+RRshXSwKEhqyZjHhC4pCMsJQk16HeNA
+	 kOcqb6zF9TORWNX5c5ULAvMValaCgFGYUf8E6LEOsBK/MDe3BTwb3QcHe9mwiczHJD
+	 AbrCE2QzIFnVacFRHILEeAHiQxJO3LUqMXn/qlZOjbttijsa3YQO7SqIeQ4SAAOvKT
+	 DAoIAy9lpwIR30CvgRCaqf23OwAuncjTWDSDmSFFCObdQAUuEbBXuTYunB7Fu9UbMc
+	 kv2dvXaUOmdEw==
+Date: Tue, 13 Aug 2024 10:52:22 +0200
 From: Joerg Roedel <joro@8bytes.org>
-To: Vasant Hegde <vasant.hegde@amd.com>
-Cc: iommu@lists.linux.dev, will@kernel.org, robin.murphy@arm.com,
-	suravee.suthikulpanit@amd.com
-Subject: Re: [PATCH] iommu/amd: Add blocked domain support
-Message-ID: <ZrsdAd2Lmh_q6fYw@8bytes.org>
-References: <20240722115452.5976-1-vasant.hegde@amd.com>
+To: Jason Gunthorpe <jgg@nvidia.com>
+Cc: Lu Baolu <baolu.lu@linux.intel.com>,
+	Bjorn Helgaas <bhelgaas@google.com>,
+	David Woodhouse <dwmw2@infradead.org>, iommu@lists.linux.dev,
+	kvm@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+	linux-pci@vger.kernel.org, Robin Murphy <robin.murphy@arm.com>,
+	Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
+	Will Deacon <will@kernel.org>, patches@lists.linux.dev
+Subject: Re: [PATCH] iommu: Allow ATS to work on VFs when the PF uses IDENTITY
+Message-ID: <ZrsexhlEKgFqwbXa@8bytes.org>
+References: <0-v1-0fb4d2ab6770+7e706-ats_vf_jgg@nvidia.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -46,17 +51,44 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20240722115452.5976-1-vasant.hegde@amd.com>
+In-Reply-To: <0-v1-0fb4d2ab6770+7e706-ats_vf_jgg@nvidia.com>
 
-On Mon, Jul 22, 2024 at 11:54:52AM +0000, Vasant Hegde wrote:
-> Create global blocked domain with attach device ops. It will clear the
-> DTE so that all DMA from device will be aborted.
+On Wed, Aug 07, 2024 at 03:19:20PM -0300, Jason Gunthorpe wrote:
+> PCI ATS has a global Smallest Translation Unit field that is located in
+> the PF but shared by all of the VFs.
 > 
-> Signed-off-by: Vasant Hegde <vasant.hegde@amd.com>
-> Reviewed-by: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
+> The expectation is that the STU will be set to the root port's global STU
+> capability which is driven by the IO page table configuration of the iommu
+> HW. Today it becomes set when the iommu driver first enables ATS.
+> 
+> Thus, to enable ATS on the VF, the PF must have already had the correct
+> STU programmed, even if ATS is off on the PF.
+> 
+> Unfortunately the PF only programs the STU when the PF enables ATS. The
+> iommu drivers tend to leave ATS disabled when IDENTITY translation is
+> being used.
+> 
+> Thus we can get into a state where the PF is setup to use IDENTITY with
+> the DMA API while the VF would like to use VFIO with a PAGING domain and
+> have ATS turned on. This fails because the PF never loaded a PAGING domain
+> and so it never setup the STU, and the VF can't do it.
+> 
+> The simplest solution is to have the iommu driver set the ATS STU when it
+> probes the device. This way the ATS STU is loaded immediately at boot time
+> to all PFs and there is no issue when a VF comes to use it.
+> 
+> Add a new call pci_prepare_ats() which should be called by iommu drivers
+> in their probe_device() op for every PCI device if the iommu driver
+> supports ATS. This will setup the STU based on whatever page size
+> capability the iommu HW has.
+> 
+> Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
 > ---
->  drivers/iommu/amd/iommu.c | 24 ++++++++++++++++++++++++
->  1 file changed, 24 insertions(+)
+>  drivers/iommu/amd/iommu.c                   |  3 ++
+>  drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c |  6 ++++
+>  drivers/iommu/intel/iommu.c                 |  1 +
+>  drivers/pci/ats.c                           | 33 +++++++++++++++++++++
+>  include/linux/pci-ats.h                     |  1 +
+>  5 files changed, 44 insertions(+)
 
 Applied, thanks.
-> 
