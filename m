@@ -1,238 +1,154 @@
-Received: from mx0b-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 108D319D089
-	for <iommu@lists.linux.dev>; Tue, 13 Aug 2024 19:28:18 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=148.163.158.5
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 84D921E86A
+	for <iommu@lists.linux.dev>; Tue, 13 Aug 2024 21:03:26 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=170.10.129.124
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1723577301; cv=none; b=CP5eRV5qCbK8PdeiFXc8C/PsKJBvEvfrDZ961odJkYC4UVsogFGF4iUK2CLVhm69mkP6jCa18xFv0Hi/Cs2IpEi3zVZjA0SwAgL7qKOEvCFyeQ14njLon9BAwekSDjFnkX8szDc+Unm0FybTYxMUjxSWZkcqJjZCkarSVxV9qCM=
+	t=1723583008; cv=none; b=c4pkgHKSnqoLbbAHF/gTBftc/T/W8lhkbPopHygzkaRdjHO5+ZDFkFTVoyYHaUImrrE/3h2IKldBIwulXGVzkZ6iEwsv1UJw1zRU0Hbsol+oKLMHGBS1u2Eodu2Eniy0GWaHebWXhykRxC7FbtDbp8X1MX4nOxYZACwLg/a0Dhc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1723577301; c=relaxed/simple;
-	bh=0mQBvfCgARN6YgvU4oSzZdpPL66BZCSsykfOz9Gb/5U=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=R4AXDNcXkmpkK2tD2l5/NRVSA1lFpF/s5m0UdifBmeCnh6V5JQD0Z6p7hBJihAurG5ELkIYtreCjYy9y7AB5GF2pjtZzvBk1uuizOwvzU8V6bWFCAKQPfbpM29Y6MxCJbUJnr+m9RXKKovRZi09DRX+fd3iO2zB8C0FoJhT0+4Q=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.ibm.com; spf=pass smtp.mailfrom=linux.ibm.com; dkim=pass (2048-bit key) header.d=ibm.com header.i=@ibm.com header.b=e8x9+qD1; arc=none smtp.client-ip=148.163.158.5
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.ibm.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.ibm.com
+	s=arc-20240116; t=1723583008; c=relaxed/simple;
+	bh=S1wGFKTAEjSQsbf68k5RXdglIXflEszFnfO6eF1HbfI=;
+	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=IWCX/mO9r1Om5aQY9vZjIibWP81WdchULTNpvQn4j8GOM5YAw8kFNR+orT6axqMRrQsoIFUf996rU40HN5MnrB4LOMOeOAN5cBmp0Xfux8HN5nKIaRqUm9hHsWLbqvjD1e87B+6AGQmNTV+gOqyUedD2FZT1MIh0vjmadwZGbkE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=redhat.com; spf=pass smtp.mailfrom=redhat.com; dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b=HzZPKLdm; arc=none smtp.client-ip=170.10.129.124
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=redhat.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=redhat.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=ibm.com header.i=@ibm.com header.b="e8x9+qD1"
-Received: from pps.filterd (m0353725.ppops.net [127.0.0.1])
-	by mx0a-001b2d01.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 47DIkJH4031433;
-	Tue, 13 Aug 2024 19:28:09 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=from
-	:to:cc:subject:date:message-id:mime-version
-	:content-transfer-encoding; s=pp1; bh=dTgI1xpBR4sq4RcSHFCsSrrdA0
-	5uWNjQbymJCHmL8v0=; b=e8x9+qD1ACdk9EHcL+y04SIrpGrqoRSk6gQKDS/qt1
-	ajH6aW1FZfGNp1ZGupCr1u59BM3y8FXfC5+hFoPAFy9jsPhbxDi/kjxvw+x6eJGm
-	Da1bVFkUwq3xs/Nz4O4+0R2hi/nqItEQNqxfxZSW4/JdSGwkT7SZaHhSuUr62O9L
-	SVCaahc8bCdeq+ikR3assUk8B255LVSJB+HSHerDMPP1m0tBjZU0o1I3YdJDKtKI
-	tRI3/u0LCqHdoTbVQKnFUWZHlupD7mrRFPMP0McpmlyBN+LMLW+rb7OZAvsy/aFz
-	YvFKt+SaAfnxTwFhnNZBTjPNHCJbzhyRIZ7FgWWA8arQ==
-Received: from ppma11.dal12v.mail.ibm.com (db.9e.1632.ip4.static.sl-reverse.com [50.22.158.219])
-	by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 410d2c8687-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Tue, 13 Aug 2024 19:28:09 +0000 (GMT)
-Received: from pps.filterd (ppma11.dal12v.mail.ibm.com [127.0.0.1])
-	by ppma11.dal12v.mail.ibm.com (8.17.1.19/8.17.1.19) with ESMTP id 47DH6Pq9020882;
-	Tue, 13 Aug 2024 19:28:08 GMT
-Received: from smtprelay03.wdc07v.mail.ibm.com ([172.16.1.70])
-	by ppma11.dal12v.mail.ibm.com (PPS) with ESMTPS id 40xn834w00-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Tue, 13 Aug 2024 19:28:08 +0000
-Received: from smtpav05.dal12v.mail.ibm.com (smtpav05.dal12v.mail.ibm.com [10.241.53.104])
-	by smtprelay03.wdc07v.mail.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 47DJS5e018875068
-	(version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-	Tue, 13 Aug 2024 19:28:07 GMT
-Received: from smtpav05.dal12v.mail.ibm.com (unknown [127.0.0.1])
-	by IMSVA (Postfix) with ESMTP id F0A5458056;
-	Tue, 13 Aug 2024 19:28:04 +0000 (GMT)
-Received: from smtpav05.dal12v.mail.ibm.com (unknown [127.0.0.1])
-	by IMSVA (Postfix) with ESMTP id CFE8F5806F;
-	Tue, 13 Aug 2024 19:28:03 +0000 (GMT)
-Received: from li-2311da4c-2e09-11b2-a85c-c003041e9174.ibm.com.com (unknown [9.61.62.204])
-	by smtpav05.dal12v.mail.ibm.com (Postfix) with ESMTP;
-	Tue, 13 Aug 2024 19:28:03 +0000 (GMT)
-From: Matthew Rosato <mjrosato@linux.ibm.com>
-To: joro@8bytes.org, will@kernel.org, robin.murphy@arm.com,
-        gerald.schaefer@linux.ibm.com, schnelle@linux.ibm.com
-Cc: jgg@ziepe.ca, baolu.lu@linux.intel.com, hca@linux.ibm.com,
-        gor@linux.ibm.com, agordeev@linux.ibm.com, svens@linux.ibm.com,
-        jroedel@suse.de, iommu@lists.linux.dev, linux-kernel@vger.kernel.org,
-        linux-s390@vger.kernel.org
-Subject: [PATCH v2] iommu/s390: Implement blocking domain
-Date: Tue, 13 Aug 2024 15:28:03 -0400
-Message-ID: <20240813192803.129449-1-mjrosato@linux.ibm.com>
-X-Mailer: git-send-email 2.45.2
+	dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="HzZPKLdm"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+	s=mimecast20190719; t=1723583005;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding:
+	 in-reply-to:in-reply-to:references:references;
+	bh=1UOf/e3HcQ+l94OWXrCwdSK3TbHtvFPHwqfrVahjAnI=;
+	b=HzZPKLdmzl9SfUMMYWJITFd9JXtrdorv7WolYXcogxGZTwKSAKv1H2cpdHiss7rLBprePA
+	1JTkHWGsRIi5aHPMmcZjtdmIqmRHxcf2q85Eq7cXSu8UktEGheGfJtU92WgydJzbp6OTWc
+	vtTpEUgoVarlN/HBi/pu73aIU06I6yU=
+Received: from mail-io1-f71.google.com (mail-io1-f71.google.com
+ [209.85.166.71]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
+ us-mta-645-2mKpQcheNqGXm-8N9vIf7g-1; Tue, 13 Aug 2024 17:03:24 -0400
+X-MC-Unique: 2mKpQcheNqGXm-8N9vIf7g-1
+Received: by mail-io1-f71.google.com with SMTP id ca18e2360f4ac-81f968e53b0so763208939f.1
+        for <iommu@lists.linux.dev>; Tue, 13 Aug 2024 14:03:24 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1723583004; x=1724187804;
+        h=content-transfer-encoding:mime-version:organization:references
+         :in-reply-to:message-id:subject:cc:to:from:date:x-gm-message-state
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=1UOf/e3HcQ+l94OWXrCwdSK3TbHtvFPHwqfrVahjAnI=;
+        b=VqUgNTgc1WB2o2K0UhrWVq/eQR8/aI4HQqYqF85WI9fMD2QkjCgNMpGXbDdGPe6n4D
+         xoSGHeltx3bBMJqvQCBjIC/TD18SywrP6aa4eGpi9+7W9FxTAfb/uP8DqXYbnLs/Vz/t
+         96oWcTZ1qCyEoLgL3u/Bn2srcQNk1yXYIq2fohib8b4qnIngtx2GAUD/2wiyM4CqdzeV
+         qIiP7lOa38v4H44FAF6cHgeRUMB+JIRYMHEI9cU+VvDQfAufddwUDm0p+DGkPQB6heVC
+         rYzvOzPMHagxV2D94C8ABW8V99H/R3AbSfIGsAhtaIkqWyyr4hTxB9JpwS8TDrbNdhxY
+         wfOg==
+X-Forwarded-Encrypted: i=1; AJvYcCX2Ht2wAQofgVeq+fMj2vXix1K6S1zItrDxO7thCOqyaZxav0aSr8nUWGlWHEJOwQnmxNTUdDPZe3mFfuM8qwNarO4wIaQ=
+X-Gm-Message-State: AOJu0Yy5VG+WdGq6B4H5b2qBWZIeYB/KJQbIymAFCrMjZVOPtr/3KLvD
+	YBhZ7KCpqrpm3DVQZcbQn5gfGpfq/5R7O7BNFHOshmW4HOT6LxcIv+YK4hyxkQsdk0QTHTKpbST
+	m/ZdMu67JIFE18GjsKWNPW7J7n+kxORsyGkHJpaJzDNr/fyfcnlUQ
+X-Received: by 2002:a05:6602:14d2:b0:804:9972:2f8c with SMTP id ca18e2360f4ac-824dad04265mr122543239f.8.1723583003650;
+        Tue, 13 Aug 2024 14:03:23 -0700 (PDT)
+X-Google-Smtp-Source: AGHT+IGUG+Ra/4MLDKrpbcdWTsiFMgCKM25UlSCbFVfALG5nTggblaB3Mjb05rv1rYcf1nGj/+3LVA==
+X-Received: by 2002:a05:6602:14d2:b0:804:9972:2f8c with SMTP id ca18e2360f4ac-824dad04265mr122539339f.8.1723583003274;
+        Tue, 13 Aug 2024 14:03:23 -0700 (PDT)
+Received: from redhat.com ([38.15.36.11])
+        by smtp.gmail.com with ESMTPSA id 8926c6da1cb9f-4ca76910393sm2733107173.7.2024.08.13.14.03.21
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 13 Aug 2024 14:03:22 -0700 (PDT)
+Date: Tue, 13 Aug 2024 15:03:20 -0600
+From: Alex Williamson <alex.williamson@redhat.com>
+To: Jason Gunthorpe <jgg@ziepe.ca>
+Cc: qemu-devel@nongnu.org, kvm@vger.kernel.org, quic_bqiang@quicinc.com,
+ kvalo@kernel.org, prestwoj@gmail.com, linux-wireless@vger.kernel.org,
+ ath11k@lists.infradead.org, dwmw2@infradead.org, iommu@lists.linux.dev,
+ kernel@quicinc.com, johannes@sipsolutions.net, jtornosm@redhat.com
+Subject: Re: [PATCH RFC/RFT] vfio/pci-quirks: Quirk for ath wireless
+Message-ID: <20240813150320.73df43d7.alex.williamson@redhat.com>
+In-Reply-To: <20240813164341.GL1985367@ziepe.ca>
+References: <adcb785e-4dc7-4c4a-b341-d53b72e13467@gmail.com>
+	<20240812170045.1584000-1-alex.williamson@redhat.com>
+	<20240813164341.GL1985367@ziepe.ca>
+Organization: Red Hat
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-TM-AS-GCONF: 00
-X-Proofpoint-GUID: pD0h8cvcBm5wU9hjK27PR-Hkez0KhZ8E
-X-Proofpoint-ORIG-GUID: pD0h8cvcBm5wU9hjK27PR-Hkez0KhZ8E
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.293,Aquarius:18.0.1039,Hydra:6.0.680,FMLib:17.12.28.16
- definitions=2024-08-13_09,2024-08-13_02,2024-05-17_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 mlxscore=0 lowpriorityscore=0
- adultscore=0 phishscore=0 impostorscore=0 malwarescore=0 bulkscore=0
- suspectscore=0 mlxlogscore=999 spamscore=0 clxscore=1011
- priorityscore=1501 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.19.0-2407110000 definitions=main-2408130138
+X-Mimecast-Spam-Score: 0
+X-Mimecast-Originator: redhat.com
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 
-This fixes a crash when surprise hot-unplugging a PCI device. This crash
-happens because during hot-unplug __iommu_group_set_domain_nofail()
-attaching the default domain fails when the platform no longer
-recognizes the device as it has already been removed and we end up with
-a NULL domain pointer and UAF. This is exactly the case referred to in
-the second comment in __iommu_device_set_domain() and just as stated
-there if we can instead attach the blocking domain the UAF is prevented
-as this can handle the already removed device. Implement the blocking
-domain to use this handling.  With this change, the crash is fixed but
-we still hit a warning attempting to change DMA ownership on a blocked
-device.
+On Tue, 13 Aug 2024 13:43:41 -0300
+Jason Gunthorpe <jgg@ziepe.ca> wrote:
 
-Fixes: c76c067e488c ("s390/pci: Use dma-iommu layer")
-Co-developed-by: Niklas Schnelle <schnelle@linux.ibm.com>
-Signed-off-by: Niklas Schnelle <schnelle@linux.ibm.com>
-Signed-off-by: Matthew Rosato <mjrosato@linux.ibm.com>
----
-Changes for v2:
-- Added co-author tag from Niklas + my SoB
-- Removed changes to drivers/iommu/iommu.c
-- Revert back to -EIO for failed attach in s390-iommu
-- Set blocking domain during probe_device / remove s390_domain check during
-  blocking attach
-- Remove s390_iommu_release_device
-- Update commit message to reflect changes
----
- drivers/iommu/s390-iommu.c | 64 ++++++++++++++++++++++++++------------
- 1 file changed, 44 insertions(+), 20 deletions(-)
+> On Mon, Aug 12, 2024 at 11:00:40AM -0600, Alex Williamson wrote:
+> > These devices have an embedded interrupt controller which is programmed
+> > with guest physical MSI address/data, which doesn't work.  We need
+> > vfio-pci kernel support to provide a device feature which disables
+> > virtualization of the MSI capability registers.  Then we can do brute
+> > force testing for writes matching the MSI address, from which we can
+> > infer writes of the MSI data, replacing each with host physical values.
+> > 
+> > This has only been tested on ath11k (0x1103), ath12k support is
+> > speculative and requires testing.  Note that Windows guest drivers make
+> > use of multi-vector MSI which requires interrupt remapping support in
+> > the host.  
+> 
+> The way it is really supposed to work, is that the guest itself
+> controls/knows the MSI addr/data pairs and the interrupt remapping HW
+> makes that delegation safe since all the interrupt processing will be
+> qualified by the RID.
+> 
+> Then the guest can make up the unique interrupts for MSI and any
+> internal "IMS" sources and we just let the guest directly write the
+> MSI/MSI-X and any IMS values however it wants.
+> 
+> This hackery to capture and substitute the IMS programming is neat and
+> will solve this one device, but there are more IMS style devices in
+> the pipeline than will really need a full solution.
 
-diff --git a/drivers/iommu/s390-iommu.c b/drivers/iommu/s390-iommu.c
-index d8eaa7ea380b..11663a920cbb 100644
---- a/drivers/iommu/s390-iommu.c
-+++ b/drivers/iommu/s390-iommu.c
-@@ -33,6 +33,8 @@ struct s390_domain {
- 	struct rcu_head		rcu;
- };
- 
-+static struct s390_domain s390_blocking_domain;
-+
- static inline unsigned int calc_rtx(dma_addr_t ptr)
- {
- 	return ((unsigned long)ptr >> ZPCI_RT_SHIFT) & ZPCI_INDEX_MASK;
-@@ -376,12 +378,21 @@ static void s390_iommu_detach_device(struct iommu_domain *domain,
- 	struct zpci_dev *zdev = to_zpci_dev(dev);
- 	unsigned long flags;
- 
-+	/*
-+	 * The static blocking domain doesn't need to track devices nor
-+	 * does it have an IOAT registered. As there is no harm
-+	 * in keeping zdev->s390_domain set to blocking until
-+	 * it is overwritten detach is a no-op.
-+	 */
-+	if (s390_domain->domain.type == IOMMU_DOMAIN_BLOCKED)
-+		return;
-+
- 	spin_lock_irqsave(&s390_domain->list_lock, flags);
- 	list_del_rcu(&zdev->iommu_list);
- 	spin_unlock_irqrestore(&s390_domain->list_lock, flags);
- 
- 	zpci_unregister_ioat(zdev, 0);
--	zdev->s390_domain = NULL;
-+	zdev->s390_domain = &s390_blocking_domain;
- 	zdev->dma_table = NULL;
- }
- 
-@@ -403,16 +414,14 @@ static int s390_iommu_attach_device(struct iommu_domain *domain,
- 
- 	if (zdev->s390_domain)
- 		s390_iommu_detach_device(&zdev->s390_domain->domain, dev);
--
--	cc = zpci_register_ioat(zdev, 0, zdev->start_dma, zdev->end_dma,
--				virt_to_phys(s390_domain->dma_table), &status);
- 	/*
--	 * If the device is undergoing error recovery the reset code
--	 * will re-establish the new domain.
-+	 * Detach set the blocking domain. If we fail now DMA remains blocked
-+	 * and the blocking domain attached.
- 	 */
-+	cc = zpci_register_ioat(zdev, 0, zdev->start_dma, zdev->end_dma,
-+				virt_to_phys(s390_domain->dma_table), &status);
- 	if (cc && status != ZPCI_PCI_ST_FUNC_NOT_AVAIL)
- 		return -EIO;
--
- 	zdev->dma_table = s390_domain->dma_table;
- 	zdev->s390_domain = s390_domain;
- 
-@@ -466,19 +475,10 @@ static struct iommu_device *s390_iommu_probe_device(struct device *dev)
- 	if (zdev->tlb_refresh)
- 		dev->iommu->shadow_on_flush = 1;
- 
--	return &zdev->iommu_dev;
--}
--
--static void s390_iommu_release_device(struct device *dev)
--{
--	struct zpci_dev *zdev = to_zpci_dev(dev);
-+	/* Start with DMA blocked */
-+	zdev->s390_domain = &s390_blocking_domain;
- 
--	/*
--	 * release_device is expected to detach any domain currently attached
--	 * to the device, but keep it attached to other devices in the group.
--	 */
--	if (zdev)
--		s390_iommu_detach_device(&zdev->s390_domain->domain, dev);
-+	return &zdev->iommu_dev;
- }
- 
- static int zpci_refresh_all(struct zpci_dev *zdev)
-@@ -702,6 +702,29 @@ struct zpci_iommu_ctrs *zpci_get_iommu_ctrs(struct zpci_dev *zdev)
- 	return &zdev->s390_domain->ctrs;
- }
- 
-+static int blocking_domain_attach_device(struct iommu_domain *domain,
-+					 struct device *dev)
-+{
-+	struct s390_domain *s390_domain = to_s390_domain(domain);
-+	struct zpci_dev *zdev = to_zpci_dev(dev);
-+	unsigned long flags;
-+
-+	if (!zdev)
-+		return 0;
-+
-+	/* Detach sets the blocking domain */
-+	s390_iommu_detach_device(&zdev->s390_domain->domain, dev);
-+	return 0;
-+}
-+
-+static struct s390_domain s390_blocking_domain = {
-+	.domain = {
-+		.type = IOMMU_DOMAIN_BLOCKED,
-+		.ops = &(const struct iommu_domain_ops) {
-+			.attach_dev	= blocking_domain_attach_device,
-+	}}
-+};
-+
- int zpci_init_iommu(struct zpci_dev *zdev)
- {
- 	u64 aperture_size;
-@@ -777,10 +800,11 @@ static int __init s390_iommu_init(void)
- subsys_initcall(s390_iommu_init);
- 
- static const struct iommu_ops s390_iommu_ops = {
-+	.blocked_domain		= &s390_blocking_domain.domain,
-+	.release_domain		= &s390_blocking_domain.domain,
- 	.capable = s390_iommu_capable,
- 	.domain_alloc_paging = s390_domain_alloc_paging,
- 	.probe_device = s390_iommu_probe_device,
--	.release_device = s390_iommu_release_device,
- 	.device_group = generic_device_group,
- 	.pgsize_bitmap = SZ_4K,
- 	.get_resv_regions = s390_iommu_get_resv_regions,
--- 
-2.45.2
+How does the guest know to write a remappable vector format?  How does
+the guest know the host interrupt architecture?  For example why would
+an aarch64 guest program an MSI vector of 0xfee... if the host is x86?
+
+The idea of guest owning the physical MSI address space sounds great,
+but is it practical?  Is it something that would be accomplished while
+this device is still relevant?
+
+> > + * The Windows driver makes use of multi-vector MSI, where our sanity test
+> > + * of the MSI data value must then mask off the vector offset for comparison
+> > + * and add it back to the host base data value on write.  
+> 
+> But is that really enough? If the vector offset is newly created then
+> that means the VM built a new interrupt that needs setup to be routed
+> into the VM?? Is that why you say it "requires interrupt remapping
+> support" because that setup is happening implicitly on x86?
+> 
+> It looks like Windows is acting as I said Linux should, with a
+> "irq_chip" and so on to get the unique interrupt source a proper
+> unique addr/data pair...
+
+The Windows driver is just programming the MSI capability to use 16
+vectors.  We configure those vectors on the host at the time the
+capability is written.  Whereas the Linux driver is only using a single
+vector and therefore writing the same MSI address and data at the
+locations noted in the trace, the Windows driver is writing different
+data values at different locations to make use of those vectors.  This
+note is simply describing that we can't directly write the physical
+data value into the device, we need to determine which vector offset
+the guest is using and provide the same offset from the host data
+register value.
+
+I don't know that interrupt remapping is specifically required, but the
+MSI domain needs to support MSI_FLAG_MULTI_PCI_MSI and AFAIK that's
+only available with interrupt remapping on x86, ie.
+pci_alloc_irq_vectors() with max_vecs >1 and PCI_IRQ_MSI flags needs to
+work on the host to mirror the guest MSI configuration.  Thanks,
+
+Alex
 
