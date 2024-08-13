@@ -1,71 +1,97 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0D535183CA6;
-	Tue, 13 Aug 2024 09:58:54 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 0BC16170A2B
+	for <iommu@lists.linux.dev>; Tue, 13 Aug 2024 11:46:28 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1723543135; cv=none; b=MajCh7BLg0zKo/HPPF20+XVV2HEN+HjeX9vLnxxSIgY16/4+wOqTUgAHvX11Hzl4SvXTeJsQPSRUXA/+1JO3aTBLt9FyXNnIbYph4cA7zj/5yhmDpD6Wb5rdacVTt3AYxPulNjL/C3mR+0tYPrdfO1pMedn/RRXLJpk3NKRr8lE=
+	t=1723549591; cv=none; b=usrTX2267pAQOLOpT+tfCG4pp13YDgQbNcGVeat89AfSoAW8KEb5Mw9MUU6Is7/VW7eGPNgsP/MUqKQb71237RNl5eBEkmtf+KT/UQfCg5A69zUx0UpaybQcA99eOJ6d06X0Z+FSeRbe1fX04yencDMQDfB9PRBExfDW3JzFm1k=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1723543135; c=relaxed/simple;
-	bh=Lw8CahXCDTaL5yyR0GiF61FLObnrlbhn5LVatwodznc=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=uFkkRNpz5hoHSM3cjyhWtcUGr3w0TjDDTznRM28d1kzEjFm6g9WfbxKBmAqwXivkWdwIwUKfzr8L/bxcwLsoSWE7ML4Ld8I/eoA46qq+UvyLJHXYrzs6A10GtjVcKDvIIHhZBUXhdS3MS+3r5GFh8k/ZEqcDc9XQDJhcL0v4Z2c=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b=H/z6yAq1; arc=none smtp.client-ip=10.30.226.201
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b="H/z6yAq1"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3231EC4AF0B;
-	Tue, 13 Aug 2024 09:58:53 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-	s=korg; t=1723543134;
-	bh=Lw8CahXCDTaL5yyR0GiF61FLObnrlbhn5LVatwodznc=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=H/z6yAq1WMVIBm22fwOInT5eFmkxz5Y7UWaE2qYEd/IlzBqrDqyeAKnE8kjAB8vbF
-	 n7FzVAnjXtWN8kQi+ThF5Cpyit6YXsPH2/ijuIlRTuPScXPqYMbm9gkkhFuaS2SS1m
-	 L5dYzafNqogVrJrop5Ov4YG9TpJmSJ9tq5sF2eNo=
-Date: Tue, 13 Aug 2024 11:58:51 +0200
-From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To: Leon Romanovsky <leon@kernel.org>
-Cc: Christoph Hellwig <hch@lst.de>, Robin Murphy <robin.murphy@arm.com>,
-	Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
-	Marek Szyprowski <m.szyprowski@samsung.com>,
-	Easwar Hariharan <eahariha@linux.microsoft.com>,
-	linux-kernel@vger.kernel.org, iommu@lists.linux.dev,
-	Jason Gunthorpe <jgg@nvidia.com>, leonro@nvidia.com
-Subject: Re: [PATCH v4 0/2] DMA IOMMU static calls
-Message-ID: <2024081330-dismiss-unsealed-0f21@gregkh>
-References: <cover.1721818168.git.leon@kernel.org>
- <20240805122050.GA480973@unreal>
+	s=arc-20240116; t=1723549591; c=relaxed/simple;
+	bh=FkG8eAW9Ih4myl4ll11jeD/+VIhj+idpMSixGVmnH7E=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=MpykFUR79V/WAbacUONK4VD+r30b9v15d8AziRrztdSTCSxSwDUJrVbZhl1okWZ4cELEqEpUGeeZoGZ1lbIWI2MEbTpATla2REeoLceT8kyIZguUBv4e6ZB9Z+2h5lG8iW1CWKqEzJl3lRNdsRqwycfmwH4/d5HcazYkQ1wh/fY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; arc=none smtp.client-ip=217.140.110.172
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 4BFFC12FC;
+	Tue, 13 Aug 2024 04:46:54 -0700 (PDT)
+Received: from [10.1.196.40] (e121345-lin.cambridge.arm.com [10.1.196.40])
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 5115D3F587;
+	Tue, 13 Aug 2024 04:46:27 -0700 (PDT)
+Message-ID: <fc80ffde-2d19-4bd6-9590-a80049302ad7@arm.com>
+Date: Tue, 13 Aug 2024 12:46:26 +0100
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20240805122050.GA480973@unreal>
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH 1/2] iommu/arm-smmu-v3: Match Stall behaviour for S2
+To: Mostafa Saleh <smostafa@google.com>, linux-kernel@vger.kernel.org,
+ iommu@lists.linux.dev, linux-arm-kernel@lists.infradead.org,
+ will@kernel.org, joro@8bytes.org
+Cc: jgg@ziepe.ca, nicolinc@nvidia.com, mshavit@google.com
+References: <20240812205255.97781-1-smostafa@google.com>
+ <20240812205255.97781-2-smostafa@google.com>
+From: Robin Murphy <robin.murphy@arm.com>
+Content-Language: en-GB
+In-Reply-To: <20240812205255.97781-2-smostafa@google.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 
-On Mon, Aug 05, 2024 at 03:20:50PM +0300, Leon Romanovsky wrote:
-> On Wed, Jul 24, 2024 at 09:04:47PM +0300, Leon Romanovsky wrote:
-> 
-> <...>
-> 
-> > Leon Romanovsky (2):
-> >   dma: call unconditionally to unmap_page and unmap_sg callbacks
-> >   dma: add IOMMU static calls with clear default ops
-> > 
-> >  MAINTAINERS                 |   1 +
-> >  drivers/iommu/Kconfig       |   2 +-
-> >  drivers/iommu/dma-iommu.c   | 121 ++++++++++----------------
-> >  drivers/iommu/intel/Kconfig |   1 -
-> >  include/linux/device.h      |   5 ++
-> 
-> Greg,
-> 
-> Can you please ack the change in the include/linux/device.h file?
+On 12/08/2024 9:52 pm, Mostafa Saleh wrote:
+> S2S must be set when stall model is forced "ARM_SMMU_FEAT_STALL_FORCE".
+> But at the moment the driver ignores that, instead of doing the minimum
+> and only set S2S for “ARM_SMMU_FEAT_STALL_FORCE” we can just match what
 
-I thought we were trying to get away from adding iommu stuff to struct
-device, but oh well :(
+This was highly confusing, until the 3rd reading when I realised that 
+maybe "instead of..." does not in fact belong to the description of the 
+current behaviour, and it does start making sense if you swap the 
+previous comma and full stop with each other.
 
-Acked-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+> S1 does which also set it for “ARM_SMMU_FEAT_STALL” and the master
+> has requested stalls.
+> This makes the driver more consistent when running on different SMMU
+> instances with different supported stages.
+> 
+> Signed-off-by: Mostafa Saleh <smostafa@google.com>
+> ---
+>   drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 5 +++++
+>   drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h | 1 +
+>   2 files changed, 6 insertions(+)
+> 
+> diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+> index a31460f9f3d4..8d573d9ca93c 100644
+> --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+> +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+> @@ -1562,6 +1562,11 @@ void arm_smmu_make_cdtable_ste(struct arm_smmu_ste *target,
+>   		(cd_table->cdtab_dma & STRTAB_STE_0_S1CTXPTR_MASK) |
+>   		FIELD_PREP(STRTAB_STE_0_S1CDMAX, cd_table->s1cdmax));
+>   
+> +	/* S2S is ignored if stage-2 exists but not enabled. */
+> +	if (master->stall_enabled &&
+> +	    smmu->features & ARM_SMMU_FEAT_TRANS_S2)
+> +		target->data[0] |= FIELD_PREP(STRTAB_STE_2_S2S, 1);
+
+In the middle of the ASID?
+
+Thanks,
+Robin.
+
+> +
+>   	target->data[1] = cpu_to_le64(
+>   		FIELD_PREP(STRTAB_STE_1_S1DSS, s1dss) |
+>   		FIELD_PREP(STRTAB_STE_1_S1CIR, STRTAB_STE_1_S1C_CACHE_WBRA) |
+> diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
+> index 14bca41a981b..0dc7ad43c64c 100644
+> --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
+> +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
+> @@ -267,6 +267,7 @@ struct arm_smmu_ste {
+>   #define STRTAB_STE_2_S2AA64		(1UL << 51)
+>   #define STRTAB_STE_2_S2ENDI		(1UL << 52)
+>   #define STRTAB_STE_2_S2PTW		(1UL << 54)
+> +#define STRTAB_STE_2_S2S		(1UL << 57)
+>   #define STRTAB_STE_2_S2R		(1UL << 58)
+>   
+>   #define STRTAB_STE_3_S2TTB_MASK		GENMASK_ULL(51, 4)
