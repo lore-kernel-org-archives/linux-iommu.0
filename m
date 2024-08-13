@@ -1,137 +1,193 @@
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 4DB16187348
-	for <iommu@lists.linux.dev>; Tue, 13 Aug 2024 12:23:15 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1723551798; cv=none; b=EepPE66yaZH7dr/+8P7IszyPc07tqDekLtQvMWtyb1KNFrH3LUS2+7IfXrApP1+hDVN2BqCHlrmAV6SWXKM7bCwYlHM1Qny3pmShPGqkX97eLZh6Bst6TvdSwGjn7NJ72MOdEZEv7Ouz7BrO2zcdKr5en3NobHhq66nu95q5OdA=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1723551798; c=relaxed/simple;
-	bh=0aF/53rygWBzDGX9kpGl449Fw0+7rQ6VE7MpYaZYMrs=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=WVH71DgHTkSqw7f3yXGaQGShn36hVyGRDebbqWAvofB2lc9XDxqpO9lDPk/uBXLeEXwbv7ouY3QkTsquT8meENuSaHezzBUFugKv56wboRTr0foonvOoWZd9OzzfY86ch176rPbGv6CSnr2tYIYqx1XvGpbqgKpYvK3qrOYR1UY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; arc=none smtp.client-ip=217.140.110.172
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 32AD912FC;
-	Tue, 13 Aug 2024 05:23:41 -0700 (PDT)
-Received: from [10.1.196.40] (e121345-lin.cambridge.arm.com [10.1.196.40])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 56A873F73B;
-	Tue, 13 Aug 2024 05:23:12 -0700 (PDT)
-Message-ID: <6304d2f3-4e35-46a7-a54d-eb39ba8f3094@arm.com>
-Date: Tue, 13 Aug 2024 13:23:10 +0100
+Received: from NAM02-DM3-obe.outbound.protection.outlook.com (mail-dm3nam02on2041.outbound.protection.outlook.com [40.107.95.41])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3851219939D;
+	Tue, 13 Aug 2024 12:30:46 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.95.41
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1723552249; cv=fail; b=LQxrGBP4Q/w0Ikqt8vDrE8l2L2VvUoDLnkNsYdP4BXOsrHEGmA5hJQ0Lbo1R4zxjxG4ulyHm3HIR3btPGF++WU4vXlRtn2gMSYwRu8tNUZFfG60u9vVJCi4kLs9YO18BFdGPIiXD/6CjwiGcqmkS1rACMFt5OHWMrWrvNPTmU9w=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1723552249; c=relaxed/simple;
+	bh=gdIF7HckhPgMq+ejh/uUF0APxzcc0PGSwCzDUPV3c3I=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:Content-Type:
+	 Content-Disposition:In-Reply-To:MIME-Version; b=QawRHBpxBrzOSbUQn4GZZO1PRRpJdUyCfcDPllH+sOAP+PE6PpfO1I76mP56TW4f2l9F6rx7nsusnEi17NsuExkOeOIQs0TTk4NX5n9WUwxMJYITJAo8dVx7xtpZmV59cdS805xiNxkPFNNRvjUtPPVb8DMwLOT7azyRvu1XAuQ=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=f5Va38Oc; arc=fail smtp.client-ip=40.107.95.41
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="f5Va38Oc"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=xFI3T/NCgerOZEktIXGeMtJQhf4HTra1GjKwfYtKADZ/DVtghuK/3KBLSs1e9UEmasyZI5eePKnWiBv6M9IbsNmniMJxAZNQ9e/6VwXNA94U9d16LypgdGHzZIE3Hx1PRnLl3B6MkDUH7WhE1Yhcek0gaDmcox4xHmo4bqPWO/Q4fVcJlBIS7W08AuomgHapC2+MqKRErIhvGfP89cVDgfj59goZCKUu4ncoBQQEaxpgYW9vC/6Nmmh2PswXm4F9fyg65T4gDk5NEguy8AYxq0A/lW049nRKSWhiuiMhhcRuGls3R1+2wM7NxZ/Y3p5eIJB7s3FtHHW+SYOMFUYSIQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=z8MOS+Kh0ErXWnltPUv/43RNTLd6tQVmkgVqvDtVjEE=;
+ b=WasuWwlkWvEOP8yiXctcwrB9p9mZRZcXX0kn7Jo6Rt3+X6lrSi73cVFl6yc6QLADviQXMCGi/6S1CN1W/bVjmcCYQwArq00IOnniga17d3VHwQG2a5wBv+AtGa0J+0pJIg3No3vqX//32jOuJKhwR0M6EZX+ARc3jw/1PcjVEq+cbFjFVz52p4Gf8a+twykcZd7VJCrK/Pt1JP2KotrP+yFVt2uEi88u4YTLOwTGdJKcJVheb65hLwOt6FY0bV9Tay51PCznEbGqrK/N00QC8Lje+TxJc29aBmK6xyjN8PTyvXg4ZqYyXqlr4FZ0RvkkumY1oYiDoisgTS/pUEUgJQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=z8MOS+Kh0ErXWnltPUv/43RNTLd6tQVmkgVqvDtVjEE=;
+ b=f5Va38OcMjIErU26jXCx/lRIvSg9TPsfUZiFN/pc+d1tfsvjA+jgyjFh4hugbWUhnMUY44eSzQKKxXF8IdJ/0jAxhC9Pxe3pHGO/mdOTeBzT7zQZLlNQQ12mwkzab4kP8EZYu5RWCqfBsnrtQueNQkrvqO+OFJDFLHAVgc+4ZkIc+5ZYZluvlyPfrcr54c7iYRpZuUSW9GElfX782wPQLyV8zXHxy0zixCDf2JMvrwVmfinibfF2Xuwt2yiyhCtHabFZh9pUV8u9zhtrsuDV4f5xPX6TO6UQhJtZeFSyaDiZs3vRgKw+0/gFes2zUi3H+2ZrxW+gN9iI2cTHGvQzBg==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nvidia.com;
+Received: from CH3PR12MB7763.namprd12.prod.outlook.com (2603:10b6:610:145::10)
+ by DS0PR12MB6560.namprd12.prod.outlook.com (2603:10b6:8:d0::22) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7849.22; Tue, 13 Aug
+ 2024 12:30:43 +0000
+Received: from CH3PR12MB7763.namprd12.prod.outlook.com
+ ([fe80::8b63:dd80:c182:4ce8]) by CH3PR12MB7763.namprd12.prod.outlook.com
+ ([fe80::8b63:dd80:c182:4ce8%3]) with mapi id 15.20.7849.021; Tue, 13 Aug 2024
+ 12:30:43 +0000
+Date: Tue, 13 Aug 2024 09:30:41 -0300
+From: Jason Gunthorpe <jgg@nvidia.com>
+To: Yi Liu <yi.l.liu@intel.com>
+Cc: Lu Baolu <baolu.lu@linux.intel.com>,
+	Bjorn Helgaas <bhelgaas@google.com>,
+	David Woodhouse <dwmw2@infradead.org>, iommu@lists.linux.dev,
+	Joerg Roedel <joro@8bytes.org>, kvm@vger.kernel.org,
+	linux-arm-kernel@lists.infradead.org, linux-pci@vger.kernel.org,
+	Robin Murphy <robin.murphy@arm.com>,
+	Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
+	Will Deacon <will@kernel.org>, patches@lists.linux.dev
+Subject: Re: [PATCH] iommu: Allow ATS to work on VFs when the PF uses IDENTITY
+Message-ID: <20240813123041.GU8378@nvidia.com>
+References: <0-v1-0fb4d2ab6770+7e706-ats_vf_jgg@nvidia.com>
+ <a4760303-02cd-4c4b-bd23-eba4379b2947@intel.com>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <a4760303-02cd-4c4b-bd23-eba4379b2947@intel.com>
+X-ClientProxiedBy: MN2PR22CA0012.namprd22.prod.outlook.com
+ (2603:10b6:208:238::17) To CH3PR12MB7763.namprd12.prod.outlook.com
+ (2603:10b6:610:145::10)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v4 1/2] dma: call unconditionally to unmap_page and
- unmap_sg callbacks
-To: Leon Romanovsky <leon@kernel.org>, Christoph Hellwig <hch@lst.de>,
- Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
- Marek Szyprowski <m.szyprowski@samsung.com>
-Cc: Leon Romanovsky <leonro@nvidia.com>,
- Easwar Hariharan <eahariha@linux.microsoft.com>,
- linux-kernel@vger.kernel.org, iommu@lists.linux.dev,
- Jason Gunthorpe <jgg@nvidia.com>,
- Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-References: <cover.1721818168.git.leon@kernel.org>
- <595d2716d252cac013a650bb3a94555ddb0d1d43.1721818168.git.leon@kernel.org>
-From: Robin Murphy <robin.murphy@arm.com>
-Content-Language: en-GB
-In-Reply-To: <595d2716d252cac013a650bb3a94555ddb0d1d43.1721818168.git.leon@kernel.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: CH3PR12MB7763:EE_|DS0PR12MB6560:EE_
+X-MS-Office365-Filtering-Correlation-Id: ec327358-bfb7-42c5-e17f-08dcbb93bfcf
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;ARA:13230040|1800799024|366016|7416014|376014;
+X-Microsoft-Antispam-Message-Info:
+	=?us-ascii?Q?TtWpZiTc6tVWOLOp+KQr1Y6mV2N+Mk1GKn0L95LRz+XJ4b36Zr9crHUTeYke?=
+ =?us-ascii?Q?iISxcK4zRo00g8jT3x+ZLh3VEEQWXRabi+CAIDfto8aarfCEhQB4OLltM8St?=
+ =?us-ascii?Q?XjN2f2IN1b4f/beqeDfSxVbedU9t6TiBpU/2yqlWrmoq5QmjUsG2/nPQqHLR?=
+ =?us-ascii?Q?2F+OblEdg+QQN/QzDRRkDedptrDlMdn9JPCkasI9O8Ria1w0KMmuqwRw2eBm?=
+ =?us-ascii?Q?kshhxgrtchbG4/mW6GTk+hoFilL4zX/Csz7vgEdPN9mtoQiEI2OKMsTOPALa?=
+ =?us-ascii?Q?zKcja+KVYvdaW6xD+4j6tzuy8qAgmE6SQ5VTKWQsUqFBLAX7Tt+TW1xuKqMv?=
+ =?us-ascii?Q?jb9wH+9sJ38715S8wqinbG9rPdhPqmJmn//F+GrevIj7Z0F3rcqtbcWBPTEv?=
+ =?us-ascii?Q?gYG/aaQ97Ebu7GWPYBVMdfjO5kD4n/2a8lzhpPnGdNYNliVjCOgs4qHUggTV?=
+ =?us-ascii?Q?+0PX4UOqW98YwVBM8/VjqxnrumRJagANTMpM3h7IfvI5g79iK3fJSsmebpKW?=
+ =?us-ascii?Q?49mRxLhF+YAJVGRVJalIOgawzVZpQRrj0ktkAb865I5JMBf1pqaY9sb6rrdm?=
+ =?us-ascii?Q?9lT8rCwQTVHYO8PsyXCQIA98e0eY0tauIbX3fnbxnmSBNiDmirBjDFEpMgfI?=
+ =?us-ascii?Q?7PSn/ycBa9IS8sNTEhD3RKxsuHU04d8d4dU9XeNbu0bDg8nLY+BJPsgYJmsb?=
+ =?us-ascii?Q?FYqk3Tz24zmW3Ee1BT9BPxEbkvz5+gC9pLJ1bCkdqeJJLTd3OoYU67e3nyFs?=
+ =?us-ascii?Q?WKjKdtks4vfxUtt11E9BjP2OEJDJPuQg8Z0+UUk8Wkb4TQ3OWn4z9/vtGE9g?=
+ =?us-ascii?Q?mRP1l7d3uqRnG3JBWuo8V3M90m6YmreCXhy9apOqZ5YqYolgoQYr2nJG9MFq?=
+ =?us-ascii?Q?+DVOauPffs0bPJGVkGrZebk6fI2lWAnzDfixzqrmhkO/JKnXj3t7QtQ/iy1v?=
+ =?us-ascii?Q?+VBHmPnOxGUx4uIhQIm/z4ukLEsGDHCq7Ymbh2YJldnzWekK7lNNawabNzsD?=
+ =?us-ascii?Q?cy0FOwrqLa36X1gZApYCoZO+2nWzOEsivMnYXHDXaLvis0+AbQh1kLB33Q9L?=
+ =?us-ascii?Q?fy4KfIl4RyfNg8vGQsExJxupZvBxN2zkErtc2MweQ5VpgJ2dQPyjAPciOgA0?=
+ =?us-ascii?Q?tkz2n44hoLa1vNegpkhbdMUKsK//qxPy5G6MCPmRHSRoz8wFQig+493TVQJZ?=
+ =?us-ascii?Q?RJzFPqRia3zE9b39SWbNDC19oYMZexDgvicTsmO8w0negKH5twnjmrL5YNuG?=
+ =?us-ascii?Q?XNx+EH1Lykw/GYlNpsy131w+jBNZ7bOAclQqPUWjeMyDdE24toWrMqJysbDE?=
+ =?us-ascii?Q?T9mCkXCNNFni+k8Gme+lga6SucODM3X9JjiT4QMf2+TUpA=3D=3D?=
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CH3PR12MB7763.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(1800799024)(366016)(7416014)(376014);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?us-ascii?Q?MIBHHW99mlYMEdLThTMkIz2wQyYtVVGivm7txChkPAL/QlFotJ/W6OWb6/y5?=
+ =?us-ascii?Q?v77+/k9zlgilbZyhSOU3xgGDtBocdkeP548Ebz1WZgiuCCnWIz7mDb54ZDq4?=
+ =?us-ascii?Q?MT/7zZwb4w4G3wOqwjA60gJywtk5bSyPB2fwvc4kKJmQ3VNvNwE4qqCWWPG5?=
+ =?us-ascii?Q?FL4u5YgXjcAgRKx4yZfiiCOlqKH6dhqxPXdFqhnDpSox4Y69gtoyBJ9kL3tB?=
+ =?us-ascii?Q?xHAYSztq2JHJHv//9r5awOw6rwTQO0fl+J2YUmNa+FG4V0d2+ZXsbAjC4Eri?=
+ =?us-ascii?Q?+iskC9oVkXFHVyfSwLB6bmS5Rf/t1n77cN/eq4YmpvDhuqxIQ5ecPtVphv9l?=
+ =?us-ascii?Q?zZ3+ZrNAQWHLgYezN/5zWdjaadv0bxsUp8ttIHWcseVDsKkRMB7OnGvlF+G7?=
+ =?us-ascii?Q?t5B2PUIVMI+nfv1VGisgkkNo4OMs204Nn658hPTb9yWJLwyPv6VRb++lTg5S?=
+ =?us-ascii?Q?i6WcgWpe5XMIxbQJRk7PhpyzfhPS1z+iyMkln1ebc4iAIg3nrz1ubitriux6?=
+ =?us-ascii?Q?VHJfC1X0/Xnib/K6o3vsf237r8OA2UKHr6zoHMd2oEpocPp7ee6lo0NuxWgJ?=
+ =?us-ascii?Q?UsUg8Ka2GcsuIkQB+90oG/aErEHZ8nhrQ9Y+B3HDNmOLF21AgOm74yuzBY0/?=
+ =?us-ascii?Q?4cmmJE4HQfZEiqIWAF+aYVbTm5soESpbZP6nrqWnaBW05ppIaM31q7buIlqM?=
+ =?us-ascii?Q?iPRIvjdkyxE+u1Lqj77t6YdzaB9FH5+hysXe5vhKhOrC43QMI6jqpwZsb+i2?=
+ =?us-ascii?Q?yeJoOQOTZoKYzKkksfmBlnR6qUDP1F9xHVFIx7KenXm+4fnPbc8nhYFIcFDJ?=
+ =?us-ascii?Q?BpT/OFFEGKJLnep6NucQ9OJ6FOmjiqtW+zn16MT7vGJAE1cJssRjze/KGV7I?=
+ =?us-ascii?Q?iqvF0TRQoG4uQNjAB+W2mXaxdgEgZenXF/TFZJHRkW1nIS//nJWtgMzpCAsJ?=
+ =?us-ascii?Q?ZTaat4aUt+kgH7mxOg+cB9/BurxygGA9QEFSCiZ7/SFQJYG42cvH/wKvnZe2?=
+ =?us-ascii?Q?1ln8fpbcE5I1NdYYImNmnCAilPwHMGvcbV3toUPED/IniHmfM1vMWtby4rtN?=
+ =?us-ascii?Q?hDiPOkuO/Qw+wFly7COodkwJiyj9Zk1+aOr6QZgRyKF/rJ0jLmsm9d0wOLs0?=
+ =?us-ascii?Q?CPnm7xrN0tkVIRDJvkQxnAsAISxzoBLeIMxHWuHWspE9DhQ7+FoehjcTsL41?=
+ =?us-ascii?Q?8WIsLIziqZC7NvbuhqZ7Nm0YlF5xsXaJZtnb35Q0IhKm69i+dorUU3650tbZ?=
+ =?us-ascii?Q?Wrdg6AoTX7pkH0G5sFqMYnp+Cu+QBgsikoiqjIOji5WSqJFFCL9Znv4MI51S?=
+ =?us-ascii?Q?vhgdYr/mEusQxpXqEXT8Fh5/8Ytb5nbAnyuqrimwzjIBrA1yYKLBW6G8yRR+?=
+ =?us-ascii?Q?l0J7AsPB2YELGlhGSLR+8h9cB0x5V+VlJxFfWuILcBMHUdG59Df7UorrSJ26?=
+ =?us-ascii?Q?mGws538VA0VMv25NdvO2JlAaYwqlpSEv/e1U1Nt1Nfqp1mWQnhHfbUGQGuNZ?=
+ =?us-ascii?Q?gjaXL23nuB33SFFindcXAF6dMiXoaFYoDzGeJSRA+TIEMCuGpHZ9mlaSUiqJ?=
+ =?us-ascii?Q?bEqjVs6fWPB9Idhui30=3D?=
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: ec327358-bfb7-42c5-e17f-08dcbb93bfcf
+X-MS-Exchange-CrossTenant-AuthSource: CH3PR12MB7763.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 13 Aug 2024 12:30:43.3843
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: cQugSpiYH6XPEQy3w9w7Xvv4m67A2wcbzeMsZNn0+1UERPjxqajYjDhV64L/jqqv
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DS0PR12MB6560
 
-On 24/07/2024 7:04 pm, Leon Romanovsky wrote:
-> From: Leon Romanovsky <leonro@nvidia.com>
-> 
-> Almost all users of ->map_page()/map_sg() callbacks implement
-> ->unmap_page()/unmap_sg() callbacks too. One user which doesn't do it,
-> is dummy DMA ops interface, and the use of this interface is to fail
-> the operation and in such case, there won't be any call to
-> ->unmap_page()/unmap_sg().
+On Tue, Aug 13, 2024 at 11:11:01AM +0800, Yi Liu wrote:
 
-Reviewed-by: Robin Murphy <robin.murphy@arm.com>
+> > The simplest solution is to have the iommu driver set the ATS STU when it
+> > probes the device. This way the ATS STU is loaded immediately at boot time
+> > to all PFs and there is no issue when a VF comes to use it.
+> 
+> This only sets STU without setting the ATS_CTRL.E bit. Is it possible that
+> VF considers the PF's STU field as valid only if PF's ATS_CTRL.E bit is
+> set?
 
-> This patch removes the existence checks of ->unmap_page()/unmap_sg()
-> and calls to it directly to create symmetrical interface to
-> ->map_page()/map_sg().
+That doesn't seem to be the case. Do you see something in the spec
+that says so?
+
+> > @@ -4091,6 +4091,7 @@ static struct iommu_device *intel_iommu_probe_device(struct device *dev)
+> >   	dev_iommu_priv_set(dev, info);
+> >   	if (pdev && pci_ats_supported(pdev)) {
+> > +		pci_prepare_ats(pdev, VTD_PAGE_SHIFT);
 > 
-> Signed-off-by: Leon Romanovsky <leonro@nvidia.com>
-> Signed-off-by: Leon Romanovsky <leon@kernel.org>
-> ---
->   kernel/dma/dummy.c   | 21 +++++++++++++++++++++
->   kernel/dma/mapping.c |  4 ++--
->   2 files changed, 23 insertions(+), 2 deletions(-)
+> perhaps just do it for PFs? :)
+
+That check is inside pci_perpare_ats(), no reason to duplicate it in
+all the callers.
+
+> > +int pci_prepare_ats(struct pci_dev *dev, int ps)
+> > +{
+> > +	u16 ctrl;
+> > +
+> > +	if (!pci_ats_supported(dev))
+> > +		return -EINVAL;
+> > +
+> > +	if (WARN_ON(dev->ats_enabled))
+> > +		return -EBUSY;
+> > +
+> > +	if (ps < PCI_ATS_MIN_STU)
+> > +		return -EINVAL;
+> > +
+> > +	if (dev->is_virtfn)
+> > +		return 0;
+> > +
+> > +	dev->ats_stu = ps;
+> > +	ctrl = PCI_ATS_CTRL_STU(dev->ats_stu - PCI_ATS_MIN_STU);
+> > +	pci_write_config_word(dev, dev->ats_cap + PCI_ATS_CTRL, ctrl);
 > 
-> diff --git a/kernel/dma/dummy.c b/kernel/dma/dummy.c
-> index b492d59ac77e..92de80e5b057 100644
-> --- a/kernel/dma/dummy.c
-> +++ b/kernel/dma/dummy.c
-> @@ -17,6 +17,15 @@ static dma_addr_t dma_dummy_map_page(struct device *dev, struct page *page,
->   {
->   	return DMA_MAPPING_ERROR;
->   }
-> +static void dma_dummy_unmap_page(struct device *dev, dma_addr_t dma_handle,
-> +		size_t size, enum dma_data_direction dir, unsigned long attrs)
-> +{
-> +	/*
-> +	 * Dummy ops doesn't support map_page, so unmap_page should never be
-> +	 * called.
-> +	 */
-> +	WARN_ON_ONCE(true);
-> +}
->   
->   static int dma_dummy_map_sg(struct device *dev, struct scatterlist *sgl,
->   		int nelems, enum dma_data_direction dir,
-> @@ -25,6 +34,16 @@ static int dma_dummy_map_sg(struct device *dev, struct scatterlist *sgl,
->   	return -EINVAL;
->   }
->   
-> +static void dma_dummy_unmap_sg(struct device *dev, struct scatterlist *sgl,
-> +		int nelems, enum dma_data_direction dir,
-> +		unsigned long attrs)
-> +{
-> +	/*
-> +	 * Dummy ops doesn't support map_sg, so unmap_sg should never be called.
-> +	 */
-> +	WARN_ON_ONCE(true);
-> +}
-> +
->   static int dma_dummy_supported(struct device *hwdev, u64 mask)
->   {
->   	return 0;
-> @@ -33,6 +52,8 @@ static int dma_dummy_supported(struct device *hwdev, u64 mask)
->   const struct dma_map_ops dma_dummy_ops = {
->   	.mmap                   = dma_dummy_mmap,
->   	.map_page               = dma_dummy_map_page,
-> +	.unmap_page             = dma_dummy_unmap_page,
->   	.map_sg                 = dma_dummy_map_sg,
-> +	.unmap_sg               = dma_dummy_unmap_sg,
->   	.dma_supported          = dma_dummy_supported,
->   };
-> diff --git a/kernel/dma/mapping.c b/kernel/dma/mapping.c
-> index 81de84318ccc..6832fd6f0796 100644
-> --- a/kernel/dma/mapping.c
-> +++ b/kernel/dma/mapping.c
-> @@ -177,7 +177,7 @@ void dma_unmap_page_attrs(struct device *dev, dma_addr_t addr, size_t size,
->   	if (dma_map_direct(dev, ops) ||
->   	    arch_dma_unmap_page_direct(dev, addr + size))
->   		dma_direct_unmap_page(dev, addr, size, dir, attrs);
-> -	else if (ops->unmap_page)
-> +	else
->   		ops->unmap_page(dev, addr, size, dir, attrs);
->   	debug_dma_unmap_page(dev, addr, size, dir);
->   }
-> @@ -291,7 +291,7 @@ void dma_unmap_sg_attrs(struct device *dev, struct scatterlist *sg,
->   	if (dma_map_direct(dev, ops) ||
->   	    arch_dma_unmap_sg_direct(dev, sg, nents))
->   		dma_direct_unmap_sg(dev, sg, nents, dir, attrs);
-> -	else if (ops->unmap_sg)
-> +	else
->   		ops->unmap_sg(dev, sg, nents, dir, attrs);
->   }
->   EXPORT_SYMBOL(dma_unmap_sg_attrs);
+> Is it valuable to have a flag to mark if STU is set or not? Such way can
+> avoid setting STU multiple times.
+
+We don't because we only do it for the PF due to the is_virtfn check
+
+Jason
