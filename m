@@ -1,48 +1,25 @@
-Received: from mx0b-0031df01.pphosted.com (mx0b-0031df01.pphosted.com [205.220.180.131])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 039552262B;
-	Tue, 13 Aug 2024 12:07:01 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.180.131
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 4DB16187348
+	for <iommu@lists.linux.dev>; Tue, 13 Aug 2024 12:23:15 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1723550823; cv=none; b=dosWMhYhV16HYbIB+dnsioVwGQGpiBc5rQq+z1W5SkQeen7VWyCuJLDzd5L74esG3z7/WSnIEfnzjb4yI3HeoGnvjsr82jx2UnvmGT493ZOUNI9BcjwdXfhbJ4ziEl2i8OpWLi1WEQvOal4s0Il9ss22rQQk4DzxeJe9Nq8rQDw=
+	t=1723551798; cv=none; b=EepPE66yaZH7dr/+8P7IszyPc07tqDekLtQvMWtyb1KNFrH3LUS2+7IfXrApP1+hDVN2BqCHlrmAV6SWXKM7bCwYlHM1Qny3pmShPGqkX97eLZh6Bst6TvdSwGjn7NJ72MOdEZEv7Ouz7BrO2zcdKr5en3NobHhq66nu95q5OdA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1723550823; c=relaxed/simple;
-	bh=HFXqsgfkGh2i63MLKdDhs7xSwlr9jFR8Gx45hNBwkXQ=;
-	h=Message-ID:Date:MIME-Version:Subject:To:CC:References:From:
-	 In-Reply-To:Content-Type; b=JX2Zap4a791sEGpABZrnN5xzntzqHeQgD2Kbu9IV+aEonY3UWdAFVow2yQ6TOATb0I678rzhfqGnHYcTf8XoGmswWlL6t6Phi6Tn2CS+xqZSqrsUngAyyLslLNDsbDSvDC4Y4XiwxxcVN/0E/gabSL2MZLfpOuVAixW/PLhZscQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com; spf=pass smtp.mailfrom=quicinc.com; dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b=O68Hqbk9; arc=none smtp.client-ip=205.220.180.131
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=quicinc.com
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b="O68Hqbk9"
-Received: from pps.filterd (m0279873.ppops.net [127.0.0.1])
-	by mx0a-0031df01.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 47D5LCVZ005635;
-	Tue, 13 Aug 2024 12:06:46 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=quicinc.com; h=
-	cc:content-transfer-encoding:content-type:date:from:in-reply-to
-	:message-id:mime-version:references:subject:to; s=qcppdkim1; bh=
-	CYyOx8obdom0b/vBXVrrjfaT8/6mGblM1Ij0bv6hbto=; b=O68Hqbk9SozddwHJ
-	rC/5lEfiebZKRjP6HZBZBMW7jQloSqnD8yA5xuEzqpMG0GE14QBtP10cwWgsRzSM
-	nC4tMrT6nKo4yM6jG7blceswhnJOLTd1NFoQuXkEPHpyVqD457x7Ws5TMck7ZhBr
-	QAAzOhxuqJZ2Z1Qv/YL01EK+4/bjTfiquEZOjIDkilbqJdBgXazLcm/iAWsCw/zA
-	i9Dt6bffvZxc089KHBcJsnm1QrPhsuN+z0RM92z3o1x/xIkGp0wMiCx1UL7aB2oy
-	ajG3VP3ffQvqV55rrwurDg7thn1djsgEXx3+nJ28otQIpL78jLNAAnTFPfUf4rWA
-	fl1txA==
-Received: from nasanppmta03.qualcomm.com (i-global254.qualcomm.com [199.106.103.254])
-	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 40x18xyjbw-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Tue, 13 Aug 2024 12:06:46 +0000 (GMT)
-Received: from nasanex01a.na.qualcomm.com (nasanex01a.na.qualcomm.com [10.52.223.231])
-	by NASANPPMTA03.qualcomm.com (8.18.1.2/8.18.1.2) with ESMTPS id 47DC6jtp027343
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Tue, 13 Aug 2024 12:06:45 GMT
-Received: from [10.133.1.196] (10.80.80.8) by nasanex01a.na.qualcomm.com
- (10.52.223.231) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1544.9; Tue, 13 Aug
- 2024 05:06:42 -0700
-Message-ID: <3cb1da06-88e3-4dd2-b56c-e0ab725ef6b2@quicinc.com>
-Date: Tue, 13 Aug 2024 15:06:23 +0300
+	s=arc-20240116; t=1723551798; c=relaxed/simple;
+	bh=0aF/53rygWBzDGX9kpGl449Fw0+7rQ6VE7MpYaZYMrs=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=WVH71DgHTkSqw7f3yXGaQGShn36hVyGRDebbqWAvofB2lc9XDxqpO9lDPk/uBXLeEXwbv7ouY3QkTsquT8meENuSaHezzBUFugKv56wboRTr0foonvOoWZd9OzzfY86ch176rPbGv6CSnr2tYIYqx1XvGpbqgKpYvK3qrOYR1UY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; arc=none smtp.client-ip=217.140.110.172
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 32AD912FC;
+	Tue, 13 Aug 2024 05:23:41 -0700 (PDT)
+Received: from [10.1.196.40] (e121345-lin.cambridge.arm.com [10.1.196.40])
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 56A873F73B;
+	Tue, 13 Aug 2024 05:23:12 -0700 (PDT)
+Message-ID: <6304d2f3-4e35-46a7-a54d-eb39ba8f3094@arm.com>
+Date: Tue, 13 Aug 2024 13:23:10 +0100
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -50,83 +27,111 @@ List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH 1/1] iommu/arm-smmu-qcom: remove runtime pm enabling for
- TBU driver
-To: Zhenhua Huang <quic_zhenhuah@quicinc.com>,
-        Pranjal Shrivastava
-	<praan@google.com>
-CC: <robdclark@gmail.com>, <will@kernel.org>, <robin.murphy@arm.com>,
-        <joro@8bytes.org>, <iommu@lists.linux.dev>,
-        <linux-arm-msm@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>, <linux-kernel@vger.kernel.org>,
-        <dmitry.baryshkov@linaro.org>, Georgi Djakov <djakov@kernel.org>
-References: <1722335443-30080-1-git-send-email-quic_zhenhuah@quicinc.com>
- <ZroNUGkKuC1L7Qfr@google.com>
- <cca690c3-916e-43b6-b2a5-eca4f2eb838e@quicinc.com>
- <ZrsJLqTnq6tG2xp4@google.com>
- <dee2f394-c9c5-4099-8e05-ce0c8756887b@quicinc.com>
-Content-Language: en-US
-From: Georgi Djakov <quic_c_gdjako@quicinc.com>
-In-Reply-To: <dee2f394-c9c5-4099-8e05-ce0c8756887b@quicinc.com>
-Content-Type: text/plain; charset="UTF-8"
+Subject: Re: [PATCH v4 1/2] dma: call unconditionally to unmap_page and
+ unmap_sg callbacks
+To: Leon Romanovsky <leon@kernel.org>, Christoph Hellwig <hch@lst.de>,
+ Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
+ Marek Szyprowski <m.szyprowski@samsung.com>
+Cc: Leon Romanovsky <leonro@nvidia.com>,
+ Easwar Hariharan <eahariha@linux.microsoft.com>,
+ linux-kernel@vger.kernel.org, iommu@lists.linux.dev,
+ Jason Gunthorpe <jgg@nvidia.com>,
+ Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+References: <cover.1721818168.git.leon@kernel.org>
+ <595d2716d252cac013a650bb3a94555ddb0d1d43.1721818168.git.leon@kernel.org>
+From: Robin Murphy <robin.murphy@arm.com>
+Content-Language: en-GB
+In-Reply-To: <595d2716d252cac013a650bb3a94555ddb0d1d43.1721818168.git.leon@kernel.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
- nasanex01a.na.qualcomm.com (10.52.223.231)
-X-QCInternal: smtphost
-X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
-X-Proofpoint-GUID: 33E62etIps3z33ArWAoTcMfQb0k2iyOH
-X-Proofpoint-ORIG-GUID: 33E62etIps3z33ArWAoTcMfQb0k2iyOH
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.293,Aquarius:18.0.1039,Hydra:6.0.680,FMLib:17.12.28.16
- definitions=2024-08-13_04,2024-08-13_01,2024-05-17_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 adultscore=0 mlxlogscore=710
- suspectscore=0 phishscore=0 malwarescore=0 mlxscore=0 spamscore=0
- lowpriorityscore=0 impostorscore=0 clxscore=1011 priorityscore=1501
- bulkscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.19.0-2407110000 definitions=main-2408130088
 
-Hi Zhenhua,
-
-On 8/13/2024 10:56 AM, Zhenhua Huang wrote:
+On 24/07/2024 7:04 pm, Leon Romanovsky wrote:
+> From: Leon Romanovsky <leonro@nvidia.com>
 > 
-> On 2024/8/13 15:20, Pranjal Shrivastava wrote:
->> On Tue, Aug 13, 2024 at 10:37:33AM +0800, Zhenhua Huang wrote:
->>>
->>> On 2024/8/12 21:25, Pranjal Shrivastava wrote:
->>>> On Tue, Jul 30, 2024 at 06:30:43PM +0800, Zhenhua Huang wrote:
->>>>> TBU driver has no runtime pm support now, adding pm_runtime_enable()
->>>>> seems to be useless. Remove it.
->>>>>
->>>>> Signed-off-by: Zhenhua Huang <quic_zhenhuah@quicinc.com>
-[..]
->> I agree that there are no pm_runtime_suspend/resume calls within the TBU
->> driver. I'm just trying to understand why was pm_runtime enabled here
->> earlier (since it's not implemented) in order to ensure that removing it
->> doesn't cause further troubles?
+> Almost all users of ->map_page()/map_sg() callbacks implement
+> ->unmap_page()/unmap_sg() callbacks too. One user which doesn't do it,
+> is dummy DMA ops interface, and the use of this interface is to fail
+> the operation and in such case, there won't be any call to
+> ->unmap_page()/unmap_sg().
+
+Reviewed-by: Robin Murphy <robin.murphy@arm.com>
+
+> This patch removes the existence checks of ->unmap_page()/unmap_sg()
+> and calls to it directly to create symmetrical interface to
+> ->map_page()/map_sg().
 > 
-> See above my assumption, need Georgi to comment but.
-
-Thank you for looking at the code! Your assumptions are mostly correct,
-but if you try this patch on a real sdm845 device you will notice some
-issues. So it's actually needed to re-configure the power-domains, three
-of which (MMNOC GDSCs) are requiring this because of a HW bug. I should
-have put a comment in the code to avoid confusion, but it took me some
-time to confirm it.
-
-I have sent a patch to handle this more cleanly:
-https://lore.kernel.org/lkml/20240813120015.3242787-1-quic_c_gdjako@quicinc.com
-
-So we should not remove the runtime pm calls until some version of the
-above patch gets merged.
-
-Thanks,
-Georgi
-
->> I see Georgi added it as a part of
->> https://lore.kernel.org/all/20240704010759.507798-1-quic_c_gdjako@quicinc.com/
->>
->> But I'm unsure why was it required to fix that bug?
+> Signed-off-by: Leon Romanovsky <leonro@nvidia.com>
+> Signed-off-by: Leon Romanovsky <leon@kernel.org>
+> ---
+>   kernel/dma/dummy.c   | 21 +++++++++++++++++++++
+>   kernel/dma/mapping.c |  4 ++--
+>   2 files changed, 23 insertions(+), 2 deletions(-)
 > 
-> I'm just thinking it is dead code and want to see if my understanding is correct.
-
-
+> diff --git a/kernel/dma/dummy.c b/kernel/dma/dummy.c
+> index b492d59ac77e..92de80e5b057 100644
+> --- a/kernel/dma/dummy.c
+> +++ b/kernel/dma/dummy.c
+> @@ -17,6 +17,15 @@ static dma_addr_t dma_dummy_map_page(struct device *dev, struct page *page,
+>   {
+>   	return DMA_MAPPING_ERROR;
+>   }
+> +static void dma_dummy_unmap_page(struct device *dev, dma_addr_t dma_handle,
+> +		size_t size, enum dma_data_direction dir, unsigned long attrs)
+> +{
+> +	/*
+> +	 * Dummy ops doesn't support map_page, so unmap_page should never be
+> +	 * called.
+> +	 */
+> +	WARN_ON_ONCE(true);
+> +}
+>   
+>   static int dma_dummy_map_sg(struct device *dev, struct scatterlist *sgl,
+>   		int nelems, enum dma_data_direction dir,
+> @@ -25,6 +34,16 @@ static int dma_dummy_map_sg(struct device *dev, struct scatterlist *sgl,
+>   	return -EINVAL;
+>   }
+>   
+> +static void dma_dummy_unmap_sg(struct device *dev, struct scatterlist *sgl,
+> +		int nelems, enum dma_data_direction dir,
+> +		unsigned long attrs)
+> +{
+> +	/*
+> +	 * Dummy ops doesn't support map_sg, so unmap_sg should never be called.
+> +	 */
+> +	WARN_ON_ONCE(true);
+> +}
+> +
+>   static int dma_dummy_supported(struct device *hwdev, u64 mask)
+>   {
+>   	return 0;
+> @@ -33,6 +52,8 @@ static int dma_dummy_supported(struct device *hwdev, u64 mask)
+>   const struct dma_map_ops dma_dummy_ops = {
+>   	.mmap                   = dma_dummy_mmap,
+>   	.map_page               = dma_dummy_map_page,
+> +	.unmap_page             = dma_dummy_unmap_page,
+>   	.map_sg                 = dma_dummy_map_sg,
+> +	.unmap_sg               = dma_dummy_unmap_sg,
+>   	.dma_supported          = dma_dummy_supported,
+>   };
+> diff --git a/kernel/dma/mapping.c b/kernel/dma/mapping.c
+> index 81de84318ccc..6832fd6f0796 100644
+> --- a/kernel/dma/mapping.c
+> +++ b/kernel/dma/mapping.c
+> @@ -177,7 +177,7 @@ void dma_unmap_page_attrs(struct device *dev, dma_addr_t addr, size_t size,
+>   	if (dma_map_direct(dev, ops) ||
+>   	    arch_dma_unmap_page_direct(dev, addr + size))
+>   		dma_direct_unmap_page(dev, addr, size, dir, attrs);
+> -	else if (ops->unmap_page)
+> +	else
+>   		ops->unmap_page(dev, addr, size, dir, attrs);
+>   	debug_dma_unmap_page(dev, addr, size, dir);
+>   }
+> @@ -291,7 +291,7 @@ void dma_unmap_sg_attrs(struct device *dev, struct scatterlist *sg,
+>   	if (dma_map_direct(dev, ops) ||
+>   	    arch_dma_unmap_sg_direct(dev, sg, nents))
+>   		dma_direct_unmap_sg(dev, sg, nents, dir, attrs);
+> -	else if (ops->unmap_sg)
+> +	else
+>   		ops->unmap_sg(dev, sg, nents, dir, attrs);
+>   }
+>   EXPORT_SYMBOL(dma_unmap_sg_attrs);
