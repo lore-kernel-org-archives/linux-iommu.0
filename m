@@ -1,142 +1,166 @@
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-yb1-f202.google.com (mail-yb1-f202.google.com [209.85.219.202])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9913D1B375A
-	for <iommu@lists.linux.dev>; Wed, 14 Aug 2024 14:55:10 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=170.10.133.124
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 94B50131E2D
+	for <iommu@lists.linux.dev>; Wed, 14 Aug 2024 14:56:39 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.219.202
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1723647312; cv=none; b=igO25Z5an9YSEI0I22cYu7WP23nryygj41f5l0r2gRSqRuX7fJqwYFzNHQzsEweQXZhFeJqwrEMT/fLanLHJNFuGd8Orsew1w3lWICOos5RP/RvHxtAVWVwknxLDGBo++NvuOQNcGacZcpZ0m3T7R18kHtrn5UVeu6vtvugVG3c=
+	t=1723647401; cv=none; b=Z94fEkPv4Pyvlo5X7WBXFG0O1KAJAtHnFuxa723moBMRCTa4xromSNO2vME//Sh0+tR19n6OVCVEj8Mpfa+FcrJkwEOl5cSInUV4QE6EfDqtu/SpNaRzDI85vMjKLnRVOOaEcDyxPkVagm/bzb1aO5IqBxomQBsXvfBlQWMjBJc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1723647312; c=relaxed/simple;
-	bh=WoccYl5tJ4uS73R5zSqJbENwLN3ciC51K4xWuQmtihA=;
-	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=dCQF+sFYN8Nmahyfe3l5fc6hhEGsPw5xDNN03HxQH8XxznTBjHAygjfHc7eVUSXhafkvsfrYPGfp5gYGE4FzQn8AYuHmi22cI8oR+3PqzQNvkr36e06i2FKOSCUcW98LhZkKLIvab9v8Vcnv78vR1IfjYWgUnHNhJdBvZYuJBGE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=redhat.com; spf=pass smtp.mailfrom=redhat.com; dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b=aJ8xBrik; arc=none smtp.client-ip=170.10.133.124
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=redhat.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=redhat.com
+	s=arc-20240116; t=1723647401; c=relaxed/simple;
+	bh=yya8mCdkJzXy0zL2NV+oNlw8ZrqamjEaG8Jd95WqXKM=;
+	h=Date:Mime-Version:Message-ID:Subject:From:To:Cc:Content-Type; b=VCHvPk+t1BzsGxNIwEzrmwDZFdU9PIITquJiYTuYEsBgaVppACotZ+5RvGOIG4LUwXX7KiNl58CauMRs95u5JB6SYk6zXg/Qr6TyNMsNGJG77pXbsIMp7nL3RuXGAKSUDaB6IunUSNRizlr28jEGIWATWQpLrDWcJQjSyme3bxs=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=flex--smostafa.bounces.google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=IBmYaqFD; arc=none smtp.client-ip=209.85.219.202
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=flex--smostafa.bounces.google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="aJ8xBrik"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-	s=mimecast20190719; t=1723647309;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references;
-	bh=oPm3R6PblHeNKQdvTaJGKrEzfWm2oR4v27v3xkNgebw=;
-	b=aJ8xBrikto+YSH+2J5Sb/9wMQ/74XEcwJk1JW1Ogb2864/1M7TuQqkJ2L9mjuQleMO66BE
-	1FDwPQ5It0voQVd6CGPUw3zBMHqLeSQhZmcv3Cipi4qEe+llh1sdWg91eR/IW9Xu89WVrE
-	ZKOo6xWegCSTbkTkrwGR33hFLS9A1qI=
-Received: from mail-io1-f72.google.com (mail-io1-f72.google.com
- [209.85.166.72]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
- us-mta-482-p66Pf0AqN7WTt_QrYfmbOQ-1; Wed, 14 Aug 2024 10:55:08 -0400
-X-MC-Unique: p66Pf0AqN7WTt_QrYfmbOQ-1
-Received: by mail-io1-f72.google.com with SMTP id ca18e2360f4ac-81faf98703eso604739f.3
-        for <iommu@lists.linux.dev>; Wed, 14 Aug 2024 07:55:08 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="IBmYaqFD"
+Received: by mail-yb1-f202.google.com with SMTP id 3f1490d57ef6-e0bb206570aso11962811276.3
+        for <iommu@lists.linux.dev>; Wed, 14 Aug 2024 07:56:39 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20230601; t=1723647398; x=1724252198; darn=lists.linux.dev;
+        h=content-transfer-encoding:cc:to:from:subject:message-id
+         :mime-version:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=6QiimjaWFQigtWp7gc9RJ6NeS58KxDmWelajHEyqbgQ=;
+        b=IBmYaqFD+dqCgMPi63XKmV/ZEJQw5ys99K0ve1yWA8lRq+2VQs/HpGfxmSuJ4Lt+D1
+         gGOkxTygUpIJqbJRHj3veaDgE/HYRi7bY2AasJ8pggBFQZebkH8MrgRqfTA6s5ClXrHp
+         ND7VdWniB9syL+x6P0H9mC3EPPu1BJtXdJEqB+D7pUBFBuSWiBTGFMdlwDwlNX2uHgtR
+         EsmAvTmfHun6mp/aVWURyl/YD4ZKqfIqYMoJRouO9ZB9n0FPfaaHIno7dYMIOru7vycI
+         yXDhvQAiROoxp22JY3bLBcQNiiMjtvF6t484TZQl4FGqBcsGe0rQUozkhwwROh/1DvIL
+         Uz0Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1723647308; x=1724252108;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:subject:cc:to:from:date:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=oPm3R6PblHeNKQdvTaJGKrEzfWm2oR4v27v3xkNgebw=;
-        b=fWCNNYD672xokjnSJMezg4EKQzG0/WBw9UlbOuOOlaCelgbradXwV2Ftgt7gQ2bJ6C
-         vbBK9hCgyZn5sKwuK8Jngj4VoPYkP2SaRDQmg7f32NypPAJOBv8NWHQSi3j5wKLn6o5m
-         21X5E6/ZeFcpUvRyUt4jfWrJff/D+DmL3tB9VcXKxR6TaDfp8s01AbHfOhYmtcl+wES7
-         wC7hCt9DSMdLN1tBhou0Ui725KErtuTJyPO355KNhlXP+54KPf8Gh3XH/magPCmXu+fx
-         UQdGyrwee1xjHylRT+FNe6AQGOesS8GBWy86RFEU/ZGFLdWFTMxhyx1RBgb+PULHooV2
-         vWQQ==
-X-Forwarded-Encrypted: i=1; AJvYcCV5zMxhKbc9JMGxdqueOm7zlAzsahhxvfvbdtt3EhPXfv0xvbqlY7rTtSmAJG0gn+lrSRVD7eyDmRXaHsqVI2pNcbu7CMc=
-X-Gm-Message-State: AOJu0YxDUxHF2uds+2cx/SmWpku7M1i2S7Wv+8EX/NSjyvs8bwNLvgxY
-	1VzErWgiv2rA4nMaR0LLBrQWldJMQfygG7sjPhTA2rBesueQY0T1PPaaXSZtNBo8mE46U8Xv54k
-	ChherfNfeSZNKviTkxamLT5TXqEZ6OBSfGoA3TPWO8g9lQX/wVETX
-X-Received: by 2002:a05:6602:4c8a:b0:7f9:b435:4f5 with SMTP id ca18e2360f4ac-824dae79033mr337940339f.11.1723647307729;
-        Wed, 14 Aug 2024 07:55:07 -0700 (PDT)
-X-Google-Smtp-Source: AGHT+IFKOB2u3ExmlngG/ZGX6m16GkR9QFQMCyYiDK1GqVIcqqNhWRQ6U/pFLSxgUSO2c6mZ3lkevw==
-X-Received: by 2002:a05:6602:4c8a:b0:7f9:b435:4f5 with SMTP id ca18e2360f4ac-824dae79033mr337937239f.11.1723647307328;
-        Wed, 14 Aug 2024 07:55:07 -0700 (PDT)
-Received: from redhat.com ([38.15.36.11])
-        by smtp.gmail.com with ESMTPSA id 8926c6da1cb9f-4ca769102a4sm3274045173.18.2024.08.14.07.55.06
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 14 Aug 2024 07:55:06 -0700 (PDT)
-Date: Wed, 14 Aug 2024 08:55:05 -0600
-From: Alex Williamson <alex.williamson@redhat.com>
-To: Jason Gunthorpe <jgg@ziepe.ca>
-Cc: Thomas Gleixner <tglx@linutronix.de>, kvm@vger.kernel.org,
- quic_bqiang@quicinc.com, kvalo@kernel.org, prestwoj@gmail.com,
- linux-wireless@vger.kernel.org, ath11k@lists.infradead.org,
- dwmw2@infradead.org, iommu@lists.linux.dev, kernel@quicinc.com,
- johannes@sipsolutions.net, jtornosm@redhat.com
-Subject: Re: [PATCH RFC/RFT] vfio/pci: Create feature to disable MSI
- virtualization
-Message-ID: <20240814085505.60819623.alex.williamson@redhat.com>
-In-Reply-To: <20240813231642.GR1985367@ziepe.ca>
-References: <adcb785e-4dc7-4c4a-b341-d53b72e13467@gmail.com>
-	<20240812170014.1583783-1-alex.williamson@redhat.com>
-	<20240813163053.GK1985367@ziepe.ca>
-	<20240813151401.789c578f.alex.williamson@redhat.com>
-	<20240813231642.GR1985367@ziepe.ca>
-X-Mailer: Claws Mail 4.3.0 (GTK 3.24.43; x86_64-redhat-linux-gnu)
+        d=1e100.net; s=20230601; t=1723647398; x=1724252198;
+        h=content-transfer-encoding:cc:to:from:subject:message-id
+         :mime-version:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=6QiimjaWFQigtWp7gc9RJ6NeS58KxDmWelajHEyqbgQ=;
+        b=Rrvnh2V+TTRcfcHOvjkytHXi717h1Rfxzuz+cEy9/Kdad8iGbrgpdYtOsM/yPmJGZ8
+         9tN2qq+0IJo4OIlSppo00WwrvY4JxYq/F3TbBAo4qmL3NasrjW7LsNMbU+9s+CYG/CFz
+         s/OC/8GWV/ZMz1VZ8psXj0dcQyx4whZ8DssuoIJGuP23X5VAzsNua94U/gFaxj0nW0Sh
+         1diuwlG7Vh8+EcO0/o0N7kMnLbCiI828k7R9Aot+hGbo18t1Chn8RrtPft5gZ1avpCGv
+         hZ74fuAexFKlv/dM+pKLWTHx7b+eKMyST/T9ug/xfQLQmbLcFVWbOgmMXYYXjs/sKFic
+         FUhQ==
+X-Forwarded-Encrypted: i=1; AJvYcCWlI88ygLOKmaZAe9Ivx9AEq0Oz49Gqdv8jassro6h4k9GOEW6/lBD4kc2GpyLxkViD4KtxtzpBWDAqjvmqLrzzt8NL4ow=
+X-Gm-Message-State: AOJu0Yz9m+YijMyBAy++rtvNTtgMue4pdhX+4rxhbFBXQMuqCKfaSIqI
+	VZHEwBT43MIClKjR3szHrgVso0RfOjxKEFtyeAYEh3VBC8c9qSVWxiYFZ3sKn6sxaV9rOTjviPH
+	eDrzJN3lc4A==
+X-Google-Smtp-Source: AGHT+IEwZKpbi2DVRDWHPR9t5KsZu510hTwOo8qGv7V3OsKoQsm3WmSQ4c6RbXYHvqRaHKRLcB9RJgCyn8fG3w==
+X-Received: from mostafa.c.googlers.com ([fda3:e722:ac3:cc00:28:9cb1:c0a8:333c])
+ (user=smostafa job=sendgmr) by 2002:a25:ed04:0:b0:e0b:bafe:a7f3 with SMTP id
+ 3f1490d57ef6-e1155ba2f29mr125325276.11.1723647398061; Wed, 14 Aug 2024
+ 07:56:38 -0700 (PDT)
+Date: Wed, 14 Aug 2024 14:56:33 +0000
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
-MIME-Version: 1.0
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: redhat.com
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Mime-Version: 1.0
+X-Mailer: git-send-email 2.46.0.76.ge559c4bf1a-goog
+Message-ID: <20240814145633.2565126-1-smostafa@google.com>
+Subject: [PATCH v2] iommu/arm-smmu-v3: Match Stall behaviour for S2
+From: Mostafa Saleh <smostafa@google.com>
+To: linux-kernel@vger.kernel.org, iommu@lists.linux.dev, 
+	linux-arm-kernel@lists.infradead.org, will@kernel.org, robin.murphy@arm.com, 
+	joro@8bytes.org
+Cc: jean-philippe@linaro.org, jgg@ziepe.ca, nicolinc@nvidia.com, 
+	mshavit@google.com, Mostafa Saleh <smostafa@google.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-On Tue, 13 Aug 2024 20:16:42 -0300
-Jason Gunthorpe <jgg@ziepe.ca> wrote:
+According to the spec (ARM IHI 0070 F.b), in
+"5.5 Fault configuration (A, R, S bits)":
+    A STE with stage 2 translation enabled and STE.S2S =3D=3D 0 is
+    considered ILLEGAL if SMMU_IDR0.STALL_MODEL =3D=3D 0b10.
 
-> On Tue, Aug 13, 2024 at 03:14:01PM -0600, Alex Williamson wrote:
-> 
-> > > Personally, I very much dislike this. Encouraging such hacky driver
-> > > use of the interrupt subsystem is not a good direction. Enabling this
-> > > in VMs will further complicate fixing the IRQ usages in these drivers
-> > > over the long run.  
-> > 
-> > Clearly these _guest_ drivers are doing this regardless of the
-> > interfaces provided by vfio, so I don't see how we're encouraging hacky
-> > driver behavior, especially when it comes to Windows guest drivers.  
-> 
-> Because people will then say the Linux driver can't be fixed to
-> properly use an irq_domain/etc as the only option that works in VMs
-> will be the hacky copy from MSI-X approach :\
+Also described in the pseudocode =E2=80=9CSteIllegal()=E2=80=9D
+    if eff_idr0_stall_model =3D=3D '10' && STE.S2S =3D=3D '0' then
+        // stall_model forcing stall, but S2S =3D=3D 0
+        return TRUE;
 
-Ironically QEMU already has direct access to the MSI-X vector table in
-MMIO space and could implement this type of quirk with no kernel
-changes.  It's MSI that is now blocked by virtualization of the address
-and data registers.  Note also that QEMU is still virtualizing these
-registers, the values seen in the guest are unchanged.  It's only the
-VMM that can bypass that virtualization to see the host values.
+Which means, S2S must be set when stall model is
+"ARM_SMMU_FEAT_STALL_FORCE", but at the moment the driver ignores that.
 
-Let's imagine the guest driver does change to implement an irq_domain.
-How does that fundamentally change the problem for the VMM that guest
-MSI values are being written to other portions of the device?  The
-guest driver can have whatever architecture it wants (we don't know
-the architecture of the Windows driver) but we still need to trap
-writes of the guest MSI address/data and replace it with host values.
+Although, the driver can do the minimum and only set S2S for
+=E2=80=9CARM_SMMU_FEAT_STALL_FORCE=E2=80=9D, it is more consistent to match=
+ S1
+behaviour, which also sets it for =E2=80=9CARM_SMMU_FEAT_STALL=E2=80=9D if =
+the
+master has requested stalls.
 
-> > > Thomas Gleixner has done alot of great work recently to clean this up.
-> > > 
-> > > So if you imagine the driver is fixed, then this is not necessary.  
-> > 
-> > How so?   
-> 
-> Because if the driver is properly using the new irq_domain/etc
-> infrastructure to model its additional interrupt source then this
-> patch won't make it work in the VM anyhow, so it is not necessary..
-> 
-> Your other patch would be the only short term answer.
+One caveat, is that S2S is not compatible with ATS, this mentioned
+in =E2=80=9C5.2 Stream Table Entry=E2=80=9D:
+    In implementations of SMMUv3.1 and later, this configuration is
+    ILLEGAL if EATS is not IGNORED and Config[1] =3D=3D 1 and S2S =3D=3D 1.
 
-The QEMU patch relies on this kernel patch in order to be able to
-access the host physical MSI address and data values through the vfio
-interface.  Otherwise QEMU has no host values with which to patch-up
-guest values.  As noted above, this does not provide any visible change
-to a QEMU guest, it only enables QEMU to implement the quirk in the
-other patch.  Thanks,
+    In SMMUv3.0 implementations, this configuration is ILLEGAL if EATS
+    is not IGNORED and S2S =3D=3D 1
 
-Alex
+This is also described in the pseudocode =E2=80=9CSteIllegal()=E2=80=9D
+
+Also, since S2 stalls are enabled now, report them to the IOMMU layer
+and for VFIO devices it will fail anyway as VFIO doesn=E2=80=99t register a=
+n
+iopf handler.
+
+Signed-off-by: Mostafa Saleh <smostafa@google.com>
+
+---
+v2:
+- Fix index of the STE
+- Fix conflict with ATS
+- Squash the 2 patches and drop enable_nesting
+---
+ drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 12 ++++++++----
+ drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h |  1 +
+ 2 files changed, 9 insertions(+), 4 deletions(-)
+
+diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/ar=
+m/arm-smmu-v3/arm-smmu-v3.c
+index a31460f9f3d4..3b70816a2b81 100644
+--- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
++++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+@@ -1601,6 +1601,14 @@ void arm_smmu_make_cdtable_ste(struct arm_smmu_ste *=
+target,
+ 		target->data[2] =3D
+ 			cpu_to_le64(FIELD_PREP(STRTAB_STE_2_S2VMID, 0));
+ 	}
++
++	/*
++	 * S2S is ignored if stage-2 exists but not enabled.
++	 * S2S is not compatible with ATS.
++	 */
++	if (master->stall_enabled && !ats_enabled &&
++	    smmu->features & ARM_SMMU_FEAT_TRANS_S2)
++		target->data[2] |=3D STRTAB_STE_2_S2S;
+ }
+ EXPORT_SYMBOL_IF_KUNIT(arm_smmu_make_cdtable_ste);
+=20
+@@ -1739,10 +1747,6 @@ static int arm_smmu_handle_evt(struct arm_smmu_devic=
+e *smmu, u64 *evt)
+ 		return -EOPNOTSUPP;
+ 	}
+=20
+-	/* Stage-2 is always pinned at the moment */
+-	if (evt[1] & EVTQ_1_S2)
+-		return -EFAULT;
+-
+ 	if (!(evt[1] & EVTQ_1_STALL))
+ 		return -EOPNOTSUPP;
+=20
+diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h b/drivers/iommu/ar=
+m/arm-smmu-v3/arm-smmu-v3.h
+index 14bca41a981b..0dc7ad43c64c 100644
+--- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
++++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
+@@ -267,6 +267,7 @@ struct arm_smmu_ste {
+ #define STRTAB_STE_2_S2AA64		(1UL << 51)
+ #define STRTAB_STE_2_S2ENDI		(1UL << 52)
+ #define STRTAB_STE_2_S2PTW		(1UL << 54)
++#define STRTAB_STE_2_S2S		(1UL << 57)
+ #define STRTAB_STE_2_S2R		(1UL << 58)
+=20
+ #define STRTAB_STE_3_S2TTB_MASK		GENMASK_ULL(51, 4)
+--=20
+2.46.0.76.ge559c4bf1a-goog
 
