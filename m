@@ -1,166 +1,142 @@
-Received: from mail-yb1-f202.google.com (mail-yb1-f202.google.com [209.85.219.202])
+Received: from mail-qv1-f52.google.com (mail-qv1-f52.google.com [209.85.219.52])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 94B50131E2D
-	for <iommu@lists.linux.dev>; Wed, 14 Aug 2024 14:56:39 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.219.202
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1023F1B3754
+	for <iommu@lists.linux.dev>; Wed, 14 Aug 2024 15:20:27 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.219.52
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1723647401; cv=none; b=Z94fEkPv4Pyvlo5X7WBXFG0O1KAJAtHnFuxa723moBMRCTa4xromSNO2vME//Sh0+tR19n6OVCVEj8Mpfa+FcrJkwEOl5cSInUV4QE6EfDqtu/SpNaRzDI85vMjKLnRVOOaEcDyxPkVagm/bzb1aO5IqBxomQBsXvfBlQWMjBJc=
+	t=1723648829; cv=none; b=TPZ3PRFWM5LUlzhZ3NFDb/jaelR+Sgb/XV0ufccxcArd4uUofWl93NWfisD6NGXI1675owjqOI68//TX6pXJWOL5ZcX7+S+vcUgBgVwxU2/NgxLPNOMvvbTBp6Z2u5nP93l1YV8t1Xx6QmE5hKtOH0AJEXPGMLmvzBupx1+cgHA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1723647401; c=relaxed/simple;
-	bh=yya8mCdkJzXy0zL2NV+oNlw8ZrqamjEaG8Jd95WqXKM=;
-	h=Date:Mime-Version:Message-ID:Subject:From:To:Cc:Content-Type; b=VCHvPk+t1BzsGxNIwEzrmwDZFdU9PIITquJiYTuYEsBgaVppACotZ+5RvGOIG4LUwXX7KiNl58CauMRs95u5JB6SYk6zXg/Qr6TyNMsNGJG77pXbsIMp7nL3RuXGAKSUDaB6IunUSNRizlr28jEGIWATWQpLrDWcJQjSyme3bxs=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=flex--smostafa.bounces.google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=IBmYaqFD; arc=none smtp.client-ip=209.85.219.202
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=flex--smostafa.bounces.google.com
+	s=arc-20240116; t=1723648829; c=relaxed/simple;
+	bh=hcduPUJ63plKYFg5sMgJaJoxpYnUDTuhe5B+9+bWdAA=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=KWOKSOX/AJPWn0fV+3gqadmwqBo8PQvdA4zDVszY7+Me4PxP2hcDj/fcIfWdWmx0rtt84p26wAZb+l6ovWsdkNV23fIhykW+LDE2TOOmUEP+0rCnkh25BeIgYvF8BfPNhpmnlfHxSv0XbXhM0Xt6kqALIuBiZ1SvoM37+CNUBYQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=jV97spcu; arc=none smtp.client-ip=209.85.219.52
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="IBmYaqFD"
-Received: by mail-yb1-f202.google.com with SMTP id 3f1490d57ef6-e0bb206570aso11962811276.3
-        for <iommu@lists.linux.dev>; Wed, 14 Aug 2024 07:56:39 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="jV97spcu"
+Received: by mail-qv1-f52.google.com with SMTP id 6a1803df08f44-6bf6755323cso2251296d6.1
+        for <iommu@lists.linux.dev>; Wed, 14 Aug 2024 08:20:27 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20230601; t=1723647398; x=1724252198; darn=lists.linux.dev;
-        h=content-transfer-encoding:cc:to:from:subject:message-id
-         :mime-version:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=6QiimjaWFQigtWp7gc9RJ6NeS58KxDmWelajHEyqbgQ=;
-        b=IBmYaqFD+dqCgMPi63XKmV/ZEJQw5ys99K0ve1yWA8lRq+2VQs/HpGfxmSuJ4Lt+D1
-         gGOkxTygUpIJqbJRHj3veaDgE/HYRi7bY2AasJ8pggBFQZebkH8MrgRqfTA6s5ClXrHp
-         ND7VdWniB9syL+x6P0H9mC3EPPu1BJtXdJEqB+D7pUBFBuSWiBTGFMdlwDwlNX2uHgtR
-         EsmAvTmfHun6mp/aVWURyl/YD4ZKqfIqYMoJRouO9ZB9n0FPfaaHIno7dYMIOru7vycI
-         yXDhvQAiROoxp22JY3bLBcQNiiMjtvF6t484TZQl4FGqBcsGe0rQUozkhwwROh/1DvIL
-         Uz0Q==
+        d=ziepe.ca; s=google; t=1723648827; x=1724253627; darn=lists.linux.dev;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=Mg23CNEDMD4zHjO1hlkwyk+loYx0YTVZ8r/y6/PQnrA=;
+        b=jV97spcuaBs6jCC6mIrvSqRLMKROVk4AEdZFWOMZLv/yYc0Ika7NYRpCeReRBMJ0pV
+         sVvB4yTlclHo30eFtt2lM+TcHkXspmmYr8p4ubw0Z5rA4Ysm1mK8xK+buHLIzuJjpPFu
+         dkXbTWvF8iM41v8qPY3AQaf2ClCrEv5NC5RRVjR3sYVUiqZCSpDewtuKg+tdRFvY/5Ug
+         w3bl8wPZGAi5K+MwApZy0Jarj86k+TJXixfUEk9vOfs1tJzdeC+CsDBzpEUeY1PnzqMl
+         vR0thhubHHajycimvVpiM75mu7RSj7l2zMicbcxSUmDCbJE5k9TuLsQE/FMln/1Fwdvj
+         RZXQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1723647398; x=1724252198;
-        h=content-transfer-encoding:cc:to:from:subject:message-id
-         :mime-version:date:x-gm-message-state:from:to:cc:subject:date
+        d=1e100.net; s=20230601; t=1723648827; x=1724253627;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=6QiimjaWFQigtWp7gc9RJ6NeS58KxDmWelajHEyqbgQ=;
-        b=Rrvnh2V+TTRcfcHOvjkytHXi717h1Rfxzuz+cEy9/Kdad8iGbrgpdYtOsM/yPmJGZ8
-         9tN2qq+0IJo4OIlSppo00WwrvY4JxYq/F3TbBAo4qmL3NasrjW7LsNMbU+9s+CYG/CFz
-         s/OC/8GWV/ZMz1VZ8psXj0dcQyx4whZ8DssuoIJGuP23X5VAzsNua94U/gFaxj0nW0Sh
-         1diuwlG7Vh8+EcO0/o0N7kMnLbCiI828k7R9Aot+hGbo18t1Chn8RrtPft5gZ1avpCGv
-         hZ74fuAexFKlv/dM+pKLWTHx7b+eKMyST/T9ug/xfQLQmbLcFVWbOgmMXYYXjs/sKFic
-         FUhQ==
-X-Forwarded-Encrypted: i=1; AJvYcCWlI88ygLOKmaZAe9Ivx9AEq0Oz49Gqdv8jassro6h4k9GOEW6/lBD4kc2GpyLxkViD4KtxtzpBWDAqjvmqLrzzt8NL4ow=
-X-Gm-Message-State: AOJu0Yz9m+YijMyBAy++rtvNTtgMue4pdhX+4rxhbFBXQMuqCKfaSIqI
-	VZHEwBT43MIClKjR3szHrgVso0RfOjxKEFtyeAYEh3VBC8c9qSVWxiYFZ3sKn6sxaV9rOTjviPH
-	eDrzJN3lc4A==
-X-Google-Smtp-Source: AGHT+IEwZKpbi2DVRDWHPR9t5KsZu510hTwOo8qGv7V3OsKoQsm3WmSQ4c6RbXYHvqRaHKRLcB9RJgCyn8fG3w==
-X-Received: from mostafa.c.googlers.com ([fda3:e722:ac3:cc00:28:9cb1:c0a8:333c])
- (user=smostafa job=sendgmr) by 2002:a25:ed04:0:b0:e0b:bafe:a7f3 with SMTP id
- 3f1490d57ef6-e1155ba2f29mr125325276.11.1723647398061; Wed, 14 Aug 2024
- 07:56:38 -0700 (PDT)
-Date: Wed, 14 Aug 2024 14:56:33 +0000
+        bh=Mg23CNEDMD4zHjO1hlkwyk+loYx0YTVZ8r/y6/PQnrA=;
+        b=QyIH0vmZHrongmWyOsm0Q2+6eVM5/coz6gJFTf84Y6DGgRSLps4jdecDf0eYgG6tM3
+         P/7Yabcq7D9JD1YVY0YDdOhwlpghIfKp8J7flS7fE18hRezuQzK3TFX5yH8PZedQHt5y
+         CzjC8vvayJCJGMNCmok40lWNBtca/aAMYUPIWAh/x8Nb+q/Xm86tJ6kslWC5zFJ2I+A9
+         dTq5/8EP0aRslBJpM9blTqEMAHQIbBTUGo2eBpujBV242dWQH2x1cRhbMaqKvaL/uS47
+         FCRyGGHeU+GhvEbJpxm4IAXbgXk+04Ibto0Kg/njgMb9EFiRTfJQ8Lv70zzelp38RWCb
+         lueg==
+X-Forwarded-Encrypted: i=1; AJvYcCUfOx0ezVIWFcGL6t52+jo2dN1FjgJinshv9N1tDtiYWMSdZoIseZmRBp3aXxmFgbXKA9vGkid/TSRSQoGXf1Ryza18znI=
+X-Gm-Message-State: AOJu0Yy9nhzEQFo6wYW/i3mklP59Sko4B9qUl5ILm8WUjMJQU58QJ0kj
+	Mj1UtIrO6RG34KicUW3vzYZHhtIfU0y9YRhjXKN3MJNWC1l5Uk4lZgv7YX+iOxY=
+X-Google-Smtp-Source: AGHT+IFs/BQEZjr8h6unAsrJ2o06RGnXrm/il5j+/wDCwXIvEtQlOlvpOhTjJBqTcjF825DsnYbpEw==
+X-Received: by 2002:a05:6214:3c9f:b0:6bd:6ff2:bb3c with SMTP id 6a1803df08f44-6bf5d056a6dmr44429756d6.0.1723648826791;
+        Wed, 14 Aug 2024 08:20:26 -0700 (PDT)
+Received: from ziepe.ca (hlfxns017vw-142-68-80-239.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.68.80.239])
+        by smtp.gmail.com with ESMTPSA id 6a1803df08f44-6bd82e4e5d3sm44550136d6.110.2024.08.14.08.20.26
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 14 Aug 2024 08:20:26 -0700 (PDT)
+Received: from jgg by wakko with local (Exim 4.95)
+	(envelope-from <jgg@ziepe.ca>)
+	id 1seFnV-00EfQF-Mk;
+	Wed, 14 Aug 2024 12:20:25 -0300
+Date: Wed, 14 Aug 2024 12:20:25 -0300
+From: Jason Gunthorpe <jgg@ziepe.ca>
+To: Alex Williamson <alex.williamson@redhat.com>
+Cc: Thomas Gleixner <tglx@linutronix.de>, kvm@vger.kernel.org,
+	quic_bqiang@quicinc.com, kvalo@kernel.org, prestwoj@gmail.com,
+	linux-wireless@vger.kernel.org, ath11k@lists.infradead.org,
+	dwmw2@infradead.org, iommu@lists.linux.dev, kernel@quicinc.com,
+	johannes@sipsolutions.net, jtornosm@redhat.com
+Subject: Re: [PATCH RFC/RFT] vfio/pci: Create feature to disable MSI
+ virtualization
+Message-ID: <20240814152025.GA3468552@ziepe.ca>
+References: <adcb785e-4dc7-4c4a-b341-d53b72e13467@gmail.com>
+ <20240812170014.1583783-1-alex.williamson@redhat.com>
+ <20240813163053.GK1985367@ziepe.ca>
+ <20240813151401.789c578f.alex.williamson@redhat.com>
+ <20240813231642.GR1985367@ziepe.ca>
+ <20240814085505.60819623.alex.williamson@redhat.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
-Mime-Version: 1.0
-X-Mailer: git-send-email 2.46.0.76.ge559c4bf1a-goog
-Message-ID: <20240814145633.2565126-1-smostafa@google.com>
-Subject: [PATCH v2] iommu/arm-smmu-v3: Match Stall behaviour for S2
-From: Mostafa Saleh <smostafa@google.com>
-To: linux-kernel@vger.kernel.org, iommu@lists.linux.dev, 
-	linux-arm-kernel@lists.infradead.org, will@kernel.org, robin.murphy@arm.com, 
-	joro@8bytes.org
-Cc: jean-philippe@linaro.org, jgg@ziepe.ca, nicolinc@nvidia.com, 
-	mshavit@google.com, Mostafa Saleh <smostafa@google.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20240814085505.60819623.alex.williamson@redhat.com>
 
-According to the spec (ARM IHI 0070 F.b), in
-"5.5 Fault configuration (A, R, S bits)":
-    A STE with stage 2 translation enabled and STE.S2S =3D=3D 0 is
-    considered ILLEGAL if SMMU_IDR0.STALL_MODEL =3D=3D 0b10.
+On Wed, Aug 14, 2024 at 08:55:05AM -0600, Alex Williamson wrote:
+> Let's imagine the guest driver does change to implement an irq_domain.
+> How does that fundamentally change the problem for the VMM that guest
+> MSI values are being written to other portions of the device?
 
-Also described in the pseudocode =E2=80=9CSteIllegal()=E2=80=9D
-    if eff_idr0_stall_model =3D=3D '10' && STE.S2S =3D=3D '0' then
-        // stall_model forcing stall, but S2S =3D=3D 0
-        return TRUE;
+If changed to irq_domain the VM will write addr/data pairs into those
+special register that are unique to that interrupt source and will not
+re-use values already set in the MSI table.
 
-Which means, S2S must be set when stall model is
-"ARM_SMMU_FEAT_STALL_FORCE", but at the moment the driver ignores that.
+This means the VMM doesn't get any value from inspecting the MSI table
+because the value it needs won't be there, and alos that no interrupt
+routing will have been setup. The VMM must call VFIO_DEVICE_SET_IRQS
+to setup the unique routing.
 
-Although, the driver can do the minimum and only set S2S for
-=E2=80=9CARM_SMMU_FEAT_STALL_FORCE=E2=80=9D, it is more consistent to match=
- S1
-behaviour, which also sets it for =E2=80=9CARM_SMMU_FEAT_STALL=E2=80=9D if =
-the
-master has requested stalls.
+These two patches are avoiding VFIO_DEVICE_SET_IRQS based on the
+assumption that the VM will re-use a addr/data pair already setup in
+the MSI table. Invalidating that assumption is the fundamental change
+irq_domain in the VM will make.
 
-One caveat, is that S2S is not compatible with ATS, this mentioned
-in =E2=80=9C5.2 Stream Table Entry=E2=80=9D:
-    In implementations of SMMUv3.1 and later, this configuration is
-    ILLEGAL if EATS is not IGNORED and Config[1] =3D=3D 1 and S2S =3D=3D 1.
+> The guest driver can have whatever architecture it wants (we don't
+> know the architecture of the Windows driver) but we still need to
+> trap writes of the guest MSI address/data and replace it with host
+> values.
 
-    In SMMUv3.0 implementations, this configuration is ILLEGAL if EATS
-    is not IGNORED and S2S =3D=3D 1
+Yes you do. But the wrinkle is you can't just assume one of the
+existing MSI entries is a valid replacement and copy from the MSI
+table. That works right now only because the Linux/Windows driver is
+re-using a MSI vector in the IMS registers.
 
-This is also described in the pseudocode =E2=80=9CSteIllegal()=E2=80=9D
+I suggest the general path is something like:
 
-Also, since S2 stalls are enabled now, report them to the IOMMU layer
-and for VFIO devices it will fail anyway as VFIO doesn=E2=80=99t register a=
-n
-iopf handler.
+ 1) A vfio variant driver sets up an irq_domain for the additional
+    interrupt source registers
+ 2) Somehow wire up VFIO_DEVICE_SET_IRQS so it can target vectors in
+    the additional interrupt domain
+ 3) Have the VMM trap writes to the extra interrupt source registers
+    and execute VFIO_DEVICE_SET_IRQS
+ 4) IRQ layer will setup an appropriate unique IRQ and route it to the
+    guest/whatever just like MSI. Callbacks into the variant driver's
+    irq_domain will program the HW registers.
 
-Signed-off-by: Mostafa Saleh <smostafa@google.com>
+Basically exactly the same flow as MSI, except instead of targetting a
+vector in the PCI core's MSI irq_domain it targets a vector in the
+variant driver's IMS IRQ domain.
 
----
-v2:
-- Fix index of the STE
-- Fix conflict with ATS
-- Squash the 2 patches and drop enable_nesting
----
- drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 12 ++++++++----
- drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h |  1 +
- 2 files changed, 9 insertions(+), 4 deletions(-)
+Then we don't make any assumptions about how the VM is using these
+interrupt vectors, and crucially, SET_IRQs is called for every
+interrupt source and we rely on the kernel to produce the correct
+addr/data pair. No need for copying addr/data pairs from MSI tables.
 
-diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/ar=
-m/arm-smmu-v3/arm-smmu-v3.c
-index a31460f9f3d4..3b70816a2b81 100644
---- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-+++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-@@ -1601,6 +1601,14 @@ void arm_smmu_make_cdtable_ste(struct arm_smmu_ste *=
-target,
- 		target->data[2] =3D
- 			cpu_to_le64(FIELD_PREP(STRTAB_STE_2_S2VMID, 0));
- 	}
-+
-+	/*
-+	 * S2S is ignored if stage-2 exists but not enabled.
-+	 * S2S is not compatible with ATS.
-+	 */
-+	if (master->stall_enabled && !ats_enabled &&
-+	    smmu->features & ARM_SMMU_FEAT_TRANS_S2)
-+		target->data[2] |=3D STRTAB_STE_2_S2S;
- }
- EXPORT_SYMBOL_IF_KUNIT(arm_smmu_make_cdtable_ste);
-=20
-@@ -1739,10 +1747,6 @@ static int arm_smmu_handle_evt(struct arm_smmu_devic=
-e *smmu, u64 *evt)
- 		return -EOPNOTSUPP;
- 	}
-=20
--	/* Stage-2 is always pinned at the moment */
--	if (evt[1] & EVTQ_1_S2)
--		return -EFAULT;
--
- 	if (!(evt[1] & EVTQ_1_STALL))
- 		return -EOPNOTSUPP;
-=20
-diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h b/drivers/iommu/ar=
-m/arm-smmu-v3/arm-smmu-v3.h
-index 14bca41a981b..0dc7ad43c64c 100644
---- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
-+++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
-@@ -267,6 +267,7 @@ struct arm_smmu_ste {
- #define STRTAB_STE_2_S2AA64		(1UL << 51)
- #define STRTAB_STE_2_S2ENDI		(1UL << 52)
- #define STRTAB_STE_2_S2PTW		(1UL << 54)
-+#define STRTAB_STE_2_S2S		(1UL << 57)
- #define STRTAB_STE_2_S2R		(1UL << 58)
-=20
- #define STRTAB_STE_3_S2TTB_MASK		GENMASK_ULL(51, 4)
---=20
-2.46.0.76.ge559c4bf1a-goog
+> As noted above, this does not provide any visible change to a QEMU
+> guest, it only enables QEMU to implement the quirk in the other
+> patch.
 
+I see, I definitely didn't understand that it only reaches qemu from
+the commit message..
+
+Jason
