@@ -1,28 +1,28 @@
 Received: from ns.iliad.fr (ns.iliad.fr [212.27.33.1])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A66FB19FA7B
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A67F41B1419
 	for <iommu@lists.linux.dev>; Wed, 14 Aug 2024 14:00:17 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=212.27.33.1
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1723644020; cv=none; b=IVz54TkaeePICVAzGSpgzPUCQZtULB/8yQ8LQfooynvH+YgH67Fu03AF8T0mfqTqYYTQeyQojAu5OXG7Cc4GqXV7fwxcRnoDNOKc/nQzNm0WMEEvYV1cfd9HeouSnXXcxD9xYJuNfngYsikppccokhhvqJtgVX+Jqr2/BJpHNgw=
+	t=1723644021; cv=none; b=FnMC1lRbbzhipHMd6TRKMZKt1UIX5uTFtlTr+m7+pbvVpVTgSr8yBEQuJYnNUl3oz03aFBuPaT2Ozeb7LQDLTlrJjudTS6EozfkY88cxM7FMI4B/k8OGaMyZP+2fpPVrUa4YLl2beD0zLjXiJSTv3wk1QkIra8vLDeNpakz4QpE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1723644020; c=relaxed/simple;
-	bh=RRdWvaaJjh2EukHMWmy8agmys/TF3UAfdsl3eILq5HQ=;
-	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=IRqNBk0hdIivdjks3aLaRfXtAzwOlG99F3wQz3aDJ4sqPN2OHYqIcOwBjSziUrt+Is0KhbeV8iNcysM71Rh/X6aauqHyBceH/i3WW+SWK2iJc/eLboytJ69pNDv+7P+euO2XMw34wqmZlQLIr0MzfRk1UQZ0ONGdZRYgq3Z3tmQ=
+	s=arc-20240116; t=1723644021; c=relaxed/simple;
+	bh=/6cw3tOWL+4l0726raXhGXm3cR28e6PNK5EJ2Dqp760=;
+	h=From:Subject:Date:Message-Id:MIME-Version:Content-Type:To:Cc; b=IYeyEYP+pnvqxlLLHA+RgruwhHMUKw9UJETpEhVqNyCtDRNiX5GUAQjD7cYYY61og751gc0+akTs/cn824IlYK9bpneJIaly5UOuTKinKT8Dy4ObkAWtQ0TNJT3JYPnZNvDGdAEWR1Nqxrj12ZyOTwcC/3DCm5fU+FlXvMWJ6/0=
 ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=freebox.fr; spf=pass smtp.mailfrom=srs.iliad.fr; arc=none smtp.client-ip=212.27.33.1
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=freebox.fr
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=srs.iliad.fr
 Received: from ns.iliad.fr (localhost [127.0.0.1])
-	by ns.iliad.fr (Postfix) with ESMTP id DE9D42099D;
+	by ns.iliad.fr (Postfix) with ESMTP id D1FE520990;
 	Wed, 14 Aug 2024 16:00:09 +0200 (CEST)
 Received: from [127.0.1.1] (freebox.vlq16.iliad.fr [213.36.7.13])
-	by ns.iliad.fr (Postfix) with ESMTP id CE1972098C;
+	by ns.iliad.fr (Postfix) with ESMTP id BDAD920988;
 	Wed, 14 Aug 2024 16:00:09 +0200 (CEST)
 From: Marc Gonzalez <mgonzalez@freebox.fr>
-Date: Wed, 14 Aug 2024 15:59:56 +0200
-Subject: [PATCH 2/2] iommu/arm-smmu-qcom: hide last context bank from linux
+Subject: [PATCH 0/2] Work around reserved SMMU context bank on msm8998
+Date: Wed, 14 Aug 2024 15:59:54 +0200
+Message-Id: <20240814-smmu-v1-0-3d6c27027d5b@freebox.fr>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -31,9 +31,9 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Message-Id: <20240814-smmu-v1-2-3d6c27027d5b@freebox.fr>
-References: <20240814-smmu-v1-0-3d6c27027d5b@freebox.fr>
-In-Reply-To: <20240814-smmu-v1-0-3d6c27027d5b@freebox.fr>
+X-B4-Tracking: v=1; b=H4sIAFq4vGYC/6tWKk4tykwtVrJSqFYqSi3LLM7MzwNyDHUUlJIzE
+ vPSU3UzU4B8JSMDIxMDC0MT3eLc3FLdFFNzo2TDREOzxMRkJaDSgqLUtMwKsDHRsbW1ACh0KDJ
+ WAAAA
 To: Rob Clark <robdclark@gmail.com>, Will Deacon <will@kernel.org>, 
  Robin Murphy <robin.murphy@arm.com>, Joerg Roedel <joro@8bytes.org>, 
  Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>, 
@@ -63,30 +63,53 @@ and here:
 It is likely that FW reserves the last context bank for its own use,
 thus a simple work-around would be: DON'T USE IT in Linux.
 
-If we decrease the number of context banks, last one will be "hidden".
+This patch series:
+1) introduces a DT prop "qcom,last-ctx-bank-reserved" to indicate
+that FW reserves the last context bank of a given SMMU.
+2) tweaks the driver to "hide" the last context bank from Linux.
 
-Signed-off-by: Marc Gonzalez <mgonzalez@freebox.fr>
+For reference, the lpass_q6_smmu node looks like this:
+
+	lpass_q6_smmu: iommu@5100000 {
+		compatible = "qcom,msm8998-smmu-v2", "qcom,smmu-v2";
+		reg = <0x05100000 0x40000>;
+		clocks = <&gcc HLOS1_VOTE_LPASS_ADSP_SMMU_CLK>;
+		clock-names = "iface";
+
+		#global-interrupts = <0>;
+		#iommu-cells = <1>;
+		interrupts =
+			<GIC_SPI 226 IRQ_TYPE_LEVEL_HIGH>,
+			<GIC_SPI 393 IRQ_TYPE_LEVEL_HIGH>,
+			<GIC_SPI 394 IRQ_TYPE_LEVEL_HIGH>,
+			<GIC_SPI 395 IRQ_TYPE_LEVEL_HIGH>,
+			<GIC_SPI 396 IRQ_TYPE_LEVEL_HIGH>,
+			<GIC_SPI 397 IRQ_TYPE_LEVEL_HIGH>,
+			<GIC_SPI 398 IRQ_TYPE_LEVEL_HIGH>,
+			<GIC_SPI 399 IRQ_TYPE_LEVEL_HIGH>,
+			<GIC_SPI 400 IRQ_TYPE_LEVEL_HIGH>,
+			<GIC_SPI 401 IRQ_TYPE_LEVEL_HIGH>,
+			<GIC_SPI 402 IRQ_TYPE_LEVEL_HIGH>,
+			<GIC_SPI 403 IRQ_TYPE_LEVEL_HIGH>,
+			<GIC_SPI 137 IRQ_TYPE_LEVEL_HIGH>;
+
+		power-domains = <&gcc LPASS_ADSP_GDSC>;
+		status = "disabled";
+	};
+
 ---
- drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c | 5 +++++
- 1 file changed, 5 insertions(+)
+Marc Gonzalez (2):
+      dt-bindings: arm-smmu: Add qcom,last-ctx-bank-reserved
+      iommu/arm-smmu-qcom: hide last context bank from linux
 
-diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
-index 7e65189ca7b8c..e2e1fd9e2452b 100644
---- a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
-+++ b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
-@@ -282,6 +282,11 @@ static int qcom_smmu_cfg_probe(struct arm_smmu_device *smmu)
- 	u32 smr;
- 	int i;
- 
-+	if (of_property_read_bool(smmu->dev->of_node, "qcom,last-ctx-bank-reserved")) {
-+		dev_warn(smmu->dev, "hiding last ctx bank from linux");
-+		--smmu->num_context_banks;
-+	}
-+
- 	/*
- 	 * Some platforms support more than the Arm SMMU architected maximum of
- 	 * 128 stream matching groups. For unknown reasons, the additional
+ Documentation/devicetree/bindings/iommu/arm,smmu.yaml | 6 ++++++
+ drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c            | 5 +++++
+ 2 files changed, 11 insertions(+)
+---
+base-commit: c934f6908ad1f210c1d1e289934d1182a6e7cb62
+change-id: 20240814-smmu-d572c1a16aac
 
+Best regards,
 -- 
-2.34.1
+Marc Gonzalez <mgonzalez@freebox.fr>
 
