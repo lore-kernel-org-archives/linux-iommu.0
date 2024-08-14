@@ -1,204 +1,238 @@
-Received: from mail-wm1-f47.google.com (mail-wm1-f47.google.com [209.85.128.47])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from NAM12-BN8-obe.outbound.protection.outlook.com (mail-bn8nam12on2073.outbound.protection.outlook.com [40.107.237.73])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D9E471BBBE4
-	for <iommu@lists.linux.dev>; Wed, 14 Aug 2024 17:33:12 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.47
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1723656795; cv=none; b=kKO06lLcHfe2Z51DMHC619GdWxImAcZueFf/UHnEZvamNCk7o7ORAES7TwohFD8Mzq/n/mrVVVzB2ZeO2w30nXZpHiTR6LUKB8lRGpu9NiHLgDYEMmjVNrBEsM9ylls8DSZfzX6Dw5LPHf0/D2Kfl2SHZXGfk2LVKLy4Puiqmsc=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1723656795; c=relaxed/simple;
-	bh=xHPn6y4xO+5SYBhOLhdA2juhFMoy6KgLmbab3AbXS8M=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=GvEVvF8tSbv+XHIcZH5EftweJjKXIri1AEi1GpRzhOfUO2RXPE7FRLBdJaj+pIRhg2vH4llduc7RID33/C4M3Z65NgLo3q3n/WGxkoTg+9mJAgGWdt6bq9ZfMez+H+T/I3TgSD7d5I+tdEzcabzVe8eQ/V+ONdMCUBBmPNEEOQc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=freebox.fr; spf=pass smtp.mailfrom=freebox.fr; dkim=pass (2048-bit key) header.d=freebox-fr.20230601.gappssmtp.com header.i=@freebox-fr.20230601.gappssmtp.com header.b=Jx5SW2P0; arc=none smtp.client-ip=209.85.128.47
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=freebox.fr
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=freebox.fr
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 836731BBBF2
+	for <iommu@lists.linux.dev>; Wed, 14 Aug 2024 21:52:52 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.237.73
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1723672374; cv=fail; b=AOnhatNWyMk4FCU1s7vNq+Hnzal9wiOJbW3eGILEzJZAu+4onf6r5z48hVrqcDry3OSLPfQ/6kaByx/8K/5Sy3Qm5tuzuurZGSJ3bEXfGYKuktNMiqtkyw7K0Gn+ua1zNZAkR4ZPmFWNyQQHfY646ZtZ438VO3YM2k7uf4Fgt/w=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1723672374; c=relaxed/simple;
+	bh=2zj+a6t+rbnLQUCWLlNZ6cRff8V8wcoJNOgWQwlcEiQ=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:Content-Type:
+	 Content-Disposition:In-Reply-To:MIME-Version; b=pj7NCDiPsWmLF3lGdWrW3yKiWrcxCZtlI/YLfctfnn7TPnbbBTk++ICHhydSnIttv+mYG2ZwzA2YZAyO9ocq3ODjHkE3GYLwuRHqbV68zNTW9u+4QcYqLN744oOcEhVyPWGUvSp61XCsqafTjOjLp9gkkl6jSNClH51E0GVhR+s=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=Ztn+gsk2; arc=fail smtp.client-ip=40.107.237.73
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=freebox-fr.20230601.gappssmtp.com header.i=@freebox-fr.20230601.gappssmtp.com header.b="Jx5SW2P0"
-Received: by mail-wm1-f47.google.com with SMTP id 5b1f17b1804b1-42817bee9e8so280085e9.3
-        for <iommu@lists.linux.dev>; Wed, 14 Aug 2024 10:33:12 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=freebox-fr.20230601.gappssmtp.com; s=20230601; t=1723656791; x=1724261591; darn=lists.linux.dev;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=VsViqlXuad7EqaJTSukZTNrLwUDaFtbQLR6eV58xusI=;
-        b=Jx5SW2P0ai76Xky8zeSGqxanFz2dwDyNRVCRoyykqksK2Iwfde4zbJoOFnA3WIqasi
-         IZxcrYEklJcntxW8wroIa9jdMHaEZxZzZpyLHkBjzf3Tf/XGI17yJo7NjVKxmNZkyXsw
-         47pM+l1RU41sm9L5qJ/6rxgOyxRkowUgZLsusdbpNU8kFlPjg7DJhJhyvbFosdxXDbR8
-         E0q1XbJubjnbCJeBqJOAGIfLhZ4p4/emAyFgLrmwNFCgIzawgwj0zJIf5DIk1HrjW88M
-         7ef1PfScMsVmv9bCMYhGo+Ef+Ju8PiSLxFjy0zgwtaT0Qo07fEM9ByV8BM1Lc9BeC4y/
-         cDQA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1723656791; x=1724261591;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=VsViqlXuad7EqaJTSukZTNrLwUDaFtbQLR6eV58xusI=;
-        b=d7HyD4XLxUmKDInMfMS9XxZ57cW1lKOF8dwUpFZW8JsTz9ExnN+GSwNbbdxKjBq1u3
-         iMUJXhQzz/YuPGzfStraTlR9+Wr++F0pZnwB4FtPTTQvhPPBA9K13E5Ry7LV/FAoGxMj
-         w3BQj3odafTk9jY0nSDQRLT+YvciGxlL7BbjrpawV6qahyN8ENGULCc3ipikAjdMdLpI
-         YbfdTvCBtFTNbeuEyUq4K4XPmGhK/8kE23porFxrG94bxAH61H3zJxIiWSqfuRb1VYVj
-         6GTuEcpm7+YSYgV0mFnW7rWnlvjqiY4a+vxm7lTOtrswbyijQTUFDMKDnpaA8EdZerZt
-         9U0Q==
-X-Forwarded-Encrypted: i=1; AJvYcCU6xL2MWVs7oeRj2hc6aDTaFl9NsW34SDGSQJ6jfeZ9XFNyHSKTWWObWKzR4891HziBuW3vZAuAnreJ6zIT4OTiBye+BjM=
-X-Gm-Message-State: AOJu0Yw+2A5RkmtNS88dNNI/Pk3uRZPxbUaDF6dn0kOQ9yUAHR8UvSyR
-	VyqZwZ18YzwnUVysEfljO1LTr4MqsemZ6Cx0wLVUlNE3slSJQOsqtsOa841HEMk=
-X-Google-Smtp-Source: AGHT+IGjd27AWWYXM6KKfwqDHwnfvaRFqeEGxklZ34WgUw5nl1yiZggtjfE6mMr+RwZoA8oB3FddQA==
-X-Received: by 2002:a05:600c:42c8:b0:429:e6bb:a436 with SMTP id 5b1f17b1804b1-429e6bbb75fmr428945e9.9.1723656790860;
-        Wed, 14 Aug 2024 10:33:10 -0700 (PDT)
-Received: from ?IPV6:2a01:cb08:108b:e400:1437:6ff2:646:a3e5? (2a01cb08108be40014376ff20646a3e5.ipv6.abo.wanadoo.fr. [2a01:cb08:108b:e400:1437:6ff2:646:a3e5])
-        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-36e4c937bb9sm13456330f8f.34.2024.08.14.10.33.10
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 14 Aug 2024 10:33:10 -0700 (PDT)
-Message-ID: <dfd80103-391a-4777-8944-296ba31a11dd@freebox.fr>
-Date: Wed, 14 Aug 2024 19:33:09 +0200
+	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="Ztn+gsk2"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=r2KIaCLJNMxpNXE0M/GfJMAL64rYjCpsD/5ZaaPWhmn0yvxMkvTTHIz/DfzBzfVWWPiq3yfTl4IIvUhxZUaJYxa7O5R6+Lho1vXqION5tz2D9iKdidEG8wV2DuhCj8toK+XY1L83RbT42M88o5dxDe8PoYHHYB7zmqCMMPnkkj4i0Mt70BM2s4OC3PIH31X9g3jGaOSY7oawMPrAyi3uF7AMLlcNL5rE+C4/mv/lBSMznCBZI6ia4aih+7XsiupoUsNVayE3qVeeV7xeRnhokVDJKX5bsZcdTjiA7+QFEzBpUC1FRnV0HchiIj9UuK62qNtpUO8kss2ckubyy+jCUQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=hP9wTH1HP8yLuZJzoiYPjhQA6BkqxOal2woYoWelczI=;
+ b=AMMB6IbEYB+SeeTRP43GZFC5QqMhKEg5dJf9i3hQJSNf19X8mPAvRuw2fuFv/w93WZ41sFn8TZLdOapIRCZJExLglme1kaBuR+GWP7NxU79sZr7VrnqgMuZ2zF6UnBjlPgWyF+zGUt7g/4aVw1wd57TDogdZhe56jvlb/+FWEYC80WNp560jyp9xNbwG59bFB3+/DEc6sN8Jg+lpLP6tOjH3bEZeiPO3wIzcbvZI4QarxuRZtaLYdoLVyGijG9UR/cllPVfkbwP722uUOrENmlkrj3reMy2rFHHjyDd1vJEACXOGyWHBj7TVILAThJ2OEMEpWldwSejp1BViqNPxrg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=hP9wTH1HP8yLuZJzoiYPjhQA6BkqxOal2woYoWelczI=;
+ b=Ztn+gsk2/s2oTjdpaw49h4pqtkJFCOFm0tYhKIt4pYkUIMOAOdti8VJVnYSTx117iqLKW/c1XxKc7kz4xydm82+kxf6eL967ZhS8ckGZhwWmStHJCVtjazp1zpQikd31g/i7ckk8g0HOhif0gRXNpMOYNlXBlo2Ap7eztMvuqsQ2o/Wl77B2X5TJPd7dy+1Zp1uSFJJHVEJis4ePmSqX3Y0hcBI6of/gpPoymexElrF+2omTtExgMKjPUATAcU2EAA2jQsA+diR+xFDseH+Ut81KFxpaAy+RD3bd7fFpDLIoIH17hW5zYUnPtqYidAvAST5JTCJGAOojZgtC0LbNLQ==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nvidia.com;
+Received: from DM4PR12MB7767.namprd12.prod.outlook.com (2603:10b6:8:100::16)
+ by PH7PR12MB6812.namprd12.prod.outlook.com (2603:10b6:510:1b6::15) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7849.22; Wed, 14 Aug
+ 2024 21:52:48 +0000
+Received: from DM4PR12MB7767.namprd12.prod.outlook.com
+ ([fe80::55c8:54a0:23b5:3e52]) by DM4PR12MB7767.namprd12.prod.outlook.com
+ ([fe80::55c8:54a0:23b5:3e52%3]) with mapi id 15.20.7849.021; Wed, 14 Aug 2024
+ 21:52:48 +0000
+Date: Wed, 14 Aug 2024 18:52:46 -0300
+From: Jason Gunthorpe <jgg@nvidia.com>
+To: Nicolin Chen <nicolinc@nvidia.com>
+Cc: will@kernel.org, robin.murphy@arm.com, joro@8bytes.org,
+	thierry.reding@gmail.com, vdumpa@nvidia.com, jonathanh@nvidia.com,
+	linux-kernel@vger.kernel.org, iommu@lists.linux.dev,
+	linux-arm-kernel@lists.infradead.org, linux-tegra@vger.kernel.org
+Subject: Re: [PATCH v11 7/9] iommu/arm-smmu-v3: Add struct arm_smmu_impl
+Message-ID: <20240814215246.GX2032816@nvidia.com>
+References: <cover.1722993435.git.nicolinc@nvidia.com>
+ <8f6fd78b4c4358e65e9d171d90aa4a3dac392f09.1722993435.git.nicolinc@nvidia.com>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <8f6fd78b4c4358e65e9d171d90aa4a3dac392f09.1722993435.git.nicolinc@nvidia.com>
+X-ClientProxiedBy: BL1P221CA0026.NAMP221.PROD.OUTLOOK.COM
+ (2603:10b6:208:2c5::27) To DM4PR12MB7767.namprd12.prod.outlook.com
+ (2603:10b6:8:100::16)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH 2/2] iommu/arm-smmu-qcom: hide last context bank from
- linux
-To: Bjorn Andersson <andersson@kernel.org>
-Cc: Rob Clark <robdclark@gmail.com>, Will Deacon <will@kernel.org>,
- Robin Murphy <robin.murphy@arm.com>, Joerg Roedel <joro@8bytes.org>,
- Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>,
- Conor Dooley <conor+dt@kernel.org>, iommu@lists.linux.dev,
- linux-arm-msm@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
- linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
- Konrad Dybcio <konradybcio@kernel.org>, Arnaud Vrac <avrac@freebox.fr>,
- Pierre-Hugues Husson <phhusson@freebox.fr>,
- Marijn Suijten <marijn.suijten@somainline.org>
-References: <20240814-smmu-v1-0-3d6c27027d5b@freebox.fr>
- <20240814-smmu-v1-2-3d6c27027d5b@freebox.fr>
- <a7j3lz62bp6pceuq472muioinjzfgw2mec5pv256zfr7yjsn3p@ok6nfsbsabig>
-Content-Language: en-US
-From: Marc Gonzalez <mgonzalez@freebox.fr>
-In-Reply-To: <a7j3lz62bp6pceuq472muioinjzfgw2mec5pv256zfr7yjsn3p@ok6nfsbsabig>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: DM4PR12MB7767:EE_|PH7PR12MB6812:EE_
+X-MS-Office365-Filtering-Correlation-Id: 0579e5df-40c5-4faf-d077-08dcbcab6f9a
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;ARA:13230040|1800799024|366016|376014;
+X-Microsoft-Antispam-Message-Info:
+	=?us-ascii?Q?WOvbjB+N3znQRtI30EU2WRBssd4O4WlofQn+xIQ32kGC3vBN2M+qntQBKXFw?=
+ =?us-ascii?Q?OT4ST5BLxBGN+aPcALgYM/+AfZfUaZaypep2kaoIESE1ezDV8iFqULO+UfN/?=
+ =?us-ascii?Q?l/QB1OX2Bhii3uDtnBY49wgQrYJdJSm03aPNpZQs5uxMQ+3iR4xqCfDGxaC+?=
+ =?us-ascii?Q?kNGZ1MF76GeUqOuvOGj7yyrc770eEIVhe4fOkj1F/SMuemsfnitDbedONzgD?=
+ =?us-ascii?Q?vitEaWIpib+mBCrYQlI050C7LxpRRqReSDpW0ySurPWR8ryvhog+aEVkOCwQ?=
+ =?us-ascii?Q?nPTlXVrMG2e+tGKhDTPyLkRV4DKd0O7IlCNTAMPOLS/dlv7IuRdKDFhhpQAT?=
+ =?us-ascii?Q?chbGcAPwAn6hkt9OJWtoXD6LS63RYM5fqKZgxbEVquJ3jGDCPFCn+jjD2V7p?=
+ =?us-ascii?Q?6f5nc/MOfHnuOwkyRIm6XJiimMv91nvoPrh/5Z8dFjpDEd3Zn+W/KsAXkNAh?=
+ =?us-ascii?Q?tpxnz91Sf80H6nMWxiheYY5jHnBKgFcW7Mb2cge+kkgbpDQMXrIthTNETK9C?=
+ =?us-ascii?Q?sTbTHen5wRkVvKA/taupvr8XUbJO5KXav1d6xlKw/mUENUjsKZ3yAoy0DAXN?=
+ =?us-ascii?Q?cM5Kpe2BZ3r80LeYatM6XHiH2zVkcxVZGUaGjGhyJnRIpDkuawhImMOapaq3?=
+ =?us-ascii?Q?arakmgYHF+7fCp9NPsqhD4g5A3z+03Cxw8c0h9rOTWAKe6yi3zTI5Wpj11E2?=
+ =?us-ascii?Q?GAzXIQk/tFz1L6cxifmxOwqOQfBD7qcbbSXoHDiUtDZxlcHikoujj3hnBppJ?=
+ =?us-ascii?Q?wUEeVkVefuMrzOw0BKqt1l1O2dbqUMpqfQmfGZQRFy7igr/oJWw4TnsvdlVK?=
+ =?us-ascii?Q?DXwIhmJddkdLhxsi0VUvmYVsDxmGuSj04UayPB/4DlbAIUVUsyYWfGbp88y3?=
+ =?us-ascii?Q?iAwS/d81Z0ytII7qt0ZfhYfPtTB7zZYjlNsWq5DQ1NzvP2DoJnkKrOKB831r?=
+ =?us-ascii?Q?wj2gsRFe+/5WhPpRm9FAXrERhGiuPouNh1PmjQc5/cYgROTv6eU8sFNFd8F2?=
+ =?us-ascii?Q?jLrK0skE945QB3CVuFSvPkaX9Lx6RjjoTw4ypfMKRHWMUfjyH2baZ4XWZLmz?=
+ =?us-ascii?Q?MwaAJBnrA7FFNTODxQLtdXA69/djL7nIqxf0r2XWs02M/45taDjAjfxcsbR6?=
+ =?us-ascii?Q?t5xue1YjsTYclDXW/XcVnLBDCO1t4YMzz75YAeSLcfPe3OEY1vQhpb971UaJ?=
+ =?us-ascii?Q?5OayXI/GJd+eDgQdUnZCXj5EyUc/7H/dACKRJW4EMe3AkkzDgzEsWZ7wJgTf?=
+ =?us-ascii?Q?R+k0FVc4W9/nvRELHHQQOveUH1no6YRv8Ogq2BcjpkYQhMwRKu+NyZxIn/Gd?=
+ =?us-ascii?Q?iFGMkeh3PzPDU43Nwf41BUx2CtUrvi81KuPkXZfSCdwEhQ=3D=3D?=
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM4PR12MB7767.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(1800799024)(366016)(376014);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?us-ascii?Q?rCFPkf8LcdJDaj+5ZjoSdKDz2gDmAA+wxUiA/eUzzQgxoyzWvJElc8zrA2ZO?=
+ =?us-ascii?Q?34sIX41DQxCYy4LEmpLHgYHi27HqmlJdXE4EtC4mgcnGYGC1eCNn0LBW5WZC?=
+ =?us-ascii?Q?MjZFk2q/66+BknPgigZRYiG+/Fh3GEiOFuBhmlsV1uo9va1JCw0fZBrT4xv7?=
+ =?us-ascii?Q?QCWbakd3rrNyGZWbBuhuFGaGPLBK2CAFrhtbSFTUwAwoY3g3E0LwiG7PC+QL?=
+ =?us-ascii?Q?AyQj3fVC4GCir1HGhV/jNpA3FU0ATKwG5TvE0BdfIQXfobPQt5Qj/a3jRq8a?=
+ =?us-ascii?Q?hYgcu03MhIWjECI/ZvV/ACUjO1r7TecQS77QyjTvQ1XqQp3hEfmym5NSMl68?=
+ =?us-ascii?Q?FRtWxSGYnUuQStlOPkWcXTMLjuYQe6sqDuNdE1YmNs6tdr5xWQcPkrAfnD5v?=
+ =?us-ascii?Q?zAIHs4jpGzkh+dDOrE2zX7LJaDD7TCs+DWBRGbQbXvcjnhzBbP/OtCuvkc0A?=
+ =?us-ascii?Q?bL7tjc4zN977Zns7lzuAQlhnMhF1hfhdFf/TXUJbUAfP4sIcCQthB0BxgSFM?=
+ =?us-ascii?Q?1S6gZ5cChzUST+u0QuHBmfULBP7THsZ/f49GiRYM7hDl8Uf4mATjd5Mqzc+w?=
+ =?us-ascii?Q?gVHeY6J+DIof3fAxBPu4c9XTb3PyYW6jXIqqz8ZT2zL7+zcWcnrT6G1sA3fW?=
+ =?us-ascii?Q?wIOVC03vHB4k+73mRl/dvFkCujah8aBTGN7AkNXnbtCf6QqzX8BgyvLiVlz2?=
+ =?us-ascii?Q?Q7euSzU5FfmlXm/jWjTrS93lx06uEdD47Jwzh8Av4uVqrQfjCiq3EY3Tubhg?=
+ =?us-ascii?Q?k4aripoZkSVZfUOYIPhPVMwgwkQ6sK75IDWhkHnR3gUR+qrPmtaf4a/fo10A?=
+ =?us-ascii?Q?6/TphpBtGVSRwU3wAPP1RYcAvfzoHdxXBzE3MTWYXE7dweLE9FGjbFe2H8pA?=
+ =?us-ascii?Q?RzCNs5x0Y15RHGkPZVDaMKNJpzBow8HyuTZRAl8i9r6j3LI7oTSiICbXMZu4?=
+ =?us-ascii?Q?jVDWqHB31R3nm4qW4FsfaNuqIcd76WOMRAUce/wXcmJwwRnMBUNGbZ2iu9yg?=
+ =?us-ascii?Q?3XBng+UI4SdXXyXK1UXZQRRC4IJ8pq5AteCDAVbLrcC2yq+3UDnuWhtoIuiI?=
+ =?us-ascii?Q?zDDGXtXBkFZctc0LJ8Pws/wiwAoARkjdxvDOesiQ6BtZ45ylKaMy6ZZ0o2bh?=
+ =?us-ascii?Q?YHuu2p3AZ0KXvfvOUaLjDw0o1PcMwsfJXKR4SquXuV87vTJtfQiZX2RPoCmq?=
+ =?us-ascii?Q?xQ3e0M2OvrsNy3+AQbDLCImYXIaQZvN4243eTF0q4hmHSdH/GX8sP9Ombv19?=
+ =?us-ascii?Q?AGzihu3ecZkEalTWyBVbQh8R5I3osmjQh+kHYXgeG10NeDrp4xU28VkCwpfa?=
+ =?us-ascii?Q?ilpMN85/v8e3r/9Zu7uB5UgoYQHuvQrm0zHRxXDvlSgKFrz9A2/dJfT7382C?=
+ =?us-ascii?Q?BPVJ/RYkchIxaHuKNGSk+SGx7rdsVlqOjQUdkgqSJwQI5t3SR/7M78b9JlKC?=
+ =?us-ascii?Q?t9tDin+T+MmcvWpwG1Gi8wMnud/ywYnlYaNdUsy7y6ZQ2+DM4jgk97qHJmAY?=
+ =?us-ascii?Q?i79rjTbgirs3lK0AeTngxkwiZqHIdlJF8GSpqdHr2dWAo+ZNra4R1uyF1xt5?=
+ =?us-ascii?Q?1paXotkuaL1HxBpFRCg=3D?=
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 0579e5df-40c5-4faf-d077-08dcbcab6f9a
+X-MS-Exchange-CrossTenant-AuthSource: DM4PR12MB7767.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 14 Aug 2024 21:52:47.9121
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: QPOSKwfrsFbitB2Ro3FEGYuaXto2WqLevE9kPc/g9VQ06Q6Vxx7lYRJnj0JrDeNG
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH7PR12MB6812
 
-On 14/08/2024 17:29, Bjorn Andersson wrote:
-> On Wed, Aug 14, 2024 at 03:59:56PM GMT, Marc Gonzalez wrote:
->> On qcom msm8998, writing to the last context bank of lpass_q6_smmu
->> (base address 0x05100000) produces a system freeze & reboot.
->>
->> Specifically, here:
->>
->> 	qsmmu->bypass_cbndx = smmu->num_context_banks - 1;
->> 	arm_smmu_cb_write(smmu, qsmmu->bypass_cbndx, ARM_SMMU_CB_SCTLR, 0);
->>
->> and here:
->>
->> 	arm_smmu_write_context_bank(smmu, i);
->> 	arm_smmu_cb_write(smmu, i, ARM_SMMU_CB_FSR, ARM_SMMU_CB_FSR_FAULT);
->>
->> It is likely that FW reserves the last context bank for its own use,
->> thus a simple work-around would be: DON'T USE IT in Linux.
->>
->> If we decrease the number of context banks, last one will be "hidden".
-> 
-> I asked you to write something like "the hardware/hypervisor reports 12
-> context banks for the lpass smmu on msm8998, but only 11 are
-> accessible...override the number of context banks"
+On Tue, Aug 06, 2024 at 07:11:52PM -0700, Nicolin Chen wrote:
+>  
+> -static int arm_smmu_device_acpi_probe(struct platform_device *pdev,
+> -				      struct arm_smmu_device *smmu)
+> +static struct arm_smmu_device *
+> +arm_smmu_impl_acpi_probe(struct arm_smmu_device *smmu,
+> +			 struct acpi_iort_node *node)
+> +{
+> +	/*
+> +	 * DSDT might hold some SMMU extension, so we have no option but to go
+> +	 * through the ACPI tables unconditionally. On success, this returns a
+> +	 * copy of smmu struct holding an impl pointer. Otherwise, an impl may
+> +	 * choose to return an ERR_PTR as an error out, or to return the pass-
+> +	 * in smmu pointer as a fallback to the standard SMMU.
+> +	 */
+> +	return arm_smmu_impl_acpi_dsdt_probe(smmu, node);
+> +}
 
-I don't understand how the exact number of context banks is relevant?
-It's just that the FW reserves one for itself, which happens to be the last,
-probably because some FW dev thought that was a good idea.
+Lets generalize this a bit more and have the impl mechanism work for
+DT too.. Keep the main probe the same and add a new function after the
+dt/acpi steps:
 
-Also, I don't like the phrasing "override the number of context banks"
-because while this is indeed what is done in the code, the *intent*
-is to "lie" to Linux about the existence of the last context bank.
+	smmu = arm_smmu_probe_impl(smmu);
+	if (IS_ERR(smmu))
+		return PTR_ERR(smmu);
 
-> It also seems, as the different SMMUs in this platform behave
-> differently it might be worth giving them further specific compatibles,
-> in which case we could just check if it's the qcom,msm8998-lpass-smmu,
-> instead of inventing a property for this quirk.
+Which is more like:
 
-Wouldn't that be too specific?
+/*
+ * Probe all the compiled in implementations. Each one checks to see if it
+ * matches this HW and if so returns a devm_krealloc'd arm_smmu_device which
+ * replaces the callers. Otherwise the original is returned or ERR_PTR.
+ *
+ */
+static struct arm_smmu_device *arm_smmu_probe_impl(struct arm_smmu_device *orig_smmu)
+{
+	struct arm_smmu_device *new_smmu;
+	int ret;
 
-Angelo's patches were even more generic than mine, as he supported
-a list of context banks not-to-be-used-by-linux.
+	new_smmu = tegra241_cmdqv_acpi_dsdt_probe(orig_smmu);
+	if (new_smmu != ERR_PTR(-ENODEV))
+		goto out_new_impl;
+	return orig_smmu;
 
-Do you say the LPASS SMMU behaves differently because it's (currently,
-to the best of my knowledge) the only SMMU where a context bank
-(the last) is not available to Linux?
+out_new_impl:
+	if (IS_ERR(new_smmu))
+		return new_smmu;
 
+	/* FIXME: check is this ordering OK during remove? */
+	ret = devm_add_action_or_reset(new_smmu->dev, arm_smmu_impl_remove,
+				       new_smmu);
+	if (ret)
+		return ERR_PTR(ret);
+	return new_smmu;
+}
 
-For easy future reference, here are the reports for the 5 SMMUs enabled on my system.
+Easy to add new sub implementations. Provide an inline ENODEV sub in
+the header file for tegra241_cmdqv_acpi_dsdt_probe
 
-[    0.137343] arm-smmu 1680000.iommu: probing hardware configuration...
-[    0.137354] arm-smmu 1680000.iommu: SMMUv2 with:
-[    0.137381] arm-smmu 1680000.iommu: 	stage 1 translation
-[    0.137390] arm-smmu 1680000.iommu: 	address translation ops
-[    0.137399] arm-smmu 1680000.iommu: 	non-coherent table walk
-[    0.137406] arm-smmu 1680000.iommu: 	(IDR0.CTTW overridden by FW configuration)
-[    0.137417] arm-smmu 1680000.iommu: 	stream matching with 16 register groups
-[    0.137447] arm-smmu 1680000.iommu: 	6 context banks (0 stage-2 only)
-[    0.137733] arm-smmu 1680000.iommu: 	Supported page sizes: 0x63315000
-[    0.137743] arm-smmu 1680000.iommu: 	Stage-1: 36-bit VA -> 36-bit IPA
-[    0.137833] arm-smmu 1680000.iommu: 	preserved 0 boot mappings
+Add something like this to the header to get the ACPI node:
 
+static inline struct acpi_iort_node *
+arm_smmu_get_iort_node(struct arm_smmu_device *smmu)
+{
+	return *(struct acpi_iort_node **)dev_get_platdata(smmu->dev);
+}
 
-[    0.138963] arm-smmu 16c0000.iommu: probing hardware configuration...
-[    0.138974] arm-smmu 16c0000.iommu: SMMUv2 with:
-[    0.138994] arm-smmu 16c0000.iommu: 	stage 1 translation
-[    0.139003] arm-smmu 16c0000.iommu: 	address translation ops
-[    0.139011] arm-smmu 16c0000.iommu: 	non-coherent table walk
-[    0.139019] arm-smmu 16c0000.iommu: 	(IDR0.CTTW overridden by FW configuration)
-[    0.139030] arm-smmu 16c0000.iommu: 	stream matching with 14 register groups
-[    0.139058] arm-smmu 16c0000.iommu: 	10 context banks (0 stage-2 only)
-[    0.139255] arm-smmu 16c0000.iommu: 	Supported page sizes: 0x63315000
-[    0.139265] arm-smmu 16c0000.iommu: 	Stage-1: 36-bit VA -> 36-bit IPA
-[    0.139341] arm-smmu 16c0000.iommu: 	preserved 0 boot mappings
+Since it isn't passed down
 
+> @@ -4560,6 +4602,7 @@ static void arm_smmu_device_remove(struct platform_device *pdev)
+>  {
+>  	struct arm_smmu_device *smmu = platform_get_drvdata(pdev);
+>  
+> +	arm_smmu_impl_remove(smmu);
 
-[    2.424369] arm-smmu 5040000.iommu: probing hardware configuration...
-[    2.428581] arm-smmu 5040000.iommu: SMMUv2 with:
-[    2.434914] arm-smmu 5040000.iommu: 	stage 1 translation
-[    2.439584] arm-smmu 5040000.iommu: 	address translation ops
-[    2.444881] arm-smmu 5040000.iommu: 	non-coherent table walk
-[    2.450522] arm-smmu 5040000.iommu: 	(IDR0.CTTW overridden by FW configuration)
-[    2.456175] arm-smmu 5040000.iommu: 	stream matching with 3 register groups
-[    2.463216] arm-smmu 5040000.iommu: 	3 context banks (0 stage-2 only)
-[    2.483555] arm-smmu 5040000.iommu: 	Supported page sizes: 0x63315000
-[    2.490455] arm-smmu 5040000.iommu: 	Stage-1: 48-bit VA -> 36-bit IPA
-[    2.497171] arm-smmu 5040000.iommu: 	preserved 0 boot mappings
+Can't call this if devm has been used to set it up, and this would be
+in the wrong order anyhow. Just remove it.. I guess the devm was put
+for this to avoid adding goto error unwind to probe?
 
 
-[    2.546101] arm-smmu 5100000.iommu: probing hardware configuration...
-[    2.552439] arm-smmu 5100000.iommu: SMMUv2 with:
-[    2.558945] arm-smmu 5100000.iommu: 	stage 1 translation
-[    2.563627] arm-smmu 5100000.iommu: 	address translation ops
-[    2.568923] arm-smmu 5100000.iommu: 	non-coherent table walk
-[    2.574566] arm-smmu 5100000.iommu: 	(IDR0.CTTW overridden by FW configuration)
-[    2.580220] arm-smmu 5100000.iommu: 	stream matching with 12 register groups
-[    2.587263] arm-smmu 5100000.iommu: 	13 context banks (0 stage-2 only)
-[    2.594544] arm-smmu 5100000.iommu: hiding last ctx bank from linux
-[    2.614447] arm-smmu 5100000.iommu: 	Supported page sizes: 0x63315000
-[    2.621358] arm-smmu 5100000.iommu: 	Stage-1: 36-bit VA -> 36-bit IPA
-[    2.627772] arm-smmu 5100000.iommu: 	preserved 0 boot mappings
+> +struct arm_smmu_impl {
+> +	int (*device_reset)(struct arm_smmu_device *smmu);
+> +	void (*device_remove)(struct arm_smmu_device *smmu);
+> +	struct arm_smmu_cmdq *(*get_secondary_cmdq)(struct arm_smmu_device *smmu);
+> +};
 
+Can we put the word "ops" into this struct somehow? That would be a
+more typically kernely name.
 
-[    2.806781] arm-smmu cd00000.iommu: probing hardware configuration...
-[    2.813029] arm-smmu cd00000.iommu: SMMUv2 with:
-[    2.819627] arm-smmu cd00000.iommu: 	stage 1 translation
-[    2.824304] arm-smmu cd00000.iommu: 	address translation ops
-[    2.829601] arm-smmu cd00000.iommu: 	non-coherent table walk
-[    2.835243] arm-smmu cd00000.iommu: 	(IDR0.CTTW overridden by FW configuration)
-[    2.840897] arm-smmu cd00000.iommu: 	stream matching with 54 register groups
-[    2.847954] arm-smmu cd00000.iommu: 	17 context banks (0 stage-2 only)
-[    2.869307] arm-smmu cd00000.iommu: 	Supported page sizes: 0x63315000
-[    2.875785] arm-smmu cd00000.iommu: 	Stage-1: 32-bit VA -> 36-bit IPA
-[    2.882205] arm-smmu cd00000.iommu: 	preserved 0 boot mappings
+arm_smmu_impl_ops perhaps?
 
+>  struct arm_smmu_device {
+>  	struct device			*dev;
+> +	/* An SMMUv3 implementation */
 
-[   24.525457] arm-smmu 16c0000.iommu: FSR    = 00000402 [Format=2 TF], SID=0x1900
-[   24.525604] arm-smmu 16c0000.iommu: FSYNR0 = 00000001 [S1CBNDX=0 PLVL=1]
-[   24.721874] arm-smmu 16c0000.iommu: FSR    = 00000402 [Format=2 TF], SID=0x1900
-[   24.722033] arm-smmu 16c0000.iommu: FSYNR0 = 00000001 [S1CBNDX=0 PLVL=1]
+The comment is self explanatory
 
+Jason
