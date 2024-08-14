@@ -1,117 +1,183 @@
-Received: from mail-pl1-f170.google.com (mail-pl1-f170.google.com [209.85.214.170])
+Received: from mail-ed1-f43.google.com (mail-ed1-f43.google.com [209.85.208.43])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 47F02381D4
-	for <iommu@lists.linux.dev>; Wed, 14 Aug 2024 09:02:17 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.170
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5E1B41A00D6
+	for <iommu@lists.linux.dev>; Wed, 14 Aug 2024 09:58:07 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.43
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1723626138; cv=none; b=XwrlrrPjrd2zR15/RzAMeDl8S/pF8OdMpQ3gtuBGBWC6VqdkWM8p5QrXhlpyL49AXjr/GPvM5GX1ILoBX1pL+uPq1Nv4BIh2q9fAxCSX+0HhP1nlieneTahbbenq2q/uaxsxIhugx+8YGcOngt2Mee09BEBDZmpt+W+og5SOQhk=
+	t=1723629490; cv=none; b=cLgJQwVYA+5QJx01H2xKCTaYb1ugN1xHlz5rpnWdqEtrxzyJ2GUeI5SqUSI3g0xfQtECTlu8nTdbns3gVK9zJBdJTNjIi+m/gysAWjrjrBAC8nVCRQ6axEKnG6tG27fs57M9B81CLQT8UOpXroAIszsFqdhMyYGpoqM1kM6mNcE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1723626138; c=relaxed/simple;
-	bh=dsKV+wqMisbH03QAF7wEuOvOjTFUb6hi739fdjsgYAc=;
+	s=arc-20240116; t=1723629490; c=relaxed/simple;
+	bh=ywl8XmyS9mHm+0bQOP27BgcWEnPO1Bj2PrL8OOlKNEg=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=CbNqRGQDIyiUucYKWqjAydxn1vXlqnrHX5WfRAerKVFdwTFa6GJrSzZwMPaMRyo3kH9OqQp2lEhSRZ6CecIR2my/4DXmGRB1h6oaAzuRXz4wYlPHuvV51/YIals7wbIAeF6QM6Icc2mVvS9u2aDIBZWiJ6ldJSad6i0dT3pHTu8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=axHv3zIf; arc=none smtp.client-ip=209.85.214.170
+	 Content-Type:Content-Disposition:In-Reply-To; b=AtjSm+RXbFlF3CVdURTaxBvu4xsCQB19cRf+ylkCCYOj77xzqknp51UTZ1Txg6xUm19+hzhwwP4VzHa4GC0HCXA/W9/FPNSavAs4k1WxXNUo5X10UIGs+/MRqs2vAISEEqg/OCORPxbwxNgxw5v7gqil1fy3CCUjnB3xRXK/CXE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=jH4sYqno; arc=none smtp.client-ip=209.85.208.43
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="axHv3zIf"
-Received: by mail-pl1-f170.google.com with SMTP id d9443c01a7336-201e4cf371eso3485ad.0
-        for <iommu@lists.linux.dev>; Wed, 14 Aug 2024 02:02:17 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="jH4sYqno"
+Received: by mail-ed1-f43.google.com with SMTP id 4fb4d7f45d1cf-5a28b61b880so4648a12.1
+        for <iommu@lists.linux.dev>; Wed, 14 Aug 2024 02:58:07 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20230601; t=1723626136; x=1724230936; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=5BeIv8tpPW4wd1BzSToPaTcquF6WJ68vuiwIAiNwYEo=;
-        b=axHv3zIfRIJKKZuWKEiX/NZ5XwndDsB1EKeFdQ+Vfv5Nh0PI9viwHFRJD+WruWCj9E
-         X/fIZxZfhI75FbPgUxdZqxcRIzGJlkzmhwvXneDyLzrTFe3PQR6f6o/s5rM7OIElETmJ
-         xaaOLCEiAvpMT/+hxjmLLl6+jM3YMN+Qgbv0iNko9IrIk0j/P+v/TLtl090niq0TFY3C
-         gwWSizAUo53BZVvfTALu8cHzTBVK1Z0DhNPsKb0YF7zNRThlZWLd8Zl4GwRWaTMdpSji
-         C29EeCg7GJ2cmbpbENPa4B4asiMK1z4ic0SELdJg+1E4qY8MvI7CzBiXT9Pllca1K+zA
-         sHsQ==
+        d=google.com; s=20230601; t=1723629485; x=1724234285; darn=lists.linux.dev;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :mime-version:references:message-id:subject:cc:to:from:date:from:to
+         :cc:subject:date:message-id:reply-to;
+        bh=XNPiYAxD0nXeda3XoGkXcfBa5gPOVQX7S7Zbc6+r9Yg=;
+        b=jH4sYqnoO0+uQop+93z8MKR5Przj99zrD53lO3fgP1iQlznN3yTPSHQkcPUZ7RD1YX
+         SiNEM2wxvZfXXfKSDx6VKJ5bcBIbNaEdBxHQM2hWQMAlrpyzHrWxB8Wg92U5BY7w59+D
+         R4c+xsrvtCalF4bhoCu3EHVcc3F1K1bCXe58USGCWZQ/FQfakPHvMTW2SSbEWZaFk5Hk
+         WHYpBjNMzSh70VWSP8/dxVb61B5RWKV63itSqUlZMUZCPydIxVPMmYD3x8DsOy3FP+GC
+         HFugTKxC3LvR/5XUSobaLDDn5eoPp3SaiOiuv7EhQbaAbXtWwuO333ks4cKarhZQN1wK
+         uB4Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1723626136; x=1724230936;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=5BeIv8tpPW4wd1BzSToPaTcquF6WJ68vuiwIAiNwYEo=;
-        b=FwWgDv3fp3zxUddxJuW1h9aJT0NgqYOmi4J/eB9c6/sk5ER3OEdZUAgVkkS55LgY26
-         UhMlJM4G736pbJNcD4GLHro8pzA/BE1ZIygaE1uySEcVXifmk9063TN2tfwOFgPPSTDX
-         5i7NL2UDUCH89J4O+kjzsi1UgTwV4IzqMGBuq36m875zBrlPG6iS/DvrmpTGM+UvbxVI
-         rnEI7MaVHCLCOJOzHNV7fI8kO5caJ2cAVlO5T6O/X9TvAvwLcwIKe3R9X73zSBamsRpT
-         lt3yXiQSjEkN8ObdsD1Sudng+PmAiceyOzKvN9uWQpsbgE7d4evtY/uHFIKnPhLDMPAw
-         HZxw==
-X-Forwarded-Encrypted: i=1; AJvYcCURVT68+VkhYlbCYepXLvtxz1Uk1IfU4j+4VuKgzNSfHKBRD9QMeVedKSJf/XSIZnk3AJnE9w==@lists.linux.dev
-X-Gm-Message-State: AOJu0YyV7qAIZE+o9c+2c1R9ImtiWaaPu3PB8gmTwOsSxhhNV2JHm9Tt
-	eKKRxt1DGNHJjY+Vf6bps1l/0RaWuEK3WI6YzidGDBvDZNJjENbig+BxidLdGQ==
-X-Google-Smtp-Source: AGHT+IG7OdlbAYBH+rSxfLKvmXWaZU+mzyHJgiWriDP/OYhsl145DYw3VYr0B7PXkF9ajxWoJVYutw==
-X-Received: by 2002:a17:903:2284:b0:1fc:548f:6533 with SMTP id d9443c01a7336-201d8fd876dmr844895ad.3.1723626135784;
-        Wed, 14 Aug 2024 02:02:15 -0700 (PDT)
-Received: from google.com (202.141.197.35.bc.googleusercontent.com. [35.197.141.202])
-        by smtp.gmail.com with ESMTPSA id d9443c01a7336-201cd1a9373sm25374055ad.144.2024.08.14.02.02.12
+        d=1e100.net; s=20230601; t=1723629485; x=1724234285;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :mime-version:references:message-id:subject:cc:to:from:date
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=XNPiYAxD0nXeda3XoGkXcfBa5gPOVQX7S7Zbc6+r9Yg=;
+        b=Rb7QjsMyeCXHQU/piwGYfU81HCSK6Jg1HBW8NRdyYD2VFES2SsPE0jBvQ2/YLx4uGE
+         eWzfLnPAhOx41S/dcSNwnQn0heA1OC1T7Ee/0qzYhHYwRVCLdSx+++5/AuSFqBQQ6Dbz
+         j5q20Z2ymwZgQ8pm1c+C3rudHPw3Nst72RNdwNF40pvrbgG9NAoiP9xxLF9s0DO2drXl
+         Cut+50FuWJCJtXrCIPBLqPuhVhW4QNXwuCLwQwQKD7CI6B57Ha3HlELmyHbin8VJLucV
+         jMf5h8BewZiQWxJMYg2g69HoS+Gr1uNWln/Ya2zPiHfIVstsDXTI2BDruq2hBrOBmXqA
+         2m9w==
+X-Forwarded-Encrypted: i=1; AJvYcCUSMYz/vi4N26yMvpyLiwMy/AiXQ4ErFo8Ac42EqyrbPApfnZrvNE2ZHvlmPU31k44/FKBQDM7pfSCF1I0fPgo70INorWY=
+X-Gm-Message-State: AOJu0YziyZwosbRFOTIDMPyBQjkzeQlQo58PItVOVsCBDKXVsKZ6QDAx
+	ReL+aSFYE0ij2SSOqtNNpSSem860h3LgPbXzDn08uz+uwiE3hoVfrLyy38FGaQ==
+X-Google-Smtp-Source: AGHT+IGOoeQSGPXnP0Clm+mJgyY7hA8NUckb53WhjJatTU+/3rVRLEqRqMqPYgosUnSxt0miWa/RPg==
+X-Received: by 2002:a05:6402:3481:b0:5aa:19b1:ffc7 with SMTP id 4fb4d7f45d1cf-5bea28067bdmr77383a12.2.1723629485134;
+        Wed, 14 Aug 2024 02:58:05 -0700 (PDT)
+Received: from google.com (203.75.199.104.bc.googleusercontent.com. [104.199.75.203])
+        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-429ded31c5esm14718735e9.13.2024.08.14.02.58.04
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 14 Aug 2024 02:02:15 -0700 (PDT)
-Date: Wed, 14 Aug 2024 09:02:06 +0000
-From: Pranjal Shrivastava <praan@google.com>
+        Wed, 14 Aug 2024 02:58:04 -0700 (PDT)
+Date: Wed, 14 Aug 2024 09:58:00 +0000
+From: Mostafa Saleh <smostafa@google.com>
 To: Jason Gunthorpe <jgg@ziepe.ca>
-Cc: Baolu Lu <baolu.lu@linux.intel.com>, Will Deacon <will@kernel.org>,
-	Kunkun Jiang <jiangkunkun@huawei.com>,
-	Robin Murphy <robin.murphy@arm.com>, Joerg Roedel <joro@8bytes.org>,
-	Nicolin Chen <nicolinc@nvidia.com>,
-	Michael Shavit <mshavit@google.com>,
-	Mostafa Saleh <smostafa@google.com>,
-	"moderated list:ARM SMMU DRIVERS" <linux-arm-kernel@lists.infradead.org>,
-	iommu@lists.linux.dev, linux-kernel@vger.kernel.org,
-	wanghaibin.wang@huawei.com, yuzenghui@huawei.com,
-	tangnianyao@huawei.com
-Subject: Re: [bug report] iommu/arm-smmu-v3: Event cannot be printed in some
- scenarios
-Message-ID: <ZrxyjgNGps1PuIVZ@google.com>
-References: <c2f6163e-47f0-4dce-b077-7751816be62f@linux.intel.com>
- <CAN6iL-QvE29-t4B+Ucg+AYMPhr9cqDa8xGj9oz_MAO5uyZyX2g@mail.gmail.com>
- <5e8e6857-44c9-40a1-f86a-b8b5aae65bfb@huawei.com>
- <20240805123001.GB9326@willie-the-truck>
- <ZrDwolC6oXN44coq@google.com>
- <20240806124943.GF676757@ziepe.ca>
- <ZrJIM8-pS31grIVR@google.com>
- <315e95d4-064d-4322-a9d3-97e96c013b4d@linux.intel.com>
- <ZrTNGepJXbmfuKBK@google.com>
- <20240813175658.GO1985367@ziepe.ca>
+Cc: linux-kernel@vger.kernel.org, iommu@lists.linux.dev,
+	linux-arm-kernel@lists.infradead.org, will@kernel.org,
+	robin.murphy@arm.com, joro@8bytes.org, nicolinc@nvidia.com,
+	mshavit@google.com
+Subject: Re: [PATCH 2/2] iommu/arm-smmu-v3: Report stalled S2 events
+Message-ID: <Zrx_qO1iHwbr4ctO@google.com>
+References: <20240812205255.97781-1-smostafa@google.com>
+ <20240812205255.97781-3-smostafa@google.com>
+ <20240813175155.GN1985367@ziepe.ca>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <20240813175658.GO1985367@ziepe.ca>
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20240813175155.GN1985367@ziepe.ca>
 
-On Tue, Aug 13, 2024 at 02:56:58PM -0300, Jason Gunthorpe wrote:
-> On Thu, Aug 08, 2024 at 01:50:17PM +0000, Pranjal Shrivastava wrote:
+On Tue, Aug 13, 2024 at 02:51:55PM -0300, Jason Gunthorpe wrote:
+> On Mon, Aug 12, 2024 at 08:52:55PM +0000, Mostafa Saleh wrote:
+> > Previously, S2 stall was disabled and in case there was an event it
+> > wouldn't be reported on the assumption that it's always pinned  by VFIO.
 > > 
-> > Kunkun -- Please try this diff and check if it fixes the problem?
+> > However, now since we can enable stall, devices that use S2 outside
+> > VFIO should be able to report the stalls similar to S1.
+> > 
+> > Also, to keep the old behaviour were S2 events from nested domains were
+> > not reported as they are pinned (from VFIO) add a new flag to track this.
 > 
-> This looks OK to me, you should send it as a proper patch..
+> I'm not entirely clear on every detail of this stall feature...
 > 
-> >  	if (!(fault->prm.flags & IOMMU_FAULT_PAGE_REQUEST_LAST_PAGE)) {
-> > -		report_partial_fault(iopf_param, fault);
-> > +		ret = report_partial_fault(iopf_param, fault);
-> >  		iopf_put_dev_fault_param(iopf_param);
-> >  		/* A request that is not the last does not need to be ack'd */
-> > +
-> > +		if (ret)
-> > +			goto err_bad_iopf;
+> But from a core perspective device fault reporting should only ever be
+> turned on in the STE/CD if the attached domain->iopf_handler is not NULL.
+> 
+> If it is NULL then any access to a non-present address should trigger
+> some kind of device error failure automatically.
+> 
+> This is new core functionality since this code would have been
+> originally written. Now it is all handled transparently by the core
+> code. The driver should just deliver all fault events to
+> iommu_report_device_fault() and it will sort it out.
+> 
+
+I agree, as there is no iopf handler in this case, we should just
+report it to the iommu code and it will reject it instead of tracking this
+in the driver. And as all the “enable_nesting” stuff is going away soon
+anyway it’s not worth adding extra code for it. (plus we shouldn’t
+really assume the intention of caller)
+
+> > Signed-off-by: Mostafa Saleh <smostafa@google.com>
+> > ---
+> >  drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 18 +++++++++++++-----
+> >  drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h |  2 ++
+> >  2 files changed, 15 insertions(+), 5 deletions(-)
+> > 
+> > diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+> > index 8d573d9ca93c..ffa865529d73 100644
+> > --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+> > +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+> > @@ -1733,6 +1733,7 @@ static int arm_smmu_handle_evt(struct arm_smmu_device *smmu, u64 *evt)
+> >  	u32 sid = FIELD_GET(EVTQ_0_SID, evt[0]);
+> >  	struct iopf_fault fault_evt = { };
+> >  	struct iommu_fault *flt = &fault_evt.fault;
+> > +	struct arm_smmu_domain *smmu_domain;
+> >  
+> >  	switch (FIELD_GET(EVTQ_0_ID, evt[0])) {
+> >  	case EVT_ID_TRANSLATION_FAULT:
+> > @@ -1744,10 +1745,6 @@ static int arm_smmu_handle_evt(struct arm_smmu_device *smmu, u64 *evt)
+> >  		return -EOPNOTSUPP;
 > >  	}
+> >  
+> > -	/* Stage-2 is always pinned at the moment */
+> > -	if (evt[1] & EVTQ_1_S2)
+> > -		return -EFAULT;
+> > -
 > 
-> rebase it on -rc3 and there will be a return line added here
-> too.. Maybe you don't want the goto in that cast
-
-Sure, I'll quickly rebase & send it out as a patch. Please let me know
-if should add any tag by you?
-
+> This makes sense at first blush since the domain mode shouldn't define
+> if events should be processed or not, and the events should be failed
+> anyhow right? If someone did turn on fault reporting in the STE then
+> it should always be processed to conclusion.
 > 
-> Jason
+> >  	if (!(evt[1] & EVTQ_1_STALL))
+> >  		return -EOPNOTSUPP;
+> >  
+> > @@ -1782,6 +1779,15 @@ static int arm_smmu_handle_evt(struct arm_smmu_device *smmu, u64 *evt)
+> >  		goto out_unlock;
+> >  	}
+> >  
+> > +	/* It is guaranteed that smmu_domain exists as EVTQ_1_STALL is checked. */
+> > +	smmu_domain = to_smmu_domain(iommu_get_domain_for_dev(master->dev));
+> 
+> Strongly discouraging drivers from calling iommu_get_domain_for_dev()
+> in async paths like this. The locking is tricky and the core code does...
+> 
+> > +	/* nesting domain is always pinned at the moment */
+> > +	if (smmu_domain->enable_nesting) {
+> 
+> This is not necessary - a nesting domain will never have an
+> iopf_handler set.
+> 
+> It immediately calls iommu_report_device_fault() which will reject it
+> because of:
+> 
+> 	if (!group->attach_handle->domain->iopf_handler)
+> 		goto err_abort;
+> 
+> Which after the rework will end up in find_fault_handler() at the top
+> of the function:
+> 
+>  https://lore.kernel.org/r/ZrTNGepJXbmfuKBK@google.com
+> 
+> So I think these parts are not necessary.
+
+Yes, I will remove this patch and squash the removal of ignoring S2
+events.
 
 Thanks,
-Pranjal
+Mostafa
+
+> 
+> Though arguably we should be rejecting domains with iopf_handler set
+> in some of the attach calls..
+> 
+> Jason
