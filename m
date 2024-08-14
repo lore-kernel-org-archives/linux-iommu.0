@@ -1,28 +1,28 @@
 Received: from ns.iliad.fr (ns.iliad.fr [212.27.33.1])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A67F41B1419
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A684B1B1429
 	for <iommu@lists.linux.dev>; Wed, 14 Aug 2024 14:00:17 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=212.27.33.1
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1723644021; cv=none; b=FnMC1lRbbzhipHMd6TRKMZKt1UIX5uTFtlTr+m7+pbvVpVTgSr8yBEQuJYnNUl3oz03aFBuPaT2Ozeb7LQDLTlrJjudTS6EozfkY88cxM7FMI4B/k8OGaMyZP+2fpPVrUa4YLl2beD0zLjXiJSTv3wk1QkIra8vLDeNpakz4QpE=
+	t=1723644022; cv=none; b=h1Kt9y+cTLmfLP3ihDAflploN0hedeGDDUrXdatVDiCOBKY4KMjKpMjBP4y2+kWJWZuTwBXZdzsTxwQF9dNAwXJzHlgTdT+fI7+eZktWjW67cvJtmvPC/VpbxLNrDwH2GtgZyD0P12uDXNAbEI2Vm2VfxTbKPZNTbFMmjDuT6XY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1723644021; c=relaxed/simple;
-	bh=/6cw3tOWL+4l0726raXhGXm3cR28e6PNK5EJ2Dqp760=;
-	h=From:Subject:Date:Message-Id:MIME-Version:Content-Type:To:Cc; b=IYeyEYP+pnvqxlLLHA+RgruwhHMUKw9UJETpEhVqNyCtDRNiX5GUAQjD7cYYY61og751gc0+akTs/cn824IlYK9bpneJIaly5UOuTKinKT8Dy4ObkAWtQ0TNJT3JYPnZNvDGdAEWR1Nqxrj12ZyOTwcC/3DCm5fU+FlXvMWJ6/0=
+	s=arc-20240116; t=1723644022; c=relaxed/simple;
+	bh=QcdrQflkqdM2QB3XA57RYn9/8XtctAhkT4I5lXhNgx8=;
+	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
+	 In-Reply-To:To:Cc; b=OrcPF3QWEblRqZDcxBKzkC7UsRrEwzYCdak1XRN6bPTUWqy8Lc5pZE0Hvd2fI04bL04Tn8kYa1avHU5SG3qegNog0/Dh283NQPVfzOppWntqbM/qLVollGDCh1r0MMVuk1P/01FZqMW9ZxnyS4EjIpSFRacaI4gP/wQVSHwKffw=
 ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=freebox.fr; spf=pass smtp.mailfrom=srs.iliad.fr; arc=none smtp.client-ip=212.27.33.1
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=freebox.fr
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=srs.iliad.fr
 Received: from ns.iliad.fr (localhost [127.0.0.1])
-	by ns.iliad.fr (Postfix) with ESMTP id D1FE520990;
+	by ns.iliad.fr (Postfix) with ESMTP id D8CC220998;
 	Wed, 14 Aug 2024 16:00:09 +0200 (CEST)
 Received: from [127.0.1.1] (freebox.vlq16.iliad.fr [213.36.7.13])
-	by ns.iliad.fr (Postfix) with ESMTP id BDAD920988;
+	by ns.iliad.fr (Postfix) with ESMTP id C755720989;
 	Wed, 14 Aug 2024 16:00:09 +0200 (CEST)
 From: Marc Gonzalez <mgonzalez@freebox.fr>
-Subject: [PATCH 0/2] Work around reserved SMMU context bank on msm8998
-Date: Wed, 14 Aug 2024 15:59:54 +0200
-Message-Id: <20240814-smmu-v1-0-3d6c27027d5b@freebox.fr>
+Date: Wed, 14 Aug 2024 15:59:55 +0200
+Subject: [PATCH 1/2] dt-bindings: arm-smmu: Add qcom,last-ctx-bank-reserved
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -31,9 +31,9 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-X-B4-Tracking: v=1; b=H4sIAFq4vGYC/6tWKk4tykwtVrJSqFYqSi3LLM7MzwNyDHUUlJIzE
- vPSU3UzU4B8JSMDIxMDC0MT3eLc3FLdFFNzo2TDREOzxMRkJaDSgqLUtMwKsDHRsbW1ACh0KDJ
- WAAAA
+Message-Id: <20240814-smmu-v1-1-3d6c27027d5b@freebox.fr>
+References: <20240814-smmu-v1-0-3d6c27027d5b@freebox.fr>
+In-Reply-To: <20240814-smmu-v1-0-3d6c27027d5b@freebox.fr>
 To: Rob Clark <robdclark@gmail.com>, Will Deacon <will@kernel.org>, 
  Robin Murphy <robin.murphy@arm.com>, Joerg Roedel <joro@8bytes.org>, 
  Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>, 
@@ -63,53 +63,29 @@ and here:
 It is likely that FW reserves the last context bank for its own use,
 thus a simple work-around would be: DON'T USE IT in Linux.
 
-This patch series:
-1) introduces a DT prop "qcom,last-ctx-bank-reserved" to indicate
-that FW reserves the last context bank of a given SMMU.
-2) tweaks the driver to "hide" the last context bank from Linux.
-
-For reference, the lpass_q6_smmu node looks like this:
-
-	lpass_q6_smmu: iommu@5100000 {
-		compatible = "qcom,msm8998-smmu-v2", "qcom,smmu-v2";
-		reg = <0x05100000 0x40000>;
-		clocks = <&gcc HLOS1_VOTE_LPASS_ADSP_SMMU_CLK>;
-		clock-names = "iface";
-
-		#global-interrupts = <0>;
-		#iommu-cells = <1>;
-		interrupts =
-			<GIC_SPI 226 IRQ_TYPE_LEVEL_HIGH>,
-			<GIC_SPI 393 IRQ_TYPE_LEVEL_HIGH>,
-			<GIC_SPI 394 IRQ_TYPE_LEVEL_HIGH>,
-			<GIC_SPI 395 IRQ_TYPE_LEVEL_HIGH>,
-			<GIC_SPI 396 IRQ_TYPE_LEVEL_HIGH>,
-			<GIC_SPI 397 IRQ_TYPE_LEVEL_HIGH>,
-			<GIC_SPI 398 IRQ_TYPE_LEVEL_HIGH>,
-			<GIC_SPI 399 IRQ_TYPE_LEVEL_HIGH>,
-			<GIC_SPI 400 IRQ_TYPE_LEVEL_HIGH>,
-			<GIC_SPI 401 IRQ_TYPE_LEVEL_HIGH>,
-			<GIC_SPI 402 IRQ_TYPE_LEVEL_HIGH>,
-			<GIC_SPI 403 IRQ_TYPE_LEVEL_HIGH>,
-			<GIC_SPI 137 IRQ_TYPE_LEVEL_HIGH>;
-
-		power-domains = <&gcc LPASS_ADSP_GDSC>;
-		status = "disabled";
-	};
-
+Signed-off-by: Marc Gonzalez <mgonzalez@freebox.fr>
 ---
-Marc Gonzalez (2):
-      dt-bindings: arm-smmu: Add qcom,last-ctx-bank-reserved
-      iommu/arm-smmu-qcom: hide last context bank from linux
-
  Documentation/devicetree/bindings/iommu/arm,smmu.yaml | 6 ++++++
- drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c            | 5 +++++
- 2 files changed, 11 insertions(+)
----
-base-commit: c934f6908ad1f210c1d1e289934d1182a6e7cb62
-change-id: 20240814-smmu-d572c1a16aac
+ 1 file changed, 6 insertions(+)
 
-Best regards,
+diff --git a/Documentation/devicetree/bindings/iommu/arm,smmu.yaml b/Documentation/devicetree/bindings/iommu/arm,smmu.yaml
+index 280b4e49f2191..f9b23aef351b0 100644
+--- a/Documentation/devicetree/bindings/iommu/arm,smmu.yaml
++++ b/Documentation/devicetree/bindings/iommu/arm,smmu.yaml
+@@ -204,6 +204,12 @@ properties:
+       access to SMMU configuration registers. In this case non-secure aliases of
+       secure registers have to be used during SMMU configuration.
+ 
++  qcom,last-ctx-bank-reserved:
++    type: boolean
++    description:
++      FW reserves the last context bank of this SMMU for its own use.
++      If Linux tries to use it, Linux gets nuked.
++
+   stream-match-mask:
+     $ref: /schemas/types.yaml#/definitions/uint32
+     description: |
+
 -- 
-Marc Gonzalez <mgonzalez@freebox.fr>
+2.34.1
 
