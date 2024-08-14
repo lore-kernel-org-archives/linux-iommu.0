@@ -1,155 +1,204 @@
-Received: from NAM12-DM6-obe.outbound.protection.outlook.com (mail-dm6nam12on2065.outbound.protection.outlook.com [40.107.243.65])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-wm1-f47.google.com (mail-wm1-f47.google.com [209.85.128.47])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1BBBD1B3F32
-	for <iommu@lists.linux.dev>; Wed, 14 Aug 2024 17:31:37 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.243.65
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1723656699; cv=fail; b=U844qI0nM8kibOJ1qVTP9MY3wzcJJZ6QEgoqpPpfW+UAzY3ftmE227+ElpAYmVrlj32pKP0RTRhMbuwe6ZilHX1VaFk0/IVlJBvKxn13KknvOrQi1SW60/+k2tTfm1gstX/M+fpozrY92KaC30MhS2lMMjBXB96NAJsyag/VqO4=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1723656699; c=relaxed/simple;
-	bh=8CsoP++6/Sg/sEM0Yl4afpIb0M/c7MPOhutjVmK7d5Q=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:Content-Type:
-	 Content-Disposition:In-Reply-To:MIME-Version; b=MILoCz90U7oHGg1UdpMHDYRHMVBImyKHe/RCTi0BRcr/kudsfjTfUEp7nfO8UhsfGpwydRsakyMbYu7ygoicBjj32OF95nhnXYgzzjjTnB7p/3pPYx77cJOkXQqYPrZvD2vDRE3cdzD820Yc37qihYxm3XcQgITp8t1LZrmJf8Y=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=Zrpshojy; arc=fail smtp.client-ip=40.107.243.65
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D9E471BBBE4
+	for <iommu@lists.linux.dev>; Wed, 14 Aug 2024 17:33:12 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.47
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1723656795; cv=none; b=kKO06lLcHfe2Z51DMHC619GdWxImAcZueFf/UHnEZvamNCk7o7ORAES7TwohFD8Mzq/n/mrVVVzB2ZeO2w30nXZpHiTR6LUKB8lRGpu9NiHLgDYEMmjVNrBEsM9ylls8DSZfzX6Dw5LPHf0/D2Kfl2SHZXGfk2LVKLy4Puiqmsc=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1723656795; c=relaxed/simple;
+	bh=xHPn6y4xO+5SYBhOLhdA2juhFMoy6KgLmbab3AbXS8M=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=GvEVvF8tSbv+XHIcZH5EftweJjKXIri1AEi1GpRzhOfUO2RXPE7FRLBdJaj+pIRhg2vH4llduc7RID33/C4M3Z65NgLo3q3n/WGxkoTg+9mJAgGWdt6bq9ZfMez+H+T/I3TgSD7d5I+tdEzcabzVe8eQ/V+ONdMCUBBmPNEEOQc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=freebox.fr; spf=pass smtp.mailfrom=freebox.fr; dkim=pass (2048-bit key) header.d=freebox-fr.20230601.gappssmtp.com header.i=@freebox-fr.20230601.gappssmtp.com header.b=Jx5SW2P0; arc=none smtp.client-ip=209.85.128.47
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=freebox.fr
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=freebox.fr
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="Zrpshojy"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=ps299lV0Xyn0selN7MAogO8DfyVjJnSundeJ3BzY6Kl4MCdXZRhUv/qQV2taLowOxDN45iu7m6wgRoDwdaSnfQ/M7xzNBIwF2l8M3pIjNllTfIjT/lxNLtlaNsSm/Ixf3t0Jpfo3x79ZvxipWm+wgmd/896kk2aeZuYP4Lyse31zPzKb71Nir43HsK2G+fzo1MD+wspgkkEtUxfhcjiebtyow5E4NUY4Ws63zf6dggIV61bWo/jD4nfx67IoZXD+Fs+Z+8/hd1P7xfXiCkKZJjL5dH9Xz6hGPfysvBnDItuGNmZlZaJYtDrH1Phy5a7tWAo5QR8sgNAOoxRjZQq/tA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=kmwdAe+7AW85mD/DhbZVXSeQP00LKPSzaiT8zK1G0Q8=;
- b=nXN7ohUhyZhGndQ7rg+x9dG//cMWDGd6JXE7bBKBbrJKLH8hlJ7WIIpywp3ThSNhDyyCeN4C+UCrTssdNaWntBJryx0s2IjMI6XAIvxUXLBQ8+A7lfb4bkoF4WZjsdge2ZzRG3asezzSKBiW+tVTgqibHRABVsgjZ+IIq4ED+RUXmx65Jt1dC8ZFiTk8k2uOrhUqmsfrrPlvo08F65mYcs9AIBBh67RXBwwm9JShaycy8UIPCSEe18nlXVcII+bMzlWF4WLUApGLCLXok4Ny+RAKxC62b9GGg5KcX6D4YuaROeZvA7ea0Wg3H7p2ZXje56sWtvlSkY35t6SVdM0trA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=kmwdAe+7AW85mD/DhbZVXSeQP00LKPSzaiT8zK1G0Q8=;
- b=ZrpshojyADwddOv9kptd/sf0bv4Kr7ExtsO3eYUK1AKqn+SI25908I2iOw1yZSpDbtAhj/TirZoiUrEJPWj1vQs6vRoF8G6ipduyqxTKZHmXUhGxBrxT5Ys/trLvlBtJIBwAHm/Qn8kyf83qXZpr9RHFOpAhBy4dxrjWDRAuj/6/7Et1yy4Vh/CJxHlDVi1Qni2qDu+IFDpg/FdCPAG7Fv+asu+MbT2/LcR2zVGShg9eaoHnvdmVJ17ZNVv7Y4pxvGTJ5bF+OdGoOYDlVCRU3juwgkKDI+bG5arLUdrQCI40nPqXUtxn7mlN0tvlwkN84BORfcX+ZzLQ2cSrG2dCHA==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-Received: from DM4PR12MB7767.namprd12.prod.outlook.com (2603:10b6:8:100::16)
- by IA0PR12MB8894.namprd12.prod.outlook.com (2603:10b6:208:483::21) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7849.24; Wed, 14 Aug
- 2024 17:31:30 +0000
-Received: from DM4PR12MB7767.namprd12.prod.outlook.com
- ([fe80::55c8:54a0:23b5:3e52]) by DM4PR12MB7767.namprd12.prod.outlook.com
- ([fe80::55c8:54a0:23b5:3e52%3]) with mapi id 15.20.7849.021; Wed, 14 Aug 2024
- 17:31:30 +0000
-Date: Wed, 14 Aug 2024 14:31:29 -0300
-From: Jason Gunthorpe <jgg@nvidia.com>
-To: Nicolin Chen <nicolinc@nvidia.com>
-Cc: will@kernel.org, robin.murphy@arm.com, joro@8bytes.org,
-	thierry.reding@gmail.com, vdumpa@nvidia.com, jonathanh@nvidia.com,
-	linux-kernel@vger.kernel.org, iommu@lists.linux.dev,
-	linux-arm-kernel@lists.infradead.org, linux-tegra@vger.kernel.org
-Subject: Re: [PATCH v11 6/9] iommu/arm-smmu-v3: Add
- ARM_SMMU_OPT_SECONDARY_CMDQ_CS_NONE_ONLY
-Message-ID: <20240814173129.GW2032816@nvidia.com>
-References: <cover.1722993435.git.nicolinc@nvidia.com>
- <716ac3e9d2564bbc47390160286a9ce1a1d85704.1722993435.git.nicolinc@nvidia.com>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <716ac3e9d2564bbc47390160286a9ce1a1d85704.1722993435.git.nicolinc@nvidia.com>
-X-ClientProxiedBy: MN2PR12CA0003.namprd12.prod.outlook.com
- (2603:10b6:208:a8::16) To DM4PR12MB7767.namprd12.prod.outlook.com
- (2603:10b6:8:100::16)
+	dkim=pass (2048-bit key) header.d=freebox-fr.20230601.gappssmtp.com header.i=@freebox-fr.20230601.gappssmtp.com header.b="Jx5SW2P0"
+Received: by mail-wm1-f47.google.com with SMTP id 5b1f17b1804b1-42817bee9e8so280085e9.3
+        for <iommu@lists.linux.dev>; Wed, 14 Aug 2024 10:33:12 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=freebox-fr.20230601.gappssmtp.com; s=20230601; t=1723656791; x=1724261591; darn=lists.linux.dev;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=VsViqlXuad7EqaJTSukZTNrLwUDaFtbQLR6eV58xusI=;
+        b=Jx5SW2P0ai76Xky8zeSGqxanFz2dwDyNRVCRoyykqksK2Iwfde4zbJoOFnA3WIqasi
+         IZxcrYEklJcntxW8wroIa9jdMHaEZxZzZpyLHkBjzf3Tf/XGI17yJo7NjVKxmNZkyXsw
+         47pM+l1RU41sm9L5qJ/6rxgOyxRkowUgZLsusdbpNU8kFlPjg7DJhJhyvbFosdxXDbR8
+         E0q1XbJubjnbCJeBqJOAGIfLhZ4p4/emAyFgLrmwNFCgIzawgwj0zJIf5DIk1HrjW88M
+         7ef1PfScMsVmv9bCMYhGo+Ef+Ju8PiSLxFjy0zgwtaT0Qo07fEM9ByV8BM1Lc9BeC4y/
+         cDQA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1723656791; x=1724261591;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=VsViqlXuad7EqaJTSukZTNrLwUDaFtbQLR6eV58xusI=;
+        b=d7HyD4XLxUmKDInMfMS9XxZ57cW1lKOF8dwUpFZW8JsTz9ExnN+GSwNbbdxKjBq1u3
+         iMUJXhQzz/YuPGzfStraTlR9+Wr++F0pZnwB4FtPTTQvhPPBA9K13E5Ry7LV/FAoGxMj
+         w3BQj3odafTk9jY0nSDQRLT+YvciGxlL7BbjrpawV6qahyN8ENGULCc3ipikAjdMdLpI
+         YbfdTvCBtFTNbeuEyUq4K4XPmGhK/8kE23porFxrG94bxAH61H3zJxIiWSqfuRb1VYVj
+         6GTuEcpm7+YSYgV0mFnW7rWnlvjqiY4a+vxm7lTOtrswbyijQTUFDMKDnpaA8EdZerZt
+         9U0Q==
+X-Forwarded-Encrypted: i=1; AJvYcCU6xL2MWVs7oeRj2hc6aDTaFl9NsW34SDGSQJ6jfeZ9XFNyHSKTWWObWKzR4891HziBuW3vZAuAnreJ6zIT4OTiBye+BjM=
+X-Gm-Message-State: AOJu0Yw+2A5RkmtNS88dNNI/Pk3uRZPxbUaDF6dn0kOQ9yUAHR8UvSyR
+	VyqZwZ18YzwnUVysEfljO1LTr4MqsemZ6Cx0wLVUlNE3slSJQOsqtsOa841HEMk=
+X-Google-Smtp-Source: AGHT+IGjd27AWWYXM6KKfwqDHwnfvaRFqeEGxklZ34WgUw5nl1yiZggtjfE6mMr+RwZoA8oB3FddQA==
+X-Received: by 2002:a05:600c:42c8:b0:429:e6bb:a436 with SMTP id 5b1f17b1804b1-429e6bbb75fmr428945e9.9.1723656790860;
+        Wed, 14 Aug 2024 10:33:10 -0700 (PDT)
+Received: from ?IPV6:2a01:cb08:108b:e400:1437:6ff2:646:a3e5? (2a01cb08108be40014376ff20646a3e5.ipv6.abo.wanadoo.fr. [2a01:cb08:108b:e400:1437:6ff2:646:a3e5])
+        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-36e4c937bb9sm13456330f8f.34.2024.08.14.10.33.10
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 14 Aug 2024 10:33:10 -0700 (PDT)
+Message-ID: <dfd80103-391a-4777-8944-296ba31a11dd@freebox.fr>
+Date: Wed, 14 Aug 2024 19:33:09 +0200
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: DM4PR12MB7767:EE_|IA0PR12MB8894:EE_
-X-MS-Office365-Filtering-Correlation-Id: d6b37edd-5dca-4841-1bf2-08dcbc86ef58
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;ARA:13230040|376014|366016|1800799024;
-X-Microsoft-Antispam-Message-Info:
-	=?us-ascii?Q?LhIpoBH6x0pd5ULt8bgIKwxzNZPDt89C6bAFM+fp3o5yyyCyLY70tNxDjR25?=
- =?us-ascii?Q?kQxNEeI9LeU3iNHuvO23Q9/5bYGTRLuccDornlIrN62/B9EsN7cgYsfFQKA1?=
- =?us-ascii?Q?CkQO6Qidweshxre4ZqTBeuV23XFnUNDQyR/STXpYzdpnj5H8naeIHEkWDuew?=
- =?us-ascii?Q?Z/mI9rtDG1qwUpX4rRw2Fm/fUWfpm0B2YoQeDDH38HF4TIRthkuIlwh7PM0v?=
- =?us-ascii?Q?qYV1kD07mZnwPPXrAko0A2CqE0uWSUxlWtj/TFb0ebcHlrhjknQDy62WZhzx?=
- =?us-ascii?Q?hWWYDXmH3V+zsjIx2k6k0MlvSG/hhlh5PpczXF+UkA9EimFluCuSePPxBZPY?=
- =?us-ascii?Q?Mio9Q91Nxew6wjNjxbiNAUuYgcrAzg2nEprsOIqPE1dE+WVeavYM/93Qo+Je?=
- =?us-ascii?Q?NIhT/GffKL4nr2BEPhn2tXgXOtcZU9BI5GTaX2LYH7jAAfuwBkFgPsdASFn2?=
- =?us-ascii?Q?BEDKsKi6cwAfvJUHsICJGr/0Frj//iao6+nJtbuklhP8uJTQSB1EBRx/tV30?=
- =?us-ascii?Q?Wwfs6cR+unKAGUdJ3o3EqeucrzmreTZbpBm2NOyXeXix+Kqiv5sBIcSsFkvt?=
- =?us-ascii?Q?dEYGabeq8afHLTxU8Kpmb6jk32Dx7AqMQuPjAWjxs472YnK41TuZabjjycR4?=
- =?us-ascii?Q?zDxnLwEeRTffA16WwFPzcOHndwOZS4O5HBCftgBCXYOFi5W/PXX+bXSjfBPh?=
- =?us-ascii?Q?4KvJY5tZwhSoD3JvU8AKj0nneVDG20xZun1jWw7glxlHIsc5cpVocnfNRjtS?=
- =?us-ascii?Q?wSWfFKMP2zoZUA55totb4lYOkq6XHuqpPLaK1ziBtm5UXWKO1ZzbuMwTpzYj?=
- =?us-ascii?Q?BBH35IpQon3R++8ExYlamteIPuKIOy4qMmrY5O5RaeeCKSBzz+7872Lk/wtI?=
- =?us-ascii?Q?6lgWxs2DUoNthnxURLKBKoSrFl2kHGyXPMa5See0h82pMbJ0VKQTFdiFRmgc?=
- =?us-ascii?Q?2HLqJ2f2fUKwAY6v9Qi70TjOydXmeZ5tGjN2IKq4BNOA8vSYl+FHMUBUSc1u?=
- =?us-ascii?Q?v1NhJe6usXGY6ya58ZE4AC6bpE3J2iXb9y5+ZNLMR2k+oXGyxanzHYJb3r4f?=
- =?us-ascii?Q?RMk+R2x3vFS9hWOWkKBd4Kj06k463MXiPvBXOGcAg+iIGf/cR1LJoDQcNu7D?=
- =?us-ascii?Q?U+C/SJ6AB1coooW/Az4D4qvhwy7Lca7pdDzMqzp2eWKM+DqL3twVRaDijLUt?=
- =?us-ascii?Q?peZwJk21j5vfRpnqvPcZ/PIXzpsXGDh3EtRRIZgcBqBgbL/vLXXM4A3lsDyB?=
- =?us-ascii?Q?7vBI8qr5BpW8K/lt4eeS5o+GTAoGH7jsVcYPm56uoaVCMV9OUWTF7Tavgub9?=
- =?us-ascii?Q?wIEaAHHvcS9NhdsJVJMLYRD35YOkkBOh4XLUPkIe8bRLaQ=3D=3D?=
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM4PR12MB7767.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(376014)(366016)(1800799024);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?us-ascii?Q?nTM+zef72LGolgW62YFt35NppU0PRDyDX1K1UbtkQA8PNH8ZoBVb+AgIJIvx?=
- =?us-ascii?Q?F5HqNfQUAr4XoRYJxr59xyBCYNceQI8kD1CVJLa14jOYWOPA9gaHzciGtl99?=
- =?us-ascii?Q?6H3fpy+npmeaO8b4PaxS0ef9pbocqnmLHnDDCAwSSm0bZCV6F1S2ya+NGkcv?=
- =?us-ascii?Q?w8zcy/J1laOGiAPJ6PdiknmDIWk8aGdb3tqBaj411aAkyn4AjvzTqOX3LIK2?=
- =?us-ascii?Q?ScrrJYvJvczRK5gDeFSjZf9Q+HwtN+/B4HzZWPScrT5C/teHJMCrGScKvDkp?=
- =?us-ascii?Q?PQN//ssMyWOmF9Ek/m+fuyV0q7Dw+ppSfmWu/w2sfUac/YGDwafkA27tLoU/?=
- =?us-ascii?Q?STd3Kj3xyp7RiArBZts87mEv62fUu7KEI7ZLJaIuo0qF7gPcURwPNzjW4sQ9?=
- =?us-ascii?Q?+27MXdouMQnRJXofpQ1BdJK9Ja9ayKn8Jk7Ccn5c2clgTt6uU5wyLQ/e0/By?=
- =?us-ascii?Q?4icIfk7MA9HfWeqjVfOF4H0iOBVnZpBCXgirJU5+QijI2WvuC2v+Q8lE8fjS?=
- =?us-ascii?Q?vMsjQPm0wxucghY/SIQ0njnS5Ab1R28P8aE4SRyBiMQvv203V0jkkR3wPiOg?=
- =?us-ascii?Q?k9eNgYHhTeQ32QrDSD8mekGRHPecrSkCPRi0RqPEqsTsplcniMv0STWjrP3s?=
- =?us-ascii?Q?boI93A3Kgyb9kNQ9GNP1ypVj8ZLTM8dIPfJuaa3WSNC7pSh+xhy5MUhyuoe1?=
- =?us-ascii?Q?nhEk3DZq2MGt8E3ry9+eqTSPSm8nZA50BMRKY5EFaGNCog5z4RhnuXCzBz/+?=
- =?us-ascii?Q?0iYDShIOrHbCDy2kOegh6wYa5rldSGJZHnp/GzAqo82GD/Mx5szTDV09/AuZ?=
- =?us-ascii?Q?eAy+peXvdO3imZOmaUe7S0rRzuVF7+bsj9x3h3a3chTXYX63FgNXHgZnu4gd?=
- =?us-ascii?Q?B9ABU4pZdLKikG3de9D56GRVgIvvyAkarqeM3MCB4O7N+7oQsNpJBi+Kw2+d?=
- =?us-ascii?Q?WPRb2HEB5wDECSivu+LY5RLs1KqMcJ4btxl5BmVmHmtud+X/DlbRgTvA4lev?=
- =?us-ascii?Q?wXK3Q+hZ+ApVepKNE+mn7r7rS0NH1AzufMq6h36eR8micpdci6mduhf65f6x?=
- =?us-ascii?Q?IjCqVZjLTfxCxqrTClAmzz+wkZ76Eeat8tiYGLHy71VU+n0btjRviQb3LA8t?=
- =?us-ascii?Q?2+IPdyhenue82nQM3xfQxAHrmtqmT6uo8kxyQ/AM1n63AMiFHLpAL7dItzlP?=
- =?us-ascii?Q?HI3iwJOgGNQl+p4t6Wa8ZZWKU8+aivJ+NCFZc+P3I0EyqZiSkb2aYYBEf+3h?=
- =?us-ascii?Q?DASDhfwqaeGReO+A0VKWpooTc3FMy1FyzRSVErycAysAPUjDS9tjAzZnGKdR?=
- =?us-ascii?Q?wVMYsF7PIZejvjPrltb1Sr+wSw0Xo8F5Fydv1B+hBNY/xBR+hUymwYaXBajG?=
- =?us-ascii?Q?33xqdZmI1YkZ4GQdJ/h15xgOENFFXvQztEdTFigOGxORNeeGmYb4FNWwGMMf?=
- =?us-ascii?Q?kMjLjuZlN6EA0pZG/PboutM4UfqM5/1oy49Wajz7M8zfxzue4SC5tH8DpJiY?=
- =?us-ascii?Q?K0UE2CuL3n6QtKukpkrFo3p3Ze5OeJdvNcTpgTSHmeIGBjQWZpdVemfNrsJu?=
- =?us-ascii?Q?+00W0NavZcpnFtd7XuM=3D?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: d6b37edd-5dca-4841-1bf2-08dcbc86ef58
-X-MS-Exchange-CrossTenant-AuthSource: DM4PR12MB7767.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 14 Aug 2024 17:31:30.8100
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: jSepRbstKGHnpWQVllUfnnUEdQNbqoTWg+Hng+1MwG0nr1Urh0IBrI6WfiDBFjZl
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: IA0PR12MB8894
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH 2/2] iommu/arm-smmu-qcom: hide last context bank from
+ linux
+To: Bjorn Andersson <andersson@kernel.org>
+Cc: Rob Clark <robdclark@gmail.com>, Will Deacon <will@kernel.org>,
+ Robin Murphy <robin.murphy@arm.com>, Joerg Roedel <joro@8bytes.org>,
+ Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>,
+ Conor Dooley <conor+dt@kernel.org>, iommu@lists.linux.dev,
+ linux-arm-msm@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+ linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
+ Konrad Dybcio <konradybcio@kernel.org>, Arnaud Vrac <avrac@freebox.fr>,
+ Pierre-Hugues Husson <phhusson@freebox.fr>,
+ Marijn Suijten <marijn.suijten@somainline.org>
+References: <20240814-smmu-v1-0-3d6c27027d5b@freebox.fr>
+ <20240814-smmu-v1-2-3d6c27027d5b@freebox.fr>
+ <a7j3lz62bp6pceuq472muioinjzfgw2mec5pv256zfr7yjsn3p@ok6nfsbsabig>
+Content-Language: en-US
+From: Marc Gonzalez <mgonzalez@freebox.fr>
+In-Reply-To: <a7j3lz62bp6pceuq472muioinjzfgw2mec5pv256zfr7yjsn3p@ok6nfsbsabig>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 
-On Tue, Aug 06, 2024 at 07:11:51PM -0700, Nicolin Chen wrote:
-> The CMDQV extension in NVIDIA Tegra241 SoC only supports CS_NONE in the
-> CS field of CMD_SYNC. Add a new SMMU option to accommodate that.
+On 14/08/2024 17:29, Bjorn Andersson wrote:
+> On Wed, Aug 14, 2024 at 03:59:56PM GMT, Marc Gonzalez wrote:
+>> On qcom msm8998, writing to the last context bank of lpass_q6_smmu
+>> (base address 0x05100000) produces a system freeze & reboot.
+>>
+>> Specifically, here:
+>>
+>> 	qsmmu->bypass_cbndx = smmu->num_context_banks - 1;
+>> 	arm_smmu_cb_write(smmu, qsmmu->bypass_cbndx, ARM_SMMU_CB_SCTLR, 0);
+>>
+>> and here:
+>>
+>> 	arm_smmu_write_context_bank(smmu, i);
+>> 	arm_smmu_cb_write(smmu, i, ARM_SMMU_CB_FSR, ARM_SMMU_CB_FSR_FAULT);
+>>
+>> It is likely that FW reserves the last context bank for its own use,
+>> thus a simple work-around would be: DON'T USE IT in Linux.
+>>
+>> If we decrease the number of context banks, last one will be "hidden".
 > 
-> Suggested-by: Will Deacon <will@kernel.org>
-> Signed-off-by: Nicolin Chen <nicolinc@nvidia.com>
-> ---
->  drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 17 ++++++++++++++++-
->  drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h |  9 +++++----
->  2 files changed, 21 insertions(+), 5 deletions(-)
+> I asked you to write something like "the hardware/hypervisor reports 12
+> context banks for the lpass smmu on msm8998, but only 11 are
+> accessible...override the number of context banks"
 
-Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
+I don't understand how the exact number of context banks is relevant?
+It's just that the FW reserves one for itself, which happens to be the last,
+probably because some FW dev thought that was a good idea.
 
-Jason
+Also, I don't like the phrasing "override the number of context banks"
+because while this is indeed what is done in the code, the *intent*
+is to "lie" to Linux about the existence of the last context bank.
+
+> It also seems, as the different SMMUs in this platform behave
+> differently it might be worth giving them further specific compatibles,
+> in which case we could just check if it's the qcom,msm8998-lpass-smmu,
+> instead of inventing a property for this quirk.
+
+Wouldn't that be too specific?
+
+Angelo's patches were even more generic than mine, as he supported
+a list of context banks not-to-be-used-by-linux.
+
+Do you say the LPASS SMMU behaves differently because it's (currently,
+to the best of my knowledge) the only SMMU where a context bank
+(the last) is not available to Linux?
+
+
+For easy future reference, here are the reports for the 5 SMMUs enabled on my system.
+
+[    0.137343] arm-smmu 1680000.iommu: probing hardware configuration...
+[    0.137354] arm-smmu 1680000.iommu: SMMUv2 with:
+[    0.137381] arm-smmu 1680000.iommu: 	stage 1 translation
+[    0.137390] arm-smmu 1680000.iommu: 	address translation ops
+[    0.137399] arm-smmu 1680000.iommu: 	non-coherent table walk
+[    0.137406] arm-smmu 1680000.iommu: 	(IDR0.CTTW overridden by FW configuration)
+[    0.137417] arm-smmu 1680000.iommu: 	stream matching with 16 register groups
+[    0.137447] arm-smmu 1680000.iommu: 	6 context banks (0 stage-2 only)
+[    0.137733] arm-smmu 1680000.iommu: 	Supported page sizes: 0x63315000
+[    0.137743] arm-smmu 1680000.iommu: 	Stage-1: 36-bit VA -> 36-bit IPA
+[    0.137833] arm-smmu 1680000.iommu: 	preserved 0 boot mappings
+
+
+[    0.138963] arm-smmu 16c0000.iommu: probing hardware configuration...
+[    0.138974] arm-smmu 16c0000.iommu: SMMUv2 with:
+[    0.138994] arm-smmu 16c0000.iommu: 	stage 1 translation
+[    0.139003] arm-smmu 16c0000.iommu: 	address translation ops
+[    0.139011] arm-smmu 16c0000.iommu: 	non-coherent table walk
+[    0.139019] arm-smmu 16c0000.iommu: 	(IDR0.CTTW overridden by FW configuration)
+[    0.139030] arm-smmu 16c0000.iommu: 	stream matching with 14 register groups
+[    0.139058] arm-smmu 16c0000.iommu: 	10 context banks (0 stage-2 only)
+[    0.139255] arm-smmu 16c0000.iommu: 	Supported page sizes: 0x63315000
+[    0.139265] arm-smmu 16c0000.iommu: 	Stage-1: 36-bit VA -> 36-bit IPA
+[    0.139341] arm-smmu 16c0000.iommu: 	preserved 0 boot mappings
+
+
+[    2.424369] arm-smmu 5040000.iommu: probing hardware configuration...
+[    2.428581] arm-smmu 5040000.iommu: SMMUv2 with:
+[    2.434914] arm-smmu 5040000.iommu: 	stage 1 translation
+[    2.439584] arm-smmu 5040000.iommu: 	address translation ops
+[    2.444881] arm-smmu 5040000.iommu: 	non-coherent table walk
+[    2.450522] arm-smmu 5040000.iommu: 	(IDR0.CTTW overridden by FW configuration)
+[    2.456175] arm-smmu 5040000.iommu: 	stream matching with 3 register groups
+[    2.463216] arm-smmu 5040000.iommu: 	3 context banks (0 stage-2 only)
+[    2.483555] arm-smmu 5040000.iommu: 	Supported page sizes: 0x63315000
+[    2.490455] arm-smmu 5040000.iommu: 	Stage-1: 48-bit VA -> 36-bit IPA
+[    2.497171] arm-smmu 5040000.iommu: 	preserved 0 boot mappings
+
+
+[    2.546101] arm-smmu 5100000.iommu: probing hardware configuration...
+[    2.552439] arm-smmu 5100000.iommu: SMMUv2 with:
+[    2.558945] arm-smmu 5100000.iommu: 	stage 1 translation
+[    2.563627] arm-smmu 5100000.iommu: 	address translation ops
+[    2.568923] arm-smmu 5100000.iommu: 	non-coherent table walk
+[    2.574566] arm-smmu 5100000.iommu: 	(IDR0.CTTW overridden by FW configuration)
+[    2.580220] arm-smmu 5100000.iommu: 	stream matching with 12 register groups
+[    2.587263] arm-smmu 5100000.iommu: 	13 context banks (0 stage-2 only)
+[    2.594544] arm-smmu 5100000.iommu: hiding last ctx bank from linux
+[    2.614447] arm-smmu 5100000.iommu: 	Supported page sizes: 0x63315000
+[    2.621358] arm-smmu 5100000.iommu: 	Stage-1: 36-bit VA -> 36-bit IPA
+[    2.627772] arm-smmu 5100000.iommu: 	preserved 0 boot mappings
+
+
+[    2.806781] arm-smmu cd00000.iommu: probing hardware configuration...
+[    2.813029] arm-smmu cd00000.iommu: SMMUv2 with:
+[    2.819627] arm-smmu cd00000.iommu: 	stage 1 translation
+[    2.824304] arm-smmu cd00000.iommu: 	address translation ops
+[    2.829601] arm-smmu cd00000.iommu: 	non-coherent table walk
+[    2.835243] arm-smmu cd00000.iommu: 	(IDR0.CTTW overridden by FW configuration)
+[    2.840897] arm-smmu cd00000.iommu: 	stream matching with 54 register groups
+[    2.847954] arm-smmu cd00000.iommu: 	17 context banks (0 stage-2 only)
+[    2.869307] arm-smmu cd00000.iommu: 	Supported page sizes: 0x63315000
+[    2.875785] arm-smmu cd00000.iommu: 	Stage-1: 32-bit VA -> 36-bit IPA
+[    2.882205] arm-smmu cd00000.iommu: 	preserved 0 boot mappings
+
+
+[   24.525457] arm-smmu 16c0000.iommu: FSR    = 00000402 [Format=2 TF], SID=0x1900
+[   24.525604] arm-smmu 16c0000.iommu: FSYNR0 = 00000001 [S1CBNDX=0 PLVL=1]
+[   24.721874] arm-smmu 16c0000.iommu: FSR    = 00000402 [Format=2 TF], SID=0x1900
+[   24.722033] arm-smmu 16c0000.iommu: FSYNR0 = 00000001 [S1CBNDX=0 PLVL=1]
+
