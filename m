@@ -1,31 +1,31 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AB285149DF8;
-	Wed, 14 Aug 2024 02:15:35 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 151AD14F136;
+	Wed, 14 Aug 2024 02:15:43 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1723601735; cv=none; b=VGZR0ltr1yx6Miv6br5wkDRmPdCg4ArF0yArtwsRnm+zMC5QTO+gLffGPia8ppAGcgrFPrrh19SYM9Pfz6EIY40G8hNVUmZGOJbKZ/xE4LC6nN0lcHmLo4wcT93rHQwkb4qASB8cUiM3VkvV7MGF25guLx79Db/ghzp3bwKq+oM=
+	t=1723601744; cv=none; b=tmVrkdkoUHlMxkyhGWys6GbdOVbQZAo7imjzxg38+TEf6OvwyCbbFL0F/qmBRWGeFXkh7DQ0aYsuqzfjK+0qtoo2aG+j6kdCHDz1USNgnELEDPgg3/+xfc6rzOmO5Kk2Nt2M/UmK2aQz1VkYTbf0dB0e4VW1vdazvSmlF5dGv3A=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1723601735; c=relaxed/simple;
-	bh=jXL6scP1Z9RRdMD0YT1vZlBy5F+gOCUAcvxqTWps19w=;
+	s=arc-20240116; t=1723601744; c=relaxed/simple;
+	bh=Iwoks43KG0whGfNeBGW75upxTjQ83XyQDgJU9Ao1ml8=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=afgipMyiARFu8UtChjR6QURFyYMCX48SMgxZltmr+LaMqlaCW54LNSUkbpheSbnuQlgmM/ETStrLkNdW3TfW7xrL0EYdRMVoQmm7g+/ygFb3ebHu/WqhZT44NpoY4foEiUXw+zojFYtEwsmW3ACWHVovnrx7bXoHajWxFviLJeo=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=G46fihDd; arc=none smtp.client-ip=10.30.226.201
+	 MIME-Version; b=Jh92eMGEfba/7DJSBMwx/Hm8xG8gDfRQPRBrJMaFmPONNql4DrR2LRG7MvcEHNbOHXiK0n1Mq5V5DAi7ko7d9MYuDwwBRdML3O1ee6u2x5+qdXbzvAMzQB9Pq+GNA1QkabsSOhpwVCq81l5vNg5PO/ekN6PeFrrrhA5mJLJsaU8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=WVJDH75k; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="G46fihDd"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A6381C4AF0C;
-	Wed, 14 Aug 2024 02:15:34 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="WVJDH75k"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B98CDC4AF0C;
+	Wed, 14 Aug 2024 02:15:42 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1723601735;
-	bh=jXL6scP1Z9RRdMD0YT1vZlBy5F+gOCUAcvxqTWps19w=;
+	s=k20201202; t=1723601743;
+	bh=Iwoks43KG0whGfNeBGW75upxTjQ83XyQDgJU9Ao1ml8=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-	b=G46fihDdCVy6zw3VwOZIahErhlQvehJzZmzbt0cG3KQcukoJyYz6j/hhYGVorw+ie
-	 LPeLkCXuNm/3kY5AV/Q5zbF6evwyPrwHF1Q5JMTMfXkwbqucnia9EWLrsoZvgoKpKD
-	 47iTzv/31y3guwnDI/Bbql7A+XnUarpFNVW82Su7ofOJx6tLEQdY0A6Q5Vyvgp+feI
-	 uQhe8qahEJxUJovHgAigDY0AbkoxGTBX1VS845AMlzs8ozyDedSBut2hYzziCs4/LZ
-	 vbqqHmSmz9WZWZcI+cgRbwlCadv64Ro7DIoteasNelhM4ODQ7itX83Z8KRiW8VljqQ
-	 IcAkdxFD+qEtw==
+	b=WVJDH75k8tFvXcdbQ66E2LM4ijvaOxFoAgzTg4FPlGFSWxon/cVYrzydBIdsSqJpX
+	 3z7A0jmbHA4hj5QzkkWExK8WtwbGpyCe58x6uSxEPeGej+QOg95mDFhz+H3/9vaZLr
+	 DaMWnwLTMZb2gw2HgdsJrng7ALkC+fsmHZdXUA415URnN4kjkKNx3AXGuFuedepRz9
+	 c1HfPRcTbpMoOPbvCk3/KH1Hd+H0Gdh3fIO1KKe2Tg9Anof0BFmBEIZDA3yVFW2BcS
+	 qwX4MFv1yquZwDIIox8UtUL3rPJooR9gK0I2WVFx8+UpGqEnsx7tLv+7bF1/Y39GUQ
+	 ymOQhRPv+ad1w==
 From: Sasha Levin <sashal@kernel.org>
 To: linux-kernel@vger.kernel.org,
 	stable@vger.kernel.org
@@ -35,12 +35,12 @@ Cc: Rik van Riel <riel@surriel.com>,
 	Sasha Levin <sashal@kernel.org>,
 	m.szyprowski@samsung.com,
 	iommu@lists.linux.dev
-Subject: [PATCH AUTOSEL 6.1 2/4] dma-debug: avoid deadlock between dma debug vs printk and netconsole
-Date: Tue, 13 Aug 2024 22:15:28 -0400
-Message-ID: <20240814021532.4130407-2-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 5.15 2/3] dma-debug: avoid deadlock between dma debug vs printk and netconsole
+Date: Tue, 13 Aug 2024 22:15:39 -0400
+Message-ID: <20240814021540.4130505-2-sashal@kernel.org>
 X-Mailer: git-send-email 2.43.0
-In-Reply-To: <20240814021532.4130407-1-sashal@kernel.org>
-References: <20240814021532.4130407-1-sashal@kernel.org>
+In-Reply-To: <20240814021540.4130505-1-sashal@kernel.org>
+References: <20240814021540.4130505-1-sashal@kernel.org>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -49,7 +49,7 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
-X-stable-base: Linux 6.1.104
+X-stable-base: Linux 5.15.164
 Content-Transfer-Encoding: 8bit
 
 From: Rik van Riel <riel@surriel.com>
@@ -140,10 +140,10 @@ Signed-off-by: Sasha Levin <sashal@kernel.org>
  1 file changed, 4 insertions(+), 1 deletion(-)
 
 diff --git a/kernel/dma/debug.c b/kernel/dma/debug.c
-index 3ff7089d11a92..de02c0808fb83 100644
+index 1f9a8cee42241..09ccb4d6bc7b6 100644
 --- a/kernel/dma/debug.c
 +++ b/kernel/dma/debug.c
-@@ -445,8 +445,11 @@ void debug_dma_dump_mappings(struct device *dev)
+@@ -447,8 +447,11 @@ void debug_dma_dump_mappings(struct device *dev)
   * dma_active_cacheline entry to track per event.  dma_map_sg(), on the
   * other hand, consumes a single dma_debug_entry, but inserts 'nents'
   * entries into the tree.
