@@ -1,306 +1,159 @@
-Received: from mail-yw1-f202.google.com (mail-yw1-f202.google.com [209.85.128.202])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from NAM12-MW2-obe.outbound.protection.outlook.com (mail-mw2nam12on2057.outbound.protection.outlook.com [40.107.244.57])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 63DF84AEE9
-	for <iommu@lists.linux.dev>; Thu, 15 Aug 2024 18:25:24 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.202
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1723746326; cv=none; b=pq+w347oqEbGayWsDyuFH8BtDhLYnNcKrXxMzLsaa9KPpehthcKj+1aBBrjv41i3QnnsVlyxYWJZa+lUgCGSJXc/YfSInZHP23nSqF7kmN9ZSpi13/COrWP1C41d7uSlWWqmActJ9Jr12keiFvFYQ0ZOcDahRPiNFz/eq4KSEzY=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1723746326; c=relaxed/simple;
-	bh=d4Fdp0sCqUr6KNhHx/EoU3hAKBbepT+zyGGyPZwpgWs=;
-	h=Date:Mime-Version:Message-ID:Subject:From:To:Cc:Content-Type; b=Hqtv4Ogy/aUEYcTynjX7f581tlPJqdEu2xHsCt/1Rm9jKvfETrLYSY4v8yNNDIRtoOiQCC83HK+iZqwiQpaWi3fijyZOHIe1cFl8vfq7Jprp/GD7NIZIo4bERA0cEDoz+NBiLFINyVte1RnoJKlLpg1saCiGaym4Ks3GSFA6C4M=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=flex--praan.bounces.google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=m9gQer3Z; arc=none smtp.client-ip=209.85.128.202
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=flex--praan.bounces.google.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 455885B1E0
+	for <iommu@lists.linux.dev>; Thu, 15 Aug 2024 18:31:56 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.244.57
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1723746718; cv=fail; b=vEmacDGqwTKUVxFlN8IQSoDLOz0NZqKr7J2dwFmvgU72dthbUQgpv9BdXI6UNTlb5DehhDX/kNG8oPStwVcp4I8dBhCfCJ3EYCDlk5XLMArHG4HZDkiKkGwMOmpo3mpMpbZ8zIO3hjk+XMRSAfDfh5wW/auipHe07j/vhpHy1sw=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1723746718; c=relaxed/simple;
+	bh=M8vasTFjc1GIdbtHib+Wc77VTFTaVE78cdMXgmSZ9JI=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:Content-Type:
+	 Content-Disposition:In-Reply-To:MIME-Version; b=cXjxbVsEbzxKwfHP6HpftELHWxddBijFm80iZ/qW0dJtEYUmG1m6GoBiiCALP+R+IpTuVpDMENkmrD7grx9daSv8fDKy9aXh921darjb7ZSTcbdViebLYFgFGfophND8Z7Au/GEfkBywIFYpk4pN5mQx+jBkjAnsLohXxQcRwDI=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=NLzrFN89; arc=fail smtp.client-ip=40.107.244.57
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="m9gQer3Z"
-Received: by mail-yw1-f202.google.com with SMTP id 00721157ae682-6ad9ffa0d77so23598077b3.2
-        for <iommu@lists.linux.dev>; Thu, 15 Aug 2024 11:25:24 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20230601; t=1723746323; x=1724351123; darn=lists.linux.dev;
-        h=cc:to:from:subject:message-id:mime-version:date:from:to:cc:subject
-         :date:message-id:reply-to;
-        bh=ynR0z3KVlE5E8JyNrTJUgi1tTmoJzECYBL4GiMb+KXo=;
-        b=m9gQer3Zd4BPx7H74EaiZdX2+o+wJjG78K2F0zoXzopTbgSNe9n98iSHd6bn4sP5G2
-         AAcwuX2sVyRWYjicu0dzbnIfsIxY4lq80BFschCETAjHLLov6EuRiz9q/rpM2huWHh31
-         hInm8U97C2TsLTO+eUiC2jWsBWp3nR122T288127ynttKy9Q29+rQXkSG3VQQh3PGX0o
-         FVfbDyGPh+//z+ErtxLZ2K8KCpeVmwaoNvKWmi2/FeWGhQe0VFkhWKxYDPmoxpjmsKyj
-         PwjPBrRLHvp1BCQzlBSOGIOwypBF+B4jqf7pXqHl4AqOS6zCCntEb/oH5s/9lq9+O5A2
-         R/Ow==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1723746323; x=1724351123;
-        h=cc:to:from:subject:message-id:mime-version:date:x-gm-message-state
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=ynR0z3KVlE5E8JyNrTJUgi1tTmoJzECYBL4GiMb+KXo=;
-        b=tqLc+mxrwJuyfyfU0x53F1uFMAan3bDsixigjfTuW6kt1kwXK8tVtah6Cg62ArXh7N
-         4e2n2iIeF2/Vg/KVD/a5Di4WI6VGmsL0uZLINOMFk+Xp6GsJq+bmhqju3RZ6kLKoYWwz
-         NeyUzsYq0x/lKdX45l5delhI62WnF16QfY9a9RSdO0HFojvT3O7HDFXLiBac9EG9FDfI
-         SLAZwtQxEFc4XL+ydB6LaiVqNAxhIWFgpxmdE4/rhwSjh0m+9HiicC7lT+m+DFddswF+
-         vvH+hAC3Sf1yUEfeMMPrHkS7Z5aO+Lp11HwOI0GyZRp4ckbWLT0HkjwZsfjCcsyDXqJS
-         UDhQ==
-X-Forwarded-Encrypted: i=1; AJvYcCUf5Kf5NK/mXALt+eojDJ5JHrDlvdtAIFvnR8deBlt+ho8dLcA+bXp/mD1RTJ78J3fpMF4Xci0yddh8nkvP7hCwd1upVrQ=
-X-Gm-Message-State: AOJu0YzY6BGjs6ir43SfPrSb6lNuCps7E418MhfrvyCHYmjOdYzEGQ0u
-	lkvP3ss1T0lNNDRYTh/cGMPozceLArAPs9eNx7DVC4feDISaB9ugn2E7wmf55nUXl61Ggud0Jw=
-	=
-X-Google-Smtp-Source: AGHT+IFui8I54LcNBR75OZJL1ck/03Q9252XsNDxFFAZzcfwhttYo1wYc3wuA5vSahJhZwBLTdo2PqDDOQ==
-X-Received: from praan.c.googlers.com ([fda3:e722:ac3:cc00:4f:4b78:c0a8:3e89])
- (user=praan job=sendgmr) by 2002:a05:690c:2d8a:b0:691:55ea:8572 with SMTP id
- 00721157ae682-6b1bc5e52c9mr24637b3.8.1723746323243; Thu, 15 Aug 2024 11:25:23
- -0700 (PDT)
-Date: Thu, 15 Aug 2024 18:24:23 +0000
+	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="NLzrFN89"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=A0K4ii7pd3h8Xb8ss7wFKgI08a/Crzsu4C5pmrsPXmmcROWWt0zUD/hjj8xdLfiMZIpRC5rO++zhd3BLP0mSskr5hhCk9JG+0zvZLk0CTJ3Z7hm1Amo3M10+ir2Oom24vpqW+WEf9SAeDRzux33aY4fjtvgBxoK7bCxMbB3sQ3p9AQtuiEzD4lolFJTWeWe0q23BxZLhBkCDTymtYgsAnaoh6j8KaXxNpxhrXYQAFU1PCKbnANQN39jr5nus1AXVoYKZqkUbzH0+8TmcUatpZwgstjwQRCQvGV8TUbvjIiWM1wtqU8Gh9CBBTQAM+IYRL4pDELWOYP18e/s0532r6g==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=Xqhgqi3iuBTL8GwXBUnJ11iO2SlDRpxlGIj59k5+sNQ=;
+ b=AbQqsmLWvQdZ602sE7KPKCb+0kBdvC2tR0epRsYFuaYY/3UWCHMcRZJYsk8rnYHgn4TnDyCX/wNV7jZN+EvQ9Aq6QG8F60BB9dVxCu6Lw9HjtYrsW5UtodeAodVvpfEBW1oXfxVPFInXXtoq86+JfPc+6AdQN/z2BNuSdNyb4ahKHe6MKOjQ1Vqy97DW9esUzp45nj+pPrTAZNfEGzvvBmq8xY9jYVf/3J1b4I35hUC17Ssu2GKhVdxgupr0Y9i82X7hc8+JLQZr9f/3vPtMFRPisa/n4YMlLfzg1iRahG+Gt0S3e1NL7iuO+JPjqbl2ThyI+zKA20e/IodZ/LPTZQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=Xqhgqi3iuBTL8GwXBUnJ11iO2SlDRpxlGIj59k5+sNQ=;
+ b=NLzrFN8976JMqMmIC3WONHfg8KADouMItuvCfNENuawXIBWrGNIcEiqIa4/9Cq17YeMDPb4JoxK1KlId38jLqOieYE73HsWeQb+T4db+R1RPGlFdLFJlDh5R28/NJ+Vy7G1UNO/iSV0Cdz0RDCGcAenHUQnDUR6rcVD48vc0S57doqllxf9uDgFVfoKxle1zYffiKrGUXOjdKqJRjXeXdJAoQJBLuwYP3dLA8rxACjgOVymwHNWqgPIr6QLEQXHspZPzhSQNUhGL/8d7/by8R2Piyspbl9fbRGEKZGzWnLTePodGr0PSUtdUaLmUpZy+JtZq1uWEBveH5D9etGs25A==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nvidia.com;
+Received: from CH3PR12MB7763.namprd12.prod.outlook.com (2603:10b6:610:145::10)
+ by SA1PR12MB6799.namprd12.prod.outlook.com (2603:10b6:806:25b::18) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7875.19; Thu, 15 Aug
+ 2024 18:31:50 +0000
+Received: from CH3PR12MB7763.namprd12.prod.outlook.com
+ ([fe80::8b63:dd80:c182:4ce8]) by CH3PR12MB7763.namprd12.prod.outlook.com
+ ([fe80::8b63:dd80:c182:4ce8%3]) with mapi id 15.20.7875.016; Thu, 15 Aug 2024
+ 18:31:48 +0000
+Date: Thu, 15 Aug 2024 15:31:42 -0300
+From: Jason Gunthorpe <jgg@nvidia.com>
+To: Nicolin Chen <nicolinc@nvidia.com>
+Cc: kevin.tian@intel.com, will@kernel.org, joro@8bytes.org,
+	suravee.suthikulpanit@amd.com, robin.murphy@arm.com,
+	dwmw2@infradead.org, baolu.lu@linux.intel.com, shuah@kernel.org,
+	linux-kernel@vger.kernel.org, iommu@lists.linux.dev,
+	linux-arm-kernel@lists.infradead.org,
+	linux-kselftest@vger.kernel.org
+Subject: Re: [PATCH v1 01/16] iommufd/viommu: Add IOMMUFD_OBJ_VIOMMU and
+ IOMMU_VIOMMU_ALLOC ioctl
+Message-ID: <20240815183142.GO2032816@nvidia.com>
+References: <cover.1723061377.git.nicolinc@nvidia.com>
+ <536c5e908af3847649d1f4b7050af17d77d8b524.1723061378.git.nicolinc@nvidia.com>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <536c5e908af3847649d1f4b7050af17d77d8b524.1723061378.git.nicolinc@nvidia.com>
+X-ClientProxiedBy: BN9PR03CA0422.namprd03.prod.outlook.com
+ (2603:10b6:408:113::7) To CH3PR12MB7763.namprd12.prod.outlook.com
+ (2603:10b6:610:145::10)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
-Mime-Version: 1.0
-X-Mailer: git-send-email 2.46.0.184.g6999bdac58-goog
-Message-ID: <20240815182423.446137-1-praan@google.com>
-Subject: [PATCH rc v3] iommu: Handle iommu faults for a bad iopf setup
-From: Pranjal Shrivastava <praan@google.com>
-To: Joerg Roedel <joro@8bytes.org>, Lu Baolu <baolu.lu@linux.intel.com>, 
-	Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>
-Cc: Mostafa Saleh <smostafa@google.com>, iommu@lists.linux.dev, 
-	Pranjal Shrivastava <praan@google.com>, Kunkun Jiang <jiangkunkun@huawei.com>, 
-	Jason Gunthorpe <jgg@nvidia.com>
-Content-Type: text/plain; charset="UTF-8"
+MIME-Version: 1.0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: CH3PR12MB7763:EE_|SA1PR12MB6799:EE_
+X-MS-Office365-Filtering-Correlation-Id: 952ced04-e89b-493c-180e-08dcbd588380
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;ARA:13230040|1800799024|7416014|376014|366016;
+X-Microsoft-Antispam-Message-Info:
+	=?us-ascii?Q?cz3V8Xu6nvCT5/LV6K5rdzaz51uYxjz+uWjXkoRnPrnEtgW8zW+rUj4bKhXV?=
+ =?us-ascii?Q?wxwi+0j9mnSZh454IMmY/3+KTcb0ZBpKauCExjawQGYjTD1juNwyEaf0ZjPM?=
+ =?us-ascii?Q?CGPls6YNwUtt7gYFDGlpugric7kSUkkmhCT8caxTsTC6LxpmrBIyBPysbE/m?=
+ =?us-ascii?Q?SND/ZC04ZvgBxVra/XScehrvrjSFBzlHM5azBPazpk7nSYf6Nn/UnNecQrv1?=
+ =?us-ascii?Q?quvtOolpP5g/pzGKljJ0Sh/Dl52rqfIQfc35X6Keo8s5bBRNIOz1GDtdhv52?=
+ =?us-ascii?Q?KxGBhpqHuJsQyoHfxsY7MYZaVXO1yGfWm4rWDH3Pmzkwtxu5rLps6WvfDUu5?=
+ =?us-ascii?Q?mPE/4fW+ChqOQ3wjy1TP3yiHneYu+OB1wjRL+HSQprnCGJSMDR21Ji30QbwE?=
+ =?us-ascii?Q?zzVWHTyiZu8G4v8nvQHTFNjpK5nwIQ+WGF+IDiQtjyaP5b6lLBenzqXSaAj7?=
+ =?us-ascii?Q?6JcH/wFjkYjjKT4gx4EeOIA9Z+LFFPVRE2+7p1yDVa5mTDBD/MmhGEQ5Kr/0?=
+ =?us-ascii?Q?Kkj7xj/KoMMXTDaXyDQtMKELXLaQVZFiXFK/H1aq7skEZ+Nv9NUGSLa1nyK4?=
+ =?us-ascii?Q?7TplpdjVVpanHKsXfRObhKhLSbzCN3ufOiKkRYBGO6LmxmTuwqc1LJVEBBCZ?=
+ =?us-ascii?Q?VZ/srf3ghnU3DI/RakGKHsYAEMGvZqyWaVysmAaX5FUvLDwzrohLm6jnIPZV?=
+ =?us-ascii?Q?JP7RzYliKZ/5loAolzHQPRxq2JlulxHwUliMpYFPjo6slj+Ll44vO/XkZwO4?=
+ =?us-ascii?Q?oZkXNKJ76fzlzYWPinnAS9LlW4cgNVAJ08snaNt2EZykeqPYHUtwdF+V85JZ?=
+ =?us-ascii?Q?e0pbnioTunNE+L+1wFD6lStdrwPWTWP4pZaLxQbsHHWWUqU+/0bYm3DADl7J?=
+ =?us-ascii?Q?/TWRjAu1vHakoXzz9BjUpSSBdMsxeGauJeLl0CqFDi6lk1lpxJLj3OV28ZBE?=
+ =?us-ascii?Q?g4yXkaXkzyl9V49wW8OwnKI5105tBCqhHMdBub5IhEUslaf4c2bmhU21pYnL?=
+ =?us-ascii?Q?f06ppJHMw2+B8IAf1mQ0dU6wPjFTg2WJenwwGqSI2QaouACEGHYCGBVB1CeH?=
+ =?us-ascii?Q?ZsBMDvXmMs7qW63ZXFlncoj7b2UTevwKLriHHOAYRrBflNVU3dqmMxh5PcMg?=
+ =?us-ascii?Q?DDyLBvj7x75ijqipA8ueuUSCCi3yIi0hM4InXn/GgXUyb3zYNb6FXg7/xri8?=
+ =?us-ascii?Q?QnxB86V26d1AC4p/0s5rs/lywuz8VfiiepogAI69K2RDefllQOKDiMGO7T6O?=
+ =?us-ascii?Q?dyaZbYq33bqgH0KQLRe0WNfE48d/BgToIaRttvmF0zUlEhzSqCdH3pi3+5bB?=
+ =?us-ascii?Q?4A121Rzwh2GohfjcaMSRENOEYwobyFkOQRusVUqDXh0JEA=3D=3D?=
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CH3PR12MB7763.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(1800799024)(7416014)(376014)(366016);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?us-ascii?Q?T2ZCmC2mSEWQE7pQa8J1lGO6DvN4MlplijR86x6QA1z5AB621bIM7k2zlt6K?=
+ =?us-ascii?Q?L8zK1H9nznQ5WjsrEepLOmnQ7sE2k2TI0Q4OjtQL2sBICIXaxcPaJ5CT2rJM?=
+ =?us-ascii?Q?XkZMce3qFDpqt82huuOBighUeDcVhvKJfbGXU3q7Cees7ogqFojUx02QY+JA?=
+ =?us-ascii?Q?fTwwikHpQrbdV59WeUgZJQATTeM+dphm39DBfcwtmmbaL9cJBSvXbF3Th3Xu?=
+ =?us-ascii?Q?9pGPJa6k2+znHwKe888DETDBsaaqcgJOCDelk6bVT5ex+UqlsXmHPNnlC4mj?=
+ =?us-ascii?Q?ZbYVBInHNJdhlPfpXK/O2RiSpB0CEdmKdpD3/+q/Nz0Lb5YDdgwGQpDzg6dy?=
+ =?us-ascii?Q?jfTXfnPNxF4P9Vi7Ms4jbAzQ5yq8jIFwIjYH5O3IHBtIxJ7E5z2ktH0JB+Ep?=
+ =?us-ascii?Q?ZD8Gj9zuArMxKvxERfRUG+geFa1r6yjHlP46YdeaB+BBqdLa4oVYTVBJ9JI4?=
+ =?us-ascii?Q?iYuzKdiJJ/46u5QIzGu3BD+8mjcOVxqI1apX6SuS//zhU5y3rhNC7OD+sxN0?=
+ =?us-ascii?Q?7uHoMdTlfsa16kMJSizQJcHHHkxlRs/z0hCMAAW2g7zLqbEvxMxFDaZz7D/L?=
+ =?us-ascii?Q?Qww82J/MU2owaaMOUnXoZQtxZy2dFBz4TeTLrxmGILdCeEcBpun1H68N0TNU?=
+ =?us-ascii?Q?KNDm0bWCDa2VLirS5B7KE7L4WQw7MzlGQ9DR9sVeMk2AebIOtZKtT3v8CeBk?=
+ =?us-ascii?Q?beboSSR6AYkoRRmx1Wz0IN7Afh2UG00dpNcwvxpySqhZGoLMqrR1WG2OBYju?=
+ =?us-ascii?Q?4PQjkY8+XDmeNaMEdaSYaa6v4ze66dl3jnHHt5ZQtRszusNdvuTxA4oZJYwj?=
+ =?us-ascii?Q?KksH1UfwXo+gkAWcK/unPSMJo70VPqHdlH5zP4G49YUyLRNPwtBDsiDlXMS5?=
+ =?us-ascii?Q?brEKp+wnROadItVuhEwjanZ/R85QGSoPMmqh/Xyeag9FzCUbHAOpjJASMkUh?=
+ =?us-ascii?Q?uN+Fq2lTmUT3W8MWEepzT0VaNOw8uYVzXUu+ehJNmJfO3jL1MMF0h2wgMWRl?=
+ =?us-ascii?Q?4jiipwCt5mwBSIeqiVM900PLPKsOpyP0+D7cYp68ID8RsX0XY1jvXgbV8ZDG?=
+ =?us-ascii?Q?spGGhj8b00lOZ19FOx+ldPoyuv/16cl53JnL1XXmbmcmVE8dh4498fVFsRAL?=
+ =?us-ascii?Q?/qIJp0dUCw9hRUpQ7Kpt4f6MooLMOMcDwgmd0j3ahUFlBXgoRWqeo3rxNMiA?=
+ =?us-ascii?Q?mUPYTEHnOFZKH/xH20BUNEFh3TXEhNmyRCLajwQIg5FCtYempK+BE+pTK2ph?=
+ =?us-ascii?Q?E2RpX/K+gkrsyJrPpkPovBMk50d9S+qWI5Rxl/EzAUWZweJeO0dnz4fdiism?=
+ =?us-ascii?Q?PSleERaMfbEz+r1juiw4vS5LLy/qbLxDORpB54AqqGIVKTl1qNcdZ2cuWDtz?=
+ =?us-ascii?Q?KB4OJUR+Afa+UtqRqOdaM9Q/pWGdc7bHPlzT6e+Dw851YuSE268Vs3GD3gfR?=
+ =?us-ascii?Q?oEgvB10g0CiUU7XB7n2qSaOrQqm2l7jJWdGHzivBlFdQax9OSVcjqY+Rpxbz?=
+ =?us-ascii?Q?yOJeqON/YVOSCMHZozy69vcFmMxM2ZNdpNTwmPLK3t7HAPLWAMwXPHA6ix0E?=
+ =?us-ascii?Q?VAlTljXz9+KMdaTDSws=3D?=
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 952ced04-e89b-493c-180e-08dcbd588380
+X-MS-Exchange-CrossTenant-AuthSource: CH3PR12MB7763.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 15 Aug 2024 18:31:47.2168
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: 8H9Yce8EGM7AHn2gMxwjv3coZvkjP0BPIRuIUzwFczTZ/fadeYzDutX2boVeGBOe
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SA1PR12MB6799
 
-The iommu_report_device_fault function was updated to return void while
-assuming that drivers only need to call iommu_report_device_fault() for
-reporting an iopf. This implementation causes following problems:
+On Wed, Aug 07, 2024 at 01:10:42PM -0700, Nicolin Chen wrote:
+> @@ -876,4 +877,33 @@ struct iommu_fault_alloc {
+>  	__u32 out_fault_fd;
+>  };
+>  #define IOMMU_FAULT_QUEUE_ALLOC _IO(IOMMUFD_TYPE, IOMMUFD_CMD_FAULT_QUEUE_ALLOC)
+> +
+> +/**
+> + * enum iommu_viommu_type - Virtual IOMMU Type
+> + * @IOMMU_VIOMMU_TYPE_DEFAULT: Core-managed VIOMMU type
+> + */
+> +enum iommu_viommu_type {
+> +	IOMMU_VIOMMU_TYPE_DEFAULT,
 
-1. The drivers rely on the core code to call it's page_reponse,
-   however, when a fault is received and no fault capable domain is
-   attached / iopf_param is NULL, the ops->page_response is NOT called
-   causing the device to stall in case the fault type was PAGE_REQ.
+= 0 here now
 
-2. The arm_smmu_v3 driver relies on the returned value to log errors
-   returning void from iommu_report_device_fault causes these events to
-   be missed while logging.
-
-Modify the iommu_report_device_fault function to return -EINVAL for
-cases where no fault capable domain is attached or iopf_param was NULL
-and calls back to the driver (ops->page_response) in case the fault type
-was IOMMU_FAULT_PAGE_REQ. The returned value can be used by the drivers
-to log the fault/event as needed.
-
-Reported-by: Kunkun Jiang <jiangkunkun@huawei.com>
-Closes: https://lore.kernel.org/all/6147caf0-b9a0-30ca-795e-a1aa502a5c51@huawei.com/
-Fixes: 3dfa64aecbaf ("iommu: Make iommu_report_device_fault() return void")
-Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
-Signed-off-by: Pranjal Shrivastava <praan@google.com>
----
- drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c |   2 +-
- drivers/iommu/io-pgfault.c                  | 116 +++++++++++++-------
- include/linux/iommu.h                       |   5 +-
- 3 files changed, 83 insertions(+), 40 deletions(-)
-
-diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-index 9bc50bded5af..8a6cd0adfcf2 100644
---- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-+++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-@@ -1777,7 +1777,7 @@ static int arm_smmu_handle_evt(struct arm_smmu_device *smmu, u64 *evt)
- 		goto out_unlock;
- 	}
- 
--	iommu_report_device_fault(master->dev, &fault_evt);
-+	ret = iommu_report_device_fault(master->dev, &fault_evt);
- out_unlock:
- 	mutex_unlock(&smmu->streams_mutex);
- 	return ret;
-diff --git a/drivers/iommu/io-pgfault.c b/drivers/iommu/io-pgfault.c
-index 81e9cc6e3164..87b2f1d989c8 100644
---- a/drivers/iommu/io-pgfault.c
-+++ b/drivers/iommu/io-pgfault.c
-@@ -115,6 +115,59 @@ static struct iopf_group *iopf_group_alloc(struct iommu_fault_param *iopf_param,
- 	return group;
- }
- 
-+static struct iommu_attach_handle *find_fault_handler(struct device *dev,
-+						     struct iopf_fault *evt)
-+{
-+	struct iommu_fault *fault = &evt->fault;
-+	struct iommu_attach_handle *attach_handle;
-+
-+	if (fault->prm.flags & IOMMU_FAULT_PAGE_REQUEST_PASID_VALID) {
-+		attach_handle = iommu_attach_handle_get(dev->iommu_group,
-+				fault->prm.pasid, 0);
-+		if (IS_ERR(attach_handle)) {
-+			const struct iommu_ops *ops = dev_iommu_ops(dev);
-+
-+			if (!ops->user_pasid_table)
-+				return NULL;
-+			/*
-+			 * The iommu driver for this device supports user-
-+			 * managed PASID table. Therefore page faults for
-+			 * any PASID should go through the NESTING domain
-+			 * attached to the device RID.
-+			 */
-+			attach_handle = iommu_attach_handle_get(
-+					dev->iommu_group, IOMMU_NO_PASID,
-+					IOMMU_DOMAIN_NESTED);
-+			if (IS_ERR(attach_handle))
-+				return NULL;
-+		}
-+	} else {
-+		attach_handle = iommu_attach_handle_get(dev->iommu_group,
-+				IOMMU_NO_PASID, 0);
-+
-+		if (IS_ERR(attach_handle))
-+			return NULL;
-+	}
-+
-+	if (!attach_handle->domain->iopf_handler)
-+		return NULL;
-+
-+	return attach_handle;
-+}
-+
-+static void iopf_error_response(struct device *dev, struct iopf_fault *evt)
-+{
-+	const struct iommu_ops *ops = dev_iommu_ops(dev);
-+	struct iommu_fault *fault = &evt->fault;
-+	struct iommu_page_response resp = {
-+		.pasid = fault->prm.pasid,
-+		.grpid = fault->prm.grpid,
-+		.code = IOMMU_PAGE_RESP_INVALID
-+	};
-+
-+	ops->page_response(dev, evt, &resp);
-+}
-+
- /**
-  * iommu_report_device_fault() - Report fault event to device driver
-  * @dev: the device
-@@ -155,22 +208,34 @@ static struct iopf_group *iopf_group_alloc(struct iommu_fault_param *iopf_param,
-  * hardware has been set to block the page faults) and the pending page faults
-  * have been flushed.
-  */
--void iommu_report_device_fault(struct device *dev, struct iopf_fault *evt)
-+int iommu_report_device_fault(struct device *dev, struct iopf_fault *evt)
- {
-+	struct iommu_attach_handle *attach_handle;
- 	struct iommu_fault *fault = &evt->fault;
- 	struct iommu_fault_param *iopf_param;
- 	struct iopf_group abort_group = {};
- 	struct iopf_group *group;
- 
-+	attach_handle = find_fault_handler(dev, evt);
-+	if (!attach_handle)
-+		goto err_bad_iopf;
-+
-+	/*
-+	 * Something has gone wrong if a fault capable domain is attached but no
-+	 * iopf_param is setup
-+	 */
- 	iopf_param = iopf_get_dev_fault_param(dev);
- 	if (WARN_ON(!iopf_param))
--		return;
-+		goto err_bad_iopf;
- 
- 	if (!(fault->prm.flags & IOMMU_FAULT_PAGE_REQUEST_LAST_PAGE)) {
--		report_partial_fault(iopf_param, fault);
-+		int ret;
-+
-+		ret = report_partial_fault(iopf_param, fault);
- 		iopf_put_dev_fault_param(iopf_param);
- 		/* A request that is not the last does not need to be ack'd */
--		return;
-+
-+		return ret;
- 	}
- 
- 	/*
-@@ -185,38 +250,7 @@ void iommu_report_device_fault(struct device *dev, struct iopf_fault *evt)
- 	if (group == &abort_group)
- 		goto err_abort;
- 
--	if (fault->prm.flags & IOMMU_FAULT_PAGE_REQUEST_PASID_VALID) {
--		group->attach_handle = iommu_attach_handle_get(dev->iommu_group,
--							       fault->prm.pasid,
--							       0);
--		if (IS_ERR(group->attach_handle)) {
--			const struct iommu_ops *ops = dev_iommu_ops(dev);
--
--			if (!ops->user_pasid_table)
--				goto err_abort;
--
--			/*
--			 * The iommu driver for this device supports user-
--			 * managed PASID table. Therefore page faults for
--			 * any PASID should go through the NESTING domain
--			 * attached to the device RID.
--			 */
--			group->attach_handle =
--				iommu_attach_handle_get(dev->iommu_group,
--							IOMMU_NO_PASID,
--							IOMMU_DOMAIN_NESTED);
--			if (IS_ERR(group->attach_handle))
--				goto err_abort;
--		}
--	} else {
--		group->attach_handle =
--			iommu_attach_handle_get(dev->iommu_group, IOMMU_NO_PASID, 0);
--		if (IS_ERR(group->attach_handle))
--			goto err_abort;
--	}
--
--	if (!group->attach_handle->domain->iopf_handler)
--		goto err_abort;
-+	group->attach_handle = attach_handle;
- 
- 	/*
- 	 * On success iopf_handler must call iopf_group_response() and
-@@ -225,7 +259,7 @@ void iommu_report_device_fault(struct device *dev, struct iopf_fault *evt)
- 	if (group->attach_handle->domain->iopf_handler(group))
- 		goto err_abort;
- 
--	return;
-+	return 0;
- 
- err_abort:
- 	dev_warn_ratelimited(dev, "iopf with pasid %d aborted\n",
-@@ -235,6 +269,14 @@ void iommu_report_device_fault(struct device *dev, struct iopf_fault *evt)
- 		__iopf_free_group(group);
- 	else
- 		iopf_free_group(group);
-+
-+	return 0;
-+
-+err_bad_iopf:
-+	if (fault->type == IOMMU_FAULT_PAGE_REQ)
-+		iopf_error_response(dev, evt);
-+
-+	return -EINVAL;
- }
- EXPORT_SYMBOL_GPL(iommu_report_device_fault);
- 
-diff --git a/include/linux/iommu.h b/include/linux/iommu.h
-index 04cbdae0052e..bd722f473635 100644
---- a/include/linux/iommu.h
-+++ b/include/linux/iommu.h
-@@ -1563,7 +1563,7 @@ struct iopf_queue *iopf_queue_alloc(const char *name);
- void iopf_queue_free(struct iopf_queue *queue);
- int iopf_queue_discard_partial(struct iopf_queue *queue);
- void iopf_free_group(struct iopf_group *group);
--void iommu_report_device_fault(struct device *dev, struct iopf_fault *evt);
-+int iommu_report_device_fault(struct device *dev, struct iopf_fault *evt);
- void iopf_group_response(struct iopf_group *group,
- 			 enum iommu_page_response_code status);
- #else
-@@ -1601,9 +1601,10 @@ static inline void iopf_free_group(struct iopf_group *group)
- {
- }
- 
--static inline void
-+static inline int
- iommu_report_device_fault(struct device *dev, struct iopf_fault *evt)
- {
-+	return -ENODEV;
- }
- 
- static inline void iopf_group_response(struct iopf_group *group,
--- 
-2.46.0.184.g6999bdac58-goog
-
+Jason
