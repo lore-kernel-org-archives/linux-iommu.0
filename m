@@ -1,310 +1,190 @@
-Received: from mail-yw1-f202.google.com (mail-yw1-f202.google.com [209.85.128.202])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.13])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7A97C19DFA4
-	for <iommu@lists.linux.dev>; Thu, 15 Aug 2024 12:46:28 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.202
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2F36C18D654
+	for <iommu@lists.linux.dev>; Thu, 15 Aug 2024 12:52:33 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.13
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1723725990; cv=none; b=L6pf7v5vgT2/tqQJE+v/M71kFVR9c24GlnNX23v+N1ujzEKYYp+Eslo6j6W6Bt9INALLg7nMTW2ua6Fq2RN1K3fMMcwBviFivlLKwiQGxEa6IJ0AvLurSSIxl4emTvpoQW9MdPrbZZAjsMMiyFJHvyd+aN+3u9qOJNmgwXAvoSQ=
+	t=1723726355; cv=none; b=Ggc6pbeYFDBIO9rTSPu1ERLD2fJlgGb4SOpVMImeJqJeBv6RNs+j7IDn5M7ZhEq8cxNunGwe49UEDnIgLtgSqrF4IKcW889nQEhPDl9W7FOaBU5wbpBK85YZfy4h7zmIFeQ6gaVRBMTuPogrBVp8Qan1wvGq3XuC8wN0J1MZS0k=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1723725990; c=relaxed/simple;
-	bh=SI0HLi3qNEOkJQrgePW+WgCNUHwZWBorcT5sg8jB1Nc=;
-	h=Date:Mime-Version:Message-ID:Subject:From:To:Cc:Content-Type; b=LHlk/XqlJb/hxXoGbt93Gkil8Fd+Fnmn1+y7v0f+tsM7WI7gCLkenyeijzy8s395Wr18eVQDlP+uLk55MnTxa7nXbUQjmGAwM+wTXDhDo+vhj9DEWtnxJuwIBrHysZoluoUkU/0dBE2mACWoAnLT1qGMxXJSFNcqkhMc57GpL8A=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=flex--praan.bounces.google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=LCP2sjmP; arc=none smtp.client-ip=209.85.128.202
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=flex--praan.bounces.google.com
+	s=arc-20240116; t=1723726355; c=relaxed/simple;
+	bh=BrSRR5uvh8cU30zKn+CdjcQa5boqGY1qzsHYzMNtRcc=;
+	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version; b=fKgAxGSuCAVjZKqRbr7Jm1zi4ce0mQcPFeo+C7fnn9ah1V1rzHuxLwdSH3J2Nmajb0eKIeGUhZBCSy83SSpsmAIhJlmyvLrst0bU3rQereOb/oP7ghWNYWIE568XkoYJ+tA8k9EoxmTJ2TTpbfyUB2fHlHClcQ+ptYcrkvPyJg8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=H60ViqEu; arc=none smtp.client-ip=198.175.65.13
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="LCP2sjmP"
-Received: by mail-yw1-f202.google.com with SMTP id 00721157ae682-6b036192efaso7752737b3.2
-        for <iommu@lists.linux.dev>; Thu, 15 Aug 2024 05:46:28 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20230601; t=1723725987; x=1724330787; darn=lists.linux.dev;
-        h=cc:to:from:subject:message-id:mime-version:date:from:to:cc:subject
-         :date:message-id:reply-to;
-        bh=V8nezdy4bgQdLo1Mmr+2U4xB0GKoM5NpFnb7nJzG7Lk=;
-        b=LCP2sjmPlrgQA9Q53VQshag4Mwt4brq06suI3UyPfIZ9esl2GPPzUnUUoaDlLtAXet
-         VD15ziiG1vnscBGLTRn6Yx3ShIEvKeb7MDvptB8DpTMkPC48xncdqDH2nfDkKPyten3h
-         QjhS2lJhk4EaLbA9KwrfqfUk9cPyyrmCpjHIrRCCTD919aPag3nvxqr+rN8GEpUSVeB4
-         kZvSgSMpmzXBRP2cjCXLlEQQ4+UGEAphh0gVVxfiuxdPBhr0nOG6Luk95jmLOyFj+ZwI
-         snoicrHEGzxb04bwHMv14dsuqUnQOODzxHATtAvt48S31kJYEdWV4AKJun429kQEJvaT
-         bZ9w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1723725987; x=1724330787;
-        h=cc:to:from:subject:message-id:mime-version:date:x-gm-message-state
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=V8nezdy4bgQdLo1Mmr+2U4xB0GKoM5NpFnb7nJzG7Lk=;
-        b=V3qeFFVlXVoi2RzoE3sfNieIlaaoIpqctyidgnfFyUC/7T1ndvLXg2Dl661Ud3msGt
-         LOLotszVuG914JAQrXF/fqqHoEaaE88B33E8IM7DbztODONJ2RhAp/H2Ki2p6YSyk4T/
-         WdN+ZSzKqsbq6GNTjfWbrU8f/RfkjpYcPGCMkbmd6B5ua50zJU84xGWJtYhaxhTYVgVE
-         7POJd0+Itlnieg8IF8hT1GzjVrmzKRg7CeYCIRJCBEZon2CNRN3VH8XYaBWbk7qkfqet
-         VYYVP8Ht2iDIa/YZXhhCcD94HyCWNu5PNcQui9GRhtmXZdEZlrfrECCQeDodAL1SDhel
-         FYNw==
-X-Forwarded-Encrypted: i=1; AJvYcCXWDQAeBA8i2QJJyCk7yrnrCHZ2E4vL+iII2yC3OP9Pm+egUCTTfN2Y5GLTB7m1NaN8ZrKKh20n4zsGUTPLuBf+hFFIWzQ=
-X-Gm-Message-State: AOJu0Yx8bn5BeDJeUzB2ljmB+bvNDAunHPbzm/52Kom+H2fjYeinROOy
-	SZEF+8mpMJ+vNkSrPNIhJc54ErFZcOiW3sSJStwWynizXQQfRLMNn6SqrQhi7a1RREz1w1hpoA=
-	=
-X-Google-Smtp-Source: AGHT+IE6TdcmxzONJfsfdqQZIbo2rfa5hlhw/5Io1ZYCHrKNYuJ5dhxAKn6+cbvoJ9osURP4J0jSTfsx1g==
-X-Received: from praan.c.googlers.com ([fda3:e722:ac3:cc00:4f:4b78:c0a8:3e89])
- (user=praan job=sendgmr) by 2002:a0d:d385:0:b0:673:b39a:92ea with SMTP id
- 00721157ae682-6ac997f8a9cmr3268827b3.7.1723725987312; Thu, 15 Aug 2024
- 05:46:27 -0700 (PDT)
-Date: Thu, 15 Aug 2024 12:46:02 +0000
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="H60ViqEu"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1723726355; x=1755262355;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=BrSRR5uvh8cU30zKn+CdjcQa5boqGY1qzsHYzMNtRcc=;
+  b=H60ViqEu0Bg1p2qHP7t9rfn9s2avf1y3oG+iPGk7Nd4CLm+IE1G/3yDR
+   wACo+IOEVPei9olyGtpP9nIIUahS9r8xFFbGFFhsT7q9Q1o15+y3M74MC
+   rpO5svtZM0gSsNCIp8reka+Z2CmKgYQHz6nh3qN5J3Uxcsvar/SLWc2Lz
+   YYTJ9ZTw6ldsRI9awEhqHhZcQEBsG3VRYOz4EbG5iI9eLFANwpVoZW1IK
+   YDIFPdr9w2BMIsq0e5A1hygHiVW2VUZLyHqwJTnusRntR735MhRXK9vaN
+   8ujC1Ivj6vnHxL5AQ19aRp0DaOfa2Yym51dkvR2G0bqz7yTzv6q4hJoW0
+   A==;
+X-CSE-ConnectionGUID: 3Nso1dG5RLejXdow1cHboQ==
+X-CSE-MsgGUID: a/N2QogaQh2tQ15+jEsVVw==
+X-IronPort-AV: E=McAfee;i="6700,10204,11165"; a="33128564"
+X-IronPort-AV: E=Sophos;i="6.10,148,1719903600"; 
+   d="scan'208";a="33128564"
+Received: from orviesa007.jf.intel.com ([10.64.159.147])
+  by orvoesa105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Aug 2024 05:52:34 -0700
+X-CSE-ConnectionGUID: 9p4ODleiTrC/tUzhBtCqUw==
+X-CSE-MsgGUID: FlNkPZEET3+x/835CA25yA==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.10,148,1719903600"; 
+   d="scan'208";a="59906470"
+Received: from allen-box.sh.intel.com ([10.239.159.127])
+  by orviesa007.jf.intel.com with ESMTP; 15 Aug 2024 05:52:31 -0700
+From: Lu Baolu <baolu.lu@linux.intel.com>
+To: Joerg Roedel <joro@8bytes.org>,
+	Will Deacon <will@kernel.org>,
+	Robin Murphy <robin.murphy@arm.com>,
+	Alex Williamson <alex.williamson@redhat.com>,
+	Jason Gunthorpe <jgg@ziepe.ca>,
+	Kevin Tian <kevin.tian@intel.com>
+Cc: iommu@lists.linux.dev,
+	linux-kernel@vger.kernel.org,
+	Lu Baolu <baolu.lu@linux.intel.com>
+Subject: [PATCH 1/1] iommu/vt-d: Fix incorrect domain ID in context flush helper
+Date: Thu, 15 Aug 2024 20:48:57 +0800
+Message-Id: <20240815124857.70038-1-baolu.lu@linux.intel.com>
+X-Mailer: git-send-email 2.34.1
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
-Mime-Version: 1.0
-X-Mailer: git-send-email 2.46.0.184.g6999bdac58-goog
-Message-ID: <20240815124602.65439-1-praan@google.com>
-Subject: [PATCH v2] iommu: Handle iommu faults for a bad iopf setup
-From: Pranjal Shrivastava <praan@google.com>
-To: Joerg Roedel <joro@8bytes.org>, Lu Baolu <baolu.lu@linux.intel.com>, 
-	Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>
-Cc: Mostafa Saleh <smostafa@google.com>, iommu@lists.linux.dev, 
-	Pranjal Shrivastava <praan@google.com>, Kunkun Jiang <jiangkunkun@huawei.com>, 
-	Jason Gunthorpe <jgg@nvidia.com>
-Content-Type: text/plain; charset="UTF-8"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 
-The iommu_report_device_fault function was updated to return void while
-assuming that drivers only need to call iommu_report_device_fault() for
-reporting an iopf. This implementation causes following problems:
+The helper intel_context_flush_present() is designed to flush all related
+caches when a context entry with the present bit set is modified. It
+currently retrieves the domain ID from the context entry and uses it to
+flush the IOTLB and context caches. This is incorrect when the context
+entry transitions from present to non-present, as the domain ID field is
+cleared before calling the helper.
 
-1. The drivers rely on the core code to call it's page_reponse,
-   however, when a fault is received and no fault capable domain is
-   attached / iopf_param is NULL, the ops->page_response is NOT called
-   causing the device to stall in case the fault type was PAGE_REQ.
+Fix it by passing the domain ID programmed in the context entry before the
+change to intel_context_flush_present(). This ensures that the correct
+domain ID is used for cache invalidation.
 
-2. The arm_smmu_v3 driver relies on the returned value to log errors
-   returning void from iommu_report_device_fault causes these events to
-   be missed while logging.
-
-Modify the iommu_report_device_fault function to return -EINVAL for
-cases where no fault capable domain is attached or iopf_param was NULL
-and calls back to the driver (ops->page_response) in case the fault type
-was IOMMU_FAULT_PAGE_REQ. The returned value can be used by the drivers
-to log the fault/event as needed.
-
-Reported-by: Kunkun Jiang <jiangkunkun@huawei.com>
-Closes: https://lore.kernel.org/all/6147caf0-b9a0-30ca-795e-a1aa502a5c51@huawei.com/
-Fixes: 3dfa64aecbaf ("iommu: Make iommu_report_device_fault() return void")
-Signed-off-by: Pranjal Shrivastava <praan@google.com>
-Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
+Fixes: f90584f4beb8 ("iommu/vt-d: Add helper to flush caches for context change")
+Reported-by: Alex Williamson <alex.williamson@redhat.com>
+Closes: https://lore.kernel.org/linux-iommu/20240814162726.5efe1a6e.alex.williamson@redhat.com/
+Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
 ---
- drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c |   2 +-
- drivers/iommu/io-pgfault.c                  | 121 ++++++++++++++------
- include/linux/iommu.h                       |   5 +-
- 3 files changed, 87 insertions(+), 41 deletions(-)
+ drivers/iommu/intel/iommu.h | 2 +-
+ drivers/iommu/intel/iommu.c | 8 ++++++--
+ drivers/iommu/intel/pasid.c | 7 ++++---
+ 3 files changed, 11 insertions(+), 6 deletions(-)
 
-diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-index 9bc50bded5af..8a6cd0adfcf2 100644
---- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-+++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-@@ -1777,7 +1777,7 @@ static int arm_smmu_handle_evt(struct arm_smmu_device *smmu, u64 *evt)
- 		goto out_unlock;
+diff --git a/drivers/iommu/intel/iommu.h b/drivers/iommu/intel/iommu.h
+index b67c14da1240..a969be2258b1 100644
+--- a/drivers/iommu/intel/iommu.h
++++ b/drivers/iommu/intel/iommu.h
+@@ -1154,7 +1154,7 @@ void cache_tag_flush_range_np(struct dmar_domain *domain, unsigned long start,
+ 
+ void intel_context_flush_present(struct device_domain_info *info,
+ 				 struct context_entry *context,
+-				 bool affect_domains);
++				 u16 did, bool affect_domains);
+ 
+ #ifdef CONFIG_INTEL_IOMMU_SVM
+ void intel_svm_check(struct intel_iommu *iommu);
+diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
+index 9ff8b83c19a3..4aa070cf56e7 100644
+--- a/drivers/iommu/intel/iommu.c
++++ b/drivers/iommu/intel/iommu.c
+@@ -1944,6 +1944,7 @@ static void domain_context_clear_one(struct device_domain_info *info, u8 bus, u8
+ {
+ 	struct intel_iommu *iommu = info->iommu;
+ 	struct context_entry *context;
++	u16 did;
+ 
+ 	spin_lock(&iommu->lock);
+ 	context = iommu_context_addr(iommu, bus, devfn, 0);
+@@ -1952,10 +1953,11 @@ static void domain_context_clear_one(struct device_domain_info *info, u8 bus, u8
+ 		return;
  	}
  
--	iommu_report_device_fault(master->dev, &fault_evt);
-+	ret = iommu_report_device_fault(master->dev, &fault_evt);
- out_unlock:
- 	mutex_unlock(&smmu->streams_mutex);
- 	return ret;
-diff --git a/drivers/iommu/io-pgfault.c b/drivers/iommu/io-pgfault.c
-index 81e9cc6e3164..540ce80228fe 100644
---- a/drivers/iommu/io-pgfault.c
-+++ b/drivers/iommu/io-pgfault.c
-@@ -115,6 +115,59 @@ static struct iopf_group *iopf_group_alloc(struct iommu_fault_param *iopf_param,
- 	return group;
++	did = context_domain_id(context);
+ 	context_clear_entry(context);
+ 	__iommu_flush_cache(iommu, context, sizeof(*context));
+ 	spin_unlock(&iommu->lock);
+-	intel_context_flush_present(info, context, true);
++	intel_context_flush_present(info, context, did, true);
  }
  
-+static struct iommu_attach_handle *find_fault_handler(struct device *dev,
-+						     struct iopf_fault *evt)
-+{
-+	struct iommu_fault *fault = &evt->fault;
-+	struct iommu_attach_handle *attach_handle;
-+
-+	if (fault->prm.flags & IOMMU_FAULT_PAGE_REQUEST_PASID_VALID) {
-+		attach_handle = iommu_attach_handle_get(dev->iommu_group,
-+				fault->prm.pasid, 0);
-+		if (IS_ERR(attach_handle)) {
-+			const struct iommu_ops *ops = dev_iommu_ops(dev);
-+
-+			if (!ops->user_pasid_table)
-+				return NULL;
-+			/*
-+			 * The iommu driver for this device supports user-
-+			 * managed PASID table. Therefore page faults for
-+			 * any PASID should go through the NESTING domain
-+			 * attached to the device RID.
-+			 */
-+			attach_handle = iommu_attach_handle_get(
-+					dev->iommu_group, IOMMU_NO_PASID,
-+					IOMMU_DOMAIN_NESTED);
-+			if (IS_ERR(attach_handle))
-+				return NULL;
-+		}
-+	} else {
-+		attach_handle = iommu_attach_handle_get(dev->iommu_group,
-+				IOMMU_NO_PASID, 0);
-+
-+		if (IS_ERR(attach_handle))
-+			return NULL;
-+	}
-+
-+	if (!attach_handle->domain->iopf_handler)
-+		return NULL;
-+
-+	return attach_handle;
-+}
-+
-+static void iopf_error_response(struct device *dev, struct iopf_fault *evt)
-+{
-+	const struct iommu_ops *ops = dev_iommu_ops(dev);
-+	struct iommu_fault *fault = &evt->fault;
-+	struct iommu_page_response resp = {
-+		.pasid = fault->prm.pasid,
-+		.grpid = fault->prm.grpid,
-+		.code = IOMMU_PAGE_RESP_INVALID
-+	};
-+
-+	ops->page_response(dev, evt, &resp);
-+}
-+
- /**
-  * iommu_report_device_fault() - Report fault event to device driver
-  * @dev: the device
-@@ -155,22 +208,37 @@ static struct iopf_group *iopf_group_alloc(struct iommu_fault_param *iopf_param,
-  * hardware has been set to block the page faults) and the pending page faults
-  * have been flushed.
+ static int domain_setup_first_level(struct intel_iommu *iommu,
+@@ -4249,6 +4251,7 @@ static int context_flip_pri(struct device_domain_info *info, bool enable)
+ 	struct intel_iommu *iommu = info->iommu;
+ 	u8 bus = info->bus, devfn = info->devfn;
+ 	struct context_entry *context;
++	u16 did;
+ 
+ 	spin_lock(&iommu->lock);
+ 	if (context_copied(iommu, bus, devfn)) {
+@@ -4261,6 +4264,7 @@ static int context_flip_pri(struct device_domain_info *info, bool enable)
+ 		spin_unlock(&iommu->lock);
+ 		return -ENODEV;
+ 	}
++	did = context_domain_id(context);
+ 
+ 	if (enable)
+ 		context_set_sm_pre(context);
+@@ -4269,7 +4273,7 @@ static int context_flip_pri(struct device_domain_info *info, bool enable)
+ 
+ 	if (!ecap_coherent(iommu->ecap))
+ 		clflush_cache_range(context, sizeof(*context));
+-	intel_context_flush_present(info, context, true);
++	intel_context_flush_present(info, context, did, true);
+ 	spin_unlock(&iommu->lock);
+ 
+ 	return 0;
+diff --git a/drivers/iommu/intel/pasid.c b/drivers/iommu/intel/pasid.c
+index 5792c817cefa..b51fc268dc84 100644
+--- a/drivers/iommu/intel/pasid.c
++++ b/drivers/iommu/intel/pasid.c
+@@ -683,6 +683,7 @@ static void device_pasid_table_teardown(struct device *dev, u8 bus, u8 devfn)
+ 	struct device_domain_info *info = dev_iommu_priv_get(dev);
+ 	struct intel_iommu *iommu = info->iommu;
+ 	struct context_entry *context;
++	u16 did;
+ 
+ 	spin_lock(&iommu->lock);
+ 	context = iommu_context_addr(iommu, bus, devfn, false);
+@@ -691,10 +692,11 @@ static void device_pasid_table_teardown(struct device *dev, u8 bus, u8 devfn)
+ 		return;
+ 	}
+ 
++	did = context_domain_id(context);
+ 	context_clear_entry(context);
+ 	__iommu_flush_cache(iommu, context, sizeof(*context));
+ 	spin_unlock(&iommu->lock);
+-	intel_context_flush_present(info, context, false);
++	intel_context_flush_present(info, context, did, false);
+ }
+ 
+ static int pci_pasid_table_teardown(struct pci_dev *pdev, u16 alias, void *data)
+@@ -885,10 +887,9 @@ static void __context_flush_dev_iotlb(struct device_domain_info *info)
   */
--void iommu_report_device_fault(struct device *dev, struct iopf_fault *evt)
-+int iommu_report_device_fault(struct device *dev, struct iopf_fault *evt)
+ void intel_context_flush_present(struct device_domain_info *info,
+ 				 struct context_entry *context,
+-				 bool flush_domains)
++				 u16 did, bool flush_domains)
  {
-+	struct iommu_attach_handle *attach_handle;
- 	struct iommu_fault *fault = &evt->fault;
- 	struct iommu_fault_param *iopf_param;
- 	struct iopf_group abort_group = {};
- 	struct iopf_group *group;
-+	int ret = 0;
+ 	struct intel_iommu *iommu = info->iommu;
+-	u16 did = context_domain_id(context);
+ 	struct pasid_entry *pte;
+ 	int i;
  
-+	attach_handle = find_fault_handler(dev, evt);
-+	if (!attach_handle) {
-+		ret = -EINVAL;
-+		goto err_bad_iopf;
-+	}
-+
-+	/*
-+	 * Something has gone wrong if a fault capable domain is attached but no
-+	 * iopf_param is setup
-+	 */
- 	iopf_param = iopf_get_dev_fault_param(dev);
--	if (WARN_ON(!iopf_param))
--		return;
-+	if (WARN_ON(!iopf_param)) {
-+		ret = -EINVAL;
-+		goto err_bad_iopf;
-+	}
- 
- 	if (!(fault->prm.flags & IOMMU_FAULT_PAGE_REQUEST_LAST_PAGE)) {
--		report_partial_fault(iopf_param, fault);
-+		ret = report_partial_fault(iopf_param, fault);
- 		iopf_put_dev_fault_param(iopf_param);
- 		/* A request that is not the last does not need to be ack'd */
--		return;
-+
-+		return ret;
- 	}
- 
- 	/*
-@@ -185,38 +253,7 @@ void iommu_report_device_fault(struct device *dev, struct iopf_fault *evt)
- 	if (group == &abort_group)
- 		goto err_abort;
- 
--	if (fault->prm.flags & IOMMU_FAULT_PAGE_REQUEST_PASID_VALID) {
--		group->attach_handle = iommu_attach_handle_get(dev->iommu_group,
--							       fault->prm.pasid,
--							       0);
--		if (IS_ERR(group->attach_handle)) {
--			const struct iommu_ops *ops = dev_iommu_ops(dev);
--
--			if (!ops->user_pasid_table)
--				goto err_abort;
--
--			/*
--			 * The iommu driver for this device supports user-
--			 * managed PASID table. Therefore page faults for
--			 * any PASID should go through the NESTING domain
--			 * attached to the device RID.
--			 */
--			group->attach_handle =
--				iommu_attach_handle_get(dev->iommu_group,
--							IOMMU_NO_PASID,
--							IOMMU_DOMAIN_NESTED);
--			if (IS_ERR(group->attach_handle))
--				goto err_abort;
--		}
--	} else {
--		group->attach_handle =
--			iommu_attach_handle_get(dev->iommu_group, IOMMU_NO_PASID, 0);
--		if (IS_ERR(group->attach_handle))
--			goto err_abort;
--	}
--
--	if (!group->attach_handle->domain->iopf_handler)
--		goto err_abort;
-+	group->attach_handle = attach_handle;
- 
- 	/*
- 	 * On success iopf_handler must call iopf_group_response() and
-@@ -225,7 +262,7 @@ void iommu_report_device_fault(struct device *dev, struct iopf_fault *evt)
- 	if (group->attach_handle->domain->iopf_handler(group))
- 		goto err_abort;
- 
--	return;
-+	return 0;
- 
- err_abort:
- 	dev_warn_ratelimited(dev, "iopf with pasid %d aborted\n",
-@@ -235,6 +272,14 @@ void iommu_report_device_fault(struct device *dev, struct iopf_fault *evt)
- 		__iopf_free_group(group);
- 	else
- 		iopf_free_group(group);
-+
-+	return 0;
-+
-+err_bad_iopf:
-+	if (fault->type == IOMMU_FAULT_PAGE_REQ)
-+		iopf_error_response(dev, evt);
-+
-+	return ret;
- }
- EXPORT_SYMBOL_GPL(iommu_report_device_fault);
- 
-diff --git a/include/linux/iommu.h b/include/linux/iommu.h
-index 04cbdae0052e..bd722f473635 100644
---- a/include/linux/iommu.h
-+++ b/include/linux/iommu.h
-@@ -1563,7 +1563,7 @@ struct iopf_queue *iopf_queue_alloc(const char *name);
- void iopf_queue_free(struct iopf_queue *queue);
- int iopf_queue_discard_partial(struct iopf_queue *queue);
- void iopf_free_group(struct iopf_group *group);
--void iommu_report_device_fault(struct device *dev, struct iopf_fault *evt);
-+int iommu_report_device_fault(struct device *dev, struct iopf_fault *evt);
- void iopf_group_response(struct iopf_group *group,
- 			 enum iommu_page_response_code status);
- #else
-@@ -1601,9 +1601,10 @@ static inline void iopf_free_group(struct iopf_group *group)
- {
- }
- 
--static inline void
-+static inline int
- iommu_report_device_fault(struct device *dev, struct iopf_fault *evt)
- {
-+	return -ENODEV;
- }
- 
- static inline void iopf_group_response(struct iopf_group *group,
 -- 
-2.46.0.184.g6999bdac58-goog
+2.34.1
 
