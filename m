@@ -1,57 +1,57 @@
 Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.11])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DBD5F17A938
-	for <iommu@lists.linux.dev>; Thu, 15 Aug 2024 06:53:30 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 49CED17B41B
+	for <iommu@lists.linux.dev>; Thu, 15 Aug 2024 06:53:32 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.11
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1723704812; cv=none; b=WYnGdy5XBtBFGepldxJpLzwvJMnaJfqpeT/wzr/e8ulcSq6fPfydjWzywdesutJ6oMbPN9dcVuNBUSCyMeLXd+eMoBNcjJyj7iQU8QLVcmXBaDczHAcNq66pyy/uxNJVRfo/0xOkI9PXR+VaP6w7QFx/ilLyaWV4YF/A4LaRxCQ=
+	t=1723704814; cv=none; b=HRgM6ZGIhCkChjgvuRcbdrM/6mG2h8TLuNANDVKDnNVh9luXhl3KfFZ69s9Wo2W0zMG1pvKfYnNM2L8kzzRGS6pqN44jjqfZAtYnDaRu/h1fRjtttaZTSOkFMRP3Ek8qeJq/4jAaDFcCl7OSF4GbSudbDa5PbgwzqeGxupZAmbs=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1723704812; c=relaxed/simple;
-	bh=LfGSL2s3OqRer5h+/wGQYpRy+Iut/M0xOkkSLN974M4=;
+	s=arc-20240116; t=1723704814; c=relaxed/simple;
+	bh=EZRupiXcACIS811ijjV9HK/TmFHYK3tDinzBUIa98RM=;
 	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
-	 MIME-Version; b=j+Bft9glRz84woOoDxD7Hf7tpVnsu6caE7CHoXRxkNIfTd+q3lo9IvGwHyaP+je7e+3tED0EehLGQuzJTZs5yqn04fRT60PWcn7gqCCu9Vpa2Rbtq08HIn335LEcoQfKXC8T6LPIQxJpKSrkQQLbPlk4eHJ6GI6ecg+m1mVZEBo=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=I8JhGG0C; arc=none smtp.client-ip=198.175.65.11
+	 MIME-Version; b=C9eNkDIfkDXJut4M+XdE2wBLR3Mk8d+gQKk4KeUh95m9XF6W+uAqsT5LP1EZ2z255aS/2SYR39UWYHpDR2WxMq5MmPeF+fzThBoTqGyo2q9uMOJB0tGh0bJhJd+ztmziSqmCZPJmyY6blTKCStCDM36GKmzWgmgT0DDyr5GlOw4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=CvY66DxZ; arc=none smtp.client-ip=198.175.65.11
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="I8JhGG0C"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="CvY66DxZ"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1723704811; x=1755240811;
+  t=1723704812; x=1755240812;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=LfGSL2s3OqRer5h+/wGQYpRy+Iut/M0xOkkSLN974M4=;
-  b=I8JhGG0CymNM3irXhfmMiZEQIHvQqL4w/ob/J6f0uluirf/kZ+yGOea7
-   DK97PCyD4Swl9JskjS8YLxjpKv4OW4pZrDrF5WMphiwm/7N89KDQhU1Ah
-   p+Gspi1U1mX1xFFVPC/uVTWRwGUFE+EzbK3oOSalz5IVD5nT4SZv2PS1D
-   RRqlTMZwRPUabaYy7tm7Lb7Qot9EHKvYbZC+hqux+hxWjSrPVuZoPPAZ7
-   r3uBu/kpUhKVs5y1H8M5iMeKRg1uLY/7K0vwVKqyGVtwIWvKnuX+Acnje
-   vNz0c+3ZX0C0UPsGMGjlaH8R3HTj7eHCwMGUwhmG9xeYL/F5XUpXETXYD
-   Q==;
-X-CSE-ConnectionGUID: ZeXlyft/SK2H0HzLLDPZpQ==
-X-CSE-MsgGUID: kGkFSJtjSYqlztySLN8E5w==
-X-IronPort-AV: E=McAfee;i="6700,10204,11164"; a="32528291"
+  bh=EZRupiXcACIS811ijjV9HK/TmFHYK3tDinzBUIa98RM=;
+  b=CvY66DxZkE+j5btRiw18/OlAkUVe1u/SM+O+OE3Y/BS31iJAYGrWyj5D
+   GU5dk94HbAo3ApFC4UlW4ZXFn+jU/ViPETzr9xZF6+wn3sHSZAOmUlrkV
+   qvrnD+qfzsuZeKkH5Um4YYJlHe1sCV0rjOoPNPUTBHIpdFbkdW2NsozSD
+   mFFlG+jaMyfxYUODsjezPlqJkNgqx+qY/u5An8HnzmaE7gGugruT927B0
+   KwxG6177x478O5DDZpzkLVVhOCnrfFgr1D6d47wjpnzTFnrZ4qBcPU1G1
+   /4J9vwC1so6qtv+UFifYrQKQn7b3ittRyBUH6YSWB13YkX+KvvAS/xhKZ
+   g==;
+X-CSE-ConnectionGUID: SHDrV8PmRu+RrqPiTREKdA==
+X-CSE-MsgGUID: XplqFuWEQ7+KJp3l3gKSPg==
+X-IronPort-AV: E=McAfee;i="6700,10204,11164"; a="32528297"
 X-IronPort-AV: E=Sophos;i="6.10,148,1719903600"; 
-   d="scan'208";a="32528291"
+   d="scan'208";a="32528297"
 Received: from fmviesa002.fm.intel.com ([10.60.135.142])
-  by orvoesa103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Aug 2024 23:53:30 -0700
-X-CSE-ConnectionGUID: bUACLD1mSDCgVXMOcQCgTQ==
-X-CSE-MsgGUID: 3XMDrh4bQxWgbZc3PNHQug==
+  by orvoesa103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Aug 2024 23:53:32 -0700
+X-CSE-ConnectionGUID: Qp922m7wR+SFq2/AXOrdiw==
+X-CSE-MsgGUID: ZYUHu4UKQGGD0IhSTc5spA==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.10,148,1719903600"; 
-   d="scan'208";a="82471574"
+   d="scan'208";a="82471591"
 Received: from desktoptgl-tinazhang.bj.intel.com ([10.238.156.103])
-  by fmviesa002.fm.intel.com with ESMTP; 14 Aug 2024 23:53:29 -0700
+  by fmviesa002.fm.intel.com with ESMTP; 14 Aug 2024 23:53:30 -0700
 From: Tina Zhang <tina.zhang@intel.com>
 To: Lu Baolu <baolu.lu@linux.intel.com>,
 	Kevin Tian <kevin.tian@intel.com>
 Cc: iommu@lists.linux.dev,
 	linux-kernel@vger.kernel.org,
 	Tina Zhang <tina.zhang@intel.com>
-Subject: [PATCH v3 3/4] iommu/vt-d: Add qi_batch for dmar_domain
-Date: Thu, 15 Aug 2024 14:52:20 +0800
-Message-Id: <20240815065221.50328-4-tina.zhang@intel.com>
+Subject: [PATCH v3 4/4] iommu/vt-d: Introduce batched cache invalidation
+Date: Thu, 15 Aug 2024 14:52:21 +0800
+Message-Id: <20240815065221.50328-5-tina.zhang@intel.com>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20240815065221.50328-1-tina.zhang@intel.com>
 References: <20240815065221.50328-1-tina.zhang@intel.com>
@@ -63,114 +63,245 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-From: Lu Baolu <baolu.lu@linux.intel.com>
+Converts IOTLB and Dev-IOTLB invalidation to a batched model. Cache tag
+invalidation requests for a domain are now accumulated in a qi_batch
+structure before being flushed in bulk. It replaces the previous per-
+request qi_flush approach with a more efficient batching mechanism.
 
-Introduces a qi_batch structure to hold batched cache invalidation
-descriptors on a per-dmar_domain basis. A fixed-size descriptor
-array is used for simplicity. The qi_batch is allocated when the
-first cache tag is added to the domain and freed during
-iommu_free_domain().
-
+Co-developed-by: Lu Baolu <baolu.lu@linux.intel.com>
 Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
 Signed-off-by: Tina Zhang <tina.zhang@intel.com>
 ---
- drivers/iommu/intel/cache.c  |  7 +++++++
- drivers/iommu/intel/iommu.c  |  1 +
- drivers/iommu/intel/iommu.h  | 14 ++++++++++++++
- drivers/iommu/intel/nested.c |  1 +
- drivers/iommu/intel/svm.c    |  5 ++++-
- 5 files changed, 27 insertions(+), 1 deletion(-)
+ drivers/iommu/intel/cache.c | 122 +++++++++++++++++++++++++++++++-----
+ 1 file changed, 107 insertions(+), 15 deletions(-)
 
 diff --git a/drivers/iommu/intel/cache.c b/drivers/iommu/intel/cache.c
-index 08f7ce2c16c3b..21485c86e7381 100644
+index 21485c86e7381..983769de3bc90 100644
 --- a/drivers/iommu/intel/cache.c
 +++ b/drivers/iommu/intel/cache.c
-@@ -190,6 +190,13 @@ int cache_tag_assign_domain(struct dmar_domain *domain,
- 	u16 did = domain_get_id_for_dev(domain, dev);
- 	int ret;
+@@ -262,6 +262,79 @@ static unsigned long calculate_psi_aligned_address(unsigned long start,
+ 	return ALIGN_DOWN(start, VTD_PAGE_SIZE << mask);
+ }
  
-+	/* domain->qi_bach will be freed in iommu_free_domain() path. */
-+	if (!domain->qi_batch) {
-+		domain->qi_batch = kzalloc(sizeof(struct qi_batch), GFP_KERNEL);
-+		if (!domain->qi_batch)
-+			return -ENOMEM;
-+	}
++static void qi_batch_flush_descs(struct intel_iommu *iommu, struct qi_batch *batch)
++{
++	if (!iommu || !batch->index)
++		return;
 +
- 	ret = __cache_tag_assign_domain(domain, did, dev, pasid);
- 	if (ret || domain->domain.type != IOMMU_DOMAIN_NESTED)
- 		return ret;
-diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
-index 14020414af892..cde5ed4d0fede 100644
---- a/drivers/iommu/intel/iommu.c
-+++ b/drivers/iommu/intel/iommu.c
-@@ -1586,6 +1586,7 @@ static void domain_exit(struct dmar_domain *domain)
- 	if (WARN_ON(!list_empty(&domain->devices)))
++	qi_submit_sync(iommu, batch->descs, batch->index, 0);
++
++	/* Reset the index value and clean the whole batch buffer. */
++	memset(batch, 0, sizeof(*batch));
++}
++
++static void qi_batch_increment_index(struct intel_iommu *iommu, struct qi_batch *batch)
++{
++	if (++batch->index == QI_MAX_BATCHED_DESC_COUNT)
++		qi_batch_flush_descs(iommu, batch);
++}
++
++static void qi_batch_add_iotlb(struct intel_iommu *iommu, u16 did, u64 addr,
++			       unsigned int size_order, u64 type,
++			       struct qi_batch *batch)
++{
++	qi_desc_iotlb(iommu, did, addr, size_order, type, &(batch->descs[batch->index]));
++	qi_batch_increment_index(iommu, batch);
++}
++
++static void qi_batch_add_dev_iotlb(struct intel_iommu *iommu, u16 sid, u16 pfsid,
++				   u16 qdep, u64 addr, unsigned int mask,
++				   struct qi_batch *batch)
++{
++	/*
++	 * According to VT-d spec, software is recommended to not submit any Device-TLB
++	 * invalidation requests while address remapping hardware is disabled.
++	 */
++	if (!(iommu->gcmd & DMA_GCMD_TE))
++		return;
++
++	qi_desc_dev_iotlb(sid, pfsid, qdep, addr, mask, &(batch->descs[batch->index]));
++	qi_batch_increment_index(iommu, batch);
++}
++
++static void qi_batch_add_piotlb(struct intel_iommu *iommu, u16 did, u32 pasid,
++				u64 addr, unsigned long npages, bool ih,
++				struct qi_batch *batch)
++{
++	/*
++	 * npages == -1 means a PASID-selective invalidation, otherwise,
++	 * a positive value for Page-selective-within-PASID invalidation.
++	 * 0 is not a valid input.
++	 */
++	if (!npages)
++		return;
++
++	qi_desc_piotlb(did, pasid, addr, npages, ih, &(batch->descs[batch->index]));
++	qi_batch_increment_index(iommu, batch);
++}
++
++static void qi_batch_add_pasid_dev_iotlb(struct intel_iommu *iommu, u16 sid, u16 pfsid,
++					 u32 pasid,  u16 qdep, u64 addr,
++					 unsigned int size_order, struct qi_batch *batch)
++{
++	/*
++	 * According to VT-d spec, software is recommended to not submit any
++	 * Device-TLB invalidation requests while address remapping hardware
++	 * is disabled.
++	 */
++	if (!(iommu->gcmd & DMA_GCMD_TE))
++		return;
++
++	qi_desc_dev_iotlb_pasid(sid, pfsid, pasid, qdep, addr, size_order,
++				&(batch->descs[batch->index]));
++	qi_batch_increment_index(iommu, batch);
++}
++
+ static void cache_tag_flush_iotlb(struct dmar_domain *domain, struct cache_tag *tag,
+ 				  unsigned long addr, unsigned long pages,
+ 				  unsigned long mask, int ih)
+@@ -270,7 +343,8 @@ static void cache_tag_flush_iotlb(struct dmar_domain *domain, struct cache_tag *
+ 	u64 type = DMA_TLB_PSI_FLUSH;
+ 
+ 	if (domain->use_first_level) {
+-		qi_flush_piotlb(iommu, tag->domain_id, tag->pasid, addr, pages, ih);
++		qi_batch_add_piotlb(iommu, tag->domain_id, tag->pasid, addr,
++				    pages, ih, domain->qi_batch);
  		return;
+ 	}
  
-+	kfree(domain->qi_batch);
- 	kfree(domain);
+@@ -287,7 +361,8 @@ static void cache_tag_flush_iotlb(struct dmar_domain *domain, struct cache_tag *
+ 	}
+ 
+ 	if (ecap_qis(iommu->ecap))
+-		qi_flush_iotlb(iommu, tag->domain_id, addr | ih, mask, type);
++		qi_batch_add_iotlb(iommu, tag->domain_id, addr | ih, mask, type,
++				   domain->qi_batch);
+ 	else
+ 		__iommu_flush_iotlb(iommu, tag->domain_id, addr | ih, mask, type);
+ }
+@@ -303,19 +378,20 @@ static void cache_tag_flush_devtlb_psi(struct dmar_domain *domain, struct cache_
+ 	sid = PCI_DEVID(info->bus, info->devfn);
+ 
+ 	if (tag->pasid == IOMMU_NO_PASID) {
+-		qi_flush_dev_iotlb(iommu, sid, info->pfsid, info->ats_qdep,
+-				   addr, mask);
++		qi_batch_add_dev_iotlb(iommu, sid, info->pfsid, info->ats_qdep,
++				       addr, mask, domain->qi_batch);
+ 		if (info->dtlb_extra_inval)
+-			qi_flush_dev_iotlb(iommu, sid, info->pfsid,
+-					   info->ats_qdep, addr, mask);
++			qi_batch_add_dev_iotlb(iommu, sid, info->pfsid, info->ats_qdep,
++					       addr, mask, domain->qi_batch);
+ 		return;
+ 	}
+ 
+-	qi_flush_dev_iotlb_pasid(iommu, sid, info->pfsid, tag->pasid,
+-				 info->ats_qdep, addr, mask);
++	qi_batch_add_pasid_dev_iotlb(iommu, sid, info->pfsid, tag->pasid,
++				     info->ats_qdep, addr, mask, domain->qi_batch);
+ 	if (info->dtlb_extra_inval)
+-		qi_flush_dev_iotlb_pasid(iommu, sid, info->pfsid, tag->pasid,
+-					 info->ats_qdep, addr, mask);
++		qi_batch_add_pasid_dev_iotlb(iommu, sid, info->pfsid, tag->pasid,
++					     info->ats_qdep, addr, mask,
++					     domain->qi_batch);
  }
  
-diff --git a/drivers/iommu/intel/iommu.h b/drivers/iommu/intel/iommu.h
-index 74634805abd19..d21eca94cb8f9 100644
---- a/drivers/iommu/intel/iommu.h
-+++ b/drivers/iommu/intel/iommu.h
-@@ -584,6 +584,19 @@ struct iommu_domain_info {
- 					 * to VT-d spec, section 9.3 */
- };
+ static void cache_tag_flush_devtlb_all(struct dmar_domain *domain, struct cache_tag *tag)
+@@ -327,11 +403,11 @@ static void cache_tag_flush_devtlb_all(struct dmar_domain *domain, struct cache_
+ 	info = dev_iommu_priv_get(tag->dev);
+ 	sid = PCI_DEVID(info->bus, info->devfn);
  
-+/*
-+ * We start simply by using a fixed size for the batched descriptors. This
-+ * size is currently sufficient for our needs. Future improvements could
-+ * involve dynamically allocating the batch buffer based on actual demand,
-+ * allowing us to adjust the batch size for optimal performance in different
-+ * scenarios.
-+ */
-+#define QI_MAX_BATCHED_DESC_COUNT 16
-+struct qi_batch {
-+	struct qi_desc descs[QI_MAX_BATCHED_DESC_COUNT];
-+	unsigned int index;
-+};
-+
- struct dmar_domain {
- 	int	nid;			/* node id */
- 	struct xarray iommu_array;	/* Attached IOMMU array */
-@@ -608,6 +621,7 @@ struct dmar_domain {
- 
- 	spinlock_t cache_lock;		/* Protect the cache tag list */
- 	struct list_head cache_tags;	/* Cache tag list */
-+	struct qi_batch *qi_batch;	/* Batched QI descriptors */
- 
- 	int		iommu_superpage;/* Level of superpages supported:
- 					   0 == 4KiB (no superpages), 1 == 2MiB,
-diff --git a/drivers/iommu/intel/nested.c b/drivers/iommu/intel/nested.c
-index 36a91b1b52be3..433c58944401f 100644
---- a/drivers/iommu/intel/nested.c
-+++ b/drivers/iommu/intel/nested.c
-@@ -83,6 +83,7 @@ static void intel_nested_domain_free(struct iommu_domain *domain)
- 	spin_lock(&s2_domain->s1_lock);
- 	list_del(&dmar_domain->s2_link);
- 	spin_unlock(&s2_domain->s1_lock);
-+	kfree(dmar_domain->qi_batch);
- 	kfree(dmar_domain);
+-	qi_flush_dev_iotlb(iommu, sid, info->pfsid, info->ats_qdep, 0,
+-			   MAX_AGAW_PFN_WIDTH);
++	qi_batch_add_dev_iotlb(iommu, sid, info->pfsid, info->ats_qdep, 0,
++			       MAX_AGAW_PFN_WIDTH, domain->qi_batch);
+ 	if (info->dtlb_extra_inval)
+-		qi_flush_dev_iotlb(iommu, sid, info->pfsid, info->ats_qdep, 0,
+-				   MAX_AGAW_PFN_WIDTH);
++		qi_batch_add_dev_iotlb(iommu, sid, info->pfsid, info->ats_qdep, 0,
++				       MAX_AGAW_PFN_WIDTH, domain->qi_batch);
  }
  
-diff --git a/drivers/iommu/intel/svm.c b/drivers/iommu/intel/svm.c
-index 0e3a9b38bef21..3421813995db8 100644
---- a/drivers/iommu/intel/svm.c
-+++ b/drivers/iommu/intel/svm.c
-@@ -184,7 +184,10 @@ static void intel_mm_release(struct mmu_notifier *mn, struct mm_struct *mm)
- 
- static void intel_mm_free_notifier(struct mmu_notifier *mn)
+ /*
+@@ -341,6 +417,7 @@ static void cache_tag_flush_devtlb_all(struct dmar_domain *domain, struct cache_
+ void cache_tag_flush_range(struct dmar_domain *domain, unsigned long start,
+ 			   unsigned long end, int ih)
  {
--	kfree(container_of(mn, struct dmar_domain, notifier));
-+	struct dmar_domain *domain = container_of(mn, struct dmar_domain, notifier);
++	struct intel_iommu *iommu = NULL;
+ 	unsigned long pages, mask, addr;
+ 	struct cache_tag *tag;
+ 	unsigned long flags;
+@@ -349,6 +426,10 @@ void cache_tag_flush_range(struct dmar_domain *domain, unsigned long start,
+ 
+ 	spin_lock_irqsave(&domain->cache_lock, flags);
+ 	list_for_each_entry(tag, &domain->cache_tags, node) {
++		if (iommu && iommu != tag->iommu)
++			qi_batch_flush_descs(iommu, domain->qi_batch);
++		iommu = tag->iommu;
 +
-+	kfree(domain->qi_batch);
-+	kfree(domain);
+ 		switch (tag->type) {
+ 		case CACHE_TAG_IOTLB:
+ 		case CACHE_TAG_NESTING_IOTLB:
+@@ -372,6 +453,7 @@ void cache_tag_flush_range(struct dmar_domain *domain, unsigned long start,
+ 
+ 		trace_cache_tag_flush_range(tag, start, end, addr, pages, mask);
+ 	}
++	qi_batch_flush_descs(iommu, domain->qi_batch);
+ 	spin_unlock_irqrestore(&domain->cache_lock, flags);
  }
  
- static const struct mmu_notifier_ops intel_mmuops = {
+@@ -381,11 +463,16 @@ void cache_tag_flush_range(struct dmar_domain *domain, unsigned long start,
+  */
+ void cache_tag_flush_all(struct dmar_domain *domain)
+ {
++	struct intel_iommu *iommu = NULL;
+ 	struct cache_tag *tag;
+ 	unsigned long flags;
+ 
+ 	spin_lock_irqsave(&domain->cache_lock, flags);
+ 	list_for_each_entry(tag, &domain->cache_tags, node) {
++		if (iommu && iommu != tag->iommu)
++			qi_batch_flush_descs(iommu, domain->qi_batch);
++		iommu = tag->iommu;
++
+ 		switch (tag->type) {
+ 		case CACHE_TAG_IOTLB:
+ 		case CACHE_TAG_NESTING_IOTLB:
+@@ -399,6 +486,7 @@ void cache_tag_flush_all(struct dmar_domain *domain)
+ 
+ 		trace_cache_tag_flush_all(tag);
+ 	}
++	qi_batch_flush_descs(iommu, domain->qi_batch);
+ 	spin_unlock_irqrestore(&domain->cache_lock, flags);
+ }
+ 
+@@ -416,6 +504,7 @@ void cache_tag_flush_all(struct dmar_domain *domain)
+ void cache_tag_flush_range_np(struct dmar_domain *domain, unsigned long start,
+ 			      unsigned long end)
+ {
++	struct intel_iommu *iommu = NULL;
+ 	unsigned long pages, mask, addr;
+ 	struct cache_tag *tag;
+ 	unsigned long flags;
+@@ -424,7 +513,9 @@ void cache_tag_flush_range_np(struct dmar_domain *domain, unsigned long start,
+ 
+ 	spin_lock_irqsave(&domain->cache_lock, flags);
+ 	list_for_each_entry(tag, &domain->cache_tags, node) {
+-		struct intel_iommu *iommu = tag->iommu;
++		if (iommu && iommu != tag->iommu)
++			qi_batch_flush_descs(iommu, domain->qi_batch);
++		iommu = tag->iommu;
+ 
+ 		if (!cap_caching_mode(iommu->cap) || domain->use_first_level) {
+ 			iommu_flush_write_buffer(iommu);
+@@ -437,5 +528,6 @@ void cache_tag_flush_range_np(struct dmar_domain *domain, unsigned long start,
+ 
+ 		trace_cache_tag_flush_range_np(tag, start, end, addr, pages, mask);
+ 	}
++	qi_batch_flush_descs(iommu, domain->qi_batch);
+ 	spin_unlock_irqrestore(&domain->cache_lock, flags);
+ }
 -- 
 2.34.1
 
