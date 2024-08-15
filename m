@@ -1,101 +1,174 @@
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 99F251AD9FB
-	for <iommu@lists.linux.dev>; Thu, 15 Aug 2024 15:50:49 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=170.10.133.124
+Received: from linux.microsoft.com (linux.microsoft.com [13.77.154.182])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 961662A8D0
+	for <iommu@lists.linux.dev>; Thu, 15 Aug 2024 16:05:19 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=13.77.154.182
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1723737051; cv=none; b=mbAYDPKA0fQD5TmclGiEjZt3gZB2uwFgkN1vyOx6UiHbI2JpH2QHf+Z/H9DRi/DO3fMyTeNRDJz9tBEzYZ6iV36Xb3omN3ZomXRqIrKnkhnb0irMFTFqGsd4Bxbk2MiP8cQl3cLj2irc5Bu1ZiDZ2flv3QDL2mF6kbgBGd/LUZ0=
+	t=1723737921; cv=none; b=n1tZ2Odb5EBTVA03Jkfj73FeURmoS6H73CB+WUb0N3rBAyS67i/wOlaISStWAICliPbHtTAURAZIy+y8shxSEI2WT1jyYPP48YOqjVpcukldESjk6Lr1Gv7VbLirfaH6xRPrUlw7e+klqOai/Z6rnkPeS8xffi06VYssjSOVIs8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1723737051; c=relaxed/simple;
-	bh=aZMMrFg1Di2xRaG2PKPTFXBs0pUsALFa/TvWiZyyiLc=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 In-Reply-To:Content-Type:Content-Disposition; b=lUlqqzxxd6QooUy27gMrsoZeTXJ0ppv6lcINixVPugTbiXEStfrPghLRE8zbTLtwt98FlPCHnHZ2FIZvazhvlxZWS8Hf2zURxGq7x+X1QRD5kJuzb8TAHjANxolNLcSLzSF6ZUado3EF9+Mj1M+WHYrnu1l1S0r+h+DR6oWbKdk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=redhat.com; spf=pass smtp.mailfrom=redhat.com; dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b=NKG8O7LP; arc=none smtp.client-ip=170.10.133.124
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=redhat.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=redhat.com
+	s=arc-20240116; t=1723737921; c=relaxed/simple;
+	bh=SUfR+C/RB4k8Pyo/zAOs4oQmbJcMpILjXqT1HkYxWw0=;
+	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=Uo6bJhRVT62uNiCqqTjP4DqDm7lHefq4iCC8wtM7GTr9AcPVrCiSgAOrSS7MLpPutj9q1angp8N8ySKoo1Nb3lbbALwb9jl7ZOo8W+sAXFbE6jbqdWSTtedxL8A71xFgu5KlAX68DkZPSPRcXZg0YRQocv3Z21BovpjpiuqxsNA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com; spf=pass smtp.mailfrom=linux.microsoft.com; dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b=KocohE3t; arc=none smtp.client-ip=13.77.154.182
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.microsoft.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="NKG8O7LP"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-	s=mimecast20190719; t=1723737048;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 in-reply-to:in-reply-to:references:references;
-	bh=PAxsRmRTyiybxBmaIn5tpwbiask6P7OilLc948K2bLs=;
-	b=NKG8O7LPHh2Oc2oJcyuQMJL6/i/ePdZo8tSRvHEyTzWJF4OSOpUUThKjXH2ekINu6KdkVE
-	y9qWqhNfkVkw3O2htxUBMsKUgnAWzi4/DJksFCcnZWGKDnC0PqN4YcAgfohIQDZNNnaaxe
-	gjbjRPfeFaBD4Dkg8d99fnKsRf2IqjA=
-Received: from mail-qt1-f199.google.com (mail-qt1-f199.google.com
- [209.85.160.199]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
- us-mta-124-InTGmSj8N326vd89EQOIsw-1; Thu, 15 Aug 2024 11:50:47 -0400
-X-MC-Unique: InTGmSj8N326vd89EQOIsw-1
-Received: by mail-qt1-f199.google.com with SMTP id d75a77b69052e-44fe92025d8so11148551cf.1
-        for <iommu@lists.linux.dev>; Thu, 15 Aug 2024 08:50:47 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1723737047; x=1724341847;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=PAxsRmRTyiybxBmaIn5tpwbiask6P7OilLc948K2bLs=;
-        b=VsU/G86ixjC/4gpf6HbqQkxYYL6cNAt1JJsJIeFCEuA3j78872oxltj7Of2Wbyhu5C
-         /0c9bX91picqZd7BClnZClmqD52xuj04SOFrE8kKvabEdH/89xcd7iIVvArpdnfkybQL
-         XtGZaiNV/j2k0u3V+cccgV735CNWIJFj60/L4+s2W/1hBdkBp6wN8ATYJ+Cz8mXLtaAd
-         tGmevr6BWlIBca9CH3A3pKTHfylQ0MFCZke7Bxeqg1LRsBBGmYsOcckPTIUFh/AFrE2j
-         eVj0yDe9G8wTCjM49O56fBDzbXnpo7sFho+KqnLKQoJChP3ujvsVoygEkdMJ99z3fgX7
-         4TfA==
-X-Forwarded-Encrypted: i=1; AJvYcCXg/xE7p8LpZldPJvXuVWXhAcHF6h/25TKfvAs/EBZHwUOuIz3MOWRC5qtjzbIFvNdiduB0LA6TXbK7N+oZF26ljw3ZPio=
-X-Gm-Message-State: AOJu0YzuWGnf0RiUtffPF7Yo7QjoX8ESgAI1id0jNZNVmyqgSOqK+yJI
-	R7hcIoPeaSsH8IGEaWM1Fr/9UH6kObJK5dhrMYmYxxXsp485pmU5oGWOBSjQv+5lyad9+NpoW+W
-	Klo9XuGZT7KxH38GUQfQkHs+fg1I/eJSukJXJULyqTxMLCjvdxao1
-X-Received: by 2002:a05:622a:1926:b0:446:63e9:dc70 with SMTP id d75a77b69052e-4535bac5032mr64655181cf.19.1723737046850;
-        Thu, 15 Aug 2024 08:50:46 -0700 (PDT)
-X-Google-Smtp-Source: AGHT+IHqP3a6s1mqzTrSrz9yk0OPDqMqwt5NymJ/RFbenIfPN48g9k3i8WzqT2MFSoGpCReyDysJ/A==
-X-Received: by 2002:a05:622a:1926:b0:446:63e9:dc70 with SMTP id d75a77b69052e-4535bac5032mr64654891cf.19.1723737046501;
-        Thu, 15 Aug 2024 08:50:46 -0700 (PDT)
-Received: from localhost (ip98-179-76-110.ph.ph.cox.net. [98.179.76.110])
-        by smtp.gmail.com with ESMTPSA id d75a77b69052e-4536a04e4e7sm6814331cf.63.2024.08.15.08.50.45
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 15 Aug 2024 08:50:46 -0700 (PDT)
-Date: Thu, 15 Aug 2024 08:50:44 -0700
-From: Jerry Snitselaar <jsnitsel@redhat.com>
+	dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b="KocohE3t"
+Received: from DESKTOP-0403QTC. (unknown [20.236.10.163])
+	by linux.microsoft.com (Postfix) with ESMTPSA id D0F4920B7165;
+	Thu, 15 Aug 2024 09:05:18 -0700 (PDT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com D0F4920B7165
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
+	s=default; t=1723737919;
+	bh=17wkRLb5k5S9a17517dzFxFHsPfgQkWaxCfkGQD7LHQ=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+	b=KocohE3tYpt12avi8fWq5oxy0sOEnjqBj3L2yPzPptuJxNeuow/2/ftagVSYU8icL
+	 JRolGo56xwWR8w3aVilDwsJvFlVFFnqWM11TepPpjfJuQe1JTvT8Tof2ROWZu0P/uy
+	 KmYZbwCAtbPVl2AU9NjoFiJj+DNQuQew45jk4u6c=
+Date: Thu, 15 Aug 2024 09:05:17 -0700
+From: Jacob Pan <jacob.pan@linux.microsoft.com>
 To: Lu Baolu <baolu.lu@linux.intel.com>
-Cc: Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>, 
-	Robin Murphy <robin.murphy@arm.com>, Alex Williamson <alex.williamson@redhat.com>, 
-	Jason Gunthorpe <jgg@ziepe.ca>, Kevin Tian <kevin.tian@intel.com>, iommu@lists.linux.dev, 
-	linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 1/1] iommu/vt-d: Fix incorrect domain ID in context flush
- helper
-Message-ID: <cgz2k3p6hiwsbpjszt2r6ecw3hrasqvoovymb7cxyum6f65ayu@mueqgrbehmr3>
+Cc: Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>, Robin
+ Murphy <robin.murphy@arm.com>, Alex Williamson
+ <alex.williamson@redhat.com>, Jason Gunthorpe <jgg@ziepe.ca>, Kevin Tian
+ <kevin.tian@intel.com>, iommu@lists.linux.dev, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 1/1] iommu/vt-d: Fix incorrect domain ID in context
+ flush helper
+Message-ID: <20240815090517.685fb5f7@DESKTOP-0403QTC.>
+In-Reply-To: <20240815124857.70038-1-baolu.lu@linux.intel.com>
 References: <20240815124857.70038-1-baolu.lu@linux.intel.com>
+X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.33; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-In-Reply-To: <20240815124857.70038-1-baolu.lu@linux.intel.com>
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: redhat.com
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 
-On Thu, Aug 15, 2024 at 08:48:57PM GMT, Lu Baolu wrote:
-> The helper intel_context_flush_present() is designed to flush all related
-> caches when a context entry with the present bit set is modified. It
-> currently retrieves the domain ID from the context entry and uses it to
-> flush the IOTLB and context caches. This is incorrect when the context
-> entry transitions from present to non-present, as the domain ID field is
-> cleared before calling the helper.
+On Thu, 15 Aug 2024 20:48:57 +0800
+Lu Baolu <baolu.lu@linux.intel.com> wrote:
+
+> The helper intel_context_flush_present() is designed to flush all
+> related caches when a context entry with the present bit set is
+> modified. It currently retrieves the domain ID from the context entry
+> and uses it to flush the IOTLB and context caches. This is incorrect
+> when the context entry transitions from present to non-present, as
+> the domain ID field is cleared before calling the helper.
 > 
-> Fix it by passing the domain ID programmed in the context entry before the
-> change to intel_context_flush_present(). This ensures that the correct
-> domain ID is used for cache invalidation.
+> Fix it by passing the domain ID programmed in the context entry
+> before the change to intel_context_flush_present(). This ensures that
+> the correct domain ID is used for cache invalidation.
 > 
-> Fixes: f90584f4beb8 ("iommu/vt-d: Add helper to flush caches for context change")
-> Reported-by: Alex Williamson <alex.williamson@redhat.com>
-> Closes: https://lore.kernel.org/linux-iommu/20240814162726.5efe1a6e.alex.williamson@redhat.com/
-> Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
-
-Reviewed-by: Jerry Snitselaar <jsnitsel@redhat.com>
-
+> Fixes: f90584f4beb8 ("iommu/vt-d: Add helper to flush caches for
+> context change") Reported-by: Alex Williamson
+> <alex.williamson@redhat.com> Closes:
+> https://lore.kernel.org/linux-iommu/20240814162726.5efe1a6e.alex.williamson@redhat.com/
+> Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com> ---
+>  drivers/iommu/intel/iommu.h | 2 +-
+>  drivers/iommu/intel/iommu.c | 8 ++++++--
+>  drivers/iommu/intel/pasid.c | 7 ++++---
+>  3 files changed, 11 insertions(+), 6 deletions(-)
+> 
+> diff --git a/drivers/iommu/intel/iommu.h b/drivers/iommu/intel/iommu.h
+> index b67c14da1240..a969be2258b1 100644
+> --- a/drivers/iommu/intel/iommu.h
+> +++ b/drivers/iommu/intel/iommu.h
+> @@ -1154,7 +1154,7 @@ void cache_tag_flush_range_np(struct
+> dmar_domain *domain, unsigned long start, 
+>  void intel_context_flush_present(struct device_domain_info *info,
+>  				 struct context_entry *context,
+> -				 bool affect_domains);
+> +				 u16 did, bool affect_domains);
+>  
+>  #ifdef CONFIG_INTEL_IOMMU_SVM
+>  void intel_svm_check(struct intel_iommu *iommu);
+> diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
+> index 9ff8b83c19a3..4aa070cf56e7 100644
+> --- a/drivers/iommu/intel/iommu.c
+> +++ b/drivers/iommu/intel/iommu.c
+> @@ -1944,6 +1944,7 @@ static void domain_context_clear_one(struct
+> device_domain_info *info, u8 bus, u8 {
+>  	struct intel_iommu *iommu = info->iommu;
+>  	struct context_entry *context;
+> +	u16 did;
+>  
+>  	spin_lock(&iommu->lock);
+>  	context = iommu_context_addr(iommu, bus, devfn, 0);
+> @@ -1952,10 +1953,11 @@ static void domain_context_clear_one(struct
+> device_domain_info *info, u8 bus, u8 return;
+>  	}
+>  
+> +	did = context_domain_id(context);
+>  	context_clear_entry(context);
+>  	__iommu_flush_cache(iommu, context, sizeof(*context));
+>  	spin_unlock(&iommu->lock);
+> -	intel_context_flush_present(info, context, true);
+> +	intel_context_flush_present(info, context, did, true);
+>  }
+>  
+>  static int domain_setup_first_level(struct intel_iommu *iommu,
+> @@ -4249,6 +4251,7 @@ static int context_flip_pri(struct
+> device_domain_info *info, bool enable) struct intel_iommu *iommu =
+> info->iommu; u8 bus = info->bus, devfn = info->devfn;
+>  	struct context_entry *context;
+> +	u16 did;
+>  
+>  	spin_lock(&iommu->lock);
+>  	if (context_copied(iommu, bus, devfn)) {
+> @@ -4261,6 +4264,7 @@ static int context_flip_pri(struct
+> device_domain_info *info, bool enable) spin_unlock(&iommu->lock);
+>  		return -ENODEV;
+>  	}
+> +	did = context_domain_id(context);
+>  
+>  	if (enable)
+>  		context_set_sm_pre(context);
+> @@ -4269,7 +4273,7 @@ static int context_flip_pri(struct
+> device_domain_info *info, bool enable) 
+>  	if (!ecap_coherent(iommu->ecap))
+>  		clflush_cache_range(context, sizeof(*context));
+> -	intel_context_flush_present(info, context, true);
+> +	intel_context_flush_present(info, context, did, true);
+>  	spin_unlock(&iommu->lock);
+>  
+>  	return 0;
+> diff --git a/drivers/iommu/intel/pasid.c b/drivers/iommu/intel/pasid.c
+> index 5792c817cefa..b51fc268dc84 100644
+> --- a/drivers/iommu/intel/pasid.c
+> +++ b/drivers/iommu/intel/pasid.c
+> @@ -683,6 +683,7 @@ static void device_pasid_table_teardown(struct
+> device *dev, u8 bus, u8 devfn) struct device_domain_info *info =
+> dev_iommu_priv_get(dev); struct intel_iommu *iommu = info->iommu;
+>  	struct context_entry *context;
+> +	u16 did;
+>  
+>  	spin_lock(&iommu->lock);
+>  	context = iommu_context_addr(iommu, bus, devfn, false);
+> @@ -691,10 +692,11 @@ static void device_pasid_table_teardown(struct
+> device *dev, u8 bus, u8 devfn) return;
+>  	}
+>  
+> +	did = context_domain_id(context);
+>  	context_clear_entry(context);
+>  	__iommu_flush_cache(iommu, context, sizeof(*context));
+>  	spin_unlock(&iommu->lock);
+> -	intel_context_flush_present(info, context, false);
+> +	intel_context_flush_present(info, context, did, false);
+>  }
+>  
+>  static int pci_pasid_table_teardown(struct pci_dev *pdev, u16 alias,
+> void *data) @@ -885,10 +887,9 @@ static void
+> __context_flush_dev_iotlb(struct device_domain_info *info) */
+>  void intel_context_flush_present(struct device_domain_info *info,
+>  				 struct context_entry *context,
+> -				 bool flush_domains)
+> +				 u16 did, bool flush_domains)
+>  {
+>  	struct intel_iommu *iommu = info->iommu;
+> -	u16 did = context_domain_id(context);
+>  	struct pasid_entry *pte;
+>  	int i;
+>
+Reviewed-by: Jacob Pan <jacob.pan@linux.microsoft.com>
