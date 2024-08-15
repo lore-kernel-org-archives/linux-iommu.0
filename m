@@ -1,142 +1,259 @@
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 730C81714A8
-	for <iommu@lists.linux.dev>; Thu, 15 Aug 2024 13:41:56 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
+Received: from mail-qv1-f45.google.com (mail-qv1-f45.google.com [209.85.219.45])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1D4FF7DA9E
+	for <iommu@lists.linux.dev>; Thu, 15 Aug 2024 13:47:39 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.219.45
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1723729317; cv=none; b=RenUDNz8VXFXskY7rwPDFQBUhcGxhr8QZgAj+Bn6cDIlLj/wPufOhNqwO49e5AOGFm6/uY8/i7+P1rgd7Va9Pu8Z81C33T4TAq0SqUhMH0egxG+nBzWncUOPIeUICo2JVOlZ6vK9hC15XSu4shCfbzKNuU/Ez/kJzpUpvb6FxnQ=
+	t=1723729662; cv=none; b=Ikco4xhun+8vs0dbTiF5DMRSR/gHK9Z99OaI877pJuyr16U7hxxqEwFxarh+QQ3CSHwwbBkE/j/h63krlqxp3mMRPCKA3J8S17dIgSZQ0CphDsGTZXYSGy5yRCz+o9nY/OEuldF1uslt+e4aVx1XjqQ4ElOLzs0rz28/W7mWvL4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1723729317; c=relaxed/simple;
-	bh=GjZQ1hT/OPm1A53XVFOMboJ7JrKo1ngaSeiyyHVkxLU=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=ukzYjzpJUiS+JaFWvlzed2OdFUPdxbjl2FFLSwa5y0Xy1ensd2ZQgWJqgcWc0EKIg+YTHPGgPyytO68P+JI2aZxOZPmh9JxFhJG6Hv/c+ej5EI08Fkpi2sktYXSOJoONF19Huv51jkumiNxol34muQCVXxdrL1BhVuTv0FngbWQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; arc=none smtp.client-ip=217.140.110.172
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id A122914BF;
-	Thu, 15 Aug 2024 06:42:21 -0700 (PDT)
-Received: from [10.1.196.40] (e121345-lin.cambridge.arm.com [10.1.196.40])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 58FC63F6A8;
-	Thu, 15 Aug 2024 06:41:54 -0700 (PDT)
-Message-ID: <43290d6c-004d-423c-822c-7b2558badcee@arm.com>
-Date: Thu, 15 Aug 2024 14:41:52 +0100
+	s=arc-20240116; t=1723729662; c=relaxed/simple;
+	bh=r6VsstRMrT5syvZUZae6rwGhopent4gI6U1kktcOCMo=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=BTislcTlsVy+TPa8E0V7oVQNGqRC3QiMy8HJHrN70PXIa8Lp3zfN73WCULJHFnCixLljd75Q3g5+hFb/KF3ueSAeV+7DDNDSyI+PjwMfrqODfJU4XylZP5CPeIUyh5LvOq9yg3idfvRbBcX245/xp5Flv1pTYF3oYKswUa1F1r8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=hA9aiqQq; arc=none smtp.client-ip=209.85.219.45
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="hA9aiqQq"
+Received: by mail-qv1-f45.google.com with SMTP id 6a1803df08f44-6bf7ba05f75so8806d6.0
+        for <iommu@lists.linux.dev>; Thu, 15 Aug 2024 06:47:39 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=ziepe.ca; s=google; t=1723729659; x=1724334459; darn=lists.linux.dev;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=j8+ZnkDmWlql4KNTK0vB0RBkvVNTOOTwpEr2tIvVp8I=;
+        b=hA9aiqQqAG/UPpYb+DjNej0ZT7goQs75EI18u3cVwP4qtPN1TmozRG6E6nNc0oiORp
+         rA92wWvmKrplMMV4FXvqQkYMrAzGV/qAIWA4M+GXL54GsmLRK4rUjwQjofehYVyhmrc8
+         jhhAez18x2vco6jCfGtk4MM+fLPyDMD3ka9aVTzj6KWq4+MSOTTJsmUtxnAVjymo1M/Y
+         66qoswhCLYoNElGvtEqzJNkxerDjSloVOkytdYk9t83nwtLNBXtpt0+u1IxERISDjTNd
+         nqbACpTaXWvO9DEOxIvZxk34+aNiHhZecFWZc7TXDUPhwQHH/Cx5AHd1ddc67LihB60f
+         gfXQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1723729659; x=1724334459;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=j8+ZnkDmWlql4KNTK0vB0RBkvVNTOOTwpEr2tIvVp8I=;
+        b=Mu80UNwelszhvMwHAN2VjfcVpFHp0Ocsiy9SVMBw3iJjoepbq34tdrV9rfag+B71p+
+         6TVq82JBfacPUwCgGV9qinjrqA6R82mWHFgQQ7Z4cmxVrRHPHJuLQnxG9eTaA+6CYt3c
+         ijCjfrTNIEeaLCEStn8YSntrZorr0F/ZtuT1oM0LEcikoChyqDbb7sk6cVF45iEwT4E3
+         71dD9WgdVeZ8HK/vRWM1jeOe+GfzI/Yr6L4DQseKk9br1zcMwCcS9Mn3MNeUhxPl7J4H
+         +e9rjhCMM8U7M1SxI1e8B8/lHG5Aa5dsLIWpVYdvsFlKgZLF/2r7ZlMqzBbPv6sUz2dA
+         8H1A==
+X-Forwarded-Encrypted: i=1; AJvYcCVM8DepQX6hSnruGLjCGL47ZajQLzpsGROy/N+Xtqygt+M1sBGU6E3LQaE3vT7R1aKVxc6hGf2FZEEy1DOogPzZEVlUcQw=
+X-Gm-Message-State: AOJu0YzzCWMT+Ey7jCItsKPRU2BJo/hJKonc8A+4cK01OcQJh97P1a/7
+	Fm+nA9DZP2Zb4vLgKk0imiYS7A4lJfjM8y2h2X9ZnDbPVQmXaWrycR6xpD6HFrU=
+X-Google-Smtp-Source: AGHT+IEPHMnEKGKKzX1EyMh2R54vqhE5bzcb0SU22bkaq/r5NAlS7DkSXtfGfH3UPHJwYcYoTr1tug==
+X-Received: by 2002:a05:6214:2026:b0:6b5:d90d:ea4f with SMTP id 6a1803df08f44-6bf6ddd2a8dmr53712556d6.15.1723729658959;
+        Thu, 15 Aug 2024 06:47:38 -0700 (PDT)
+Received: from ziepe.ca ([128.77.69.90])
+        by smtp.gmail.com with ESMTPSA id 6a1803df08f44-6bf6fef3124sm6441676d6.123.2024.08.15.06.47.38
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 15 Aug 2024 06:47:38 -0700 (PDT)
+Received: from jgg by wakko with local (Exim 4.95)
+	(envelope-from <jgg@ziepe.ca>)
+	id 1seapF-003EVS-7Y;
+	Thu, 15 Aug 2024 10:47:37 -0300
+Date: Thu, 15 Aug 2024 10:47:37 -0300
+From: Jason Gunthorpe <jgg@ziepe.ca>
+To: Baolu Lu <baolu.lu@linux.intel.com>
+Cc: Vasant Hegde <vasant.hegde@amd.com>,
+	"Tian, Kevin" <kevin.tian@intel.com>,
+	"iommu@lists.linux.dev" <iommu@lists.linux.dev>,
+	"joro@8bytes.org" <joro@8bytes.org>,
+	"will@kernel.org" <will@kernel.org>,
+	"robin.murphy@arm.com" <robin.murphy@arm.com>,
+	"suravee.suthikulpanit@amd.com" <suravee.suthikulpanit@amd.com>,
+	"Liu, Yi L" <yi.l.liu@intel.com>,
+	Alex Williamson <alex.williamson@redhat.com>
+Subject: Re: [PATCH RFCv2] iommu: Add domain type and flag to
+ domain_alloc_paging()
+Message-ID: <20240815134737.GK3468552@ziepe.ca>
+References: <bbe564b6-5079-4973-8678-1068a53ddf70@amd.com>
+ <20240807135915.GF8473@ziepe.ca>
+ <e5da0709-86d3-4b45-82cc-d995a2686afa@amd.com>
+ <20240807182947.GI8473@ziepe.ca>
+ <BN9PR11MB52765C37F5401E9AA7113D748C862@BN9PR11MB5276.namprd11.prod.outlook.com>
+ <20240813162044.GI1985367@ziepe.ca>
+ <BN9PR11MB527654EBEFE7CBDD37B7B4068C872@BN9PR11MB5276.namprd11.prod.outlook.com>
+ <20240814224045.GC3468552@ziepe.ca>
+ <ad009d03-9a38-4b0e-ac90-13bd8ea0b191@amd.com>
+ <60778628-2b2c-4671-b1c6-276db3cd42ea@linux.intel.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v2] iommu/arm-smmu-v3: Match Stall behaviour for S2
-To: Jason Gunthorpe <jgg@ziepe.ca>, Mostafa Saleh <smostafa@google.com>
-Cc: linux-kernel@vger.kernel.org, iommu@lists.linux.dev,
- linux-arm-kernel@lists.infradead.org, will@kernel.org, joro@8bytes.org,
- jean-philippe@linaro.org, nicolinc@nvidia.com, mshavit@google.com
-References: <20240814145633.2565126-1-smostafa@google.com>
- <20240814155151.GB3468552@ziepe.ca> <Zr3m4YCY7Ape3R6y@google.com>
- <91d6574d-c67e-484c-ad96-91c9fd3d0c43@arm.com> <Zr30BjAcVDKJPv3B@google.com>
- <20240815125919.GH3468552@ziepe.ca>
-From: Robin Murphy <robin.murphy@arm.com>
-Content-Language: en-GB
-In-Reply-To: <20240815125919.GH3468552@ziepe.ca>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <60778628-2b2c-4671-b1c6-276db3cd42ea@linux.intel.com>
 
-On 15/08/2024 1:59 pm, Jason Gunthorpe wrote:
-> On Thu, Aug 15, 2024 at 12:26:46PM +0000, Mostafa Saleh wrote:
->> Hi Robin,
->>
->> On Thu, Aug 15, 2024 at 01:16:19PM +0100, Robin Murphy wrote:
->>> On 15/08/2024 12:30 pm, Mostafa Saleh wrote:
->>>> Hi Jason,
->>>>
->>>> On Wed, Aug 14, 2024 at 12:51:51PM -0300, Jason Gunthorpe wrote:
->>>>> On Wed, Aug 14, 2024 at 02:56:33PM +0000, Mostafa Saleh wrote:
->>>>>
->>>>>> Also described in the pseudocode “SteIllegal()”
->>>>>>       if eff_idr0_stall_model == '10' && STE.S2S == '0' then
->>>>>>           // stall_model forcing stall, but S2S == 0
->>>>>>           return TRUE;
->>>>>
->>>>> This clips out an important bit:
->>>>>
->>>>> if STE.Config == '11x' then
->>>>>     [..]
->>>>>     if eff_idr0_stall_model == '10' && STE.S2S == '0' then
->>>>>         // stall_model forcing stall, but S2S == 0
->>>>>         return TRUE;
->>>>>
->>>>> And here we are using STRTAB_STE_0_CFG_S1_TRANS which is 101 and won't
->>>>> match the STE.Config qualification.
->>>>>
->>>>> The plain text language said the S2S is only required if the S2 is
->>>>> translating, STRTAB_STE_0_CFG_S1_TRANS puts it in bypass.
->>>>
->>>> Yes, my bad, this should be for stage-2 only which is populated in
->>>> arm_smmu_make_s2_domain_ste()
->>>>
->>>>>
->>>>>> +	/*
->>>>>> +	 * S2S is ignored if stage-2 exists but not enabled.
->>>>>> +	 * S2S is not compatible with ATS.
->>>>>> +	 */
->>>>>> +	if (master->stall_enabled && !ats_enabled &&
->>>>>> +	    smmu->features & ARM_SMMU_FEAT_TRANS_S2)
->>>>>> +		target->data[2] |= STRTAB_STE_2_S2S;
->>>>>
->>>>> We can't ignore ATS if it was requested here.
->>>
->>> I don't see much value in adding effectively-dead checks for something which
->>> is already forbidden by the architecture. The definition of STALL_MODEL
->>> explicitly states:
->>>
->>> "An SMMU associated with a PCI system must not have STALL_MODEL == 0b10".
->>>
->>
->> Ah, I was expecting that as otherwise it's contradiction, but couldn't
->> find it while searching. Thanks for pointing it out, I will drop all
->> references to ATS then.
-> 
-> I was thinking this was also protecting against buggy FW since
-> stall_enable can be set by:
->      device_property_read_bool(dev, "dma-can-stall"))
+On Thu, Aug 15, 2024 at 12:59:13PM +0800, Baolu Lu wrote:
+> I suppose that this also includes converting paging domain to user
+> domain allocation in VFIO (ideally vhost-vdpa as well), right?
 
-If firmware goes out of its way to describe the system incorrectly then 
-I'd consider that all bets are off, and there's little point in us 
-trying to guess how to cope with a contradiction. For all we know, it 
-could be that the stall property is in fact genuine and it's the ATS 
-capability that was advertised erroneously.
+Another thought is to add a flag to iommu_paging_domain_alloc()..
 
-> Alternatively we could directly prevent the clash even earlier:
-> 
-> @@ -3292,8 +3292,13 @@ static struct iommu_device *arm_smmu_probe_device(struct device *dev)
->   
->          if ((smmu->features & ARM_SMMU_FEAT_STALLS &&
->               device_property_read_bool(dev, "dma-can-stall")) ||
-> -           smmu->features & ARM_SMMU_FEAT_STALL_FORCE)
-> -               master->stall_enabled = true;
-> +           smmu->features & ARM_SMMU_FEAT_STALL_FORCE) {
-> +               if (!dev_is_pci(dev))
-> +                       master->stall_enabled = true;
-> +               else
-> +                       dev_err(dev, FW_BUG
-> +                               "A SMMUv3 is required to run in stall mode for a PCI device\n");
+Maybe like the below. The small duplication with
+__iommu_domain_alloc() would go away when iommu_domain_alloc() finally
+goes, then we'd be able to directly call iommu_paging_domain_alloc().
 
-Unfortunately we can't do that, because there *are* RCiEP devices whose 
-data interfaces are native AMBA, and thus for whom stalling is not 
-actually a protocol violation as it would be on a real PCIe transport 
-layer; correspondingly, it's *because* they are not true PCIe devices 
-that they can't support ATS, and thus need stall support in order to do 
-SVA, so things should still work out OK in practice.
-
-> +           }
->   
->          if (dev_is_pci(dev)) {
-> 
-> Though I have no idea how the GPU driver that wants to use this
-> works - it doesn't seem to be intree :\
-
-It's not a GPU: drivers/crypto/hisilicon/zip/
-
-Thanks,
-Robin.
+diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
+index ed6c5cb60c5aee..7c028d036e8a1a 100644
+--- a/drivers/iommu/iommu.c
++++ b/drivers/iommu/iommu.c
+@@ -1934,6 +1934,22 @@ void iommu_set_fault_handler(struct iommu_domain *domain,
+ }
+ EXPORT_SYMBOL_GPL(iommu_set_fault_handler);
+ 
++static void iommu_domain_init(struct iommu_domain *domain, unsigned int type,
++			      const struct iommu_ops *ops)
++{
++	domain->type = type;
++	domain->owner = ops;
++	if (!domain->ops)
++		domain->ops = ops->default_domain_ops;
++
++	/*
++	 * If not already set, assume all sizes by default; the driver
++	 * may override this later
++	 */
++	if (!domain->pgsize_bitmap)
++		domain->pgsize_bitmap = ops->pgsize_bitmap;
++}
++
+ static struct iommu_domain *__iommu_domain_alloc(const struct iommu_ops *ops,
+ 						 struct device *dev,
+ 						 unsigned int type)
+@@ -1962,27 +1978,7 @@ static struct iommu_domain *__iommu_domain_alloc(const struct iommu_ops *ops,
+ 	if (!domain)
+ 		return ERR_PTR(-ENOMEM);
+ 
+-	domain->type = type;
+-	domain->owner = ops;
+-	/*
+-	 * If not already set, assume all sizes by default; the driver
+-	 * may override this later
+-	 */
+-	if (!domain->pgsize_bitmap)
+-		domain->pgsize_bitmap = ops->pgsize_bitmap;
+-
+-	if (!domain->ops)
+-		domain->ops = ops->default_domain_ops;
+-
+-	if (iommu_is_dma_domain(domain)) {
+-		int rc;
+-
+-		rc = iommu_get_dma_cookie(domain);
+-		if (rc) {
+-			iommu_domain_free(domain);
+-			return ERR_PTR(rc);
+-		}
+-	}
++	iommu_domain_init(domain, type, ops);
+ 	return domain;
+ }
+ 
+@@ -2031,20 +2027,40 @@ struct iommu_domain *iommu_domain_alloc(const struct bus_type *bus)
+ EXPORT_SYMBOL_GPL(iommu_domain_alloc);
+ 
+ /**
+- * iommu_paging_domain_alloc() - Allocate a paging domain
++ * iommu_paging_domain_alloc_flags() - Allocate a paging domain
+  * @dev: device for which the domain is allocated
++ * @flags: Bitmap of iommufd_hwpt_alloc_flags
+  *
+  * Allocate a paging domain which will be managed by a kernel driver. Return
+  * allocated domain if successful, or a ERR pointer for failure.
+  */
+-struct iommu_domain *iommu_paging_domain_alloc(struct device *dev)
++struct iommu_domain *iommu_paging_domain_alloc_flags(struct device *dev,
++						     unsigned int flags)
+ {
++	const struct iommu_ops *ops = dev_iommu_ops(dev);
++	struct iommu_domain *domain;
++
+ 	if (!dev_has_iommu(dev))
+ 		return ERR_PTR(-ENODEV);
+ 
+-	return __iommu_domain_alloc(dev_iommu_ops(dev), dev, IOMMU_DOMAIN_UNMANAGED);
++	if (ops->domain_alloc_paging && !flags)
++		domain = ops->domain_alloc_paging(dev);
++	else if (ops->domain_alloc_user)
++		domain = ops->domain_alloc_user(dev, flags, NULL, NULL);
++	else if (ops->domain_alloc && !flags)
++		domain = ops->domain_alloc(IOMMU_DOMAIN_UNMANAGED);
++	else
++		return ERR_PTR(-EOPNOTSUPP);
++
++	if (IS_ERR(domain))
++		return domain;
++	if (!domain)
++		return ERR_PTR(-ENOMEM);
++
++	iommu_domain_init(domain, IOMMU_DOMAIN_UNMANAGED, ops);
++	return domain;
+ }
+-EXPORT_SYMBOL_GPL(iommu_paging_domain_alloc);
++EXPORT_SYMBOL_GPL(iommu_paging_domain_alloc_flags);
+ 
+ void iommu_domain_free(struct iommu_domain *domain)
+ {
+@@ -2965,6 +2981,14 @@ static int iommu_setup_default_domain(struct iommu_group *group,
+ 	if (group->default_domain == dom)
+ 		return 0;
+ 
++	if (iommu_is_dma_domain(dom)) {
++		ret = iommu_get_dma_cookie(dom);
++		if (ret) {
++			iommu_domain_free(dom);
++			return ret;
++		}
++	}
++
+ 	/*
+ 	 * IOMMU_RESV_DIRECT and IOMMU_RESV_DIRECT_RELAXABLE regions must be
+ 	 * mapped before their device is attached, in order to guarantee
+diff --git a/include/linux/iommu.h b/include/linux/iommu.h
+index 4d47f2c3331185..8648be89834014 100644
+--- a/include/linux/iommu.h
++++ b/include/linux/iommu.h
+@@ -511,8 +511,8 @@ static inline int __iommu_copy_struct_from_user_array(
+  *                the caller iommu_domain_alloc() returns.
+  * @domain_alloc_user: Allocate an iommu domain corresponding to the input
+  *                     parameters as defined in include/uapi/linux/iommufd.h.
+- *                     Unlike @domain_alloc, it is called only by IOMMUFD and
+- *                     must fully initialize the new domain before return.
++ *                     Unlike @domain_alloc, it must fully initialize the new
++ *                     domain before return.
+  *                     Upon success, if the @user_data is valid and the @parent
+  *                     points to a kernel-managed domain, the new domain must be
+  *                     IOMMU_DOMAIN_NESTED type; otherwise, the @parent must be
+@@ -789,7 +789,11 @@ extern bool iommu_present(const struct bus_type *bus);
+ extern bool device_iommu_capable(struct device *dev, enum iommu_cap cap);
+ extern bool iommu_group_has_isolated_msi(struct iommu_group *group);
+ extern struct iommu_domain *iommu_domain_alloc(const struct bus_type *bus);
+-struct iommu_domain *iommu_paging_domain_alloc(struct device *dev);
++struct iommu_domain *iommu_paging_domain_alloc_flags(struct device *dev, unsigned int flags);
++static inline struct iommu_domain *iommu_paging_domain_alloc(struct device *dev)
++{
++	return iommu_paging_domain_alloc_flags(dev, 0);
++}
+ extern void iommu_domain_free(struct iommu_domain *domain);
+ extern int iommu_attach_device(struct iommu_domain *domain,
+ 			       struct device *dev);
+@@ -1098,6 +1102,12 @@ static inline struct iommu_domain *iommu_domain_alloc(const struct bus_type *bus
+ 	return NULL;
+ }
+ 
++struct inline iommu_domain *iommu_paging_domain_alloc_flags(struct device *dev,
++							    unsigned int flags)
++{
++	return ERR_PTR(-ENODEV);
++}
++
+ static inline struct iommu_domain *iommu_paging_domain_alloc(struct device *dev)
+ {
+ 	return ERR_PTR(-ENODEV);
