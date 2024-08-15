@@ -1,213 +1,295 @@
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+Received: from NAM10-MW2-obe.outbound.protection.outlook.com (mail-mw2nam10on2072.outbound.protection.outlook.com [40.107.94.72])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 450C31A76B2
-	for <iommu@lists.linux.dev>; Thu, 15 Aug 2024 14:04:53 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=170.10.133.124
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1723730696; cv=none; b=YIclIJl2CfKEod+FaAeXHx8KI7XXouzLClACwTHNy6+71vyfSR5JiIQMX6y7FbK+0gzALjcNGIWiTwdwiUUyNgBaU9IT7da1bJviXPvFSTVwcX4/ZXqSgX/qu8AZAfH/XtUP5QbrWLDnyAc204FlBrUfNm+E3V+ID6nOk29p8j0=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1723730696; c=relaxed/simple;
-	bh=9wBRif8u3KQqdmKtTCFDYwDvc05ue+hKUHHLMXPQ+sQ=;
-	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=Qmt6kcfKawAEzItAQcwjSRkrU1q/7rz8oCvXsnC+zUDHxzoiaIrMgrYqTD/olU7Pf7lHv34wPFNWSfqRysY7+iUfwiey8mRTGng26ANCJANkaQGg2MVub2VFO68u7ak4DBpE9hHVanXCwpL3VSoP6/RX//FXseFaQf4tCvXVz7E=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=redhat.com; spf=pass smtp.mailfrom=redhat.com; dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b=DepSNArb; arc=none smtp.client-ip=170.10.133.124
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=redhat.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=redhat.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 20E70175A5
+	for <iommu@lists.linux.dev>; Thu, 15 Aug 2024 15:11:42 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.94.72
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1723734704; cv=fail; b=g5boygSW+pzCwudzsTwagi7mcF1Ce8iNrZpsw0BQ6XK64vS/LtwN9gLd31X7i7BahQ6wj3JlThvTTPA31+6uk4JdzsqebXa1lKJGhKXPcTvY0ugmY5UbygJNvOz8s7FCq4k0W8he8MHQYfeKNZjR3PieRwJb9glTLbShcyFPrGA=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1723734704; c=relaxed/simple;
+	bh=6wBlfx6SyuNxYG5csajEvknGLVOQeAH6aakFu4Ff2So=;
+	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
+	 Content-Type:MIME-Version; b=mHtZxoz8Do/zk4M1mbDK2yHo1Ywyl2HlPbl3a478gmdePnDHbkDeBhsEWhwyT6mxX3k2y2Ir5wFIw/mHQpVLb/jNF6xwGhg1iz1VpNuHoFdl2JZ17wQFM1DQn8eVqagYAVadIhY2eIhspevvJ6yqXI6O1XO5ntyADxdRghEuzEU=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=PDDTmYK7; arc=fail smtp.client-ip=40.107.94.72
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="DepSNArb"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-	s=mimecast20190719; t=1723730693;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references;
-	bh=o1VeUmzh/uoFzMQziuwAE8gO4OkZoUZ7P6/8d0nwKLk=;
-	b=DepSNArbfK6Vc9jH9jOsMnTn4gqF+mpDCsd/2nmn9lPUh3P/HpXq1fpAGImU9bApqyJTof
-	dv4jGdteMtcwPBdKBml/nAXo/ZhWPpVOymAqTNn9TQeJTWg2AmQVhAL8kT1Pvl2iwHzNnc
-	+mESzrHTlKHpU34x/WLJZwR5cu4Wneo=
-Received: from mail-pl1-f197.google.com (mail-pl1-f197.google.com
- [209.85.214.197]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
- us-mta-504-bMRwCUPYPSCtnhqICLi8zw-1; Thu, 15 Aug 2024 10:04:51 -0400
-X-MC-Unique: bMRwCUPYPSCtnhqICLi8zw-1
-Received: by mail-pl1-f197.google.com with SMTP id d9443c01a7336-201ec229632so9324595ad.2
-        for <iommu@lists.linux.dev>; Thu, 15 Aug 2024 07:04:51 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1723730690; x=1724335490;
-        h=content-transfer-encoding:mime-version:organization:references
-         :in-reply-to:message-id:subject:cc:to:from:date:x-gm-message-state
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=o1VeUmzh/uoFzMQziuwAE8gO4OkZoUZ7P6/8d0nwKLk=;
-        b=S8h015KywZ/cCBVWRYeTW0Ma5TnQPp5Co7UUoOOVXXZq66BJZKIH9ioE/PVlYapLvZ
-         2blkmQ1zm+jdFMItApF8OM0nTPDfEHm34ltAsyhI3e5dXVG7iOeiUwNj+0Gy9i+0rN9V
-         TiqYYT6S2bYkXcGlyS5Zhy5vjEk2WdEffuE46nJsTXKNm7qev8bsBKHgIvnUL0lwTy2n
-         gztstneMSd0KzPn58GzKVOuGS+RFiyVQZpmvLjt66CtXYa4IjwrlBiEP4yBF3eGwf7uW
-         W8023YBejfBbrYA+3e1TFWwjd+8dgB9qzhjBKO3PurEKOCAn1apQivgnaGUNBjQ4iO49
-         O8yA==
-X-Forwarded-Encrypted: i=1; AJvYcCXTzRO6b9spQ6JOtjIFaRPBUCqN1g5pI0zdyG8aAgiSpyyPzW7UhA98fed60M9a8ZdHOYPVv5RaEi/MEoFT9xyKREM1jKU=
-X-Gm-Message-State: AOJu0YyId3RaQd+iQPZAB7+uX3i4fjVUG0w7XSyr8W0LwEhZnqsnd0Nq
-	y/XMDQmfzupMm6JuCvSlcLUU2WZZvJ4Q4zSKdU9RNbN1mJoE+AawggscmQnuGr9Evu6kx5EmOLl
-	eDQY6fT8d3vpm1KdhqDOjh/pVbEW+qXvh/zN6HiqdG81/Ikdi03mj
-X-Received: by 2002:a17:902:ce12:b0:202:cb:cd52 with SMTP id d9443c01a7336-20200cbce4emr5936905ad.21.1723730690008;
-        Thu, 15 Aug 2024 07:04:50 -0700 (PDT)
-X-Google-Smtp-Source: AGHT+IEMstqlVCsHH3cnCvGEGSZLKl4bqQLKDZZAZv1C0f5Pe3ITA+LT6nVFeRM6bDtEZ78KV+LuOA==
-X-Received: by 2002:a17:902:ce12:b0:202:cb:cd52 with SMTP id d9443c01a7336-20200cbce4emr5935965ad.21.1723730688871;
-        Thu, 15 Aug 2024 07:04:48 -0700 (PDT)
-Received: from redhat.com ([38.15.36.11])
-        by smtp.gmail.com with ESMTPSA id 8926c6da1cb9f-4ccd6f3e3b9sm498687173.88.2024.08.15.07.04.48
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 15 Aug 2024 07:04:48 -0700 (PDT)
-Date: Thu, 15 Aug 2024 08:04:47 -0600
-From: Alex Williamson <alex.williamson@redhat.com>
-To: Lu Baolu <baolu.lu@linux.intel.com>
-Cc: Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>, Robin
- Murphy <robin.murphy@arm.com>, Jason Gunthorpe <jgg@ziepe.ca>, Kevin Tian
- <kevin.tian@intel.com>, iommu@lists.linux.dev, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 1/1] iommu/vt-d: Fix incorrect domain ID in context
- flush helper
-Message-ID: <20240815080447.5d7264df.alex.williamson@redhat.com>
-In-Reply-To: <20240815124857.70038-1-baolu.lu@linux.intel.com>
-References: <20240815124857.70038-1-baolu.lu@linux.intel.com>
-Organization: Red Hat
+	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="PDDTmYK7"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=aHaKy78KbNTc0SAtOlDhX/zR6XSuD8DyymaN6LTXhHksRIuDR/iWAgUgo9MXfpr5zBfi9VcIxyKB+L8KhxXRWNUGvsJchnrdc7eP7PIeYNjvMPYm3POq0GaUE4Bc6+4i9hd+IEvM9f0Dbj9wQWOci191fTHk2DHaDTW6M37Hoh/tdgzRZhVeB1bZcQXjBZAK3gS7xFbHZK1aOdeq1Pzg8BX/ya43JnhXQtIc8Lu1ysYh8iWngrsAtcAsOBPXAHJxIN8KZQwVPIV+5qmngXZNoMyNwHiWFSyyKVdws3Xfpy68SPLar/AftEBsPOUkySPAe+3DJrXWoO0eGjDkVmP7jA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=cT5OYTyoXYx5X/x38jJiW1W79T0WeY2Tg2D25rF5DZI=;
+ b=gqSbBNBZ0qLxXxCPhNZUyeEwcpafirGWgcCYpjMYodStmRHt/LEQ0titBlHfFjtMqa2yV7H/9vZqDiWBwHiwBpYk25p9wiUl8JeYk8dsuvKa5gYmh0Bc8O+bYgD4iGt0r2650RWZNYzemn+e9BxRCMbUyoYlOUmGfIp6rHlLn/BS9xTrDYmdzMvG5R9X04fqck7HSbxTK3xfoXLJKOA5HDAo3YBz3aJo6/K9SZYd7Sq6eKNh++iM15vqtd6aLT1Fj5kBXrVyigUtnvhxTi/t0zJwQctYV9qCjFHDzbdrBgbdbwshCJtXNZVqruBrWV1y80rkbcesu4KPK+aV1eIxnA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=cT5OYTyoXYx5X/x38jJiW1W79T0WeY2Tg2D25rF5DZI=;
+ b=PDDTmYK7316KTvAwV7FLzV8k3mZmXVLDVlofUDnukLePag6A2/aXe4cPJcU8SP23eCGV/y/CEBtPl4xszH6YY6q1nB89vXoDDkjInlETMtRRnuroM/glx0t5ZTP/JOQjDseOrxH1BJ1TsAaWBFPOJhZL6eafgKQyF0pAYsYbTUzdT0EatlE2XjNe/DzYegcyDhK8p4ifwJysfBaGhnuylETndQKqqTQfKBH8S71/LCJOEhICa+ogw97QdOGRbqkYMTSvXUfGieK6oCXSFeZnzVApV5P9Y6Lqvch3fjfgsr/KKsT8KbwDMgbBbijFHf8mlm2GuuEJFfDOkb8qi2q3tA==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nvidia.com;
+Received: from CH3PR12MB7763.namprd12.prod.outlook.com (2603:10b6:610:145::10)
+ by SN7PR12MB8146.namprd12.prod.outlook.com (2603:10b6:806:323::10) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7875.17; Thu, 15 Aug
+ 2024 15:11:35 +0000
+Received: from CH3PR12MB7763.namprd12.prod.outlook.com
+ ([fe80::8b63:dd80:c182:4ce8]) by CH3PR12MB7763.namprd12.prod.outlook.com
+ ([fe80::8b63:dd80:c182:4ce8%3]) with mapi id 15.20.7875.016; Thu, 15 Aug 2024
+ 15:11:35 +0000
+From: Jason Gunthorpe <jgg@nvidia.com>
+To:
+Cc: Alejandro Jimenez <alejandro.j.jimenez@oracle.com>,
+	Lu Baolu <baolu.lu@linux.intel.com>,
+	David Hildenbrand <david@redhat.com>,
+	Christoph Hellwig <hch@lst.de>,
+	iommu@lists.linux.dev,
+	Joao Martins <joao.m.martins@oracle.com>,
+	Kevin Tian <kevin.tian@intel.com>,
+	kvm@vger.kernel.org,
+	linux-mm@kvack.org,
+	Pasha Tatashin <pasha.tatashin@soleen.com>,
+	Peter Xu <peterx@redhat.com>,
+	Ryan Roberts <ryan.roberts@arm.com>,
+	Sean Christopherson <seanjc@google.com>,
+	Tina Zhang <tina.zhang@intel.com>
+Subject: [PATCH 08/16] iommupt: Add read_and_clear_dirty op
+Date: Thu, 15 Aug 2024 12:11:24 -0300
+Message-ID: <8-v1-01fa10580981+1d-iommu_pt_jgg@nvidia.com>
+In-Reply-To: <0-v1-01fa10580981+1d-iommu_pt_jgg@nvidia.com>
+References:
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-ClientProxiedBy: MN2PR05CA0049.namprd05.prod.outlook.com
+ (2603:10b6:208:236::18) To CH3PR12MB7763.namprd12.prod.outlook.com
+ (2603:10b6:610:145::10)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: redhat.com
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: CH3PR12MB7763:EE_|SN7PR12MB8146:EE_
+X-MS-Office365-Filtering-Correlation-Id: 6e4e0405-7df8-4d98-055f-08dcbd3c8d29
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;ARA:13230040|366016|1800799024|7416014|376014;
+X-Microsoft-Antispam-Message-Info:
+	=?us-ascii?Q?pos61fFPSFsNDtfDkVWGj5nL47JRth8Vp8W1ggD6VTclyqXVb+KbWbu5eRtk?=
+ =?us-ascii?Q?mhI4kqzX7aSkcGurLR6l9cWwbvNXNMZZO8624PunO4uta0N2zt+1MtoY09EY?=
+ =?us-ascii?Q?+dfQpNqtBrqlAw8Dgs4PoXSSdwJJJffB4Iiivc0uJ0O7zfeExnggrCBsccO0?=
+ =?us-ascii?Q?29EHELZhYO1qkfUB0nL2u7ABt3uv139U1g+f6ex7/I6NAD92yN70uCG2v+wu?=
+ =?us-ascii?Q?murXM3GoHkRoqZpcPa6GmdUc6WZ5mshCz1bjzrRsplpnCN7pi9EX3G0+gFp4?=
+ =?us-ascii?Q?6V0wkSXVw5yiJdJSdasZxewdPk6BbN0crlzpS+PtdrXfXoo1sqi0VIikehBB?=
+ =?us-ascii?Q?J7uQc5eKVuXPzX6AurpQBtPDFJzj0xAgDNOND0N89UMBCABCEtPJDM7iP8TU?=
+ =?us-ascii?Q?Ip4K56VS5uSfY6Dl9bW+jBNWeRaU1u748Emx0wUSBhFYqwPH98fOL6vmp1t+?=
+ =?us-ascii?Q?EuQsH4xdvq8yf1duJr5yiUC27HcVVbmP9LKQxQxMnuxAAYUWw3bL19nFKLFl?=
+ =?us-ascii?Q?0e6zNQrvIz9FCBVxFYmbV5rM8SD2pfa6cMoTufh5DtnMCLzdwsquAI0e5kvx?=
+ =?us-ascii?Q?tVTEQFi0f/uIKkZoIAnb6ImaNfwUyMcUduPBwYsKIFq+jXAy1JDI8Mz2XqnL?=
+ =?us-ascii?Q?trGJIaPv7zfFuStplyTtGDXKaPs5D+E9sx74sg+87H+0GIp8A6jnXzsnOj66?=
+ =?us-ascii?Q?28EuAeRwMTkoNY1Pf/H/FbLo+UIMLJLy1KdCG5UtiNE6RRpar/yqa53sbt7j?=
+ =?us-ascii?Q?k99DpslRP88Tf+kcDCStaxFmlwBu5qHYr5pMwPbwhCbNV59qz2It1i8hR4d0?=
+ =?us-ascii?Q?3gVvog5KtJAwCDH964Etwv/m5ow9vzwR31byG9ATvDRVbDkyc+rZwDx3iIIs?=
+ =?us-ascii?Q?n18z2mdYyF7xvLk63Wj7xIXyyjwWedB4hgPYHSq50ViTArvLbTjPxR8D/hz9?=
+ =?us-ascii?Q?pI+aCd3AbGbFCZXH0HhR7XKCrxW5ErbCmZVUzGTe5DYPSkIzWUVsC5EzrEya?=
+ =?us-ascii?Q?KcNx+ZBmO8V65eXTITOcv1l8JByuECl6QT5Iym8Xy9VCYU51CP+Mgc5TxyLb?=
+ =?us-ascii?Q?GAlp79Lj5aSVbwyGifZMttxUjC8Fkkf7EY3D+loSWEahHWl5UhfIlGXlD0Pa?=
+ =?us-ascii?Q?qeoehbu3f3zo2R7ohgzcI3T+uE2z7hfsJU5/1+BV09okcv7zJNa7IUParFOr?=
+ =?us-ascii?Q?1Y4fZLRY1O+3D5JUmkCyZ64w9q6/reo9nTumTx9wU+DRkwvra/jHlfJzIdvd?=
+ =?us-ascii?Q?pL3QJeBwYOYICnIVhcrY3KpKtVFoR5rVXOnsKNf/3/iNqAZe2QAnRl087je/?=
+ =?us-ascii?Q?3DHMnvHUHOfIf0/O6eMi6b8tkyTu8FRFZvJM5avTtmn+cQ=3D=3D?=
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CH3PR12MB7763.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(366016)(1800799024)(7416014)(376014);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?us-ascii?Q?Ir7ZpkrRUOqHNZea6VR2AyfWPQHG1IwReI25VUlwWUB0fD/XlSQS7UmLhTzS?=
+ =?us-ascii?Q?CpocQeysA6cn9fQ3KnJgrHHMNfu05EdxRI5uspOOkLzkoGwG+zbaW6dnCprQ?=
+ =?us-ascii?Q?zhtdjOxicIQo3u08QnXHgfK4FtteF7vD6uY/134c5Isq0RQjs1p8IWfwOkzb?=
+ =?us-ascii?Q?KHfQzaoRw4d2717zXYDIXKGQKEXjIqHXUactvrAF3zDihyoGtU/rTabSPd0u?=
+ =?us-ascii?Q?FOfolXZTVK5RhRB/mRDGupqy4OVXBcs5ORftOwgvQtryPxlHhv0ObnWhfqqp?=
+ =?us-ascii?Q?lLkWHcKojrI1S/nXe0JeBLi2dY0GIMSDO4VrDdGv2dvmIez0BABxccrhHV/s?=
+ =?us-ascii?Q?okbm4MbTvC7SYOK62PjF1eXbM4wyLkCSL/M8gQVdbbAWOhY0Kg2IMvKCQS+u?=
+ =?us-ascii?Q?iWVwYG6KDacrRZr+WYvtH/xi2/34AthRw1JySsBp10dtlSA+dGsdn4eAdaho?=
+ =?us-ascii?Q?pvsO3C4G3JssSpMqnFJA85mxN1JMtBQ0LHOGbZnb/mW0oWgJxBV8jnRxEdRk?=
+ =?us-ascii?Q?Cq4GSjmVn02mRjoGUxP27/5Tq2oEeSxw60W0KRw4Cn0Nof7sxnEI3Q7BEGlQ?=
+ =?us-ascii?Q?K93qhsvlBD7Wshu/CUbcXChAn50pMgUL4FCCstEsMSa1IX+ZQcVqF0wFBX7r?=
+ =?us-ascii?Q?kWKTwCjdUWSlwiHNmCq/NdszcnjHdghWQ3C2OvAJlRjVFKEaAgrFnBwC6QhY?=
+ =?us-ascii?Q?xHH5iWjIWGDEO1ESg6iIxPF+7HNrdSXkljQrI9YJV+1mMfSNEwZ/hZr7Vq39?=
+ =?us-ascii?Q?l98CWPfqbgeadVxhhrNHN5rROpABD36qO9PZVR+uhmBL8KyFWhdj3RlhhUS3?=
+ =?us-ascii?Q?rwRBvO4jWsqrVrlxgIjSKo6lOLGnoUQespTLXjOIGd4CjJe2EixDG55eRj9d?=
+ =?us-ascii?Q?AJm/T3waMPZI2KvEdZ7L9VdhEmnl9SoX7id00FIH/tf0l8NgMqHil1d11LpD?=
+ =?us-ascii?Q?q2yMh4r5pQeJ3eRUlVhuAOvsZI1ErBYXzmOxl+5cSUGrTbU7KIivsiBtoHf1?=
+ =?us-ascii?Q?bysIPsjgGhuxycl37mbLum/j9C0jJP+k/swHBB+qEblNyMcdKVyDdJwz6Gck?=
+ =?us-ascii?Q?SvstIlzjnP3KJ/keTshzT5nMoHYE+NhQ84tANwxYkbZ3eFjqrG7EGD+QDouA?=
+ =?us-ascii?Q?cmZlaG6fdM6XbKLRU7XYZI4sjn3LAjt9K5xTKitxbjIj7ZnmwGO26k6cRdZU?=
+ =?us-ascii?Q?SM+SJJ4Pmmyiy4wFewYInWLe21+gs+b/3v4drS9XzSAVoirkeEJ8piD324sA?=
+ =?us-ascii?Q?BJbhfP5+37HRATAb6vPKGl8NG7IzhFCuv1Ygd9GzYlPZ/eT//KkYL5a88E8o?=
+ =?us-ascii?Q?4cbCrGZRU70EsZGjBENSNeNC0yq49BW5w1Ml7aIWAC6H73UPe5ZLMTYfZVS0?=
+ =?us-ascii?Q?d7vZXw8ckzgH+j7U+hPOzDJnv5tQoB8LBVQIvE6D/ixPOWrI9JtxnkxGBRY+?=
+ =?us-ascii?Q?DLfYqpvZd5SlihBRIZi0b9gKht8q73gz7sUjGafYD7mlWGmIamUHzDAdTkSh?=
+ =?us-ascii?Q?la+pDb+uwu02BU45izip5glnbua/6O3BL8voRUHLtGwvWL9K71WYQjlCjvIS?=
+ =?us-ascii?Q?PgRh3fAcMQKneZQ2law=3D?=
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 6e4e0405-7df8-4d98-055f-08dcbd3c8d29
+X-MS-Exchange-CrossTenant-AuthSource: CH3PR12MB7763.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 15 Aug 2024 15:11:34.4977
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: I7X6qejelVoqfoseLkmQuK1oXVBfGoK8hA/OonVnJvvblp49TVse+P18MA3cR990
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SN7PR12MB8146
 
-On Thu, 15 Aug 2024 20:48:57 +0800
-Lu Baolu <baolu.lu@linux.intel.com> wrote:
+IOMMU HW now supports updating a dirty bit in an entry when a DMA writes
+to the entry's VA range. iommufd has a uAPI to read and clear the dirty
+bits from the tables.
 
-> The helper intel_context_flush_present() is designed to flush all related
-> caches when a context entry with the present bit set is modified. It
-> currently retrieves the domain ID from the context entry and uses it to
-> flush the IOTLB and context caches. This is incorrect when the context
-> entry transitions from present to non-present, as the domain ID field is
-> cleared before calling the helper.
-> 
-> Fix it by passing the domain ID programmed in the context entry before the
-> change to intel_context_flush_present(). This ensures that the correct
-> domain ID is used for cache invalidation.
-> 
-> Fixes: f90584f4beb8 ("iommu/vt-d: Add helper to flush caches for context change")
-> Reported-by: Alex Williamson <alex.williamson@redhat.com>
-> Closes: https://lore.kernel.org/linux-iommu/20240814162726.5efe1a6e.alex.williamson@redhat.com/
-> Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
-> ---
->  drivers/iommu/intel/iommu.h | 2 +-
->  drivers/iommu/intel/iommu.c | 8 ++++++--
->  drivers/iommu/intel/pasid.c | 7 ++++---
->  3 files changed, 11 insertions(+), 6 deletions(-)
+This is a trivial recrusive descent algorithm unwound into a function call
+waterfall. The format needs a function to tell if a contiguous entry is
+dirty, and a function to clear a contiguous entry back to clean.
 
-Works for me.  Thanks for the fix.
+FIXME: needs kunit testing
 
-Tested-by: Alex Williamson <alex.williamson@redhat.com>
-Reviewed-by: Alex Williamson <alex.williamson@redhat.com>
+Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
+---
+ drivers/iommu/generic_pt/iommu_pt.h | 63 +++++++++++++++++++++++++++++
+ include/linux/generic_pt/iommu.h    | 22 ++++++++++
+ 2 files changed, 85 insertions(+)
 
-> diff --git a/drivers/iommu/intel/iommu.h b/drivers/iommu/intel/iommu.h
-> index b67c14da1240..a969be2258b1 100644
-> --- a/drivers/iommu/intel/iommu.h
-> +++ b/drivers/iommu/intel/iommu.h
-> @@ -1154,7 +1154,7 @@ void cache_tag_flush_range_np(struct dmar_domain *domain, unsigned long start,
->  
->  void intel_context_flush_present(struct device_domain_info *info,
->  				 struct context_entry *context,
-> -				 bool affect_domains);
-> +				 u16 did, bool affect_domains);
->  
->  #ifdef CONFIG_INTEL_IOMMU_SVM
->  void intel_svm_check(struct intel_iommu *iommu);
-> diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
-> index 9ff8b83c19a3..4aa070cf56e7 100644
-> --- a/drivers/iommu/intel/iommu.c
-> +++ b/drivers/iommu/intel/iommu.c
-> @@ -1944,6 +1944,7 @@ static void domain_context_clear_one(struct device_domain_info *info, u8 bus, u8
->  {
->  	struct intel_iommu *iommu = info->iommu;
->  	struct context_entry *context;
-> +	u16 did;
->  
->  	spin_lock(&iommu->lock);
->  	context = iommu_context_addr(iommu, bus, devfn, 0);
-> @@ -1952,10 +1953,11 @@ static void domain_context_clear_one(struct device_domain_info *info, u8 bus, u8
->  		return;
->  	}
->  
-> +	did = context_domain_id(context);
->  	context_clear_entry(context);
->  	__iommu_flush_cache(iommu, context, sizeof(*context));
->  	spin_unlock(&iommu->lock);
-> -	intel_context_flush_present(info, context, true);
-> +	intel_context_flush_present(info, context, did, true);
->  }
->  
->  static int domain_setup_first_level(struct intel_iommu *iommu,
-> @@ -4249,6 +4251,7 @@ static int context_flip_pri(struct device_domain_info *info, bool enable)
->  	struct intel_iommu *iommu = info->iommu;
->  	u8 bus = info->bus, devfn = info->devfn;
->  	struct context_entry *context;
-> +	u16 did;
->  
->  	spin_lock(&iommu->lock);
->  	if (context_copied(iommu, bus, devfn)) {
-> @@ -4261,6 +4264,7 @@ static int context_flip_pri(struct device_domain_info *info, bool enable)
->  		spin_unlock(&iommu->lock);
->  		return -ENODEV;
->  	}
-> +	did = context_domain_id(context);
->  
->  	if (enable)
->  		context_set_sm_pre(context);
-> @@ -4269,7 +4273,7 @@ static int context_flip_pri(struct device_domain_info *info, bool enable)
->  
->  	if (!ecap_coherent(iommu->ecap))
->  		clflush_cache_range(context, sizeof(*context));
-> -	intel_context_flush_present(info, context, true);
-> +	intel_context_flush_present(info, context, did, true);
->  	spin_unlock(&iommu->lock);
->  
->  	return 0;
-> diff --git a/drivers/iommu/intel/pasid.c b/drivers/iommu/intel/pasid.c
-> index 5792c817cefa..b51fc268dc84 100644
-> --- a/drivers/iommu/intel/pasid.c
-> +++ b/drivers/iommu/intel/pasid.c
-> @@ -683,6 +683,7 @@ static void device_pasid_table_teardown(struct device *dev, u8 bus, u8 devfn)
->  	struct device_domain_info *info = dev_iommu_priv_get(dev);
->  	struct intel_iommu *iommu = info->iommu;
->  	struct context_entry *context;
-> +	u16 did;
->  
->  	spin_lock(&iommu->lock);
->  	context = iommu_context_addr(iommu, bus, devfn, false);
-> @@ -691,10 +692,11 @@ static void device_pasid_table_teardown(struct device *dev, u8 bus, u8 devfn)
->  		return;
->  	}
->  
-> +	did = context_domain_id(context);
->  	context_clear_entry(context);
->  	__iommu_flush_cache(iommu, context, sizeof(*context));
->  	spin_unlock(&iommu->lock);
-> -	intel_context_flush_present(info, context, false);
-> +	intel_context_flush_present(info, context, did, false);
->  }
->  
->  static int pci_pasid_table_teardown(struct pci_dev *pdev, u16 alias, void *data)
-> @@ -885,10 +887,9 @@ static void __context_flush_dev_iotlb(struct device_domain_info *info)
->   */
->  void intel_context_flush_present(struct device_domain_info *info,
->  				 struct context_entry *context,
-> -				 bool flush_domains)
-> +				 u16 did, bool flush_domains)
->  {
->  	struct intel_iommu *iommu = info->iommu;
-> -	u16 did = context_domain_id(context);
->  	struct pasid_entry *pte;
->  	int i;
->  
+diff --git a/drivers/iommu/generic_pt/iommu_pt.h b/drivers/iommu/generic_pt/iommu_pt.h
+index 4fccdcd58d4ba6..79b0ecbdc1adf6 100644
+--- a/drivers/iommu/generic_pt/iommu_pt.h
++++ b/drivers/iommu/generic_pt/iommu_pt.h
+@@ -130,6 +130,64 @@ static phys_addr_t NS(iova_to_phys)(struct pt_iommu *iommu_table,
+ 	return res;
+ }
+ 
++struct pt_iommu_dirty_args {
++	struct iommu_dirty_bitmap *dirty;
++	unsigned int flags;
++};
++
++/* FIXME this is a bit big on formats with contig.. */
++static __always_inline int
++__do_read_and_clear_dirty(struct pt_range *range, void *arg, unsigned int level,
++			  struct pt_table_p *table, pt_level_fn_t descend_fn)
++{
++	struct pt_state pts = pt_init(range, level, table);
++	struct pt_iommu_dirty_args *dirty = arg;
++
++	for_each_pt_level_item(&pts) {
++		if (pts.type == PT_ENTRY_TABLE)
++			return pt_descend(&pts, arg, descend_fn);
++		if (pts.type == PT_ENTRY_EMPTY)
++			continue;
++
++		if (!pt_entry_write_is_dirty(&pts))
++			continue;
++
++		/* FIXME we should probably do our own gathering? */
++		iommu_dirty_bitmap_record(dirty->dirty, range->va,
++					  log2_to_int(pt_entry_oa_lg2sz(&pts)));
++		if (!(dirty->flags & IOMMU_DIRTY_NO_CLEAR)) {
++			/*
++			 * No write log required because DMA incoherence and
++			 * atomic dirty tracking bits can't work together
++			 */
++			pt_entry_set_write_clean(&pts);
++		}
++		break;
++	}
++	return 0;
++}
++PT_MAKE_LEVELS(__read_and_clear_dirty, __do_read_and_clear_dirty);
++
++static int __maybe_unused NS(read_and_clear_dirty)(
++	struct pt_iommu *iommu_table, dma_addr_t iova, dma_addr_t len,
++	unsigned long flags, struct iommu_dirty_bitmap *dirty_bitmap)
++{
++	struct pt_iommu_dirty_args dirty = {
++		.dirty = dirty_bitmap,
++		.flags = flags,
++	};
++	struct pt_range range;
++	int ret;
++
++	ret = make_range(common_from_iommu(iommu_table), &range, iova, len);
++	if (ret)
++		return ret;
++
++	ret = pt_walk_range(&range, __read_and_clear_dirty, &dirty);
++	PT_WARN_ON(ret);
++	return ret;
++}
++
+ struct pt_iommu_collect_args {
+ 	struct pt_radix_list_head free_list;
+ 	u8 ignore_mapped : 1;
+@@ -887,6 +945,9 @@ static const struct pt_iommu_ops NS(ops) = {
+ 	.unmap_pages = NS(unmap_pages),
+ 	.iova_to_phys = NS(iova_to_phys),
+ 	.cut_mapping = NS(cut_mapping),
++#if IS_ENABLED(CONFIG_IOMMUFD_DRIVER) && defined(pt_entry_write_is_dirty)
++	.read_and_clear_dirty = NS(read_and_clear_dirty),
++#endif
+ 	.get_info = NS(get_info),
+ 	.deinit = NS(deinit),
+ };
+@@ -963,5 +1024,7 @@ EXPORT_SYMBOL_NS_GPL(pt_iommu_init, GENERIC_PT_IOMMU);
+ 
+ MODULE_LICENSE("GPL");
+ MODULE_IMPORT_NS(GENERIC_PT);
++/* For iommu_dirty_bitmap_record() */
++MODULE_IMPORT_NS(IOMMUFD);
+ 
+ #endif
+diff --git a/include/linux/generic_pt/iommu.h b/include/linux/generic_pt/iommu.h
+index d83f293209fa77..f77f6aef3f5958 100644
+--- a/include/linux/generic_pt/iommu.h
++++ b/include/linux/generic_pt/iommu.h
+@@ -10,6 +10,7 @@
+ 
+ struct iommu_iotlb_gather;
+ struct pt_iommu_ops;
++struct iommu_dirty_bitmap;
+ 
+ /**
+  * DOC: IOMMU Radix Page Table
+@@ -158,6 +159,27 @@ struct pt_iommu_ops {
+ 	phys_addr_t (*iova_to_phys)(struct pt_iommu *iommu_table,
+ 				    dma_addr_t iova);
+ 
++	/**
++	 * read_and_clear_dirty() - Manipulate the HW set write dirty state
++	 * @iommu_table: Table to manipulate
++	 * @iova: IO virtual address to start
++	 * @size: Length of the IOVA
++	 * @flags: A bitmap of IOMMU_DIRTY_NO_CLEAR
++	 *
++	 * Iterate over all the entries in the mapped range and record their
++	 * write dirty status in iommu_dirty_bitmap. If IOMMU_DIRTY_NO_CLEAR is
++	 * not specified then the entries will be left dirty, otherwise they are
++	 * returned to being not write dirty.
++	 *
++	 * Context: The caller must hold a read range lock that includes @iova.
++	 *
++	 * Returns: -ERRNO on failure, 0 on success.
++	 */
++	int (*read_and_clear_dirty)(struct pt_iommu *iommu_table,
++				    dma_addr_t iova, dma_addr_t len,
++				    unsigned long flags,
++				    struct iommu_dirty_bitmap *dirty_bitmap);
++
+ 	/**
+ 	 * get_info() - Return the pt_iommu_info structure
+ 	 * @iommu_table: Table to query
+-- 
+2.46.0
 
