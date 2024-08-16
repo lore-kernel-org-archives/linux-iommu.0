@@ -1,109 +1,123 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.15])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 960331A01CF
-	for <iommu@lists.linux.dev>; Fri, 16 Aug 2024 13:14:44 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.15
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BBE971B8E9B;
+	Fri, 16 Aug 2024 13:21:09 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1723814085; cv=none; b=JoNaSlRQdOw1V7iOgEoK5oijBnM2tkJ0XUaY2PEnVoC1ZorodtAmqhpp9Sl5+kk7Agerey2fWedU/rP8j234Tounl9/sm03CPIQDOAeVotMBQ4FL0pqqnKlLmFyqOztVDfo1q2vqDTNmX4yQ3ZhfMkwzdAMzrE1Ovtz0V1qegmQ=
+	t=1723814469; cv=none; b=V7BZSfp/6WenQjZhQIOUxFFG0NU2xpceIYlUKw2Ez4wJr63xlPl0RJgV1y024zRFemVbPELZ/vQvoRPXGTEwGlqLqFrtrJgaGbuIak0d/njNH2cSRWatKjt1p1FU95MY2BgV/ukZCXGwEqLI1BmM2bmg9W8GWSltzA4Ql/ndN1w=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1723814085; c=relaxed/simple;
-	bh=Okg3+uwu0bCLZvjjHJ2snIchx4goVhonI4QHQBcac3s=;
-	h=Message-ID:Date:MIME-Version:Cc:Subject:To:References:From:
-	 In-Reply-To:Content-Type; b=DCsUUpD+t+5Xi7RNOyVkpQe3ZfhUhqk/vu0E0zLyV1CTifv9eldPw4Roc03OhjS2TzlOTHr8NU/FhFMBY68jDKtcg+ezjspKEcLdnb7PzRyxM3WBJaXC0HU6HIEtrBPGL09qGKtE4qgEVJOG8Yo/JcUkw+AuLiKrSZ3G69wP+DA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=bA9cXxnV; arc=none smtp.client-ip=198.175.65.15
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
+	s=arc-20240116; t=1723814469; c=relaxed/simple;
+	bh=a2Kf6a8V9/SSavactzIhoatEiARq9RMYi5B2/3we3eo=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=Af5MLUTFYYtERNDq1Cpgu7mNCKogviOapWKHp639WXPpaouM8M+lNYaw7S7yo0x9FPUn2eNPz51H6uYe2Lnc2ZM8RoEG5dI+YY3rQ7+wy8Vsm+axXKq6yD9M1ClRin6Rk1ATvfLA/0RkOw+jhZoz9ZH+AO0p81+3HObuGxLiAbI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=t1Ux+NDM; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="bA9cXxnV"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1723814084; x=1755350084;
-  h=message-id:date:mime-version:cc:subject:to:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=Okg3+uwu0bCLZvjjHJ2snIchx4goVhonI4QHQBcac3s=;
-  b=bA9cXxnVm0XZXMySrTr+qJgeE6JlrLZ5vw6iFIko1gn04rBPdD8bMmyj
-   jUKgdLzjPuHbkwmbgnIDnMMmeReDNpZb8XdEPnVL16A+UrmWbruXEORyt
-   oWVkoaA9ADQh6vcngyOaBUll7zzIxjmHVQWeP+zeSm1cyBkWsCYj0cfNw
-   tecNilf7Moxhjl89zmeqdWvqfP4BqO5jnXYvYs+2CD9sHGiGsrXMScMFn
-   WteKjUkNtemqWJLCCFRf3mA4Q3p5dGHmPjWLfKYtSguA9ipC9vgCwSIMj
-   WMhQKPzPQ1NTok2+XsSJ+z+/Ns0/p4yl6bL5DZabqxA9yoYmubEXeM0O5
-   g==;
-X-CSE-ConnectionGUID: Gz6ozXWbTSiTFAy/58aT0g==
-X-CSE-MsgGUID: MSm9XqbRQfmcM7nbMNFznw==
-X-IronPort-AV: E=McAfee;i="6700,10204,11166"; a="25866876"
-X-IronPort-AV: E=Sophos;i="6.10,151,1719903600"; 
-   d="scan'208";a="25866876"
-Received: from orviesa004.jf.intel.com ([10.64.159.144])
-  by orvoesa107.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Aug 2024 06:14:44 -0700
-X-CSE-ConnectionGUID: Gyua7FRbSE2nKtlIbaowgg==
-X-CSE-MsgGUID: y6hKpDWTRJeNvbjkGWhTQA==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.10,151,1719903600"; 
-   d="scan'208";a="64616054"
-Received: from blu2-mobl.ccr.corp.intel.com (HELO [10.125.248.220]) ([10.125.248.220])
-  by orviesa004-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Aug 2024 06:14:40 -0700
-Message-ID: <215647fb-5aec-48db-9e09-5034dd19977c@linux.intel.com>
-Date: Fri, 16 Aug 2024 21:14:37 +0800
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="t1Ux+NDM"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4B88EC32782;
+	Fri, 16 Aug 2024 13:21:07 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1723814469;
+	bh=a2Kf6a8V9/SSavactzIhoatEiARq9RMYi5B2/3we3eo=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=t1Ux+NDMqLquWHD24RThGYzsYU5Ru0ybzHSSg6uRINnbKY6yKpzOy8Iyyb2K1xmkH
+	 Xj48wX2XIWpHykMiimGieQQyQEu/6oCgfzRG1ljEhCTGTqB4griDrOsx0pe2iALSZd
+	 OR/lkakZ8L6T0qy3o57lEtnliFPctKWHYFA5O7w9yYOaXJtX24YmZJurAQGMOEEYeO
+	 PoB7SDkiuw9NJs5GJ2qc60Q7OEAHvcGKeH4zZ8hrrdCjVvCaUXE5+t7wfvDMKo9hYS
+	 CxbfPBgvcV6AK04uAdMge/h6yQaf4B+y3ywwPXpDobOoMXMO/7mqHESOl29Zx4C2Yd
+	 i9RTMYO38baog==
+Date: Fri, 16 Aug 2024 14:21:03 +0100
+From: Will Deacon <will@kernel.org>
+To: Nicolin Chen <nicolinc@nvidia.com>
+Cc: robin.murphy@arm.com, joro@8bytes.org, jgg@nvidia.com,
+	thierry.reding@gmail.com, vdumpa@nvidia.com, jonathanh@nvidia.com,
+	linux-kernel@vger.kernel.org, iommu@lists.linux.dev,
+	linux-arm-kernel@lists.infradead.org, linux-tegra@vger.kernel.org
+Subject: Re: [PATCH v11 9/9] iommu/tegra241-cmdqv: Limit CMDs for guest owned
+ VINTF
+Message-ID: <20240816132103.GA24411@willie-the-truck>
+References: <cover.1722993435.git.nicolinc@nvidia.com>
+ <153fb887cf4bf6318c6f313a4be9b40a25a24e7d.1722993435.git.nicolinc@nvidia.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Cc: baolu.lu@linux.intel.com, Yi Liu <yi.l.liu@intel.com>,
- "Tian, Kevin" <kevin.tian@intel.com>,
- Alex Williamson <alex.williamson@redhat.com>,
- "joro@8bytes.org" <joro@8bytes.org>,
- "robin.murphy@arm.com" <robin.murphy@arm.com>,
- "eric.auger@redhat.com" <eric.auger@redhat.com>,
- "nicolinc@nvidia.com" <nicolinc@nvidia.com>,
- "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
- "chao.p.peng@linux.intel.com" <chao.p.peng@linux.intel.com>,
- "iommu@lists.linux.dev" <iommu@lists.linux.dev>,
- "Duan, Zhenzhong" <zhenzhong.duan@intel.com>,
- "Pan, Jacob jun" <jacob.jun.pan@intel.com>, =?UTF-8?Q?C=C3=A9dric_Le_Goater?=
- <clg@redhat.com>, Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
-Subject: Re: [PATCH v2 0/4] vfio-pci support pasid attach/detach
-To: Jason Gunthorpe <jgg@nvidia.com>, Vasant Hegde <vasant.hegde@amd.com>
-References: <BN9PR11MB5276318969A212AD0649C7BE8CBE2@BN9PR11MB5276.namprd11.prod.outlook.com>
- <20240806142047.GN478300@nvidia.com>
- <0ae87b83-c936-47d2-b981-ef1e8c87f7fa@intel.com>
- <BN9PR11MB5276871E150DC968B2F652798C872@BN9PR11MB5276.namprd11.prod.outlook.com>
- <4f5bfba2-c1e7-4923-aa9c-59d76ccc4390@intel.com>
- <20240814144031.GO2032816@nvidia.com>
- <b37a7336-36af-4ffc-a50f-c9b578cd9bda@intel.com>
- <6f293363-1c02-4389-a6b3-7e9845b0f251@amd.com>
- <8a73ef9c-bd37-403f-abdf-b00e8eb45236@intel.com>
- <f6c4e06e-e946-489f-8856-f18e1c1cc0aa@amd.com>
- <20240816125252.GA2032816@nvidia.com>
-Content-Language: en-US
-From: Baolu Lu <baolu.lu@linux.intel.com>
-In-Reply-To: <20240816125252.GA2032816@nvidia.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <153fb887cf4bf6318c6f313a4be9b40a25a24e7d.1722993435.git.nicolinc@nvidia.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 
-On 2024/8/16 20:52, Jason Gunthorpe wrote:
-> On Fri, Aug 16, 2024 at 05:31:31PM +0530, Vasant Hegde wrote:
->>> I see. So AMD side also has a gap. Is it easy to make it suit Jason's
->>> suggestion in the above?
->> We can do that. We can enable ATS, PRI and PASID capability during probe time
->> and keep it enabled always.
-> I don't see a downside to enabling PASID at probe time, it exists to
-> handshake with the device if the root complex is able to understand
-> PASID TLPs.
+On Tue, Aug 06, 2024 at 07:11:54PM -0700, Nicolin Chen wrote:
+> When VCMDQs are assigned to a VINTF owned by a guest (HYP_OWN bit unset),
+> only TLB and ATC invalidation commands are supported by the VCMDQ HW. So,
+> add a new helper to scan the input cmd to make sure it is supported when
+> selecting a queue, though this assumes that SMMUv3 driver will only add
+> the same type of commands into an arm_smmu_cmdq_batch as it does today.
 > 
-> SMMU3 calls
->   arm_smmu_probe_device
->    arm_smmu_enable_pasid
->     pci_enable_pasid
+> Note that the guest VM shouldn't have HYP_OWN bit being set regardless of
+> guest kernel driver writing it or not, i.e. the hypervisor running in the
+> host OS should wire this bit to zero when trapping a write access to this
+> VINTF_CONFIG register from a guest kernel.
 > 
-> So it looks Ok
+> Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
+> Signed-off-by: Nicolin Chen <nicolinc@nvidia.com>
+> ---
+>  drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c   | 22 +++++++-----
+>  drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h   |  3 +-
+>  .../iommu/arm/arm-smmu-v3/tegra241-cmdqv.c    | 35 ++++++++++++++++++-
+>  3 files changed, 49 insertions(+), 11 deletions(-)
+> 
+> diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+> index 18d940c65e2c..8ff8e264d5e7 100644
+> --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+> +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+> @@ -336,12 +336,13 @@ static int arm_smmu_cmdq_build_cmd(u64 *cmd, struct arm_smmu_cmdq_ent *ent)
+>  	return 0;
+>  }
+>  
+> -static struct arm_smmu_cmdq *arm_smmu_get_cmdq(struct arm_smmu_device *smmu)
+> +static struct arm_smmu_cmdq *arm_smmu_get_cmdq(struct arm_smmu_device *smmu,
+> +					       u8 opcode)
+>  {
+>  	struct arm_smmu_cmdq *cmdq = NULL;
+>  
+>  	if (smmu->impl && smmu->impl->get_secondary_cmdq)
+> -		cmdq = smmu->impl->get_secondary_cmdq(smmu);
+> +		cmdq = smmu->impl->get_secondary_cmdq(smmu, opcode);
+>  
+>  	return cmdq ?: &smmu->cmdq;
+>  }
+> @@ -889,7 +890,7 @@ static int __arm_smmu_cmdq_issue_cmd(struct arm_smmu_device *smmu,
+>  	}
+>  
+>  	return arm_smmu_cmdq_issue_cmdlist(
+> -		smmu, arm_smmu_get_cmdq(smmu), cmd, 1, sync);
+> +		smmu, arm_smmu_get_cmdq(smmu, ent->opcode), cmd, 1, sync);
+>  }
+>  
+>  static int arm_smmu_cmdq_issue_cmd(struct arm_smmu_device *smmu,
+> @@ -905,10 +906,13 @@ static int arm_smmu_cmdq_issue_cmd_with_sync(struct arm_smmu_device *smmu,
+>  }
+>  
+>  static void arm_smmu_cmdq_batch_init(struct arm_smmu_device *smmu,
+> -				     struct arm_smmu_cmdq_batch *cmds)
+> +				     struct arm_smmu_cmdq_batch *cmds,
+> +				     u8 opcode)
+>  {
+> +	WARN_ON_ONCE(!opcode);
 
-I made a patch for the Intel driver.
+This seems like a fairly arbitrary warning. Remove it?
 
-https://lore.kernel.org/linux-iommu/20240816104945.97160-1-baolu.lu@linux.intel.com/
+> +
+>  	cmds->num = 0;
+> -	cmds->cmdq = arm_smmu_get_cmdq(smmu);
+> +	cmds->cmdq = arm_smmu_get_cmdq(smmu, opcode);
 
-Thanks,
-baolu
+If we stashed the opcode here, we could actually just enforce that all
+commands in the batch are the same type in arm_smmu_cmdq_batch_add().
+
+Would that work better for you or not?
+
+Will
