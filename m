@@ -1,50 +1,50 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.17])
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.15])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 918A81B86F2
-	for <iommu@lists.linux.dev>; Fri, 16 Aug 2024 13:09:10 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.17
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 960331A01CF
+	for <iommu@lists.linux.dev>; Fri, 16 Aug 2024 13:14:44 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.15
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1723813752; cv=none; b=SRo4W7KNpoI08Pf6Ekw1ARROTSWBhNR/LW1TWprM2gTqBxpLqzaiAHGXLI5WVNMBEJQJwh4M9J6xmxoK7+zwbmTv9YsVBKxJB26YtN9enWQOHP2ocNLD9PscCv9zA5tGi50QEzxMiACemdmTDzLGf5G/dx3mMCWSdnh1de19/iU=
+	t=1723814085; cv=none; b=JoNaSlRQdOw1V7iOgEoK5oijBnM2tkJ0XUaY2PEnVoC1ZorodtAmqhpp9Sl5+kk7Agerey2fWedU/rP8j234Tounl9/sm03CPIQDOAeVotMBQ4FL0pqqnKlLmFyqOztVDfo1q2vqDTNmX4yQ3ZhfMkwzdAMzrE1Ovtz0V1qegmQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1723813752; c=relaxed/simple;
-	bh=RWcQLwO01wO7lZK+4TH1HBDdeNFGrYDvAOx+heLlZhM=;
+	s=arc-20240116; t=1723814085; c=relaxed/simple;
+	bh=Okg3+uwu0bCLZvjjHJ2snIchx4goVhonI4QHQBcac3s=;
 	h=Message-ID:Date:MIME-Version:Cc:Subject:To:References:From:
-	 In-Reply-To:Content-Type; b=lZOqPTbcjRMQ9A2H8S1QUsdZobLJmSxFRPF+GKO6NcvB5Vah6drBqiSukT57M1T9HOBeqGfx8BFoG6QMI+fwwGV1J//a1JqNYpk6OBDm40+yv2bgB5mZ5IOU0zhyH4V9dBRxzZgMPvRDnZleiSor9KJpIUCSzDv+7CwQSfPAbRg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=lZmwuaT0; arc=none smtp.client-ip=192.198.163.17
+	 In-Reply-To:Content-Type; b=DCsUUpD+t+5Xi7RNOyVkpQe3ZfhUhqk/vu0E0zLyV1CTifv9eldPw4Roc03OhjS2TzlOTHr8NU/FhFMBY68jDKtcg+ezjspKEcLdnb7PzRyxM3WBJaXC0HU6HIEtrBPGL09qGKtE4qgEVJOG8Yo/JcUkw+AuLiKrSZ3G69wP+DA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=bA9cXxnV; arc=none smtp.client-ip=198.175.65.15
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="lZmwuaT0"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="bA9cXxnV"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1723813751; x=1755349751;
+  t=1723814084; x=1755350084;
   h=message-id:date:mime-version:cc:subject:to:references:
    from:in-reply-to:content-transfer-encoding;
-  bh=RWcQLwO01wO7lZK+4TH1HBDdeNFGrYDvAOx+heLlZhM=;
-  b=lZmwuaT0sHNcjd3LLswcrAFIPOMh75OsyI4Uw9WtruOXIRPD2VO6k+Ed
-   6Fn1EF4ICBVCJsj/MHYmtf85LVv5vcwB982RGNMN196CJ4mcO882YkrUa
-   sVrZ3xV4ixHICA6gBxa2kBKCKhuXu4ItXoMmOV64hyyV9hvVXTt4eqqbE
-   jSsvyYQe2/wuTH6ncqRW99zWIYn1qfLpc+05UWDfA9nZRYEckfXBVo4e9
-   LMo2CiFU/ND2VaDc/48Jna2lZjOVoaJJOYUsf7K+KqqYoxVrETRAk+3vr
-   jzN2Rxe9cIK0op8D8pibLzrMrSzE/yGWCfkIbLbDoO/xCr9Uw2x082Eqv
+  bh=Okg3+uwu0bCLZvjjHJ2snIchx4goVhonI4QHQBcac3s=;
+  b=bA9cXxnVm0XZXMySrTr+qJgeE6JlrLZ5vw6iFIko1gn04rBPdD8bMmyj
+   jUKgdLzjPuHbkwmbgnIDnMMmeReDNpZb8XdEPnVL16A+UrmWbruXEORyt
+   oWVkoaA9ADQh6vcngyOaBUll7zzIxjmHVQWeP+zeSm1cyBkWsCYj0cfNw
+   tecNilf7Moxhjl89zmeqdWvqfP4BqO5jnXYvYs+2CD9sHGiGsrXMScMFn
+   WteKjUkNtemqWJLCCFRf3mA4Q3p5dGHmPjWLfKYtSguA9ipC9vgCwSIMj
+   WMhQKPzPQ1NTok2+XsSJ+z+/Ns0/p4yl6bL5DZabqxA9yoYmubEXeM0O5
    g==;
-X-CSE-ConnectionGUID: rtk1A+ogSYGgCjnU6+RiUA==
-X-CSE-MsgGUID: PW8093VfQdOdHwDxYdymdQ==
-X-IronPort-AV: E=McAfee;i="6700,10204,11166"; a="21985625"
+X-CSE-ConnectionGUID: Gz6ozXWbTSiTFAy/58aT0g==
+X-CSE-MsgGUID: MSm9XqbRQfmcM7nbMNFznw==
+X-IronPort-AV: E=McAfee;i="6700,10204,11166"; a="25866876"
 X-IronPort-AV: E=Sophos;i="6.10,151,1719903600"; 
-   d="scan'208";a="21985625"
-Received: from orviesa005.jf.intel.com ([10.64.159.145])
-  by fmvoesa111.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Aug 2024 06:09:10 -0700
-X-CSE-ConnectionGUID: 4domtbMSRG+FxjIiCA7yZw==
-X-CSE-MsgGUID: SotT63MOQwaC6BH65Zz7bg==
+   d="scan'208";a="25866876"
+Received: from orviesa004.jf.intel.com ([10.64.159.144])
+  by orvoesa107.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Aug 2024 06:14:44 -0700
+X-CSE-ConnectionGUID: Gyua7FRbSE2nKtlIbaowgg==
+X-CSE-MsgGUID: y6hKpDWTRJeNvbjkGWhTQA==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.10,151,1719903600"; 
-   d="scan'208";a="64557821"
+   d="scan'208";a="64616054"
 Received: from blu2-mobl.ccr.corp.intel.com (HELO [10.125.248.220]) ([10.125.248.220])
-  by orviesa005-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Aug 2024 06:09:07 -0700
-Message-ID: <92b55591-e106-4366-ba5b-0588af50770f@linux.intel.com>
-Date: Fri, 16 Aug 2024 21:09:04 +0800
+  by orviesa004-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Aug 2024 06:14:40 -0700
+Message-ID: <215647fb-5aec-48db-9e09-5034dd19977c@linux.intel.com>
+Date: Fri, 16 Aug 2024 21:14:37 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -52,33 +52,58 @@ List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Cc: baolu.lu@linux.intel.com, iommu@lists.linux.dev,
- linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 1/1] iommu/vt-d: Move PCI PASID enablement to probe path
-To: Vasant Hegde <vasant.hegde@amd.com>, Joerg Roedel <joro@8bytes.org>,
- Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
- Jason Gunthorpe <jgg@ziepe.ca>, Kevin Tian <kevin.tian@intel.com>,
- Yi Liu <yi.l.liu@intel.com>
-References: <20240816104945.97160-1-baolu.lu@linux.intel.com>
- <6650ce02-ac85-4cb6-941c-cc7e8b6effc4@amd.com>
+Cc: baolu.lu@linux.intel.com, Yi Liu <yi.l.liu@intel.com>,
+ "Tian, Kevin" <kevin.tian@intel.com>,
+ Alex Williamson <alex.williamson@redhat.com>,
+ "joro@8bytes.org" <joro@8bytes.org>,
+ "robin.murphy@arm.com" <robin.murphy@arm.com>,
+ "eric.auger@redhat.com" <eric.auger@redhat.com>,
+ "nicolinc@nvidia.com" <nicolinc@nvidia.com>,
+ "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
+ "chao.p.peng@linux.intel.com" <chao.p.peng@linux.intel.com>,
+ "iommu@lists.linux.dev" <iommu@lists.linux.dev>,
+ "Duan, Zhenzhong" <zhenzhong.duan@intel.com>,
+ "Pan, Jacob jun" <jacob.jun.pan@intel.com>, =?UTF-8?Q?C=C3=A9dric_Le_Goater?=
+ <clg@redhat.com>, Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
+Subject: Re: [PATCH v2 0/4] vfio-pci support pasid attach/detach
+To: Jason Gunthorpe <jgg@nvidia.com>, Vasant Hegde <vasant.hegde@amd.com>
+References: <BN9PR11MB5276318969A212AD0649C7BE8CBE2@BN9PR11MB5276.namprd11.prod.outlook.com>
+ <20240806142047.GN478300@nvidia.com>
+ <0ae87b83-c936-47d2-b981-ef1e8c87f7fa@intel.com>
+ <BN9PR11MB5276871E150DC968B2F652798C872@BN9PR11MB5276.namprd11.prod.outlook.com>
+ <4f5bfba2-c1e7-4923-aa9c-59d76ccc4390@intel.com>
+ <20240814144031.GO2032816@nvidia.com>
+ <b37a7336-36af-4ffc-a50f-c9b578cd9bda@intel.com>
+ <6f293363-1c02-4389-a6b3-7e9845b0f251@amd.com>
+ <8a73ef9c-bd37-403f-abdf-b00e8eb45236@intel.com>
+ <f6c4e06e-e946-489f-8856-f18e1c1cc0aa@amd.com>
+ <20240816125252.GA2032816@nvidia.com>
 Content-Language: en-US
 From: Baolu Lu <baolu.lu@linux.intel.com>
-In-Reply-To: <6650ce02-ac85-4cb6-941c-cc7e8b6effc4@amd.com>
+In-Reply-To: <20240816125252.GA2032816@nvidia.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 
-On 2024/8/16 20:16, Vasant Hegde wrote:
-> On 8/16/2024 4:19 PM, Lu Baolu wrote:
->> Currently, PCI PASID is enabled alongside PCI ATS when an iommu domain is
->> attached to the device and disabled when the device transitions to block
->> translation mode. This approach is inappropriate as PCI PASID is a device
->> feature independent of the type of the attached domain.
-> Reading through other thread, I thought we want to enable both PASID and PRI in
-> device probe path. Did I miss something?
+On 2024/8/16 20:52, Jason Gunthorpe wrote:
+> On Fri, Aug 16, 2024 at 05:31:31PM +0530, Vasant Hegde wrote:
+>>> I see. So AMD side also has a gap. Is it easy to make it suit Jason's
+>>> suggestion in the above?
+>> We can do that. We can enable ATS, PRI and PASID capability during probe time
+>> and keep it enabled always.
+> I don't see a downside to enabling PASID at probe time, it exists to
+> handshake with the device if the root complex is able to understand
+> PASID TLPs.
+> 
+> SMMU3 calls
+>   arm_smmu_probe_device
+>    arm_smmu_enable_pasid
+>     pci_enable_pasid
+> 
+> So it looks Ok
 
-PRI is different. PRI should be enabled when the first iopf-capable
-domain is attached to device or its PASID, and disabled when the last
-such domain is detached.
+I made a patch for the Intel driver.
+
+https://lore.kernel.org/linux-iommu/20240816104945.97160-1-baolu.lu@linux.intel.com/
 
 Thanks,
 baolu
