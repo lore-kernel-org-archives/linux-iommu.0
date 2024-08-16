@@ -1,143 +1,132 @@
-Received: from bee.tesarici.cz (bee.tesarici.cz [37.205.15.56])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-ed1-f53.google.com (mail-ed1-f53.google.com [209.85.208.53])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0271A1BD4FF
-	for <iommu@lists.linux.dev>; Fri, 16 Aug 2024 14:37:56 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=37.205.15.56
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 227561BD001
+	for <iommu@lists.linux.dev>; Fri, 16 Aug 2024 14:42:57 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.53
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1723819081; cv=none; b=oSADCE0E6hvtGgEFbOhUYTIHYD9NQ/734+pmFNbOdyYi1IE62hvvCJGs7NUU8FX83gIGpN/JKsDSnXdF39pCUuF60rq6szxbknvriVDO38K9cY7HcKbSrDofZ5+N8gA3LBEoB7kntP2zJdqJF3q02R6UjPBHxjPtLEsOeYU7O2E=
+	t=1723819379; cv=none; b=S+d8F+opMZz6AqLSO1kjGuyxnb8z+/EzluBNCYfv0IFusju4BdJ5TH45ptMdgGnaG9GITTKD+G6J0tbxq65MCqk5+nDMBXqAlZiERbJ4IrtghyRpt8FK2ahLHp/8AZMJwchmt1yNMz/Z7uA6V67ANyeYLOu8FawRR4v/6WHh83M=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1723819081; c=relaxed/simple;
-	bh=mmLtzot0ufpyFUcavkC+Nn3B+Q5J6BsCRBGm8Iiivrs=;
-	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=Uu/LhaKaqau/Bp7wQTRHZSYQUZ0V0YQU2cBwSGOv/LftLJrh0YLum2B0pCyhFKLbPz6Hie+xQDGq/DYpMrB1Xx/Cf7Wqcq6HrrE+eWSch8FpSdsbvIF087CFADV4dnziJtfYkEBaAl0AOhJ4rLFePph8w4vq2mUuHmEa9Z4Hg78=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=tesarici.cz; spf=pass smtp.mailfrom=tesarici.cz; dkim=pass (2048-bit key) header.d=tesarici.cz header.i=@tesarici.cz header.b=0CuhUKid; arc=none smtp.client-ip=37.205.15.56
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=tesarici.cz
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=tesarici.cz
+	s=arc-20240116; t=1723819379; c=relaxed/simple;
+	bh=/ZcdoQZgWUioXpD8yYGIrCkiY4QmlOOvZmIkF3rOxVY=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=CnlwPkT3MkE+TdTWN9AM1roGCH6XjJtGnbbsXxP7CPo7c035R2jvEon+b2ZAPdUUWc+KK7oLvbxpXnogoVj4sSXWew1f1YVhSaNnAg5l8EQE78B9gnvp4yzvp6/fnz41qc/18a3mekxwkyvLkYiCLqLCwY6ulgZQx6dZ9J0TQlk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=KO/dg+fn; arc=none smtp.client-ip=209.85.208.53
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=tesarici.cz header.i=@tesarici.cz header.b="0CuhUKid"
-Received: from mordecai.tesarici.cz (dynamic-2a00-1028-83b8-1e7a-3010-3bd6-8521-caf1.ipv6.o2.cz [IPv6:2a00:1028:83b8:1e7a:3010:3bd6:8521:caf1])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange ECDHE (P-256) server-signature RSA-PSS (2048 bits) server-digest SHA256)
-	(No client certificate requested)
-	by bee.tesarici.cz (Postfix) with ESMTPSA id B57A21E37A1;
-	Fri, 16 Aug 2024 16:37:48 +0200 (CEST)
-Authentication-Results: mail.tesarici.cz; dmarc=fail (p=quarantine dis=none) header.from=tesarici.cz
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=tesarici.cz; s=mail;
-	t=1723819068; bh=YTsjo9xdLYhs/JNEPkM0QFjPK5lYJCTAZFLJJQCw3FU=;
-	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-	b=0CuhUKidl4+XHrz9gNPtjDuzk4+GJznh4ZajAJYkkbkaai6FjEG05RWi5joRvMBnO
-	 SAxoRmfGHhXqGGAkVlaHgfo3F6Mb5gfntXIwmAXHFvCKKYLP5rL0kXNH5ih7NPGjG+
-	 p9H0lHBrjCXd3RrzPRDfFb5cqT00vgdtwO/3YHQR+24ZP8erEXTrerbpapKZgw8SgK
-	 cngJSDf1OEDWEw4kHFQj1c9Hlj40xeiKFOM0xv6EEq+RxXpHLTahgsUHDxa3oJdzDu
-	 GC4wCcJ5Yu/NxHoAGUXCOfrsFtjxrECGQpyakRb4NBv/5KGoqrrnsfCKpzMkXUdefO
-	 OEv46M2PYXh9g==
-Date: Fri, 16 Aug 2024 16:37:43 +0200
-From: Petr =?UTF-8?B?VGVzYcWZw61r?= <petr@tesarici.cz>
-To: Will Deacon <will@kernel.org>
-Cc: Baruch Siach <baruch@tkos.co.il>, Christoph Hellwig <hch@lst.de>, Marek
- Szyprowski <m.szyprowski@samsung.com>, Catalin Marinas
- <catalin.marinas@arm.com>, Robin Murphy <robin.murphy@arm.com>,
- iommu@lists.linux.dev, linux-arm-kernel@lists.infradead.org,
- linux-kernel@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
- linux-s390@vger.kernel.org, Ramon Fried <ramon@neureality.ai>, Elad Nachman
- <enachman@marvell.com>
-Subject: Re: [PATCH v6 RESED 1/2] dma: replace zone_dma_bits by
- zone_dma_limit
-Message-ID: <20240816163743.16028508@mordecai.tesarici.cz>
-In-Reply-To: <20240816115246.GA24137@willie-the-truck>
-References: <cover.1723359916.git.baruch@tkos.co.il>
-	<17c067618b93e5d71f19c37826d54db4299621a3.1723359916.git.baruch@tkos.co.il>
-	<20240816115246.GA24137@willie-the-truck>
-X-Mailer: Claws Mail 4.3.0 (GTK 3.24.43; x86_64-suse-linux-gnu)
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="KO/dg+fn"
+Received: by mail-ed1-f53.google.com with SMTP id 4fb4d7f45d1cf-5bebc830406so7291a12.0
+        for <iommu@lists.linux.dev>; Fri, 16 Aug 2024 07:42:57 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20230601; t=1723819376; x=1724424176; darn=lists.linux.dev;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :mime-version:references:message-id:subject:cc:to:from:date:from:to
+         :cc:subject:date:message-id:reply-to;
+        bh=opFPN7f3AVgmlYBsPIGvsO2bTRdIA2J78NUkiklHncQ=;
+        b=KO/dg+fn4mHCaL+eula0mKIxL3Npnwh8a87C2kdvZMTcmn7i4Kbe25TbmXlNrKfvW8
+         3GjM7PrkZTWBusK7smrjsgMqQ/g5zj7OXvMiaOoRbmFnpR6pZ3UG5qprkprghDF72FVj
+         5xHRWs03eGjg7BUpGICopar08ZD5OWGIbyoNbNoh5Wwuxe84UBYCsGXBY7OdnSpHXWbf
+         RY5sroR00z41/JFGQ90VX2NJmWuUwsFIffMgZVtoOsplgpAk/26o0YbGezGE7fG3LYmD
+         ygr+efXFxtkjJDGMDAfzG8PM24+pkYEagfJHIUvncXDLgVXDVb20ApXwa1KSOueZNMgI
+         eozg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1723819376; x=1724424176;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :mime-version:references:message-id:subject:cc:to:from:date
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=opFPN7f3AVgmlYBsPIGvsO2bTRdIA2J78NUkiklHncQ=;
+        b=pLsygxgp51V03DOO0zG09SLX8hdYx4jBfizN+beZSgOBK3LD3cR2/BsRchAypvYECZ
+         dBGDnCLV28ifsXc+kILD0MZvJ1g8/WelbQ3Xo23xY9Cv57M/6I37TIE6ivgc18p39kDx
+         Ea2Pg5L+R+nER6fROK5T208xJ8dsheqUOMCuOa/PFLgcq7f5PlgX9q9eaq9vuSgsyEqp
+         9hBQoF0PyNuturwHd6vZo5bcdphB6L+H0jw0lBMI5Dj2IX1P3NUoPqlaZK4RthEuptPm
+         15suVb/iUYgMKZAYvcBBNlLmTZpgF8mGv7Ga4OIDl4Z7W0usWZNS1E4XuSQG71XiZF7g
+         0pig==
+X-Forwarded-Encrypted: i=1; AJvYcCXswsE7SkxLH1eUbijmQBpUvpQalTwXSN0T3H9EU1Tr7XRflIfVTBK/rHuiOO9zd1LywYYbcJyZB1+zhALIkfLnYr30ZDk=
+X-Gm-Message-State: AOJu0Yya4DuXNq1AsUr/i+N/qbcXsJoVh8gunhqbqpEC/YVcXZHZeZJ1
+	v0TcPV6UfOKrHw9gwbayt806KsCDTar0DGjZ/80T5gnyrUvMnyw+eBusWWxbFA==
+X-Google-Smtp-Source: AGHT+IELDozvOpO3OAJVEnbrz3xGHmp3wJyCr54Jrj7tBHZQPhYLug8LXtro0KRrV9QeYK401189nw==
+X-Received: by 2002:a05:6402:40d4:b0:58b:90c6:c59e with SMTP id 4fb4d7f45d1cf-5becd6e59d2mr86465a12.7.1723819375968;
+        Fri, 16 Aug 2024 07:42:55 -0700 (PDT)
+Received: from google.com (203.75.199.104.bc.googleusercontent.com. [104.199.75.203])
+        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-3718984c0d0sm3764157f8f.38.2024.08.16.07.42.55
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 16 Aug 2024 07:42:55 -0700 (PDT)
+Date: Fri, 16 Aug 2024 14:42:51 +0000
+From: Mostafa Saleh <smostafa@google.com>
+To: Jason Gunthorpe <jgg@ziepe.ca>
+Cc: linux-kernel@vger.kernel.org, iommu@lists.linux.dev,
+	linux-arm-kernel@lists.infradead.org, will@kernel.org,
+	robin.murphy@arm.com, joro@8bytes.org, jean-philippe@linaro.org,
+	nicolinc@nvidia.com, mshavit@google.com
+Subject: Re: [PATCH v3] iommu/arm-smmu-v3: Match Stall behaviour for S2
+Message-ID: <Zr9la0hy34IDgbGd@google.com>
+References: <20240816125901.3773388-1-smostafa@google.com>
+ <20240816133135.GP3468552@ziepe.ca>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20240816133135.GP3468552@ziepe.ca>
 
-On Fri, 16 Aug 2024 12:52:47 +0100
-Will Deacon <will@kernel.org> wrote:
-
-> On Sun, Aug 11, 2024 at 10:09:35AM +0300, Baruch Siach wrote:
-> > From: Catalin Marinas <catalin.marinas@arm.com>
+On Fri, Aug 16, 2024 at 10:31:35AM -0300, Jason Gunthorpe wrote:
+> On Fri, Aug 16, 2024 at 12:59:01PM +0000, Mostafa Saleh wrote:
+> > According to the spec (ARM IHI 0070 F.b), in
+> > "5.5 Fault configuration (A, R, S bits)":
+> >     A STE with stage 2 translation enabled and STE.S2S == 0 is
+> >     considered ILLEGAL if SMMU_IDR0.STALL_MODEL == 0b10.
 > > 
-> > Hardware DMA limit might not be power of 2. When RAM range starts above
-> > 0, say 4GB, DMA limit of 30 bits should end at 5GB. A single high bit
-> > can not encode this limit.
+> > Also described in the pseudocode “SteIllegal()”
+> >     if STE.Config == '11x' then
+> >         [..]
+> >         if eff_idr0_stall_model == '10' && STE.S2S == '0' then
+> >             // stall_model forcing stall, but S2S == 0
+> >             return TRUE;
 > > 
-> > Use plain address for DMA zone limit.
+> > Which means, S2S must be set when stall model is
+> > "ARM_SMMU_FEAT_STALL_FORCE", but at the moment the driver ignores that.
 > > 
-> > Since DMA zone can now potentially span beyond 4GB physical limit of
-> > DMA32, make sure to use DMA zone for GFP_DMA32 allocations in that case.
+> > Although, the driver can do the minimum and only set S2S for
+> > “ARM_SMMU_FEAT_STALL_FORCE”, it is more consistent to match S1
+> > behaviour, which also sets it for “ARM_SMMU_FEAT_STALL” if the
+> > master has requested stalls.
 > > 
-> > Signed-off-by: Catalin Marinas <catalin.marinas@arm.com>
-> > Co-developed-by: Baruch Siach <baruch@tkos.co.il>
-> > Signed-off-by: Baruch Siach <baruch@tkos.co.il>
+> > Also, since S2 stalls are enabled now, report them to the IOMMU layer
+> > and for VFIO devices it will fail anyway as VFIO doesn’t register an
+> > iopf handler.
+> > 
+> > Signed-off-by: Mostafa Saleh <smostafa@google.com>
+> > 
 > > ---
-> >  arch/arm64/mm/init.c       | 30 +++++++++++++++---------------
-> >  arch/powerpc/mm/mem.c      |  5 ++++-
-> >  arch/s390/mm/init.c        |  2 +-
-> >  include/linux/dma-direct.h |  2 +-
-> >  kernel/dma/direct.c        |  6 +++---
-> >  kernel/dma/pool.c          |  4 ++--
-> >  kernel/dma/swiotlb.c       |  6 +++---
-> >  7 files changed, 29 insertions(+), 26 deletions(-)
+> > v3:
+> > - Set S2S for s2 and not s1 domain
+> > - Ignore ats check
 > > 
-> > diff --git a/arch/arm64/mm/init.c b/arch/arm64/mm/init.c
-> > index 9b5ab6818f7f..c45e2152ca9e 100644
-> > --- a/arch/arm64/mm/init.c
-> > +++ b/arch/arm64/mm/init.c
-> > @@ -115,35 +115,35 @@ static void __init arch_reserve_crashkernel(void)
-> >  }
-> >  
-> >  /*
-> > - * Return the maximum physical address for a zone accessible by the given bits
-> > - * limit. If DRAM starts above 32-bit, expand the zone to the maximum
-> > + * Return the maximum physical address for a zone given its limit.
-> > + * If DRAM starts above 32-bit, expand the zone to the maximum
-> >   * available memory, otherwise cap it at 32-bit.
-> >   */
-> > -static phys_addr_t __init max_zone_phys(unsigned int zone_bits)
-> > +static phys_addr_t __init max_zone_phys(phys_addr_t zone_limit)
-> >  {
-> > -	phys_addr_t zone_mask = DMA_BIT_MASK(zone_bits);
-> >  	phys_addr_t phys_start = memblock_start_of_DRAM();
-> >  
-> >  	if (phys_start > U32_MAX)
-> > -		zone_mask = PHYS_ADDR_MAX;
-> > -	else if (phys_start > zone_mask)
-> > -		zone_mask = U32_MAX;
-> > +		zone_limit = PHYS_ADDR_MAX;
-> > +	else if (phys_start > zone_limit)
-> > +		zone_limit = U32_MAX;
-> >  
-> > -	return min(zone_mask, memblock_end_of_DRAM() - 1) + 1;
-> > +	return min(zone_limit, memblock_end_of_DRAM() - 1) + 1;  
+> > v2:
+> > - Fix index of the STE
+> > - Fix conflict with ATS
+> > - Squash the 2 patches and drop enable_nesting
+> > ---
+> >  drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 5 +----
+> >  drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h | 1 +
+> >  2 files changed, 2 insertions(+), 4 deletions(-)
 > 
-> Why do we need to adjust +-1 now that we're no longer using a mask?
+> Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
 
-Subtracting 1 is needed to get the highest valid DRAM address so it can
-be compared to the highest address in the zone (zone_limit). Adding 1
-is necessary to get the lowest address beyond the zone.
+Actually this misses adding S2S to arm_smmu_get_ste_used() as it is
+a new bit :/
 
-AFAICT this is the right thing here:
+And that is not detected by “CONFIG_ARM_SMMU_V3_KUNIT_TEST” as it
+doesn’t test stall in masters, I will fix that and add coverage in
+tests for stall for both stages and respin.
 
-	arm64_dma_phys_limit = max_zone_phys(zone_dma_bits);
-	max_zone_pfns[ZONE_DMA] = PFN_DOWN(arm64_dma_phys_limit);
+Thanks,
+Mostafa
 
-max_zone_pfns[] max values are exclusive, i.e. the lowest PFN which is
-_not_ within the zone.
-
-It is also the right thing when arm64_dma_phys_limit is passed to
-dma_contiguous_reserve().
-
-It would be subtly broken if phys_addr_t could be a 32-bit integer, but
-that's not possible on arm64.
-
-In short, LGTM.
-
-Petr T
+> 
+> Jason
