@@ -1,123 +1,97 @@
-Received: from mail-qv1-f41.google.com (mail-qv1-f41.google.com [209.85.219.41])
+Received: from mail-qk1-f169.google.com (mail-qk1-f169.google.com [209.85.222.169])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1584C18FC83
-	for <iommu@lists.linux.dev>; Fri, 16 Aug 2024 13:32:27 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.219.41
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 271E21B86DE
+	for <iommu@lists.linux.dev>; Fri, 16 Aug 2024 13:32:41 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.222.169
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1723815149; cv=none; b=hoEMW/HEPBLxc5gmJCb4njZbyHorrvZHVaPK4z1/Iqe3MtlJfguiUbXo4/dSXz5Q/0o7PHSk+FMz71q6VwS298ggTJ53YwRGK+zexz2goiQ+CCfx4zgwUhLmNAq4JSahBnexzFo5Gp9KCSi1/1IRkUOSMiAMFkUm9OOdc7kzC3k=
+	t=1723815163; cv=none; b=FVaOH3jZrteSa72hmNMbxQNGyg0AEg/p+E7W6pJZKBeLZLSHkpaLN9CNCXJ3Cwhc1MWkPdxqONMsfQiBLXGQISTN1a0u1hhjli96zRhbtaY7HERenPjtiNkRv2vQcoPft2RkHd67P+cLsx1eSOwoXPg3DXdXiaTCAxIbs/tFso8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1723815149; c=relaxed/simple;
-	bh=x3S5s+Hej4DQldTEO6rhmuDuDxXeRxvdU3Zwg4JhmwE=;
+	s=arc-20240116; t=1723815163; c=relaxed/simple;
+	bh=qcTAVK6EItOoSO1Q3tgK65Y7zRc5MBErrU82rC1VqJ4=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=Pc4zJPLBs0CSRfb0SPHOW0B8fOu6JMwvVdOl7mp22C845897OFuiQknkGBjhuw4AGqK8hUzbUw03RpH2J5PcqXU1jgiV0cjCwECW5MGUN/maJMKMdNGgbqkGBp20zPo+C5WgFNKQasLZH4dC8MwHQ2KJZ+Um+Nb0t+TyS22x64k=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=l0WLC0YH; arc=none smtp.client-ip=209.85.219.41
+	 Content-Type:Content-Disposition:In-Reply-To; b=QxZu5EfDtA9YkVsF6tL/EDT6Yihj4mwFJKujFNRzW/G7eDZpeEwWofwReqsE3vcWJP/DXGMZlqYHTCRpRB8af+0pZ8sJLkWGCrdmkBR5lAG/LV+0AilpcjpSNqv4HTzyKviRvfp+eDEfGr4yGT5qurhH2b3UEq0bBTITJPFsCdQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=LMRrhpv1; arc=none smtp.client-ip=209.85.222.169
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="l0WLC0YH"
-Received: by mail-qv1-f41.google.com with SMTP id 6a1803df08f44-6bf7ad1ec3aso7213136d6.0
-        for <iommu@lists.linux.dev>; Fri, 16 Aug 2024 06:32:27 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="LMRrhpv1"
+Received: by mail-qk1-f169.google.com with SMTP id af79cd13be357-7a50313f785so98231985a.3
+        for <iommu@lists.linux.dev>; Fri, 16 Aug 2024 06:32:41 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google; t=1723815147; x=1724419947; darn=lists.linux.dev;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :mime-version:references:message-id:subject:cc:to:from:date:from:to
-         :cc:subject:date:message-id:reply-to;
-        bh=WLdyyDxuoCEu/ofqE3qKzxzdPAofyeH2iLCwX0g+TKk=;
-        b=l0WLC0YHDRfPaaRNJa0txYeg6gWsj5UYN+9LW3r8cQL7KfolprZNFUgJ+ZZE+G1GxE
-         YwQ5Wd/gf3CofRnvTSvqJRZ+mA1GNeL5N5895eLvP3Z6YaGYmQBMlYckQ2dn/1Hd256l
-         fvtQQaRDFk2sJnaHZy4fHBaTT5L80LWlBwnqXofi0MXzlPXXZzhUQ7WIAqFBBMG5HhgW
-         Z6IhhHjVy7+pPnGS+5WtC/nGuUmmtFH+mGTSt/etT0kiygK2o49f2wsnbExnCLR9kV5i
-         G82UWkkyC6n2/StbDXYhmw58mw71sGkbLv+qpKwB8FUTIly25ipe2tWc3AzTaK8wfvr9
-         OagQ==
+        d=ziepe.ca; s=google; t=1723815161; x=1724419961; darn=lists.linux.dev;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=hcNVKD9ArkalzemGS28H2A8RRoS7UHu4ogyyEqaz7QQ=;
+        b=LMRrhpv1jEfx8DWfvCyoXHQg+KJU3JBEjiYS2OzJc4rFJ+h9PqQ8V+opDjxYpWoFdR
+         uUDuiXvSLXblVolkrOPc8Bx/e6bNhXyhwrNaqo8fp3mkmteN5ov9CPRlQtH9lQAJ25As
+         crIQEVZrGEIn7rOkgfi54BebNRguKWaB2Xkv1PB0WZvfGQdq3eTDFRtlrTd4iEt4ylb3
+         UVXTZywVMffWNwfOLt3pmc+mGM25pUHg8mziW+QjbrRVwzWnCIX5BItWn6cejudYCRzY
+         po903B6UXyQ+Ikhf7tb2phblTwxG/B3FMr2ymJgIxd8qO7tOVuLofdWReq+k55UMMaZR
+         Sm9A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1723815147; x=1724419947;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :mime-version:references:message-id:subject:cc:to:from:date
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=WLdyyDxuoCEu/ofqE3qKzxzdPAofyeH2iLCwX0g+TKk=;
-        b=VH3Kz9h+xeW8zqPjJWiE1qc1N8TddlxKOyeAHR2ZevQ/EemcMDqJtFKIytE2SEB0Ue
-         0hJpO/kHTfLa6jcFt4VspCjTXZ+GAjF6V42Xzfebq3D8RRZ+6LcpwFET0UGASt1dcVkV
-         N5uJO0YwvN849YSVSSiCCudn2wkp7RI5GZYxG/VAXk89aKwuZT/+dLwc6UcstAtl12XG
-         lyXNyaGbedqgjjLGHpLJoyDeJIsjwimU1UDy4h+rLlwLInfQyh7jaekivNKo+VpWeF3q
-         MEsAt/aX5s2WUwin/jvcUVyL41CNTiajJX5RccJcJEAiEf+Mt+sBoFYyt6L3gME1piiU
-         RwTg==
-X-Forwarded-Encrypted: i=1; AJvYcCU1gra8mjhf27nKjz1j+nOm4Z7uFmVWkcV1qDpidySpqPMve6RysgYctAGd0Jkg3oDRfkKcFt2IxT6ojNpLgY7hTHABeWw=
-X-Gm-Message-State: AOJu0YxRaoVzWPgq9GoE36W4C4hL/wW7iO38LKwHb/E2jkM6g2iL/uQe
-	YCY2FtJ181sOzGcTalgfSCX5bwukGftFnMv/hdyTPXXm116hpfDWR2EoWEoV/BY=
-X-Google-Smtp-Source: AGHT+IFSYD7XIUdE2zz0q7OwzKKppto9XaQU9IEejkC+twRGET75J3c2JhhzjEgdxqdQt2xI7LB8Qg==
-X-Received: by 2002:a05:6214:3f8a:b0:6bf:7aa3:92dd with SMTP id 6a1803df08f44-6bf7cd80e7cmr35004036d6.9.1723815146697;
-        Fri, 16 Aug 2024 06:32:26 -0700 (PDT)
+        d=1e100.net; s=20230601; t=1723815161; x=1724419961;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=hcNVKD9ArkalzemGS28H2A8RRoS7UHu4ogyyEqaz7QQ=;
+        b=xHOY4NQLhpkFvisFaAv1mB4MaLTSwPLCNrhC555nNStKcf4t5A/RKjHslUqjksuCdm
+         e4EKzvLgCmThSjyMCyzxvaPjaDnmhblla5yK97eJmWmkpf6R6QDoiEVbYcyRbmdNY616
+         p87As8PkpJciHZuqcsDbN3uoQ+KMF6d1KXNnr6LIGdeo/fYoOvRjrpj23tmMeyiXy/fJ
+         QGzU4W2weakk0rufuGqzulpUBiLu/d/niQws5thBbVzgVi9wJRws4kYUQIvzvK29XjcW
+         tSTo9fY3qMx3TpvlYRlv7feC/qxRaNd7npt1uHEH+TGZ5VNiFjE5BOgDsU6EqixaKMmz
+         cAEQ==
+X-Forwarded-Encrypted: i=1; AJvYcCWPSwpbF8SgTxj9gAJkvrHtqoFrd41J4R0If9OKj5fCujnY26xWzy/FTCaEHs/VCSMbQyfXVlxq2GUoN/osJGo6SFtwsrc=
+X-Gm-Message-State: AOJu0YzYwUk3hdl/gMKbHjUu9bXoe58mCeiVX92ZW0udrB2sLMslvtbr
+	H21rJ8U8SipMZpWQhWdrIkziMr8PKcR9OvaVHCs+5eIG/KBjEKJyNJpBl0su2yUQByosd/V5jUk
+	ULIw=
+X-Google-Smtp-Source: AGHT+IFWZiZFILtEO3eQGWudldVtkY+zYk/91TK19t9S7myPrK6cUMb0pkmDP2UYPZcLYzFykUvR3g==
+X-Received: by 2002:a05:6214:4893:b0:6bd:6f1e:3303 with SMTP id 6a1803df08f44-6bf7cd9dff9mr33711496d6.13.1723815160843;
+        Fri, 16 Aug 2024 06:32:40 -0700 (PDT)
 Received: from ziepe.ca ([128.77.69.90])
-        by smtp.gmail.com with ESMTPSA id 6a1803df08f44-6bf6ff0a5a6sm17351556d6.138.2024.08.16.06.32.25
+        by smtp.gmail.com with ESMTPSA id 6a1803df08f44-6bf6fe2748csm17322026d6.63.2024.08.16.06.32.40
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 16 Aug 2024 06:32:25 -0700 (PDT)
+        Fri, 16 Aug 2024 06:32:40 -0700 (PDT)
 Received: from jgg by wakko with local (Exim 4.95)
 	(envelope-from <jgg@ziepe.ca>)
-	id 1sex3H-009kK9-3S;
-	Fri, 16 Aug 2024 10:31:35 -0300
-Date: Fri, 16 Aug 2024 10:31:35 -0300
+	id 1sex3a-009kPY-NK;
+	Fri, 16 Aug 2024 10:31:54 -0300
+Date: Fri, 16 Aug 2024 10:31:54 -0300
 From: Jason Gunthorpe <jgg@ziepe.ca>
-To: Mostafa Saleh <smostafa@google.com>
-Cc: linux-kernel@vger.kernel.org, iommu@lists.linux.dev,
-	linux-arm-kernel@lists.infradead.org, will@kernel.org,
-	robin.murphy@arm.com, joro@8bytes.org, jean-philippe@linaro.org,
-	nicolinc@nvidia.com, mshavit@google.com
-Subject: Re: [PATCH v3] iommu/arm-smmu-v3: Match Stall behaviour for S2
-Message-ID: <20240816133135.GP3468552@ziepe.ca>
-References: <20240816125901.3773388-1-smostafa@google.com>
+To: Baolu Lu <baolu.lu@linux.intel.com>
+Cc: Vasant Hegde <vasant.hegde@amd.com>, Joerg Roedel <joro@8bytes.org>,
+	Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
+	Kevin Tian <kevin.tian@intel.com>, Yi Liu <yi.l.liu@intel.com>,
+	iommu@lists.linux.dev, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 1/1] iommu/vt-d: Move PCI PASID enablement to probe path
+Message-ID: <20240816133154.GQ3468552@ziepe.ca>
+References: <20240816104945.97160-1-baolu.lu@linux.intel.com>
+ <6650ce02-ac85-4cb6-941c-cc7e8b6effc4@amd.com>
+ <92b55591-e106-4366-ba5b-0588af50770f@linux.intel.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20240816125901.3773388-1-smostafa@google.com>
+In-Reply-To: <92b55591-e106-4366-ba5b-0588af50770f@linux.intel.com>
 
-On Fri, Aug 16, 2024 at 12:59:01PM +0000, Mostafa Saleh wrote:
-> According to the spec (ARM IHI 0070 F.b), in
-> "5.5 Fault configuration (A, R, S bits)":
->     A STE with stage 2 translation enabled and STE.S2S == 0 is
->     considered ILLEGAL if SMMU_IDR0.STALL_MODEL == 0b10.
+On Fri, Aug 16, 2024 at 09:09:04PM +0800, Baolu Lu wrote:
+> On 2024/8/16 20:16, Vasant Hegde wrote:
+> > On 8/16/2024 4:19 PM, Lu Baolu wrote:
+> > > Currently, PCI PASID is enabled alongside PCI ATS when an iommu domain is
+> > > attached to the device and disabled when the device transitions to block
+> > > translation mode. This approach is inappropriate as PCI PASID is a device
+> > > feature independent of the type of the attached domain.
+> > Reading through other thread, I thought we want to enable both PASID and PRI in
+> > device probe path. Did I miss something?
 > 
-> Also described in the pseudocode “SteIllegal()”
->     if STE.Config == '11x' then
->         [..]
->         if eff_idr0_stall_model == '10' && STE.S2S == '0' then
->             // stall_model forcing stall, but S2S == 0
->             return TRUE;
-> 
-> Which means, S2S must be set when stall model is
-> "ARM_SMMU_FEAT_STALL_FORCE", but at the moment the driver ignores that.
-> 
-> Although, the driver can do the minimum and only set S2S for
-> “ARM_SMMU_FEAT_STALL_FORCE”, it is more consistent to match S1
-> behaviour, which also sets it for “ARM_SMMU_FEAT_STALL” if the
-> master has requested stalls.
-> 
-> Also, since S2 stalls are enabled now, report them to the IOMMU layer
-> and for VFIO devices it will fail anyway as VFIO doesn’t register an
-> iopf handler.
-> 
-> Signed-off-by: Mostafa Saleh <smostafa@google.com>
-> 
-> ---
-> v3:
-> - Set S2S for s2 and not s1 domain
-> - Ignore ats check
-> 
-> v2:
-> - Fix index of the STE
-> - Fix conflict with ATS
-> - Squash the 2 patches and drop enable_nesting
-> ---
->  drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 5 +----
->  drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h | 1 +
->  2 files changed, 2 insertions(+), 4 deletions(-)
+> PRI is different. PRI should be enabled when the first iopf-capable
+> domain is attached to device or its PASID, and disabled when the last
+> such domain is detached.
 
-Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
++1
 
 Jason
