@@ -1,203 +1,124 @@
 Received: from mx0a-0031df01.pphosted.com (mx0a-0031df01.pphosted.com [205.220.168.131])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C190F1C37A0
-	for <iommu@lists.linux.dev>; Fri, 16 Aug 2024 17:44:08 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AFF021BDABF
+	for <iommu@lists.linux.dev>; Fri, 16 Aug 2024 17:56:03 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.168.131
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1723830250; cv=none; b=pAfzHzTPjHX1B2CHHILXnQhPqAyedKOJwdVtXxWlXWYw8mwbm8oUrA7IuLomi6uiCH+vDcoBSki7r43C0XxImjta+TIT3Pz52znmdTe0LWN5Uw0Zq6M9MlwNiMDPkWZLM3rQiKnVnrA8WeIor1pe1gssNHZzVXyhjKu1RjpSZRM=
+	t=1723830965; cv=none; b=FJFaJNw/PbJkvIbxA4/801CMgfe65fySOExRXUvtfF7saAV2vOS8p7F0lupKFXNWdoG6utyY5JjuCG7H6URKMeshmIBj8PKpuHGIoOOtte7ukob1LYheQxMQRGmvykfjj9jw42DDnuaDK5lODYuZ0S72LeZ8vI4j7F0oBDNEoH4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1723830250; c=relaxed/simple;
-	bh=Q34VrfGuWOEyEgQGZ89pTSn7gByo50xHoSSOmEvrPk0=;
-	h=From:To:CC:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=F5ZevPiaSrRaWhDtzzwvHNBTet/iK7KCqL9Iwbag3j1dF3ZnLpJHdhcuFUP4LzkPPfcyM4ZR2mWv6BXFzruqr4+M++ht4+dKAnNxqjOvm94PHO6ohKJtKSRliyHEmJk9f/zzXkFzOtCAEpb6VSnx/nqtLQOS8vRnfyYIh+SSYts=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com; spf=pass smtp.mailfrom=quicinc.com; dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b=CF2OG1n5; arc=none smtp.client-ip=205.220.168.131
+	s=arc-20240116; t=1723830965; c=relaxed/simple;
+	bh=JS7LCLfqiF2298c7Bl5zNY/XEsRbUrBD1Hkoq4XEjLg=;
+	h=Message-ID:Date:MIME-Version:Subject:To:CC:References:From:
+	 In-Reply-To:Content-Type; b=LeBN2EyHhDB5ra+e1uq66NBw8/pZ4bNaTHdemzHIvd/CWLkh3f4Q3TIq60MJ74KLEEobOJ3knhj8AqVv5zx0GvHTUZ0/algmoOF9DFObfYnkdTBldUnyaJiDVl2vxep7+zQBjUCLIMA7Y/R6Mu0QeoskJmwvcu2LieAaOvANyJo=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com; spf=pass smtp.mailfrom=quicinc.com; dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b=Fpfs68zu; arc=none smtp.client-ip=205.220.168.131
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=quicinc.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b="CF2OG1n5"
-Received: from pps.filterd (m0279863.ppops.net [127.0.0.1])
-	by mx0a-0031df01.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 47G8NEUQ020655;
-	Fri, 16 Aug 2024 17:43:58 GMT
+	dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b="Fpfs68zu"
+Received: from pps.filterd (m0279867.ppops.net [127.0.0.1])
+	by mx0a-0031df01.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 47GG68I7031130;
+	Fri, 16 Aug 2024 17:55:52 GMT
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=quicinc.com; h=
 	cc:content-transfer-encoding:content-type:date:from:in-reply-to
 	:message-id:mime-version:references:subject:to; s=qcppdkim1; bh=
-	KgrActngNPtMVns1AP4MwyVoxN4UueOaGf4POtohag4=; b=CF2OG1n5xiFx6ARY
-	ylVtVS1qscUGqp4EsfSt944iRit3MtVTTN1tg0Yv6zOumCqucMzDNobT5OlQ9LfK
-	3pl88C0Zy+8zvOLnmU/QLjbD/fO+BIAW5w7YC08c8f+hqMuNcX9szuliMlrZN3Rl
-	vUimDhDWI6X18UN7xK3gSVsmjp0/HK4hjTH2+8+dPG1ecWgcaDJ21/QVEw5OQGL0
-	PDgKr5oUh3oTZ995CaRmwI73oZ6cKSadxxEUbJTWTpKV/NS+SJde1kA1DTJLb170
-	k17Ll+/edpFH0yM2HWDw8d6IGo9F2FVWbk4pb18s/IAqoIk1NzHikJrIRJgP+JZ2
-	HRQlSw==
-Received: from nalasppmta04.qualcomm.com (Global_NAT1.qualcomm.com [129.46.96.20])
-	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 412373sd7t-1
+	Yq9OAduvY4S8Jeg2Pa9Vlbb2Uon6I6YSTXJyX8g/M2c=; b=Fpfs68zujjffosGq
+	pJm+yg89t1zQd3+CI0xvix9M5KmhTmTYem7h8+wSDywVSNpMGUVXWry7KRAx/6d3
+	u8o0yvrOLNSHAz03bxvmFdkwUOchc8hJ3Q0Kzt1Ese5GQqVOjf/2Yy6iXgC+sDGd
+	OtQqIu8zZXZCoB21obqQ3FMtfmdTZL3ZobX+WWRrkWWcKZKCJaMgohBlBCXwHeU+
+	YUgOkPyeRdVxQoK6dGKMJLk6lxEauuW3zpO07fTM9i9dx15jA3Q53aSlhb0YOuDl
+	M1fXtz+8XuxKpcfQ38v4qopMqWldSuAPHwPV/Mx8fPUMps9jKqYc+UomdBrUYCyr
+	iBQovg==
+Received: from nasanppmta03.qualcomm.com (i-global254.qualcomm.com [199.106.103.254])
+	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 4103wsb4vp-1
 	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Fri, 16 Aug 2024 17:43:57 +0000 (GMT)
-Received: from nalasex01c.na.qualcomm.com (nalasex01c.na.qualcomm.com [10.47.97.35])
-	by NALASPPMTA04.qualcomm.com (8.18.1.2/8.18.1.2) with ESMTPS id 47GHhvbp012785
+	Fri, 16 Aug 2024 17:55:52 +0000 (GMT)
+Received: from nasanex01b.na.qualcomm.com (nasanex01b.na.qualcomm.com [10.46.141.250])
+	by NASANPPMTA03.qualcomm.com (8.18.1.2/8.18.1.2) with ESMTPS id 47GHtplv020165
 	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Fri, 16 Aug 2024 17:43:57 GMT
-Received: from hu-bibekkum-hyd.qualcomm.com (10.80.80.8) by
- nalasex01c.na.qualcomm.com (10.47.97.35) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.1544.9; Fri, 16 Aug 2024 10:43:52 -0700
-From: Bibek Kumar Patro <quic_bibekkum@quicinc.com>
-To: <robdclark@gmail.com>, <will@kernel.org>, <robin.murphy@arm.com>,
-        <joro@8bytes.org>, <jgg@ziepe.ca>, <jsnitsel@redhat.com>,
-        <robh@kernel.org>, <krzysztof.kozlowski@linaro.org>,
-        <quic_c_gdjako@quicinc.com>, <dmitry.baryshkov@linaro.org>,
-        <konrad.dybcio@linaro.org>
-CC: <iommu@lists.linux.dev>, <linux-arm-msm@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>, <linux-kernel@vger.kernel.org>,
-        "Bibek Kumar Patro" <quic_bibekkum@quicinc.com>
-Subject: [PATCH v14 6/6] iommu/arm-smmu: add support for PRR bit setup
-Date: Fri, 16 Aug 2024 23:12:59 +0530
-Message-ID: <20240816174259.2056829-7-quic_bibekkum@quicinc.com>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20240816174259.2056829-1-quic_bibekkum@quicinc.com>
-References: <20240816174259.2056829-1-quic_bibekkum@quicinc.com>
+	Fri, 16 Aug 2024 17:55:51 GMT
+Received: from [10.81.24.74] (10.49.16.6) by nasanex01b.na.qualcomm.com
+ (10.46.141.250) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1544.9; Fri, 16 Aug
+ 2024 10:55:51 -0700
+Message-ID: <292a7ed2-a2a0-4dce-9741-b7169402b290@quicinc.com>
+Date: Fri, 16 Aug 2024 10:55:50 -0700
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
- nalasex01c.na.qualcomm.com (10.47.97.35)
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH 09/16] iommupt: Add a kunit test for Generic Page Table
+ and the IOMMU implementation
+To: Jason Gunthorpe <jgg@nvidia.com>
+CC: Alejandro Jimenez <alejandro.j.jimenez@oracle.com>,
+        Lu Baolu
+	<baolu.lu@linux.intel.com>,
+        David Hildenbrand <david@redhat.com>, Christoph
+ Hellwig <hch@lst.de>,
+        <iommu@lists.linux.dev>, Joao Martins
+	<joao.m.martins@oracle.com>,
+        Kevin Tian <kevin.tian@intel.com>, <kvm@vger.kernel.org>,
+        <linux-mm@kvack.org>, Pasha Tatashin
+	<pasha.tatashin@soleen.com>,
+        Peter Xu <peterx@redhat.com>, Ryan Roberts
+	<ryan.roberts@arm.com>,
+        Sean Christopherson <seanjc@google.com>,
+        Tina Zhang
+	<tina.zhang@intel.com>
+References: <9-v1-01fa10580981+1d-iommu_pt_jgg@nvidia.com>
+Content-Language: en-US
+From: Jeff Johnson <quic_jjohnson@quicinc.com>
+In-Reply-To: <9-v1-01fa10580981+1d-iommu_pt_jgg@nvidia.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: nalasex01b.na.qualcomm.com (10.47.209.197) To
+ nasanex01b.na.qualcomm.com (10.46.141.250)
 X-QCInternal: smtphost
 X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
-X-Proofpoint-GUID: egz9A8xXRCxAmUlaFQJ_qTEx_u_gbgB7
-X-Proofpoint-ORIG-GUID: egz9A8xXRCxAmUlaFQJ_qTEx_u_gbgB7
+X-Proofpoint-GUID: ZNfrWpnORYMPty3y6Lmw_WiVp1j4NNZP
+X-Proofpoint-ORIG-GUID: ZNfrWpnORYMPty3y6Lmw_WiVp1j4NNZP
 X-Proofpoint-Virus-Version: vendor=baseguard
  engine=ICAP:2.0.293,Aquarius:18.0.1039,Hydra:6.0.680,FMLib:17.12.28.16
  definitions=2024-08-16_12,2024-08-16_01,2024-05-17_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 clxscore=1015 phishscore=0
- lowpriorityscore=0 spamscore=0 priorityscore=1501 impostorscore=0
- adultscore=0 bulkscore=0 mlxlogscore=999 mlxscore=0 malwarescore=0
- suspectscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.19.0-2407110000 definitions=main-2408160123
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 suspectscore=0
+ impostorscore=0 malwarescore=0 mlxscore=0 lowpriorityscore=0 spamscore=0
+ mlxlogscore=999 bulkscore=0 adultscore=0 priorityscore=1501 clxscore=1011
+ phishscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.19.0-2407110000 definitions=main-2408160126
 
-Add an adreno-smmu-priv interface for drm/msm to call
-into arm-smmu-qcom and initiate the PRR bit setup or reset
-sequence as per request.
+On 8/15/24 08:11, Jason Gunthorpe wrote:
+> This intends to have high coverage of the page table format functions and
+> the IOMMU implementation itself, exercising the various corner cases.
+> 
+> The kunit can be run in the kunit framework, using commands like:
+> 
+> tools/testing/kunit/kunit.py run --build_dir build_kunit_arm64 --arch arm64 --make_options LD=ld.lld-18  --make_options 'CC=clang-18 --target=aarch64-linux-gnu' --kunitconfig ./drivers/iommu/generic_pt/.kunitconfig
+> tools/testing/kunit/kunit.py run --build_dir build_kunit_uml --make_options CC=gcc-13 --kunitconfig ./drivers/iommu/generic_pt/.kunitconfig --kconfig_add CONFIG_WERROR=n
+> tools/testing/kunit/kunit.py run --build_dir build_kunit_x86_64 --arch x86_64 --kunitconfig ./drivers/iommu/generic_pt/.kunitconfig
+> tools/testing/kunit/kunit.py run --build_dir build_kunit_i386 --arch i386 --kunitconfig ./drivers/iommu/generic_pt/.kunitconfig
+> tools/testing/kunit/kunit.py run --build_dir build_kunit_i386pae --arch i386 --kunitconfig ./drivers/iommu/generic_pt/.kunitconfig --kconfig_add CONFIG_X86_PAE=y
+> 
+> There are several interesting corner cases on the 32 bit platforms that
+> need checking.
+> 
+> FIXME: further improve the tests
+> 
+> Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
+> ---
+...
 
-This will be used by GPU to setup the PRR bit and related
-configuration registers through adreno-smmu private
-interface instead of directly poking the smmu hardware.
+> +kunit_test_suites(&NS(iommu_suite));
+> +
+> +MODULE_LICENSE("GPL");
+> +MODULE_IMPORT_NS(GENERIC_PT_IOMMU);
 
-Suggested-by: Rob Clark <robdclark@gmail.com>
-Signed-off-by: Bibek Kumar Patro <quic_bibekkum@quicinc.com>
----
- drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c | 37 ++++++++++++++++++++++
- drivers/iommu/arm/arm-smmu/arm-smmu.h      |  2 ++
- include/linux/adreno-smmu-priv.h           | 10 +++++-
- 3 files changed, 48 insertions(+), 1 deletion(-)
+Since commit 1fffe7a34c89 ("script: modpost: emit a warning when the
+description is missing"), a module without a MODULE_DESCRIPTION() will
+result in a warning when built with make W=1. Recently, multiple
+developers have been eradicating these warnings treewide, and very few
+are left, so please don't introduce a new one :)
 
-diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
-index a776c7906c76..f62e20d472d3 100644
---- a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
-+++ b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
-@@ -30,6 +30,7 @@
- #define PREFETCH_SHALLOW	(1 << PREFETCH_SHIFT)
- #define PREFETCH_MODERATE	(2 << PREFETCH_SHIFT)
- #define PREFETCH_DEEP		(3 << PREFETCH_SHIFT)
-+#define GFX_ACTLR_PRR		(1 << 5)
-
- static const struct actlr_config sc7280_apps_actlr_cfg[] = {
- 	{ 0x0800, 0x04e0, PREFETCH_DEFAULT | CMTLB },
-@@ -237,6 +238,40 @@ static void qcom_adreno_smmu_resume_translation(const void *cookie, bool termina
- 	arm_smmu_cb_write(smmu, cfg->cbndx, ARM_SMMU_CB_RESUME, reg);
- }
-
-+static void qcom_adreno_smmu_set_prr_bit(const void *cookie, bool set)
-+{
-+	struct arm_smmu_domain *smmu_domain = (void *)cookie;
-+	struct arm_smmu_device *smmu = smmu_domain->smmu;
-+	const struct device_node *np = smmu->dev->of_node;
-+	struct arm_smmu_cfg *cfg = &smmu_domain->cfg;
-+	u32 reg = 0;
-+
-+	if (of_device_is_compatible(np, "qcom,smmu-500") &&
-+			of_device_is_compatible(np, "qcom,adreno-smmu")) {
-+		reg =  arm_smmu_cb_read(smmu, cfg->cbndx, ARM_SMMU_CB_ACTLR);
-+		reg &= ~GFX_ACTLR_PRR;
-+		if (set)
-+			reg |= FIELD_PREP(GFX_ACTLR_PRR, 1);
-+		arm_smmu_cb_write(smmu, cfg->cbndx, ARM_SMMU_CB_ACTLR, reg);
-+	}
-+}
-+
-+static void qcom_adreno_smmu_set_prr_addr(const void *cookie, phys_addr_t page_addr)
-+{
-+	struct arm_smmu_domain *smmu_domain = (void *)cookie;
-+	struct arm_smmu_device *smmu = smmu_domain->smmu;
-+	const struct device_node *np = smmu->dev->of_node;
-+
-+	if (of_device_is_compatible(np, "qcom,smmu-500") &&
-+			of_device_is_compatible(np, "qcom,adreno-smmu")) {
-+		writel_relaxed(lower_32_bits(page_addr),
-+					(void *)smmu->ioaddr + ARM_SMMU_GFX_PRR_CFG_LADDR);
-+
-+		writel_relaxed(upper_32_bits(page_addr),
-+					(void *)smmu->ioaddr + ARM_SMMU_GFX_PRR_CFG_UADDR);
-+	}
-+}
-+
- #define QCOM_ADRENO_SMMU_GPU_SID 0
-
- static bool qcom_adreno_smmu_is_gpu_device(struct device *dev)
-@@ -410,6 +445,8 @@ static int qcom_adreno_smmu_init_context(struct arm_smmu_domain *smmu_domain,
- 	priv->get_fault_info = qcom_adreno_smmu_get_fault_info;
- 	priv->set_stall = qcom_adreno_smmu_set_stall;
- 	priv->resume_translation = qcom_adreno_smmu_resume_translation;
-+	priv->set_prr_bit = qcom_adreno_smmu_set_prr_bit;
-+	priv->set_prr_addr = qcom_adreno_smmu_set_prr_addr;
-
- 	actlrvar = qsmmu->data->actlrvar;
- 	if (!actlrvar)
-diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu.h b/drivers/iommu/arm/arm-smmu/arm-smmu.h
-index 172f1b56b879..b3f5ff1ebb8d 100644
---- a/drivers/iommu/arm/arm-smmu/arm-smmu.h
-+++ b/drivers/iommu/arm/arm-smmu/arm-smmu.h
-@@ -154,6 +154,8 @@ enum arm_smmu_cbar_type {
- #define ARM_SMMU_SCTLR_M		BIT(0)
-
- #define ARM_SMMU_CB_ACTLR		0x4
-+#define ARM_SMMU_GFX_PRR_CFG_LADDR	0x6008
-+#define ARM_SMMU_GFX_PRR_CFG_UADDR	0x600C
-
- #define ARM_SMMU_CB_RESUME		0x8
- #define ARM_SMMU_RESUME_TERMINATE	BIT(0)
-diff --git a/include/linux/adreno-smmu-priv.h b/include/linux/adreno-smmu-priv.h
-index c637e0997f6d..03466eb16933 100644
---- a/include/linux/adreno-smmu-priv.h
-+++ b/include/linux/adreno-smmu-priv.h
-@@ -49,7 +49,13 @@ struct adreno_smmu_fault_info {
-  *                 before set_ttbr0_cfg().  If stalling on fault is enabled,
-  *                 the GPU driver must call resume_translation()
-  * @resume_translation: Resume translation after a fault
-- *
-+ * @set_prr_bit:   Extendible interface to be used by GPU to modify the
-+ *		   ACTLR register bits, currently used to configure
-+ *		   Partially-Resident-Region (PRR) bit for feature's
-+ *		   setup and reset sequence as requested.
-+ * @set_prr_addr:  Configure the PRR_CFG_*ADDR register with the
-+ *		   physical address of PRR page passed from
-+ *		   GPU driver.
-  *
-  * The GPU driver (drm/msm) and adreno-smmu work together for controlling
-  * the GPU's SMMU instance.  This is by necessity, as the GPU is directly
-@@ -67,6 +73,8 @@ struct adreno_smmu_priv {
-     void (*get_fault_info)(const void *cookie, struct adreno_smmu_fault_info *info);
-     void (*set_stall)(const void *cookie, bool enabled);
-     void (*resume_translation)(const void *cookie, bool terminate);
-+    void (*set_prr_bit)(const void *cookie, bool set);
-+    void (*set_prr_addr)(const void *cookie, phys_addr_t page_addr);
- };
-
- #endif /* __ADRENO_SMMU_PRIV_H */
---
-2.34.1
-
+/jeff
