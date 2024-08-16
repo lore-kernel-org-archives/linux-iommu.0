@@ -1,239 +1,226 @@
-Received: from mail-yw1-f201.google.com (mail-yw1-f201.google.com [209.85.128.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from NAM10-BN7-obe.outbound.protection.outlook.com (mail-bn7nam10on2044.outbound.protection.outlook.com [40.107.92.44])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 417527DA64
-	for <iommu@lists.linux.dev>; Fri, 16 Aug 2024 21:17:54 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.201
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1723843075; cv=none; b=UmlnWGwQC+FoGFtpiHgAWMU8l7MvDJrok0PvztHYmiL5uL9uIBEc99FFaqYeQB9s3ByPtnVKsPGijYwajt0fsBzHzQTcR4VCAVW2TZKp4rOzP/a4uXgVMIsvRa22gsTtKBRFMba2d+JXtIbGelYuGmDFo2EOkLx4XSQZpReZnQ4=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1723843075; c=relaxed/simple;
-	bh=j/pwVToCKLWDnC3SPyknJTLiiSGjqV6XR6pGEtK4T0k=;
-	h=Date:Mime-Version:Message-ID:Subject:From:To:Cc:Content-Type; b=XTCyHAWBEESRHGZhpDHIjn1qAOGLVOMaUrmzfLYbQFN/AjJsyJLm9Lmqj5w7r5INGXcgx4V2XuqAed54xeO+GQsTl4rJNBPH8q/ufYRxFUumkrYVNd4N4xtV5m8ClfGWssozW+r6Z0yyK8fbiFijTGsS+E1xSwD1Ceo0jLYD8kI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=flex--praan.bounces.google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=WUyhPdZ7; arc=none smtp.client-ip=209.85.128.201
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=flex--praan.bounces.google.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7116285283
+	for <iommu@lists.linux.dev>; Fri, 16 Aug 2024 22:17:32 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.92.44
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1723846655; cv=fail; b=tGi4NPIPuxLe312Q0e3S6EhGPnYGznxlwx8ymbo7h7fjdBjY5w1IJnRKW8ddyPdrUZO/PwRlbnN6NZ/r4hBGSc+cVeHNHFB1AMEDrofgncr2QtUI7R238k2J0gdOR6gteDEi4W3Ypm9kIysX8r2YdmJ199pI96ZZAyvZEoBkEM0=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1723846655; c=relaxed/simple;
+	bh=3C66i7STm38DyRFh8X7fMmvUFal1LeKC7kccde5HolQ=;
+	h=From:To:CC:Subject:Date:Message-ID:MIME-Version:Content-Type; b=sqLGzVibyMsmTbC3DjW9fFuFeOrO9c4ocqf3mgG4EyP88MDDURRfBOXYuklkT2OZdAUDy1+dVBo7BWlBpgVy4zMQFubwYKRk39ahrX6VKBwHlOYfwzZhDH44bQkIOCw5eKU3w3YgtmUWGg4BHpxGG4vkfUUGXzRHJ75dr4dfTW0=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com; spf=fail smtp.mailfrom=amd.com; dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b=s0q0TyEL; arc=fail smtp.client-ip=40.107.92.44
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=amd.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="WUyhPdZ7"
-Received: by mail-yw1-f201.google.com with SMTP id 00721157ae682-6b198ecf931so14058367b3.1
-        for <iommu@lists.linux.dev>; Fri, 16 Aug 2024 14:17:54 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20230601; t=1723843073; x=1724447873; darn=lists.linux.dev;
-        h=cc:to:from:subject:message-id:mime-version:date:from:to:cc:subject
-         :date:message-id:reply-to;
-        bh=ALeg+irkeTP8ga/ayIOJQ6m7x1zEP/qNdDKyFjJWxtM=;
-        b=WUyhPdZ7mfumqFXFu58PdIRqPuQJEzPBgJkFZVNxBNoesZZP4ROqwfmI4VHjs2HaHk
-         jUrnIm6ar+MsgQPb6RiHDBq51oOMsAX3TYjqynAAk/KM91BGtroeyjBThjbl7uj5XHld
-         aIdPUXXb92qgpYPmRp48W52hw6GRQiLMLgMhE9vmeHCh794GzTki3mqAHcbIqwlCvwZs
-         oJ5A+SvmDZCgcUyOh3UEG5EtLFES8doqEKIyghK+Eur6a7DNJH/XrPPLymIow/aJjgs0
-         JJaeYR8zctBVZiHxU7NV0DBlclnlHSlpB3XlCwquztAvbGTWQHAZ/x5DwvTsnMYn3rsN
-         2ziw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1723843073; x=1724447873;
-        h=cc:to:from:subject:message-id:mime-version:date:x-gm-message-state
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=ALeg+irkeTP8ga/ayIOJQ6m7x1zEP/qNdDKyFjJWxtM=;
-        b=D8qkxAOro1xyJ+8Cq3maY7c+K+0T4ftiqa2a49b6NV+JqXZfqH4/ztAU2D4kBoTVgx
-         /HdM6bc5pdhAMQiVerkE8QpXgIkx2YLobaDASy0cWnW6BB7TtFMzA0SgQuZ472ds9u3R
-         SsGJwgON8zIPZEngG6+GHBGmEEepBudfiDM7edtvAvtzZROtCDt4/Fl2d8A7r9eBzWby
-         BTLSD4a9I1PvTpdixdJ+1c6QGJyPyTNrccHyiLowayL6zvsUssFkv2fs1bGqeFM0FDjR
-         ivWOd3PCgHYDKVftVLUoBmEHlnTX0gSBANJQHt4pNvcruj2GIy6DjjqyiyiIiLyM5J3X
-         YSuQ==
-X-Forwarded-Encrypted: i=1; AJvYcCWl0yoFjBR7LaXUDAtqZhfnuZMex+in2HJjyJMmO8z4BO3bKviGCvTDdqjKwBN95AiSDBrCTwzxx9Zw9cezncHxp92x4rQ=
-X-Gm-Message-State: AOJu0Yymq438p5AxThMcpdf7i+Qscj9q1usI7zDyCw23U9W+QI+VK6KA
-	toqPuEI/LtNXr3Z+0vQTzONf1RYtxBy+WtYntt687rh8SEdFxKoy+5PykJNZLx+VMJeo7laLfQ=
-	=
-X-Google-Smtp-Source: AGHT+IE0UBGz8OXFpWdWR/4odWMWHuRsS1gRpzzuFJm26D4U08Xyipjk27xc5nvfmzG0hco7rnTh2/s6yQ==
-X-Received: from praan.c.googlers.com ([fda3:e722:ac3:cc00:4f:4b78:c0a8:3e89])
- (user=praan job=sendgmr) by 2002:a25:951:0:b0:e0b:af9b:fb94 with SMTP id
- 3f1490d57ef6-e1182f824e6mr114928276.6.1723843073036; Fri, 16 Aug 2024
- 14:17:53 -0700 (PDT)
-Date: Fri, 16 Aug 2024 21:17:22 +0000
+	dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b="s0q0TyEL"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=RyUZhv6J2I65c0L5K3fZk1LVZPuasHBVtr8fdoT+149EHnRWLJJo0R5rJ5gTyVeqxhwXhqg3VcdU6e0DiKP+wI/fApqkOUW+qTdQRbJRd01XxG1RAurWybdnGGpV5hiM+zoXEg8kXOYdEOyb9PdHqsnFsz8T+AOKoQD/T3KNGAFYS/ugULRN17ai/a9+7CjMkg4MtCwGpoMyLxvw0wHe5sfWXEa/0F8k2Rii9Vmdpam5U/EzV2ZJo1hxh31RqkSfKzsjEDQXKYi2rrE9PC0vL5VqHRP7UswDRnUMYiy6w5Yb/tvx+QUcAvxkWqNSckAaItz8dxwDAFINKAA9WanxWA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=enpq0OzrfY8LXs6+M2a6YNn7bVQ4UBUCfN4O8w6QFpA=;
+ b=Hng8/X/ddeyngP1Ca4j/6dYdX0L1VgE9UyEJ2VX1647VNMbij5+ChPDkXu5hwpW3UMt9idbEVJyimidz5+Hlpsqi2QUU05EC0I29G7O8J8rVlblEjq9qdhJOaGJ4dcVOs8OI4MVoQVQaz4CbWW5VJJ4Q/kloxf3eJWZq/P53wtRRzJGN5yBCf4beq5VgKFDegLypPOkBuO+kq5Y8EkwYQ3nRIqHgYLwbBZ0Zu+Iu5PaKzoDH3yS2iqrrJQFcCTuGdVWxz91i55D5nqJUBLejHv1NMlTZjEfvXWKzH+15Pk60wFNL2tTF26KtLKQbExxZVLQXKCF5ScGXnD8a+X4qvw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 165.204.84.17) smtp.rcpttodomain=vger.kernel.org smtp.mailfrom=amd.com;
+ dmarc=pass (p=quarantine sp=quarantine pct=100) action=none
+ header.from=amd.com; dkim=none (message not signed); arc=none (0)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=enpq0OzrfY8LXs6+M2a6YNn7bVQ4UBUCfN4O8w6QFpA=;
+ b=s0q0TyELbKgFyqG9gU+sVtm4C6tKJBo5y3/h8SALFiPgdEdiSYgd8gFcVS3Gp0Q83zGgLW+84obUlnU0bFPbibp0tdvDPPXpIBWLqFKRJylbbp0dFVTFa6kwyB/uCiM9W/1KNAUDFnp0DIGcbtkWKEXT292VFpvDuSHAkI3HErg=
+Received: from DS7PR03CA0330.namprd03.prod.outlook.com (2603:10b6:8:2b::22) by
+ CY5PR12MB6370.namprd12.prod.outlook.com (2603:10b6:930:20::22) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.7875.19; Fri, 16 Aug 2024 22:17:29 +0000
+Received: from DS3PEPF0000C381.namprd04.prod.outlook.com
+ (2603:10b6:8:2b:cafe::e2) by DS7PR03CA0330.outlook.office365.com
+ (2603:10b6:8:2b::22) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7875.20 via Frontend
+ Transport; Fri, 16 Aug 2024 22:17:29 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 165.204.84.17)
+ smtp.mailfrom=amd.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=amd.com;
+Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
+ 165.204.84.17 as permitted sender) receiver=protection.outlook.com;
+ client-ip=165.204.84.17; helo=SATLEXMB04.amd.com; pr=C
+Received: from SATLEXMB04.amd.com (165.204.84.17) by
+ DS3PEPF0000C381.mail.protection.outlook.com (10.167.23.11) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.20.7849.8 via Frontend Transport; Fri, 16 Aug 2024 22:17:28 +0000
+Received: from purico-ed03host.amd.com (10.180.168.240) by SATLEXMB04.amd.com
+ (10.181.40.145) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2507.39; Fri, 16 Aug
+ 2024 17:17:25 -0500
+From: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
+To: <linux-kernel@vger.kernel.org>, <iommu@lists.linux.dev>
+CC: <joro@8bytes.org>, <robin.murphy@arm.com>, <vasant.hegde@amd.com>,
+	<jon.grimm@amd.com>, <santosh.shukla@amd.com>, Suravee Suthikulpanit
+	<suravee.suthikulpanit@amd.com>, Jason Gunthorpe <jgg@nvidia.com>
+Subject: [PATCH V2] iommu/amd: Update PASID, GATS, GLX, SNPAVICSUP feature related macros
+Date: Fri, 16 Aug 2024 22:16:50 +0000
+Message-ID: <20240816221650.62295-1-suravee.suthikulpanit@amd.com>
+X-Mailer: git-send-email 2.34.1
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
-Mime-Version: 1.0
-X-Mailer: git-send-email 2.46.0.184.g6999bdac58-goog
-Message-ID: <20240816211722.1404070-1-praan@google.com>
-Subject: [PATCH] iommu/arm-smmu-v3: Print better events records
-From: Pranjal Shrivastava <praan@google.com>
-To: Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>, 
-	Robin Murphy <robin.murphy@arm.com>
-Cc: Mostafa Saleh <smostafa@google.com>, iommu@lists.linux.dev, 
-	Pranjal Shrivastava <praan@google.com>, Daniel Mentz <danielmentz@google.com>
-Content-Type: text/plain; charset="UTF-8"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-ClientProxiedBy: SATLEXMB03.amd.com (10.181.40.144) To SATLEXMB04.amd.com
+ (10.181.40.145)
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: DS3PEPF0000C381:EE_|CY5PR12MB6370:EE_
+X-MS-Office365-Filtering-Correlation-Id: d78f8baa-fe20-42d3-e6fe-08dcbe413753
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam:
+	BCL:0;ARA:13230040|36860700013|376014|1800799024|82310400026;
+X-Microsoft-Antispam-Message-Info:
+	=?us-ascii?Q?6SdnHPF6j0Km6tFXIqV+/7hjvhlb8TsJuq6B2scy0IlJipQYnblCPvfakwlb?=
+ =?us-ascii?Q?dZF24OZdQ9gvO0ZXcC9A4WdqbhXk2Xbqus6sLTaqcQrdORCnj/d+ogDEZ/wt?=
+ =?us-ascii?Q?r/L+nBk6BNJgPf5sUUXd2XMWmV7uvrwoFnZo5oBvIbnKX8lRIMp+hdccoNz8?=
+ =?us-ascii?Q?J6JxIuXdvWigB9dHe0VMUpN3gqPyYKFg8FBv4XOZLmK72G6ZHidQfnWguZoB?=
+ =?us-ascii?Q?ukboJ/6LhbJZv552mqjOr7CYmrC6yCN1d5fLlbvmUxGsvXxvVcc4fNjmmrJG?=
+ =?us-ascii?Q?72RdN3/09quipiDFt8Snq0hMCVeELb4WDH+O9iIv2FvC0/WHQ/wk/EdPt9Qk?=
+ =?us-ascii?Q?H9K3Ln+nQ0n2ka03aQqhBHtu2ClPpts/UHVFw5hHiD9opI3mdGNnlHogsjpD?=
+ =?us-ascii?Q?vmdHOhe37C9mH1rG+0UjFZfMrtsMvetzL42Ru4JQIALBbsIC9TcQ5WgfFgoN?=
+ =?us-ascii?Q?cdGrltMIZUvrBx7p75vbFN2M+Nfd1+Pw/CFjvRT5bORkRBlgQgiJycmKLqqN?=
+ =?us-ascii?Q?nZFMRCbzNs+r2fLY9Zj7tCshAShxynL7+vt8uXARnjDRqGqG5SSi0ZVYInBl?=
+ =?us-ascii?Q?fO6oss9zVBS5kpsy3/wmiJdyDgdeAJErOuIf+SRcJOX6LMDxaCfK2V1hsAbi?=
+ =?us-ascii?Q?ShNlK1/vHnzzHzgvQPtL0NbtDZsL3zUK38QYfu6n+lMhKuyQYkeA5w1yRWNj?=
+ =?us-ascii?Q?x24b9WeKk3OcsKgHzfXtLVUdp7auDVkZG25lZTUOrXU+5jqBiV3O0ZWWBhHw?=
+ =?us-ascii?Q?cdOxPTvZXgkLEuObZqNFsFEFlE3XglUEddGIQYOinQA+KzdEMCsMpuJM/Iqr?=
+ =?us-ascii?Q?PPLNJuoNPmKCUjq4FgxCPzwfPhZqqpqpzUAiUOvf4IZ3Yyo5rKKEgIch1eRl?=
+ =?us-ascii?Q?CdfBGYh/jIOHFV2Dih0litZp14kwSGerB+jtk8UfrI6Khs8l90V8qTI3V52x?=
+ =?us-ascii?Q?0PiAnGUd8RO/vshS5Z63Br6fJ1/OSGiWVXPoKxHPzALi2yEr6Cmn9zDNWi8o?=
+ =?us-ascii?Q?9USsXU3poIcj1wC3LLcyyWqn6Qd/rRVglH2cS3dgiEwa+fzlYi0kG07LdP8U?=
+ =?us-ascii?Q?/tTk4NFN43Zrqs+6S0aMY2S/wqQxaRvPps6zORuBIqk4nrF3F+caNTAVP6su?=
+ =?us-ascii?Q?y7vhABJpoxXLg9nmxdx5qj6XKNk4LbrN8wjZj3UbjY7YoIAccJzK6qMIJHZA?=
+ =?us-ascii?Q?OThPPemb95I0uP+Bh94jY1pBIFqTmNwpn0tjFK27feV0zkfXu9Yk0UZq1ZEf?=
+ =?us-ascii?Q?Bu4eLlygDzn/H7vbMjDjiCyPQDgrqUNyC1cIPClWDmx3j/7bxpQQquRHM4Vl?=
+ =?us-ascii?Q?kZBS+cX+LBHvqOQqJucPcD12cu8/L0XAGTeTxxak3P+qsSexXmxKVzl5hBAF?=
+ =?us-ascii?Q?9Fmq6aiK0AGM916fFzU+h8/3/esXrXqHZLGxCLorodsWUlUXiv095eIZGNHD?=
+ =?us-ascii?Q?jxiU3HyYoLCChb+1SQCD8WMXJz/XsAY3?=
+X-Forefront-Antispam-Report:
+	CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB04.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230040)(36860700013)(376014)(1800799024)(82310400026);DIR:OUT;SFP:1101;
+X-OriginatorOrg: amd.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 16 Aug 2024 22:17:28.9227
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: d78f8baa-fe20-42d3-e6fe-08dcbe413753
+X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[SATLEXMB04.amd.com]
+X-MS-Exchange-CrossTenant-AuthSource:
+	DS3PEPF0000C381.namprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: CY5PR12MB6370
 
-Currently, the driver dumps the hex for a received event, improve this
-by parsing out fields from an event for easier-to-read event records.
+Clean up and reorder them according to the bit index. There is no
+functional change.
 
-Signed-off-by: Daniel Mentz <danielmentz@google.com>
-Signed-off-by: Pranjal Shrivastava <praan@google.com>
+Suggested-by: Jason Gunthorpe <jgg@nvidia.com>
+Signed-off-by: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
 ---
- drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 102 ++++++++++++++++++--
- drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h |  10 ++
- 2 files changed, 105 insertions(+), 7 deletions(-)
+ drivers/iommu/amd/amd_iommu.h       |  5 -----
+ drivers/iommu/amd/amd_iommu_types.h | 16 ++++++----------
+ drivers/iommu/amd/init.c            |  8 +++-----
+ 3 files changed, 9 insertions(+), 20 deletions(-)
 
-diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-index a31460f9f3d4..993ded10c7b1 100644
---- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-+++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-@@ -1783,9 +1783,102 @@ static int arm_smmu_handle_evt(struct arm_smmu_device *smmu, u64 *evt)
- 	return ret;
+diff --git a/drivers/iommu/amd/amd_iommu.h b/drivers/iommu/amd/amd_iommu.h
+index 2d5945c982bd..52e18b5f99fd 100644
+--- a/drivers/iommu/amd/amd_iommu.h
++++ b/drivers/iommu/amd/amd_iommu.h
+@@ -121,11 +121,6 @@ static inline bool check_feature2(u64 mask)
+ 	return (amd_iommu_efr2 & mask);
  }
  
-+static void arm_smmu_print_evt_record(struct arm_smmu_device *smmu, u64 *evt)
-+{
-+	static const char * const evts[] = {
-+		/* Bad config events */
-+		[EVT_ID_BAD_SID_CONFIG] = "C_BAD_STREAMID",
-+		[EVT_ID_BAD_STE_CONFIG] = "C_BAD_STE",
-+		[EVT_ID_BAD_CD_CONFIG] = "C_BAD_CD",
-+		[EVT_ID_BAD_SSID_CONFIG] = "C_BAD_SUBSTREAMID",
-+		[EVT_ID_STREAM_DISABLED] = "F_STREAM_DISABLED",
-+
-+		/* Bad translation events */
-+		[EVT_ID_TRANSLATION_FAULT] = "F_TRANSLATION",
-+		[EVT_ID_ADDR_SIZE_FAULT] = "F_ADDR_SIZE",
-+		[EVT_ID_ACCESS_FAULT] = "F_ACCESS",
-+		[EVT_ID_PERMISSION_FAULT] = "F_PERMISSION",
-+
-+		/* Bad fetch events */
-+		[EVT_ID_STE_FETCH_FAULT] = "F_STE_FETCH",
-+		[EVT_ID_CD_FETCH_FAULT] = "F_CD_FETCH",
-+		[EVT_ID_VMS_FETCH_FAULT] = "F_VMS_FAULT"
-+	};
-+
-+	static const char * const class_str[] = {
-+		[0] = "CD",
-+		[1] = "TTD",
-+		[2] = "IN",
-+		[3] = "RES",
-+	};
-+
-+	const char *master_name = "(unassigned sid)";
-+	struct arm_smmu_master *master;
-+	u64 iova, ipa;
-+	bool ssid_valid;
-+	u32 sid, ssid;
-+	u8 evt_id, class;
-+	int i;
-+
-+	/* Pick out the good stuff */
-+	evt_id = FIELD_GET(EVTQ_0_ID, evt[0]);
-+	sid = FIELD_GET(EVTQ_0_SID, evt[0]);
-+	ssid_valid = evt[0] & EVTQ_0_SSV;
-+	ssid = ssid_valid ? FIELD_GET(EVTQ_0_SSID, evt[0]) : IOMMU_NO_PASID;
-+	class = FIELD_GET(EVTQ_1_CLASS, evt[1]);
-+	iova = FIELD_GET(EVTQ_2_ADDR, evt[2]);
-+	ipa = FIELD_GET(EVTQ_3_IPA, evt[3]);
-+
-+	mutex_lock(&smmu->streams_mutex);
-+	master = arm_smmu_find_master(smmu, sid);
-+	if (master)
-+		master_name = dev_name(master->dev);
-+	mutex_unlock(&smmu->streams_mutex);
-+
-+	switch (evt_id) {
-+	case EVT_ID_BAD_SID_CONFIG:
-+	case EVT_ID_BAD_STE_CONFIG:
-+	case EVT_ID_BAD_SSID_CONFIG:
-+	case EVT_ID_BAD_CD_CONFIG:
-+	case EVT_ID_STREAM_DISABLED:
-+		dev_err(smmu->dev, "Bad smmu config - %s client %s sid 0x%08x.0x%05x\n",
-+				evts[evt_id], master_name, sid, ssid);
-+		break;
-+
-+	case EVT_ID_TRANSLATION_FAULT:
-+	case EVT_ID_ADDR_SIZE_FAULT:
-+	case EVT_ID_ACCESS_FAULT:
-+	case EVT_ID_PERMISSION_FAULT:
-+		dev_err(smmu->dev, "Translation fault:\n");
-+		dev_err(smmu->dev, "\t%s client %s sid 0x%08x.0x%05x: iova = %#llx ipa = %#llx (%s%s%s%s%s%s)\n",
-+			    evts[evt_id], master_name, sid, ssid, iova, ipa,
-+			    FIELD_GET(EVTQ_1_PnU, evt[1]) ? "Priv " : "Unpriv ",
-+			    FIELD_GET(EVTQ_1_InD, evt[1]) ? "Inst " : "Data ",
-+			    FIELD_GET(EVTQ_1_RnW, evt[1]) ? "Read " : "Write ",
-+			    FIELD_GET(EVTQ_1_S2, evt[1]) ? "S2 " : "S1 ", class_str[class],
-+			    ((evt_id == EVT_ID_PERMISSION_FAULT) && (class == EVTQ_1_CLASS_TT)) ?
-+			    (FIELD_GET(EVTQ_1_TT_READ, evt[1]) ? " TTD Read" : " TTD Write")
-+			    : "");
-+		break;
-+
-+	case EVT_ID_STE_FETCH_FAULT:
-+	case EVT_ID_CD_FETCH_FAULT:
-+	case EVT_ID_VMS_FETCH_FAULT:
-+		dev_err(smmu->dev, "Unable to fetch data structure - bad fetch address\n");
-+		dev_err(smmu->dev, "\t%s client %s sid 0x%08x.0x%05x: fetch addr = %#llx\n",
-+				evts[evt_id], master_name, sid, ssid, ipa);
-+		break;
-+	}
-+
-+	dev_info(smmu->dev, "event 0x%02x received:\n", evt_id);
-+	for (i = 0; i < EVTQ_ENT_DWORDS; ++i)
-+		dev_info(smmu->dev, "\t0x%016llx\n",
-+			 (unsigned long long)evt[i]);
-+}
-+
- static irqreturn_t arm_smmu_evtq_thread(int irq, void *dev)
- {
--	int i, ret;
-+	int ret;
- 	struct arm_smmu_device *smmu = dev;
- 	struct arm_smmu_queue *q = &smmu->evtq.q;
- 	struct arm_smmu_ll_queue *llq = &q->llq;
-@@ -1795,17 +1888,12 @@ static irqreturn_t arm_smmu_evtq_thread(int irq, void *dev)
- 
- 	do {
- 		while (!queue_remove_raw(q, evt)) {
--			u8 id = FIELD_GET(EVTQ_0_ID, evt[0]);
- 
- 			ret = arm_smmu_handle_evt(smmu, evt);
- 			if (!ret || !__ratelimit(&rs))
- 				continue;
- 
--			dev_info(smmu->dev, "event 0x%02x received:\n", id);
--			for (i = 0; i < ARRAY_SIZE(evt); ++i)
--				dev_info(smmu->dev, "\t0x%016llx\n",
--					 (unsigned long long)evt[i]);
+-static inline int check_feature_gpt_level(void)
+-{
+-	return ((amd_iommu_efr >> FEATURE_GATS_SHIFT) & FEATURE_GATS_MASK);
+-}
 -
-+			arm_smmu_print_evt_record(smmu, evt);
- 			cond_resched();
- 		}
+ static inline bool amd_iommu_gt_ppr_supported(void)
+ {
+ 	return (check_feature(FEATURE_GT) &&
+diff --git a/drivers/iommu/amd/amd_iommu_types.h b/drivers/iommu/amd/amd_iommu_types.h
+index 2b76b5dedc1d..c9f9a598eb82 100644
+--- a/drivers/iommu/amd/amd_iommu_types.h
++++ b/drivers/iommu/amd/amd_iommu_types.h
+@@ -8,6 +8,7 @@
+ #ifndef _ASM_X86_AMD_IOMMU_TYPES_H
+ #define _ASM_X86_AMD_IOMMU_TYPES_H
  
-diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
-index 14bca41a981b..500eecbf2834 100644
---- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
-+++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
-@@ -399,10 +399,19 @@ struct arm_smmu_cd {
++#include <linux/bitfield.h>
+ #include <linux/iommu.h>
+ #include <linux/types.h>
+ #include <linux/mmu_notifier.h>
+@@ -95,26 +96,21 @@
+ #define FEATURE_GA		BIT_ULL(7)
+ #define FEATURE_HE		BIT_ULL(8)
+ #define FEATURE_PC		BIT_ULL(9)
+-#define FEATURE_GATS_SHIFT	(12)
+-#define FEATURE_GATS_MASK	(3ULL)
++#define FEATURE_GATS		GENMASK_ULL(13, 12)
++#define FEATURE_GLX		GENMASK_ULL(15, 14)
+ #define FEATURE_GAM_VAPIC	BIT_ULL(21)
++#define FEATURE_PASMAX		GENMASK_ULL(36, 32)
+ #define FEATURE_GIOSUP		BIT_ULL(48)
+ #define FEATURE_HASUP		BIT_ULL(49)
+ #define FEATURE_EPHSUP		BIT_ULL(50)
+ #define FEATURE_HDSUP		BIT_ULL(52)
+ #define FEATURE_SNP		BIT_ULL(63)
  
- #define EVTQ_0_ID			GENMASK_ULL(7, 0)
+-#define FEATURE_PASID_SHIFT	32
+-#define FEATURE_PASID_MASK	(0x1fULL << FEATURE_PASID_SHIFT)
+-
+-#define FEATURE_GLXVAL_SHIFT	14
+-#define FEATURE_GLXVAL_MASK	(0x03ULL << FEATURE_GLXVAL_SHIFT)
  
-+/* Events */
-+#define EVT_ID_BAD_SID_CONFIG		0x02
-+#define EVT_ID_STE_FETCH_FAULT		0x03
-+#define EVT_ID_BAD_STE_CONFIG		0x04
-+#define EVT_ID_STREAM_DISABLED		0x06
-+#define EVT_ID_BAD_SSID_CONFIG		0x08
-+#define EVT_ID_CD_FETCH_FAULT		0x09
-+#define EVT_ID_BAD_CD_CONFIG		0x0a
- #define EVT_ID_TRANSLATION_FAULT	0x10
- #define EVT_ID_ADDR_SIZE_FAULT		0x11
- #define EVT_ID_ACCESS_FAULT		0x12
- #define EVT_ID_PERMISSION_FAULT		0x13
-+#define EVT_ID_VMS_FETCH_FAULT		0x25
+ /* Extended Feature 2 Bits */
+-#define FEATURE_SNPAVICSUP_SHIFT	5
+-#define FEATURE_SNPAVICSUP_MASK		(0x07ULL << FEATURE_SNPAVICSUP_SHIFT)
++#define FEATURE_SNPAVICSUP	GENMASK_ULL(7, 5)
+ #define FEATURE_SNPAVICSUP_GAM(x) \
+-	((x & FEATURE_SNPAVICSUP_MASK) >> FEATURE_SNPAVICSUP_SHIFT == 0x1)
++	(FIELD_GET(FEATURE_SNPAVICSUP, x) == 0x1)
  
- #define EVTQ_0_SSV			(1UL << 11)
- #define EVTQ_0_SSID			GENMASK_ULL(31, 12)
-@@ -414,6 +423,7 @@ struct arm_smmu_cd {
- #define EVTQ_1_RnW			(1UL << 35)
- #define EVTQ_1_S2			(1UL << 39)
- #define EVTQ_1_CLASS			GENMASK_ULL(41, 40)
-+#define EVTQ_1_CLASS_TT			0x1
- #define EVTQ_1_TT_READ			(1UL << 44)
- #define EVTQ_2_ADDR			GENMASK_ULL(63, 0)
- #define EVTQ_3_IPA			GENMASK_ULL(51, 12)
+ /* Note:
+  * The current driver only support 16-bit PASID.
+diff --git a/drivers/iommu/amd/init.c b/drivers/iommu/amd/init.c
+index c89d85b54a1a..6b15ce09e78d 100644
+--- a/drivers/iommu/amd/init.c
++++ b/drivers/iommu/amd/init.c
+@@ -2042,14 +2042,12 @@ static int __init iommu_init_pci(struct amd_iommu *iommu)
+ 		int glxval;
+ 		u64 pasmax;
+ 
+-		pasmax = amd_iommu_efr & FEATURE_PASID_MASK;
+-		pasmax >>= FEATURE_PASID_SHIFT;
++		pasmax = FIELD_GET(FEATURE_PASMAX, amd_iommu_efr);
+ 		iommu->iommu.max_pasids = (1 << (pasmax + 1)) - 1;
+ 
+ 		BUG_ON(iommu->iommu.max_pasids & ~PASID_MASK);
+ 
+-		glxval   = amd_iommu_efr & FEATURE_GLXVAL_MASK;
+-		glxval >>= FEATURE_GLXVAL_SHIFT;
++		glxval = FIELD_GET(FEATURE_GLX, amd_iommu_efr);
+ 
+ 		if (amd_iommu_max_glx_val == -1)
+ 			amd_iommu_max_glx_val = glxval;
+@@ -3088,7 +3086,7 @@ static int __init early_amd_iommu_init(void)
+ 
+ 	/* 5 level guest page table */
+ 	if (cpu_feature_enabled(X86_FEATURE_LA57) &&
+-	    check_feature_gpt_level() == GUEST_PGTABLE_5_LEVEL)
++	    FIELD_GET(FEATURE_GATS, amd_iommu_efr) == GUEST_PGTABLE_5_LEVEL)
+ 		amd_iommu_gpt_level = PAGE_MODE_5_LEVEL;
+ 
+ 	/* Disable any previously enabled IOMMUs */
 -- 
-2.46.0.184.g6999bdac58-goog
+2.34.1
 
