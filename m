@@ -1,166 +1,172 @@
-Received: from NAM11-CO1-obe.outbound.protection.outlook.com (mail-co1nam11on2054.outbound.protection.outlook.com [40.107.220.54])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 660621C2316
-	for <iommu@lists.linux.dev>; Fri, 16 Aug 2024 20:40:31 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.220.54
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1723840833; cv=fail; b=QpVOV+2iNTa96KLAHlN+BsJ0++S9cyKGN8+2ZYoVVbJ4VOWB9x3ZFIkr1Pev2t7fJyn5TfFAoiJQUqKCrOMjap8xvymnl3cRSsi1YvcBPqcgbtRoB4jWCxjPYxNN3VI4zsCq1B/wX1zT4hJTLOdQuqVkUHonhcB0EdoOQ9oYqBU=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1723840833; c=relaxed/simple;
-	bh=r/sssly5sa1L++TOIsicUI8klUmBzkvITt1l05wHqT0=;
-	h=Message-ID:Date:Subject:To:Cc:References:From:In-Reply-To:
-	 Content-Type:MIME-Version; b=S+bT+wbWvLQrK9AQh54aB1VQEwG6+KF5HftHUBBe2dl+2o007jcULrCZK+xOnV/OzNpYp4utpHORv8XviiQydM5eI7/KzC5GVd9+2Myq3wCsV0AjY/h6zVlT3RqfXkqmchLNEChza2mRKOhrqBL9oe99K9PfFSKX/W7c0EaFWBQ=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com; spf=fail smtp.mailfrom=amd.com; dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b=wCVCeTPg; arc=fail smtp.client-ip=40.107.220.54
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=amd.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A24DC1BF339;
+	Fri, 16 Aug 2024 21:07:18 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1723842438; cv=none; b=PIlMSmL88UOCRvTqm4dyqKMLNMEBZYTiHxz73iQSY9L4la8hEy8smuDxsoWNoVmFU0nqPAh+ujavCNi3IJKDCbbBNk5pHg9Ebax6geJ+tC4jYfIp5pT7BlwLOUoJVMrfVlNAzWqTFA2eL2246cRruvkX7rREaTLeDpmdpQ7Gek8=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1723842438; c=relaxed/simple;
+	bh=s3jVdAVjzFoRJo4B/B/8soz52JAn5/6CmLtBL9Mcx5w=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=JTcivloBVjYeZqD58ykPlF3diEwYEJbZTmJvieuTkkVJbw0RPKZBiP+2J1V29wQmMKp6g2crNM5kcGZfitg63gF13YcEiPgJSSr/odgpfq3QA5NJVEcfLJIJ55NpbjUH2b43Gs6g/pwqdXZzM9H8Op5Pn/p/JG5ykm2cto+mMa0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=GdffXrF0; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b="wCVCeTPg"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=CjqaTOWOjkt6wULwCvXIIn5tTFUF9Gilkvg2JRVHOfegKioPCD60T0N0gfqfPcdYGJ16a5CSVdJyclGa5nGV3K9iFpm1MtljgF2MN6tVSpIUyDle/j4B0agG4uxyflOmYsojJiJJqXc7lIe6LeSYNTHcudCjCD0tAdABAdIGS75Afo52CxOFjsTWPg60nvAfxoGMYmyLsd9IVaFPDQe7+qL96fkgsed6qjEd22NSHHx4Enx7NJLrqoMfFJYbzekqqDeWm/Le7fD9FQBYjl+dFeXCU3/i7OZ9CkUaPamdqyR9duzMAHv4e4qzj7gkflTvO7+Hlr9vNL/wx14tYeUopA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=Ywk5NTMKE8LEtyqap5hvI8kBWJ/whDbFXqDv4uyBrFs=;
- b=NpjEOKmDnaka26X/6dEI3hwgsInOPOSOp4vlTM2eOUyTdAMAp0QOCTQk4okh4B+MmRg9w/y5eMlxBFvWsH659512FYjnkc3xNV94Sr+dCpuy47pXethfJt8YA/l6P5CLZwi0FaK1yw2B+sdM85nSkbetOEbh9sHlHxP6179owOEL7aD59F0eC2AVHhgMyHxUpriEbO6OH8+UNxUEG7vSJvbAfTGsNhIq0Nu/HR43WYEut4av0x1RTy0BMbtt3ekqS589aGFCu16QcwKvX8tP/KK77zbgydNFIQTAkApbbpyzZ9NjpQIAb0ibni7YnwUX/U73m3dlz09TosPNL/dfRw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=amd.com; dmarc=pass action=none header.from=amd.com; dkim=pass
- header.d=amd.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=Ywk5NTMKE8LEtyqap5hvI8kBWJ/whDbFXqDv4uyBrFs=;
- b=wCVCeTPgNrnyt/RfR1B3JdA99ecuBQCn9zwjTQBcRcllTOoHrcw1h95z9czxodYT+eMcdUtsVfrKAwKt1qm6Bi5v/jhzJee9IRHWmHmr6UjVvLTfEse0p2gWyHVSJmzKIHjdMS1qT8x1OImhkmErcNAHc23uq3pl1WGizIOkodA=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=amd.com;
-Received: from DM8PR12MB5445.namprd12.prod.outlook.com (2603:10b6:8:24::7) by
- DM6PR12MB4297.namprd12.prod.outlook.com (2603:10b6:5:211::20) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.7875.20; Fri, 16 Aug 2024 20:40:29 +0000
-Received: from DM8PR12MB5445.namprd12.prod.outlook.com
- ([fe80::a544:caf8:b505:5db6]) by DM8PR12MB5445.namprd12.prod.outlook.com
- ([fe80::a544:caf8:b505:5db6%4]) with mapi id 15.20.7875.018; Fri, 16 Aug 2024
- 20:40:28 +0000
-Message-ID: <1d835a25-d148-4cf9-ba00-d8557b0d7649@amd.com>
-Date: Sat, 17 Aug 2024 03:40:21 +0700
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH] iommu/amd: Update PASID, GATS, and GLX feature related
- macros
-Content-Language: en-US
-To: linux-kernel@vger.kernel.org, iommu@lists.linux.dev
-Cc: joro@8bytes.org, robin.murphy@arm.com, vasant.hegde@amd.com,
- jon.grimm@amd.com, santosh.shukla@amd.com
-References: <20240816160020.5525-1-suravee.suthikulpanit@amd.com>
-From: "Suthikulpanit, Suravee" <suravee.suthikulpanit@amd.com>
-In-Reply-To: <20240816160020.5525-1-suravee.suthikulpanit@amd.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: SGAP274CA0012.SGPP274.PROD.OUTLOOK.COM (2603:1096:4:b6::24)
- To DM8PR12MB5445.namprd12.prod.outlook.com (2603:10b6:8:24::7)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="GdffXrF0"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6ADB6C32782;
+	Fri, 16 Aug 2024 21:07:18 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1723842438;
+	bh=s3jVdAVjzFoRJo4B/B/8soz52JAn5/6CmLtBL9Mcx5w=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=GdffXrF0Lz1CQ2UIzTQO+cLy/3HZFENL+eTTOM0GigbyBqzxAlip2pWJpGHnkZC4/
+	 gTRAGOccI3wXLv0zVlpyBCajr9ExQgp24c+2YmcUQ/cZNRLz7PXNkWxRQb2X7XeC1s
+	 zVouCnwoD6F69VPHuk+YH03ZLVpvgVbXMFcl4MRmfQRmJ0granvwojEjRIKQ84hHD9
+	 Ih9lZSFwC0HjqyFGlgH2PlIRM8KvNE3Xhg4iZZ1+k7QGV8eJ4SaJkPIRCT3iPQZXn/
+	 F4sJv6hxV+A5qWR0MR6oWytkR6sPpZulCAn26OViJKoy/EqusNfxcSwzJyYrjmAM1y
+	 aq2N68h//IDJQ==
+Date: Fri, 16 Aug 2024 15:07:17 -0600
+From: "Rob Herring (Arm)" <robh@kernel.org>
+To: Oreoluwa Babatunde <quic_obabatun@quicinc.com>
+Cc: will@kernel.org, m.szyprowski@samsung.com, saravanak@google.com,
+	klarasmodin@gmail.com, robin.murphy@arm.com, iommu@lists.linux.dev,
+	aisheng.dong@nxp.com, kernel@quicinc.com,
+	devicetree@vger.kernel.org, catalin.marinas@arm.com, hch@lst.de,
+	linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v7 1/2] of: reserved_mem: Restruture how the reserved
+ memory regions are processed
+Message-ID: <172384243424.2188220.6416522765336763832.robh@kernel.org>
+References: <20240809184814.2703050-1-quic_obabatun@quicinc.com>
+ <20240809184814.2703050-2-quic_obabatun@quicinc.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: DM8PR12MB5445:EE_|DM6PR12MB4297:EE_
-X-MS-Office365-Filtering-Correlation-Id: db626027-e179-4d8f-ed05-08dcbe33a9e3
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;ARA:13230040|376014|1800799024|366016;
-X-Microsoft-Antispam-Message-Info:
-	=?utf-8?B?RElGZFphTWRrQTZoclFRUTUyRU9CMURteFlNbFNJdUppSGEyakZhQk9zOVhV?=
- =?utf-8?B?dHlGQWpyY2lmOWYzNzM3SGJRUGhJYkJlZkNDVVJGc2VkWDFDVFpSL3FqTlda?=
- =?utf-8?B?dTN5QW5SaGRiN1VEREhYcy8zUGZoZXpwRFlvdW9UZ2RNQnlyaEsyZ0Q1QXA2?=
- =?utf-8?B?dUFnbzVRYmc0b2VYbTBkem5DcmVTSFBjT2ErSzB3VXU5QXdtZmtMVjdEdlRt?=
- =?utf-8?B?SUVRMENOa2FuQUhOWkRoWTRBaGpkMnlQTDR2TUtmOXJ1TDNVR2hpU0JqWGdu?=
- =?utf-8?B?eThhbk80QzN6T3JualNROXFHRS9VQ0trbjM3R1UwcUZzdU93OFpubEdMbEsx?=
- =?utf-8?B?NXdZRVJGOVNacmFFd0lYSzJZYWdtSkw4UDVmWS9QWENYSnFtc2xhdml3OXlE?=
- =?utf-8?B?dkU4TTFNWU5TUUk0Nk1kL0t4UVlUOFQrK0lyYUt2Zlk4QnhtZDEyczJ5L20y?=
- =?utf-8?B?T3VKOUYrcnpkWEk1N3V6Y1pGRS92N29jM2lURUxyQUM3NmdFdFBrT2NSbWE2?=
- =?utf-8?B?QmpBZjFmSXlLN08zZVM3dEtCUkJmNkpPUlcrN1FlLzFMOG5ybm1EVzYzT2Iv?=
- =?utf-8?B?VkhzTFRFMjRmaytPemNoWTVTRFpobk5NWnJreXB2d0FyL1FyN2JCbEQ2Nk5u?=
- =?utf-8?B?YTY3V1p4eUFvSTBvNDBCVHNTaHhtVytCa3dnOTFTYzJXSXFscFFEYXlFL2x5?=
- =?utf-8?B?NGNMU1pxVkF4MHZCOUFBQ1VSanlTQmdoNGpUS0ZqdEhvTkRIYU9ua3lWOWZY?=
- =?utf-8?B?b0dSOEZRalQ0WjVGVkVTaWF2ME40RjFDOTBURkpjRk9vYlB0UEI1aGw2ZmE5?=
- =?utf-8?B?M2VyMmd0c1FMRVBONXFKbEFDRHlRVHpteG5iZTJxb0s2bld1cHpaNExlUTBF?=
- =?utf-8?B?aVZCaVQvZk41YmIxVzFKWXM4T3lST1I1TEcvQ3FkQ05EY2k4bjBNY1VldGNt?=
- =?utf-8?B?cEF2MWNhZDNkRDdCOUJLZlIvdnlrejdhRjJJVzIxYUlzVUg3MjFPZERKSStn?=
- =?utf-8?B?MXpJVysrNml4eVNJVFMyMWJyTlNZYVYvZHhoaG5QMVBKbldZajE3SEdHZUZh?=
- =?utf-8?B?QVFTS2lJdmRzOEdISThvaFMrVkc5RG5aQ0RyanhaZkRtTG5wNC9Xc2RyNElk?=
- =?utf-8?B?R2I0R1d6V3pzc0ljRUhZMFJ4ZjZiTEhSMHhRWldvVU4wRUxsbzNVRUdvaFB1?=
- =?utf-8?B?L1ZJelczeHhGbHVBTHFFWkFEWXlEeGZKN0k1U1JSNVFXNEFyb2NBY0Qwcjhy?=
- =?utf-8?B?Y1dKYVBQU1FHTlcwYzUrcnlTKzVUbXM3ZEsxRFc4ditNWTUxZFU1WXByZzg2?=
- =?utf-8?B?Y0FaYUFOWUJvQzN4WVVnOXAvVXlMTkhEWXJJMXpwOER5eDNaVUtXeXczMHlB?=
- =?utf-8?B?a09qWWNYN0RDZlJPdVAzMUQ3VlA0YTNkbnVzd0QzZURXdUxFQ1NnbjhqVDFU?=
- =?utf-8?B?VXdub1BEbHNodm5wR00rYTRhR3RwZllWcGMvWDRCYWVxUTgrSmNzdjBZeGFL?=
- =?utf-8?B?YnB4c21TejVuc0I0dFJkSlhqa2srbUJFbEtIOWU0dFcxeXRvcmxMZjBPVUFF?=
- =?utf-8?B?RTErajlST05BMEZtdUVSaWNOczE3Uk15MjlXbGRVK1I3ak1JSUJ6ZmEvOHQ4?=
- =?utf-8?B?M1RvQ2REVUxSVGw2T3VhV3lOUW83VTF4VmZFWFNHanJJN3NnU2NITEd0cmI5?=
- =?utf-8?B?dUZXelMzdUg4THZGUUxLcU5uTkJOczhoS0c0ZHFPaW80SlZKa3lzZGdrUXZi?=
- =?utf-8?B?dHZUR1VGZ3dKYW5JRXhqRkRnanpFREQ5UDlEQkF0aklTUDEyYmZiVFE5Vms1?=
- =?utf-8?B?WGg3bVErUVZUQ3dSNHY0Zz09?=
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM8PR12MB5445.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(376014)(1800799024)(366016);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?utf-8?B?S3RwbXhUd2xyc2dxdHcrbitENGpKMzBPT09kNWVtSVNRQ1hTa2NaWFdvVEZs?=
- =?utf-8?B?TExNZXovZk82Mk5UdHdwRDExaVBRMFlHb01MUkVXcGQxSjJIWmwxQVhDenVH?=
- =?utf-8?B?NldTdU0yb1JvQXAxQ1dKTkI3b2xWUEx0NHVjbHAzaDN4aVNtQUVwYkxHQlB4?=
- =?utf-8?B?Q0JRQlp3R0hyMlFUYmRMT3B3a3EzVk5hdDhKWUxiQ1l3eUdQMDlmNElVcWVU?=
- =?utf-8?B?OWF4UVlLL1RmTW5FMGNITkxQcEhRb3llK3BMYTYwVkZGNkJhZHkvL1djMllq?=
- =?utf-8?B?dDFXR0E0S3ZLeVRMNGpPa09LRHBNWjZKTXBjWCtuekgxd04wWmJzMFd2YmRB?=
- =?utf-8?B?WElUV2RWd3hvWjRISjFxYzRnQWVWd1d0ckt2V0tNMHp5QjFMWXJ0dDc5dTlx?=
- =?utf-8?B?RWdCVGJYUWRwN2VqUmhPbTh4ZnVSYW1BRTlsZ20vRnlQOUFYdmpsYWd5UGsv?=
- =?utf-8?B?MkRzUmM2SEdjTW9KRG5PdUFZdldtNksyaUtkcGlmRzZhei9KUGVrSTlXVzhO?=
- =?utf-8?B?QVVUTVFReWd4TXdMbTg0QXk0eFJOd1JSN2JXa3Q4RlovNmZvL1pZdlB6Z0dw?=
- =?utf-8?B?Vlg0ZS9EYWgraDYwUXU2c2VKa3JFZWg0UGs1dUpmSk0wWUNOVEszdUdKa2RB?=
- =?utf-8?B?WG4yODdPdFRLT3I1bGR6ZlJmSkVaR3Jia3NTMUNia2MzVlFVQjhaenZib29E?=
- =?utf-8?B?MmFiY203REFpL013Ym13YlI5KzAxVmlNVy9nQzV2ekE4aHUzUFdDQzRlOHh6?=
- =?utf-8?B?OFQvUTljNWJRWmdkRW5jS2xoV3FnVm1hWStPZjJENTJYNmRXd3VGdUZMWThj?=
- =?utf-8?B?ZGdsTWdkMTJhZjNlVjNSV1dZOWZYUjdubzZXZ21WUHdSbUZ3SjBsWFg1UTBw?=
- =?utf-8?B?RDIrUnRMYkxqbkJJUGVmajFWUElPeDJvRXNoUm52MkdNMnVMeHVhZmZxUERw?=
- =?utf-8?B?NXRmVW9nMXFCMWMrdE1UcHpmQ3pHZXp3WUVzT2RSOUF5QW9jb3NNeVZZRjNl?=
- =?utf-8?B?cEdCZGt1b0ZESG1BTlcrb1ZpaXdpaGdmclV1U3hzRWlOWVRMUDkvWHczOFJX?=
- =?utf-8?B?NXh5TUlFNi9xajVsV2tjcUowZCtDNStUTkZ2aXowYVJ4OUpBaUVraE0rYkxS?=
- =?utf-8?B?MmtRYnd0aDdybWxkTWs3d1dnOTRwc2IvOS9Hb2c4VldNN0gwMVpkWXIrUlBw?=
- =?utf-8?B?ejdmM2xJZmRIWTluemNFaWhpVURYKzhxK1ZKaUQxS2hHZEV5TThCblpMd0t3?=
- =?utf-8?B?SjNTWmo3azZVM1ZyTW1lUGlBbE9hWWY3NXFNSEtzckI5ZExjSEVLUjcwdnB4?=
- =?utf-8?B?aFhKTWhvZ20rZWdNMU5HVUV6NFlpTDM0enR0VWl6UThwTmg2dGRmSkxYTjlT?=
- =?utf-8?B?NHBNNWc0SFJyWjh3ZTU0ajF6WUZmZmhaZTY1TmdTQUxNZG5pMEswdGZHVjZn?=
- =?utf-8?B?YzVqcFJPOERNQXkzMzA0SVFlcFgySFVaV1Z0dTdsWXp1UXJ3QkdJU2JCL2dG?=
- =?utf-8?B?YXVCSkRjUWsxSlRXQ0lxQ1FXakdQQ3VFL1FHREhhZ0VxZW9SVFlIN3lNdUs4?=
- =?utf-8?B?SVl1bzlMNmV5aDYzL1NXanh2RUk4a1Fqak5seFB1clFIb21vN29lNEJKbVhN?=
- =?utf-8?B?WmFKVlhvZEs3bkVqSnZyN3NPeEsvc2ZmK1ZKektIZS9TazBZSGdweUl5cS9R?=
- =?utf-8?B?TnBVc0o0ODJjZXlEdGRNemIxUGt5VUxjRk9VMEpEQ2wwTmFyTEI3c0xjYjBW?=
- =?utf-8?B?Vldwd2dIYTRnb0RHYnh3S2JjM295WWUxMHVTYy91TUNQT0NhSGU2RFdSY2Fa?=
- =?utf-8?B?S2hYSzVuSEhXcnpUeHlwcWo5S0lMQncvOTRHZUhhb0RvRlVzeWlDT043ZXg1?=
- =?utf-8?B?MWpoeld3TDAvSDBRWXV0SlBPc0UyNmpEdGN4Kyt4RVd1NTNaeUZkRlZ4bzFV?=
- =?utf-8?B?eG5oRXo4MjBNaGVyM0tqVHF4MnJockY1L1ZhRWNuTGJsM1hNazhJQ1FabHJz?=
- =?utf-8?B?cmp0Z25RYkFaM0ljbDRQVjZXc05VWVMxNG1qdElUb2lMNDBQNSt1MXQxUkhl?=
- =?utf-8?B?SEhaY3VURVdXMkRKa1F3cmRjS0NJMUdxbnorZ0NRdjRwayswK1JoejBrSXdx?=
- =?utf-8?Q?8zUyu6oHgAjj1zvDLh5dy9MvI?=
-X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: db626027-e179-4d8f-ed05-08dcbe33a9e3
-X-MS-Exchange-CrossTenant-AuthSource: DM8PR12MB5445.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 16 Aug 2024 20:40:28.6522
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: 1m7rkcPworSNaHb6cJm5dySCsWGGchf+MNABMymEI/WehJyxcslLOzCNRDg9PoBWqmeIZKwVje60XWECtqTs6A==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR12MB4297
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20240809184814.2703050-2-quic_obabatun@quicinc.com>
 
 
-
-On 8/16/2024 11:00 PM, Suravee Suthikulpanit wrote:
-> Clean up and reorder them according to the bit index. There is no
-> functional change.
+On Fri, 09 Aug 2024 11:48:13 -0700, Oreoluwa Babatunde wrote:
+> Reserved memory regions defined in the devicetree can be broken up into
+> two groups:
+> i) Statically-placed reserved memory regions
+> i.e. regions defined with a static start address and size using the
+>      "reg" property.
+> ii) Dynamically-placed reserved memory regions.
+> i.e. regions defined by specifying an address range where they can be
+>      placed in memory using the "alloc_ranges" and "size" properties.
 > 
-> Signed-off-by: Suravee Suthikulpanit<suravee.suthikulpanit@amd.com>
+> These regions are processed and set aside at boot time.
+> This is done in two stages as seen below:
+> 
+> Stage 1:
+> At this stage, fdt_scan_reserved_mem() scans through the child nodes of
+> the reserved_memory node using the flattened devicetree and does the
+> following:
+> 
+> 1) If the node represents a statically-placed reserved memory region,
+>    i.e. if it is defined using the "reg" property:
+>    - Call memblock_reserve() or memblock_mark_nomap() as needed.
+>    - Add the information for that region into the reserved_mem array
+>      using fdt_reserved_mem_save_node().
+>      i.e. fdt_reserved_mem_save_node(node, name, base, size).
+> 
+> 2) If the node represents a dynamically-placed reserved memory region,
+>    i.e. if it is defined using "alloc-ranges" and "size" properties:
+>    - Add the information for that region to the reserved_mem array with
+>      the starting address and size set to 0.
+>      i.e. fdt_reserved_mem_save_node(node, name, 0, 0).
+>    Note: This region is saved to the array with a starting address of 0
+>    because a starting address is not yet allocated for it.
+> 
+> Stage 2:
+> After iterating through all the reserved memory nodes and storing their
+> relevant information in the reserved_mem array,fdt_init_reserved_mem() is
+> called and does the following:
+> 
+> 1) For statically-placed reserved memory regions:
+>    - Call the region specific init function using
+>      __reserved_mem_init_node().
+> 2) For dynamically-placed reserved memory regions:
+>    - Call __reserved_mem_alloc_size() which is used to allocate memory
+>      for each of these regions, and mark them as nomap if they have the
+>      nomap property specified in the DT.
+>    - Call the region specific init function.
+> 
+> The current size of the resvered_mem array is 64 as is defined by
+> MAX_RESERVED_REGIONS. This means that there is a limitation of 64 for
+> how many reserved memory regions can be specified on a system.
+> As systems continue to grow more and more complex, the number of
+> reserved memory regions needed are also growing and are starting to hit
+> this 64 count limit, hence the need to make the reserved_mem array
+> dynamically sized (i.e. dynamically allocating memory for the
+> reserved_mem array using membock_alloc_*).
+> 
+> On architectures such as arm64, memory allocated using memblock is
+> writable only after the page tables have been setup. This means that if
+> the reserved_mem array is going to be dynamically allocated, it needs to
+> happen after the page tables have been setup, not before.
+> 
+> Since the reserved memory regions are currently being processed and
+> added to the array before the page tables are setup, there is a need to
+> change the order in which some of the processing is done to allow for
+> the reserved_mem array to be dynamically sized.
+> 
+> It is possible to process the statically-placed reserved memory regions
+> without needing to store them in the reserved_mem array until after the
+> page tables have been setup because all the information stored in the
+> array is readily available in the devicetree and can be referenced at
+> any time.
+> Dynamically-placed reserved memory regions on the other hand get
+> assigned a start address only at runtime, and hence need a place to be
+> stored once they are allocated since there is no other referrence to the
+> start address for these regions.
+> 
+> Hence this patch changes the processing order of the reserved memory
+> regions in the following ways:
+> 
+> Step 1:
+> fdt_scan_reserved_mem() scans through the child nodes of
+> the reserved_memory node using the flattened devicetree and does the
+> following:
+> 
+> 1) If the node represents a statically-placed reserved memory region,
+>    i.e. if it is defined using the "reg" property:
+>    - Call memblock_reserve() or memblock_mark_nomap() as needed.
+>    - Call the region specific initialization function for the region
+>      using fdt_init_reserved_mem_node().
+> 
+> 2) If the node represents a dynamically-placed reserved memory region,
+>    i.e. if it is defined using "alloc-ranges" and "size" properties:
+>    - Call __reserved_mem_alloc_size() which will:
+>      i) Allocate memory for the reserved region and call
+>      memblock_mark_nomap() as needed.
+>      ii) Call the region specific initialization function using
+>      fdt_init_reserved_mem_node().
+>      iii) Save the region information in the reserved_mem array using
+>      fdt_reserved_mem_save_node().
+> 
+> Step 2:
+> 1) This stage of the reserved memory processing is now only used to add
+>    the statically-placed reserved memory regions into the reserved_mem
+>    array using fdt_scan_reserved_mem_reg_nodes().
+> 
+> 2) This step is also moved to be after the page tables have been
+>    setup. Moving this will allow us to replace the reserved_mem
+>    array with a dynamically sized array before storing the rest of
+>    these regions.
+> 
+> Signed-off-by: Oreoluwa Babatunde <quic_obabatun@quicinc.com>
 > ---
+>  drivers/of/fdt.c             |   5 +-
+>  drivers/of/of_private.h      |   3 +-
+>  drivers/of/of_reserved_mem.c | 172 +++++++++++++++++++++++++----------
+>  3 files changed, 131 insertions(+), 49 deletions(-)
+> 
 
-I am doing more clean up and sending out v2 for this.
+Applied, thanks!
 
-Suravee
