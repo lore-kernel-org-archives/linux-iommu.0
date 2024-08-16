@@ -1,115 +1,217 @@
-Received: from mail-oo1-f54.google.com (mail-oo1-f54.google.com [209.85.161.54])
+Received: from mail-pg1-f202.google.com (mail-pg1-f202.google.com [209.85.215.202])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6C61A7DA90
-	for <iommu@lists.linux.dev>; Fri, 16 Aug 2024 18:37:52 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.161.54
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C772C8120D
+	for <iommu@lists.linux.dev>; Fri, 16 Aug 2024 19:21:20 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.215.202
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1723833474; cv=none; b=caGmczq6NMGxQGbS3mhNLKf4CztdpF1lru6xwKwxffNKoSw42cbj3SFb0e/U4fPUDNVipVaRC2RPmK/S13lfNvbGG5VUCnaBnv0hc0GcB7XM2nARgZVVr+F7512yr4UOwcm5o27QYAfiB1CQcq7tpCP1cyGsPh8ZR2AzTheYbIo=
+	t=1723836082; cv=none; b=iCAEhw8ZjXCPsQuGwNshkhfB17khHYA9wptKxTd3TtQ2NshAtYBMk0NJvUUPVhstU9t3BB4a7DzRy1Xp4/yB/AuD9/msPkTR/IRauREgCd4p2L7YB6jfdNu4Ewq9mIhzfOpw8yrtRIu7g48e8YQSJeZWS3NIayQutq8ALTYYPdk=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1723833474; c=relaxed/simple;
-	bh=erJmaBAuttfAO5mbD7t9V6H18foWxf0xl3UBpOgHXpI=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=qA3oiDX4d9fQ4KiF20BPXrNJKYVJXotYKsO6AGImpYO+AZaa4EdXW/mNtEYaiXr4ntFAHyZD5LzjmjcrzBLtmn5r2QZqVHaVQlem1BGh96F0tEQag7tAWajFjE1oFZG2will+vWQHoROQrDD/3SYLrUvGgDrMu2WGiHcJjpykSw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=WGfMw5x0; arc=none smtp.client-ip=209.85.161.54
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
+	s=arc-20240116; t=1723836082; c=relaxed/simple;
+	bh=EEBIa6fj/Pv2HSdlYiP/qAmyl9BfYOfm6PD9687aiWo=;
+	h=Date:In-Reply-To:Mime-Version:References:Message-ID:Subject:From:
+	 To:Cc:Content-Type; b=QfRhCvEDSPqt/mH7dyVqO52Ke1M75JAtFLF/JKHAr2MYn+CFhWVxBlOyuWecuRB26/pl4XJOaQJMo2RYtWFm61+9KYnZoaCGKkAib0D/MDt5hDfFLr7B4yJwmHt1dS/ug2AjjB0KBuQkPRyWNAUp4xoqd+kp/v7nljNQxOdPXg4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=flex--seanjc.bounces.google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=MI3tQGeH; arc=none smtp.client-ip=209.85.215.202
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=flex--seanjc.bounces.google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="WGfMw5x0"
-Received: by mail-oo1-f54.google.com with SMTP id 006d021491bc7-5d5eec95a74so1391719eaf.1
-        for <iommu@lists.linux.dev>; Fri, 16 Aug 2024 11:37:52 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="MI3tQGeH"
+Received: by mail-pg1-f202.google.com with SMTP id 41be03b00d2f7-7a30753fe30so2012284a12.3
+        for <iommu@lists.linux.dev>; Fri, 16 Aug 2024 12:21:20 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google; t=1723833471; x=1724438271; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=sebjMBM5W+rfgwddJvX9QH9EPhF3Ehwi61e3I/e2S4Y=;
-        b=WGfMw5x0Oiwh2vHZjP9nQviosuHGMCF++CqqSDbVD84elTaor+QNABoaRbnIZipn14
-         6OlZHBLVj5JXOjRSlGDJ0zuYn/2wPNlbHqrEBZ2TvFc6KhGt8xR6fphHTMEbkw/JmXwW
-         9JRwzFBuVGGdgZG18lM3bNCAyURO4AbQpvGBSt0/vs+hDE168shxDD/p/jS5HouUbUoY
-         Veekr3AQ1t+Cej1WWY+zOjER/wZfxZf3yd0N/Lqlv33ATOp97t/5Fe5WZdL+jQlo4yMz
-         mgFi6jyvLbM6OLjUHbnthMbP0PwnOZhF+Cc412Ck4dfCZNd+o+Gydyo/WNR8ECN0vZaK
-         qgjQ==
+        d=google.com; s=20230601; t=1723836080; x=1724440880; darn=lists.linux.dev;
+        h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
+         :date:from:to:cc:subject:date:message-id:reply-to;
+        bh=ftVQJ22uwhnVCu9sapxQkj0rYV8PxV9JBpHRmc+PMHc=;
+        b=MI3tQGeHGLAO2jS2rlqzCW8ZVYeUBpxgEFtmvTCbjv4loDFzyAmi6nqtYalTj5eeZj
+         zCCvs1T1fKgb+X3Dk3NthvMOVll1H4Rr2C74Z+nHuWXUJOCYsngz62OIRbyLKF0HWK9v
+         4H7oNHHyg9dWJjKFN+r/bhs9st40XOI7DqV+ea+TqGgXOWPq5314KU2Xowe/O8wmhGnn
+         4VF5hm3PuThWjXokz6d97GTX2btl5CRng1FMbqzzHKvAaqkKcTqP7H0z+quLD3s7pw8Y
+         GhMacOq0VgPlkoVXLVwY/OL8lzGOKyOuF8zsiQtkDt1xVhh0USdUp3NyguakBAubwUMQ
+         Jj0Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1723833471; x=1724438271;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=sebjMBM5W+rfgwddJvX9QH9EPhF3Ehwi61e3I/e2S4Y=;
-        b=Rkl5kEX9KMT1WO5pRUF5xDxbp9WlZis+L42gX8vqXukelSShOXigFL13OEiXB7P+Mc
-         IpSIeZcYtRvC+LwWoVEBdlhQwn2HrEIWGYnmHUfvh/PUd+Onea+KfFMd+aproPJW+f2w
-         vNrcj8BVlGjp0/3Hw42uO70X7GxRMatwGqsdovPpEoGB6cFZ7EyReAOIGAFA/7oRFEDb
-         ZZ+xx95NB47AvwiYHBm55b7YlGD45YqkNZBRduU/EMtKuogJQ86cktR1ZJCZawMbMIP7
-         xDkl3vb9oB69etxoeIbIQZiXQuJZ3VJCDOIWVxsu/UAbS3IE5AH2DBfKzK9GAHEjWWIb
-         mOdw==
-X-Forwarded-Encrypted: i=1; AJvYcCVedrz+tjDOo9YM4dUmBBrKU9/s2mVRVK0eZFYEtpT42DmLOrVNy4hzxZ1QDfFHzXrvhgEpwUp9A09rH5RX8fieSokXPOI=
-X-Gm-Message-State: AOJu0Yx91aEqVbg3/02EwqreqbanaFticrfIkEjrkx5Q7LTLlDP9G0/s
-	Go+r9XoMloqmeDtXPnzbKqZZrcqNhg59NExCQg1QJoCjcuztFZ4ovQfPu8x/itA=
-X-Google-Smtp-Source: AGHT+IELq6FskbhXt6sP3FNTIusKOtNdKX+rkJz4d+aZYrtMCVwxBnS9xmMcULN9RyVu+YdO7XMzdw==
-X-Received: by 2002:a05:6358:938f:b0:1ac:f346:735a with SMTP id e5c5f4694b2df-1b393315b20mr485126655d.28.1723833471308;
-        Fri, 16 Aug 2024 11:37:51 -0700 (PDT)
-Received: from ziepe.ca ([128.77.69.90])
-        by smtp.gmail.com with ESMTPSA id af79cd13be357-7a4ff02aefbsm203117485a.6.2024.08.16.11.37.50
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 16 Aug 2024 11:37:50 -0700 (PDT)
-Received: from jgg by wakko with local (Exim 4.95)
-	(envelope-from <jgg@ziepe.ca>)
-	id 1sf1oq-00BmHT-2B;
-	Fri, 16 Aug 2024 15:37:00 -0300
-Date: Fri, 16 Aug 2024 15:37:00 -0300
-From: Jason Gunthorpe <jgg@ziepe.ca>
-To: Vasant Hegde <vasant.hegde@amd.com>
-Cc: Baolu Lu <baolu.lu@linux.intel.com>,
-	"Tian, Kevin" <kevin.tian@intel.com>,
-	"iommu@lists.linux.dev" <iommu@lists.linux.dev>,
-	"joro@8bytes.org" <joro@8bytes.org>,
-	"will@kernel.org" <will@kernel.org>,
-	"robin.murphy@arm.com" <robin.murphy@arm.com>,
-	"suravee.suthikulpanit@amd.com" <suravee.suthikulpanit@amd.com>,
-	"Liu, Yi L" <yi.l.liu@intel.com>,
-	Alex Williamson <alex.williamson@redhat.com>
-Subject: Re: [PATCH RFCv2] iommu: Add domain type and flag to
- domain_alloc_paging()
-Message-ID: <20240816183700.GR3468552@ziepe.ca>
-References: <e5da0709-86d3-4b45-82cc-d995a2686afa@amd.com>
- <20240807182947.GI8473@ziepe.ca>
- <BN9PR11MB52765C37F5401E9AA7113D748C862@BN9PR11MB5276.namprd11.prod.outlook.com>
- <20240813162044.GI1985367@ziepe.ca>
- <BN9PR11MB527654EBEFE7CBDD37B7B4068C872@BN9PR11MB5276.namprd11.prod.outlook.com>
- <20240814224045.GC3468552@ziepe.ca>
- <ad009d03-9a38-4b0e-ac90-13bd8ea0b191@amd.com>
- <60778628-2b2c-4671-b1c6-276db3cd42ea@linux.intel.com>
- <20240815134737.GK3468552@ziepe.ca>
- <29a16f7c-6193-4753-b547-74c5bb9363d6@amd.com>
+        d=1e100.net; s=20230601; t=1723836080; x=1724440880;
+        h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
+         :date:x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=ftVQJ22uwhnVCu9sapxQkj0rYV8PxV9JBpHRmc+PMHc=;
+        b=VaUtiZoLH854CpG8LlzPrAEE6kLb0WnnTu2kltWsQxL3ire2xYsboHc8vPgA3ZJChM
+         QZViZQ4uzxPh8og2xdL4hEx4cZ7+m7mZ9cQZvH8lH8Wt1zTdS4LkfBIZcvcC+GagdRY/
+         3YpRUmGOfg3BAlvxF/0J8+Qt89FkIvQnyQ4CpAM431/0TjA65lDuwAmrab1Gs59KoNF9
+         zC8+bonYjM6HZAA/SE9c6mkS093UTYFMQ6CKGsjGfXC6xn3bYriRJXeNaXKuwjkw6kOO
+         L9u0FSF6kqUF8hXFwTqcdsyxAvIza9fnDIDnJF5DOiXJV9A84EzQEuOX16eQ8/ZHDmNy
+         Lmfw==
+X-Forwarded-Encrypted: i=1; AJvYcCUZlkMce+Ah91azx2E17z4Fap+FmvjRS1r3wXda0lh/LkR5+fzblT9QxCBPZVaTBRls0mMH1w==@lists.linux.dev
+X-Gm-Message-State: AOJu0YyOCgWG/12803SJyqKqs299IFyxKlfpwKYpqgktl5jVQao3BaKz
+	P6gpX6pVYx9MUNXfapVGLeqzgQ1BUWswzdkA448ms52YnBPJ/gGQD2D56Yxh6D0gkOIfXg/qPQO
+	4xA==
+X-Google-Smtp-Source: AGHT+IHf6qVj/b2zC94+HdArQXss/KprNTNzFkLYPIjrHyHGZ5yxwPLzjGqV4Tufr9LC9iVbmqgXfl1sOeQ=
+X-Received: from zagreus.c.googlers.com ([fda3:e722:ac3:cc00:7f:e700:c0a8:5c37])
+ (user=seanjc job=sendgmr) by 2002:a63:4e60:0:b0:7c6:acc8:3eb5 with SMTP id
+ 41be03b00d2f7-7c978efc48fmr6574a12.1.1723836079882; Fri, 16 Aug 2024 12:21:19
+ -0700 (PDT)
+Date: Fri, 16 Aug 2024 12:21:18 -0700
+In-Reply-To: <13-v1-01fa10580981+1d-iommu_pt_jgg@nvidia.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <29a16f7c-6193-4753-b547-74c5bb9363d6@amd.com>
+Mime-Version: 1.0
+References: <0-v1-01fa10580981+1d-iommu_pt_jgg@nvidia.com> <13-v1-01fa10580981+1d-iommu_pt_jgg@nvidia.com>
+Message-ID: <Zr-mrsewGxXt1rAC@google.com>
+Subject: Re: [PATCH 13/16] iommupt: Add the x86 PAE page table format
+From: Sean Christopherson <seanjc@google.com>
+To: Jason Gunthorpe <jgg@nvidia.com>
+Cc: Alejandro Jimenez <alejandro.j.jimenez@oracle.com>, Lu Baolu <baolu.lu@linux.intel.com>, 
+	David Hildenbrand <david@redhat.com>, Christoph Hellwig <hch@lst.de>, iommu@lists.linux.dev, 
+	Joao Martins <joao.m.martins@oracle.com>, Kevin Tian <kevin.tian@intel.com>, kvm@vger.kernel.org, 
+	linux-mm@kvack.org, Pasha Tatashin <pasha.tatashin@soleen.com>, 
+	Peter Xu <peterx@redhat.com>, Ryan Roberts <ryan.roberts@arm.com>, 
+	Tina Zhang <tina.zhang@intel.com>
+Content-Type: text/plain; charset="us-ascii"
 
-On Fri, Aug 16, 2024 at 01:47:52PM +0530, Vasant Hegde wrote:
-> Jason,
+On Thu, Aug 15, 2024, Jason Gunthorpe wrote:
+> This is used by x86 CPUs and can be used in both x86 IOMMUs. When the x86
+> IOMMU is running SVA it is using this page table format.
 > 
+> This implementation follows the AMD v2 io-pgtable version.
 > 
-> On 8/15/2024 7:17 PM, Jason Gunthorpe wrote:
-> > On Thu, Aug 15, 2024 at 12:59:13PM +0800, Baolu Lu wrote:
-> >> I suppose that this also includes converting paging domain to user
-> >> domain allocation in VFIO (ideally vhost-vdpa as well), right?
-> > 
-> > Another thought is to add a flag to iommu_paging_domain_alloc()..
-> > 
-> > Maybe like the below. The small duplication with
-> > __iommu_domain_alloc() would go away when iommu_domain_alloc() finally
-> > goes, then we'd be able to directly call iommu_paging_domain_alloc().
+> There is nothing remarkable here, the format has a variable top and
+> limited support for different page sizes and no contiguous pages support.
 > 
-> This will work. But we have to define NO_PASID flag and pass it from vfio.
+> In principle this can support the 32 bit configuration with fewer table
+> levels.
 
-flags = 0 means NO_PASID
+What's "the 32 bit configuration"?
 
-I didn't show it but the dma api domain's allocation path would have
-to specify IOMMU_HWPT_ALLOC_PASID to make it work.
+> FIXME: Compare the bits against the VT-D version too.
+> 
+> Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
+> ---
+>  drivers/iommu/generic_pt/Kconfig            |   6 +
+>  drivers/iommu/generic_pt/fmt/Makefile       |   2 +
+>  drivers/iommu/generic_pt/fmt/defs_x86pae.h  |  21 ++
+>  drivers/iommu/generic_pt/fmt/iommu_x86pae.c |   8 +
+>  drivers/iommu/generic_pt/fmt/x86pae.h       | 283 ++++++++++++++++++++
+>  include/linux/generic_pt/common.h           |   4 +
+>  include/linux/generic_pt/iommu.h            |  12 +
+>  7 files changed, 336 insertions(+)
+>  create mode 100644 drivers/iommu/generic_pt/fmt/defs_x86pae.h
+>  create mode 100644 drivers/iommu/generic_pt/fmt/iommu_x86pae.c
+>  create mode 100644 drivers/iommu/generic_pt/fmt/x86pae.h
+> 
+> diff --git a/drivers/iommu/generic_pt/Kconfig b/drivers/iommu/generic_pt/Kconfig
+> index e34be10cf8bac2..a7c006234fc218 100644
+> --- a/drivers/iommu/generic_pt/Kconfig
+> +++ b/drivers/iommu/generic_pt/Kconfig
+> @@ -70,6 +70,11 @@ config IOMMU_PT_ARMV8_64K
+>  
+>  	  If unsure, say N here.
+>  
+> +config IOMMU_PT_X86PAE
+> +       tristate "IOMMU page table for x86 PAE"
+> +#include "iommu_template.h"
+> diff --git a/drivers/iommu/generic_pt/fmt/x86pae.h b/drivers/iommu/generic_pt/fmt/x86pae.h
+> new file mode 100644
+> index 00000000000000..9e0ee74275fcb3
+> --- /dev/null
+> +++ b/drivers/iommu/generic_pt/fmt/x86pae.h
+> @@ -0,0 +1,283 @@
+> +/* SPDX-License-Identifier: GPL-2.0-only */
+> +/*
+> + * Copyright (c) 2024, NVIDIA CORPORATION & AFFILIATES
+> + *
+> + * x86 PAE page table
+> + *
+> + * This is described in
+> + *   Section "4.4 PAE Paging" of the Intel Software Developer's Manual Volume 3
 
-Jason
+I highly doubt what's implemented here is actually PAE paging, as the SDM (that
+is referenced above) and most x86 folks describe PAE paging.  PAE paging is
+specifically used when the CPU is in 32-bit mode (NOT including compatibility mode!).
+
+  PAE paging translates 32-bit linear addresses to 52-bit physical addresses.
+
+Presumably what's implemented here is what Intel calls 4-level and 5-level paging.
+Those are _really_ similar to PAE paging, e.g. have the same encodings for bits
+11:0, and even require CR4.PAE=1, but they aren't 100% identical.  E.g. true PAE
+paging doesn't have software-available bits in 62:MAXPHYADDR.
+
+Unfortuntately, I have no idea what name to use for this flavor.  x86pae is
+actually kinda good, but I think it'll be confusing to people that are familiar
+with the more canonical version of PAE paging.
+
+> + *   Section "2.2.6 I/O Page Tables for Guest Translations" of the "AMD I/O
+> + *   Virtualization Technology (IOMMU) Specification"
+> + *
+> + * It is used by x86 CPUs and The AMD and VT-D IOMMU HW.
+> + *
+> + * The named levels in the spec map to the pts->level as:
+> + *   Table/PTE - 0
+> + *   Directory/PDE - 1
+> + *   Directory Ptr/PDPTE - 2
+> + *   PML4/PML4E - 3
+> + *   PML5/PML5E - 4
+
+Any particularly reason not to use x86's (and KVM's) effective 1-based system?
+(level '0' is essentially the 4KiB leaf entries in a page table)
+
+Starting at '1' is kinda odd, but it aligns with thing like PML4/5, allows using
+the pg_level enums from x86, and diverging from both x86 MM and KVM is likely
+going to confuse people.
+	
+> + * FIXME: __sme_set
+> + */
+> +#ifndef __GENERIC_PT_FMT_X86PAE_H
+> +#define __GENERIC_PT_FMT_X86PAE_H
+> +
+> +#include "defs_x86pae.h"
+> +#include "../pt_defs.h"
+> +
+> +#include <linux/bitfield.h>
+> +#include <linux/container_of.h>
+> +#include <linux/log2.h>
+> +
+> +enum {
+> +	PT_MAX_OUTPUT_ADDRESS_LG2 = 52,
+> +	PT_MAX_VA_ADDRESS_LG2 = 57,
+> +	PT_ENTRY_WORD_SIZE = sizeof(u64),
+> +	PT_MAX_TOP_LEVEL = 4,
+> +	PT_GRANUAL_LG2SZ = 12,
+> +	PT_TABLEMEM_LG2SZ = 12,
+> +};
+> +
+> +/* Shared descriptor bits */
+> +enum {
+> +	X86PAE_FMT_P = BIT(0),
+> +	X86PAE_FMT_RW = BIT(1),
+> +	X86PAE_FMT_U = BIT(2),
+> +	X86PAE_FMT_A = BIT(5),
+> +	X86PAE_FMT_D = BIT(6),
+> +	X86PAE_FMT_OA = GENMASK_ULL(51, 12),
+> +	X86PAE_FMT_XD = BIT_ULL(63),
+
+Any reason not to use the #defines in arch/x86/include/asm/pgtable_types.h?
+
+> +static inline bool x86pae_pt_install_table(struct pt_state *pts,
+> +					   pt_oaddr_t table_pa,
+> +					   const struct pt_write_attrs *attrs)
+> +{
+> +	u64 *tablep = pt_cur_table(pts, u64);
+> +	u64 entry;
+> +
+> +	/*
+> +	 * FIXME according to the SDM D is ignored by HW on table pointers?
+
+Correct, only leaf entries have dirty bits.  
+
+> +	 * io_pgtable_v2 sets it
+> +	 */
+> +	entry = X86PAE_FMT_P | X86PAE_FMT_RW | X86PAE_FMT_U | X86PAE_FMT_A |
+
+What happens with the USER bit for I/O page tables?  Ignored, I assume?
+
+> +		X86PAE_FMT_D |
+> +		FIELD_PREP(X86PAE_FMT_OA, log2_div(table_pa, PT_GRANUAL_LG2SZ));
+> +	return pt_table_install64(&tablep[pts->index], entry, pts->entry);
+> +}
