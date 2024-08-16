@@ -1,50 +1,50 @@
 Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.17])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 261F61C14
-	for <iommu@lists.linux.dev>; Fri, 16 Aug 2024 02:53:09 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 29E862C6BB
+	for <iommu@lists.linux.dev>; Fri, 16 Aug 2024 02:56:30 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.17
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1723776791; cv=none; b=Hj8Bn9FIW3SghcRhvAzzuiB8a9VMY8VZBdQan8DdyH+2iz5v+akZ+tzvET33YAWZQG/LvSvR01YgympnjITb3QtXnnc7mD41tRUYRErGBErGT1u4HfDIleKOLSSDdcWvDRoI4mHObmWqfnbz+k9FNZmlDuhhXjyxJcDLMRdg+Ik=
+	t=1723776992; cv=none; b=u6BCITRU59JSQCIWYkN/eQ+dstlEF9UWQmv8CmhsVYIvS1mjx5LSvku54yu0vllVnlY879vTeQ5K/IqApa6ukfGoa0tr7eRp6QH/o6G/yLMgbD0WuXgbFxqyd1bsz5dWOC9c0PmQdaVVj+UHgGe9QmQhDClU2t6PnKbgQ5TCye8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1723776791; c=relaxed/simple;
-	bh=i84QddIjngCTFCPwR/mFBzMs3YXGyH7E24SK8Jeqt84=;
+	s=arc-20240116; t=1723776992; c=relaxed/simple;
+	bh=UcCflUrO8MTjMv0Qq2HWX1SqGNsVQ+wdRA8MjsEdkJQ=;
 	h=Message-ID:Date:MIME-Version:Cc:Subject:To:References:From:
-	 In-Reply-To:Content-Type; b=TqadqWQY/GaFEuVKyr8pCUgmxtyQgWwWnnu77e4ZKxSAi93F7fgv2ZsX8iaJVT4CmVopH3RRtTwgFAjuroHrlM0QZmq0d4cgLsYjmyCUyZraNFrvXQQnbg73DDIJbb+vNlBW/35Ay/rQpPuBRmIe0OHDRXyXY/TJnFBw5m1jQfA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=e4zm0KHb; arc=none smtp.client-ip=198.175.65.17
+	 In-Reply-To:Content-Type; b=aBc+d56E1mQ9j6x8guh+zebS2sEU4krMUFzB6og2ecjksndEY0T2HN/dk4XqN17HxbCszDtktyEONG625TsIbXpdmS4PzK94IEQfR5MRm3PD51otqNZfOOP2D2FifhkrWLujb7YWlB7G9tvZsZV63MlVOBYBr/S2CP0KDyBYP+4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=jSrBxCcY; arc=none smtp.client-ip=198.175.65.17
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="e4zm0KHb"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="jSrBxCcY"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1723776790; x=1755312790;
+  t=1723776991; x=1755312991;
   h=message-id:date:mime-version:cc:subject:to:references:
    from:in-reply-to:content-transfer-encoding;
-  bh=i84QddIjngCTFCPwR/mFBzMs3YXGyH7E24SK8Jeqt84=;
-  b=e4zm0KHbPADMpo5IZWGIBjJvnWc43VeTlanwSGvUA5LAkDqEVhwvYJvq
-   zzFrCIqDfD/U0HFr+V6yNDIbHn0icXpb/HIKwXSdjhRyDFaqbsL5WZmGD
-   Z2dp8HnUDOyoTmvvqls3rYRPWRNjExuCmmvAx+IiFP1ywabLWKBeLu1DT
-   yD2ccvUQi3tNgvGKZ9QefvnpiKpLEigH4n92d92mkXJnp4NA/ucl13tHr
-   N1cAJf75JxM2nYQlH63vy2QiG8uYu22MK6FdRRLz006EKn3zAn4pSDU5B
-   qLMi/IO83pQJdrwAcaD6rvsjA+/+CrcDXOyoEYLw7Ul/kVACLZiNtsaJI
+  bh=UcCflUrO8MTjMv0Qq2HWX1SqGNsVQ+wdRA8MjsEdkJQ=;
+  b=jSrBxCcYL2TyLUVIHfW4rJCQZwMDSEL6uYfOpvam3Z2dUp9cUINarWYC
+   DyWlfitTYqGtduqw1FarhhGKNqRfYz0B9f2QkXc3g2mU0RtjcbY1FbVyE
+   yD2a+PBNBp3atkgMqZsO69mZTcTsZ7JavqCEpJsHEbxMnTcrwRpmpI+6w
+   0SNqXNKuZ3umjRFuAtjruz5xJ9CpdnIIwMRagDdP6cv8KluR+smQAoS7R
+   QdUfIaqXqt2Xemu3ZSIzS5eYoIAFLec01ziGBHuqsdJ5EYUcZA5PIqooX
+   R33gEly1Z6N5fpyHRMtKR4jVnE4M4D1VR94jpqzvCcWjDuHqO/1eMq/29
    Q==;
-X-CSE-ConnectionGUID: 7NMK/RfPT6W2bHYUfdcphA==
-X-CSE-MsgGUID: 3qHlVKIiSSKBOFyumqB53w==
-X-IronPort-AV: E=McAfee;i="6700,10204,11165"; a="22205806"
+X-CSE-ConnectionGUID: Jg6QGhX4QMeHOjL2QRFnCQ==
+X-CSE-MsgGUID: tNQe+bWVT7KEGy6+8DFoZQ==
+X-IronPort-AV: E=McAfee;i="6700,10204,11165"; a="22206199"
 X-IronPort-AV: E=Sophos;i="6.10,150,1719903600"; 
-   d="scan'208";a="22205806"
+   d="scan'208";a="22206199"
 Received: from fmviesa008.fm.intel.com ([10.60.135.148])
-  by orvoesa109.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Aug 2024 19:53:10 -0700
-X-CSE-ConnectionGUID: FWgAFBgaR9O/TPuefS+8vw==
-X-CSE-MsgGUID: H+pdqzH+QRysxSM5bWqXjA==
+  by orvoesa109.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Aug 2024 19:56:31 -0700
+X-CSE-ConnectionGUID: FuOX1X5dTyqMunJSgmYBbQ==
+X-CSE-MsgGUID: 49e3ZLaCR9KulV/0r9xdEA==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.10,150,1719903600"; 
-   d="scan'208";a="59554224"
+   d="scan'208";a="59554766"
 Received: from allen-box.sh.intel.com (HELO [10.239.159.127]) ([10.239.159.127])
-  by fmviesa008.fm.intel.com with ESMTP; 15 Aug 2024 19:53:07 -0700
-Message-ID: <e15b1162-dcdc-4bcf-ab61-79400dba87c3@linux.intel.com>
-Date: Fri, 16 Aug 2024 10:49:33 +0800
+  by fmviesa008.fm.intel.com with ESMTP; 15 Aug 2024 19:56:28 -0700
+Message-ID: <33eaf2b1-75be-4167-be05-16414abe8385@linux.intel.com>
+Date: Fri, 16 Aug 2024 10:52:55 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -65,36 +65,21 @@ Content-Language: en-US
 From: Baolu Lu <baolu.lu@linux.intel.com>
 In-Reply-To: <06f5fc87-b414-4266-a17a-cb2b86111e7a@intel.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 
 On 8/16/24 9:19 AM, Yi Liu wrote:
-> On 2024/8/16 01:49, Vasant Hegde wrote:
->> Hi All,
+>> So the expectation is replace existing PASID from PASID table only if 
+>> old_domain
+>> is passed. Otherwise sev_dev_pasid() should throw an error right?
 >>
->> On 6/28/2024 2:25 PM, Yi Liu wrote:
->>> This splits the preparation works of the iommu and the Intel iommu 
->>> driver
->>> out from the iommufd pasid attach/replace series. [1]
->>>
->>> To support domain replacement, the definition of the set_dev_pasid op
->>> needs to be enhanced. Meanwhile, the existing set_dev_pasid callbacks
->>> should be extended as well to suit the new definition.
->>
->> IIUC this will remove PASID from old SVA domain and attaches to new 
->> SVA domain.
->> (basically attaching same dev/PASID to different process). Is that the 
->> correct?
 > 
-> In brief, yes. But it's not only for SVA domain. Remember that SIOVr1
-> extends the usage of PASID. At least on Intel side, a PASID may be
-> attached to paging domains.
+> yes. If no old_domain passed in, then it is just a normal attachment. As
+> you are working on AMD iommu, it would be great if you can have a patch to
+> make the AMD set_dev_pasid() op suit this expectation. Then it can be
+> incorporated in this series. 🙂
 
-You are correct.
-
-The idxd driver attaches a paging domain to a non-zero PASID for kernel
-DMA with PASID. From an architectural perspective, other architectures,
-like ARM, AMD, and RISC-V, also support this. Therefore, attaching a
-paging domain to a PASID is not Intel-specific but a generic feature.
+Perhaps this has been discussed before, but I can't recall. Out of
+curiosity, why not introduce a specific replace_dev_pasid callback?
 
 Thanks,
 baolu
