@@ -1,254 +1,142 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.20])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 651801547C4
-	for <iommu@lists.linux.dev>; Fri, 16 Aug 2024 11:48:02 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=198.175.65.20
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1723808884; cv=fail; b=ZHjjNQ9g+FyUWpvhHg8yQVoYg+XQUq9c9G2kSNx5QVFc76jdPxS63Va/K1ksmJt3T9gF7kenLu9zJb66x2RSc9scPu2Gi6iKlbhwDi5Eyzv3m/fePRRx0wF7Rpx6xIosEXQnHycHJCMlz811vEUTlaJUJqBzcDmrEVGWnT8V1BM=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1723808884; c=relaxed/simple;
-	bh=P2yjzdz13ogL8gBK1W3+b//edJ6lHERk/9For7h3ETA=;
-	h=Message-ID:Date:Subject:To:CC:References:From:In-Reply-To:
-	 Content-Type:MIME-Version; b=D4u8AP/JjEIKsY9GTbyAYPCeIuPpPviGDA2Z1ycOo/VHJO3ZJ8RqsMtE81NeWyUirWNiguMbS6mfoWS+aslLEKDKAN319SHoHKw2TsoD/3/Y3U49MdOJeAmnIEra5rkAclwC6K/E3A8IdbDdoizgenb6t2YP/l/fXeezERbj1/4=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=LwRNkBd7; arc=fail smtp.client-ip=198.175.65.20
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5F8A7143757;
+	Fri, 16 Aug 2024 11:52:53 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1723809173; cv=none; b=Oc1ItTJ387CymusC/t//1HXF6qZQaqJAq8wIFZGGdRB5W0VkGicFa2nznBb0w+0HxnIXXg0IV3ojaGyVe8zy52PdmLSNfub3hTSlyoibdUTWInI2WBmyxJ1PPmmnLk8PynkBjzG3XB5od14V25ZVW9BWgz1IMemNHPYd58YaAiA=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1723809173; c=relaxed/simple;
+	bh=edZGKTdhd+JKc9rRo5Mb349EFlR6r0Ya6roKnVmRgy4=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=Ej0JaGcL9Rrw8uLEm6/vqzFhRfgj/8maxtB5tCsRnxqmQcPyPtgkdwVP+jmtWge7svKPwHWh0ReEpLzfV9OrCqdcLx6DahwsNmjZAgwXT96UA9sIxKCu8KxavoR++icNw8TuIIpuy+ye+DHRCMg7Dx3iw1S6CJluqzMYGm3wdnc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=XoCrIZQa; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="LwRNkBd7"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1723808882; x=1755344882;
-  h=message-id:date:subject:to:cc:references:from:
-   in-reply-to:content-transfer-encoding:mime-version;
-  bh=P2yjzdz13ogL8gBK1W3+b//edJ6lHERk/9For7h3ETA=;
-  b=LwRNkBd7qpPPqEuLZT0Y27QWSprvVO9u321HVx3NUo4b1uGNYxjlp+Xr
-   NhZWJ3emld7rrDyscdFaSE/98ZT2iDzQWBVyEtE9kd1P4QjQp2uVRGFIX
-   w2/CpKmrOFSsBb8A7c08WOW172iPl8bGsgAy/Ovke6ywsWaJg29ZTnUa+
-   sqyMYy2Szev1NMldM7KYgul0Q8NS2dfYq1jvppRtkZzECKF/cWBpjyEjR
-   kXG0ZuVpVLHxugKBaNGf5DMk5lz8NFSE6tPv72KyBRzSNkSDsJ7UwXsqh
-   2w7XFmALmzo90cjOs0FVwVWEHphyAa95x1z0z3yPvxSUCMRcH78Dw/p8U
-   g==;
-X-CSE-ConnectionGUID: In1nBhPUQDm2QtNA/ZQyZQ==
-X-CSE-MsgGUID: N0aS6SuwSPSooyh3AO7QGQ==
-X-IronPort-AV: E=McAfee;i="6700,10204,11165"; a="21914765"
-X-IronPort-AV: E=Sophos;i="6.10,151,1719903600"; 
-   d="scan'208";a="21914765"
-Received: from orviesa009.jf.intel.com ([10.64.159.149])
-  by orvoesa112.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Aug 2024 04:48:01 -0700
-X-CSE-ConnectionGUID: AVhzijuTRmSir+PWKb1iXg==
-X-CSE-MsgGUID: G2K7l4TwQeylDrKg5HCHjg==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.10,151,1719903600"; 
-   d="scan'208";a="59610108"
-Received: from fmsmsx603.amr.corp.intel.com ([10.18.126.83])
-  by orviesa009.jf.intel.com with ESMTP/TLS/AES256-GCM-SHA384; 16 Aug 2024 04:48:01 -0700
-Received: from fmsmsx610.amr.corp.intel.com (10.18.126.90) by
- fmsmsx603.amr.corp.intel.com (10.18.126.83) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.39; Fri, 16 Aug 2024 04:48:00 -0700
-Received: from FMSEDG603.ED.cps.intel.com (10.1.192.133) by
- fmsmsx610.amr.corp.intel.com (10.18.126.90) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.39 via Frontend Transport; Fri, 16 Aug 2024 04:48:00 -0700
-Received: from NAM10-BN7-obe.outbound.protection.outlook.com (104.47.70.43) by
- edgegateway.intel.com (192.55.55.68) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.1.2507.39; Fri, 16 Aug 2024 04:48:00 -0700
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=hJGbPNk1L/Yf4LYPM8cS94g/ciiRHK6UX2IlWX9r8uerxxCbfzyUPSKFxgNnILofxe4vG+8c5zGSYY1yo6qT8QC7ub/9Za3hka3YwLQU4+/d4d6QXtkSB/shPcC2FoDOcAxBUHpduHpOyYJhtO5KUfskbUeALd8CBh18IUesdKlT3f+nadnF4mRoGXpNL19iU5qv+r2hO55O37YTEDUY70aoGiuYo8i4v4nKXq7Za5yuQCLgFE13yOqcF7wuX87X81vrV6spnELHyFHoAHFs+HwlcKAwXIkMgmfBPbL/I3rlTPe2aVQx9OfFwEuu/9XMDm6S/ZFjeRwDXSW5uXqkew==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=AfQ1ApS15bGrqcsLyOgrGtTJ4v+kQwR/Zhp5DKjxwu4=;
- b=yV4MBhJtFqbl5mV6FVW4Uw6D4i9AyUhTvhx7mXP7e6X73ISF6On2cBI5k7WRLxpByYUkW+S/xPWt2nWP/Shvh8X1jmJHnDo0rHjRraJYgtOLe83cugzamroSDWIGfrhuDq+mqt4DZk69G+csanaTNrdVw5oxA9E7STpVqrViwa78EIbCy/+mYuI23cNc00Lnh0cxYDC+Gf5XU5eNQmcUyQZFU4bvXDVGoehSWs3I5X8A2+sgsX3OlQZ/9XTw5n0xFZsP3lXbrM+sA+7AAEZPoU6t3xoIuFvP/cpL1aMtStsprXdwfpfQjULJLDQcqjH4NKYtgjUBWBpJQUY30bkDfQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
- dkim=pass header.d=intel.com; arc=none
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=intel.com;
-Received: from DS0PR11MB7529.namprd11.prod.outlook.com (2603:10b6:8:141::20)
- by CH3PR11MB7201.namprd11.prod.outlook.com (2603:10b6:610:143::10) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7875.19; Fri, 16 Aug
- 2024 11:47:58 +0000
-Received: from DS0PR11MB7529.namprd11.prod.outlook.com
- ([fe80::d244:15cd:1060:941a]) by DS0PR11MB7529.namprd11.prod.outlook.com
- ([fe80::d244:15cd:1060:941a%3]) with mapi id 15.20.7875.016; Fri, 16 Aug 2024
- 11:47:58 +0000
-Message-ID: <8a73ef9c-bd37-403f-abdf-b00e8eb45236@intel.com>
-Date: Fri, 16 Aug 2024 19:52:11 +0800
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v2 0/4] vfio-pci support pasid attach/detach
-To: Vasant Hegde <vasant.hegde@amd.com>, Jason Gunthorpe <jgg@nvidia.com>
-CC: "Tian, Kevin" <kevin.tian@intel.com>, Alex Williamson
-	<alex.williamson@redhat.com>, "joro@8bytes.org" <joro@8bytes.org>,
-	"robin.murphy@arm.com" <robin.murphy@arm.com>, "eric.auger@redhat.com"
-	<eric.auger@redhat.com>, "nicolinc@nvidia.com" <nicolinc@nvidia.com>,
-	"kvm@vger.kernel.org" <kvm@vger.kernel.org>, "chao.p.peng@linux.intel.com"
-	<chao.p.peng@linux.intel.com>, "iommu@lists.linux.dev"
-	<iommu@lists.linux.dev>, "baolu.lu@linux.intel.com"
-	<baolu.lu@linux.intel.com>, "Duan, Zhenzhong" <zhenzhong.duan@intel.com>,
-	"Pan, Jacob jun" <jacob.jun.pan@intel.com>, =?UTF-8?Q?C=C3=A9dric_Le_Goater?=
-	<clg@redhat.com>, Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
-References: <20240730113517.27b06160.alex.williamson@redhat.com>
- <BN9PR11MB5276D184783C687B0B1B6FE68CB12@BN9PR11MB5276.namprd11.prod.outlook.com>
- <20240731110436.7a569ce0.alex.williamson@redhat.com>
- <BN9PR11MB5276BEBDDD6720C2FEFD4B718CB22@BN9PR11MB5276.namprd11.prod.outlook.com>
- <20240802122528.329814a7.alex.williamson@redhat.com>
- <BN9PR11MB5276318969A212AD0649C7BE8CBE2@BN9PR11MB5276.namprd11.prod.outlook.com>
- <20240806142047.GN478300@nvidia.com>
- <0ae87b83-c936-47d2-b981-ef1e8c87f7fa@intel.com>
- <BN9PR11MB5276871E150DC968B2F652798C872@BN9PR11MB5276.namprd11.prod.outlook.com>
- <4f5bfba2-c1e7-4923-aa9c-59d76ccc4390@intel.com>
- <20240814144031.GO2032816@nvidia.com>
- <b37a7336-36af-4ffc-a50f-c9b578cd9bda@intel.com>
- <6f293363-1c02-4389-a6b3-7e9845b0f251@amd.com>
-Content-Language: en-US
-From: Yi Liu <yi.l.liu@intel.com>
-In-Reply-To: <6f293363-1c02-4389-a6b3-7e9845b0f251@amd.com>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 8bit
-X-ClientProxiedBy: SI2P153CA0002.APCP153.PROD.OUTLOOK.COM
- (2603:1096:4:140::16) To DS0PR11MB7529.namprd11.prod.outlook.com
- (2603:10b6:8:141::20)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="XoCrIZQa"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 926AFC32782;
+	Fri, 16 Aug 2024 11:52:50 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1723809172;
+	bh=edZGKTdhd+JKc9rRo5Mb349EFlR6r0Ya6roKnVmRgy4=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=XoCrIZQaaMoPTy/QY3fFLsXEYVVOsv/rkKX/K07OWS1jIY9LvRwg/IuJteDPq6i0p
+	 NQhrXbHFhAghu6o3X18y2OsbE6hiFdkD1XtfgBB1TcFGS2bIqAPvTNjuWqjm2MUImY
+	 ti0FklwG/EhlO3RkmzmRXnO1t53XD1yqD6Jve/Emycm2LUl0GwSuOOBy64ooLB2QAR
+	 Zjik+HKBMwG0e9ftVWZsHHlRsA+mR4ObONv8AYCoihtphAJTUdgTe04uVXD8ij3SZO
+	 s6B3TnxsMzNqVLFjEugrvUOK70KJdpv4CqwjLP7mU2LNeEWg2EG5pDGeHT3j5I2t+M
+	 N7bUUHDGX/LFg==
+Date: Fri, 16 Aug 2024 12:52:47 +0100
+From: Will Deacon <will@kernel.org>
+To: Baruch Siach <baruch@tkos.co.il>
+Cc: Christoph Hellwig <hch@lst.de>,
+	Marek Szyprowski <m.szyprowski@samsung.com>,
+	Catalin Marinas <catalin.marinas@arm.com>,
+	Robin Murphy <robin.murphy@arm.com>, iommu@lists.linux.dev,
+	linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+	linuxppc-dev@lists.ozlabs.org, linux-s390@vger.kernel.org,
+	Petr =?utf-8?B?VGVzYcWZw61r?= <petr@tesarici.cz>,
+	Ramon Fried <ramon@neureality.ai>,
+	Elad Nachman <enachman@marvell.com>
+Subject: Re: [PATCH v6 RESED 1/2] dma: replace zone_dma_bits by zone_dma_limit
+Message-ID: <20240816115246.GA24137@willie-the-truck>
+References: <cover.1723359916.git.baruch@tkos.co.il>
+ <17c067618b93e5d71f19c37826d54db4299621a3.1723359916.git.baruch@tkos.co.il>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: DS0PR11MB7529:EE_|CH3PR11MB7201:EE_
-X-MS-Office365-Filtering-Correlation-Id: 81b3539e-db91-41d9-662e-08dcbde94617
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;ARA:13230040|1800799024|7416014|376014|366016;
-X-Microsoft-Antispam-Message-Info: =?utf-8?B?U0hjbGdnb3FVbWxIbEVPV3BGOWdjNXA1OHpjL3p6NDV3M1RKc0ZUTzZ6Sm4z?=
- =?utf-8?B?SU5WamkvR2FtVFVJbERjU2ZYalg2OTZVVm5IckFkbE5lTUFtaWJrSGtDVW5R?=
- =?utf-8?B?eXhhMGJHVEdUMnFiSGhqODRuZDZUaStBOFJUQWEvZXRqSHJWL3NHQkh5WjdV?=
- =?utf-8?B?UnM5ZkFQVjFUaEdka1hMM01haTM4MHBEUGRkTzYvS3MvcTVRLzJXNCt3eUNU?=
- =?utf-8?B?YW9FQ3ExZFN0NEcrclE1Vnhlb3pHcmNJTDM2c3JtKzJCQWVDa1VxNU1xNFRF?=
- =?utf-8?B?WE1GQlU1YlJ4WllrSnlWUDZlUGhadWdjejZiZDFBajc1SzJtRlUrSHo5SW41?=
- =?utf-8?B?RkV5dHYzNEdESldhajZLemJ3Q01RM3FMQW40aEt2MXZ3OU55Mnd1djNUNExs?=
- =?utf-8?B?bUUydEUyS2ZyTWZPZ0FVNERIN1hDR2dwR3VlY0VYRUNkUjNQa1Y5RTNEaXFx?=
- =?utf-8?B?UVpjSXpKampuL3laZHZlTFBuMGE4aTN1VmNMQWpaL0liNUlQMW9jSm5XVU1w?=
- =?utf-8?B?akl5OXIvYi9uZktISmxkbGMvU0t4bWJWazE3R1RLakoyeGlnNXZlR0NaTERt?=
- =?utf-8?B?MzVaMHFqUTBoQUdrbUpnWWhDak5TWjBnTlljd2Q1a2xJcmdOdDNWbUprZ1RK?=
- =?utf-8?B?ejZiNkRFa0NTeGJEWHdzMWtYYTdkV054aWFzbGhsa2lVdVRDNGlhWm02WHdC?=
- =?utf-8?B?cUNGMWl0R0pobmowT2tGYlFKNDl4U0xKZzFMd1d2RkRsOFhYZlNBQlE1ZWdS?=
- =?utf-8?B?S20zTTlDZnRiaDJ2bng2S2JSVk8rNVh6RFNPMVZoem1OYzg3bDAvU0hUd0lI?=
- =?utf-8?B?c1FndEwxcUlrVmQxSEgrZzA0b1dLOWcxaUZ4bi80ZVRtYlJPY01MbVBQaGJj?=
- =?utf-8?B?ajlxK3FGSjNNNm10NWRmR0E5bVhTaUtkM3g4K2g4VEF0NzNZVFVLbUt0V3Js?=
- =?utf-8?B?eS9rNzFOOUpqckFCdnZRb2dpU1FzVFhqaDREQkh2MnpDKzllalQyQXk3eDVj?=
- =?utf-8?B?QkVxSmN3eEFRcDNRMTZ6NFNXT250UlNwQkp6ZC9kR1lVbTFoYmVZVWJRV0lV?=
- =?utf-8?B?dUw2cG9aNHcyb0FzdTM4QWc0MzJqUlRvaHBqdXRXUlFZdWZVTTB5Q0llcEY2?=
- =?utf-8?B?bUR5R245dHQ2bkF1WkQ1ekN0emg3RGw1N3BQUDlVWkpwZHhJcHFBYVZkZVRn?=
- =?utf-8?B?R2FJMEkzdlp5QVE4WVo5em1WS05iOHZtZFVaNWdiVzVkQXRYMmVoYWVNRE1V?=
- =?utf-8?B?ZlR5OGNoVk4vTmU2TlNaL2tOZ1lla0VZbEZJdjd3V2djaUJpS3ZYTFJUM3I0?=
- =?utf-8?B?ckNSWHdwbUdCU1ViSHhWZGpVcG1PQ2krMU1UR2d3cFgrQ1hOdG14ZTV4WnNy?=
- =?utf-8?B?NlRoMlYvMVh0ZUw4aWhTVzVza3JOZjFkcFJKTU5KMnVjWUJqWS9JM3p5dk5p?=
- =?utf-8?B?ZXdxSGcyMTZjY2dSOVB4eE1ZTXRaNGpXSlkwb0RhamVuMkRrZlN0MFcrZVpa?=
- =?utf-8?B?eHMrUEhBZ2NiM3lsM3Z2aXVzTnhrejcxbGU3N25TaVlJdXBLRE4zL1BpNWhY?=
- =?utf-8?B?LzlFV3BMN1llOGNVWVNRTkVoQmpKdUUzN3RpdmR5TlY4THZGcWlIT0FsUS93?=
- =?utf-8?B?dGdxVzI5VEJ2R0M5MTdnM0hGRzJQTGlZTit0RzdLMHVBU1B5eGt1enZYV1pJ?=
- =?utf-8?B?ZXF5cmhLR3hzeUFySVJ4UmhHWkJmeEdMQ3ZMaEFpS051YW9HaENkN2xuaUFj?=
- =?utf-8?B?bXVWa3k3NXFJTVNnYjFkMy9ISHViSkprdERaUFhRWkhVOTdnUDVEMEJTaTlR?=
- =?utf-8?B?aDl3V21jdm96eEo1blhpUT09?=
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DS0PR11MB7529.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(1800799024)(7416014)(376014)(366016);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?S0NGYlloeWtrQllIWWZ3WEM1YUdBckZtR1hEWk1QQnhvTmdWY3VWTEJJUlBu?=
- =?utf-8?B?L2ovM3VFUVZOdjFTZDdFYXBkN3NVNUJqdHEyKzhCT1MvazZwY0ZmdkVzM0hC?=
- =?utf-8?B?VkM3SEdteDdnTTZwN0RjZ3IrUytMK2N1K0dHQ25OM0h0WEdYQkNrZnRwWUxm?=
- =?utf-8?B?WUJQN0RoUml4VHZxMDZreC9FZTNIcVdlekFVU1JEdzJsRm9maWIzQVl4TDdz?=
- =?utf-8?B?Y2RKeWQ4SWNTdC9qTDIwVjhCUTJXZm41Y1BiTERoUlVVYXk2VWNWZzJrTUJq?=
- =?utf-8?B?OTNsRTZSMUR4cG1MeEc4MnBpNjgxOHp0UUNYdm1aNGZXRUFRZTJab3IwNWor?=
- =?utf-8?B?Snd5R2ZxUEk1MTZNY0p3MndPMHhmUkM4MFJJcW1tUjVrd0d5dnRHY2dvVDdB?=
- =?utf-8?B?c1dFREc5NWNkNUlKeGVDYWR0YW1uanJQbER6ZU1rbVlwWjhJcWM1bEpiSFc4?=
- =?utf-8?B?cTYrTnZEQUk4REJ4WEM1Z2FNdjZGTG1GTjQ0U3VSeGhaZERCRnozQmN6SEt5?=
- =?utf-8?B?ZFl4V3Z2V1djNHZmaXAzQjZXbkdIbFhwd3Bmdk8zK204cnF4MmJnNTM5bkxh?=
- =?utf-8?B?QVc2eXBLT0c0Mmlac0Y3b0FtUS9CZnRVM3I0Mi9xQWdTT0pDNnJPZGNmNE9E?=
- =?utf-8?B?Z2tMQnU4TGtIR0c3alhRaHNQcHQ2RHgrdUNFVUdFcWxrdi9MREFVRlFJNndo?=
- =?utf-8?B?WkowL3FvZ0JzMlJsK0J3ZXVJdVV6OFAxMm5nQkowQW14ZFRiMEJuMHFJc2VO?=
- =?utf-8?B?SzRoaW9mL2RjVUEzcU5zQWpoeTg3WWhJVnliaGlZb2FXc000MzNPc2pUaks4?=
- =?utf-8?B?V2x0ZGJxZ3lhVVZzMFJKb3VSRmJRVWV2ZGpHeW5ENUJKSGlzaDFwZE1tY29F?=
- =?utf-8?B?QlQybWkwTmh1dDBiVlhuMFNMZlVEcGRWZHNzSm1QV0dlNmpFNHFITlhSUVZI?=
- =?utf-8?B?Q2FiT0ZUQXF6dkMxbUJhWURaRkpQeC81TCsrWktOUDN4NVNnc3AwSk1CUnNl?=
- =?utf-8?B?bWFmK2VKTmgzbnNNbGNUUlR1ckl2NjdtZ0p0ZHlqbjVFMi8yTm42UDZLKzZh?=
- =?utf-8?B?STZuNjduek9qL3JmQ2wrenpYVW5qd2JDVHJkZGkrN3JCWUtwbmNYNkFJTDQr?=
- =?utf-8?B?UFZvcTVFdkpjSmRkS1VUbysxWHNTNzIya2FhRU16K2ZGNHdORTdEUjZtWVIw?=
- =?utf-8?B?U2Z1L3Q3UGhoZTFpbzdDMW9xWXVFK0RqWHJ2TEpnMXYzY3dqQzhabDRsZFRC?=
- =?utf-8?B?S285dXp6SFlORE16eWFzTXBsL2R1R2g4ZDFuK2NEM3M5Q2lpRVRqVkx3bnFi?=
- =?utf-8?B?aysxYjZuT0t5ZFkxQ21LbG5QLzFqRjRHS2gwYnR2MEUyamd2bG9iWnZZblZ5?=
- =?utf-8?B?dm5HUHY5QjRkd0RIT2o0Nkhoa2liV1VYeUpHeGhnRDFSdzBSOHZnTU53Zy9u?=
- =?utf-8?B?RmRjMWdjakF3WmtqbU1ZV0dwWHFmL1NPeVlLZCttaGR3dzk5eDdVbmdLN0hv?=
- =?utf-8?B?V2ZwenZQMEhDNTR4NWY2ZmNNdDVVRlNFclBuOW9YOTVLN0I5d3BZUno0dzBN?=
- =?utf-8?B?SXhESnZMY2p5Q1N2eEhUWmpMM3ZhUEoyc29yTHVVcFhuUWpYZDMrT2s5emRQ?=
- =?utf-8?B?SDFuai9PYlhkbDluVkVOYWJpUmJKNzlJczlsTWs1cnJGcFRXZVNQM0o0MmNq?=
- =?utf-8?B?cFBZenMvUTN4L2lWN1cwSFhtRGhSaHZQZTBteUVrTW81VkJrdGw4NUMycnpk?=
- =?utf-8?B?NGtrbnpIa1hVYnQ0azlvV2NGS0ZKbXY3a2pBYk4vZUFQVjY3T2RpY0ZRaEFW?=
- =?utf-8?B?THZ1WVl4SmZFd0F5dHdQZnNNcDl2VzM5TWJKRzNQZVYwakMzUFd3bkpHN3Zh?=
- =?utf-8?B?T29uKzhRN0ZiUlVlTGZJVWNhMGZJYjg0bnc2S0JRc2dGcko4aWhyMi9vK0J5?=
- =?utf-8?B?VjNFN2Y1eFRWVU9GWFRkQ2tzaDdsSlJjWU5VZ1RBRlFqbUJ6RDhnZlZvc3Rr?=
- =?utf-8?B?eGVUTlM2aWl1UXo3LzZrdUoxY2pIWGZpWkhQZ21DYkhIVFZLL3gzYW9qeWYw?=
- =?utf-8?B?NFo1b21pMEdLcXdYV3FjQVR1TytOVzY5N1dMZWtRRlFUdmZFcW9lMUxORllR?=
- =?utf-8?Q?kpfR4c7GbHQWpHRqRSRc+hyS6?=
-X-MS-Exchange-CrossTenant-Network-Message-Id: 81b3539e-db91-41d9-662e-08dcbde94617
-X-MS-Exchange-CrossTenant-AuthSource: DS0PR11MB7529.namprd11.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 16 Aug 2024 11:47:58.4153
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 46c98d88-e344-4ed4-8496-4ed7712e255d
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: pcf5SjQkZzpjWYBaieiL/QthSOzEJL15072+uJffqUE6OGlNU40RF31Y0UBapm316JWZGu3ZX8UJhUTn79KBXQ==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: CH3PR11MB7201
-X-OriginatorOrg: intel.com
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <17c067618b93e5d71f19c37826d54db4299621a3.1723359916.git.baruch@tkos.co.il>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 
-On 2024/8/16 16:29, Vasant Hegde wrote:
-> Yi,
+On Sun, Aug 11, 2024 at 10:09:35AM +0300, Baruch Siach wrote:
+> From: Catalin Marinas <catalin.marinas@arm.com>
 > 
+> Hardware DMA limit might not be power of 2. When RAM range starts above
+> 0, say 4GB, DMA limit of 30 bits should end at 5GB. A single high bit
+> can not encode this limit.
 > 
-> On 8/15/2024 7:42 AM, Yi Liu wrote:
->> On 2024/8/14 22:40, Jason Gunthorpe wrote:
->>> On Wed, Aug 14, 2024 at 04:19:13PM +0800, Yi Liu wrote:
->>>
->>>> /**
->>>>    * enum iommufd_hw_capabilities
->>>>    * @IOMMU_HW_CAP_DIRTY_TRACKING: IOMMU hardware support for dirty tracking
->>>>    *                               If available, it means the following APIs
->>>>    *                               are supported:
->>>>    *
->>>>    *                                   IOMMU_HWPT_GET_DIRTY_BITMAP
->>>>    *                                   IOMMU_HWPT_SET_DIRTY_TRACKING
->>>>    *
->>>>    */
->>>> enum iommufd_hw_capabilities {
->>>>      IOMMU_HW_CAP_DIRTY_TRACKING = 1 << 0,
->>>> };
->>>
->>> I think it would be appropriate to add the flag here
->>
->> ok.
->>
->>> Is it OK to rely on the PCI config space PASID enable? I see all the
->>> drivers right now are turning on PASID support during probe if the
->>> iommu supports it.
->>
->> Intel side is not ready yet as it enables pasid when the device is attached
->> to a non-blocking domain. I've chatted with Baolu, and he will kindly to
->> enable the pasid cap in the probe_device() op if both iommu and device has
->> this cap. After that, Intel side should be fine to rely on the PASID enable
->> bit in the PCI config space.
->>
->> How about SMMU and AMD iommu side? @Jason, @Suravee, @Vasant?
+> Use plain address for DMA zone limit.
 > 
-> AMD driver currently discovers capability in probe_device() and enabled it in
-> attach_dev() path.
+> Since DMA zone can now potentially span beyond 4GB physical limit of
+> DMA32, make sure to use DMA zone for GFP_DMA32 allocations in that case.
+> 
+> Signed-off-by: Catalin Marinas <catalin.marinas@arm.com>
+> Co-developed-by: Baruch Siach <baruch@tkos.co.il>
+> Signed-off-by: Baruch Siach <baruch@tkos.co.il>
+> ---
+>  arch/arm64/mm/init.c       | 30 +++++++++++++++---------------
+>  arch/powerpc/mm/mem.c      |  5 ++++-
+>  arch/s390/mm/init.c        |  2 +-
+>  include/linux/dma-direct.h |  2 +-
+>  kernel/dma/direct.c        |  6 +++---
+>  kernel/dma/pool.c          |  4 ++--
+>  kernel/dma/swiotlb.c       |  6 +++---
+>  7 files changed, 29 insertions(+), 26 deletions(-)
+> 
+> diff --git a/arch/arm64/mm/init.c b/arch/arm64/mm/init.c
+> index 9b5ab6818f7f..c45e2152ca9e 100644
+> --- a/arch/arm64/mm/init.c
+> +++ b/arch/arm64/mm/init.c
+> @@ -115,35 +115,35 @@ static void __init arch_reserve_crashkernel(void)
+>  }
+>  
+>  /*
+> - * Return the maximum physical address for a zone accessible by the given bits
+> - * limit. If DRAM starts above 32-bit, expand the zone to the maximum
+> + * Return the maximum physical address for a zone given its limit.
+> + * If DRAM starts above 32-bit, expand the zone to the maximum
+>   * available memory, otherwise cap it at 32-bit.
+>   */
+> -static phys_addr_t __init max_zone_phys(unsigned int zone_bits)
+> +static phys_addr_t __init max_zone_phys(phys_addr_t zone_limit)
+>  {
+> -	phys_addr_t zone_mask = DMA_BIT_MASK(zone_bits);
+>  	phys_addr_t phys_start = memblock_start_of_DRAM();
+>  
+>  	if (phys_start > U32_MAX)
+> -		zone_mask = PHYS_ADDR_MAX;
+> -	else if (phys_start > zone_mask)
+> -		zone_mask = U32_MAX;
+> +		zone_limit = PHYS_ADDR_MAX;
+> +	else if (phys_start > zone_limit)
+> +		zone_limit = U32_MAX;
+>  
+> -	return min(zone_mask, memblock_end_of_DRAM() - 1) + 1;
+> +	return min(zone_limit, memblock_end_of_DRAM() - 1) + 1;
 
-I see. So AMD side also has a gap. Is it easy to make it suit Jason's
-suggestion in the above?
+Why do we need to adjust +-1 now that we're no longer using a mask?
 
--- 
-Regards,
-Yi Liu
+>  }
+>  
+>  static void __init zone_sizes_init(void)
+>  {
+>  	unsigned long max_zone_pfns[MAX_NR_ZONES]  = {0};
+> -	unsigned int __maybe_unused acpi_zone_dma_bits;
+> -	unsigned int __maybe_unused dt_zone_dma_bits;
+> -	phys_addr_t __maybe_unused dma32_phys_limit = max_zone_phys(32);
+> +	phys_addr_t __maybe_unused acpi_zone_dma_limit;
+> +	phys_addr_t __maybe_unused dt_zone_dma_limit;
+> +	phys_addr_t __maybe_unused dma32_phys_limit =
+> +		max_zone_phys(DMA_BIT_MASK(32));
+>  
+>  #ifdef CONFIG_ZONE_DMA
+> -	acpi_zone_dma_bits = fls64(acpi_iort_dma_get_max_cpu_address());
+> -	dt_zone_dma_bits = fls64(of_dma_get_max_cpu_address(NULL));
+> -	zone_dma_bits = min3(32U, dt_zone_dma_bits, acpi_zone_dma_bits);
+> -	arm64_dma_phys_limit = max_zone_phys(zone_dma_bits);
+> +	acpi_zone_dma_limit = acpi_iort_dma_get_max_cpu_address();
+> +	dt_zone_dma_limit = of_dma_get_max_cpu_address(NULL);
+> +	zone_dma_limit = min(dt_zone_dma_limit, acpi_zone_dma_limit);
+> +	arm64_dma_phys_limit = max_zone_phys(zone_dma_limit);
+>  	max_zone_pfns[ZONE_DMA] = PFN_DOWN(arm64_dma_phys_limit);
+>  #endif
+
+Maybe move this block into a helper function so we can avoid three
+__maybe_unused variables?
+
+Will
