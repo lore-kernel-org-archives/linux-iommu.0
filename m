@@ -1,226 +1,317 @@
-Received: from NAM10-BN7-obe.outbound.protection.outlook.com (mail-bn7nam10on2044.outbound.protection.outlook.com [40.107.92.44])
+Received: from NAM02-BN1-obe.outbound.protection.outlook.com (mail-bn1nam02on2065.outbound.protection.outlook.com [40.107.212.65])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7116285283
-	for <iommu@lists.linux.dev>; Fri, 16 Aug 2024 22:17:32 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.92.44
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C719133E7
+	for <iommu@lists.linux.dev>; Sat, 17 Aug 2024 00:37:45 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.212.65
 ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1723846655; cv=fail; b=tGi4NPIPuxLe312Q0e3S6EhGPnYGznxlwx8ymbo7h7fjdBjY5w1IJnRKW8ddyPdrUZO/PwRlbnN6NZ/r4hBGSc+cVeHNHFB1AMEDrofgncr2QtUI7R238k2J0gdOR6gteDEi4W3Ypm9kIysX8r2YdmJ199pI96ZZAyvZEoBkEM0=
+	t=1723855070; cv=fail; b=Mc35KakrJz7kLcyN7uu0aa9HaBiRjawCquiI5kcyzhqnivvUXiaNDSMDy0h4AcoYDrj6g9F83afS3E9ZvyhlRxUusyGQEn1lnLh72JmHQ5u6NH/fcM644k4cwioaUcZZIBjWNPFgK5DBsw/xX6YWFtBhBFnHx/70DaU0gfcM83c=
 ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1723846655; c=relaxed/simple;
-	bh=3C66i7STm38DyRFh8X7fMmvUFal1LeKC7kccde5HolQ=;
-	h=From:To:CC:Subject:Date:Message-ID:MIME-Version:Content-Type; b=sqLGzVibyMsmTbC3DjW9fFuFeOrO9c4ocqf3mgG4EyP88MDDURRfBOXYuklkT2OZdAUDy1+dVBo7BWlBpgVy4zMQFubwYKRk39ahrX6VKBwHlOYfwzZhDH44bQkIOCw5eKU3w3YgtmUWGg4BHpxGG4vkfUUGXzRHJ75dr4dfTW0=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com; spf=fail smtp.mailfrom=amd.com; dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b=s0q0TyEL; arc=fail smtp.client-ip=40.107.92.44
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=amd.com
+	s=arc-20240116; t=1723855070; c=relaxed/simple;
+	bh=obQaBmlvOfB48MjtsYH1+/SJiFus2SfnDkQP+mEmMgU=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:Content-Type:
+	 Content-Disposition:In-Reply-To:MIME-Version; b=sLAiCuq5dhd8BshYXLVb4SvgcYg2Erc/i+yOvyArYIzlN6Z7Jzgmqnozf67FajyeV1pkYeJJ4EwmiZN9Qhuro0TlPDtJ9NipfpfbBUi66UjpEAYUxrcFiHtx6MecRmYkOhSVuMGKovk4mzAFNbyJqm/V0NNXST52TIIWAzeIctc=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=PaKBc9yf; arc=fail smtp.client-ip=40.107.212.65
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b="s0q0TyEL"
+	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="PaKBc9yf"
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=RyUZhv6J2I65c0L5K3fZk1LVZPuasHBVtr8fdoT+149EHnRWLJJo0R5rJ5gTyVeqxhwXhqg3VcdU6e0DiKP+wI/fApqkOUW+qTdQRbJRd01XxG1RAurWybdnGGpV5hiM+zoXEg8kXOYdEOyb9PdHqsnFsz8T+AOKoQD/T3KNGAFYS/ugULRN17ai/a9+7CjMkg4MtCwGpoMyLxvw0wHe5sfWXEa/0F8k2Rii9Vmdpam5U/EzV2ZJo1hxh31RqkSfKzsjEDQXKYi2rrE9PC0vL5VqHRP7UswDRnUMYiy6w5Yb/tvx+QUcAvxkWqNSckAaItz8dxwDAFINKAA9WanxWA==
+ b=LmUhKtnSb1gr6nxBgetarjUnoJAUxQvAH+nxuTXqY59GJxfNlqbbNxiC/FB3oopD9nyCnxggoGXcqkD1g05Hf5CT6LE58JknmEUGEGh0KBXMFXmmzA3QDrQgxGjEVGdPWPTFdEmJuC18PH9NYQIas/L7vDvaS/tjIYEVn2dr/va5jFjU3Co0AurPmOHbJuFjx67l0gDXHDsRe4gcF6M8aLH87ugmq6FWUzrp7SfJFU2af9N/sgIPZanZFUyQPUhO5jGnfBtp2VzV5vFxQdRK521EvByKwp+REgPmHJrIzBrhwl7Z+p9Kgq6Kc9+6oHQcs4R5N9IzFRov32xmUtIhcQ==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector10001;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=enpq0OzrfY8LXs6+M2a6YNn7bVQ4UBUCfN4O8w6QFpA=;
- b=Hng8/X/ddeyngP1Ca4j/6dYdX0L1VgE9UyEJ2VX1647VNMbij5+ChPDkXu5hwpW3UMt9idbEVJyimidz5+Hlpsqi2QUU05EC0I29G7O8J8rVlblEjq9qdhJOaGJ4dcVOs8OI4MVoQVQaz4CbWW5VJJ4Q/kloxf3eJWZq/P53wtRRzJGN5yBCf4beq5VgKFDegLypPOkBuO+kq5Y8EkwYQ3nRIqHgYLwbBZ0Zu+Iu5PaKzoDH3yS2iqrrJQFcCTuGdVWxz91i55D5nqJUBLejHv1NMlTZjEfvXWKzH+15Pk60wFNL2tTF26KtLKQbExxZVLQXKCF5ScGXnD8a+X4qvw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 165.204.84.17) smtp.rcpttodomain=vger.kernel.org smtp.mailfrom=amd.com;
- dmarc=pass (p=quarantine sp=quarantine pct=100) action=none
- header.from=amd.com; dkim=none (message not signed); arc=none (0)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
+ bh=+b/4kLMgvH9aw9mciTohH+J8CXizrjfv2zH5y80hetQ=;
+ b=CLEQD2MjC2AKD9c5j7zwP4+n9tWmuTsSIZb/m96BT/AG2sp+NVMJ5bau4kbwRpeoXIeLhuFxa6NQX5PNiPdGvJEkUOBraOIzOEXzhOBvyU1D9eE/Z5PqY6Aqa6z/Rz2VrDFrPCj82MCEFVaovyadHnr+b15N3tMxhHITuHNAAO5j8DYkHXBojd/VLOejgZ1ctMDCwwIBy/MtNoGNItxCkmRDRXLYtbU63KpCKsXFJG1VyBhaAXzs2VByew4g6A2iOOehz/kuCGkxsC9ldxsd1zyEBA0BXfNGOaOz+XfETo23VYitXUkwvFWmOTU468PT3FgPrHMa/cG5cqray5kTWw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=enpq0OzrfY8LXs6+M2a6YNn7bVQ4UBUCfN4O8w6QFpA=;
- b=s0q0TyELbKgFyqG9gU+sVtm4C6tKJBo5y3/h8SALFiPgdEdiSYgd8gFcVS3Gp0Q83zGgLW+84obUlnU0bFPbibp0tdvDPPXpIBWLqFKRJylbbp0dFVTFa6kwyB/uCiM9W/1KNAUDFnp0DIGcbtkWKEXT292VFpvDuSHAkI3HErg=
-Received: from DS7PR03CA0330.namprd03.prod.outlook.com (2603:10b6:8:2b::22) by
- CY5PR12MB6370.namprd12.prod.outlook.com (2603:10b6:930:20::22) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.7875.19; Fri, 16 Aug 2024 22:17:29 +0000
-Received: from DS3PEPF0000C381.namprd04.prod.outlook.com
- (2603:10b6:8:2b:cafe::e2) by DS7PR03CA0330.outlook.office365.com
- (2603:10b6:8:2b::22) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7875.20 via Frontend
- Transport; Fri, 16 Aug 2024 22:17:29 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 165.204.84.17)
- smtp.mailfrom=amd.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=amd.com;
-Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
- 165.204.84.17 as permitted sender) receiver=protection.outlook.com;
- client-ip=165.204.84.17; helo=SATLEXMB04.amd.com; pr=C
-Received: from SATLEXMB04.amd.com (165.204.84.17) by
- DS3PEPF0000C381.mail.protection.outlook.com (10.167.23.11) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.20.7849.8 via Frontend Transport; Fri, 16 Aug 2024 22:17:28 +0000
-Received: from purico-ed03host.amd.com (10.180.168.240) by SATLEXMB04.amd.com
- (10.181.40.145) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2507.39; Fri, 16 Aug
- 2024 17:17:25 -0500
-From: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
-To: <linux-kernel@vger.kernel.org>, <iommu@lists.linux.dev>
-CC: <joro@8bytes.org>, <robin.murphy@arm.com>, <vasant.hegde@amd.com>,
-	<jon.grimm@amd.com>, <santosh.shukla@amd.com>, Suravee Suthikulpanit
-	<suravee.suthikulpanit@amd.com>, Jason Gunthorpe <jgg@nvidia.com>
-Subject: [PATCH V2] iommu/amd: Update PASID, GATS, GLX, SNPAVICSUP feature related macros
-Date: Fri, 16 Aug 2024 22:16:50 +0000
-Message-ID: <20240816221650.62295-1-suravee.suthikulpanit@amd.com>
-X-Mailer: git-send-email 2.34.1
+ bh=+b/4kLMgvH9aw9mciTohH+J8CXizrjfv2zH5y80hetQ=;
+ b=PaKBc9yfYT6BkE8laxBT8L+HRwkKEaGcqS7LuYzgJ/LsTNHgBzcGQg/brJdcBYSJ60i64uDOg2QkHTc6t9oji4meZbkQt1qvbmsNDzzjZ4sBlW+v3ODg7xly8GxtU+TP9K5TSuR5vaOP4uEj6sebpNL+8BnOx98DErEpj43BnMA4XbiJgTmZPP4fmPGoExDG6FPIUYTLVdATG0wDFm4qsfd1vuT5Z4ZBcxwjLTIwgoDZx0eVo9ydVAbTni2dIQj4HxpmdOvQNiSgxEGixiomJfyf7gp7V2B/Itev+Bu7IHArfLbtYwMJtHNLCyGDbvBDopXyg+kvuVfPqmMoruOquw==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nvidia.com;
+Received: from CH3PR12MB7763.namprd12.prod.outlook.com (2603:10b6:610:145::10)
+ by SJ2PR12MB9007.namprd12.prod.outlook.com (2603:10b6:a03:541::18) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7875.20; Sat, 17 Aug
+ 2024 00:37:42 +0000
+Received: from CH3PR12MB7763.namprd12.prod.outlook.com
+ ([fe80::8b63:dd80:c182:4ce8]) by CH3PR12MB7763.namprd12.prod.outlook.com
+ ([fe80::8b63:dd80:c182:4ce8%3]) with mapi id 15.20.7875.016; Sat, 17 Aug 2024
+ 00:37:41 +0000
+Date: Fri, 16 Aug 2024 21:36:30 -0300
+From: Jason Gunthorpe <jgg@nvidia.com>
+To: Sean Christopherson <seanjc@google.com>
+Cc: Alejandro Jimenez <alejandro.j.jimenez@oracle.com>,
+	Lu Baolu <baolu.lu@linux.intel.com>,
+	David Hildenbrand <david@redhat.com>,
+	Christoph Hellwig <hch@lst.de>, iommu@lists.linux.dev,
+	Joao Martins <joao.m.martins@oracle.com>,
+	Kevin Tian <kevin.tian@intel.com>, kvm@vger.kernel.org,
+	linux-mm@kvack.org, Pasha Tatashin <pasha.tatashin@soleen.com>,
+	Peter Xu <peterx@redhat.com>, Ryan Roberts <ryan.roberts@arm.com>,
+	Tina Zhang <tina.zhang@intel.com>
+Subject: Re: [PATCH 13/16] iommupt: Add the x86 PAE page table format
+Message-ID: <20240817003630.GF2032816@nvidia.com>
+References: <0-v1-01fa10580981+1d-iommu_pt_jgg@nvidia.com>
+ <13-v1-01fa10580981+1d-iommu_pt_jgg@nvidia.com>
+ <Zr-mrsewGxXt1rAC@google.com>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <Zr-mrsewGxXt1rAC@google.com>
+X-ClientProxiedBy: BL1PR13CA0131.namprd13.prod.outlook.com
+ (2603:10b6:208:2bb::16) To CH3PR12MB7763.namprd12.prod.outlook.com
+ (2603:10b6:610:145::10)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-ClientProxiedBy: SATLEXMB03.amd.com (10.181.40.144) To SATLEXMB04.amd.com
- (10.181.40.145)
-X-EOPAttributedMessage: 0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: DS3PEPF0000C381:EE_|CY5PR12MB6370:EE_
-X-MS-Office365-Filtering-Correlation-Id: d78f8baa-fe20-42d3-e6fe-08dcbe413753
+X-MS-TrafficTypeDiagnostic: CH3PR12MB7763:EE_|SJ2PR12MB9007:EE_
+X-MS-Office365-Filtering-Correlation-Id: 0779b5fc-1508-4360-48bc-08dcbe54cd7c
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|36860700013|376014|1800799024|82310400026;
+X-Microsoft-Antispam: BCL:0;ARA:13230040|1800799024|366016|7416014|376014;
 X-Microsoft-Antispam-Message-Info:
-	=?us-ascii?Q?6SdnHPF6j0Km6tFXIqV+/7hjvhlb8TsJuq6B2scy0IlJipQYnblCPvfakwlb?=
- =?us-ascii?Q?dZF24OZdQ9gvO0ZXcC9A4WdqbhXk2Xbqus6sLTaqcQrdORCnj/d+ogDEZ/wt?=
- =?us-ascii?Q?r/L+nBk6BNJgPf5sUUXd2XMWmV7uvrwoFnZo5oBvIbnKX8lRIMp+hdccoNz8?=
- =?us-ascii?Q?J6JxIuXdvWigB9dHe0VMUpN3gqPyYKFg8FBv4XOZLmK72G6ZHidQfnWguZoB?=
- =?us-ascii?Q?ukboJ/6LhbJZv552mqjOr7CYmrC6yCN1d5fLlbvmUxGsvXxvVcc4fNjmmrJG?=
- =?us-ascii?Q?72RdN3/09quipiDFt8Snq0hMCVeELb4WDH+O9iIv2FvC0/WHQ/wk/EdPt9Qk?=
- =?us-ascii?Q?H9K3Ln+nQ0n2ka03aQqhBHtu2ClPpts/UHVFw5hHiD9opI3mdGNnlHogsjpD?=
- =?us-ascii?Q?vmdHOhe37C9mH1rG+0UjFZfMrtsMvetzL42Ru4JQIALBbsIC9TcQ5WgfFgoN?=
- =?us-ascii?Q?cdGrltMIZUvrBx7p75vbFN2M+Nfd1+Pw/CFjvRT5bORkRBlgQgiJycmKLqqN?=
- =?us-ascii?Q?nZFMRCbzNs+r2fLY9Zj7tCshAShxynL7+vt8uXARnjDRqGqG5SSi0ZVYInBl?=
- =?us-ascii?Q?fO6oss9zVBS5kpsy3/wmiJdyDgdeAJErOuIf+SRcJOX6LMDxaCfK2V1hsAbi?=
- =?us-ascii?Q?ShNlK1/vHnzzHzgvQPtL0NbtDZsL3zUK38QYfu6n+lMhKuyQYkeA5w1yRWNj?=
- =?us-ascii?Q?x24b9WeKk3OcsKgHzfXtLVUdp7auDVkZG25lZTUOrXU+5jqBiV3O0ZWWBhHw?=
- =?us-ascii?Q?cdOxPTvZXgkLEuObZqNFsFEFlE3XglUEddGIQYOinQA+KzdEMCsMpuJM/Iqr?=
- =?us-ascii?Q?PPLNJuoNPmKCUjq4FgxCPzwfPhZqqpqpzUAiUOvf4IZ3Yyo5rKKEgIch1eRl?=
- =?us-ascii?Q?CdfBGYh/jIOHFV2Dih0litZp14kwSGerB+jtk8UfrI6Khs8l90V8qTI3V52x?=
- =?us-ascii?Q?0PiAnGUd8RO/vshS5Z63Br6fJ1/OSGiWVXPoKxHPzALi2yEr6Cmn9zDNWi8o?=
- =?us-ascii?Q?9USsXU3poIcj1wC3LLcyyWqn6Qd/rRVglH2cS3dgiEwa+fzlYi0kG07LdP8U?=
- =?us-ascii?Q?/tTk4NFN43Zrqs+6S0aMY2S/wqQxaRvPps6zORuBIqk4nrF3F+caNTAVP6su?=
- =?us-ascii?Q?y7vhABJpoxXLg9nmxdx5qj6XKNk4LbrN8wjZj3UbjY7YoIAccJzK6qMIJHZA?=
- =?us-ascii?Q?OThPPemb95I0uP+Bh94jY1pBIFqTmNwpn0tjFK27feV0zkfXu9Yk0UZq1ZEf?=
- =?us-ascii?Q?Bu4eLlygDzn/H7vbMjDjiCyPQDgrqUNyC1cIPClWDmx3j/7bxpQQquRHM4Vl?=
- =?us-ascii?Q?kZBS+cX+LBHvqOQqJucPcD12cu8/L0XAGTeTxxak3P+qsSexXmxKVzl5hBAF?=
- =?us-ascii?Q?9Fmq6aiK0AGM916fFzU+h8/3/esXrXqHZLGxCLorodsWUlUXiv095eIZGNHD?=
- =?us-ascii?Q?jxiU3HyYoLCChb+1SQCD8WMXJz/XsAY3?=
+	=?us-ascii?Q?+riury+KV4o6lzYFMaF3DeFsgpzJdF3SMCBZgdTjSg9sQthrJHiKbxuagprM?=
+ =?us-ascii?Q?2KylA0GBw85F2/e9XMztXuKpiUh3Jd/9qQlSVrZ5F2ln/Y3RK9iAmINETbbZ?=
+ =?us-ascii?Q?Z7+YsYFWsUF6fEmx0N404gwwaefsVOEjjPGr+se9rNaqkR+PUgzGvtMx/vUl?=
+ =?us-ascii?Q?IkajAIjNhfZTdCSpkXYrzHGHB4d1dVXJHCcQnKmHD35oBWX4MWRCeSqoJIzN?=
+ =?us-ascii?Q?u9d/8CoQXpKcQRK8UuzmlBfc980FWHFZNLsPp0b55Le9tuIuKM1V+1sQilxZ?=
+ =?us-ascii?Q?b5Oz1JzktRAkBb4uRtHs4qHrfTK2ZR3a/PxD2I02rSyEDMztjfdyoPFg2N+5?=
+ =?us-ascii?Q?KncrV5mBvzhW3dVjgdct6xUYzGfTWrsbF1cdhP7y4BOu3efr2DoaU3l1SKCK?=
+ =?us-ascii?Q?KDAwuk+IwGYUkEbl7OYm9GrKMUwV1GZ17JXGVJIz8zOW8gKE0iKvxmLPxRsa?=
+ =?us-ascii?Q?rEC22KL+sBw/kHARj36QsWRSdJ+JlhRh6Es8ghd/Qq6ltwnalvy3W+VVynFO?=
+ =?us-ascii?Q?b4okInfR1kqzgIeJIgDJl+bjLdxJF+TLdTj2k6gRylaWDsWXzSu4dyIwIXkh?=
+ =?us-ascii?Q?cX5OFUn8ahO39a8mpWq+XCPMKRUYuaodQqrVqyagB7uRL5S3x9Mz5QfVEl4X?=
+ =?us-ascii?Q?FEnKv214YDOYG44h3C7G2FMWJciXw2uO8CMQg1yBFR2XPmT+fTMBoaSdysyb?=
+ =?us-ascii?Q?izgvhE/i76BUYgL/DpGDJoGQSy8Wv5joq/vSyVybUFJPtXdtNZKdZTedKZz7?=
+ =?us-ascii?Q?JKKw/E9HfZOdUC+k7Wju6HIApFR3/Wi6ENw5v9Q8+1BDUvEyWUqZxW3xoMDb?=
+ =?us-ascii?Q?pEaU06xJHVKIevqwVBUziwgraE8Jq//glMBDXY3bta8dEt26a5TCSVjc+ac9?=
+ =?us-ascii?Q?v+Ky16pYWoMEStxM5YEeypohZ5oMfWjxLaO5rt2V0TVTvXvTaDizsXP/3oGi?=
+ =?us-ascii?Q?RoVZCnDukqzdf18Lbqtf7885Rk3wXkHRQFX+GZxtr1q8ptQygBWCaxgyDP7m?=
+ =?us-ascii?Q?MlU5RufKEElSWl5Rw2mX9/+lHReMY7n5nwgFoiZyZGPGDjoJDi4/zFnt9f44?=
+ =?us-ascii?Q?47HcszArowfswlcTFbOD9V/3NhN6poJO70c1bfpE8K7n/uAX9q8hadGJ7z+5?=
+ =?us-ascii?Q?JlcMDQCEbeiBGTK7mh79gqf5mSDEvplcYBBj4pzB1xmVJXlkT1yDFlAvPefA?=
+ =?us-ascii?Q?koP0wUdJ9ZLUwU/I/ElaFm8cVfKqegfrt/BPD20tyhrcLpLIsz2pz/5xfKg6?=
+ =?us-ascii?Q?a564E18ItpbYEg7PBcYNBx7dxNptzXNqZNcwyB9BZzIPgdgjGUqS434wyeOl?=
+ =?us-ascii?Q?nKu5kqO7Kat4Uumm/C0gYX7JbY9zIwSVNvHNovXQCa02Ug=3D=3D?=
 X-Forefront-Antispam-Report:
-	CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB04.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230040)(36860700013)(376014)(1800799024)(82310400026);DIR:OUT;SFP:1101;
-X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 16 Aug 2024 22:17:28.9227
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CH3PR12MB7763.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(1800799024)(366016)(7416014)(376014);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?us-ascii?Q?WhwshgcJldZZlXQ0/iao2wGGQLly84HlQICyeQKnistTCyeIeXWqAwArsW0i?=
+ =?us-ascii?Q?fvjK15xieFPjftaGjb/v+kjDpOt/U4RSUja42VSzxr/CDHFJKxhztlg19DXT?=
+ =?us-ascii?Q?/qqepkicXNmx6vuGq75MCkP90roOw7CNUs0E5GSTLj0RlXEB7viHzQWo8T+H?=
+ =?us-ascii?Q?Rh/XvzfD1EFnZyGI86P2zcBXXNJd+55UZteY8wl31AUJSfkX9Pq/tamdEMA+?=
+ =?us-ascii?Q?2x1MalE09Ijd9/ctF5CFWVn5yRGgEVxSsjqbP+jWnby/SGPQrHx7anHqV3Wf?=
+ =?us-ascii?Q?7ovoDrehPPTruLZTJDNKOKDHW3yv/goI5jejVHIYY7AzBhRAOORRwlHO0dTI?=
+ =?us-ascii?Q?23mwZ3ASkbZYiWo7SGstB0QqsFOXiI3WmpjaOLxzq5QiL4Qj5YoQeHDjrlHz?=
+ =?us-ascii?Q?RCUM0CmjJfsMYZ9Xy8qEHpfRF4toKcxaCgbc6zxWor9xOBZsr0BnmlfumAHz?=
+ =?us-ascii?Q?5bIsN/sPS64zD5KxA9rSSEGNBR4a6Nfa6Zurno51b1MZ7uiqc3+KdovifUX3?=
+ =?us-ascii?Q?o+OnhIZeSkCO+7n7Xu31BQG/yJ+1ySQ9Ie1FguMyIvpY5DoFdrTyNIVeF+K4?=
+ =?us-ascii?Q?w02nwDn/Ny1Q0QJaM7wtGXXImtu2Y89A2RRqDfwq5nx5I2LSDyw406mRGbVL?=
+ =?us-ascii?Q?IcxIAeeCxjCqFBBAnGE8LpUszATOnDxRLl/lEGItlQNeiMsxJExKLgPLU7rB?=
+ =?us-ascii?Q?zMgDnCplUNe8ZBbQ2Ppd9egdcuZ42LI6X709MYYUdCLLAOnDiRrcbEcXQ1w9?=
+ =?us-ascii?Q?q5AlAqKN760/XcVVNW8yTL2bHGuO4kMrSS2PjepJvznjqxcAqztEDN6TkKYk?=
+ =?us-ascii?Q?xtOxF/9HN13xN/HIT4JfnrSjzyW1RRCbPejH7t7CXiXgCJ/lFxmCFMzvoqnD?=
+ =?us-ascii?Q?b+ZFKHZuAl2reGqzlGc9Bl700R+1HiloKPEFia7C2Q9uIcrCTvBE/RWDdz4Y?=
+ =?us-ascii?Q?QYyMXB6m+2DycRUp4hB/veO7CRB9SYLh6j+Xs1LTP3vF/f6QEYgXIZVYWvEQ?=
+ =?us-ascii?Q?fjZA4KPKCI1yTzq66/D3pGw9WupjCx2IFrW87SmWw0s5h26Dcmp9iRpR7V76?=
+ =?us-ascii?Q?V4wzq/hADqZFdeepbFbj6dcjDZg0Ybmz759bxy/N1AgvwUeQQHA17hSmfVzU?=
+ =?us-ascii?Q?Tg0jKOdFl8PuLSGCrztpILhtCCNC1+vxnsxTz8JlTq/p6I+j3w9m7gaqJO9X?=
+ =?us-ascii?Q?alqiZDoqWU3zWT8cBCXAzCZ8fUzOtAzVZUWQpN1lJ17iq4gbm19bBmPupBZi?=
+ =?us-ascii?Q?F7k7whwBGxXfeMOQDiTunvh12x7eKYAymeeQ638yp5PnwXMRSYwP3x9wYH/x?=
+ =?us-ascii?Q?p7JdLCYmyaFC4yqENDqEEUbNA7IDKFoBYE1cpaymeXpvPwyytPhx50sggwc2?=
+ =?us-ascii?Q?hzPhFF2DrAQnqDpVQ6nq4rDcGcOuCeiy6VywzB46TKzMXoNOcPwfJh3MZ1fl?=
+ =?us-ascii?Q?4MW0Oe6LeZHL9eocigcouSsUNTXvL01MCJD9dkqnBejE+SG0o/yi50WAPQtr?=
+ =?us-ascii?Q?f043ciNx69604MaqHvClKqfr/3MDAD+YxT6SI91qaqQxRoVyUKIs/h/Uh1cv?=
+ =?us-ascii?Q?0dRvxvuNAcvHuRi/rbg=3D?=
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 0779b5fc-1508-4360-48bc-08dcbe54cd7c
+X-MS-Exchange-CrossTenant-AuthSource: CH3PR12MB7763.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 17 Aug 2024 00:37:41.5325
  (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: d78f8baa-fe20-42d3-e6fe-08dcbe413753
-X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[SATLEXMB04.amd.com]
-X-MS-Exchange-CrossTenant-AuthSource:
-	DS3PEPF0000C381.namprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: CY5PR12MB6370
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: ZL1EFjPxpjp8bCEK9kPA3mqiW8NOGvNV+TFsYAGd0+fnkI7ICs5ieAeZlXB5unXY
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SJ2PR12MB9007
 
-Clean up and reorder them according to the bit index. There is no
-functional change.
+On Fri, Aug 16, 2024 at 12:21:18PM -0700, Sean Christopherson wrote:
+> On Thu, Aug 15, 2024, Jason Gunthorpe wrote:
+> > This is used by x86 CPUs and can be used in both x86 IOMMUs. When the x86
+> > IOMMU is running SVA it is using this page table format.
+> > 
+> > This implementation follows the AMD v2 io-pgtable version.
+> > 
+> > There is nothing remarkable here, the format has a variable top and
+> > limited support for different page sizes and no contiguous pages support.
+> > 
+> > In principle this can support the 32 bit configuration with fewer table
+> > levels.
+> 
+> What's "the 32 bit configuration"?
 
-Suggested-by: Jason Gunthorpe <jgg@nvidia.com>
-Signed-off-by: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
----
- drivers/iommu/amd/amd_iommu.h       |  5 -----
- drivers/iommu/amd/amd_iommu_types.h | 16 ++++++----------
- drivers/iommu/amd/init.c            |  8 +++-----
- 3 files changed, 9 insertions(+), 20 deletions(-)
+Oh, the three level version
 
-diff --git a/drivers/iommu/amd/amd_iommu.h b/drivers/iommu/amd/amd_iommu.h
-index 2d5945c982bd..52e18b5f99fd 100644
---- a/drivers/iommu/amd/amd_iommu.h
-+++ b/drivers/iommu/amd/amd_iommu.h
-@@ -121,11 +121,6 @@ static inline bool check_feature2(u64 mask)
- 	return (amd_iommu_efr2 & mask);
- }
- 
--static inline int check_feature_gpt_level(void)
--{
--	return ((amd_iommu_efr >> FEATURE_GATS_SHIFT) & FEATURE_GATS_MASK);
--}
--
- static inline bool amd_iommu_gt_ppr_supported(void)
- {
- 	return (check_feature(FEATURE_GT) &&
-diff --git a/drivers/iommu/amd/amd_iommu_types.h b/drivers/iommu/amd/amd_iommu_types.h
-index 2b76b5dedc1d..c9f9a598eb82 100644
---- a/drivers/iommu/amd/amd_iommu_types.h
-+++ b/drivers/iommu/amd/amd_iommu_types.h
-@@ -8,6 +8,7 @@
- #ifndef _ASM_X86_AMD_IOMMU_TYPES_H
- #define _ASM_X86_AMD_IOMMU_TYPES_H
- 
-+#include <linux/bitfield.h>
- #include <linux/iommu.h>
- #include <linux/types.h>
- #include <linux/mmu_notifier.h>
-@@ -95,26 +96,21 @@
- #define FEATURE_GA		BIT_ULL(7)
- #define FEATURE_HE		BIT_ULL(8)
- #define FEATURE_PC		BIT_ULL(9)
--#define FEATURE_GATS_SHIFT	(12)
--#define FEATURE_GATS_MASK	(3ULL)
-+#define FEATURE_GATS		GENMASK_ULL(13, 12)
-+#define FEATURE_GLX		GENMASK_ULL(15, 14)
- #define FEATURE_GAM_VAPIC	BIT_ULL(21)
-+#define FEATURE_PASMAX		GENMASK_ULL(36, 32)
- #define FEATURE_GIOSUP		BIT_ULL(48)
- #define FEATURE_HASUP		BIT_ULL(49)
- #define FEATURE_EPHSUP		BIT_ULL(50)
- #define FEATURE_HDSUP		BIT_ULL(52)
- #define FEATURE_SNP		BIT_ULL(63)
- 
--#define FEATURE_PASID_SHIFT	32
--#define FEATURE_PASID_MASK	(0x1fULL << FEATURE_PASID_SHIFT)
--
--#define FEATURE_GLXVAL_SHIFT	14
--#define FEATURE_GLXVAL_MASK	(0x03ULL << FEATURE_GLXVAL_SHIFT)
- 
- /* Extended Feature 2 Bits */
--#define FEATURE_SNPAVICSUP_SHIFT	5
--#define FEATURE_SNPAVICSUP_MASK		(0x07ULL << FEATURE_SNPAVICSUP_SHIFT)
-+#define FEATURE_SNPAVICSUP	GENMASK_ULL(7, 5)
- #define FEATURE_SNPAVICSUP_GAM(x) \
--	((x & FEATURE_SNPAVICSUP_MASK) >> FEATURE_SNPAVICSUP_SHIFT == 0x1)
-+	(FIELD_GET(FEATURE_SNPAVICSUP, x) == 0x1)
- 
- /* Note:
-  * The current driver only support 16-bit PASID.
-diff --git a/drivers/iommu/amd/init.c b/drivers/iommu/amd/init.c
-index c89d85b54a1a..6b15ce09e78d 100644
---- a/drivers/iommu/amd/init.c
-+++ b/drivers/iommu/amd/init.c
-@@ -2042,14 +2042,12 @@ static int __init iommu_init_pci(struct amd_iommu *iommu)
- 		int glxval;
- 		u64 pasmax;
- 
--		pasmax = amd_iommu_efr & FEATURE_PASID_MASK;
--		pasmax >>= FEATURE_PASID_SHIFT;
-+		pasmax = FIELD_GET(FEATURE_PASMAX, amd_iommu_efr);
- 		iommu->iommu.max_pasids = (1 << (pasmax + 1)) - 1;
- 
- 		BUG_ON(iommu->iommu.max_pasids & ~PASID_MASK);
- 
--		glxval   = amd_iommu_efr & FEATURE_GLXVAL_MASK;
--		glxval >>= FEATURE_GLXVAL_SHIFT;
-+		glxval = FIELD_GET(FEATURE_GLX, amd_iommu_efr);
- 
- 		if (amd_iommu_max_glx_val == -1)
- 			amd_iommu_max_glx_val = glxval;
-@@ -3088,7 +3086,7 @@ static int __init early_amd_iommu_init(void)
- 
- 	/* 5 level guest page table */
- 	if (cpu_feature_enabled(X86_FEATURE_LA57) &&
--	    check_feature_gpt_level() == GUEST_PGTABLE_5_LEVEL)
-+	    FIELD_GET(FEATURE_GATS, amd_iommu_efr) == GUEST_PGTABLE_5_LEVEL)
- 		amd_iommu_gpt_level = PAGE_MODE_5_LEVEL;
- 
- 	/* Disable any previously enabled IOMMUs */
--- 
-2.34.1
+> > +/* SPDX-License-Identifier: GPL-2.0-only */
+> > +/*
+> > + * Copyright (c) 2024, NVIDIA CORPORATION & AFFILIATES
+> > + *
+> > + * x86 PAE page table
+> > + *
+> > + * This is described in
+> > + *   Section "4.4 PAE Paging" of the Intel Software Developer's Manual Volume 3
+> 
+> I highly doubt what's implemented here is actually PAE paging, as the SDM (that
+> is referenced above) and most x86 folks describe PAE paging.  PAE paging is
+> specifically used when the CPU is in 32-bit mode (NOT including compatibility mode!).
+> 
+>   PAE paging translates 32-bit linear addresses to 52-bit physical addresses.
 
+> Presumably what's implemented here is what Intel calls 4-level and 5-level paging.
+> Those are _really_ similar to PAE paging, 
+
+I *think* this needs to support the three level "PAE" format as well?
+
+I'm not really sure yet, but it looked to me like really old
+non-scalable Intel vt-d iommu might need it?? Or maybe it uses the
+vtdss format with 3 levels.. It is not something I've checked deeply
+into yet.
+
+So the intention was to also capture the 32 bit PAE format with three
+levels and the 4/5 level as well. The idea will be that like arm and
+others you select how many levels you want when you init the table.
+
+If the three level format needs some bit adjustments also it would be
+done with a feature bit. I haven't yet got to comparing against the
+bit patterns the VT-D driver uses for this file, but I expect any
+differences are minor.
+
+> Unfortuntately, I have no idea what name to use for this flavor.  x86pae is
+> actually kinda good, but I think it'll be confusing to people that are familiar
+> with the more canonical version of PAE paging.
+
+I struggled too. The name wasn't good to me either.. I think if this
+is confusing lets just call it x86_64? Sort of a focus on the new.
+
+> > + *   Section "2.2.6 I/O Page Tables for Guest Translations" of the "AMD I/O
+> > + *   Virtualization Technology (IOMMU) Specification"
+> > + *
+> > + * It is used by x86 CPUs and The AMD and VT-D IOMMU HW.
+> > + *
+> > + * The named levels in the spec map to the pts->level as:
+> > + *   Table/PTE - 0
+> > + *   Directory/PDE - 1
+> > + *   Directory Ptr/PDPTE - 2
+> > + *   PML4/PML4E - 3
+> > + *   PML5/PML5E - 4
+> 
+> Any particularly reason not to use x86's (and KVM's) effective 1-based system?
+> (level '0' is essentially the 4KiB leaf entries in a page table)
+
+Not any super strong one. The math is slightly more natural with 0
+based, for instance the most general version is arm 32 bit:
+
+	return PT_GRANUAL_LG2SZ +
+	       (PT_TABLEMEM_LG2SZ - ilog2(sizeof(u32))) * pts->level;
+
+This is the only case where PT_GRANUAL_LG2SZ=12 and
+PT_TABLEMEM_LG2SZ=10, so the above needs no adjustment to level.
+
+It also ensures that 0 is not an invalid value that needs to be
+considered, and that little detail helps a few micro optimization.
+
+Every document seems to have its own take of this, the intel/amd ones
+all like to start at 1 and go up, the ARM ones are reversed and start
+at 4 and goes down to 0.
+
+> Starting at '1' is kinda odd, but it aligns with thing like PML4/5,
+> allows using the pg_level enums from x86, and diverging from both
+> x86 MM and KVM is likely going to confuse people.
+
+And ARM people will say not using their totally different numbers
+confuses them. I feel there is no winning here. So I went with
+something mathematically clean and assumed we'd have this
+discussion :)
+
+At the end of the day the intersting stuff is done using the generic
+code and API, so that can't make assumptions about the structure from
+any of the documents. In that regard having it be different from
+everything else (because it has to be a superset of everything else)
+is not necessarily a bad thing.
+
+In truth the number of places where you have to look at level is
+really pretty small so I felt this was OK.
+
+> > +/* Shared descriptor bits */
+> > +enum {
+> > +	X86PAE_FMT_P = BIT(0),
+> > +	X86PAE_FMT_RW = BIT(1),
+> > +	X86PAE_FMT_U = BIT(2),
+> > +	X86PAE_FMT_A = BIT(5),
+> > +	X86PAE_FMT_D = BIT(6),
+> > +	X86PAE_FMT_OA = GENMASK_ULL(51, 12),
+> > +	X86PAE_FMT_XD = BIT_ULL(63),
+> 
+> Any reason not to use the #defines in arch/x86/include/asm/pgtable_types.h?
+
+This is arch independent code, I don't think I can include that header
+from here?? I've seen Linus be negative about wild ../../ includes..
+
+Keeping everything here arch independent is one of the big value adds
+here, IMHO.
+
+> > +static inline bool x86pae_pt_install_table(struct pt_state *pts,
+> > +					   pt_oaddr_t table_pa,
+> > +					   const struct pt_write_attrs *attrs)
+> > +{
+> > +	u64 *tablep = pt_cur_table(pts, u64);
+> > +	u64 entry;
+> > +
+> > +	/*
+> > +	 * FIXME according to the SDM D is ignored by HW on table pointers?
+> 
+> Correct, only leaf entries have dirty bits.  
+
+To add some colour, this logic is exactly matching the bit patterns
+that existing amd v2 iommu code is creating.
+
+It looks to me like the AMD IOMMU manual also says it ignores this bit
+in table levels, so it is possibly a little mistake in the existing
+code.
+
+I'll make a little patch fixing it and ask them that way..
+
+> > +	 * io_pgtable_v2 sets it
+> > +	 */
+> > +	entry = X86PAE_FMT_P | X86PAE_FMT_RW | X86PAE_FMT_U | X86PAE_FMT_A |
+> 
+> What happens with the USER bit for I/O page tables?  Ignored, I assume?
+
+Not ignored, it does stuff. AMD's IOMMU manual says:
+
+ U/S: User/Supervisor. IOMMU uses same meaning as AMD64 processor page tables. 0=access is
+ restricted to supervisor level. 1=both user and supervisor access is
+ allowed.
+
+ Software Note: For a peripheral not using U/S, software should program
+ the bit to signal user mode.  If MMIO Offset 0030h[USSup] = 0, this
+ field is ignored
+
+IIRC it also comes out through the ATS replies.
+
+I expect VTD is similar.
+
+Thanks for checking, your remarks in the room at LPC were inspiring
+this was the right way to go!
+
+Thanks,
+Jason
