@@ -1,209 +1,178 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from mx0a-0031df01.pphosted.com (mx0a-0031df01.pphosted.com [205.220.168.131])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8A2E3158DC6
-	for <iommu@lists.linux.dev>; Mon, 19 Aug 2024 22:04:46 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5583F14D70E
+	for <iommu@lists.linux.dev>; Mon, 19 Aug 2024 22:04:58 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.168.131
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1724105086; cv=none; b=Hnki5u2YcyA6IqggGx+50DmEKHJALCdZLxmchnCdpPeRBV01m+hSZ99GvRvaPB4EIXcvERF+mYE+2EjyMsN+4p4QF4+VknUD0kZA/n5mKUS8wiol6R08jqp52CePpQPXSO1mFAak1iNCuTDbtHgn8KBvUXx2OSi1p5AgQXFKJ/I=
+	t=1724105099; cv=none; b=GA3PmCjtIebaE9h7CS8cgfJ0qIghRCjm11uNEYIu1+fR70g8ua20drfyUxY6n2XyVaZUbird5XTmHDBBW8gXpWSLbxD4IWluRp1XdvSd+CCXG1rUEM1Cds/EO60q4BolMkIqIyEX7D9VnMZFNk7ftG+z+qtWF5/pgegpTFHtDyU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1724105086; c=relaxed/simple;
-	bh=O2+CqhRmpPugQ+4RnyA0V4X7jrOVXUbbDT0/XwJkavc=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=srraEZnewfS0v9qXIv6KjPsbMO0RwkSkRxn/b9IZSyULrKKFaztAoUFHFCKBtcbQBp/reuE7LgA2MDX+VpWqYidTW/BvEwDf+nL0Wsrm8X4E0RnFQ4JQf49+DeR7Iv6xLFdY8ByvAWxmznENqmPVvY38gUoWXCz4LD6sSPGMDDI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=RLD/rkLT; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1724105099; c=relaxed/simple;
+	bh=sAO3TUHgVk99Kw9RCvCoijE9MKOG4GkkxLNUBJJOGr4=;
+	h=Date:From:To:CC:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=J7Hgh2zEM2sUcxVj+yp3iAyaAlgqeaBJvYofLRjntL+DURO8gJcz5S+itNDlsFEBJQouaF+httxbaDqJYD0wtHwVjEnoTvQV9KapPqeq5f5ivIxN/zEgBfFyyLQ3ceXIpWak5aI3i/bDBdpIbXzEdpXsXLMHfjkcpS6k5oxEre8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com; spf=pass smtp.mailfrom=quicinc.com; dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b=omWIeMpK; arc=none smtp.client-ip=205.220.168.131
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=quicinc.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="RLD/rkLT"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2326AC4AF0F
-	for <iommu@lists.linux.dev>; Mon, 19 Aug 2024 22:04:46 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1724105086;
-	bh=O2+CqhRmpPugQ+4RnyA0V4X7jrOVXUbbDT0/XwJkavc=;
-	h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-	b=RLD/rkLTY6NyhiChkzCP4wSluHFvYJRiSY7NRSfqqXCE8ubTOA8hK3FpbjsTnybhM
-	 S4YvAm4WX3Q2Kcb8EDdkk4uEu4WI2yShiHdx8UxbXVQ+u+GQlijg0EuzKKJqWOugWA
-	 RROwMR8yBtSmvTUqjEjLwU1/7f3cRfjNGE6Vh4pMb3OJvsUFICzmGhaNpNRSPJ1p6s
-	 BKAc28LWfbN2Isl3jcn2hTKU5nAQmO/FxyKpbKPZWtAz3PqiGpFTojPIyEvyOhfoRf
-	 B4UlOhNsXecd2F7CgYvo8PZwl0hxHQGNyUqWLXPNOyYU3eSFHPiegt4bkIAG3aIq+i
-	 61bF+oHEwwRXg==
-Received: by mail-lj1-f176.google.com with SMTP id 38308e7fff4ca-2ef2fbf1d14so55288691fa.1
-        for <iommu@lists.linux.dev>; Mon, 19 Aug 2024 15:04:46 -0700 (PDT)
-X-Forwarded-Encrypted: i=1; AJvYcCWtcm/+X7Ebzw1Z1vAprmWPnUoQffNN9EBDzUxFyXxKifFchFzkjq6/MfPLsRm7rH0tydzArA==@lists.linux.dev
-X-Gm-Message-State: AOJu0Yx+2BAmqshuq/QOQ0Hl+c3kciZinO9NkdYZz4Aay/Lb12kk8bXv
-	oEsdc+Em14EsQUxvNFdmrCFkjIgm5kpdpmuOs2dNw5y2jm+cu+gC3zK+9CwGgQ7XTzbqAH8UYQr
-	N6rANHVpxAgz37Bq2rwmsgFBFkQ==
-X-Google-Smtp-Source: AGHT+IHYtijN7CreNT7SB8WnmJgcnOe20Rymlewrgo1iNEhleXWnNwHXwVoCONZ09ldNoIQ3ONhXmYFPT5mMVEsRYQU=
-X-Received: by 2002:a05:6512:a95:b0:52f:31a:4c08 with SMTP id
- 2adb3069b0e04-5333f1c3852mr294124e87.11.1724105084363; Mon, 19 Aug 2024
- 15:04:44 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b="omWIeMpK"
+Received: from pps.filterd (m0279866.ppops.net [127.0.0.1])
+	by mx0a-0031df01.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 47JBB38O025706;
+	Mon, 19 Aug 2024 22:04:44 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=quicinc.com; h=
+	cc:content-type:date:from:in-reply-to:message-id:mime-version
+	:references:subject:to; s=qcppdkim1; bh=1Pdl09RIpjSpgpUzeTyvHQSd
+	kABHf3jk9ZT3rNx96zc=; b=omWIeMpKE0meovzZGitbpTCmprNlPA9orsKDCkam
+	9VpuHHTx0zmVBr5bg+QxKFowsjWSq/IZ1ctz+s3XG3GcsHTNcZlnqR0QVzdPt/q/
+	6CSPnCfoBk1gHk9RFioVojHZ2JV1n3OxHHSedr3uPRZJQcKtIMfTFrrcj9khSJnZ
+	SmTTD1fSJzz3mNL0IGponQY0p0n3C9s2UZsvPeWTdhs+yjywoO07sehgnI9ngnsP
+	aF40+Vfz+25TbhqJHFGemJID9FyguKIbt1CFA2VARCO9oC6jkCrgWH15jAwu5JIS
+	U6f1HuEkhNnH93z/HYkxhrfI5A13yi3CEEYsfEXr/faJLQ==
+Received: from nalasppmta03.qualcomm.com (Global_NAT1.qualcomm.com [129.46.96.20])
+	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 412n585hux-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Mon, 19 Aug 2024 22:04:43 +0000 (GMT)
+Received: from nalasex01c.na.qualcomm.com (nalasex01c.na.qualcomm.com [10.47.97.35])
+	by NALASPPMTA03.qualcomm.com (8.18.1.2/8.18.1.2) with ESMTPS id 47JM4hsp019820
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Mon, 19 Aug 2024 22:04:43 GMT
+Received: from hu-bjorande-lv.qualcomm.com (10.49.16.6) by
+ nalasex01c.na.qualcomm.com (10.47.97.35) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.1544.9; Mon, 19 Aug 2024 15:04:42 -0700
+Date: Mon, 19 Aug 2024 15:04:41 -0700
+From: Bjorn Andersson <quic_bjorande@quicinc.com>
+To: Marc Gonzalez <mgonzalez@freebox.fr>
+CC: Robin Murphy <robin.murphy@arm.com>, Rob Herring <robh@kernel.org>,
+        Rob
+ Clark <robdclark@gmail.com>, Will Deacon <will@kernel.org>,
+        Joerg Roedel
+	<joro@8bytes.org>,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>,
+        Conor Dooley
+	<conor+dt@kernel.org>, <iommu@lists.linux.dev>,
+        <linux-arm-msm@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>, <linux-kernel@vger.kernel.org>,
+        <devicetree@vger.kernel.org>, Bjorn Andersson
+	<andersson@kernel.org>,
+        Konrad Dybcio <konradybcio@kernel.org>,
+        Arnaud Vrac
+	<avrac@freebox.fr>,
+        Pierre-Hugues Husson <phhusson@freebox.fr>,
+        Marijn
+ Suijten <marijn.suijten@somainline.org>,
+        Caleb Connolly
+	<caleb.connolly@linaro.org>
+Subject: Re: [PATCH 1/2] dt-bindings: arm-smmu: Add
+ qcom,last-ctx-bank-reserved
+Message-ID: <ZsPBeRTqE9o253Gw@hu-bjorande-lv.qualcomm.com>
+References: <20240814-smmu-v1-0-3d6c27027d5b@freebox.fr>
+ <20240814-smmu-v1-1-3d6c27027d5b@freebox.fr>
+ <20240818152515.GA104481-robh@kernel.org>
+ <30489eee-075b-461b-ab43-c8807d667630@freebox.fr>
+ <17893776-9666-4bbe-b5fc-c3fe977d0337@arm.com>
+ <67f9a762-6d14-4557-b1f6-22aabb33f927@freebox.fr>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <20240809184814.2703050-1-quic_obabatun@quicinc.com> <20240809184814.2703050-2-quic_obabatun@quicinc.com>
-In-Reply-To: <20240809184814.2703050-2-quic_obabatun@quicinc.com>
-From: Rob Herring <robh@kernel.org>
-Date: Mon, 19 Aug 2024 17:04:32 -0500
-X-Gmail-Original-Message-ID: <CAL_JsqL=Pc7FJJevMskvYYOoYZYCKF+db9C2Y7_cm7DZNyTYPw@mail.gmail.com>
-Message-ID: <CAL_JsqL=Pc7FJJevMskvYYOoYZYCKF+db9C2Y7_cm7DZNyTYPw@mail.gmail.com>
-Subject: Re: [PATCH v7 1/2] of: reserved_mem: Restruture how the reserved
- memory regions are processed
-To: Oreoluwa Babatunde <quic_obabatun@quicinc.com>
-Cc: saravanak@google.com, klarasmodin@gmail.com, aisheng.dong@nxp.com, 
-	hch@lst.de, m.szyprowski@samsung.com, robin.murphy@arm.com, 
-	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, 
-	iommu@lists.linux.dev, will@kernel.org, catalin.marinas@arm.com, 
-	kernel@quicinc.com
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: inline
+In-Reply-To: <67f9a762-6d14-4557-b1f6-22aabb33f927@freebox.fr>
+X-ClientProxiedBy: nalasex01c.na.qualcomm.com (10.47.97.35) To
+ nalasex01c.na.qualcomm.com (10.47.97.35)
+X-QCInternal: smtphost
+X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
+X-Proofpoint-GUID: zKRsNtyBD-iSNi9VaciL5bMiQXyEBl-I
+X-Proofpoint-ORIG-GUID: zKRsNtyBD-iSNi9VaciL5bMiQXyEBl-I
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.293,Aquarius:18.0.1039,Hydra:6.0.680,FMLib:17.12.28.16
+ definitions=2024-08-19_16,2024-08-19_03,2024-05-17_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 priorityscore=1501
+ malwarescore=0 suspectscore=0 phishscore=0 clxscore=1011 spamscore=0
+ mlxlogscore=793 mlxscore=0 bulkscore=0 impostorscore=0 lowpriorityscore=0
+ adultscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.19.0-2407110000 definitions=main-2408190146
 
-On Fri, Aug 9, 2024 at 1:48=E2=80=AFPM Oreoluwa Babatunde
-<quic_obabatun@quicinc.com> wrote:
->
-> Reserved memory regions defined in the devicetree can be broken up into
-> two groups:
-> i) Statically-placed reserved memory regions
-> i.e. regions defined with a static start address and size using the
->      "reg" property.
-> ii) Dynamically-placed reserved memory regions.
-> i.e. regions defined by specifying an address range where they can be
->      placed in memory using the "alloc_ranges" and "size" properties.
->
-> These regions are processed and set aside at boot time.
-> This is done in two stages as seen below:
->
-> Stage 1:
-> At this stage, fdt_scan_reserved_mem() scans through the child nodes of
-> the reserved_memory node using the flattened devicetree and does the
-> following:
->
-> 1) If the node represents a statically-placed reserved memory region,
->    i.e. if it is defined using the "reg" property:
->    - Call memblock_reserve() or memblock_mark_nomap() as needed.
->    - Add the information for that region into the reserved_mem array
->      using fdt_reserved_mem_save_node().
->      i.e. fdt_reserved_mem_save_node(node, name, base, size).
->
-> 2) If the node represents a dynamically-placed reserved memory region,
->    i.e. if it is defined using "alloc-ranges" and "size" properties:
->    - Add the information for that region to the reserved_mem array with
->      the starting address and size set to 0.
->      i.e. fdt_reserved_mem_save_node(node, name, 0, 0).
->    Note: This region is saved to the array with a starting address of 0
->    because a starting address is not yet allocated for it.
->
-> Stage 2:
-> After iterating through all the reserved memory nodes and storing their
-> relevant information in the reserved_mem array,fdt_init_reserved_mem() is
-> called and does the following:
->
-> 1) For statically-placed reserved memory regions:
->    - Call the region specific init function using
->      __reserved_mem_init_node().
-> 2) For dynamically-placed reserved memory regions:
->    - Call __reserved_mem_alloc_size() which is used to allocate memory
->      for each of these regions, and mark them as nomap if they have the
->      nomap property specified in the DT.
->    - Call the region specific init function.
->
-> The current size of the resvered_mem array is 64 as is defined by
-> MAX_RESERVED_REGIONS. This means that there is a limitation of 64 for
-> how many reserved memory regions can be specified on a system.
-> As systems continue to grow more and more complex, the number of
-> reserved memory regions needed are also growing and are starting to hit
-> this 64 count limit, hence the need to make the reserved_mem array
-> dynamically sized (i.e. dynamically allocating memory for the
-> reserved_mem array using membock_alloc_*).
->
-> On architectures such as arm64, memory allocated using memblock is
-> writable only after the page tables have been setup. This means that if
-> the reserved_mem array is going to be dynamically allocated, it needs to
-> happen after the page tables have been setup, not before.
->
-> Since the reserved memory regions are currently being processed and
-> added to the array before the page tables are setup, there is a need to
-> change the order in which some of the processing is done to allow for
-> the reserved_mem array to be dynamically sized.
->
-> It is possible to process the statically-placed reserved memory regions
-> without needing to store them in the reserved_mem array until after the
-> page tables have been setup because all the information stored in the
-> array is readily available in the devicetree and can be referenced at
-> any time.
-> Dynamically-placed reserved memory regions on the other hand get
-> assigned a start address only at runtime, and hence need a place to be
-> stored once they are allocated since there is no other referrence to the
-> start address for these regions.
->
-> Hence this patch changes the processing order of the reserved memory
-> regions in the following ways:
->
-> Step 1:
-> fdt_scan_reserved_mem() scans through the child nodes of
-> the reserved_memory node using the flattened devicetree and does the
-> following:
->
-> 1) If the node represents a statically-placed reserved memory region,
->    i.e. if it is defined using the "reg" property:
->    - Call memblock_reserve() or memblock_mark_nomap() as needed.
->    - Call the region specific initialization function for the region
->      using fdt_init_reserved_mem_node().
->
-> 2) If the node represents a dynamically-placed reserved memory region,
->    i.e. if it is defined using "alloc-ranges" and "size" properties:
->    - Call __reserved_mem_alloc_size() which will:
->      i) Allocate memory for the reserved region and call
->      memblock_mark_nomap() as needed.
->      ii) Call the region specific initialization function using
->      fdt_init_reserved_mem_node().
->      iii) Save the region information in the reserved_mem array using
->      fdt_reserved_mem_save_node().
->
-> Step 2:
-> 1) This stage of the reserved memory processing is now only used to add
->    the statically-placed reserved memory regions into the reserved_mem
->    array using fdt_scan_reserved_mem_reg_nodes().
->
-> 2) This step is also moved to be after the page tables have been
->    setup. Moving this will allow us to replace the reserved_mem
->    array with a dynamically sized array before storing the rest of
->    these regions.
->
-> Signed-off-by: Oreoluwa Babatunde <quic_obabatun@quicinc.com>
-> ---
->  drivers/of/fdt.c             |   5 +-
->  drivers/of/of_private.h      |   3 +-
->  drivers/of/of_reserved_mem.c | 172 +++++++++++++++++++++++++----------
->  3 files changed, 131 insertions(+), 49 deletions(-)
->
-> diff --git a/drivers/of/fdt.c b/drivers/of/fdt.c
-> index 68103ad230ee..d4b7aaa70e31 100644
-> --- a/drivers/of/fdt.c
-> +++ b/drivers/of/fdt.c
-> @@ -511,8 +511,6 @@ void __init early_init_fdt_scan_reserved_mem(void)
->                         break;
->                 memblock_reserve(base, size);
->         }
-> -
-> -       fdt_init_reserved_mem();
->  }
->
->  /**
-> @@ -1239,6 +1237,9 @@ void __init unflatten_device_tree(void)
->         of_alias_scan(early_init_dt_alloc_memory_arch);
->
->         unittest_unflatten_overlay_base();
-> +
-> +       /* Save the statically-placed regions in the reserved_mem array *=
-/
-> +       fdt_scan_reserved_mem_reg_nodes();
+On Mon, Aug 19, 2024 at 05:02:16PM +0200, Marc Gonzalez wrote:
+> On 19/08/2024 14:57, Robin Murphy wrote:
+> 
+> > Luckily, in this case it seems straightforward enough to be able to see 
+> > that if we have a "qcom,msm8996-smmu-v2" with 13 context banks then we 
+> > should just treat it as if it has 12 - it's also notable that it only 
+> > reports NUMSMRG=12, so we couldn't use more than that many S1 context 
+> > banks at once anyway.
+> 
+> This is what the hypervisor reports:
+> 
+> [    2.550974] arm-smmu 5100000.iommu: probing hardware configuration...
+> [    2.557309] arm-smmu 5100000.iommu: SMMUv2 with:
+> [    2.563815] arm-smmu 5100000.iommu:  stage 1 translation
+> [    2.568494] arm-smmu 5100000.iommu:  address translation ops
+> [    2.573791] arm-smmu 5100000.iommu:  non-coherent table walk
+> [    2.579434] arm-smmu 5100000.iommu:  (IDR0.CTTW overridden by FW configuration)
+> [    2.585088] arm-smmu 5100000.iommu:  stream matching with 12 register groups
+> [    2.592132] arm-smmu 5100000.iommu:  13 context banks (0 stage-2 only)
+> [    2.619316] arm-smmu 5100000.iommu:  Supported page sizes: 0x63315000
+> [    2.626225] arm-smmu 5100000.iommu:  Stage-1: 36-bit VA -> 36-bit IPA
+> [    2.632645] arm-smmu 5100000.iommu:  preserved 0 boot mappings
+> 
+> 
+> smmu->num_mapping_groups = 12
 
-I'm still not understanding why the unflatttened API doesn't work
-here? It was just used in of_alias_scan() above here.
+Ignore num_mapping_groups, they are used to define which streams should
+be mapped to which context bank. But there's no relationship between
+these numbers.
 
-The problem reported is this function uses initial_boot_params, but
-that's NULL for x86.
+> smmu->num_context_banks  = 13
+> 
+> 
+> Are you saying that
+> 
+> 	smmu->num_context_banks > smmu->num_mapping_groups
+> 
+> does not make sense?
+> 
+> 
+> Would a well-placed
+> 
+> 	if (smmu->num_context_banks > smmu->num_mapping_groups)
+> 		smmu->num_context_banks = smmu->num_mapping_groups;
+> 
+> be a proper work-around?
 
-Rob
+No, something like this would apply your quirk to other targets (and
+specifically it would be wrong, per above).
+
+> 
+> (Probably in qcom_smmu_cfg_probe() so as to not interfere with other platforms.)
+> 
+> 
+> Maybe to limit the side effects even more:
+> 
+> 	if (of_device_is_compatible(smmu->dev->of_node, "qcom,msm8998-smmu-v2") &&
+> 		smmu->num_context_banks > smmu->num_mapping_groups))
+> 		smmu->num_context_banks = smmu->num_mapping_groups;
+
+If we don't want to introduce a more specific compatible for this SMMU
+instance, then let's add this to qcom_smmu_cfg_probe():
+
+	/* MSM8998 LPASS SMMU reports 13 context banks, but only 12 are accessible */
+ 	if (of_device_is_compatible(smmu->dev->of_node, "qcom,msm8998-smmu-v2") && smmu->num_context_banks == 13)
+		smmu->num_context_banks = 12;
+
+
+Regards,
+Bjorn
+
+> 
+> 
+> Neither work-around would require changing the binding.
+> 
+> Is either work-around acceptable, Robin?
+> 
+> Regards
+> 
+> 
