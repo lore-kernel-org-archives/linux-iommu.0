@@ -1,146 +1,110 @@
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 4067D166F0C
-	for <iommu@lists.linux.dev>; Mon, 19 Aug 2024 12:57:17 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
+Received: from ns.iliad.fr (ns.iliad.fr [212.27.33.1])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EBA8C16BE19
+	for <iommu@lists.linux.dev>; Mon, 19 Aug 2024 12:59:45 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=212.27.33.1
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1724072239; cv=none; b=lpdsC7b37FxqLyxC5iaeXrW+xwmFmb6Fp5AT0a6hoVZ8wcIoJaMa3/JJvRq+MG9httpDe/pvEh6LU5N4r2/7+CfQGcFwRIQMhr7C9ZG1/hFuuiHVzmAxUAs37PHZUUZkiLHy6HZN0DZSBujFpUMPj1S8NY/M3lQuhD9nuepoeWQ=
+	t=1724072388; cv=none; b=ORvKgNFFoewI8hehIK4pcveXGAJnPAl4rvxkBIwVNU1ZXS6XnfSJi78MidfUlyZyT8xfyG15/SblEl1LOW+uYazvBeN8EcnoqHczMDGSvZeCv7gv9rNUh8/4R9n86+UDffsKYNURfEqYi3t4R8+f8qyJPfFrv90HYoBu/C/LYZ8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1724072239; c=relaxed/simple;
-	bh=lakgPcIw7qUBbL2ZLM0qTThrZs/JFj0UeFbwr+dhzj0=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=O81vyda1eJIRpEqNUNo3AiNSNtexi/fr/sytd496x4fNMQYauonJvYgCWlUnVKCmAKaTIcmLRiZeXiWGECsFjtiqEyOqamqq+Aecx3dNMEsQMqa3eVBvFjq5CaQI/NrufFirSEjXj3qNUv4I1KGB4aXqfU1lQzyhg16TYT1unqs=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; arc=none smtp.client-ip=217.140.110.172
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 8F910339;
-	Mon, 19 Aug 2024 05:57:42 -0700 (PDT)
-Received: from [10.1.196.40] (e121345-lin.cambridge.arm.com [10.1.196.40])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 87BB83F73B;
-	Mon, 19 Aug 2024 05:57:14 -0700 (PDT)
-Message-ID: <17893776-9666-4bbe-b5fc-c3fe977d0337@arm.com>
-Date: Mon, 19 Aug 2024 13:57:12 +0100
+	s=arc-20240116; t=1724072388; c=relaxed/simple;
+	bh=mVTUdHZIMPJ1+Lpr64UfYpEMVVQCY4Gv9UsTuKmzLRE=;
+	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
+	 In-Reply-To:To:Cc; b=UVLSM0EoBGQbivkenHQuH5nE74UVW08vkmr2UD1b6bReGteLjqAhg+LkkidpjxuOxO+/IGCQJgsuWyCoI6pVMciUqtYLnxChXlcs0BcDiIfF9wlMlMDINJa50dCD0Qjanwp0DQVyeG613Lk6GB5fsPZwb7uQQm8dQsCXQLTttXs=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=freebox.fr; spf=pass smtp.mailfrom=srs.iliad.fr; arc=none smtp.client-ip=212.27.33.1
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=freebox.fr
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=srs.iliad.fr
+Received: from ns.iliad.fr (localhost [127.0.0.1])
+	by ns.iliad.fr (Postfix) with ESMTP id 936A820990;
+	Mon, 19 Aug 2024 14:59:37 +0200 (CEST)
+Received: from [127.0.1.1] (freebox.vlq16.iliad.fr [213.36.7.13])
+	by ns.iliad.fr (Postfix) with ESMTP id 83A9C20987;
+	Mon, 19 Aug 2024 14:59:37 +0200 (CEST)
+From: Marc Gonzalez <mgonzalez@freebox.fr>
+Date: Mon, 19 Aug 2024 14:59:35 +0200
+Subject: [PATCH 1/2] iommu/arm-smmu-qcom: hide last LPASS SMMU context bank
+ from linux
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH 1/2] dt-bindings: arm-smmu: Add
- qcom,last-ctx-bank-reserved
-To: Marc Gonzalez <mgonzalez@freebox.fr>, Rob Herring <robh@kernel.org>
-Cc: Rob Clark <robdclark@gmail.com>, Will Deacon <will@kernel.org>,
- Joerg Roedel <joro@8bytes.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>,
- Conor Dooley <conor+dt@kernel.org>, iommu@lists.linux.dev,
- linux-arm-msm@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
- linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
- Bjorn Andersson <andersson@kernel.org>,
- Konrad Dybcio <konradybcio@kernel.org>, Arnaud Vrac <avrac@freebox.fr>,
- Pierre-Hugues Husson <phhusson@freebox.fr>,
- Marijn Suijten <marijn.suijten@somainline.org>
-References: <20240814-smmu-v1-0-3d6c27027d5b@freebox.fr>
- <20240814-smmu-v1-1-3d6c27027d5b@freebox.fr>
- <20240818152515.GA104481-robh@kernel.org>
- <30489eee-075b-461b-ab43-c8807d667630@freebox.fr>
-From: Robin Murphy <robin.murphy@arm.com>
-Content-Language: en-GB
-In-Reply-To: <30489eee-075b-461b-ab43-c8807d667630@freebox.fr>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
+Message-Id: <20240819-smmu-v1-1-bce6e4738825@freebox.fr>
+References: <20240819-smmu-v1-0-bce6e4738825@freebox.fr>
+In-Reply-To: <20240819-smmu-v1-0-bce6e4738825@freebox.fr>
+To: Rob Clark <robdclark@gmail.com>, Will Deacon <will@kernel.org>, 
+ Robin Murphy <robin.murphy@arm.com>, Joerg Roedel <joro@8bytes.org>, 
+ Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>, 
+ Conor Dooley <conor+dt@kernel.org>
+Cc: iommu@lists.linux.dev, linux-arm-msm@vger.kernel.org, 
+ linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, 
+ devicetree@vger.kernel.org, Bjorn Andersson <andersson@kernel.org>, 
+ Konrad Dybcio <konradybcio@kernel.org>, Arnaud Vrac <avrac@freebox.fr>, 
+ Pierre-Hugues Husson <phhusson@freebox.fr>, 
+ Marijn Suijten <marijn.suijten@somainline.org>, 
+ Caleb Connolly <caleb.connolly@linaro.org>, 
+ Marc Gonzalez <mgonzalez@freebox.fr>
+X-Mailer: b4 0.13.0
 
-On 19/08/2024 12:37 pm, Marc Gonzalez wrote:
-> On 18/08/2024 17:25, Rob Herring wrote:
-> 
->> On Wed, Aug 14, 2024 at 03:59:55PM +0200, Marc Gonzalez wrote:
->>
->>> On qcom msm8998, writing to the last context bank of lpass_q6_smmu
->>> (base address 0x05100000) produces a system freeze & reboot.
->>>
->>> Specifically, here:
->>>
->>> 	qsmmu->bypass_cbndx = smmu->num_context_banks - 1;
->>> 	arm_smmu_cb_write(smmu, qsmmu->bypass_cbndx, ARM_SMMU_CB_SCTLR, 0);
->>>
->>> and here:
->>>
->>> 	arm_smmu_write_context_bank(smmu, i);
->>> 	arm_smmu_cb_write(smmu, i, ARM_SMMU_CB_FSR, ARM_SMMU_CB_FSR_FAULT);
->>>
->>> It is likely that FW reserves the last context bank for its own use,
->>> thus a simple work-around would be: DON'T USE IT in Linux.
->>>
->>> Signed-off-by: Marc Gonzalez <mgonzalez@freebox.fr>
->>> ---
->>>   Documentation/devicetree/bindings/iommu/arm,smmu.yaml | 6 ++++++
->>>   1 file changed, 6 insertions(+)
->>>
->>> diff --git a/Documentation/devicetree/bindings/iommu/arm,smmu.yaml b/Documentation/devicetree/bindings/iommu/arm,smmu.yaml
->>> index 280b4e49f2191..f9b23aef351b0 100644
->>> --- a/Documentation/devicetree/bindings/iommu/arm,smmu.yaml
->>> +++ b/Documentation/devicetree/bindings/iommu/arm,smmu.yaml
->>> @@ -204,6 +204,12 @@ properties:
->>>         access to SMMU configuration registers. In this case non-secure aliases of
->>>         secure registers have to be used during SMMU configuration.
->>>   
->>> +  qcom,last-ctx-bank-reserved:
->>> +    type: boolean
->>> +    description:
->>> +      FW reserves the last context bank of this SMMU for its own use.
->>> +      If Linux tries to use it, Linux gets nuked.
->>
->> How is this Qualcomm specific? Presumably any implementation could do
->> this if there's no way to properly partition things. Robin?
-> 
-> Obviously, there is nothing Qualcomm specific about reserving
-> an SMMU context bank for the FW / hypervisor, other than it
-> appears that qcom is the first to do it; or at least the
-> LPASS SMMU on qcom msm8998 is the first known SMMU where such
-> a work-around is required.
+On qcom msm8998, writing to the last context bank of lpass_q6_smmu
+(base address 0x05100000) produces a system freeze & reboot.
 
-Yes, the Qualcomm-specific aspect is that it's Qualcomm's hypervisor 
-which is broken and reporting a larger number in its emulated 
-SMMU_IDR1.NUMCB than the number of context banks it's actually willing 
-to emulate.
+The hardware/hypervisor reports 13 context banks for the LPASS SMMU
+on msm8998, but only the first 12 are accessible...
+Override the number of context banks
 
-> What is the correct nomenclature?
-> 
-> Can we just drop the vendor prefix if a property is generic
-> across vendors? But does it require a subsystem prefix like
-> "iommu" in order to not clash with generic props in other subsystems?
+[    2.546101] arm-smmu 5100000.iommu: probing hardware configuration...
+[    2.552439] arm-smmu 5100000.iommu: SMMUv2 with:
+[    2.558945] arm-smmu 5100000.iommu: 	stage 1 translation
+[    2.563627] arm-smmu 5100000.iommu: 	address translation ops
+[    2.568923] arm-smmu 5100000.iommu: 	non-coherent table walk
+[    2.574566] arm-smmu 5100000.iommu: 	(IDR0.CTTW overridden by FW configuration)
+[    2.580220] arm-smmu 5100000.iommu: 	stream matching with 12 register groups
+[    2.587263] arm-smmu 5100000.iommu: 	13 context banks (0 stage-2 only)
+[    2.614447] arm-smmu 5100000.iommu: 	Supported page sizes: 0x63315000
+[    2.621358] arm-smmu 5100000.iommu: 	Stage-1: 36-bit VA -> 36-bit IPA
+[    2.627772] arm-smmu 5100000.iommu: 	preserved 0 boot mappings
 
-I guess if we *were* to consider a generic property to endorse violating 
-the SMMU architecture, then it would logically be vendored to Arm as the 
-owner of the SMMU architecture. However I am strongly against that idea, 
-not only because I obviously don't want to normalise hypervisors 
-emulating non-architectural behaviour which every DT-consuming OS will 
-have to understand how to work around, but it's also less than great for 
-the user to have a workaround that's not compatible with existing DTBs.
+Specifically, the crashes occur here:
 
-Luckily, in this case it seems straightforward enough to be able to see 
-that if we have a "qcom,msm8996-smmu-v2" with 13 context banks then we 
-should just treat it as if it has 12 - it's also notable that it only 
-reports NUMSMRG=12, so we couldn't use more than that many S1 context 
-banks at once anyway.
+	qsmmu->bypass_cbndx = smmu->num_context_banks - 1;
+	arm_smmu_cb_write(smmu, qsmmu->bypass_cbndx, ARM_SMMU_CB_SCTLR, 0);
 
-Thanks,
-Robin.
+and here:
 
->> Also, this property isn't very flexible. What happens when it is not the
->> last bank or more than 1 bank reserved? This should probably be a mask
->> instead.
-> 
-> OK, I'm getting conflicting requests here.
-> 
-> Bjorn has recommended dropping the property altogether:
-> 
->> It also seems, as the different SMMUs in this platform behave
->> differently it might be worth giving them further specific compatibles,
->> in which case we could just check if it's the qcom,msm8998-lpass-smmu,
->> instead of inventing a property for this quirk.
-> 
-> 
-> I'll send a patch series in line with Bjorn's request.
-> 
-> Regards
-> 
+	arm_smmu_write_context_bank(smmu, i);
+	arm_smmu_cb_write(smmu, i, ARM_SMMU_CB_FSR, ARM_SMMU_CB_FSR_FAULT);
+
+It is likely that FW reserves the last context bank for its own use,
+thus a simple work-around is: DON'T USE IT in Linux.
+
+If we decrease the number of context banks, last one will be "hidden".
+
+Signed-off-by: Marc Gonzalez <mgonzalez@freebox.fr>
+---
+ drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c | 5 +++++
+ 1 file changed, 5 insertions(+)
+
+diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
+index 7e65189ca7b8c..d08c18edf5732 100644
+--- a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
++++ b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
+@@ -282,6 +282,11 @@ static int qcom_smmu_cfg_probe(struct arm_smmu_device *smmu)
+ 	u32 smr;
+ 	int i;
+ 
++	if (of_device_is_compatible(smmu->dev->of_node, "qcom,msm8998-lpass-smmu")) {
++		dev_warn(smmu->dev, "hide last ctx bank from linux");
++		--smmu->num_context_banks;
++	}
++
+ 	/*
+ 	 * Some platforms support more than the Arm SMMU architected maximum of
+ 	 * 128 stream matching groups. For unknown reasons, the additional
+
+-- 
+2.34.1
+
