@@ -1,235 +1,144 @@
-Received: from NAM11-BN8-obe.outbound.protection.outlook.com (mail-bn8nam11on2058.outbound.protection.outlook.com [40.107.236.58])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-wr1-f46.google.com (mail-wr1-f46.google.com [209.85.221.46])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 869F9156C78
-	for <iommu@lists.linux.dev>; Mon, 19 Aug 2024 14:59:14 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.236.58
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1724079556; cv=fail; b=CBHfRYVy3KQhCCOoRvseNhyvv1Pc4eewAHHtFDAC1hL0E2QaYRVytjPQsmX9lSKOUCk8wXHFX+SzOgf3AkyzneqTY3RVZEOsiIi90EiF1YyWZTUqogUcZ5jfyvQ+q28TGik1EoRIyoewtV86D80Z9HLhscQEgbiSj4ViSm7pSJE=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1724079556; c=relaxed/simple;
-	bh=m40fcPstNzwerDqD4Dq3Ksh5XDk2BBTeJQa35vOAhHI=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:Content-Type:
-	 Content-Disposition:In-Reply-To:MIME-Version; b=Ji4QMexCg1u8FsUPT52j18pcb/w4aDyKbZSXHPY5s/DiKGdR0FeFQepTdEZ8mYDHFZnrdBivJSVUEwjAyaIVwEo2tNm0Q3IAuqn6qpKVYk8VPLAKPSh5OFhkGU4ruMbziNVwvmQOzuc7WbVTFhypETSJuJgWW+ulo7DnOXwBbwI=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=usz/o3k2; arc=fail smtp.client-ip=40.107.236.58
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 51DE0174EDB
+	for <iommu@lists.linux.dev>; Mon, 19 Aug 2024 15:02:18 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.46
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1724079741; cv=none; b=WUGgEXEYHvzNPNU08qnqgNP3s2cwqqpX0ahXIYobyh3Pdh12qbG63JD8oLL6AkNcBxu3RX+r88WO4SzHC9yev5tCr3tTSbgFk2mZ54Rk8aM+J89rURm7zeSyDWFpVLKsSyLD6NWtPEQeFcpUhMvykRYtayqG0w6sjlW3K2XEOZc=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1724079741; c=relaxed/simple;
+	bh=EN08TFaSVBCQMLBeFx4mFOBoH9BoUxUimX0KlSPHLS0=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=kjTqAKG3FAY4LyHbh5HBrHxFEWjCXVph1t8lCuomP5xu8dlBfCLqNKeKCXOdKUM0tdyROUQte3kpzNySU1irZu6Dx1X9DvDGNy88uXb2sQ9zO58SRnYKljtnDCR8HCWFwprlvpcnPyuhJ4L8rSVtiAy/THIbg/h14EgDJuQGn9o=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=freebox.fr; spf=pass smtp.mailfrom=freebox.fr; dkim=pass (2048-bit key) header.d=freebox-fr.20230601.gappssmtp.com header.i=@freebox-fr.20230601.gappssmtp.com header.b=bvW12yFd; arc=none smtp.client-ip=209.85.221.46
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=freebox.fr
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=freebox.fr
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="usz/o3k2"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=u7cqzIlF3AzGhvqtaMhs/GP2rlqG8V+WvnFRO3gpY4dE+fud/45qw0dAKzPl9A593D8IkT586CtY4Dywy8BLzWwhKz+Ljtn7Q8esSwP1d4IdL0edf7uwg8vDBomTiktyxu7g2taDNExBMSWTGyZMvdJSJOmG+3Vo7QmXV+QIOoqj/4+XAtl679FYKmh7uQ1tr9Wly1pqnV/SKk427cpbMFhXHGuEf8EXRuhF+2klagZn/1v1gj2ktBmVPTwN2ilS7pSr5Z+J5E6V7pwxaaEzrOeSP4APqkm9r9Yz8RQ4V7Rj8Px75ZKxts8ybBA7Wi0OHlGL7yATl3+4ggFBpaXZ/Q==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=NbutAkTX0RyfUE2eve0X0z6QqYmJy2GnX1lDPbw/ySI=;
- b=qA8fSLVPwlIX153Z4jzK1rRZWyf+PYKwW9g2p6+RsYBKSQoJzk7R5zyfaD0aRyTEvsDrW0O0UjsASk2n7CnsNKjOCK8eNjCmHZu3vsVOyodtvkY6TGH6TBZ4CgOTsoz5QYI2/QHsldWIoVNRUAP8KWtckcEhPLccN2imMsvbOtAUObys7QuymuPk38aQFJyPSGz01zQ6T2zmyromvEhzqqhCkazrlICnAh5m8GIpFUMgvuchXizG53cKnf4zfsTo+MdNnPsNug2su73g6lledKZIyxlkydZ87A89IaAChlfkw7etirkPqtYfJlWaQ9GLCC+kQXbLNyW0K2LTp77PNQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=NbutAkTX0RyfUE2eve0X0z6QqYmJy2GnX1lDPbw/ySI=;
- b=usz/o3k2FbD5HIDA2lGOcN1S29QTJP8a/LdRJ/gp1eODKm8EGGX09RNFEn0uFthNrMWbEqvQyz4XCHDkGTyOz/ieDXPXyJu4W0hgLPMlh85eg0Ftq9b8vct6v3C5Oac0kYyp12GsIsrL7szV8GTBcfXSykq+Ljfoi2AR64LI+xQB0ZdDBWuPM5SnPQCzeUbqIIxhS/Xq/etwPxKQCqZgNkNR8IzSTzugG3G7TBawDO7O5AnyVetGgRbn/wrIl+BkE4ZF4+YzVl6xAjV1L+J1xrKKcAMkjwIfYhYauy2S7tiSNNrxYD3sq8MOBNMu0GN+WIpwGx2QUUOhV2H3wNjpTA==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-Received: from CH3PR12MB7763.namprd12.prod.outlook.com (2603:10b6:610:145::10)
- by DM4PR12MB6086.namprd12.prod.outlook.com (2603:10b6:8:b2::16) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7875.21; Mon, 19 Aug
- 2024 14:59:09 +0000
-Received: from CH3PR12MB7763.namprd12.prod.outlook.com
- ([fe80::8b63:dd80:c182:4ce8]) by CH3PR12MB7763.namprd12.prod.outlook.com
- ([fe80::8b63:dd80:c182:4ce8%3]) with mapi id 15.20.7875.019; Mon, 19 Aug 2024
- 14:59:09 +0000
-Date: Mon, 19 Aug 2024 11:59:08 -0300
-From: Jason Gunthorpe <jgg@nvidia.com>
-To: Steven Sistare <steven.sistare@oracle.com>
-Cc: iommu@lists.linux.dev, Kevin Tian <kevin.tian@intel.com>,
-	Alex Williamson <alex.williamson@redhat.com>,
-	Cornelia Huck <cohuck@redhat.com>
-Subject: Re: [RFC V1 0/4] iommufd live update
-Message-ID: <20240819145908.GH2032816@nvidia.com>
-References: <1721501805-86928-1-git-send-email-steven.sistare@oracle.com>
- <20240722155500.GI3371438@nvidia.com>
- <3329e042-e4b1-40b3-9875-623f26386609@oracle.com>
- <20240806125602.GJ478300@nvidia.com>
- <54f33881-26e4-4b7f-bbdb-89f4cb207be9@oracle.com>
- <20240808195252.GE8378@nvidia.com>
- <53e7ab6b-9419-4808-b429-a88faeb3f6a7@oracle.com>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <53e7ab6b-9419-4808-b429-a88faeb3f6a7@oracle.com>
-X-ClientProxiedBy: BN0PR03CA0046.namprd03.prod.outlook.com
- (2603:10b6:408:e7::21) To CH3PR12MB7763.namprd12.prod.outlook.com
- (2603:10b6:610:145::10)
+	dkim=pass (2048-bit key) header.d=freebox-fr.20230601.gappssmtp.com header.i=@freebox-fr.20230601.gappssmtp.com header.b="bvW12yFd"
+Received: by mail-wr1-f46.google.com with SMTP id ffacd0b85a97d-36d2a601c31so2596744f8f.0
+        for <iommu@lists.linux.dev>; Mon, 19 Aug 2024 08:02:18 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=freebox-fr.20230601.gappssmtp.com; s=20230601; t=1724079737; x=1724684537; darn=lists.linux.dev;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=bUK8OL34DJRMcxB19xg1k7/qsStJR02DDbFs+v32ruE=;
+        b=bvW12yFdql4nRXfKpXGW4rkp/y7lT88LRe75Ri7pBzmShTeAjMrfmc5QhyPxLHhj8v
+         ki1f6p29bGJUHneZvOQplYX1G8rrm/hZkvkgSu76SwGjmMpodPA6Uf9PTeeO7u5SLhGA
+         bdGwc/sWL35yAI22IXQXuM69CXvagVZpR1OhVXIrD0crFuh+NvKjMIOfWBVh8FMFEKgM
+         oMSvl2w2deLZFcMy0DnoTYG/RcQJ4wEDWmGYnePdpMZiX/imS7aygPxGULY7bNPHf2oY
+         M/3567DBE6WkWGsBbBz9RwpEyjGYxezxM4G8WIJ87AF/D+30xvX7lhEP627U7tIU6eAI
+         uEsg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1724079737; x=1724684537;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=bUK8OL34DJRMcxB19xg1k7/qsStJR02DDbFs+v32ruE=;
+        b=P+6Zp0ptYp0E/3xzXVdC1F3lbnkMipjIkhmEKCgMPucZ1ukK8Hti/RydtXbzPkXijI
+         D4yPHKAHnrPdgZ353ejnWoA2TLNdT+oibtbZSg7hXrJ4530Fsvj2E08VzCfP7D1v5ikc
+         i4OqPdDjaiT+jxNUEv+T7CF6Ra7biYYoAD+Rjlh/xtPwzAdXVqxEI0x/J+EqrOeAXKgX
+         qPTxK/9HMIIwe/nsxx/Qsc2FBiZYxfPXKQs3LTG7pa2REyDqid+9K2GFnklJDAJEWWXw
+         jyTiwSPfxJTSnC+7YwasIUK/fijks6c0kYbBcE0rexjFBkRVFuyE41/20jyQd/lV9kg2
+         kW5g==
+X-Forwarded-Encrypted: i=1; AJvYcCVzGV6L44SeqT/yZtDgkJVBbjJiqZMYAlxxSt8vx4rreklpSLDoqVci7jIdN1PSwKvNDaNB6a3m3vEwzagZKJ1mSwgRiF4=
+X-Gm-Message-State: AOJu0YySMfFQp2TleuEja97QLJV8LCfkhvriOT58D5nvwW+mrrix5XGV
+	vHwEvHMsizFyIYLnIsZqvsic2A3yMp12pv6OXkrsT1ItfnctTheCtAf7YqLBR4E=
+X-Google-Smtp-Source: AGHT+IHoBqukazpQ2b+gLTUJRvOUgCeOQ4+kudIq0jjRNmYddBHniXchx8b++5+6dBkpqdwg2at2Cg==
+X-Received: by 2002:a5d:5e0f:0:b0:367:4d9d:56a5 with SMTP id ffacd0b85a97d-371983d5ea0mr5461777f8f.44.1724079737278;
+        Mon, 19 Aug 2024 08:02:17 -0700 (PDT)
+Received: from [192.168.108.81] (freebox.vlq16.iliad.fr. [213.36.7.13])
+        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-3718983a2d7sm10875557f8f.10.2024.08.19.08.02.16
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 19 Aug 2024 08:02:16 -0700 (PDT)
+Message-ID: <67f9a762-6d14-4557-b1f6-22aabb33f927@freebox.fr>
+Date: Mon, 19 Aug 2024 17:02:16 +0200
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: CH3PR12MB7763:EE_|DM4PR12MB6086:EE_
-X-MS-Office365-Filtering-Correlation-Id: 09689613-b881-4137-2fad-08dcc05f7aaa
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;ARA:13230040|366016|1800799024|376014;
-X-Microsoft-Antispam-Message-Info:
-	=?us-ascii?Q?Hms1pqreDN9PfryYFuro88eDV7Mq8usYDG4SO6l6icLWLap51LndWsabLBwN?=
- =?us-ascii?Q?celLHE4rPCkyh0dS7WTMy5UpPtzUh6YY6B7m9OTBEhcnMsDYB7IAJex77/6D?=
- =?us-ascii?Q?oS7mMFBGUhnzvyVWq7V7itI0fT8VPF4G6CfC+oj0bFOHFtW0S0dUsvAZ5cMT?=
- =?us-ascii?Q?rHkeOEqCtMIGpB36FBCLwLYS8Ke2JNt5TxFxVnecK7a1TiKD1dVYRSn04ZkC?=
- =?us-ascii?Q?09XlQ1PCUfqXIZ6yXhXbCmotLnHv9vnRbSVMCYNZPUXpfNO/iZt4spNOV7TG?=
- =?us-ascii?Q?b6Ar1vCifEztbO5zxbYHSdKvKV6scmlAblk02SNd64vwgIGP8Rmr7hmklTbZ?=
- =?us-ascii?Q?LQOSlBdeT8DMm6VahPSxEdAHXlyWebEK+qx0Gwykcm9Mn0fyugE/fwGFopIZ?=
- =?us-ascii?Q?pfT5p0RmpA03Z4Okvh0OJf+L0zIVKeLofxPWD6dsHUM5743Z5IPujxklk1Ra?=
- =?us-ascii?Q?SBLPhW31xBhkTzQfIYqHRwY8N8uLdd5idAA81dRTbaidBLcQXvHt5DPYuTBp?=
- =?us-ascii?Q?1Kyd4dNddiKryEWZ8DLaoCGFUYjQl46MvXuEE53VgEFCuPesIfgBEdORxXm1?=
- =?us-ascii?Q?/bnuOGnUJiX8Ec1OrHSs4RvWfA8PTm/WOsSr7TYwTjecKRtRyH1YJBGpJUn4?=
- =?us-ascii?Q?iUMiglQQHu0ClkOVvGWpjvw/OJJO3P6hBHfPZXTXKVWkjNdFzyxyX/KaRhj1?=
- =?us-ascii?Q?Nmr2hxDm2r9l/ce9hJ6UIjkFfKwbZJ1quxgGMm9/KExuZ+YTFASQri7fXdn5?=
- =?us-ascii?Q?etL3eGQTGh5yaySlNXYjkwIcAhzn5NMVbzaMxHXTBCAUYyR5YeP/rjU5t/Dm?=
- =?us-ascii?Q?PzV4/QmvFxSl6uNcBxt0KR6DT90ZpL21fDJc7w+MowGJcJJHHuuEg+N5Z+cS?=
- =?us-ascii?Q?3mU0Y8+onkgQGwKaLnHyRiLyY1KU0RxFlneVKx2dXdI+7G2ZOwNjSAlVpDNS?=
- =?us-ascii?Q?h6u7vVfHwqzvAJQi4z4VVSfdHEhmV1dvcmpZ9UKRnPXga8V23eEv+4iuG7Yz?=
- =?us-ascii?Q?lS4CDWsNYVQ3dcj/ZtXrIKrEl6Mb2BMZ4AmvqFu1BBAjXaDJtE9zgmqa0cSW?=
- =?us-ascii?Q?vtGFcZ5nus0JAkg+BgPsKlfLuG/SMbt701z/b/bC2CsnvvvC7FYA0KK+/qW5?=
- =?us-ascii?Q?Jb16TQEQ93jsl5llwOpWcuv/mqwu1an0oPlNGf5eokn2A/DiuvkSHvksoNtY?=
- =?us-ascii?Q?SKniOp+W40sH6LNAcSsmMaIH/uBHDN0CaT8rn7QaRNlYlg4q7tZh5MC5lWGs?=
- =?us-ascii?Q?Etm7DhjuWnFcL9hP2MePSdIRtt1RBpmPSYeufNZYFEKSHsbMZVlK5+ClXT20?=
- =?us-ascii?Q?aRZFDZOqH81jqWIAVSpxTLdWuMcD9PJGLdvE7VTi7OJ5ZpubsX7DBcerQUKx?=
- =?us-ascii?Q?b2eVYAM=3D?=
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CH3PR12MB7763.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(366016)(1800799024)(376014);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?us-ascii?Q?SbU0eSDzQTYvnEma8m0gBZSgMiWB0Ru6e26jLaR4kvunT/Jpj5Qani/xALAu?=
- =?us-ascii?Q?knhZPzofN5BuXhAfCrN1RxIDi8Mg1xTIZo3aIEmJiTOaY0YZZ4LqumpN+S1T?=
- =?us-ascii?Q?brZtvMI8u/zlmB8YbmKSQBLx7d0FekLvSzMLofLoRxpQEGNgkycS97pW3Izt?=
- =?us-ascii?Q?KF1nvidibrQWzpE+qJo/V5SXWMp2eGH7KThwkv2u168eGUhs8jqC9rZrxDzF?=
- =?us-ascii?Q?5MQ4LpLkPErBF0z7npAU9xFnxZ4Nl5VmSCEWs6dw4+zepWXCZ50R2+t3ufvl?=
- =?us-ascii?Q?8XBEiYosljyoJziIFkh8i8k9gGNLAx0aaBWDCx8uIicLdDfEETx8aFuq49Rp?=
- =?us-ascii?Q?p8JB7nFclI3Irxe8tVJrBjHvmDYxnozbg3f1B5LW2fbk5X2lxlogYYS2uhqf?=
- =?us-ascii?Q?2tnDrem9fNXjpRl+AuNPnVO4PGSui0KcDosq+rUcN7BxfaTeaDO1OcegsGSD?=
- =?us-ascii?Q?TtN1d/K8CGxz2GdfuIm/A12NAUPD0qGWdiph7XPzq6JWEJiilTr+QfYSa8a/?=
- =?us-ascii?Q?cX5c70QNiWyYQeJpLUhxkDG+4lMK2EosBR390hbWOuFfCG4Ey3Al97FsnwL+?=
- =?us-ascii?Q?7epOdOlIOta0rrHTDY+zXE0EgTcP9Cz8gn21j3IWdSYWJ2Jy3s4iZyJPyXSb?=
- =?us-ascii?Q?4VV88J5S/mnyMSy4ZBSxcUPguusoHWRblz46871mVNVomtiOtCeGKsZHWaOD?=
- =?us-ascii?Q?FtZGaBhOuWJN153WupJQz1TF3Tv9YZ9HE6T1omXZfMxuWhbeZJrfiErcjBOm?=
- =?us-ascii?Q?TViwQOr9mMNehN59TNx8gs3NBcEXXVJTkDqC9/J+XeFoezxdtexaJGNqvTyg?=
- =?us-ascii?Q?qznVQB9jEwSMGHsoW/uEQDFkAms3ndvfBFt4x1Q//MVve3vJqJU8hPNwvWg/?=
- =?us-ascii?Q?qMEymAgl293MbWYzSpyrR4byDG09+udP47cKPX2VNQqsKELB5ldyAV+1HCxr?=
- =?us-ascii?Q?ATIarsPjUuw3XT1E9iToX0rkkp8LM5wZFgYvjBsSEQ2Oy+q9/j/qprKPCzcn?=
- =?us-ascii?Q?aoV3rWurtzPhJVnhZj4K5jVWPJvSa1RpRGtvyrp6rYUpqaVY3zNRjxFwOGPN?=
- =?us-ascii?Q?lDeCKsdVjQ5QjKUMqUMWbncUSp6t0Bgwi8te1qdCVZgu0DDYeVLhbjjagiPO?=
- =?us-ascii?Q?IzwzIobiArYp57EccPqBgIM3pJkONkA8UZ4Q67yzSA3qum9QZHg9vuoRCfp7?=
- =?us-ascii?Q?v43tlbAz5V/IUb0wtROHJ244YmvqXRTS96hdx26ROqchFqtwZt4p/0SW2Si3?=
- =?us-ascii?Q?AvsSgbVJQS93fwPrxGarBV9cJqJfbzjd9d5WzuaU/yQvzM1YF16iiMVi0w8e?=
- =?us-ascii?Q?/Az7M2fdfhrc5tiJu3/yEuWkAEsAV7eYYvquz/NohHr3ydEwvUQ28ZbzPY3O?=
- =?us-ascii?Q?4Wbs1S+L53PaTfvX3Y8NhN3DrlP20YLNFySNnldN0fr/+XkzMfTspNKJlf7N?=
- =?us-ascii?Q?Cuie4KzaThqvVBYJ6wRFcay46atwCRWbwQ4AEt8mnigIJtOZii39dWJ084xR?=
- =?us-ascii?Q?/MnAKvw+BPWh1ATKLiemPYmkdNPVMJxCB0+Ic6lgEdkTzuVpCOmsNm/6XiiK?=
- =?us-ascii?Q?vsub4b7GeAuBi7gSQRA=3D?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 09689613-b881-4137-2fad-08dcc05f7aaa
-X-MS-Exchange-CrossTenant-AuthSource: CH3PR12MB7763.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 19 Aug 2024 14:59:09.3859
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: Wt7V70rVwPNecbP9eemQ6NDw3K6ibGGuo1xbgXFmAqTIrwf0cVtj8A8nqpSH9g9f
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM4PR12MB6086
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH 1/2] dt-bindings: arm-smmu: Add
+ qcom,last-ctx-bank-reserved
+To: Robin Murphy <robin.murphy@arm.com>, Rob Herring <robh@kernel.org>
+Cc: Rob Clark <robdclark@gmail.com>, Will Deacon <will@kernel.org>,
+ Joerg Roedel <joro@8bytes.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>,
+ Conor Dooley <conor+dt@kernel.org>, iommu@lists.linux.dev,
+ linux-arm-msm@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+ linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
+ Bjorn Andersson <andersson@kernel.org>,
+ Konrad Dybcio <konradybcio@kernel.org>, Arnaud Vrac <avrac@freebox.fr>,
+ Pierre-Hugues Husson <phhusson@freebox.fr>,
+ Marijn Suijten <marijn.suijten@somainline.org>,
+ Caleb Connolly <caleb.connolly@linaro.org>
+References: <20240814-smmu-v1-0-3d6c27027d5b@freebox.fr>
+ <20240814-smmu-v1-1-3d6c27027d5b@freebox.fr>
+ <20240818152515.GA104481-robh@kernel.org>
+ <30489eee-075b-461b-ab43-c8807d667630@freebox.fr>
+ <17893776-9666-4bbe-b5fc-c3fe977d0337@arm.com>
+Content-Language: en-US
+From: Marc Gonzalez <mgonzalez@freebox.fr>
+In-Reply-To: <17893776-9666-4bbe-b5fc-c3fe977d0337@arm.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 
-On Mon, Aug 12, 2024 at 01:41:46PM -0400, Steven Sistare wrote:
-> On 8/8/2024 3:52 PM, Jason Gunthorpe wrote:
-> > On Thu, Aug 08, 2024 at 03:15:02PM -0400, Steven Sistare wrote:
-> > > On 8/6/2024 8:56 AM, Jason Gunthorpe wrote:
-> > > > On Mon, Aug 05, 2024 at 03:03:30PM -0400, Steven Sistare wrote:
-> > > > > On 7/22/2024 11:55 AM, Jason Gunthorpe wrote:
-> > > > > > On Sat, Jul 20, 2024 at 11:56:40AM -0700, Steve Sistare wrote:
-> > > > > > > Live update is a technique wherein an application saves its state, launches
-> > > > > > > an updated version of itself, and restores its state.  Clients of the
-> > > > > > > application experience a brief suspension of service, on the order of
-> > > > > > > 100's of milliseconds, but are otherwise unaffected.
-> > > > > > > 
-> > > > > > > Define the IOMMU_IOAS_CHANGE_PROCESS ioctl to allow management and use
-> > > > > > > of an iommufd device to be transferred from one process to another.  The
-> > > > > > > application is responsible for transferring the device descriptor to the new
-> > > > > > > process, eg either by preservation across fork and exec or via SCM_RIGHTS.
-> > > > > > 
-> > > > > > It seems Ok to me, I'm glad it worked out for you
-> > > > > > 
-> > > > > > But have you considered using something like the new
-> > > > > > memfd_pin_folios() system so that iommufd is bound to the FDs backing
-> > > > > > the memory instead of VMAs?
-> > > > > > 
-> > > > > > https://lore.kernel.org/all/20240624063952.1572359-1-vivek.kasireddy@intel.com/
-> > > > > > 
-> > > > > > I've been expecting to add support for that, but does it help this scenario?
-> > > > > 
-> > > > > Thanks for the pointer, I had not seen it.
-> > > > > AFAICT it does not affect live update.  The memfd is passed to new qemu, and
-> > > > > the manner in which its pages were pinned does not matter, as long as the effect
-> > > > > on the mm fields that we manipulate is the same.
-> > > > 
-> > > > I mean instead of using mmap's() and telling iommfd to take the pages
-> > > > from a VMA you'd use a memfd and tell iommufd to take the pages from
-> > > > the memfd directly.
-> > > > 
-> > > > Since the memfd is not part of a process or mm_struct it is not
-> > > > effected by live update's exec() and none of these gyrations are
-> > > > necessary.
-> > > 
-> > > The problem is that kernel clients (eg mdevs) use userland VA to identify
-> > > memory when calling iommufd, so we must update the VA's after exec.
-> > 
-> > Technically no, they use IOVA too and iommufd translates IOVA into a
-> > VMA and what not.
-> > 
-> > So if we teach iommufd how to do memfd it would also learn how to
-> > adapt it to mdevs as well.
-> > 
-> > > vdpa does the same, if/when it converts to iommufd.  I cannot see us
-> > > changing vaddr to (file, offset) everywhere in iommufd and its clients,
-> > > up through the mdev code stack, can you?
-> > 
-> > That is exactly what I imagine, because it isn't vaddr already, it is
-> > IOVA and IOVA always already translates to an area which gets you the
-> > vaddr.
-> > 
-> > It is why this series can remap the vaddrs on the fly without reaching
-> > outside the area struct.
-> 
-> OK, that looks tractable.  There are not too many instances of
-> struct iopt_pages uptr to fiddle with, adding support for
-> file+offset.  We must of course keep uptr to continue to support
-> anonymous memory for iommufd, but such memory will not be supported
-> for live update.
-> 
-> Do you envision a new userland interface variant of IOMMU_IOAS_MAP
-> that takes fd and offset?
+On 19/08/2024 14:57, Robin Murphy wrote:
 
-Yes
+> Luckily, in this case it seems straightforward enough to be able to see 
+> that if we have a "qcom,msm8996-smmu-v2" with 13 context banks then we 
+> should just treat it as if it has 12 - it's also notable that it only 
+> reports NUMSMRG=12, so we couldn't use more than that many S1 context 
+> banks at once anyway.
 
-> Or have userland pass user_va as usual, but have the kernel check if it maps to a file,
-> and save the file?  The latter is more work in the kernel but requires no change in
-> applications.
+This is what the hypervisor reports:
 
-Maybe this is possible too..
+[    2.550974] arm-smmu 5100000.iommu: probing hardware configuration...
+[    2.557309] arm-smmu 5100000.iommu: SMMUv2 with:
+[    2.563815] arm-smmu 5100000.iommu:  stage 1 translation
+[    2.568494] arm-smmu 5100000.iommu:  address translation ops
+[    2.573791] arm-smmu 5100000.iommu:  non-coherent table walk
+[    2.579434] arm-smmu 5100000.iommu:  (IDR0.CTTW overridden by FW configuration)
+[    2.585088] arm-smmu 5100000.iommu:  stream matching with 12 register groups
+[    2.592132] arm-smmu 5100000.iommu:  13 context banks (0 stage-2 only)
+[    2.619316] arm-smmu 5100000.iommu:  Supported page sizes: 0x63315000
+[    2.626225] arm-smmu 5100000.iommu:  Stage-1: 36-bit VA -> 36-bit IPA
+[    2.632645] arm-smmu 5100000.iommu:  preserved 0 boot mappings
 
-> Do you plan to work on this any time soon?  Do you want me to?
 
-I wasn't at the point of this yet, if you are interested I suggest
-taking a stab. Now that the the infrastructure is in the mm it should
-mostly just be changing pin_user_pages() to the other one. It might be
-quite shore
+smmu->num_mapping_groups = 12
+smmu->num_context_banks  = 13
 
-> We still need IOMMU_IOAS_CHANGE_PROCESS to handle
-> IOMMU_OPTION_RLIMIT_MODE, and to handle a changed uid.
 
-Yes that makes sense
+Are you saying that
 
-Jason
+	smmu->num_context_banks > smmu->num_mapping_groups
+
+does not make sense?
+
+
+Would a well-placed
+
+	if (smmu->num_context_banks > smmu->num_mapping_groups)
+		smmu->num_context_banks = smmu->num_mapping_groups;
+
+be a proper work-around?
+
+(Probably in qcom_smmu_cfg_probe() so as to not interfere with other platforms.)
+
+
+Maybe to limit the side effects even more:
+
+	if (of_device_is_compatible(smmu->dev->of_node, "qcom,msm8998-smmu-v2") &&
+		smmu->num_context_banks > smmu->num_mapping_groups))
+		smmu->num_context_banks = smmu->num_mapping_groups;
+
+
+Neither work-around would require changing the binding.
+
+Is either work-around acceptable, Robin?
+
+Regards
+
