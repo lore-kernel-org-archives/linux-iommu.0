@@ -1,137 +1,146 @@
-Received: from mail-vs1-f42.google.com (mail-vs1-f42.google.com [209.85.217.42])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0698D1487FE
-	for <iommu@lists.linux.dev>; Mon, 19 Aug 2024 12:34:02 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.217.42
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 4067D166F0C
+	for <iommu@lists.linux.dev>; Mon, 19 Aug 2024 12:57:17 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1724070844; cv=none; b=oWNILROByeUUJLWIYSBg9/nI8YsLNaElI+QuVPJd9FKey79mEdNhb8hNDbXoUAcoh60g8eYNXDCGphaUR46DSnn1N60D/rRFcIqAt5L3E2g8yKVfkJb70vsMFEEmwtwjkOQd5gsn1Vk4lVSl7svxd/txhCCKfdrBGilqR68wuiE=
+	t=1724072239; cv=none; b=lpdsC7b37FxqLyxC5iaeXrW+xwmFmb6Fp5AT0a6hoVZ8wcIoJaMa3/JJvRq+MG9httpDe/pvEh6LU5N4r2/7+CfQGcFwRIQMhr7C9ZG1/hFuuiHVzmAxUAs37PHZUUZkiLHy6HZN0DZSBujFpUMPj1S8NY/M3lQuhD9nuepoeWQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1724070844; c=relaxed/simple;
-	bh=+0jRmYM3BIyfYfODUKjrloxe1+Z9UqA25KBuL4lSTdk=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=TbLxb8aWzdu8E+m8nGRmy6OIq1GkULZMMnOKnVW0lVwRPyPWp8fGDNIsPdI4ZEOeYrNKNE7q3h0+NqPNzzcv/yh3TgQyDWl78F/Of0gq3s6SJy2TqUL1Q/OFV7+d5bGBTM2UvQeEbIp4pH6IMK+I7fMKijnAd1tLvpXDdU19jN4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=PxmNErDP; arc=none smtp.client-ip=209.85.217.42
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="PxmNErDP"
-Received: by mail-vs1-f42.google.com with SMTP id ada2fe7eead31-4928b5531caso1568741137.3
-        for <iommu@lists.linux.dev>; Mon, 19 Aug 2024 05:34:02 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google; t=1724070842; x=1724675642; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=VQpOZu4CzjYzGnVaMGjEB0UGuRwYjdpu2bXWuEbf9n8=;
-        b=PxmNErDPKsiFDbkk3DDM8PXOvIk2JwdUVbVHPaaJaj15vrsXNj7ZdYGV5gN5dSfiwt
-         QuCgOOB+9ji5Or1BQv2wqcGNXB7E9grVWV67vxObGWpGGO2Mhgz6Ripf0fxTywKupX+o
-         ptwbMe+DeIFIrVzYeGNEZwR5V9ye6elX/HzN/qu9bQDHaAJWMPP48Gp0ArZH1USPC+FH
-         dIjOtEKvlfKmE0TfJf7AIgVPT35tpeq+fr/dJokG0laCY1dN4n6V27QrNh0q+TRm47x1
-         bdEkx599+t6gSju8/mfvIK0DbUFFO6vLHjQ91u9yND7Pke913/EJQNVYPRlBFjHlGYZy
-         S2lQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1724070842; x=1724675642;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=VQpOZu4CzjYzGnVaMGjEB0UGuRwYjdpu2bXWuEbf9n8=;
-        b=lcli+N/eJUD9LHuSkgxi7wUwobbiFiQD7b+/p41olwXeY9ZDbpyVpDGRI3fHnB3dFN
-         ya6OCfgGR6oWpwL4OzsDsMdHfc/ZAd6vWToq6jV/imG0ySbqXxCSI8sm9qq4YHUXspe9
-         /050CoSFbsxDRTvVrqga9j7EA/KS5J24riOFlBlB5X8XGcmgRQsslL4v8US2vLqNcxB6
-         7BfARTcRfx0uKicx/JkqPp9qpB55IeEiVYBz6s7sykR9WdvDR4PJzLoi00CN7TH/rPwT
-         Dj1iSxh3aKKM24lQfPI9awNJTfo0yuhzNdFVt4vHzxdwyUDHHhA67Vz3x+YrwMrvNckr
-         r/Eg==
-X-Forwarded-Encrypted: i=1; AJvYcCUffNrTBzVneOfsZpb53ckK5TOOcpR+LYF8A/JQmNimelRozbMunqmVz15spih4iKWoPOtJfvSr/Y/Xtloms08yEu6KJC8=
-X-Gm-Message-State: AOJu0YwIt4HyMu6IX9qOyHUbSeFBfhiBonp/U2axOvKT6RHOwWoT1Uk1
-	ao2QXvwE47BbAyhQmWj/B8LSuAuK+4zXLHTlmoHsUZV0gH/LLuO3ihe13f2vT38=
-X-Google-Smtp-Source: AGHT+IHrKEFNCileOhq7EM4IymMT5yiLPV6Hjs48m7OF3CiU15peExhQF2qose8JEEzRWgOAer2Lew==
-X-Received: by 2002:a05:6102:3912:b0:492:aa42:e0ce with SMTP id ada2fe7eead31-4977997cd15mr14374649137.20.1724070841927;
-        Mon, 19 Aug 2024 05:34:01 -0700 (PDT)
-Received: from ziepe.ca (hlfxns017vw-142-68-80-239.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.68.80.239])
-        by smtp.gmail.com with ESMTPSA id af79cd13be357-7a4ff025280sm428971985a.24.2024.08.19.05.34.01
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 19 Aug 2024 05:34:01 -0700 (PDT)
-Received: from jgg by wakko with local (Exim 4.95)
-	(envelope-from <jgg@ziepe.ca>)
-	id 1sg1aC-00CJ0V-Qc;
-	Mon, 19 Aug 2024 09:34:00 -0300
-Date: Mon, 19 Aug 2024 09:34:00 -0300
-From: Jason Gunthorpe <jgg@ziepe.ca>
-To: Baolu Lu <baolu.lu@linux.intel.com>
-Cc: Vasant Hegde <vasant.hegde@amd.com>, Joerg Roedel <joro@8bytes.org>,
-	Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
-	Kevin Tian <kevin.tian@intel.com>, Yi Liu <yi.l.liu@intel.com>,
-	iommu@lists.linux.dev, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 1/1] iommu/vt-d: Move PCI PASID enablement to probe path
-Message-ID: <20240819123400.GU3468552@ziepe.ca>
-References: <20240816104945.97160-1-baolu.lu@linux.intel.com>
- <6650ce02-ac85-4cb6-941c-cc7e8b6effc4@amd.com>
- <92b55591-e106-4366-ba5b-0588af50770f@linux.intel.com>
- <635b24b7-632d-4046-b82e-6ac6976686c9@amd.com>
- <0e807eec-ce51-42e2-9290-dc90c4210888@linux.intel.com>
+	s=arc-20240116; t=1724072239; c=relaxed/simple;
+	bh=lakgPcIw7qUBbL2ZLM0qTThrZs/JFj0UeFbwr+dhzj0=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=O81vyda1eJIRpEqNUNo3AiNSNtexi/fr/sytd496x4fNMQYauonJvYgCWlUnVKCmAKaTIcmLRiZeXiWGECsFjtiqEyOqamqq+Aecx3dNMEsQMqa3eVBvFjq5CaQI/NrufFirSEjXj3qNUv4I1KGB4aXqfU1lQzyhg16TYT1unqs=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; arc=none smtp.client-ip=217.140.110.172
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 8F910339;
+	Mon, 19 Aug 2024 05:57:42 -0700 (PDT)
+Received: from [10.1.196.40] (e121345-lin.cambridge.arm.com [10.1.196.40])
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 87BB83F73B;
+	Mon, 19 Aug 2024 05:57:14 -0700 (PDT)
+Message-ID: <17893776-9666-4bbe-b5fc-c3fe977d0337@arm.com>
+Date: Mon, 19 Aug 2024 13:57:12 +0100
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <0e807eec-ce51-42e2-9290-dc90c4210888@linux.intel.com>
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH 1/2] dt-bindings: arm-smmu: Add
+ qcom,last-ctx-bank-reserved
+To: Marc Gonzalez <mgonzalez@freebox.fr>, Rob Herring <robh@kernel.org>
+Cc: Rob Clark <robdclark@gmail.com>, Will Deacon <will@kernel.org>,
+ Joerg Roedel <joro@8bytes.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>,
+ Conor Dooley <conor+dt@kernel.org>, iommu@lists.linux.dev,
+ linux-arm-msm@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+ linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
+ Bjorn Andersson <andersson@kernel.org>,
+ Konrad Dybcio <konradybcio@kernel.org>, Arnaud Vrac <avrac@freebox.fr>,
+ Pierre-Hugues Husson <phhusson@freebox.fr>,
+ Marijn Suijten <marijn.suijten@somainline.org>
+References: <20240814-smmu-v1-0-3d6c27027d5b@freebox.fr>
+ <20240814-smmu-v1-1-3d6c27027d5b@freebox.fr>
+ <20240818152515.GA104481-robh@kernel.org>
+ <30489eee-075b-461b-ab43-c8807d667630@freebox.fr>
+From: Robin Murphy <robin.murphy@arm.com>
+Content-Language: en-GB
+In-Reply-To: <30489eee-075b-461b-ab43-c8807d667630@freebox.fr>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-On Mon, Aug 19, 2024 at 03:09:00PM +0800, Baolu Lu wrote:
-> On 2024/8/19 14:34, Vasant Hegde wrote:
-> > On 8/16/2024 6:39 PM, Baolu Lu wrote:
-> > > On 2024/8/16 20:16, Vasant Hegde wrote:
-> > > > On 8/16/2024 4:19 PM, Lu Baolu wrote:
-> > > > > Currently, PCI PASID is enabled alongside PCI ATS when an iommu domain is
-> > > > > attached to the device and disabled when the device transitions to block
-> > > > > translation mode. This approach is inappropriate as PCI PASID is a device
-> > > > > feature independent of the type of the attached domain.
-> > > > Reading through other thread, I thought we want to enable both PASID and PRI in
-> > > > device probe path. Did I miss something?
-> > > PRI is different. PRI should be enabled when the first iopf-capable
-> > > domain is attached to device or its PASID, and disabled when the last
-> > > such domain is detached.
-> > Right. That's what AMD driver also does (We enable it when we attach IOPF
-> > capable domain). But looking into pci_enable_pri() :
-> > 
-> > 
-> > 202         /*
-> > 203          * VFs must not implement the PRI Capability.  If their PF
-> > 204          * implements PRI, it is shared by the VFs, so if the PF PRI is
-> > 205          * enabled, it is also enabled for the VF.
-> > 206          */
-> > 207         if (pdev->is_virtfn) {
-> > 208                 if (pci_physfn(pdev)->pri_enabled)
-> > 209                         return 0;
-> > 210                 return -EINVAL;
-> > 211         }
-> > 212
-> > 
-> > 
-> > If we try to enable PRI for VF without first enabling it in PF it will fail right?
-> > 
-> > Now if PF is attached to non-IOPF capable domain (like in AMD case attaching to
-> > domain with V1 page table) and we try to attach VF to IOPF capable domain  (say
-> > AMD v2 page table -OR- nested domain) it will fail right?
+On 19/08/2024 12:37 pm, Marc Gonzalez wrote:
+> On 18/08/2024 17:25, Rob Herring wrote:
 > 
-> Yeah! So, the iommu driver should basically control the PRI switch on
-> the PF whenever someone wants to use it on a VF.
+>> On Wed, Aug 14, 2024 at 03:59:55PM +0200, Marc Gonzalez wrote:
+>>
+>>> On qcom msm8998, writing to the last context bank of lpass_q6_smmu
+>>> (base address 0x05100000) produces a system freeze & reboot.
+>>>
+>>> Specifically, here:
+>>>
+>>> 	qsmmu->bypass_cbndx = smmu->num_context_banks - 1;
+>>> 	arm_smmu_cb_write(smmu, qsmmu->bypass_cbndx, ARM_SMMU_CB_SCTLR, 0);
+>>>
+>>> and here:
+>>>
+>>> 	arm_smmu_write_context_bank(smmu, i);
+>>> 	arm_smmu_cb_write(smmu, i, ARM_SMMU_CB_FSR, ARM_SMMU_CB_FSR_FAULT);
+>>>
+>>> It is likely that FW reserves the last context bank for its own use,
+>>> thus a simple work-around would be: DON'T USE IT in Linux.
+>>>
+>>> Signed-off-by: Marc Gonzalez <mgonzalez@freebox.fr>
+>>> ---
+>>>   Documentation/devicetree/bindings/iommu/arm,smmu.yaml | 6 ++++++
+>>>   1 file changed, 6 insertions(+)
+>>>
+>>> diff --git a/Documentation/devicetree/bindings/iommu/arm,smmu.yaml b/Documentation/devicetree/bindings/iommu/arm,smmu.yaml
+>>> index 280b4e49f2191..f9b23aef351b0 100644
+>>> --- a/Documentation/devicetree/bindings/iommu/arm,smmu.yaml
+>>> +++ b/Documentation/devicetree/bindings/iommu/arm,smmu.yaml
+>>> @@ -204,6 +204,12 @@ properties:
+>>>         access to SMMU configuration registers. In this case non-secure aliases of
+>>>         secure registers have to be used during SMMU configuration.
+>>>   
+>>> +  qcom,last-ctx-bank-reserved:
+>>> +    type: boolean
+>>> +    description:
+>>> +      FW reserves the last context bank of this SMMU for its own use.
+>>> +      If Linux tries to use it, Linux gets nuked.
+>>
+>> How is this Qualcomm specific? Presumably any implementation could do
+>> this if there's no way to properly partition things. Robin?
+> 
+> Obviously, there is nothing Qualcomm specific about reserving
+> an SMMU context bank for the FW / hypervisor, other than it
+> appears that qcom is the first to do it; or at least the
+> LPASS SMMU on qcom msm8998 is the first known SMMU where such
+> a work-around is required.
 
-PRI enable sounds like PASID enable to me.
+Yes, the Qualcomm-specific aspect is that it's Qualcomm's hypervisor 
+which is broken and reporting a larger number in its emulated 
+SMMU_IDR1.NUMCB than the number of context banks it's actually willing 
+to emulate.
 
-The ATS control is per VF/PF, and PRI does nothing unless ATS returns
-a non-present indication.
+> What is the correct nomenclature?
+> 
+> Can we just drop the vendor prefix if a property is generic
+> across vendors? But does it require a subsystem prefix like
+> "iommu" in order to not clash with generic props in other subsystems?
 
-Like PASID, it seems the purpose of PRI caps is to negotiate if the
-CPU can process PRI TLPs globally.
+I guess if we *were* to consider a generic property to endorse violating 
+the SMMU architecture, then it would logically be vendored to Arm as the 
+owner of the SMMU architecture. However I am strongly against that idea, 
+not only because I obviously don't want to normalise hypervisors 
+emulating non-architectural behaviour which every DT-consuming OS will 
+have to understand how to work around, but it's also less than great for 
+the user to have a workaround that's not compatible with existing DTBs.
 
-So, I'd guess that just like PASID we should turn it on at PF probe
-time if the IOMMU can globall handle PRI.
+Luckily, in this case it seems straightforward enough to be able to see 
+that if we have a "qcom,msm8996-smmu-v2" with 13 context banks then we 
+should just treat it as if it has 12 - it's also notable that it only 
+reports NUMSMRG=12, so we couldn't use more than that many S1 context 
+banks at once anyway.
 
-Enabling ATS will cause PRI TLPs to be sent.
+Thanks,
+Robin.
 
-Probably more of this code should be lifted out of the iommu drivers..
-
-Jason
+>> Also, this property isn't very flexible. What happens when it is not the
+>> last bank or more than 1 bank reserved? This should probably be a mask
+>> instead.
+> 
+> OK, I'm getting conflicting requests here.
+> 
+> Bjorn has recommended dropping the property altogether:
+> 
+>> It also seems, as the different SMMUs in this platform behave
+>> differently it might be worth giving them further specific compatibles,
+>> in which case we could just check if it's the qcom,msm8998-lpass-smmu,
+>> instead of inventing a property for this quirk.
+> 
+> 
+> I'll send a patch series in line with Bjorn's request.
+> 
+> Regards
+> 
