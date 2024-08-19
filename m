@@ -1,178 +1,84 @@
-Received: from mx0a-0031df01.pphosted.com (mx0a-0031df01.pphosted.com [205.220.168.131])
+Received: from fgw23-7.mail.saunalahti.fi (fgw23-7.mail.saunalahti.fi [62.142.5.84])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5583F14D70E
-	for <iommu@lists.linux.dev>; Mon, 19 Aug 2024 22:04:58 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.168.131
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D34081DF68B
+	for <iommu@lists.linux.dev>; Mon, 19 Aug 2024 22:34:55 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=62.142.5.84
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1724105099; cv=none; b=GA3PmCjtIebaE9h7CS8cgfJ0qIghRCjm11uNEYIu1+fR70g8ua20drfyUxY6n2XyVaZUbird5XTmHDBBW8gXpWSLbxD4IWluRp1XdvSd+CCXG1rUEM1Cds/EO60q4BolMkIqIyEX7D9VnMZFNk7ftG+z+qtWF5/pgegpTFHtDyU=
+	t=1724106897; cv=none; b=Z9g+wQm6gaeHpwrGswvgJx+/u9HEP7hamqGZFomZiXQ9xiVZXZjpWNeuBbxAWkDDBufn+oBNXDTvh82VXeO6UYGioDeHWop/MVWUqXCUDdfnXzn5Kr0ULK21s3FkGXDiGYKmkcXEVRaYPFwjJgem/uqP/HaNYIgehWTSkMTQDmk=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1724105099; c=relaxed/simple;
-	bh=sAO3TUHgVk99Kw9RCvCoijE9MKOG4GkkxLNUBJJOGr4=;
-	h=Date:From:To:CC:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=J7Hgh2zEM2sUcxVj+yp3iAyaAlgqeaBJvYofLRjntL+DURO8gJcz5S+itNDlsFEBJQouaF+httxbaDqJYD0wtHwVjEnoTvQV9KapPqeq5f5ivIxN/zEgBfFyyLQ3ceXIpWak5aI3i/bDBdpIbXzEdpXsXLMHfjkcpS6k5oxEre8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com; spf=pass smtp.mailfrom=quicinc.com; dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b=omWIeMpK; arc=none smtp.client-ip=205.220.168.131
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=quicinc.com
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b="omWIeMpK"
-Received: from pps.filterd (m0279866.ppops.net [127.0.0.1])
-	by mx0a-0031df01.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 47JBB38O025706;
-	Mon, 19 Aug 2024 22:04:44 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=quicinc.com; h=
-	cc:content-type:date:from:in-reply-to:message-id:mime-version
-	:references:subject:to; s=qcppdkim1; bh=1Pdl09RIpjSpgpUzeTyvHQSd
-	kABHf3jk9ZT3rNx96zc=; b=omWIeMpKE0meovzZGitbpTCmprNlPA9orsKDCkam
-	9VpuHHTx0zmVBr5bg+QxKFowsjWSq/IZ1ctz+s3XG3GcsHTNcZlnqR0QVzdPt/q/
-	6CSPnCfoBk1gHk9RFioVojHZ2JV1n3OxHHSedr3uPRZJQcKtIMfTFrrcj9khSJnZ
-	SmTTD1fSJzz3mNL0IGponQY0p0n3C9s2UZsvPeWTdhs+yjywoO07sehgnI9ngnsP
-	aF40+Vfz+25TbhqJHFGemJID9FyguKIbt1CFA2VARCO9oC6jkCrgWH15jAwu5JIS
-	U6f1HuEkhNnH93z/HYkxhrfI5A13yi3CEEYsfEXr/faJLQ==
-Received: from nalasppmta03.qualcomm.com (Global_NAT1.qualcomm.com [129.46.96.20])
-	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 412n585hux-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Mon, 19 Aug 2024 22:04:43 +0000 (GMT)
-Received: from nalasex01c.na.qualcomm.com (nalasex01c.na.qualcomm.com [10.47.97.35])
-	by NALASPPMTA03.qualcomm.com (8.18.1.2/8.18.1.2) with ESMTPS id 47JM4hsp019820
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Mon, 19 Aug 2024 22:04:43 GMT
-Received: from hu-bjorande-lv.qualcomm.com (10.49.16.6) by
- nalasex01c.na.qualcomm.com (10.47.97.35) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.1544.9; Mon, 19 Aug 2024 15:04:42 -0700
-Date: Mon, 19 Aug 2024 15:04:41 -0700
-From: Bjorn Andersson <quic_bjorande@quicinc.com>
-To: Marc Gonzalez <mgonzalez@freebox.fr>
-CC: Robin Murphy <robin.murphy@arm.com>, Rob Herring <robh@kernel.org>,
-        Rob
- Clark <robdclark@gmail.com>, Will Deacon <will@kernel.org>,
-        Joerg Roedel
-	<joro@8bytes.org>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        Conor Dooley
-	<conor+dt@kernel.org>, <iommu@lists.linux.dev>,
-        <linux-arm-msm@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>, <linux-kernel@vger.kernel.org>,
-        <devicetree@vger.kernel.org>, Bjorn Andersson
-	<andersson@kernel.org>,
-        Konrad Dybcio <konradybcio@kernel.org>,
-        Arnaud Vrac
-	<avrac@freebox.fr>,
-        Pierre-Hugues Husson <phhusson@freebox.fr>,
-        Marijn
- Suijten <marijn.suijten@somainline.org>,
-        Caleb Connolly
-	<caleb.connolly@linaro.org>
-Subject: Re: [PATCH 1/2] dt-bindings: arm-smmu: Add
- qcom,last-ctx-bank-reserved
-Message-ID: <ZsPBeRTqE9o253Gw@hu-bjorande-lv.qualcomm.com>
-References: <20240814-smmu-v1-0-3d6c27027d5b@freebox.fr>
- <20240814-smmu-v1-1-3d6c27027d5b@freebox.fr>
- <20240818152515.GA104481-robh@kernel.org>
- <30489eee-075b-461b-ab43-c8807d667630@freebox.fr>
- <17893776-9666-4bbe-b5fc-c3fe977d0337@arm.com>
- <67f9a762-6d14-4557-b1f6-22aabb33f927@freebox.fr>
+	s=arc-20240116; t=1724106897; c=relaxed/simple;
+	bh=yAeeXH3hEK8ajF7huENH61OB3ZzOO1jVBaZD5aohuEs=;
+	h=From:Date:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=DCFyhUUmdEmsCECbAwswkMACIQRpPaagMdqPUf1wZIV4Au8CxQiOuMRkhuDqkDlzZsLhZ/VSlBzZ4srv9p69AnmqLzmpp4b31is1a7/ugVe1ieUREtdaXwq7j+0O75Fcz+ztXL8Myuy7+5tx4JK4iI58yahULjkA2CUURqOJAHw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=gmail.com; spf=fail smtp.mailfrom=gmail.com; arc=none smtp.client-ip=62.142.5.84
+Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=gmail.com
+Received: from localhost (88-113-25-87.elisa-laajakaista.fi [88.113.25.87])
+	by fgw22.mail.saunalahti.fi (Halon) with ESMTP
+	id 174dc974-5e7b-11ef-8eb5-005056bdf889;
+	Tue, 20 Aug 2024 01:33:44 +0300 (EEST)
+From: Andy Shevchenko <andy.shevchenko@gmail.com>
+Date: Tue, 20 Aug 2024 01:33:43 +0300
+To: Rob Herring <robh@kernel.org>
+Cc: Andy Shevchenko <andy@kernel.org>,
+	Oreoluwa Babatunde <quic_obabatun@quicinc.com>,
+	saravanak@google.com, klarasmodin@gmail.com, aisheng.dong@nxp.com,
+	hch@lst.de, m.szyprowski@samsung.com, robin.murphy@arm.com,
+	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+	iommu@lists.linux.dev, will@kernel.org, catalin.marinas@arm.com,
+	kernel@quicinc.com
+Subject: Re: [PATCH v7 0/2] Dynamic Allocation of the reserved_mem array
+Message-ID: <ZsPIATwAPpw7vnMU@surfacebook.localdomain>
+References: <20240809184814.2703050-1-quic_obabatun@quicinc.com>
+ <ZsN_p9l8Pw2_X3j3@black.fi.intel.com>
+ <CAL_JsqJHRoP40E2Wqk_Dsc8hmAdN-63ikR2BWqHeihM7F49ohQ@mail.gmail.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <67f9a762-6d14-4557-b1f6-22aabb33f927@freebox.fr>
-X-ClientProxiedBy: nalasex01c.na.qualcomm.com (10.47.97.35) To
- nalasex01c.na.qualcomm.com (10.47.97.35)
-X-QCInternal: smtphost
-X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
-X-Proofpoint-GUID: zKRsNtyBD-iSNi9VaciL5bMiQXyEBl-I
-X-Proofpoint-ORIG-GUID: zKRsNtyBD-iSNi9VaciL5bMiQXyEBl-I
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.293,Aquarius:18.0.1039,Hydra:6.0.680,FMLib:17.12.28.16
- definitions=2024-08-19_16,2024-08-19_03,2024-05-17_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 priorityscore=1501
- malwarescore=0 suspectscore=0 phishscore=0 clxscore=1011 spamscore=0
- mlxlogscore=793 mlxscore=0 bulkscore=0 impostorscore=0 lowpriorityscore=0
- adultscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.19.0-2407110000 definitions=main-2408190146
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <CAL_JsqJHRoP40E2Wqk_Dsc8hmAdN-63ikR2BWqHeihM7F49ohQ@mail.gmail.com>
 
-On Mon, Aug 19, 2024 at 05:02:16PM +0200, Marc Gonzalez wrote:
-> On 19/08/2024 14:57, Robin Murphy wrote:
-> 
-> > Luckily, in this case it seems straightforward enough to be able to see 
-> > that if we have a "qcom,msm8996-smmu-v2" with 13 context banks then we 
-> > should just treat it as if it has 12 - it's also notable that it only 
-> > reports NUMSMRG=12, so we couldn't use more than that many S1 context 
-> > banks at once anyway.
-> 
-> This is what the hypervisor reports:
-> 
-> [    2.550974] arm-smmu 5100000.iommu: probing hardware configuration...
-> [    2.557309] arm-smmu 5100000.iommu: SMMUv2 with:
-> [    2.563815] arm-smmu 5100000.iommu:  stage 1 translation
-> [    2.568494] arm-smmu 5100000.iommu:  address translation ops
-> [    2.573791] arm-smmu 5100000.iommu:  non-coherent table walk
-> [    2.579434] arm-smmu 5100000.iommu:  (IDR0.CTTW overridden by FW configuration)
-> [    2.585088] arm-smmu 5100000.iommu:  stream matching with 12 register groups
-> [    2.592132] arm-smmu 5100000.iommu:  13 context banks (0 stage-2 only)
-> [    2.619316] arm-smmu 5100000.iommu:  Supported page sizes: 0x63315000
-> [    2.626225] arm-smmu 5100000.iommu:  Stage-1: 36-bit VA -> 36-bit IPA
-> [    2.632645] arm-smmu 5100000.iommu:  preserved 0 boot mappings
-> 
-> 
-> smmu->num_mapping_groups = 12
+Mon, Aug 19, 2024 at 04:55:49PM -0500, Rob Herring kirjoitti:
+> On Mon, Aug 19, 2024 at 12:23 PM Andy Shevchenko
+> <andy@black.fi.intel.com> wrote:
 
-Ignore num_mapping_groups, they are used to define which streams should
-be mapped to which context bank. But there's no relationship between
-these numbers.
+...
 
-> smmu->num_context_banks  = 13
+> > This series (in particular the first patch) broke boot on Intel Meteor
+> > Lake-P. Taking Linux next of 20240819 with these being reverted makes
+> > things work again.
 > 
+> Looks like this provides some detail:
+> https://lore.kernel.org/all/202408192157.8d8fe8a9-oliver.sang@intel.com/
 > 
-> Are you saying that
-> 
-> 	smmu->num_context_banks > smmu->num_mapping_groups
-> 
-> does not make sense?
-> 
-> 
-> Would a well-placed
-> 
-> 	if (smmu->num_context_banks > smmu->num_mapping_groups)
-> 		smmu->num_context_banks = smmu->num_mapping_groups;
-> 
-> be a proper work-around?
+> I've dropped the patches for now.
 
-No, something like this would apply your quirk to other targets (and
-specifically it would be wrong, per above).
+Thank you, that's what I have asked for!
 
+> > Taking into account bisectability issue (that's how I noticed the issue
+> > in the first place) I think it would be nice to have no such patches at
+> > all in the respective subsystem tree. On my side I may help with testing
+> > whatever solution or next version provides.
 > 
-> (Probably in qcom_smmu_cfg_probe() so as to not interfere with other platforms.)
-> 
-> 
-> Maybe to limit the side effects even more:
-> 
-> 	if (of_device_is_compatible(smmu->dev->of_node, "qcom,msm8998-smmu-v2") &&
-> 		smmu->num_context_banks > smmu->num_mapping_groups))
-> 		smmu->num_context_banks = smmu->num_mapping_groups;
+> I don't follow what you are asking for? That the patches should be
+> bisectable? Well, yes, of course, but I don't verify that typically.
+> Patch 1 builds fine for m, so I'm not sure what issue you see.
 
-If we don't want to introduce a more specific compatible for this SMMU
-instance, then let's add this to qcom_smmu_cfg_probe():
+There are two types of bisectability:
+1) compile-time;
+2) run-time.
 
-	/* MSM8998 LPASS SMMU reports 13 context banks, but only 12 are accessible */
- 	if (of_device_is_compatible(smmu->dev->of_node, "qcom,msm8998-smmu-v2") && smmu->num_context_banks == 13)
-		smmu->num_context_banks = 12;
+People often forgot about #2 and that's exactly what I'm complaining about.
+Due to bisecting another thing, I have stumbled over this issue.
+
+-- 
+With Best Regards,
+Andy Shevchenko
 
 
-Regards,
-Bjorn
-
-> 
-> 
-> Neither work-around would require changing the binding.
-> 
-> Is either work-around acceptable, Robin?
-> 
-> Regards
-> 
-> 
