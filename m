@@ -1,161 +1,156 @@
-Received: from mx2.zhaoxin.com (mx2.zhaoxin.com [203.110.167.99])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-wm1-f50.google.com (mail-wm1-f50.google.com [209.85.128.50])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 26BE9148315
-	for <iommu@lists.linux.dev>; Mon, 19 Aug 2024 10:56:03 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=203.110.167.99
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BAB02166F0C
+	for <iommu@lists.linux.dev>; Mon, 19 Aug 2024 11:37:47 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.50
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1724064967; cv=none; b=nnZTp86YnlXr/j8lXFXMOPU3BrVnU8j3xI9D6xbq/BiZDZROeNvz4VfyWq/f83X2oTSjanwqGuU1Hcrv7wRzpNqYi/HlOo3bi5i4y7eM/75uiXr90rD0zFCmIFC6+m3tPcL1H9vw0Ohpo9okqrhlAWgymxa/LEtisfJlT7RGvzc=
+	t=1724067471; cv=none; b=hp+yxiYb8IgJTKD/QLKbAwRV4gvNUSHBUDj+HaT2DR39Z2KfFxBzdW9YYkik/OtjrlqZSgv3Lo/PneuBAUbFJ8NjKnRjlvu2f/yFJFteKC8slky3aWLidB3hpyhfVK+IwpGsLf6vVW1rxCtx2/s7dT0nkwaD5D2zmPjw3tnvpwo=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1724064967; c=relaxed/simple;
-	bh=28eiBx9PmX31DIEiab35EHBlvPR50wHVwNErjmfAAuc=;
-	h=From:To:CC:Subject:Date:Message-ID:MIME-Version:Content-Type; b=CXfAfLl3FHsRwyRSsi6UQ/FtLLZQU31i7z3ncZJcROFFxcEh5a1qpHuGfkKmZzQdQPC6nm4eMDM2lirY8ycO7aEA8XIYGPBKLw4Dq3bTP5Y5gXkA3MBMKUevpX6z5lHPyhEy+U/OYC7wxv+bsI+jpfU+vQNAds8I+X65HW933ks=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=zhaoxin.com; spf=pass smtp.mailfrom=zhaoxin.com; arc=none smtp.client-ip=203.110.167.99
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=zhaoxin.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=zhaoxin.com
-X-ASG-Debug-ID: 1724064285-1eb14e31a7542a0001-Djp6mn
-Received: from ZXSHMBX2.zhaoxin.com (ZXSHMBX2.zhaoxin.com [10.28.252.164]) by mx2.zhaoxin.com with ESMTP id 0eunwJAKyFGd07QX (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NO); Mon, 19 Aug 2024 18:44:46 +0800 (CST)
-X-Barracuda-Envelope-From: LeoLiu-oc@zhaoxin.com
-X-Barracuda-RBL-Trusted-Forwarder: 10.28.252.164
-Received: from ZXSHMBX1.zhaoxin.com (10.28.252.163) by ZXSHMBX2.zhaoxin.com
- (10.28.252.164) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.1.2507.39; Mon, 19 Aug
- 2024 18:44:45 +0800
-Received: from ZXSHMBX1.zhaoxin.com ([fe80::dcd1:d46d:263:77e]) by
- ZXSHMBX1.zhaoxin.com ([fe80::dcd1:d46d:263:77e%7]) with mapi id
- 15.01.2507.039; Mon, 19 Aug 2024 18:44:45 +0800
-X-Barracuda-RBL-Trusted-Forwarder: 10.28.252.164
-Received: from xin.lan (10.32.64.1) by ZXBJMBX03.zhaoxin.com (10.29.252.7)
- with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2507.39; Mon, 19 Aug
- 2024 18:42:22 +0800
-From: LeoLiu-oc <LeoLiu-oc@zhaoxin.com>
-To: <joro@8bytes.org>, <will@kernel.org>, <robin.murphy@arm.com>,
-	<iommu@lists.linux.dev>, <linux-kernel@vger.kernel.org>
-CC: <CobeChen@zhaoxin.com>, <TimGuo@zhaoxin.com>, <TonyWWang-oc@zhaoxin.com>,
-	<leoliu-oc@zhaoxin.com>, <YeeLi@zhaoxin.com>, LeoLiuoc
-	<LeoLiu-oc@zhaoxin.com>
-Subject: [PATCH] iommu/dma: Fix not fully traversing iova reservations bug
-Date: Mon, 19 Aug 2024 18:42:19 +0800
-X-ASG-Orig-Subj: [PATCH] iommu/dma: Fix not fully traversing iova reservations bug
-Message-ID: <20240819104219.8057-1-LeoLiu-oc@zhaoxin.com>
-X-Mailer: git-send-email 2.34.1
+	s=arc-20240116; t=1724067471; c=relaxed/simple;
+	bh=8/9B3QlhBwbDoJsFPD/l/32vonkGRYcKYIBM9WTI8Po=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=Z75/s1rpoJ4Z15p4KzKB7r3lu8ufxhzW5MhYCbX06zedZU69cF3r5WjjhWPTkRv+WFoMtB04BDQ9g8u9JpPpT+8Q2/xHimUn6606UPRYoV280jsx6CH4QyeFIa289/2ddS3ULgmWOxJRIJicXI/dFtDWX00OFMYZdNJ1T/bLxe4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=freebox.fr; spf=pass smtp.mailfrom=freebox.fr; dkim=pass (2048-bit key) header.d=freebox-fr.20230601.gappssmtp.com header.i=@freebox-fr.20230601.gappssmtp.com header.b=ZMTug0/0; arc=none smtp.client-ip=209.85.128.50
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=freebox.fr
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=freebox.fr
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=freebox-fr.20230601.gappssmtp.com header.i=@freebox-fr.20230601.gappssmtp.com header.b="ZMTug0/0"
+Received: by mail-wm1-f50.google.com with SMTP id 5b1f17b1804b1-429d2d7be1eso21765145e9.1
+        for <iommu@lists.linux.dev>; Mon, 19 Aug 2024 04:37:47 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=freebox-fr.20230601.gappssmtp.com; s=20230601; t=1724067466; x=1724672266; darn=lists.linux.dev;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=RIDiWquIQ0tXErhdx+a7t4j4cfeeG9QXueTzJmbscTA=;
+        b=ZMTug0/0OiEByJlDKTil3jU+aUoc3VbFsdJqZubvL7ZBpm/DKpLcKO/gbDy8Ghdf4J
+         gIljCHJrm7Qk1igtPGRaAPj5HbQ3hGgAzs2i+gAz4a17WEj/JYY78/RTQY4QqUNh8jok
+         Pie9KMCkGEnt6Nn7iEPb+gs3RbzcyV3Euj/Ju95UpqcJ/ibjBgxbFs58XAih16vz+Abz
+         PDtZN7b/qpwlO2cVmpmdSTjB4M9ZxJi1rPjKiDfxRywNyfJ8kQLi/+MVm+ebs1d5oxhS
+         bJPcvKErIkZHtSP1fCXBPKrq/1oeWsWPUBEM8a3o+cK9XJurDZs3QTsMbcLQYYa7QUaM
+         nCrA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1724067466; x=1724672266;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=RIDiWquIQ0tXErhdx+a7t4j4cfeeG9QXueTzJmbscTA=;
+        b=h7mLyxAyG4Zc91UsCswGMTQjsW2qbDxuAvlX9jBprbWXJsZ/8co7jImJQH7fmNzMCI
+         sFR1c2qvNvzbeH7xT62ehrACXMxqBIrzfSkgz5bXJAU4WLx8TB6T8dXZOuHaYL9SLpCc
+         s/1QGYwu4+NoF6zRQUXSBBNLDfPHdtCqS7q4jp95xKlSDBs3pNxRgoZBDpwySEFqMiIF
+         /EG+u6+OAIr+4ddmNjCp+/CtdCHJ1doo9RcgvqXkUiGoRFYub1NEZelk1eTvNX6VmKRF
+         C7se6fWu3tFQ3U9hJvvrdR0hSMXiPlRSfcCTrIM5O/3Lahzmp+A/OfVAWMMCQRQM455d
+         Qr9g==
+X-Forwarded-Encrypted: i=1; AJvYcCWwy5qSFxzpQGdh4kajjMYNNe9tRNG2yEkz/DN87smOe/mGE5omSC5IlJVNZt5PS4Xw09w3vVad5JQJwtwi7OlCkv9J2JI=
+X-Gm-Message-State: AOJu0YxgI4dzaMBK9E19H9VOhG7Af71EwTSP+vvYw26Ndcnfd172vi5O
+	VP9tm2Dce/jRlr3F2ucWvA6sRTOKpYHY14wT0/tztYXEzz6uD8yELUfloh6xwSQ=
+X-Google-Smtp-Source: AGHT+IFOJqjoHU776vMvmeNPhV5ABeHBYFbyd6hV4KkeFyukt8jo0BTVCxoIlRPdXMWDFe8ccG01ag==
+X-Received: by 2002:a05:600c:468e:b0:426:5b19:d2b3 with SMTP id 5b1f17b1804b1-429e23b4b0cmr98450015e9.14.1724067465664;
+        Mon, 19 Aug 2024 04:37:45 -0700 (PDT)
+Received: from [192.168.108.81] (freebox.vlq16.iliad.fr. [213.36.7.13])
+        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-37189896a9csm10335771f8f.79.2024.08.19.04.37.44
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 19 Aug 2024 04:37:45 -0700 (PDT)
+Message-ID: <30489eee-075b-461b-ab43-c8807d667630@freebox.fr>
+Date: Mon, 19 Aug 2024 13:37:44 +0200
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-Content-Type: text/plain
-X-ClientProxiedBy: zxbjmbx1.zhaoxin.com (10.29.252.163) To
- ZXBJMBX03.zhaoxin.com (10.29.252.7)
-X-Moderation-Data: 8/19/2024 6:44:44 PM
-X-Barracuda-Connect: ZXSHMBX2.zhaoxin.com[10.28.252.164]
-X-Barracuda-Start-Time: 1724064286
-X-Barracuda-Encrypted: ECDHE-RSA-AES128-GCM-SHA256
-X-Barracuda-URL: https://10.28.252.36:4443/cgi-mod/mark.cgi
-X-Virus-Scanned: by bsmtpd at zhaoxin.com
-X-Barracuda-Scan-Msg-Size: 2804
-X-Barracuda-BRTS-Status: 1
-X-Barracuda-Bayes: INNOCENT GLOBAL 0.0000 1.0000 -2.0210
-X-Barracuda-Spam-Score: -2.02
-X-Barracuda-Spam-Status: No, SCORE=-2.02 using global scores of TAG_LEVEL=1000.0 QUARANTINE_LEVEL=1000.0 KILL_LEVEL=9.0 tests=
-X-Barracuda-Spam-Report: Code version 3.2, rules version 3.2.3.129251
-	Rule breakdown below
-	 pts rule name              description
-	---- ---------------------- --------------------------------------------------
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH 1/2] dt-bindings: arm-smmu: Add
+ qcom,last-ctx-bank-reserved
+To: Rob Herring <robh@kernel.org>
+Cc: Rob Clark <robdclark@gmail.com>, Will Deacon <will@kernel.org>,
+ Robin Murphy <robin.murphy@arm.com>, Joerg Roedel <joro@8bytes.org>,
+ Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley
+ <conor+dt@kernel.org>, iommu@lists.linux.dev, linux-arm-msm@vger.kernel.org,
+ linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+ devicetree@vger.kernel.org, Bjorn Andersson <andersson@kernel.org>,
+ Konrad Dybcio <konradybcio@kernel.org>, Arnaud Vrac <avrac@freebox.fr>,
+ Pierre-Hugues Husson <phhusson@freebox.fr>,
+ Marijn Suijten <marijn.suijten@somainline.org>
+References: <20240814-smmu-v1-0-3d6c27027d5b@freebox.fr>
+ <20240814-smmu-v1-1-3d6c27027d5b@freebox.fr>
+ <20240818152515.GA104481-robh@kernel.org>
+Content-Language: en-US
+From: Marc Gonzalez <mgonzalez@freebox.fr>
+In-Reply-To: <20240818152515.GA104481-robh@kernel.org>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 
-From: LeoLiuoc <LeoLiu-oc@zhaoxin.com>
+On 18/08/2024 17:25, Rob Herring wrote:
 
-For multiple devices in the same iommu group, sorted later devices (based
-on Bus:Dev.Func) have the RMRR.
+> On Wed, Aug 14, 2024 at 03:59:55PM +0200, Marc Gonzalez wrote:
+>
+>> On qcom msm8998, writing to the last context bank of lpass_q6_smmu
+>> (base address 0x05100000) produces a system freeze & reboot.
+>>
+>> Specifically, here:
+>>
+>> 	qsmmu->bypass_cbndx = smmu->num_context_banks - 1;
+>> 	arm_smmu_cb_write(smmu, qsmmu->bypass_cbndx, ARM_SMMU_CB_SCTLR, 0);
+>>
+>> and here:
+>>
+>> 	arm_smmu_write_context_bank(smmu, i);
+>> 	arm_smmu_cb_write(smmu, i, ARM_SMMU_CB_FSR, ARM_SMMU_CB_FSR_FAULT);
+>>
+>> It is likely that FW reserves the last context bank for its own use,
+>> thus a simple work-around would be: DON'T USE IT in Linux.
+>>
+>> Signed-off-by: Marc Gonzalez <mgonzalez@freebox.fr>
+>> ---
+>>  Documentation/devicetree/bindings/iommu/arm,smmu.yaml | 6 ++++++
+>>  1 file changed, 6 insertions(+)
+>>
+>> diff --git a/Documentation/devicetree/bindings/iommu/arm,smmu.yaml b/Documentation/devicetree/bindings/iommu/arm,smmu.yaml
+>> index 280b4e49f2191..f9b23aef351b0 100644
+>> --- a/Documentation/devicetree/bindings/iommu/arm,smmu.yaml
+>> +++ b/Documentation/devicetree/bindings/iommu/arm,smmu.yaml
+>> @@ -204,6 +204,12 @@ properties:
+>>        access to SMMU configuration registers. In this case non-secure aliases of
+>>        secure registers have to be used during SMMU configuration.
+>>  
+>> +  qcom,last-ctx-bank-reserved:
+>> +    type: boolean
+>> +    description:
+>> +      FW reserves the last context bank of this SMMU for its own use.
+>> +      If Linux tries to use it, Linux gets nuked.
+> 
+> How is this Qualcomm specific? Presumably any implementation could do 
+> this if there's no way to properly partition things. Robin?
 
-Sorted earlier device (without RMRR) initialized the iova domain causing
-the sorted later device goto done_unlock.
+Obviously, there is nothing Qualcomm specific about reserving   
+an SMMU context bank for the FW / hypervisor, other than it
+appears that qcom is the first to do it; or at least the
+LPASS SMMU on qcom msm8998 is the first known SMMU where such
+a work-around is required.
 
-Then, the sorted later device (with RMRR) cannot execute the
-iova_reserve_iommu_regions to reserve the RMRR in the group's iova domain,
-and other devices (in the same group) alloc iova in RMRR are permitted.
+What is the correct nomenclature?
 
-DMA iova addresses conflict with RMRR in this case.
+Can we just drop the vendor prefix if a property is generic
+across vendors? But does it require a subsystem prefix like
+"iommu" in order to not clash with generic props in other subsystems?
 
-There is a need to make sure all devices of the same group execute reserve
-iova.
+> Also, this property isn't very flexible. What happens when it is not the 
+> last bank or more than 1 bank reserved? This should probably be a mask 
+> instead.
 
-Substitute iova_reserve_iommu_regions with iova_reserve_pci_regions
-(reserved PCI window)and iova_reserve_iommu_regions(reserved resv-region,
-like RMRR and msi range). And then, goto iova_reserve_iommu_regions could
-avoid the problem when if (iovad->start_pfn) is true.
+OK, I'm getting conflicting requests here.
 
-Signed-off-by: LeoLiuoc <LeoLiu-oc@zhaoxin.com>
----
- drivers/iommu/dma-iommu.c | 26 +++++++++++++++++++-------
- 1 file changed, 19 insertions(+), 7 deletions(-)
+Bjorn has recommended dropping the property altogether:
 
-diff --git a/drivers/iommu/dma-iommu.c b/drivers/iommu/dma-iommu.c
-index 7b1dfa0665df..9d40146a63e3 100644
---- a/drivers/iommu/dma-iommu.c
-+++ b/drivers/iommu/dma-iommu.c
-@@ -559,6 +559,19 @@ static int iova_reserve_pci_windows(struct pci_dev *de=
-v,
- 	return 0;
- }
-=20
-+static int iova_reserve_pci_regions(struct device *dev,
-+		struct iommu_domain *domain)
-+{
-+	struct iommu_dma_cookie *cookie =3D domain->iova_cookie;
-+	struct iova_domain *iovad =3D &cookie->iovad;
-+	int ret =3D 0;
-+
-+	if (dev_is_pci(dev))
-+		ret =3D iova_reserve_pci_windows(to_pci_dev(dev), iovad);
-+
-+	return ret;
-+}
-+
- static int iova_reserve_iommu_regions(struct device *dev,
- 		struct iommu_domain *domain)
- {
-@@ -568,12 +581,6 @@ static int iova_reserve_iommu_regions(struct device *d=
-ev,
- 	LIST_HEAD(resv_regions);
- 	int ret =3D 0;
-=20
--	if (dev_is_pci(dev)) {
--		ret =3D iova_reserve_pci_windows(to_pci_dev(dev), iovad);
--		if (ret)
--			return ret;
--	}
--
- 	iommu_get_resv_regions(dev, &resv_regions);
- 	list_for_each_entry(region, &resv_regions, list) {
- 		unsigned long lo, hi;
-@@ -707,7 +714,7 @@ static int iommu_dma_init_domain(struct iommu_domain *d=
-omain, struct device *dev
- 		}
-=20
- 		ret =3D 0;
--		goto done_unlock;
-+		goto iova_reserve_iommu;
- 	}
-=20
- 	init_iova_domain(iovad, 1UL << order, base_pfn);
-@@ -722,6 +729,11 @@ static int iommu_dma_init_domain(struct iommu_domain *=
-domain, struct device *dev
- 	    (!device_iommu_capable(dev, IOMMU_CAP_DEFERRED_FLUSH) || iommu_dma_in=
-it_fq(domain)))
- 		domain->type =3D IOMMU_DOMAIN_DMA;
-=20
-+	ret =3D iova_reserve_pci_regions(dev, domain);
-+	if (ret)
-+		goto done_unlock;
-+
-+iova_reserve_iommu:
- 	ret =3D iova_reserve_iommu_regions(dev, domain);
-=20
- done_unlock:
---=20
-2.34.1
+> It also seems, as the different SMMUs in this platform behave
+> differently it might be worth giving them further specific compatibles,
+> in which case we could just check if it's the qcom,msm8998-lpass-smmu,
+> instead of inventing a property for this quirk.
+
+
+I'll send a patch series in line with Bjorn's request.
+
+Regards
 
