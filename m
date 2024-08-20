@@ -1,174 +1,235 @@
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 1BEB618E355
-	for <iommu@lists.linux.dev>; Tue, 20 Aug 2024 10:05:35 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1724148337; cv=none; b=NnxbO9kvk8oShxSIVz9CV+HchGc9IjO3tA1KEhty/+B2C0h+dhPdhNm0mEy2IZWtUuGavl0kpzsU79juk5RYxO1ddPocYlxJhvSg0Z+WB/TgRHKpHklssPXY7VlzkXvKKR1sgr8bCnH5QWLpe1IrkwQABN3soEMWAnESGxfiflY=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1724148337; c=relaxed/simple;
-	bh=7924WqlDUJrIrxpN04wq3ddA9MJDlHcP1SLcKcpKas4=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=edJQDA0IVUP6I9d7BDH39EM2JoUDguDNCYis1ScOrfFL4WdUF4MwxeRpLHmnyvRsLQDTTjcsQdG6iF0mUsvEzjKD3hXQGt7OR1ddQidhuvC55S154liQJnQLF9aQrvnxc1jUFHanm3HnCRXUuOFkeaEC7EM0GwKF+JqS9LJpKNg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; arc=none smtp.client-ip=217.140.110.172
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 34179DA7;
-	Tue, 20 Aug 2024 03:06:01 -0700 (PDT)
-Received: from [10.57.70.101] (unknown [10.57.70.101])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 633F63F66E;
-	Tue, 20 Aug 2024 03:05:32 -0700 (PDT)
-Message-ID: <2bc8d8c0-3e7f-47e3-99eb-be4f0983a54d@arm.com>
-Date: Tue, 20 Aug 2024 11:05:28 +0100
+Received: from NAM11-BN8-obe.outbound.protection.outlook.com (mail-bn8nam11on2082.outbound.protection.outlook.com [40.107.236.82])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B50F018F2EF;
+	Tue, 20 Aug 2024 12:01:07 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.236.82
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1724155269; cv=fail; b=TGx1KbZ1jEVOAsBdZUsjV1Fu8QA3aHlfZ5y3KkGqsVfYihHG/jHThHDreW+nPzGJjjPnFYH/ma5WGsKvu5dP45FSZRH8dQVJ7qCu/gcmbWfb5jNqrZy+7pvxqeU3/SoHL7SuZqnYE0cTVpBEVuMHSySc6IjuMTxFWWUVsx1a0hE=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1724155269; c=relaxed/simple;
+	bh=EmTcHp7FXKlT1G1HjS1IA8RbW6IP4klaLCxlc189mJQ=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:Content-Type:
+	 Content-Disposition:In-Reply-To:MIME-Version; b=lfWnTMLx/8BO8XJq/8Rew2uqGHm0iN+fpTCX/WawExWlHeq0y3FnV//UBdLRBHYVPkdyofvvVcfZ/WEf1azW8PqiAM9yilChO5nwToE7DeOxWt42MerFG3Hd07Z2EVq4AeQer3GMfyKb2XdmBrOm5AjeKfH452kZ3SvYqq8NgE4=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=jFUcONEH; arc=fail smtp.client-ip=40.107.236.82
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="jFUcONEH"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=N86HajC28AjsxyJr1NJDNs3NTvKESCKMA1tivg2yru2M6YZ/IPULp/t5ubINqeRCdY2SMj3qs+xrQX2lg/jy8UG1FfmtROU5Q/+ELvPb2Th17XWR8CBwolxHM4Hh7adR6umhA+NU49hd3k+lIpFt87qG4JLG3rHYDjqHs8BJGJmX+K9SH2OHxi+pbk8X50ePAlkXndrFOIW6OhDmS9idUKmlHYZXsKJM6Yv8IQiUXy62/eB3Fim+fJk11j13x5MHz1jCskPsHA0mDMxBdI3atRXH7VVclB6fvBJK9+2cnLdLfJhgo+d0fcfyajMaT77538Eh8UF4DAA9rTmyGdhO7g==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=ICd1IQl4iRppIed1BW+PAdVfdetVzyz43u1yOKHsLIQ=;
+ b=NU8NREkU2oCbvIosbOYGvAT1GQktf3k/sqz8aViHpJ473c5G0z1rsidH6aau4DWmUU4kmg1w+eSC/tGtRcoMRqPCLYu4qRYPlZGFNnut9UJh+f858mkjwIjR5sHa3YdzsLEIOOFf+Q713BpPb40jC67G1Mb9TtNVyOoOoMviV5VCYq5a33okP90/x4hNvNEIcu81DyCBptekdjFLo1NVgVgcLXIjdEosT0lxMDKbYjIRT0m7OWn68rP0F/wjkSpeLaR05ZUIDQ14/rECmitp3Sge+yVYXhtocZriFxiSYdCj7q3xAsb0VnTPuyLmHt1IaOz0J/0rVWUtglCULoKZlQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=ICd1IQl4iRppIed1BW+PAdVfdetVzyz43u1yOKHsLIQ=;
+ b=jFUcONEH60pO8CcgPQf3rRgcn8keGAA0P2c1oDimjyAuBUVp8J7wTFu+ciRJ0sFTd4Tv3naxdSlKQCqA/HX/fDKJ1umoYqoAaRByTZb0X4sLfCe6xoI53oLwH7low+ZMxiPRbACKevyFUNvXbaaC+T7TpmUhiuRYMaZ3Wrf9YE4GHX/vl8YWNqNH3xddf929za+ey7PGqSvn7e+JbUGdI62vfIFFkDnKMVOz9H3O9weVPl9EW3U6HW/dq1iHvU3QFWdsWx/dYZJj0MuxQmEkU+HxhbLjNbnWewUudfer11x/CBiGjIwH1kpUfNG8wS8F6nBG2D48k8KjNPrA30XeSg==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nvidia.com;
+Received: from CH3PR12MB7763.namprd12.prod.outlook.com (2603:10b6:610:145::10)
+ by CH2PR12MB4328.namprd12.prod.outlook.com (2603:10b6:610:a6::14) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7897.16; Tue, 20 Aug
+ 2024 12:01:04 +0000
+Received: from CH3PR12MB7763.namprd12.prod.outlook.com
+ ([fe80::8b63:dd80:c182:4ce8]) by CH3PR12MB7763.namprd12.prod.outlook.com
+ ([fe80::8b63:dd80:c182:4ce8%3]) with mapi id 15.20.7875.023; Tue, 20 Aug 2024
+ 12:01:04 +0000
+Date: Tue, 20 Aug 2024 09:01:02 -0300
+From: Jason Gunthorpe <jgg@nvidia.com>
+To: Mostafa Saleh <smostafa@google.com>
+Cc: acpica-devel@lists.linux.dev,
+	Alex Williamson <alex.williamson@redhat.com>,
+	Hanjun Guo <guohanjun@huawei.com>, iommu@lists.linux.dev,
+	Joerg Roedel <joro@8bytes.org>, Kevin Tian <kevin.tian@intel.com>,
+	kvm@vger.kernel.org, Len Brown <lenb@kernel.org>,
+	linux-acpi@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+	Lorenzo Pieralisi <lpieralisi@kernel.org>,
+	"Rafael J. Wysocki" <rafael@kernel.org>,
+	Robert Moore <robert.moore@intel.com>,
+	Robin Murphy <robin.murphy@arm.com>,
+	Sudeep Holla <sudeep.holla@arm.com>, Will Deacon <will@kernel.org>,
+	Eric Auger <eric.auger@redhat.com>,
+	Jean-Philippe Brucker <jean-philippe@linaro.org>,
+	Moritz Fischer <mdf@kernel.org>,
+	Michael Shavit <mshavit@google.com>,
+	Nicolin Chen <nicolinc@nvidia.com>, patches@lists.linux.dev,
+	Shameerali Kolothum Thodi <shameerali.kolothum.thodi@huawei.com>
+Subject: Re: [PATCH 2/8] iommu/arm-smmu-v3: Use S2FWB when available
+Message-ID: <20240820120102.GB3773488@nvidia.com>
+References: <0-v1-54e734311a7f+14f72-smmuv3_nesting_jgg@nvidia.com>
+ <2-v1-54e734311a7f+14f72-smmuv3_nesting_jgg@nvidia.com>
+ <ZsRUDaFLd85O8u4Z@google.com>
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <ZsRUDaFLd85O8u4Z@google.com>
+X-ClientProxiedBy: BL1P221CA0025.NAMP221.PROD.OUTLOOK.COM
+ (2603:10b6:208:2c5::13) To CH3PR12MB7763.namprd12.prod.outlook.com
+ (2603:10b6:610:145::10)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [BUG REPORT]net: page_pool: kernel crash at
- iommu_get_dma_domain+0xc/0x20
-To: Yonglong Liu <liuyonglong@huawei.com>,
- Yunsheng Lin <linyunsheng@huawei.com>,
- Somnath Kotur <somnath.kotur@broadcom.com>,
- Jesper Dangaard Brouer <hawk@kernel.org>
-Cc: "David S. Miller" <davem@davemloft.net>, Jakub Kicinski
- <kuba@kernel.org>, pabeni@redhat.com, ilias.apalodimas@linaro.org,
- netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
- Alexander Duyck <alexander.duyck@gmail.com>,
- Alexei Starovoitov <ast@kernel.org>, "shenjian (K)" <shenjian15@huawei.com>,
- Salil Mehta <salil.mehta@huawei.com>, joro@8bytes.org, will@kernel.org,
- iommu@lists.linux.dev, Matthew Rosato <mjrosato@linux.ibm.com>
-References: <0e54954b-0880-4ebc-8ef0-13b3ac0a6838@huawei.com>
- <8743264a-9700-4227-a556-5f931c720211@huawei.com>
- <e980d20f-ea8a-43e3-8d3f-179a269b5956@kernel.org>
- <CAOBf=musxZcjYNHjdD+MGp0y6epnNO5ryC6JgeAJbP6YQ+sVUA@mail.gmail.com>
- <ad84acd2-36ba-433c-bdf7-c16c0d992e1c@huawei.com>
- <190d5a15-d6bf-47d6-be86-991853b7b51d@arm.com>
- <5b0415ff-9bbe-4553-89d6-17d12fd44b47@huawei.com>
- <ae995d55-daa9-4060-85fa-31b4f725a17d@arm.com>
- <775234bc-84a2-458b-b047-ff6ab2607989@huawei.com>
-From: Robin Murphy <robin.murphy@arm.com>
-Content-Language: en-GB
-In-Reply-To: <775234bc-84a2-458b-b047-ff6ab2607989@huawei.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: CH3PR12MB7763:EE_|CH2PR12MB4328:EE_
+X-MS-Office365-Filtering-Correlation-Id: d20769b9-5422-4e28-8c50-08dcc10fc413
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;ARA:13230040|7416014|376014|1800799024|366016;
+X-Microsoft-Antispam-Message-Info:
+	=?utf-8?B?SXNCTzR2MEwxTWw0aDViQW5qQkgxNXhEbVgyWVd0M25kS1dNVTE2bXR4dmpl?=
+ =?utf-8?B?cnNtVFA5c2l4REl0NUowcFNiOTM3MEZ5TmJ3Z2NzMFY3YTNTU09XQU1CTThZ?=
+ =?utf-8?B?MERjWWl4azRHRU8zaTQrbjVoMS9ZZkVJTWZKb0NISkFwTnRsbnRDSmZ1RmNR?=
+ =?utf-8?B?TFZzQ2ZWdFp4MlF0b3BrdkowNC9zN1kyOTVqNDBwNHQxOFVqWGE0UjdrRER2?=
+ =?utf-8?B?YlRHVGo2d1BXNCt5T1V0TTZiMG93N0VxbHI0OGYrZ0lGbUJEa3BraS9vZFdr?=
+ =?utf-8?B?M1dlOWhjTkJnUkhKNXhTSHRtQWw5Q0RkdHdDaDZQTXlQK3grVm8zb3YrSWYx?=
+ =?utf-8?B?Vm5wRjlUelg2d2dkOVVkNUVZU0RkM3RuK1JwV05aV09tb2RFTENVREwxWHJo?=
+ =?utf-8?B?Z2o5Y0M3aC90ZHBOSURhWjNEbkljRFpPYXY4azlGdSs1bVE2YWZpczRUYVVW?=
+ =?utf-8?B?SW5oTVdtN2RCSjM1Y3o0TktaeHM3UHBNUVhDNnAxc3czeGxsUm1udlVCbDBi?=
+ =?utf-8?B?ZGUyazgyVExqOVBidExWeDJMTTdJODMrVzVWSUR4eWwxZ1BZOVduUEkyMkpT?=
+ =?utf-8?B?clpoNFBvT2g2TDY5aHYrOXYzR2QxQVE1eElXcEVQMTFtaVJISGpiU2NUSGZB?=
+ =?utf-8?B?ZWNpK3pjcmVndzdGRng3QmJxYmlQYTVocFpKbngvbFNGZVNMQldIVXBsb0VL?=
+ =?utf-8?B?WC84NW94V0ZFSFFzaFU1eGQ3OEVOZHBoWHZJd3pnNWlmRFMxeHVEalBUL0dw?=
+ =?utf-8?B?aGFOY0xxZGs4VG4vSTJieVBleDQ3aTRSbDJoUEFvSTQ0T0xEcmNQeGxZbEFa?=
+ =?utf-8?B?Wmc1YzBHVDJiWVBKSTVFTnVDazdmTlRZQURnTWhldGJOOHZmYm5yakJub1hK?=
+ =?utf-8?B?dHpqQW9wNUZid3ZmVE54Mm5LSld4b3hwNnUxYXdmN05oSG5VTXBZdVBnR05u?=
+ =?utf-8?B?WGJSS2RTNWRMUDE2UjFITlVHUnF2WkE3RE40TERURlJnTyszOGg3MzMxWE5o?=
+ =?utf-8?B?eUhCR2htSmkrd3Z6MmcveElaUm1OOVBXVUd1RFdZQjNadzhQTlRSayt3SEdh?=
+ =?utf-8?B?WXNmYTlKa08wb0pUUWpSZm5lcmpKU3RlWll3WGJZOWFRTmxpNU5VaDhCSGNW?=
+ =?utf-8?B?cjNIL2tpUXlldVE5Sy95a3VOUXZHWFNpZWVSQzlwQmNheVlSQlVueFZRVldZ?=
+ =?utf-8?B?Tkx4WndmMzJZQW8rZzl0WE8xTXduNXV3UlpsQnJWVnpMTEFoN01id081blJQ?=
+ =?utf-8?B?Sm5kNWl4OUFpV2FQZ1pHNVRkUFdDUk1BcFZLTXg5OGN5bE02VlN1Y3p2VzIx?=
+ =?utf-8?B?dFNveVhSWGRUc05RYW9QRHBqbFpRMldtNFc0MFhNeW80djNXQW91YmUrVUs0?=
+ =?utf-8?B?YVZLV3VzNUdodW9VeWpnanhMcnJYcExJdFZUOVFiUTcraUpqZ203d1hRenFi?=
+ =?utf-8?B?NHZGSGkrQThPNlNVUlg4Y1A4a0wwM3pQcGZKZ3B6U2VaM212ak9DaTFCSXV1?=
+ =?utf-8?B?Nmt6a2d6MFZwd2RXSGJTK0VBamthTzczTkVOdDBIOExqTy9OalkrUzdwV1dY?=
+ =?utf-8?B?dUpZOElrbnhNLytoUmkwOVcyRFpVOHgzS0VJYU8wLzd4Mk9hOWxBMnRNUEd3?=
+ =?utf-8?B?citrVjYzSUJyQTM3aUpuRWRZUUZ2WWJUMkRLSER0ZW5JRkVUYWIyanJEcjJY?=
+ =?utf-8?B?SVBRdEtyM1ViK1V0b3FKVEhvTXpNN014SGgyRXd6NW9TVGpCK0pKaDZNemZB?=
+ =?utf-8?B?UWVGSEU0MzVXWXduSG5kb1VpTnpaYnRMVmNuQnFUSTF5MVJHZkpzekJqeS9C?=
+ =?utf-8?Q?I72j2Kz0/0hqCV60G+6SVudte4jfiln8dnJnQ=3D?=
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CH3PR12MB7763.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(7416014)(376014)(1800799024)(366016);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?utf-8?B?UENNOUJWcklPQllLNTZZd01uSjk1Z1g2TWdvWUpNb3E3SzN5eFdZOTFRT3o1?=
+ =?utf-8?B?Ykd2cEMvYU9TWFdzUmJmbUxRNVRkOWsxRUJTS3ZnbFBzcW1Mc0dad0JRRS9p?=
+ =?utf-8?B?dUxwQkk4OFJ2YUljMzRyZjVVQlFsdTVVRmFsRFovKzlVbWxiU1k1OWtiN1pu?=
+ =?utf-8?B?TGNPLy9KdUcvQUJUMFJrYTNTbEoveDJlK09HR0xXelNnY3lLc3dFSlpHNVFF?=
+ =?utf-8?B?dWRsamhiRGFlZ3FsVThnSHdFNWNwMjBEcG9GY3hjcjdUUyt6SWtxZkR1L2J3?=
+ =?utf-8?B?RVJrOGl6V0EyVms1YzhWamV2eFRBbURtc0cyUDBGcnVMYm80WVFrQ29rTkdO?=
+ =?utf-8?B?dnZNWFdyOTJ4Q1VmTzRSa3Z0Y3laRWNrejBWbmVBTi9VcW1ta1loMnRQTDV4?=
+ =?utf-8?B?cFlJTFc4TWpXSkFuQmd1cEZEYlFGMVVXL1NnQ1lUOGdEQWNZZFdIcmZURnFX?=
+ =?utf-8?B?Z1hZUDVPVUhFZ3hlc25IZVQvbzhHODIreDFVYmZYa0JJWGdNZ2Y3Yi9oL1l2?=
+ =?utf-8?B?Tm92RFlhVmxhc3pFNWZaZkdVMkR5Q2xRUnZSZGhvTmpNRm9oUFBoZzFnMGJn?=
+ =?utf-8?B?QmhjdDBveFVVOHFPUEdERmZJQ0lTRlpQVHpjOXB1TytOOXlWK0tBQUdTdmtF?=
+ =?utf-8?B?a1I0MHVsVWVDaUZ2UzNlVXc2RFhQMGdHamdCRjkvODJVUlIyL005dkYvY1Uv?=
+ =?utf-8?B?UG5ObjVpSUxEL2pqS3Y1V2M5bjF6OXVBSkF2cTB6d3dnN0E1UFRYU1pYUVJu?=
+ =?utf-8?B?K3VOMHRMM3RuakRlWUF6b09nODdZY0Z1M1JUTDJzNkp0azgxbnRJNDUzeEli?=
+ =?utf-8?B?SEVKSnNGblZaRm9MMS9QTWpjTWZZZ0JabEZ1eTRrS0o2Uk5kbTU3cmdJOXBx?=
+ =?utf-8?B?aGh4SWt5RUJoUXc0amxXMGx4dEg2SFBkSm9ISERNaXIzYlVPalhyd1c0ZHpa?=
+ =?utf-8?B?cE9TSEo5SDNFUDR3VWNFYkl6a2k4UnRaVnlnWlJtcGZNWVh0VllzS1Z0OEN6?=
+ =?utf-8?B?TDNUdTdYM1JXQzR2RDg0WWdKZnh1ejIrY1hOeXZqZ0x6VVUwTCtZK0RLZlBZ?=
+ =?utf-8?B?OWh5ZUh1TFJlOTFmNWNnK1V2NzBPejR1SWgvK1Qwek93MjlvY3lyeThCajB1?=
+ =?utf-8?B?d0RaV2JqMnV5bVdJdmhFeWdRZ0NTZ2JFcUc2NU9NcHR2cUFsbzFBamM0YTlH?=
+ =?utf-8?B?eE41SkdJc1IrSW8zdzVpbzBoaVo5U0ZxaUtFZytZcEZyakZSd0UxNzdJcS9y?=
+ =?utf-8?B?VnlYTUVVRGtsdjFZSnZ1ckdVcFFzeGU0ZVh2dEFWYnM0UzVQTjZ4S25mbTVP?=
+ =?utf-8?B?QXYwYSs2WWcyd1llV3dpVEJnQklwY1hrbGNHQU5DSTZ3WnFlMWYyS0RRczUy?=
+ =?utf-8?B?aVFQZ2IvT2UxaTVrZS9laHltRFNJaDlybUNEdERoN0lIbDI4d2ZSNVZYaUZj?=
+ =?utf-8?B?V0tKdHFiSWtZKzZtNDdZQ09rLzdwZWx4Z2VPYXlhVDQra2ovV2x0QXdvdVRL?=
+ =?utf-8?B?TXcra3A3SGZsdzZia0xNTnRSaVN4bGxlUURNaHd6S3RUYUNYWTdxWVJpcmFo?=
+ =?utf-8?B?amJxTldUSHFYSnlydjdORHdXSzErWW50VHQvLzlGb1dGNFowbUhSUWVLNFMv?=
+ =?utf-8?B?NjZDVTZnSStia21lWGVtSEVHazJnK3hHb2dIejRrdDFxTGl6d2xNL0ZYS3lu?=
+ =?utf-8?B?UU5ZQlZOUDZhLy95ZnZ3L2h3ck54SlR2WmUrNmhTV0dISm9YWVhDTG44MkNw?=
+ =?utf-8?B?c1Z5b3Azc2E0MG5tRHhkRzkwV1BLT0VRK0JzNzMrdzNPV29LTXFpb0dKZ3dh?=
+ =?utf-8?B?MFduU2lTOFV1bndDMkVYSGtSb2ZZNHBEUndTV0VHNEM2dDAralJWTkEyL0ZM?=
+ =?utf-8?B?U3pseTQ5WDhIRVJZbzJXYldKZmorSWRQcEUveG9xSzBGeDlQVm1JQ1Y0R3NV?=
+ =?utf-8?B?TTYwekxSME43MjFmbUFlbm1HNjRDRVNKWTh6dVBDOEFEbk1wVkxUWGtqM0dw?=
+ =?utf-8?B?WW9uZEVaUmZ2ekQwR2tpOFhQTE1rWmxRbXFzUGZQQTN4NXpRTjIzcERNNE10?=
+ =?utf-8?B?OFlSTk5oOTZZdXhtNkZEcHgxeE1nWGtqbFhPS0Q4SkNrdFFkMytJMWxqWFRx?=
+ =?utf-8?Q?xz1G75KUQPVYyH4GVrB+MSoES?=
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: d20769b9-5422-4e28-8c50-08dcc10fc413
+X-MS-Exchange-CrossTenant-AuthSource: CH3PR12MB7763.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 20 Aug 2024 12:01:03.9699
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: ij0hoEkQyrNrXrxucmqbVwypXlCej3v847F6jhjAj0Lhz4pYLXfRDtst3jxnNOaJ
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: CH2PR12MB4328
 
-On 2024-08-20 8:18 am, Yonglong Liu wrote:
+On Tue, Aug 20, 2024 at 08:30:05AM +0000, Mostafa Saleh wrote:
+> Hi Jason,
 > 
-> On 2024/8/6 20:50, Robin Murphy wrote:
->> On 06/08/2024 12:54 pm, Yunsheng Lin wrote:
->>> On 2024/8/5 20:53, Robin Murphy wrote:
->>>>>>>
->>>>>>> The page_pool bumps refcnt via get_device() + put_device() on the 
->>>>>>> DMA
->>>>>>> 'struct device', to avoid it going away, but I guess there is 
->>>>>>> also some
->>>>>>> IOMMU code that we need to make sure doesn't go away (until all 
->>>>>>> inflight
->>>>>>> pages are returned) ???
->>>>>
->>>>> I guess the above is why thing went wrong here, the question is which
->>>>> IOMMU code need to be called here to stop them from going away.
->>>>
->>>> This looks like the wrong device is being passed to dma_unmap_page() 
->>>> - if a device had an IOMMU DMA domain at the point when the DMA 
->>>> mapping was create, then neither that domain nor its group can 
->>>> legitimately have disappeared while that device still had a driver 
->>>> bound. Or if it *was* the right device, but it's already had 
->>>> device_del() called on it, then you have a fundamental lifecycle 
->>>> problem - a device with no driver bound should not be passed to the 
->>>> DMA API, much less a dead device that's already been removed from 
->>>> its parent bus.
->>>
->>> Yes, the device *was* the right device, And it's already had 
->>> device_del()
->>> called on it.
->>> page_pool tries to call get_device() on the DMA 'struct device' to 
->>> avoid the
->>> above lifecycle problem, it seems get_device() does not stop 
->>> device_del()
->>> from being called, and that is where we have the problem here:
->>> https://elixir.bootlin.com/linux/v6.11-rc2/source/net/core/page_pool.c#L269
->>>
->>> The above happens because driver with page_pool support may hand over
->>> page still with dma mapping to network stack and try to reuse that page
->>> after network stack is done with it and passes it back to page_pool 
->>> to avoid
->>> the penalty of dma mapping/unmapping. With all the caching in the 
->>> network
->>> stack, some pages may be held in the network stack without returning 
->>> to the
->>> page_pool soon enough, and with VF disable causing the driver 
->>> unbound, the
->>> page_pool does not stop the driver from doing it's unbounding work, 
->>> instead
->>> page_pool uses workqueue to check if there is some pages coming back 
->>> from the
->>> network stack periodically, if there is any, it will do the dma 
->>> unmmapping
->>> related cleanup work.
->>
->> OK, that sounds like a more insidious problem - it's not just IOMMU 
->> stuff, in general the page pool should not be holding and using the 
->> device pointer after the device has already been destroyed. Even 
->> without an IOMMU, attempting DMA unmaps after the driver has already 
->> unbound may leak resources or at worst corrupt memory. Fundamentally, 
->> the page pool code cannot allow DMA mappings to outlive the driver 
->> they belong to.
->>
->> Thanks,
->> Robin.
->>
-> I found a easier way to reproduce the problem:
-> 1. enable a vf
-> 2. use mz to send only one of the multiple fragments
-> 3. disable the vf in 30 seconds
+> On Tue, Aug 06, 2024 at 08:41:15PM -0300, Jason Gunthorpe wrote:
+> > Force Write Back (FWB) changes how the S2 IOPTE's MemAttr field
+> > works. When S2FWB is supported and enabled the IOPTE will force cachable
+> > access to IOMMU_CACHE memory and deny cachable access otherwise.
+> > 
+> > This is not especially meaningful for simple S2 domains, it apparently
+> > doesn't even force PCI no-snoop access to be coherent.
+> > 
+> > However, when used with a nested S1, FWB has the effect of preventing the
+> > guest from choosing a MemAttr that would cause ordinary DMA to bypass the
+> > cache. Consistent with KVM we wish to deny the guest the ability to become
+> > incoherent with cached memory the hypervisor believes is cachable so we
+> > don't have to flush it.
+> > 
+> > Turn on S2FWB whenever the SMMU supports it and use it for all S2
+> > mappings.
 > 
-> Jakub's patch:
-> https://lore.kernel.org/netdev/20240809205717.0c966bad@kernel.org/T/
-> can solve this case, but can not solve the origin case.
-> 
-> Base on the simple case, I found that v6.9 has no problem, v6.10-rc1 
-> introduce the problem.
+> I have been looking into this recently from the KVM side as it will
+> use FWB for the CPU stage-2 unconditionally for guests(if supported),
+> however that breaks for non-coherent devices when assigned, and
+> limiting assigned devices to be coherent seems too restrictive.
 
-No, just because you don't see this particular crash symptom doesn't 
-mean the fundamental issue isn't still there. Besides, Matthew already 
-said he reproduced it on s390 back to v6.7 (and with the old DMA API 
-implementation before then I think it wouldn't have crashed, but would 
-have still leaked the hypervisor DMA mappings).
+kvm's CPU S2 doesn't care about non-DMA-coherent devices though? That
+concept is only relevant to the SMMU.
 
-> And I trace the differences between the two version:
-> v6.9: 
-> page_pool_return_page()->dma_unmap_page_attrs()->*dma_direct_unmap_page()*
-> v6.10-rc1: 
-> page_pool_return_page()->dma_unmap_page_attrs()->*iommu_dma_unmap_page()*
-> That's because in v6.9 dev->dma_ops is NULL and v6.10-rc1 doesn't. (The 
-> driver has already unbound, but the device is still there)
-> 
-> I revert the patch:
-> https://lore.kernel.org/linux-arm-kernel/4a4482a0-4408-4d86-9f61-6589ab78686b@somainline.org/T/
-> then the bug I report can not reproduce.
-> 
-> So maybe this problem is introduced by this patch or the following patch 
-> set?
+The issue on the KVM side is you can't put device MMIO into the CPU S2
+using S2FWB and Normal Cachable, it will break the MMIO programming
+model. That isn't "coherency" though.
 
-That patch fixes a bug. Reintroducing that bug and breaking probe 
-deferral on arm64 to attempt to paper over a design flaw in the page 
-pool code is clearly not a reasonable course of action.
+It has to be Normal-NC, which this patch does:
 
-> https://lore.kernel.org/linux-iommu/cover.1713523152.git.robin.murphy@arm.com/
-> or the page pool always has the problem: In the version before v6.9, and 
-> in this case, page pool use iommu_dma_map_page() and 
-> dma_direct_unmap_page(), not pair?
+https://lore.kernel.org/r/20240224150546.368-4-ankita@nvidia.com
 
-OK, do you start to see the problem there? If you got an address from 
-vmalloc() and passed it to free_pages() would you expect that to work 
-either? Sure, with enough luck on a cache-coherent system you may have 
-been getting away with dma_direct_unmap_page() being largely a no-op, 
-but if the arbitrary IOVA DMA address from iommu-dma happens to look 
-like a SWIOTLB DMA address to dma-direct, that could be much more fun.
+> But for SMMUv3, S2FWB is per stream, can’t we just use it if the master
+> is DMA coherent?
 
-Thanks,
-Robin.
+Sure, that seems to be a weird corner. Lets add this:
+
+@@ -4575,7 +4575,12 @@ static int arm_smmu_device_hw_probe(struct arm_smmu_device *smmu)
+ 
+        /* IDR3 */
+        reg = readl_relaxed(smmu->base + ARM_SMMU_IDR3);
+-       if (FIELD_GET(IDR3_FWB, reg))
++       /*
++        * If for some reason the HW does not support DMA coherency then using
++        * S2FWB won't work. This will also disable nesting support.
++        */
++       if (FIELD_GET(IDR3_FWB, reg) &&
++           (smmu->features & ARM_SMMU_FEAT_COHERENCY))
+                smmu->features |= ARM_SMMU_FEAT_S2FWB;
+        if (FIELD_GET(IDR3_RIL, reg))
+                smmu->features |= ARM_SMMU_FEAT_RANGE_INV;
+
+IMHO it would be weird to make HW that has S2FWB but not coherency,
+but sure let's check it.
+
+Also bear in mind VFIO won't run unless ARM_SMMU_FEAT_COHERENCY is set
+so we won't even get a chance to ask for a S2 domain.
+
+Jason
