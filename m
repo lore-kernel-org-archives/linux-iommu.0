@@ -1,175 +1,196 @@
-Received: from mail-wm1-f43.google.com (mail-wm1-f43.google.com [209.85.128.43])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0787115C152
-	for <iommu@lists.linux.dev>; Tue, 20 Aug 2024 19:53:00 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.43
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 20D5B1547D1;
+	Tue, 20 Aug 2024 19:55:05 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1724183584; cv=none; b=dGvOQa66ryLATr1PkoW/i/J6aeuIxAmuHb5Y+8dZCOPQL6FS4xHCqvQ6jC6H1RB4261SZX6KvRMa3AhcDJl5Ugi5e9AFtjv00vMCP68Jlwerbe7ZAfI259A53jujPEqfip3lXXm5nxgB2mE/mywXvvEC1RyPflkS1MVgBOCjp/g=
+	t=1724183706; cv=none; b=iCwxeNhwCOitIS6SBuz6O1JUAsdL3btb3yuYvmxfIT/lxs7J4e7X/CSrIH7MQvrkJsPJb3TdHWQwBuJx9UV07xzRjZmj5qwyrUOp6cYLSsDxQ2MEXNoB9BBe+SwWJKS3yTVDUu02a5dimJLEMZGFiuDFUUwxG1yWQ5sxniJeXI0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1724183584; c=relaxed/simple;
-	bh=f2EDYJYaLCiAoxFHTZr78tEIJO4+g6e/klYwcujCItM=;
+	s=arc-20240116; t=1724183706; c=relaxed/simple;
+	bh=N4Qq3iZWY8eQWm64J0ShcQ1nb3n6BnqGNeWNK07Ou6c=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=o0CFGQBApAM60Wky2KmPNg5RYNi0en6URaeMKMef6ishYVPQdI0T1wYvUXekNzMX2eLS3u4rLNqqZhESiy3AduEc9mLYQJtLcOMOj/hLK3SmjmTqCgrCDxQbG6Y60FB6x1qUVxRNhv7sQy5BGS62Ic6EijbBqt5GWYnFswMLI1M=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=M59SPv75; arc=none smtp.client-ip=209.85.128.43
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
+	 Content-Type:Content-Disposition:In-Reply-To; b=GzVXAHFMNNhr/t09uU5vw/5iX6D+w+8MeLPa+dgzSU0EPDLa2C6FJz4zoeMEtpCwPIOP9gnJofCcDO4vjkHzibbLRG4qEdBPE14YCsXMKmXh94VucVxx/toIuMNJ0ncL4JsXHwoQ4AXjXMWivffqqZsfB9jDuaKTKblgMcezC1Y=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=qse4Bbdn; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="M59SPv75"
-Received: by mail-wm1-f43.google.com with SMTP id 5b1f17b1804b1-429d1a9363aso3145e9.1
-        for <iommu@lists.linux.dev>; Tue, 20 Aug 2024 12:53:00 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20230601; t=1724183579; x=1724788379; darn=lists.linux.dev;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :mime-version:references:message-id:subject:cc:to:from:date:from:to
-         :cc:subject:date:message-id:reply-to;
-        bh=yp4vfYpCGOdYBS/m6HmbaB98zMN6C60AGpKXCWzp5n0=;
-        b=M59SPv75VJ4cuxFAj1LBtKbLzZPUb2N6KD90Z02uWfyU/uRBAuMxtvNPiYs8vBDeYM
-         5YQijTQkKlNCGG1FBtuKa68GlylMtwOjaYFXokx+0Im72HetE/VSE2y+M+yFqctBXFwy
-         IzgXU7BcK4Xec5Q7lnhbvBpjaM7AJee+W6rcRQf6hJfrZcdFiDD0Kd9kElcWg8sCPz2V
-         Xg0J2hsGNThrRdUHFGh2fx+O6IdIDVoEX8SH94pu+4CTIb5BKLhmMDajOYr/xL3kCo07
-         J1d9NT347MmxijtwlPgxPgCGenX4Ng7/d1dqkImhv61D3aRSSUXsqJEhSW3N1z5CJimT
-         2m2A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1724183579; x=1724788379;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :mime-version:references:message-id:subject:cc:to:from:date
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=yp4vfYpCGOdYBS/m6HmbaB98zMN6C60AGpKXCWzp5n0=;
-        b=wsbneAJ7ioPsf+AA8Ds/kuE5QYYNp4QUbBuBPdafR70bUyIIeZKoAicWPQGVki/ph4
-         EcNEh5HfSOT0OxJLM6cVH3hKZ3B5cTLZaCnf5HDg0CWTCa9LkrPd9UL/g0n4kgPhx7rR
-         ImzFahBO+blzIveu7RoeUq7FsG/fQ9qchx8q012JsSdQf1MehV4xh8B9fSMdMAdu3M88
-         vXcvPhlnzviocZ1RDs+Z/hb0ZDGxi9kRUgbGLQk5wdtj9tUEVtudroPHwVUgCajQ7MeS
-         KFKmwApj/lHHegQhXz5jv+3bi5M6qkiHwWSTz+8K+0apxuZqMcCPc7yXVOfG7/sAmVit
-         y4RA==
-X-Forwarded-Encrypted: i=1; AJvYcCU1B9lAfNuYqVNn+61GB3wE9wrLDOfSELZqHIeEPFaYwKnel0TL7B7n5UUze95YICSuXcXB/Q==@lists.linux.dev
-X-Gm-Message-State: AOJu0Yx8lxbO8Hyqbkq++jbuN07rH2eSfd9wXhI4DXqawXzZ8ZTU5UnB
-	LYJSPERNeWg05ZqwcksisEXmSMJIk2t/O5bxSUOKXw/dYQR8lrXoxxT03nfr8w==
-X-Google-Smtp-Source: AGHT+IEIPDf3d+uDL/Y/8Kxr91qxpv+48637k6O2srNTmFhDwf9KvmOeUX+rRg1Oapmp/C3vcKZSsw==
-X-Received: by 2002:a05:600c:1f07:b0:424:898b:522b with SMTP id 5b1f17b1804b1-42ab78c1aa8mr1113155e9.1.1724183578856;
-        Tue, 20 Aug 2024 12:52:58 -0700 (PDT)
-Received: from google.com (203.75.199.104.bc.googleusercontent.com. [104.199.75.203])
-        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-371898b89bdsm13811059f8f.112.2024.08.20.12.52.58
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 20 Aug 2024 12:52:58 -0700 (PDT)
-Date: Tue, 20 Aug 2024 19:52:53 +0000
-From: Mostafa Saleh <smostafa@google.com>
-To: Jason Gunthorpe <jgg@nvidia.com>
-Cc: acpica-devel@lists.linux.dev,
-	Alex Williamson <alex.williamson@redhat.com>,
-	Hanjun Guo <guohanjun@huawei.com>, iommu@lists.linux.dev,
-	Joerg Roedel <joro@8bytes.org>, Kevin Tian <kevin.tian@intel.com>,
-	kvm@vger.kernel.org, Len Brown <lenb@kernel.org>,
-	linux-acpi@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-	Lorenzo Pieralisi <lpieralisi@kernel.org>,
-	"Rafael J. Wysocki" <rafael@kernel.org>,
-	Robert Moore <robert.moore@intel.com>,
-	Robin Murphy <robin.murphy@arm.com>,
-	Sudeep Holla <sudeep.holla@arm.com>, Will Deacon <will@kernel.org>,
-	Eric Auger <eric.auger@redhat.com>,
-	Jean-Philippe Brucker <jean-philippe@linaro.org>,
-	Moritz Fischer <mdf@kernel.org>,
-	Michael Shavit <mshavit@google.com>,
-	Nicolin Chen <nicolinc@nvidia.com>, patches@lists.linux.dev,
-	Shameerali Kolothum Thodi <shameerali.kolothum.thodi@huawei.com>
-Subject: Re: [PATCH 2/8] iommu/arm-smmu-v3: Use S2FWB when available
-Message-ID: <ZsT0Fd5FHS47gm0-@google.com>
-References: <0-v1-54e734311a7f+14f72-smmuv3_nesting_jgg@nvidia.com>
- <2-v1-54e734311a7f+14f72-smmuv3_nesting_jgg@nvidia.com>
- <ZsRUDaFLd85O8u4Z@google.com>
- <20240820120102.GB3773488@nvidia.com>
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="qse4Bbdn"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5D184C4AF09;
+	Tue, 20 Aug 2024 19:55:04 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1724183705;
+	bh=N4Qq3iZWY8eQWm64J0ShcQ1nb3n6BnqGNeWNK07Ou6c=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=qse4Bbdn4CILpo8kSdpDhIVH5hyMQmN2mI+8r3HO7bdyvBwgDYfwsUR4jVDme/YRv
+	 9yX5MfX0HQczTGhI5Vfmp7XYUcoClfamYpBVATdYq0U+4Jd2qQ1UpHHUtKxf70JNDG
+	 eIZMQd/MW9tbA/hwrQ2S600Ecw859wEcShC1bQhGH1t+EiQM6UcP8f6oIn1lbtqzT/
+	 v/Qd2gqWdDOhyHLtDYJ/l5Pi05ZcVh0n2HaDqAlwAPtqrKeHsBBXX7QMrlbCwYRMYP
+	 Qg3LsTRNZ1HVlcU0y+Alxfa5Mo4+xC8WZbLV7UELB0blzSMVRnq/09Xw7sBrDx5JpN
+	 5JFEr5uVR/lGA==
+Date: Tue, 20 Aug 2024 14:55:02 -0500
+From: Bjorn Andersson <andersson@kernel.org>
+To: Marc Gonzalez <mgonzalez@freebox.fr>
+Cc: Rob Clark <robdclark@gmail.com>, Will Deacon <will@kernel.org>, 
+	Robin Murphy <robin.murphy@arm.com>, Joerg Roedel <joro@8bytes.org>, Rob Herring <robh@kernel.org>, 
+	Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, iommu@lists.linux.dev, 
+	linux-arm-msm@vger.kernel.org, linux-arm-kernel@lists.infradead.org, 
+	linux-kernel@vger.kernel.org, devicetree@vger.kernel.org, 
+	Konrad Dybcio <konradybcio@kernel.org>, Arnaud Vrac <avrac@freebox.fr>, 
+	Pierre-Hugues Husson <phhusson@freebox.fr>, Marijn Suijten <marijn.suijten@somainline.org>, 
+	Caleb Connolly <caleb.connolly@linaro.org>
+Subject: Re: [PATCH v3] iommu/arm-smmu-qcom: hide last LPASS SMMU context
+ bank from linux
+Message-ID: <hilrqug7akx3d4g5mh76swu37ywlkxlbnurc5mzz5yva43uiek@kpurwhc6uu6w>
+References: <20240820-smmu-v3-1-2f71483b00ec@freebox.fr>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20240820120102.GB3773488@nvidia.com>
+In-Reply-To: <20240820-smmu-v3-1-2f71483b00ec@freebox.fr>
 
-On Tue, Aug 20, 2024 at 09:01:02AM -0300, Jason Gunthorpe wrote:
-> On Tue, Aug 20, 2024 at 08:30:05AM +0000, Mostafa Saleh wrote:
-> > Hi Jason,
-> > 
-> > On Tue, Aug 06, 2024 at 08:41:15PM -0300, Jason Gunthorpe wrote:
-> > > Force Write Back (FWB) changes how the S2 IOPTE's MemAttr field
-> > > works. When S2FWB is supported and enabled the IOPTE will force cachable
-> > > access to IOMMU_CACHE memory and deny cachable access otherwise.
-> > > 
-> > > This is not especially meaningful for simple S2 domains, it apparently
-> > > doesn't even force PCI no-snoop access to be coherent.
-> > > 
-> > > However, when used with a nested S1, FWB has the effect of preventing the
-> > > guest from choosing a MemAttr that would cause ordinary DMA to bypass the
-> > > cache. Consistent with KVM we wish to deny the guest the ability to become
-> > > incoherent with cached memory the hypervisor believes is cachable so we
-> > > don't have to flush it.
-> > > 
-> > > Turn on S2FWB whenever the SMMU supports it and use it for all S2
-> > > mappings.
-> > 
-> > I have been looking into this recently from the KVM side as it will
-> > use FWB for the CPU stage-2 unconditionally for guests(if supported),
-> > however that breaks for non-coherent devices when assigned, and
-> > limiting assigned devices to be coherent seems too restrictive.
+On Tue, Aug 20, 2024 at 03:27:19PM GMT, Marc Gonzalez wrote:
+> On qcom msm8998, writing to the last context bank of lpass_q6_smmu
+> (base address 0x05100000) produces a system freeze & reboot.
 > 
-> kvm's CPU S2 doesn't care about non-DMA-coherent devices though? That
-> concept is only relevant to the SMMU.
+> The hardware/hypervisor reports 13 context banks for the LPASS SMMU
+> on msm8998, but only the first 12 are accessible...
+> Override the number of context banks
 > 
+> [    2.546101] arm-smmu 5100000.iommu: probing hardware configuration...
+> [    2.552439] arm-smmu 5100000.iommu: SMMUv2 with:
+> [    2.558945] arm-smmu 5100000.iommu: 	stage 1 translation
+> [    2.563627] arm-smmu 5100000.iommu: 	address translation ops
+> [    2.568923] arm-smmu 5100000.iommu: 	non-coherent table walk
+> [    2.574566] arm-smmu 5100000.iommu: 	(IDR0.CTTW overridden by FW configuration)
+> [    2.580220] arm-smmu 5100000.iommu: 	stream matching with 12 register groups
+> [    2.587263] arm-smmu 5100000.iommu: 	13 context banks (0 stage-2 only)
+> [    2.614447] arm-smmu 5100000.iommu: 	Supported page sizes: 0x63315000
+> [    2.621358] arm-smmu 5100000.iommu: 	Stage-1: 36-bit VA -> 36-bit IPA
+> [    2.627772] arm-smmu 5100000.iommu: 	preserved 0 boot mappings
+> 
+> Specifically, the crashes occur here:
+> 
+> 	qsmmu->bypass_cbndx = smmu->num_context_banks - 1;
+> 	arm_smmu_cb_write(smmu, qsmmu->bypass_cbndx, ARM_SMMU_CB_SCTLR, 0);
+> 
+> and here:
+> 
+> 	arm_smmu_write_context_bank(smmu, i);
+> 	arm_smmu_cb_write(smmu, i, ARM_SMMU_CB_FSR, ARM_SMMU_CB_FSR_FAULT);
+> 
+> It is likely that FW reserves the last context bank for its own use,
+> thus a simple work-around is: DON'T USE IT in Linux.
+> 
+> If we decrease the number of context banks, last one will be "hidden".
+> 
+> Signed-off-by: Marc Gonzalez <mgonzalez@freebox.fr>
 
-Why not? That would be a problem if a device is not dma coherent,
-and the VM knows that and maps it’s DMA memory as non cacheable.
-But it would be overridden by FWB in stage-2 to be cacheable,
-it would lead to coherency issues.
+Reviewed-by: Bjorn Andersson <andersson@kernel.org>
 
-> The issue on the KVM side is you can't put device MMIO into the CPU S2
-> using S2FWB and Normal Cachable, it will break the MMIO programming
-> model. That isn't "coherency" though.> 
-> It has to be Normal-NC, which this patch does:
-> 
-> https://lore.kernel.org/r/20240224150546.368-4-ankita@nvidia.com
+Regards,
+Bjorn
 
-Yes, that also breaks (although I think this is an easier problem to
-solve)
-
+> ---
+> Changes in v3:
+> - Use very specific test (hack) to avoid changing the binding (Bjorn)
+> - Link to v2: https://lore.kernel.org/r/20240819-smmu-v1-0-bce6e4738825@freebox.fr
 > 
-> > But for SMMUv3, S2FWB is per stream, can’t we just use it if the master
-> > is DMA coherent?
+> Changes in v2:
+> - Use the compatible prop instead of a specific prop to trigger work-around (Bjorn & Caleb)
+> - Add qcom,msm8998-lpass-smmu compatible string
+> - Link to v1: https://lore.kernel.org/r/20240814-smmu-v1-0-3d6c27027d5b@freebox.fr
 > 
-> Sure, that seems to be a weird corner. Lets add this:
+> On qcom msm8998, writing to the last context bank of lpass_q6_smmu
+> (base address 0x05100000) produces a system freeze & reboot.
 > 
-> @@ -4575,7 +4575,12 @@ static int arm_smmu_device_hw_probe(struct arm_smmu_device *smmu)
+> The hardware/hypervisor reports 13 context banks for the LPASS SMMU
+> on msm8998, but only the first 12 are accessible...
+> Override the number of context banks
+> 
+> [    2.546101] arm-smmu 5100000.iommu: probing hardware configuration...
+> [    2.552439] arm-smmu 5100000.iommu: SMMUv2 with:
+> [    2.558945] arm-smmu 5100000.iommu: 	stage 1 translation
+> [    2.563627] arm-smmu 5100000.iommu: 	address translation ops
+> [    2.568923] arm-smmu 5100000.iommu: 	non-coherent table walk
+> [    2.574566] arm-smmu 5100000.iommu: 	(IDR0.CTTW overridden by FW configuration)
+> [    2.580220] arm-smmu 5100000.iommu: 	stream matching with 12 register groups
+> [    2.587263] arm-smmu 5100000.iommu: 	13 context banks (0 stage-2 only)
+> [    2.614447] arm-smmu 5100000.iommu: 	Supported page sizes: 0x63315000
+> [    2.621358] arm-smmu 5100000.iommu: 	Stage-1: 36-bit VA -> 36-bit IPA
+> [    2.627772] arm-smmu 5100000.iommu: 	preserved 0 boot mappings
+> 
+> Specifically, here:
+> 
+> 	qsmmu->bypass_cbndx = smmu->num_context_banks - 1;
+> 	arm_smmu_cb_write(smmu, qsmmu->bypass_cbndx, ARM_SMMU_CB_SCTLR, 0);
+> 
+> and here:
+> 
+> 	arm_smmu_write_context_bank(smmu, i);
+> 	arm_smmu_cb_write(smmu, i, ARM_SMMU_CB_FSR, ARM_SMMU_CB_FSR_FAULT);
+> 
+> It is likely that FW reserves the last context bank for its own use,
+> thus a simple work-around would be: DON'T USE IT in Linux.
+> 
+> For reference, the lpass_q6_smmu node looks like this:
+> 
+> 	lpass_q6_smmu: iommu@5100000 {
+> 		compatible = "qcom,msm8998-smmu-v2", "qcom,smmu-v2";
+> 		reg = <0x05100000 0x40000>;
+> 		clocks = <&gcc HLOS1_VOTE_LPASS_ADSP_SMMU_CLK>;
+> 		clock-names = "iface";
+> 
+> 		#global-interrupts = <0>;
+> 		#iommu-cells = <1>;
+> 		interrupts =
+> 			<GIC_SPI 226 IRQ_TYPE_LEVEL_HIGH>,
+> 			<GIC_SPI 393 IRQ_TYPE_LEVEL_HIGH>,
+> 			<GIC_SPI 394 IRQ_TYPE_LEVEL_HIGH>,
+> 			<GIC_SPI 395 IRQ_TYPE_LEVEL_HIGH>,
+> 			<GIC_SPI 396 IRQ_TYPE_LEVEL_HIGH>,
+> 			<GIC_SPI 397 IRQ_TYPE_LEVEL_HIGH>,
+> 			<GIC_SPI 398 IRQ_TYPE_LEVEL_HIGH>,
+> 			<GIC_SPI 399 IRQ_TYPE_LEVEL_HIGH>,
+> 			<GIC_SPI 400 IRQ_TYPE_LEVEL_HIGH>,
+> 			<GIC_SPI 401 IRQ_TYPE_LEVEL_HIGH>,
+> 			<GIC_SPI 402 IRQ_TYPE_LEVEL_HIGH>,
+> 			<GIC_SPI 403 IRQ_TYPE_LEVEL_HIGH>,
+> 			<GIC_SPI 137 IRQ_TYPE_LEVEL_HIGH>;
+> 
+> power-domains = <&gcc LPASS_ADSP_GDSC>;
+> 		status = "disabled";
+> 	};
+> ---
+>  drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c | 7 +++++++
+>  1 file changed, 7 insertions(+)
+> 
+> diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
+> index 7e65189ca7b8c..625db1d00fe5e 100644
+> --- a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
+> +++ b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
+> @@ -282,6 +282,13 @@ static int qcom_smmu_cfg_probe(struct arm_smmu_device *smmu)
+>  	u32 smr;
+>  	int i;
 >  
->         /* IDR3 */
->         reg = readl_relaxed(smmu->base + ARM_SMMU_IDR3);
-> -       if (FIELD_GET(IDR3_FWB, reg))
-> +       /*
-> +        * If for some reason the HW does not support DMA coherency then using
-> +        * S2FWB won't work. This will also disable nesting support.
-> +        */
-> +       if (FIELD_GET(IDR3_FWB, reg) &&
-> +           (smmu->features & ARM_SMMU_FEAT_COHERENCY))
->                 smmu->features |= ARM_SMMU_FEAT_S2FWB;
->         if (FIELD_GET(IDR3_RIL, reg))
->                 smmu->features |= ARM_SMMU_FEAT_RANGE_INV;
+> +	/*
+> +	 * MSM8998 LPASS SMMU reports 13 context banks, but accessing
+> +	 * the last context bank crashes the system.
+> +	 */
+> +	if (of_device_is_compatible(smmu->dev->of_node, "qcom,msm8998-smmu-v2") && smmu->num_context_banks == 13)
+> +		smmu->num_context_banks = 12;
+> +
+>  	/*
+>  	 * Some platforms support more than the Arm SMMU architected maximum of
+>  	 * 128 stream matching groups. For unknown reasons, the additional
 > 
-> IMHO it would be weird to make HW that has S2FWB but not coherency,
-> but sure let's check it.
+> ---
+> base-commit: 96a96aed6bb75b5c212f233b6c059a9354cdeebe
+> change-id: 20240814-smmu-d572c1a16aac
 > 
-What I mean is the master itself not the SMMU (the SID basically),
-so in that case the STE shouldn’t have FWB enabled.
-
-> Also bear in mind VFIO won't run unless ARM_SMMU_FEAT_COHERENCY is set
-> so we won't even get a chance to ask for a S2 domain.
-
-Oh, I think that is only for the SMMU, not for the master, the
-SMMU can be coherent (for pte, ste …) but the master can still be
-non coherent. Looking at how VFIO uses it, that seems to be a bug?
-
-Thanks,
-Mostafa
-
+> Best regards,
+> -- 
+> Marc Gonzalez <mgonzalez@freebox.fr>
 > 
-> Jason
