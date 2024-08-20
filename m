@@ -1,106 +1,63 @@
-Received: from linux.microsoft.com (linux.microsoft.com [13.77.154.182])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id DE41B38DD4
-	for <iommu@lists.linux.dev>; Tue, 20 Aug 2024 23:04:39 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=13.77.154.182
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 15E8618E351;
+	Tue, 20 Aug 2024 23:52:24 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1724195082; cv=none; b=Y0+qrNC7mRXUNKyQCYpuChvCdbWMx+VZT2jMSWXGmLNTQKFf6s5NTwETKQmd0FHV7fch6TQDF8YhXHDRaqFeA22oPGLGXQ0rIB8XiaJ8tWkynzRj0pTM+4WyFZ+syY+Kw7T9txO+HdKEL8IheAdxoozCs0Hiijd3MiKG70cesvc=
+	t=1724197944; cv=none; b=BV48g+wsYjCzSMc/wGiAX77CPmQqoFqb0Qmn/q0Tx3GeEnor8iqj188gJampn2BmhPP6D2clB3IwkHl77Su4Dq7L7hJpV9PHOWKCg32Hz+WgF8EZdQ9Okf3+FWj2JKLW/NklkSyrPVzX3HYinQHHRleaSAqyLRWNeyhV/YCd/wo=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1724195082; c=relaxed/simple;
-	bh=EATt0tCRzljWphvcXmBRRwS+xNaSSQAgbXjkkdb157Y=;
-	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=UX9D2gwpZ86FyQAviPm8kjCDO3jdqCr5mVKeItEZwEfrnBdjYZMuPT9y+0mNlOO+mdTlWCVKwglb68oeH/28lr2aGSvS3otOnZ9UOIh59OCuG1d1r65muvgtq7Q3pITii5G+XWoJRkgxbebJvdMs420UMvmpGjjQCcFGDE9eaKU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com; spf=pass smtp.mailfrom=linux.microsoft.com; dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b=kvSjZdu6; arc=none smtp.client-ip=13.77.154.182
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.microsoft.com
+	s=arc-20240116; t=1724197944; c=relaxed/simple;
+	bh=QrAFz6/On8von0ohcwI3J6cKXBt4YkE9R96SuhbDEFU=;
+	h=Subject:From:In-Reply-To:References:Message-Id:Date:To:Cc; b=QrBNqkz4BkJXXjtJXrFqkw5bIXj53D+REBpZRLvAbc08jrIw6p3yz9P2EmcErZ9GxT7bcYxOuaeYwx2yg7gunf+/0hDJIzZgAGfJE5RkZxfnOU9qzq4LjbWN1ZQmg2977eyhVI038g6RaB2NRUZKlLK+ntZjBbX6KXYOeRTMDxs=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=uoCi1XJe; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b="kvSjZdu6"
-Received: from DESKTOP-0403QTC. (unknown [20.236.11.102])
-	by linux.microsoft.com (Postfix) with ESMTPSA id 3D1FD20B7165;
-	Tue, 20 Aug 2024 16:04:39 -0700 (PDT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com 3D1FD20B7165
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
-	s=default; t=1724195079;
-	bh=D6zEqy376/OShhmuon6epP+P07be+GAy/DybGw8HGwc=;
-	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-	b=kvSjZdu6M9XzNBlSR6m94fselW1qjr/8b0WSC6V/u1vt/uOsovMsZcooYzlptpFoK
-	 0tEP7km3aLaqGRNw8N6murAFH2xzyC+U8aosBGMiomFiXbZcq4tYRO+ss+HM+rWG7s
-	 Lp5kXYovmMTwmatOF2DkNYTNzCRN94dIuGs6qTdY=
-Date: Tue, 20 Aug 2024 16:04:37 -0700
-From: Jacob Pan <jacob.pan@linux.microsoft.com>
-To: Baolu Lu <baolu.lu@linux.intel.com>
-Cc: Tina Zhang <tina.zhang@intel.com>, Kevin Tian <kevin.tian@intel.com>,
- iommu@lists.linux.dev, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v3 4/4] iommu/vt-d: Introduce batched cache invalidation
-Message-ID: <20240820160437.76fb4d34@DESKTOP-0403QTC.>
-In-Reply-To: <8da6a9b6-01f4-4c4f-9619-148fdb3828d0@linux.intel.com>
-References: <20240815065221.50328-1-tina.zhang@intel.com>
-	<20240815065221.50328-5-tina.zhang@intel.com>
-	<20240816093846.40dbd623@DESKTOP-0403QTC.>
-	<afec1d30-4bb3-4d39-9ff1-eb8ecb26bed3@linux.intel.com>
-	<20240819084056.298a9924@DESKTOP-0403QTC.>
-	<8da6a9b6-01f4-4c4f-9619-148fdb3828d0@linux.intel.com>
-X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.33; x86_64-pc-linux-gnu)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="uoCi1XJe"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EB032C4AF0B;
+	Tue, 20 Aug 2024 23:52:23 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1724197944;
+	bh=QrAFz6/On8von0ohcwI3J6cKXBt4YkE9R96SuhbDEFU=;
+	h=Subject:From:In-Reply-To:References:Date:To:Cc:From;
+	b=uoCi1XJe+BbKKO+9xA2bEIOZsndzBnRgVs5kN5XJzAjPXl3mvCBKJw1zPyj3Zd2eJ
+	 limsmyqgkPfOlukvTGtR7VbS6iKIfrA7xK9FVvFO/Ka3dnn1q1e7acbbMhl5qc7KlU
+	 Gx/LcEH5BrG1OziB9b9R2xfQefS/jJYYehXEY2WYAUs/SBKFNedB/xoIIWGTvla0Jd
+	 1puA2ZsBoqqQYiTCM0oNL6UpNPgTf8vKBvzUETrzNqWrPI/2WO5KuxtP+ooNE8gjeh
+	 ARWzTOJMYu2GhjmU0BrSNh74Mo2JbHAtbAbqVuYMAOvgvk1DKNRZV/YhUVcAd5RMZS
+	 BK/2rRNWzZrAg==
+Received: from [10.30.226.235] (localhost [IPv6:::1])
+	by aws-us-west-2-korg-oddjob-rhel9-1.codeaurora.org (Postfix) with ESMTP id AF4433804CB5;
+	Tue, 20 Aug 2024 23:52:24 +0000 (UTC)
+Subject: Re: [GIT PULL] Please pull IOMMUFD subsystem changes
+From: pr-tracker-bot@kernel.org
+In-Reply-To: <20240820224837.GA1570264@nvidia.com>
+References: <20240820224837.GA1570264@nvidia.com>
+X-PR-Tracked-List-Id: <iommu.lists.linux.dev>
+X-PR-Tracked-Message-Id: <20240820224837.GA1570264@nvidia.com>
+X-PR-Tracked-Remote: git://git.kernel.org/pub/scm/linux/kernel/git/jgg/iommufd.git tags/for-linus-iommufd
+X-PR-Tracked-Commit-Id: cf1e515c9a40caa8bddb920970d3257bb01c1421
+X-PR-Merge-Tree: torvalds/linux.git
+X-PR-Merge-Refname: refs/heads/master
+X-PR-Merge-Commit-Id: 0108b7be2a18d85face1e10c68ecc0138f1bed58
+Message-Id: <172419794311.1273793.8742959991162677899.pr-tracker-bot@kernel.org>
+Date: Tue, 20 Aug 2024 23:52:23 +0000
+To: Jason Gunthorpe <jgg@nvidia.com>
+Cc: Linus Torvalds <torvalds@linux-foundation.org>, iommu@lists.linux.dev, kvm@vger.kernel.org, linux-kernel@vger.kernel.org, Kevin Tian <kevin.tian@intel.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
 
-Hi Baolu,
+The pull request you sent on Tue, 20 Aug 2024 19:48:37 -0300:
 
-On Tue, 20 Aug 2024 10:06:05 +0800
-Baolu Lu <baolu.lu@linux.intel.com> wrote:
+> git://git.kernel.org/pub/scm/linux/kernel/git/jgg/iommufd.git tags/for-linus-iommufd
 
-> On 8/19/24 11:40 PM, Jacob Pan wrote:
-> > On Sat, 17 Aug 2024 11:28:21 +0800
-> > Baolu Lu<baolu.lu@linux.intel.com>  wrote:
-> >   
-> >> On 2024/8/17 0:38, Jacob Pan wrote:  
-> >>> On Thu, 15 Aug 2024 14:52:21 +0800
-> >>> Tina Zhang<tina.zhang@intel.com>  wrote:
-> >>>      
-> >>>> @@ -270,7 +343,8 @@ static void cache_tag_flush_iotlb(struct
-> >>>> dmar_domain *domain, struct cache_tag * u64 type =
-> >>>> DMA_TLB_PSI_FLUSH;
-> >>>>    	if (domain->use_first_level) {
-> >>>> -		qi_flush_piotlb(iommu, tag->domain_id,
-> >>>> tag->pasid, addr, pages, ih);
-> >>>> +		qi_batch_add_piotlb(iommu, tag->domain_id,
-> >>>> tag->pasid, addr,
-> >>>> +				    pages, ih,
-> >>>> domain->qi_batch); return;
-> >>>>    	}
-> >>>>    
-> >>>> @@ -287,7 +361,8 @@ static void cache_tag_flush_iotlb(struct
-> >>>> dmar_domain *domain, struct cache_tag * }
-> >>>>    
-> >>>>    	if (ecap_qis(iommu->ecap))
-> >>>> -		qi_flush_iotlb(iommu, tag->domain_id, addr | ih,
-> >>>> mask, type);
-> >>>> +		qi_batch_add_iotlb(iommu, tag->domain_id, addr |
-> >>>> ih, mask, type,
-> >>>> +				   domain->qi_batch);
-> >>>>        
-> >>> If I understand this correctly, IOTLB flush maybe deferred until
-> >>> the batch array is full, right? If so, is there a security gap
-> >>> where callers think the mapping is gone after the call returns?  
-> >> No. All related caches are flushed before function return. A domain
-> >> can have multiple cache tags. Previously, we sent individual cache
-> >> invalidation requests to hardware. This change combines all
-> >> necessary invalidation requests into a single batch and raise them
-> >> to hardware together to make it more efficient.  
-> > I was looking at the code below, if the index does not reach
-> > QI_MAX_BATCHED_DESC_COUNT. There will be no flush after
-> > cache_tag_flush_iotlb() returns, right?  
-> 
-> No. qi_batch_flush_descs() is called explicitly before return.
-I see, cache_tag_flush_iotlb() is really just adding descriptors to the
-batch. Not doing any flush for most cases. IMHO, the name is a little
-confusing.
+has been merged into torvalds/linux.git:
+https://git.kernel.org/torvalds/c/0108b7be2a18d85face1e10c68ecc0138f1bed58
 
-Thanks,
+Thank you!
 
-Jacob
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/prtracker.html
