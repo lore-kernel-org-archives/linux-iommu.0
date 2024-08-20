@@ -1,172 +1,187 @@
-Received: from mail-ot1-f50.google.com (mail-ot1-f50.google.com [209.85.210.50])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from ns.iliad.fr (ns.iliad.fr [212.27.33.1])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 39F7A190462
-	for <iommu@lists.linux.dev>; Tue, 20 Aug 2024 13:22:53 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.50
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 946B6191F82
+	for <iommu@lists.linux.dev>; Tue, 20 Aug 2024 13:27:36 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=212.27.33.1
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1724160175; cv=none; b=QHs7tbF812cQr+d3IbDuMB1ieJNaMtYy5OIyboVBm5KgnUpA8dWwh9UJ+U5MTg4LR2U3Zx/wDUJa4anDggSPyNz41rTLECW12osChWbibaiL/Bde04Mx5Lq5N6Y8VOOcP5XtQ9w/YV6BWVOnSmLPHUTLoUh0Cn9akhesXFhsU8c=
+	t=1724160460; cv=none; b=OF5oxoD8Wz8xG0S8XRQDOieyHhERA1vXyhv44ULF2QxcReJjtrIU3u5pAQ1sfDmY9DtJHUuy5FXUVWL0PV+upDHYOcD1Oh7J9LDlXpypL5iDoRJAr3ZZgPy7A1Lz7IJf7k8wMbAGNfQLtAqz0t9C54bbOEaEZmM3OnjMuwaL9f4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1724160175; c=relaxed/simple;
-	bh=gWY6eEb5kQA622IuNwu2GxpBpJ4n3ZSXpMCxt8b6zNM=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=eT+v6WDY2Wbmt/0qDAv2P83XvcvuLhsHQpSyfoSd0tkwfTr1tCJ4hlValld0CJIgFeIrG/R8MVp4V/qNRG8/DDuZ27fcJyLqocgVSJaZymPgIBSXFIZqHT909We5UaleF/IKYGjsH07Z/kbKhPQESZAWgcTl6IhfDWXVt+1hIRQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=IHjL8Dwx; arc=none smtp.client-ip=209.85.210.50
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="IHjL8Dwx"
-Received: by mail-ot1-f50.google.com with SMTP id 46e09a7af769-7093d565310so4107265a34.2
-        for <iommu@lists.linux.dev>; Tue, 20 Aug 2024 06:22:53 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20230601; t=1724160173; x=1724764973; darn=lists.linux.dev;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=gWY6eEb5kQA622IuNwu2GxpBpJ4n3ZSXpMCxt8b6zNM=;
-        b=IHjL8DwxMo8myuJWaiDwgeXGfMmz/iZMczjs7+TxmYIwKUR7DzAybjGh2Juy23D9ey
-         ueqR/g6SwOH5Gx+jSwUZA37sn6Ashl2zZjNGfBGCui+go/58N2N7CcelfRoVrvkDOt1g
-         WvVjwIgK8iPW2m7Ln7wLAJvTE0UdnvQJwkvz+FWsJIxU3WTLu73wYSgN1TtQLoSp1XsR
-         hxISG6M01FUcvKbTSkIpZD2qELwobWpN1gtVGh1ONKesGlUMl4j/Rafv1SR9brDScW2W
-         0ds5xqemdcblN7LFi3sc9xOzty0lSo20CGA9LcLbuZxgVDBiqTqQXTSz6WzpwAKiGAJh
-         CuGQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1724160173; x=1724764973;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=gWY6eEb5kQA622IuNwu2GxpBpJ4n3ZSXpMCxt8b6zNM=;
-        b=WKH3JlNWdoPZ6dIDezoRAXrQp4E8loSZ+4ee6EdSX+927sqKNBOGyjygcM5eEKf+4b
-         gxIOKOwj8+Ti0RTlEmLmXD24hdWfsZ508ZCF7bd0m5ewt+tOtkpsOBMMppqHkYXMCPug
-         p+i8KfBM2obBdl+FuAW8md2NpF/jlM15XoIrAMjicvTtObJd7sPD6rZ1SFWA31w8matC
-         AobJdZeUaeMor3awe9KMZiYsF2WQ8Dj2NhteglCwm3vsvX9D2reoYGU0bwDubpaIuiZR
-         U+cbEGjPmOozlJWZocvY6FmoRN5HmXVWYBP9TLyqpG3lOgojogeDCupOyFG+M6SVG/35
-         xSlA==
-X-Forwarded-Encrypted: i=1; AJvYcCVQYuupi6gL68P/BU3mYape6tN1onyy+D3b2RwPyHMzC6Mh8GkKPXMGA1d1b3ZlY/qcMTx6aw==@lists.linux.dev
-X-Gm-Message-State: AOJu0Yxzia8KmpQtpElOppSgHMclIG9gq8D1PihUxokniY3bThLRBAz9
-	Wd/k6VpzKIopdwX3asb0If/GOpbXf9UZwUlWE9+VLpCZgHLY6yZSMrg0RixBK/ML74hV91yIesf
-	s6WqyzshVgGD29aSMg193y6wNpIDy/k4bMbzA
-X-Google-Smtp-Source: AGHT+IEo+EPu/E8LXltAbMl1cUiNyPjkKyZAcLGG+ibPVJnZgD4HtnkqyMOufQ6wBdUbt1G5TRGFrPFKkL2ZQJ/X5QE=
-X-Received: by 2002:a05:6830:d87:b0:709:4829:47bd with SMTP id
- 46e09a7af769-70deec90226mr2702353a34.22.1724160172867; Tue, 20 Aug 2024
- 06:22:52 -0700 (PDT)
+	s=arc-20240116; t=1724160460; c=relaxed/simple;
+	bh=WgMvhD6cuag6dUYVIdapvUjvrcTNcu+CX/nWDTdVGwU=;
+	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:To:Cc; b=JAu73qGrTcKxW2TO8+EygRA4j+8enD8QWU6Eiv0OjTQKmHCbriEccSc/d+XlWNj7pmOienc0xjECkzbWIocTwzgMniMkD2ysruz8jbnXaulC+kz4UfmOWAqmZqgGxdAvA/7tjUfllEI037WgdT8/r+/UKMHkHND/0hq8Li41L8s=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=freebox.fr; spf=pass smtp.mailfrom=srs.iliad.fr; arc=none smtp.client-ip=212.27.33.1
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=freebox.fr
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=srs.iliad.fr
+Received: from ns.iliad.fr (localhost [127.0.0.1])
+	by ns.iliad.fr (Postfix) with ESMTP id BB3FB209EF;
+	Tue, 20 Aug 2024 15:27:28 +0200 (CEST)
+Received: from [127.0.1.1] (freebox.vlq16.iliad.fr [213.36.7.13])
+	by ns.iliad.fr (Postfix) with ESMTP id A487920582;
+	Tue, 20 Aug 2024 15:27:28 +0200 (CEST)
+From: Marc Gonzalez <mgonzalez@freebox.fr>
+Date: Tue, 20 Aug 2024 15:27:19 +0200
+Subject: [PATCH v3] iommu/arm-smmu-qcom: hide last LPASS SMMU context bank
+ from linux
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <0e54954b-0880-4ebc-8ef0-13b3ac0a6838@huawei.com>
- <8743264a-9700-4227-a556-5f931c720211@huawei.com> <e980d20f-ea8a-43e3-8d3f-179a269b5956@kernel.org>
- <CAOBf=musxZcjYNHjdD+MGp0y6epnNO5ryC6JgeAJbP6YQ+sVUA@mail.gmail.com>
- <ad84acd2-36ba-433c-bdf7-c16c0d992e1c@huawei.com> <190d5a15-d6bf-47d6-be86-991853b7b51d@arm.com>
- <5b0415ff-9bbe-4553-89d6-17d12fd44b47@huawei.com> <ae995d55-daa9-4060-85fa-31b4f725a17d@arm.com>
- <20240806135017.GG676757@ziepe.ca>
-In-Reply-To: <20240806135017.GG676757@ziepe.ca>
-From: Mina Almasry <almasrymina@google.com>
-Date: Tue, 20 Aug 2024 09:22:39 -0400
-Message-ID: <CAHS8izP-MWSFJi8zMW2P144-5p+KyWwNT2+UXBwSf=ocseQycQ@mail.gmail.com>
-Subject: Re: [BUG REPORT]net: page_pool: kernel crash at iommu_get_dma_domain+0xc/0x20
-To: Jason Gunthorpe <jgg@ziepe.ca>
-Cc: Robin Murphy <robin.murphy@arm.com>, Yunsheng Lin <linyunsheng@huawei.com>, 
-	Somnath Kotur <somnath.kotur@broadcom.com>, Jesper Dangaard Brouer <hawk@kernel.org>, 
-	Yonglong Liu <liuyonglong@huawei.com>, "David S. Miller" <davem@davemloft.net>, 
-	Jakub Kicinski <kuba@kernel.org>, pabeni@redhat.com, ilias.apalodimas@linaro.org, 
-	netdev@vger.kernel.org, linux-kernel@vger.kernel.org, 
-	Alexander Duyck <alexander.duyck@gmail.com>, Alexei Starovoitov <ast@kernel.org>, 
-	"shenjian (K)" <shenjian15@huawei.com>, Salil Mehta <salil.mehta@huawei.com>, joro@8bytes.org, 
-	will@kernel.org, iommu@lists.linux.dev
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+Message-Id: <20240820-smmu-v3-1-2f71483b00ec@freebox.fr>
+X-B4-Tracking: v=1; b=H4sIALaZxGYC/zXMQQ6DIBCF4auYWZcGEJV21Xs0LhCHykIxQ0tsD
+ Hcvtenyf3n5dohIHiNcqx0Ik48+LCXqUwV2MssDmR9Lg+RScS0Ui/P8YmPTSSuMaI2xUK4rofP
+ bwdz70pOPz0DvQ03iu/6Byw9IgnE2WGxRdbXWsrk5QhzCdnYEfc75A8Pkt+CZAAAA
+To: Rob Clark <robdclark@gmail.com>, Will Deacon <will@kernel.org>, 
+ Robin Murphy <robin.murphy@arm.com>, Joerg Roedel <joro@8bytes.org>, 
+ Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>, 
+ Conor Dooley <conor+dt@kernel.org>
+Cc: iommu@lists.linux.dev, linux-arm-msm@vger.kernel.org, 
+ linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, 
+ devicetree@vger.kernel.org, Bjorn Andersson <andersson@kernel.org>, 
+ Konrad Dybcio <konradybcio@kernel.org>, Arnaud Vrac <avrac@freebox.fr>, 
+ Pierre-Hugues Husson <phhusson@freebox.fr>, 
+ Marijn Suijten <marijn.suijten@somainline.org>, 
+ Caleb Connolly <caleb.connolly@linaro.org>, 
+ Marc Gonzalez <mgonzalez@freebox.fr>
+X-Mailer: b4 0.13.0
 
-On Tue, Aug 6, 2024 at 9:50=E2=80=AFAM Jason Gunthorpe <jgg@ziepe.ca> wrote=
-:
->
-> On Tue, Aug 06, 2024 at 01:50:08PM +0100, Robin Murphy wrote:
-> > On 06/08/2024 12:54 pm, Yunsheng Lin wrote:
-> > > On 2024/8/5 20:53, Robin Murphy wrote:
-> > > > > > >
-> > > > > > > The page_pool bumps refcnt via get_device() + put_device() on=
- the DMA
-> > > > > > > 'struct device', to avoid it going away, but I guess there is=
- also some
-> > > > > > > IOMMU code that we need to make sure doesn't go away (until a=
-ll inflight
-> > > > > > > pages are returned) ???
-> > > > >
-> > > > > I guess the above is why thing went wrong here, the question is w=
-hich
-> > > > > IOMMU code need to be called here to stop them from going away.
-> > > >
-> > > > This looks like the wrong device is being passed to dma_unmap_page(=
-) - if a device had an IOMMU DMA domain at the point when the DMA mapping w=
-as create, then neither that domain nor its group can legitimately have dis=
-appeared while that device still had a driver bound. Or if it *was* the rig=
-ht device, but it's already had device_del() called on it, then you have a =
-fundamental lifecycle problem - a device with no driver bound should not be=
- passed to the DMA API, much less a dead device that's already been removed=
- from its parent bus.
-> > >
-> > > Yes, the device *was* the right device, And it's already had device_d=
-el()
-> > > called on it.
-> > > page_pool tries to call get_device() on the DMA 'struct device' to av=
-oid the
-> > > above lifecycle problem, it seems get_device() does not stop device_d=
-el()
-> > > from being called, and that is where we have the problem here:
-> > > https://elixir.bootlin.com/linux/v6.11-rc2/source/net/core/page_pool.=
-c#L269
-> > >
-> > > The above happens because driver with page_pool support may hand over
-> > > page still with dma mapping to network stack and try to reuse that pa=
-ge
-> > > after network stack is done with it and passes it back to page_pool t=
-o avoid
-> > > the penalty of dma mapping/unmapping. With all the caching in the net=
-work
-> > > stack, some pages may be held in the network stack without returning =
-to the
-> > > page_pool soon enough, and with VF disable causing the driver unbound=
-, the
-> > > page_pool does not stop the driver from doing it's unbounding work, i=
-nstead
-> > > page_pool uses workqueue to check if there is some pages coming back =
-from the
-> > > network stack periodically, if there is any, it will do the dma unmma=
-pping
-> > > related cleanup work.
-> >
-> > OK, that sounds like a more insidious problem - it's not just IOMMU stu=
-ff,
-> > in general the page pool should not be holding and using the device poi=
-nter
-> > after the device has already been destroyed. Even without an IOMMU,
-> > attempting DMA unmaps after the driver has already unbound may leak
-> > resources or at worst corrupt memory. Fundamentally, the page pool code
-> > cannot allow DMA mappings to outlive the driver they belong to.
->
-> +1
->
-> There is more that gets broken here if these basic driver model rules
-> are not followed!
->
-> netdev must fix this by waiting during driver remove until all this DMA
-> activity is finished somehow.
->
->
+On qcom msm8998, writing to the last context bank of lpass_q6_smmu
+(base address 0x05100000) produces a system freeze & reboot.
 
-Sorry if naive question, but why don't non-pp drivers run into this
-issue? On driver unload, GVE seems to loop over the pages in its rx
-queues, and calls gve_free_page_dqo, which simply subtracts the bias
-refcount, dma_unmap_page(), and put_page(). The pages will live on if
-they have references in the net stack, but the driver is free to
-unload.
+The hardware/hypervisor reports 13 context banks for the LPASS SMMU
+on msm8998, but only the first 12 are accessible...
+Override the number of context banks
 
-Is it for some reason not feasible for the page_pool to release the
-pages on driver unload and destroy itself, rather than have to stick
-around until all pending pages have been returned from the net stack?
+[    2.546101] arm-smmu 5100000.iommu: probing hardware configuration...
+[    2.552439] arm-smmu 5100000.iommu: SMMUv2 with:
+[    2.558945] arm-smmu 5100000.iommu: 	stage 1 translation
+[    2.563627] arm-smmu 5100000.iommu: 	address translation ops
+[    2.568923] arm-smmu 5100000.iommu: 	non-coherent table walk
+[    2.574566] arm-smmu 5100000.iommu: 	(IDR0.CTTW overridden by FW configuration)
+[    2.580220] arm-smmu 5100000.iommu: 	stream matching with 12 register groups
+[    2.587263] arm-smmu 5100000.iommu: 	13 context banks (0 stage-2 only)
+[    2.614447] arm-smmu 5100000.iommu: 	Supported page sizes: 0x63315000
+[    2.621358] arm-smmu 5100000.iommu: 	Stage-1: 36-bit VA -> 36-bit IPA
+[    2.627772] arm-smmu 5100000.iommu: 	preserved 0 boot mappings
 
---=20
-Thanks,
-Mina
+Specifically, the crashes occur here:
+
+	qsmmu->bypass_cbndx = smmu->num_context_banks - 1;
+	arm_smmu_cb_write(smmu, qsmmu->bypass_cbndx, ARM_SMMU_CB_SCTLR, 0);
+
+and here:
+
+	arm_smmu_write_context_bank(smmu, i);
+	arm_smmu_cb_write(smmu, i, ARM_SMMU_CB_FSR, ARM_SMMU_CB_FSR_FAULT);
+
+It is likely that FW reserves the last context bank for its own use,
+thus a simple work-around is: DON'T USE IT in Linux.
+
+If we decrease the number of context banks, last one will be "hidden".
+
+Signed-off-by: Marc Gonzalez <mgonzalez@freebox.fr>
+---
+Changes in v3:
+- Use very specific test (hack) to avoid changing the binding (Bjorn)
+- Link to v2: https://lore.kernel.org/r/20240819-smmu-v1-0-bce6e4738825@freebox.fr
+
+Changes in v2:
+- Use the compatible prop instead of a specific prop to trigger work-around (Bjorn & Caleb)
+- Add qcom,msm8998-lpass-smmu compatible string
+- Link to v1: https://lore.kernel.org/r/20240814-smmu-v1-0-3d6c27027d5b@freebox.fr
+
+On qcom msm8998, writing to the last context bank of lpass_q6_smmu
+(base address 0x05100000) produces a system freeze & reboot.
+
+The hardware/hypervisor reports 13 context banks for the LPASS SMMU
+on msm8998, but only the first 12 are accessible...
+Override the number of context banks
+
+[    2.546101] arm-smmu 5100000.iommu: probing hardware configuration...
+[    2.552439] arm-smmu 5100000.iommu: SMMUv2 with:
+[    2.558945] arm-smmu 5100000.iommu: 	stage 1 translation
+[    2.563627] arm-smmu 5100000.iommu: 	address translation ops
+[    2.568923] arm-smmu 5100000.iommu: 	non-coherent table walk
+[    2.574566] arm-smmu 5100000.iommu: 	(IDR0.CTTW overridden by FW configuration)
+[    2.580220] arm-smmu 5100000.iommu: 	stream matching with 12 register groups
+[    2.587263] arm-smmu 5100000.iommu: 	13 context banks (0 stage-2 only)
+[    2.614447] arm-smmu 5100000.iommu: 	Supported page sizes: 0x63315000
+[    2.621358] arm-smmu 5100000.iommu: 	Stage-1: 36-bit VA -> 36-bit IPA
+[    2.627772] arm-smmu 5100000.iommu: 	preserved 0 boot mappings
+
+Specifically, here:
+
+	qsmmu->bypass_cbndx = smmu->num_context_banks - 1;
+	arm_smmu_cb_write(smmu, qsmmu->bypass_cbndx, ARM_SMMU_CB_SCTLR, 0);
+
+and here:
+
+	arm_smmu_write_context_bank(smmu, i);
+	arm_smmu_cb_write(smmu, i, ARM_SMMU_CB_FSR, ARM_SMMU_CB_FSR_FAULT);
+
+It is likely that FW reserves the last context bank for its own use,
+thus a simple work-around would be: DON'T USE IT in Linux.
+
+For reference, the lpass_q6_smmu node looks like this:
+
+	lpass_q6_smmu: iommu@5100000 {
+		compatible = "qcom,msm8998-smmu-v2", "qcom,smmu-v2";
+		reg = <0x05100000 0x40000>;
+		clocks = <&gcc HLOS1_VOTE_LPASS_ADSP_SMMU_CLK>;
+		clock-names = "iface";
+
+		#global-interrupts = <0>;
+		#iommu-cells = <1>;
+		interrupts =
+			<GIC_SPI 226 IRQ_TYPE_LEVEL_HIGH>,
+			<GIC_SPI 393 IRQ_TYPE_LEVEL_HIGH>,
+			<GIC_SPI 394 IRQ_TYPE_LEVEL_HIGH>,
+			<GIC_SPI 395 IRQ_TYPE_LEVEL_HIGH>,
+			<GIC_SPI 396 IRQ_TYPE_LEVEL_HIGH>,
+			<GIC_SPI 397 IRQ_TYPE_LEVEL_HIGH>,
+			<GIC_SPI 398 IRQ_TYPE_LEVEL_HIGH>,
+			<GIC_SPI 399 IRQ_TYPE_LEVEL_HIGH>,
+			<GIC_SPI 400 IRQ_TYPE_LEVEL_HIGH>,
+			<GIC_SPI 401 IRQ_TYPE_LEVEL_HIGH>,
+			<GIC_SPI 402 IRQ_TYPE_LEVEL_HIGH>,
+			<GIC_SPI 403 IRQ_TYPE_LEVEL_HIGH>,
+			<GIC_SPI 137 IRQ_TYPE_LEVEL_HIGH>;
+
+power-domains = <&gcc LPASS_ADSP_GDSC>;
+		status = "disabled";
+	};
+---
+ drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c | 7 +++++++
+ 1 file changed, 7 insertions(+)
+
+diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
+index 7e65189ca7b8c..625db1d00fe5e 100644
+--- a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
++++ b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
+@@ -282,6 +282,13 @@ static int qcom_smmu_cfg_probe(struct arm_smmu_device *smmu)
+ 	u32 smr;
+ 	int i;
+ 
++	/*
++	 * MSM8998 LPASS SMMU reports 13 context banks, but accessing
++	 * the last context bank crashes the system.
++	 */
++	if (of_device_is_compatible(smmu->dev->of_node, "qcom,msm8998-smmu-v2") && smmu->num_context_banks == 13)
++		smmu->num_context_banks = 12;
++
+ 	/*
+ 	 * Some platforms support more than the Arm SMMU architected maximum of
+ 	 * 128 stream matching groups. For unknown reasons, the additional
+
+---
+base-commit: 96a96aed6bb75b5c212f233b6c059a9354cdeebe
+change-id: 20240814-smmu-d572c1a16aac
+
+Best regards,
+-- 
+Marc Gonzalez <mgonzalez@freebox.fr>
+
