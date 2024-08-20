@@ -1,93 +1,69 @@
-Received: from mail-qk1-f172.google.com (mail-qk1-f172.google.com [209.85.222.172])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BE4FA18E77B
-	for <iommu@lists.linux.dev>; Tue, 20 Aug 2024 13:52:30 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.222.172
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F07D3192B6F;
+	Tue, 20 Aug 2024 14:43:42 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1724161954; cv=none; b=dTfO0sIulDhJ6sU0quF1MqLQKR93M+LTDb3iP0oV9Y+5/W+rVTqpQzfk5B0ocwZz3nN+jvQ8S2E+ltyi1/arepH7wxIrE+DoLADG5aBmutjUDyfNSG+00Q6VZhChg93RNTmVTRHnr8gFHlkcTYhhijgRieMtC3W1EKZ/+WdEJko=
+	t=1724165023; cv=none; b=rWfnX5EPL55sDzWD8x80fgif2V2MJyzQbEGHqZ255ZHyvW4XfS7v+RDwiVhGCdh6YyRevYWk1D+KD4erkSl61OkqpJEKPgdRpmnXuvscFM8n/zmSWhEiKOwWu8xJGbrtWBj35156tIay5+eRO0YzR4Z44JgFn29QetkrUh2RY1s=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1724161954; c=relaxed/simple;
-	bh=f82abBbg9jguh/VDRR9fMf/RDo5qRnRxbSo6To1gBvM=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=Q3KHiZX5vRSHL4qRqSFSnKqRePBCKAIBcomA0B8UvuHHSQjMMKyIbjuAO8hFThtrmbgJbJsOAgYSmmWBDRqLsXcsknCuhgMBsbmCSMK+NGxugBPhpReuCOjOWzWY43xz1AbDLeK+DRVI6EU18XoXGQsv/3WlPulpx+CXXY4Y0/Y=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=HgWgcQf3; arc=none smtp.client-ip=209.85.222.172
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
+	s=arc-20240116; t=1724165023; c=relaxed/simple;
+	bh=qKVWR2bAYFjX4EnvEKN/nM7t6D7ZiPXtCFfUKjHWsmY=;
+	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=idIG4S4xYDSdApY97AIWg4KBeYXrukSXpjaETGRMlBSyPiIV09q7ElreDwGoxHwbyWpt+1bgCbwUA5gw3EP+IqwIjC8U5vBg+1d/nXykx4RzzIkErJVZ6KpS6tlqjjwiSjnLscAictFYMdanRmYgD6UgJwig7NS1imDxIl0ii0M=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=jvP0yVC9; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="HgWgcQf3"
-Received: by mail-qk1-f172.google.com with SMTP id af79cd13be357-7a1e31bc1efso352882085a.3
-        for <iommu@lists.linux.dev>; Tue, 20 Aug 2024 06:52:30 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google; t=1724161949; x=1724766749; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=67FW9uiQtDU02nDB/lzmQFYFhmPDEgPJ7AO31offMAw=;
-        b=HgWgcQf3dpM5N3PDATGZjSm0jrf/WetavGvwsRygugcph4hospEvdidJchQ5m1R2JL
-         9n/7JbnbwXSqLVHIJ2qRasQ5Rmgm/Aqhi8diieyufhTPljnrs0gXOhZQKJjtm/PcejL+
-         q4MNGTz1n/0EzGG77KA3ndJ1QceDjLOhYnAM34EC/P3c2vZDdH39t+FknvlvUT/1ECul
-         YTUbaiqBpnnB79qfaUn+msLM5sQtDyClMroXxP7YyrVsZqXHHiy2Otd2Lk+QaMGIQEYU
-         tF3PNPewZQoPSfmNcjBGSh8/6we9yBzNoK/oVI/vrL6wEanrAxS0sw4W12a+3PAhmM7s
-         2itA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1724161949; x=1724766749;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=67FW9uiQtDU02nDB/lzmQFYFhmPDEgPJ7AO31offMAw=;
-        b=l9ottkTCCo/xGlWqfbki9fJxmlSk7EnSt9zUNb96cOjpkjNSmDKUcZEw9VDttft7Xp
-         xxjl4mgHn3oMJb8BSrSCPBS7WW8NE9A04KUmfALUQnbRJ+j+EIbRDbcZjj0xI0cB0hS0
-         Lad/QurnfhaeUpFOYo5lteZTSvp7kupeEnoPHgcwVm2P9ahAKtuuYZhyRq/iHgpBJyXf
-         cxT5tnbShVLecCC1A7cbu+401aiVwM4UoW63mfb2WkmrpdcTzh/a4+6K+tQ4TbxlY8ja
-         fz0OkQFUYEoQDAVNmHBB+hTtNtDBY10dgXZnYPYVX6/SPeBdPO4Ot/Fi/SA3W2wy583L
-         7bGg==
-X-Forwarded-Encrypted: i=1; AJvYcCUrgjz4EhZWMSVvy/uPdF6CxFA/C0+vTVSPzJQqt773Tkrpz3XDtKiR+lLBx+JKjeGTnti92Q8ewlIwrsV7RhCVNA/cP/A=
-X-Gm-Message-State: AOJu0YwqPLXb3cc4O/9JBT4Og/E7237EFGvCueDj4GkzpWpO+TwkRvYY
-	r3s+V/j59IndR2QA4mlaSsgWU1JLjPorrZgc7CanSiVtO4eJZaBDa3mSDH/5xLI=
-X-Google-Smtp-Source: AGHT+IEhNIv0Ij2MIGvabq4gRCT+4B/5w3shoRSv5yF3X/yF+fiI0jyRZ5wjshZ3n7mQC+eePGdBkA==
-X-Received: by 2002:a05:620a:1a94:b0:79d:8153:57aa with SMTP id af79cd13be357-7a5069d48b7mr1515182485a.48.1724161949724;
-        Tue, 20 Aug 2024 06:52:29 -0700 (PDT)
-Received: from ziepe.ca ([128.77.69.90])
-        by smtp.gmail.com with ESMTPSA id af79cd13be357-7a4ff02f89bsm530357085a.23.2024.08.20.06.52.29
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 20 Aug 2024 06:52:29 -0700 (PDT)
-Received: from jgg by wakko with local (Exim 4.95)
-	(envelope-from <jgg@ziepe.ca>)
-	id 1sgPHg-002W0g-35;
-	Tue, 20 Aug 2024 10:52:28 -0300
-Date: Tue, 20 Aug 2024 10:52:28 -0300
-From: Jason Gunthorpe <jgg@ziepe.ca>
-To: Yi Liu <yi.l.liu@intel.com>
-Cc: Vasant Hegde <vasant.hegde@amd.com>,
-	Baolu Lu <baolu.lu@linux.intel.com>, Joerg Roedel <joro@8bytes.org>,
-	Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
-	Kevin Tian <kevin.tian@intel.com>, iommu@lists.linux.dev,
-	linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 1/1] iommu/vt-d: Move PCI PASID enablement to probe path
-Message-ID: <20240820135228.GX3468552@ziepe.ca>
-References: <20240816104945.97160-1-baolu.lu@linux.intel.com>
- <6650ce02-ac85-4cb6-941c-cc7e8b6effc4@amd.com>
- <92b55591-e106-4366-ba5b-0588af50770f@linux.intel.com>
- <635b24b7-632d-4046-b82e-6ac6976686c9@amd.com>
- <0e807eec-ce51-42e2-9290-dc90c4210888@linux.intel.com>
- <20240819123400.GU3468552@ziepe.ca>
- <4d9c1513-8062-4594-a06a-c9f179abdaab@linux.intel.com>
- <72e59734-431e-4eb4-b27c-44eefab3dcb0@amd.com>
- <95473081-db0b-4802-b875-24605ab2ef37@intel.com>
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="jvP0yVC9"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 876FEC4AF0B;
+	Tue, 20 Aug 2024 14:43:41 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1724165022;
+	bh=qKVWR2bAYFjX4EnvEKN/nM7t6D7ZiPXtCFfUKjHWsmY=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+	b=jvP0yVC9+ktb07008ryrlvI+J8gqmlyEQfRbAnctHjVCiZp7Qz+hK/Vq4bKBkiC5Y
+	 yOz9KxTEO93iX9v+f/FPi/EuLJh9I3KGu1ZAEtGW+xu4mijbw+f+L3I2XE3anS+72p
+	 P9x7TNI6/8lDRg0higKB2QCeNuMSNDTdshkSwlxuNVwfGkObNSct2tbh4Wb6NbKO4B
+	 h3t0q+0sXn4OAPbJEuGAiteC4cd5oNJCExgVYWCGonHOqOZa5583BD/hNWo4+0nIjh
+	 MxSjnFx/mAD5Czxm2+Y9QdYU2YOpiI7e7yjZQ9H/AwHzi1cLPrAXeOaZ0/F03qJbqk
+	 bGeHTpt7bgmbQ==
+Date: Tue, 20 Aug 2024 07:43:40 -0700
+From: Jakub Kicinski <kuba@kernel.org>
+To: Mina Almasry <almasrymina@google.com>
+Cc: Jason Gunthorpe <jgg@ziepe.ca>, Robin Murphy <robin.murphy@arm.com>,
+ Yunsheng Lin <linyunsheng@huawei.com>, Somnath Kotur
+ <somnath.kotur@broadcom.com>, Jesper Dangaard Brouer <hawk@kernel.org>,
+ Yonglong Liu <liuyonglong@huawei.com>, "David S. Miller"
+ <davem@davemloft.net>, pabeni@redhat.com, ilias.apalodimas@linaro.org,
+ netdev@vger.kernel.org, linux-kernel@vger.kernel.org, Alexander Duyck
+ <alexander.duyck@gmail.com>, Alexei Starovoitov <ast@kernel.org>, "shenjian
+ (K)" <shenjian15@huawei.com>, Salil Mehta <salil.mehta@huawei.com>,
+ joro@8bytes.org, will@kernel.org, iommu@lists.linux.dev
+Subject: Re: [BUG REPORT]net: page_pool: kernel crash at
+ iommu_get_dma_domain+0xc/0x20
+Message-ID: <20240820074340.6de9282d@kernel.org>
+In-Reply-To: <CAHS8izP-MWSFJi8zMW2P144-5p+KyWwNT2+UXBwSf=ocseQycQ@mail.gmail.com>
+References: <0e54954b-0880-4ebc-8ef0-13b3ac0a6838@huawei.com>
+	<8743264a-9700-4227-a556-5f931c720211@huawei.com>
+	<e980d20f-ea8a-43e3-8d3f-179a269b5956@kernel.org>
+	<CAOBf=musxZcjYNHjdD+MGp0y6epnNO5ryC6JgeAJbP6YQ+sVUA@mail.gmail.com>
+	<ad84acd2-36ba-433c-bdf7-c16c0d992e1c@huawei.com>
+	<190d5a15-d6bf-47d6-be86-991853b7b51d@arm.com>
+	<5b0415ff-9bbe-4553-89d6-17d12fd44b47@huawei.com>
+	<ae995d55-daa9-4060-85fa-31b4f725a17d@arm.com>
+	<20240806135017.GG676757@ziepe.ca>
+	<CAHS8izP-MWSFJi8zMW2P144-5p+KyWwNT2+UXBwSf=ocseQycQ@mail.gmail.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <95473081-db0b-4802-b875-24605ab2ef37@intel.com>
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 
-On Tue, Aug 20, 2024 at 04:55:26PM +0800, Yi Liu wrote:
+On Tue, 20 Aug 2024 09:22:39 -0400 Mina Almasry wrote:
+> Is it for some reason not feasible for the page_pool to release the
+> pages on driver unload and destroy itself, rather than have to stick
+> around until all pending pages have been returned from the net stack?
 
-> Are we sure that it is ok to enable PRI before enabling ATS?
-
-I did not see language in the spec prohibiting this order.
-
-Jason 
+Normal page pool does not track all the pages it allocates.
