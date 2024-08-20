@@ -1,187 +1,159 @@
-Received: from ns.iliad.fr (ns.iliad.fr [212.27.33.1])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-qt1-f180.google.com (mail-qt1-f180.google.com [209.85.160.180])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 946B6191F82
-	for <iommu@lists.linux.dev>; Tue, 20 Aug 2024 13:27:36 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=212.27.33.1
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1852E18FDC0
+	for <iommu@lists.linux.dev>; Tue, 20 Aug 2024 13:51:56 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.160.180
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1724160460; cv=none; b=OF5oxoD8Wz8xG0S8XRQDOieyHhERA1vXyhv44ULF2QxcReJjtrIU3u5pAQ1sfDmY9DtJHUuy5FXUVWL0PV+upDHYOcD1Oh7J9LDlXpypL5iDoRJAr3ZZgPy7A1Lz7IJf7k8wMbAGNfQLtAqz0t9C54bbOEaEZmM3OnjMuwaL9f4=
+	t=1724161918; cv=none; b=ZrmJ728ORfg6DSUANY/48K2+3VqQPBqI6gGNozgMMUUh9fSzaGcztVwL4tZrjyIlSouK7bhiKVSdCftqY38z2uje1ThjUAR5PywKXMKABida4zaBhn7mHa2BsdAH0eFYlDXlN8TXLdM3vI3ceMzi4iy2WD+ugbmmGEdzwWl+iB8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1724160460; c=relaxed/simple;
-	bh=WgMvhD6cuag6dUYVIdapvUjvrcTNcu+CX/nWDTdVGwU=;
-	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:To:Cc; b=JAu73qGrTcKxW2TO8+EygRA4j+8enD8QWU6Eiv0OjTQKmHCbriEccSc/d+XlWNj7pmOienc0xjECkzbWIocTwzgMniMkD2ysruz8jbnXaulC+kz4UfmOWAqmZqgGxdAvA/7tjUfllEI037WgdT8/r+/UKMHkHND/0hq8Li41L8s=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=freebox.fr; spf=pass smtp.mailfrom=srs.iliad.fr; arc=none smtp.client-ip=212.27.33.1
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=freebox.fr
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=srs.iliad.fr
-Received: from ns.iliad.fr (localhost [127.0.0.1])
-	by ns.iliad.fr (Postfix) with ESMTP id BB3FB209EF;
-	Tue, 20 Aug 2024 15:27:28 +0200 (CEST)
-Received: from [127.0.1.1] (freebox.vlq16.iliad.fr [213.36.7.13])
-	by ns.iliad.fr (Postfix) with ESMTP id A487920582;
-	Tue, 20 Aug 2024 15:27:28 +0200 (CEST)
-From: Marc Gonzalez <mgonzalez@freebox.fr>
-Date: Tue, 20 Aug 2024 15:27:19 +0200
-Subject: [PATCH v3] iommu/arm-smmu-qcom: hide last LPASS SMMU context bank
- from linux
+	s=arc-20240116; t=1724161918; c=relaxed/simple;
+	bh=97OqfwoT8bEFm+agkfbPwaf/JyVQpFAXVsk7wW7MwcA=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=QsbiPZ9yJ/PdQ6QIAGGz9hVZMyuPvVnam1i+k11z95pTpjOasgw9VeaFGs760bkJE2TjBvnPpW94Jiu+7y3InX+X5QSuAAI9FryEhGheUdsJ70dWNB3sE7WRmhUZqS9L7h8UHKUZx6roAu7SSxv7wfzm7CfFHxNnkLwwarbkJUc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=GjESOEZk; arc=none smtp.client-ip=209.85.160.180
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="GjESOEZk"
+Received: by mail-qt1-f180.google.com with SMTP id d75a77b69052e-44fe28eb1bfso30659341cf.0
+        for <iommu@lists.linux.dev>; Tue, 20 Aug 2024 06:51:56 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=ziepe.ca; s=google; t=1724161916; x=1724766716; darn=lists.linux.dev;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=iPMBqKgTvu/q/t3NJNOvrEVL1q4BW88uaiAwCMNkjIY=;
+        b=GjESOEZkkVVE/j5wDvPoiLzWPEvZvTk3eeoF3viKPgbo3TKvApjmN2QOS7eoJSKOk3
+         FT8gxqt1Q5s3j/ssEsLuxHfBNQjYDaglW15+rCQ+7CB8lSzZ0fClYXtkrpGoGRZsMvy9
+         vMvPTQQXarRv41idZrW9Z7dfTsDQesTzyurDmE4+Hqjvos+rAi7xz/spFXYQ/NmrA2gj
+         Edd2RoWMrRT8Vuo59/NFGD0kD42GmcLmGSRutnzf2KMYsLSnOavr+lmRXJunb3yRjvVH
+         XbX6I+9LzZcAxVFAJH8LgGnUfe3Gr9K4o+n19J61YG7BrQxa/6G5FXgz1o4UyefyXHfK
+         Zb2w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1724161916; x=1724766716;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=iPMBqKgTvu/q/t3NJNOvrEVL1q4BW88uaiAwCMNkjIY=;
+        b=E1OTa7y7xj7xarMgT9cBaagbqvCYlGbYFZoeFdtCrzQjslYx7eVIKljNi/EyZsjk2U
+         ktfSXZzhu6P5RXvi/VsaY4jif7G15oCB0i71Ur/6/G18ymCpJ7Ecds7VxMW3r4FjIk7G
+         0dWpQltjncSZ6RSZdjZnfxhIVVdmmlGBgS0iLjieHSADwKYaBb0s9EMI3/rSAmIkTPFF
+         xoZ11cjMIix1OYa9zAQcbuCDDoqC+EPmT53h/ihehvEDJhPz4Y+rGbnUkoNX60cp+FzM
+         /FAK7694MsCF/Ii94qJjjmRAli52oKdUq2KvBz/UqPoaXGs4gwZWWS/btpILmaoOC+7w
+         NbfA==
+X-Forwarded-Encrypted: i=1; AJvYcCXtFRSDNnsuWzxUGDFbjNYkuu/OVWEQ7QSSH85nKi1DK4hoj65y4VmLzj811aTIuoIEB1h95Q==@lists.linux.dev
+X-Gm-Message-State: AOJu0Yzw/oXiHx6sQ+yKs92fTVLqxstW21LVHbzmNNrz7w7361xXaDF9
+	NFiNVmArPdVK+TTjlxUgmn6E24dRUl7NApd7KLdIy6ariPa+arpoTRTR2oCNJdk=
+X-Google-Smtp-Source: AGHT+IE8l4btvL7gxpv9mQUEjr4ul3TSWB5MNmKj7f4Jk9Pj3F1VoaUwJFVfS7skgn4lp6UUwD3NCQ==
+X-Received: by 2002:a05:622a:1f13:b0:446:5ac5:f9dd with SMTP id d75a77b69052e-4537420d824mr161727411cf.14.1724161915910;
+        Tue, 20 Aug 2024 06:51:55 -0700 (PDT)
+Received: from ziepe.ca ([128.77.69.90])
+        by smtp.gmail.com with ESMTPSA id d75a77b69052e-454e904ff81sm5792571cf.35.2024.08.20.06.51.54
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 20 Aug 2024 06:51:55 -0700 (PDT)
+Received: from jgg by wakko with local (Exim 4.95)
+	(envelope-from <jgg@ziepe.ca>)
+	id 1sgPH7-002VqE-VD;
+	Tue, 20 Aug 2024 10:51:53 -0300
+Date: Tue, 20 Aug 2024 10:51:53 -0300
+From: Jason Gunthorpe <jgg@ziepe.ca>
+To: Vasant Hegde <vasant.hegde@amd.com>
+Cc: Baolu Lu <baolu.lu@linux.intel.com>, Joerg Roedel <joro@8bytes.org>,
+	Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
+	Kevin Tian <kevin.tian@intel.com>, Yi Liu <yi.l.liu@intel.com>,
+	iommu@lists.linux.dev, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 1/1] iommu/vt-d: Move PCI PASID enablement to probe path
+Message-ID: <20240820135153.GW3468552@ziepe.ca>
+References: <20240816104945.97160-1-baolu.lu@linux.intel.com>
+ <6650ce02-ac85-4cb6-941c-cc7e8b6effc4@amd.com>
+ <92b55591-e106-4366-ba5b-0588af50770f@linux.intel.com>
+ <635b24b7-632d-4046-b82e-6ac6976686c9@amd.com>
+ <0e807eec-ce51-42e2-9290-dc90c4210888@linux.intel.com>
+ <20240819123400.GU3468552@ziepe.ca>
+ <4d9c1513-8062-4594-a06a-c9f179abdaab@linux.intel.com>
+ <72e59734-431e-4eb4-b27c-44eefab3dcb0@amd.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
-Message-Id: <20240820-smmu-v3-1-2f71483b00ec@freebox.fr>
-X-B4-Tracking: v=1; b=H4sIALaZxGYC/zXMQQ6DIBCF4auYWZcGEJV21Xs0LhCHykIxQ0tsD
- Hcvtenyf3n5dohIHiNcqx0Ik48+LCXqUwV2MssDmR9Lg+RScS0Ui/P8YmPTSSuMaI2xUK4rofP
- bwdz70pOPz0DvQ03iu/6Byw9IgnE2WGxRdbXWsrk5QhzCdnYEfc75A8Pkt+CZAAAA
-To: Rob Clark <robdclark@gmail.com>, Will Deacon <will@kernel.org>, 
- Robin Murphy <robin.murphy@arm.com>, Joerg Roedel <joro@8bytes.org>, 
- Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>, 
- Conor Dooley <conor+dt@kernel.org>
-Cc: iommu@lists.linux.dev, linux-arm-msm@vger.kernel.org, 
- linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, 
- devicetree@vger.kernel.org, Bjorn Andersson <andersson@kernel.org>, 
- Konrad Dybcio <konradybcio@kernel.org>, Arnaud Vrac <avrac@freebox.fr>, 
- Pierre-Hugues Husson <phhusson@freebox.fr>, 
- Marijn Suijten <marijn.suijten@somainline.org>, 
- Caleb Connolly <caleb.connolly@linaro.org>, 
- Marc Gonzalez <mgonzalez@freebox.fr>
-X-Mailer: b4 0.13.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <72e59734-431e-4eb4-b27c-44eefab3dcb0@amd.com>
 
-On qcom msm8998, writing to the last context bank of lpass_q6_smmu
-(base address 0x05100000) produces a system freeze & reboot.
+On Tue, Aug 20, 2024 at 02:00:08PM +0530, Vasant Hegde wrote:
 
-The hardware/hypervisor reports 13 context banks for the LPASS SMMU
-on msm8998, but only the first 12 are accessible...
-Override the number of context banks
+> > Some architectures, including VT-d non-scalable mode, doesn't support
+> > ATS translation and translated requests when it is working in the
+> > IDENTITY domain mode. 
 
-[    2.546101] arm-smmu 5100000.iommu: probing hardware configuration...
-[    2.552439] arm-smmu 5100000.iommu: SMMUv2 with:
-[    2.558945] arm-smmu 5100000.iommu: 	stage 1 translation
-[    2.563627] arm-smmu 5100000.iommu: 	address translation ops
-[    2.568923] arm-smmu 5100000.iommu: 	non-coherent table walk
-[    2.574566] arm-smmu 5100000.iommu: 	(IDR0.CTTW overridden by FW configuration)
-[    2.580220] arm-smmu 5100000.iommu: 	stream matching with 12 register groups
-[    2.587263] arm-smmu 5100000.iommu: 	13 context banks (0 stage-2 only)
-[    2.614447] arm-smmu 5100000.iommu: 	Supported page sizes: 0x63315000
-[    2.621358] arm-smmu 5100000.iommu: 	Stage-1: 36-bit VA -> 36-bit IPA
-[    2.627772] arm-smmu 5100000.iommu: 	preserved 0 boot mappings
+ARM has a similar issue.
 
-Specifically, the crashes occur here:
+ATS enablement should be done when the domain is attached in those
+cases.
 
-	qsmmu->bypass_cbndx = smmu->num_context_banks - 1;
-	arm_smmu_cb_write(smmu, qsmmu->bypass_cbndx, ARM_SMMU_CB_SCTLR, 0);
+Arguably you don't want to turn ATS on anyhow for pure IDENTITY with
+no PASID because it is just pointless.
 
-and here:
+> In that case, probably PCI ATS still need to be
+> > disabled when such domain is attached and re-enabled when the domain is
+> > detached.
+> 
+> Does it make sense to move both PASID/PRI enablement to probe() path? something
+> like below :
 
-	arm_smmu_write_context_bank(smmu, i);
-	arm_smmu_cb_write(smmu, i, ARM_SMMU_CB_FSR, ARM_SMMU_CB_FSR_FAULT);
+It makes sense.
 
-It is likely that FW reserves the last context bank for its own use,
-thus a simple work-around is: DON'T USE IT in Linux.
+I don't see any ordering restriction in the PCI specification.
 
-If we decrease the number of context banks, last one will be "hidden".
+Notice that PASID does have a specific called out restriction:
 
-Signed-off-by: Marc Gonzalez <mgonzalez@freebox.fr>
----
-Changes in v3:
-- Use very specific test (hack) to avoid changing the binding (Bjorn)
-- Link to v2: https://lore.kernel.org/r/20240819-smmu-v1-0-bce6e4738825@freebox.fr
+	/*
+	 * Note that PASID must be enabled before, and disabled after ATS:
+	 * PCI Express Base 4.0r1.0 - 10.5.1.3 ATS Control Register
+	 *
+	 *   Behavior is undefined if this bit is Set and the value of the PASID
+	 *   Enable, Execute Requested Enable, or Privileged Mode Requested bits
+	 *   are changed.
+	 */
 
-Changes in v2:
-- Use the compatible prop instead of a specific prop to trigger work-around (Bjorn & Caleb)
-- Add qcom,msm8998-lpass-smmu compatible string
-- Link to v1: https://lore.kernel.org/r/20240814-smmu-v1-0-3d6c27027d5b@freebox.fr
+> [I am assuming ops->dev_enable_feat() interface is going away]
 
-On qcom msm8998, writing to the last context bank of lpass_q6_smmu
-(base address 0x05100000) produces a system freeze & reboot.
-
-The hardware/hypervisor reports 13 context banks for the LPASS SMMU
-on msm8998, but only the first 12 are accessible...
-Override the number of context banks
-
-[    2.546101] arm-smmu 5100000.iommu: probing hardware configuration...
-[    2.552439] arm-smmu 5100000.iommu: SMMUv2 with:
-[    2.558945] arm-smmu 5100000.iommu: 	stage 1 translation
-[    2.563627] arm-smmu 5100000.iommu: 	address translation ops
-[    2.568923] arm-smmu 5100000.iommu: 	non-coherent table walk
-[    2.574566] arm-smmu 5100000.iommu: 	(IDR0.CTTW overridden by FW configuration)
-[    2.580220] arm-smmu 5100000.iommu: 	stream matching with 12 register groups
-[    2.587263] arm-smmu 5100000.iommu: 	13 context banks (0 stage-2 only)
-[    2.614447] arm-smmu 5100000.iommu: 	Supported page sizes: 0x63315000
-[    2.621358] arm-smmu 5100000.iommu: 	Stage-1: 36-bit VA -> 36-bit IPA
-[    2.627772] arm-smmu 5100000.iommu: 	preserved 0 boot mappings
-
-Specifically, here:
-
-	qsmmu->bypass_cbndx = smmu->num_context_banks - 1;
-	arm_smmu_cb_write(smmu, qsmmu->bypass_cbndx, ARM_SMMU_CB_SCTLR, 0);
-
-and here:
-
-	arm_smmu_write_context_bank(smmu, i);
-	arm_smmu_cb_write(smmu, i, ARM_SMMU_CB_FSR, ARM_SMMU_CB_FSR_FAULT);
-
-It is likely that FW reserves the last context bank for its own use,
-thus a simple work-around would be: DON'T USE IT in Linux.
-
-For reference, the lpass_q6_smmu node looks like this:
-
-	lpass_q6_smmu: iommu@5100000 {
-		compatible = "qcom,msm8998-smmu-v2", "qcom,smmu-v2";
-		reg = <0x05100000 0x40000>;
-		clocks = <&gcc HLOS1_VOTE_LPASS_ADSP_SMMU_CLK>;
-		clock-names = "iface";
-
-		#global-interrupts = <0>;
-		#iommu-cells = <1>;
-		interrupts =
-			<GIC_SPI 226 IRQ_TYPE_LEVEL_HIGH>,
-			<GIC_SPI 393 IRQ_TYPE_LEVEL_HIGH>,
-			<GIC_SPI 394 IRQ_TYPE_LEVEL_HIGH>,
-			<GIC_SPI 395 IRQ_TYPE_LEVEL_HIGH>,
-			<GIC_SPI 396 IRQ_TYPE_LEVEL_HIGH>,
-			<GIC_SPI 397 IRQ_TYPE_LEVEL_HIGH>,
-			<GIC_SPI 398 IRQ_TYPE_LEVEL_HIGH>,
-			<GIC_SPI 399 IRQ_TYPE_LEVEL_HIGH>,
-			<GIC_SPI 400 IRQ_TYPE_LEVEL_HIGH>,
-			<GIC_SPI 401 IRQ_TYPE_LEVEL_HIGH>,
-			<GIC_SPI 402 IRQ_TYPE_LEVEL_HIGH>,
-			<GIC_SPI 403 IRQ_TYPE_LEVEL_HIGH>,
-			<GIC_SPI 137 IRQ_TYPE_LEVEL_HIGH>;
-
-power-domains = <&gcc LPASS_ADSP_GDSC>;
-		status = "disabled";
-	};
----
- drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c | 7 +++++++
- 1 file changed, 7 insertions(+)
-
-diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
-index 7e65189ca7b8c..625db1d00fe5e 100644
---- a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
-+++ b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
-@@ -282,6 +282,13 @@ static int qcom_smmu_cfg_probe(struct arm_smmu_device *smmu)
- 	u32 smr;
- 	int i;
+Is the plan
  
-+	/*
-+	 * MSM8998 LPASS SMMU reports 13 context banks, but accessing
-+	 * the last context bank crashes the system.
-+	 */
-+	if (of_device_is_compatible(smmu->dev->of_node, "qcom,msm8998-smmu-v2") && smmu->num_context_banks == 13)
-+		smmu->num_context_banks = 12;
-+
- 	/*
- 	 * Some platforms support more than the Arm SMMU architected maximum of
- 	 * 128 stream matching groups. For unknown reasons, the additional
+>   - Enable device side PASID/PRI during ops->probe_device()
 
----
-base-commit: 96a96aed6bb75b5c212f233b6c059a9354cdeebe
-change-id: 20240814-smmu-d572c1a16aac
+Yes
 
-Best regards,
--- 
-Marc Gonzalez <mgonzalez@freebox.fr>
+>   - In device attach path (ops->attach_dev()), depending on IOMMU, device and
+> domain capability configure the features like PASID, IOPF and ATS. That means
+> ATS enablement is still done at attach device path.
 
+From a PCI perspective only ATS can be changed at this point..
+
+The SW construct of IOPF can be changed during domain attachment.
+
+Everything that is PF-only must be setup during probe_device only
+otherwise SRIOV VFs will be broken insome cases.
+
+See
+https://lore.kernel.org/all/0-v1-0fb4d2ab6770+7e706-ats_vf_jgg@nvidia.com/
+for this concept applied to ATS.
+
+This means probe_device() has to do:
+
+ - ATS properties 
+ - PRI
+ - PASID properties
+
+At a minimum.
+
+It would be nice if the iommu core code did this setup in one place
+immediately after calling probe_device() but before attaching a
+domain.
+
+There is no particularly good reason to have this coded in all the
+iommu drivers.
+
+Jason
