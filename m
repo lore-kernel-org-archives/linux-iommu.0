@@ -1,31 +1,50 @@
-Received: from szxga08-in.huawei.com (szxga08-in.huawei.com [45.249.212.255])
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.21])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AF9E640BE5
-	for <iommu@lists.linux.dev>; Tue, 20 Aug 2024 07:18:26 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=45.249.212.255
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C306518990C
+	for <iommu@lists.linux.dev>; Tue, 20 Aug 2024 07:37:12 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.21
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1724138309; cv=none; b=AkXZ2mEzVYkZXEQiYOHubPHx0EgyFnUUJDYsO2etS28gkqpQfInpbx6aQTWRpM4sCWRrMwankapJ2oUhSEKsemJkbLJnRiCi/kr+5tEd7getJD73IrC7mhhFP/cy4Fb/nh03ILxjvdf1ByPooFZEbb/X0ZDsO4otTD0tqYsFF4k=
+	t=1724139434; cv=none; b=QYfdfu/e3CPa5R5JkcxrULDPmqxXcIcMDywxzWwVkLpVpqWRF89XSquYaC0pqluKY7r0Z+y8okjtvcPXZodTTGXqJxLNUSnroNUPqU0JupzBT26W/sWucxX8OB6afBup78B2l2s5MPN3irE3KauolFLOdTQdpvYZub+zVBSM08Q=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1724138309; c=relaxed/simple;
-	bh=9bplCARZ+J/ETs6+wk14S8Wh1vJdJFxm/J7KEV3c2NM=;
-	h=Message-ID:Date:MIME-Version:Subject:To:CC:References:From:
-	 In-Reply-To:Content-Type; b=NN1AQXthLvucVWY0XjU9OI+d/B8SCQXsbvH8iSFjjQJyPhb4PcJRrIQ7ndsDvGhYmg8kRNxH+fsZsAjwOCBTMd4w/p4RMBs6SygRCqpk+d5f6KB5QCpOedD4Y+tTFLcXkW5fNwlMFJP0i43+GjKPVNyB49OiUh8HcN61bY5eWdo=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=huawei.com; spf=pass smtp.mailfrom=huawei.com; arc=none smtp.client-ip=45.249.212.255
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=huawei.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=huawei.com
-Received: from mail.maildlp.com (unknown [172.19.163.174])
-	by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4Wp15106g1z13Spy;
-	Tue, 20 Aug 2024 15:17:41 +0800 (CST)
-Received: from kwepemf200007.china.huawei.com (unknown [7.202.181.233])
-	by mail.maildlp.com (Postfix) with ESMTPS id 6E48C1400FD;
-	Tue, 20 Aug 2024 15:18:18 +0800 (CST)
-Received: from [10.67.121.184] (10.67.121.184) by
- kwepemf200007.china.huawei.com (7.202.181.233) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.1544.11; Tue, 20 Aug 2024 15:18:17 +0800
-Message-ID: <775234bc-84a2-458b-b047-ff6ab2607989@huawei.com>
-Date: Tue, 20 Aug 2024 15:18:16 +0800
+	s=arc-20240116; t=1724139434; c=relaxed/simple;
+	bh=jm2Ah0QcIsof5GMklMqVLfJgTDJic0oUv2HMzEC5O6g=;
+	h=Message-ID:Date:MIME-Version:Cc:Subject:To:References:From:
+	 In-Reply-To:Content-Type; b=Vy+wxX3iPU/LwXpkKxs9TorLBYp9lxTieu1rN2KKpvOlSd+ISdEqD/PYaP3IuWHu617DZXvo6c4LAUfoJV6ZIQUtWQG0ETs7g/dNtq1PwwGsV4XLitmznlfiz1lMCdRt2YTDlJjTRU2p0shwDQO09shFOGEpG7SLVy1XslSOnlo=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=Z7Fz8YMD; arc=none smtp.client-ip=198.175.65.21
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="Z7Fz8YMD"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1724139433; x=1755675433;
+  h=message-id:date:mime-version:cc:subject:to:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=jm2Ah0QcIsof5GMklMqVLfJgTDJic0oUv2HMzEC5O6g=;
+  b=Z7Fz8YMDk8hz7VqzKBlNeLgAVMVZMY3pgMq4a9CoUzdU5po5SSWp/SO2
+   Ykw5/m3KkGwLunrA+gN0llTmK5/fztykxYFbZw7ZgPrzUuDLS4AqjNOkl
+   95Kna3L+6PxsYgZ53p8yttZ8iMGVYPiNrqZLqnJ+62X8AiycaEfgwMnaf
+   EiZVGsK6sQdzeFw9g4ZZ0edh6UmUPSB5me7hmtHRLQabXciPI+BEF0Js9
+   LEQkotyKzoPqg0zLmJ1dgqq11rKnjjxmToeH1NIVOddI6lo0CY/q1jRiY
+   PsChE8++XQVdPTBB/b+Qq7epfOrjKairsN8D8KcEHpZEQGGAaocjP3BT3
+   Q==;
+X-CSE-ConnectionGUID: Vfi0E1zbRa+kJmqrnE4qMQ==
+X-CSE-MsgGUID: JyjBZArnTRGL5DqEbCjtOw==
+X-IronPort-AV: E=McAfee;i="6700,10204,11169"; a="22390298"
+X-IronPort-AV: E=Sophos;i="6.10,161,1719903600"; 
+   d="scan'208";a="22390298"
+Received: from fmviesa003.fm.intel.com ([10.60.135.143])
+  by orvoesa113.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Aug 2024 00:37:12 -0700
+X-CSE-ConnectionGUID: ImAwxkwSREuls58B7C1TRg==
+X-CSE-MsgGUID: 53piYitRRMezrL9Lsu5tBw==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.10,161,1719903600"; 
+   d="scan'208";a="64821022"
+Received: from blu2-mobl.ccr.corp.intel.com (HELO [10.125.248.220]) ([10.125.248.220])
+  by fmviesa003-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Aug 2024 00:37:09 -0700
+Message-ID: <f9ee4657-eea5-4a82-8e01-0396948ed755@linux.intel.com>
+Date: Tue, 20 Aug 2024 15:37:07 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -33,125 +52,45 @@ List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [BUG REPORT]net: page_pool: kernel crash at
- iommu_get_dma_domain+0xc/0x20
-To: Robin Murphy <robin.murphy@arm.com>, Yunsheng Lin
-	<linyunsheng@huawei.com>, Somnath Kotur <somnath.kotur@broadcom.com>, Jesper
- Dangaard Brouer <hawk@kernel.org>
-CC: "David S. Miller" <davem@davemloft.net>, Jakub Kicinski <kuba@kernel.org>,
-	<pabeni@redhat.com>, <ilias.apalodimas@linaro.org>, <netdev@vger.kernel.org>,
-	<linux-kernel@vger.kernel.org>, Alexander Duyck <alexander.duyck@gmail.com>,
-	Alexei Starovoitov <ast@kernel.org>, "shenjian (K)" <shenjian15@huawei.com>,
-	Salil Mehta <salil.mehta@huawei.com>, <joro@8bytes.org>, <will@kernel.org>,
-	<iommu@lists.linux.dev>
-References: <0e54954b-0880-4ebc-8ef0-13b3ac0a6838@huawei.com>
- <8743264a-9700-4227-a556-5f931c720211@huawei.com>
- <e980d20f-ea8a-43e3-8d3f-179a269b5956@kernel.org>
- <CAOBf=musxZcjYNHjdD+MGp0y6epnNO5ryC6JgeAJbP6YQ+sVUA@mail.gmail.com>
- <ad84acd2-36ba-433c-bdf7-c16c0d992e1c@huawei.com>
- <190d5a15-d6bf-47d6-be86-991853b7b51d@arm.com>
- <5b0415ff-9bbe-4553-89d6-17d12fd44b47@huawei.com>
- <ae995d55-daa9-4060-85fa-31b4f725a17d@arm.com>
+Cc: baolu.lu@linux.intel.com, iommu@lists.linux.dev,
+ linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 1/1] iommu/vt-d: Unconditionally flush device TLB for
+ pasid table updates
+To: Yi Liu <yi.l.liu@intel.com>, Joerg Roedel <joro@8bytes.org>,
+ Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
+ Jason Gunthorpe <jgg@ziepe.ca>, Kevin Tian <kevin.tian@intel.com>
+References: <20240820030208.20020-1-baolu.lu@linux.intel.com>
+ <9047e540-a993-473c-9d24-8359cec67b5b@intel.com>
 Content-Language: en-US
-From: Yonglong Liu <liuyonglong@huawei.com>
-In-Reply-To: <ae995d55-daa9-4060-85fa-31b4f725a17d@arm.com>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
+From: Baolu Lu <baolu.lu@linux.intel.com>
+In-Reply-To: <9047e540-a993-473c-9d24-8359cec67b5b@intel.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: dggems703-chm.china.huawei.com (10.3.19.180) To
- kwepemf200007.china.huawei.com (7.202.181.233)
 
-
-On 2024/8/6 20:50, Robin Murphy wrote:
-> On 06/08/2024 12:54 pm, Yunsheng Lin wrote:
->> On 2024/8/5 20:53, Robin Murphy wrote:
->>>>>>
->>>>>> The page_pool bumps refcnt via get_device() + put_device() on the 
->>>>>> DMA
->>>>>> 'struct device', to avoid it going away, but I guess there is 
->>>>>> also some
->>>>>> IOMMU code that we need to make sure doesn't go away (until all 
->>>>>> inflight
->>>>>> pages are returned) ???
->>>>
->>>> I guess the above is why thing went wrong here, the question is which
->>>> IOMMU code need to be called here to stop them from going away.
->>>
->>> This looks like the wrong device is being passed to dma_unmap_page() 
->>> - if a device had an IOMMU DMA domain at the point when the DMA 
->>> mapping was create, then neither that domain nor its group can 
->>> legitimately have disappeared while that device still had a driver 
->>> bound. Or if it *was* the right device, but it's already had 
->>> device_del() called on it, then you have a fundamental lifecycle 
->>> problem - a device with no driver bound should not be passed to the 
->>> DMA API, much less a dead device that's already been removed from 
->>> its parent bus.
+On 2024/8/20 15:09, Yi Liu wrote:
+> On 2024/8/20 11:02, Lu Baolu wrote:
+>> The caching mode of an IOMMU is irrelevant to the behavior of the device
+>> TLB. Previously, commit <304b3bde24b5> ("iommu/vt-d: Remove caching mode
+>> check before device TLB flush") removed this redundant check in the
+>> domain unmap path.
 >>
->> Yes, the device *was* the right device, And it's already had 
->> device_del()
->> called on it.
->> page_pool tries to call get_device() on the DMA 'struct device' to 
->> avoid the
->> above lifecycle problem, it seems get_device() does not stop 
->> device_del()
->> from being called, and that is where we have the problem here:
->> https://elixir.bootlin.com/linux/v6.11-rc2/source/net/core/page_pool.c#L269 
+>> Checking the caching mode before flushing the device TLB after a pasid
+>> table entry is updated is unnecessary and can lead to inconsistent
+>> behavior.
 >>
->>
->> The above happens because driver with page_pool support may hand over
->> page still with dma mapping to network stack and try to reuse that page
->> after network stack is done with it and passes it back to page_pool 
->> to avoid
->> the penalty of dma mapping/unmapping. With all the caching in the 
->> network
->> stack, some pages may be held in the network stack without returning 
->> to the
->> page_pool soon enough, and with VF disable causing the driver 
->> unbound, the
->> page_pool does not stop the driver from doing it's unbounding work, 
->> instead
->> page_pool uses workqueue to check if there is some pages coming back 
->> from the
->> network stack periodically, if there is any, it will do the dma 
->> unmmapping
->> related cleanup work.
->
-> OK, that sounds like a more insidious problem - it's not just IOMMU 
-> stuff, in general the page pool should not be holding and using the 
-> device pointer after the device has already been destroyed. Even 
-> without an IOMMU, attempting DMA unmaps after the driver has already 
-> unbound may leak resources or at worst corrupt memory. Fundamentally, 
-> the page pool code cannot allow DMA mappings to outlive the driver 
-> they belong to.
->
-> Thanks,
-> Robin.
->
-I found a easier way to reproduce the problem:
-1. enable a vf
-2. use mz to send only one of the multiple fragments
-3. disable the vf in 30 seconds
+>> Extends this consistency by removing the caching mode check in the pasid
+>> table update path.
+> 
+> I'm wondering if a fix tag is needed here. Before this patch, the guest
+> kernel does not issue device TLB invalidation. This may be a problem for
+> the emulated devices that support ATS capability. The cache in device
+> side would be stale. Although some vIOMMU like QEMU virtual VT-d would
+> notify the emulated devices to flush their cache when handling the unmap
+> event. [1]. But this is not required by VT-d spec. So it's possible that
+> other vIOMMU may not do it. So this patch appears to fix an issue, so a fix
+> tag may be necessary. How about your thought?
 
-Jakub's patch:
-https://lore.kernel.org/netdev/20240809205717.0c966bad@kernel.org/T/
-can solve this case, but can not solve the origin case.
+It depends on whether this solves any real or potential issues.
 
-Base on the simple case, I found that v6.9 has no problem, v6.10-rc1 
-introduce the problem.
-And I trace the differences between the two version:
-v6.9: 
-page_pool_return_page()->dma_unmap_page_attrs()->*dma_direct_unmap_page()*
-v6.10-rc1: 
-page_pool_return_page()->dma_unmap_page_attrs()->*iommu_dma_unmap_page()*
-That's because in v6.9 dev->dma_ops is NULL and v6.10-rc1 doesn't. (The 
-driver has already unbound, but the device is still there)
-
-I revert the patch:
-https://lore.kernel.org/linux-arm-kernel/4a4482a0-4408-4d86-9f61-6589ab78686b@somainline.org/T/
-then the bug I report can not reproduce.
-
-So maybe this problem is introduced by this patch or the following patch 
-set?
-https://lore.kernel.org/linux-iommu/cover.1713523152.git.robin.murphy@arm.com/
-or the page pool always has the problem: In the version before v6.9, and 
-in this case, page pool use iommu_dma_map_page() and 
-dma_direct_unmap_page(), not pair?
+Thanks,
+baolu
