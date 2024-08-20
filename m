@@ -1,224 +1,106 @@
-Received: from mail-ed1-f42.google.com (mail-ed1-f42.google.com [209.85.208.42])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 387A645BEC
-	for <iommu@lists.linux.dev>; Tue, 20 Aug 2024 23:01:44 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.42
+Received: from linux.microsoft.com (linux.microsoft.com [13.77.154.182])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id DE41B38DD4
+	for <iommu@lists.linux.dev>; Tue, 20 Aug 2024 23:04:39 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=13.77.154.182
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1724194906; cv=none; b=SxVP4AFDa95TCUI0eKThALQjH+hah0vXCurKjILXxq6ZgjJrUWgpZRKd0ZQpkAXjNGppVhW+svco6Alm844jIQqV8i7UVEFu2vaNmb57f9rJ/k+FYMxOzBjrReseiPctAPKJtEhPEaTWwF1tP/Iwebx8daBja6+IwAZQ71fMD6c=
+	t=1724195082; cv=none; b=Y0+qrNC7mRXUNKyQCYpuChvCdbWMx+VZT2jMSWXGmLNTQKFf6s5NTwETKQmd0FHV7fch6TQDF8YhXHDRaqFeA22oPGLGXQ0rIB8XiaJ8tWkynzRj0pTM+4WyFZ+syY+Kw7T9txO+HdKEL8IheAdxoozCs0Hiijd3MiKG70cesvc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1724194906; c=relaxed/simple;
-	bh=oZ6HnlhFFnD76cBD61CWDrFOFad6r5f3H3ArzEmAfnw=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=FCK+1ngpQEZ7ovSW3WjmGUpM4s/Tpa+33+0+/2Cod7Zl0zXDkfAuB+OS73tAHp3bUpJvEqopsIU8fJgMA7c/4lf5PQQ4bI9DMPK8aJxs12ncEZK3TkoGTZkShDJTIBGlSdR86pCbenfhU+Rn7IkPClRYbSvUdEzgqnPIUj96TOo=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org; spf=pass smtp.mailfrom=linaro.org; dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b=AItXj8Bw; arc=none smtp.client-ip=209.85.208.42
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linaro.org
+	s=arc-20240116; t=1724195082; c=relaxed/simple;
+	bh=EATt0tCRzljWphvcXmBRRwS+xNaSSQAgbXjkkdb157Y=;
+	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=UX9D2gwpZ86FyQAviPm8kjCDO3jdqCr5mVKeItEZwEfrnBdjYZMuPT9y+0mNlOO+mdTlWCVKwglb68oeH/28lr2aGSvS3otOnZ9UOIh59OCuG1d1r65muvgtq7Q3pITii5G+XWoJRkgxbebJvdMs420UMvmpGjjQCcFGDE9eaKU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com; spf=pass smtp.mailfrom=linux.microsoft.com; dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b=kvSjZdu6; arc=none smtp.client-ip=13.77.154.182
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.microsoft.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="AItXj8Bw"
-Received: by mail-ed1-f42.google.com with SMTP id 4fb4d7f45d1cf-5becfd14353so4952993a12.1
-        for <iommu@lists.linux.dev>; Tue, 20 Aug 2024 16:01:43 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1724194902; x=1724799702; darn=lists.linux.dev;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=kC7vkVAJUQE0cYVMmhqBSRyCNd1fPaHCZyplFYwQ3Ps=;
-        b=AItXj8BwrR8dY2g1bmBcH/1i6pdpPVO5ETj910RU00tg7OlTmIYPTs9o0dcAPlMCX7
-         V4/xpFIhqbgMdlMBqbBG0iqwC5DEOim2Hu2C4wnChgWc5mdlHoIrsKZ4uW9o+1Xudciy
-         vmc2ZW8PaXYHEh5CJA5JPZst0Xxcy2eiVEm9EQmvo/5S2U8Z+dq5pG3b7Xlxl57QzT/z
-         AmbGsJM57ZXGVcqykMTY8jEjPhiBgTs/DNC8cU08Jl+ruYBa8zqeCNmKXsEhYTAWaLhL
-         fHLC/KhX8AqZ+ZhZ5hHyVskhXsI7stCE4oHxFKn6KQNpjEK2JUaUYbLxdg6L5Br/yt96
-         pVlw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1724194902; x=1724799702;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=kC7vkVAJUQE0cYVMmhqBSRyCNd1fPaHCZyplFYwQ3Ps=;
-        b=Kgw9Ometv/IW2A2slhzZZMNVwGGD+g3rSmsiZnnz6M7WTVoeWPITIpnjD9ux7Mv399
-         jRNZdW/Cf72ZScyE6eJ/1DUZ/rJgwy7Imxjgqs2wkIaEXLAlVKeoCGe7v/lCjY341MGt
-         DL5WBNeLqnwwcxL66QVn3PqjNdf7d/EW1e6PC5N8YsD1g3sy4A48qd9ijiM9ZvFngNge
-         R9uSRPKQLDTHqbJph/w5pblQRkulHi+KkerXGQHqsHUM92V82Eao78CKqW+XRCpyCbKq
-         rNLmex0Cxws0w4c2VtXFE1HriyIDpSkMqH6i0zcvQY+qAsBQcJLglht1stFpVu1qv3f/
-         W/Sw==
-X-Gm-Message-State: AOJu0YyG73aSDXwXnDypoqJ3rd1le5tPREXqOS/HlLOCZKjmSMIkP1D5
-	oZp7ccroZTC/ihIfIJU94wtymJ4AejXSFdHgL+cdHthsdSxaKmUTBAU6+v+uf24=
-X-Google-Smtp-Source: AGHT+IH/kpgHGxeSB23tQMLpjn7/+xqj10S/vaLRuAiUHtgs+SorygqqL8tSoFCWMnv4Rbg1NyhgrA==
-X-Received: by 2002:a17:907:d2c9:b0:a7d:33f0:4d58 with SMTP id a640c23a62f3a-a866f73376bmr40138966b.48.1724194902487;
-        Tue, 20 Aug 2024 16:01:42 -0700 (PDT)
-Received: from ?IPV6:2a02:8109:aa0d:be00::676e? ([2a02:8109:aa0d:be00::676e])
-        by smtp.gmail.com with ESMTPSA id a640c23a62f3a-a83839464ebsm809596666b.155.2024.08.20.16.01.41
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 20 Aug 2024 16:01:42 -0700 (PDT)
-Message-ID: <482ddee7-6b56-47c4-ae80-ed708f7e2c2a@linaro.org>
-Date: Wed, 21 Aug 2024 01:01:40 +0200
+	dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b="kvSjZdu6"
+Received: from DESKTOP-0403QTC. (unknown [20.236.11.102])
+	by linux.microsoft.com (Postfix) with ESMTPSA id 3D1FD20B7165;
+	Tue, 20 Aug 2024 16:04:39 -0700 (PDT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com 3D1FD20B7165
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
+	s=default; t=1724195079;
+	bh=D6zEqy376/OShhmuon6epP+P07be+GAy/DybGw8HGwc=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+	b=kvSjZdu6M9XzNBlSR6m94fselW1qjr/8b0WSC6V/u1vt/uOsovMsZcooYzlptpFoK
+	 0tEP7km3aLaqGRNw8N6murAFH2xzyC+U8aosBGMiomFiXbZcq4tYRO+ss+HM+rWG7s
+	 Lp5kXYovmMTwmatOF2DkNYTNzCRN94dIuGs6qTdY=
+Date: Tue, 20 Aug 2024 16:04:37 -0700
+From: Jacob Pan <jacob.pan@linux.microsoft.com>
+To: Baolu Lu <baolu.lu@linux.intel.com>
+Cc: Tina Zhang <tina.zhang@intel.com>, Kevin Tian <kevin.tian@intel.com>,
+ iommu@lists.linux.dev, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v3 4/4] iommu/vt-d: Introduce batched cache invalidation
+Message-ID: <20240820160437.76fb4d34@DESKTOP-0403QTC.>
+In-Reply-To: <8da6a9b6-01f4-4c4f-9619-148fdb3828d0@linux.intel.com>
+References: <20240815065221.50328-1-tina.zhang@intel.com>
+	<20240815065221.50328-5-tina.zhang@intel.com>
+	<20240816093846.40dbd623@DESKTOP-0403QTC.>
+	<afec1d30-4bb3-4d39-9ff1-eb8ecb26bed3@linux.intel.com>
+	<20240819084056.298a9924@DESKTOP-0403QTC.>
+	<8da6a9b6-01f4-4c4f-9619-148fdb3828d0@linux.intel.com>
+X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.33; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v3] iommu/arm-smmu-qcom: hide last LPASS SMMU context bank
- from linux
-To: Marc Gonzalez <mgonzalez@freebox.fr>, Rob Clark <robdclark@gmail.com>,
- Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
- Joerg Roedel <joro@8bytes.org>, Rob Herring <robh@kernel.org>,
- Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>
-Cc: iommu@lists.linux.dev, linux-arm-msm@vger.kernel.org,
- linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
- devicetree@vger.kernel.org, Bjorn Andersson <andersson@kernel.org>,
- Konrad Dybcio <konradybcio@kernel.org>, Arnaud Vrac <avrac@freebox.fr>,
- Pierre-Hugues Husson <phhusson@freebox.fr>,
- Marijn Suijten <marijn.suijten@somainline.org>
-References: <20240820-smmu-v3-1-2f71483b00ec@freebox.fr>
-Content-Language: en-US
-From: Caleb Connolly <caleb.connolly@linaro.org>
-In-Reply-To: <20240820-smmu-v3-1-2f71483b00ec@freebox.fr>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
+Hi Baolu,
 
+On Tue, 20 Aug 2024 10:06:05 +0800
+Baolu Lu <baolu.lu@linux.intel.com> wrote:
 
-On 20/08/2024 15:27, Marc Gonzalez wrote:
-> On qcom msm8998, writing to the last context bank of lpass_q6_smmu
-> (base address 0x05100000) produces a system freeze & reboot.
+> On 8/19/24 11:40 PM, Jacob Pan wrote:
+> > On Sat, 17 Aug 2024 11:28:21 +0800
+> > Baolu Lu<baolu.lu@linux.intel.com>  wrote:
+> >   
+> >> On 2024/8/17 0:38, Jacob Pan wrote:  
+> >>> On Thu, 15 Aug 2024 14:52:21 +0800
+> >>> Tina Zhang<tina.zhang@intel.com>  wrote:
+> >>>      
+> >>>> @@ -270,7 +343,8 @@ static void cache_tag_flush_iotlb(struct
+> >>>> dmar_domain *domain, struct cache_tag * u64 type =
+> >>>> DMA_TLB_PSI_FLUSH;
+> >>>>    	if (domain->use_first_level) {
+> >>>> -		qi_flush_piotlb(iommu, tag->domain_id,
+> >>>> tag->pasid, addr, pages, ih);
+> >>>> +		qi_batch_add_piotlb(iommu, tag->domain_id,
+> >>>> tag->pasid, addr,
+> >>>> +				    pages, ih,
+> >>>> domain->qi_batch); return;
+> >>>>    	}
+> >>>>    
+> >>>> @@ -287,7 +361,8 @@ static void cache_tag_flush_iotlb(struct
+> >>>> dmar_domain *domain, struct cache_tag * }
+> >>>>    
+> >>>>    	if (ecap_qis(iommu->ecap))
+> >>>> -		qi_flush_iotlb(iommu, tag->domain_id, addr | ih,
+> >>>> mask, type);
+> >>>> +		qi_batch_add_iotlb(iommu, tag->domain_id, addr |
+> >>>> ih, mask, type,
+> >>>> +				   domain->qi_batch);
+> >>>>        
+> >>> If I understand this correctly, IOTLB flush maybe deferred until
+> >>> the batch array is full, right? If so, is there a security gap
+> >>> where callers think the mapping is gone after the call returns?  
+> >> No. All related caches are flushed before function return. A domain
+> >> can have multiple cache tags. Previously, we sent individual cache
+> >> invalidation requests to hardware. This change combines all
+> >> necessary invalidation requests into a single batch and raise them
+> >> to hardware together to make it more efficient.  
+> > I was looking at the code below, if the index does not reach
+> > QI_MAX_BATCHED_DESC_COUNT. There will be no flush after
+> > cache_tag_flush_iotlb() returns, right?  
 > 
-> The hardware/hypervisor reports 13 context banks for the LPASS SMMU
-> on msm8998, but only the first 12 are accessible...
-> Override the number of context banks
-> 
-> [    2.546101] arm-smmu 5100000.iommu: probing hardware configuration...
-> [    2.552439] arm-smmu 5100000.iommu: SMMUv2 with:
-> [    2.558945] arm-smmu 5100000.iommu: 	stage 1 translation
-> [    2.563627] arm-smmu 5100000.iommu: 	address translation ops
-> [    2.568923] arm-smmu 5100000.iommu: 	non-coherent table walk
-> [    2.574566] arm-smmu 5100000.iommu: 	(IDR0.CTTW overridden by FW configuration)
-> [    2.580220] arm-smmu 5100000.iommu: 	stream matching with 12 register groups
-> [    2.587263] arm-smmu 5100000.iommu: 	13 context banks (0 stage-2 only)
-> [    2.614447] arm-smmu 5100000.iommu: 	Supported page sizes: 0x63315000
-> [    2.621358] arm-smmu 5100000.iommu: 	Stage-1: 36-bit VA -> 36-bit IPA
-> [    2.627772] arm-smmu 5100000.iommu: 	preserved 0 boot mappings
-> 
-> Specifically, the crashes occur here:
-> 
-> 	qsmmu->bypass_cbndx = smmu->num_context_banks - 1;
-> 	arm_smmu_cb_write(smmu, qsmmu->bypass_cbndx, ARM_SMMU_CB_SCTLR, 0);
-> 
-> and here:
-> 
-> 	arm_smmu_write_context_bank(smmu, i);
-> 	arm_smmu_cb_write(smmu, i, ARM_SMMU_CB_FSR, ARM_SMMU_CB_FSR_FAULT);
-> 
-> It is likely that FW reserves the last context bank for its own use,
-> thus a simple work-around is: DON'T USE IT in Linux.
-> 
-> If we decrease the number of context banks, last one will be "hidden".
-> 
-> Signed-off-by: Marc Gonzalez <mgonzalez@freebox.fr>
+> No. qi_batch_flush_descs() is called explicitly before return.
+I see, cache_tag_flush_iotlb() is really just adding descriptors to the
+batch. Not doing any flush for most cases. IMHO, the name is a little
+confusing.
 
-Reviewed-by: Caleb Connolly <caleb.connolly@linaro.org>
+Thanks,
 
-
-> ---
-> Changes in v3:
-> - Use very specific test (hack) to avoid changing the binding (Bjorn)
-> - Link to v2: https://lore.kernel.org/r/20240819-smmu-v1-0-bce6e4738825@freebox.fr
-> 
-> Changes in v2:
-> - Use the compatible prop instead of a specific prop to trigger work-around (Bjorn & Caleb)
-> - Add qcom,msm8998-lpass-smmu compatible string
-> - Link to v1: https://lore.kernel.org/r/20240814-smmu-v1-0-3d6c27027d5b@freebox.fr
-> 
-> On qcom msm8998, writing to the last context bank of lpass_q6_smmu
-> (base address 0x05100000) produces a system freeze & reboot.
-> 
-> The hardware/hypervisor reports 13 context banks for the LPASS SMMU
-> on msm8998, but only the first 12 are accessible...
-> Override the number of context banks
-> 
-> [    2.546101] arm-smmu 5100000.iommu: probing hardware configuration...
-> [    2.552439] arm-smmu 5100000.iommu: SMMUv2 with:
-> [    2.558945] arm-smmu 5100000.iommu: 	stage 1 translation
-> [    2.563627] arm-smmu 5100000.iommu: 	address translation ops
-> [    2.568923] arm-smmu 5100000.iommu: 	non-coherent table walk
-> [    2.574566] arm-smmu 5100000.iommu: 	(IDR0.CTTW overridden by FW configuration)
-> [    2.580220] arm-smmu 5100000.iommu: 	stream matching with 12 register groups
-> [    2.587263] arm-smmu 5100000.iommu: 	13 context banks (0 stage-2 only)
-> [    2.614447] arm-smmu 5100000.iommu: 	Supported page sizes: 0x63315000
-> [    2.621358] arm-smmu 5100000.iommu: 	Stage-1: 36-bit VA -> 36-bit IPA
-> [    2.627772] arm-smmu 5100000.iommu: 	preserved 0 boot mappings
-> 
-> Specifically, here:
-> 
-> 	qsmmu->bypass_cbndx = smmu->num_context_banks - 1;
-> 	arm_smmu_cb_write(smmu, qsmmu->bypass_cbndx, ARM_SMMU_CB_SCTLR, 0);
-> 
-> and here:
-> 
-> 	arm_smmu_write_context_bank(smmu, i);
-> 	arm_smmu_cb_write(smmu, i, ARM_SMMU_CB_FSR, ARM_SMMU_CB_FSR_FAULT);
-> 
-> It is likely that FW reserves the last context bank for its own use,
-> thus a simple work-around would be: DON'T USE IT in Linux.
-> 
-> For reference, the lpass_q6_smmu node looks like this:
-> 
-> 	lpass_q6_smmu: iommu@5100000 {
-> 		compatible = "qcom,msm8998-smmu-v2", "qcom,smmu-v2";
-> 		reg = <0x05100000 0x40000>;
-> 		clocks = <&gcc HLOS1_VOTE_LPASS_ADSP_SMMU_CLK>;
-> 		clock-names = "iface";
-> 
-> 		#global-interrupts = <0>;
-> 		#iommu-cells = <1>;
-> 		interrupts =
-> 			<GIC_SPI 226 IRQ_TYPE_LEVEL_HIGH>,
-> 			<GIC_SPI 393 IRQ_TYPE_LEVEL_HIGH>,
-> 			<GIC_SPI 394 IRQ_TYPE_LEVEL_HIGH>,
-> 			<GIC_SPI 395 IRQ_TYPE_LEVEL_HIGH>,
-> 			<GIC_SPI 396 IRQ_TYPE_LEVEL_HIGH>,
-> 			<GIC_SPI 397 IRQ_TYPE_LEVEL_HIGH>,
-> 			<GIC_SPI 398 IRQ_TYPE_LEVEL_HIGH>,
-> 			<GIC_SPI 399 IRQ_TYPE_LEVEL_HIGH>,
-> 			<GIC_SPI 400 IRQ_TYPE_LEVEL_HIGH>,
-> 			<GIC_SPI 401 IRQ_TYPE_LEVEL_HIGH>,
-> 			<GIC_SPI 402 IRQ_TYPE_LEVEL_HIGH>,
-> 			<GIC_SPI 403 IRQ_TYPE_LEVEL_HIGH>,
-> 			<GIC_SPI 137 IRQ_TYPE_LEVEL_HIGH>;
-> 
-> power-domains = <&gcc LPASS_ADSP_GDSC>;
-> 		status = "disabled";
-> 	};
-> ---
->   drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c | 7 +++++++
->   1 file changed, 7 insertions(+)
-> 
-> diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
-> index 7e65189ca7b8c..625db1d00fe5e 100644
-> --- a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
-> +++ b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
-> @@ -282,6 +282,13 @@ static int qcom_smmu_cfg_probe(struct arm_smmu_device *smmu)
->   	u32 smr;
->   	int i;
->   
-> +	/*
-> +	 * MSM8998 LPASS SMMU reports 13 context banks, but accessing
-> +	 * the last context bank crashes the system.
-> +	 */
-> +	if (of_device_is_compatible(smmu->dev->of_node, "qcom,msm8998-smmu-v2") && smmu->num_context_banks == 13)
-> +		smmu->num_context_banks = 12;
-> +
->   	/*
->   	 * Some platforms support more than the Arm SMMU architected maximum of
->   	 * 128 stream matching groups. For unknown reasons, the additional
-> 
-> ---
-> base-commit: 96a96aed6bb75b5c212f233b6c059a9354cdeebe
-> change-id: 20240814-smmu-d572c1a16aac
-> 
-> Best regards,
-
--- 
-// Caleb (they/them)
+Jacob
