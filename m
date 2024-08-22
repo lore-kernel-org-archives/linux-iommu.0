@@ -1,57 +1,57 @@
-Received: from mail-pl1-f176.google.com (mail-pl1-f176.google.com [209.85.214.176])
+Received: from mail-pl1-f180.google.com (mail-pl1-f180.google.com [209.85.214.180])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 363C11D0DE7;
-	Thu, 22 Aug 2024 18:37:51 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.176
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 926EE1D172C;
+	Thu, 22 Aug 2024 18:37:52 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.180
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1724351873; cv=none; b=A59TKIIM1tRZBDK0+q33KKMVAVv2L9o/qJ+vc+0mJkPeRI0xMjr/4VGzDo5oJAC281fo+4zYmawh8Ojtlgu5AwTOnlFn9CLZs/cygkaOkeybXymrhpAUPSzXrforbWe5FaQgib9wc8A5gvOlkcwcbn1PnOLT1yVVEn9NIxKocBA=
+	t=1724351874; cv=none; b=WsXnL/6O/+nQ8+0ds8GkmGjV/qcfT7Nw5oJnhIa4GKWCpmq5f94KzlinwVG4IzCXIZefCsTLBCDke2jUzF0EC4V+Ms3vxexfEHY3rOSanF18bNSACwpBHuiqa6BYPtSPZYtQb5pI+AWDJoT4bb+rSAYk6I5KYTs1eZfDXY3Ou+E=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1724351873; c=relaxed/simple;
-	bh=htxc2DqPCapb6n7XzlxbqGRMERf/FZW0+ZevZ0VUTwQ=;
+	s=arc-20240116; t=1724351874; c=relaxed/simple;
+	bh=KQxA10ny3y7ONujVrMwgPmKcFbuUbkjllbN6PgK2qYA=;
 	h=From:To:Subject:Date:Message-Id:In-Reply-To:References:
-	 MIME-Version; b=ct6TOn77tv/TX4ffr+dz6LrlAw+vixa46+YiUX8Jvr74pCWaPcKBofVIBpu/lziWdI7WUgJ1argiGuD2kJuAWmH+KC+RuHGV/nMrhBzIA/wdpLeVrWjkDc7f4W9kLsjG1XL2VG/jbuZkq35+l1YPGwSW5PN5De85spkr3RBCqCA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=IRq+4TGD; arc=none smtp.client-ip=209.85.214.176
+	 MIME-Version; b=nguua3ER5QJZxL8TjvUabpbFhgXBIaJKZLgJwKDt0fKyrFSsYjQ6YdYP7PFoPgoD5t9tmpHbharJaqwgkjf0qBqeAv53XP2x4cyxtk/81DY0FdZfm+QQ7/iXTvslUTLisnVXho46V+DoYihdVdxvFlmDdTVqUx8UID/LSAZtCwY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=BwidH0AC; arc=none smtp.client-ip=209.85.214.180
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="IRq+4TGD"
-Received: by mail-pl1-f176.google.com with SMTP id d9443c01a7336-201e64607a5so8719935ad.2;
-        Thu, 22 Aug 2024 11:37:51 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="BwidH0AC"
+Received: by mail-pl1-f180.google.com with SMTP id d9443c01a7336-202146e93f6so11470835ad.3;
+        Thu, 22 Aug 2024 11:37:52 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1724351870; x=1724956670; darn=lists.linux.dev;
+        d=gmail.com; s=20230601; t=1724351872; x=1724956672; darn=lists.linux.dev;
         h=content-transfer-encoding:mime-version:reply-to:references
          :in-reply-to:message-id:date:subject:to:from:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=/FSttR6p2yucCC2C1ycZHoGqThcAXEf4kSal+8QkByQ=;
-        b=IRq+4TGD7901/TtslH32On30QUc4oPUxkitGoY+YfgrNYnVUDt3ZM/ZXUTCrERIKFt
-         Y25zSvgf72Run1+hCCT202heqjEu5Dzu7fRuJH085b8x2RQT4N8QEZaDfJtHBllU6mji
-         HqdS2DZkbn/cGvJuAowDe0FoMn96S9cdp6AEUwAUk+0p22KTgisCjAdEp86PUEyApi7V
-         UsH/eLXcISneRa0au1cCJmU/4rVp6FZi6DmRbWvp342Zt7BVEMwHtt8NrPIjF87RgiMD
-         sH1rFS4bqfn2QYH17vsEa1amAkMz0vQeib8nnGvBENvp3L+9bfRKmdCv+T/1aEjErXcu
-         MF5g==
+        bh=4JDb2lC6vkxiQiFZDx7okJ0uyYWyOojJCyTq1IY1j8o=;
+        b=BwidH0ACSRzS635iGDBmM0fZWMEMLaCjd7Y5YEIdDXm2AMsfZSWYzkxc2tPCkoeq3p
+         gTGKLAGPpCZKSfL4dn4slNBi9RW/Un+ETsOEF9t1jnpfnqWGfBOIGMfUOQgCy989FP42
+         UmFF3BxxEBa42+w0x/UkDXLUbIZ59s+dJQPN60xtWpBsyt0pbwGkwwXO6kzmJCi/OQgi
+         7TIkJ4k4ju2WD6o02LmObCc2Gvgju3UbsWJtSGOn8XTGkmF7e7mANBOo7S+KsBkc1WPk
+         HRrbSoW9cQcsxfIBtOgqVnPkYjOjamFY/PWcDhZBWPz6UVMZNXH6f+D/p4iT5krHtGkX
+         a04A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1724351870; x=1724956670;
+        d=1e100.net; s=20230601; t=1724351872; x=1724956672;
         h=content-transfer-encoding:mime-version:reply-to:references
          :in-reply-to:message-id:date:subject:to:from:x-gm-message-state:from
          :to:cc:subject:date:message-id:reply-to;
-        bh=/FSttR6p2yucCC2C1ycZHoGqThcAXEf4kSal+8QkByQ=;
-        b=TI+2eBXIKDMPI9PDJHrl/PWzdVC/M7739ixSulkVHVmzFBs8gzUaWlpNuyZzuilMj/
-         H8rQh5C9D9gV4zGDZPIIFwb4zbnPwhTQNSOCMHgs0h7MX8mzVgYW89OBeJ8GE93uwCB9
-         aKknTQ5IYXoMAyvyUiUVWNUGEQtI7wUDQirnMDkVXFNgW4+5YIiLM5wPGQ//t8rrs0uK
-         c+a3n1AEBXU7DD1v8ipMvkz4mFyCHhM120dQr/nRMFY2o5UrRQ+rk/zZXt3JryNdCyVI
-         o8dTFcoqC4It+rEU21slDbQpOE47/3mxwZreIsyUPxDwE0H5BmOx9IZXrIrmWmI+hrRV
-         TvjQ==
-X-Forwarded-Encrypted: i=1; AJvYcCUb47xV1EAvEVfhRp0KCWDenq//X37ZDYXDF2KJC60J2YwaIv0DPEW4WybODt7TNFmRWrifiGnaCwzjIA==@lists.linux.dev, AJvYcCXxu9L1iVs7gKp3U7FfP61h2mj9L9wiFSc15zKZWtOB+s+DPIQYV8OKpbMRrt1rjUUV8oeRsw==@lists.linux.dev
-X-Gm-Message-State: AOJu0YyFNCr9Zv7YT5eJ7LroqIJRXHB0+eGco7bDU4GDBzIoPuoYSTZE
-	Y0XpdI8MaXzbEYwN7Iyqex/f3suLfVPPvxe/ml+J5AZoloSBj0M0
-X-Google-Smtp-Source: AGHT+IG0xFiyyhUEAVqUeNP4awQwMQmb0ao3xlY9kk2g+DZ4RUL1iV7dvaFZrYLPjHsqT4Fbvb/IyA==
-X-Received: by 2002:a17:902:ce85:b0:1fc:6740:3ce6 with SMTP id d9443c01a7336-2038822be0cmr36095425ad.20.1724351870494;
-        Thu, 22 Aug 2024 11:37:50 -0700 (PDT)
+        bh=4JDb2lC6vkxiQiFZDx7okJ0uyYWyOojJCyTq1IY1j8o=;
+        b=VDMEBgvqFrDcnN3stiTDNeV6fTc4LuQKnh9cYNcbQItaN0RfcbL157panScSfU0uO0
+         5aMP/8TJVJFUHm1gOL7IstVH92Wzs2xVxP+jKFEoRJRbJqpzeAchyZjdvhjROIiyli3g
+         YzSTKL3BiVvhFh4XDOjWlHIWLNkMbj/xHC4eqc+Y+bAC418J1OxAXNtoCWWbQZU1r395
+         gLNkbqbMp1ZRY+Vjof+urFT2Xl+sp3Mqe01ezwVRqOnfVm7rC5Ykg7m+WSRdg//L1+YH
+         jML2BizzEFqDMce+W5Lsy+WDDodOKTxiGAxcgTd4bIxCanAs0SXAw2EbJUYO9qnG8k3P
+         YLTg==
+X-Forwarded-Encrypted: i=1; AJvYcCW1PEI0Yl6jAgp48HMDEVAbmdlKyQ1kgQvg8+Q+BtFt9Y9VqFXhS7Q4fJsx/4eSqpGMy3MvFw==@lists.linux.dev, AJvYcCWOAIjntE5G4aSZrq3d9bTDaoTHvyDq9Sne0EsP6x+XAB2JMX7lW5KNPVrMWtx4qKHWA1Y1U7Qr14xdWA==@lists.linux.dev
+X-Gm-Message-State: AOJu0YycAMZ02VM+jHhLWSlhOJeZ02D85eHalS2P0A8eKDUxcaxD3M9Z
+	b3q18SEbeGRUYW/7ANtof80bqkk44ISLH3mt8687xa74vh9067p9
+X-Google-Smtp-Source: AGHT+IEoJ1gpzNrcpekG/3JPJrpxwsytoY1vLLalws9b/ZRPgjfwB0Ov7rhSrw2br36PLdiErGBT6A==
+X-Received: by 2002:a17:903:1cc:b0:1fb:9b91:d7c9 with SMTP id d9443c01a7336-20367d32768mr57195805ad.4.1724351871710;
+        Thu, 22 Aug 2024 11:37:51 -0700 (PDT)
 Received: from localhost.localdomain (c-67-160-120-253.hsd1.wa.comcast.net. [67.160.120.253])
-        by smtp.gmail.com with ESMTPSA id d9443c01a7336-2038557e4f9sm15667145ad.65.2024.08.22.11.37.49
+        by smtp.gmail.com with ESMTPSA id d9443c01a7336-2038557e4f9sm15667145ad.65.2024.08.22.11.37.50
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 22 Aug 2024 11:37:50 -0700 (PDT)
+        Thu, 22 Aug 2024 11:37:51 -0700 (PDT)
 From: mhkelley58@gmail.com
 X-Google-Original-From: mhklinux@outlook.com
 To: kbusch@kernel.org,
@@ -73,9 +73,9 @@ To: kbusch@kernel.org,
 	linux-scsi@vger.kernel.org,
 	linux-hyperv@vger.kernel.org,
 	linux-coco@lists.linux.dev
-Subject: [RFC 4/7] scsi_lib_dma: Add _attrs variant of scsi_dma_map()
-Date: Thu, 22 Aug 2024 11:37:15 -0700
-Message-Id: <20240822183718.1234-5-mhklinux@outlook.com>
+Subject: [RFC 5/7] scsi: storvsc: Enable swiotlb throttling
+Date: Thu, 22 Aug 2024 11:37:16 -0700
+Message-Id: <20240822183718.1234-6-mhklinux@outlook.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20240822183718.1234-1-mhklinux@outlook.com>
 References: <20240822183718.1234-1-mhklinux@outlook.com>
@@ -90,80 +90,70 @@ Content-Transfer-Encoding: 8bit
 
 From: Michael Kelley <mhklinux@outlook.com>
 
-Extend the SCSI DMA mapping interfaces by adding the "_attrs" variant
-of scsi_dma_map(). This variant allows passing DMA_ATTR_* values, such
-as is needed to support swiotlb throttling. The existing scsi_dma_map()
-interface is unchanged, so no incompatibilities are introduced.
+In a CoCo VM, all DMA-based I/O must use swiotlb bounce buffers
+because DMA cannot be done to private (encrypted) portions of VM
+memory. The bounce buffer memory is marked shared (decrypted) at
+boot time, so I/O is done to/from the bounce buffer memory and then
+copied by the CPU to/from the final target memory (i.e, "bounced").
+Storage devices can be large consumers of bounce buffer memory because it
+is possible to have large numbers of I/Os in flight across multiple
+devices. Bounce buffer memory must be pre-allocated at boot time, and
+it is difficult to know how much memory to allocate to handle peak
+storage I/O loads. Consequently, bounce buffer memory is typically
+over-provisioned, which wastes memory, and may still not avoid a peak
+that exhausts bounce buffer memory and cause storage I/O errors.
+
+To solve this problem for Coco VMs running on Hyper-V, update the
+storvsc driver to permit bounce buffer throttling. First, use
+scsi_dma_map_attrs() instead of scsi_dma_map(). Then gate the
+throttling behavior on a DMA layer check indicating that throttling is
+useful, so that no change occurs in a non-CoCo VM. If throttling is
+useful, pass the DMA_ATTR_MAY_BLOCK attribute, and set the block queue
+flag indicating that the I/O request submission path may sleep, which
+could happen when throttling. With these options in place, DMA map
+requests are pended when necessary to reduce the likelihood of usage
+peaks caused by storvsc that could exhaust bounce buffer memory and
+generate errors.
 
 Signed-off-by: Michael Kelley <mhklinux@outlook.com>
 ---
- drivers/scsi/scsi_lib_dma.c | 13 +++++++------
- include/scsi/scsi_cmnd.h    |  7 +++++--
- 2 files changed, 12 insertions(+), 8 deletions(-)
+ drivers/scsi/storvsc_drv.c | 9 ++++++++-
+ 1 file changed, 8 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/scsi/scsi_lib_dma.c b/drivers/scsi/scsi_lib_dma.c
-index 5723915275ad..34453a79be97 100644
---- a/drivers/scsi/scsi_lib_dma.c
-+++ b/drivers/scsi/scsi_lib_dma.c
-@@ -14,30 +14,31 @@
- #include <scsi/scsi_host.h>
+diff --git a/drivers/scsi/storvsc_drv.c b/drivers/scsi/storvsc_drv.c
+index 7ceb982040a5..7bedd5502d07 100644
+--- a/drivers/scsi/storvsc_drv.c
++++ b/drivers/scsi/storvsc_drv.c
+@@ -457,6 +457,7 @@ struct hv_host_device {
+ 	struct workqueue_struct *handle_error_wq;
+ 	struct work_struct host_scan_work;
+ 	struct Scsi_Host *host;
++	unsigned long dma_attrs;
+ };
  
- /**
-- * scsi_dma_map - perform DMA mapping against command's sg lists
-+ * scsi_dma_map_attrs - perform DMA mapping against command's sg lists
-  * @cmd:	scsi command
-+ * @attrs:	DMA attribute flags
-  *
-  * Returns the number of sg lists actually used, zero if the sg lists
-  * is NULL, or -ENOMEM if the mapping failed.
-  */
--int scsi_dma_map(struct scsi_cmnd *cmd)
-+int scsi_dma_map_attrs(struct scsi_cmnd *cmd, unsigned long attrs)
- {
- 	int nseg = 0;
+ struct storvsc_scan_work {
+@@ -1810,7 +1811,7 @@ static int storvsc_queuecommand(struct Scsi_Host *host, struct scsi_cmnd *scmnd)
+ 		payload->range.len = length;
+ 		payload->range.offset = offset_in_hvpg;
  
- 	if (scsi_sg_count(cmd)) {
- 		struct device *dev = cmd->device->host->dma_dev;
- 
--		nseg = dma_map_sg(dev, scsi_sglist(cmd), scsi_sg_count(cmd),
--				  cmd->sc_data_direction);
-+		nseg = dma_map_sg_attrs(dev, scsi_sglist(cmd),
-+			scsi_sg_count(cmd), cmd->sc_data_direction, attrs);
- 		if (unlikely(!nseg))
- 			return -ENOMEM;
- 	}
- 	return nseg;
- }
--EXPORT_SYMBOL(scsi_dma_map);
-+EXPORT_SYMBOL(scsi_dma_map_attrs);
- 
- /**
-- * scsi_dma_unmap - unmap command's sg lists mapped by scsi_dma_map
-+ * scsi_dma_unmap - unmap command's sg lists mapped by scsi_dma_map_attrs
-  * @cmd:	scsi command
-  */
- void scsi_dma_unmap(struct scsi_cmnd *cmd)
-diff --git a/include/scsi/scsi_cmnd.h b/include/scsi/scsi_cmnd.h
-index 45c40d200154..6603003bc588 100644
---- a/include/scsi/scsi_cmnd.h
-+++ b/include/scsi/scsi_cmnd.h
-@@ -170,11 +170,14 @@ extern void scsi_kunmap_atomic_sg(void *virt);
- blk_status_t scsi_alloc_sgtables(struct scsi_cmnd *cmd);
- void scsi_free_sgtables(struct scsi_cmnd *cmd);
- 
-+#define scsi_dma_map(cmd) scsi_dma_map_attrs(cmd, 0)
+-		sg_count = scsi_dma_map(scmnd);
++		sg_count = scsi_dma_map_attrs(scmnd, host_dev->dma_attrs);
+ 		if (sg_count < 0) {
+ 			ret = SCSI_MLQUEUE_DEVICE_BUSY;
+ 			goto err_free_payload;
+@@ -2030,6 +2031,12 @@ static int storvsc_probe(struct hv_device *device,
+ 	 *    have an offset that is a multiple of HV_HYP_PAGE_SIZE.
+ 	 */
+ 	host->sg_tablesize = (max_xfer_bytes >> HV_HYP_PAGE_SHIFT) + 1;
 +
- #ifdef CONFIG_SCSI_DMA
--extern int scsi_dma_map(struct scsi_cmnd *cmd);
-+extern int scsi_dma_map_attrs(struct scsi_cmnd *cmd, unsigned long attrs);
- extern void scsi_dma_unmap(struct scsi_cmnd *cmd);
- #else /* !CONFIG_SCSI_DMA */
--static inline int scsi_dma_map(struct scsi_cmnd *cmd) { return -ENOSYS; }
-+static inline int scsi_dma_map_attrs(struct scsi_cmnd *cmd, unsigned long attrs)
-+						{ return -ENOSYS; }
- static inline void scsi_dma_unmap(struct scsi_cmnd *cmd) { }
- #endif /* !CONFIG_SCSI_DMA */
- 
++	if (dma_recommend_may_block(&device->device)) {
++		host->queuecommand_may_block = true;
++		host_dev->dma_attrs = DMA_ATTR_MAY_BLOCK;
++	}
++
+ 	/*
+ 	 * For non-IDE disks, the host supports multiple channels.
+ 	 * Set the number of HW queues we are supporting.
 -- 
 2.25.1
 
