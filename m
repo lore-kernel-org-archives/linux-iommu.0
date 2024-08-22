@@ -1,48 +1,50 @@
-Received: from mx0a-0031df01.pphosted.com (mx0a-0031df01.pphosted.com [205.220.168.131])
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.11])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BFFBC1422A8
-	for <iommu@lists.linux.dev>; Wed, 21 Aug 2024 23:41:28 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.168.131
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CF59F79C2
+	for <iommu@lists.linux.dev>; Thu, 22 Aug 2024 01:42:13 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.11
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1724283690; cv=none; b=V1r79Bis/Nv5l5gBySpRiDpb7AC15K2Hx2sggHB93G3C13CRsRpMywCkrm4643g/LtDYadGtmiJTy6McLOxC/C1/pX8FwjvbWLPk0eaaG5EULLuwdFZA6ZNZ3pT2a0uFTKP2TGSD2/l4V6HoktuN0f6ixdXD0wDYJliHua4aERI=
+	t=1724290935; cv=none; b=LHOtdtD4KchfEpDhnGiPXqeOpZizUehJCIWNH8fbHV0EXTnfmU4fTnXagBcsugiyCoyCXT1H0S2jCSIYVGLRBO4SttD0Syz44Tw2EkYuw14TMnBuV26gNE/MhzgCA9J8rFV1f/tzhb4hbU5P37uFgokmUHaAKSrJRyOuVUHiAg4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1724283690; c=relaxed/simple;
-	bh=x8Bg94Z2zsdxajcw3hSHGhloSoauODJGqMwgx8Ukg8E=;
-	h=Message-ID:Date:MIME-Version:Subject:To:CC:References:From:
-	 In-Reply-To:Content-Type; b=i5DUbBpCGUm7SkHjz9kEp4EVibsLlc7jrjHwCDOcvzuwP2HZIicc2AhRsifvCj6gQeZGCb3QlXB1ytJj0OAs9vJ7vLVhmlOh4XfEdbZWF4hjSA2WjxdOtlvccdk4DtHFFgBwPRWW7lRGv2NV/m+uMPjkG46FkKd0hy3KP+4jl+g=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com; spf=pass smtp.mailfrom=quicinc.com; dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b=D4WbdCQ5; arc=none smtp.client-ip=205.220.168.131
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=quicinc.com
+	s=arc-20240116; t=1724290935; c=relaxed/simple;
+	bh=TVIKdgZOMxAM/s0RkmCn+Wbbueg36cnxTX3pSxyGzL0=;
+	h=Message-ID:Date:MIME-Version:Cc:Subject:To:References:From:
+	 In-Reply-To:Content-Type; b=OGd9/HqyzOE8WbAGMIv/kA/JWc/NNQbAM2GVaziCyF/bAflFE5jb+UkJelAqxzoSnVVYs4cJPilN/Q2hZqCfkrHjfid+fhn2VjhkxUHLLq8HjyxOcS8F/y9UnUdvwzUf38Sr9VQyYG0ECgMj9/DYoT4Tm+JTVhj3gQ6b0pq1m90=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=T3jy4uPv; arc=none smtp.client-ip=198.175.65.11
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b="D4WbdCQ5"
-Received: from pps.filterd (m0279866.ppops.net [127.0.0.1])
-	by mx0a-0031df01.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 47LFZ7cl019748;
-	Wed, 21 Aug 2024 23:41:20 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=quicinc.com; h=
-	cc:content-transfer-encoding:content-type:date:from:in-reply-to
-	:message-id:mime-version:references:subject:to; s=qcppdkim1; bh=
-	0f+/dlZFqwe0oaeG97dCTtX57gT5/oAkzmFEAXls3zA=; b=D4WbdCQ520izKdyA
-	2vgmNaz5BryAXT06IChx3qN2tSeGkJJim//ATBvyEW0l6R2CLrwLYL3HHcOFK5Df
-	ZZATyZKDy0J0DiRvonwUKA6XBpWiD4dqUtss+b05v2exKbTdHME+4nbLS9W7MSWt
-	G/O2E+yfVrCxmOrE+LE+TanAZxYVZsdozML6JYSJpq/xxv3CBWpnrr1suxtK+h7W
-	ixeyVHkwjWlxbLkSv+UmTu3ElQ9FsT6Rfvsc52+mUrm2y7Hc+cM+9954i+oUz75Z
-	r4VYIbnqVl/twhwREXGTgU1NnoBiG927yANNS2zoDUMAfvxSEGZRN5WzMEK8HJPZ
-	tu/YTQ==
-Received: from nalasppmta03.qualcomm.com (Global_NAT1.qualcomm.com [129.46.96.20])
-	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 415bkwaqmm-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Wed, 21 Aug 2024 23:41:20 +0000 (GMT)
-Received: from nalasex01b.na.qualcomm.com (nalasex01b.na.qualcomm.com [10.47.209.197])
-	by NALASPPMTA03.qualcomm.com (8.18.1.2/8.18.1.2) with ESMTPS id 47LNfJCB021976
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Wed, 21 Aug 2024 23:41:19 GMT
-Received: from [10.71.109.148] (10.80.80.8) by nalasex01b.na.qualcomm.com
- (10.47.209.197) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1544.9; Wed, 21 Aug
- 2024 16:41:16 -0700
-Message-ID: <3e6e8921-6d52-40e2-9124-7ab550566716@quicinc.com>
-Date: Wed, 21 Aug 2024 16:41:10 -0700
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="T3jy4uPv"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1724290933; x=1755826933;
+  h=message-id:date:mime-version:cc:subject:to:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=TVIKdgZOMxAM/s0RkmCn+Wbbueg36cnxTX3pSxyGzL0=;
+  b=T3jy4uPvua5qrEjMVYAiOWVs4O0K/GDFMrPbyoPQQRiLDfvJi7ruzjMB
+   HMFTuXCu9StB1YcSFV9e13pufD8NG2YtjywbApl3zHmdkcyAnDym5Fbgw
+   O/xbwE1WRAAZPxtxexRy2laC4CrToF20eM78oeBYjNANgeRJ7gKplk66U
+   aEo7fsifMJAIr3EBNLNBV+qjmYxX6hGDqL0dyJZlAJAxuebmAX6uO64rA
+   dmh4znI+pWh041qbesb+uXsQmnWqEzH85T/mkVff8y+3FdeU8vB6QVENW
+   7mS4ds80lAIRbRiIXVo5JjrfcJyDvVTYaoNJ9tmABi/zQM843cwJrwvUQ
+   A==;
+X-CSE-ConnectionGUID: BbOrU+dZS7SeUUueYTKXgw==
+X-CSE-MsgGUID: otpckCocSnCvh7//KDMNzg==
+X-IronPort-AV: E=McAfee;i="6700,10204,11171"; a="33251936"
+X-IronPort-AV: E=Sophos;i="6.10,165,1719903600"; 
+   d="scan'208";a="33251936"
+Received: from fmviesa004.fm.intel.com ([10.60.135.144])
+  by orvoesa103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Aug 2024 18:42:13 -0700
+X-CSE-ConnectionGUID: /HyB/yvdTdCtJToTbY7rAQ==
+X-CSE-MsgGUID: fhgeegHIQvquc+GU6bqwuw==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.10,165,1719903600"; 
+   d="scan'208";a="65975512"
+Received: from allen-box.sh.intel.com (HELO [10.239.159.127]) ([10.239.159.127])
+  by fmviesa004.fm.intel.com with ESMTP; 21 Aug 2024 18:42:10 -0700
+Message-ID: <a85e4bc3-0046-46fd-91e4-bac451574d11@linux.intel.com>
+Date: Thu, 22 Aug 2024 09:38:31 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -50,107 +52,128 @@ List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v7 1/2] of: reserved_mem: Restruture how the reserved
- memory regions are processed
-To: Rob Herring <robh@kernel.org>
-CC: <saravanak@google.com>, <klarasmodin@gmail.com>, <aisheng.dong@nxp.com>,
-        <hch@lst.de>, <m.szyprowski@samsung.com>, <robin.murphy@arm.com>,
-        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <iommu@lists.linux.dev>, <will@kernel.org>, <catalin.marinas@arm.com>,
-        <kernel@quicinc.com>
-References: <20240809184814.2703050-1-quic_obabatun@quicinc.com>
- <20240809184814.2703050-2-quic_obabatun@quicinc.com>
- <CAL_JsqL=Pc7FJJevMskvYYOoYZYCKF+db9C2Y7_cm7DZNyTYPw@mail.gmail.com>
+Cc: baolu.lu@linux.intel.com, will@kernel.org, robin.murphy@arm.com,
+ suravee.suthikulpanit@amd.com, jgg@ziepe.ca, yi.l.liu@intel.com,
+ kevin.tian@intel.com
+Subject: Re: [PATCH 1/5] iommu: Enhance domain allocation code to take
+ additional flags
+To: Vasant Hegde <vasant.hegde@amd.com>, iommu@lists.linux.dev,
+ joro@8bytes.org
+References: <20240821133554.7405-1-vasant.hegde@amd.com>
+ <20240821133554.7405-2-vasant.hegde@amd.com>
 Content-Language: en-US
-From: Oreoluwa Babatunde <quic_obabatun@quicinc.com>
-In-Reply-To: <CAL_JsqL=Pc7FJJevMskvYYOoYZYCKF+db9C2Y7_cm7DZNyTYPw@mail.gmail.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 8bit
-X-ClientProxiedBy: nasanex01a.na.qualcomm.com (10.52.223.231) To
- nalasex01b.na.qualcomm.com (10.47.209.197)
-X-QCInternal: smtphost
-X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
-X-Proofpoint-ORIG-GUID: 8tpH6n_CHjapxUDiO4aPLEaL2b9qXJqd
-X-Proofpoint-GUID: 8tpH6n_CHjapxUDiO4aPLEaL2b9qXJqd
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.293,Aquarius:18.0.1039,Hydra:6.0.680,FMLib:17.12.28.16
- definitions=2024-08-21_15,2024-08-19_03,2024-05-17_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 suspectscore=0 spamscore=0
- mlxscore=0 mlxlogscore=999 bulkscore=0 malwarescore=0 priorityscore=1501
- adultscore=0 phishscore=0 impostorscore=0 lowpriorityscore=0 clxscore=1015
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.19.0-2407110000
- definitions=main-2408210171
+From: Baolu Lu <baolu.lu@linux.intel.com>
+In-Reply-To: <20240821133554.7405-2-vasant.hegde@amd.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+
+On 8/21/24 9:35 PM, Vasant Hegde wrote:
+> From: Jason Gunthorpe<jgg@ziepe.ca>
+> 
+> Currently drivers calls iommu_paging_domain_alloc(dev) to get an
+> UNAMANAGED domain. This is not sufficient to support PASID with
+> UNAMANAGED domain as some HW like AMD requires certain page table type
+> to support PASIDs.
+> 
+> Also domain_alloc_paging() passes device as param for domain
+> allocation. This is not sufficient for AMD driver to decide the right
+> page table.
+> 
+> Hence add iommu_paging_domain_alloc_flags() API which takes flags as
+> parameter. Also update default domain allocation path to use this new
+> API whenever device is PASID capable. HW driver should implement
+> domain_alloc_user() to allocate PASID capable domain.
+> 
+> Finally introduce new flag (IOMMUFD_HWPT_ALLOC_PASID) to
+> domain_alloc_users() ops. If both IOMMU and device supports PASID it
+> will allocate domain. Otherwise return error.
+
+I would suggest one patch for one thing. This will make the changes
+easier to review, especially for those who don't have much context. It
+might be helpful to split this into some smaller changes:
+
+- Code refactoring with no functionality change;
+- Introduce new domain allocation API;
+- Introduce domain allocation flag;
+- Code refactoring afterwards.
+
+> 
+> Signed-off-by: Jason Gunthorpe<jgg@ziepe.ca>
+> [Added __iommu_paging_domain_alloc_flags() and description - Vasant]
+> Signed-off-by: Vasant Hegde<vasant.hegde@amd.com>
 
 
-On 8/19/2024 3:04 PM, Rob Herring wrote:
-> On Fri, Aug 9, 2024 at 1:48 PM Oreoluwa Babatunde
-> <quic_obabatun@quicinc.com> wrote:
->> Reserved memory regions defined in the devicetree can be broken up into
->> two groups:
->> i) Statically-placed reserved memory regions
->> i.e. regions defined with a static start address and size using the
->>      "reg" property.
->> ii) Dynamically-placed reserved memory regions.
->> i.e. regions defined by specifying an address range where they can be
->>      placed in memory using the "alloc_ranges" and "size" properties.
->>
->> [...]
->>
->> Signed-off-by: Oreoluwa Babatunde <quic_obabatun@quicinc.com>
->> ---
->>  drivers/of/fdt.c             |   5 +-
->>  drivers/of/of_private.h      |   3 +-
->>  drivers/of/of_reserved_mem.c | 172 +++++++++++++++++++++++++----------
->>  3 files changed, 131 insertions(+), 49 deletions(-)
->>
->> diff --git a/drivers/of/fdt.c b/drivers/of/fdt.c
->> index 68103ad230ee..d4b7aaa70e31 100644
->> --- a/drivers/of/fdt.c
->> +++ b/drivers/of/fdt.c
->> @@ -511,8 +511,6 @@ void __init early_init_fdt_scan_reserved_mem(void)
->>                         break;
->>                 memblock_reserve(base, size);
->>         }
->> -
->> -       fdt_init_reserved_mem();
->>  }
->>
->>  /**
->> @@ -1239,6 +1237,9 @@ void __init unflatten_device_tree(void)
->>         of_alias_scan(early_init_dt_alloc_memory_arch);
->>
->>         unittest_unflatten_overlay_base();
->> +
->> +       /* Save the statically-placed regions in the reserved_mem array */
->> +       fdt_scan_reserved_mem_reg_nodes();
-Hi Rob,
-> I'm still not understanding why the unflatttened API doesn't work
-> here? It was just used in of_alias_scan() above here.
-The main reason why the unflatten_devicetree APIs does not work here is
-because a reference to fdt_node needs to be stored for the reserved
-regions, and it can only be gotten by using the fdt APIs.
+[...]
 
-The fdt_node is needed by rmem_dma_setup(), rmem_cma_setup(), and
-rmem_swiotlb_setup(). All of which are used to configure the reserved
-memory regions during early bootup.
+> ---+static struct iommu_domain *__iommu_paging_domain_alloc_flags(struct device *dev,
+> +						       unsigned int type,
+> +						       unsigned int flags)
+> +{
+> +	const struct iommu_ops *ops = dev_iommu_ops(dev);
+> +	struct iommu_domain *domain;
+> +
+> +	if (!dev_has_iommu(dev))
+> +		return ERR_PTR(-ENODEV);
 
-In my previous versions, I replaced fdt_node with device_node in struct
-reserved_mem in order to leverage the unflatten_devicetree APIs, and the
-above functions were being called after the page tables were setup.
+This check is unnecessary as you have already called dev_iommu_ops(),
+which assumes that the device is iommu probed.
 
-As we found out later, those functions need to be called before the page
-tables are setup in order for the reserved regions to be configured
-correctly[1]. But since the unflatten_devicetree APIs are not available
-before the page tables are setup, I had to switch back to using the
-fdt_node which can only be gotten by using the fdt APIs.
+If you are worrying about the caller passing a non-iommu-probed device,
+you can make it like this:
 
-[1] https://lore.kernel.org/all/002b6176-41b3-4888-abb1-978399d108b8@arm.com/
+	const struct iommu_ops *ops;
 
-The only way I see that we can avoid using the fdt APIs here is if
-we just don't store an fdt_node reference for the reserved regions
-in resvered_mem.  But I'm not sure if we want to do that.
-> The problem reported is this function uses initial_boot_params, but
-> that's NULL for x86.
-ack
-Thank you,
-Oreoluwa.
+	if (!dev_has_iommu(dev))
+		return ERR_PTR(-ENODEV);
+
+	ops = dev_iommu_ops(dev);
+
+> +
+> +	if (ops->domain_alloc_paging && !flags)
+> +		domain = ops->domain_alloc_paging(dev);
+> +	else if (ops->domain_alloc_user)
+> +		domain = ops->domain_alloc_user(dev, flags, NULL, NULL);
+> +	else if (ops->domain_alloc && !flags)
+> +		domain = ops->domain_alloc(IOMMU_DOMAIN_UNMANAGED);
+> +	else
+> +		return ERR_PTR(-EOPNOTSUPP);
+> +
+> +	if (IS_ERR(domain))
+> +		return domain;
+> +	if (!domain)
+> +		return ERR_PTR(-ENOMEM);
+> +
+> +	iommu_domain_init(domain, type, ops);
+> +	return domain;
+> +}
+> +
+>   /**
+> - * iommu_paging_domain_alloc() - Allocate a paging domain
+> + * iommu_paging_domain_alloc_flags() - Allocate a paging domain
+>    * @dev: device for which the domain is allocated
+> + * @flags: Bitmap of iommufd_hwpt_alloc_flags
+>    *
+>    * Allocate a paging domain which will be managed by a kernel driver. Return
+>    * allocated domain if successful, or a ERR pointer for failure.
+>    */
+> -struct iommu_domain *iommu_paging_domain_alloc(struct device *dev)
+> +struct iommu_domain *iommu_paging_domain_alloc_flags(struct device *dev,
+> +						     unsigned int flags)
+>   {
+> -	if (!dev_has_iommu(dev))
+> -		return ERR_PTR(-ENODEV);
+> -
+> -	return __iommu_domain_alloc(dev_iommu_ops(dev), dev, IOMMU_DOMAIN_UNMANAGED);
+> +	return __iommu_paging_domain_alloc_flags(dev,
+> +					 IOMMU_DOMAIN_UNMANAGED, flags);
+>   }
+> -EXPORT_SYMBOL_GPL(iommu_paging_domain_alloc);
+> +EXPORT_SYMBOL_GPL(iommu_paging_domain_alloc_flags);
+
+Some external modules are still using iommu_paging_domain_alloc(). Would
+it break the kernel build if you simply remove it here?
+
+[...]
+
+Thanks,
+baolu
