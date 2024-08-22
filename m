@@ -1,226 +1,238 @@
-Received: from mx0b-0031df01.pphosted.com (mx0b-0031df01.pphosted.com [205.220.180.131])
+Received: from mx0a-00069f02.pphosted.com (mx0a-00069f02.pphosted.com [205.220.165.32])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 072012AE77
-	for <iommu@lists.linux.dev>; Thu, 22 Aug 2024 20:34:19 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.180.131
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1724358862; cv=none; b=HguxNB6kaqgLL+c7wgx5b6D0HdmyqJBnhjqATGwFdrYlUnsV28zLBHf5PWNpEYmqf29Akdy3QA2VngHKa6kfR4FE0pI5AWEKejrN9dhEJa8/EThsb2mYeUaItpERlHEIQsa7oDPZeNE88tBG+CT0ckuz/1lJcbQmD2N/x9ieFZM=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1724358862; c=relaxed/simple;
-	bh=ctQ9UYC6J8LJzX45tOSyD1Sw4BDUIamOloH6hatvdnQ=;
-	h=Date:From:To:CC:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=NURjX+kGMFwwDlFSS13v0GbqcaWgpgzOdKGZ7GFNdU81d7BO4zUs9GZmc5J1wcD95oca8hWsxBwGDim0z+fCKMhrlrNicLy17rvQKSuMuw6MFQmCVr2JsDRraHIipVUdBM5il4AelHTw9wGAzD+ujKvrGlFR6cMSbR4nkMgTgvw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com; spf=pass smtp.mailfrom=quicinc.com; dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b=cFFyeyuT; arc=none smtp.client-ip=205.220.180.131
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=quicinc.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 925D9EC5
+	for <iommu@lists.linux.dev>; Thu, 22 Aug 2024 21:06:29 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=205.220.165.32
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1724360791; cv=fail; b=Sa62Y/EWF3R6VMYb5n/qN/p/zbCMMsIsdSdO5r7aJNjiP+gBcO5z8xuNMkTi/25XQkSZXE6rtf7W9iSJHdT1ZK9u1YiUNGM/8Cdqp+oKf+Lg2AFUIrjNxSmQvYF9uygo53pLj6ow+Ypjus3MGhL7+7GENaXAuhpRvgTA4KUtiRo=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1724360791; c=relaxed/simple;
+	bh=uAikid3S57ugwZ7u0ndw6tWPHMHuJ0aFhTrJ9elku7A=;
+	h=Message-ID:Date:Subject:To:Cc:References:From:In-Reply-To:
+	 Content-Type:MIME-Version; b=blW52ZG9nt9+4cu3MkDd4vxo6bc3OonLRVjzOcbC3I5rvAHYnOb+hLVGSKizx4k9B4Xv+vNrxyCkmIpWAJySn4PbCPNUyVuZ7oLm41ayEA9mrBGQMc3yiAHhDUQgS8QOxGqqM61sA5CGKLEHzLdZcTcFp5MY/bbZJYC81BEHFYo=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oracle.com; spf=pass smtp.mailfrom=oracle.com; dkim=pass (2048-bit key) header.d=oracle.com header.i=@oracle.com header.b=odCFzZvZ; dkim=pass (1024-bit key) header.d=oracle.onmicrosoft.com header.i=@oracle.onmicrosoft.com header.b=UBjKVaoM; arc=fail smtp.client-ip=205.220.165.32
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oracle.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=oracle.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b="cFFyeyuT"
-Received: from pps.filterd (m0279871.ppops.net [127.0.0.1])
-	by mx0a-0031df01.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 47MACTBV029158;
-	Thu, 22 Aug 2024 20:34:11 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=quicinc.com; h=
-	cc:content-type:date:from:in-reply-to:message-id:mime-version
-	:references:subject:to; s=qcppdkim1; bh=BPxAlT+tRjlhmKxEHYvrHQUR
-	U/2LRCMPb+ZpasSAVuI=; b=cFFyeyuT+pQda/3Q6XcHXMp4106+PzyPJQqGlJhz
-	xBQ5qAAsCg3y/cwOWWi1Nlkb6k5FL/Yavho95OqD2WEy9dzKWQgORu5Gb9GbvwwL
-	gCQ+DhoWW23YurVlzFU+WJ8qYxlp79BSS69PQL9xUDNblrWI5cP1o6RU2eC9dBQ4
-	h4ZBdfz2JDYKJp/hzpnkyf/Z/z1lAwWbnK5Gz8Bd1tT28pZyjxth5ZL0P9o6go7i
-	TkcOo5T1SmEFvlD13Rpl9qYI+HFOeb8jipnBts4HKzdzbZvE31dct1F31IR5zorq
-	xABvFkcGTS4rGltOtJXL5xohiZTiKjRDlRu/g7WDaef6Xg==
-Received: from nalasppmta01.qualcomm.com (Global_NAT1.qualcomm.com [129.46.96.20])
-	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 4159ade7ve-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Thu, 22 Aug 2024 20:34:11 +0000 (GMT)
-Received: from nalasex01a.na.qualcomm.com (nalasex01a.na.qualcomm.com [10.47.209.196])
-	by NALASPPMTA01.qualcomm.com (8.18.1.2/8.18.1.2) with ESMTPS id 47MKY9Og022939
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Thu, 22 Aug 2024 20:34:09 GMT
-Received: from hu-akhilpo-hyd.qualcomm.com (10.80.80.8) by
- nalasex01a.na.qualcomm.com (10.47.209.196) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.1544.9; Thu, 22 Aug 2024 13:34:05 -0700
-Date: Fri, 23 Aug 2024 02:04:01 +0530
-From: Akhil P Oommen <quic_akhilpo@quicinc.com>
-To: Rob Clark <robdclark@gmail.com>
-CC: <iommu@lists.linux.dev>, <linux-arm-msm@vger.kernel.org>,
-        <freedreno@lists.freedesktop.org>, Mostafa Saleh <smostafa@google.com>,
-        "Will
- Deacon" <will@kernel.org>, Rob Clark <robdclark@chromium.org>,
-        Sean Paul
-	<sean@poorly.run>, Konrad Dybcio <konrad.dybcio@linaro.org>,
-        Abhinav Kumar
-	<quic_abhinavk@quicinc.com>,
-        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
-        Marijn Suijten <marijn.suijten@somainline.org>,
-        David Airlie
-	<airlied@gmail.com>, Daniel Vetter <daniel@ffwll.ch>,
-        "open list:DRM DRIVER
- for Qualcomm Adreno GPUs" <dri-devel@lists.freedesktop.org>,
-        open list
-	<linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH v7 4/4] drm/msm: Extend gpu devcore dumps with pgtbl info
-Message-ID: <20240822203401.odfmdlqto6lsqefz@hu-akhilpo-hyd.qualcomm.com>
-References: <20240820171652.145673-1-robdclark@gmail.com>
- <20240820171652.145673-5-robdclark@gmail.com>
+	dkim=pass (2048-bit key) header.d=oracle.com header.i=@oracle.com header.b="odCFzZvZ";
+	dkim=pass (1024-bit key) header.d=oracle.onmicrosoft.com header.i=@oracle.onmicrosoft.com header.b="UBjKVaoM"
+Received: from pps.filterd (m0246617.ppops.net [127.0.0.1])
+	by mx0b-00069f02.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 47MIMUbL021051;
+	Thu, 22 Aug 2024 21:06:28 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=
+	message-id:date:subject:to:cc:references:from:in-reply-to
+	:content-type:content-transfer-encoding:mime-version; s=
+	corp-2023-11-20; bh=HlyRJa6OKpflcMyrTzWDdb0c4oMdtQD5DU1ixE4sOZc=; b=
+	odCFzZvZbn6cHf9PPsCTqpLTnPnIVvq2bSZvBDonLLsimF9cY10FYLvNQ5mSTFmI
+	QS/cTbOOku80fooSceAHI1+c6CXU01qTaxW0jkjSg+b4pL2mo95qIR2swYbjSPTg
+	afeq7XzVCQFZfYYxQ3EOdsFd1oRLNj/EDpPhuzojyd3oy7Iw9U2cvDPKE+yHXLHx
+	0WSw7f+LUj0CnjkjWYa2foY8hdfznKWHENQxYmGnDe9sVmDppyxZX9ZpgKHFpwFs
+	qpDC3JCc2+csJL9xCtSAquH9iSnTx+2IVfd6/GrrfD5NFqhFq/ASh7NPfzrYecQD
+	6JwUiyAqPy0BQAtBi7Up1w==
+Received: from phxpaimrmta01.imrmtpd1.prodappphxaev1.oraclevcn.com (phxpaimrmta01.appoci.oracle.com [138.1.114.2])
+	by mx0b-00069f02.pphosted.com (PPS) with ESMTPS id 412mdt32nu-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+	Thu, 22 Aug 2024 21:06:28 +0000 (GMT)
+Received: from pps.filterd (phxpaimrmta01.imrmtpd1.prodappphxaev1.oraclevcn.com [127.0.0.1])
+	by phxpaimrmta01.imrmtpd1.prodappphxaev1.oraclevcn.com (8.18.1.2/8.18.1.2) with ESMTP id 47MKs1pG039322;
+	Thu, 22 Aug 2024 21:06:27 GMT
+Received: from nam11-co1-obe.outbound.protection.outlook.com (mail-co1nam11lp2173.outbound.protection.outlook.com [104.47.56.173])
+	by phxpaimrmta01.imrmtpd1.prodappphxaev1.oraclevcn.com (PPS) with ESMTPS id 416cs80epe-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+	Thu, 22 Aug 2024 21:06:27 +0000
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=cyrhjJ8nDKwL+rEZi1NDS8tnpJioZZyNcqb38vZ7OfnVmCjzB/hN9ttPICLIPgQ+Gsd6cRuckvXwIeCWa8dMUsN0Oq85VRQr5E3F5k/MeE8HNK4rGDw3b0Dp7QJ37170HTjEj42YR/zCy+jKaWDv8RsIPodnZ9AlTQTGjRwoTk4t6SzVVofH1mPA9Dax3msVfv9yAfjkhu1LlWTsRUL/6BVHhSz7L6ZbmQTm/yoXt/SSn7NDbxe1q250BhQ99X5J+MchPF4Zlit0H8VRztCK8FMn1YkGrQVQHFaEDaMPw7P+xsqH0rpXhzs6LmPNLc2/bjRj9yiF9+nZT9JBA6ZwPw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=HlyRJa6OKpflcMyrTzWDdb0c4oMdtQD5DU1ixE4sOZc=;
+ b=DClXTV451KCLLEYG6wRY/FusrPSuIjpw+0THXd0UT2FvgQMsmZHfHyu9dRly3ZQ8axnU0eRBwAfzSv6B/vxSO6hDmIp6jLsHeZYuPdSQYiWGHRXCkMFnVKDZJoaO0EHpXPNRvMAX68H/svxzH4zyIyTdYhWZKL13QGoPaHbsYAgKerPrxqtEGaIZl8+fGf7rcpkOFv6EIq4qcuv8HVbRS5tTCSGVHVVh4be69cclqL8LrIrJh+kFZAgR/9LBxvQcIkEduKctxcHf2bUc/z8+d0cDbPYwYsLbm99vHIx808Q7xDEJpg18Zrps25jaIW9TmBruegLRd4wb71FSxcQhWA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=oracle.com; dmarc=pass action=none header.from=oracle.com;
+ dkim=pass header.d=oracle.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=oracle.onmicrosoft.com; s=selector2-oracle-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=HlyRJa6OKpflcMyrTzWDdb0c4oMdtQD5DU1ixE4sOZc=;
+ b=UBjKVaoMcrrPeDBTm1FvG9wkxpvCi3l1AgNODq3J05fqCKwN8YNhBYc/oySjwP5SeVmeLp7QkvmxROauVMMXtkp9JDw2Ixhlnra6Cta/kvubMcrolg6R5fiFGj5BLWHMbvJDI0xebG+dJoa4sPO65KHWC+rGswX2mkZr/rDgqrY=
+Received: from IA1PR10MB7447.namprd10.prod.outlook.com (2603:10b6:208:44c::10)
+ by SJ0PR10MB4478.namprd10.prod.outlook.com (2603:10b6:a03:2d4::19) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7897.18; Thu, 22 Aug
+ 2024 21:05:24 +0000
+Received: from IA1PR10MB7447.namprd10.prod.outlook.com
+ ([fe80::f2fe:d6c6:70c4:4572]) by IA1PR10MB7447.namprd10.prod.outlook.com
+ ([fe80::f2fe:d6c6:70c4:4572%7]) with mapi id 15.20.7897.010; Thu, 22 Aug 2024
+ 21:05:24 +0000
+Message-ID: <1fd5610b-998b-438a-8959-2dc7f3ed8afa@oracle.com>
+Date: Thu, 22 Aug 2024 17:05:19 -0400
+User-Agent: Mozilla Thunderbird
+Subject: Re: [RFC V1 0/4] iommufd live update
+To: Jason Gunthorpe <jgg@nvidia.com>,
+        Alex Williamson <alex.williamson@redhat.com>
+Cc: iommu@lists.linux.dev, Kevin Tian <kevin.tian@intel.com>,
+        Cornelia Huck <cohuck@redhat.com>
+References: <1721501805-86928-1-git-send-email-steven.sistare@oracle.com>
+ <20240722155500.GI3371438@nvidia.com>
+ <3329e042-e4b1-40b3-9875-623f26386609@oracle.com>
+ <20240806125602.GJ478300@nvidia.com>
+ <54f33881-26e4-4b7f-bbdb-89f4cb207be9@oracle.com>
+ <20240808195252.GE8378@nvidia.com>
+ <53e7ab6b-9419-4808-b429-a88faeb3f6a7@oracle.com>
+ <20240819145908.GH2032816@nvidia.com>
+ <ffa07fb2-6554-40cc-8af6-e6b3a2cfacdc@oracle.com>
+ <20240821180400.GM3773488@nvidia.com>
+Content-Language: en-US
+From: Steven Sistare <steven.sistare@oracle.com>
+Organization: Oracle Corporation
+In-Reply-To: <20240821180400.GM3773488@nvidia.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: SJ0PR03CA0241.namprd03.prod.outlook.com
+ (2603:10b6:a03:3a0::6) To IA1PR10MB7447.namprd10.prod.outlook.com
+ (2603:10b6:208:44c::10)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: inline
-In-Reply-To: <20240820171652.145673-5-robdclark@gmail.com>
-X-ClientProxiedBy: nasanex01a.na.qualcomm.com (10.52.223.231) To
- nalasex01a.na.qualcomm.com (10.47.209.196)
-X-QCInternal: smtphost
-X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
-X-Proofpoint-GUID: RA3gRm1gs5mXuRX2CYjzVSUtV0AEWAf_
-X-Proofpoint-ORIG-GUID: RA3gRm1gs5mXuRX2CYjzVSUtV0AEWAf_
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: IA1PR10MB7447:EE_|SJ0PR10MB4478:EE_
+X-MS-Office365-Filtering-Correlation-Id: b7b37219-bcd7-4320-f381-08dcc2ee2412
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;ARA:13230040|376014|366016|1800799024;
+X-Microsoft-Antispam-Message-Info:
+	=?utf-8?B?bm1zc01aSlNMazhranUxdHpIeHZxSVpIVHkvZnBIcVlLNzB5aWFic2tsTzZV?=
+ =?utf-8?B?U1FYSDl0NjJHL01kRTdNbXNkR3EyTzhXeUZRNG1YZ2JkUk9pajNsdWk3V2pO?=
+ =?utf-8?B?ZkM4Rm5BczJyb2xyNGF0MnRqTXNGd3FVWDladEs2WWI0Y0lRN3pxRDZqbkE3?=
+ =?utf-8?B?dzMyb3BUQWtNcS8ycFEvQkQ1SVVGTzh3RTE2R2JWVTljcnNzeGJxZjVSZCtB?=
+ =?utf-8?B?TnVtUkI5K0JrUHA5UjFnM1dWamIvUXVnd29jVXpIUENvUk9VeGIwd1oxb29W?=
+ =?utf-8?B?bUU3cTRodkVxWURMcER5Y3RoNWhDU2tIVzVyVFN4b2tBRVdzVzBlWnl0b1N0?=
+ =?utf-8?B?MHZWODhRcmZ4SmQyY25GZTZkcUd5Z1lqSXpLYlpsbTZuU3M3OG4yMEkzaTlI?=
+ =?utf-8?B?eDg5cW9pSWwrbk11QmVVd2VuS2hoU1NPd1E5SjYrN1hEYmJjaW8vS0xNTFVE?=
+ =?utf-8?B?RUxKUkdRb2FzWCtBYnN1QmVwSzdkeVowNFRxMDIvY3ErVGk3dkNiU3NxZzBl?=
+ =?utf-8?B?REZDZ29JSUduRHRyYUl1K3pLdFUwdVpVejZLVmFkSVlqYUJlcVpqTjdtbFNs?=
+ =?utf-8?B?TEZjNGdWamRDZkxIT2Nha0xjRDJQcFRNWmxIMk8zaXl2cG53RGwycXRPTlhO?=
+ =?utf-8?B?MzA1M1FkVkpObGFyK2RYQmdqSU1hWTEvNHNzdDYyOHlUei8wYkNyZlZmZlds?=
+ =?utf-8?B?bXd0QlB4MnZZV3lldkRpeSt1cWJDalZHVlJvR2Rnd0lkNGIrV3BaTnhtTm1o?=
+ =?utf-8?B?RmdrVVRzNUlxekt2UDdJNWFNaktjNmM2bUFveGxrczl0WnRFVGo1cGRRcVZp?=
+ =?utf-8?B?Q2gxaS9JSTkrbGpKb21ZNmRLalpKUjFrcEI3YjJYQzF0R05kOUw5My92VUZV?=
+ =?utf-8?B?MGFlSzhkdS90NzV4c0dxcmtFQmF0TytwUW1jcm9CK210Qms1SHJxTmdFMmkv?=
+ =?utf-8?B?M09Gc0ZDMm9iSjU1SnhJak9Za1JFVFNvSDA1UjNnbEx5dmZ5OHdROEdlZUJo?=
+ =?utf-8?B?YVA1bVEzTUJyV0RMWDFCR2k5RXFndnNwS3JXa2Z2aHNCdFlUNWJUaVpNWlNj?=
+ =?utf-8?B?RHY0dGpxQTdLZzBpRFB5WkNMVm03dTJLWEhURGY0ZTRkc3phNk12SWJIWnZ2?=
+ =?utf-8?B?TTV2VUJwamo0U1RldThCQ0sva29FcUZSRVdJN0NTSnNlNVNQZzNEMXRpb1lm?=
+ =?utf-8?B?SnFkOEw4eEFmUnFQandnV0NCVzNKNXdURkhld0pKanpaeWdnQ0RmbWl3V2NU?=
+ =?utf-8?B?eVB0LzdncUNwU0J1bTI2amQ4ZGZ0T0VYVldXaERDMmJGQm0rMlZ0VUw1bUJ4?=
+ =?utf-8?B?RU5MUHZnL0t2MG1QbHRpTEQ0ZDlwc041aGROZ3BqaW4wNUpycURvRjgxU055?=
+ =?utf-8?B?ajBsUkpzSXExQVFiaUVrcUFlZnBMQUJLbk01NGxmYjNOMFV3ekhXTDBvem1V?=
+ =?utf-8?B?MGEvY1hvZFZXdUM2a2pBeW14TUpBWlMvTEZESnpIWXdWdTVBWkt3cU11Nnll?=
+ =?utf-8?B?dzBWWHhnY3g3ZVkweW1JZmVSTlVHOTRmc21wSjBjd2dtZ2J3U2IxUmJucnFL?=
+ =?utf-8?B?dEdxMXJEVTZEWWo1bExNTVMxeHQ4Y1BRVk1OZjgrendSMTBIOGxGSVpCaDgw?=
+ =?utf-8?B?enNwUy9VMEY3S3o4c29WaGZPUmhKN2NGZ2dDaXBEdExpRnY0U1NMVVdFR0gv?=
+ =?utf-8?B?YnFCQ0VZVkt1eEIrQUFsV0o5OUlNc2xidXd3dFRNTnpUaTdlS2UrZ0UydW1J?=
+ =?utf-8?B?d0pGYmxFQ29BdUxKQUNYNEtnTXhqYzBQK2x3SEkxWFhPcHdZVFVnemJZckJl?=
+ =?utf-8?B?aFIvUFE5WEZxSnhWSFBKQT09?=
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:IA1PR10MB7447.namprd10.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(376014)(366016)(1800799024);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?utf-8?B?OTk0U2tDTVFvWmhFYjlteFdHU0h0bnYydWhQcG9qMTk2SXlsYnczZjlsSGNi?=
+ =?utf-8?B?d0ZBZEpKUjZwaHJScEU1OUp0RWV5aTA0VG01cHY3aUNUYy9XOXhVSW1qQ21J?=
+ =?utf-8?B?VWNFQTNkdEVWSFBlTGVGZjJoUVYxMS9mSmRnczR5Wk5USFNKS3FIQVhJUVg4?=
+ =?utf-8?B?dzVSbTB5UE5pMUlCOXpQbmpkMENKdFByVk0ybTVMRWdIdVlnN2sxelpLNmlk?=
+ =?utf-8?B?MUJBTXdrbXpwS1ZIWExvYlorN2VMa2NDWDJQRkdoZWRNWW9xZ1Z2dXZmaS91?=
+ =?utf-8?B?Uzlzc2YrME5NdWpYSjVkS25OMmtuTEl1REdrcnZnWkdFcmlDeHo2bDJSTzQ0?=
+ =?utf-8?B?d2NyTU5CaTdvcmxWK01mWEdWNnVWQllxOWdoYi96UFlrS0VFOTFEejhkYkNV?=
+ =?utf-8?B?Rm5mWHczSU9NblRZQ1BBRHUzU0FZK3JiS1NCbDlVZVlPcTdhRDhBeEhkSWlU?=
+ =?utf-8?B?YmxYOXFuQlp2ckhuSHM3ZTJvQWFmVEVRd3JxL00vaG1ReWpEYTlSNXRqT081?=
+ =?utf-8?B?RzFJSktlZ0d3OVdEU1RMdFcrOHdwLzBtcVBDRkM4UmhDS0JEMzdpKy9HTWZk?=
+ =?utf-8?B?NEpRbVViNFR4TERGYTZRb3dORkZlRDh3emNKQytRN1laWFJwczU1NmRtUHZt?=
+ =?utf-8?B?aDI2N2QvZHMySFVQMDYrWnZrQ21JbzV1N2VGWThudVc0ckxDTFp6NXR6cE5n?=
+ =?utf-8?B?MVpaWXZ0eHUyYVRoZHRJWnZ3cUtrVUU2aWE4bm9qenRaakNibU1iZGd2VnZP?=
+ =?utf-8?B?WnB5bi82d1ZXOGNXR0VzZnFjZUlXQXdKQy8zeFJIb3JDRm5aZlpVcldNR1Ft?=
+ =?utf-8?B?QkFNSEtBUk0zQXVkTW0yRDh0QnhDWlFjRzU4K1QyUjlZK01hQ1JSWmROWjFk?=
+ =?utf-8?B?ZFJkaE5YNGcrTjBWQzNwcW0wUUI0aTk5dlNTWWo3N05GejBRQUhGTmNaMmRR?=
+ =?utf-8?B?T0c4NE1MOW5QKzZjajBZOHVudGZYSXdJL3FOSHRyOHNZYzRwZDhEcTNkZ3VD?=
+ =?utf-8?B?VGVjZnR3WFhnWCsxbklkdThJbkNQWGpuWUh1N01EU1Z0enZ3a0VtM3hvZUVY?=
+ =?utf-8?B?VlRwMmZaT1dyd0hHWksyc3hESnJoZ3ZiTWRMM1UvRCtsdUFMb1NpQWVNMEVs?=
+ =?utf-8?B?d2VUWXBPSjMxTnRuVXd2VTFnbTdsNUpEZGZLTDFIeTF1OFE1eWVKUE5wT0pq?=
+ =?utf-8?B?SkdIMFdoYTAzTDcycEZyVWtkVXFhVjZYa3hwU3M4Sng2QnpkOUpham5rUFNv?=
+ =?utf-8?B?M3IzME9ZOHpuQzVCRHlsaEV4Y01FNWxCeDNwUE8zRWlIMER1WVA0UGo4L2hO?=
+ =?utf-8?B?ZUhpTlFid3lsTXdYcy93RkJPM0tjU2liT0pGMTNVaEtXczg3bWFXRUFKNm14?=
+ =?utf-8?B?R3R5S1N3Q0pvbW1ZWTY5ZGJjbnVrOGxlQ05NQUtQd0o0OFRxdy9xMXhYaDlM?=
+ =?utf-8?B?Mnk1V0RLZXpPS1V4RFdrQ0QzM3FhU0J0VXVJRmIzeXREUG5VY084UTdkam5y?=
+ =?utf-8?B?UGJIMzlpalJqM2FFdTlLZ09yRHlDZSsyU0R1S1VpcU9SMkk3c2N2cllTZWxX?=
+ =?utf-8?B?Z1pyR0NzYngwK2hkdFVnc3M3OURKZWFuTWhqU2FKaDkyL0NFWE1EQVlhcWtH?=
+ =?utf-8?B?Q2p2blg5allBZGMwU3Q0Q3V6YnJuUUFCZ1YvU2FWWGZTM3hZSlREQWJaV1Nk?=
+ =?utf-8?B?QWEzSkI2ZXpnM05LM0JVenFmaVhWekp0ang2dXpEWTZmWGVPeVR5RzAyYkhy?=
+ =?utf-8?B?Zk5NWkYweFJ0azRVRkpJTzFRVEZCMk1tQi9NdUh5cTh5STNFWjdJS0pMdjBQ?=
+ =?utf-8?B?Z3ZrZU1RRTJuUmRmTmswRGhNWHM3WUpmbmFkVDVsK1QwekwrSUhndU9XdUhG?=
+ =?utf-8?B?Q2FGdlRKSlNrd0JOMEhPeVJ4Q1NqU2pFMGtpU2tLMHhacUNqT0l3dlJSUWs0?=
+ =?utf-8?B?N05QdFlrcXB0ODM4eXNvK2lBWWJnWFFwQUx4OUxuUmZQaWFHQVBFdjZ1UmhY?=
+ =?utf-8?B?Z3I4ZTNTVFhDNzlFcUpTMG5EbnYxdXV1RzBwR24xZXMxcE1nQVgrRURuM1Zq?=
+ =?utf-8?B?azBuU1BHM3FlcXgxYnlpK2diNFZ2WCttajVVVXM0MGpiM3ZRQjJiV3BoQmpD?=
+ =?utf-8?B?SFJyMUVGNGg1RFE1NUxaVnNJTUpyYkp4bGFUejVuUnIzRjR2amUxR3BtdjY5?=
+ =?utf-8?B?bEE9PQ==?=
+X-MS-Exchange-AntiSpam-ExternalHop-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-ExternalHop-MessageData-0:
+	C9TRQMeHVY92zMS3fTWWlVdpyiqGv1eS8jIkP4rRfuxsLgq+Q12Zsx/MUur84U6OT7FfQytHV50KtCYGq8BtmXE9pkU8vGlJ/L3sSjkQfQL+Gw5BkUhhc3T7FnjzEgAHigNUYzfZbxSFAvzdTQ/glu36GBoq7QSuESvms6/qMIwwqDNl/6UUit2XbZUSp042+xzWzd6DE/xhphQyw8L7B7zRJ0yE7EdqFaXvRNLkIU4JynJDz++RSOcFnR3wZKloMi+t1/6JBZOrWoj832Ukrr0uZq61UNYJVuBJEDFF/MUfHDF+z10qZ4jIh5Qtt9BdGOelVjZ8kuPgvUwsrGdgi7fu6QdJw4Zt3HNh8fG1hLcyzb9fiTSS5x3OgLjtvl8GY64DvgGSyyUg+wkc55DbJAn9B6A3DncI54YZToLFgDU46pkLlm1Ra+Kl22zdUO7nU7lBCh2uei7GrjbCK4MnzqQi6rsq1zxWNFa2CkC8GufFhApg/P6jI9px7hsGac3++cFgQSG0OauscHqd5surlWJnvcTbClI4sEKDv4ifDlrzEh1vClnCNrn2B4dx+XzaMA5+s0yt5W+hzMmtRrzDI88AURXEVj+GLapNHQDVRdw=
+X-OriginatorOrg: oracle.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: b7b37219-bcd7-4320-f381-08dcc2ee2412
+X-MS-Exchange-CrossTenant-AuthSource: IA1PR10MB7447.namprd10.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 22 Aug 2024 21:05:24.5233
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 4e2c6054-71cb-48f1-bd6c-3a9705aca71b
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: 3iO44r4/XkhjuW4wOyToA7Mq5Hd1+bscMa7UX4gCtBDQH09PEl1ma6lu+oA0ARVcLKI0EXlIiI0+8tpEemAZiq8qAfNSjZezoRvZMIZnors=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SJ0PR10MB4478
 X-Proofpoint-Virus-Version: vendor=baseguard
  engine=ICAP:2.0.293,Aquarius:18.0.1039,Hydra:6.0.680,FMLib:17.12.28.16
  definitions=2024-08-22_14,2024-08-22_01,2024-05-17_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 mlxlogscore=844
- impostorscore=0 lowpriorityscore=0 clxscore=1011 spamscore=0 mlxscore=0
- bulkscore=0 phishscore=0 adultscore=0 malwarescore=0 priorityscore=1501
- suspectscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.19.0-2407110000 definitions=main-2408220152
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 phishscore=0 suspectscore=0
+ adultscore=0 mlxscore=0 malwarescore=0 mlxlogscore=999 spamscore=0
+ bulkscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2407110000 definitions=main-2408220158
+X-Proofpoint-ORIG-GUID: XI1tnH1SFMbWrDxg3RNsxH8LaOpomnkE
+X-Proofpoint-GUID: XI1tnH1SFMbWrDxg3RNsxH8LaOpomnkE
 
-On Tue, Aug 20, 2024 at 10:16:47AM -0700, Rob Clark wrote: > From: Rob Clark <robdclark@chromium.org>
+On 8/21/2024 2:04 PM, Jason Gunthorpe wrote:
+> On Wed, Aug 21, 2024 at 01:54:04PM -0400, Steven Sistare wrote:
 > 
-> In the case of iova fault triggered devcore dumps, include additional
-> debug information based on what we think is the current page tables,
-> including the TTBR0 value (which should match what we have in
-> adreno_smmu_fault_info unless things have gone horribly wrong), and
-> the pagetable entries traversed in the process of resolving the
-> faulting iova.
+>> memfd_pin_folios() returns an array of folios which must be saved and
+>> later passed back to unpin_folios().   That's a slight bummer, since
+>> currently you save memory by retrieving PFNs from the iommu as needed,
+>> rather than saving all of them explicitly (with the exception of pinned_pfns).
 > 
-> Signed-off-by: Rob Clark <robdclark@chromium.org>
-> ---
->  drivers/gpu/drm/msm/adreno/adreno_gpu.c | 10 ++++++++++
->  drivers/gpu/drm/msm/msm_gpu.c           |  9 +++++++++
->  drivers/gpu/drm/msm/msm_gpu.h           |  8 ++++++++
->  drivers/gpu/drm/msm/msm_iommu.c         | 22 ++++++++++++++++++++++
->  drivers/gpu/drm/msm/msm_mmu.h           |  3 ++-
->  5 files changed, 51 insertions(+), 1 deletion(-)
+> You wouldn't save the folios directly. The existing PFN mechanism is
+> fine and already works with folios memory.
 > 
-> diff --git a/drivers/gpu/drm/msm/adreno/adreno_gpu.c b/drivers/gpu/drm/msm/adreno/adreno_gpu.c
-> index 1c6626747b98..3848b5a64351 100644
-> --- a/drivers/gpu/drm/msm/adreno/adreno_gpu.c
-> +++ b/drivers/gpu/drm/msm/adreno/adreno_gpu.c
-> @@ -864,6 +864,16 @@ void adreno_show(struct msm_gpu *gpu, struct msm_gpu_state *state,
->  		drm_printf(p, "  - dir=%s\n", info->flags & IOMMU_FAULT_WRITE ? "WRITE" : "READ");
->  		drm_printf(p, "  - type=%s\n", info->type);
->  		drm_printf(p, "  - source=%s\n", info->block);
-> +
-> +		/* Information extracted from what we think are the current
-> +		 * pgtables.  Hopefully the TTBR0 matches what we've extracted
-> +		 * from the SMMU registers in smmu_info!
-> +		 */
-> +		drm_puts(p, "pgtable-fault-info:\n");
-> +		drm_printf(p, "  - ttbr0: %.16llx\n", (u64)info->pgtbl_ttbr0);
-
-"0x" prefix? Otherwise, it is a bit confusing when the below one is
-decimal.
-
-> +		drm_printf(p, "  - asid: %d\n", info->asid);
-> +		drm_printf(p, "  - ptes: %.16llx %.16llx %.16llx %.16llx\n",
-> +			   info->ptes[0], info->ptes[1], info->ptes[2], info->ptes[3]);
-
-Does crashdec decodes this?
-
--Akhil.
-
->  	}
->  
->  	drm_printf(p, "rbbm-status: 0x%08x\n", state->rbbm_status);
-> diff --git a/drivers/gpu/drm/msm/msm_gpu.c b/drivers/gpu/drm/msm/msm_gpu.c
-> index 3666b42b4ecd..bf2f8b2a7ccc 100644
-> --- a/drivers/gpu/drm/msm/msm_gpu.c
-> +++ b/drivers/gpu/drm/msm/msm_gpu.c
-> @@ -281,6 +281,15 @@ static void msm_gpu_crashstate_capture(struct msm_gpu *gpu,
->  	if (submit) {
->  		int i;
->  
-> +		if (state->fault_info.ttbr0) {
-> +			struct msm_gpu_fault_info *info = &state->fault_info;
-> +			struct msm_mmu *mmu = submit->aspace->mmu;
-> +
-> +			msm_iommu_pagetable_params(mmu, &info->pgtbl_ttbr0,
-> +						   &info->asid);
-> +			msm_iommu_pagetable_walk(mmu, info->iova, info->ptes);
-> +		}
-> +
->  		state->bos = kcalloc(submit->nr_bos,
->  			sizeof(struct msm_gpu_state_bo), GFP_KERNEL);
->  
-> diff --git a/drivers/gpu/drm/msm/msm_gpu.h b/drivers/gpu/drm/msm/msm_gpu.h
-> index 1f02bb9956be..82e838ba8c80 100644
-> --- a/drivers/gpu/drm/msm/msm_gpu.h
-> +++ b/drivers/gpu/drm/msm/msm_gpu.h
-> @@ -101,6 +101,14 @@ struct msm_gpu_fault_info {
->  	int flags;
->  	const char *type;
->  	const char *block;
-> +
-> +	/* Information about what we think/expect is the current SMMU state,
-> +	 * for example expected_ttbr0 should match smmu_info.ttbr0 which
-> +	 * was read back from SMMU registers.
-> +	 */
-> +	phys_addr_t pgtbl_ttbr0;
-> +	u64 ptes[4];
-> +	int asid;
->  };
->  
->  /**
-> diff --git a/drivers/gpu/drm/msm/msm_iommu.c b/drivers/gpu/drm/msm/msm_iommu.c
-> index 2a94e82316f9..3e692818ba1f 100644
-> --- a/drivers/gpu/drm/msm/msm_iommu.c
-> +++ b/drivers/gpu/drm/msm/msm_iommu.c
-> @@ -195,6 +195,28 @@ struct iommu_domain_geometry *msm_iommu_get_geometry(struct msm_mmu *mmu)
->  	return &iommu->domain->geometry;
->  }
->  
-> +int
-> +msm_iommu_pagetable_walk(struct msm_mmu *mmu, unsigned long iova, uint64_t ptes[4])
-> +{
-> +	struct msm_iommu_pagetable *pagetable;
-> +	struct arm_lpae_io_pgtable_walk_data wd = {};
-> +
-> +	if (mmu->type != MSM_MMU_IOMMU_PAGETABLE)
-> +		return -EINVAL;
-> +
-> +	pagetable = to_pagetable(mmu);
-> +
-> +	if (!pagetable->pgtbl_ops->pgtable_walk)
-> +		return -EINVAL;
-> +
-> +	pagetable->pgtbl_ops->pgtable_walk(pagetable->pgtbl_ops, iova, &wd);
-> +
-> +	for (int i = 0; i < ARRAY_SIZE(wd.ptes); i++)
-> +		ptes[i] = wd.ptes[i];
-> +
-> +	return 0;
-> +}
-> +
->  static const struct msm_mmu_funcs pagetable_funcs = {
->  		.map = msm_iommu_pagetable_map,
->  		.unmap = msm_iommu_pagetable_unmap,
-> diff --git a/drivers/gpu/drm/msm/msm_mmu.h b/drivers/gpu/drm/msm/msm_mmu.h
-> index 88af4f490881..96e509bd96a6 100644
-> --- a/drivers/gpu/drm/msm/msm_mmu.h
-> +++ b/drivers/gpu/drm/msm/msm_mmu.h
-> @@ -53,7 +53,8 @@ static inline void msm_mmu_set_fault_handler(struct msm_mmu *mmu, void *arg,
->  struct msm_mmu *msm_iommu_pagetable_create(struct msm_mmu *parent);
->  
->  int msm_iommu_pagetable_params(struct msm_mmu *mmu, phys_addr_t *ttbr,
-> -		int *asid);
-> +			       int *asid);
-> +int msm_iommu_pagetable_walk(struct msm_mmu *mmu, unsigned long iova, uint64_t ptes[4]);
->  struct iommu_domain_geometry *msm_iommu_get_geometry(struct msm_mmu *mmu);
->  
->  #endif /* __MSM_MMU_H__ */
-> -- 
-> 2.46.0
+> The mismatch betwen gup returning pages and memfd_pin_folios returning
+> folios is fixed up by adjusting the folio refcount back to page
+> granularity, then treating it the same as a bunch of pages and using
+> unpin_user_pages() as normal.
 > 
+> gup.c already has code that can do this adjustment it would probably
+> need to be exported. Something like:
+> 
+> folio_refs_to_pages(folio, len);
+> 
+> Then don't change very much in iommufd, just stuff the folio's PFNs
+> into the existing reader mechanism the same as the pin_user_pages()
+> flow after fixing the refcount.
+
+Thanks, I will keep working on it.
+
+I found a screw case -- PCI BARs.
+When iommufd supports mapping them (I assume someone is working on that?),
+mdev access to those mappings must work after live update.  We must be
+able to translate iova to PFN without using va, by recognizing the mapping
+is special and calling something special to generate the PFN, such as
+the extracted guts of vfio_pci_mmap_fault.
+
+- Steve
