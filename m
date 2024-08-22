@@ -1,157 +1,261 @@
-Received: from NAM10-BN7-obe.outbound.protection.outlook.com (mail-bn7nam10on2046.outbound.protection.outlook.com [40.107.92.46])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-pl1-f179.google.com (mail-pl1-f179.google.com [209.85.214.179])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3A46F1CF2A1;
-	Thu, 22 Aug 2024 17:06:31 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.92.46
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1724346395; cv=fail; b=WD+NgV2ryWaui06MMadQnRaDLhR5UMWmRSHLQ22bVhXQE+7WCebqy6lYjORNcqswal2+Qbr53Cn2k91MA0jzRPz6Ie9DIzLZ+N8TtdQCz4wrWeaDJwvD3qSmlm4utGJXO7+J7H/Z3sOM/pEv20AA8lu6jeVp3m1BlCuIskZmst0=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1724346395; c=relaxed/simple;
-	bh=CKZpkvSPLU5XZeqkxkZHqIU/EQ1uK0DsxWffuDejKjA=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:Content-Type:
-	 Content-Disposition:In-Reply-To:MIME-Version; b=ThcnF4s9nw2jm/R4TacGy5f3fpb+PR6ELfbRov3lH/cwl1U6fxSRPaytrnKU5Y5fxHFVdcF0qOF8r0jnmM4qJSPosXTdk53Vt+WZPazIoe6aYqkQUD76pWJagm4SNq2qG4w98dmAaUoD1aRPpaCo5kGOdVSl/nSDALPHtDgv5PA=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=p8tFf/YT; arc=fail smtp.client-ip=40.107.92.46
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 38B21EC5;
+	Thu, 22 Aug 2024 18:37:45 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.179
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1724351867; cv=none; b=aXbtkmuLRqoNP/XAoVbDzOhDvGYyAuPULaxGOLYlNEpoYHyhQcR2JLSSpBxaVZtE3MDRlybH5uNoakXGVktUi8UAjJnvPKZ5xQHzXZ1TupE6CZrGIRhrUtFJUOqdFkypoPHIsQ676A4AdIpDZSQwOfxAJ0KfxQTvT8dYgAEfnuY=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1724351867; c=relaxed/simple;
+	bh=P19DGvRJHfXvmgQ7mc0QBm4YZAqPf12PUHoT4LyDy0Q=;
+	h=From:To:Subject:Date:Message-Id:MIME-Version; b=ekqnLfTTExnkcwZPisCbmywFfBil7P2WXhM6obk1sFGZrHxP9bPVt1POnkPysdG1ZTfxcC95KcPpptH83T4hzoG1dsvkq0e+7JIx3ojGDmEh24tz8PAXFXR7/NkRo2HGlonllmUCVVmzKlIUGnxcm8RdCKtDUrQT6gHws9Xr/io=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=Ikv4W3vE; arc=none smtp.client-ip=209.85.214.179
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="p8tFf/YT"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=HqOxbHTVKnlsaWzAJW4ofsRmQpJmdwPXfwh1/Vlfa5lHvHRFbDaPrFBKcqdXRPJPcONxxVm/hAjd+zZedILga31HxLbGKkJBdg5eajPcnz4FhMr7g1DDZHrH5RtrY2QNAaNNJ0w1/M5IaNok/EgfrU+Lvf4quTmPjXx3YvvqZx1GGJEHFqfp99zD/aPrW2sNJBKKS3lT3fuNR5tO4r4BGa/qFbpPLSv7A8wCzSwsI6Do/4qHDIlA1ElQmWk17DWa2dzO8cQBgXQ98Y+egiEOo0ksGfC/zOVQ8LcLCXCzPu1+C3HGPDtXBCaj0dhXNzQV1NXwnRAherc7TuzLJMiBMw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=vi5LxEpXnLbLR9U2j/UtfgS/9utzP3znvFO+Nwkzbe8=;
- b=fkXDwUhE8Np/fAlXfVXNqvvRflUPdPZo5MM6xbS0e5HAO+YxVkUuq1lpXfhwbOWGB7yEc1fARe9PaM6QC37TcNcHm999pqsagcbJU5k9JNFvsduZjUf8oW79kQpdRPuC4f7czaxYNk8ISXtDAnDeBaAtl8AZaJoBxDtuycKsGXH7I6ScqCHzV/NH/q/8Tp7z3QQC1AFWfUD/52GBziK+CMphscg2eLu5zLAlKwz4RaNnTv94jiyERqb7m0+O5it4PMw6iK5ou2T95rSzmovpKmNiUlRAdkal7ZGcAdqx6EyeEnmL1A/E16LvBiXnohR0bHlPxSvylqFtoSPuM4UmeA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=vi5LxEpXnLbLR9U2j/UtfgS/9utzP3znvFO+Nwkzbe8=;
- b=p8tFf/YTtbOemFnfFn9nik1oTIuG4f6bxQGib9Sj2lSwNsxmi4n8AUr1WM32+uGL9cJFH2G/WuEPpq9zYLC8Tk+VEWMVAHPwMTWVPZhaH3xBOFUt2vcQZ8qMWvaHe3z47Uqh+6CeXa+8KZJdEr2wCiCmX/YYLXWGrUUsCY+/vYHScpIkcPraJGJtadaoXolYEzD1OIjR+rIQcCDM90xXfdftf3YPxKKAG3HjWHZJF0JT8c6PkwLt//biBbbTXDO9a+Tub64uX6eVFYljBJfyIvn5Gd03pYDRZ0I5Jt/aRp+T/xZ9Ylu+de4ErDhdSzqTd2t199+tEYIhy+in6yp63A==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-Received: from CH3PR12MB7763.namprd12.prod.outlook.com (2603:10b6:610:145::10)
- by PH8PR12MB6843.namprd12.prod.outlook.com (2603:10b6:510:1ca::14) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7897.19; Thu, 22 Aug
- 2024 17:06:26 +0000
-Received: from CH3PR12MB7763.namprd12.prod.outlook.com
- ([fe80::8b63:dd80:c182:4ce8]) by CH3PR12MB7763.namprd12.prod.outlook.com
- ([fe80::8b63:dd80:c182:4ce8%3]) with mapi id 15.20.7875.023; Thu, 22 Aug 2024
- 17:06:26 +0000
-Date: Thu, 22 Aug 2024 14:06:24 -0300
-From: Jason Gunthorpe <jgg@nvidia.com>
-To: Joao Martins <joao.m.martins@oracle.com>
-Cc: iommu@lists.linux.dev, Kevin Tian <kevin.tian@intel.com>,
-	Matt Ochs <mochs@nvidia.com>, patches@lists.linux.dev,
-	Will Deacon <will@kernel.org>, Joerg Roedel <joro@8bytes.org>
-Subject: Re: [PATCH] iommufd/selftest: Fix buffer read overrrun in the dirty
- test
-Message-ID: <20240822170624.GT3773488@nvidia.com>
-References: <0-v1-113e8d9e7861+5ae-iommufd_kasan_jgg@nvidia.com>
- <e978b42b-3077-403f-a5b0-7da6b52f29d8@oracle.com>
- <20240822165931.GS3773488@nvidia.com>
- <29558b8a-93a5-4368-8954-7c7de0d9a0b7@oracle.com>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <29558b8a-93a5-4368-8954-7c7de0d9a0b7@oracle.com>
-X-ClientProxiedBy: BL0PR02CA0024.namprd02.prod.outlook.com
- (2603:10b6:207:3c::37) To CH3PR12MB7763.namprd12.prod.outlook.com
- (2603:10b6:610:145::10)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="Ikv4W3vE"
+Received: by mail-pl1-f179.google.com with SMTP id d9443c01a7336-2023dd9b86aso9557815ad.1;
+        Thu, 22 Aug 2024 11:37:45 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20230601; t=1724351865; x=1724956665; darn=lists.linux.dev;
+        h=content-transfer-encoding:mime-version:reply-to:message-id:date
+         :subject:to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=VOaQTtxsk58SbDoLn+PAUGwK+8hE4FRojXrJ9dN8wyI=;
+        b=Ikv4W3vE4D1eaRZ5Khp9E45k9KkSU+hkyFm7JZSetGJTMTy7Tbz59+ymF+b0vqKQID
+         emTj2MdTdWhODC51I1KbNx6lnr7hh1+gEtul3bIcuNdunisV3MKIOquIedh6bV+VJCs/
+         qGh6bYbVoZ04CjIUfOa7aVBszQG28CER6k3R7w2y3IJjVCTwNcXB/1Icjj9ecrQ1W1iv
+         D9vsLpLWxrxm1DhT0ZucUpfR3O5WTdBURiwpUq+IJLgeKcQApa5tzOVw+HsZ+0sV//UV
+         cnOyXvsubU7Z5CJ0txlPcZVk3MO4B691mw6/yZAS+1eI2+wpSP2iEnR2SLIv1tVwyE4X
+         Z8Jw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1724351865; x=1724956665;
+        h=content-transfer-encoding:mime-version:reply-to:message-id:date
+         :subject:to:from:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=VOaQTtxsk58SbDoLn+PAUGwK+8hE4FRojXrJ9dN8wyI=;
+        b=cCnVdzvB3mds0WJNVfpc4WSBcTbtomArgAn4olN2GZCd16DCbVSxhj6JDdyX3j9NHa
+         VCQvz9ea1MdCLIU2dsBirtP5eQup1fanBCVCfcKieg4OXTeW0CkJXdp/PBaBFuVxbRuO
+         3XTwC7khS1Xct+ol8dfJ0CAcoB7a1ZldsYTnTUQKgo1naQrWvKczJFhPntb9tc5MCZL/
+         hIOnpVBiqJdctIVO1Q5ne+MNRUofYleHVSfwsY2Gy9YfWtV2xo1yDL6KFA9Pri6qu8ga
+         cajPmzdj21ayG78MQ3WonDBVwYbWquQfggt/76qI7+bos9Yun/IIMVSjIepNOhHmwQtx
+         dvuA==
+X-Forwarded-Encrypted: i=1; AJvYcCXFDnx7BXsV/aQgYfBY/4wFdBVU7jcNio+Bk6f/0nXIbYkWW9qSW4ULFxMrey8U8cFnmPG++mGkfd1khg==@lists.linux.dev, AJvYcCXWevlyJDEbAR3UlWSbvBNN+0dP+hRki8K729JE2AEc8SeZ00BI7HjnE+9a89KXQP8SQxLHLQ==@lists.linux.dev
+X-Gm-Message-State: AOJu0Yxadaf6cTWQ1D5+UtQl1Ku+/Gd3g9CWiC52mK9pcMwUnfXW+ejC
+	Nuj1SVpfyqmlBiv/6uYz/sZotRt5TpXQ3ANaOlylZ/Rh4t0U5gNR
+X-Google-Smtp-Source: AGHT+IEl3He9Aim4HWajrK80+KqOIG9qzlUskCayv41SgJM9s3grubdRM7QHgHTRWUeXewRIkkN6lw==
+X-Received: by 2002:a17:902:d48c:b0:202:32cf:5db1 with SMTP id d9443c01a7336-20388b6a84cmr38489205ad.44.1724351865300;
+        Thu, 22 Aug 2024 11:37:45 -0700 (PDT)
+Received: from localhost.localdomain (c-67-160-120-253.hsd1.wa.comcast.net. [67.160.120.253])
+        by smtp.gmail.com with ESMTPSA id d9443c01a7336-2038557e4f9sm15667145ad.65.2024.08.22.11.37.43
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 22 Aug 2024 11:37:44 -0700 (PDT)
+From: mhkelley58@gmail.com
+X-Google-Original-From: mhklinux@outlook.com
+To: kbusch@kernel.org,
+	axboe@kernel.dk,
+	sagi@grimberg.me,
+	James.Bottomley@HansenPartnership.com,
+	martin.petersen@oracle.com,
+	kys@microsoft.com,
+	haiyangz@microsoft.com,
+	wei.liu@kernel.org,
+	decui@microsoft.com,
+	robin.murphy@arm.com,
+	hch@lst.de,
+	m.szyprowski@samsung.com,
+	petr@tesarici.cz,
+	iommu@lists.linux.dev,
+	linux-kernel@vger.kernel.org,
+	linux-nvme@lists.infradead.org,
+	linux-scsi@vger.kernel.org,
+	linux-hyperv@vger.kernel.org,
+	linux-coco@lists.linux.dev
+Subject: [RFC 0/7] Introduce swiotlb throttling
+Date: Thu, 22 Aug 2024 11:37:11 -0700
+Message-Id: <20240822183718.1234-1-mhklinux@outlook.com>
+X-Mailer: git-send-email 2.25.1
+Reply-To: mhklinux@outlook.com
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: CH3PR12MB7763:EE_|PH8PR12MB6843:EE_
-X-MS-Office365-Filtering-Correlation-Id: afdaffd0-a6b2-4b51-f904-08dcc2ccc1b5
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;ARA:13230040|1800799024|366016|376014;
-X-Microsoft-Antispam-Message-Info:
-	=?us-ascii?Q?GOpHkTXr9jlOOkqWHizoHh2mZPjzRWnpjjzdPKRfmVV4+O3dcTrkob1ZM/i4?=
- =?us-ascii?Q?XVFr2bZ/Cz2jvx+IWzz0isK0lTlsywO6nM8VZDn+P1oQ7j6i1h9je78RYXoU?=
- =?us-ascii?Q?KsmAw4/23l3sXikyenEWrDv7uHl9bYbLdBdf6MAYjA2MNGesq9zYF/UBxI95?=
- =?us-ascii?Q?s+UHcMctC/hMotI/82TtKcqo+SnHNkx5ofbEWmgl/+vD3w8lHFFgOnKTw/cV?=
- =?us-ascii?Q?R7EZXLuXoeTV5gS+IwGUVv/I+ww31v0mioxCihgMjYDMeLQ/GKCSPkebXE8q?=
- =?us-ascii?Q?jGgTPaX21TfCVe6R57BpBmrwmygj3hldDcgVpEdbmfD8X+P6K1Ytpuj2rfpl?=
- =?us-ascii?Q?v3pW6XLHnkwNQZlgzDvSi/NRqdRAGz3bhEPFmOAUqcuE1kksg8EIiZLjCLpY?=
- =?us-ascii?Q?3tXbeflWth/+XWLctQbLCxc6T4fSKvsLpt9L0UyYWUnfhI7QT55HRoqBVXXR?=
- =?us-ascii?Q?0TuIg5e5e6OPkmAF+bTEEjb/UjusNoJ6r8LBFn5n1ryzAGVmS50g6H7ccjzS?=
- =?us-ascii?Q?j0NWktUlMfFkt14HJFxPDkbgE6wWna9jx2PE+SIPpKHE63CU7EatKy3ldKH6?=
- =?us-ascii?Q?BMSvDuMPwTx15ZsX8lQ4gRBOTLYX4meUO+buhgxPDcx+xS9XzRRd7xheOhYv?=
- =?us-ascii?Q?aj5mThpqTNlJvzRsPGHUmYQsuomoHkJ7vmlcwEtZ6Vnsn5HOk9S6adUhCpqq?=
- =?us-ascii?Q?zyriHrWyNcV2HZPNkn/IMHZbD/C8nvIOheMG8Bg2NM18YQq0FOBNKVx86zyO?=
- =?us-ascii?Q?W0cWh2t60IU6G5+i0o+nsCBJs9jG3cDqHuIqE8R5k0yP7PWzyPRMpqe/wCY3?=
- =?us-ascii?Q?v4aVlxmidt/q8yRF/bpCIGR0xF860nyEy2Cg0c1apA1X/mv0RfopZJtENkcL?=
- =?us-ascii?Q?5hEja29yiGChdp/YInYcsI3PrDAIG0l9CdI1B1f4YHNxNJO7Gs1NXnM04AuY?=
- =?us-ascii?Q?f/0HpHlSv2vYApiXpf66fCAmGYCtm5AIbuaNDj8Ll4fzo7nE+Wo0bDr0EMrA?=
- =?us-ascii?Q?by5M/goPtGzfQlc6HQhXFhNyGDOBi0KrbH9ym6cbaUBEXQbEfk4CiXadRavy?=
- =?us-ascii?Q?PQmkoIdlDRPk2BgIeL+zMmHUn8006sof14SCxONqX/uP31cS/m02mlZCczVj?=
- =?us-ascii?Q?clR7CeS7Es2S8RLhtE3ooFXafBvDx3IsGAmUXdxX0hOuBHFs0Od5QOfuLQTS?=
- =?us-ascii?Q?nxR8T0bZD1l/7lVcKxRqW5wo2LUJXqdXiDvNdLxPEVIOtRodDXsqtc2j32np?=
- =?us-ascii?Q?pGqZMNPehdx6wppDqVrtWXHgNDDQdM190E5tvOFehrqZ39gP3zVW63+7QBh4?=
- =?us-ascii?Q?pAqLKW+Rnm2R8vfXNOs0oL7XItEdpNqxPCVEr6AYCo0Z6A=3D=3D?=
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CH3PR12MB7763.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(1800799024)(366016)(376014);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?us-ascii?Q?ROXw4DsfqYKZF/jJxe6eqdpP/J5IDHHSi8AXcFWKNhx1IimYyRCaqYbbAwc/?=
- =?us-ascii?Q?in0UK4GfrTgxrRe6kSpyZDiIpFUg/uTfQrmjKTEnKsAEB/lmzLMkwX1mTvcz?=
- =?us-ascii?Q?1Cy9czyL90fHJJU6CLWuvWM1ilI2oj2IjiHSgOGOHHGPADJTFKDnftT9tTRT?=
- =?us-ascii?Q?3DQLz2lYojyldv4YOQ4zxngN7XtV/lrWcRDTh8C3SYoO2w56jUH8WsN/aCD8?=
- =?us-ascii?Q?loj3mxaegmOPFJPYfIBkeJjr0536vZA1FB7bkJzhnu+HAZMsHjP5cArjFduX?=
- =?us-ascii?Q?MVo12d5vD7kPSyDuQUBhKp7xqLtK0KGzQ+3KAv9tk8D/0jlb5jTmzeB+uby/?=
- =?us-ascii?Q?MicYiMfIz7YSiBYciORuYeKTsKORDB3WdDlxkNG8mPuqA982GqAVKA+w54zA?=
- =?us-ascii?Q?LU3MEi3p5NPOC9by7T48g0tlfFHKRGUYo+dU6GYiZIC0J9Lldh154iCxij3b?=
- =?us-ascii?Q?/9CAgOQ3Y+jxQCi0Fvz9p5Q7lrVWzzwcvY0yM2WW5YpJU6p+perL96gDR/m3?=
- =?us-ascii?Q?VkPcsDRj+OVGWh1Kph+E0uQfMlCif+/4vWOLz3CcY6j3J6mvdNH7atgtfo0o?=
- =?us-ascii?Q?cfwAAMn+QPoTmsSk9gmdQW09CG+tpNaee7E5UNwh1bLmi4QASmSkO63yxHi4?=
- =?us-ascii?Q?ye3+2O5fZp+mjsONGQmMbkRoY8l3a1xIUsbUqBjOoZl4ZenhDTwgmVn5xCbL?=
- =?us-ascii?Q?/AyJ6ak8PWP5hivNCBqF0qrVZDPPpBMPc5lBKA4moFZnISTfT7RfrLIpbTxZ?=
- =?us-ascii?Q?xbgN2Uth0TzKu8x6oYmm335V4ysImWNEd/fqPBBKis5jAY/JZTccw7Oc4Q2b?=
- =?us-ascii?Q?5pOwVD9Enu5PcP9wliwu2V8iEgc3dfJMhJlAqGHxoZbXj00JZ5aLqrMMiCHt?=
- =?us-ascii?Q?PJTAT0Kx0N5niBUYEUSl71/NVBGZBtTV7ebtq4vasfca7t7sJ5qLROoac2VO?=
- =?us-ascii?Q?MxSiIQqEweweMNsOL61W1DHI1nmQ5ZpSGVD5QmvjOALEd1uOtWcMP/WCaL3g?=
- =?us-ascii?Q?l/R7ZjvMNP+HzFKIdFNF4kGiQiu8j8vh1Vk/06IVChcS2Bn/RXJ/td6FLal2?=
- =?us-ascii?Q?DdyJhGekxO9X9csYOMgtXJsITb861RLsl9BNPJgbON2LMIBQYbwK8/D15PYM?=
- =?us-ascii?Q?bZgyGwvCUFKYJc6bC7mskwSUVocstxSPWOVLn289zZel1OudRDcwnoBjcmHH?=
- =?us-ascii?Q?kBDaISyi7IoBFVnXqj5dnud+QBiJDTP3PIaMZD/36a3doPpuyjPgqjajPnGy?=
- =?us-ascii?Q?uv7sVhkGTrDqoQsIB/QXyXQ1FKmZ1kY+BzAldXE/eg3qECVCajgqhtUy2Qmo?=
- =?us-ascii?Q?fqlHqF+uabJ7UMPsqh0P6eW8uJ3HvellPkfTvbwUcG8TWGsuoETxoU17LLgp?=
- =?us-ascii?Q?QH3YoFEuM7erZW4kyB9y6NYxwUzTgOrZYfc8jCgT2xUhjqtq/cJDC1YLFOdT?=
- =?us-ascii?Q?6mSuQ4tfpaIQJxxP/DyccpCBYamnBLjKKXBo6qG5vu820FcqNtvmFnZYjzhF?=
- =?us-ascii?Q?dIUP/acYFNjbnqU5N8hjnaa7rpHNGuL1xiVzOBkX6CS0QipR4/+BUyfznsS1?=
- =?us-ascii?Q?AL92zKcBuEI57Sf8xVrqRrzjZHRfYMQLpxRkugK+?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: afdaffd0-a6b2-4b51-f904-08dcc2ccc1b5
-X-MS-Exchange-CrossTenant-AuthSource: CH3PR12MB7763.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 22 Aug 2024 17:06:25.9983
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: tYffXeU9y8BGzmqsI6MsBRd+4vJALsAOxjjLPjLUNR5VWU4oa0Xkd6sUYbliYQ0B
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH8PR12MB6843
+Content-Transfer-Encoding: 8bit
 
-On Thu, Aug 22, 2024 at 06:03:17PM +0100, Joao Martins wrote:
+From: Michael Kelley <mhklinux@outlook.com>
 
-> -	if (copy_from_user(tmp, uptr, bitmap_size)) {
-> +	if (copy_from_user(tmp, uptr,DIV_ROUND_UP(max, BITS_PER_BYTE))) {
->  		rc = -EFAULT;
->  		goto out_free;
->  	}
-> 
-> 
-> But considering that's only one call side, then I assumed you just wanted removed.
+Background
+==========
+Linux device drivers may make DMA map/unmap calls in contexts that
+cannot block, such as in an interrupt handler. Consequently, when a
+DMA map call must use a bounce buffer, the allocation of swiotlb
+memory must always succeed immediately. If swiotlb memory is
+exhausted, the DMA map call cannot wait for memory to be released. The
+call fails, which usually results in an I/O error.
 
-Oh, I see, yes, with only one user (and there is actually a #define
-called bitmap_size in common headers too) it seemed best
+Bounce buffers are usually used infrequently for a few corner cases,
+so the default swiotlb memory allocation of 64 MiB is more than
+sufficient to avoid running out and causing errors. However, recently
+introduced Confidential Computing (CoCo) VMs must use bounce buffers
+for all DMA I/O because the VM's memory is encrypted. In CoCo VMs
+a new heuristic allocates ~6% of the VM's memory, up to 1 GiB, for
+swiotlb memory. This large allocation reduces the likelihood of a
+spike in usage causing DMA map failures. Unfortunately for most
+workloads, this insurance against spikes comes at the cost of
+potentially "wasting" hundreds of MiB's of the VM's memory, as swiotlb
+memory can't be used for other purposes.
 
-Jason
+Approach
+========
+The goal is to significantly reduce the amount of memory reserved as
+swiotlb memory in CoCo VMs, while not unduly increasing the risk of
+DMA map failures due to memory exhaustion.
+
+To reach this goal, this patch set introduces the concept of swiotlb
+throttling, which can delay swiotlb allocation requests when swiotlb
+memory usage is high. This approach depends on the fact that some
+DMA map requests are made from contexts where it's OK to block.
+Throttling such requests is acceptable to spread out a spike in usage.
+
+Because it's not possible to detect at runtime whether a DMA map call
+is made in a context that can block, the calls in key device drivers
+must be updated with a MAY_BLOCK attribute, if appropriate. When this
+attribute is set and swiotlb memory usage is above a threshold, the
+swiotlb allocation code can serialize swiotlb memory usage to help
+ensure that it is not exhausted.
+
+In general, storage device drivers can take advantage of the MAY_BLOCK
+option, while network device drivers cannot. The Linux block layer
+already allows storage requests to block when the BLK_MQ_F_BLOCKING
+flag is present on the request queue. In a CoCo VM environment,
+relatively few device types are used for storage devices, and updating
+these drivers is feasible. This patch set updates the NVMe driver and
+the Hyper-V storvsc synthetic storage driver. A few other drivers
+might also need to be updated to handle the key CoCo VM storage
+devices.
+
+Because network drivers generally cannot use swiotlb throttling, it is
+still possible for swiotlb memory to become exhausted. But blunting
+the maximum swiotlb memory used by storage devices can significantly
+reduce the peak usage, and a smaller amount of swiotlb memory can be
+allocated in a CoCo VM. Also, usage by storage drivers is likely to
+overall be larger than for network drivers, especially when large
+numbers of disk devices are in use, each with many I/O requests in-
+flight.
+
+swiotlb throttling does not affect the context requirements of DMA
+unmap calls. These always complete without blocking, even if the
+corresponding DMA map call was throttled.
+
+Patches
+=======
+Patches 1 and 2 implement the core of swiotlb throttling. They define
+DMA attribute flag DMA_ATTR_MAY_BLOCK that device drivers use to
+indicate that a DMA map call is allowed to block, and therefore can be
+throttled. They update swiotlb_tbl_map_single() to detect this flag and
+implement the throttling. Similarly, swiotlb_tbl_unmap_single() is
+updated to handle a previously throttled request that has now freed
+its swiotlb memory.
+
+Patch 3 adds the dma_recommend_may_block() call that device drivers
+can use to know if there's benefit in using the MAY_BLOCK option on
+DMA map calls. If not in a CoCo VM, this call returns "false" because
+swiotlb is not being used for all DMA I/O. This allows the driver to
+set the BLK_MQ_F_BLOCKING flag on blk-mq request queues only when
+there is benefit.
+
+Patch 4 updates the SCSI-specific DMA map calls to add a "_attrs"
+variant to allow passing the MAY_BLOCK attribute.
+
+Patch 5 adds the MAY_BLOCK option to the Hyper-V storvsc driver, which
+is used for storage in CoCo VMs in the Azure public cloud.
+
+Patches 6 and 7 add the MAY_BLOCK option to the NVMe PCI host driver.
+
+Discussion
+==========
+* Since swiotlb isn't visible to device drivers, I've specifically
+named the DMA attribute as MAY_BLOCK instead of MAY_THROTTLE or
+something swiotlb specific. While this patch set consumes MAY_BLOCK
+only on the DMA direct path to do throttling in the swiotlb code,
+there might be other uses in the future outside of CoCo VMs, or
+perhaps on the IOMMU path.
+
+* The swiotlb throttling code in this patch set throttles by
+serializing the use of swiotlb memory when usage is above a designated
+threshold: i.e., only one new swiotlb request is allowed to proceed at
+a time. When the corresponding unmap is done to release its swiotlb
+memory, the next request is allowed to proceed. This serialization is
+global and without knowledge of swiotlb areas. From a storage I/O
+performance standpoint, the serialization is a bit restrictive, but
+the code isn't trying to optimize for being above the threshold. If a
+workload regularly runs above the threshold, the size of the swiotlb
+memory should be increased.
+
+* Except for knowing how much swiotlb memory is currently allocated,
+throttle accounting is done without locking or atomic operations. For
+example, multiple requests could proceed in parallel when usage is
+just under the threshold, putting usage above the threshold by the
+aggregate size of the parallel requests. The threshold must already be
+set relatively conservatively because of drivers that can't enable
+throttling, so this slop in the accounting shouldn't be a problem.
+It's better than the potential bottleneck of a globally synchronized
+reservation mechanism.
+
+* In a CoCo VM, mapping a scatter/gather list makes an independent
+swiotlb request for each entry. Throttling each independent request
+wouldn't really work, so the code throttles only the first SGL entry.
+Once that entry passes any throttle, subsequent entries in the SGL
+proceed without throttling. When the SGL is unmapped, entries 1 thru
+N-1 are unmapped first, then entry 0 is unmapped, allowing the next
+serialized request to proceed.
+
+Open Topics
+===========
+1. swiotlb allocations from Xen and the IOMMU code don't make use of
+throttling. This could be added if beneficial.
+
+2. The throttling values are currently exposed and adjustable in
+/sys/kernel/debug/swiotlb. Should any of this be moved so it is
+visible even without CONFIG_DEBUG_FS?
+
+3. I have not changed the current heuristic for the swiotlb memory
+size in CoCo VMs. It's not clear to me how to link this to whether the
+key storage drivers have been updated to allow throttling. For now,
+the benefit of reduced swiotlb memory size must be realized using the
+swiotlb= kernel boot line option.
+
+4. I need to update the swiotlb documentation to describe throttling.
+
+This patch set is built against linux-next-20240816.
+
+Michael Kelley (7):
+  swiotlb: Introduce swiotlb throttling
+  dma: Handle swiotlb throttling for SGLs
+  dma: Add function for drivers to know if allowing blocking is useful
+  scsi_lib_dma: Add _attrs variant of scsi_dma_map()
+  scsi: storvsc: Enable swiotlb throttling
+  nvme: Move BLK_MQ_F_BLOCKING indicator to struct nvme_ctrl
+  nvme: Enable swiotlb throttling for NVMe PCI devices
+
+ drivers/nvme/host/core.c    |   4 +-
+ drivers/nvme/host/nvme.h    |   2 +-
+ drivers/nvme/host/pci.c     |  18 ++++--
+ drivers/nvme/host/tcp.c     |   3 +-
+ drivers/scsi/scsi_lib_dma.c |  13 ++--
+ drivers/scsi/storvsc_drv.c  |   9 ++-
+ include/linux/dma-mapping.h |  13 ++++
+ include/linux/swiotlb.h     |  15 ++++-
+ include/scsi/scsi_cmnd.h    |   7 ++-
+ kernel/dma/Kconfig          |  13 ++++
+ kernel/dma/direct.c         |  41 +++++++++++--
+ kernel/dma/direct.h         |   1 +
+ kernel/dma/mapping.c        |  10 ++++
+ kernel/dma/swiotlb.c        | 114 ++++++++++++++++++++++++++++++++----
+ 14 files changed, 227 insertions(+), 36 deletions(-)
+
+-- 
+2.25.1
+
