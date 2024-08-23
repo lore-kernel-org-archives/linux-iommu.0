@@ -1,40 +1,45 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C055C188A3E;
-	Fri, 23 Aug 2024 15:54:02 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3D8C1188903;
+	Fri, 23 Aug 2024 15:59:25 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1724428442; cv=none; b=La7B0+kqRrS1wx1JPx2ptuXr3EHpOHTKejW3dm8sdg8iELCA/cQkXDFvA0Yr7E13O0m6E9l9OzT8h9qISr3Ha5paELI8yesuTqFyeUpkWKRKwUxWi9Iy4maYgaanPF5vTSh8DxFwPRv4wuUCY3Tr/pXX9X0v3wFvVa9psW6R+5M=
+	t=1724428765; cv=none; b=d7TMzzAFUcYYjnyYlfVyP3YyCGjXiEbM+6nPEIvnqoEG1IkMLhncYBLne5z4Isr41EcpSFSaOgbjEj9OeDNP0r7fL2kkIRq6WqWDiqsqORv93DpBvEGBSbVdBh1YKMxwa9WzmZe3YjdWIM4b15ixFVR07vDycl18PLsJHXKwtc4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1724428442; c=relaxed/simple;
-	bh=Oknf7Bh9HhKv0p492TrRsH9RWzKQ8QEpPRIapU/vtx4=;
+	s=arc-20240116; t=1724428765; c=relaxed/simple;
+	bh=0HRvVg+YyEHc+kywsKJk0vWlQ3aA90NvCzXe/aKIlyg=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=fZ19FxZR5oGJNn30sNj2EULOnnTCSNL6h+PZbz8/neS0h8S91YrF9Qpi22pvGf4aRXUx/rTV9S89aCOELwYq6bTy0GDgWsH++pB37Lb6XXYhapFQoGJFrB53kN50EO9IOGX/cCCHCpiVKw7JqUnMZLgQed3D+ixR/oNU28wVSq0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=LOaBFcd8; arc=none smtp.client-ip=10.30.226.201
+	 Content-Type:Content-Disposition:In-Reply-To; b=f29WEHxw2tggVDJ0Vp7tP5FYG1gI/6NjmmpOC1HJRPWXDpQKVqgV1yZyK6rA22CmZYlEgQ0z4qHMSqz7kwurfcamWPB44QHPY4TS7TP6nQWDvDxarhIiSc31Ot4d4vxVRcPl98T/LS10LHB2SbOjLnPWSw24YCSRjEL+4wEzp4M=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=riwlz6LI; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="LOaBFcd8"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id F0485C32786;
-	Fri, 23 Aug 2024 15:54:00 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="riwlz6LI"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3B394C32786;
+	Fri, 23 Aug 2024 15:59:22 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1724428442;
-	bh=Oknf7Bh9HhKv0p492TrRsH9RWzKQ8QEpPRIapU/vtx4=;
+	s=k20201202; t=1724428764;
+	bh=0HRvVg+YyEHc+kywsKJk0vWlQ3aA90NvCzXe/aKIlyg=;
 	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=LOaBFcd86Xy8xkLlgveZzv5oo4gHNIAjYJKRrV+TC2Bha+Q2oqc9RS+z+rkF4CG2r
-	 B5sh76TgNhE4pN1HNDODQfBdpvhseP3oeLf/V0phOsnkC5hYiwMbjJsfMPriDnpFr1
-	 1EElvFr60JqEx3pGRRsrwoGDMLKE7F2QsZnMtzWB5Q/WS/hPsK4+GUslyCRxbLUGht
-	 XO+yjRD7jZRykvbhuEAS1i5EBdSN5H5NjKTvTxqSBV4T7lUoAzYdSgLPfQhTWXGw2D
-	 QHPbQkcTkw6x9vSWAi+n/+lSqRlxg5S//qG88Jksy+7Ri/hrEtpjWPn2zUoehjlYa9
-	 jvQ1MPNHFTRYA==
-Date: Fri, 23 Aug 2024 16:53:57 +0100
+	b=riwlz6LIf2Pymnypnc/MJDlMct1gq2mDyLkLXe7rb56gRpjjhC3FzxSLYDLbdI7V8
+	 0btplPPz2BUPNPlHALtJQMwSy7kN+xixkekp5zOHusd5kcsMECSDsYqhJvFT5o36pX
+	 KHb1resMxE5ApDWpoO/oB9gIWOVh5HKblq7JrpphHaztzH58KqGqVSIV3EztswH6tr
+	 MiP15E4rKZlcFwVq8cYwH5oKBXApwsauSkidFQ/ENPO0+a8jDA6Dq8Q/lOX9gk6ihD
+	 7gVCNVrirWS7QttwJl9Qrm9tA9hW10GXYK+e/ok8hiRFjVnz0+RAjgb6nNvYaP7xQO
+	 D/oH6+gzIdSZA==
+Date: Fri, 23 Aug 2024 16:59:18 +0100
 From: Will Deacon <will@kernel.org>
-To: Ashish Mhetre <amhetre@nvidia.com>, joro@8bytes.org
-Cc: robin.murphy@arm.com, linux-arm-kernel@lists.infradead.org,
-	iommu@lists.linux.dev, linux-kernel@vger.kernel.org,
-	linux-tegra@vger.kernel.org
-Subject: Re: [PATCH V4] iommu/io-pgtable-arm: Optimise non-coherent unmap
-Message-ID: <20240823155357.GC525@willie-the-truck>
-References: <20240806105135.218089-1-amhetre@nvidia.com>
+To: Bibek Kumar Patro <quic_bibekkum@quicinc.com>
+Cc: robdclark@gmail.com, robin.murphy@arm.com, joro@8bytes.org,
+	jgg@ziepe.ca, jsnitsel@redhat.com, robh@kernel.org,
+	krzysztof.kozlowski@linaro.org, quic_c_gdjako@quicinc.com,
+	dmitry.baryshkov@linaro.org, konrad.dybcio@linaro.org,
+	iommu@lists.linux.dev, linux-arm-msm@vger.kernel.org,
+	linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v14 5/6] iommu/arm-smmu: add ACTLR data and support for
+ SC7280
+Message-ID: <20240823155918.GD525@willie-the-truck>
+References: <20240816174259.2056829-1-quic_bibekkum@quicinc.com>
+ <20240816174259.2056829-6-quic_bibekkum@quicinc.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -43,60 +48,66 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20240806105135.218089-1-amhetre@nvidia.com>
+In-Reply-To: <20240816174259.2056829-6-quic_bibekkum@quicinc.com>
 User-Agent: Mutt/1.10.1 (2018-07-13)
 
-On Tue, Aug 06, 2024 at 10:51:35AM +0000, Ashish Mhetre wrote:
-> The current __arm_lpae_unmap() function calls dma_sync() on individual
-> PTEs after clearing them. Overall unmap performance can be improved by
-> around 25% for large buffer sizes by combining the syncs for adjacent
-> leaf entries.
-> Optimize the unmap time by clearing all the leaf entries and issuing a
-> single dma_sync() for them.
-> Below is detailed analysis of average unmap latency(in us) with and
-> without this optimization obtained by running dma_map_benchmark for
-> different buffer sizes.
+On Fri, Aug 16, 2024 at 11:12:58PM +0530, Bibek Kumar Patro wrote:
+> Add ACTLR data table for SC7280 along with support for
+> same including SC7280 specific implementation operations.
 > 
-> 		UnMap Latency(us)
-> Size	Without		With		% gain with
-> 	optimiztion	optimization	optimization
-> 
-> 4KB	3		3		0
-> 8KB	4		3.8		5
-> 16KB	6.1		5.4		11.48
-> 32KB	10.2		8.5		16.67
-> 64KB	18.5		14.9		19.46
-> 128KB	35		27.5		21.43
-> 256KB	67.5		52.2		22.67
-> 512KB	127.9		97.2		24.00
-> 1MB	248.6		187.4		24.62
-> 2MB	65.5		65.5		0
-> 4MB	119.2		119		0.17
-> 
-> Reviewed-by: Robin Murphy <robin.murphy@arm.com>
-> Signed-off-by: Ashish Mhetre <amhetre@nvidia.com>
+> Signed-off-by: Bibek Kumar Patro <quic_bibekkum@quicinc.com>
 > ---
-> Changes in V2:
-> - Updated the commit message to be imperative.
-> - Fixed ptep at incorrect index getting cleared for non-leaf entries.
+>  drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c | 58 +++++++++++++++++++++-
+>  1 file changed, 57 insertions(+), 1 deletion(-)
 > 
-> Changes in V3:
-> - Used loop-local variables and removed redundant function variables.
-> - Added check for zero-sized dma_sync in __arm_lpae_clear_pte().
-> - Merged both patches into this single patch by adding check for a
->   NULL gather in __arm_lpae_unmap() itself.
+> diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
+> index dc143b250704..a776c7906c76 100644
+> --- a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
+> +++ b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
+> @@ -31,6 +31,55 @@
+>  #define PREFETCH_MODERATE	(2 << PREFETCH_SHIFT)
+>  #define PREFETCH_DEEP		(3 << PREFETCH_SHIFT)
 > 
-> Changes in V4:
-> - Updated the subject in commit message to correctly reflect the changes
->   made in this patch.
-> ---
->  drivers/iommu/io-pgtable-arm.c | 31 +++++++++++++++++--------------
->  1 file changed, 17 insertions(+), 14 deletions(-)
+> +static const struct actlr_config sc7280_apps_actlr_cfg[] = {
+> +	{ 0x0800, 0x04e0, PREFETCH_DEFAULT | CMTLB },
+> +	{ 0x0900, 0x0402, PREFETCH_SHALLOW | CPRE | CMTLB },
+> +	{ 0x0901, 0x0000, PREFETCH_SHALLOW | CPRE | CMTLB },
+> +	{ 0x0d01, 0x0000, PREFETCH_SHALLOW | CPRE | CMTLB },
+> +	{ 0x1181, 0x0420, PREFETCH_DEEP | CPRE | CMTLB },
+> +	{ 0x1182, 0x0420, PREFETCH_DEEP | CPRE | CMTLB },
+> +	{ 0x1183, 0x0420, PREFETCH_DEEP | CPRE | CMTLB },
+> +	{ 0x1184, 0x0420, PREFETCH_DEEP | CPRE | CMTLB },
+> +	{ 0x1185, 0x0420, PREFETCH_DEEP | CPRE | CMTLB },
+> +	{ 0x1186, 0x0420, PREFETCH_DEEP | CPRE | CMTLB },
+> +	{ 0x1187, 0x0420, PREFETCH_DEEP | CPRE | CMTLB },
+> +	{ 0x1188, 0x0420, PREFETCH_DEEP | CPRE | CMTLB },
+> +	{ 0x1189, 0x0420, PREFETCH_DEEP | CPRE | CMTLB },
+> +	{ 0x118b, 0x0420, PREFETCH_DEEP | CPRE | CMTLB },
+> +	{ 0x118c, 0x0420, PREFETCH_DEEP | CPRE | CMTLB },
+> +	{ 0x118d, 0x0420, PREFETCH_DEEP | CPRE | CMTLB },
+> +	{ 0x118e, 0x0420, PREFETCH_DEEP | CPRE | CMTLB },
+> +	{ 0x118f, 0x0420, PREFETCH_DEEP | CPRE | CMTLB },
+> +	{ 0x2000, 0x0020, PREFETCH_DEFAULT | CMTLB },
+> +	{ 0x2040, 0x0000, PREFETCH_DEFAULT | CMTLB },
+> +	{ 0x2062, 0x0000, PREFETCH_DEFAULT | CMTLB },
+> +	{ 0x2080, 0x0020, PREFETCH_DEFAULT | CMTLB },
+> +	{ 0x20c0, 0x0020, PREFETCH_DEFAULT | CMTLB },
+> +	{ 0x2100, 0x0020, PREFETCH_DEFAULT | CMTLB },
+> +	{ 0x2140, 0x0000, PREFETCH_DEFAULT | CMTLB },
+> +	{ 0x2180, 0x0020, PREFETCH_SHALLOW | CPRE | CMTLB },
+> +	{ 0x2181, 0x0004, PREFETCH_SHALLOW | CPRE | CMTLB },
+> +	{ 0x2183, 0x0000, PREFETCH_SHALLOW | CPRE | CMTLB },
+> +	{ 0x2184, 0x0020, PREFETCH_SHALLOW | CPRE | CMTLB },
+> +	{ 0x2187, 0x0000, PREFETCH_SHALLOW | CPRE | CMTLB },
+> +};
+> +
+> +static const struct actlr_config sc7280_gfx_actlr_cfg[] = {
+> +	{ 0x0000, 0x07ff, PREFETCH_DEEP | CPRE | CMTLB },
+> +};
 
-Acked-by: Will Deacon <will@kernel.org>
+It's Will "stuck record" Deacon here again to say that I don't think
+this data belongs in the driver.
 
-Joerg, please can you pick this one up for -next?
-
-Cheers,
+Have a great weekend!
 
 Will
