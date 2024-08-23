@@ -1,76 +1,87 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B78AD18E743
-	for <iommu@lists.linux.dev>; Fri, 23 Aug 2024 16:55:00 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5014C18BB97;
+	Fri, 23 Aug 2024 17:02:35 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1724432100; cv=none; b=h/7oPpOPt4Y04Lqvh3Ryb5Ja1vWfu5TzMLsizu56iVelqqrEJjPVBGLn6LcKnOzM6D0QnpIxwk0VGy70bLt0a9aY+to2sF6cGlp1HcuNvAR23QKFrdIacv4VLnHha4FFfj1SjFU25HuCSWdPGxmRTMvzukPDCdOVuRosQX0S33k=
+	t=1724432556; cv=none; b=F3BoEF152Lb8K+QsIvqNT9I7cpMLTwrzFrEXjOrW2BCHYzDA/wMM9pX4IwNjH2coGfP24tfPTaWKg7Ue7GiFMmptr99fG2UPNHes2w6PYgSTSi4gKERHj+oE0teOG+/HLrmFGI3wD8B3aqEr4m+0zh+v5PsWnH7a509a6IS8hbg=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1724432100; c=relaxed/simple;
-	bh=CzprT1Ay7lI87sOU4gRurd6Tg+T5u/CgVsFwOU0hUXc=;
-	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version; b=Ve3jgopmaWEvbvAOVMlBkObz2fbhGavdREEJfIbX1erPr9hlcrnehogpuxAQxwrGAg8jW73AcLsj08F8VtYC/hTN8VpSWrflEpVgYLbzsWuJBx2XvG9RcQRo+3J/2VITRF+e4kURiD2bxgAVBsr0oJTcGMIIq11mV1TBsboiRQM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=d97gjLNa; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1724432556; c=relaxed/simple;
+	bh=KTOqkWcx4VJ3PzktD2qDUCcUOUY9+HIU+QUcTAXO0s4=;
+	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=XY8JHPuCCeu+qBxSLiFbWfDOgx2maLCJMY782S7LNo7YA6B2/pa7NSiAGNOc8YtLNPdxdAgxsad05kwISzFCnCH0cZJfdeuf9de+JUr946r/LcsF91aefmGk/+fBSL0sW1grLQ9HbEs+EcIcJhpRX5k090n6IG5LNOKrraI0Mwg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=VREJfoRV; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="d97gjLNa"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5BC11C4AF0B;
-	Fri, 23 Aug 2024 16:54:59 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="VREJfoRV"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 146ADC32786;
+	Fri, 23 Aug 2024 17:02:31 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1724432100;
-	bh=CzprT1Ay7lI87sOU4gRurd6Tg+T5u/CgVsFwOU0hUXc=;
-	h=From:To:Cc:Subject:Date:From;
-	b=d97gjLNasmnJibWn+NOQ7u+psAKzEVreDtaVhKn0WoJi9aovxhhg2NIE2ybo7gTu2
-	 bNzFnaY9gE55yF0h4lDpCvj9yrTW7HpXgGstLMVGOjG2WzKwApS0dGG0cDWJoLXx0l
-	 VOhc9x9Dpw8/g56tRSonXoFmIpr/9JKbB1SeIwjCDz7K3B7YLjTzBeEbW3qKNf6KG/
-	 T/b6o8ekr6lzkQaceT7CGciTrwVA5TQhYNU/a6wSIVNfrFDgSsRFfeG1DnoTUZOP8N
-	 1hcm6yIw8a+cDC3JtBg8Xulbnecl4vNIxqqjugXQogYsWoXzL114jhWD2vuouleun1
-	 JJZH8knIM55tA==
+	s=k20201202; t=1724432555;
+	bh=KTOqkWcx4VJ3PzktD2qDUCcUOUY9+HIU+QUcTAXO0s4=;
+	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+	b=VREJfoRVY97Dv8b1g+75FarIAmgTQalQ8zeeaU5A5NTBdBFRP1QLr7LfxvbtFlwZK
+	 ORqPD854lMYLJxFRiFuaAkYYceJSA6hdCVJ2rixtDC7OKSDL2AF4VG5+hkzp5qMscZ
+	 QfV1KRgn3/zLCWwf5XKg9nG6e4TPkLxzqNXmMBmGbJYKbAHsHNG2KPS9RO5n1znY0i
+	 Q7Znl+a3XtIPSICWAgno0ad+MI4Me5VmYSVCqZVXn8hDz51kF4DBuoJFMosFbzwQM9
+	 Ykg1bkmJGxTwfTouNR7aX22JRlhEwXPloE4uayV6b+REwl0bh9h0gJlqFX+AYRv112
+	 qJ4Wx3Q6Z0vng==
 From: Will Deacon <will@kernel.org>
-To: iommu@lists.linux.dev
-Cc: joro@8bytes.org,
-	Will Deacon <will@kernel.org>,
+To: Rob Clark <robdclark@gmail.com>,
 	Robin Murphy <robin.murphy@arm.com>,
-	Jean-Philippe Brucker <jean-philippe@linaro.org>,
-	Mostafa Saleh <smostafa@google.com>
-Subject: [PATCH] MAINTAINERS: Add Jean-Philippe as SMMUv3 SVA reviewer
-Date: Fri, 23 Aug 2024 17:54:54 +0100
-Message-Id: <20240823165454.1064-1-will@kernel.org>
+	Joerg Roedel <joro@8bytes.org>,
+	Rob Herring <robh@kernel.org>,
+	Krzysztof Kozlowski <krzk+dt@kernel.org>,
+	Conor Dooley <conor+dt@kernel.org>,
+	Marc Gonzalez <mgonzalez@freebox.fr>
+Cc: catalin.marinas@arm.com,
+	kernel-team@android.com,
+	Will Deacon <will@kernel.org>,
+	iommu@lists.linux.dev,
+	linux-arm-msm@vger.kernel.org,
+	linux-arm-kernel@lists.infradead.org,
+	linux-kernel@vger.kernel.org,
+	devicetree@vger.kernel.org,
+	Bjorn Andersson <andersson@kernel.org>,
+	Konrad Dybcio <konradybcio@kernel.org>,
+	Arnaud Vrac <avrac@freebox.fr>,
+	Pierre-Hugues Husson <phhusson@freebox.fr>,
+	Marijn Suijten <marijn.suijten@somainline.org>,
+	Caleb Connolly <caleb.connolly@linaro.org>
+Subject: Re: [PATCH v3] iommu/arm-smmu-qcom: hide last LPASS SMMU context bank from linux
+Date: Fri, 23 Aug 2024 18:02:11 +0100
+Message-Id: <172442858770.2796746.16801443724407766952.b4-ty@kernel.org>
 X-Mailer: git-send-email 2.20.1
+In-Reply-To: <20240820-smmu-v3-1-2f71483b00ec@freebox.fr>
+References: <20240820-smmu-v3-1-2f71483b00ec@freebox.fr>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 
-Add Jean-Philippe as a reviewer for the Arm SMMUv3 SVA support, since
-he's been a consistent contributor to that code over the years and
-understands the relevant parts of the architecture much better than me.
+On Tue, 20 Aug 2024 15:27:19 +0200, Marc Gonzalez wrote:
+> On qcom msm8998, writing to the last context bank of lpass_q6_smmu
+> (base address 0x05100000) produces a system freeze & reboot.
+> 
+> The hardware/hypervisor reports 13 context banks for the LPASS SMMU
+> on msm8998, but only the first 12 are accessible...
+> Override the number of context banks
+> 
+> [...]
 
-Cc: Robin Murphy <robin.murphy@arm.com>
-Cc: Jean-Philippe Brucker <jean-philippe@linaro.org>
-Cc: Mostafa Saleh <smostafa@google.com>
-Signed-off-by: Will Deacon <will@kernel.org>
----
- MAINTAINERS | 4 ++++
- 1 file changed, 4 insertions(+)
+Applied to will (for-joerg/arm-smmu/updates), thanks!
 
-diff --git a/MAINTAINERS b/MAINTAINERS
-index f328373463b0..445cec2ae4ed 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -1880,6 +1880,10 @@ F:	Documentation/devicetree/bindings/iommu/arm,smmu*
- F:	drivers/iommu/arm/
- F:	drivers/iommu/io-pgtable-arm*
- 
-+ARM SMMU SVA SUPPORT
-+R:	Jean-Philippe Brucker <jean-philippe@linaro.org>
-+F:	drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c
-+
- ARM SUB-ARCHITECTURES
- L:	linux-arm-kernel@lists.infradead.org (moderated for non-subscribers)
- S:	Maintained
+[1/1] iommu/arm-smmu-qcom: hide last LPASS SMMU context bank from linux
+      https://git.kernel.org/will/c/3a8990b8a778
+
+Cheers,
 -- 
-2.46.0.184.g6999bdac58-goog
+Will
 
+https://fixes.arm64.dev
+https://next.arm64.dev
+https://will.arm64.dev
