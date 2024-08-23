@@ -1,98 +1,107 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.11])
+Received: from bee.tesarici.cz (bee.tesarici.cz [37.205.15.56])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E740947A5C
-	for <iommu@lists.linux.dev>; Fri, 23 Aug 2024 05:01:24 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.11
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6965A29413;
+	Fri, 23 Aug 2024 05:46:49 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=37.205.15.56
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1724389286; cv=none; b=FHurxgsSbySbAOh+e+8kuuc/xHqxZUwrB00qpy9jPTKfeNz1Qu4L7LSinvGeLjSYipkQCXmbmX/wcAP/2nHq/DGNH1zJa+KDMv91AI3Dgj0RWo/Z4HTHon3oLaNVTi7x0gI/SFUlXcndpwffiLxgl1nJm77eTauqJvvkIxnW0/4=
+	t=1724392013; cv=none; b=eEvElwsgDyDJ85MNOqx/qOrNAgcL8VJLWLOcMigszX7WdZeoJ4rTOv1lrpwxmMwBchU/6k1+dDYh4Fz0lwrriroODWBU6RouK3wHC0JRVGQdvcrHzec++R2RCXprYIX05ofy6E0riVSwLgsHiL+M2OjP01B23tAvht574631Da0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1724389286; c=relaxed/simple;
-	bh=TgpylnB7dE+Ek0K/JdrRCFCoeW6yHgDeVlfubP6ligw=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=Vr+KGLQa9mjRuVOqJWy2hEvhMgwSc1SXW6J1lynwHDfdSoZgE4BAkFL3ujWPc2jMEbL/E4WaWjR1rQm6+lU/OOOxO03qusXfABtWxFCN7aBj/78mgebTMgwZ5OG/FtrE9gLOS8KzfMIR4a8vZEzdR0kxyRjRpqLGZU5ca7P7jPo=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=VValkcjy; arc=none smtp.client-ip=192.198.163.11
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
+	s=arc-20240116; t=1724392013; c=relaxed/simple;
+	bh=j0J+gRKI1Fa1LARPANHyNgvIF1RrlyUDQWkIFewK1/c=;
+	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=W8dLNHJJXuQZPbarPBzlKqD+rlusgB7AVZPtoYAnyNGempElqZeDmQuNVFRMrtw8YavMevn+D4KpftMOmLT0G6ng7rzyDPKnnlSOMl3cDiY3LLfkQpLiHPm7Zld+hVuJEDssaw8hObopvyGJEmsRWx5MfB8N/klmeayLYWWzbgs=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=tesarici.cz; spf=pass smtp.mailfrom=tesarici.cz; dkim=pass (2048-bit key) header.d=tesarici.cz header.i=@tesarici.cz header.b=hArhfTxu; arc=none smtp.client-ip=37.205.15.56
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=tesarici.cz
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=tesarici.cz
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="VValkcjy"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1724389284; x=1755925284;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=TgpylnB7dE+Ek0K/JdrRCFCoeW6yHgDeVlfubP6ligw=;
-  b=VValkcjycWhF/gezoKNOW8B7nPRkRVhJqYn/j1X57/BFFF9Oi9haa8SX
-   qtCgVvgfFkbq+p0tEpoyt2sW5ASOkdQDi7XJkgwiNuobUmSUOiOTrFWZD
-   l/02sA7Q5XPeUF7R3JmYbfpxGr8Yb25CoI+AN1G/FgS/to6eYc9k9spNW
-   pBhDyzrOXD2ADwsqjPk+rIIrtZ0KqZgvBaOl8Tk449dKvVHLfPYem+PJQ
-   ZaIWW59dcp32sq3TXXDbr9aaSqTY1/UgdttYbnk+URnyb7IiwTjp+pG90
-   hu4xkXA9hRq9XcWhRh7zkI5Ri42w+0sUYz0spVqW0Ogh/wR+zJMz5hKX5
-   w==;
-X-CSE-ConnectionGUID: Ud5/QP3oRAOBOSThE9IUVg==
-X-CSE-MsgGUID: OcdD2g2+RNi19Z+FAqxUCw==
-X-IronPort-AV: E=McAfee;i="6700,10204,11172"; a="33465507"
-X-IronPort-AV: E=Sophos;i="6.10,169,1719903600"; 
-   d="scan'208";a="33465507"
-Received: from orviesa001.jf.intel.com ([10.64.159.141])
-  by fmvoesa105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Aug 2024 22:01:24 -0700
-X-CSE-ConnectionGUID: HI+tAPE5RHi4xTB/mliSSA==
-X-CSE-MsgGUID: kLdnFklWRWK7mnclvNoY3A==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.10,169,1719903600"; 
-   d="scan'208";a="99199631"
-Received: from black.fi.intel.com ([10.237.72.28])
-  by orviesa001.jf.intel.com with ESMTP; 22 Aug 2024 22:01:22 -0700
-Received: by black.fi.intel.com (Postfix, from userid 1001)
-	id 9CDC12AA; Fri, 23 Aug 2024 08:01:20 +0300 (EEST)
-Date: Fri, 23 Aug 2024 08:01:20 +0300
-From: Mika Westerberg <mika.westerberg@linux.intel.com>
-To: Mario Limonciello <mario.limonciello@amd.com>
-Cc: Esther Shimanovich <eshimanovich@chromium.org>,
-	Bjorn Helgaas <bhelgaas@google.com>,
-	Rajat Jain <rajatja@google.com>,
-	"Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
-	iommu@lists.linux.dev, Lukas Wunner <lukas@wunner.de>,
-	linux-pci@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v3] PCI: Detect and trust built-in Thunderbolt chips
-Message-ID: <20240823050120.GJ1532424@black.fi.intel.com>
-References: <20240815-trust-tbt-fix-v3-1-6ba01865d54c@chromium.org>
- <6da512d2-464d-40fa-9d05-02928246ddba@amd.com>
- <20240822155329.GI1532424@black.fi.intel.com>
- <54feb448-b8b9-49ca-bf29-02b9884c048c@amd.com>
+	dkim=pass (2048-bit key) header.d=tesarici.cz header.i=@tesarici.cz header.b="hArhfTxu"
+Received: from meshulam.tesarici.cz (dynamic-2a00-1028-83b8-1e7a-4427-cc85-6706-c595.ipv6.o2.cz [IPv6:2a00:1028:83b8:1e7a:4427:cc85:6706:c595])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange ECDHE (P-256) server-signature RSA-PSS (2048 bits) server-digest SHA256)
+	(No client certificate requested)
+	by bee.tesarici.cz (Postfix) with ESMTPSA id 8F2631EF9C3;
+	Fri, 23 Aug 2024 07:46:47 +0200 (CEST)
+Authentication-Results: mail.tesarici.cz; dmarc=fail (p=quarantine dis=none) header.from=tesarici.cz
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=tesarici.cz; s=mail;
+	t=1724392007; bh=uNgK0Dw8bT4+ACHl9uiGmvZCvs2LRUQX0MM+PNrbWDE=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+	b=hArhfTxuJpmZy/QI44DOLL8nlhwSAV1Q8F1UtEyCSO5NL1kCOZK6ttzq/lQiWWDqe
+	 kAiqXcUX5Po+oc4guRJNR8VCytBV0GoIM2NaVIfE9ooBlwUyBeVBRcCHgLCa1XUNpS
+	 KehaezkcyCG6ZTGnxI8d5B4GMWWpoTVhQlHWNxUk1wxxYpQtFuY3zWJbyWloHjiXrb
+	 luYwVGbGGPSdYtkVoJPjiA+jn+VuH+uHgwOZlATHnVlx+rftiKDO5m0Q0NdsrVZ2PL
+	 5/FERS4zek5TReS9TUqMY7iJAHXNDkTNeDv5Xjyc1cljzjV9w2UCy2gEcke3KP2VBA
+	 PmNuoJAC7O28Q==
+Date: Fri, 23 Aug 2024 07:46:46 +0200
+From: Petr =?UTF-8?B?VGVzYcWZw61r?= <petr@tesarici.cz>
+To: Michael Kelley <mhklinux@outlook.com>
+Cc: Bart Van Assche <bvanassche@acm.org>, "kbusch@kernel.org"
+ <kbusch@kernel.org>, "axboe@kernel.dk" <axboe@kernel.dk>,
+ "sagi@grimberg.me" <sagi@grimberg.me>,
+ "James.Bottomley@HansenPartnership.com"
+ <James.Bottomley@HansenPartnership.com>, "martin.petersen@oracle.com"
+ <martin.petersen@oracle.com>, "kys@microsoft.com" <kys@microsoft.com>,
+ "haiyangz@microsoft.com" <haiyangz@microsoft.com>, "wei.liu@kernel.org"
+ <wei.liu@kernel.org>, "decui@microsoft.com" <decui@microsoft.com>,
+ "robin.murphy@arm.com" <robin.murphy@arm.com>, "hch@lst.de" <hch@lst.de>,
+ "m.szyprowski@samsung.com" <m.szyprowski@samsung.com>,
+ "iommu@lists.linux.dev" <iommu@lists.linux.dev>,
+ "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+ "linux-nvme@lists.infradead.org" <linux-nvme@lists.infradead.org>,
+ "linux-scsi@vger.kernel.org" <linux-scsi@vger.kernel.org>,
+ "linux-hyperv@vger.kernel.org" <linux-hyperv@vger.kernel.org>,
+ "linux-coco@lists.linux.dev" <linux-coco@lists.linux.dev>
+Subject: Re: [RFC 0/7] Introduce swiotlb throttling
+Message-ID: <20240823074646.555009d6@meshulam.tesarici.cz>
+In-Reply-To: <SN6PR02MB41577F000FD7A5EC70CF54D0D4882@SN6PR02MB4157.namprd02.prod.outlook.com>
+References: <20240822183718.1234-1-mhklinux@outlook.com>
+	<f8bb65ed-cdf2-4d23-b794-765ce0b48a4b@acm.org>
+	<SN6PR02MB41577F000FD7A5EC70CF54D0D4882@SN6PR02MB4157.namprd02.prod.outlook.com>
+X-Mailer: Claws Mail 4.3.0 (GTK 3.24.43; x86_64-suse-linux-gnu)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <54feb448-b8b9-49ca-bf29-02b9884c048c@amd.com>
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 
-Hi,
+On Fri, 23 Aug 2024 02:20:41 +0000
+Michael Kelley <mhklinux@outlook.com> wrote:
 
-On Thu, Aug 22, 2024 at 10:56:44AM -0500, Mario Limonciello wrote:
-> > > Here's the snippet from the kernel log with the patch in place.  You can see
-> > > it flagged 00:02.0 as untrusted and removable, but it definitely isn't.
+> From: Bart Van Assche <bvanassche@acm.org> Sent: Thursday, August 22, 2024 12:29 PM
 > > 
-> > Is it marked as ExternalFacingPort in the ACPI tables?
+> > On 8/22/24 11:37 AM, mhkelley58@gmail.com wrote:  
+> > > Linux device drivers may make DMA map/unmap calls in contexts that
+> > > cannot block, such as in an interrupt handler.  
+> > 
+> > Although I really appreciate your work, what alternatives have been
+> > considered? How many drivers perform DMA mapping from atomic context?
+> > Would it be feasible to modify these drivers such that DMA mapping
+> > always happens in a context in which sleeping is allowed?
+> >   
 > 
-> No; it doesn't have an ACPI companion device.
+> I had assumed that allowing DMA mapping from interrupt context is a
+> long-time fundamental requirement that can't be changed.  It's been
+> allowed at least for the past 20 years, as Linus added this statement to
+> kernel documentation in 2005:
+> 
+>    The streaming DMA mapping routines can be called from interrupt context.
+> 
+> But I don't have any idea how many drivers actually do that. There are
+> roughly 1700 call sites in kernel code/drivers that call one of the
+> dma_map_*() variants, so looking through them all doesn't seem
+> feasible.
 
-Hm, how can it pass this then?
+Besides, calls from interrupt context are not the only calls which are
+not allowed to schedule (e.g. lock nesting comes to mind). Even if we
+agreed to make DMA mapping routines blocking, I believe the easiest way
+would be to start adding DMA_ATTR_MAY_BLOCK until it would be used by
+all drivers. ;-)
 
-static bool pcie_is_tunneled(struct pci_dev *pdev)
-{
-	...
-	/* Internal PCIe devices are not tunneled. */
-	if (!root->external_facing)
-		return false;
-	...
+But most importantly, if streaming DMA could block, there would be no
+need for a SWIOTLB, because you could simply allocate a bounce buffer
+from the buddy allocator when it's needed.
 
-Would you mind adding some debug statements there so we can see
-(hopefully) what goes wrong?
-
-The intention is that pcie_switch_directly_under() is only called on
-Intel pre-USB4 discrete controllers (well and Maple Ridge as that's
-still using the Connection Manager firmware).
+Petr T
