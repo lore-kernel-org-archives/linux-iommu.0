@@ -1,338 +1,343 @@
-Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
+Received: from BN1PR04CU002.outbound.protection.outlook.com (mail-eastus2azolkn19010008.outbound.protection.outlook.com [52.103.12.8])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B02FB1B86C7
-	for <iommu@lists.linux.dev>; Fri, 23 Aug 2024 20:31:25 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=148.163.156.1
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1724445088; cv=none; b=u8myjpF/P5Ptl8afuYBnjeMmfaCxEZ0dYtA+zJDM/SVcxSKvMm3h1OzmrV/4YsuZ+WFYeKTeb+2FqEjdlYfapeia3xPZ8/YhaSRZ2jbYz1d1QPmLYgJUKhqBsZXR4kH/zIseBnmzckSHgPlIT8UDa4KGE8yv/6bpUim2ftvIiXA=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1724445088; c=relaxed/simple;
-	bh=SwAbLsSUorE8PD/5SF1C8G7Y+wbUpnoqyPGCRtElLB0=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=rafjjx2UTaTKgduB40qcuAQNlO+R+Wyp+xm9+36IDI3ocQ0oRa7PyU+bWeuwTPobQTg3tDf30pefquf0Ae2OXcsZnrJOmLW7OM1N68Dro33SqFEx8ucxYRWm+Wb73+VbosL1C0vgm5FXlLKvjHDnmKWk5T+Mx4IbH3xxjMsBcIw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.ibm.com; spf=pass smtp.mailfrom=linux.ibm.com; dkim=pass (2048-bit key) header.d=ibm.com header.i=@ibm.com header.b=T8u19it5; arc=none smtp.client-ip=148.163.156.1
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.ibm.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.ibm.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A786B193430;
+	Fri, 23 Aug 2024 20:40:24 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.103.12.8
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1724445626; cv=fail; b=j+g9qwl+sPFW32XCrswISAC7I3P3uRnVRYbpRC5Pydtdi4rFiZXeJcAIG/PxuUHoKgklptnTiZdPc3Aanhd2PTdVKFkngOF/im+aqQwJsbKYng9ZBArwepMqvczG7l/w9UJ9IuA6EGXI740/PC8hm/dzq6R7F8r5LPbF6Kb4hqQ=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1724445626; c=relaxed/simple;
+	bh=CkOKarMjvBlBvwdab9f3F5nmKyweiSwxEXkOF48Xtn8=;
+	h=From:To:CC:Subject:Date:Message-ID:References:In-Reply-To:
+	 Content-Type:MIME-Version; b=d1w7Elp5v5nyQMHrSO9/L7nAbAUh9ecVjx4yG+WkzMMMS363w77O5uBhsQU/6COzwx/3fTUj+dviC74Jn8kek0JlacmcmGIggP8RCH6f8vDQBSr+DFhqZCVY5HzEltojFO7hyoH4yDHkxGguxboTALvE1cR5scsWaPIWQeL9Pog=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=outlook.com; spf=pass smtp.mailfrom=outlook.com; dkim=pass (2048-bit key) header.d=outlook.com header.i=@outlook.com header.b=nn1UnoUB; arc=fail smtp.client-ip=52.103.12.8
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=outlook.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=outlook.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=ibm.com header.i=@ibm.com header.b="T8u19it5"
-Received: from pps.filterd (m0360083.ppops.net [127.0.0.1])
-	by mx0a-001b2d01.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 47NKJRUM026762;
-	Fri, 23 Aug 2024 20:31:16 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=from
-	:to:cc:subject:date:message-id:mime-version
-	:content-transfer-encoding; s=pp1; bh=ykE186t3MaR3dCKAS8dKqoxEmh
-	h2jV3WGPr0OhRflZ0=; b=T8u19it5JgVrzr7LQS7cwGScsTVKPvFnyBh0I32W5r
-	vM3QAbOmE+05GIJy2OW1QGTX461lO3+UPofA+PxuvgoS9EbpbDu0CnSHDHwN0K2A
-	sQkQZ8fy8blGc9hBX6qt3RYHvoC3BuGDQdlyeVFkXHFtsXubWRMscmeo9nXYpsWu
-	Eg54vB/sKdSeeDZAnOBoelZ0/TdoLP5A1EMuueiW6PZlpyU2h9QlaTW/3Lc98gdQ
-	LrBVf6kIAcUqcSn7eYsm4k6lySb9w//B02/1jpzPqfSao41f/t7qTJeJsXgKdQtZ
-	G2ofrLWF6UFVMfS3CeBcuKRIJiPzTEvDlOTvGDGGw/+g==
-Received: from ppma13.dal12v.mail.ibm.com (dd.9e.1632.ip4.static.sl-reverse.com [50.22.158.221])
-	by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 4171byr15a-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Fri, 23 Aug 2024 20:31:15 +0000 (GMT)
-Received: from pps.filterd (ppma13.dal12v.mail.ibm.com [127.0.0.1])
-	by ppma13.dal12v.mail.ibm.com (8.18.1.2/8.18.1.2) with ESMTP id 47NKIQ6I029237;
-	Fri, 23 Aug 2024 20:31:14 GMT
-Received: from smtprelay05.wdc07v.mail.ibm.com ([172.16.1.72])
-	by ppma13.dal12v.mail.ibm.com (PPS) with ESMTPS id 4138dmud3f-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Fri, 23 Aug 2024 20:31:14 +0000
-Received: from smtpav04.dal12v.mail.ibm.com (smtpav04.dal12v.mail.ibm.com [10.241.53.103])
-	by smtprelay05.wdc07v.mail.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 47NKVAZH22282872
-	(version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-	Fri, 23 Aug 2024 20:31:12 GMT
-Received: from smtpav04.dal12v.mail.ibm.com (unknown [127.0.0.1])
-	by IMSVA (Postfix) with ESMTP id 9336A5805A;
-	Fri, 23 Aug 2024 20:31:10 +0000 (GMT)
-Received: from smtpav04.dal12v.mail.ibm.com (unknown [127.0.0.1])
-	by IMSVA (Postfix) with ESMTP id 6E90758052;
-	Fri, 23 Aug 2024 20:31:09 +0000 (GMT)
-Received: from li-2311da4c-2e09-11b2-a85c-c003041e9174.ibm.com.com (unknown [9.61.39.129])
-	by smtpav04.dal12v.mail.ibm.com (Postfix) with ESMTP;
-	Fri, 23 Aug 2024 20:31:09 +0000 (GMT)
-From: Matthew Rosato <mjrosato@linux.ibm.com>
-To: joro@8bytes.org, will@kernel.org, robin.murphy@arm.com,
-        gerald.schaefer@linux.ibm.com, schnelle@linux.ibm.com
-Cc: jgg@ziepe.ca, baolu.lu@linux.intel.com, hca@linux.ibm.com,
-        gor@linux.ibm.com, agordeev@linux.ibm.com, svens@linux.ibm.com,
-        jroedel@suse.de, iommu@lists.linux.dev, linux-kernel@vger.kernel.org,
-        linux-s390@vger.kernel.org
-Subject: [PATCH v3] iommu/s390: Implement blocking domain
-Date: Fri, 23 Aug 2024 16:31:08 -0400
-Message-ID: <20240823203108.304054-1-mjrosato@linux.ibm.com>
-X-Mailer: git-send-email 2.46.0
+	dkim=pass (2048-bit key) header.d=outlook.com header.i=@outlook.com header.b="nn1UnoUB"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=cwODwUV1dKJ0RvNyWqRoNjV+DhL2tj/oOFAbp1cPjKOBLeNKcY73vBXeo2baQvIxQRrq6VqTIqtQzJ1cuxsCva3mUES9nkmC4OSk6l2LaG2NI2uxtZi8oA5ab3c/gQx9uVjdNcuhxbr26aMC8G/OnpzhiV/p2oym+eNYyTu51JYDtz/KWXx6n+0Lg7vSXS39OfZQlvYWmRbYZ8X3TUAdFNx9mXvpWUg3vliY0diqCTuJD0qIzkuhsj+bxfZrVzrlOaxKlBXZ6BV3Ol97NBxLaATUTJHkiflz8miKw3u5+oKQ148EZb9qlCtsavSYV+ncXwEtx8BxVTl/8yiBHdgY9Q==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=uTeRk3boFcaxCGWHlJ4tNzptrSiHl9sJwQxI4pNCfsM=;
+ b=Vh7jP409Xe1cSVqjYv/mi+zuc2RobZMTw0amvv3JY91wKrWMV7wzoITNDHLEh1gFXikJ+STXfh9g2vqmuBdIcrmcIoCnxGEbo0Se/+/BhVeimRkeehfhgU9orPKFeEG4zUbVuXUvSHPlpHus8n3Hb/2Ki5msBMYzqaIKplwGVKeQ+pCZj3IXYy5D4q/QiDIvQDONT6a1Yq9MyGuiiBLkTNsdUdx3RFAdXiVGqBvqFiHDgWo7QnkQ51OAYAwqyKBR9jO1Xg6EgtJH5eUx+nJUYQlBvVIs31Ol/Y3Z/pgggxjuj/yj+3YL6Lt4fSmnDF+Tsu3vHQj7z4b1v+lloTJlFA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=none; dmarc=none;
+ dkim=none; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=outlook.com;
+ s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=uTeRk3boFcaxCGWHlJ4tNzptrSiHl9sJwQxI4pNCfsM=;
+ b=nn1UnoUBeenzxCDH1F8r1g4bWuEk5mQQ2x9ngfoDunN05IuAPDhNRszIoLrH3gkwQMqcCl1/gVmlQ5rcEaiv5ECD+Zu+GEnfEHaUzDcvIYBTFLlYO7vrd24faENEH8TwYrrjGT7jHwwPjPKyH7JDIfHmwaIKWIkORzZxv0CS8RyaOzWLa74/waAKdhFaeZnOK6Iks5Sgh2/Zgr7e5/gmDShqVuVx6KkUwe1sJZ/p4TDrwLDUMQPCmHxlwMEGJWLhbRDwX1qpsvz3sDhn4L+tzbLunQhjSyC5TwTAjZiRHNNtrolk/gGGnX5X1IDHxRMYB6bEBTLkeKuWhsMMGsJZcg==
+Received: from SN6PR02MB4157.namprd02.prod.outlook.com (2603:10b6:805:33::23)
+ by BY5PR02MB6962.namprd02.prod.outlook.com (2603:10b6:a03:235::13) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7897.22; Fri, 23 Aug
+ 2024 20:40:17 +0000
+Received: from SN6PR02MB4157.namprd02.prod.outlook.com
+ ([fe80::cedd:1e64:8f61:b9df]) by SN6PR02MB4157.namprd02.prod.outlook.com
+ ([fe80::cedd:1e64:8f61:b9df%6]) with mapi id 15.20.7875.018; Fri, 23 Aug 2024
+ 20:40:16 +0000
+From: Michael Kelley <mhklinux@outlook.com>
+To: =?iso-8859-2?Q?Petr_Tesa=F8=EDk?= <petr@tesarici.cz>, Michael Kelley
+	<mhklinux@outlook.com>
+CC: "kbusch@kernel.org" <kbusch@kernel.org>, "axboe@kernel.dk"
+	<axboe@kernel.dk>, "sagi@grimberg.me" <sagi@grimberg.me>,
+	"James.Bottomley@HansenPartnership.com"
+	<James.Bottomley@HansenPartnership.com>, "martin.petersen@oracle.com"
+	<martin.petersen@oracle.com>, "kys@microsoft.com" <kys@microsoft.com>,
+	"haiyangz@microsoft.com" <haiyangz@microsoft.com>, "wei.liu@kernel.org"
+	<wei.liu@kernel.org>, "decui@microsoft.com" <decui@microsoft.com>,
+	"robin.murphy@arm.com" <robin.murphy@arm.com>, "hch@lst.de" <hch@lst.de>,
+	"m.szyprowski@samsung.com" <m.szyprowski@samsung.com>,
+	"iommu@lists.linux.dev" <iommu@lists.linux.dev>,
+	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+	"linux-nvme@lists.infradead.org" <linux-nvme@lists.infradead.org>,
+	"linux-scsi@vger.kernel.org" <linux-scsi@vger.kernel.org>,
+	"linux-hyperv@vger.kernel.org" <linux-hyperv@vger.kernel.org>,
+	"linux-coco@lists.linux.dev" <linux-coco@lists.linux.dev>
+Subject: RE: [RFC 0/7] Introduce swiotlb throttling
+Thread-Topic: [RFC 0/7] Introduce swiotlb throttling
+Thread-Index: AQHa9MJuV8zHlUlbFEOu4P5Y/AqjALI0ZmsAgADTyNA=
+Date: Fri, 23 Aug 2024 20:40:16 +0000
+Message-ID:
+ <SN6PR02MB415758F12C59E6CA67227DCFD4882@SN6PR02MB4157.namprd02.prod.outlook.com>
+References: <20240822183718.1234-1-mhklinux@outlook.com>
+ <20240823084458.4394b401@meshulam.tesarici.cz>
+In-Reply-To: <20240823084458.4394b401@meshulam.tesarici.cz>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach:
+X-MS-TNEF-Correlator:
+x-tmn: [QPfqj8FxiyL0u3GI73Q55BNGYt0TcTqM]
+x-ms-publictraffictype: Email
+x-ms-traffictypediagnostic: SN6PR02MB4157:EE_|BY5PR02MB6962:EE_
+x-ms-office365-filtering-correlation-id: 0771684e-c18d-4833-ad8d-08dcc3b3cbe2
+x-microsoft-antispam:
+ BCL:0;ARA:14566002|8060799006|19110799003|15080799003|461199028|102099032|3412199025|440099028|1710799026;
+x-microsoft-antispam-message-info:
+ sP4q++1BbrH7t9wY1WSe2aWaBPg3EF2LxRCaAul9rS8X2M5hSCVpPSuJdADf0olm4fAhYRnWpMLsh/kh6VlyR7kFl7BOBCVYb/s93L0cBPyvBvcJmirPKN4NhgoBXsdZ7KHahKT5KVLSrBSi6aQlzlpBVaampvGvJWroutGtW1oYAmQ1ulXr+fBN5d4dIEhM4XTEG2CzvUaxCs9cZAxTRHU9UhJ5tpv0Pxxed0xurH9ZNVV5OTVrOFbQMAVLNSTf/VZ+NcxnzknDSwwbuSJDJ9j/JF1X0cppjnBCAyNm4KQGpdcUViv+nfqHfb6TFJfNff1kTjTTg4/n00FGdoumiGiLE+l4O4H9olcXipiByKDm0zcbyTwLfbo7AmzPdIqKFo8nhDPHwmx7evfbsIoWwhZ7+UjWMvJtgqwV6pwH0qI5pH1LvMb1JPNYB+Jij0MoaCWtwIHIKBkbHCSpaueiExEjMPyzRqZovcTC8fo4ag3tYCEn00AM+qWFMMubZRLNiu3TwrckVV2mTf3WkGXtK6yzgbRUMzv4v719SIxrtCMzC01xsRSCMaQG25+vZCiBbLIidptlBdge314g9bA+Xaw13NF+aUu/ymXFFDQY4TPYKdRpFzPkt7M+Cf4fJ6Y672Hlx7aBqGtrJ2Vqfk+S4HiDEB/xnMNSKFsNcF3V15bty2DMo6U91wMx46VWgWC+9QmF044Kzpq97ey/goHapA==
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0:
+ =?iso-8859-2?Q?Ssjr3dZ4TlMe1r2Rd6KZamfyuGaOKzBiVypbl7UinoRhM1XON5bR1EmxgJ?=
+ =?iso-8859-2?Q?xHe+Uu8SNCe8yw7qBgfKy2NF6ITL30xltd5sHXyPoNgKIpM1+IKAGkzKLO?=
+ =?iso-8859-2?Q?vpEF+FWo49eak9IXyDUmbjrApW4p0FG/mOUCpgEaHWA8VDL1d8FxrO24cv?=
+ =?iso-8859-2?Q?pWZVG6IIFYaf/AcSxVLKbGR4XP4K7qBeihOnTd+HureMZsZbw5FCK5Akdr?=
+ =?iso-8859-2?Q?B6eeyxUPmlvJ40d1F65j1H17Skpw+dSFzsp+HA6RX8uZai7NG1tezRymAe?=
+ =?iso-8859-2?Q?HxHyF5VKSmkc4eGmbcYAhOTdDdqJolPehUalqpKAbsd6xoaScMcxPeXQ7t?=
+ =?iso-8859-2?Q?QBJ84i+3ZLanWBGkf3LJVQIGsPx6Ob7F/KJyr+DJaBXav0/TF9Cb3XU91O?=
+ =?iso-8859-2?Q?m7lvdSaCKKXqEu5vV5hSWGC/J14x82mt6CxWm9ekzMX0vTfCFmGbCUmIod?=
+ =?iso-8859-2?Q?jBRBqSeN9woxI+0MU8KEU9xjty60SD7fIHkMNGanE3Y067xm5CHNt9vDRH?=
+ =?iso-8859-2?Q?p/bh6JyGeYZuTb64lQvmUz00S1omElk1Ylt9POsx41Ne+GqzmPHeqF7OpZ?=
+ =?iso-8859-2?Q?KNQx+xmlVcIaY7O8/Fky3PEoe/LzEEmNWvv/BtbHX7gLP4Ct2Mb2+lTTsL?=
+ =?iso-8859-2?Q?GmtikenybLx0+3dKQO+EI/dasi5W4E6CMa0pmdWfGxrWBjki+IjytEr2aU?=
+ =?iso-8859-2?Q?+i3Wy/YzvZlV0B7eieVYhyD781kYc3lyb55C55uF2UZV+L/lVLF7+m0uuO?=
+ =?iso-8859-2?Q?qTLjd8RvJCDzQw8RGEkMeDjl8bAhU4UGUWb5BuAVgFXXAXaBiKLpVo1Z8O?=
+ =?iso-8859-2?Q?1WI6BBs6PjcbMU44SuMvwWdiVXF8ptJhnxNvDnu7BEKfxsC+juKv4Gx3Hj?=
+ =?iso-8859-2?Q?2tEYEN+k3LmGEetuP0SdVfRXiGurt8DpesbPm0GvIBEqW8iDvYwwlYL925?=
+ =?iso-8859-2?Q?V2cRYnQg0pdBqXvFQiTr3ltYEndqyQZOpqkGtrnctmOMZpjK+ky05UHmii?=
+ =?iso-8859-2?Q?52WA9N2N1XQCt2RkHswbOUSirabFuuzKq5vTqz46UD6ShDRuxc4qHYzEiN?=
+ =?iso-8859-2?Q?jbjvZELW9d9DhjueV4GkWd5f4/DsNgopND3wLOPSSCibEQAr+5MCEwKyDH?=
+ =?iso-8859-2?Q?0+jRqL7NnuGOg8MNxWq3Zxhi9Xg/RZzcK9nwtcbStRz2Yjc+78Uy98vlpT?=
+ =?iso-8859-2?Q?Iwe/CHH5Um09ERGkMMt/vGHSsj/FMjSlE/rxy+8F/diXeaBvnpI2kk/Ivh?=
+ =?iso-8859-2?Q?fbKZ+Wygf0XFfukNIsV6nnpw0bvh2EUYC8IuaqGfE=3D?=
+Content-Type: text/plain; charset="iso-8859-2"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-TM-AS-GCONF: 00
-X-Proofpoint-ORIG-GUID: e28A0lPFvwD66QE9PwennwO9rXQ5gFml
-X-Proofpoint-GUID: e28A0lPFvwD66QE9PwennwO9rXQ5gFml
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.293,Aquarius:18.0.1039,Hydra:6.0.680,FMLib:17.12.28.16
- definitions=2024-08-23_16,2024-08-23_01,2024-05-17_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 mlxlogscore=727 mlxscore=0
- lowpriorityscore=0 malwarescore=0 clxscore=1015 phishscore=0
- suspectscore=0 bulkscore=0 adultscore=0 priorityscore=1501 impostorscore=0
- spamscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.19.0-2407110000 definitions=main-2408230148
+X-OriginatorOrg: outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: SN6PR02MB4157.namprd02.prod.outlook.com
+X-MS-Exchange-CrossTenant-RMS-PersistedConsumerOrg: 00000000-0000-0000-0000-000000000000
+X-MS-Exchange-CrossTenant-Network-Message-Id: 0771684e-c18d-4833-ad8d-08dcc3b3cbe2
+X-MS-Exchange-CrossTenant-rms-persistedconsumerorg: 00000000-0000-0000-0000-000000000000
+X-MS-Exchange-CrossTenant-originalarrivaltime: 23 Aug 2024 20:40:16.6386
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 84df9e7f-e9f6-40af-b435-aaaaaaaaaaaa
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BY5PR02MB6962
 
-This fixes a crash when surprise hot-unplugging a PCI device. This crash
-happens because during hot-unplug __iommu_group_set_domain_nofail()
-attaching the default domain fails when the platform no longer
-recognizes the device as it has already been removed and we end up with
-a NULL domain pointer and UAF. This is exactly the case referred to in
-the second comment in __iommu_device_set_domain() and just as stated
-there if we can instead attach the blocking domain the UAF is prevented
-as this can handle the already removed device. Implement the blocking
-domain to use this handling.  With this change, the crash is fixed but
-we still hit a warning attempting to change DMA ownership on a blocked
-device.
+From: Petr Tesa=F8=EDk <petr@tesarici.cz> Sent: Thursday, August 22, 2024 1=
+1:45 PM
+>=20
+> Hi all,
+>=20
+> upfront, I've had more time to consider this idea, because Michael
+> kindly shared it with me back in February.
+>=20
+> On Thu, 22 Aug 2024 11:37:11 -0700
+> mhkelley58@gmail.com wrote:
+>=20
+> > From: Michael Kelley <mhklinux@outlook.com>
+> >
+> > Background
+> > =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+> > Linux device drivers may make DMA map/unmap calls in contexts that
+> > cannot block, such as in an interrupt handler. Consequently, when a
+> > DMA map call must use a bounce buffer, the allocation of swiotlb
+> > memory must always succeed immediately. If swiotlb memory is
+> > exhausted, the DMA map call cannot wait for memory to be released. The
+> > call fails, which usually results in an I/O error.
+>=20
+> FTR most I/O errors are recoverable, but the recovery usually takes
+> a lot of time. Plus the errors are logged and usually treated as
+> important by monitoring software. In short, I agree it's a poor choice.
+>=20
+> > Bounce buffers are usually used infrequently for a few corner cases,
+> > so the default swiotlb memory allocation of 64 MiB is more than
+> > sufficient to avoid running out and causing errors. However, recently
+> > introduced Confidential Computing (CoCo) VMs must use bounce buffers
+> > for all DMA I/O because the VM's memory is encrypted. In CoCo VMs
+> > a new heuristic allocates ~6% of the VM's memory, up to 1 GiB, for
+> > swiotlb memory. This large allocation reduces the likelihood of a
+> > spike in usage causing DMA map failures. Unfortunately for most
+> > workloads, this insurance against spikes comes at the cost of
+> > potentially "wasting" hundreds of MiB's of the VM's memory, as swiotlb
+> > memory can't be used for other purposes.
+>=20
+> It may be worth mentioning that page encryption state can be changed by
+> a hypercall, but that's a costly (and non-atomic) operation. It's much
+> faster to copy the data to a page which is already unencrypted (a
+> bounce buffer).
+>=20
+> > Approach
+> > =3D=3D=3D=3D=3D=3D=3D=3D
+> > The goal is to significantly reduce the amount of memory reserved as
+> > swiotlb memory in CoCo VMs, while not unduly increasing the risk of
+> > DMA map failures due to memory exhaustion.
+> >
+> > To reach this goal, this patch set introduces the concept of swiotlb
+> > throttling, which can delay swiotlb allocation requests when swiotlb
+> > memory usage is high. This approach depends on the fact that some
+> > DMA map requests are made from contexts where it's OK to block.
+> > Throttling such requests is acceptable to spread out a spike in usage.
+> >
+> > Because it's not possible to detect at runtime whether a DMA map call
+> > is made in a context that can block, the calls in key device drivers
+> > must be updated with a MAY_BLOCK attribute, if appropriate.
+>=20
+> Before somebody asks, the general agreement for decades has been that
+> there should be no global state indicating whether the kernel is in
+> atomic context. Instead, if a function needs to know, it should take an
+> explicit parameter.
+>=20
+> IOW this MAY_BLOCK attribute follows an unquestioned kernel design
+> pattern.
+>=20
+> > When this
+> > attribute is set and swiotlb memory usage is above a threshold, the
+> > swiotlb allocation code can serialize swiotlb memory usage to help
+> > ensure that it is not exhausted.
+> >
+> > In general, storage device drivers can take advantage of the MAY_BLOCK
+> > option, while network device drivers cannot. The Linux block layer
+> > already allows storage requests to block when the BLK_MQ_F_BLOCKING
+> > flag is present on the request queue. In a CoCo VM environment,
+> > relatively few device types are used for storage devices, and updating
+> > these drivers is feasible. This patch set updates the NVMe driver and
+> > the Hyper-V storvsc synthetic storage driver. A few other drivers
+> > might also need to be updated to handle the key CoCo VM storage
+> > devices.
+> >
+> > Because network drivers generally cannot use swiotlb throttling, it is
+> > still possible for swiotlb memory to become exhausted. But blunting
+> > the maximum swiotlb memory used by storage devices can significantly
+> > reduce the peak usage, and a smaller amount of swiotlb memory can be
+> > allocated in a CoCo VM. Also, usage by storage drivers is likely to
+> > overall be larger than for network drivers, especially when large
+> > numbers of disk devices are in use, each with many I/O requests in-
+> > flight.
+>=20
+> The system can also handle network packet loss much better than I/O
+> errors, mainly because lost packets have always been part of normal
+> operation, unlike I/O errors. After all, that's why we unmount all
+> filesystems on removable media before physically unplugging (or
+> ejecting) them.
+>=20
+> > swiotlb throttling does not affect the context requirements of DMA
+> > unmap calls. These always complete without blocking, even if the
+> > corresponding DMA map call was throttled.
+> >
+> > Patches
+> > =3D=3D=3D=3D=3D=3D=3D
+> > Patches 1 and 2 implement the core of swiotlb throttling. They define
+> > DMA attribute flag DMA_ATTR_MAY_BLOCK that device drivers use to
+> > indicate that a DMA map call is allowed to block, and therefore can be
+> > throttled. They update swiotlb_tbl_map_single() to detect this flag and
+> > implement the throttling. Similarly, swiotlb_tbl_unmap_single() is
+> > updated to handle a previously throttled request that has now freed
+> > its swiotlb memory.
+> >
+> > Patch 3 adds the dma_recommend_may_block() call that device drivers
+> > can use to know if there's benefit in using the MAY_BLOCK option on
+> > DMA map calls. If not in a CoCo VM, this call returns "false" because
+> > swiotlb is not being used for all DMA I/O. This allows the driver to
+> > set the BLK_MQ_F_BLOCKING flag on blk-mq request queues only when
+> > there is benefit.
+> >
+> > Patch 4 updates the SCSI-specific DMA map calls to add a "_attrs"
+> > variant to allow passing the MAY_BLOCK attribute.
+> >
+> > Patch 5 adds the MAY_BLOCK option to the Hyper-V storvsc driver, which
+> > is used for storage in CoCo VMs in the Azure public cloud.
+> >
+> > Patches 6 and 7 add the MAY_BLOCK option to the NVMe PCI host driver.
+> >
+> > Discussion
+> > =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+> > * Since swiotlb isn't visible to device drivers, I've specifically
+> > named the DMA attribute as MAY_BLOCK instead of MAY_THROTTLE or
+> > something swiotlb specific. While this patch set consumes MAY_BLOCK
+> > only on the DMA direct path to do throttling in the swiotlb code,
+> > there might be other uses in the future outside of CoCo VMs, or
+> > perhaps on the IOMMU path.
+>=20
+> I once introduced a similar flag and called it MAY_SLEEP. I chose
+> MAY_SLEEP, because there is already a might_sleep() annotation, but I
+> don't have a strong opinion unless your semantics is supposed to be
+> different from might_sleep(). If it is, then I strongly prefer
+> MAY_BLOCK to prevent confusing the two.
 
-Fixes: c76c067e488c ("s390/pci: Use dma-iommu layer")
-Co-developed-by: Niklas Schnelle <schnelle@linux.ibm.com>
-Signed-off-by: Niklas Schnelle <schnelle@linux.ibm.com>
-Signed-off-by: Matthew Rosato <mjrosato@linux.ibm.com>
----
-Changes for v3:
-- make blocking_domain type iommu_domain
-- change zdev->s390_domain to type iommu_domain and remove most uses
-- remove s390_iommu_detach_device, use blocking domain attach
-- add spinlock to serialize zdev->s390_domain change / access to counters
----
- arch/s390/include/asm/pci.h |  4 +-
- arch/s390/pci/pci.c         |  3 ++
- arch/s390/pci/pci_debug.c   | 10 ++++-
- drivers/iommu/s390-iommu.c  | 73 +++++++++++++++++++++++--------------
- 4 files changed, 59 insertions(+), 31 deletions(-)
+My intent is that the semantics are the same as might_sleep(). I
+vacillated between MAY_SLEEP and MAY_BLOCK. The kernel seems
+to treat "sleep" and "block" as equivalent, because blk-mq has
+the BLK_MQ_F_BLOCKING flag, and SCSI has the=20
+queuecommand_may_block flag that is translated to
+BLK_MQ_F_BLOCKING. So I settled on MAY_BLOCK, but as you
+point out, that's inconsistent with might_sleep(). Either way will
+be inconsistent somewhere, and I don't have a preference.
 
-diff --git a/arch/s390/include/asm/pci.h b/arch/s390/include/asm/pci.h
-index 30820a649e6e..a60a291fbd58 100644
---- a/arch/s390/include/asm/pci.h
-+++ b/arch/s390/include/asm/pci.h
-@@ -96,7 +96,6 @@ struct zpci_bar_struct {
- 	u8		size;		/* order 2 exponent */
- };
- 
--struct s390_domain;
- struct kvm_zdev;
- 
- #define ZPCI_FUNCTIONS_PER_BUS 256
-@@ -181,9 +180,10 @@ struct zpci_dev {
- 	struct dentry	*debugfs_dev;
- 
- 	/* IOMMU and passthrough */
--	struct s390_domain *s390_domain; /* s390 IOMMU domain data */
-+	struct iommu_domain *s390_domain; /* attached IOMMU domain */
- 	struct kvm_zdev *kzdev;
- 	struct mutex kzdev_lock;
-+	spinlock_t dom_lock;		/* protect s390_domain change */
- };
- 
- static inline bool zdev_enabled(struct zpci_dev *zdev)
-diff --git a/arch/s390/pci/pci.c b/arch/s390/pci/pci.c
-index cff4838fad21..759983d0e63e 100644
---- a/arch/s390/pci/pci.c
-+++ b/arch/s390/pci/pci.c
-@@ -160,6 +160,7 @@ int zpci_fmb_enable_device(struct zpci_dev *zdev)
- 	u64 req = ZPCI_CREATE_REQ(zdev->fh, 0, ZPCI_MOD_FC_SET_MEASURE);
- 	struct zpci_iommu_ctrs *ctrs;
- 	struct zpci_fib fib = {0};
-+	unsigned long flags;
- 	u8 cc, status;
- 
- 	if (zdev->fmb || sizeof(*zdev->fmb) < zdev->fmb_length)
-@@ -171,6 +172,7 @@ int zpci_fmb_enable_device(struct zpci_dev *zdev)
- 	WARN_ON((u64) zdev->fmb & 0xf);
- 
- 	/* reset software counters */
-+	spin_lock_irqsave(&zdev->dom_lock, flags);
- 	ctrs = zpci_get_iommu_ctrs(zdev);
- 	if (ctrs) {
- 		atomic64_set(&ctrs->mapped_pages, 0);
-@@ -179,6 +181,7 @@ int zpci_fmb_enable_device(struct zpci_dev *zdev)
- 		atomic64_set(&ctrs->sync_map_rpcits, 0);
- 		atomic64_set(&ctrs->sync_rpcits, 0);
- 	}
-+	spin_unlock_irqrestore(&zdev->dom_lock, flags);
- 
- 
- 	fib.fmb_addr = virt_to_phys(zdev->fmb);
-diff --git a/arch/s390/pci/pci_debug.c b/arch/s390/pci/pci_debug.c
-index 2cb5043a997d..38014206c16b 100644
---- a/arch/s390/pci/pci_debug.c
-+++ b/arch/s390/pci/pci_debug.c
-@@ -71,17 +71,23 @@ static void pci_fmb_show(struct seq_file *m, char *name[], int length,
- 
- static void pci_sw_counter_show(struct seq_file *m)
- {
--	struct zpci_iommu_ctrs  *ctrs = zpci_get_iommu_ctrs(m->private);
-+	struct zpci_dev *zdev = m->private;
-+	struct zpci_iommu_ctrs *ctrs;
- 	atomic64_t *counter;
-+	unsigned long flags;
- 	int i;
- 
-+	spin_lock_irqsave(&zdev->dom_lock, flags);
-+	ctrs = zpci_get_iommu_ctrs(m->private);
- 	if (!ctrs)
--		return;
-+		goto unlock;
- 
- 	counter = &ctrs->mapped_pages;
- 	for (i = 0; i < ARRAY_SIZE(pci_sw_names); i++, counter++)
- 		seq_printf(m, "%26s:\t%llu\n", pci_sw_names[i],
- 			   atomic64_read(counter));
-+unlock:
-+	spin_unlock_irqrestore(&zdev->dom_lock, flags);
- }
- 
- static int pci_perf_show(struct seq_file *m, void *v)
-diff --git a/drivers/iommu/s390-iommu.c b/drivers/iommu/s390-iommu.c
-index d8eaa7ea380b..a0aca308909e 100644
---- a/drivers/iommu/s390-iommu.c
-+++ b/drivers/iommu/s390-iommu.c
-@@ -33,6 +33,8 @@ struct s390_domain {
- 	struct rcu_head		rcu;
- };
- 
-+static struct iommu_domain blocking_domain;
-+
- static inline unsigned int calc_rtx(dma_addr_t ptr)
- {
- 	return ((unsigned long)ptr >> ZPCI_RT_SHIFT) & ZPCI_INDEX_MASK;
-@@ -369,20 +371,36 @@ static void s390_domain_free(struct iommu_domain *domain)
- 	call_rcu(&s390_domain->rcu, s390_iommu_rcu_free_domain);
- }
- 
--static void s390_iommu_detach_device(struct iommu_domain *domain,
--				     struct device *dev)
-+static void zdev_s390_domain_update(struct zpci_dev *zdev,
-+				    struct iommu_domain *domain)
-+{
-+	unsigned long flags;
-+
-+	spin_lock_irqsave(&zdev->dom_lock, flags);
-+	zdev->s390_domain = domain;
-+	spin_unlock_irqrestore(&zdev->dom_lock, flags);
-+}
-+
-+static int blocking_domain_attach_device(struct iommu_domain *domain,
-+					 struct device *dev)
- {
--	struct s390_domain *s390_domain = to_s390_domain(domain);
- 	struct zpci_dev *zdev = to_zpci_dev(dev);
-+	struct s390_domain *s390_domain;
- 	unsigned long flags;
- 
-+	if (zdev->s390_domain->type == IOMMU_DOMAIN_BLOCKED)
-+		return 0;
-+
-+	s390_domain = to_s390_domain(zdev->s390_domain);
- 	spin_lock_irqsave(&s390_domain->list_lock, flags);
- 	list_del_rcu(&zdev->iommu_list);
- 	spin_unlock_irqrestore(&s390_domain->list_lock, flags);
- 
- 	zpci_unregister_ioat(zdev, 0);
--	zdev->s390_domain = NULL;
- 	zdev->dma_table = NULL;
-+	zdev_s390_domain_update(zdev, domain);
-+
-+	return 0;
- }
- 
- static int s390_iommu_attach_device(struct iommu_domain *domain,
-@@ -401,20 +419,15 @@ static int s390_iommu_attach_device(struct iommu_domain *domain,
- 		domain->geometry.aperture_end < zdev->start_dma))
- 		return -EINVAL;
- 
--	if (zdev->s390_domain)
--		s390_iommu_detach_device(&zdev->s390_domain->domain, dev);
-+	blocking_domain_attach_device(&blocking_domain, dev);
- 
-+	/* If we fail now DMA remains blocked via blocking domain */
- 	cc = zpci_register_ioat(zdev, 0, zdev->start_dma, zdev->end_dma,
- 				virt_to_phys(s390_domain->dma_table), &status);
--	/*
--	 * If the device is undergoing error recovery the reset code
--	 * will re-establish the new domain.
--	 */
- 	if (cc && status != ZPCI_PCI_ST_FUNC_NOT_AVAIL)
- 		return -EIO;
--
- 	zdev->dma_table = s390_domain->dma_table;
--	zdev->s390_domain = s390_domain;
-+	zdev_s390_domain_update(zdev, domain);
- 
- 	spin_lock_irqsave(&s390_domain->list_lock, flags);
- 	list_add_rcu(&zdev->iommu_list, &s390_domain->devices);
-@@ -466,19 +479,11 @@ static struct iommu_device *s390_iommu_probe_device(struct device *dev)
- 	if (zdev->tlb_refresh)
- 		dev->iommu->shadow_on_flush = 1;
- 
--	return &zdev->iommu_dev;
--}
-+	/* Start with DMA blocked */
-+	spin_lock_init(&zdev->dom_lock);
-+	zdev_s390_domain_update(zdev, &blocking_domain);
- 
--static void s390_iommu_release_device(struct device *dev)
--{
--	struct zpci_dev *zdev = to_zpci_dev(dev);
--
--	/*
--	 * release_device is expected to detach any domain currently attached
--	 * to the device, but keep it attached to other devices in the group.
--	 */
--	if (zdev)
--		s390_iommu_detach_device(&zdev->s390_domain->domain, dev);
-+	return &zdev->iommu_dev;
- }
- 
- static int zpci_refresh_all(struct zpci_dev *zdev)
-@@ -697,9 +702,15 @@ static size_t s390_iommu_unmap_pages(struct iommu_domain *domain,
- 
- struct zpci_iommu_ctrs *zpci_get_iommu_ctrs(struct zpci_dev *zdev)
- {
--	if (!zdev || !zdev->s390_domain)
-+	struct s390_domain *s390_domain;
-+
-+	lockdep_assert_held(zdev->dom_lock);
-+
-+	if (zdev->s390_domain->type == IOMMU_DOMAIN_BLOCKED)
- 		return NULL;
--	return &zdev->s390_domain->ctrs;
-+
-+	s390_domain = to_s390_domain(zdev->s390_domain);
-+	return &s390_domain->ctrs;
- }
- 
- int zpci_init_iommu(struct zpci_dev *zdev)
-@@ -776,11 +787,19 @@ static int __init s390_iommu_init(void)
- }
- subsys_initcall(s390_iommu_init);
- 
-+static struct iommu_domain blocking_domain = {
-+	.type = IOMMU_DOMAIN_BLOCKED,
-+	.ops = &(const struct iommu_domain_ops) {
-+		.attach_dev	= blocking_domain_attach_device,
-+	}
-+};
-+
- static const struct iommu_ops s390_iommu_ops = {
-+	.blocked_domain		= &blocking_domain,
-+	.release_domain		= &blocking_domain,
- 	.capable = s390_iommu_capable,
- 	.domain_alloc_paging = s390_domain_alloc_paging,
- 	.probe_device = s390_iommu_probe_device,
--	.release_device = s390_iommu_release_device,
- 	.device_group = generic_device_group,
- 	.pgsize_bitmap = SZ_4K,
- 	.get_resv_regions = s390_iommu_get_resv_regions,
--- 
-2.46.0
+>=20
+> > * The swiotlb throttling code in this patch set throttles by
+> > serializing the use of swiotlb memory when usage is above a designated
+> > threshold: i.e., only one new swiotlb request is allowed to proceed at
+> > a time. When the corresponding unmap is done to release its swiotlb
+> > memory, the next request is allowed to proceed. This serialization is
+> > global and without knowledge of swiotlb areas. From a storage I/O
+> > performance standpoint, the serialization is a bit restrictive, but
+> > the code isn't trying to optimize for being above the threshold. If a
+> > workload regularly runs above the threshold, the size of the swiotlb
+> > memory should be increased.
+>=20
+> With CONFIG_SWIOTLB_DYNAMIC, this could happen automatically in the
+> future. But let's get the basic functionality first.
+>=20
+> > * Except for knowing how much swiotlb memory is currently allocated,
+> > throttle accounting is done without locking or atomic operations. For
+> > example, multiple requests could proceed in parallel when usage is
+> > just under the threshold, putting usage above the threshold by the
+> > aggregate size of the parallel requests. The threshold must already be
+> > set relatively conservatively because of drivers that can't enable
+> > throttling, so this slop in the accounting shouldn't be a problem.
+> > It's better than the potential bottleneck of a globally synchronized
+> > reservation mechanism.
+>=20
+> Agreed.
+>=20
+> > * In a CoCo VM, mapping a scatter/gather list makes an independent
+> > swiotlb request for each entry. Throttling each independent request
+> > wouldn't really work, so the code throttles only the first SGL entry.
+> > Once that entry passes any throttle, subsequent entries in the SGL
+> > proceed without throttling. When the SGL is unmapped, entries 1 thru
+> > N-1 are unmapped first, then entry 0 is unmapped, allowing the next
+> > serialized request to proceed.
+> >
+> > Open Topics
+> > =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+> > 1. swiotlb allocations from Xen and the IOMMU code don't make use of
+> > throttling. This could be added if beneficial.
+> >
+> > 2. The throttling values are currently exposed and adjustable in
+> > /sys/kernel/debug/swiotlb. Should any of this be moved so it is
+> > visible even without CONFIG_DEBUG_FS?
+>=20
+> Yes. It should be possible to control the thresholds through sysctl.
 
+Good point.  I was thinking about creating /sys/kernel/swiotlb, but
+sysctl is better.
+
+Michael
+
+>=20
+> > 3. I have not changed the current heuristic for the swiotlb memory
+> > size in CoCo VMs. It's not clear to me how to link this to whether the
+> > key storage drivers have been updated to allow throttling. For now,
+> > the benefit of reduced swiotlb memory size must be realized using the
+> > swiotlb=3D kernel boot line option.
+>=20
+> This sounds fine for now.
+>=20
+> > 4. I need to update the swiotlb documentation to describe throttling.
+> >
+> > This patch set is built against linux-next-20240816.
+>=20
+> OK, I'm going try it out.
+>=20
+> Thank you for making this happen!
+>=20
+> Petr T
