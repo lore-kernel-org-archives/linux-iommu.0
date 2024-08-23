@@ -1,174 +1,188 @@
-Received: from NAM10-DM6-obe.outbound.protection.outlook.com (mail-dm6nam10on2077.outbound.protection.outlook.com [40.107.93.77])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 03959189B93;
-	Fri, 23 Aug 2024 16:29:58 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.93.77
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1724430600; cv=fail; b=SBdbkdTOoSADNMIT6hwG4hcQPC+fPnR8pL0+rYpdzeV7pTMoecnNhiucL3/W2nFh9AoZPuhgp93p9I8cqImwwAyOPQrz8FfLczucP3wlQxhL5K0y9gh1VokkaUHO/7fmNgHxQIzvI7hyeIxv2oDbIKPIZuRjJW6oJtstNvdyfds=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1724430600; c=relaxed/simple;
-	bh=iGnM1mSb5zI0P4OChHv06HLAH9sRDAOq+9/UcvPiSCo=;
-	h=Date:From:To:CC:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=jh7W7dvQgvBkA+cZ9OwbMC2Ylj/iQVIvTOF+Yhwm46j4feev3svyQEPGLn8TcSLeWFnKqdSRONUF56GRQQ6gH27ykqMDf/M6IYTPjGL6cQFxEJyisCVuktWaRBa7/NgIBagqAkwJ4MyoWCOD5F6KGhSfRDswV+LZqBKKcU/eYYA=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=eu7QoXHC; arc=fail smtp.client-ip=40.107.93.77
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2651B18858B
+	for <iommu@lists.linux.dev>; Fri, 23 Aug 2024 16:31:09 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1724430670; cv=none; b=kWHGCtMI76+ICgCCKsHXXjNH1D8zG6fith+mS3bGsvgX0/iQFXxTdKQ+tgerzVhCOvkJjvtF0c8tLxGidFFsERMM08JhaJg7mfkJw009R1xKFCEqb3YUIZQKtgmk6BJ2A4CZZed2WfsEZR7NHRtMmlt5AA/bFm7c82BXztm82GE=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1724430670; c=relaxed/simple;
+	bh=9lHM6b+ActxegeEXQPz6BAagep9zzVNwTWfk3BJdMHY=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=DEMrZTRVVZgNLefHq7Y/p6SgjVFFTrK9JBUu7SXtAR6ep/qYDMjO3HGJoeJNXugfFBKoER3RvuDwkLgF6Z+cndbZD6f4ti1SRj91qaTnNREt+OrQGFdQR3g6s202HbM2wZ5gwE3XBCznRwIwcTyRZ6mf3pa0oQUvrquwR9Ylbuo=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=fYr78buC; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="eu7QoXHC"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=VDYv7TD27pxxVjI2do2OwIrrYgcd+QKIWqgLcDOU1XGoyaPB3T9oMrvEgWK1xn3wNCkbRbeui0ELbThDea2P+69DMtP5JEaEW29oH2AXSusvvl4nT5h4x4B0fny1dhbtTuYtU64e57ERtjrlRN0bFRCi6KVntnIjRLbwOxpM00j9DdFGL3KZ2aAJIPctnlPLkuK3SgS3lQCN5zPR8Trtli+wo9JLGWgOCJ1luZ2mrUJJR/55y0ExcrWrzl4Fo8nhJCJ+3IhXKusEgdqP2kFgn2pJ8mvehlJpqHuZApUA43esvGLHVSLpLy3qZFOpfxHlkHdnTEgGMENyDBoL2rfJzw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=5zbNR9oRln4sjy3i+6mGN8H4/ABGzLMHl881jNNwnLY=;
- b=u0G26iOlfoNUKB3KPY6X29N9CRE6gaC3kj6MEbUI1ps+E1m/5aSpOljTHpvTbz4/BT7oyrZJTjBe5WRcm0BJugVD+aOXjAU6z9arW11tbuaD1vBA7IdvoWsdddmYjCvOsMF8k9tpVrEXtRmEONH+iYHe1x2lxF2HBRiiO+sVBhl0RxrAbV/9ct4y2FcQkgMriitM7Ao4Hj/QLbmiNIqKMYpPIuBA4esAPRoQdePNFkW1bRFqf2cHWPMOtRsDXXHE1z3hH5VsvbhxZlUt0Phw7VcrOaZS5lU/ojbT/qg+KNVXpOsnBIME1gbRWD1pEFohN/l8kC9tH7DI7nZx7+mY0A==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 216.228.117.161) smtp.rcpttodomain=arm.com smtp.mailfrom=nvidia.com;
- dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
- dkim=none (message not signed); arc=none (0)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=5zbNR9oRln4sjy3i+6mGN8H4/ABGzLMHl881jNNwnLY=;
- b=eu7QoXHCJ3Z37L/hwO/mJu/4+cOjdTJ2MvEYh/KKlf/H4EtY5wEEAgoDZe/6E17B/HhRgREgDKORYq4e9n6U9nosnAwrCunbV7VwoUkWeT6n8nBchZZfHwJ/NzYEUVcZFaVFZkQakfDRVgs4eUJsog9gMqwxSRY7hIBbEiS6/AC8+QrVTo3ir+s/WgqPBj0eL1OMhh7g5RPMWh7TiUOEXYiBz5oHfvhoBKvGNg/n0kSDmmgmWrAYLKlr12XcWSipMvFGY9uFpqhTQ8IqvEgbshyhR7kGt6c8bAGnaLXlkbvaKbuC0nGQIydi6yAK4BbL4LA8w84+nIxsyNVEcF5mEA==
-Received: from MW4P222CA0028.NAMP222.PROD.OUTLOOK.COM (2603:10b6:303:114::33)
- by IA1PR12MB8586.namprd12.prod.outlook.com (2603:10b6:208:44e::9) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7875.20; Fri, 23 Aug
- 2024 16:29:53 +0000
-Received: from CO1PEPF000044FC.namprd21.prod.outlook.com
- (2603:10b6:303:114:cafe::59) by MW4P222CA0028.outlook.office365.com
- (2603:10b6:303:114::33) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7897.18 via Frontend
- Transport; Fri, 23 Aug 2024 16:29:52 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.117.161)
- smtp.mailfrom=nvidia.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=nvidia.com;
-Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 216.228.117.161 as permitted sender) receiver=protection.outlook.com;
- client-ip=216.228.117.161; helo=mail.nvidia.com; pr=C
-Received: from mail.nvidia.com (216.228.117.161) by
- CO1PEPF000044FC.mail.protection.outlook.com (10.167.241.202) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.7897.4 via Frontend Transport; Fri, 23 Aug 2024 16:29:52 +0000
-Received: from rnnvmail202.nvidia.com (10.129.68.7) by mail.nvidia.com
- (10.129.200.67) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1544.4; Fri, 23 Aug
- 2024 09:29:36 -0700
-Received: from rnnvmail204.nvidia.com (10.129.68.6) by rnnvmail202.nvidia.com
- (10.129.68.7) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1544.4; Fri, 23 Aug
- 2024 09:29:36 -0700
-Received: from Asurada-Nvidia (10.127.8.12) by mail.nvidia.com (10.129.68.6)
- with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1544.4 via Frontend
- Transport; Fri, 23 Aug 2024 09:29:34 -0700
-Date: Fri, 23 Aug 2024 09:29:32 -0700
-From: Nicolin Chen <nicolinc@nvidia.com>
-To: Jason Gunthorpe <jgg@nvidia.com>
-CC: Alyssa Rosenzweig <alyssa@rosenzweig.io>, <asahi@lists.linux.dev>,
-	<iommu@lists.linux.dev>, Joerg Roedel <joro@8bytes.org>,
-	<linux-arm-kernel@lists.infradead.org>, <linux-kselftest@vger.kernel.org>,
-	Robin Murphy <robin.murphy@arm.com>, Shuah Khan <shuah@kernel.org>, "Will
- Deacon" <will@kernel.org>, Eric Auger <eric.auger@redhat.com>, Janne Grunau
-	<j@jannau.net>, Joerg Roedel <jroedel@suse.de>, Kevin Tian
-	<kevin.tian@intel.com>, Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
-	Lixiao Yang <lixiao.yang@intel.com>, Hector Martin <marcan@marcan.st>,
-	Matthew Rosato <mjrosato@linux.ibm.com>, <patches@lists.linux.dev>, "Sven
- Peter" <sven@svenpeter.dev>, Will Deacon <will.deacon@arm.com>, Yi Liu
-	<yi.l.liu@intel.com>, Yong Wu <yong.wu@mediatek.com>
-Subject: Re: [PATCH rc 1/2] iommufd: Do not allow creating areas without READ
- or WRITE
-Message-ID: <Zsi47Ek88/f42hDd@Asurada-Nvidia>
-References: <0-v1-1211e1294c27+4b1-iommu_no_prot_jgg@nvidia.com>
- <1-v1-1211e1294c27+4b1-iommu_no_prot_jgg@nvidia.com>
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="fYr78buC"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7526FC4AF09;
+	Fri, 23 Aug 2024 16:31:08 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1724430669;
+	bh=9lHM6b+ActxegeEXQPz6BAagep9zzVNwTWfk3BJdMHY=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=fYr78buCC1gYGOI3tcrrxzpHtxq1YOovPXDlBfUJNorHY5LY2VCvDLrANvNbPy0XV
+	 v7m7ZVuz36nSiCAr8A8rdd9p43ou08vyjQAIx7JFIUieNTdrGP7m2v/Kp7S0Z1F/Qt
+	 fIZqpE4pIi/TByg4eynNhhnmOaTnabXknhz1f1cL2rrYEbibwUCcxhNHU2hi9vyXfS
+	 QeaEvSxA0hQCkdU23xmo5+Y3nBRRgZixgCSJF6KHYbfRW/Lv/9vtWflgPRheTCSmNx
+	 urTMTHPcAfFXCTioIWPdh5Uc34jtVXO4RDvXKN0qh8N/DRtBkJGHwdhmcTBCCke/IQ
+	 DRoMh/sKY87Ew==
+Date: Fri, 23 Aug 2024 17:31:05 +0100
+From: Will Deacon <will@kernel.org>
+To: Pranjal Shrivastava <praan@google.com>
+Cc: Joerg Roedel <joro@8bytes.org>, Robin Murphy <robin.murphy@arm.com>,
+	Mostafa Saleh <smostafa@google.com>, iommu@lists.linux.dev,
+	Daniel Mentz <danielmentz@google.com>
+Subject: Re: [PATCH] iommu/arm-smmu-v3: Print better events records
+Message-ID: <20240823163104.GD851@willie-the-truck>
+References: <20240816211722.1404070-1-praan@google.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <1-v1-1211e1294c27+4b1-iommu_no_prot_jgg@nvidia.com>
-X-NV-OnPremToCloud: ExternallySecured
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: CO1PEPF000044FC:EE_|IA1PR12MB8586:EE_
-X-MS-Office365-Filtering-Correlation-Id: 95ce5f87-4f12-4fdf-0fab-08dcc390d0d4
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|1800799024|36860700013|376014|7416014|82310400026;
-X-Microsoft-Antispam-Message-Info:
-	=?us-ascii?Q?Inmg3XNRv/LzxdcsgMLGDHHNIUS9IO/qpKWiIS3QJYUDLeqGK+ZoAN1fhuAW?=
- =?us-ascii?Q?B0bgO5kzCV4uq8pg2BPgaykXqH6W8B6Vt1l38X5JrSNXzxbGAQGwmTgYBHvm?=
- =?us-ascii?Q?faOlcy8H+uEFs/5m137FKv6OlqTzbxKnQmsGg/JNhi0taNaebW8kgjYu65Rw?=
- =?us-ascii?Q?Kr8ONUbuuTO7s5dr7S2jcTidNEP08fpI6UnikwKuA7LyLjs3b5Nk9v+OBVN7?=
- =?us-ascii?Q?ylCkh/A/9yOh4DEBbnTvwXaE/7UtCGDZtgX6HnaniWBO6eB82XVJVSIKaY0+?=
- =?us-ascii?Q?11PebbPb3zKWinuHv/ueYKJsYWue6BKkpGKJt1ItddCDuIM2c3k4svBbyQRu?=
- =?us-ascii?Q?6D8LhPOqvTzqJ6DY/aO6vZWK3BLubFMF13nqBNtjw5oV5o5AeZg1inAADP89?=
- =?us-ascii?Q?mINeHbdo1jTJXXkBuClAkl5ko71uLjbMz/Y02a4JIXQqZXwkVizvNL1ijFSJ?=
- =?us-ascii?Q?jkIQZWdm48tYi7tXk3hLfSaCV1KAL6SvbntyVJ2xA9Ao7GuLkdM5RUg8zySu?=
- =?us-ascii?Q?uzfVIBBeb+wWHblNhwAxVZWX1molYv31DFgoNkQYIN7YZBdcOaNz4kAjEsmq?=
- =?us-ascii?Q?l1HmrF2qdQgSb0xpSacCUjF/P2rh89v3SBsNHHd7u3RfRMEtNNHshop+dfsL?=
- =?us-ascii?Q?+QTD1EDg3MbaS9jeBS/LQE38dVbGe/s3zRotHlinr1wwM+UmHbemo5NFh4vd?=
- =?us-ascii?Q?yhqIcyDirdwE/VLGkgOoRXp6BUZ6uTv6G+fmsDT5Fhk2Y+Xaa0shuKazPMeN?=
- =?us-ascii?Q?retk6An/YNMhImGyhbiXayyHk4EUAQwE9TABqNOtvJ60ptvLhVWzWQ7Sc05d?=
- =?us-ascii?Q?X3mKuhkX/hVVRvHGXl7A92U5xP+UrDhBT+YL1kIiLp/jgBzxg1FU4/DY/iNP?=
- =?us-ascii?Q?f6KXK9/7FU10Vo/eKOiqst77w/nqdbATIMPoNUK5swU5ZQvPEzx2SIB/pyoT?=
- =?us-ascii?Q?0HBrbKciPw93isLf+4nC7hgmi3U4sQMIkN7kbRJ3hwNVMdGmgoyvHY0FNklP?=
- =?us-ascii?Q?QRWoOoNnphLa7lc3l+RC0XRaRXl4WGtk5WiE7UGLs7scoTxJKLxVZTNkl79C?=
- =?us-ascii?Q?+YmiTAkNYIVXSPKSZABjo/ClAL8FXKxE2Q+BdKNJp8hqCuRKuKxqtGXqHEkr?=
- =?us-ascii?Q?58uMmVz2+zaCnLogf8FWhNYYcF0gnp/yFNWLuLkL3OBKUtUsy3wX1Vh2LwAV?=
- =?us-ascii?Q?EFr5HAfzb/HKT4Ii3mIWRI764zRyoGv6sAWUHHiELgxUqQcsr9NesipRS/yj?=
- =?us-ascii?Q?qDkPFbtPm1OKgtN7CzDtGMIHzL1Bmk6yCvMBWXN7iZdCsENq9oaLetSoR5bJ?=
- =?us-ascii?Q?ZPeh1zH7iYHY87WHBDhietQ58EdCXgzBzrlzqgRF9OgwI7be9h3tKQQdwKCA?=
- =?us-ascii?Q?vNFWpyg2OpVGYbAObVhYh3H4iCYX8gMjgYAHFEGud2YiLLqFTWjD7oVkS9ae?=
- =?us-ascii?Q?5K3AEfUb/hgmg1j4rBM0E2avveaDjj1j?=
-X-Forefront-Antispam-Report:
-	CIP:216.228.117.161;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc6edge2.nvidia.com;CAT:NONE;SFS:(13230040)(1800799024)(36860700013)(376014)(7416014)(82310400026);DIR:OUT;SFP:1101;
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 23 Aug 2024 16:29:52.4470
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 95ce5f87-4f12-4fdf-0fab-08dcc390d0d4
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.117.161];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource:
-	CO1PEPF000044FC.namprd21.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: IA1PR12MB8586
+In-Reply-To: <20240816211722.1404070-1-praan@google.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 
-On Thu, Aug 22, 2024 at 11:45:54AM -0300, Jason Gunthorpe wrote:
-> This results in passing 0 or just IOMMU_CACHE to iommu_map(). Most of
-> the page table formats don't like this:
-> 
->   amdv1 - -EINVAL
->   armv7s - returns 0, doesn't update mapped
->   arm-lpae - returns 0 doesn't update mapped
->   dart - returns 0, doesn't update mapped
->   VT-D - returns -EINVAL
-> 
-> Unfortunately the three formats that return 0 cause serious problems:
-> 
->  - Returning ret = but not uppdating mapped from domain->map_pages()
->    causes an infinite loop in __iommu_map()
-> 
->  - Not writing ioptes means that VFIO/iommufd have no way to recover them
->    and we will have memory leaks and worse during unmap
-> 
-> Since almost nothing can support this, and it is a useless thing to do,
-> block it early in iommufd.
-> 
-> Cc: stable@kernel.org
-> Fixes: aad37e71d5c4 ("iommufd: IOCTLs for the io_pagetable")
-> Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
+Hi Pranjal,
 
-Reviewed-by: Nicolin Chen <nicolinc@nvidia.com>
+On Fri, Aug 16, 2024 at 09:17:22PM +0000, Pranjal Shrivastava wrote:
+> Currently, the driver dumps the hex for a received event, improve this
+> by parsing out fields from an event for easier-to-read event records.
+> 
+> Signed-off-by: Daniel Mentz <danielmentz@google.com>
+> Signed-off-by: Pranjal Shrivastava <praan@google.com>
+> ---
+>  drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 102 ++++++++++++++++++--
+>  drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h |  10 ++
+>  2 files changed, 105 insertions(+), 7 deletions(-)
 
-I also tried both patches with io-pgtable-arm and didn't see any
-issue, since they tends to fix a corner case I think.
+Thanks for doing this. I've got used to the useless messages we currently
+print, but this will be a tonne beter.
 
-Nicolin
+> 
+> diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+> index a31460f9f3d4..993ded10c7b1 100644
+> --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+> +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+> @@ -1783,9 +1783,102 @@ static int arm_smmu_handle_evt(struct arm_smmu_device *smmu, u64 *evt)
+>  	return ret;
+>  }
+>  
+> +static void arm_smmu_print_evt_record(struct arm_smmu_device *smmu, u64 *evt)
+> +{
+> +	static const char * const evts[] = {
+> +		/* Bad config events */
+> +		[EVT_ID_BAD_SID_CONFIG] = "C_BAD_STREAMID",
+> +		[EVT_ID_BAD_STE_CONFIG] = "C_BAD_STE",
+> +		[EVT_ID_BAD_CD_CONFIG] = "C_BAD_CD",
+> +		[EVT_ID_BAD_SSID_CONFIG] = "C_BAD_SUBSTREAMID",
+> +		[EVT_ID_STREAM_DISABLED] = "F_STREAM_DISABLED",
+> +
+> +		/* Bad translation events */
+> +		[EVT_ID_TRANSLATION_FAULT] = "F_TRANSLATION",
+> +		[EVT_ID_ADDR_SIZE_FAULT] = "F_ADDR_SIZE",
+> +		[EVT_ID_ACCESS_FAULT] = "F_ACCESS",
+> +		[EVT_ID_PERMISSION_FAULT] = "F_PERMISSION",
+> +
+> +		/* Bad fetch events */
+> +		[EVT_ID_STE_FETCH_FAULT] = "F_STE_FETCH",
+> +		[EVT_ID_CD_FETCH_FAULT] = "F_CD_FETCH",
+> +		[EVT_ID_VMS_FETCH_FAULT] = "F_VMS_FAULT"
+> +	};
+> +
+> +	static const char * const class_str[] = {
+> +		[0] = "CD",
+> +		[1] = "TTD",
+> +		[2] = "IN",
+> +		[3] = "RES",
+> +	};
+
+You can move these arrays out of this function...
+
+> +
+> +	const char *master_name = "(unassigned sid)";
+> +	struct arm_smmu_master *master;
+> +	u64 iova, ipa;
+> +	bool ssid_valid;
+> +	u32 sid, ssid;
+> +	u8 evt_id, class;
+> +	int i;
+> +
+> +	/* Pick out the good stuff */
+> +	evt_id = FIELD_GET(EVTQ_0_ID, evt[0]);
+> +	sid = FIELD_GET(EVTQ_0_SID, evt[0]);
+> +	ssid_valid = evt[0] & EVTQ_0_SSV;
+> +	ssid = ssid_valid ? FIELD_GET(EVTQ_0_SSID, evt[0]) : IOMMU_NO_PASID;
+> +	class = FIELD_GET(EVTQ_1_CLASS, evt[1]);
+> +	iova = FIELD_GET(EVTQ_2_ADDR, evt[2]);
+> +	ipa = FIELD_GET(EVTQ_3_IPA, evt[3]);
+
+You could encapsulate this in e.g.
+
+	struct arm_smmu_event {
+		u8	id;
+		u32	sid;
+		u32	ssid;
+		...
+		u64	*raw;
+	};
+
+> +
+> +	mutex_lock(&smmu->streams_mutex);
+> +	master = arm_smmu_find_master(smmu, sid);
+> +	if (master)
+> +		master_name = dev_name(master->dev);
+> +	mutex_unlock(&smmu->streams_mutex);
+> +
+> +	switch (evt_id) {
+> +	case EVT_ID_BAD_SID_CONFIG:
+> +	case EVT_ID_BAD_STE_CONFIG:
+> +	case EVT_ID_BAD_SSID_CONFIG:
+> +	case EVT_ID_BAD_CD_CONFIG:
+> +	case EVT_ID_STREAM_DISABLED:
+> +		dev_err(smmu->dev, "Bad smmu config - %s client %s sid 0x%08x.0x%05x\n",
+> +				evts[evt_id], master_name, sid, ssid);
+> +		break;
+
+and have separate dumper functions here, I think.
+
+> +	case EVT_ID_TRANSLATION_FAULT:
+> +	case EVT_ID_ADDR_SIZE_FAULT:
+> +	case EVT_ID_ACCESS_FAULT:
+> +	case EVT_ID_PERMISSION_FAULT:
+> +		dev_err(smmu->dev, "Translation fault:\n");
+> +		dev_err(smmu->dev, "\t%s client %s sid 0x%08x.0x%05x: iova = %#llx ipa = %#llx (%s%s%s%s%s%s)\n",
+> +			    evts[evt_id], master_name, sid, ssid, iova, ipa,
+> +			    FIELD_GET(EVTQ_1_PnU, evt[1]) ? "Priv " : "Unpriv ",
+> +			    FIELD_GET(EVTQ_1_InD, evt[1]) ? "Inst " : "Data ",
+> +			    FIELD_GET(EVTQ_1_RnW, evt[1]) ? "Read " : "Write ",
+> +			    FIELD_GET(EVTQ_1_S2, evt[1]) ? "S2 " : "S1 ", class_str[class],
+> +			    ((evt_id == EVT_ID_PERMISSION_FAULT) && (class == EVTQ_1_CLASS_TT)) ?
+> +			    (FIELD_GET(EVTQ_1_TT_READ, evt[1]) ? " TTD Read" : " TTD Write")
+> +			    : "");
+
+i.e. call arm_smmu_dump_translation_fault(&event) here.
+
+> +		break;
+> +
+> +	case EVT_ID_STE_FETCH_FAULT:
+> +	case EVT_ID_CD_FETCH_FAULT:
+> +	case EVT_ID_VMS_FETCH_FAULT:
+> +		dev_err(smmu->dev, "Unable to fetch data structure - bad fetch address\n");
+> +		dev_err(smmu->dev, "\t%s client %s sid 0x%08x.0x%05x: fetch addr = %#llx\n",
+> +				evts[evt_id], master_name, sid, ssid, ipa);
+> +		break;
+> +	}
+> +
+> +	dev_info(smmu->dev, "event 0x%02x received:\n", evt_id);
+> +	for (i = 0; i < EVTQ_ENT_DWORDS; ++i)
+> +		dev_info(smmu->dev, "\t0x%016llx\n",
+> +			 (unsigned long long)evt[i]);
+> +}
+
+We should probably be consistent with dev_info() vs dev_err().
+
+Will
