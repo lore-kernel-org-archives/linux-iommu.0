@@ -1,197 +1,87 @@
-Received: from NAM12-MW2-obe.outbound.protection.outlook.com (mail-mw2nam12on2089.outbound.protection.outlook.com [40.107.244.89])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EFAFB14387B;
-	Fri, 23 Aug 2024 13:33:35 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.244.89
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1724420017; cv=fail; b=omu3Q82to7j0HrgLpcWERaEUD4aNsV8xYSXfoUzKCc3oaZkTrVjMptuy0K6n4kryKwtjKaaQeTG3yyle2+jOsAGsb3s7Qz/+liFgXoeQv6/jvmpyggr98DxnDFHfOHvXEQp18UL7RgZoRomt9VdDc9BZNWvt5kRxYbcBrWXo/O8=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1724420017; c=relaxed/simple;
-	bh=cQInEfLb+YpCGMaA9/lL1qa/2qBqFLgxaefuUICWDzQ=;
-	h=From:To:CC:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=AVB6Ti1qC5pmakb8sOJspAtJ6cLH2pYUlcmLET2TxSRkEsB2QgWgr9urLzWydNWEJ1qEeGQ8VXovMCLbl1yhcJRgAbfTYP9z5pbv4HX7oWXid3atda+NY7yLjM2jShsQyFmwSRrS3S7qT9d/U3zFRiKfNdqJShXOqV/oz+7ageU=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com; spf=fail smtp.mailfrom=amd.com; dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b=ITsEUhh3; arc=fail smtp.client-ip=40.107.244.89
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=amd.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 46A96188903;
+	Fri, 23 Aug 2024 15:21:53 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1724426514; cv=none; b=p3tBFtDULLIMju9zukVgm/FBxiVhYB4QvXAp+QnvTzaCuhIgx8GlT7dhEhQ6T1rN+iGznvZvcCOi8fGYN/rgwQbSWUHaZqCziZw6h7+TLpyTkJiyJHqv0mSYtrFaAFv3XhkCtVnywOcUdQm4zuYkaEdYY+Wq71LPZIP4r1c+Fio=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1724426514; c=relaxed/simple;
+	bh=z/xlA997HrrjimGdMRbL+kogTgPfZTfDFAxkUoJUHPQ=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=WgvnfCDK3IdrHkU3F4Tzq7hexTcM7dLvHNjHr+CdaYQtjl2MTRbYMLXOkT+Hnm5qIwm2tgAH6G3HhTyyM9ftVG/pRl24uq0nXpbBJtUnNPu9CUS38gVYUopBW1bCGaVHMyamhtwhxyzq/YM+ztBJ7CshapwMHaLtuyhUJwfiwYU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Z028GTwJ; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b="ITsEUhh3"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=EbJ3cYNn5BNf5OIRmqFhWJ+O8g/6+k1DEk97RQq3H9JsSZONzM79nENnWCitmkc8ClNknDxLL4WFQQDv8V3jA8cjvTjMN70Ns8IBq7zRgIfhco6iTZlJXe63XU2uQ6SGtXj6/MrLvqjeZ9cW+sAeUrBGu/S8rci5FocepurnTqTOtzW0f3phQFSMpDTbqhkdXf1x7RYj2Q+aXye4bKnTy6ABQ//Tl41Z/LUP3g0xIJTswn9StQFhHP2fVMpBqR/oGxLAmpQXnaeVS+xmuHJysmqUVrCRQhI4wAwv/1Hn9EqmFjqs+sw+9MkhdMQF7yvdY3n4QHpo3SF30uX3eDRzkA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=4t3kGZG9vXAAI3X+GM/4KY5BbP775kCOx+yOmL5/QbI=;
- b=xev29ZPTwXRiHvaZUSoHkQrRcxbx2zOn86IQGhRIJtqYdHt6vV1bDwlHV+FhblZpRrvqS6fbJXxx0DSrNrdo5HEZGXwPJEeXuet8FiOxiBDfhHGs6RUbkNqIuixclLRMd1gXFXI9Z/ymDk1Esc4ZpskQuqKlW74rh3ZiFAMs6gbWxb0vSp5tFX7J5/Ep15VmQ4zk3Vrp0giWnHqz3gIcXrU6Rpvk+nLyqeac7z1OhNBHXRbKOInoqrXEBzsZmqXFpWV3FZ5uwxS1+tCZGm0Ml0KjxgoD+2vLt9J0ewMIZmA3KLR1l69UkmcUF/Axy7LcGDpX2cafJq1MegujClazwQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 165.204.84.17) smtp.rcpttodomain=vger.kernel.org smtp.mailfrom=amd.com;
- dmarc=pass (p=quarantine sp=quarantine pct=100) action=none
- header.from=amd.com; dkim=none (message not signed); arc=none (0)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=4t3kGZG9vXAAI3X+GM/4KY5BbP775kCOx+yOmL5/QbI=;
- b=ITsEUhh3KN9HqK1PNHC2VusRaJus3E5PLko3KGjK3yneEsdjPA45B9rH81ENroHuaE0V/eWwvguCyzhk0Rjj70ZpPWT2jLoTfbFt5MWtnG2cBXe00tbzMxcYIQfGSryu8c061deoWVAhaZtcxmt28XEoMbV/FdNZdoxZ8297P8I=
-Received: from PH7PR10CA0006.namprd10.prod.outlook.com (2603:10b6:510:23d::25)
- by PH7PR12MB5901.namprd12.prod.outlook.com (2603:10b6:510:1d5::19) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7897.19; Fri, 23 Aug
- 2024 13:33:32 +0000
-Received: from CY4PEPF0000EE37.namprd05.prod.outlook.com
- (2603:10b6:510:23d:cafe::91) by PH7PR10CA0006.outlook.office365.com
- (2603:10b6:510:23d::25) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7897.19 via Frontend
- Transport; Fri, 23 Aug 2024 13:33:32 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 165.204.84.17)
- smtp.mailfrom=amd.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=amd.com;
-Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
- 165.204.84.17 as permitted sender) receiver=protection.outlook.com;
- client-ip=165.204.84.17; helo=SATLEXMB04.amd.com; pr=C
-Received: from SATLEXMB04.amd.com (165.204.84.17) by
- CY4PEPF0000EE37.mail.protection.outlook.com (10.167.242.43) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.20.7897.11 via Frontend Transport; Fri, 23 Aug 2024 13:33:31 +0000
-Received: from aiemdee.2.ozlabs.ru (10.180.168.240) by SATLEXMB04.amd.com
- (10.181.40.145) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2507.39; Fri, 23 Aug
- 2024 08:33:25 -0500
-From: Alexey Kardashevskiy <aik@amd.com>
-To: <kvm@vger.kernel.org>
-CC: <iommu@lists.linux.dev>, <linux-coco@lists.linux.dev>,
-	<linux-pci@vger.kernel.org>, Suravee Suthikulpanit
-	<suravee.suthikulpanit@amd.com>, Alex Williamson
-	<alex.williamson@redhat.com>, Dan Williams <dan.j.williams@intel.com>,
-	<pratikrajesh.sampat@amd.com>, <michael.day@amd.com>, <david.kaplan@amd.com>,
-	<dhaval.giani@amd.com>, Santosh Shukla <santosh.shukla@amd.com>, Tom Lendacky
-	<thomas.lendacky@amd.com>, Michael Roth <michael.roth@amd.com>, "Alexander
- Graf" <agraf@suse.de>, Nikunj A Dadhania <nikunj@amd.com>, Vasant Hegde
-	<vasant.hegde@amd.com>, Lukas Wunner <lukas@wunner.de>, Alexey Kardashevskiy
-	<aik@amd.com>
-Subject: [RFC PATCH 21/21] pci: Define pci_iomap_range_encrypted
-Date: Fri, 23 Aug 2024 23:21:35 +1000
-Message-ID: <20240823132137.336874-22-aik@amd.com>
-X-Mailer: git-send-email 2.45.2
-In-Reply-To: <20240823132137.336874-1-aik@amd.com>
-References: <20240823132137.336874-1-aik@amd.com>
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Z028GTwJ"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 30861C32786;
+	Fri, 23 Aug 2024 15:21:51 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1724426513;
+	bh=z/xlA997HrrjimGdMRbL+kogTgPfZTfDFAxkUoJUHPQ=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=Z028GTwJDVdrD1dy3EjvhFp7/d7QDBryXCZodsxMo5qKnH3PWsQ/4+Wm6eTEOplEp
+	 kyBxZ8jGqrPeG1Xt8UjF3BY6dJ8CDvKsug5GIhKRmTuCV4NrVNBw8ZaqqiDNn028+N
+	 NVE4bPZFx8i7vIG9zzXW4Gy2cPxD11soRQ0JnmfdL+f5+tDk7wneORN70sI2Sa0XGl
+	 z207z0JmHzApJt8hYOYpgbu5My/ukNBLeso2W2h8bw5s2cXb4TcR+6oAOuUZgzBM13
+	 VU1auf4S0UCnI1WUEFGc62AHSLTSq7/h8ij4AjUY+ZmCIeixPeD8mntVJWiTS4ZRVS
+	 Ksi6NBAv4Cdhg==
+Date: Fri, 23 Aug 2024 16:21:48 +0100
+From: Will Deacon <will@kernel.org>
+To: Trilok Soni <quic_tsoni@quicinc.com>
+Cc: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
+	Konrad Dybcio <konradybcio@gmail.com>,
+	Rob Clark <robdclark@gmail.com>,
+	Konrad Dybcio <konradybcio@kernel.org>,
+	Bjorn Andersson <andersson@kernel.org>,
+	Robin Murphy <robin.murphy@arm.com>, Joerg Roedel <joro@8bytes.org>,
+	Marijn Suijten <marijn.suijten@somainline.org>,
+	iommu@lists.linux.dev, linux-arm-msm@vger.kernel.org,
+	linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+	Konrad Dybcio <konrad.dybcio@linaro.org>,
+	Sumit Semwal <sumit.semwal@linaro.org>
+Subject: Re: [PATCH] iommu/arm-smmu-qcom: Work around SDM845 Adreno SMMU w/
+ 16K pages
+Message-ID: <20240823152147.GA396@willie-the-truck>
+References: <20240729-topic-845_gpu_smmu-v1-1-8e372abbde41@kernel.org>
+ <osxynb352ubxgcb5tv3u7mskkon23nmm3gxkfiiiqss5zp67jf@fv5d6bob2rgp>
+ <CAF6AEGuWULwrJDWW37nQhByTpc-2bBYVv3b_Ac6OCwaJ83Ed9w@mail.gmail.com>
+ <CAA8EJpp9zaQSKbis7J9kYTudTt=RFhfbzeayz3b-VbGQENtqeA@mail.gmail.com>
+ <3332c732-4555-46bf-af75-aa36ce2d58df@gmail.com>
+ <CAA8EJppZsNTqh_KxD=BWXjmedA1ogeMa74cA=vVbCWAU7A-qgQ@mail.gmail.com>
+ <d766e2e8-9f3f-af3a-bb5e-633b11bce941@quicinc.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-ClientProxiedBy: SATLEXMB03.amd.com (10.181.40.144) To SATLEXMB04.amd.com
- (10.181.40.145)
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: CY4PEPF0000EE37:EE_|PH7PR12MB5901:EE_
-X-MS-Office365-Filtering-Correlation-Id: 42e32eb1-6997-4d38-5189-08dcc3782df5
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|82310400026|36860700013|376014|1800799024;
-X-Microsoft-Antispam-Message-Info:
-	=?us-ascii?Q?Dhlz3GlVofy7STNa8XIb5cur/jAnm6CXKDtHv38GIr/CAlYmQrY9l/hJZrrX?=
- =?us-ascii?Q?3ANgQst8LLRQ1y44i9SNZ+2UKl2gXd3aGo4DJG+BW14f0wTwYJCSd6/N5bvp?=
- =?us-ascii?Q?r38e2U6e9FWeYJln6JcBRE54f1+ENFLec/3+egBlf0CEagwN1Kpdjy6cjSGc?=
- =?us-ascii?Q?2jtnrl36wSddNIB8vAEQBvfiph8puqSe4Av/FuTp8wCR3F1/86mCvpcXJ7+v?=
- =?us-ascii?Q?hjwaUXlsJCpGnbjAA7S9RFU3QjrBb52KBF8JCAlq5bDgoUeuLq4YbKP89b3Q?=
- =?us-ascii?Q?8euf/5MgH6KRY7l11bUU/hS88iV44J/Wh5F+ykx1v46cNXJc0e/kTLOlECcI?=
- =?us-ascii?Q?+8TxAqDNsEEa916V6BKREt04ypo9I+Qk8HeZfHPmM8jVYCVrpifqFdmjF3w6?=
- =?us-ascii?Q?do21xnPJYoa4jncYgXOWeMyb80h/h4tcGF4E5gtnKC1QzsglydEAjtMaRPKa?=
- =?us-ascii?Q?Vg/VKnSvJZUygoJQ3ujZWUnaGvE4ysp+QOvZSVhF2/7vp6OioLwv8ruBcX/N?=
- =?us-ascii?Q?rHa5aB4/3NYzQXLutGelcY6BO+bz1TDLPsvrLerLGdGdGeYb/m452rL1l0xu?=
- =?us-ascii?Q?dYOiRpvELq7zlJFrYJAISODWNMbWEHwXXb7a/aBOewb7vn/DSk0pa6+jJ/cC?=
- =?us-ascii?Q?9bDxnc+rqdywQZVK+sOCf85Qt7twJpR7vRahiliub7lWPgsqqFEt+EZGACXB?=
- =?us-ascii?Q?HopvEuUp4I4xiFaMKGAgkHY0chP/5muvU/jWsM7jxPuTzB04QKQuMK1AacYu?=
- =?us-ascii?Q?ojukm61BY8KpKq4oJFYTrPeF4/FbTzc4vSuhjfXekbkP+a7Ne9SNf4EdR9nC?=
- =?us-ascii?Q?WqrQ1wGJa5vJ5KXZ9uuli2K+WU4Omcr8qhhTQJIjuzPIE660zLWtOVl5crKZ?=
- =?us-ascii?Q?uB/029LuQL62sAPPKamf+Fs/QbuGEwW2FZfSTdNkUcCtn8os78TJ2Rxw7/80?=
- =?us-ascii?Q?P6VXyH+LXWbgvqWzGbCNOb2DyK3fnGKg9kn0xdbtwqJNf4Orsy762+7nPrjd?=
- =?us-ascii?Q?Xj9ZFLpE7c5HACpRYrUdvPBfhrb7xbtYfNg7rHrqDBWNQN2+c9c8J8LzRkIL?=
- =?us-ascii?Q?KupORIMtuFpkLc7fVUr2aljoLpi8rMGY3YKntiDWIr3BCGFoVL9cdoN6sKLn?=
- =?us-ascii?Q?m4imm8STRzuUA1E1U956eSa/SFeTwj2z9jXln/Xp92GmCyvf5g0wldsnUmnI?=
- =?us-ascii?Q?i4RXJdHbmATNNA0gYnbzHzNx3KkZN/lt4MmIaYbd3UQRgYkbdkq/sR/Idrq1?=
- =?us-ascii?Q?hNb9o0ebH+E+ozRdityOEKdUqICa1nCVLZyyRHCznlZ8fXuyDjl6CcNy40zk?=
- =?us-ascii?Q?QqJdPndrmm1OoX5om3d+tBy/rgBa1/6xH7aMl+c3t3bDqMTd0cmInxFntqxO?=
- =?us-ascii?Q?ht2s6Z3gL2OR/F+UOWjMVrtFL5m1BHgW4zDmWzk4Tu5c/sPLwgwZz8KPJY+o?=
- =?us-ascii?Q?aw2fEFiOv7lVoFXOa8Pwu6MUfC+2fCWK?=
-X-Forefront-Antispam-Report:
-	CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB04.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230040)(82310400026)(36860700013)(376014)(1800799024);DIR:OUT;SFP:1101;
-X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 23 Aug 2024 13:33:31.3061
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 42e32eb1-6997-4d38-5189-08dcc3782df5
-X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[SATLEXMB04.amd.com]
-X-MS-Exchange-CrossTenant-AuthSource:
-	CY4PEPF0000EE37.namprd05.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH7PR12MB5901
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <d766e2e8-9f3f-af3a-bb5e-633b11bce941@quicinc.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 
-So far PCI BARs could not be mapped as encrypted so there was no
-need in API supporting encrypted mappings. TDISP is adding such
-support so add pci_iomap_range_encrypted() to allow PCI drivers
-do the encrypted mapping when needed.
+On Tue, Jul 30, 2024 at 10:16:00AM -0700, Trilok Soni wrote:
+> On 7/30/2024 1:50 AM, Dmitry Baryshkov wrote:
+> >>>>>> SDM845's Adreno SMMU is unique in that it actually advertizes support
+> >>>>>> for 16K (and 32M) pages, which doesn't hold for newer SoCs.
+> > My question is about forbidding 16k pages for sdm845 only or for other
+> > chips too. I'd assume that it shouldn't also work for other smmu-v2
+> > platforms.
+> 
+> Yes, my understanding was that SMMUv2 based IPs doesn't have 16k support
+> and it is only starting from SMMUv3. 
 
-Signed-off-by: Alexey Kardashevskiy <aik@amd.com>
----
- include/asm-generic/pci_iomap.h |  4 ++++
- drivers/pci/iomap.c             | 24 ++++++++++++++++++++
- 2 files changed, 28 insertions(+)
+I'm not sure about that. The architecture doc for SMMUv2 talks about the
+AArch64 translation regime in section 1.5 and bit 13 of SMMU_IDR2 says:
 
-diff --git a/include/asm-generic/pci_iomap.h b/include/asm-generic/pci_iomap.h
-index 8fbb0a55545d..d7b922c5ab86 100644
---- a/include/asm-generic/pci_iomap.h
-+++ b/include/asm-generic/pci_iomap.h
-@@ -15,6 +15,10 @@ extern void __iomem *pci_iomap_wc(struct pci_dev *dev, int bar, unsigned long ma
- extern void __iomem *pci_iomap_range(struct pci_dev *dev, int bar,
- 				     unsigned long offset,
- 				     unsigned long maxlen);
-+extern void __iomem *pci_iomap_range_encrypted(struct pci_dev *dev,
-+					       int bar,
-+					       unsigned long offset,
-+					       unsigned long maxlen);
- extern void __iomem *pci_iomap_wc_range(struct pci_dev *dev, int bar,
- 					unsigned long offset,
- 					unsigned long maxlen);
-diff --git a/drivers/pci/iomap.c b/drivers/pci/iomap.c
-index a715a4803c95..2bf8ef4f672b 100644
---- a/drivers/pci/iomap.c
-+++ b/drivers/pci/iomap.c
-@@ -52,6 +52,30 @@ void __iomem *pci_iomap_range(struct pci_dev *dev,
- }
- EXPORT_SYMBOL(pci_iomap_range);
- 
-+void __iomem *pci_iomap_range_encrypted(struct pci_dev *dev,
-+					int bar,
-+					unsigned long offset,
-+					unsigned long maxlen)
-+{
-+	resource_size_t start = pci_resource_start(dev, bar);
-+	resource_size_t len = pci_resource_len(dev, bar);
-+	unsigned long flags = pci_resource_flags(dev, bar);
-+
-+	if (len <= offset || !start)
-+		return NULL;
-+	len -= offset;
-+	start += offset;
-+	if (maxlen && len > maxlen)
-+		len = maxlen;
-+	if (flags & IORESOURCE_IO)
-+		return NULL;
-+	if (flags & IORESOURCE_MEM)
-+		return ioremap_encrypted(start, len);
-+	/* What? */
-+	return NULL;
-+}
-+EXPORT_SYMBOL(pci_iomap_range_encrypted);
-+
- /**
-  * pci_iomap_wc_range - create a virtual WC mapping cookie for a PCI BAR
-  * @dev: PCI device that owns the BAR
--- 
-2.45.2
+  | PTFSv8_16kB, bit[13]
+  | Support for 16KB translation granule size. The possible values of this bit are:
+  | 0	The 16KB translation granule is not supported.
+  | 1	The 16KB translation granule is supported.
+  | In SMMUv1, this bit is reserved.
 
+so I think Konrad's patch is about right, but if you want to extend it
+to cover other implementations then that's fine too.
+
+Will
