@@ -1,113 +1,219 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from bee.tesarici.cz (bee.tesarici.cz [37.205.15.56])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 08A7729422;
-	Sat, 24 Aug 2024 16:20:44 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4DE547DA78;
+	Sat, 24 Aug 2024 19:56:46 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=37.205.15.56
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1724516445; cv=none; b=t58FvluxJ8IV3uQBO2uQGF5t6wAC8ueTqFWOXAp2E7IudBrYHuT/9AndSdyQAQQSl8qSe7SAYPp4eDWcH3bbD66zlCVMNEa9sgQoQbVt+Kouf8CCZYt4+6aRny+/G0rBDhCJ81siH0BYjM+O+2U/Uu50cXpUiOvrjZ9O53Rh1ZE=
+	t=1724529412; cv=none; b=S5i+h5yZXSOHb9YOkJOKAXBFQ+pUGErsmvtNLRncICXhNBvzaXje4KBYwsjUxE+noRwv8SvO3vuDim15yLKfXHpP0bbmabI0jRESJXiSIvhyegitgwiVkpOzaMkuKSA7CxjSmJQErEkVyIBoYzidOB3XfgTJdzu3M6yz8V7trnc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1724516445; c=relaxed/simple;
-	bh=4rNI7CjGB+bnr4YbBzsADFxzkV0n2pJVKnmY1DUCoX4=;
-	h=Date:From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:
-	 Content-Disposition:In-Reply-To; b=X/b07ZxlI3zt9jlcXuAxcJzX6pLkzglXpN5u8G9ybjsbbjPqNVb8xlNJ5nJv8SjgfhUkbHPQ+8gxmx75K9lJGBzVY+Bvbwr99kvMNr0JAHCTT/fAP+fY5uJCW4X6HYlG6Ge6OJx5u7Q1O0wvfKcVRDjb3SVs4LzhF619DqW1ec0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=GQkTiIup; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1724529412; c=relaxed/simple;
+	bh=tUc6wqBgvvSHEzhitXtazy+5fPbQNKmrQu5tbupGBZ0=;
+	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=H5A2LcQ0ZaCj9trzU4srK1q0uvXw1JDbrmjVpAkvEe0dowvk5OhglUyvwltXheEL9d11fTrKfNF0EzR4NBSsAS4i6aTZXsZvetJudAXvd4sW3HOtdJWysk2HWdoq2TsrXAjCyYOwZEFv59AL7CCiXr9aVQ3Uur4dHo33qPXgXcM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=tesarici.cz; spf=pass smtp.mailfrom=tesarici.cz; dkim=pass (2048-bit key) header.d=tesarici.cz header.i=@tesarici.cz header.b=k+tG6Lis; arc=none smtp.client-ip=37.205.15.56
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=tesarici.cz
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=tesarici.cz
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="GQkTiIup"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 430E5C32781;
-	Sat, 24 Aug 2024 16:20:44 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1724516444;
-	bh=4rNI7CjGB+bnr4YbBzsADFxzkV0n2pJVKnmY1DUCoX4=;
-	h=Date:From:To:Cc:Subject:In-Reply-To:From;
-	b=GQkTiIupJPchZZootglVD2UK/QSNanVaEIqCHfjcuHYBIch8WDBZJKvxq6zjkh7PO
-	 vx9ygHGVOMWl/k8Anvf9rCZlvke0zbJDTtWZtOEKkv4vwAWnciC9Mvw0tbdMSokgbT
-	 d1OGeDfy54m/3bfVYvu+SppuytFD21Bzo/Kd0AP/3iPLZy89PMjEbxXbmJstfSWMfS
-	 GMiRFqalQUuFha1MqzxEYyTZzOHeTAydNfgsao/y35O/JmDObOE4FRB8YvLPHWSIsy
-	 TjgiJ5JBWloaFqpknbYunxW+pUv+S8maIfWKEYsZlPM1olEHaxTgDLozx4ObaGqasz
-	 +XanfGedfSL6g==
-Date: Sat, 24 Aug 2024 11:20:42 -0500
-From: Bjorn Helgaas <helgaas@kernel.org>
-To: Mika Westerberg <mika.westerberg@linux.intel.com>
-Cc: Esther Shimanovich <eshimanovich@chromium.org>,
-	Bjorn Helgaas <bhelgaas@google.com>,
-	Rajat Jain <rajatja@google.com>,
-	"Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
-	Mario Limonciello <mario.limonciello@amd.com>,
-	Ilpo =?utf-8?B?SsOkcnZpbmVu?= <ilpo.jarvinen@linux.intel.com>,
-	iommu@lists.linux.dev, Lukas Wunner <lukas@wunner.de>,
-	linux-pci@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v4] PCI: Detect and trust built-in Thunderbolt chips
-Message-ID: <20240824162042.GA411509@bhelgaas>
+	dkim=pass (2048-bit key) header.d=tesarici.cz header.i=@tesarici.cz header.b="k+tG6Lis"
+Received: from meshulam.tesarici.cz (dynamic-2a00-1028-83b8-1e7a-4427-cc85-6706-c595.ipv6.o2.cz [IPv6:2a00:1028:83b8:1e7a:4427:cc85:6706:c595])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange ECDHE (P-256) server-signature RSA-PSS (2048 bits) server-digest SHA256)
+	(No client certificate requested)
+	by bee.tesarici.cz (Postfix) with ESMTPSA id D8C081EF371;
+	Sat, 24 Aug 2024 21:56:38 +0200 (CEST)
+Authentication-Results: mail.tesarici.cz; dmarc=fail (p=quarantine dis=none) header.from=tesarici.cz
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=tesarici.cz; s=mail;
+	t=1724529399; bh=jmAC944ISCidHnUwcR4x0UuSWh9TH7n54p4N1rya7jM=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+	b=k+tG6LisKBq7voHQ0bQ6+lBvUOcU2LoyXaJfiah5wNcUIauVh56QV0v9PFOeg6Drl
+	 Fr+oRwGly1ejLvF3qN6qwmuVgyq4nS9Uzpz73JNo2EyW55InLgf490RISl+cF2idpM
+	 CuPX/kj5djSrNU8RpJ5u9kd5pJp/cMwHU1IumdzgjBNfbzMtvoKgfLS8JrzJ79+ApU
+	 6uNPr7caYHUeRdr/dEPZZpQ4tkR2fzWl6BTDlesDjpjuxMHu+/VbuzSG4ZZDh3UzyP
+	 PdnheeGXY5skrcWIBrRbzThAvl0Ifzg8tNiIA7Lf9ecCbAaMoIH+yvyH4XBztvZe0v
+	 bMuGG9mOlbedA==
+Date: Sat, 24 Aug 2024 21:56:37 +0200
+From: Petr =?UTF-8?B?VGVzYcWZw61r?= <petr@tesarici.cz>
+To: Michael Kelley <mhklinux@outlook.com>
+Cc: "mhkelley58@gmail.com" <mhkelley58@gmail.com>, "kbusch@kernel.org"
+ <kbusch@kernel.org>, "axboe@kernel.dk" <axboe@kernel.dk>,
+ "sagi@grimberg.me" <sagi@grimberg.me>,
+ "James.Bottomley@HansenPartnership.com"
+ <James.Bottomley@HansenPartnership.com>, "martin.petersen@oracle.com"
+ <martin.petersen@oracle.com>, "kys@microsoft.com" <kys@microsoft.com>,
+ "haiyangz@microsoft.com" <haiyangz@microsoft.com>, "wei.liu@kernel.org"
+ <wei.liu@kernel.org>, "decui@microsoft.com" <decui@microsoft.com>,
+ "robin.murphy@arm.com" <robin.murphy@arm.com>, "hch@lst.de" <hch@lst.de>,
+ "m.szyprowski@samsung.com" <m.szyprowski@samsung.com>,
+ "iommu@lists.linux.dev" <iommu@lists.linux.dev>,
+ "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+ "linux-nvme@lists.infradead.org" <linux-nvme@lists.infradead.org>,
+ "linux-scsi@vger.kernel.org" <linux-scsi@vger.kernel.org>,
+ "linux-hyperv@vger.kernel.org" <linux-hyperv@vger.kernel.org>,
+ "linux-coco@lists.linux.dev" <linux-coco@lists.linux.dev>
+Subject: Re: [RFC 2/7] dma: Handle swiotlb throttling for SGLs
+Message-ID: <20240824215637.2bbacb50@meshulam.tesarici.cz>
+In-Reply-To: <SN6PR02MB41577D08C73A93C32F836E17D4882@SN6PR02MB4157.namprd02.prod.outlook.com>
+References: <20240822183718.1234-1-mhklinux@outlook.com>
+	<20240822183718.1234-3-mhklinux@outlook.com>
+	<20240823100252.4f2a1a43@meshulam.tesarici.cz>
+	<SN6PR02MB41577D08C73A93C32F836E17D4882@SN6PR02MB4157.namprd02.prod.outlook.com>
+X-Mailer: Claws Mail 4.3.0 (GTK 3.24.43; x86_64-suse-linux-gnu)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20240824042635.GM1532424@black.fi.intel.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 
-On Sat, Aug 24, 2024 at 07:26:35AM +0300, Mika Westerberg wrote:
-> On Fri, Aug 23, 2024 at 04:12:54PM -0500, Bjorn Helgaas wrote:
-> > On Fri, Aug 23, 2024 at 04:53:16PM +0000, Esther Shimanovich wrote:
-> > > Some computers with CPUs that lack Thunderbolt features use discrete
-> > > Thunderbolt chips to add Thunderbolt functionality. These Thunderbolt
-> > > chips are located within the chassis; between the root port labeled
-> > > ExternalFacingPort and the USB-C port.
-> > 
-> > Is this a firmware defect?  I asked this before, and I interpret your
-> > answer of "ExternalFacingPort is not 100% accurate all of the time" as
-> > "yes, this is a firmware defect."  That should be part of the commit
-> > log and code comments.
-> > 
-> > We (of course) have to work around firmware defects, but workarounds
-> > need to be labeled as such instead of masquerading as generic code.
-> > 
-> > > These Thunderbolt PCIe devices should be labeled as fixed and trusted,
-> > > as they are built into the computer. Otherwise, security policies that
-> > > rely on those flags may have unintended results, such as preventing
-> > > USB-C ports from enumerating.
-> > > 
-> > > Detect the above scenario through the process of elimination.
-> > > 
-> > > 1) Integrated Thunderbolt host controllers already have Thunderbolt
-> > >    implemented, so anything outside their external facing root port is
-> > >    removable and untrusted.
-> > > 
-> > >    Detect them using the following properties:
-> > > 
-> > >      - Most integrated host controllers have the usb4-host-interface
-> > >        ACPI property, as described here:
-> > > Link: https://learn.microsoft.com/en-us/windows-hardware/drivers/pci/dsd-for-pcie-root-ports#mapping-native-protocols-pcie-displayport-tunneled-through-usb4-to-usb4-host-routers
-> > > 
-> > >      - Integrated Thunderbolt PCIe root ports before Alder Lake do not
-> > >        have the usb4-host-interface ACPI property. Identify those with
-> > >        their PCI IDs instead.
-> > > 
-> > > 2) If a root port does not have integrated Thunderbolt capabilities, but
-> > >    has the ExternalFacingPort ACPI property, that means the manufacturer
-> > >    has opted to use a discrete Thunderbolt host controller that is
-> > >    built into the computer.
-> > 
-> > Unconvincing.  If a Root Port has an external connector, is it
-> > impossible to plug in a Thunderbolt device to that connector?  I
-> > assume the wires from a Root Port could be traces on a PCB to a
-> > soldered-down Thunderbolt controller, OR could be wires to a connector
-> > where a Thunderbolt controller could be plugged in.  How could we tell
-> > the difference?
-> 
-> You are talking about soldered down controller vs. add-in card (e.g PCIe
-> slot)? We don't really distinguish those.
+On Fri, 23 Aug 2024 20:42:08 +0000
+Michael Kelley <mhklinux@outlook.com> wrote:
 
-That's kind of my point.  We're depending on the platform using
-ExternalFacingPort to tell us whether there's an external connector,
-and in this case it sounds like the platform is lying to us.
+> From: Petr Tesa=C5=99=C3=ADk <petr@tesarici.cz> Sent: Friday, August 23, =
+2024 1:03 AM
+> >=20
+> > On Thu, 22 Aug 2024 11:37:13 -0700
+> > mhkelley58@gmail.com wrote:
+> >  =20
+> > > From: Michael Kelley <mhklinux@outlook.com>
+> > >
+> > > When a DMA map request is for a SGL, each SGL entry results in an
+> > > independent mapping operation. If the mapping requires a bounce buffer
+> > > due to running in a CoCo VM or due to swiotlb=3Dforce on the boot lin=
+e,
+> > > swiotlb is invoked. If swiotlb throttling is enabled for the request,
+> > > each SGL entry results in a separate throttling operation. This is
+> > > problematic because a thread may be holding swiotlb memory while wait=
+ing
+> > > for memory to become free.
+> > >
+> > > Resolve this problem by only allowing throttling on the 0th SGL
+> > > entry. When unmapping the SGL, unmap entries 1 thru N-1 first, then
+> > > unmap entry 0 so that the throttle isn't released until all swiotlb
+> > > memory has been freed.
+> > >
+> > > Signed-off-by: Michael Kelley <mhklinux@outlook.com>
+> > > ---
+> > > This approach to SGLs muddies the line between DMA direct and swiotlb
+> > > throttling functionality. To keep the MAY_BLOCK attr fully generic, it
+> > > should propagate to the mapping of all SGL entries.
+> > >
+> > > An alternate approach is to define an additional DMA attribute that
+> > > is internal to the DMA layer. Instead of clearing MAX_BLOCK, this
+> > > attr is added by dma_direct_map_sg() when mapping SGL entries other
+> > > than the 0th entry. swiotlb would do throttling only when MAY_BLOCK
+> > > is set and this new attr is not set.
+> > >
+> > > This approach has a modest amount of additional complexity. Given
+> > > that we currently have no other users of the MAY_BLOCK attr, the
+> > > conceptual cleanliness may not be warranted until we do.
+> > >
+> > > Thoughts? =20
+> >=20
+> > If we agree to change the unthrottling logic (see my comment to your
+> > RFC 1/7), we'll need an additional attribute to delay unthrottling when
+> > unmapping sg list entries 1 to N-1. This attribute could convey that
+> > the mapping is the non-initial segment of an sg list and it could then
+> > be also used to disable blocking in swiotlb_tbl_map_single().
+> >  =20
+> > >
+> > >  kernel/dma/direct.c | 35 ++++++++++++++++++++++++++++++-----
+> > >  1 file changed, 30 insertions(+), 5 deletions(-)
+> > >
+> > > diff --git a/kernel/dma/direct.c b/kernel/dma/direct.c
+> > > index 4480a3cd92e0..80e03c0838d4 100644
+> > > --- a/kernel/dma/direct.c
+> > > +++ b/kernel/dma/direct.c
+> > > @@ -438,6 +438,18 @@ void dma_direct_sync_sg_for_cpu(struct device *d=
+ev,
+> > >  		arch_sync_dma_for_cpu_all();
+> > >  }
+> > >
+> > > +static void dma_direct_unmap_sgl_entry(struct device *dev,
+> > > +		struct scatterlist *sgl, enum dma_data_direction dir, =20
+> >=20
+> > Nitpick: This parameter should probably be called "sg", because it is
+> > never used to do any operation on the whole list. Similarly, the
+> > function could be called dma_direct_unmap_sg_entry(), because there is
+> > no dma_direct_unmap_sgl() either... =20
+>=20
+> OK.  I agree.
+>=20
+> >  =20
+> > > +		unsigned long attrs)
+> > > +
+> > > +{
+> > > +	if (sg_dma_is_bus_address(sgl))
+> > > +		sg_dma_unmark_bus_address(sgl);
+> > > +	else
+> > > +		dma_direct_unmap_page(dev, sgl->dma_address,
+> > > +				      sg_dma_len(sgl), dir, attrs);
+> > > +}
+> > > +
+> > >  /*
+> > >   * Unmaps segments, except for ones marked as pci_p2pdma which do not
+> > >   * require any further action as they contain a bus address.
+> > > @@ -449,12 +461,20 @@ void dma_direct_unmap_sg(struct device *dev, st=
+ruct =20
+> > scatterlist *sgl, =20
+> > >  	int i;
+> > >
+> > >  	for_each_sg(sgl,  sg, nents, i) {
+> > > -		if (sg_dma_is_bus_address(sg))
+> > > -			sg_dma_unmark_bus_address(sg);
+> > > -		else
+> > > -			dma_direct_unmap_page(dev, sg->dma_address,
+> > > -					      sg_dma_len(sg), dir, attrs);
+> > > +		/*
+> > > +		 * Skip the 0th SGL entry in case this SGL consists of
+> > > +		 * throttled swiotlb mappings. In such a case, any other
+> > > +		 * entries should be unmapped first since unmapping the
+> > > +		 * 0th entry will release the throttle semaphore.
+> > > +		 */
+> > > +		if (!i)
+> > > +			continue;
+> > > +		dma_direct_unmap_sgl_entry(dev, sg, dir, attrs);
+> > >  	}
+> > > +
+> > > +	/* Now do the 0th SGL entry */
+> > > +	if (nents) =20
+> >=20
+> > I wonder if nents can ever be zero here, but it's nowhere enforced and
+> > dma_map_sg_attrs() is exported, so I agree, let's play it safe. =20
+>=20
+> Yep -- my thinking exactly.
+>=20
+> >  =20
+> > > +		dma_direct_unmap_sgl_entry(dev, sgl, dir, attrs);
+> > >  }
+> > >  #endif
+> > >
+> > > @@ -492,6 +512,11 @@ int dma_direct_map_sg(struct device *dev, struct=
+ scatterlist =20
+> > *sgl, int nents, =20
+> > >  			ret =3D -EIO;
+> > >  			goto out_unmap;
+> > >  		}
+> > > +
+> > > +		/* Allow only the 0th SGL entry to block */
+> > > +		if (!i) =20
+> >=20
+> > Are you sure? I think the modified value of attrs is first used in the
+> > next loop iteration, so the conditional should be removed, or else both
+> > segment index 0 and 1 will keep the flag. =20
+>=20
+> I don't understand your comment. If it's present, the MAY_BLOCK flag
+> is used for the index 0 SGL entry, and then is cleared before the loop is
+> run again for the index 1 and subsequent SGL entries. But it would
+> still work with the conditional removed, and maybe the CPU overhead
+> of always clearing the flag is the same as doing the conditional.
 
-What about PCI_EXP_FLAGS_SLOT?  If a discrete Thunderbolt controller
-is built into the platform, maybe there would be no reason for the
-Root Port to set Slot Implemented and provide the Slot Capabilities/
-Control/Status registers.
+Yes, this was my original thinking, but then I somehow got caught up in
+it and went on to thinking that the condition was not only unnecessary,
+but wrong. You're right, the code is perfectly fine as it is.
 
-Bjorn
+Sorry for the noise.
+
+Petr T
