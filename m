@@ -1,69 +1,47 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.18])
+Received: from verein.lst.de (verein.lst.de [213.95.11.211])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0B0E88460;
-	Sat, 24 Aug 2024 07:58:16 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 20AA0154BF0;
+	Sat, 24 Aug 2024 08:05:26 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=213.95.11.211
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1724486298; cv=none; b=bNBEs+dsP29AtkwhUJtvcQUNujXEfFKbPlMrbPMp2q8NJfRboG3PWESSuTqnBLLvaFuLrCdQAjohSKK95zgTAR5lSRk1zHifFSYCtLVS8O9Re87uxWJ1DEYmDOzNdi+PFJKqbKzCTlPxXWSrDESuf98sppoF7co69qHypxprePU=
+	t=1724486730; cv=none; b=pWyJ/md+NVD/ak/a/4JpQeZAEVcXR4puqTRatGzWK465ILSRST3Q0AQ7LiUtwILxfgn4heUtrGvzCHZamjWlOn6mJPArwxexH2AbZH+2p5mT8em8xIZB7w1724zx8Esw0sKSs+ZRXH4oNqHkd34/N6Ub/t+56/TQ2Jw+ucxQOdM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1724486298; c=relaxed/simple;
-	bh=+MuJabAXZNXC3PzKmb+ctuTHQcVD5uw07JOm0cukiHM=;
+	s=arc-20240116; t=1724486730; c=relaxed/simple;
+	bh=M/BIBnLEhY/rZYFAJjMpvfFC+TI9s3HFHcqI3QGQvGI=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=nxd8A+lwHLTeC+QE9PEC2Ei8sZVBKSX9d8taSzaLShWXsFNzDGbTjlE7AOhOdB16vDwIkXfpZq+paYtcMcj0wBdLiVWM4rAl8H//guomwiirmjaOiZ0uYtChyq9GqansJpyIKxbAqhPB6tR7YIXAWyXibayTNlEdmfQFgWp7Ng4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=H132KVz3; arc=none smtp.client-ip=198.175.65.18
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="H132KVz3"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1724486297; x=1756022297;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=+MuJabAXZNXC3PzKmb+ctuTHQcVD5uw07JOm0cukiHM=;
-  b=H132KVz304XJPf6ReChbID2w1YHRPvxytq0WbDqu4uhidZZSlva4Y4LE
-   pZHl3AGTuAOiweWSGhZDA8IwlbzEoHnXnbMCKukZ/q+5k+rMv9h4gy7Gg
-   lrqNpj8eCrMpC8dgLkyHv94gHXIDAlxwso32cgk3S50h615I0K86g9G+X
-   XmZ+8gxO+63cIdmweFZi0vKY6B783NQbpEeCRiefFnAOryPtfqs9e+VOq
-   tOFi5hsQh2mndrvZc3hgde+agJNmsp977DN6vvWI/rA4Ptt1uBBfTnLlN
-   s4+sWi9vLViQhAOyXzNqIWOYRX9YsZ/Oa0iCAQG3P43fJn22Am1fVQk6v
-   A==;
-X-CSE-ConnectionGUID: nWC/s5T+T5ScBz+dCxeEvA==
-X-CSE-MsgGUID: OeJ6Nm/KQe6uk4DxaXLH6g==
-X-IronPort-AV: E=McAfee;i="6700,10204,11173"; a="23126431"
-X-IronPort-AV: E=Sophos;i="6.10,172,1719903600"; 
-   d="scan'208";a="23126431"
-Received: from orviesa001.jf.intel.com ([10.64.159.141])
-  by orvoesa110.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Aug 2024 00:58:17 -0700
-X-CSE-ConnectionGUID: xNO1WY6SQfimIDbJMyQklA==
-X-CSE-MsgGUID: Re7yuOLNQLu2fGkmVM310w==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.10,172,1719903600"; 
-   d="scan'208";a="99531438"
-Received: from turnipsi.fi.intel.com (HELO kekkonen.fi.intel.com) ([10.237.72.44])
-  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Aug 2024 00:58:12 -0700
-Received: from kekkonen.localdomain (localhost [127.0.0.1])
-	by kekkonen.fi.intel.com (Postfix) with SMTP id AF4D411F95D;
-	Sat, 24 Aug 2024 10:58:07 +0300 (EEST)
-Date: Sat, 24 Aug 2024 07:58:07 +0000
-From: Sakari Ailus <sakari.ailus@linux.intel.com>
-To: Christoph Hellwig <hch@lst.de>
-Cc: iommu@lists.linux.dev, Marek Szyprowski <m.szyprowski@samsung.com>,
-	Robin Murphy <robin.murphy@arm.com>,
-	Bingbu Cao <bingbu.cao@intel.com>,
-	"Michael S . Tsirkin " <mst@redhat.com>,
-	Jason Wang <jasowang@redhat.com>, linux-kernel@vger.kernel.org,
-	linux-alpha@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-	linux-mips@vger.kernel.org, linux-parisc@vger.kernel.org,
-	linuxppc-dev@lists.ozlabs.org, linux-s390@vger.kernel.org,
-	sparclinux@vger.kernel.org, linux-media@vger.kernel.org,
-	virtualization@lists.linux.dev, xen-devel@lists.xenproject.org
-Subject: Re: [PATCH] dma-mapping: clear mark DMA ops as an architecture
- feature
-Message-ID: <ZsmSj6ZBZqBtjALU@kekkonen.localdomain>
-References: <20240824035817.1163502-1-hch@lst.de>
- <20240824035817.1163502-2-hch@lst.de>
+	 Content-Type:Content-Disposition:In-Reply-To; b=te+xWNYJvdfRlaXXpSJR/kBvXjajxQI5G0IY8uP+b4eWCaTnSKuGGJ2DkmuHbd9/rxcz27dEieYkacq7TlMwtR8qffKWM4bNLXK5Ft9P3QhzeSenB3g0GbhJvamGlt2UOKz7QU/IIzA5xI25HHIDGf93abKXIhoMJbRs/iFDPNc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=lst.de; spf=pass smtp.mailfrom=lst.de; arc=none smtp.client-ip=213.95.11.211
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=lst.de
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=lst.de
+Received: by verein.lst.de (Postfix, from userid 2407)
+	id 28730227A88; Sat, 24 Aug 2024 10:05:15 +0200 (CEST)
+Date: Sat, 24 Aug 2024 10:05:14 +0200
+From: "hch@lst.de" <hch@lst.de>
+To: Michael Kelley <mhklinux@outlook.com>
+Cc: Bart Van Assche <bvanassche@acm.org>,
+	"kbusch@kernel.org" <kbusch@kernel.org>,
+	"axboe@kernel.dk" <axboe@kernel.dk>,
+	"sagi@grimberg.me" <sagi@grimberg.me>,
+	"James.Bottomley@HansenPartnership.com" <James.Bottomley@HansenPartnership.com>,
+	"martin.petersen@oracle.com" <martin.petersen@oracle.com>,
+	"kys@microsoft.com" <kys@microsoft.com>,
+	"haiyangz@microsoft.com" <haiyangz@microsoft.com>,
+	"wei.liu@kernel.org" <wei.liu@kernel.org>,
+	"decui@microsoft.com" <decui@microsoft.com>,
+	"robin.murphy@arm.com" <robin.murphy@arm.com>,
+	"hch@lst.de" <hch@lst.de>,
+	"m.szyprowski@samsung.com" <m.szyprowski@samsung.com>,
+	"petr@tesarici.cz" <petr@tesarici.cz>,
+	"iommu@lists.linux.dev" <iommu@lists.linux.dev>,
+	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+	"linux-nvme@lists.infradead.org" <linux-nvme@lists.infradead.org>,
+	"linux-scsi@vger.kernel.org" <linux-scsi@vger.kernel.org>,
+	"linux-hyperv@vger.kernel.org" <linux-hyperv@vger.kernel.org>,
+	"linux-coco@lists.linux.dev" <linux-coco@lists.linux.dev>
+Subject: Re: [RFC 0/7] Introduce swiotlb throttling
+Message-ID: <20240824080514.GA8527@lst.de>
+References: <20240822183718.1234-1-mhklinux@outlook.com> <f8bb65ed-cdf2-4d23-b794-765ce0b48a4b@acm.org> <SN6PR02MB41577F000FD7A5EC70CF54D0D4882@SN6PR02MB4157.namprd02.prod.outlook.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -72,25 +50,17 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20240824035817.1163502-2-hch@lst.de>
+In-Reply-To: <SN6PR02MB41577F000FD7A5EC70CF54D0D4882@SN6PR02MB4157.namprd02.prod.outlook.com>
+User-Agent: Mutt/1.5.17 (2007-11-01)
 
-Hi Christoph,
+On Fri, Aug 23, 2024 at 02:20:41AM +0000, Michael Kelley wrote:
+> Christoph Hellwig, or anyone else who knows the history and current
+> reality better than I do, please jump in. :-)
 
-On Sat, Aug 24, 2024 at 05:57:58AM +0200, Christoph Hellwig wrote:
-> DMA ops are a helper for architectures and not for drivers to override
-> the DMA implementation.  Unfortunately driver authors keep ignoring
-> this.  Make this more clear by renaming the symbol to ARCH_DMA_OPS,
-> have the three drivers overriding it depend on that.  They should
-> probably also be marked broken, but we can give them a bit of a grace
-> period for that.
-> 
-> Signed-off-by: Christoph Hellwig <hch@lst.de>
+It's not just interrupt context, but any context that does not allow
+blocking.  There is plenty of that as seen by the moving of nvme
+to specifically request a blocking context for I/O submission in this
+path.
 
-Acked-by: Sakari Ailus <sakari.ailus@linux.intel.com> # for IPU6
-
-We'll address this for IPU6 but I can't give a timeline for that right now.
-
--- 
-Kind regards,
-
-Sakari Ailus
+That being said there are probably more contexts that can block than
+those that can't, so allowing for that option is a good thing.
