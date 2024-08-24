@@ -1,133 +1,96 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.16])
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 64A61182B4
-	for <iommu@lists.linux.dev>; Sat, 24 Aug 2024 04:26:40 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.16
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0B0E88460;
+	Sat, 24 Aug 2024 07:58:16 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1724473602; cv=none; b=qov95gxWrHfKlxo3KvAtSTsmHl9N/KrdvUulB+jMYXyTrjrPnqQk1hlrXshIDyhXT9Un/1IqupwgsEpTGcGSMxyFQxitk9v5YoSRxX3J8uJ1QnfL8cr6FZ9cBEBvZyDatcTj/N9Qk1c73GOVfYgTK7HMC3PPin7clTaMoytez3E=
+	t=1724486298; cv=none; b=bNBEs+dsP29AtkwhUJtvcQUNujXEfFKbPlMrbPMp2q8NJfRboG3PWESSuTqnBLLvaFuLrCdQAjohSKK95zgTAR5lSRk1zHifFSYCtLVS8O9Re87uxWJ1DEYmDOzNdi+PFJKqbKzCTlPxXWSrDESuf98sppoF7co69qHypxprePU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1724473602; c=relaxed/simple;
-	bh=40GlEPNurYWTPJrHrKMNmjjvmAN4H33EaCA2SPTdpiw=;
+	s=arc-20240116; t=1724486298; c=relaxed/simple;
+	bh=+MuJabAXZNXC3PzKmb+ctuTHQcVD5uw07JOm0cukiHM=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=t2XWqmy92POZQSQRfMv0sFyBCkS72ADoB6MbI589z74kTBl7XswgLOyVXoSImTvoxsp3guDvZ3cWC/Q2ojgVGAs1oX+GuEmAG6nLBzSfRDYMXvCi8MawpurgOKcS6QrnUskkM2XgxHR9GjUufIDgvgZDdTHJ13sIUz0devq/sHE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=lg9Tf/ws; arc=none smtp.client-ip=192.198.163.16
+	 Content-Type:Content-Disposition:In-Reply-To; b=nxd8A+lwHLTeC+QE9PEC2Ei8sZVBKSX9d8taSzaLShWXsFNzDGbTjlE7AOhOdB16vDwIkXfpZq+paYtcMcj0wBdLiVWM4rAl8H//guomwiirmjaOiZ0uYtChyq9GqansJpyIKxbAqhPB6tR7YIXAWyXibayTNlEdmfQFgWp7Ng4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=H132KVz3; arc=none smtp.client-ip=198.175.65.18
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="lg9Tf/ws"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="H132KVz3"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1724473600; x=1756009600;
+  t=1724486297; x=1756022297;
   h=date:from:to:cc:subject:message-id:references:
    mime-version:in-reply-to;
-  bh=40GlEPNurYWTPJrHrKMNmjjvmAN4H33EaCA2SPTdpiw=;
-  b=lg9Tf/wsmK4/ioVGMljUcyC78GBlP7sHrhd2QwHpA/+Qb/rvbFf2Xs1d
-   7XCQkv38bd3OfiNVcMyWtfXZ3dBAmwStaBzoyyF1+Sfmvvjvz/39j1Nxl
-   fpHOHI1+DZmqlLKE1h6sxBc3m1v5ciOX9GGUTtjVotNWlMtHWpk3mmFb+
-   76FMcynC69a43N6jt7OlR6WcFtTUXdq1O8De/nBYEwgHiYKS+pdqxkBZP
-   PFRzv72SGI9KxYnkUkKRFRhdDvQM6BxF9NIyEahv0bY4TCkj7c95nWF2h
-   Y4TSU22cZgKKXfjQFYBRxJ66mbArh1oZ6A+UEs/ht/2V7ZG3sJXFaAwLm
-   Q==;
-X-CSE-ConnectionGUID: kAQ1OSemS8eA7wWt4x7a3Q==
-X-CSE-MsgGUID: qux9ZxcRSrOTWhZAMbwc9A==
-X-IronPort-AV: E=McAfee;i="6700,10204,11173"; a="13188266"
+  bh=+MuJabAXZNXC3PzKmb+ctuTHQcVD5uw07JOm0cukiHM=;
+  b=H132KVz304XJPf6ReChbID2w1YHRPvxytq0WbDqu4uhidZZSlva4Y4LE
+   pZHl3AGTuAOiweWSGhZDA8IwlbzEoHnXnbMCKukZ/q+5k+rMv9h4gy7Gg
+   lrqNpj8eCrMpC8dgLkyHv94gHXIDAlxwso32cgk3S50h615I0K86g9G+X
+   XmZ+8gxO+63cIdmweFZi0vKY6B783NQbpEeCRiefFnAOryPtfqs9e+VOq
+   tOFi5hsQh2mndrvZc3hgde+agJNmsp977DN6vvWI/rA4Ptt1uBBfTnLlN
+   s4+sWi9vLViQhAOyXzNqIWOYRX9YsZ/Oa0iCAQG3P43fJn22Am1fVQk6v
+   A==;
+X-CSE-ConnectionGUID: nWC/s5T+T5ScBz+dCxeEvA==
+X-CSE-MsgGUID: OeJ6Nm/KQe6uk4DxaXLH6g==
+X-IronPort-AV: E=McAfee;i="6700,10204,11173"; a="23126431"
 X-IronPort-AV: E=Sophos;i="6.10,172,1719903600"; 
-   d="scan'208";a="13188266"
-Received: from orviesa004.jf.intel.com ([10.64.159.144])
-  by fmvoesa110.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Aug 2024 21:26:39 -0700
-X-CSE-ConnectionGUID: dqpdH3fxQnq9MiSUYdVs8Q==
-X-CSE-MsgGUID: gPFp6PdTSbKwUx3ojwzGwg==
+   d="scan'208";a="23126431"
+Received: from orviesa001.jf.intel.com ([10.64.159.141])
+  by orvoesa110.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Aug 2024 00:58:17 -0700
+X-CSE-ConnectionGUID: xNO1WY6SQfimIDbJMyQklA==
+X-CSE-MsgGUID: Re7yuOLNQLu2fGkmVM310w==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.10,172,1719903600"; 
-   d="scan'208";a="66938134"
-Received: from black.fi.intel.com ([10.237.72.28])
-  by orviesa004.jf.intel.com with ESMTP; 23 Aug 2024 21:26:37 -0700
-Received: by black.fi.intel.com (Postfix, from userid 1001)
-	id 631CA27C; Sat, 24 Aug 2024 07:26:35 +0300 (EEST)
-Date: Sat, 24 Aug 2024 07:26:35 +0300
-From: Mika Westerberg <mika.westerberg@linux.intel.com>
-To: Bjorn Helgaas <helgaas@kernel.org>
-Cc: Esther Shimanovich <eshimanovich@chromium.org>,
-	Bjorn Helgaas <bhelgaas@google.com>,
-	Rajat Jain <rajatja@google.com>,
-	"Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
-	Mario Limonciello <mario.limonciello@amd.com>,
-	Ilpo =?utf-8?B?SsOkcnZpbmVu?= <ilpo.jarvinen@linux.intel.com>,
-	iommu@lists.linux.dev, Lukas Wunner <lukas@wunner.de>,
-	linux-pci@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v4] PCI: Detect and trust built-in Thunderbolt chips
-Message-ID: <20240824042635.GM1532424@black.fi.intel.com>
-References: <20240823-trust-tbt-fix-v4-1-c6f1e3bdd9be@chromium.org>
- <20240823211254.GA385934@bhelgaas>
+   d="scan'208";a="99531438"
+Received: from turnipsi.fi.intel.com (HELO kekkonen.fi.intel.com) ([10.237.72.44])
+  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Aug 2024 00:58:12 -0700
+Received: from kekkonen.localdomain (localhost [127.0.0.1])
+	by kekkonen.fi.intel.com (Postfix) with SMTP id AF4D411F95D;
+	Sat, 24 Aug 2024 10:58:07 +0300 (EEST)
+Date: Sat, 24 Aug 2024 07:58:07 +0000
+From: Sakari Ailus <sakari.ailus@linux.intel.com>
+To: Christoph Hellwig <hch@lst.de>
+Cc: iommu@lists.linux.dev, Marek Szyprowski <m.szyprowski@samsung.com>,
+	Robin Murphy <robin.murphy@arm.com>,
+	Bingbu Cao <bingbu.cao@intel.com>,
+	"Michael S . Tsirkin " <mst@redhat.com>,
+	Jason Wang <jasowang@redhat.com>, linux-kernel@vger.kernel.org,
+	linux-alpha@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+	linux-mips@vger.kernel.org, linux-parisc@vger.kernel.org,
+	linuxppc-dev@lists.ozlabs.org, linux-s390@vger.kernel.org,
+	sparclinux@vger.kernel.org, linux-media@vger.kernel.org,
+	virtualization@lists.linux.dev, xen-devel@lists.xenproject.org
+Subject: Re: [PATCH] dma-mapping: clear mark DMA ops as an architecture
+ feature
+Message-ID: <ZsmSj6ZBZqBtjALU@kekkonen.localdomain>
+References: <20240824035817.1163502-1-hch@lst.de>
+ <20240824035817.1163502-2-hch@lst.de>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20240823211254.GA385934@bhelgaas>
+In-Reply-To: <20240824035817.1163502-2-hch@lst.de>
 
-On Fri, Aug 23, 2024 at 04:12:54PM -0500, Bjorn Helgaas wrote:
-> On Fri, Aug 23, 2024 at 04:53:16PM +0000, Esther Shimanovich wrote:
-> > Some computers with CPUs that lack Thunderbolt features use discrete
-> > Thunderbolt chips to add Thunderbolt functionality. These Thunderbolt
-> > chips are located within the chassis; between the root port labeled
-> > ExternalFacingPort and the USB-C port.
-> 
-> Is this a firmware defect?  I asked this before, and I interpret your
-> answer of "ExternalFacingPort is not 100% accurate all of the time" as
-> "yes, this is a firmware defect."  That should be part of the commit
-> log and code comments.
-> 
-> We (of course) have to work around firmware defects, but workarounds
-> need to be labeled as such instead of masquerading as generic code.
-> 
-> > These Thunderbolt PCIe devices should be labeled as fixed and trusted,
-> > as they are built into the computer. Otherwise, security policies that
-> > rely on those flags may have unintended results, such as preventing
-> > USB-C ports from enumerating.
-> > 
-> > Detect the above scenario through the process of elimination.
-> > 
-> > 1) Integrated Thunderbolt host controllers already have Thunderbolt
-> >    implemented, so anything outside their external facing root port is
-> >    removable and untrusted.
-> > 
-> >    Detect them using the following properties:
-> > 
-> >      - Most integrated host controllers have the usb4-host-interface
-> >        ACPI property, as described here:
-> > Link: https://learn.microsoft.com/en-us/windows-hardware/drivers/pci/dsd-for-pcie-root-ports#mapping-native-protocols-pcie-displayport-tunneled-through-usb4-to-usb4-host-routers
-> > 
-> >      - Integrated Thunderbolt PCIe root ports before Alder Lake do not
-> >        have the usb4-host-interface ACPI property. Identify those with
-> >        their PCI IDs instead.
-> > 
-> > 2) If a root port does not have integrated Thunderbolt capabilities, but
-> >    has the ExternalFacingPort ACPI property, that means the manufacturer
-> >    has opted to use a discrete Thunderbolt host controller that is
-> >    built into the computer.
-> 
-> Unconvincing.  If a Root Port has an external connector, is it
-> impossible to plug in a Thunderbolt device to that connector?  I
-> assume the wires from a Root Port could be traces on a PCB to a
-> soldered-down Thunderbolt controller, OR could be wires to a connector
-> where a Thunderbolt controller could be plugged in.  How could we tell
-> the difference?
+Hi Christoph,
 
-You are talking about soldered down controller vs. add-in card (e.g PCIe
-slot)? We don't really distinguish those. The whole ExternalFacingPort
-and the like IOMMU protection is meant for exposed hot-pluggable ports
-on your laptop such as Type-C where a malicious charger for instance may
-have a PCIe endpoint that steals your secrets. Not something that
-requires dissasembly, opening the system cover and plugging in the
-controller, connecting all the wires etc.
+On Sat, Aug 24, 2024 at 05:57:58AM +0200, Christoph Hellwig wrote:
+> DMA ops are a helper for architectures and not for drivers to override
+> the DMA implementation.  Unfortunately driver authors keep ignoring
+> this.  Make this more clear by renaming the symbol to ARCH_DMA_OPS,
+> have the three drivers overriding it depend on that.  They should
+> probably also be marked broken, but we can give them a bit of a grace
+> period for that.
+> 
+> Signed-off-by: Christoph Hellwig <hch@lst.de>
 
-(We have also an additional "line of defence" in Linux because we do not
-automatically create any PCIe tunnels and this is something user can
-even disable completely [there is a flip in GNOME settings that disables
-PCIe tunneling completely, which can be turned on whenever you are
-travelling for instance]).
+Acked-by: Sakari Ailus <sakari.ailus@linux.intel.com> # for IPU6
+
+We'll address this for IPU6 but I can't give a timeline for that right now.
+
+-- 
+Kind regards,
+
+Sakari Ailus
