@@ -1,123 +1,76 @@
-Received: from bee.tesarici.cz (bee.tesarici.cz [37.205.15.56])
+Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A85291E49F;
-	Sat, 24 Aug 2024 20:05:59 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=37.205.15.56
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A6D04EAD2;
+	Sun, 25 Aug 2024 11:33:15 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=193.142.43.55
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1724529961; cv=none; b=qZy6NDV8Sx/pRqiL5KqUIg9gwUqJc4tfHuUfhhbdGsR1B3i4lxAl4lFjSHxS1H58QL3/gFkGwuDH6Jn8rge1NsmA0qJMJZnccsk/boNflu6d6NwEOnmKaj6CHwn4mNRUX2uP05MaDf3cYPzMZhpPeD9/QFlB1OQpUAmGzhrt/fU=
+	t=1724585597; cv=none; b=fFwHkVXE7Fh8xkJX36p2oki4KW25F+PCRj1KyApTZxH5JIB46DV8lcW2+TCKBNnZE+9gvU4HIAbkWnUQ7Ly3Qwv3L3zONtX0IF2fmA5/blfsCFMoo8v+p8K5gnOLB4Hpyh+FOeXCggdNFwTG4I+PIJ50Ad8UhO+i/XrJ3mjaw0I=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1724529961; c=relaxed/simple;
-	bh=lMTeCQzH6kMmHX/l9Jn3JQcO/hHSZcBoRk4fs+/yiD4=;
-	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=aDj6jfqDAOREqDdoZvChW0332suyzy0indJF/0EC6uWkJT39xbuGG+X9S8mys3QqkUA40mPSGCjvXxkrtpGwUvQcCR6Wy67qiGxrg34aQ1HtKItdO4lGo4NP+mPT3ZOgFmUqH/13tu24akXL5fGwA1Kr4ArcIUA8wkN7L1VUhJA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=tesarici.cz; spf=pass smtp.mailfrom=tesarici.cz; dkim=pass (2048-bit key) header.d=tesarici.cz header.i=@tesarici.cz header.b=fR6UW6h8; arc=none smtp.client-ip=37.205.15.56
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=tesarici.cz
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=tesarici.cz
+	s=arc-20240116; t=1724585597; c=relaxed/simple;
+	bh=6XMbpzg/JuSwUOH7P7AO5R4Ugnca4dCXUcfcSqerxdM=;
+	h=From:To:Cc:Subject:In-Reply-To:References:Date:Message-ID:
+	 MIME-Version:Content-Type; b=QpQbEDRTK0SUHAZL2ccVXAZWpvxEFCcv3+1vSwM/rELxY9NeHlGrTB+tCw+V9tYTftVe9XCMC10U0xX67xpBrNJtSFK67wmnmBkKR3OVrnQZUckAfO/mouw+mCTNc1MAYRiZi9/b72GwUcKkxl/qWmpduOXf8H9O8PPaWccE9w8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linutronix.de; spf=pass smtp.mailfrom=linutronix.de; dkim=pass (2048-bit key) header.d=linutronix.de header.i=@linutronix.de header.b=qn2bhicO; dkim=permerror (0-bit key) header.d=linutronix.de header.i=@linutronix.de header.b=362fE7OT; arc=none smtp.client-ip=193.142.43.55
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linutronix.de
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linutronix.de
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=tesarici.cz header.i=@tesarici.cz header.b="fR6UW6h8"
-Received: from meshulam.tesarici.cz (dynamic-2a00-1028-83b8-1e7a-4427-cc85-6706-c595.ipv6.o2.cz [IPv6:2a00:1028:83b8:1e7a:4427:cc85:6706:c595])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange ECDHE (P-256) server-signature RSA-PSS (2048 bits) server-digest SHA256)
-	(No client certificate requested)
-	by bee.tesarici.cz (Postfix) with ESMTPSA id B2CB31F36F1;
-	Sat, 24 Aug 2024 22:05:57 +0200 (CEST)
-Authentication-Results: mail.tesarici.cz; dmarc=fail (p=quarantine dis=none) header.from=tesarici.cz
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=tesarici.cz; s=mail;
-	t=1724529958; bh=6q+DC9qEi4FRPHzOR4JhQ0nGEEP7YVA8G4HC6P+cUdg=;
-	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-	b=fR6UW6h84uQyCzzVZNSO0UWSzM5bGYLmY1G76UqvJUBOJXPzsISmYl/OWFY5HBXxV
-	 MDkPHxv+1rabIGBdc8lw/KrqFnp/+ThasVMTP9xmaTAKfphiA5FYFaRYqZryLtfndw
-	 4ovWnUZkv06IGKawoXxwJNia+R34Y4769D8oG3m/FOI55O0qbXjSJ/h67h7etOWn0M
-	 v31Al/bNYDgPvfI/md3dxAMfx+MVdGYmt+hR7GQqe/Md97Rrv4aCWfr0lt57YdbqhO
-	 RQdS3uf6P9OlV1AQFLcx67uZ9cQi+2nqE3iwduF6NypvU0JZ6jalCuhtKb0gsuCq6t
-	 ah3J7uG9R0cog==
-Date: Sat, 24 Aug 2024 22:05:56 +0200
-From: Petr =?UTF-8?B?VGVzYcWZw61r?= <petr@tesarici.cz>
-To: Michael Kelley <mhklinux@outlook.com>
-Cc: "kbusch@kernel.org" <kbusch@kernel.org>, "axboe@kernel.dk"
- <axboe@kernel.dk>, "sagi@grimberg.me" <sagi@grimberg.me>,
- "James.Bottomley@HansenPartnership.com"
- <James.Bottomley@HansenPartnership.com>, "martin.petersen@oracle.com"
- <martin.petersen@oracle.com>, "kys@microsoft.com" <kys@microsoft.com>,
- "haiyangz@microsoft.com" <haiyangz@microsoft.com>, "wei.liu@kernel.org"
- <wei.liu@kernel.org>, "decui@microsoft.com" <decui@microsoft.com>,
- "robin.murphy@arm.com" <robin.murphy@arm.com>, "hch@lst.de" <hch@lst.de>,
- "m.szyprowski@samsung.com" <m.szyprowski@samsung.com>,
- "iommu@lists.linux.dev" <iommu@lists.linux.dev>,
- "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
- "linux-nvme@lists.infradead.org" <linux-nvme@lists.infradead.org>,
- "linux-scsi@vger.kernel.org" <linux-scsi@vger.kernel.org>,
- "linux-hyperv@vger.kernel.org" <linux-hyperv@vger.kernel.org>,
- "linux-coco@lists.linux.dev" <linux-coco@lists.linux.dev>
-Subject: Re: [RFC 0/7] Introduce swiotlb throttling
-Message-ID: <20240824220556.0e2587d5@meshulam.tesarici.cz>
-In-Reply-To: <SN6PR02MB415758F12C59E6CA67227DCFD4882@SN6PR02MB4157.namprd02.prod.outlook.com>
-References: <20240822183718.1234-1-mhklinux@outlook.com>
-	<20240823084458.4394b401@meshulam.tesarici.cz>
-	<SN6PR02MB415758F12C59E6CA67227DCFD4882@SN6PR02MB4157.namprd02.prod.outlook.com>
-X-Mailer: Claws Mail 4.3.0 (GTK 3.24.43; x86_64-suse-linux-gnu)
+	dkim=pass (2048-bit key) header.d=linutronix.de header.i=@linutronix.de header.b="qn2bhicO";
+	dkim=permerror (0-bit key) header.d=linutronix.de header.i=@linutronix.de header.b="362fE7OT"
+From: Thomas Gleixner <tglx@linutronix.de>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+	s=2020; t=1724585594;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 in-reply-to:in-reply-to:references:references;
+	bh=traTpRXPEY3SvX85V4UNHLV9avrLQDajKAbi9KW9Mas=;
+	b=qn2bhicOfVHkdU7ck2v9tQF6W6WaJTXtqZEiWMHDfSL0Ev8o4KvGgHaALZgsyIAuFmttgs
+	z5VnO+/6JY/fpXdhsiJya6hJDEm92zNzekboN60EFMExyIDu4ptFxzhH4F3Ic/cIAkD5Z3
+	eTpykbtlXrP26a2G14buyr1ILLvcF3Fwjw+fU4Ds0yx9zmYL070XfvOjMbFbx0+G7GP/qN
+	QWk0cMlQW6lVQzcayW3GOUwF4N5MKvBs+rCVlIVgoMHKGRHCRYdZj9qmfE8WafyxZ6YmSX
+	+njM55adqgFTMeTO5hcBsEL9u4XGST4sctn9iwM/3LHcUT2tKJnm1xD+iixu3g==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+	s=2020e; t=1724585594;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 in-reply-to:in-reply-to:references:references;
+	bh=traTpRXPEY3SvX85V4UNHLV9avrLQDajKAbi9KW9Mas=;
+	b=362fE7OT8P33AoXzNCnYkmiiNxEZ9GS9ZEvhn7ufxaWm1AsSruiz/SNKSgf7TwmCNyijB9
+	4r4ytqAeRlb3O+Cg==
+To: Christoph Hellwig <hch@lst.de>, iommu@lists.linux.dev
+Cc: Marek Szyprowski <m.szyprowski@samsung.com>, Robin Murphy
+ <robin.murphy@arm.com>, Sakari Ailus <sakari.ailus@linux.intel.com>,
+ Bingbu Cao <bingbu.cao@intel.com>, "Michael S . Tsirkin" <mst@redhat.com>,
+ Jason Wang <jasowang@redhat.com>, linux-kernel@vger.kernel.org,
+ linux-alpha@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+ linux-mips@vger.kernel.org, linux-parisc@vger.kernel.org,
+ linuxppc-dev@lists.ozlabs.org, linux-s390@vger.kernel.org,
+ sparclinux@vger.kernel.org, linux-media@vger.kernel.org,
+ virtualization@lists.linux.dev, xen-devel@lists.xenproject.org
+Subject: Re: [PATCH] dma-mapping: clear mark DMA ops as an architecture feature
+In-Reply-To: <20240824035817.1163502-2-hch@lst.de>
+References: <20240824035817.1163502-1-hch@lst.de>
+ <20240824035817.1163502-2-hch@lst.de>
+Date: Sun, 25 Aug 2024 13:33:13 +0200
+Message-ID: <87ed6cg7ly.ffs@tglx>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain
 
-On Fri, 23 Aug 2024 20:40:16 +0000
-Michael Kelley <mhklinux@outlook.com> wrote:
+On Sat, Aug 24 2024 at 05:57, Christoph Hellwig wrote:
+> DMA ops are a helper for architectures and not for drivers to override
+> the DMA implementation.  Unfortunately driver authors keep ignoring
+> this.  Make this more clear by renaming the symbol to ARCH_DMA_OPS,
+> have the three drivers overriding it depend on that.  They should
+> probably also be marked broken, but we can give them a bit of a grace
+> period for that.
 
-> From: Petr Tesa=C5=99=C3=ADk <petr@tesarici.cz> Sent: Thursday, August 22=
-, 2024 11:45 PM
->[...]
-> > > Discussion
-> > > =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
-> > > * Since swiotlb isn't visible to device drivers, I've specifically
-> > > named the DMA attribute as MAY_BLOCK instead of MAY_THROTTLE or
-> > > something swiotlb specific. While this patch set consumes MAY_BLOCK
-> > > only on the DMA direct path to do throttling in the swiotlb code,
-> > > there might be other uses in the future outside of CoCo VMs, or
-> > > perhaps on the IOMMU path. =20
-> >=20
-> > I once introduced a similar flag and called it MAY_SLEEP. I chose
-> > MAY_SLEEP, because there is already a might_sleep() annotation, but I
-> > don't have a strong opinion unless your semantics is supposed to be
-> > different from might_sleep(). If it is, then I strongly prefer
-> > MAY_BLOCK to prevent confusing the two. =20
->=20
-> My intent is that the semantics are the same as might_sleep(). I
-> vacillated between MAY_SLEEP and MAY_BLOCK. The kernel seems
-> to treat "sleep" and "block" as equivalent, because blk-mq has
-> the BLK_MQ_F_BLOCKING flag, and SCSI has the=20
-> queuecommand_may_block flag that is translated to
-> BLK_MQ_F_BLOCKING. So I settled on MAY_BLOCK, but as you
-> point out, that's inconsistent with might_sleep(). Either way will
-> be inconsistent somewhere, and I don't have a preference.
+One week :)
 
-Fair enough. Let's stay with MAY_BLOCK then, so you don't have to
-change it everywhere.
+> Signed-off-by: Christoph Hellwig <hch@lst.de>
 
->[...]
-> > > Open Topics
-> > > =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
-> > > 1. swiotlb allocations from Xen and the IOMMU code don't make use
-> > > of throttling. This could be added if beneficial.
-> > >
-> > > 2. The throttling values are currently exposed and adjustable in
-> > > /sys/kernel/debug/swiotlb. Should any of this be moved so it is
-> > > visible even without CONFIG_DEBUG_FS? =20
-> >=20
-> > Yes. It should be possible to control the thresholds through
-> > sysctl. =20
->=20
-> Good point.  I was thinking about creating /sys/kernel/swiotlb, but
-> sysctl is better.
-
-That still leaves the question where it should go.
-
-Under /proc/sys/kernel? Or should we make a /proc/sys/kernel/dma
-subdirectory to make room for more dma-related controls?
-
-Petr T
+Reviewed-by: Thomas Gleixner <tglx@linutronix.de>
