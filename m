@@ -1,182 +1,151 @@
-Received: from NAM04-MW2-obe.outbound.protection.outlook.com (mail-mw2nam04olkn2072.outbound.protection.outlook.com [40.92.46.72])
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3F227195F04;
-	Mon, 26 Aug 2024 16:24:56 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.92.46.72
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1724689499; cv=fail; b=Sf78TwxwCTN/UFhvGzIp5uNlCgVM8xrggWlpnwjOyJMIewF0AW2NaPNUeJb0Un98KpGIK3yV7fNxvGlKonPtrz6c9Yin1jebSYKZvzA3PoJWmD4xZguLLL2KmeinSNWho/QcXn7Phc7Qe1pgBPfrrYH0KnmvOQdM6Bgp7OI93XE=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1724689499; c=relaxed/simple;
-	bh=0rugomumiG1kaukeKcLwPS3kEW9tHqUf5dv+m+3OVHY=;
-	h=From:To:CC:Subject:Date:Message-ID:References:In-Reply-To:
-	 Content-Type:MIME-Version; b=cRs40kBT8+AgcBOBXDEo71P3Rr52ESoY5KodGuz4OgDn/6nLXHXBygKfFWz/Njq2E5e2Ddch1+pgx9QedmP8CETTdBwbJkESHuowC6dyaGW8mCqSHQ6HGJF5yQXf3WTrBQGpLIrIFy/7D6imiqcLHyQUGRSGXULP7qS1mcu0K78=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=outlook.com; spf=pass smtp.mailfrom=outlook.com; dkim=pass (2048-bit key) header.d=outlook.com header.i=@outlook.com header.b=evbeFzTo; arc=fail smtp.client-ip=40.92.46.72
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=outlook.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=outlook.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AECA11946BB
+	for <iommu@lists.linux.dev>; Mon, 26 Aug 2024 17:04:52 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=170.10.129.124
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1724691894; cv=none; b=uG4IwpDCg1HlxS8K07fN6w6F2WrqnwOieCfo+Jr1Oi8olpiuYXQDGwJPetznqAf7F6vAvAtrN56GsMLsMZ8hbw4MEcOWHekUjyBsUNrNi0pz4FxJmgqJPcDq53YxC2eqrOF4wJ0J/yLuoe8KvIpkqzd2bOamLE2Am/MQSlMkzqE=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1724691894; c=relaxed/simple;
+	bh=sSP3E1pz71KBeoaohCBRvwa3X+4yl+kGCoQ6GI6IpL8=;
+	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=X2son61Dj1P0rCfvWSMLdmvflr2OSlFKUcDj6YVZp6vQgG/m2sYno+r1VAdwhBIxlpEm+G4QXCGLK+UEZcmoUg/5w6LpjtUtPStCemllBj/ZhwKeIZQa8pPJmQxLbkZ/Oka3z7mTt/IU2kyNZaq20DwM36/3TwDxX8mDFG6HA9Y=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=redhat.com; spf=pass smtp.mailfrom=redhat.com; dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b=JYHM1Y75; arc=none smtp.client-ip=170.10.129.124
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=redhat.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=redhat.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=outlook.com header.i=@outlook.com header.b="evbeFzTo"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=t1lx5aNiVgmf66FkwSYJC7kPUmziwc7U07GODLF7x+sZY3Eg37wC1ndkP25/O5CVo9A7jBzUT1RFqWjntHnvUnyOibX5IBodjt6Ul4ZaJ2iUsIZ7oLiU2rs06O2tV4ImROZjW7PAYnWvnMTT6cEYtA9jPL83cpL/8zYQEaBuDRtCZ2xDk+osepKxDtoSG13b1hAKgo/zNlWMRx8QLwNDPN3Exi52NLJIZjryExrpQ5g2WghrXedFZoT7KYJbDt8pZHgSUDuKHPTFSWF6DBHb/BelkhZbxD10Qk2ZTw0czBldZ2FX8y3/oT0FkjzhT3iLRm4FJTbQvwvUywI2hGoAzw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=0rugomumiG1kaukeKcLwPS3kEW9tHqUf5dv+m+3OVHY=;
- b=NO3SXgoD829rJEt8FHx0SMNPiAzfjjyn0fuLyyI6mlVaYUfGl4MnFPUHPaYJH/YhX9A8H5zP1GOZ1GABD7I0u+AWW3psJywezDIOyB8VZormLBxiHVmuqfPVInGJqbGaI6GsOPRjNesTpduLHZ+EC3iaufSeLYghvP6VwNrkXsEMr3slWNVqUwGmt6dfQjOyjdK7ooxtKk4QyCs5frnKB72jZxeRllatQLhRu5wpbeL4p+7bUIfF72vVQgnVL3AYwHBrGfjFmUFFMcwEVYrlMdWqpkwhm+yvRffi4WTzA1p65ukdlBU1sEHkTiRK8ewd2QgLbxryz5XDHEpKrMZfGQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=none; dmarc=none;
- dkim=none; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=outlook.com;
- s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=0rugomumiG1kaukeKcLwPS3kEW9tHqUf5dv+m+3OVHY=;
- b=evbeFzToBdp4fMB5JOxvFdevvTghfl+VWEpEDPuCa7GmkTnHsBl0Kh3Cja21q/Q13R5XuyWlBEpgLZ0LM/pjttHbYr7Cb42UCvu6KyAdW0eHbzTjO5YVqcH0E03ykvqJWKW8PgZwFWFIj3HikSDSKDoqt0/BaiqAjdKImtuEnyQx3B54JX4C9/mOVs9kGxpksnZEo+fEnICkaHs9VJDVZxkZOsY6zbrrVBo8XDsMwavH+JuyL7+oZSVYpgv3rrVW/G8HxrhL3T9EEeZxGeeJ20MjQIz7bZ2PbJtR3kl4dMLKaCmrSWslOAY1jK6kLoPue/5OnhXlXafHG2M0qQyMGg==
-Received: from SN6PR02MB4157.namprd02.prod.outlook.com (2603:10b6:805:33::23)
- by SA2PR02MB7546.namprd02.prod.outlook.com (2603:10b6:806:144::5) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7897.25; Mon, 26 Aug
- 2024 16:24:53 +0000
-Received: from SN6PR02MB4157.namprd02.prod.outlook.com
- ([fe80::cedd:1e64:8f61:b9df]) by SN6PR02MB4157.namprd02.prod.outlook.com
- ([fe80::cedd:1e64:8f61:b9df%6]) with mapi id 15.20.7875.018; Mon, 26 Aug 2024
- 16:24:53 +0000
-From: Michael Kelley <mhklinux@outlook.com>
-To: =?utf-8?B?UGV0ciBUZXNhxZnDrWs=?= <petr@tesarici.cz>
-CC: "kbusch@kernel.org" <kbusch@kernel.org>, "axboe@kernel.dk"
-	<axboe@kernel.dk>, "sagi@grimberg.me" <sagi@grimberg.me>,
-	"James.Bottomley@HansenPartnership.com"
-	<James.Bottomley@HansenPartnership.com>, "martin.petersen@oracle.com"
-	<martin.petersen@oracle.com>, "kys@microsoft.com" <kys@microsoft.com>,
-	"haiyangz@microsoft.com" <haiyangz@microsoft.com>, "wei.liu@kernel.org"
-	<wei.liu@kernel.org>, "decui@microsoft.com" <decui@microsoft.com>,
-	"robin.murphy@arm.com" <robin.murphy@arm.com>, "hch@lst.de" <hch@lst.de>,
-	"m.szyprowski@samsung.com" <m.szyprowski@samsung.com>,
-	"iommu@lists.linux.dev" <iommu@lists.linux.dev>,
-	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-	"linux-nvme@lists.infradead.org" <linux-nvme@lists.infradead.org>,
-	"linux-scsi@vger.kernel.org" <linux-scsi@vger.kernel.org>,
-	"linux-hyperv@vger.kernel.org" <linux-hyperv@vger.kernel.org>,
-	"linux-coco@lists.linux.dev" <linux-coco@lists.linux.dev>
-Subject: RE: [RFC 0/7] Introduce swiotlb throttling
-Thread-Topic: [RFC 0/7] Introduce swiotlb throttling
-Thread-Index: AQHa9MJuV8zHlUlbFEOu4P5Y/AqjALI0ZmsAgADTyNCAAZ5XAIAC5aKg
-Date: Mon, 26 Aug 2024 16:24:53 +0000
-Message-ID:
- <SN6PR02MB41577933B499309EA3CE4DDBD48B2@SN6PR02MB4157.namprd02.prod.outlook.com>
-References: <20240822183718.1234-1-mhklinux@outlook.com>
-	<20240823084458.4394b401@meshulam.tesarici.cz>
-	<SN6PR02MB415758F12C59E6CA67227DCFD4882@SN6PR02MB4157.namprd02.prod.outlook.com>
- <20240824220556.0e2587d5@meshulam.tesarici.cz>
-In-Reply-To: <20240824220556.0e2587d5@meshulam.tesarici.cz>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach:
-X-MS-TNEF-Correlator:
-x-tmn: [39Y4UjfANeb63Oxf0VtHn8u6T1PiI4rP]
-x-ms-publictraffictype: Email
-x-ms-traffictypediagnostic: SN6PR02MB4157:EE_|SA2PR02MB7546:EE_
-x-ms-office365-filtering-correlation-id: 29a872af-ea87-4bbf-0423-08dcc5eb9dab
-x-microsoft-antispam:
- BCL:0;ARA:14566002|19110799003|8060799006|461199028|15080799006|3412199025|440099028|102099032;
-x-microsoft-antispam-message-info:
- dfQHnQfG2k4vCgRQVBeiHCQyYx6vy8JJpAX0baunBp4jmw5X3c16duLKOYWada2E1i4bZ8ul2k/VJhDhIZL19A5TXtrxzYVJ4fd65L4lmmfE7vqPNLkXMaNeCAelzGbk7zLlfrygYaqi1tzVHkk7v8w6EDMho4wBNAOiBg1dNfjLbAcFk/9lOR5sx0ev2Z2XJrbLs812QwbEVZeS0b5XYLaTTtxIqGX0yYfcj8t2SC/WzfZk/s1hk/70Bf99M6Ov8HZaNCp74kmAMllyx7BpHB9eObTqGGYS7q0pbG9d88wl0eH9IqR7HQN/owhkzaAfn01Zg9R72VKAeDSqtScgXhPvdA4vFlaI+7axJ02AeRUEv9yWtRNNfIy8uUG6rSD8HPFHvZv/42cvmbaUpIXFr45xrwcb8dTmhLQDiT7hlEfuD0YCcJKE15t1WVg83ZouLQnUgd5wm/afn+ed5jUHqEuuX7gmO8Et3t8SGafNxiSclT9ot0BSzuRMakkz2+v7Nhy3QcS0IABg3ltVB0hfbT+T1A3APzj5OOA1ndcIbk77OQAB4CRkqRrnfL7DQKLqavt83siJDJak+KSOAWxoLftzPFS4+sxvlNOnRekTpbEATWbA1453umNp5K9l1EmMCb2DHOu0Ah4VhtcBPKKRRdqRil2InpPaXGMgwIme+piAF13ZZwaTi0NbbAn03gDL
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0:
- =?utf-8?B?UU8rNVBSc3V0NU0zOTBER0g5NGZ0NjBkeFkrRFZIVVhGY1FRNkJwTjlUUUFW?=
- =?utf-8?B?ZjlSejI5Ri9Cb0lPUlJId1AyQnFQeFhYTVFIUEtJSUMxZ2xoV2FUTStxUkpq?=
- =?utf-8?B?STlCMWszbUdYcVNFMXpJTUJHYUdNYWd0ZkxWRjBRNlpWbU82VHFUMm5mNVFn?=
- =?utf-8?B?N2JKMWI1TVFkUTg4TU5NdUQ3L1loVzNmOEhTMmUyRzl3ek1nUmU5bjR1eURJ?=
- =?utf-8?B?MmlzRFBjcFh5ZXRsZHY3L21NMGJmaXRueTEwejhtSTk4bW45RUpuclY4NWFB?=
- =?utf-8?B?eENYdCtzY0J4TjErTFFLRm8rMW5mQ214MEw4ckN1Mm5FQXRGa3NPakt1dllj?=
- =?utf-8?B?OHBwa1U2MzRGdXlCTFdsbEZpLytRbkVPOEg0VkJTbzZNOS8zUCtaVWh5WThN?=
- =?utf-8?B?S0UyU25NY2llc25GVFF1OE9xclBTdUVHN0FDbjF3SVg0NEdsT3JtQXl2Nlc0?=
- =?utf-8?B?ZHRyZHdia3VWOTZIZHoybXRzRU9hYitIR3Y1QVBRb3dqMnN1S21laVpuamI4?=
- =?utf-8?B?VVovYkg1ZjFMb2grZUtkei9wTURucS9KZWRXVkVEZ0pVOUJ0ZnhZRmdtdFJz?=
- =?utf-8?B?ZEU2N1VYV0svTFdaMnd1SlR5akRucGU1SC9PMkpNVmJlVFpHeTFDSWVkaWx5?=
- =?utf-8?B?dUhTMFdJNmxBeWRRZTN5OWd1MmtFWEFTY2xIOU9JTWZDTmR6bWN5ZlB1RmFD?=
- =?utf-8?B?RnFsQTArL056dkZWQkt1UVI3Z0VnbkNtNS9VNDFJcFhmZ3BHQnNaWndhSkIr?=
- =?utf-8?B?YktVdG5NdFZLSk1hLzQycDZjMGJQRHF3cTRBTGw1STBlMzRCYkhXVDdNRHBG?=
- =?utf-8?B?SGUyYi9mOVc0aFdXckt5V1dINkRzcTVyMlI0aFMvSkxTVFRLSmRvVGVnTnNv?=
- =?utf-8?B?NWErZitxOUN4MWdPU3BEc0ZqT2czZDk2K2ZhVFF4alNTUytRdWlqZlNSY0Jq?=
- =?utf-8?B?UDRXejFka0RHZGxzUHpZeVNwdmpOTUd6U1NjWGY2ejFGOGZWTmZISG12WjNa?=
- =?utf-8?B?U2w1TDFuSXJZd05JN3JJMFI1MlNBNS8wSURobUNRRXAxWW1uZE1aZ2srRFcz?=
- =?utf-8?B?V1p2TVF4UlJIYzFaZlI3RmVGMnpjVDA4cTc5WkV2VjBxZmoxazFRK1pyZzZ5?=
- =?utf-8?B?akJIK2JxUnhvSWxtaGg5V2prOWRGZU9JR3ZMTk9aVEZvMjdkenNsMWJnVHlH?=
- =?utf-8?B?aW5OanVHOUFGRmgxODcvbHhCYzVlQjB2Sm1mb012eVc3UDYvUTJ0emFVK2Y2?=
- =?utf-8?B?WjcrTjFwTnJEMEtYRmFFeGFTSUZ5Z1pMU2F3U3RqTG0vRFhLZGp6MEtRYllO?=
- =?utf-8?B?eWxLMmJFUTNHRjRMakRrdmpnWGExYnRVZ293K2VubEVtNkcxZDVvVDZIcW5D?=
- =?utf-8?B?QzdDeWpxcDBmQVJVOU1tOUR5TU5JQVgwQ2QyQkRXc1hPcldub2w5bWNETURW?=
- =?utf-8?B?YXdVSGVXeUw5RzVoVmIrZUVYUmJ2WVE3UzFQZVNFendOZngvSWR6ZktmTTFB?=
- =?utf-8?B?Nkw1MTRTTnlCb0JIZXZKRW1EN0t6UjZrTkVHbkZCdXBwR3ZKaXZ5bWRkTmND?=
- =?utf-8?B?M3U3UVlhbnplZ1lKaGZtWlhWU0ZOazhjcXQ1eGx3Y2hVQ1hHK0ZzWnpXejBT?=
- =?utf-8?Q?FXxLj+nM2raD4uUzw+Y5oNDsYkkx33xgLOfuntUDzGGI=3D?=
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+	dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="JYHM1Y75"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+	s=mimecast20190719; t=1724691891;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding:
+	 in-reply-to:in-reply-to:references:references;
+	bh=rwlIXih1BO8ZQGiTKnzjUQyj1FpIRW1qmjvRfN0Byzo=;
+	b=JYHM1Y751J4tdonemKPfpFfUed6e98lPmc41C20ak6482dXnT0Liepqt3yqfYmrqgb/L/Y
+	ynarWF6T7IdT+frRvJ+eXt97g3IuL3v8y3MZWgNxUx+H1DP64ZJ34yPcHlAw+87oHpBVq5
+	aaCy2g7jP/wh2CD3v3bcoXiiyFqYdFw=
+Received: from mail-io1-f70.google.com (mail-io1-f70.google.com
+ [209.85.166.70]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
+ us-mta-655-UsCwm4RBPNqjmV2mFz-0Pg-1; Mon, 26 Aug 2024 13:04:50 -0400
+X-MC-Unique: UsCwm4RBPNqjmV2mFz-0Pg-1
+Received: by mail-io1-f70.google.com with SMTP id ca18e2360f4ac-81f8285f737so49555239f.0
+        for <iommu@lists.linux.dev>; Mon, 26 Aug 2024 10:04:49 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1724691889; x=1725296689;
+        h=content-transfer-encoding:mime-version:organization:references
+         :in-reply-to:message-id:subject:cc:to:from:date:x-gm-message-state
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=rwlIXih1BO8ZQGiTKnzjUQyj1FpIRW1qmjvRfN0Byzo=;
+        b=qZrvS9esbSVDG35VKGBjxxLytrqROaEeG9dUa8Od0gGESPn1R6t3+HxoY2MIcx9JgV
+         I07NAOpiYc3khrkBIl6CttZOeWql6b9LPcX9X296vewLqYSl+i6BCASzC8YTHugT264Y
+         6aIZIP2YDLlSaQIhvLzhl0bsjlJ3f+AmIspCpb6Li6ro1i2atgOkzcQaeyUllvZzhDI+
+         iOIIHmUiQPB44trJImRjPT00zJv7XZX8Slv8IOv4O1ka2W0sYjUzM+IYftPBC444p6yh
+         PIKds/oiKUj3zUl2LJPOgZ4m4u+sYA7Mi8rcXlH7HthtHZXL/iRTuVtLSbzW7mab/x0C
+         YWHw==
+X-Forwarded-Encrypted: i=1; AJvYcCVkgG3PVVU/4aVgnjhfb7rkD+hK2KTfqrmaH8MM6JTO3XWfFYrWRxBOrQEQ2PbVL3C6zFgPTg==@lists.linux.dev
+X-Gm-Message-State: AOJu0YzK9eSFNhSOrGrtRr8EIAxQkr00G8aC2V7d9+oyTb9rwQHziz54
+	O7GCesNp6FjbmJGm8SiR+IxsRHsWjJlRc7Uzc8U9lZjfDwNiuP8P2oGDuoOsbFW5tPBW0hJ6AKK
+	qmKLYvqI7Wa/IOnB0VFZkVs7LyAayyGWhelYKZUKLJVz6hHFjsjnc
+X-Received: by 2002:a05:6e02:1522:b0:39a:eac8:9be8 with SMTP id e9e14a558f8ab-39e3c97a5dfmr61324845ab.1.1724691889186;
+        Mon, 26 Aug 2024 10:04:49 -0700 (PDT)
+X-Google-Smtp-Source: AGHT+IH/jEWrTo7q6VwBNGfSnxrn8MgB6Q7L404MZHrzYPI78/GNJ5dUbnlkNdD62TNSjIbJvZrssQ==
+X-Received: by 2002:a05:6e02:1522:b0:39a:eac8:9be8 with SMTP id e9e14a558f8ab-39e3c97a5dfmr61324775ab.1.1724691888651;
+        Mon, 26 Aug 2024 10:04:48 -0700 (PDT)
+Received: from redhat.com ([38.15.36.11])
+        by smtp.gmail.com with ESMTPSA id 8926c6da1cb9f-4ce7113a21asm2269909173.166.2024.08.26.10.04.47
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 26 Aug 2024 10:04:48 -0700 (PDT)
+Date: Mon, 26 Aug 2024 11:04:47 -0600
+From: Alex Williamson <alex.williamson@redhat.com>
+To: Manoj Vishwanathan <manojvishy@google.com>
+Cc: Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
+ Joerg Roedel <joro@8bytes.org>, linux-arm-kernel@lists.infradead.org,
+ kvm@vger.kernel.org, iommu@lists.linux.dev, linux-kernel@vger.kernel.org,
+ David Dillow <dillow@google.com>, Jason Gunthorpe <jgg@nvidia.com>
+Subject: Re: [PATCH v1 0/4] vfio/iommu: Flag to allow userspace to set DMA
+ buffers system cacheable
+Message-ID: <20240826110447.6522e0a7.alex.williamson@redhat.com>
+In-Reply-To: <20240826071641.2691374-1-manojvishy@google.com>
+References: <20240826071641.2691374-1-manojvishy@google.com>
+Organization: Red Hat
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-OriginatorOrg: outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: SN6PR02MB4157.namprd02.prod.outlook.com
-X-MS-Exchange-CrossTenant-RMS-PersistedConsumerOrg: 00000000-0000-0000-0000-000000000000
-X-MS-Exchange-CrossTenant-Network-Message-Id: 29a872af-ea87-4bbf-0423-08dcc5eb9dab
-X-MS-Exchange-CrossTenant-rms-persistedconsumerorg: 00000000-0000-0000-0000-000000000000
-X-MS-Exchange-CrossTenant-originalarrivaltime: 26 Aug 2024 16:24:53.2874
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 84df9e7f-e9f6-40af-b435-aaaaaaaaaaaa
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SA2PR02MB7546
+X-Mimecast-Spam-Score: 0
+X-Mimecast-Originator: redhat.com
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 
-RnJvbTogUGV0ciBUZXNhxZnDrWsgPHBldHJAdGVzYXJpY2kuY3o+IFNlbnQ6IFNhdHVyZGF5LCBB
-dWd1c3QgMjQsIDIwMjQgMTowNiBQTQ0KPiANCj4gT24gRnJpLCAyMyBBdWcgMjAyNCAyMDo0MDox
-NiArMDAwMA0KPiBNaWNoYWVsIEtlbGxleSA8bWhrbGludXhAb3V0bG9vay5jb20+IHdyb3RlOg0K
-PiANCj4gPiBGcm9tOiBQZXRyIFRlc2HFmcOtayA8cGV0ckB0ZXNhcmljaS5jej4gU2VudDogVGh1
-cnNkYXksIEF1Z3VzdCAyMiwgMjAyNCAxMTo0NSBQTQ0KPiA+Wy4uLl0NCj4gPiA+ID4gRGlzY3Vz
-c2lvbg0KPiA+ID4gPiA9PT09PT09PT09DQo+ID4gPiA+ICogU2luY2Ugc3dpb3RsYiBpc24ndCB2
-aXNpYmxlIHRvIGRldmljZSBkcml2ZXJzLCBJJ3ZlIHNwZWNpZmljYWxseQ0KPiA+ID4gPiBuYW1l
-ZCB0aGUgRE1BIGF0dHJpYnV0ZSBhcyBNQVlfQkxPQ0sgaW5zdGVhZCBvZiBNQVlfVEhST1RUTEUg
-b3INCj4gPiA+ID4gc29tZXRoaW5nIHN3aW90bGIgc3BlY2lmaWMuIFdoaWxlIHRoaXMgcGF0Y2gg
-c2V0IGNvbnN1bWVzIE1BWV9CTE9DSw0KPiA+ID4gPiBvbmx5IG9uIHRoZSBETUEgZGlyZWN0IHBh
-dGggdG8gZG8gdGhyb3R0bGluZyBpbiB0aGUgc3dpb3RsYiBjb2RlLA0KPiA+ID4gPiB0aGVyZSBt
-aWdodCBiZSBvdGhlciB1c2VzIGluIHRoZSBmdXR1cmUgb3V0c2lkZSBvZiBDb0NvIFZNcywgb3IN
-Cj4gPiA+ID4gcGVyaGFwcyBvbiB0aGUgSU9NTVUgcGF0aC4NCj4gPiA+DQo+ID4gPiBJIG9uY2Ug
-aW50cm9kdWNlZCBhIHNpbWlsYXIgZmxhZyBhbmQgY2FsbGVkIGl0IE1BWV9TTEVFUC4gSSBjaG9z
-ZQ0KPiA+ID4gTUFZX1NMRUVQLCBiZWNhdXNlIHRoZXJlIGlzIGFscmVhZHkgYSBtaWdodF9zbGVl
-cCgpIGFubm90YXRpb24sIGJ1dCBJDQo+ID4gPiBkb24ndCBoYXZlIGEgc3Ryb25nIG9waW5pb24g
-dW5sZXNzIHlvdXIgc2VtYW50aWNzIGlzIHN1cHBvc2VkIHRvIGJlDQo+ID4gPiBkaWZmZXJlbnQg
-ZnJvbSBtaWdodF9zbGVlcCgpLiBJZiBpdCBpcywgdGhlbiBJIHN0cm9uZ2x5IHByZWZlcg0KPiA+
-ID4gTUFZX0JMT0NLIHRvIHByZXZlbnQgY29uZnVzaW5nIHRoZSB0d28uDQo+ID4NCj4gPiBNeSBp
-bnRlbnQgaXMgdGhhdCB0aGUgc2VtYW50aWNzIGFyZSB0aGUgc2FtZSBhcyBtaWdodF9zbGVlcCgp
-LiBJDQo+ID4gdmFjaWxsYXRlZCBiZXR3ZWVuIE1BWV9TTEVFUCBhbmQgTUFZX0JMT0NLLiBUaGUg
-a2VybmVsIHNlZW1zDQo+ID4gdG8gdHJlYXQgInNsZWVwIiBhbmQgImJsb2NrIiBhcyBlcXVpdmFs
-ZW50LCBiZWNhdXNlIGJsay1tcSBoYXMNCj4gPiB0aGUgQkxLX01RX0ZfQkxPQ0tJTkcgZmxhZywg
-YW5kIFNDU0kgaGFzIHRoZQ0KPiA+IHF1ZXVlY29tbWFuZF9tYXlfYmxvY2sgZmxhZyB0aGF0IGlz
-IHRyYW5zbGF0ZWQgdG8NCj4gPiBCTEtfTVFfRl9CTE9DS0lORy4gU28gSSBzZXR0bGVkIG9uIE1B
-WV9CTE9DSywgYnV0IGFzIHlvdQ0KPiA+IHBvaW50IG91dCwgdGhhdCdzIGluY29uc2lzdGVudCB3
-aXRoIG1pZ2h0X3NsZWVwKCkuIEVpdGhlciB3YXkgd2lsbA0KPiA+IGJlIGluY29uc2lzdGVudCBz
-b21ld2hlcmUsIGFuZCBJIGRvbid0IGhhdmUgYSBwcmVmZXJlbmNlLg0KPiANCj4gRmFpciBlbm91
-Z2guIExldCdzIHN0YXkgd2l0aCBNQVlfQkxPQ0sgdGhlbiwgc28geW91IGRvbid0IGhhdmUgdG8N
-Cj4gY2hhbmdlIGl0IGV2ZXJ5d2hlcmUuDQo+IA0KPiA+Wy4uLl0NCj4gPiA+ID4gT3BlbiBUb3Bp
-Y3MNCj4gPiA+ID4gPT09PT09PT09PT0NCj4gPiA+ID4gMS4gc3dpb3RsYiBhbGxvY2F0aW9ucyBm
-cm9tIFhlbiBhbmQgdGhlIElPTU1VIGNvZGUgZG9uJ3QgbWFrZSB1c2UNCj4gPiA+ID4gb2YgdGhy
-b3R0bGluZy4gVGhpcyBjb3VsZCBiZSBhZGRlZCBpZiBiZW5lZmljaWFsLg0KPiA+ID4gPg0KPiA+
-ID4gPiAyLiBUaGUgdGhyb3R0bGluZyB2YWx1ZXMgYXJlIGN1cnJlbnRseSBleHBvc2VkIGFuZCBh
-ZGp1c3RhYmxlIGluDQo+ID4gPiA+IC9zeXMva2VybmVsL2RlYnVnL3N3aW90bGIuIFNob3VsZCBh
-bnkgb2YgdGhpcyBiZSBtb3ZlZCBzbyBpdCBpcw0KPiA+ID4gPiB2aXNpYmxlIGV2ZW4gd2l0aG91
-dCBDT05GSUdfREVCVUdfRlM/DQo+ID4gPg0KPiA+ID4gWWVzLiBJdCBzaG91bGQgYmUgcG9zc2li
-bGUgdG8gY29udHJvbCB0aGUgdGhyZXNob2xkcyB0aHJvdWdoDQo+ID4gPiBzeXNjdGwuDQo+ID4N
-Cj4gPiBHb29kIHBvaW50LiAgSSB3YXMgdGhpbmtpbmcgYWJvdXQgY3JlYXRpbmcgL3N5cy9rZXJu
-ZWwvc3dpb3RsYiwgYnV0DQo+ID4gc3lzY3RsIGlzIGJldHRlci4NCj4gDQo+IFRoYXQgc3RpbGwg
-bGVhdmVzIHRoZSBxdWVzdGlvbiB3aGVyZSBpdCBzaG91bGQgZ28uDQo+IA0KPiBVbmRlciAvcHJv
-Yy9zeXMva2VybmVsPyBPciBzaG91bGQgd2UgbWFrZSBhIC9wcm9jL3N5cy9rZXJuZWwvZG1hDQo+
-IHN1YmRpcmVjdG9yeSB0byBtYWtlIHJvb20gZm9yIG1vcmUgZG1hLXJlbGF0ZWQgY29udHJvbHM/
-DQoNCkkgd291bGQgYmUgZ29vZCB3aXRoIC9wcm9jL3N5cy9rZXJuZWwvc3dpb3RsYiAob3IgImRt
-YSIpLiBUaGVyZQ0KYXJlIG9ubHkgdHdvIGVudHJpZXMgKGhpZ2hfdGhyb3R0bGUgYW5kIGxvd190
-aHJvdHRsZSksIGJ1dCBqdXN0DQpkdW1waW5nIGV2ZXJ5dGhpbmcgZGlyZWN0bHkgaW4gL3Byb2Mv
-c3lzL2tlcm5lbCBkb2Vzbid0IHNlZW0gbGlrZQ0KYSBnb29kIGxvbmctdGVybSBhcHByb2FjaC4g
-IEV2ZW4gdGhvdWdoIHRoZXJlIGFyZSBjdXJyZW50bHkgYSBsb3QNCm9mIGRpcmVjdCBlbnRyaWVz
-IGluIC9wcm9jL3N5cy9rZXJuZWwsIHRoYXQgbWF5IGJlIGhpc3RvcmljYWwsIGFuZCBub3QNCmNo
-YW5nZWFibGUgZHVlIHRvIGJhY2t3YXJkcyBjb21wYXRpYmlsaXR5IHJlcXVpcmVtZW50cy4NCg0K
-TWljaGFlbA0KDQpNaWNoYWVsDQo=
+On Mon, 26 Aug 2024 07:16:37 +0000
+Manoj Vishwanathan <manojvishy@google.com> wrote:
+
+> Hi maintainers,
+> 
+> This RFC patch introduces the ability for userspace to control whether
+> device (DMA) buffers are marked as cacheable, enabling them to utilize
+> the system-level cache.
+> 
+> The specific changes made in this patch are:
+> 
+> * Introduce a new flag in `include/linux/iommu.h`: 
+>     * `IOMMU_SYS_CACHE` -  Indicates if the associated page should be cached in the system's cache hierarchy.
+> * Add `VFIO_DMA_MAP_FLAG_SYS_CACHE` to `include/uapi/linux/vfio.h`:
+>     * Allows userspace to set the cacheable attribute to PTE when mapping DMA regions using the VFIO interface.
+> * Update `vfio_iommu_type1.c`:
+>     * Handle the `VFIO_DMA_MAP_FLAG_SYS_CACHE` flag during DMA mapping operations.
+>     * Set the `IOMMU_SYS_CACHE` flag in the IOMMU page table entry if
+> the `VFIO_DMA_MAP_FLAG_SYS_CACHE` is set.
+
+We intend to eventually drop vfio type1 in favor of using IOMMUFD,
+therefore all new type1 features need to first be available in IOMMUFD.
+Once there we may consider use cases for providing the feature in the
+legacy type1 interface and the IOMMUFD compatibility interface.  Thanks,
+
+Alex
+
+> * arm/smmu/io-pgtable-arm: Set the MAIR for SYS_CACHE
+> 
+> The reasoning behind these changes is to provide userspace with
+> finer-grained control over memory access patterns for devices,
+> potentially improving performance in scenarios where caching is
+> beneficial. We saw in some of the use cases where the buffers were
+> for transient data ( in and out without processing).
+> 
+> I have tested this patch on certain arm64 machines and observed the
+> following:
+> 
+> * There is 14-21% improvement in jitter measurements, where the
+> buffer on System Level Cache vs DDR buffers
+> * There was not much of an improvement in latency in the diration of
+> the tests that I have tried.
+> 
+> I am open to feedback and suggestions for further improvements.
+> Please let me know if you have any questions or concerns. Also, I am
+> working on adding a check in the VFIO layer to ensure that if there
+> is no architecture supported implementation for sys cache, if should
+> not apply them.
+> 
+> Thanks,
+> Manoj Vishwanathan
+> 
+> Manoj Vishwanathan (4):
+>   iommu: Add IOMMU_SYS_CACHE flag for system cache control
+>   iommu/io-pgtable-arm: Force outer cache for page-level MAIR via user
+>     flag
+>   vfio: Add VFIO_DMA_MAP_FLAG_SYS_CACHE to control device access to
+>     system cache
+>   vfio/type1: Add support for VFIO_DMA_MAP_FLAG_SYS_CACHE
+> 
+>  drivers/iommu/io-pgtable-arm.c  | 3 +++
+>  drivers/vfio/vfio_iommu_type1.c | 5 +++--
+>  include/linux/iommu.h           | 6 ++++++
+>  include/uapi/linux/vfio.h       | 1 +
+>  4 files changed, 13 insertions(+), 2 deletions(-)
+> 
+
