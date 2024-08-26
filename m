@@ -1,321 +1,279 @@
-Received: from mail-yb1-f173.google.com (mail-yb1-f173.google.com [209.85.219.173])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from fhigh8-smtp.messagingengine.com (fhigh8-smtp.messagingengine.com [103.168.172.159])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 27B481514E1
-	for <iommu@lists.linux.dev>; Mon, 26 Aug 2024 11:36:47 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.219.173
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3369D13DDD9
+	for <iommu@lists.linux.dev>; Mon, 26 Aug 2024 11:40:52 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=103.168.172.159
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1724672209; cv=none; b=avsMbOcwJEcfU0MQtutIrstwxWXXoJ6UHZdUBm99TFzY9NVMjHpJ25V4YAGRJKhdSqaFYRNpaa/8GoqAlA5wXvN2M8Tf0BPMVD2a5LZYaYMBn62/j09kvWovP4cy106N0ekFXY0rIZxyDlhugXJ2Qy2bCrGgTTAk5lhgnVJkajs=
+	t=1724672456; cv=none; b=TJYuvxkQelLAGXpPwPb+6SPEDKSdBJhoPIvKZtdrJkW/lxSvmRPPNjugiHoH5InFrfWLLK23CHmMTM1N+ZAS9mmGAb5g+gnYe+jbhdSeDvF2EYjdj305mBvhAACSN+2UP6irs78Jmdx2aWqD5f+0aQx4rVzzwRHhVSRGL59/p4s=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1724672209; c=relaxed/simple;
-	bh=viPyuROUTeekllWPMisGYV8X++jFkeZ4J5mNBK4kLyU=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=HsFmKCycKFCHvztXti54XpY+LDlfgG2ItpUf3jCz95AS9OkNWTpB+8KDqj2+s+3Sp2JH0dIM8yeUuU2bZOhlntNbAR7lGdqtkgfd9CQD9rEgXuY7wE8jIEjHQod8NpZXHMm8Rr+f0EyGTjciEWHSJjOWM8Ub+44lgiteYrT2ZJI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org; spf=pass smtp.mailfrom=linaro.org; dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b=ajn8wIDf; arc=none smtp.client-ip=209.85.219.173
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linaro.org
+	s=arc-20240116; t=1724672456; c=relaxed/simple;
+	bh=AOKCN3pcEInzWzY591sIXcr7L729m4cdv7zQgCLMqQA=;
+	h=From:Subject:Date:Message-Id:MIME-Version:Content-Type:To:Cc; b=UrEZdujb4ro81jGdznq8hvOs4SaJ9Qp3kv++emneUelN3YsMfa2oWLtLw0a+17k+sMYShkx+yWQmx3Mywk5GH/5IAhBV50UAvosq9ho2//KSAt7TWj1YZ4yEh95VmHanOp+u6UF5Q/lnZd6H/rwxHWYbTYYPQ4HpczF1RdPyeE4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=irrelevant.dk; spf=pass smtp.mailfrom=irrelevant.dk; dkim=pass (2048-bit key) header.d=irrelevant.dk header.i=@irrelevant.dk header.b=FTINSCa0; dkim=pass (2048-bit key) header.d=messagingengine.com header.i=@messagingengine.com header.b=XDgTdXlD; arc=none smtp.client-ip=103.168.172.159
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=irrelevant.dk
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=irrelevant.dk
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="ajn8wIDf"
-Received: by mail-yb1-f173.google.com with SMTP id 3f1490d57ef6-e13e11b23faso4166471276.3
-        for <iommu@lists.linux.dev>; Mon, 26 Aug 2024 04:36:47 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1724672206; x=1725277006; darn=lists.linux.dev;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=3WuBkNkQq7ncBHhLfidrPpVIWONY2++qBbCcAKeFG0A=;
-        b=ajn8wIDfmTlzdXP04iAcQHg0pTwtDkZF5aYr/O//D2aL/X6uJhHNglYBAD1OM/Ih6C
-         R9fhtDhmZyiPSeizVTQtDbyES8kIJuzwKQigp4pVmzXwr5INstEAOKlt7TH/v8VXfYP2
-         EWVKYOlyE8rFlt4fNA9qpil05Hgm30xpbl8ijgKWQqC7DJ9qv+ixAt6hDtHEFY6xA4P0
-         IpxC2UJf/BcVGpa2gzQGh+4/SxWWT77NNzyBoyUoCzsKC39+I1vb/J4v3OcBYK6114mq
-         bvzvalSklGJhbKzX3RHou8iubjqqVVbCECJERixxDGwFOHQImLhzxYIuPl0uqstgez3Q
-         C7fQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1724672206; x=1725277006;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=3WuBkNkQq7ncBHhLfidrPpVIWONY2++qBbCcAKeFG0A=;
-        b=MF0JM1GvGcPNs91ZXlCSFliTKvNczHgDKQP+tb4Frb34wBbiRPa6T8dtsh893XIbJA
-         Om1aGw/jVANT+sVvj+SLOqYug6b4Xmk/nBs+ugQoFiO4mXS5LsTpzE4kcZaqHGruWLjp
-         hn6KDY+Bl+cMCwcR/Ym0h+ytg6xWMfrOwkIaUvUA7FmsspyYAgCt/pzoqW6fpCupuXov
-         7BrnzR6vQk80icM1aeWmWeQQjExb280Y9enTijREmlIOBTs3m5wG0vv7ptc4VqHb/tTP
-         GR8Q/84mIC0BiaLXBFuq9unXiA402BXeLAcSe3pmA5P47bW2jG1xuyiwKDp8nNWOt1Hw
-         REuw==
-X-Gm-Message-State: AOJu0YyntLksTlx8y+Y/qq3USV0GAckSbxF2JHinciW6UhGY77HbycPX
-	LRT0gSdXpKSlpTIMSzizo/HFFt7N9g3XwMunY6lprNIxFU91J67zO9vJPkH/yb6J2oO7e9iGFyp
-	WgWwclyo80My0d4L07FdATEdA0OKbrz8APbKZzw==
-X-Google-Smtp-Source: AGHT+IFTmCOXbkWFVjFKxNQjfliOW8Z+x4s+zXNlqgxkRfvBAgPO0UAeheCBnSP89lF7epHbxvk3ur82nxWQLLc8Og4=
-X-Received: by 2002:a05:6902:1a46:b0:e0b:4045:ada0 with SMTP id
- 3f1490d57ef6-e17a83d45d4mr9340283276.23.1724672206061; Mon, 26 Aug 2024
- 04:36:46 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=irrelevant.dk header.i=@irrelevant.dk header.b="FTINSCa0";
+	dkim=pass (2048-bit key) header.d=messagingengine.com header.i=@messagingengine.com header.b="XDgTdXlD"
+Received: from phl-compute-06.internal (phl-compute-06.nyi.internal [10.202.2.46])
+	by mailfhigh.nyi.internal (Postfix) with ESMTP id 265171151B2B;
+	Mon, 26 Aug 2024 07:40:52 -0400 (EDT)
+Received: from phl-mailfrontend-01 ([10.202.2.162])
+  by phl-compute-06.internal (MEProxy); Mon, 26 Aug 2024 07:40:52 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=irrelevant.dk;
+	 h=cc:cc:content-transfer-encoding:content-type:content-type
+	:date:date:from:from:in-reply-to:message-id:mime-version
+	:reply-to:subject:subject:to:to; s=fm3; t=1724672452; x=
+	1724758852; bh=YILOmF+9Yg51GcabLK1dCq9X7yDH0FEOgB9qW8eVdLw=; b=F
+	TINSCa0zh1zUacnpki6T9s/QxOFuP5t7DZOiaEmTt9hrWXpm9LNqQgFzYv+Sxruu
+	CLn72YVccWrr2HJtwq0AOfVR2HL8oNUubTX2auUzDN2Tqd/z6zpA0Z6USOXSi5To
+	/uHg1ziinWqd0eMPHnYRZ/GRlvSMVwKmUumKsyl38T01c8VQYkFqDFaIItJuIpS/
+	JHOVE+SNRnAE7HUmZLHWFmHGy6fcYrJrn7bbGtgHjRBdfzB/8/xKleCTLEQPQGxD
+	obmXA9I8JAi1FfPjFlZu7+1P/TDi7gDvQaSta3QxaR5G1mMhWzqnY3pW5HIBYsNp
+	nqjU2Rh4QlzcKJOy0VZew==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+	messagingengine.com; h=cc:cc:content-transfer-encoding
+	:content-type:content-type:date:date:feedback-id:feedback-id
+	:from:from:in-reply-to:message-id:mime-version:reply-to:subject
+	:subject:to:to:x-me-proxy:x-me-proxy:x-me-sender:x-me-sender
+	:x-sasl-enc; s=fm1; t=1724672452; x=1724758852; bh=YILOmF+9Yg51G
+	cabLK1dCq9X7yDH0FEOgB9qW8eVdLw=; b=XDgTdXlDVYWDQ8zy4ZzDwuKhuplZg
+	yQQr6OSKzHHbbUCIOrQIsCOqqwyHV7+e/GoeqoZH+nmEA3DwHiPfo0fUKapdrbNC
+	cS/syJlgu76jsXUL/cnJxaru0GkjIsHKPp7aObcueM4hw3foiSbMKAuaHMB8kgo7
+	X+K8VJ6LTvSJ339vhuB3DTtbnLegLoBAtv0zos/kO1Bo8QwKOXOKMtWCu3ZKHRaI
+	sj/hrzPNmY5L5Qog97LdB/gaNApvmH1419QvRN8KdxTOOwGsFaeFI1wnGKlZkANr
+	eORBQ4pUoP6HIyF0EuEpKVyuP5ay0ZT/NWr6gyM2C0Or1dXKiW7fkGdsw==
+X-ME-Sender: <xms:w2nMZumWPQvLdroEdZXEQ5950cqZv_Fz-HY_YTvYXHHkNVTruBG5uQ>
+    <xme:w2nMZl2zkJP7ExVOjt1FJWBqUY4eCdCkdTcfJFZswy_DIQ1-7BQH1PIK6KDwHcAeb
+    Ou1ikc7yZjRJkftRGs>
+X-ME-Received: <xmr:w2nMZspE3swJHWbh-HU12k1yQjjs04SH-E_vXM6q9hsUGnw2aUyXTzdVr4by42pUDqOYRDpgK64r88WEWiL2fw>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeeftddruddvkedggeduucetufdoteggodetrfdotf
+    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdggtfgfnhhsuhgsshgtrhhisggvpdfu
+    rfetoffkrfgpnffqhgenuceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnh
+    htshculddquddttddmnecujfgurhephffufffkgggtgffvvefosehtjeertdertdejnecu
+    hfhrohhmpefmlhgruhhsucflvghnshgvnhcuoehithhssehirhhrvghlvghvrghnthdrug
+    hkqeenucggtffrrghtthgvrhhnpeffteehuefhuedtiedutdduledutdegtdfffedvkedt
+    ieegudfhueffkeekvefhgeenucffohhmrghinhepghhithhhuhgsrdgtohhmpdhgihhtlh
+    grsgdrtghomhdpohhuthgpuggvvhhiugdrphhtnecuvehluhhsthgvrhfuihiivgeptden
+    ucfrrghrrghmpehmrghilhhfrhhomhepihhtshesihhrrhgvlhgvvhgrnhhtrdgukhdpnh
+    gspghrtghpthhtohepuddvpdhmohguvgepshhmthhpohhuthdprhgtphhtthhopehjrdhg
+    rhgrnhgrughoshesshgrmhhsuhhnghdrtghomhdprhgtphhtthhopehkrdhjvghnshgvnh
+    esshgrmhhsuhhnghdrtghomhdprhgtphhtthhopehkvghvihhnrdhtihgrnhesihhnthgv
+    lhdrtghomhdprhgtphhtthhopegufihmfidvsehinhhfrhgruggvrggurdhorhhgpdhrtg
+    hpthhtohepihhomhhmuheslhhishhtshdrlhhinhhugidruggvvhdprhgtphhtthhopehr
+    ohgsihhnrdhmuhhrphhhhiesrghrmhdrtghomhdprhgtphhtthhopegsrgholhhurdhluh
+    eslhhinhhugidrihhnthgvlhdrtghomhdprhgtphhtthhopehmihhnfihoohdrihhmsehs
+    rghmshhunhhgrdgtohhmpdhrtghpthhtohepjhhorhhoseeksgihthgvshdrohhrgh
+X-ME-Proxy: <xmx:w2nMZikyjMf3s4nOEeG6TMKzSXiQH2bNVD6m2LraidY3sH3j9YGOeg>
+    <xmx:w2nMZs310fN_iwLTJjMxHrvU55d7fzxqlhoewO6bciEj5CV5ZacJNQ>
+    <xmx:w2nMZptyHlNajwH9MLxrDietWKGOL0nGGKNDYoiM95FbUdHmuLJPlA>
+    <xmx:w2nMZoWfb0I1K1otHze66VoudBy-uQniNqmwaDRb3iKVhol_bJ512g>
+    <xmx:xGnMZiOLhozCJlRNlQ9lMjkOF8jxC6yTDSzuDCNn_iX1D4thx7gFDXed>
+Feedback-ID: idc91472f:Fastmail
+Received: by mail.messagingengine.com (Postfix) with ESMTPA; Mon,
+ 26 Aug 2024 07:40:49 -0400 (EDT)
+From: Klaus Jensen <its@irrelevant.dk>
+Subject: [PATCH RFC PREVIEW 0/6] iommu: enable user space iopfs in
+ non-nested and non-svm cases
+Date: Mon, 26 Aug 2024 13:40:26 +0200
+Message-Id: <20240826-iopf-for-all-v1-0-59174e6a7528@samsung.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <20240824034925.1163244-1-hch@lst.de> <20240824034925.1163244-5-hch@lst.de>
-In-Reply-To: <20240824034925.1163244-5-hch@lst.de>
-From: Ulf Hansson <ulf.hansson@linaro.org>
-Date: Mon, 26 Aug 2024 13:36:09 +0200
-Message-ID: <CAPDyKFrnP5uZ8H3CL5P7bwjRnPwNPDF-U7amm1fwGeob63GYmw@mail.gmail.com>
-Subject: Re: [PATCH 4/4] dma-mapping: don't return errors from dma_set_max_seg_size
-To: Christoph Hellwig <hch@lst.de>
-Cc: iommu@lists.linux.dev, "Martin K. Petersen" <martin.petersen@oracle.com>, 
-	Robin Murphy <robin.murphy@arm.com>, Marek Szyprowski <m.szyprowski@samsung.com>, 
-	linux-scsi@vger.kernel.org, linux-kernel@vger.kernel.org, 
-	linux-arm-msm@vger.kernel.org, dri-devel@lists.freedesktop.org, 
-	dmaengine@vger.kernel.org, linux-arm-kernel@lists.infradead.org, 
-	linux-mediatek@lists.infradead.org, linux-media@vger.kernel.org, 
-	linux-mmc@vger.kernel.org, linux-stm32@st-md-mailman.stormreply.com, 
-	linux-hyperv@vger.kernel.org, netdev@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+X-B4-Tracking: v=1; b=H4sIAKppzGYC/6tWKk4tykwtVrJSqFYqSi3LLM7MzwNyDHUUlJIzE
+ vPSU3UzU4B8JSMDIxMDCyNj3cz8gjTdtPwi3cScHF3jJENLA3PT1LRkYyMloJaCotS0zAqwcdF
+ KQW7OILGAINcwT9dwpdjaWgAgz9MbbgAAAA==
+To: David Woodhouse <dwmw2@infradead.org>, 
+ Lu Baolu <baolu.lu@linux.intel.com>, Joerg Roedel <joro@8bytes.org>, 
+ Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>, 
+ Jason Gunthorpe <jgg@ziepe.ca>, Kevin Tian <kevin.tian@intel.com>
+Cc: Minwoo Im <minwoo.im@samsung.com>, linux-kernel@vger.kernel.org, 
+ iommu@lists.linux.dev, Joel Granados <j.granados@samsung.com>, 
+ Klaus Jensen <k.jensen@samsung.com>
+X-Mailer: b4 0.14.1
+X-Developer-Signature: v=1; a=openpgp-sha256; l=6011; i=k.jensen@samsung.com;
+ h=from:subject:message-id; bh=AOKCN3pcEInzWzY591sIXcr7L729m4cdv7zQgCLMqQA=;
+ b=LS0tLS1CRUdJTiBQR1AgTUVTU0FHRS0tLS0tCgpvd0o0bkFGdEFaTCtrQTBEQUFvQlRlR3ZNV
+ zFQRGVrQnl5WmlBR2JNYWI3VnNXSW9tY2NWZXlJem9sS2QzUnFICmlCalc0RTlTcU9pQUd2VUww
+ Z3lpN0lrQk13UUFBUW9BSFJZaEJGSW9NNnAxNHR6bW9rZG13RTNocnpGdFR3M3AKQlFKbXpHbSt
+ BQW9KRUUzaHJ6RnRUdzNwQW53SCtnTTIxcEQwT1pEcFkyRStEM0N0NldKNXZwWFNBN3d3c3NoZg
+ o4ZXozaXZ0ZVpXOHZKdnNJeWhQTGtjODV0RTdMeHNJQmhaemN2WDlGOU53dU5YbWRlaklJTytON
+ nZRNDZGUW8wCmQzSnBxR0ZiV1d2b3IwZkNjanp5UGl5SnUwNFdtaklFVlZFbzliNmpoN2JCSDBX
+ dy9LM0YwNUlMZXBaT3hFclEKL01PSDZxaDdjdjk1Y3RNbXpFUk4xQzA3SHQ1ZGFvTTF2WDdoYWU
+ 3QVpiVU91YVlEOXRJdGZzMjlaenEzVmQvawpRWUVzSlhxdnJMTWRtcXJ0b3p4NGtlOTY1K3JaSH
+ AvTXpkczZBL3RHeG9NdzJQMzBkTzljNUtJZEo0ZVdtejI2Ci9vTklCUnU2dVRiUnlWUFVBUVV1Z
+ HlxZnZ1NUlrMXRKV0xaRUxzRjFlOG50TU12UWYxdThmTENWCj1nR0s1Ci0tLS0tRU5EIFBHUCBN
+ RVNTQUdFLS0tLS0K
+X-Developer-Key: i=k.jensen@samsung.com; a=openpgp;
+ fpr=DDCA4D9C9EF931CC3468427263D56FC5E55DA838
 
-On Sat, 24 Aug 2024 at 05:51, Christoph Hellwig <hch@lst.de> wrote:
->
-> A NULL dev->dma_parms indicates either a bus that is not DMA capable or
-> grave bug in the implementation of the bus code.
->
-> There isn't much the driver can do in terms of error handling for either
-> case, so just warn and continue as DMA operations will fail anyway.
->
-> Signed-off-by: Christoph Hellwig <hch@lst.de>
-> Reviewed-by: Robin Murphy <robin.murphy@arm.com>
-> ---
->  drivers/accel/qaic/qaic_drv.c                         |  4 +---
->  drivers/dma/idma64.c                                  |  4 +---
->  drivers/dma/pl330.c                                   |  5 +----
->  drivers/dma/qcom/bam_dma.c                            |  6 +-----
->  drivers/dma/sh/rcar-dmac.c                            |  4 +---
->  drivers/dma/ste_dma40.c                               |  6 +-----
->  drivers/gpu/drm/mediatek/mtk_drm_drv.c                |  6 +-----
->  drivers/media/common/videobuf2/videobuf2-dma-contig.c |  3 +--
->  drivers/media/pci/intel/ipu6/ipu6.c                   |  4 +---
->  drivers/mmc/host/mmci_stm32_sdmmc.c                   |  3 ++-
->  drivers/net/ethernet/microsoft/mana/gdma_main.c       |  6 +-----
->  drivers/scsi/lpfc/lpfc_init.c                         |  7 +------
->  include/linux/dma-mapping.h                           | 10 ++++------
->  13 files changed, 17 insertions(+), 51 deletions(-)
+This is a Request for Comment series that will hopefully generate
+initial feedback on the use of the iommufd_hwpt_replace_device to
+execute non-nested and non-svm user space IOPFs. Our main motivation is
+to enable user-space driver driven device verification with default
+pasid and without nesting nor SVM.
 
-Acked-by: Ulf Hansson <ulf.hansson@linaro.org> # For MMC
+What?
+  * Enable IO page fault handling in user space in a non-nested, non-svm
+    and non-virtualised use case.
+  * Removing the relation between IOPF and INTEL_IOMMU_SVM by allowing
+    the user to (de)select the IOPF code through Kconfig.
+  * Create a new file under iommu/intel (prq.c) that contains all the
+    page request queue related logic and is not under intel/svm.c.
+  * Add the IOMMU_HWPT_FAULT_ID_VALID to the valid flags used to create
+    IOMMU_HWPT_ALLOC allocations.
+  * Create a default (zero) pasid handle and insert it to the pasid
+    array within the dev->iommu_group when replacing the old HWPT with
+    an iopf enabled HWPT.
 
-Kind regards
-Uffe
+Why?
+  The PCI ATS Extended Capability allows peripheral devices to
+  participate in the caching of translations when operating under an
+  IOMMU. Further, the ATS Page Request Interface (PRI) Extension allows
+  devices to handle missing mappings. Currently, PRI is mainly used in
+  the context of Shared Virtual Addressing, requiring support for the
+  Process Address Space Identifier (PASID) capability, but other use
+  cases such as enabling user-space driver driven device verification
+  and reducing memory pinning exists. This patchest sets out to enable
+  these use cases.
 
->
-> diff --git a/drivers/accel/qaic/qaic_drv.c b/drivers/accel/qaic/qaic_drv.c
-> index 580b29ed190217..bf10156c334e71 100644
-> --- a/drivers/accel/qaic/qaic_drv.c
-> +++ b/drivers/accel/qaic/qaic_drv.c
-> @@ -447,9 +447,7 @@ static int init_pci(struct qaic_device *qdev, struct pci_dev *pdev)
->         ret = dma_set_mask_and_coherent(&pdev->dev, DMA_BIT_MASK(64));
->         if (ret)
->                 return ret;
-> -       ret = dma_set_max_seg_size(&pdev->dev, UINT_MAX);
-> -       if (ret)
-> -               return ret;
-> +       dma_set_max_seg_size(&pdev->dev, UINT_MAX);
->
->         qdev->bar_0 = devm_ioremap_resource(&pdev->dev, &pdev->resource[0]);
->         if (IS_ERR(qdev->bar_0))
-> diff --git a/drivers/dma/idma64.c b/drivers/dma/idma64.c
-> index e3505e56784b1a..1398814d8fbb63 100644
-> --- a/drivers/dma/idma64.c
-> +++ b/drivers/dma/idma64.c
-> @@ -598,9 +598,7 @@ static int idma64_probe(struct idma64_chip *chip)
->
->         idma64->dma.dev = chip->sysdev;
->
-> -       ret = dma_set_max_seg_size(idma64->dma.dev, IDMA64C_CTLH_BLOCK_TS_MASK);
-> -       if (ret)
-> -               return ret;
-> +       dma_set_max_seg_size(idma64->dma.dev, IDMA64C_CTLH_BLOCK_TS_MASK);
->
->         ret = dma_async_device_register(&idma64->dma);
->         if (ret)
-> diff --git a/drivers/dma/pl330.c b/drivers/dma/pl330.c
-> index 60c4de8dac1d2a..82a9fe88ad54c9 100644
-> --- a/drivers/dma/pl330.c
-> +++ b/drivers/dma/pl330.c
-> @@ -3163,10 +3163,7 @@ pl330_probe(struct amba_device *adev, const struct amba_id *id)
->          * This is the limit for transfers with a buswidth of 1, larger
->          * buswidths will have larger limits.
->          */
-> -       ret = dma_set_max_seg_size(&adev->dev, 1900800);
-> -       if (ret)
-> -               dev_err(&adev->dev, "unable to set the seg size\n");
-> -
-> +       dma_set_max_seg_size(&adev->dev, 1900800);
->
->         init_pl330_debugfs(pl330);
->         dev_info(&adev->dev,
-> diff --git a/drivers/dma/qcom/bam_dma.c b/drivers/dma/qcom/bam_dma.c
-> index 5e7d332731e0c1..368ffaa4003789 100644
-> --- a/drivers/dma/qcom/bam_dma.c
-> +++ b/drivers/dma/qcom/bam_dma.c
-> @@ -1325,11 +1325,7 @@ static int bam_dma_probe(struct platform_device *pdev)
->
->         /* set max dma segment size */
->         bdev->common.dev = bdev->dev;
-> -       ret = dma_set_max_seg_size(bdev->common.dev, BAM_FIFO_SIZE);
-> -       if (ret) {
-> -               dev_err(bdev->dev, "cannot set maximum segment size\n");
-> -               goto err_bam_channel_exit;
-> -       }
-> +       dma_set_max_seg_size(bdev->common.dev, BAM_FIFO_SIZE);
->
->         platform_set_drvdata(pdev, bdev);
->
-> diff --git a/drivers/dma/sh/rcar-dmac.c b/drivers/dma/sh/rcar-dmac.c
-> index 40482cb73d798a..1094a2f821649c 100644
-> --- a/drivers/dma/sh/rcar-dmac.c
-> +++ b/drivers/dma/sh/rcar-dmac.c
-> @@ -1868,9 +1868,7 @@ static int rcar_dmac_probe(struct platform_device *pdev)
->
->         dmac->dev = &pdev->dev;
->         platform_set_drvdata(pdev, dmac);
-> -       ret = dma_set_max_seg_size(dmac->dev, RCAR_DMATCR_MASK);
-> -       if (ret)
-> -               return ret;
-> +       dma_set_max_seg_size(dmac->dev, RCAR_DMATCR_MASK);
->
->         ret = dma_set_mask_and_coherent(dmac->dev, DMA_BIT_MASK(40));
->         if (ret)
-> diff --git a/drivers/dma/ste_dma40.c b/drivers/dma/ste_dma40.c
-> index 2c489299148eee..d52e1685aed53f 100644
-> --- a/drivers/dma/ste_dma40.c
-> +++ b/drivers/dma/ste_dma40.c
-> @@ -3632,11 +3632,7 @@ static int __init d40_probe(struct platform_device *pdev)
->         if (ret)
->                 goto destroy_cache;
->
-> -       ret = dma_set_max_seg_size(base->dev, STEDMA40_MAX_SEG_SIZE);
-> -       if (ret) {
-> -               d40_err(dev, "Failed to set dma max seg size\n");
-> -               goto destroy_cache;
-> -       }
-> +       dma_set_max_seg_size(base->dev, STEDMA40_MAX_SEG_SIZE);
->
->         d40_hw_init(base);
->
-> diff --git a/drivers/gpu/drm/mediatek/mtk_drm_drv.c b/drivers/gpu/drm/mediatek/mtk_drm_drv.c
-> index 77b50c56c124ce..3e807195a0d03a 100644
-> --- a/drivers/gpu/drm/mediatek/mtk_drm_drv.c
-> +++ b/drivers/gpu/drm/mediatek/mtk_drm_drv.c
-> @@ -559,11 +559,7 @@ static int mtk_drm_kms_init(struct drm_device *drm)
->          * Configure the DMA segment size to make sure we get contiguous IOVA
->          * when importing PRIME buffers.
->          */
-> -       ret = dma_set_max_seg_size(dma_dev, UINT_MAX);
-> -       if (ret) {
-> -               dev_err(dma_dev, "Failed to set DMA segment size\n");
-> -               goto err_component_unbind;
-> -       }
-> +       dma_set_max_seg_size(dma_dev, UINT_MAX);
->
->         ret = drm_vblank_init(drm, MAX_CRTC);
->         if (ret < 0)
-> diff --git a/drivers/media/common/videobuf2/videobuf2-dma-contig.c b/drivers/media/common/videobuf2/videobuf2-dma-contig.c
-> index 3d4fd4ef53107c..bb0b7fa67b539a 100644
-> --- a/drivers/media/common/videobuf2/videobuf2-dma-contig.c
-> +++ b/drivers/media/common/videobuf2/videobuf2-dma-contig.c
-> @@ -854,8 +854,7 @@ int vb2_dma_contig_set_max_seg_size(struct device *dev, unsigned int size)
->                 return -ENODEV;
->         }
->         if (dma_get_max_seg_size(dev) < size)
-> -               return dma_set_max_seg_size(dev, size);
-> -
-> +               dma_set_max_seg_size(dev, size);
->         return 0;
->  }
->  EXPORT_SYMBOL_GPL(vb2_dma_contig_set_max_seg_size);
-> diff --git a/drivers/media/pci/intel/ipu6/ipu6.c b/drivers/media/pci/intel/ipu6/ipu6.c
-> index bbd646378ab3ed..83e70c692d957f 100644
-> --- a/drivers/media/pci/intel/ipu6/ipu6.c
-> +++ b/drivers/media/pci/intel/ipu6/ipu6.c
-> @@ -576,9 +576,7 @@ static int ipu6_pci_probe(struct pci_dev *pdev, const struct pci_device_id *id)
->         if (ret)
->                 return dev_err_probe(dev, ret, "Failed to set DMA mask\n");
->
-> -       ret = dma_set_max_seg_size(dev, UINT_MAX);
-> -       if (ret)
-> -               return dev_err_probe(dev, ret, "Failed to set max_seg_size\n");
-> +       dma_set_max_seg_size(dev, UINT_MAX);
->
->         ret = ipu6_pci_config_setup(pdev, isp->hw_ver);
->         if (ret)
-> diff --git a/drivers/mmc/host/mmci_stm32_sdmmc.c b/drivers/mmc/host/mmci_stm32_sdmmc.c
-> index f5da7f9baa52d4..9dc51859c2e51e 100644
-> --- a/drivers/mmc/host/mmci_stm32_sdmmc.c
-> +++ b/drivers/mmc/host/mmci_stm32_sdmmc.c
-> @@ -213,7 +213,8 @@ static int sdmmc_idma_setup(struct mmci_host *host)
->                 host->mmc->max_seg_size = host->mmc->max_req_size;
->         }
->
-> -       return dma_set_max_seg_size(dev, host->mmc->max_seg_size);
-> +       dma_set_max_seg_size(dev, host->mmc->max_seg_size);
-> +       return 0;
->  }
->
->  static int sdmmc_idma_start(struct mmci_host *host, unsigned int *datactrl)
-> diff --git a/drivers/net/ethernet/microsoft/mana/gdma_main.c b/drivers/net/ethernet/microsoft/mana/gdma_main.c
-> index ddb8f68d80a206..ca4ed58f1206dd 100644
-> --- a/drivers/net/ethernet/microsoft/mana/gdma_main.c
-> +++ b/drivers/net/ethernet/microsoft/mana/gdma_main.c
-> @@ -1496,11 +1496,7 @@ static int mana_gd_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
->         if (err)
->                 goto release_region;
->
-> -       err = dma_set_max_seg_size(&pdev->dev, UINT_MAX);
-> -       if (err) {
-> -               dev_err(&pdev->dev, "Failed to set dma device segment size\n");
-> -               goto release_region;
-> -       }
-> +       dma_set_max_seg_size(&pdev->dev, UINT_MAX);
->
->         err = -ENOMEM;
->         gc = vzalloc(sizeof(*gc));
-> diff --git a/drivers/scsi/lpfc/lpfc_init.c b/drivers/scsi/lpfc/lpfc_init.c
-> index e1dfa96c2a553a..50620918becd59 100644
-> --- a/drivers/scsi/lpfc/lpfc_init.c
-> +++ b/drivers/scsi/lpfc/lpfc_init.c
-> @@ -13861,12 +13861,7 @@ lpfc_get_sli4_parameters(struct lpfc_hba *phba, LPFC_MBOXQ_t *mboxq)
->         if (sli4_params->sge_supp_len > LPFC_MAX_SGE_SIZE)
->                 sli4_params->sge_supp_len = LPFC_MAX_SGE_SIZE;
->
-> -       rc = dma_set_max_seg_size(&phba->pcidev->dev, sli4_params->sge_supp_len);
-> -       if (unlikely(rc)) {
-> -               lpfc_printf_log(phba, KERN_INFO, LOG_INIT,
-> -                               "6400 Can't set dma maximum segment size\n");
-> -               return rc;
-> -       }
-> +       dma_set_max_seg_size(&phba->pcidev->dev, sli4_params->sge_supp_len);
->
->         /*
->          * Check whether the adapter supports an embedded copy of the
-> diff --git a/include/linux/dma-mapping.h b/include/linux/dma-mapping.h
-> index 6bd1333dbacb9b..1524da363734af 100644
-> --- a/include/linux/dma-mapping.h
-> +++ b/include/linux/dma-mapping.h
-> @@ -524,13 +524,11 @@ static inline unsigned int dma_get_max_seg_size(struct device *dev)
->         return SZ_64K;
->  }
->
-> -static inline int dma_set_max_seg_size(struct device *dev, unsigned int size)
-> +static inline void dma_set_max_seg_size(struct device *dev, unsigned int size)
->  {
-> -       if (dev->dma_parms) {
-> -               dev->dma_parms->max_segment_size = size;
-> -               return 0;
-> -       }
-> -       return -EIO;
-> +       if (WARN_ON_ONCE(!dev->dma_parms))
-> +               return;
-> +       dev->dma_parms->max_segment_size = size;
->  }
->
->  static inline unsigned long dma_get_seg_boundary(struct device *dev)
-> --
-> 2.43.0
->
->
+Testing?
+  The non-nested/non-svm IOPF interface is exercised by first
+  initializing an iopf enabled ioas and then reading the fault file
+  descriptor. Pseudocode on the iopf initializing and handling is in [3]
+  and [4] (using libvfn).
+
+  Supplementary repositories supporting this patchset:
+    1. A user space library libvfn [1] which is used for testing and
+       verification (see examples/iopf.c), and
+    2. Basic emulation of PCIe ATS/PRI and Intel VT-d PRQ in QEMU [2].
+
+Notes
+  Patches 5/6 are added by Klaus for testing against the QEMU test
+  device (which does not support PASID). They are very much RFC.
+
+Comments and feedback are greatly appreciated
+
+Best
+
+Joel
+
+PS: I'm on PTO, so my answers might be delayed (back September 2nd). But
+    I'll give priority to answer any questions or feedback when I see
+    it.
+
+[1] https://github.com/SamsungDS/libvfn/tree/iommufd-fault-queue
+[2] https://gitlab.com/birkelund/qemu/-/tree/pcie-ats-pri
+
+[3] Initializing
+```
+  int iopf_init(struct iommu_ioas *ioas, const char *bdf)
+  {
+      // open vfio device from bdf
+      int devfd = open('/dev/vfio/devices/VFIO_DEV', O_RDWR);
+
+      struct vfio_device_bind_iommufd bind = {
+          .argsz = sizeof(bind),
+          .flags = 0,
+          .iommufd = __iommufd,
+      };
+      ioctl(devfd, VFIO_DEVICE_BIND_IOMMUFD, &bind);
+
+      struct iommu_ioas *ioas = ioas;
+      struct vfio_device_attach_iommufd_pt attach_data = {
+          .argsz = sizeof(attach_data),
+          .flags = 0,
+          .pt_id = ioas->id,
+      };
+      ioctl(devfd, VFIO_DEVICE_ATTACH_IOMMUFD_PT, &attach_data);
+
+      struct iommu_fault_alloc fault = {
+          .size = sizeof(fault),
+          .flags = 0,
+      };
+      ioctl(__iommufd, IOMMU_FAULT_QUEUE_ALLOC, &fault);
+
+      struct iommu_hwpt_alloc fault_cmd = {
+          .size = sizeof(fault_cmd),
+          .flags = IOMMU_HWPT_FAULT_ID_VALID,
+          .dev_id = bind.out_devid,
+          .pt_id = ioas->id,
+          .data_len = 0,
+          .data_uptr = (uint64_t)NULL,
+          .fault_id = fault.out_fault_id,
+          .__reserved = 0,
+          };
+      ioctl(__iommufd, IOMMU_HWPT_ALLOC, &fault_cmd);
+
+      // This is a re-attach
+      struct vfio_device_attach_iommufd_pt attach = {
+          .argsz = sizeof(attach),
+          .flags = 0,
+          .pt_id = fault_cmd.out_hwpt_id
+      };
+      ioctl(dev_fd, VFIO_DEVICE_ATTACH_IOMMUFD_PT, &attach);
+  }
+```
+
+[4] Handling
+```
+  int handle_iopf(void *vaddr, int len, uint64_t iova) {
+    exec_command(CMD)
+
+    int iopf_fd = fault_cmd.fault_id;
+
+    struct iommu_hwpt_pgfault pgfault = {0};
+    if(read(iopf_fd, &pgfault, sizeof(pgfault)) == 0);
+      return; // no page fault
+
+    ret = iommu_map_vaddr(__iommmufd, vaddr, len, &iova)
+    struct iommu_hwpt_page_response pgfault_response = {
+      .cookie = pgfault.cookie,
+      .code = ret ? IOMMUFD_PAGE_RESP_SUCCESS : IOMMUFD_PAGE_RESP_INVALID,
+    };
+
+    write(iopf_fd, &pgfault_response, sizeof(pgfault_response));
+
+    return;
+  }
+```
+
+Signed-off-by: Joel Granados <j.granados@samsung.com>
+Signed-off-by: Klaus Jensen <k.jensen@samsung.com>
+---
+Joel Granados (4):
+      iommu/vt-d: Separate page request queue from SVM
+      iommu: Make IOMMU_IOPF selectable in Kconfig
+      iommufd: Enable PRI when doing the iommufd_hwpt_alloc
+      iommu: init pasid array while doing domain_replace and iopf is active
+
+Klaus Jensen (2):
+      iommu/vt-d: drop pasid requirement for prq initialization
+      iommu/vt-d: do not require a PASID in page requests
+
+ drivers/iommu/Kconfig                |   2 +-
+ drivers/iommu/intel/Kconfig          |   1 -
+ drivers/iommu/intel/Makefile         |   2 +-
+ drivers/iommu/intel/iommu.c          |  29 ++--
+ drivers/iommu/intel/iommu.h          |  40 ++++-
+ drivers/iommu/intel/prq.c            | 284 ++++++++++++++++++++++++++++++++
+ drivers/iommu/intel/svm.c            | 308 -----------------------------------
+ drivers/iommu/iommu-priv.h           |   3 +
+ drivers/iommu/iommu.c                |  31 ++++
+ drivers/iommu/iommufd/fault.c        |  22 +++
+ drivers/iommu/iommufd/hw_pagetable.c |   3 +-
+ 11 files changed, 389 insertions(+), 336 deletions(-)
+---
+base-commit: 3d5f968a177d468cd13568ef901c5be84d83d32b
+change-id: 20240823-iopf-for-all-3b19075efc32
+
+Best regards,
+-- 
+Klaus Jensen <k.jensen@samsung.com>
+
