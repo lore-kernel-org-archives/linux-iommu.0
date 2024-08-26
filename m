@@ -1,403 +1,568 @@
-Received: from mailout1.w1.samsung.com (mailout1.w1.samsung.com [210.118.77.11])
+Received: from out-175.mta0.migadu.com (out-175.mta0.migadu.com [91.218.175.175])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C111212C7FB
-	for <iommu@lists.linux.dev>; Mon, 26 Aug 2024 19:28:34 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=210.118.77.11
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DCAF413A3F6
+	for <iommu@lists.linux.dev>; Mon, 26 Aug 2024 20:33:22 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=91.218.175.175
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1724700518; cv=none; b=K5qVm2rvo9CJ0eLr+B4m6kThi8KxXrAca0h9KmqtDrGF1TzKIQ6LgisRK6UQI/Ty04bxTomj6nYHQB8F0XeUEIRu6nc+/DzEzblXsh7xzMekGWRKHFE+YD92OOW7TZHhrmIIdlNBVLmDbOMN+o/Yn8kPjk2tXVL1ljONvvaIQcU=
+	t=1724704406; cv=none; b=Vjc0BQ3qPJxUmNRyfAebYaAJ2w2Z8B3DneCVheJ1pvO1wWL3r2GXlWniAeg7jnyCL4mto58uIVn+QgnA0O7X1e6/w1H3tf4iZXu9XQ05A1HIxBcpbeT4aHZe/WQM3O3uT5m8ISUX8DdqspX/3ztf4RSk3DrsSlLJsh4V667Z2YU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1724700518; c=relaxed/simple;
-	bh=flXGqCX8lZXMwYi7kysZ34o9tLSVnSc9bj4852AHiMo=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:From:In-Reply-To:
-	 Content-Type:References; b=eTBU+pMScJftjO3zb+GGNoeEGHKPmrTT17koyelmAJ/Ev74wjKCatMCQ5YH1B6GkTCHfAePhU0RiK4cVWICMQh5ddfqRpR9VNzgkfWcHuwAwzegsS4m8N4OwCuffvB/vQqjVDJ4UsBGSeUwESoy7xloMEQzdKhlpc3177npIOEM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=samsung.com; spf=pass smtp.mailfrom=samsung.com; dkim=pass (1024-bit key) header.d=samsung.com header.i=@samsung.com header.b=th6AuyQW; arc=none smtp.client-ip=210.118.77.11
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=samsung.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=samsung.com
+	s=arc-20240116; t=1724704406; c=relaxed/simple;
+	bh=xYk3E3qZ/hEtNeE2rprAjHIiduo2xdXtug150MAZpdA=;
+	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version; b=eSMtWafHBOVuJDMa60OacXC/aemNuo8Go5KYWVC4YG8XxBdaFWXjvZ+QKUcgpyqrzLF97LpbXl3HJ7qgQVisP8qAKmeMTkx3xM5JGmqeBW/7JUhOCJh+94jXcJ9VkSkhK1UdxVUW19qcl4j9b81cKAYa/Ai4XFz+h67qtbkszD8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.dev; spf=pass smtp.mailfrom=linux.dev; dkim=pass (1024-bit key) header.d=linux.dev header.i=@linux.dev header.b=PEYgYJ8l; arc=none smtp.client-ip=91.218.175.175
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.dev
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.dev
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=samsung.com header.i=@samsung.com header.b="th6AuyQW"
-Received: from eucas1p2.samsung.com (unknown [182.198.249.207])
-	by mailout1.w1.samsung.com (KnoxPortal) with ESMTP id 20240826192832euoutp0122479e1322d04225d645c207887ce5bb~vXfp3jdBN3188331883euoutp01t
-	for <iommu@lists.linux.dev>; Mon, 26 Aug 2024 19:28:32 +0000 (GMT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 mailout1.w1.samsung.com 20240826192832euoutp0122479e1322d04225d645c207887ce5bb~vXfp3jdBN3188331883euoutp01t
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
-	s=mail20170921; t=1724700512;
-	bh=ZX+wrqfx1bzDDtL6WbN39xilUXlPHJNgSjW3OMn0Guo=;
-	h=Date:Subject:To:Cc:From:In-Reply-To:References:From;
-	b=th6AuyQWr1fYa7HUSk81KZKq4R2Z2MQf4ByQ6Ri5br/sYvWUrZYY2Sg9qVhdhw99b
-	 oR1KJ/Z0nh/E7wSfU4LJALmC9Z8oMjLUO4/rYpqCp+yeGdV/6tSzt5cxP5RjohQZLV
-	 ewQi7nDSh2ZH9nWaItgN6IfoP30P1E8Q1Y1yBWUo=
-Received: from eusmges2new.samsung.com (unknown [203.254.199.244]) by
-	eucas1p2.samsung.com (KnoxPortal) with ESMTP id
-	20240826192832eucas1p24e055ed94bde75c3e1c5a0d167e379da~vXfpfIxUq1201112011eucas1p21;
-	Mon, 26 Aug 2024 19:28:32 +0000 (GMT)
-Received: from eucas1p2.samsung.com ( [182.198.249.207]) by
-	eusmges2new.samsung.com (EUCPMTA) with SMTP id F3.4B.09875.F57DCC66; Mon, 26
-	Aug 2024 20:28:32 +0100 (BST)
-Received: from eusmtrp1.samsung.com (unknown [182.198.249.138]) by
-	eucas1p1.samsung.com (KnoxPortal) with ESMTPA id
-	20240826192831eucas1p1f2dcbd72c0096370e721d2e9e87dbace~vXfpCSEeu3001030010eucas1p13;
-	Mon, 26 Aug 2024 19:28:31 +0000 (GMT)
-Received: from eusmgms1.samsung.com (unknown [182.198.249.179]) by
-	eusmtrp1.samsung.com (KnoxPortal) with ESMTP id
-	20240826192831eusmtrp19a19c57f4ef810d69982206730b58566~vXfpBnGk53088530885eusmtrp15;
-	Mon, 26 Aug 2024 19:28:31 +0000 (GMT)
-X-AuditID: cbfec7f4-11bff70000002693-95-66ccd75fb9d5
-Received: from eusmtip2.samsung.com ( [203.254.199.222]) by
-	eusmgms1.samsung.com (EUCPMTA) with SMTP id 08.8A.08810.F57DCC66; Mon, 26
-	Aug 2024 20:28:31 +0100 (BST)
-Received: from [106.210.134.192] (unknown [106.210.134.192]) by
-	eusmtip2.samsung.com (KnoxPortal) with ESMTPA id
-	20240826192830eusmtip2eca04abb977e7da2df11d0adc5016ea8~vXfn5OPwj0269802698eusmtip2I;
-	Mon, 26 Aug 2024 19:28:30 +0000 (GMT)
-Message-ID: <53d988b1-bdce-422a-ae4e-158f305ad703@samsung.com>
-Date: Mon, 26 Aug 2024 21:28:29 +0200
+	dkim=pass (1024-bit key) header.d=linux.dev header.i=@linux.dev header.b="PEYgYJ8l"
+X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
+	t=1724704400;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:
+	 content-transfer-encoding:content-transfer-encoding;
+	bh=6ODrmyDnGgXHBXijb/wV9jJ31UGBAvpRzxd2Z9I8SOw=;
+	b=PEYgYJ8l0KHNRZIxnMu68RacvCArBxuxhtcY/KrxBNdSZVINqtC2d8Lh9OT16wP6kArBxO
+	nL6YdAKeoOZgBUv73aHu/+AKyxDTjTW3dsgBAgbMjWuzmwv4lFd5sC4VPvkuJck/otipyI
+	9/ZjOrsxe35AhtcljzR31T+8HI3BD2w=
+From: Sean Anderson <sean.anderson@linux.dev>
+To: Christoph Hellwig <hch@lst.de>,
+	Marek Szyprowski <m.szyprowski@samsung.com>,
+	Robin Murphy <robin.murphy@arm.com>,
+	iommu@lists.linux.dev
+Cc: linux-kernel@vger.kernel.org,
+	Sean Anderson <sean.anderson@linux.dev>
+Subject: [PATCH v3] dma: Trace API
+Date: Mon, 26 Aug 2024 16:32:40 -0400
+Message-Id: <20240826203240.2234615-1-sean.anderson@linux.dev>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v6 RESED 1/2] dma: replace zone_dma_bits by
- zone_dma_limit
-To: Baruch Siach <baruch@tkos.co.il>, Christoph Hellwig <hch@lst.de>,
-	Catalin Marinas <catalin.marinas@arm.com>, Will Deacon <will@kernel.org>
-Cc: Robin Murphy <robin.murphy@arm.com>, iommu@lists.linux.dev,
-	linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-	linuxppc-dev@lists.ozlabs.org, linux-s390@vger.kernel.org,
-	=?UTF-8?B?UGV0ciBUZXNhxZnDrWs=?= <petr@tesarici.cz>, Ramon Fried
-	<ramon@neureality.ai>, Elad Nachman <enachman@marvell.com>,
-	linux-rockchip@lists.infradead.org
-Content-Language: en-US
-From: Marek Szyprowski <m.szyprowski@samsung.com>
-In-Reply-To: <17c067618b93e5d71f19c37826d54db4299621a3.1723359916.git.baruch@tkos.co.il>
 Content-Transfer-Encoding: 8bit
-X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFrrDKsWRmVeSWpSXmKPExsWy7djP87oJ18+kGSw9ymix4tobFov3y3oY
-	LR4v2sZusXL1USaLX18sLDY9vsZqcXnXHDaLTw/+M1tMWNjMbPH7+z9Wi4VznrNa9L1cw2px
-	8MMTVouWO6YOfB5r5q1h9Ni0qpPNY/OSeo8Xm2cyepyfsZDRY/fNBjaPyQsvMnvM+vmPxWPv
-	3u2MHnMbbjF5fN4kF8AdxWWTkpqTWZZapG+XwJVx/PI99oKOiIp522azNjAe8ehi5OSQEDCR
-	WLd0KnMXIxeHkMAKRompLfPYIJwvjBJnd7WwQDifGSUenjjGCNOyd/cqJhBbSGA5o8TlHj+I
-	oo+MEvs6N7CBJHgF7CS+fNvAAmKzCKhKHPx+nBUiLihxcuYTsLiogLzE/Vsz2EFsYYEAiSnP
-	NoH1ighMYJT4vFQNZCizwAsmiZ1THoFtYxYQl7j1ZD6YzSZgKNH1tgusgVMgQuLF7U0sEDXy
-	Es1bZ4M9JCGwnVNi2qm7QA4HkOMi0XFNEOIDYYlXx7ewQ9gyEqcn97BA1LczSiz4fZ8JwgG6
-	ouH5LaifrSXunPvFBjKIWUBTYv0ufYiwo8TyuS+YIObzSdx4KwhxA5/EpG3TodbySnS0CUFU
-	q0nMOr4Obu3BC5eYJzAqzUIKlllIvpyF5JtZCHsXMLKsYhRPLS3OTU8tNspLLdcrTswtLs1L
-	10vOz93ECEyAp/8d/7KDcfmrj3qHGJk4GA8xSnAwK4nwyl0+mSbEm5JYWZValB9fVJqTWnyI
-	UZqDRUmcVzVFPlVIID2xJDU7NbUgtQgmy8TBKdXA1Hd48uVDd5vYv7VPjFApmiH68MrD5ReF
-	t/Nc9+lazmNXf6M9J2LnmvTzHHcmHNBPKWBezq/AYvNMSqbh8jt7IeX9vr9yUld7zD9yqM+L
-	pf3r22gjjlfZLDcXvVELujbrcJZGx5xWBX7HtqlLcx/EqYV/Yb/sOmO+cIOwodWdIzUPzj8r
-	OdDiyrfqSsprXY3SHzMvnXYrOFT3/Ldkf59q4OP5kc2PRVZa9XALsH+KuX1g1+5btmdnMBxk
-	tTQ25GR98P7itZ8Pu/YLRk9+w5ura2cg87Tt5tZHPqK/dig9CuR+IMjzWkfo6ZvSav+vbupv
-	7B0qVITW1Z/srJ3sXnT61vG4NY8S1TeHFa7/M2P1fyWW4oxEQy3mouJEAPIUsmXvAwAA
-X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFvrAIsWRmVeSWpSXmKPExsVy+t/xe7rx18+kGbxqlLVYce0Ni8X7ZT2M
-	Fo8XbWO3WLn6KJPFry8WFpseX2O1uLxrDpvFpwf/mS0mLGxmtvj9/R+rxcI5z1kt+l6uYbU4
-	+OEJq0XLHVMHPo8189Ywemxa1cnmsXlJvceLzTMZPc7PWMjosftmA5vH5IUXmT1m/fzH4rF3
-	73ZGj7kNt5g8Pm+SC+CO0rMpyi8tSVXIyC8usVWKNrQw0jO0tNAzMrHUMzQ2j7UyMlXSt7NJ
-	Sc3JLEst0rdL0Ms4fvkee0FHRMW8bbNZGxiPeHQxcnJICJhI7N29iqmLkYtDSGApo8SzaxOZ
-	IBIyEienNbBC2MISf651sUEUvWeU+D/zACNIglfATuLLtw0sIDaLgKrEwe/HWSHighInZz4B
-	i4sKyEvcvzWDHcQWFvCTuP92K9ggEYEJjBLLfv1nBkkwC7xgklh3pBxiwzVGiY+nO5kgEuIS
-	t57MB7PZBAwlut6CnMHJwSkQIfHi9iYWiBozia6tXYwQtrxE89bZzBMYhWYhOWQWklGzkLTM
-	QtKygJFlFaNIamlxbnpusaFecWJucWleul5yfu4mRmDUbzv2c/MOxnmvPuodYmTiYDzEKMHB
-	rCTCK3f5ZJoQb0piZVVqUX58UWlOavEhRlNgaExklhJNzgemnbySeEMzA1NDEzNLA1NLM2Ml
-	cV7Pgo5EIYH0xJLU7NTUgtQimD4mDk6pBqZjV9xe1gbmRV2omCS3NmAHi8SaxQdsm3emaRlL
-	JQjsOPvr6bnSHNXXHdMafjqHi0VPCnvmk+XQ/L7SdoOfenTxx1tfI/9vC7M4qLOybMltZ6b4
-	dkbj+ReqlESEtE0fVs37H9rb+eRQ3MqFbN5c7nLRSz5ou15eG3NKNmrlKZ/rn7yKuvh7uk6r
-	t+9RP8D+IFOTI7u7bTmL3YU9O7Tf7iv06kldI/R45/KGhkrfOKe7pSXvdNtWuWftucWj+7T1
-	+7rFUzJig7deO3hSIkvATvyNvZB4eI2WrrvVytvLv1RZ2r+asf14dYLdPtXJnTMtNJUiDt4/
-	eq66RWHN7uf9laf+5rWk7hTRdjze4MGYrMRSnJFoqMVcVJwIADS951qDAwAA
-X-CMS-MailID: 20240826192831eucas1p1f2dcbd72c0096370e721d2e9e87dbace
-X-Msg-Generator: CA
-Content-Type: text/plain; charset="utf-8"
-X-RootMTR: 20240811070951eucas1p1dc5315e0d710db13ce28fa0a977c7bc1
-X-EPHeader: CA
-CMS-TYPE: 201P
-X-CMS-RootMailID: 20240811070951eucas1p1dc5315e0d710db13ce28fa0a977c7bc1
-References: <cover.1723359916.git.baruch@tkos.co.il>
-	<CGME20240811070951eucas1p1dc5315e0d710db13ce28fa0a977c7bc1@eucas1p1.samsung.com>
-	<17c067618b93e5d71f19c37826d54db4299621a3.1723359916.git.baruch@tkos.co.il>
+X-Migadu-Flow: FLOW_OUT
 
-Dear All,
+When debugging drivers, it can often be useful to trace when memory gets
+(un)mapped for DMA (and can be accessed by the device). Add some
+tracepoints for this purpose.
 
-On 11.08.2024 09:09, Baruch Siach wrote:
-> From: Catalin Marinas <catalin.marinas@arm.com>
->
-> Hardware DMA limit might not be power of 2. When RAM range starts above
-> 0, say 4GB, DMA limit of 30 bits should end at 5GB. A single high bit
-> can not encode this limit.
->
-> Use plain address for DMA zone limit.
->
-> Since DMA zone can now potentially span beyond 4GB physical limit of
-> DMA32, make sure to use DMA zone for GFP_DMA32 allocations in that case.
->
-> Signed-off-by: Catalin Marinas <catalin.marinas@arm.com>
-> Co-developed-by: Baruch Siach <baruch@tkos.co.il>
-> Signed-off-by: Baruch Siach <baruch@tkos.co.il>
-> ---
+We use unsigned long long instead of phys_addr_t and dma_addr_t (and
+similarly %llx instead of %pa) because libtraceevent can't handle
+typedefs.
 
-This patch landed recently in linux-next as commit ba0fb44aed47 
-("dma-mapping: replace zone_dma_bits by zone_dma_limit"). During my 
-tests I found that it introduces the following warning on ARM64/Rockchip 
-based Odroid M1 board (arch/arm64/boot/dts/rockchip/rk3568-odroid-m1.dts):
+Signed-off-by: Sean Anderson <sean.anderson@linux.dev>
+---
+Well, I ended up needing the other stuff to debug a different driver, so
+here's the whole API.
 
-------------[ cut here ]------------
-dwmmc_rockchip fe2b0000.mmc: swiotlb addr 0x00000001faf00000+4096 
-overflow (mask ffffffff, bus limit 0).
-WARNING: CPU: 3 PID: 1 at kernel/dma/swiotlb.c:1594 swiotlb_map+0x2f0/0x308
-Modules linked in:
-CPU: 3 UID: 0 PID: 1 Comm: swapper/0 Not tainted 6.11.0-rc4+ #15278
-Hardware name: Hardkernel ODROID-M1 (DT)
-pstate: 60400009 (nZCv daif +PAN -UAO -TCO -DIT -SSBS BTYPE=--)
-pc : swiotlb_map+0x2f0/0x308
-lr : swiotlb_map+0x2f0/0x308
-...
-Call trace:
-  swiotlb_map+0x2f0/0x308
-  dma_direct_map_sg+0x9c/0x2e4
-  __dma_map_sg_attrs+0x28/0x94
-  dma_map_sg_attrs+0x10/0x24
-  dw_mci_pre_dma_transfer+0xb8/0xf4
-  dw_mci_pre_req+0x50/0x68
-  mmc_blk_mq_issue_rq+0x3e0/0x964
-  mmc_mq_queue_rq+0x118/0x2b4
-  blk_mq_dispatch_rq_list+0x21c/0x714
-  __blk_mq_sched_dispatch_requests+0x490/0x58c
-  blk_mq_sched_dispatch_requests+0x30/0x6c
-  blk_mq_run_hw_queue+0x284/0x40c
-  blk_mq_flush_plug_list.part.0+0x190/0x974
-  blk_mq_flush_plug_list+0x1c/0x2c
-  __blk_flush_plug+0xe4/0x140
-  blk_finish_plug+0x38/0x4c
-  __ext4_get_inode_loc+0x22c/0x654
-  __ext4_get_inode_loc_noinmem+0x40/0xa8
-  __ext4_iget+0x154/0xcc0
-  ext4_get_journal_inode+0x30/0x110
-  ext4_load_and_init_journal+0x9c/0xaf0
-  ext4_fill_super+0x1fec/0x2d90
-  get_tree_bdev+0x140/0x1d8
-  ext4_get_tree+0x18/0x24
-  vfs_get_tree+0x28/0xe8
-  path_mount+0x3e8/0xb7c
-  init_mount+0x68/0xac
-  do_mount_root+0x108/0x1dc
-  mount_root_generic+0x100/0x330
-  mount_root+0x160/0x2d0
-  initrd_load+0x1f0/0x2a0
-  prepare_namespace+0x4c/0x29c
-  kernel_init_freeable+0x4b4/0x50c
-  kernel_init+0x20/0x1d8
-  ret_from_fork+0x10/0x20
-irq event stamp: 1305682
-hardirqs last  enabled at (1305681): [<ffff8000800e332c>] 
-console_unlock+0x124/0x130
-hardirqs last disabled at (1305682): [<ffff80008124e684>] el1_dbg+0x24/0x8c
-softirqs last  enabled at (1305678): [<ffff80008005be1c>] 
-handle_softirqs+0x4cc/0x4e4
-softirqs last disabled at (1305665): [<ffff8000800105b0>] 
-__do_softirq+0x14/0x20
----[ end trace 0000000000000000 ]---
+Changes in v3:
+- Trace the rest too
 
-This "bus limit 0" seems to be a bit suspicious to me as well as the 
-fact that swiotlb is used for the MMC DMA. I will investigate this 
-further tomorrow. The board boots fine though.
+Changes in v2:
+- Trace dma_(un)map_sg and dma_(un)map_resource
 
+ include/trace/events/dma.h | 341 +++++++++++++++++++++++++++++++++++++
+ kernel/dma/mapping.c       |  24 ++-
+ 2 files changed, 364 insertions(+), 1 deletion(-)
+ create mode 100644 include/trace/events/dma.h
 
->   arch/arm64/mm/init.c       | 30 +++++++++++++++---------------
->   arch/powerpc/mm/mem.c      |  5 ++++-
->   arch/s390/mm/init.c        |  2 +-
->   include/linux/dma-direct.h |  2 +-
->   kernel/dma/direct.c        |  6 +++---
->   kernel/dma/pool.c          |  4 ++--
->   kernel/dma/swiotlb.c       |  6 +++---
->   7 files changed, 29 insertions(+), 26 deletions(-)
->
-> diff --git a/arch/arm64/mm/init.c b/arch/arm64/mm/init.c
-> index 9b5ab6818f7f..c45e2152ca9e 100644
-> --- a/arch/arm64/mm/init.c
-> +++ b/arch/arm64/mm/init.c
-> @@ -115,35 +115,35 @@ static void __init arch_reserve_crashkernel(void)
->   }
->   
->   /*
-> - * Return the maximum physical address for a zone accessible by the given bits
-> - * limit. If DRAM starts above 32-bit, expand the zone to the maximum
-> + * Return the maximum physical address for a zone given its limit.
-> + * If DRAM starts above 32-bit, expand the zone to the maximum
->    * available memory, otherwise cap it at 32-bit.
->    */
-> -static phys_addr_t __init max_zone_phys(unsigned int zone_bits)
-> +static phys_addr_t __init max_zone_phys(phys_addr_t zone_limit)
->   {
-> -	phys_addr_t zone_mask = DMA_BIT_MASK(zone_bits);
->   	phys_addr_t phys_start = memblock_start_of_DRAM();
->   
->   	if (phys_start > U32_MAX)
-> -		zone_mask = PHYS_ADDR_MAX;
-> -	else if (phys_start > zone_mask)
-> -		zone_mask = U32_MAX;
-> +		zone_limit = PHYS_ADDR_MAX;
-> +	else if (phys_start > zone_limit)
-> +		zone_limit = U32_MAX;
->   
-> -	return min(zone_mask, memblock_end_of_DRAM() - 1) + 1;
-> +	return min(zone_limit, memblock_end_of_DRAM() - 1) + 1;
->   }
->   
->   static void __init zone_sizes_init(void)
->   {
->   	unsigned long max_zone_pfns[MAX_NR_ZONES]  = {0};
-> -	unsigned int __maybe_unused acpi_zone_dma_bits;
-> -	unsigned int __maybe_unused dt_zone_dma_bits;
-> -	phys_addr_t __maybe_unused dma32_phys_limit = max_zone_phys(32);
-> +	phys_addr_t __maybe_unused acpi_zone_dma_limit;
-> +	phys_addr_t __maybe_unused dt_zone_dma_limit;
-> +	phys_addr_t __maybe_unused dma32_phys_limit =
-> +		max_zone_phys(DMA_BIT_MASK(32));
->   
->   #ifdef CONFIG_ZONE_DMA
-> -	acpi_zone_dma_bits = fls64(acpi_iort_dma_get_max_cpu_address());
-> -	dt_zone_dma_bits = fls64(of_dma_get_max_cpu_address(NULL));
-> -	zone_dma_bits = min3(32U, dt_zone_dma_bits, acpi_zone_dma_bits);
-> -	arm64_dma_phys_limit = max_zone_phys(zone_dma_bits);
-> +	acpi_zone_dma_limit = acpi_iort_dma_get_max_cpu_address();
-> +	dt_zone_dma_limit = of_dma_get_max_cpu_address(NULL);
-> +	zone_dma_limit = min(dt_zone_dma_limit, acpi_zone_dma_limit);
-> +	arm64_dma_phys_limit = max_zone_phys(zone_dma_limit);
->   	max_zone_pfns[ZONE_DMA] = PFN_DOWN(arm64_dma_phys_limit);
->   #endif
->   #ifdef CONFIG_ZONE_DMA32
-> diff --git a/arch/powerpc/mm/mem.c b/arch/powerpc/mm/mem.c
-> index d325217ab201..05b7f702b3f7 100644
-> --- a/arch/powerpc/mm/mem.c
-> +++ b/arch/powerpc/mm/mem.c
-> @@ -216,7 +216,7 @@ static int __init mark_nonram_nosave(void)
->    * everything else. GFP_DMA32 page allocations automatically fall back to
->    * ZONE_DMA.
->    *
-> - * By using 31-bit unconditionally, we can exploit zone_dma_bits to inform the
-> + * By using 31-bit unconditionally, we can exploit zone_dma_limit to inform the
->    * generic DMA mapping code.  32-bit only devices (if not handled by an IOMMU
->    * anyway) will take a first dip into ZONE_NORMAL and get otherwise served by
->    * ZONE_DMA.
-> @@ -230,6 +230,7 @@ void __init paging_init(void)
->   {
->   	unsigned long long total_ram = memblock_phys_mem_size();
->   	phys_addr_t top_of_ram = memblock_end_of_DRAM();
-> +	int zone_dma_bits;
->   
->   #ifdef CONFIG_HIGHMEM
->   	unsigned long v = __fix_to_virt(FIX_KMAP_END);
-> @@ -256,6 +257,8 @@ void __init paging_init(void)
->   	else
->   		zone_dma_bits = 31;
->   
-> +	zone_dma_limit = DMA_BIT_MASK(zone_dma_bits);
-> +
->   #ifdef CONFIG_ZONE_DMA
->   	max_zone_pfns[ZONE_DMA]	= min(max_low_pfn,
->   				      1UL << (zone_dma_bits - PAGE_SHIFT));
-> diff --git a/arch/s390/mm/init.c b/arch/s390/mm/init.c
-> index ddcd39ef4346..91fc2b91adfc 100644
-> --- a/arch/s390/mm/init.c
-> +++ b/arch/s390/mm/init.c
-> @@ -97,7 +97,7 @@ void __init paging_init(void)
->   
->   	vmem_map_init();
->   	sparse_init();
-> -	zone_dma_bits = 31;
-> +	zone_dma_limit = DMA_BIT_MASK(31);
->   	memset(max_zone_pfns, 0, sizeof(max_zone_pfns));
->   	max_zone_pfns[ZONE_DMA] = virt_to_pfn(MAX_DMA_ADDRESS);
->   	max_zone_pfns[ZONE_NORMAL] = max_low_pfn;
-> diff --git a/include/linux/dma-direct.h b/include/linux/dma-direct.h
-> index edbe13d00776..d7e30d4f7503 100644
-> --- a/include/linux/dma-direct.h
-> +++ b/include/linux/dma-direct.h
-> @@ -12,7 +12,7 @@
->   #include <linux/mem_encrypt.h>
->   #include <linux/swiotlb.h>
->   
-> -extern unsigned int zone_dma_bits;
-> +extern u64 zone_dma_limit;
->   
->   /*
->    * Record the mapping of CPU physical to DMA addresses for a given region.
-> diff --git a/kernel/dma/direct.c b/kernel/dma/direct.c
-> index 4480a3cd92e0..f2ba074a6a54 100644
-> --- a/kernel/dma/direct.c
-> +++ b/kernel/dma/direct.c
-> @@ -20,7 +20,7 @@
->    * it for entirely different regions. In that case the arch code needs to
->    * override the variable below for dma-direct to work properly.
->    */
-> -unsigned int zone_dma_bits __ro_after_init = 24;
-> +u64 zone_dma_limit __ro_after_init = DMA_BIT_MASK(24);
->   
->   static inline dma_addr_t phys_to_dma_direct(struct device *dev,
->   		phys_addr_t phys)
-> @@ -59,7 +59,7 @@ static gfp_t dma_direct_optimal_gfp_mask(struct device *dev, u64 *phys_limit)
->   	 * zones.
->   	 */
->   	*phys_limit = dma_to_phys(dev, dma_limit);
-> -	if (*phys_limit <= DMA_BIT_MASK(zone_dma_bits))
-> +	if (*phys_limit <= zone_dma_limit)
->   		return GFP_DMA;
->   	if (*phys_limit <= DMA_BIT_MASK(32))
->   		return GFP_DMA32;
-> @@ -580,7 +580,7 @@ int dma_direct_supported(struct device *dev, u64 mask)
->   	 * part of the check.
->   	 */
->   	if (IS_ENABLED(CONFIG_ZONE_DMA))
-> -		min_mask = min_t(u64, min_mask, DMA_BIT_MASK(zone_dma_bits));
-> +		min_mask = min_t(u64, min_mask, zone_dma_limit);
->   	return mask >= phys_to_dma_unencrypted(dev, min_mask);
->   }
->   
-> diff --git a/kernel/dma/pool.c b/kernel/dma/pool.c
-> index d10613eb0f63..7b04f7575796 100644
-> --- a/kernel/dma/pool.c
-> +++ b/kernel/dma/pool.c
-> @@ -70,9 +70,9 @@ static bool cma_in_zone(gfp_t gfp)
->   	/* CMA can't cross zone boundaries, see cma_activate_area() */
->   	end = cma_get_base(cma) + size - 1;
->   	if (IS_ENABLED(CONFIG_ZONE_DMA) && (gfp & GFP_DMA))
-> -		return end <= DMA_BIT_MASK(zone_dma_bits);
-> +		return end <= zone_dma_limit;
->   	if (IS_ENABLED(CONFIG_ZONE_DMA32) && (gfp & GFP_DMA32))
-> -		return end <= DMA_BIT_MASK(32);
-> +		return end <= max(DMA_BIT_MASK(32), zone_dma_limit);
->   	return true;
->   }
->   
-> diff --git a/kernel/dma/swiotlb.c b/kernel/dma/swiotlb.c
-> index df68d29740a0..abcf3fa63a56 100644
-> --- a/kernel/dma/swiotlb.c
-> +++ b/kernel/dma/swiotlb.c
-> @@ -450,9 +450,9 @@ int swiotlb_init_late(size_t size, gfp_t gfp_mask,
->   	if (!remap)
->   		io_tlb_default_mem.can_grow = true;
->   	if (IS_ENABLED(CONFIG_ZONE_DMA) && (gfp_mask & __GFP_DMA))
-> -		io_tlb_default_mem.phys_limit = DMA_BIT_MASK(zone_dma_bits);
-> +		io_tlb_default_mem.phys_limit = zone_dma_limit;
->   	else if (IS_ENABLED(CONFIG_ZONE_DMA32) && (gfp_mask & __GFP_DMA32))
-> -		io_tlb_default_mem.phys_limit = DMA_BIT_MASK(32);
-> +		io_tlb_default_mem.phys_limit = max(DMA_BIT_MASK(32), zone_dma_limit);
->   	else
->   		io_tlb_default_mem.phys_limit = virt_to_phys(high_memory - 1);
->   #endif
-> @@ -629,7 +629,7 @@ static struct page *swiotlb_alloc_tlb(struct device *dev, size_t bytes,
->   	}
->   
->   	gfp &= ~GFP_ZONEMASK;
-> -	if (phys_limit <= DMA_BIT_MASK(zone_dma_bits))
-> +	if (phys_limit <= zone_dma_limit)
->   		gfp |= __GFP_DMA;
->   	else if (phys_limit <= DMA_BIT_MASK(32))
->   		gfp |= __GFP_DMA32;
-
-Best regards
+diff --git a/include/trace/events/dma.h b/include/trace/events/dma.h
+new file mode 100644
+index 000000000000..9f11d94d1ec6
+--- /dev/null
++++ b/include/trace/events/dma.h
+@@ -0,0 +1,341 @@
++/* SPDX-License-Identifier: GPL-2.0 */
++#undef TRACE_SYSTEM
++#define TRACE_SYSTEM dma
++
++#if !defined(_TRACE_DMA_H) || defined(TRACE_HEADER_MULTI_READ)
++#define _TRACE_DMA_H
++
++#include <linux/tracepoint.h>
++#include <linux/dma-direction.h>
++#include <linux/dma-mapping.h>
++#include <trace/events/mmflags.h>
++
++TRACE_DEFINE_ENUM(DMA_BIDIRECTIONAL);
++TRACE_DEFINE_ENUM(DMA_TO_DEVICE);
++TRACE_DEFINE_ENUM(DMA_FROM_DEVICE);
++TRACE_DEFINE_ENUM(DMA_NONE);
++
++#define decode_dma_data_direction(dir) \
++	__print_symbolic(dir, \
++		{ DMA_BIDIRECTIONAL, "BIDIRECTIONAL" }, \
++		{ DMA_TO_DEVICE, "TO_DEVICE" }, \
++		{ DMA_FROM_DEVICE, "FROM_DEVICE" }, \
++		{ DMA_NONE, "NONE" })
++
++#define decode_dma_attrs(attrs) \
++	__print_flags(attrs, "|", \
++		{ DMA_ATTR_WEAK_ORDERING, "WEAK_ORDERING" }, \
++		{ DMA_ATTR_WRITE_COMBINE, "WRITE_COMBINE" }, \
++		{ DMA_ATTR_NO_KERNEL_MAPPING, "NO_KERNEL_MAPPING" }, \
++		{ DMA_ATTR_SKIP_CPU_SYNC, "SKIP_CPU_SYNC" }, \
++		{ DMA_ATTR_FORCE_CONTIGUOUS, "FORCE_CONTIGUOUS" }, \
++		{ DMA_ATTR_ALLOC_SINGLE_PAGES, "ALLOC_SINGLE_PAGES" }, \
++		{ DMA_ATTR_NO_WARN, "NO_WARN" }, \
++		{ DMA_ATTR_PRIVILEGED, "PRIVILEGED" })
++
++DECLARE_EVENT_CLASS(dma_map,
++	TP_PROTO(struct device *dev, phys_addr_t phys_addr, dma_addr_t dma_addr,
++		 size_t size, enum dma_data_direction dir, unsigned long attrs),
++	TP_ARGS(dev, phys_addr, dma_addr, size, dir, attrs),
++
++	TP_STRUCT__entry(
++		__string(device, dev_name(dev))
++		__field(unsigned long long, phys_addr)
++		__field(unsigned long long, dma_addr)
++		__field(size_t, size)
++		__field(enum dma_data_direction, dir)
++		__field(unsigned long, attrs)
++	),
++
++	TP_fast_assign(
++		__assign_str(device);
++		__entry->phys_addr = phys_addr;
++		__entry->dma_addr = dma_addr;
++		__entry->size = size;
++		__entry->dir = dir;
++		__entry->attrs = attrs;
++	),
++
++	TP_printk("%s dir=%s dma_addr=%llx size=%zu phys_addr=%llx attrs=%s",
++		__get_str(device),
++		decode_dma_data_direction(__entry->dir),
++		__entry->dma_addr,
++		__entry->size,
++		__entry->phys_addr,
++		decode_dma_attrs(__entry->attrs))
++);
++
++DEFINE_EVENT(dma_map, dma_map_page,
++	TP_PROTO(struct device *dev, phys_addr_t phys_addr, dma_addr_t dma_addr,
++		 size_t size, enum dma_data_direction dir, unsigned long attrs),
++	TP_ARGS(dev, phys_addr, dma_addr, size, dir, attrs));
++
++DEFINE_EVENT(dma_map, dma_map_resource,
++	TP_PROTO(struct device *dev, phys_addr_t phys_addr, dma_addr_t dma_addr,
++		 size_t size, enum dma_data_direction dir, unsigned long attrs),
++	TP_ARGS(dev, phys_addr, dma_addr, size, dir, attrs));
++
++DECLARE_EVENT_CLASS(dma_unmap,
++	TP_PROTO(struct device *dev, dma_addr_t addr, size_t size,
++		 enum dma_data_direction dir, unsigned long attrs),
++	TP_ARGS(dev, addr, size, dir, attrs),
++
++	TP_STRUCT__entry(
++		__string(device, dev_name(dev))
++		__field(unsigned long long, addr)
++		__field(size_t, size)
++		__field(enum dma_data_direction, dir)
++		__field(unsigned long, attrs)
++	),
++
++	TP_fast_assign(
++		__assign_str(device);
++		__entry->addr = addr;
++		__entry->size = size;
++		__entry->dir = dir;
++		__entry->attrs = attrs;
++	),
++
++	TP_printk("%s dir=%s dma_addr=%llx size=%zu attrs=%s",
++		__get_str(device),
++		decode_dma_data_direction(__entry->dir),
++		__entry->addr,
++		__entry->size,
++		decode_dma_attrs(__entry->attrs))
++);
++
++DEFINE_EVENT(dma_unmap, dma_unmap_page,
++	TP_PROTO(struct device *dev, dma_addr_t addr, size_t size,
++		 enum dma_data_direction dir, unsigned long attrs),
++	TP_ARGS(dev, addr, size, dir, attrs));
++
++DEFINE_EVENT(dma_unmap, dma_unmap_resource,
++	TP_PROTO(struct device *dev, dma_addr_t addr, size_t size,
++		 enum dma_data_direction dir, unsigned long attrs),
++	TP_ARGS(dev, addr, size, dir, attrs));
++
++TRACE_EVENT(dma_alloc,
++	TP_PROTO(struct device *dev, void *virt_addr, dma_addr_t dma_addr,
++		 size_t size, gfp_t flags, unsigned long attrs),
++	TP_ARGS(dev, virt_addr, dma_addr, size, flags, attrs),
++
++	TP_STRUCT__entry(
++		__string(device, dev_name(dev))
++		__field(unsigned long long, phys_addr)
++		__field(unsigned long long, dma_addr)
++		__field(size_t, size)
++		__field(gfp_t, flags)
++		__field(unsigned long, attrs)
++	),
++
++	TP_fast_assign(
++		__assign_str(device);
++		__entry->phys_addr = virt_to_phys(virt_addr);
++		__entry->dma_addr = dma_addr;
++		__entry->size = size;
++		__entry->flags = flags;
++		__entry->attrs = attrs;
++	),
++
++	TP_printk("%s dma_addr=%llx size=%zu phys_addr=%llx flags=%s attrs=%s",
++		__get_str(device),
++		__entry->dma_addr,
++		__entry->size,
++		__entry->phys_addr,
++		show_gfp_flags(__entry->flags),
++		decode_dma_attrs(__entry->attrs))
++);
++
++TRACE_EVENT(dma_free,
++	TP_PROTO(struct device *dev, void *virt_addr, dma_addr_t dma_addr,
++		 size_t size, unsigned long attrs),
++	TP_ARGS(dev, virt_addr, dma_addr, size, attrs),
++
++	TP_STRUCT__entry(
++		__string(device, dev_name(dev))
++		__field(unsigned long long, phys_addr)
++		__field(unsigned long long, dma_addr)
++		__field(size_t, size)
++		__field(unsigned long, attrs)
++	),
++
++	TP_fast_assign(
++		__assign_str(device);
++		__entry->phys_addr = virt_to_phys(virt_addr);
++		__entry->dma_addr = dma_addr;
++		__entry->size = size;
++		__entry->attrs = attrs;
++	),
++
++	TP_printk("%s dma_addr=%llx size=%zu phys_addr=%llx attrs=%s",
++		__get_str(device),
++		__entry->dma_addr,
++		__entry->size,
++		__entry->phys_addr,
++		decode_dma_attrs(__entry->attrs))
++);
++
++TRACE_EVENT(dma_map_sg,
++	TP_PROTO(struct device *dev, struct scatterlist *sg, int nents,
++		 int ents, enum dma_data_direction dir, unsigned long attrs),
++	TP_ARGS(dev, sg, nents, ents, dir, attrs),
++
++	TP_STRUCT__entry(
++		__string(device, dev_name(dev))
++		__dynamic_array(unsigned long long, phys_addrs, nents)
++		__dynamic_array(unsigned long long, dma_addrs, ents)
++		__dynamic_array(unsigned int, lengths, ents)
++		__field(enum dma_data_direction, dir)
++		__field(unsigned long, attrs)
++	),
++
++	TP_fast_assign(
++		int i;
++
++		__assign_str(device);
++		for (i = 0; i < nents; i++)
++			((unsigned long long *)__get_dynamic_array(phys_addrs))[i] =
++				sg_phys(sg + i);
++		for (i = 0; i < ents; i++) {
++			((unsigned long long *)__get_dynamic_array(dma_addrs))[i] =
++				sg_dma_address(sg + i);
++			((unsigned int *)__get_dynamic_array(lengths))[i] =
++				sg_dma_len(sg + i);
++		}
++		__entry->dir = dir;
++		__entry->attrs = attrs;
++	),
++
++	TP_printk("%s dir=%s dma_addrs=%s sizes=%s phys_addrs=%s attrs=%s",
++		__get_str(device),
++		decode_dma_data_direction(__entry->dir),
++		__print_array(__get_dynamic_array(dma_addrs),
++			      __get_dynamic_array_len(dma_addrs) /
++				sizeof(unsigned long long), sizeof(unsigned long long)),
++		__print_array(__get_dynamic_array(lengths),
++			      __get_dynamic_array_len(lengths) /
++				sizeof(unsigned int), sizeof(unsigned int)),
++		__print_array(__get_dynamic_array(phys_addrs),
++			      __get_dynamic_array_len(phys_addrs) /
++				sizeof(unsigned long long), sizeof(unsigned long long)),
++		decode_dma_attrs(__entry->attrs))
++);
++
++TRACE_EVENT(dma_unmap_sg,
++	TP_PROTO(struct device *dev, struct scatterlist *sg, int nents,
++		 enum dma_data_direction dir, unsigned long attrs),
++	TP_ARGS(dev, sg, nents, dir, attrs),
++
++	TP_STRUCT__entry(
++		__string(device, dev_name(dev))
++		__dynamic_array(unsigned long long, addrs, nents)
++		__field(enum dma_data_direction, dir)
++		__field(unsigned long, attrs)
++	),
++
++	TP_fast_assign(
++		int i;
++
++		__assign_str(device);
++		for (i = 0; i < nents; i++)
++			((unsigned long long *)__get_dynamic_array(addrs))[i] =
++				sg_phys(sg + i);
++		__entry->dir = dir;
++		__entry->attrs = attrs;
++	),
++
++	TP_printk("%s dir=%s phys_addrs=%s attrs=%s",
++		__get_str(device),
++		decode_dma_data_direction(__entry->dir),
++		__print_array(__get_dynamic_array(addrs),
++			      __get_dynamic_array_len(addrs) /
++				sizeof(unsigned long long), sizeof(unsigned long long)),
++		decode_dma_attrs(__entry->attrs))
++);
++
++DECLARE_EVENT_CLASS(dma_sync_single,
++	TP_PROTO(struct device *dev, dma_addr_t dma_addr, size_t size,
++		 enum dma_data_direction dir),
++	TP_ARGS(dev, dma_addr, size, dir),
++
++	TP_STRUCT__entry(
++		__string(device, dev_name(dev))
++		__field(unsigned long long, dma_addr)
++		__field(size_t, size)
++		__field(enum dma_data_direction, dir)
++	),
++
++	TP_fast_assign(
++		__assign_str(device);
++		__entry->dma_addr = dma_addr;
++		__entry->size = size;
++		__entry->dir = dir;
++	),
++
++	TP_printk("%s dir=%s dma_addr=%llx size=%zu",
++		__get_str(device),
++		decode_dma_data_direction(__entry->dir),
++		__entry->dma_addr,
++		__entry->size)
++);
++
++DEFINE_EVENT(dma_sync_single, dma_sync_single_for_cpu,
++	TP_PROTO(struct device *dev, dma_addr_t dma_addr, size_t size,
++		 enum dma_data_direction dir),
++	TP_ARGS(dev, dma_addr, size, dir));
++
++DEFINE_EVENT(dma_sync_single, dma_sync_single_for_device,
++	TP_PROTO(struct device *dev, dma_addr_t dma_addr, size_t size,
++		 enum dma_data_direction dir),
++	TP_ARGS(dev, dma_addr, size, dir));
++
++DECLARE_EVENT_CLASS(dma_sync_sg,
++	TP_PROTO(struct device *dev, struct scatterlist *sg, int nents,
++		 enum dma_data_direction dir),
++	TP_ARGS(dev, sg, nents, dir),
++
++	TP_STRUCT__entry(
++		__string(device, dev_name(dev))
++		__dynamic_array(unsigned long long, dma_addrs, nents)
++		__dynamic_array(unsigned int, lengths, nents)
++		__field(enum dma_data_direction, dir)
++	),
++
++	TP_fast_assign(
++		int i;
++
++		__assign_str(device);
++		for (i = 0; i < nents; i++) {
++			((unsigned long long *)__get_dynamic_array(dma_addrs))[i] =
++				sg_dma_address(sg + i);
++			((unsigned int *)__get_dynamic_array(lengths))[i] =
++				sg_dma_len(sg + i);
++		}
++		__entry->dir = dir;
++	),
++
++	TP_printk("%s dir=%s dma_addrs=%s sizes=%s",
++		__get_str(device),
++		decode_dma_data_direction(__entry->dir),
++		__print_array(__get_dynamic_array(dma_addrs),
++			      __get_dynamic_array_len(dma_addrs) /
++				sizeof(unsigned long long), sizeof(unsigned long long)),
++		__print_array(__get_dynamic_array(lengths),
++			      __get_dynamic_array_len(lengths) /
++				sizeof(unsigned int), sizeof(unsigned int)))
++);
++
++DEFINE_EVENT(dma_sync_sg, dma_sync_sg_for_cpu,
++	TP_PROTO(struct device *dev, struct scatterlist *sg, int nents,
++		 enum dma_data_direction dir),
++	TP_ARGS(dev, sg, nents, dir));
++
++DEFINE_EVENT(dma_sync_sg, dma_sync_sg_for_device,
++	TP_PROTO(struct device *dev, struct scatterlist *sg, int nents,
++		 enum dma_data_direction dir),
++	TP_ARGS(dev, sg, nents, dir));
++
++#endif /*  _TRACE_DMA_H */
++
++/* This part must be outside protection */
++#include <trace/define_trace.h>
+diff --git a/kernel/dma/mapping.c b/kernel/dma/mapping.c
+index b50ae3d198a6..94823d779f68 100644
+--- a/kernel/dma/mapping.c
++++ b/kernel/dma/mapping.c
+@@ -18,6 +18,9 @@
+ #include "debug.h"
+ #include "direct.h"
+ 
++#define CREATE_TRACE_POINTS
++#include <trace/events/dma.h>
++
+ #if defined(CONFIG_ARCH_HAS_SYNC_DMA_FOR_DEVICE) || \
+ 	defined(CONFIG_ARCH_HAS_SYNC_DMA_FOR_CPU) || \
+ 	defined(CONFIG_ARCH_HAS_SYNC_DMA_FOR_CPU_ALL)
+@@ -181,6 +184,8 @@ dma_addr_t dma_map_page_attrs(struct device *dev, struct page *page,
+ 	else
+ 		addr = ops->map_page(dev, page, offset, size, dir, attrs);
+ 	kmsan_handle_dma(page, offset, size, dir);
++	trace_dma_map_page(dev, page_to_phys(page) + offset, addr, size, dir,
++			   attrs);
+ 	debug_dma_map_page(dev, page, offset, size, dir, addr, attrs);
+ 
+ 	return addr;
+@@ -200,6 +205,7 @@ void dma_unmap_page_attrs(struct device *dev, dma_addr_t addr, size_t size,
+ 		iommu_dma_unmap_page(dev, addr, size, dir, attrs);
+ 	else
+ 		ops->unmap_page(dev, addr, size, dir, attrs);
++	trace_dma_unmap_page(dev, addr, size, dir, attrs);
+ 	debug_dma_unmap_page(dev, addr, size, dir);
+ }
+ EXPORT_SYMBOL(dma_unmap_page_attrs);
+@@ -225,6 +231,7 @@ static int __dma_map_sg_attrs(struct device *dev, struct scatterlist *sg,
+ 
+ 	if (ents > 0) {
+ 		kmsan_handle_dma_sg(sg, nents, dir);
++		trace_dma_map_sg(dev, sg, nents, ents, dir, attrs);
+ 		debug_dma_map_sg(dev, sg, nents, ents, dir, attrs);
+ 	} else if (WARN_ON_ONCE(ents != -EINVAL && ents != -ENOMEM &&
+ 				ents != -EIO && ents != -EREMOTEIO)) {
+@@ -310,6 +317,7 @@ void dma_unmap_sg_attrs(struct device *dev, struct scatterlist *sg,
+ 	const struct dma_map_ops *ops = get_dma_ops(dev);
+ 
+ 	BUG_ON(!valid_dma_direction(dir));
++	trace_dma_unmap_sg(dev, sg, nents, dir, attrs);
+ 	debug_dma_unmap_sg(dev, sg, nents, dir);
+ 	if (dma_map_direct(dev, ops) ||
+ 	    arch_dma_unmap_sg_direct(dev, sg, nents))
+@@ -339,6 +347,7 @@ dma_addr_t dma_map_resource(struct device *dev, phys_addr_t phys_addr,
+ 	else if (ops->map_resource)
+ 		addr = ops->map_resource(dev, phys_addr, size, dir, attrs);
+ 
++	trace_dma_map_resource(dev, phys_addr, addr, size, dir, attrs);
+ 	debug_dma_map_resource(dev, phys_addr, size, dir, addr, attrs);
+ 	return addr;
+ }
+@@ -356,6 +365,7 @@ void dma_unmap_resource(struct device *dev, dma_addr_t addr, size_t size,
+ 		iommu_dma_unmap_resource(dev, addr, size, dir, attrs);
+ 	else if (ops->unmap_resource)
+ 		ops->unmap_resource(dev, addr, size, dir, attrs);
++	trace_dma_unmap_resource(dev, addr, size, dir, attrs);
+ 	debug_dma_unmap_resource(dev, addr, size, dir);
+ }
+ EXPORT_SYMBOL(dma_unmap_resource);
+@@ -373,6 +383,7 @@ void __dma_sync_single_for_cpu(struct device *dev, dma_addr_t addr, size_t size,
+ 		iommu_dma_sync_single_for_cpu(dev, addr, size, dir);
+ 	else if (ops->sync_single_for_cpu)
+ 		ops->sync_single_for_cpu(dev, addr, size, dir);
++	trace_dma_sync_single_for_cpu(dev, addr, size, dir);
+ 	debug_dma_sync_single_for_cpu(dev, addr, size, dir);
+ }
+ EXPORT_SYMBOL(__dma_sync_single_for_cpu);
+@@ -389,6 +400,7 @@ void __dma_sync_single_for_device(struct device *dev, dma_addr_t addr,
+ 		iommu_dma_sync_single_for_device(dev, addr, size, dir);
+ 	else if (ops->sync_single_for_device)
+ 		ops->sync_single_for_device(dev, addr, size, dir);
++	trace_dma_sync_single_for_device(dev, addr, size, dir);
+ 	debug_dma_sync_single_for_device(dev, addr, size, dir);
+ }
+ EXPORT_SYMBOL(__dma_sync_single_for_device);
+@@ -405,6 +417,7 @@ void __dma_sync_sg_for_cpu(struct device *dev, struct scatterlist *sg,
+ 		iommu_dma_sync_sg_for_cpu(dev, sg, nelems, dir);
+ 	else if (ops->sync_sg_for_cpu)
+ 		ops->sync_sg_for_cpu(dev, sg, nelems, dir);
++	trace_dma_sync_sg_for_cpu(dev, sg, nelems, dir);
+ 	debug_dma_sync_sg_for_cpu(dev, sg, nelems, dir);
+ }
+ EXPORT_SYMBOL(__dma_sync_sg_for_cpu);
+@@ -421,6 +434,7 @@ void __dma_sync_sg_for_device(struct device *dev, struct scatterlist *sg,
+ 		iommu_dma_sync_sg_for_device(dev, sg, nelems, dir);
+ 	else if (ops->sync_sg_for_device)
+ 		ops->sync_sg_for_device(dev, sg, nelems, dir);
++	trace_dma_sync_sg_for_device(dev, sg, nelems, dir);
+ 	debug_dma_sync_sg_for_device(dev, sg, nelems, dir);
+ }
+ EXPORT_SYMBOL(__dma_sync_sg_for_device);
+@@ -613,6 +627,7 @@ void *dma_alloc_attrs(struct device *dev, size_t size, dma_addr_t *dma_handle,
+ 	else
+ 		return NULL;
+ 
++	trace_dma_alloc(dev, cpu_addr, *dma_handle, size, flag, attrs);
+ 	debug_dma_alloc_coherent(dev, size, *dma_handle, cpu_addr, attrs);
+ 	return cpu_addr;
+ }
+@@ -637,6 +652,7 @@ void dma_free_attrs(struct device *dev, size_t size, void *cpu_addr,
+ 	if (!cpu_addr)
+ 		return;
+ 
++	trace_dma_free(dev, cpu_addr, dma_handle, size, attrs);
+ 	debug_dma_free_coherent(dev, size, cpu_addr, dma_handle);
+ 	if (dma_alloc_direct(dev, ops))
+ 		dma_direct_free(dev, size, cpu_addr, dma_handle, attrs);
+@@ -674,8 +690,11 @@ struct page *dma_alloc_pages(struct device *dev, size_t size,
+ {
+ 	struct page *page = __dma_alloc_pages(dev, size, dma_handle, dir, gfp);
+ 
+-	if (page)
++	if (page) {
++		trace_dma_map_page(dev, page_to_phys(page), *dma_handle, size,
++				   dir, 0);
+ 		debug_dma_map_page(dev, page, 0, size, dir, *dma_handle, 0);
++	}
+ 	return page;
+ }
+ EXPORT_SYMBOL_GPL(dma_alloc_pages);
+@@ -697,6 +716,7 @@ static void __dma_free_pages(struct device *dev, size_t size, struct page *page,
+ void dma_free_pages(struct device *dev, size_t size, struct page *page,
+ 		dma_addr_t dma_handle, enum dma_data_direction dir)
+ {
++	trace_dma_unmap_page(dev, dma_handle, size, dir, 0);
+ 	debug_dma_unmap_page(dev, dma_handle, size, dir);
+ 	__dma_free_pages(dev, size, page, dma_handle, dir);
+ }
+@@ -759,6 +779,7 @@ struct sg_table *dma_alloc_noncontiguous(struct device *dev, size_t size,
+ 
+ 	if (sgt) {
+ 		sgt->nents = 1;
++		trace_dma_map_sg(dev, sgt->sgl, sgt->orig_nents, 1, dir, attrs);
+ 		debug_dma_map_sg(dev, sgt->sgl, sgt->orig_nents, 1, dir, attrs);
+ 	}
+ 	return sgt;
+@@ -779,6 +800,7 @@ void dma_free_noncontiguous(struct device *dev, size_t size,
+ {
+ 	const struct dma_map_ops *ops = get_dma_ops(dev);
+ 
++	trace_dma_unmap_sg(dev, sgt->sgl, sgt->orig_nents, dir, 0);
+ 	debug_dma_unmap_sg(dev, sgt->sgl, sgt->orig_nents, dir);
+ 	if (ops && ops->free_noncontiguous)
+ 		ops->free_noncontiguous(dev, size, sgt, dir);
 -- 
-Marek Szyprowski, PhD
-Samsung R&D Institute Poland
+2.35.1.1320.gc452695387.dirty
 
