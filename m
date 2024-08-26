@@ -1,72 +1,74 @@
-Received: from mail-qv1-f54.google.com (mail-qv1-f54.google.com [209.85.219.54])
+Received: from mail-oo1-f51.google.com (mail-oo1-f51.google.com [209.85.161.51])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C28B0187868
-	for <iommu@lists.linux.dev>; Mon, 26 Aug 2024 13:56:17 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.219.54
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 65E5417279E
+	for <iommu@lists.linux.dev>; Mon, 26 Aug 2024 13:59:57 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.161.51
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1724680579; cv=none; b=c9o+obHvlDQN1bdC+rNlDBtLtrnM9aoFDwTGrbnPKBiOvsi6pzaoBOKGScuTAkpFVlkmjynfHl7CqpvILVu4EC1CGDnjJq1f6J2GoKLrt83vfdeMHHq53iQmb/WrzG0+jN3Vyy0eEiUC6wvp2oUoAS/C3elfjcFet2TjPv0pjts=
+	t=1724680798; cv=none; b=FRv9Ps1649mqAwjqWXBXTYoBU/nPbI1qe7AbK3YXYVjs8EepxqFKlWUsrMkbSjYfOnrO33YlGF4is4Yss7XWHVTbmq0lKMJhALoBBKPVL89sfFaXN+Evf7Lo0icLdJB6VLGl4dUfZTl0bttoT0EUiBpRfWDgT7dmOR85FxkUk3M=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1724680579; c=relaxed/simple;
-	bh=4L+x6xlPiKN4o9DedL/WokkxAkOee0tvAtkAVanYorY=;
+	s=arc-20240116; t=1724680798; c=relaxed/simple;
+	bh=j9QMxSHy3XpBffR7dfpz47FxtLeot0FNJuV1tI075S0=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=S2eWpuqBdY78UgPEddVs3XUfN7uHZVc1N+SRiN3WHq4ctinUmXbY+NNEw1vGkYbn3epI4dbjl7owQhSYvJnELeB+LeVAuRV71D8fW2mHrzKjQcHdkXV3bFc7DXq54cSW2YF3KuWziuxLWErNK8NlNWbFgWYFcE32gKCowNivnaI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=SjhWEYdd; arc=none smtp.client-ip=209.85.219.54
+	 Content-Type:Content-Disposition:In-Reply-To; b=ksu02B+ZA2jGulWzwR5XHgjqM2M4mXWAUZC9uIw+r5349+shP6tXVwZz2yeuIa/U2CeQ2nKqN8rYWW8hzavaber+dTUndwGc9Ljj2avngBlR90St8w7/uOmpXN/5euYF/GMb2rOHt9h9+ISVyFuXfWBqTANmeItISp5GZNfGRnI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=LJkNh0kM; arc=none smtp.client-ip=209.85.161.51
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="SjhWEYdd"
-Received: by mail-qv1-f54.google.com with SMTP id 6a1803df08f44-6c159150ff4so23471586d6.2
-        for <iommu@lists.linux.dev>; Mon, 26 Aug 2024 06:56:17 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="LJkNh0kM"
+Received: by mail-oo1-f51.google.com with SMTP id 006d021491bc7-5da6865312eso3642983eaf.3
+        for <iommu@lists.linux.dev>; Mon, 26 Aug 2024 06:59:57 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google; t=1724680576; x=1725285376; darn=lists.linux.dev;
+        d=ziepe.ca; s=google; t=1724680796; x=1725285596; darn=lists.linux.dev;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=bYexcUtKg8OR6Vr90jcbIcOz6479CY7bxZJFZVVFbUA=;
-        b=SjhWEYddhldgt1FX9cqikcqmuYOhAVf1Ujqbaw5TmW8usrh5hHK209rzUszNc4580C
-         EuYhlarAeVV9GLLgtM+/Id+4ODPLicy0hGJbcgyQ4ReV9KyEaXLtQeRTT4exExpt0iKp
-         twp5Lbh8iWhfLUI4t3AsDz/N8ISvxuZUbhiUwhgiRDwI9r/CuX/DwlCRjin5x85H/wsH
-         zsJj/iKBVQCAro3KXLksTxiHycacz0IY+gE3OuS9WNF3ZXlPP1O8U9VScSgPDSGWVFig
-         N1SKvsKO81/EqiG0Auamj66XJhX+w0Ozoq4uWf68mf/Gji4l8pdjOVmVmZezytsoh2R8
-         v24g==
+        bh=X2Xok4Exfr8qUalOltHMuaUnJ+WLJezD0kKoq3dkglM=;
+        b=LJkNh0kMkIF1rXn5k2spqhRzK6otOdWFTx9QgtNxQkb0vYU859vyXPWIIXQlgGRWV8
+         Ncfwm9sG5Yq12DxY3+Wigq/kFI3nAbH6ZExozm/N8ag0xbHrLRXn6aa7mFLEIt/LhEXZ
+         voas6uVbAZe53jbJj91v87CDffkeQZ+4nrQlbVZcn2PiW9bpt8SRS88TxHom4YMfBKPb
+         IKQyxuO83wQaGo+hGUn8d/oN7TQQEONSC7RN1InUsMOTITSpI+Y8hU1LAw1H6+gJFDbT
+         fNXXrcAUEkwlrCWvCxh3R6JCgCfBgMidUk/KihCA52dBN9gssfqXR5aHAf10FQfSvrbK
+         dhoQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1724680576; x=1725285376;
+        d=1e100.net; s=20230601; t=1724680796; x=1725285596;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=bYexcUtKg8OR6Vr90jcbIcOz6479CY7bxZJFZVVFbUA=;
-        b=BPAhDHwOQjtXp92GySn+JYVZiH9kUEHfLx1jfk8XXIaIdkAHuTAETn3yapQulgivWl
-         O50BL8rPzjV44ZBk4cfGSUgLHq3ftYajvJTYzU8uKKUy2VBwppKs4HxeVYS1XoI1FRHg
-         K3vQSMUBDh9LP0whxUCbwJbnjydxY0uM0wYpOAxM/PUvUgdXaparQ+NCunZZbYjL9ms/
-         z9zBX9hfdWNWev3FRl3oeubgIPRuvkU3uBU/oKa6JUIoHQEQlmrO2VSAwEp1oD/SXNPY
-         XNk42jU/yCxfI8voOs0pzf4H6APWSOtm2JsZB9g+zfX6Q2GVC07JBHjObKFwuca5hs3J
-         lVRg==
-X-Gm-Message-State: AOJu0YwaYJK6jqpyDk+NIOaFQcU4eWR6R1SuNwSFG40fcDW/45x6c5ju
-	pHkAj1t8nZTA6zN1WumNtmXCGNomHU/uxaIFRFIJACsBv/esYLfOuxdx86rKD/o=
-X-Google-Smtp-Source: AGHT+IG8YiMCi+/oBDehobCRdHqQNDOZmcnQq+cWN3ZxsnYWhT6xpzLu5hTeG5c0Jr3hZBVNPpOk+A==
-X-Received: by 2002:a05:6214:5345:b0:6b5:4338:e029 with SMTP id 6a1803df08f44-6c16dc88e38mr118802076d6.28.1724680576566;
-        Mon, 26 Aug 2024 06:56:16 -0700 (PDT)
+        bh=X2Xok4Exfr8qUalOltHMuaUnJ+WLJezD0kKoq3dkglM=;
+        b=rFsmleKRziPuXMQh8rA5odU0ZS1rpTVWbFHa3k8YWTpCCLRSHhJOIRXGXVF36ca6rN
+         DHiZVqK0ieh8lqjiXOF011qxcXcWfpMd7ijgmJbk+hi706ZktEhYYs0fmiKdFQrhULbS
+         GdvGhhdWtzqhvWbU1Dvz7FfEX7WoIZHzIlQZwa3yozFf2I9wwHQ1Y+z6vLXoD00PQOOe
+         dURxqHfyuhO6cexnNNYAMpZcyGxLrrQKORbPyIr/FEyERa4sVrbGNldKeVMUpFMQbSMk
+         eTMmxB9WUP37dOlC5BQaN66WvzR6HvbFNI/H3TlBn54PDkCkkzcSrmFElk1sALYqnKZX
+         65Uw==
+X-Forwarded-Encrypted: i=1; AJvYcCXHUfny8qcphh7b5IDjR1J1sdwSIBtcMgSN/NlFjXar8Ks4WwWuGtoNII6LaagKliVGZYZ9WA==@lists.linux.dev
+X-Gm-Message-State: AOJu0Yzzl1mV3/a3feLZcF5PFJfxZHcmfaFUbwVOzIki56KTZCRgSW4h
+	zpU1PYVUSkYQ0BQL7sF0m/Bv9XlGYCjei4h4Ln9dZo7QATQDFUr8RV7uZADT5+Y=
+X-Google-Smtp-Source: AGHT+IGoxmHIXunyrBa/p1uk2uHzYi1Z/hcWVNZcLQIdjI/t7vu+fCLqkwc8pknHtw/kuTjO+ExxGg==
+X-Received: by 2002:a4a:edc7:0:b0:5da:9204:6727 with SMTP id 006d021491bc7-5dcc631afa3mr12061917eaf.6.1724680796380;
+        Mon, 26 Aug 2024 06:59:56 -0700 (PDT)
 Received: from ziepe.ca (hlfxns017vw-142-68-80-239.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.68.80.239])
-        by smtp.gmail.com with ESMTPSA id 6a1803df08f44-6c162dcd0afsm46698676d6.120.2024.08.26.06.56.16
+        by smtp.gmail.com with ESMTPSA id 6a1803df08f44-6c162de8c17sm46261346d6.140.2024.08.26.06.59.55
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 26 Aug 2024 06:56:16 -0700 (PDT)
+        Mon, 26 Aug 2024 06:59:55 -0700 (PDT)
 Received: from jgg by wakko with local (Exim 4.95)
 	(envelope-from <jgg@ziepe.ca>)
-	id 1siaCd-00Bw6u-Hi;
-	Mon, 26 Aug 2024 10:56:15 -0300
-Date: Mon, 26 Aug 2024 10:56:15 -0300
+	id 1siaGB-00Bx31-9b;
+	Mon, 26 Aug 2024 10:59:55 -0300
+Date: Mon, 26 Aug 2024 10:59:55 -0300
 From: Jason Gunthorpe <jgg@ziepe.ca>
-To: Vasant Hegde <vasant.hegde@amd.com>
-Cc: iommu@lists.linux.dev, joro@8bytes.org, will@kernel.org,
-	robin.murphy@arm.com, suravee.suthikulpanit@amd.com,
-	yi.l.liu@intel.com, baolu.lu@linux.intel.com, kevin.tian@intel.com
-Subject: Re: [PATCH 1/5] iommu: Enhance domain allocation code to take
- additional flags
-Message-ID: <20240826135615.GH3468552@ziepe.ca>
-References: <20240821133554.7405-1-vasant.hegde@amd.com>
- <20240821133554.7405-2-vasant.hegde@amd.com>
- <20240821163147.GZ3468552@ziepe.ca>
- <5fd22a04-ff5f-4763-a93f-268fefabaf7b@amd.com>
+To: Klaus Jensen <its@irrelevant.dk>
+Cc: David Woodhouse <dwmw2@infradead.org>,
+	Lu Baolu <baolu.lu@linux.intel.com>, Joerg Roedel <joro@8bytes.org>,
+	Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
+	Kevin Tian <kevin.tian@intel.com>,
+	Minwoo Im <minwoo.im@samsung.com>, linux-kernel@vger.kernel.org,
+	iommu@lists.linux.dev, Joel Granados <j.granados@samsung.com>,
+	Klaus Jensen <k.jensen@samsung.com>
+Subject: Re: [PATCH RFC PREVIEW 0/6] iommu: enable user space iopfs in
+ non-nested and non-svm cases
+Message-ID: <20240826135955.GI3468552@ziepe.ca>
+References: <20240826-iopf-for-all-v1-0-59174e6a7528@samsung.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -75,53 +77,48 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <5fd22a04-ff5f-4763-a93f-268fefabaf7b@amd.com>
+In-Reply-To: <20240826-iopf-for-all-v1-0-59174e6a7528@samsung.com>
 
-On Mon, Aug 26, 2024 at 02:06:27PM +0530, Vasant Hegde wrote:
-> >> @Jason,
-> >>   Notice that I have added __iommu_paging_domain_alloc_flags() so that
-> >>   it can call iommu_domain_init() with appropriate domain type.
-> > 
-> > It is okay, but also the type could be fixed in
-> > __iommu_group_alloc_default_domain() using something like:
-> > 
-> > 		ret->type |= req_type;
+On Mon, Aug 26, 2024 at 01:40:26PM +0200, Klaus Jensen wrote:
+> This is a Request for Comment series that will hopefully generate
+> initial feedback on the use of the iommufd_hwpt_replace_device to
+> execute non-nested and non-svm user space IOPFs. Our main motivation is
+> to enable user-space driver driven device verification with default
+> pasid and without nesting nor SVM.
 > 
-> Sorry. I didn't get it. You mean domain->type? 
-
-Sorry, yes. I mean the path that knows it is allocating for the DMA
-API can or in the DMA API flags after allocation succeeds and we don't
-have to muddle lower levels by passing them all around.
-
-> >>   I think instead of having separate function it may be better to
-> >>   enhance __iommu_domain_alloc() such that:
-> >>     - Keep below changes from this patch
-> >>       - iommu_domain_init()
-> >>       - iommu_get_dma_cookie call inside iommu_setup_default_domain()
-> >>     - modify __iommu_domain_alloc() to additional param (flags)
-> >>     - iommu_paging_domain_alloc_flags() will call __iommu_domain_alloc()
-> > 
-> > My expectation was to basically remove iommu_domain_alloc() entirely
-> > once Lu's work is merged.
-> > 
-> > Instead we'd have these direct APIs:
-> >   iommu_domain_alloc_paging_flags()
-> >   iommu_group_alloc_blocking_domain()
-> >   iommu_group_alloc_identity_domain()
+> What?
+>   * Enable IO page fault handling in user space in a non-nested, non-svm
+>     and non-virtualised use case.
+>   * Removing the relation between IOPF and INTEL_IOMMU_SVM by allowing
+>     the user to (de)select the IOPF code through Kconfig.
+>   * Create a new file under iommu/intel (prq.c) that contains all the
+>     page request queue related logic and is not under intel/svm.c.
+>   * Add the IOMMU_HWPT_FAULT_ID_VALID to the valid flags used to create
+>     IOMMU_HWPT_ALLOC allocations.
+>   * Create a default (zero) pasid handle and insert it to the pasid
+>     array within the dev->iommu_group when replacing the old HWPT with
+>     an iopf enabled HWPT.
 > 
-> Sure (For AMD driver, we may have to tweak a bit to allocate_identity domain,
-> but doable).
+> Why?
+>   The PCI ATS Extended Capability allows peripheral devices to
+>   participate in the caching of translations when operating under an
+>   IOMMU. Further, the ATS Page Request Interface (PRI) Extension allows
+>   devices to handle missing mappings. Currently, PRI is mainly used in
+>   the context of Shared Virtual Addressing, requiring support for the
+>   Process Address Space Identifier (PASID) capability, but other use
+>   cases such as enabling user-space driver driven device verification
+>   and reducing memory pinning exists. This patchest sets out to enable
+>   these use cases.
 
-Why does it need to allocate_identity ?
+I definitely expect PRI to work outside PASID and SVA cases, so this
+is going in a good direction
 
-> > I think the series looks OK. The naming of domain_alloc_user() is now
-> > a little bit weird, it has now turned into
-> > domain_alloc_paging_extended().
-> 
-> Ack. Do you want me to do it now -OR- May be wait until all changes settles down
-> (above described group() related changes, this series, Baolu's series, etc)?
+>   Supplementary repositories supporting this patchset:
+>     1. A user space library libvfn [1] which is used for testing and
+>        verification (see examples/iopf.c), and
 
-I think if we rename things it will clash with the smmu nesting
-series, lets live with it for now.
+That's pretty neat, I've been wanting to see some kind of IOMMU test
+suite based around a capable widely available device. This is the
+closest I've seen..
 
 Jason
