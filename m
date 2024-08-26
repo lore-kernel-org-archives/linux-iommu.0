@@ -1,212 +1,146 @@
-Received: from mail-pl1-f172.google.com (mail-pl1-f172.google.com [209.85.214.172])
+Received: from mail-il1-f176.google.com (mail-il1-f176.google.com [209.85.166.176])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 920B8198A19
-	for <iommu@lists.linux.dev>; Mon, 26 Aug 2024 17:16:07 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.172
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9074C198E69
+	for <iommu@lists.linux.dev>; Mon, 26 Aug 2024 17:37:12 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.166.176
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1724692569; cv=none; b=a0/b1OMOVp2khV7bL6qsTfQ6aJLsubc8o4doejrDMHAWylv+T6Vy3kP0ztbbuV/EU6uWs4PS88yL+NcWXyDdokkAtJ33RnBLePous86uNDrkTrAhLlROAdGGxPEYuRjQgjZfNBKv46S1Se3npiqX8r1ovkRIdjsEcPQ6WCdGahk=
+	t=1724693834; cv=none; b=S7FdFKohu8f8qhMB6ilYQ0JtLK5quw2h3a+OiuEYJ/cZGUcon5d5cfzNHVL29h+LXqyiORnnJKQS+y4Xo+o3ZUnl+dYd8k2mO7TG7HzOxvJo1witsC2PiEgY8rkZeLxeOXrvD5TKOX1IYdaEa9i3YK29j7rvP/qKoh0kXvZp9d8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1724692569; c=relaxed/simple;
-	bh=Z9rdbPQfURPCIg572NnKyoFcQ2uLzoi++cMrYqDlAP4=;
-	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=FEEdAa0AdYRrLkEkCtpVhpVIBxo+EiDuclpz8SQTD//HCHYBwQJQlEZ6joglZxh1ID/ojxpzSqBl5plwy1r407HesRkX/69rO0POnhJtbXEaAMRtBIqhjL58XWj+hktuBCPpNngEYB92eMaP/W/KAseZc4ieLk5CzxM2s9/FHfU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=HqiqjBX+; arc=none smtp.client-ip=209.85.214.172
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1724693834; c=relaxed/simple;
+	bh=xHmiRNhRRt9eYiRt79QCeyN/h+W2Ra8rJ3ocE5z49V4=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=dLHDdHP8BNWhOZ3fkdRIm5EwKSCGAZu3XGA8PUaNw0DTP3ovcc+s6zetvLUPjH/x+dAwywGyPhR+yrABPbNF8f/mYtxlierfP+Qt3xTN4R1/ziCC50hbtqXzZGtCf2ck0CgZ13Q9BpbasGISgDYe1OhQm7TwAIfJE8UFh4HdqnI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=Chni/H5k; arc=none smtp.client-ip=209.85.166.176
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="HqiqjBX+"
-Received: by mail-pl1-f172.google.com with SMTP id d9443c01a7336-202508cb8ebso30550685ad.3
-        for <iommu@lists.linux.dev>; Mon, 26 Aug 2024 10:16:07 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="Chni/H5k"
+Received: by mail-il1-f176.google.com with SMTP id e9e14a558f8ab-39d2a107aebso15995ab.0
+        for <iommu@lists.linux.dev>; Mon, 26 Aug 2024 10:37:12 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1724692566; x=1725297366; darn=lists.linux.dev;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
+        d=google.com; s=20230601; t=1724693832; x=1725298632; darn=lists.linux.dev;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=Cgk9ZwZd91vOVt90fIiETgBR9DeXKbUMnWSmPau0W5M=;
-        b=HqiqjBX+v6hnPkYRzBEvLACBuUUT8r3B8oGmliOvf51gpaiwI3jyT1PZkgBmFhw2V3
-         Djc3rCOTjYz3YjiwaPJ3irn3iKJab13hF8K+kXJriUPr25OKOqkJMXqF1ShVnU4DbB4d
-         nY8kilLSRqNDjbOUkT3qoP11Zvm4MQ3ArDvmFBTdAGZEicRwDHTnL6uqCboV/H5nVcmm
-         s63P4vleBQsiSysoZUdU3agJ0tcSEhJM7sC5vIXxzybVCzR4ZOgDzY42680PY3bsQbyd
-         rF/EUO8rAAZPXC2tLbaV1sSqYxMCfsZD8RNoGc4Ss1NFUkZT5q6vcLuh3oyCR8wnL0xg
-         bF+A==
+        bh=Oh0j8JVhDYlydZMkUx8RVg1JAsfs2sLF6/GwVKf9xvs=;
+        b=Chni/H5ktkAKk2UfDENXq33gEBODldCn4eCaXW7sslKldhbGWbXmpL9zJEZylkuGJk
+         ZZBlL9cU021dmSMUBIMrOTGt90LVAqA/aNCTBJvjpsI9YmNWWiSA/ys8xoNVdTWFeYum
+         a8+feOqFE6nAp7T2WIaTED8oubd3aFpcPffWr44uEs427BoUJHRVGpNQRQ9poVZ/rNxW
+         qw6F+ap3V86+S0sYM9WLHf4Z0LUDGS1KR/6I9h1WEjaLqnDmionW/fj07wlgGPm/2XbF
+         YXnE0NJR9BrjLHYD5fnlNUzGXHzVsRPhX5ea3rk2+RJ8o5bs547tnK1W5Siufv0CQaHC
+         aZuw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1724692566; x=1725297366;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
+        d=1e100.net; s=20230601; t=1724693832; x=1725298632;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=Cgk9ZwZd91vOVt90fIiETgBR9DeXKbUMnWSmPau0W5M=;
-        b=mLoBZRs3Vh5KMfQUvOvOlFsJL9EVrGavRSXW1R5c34ijWOD9aTQwzsX+KBGEmNuYJv
-         sz6YaemGmkO3SurHHEtdRXQGZTr95rFh5lmHBd0Q24fROmWrgOI0IIO7DmWYYAaMEF+i
-         CdhjC7zGVy/7/rv9l4Hna5RTNfxhfrabPFlcrUmTzIcTe8UA8W8LGHCiCG38X3ZAaEJC
-         7Gze726XDeO8Glhs5q/90SiGh/Xr2bxxXtZn6YSTu4iu+WfIjjQIoL+/jT4BJKVfiG7E
-         c0Gnd16M/4/nsKREsT1v8dP7WutFXBhbBvcg2a1ZV18bHbNALJvMswhTljLmS4xRZUQQ
-         VPBQ==
-X-Gm-Message-State: AOJu0YxjkX2ectI9bHppeqhwdJeu/zHssPiaicfMQFqR46r6EzfZ6+ft
-	9onsPk+RCaaKxXsZOiZmTNn9sV1TSkvQE07/JvB8PlKx3D/onspq7gOhVw==
-X-Google-Smtp-Source: AGHT+IHGL1MOQ7nhSehnfvO75y0Ls4GPWtSRbqyg7KY7kq6ZyQvUf9DWVxti63QNaWSL53DiyLEF1A==
-X-Received: by 2002:a17:903:186:b0:202:244e:a0cc with SMTP id d9443c01a7336-204df4d3543mr2327305ad.45.1724692565761;
-        Mon, 26 Aug 2024 10:16:05 -0700 (PDT)
-Received: from localhost ([2a00:79e1:2e00:1301:12e9:d196:a1e9:ab67])
-        by smtp.gmail.com with ESMTPSA id d9443c01a7336-203855dbd96sm69825935ad.175.2024.08.26.10.16.04
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 26 Aug 2024 10:16:05 -0700 (PDT)
-From: Rob Clark <robdclark@gmail.com>
-To: iommu@lists.linux.dev
-Cc: Will Deacon <will@kernel.org>,
-	Robin Murphy <robin.murphy@arm.com>,
-	Rob Clark <robdclark@chromium.org>,
-	Rob Clark <robdclark@gmail.com>,
-	Sean Paul <sean@poorly.run>,
-	Konrad Dybcio <konrad.dybcio@linaro.org>,
-	Abhinav Kumar <quic_abhinavk@quicinc.com>,
-	Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
-	Marijn Suijten <marijn.suijten@somainline.org>,
-	David Airlie <airlied@gmail.com>,
-	Daniel Vetter <daniel@ffwll.ch>,
-	linux-arm-msm@vger.kernel.org (open list:DRM DRIVER for Qualcomm Adreno GPUs),
-	dri-devel@lists.freedesktop.org (open list:DRM DRIVER for Qualcomm Adreno GPUs),
-	freedreno@lists.freedesktop.org (open list:DRM DRIVER for Qualcomm Adreno GPUs),
-	linux-kernel@vger.kernel.org (open list)
-Subject: [PATCH v8 4/4] drm/msm: Extend gpu devcore dumps with pgtbl info
-Date: Mon, 26 Aug 2024 10:15:41 -0700
-Message-ID: <20240826171546.6777-5-robdclark@gmail.com>
-X-Mailer: git-send-email 2.46.0
-In-Reply-To: <20240826171546.6777-1-robdclark@gmail.com>
-References: <20240826171546.6777-1-robdclark@gmail.com>
+        bh=Oh0j8JVhDYlydZMkUx8RVg1JAsfs2sLF6/GwVKf9xvs=;
+        b=jDLJKd0UTosSoOh0aM6nEw/pWcttXyYsFx5z6GZXFMvuyS0WTiCYDTgjO+CO7UgkHL
+         rPFX/3Uov5qTXBu/gpoD1kZrdXLW7tOYLqm/lk0QyF3WASo/r7QB8q5eE/TjyosVd7QU
+         ka68vaHAWf5pb3vTOKwGtXwTZcqn5+Qs2JNPvP7FwIxuKk6BdROw9fRzZeWCpwQyS+Mk
+         Z3WAQZIGzBU1ghlcxpd3HvAXqkk2xQ6WZwp35+sPGUbmZg8kArXMu2Yp12zj6bfgjmDN
+         KxzGJQY/6vFKBOfhbu9iJZqhnkAc7/0i5R9BL/2pO9xd5GhPaS3Lz7VA7QjZnLjk0Lsz
+         dq7g==
+X-Forwarded-Encrypted: i=1; AJvYcCWSsWKbj3PYFNzIZ0fY8UCaLX1Tk2PML5kDAeQtUivTMe+CF8do9vRKrJle8SrMCR8OjiNHbQ==@lists.linux.dev
+X-Gm-Message-State: AOJu0YyLWpTntR9CSVfXMkrWpO2I8Y0pLScjN945fkLqWzRepziIX76g
+	bs7d5WvBqZUOK8JTWRvEqn4Kbo1KsbgtMivqkImolBxQxv300veAj8xeE8ChNQwuyyo/cjgPZod
+	kDJgkGBXLhzucxEs74xIVkw9RizLm5SgRkUWg
+X-Google-Smtp-Source: AGHT+IHDJn2W5sA7BZSuEiAztVMwpsekZ9JYmxVAxVceAMBd/f24sCJ4Q/dzJtDHxuQfgyQ6VwJ8096tyWLH+0vkxGw=
+X-Received: by 2002:a92:c24d:0:b0:39a:f2f4:7ec1 with SMTP id
+ e9e14a558f8ab-39e64de00d4mr36645ab.20.1724693831406; Mon, 26 Aug 2024
+ 10:37:11 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20240826071641.2691374-1-manojvishy@google.com> <20240826110447.6522e0a7.alex.williamson@redhat.com>
+In-Reply-To: <20240826110447.6522e0a7.alex.williamson@redhat.com>
+From: Manoj Vishwanathan <manojvishy@google.com>
+Date: Mon, 26 Aug 2024 10:36:58 -0700
+Message-ID: <CA+M8utOvUr3LrWhTNtcBhRAsOB-ST8kKWJN4u_0eNCcWLihH4w@mail.gmail.com>
+Subject: Re: [PATCH v1 0/4] vfio/iommu: Flag to allow userspace to set DMA
+ buffers system cacheable
+To: Alex Williamson <alex.williamson@redhat.com>
+Cc: Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>, 
+	Joerg Roedel <joro@8bytes.org>, linux-arm-kernel@lists.infradead.org, kvm@vger.kernel.org, 
+	iommu@lists.linux.dev, linux-kernel@vger.kernel.org, 
+	David Dillow <dillow@google.com>, Jason Gunthorpe <jgg@nvidia.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-From: Rob Clark <robdclark@chromium.org>
-
-In the case of iova fault triggered devcore dumps, include additional
-debug information based on what we think is the current page tables,
-including the TTBR0 value (which should match what we have in
-adreno_smmu_fault_info unless things have gone horribly wrong), and
-the pagetable entries traversed in the process of resolving the
-faulting iova.
-
-Signed-off-by: Rob Clark <robdclark@chromium.org>
----
- drivers/gpu/drm/msm/adreno/adreno_gpu.c | 10 ++++++++++
- drivers/gpu/drm/msm/msm_gpu.c           |  9 +++++++++
- drivers/gpu/drm/msm/msm_gpu.h           |  8 ++++++++
- drivers/gpu/drm/msm/msm_iommu.c         | 22 ++++++++++++++++++++++
- drivers/gpu/drm/msm/msm_mmu.h           |  3 ++-
- 5 files changed, 51 insertions(+), 1 deletion(-)
-
-diff --git a/drivers/gpu/drm/msm/adreno/adreno_gpu.c b/drivers/gpu/drm/msm/adreno/adreno_gpu.c
-index 1c6626747b98..3848b5a64351 100644
---- a/drivers/gpu/drm/msm/adreno/adreno_gpu.c
-+++ b/drivers/gpu/drm/msm/adreno/adreno_gpu.c
-@@ -864,6 +864,16 @@ void adreno_show(struct msm_gpu *gpu, struct msm_gpu_state *state,
- 		drm_printf(p, "  - dir=%s\n", info->flags & IOMMU_FAULT_WRITE ? "WRITE" : "READ");
- 		drm_printf(p, "  - type=%s\n", info->type);
- 		drm_printf(p, "  - source=%s\n", info->block);
-+
-+		/* Information extracted from what we think are the current
-+		 * pgtables.  Hopefully the TTBR0 matches what we've extracted
-+		 * from the SMMU registers in smmu_info!
-+		 */
-+		drm_puts(p, "pgtable-fault-info:\n");
-+		drm_printf(p, "  - ttbr0: %.16llx\n", (u64)info->pgtbl_ttbr0);
-+		drm_printf(p, "  - asid: %d\n", info->asid);
-+		drm_printf(p, "  - ptes: %.16llx %.16llx %.16llx %.16llx\n",
-+			   info->ptes[0], info->ptes[1], info->ptes[2], info->ptes[3]);
- 	}
- 
- 	drm_printf(p, "rbbm-status: 0x%08x\n", state->rbbm_status);
-diff --git a/drivers/gpu/drm/msm/msm_gpu.c b/drivers/gpu/drm/msm/msm_gpu.c
-index 3666b42b4ecd..bf2f8b2a7ccc 100644
---- a/drivers/gpu/drm/msm/msm_gpu.c
-+++ b/drivers/gpu/drm/msm/msm_gpu.c
-@@ -281,6 +281,15 @@ static void msm_gpu_crashstate_capture(struct msm_gpu *gpu,
- 	if (submit) {
- 		int i;
- 
-+		if (state->fault_info.ttbr0) {
-+			struct msm_gpu_fault_info *info = &state->fault_info;
-+			struct msm_mmu *mmu = submit->aspace->mmu;
-+
-+			msm_iommu_pagetable_params(mmu, &info->pgtbl_ttbr0,
-+						   &info->asid);
-+			msm_iommu_pagetable_walk(mmu, info->iova, info->ptes);
-+		}
-+
- 		state->bos = kcalloc(submit->nr_bos,
- 			sizeof(struct msm_gpu_state_bo), GFP_KERNEL);
- 
-diff --git a/drivers/gpu/drm/msm/msm_gpu.h b/drivers/gpu/drm/msm/msm_gpu.h
-index 1f02bb9956be..82e838ba8c80 100644
---- a/drivers/gpu/drm/msm/msm_gpu.h
-+++ b/drivers/gpu/drm/msm/msm_gpu.h
-@@ -101,6 +101,14 @@ struct msm_gpu_fault_info {
- 	int flags;
- 	const char *type;
- 	const char *block;
-+
-+	/* Information about what we think/expect is the current SMMU state,
-+	 * for example expected_ttbr0 should match smmu_info.ttbr0 which
-+	 * was read back from SMMU registers.
-+	 */
-+	phys_addr_t pgtbl_ttbr0;
-+	u64 ptes[4];
-+	int asid;
- };
- 
- /**
-diff --git a/drivers/gpu/drm/msm/msm_iommu.c b/drivers/gpu/drm/msm/msm_iommu.c
-index 2a94e82316f9..3e692818ba1f 100644
---- a/drivers/gpu/drm/msm/msm_iommu.c
-+++ b/drivers/gpu/drm/msm/msm_iommu.c
-@@ -195,6 +195,28 @@ struct iommu_domain_geometry *msm_iommu_get_geometry(struct msm_mmu *mmu)
- 	return &iommu->domain->geometry;
- }
- 
-+int
-+msm_iommu_pagetable_walk(struct msm_mmu *mmu, unsigned long iova, uint64_t ptes[4])
-+{
-+	struct msm_iommu_pagetable *pagetable;
-+	struct arm_lpae_io_pgtable_walk_data wd = {};
-+
-+	if (mmu->type != MSM_MMU_IOMMU_PAGETABLE)
-+		return -EINVAL;
-+
-+	pagetable = to_pagetable(mmu);
-+
-+	if (!pagetable->pgtbl_ops->pgtable_walk)
-+		return -EINVAL;
-+
-+	pagetable->pgtbl_ops->pgtable_walk(pagetable->pgtbl_ops, iova, &wd);
-+
-+	for (int i = 0; i < ARRAY_SIZE(wd.ptes); i++)
-+		ptes[i] = wd.ptes[i];
-+
-+	return 0;
-+}
-+
- static const struct msm_mmu_funcs pagetable_funcs = {
- 		.map = msm_iommu_pagetable_map,
- 		.unmap = msm_iommu_pagetable_unmap,
-diff --git a/drivers/gpu/drm/msm/msm_mmu.h b/drivers/gpu/drm/msm/msm_mmu.h
-index 88af4f490881..96e509bd96a6 100644
---- a/drivers/gpu/drm/msm/msm_mmu.h
-+++ b/drivers/gpu/drm/msm/msm_mmu.h
-@@ -53,7 +53,8 @@ static inline void msm_mmu_set_fault_handler(struct msm_mmu *mmu, void *arg,
- struct msm_mmu *msm_iommu_pagetable_create(struct msm_mmu *parent);
- 
- int msm_iommu_pagetable_params(struct msm_mmu *mmu, phys_addr_t *ttbr,
--		int *asid);
-+			       int *asid);
-+int msm_iommu_pagetable_walk(struct msm_mmu *mmu, unsigned long iova, uint64_t ptes[4]);
- struct iommu_domain_geometry *msm_iommu_get_geometry(struct msm_mmu *mmu);
- 
- #endif /* __MSM_MMU_H__ */
--- 
-2.46.0
-
+On Mon, Aug 26, 2024 at 10:04=E2=80=AFAM Alex Williamson
+<alex.williamson@redhat.com> wrote:
+>
+> On Mon, 26 Aug 2024 07:16:37 +0000
+> Manoj Vishwanathan <manojvishy@google.com> wrote:
+>
+> > Hi maintainers,
+> >
+> > This RFC patch introduces the ability for userspace to control whether
+> > device (DMA) buffers are marked as cacheable, enabling them to utilize
+> > the system-level cache.
+> >
+> > The specific changes made in this patch are:
+> >
+> > * Introduce a new flag in `include/linux/iommu.h`:
+> >     * `IOMMU_SYS_CACHE` -  Indicates if the associated page should be c=
+ached in the system's cache hierarchy.
+> > * Add `VFIO_DMA_MAP_FLAG_SYS_CACHE` to `include/uapi/linux/vfio.h`:
+> >     * Allows userspace to set the cacheable attribute to PTE when mappi=
+ng DMA regions using the VFIO interface.
+> > * Update `vfio_iommu_type1.c`:
+> >     * Handle the `VFIO_DMA_MAP_FLAG_SYS_CACHE` flag during DMA mapping =
+operations.
+> >     * Set the `IOMMU_SYS_CACHE` flag in the IOMMU page table entry if
+> > the `VFIO_DMA_MAP_FLAG_SYS_CACHE` is set.
+>
+> We intend to eventually drop vfio type1 in favor of using IOMMUFD,
+> therefore all new type1 features need to first be available in IOMMUFD.
+> Once there we may consider use cases for providing the feature in the
+> legacy type1 interface and the IOMMUFD compatibility interface.  Thanks,
+>
+> Alex
+Thank You, Alex! I will redirect this patch to iommufd in the next version.
+> > * arm/smmu/io-pgtable-arm: Set the MAIR for SYS_CACHE
+> >
+> > The reasoning behind these changes is to provide userspace with
+> > finer-grained control over memory access patterns for devices,
+> > potentially improving performance in scenarios where caching is
+> > beneficial. We saw in some of the use cases where the buffers were
+> > for transient data ( in and out without processing).
+> >
+> > I have tested this patch on certain arm64 machines and observed the
+> > following:
+> >
+> > * There is 14-21% improvement in jitter measurements, where the
+> > buffer on System Level Cache vs DDR buffers
+> > * There was not much of an improvement in latency in the diration of
+> > the tests that I have tried.
+> >
+> > I am open to feedback and suggestions for further improvements.
+> > Please let me know if you have any questions or concerns. Also, I am
+> > working on adding a check in the VFIO layer to ensure that if there
+> > is no architecture supported implementation for sys cache, if should
+> > not apply them.
+> >
+> > Thanks,
+> > Manoj Vishwanathan
+> >
+> > Manoj Vishwanathan (4):
+> >   iommu: Add IOMMU_SYS_CACHE flag for system cache control
+> >   iommu/io-pgtable-arm: Force outer cache for page-level MAIR via user
+> >     flag
+> >   vfio: Add VFIO_DMA_MAP_FLAG_SYS_CACHE to control device access to
+> >     system cache
+> >   vfio/type1: Add support for VFIO_DMA_MAP_FLAG_SYS_CACHE
+> >
+> >  drivers/iommu/io-pgtable-arm.c  | 3 +++
+> >  drivers/vfio/vfio_iommu_type1.c | 5 +++--
+> >  include/linux/iommu.h           | 6 ++++++
+> >  include/uapi/linux/vfio.h       | 1 +
+> >  4 files changed, 13 insertions(+), 2 deletions(-)
+> >
+>
