@@ -1,258 +1,151 @@
-Received: from mx0a-0031df01.pphosted.com (mx0a-0031df01.pphosted.com [205.220.168.131])
+Received: from bee.tesarici.cz (bee.tesarici.cz [37.205.15.56])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 67738B677
-	for <iommu@lists.linux.dev>; Mon, 26 Aug 2024 18:29:41 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.168.131
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1A24512C7FB;
+	Mon, 26 Aug 2024 19:28:12 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=37.205.15.56
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1724696983; cv=none; b=B4K4LNfHK1huYKVZQrXddKZnt+drOgkuN5KNGMMkfbLL5dcnsL0ws2sCxYHnLhJSXjJyiNzD5DTbtUJQlpZV7masoEo0ISMeXB4XfETMbkrbJTYjKKYuQPMQFuZF5g3MHMNtFzgKhcBP1zcjHBXUdp8tznnRpJD+MKZXrM1eeEI=
+	t=1724700496; cv=none; b=isaDPU3ZCFB78nU/hrJ9DPuJ2Q6jUUYKVpRUC1lTk8yCLX0oUrXnudWxioSNWHKzT+xHMZWl7sprFETj23gStZFC13YcvsUK48+QePpZBNP/a7XDQT7s2kAuLrYEsoyxBj5EF5HCtdYKGHRZIuQV9ZhuvHSE3oe7uw24EL8l77k=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1724696983; c=relaxed/simple;
-	bh=DoqSWBVRDMY9nAZiN+3zetnRbsIkRgSSX511Rab4zDk=;
-	h=Date:From:To:CC:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=sxQBWjR4E8lBbTjRtMPXxpXPAHv2kpn1d6cQtvnct70N5IC+2LyksXnAyCBdFKChEFXDpI6VQEQxuZ3E/SIR1pug1vTm1PpbCnL6xZjFwvcBgwJAQZnOu8W25vdTBffIsl2ctEekh3oc19wh5KOsf9ABBTPauVHDWjfi4HDdyWE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com; spf=pass smtp.mailfrom=quicinc.com; dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b=QV6HdLMx; arc=none smtp.client-ip=205.220.168.131
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=quicinc.com
+	s=arc-20240116; t=1724700496; c=relaxed/simple;
+	bh=FHyu0VU/PnPOXAQDCe1rt+BnsCDvW7gQcM+qKPcnMh0=;
+	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=Ul1pvP2Kgg++kwh+lJXCXC9eFZOJz7fv+w842MqFoTB/HPDo0V3bg54IOEI6ze9jHSjVPMJqDkixMgIwPsrw1IGUrBLTk869EpabR5+Vf9NRdBGhr+WzhxiIjLpmlc7vDVhxFx4Gh2HhSPD9R44l8JnXceveZG5zXFP3nP0L9BU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=tesarici.cz; spf=pass smtp.mailfrom=tesarici.cz; dkim=pass (2048-bit key) header.d=tesarici.cz header.i=@tesarici.cz header.b=3OqICh2V; arc=none smtp.client-ip=37.205.15.56
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=tesarici.cz
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=tesarici.cz
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b="QV6HdLMx"
-Received: from pps.filterd (m0279865.ppops.net [127.0.0.1])
-	by mx0a-0031df01.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 47QGjvZX014445;
-	Mon, 26 Aug 2024 18:29:32 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=quicinc.com; h=
-	cc:content-transfer-encoding:content-type:date:from:in-reply-to
-	:message-id:mime-version:references:subject:to; s=qcppdkim1; bh=
-	msHYl9Xj4RS1OPrJlrsccFKr/fThyPbI4ZRc5QLXCo4=; b=QV6HdLMxyIctrgGR
-	7lz7VoZEatuUThWWBnELhCuNFL74btoCP0O+2SknJ8rfgU3Z40s0BXaVQi4WC5Tg
-	e1FbDzGcH8zuLDRLfrP4+VjfudCjn9aqW8myrqRUD7ak3V01DF6Njn11ZXZ7ig2R
-	AR9Eegc4hPSgeU73mfvXOWYhVRg40f3BwnlOsmtMxsRrVwi70wI4Tqc3Yp4Z2HMQ
-	Ik9tX2CHmj4cLoAgJWCO22fOBcJx8ScSPvJTtBWzv16jz03KdqDyoqARY85Tf+hK
-	EPSvEwxsMyE+zrAFQJVUK7F1lRlFSTv6dBuYNKoqVV7eSrlWDFq13OKkmDo5I0jg
-	PecNsg==
-Received: from nalasppmta05.qualcomm.com (Global_NAT1.qualcomm.com [129.46.96.20])
-	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 417993mgan-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Mon, 26 Aug 2024 18:29:32 +0000 (GMT)
-Received: from nalasex01a.na.qualcomm.com (nalasex01a.na.qualcomm.com [10.47.209.196])
-	by NALASPPMTA05.qualcomm.com (8.18.1.2/8.18.1.2) with ESMTPS id 47QITVRS029932
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Mon, 26 Aug 2024 18:29:31 GMT
-Received: from hu-akhilpo-hyd.qualcomm.com (10.80.80.8) by
- nalasex01a.na.qualcomm.com (10.47.209.196) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.1544.9; Mon, 26 Aug 2024 11:29:26 -0700
-Date: Mon, 26 Aug 2024 23:59:22 +0530
-From: Akhil P Oommen <quic_akhilpo@quicinc.com>
-To: Rob Clark <robdclark@gmail.com>
-CC: <iommu@lists.linux.dev>, <linux-arm-msm@vger.kernel.org>,
-        <freedreno@lists.freedesktop.org>, Mostafa Saleh <smostafa@google.com>,
-        "Will
- Deacon" <will@kernel.org>, Rob Clark <robdclark@chromium.org>,
-        Sean Paul
-	<sean@poorly.run>, Konrad Dybcio <konrad.dybcio@linaro.org>,
-        Abhinav Kumar
-	<quic_abhinavk@quicinc.com>,
-        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
-        Marijn Suijten <marijn.suijten@somainline.org>,
-        David Airlie
-	<airlied@gmail.com>, Daniel Vetter <daniel@ffwll.ch>,
-        "open list:DRM DRIVER
- for Qualcomm Adreno GPUs" <dri-devel@lists.freedesktop.org>,
-        open list
-	<linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH v7 4/4] drm/msm: Extend gpu devcore dumps with pgtbl info
-Message-ID: <20240826182922.wxxx3bwflxga2dlr@hu-akhilpo-hyd.qualcomm.com>
-References: <20240820171652.145673-1-robdclark@gmail.com>
- <20240820171652.145673-5-robdclark@gmail.com>
- <20240822203401.odfmdlqto6lsqefz@hu-akhilpo-hyd.qualcomm.com>
- <CAF6AEGtGCT=TSp2XRmPaqb23dk42V_ic06OCB+JLEp6f5Y4tNg@mail.gmail.com>
+	dkim=pass (2048-bit key) header.d=tesarici.cz header.i=@tesarici.cz header.b="3OqICh2V"
+Received: from meshulam.tesarici.cz (dynamic-2a00-1028-83b8-1e7a-4427-cc85-6706-c595.ipv6.o2.cz [IPv6:2a00:1028:83b8:1e7a:4427:cc85:6706:c595])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange ECDHE (P-256) server-signature RSA-PSS (2048 bits) server-digest SHA256)
+	(No client certificate requested)
+	by bee.tesarici.cz (Postfix) with ESMTPSA id 723761F5836;
+	Mon, 26 Aug 2024 21:28:04 +0200 (CEST)
+Authentication-Results: mail.tesarici.cz; dmarc=fail (p=quarantine dis=none) header.from=tesarici.cz
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=tesarici.cz; s=mail;
+	t=1724700484; bh=++Bczk63eC2DOga6kXt5dxUEmHon4YZ3k2+0HLuXZag=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+	b=3OqICh2V1e2GjJj6P5dajLB+vX9Z3X4Wa4bS1dWEwq8vhHUUIUosz3GCww2OJ1jUo
+	 CqePrcEgW60T6bgpx/94gfYqT1dbH0f52BXLCD7aO5mgnlEQ56zdJzVeBi5T92aXrZ
+	 bYl31QmnVAr35N2iFoW8vnmc/PLofHaSfrg7fu+X07020RnFGA4A+1DAJnskmB+YRa
+	 65chdJgFXnfe69EGSCgCIpI56BqhFMIP4TykSfuXnspbLBMXg6jcsBFPuCyLr4IZUA
+	 mwqWOH8sHchI9YbUutrw5p6muhKUc4L07fG7A66CM3S3dTzhRQgA5xMluFisAuzRfn
+	 xy5uztHZJzqjg==
+Date: Mon, 26 Aug 2024 21:28:03 +0200
+From: Petr =?UTF-8?B?VGVzYcWZw61r?= <petr@tesarici.cz>
+To: Michael Kelley <mhklinux@outlook.com>
+Cc: "kbusch@kernel.org" <kbusch@kernel.org>, "axboe@kernel.dk"
+ <axboe@kernel.dk>, "sagi@grimberg.me" <sagi@grimberg.me>,
+ "James.Bottomley@HansenPartnership.com"
+ <James.Bottomley@HansenPartnership.com>, "martin.petersen@oracle.com"
+ <martin.petersen@oracle.com>, "kys@microsoft.com" <kys@microsoft.com>,
+ "haiyangz@microsoft.com" <haiyangz@microsoft.com>, "wei.liu@kernel.org"
+ <wei.liu@kernel.org>, "decui@microsoft.com" <decui@microsoft.com>,
+ "robin.murphy@arm.com" <robin.murphy@arm.com>, "hch@lst.de" <hch@lst.de>,
+ "m.szyprowski@samsung.com" <m.szyprowski@samsung.com>,
+ "iommu@lists.linux.dev" <iommu@lists.linux.dev>,
+ "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+ "linux-nvme@lists.infradead.org" <linux-nvme@lists.infradead.org>,
+ "linux-scsi@vger.kernel.org" <linux-scsi@vger.kernel.org>,
+ "linux-hyperv@vger.kernel.org" <linux-hyperv@vger.kernel.org>,
+ "linux-coco@lists.linux.dev" <linux-coco@lists.linux.dev>
+Subject: Re: [RFC 0/7] Introduce swiotlb throttling
+Message-ID: <20240826212803.3e11d2f9@meshulam.tesarici.cz>
+In-Reply-To: <SN6PR02MB41577933B499309EA3CE4DDBD48B2@SN6PR02MB4157.namprd02.prod.outlook.com>
+References: <20240822183718.1234-1-mhklinux@outlook.com>
+	<20240823084458.4394b401@meshulam.tesarici.cz>
+	<SN6PR02MB415758F12C59E6CA67227DCFD4882@SN6PR02MB4157.namprd02.prod.outlook.com>
+	<20240824220556.0e2587d5@meshulam.tesarici.cz>
+	<SN6PR02MB41577933B499309EA3CE4DDBD48B2@SN6PR02MB4157.namprd02.prod.outlook.com>
+X-Mailer: Claws Mail 4.3.0 (GTK 3.24.43; x86_64-suse-linux-gnu)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <CAF6AEGtGCT=TSp2XRmPaqb23dk42V_ic06OCB+JLEp6f5Y4tNg@mail.gmail.com>
-X-ClientProxiedBy: nasanex01a.na.qualcomm.com (10.52.223.231) To
- nalasex01a.na.qualcomm.com (10.47.209.196)
-X-QCInternal: smtphost
-X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
-X-Proofpoint-GUID: 4iY9OrKCU8OH8cKCTPCe6d5xiAVpZivz
-X-Proofpoint-ORIG-GUID: 4iY9OrKCU8OH8cKCTPCe6d5xiAVpZivz
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.293,Aquarius:18.0.1039,Hydra:6.0.680,FMLib:17.12.28.16
- definitions=2024-08-26_13,2024-08-26_01,2024-05-17_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 suspectscore=0
- priorityscore=1501 bulkscore=0 adultscore=0 mlxscore=0 clxscore=1015
- phishscore=0 mlxlogscore=999 spamscore=0 impostorscore=0
- lowpriorityscore=0 malwarescore=0 classifier=spam adjust=0 reason=mlx
- scancount=1 engine=8.19.0-2407110000 definitions=main-2408260140
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 
-On Thu, Aug 22, 2024 at 04:15:24PM -0700, Rob Clark wrote:
-> On Thu, Aug 22, 2024 at 1:34 PM Akhil P Oommen <quic_akhilpo@quicinc.com> wrote:
-> >
-> > On Tue, Aug 20, 2024 at 10:16:47AM -0700, Rob Clark wrote: > From: Rob Clark <robdclark@chromium.org>
-> > >
-> > > In the case of iova fault triggered devcore dumps, include additional
-> > > debug information based on what we think is the current page tables,
-> > > including the TTBR0 value (which should match what we have in
-> > > adreno_smmu_fault_info unless things have gone horribly wrong), and
-> > > the pagetable entries traversed in the process of resolving the
-> > > faulting iova.
-> > >
-> > > Signed-off-by: Rob Clark <robdclark@chromium.org>
-> > > ---
-> > >  drivers/gpu/drm/msm/adreno/adreno_gpu.c | 10 ++++++++++
-> > >  drivers/gpu/drm/msm/msm_gpu.c           |  9 +++++++++
-> > >  drivers/gpu/drm/msm/msm_gpu.h           |  8 ++++++++
-> > >  drivers/gpu/drm/msm/msm_iommu.c         | 22 ++++++++++++++++++++++
-> > >  drivers/gpu/drm/msm/msm_mmu.h           |  3 ++-
-> > >  5 files changed, 51 insertions(+), 1 deletion(-)
-> > >
-> > > diff --git a/drivers/gpu/drm/msm/adreno/adreno_gpu.c b/drivers/gpu/drm/msm/adreno/adreno_gpu.c
-> > > index 1c6626747b98..3848b5a64351 100644
-> > > --- a/drivers/gpu/drm/msm/adreno/adreno_gpu.c
-> > > +++ b/drivers/gpu/drm/msm/adreno/adreno_gpu.c
-> > > @@ -864,6 +864,16 @@ void adreno_show(struct msm_gpu *gpu, struct msm_gpu_state *state,
-> > >               drm_printf(p, "  - dir=%s\n", info->flags & IOMMU_FAULT_WRITE ? "WRITE" : "READ");
-> > >               drm_printf(p, "  - type=%s\n", info->type);
-> > >               drm_printf(p, "  - source=%s\n", info->block);
-> > > +
-> > > +             /* Information extracted from what we think are the current
-> > > +              * pgtables.  Hopefully the TTBR0 matches what we've extracted
-> > > +              * from the SMMU registers in smmu_info!
-> > > +              */
-> > > +             drm_puts(p, "pgtable-fault-info:\n");
-> > > +             drm_printf(p, "  - ttbr0: %.16llx\n", (u64)info->pgtbl_ttbr0);
-> >
-> > "0x" prefix? Otherwise, it is a bit confusing when the below one is
-> > decimal.
-> 
-> mixed feelings, the extra 0x is annoying when pasting into calc which
-> is a simple way to get binary decoding
-> 
-> OTOH none of this is machine decoded so I guess we could change it
+On Mon, 26 Aug 2024 16:24:53 +0000
+Michael Kelley <mhklinux@outlook.com> wrote:
 
-On second thought, I think it is fine as this is an address. Probably,
-it is helpful for the pte values below.
+> From: Petr Tesa=C5=99=C3=ADk <petr@tesarici.cz> Sent: Saturday, August 24=
+, 2024 1:06 PM
+> >=20
+> > On Fri, 23 Aug 2024 20:40:16 +0000
+> > Michael Kelley <mhklinux@outlook.com> wrote:
+> >  =20
+> > > From: Petr Tesa=C5=99=C3=ADk <petr@tesarici.cz> Sent: Thursday, Augus=
+t 22, 2024 11:45 PM
+> > >[...] =20
+> > > > > Discussion
+> > > > > =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+> > > > > * Since swiotlb isn't visible to device drivers, I've specifically
+> > > > > named the DMA attribute as MAY_BLOCK instead of MAY_THROTTLE or
+> > > > > something swiotlb specific. While this patch set consumes MAY_BLO=
+CK
+> > > > > only on the DMA direct path to do throttling in the swiotlb code,
+> > > > > there might be other uses in the future outside of CoCo VMs, or
+> > > > > perhaps on the IOMMU path. =20
+> > > >
+> > > > I once introduced a similar flag and called it MAY_SLEEP. I chose
+> > > > MAY_SLEEP, because there is already a might_sleep() annotation, but=
+ I
+> > > > don't have a strong opinion unless your semantics is supposed to be
+> > > > different from might_sleep(). If it is, then I strongly prefer
+> > > > MAY_BLOCK to prevent confusing the two. =20
+> > >
+> > > My intent is that the semantics are the same as might_sleep(). I
+> > > vacillated between MAY_SLEEP and MAY_BLOCK. The kernel seems
+> > > to treat "sleep" and "block" as equivalent, because blk-mq has
+> > > the BLK_MQ_F_BLOCKING flag, and SCSI has the
+> > > queuecommand_may_block flag that is translated to
+> > > BLK_MQ_F_BLOCKING. So I settled on MAY_BLOCK, but as you
+> > > point out, that's inconsistent with might_sleep(). Either way will
+> > > be inconsistent somewhere, and I don't have a preference. =20
+> >=20
+> > Fair enough. Let's stay with MAY_BLOCK then, so you don't have to
+> > change it everywhere.
+> >  =20
+> > >[...] =20
+> > > > > Open Topics
+> > > > > =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+> > > > > 1. swiotlb allocations from Xen and the IOMMU code don't make use
+> > > > > of throttling. This could be added if beneficial.
+> > > > >
+> > > > > 2. The throttling values are currently exposed and adjustable in
+> > > > > /sys/kernel/debug/swiotlb. Should any of this be moved so it is
+> > > > > visible even without CONFIG_DEBUG_FS? =20
+> > > >
+> > > > Yes. It should be possible to control the thresholds through
+> > > > sysctl. =20
+> > >
+> > > Good point.  I was thinking about creating /sys/kernel/swiotlb, but
+> > > sysctl is better. =20
+> >=20
+> > That still leaves the question where it should go.
+> >=20
+> > Under /proc/sys/kernel? Or should we make a /proc/sys/kernel/dma
+> > subdirectory to make room for more dma-related controls? =20
+>=20
+> I would be good with /proc/sys/kernel/swiotlb (or "dma"). There
+> are only two entries (high_throttle and low_throttle), but just
+> dumping everything directly in /proc/sys/kernel doesn't seem like
+> a good long-term approach.  Even though there are currently a lot
+> of direct entries in /proc/sys/kernel, that may be historical, and not
+> changeable due to backwards compatibility requirements.
 
-> 
-> > > +             drm_printf(p, "  - asid: %d\n", info->asid);
-> > > +             drm_printf(p, "  - ptes: %.16llx %.16llx %.16llx %.16llx\n",
-> > > +                        info->ptes[0], info->ptes[1], info->ptes[2], info->ptes[3]);
-> >
-> > Does crashdec decodes this?
-> 
-> No, it just passed thru for human eyeballs
-> 
-> crashdec _does_ have some logic to flag buffers that are "near" the
-> faulting iova to help identify if the fault is an underflow/overflow
-> (which has been, along with the pte trail, useful to debug some
-> issues)
+I think SWIOTLB is a bit too narrow. How many controls would we add
+under /proc/sys/kernel/swiotlb? The chances seem higher if we call it
+/proc/sys/kernel/dma/swiotlb_{low,high}_throttle, and it follows the
+paths in source code (which are subject to change any time, however).
+Anyway, I don't want to get into bikeshedding; I'm fine with whatever
+you send in the end. :-)
 
-Alright.
+BTW those entries directly under /proc/sys/kernel are not all
+historical. The io_uring_* controls were added just last year, see
+commit 76d3ccecfa18.
 
-Reviewed-by: Akhil P Oommen <quic_akhilpo@quicinc.com>
-
--Akhil.
-> 
-> BR,
-> -R
-> 
-> > -Akhil.
-> >
-> > >       }
-> > >
-> > >       drm_printf(p, "rbbm-status: 0x%08x\n", state->rbbm_status);
-> > > diff --git a/drivers/gpu/drm/msm/msm_gpu.c b/drivers/gpu/drm/msm/msm_gpu.c
-> > > index 3666b42b4ecd..bf2f8b2a7ccc 100644
-> > > --- a/drivers/gpu/drm/msm/msm_gpu.c
-> > > +++ b/drivers/gpu/drm/msm/msm_gpu.c
-> > > @@ -281,6 +281,15 @@ static void msm_gpu_crashstate_capture(struct msm_gpu *gpu,
-> > >       if (submit) {
-> > >               int i;
-> > >
-> > > +             if (state->fault_info.ttbr0) {
-> > > +                     struct msm_gpu_fault_info *info = &state->fault_info;
-> > > +                     struct msm_mmu *mmu = submit->aspace->mmu;
-> > > +
-> > > +                     msm_iommu_pagetable_params(mmu, &info->pgtbl_ttbr0,
-> > > +                                                &info->asid);
-> > > +                     msm_iommu_pagetable_walk(mmu, info->iova, info->ptes);
-> > > +             }
-> > > +
-> > >               state->bos = kcalloc(submit->nr_bos,
-> > >                       sizeof(struct msm_gpu_state_bo), GFP_KERNEL);
-> > >
-> > > diff --git a/drivers/gpu/drm/msm/msm_gpu.h b/drivers/gpu/drm/msm/msm_gpu.h
-> > > index 1f02bb9956be..82e838ba8c80 100644
-> > > --- a/drivers/gpu/drm/msm/msm_gpu.h
-> > > +++ b/drivers/gpu/drm/msm/msm_gpu.h
-> > > @@ -101,6 +101,14 @@ struct msm_gpu_fault_info {
-> > >       int flags;
-> > >       const char *type;
-> > >       const char *block;
-> > > +
-> > > +     /* Information about what we think/expect is the current SMMU state,
-> > > +      * for example expected_ttbr0 should match smmu_info.ttbr0 which
-> > > +      * was read back from SMMU registers.
-> > > +      */
-> > > +     phys_addr_t pgtbl_ttbr0;
-> > > +     u64 ptes[4];
-> > > +     int asid;
-> > >  };
-> > >
-> > >  /**
-> > > diff --git a/drivers/gpu/drm/msm/msm_iommu.c b/drivers/gpu/drm/msm/msm_iommu.c
-> > > index 2a94e82316f9..3e692818ba1f 100644
-> > > --- a/drivers/gpu/drm/msm/msm_iommu.c
-> > > +++ b/drivers/gpu/drm/msm/msm_iommu.c
-> > > @@ -195,6 +195,28 @@ struct iommu_domain_geometry *msm_iommu_get_geometry(struct msm_mmu *mmu)
-> > >       return &iommu->domain->geometry;
-> > >  }
-> > >
-> > > +int
-> > > +msm_iommu_pagetable_walk(struct msm_mmu *mmu, unsigned long iova, uint64_t ptes[4])
-> > > +{
-> > > +     struct msm_iommu_pagetable *pagetable;
-> > > +     struct arm_lpae_io_pgtable_walk_data wd = {};
-> > > +
-> > > +     if (mmu->type != MSM_MMU_IOMMU_PAGETABLE)
-> > > +             return -EINVAL;
-> > > +
-> > > +     pagetable = to_pagetable(mmu);
-> > > +
-> > > +     if (!pagetable->pgtbl_ops->pgtable_walk)
-> > > +             return -EINVAL;
-> > > +
-> > > +     pagetable->pgtbl_ops->pgtable_walk(pagetable->pgtbl_ops, iova, &wd);
-> > > +
-> > > +     for (int i = 0; i < ARRAY_SIZE(wd.ptes); i++)
-> > > +             ptes[i] = wd.ptes[i];
-> > > +
-> > > +     return 0;
-> > > +}
-> > > +
-> > >  static const struct msm_mmu_funcs pagetable_funcs = {
-> > >               .map = msm_iommu_pagetable_map,
-> > >               .unmap = msm_iommu_pagetable_unmap,
-> > > diff --git a/drivers/gpu/drm/msm/msm_mmu.h b/drivers/gpu/drm/msm/msm_mmu.h
-> > > index 88af4f490881..96e509bd96a6 100644
-> > > --- a/drivers/gpu/drm/msm/msm_mmu.h
-> > > +++ b/drivers/gpu/drm/msm/msm_mmu.h
-> > > @@ -53,7 +53,8 @@ static inline void msm_mmu_set_fault_handler(struct msm_mmu *mmu, void *arg,
-> > >  struct msm_mmu *msm_iommu_pagetable_create(struct msm_mmu *parent);
-> > >
-> > >  int msm_iommu_pagetable_params(struct msm_mmu *mmu, phys_addr_t *ttbr,
-> > > -             int *asid);
-> > > +                            int *asid);
-> > > +int msm_iommu_pagetable_walk(struct msm_mmu *mmu, unsigned long iova, uint64_t ptes[4]);
-> > >  struct iommu_domain_geometry *msm_iommu_get_geometry(struct msm_mmu *mmu);
-> > >
-> > >  #endif /* __MSM_MMU_H__ */
-> > > --
-> > > 2.46.0
-> > >
+Petr T
