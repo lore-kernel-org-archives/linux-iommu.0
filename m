@@ -1,144 +1,137 @@
-Received: from mail-qv1-f48.google.com (mail-qv1-f48.google.com [209.85.219.48])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 794C01BC07A
-	for <iommu@lists.linux.dev>; Tue, 27 Aug 2024 12:32:44 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.219.48
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 89A9319EED8;
+	Tue, 27 Aug 2024 12:47:21 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1724761966; cv=none; b=KThsYafwuBUZqfHeapVBDRUVwrOyMZfqcWkQaHGqm2RksitJVB3P8YUnvkO51dkyMz8MhTQqu4Eg48XKjwy5+QSt92eeW1grdHO0JDAlv14c2bJO3No3jFc1Ev93V6na3FDnPSMR0+KG4A45ZiSnzaXHlwgndnN1/XIAdpb1BOA=
+	t=1724762841; cv=none; b=K2azyzuLdb9rrbWO5gp/E3g1sh9D7Sm9KE9lix5rXa3j71gmC78l3OoQYstB/Y/BSxoPU1dUHBv8RnyJIkM6LC92MpM9wNe6pHvg/Ow/w23G6VBWjMMzxvUjyX/M85LJpd557lBqg76ngYHRzsfej9X2S5oprSpcCRl98gqKYc8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1724761966; c=relaxed/simple;
-	bh=jhywql0i1Igm4tZ6CC7w55Fwugmoo13oCgW+x0dMPQ8=;
+	s=arc-20240116; t=1724762841; c=relaxed/simple;
+	bh=0sd4Bxi4i+Qdbg9yXamzmuyf7Qb4bpTqEafzYbKvJsI=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=n95GA0QmwI/SwoRhY+ApPV3h9E+7l12sf3I3CIHCsISLtzIV9fSkLIKOxTubZZ/aWElF+Q6Z04swt3lGpyQ3qXgXGFj62Zfi5nYqTcu4X9XaabWpzKCdKmHJBIb/0oqv5zGxWEjIMIjlQ8YyuaQiK7lYCsZ4wrWKqJLSr+jl22c=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=i47DtE17; arc=none smtp.client-ip=209.85.219.48
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
+	 Content-Type:Content-Disposition:In-Reply-To; b=pmjNKAXMx7Cv/vv+7rAnYiWvdkpzBI9umNboqM1oHhLfU2w+oKNMrINSagRZRurR0MDoOz7U0rbWADTLn4eYWJAbH32FrDLV5VQErSfLQ2+/DFEBabeopbEuUiALz6V3QxKQ2eeiXGq0ZI/gzsAy//C4ji1ulFS7c7oWcOWlDwk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=gVkBjnY/; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="i47DtE17"
-Received: by mail-qv1-f48.google.com with SMTP id 6a1803df08f44-6bf90d52e79so30024486d6.3
-        for <iommu@lists.linux.dev>; Tue, 27 Aug 2024 05:32:44 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google; t=1724761963; x=1725366763; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=L5jbjcbxUPPj9zYNKoE0eIYQhFCqfcFcc1QbGEVtWHE=;
-        b=i47DtE17HUulYZuuB6U2Jkn7yuxDRxgmSKo0ghPgwtMiSM4vU/n/if64BXhZhXU1XL
-         4Smjgc5OaKxu68mERCHpS2ndkSCZQioOWFkx79t5XBAVaGmdfayhACH8v1bST1Gg1+/0
-         arztPg5Ti/i242CFn01YSKu0SOnKiWwxN4q8/gYHsJT4n6MafWG7y+TzE1NFD4Revjer
-         LUelxl1X61Q7OwZzpAnig8WiF/C4uqrEysSw/lZUcp+gAKT6oYqL7EXytaDMX7YJcp0Q
-         9VRf11Zl+1Py0rs57/xeZ+U+DGA6d03dxLJD1+yAb3usZZZUSuBSh923yNJ8zLWPhTBh
-         aBAQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1724761963; x=1725366763;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=L5jbjcbxUPPj9zYNKoE0eIYQhFCqfcFcc1QbGEVtWHE=;
-        b=jJs7GFxovcSbQMSryf5ju3EO1UNaWj9EryqpADrXmge9OINecElpymOL9zrAUntAtK
-         wASRpStJIPOJeRmskBjkvQglwM4dPBnVv1rDeD5ZZdAS8pi1UNWZGJuH1wsQrqy5rfle
-         VH4kn/PfAchJU8KPhPjEYvyOIHAg9C9gSn4imMjcHrYFPPb+fOB0ULCprAPzGtUD67vr
-         Bc51MUHtDjj9bLm7WIITptMYvJyr6bdtwo7K6DBJ5H2g0tRh+qGNHYG+erfPi75l1hvi
-         P5APdfMuK1ldtg2RxGDGyWl86geeSncs8URzxrojcyL67ZOnGsGClVLzVXvLxug/qTNt
-         YUtA==
-X-Forwarded-Encrypted: i=1; AJvYcCUbrBQadxInhM1bglBitjR+Gdlni6ST3x+FiO1nUITevKgIkzKmhQrITAUkyZBxYlTd1x8kbQ==@lists.linux.dev
-X-Gm-Message-State: AOJu0YzisIlzTEMUuixo+YqM4f0EYhVWc5V12xuwW0vEuIe0xJXSj/S1
-	usLjhiIN9S8VkYaToxgBdVHgfC112cOjtrPFJ/vCJACB2+0HkyTChzUgc/PfxwY=
-X-Google-Smtp-Source: AGHT+IFgABoyQ7opyAvWPQnFZTXKyke+4HJ1twIgh/+mRitM/qVkX72/Bi45aDM2XOpCwlcFx8pYwA==
-X-Received: by 2002:a05:6214:4381:b0:6c1:6a2e:afc6 with SMTP id 6a1803df08f44-6c16dc36d53mr159756336d6.15.1724761963298;
-        Tue, 27 Aug 2024 05:32:43 -0700 (PDT)
-Received: from ziepe.ca (hlfxns017vw-142-68-80-239.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.68.80.239])
-        by smtp.gmail.com with ESMTPSA id 6a1803df08f44-6c162dd1cfdsm55802226d6.129.2024.08.27.05.32.42
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 27 Aug 2024 05:32:42 -0700 (PDT)
-Received: from jgg by wakko with local (Exim 4.95)
-	(envelope-from <jgg@ziepe.ca>)
-	id 1sivNK-000dsU-Aq;
-	Tue, 27 Aug 2024 09:32:42 -0300
-Date: Tue, 27 Aug 2024 09:32:42 -0300
-From: Jason Gunthorpe <jgg@ziepe.ca>
-To: Alexey Kardashevskiy <aik@amd.com>
-Cc: kvm@vger.kernel.org, iommu@lists.linux.dev, linux-coco@lists.linux.dev,
-	linux-pci@vger.kernel.org,
-	Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
-	Alex Williamson <alex.williamson@redhat.com>,
-	Dan Williams <dan.j.williams@intel.com>,
-	pratikrajesh.sampat@amd.com, michael.day@amd.com,
-	david.kaplan@amd.com, dhaval.giani@amd.com,
-	Santosh Shukla <santosh.shukla@amd.com>,
-	Tom Lendacky <thomas.lendacky@amd.com>,
-	Michael Roth <michael.roth@amd.com>, Alexander Graf <agraf@suse.de>,
-	Nikunj A Dadhania <nikunj@amd.com>,
-	Vasant Hegde <vasant.hegde@amd.com>, Lukas Wunner <lukas@wunner.de>
-Subject: Re: [RFC PATCH 07/21] pci/tdisp: Introduce tsm module
-Message-ID: <20240827123242.GM3468552@ziepe.ca>
-References: <20240823132137.336874-1-aik@amd.com>
- <20240823132137.336874-8-aik@amd.com>
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="gVkBjnY/"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B4D95C4FF6C;
+	Tue, 27 Aug 2024 12:47:18 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1724762841;
+	bh=0sd4Bxi4i+Qdbg9yXamzmuyf7Qb4bpTqEafzYbKvJsI=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=gVkBjnY/oeu8AgEk02EVcnU5S8GN0oumlt+4m7TRZhdmSV8uPefA8DTHJlfh2hnII
+	 emruP8nvobs6vGPIlnumQlUxv5jeHtilssMFg/FcYpK3L34OdHb3GuNc6d8zMCiR1x
+	 ztHzMM6AZ2mU4DbkuyF+2ptpwhTamm1k5bgrPEIPppCoSmKdLkvn6BHEoRa7t1at3j
+	 JPa92QFnBlRTtlVcIE1l6C4xiCswLG2aGwC03TxyQjifuCaK79U1ECxrYE3BYPbpfR
+	 mxgCAm2jqAJ/V13Hprh6eH+M9CHP5BE5CWFeWoev1a6DW/mDftHvplqC5xPi46hQm7
+	 EyDKFB1KAiI4Q==
+Date: Tue, 27 Aug 2024 13:47:15 +0100
+From: Will Deacon <will@kernel.org>
+To: Bibek Kumar Patro <quic_bibekkum@quicinc.com>
+Cc: robdclark@gmail.com, robin.murphy@arm.com, joro@8bytes.org,
+	jgg@ziepe.ca, jsnitsel@redhat.com, robh@kernel.org,
+	krzysztof.kozlowski@linaro.org, quic_c_gdjako@quicinc.com,
+	dmitry.baryshkov@linaro.org, konrad.dybcio@linaro.org,
+	iommu@lists.linux.dev, linux-arm-msm@vger.kernel.org,
+	linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v14 5/6] iommu/arm-smmu: add ACTLR data and support for
+ SC7280
+Message-ID: <20240827124714.GB4772@willie-the-truck>
+References: <20240816174259.2056829-1-quic_bibekkum@quicinc.com>
+ <20240816174259.2056829-6-quic_bibekkum@quicinc.com>
+ <20240823155918.GD525@willie-the-truck>
+ <3ae75a75-1717-40b6-9149-bc3673d520d6@quicinc.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <20240823132137.336874-8-aik@amd.com>
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <3ae75a75-1717-40b6-9149-bc3673d520d6@quicinc.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 
-On Fri, Aug 23, 2024 at 11:21:21PM +1000, Alexey Kardashevskiy wrote:
-> The module responsibilities are:
-> 1. detect TEE support in a device and create nodes in the device's sysfs
-> entry;
-> 2. allow binding a PCI device to a VM for passing it through in a trusted
-> manner;
+On Mon, Aug 26, 2024 at 04:33:24PM +0530, Bibek Kumar Patro wrote:
+> 
+> 
+> On 8/23/2024 9:29 PM, Will Deacon wrote:
+> > On Fri, Aug 16, 2024 at 11:12:58PM +0530, Bibek Kumar Patro wrote:
+> > > Add ACTLR data table for SC7280 along with support for
+> > > same including SC7280 specific implementation operations.
+> > > 
+> > > Signed-off-by: Bibek Kumar Patro <quic_bibekkum@quicinc.com>
+> > > ---
+> > >   drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c | 58 +++++++++++++++++++++-
+> > >   1 file changed, 57 insertions(+), 1 deletion(-)
+> > > 
+> > > diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
+> > > index dc143b250704..a776c7906c76 100644
+> > > --- a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
+> > > +++ b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
+> > > @@ -31,6 +31,55 @@
+> > >   #define PREFETCH_MODERATE	(2 << PREFETCH_SHIFT)
+> > >   #define PREFETCH_DEEP		(3 << PREFETCH_SHIFT)
+> > > 
+> > > +static const struct actlr_config sc7280_apps_actlr_cfg[] = {
+> > > +	{ 0x0800, 0x04e0, PREFETCH_DEFAULT | CMTLB },
+> > > +	{ 0x0900, 0x0402, PREFETCH_SHALLOW | CPRE | CMTLB },
+> > > +	{ 0x0901, 0x0000, PREFETCH_SHALLOW | CPRE | CMTLB },
+> > > +	{ 0x0d01, 0x0000, PREFETCH_SHALLOW | CPRE | CMTLB },
+> > > +	{ 0x1181, 0x0420, PREFETCH_DEEP | CPRE | CMTLB },
+> > > +	{ 0x1182, 0x0420, PREFETCH_DEEP | CPRE | CMTLB },
+> > > +	{ 0x1183, 0x0420, PREFETCH_DEEP | CPRE | CMTLB },
+> > > +	{ 0x1184, 0x0420, PREFETCH_DEEP | CPRE | CMTLB },
+> > > +	{ 0x1185, 0x0420, PREFETCH_DEEP | CPRE | CMTLB },
+> > > +	{ 0x1186, 0x0420, PREFETCH_DEEP | CPRE | CMTLB },
+> > > +	{ 0x1187, 0x0420, PREFETCH_DEEP | CPRE | CMTLB },
+> > > +	{ 0x1188, 0x0420, PREFETCH_DEEP | CPRE | CMTLB },
+> > > +	{ 0x1189, 0x0420, PREFETCH_DEEP | CPRE | CMTLB },
+> > > +	{ 0x118b, 0x0420, PREFETCH_DEEP | CPRE | CMTLB },
+> > > +	{ 0x118c, 0x0420, PREFETCH_DEEP | CPRE | CMTLB },
+> > > +	{ 0x118d, 0x0420, PREFETCH_DEEP | CPRE | CMTLB },
+> > > +	{ 0x118e, 0x0420, PREFETCH_DEEP | CPRE | CMTLB },
+> > > +	{ 0x118f, 0x0420, PREFETCH_DEEP | CPRE | CMTLB },
+> > > +	{ 0x2000, 0x0020, PREFETCH_DEFAULT | CMTLB },
+> > > +	{ 0x2040, 0x0000, PREFETCH_DEFAULT | CMTLB },
+> > > +	{ 0x2062, 0x0000, PREFETCH_DEFAULT | CMTLB },
+> > > +	{ 0x2080, 0x0020, PREFETCH_DEFAULT | CMTLB },
+> > > +	{ 0x20c0, 0x0020, PREFETCH_DEFAULT | CMTLB },
+> > > +	{ 0x2100, 0x0020, PREFETCH_DEFAULT | CMTLB },
+> > > +	{ 0x2140, 0x0000, PREFETCH_DEFAULT | CMTLB },
+> > > +	{ 0x2180, 0x0020, PREFETCH_SHALLOW | CPRE | CMTLB },
+> > > +	{ 0x2181, 0x0004, PREFETCH_SHALLOW | CPRE | CMTLB },
+> > > +	{ 0x2183, 0x0000, PREFETCH_SHALLOW | CPRE | CMTLB },
+> > > +	{ 0x2184, 0x0020, PREFETCH_SHALLOW | CPRE | CMTLB },
+> > > +	{ 0x2187, 0x0000, PREFETCH_SHALLOW | CPRE | CMTLB },
+> > > +};
+> > > +
+> > > +static const struct actlr_config sc7280_gfx_actlr_cfg[] = {
+> > > +	{ 0x0000, 0x07ff, PREFETCH_DEEP | CPRE | CMTLB },
+> > > +};
+> > 
+> > It's Will "stuck record" Deacon here again to say that I don't think
+> > this data belongs in the driver.
+> > 
+> 
+> Hi Will,
+> 
+> It will be difficult to reach a consensus here, with Robin and the DT folks
+> okay to keep it in the driver, while you believe it doesn't belong there.
+> 
+> Robin, Rob, could you please share your thoughts on concluding the placement
+> of this prefetch data?
+> 
+> As discussed earlier [1], the prefetch value for each client doesn’t define
+> the hardware topology and is implementation-defined register writes used by
+> the software driver.
 
-Binding devices to VMs and managing their lifecycle is the purvue of
-VFIO and iommufd, it should not be exposed via weird sysfs calls like
-this. You can't build the right security model without being inside
-the VFIO context.
+It does reflect the hardware topology though, doesn't it? Those magic hex
+masks above refer to stream ids, so the table is hard-coding the prefetch
+values for particular matches. If I run on a different SoC configuration
+with the same table, then the prefetch settings will be applied to the
+wrong devices. How is that not hardware topology?
 
-As I said in the other email, it seems like the PSP and the iommu
-driver need to coordinate to ensure the two DTEs are consistent, and
-solve the other sequencing problems you seem to have.
-
-I'm not convinced this should be in some side module - it seems like
-this is possibly more logically integrated as part of the iommu..
-
-> +static ssize_t tsm_dev_connect_store(struct device *dev, struct device_attribute *attr,
-> +				     const char *buf, size_t count)
-> +{
-> +	struct tsm_dev *tdev = tsm_dev_get(dev);
-> +	unsigned long val;
-> +	ssize_t ret = -EIO;
-> +
-> +	if (kstrtoul(buf, 0, &val) < 0)
-> +		ret = -EINVAL;
-> +	else if (val && !tdev->connected)
-> +		ret = tsm_dev_connect(tdev, tsm.private_data, val);
-> +	else if (!val && tdev->connected)
-> +		ret = tsm_dev_reclaim(tdev, tsm.private_data);
-> +
-> +	if (!ret)
-> +		ret = count;
-> +
-> +	tsm_dev_put(tdev);
-> +
-> +	return ret;
-> +}
-> +
-> +static ssize_t tsm_dev_connect_show(struct device *dev, struct device_attribute *attr, char *buf)
-> +{
-> +	struct tsm_dev *tdev = tsm_dev_get(dev);
-> +	ssize_t ret = sysfs_emit(buf, "%u\n", tdev->connected);
-> +
-> +	tsm_dev_put(tdev);
-> +	return ret;
-> +}
-> +
-> +static DEVICE_ATTR_RW(tsm_dev_connect);
-
-Please do a much better job explaining the uAPIS you are trying to
-build in all the commit messages and how you expect them to be used.
-
-Picking this stuff out of a 6k loc series is a bit tricky
-
-Jason
+WIll
