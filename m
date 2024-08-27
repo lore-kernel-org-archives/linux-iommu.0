@@ -1,212 +1,90 @@
-Received: from mail-il1-f180.google.com (mail-il1-f180.google.com [209.85.166.180])
+Received: from mail-yb1-f201.google.com (mail-yb1-f201.google.com [209.85.219.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A1CD41D460D
-	for <iommu@lists.linux.dev>; Tue, 27 Aug 2024 18:17:35 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.166.180
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4D7862E62B
+	for <iommu@lists.linux.dev>; Tue, 27 Aug 2024 19:31:18 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.219.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1724782657; cv=none; b=Qg20zfk3Apji2GwOVJhOo0INLTzg/OJeF8gMWct91rdlZJAmsUyIPgE2Kgq+/0a4rWjDSMXw8Lm2pO5dQyJ6SeKdvQDZRbust1/z52+FyZysVM4DwzMLSb7jIwVtLrXM2sn+9f77sP2gwjvotaa4ae1k/kBybPQtph16nk+RBd8=
+	t=1724787079; cv=none; b=If3fXZswnODLYGU6UjQBmUkrGXcA4qP3n9RQVDwdzor4/sH1R+sgcwtei135Ce/8KHA7aIrYJE/qJ3Ce95XUkZXv8QLHc66IaBCUll9peDioEXVx8IVcWmOD8+Z1AqTXFBA2fJFJFS5FOL4ueyf52zFNFKuJhukGJG4KMAgkMTI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1724782657; c=relaxed/simple;
-	bh=Z9rdbPQfURPCIg572NnKyoFcQ2uLzoi++cMrYqDlAP4=;
-	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=UeHbrH5SAMi0dsGRN5zUSRNzQpRyRgXQVykhrgJushDa2B/NPpVunxmGHzMnlbpS6np0rGZpiQSMHEgo9xQ8hOl+pqc1/AlZDIusp4N6Q5I17diYz9eC07f39EsxJ7ZTDAlMwulmnf9xyQ0T5InUGpM1308aAWJMLWeUAHTwfAY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=MR8nD7hr; arc=none smtp.client-ip=209.85.166.180
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1724787079; c=relaxed/simple;
+	bh=FIeZRSqkSttQUUajSE2QJyrza/xpkARuY1BzlNk1wXw=;
+	h=Date:Mime-Version:Message-ID:Subject:From:To:Cc:Content-Type; b=gI+vzP7WD0e99yiWaT0nqW+o14xXGpkBVkztAf/Ir7qiuTpmpgIsFlQrke9U0AuuvhqLPuTCi+CpPXZ/QTvxEjJ2xGt6HapFNosJDb7CgLAfr2+2+vjW69sw9PZ9/9vh2O9KRIvpJz/Pz3VsxLdZ7w8ExOyPEmxKiEs8ymbkf4c=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=flex--praan.bounces.google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=bqVpVTpq; arc=none smtp.client-ip=209.85.219.201
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=flex--praan.bounces.google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="MR8nD7hr"
-Received: by mail-il1-f180.google.com with SMTP id e9e14a558f8ab-39d3636e955so18645085ab.3
-        for <iommu@lists.linux.dev>; Tue, 27 Aug 2024 11:17:35 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="bqVpVTpq"
+Received: by mail-yb1-f201.google.com with SMTP id 3f1490d57ef6-e166ac5178eso11252113276.0
+        for <iommu@lists.linux.dev>; Tue, 27 Aug 2024 12:31:18 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1724782654; x=1725387454; darn=lists.linux.dev;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=Cgk9ZwZd91vOVt90fIiETgBR9DeXKbUMnWSmPau0W5M=;
-        b=MR8nD7hrXnvnQChTYH7ztEnfcDOD8yIyW4mlYm1rB9vwuESRRRIc0rDlQm67HIH/Nj
-         3h6YyUlijNq2vNIsXkgiW1oiPpJPb3+bdoqJ2x3GTpJUaTfriCLiApLuZuOAeBjiLbz/
-         G4O2zePOr29eMncjtME33liQ7qnlhVfVuMun/h697geU5fr3pCdobVuSQF9BMY39zIWS
-         gZgn6G+9sZ0jy53/l7FcdYiACWv9bYiCztXlPt4QCsdsNtXgOFOSTcVREdYZC8QeIt+2
-         6i+mziBuHaNZX4Lmqy8P8QOdR/8biI+U6RohDvo4InFSoki4LQPjIwQq+j3Fw/U0CQZZ
-         X+TA==
+        d=google.com; s=20230601; t=1724787077; x=1725391877; darn=lists.linux.dev;
+        h=cc:to:from:subject:message-id:mime-version:date:from:to:cc:subject
+         :date:message-id:reply-to;
+        bh=H9ngOCnzfaM6DU7nIOmke0NnjZ/DtnyxjbmtBD/BKIk=;
+        b=bqVpVTpqySXv6LrzpeJMEqYdvj2BvPYTXQM/o1nCZDSnIfBfs3qiagJlinCCxipUYB
+         tUy4uljatg0gGUHLbBn5Aq6+GOfeE2/pgwPxT/fEckUkb8vKwkouuLvlMn1HaTUO+n+k
+         NnV/Gg0ct8Ut6vy+b2tDC2WWAFqGsaQP0Sqvw43NkXicd4wkAS5Zg8ujCNRFSD9YohSq
+         3sgN5AJKqEb1gkxVmwApkaqx7a3dVu/uBBTaEyZnD04mXqU07khKTyDf7oWDGz0QbMxZ
+         i7/CWQ6NVFBWII6Js2Bjhm6drL6pmTt+2nm0ZT6fSr9MFHF5lvmGhecTFV7efNnfAsa/
+         ZMiw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1724782654; x=1725387454;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=Cgk9ZwZd91vOVt90fIiETgBR9DeXKbUMnWSmPau0W5M=;
-        b=NxkuxOIUYCRKX4OVlckKdYE5OztrTf6MVKsmFmwLfTXMtaEiXYyaYV1K3SwFo05hqp
-         ayVEYd98rBghcxAE10aftv99Bc6owFOBuirTGx7ueFtrk/bi2yc9yAEwJIsPfnoM+wwv
-         UkbzXGlI9PTGngmvbXDLN8gvgVXIlDEO6BcBC70V5engaOXLW11xraX4cCrjjTuOtIFt
-         0ebPdXNfsVdFiwvo8G6Gr0g4fdqBePQ1fTvbuczrbmTeSHWZVUYafH3DKjAy+L4r45Zv
-         P9f3nwuXTT6dVeMzNH/OriyAPH4eo9sQs0HRRjdrvvIAqmfsL2Q9D3CqqK2s4fQ7q6B4
-         L86g==
-X-Gm-Message-State: AOJu0Yz19T3S/XF85nE4QmZcZnatYlQkI15/E/jUqKVYF5np0s+EfKsO
-	PNqYu/m0A8TZLIyNRUNO6lqElq7T0tzATw/3nuh6VxGaq6yuBjlRYLw4Jg==
-X-Google-Smtp-Source: AGHT+IGAgUs1zObwyhF7fTbdtha65n0BhLE2VwyP+bd4hlIhZyKR5Y1ftLH0i1qZ8R2IN6fgpq/FGA==
-X-Received: by 2002:a05:6e02:1d9b:b0:397:351b:2c0c with SMTP id e9e14a558f8ab-39e3c9c06dfmr170767125ab.17.1724782653624;
-        Tue, 27 Aug 2024 11:17:33 -0700 (PDT)
-Received: from localhost ([2a00:79e1:2e00:1301:12e9:d196:a1e9:ab67])
-        by smtp.gmail.com with ESMTPSA id 41be03b00d2f7-7cd9ad6e8e9sm8321211a12.86.2024.08.27.11.17.32
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 27 Aug 2024 11:17:32 -0700 (PDT)
-From: Rob Clark <robdclark@gmail.com>
-To: iommu@lists.linux.dev
-Cc: Will Deacon <will@kernel.org>,
-	Robin Murphy <robin.murphy@arm.com>,
-	Rob Clark <robdclark@chromium.org>,
-	Rob Clark <robdclark@gmail.com>,
-	Sean Paul <sean@poorly.run>,
-	Konrad Dybcio <konrad.dybcio@linaro.org>,
-	Abhinav Kumar <quic_abhinavk@quicinc.com>,
-	Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
-	Marijn Suijten <marijn.suijten@somainline.org>,
-	David Airlie <airlied@gmail.com>,
-	Daniel Vetter <daniel@ffwll.ch>,
-	linux-arm-msm@vger.kernel.org (open list:DRM DRIVER for Qualcomm Adreno GPUs),
-	dri-devel@lists.freedesktop.org (open list:DRM DRIVER for Qualcomm Adreno GPUs),
-	freedreno@lists.freedesktop.org (open list:DRM DRIVER for Qualcomm Adreno GPUs),
-	linux-kernel@vger.kernel.org (open list)
-Subject: [PATCH v9 4/4] drm/msm: Extend gpu devcore dumps with pgtbl info
-Date: Tue, 27 Aug 2024 11:17:12 -0700
-Message-ID: <20240827181717.187245-5-robdclark@gmail.com>
-X-Mailer: git-send-email 2.46.0
-In-Reply-To: <20240827181717.187245-1-robdclark@gmail.com>
-References: <20240827181717.187245-1-robdclark@gmail.com>
+        d=1e100.net; s=20230601; t=1724787077; x=1725391877;
+        h=cc:to:from:subject:message-id:mime-version:date:x-gm-message-state
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=H9ngOCnzfaM6DU7nIOmke0NnjZ/DtnyxjbmtBD/BKIk=;
+        b=b4yzyYyWmfb7mvzHQyrPgkkcNBsSoaUWiAdc8IF/sDfasYJ1/2LDTu6qZACbNjxKDA
+         WFl1Nu2JjY+DR+Ss1RzaVoScm8jGpwI13nMpMFMEXfxDbWg5h4KUWwNIpQ9ekRplQ/eK
+         SNEv/k4Ln/tdoMKIrcvhRdKU5ADXpBlcezd6j9K2XjWe19H4L/w/KkwZgbRB5K7xA0xj
+         rUxLGLUhpuxfnDBGD9kZRa92f92Fcki0dOXJfXvoOFDKjmEXYLojMu9qae7FQ4x0+E7P
+         Vefew6TMXRRDey1sxQbqyTYsd3nz0GfUAw38Y2iOGRab+wgKQGcJ5tTEO4YouD4A54Oe
+         jTlQ==
+X-Forwarded-Encrypted: i=1; AJvYcCURDZnB1IGEhaVUYwetuTv4/1cMb1xx55+HP2OCrbYsZy22jImoqqZosBZTEDTph3YhHtiK4w==@lists.linux.dev
+X-Gm-Message-State: AOJu0YxgMzZu4LStbwIYmuAIzBfhhJMxUT9XCJgvNDCSHEPLuLAm9RFp
+	jLGGS7qzFP67/p8SD4qf9jDu6ePicUlfyuZq1ujl6eF+EbUQ6b0DBh2mUIg5fUH4JnQbJPqRKg=
+	=
+X-Google-Smtp-Source: AGHT+IFAUxqs70iiVDz2AcpzZ8TJAAstVNkkSUp2U2HwBaoxzDOaXuQylmJroyx6WuKmZ3It1GbIlxstsw==
+X-Received: from praan.c.googlers.com ([fda3:e722:ac3:cc00:4f:4b78:c0a8:3e89])
+ (user=praan job=sendgmr) by 2002:a25:a123:0:b0:e11:ade7:ba56 with SMTP id
+ 3f1490d57ef6-e17a86451a3mr215330276.7.1724787077142; Tue, 27 Aug 2024
+ 12:31:17 -0700 (PDT)
+Date: Tue, 27 Aug 2024 19:30:24 +0000
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Mime-Version: 1.0
+X-Mailer: git-send-email 2.46.0.295.g3b9ea8a38a-goog
+Message-ID: <20240827193026.3993039-1-praan@google.com>
+Subject: [PATCH v2 0/2] iommu/arm-smmu-v3: Parse out event records
+From: Pranjal Shrivastava <praan@google.com>
+To: Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>, 
+	Robin Murphy <robin.murphy@arm.com>
+Cc: Mostafa Saleh <smostafa@google.com>, iommu@lists.linux.dev, 
+	Pranjal Shrivastava <praan@google.com>
+Content-Type: text/plain; charset="UTF-8"
 
-From: Rob Clark <robdclark@chromium.org>
+Enhance the arm-smmu-v3 driver to parse out useful information from
+event records into a structure for better event handling & logging.
 
-In the case of iova fault triggered devcore dumps, include additional
-debug information based on what we think is the current page tables,
-including the TTBR0 value (which should match what we have in
-adreno_smmu_fault_info unless things have gone horribly wrong), and
-the pagetable entries traversed in the process of resolving the
-faulting iova.
+v2
+ * Addressed review comments
+ * Introduced `struct arm_smmu_event` to hold relevant event fields
+ * Broke out helper functions to populate & dump event info
+ * Modified the event handler routines to use `struct arm_smmu_event`
 
-Signed-off-by: Rob Clark <robdclark@chromium.org>
----
- drivers/gpu/drm/msm/adreno/adreno_gpu.c | 10 ++++++++++
- drivers/gpu/drm/msm/msm_gpu.c           |  9 +++++++++
- drivers/gpu/drm/msm/msm_gpu.h           |  8 ++++++++
- drivers/gpu/drm/msm/msm_iommu.c         | 22 ++++++++++++++++++++++
- drivers/gpu/drm/msm/msm_mmu.h           |  3 ++-
- 5 files changed, 51 insertions(+), 1 deletion(-)
+v1
+ https://lore.kernel.org/linux-iommu/20240816211722.1404070-1-praan@google.com/
 
-diff --git a/drivers/gpu/drm/msm/adreno/adreno_gpu.c b/drivers/gpu/drm/msm/adreno/adreno_gpu.c
-index 1c6626747b98..3848b5a64351 100644
---- a/drivers/gpu/drm/msm/adreno/adreno_gpu.c
-+++ b/drivers/gpu/drm/msm/adreno/adreno_gpu.c
-@@ -864,6 +864,16 @@ void adreno_show(struct msm_gpu *gpu, struct msm_gpu_state *state,
- 		drm_printf(p, "  - dir=%s\n", info->flags & IOMMU_FAULT_WRITE ? "WRITE" : "READ");
- 		drm_printf(p, "  - type=%s\n", info->type);
- 		drm_printf(p, "  - source=%s\n", info->block);
-+
-+		/* Information extracted from what we think are the current
-+		 * pgtables.  Hopefully the TTBR0 matches what we've extracted
-+		 * from the SMMU registers in smmu_info!
-+		 */
-+		drm_puts(p, "pgtable-fault-info:\n");
-+		drm_printf(p, "  - ttbr0: %.16llx\n", (u64)info->pgtbl_ttbr0);
-+		drm_printf(p, "  - asid: %d\n", info->asid);
-+		drm_printf(p, "  - ptes: %.16llx %.16llx %.16llx %.16llx\n",
-+			   info->ptes[0], info->ptes[1], info->ptes[2], info->ptes[3]);
- 	}
- 
- 	drm_printf(p, "rbbm-status: 0x%08x\n", state->rbbm_status);
-diff --git a/drivers/gpu/drm/msm/msm_gpu.c b/drivers/gpu/drm/msm/msm_gpu.c
-index 3666b42b4ecd..bf2f8b2a7ccc 100644
---- a/drivers/gpu/drm/msm/msm_gpu.c
-+++ b/drivers/gpu/drm/msm/msm_gpu.c
-@@ -281,6 +281,15 @@ static void msm_gpu_crashstate_capture(struct msm_gpu *gpu,
- 	if (submit) {
- 		int i;
- 
-+		if (state->fault_info.ttbr0) {
-+			struct msm_gpu_fault_info *info = &state->fault_info;
-+			struct msm_mmu *mmu = submit->aspace->mmu;
-+
-+			msm_iommu_pagetable_params(mmu, &info->pgtbl_ttbr0,
-+						   &info->asid);
-+			msm_iommu_pagetable_walk(mmu, info->iova, info->ptes);
-+		}
-+
- 		state->bos = kcalloc(submit->nr_bos,
- 			sizeof(struct msm_gpu_state_bo), GFP_KERNEL);
- 
-diff --git a/drivers/gpu/drm/msm/msm_gpu.h b/drivers/gpu/drm/msm/msm_gpu.h
-index 1f02bb9956be..82e838ba8c80 100644
---- a/drivers/gpu/drm/msm/msm_gpu.h
-+++ b/drivers/gpu/drm/msm/msm_gpu.h
-@@ -101,6 +101,14 @@ struct msm_gpu_fault_info {
- 	int flags;
- 	const char *type;
- 	const char *block;
-+
-+	/* Information about what we think/expect is the current SMMU state,
-+	 * for example expected_ttbr0 should match smmu_info.ttbr0 which
-+	 * was read back from SMMU registers.
-+	 */
-+	phys_addr_t pgtbl_ttbr0;
-+	u64 ptes[4];
-+	int asid;
- };
- 
- /**
-diff --git a/drivers/gpu/drm/msm/msm_iommu.c b/drivers/gpu/drm/msm/msm_iommu.c
-index 2a94e82316f9..3e692818ba1f 100644
---- a/drivers/gpu/drm/msm/msm_iommu.c
-+++ b/drivers/gpu/drm/msm/msm_iommu.c
-@@ -195,6 +195,28 @@ struct iommu_domain_geometry *msm_iommu_get_geometry(struct msm_mmu *mmu)
- 	return &iommu->domain->geometry;
- }
- 
-+int
-+msm_iommu_pagetable_walk(struct msm_mmu *mmu, unsigned long iova, uint64_t ptes[4])
-+{
-+	struct msm_iommu_pagetable *pagetable;
-+	struct arm_lpae_io_pgtable_walk_data wd = {};
-+
-+	if (mmu->type != MSM_MMU_IOMMU_PAGETABLE)
-+		return -EINVAL;
-+
-+	pagetable = to_pagetable(mmu);
-+
-+	if (!pagetable->pgtbl_ops->pgtable_walk)
-+		return -EINVAL;
-+
-+	pagetable->pgtbl_ops->pgtable_walk(pagetable->pgtbl_ops, iova, &wd);
-+
-+	for (int i = 0; i < ARRAY_SIZE(wd.ptes); i++)
-+		ptes[i] = wd.ptes[i];
-+
-+	return 0;
-+}
-+
- static const struct msm_mmu_funcs pagetable_funcs = {
- 		.map = msm_iommu_pagetable_map,
- 		.unmap = msm_iommu_pagetable_unmap,
-diff --git a/drivers/gpu/drm/msm/msm_mmu.h b/drivers/gpu/drm/msm/msm_mmu.h
-index 88af4f490881..96e509bd96a6 100644
---- a/drivers/gpu/drm/msm/msm_mmu.h
-+++ b/drivers/gpu/drm/msm/msm_mmu.h
-@@ -53,7 +53,8 @@ static inline void msm_mmu_set_fault_handler(struct msm_mmu *mmu, void *arg,
- struct msm_mmu *msm_iommu_pagetable_create(struct msm_mmu *parent);
- 
- int msm_iommu_pagetable_params(struct msm_mmu *mmu, phys_addr_t *ttbr,
--		int *asid);
-+			       int *asid);
-+int msm_iommu_pagetable_walk(struct msm_mmu *mmu, unsigned long iova, uint64_t ptes[4]);
- struct iommu_domain_geometry *msm_iommu_get_geometry(struct msm_mmu *mmu);
- 
- #endif /* __MSM_MMU_H__ */
+Pranjal Shrivastava (2):
+  iommu/arm-smmu-v3: Print better events records
+  iommu/arm-smmu-v3: Adopt arm_smmu_event in handlers
+
+ drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 165 ++++++++++++++++----
+ drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h |  27 ++++
+ 2 files changed, 162 insertions(+), 30 deletions(-)
+
 -- 
-2.46.0
+2.46.0.295.g3b9ea8a38a-goog
 
