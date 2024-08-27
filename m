@@ -1,48 +1,45 @@
-Received: from mail.8bytes.org (mail.8bytes.org [85.214.250.239])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id EE3E6142E7C
-	for <iommu@lists.linux.dev>; Tue, 27 Aug 2024 07:07:59 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=85.214.250.239
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1724742482; cv=none; b=K3ZdpH6i/dZJYQ3oNw5VcR4PWCtVCaqa//X+eLkr/1LZL5YcdvqPADh0oDerBIj+DypbziD0qfg8wIxw4Tw70apwQdBECNyJ/U12gZFqPUQxqf+lQHwHHPxttCVRxLxbaVlZDCfov6GoiH3IKtalQlBdrsCIu12/4pGOjrpR4Qw=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1724742482; c=relaxed/simple;
-	bh=v3oMDBXISh7mOqH4SIKSXdEp5TdADu27D9kqCT3a+yg=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=sCrJ7UT/zTYAgWAckY5tgFWbym+fGRyGaxFLST9xeibuJZwQhtvJjYofyIyTFEe7KRFUHOCDU0JdNjn4AVRxYfsF6uh6ZeYtKZT2BzLNT4CSGuMSUefGZQjjmQ+zIyXgLLxGXzn2gV2YfoeCmkJUyfUJJPZH59WW1Blylq8mhfc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=8bytes.org; spf=pass smtp.mailfrom=8bytes.org; dkim=pass (2048-bit key) header.d=8bytes.org header.i=@8bytes.org header.b=2FQcnv+v; arc=none smtp.client-ip=85.214.250.239
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=8bytes.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=8bytes.org
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=8bytes.org header.i=@8bytes.org header.b="2FQcnv+v"
-Received: from 8bytes.org (pd9fe9dd8.dip0.t-ipconnect.de [217.254.157.216])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange ECDHE (P-256) server-signature RSA-PSS (2048 bits) server-digest SHA256)
+Received: from verein.lst.de (verein.lst.de [213.95.11.211])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.8bytes.org (Postfix) with ESMTPSA id A85CB2842E6;
-	Tue, 27 Aug 2024 09:07:58 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=8bytes.org;
-	s=default; t=1724742478;
-	bh=v3oMDBXISh7mOqH4SIKSXdEp5TdADu27D9kqCT3a+yg=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=2FQcnv+vR+F+r2tu2zzJ/FaLSxMX8Wrtm3XL2y1wAGjMG8UTNu2seNZBkulvBY2yL
-	 4xcvNjWUpk0D3fark/ti4n7SW7hc5YUtifl2pnLxWjtJuo2o/tP8i5zPLaF4iNV4H9
-	 kAb9HI+g28PuA/vGNf79jYK+2CVaSEcyCK5piZUOUQ7PfBYNcp8cxorew2YYASzO9h
-	 zLDG8XZ2pt3ugMpJMAAqeeJeC4g9qZs+DCY599ENEoNj6VxAzKQEtwVTStJzPyDeoc
-	 IGOFASzwVoJE4Bs858UEGdketXr02agbnltPyF3IqJXJFBEpNpo9n32g9i7VEQxnB6
-	 RBxcOzTwb8KVA==
-Date: Tue, 27 Aug 2024 09:07:57 +0200
-From: Joerg Roedel <joro@8bytes.org>
-To: Jerry Snitselaar <jsnitsel@redhat.com>
-Cc: Lu Baolu <baolu.lu@linux.intel.com>, Will Deacon <will@kernel.org>,
-	Robin Murphy <robin.murphy@arm.com>,
-	Alex Williamson <alex.williamson@redhat.com>,
-	Jason Gunthorpe <jgg@ziepe.ca>, Kevin Tian <kevin.tian@intel.com>,
-	iommu@lists.linux.dev, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 1/1] iommu/vt-d: Fix incorrect domain ID in context flush
- helper
-Message-ID: <Zs17TSaW-GW7DYj4@8bytes.org>
-References: <20240815124857.70038-1-baolu.lu@linux.intel.com>
- <2h2gyzr3anhcpyiorkrjp3o4cdg7sg2rmrvgzmkxopabdsr3ph@jlhq77xjtcdf>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5E32D1547C5;
+	Tue, 27 Aug 2024 07:14:39 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=213.95.11.211
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1724742881; cv=none; b=OFcAQp/IMnG0kiRrmhVcxn25nGQ6r9DRuHq+mHkZYHNSvScXKMNjoLQ60QBTF14mV6vx+gsWVTGVqxNgAgFuXaPevZyfrfNiisOlwIDK06GInahLtgv3yPEvI8uN0ItMlf6iY3l6LPl7XJBFvufosvymreZnm4l0I7MVcgmwCo4=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1724742881; c=relaxed/simple;
+	bh=nhjxhmNHLo5IoXdK9az/5+6rhAZctBlOH954/my4wZo=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=ovUSGxB/zYGmO4DVY/+uEpVxoTrJKfz+MX4TjKxkLN2dw4utI7alDJKJ/Osg1/ws/rE99Sf1JYRUwEAkCOiQaOheb5HmcQEBhgRmFIC5I7f8EMYtbo7OGScmFDzSSAfWNstvldmiDYosTnJnY4UTyl/zk5N8jp/TxcP6VKL/kwU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=lst.de; spf=pass smtp.mailfrom=lst.de; arc=none smtp.client-ip=213.95.11.211
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=lst.de
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=lst.de
+Received: by verein.lst.de (Postfix, from userid 2407)
+	id 6526A227AAA; Tue, 27 Aug 2024 09:14:28 +0200 (CEST)
+Date: Tue, 27 Aug 2024 09:14:28 +0200
+From: Christoph Hellwig <hch@lst.de>
+To: Michael Kelley <mhklinux@outlook.com>
+Cc: Christoph Hellwig <hch@lst.de>, "kbusch@kernel.org" <kbusch@kernel.org>,
+	"axboe@kernel.dk" <axboe@kernel.dk>,
+	"sagi@grimberg.me" <sagi@grimberg.me>,
+	"James.Bottomley@HansenPartnership.com" <James.Bottomley@HansenPartnership.com>,
+	"martin.petersen@oracle.com" <martin.petersen@oracle.com>,
+	"kys@microsoft.com" <kys@microsoft.com>,
+	"haiyangz@microsoft.com" <haiyangz@microsoft.com>,
+	"wei.liu@kernel.org" <wei.liu@kernel.org>,
+	"decui@microsoft.com" <decui@microsoft.com>,
+	"robin.murphy@arm.com" <robin.murphy@arm.com>,
+	"m.szyprowski@samsung.com" <m.szyprowski@samsung.com>,
+	"petr@tesarici.cz" <petr@tesarici.cz>,
+	"iommu@lists.linux.dev" <iommu@lists.linux.dev>,
+	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+	"linux-nvme@lists.infradead.org" <linux-nvme@lists.infradead.org>,
+	"linux-scsi@vger.kernel.org" <linux-scsi@vger.kernel.org>,
+	"linux-hyperv@vger.kernel.org" <linux-hyperv@vger.kernel.org>,
+	"linux-coco@lists.linux.dev" <linux-coco@lists.linux.dev>
+Subject: Re: [RFC 0/7] Introduce swiotlb throttling
+Message-ID: <20240827071428.GA12797@lst.de>
+References: <20240822183718.1234-1-mhklinux@outlook.com> <20240824081618.GB8527@lst.de> <SN6PR02MB415753359387FBC8977A9598D48B2@SN6PR02MB4157.namprd02.prod.outlook.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -51,9 +48,48 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <2h2gyzr3anhcpyiorkrjp3o4cdg7sg2rmrvgzmkxopabdsr3ph@jlhq77xjtcdf>
+In-Reply-To: <SN6PR02MB415753359387FBC8977A9598D48B2@SN6PR02MB4157.namprd02.prod.outlook.com>
+User-Agent: Mutt/1.5.17 (2007-11-01)
 
-On Mon, Aug 26, 2024 at 09:15:06AM -0700, Jerry Snitselaar wrote:
-> Can this go into a fixes pr for 6.11?
+On Mon, Aug 26, 2024 at 03:27:30PM +0000, Michael Kelley wrote:
+> OK, this makes sense to me. The DMA_ATTR_* symbols are currently
+> defined as just values that are not part of an enum or any other higher
+> level abstraction, and the "attrs" parameter to the dma_* functions is
+> just "unsigned long". Are you thinking that the separate namespace is
+> based only on the symbolic name (i.e., DMA_MAP_* vs DMA_ATTR_*),
+> with the values being disjoint? That seems straightforward to me.
 
-It is already queued for 6.11, will send the PR in the next days.
+Yes. Although initially I'd just keep ATTR for the allocation and then
+maybe do a scripted run to convert it.
+
+> Changing the "attrs" parameter to an enum is a much bigger change ....
+
+I don't think an enum makes much sense as we have bits defined.  A
+__bitwise type would be nice, but not required.
+
+> For a transition period we can have both DMA_ATTR_SKIP_CPU_SYNC
+> and DMA_MAP_SKIP_CPU_SYNC, and then work to change all
+> occurrences of the former to the latter.
+> 
+> I'll have to look more closely at WEAK_ORDERING and NO_WARN.
+> 
+> There are also a couple of places where DMA_ATTR_NO_KERNEL_MAPPING
+> is used for dma_map_* calls, but those are clearly bogus since that
+> attribute is never tested in the map path.
+
+Yeah, these kinds of bogus things is what I'd like to kill..
+
+
+> > Note that this also in general involves changes to the block drivers
+> > to set that flag, which is a bit annoying, but I guess there is not
+> > easy way around it without paying the price for the BLK_MQ_F_BLOCKING
+> > overhead everywhere.
+> 
+> Agreed. I assumed there was some cost to BLK_MQ_F_BLOCKING since
+> the default is !BLK_MQ_F_BLOCKING, but I don't really know what
+> that is. Do you have a short summary, just for my education?
+
+I think the biggest issue is that synchronize_srcu is pretty damn
+expensive, but there's also a whole bunch of places that unconditionally
+defer to the workqueue.
+
