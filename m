@@ -1,243 +1,389 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.12])
+Received: from mail.tkos.co.il (wiki.tkos.co.il [84.110.109.230])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6807E17543;
-	Tue, 27 Aug 2024 02:54:48 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.12
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DBCC08003F
+	for <iommu@lists.linux.dev>; Tue, 27 Aug 2024 04:58:35 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=84.110.109.230
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1724727290; cv=none; b=pMN+angQ1RNzpr0fVA4EjAo7amRbARc5LnKtgRL0+pnu6qCLw7OKU5DxWlTq1o8u0g12NGgr9mz88nXJm9Z57NCcuxpCv8AF+ZjrtdTKuhJ3Z+EvMw3A1YJnCNVIOaGPl+cVnmYgih1aqDEcGtzz5kjG1GLzq2eN4VgwiDzM6b8=
+	t=1724734718; cv=none; b=ulLetBwXzpicikfbKpdioX4FU/I/arHA0gNXsru6VPc58d4EiWafJl90RWBkjxsL9UaO8YvvuSWPDiJvMfcM7c17hfu8V5ytwFAk5aQ0dL3z/dc66aoQ+kGVi8iiTRbBP1Lzj4dCdPwNVwVcKayPihZIg82WN2NUZIrlCfttrkQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1724727290; c=relaxed/simple;
-	bh=rN/h/kIfM1rJjuoXzuWT45K5gm3d2kWicXFFCsPee7Y=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=T0vjY+T97hmljfr5qh8xEE6SL5LQK4dDYVrneuQx1GLbcn/N8TNawNOQM+bJChpeYolrD4gnXrP5/1EfxqYtg3iOW9GOdUcvLpK6ZNI2YCU5Y7tibkwRLPJrfno4HB6vZvspt09e4pZRWzvv2qcd9aEcAQn+fdOGW2cOndKZpw4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=Gy4nyYpV; arc=none smtp.client-ip=198.175.65.12
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	s=arc-20240116; t=1724734718; c=relaxed/simple;
+	bh=9WyFB9yd3fDx1n71EKn0NOUDm0SNyy+ugmA5x2v2FE8=;
+	h=From:To:Cc:Subject:In-Reply-To:References:Date:Message-ID:
+	 MIME-Version:Content-Type; b=kWERCCnSqIP4tleGSpD+cZrzp1c9YuDwBknYhhMub/yA6jwR715fD/0DXciFKrGwr3zikGJxFG1sJCGmbpnljkMzPB64N1EH0++eAyQsXCbegnPb0p6ZNZIwufb6YWWndYocnlSs4hrc0gwsEvUjvCXNYBFofghZVvsC4N1ZzUM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=tkos.co.il; spf=pass smtp.mailfrom=tkos.co.il; dkim=pass (2048-bit key) header.d=tkos.co.il header.i=@tkos.co.il header.b=FI98ZrqF; arc=none smtp.client-ip=84.110.109.230
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=tkos.co.il
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=tkos.co.il
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="Gy4nyYpV"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1724727288; x=1756263288;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=rN/h/kIfM1rJjuoXzuWT45K5gm3d2kWicXFFCsPee7Y=;
-  b=Gy4nyYpV7EWN/bVBzYFvVLPZ/+O49tfNB0WQcrpiLNJlIuuk+57T7E8L
-   qg2nnfTH0kqD451vuk39QceyT9Fn3G3Qm7c8Huenz6zjGWjAhjXtgkMQu
-   y8uIvUSuUbrCi3HPIN8uQw9WJ8BWwZASAVxCnT1xdYw6qFXtcFKuvqOt8
-   SUvesQ76yxA95kx1LMNmL/VMBD/6LO9ISxO6xMuEOkSh3m4oVSug7tR93
-   1xmwVpvGNBGfk8DpeAOMDjpeAiSIAkATiXlg2j4rivzR6RGKIewXRVbpe
-   xVMSIfKsJ3263nrO3URsMpMOTl8hHNTwBdgKd64lokKKI3sAB+ps5/2L1
-   g==;
-X-CSE-ConnectionGUID: TL4Y4C+SS4KmtjbWeDSIMg==
-X-CSE-MsgGUID: CdS28wViS7yqFtT3cLdxgA==
-X-IronPort-AV: E=McAfee;i="6700,10204,11176"; a="34558670"
-X-IronPort-AV: E=Sophos;i="6.10,179,1719903600"; 
-   d="scan'208";a="34558670"
-Received: from fmviesa008.fm.intel.com ([10.60.135.148])
-  by orvoesa104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Aug 2024 19:54:48 -0700
-X-CSE-ConnectionGUID: cTcBETDLSUSL/e9BUHoeLQ==
-X-CSE-MsgGUID: 2653ryGeSqWpa68aqcDMbA==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.10,179,1719903600"; 
-   d="scan'208";a="62688226"
-Received: from lkp-server01.sh.intel.com (HELO 9a732dc145d3) ([10.239.97.150])
-  by fmviesa008.fm.intel.com with ESMTP; 26 Aug 2024 19:54:43 -0700
-Received: from kbuild by 9a732dc145d3 with local (Exim 4.96)
-	(envelope-from <lkp@intel.com>)
-	id 1simLx-000How-0T;
-	Tue, 27 Aug 2024 02:54:41 +0000
-Date: Tue, 27 Aug 2024 10:54:11 +0800
-From: kernel test robot <lkp@intel.com>
-To: Matthew Rosato <mjrosato@linux.ibm.com>, joro@8bytes.org,
-	will@kernel.org, robin.murphy@arm.com,
-	gerald.schaefer@linux.ibm.com, schnelle@linux.ibm.com
-Cc: llvm@lists.linux.dev, oe-kbuild-all@lists.linux.dev, jgg@ziepe.ca,
-	baolu.lu@linux.intel.com, hca@linux.ibm.com, gor@linux.ibm.com,
-	agordeev@linux.ibm.com, svens@linux.ibm.com, jroedel@suse.de,
-	iommu@lists.linux.dev, linux-kernel@vger.kernel.org,
-	linux-s390@vger.kernel.org
-Subject: Re: [PATCH v3] iommu/s390: Implement blocking domain
-Message-ID: <202408271011.SsRB0mow-lkp@intel.com>
-References: <20240823203108.304054-1-mjrosato@linux.ibm.com>
+	dkim=pass (2048-bit key) header.d=tkos.co.il header.i=@tkos.co.il header.b="FI98ZrqF"
+Received: from localhost (unknown [10.0.8.3])
+	by mail.tkos.co.il (Postfix) with ESMTP id 07138440FD1;
+	Tue, 27 Aug 2024 07:50:36 +0300 (IDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=tkos.co.il;
+	s=default; t=1724734236;
+	bh=9WyFB9yd3fDx1n71EKn0NOUDm0SNyy+ugmA5x2v2FE8=;
+	h=From:To:Cc:Subject:In-Reply-To:References:Date:From;
+	b=FI98ZrqFrkaPZNYHWGvjN821TTsf1l9dasleqTNzWX5CifjFUlZGK/dlYU1Wg2dKf
+	 zRPa8u5HMNs78KaGG3T69/cRMOh8AbRIqBtbFb3o9kWQdLXtIxh+AyFBL9vy+LZ+/2
+	 2A5ycZJPBluf1fAsJ7U7stKNjxdl7nh8+4glxt8l6+kVK+26bXB09aUJzdJQ0wJofQ
+	 gnN4m4CuzwTE9jSfMsVg7bbJ0GKQOD/VJYGVjg+tr6El5tiuQfHN7bV32r06+TDz3a
+	 xv6DGTSn4e5mJ0VZcCom/Wil+aWl44XUvX7OoV66JMhYKIWNnpfMYZ4dGlfc2G5n5a
+	 2DSR3UzHlCrFA==
+From: Baruch Siach <baruch@tkos.co.il>
+To: Marek Szyprowski <m.szyprowski@samsung.com>
+Cc: Christoph Hellwig <hch@lst.de>,  Catalin Marinas
+ <catalin.marinas@arm.com>,  Will Deacon <will@kernel.org>,  Robin Murphy
+ <robin.murphy@arm.com>,  iommu@lists.linux.dev,
+  linux-arm-kernel@lists.infradead.org,  linux-kernel@vger.kernel.org,
+  linuxppc-dev@lists.ozlabs.org,  linux-s390@vger.kernel.org,  Petr
+ =?utf-8?B?VGVzYcWZw61r?=
+ <petr@tesarici.cz>,  Ramon Fried <ramon@neureality.ai>,  Elad Nachman
+ <enachman@marvell.com>,  linux-rockchip@lists.infradead.org
+Subject: Re: [PATCH v6 RESED 1/2] dma: replace zone_dma_bits by zone_dma_limit
+In-Reply-To: <53d988b1-bdce-422a-ae4e-158f305ad703@samsung.com> (Marek
+	Szyprowski's message of "Mon, 26 Aug 2024 21:28:29 +0200")
+References: <cover.1723359916.git.baruch@tkos.co.il>
+	<CGME20240811070951eucas1p1dc5315e0d710db13ce28fa0a977c7bc1@eucas1p1.samsung.com>
+	<17c067618b93e5d71f19c37826d54db4299621a3.1723359916.git.baruch@tkos.co.il>
+	<53d988b1-bdce-422a-ae4e-158f305ad703@samsung.com>
+Date: Tue, 27 Aug 2024 07:52:27 +0300
+Message-ID: <87mskyva7o.fsf@tarshish>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20240823203108.304054-1-mjrosato@linux.ibm.com>
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
 
-Hi Matthew,
+Hi Marek,
 
-kernel test robot noticed the following build errors:
+Thanks for your report.
 
-[auto build test ERROR on s390/features]
-[also build test ERROR on linus/master v6.11-rc5 next-20240826]
-[If your patch is applied to the wrong git tree, kindly drop us a note.
-And when submitting patch, we suggest to use '--base' as documented in
-https://git-scm.com/docs/git-format-patch#_base_tree_information]
+On Mon, Aug 26 2024, Marek Szyprowski wrote:
+> On 11.08.2024 09:09, Baruch Siach wrote:
+>> From: Catalin Marinas <catalin.marinas@arm.com>
+>>
+>> Hardware DMA limit might not be power of 2. When RAM range starts above
+>> 0, say 4GB, DMA limit of 30 bits should end at 5GB. A single high bit
+>> can not encode this limit.
+>>
+>> Use plain address for DMA zone limit.
+>>
+>> Since DMA zone can now potentially span beyond 4GB physical limit of
+>> DMA32, make sure to use DMA zone for GFP_DMA32 allocations in that case.
+>>
+>> Signed-off-by: Catalin Marinas <catalin.marinas@arm.com>
+>> Co-developed-by: Baruch Siach <baruch@tkos.co.il>
+>> Signed-off-by: Baruch Siach <baruch@tkos.co.il>
+>> ---
+>
+> This patch landed recently in linux-next as commit ba0fb44aed47=20
+> ("dma-mapping: replace zone_dma_bits by zone_dma_limit"). During my=20
+> tests I found that it introduces the following warning on ARM64/Rockchip=
+=20
+> based Odroid M1 board (arch/arm64/boot/dts/rockchip/rk3568-odroid-m1.dts):
 
-url:    https://github.com/intel-lab-lkp/linux/commits/Matthew-Rosato/iommu-s390-Implement-blocking-domain/20240826-163744
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/s390/linux.git features
-patch link:    https://lore.kernel.org/r/20240823203108.304054-1-mjrosato%40linux.ibm.com
-patch subject: [PATCH v3] iommu/s390: Implement blocking domain
-config: s390-allmodconfig (https://download.01.org/0day-ci/archive/20240827/202408271011.SsRB0mow-lkp@intel.com/config)
-compiler: clang version 20.0.0git (https://github.com/llvm/llvm-project 08e5a1de8227512d4774a534b91cb2353cef6284)
-reproduce (this is a W=1 build): (https://download.01.org/0day-ci/archive/20240827/202408271011.SsRB0mow-lkp@intel.com/reproduce)
+Does this warning go away if you revert both 3be9b846896d and ba0fb44aed47?
 
-If you fix the issue in a separate patch/commit (i.e. not just a new version of
-the same patch/commit), kindly add following tags
-| Reported-by: kernel test robot <lkp@intel.com>
-| Closes: https://lore.kernel.org/oe-kbuild-all/202408271011.SsRB0mow-lkp@intel.com/
+Upstream rockchip DTs have no dma-ranges property. Is that the case for
+your platform as well?
 
-All errors (new ones prefixed by >>):
+Can you share kernel report of DMA zones and swiotlb? On my platform I get:
 
-   In file included from drivers/iommu/s390-iommu.c:9:
-   In file included from include/linux/pci.h:37:
-   In file included from include/linux/device.h:32:
-   In file included from include/linux/device/driver.h:21:
-   In file included from include/linux/module.h:19:
-   In file included from include/linux/elf.h:6:
-   In file included from arch/s390/include/asm/elf.h:181:
-   In file included from arch/s390/include/asm/mmu_context.h:11:
-   In file included from arch/s390/include/asm/pgalloc.h:18:
-   In file included from include/linux/mm.h:2228:
-   include/linux/vmstat.h:500:43: warning: arithmetic between different enumeration types ('enum zone_stat_item' and 'enum numa_stat_item') [-Wenum-enum-conversion]
-     500 |         return vmstat_text[NR_VM_ZONE_STAT_ITEMS +
-         |                            ~~~~~~~~~~~~~~~~~~~~~ ^
-     501 |                            item];
-         |                            ~~~~
-   include/linux/vmstat.h:507:43: warning: arithmetic between different enumeration types ('enum zone_stat_item' and 'enum numa_stat_item') [-Wenum-enum-conversion]
-     507 |         return vmstat_text[NR_VM_ZONE_STAT_ITEMS +
-         |                            ~~~~~~~~~~~~~~~~~~~~~ ^
-     508 |                            NR_VM_NUMA_EVENT_ITEMS +
-         |                            ~~~~~~~~~~~~~~~~~~~~~~
-   include/linux/vmstat.h:514:36: warning: arithmetic between different enumeration types ('enum node_stat_item' and 'enum lru_list') [-Wenum-enum-conversion]
-     514 |         return node_stat_name(NR_LRU_BASE + lru) + 3; // skip "nr_"
-         |                               ~~~~~~~~~~~ ^ ~~~
-   include/linux/vmstat.h:519:43: warning: arithmetic between different enumeration types ('enum zone_stat_item' and 'enum numa_stat_item') [-Wenum-enum-conversion]
-     519 |         return vmstat_text[NR_VM_ZONE_STAT_ITEMS +
-         |                            ~~~~~~~~~~~~~~~~~~~~~ ^
-     520 |                            NR_VM_NUMA_EVENT_ITEMS +
-         |                            ~~~~~~~~~~~~~~~~~~~~~~
-   include/linux/vmstat.h:528:43: warning: arithmetic between different enumeration types ('enum zone_stat_item' and 'enum numa_stat_item') [-Wenum-enum-conversion]
-     528 |         return vmstat_text[NR_VM_ZONE_STAT_ITEMS +
-         |                            ~~~~~~~~~~~~~~~~~~~~~ ^
-     529 |                            NR_VM_NUMA_EVENT_ITEMS +
-         |                            ~~~~~~~~~~~~~~~~~~~~~~
-   In file included from drivers/iommu/s390-iommu.c:9:
-   In file included from include/linux/pci.h:39:
-   In file included from include/linux/io.h:14:
-   In file included from arch/s390/include/asm/io.h:93:
-   include/asm-generic/io.h:548:31: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
-     548 |         val = __raw_readb(PCI_IOBASE + addr);
-         |                           ~~~~~~~~~~ ^
-   include/asm-generic/io.h:561:61: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
-     561 |         val = __le16_to_cpu((__le16 __force)__raw_readw(PCI_IOBASE + addr));
-         |                                                         ~~~~~~~~~~ ^
-   include/uapi/linux/byteorder/big_endian.h:37:59: note: expanded from macro '__le16_to_cpu'
-      37 | #define __le16_to_cpu(x) __swab16((__force __u16)(__le16)(x))
-         |                                                           ^
-   include/uapi/linux/swab.h:102:54: note: expanded from macro '__swab16'
-     102 | #define __swab16(x) (__u16)__builtin_bswap16((__u16)(x))
-         |                                                      ^
-   In file included from drivers/iommu/s390-iommu.c:9:
-   In file included from include/linux/pci.h:39:
-   In file included from include/linux/io.h:14:
-   In file included from arch/s390/include/asm/io.h:93:
-   include/asm-generic/io.h:574:61: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
-     574 |         val = __le32_to_cpu((__le32 __force)__raw_readl(PCI_IOBASE + addr));
-         |                                                         ~~~~~~~~~~ ^
-   include/uapi/linux/byteorder/big_endian.h:35:59: note: expanded from macro '__le32_to_cpu'
-      35 | #define __le32_to_cpu(x) __swab32((__force __u32)(__le32)(x))
-         |                                                           ^
-   include/uapi/linux/swab.h:115:54: note: expanded from macro '__swab32'
-     115 | #define __swab32(x) (__u32)__builtin_bswap32((__u32)(x))
-         |                                                      ^
-   In file included from drivers/iommu/s390-iommu.c:9:
-   In file included from include/linux/pci.h:39:
-   In file included from include/linux/io.h:14:
-   In file included from arch/s390/include/asm/io.h:93:
-   include/asm-generic/io.h:585:33: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
-     585 |         __raw_writeb(value, PCI_IOBASE + addr);
-         |                             ~~~~~~~~~~ ^
-   include/asm-generic/io.h:595:59: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
-     595 |         __raw_writew((u16 __force)cpu_to_le16(value), PCI_IOBASE + addr);
-         |                                                       ~~~~~~~~~~ ^
-   include/asm-generic/io.h:605:59: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
-     605 |         __raw_writel((u32 __force)cpu_to_le32(value), PCI_IOBASE + addr);
-         |                                                       ~~~~~~~~~~ ^
-   include/asm-generic/io.h:693:20: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
-     693 |         readsb(PCI_IOBASE + addr, buffer, count);
-         |                ~~~~~~~~~~ ^
-   include/asm-generic/io.h:701:20: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
-     701 |         readsw(PCI_IOBASE + addr, buffer, count);
-         |                ~~~~~~~~~~ ^
-   include/asm-generic/io.h:709:20: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
-     709 |         readsl(PCI_IOBASE + addr, buffer, count);
-         |                ~~~~~~~~~~ ^
-   include/asm-generic/io.h:718:21: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
-     718 |         writesb(PCI_IOBASE + addr, buffer, count);
-         |                 ~~~~~~~~~~ ^
-   include/asm-generic/io.h:727:21: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
-     727 |         writesw(PCI_IOBASE + addr, buffer, count);
-         |                 ~~~~~~~~~~ ^
-   include/asm-generic/io.h:736:21: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
-     736 |         writesl(PCI_IOBASE + addr, buffer, count);
-         |                 ~~~~~~~~~~ ^
->> drivers/iommu/s390-iommu.c:707:2: error: member reference type 'spinlock_t' (aka 'struct spinlock') is not a pointer; did you mean to use '.'?
-     707 |         lockdep_assert_held(zdev->dom_lock);
-         |         ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-   include/linux/lockdep.h:285:17: note: expanded from macro 'lockdep_assert_held'
-     285 |         lockdep_assert(lockdep_is_held(l) != LOCK_STATE_NOT_HELD)
-         |         ~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-   include/linux/lockdep.h:252:52: note: expanded from macro 'lockdep_is_held'
-     252 | #define lockdep_is_held(lock)           lock_is_held(&(lock)->dep_map)
-         |                                                             ^
-   include/linux/lockdep.h:279:32: note: expanded from macro 'lockdep_assert'
-     279 |         do { WARN_ON(debug_locks && !(cond)); } while (0)
-         |              ~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~
-   arch/s390/include/asm/bug.h:54:25: note: expanded from macro 'WARN_ON'
-      54 |         int __ret_warn_on = !!(x);                      \
-         |                                ^
->> drivers/iommu/s390-iommu.c:707:2: error: cannot take the address of an rvalue of type 'struct lockdep_map'
-     707 |         lockdep_assert_held(zdev->dom_lock);
-         |         ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-   include/linux/lockdep.h:285:17: note: expanded from macro 'lockdep_assert_held'
-     285 |         lockdep_assert(lockdep_is_held(l) != LOCK_STATE_NOT_HELD)
-         |         ~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-   include/linux/lockdep.h:252:45: note: expanded from macro 'lockdep_is_held'
-     252 | #define lockdep_is_held(lock)           lock_is_held(&(lock)->dep_map)
-         |                                                      ^
-   include/linux/lockdep.h:279:32: note: expanded from macro 'lockdep_assert'
-     279 |         do { WARN_ON(debug_locks && !(cond)); } while (0)
-         |              ~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~
-   arch/s390/include/asm/bug.h:54:25: note: expanded from macro 'WARN_ON'
-      54 |         int __ret_warn_on = !!(x);                      \
-         |                                ^
-   17 warnings and 2 errors generated.
+[    0.000000] Zone ranges:
+[    0.000000]   DMA      [mem 0x0000000800000000-0x000000083fffffff]
+[    0.000000]   DMA32    empty
+[    0.000000]   Normal   [mem 0x0000000840000000-0x0000000fffffffff]
+...
+[    0.000000] software IO TLB: area num 8.
+[    0.000000] software IO TLB: mapped [mem 0x000000083be38000-0x000000083f=
+e38000] (64MB)
 
+What do you get at your end?
 
-vim +707 drivers/iommu/s390-iommu.c
+> ------------[ cut here ]------------
+> dwmmc_rockchip fe2b0000.mmc: swiotlb addr 0x00000001faf00000+4096=20
+> overflow (mask ffffffff, bus limit 0).
+> WARNING: CPU: 3 PID: 1 at kernel/dma/swiotlb.c:1594 swiotlb_map+0x2f0/0x3=
+08
+> Modules linked in:
+> CPU: 3 UID: 0 PID: 1 Comm: swapper/0 Not tainted 6.11.0-rc4+ #15278
+> Hardware name: Hardkernel ODROID-M1 (DT)
+> pstate: 60400009 (nZCv daif +PAN -UAO -TCO -DIT -SSBS BTYPE=3D--)
+> pc : swiotlb_map+0x2f0/0x308
+> lr : swiotlb_map+0x2f0/0x308
+> ...
+> Call trace:
+>  =C2=A0swiotlb_map+0x2f0/0x308
+>  =C2=A0dma_direct_map_sg+0x9c/0x2e4
+>  =C2=A0__dma_map_sg_attrs+0x28/0x94
+>  =C2=A0dma_map_sg_attrs+0x10/0x24
+>  =C2=A0dw_mci_pre_dma_transfer+0xb8/0xf4
+>  =C2=A0dw_mci_pre_req+0x50/0x68
+>  =C2=A0mmc_blk_mq_issue_rq+0x3e0/0x964
+>  =C2=A0mmc_mq_queue_rq+0x118/0x2b4
+>  =C2=A0blk_mq_dispatch_rq_list+0x21c/0x714
+>  =C2=A0__blk_mq_sched_dispatch_requests+0x490/0x58c
+>  =C2=A0blk_mq_sched_dispatch_requests+0x30/0x6c
+>  =C2=A0blk_mq_run_hw_queue+0x284/0x40c
+>  =C2=A0blk_mq_flush_plug_list.part.0+0x190/0x974
+>  =C2=A0blk_mq_flush_plug_list+0x1c/0x2c
+>  =C2=A0__blk_flush_plug+0xe4/0x140
+>  =C2=A0blk_finish_plug+0x38/0x4c
+>  =C2=A0__ext4_get_inode_loc+0x22c/0x654
+>  =C2=A0__ext4_get_inode_loc_noinmem+0x40/0xa8
+>  =C2=A0__ext4_iget+0x154/0xcc0
+>  =C2=A0ext4_get_journal_inode+0x30/0x110
+>  =C2=A0ext4_load_and_init_journal+0x9c/0xaf0
+>  =C2=A0ext4_fill_super+0x1fec/0x2d90
+>  =C2=A0get_tree_bdev+0x140/0x1d8
+>  =C2=A0ext4_get_tree+0x18/0x24
+>  =C2=A0vfs_get_tree+0x28/0xe8
+>  =C2=A0path_mount+0x3e8/0xb7c
+>  =C2=A0init_mount+0x68/0xac
+>  =C2=A0do_mount_root+0x108/0x1dc
+>  =C2=A0mount_root_generic+0x100/0x330
+>  =C2=A0mount_root+0x160/0x2d0
+>  =C2=A0initrd_load+0x1f0/0x2a0
+>  =C2=A0prepare_namespace+0x4c/0x29c
+>  =C2=A0kernel_init_freeable+0x4b4/0x50c
+>  =C2=A0kernel_init+0x20/0x1d8
+>  =C2=A0ret_from_fork+0x10/0x20
+> irq event stamp: 1305682
+> hardirqs last=C2=A0 enabled at (1305681): [<ffff8000800e332c>]=20
+> console_unlock+0x124/0x130
+> hardirqs last disabled at (1305682): [<ffff80008124e684>] el1_dbg+0x24/0x=
+8c
+> softirqs last=C2=A0 enabled at (1305678): [<ffff80008005be1c>]=20
+> handle_softirqs+0x4cc/0x4e4
+> softirqs last disabled at (1305665): [<ffff8000800105b0>]=20
+> __do_softirq+0x14/0x20
+> ---[ end trace 0000000000000000 ]---
+>
+> This "bus limit 0" seems to be a bit suspicious to me as well as the=20
+> fact that swiotlb is used for the MMC DMA. I will investigate this=20
+> further tomorrow. The board boots fine though.
 
-   702	
-   703	struct zpci_iommu_ctrs *zpci_get_iommu_ctrs(struct zpci_dev *zdev)
-   704	{
-   705		struct s390_domain *s390_domain;
-   706	
- > 707		lockdep_assert_held(zdev->dom_lock);
-   708	
-   709		if (zdev->s390_domain->type == IOMMU_DOMAIN_BLOCKED)
-   710			return NULL;
-   711	
-   712		s390_domain = to_s390_domain(zdev->s390_domain);
-   713		return &s390_domain->ctrs;
-   714	}
-   715	
+Looking at the code I guess that bus_dma_limit set to 0 means no bus
+limit. But dma_mask for your device indicates 32-bit device limit. This
+can't work with address above 4GB. For some reason DMA code tries to
+allocate from higher address. This is most likely the reason
+dma_capable() returns false.
 
--- 
-0-DAY CI Kernel Test Service
-https://github.com/intel/lkp-tests/wiki
+Thanks,
+baruch
+
+>>   arch/arm64/mm/init.c       | 30 +++++++++++++++---------------
+>>   arch/powerpc/mm/mem.c      |  5 ++++-
+>>   arch/s390/mm/init.c        |  2 +-
+>>   include/linux/dma-direct.h |  2 +-
+>>   kernel/dma/direct.c        |  6 +++---
+>>   kernel/dma/pool.c          |  4 ++--
+>>   kernel/dma/swiotlb.c       |  6 +++---
+>>   7 files changed, 29 insertions(+), 26 deletions(-)
+>>
+>> diff --git a/arch/arm64/mm/init.c b/arch/arm64/mm/init.c
+>> index 9b5ab6818f7f..c45e2152ca9e 100644
+>> --- a/arch/arm64/mm/init.c
+>> +++ b/arch/arm64/mm/init.c
+>> @@ -115,35 +115,35 @@ static void __init arch_reserve_crashkernel(void)
+>>   }
+>>=20=20=20
+>>   /*
+>> - * Return the maximum physical address for a zone accessible by the giv=
+en bits
+>> - * limit. If DRAM starts above 32-bit, expand the zone to the maximum
+>> + * Return the maximum physical address for a zone given its limit.
+>> + * If DRAM starts above 32-bit, expand the zone to the maximum
+>>    * available memory, otherwise cap it at 32-bit.
+>>    */
+>> -static phys_addr_t __init max_zone_phys(unsigned int zone_bits)
+>> +static phys_addr_t __init max_zone_phys(phys_addr_t zone_limit)
+>>   {
+>> -	phys_addr_t zone_mask =3D DMA_BIT_MASK(zone_bits);
+>>   	phys_addr_t phys_start =3D memblock_start_of_DRAM();
+>>=20=20=20
+>>   	if (phys_start > U32_MAX)
+>> -		zone_mask =3D PHYS_ADDR_MAX;
+>> -	else if (phys_start > zone_mask)
+>> -		zone_mask =3D U32_MAX;
+>> +		zone_limit =3D PHYS_ADDR_MAX;
+>> +	else if (phys_start > zone_limit)
+>> +		zone_limit =3D U32_MAX;
+>>=20=20=20
+>> -	return min(zone_mask, memblock_end_of_DRAM() - 1) + 1;
+>> +	return min(zone_limit, memblock_end_of_DRAM() - 1) + 1;
+>>   }
+>>=20=20=20
+>>   static void __init zone_sizes_init(void)
+>>   {
+>>   	unsigned long max_zone_pfns[MAX_NR_ZONES]  =3D {0};
+>> -	unsigned int __maybe_unused acpi_zone_dma_bits;
+>> -	unsigned int __maybe_unused dt_zone_dma_bits;
+>> -	phys_addr_t __maybe_unused dma32_phys_limit =3D max_zone_phys(32);
+>> +	phys_addr_t __maybe_unused acpi_zone_dma_limit;
+>> +	phys_addr_t __maybe_unused dt_zone_dma_limit;
+>> +	phys_addr_t __maybe_unused dma32_phys_limit =3D
+>> +		max_zone_phys(DMA_BIT_MASK(32));
+>>=20=20=20
+>>   #ifdef CONFIG_ZONE_DMA
+>> -	acpi_zone_dma_bits =3D fls64(acpi_iort_dma_get_max_cpu_address());
+>> -	dt_zone_dma_bits =3D fls64(of_dma_get_max_cpu_address(NULL));
+>> -	zone_dma_bits =3D min3(32U, dt_zone_dma_bits, acpi_zone_dma_bits);
+>> -	arm64_dma_phys_limit =3D max_zone_phys(zone_dma_bits);
+>> +	acpi_zone_dma_limit =3D acpi_iort_dma_get_max_cpu_address();
+>> +	dt_zone_dma_limit =3D of_dma_get_max_cpu_address(NULL);
+>> +	zone_dma_limit =3D min(dt_zone_dma_limit, acpi_zone_dma_limit);
+>> +	arm64_dma_phys_limit =3D max_zone_phys(zone_dma_limit);
+>>   	max_zone_pfns[ZONE_DMA] =3D PFN_DOWN(arm64_dma_phys_limit);
+>>   #endif
+>>   #ifdef CONFIG_ZONE_DMA32
+>> diff --git a/arch/powerpc/mm/mem.c b/arch/powerpc/mm/mem.c
+>> index d325217ab201..05b7f702b3f7 100644
+>> --- a/arch/powerpc/mm/mem.c
+>> +++ b/arch/powerpc/mm/mem.c
+>> @@ -216,7 +216,7 @@ static int __init mark_nonram_nosave(void)
+>>    * everything else. GFP_DMA32 page allocations automatically fall back=
+ to
+>>    * ZONE_DMA.
+>>    *
+>> - * By using 31-bit unconditionally, we can exploit zone_dma_bits to inf=
+orm the
+>> + * By using 31-bit unconditionally, we can exploit zone_dma_limit to in=
+form the
+>>    * generic DMA mapping code.  32-bit only devices (if not handled by a=
+n IOMMU
+>>    * anyway) will take a first dip into ZONE_NORMAL and get otherwise se=
+rved by
+>>    * ZONE_DMA.
+>> @@ -230,6 +230,7 @@ void __init paging_init(void)
+>>   {
+>>   	unsigned long long total_ram =3D memblock_phys_mem_size();
+>>   	phys_addr_t top_of_ram =3D memblock_end_of_DRAM();
+>> +	int zone_dma_bits;
+>>=20=20=20
+>>   #ifdef CONFIG_HIGHMEM
+>>   	unsigned long v =3D __fix_to_virt(FIX_KMAP_END);
+>> @@ -256,6 +257,8 @@ void __init paging_init(void)
+>>   	else
+>>   		zone_dma_bits =3D 31;
+>>=20=20=20
+>> +	zone_dma_limit =3D DMA_BIT_MASK(zone_dma_bits);
+>> +
+>>   #ifdef CONFIG_ZONE_DMA
+>>   	max_zone_pfns[ZONE_DMA]	=3D min(max_low_pfn,
+>>   				      1UL << (zone_dma_bits - PAGE_SHIFT));
+>> diff --git a/arch/s390/mm/init.c b/arch/s390/mm/init.c
+>> index ddcd39ef4346..91fc2b91adfc 100644
+>> --- a/arch/s390/mm/init.c
+>> +++ b/arch/s390/mm/init.c
+>> @@ -97,7 +97,7 @@ void __init paging_init(void)
+>>=20=20=20
+>>   	vmem_map_init();
+>>   	sparse_init();
+>> -	zone_dma_bits =3D 31;
+>> +	zone_dma_limit =3D DMA_BIT_MASK(31);
+>>   	memset(max_zone_pfns, 0, sizeof(max_zone_pfns));
+>>   	max_zone_pfns[ZONE_DMA] =3D virt_to_pfn(MAX_DMA_ADDRESS);
+>>   	max_zone_pfns[ZONE_NORMAL] =3D max_low_pfn;
+>> diff --git a/include/linux/dma-direct.h b/include/linux/dma-direct.h
+>> index edbe13d00776..d7e30d4f7503 100644
+>> --- a/include/linux/dma-direct.h
+>> +++ b/include/linux/dma-direct.h
+>> @@ -12,7 +12,7 @@
+>>   #include <linux/mem_encrypt.h>
+>>   #include <linux/swiotlb.h>
+>>=20=20=20
+>> -extern unsigned int zone_dma_bits;
+>> +extern u64 zone_dma_limit;
+>>=20=20=20
+>>   /*
+>>    * Record the mapping of CPU physical to DMA addresses for a given reg=
+ion.
+>> diff --git a/kernel/dma/direct.c b/kernel/dma/direct.c
+>> index 4480a3cd92e0..f2ba074a6a54 100644
+>> --- a/kernel/dma/direct.c
+>> +++ b/kernel/dma/direct.c
+>> @@ -20,7 +20,7 @@
+>>    * it for entirely different regions. In that case the arch code needs=
+ to
+>>    * override the variable below for dma-direct to work properly.
+>>    */
+>> -unsigned int zone_dma_bits __ro_after_init =3D 24;
+>> +u64 zone_dma_limit __ro_after_init =3D DMA_BIT_MASK(24);
+>>=20=20=20
+>>   static inline dma_addr_t phys_to_dma_direct(struct device *dev,
+>>   		phys_addr_t phys)
+>> @@ -59,7 +59,7 @@ static gfp_t dma_direct_optimal_gfp_mask(struct device=
+ *dev, u64 *phys_limit)
+>>   	 * zones.
+>>   	 */
+>>   	*phys_limit =3D dma_to_phys(dev, dma_limit);
+>> -	if (*phys_limit <=3D DMA_BIT_MASK(zone_dma_bits))
+>> +	if (*phys_limit <=3D zone_dma_limit)
+>>   		return GFP_DMA;
+>>   	if (*phys_limit <=3D DMA_BIT_MASK(32))
+>>   		return GFP_DMA32;
+>> @@ -580,7 +580,7 @@ int dma_direct_supported(struct device *dev, u64 mas=
+k)
+>>   	 * part of the check.
+>>   	 */
+>>   	if (IS_ENABLED(CONFIG_ZONE_DMA))
+>> -		min_mask =3D min_t(u64, min_mask, DMA_BIT_MASK(zone_dma_bits));
+>> +		min_mask =3D min_t(u64, min_mask, zone_dma_limit);
+>>   	return mask >=3D phys_to_dma_unencrypted(dev, min_mask);
+>>   }
+>>=20=20=20
+>> diff --git a/kernel/dma/pool.c b/kernel/dma/pool.c
+>> index d10613eb0f63..7b04f7575796 100644
+>> --- a/kernel/dma/pool.c
+>> +++ b/kernel/dma/pool.c
+>> @@ -70,9 +70,9 @@ static bool cma_in_zone(gfp_t gfp)
+>>   	/* CMA can't cross zone boundaries, see cma_activate_area() */
+>>   	end =3D cma_get_base(cma) + size - 1;
+>>   	if (IS_ENABLED(CONFIG_ZONE_DMA) && (gfp & GFP_DMA))
+>> -		return end <=3D DMA_BIT_MASK(zone_dma_bits);
+>> +		return end <=3D zone_dma_limit;
+>>   	if (IS_ENABLED(CONFIG_ZONE_DMA32) && (gfp & GFP_DMA32))
+>> -		return end <=3D DMA_BIT_MASK(32);
+>> +		return end <=3D max(DMA_BIT_MASK(32), zone_dma_limit);
+>>   	return true;
+>>   }
+>>=20=20=20
+>> diff --git a/kernel/dma/swiotlb.c b/kernel/dma/swiotlb.c
+>> index df68d29740a0..abcf3fa63a56 100644
+>> --- a/kernel/dma/swiotlb.c
+>> +++ b/kernel/dma/swiotlb.c
+>> @@ -450,9 +450,9 @@ int swiotlb_init_late(size_t size, gfp_t gfp_mask,
+>>   	if (!remap)
+>>   		io_tlb_default_mem.can_grow =3D true;
+>>   	if (IS_ENABLED(CONFIG_ZONE_DMA) && (gfp_mask & __GFP_DMA))
+>> -		io_tlb_default_mem.phys_limit =3D DMA_BIT_MASK(zone_dma_bits);
+>> +		io_tlb_default_mem.phys_limit =3D zone_dma_limit;
+>>   	else if (IS_ENABLED(CONFIG_ZONE_DMA32) && (gfp_mask & __GFP_DMA32))
+>> -		io_tlb_default_mem.phys_limit =3D DMA_BIT_MASK(32);
+>> +		io_tlb_default_mem.phys_limit =3D max(DMA_BIT_MASK(32), zone_dma_limi=
+t);
+>>   	else
+>>   		io_tlb_default_mem.phys_limit =3D virt_to_phys(high_memory - 1);
+>>   #endif
+>> @@ -629,7 +629,7 @@ static struct page *swiotlb_alloc_tlb(struct device =
+*dev, size_t bytes,
+>>   	}
+>>=20=20=20
+>>   	gfp &=3D ~GFP_ZONEMASK;
+>> -	if (phys_limit <=3D DMA_BIT_MASK(zone_dma_bits))
+>> +	if (phys_limit <=3D zone_dma_limit)
+>>   		gfp |=3D __GFP_DMA;
+>>   	else if (phys_limit <=3D DMA_BIT_MASK(32))
+>>   		gfp |=3D __GFP_DMA32;
+>
+> Best regards
+
+--=20
+                                                     ~. .~   Tk Open Systems
+=3D}------------------------------------------------ooO--U--Ooo------------=
+{=3D
+   - baruch@tkos.co.il - tel: +972.52.368.4656, http://www.tkos.co.il -
