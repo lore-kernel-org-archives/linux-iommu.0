@@ -1,212 +1,105 @@
-Received: from bee.tesarici.cz (bee.tesarici.cz [37.205.15.56])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-wr1-f54.google.com (mail-wr1-f54.google.com [209.85.221.54])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9A8A417C9A7;
-	Tue, 27 Aug 2024 08:01:00 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=37.205.15.56
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9AEAE7641E
+	for <iommu@lists.linux.dev>; Tue, 27 Aug 2024 08:29:06 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.54
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1724745664; cv=none; b=A7ZZMgaL7+04KMVR7ZxSTCuFMR6ervg7xmMpAFg4pREZQNBsgi/HWfl3cVcMrsAXJklwlDU/sb0xGFpll71R+h0HfiUddhc/xBzmGp1kUdXZ676odimZ68Ea5nJ1TYCt/2wbBhRPo+TyFDvTRgUkI3OH9AdxmW5WtFWzNfXLUC8=
+	t=1724747348; cv=none; b=ZC4/Z32i3Wz+BzWtddp6BHw7xijh8yLpc9RH4lC4tOCv5DdZQkoP6zIzXqTGs7eAUndWxDSXRGXwuEaKikY0fEU0Ra+4t94wFx1rKIKEYnCBSIfh8YB1CALDmf8hpl8eqiVutzbNKHqTE8/nngPC3EgoA5VcaXF2LK+GiWnIHsY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1724745664; c=relaxed/simple;
-	bh=XeuKHYphwj6HEB8Fy7aHZAKGom5ZSuFWmNc9MuomPmo=;
-	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=hTJA+7hY1FueXz+LmSQ+EikbMtTRgjoxq6iclxKuQmA12W6xMI3wtCW7H2+ZyXsUUJ0MfhXY7jeeYGD1xPEqzM9eAbUyoe6AXh5wcjaDuhjTJxHeihz+gJ06tqV4cTaH8XIDjIJIFJZf9Uft0k6ir7omPXX0+ydTVOGHFMG9hSI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=tesarici.cz; spf=pass smtp.mailfrom=tesarici.cz; dkim=pass (2048-bit key) header.d=tesarici.cz header.i=@tesarici.cz header.b=pq1t7xe6; arc=none smtp.client-ip=37.205.15.56
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=tesarici.cz
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=tesarici.cz
+	s=arc-20240116; t=1724747348; c=relaxed/simple;
+	bh=iIPwUGV13p5fZmrE79+8bArYc/Op+nqsbUDhnMje5eQ=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=uU3Gfo02uz2BiS2AyOQLJJ9uLD5JQVHoehVp/tLIEf2rsZd4ojJBgMm9rWnNeyqqzqyyUCIcBdQqVF8ftW2EJUtAWF56vL9xpKQD5Oo1MueZXR+OJWcJE1tUm6/yjlv0qJ5A5HH6JmgPPAwBIGeu5PvJF55Ls3MqMRHvTTaEEaw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org; spf=pass smtp.mailfrom=linaro.org; dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b=DFCwyGry; arc=none smtp.client-ip=209.85.221.54
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linaro.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=tesarici.cz header.i=@tesarici.cz header.b="pq1t7xe6"
-Received: from mordecai.tesarici.cz (unknown [193.86.92.181])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange ECDHE (P-256) server-signature RSA-PSS (2048 bits) server-digest SHA256)
-	(No client certificate requested)
-	by bee.tesarici.cz (Postfix) with ESMTPSA id 405871F5F37;
-	Tue, 27 Aug 2024 10:00:58 +0200 (CEST)
-Authentication-Results: mail.tesarici.cz; dmarc=fail (p=quarantine dis=none) header.from=tesarici.cz
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=tesarici.cz; s=mail;
-	t=1724745658; bh=gTsz4OLuUenCez/Nx0yB83T9U09ihDAGrzP/1JubWmI=;
-	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-	b=pq1t7xe6FE1ajRU0n1PIq3R0gO1GVYddI2phd9r8voNaVUl1hVZCcMkdAtwXygweV
-	 ubQch50HX9nRGZuSq2WaOoIyzOf8JRlfxP3DsxcsgNJRwa29w/uCwJhCoPCTk+giRq
-	 Ob+JY9iTxQE0nkQRJp+MjLSF5mUWl6g4W/qQ5UFLBoGiRi25nGiKRAnEbTSucAQ23t
-	 Li5T+VY6hbL127O+5EkAOruj2eel+5WtjGBrPgnvfsLOdYVDgcqq8jhiWKaHIMhEi+
-	 leVYLJJkH7xnfpUmFRyn8mdp5aSg7zsrHzJIfXms3JVY5ILYZwXLozpWs1/eHtuI+/
-	 Jm5Qur/0EyZ0w==
-Date: Tue, 27 Aug 2024 10:00:53 +0200
-From: Petr =?UTF-8?B?VGVzYcWZw61r?= <petr@tesarici.cz>
-To: Michael Kelley <mhklinux@outlook.com>
-Cc: "kbusch@kernel.org" <kbusch@kernel.org>, "axboe@kernel.dk"
- <axboe@kernel.dk>, "sagi@grimberg.me" <sagi@grimberg.me>,
- "James.Bottomley@HansenPartnership.com"
- <James.Bottomley@HansenPartnership.com>, "martin.petersen@oracle.com"
- <martin.petersen@oracle.com>, "kys@microsoft.com" <kys@microsoft.com>,
- "haiyangz@microsoft.com" <haiyangz@microsoft.com>, "wei.liu@kernel.org"
- <wei.liu@kernel.org>, "decui@microsoft.com" <decui@microsoft.com>,
- "robin.murphy@arm.com" <robin.murphy@arm.com>, "hch@lst.de" <hch@lst.de>,
- "m.szyprowski@samsung.com" <m.szyprowski@samsung.com>,
- "iommu@lists.linux.dev" <iommu@lists.linux.dev>,
- "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
- "linux-nvme@lists.infradead.org" <linux-nvme@lists.infradead.org>,
- "linux-scsi@vger.kernel.org" <linux-scsi@vger.kernel.org>,
- "linux-hyperv@vger.kernel.org" <linux-hyperv@vger.kernel.org>,
- "linux-coco@lists.linux.dev" <linux-coco@lists.linux.dev>
-Subject: Re: [RFC 0/7] Introduce swiotlb throttling
-Message-ID: <20240827100053.2f5c3403@mordecai.tesarici.cz>
-In-Reply-To: <SN6PR02MB41571FA9E40ECA5954001A57D4942@SN6PR02MB4157.namprd02.prod.outlook.com>
-References: <20240822183718.1234-1-mhklinux@outlook.com>
-	<20240823084458.4394b401@meshulam.tesarici.cz>
-	<SN6PR02MB415758F12C59E6CA67227DCFD4882@SN6PR02MB4157.namprd02.prod.outlook.com>
-	<20240824220556.0e2587d5@meshulam.tesarici.cz>
-	<SN6PR02MB41577933B499309EA3CE4DDBD48B2@SN6PR02MB4157.namprd02.prod.outlook.com>
-	<20240826212803.3e11d2f9@meshulam.tesarici.cz>
-	<SN6PR02MB41571FA9E40ECA5954001A57D4942@SN6PR02MB4157.namprd02.prod.outlook.com>
-X-Mailer: Claws Mail 4.3.0 (GTK 3.24.43; x86_64-suse-linux-gnu)
+	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="DFCwyGry"
+Received: by mail-wr1-f54.google.com with SMTP id ffacd0b85a97d-3718706cf8aso2968565f8f.3
+        for <iommu@lists.linux.dev>; Tue, 27 Aug 2024 01:29:06 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google; t=1724747345; x=1725352145; darn=lists.linux.dev;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=VbxaF6U83ZdL2HnmpUCTIZfonMJcEng76YSUWc2fuwc=;
+        b=DFCwyGryn1/EMu0tNJkAqnKp81awnsOhZ2Ta+aXdqqqUl5nSKBpSKTg3yFsZHmSCng
+         PxdBA+77xYSvDD2pizAsIcWci8WzdZqfbT0VVYklT9HRHKwPJn051Ra37AMYwR1Q7T7U
+         sUbLukcn9XRiyJvAMhQJMt1VG6z1GCdO+Li7vYh+YVEXI+ZFl6NEgQ/IYcT0EEVLUbyR
+         l39vbTLcubrLqRiq44GC6gJTe+g/v1UYKl80vWLLPaLfr5zeUJxCwNr06HlSTUfAGSI3
+         G0BCU/d9WvohbLxvxFgq0Tk5Eg26sU4+9LN+Cw8Fj45+VtD43lotO6/pPMiZ4ZiQ1gxm
+         KqBA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1724747345; x=1725352145;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=VbxaF6U83ZdL2HnmpUCTIZfonMJcEng76YSUWc2fuwc=;
+        b=PO2nPIeFz0bWnf3O1TP8Q803ddHfPBhcwSTKp/ROg60ZEFqH5rC5KUczNvpzg0qgzq
+         SAUcZs3RGomI8+aH+xVfWonPY21jgHh0ernE77X+wqzdmvv7ngWyWtYjO7etwREMp3ju
+         gWRhqYHP4MaAJ8p+HjF1f3IM8ecPnIwcEndc8P7dMYDvZWdveHJiNh+ddXebGf7ypQR0
+         xOJYV9r6ZrBeOZKRV5maPRtXk6FrdPuYKlBlTBIrQjqMuHjPG9JFEIE7srVslexh/49J
+         fZe365qLFaq/qEMSUsF1I34e3px/YWqXFuvdBrnnLDN58ARw55M6fneW0dWJvsdVKlmA
+         SB0w==
+X-Gm-Message-State: AOJu0YxPeZIxpj/dUM52jz/GSvEW1oU86QE6dcOqQH2z0iMj9uHoGOao
+	7RAg07GxNoUDRC1VAhI9vpRRtJa9WelsMUsAAMfW+XKJx7uvIHG411BemUWYdF8=
+X-Google-Smtp-Source: AGHT+IGJ/dd/QgZrCPHBBiLONZMEH52GGVDrVO6RVgbGne+O9ozbjHPyuFvNYlBcosHvn9x8ZSQ+0w==
+X-Received: by 2002:adf:b309:0:b0:367:4e05:bb7b with SMTP id ffacd0b85a97d-373118e3c8emr7174074f8f.53.1724747344529;
+        Tue, 27 Aug 2024 01:29:04 -0700 (PDT)
+Received: from myrica ([2.221.137.100])
+        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-3730826196bsm12491738f8f.102.2024.08.27.01.29.03
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 27 Aug 2024 01:29:04 -0700 (PDT)
+Date: Tue, 27 Aug 2024 09:29:24 +0100
+From: Jean-Philippe Brucker <jean-philippe@linaro.org>
+To: Will Deacon <will@kernel.org>
+Cc: iommu@lists.linux.dev, joro@8bytes.org,
+	Robin Murphy <robin.murphy@arm.com>,
+	Mostafa Saleh <smostafa@google.com>
+Subject: Re: [PATCH] MAINTAINERS: Add Jean-Philippe as SMMUv3 SVA reviewer
+Message-ID: <20240827082924.GB424579@myrica>
+References: <20240823165454.1064-1-will@kernel.org>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20240823165454.1064-1-will@kernel.org>
 
-On Tue, 27 Aug 2024 00:26:36 +0000
-Michael Kelley <mhklinux@outlook.com> wrote:
+On Fri, Aug 23, 2024 at 05:54:54PM +0100, Will Deacon wrote:
+> Add Jean-Philippe as a reviewer for the Arm SMMUv3 SVA support, since
+> he's been a consistent contributor to that code over the years and
+> understands the relevant parts of the architecture much better than me.
+> 
+> Cc: Robin Murphy <robin.murphy@arm.com>
+> Cc: Jean-Philippe Brucker <jean-philippe@linaro.org>
+> Cc: Mostafa Saleh <smostafa@google.com>
+> Signed-off-by: Will Deacon <will@kernel.org>
 
-> From: Petr Tesa=C5=99=C3=ADk <petr@tesarici.cz> Sent: Monday, August 26, =
-2024 12:28 PM
-> >=20
-> > On Mon, 26 Aug 2024 16:24:53 +0000
-> > Michael Kelley <mhklinux@outlook.com> wrote:
-> >  =20
-> > > From: Petr Tesa=C5=99=C3=ADk <petr@tesarici.cz> Sent: Saturday, Augus=
-t 24, 2024 1:06 PM =20
-> > > >
-> > > > On Fri, 23 Aug 2024 20:40:16 +0000
-> > > > Michael Kelley <mhklinux@outlook.com> wrote:
-> > > > =20
-> > > > > From: Petr Tesa=C5=99=C3=ADk <petr@tesarici.cz> Sent: Thursday, A=
-ugust 22, 2024 11:45 PM
-> > > > >[...] =20
-> > > > > > > Discussion
-> > > > > > > =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
-> > > > > > > * Since swiotlb isn't visible to device drivers, I've specifi=
-cally
-> > > > > > > named the DMA attribute as MAY_BLOCK instead of MAY_THROTTLE =
-or
-> > > > > > > something swiotlb specific. While this patch set consumes MAY=
-_BLOCK
-> > > > > > > only on the DMA direct path to do throttling in the swiotlb c=
-ode,
-> > > > > > > there might be other uses in the future outside of CoCo VMs, =
-or
-> > > > > > > perhaps on the IOMMU path. =20
-> > > > > >
-> > > > > > I once introduced a similar flag and called it MAY_SLEEP. I cho=
-se
-> > > > > > MAY_SLEEP, because there is already a might_sleep() annotation,=
- but I
-> > > > > > don't have a strong opinion unless your semantics is supposed t=
-o be
-> > > > > > different from might_sleep(). If it is, then I strongly prefer
-> > > > > > MAY_BLOCK to prevent confusing the two. =20
-> > > > >
-> > > > > My intent is that the semantics are the same as might_sleep(). I
-> > > > > vacillated between MAY_SLEEP and MAY_BLOCK. The kernel seems
-> > > > > to treat "sleep" and "block" as equivalent, because blk-mq has
-> > > > > the BLK_MQ_F_BLOCKING flag, and SCSI has the
-> > > > > queuecommand_may_block flag that is translated to
-> > > > > BLK_MQ_F_BLOCKING. So I settled on MAY_BLOCK, but as you
-> > > > > point out, that's inconsistent with might_sleep(). Either way will
-> > > > > be inconsistent somewhere, and I don't have a preference. =20
-> > > >
-> > > > Fair enough. Let's stay with MAY_BLOCK then, so you don't have to
-> > > > change it everywhere.
-> > > > =20
-> > > > >[...] =20
-> > > > > > > Open Topics
-> > > > > > > =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
-> > > > > > > 1. swiotlb allocations from Xen and the IOMMU code don't make=
- use
-> > > > > > > of throttling. This could be added if beneficial.
-> > > > > > >
-> > > > > > > 2. The throttling values are currently exposed and adjustable=
- in
-> > > > > > > /sys/kernel/debug/swiotlb. Should any of this be moved so it =
-is
-> > > > > > > visible even without CONFIG_DEBUG_FS? =20
-> > > > > >
-> > > > > > Yes. It should be possible to control the thresholds through
-> > > > > > sysctl. =20
-> > > > >
-> > > > > Good point.  I was thinking about creating /sys/kernel/swiotlb, b=
-ut
-> > > > > sysctl is better. =20
-> > > >
-> > > > That still leaves the question where it should go.
-> > > >
-> > > > Under /proc/sys/kernel? Or should we make a /proc/sys/kernel/dma
-> > > > subdirectory to make room for more dma-related controls? =20
-> > >
-> > > I would be good with /proc/sys/kernel/swiotlb (or "dma"). There
-> > > are only two entries (high_throttle and low_throttle), but just
-> > > dumping everything directly in /proc/sys/kernel doesn't seem like
-> > > a good long-term approach.  Even though there are currently a lot
-> > > of direct entries in /proc/sys/kernel, that may be historical, and not
-> > > changeable due to backwards compatibility requirements. =20
-> >=20
-> > I think SWIOTLB is a bit too narrow. How many controls would we add
-> > under /proc/sys/kernel/swiotlb? The chances seem higher if we call it
-> > /proc/sys/kernel/dma/swiotlb_{low,high}_throttle, and it follows the
-> > paths in source code (which are subject to change any time, however).
-> > Anyway, I don't want to get into bikeshedding; I'm fine with whatever
-> > you send in the end. :-)
-> >=20
-> > BTW those entries directly under /proc/sys/kernel are not all
-> > historical. The io_uring_* controls were added just last year, see
-> > commit 76d3ccecfa18.
-> >  =20
->=20
-> Note that there could be multiple instances of the throttle values, since
-> a DMA restricted pool has its own struct io_tlb_mem that is separate
-> from the default. I wrote the code so that throttling is independently
-> applied to a restricted pool as well, though I haven't tested it.
+Acked-by: Jean-Philippe Brucker <jean-philippe@linaro.org>
 
-Good point. I didn't think about it.
-
-> So the typical case is that we'll have high and low throttle values for t=
-he
-> default swiotlb pool, but we could also have high and low throttle
-> values for any restricted pools.
->=20
-> Maybe the /proc pathnames would need to be:
->=20
->    /proc/sys/kernel/dma/swiotlb_default/high_throttle
->    /proc/sys/kernel/dma/swiotlb_default/low_throttle
->    /proc/sys/kernel/dma/swiotlb_<rpoolname>/high_throttle
->    /proc/sys/kernel/dma/swiotlb_<rpoolname>/low_throttle
-
-If a subdirectory is needed anyway, then we may ditch the dma
-directory idea and place swiotlb subdirectories directly under
-/proc/sys/kernel.
-
-> Or we could throw all the throttles directly into the "dma" directory,
-> though that makes for fairly long names in lieu of a deeper directory
-> structure:
->=20
->    /proc/sys/kernel/dma/default_swiotlb_high_throttle
->    /proc/sys/kernel/dma/default_swiotlb_low_throttle
->    /proc/sys/kernel/dma/<rpoolname>_swiotlb_high_throttle
->    /proc/sys/kernel/dma/<rpoolname_>swiotlb_low_throttle
->=20
-> Thoughts?
-
-I have already said I don't care much as long as the naming and/or
-placement is not downright confusing. If the default values are
-adjusted, they will end up in a config file under /etc/sysctl.d, and
-admins will copy&paste it from Stack Exchange.
-
-I mean, you're probably the most interested person on the planet, so
-make a choice, and we'll adapt. ;-)
-
-Petr T
+> ---
+>  MAINTAINERS | 4 ++++
+>  1 file changed, 4 insertions(+)
+> 
+> diff --git a/MAINTAINERS b/MAINTAINERS
+> index f328373463b0..445cec2ae4ed 100644
+> --- a/MAINTAINERS
+> +++ b/MAINTAINERS
+> @@ -1880,6 +1880,10 @@ F:	Documentation/devicetree/bindings/iommu/arm,smmu*
+>  F:	drivers/iommu/arm/
+>  F:	drivers/iommu/io-pgtable-arm*
+>  
+> +ARM SMMU SVA SUPPORT
+> +R:	Jean-Philippe Brucker <jean-philippe@linaro.org>
+> +F:	drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c
+> +
+>  ARM SUB-ARCHITECTURES
+>  L:	linux-arm-kernel@lists.infradead.org (moderated for non-subscribers)
+>  S:	Maintained
+> -- 
+> 2.46.0.184.g6999bdac58-goog
+> 
