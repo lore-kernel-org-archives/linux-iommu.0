@@ -1,105 +1,92 @@
-Received: from mail-wr1-f54.google.com (mail-wr1-f54.google.com [209.85.221.54])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mail.tkos.co.il (mail.tkos.co.il [84.110.109.230])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9AEAE7641E
-	for <iommu@lists.linux.dev>; Tue, 27 Aug 2024 08:29:06 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.54
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 79BC217BEA4
+	for <iommu@lists.linux.dev>; Tue, 27 Aug 2024 08:47:38 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=84.110.109.230
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1724747348; cv=none; b=ZC4/Z32i3Wz+BzWtddp6BHw7xijh8yLpc9RH4lC4tOCv5DdZQkoP6zIzXqTGs7eAUndWxDSXRGXwuEaKikY0fEU0Ra+4t94wFx1rKIKEYnCBSIfh8YB1CALDmf8hpl8eqiVutzbNKHqTE8/nngPC3EgoA5VcaXF2LK+GiWnIHsY=
+	t=1724748460; cv=none; b=bIhPdfmYEsCyKJZ4oRwIxTs9M9x2Yw2lnm1ozV+lElw/Ggam2Tsgi/sCYFd5IpoUBmD9KI9PMDeJdjIRtHl8wxey7T8IFnq4UOytCftrdJ5yFCcsTreIXU3zs9bKE3m61VafjU+J1JkHedPyu+ohScrM9y9Y/bMjIzUbyb+WkJ4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1724747348; c=relaxed/simple;
-	bh=iIPwUGV13p5fZmrE79+8bArYc/Op+nqsbUDhnMje5eQ=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=uU3Gfo02uz2BiS2AyOQLJJ9uLD5JQVHoehVp/tLIEf2rsZd4ojJBgMm9rWnNeyqqzqyyUCIcBdQqVF8ftW2EJUtAWF56vL9xpKQD5Oo1MueZXR+OJWcJE1tUm6/yjlv0qJ5A5HH6JmgPPAwBIGeu5PvJF55Ls3MqMRHvTTaEEaw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org; spf=pass smtp.mailfrom=linaro.org; dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b=DFCwyGry; arc=none smtp.client-ip=209.85.221.54
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linaro.org
+	s=arc-20240116; t=1724748460; c=relaxed/simple;
+	bh=izAiWkQ0QMIJvlh6hdlTFfx3RH9ZwdClVZ50FgkP8I8=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=u29olYfmmJ6pikqe2+l1+2xVFBtSCkMseOys0Xl4tZC1Gw/BgXZbWEJtmehXogvGAdY+xpY+kZnCVS1XiqPfyVE2P9jnS7DJnkMtTN57kkUlTuOtzToojNINEFdrdBDf8AHHNporkYruENblAlR79JCKUxyrr8EQk5T6ISlfSyE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=tkos.co.il; spf=pass smtp.mailfrom=tkos.co.il; dkim=pass (2048-bit key) header.d=tkos.co.il header.i=@tkos.co.il header.b=orrfsr2t; arc=none smtp.client-ip=84.110.109.230
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=tkos.co.il
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=tkos.co.il
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="DFCwyGry"
-Received: by mail-wr1-f54.google.com with SMTP id ffacd0b85a97d-3718706cf8aso2968565f8f.3
-        for <iommu@lists.linux.dev>; Tue, 27 Aug 2024 01:29:06 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1724747345; x=1725352145; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=VbxaF6U83ZdL2HnmpUCTIZfonMJcEng76YSUWc2fuwc=;
-        b=DFCwyGryn1/EMu0tNJkAqnKp81awnsOhZ2Ta+aXdqqqUl5nSKBpSKTg3yFsZHmSCng
-         PxdBA+77xYSvDD2pizAsIcWci8WzdZqfbT0VVYklT9HRHKwPJn051Ra37AMYwR1Q7T7U
-         sUbLukcn9XRiyJvAMhQJMt1VG6z1GCdO+Li7vYh+YVEXI+ZFl6NEgQ/IYcT0EEVLUbyR
-         l39vbTLcubrLqRiq44GC6gJTe+g/v1UYKl80vWLLPaLfr5zeUJxCwNr06HlSTUfAGSI3
-         G0BCU/d9WvohbLxvxFgq0Tk5Eg26sU4+9LN+Cw8Fj45+VtD43lotO6/pPMiZ4ZiQ1gxm
-         KqBA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1724747345; x=1725352145;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=VbxaF6U83ZdL2HnmpUCTIZfonMJcEng76YSUWc2fuwc=;
-        b=PO2nPIeFz0bWnf3O1TP8Q803ddHfPBhcwSTKp/ROg60ZEFqH5rC5KUczNvpzg0qgzq
-         SAUcZs3RGomI8+aH+xVfWonPY21jgHh0ernE77X+wqzdmvv7ngWyWtYjO7etwREMp3ju
-         gWRhqYHP4MaAJ8p+HjF1f3IM8ecPnIwcEndc8P7dMYDvZWdveHJiNh+ddXebGf7ypQR0
-         xOJYV9r6ZrBeOZKRV5maPRtXk6FrdPuYKlBlTBIrQjqMuHjPG9JFEIE7srVslexh/49J
-         fZe365qLFaq/qEMSUsF1I34e3px/YWqXFuvdBrnnLDN58ARw55M6fneW0dWJvsdVKlmA
-         SB0w==
-X-Gm-Message-State: AOJu0YxPeZIxpj/dUM52jz/GSvEW1oU86QE6dcOqQH2z0iMj9uHoGOao
-	7RAg07GxNoUDRC1VAhI9vpRRtJa9WelsMUsAAMfW+XKJx7uvIHG411BemUWYdF8=
-X-Google-Smtp-Source: AGHT+IGJ/dd/QgZrCPHBBiLONZMEH52GGVDrVO6RVgbGne+O9ozbjHPyuFvNYlBcosHvn9x8ZSQ+0w==
-X-Received: by 2002:adf:b309:0:b0:367:4e05:bb7b with SMTP id ffacd0b85a97d-373118e3c8emr7174074f8f.53.1724747344529;
-        Tue, 27 Aug 2024 01:29:04 -0700 (PDT)
-Received: from myrica ([2.221.137.100])
-        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-3730826196bsm12491738f8f.102.2024.08.27.01.29.03
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 27 Aug 2024 01:29:04 -0700 (PDT)
-Date: Tue, 27 Aug 2024 09:29:24 +0100
-From: Jean-Philippe Brucker <jean-philippe@linaro.org>
-To: Will Deacon <will@kernel.org>
-Cc: iommu@lists.linux.dev, joro@8bytes.org,
+	dkim=pass (2048-bit key) header.d=tkos.co.il header.i=@tkos.co.il header.b="orrfsr2t"
+Received: from tarshish.tkos.co.il (unknown [10.0.8.3])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by mail.tkos.co.il (Postfix) with ESMTPS id 8CFA1440A74;
+	Tue, 27 Aug 2024 11:45:43 +0300 (IDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=tkos.co.il;
+	s=default; t=1724748343;
+	bh=izAiWkQ0QMIJvlh6hdlTFfx3RH9ZwdClVZ50FgkP8I8=;
+	h=From:To:Cc:Subject:Date:From;
+	b=orrfsr2tQ9kfounZs5tm1ACHAeuMnhfIZGNsAZEf/48xdD9q/qp/3ukiHqvD0YP0Z
+	 fQOHwHdSFt2bWdZ313Q1FHuEyEJ2TmubxFoKyGPgEvnfYpc3xkctXnTlRFhdUqzVKh
+	 jrKnRln4lS8hICFwUz0aGL3sV7Y8Ob3WSwC7tgHjciS1VeOrfQyFmSRFIBTXBwKy8r
+	 Wl2zomJlhWteN12/ztOlBkCOWO9CXbT1gf3y5A3gnE17wnKhuxKLEWhEAm86zXCig7
+	 Z6LCf6wpaQRpQi1fV87FTJuV5DFkdoc7Zii6EiAe+Ef5fQOqmD1d6eWWhnVyDQWMAC
+	 5cO1OtO9Mmk8w==
+From: Baruch Siach <baruch@tkos.co.il>
+To: Christoph Hellwig <hch@lst.de>,
+	Marek Szyprowski <m.szyprowski@samsung.com>,
 	Robin Murphy <robin.murphy@arm.com>,
-	Mostafa Saleh <smostafa@google.com>
-Subject: Re: [PATCH] MAINTAINERS: Add Jean-Philippe as SMMUv3 SVA reviewer
-Message-ID: <20240827082924.GB424579@myrica>
-References: <20240823165454.1064-1-will@kernel.org>
+	Catalin Marinas <catalin.marinas@arm.com>,
+	Will Deacon <will@kernel.org>
+Cc: iommu@lists.linux.dev,
+	linux-arm-kernel@lists.infradead.org,
+	=?UTF-8?q?Petr=20Tesa=C5=99=C3=ADk?= <petr@tesarici.cz>,
+	Ramon Fried <ramon@neureality.ai>,
+	Elad Nachman <enachman@marvell.com>,
+	Baruch Siach <baruch@tkos.co.il>
+Subject: [PATCH] arm64: mm: fix DMA zone when dma-ranges is missing
+Date: Tue, 27 Aug 2024 11:44:09 +0300
+Message-ID: <731d204f5f556ad61bbaf004b1d984f83c90b4f5.1724748249.git.baruch@tkos.co.il>
+X-Mailer: git-send-email 2.45.2
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20240823165454.1064-1-will@kernel.org>
+Content-Transfer-Encoding: 8bit
 
-On Fri, Aug 23, 2024 at 05:54:54PM +0100, Will Deacon wrote:
-> Add Jean-Philippe as a reviewer for the Arm SMMUv3 SVA support, since
-> he's been a consistent contributor to that code over the years and
-> understands the relevant parts of the architecture much better than me.
-> 
-> Cc: Robin Murphy <robin.murphy@arm.com>
-> Cc: Jean-Philippe Brucker <jean-philippe@linaro.org>
-> Cc: Mostafa Saleh <smostafa@google.com>
-> Signed-off-by: Will Deacon <will@kernel.org>
+Some platforms, like Rockchip RK3568 based Odroid M1, do not provide DMA
+limits information in device-tree dma-ranges property. Still some device
+drivers set DMA limit that relies on DMA zone at low 4GB memory area.
+Until commit ba0fb44aed47 ("dma-mapping: replace zone_dma_bits by
+zone_dma_limit"), zone_sizes_init() restricted DMA zone to low 32-bit
+when there is RAM there.
 
-Acked-by: Jean-Philippe Brucker <jean-philippe@linaro.org>
+Restore DMA zone 32-bit limit for platforms that have RAM in this area.
 
-> ---
->  MAINTAINERS | 4 ++++
->  1 file changed, 4 insertions(+)
-> 
-> diff --git a/MAINTAINERS b/MAINTAINERS
-> index f328373463b0..445cec2ae4ed 100644
-> --- a/MAINTAINERS
-> +++ b/MAINTAINERS
-> @@ -1880,6 +1880,10 @@ F:	Documentation/devicetree/bindings/iommu/arm,smmu*
->  F:	drivers/iommu/arm/
->  F:	drivers/iommu/io-pgtable-arm*
->  
-> +ARM SMMU SVA SUPPORT
-> +R:	Jean-Philippe Brucker <jean-philippe@linaro.org>
-> +F:	drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c
-> +
->  ARM SUB-ARCHITECTURES
->  L:	linux-arm-kernel@lists.infradead.org (moderated for non-subscribers)
->  S:	Maintained
-> -- 
-> 2.46.0.184.g6999bdac58-goog
-> 
+Fixes: ba0fb44aed47 ("dma-mapping: replace zone_dma_bits by zone_dma_limit")
+Reported-by: Marek Szyprowski <m.szyprowski@samsung.com>
+Tested-by: Marek Szyprowski <m.szyprowski@samsung.com>
+Signed-off-by: Baruch Siach <baruch@tkos.co.il>
+---
+This should go via the dma-mapping tree that contains the fixed commit.
+---
+ arch/arm64/mm/init.c | 3 +++
+ 1 file changed, 3 insertions(+)
+
+diff --git a/arch/arm64/mm/init.c b/arch/arm64/mm/init.c
+index bfb10969cbf0..7fcd0aaa9bb6 100644
+--- a/arch/arm64/mm/init.c
++++ b/arch/arm64/mm/init.c
+@@ -116,6 +116,9 @@ static void __init arch_reserve_crashkernel(void)
+ 
+ static phys_addr_t __init max_zone_phys(phys_addr_t zone_limit)
+ {
++	if (memblock_start_of_DRAM() < U32_MAX)
++		zone_limit = min(zone_limit, U32_MAX);
++
+ 	return min(zone_limit, memblock_end_of_DRAM() - 1) + 1;
+ }
+ 
+-- 
+2.45.2
+
