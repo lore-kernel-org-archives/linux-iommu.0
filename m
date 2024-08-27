@@ -1,254 +1,212 @@
-Received: from mailout2.w1.samsung.com (mailout2.w1.samsung.com [210.118.77.12])
+Received: from bee.tesarici.cz (bee.tesarici.cz [37.205.15.56])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 03B33189511
-	for <iommu@lists.linux.dev>; Tue, 27 Aug 2024 07:46:12 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=210.118.77.12
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9A8A417C9A7;
+	Tue, 27 Aug 2024 08:01:00 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=37.205.15.56
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1724744776; cv=none; b=T1pQROPo90ZFwSmT4NhREhGPiTktmzlcvRRTLK8hFEDHQPWpVRIhY9elpFVPzg5oMxpLv5jrjkg6faRCrfZEK8cBKne5CbF8zXYdnyJmEwLfgXWHMDMUmAyw+D4/P+Kg1i1s6maPQjuaYkQCQurRVdy9LXrx6RGcIr/Ck5WUwWg=
+	t=1724745664; cv=none; b=A7ZZMgaL7+04KMVR7ZxSTCuFMR6ervg7xmMpAFg4pREZQNBsgi/HWfl3cVcMrsAXJklwlDU/sb0xGFpll71R+h0HfiUddhc/xBzmGp1kUdXZ676odimZ68Ea5nJ1TYCt/2wbBhRPo+TyFDvTRgUkI3OH9AdxmW5WtFWzNfXLUC8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1724744776; c=relaxed/simple;
-	bh=ikZCmmAm5THeKWLXLqgcL8YwQmmXnt0dgIwvfcrnj0Y=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:From:In-Reply-To:
-	 Content-Type:References; b=E7ZrA40XBU1Ejjn07tCPGSKfl25LTyy3OgenDCdKvAcOPMvSZSTnXrQtdinCfRxatrpqCbwMKxnrFkJU7/wU9KYu0BCOr1exydQUBA0A8J2jSNgFKjNE0YTHw852qA8wGQEJytYJ9JVlPtwSseO+zPltcHmxky4zEfrItcRGi0Y=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=samsung.com; spf=pass smtp.mailfrom=samsung.com; dkim=pass (1024-bit key) header.d=samsung.com header.i=@samsung.com header.b=aonowNXF; arc=none smtp.client-ip=210.118.77.12
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=samsung.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=samsung.com
+	s=arc-20240116; t=1724745664; c=relaxed/simple;
+	bh=XeuKHYphwj6HEB8Fy7aHZAKGom5ZSuFWmNc9MuomPmo=;
+	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=hTJA+7hY1FueXz+LmSQ+EikbMtTRgjoxq6iclxKuQmA12W6xMI3wtCW7H2+ZyXsUUJ0MfhXY7jeeYGD1xPEqzM9eAbUyoe6AXh5wcjaDuhjTJxHeihz+gJ06tqV4cTaH8XIDjIJIFJZf9Uft0k6ir7omPXX0+ydTVOGHFMG9hSI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=tesarici.cz; spf=pass smtp.mailfrom=tesarici.cz; dkim=pass (2048-bit key) header.d=tesarici.cz header.i=@tesarici.cz header.b=pq1t7xe6; arc=none smtp.client-ip=37.205.15.56
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=tesarici.cz
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=tesarici.cz
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=samsung.com header.i=@samsung.com header.b="aonowNXF"
-Received: from eucas1p2.samsung.com (unknown [182.198.249.207])
-	by mailout2.w1.samsung.com (KnoxPortal) with ESMTP id 20240827074611euoutp0272683be4853ff25f450138f02a445f4c~vhjsx7vnA2967229672euoutp02T
-	for <iommu@lists.linux.dev>; Tue, 27 Aug 2024 07:46:11 +0000 (GMT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 mailout2.w1.samsung.com 20240827074611euoutp0272683be4853ff25f450138f02a445f4c~vhjsx7vnA2967229672euoutp02T
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
-	s=mail20170921; t=1724744771;
-	bh=kfDFUjs7/q5tIplnMbJnk4YsrEAYZmv3Pq/OPVvfdLM=;
-	h=Date:Subject:To:Cc:From:In-Reply-To:References:From;
-	b=aonowNXFnsPBl1w5o3cHGIn0bWkFavi8nntq8BZnBxrL1W506Eyh2lI/cllMpe/uf
-	 tQks1xYDXHMUOOCooyhNJLg6aPGnRZHapjBr8+K+1jwQg++AbMyFle1rzera/r4oRb
-	 keqdrJux1RG3zdjIKCHIAfyC3II02q+GUc5+nDzA=
-Received: from eusmges2new.samsung.com (unknown [203.254.199.244]) by
-	eucas1p1.samsung.com (KnoxPortal) with ESMTP id
-	20240827074610eucas1p13ac389b59f36049879f9f074056b2a1e~vhjsbJFKV0306003060eucas1p1G;
-	Tue, 27 Aug 2024 07:46:10 +0000 (GMT)
-Received: from eucas1p1.samsung.com ( [182.198.249.206]) by
-	eusmges2new.samsung.com (EUCPMTA) with SMTP id F8.A5.09875.2448DC66; Tue, 27
-	Aug 2024 08:46:10 +0100 (BST)
-Received: from eusmtrp2.samsung.com (unknown [182.198.249.139]) by
-	eucas1p2.samsung.com (KnoxPortal) with ESMTPA id
-	20240827074610eucas1p213b68cc09fbe310cb707804e90a6a3c6~vhjr4wuuc1758917589eucas1p28;
-	Tue, 27 Aug 2024 07:46:10 +0000 (GMT)
-Received: from eusmgms1.samsung.com (unknown [182.198.249.179]) by
-	eusmtrp2.samsung.com (KnoxPortal) with ESMTP id
-	20240827074610eusmtrp2a06199635b59700d136eb9e7aafd0dcb~vhjr4CO3o2030920309eusmtrp2I;
-	Tue, 27 Aug 2024 07:46:10 +0000 (GMT)
-X-AuditID: cbfec7f4-131ff70000002693-95-66cd844202b0
-Received: from eusmtip2.samsung.com ( [203.254.199.222]) by
-	eusmgms1.samsung.com (EUCPMTA) with SMTP id 14.64.08810.1448DC66; Tue, 27
-	Aug 2024 08:46:09 +0100 (BST)
-Received: from [106.210.134.192] (unknown [106.210.134.192]) by
-	eusmtip2.samsung.com (KnoxPortal) with ESMTPA id
-	20240827074608eusmtip2a9ffd70ae4400a94c17978bd742ea4ea~vhjqpiDOe0430004300eusmtip2O;
-	Tue, 27 Aug 2024 07:46:08 +0000 (GMT)
-Message-ID: <5615235b-d114-4a7c-bebf-f7fe72886489@samsung.com>
-Date: Tue, 27 Aug 2024 09:46:06 +0200
+	dkim=pass (2048-bit key) header.d=tesarici.cz header.i=@tesarici.cz header.b="pq1t7xe6"
+Received: from mordecai.tesarici.cz (unknown [193.86.92.181])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange ECDHE (P-256) server-signature RSA-PSS (2048 bits) server-digest SHA256)
+	(No client certificate requested)
+	by bee.tesarici.cz (Postfix) with ESMTPSA id 405871F5F37;
+	Tue, 27 Aug 2024 10:00:58 +0200 (CEST)
+Authentication-Results: mail.tesarici.cz; dmarc=fail (p=quarantine dis=none) header.from=tesarici.cz
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=tesarici.cz; s=mail;
+	t=1724745658; bh=gTsz4OLuUenCez/Nx0yB83T9U09ihDAGrzP/1JubWmI=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+	b=pq1t7xe6FE1ajRU0n1PIq3R0gO1GVYddI2phd9r8voNaVUl1hVZCcMkdAtwXygweV
+	 ubQch50HX9nRGZuSq2WaOoIyzOf8JRlfxP3DsxcsgNJRwa29w/uCwJhCoPCTk+giRq
+	 Ob+JY9iTxQE0nkQRJp+MjLSF5mUWl6g4W/qQ5UFLBoGiRi25nGiKRAnEbTSucAQ23t
+	 Li5T+VY6hbL127O+5EkAOruj2eel+5WtjGBrPgnvfsLOdYVDgcqq8jhiWKaHIMhEi+
+	 leVYLJJkH7xnfpUmFRyn8mdp5aSg7zsrHzJIfXms3JVY5ILYZwXLozpWs1/eHtuI+/
+	 Jm5Qur/0EyZ0w==
+Date: Tue, 27 Aug 2024 10:00:53 +0200
+From: Petr =?UTF-8?B?VGVzYcWZw61r?= <petr@tesarici.cz>
+To: Michael Kelley <mhklinux@outlook.com>
+Cc: "kbusch@kernel.org" <kbusch@kernel.org>, "axboe@kernel.dk"
+ <axboe@kernel.dk>, "sagi@grimberg.me" <sagi@grimberg.me>,
+ "James.Bottomley@HansenPartnership.com"
+ <James.Bottomley@HansenPartnership.com>, "martin.petersen@oracle.com"
+ <martin.petersen@oracle.com>, "kys@microsoft.com" <kys@microsoft.com>,
+ "haiyangz@microsoft.com" <haiyangz@microsoft.com>, "wei.liu@kernel.org"
+ <wei.liu@kernel.org>, "decui@microsoft.com" <decui@microsoft.com>,
+ "robin.murphy@arm.com" <robin.murphy@arm.com>, "hch@lst.de" <hch@lst.de>,
+ "m.szyprowski@samsung.com" <m.szyprowski@samsung.com>,
+ "iommu@lists.linux.dev" <iommu@lists.linux.dev>,
+ "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+ "linux-nvme@lists.infradead.org" <linux-nvme@lists.infradead.org>,
+ "linux-scsi@vger.kernel.org" <linux-scsi@vger.kernel.org>,
+ "linux-hyperv@vger.kernel.org" <linux-hyperv@vger.kernel.org>,
+ "linux-coco@lists.linux.dev" <linux-coco@lists.linux.dev>
+Subject: Re: [RFC 0/7] Introduce swiotlb throttling
+Message-ID: <20240827100053.2f5c3403@mordecai.tesarici.cz>
+In-Reply-To: <SN6PR02MB41571FA9E40ECA5954001A57D4942@SN6PR02MB4157.namprd02.prod.outlook.com>
+References: <20240822183718.1234-1-mhklinux@outlook.com>
+	<20240823084458.4394b401@meshulam.tesarici.cz>
+	<SN6PR02MB415758F12C59E6CA67227DCFD4882@SN6PR02MB4157.namprd02.prod.outlook.com>
+	<20240824220556.0e2587d5@meshulam.tesarici.cz>
+	<SN6PR02MB41577933B499309EA3CE4DDBD48B2@SN6PR02MB4157.namprd02.prod.outlook.com>
+	<20240826212803.3e11d2f9@meshulam.tesarici.cz>
+	<SN6PR02MB41571FA9E40ECA5954001A57D4942@SN6PR02MB4157.namprd02.prod.outlook.com>
+X-Mailer: Claws Mail 4.3.0 (GTK 3.24.43; x86_64-suse-linux-gnu)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v6 RESED 1/2] dma: replace zone_dma_bits by
- zone_dma_limit
-To: Baruch Siach <baruch@tkos.co.il>
-Cc: Christoph Hellwig <hch@lst.de>, Catalin Marinas
-	<catalin.marinas@arm.com>, Will Deacon <will@kernel.org>, Robin Murphy
-	<robin.murphy@arm.com>, iommu@lists.linux.dev,
-	linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-	linuxppc-dev@lists.ozlabs.org, linux-s390@vger.kernel.org,
-	=?UTF-8?B?UGV0ciBUZXNhxZnDrWs=?= <petr@tesarici.cz>, Ramon Fried
-	<ramon@neureality.ai>, Elad Nachman <enachman@marvell.com>,
-	linux-rockchip@lists.infradead.org
-Content-Language: en-US
-From: Marek Szyprowski <m.szyprowski@samsung.com>
-In-Reply-To: <87ikvmv45i.fsf@tarshish>
-Content-Transfer-Encoding: 8bit
-X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFrrJKsWRmVeSWpSXmKPExsWy7djPc7pOLWfTDPYfUrBYce0Ni8X7ZT2M
-	Fo8XbWO3WLn6KJPFry8WFpseX2O1uLxrDpvFpwf/mS0mLGxmtvj9/R+rxcI5z1kt+l6uYbU4
-	+OEJq0XLHVMHPo8189Ywemxa1cnmsXlJvceLzTMZPc7PWMjosftmA5vH5IUXmT1m/fzH4rF3
-	73ZGj7kNt5g8Pm+SC+CO4rJJSc3JLEst0rdL4Mp4fZu1oEGnYsWcqywNjFdUuhg5OCQETCQm
-	zjTrYuTiEBJYwSjx4eAq9i5GTiDnC6PE9Zf+EPZnRok3D+pAbJD6yetbWCAaljNKvFi9kw3C
-	+cgocaCzjQWkilfATuLL1uWMIDaLgKrEo5k/2CHighInZz4BqxEVkJe4f2sGWFxYIEBiyrNN
-	bCC2iICKxP/n28BsZoFrzBKbZ9hA2OISt57MZwKx2QQMJbredoHVcAqoSdw7eo0dokZeonnr
-	bGaQgyQEtnNKzOjYwwZxtovEjq/NLBC2sMSr41vYIWwZif87QYaCNLQzSiz4fR/KmcAo0fD8
-	FiNElbXEnXO/2EABxiygKbF+lz5E2FFi+dwXTJBw5JO48VYQ4gg+iUnbpjNDhHklOtqEIKrV
-	JGYdXwe39uCFS8wTGJVmIQXLLCRvzkLyziyEvQsYWVYxiqeWFuempxYb5aWW6xUn5haX5qXr
-	JefnbmIEpr7T/45/2cG4/NVHvUOMTByMhxglOJiVRHjlLp9ME+JNSaysSi3Kjy8qzUktPsQo
-	zcGiJM6rmiKfKiSQnliSmp2aWpBaBJNl4uCUamDi7wlJOrlmm6Z+X8PjOQ7rLl9JDnB+vWxp
-	lPkPpcnB+fnzFTd/+MZe2q9xPFjzxK66xU/M16lsnTfhuw9ztx/7xOsCtlZ6dosrD5cWcK48
-	FHV/TWK0qq5pVtOx5ZxhP3vOL/9pllf6vKLu8tMk73357o5Hd+/pkZ5n2/ho7V/5ug9pGv2h
-	mz59P5Bid3TOe/t1u46et5oW0uxuoel8bIfow5xFdZNbbFrP7HnUmPSUN90zdXLZwsglJzN0
-	s6xOcgX+v7z/vu2meudl24sff1/1Q7XjTPGndZG++QVzE32dzmewympLMd3enfC57NiBsMVL
-	w83/6TU8OHEn/Wehskfit2uvL7wtl/6meCnEQl5NiaU4I9FQi7moOBEAMPhlE+wDAAA=
-X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFnrPIsWRmVeSWpSXmKPExsVy+t/xe7qOLWfTDG6ttbJYce0Ni8X7ZT2M
-	Fo8XbWO3WLn6KJPFry8WFpseX2O1uLxrDpvFpwf/mS0mLGxmtvj9/R+rxcI5z1kt+l6uYbU4
-	+OEJq0XLHVMHPo8189Ywemxa1cnmsXlJvceLzTMZPc7PWMjosftmA5vH5IUXmT1m/fzH4rF3
-	73ZGj7kNt5g8Pm+SC+CO0rMpyi8tSVXIyC8usVWKNrQw0jO0tNAzMrHUMzQ2j7UyMlXSt7NJ
-	Sc3JLEst0rdL0Mt4fZu1oEGnYsWcqywNjFdUuhg5OSQETCQmr29h6WLk4hASWMoo0brwHzNE
-	Qkbi5LQGVghbWOLPtS42iKL3jBK/754ES/AK2El82bqcEcRmEVCVeDTzBztEXFDi5MwnLCC2
-	qIC8xP1bM8DiwgJ+EvffbmUDsUUEVCT+P98GNpRZ4BqzROvP81AbvjBJzGh6DtbNLCAucevJ
-	fCYQm03AUKLrbRdYN6eAmsS9o9fYIWrMJLq2djFC2PISzVtnM09gFJqF5JBZSEbNQtIyC0nL
-	AkaWVYwiqaXFuem5xYZ6xYm5xaV56XrJ+bmbGIExv+3Yz807GOe9+qh3iJGJg/EQowQHs5II
-	r9zlk2lCvCmJlVWpRfnxRaU5qcWHGE2BoTGRWUo0OR+YdPJK4g3NDEwNTcwsDUwtzYyVxHk9
-	CzoShQTSE0tSs1NTC1KLYPqYODilGphWFwjcUBPdcWW6ufQE9mbmbj9ti/q27S+SLu1bdjVn
-	3s/ZGxe/iMnKsGjvWl+xKOHDCSf5faHydx4qV1qsvV3+429p1feFjDzzivJ1boaGzjC49TqL
-	semFcnq+9+pFT14Lhb9PV3p4UeaUyeHbF70F1kwQsGMyfhBRvDdijbmGoVzRo89HAy4UnL/a
-	zD9RpuSCBPs1zdsTo/Oybv87+O/ejMMbpCI5Hrva9x6bmFUc+3TPhmcZ7fkrlwS/cTa6llIo
-	tOX+p2kHl5/YMT9f9YJfnPOczB9FbwsPTDSv0n73+f+Vx47sb4qqlXi+ZvxTmi1Wc+v0Q6G9
-	rgzheq6Prknp8byfXMVp+ThAhLfpNf8jJZbijERDLeai4kQA35+ZY4IDAAA=
-X-CMS-MailID: 20240827074610eucas1p213b68cc09fbe310cb707804e90a6a3c6
-X-Msg-Generator: CA
-Content-Type: text/plain; charset="utf-8"
-X-RootMTR: 20240811070951eucas1p1dc5315e0d710db13ce28fa0a977c7bc1
-X-EPHeader: CA
-CMS-TYPE: 201P
-X-CMS-RootMailID: 20240811070951eucas1p1dc5315e0d710db13ce28fa0a977c7bc1
-References: <cover.1723359916.git.baruch@tkos.co.il>
-	<CGME20240811070951eucas1p1dc5315e0d710db13ce28fa0a977c7bc1@eucas1p1.samsung.com>
-	<17c067618b93e5d71f19c37826d54db4299621a3.1723359916.git.baruch@tkos.co.il>
-	<53d988b1-bdce-422a-ae4e-158f305ad703@samsung.com> <87mskyva7o.fsf@tarshish>
-	<f206f46c-0e2a-47a3-84b3-30bb53499f75@samsung.com> <87ikvmv45i.fsf@tarshish>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 
-On 27.08.2024 09:03, Baruch Siach wrote:
-> On Tue, Aug 27 2024, Marek Szyprowski wrote:
->> On 27.08.2024 06:52, Baruch Siach wrote:
->>> Hi Marek,
->>>
->>> Thanks for your report.
->>>
->>> On Mon, Aug 26 2024, Marek Szyprowski wrote:
->>>> On 11.08.2024 09:09, Baruch Siach wrote:
->>>>> From: Catalin Marinas <catalin.marinas@arm.com>
->>>>>
->>>>> Hardware DMA limit might not be power of 2. When RAM range starts above
->>>>> 0, say 4GB, DMA limit of 30 bits should end at 5GB. A single high bit
->>>>> can not encode this limit.
->>>>>
->>>>> Use plain address for DMA zone limit.
->>>>>
->>>>> Since DMA zone can now potentially span beyond 4GB physical limit of
->>>>> DMA32, make sure to use DMA zone for GFP_DMA32 allocations in that case.
->>>>>
->>>>> Signed-off-by: Catalin Marinas <catalin.marinas@arm.com>
->>>>> Co-developed-by: Baruch Siach <baruch@tkos.co.il>
->>>>> Signed-off-by: Baruch Siach <baruch@tkos.co.il>
->>>>> ---
->>>> This patch landed recently in linux-next as commit ba0fb44aed47
->>>> ("dma-mapping: replace zone_dma_bits by zone_dma_limit"). During my
->>>> tests I found that it introduces the following warning on ARM64/Rockchip
->>>> based Odroid M1 board (arch/arm64/boot/dts/rockchip/rk3568-odroid-m1.dts):
->>> Does this warning go away if you revert both 3be9b846896d and ba0fb44aed47?
->> Yes, linux-next with above mentioned commits reverted works fine.
->>
->>
->>> Upstream rockchip DTs have no dma-ranges property. Is that the case for
->>> your platform as well?
->>>
->>> Can you share kernel report of DMA zones and swiotlb? On my platform I get:
->>>
->>> [    0.000000] Zone ranges:
->>> [    0.000000]   DMA      [mem 0x0000000800000000-0x000000083fffffff]
->>> [    0.000000]   DMA32    empty
->>> [    0.000000]   Normal   [mem 0x0000000840000000-0x0000000fffffffff]
->>> ...
->>> [    0.000000] software IO TLB: area num 8.
->>> [    0.000000] software IO TLB: mapped [mem 0x000000083be38000-0x000000083fe38000] (64MB)
->>>
->>> What do you get at your end?
->> On ba0fb44aed47 I got:
->>
->> [    0.000000] NUMA: No NUMA configuration found
->> [    0.000000] NUMA: Faking a node at [mem
->> 0x0000000000200000-0x00000001ffffffff]
->> [    0.000000] NUMA: NODE_DATA [mem 0x1ff7a0600-0x1ff7a2fff]
->> [    0.000000] Zone ranges:
->> [    0.000000]   DMA      [mem 0x0000000000200000-0x00000001ffffffff]
->> [    0.000000]   DMA32    empty
->> [    0.000000]   Normal   empty
->> [    0.000000] Movable zone start for each node
->> [    0.000000] Early memory node ranges
->> [    0.000000]   node   0: [mem 0x0000000000200000-0x00000000083fffff]
->> [    0.000000]   node   0: [mem 0x0000000009400000-0x00000000efffffff]
->> [    0.000000]   node   0: [mem 0x00000001f0000000-0x00000001ffffffff]
->> [    0.000000] Initmem setup node 0 [mem
->> 0x0000000000200000-0x00000001ffffffff]
->> [    0.000000] On node 0, zone DMA: 512 pages in unavailable ranges
->> [    0.000000] On node 0, zone DMA: 4096 pages in unavailable ranges
->> [    0.000000] cma: Reserved 96 MiB at 0x00000001f0000000 on node -1
->>
->> ...
->>
->> [    0.000000] software IO TLB: SWIOTLB bounce buffer size adjusted to 3MB
->> [    0.000000] software IO TLB: area num 4.
->> [    0.000000] software IO TLB: mapped [mem
->> 0x00000001fac00000-0x00000001fb000000] (4MB)
->>
->> On the fa3c109a6d30 (parent commit of the $subject) I got:
->>
->> [    0.000000] NUMA: No NUMA configuration found
->> [    0.000000] NUMA: Faking a node at [mem
->> 0x0000000000200000-0x00000001ffffffff]
->> [    0.000000] NUMA: NODE_DATA [mem 0x1ff7a0600-0x1ff7a2fff]
->> [    0.000000] Zone ranges:
->> [    0.000000]   DMA      [mem 0x0000000000200000-0x00000000ffffffff]
->> [    0.000000]   DMA32    empty
->> [    0.000000]   Normal   [mem 0x0000000100000000-0x00000001ffffffff]
->> [    0.000000] Movable zone start for each node
->> [    0.000000] Early memory node ranges
->> [    0.000000]   node   0: [mem 0x0000000000200000-0x00000000083fffff]
->> [    0.000000]   node   0: [mem 0x0000000009400000-0x00000000efffffff]
->> [    0.000000]   node   0: [mem 0x00000001f0000000-0x00000001ffffffff]
->> [    0.000000] Initmem setup node 0 [mem
->> 0x0000000000200000-0x00000001ffffffff]
->> [    0.000000] On node 0, zone DMA: 512 pages in unavailable ranges
->> [    0.000000] On node 0, zone DMA: 4096 pages in unavailable ranges
->> [    0.000000] cma: Reserved 96 MiB at 0x00000000ea000000 on node -1
->>
->> ...
->>
->> [    0.000000] software IO TLB: area num 4.
->> [    0.000000] software IO TLB: mapped [mem
->> 0x00000000e6000000-0x00000000ea000000] (64MB)
->>
->> It looks that for some reasons $subject patch changes the default zone
->> and swiotlb configuration.
-> Does this fix the issue?
->
-> diff --git a/arch/arm64/mm/init.c b/arch/arm64/mm/init.c
-> index bfb10969cbf0..7fcd0aaa9bb6 100644
-> --- a/arch/arm64/mm/init.c
-> +++ b/arch/arm64/mm/init.c
-> @@ -116,6 +116,9 @@ static void __init arch_reserve_crashkernel(void)
->   
->   static phys_addr_t __init max_zone_phys(phys_addr_t zone_limit)
->   {
-> +	if (memblock_start_of_DRAM() < U32_MAX)
-> +		zone_limit = min(zone_limit, U32_MAX);
-> +
->   	return min(zone_limit, memblock_end_of_DRAM() - 1) + 1;
->   }
->   
+On Tue, 27 Aug 2024 00:26:36 +0000
+Michael Kelley <mhklinux@outlook.com> wrote:
 
-Yes, this fixes my issue. Thanks!
+> From: Petr Tesa=C5=99=C3=ADk <petr@tesarici.cz> Sent: Monday, August 26, =
+2024 12:28 PM
+> >=20
+> > On Mon, 26 Aug 2024 16:24:53 +0000
+> > Michael Kelley <mhklinux@outlook.com> wrote:
+> >  =20
+> > > From: Petr Tesa=C5=99=C3=ADk <petr@tesarici.cz> Sent: Saturday, Augus=
+t 24, 2024 1:06 PM =20
+> > > >
+> > > > On Fri, 23 Aug 2024 20:40:16 +0000
+> > > > Michael Kelley <mhklinux@outlook.com> wrote:
+> > > > =20
+> > > > > From: Petr Tesa=C5=99=C3=ADk <petr@tesarici.cz> Sent: Thursday, A=
+ugust 22, 2024 11:45 PM
+> > > > >[...] =20
+> > > > > > > Discussion
+> > > > > > > =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+> > > > > > > * Since swiotlb isn't visible to device drivers, I've specifi=
+cally
+> > > > > > > named the DMA attribute as MAY_BLOCK instead of MAY_THROTTLE =
+or
+> > > > > > > something swiotlb specific. While this patch set consumes MAY=
+_BLOCK
+> > > > > > > only on the DMA direct path to do throttling in the swiotlb c=
+ode,
+> > > > > > > there might be other uses in the future outside of CoCo VMs, =
+or
+> > > > > > > perhaps on the IOMMU path. =20
+> > > > > >
+> > > > > > I once introduced a similar flag and called it MAY_SLEEP. I cho=
+se
+> > > > > > MAY_SLEEP, because there is already a might_sleep() annotation,=
+ but I
+> > > > > > don't have a strong opinion unless your semantics is supposed t=
+o be
+> > > > > > different from might_sleep(). If it is, then I strongly prefer
+> > > > > > MAY_BLOCK to prevent confusing the two. =20
+> > > > >
+> > > > > My intent is that the semantics are the same as might_sleep(). I
+> > > > > vacillated between MAY_SLEEP and MAY_BLOCK. The kernel seems
+> > > > > to treat "sleep" and "block" as equivalent, because blk-mq has
+> > > > > the BLK_MQ_F_BLOCKING flag, and SCSI has the
+> > > > > queuecommand_may_block flag that is translated to
+> > > > > BLK_MQ_F_BLOCKING. So I settled on MAY_BLOCK, but as you
+> > > > > point out, that's inconsistent with might_sleep(). Either way will
+> > > > > be inconsistent somewhere, and I don't have a preference. =20
+> > > >
+> > > > Fair enough. Let's stay with MAY_BLOCK then, so you don't have to
+> > > > change it everywhere.
+> > > > =20
+> > > > >[...] =20
+> > > > > > > Open Topics
+> > > > > > > =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+> > > > > > > 1. swiotlb allocations from Xen and the IOMMU code don't make=
+ use
+> > > > > > > of throttling. This could be added if beneficial.
+> > > > > > >
+> > > > > > > 2. The throttling values are currently exposed and adjustable=
+ in
+> > > > > > > /sys/kernel/debug/swiotlb. Should any of this be moved so it =
+is
+> > > > > > > visible even without CONFIG_DEBUG_FS? =20
+> > > > > >
+> > > > > > Yes. It should be possible to control the thresholds through
+> > > > > > sysctl. =20
+> > > > >
+> > > > > Good point.  I was thinking about creating /sys/kernel/swiotlb, b=
+ut
+> > > > > sysctl is better. =20
+> > > >
+> > > > That still leaves the question where it should go.
+> > > >
+> > > > Under /proc/sys/kernel? Or should we make a /proc/sys/kernel/dma
+> > > > subdirectory to make room for more dma-related controls? =20
+> > >
+> > > I would be good with /proc/sys/kernel/swiotlb (or "dma"). There
+> > > are only two entries (high_throttle and low_throttle), but just
+> > > dumping everything directly in /proc/sys/kernel doesn't seem like
+> > > a good long-term approach.  Even though there are currently a lot
+> > > of direct entries in /proc/sys/kernel, that may be historical, and not
+> > > changeable due to backwards compatibility requirements. =20
+> >=20
+> > I think SWIOTLB is a bit too narrow. How many controls would we add
+> > under /proc/sys/kernel/swiotlb? The chances seem higher if we call it
+> > /proc/sys/kernel/dma/swiotlb_{low,high}_throttle, and it follows the
+> > paths in source code (which are subject to change any time, however).
+> > Anyway, I don't want to get into bikeshedding; I'm fine with whatever
+> > you send in the end. :-)
+> >=20
+> > BTW those entries directly under /proc/sys/kernel are not all
+> > historical. The io_uring_* controls were added just last year, see
+> > commit 76d3ccecfa18.
+> >  =20
+>=20
+> Note that there could be multiple instances of the throttle values, since
+> a DMA restricted pool has its own struct io_tlb_mem that is separate
+> from the default. I wrote the code so that throttling is independently
+> applied to a restricted pool as well, though I haven't tested it.
 
-Fell free to add:
+Good point. I didn't think about it.
 
-Reported-by: Marek Szyprowski <m.szyprowski@samsung.com>
-Tested-by: Marek Szyprowski <m.szyprowski@samsung.com>
+> So the typical case is that we'll have high and low throttle values for t=
+he
+> default swiotlb pool, but we could also have high and low throttle
+> values for any restricted pools.
+>=20
+> Maybe the /proc pathnames would need to be:
+>=20
+>    /proc/sys/kernel/dma/swiotlb_default/high_throttle
+>    /proc/sys/kernel/dma/swiotlb_default/low_throttle
+>    /proc/sys/kernel/dma/swiotlb_<rpoolname>/high_throttle
+>    /proc/sys/kernel/dma/swiotlb_<rpoolname>/low_throttle
 
-Best regards
--- 
-Marek Szyprowski, PhD
-Samsung R&D Institute Poland
+If a subdirectory is needed anyway, then we may ditch the dma
+directory idea and place swiotlb subdirectories directly under
+/proc/sys/kernel.
 
+> Or we could throw all the throttles directly into the "dma" directory,
+> though that makes for fairly long names in lieu of a deeper directory
+> structure:
+>=20
+>    /proc/sys/kernel/dma/default_swiotlb_high_throttle
+>    /proc/sys/kernel/dma/default_swiotlb_low_throttle
+>    /proc/sys/kernel/dma/<rpoolname>_swiotlb_high_throttle
+>    /proc/sys/kernel/dma/<rpoolname_>swiotlb_low_throttle
+>=20
+> Thoughts?
+
+I have already said I don't care much as long as the naming and/or
+placement is not downright confusing. If the default values are
+adjusted, they will end up in a config file under /etc/sysctl.d, and
+admins will copy&paste it from Stack Exchange.
+
+I mean, you're probably the most interested person on the planet, so
+make a choice, and we'll adapt. ;-)
+
+Petr T
