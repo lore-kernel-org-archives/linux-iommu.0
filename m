@@ -1,71 +1,43 @@
-Received: from mail-qv1-f42.google.com (mail-qv1-f42.google.com [209.85.219.42])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 767A31BD03C
-	for <iommu@lists.linux.dev>; Tue, 27 Aug 2024 12:47:34 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.219.42
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0B8E819EED3;
+	Tue, 27 Aug 2024 13:02:39 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1724762856; cv=none; b=iEwMmuW73J2Iu8HhJQ1EhlKs/gEu1TMK9zc3Rb2FD3N/P5NNJQpr/bCdAcS3dq2473yBuZ+7OHtU1V5PJPWNqCKFNGWDtJDmaf93x70BMlU/v6oS2sfYj0wP/06DzlMJ4OsqILkcwv4OsLhqJicCb+uRLt7SE3J5C9gY73PgFFM=
+	t=1724763760; cv=none; b=esF7CbDn9wKs7AuSJjigWgBDWFi2gMSxyfh/bpet4/roDZ5EY/nUz9ZDrgIB/QN/XT9deZJjhcxVnj3H9mHTHHcgMrtH7NYHdF2yp9bVCI3a703N+pU4lKozoGpynu3Diefhg6tX3jEphz1NksqWQydsKukgwDakxWa4mlA0lCo=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1724762856; c=relaxed/simple;
-	bh=3HCTVcNovF0MeeI0ysdeWokm3L1qbp7raTPLakXqCQQ=;
+	s=arc-20240116; t=1724763760; c=relaxed/simple;
+	bh=2cH48CeKweIa6Il0vytWOeXd373y5p9pQgTadJZeWak=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=kffA8lap/esSAOp1pscbchgK69TxC7KawCNKT8UAoPS7RTVpYoVaI61RQ3a9vhxXL1bqt1ED0fm7B8GvGzKqiE1n9J5hIRFyFK6p3WOTDuHLYT2cazq/6HdLvWJJuKcKffAG5QOgvNf3AwHLHDp6G/lRHndBi5JGHN0u4l3/c6M=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=SAVHX4QZ; arc=none smtp.client-ip=209.85.219.42
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
+	 Content-Type:Content-Disposition:In-Reply-To; b=Am10o9b9X5AYzYH3+tbULI5cLzN1I+5nsfEZ8IaNqoTxL3UBj6uytMz4GqrlL102FvG26ltdi3yhXdR1Psu09uXOxqVG+HX7mSo4IKmdT/nH9YDX+0FZZUdxlPjNH2Anx5Q88oJQl8eLd+x38ykY99LxWHTG59HdaYIB/BT+LP0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=sUHAfuRQ; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="SAVHX4QZ"
-Received: by mail-qv1-f42.google.com with SMTP id 6a1803df08f44-6bf7a2035d9so60270366d6.1
-        for <iommu@lists.linux.dev>; Tue, 27 Aug 2024 05:47:34 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google; t=1724762853; x=1725367653; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=tJf38CaphXNMGt5jFxO/UJoK/6Ew+48M1qmB9QmL+XM=;
-        b=SAVHX4QZ94t8N9PoVlmo3iKgMNxIB3q2y7WkmcEtg0qOG8Mh2XTwfsgWmFPoPuC7Cl
-         is27nfQpNCe6P43W0B/foo8z4xL+KNjQYGiFrTtBGynUTkYcW9Avv5xfQyiY9FRnZr5A
-         SCteL1tU+Jftw97n3PnEW4kMYwNAiRMHvLesKqQxZ/9/nC0ljXo1oAi2klPAqo9LQZFW
-         iyoJ32OqYKyiaoeSEHwNHK1Rb6jZN1WKQBWRHIAB7NuFowfbLVBujiL4EYKKmq72thJe
-         eNRw+RFXH5JPI+kYmnHrlpJPlkraLc2jcZSABJJnfYc/OEWb0es6K1GeG3jNFofjbF3e
-         zSZA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1724762853; x=1725367653;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=tJf38CaphXNMGt5jFxO/UJoK/6Ew+48M1qmB9QmL+XM=;
-        b=uXSddTQtMI3IZNOZ9Sm+YXRJqG2b+/KI6/Y8lrTfAYe59AALWeHbx0VVqbuUXTzFxO
-         iQv4gA2AktaaHc2u5PmKZp33yQ1I+hGJD4av4W3lwRUczIOXLrEgXbdGclvltmmBjSsV
-         tkhtpDY10bM1fn4v3jpSbRDQxRCzVQYFQf39GLVeCTnpVPjSQ2JxTDgkq8GOz72oXx0D
-         yGmZvSPI3C1JbkpvVXBtN4nLBxWgfRQO84QDSrETId/iEZPm8959QrSYpr3HjfuTl+DN
-         ypug8PzsSJavo4w3psJd43NC0srgEh1Xn/7c2p14DLf+lk1ph2rEJth2CR4a4QivUCHt
-         8SsQ==
-X-Gm-Message-State: AOJu0YwAlVXLtSMFs5cvEkt4/uHfKyokzqnrLB+zPxEFho+gYd+fLrz+
-	7tVy7dEuRMuk+w7ucc50sI4OLwbqKJ5EOKPDwE7tNeZYZSxHvomtJKZxoQJaHFU9yvAsEZBmoK2
-	Q
-X-Google-Smtp-Source: AGHT+IFggHZP5nVRykjVU0WzDPU4GkV1B65t9v++rWmP7nXz0t41CO3P/jYgttttTxSFOZ0y0c4YFw==
-X-Received: by 2002:ad4:430e:0:b0:6c3:2eb0:23b7 with SMTP id 6a1803df08f44-6c32eb025f6mr21223316d6.1.1724762853127;
-        Tue, 27 Aug 2024 05:47:33 -0700 (PDT)
-Received: from ziepe.ca (hlfxns017vw-142-68-80-239.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.68.80.239])
-        by smtp.gmail.com with ESMTPSA id 6a1803df08f44-6c162de8c17sm55443476d6.140.2024.08.27.05.47.32
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 27 Aug 2024 05:47:32 -0700 (PDT)
-Received: from jgg by wakko with local (Exim 4.95)
-	(envelope-from <jgg@ziepe.ca>)
-	id 1sivbg-000hv4-9U;
-	Tue, 27 Aug 2024 09:47:32 -0300
-Date: Tue, 27 Aug 2024 09:47:32 -0300
-From: Jason Gunthorpe <jgg@ziepe.ca>
-To: iommu@lists.linux.dev, Joerg Roedel <joro@8bytes.org>,
-	Will Deacon <will@kernel.org>
-Cc: Joao Martins <joao.m.martins@oracle.com>,
-	Kevin Tian <kevin.tian@intel.com>, Matt Ochs <mochs@nvidia.com>,
-	patches@lists.linux.dev
-Subject: Re: [PATCH] iommufd/selftest: Fix buffer read overrrun in the dirty
- test
-Message-ID: <20240827124732.GO3468552@ziepe.ca>
-References: <0-v1-113e8d9e7861+5ae-iommufd_kasan_jgg@nvidia.com>
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="sUHAfuRQ"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6C142C4E677;
+	Tue, 27 Aug 2024 13:02:37 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1724763759;
+	bh=2cH48CeKweIa6Il0vytWOeXd373y5p9pQgTadJZeWak=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=sUHAfuRQQuWC0D0kxcnHrk1+9OQBRN3Eu+Hz5pam8SAGEMWKPHYbUo2km69hf4nSR
+	 b/b3qjYBQZC8eZkLF9+Fw44IfQmBJRX9eIlKdnJPqcU2DGh1DXcFVR493ASgv+pNtM
+	 ug7egLXUkynEUrJFlHiCiXV/vjCwcbVx1agAwkKAeCx2RQLUFZmZof+0OHI55kf0XD
+	 iTGJarE1EItpBR1teHm0tYQzW4tMvgpd0zCPhIU2QXDdePmoSJiONCs7NZl2sJQ6mY
+	 e2HyJBkO9RFzxEjRB52F8RevQWKlE8QMoolJnpq+QqF2qwfKliBhe03P9e62d6qve8
+	 6vPdKIc4WmEaw==
+Date: Tue, 27 Aug 2024 14:02:34 +0100
+From: Will Deacon <will@kernel.org>
+To: Nicolin Chen <nicolinc@nvidia.com>
+Cc: robin.murphy@arm.com, joro@8bytes.org, jgg@nvidia.com,
+	thierry.reding@gmail.com, vdumpa@nvidia.com, jonathanh@nvidia.com,
+	linux-kernel@vger.kernel.org, iommu@lists.linux.dev,
+	linux-arm-kernel@lists.infradead.org, linux-tegra@vger.kernel.org
+Subject: Re: [PATCH v13 06/10] iommu/arm-smmu-v3: Add
+ acpi_smmu_acpi_probe_model for impl
+Message-ID: <20240827130233.GF4772@willie-the-truck>
+References: <cover.1724453781.git.nicolinc@nvidia.com>
+ <8a2629bb98cabb1be72b32c120bb5ed0114b21bc.1724453781.git.nicolinc@nvidia.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -74,24 +46,52 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <0-v1-113e8d9e7861+5ae-iommufd_kasan_jgg@nvidia.com>
+In-Reply-To: <8a2629bb98cabb1be72b32c120bb5ed0114b21bc.1724453781.git.nicolinc@nvidia.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 
-On Thu, Aug 22, 2024 at 11:47:09AM -0300, Jason Gunthorpe wrote:
-> test_bit() is used to read the memory storing the bitmap, however
-> test_bit() always uses a unsigned long 8 byte access.
+On Fri, Aug 23, 2024 at 05:10:40PM -0700, Nicolin Chen wrote:
+> For model-specific implementation, repurpose the acpi_smmu_get_options()
+> to a wider acpi_smmu_acpi_probe_model(). A new model can add to the list
+> in this new function.
 > 
-> If the bitmap is not an aligned size of 64 bits this will now trigger a
-> KASAN warning reading past the end of the buffer.
-> 
-> Properly round the buffer allocation to an unsigned long size. Continue to
-> copy_from_user() using a byte granularity.
-> 
-> Fixes: 9560393b830b ("iommufd/selftest: Fix iommufd_test_dirty() to handle <u8 bitmaps")
-> Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
+> Suggested-by: Will Deacon <will@kernel.org>
+> Signed-off-by: Nicolin Chen <nicolinc@nvidia.com>
 > ---
->  drivers/iommu/iommufd/selftest.c | 9 ++++-----
->  1 file changed, 4 insertions(+), 5 deletions(-)
+>  drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 18 +++++++++++++-----
+>  1 file changed, 13 insertions(+), 5 deletions(-)
+> 
+> diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+> index afdb8a76a72a..ceb31d63f79b 100644
+> --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+> +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+> @@ -4341,18 +4341,28 @@ static int arm_smmu_device_hw_probe(struct arm_smmu_device *smmu)
+>  }
+>  
+>  #ifdef CONFIG_ACPI
+> -static void acpi_smmu_get_options(u32 model, struct arm_smmu_device *smmu)
+> +static int acpi_smmu_iort_probe_model(struct acpi_iort_node *node,
+> +				      struct arm_smmu_device *smmu)
+>  {
+> -	switch (model) {
+> +	struct acpi_iort_smmu_v3 *iort_smmu =
+> +		(struct acpi_iort_smmu_v3 *)node->node_data;
+> +
+> +	switch (iort_smmu->model) {
+>  	case ACPI_IORT_SMMU_V3_CAVIUM_CN99XX:
+>  		smmu->options |= ARM_SMMU_OPT_PAGE0_REGS_ONLY;
+>  		break;
+>  	case ACPI_IORT_SMMU_V3_HISILICON_HI161X:
+>  		smmu->options |= ARM_SMMU_OPT_SKIP_PREFETCH;
+>  		break;
+> +	case ACPI_IORT_SMMU_V3_GENERIC:
+> +		break;
+> +	default:
+> +		dev_err(smmu->dev, "Unknown/unsupported IORT model!\n");
+> +		return -ENXIO;
 
-Applied to for-next
+We probably don't want this 'default' case, otherwise the driver will
+need to be updated every time there's a new model.
 
-Jason
+If you agree, then I can just drop this bit when applying.
+
+Will
