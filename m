@@ -1,25 +1,25 @@
 Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 39F5719AA46
-	for <iommu@lists.linux.dev>; Tue, 27 Aug 2024 10:22:36 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id CC19819EEC2
+	for <iommu@lists.linux.dev>; Tue, 27 Aug 2024 11:58:01 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1724754159; cv=none; b=c6+4vPd+ZZ6i5ToVh35qOKrF+igAOo5T88rMEqbwzztE/fFYjj0qVVTHpM5h9p08KCqUmvfRHHPZYjyOUv6EFtX6NzTMGrMMEgCdy2pP5SxmGuVfREjWGVlZ5/RNlk38QwjblYhO++f6hH0qR5Rj3nYWSQ0WL/pnL76sOGolU78=
+	t=1724759883; cv=none; b=e+pLZDM1WfSLLHlpUy0HgZB1NevxGqhdQfxU20UV1SGTjU3Wgod0Csi5JRht8Bz+7SGUoY2h+9VKJDTkSdinrwr1faLV+UU5o16aye0Xattu8Dna6XQo0edLP/ea+b57ZXlxZVVVXLTkKdKHKE3hPOUrO61IJXudNlJcTSedIFs=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1724754159; c=relaxed/simple;
-	bh=+B9K2Hpp3cjUuH99nctnL4FGgHBYxVIU5gJSUwR246A=;
+	s=arc-20240116; t=1724759883; c=relaxed/simple;
+	bh=Flx7bTsY17IE7Wjk12EgYowMqnfPFZ5Az3DmuH6EEpQ=;
 	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=iq0ASWxKNgqqXtFeMQZNO5N1ed73SnPAOY5932jROzO23hHXDBjEZhMTc0tl6OVwtORJpONmEK8Ctp03wQ0FqeJWJhqcMcn4kL9vTS54vu3RQIYqexfoVIa+1aMUh7Z1XaItvkkTQQshX7oF3qwZ/HNICOM63/bKUDfcGMvJLg0=
+	 In-Reply-To:Content-Type; b=fm3maea4w51ub8yw0zjeOFtXBvRQbGLFJMqHsSud+Q9rp4g6wWOo/w3wMPvXWAFPZgX9b9muBMoIjqK92w+skLxl8m4KeAi/3j8gDYBxo4agab7KzZryXeyNLskh/2P0+ugGFHXm4IAU8us6k5dGRvMNGoCUiYrCOg4xfPB+uzM=
 ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; arc=none smtp.client-ip=217.140.110.172
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
 Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 4007FDA7;
-	Tue, 27 Aug 2024 03:23:02 -0700 (PDT)
-Received: from [10.57.72.132] (unknown [10.57.72.132])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 59E263F66E;
-	Tue, 27 Aug 2024 03:22:34 -0700 (PDT)
-Message-ID: <53679dda-178c-435b-81c5-42d139911cef@arm.com>
-Date: Tue, 27 Aug 2024 11:22:28 +0100
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 4923CDA7;
+	Tue, 27 Aug 2024 04:58:27 -0700 (PDT)
+Received: from [10.1.196.40] (e121345-lin.cambridge.arm.com [10.1.196.40])
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id C85FE3F762;
+	Tue, 27 Aug 2024 04:57:59 -0700 (PDT)
+Message-ID: <f803659b-d98a-4472-98e4-7deebb9df45f@arm.com>
+Date: Tue, 27 Aug 2024 12:57:58 +0100
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -27,75 +27,54 @@ List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH] arm64: mm: fix DMA zone when dma-ranges is missing
-To: Baruch Siach <baruch@tkos.co.il>, Christoph Hellwig <hch@lst.de>,
- Marek Szyprowski <m.szyprowski@samsung.com>,
- Catalin Marinas <catalin.marinas@arm.com>, Will Deacon <will@kernel.org>
-Cc: iommu@lists.linux.dev, linux-arm-kernel@lists.infradead.org,
- =?UTF-8?B?UGV0ciBUZXNhxZnDrWs=?= <petr@tesarici.cz>,
- Ramon Fried <ramon@neureality.ai>, Elad Nachman <enachman@marvell.com>
-References: <731d204f5f556ad61bbaf004b1d984f83c90b4f5.1724748249.git.baruch@tkos.co.il>
+Subject: Re: [PATCH v4 2/2] dma: add IOMMU static calls with clear default ops
+To: Christoph Hellwig <hch@lst.de>
+Cc: Leon Romanovsky <leon@kernel.org>, Joerg Roedel <joro@8bytes.org>,
+ Will Deacon <will@kernel.org>, Marek Szyprowski <m.szyprowski@samsung.com>,
+ Leon Romanovsky <leonro@nvidia.com>,
+ Easwar Hariharan <eahariha@linux.microsoft.com>,
+ linux-kernel@vger.kernel.org, iommu@lists.linux.dev,
+ Jason Gunthorpe <jgg@nvidia.com>,
+ Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+References: <cover.1721818168.git.leon@kernel.org>
+ <c3179690b16d790d5bfd7d0afabac9b90922ec28.1721818168.git.leon@kernel.org>
+ <20369981-37c8-482a-9ffa-cf54d12dad2d@arm.com> <20240816071134.GA2943@lst.de>
+ <91b6da73-fc59-4751-8215-1edf68de222e@arm.com>
+ <20240820122240.GA17459@lst.de>
 From: Robin Murphy <robin.murphy@arm.com>
 Content-Language: en-GB
-In-Reply-To: <731d204f5f556ad61bbaf004b1d984f83c90b4f5.1724748249.git.baruch@tkos.co.il>
+In-Reply-To: <20240820122240.GA17459@lst.de>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 
-On 2024-08-27 9:44 am, Baruch Siach wrote:
-> Some platforms, like Rockchip RK3568 based Odroid M1, do not provide DMA
-> limits information in device-tree dma-ranges property. Still some device
-> drivers set DMA limit that relies on DMA zone at low 4GB memory area.
-> Until commit ba0fb44aed47 ("dma-mapping: replace zone_dma_bits by
-> zone_dma_limit"), zone_sizes_init() restricted DMA zone to low 32-bit
-> when there is RAM there.
+On 20/08/2024 1:22 pm, Christoph Hellwig wrote:
+> On Mon, Aug 19, 2024 at 02:16:56PM +0100, Robin Murphy wrote:
+>> Thanks, I've just had a quick look over what you queued on
+>> dma-iommu-direct-calls, and you're welcome to stick my ack on that if you
+>> like.
 > 
-> Restore DMA zone 32-bit limit for platforms that have RAM in this area.
+> Yes, thank you a lot for your review!
 > 
-> Fixes: ba0fb44aed47 ("dma-mapping: replace zone_dma_bits by zone_dma_limit")
-> Reported-by: Marek Szyprowski <m.szyprowski@samsung.com>
-> Tested-by: Marek Szyprowski <m.szyprowski@samsung.com>
-> Signed-off-by: Baruch Siach <baruch@tkos.co.il>
-> ---
-> This should go via the dma-mapping tree that contains the fixed commit.
-> ---
->   arch/arm64/mm/init.c | 3 +++
->   1 file changed, 3 insertions(+)
-> 
-> diff --git a/arch/arm64/mm/init.c b/arch/arm64/mm/init.c
-> index bfb10969cbf0..7fcd0aaa9bb6 100644
-> --- a/arch/arm64/mm/init.c
-> +++ b/arch/arm64/mm/init.c
-> @@ -116,6 +116,9 @@ static void __init arch_reserve_crashkernel(void)
->   
->   static phys_addr_t __init max_zone_phys(phys_addr_t zone_limit)
->   {
-> +	if (memblock_start_of_DRAM() < U32_MAX)
-> +		zone_limit = min(zone_limit, U32_MAX);
+> While I have your attention - with these two patches we stop building
+> dummy_dma_ops for most common configs.  Do you think we need additional
+> safeguards for this case?  My idea would be to remove them and force the
+> bus_dma_mask to zero where we currently set the dummy ops, but I could
+> use a little reality check for that idea.
 
-This seems like a bit of a bodge, since it now means we either get the 
-old or the new behaviour depending on where DRAM is, so if, say, RAM 
-starts at 3GB but all devices have a 3GB DMA offset, we still can't have 
-a properly-sized DMA zone.
+Yeah, the dummy ops were a nice idea at the time, but have been looking 
+increasingly anachronistic for a while - in fact I think they're 
+effectively broken already now, since if arm64 stops selecting DMA_OPS 
+via IOMMU_DMA then the set_dma_ops() in the ACPI path isn't going to be 
+effective anyway.
 
-Really it comes down to this change:
-
--       zone_dma_bits = min3(32U, dt_zone_dma_bits, acpi_zone_dma_bits);
-+       zone_dma_limit = min(dt_zone_dma_limit, acpi_zone_dma_limit);
-
-where although the "32" represented the assumption of RAM starting at 0, 
-it also implicitly removed the handling of the case where no DMA ranges 
-are specified. Per the commit message, it's that which we want to 
-account for, not the placement of RAM.
-
-I think the more correct version should be:
-
-	if (zone_limit == PHYS_ADDR_MAX)
-		zone_limit = U32_MAX;
+I certainly don't hate the idea of using bus_dma_limit as the next most 
+functionally robust way to deny DMA for now. It would probably be a bit 
+awkward to upheave the existing notion of 0 meaning no limit, but 
+setting it to 1 would have the desired effect in practice (at least with 
+dma-direct), plus would look nicely deliberate - for completeness we'd 
+probably just want an extra check or two in the right place(s) to ensure 
+that such a DMA-denied device still can't end up being given ops other 
+than dma-direct, but that seems simple enough.
 
 Thanks,
 Robin.
-
-> +
->   	return min(zone_limit, memblock_end_of_DRAM() - 1) + 1;
->   }
->   
