@@ -1,155 +1,81 @@
-Received: from bee.tesarici.cz (bee.tesarici.cz [37.205.15.56])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BC0671C93AF;
-	Tue, 27 Aug 2024 15:55:44 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=37.205.15.56
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E269664A;
+	Tue, 27 Aug 2024 15:56:30 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1724774148; cv=none; b=TY5v/uLgKOosZFlT262J31Pc8YKO/+kIypAef83+Fz1HSq75eRym9Sd4wQbbstgfFWrmdAL+TESSJ4xocUpsubjSEOeOpknGJKjbrHM2HPvoyTkIkz3mMfBpnziACpedPKEd7GTX0SkybmLSXkyySWoW3uHD+RmjswRaU0kiKg4=
+	t=1724774194; cv=none; b=s6VXyceacRUwmDbN5lGk0iqxLT9jA0Up+Rncgh5yfwn0MHx4XGx0VN7wySF3Bo7R24+wqh1iHzkFWA2fBGnPcF9umAbXQsFlQcRYup49cPZWWAVyUB7H8EL/o71udP7rIEeQN2HqAOfDnKinSFgnECeThMukjLJ5pIY08e8EJJ8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1724774148; c=relaxed/simple;
-	bh=cBO2FyArKD0hhv02lTcB1TMtG8oLlZwbkjkc6NN/N60=;
-	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=f4xZB7in3YipziNeLqsVZ2epDWISev0Hw9gd6D3jCMAirQ0TseeJd6WXaPI+hv+dVSRnD+mL9z07mNvprXF/aqVN7sMBJNsKbfc27DM/dbLbtecrtOXw2WUVKRFkK8ox4PT92lM8Qa4QZ1OWymMv2+AghJo9atFYSaFyOkOxAOs=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=tesarici.cz; spf=pass smtp.mailfrom=tesarici.cz; dkim=pass (2048-bit key) header.d=tesarici.cz header.i=@tesarici.cz header.b=Yr2QCciq; arc=none smtp.client-ip=37.205.15.56
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=tesarici.cz
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=tesarici.cz
+	s=arc-20240116; t=1724774194; c=relaxed/simple;
+	bh=X7xAwVEq7UYKmL5TsBc1FitSBnKcmqyZKM5lZxcTfHI=;
+	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=JGfXsTHM5cxRFJyaOuc8nOeoJd5uuiHe8/bICzngpKPjVWaMTU+xyBl30Ep+dR0XNB21EDF+2KSfBXyqY7bdohHXUZVx85U5O4GIMK7oU2LAL6T6s8dK3hcMk9OFEPmGKXXdCsJMWssWC9SInbLK2zxbgLgLcYvqxgGmjMtyZyw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Sy3XA0Wa; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=tesarici.cz header.i=@tesarici.cz header.b="Yr2QCciq"
-Received: from mordecai.tesarici.cz (unknown [213.235.133.103])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange ECDHE (P-256) server-signature RSA-PSS (2048 bits) server-digest SHA256)
-	(No client certificate requested)
-	by bee.tesarici.cz (Postfix) with ESMTPSA id BB8E91F64C8;
-	Tue, 27 Aug 2024 17:55:41 +0200 (CEST)
-Authentication-Results: mail.tesarici.cz; dmarc=fail (p=quarantine dis=none) header.from=tesarici.cz
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=tesarici.cz; s=mail;
-	t=1724774142; bh=Kgt1rDhB3tqHgknqxyoONMHMo+OxvdM/AzWNdimoAOE=;
-	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-	b=Yr2QCciqpjJLdknVeRsD7PsgDs/BjCz1fzFb54yBUI3dAxCIH/yC8BaQmC7/rIZta
-	 R4kjf3UbLQCx1HLrAE4H2MgHezkcmPDFZQZ9nmLAlnCgcG7tHoQyc+4tzcXxmxeGY7
-	 trJ1BuKWBR09O0Y0zhR9kjieTqui1PosnMmSEtljfZmWeWRlO47Ec6PMVNuitXt+Tm
-	 ZbHUJnds5/jNYa0TE/npvMr4Rh6uHf2OuRT36H8OkM3E45X4PNypdTIftik36Eqlf5
-	 UAsu0FwczQ62eO0gD/RQm/Whj1+48funVWiYx6oo8oGD4OY2icw65WKNjg03OqWYJY
-	 hzHJcftv+yBNQ==
-Date: Tue, 27 Aug 2024 17:55:36 +0200
-From: Petr =?UTF-8?B?VGVzYcWZw61r?= <petr@tesarici.cz>
-To: Michael Kelley <mhklinux@outlook.com>
-Cc: "mhkelley58@gmail.com" <mhkelley58@gmail.com>, "kbusch@kernel.org"
- <kbusch@kernel.org>, "axboe@kernel.dk" <axboe@kernel.dk>,
- "sagi@grimberg.me" <sagi@grimberg.me>,
- "James.Bottomley@HansenPartnership.com"
- <James.Bottomley@HansenPartnership.com>, "martin.petersen@oracle.com"
- <martin.petersen@oracle.com>, "kys@microsoft.com" <kys@microsoft.com>,
- "haiyangz@microsoft.com" <haiyangz@microsoft.com>, "wei.liu@kernel.org"
- <wei.liu@kernel.org>, "decui@microsoft.com" <decui@microsoft.com>,
- "robin.murphy@arm.com" <robin.murphy@arm.com>, "hch@lst.de" <hch@lst.de>,
- "m.szyprowski@samsung.com" <m.szyprowski@samsung.com>,
- "iommu@lists.linux.dev" <iommu@lists.linux.dev>,
- "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
- "linux-nvme@lists.infradead.org" <linux-nvme@lists.infradead.org>,
- "linux-scsi@vger.kernel.org" <linux-scsi@vger.kernel.org>,
- "linux-hyperv@vger.kernel.org" <linux-hyperv@vger.kernel.org>,
- "linux-coco@lists.linux.dev" <linux-coco@lists.linux.dev>
-Subject: Re: [RFC 1/7] swiotlb: Introduce swiotlb throttling
-Message-ID: <20240827175536.004785f3@mordecai.tesarici.cz>
-In-Reply-To: <SN6PR02MB4157AE3FA2E0D2227CC94CC0D4882@SN6PR02MB4157.namprd02.prod.outlook.com>
-References: <20240822183718.1234-1-mhklinux@outlook.com>
-	<20240822183718.1234-2-mhklinux@outlook.com>
-	<20240823094101.07ba5e0f@meshulam.tesarici.cz>
-	<SN6PR02MB4157AE3FA2E0D2227CC94CC0D4882@SN6PR02MB4157.namprd02.prod.outlook.com>
-X-Mailer: Claws Mail 4.3.0 (GTK 3.24.43; x86_64-suse-linux-gnu)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Sy3XA0Wa"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EFADDC4AF1C;
+	Tue, 27 Aug 2024 15:56:27 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1724774190;
+	bh=X7xAwVEq7UYKmL5TsBc1FitSBnKcmqyZKM5lZxcTfHI=;
+	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+	b=Sy3XA0WabhyJwgn0NiKa1h7CVYh3pi7Mdd49gK2GhZ46acYPGYCZx8ct3G4G8LSis
+	 bEqZEj9k6qoO4U4v6u03JpwsS9nWcvOTZZzkVwaDuu52RcDc7c9NF+jIaYFR2PRvEf
+	 VaK+neDJ4oVd0Fq+db0Dif/ZyIglYb1EbvQhrxjQtQXC6C8axmWwZB0dW4gOFU1wkt
+	 wj21fnZ07IKWWMX0xCFPWQ0HXhU6on5doCw+gqNzjsXXUGQE+r5sptuuSzJ65EkLtu
+	 IbO/fau+KWuRqO9OzgQzUERs0GPI1zMhdkn7jVEyPWmdm1m9qRkjOqt5uqcrDh6e6t
+	 Z0kqp4p51reJg==
+From: Will Deacon <will@kernel.org>
+To: Bjorn Andersson <andersson@kernel.org>,
+	Rob Clark <robdclark@gmail.com>,
+	Robin Murphy <robin.murphy@arm.com>,
+	Joerg Roedel <joro@8bytes.org>,
+	Konrad Dybcio <konradybcio@kernel.org>
+Cc: catalin.marinas@arm.com,
+	kernel-team@android.com,
+	Will Deacon <will@kernel.org>,
+	Marijn Suijten <marijn.suijten@somainline.org>,
+	iommu@lists.linux.dev,
+	linux-arm-msm@vger.kernel.org,
+	linux-arm-kernel@lists.infradead.org,
+	linux-kernel@vger.kernel.org,
+	Konrad Dybcio <konrad.dybcio@linaro.org>,
+	Sumit Semwal <sumit.semwal@linaro.org>
+Subject: Re: [PATCH v2] iommu/arm-smmu-qcom: Work around SDM845 Adreno SMMU w/ 16K pages
+Date: Tue, 27 Aug 2024 16:56:21 +0100
+Message-Id: <172476226608.403918.15668836720825051259.b4-ty@kernel.org>
+X-Mailer: git-send-email 2.20.1
+In-Reply-To: <20240824-topic-845_gpu_smmu-v2-1-a302b8acc052@quicinc.com>
+References: <20240824-topic-845_gpu_smmu-v2-1-a302b8acc052@quicinc.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
 
-On Fri, 23 Aug 2024 20:41:15 +0000
-Michael Kelley <mhklinux@outlook.com> wrote:
+On Sat, 24 Aug 2024 01:12:01 +0200, Konrad Dybcio wrote:
+> SDM845's Adreno SMMU is unique in that it actually advertizes support
+> for 16K (and 32M) pages, which doesn't hold for newer SoCs.
+> 
+> This however, seems either broken in the hardware implementation, the
+> hypervisor middleware that abstracts the SMMU, or there's a bug in the
+> Linux kernel somewhere down the line that nobody managed to track down.
+> 
+> [...]
 
-> From: Petr Tesa=C5=99=C3=ADk <petr@tesarici.cz> Sent: Friday, August 23, =
-2024 12:41 AM
-> >=20
-> > On Thu, 22 Aug 2024 11:37:12 -0700
-> > mhkelley58@gmail.com wrote:
->[...]
-> > > @@ -71,12 +72,15 @@
-> > >   *		from each index.
-> > >   * @pad_slots:	Number of preceding padding slots. Valid only in the =
-first
-> > >   *		allocated non-padding slot.
-> > > + * @throttled:  Boolean indicating the slot is used by a request tha=
-t was
-> > > + *		throttled. Valid only in the first allocated non-padding slot.
-> > >   */
-> > >  struct io_tlb_slot {
-> > >  	phys_addr_t orig_addr;
-> > >  	size_t alloc_size;
-> > >  	unsigned short list;
-> > > -	unsigned short pad_slots;
-> > > +	u8 pad_slots;
-> > > +	u8 throttled; =20
-> >=20
-> > I'm not sure this flag is needed for each slot.
-> >=20
-> > SWIOTLB mappings should be throttled when the total SWIOTLB usage is
-> > above a threshold. Conversely, it can be unthrottled when the total
-> > usage goes below a threshold, and it should not matter if that happens
-> > due to an unmap of the exact buffer which previously pushed the usage
-> > over the edge, or due to an unmap of any other unrelated buffer. =20
->=20
-> I think I understand what you are proposing. But I don't see a way
-> to make it work without adding global synchronization beyond
-> the current atomic counter for the number of uI'm sed slabs. At a minimum
-> we would need a global spin lock instead of the atomic counter. The spin
-> lock would protect the (non-atomic) slab count along with some other
-> accounting, and that's more global references. As described in the
-> cover letter, I was trying to avoid doing that.
+Applied to will (for-joerg/arm-smmu/updates), thanks!
 
-I have thought about this for a few days. And I'm still not convinced.
-You have made it clear in multiple places that the threshold is a soft
-limit, and there are many ways the SWIOTLB utilization may exceed the
-threshold. In fact I'm not even 100% sure that an atomic counter is
-needed, because the check is racy anyway. Another task may increase
-(or decrease) the counter between atomic_long_read(&mem->total_used)
-and a subsequent down(&mem->throttle_sem).
+[1/1] iommu/arm-smmu-qcom: Work around SDM845 Adreno SMMU w/ 16K pages
+      https://git.kernel.org/will/c/2d42d3ba4437
 
-I consider it a feature, not a flaw, because the real important checks
-happen later while searching for free slots, and those are protected
-with a spinlock.
+Cheers,
+-- 
+Will
 
-> If you can see how to do what you propose with just the current
-> atomic counter, please describe.
-
-I think I'm certainly missing something obvious, but let me open the
-discussion to improve my understanding of the matter.
-
-Suppose we don't protect the slab count with anything. What is the
-worst possible outcome? IIUC the worst scenario is that multiple tasks
-unmap swiotlb buffers simultaneously and all of them believe that their
-action made the total usage go below the low threshold, so all of them
-try to release the semaphore.
-
-That's obviously not good, but AFAICS all that's needed is a
-test_and_clear_bit() on a per-io_tlb_mem throttled flag just before
-calling up(). Since up() would acquire the semaphore's spinlock, and
-there's only one semaphore per io_tlb_mem, adding an atomic flag doesn't
-look like too much overhead to me, especially if it ends up in the same
-cache line as the semaphore.
-
-Besides, this all happens only in the slow path, i.e. only after the
-current utilization has just dropped below the low threshold, not if
-the utilization was already below the threshold before freeing up some
-slots.
-
-I have briefly considered subtracting the low threshold as initial bias
-from mem->total_used and using atomic_long_add_negative() to avoid the
-need for an extra throttled flag, but at this point I'm not sure it can
-be implemented without any races. We can try to figure out the details
-if it sounds like a good idea.
-
-Petr T
+https://fixes.arm64.dev
+https://next.arm64.dev
+https://will.arm64.dev
