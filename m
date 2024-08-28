@@ -1,108 +1,167 @@
-Received: from mail-oi1-f175.google.com (mail-oi1-f175.google.com [209.85.167.175])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D2A701A7074
-	for <iommu@lists.linux.dev>; Wed, 28 Aug 2024 21:15:35 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.175
+Received: from linux.microsoft.com (linux.microsoft.com [13.77.154.182])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id EBE42156875
+	for <iommu@lists.linux.dev>; Wed, 28 Aug 2024 21:52:27 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=13.77.154.182
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1724879737; cv=none; b=smzLkVDFxyB/OnT5mwVcD+GWSQs+CPuToZfu4c2iHTJgn+SfRBOIBOiJ8+qLIPSiDncFIH7flBSQgWz2E5Km3Q/QWzbqWrewZ3mcxmkT1mVhhXsenBR8pP4Sn2ZQEPzCt9I3PTzcanSZEocjyI9Jh+OcQW9qgKN/xYd1iKRWQNs=
+	t=1724881949; cv=none; b=T+eRRVGmgq1+cpUK+vUmOmB042HmQOm+uKe+m8/s3BPfAgn4L9YeW0wCZN6XwoZdS/R0UYeIXw7CAOeXsRqO6DyMzI1NG7duXOmzpGFKe9SXN2pUNsi3XO1nFE5UjqzPJ8llCh/8tb9uDztmsa2HvtE6b2MmrxMHrB62wrip+jc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1724879737; c=relaxed/simple;
-	bh=rZ0hzRuydgbsTmzNxJW5qDg7GgFGEViAZUQW/xwoQg8=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=OAG+63GaeNUncjy5rDjOqYv4PAuz7oIiR8rb4BKYU1+gaEaxafTcuUgB2net0NG6FkbGPc2TC7OXUKEbxDN3r1AL/pPIGRQB1OlDkbne7OITB+848+cE8Pm78/8EEXjvEJmNE+T2650hGS37LwFHkiCac1IbS2qbH09Rr1IWit0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=chromium.org; spf=pass smtp.mailfrom=chromium.org; dkim=pass (1024-bit key) header.d=chromium.org header.i=@chromium.org header.b=BriXmh6I; arc=none smtp.client-ip=209.85.167.175
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=chromium.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=chromium.org
+	s=arc-20240116; t=1724881949; c=relaxed/simple;
+	bh=4pxbq7Tr3FScTIUfBkP5KmX00rBiyos8FPre6pu9ARY=;
+	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=uieuCvg62i40lVmv6v4TmO49zNen55nA0YION14c5+bX24oWuf5OkqLljI6PlNSilDDHOAIZzBkwc0fN64Y70hkQ/yxf2ylbdl9UUgIhCPXZ5DzsEupRPDZb7O+92UrQNmcol4TAbmCtv2NQNrRpWtZYPtXfer5snnubhfinrHY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com; spf=pass smtp.mailfrom=linux.microsoft.com; dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b=JtAs+pw1; arc=none smtp.client-ip=13.77.154.182
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.microsoft.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=chromium.org header.i=@chromium.org header.b="BriXmh6I"
-Received: by mail-oi1-f175.google.com with SMTP id 5614622812f47-3db14930a1aso1484661b6e.3
-        for <iommu@lists.linux.dev>; Wed, 28 Aug 2024 14:15:35 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google; t=1724879735; x=1725484535; darn=lists.linux.dev;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=wroWp6ZdRx4y4EGEIviQ1d0CtpBbTRnZ8bxPpcNXhAI=;
-        b=BriXmh6ICYiuvv2Saqs2ho++L4RLAj94pI5LE7oqEVMi+0oamrWht0dR5ulIVU2Y1r
-         JE0mXeXgjLViENxwoxvjvWIE1yyJRhDrMwxQVXXloEwOYY6LUQaoHHX6zoxsw7eyIVRF
-         TVrB/8aafJcWjz3Kht//xPtIpKYpsgjDWWhFw=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1724879735; x=1725484535;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=wroWp6ZdRx4y4EGEIviQ1d0CtpBbTRnZ8bxPpcNXhAI=;
-        b=uG5FYBv8EDwUQOjb+kZHeU0vzRh7FXqb8U79k3cSvXmAFNoe2hGYq1viiHW6APrM9B
-         4n3GspAHQBMafQMGmIyts0xJet4ggNz2fmui7P5RSQRH0o79BIuFCZpcsw7mXV1KlBeO
-         447w752tsHoiFDxUO5axWidSNbaJXopxljhlL9coPjXaY15fbAJWI7quHCY77YWZ5+5j
-         fGzfF0Fw3UIwjeqqCu1AlhEa93P01S28Jju8mnRGVCcyri3lMhFSbP4r2N0HwDitMpHT
-         SSytJOejV9ifzTGV8TJSCSS2NlQsgGqDyI0ZlzZvY4j5K1kq5swcx9V85XREN1v0/TND
-         CNAQ==
-X-Forwarded-Encrypted: i=1; AJvYcCUcvAcVHluxZwWiTm3mTSeola95miyIDmoF247+H1GwP6GJx0poR0+ul2v4ko7B2pfxEGnycw==@lists.linux.dev
-X-Gm-Message-State: AOJu0Yy4iQN47wwdvG1PEt0ntmpUSomQlFCEkfvT4ZcgsVQLZApaoCYu
-	tnmRQWcQwJX6cgv+M/ZfUNZQbbfsHbo72H39cY3E2ujSzcdRZbgomcJ2a3r/B/dJcJp7mlcFjRW
-	2u5O3egPxuf0bneJU5f23dAQdBepdSjwsX79T
-X-Google-Smtp-Source: AGHT+IHpc1TwQ/elzvJfTT8LvKlPqSoX8Jgij02Zkapj6rbYbejYym0vJh0kKtUwFwrIDA0pdyfbKUIckcCIzSc/5qU=
-X-Received: by 2002:a05:6870:1586:b0:260:ebf7:d0e7 with SMTP id
- 586e51a60fabf-277900cfd7dmr1020924fac.15.1724879734799; Wed, 28 Aug 2024
- 14:15:34 -0700 (PDT)
+	dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b="JtAs+pw1"
+Received: from DESKTOP-0403QTC. (unknown [20.236.10.163])
+	by linux.microsoft.com (Postfix) with ESMTPSA id F26A920B7165;
+	Wed, 28 Aug 2024 14:52:26 -0700 (PDT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com F26A920B7165
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
+	s=default; t=1724881947;
+	bh=0VVUu+ZGbQuikknnxpW1lMpLrgIKLSfcAz9lQGO7sfs=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+	b=JtAs+pw1A82Qh22yo2SSURx/LSDTmH0ULXOIIEc8t8tRiUCEf512H8sYQFQqb5bCw
+	 xSKj9F8jOIVE3tWJ87bdF84sQYALukd7cFjQpSmWVWRLuiC7Du1K9LyYtf7CE0rqQO
+	 ZDDgSx0MjpRHEvaqYXcb5grRZyDRW4KXV7ffNlII=
+Date: Wed, 28 Aug 2024 14:52:24 -0700
+From: Jacob Pan <jacob.pan@linux.microsoft.com>
+To: Vasant Hegde <vasant.hegde@amd.com>
+Cc: Yi Liu <yi.l.liu@intel.com>, Jason Gunthorpe <jgg@ziepe.ca>,
+ iommu@lists.linux.dev, joro@8bytes.org, will@kernel.org,
+ robin.murphy@arm.com, suravee.suthikulpanit@amd.com,
+ baolu.lu@linux.intel.com, kevin.tian@intel.com
+Subject: Re: [PATCH 1/5] iommu: Enhance domain allocation code to take
+ additional flags
+Message-ID: <20240828145224.2e949806@DESKTOP-0403QTC.>
+In-Reply-To: <8215e4d4-2077-4fca-a002-27ddbfc0ddf2@amd.com>
+References: <20240821133554.7405-1-vasant.hegde@amd.com>
+	<20240821133554.7405-2-vasant.hegde@amd.com>
+	<20240821163147.GZ3468552@ziepe.ca>
+	<67436cba-3d05-4528-9519-231b8396ed51@intel.com>
+	<20240822124433.GD3468552@ziepe.ca>
+	<0ca31cc6-1741-40d1-b8c1-20e6b4fc955a@intel.com>
+	<8215e4d4-2077-4fca-a002-27ddbfc0ddf2@amd.com>
+X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.33; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <20240823-trust-tbt-fix-v4-1-c6f1e3bdd9be@chromium.org> <ZstCyti3FHZIeFO8@wunner.de>
-In-Reply-To: <ZstCyti3FHZIeFO8@wunner.de>
-From: Esther Shimanovich <eshimanovich@chromium.org>
-Date: Wed, 28 Aug 2024 17:15:24 -0400
-Message-ID: <CA+Y6NJE1p-nidmCZzJ7j-mJAmCLmC2q2meUf-5FFSWofWES-qA@mail.gmail.com>
-Subject: Re: [PATCH v4] PCI: Detect and trust built-in Thunderbolt chips
-To: Lukas Wunner <lukas@wunner.de>
-Cc: Bjorn Helgaas <bhelgaas@google.com>, Rajat Jain <rajatja@google.com>, 
-	"Rafael J. Wysocki" <rafael.j.wysocki@intel.com>, Mario Limonciello <mario.limonciello@amd.com>, 
-	=?UTF-8?Q?Ilpo_J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>, 
-	iommu@lists.linux.dev, Mika Westerberg <mika.westerberg@linux.intel.com>, 
-	linux-pci@vger.kernel.org, linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: quoted-printable
 
-On Sun, Aug 25, 2024 at 10:49=E2=80=AFAM Lukas Wunner <lukas@wunner.de> wro=
-te:
->
-> On Fri, Aug 23, 2024 at 04:53:16PM +0000, Esther Shimanovich wrote:
-> > --- a/drivers/pci/probe.c
-> > +++ b/drivers/pci/probe.c
-> > +static bool pcie_has_usb4_host_interface(struct pci_dev *pdev)
-> > +{
-> > +     struct fwnode_handle *fwnode;
-> > +
-> > +     /*
-> > +      * For USB4, the tunneled PCIe root or downstream ports are marke=
-d
-> > +      * with the "usb4-host-interface" ACPI property, so we look for
-> > +      * that first. This should cover most cases.
-> > +      */
-> > +     fwnode =3D fwnode_find_reference(dev_fwnode(&pdev->dev),
-> > +                                    "usb4-host-interface", 0);
->
-> This is all ACPI only, so it should either be #ifdef'ed to CONFIG_ACPI
-> or moved to drivers/pci/pci-acpi.c.
->
-> Alternatively, it could be moved to arch/x86/pci/ because ACPI can also
-> be enabled on arm64 or riscv but the issue seems to only affect x86.
+Hi Vasant,
 
-Thanks for the feedback! Adding an #ifdef to CONFIG_ACPI seems more
-straightforward, but I do like the idea of not having unnecessary code
-run on non-x86 systems.
+On Sat, 24 Aug 2024 20:17:45 +0530
+Vasant Hegde <vasant.hegde@amd.com> wrote:
 
-I'd appreciate some guidance here. How would I move a portion of a
-function into a completely different location in the kernel src?
-Could you show me an example?
-I'm assuming you'd want me to write another function elsewhere.
-Shouldn't it be in some existing file in
-`include/linux/platform_data/x86`? I don't see `arch/x86/pci/`
-included anywhere.
-Or would CONFIG_X86 be sufficient? (instead of or in addition to CONFIG_ACP=
-I?)
+> Yi,
+>=20
+>=20
+> On 8/23/2024 2:28 PM, Yi Liu wrote:
+> > On 2024/8/22 20:44, Jason Gunthorpe wrote: =20
+> >> On Thu, Aug 22, 2024 at 07:27:39PM +0800, Yi Liu wrote: =20
+> >>> On 2024/8/22 00:31, Jason Gunthorpe wrote:
+> >>> =20
+> >>>>> @@ -359,11 +359,17 @@ struct iommu_vfio_ioas {
+> >>>>> =C2=A0=C2=A0=C2=A0 *=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
+=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
+=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
+=A0=C2=A0 enforced on device
+> >>>>> attachment
+> >>>>> =C2=A0=C2=A0=C2=A0 * @IOMMU_HWPT_FAULT_ID_VALID: The fault_id field=
+ of hwpt
+> >>>>> allocation data is
+> >>>>> =C2=A0=C2=A0=C2=A0 *=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
+=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
+=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 valid.
+> >>>>> + * @IOMMUFD_HWPT_ALLOC_PASID: When the domain is used on a
+> >>>>> device, with no
+> >>>>> + *=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
+=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
+=C2=A0=C2=A0=C2=A0=C2=A0 PASID, the device will support
+> >>>>> later attaching
+> >>>>> + *=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
+=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
+=C2=A0=C2=A0=C2=A0=C2=A0 a PASID as well. Some HW
+> >>>>> requires a specific
+> >>>>> + *=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
+=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
+=C2=A0=C2=A0=C2=A0=C2=A0 domain format on the device to
+> >>>>> allow PASID to
+> >>>>> + *=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
+=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
+=C2=A0=C2=A0=C2=A0=C2=A0 work. =20
+> >>>>
+> >>>> Maybe:
+> >>>>
+> >>>> =C2=A0=C2=A0 Requests a domain that can be used with PASID. The doma=
+in can
+> >>>> be attached to any PASID on the device. Any domain attached to
+> >>>> the non-PASID part of the device must also be flaged, otherwise
+> >>>> attaching a PASID will blocked.
+> >>>>
+> >>>> Yi will need to add a check that IOMMUFD_HWPT_ALLOC_PASID was
+> >>>> specified on the RID domain while processing attach on the PASID
+> >>>> domain. =20
+> >>>
+> >>> this means if userspace wants to user pasid on a device, it
+> >>> should allocate hwpt with this flag, no matter the hwpt is going
+> >>> to be attached to RID or pasid. is it? =20
+> >> =20
+> >> Yes>> =20
+> >>> I still have a confusion. Say on AMD, is it a legitimate
+> >>> configuration that the RID is attached to a domain that uses V1
+> >>> page table while pasid is attached to domains that use V2 page
+> >>> table? From architecture p.o.v., it seems allowed. =20
+> >>
+> >> I think that is exactly what they have been saying their design
+> >> cannot do. =20
+> >=20
+> > ok. I don't think Intel has this limitation. RID/PASID is free to
+> > use s1 or s2 format page table. So such enforcement is nop on Intel
+> > platform.=20
+> >>
+> >> If you want to use PASID you must install a GCR3 table full of V2
+> >> tables. Doing this denies use of the V1 format for anything except
+> >> a NESTING_PARENT. =20
+> >=20
+> > thanks for the explanation. So if pasid is to be used, amd iommu
+> > driver just programs the GCR3 tables and the request without pasid
+> > would use the v2 page table installed at pasid#0. It does not use
+> > the DTE->host_page_table at all. I remember the
+> > DTE->host_page_table uses v1 format. =20
+>=20
+>=20
+> Right. Only V2 page table supports PASID. So when user space requests
+> hwpt with PASID AMD driver will allocate V2 page table with GCR3
+> setup and updated DTE. So it can handle attaching Device ID (uses
+> PASID#0) and PASID (as GCR3 table is already setup).
+>=20
+> Note that when we use NESTED page table it will have both v1 (L2 /
+> stage 2 level) and v2 page table (L1 / stage 1 level). Even in this
+> setup V2 page table inside guest can support PASID.
+>=20
+Sorry I am still confused. So V2 can support both PASID and no PASID
+(untagged DMA). For the nested case, if the guest wants to allocate
+a UNMANAGED domain, would you use V1? If this code in [3/5] below runs
+in the guest:
+
+static struct iommu_domain *amd_iommu_domain_alloc(unsigned int type)
+
+	/*
+	 * Force IOMMU v1 page table when allocating
+	 * domain for pass-through devices.
+	 */
+	if (type =3D=3D IOMMU_DOMAIN_UNMANAGED)
+		pgtable =3D AMD_IOMMU_V1;
+
+Hardware-wise, in nested case, can V1 be used in L1/S1 for DMA w/o
+PASID?
+
+Thanks,
+
+Jacob
