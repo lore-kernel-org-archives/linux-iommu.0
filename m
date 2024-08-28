@@ -1,266 +1,156 @@
-Received: from bee.tesarici.cz (bee.tesarici.cz [37.205.15.56])
+Received: from NAM10-DM6-obe.outbound.protection.outlook.com (mail-dm6nam10on2060.outbound.protection.outlook.com [40.107.93.60])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 30CF8168489;
-	Wed, 28 Aug 2024 13:04:03 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=37.205.15.56
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1724850247; cv=none; b=qstnnrY2GLYm4dUnqob/AEqqhIyav0+UjWX/xtlUUqwEhlo9qyFg+wpmnX5OARzv1OSMG2VuiWJj1pzJP/nmjzANxEFls4tWrqSFqRoaTHIwKhbr9n/IPBKtKy7xhtCNieF8H3qpfMvP23OehaIKFJ4CIJCScB1jqkeSL6u7gy8=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1724850247; c=relaxed/simple;
-	bh=eIFWJnnAkEgyXg29iirfM5KJoJGi1BEJ91e5R2V/odg=;
-	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=KgzI/cpw9MjXbv6SVbTlzJw49FnFAg7ddP4FoPrERVK+WXJI6Kvll+XDcPW1eyCwCFrqxt4UcSBY4x82ta0mhXl+8MkAnpurXJNpHYUJBP4hl8pEN1CL0+OE0peIoXlHnpI7K819RCvx3gsyIepKiBfhEWcqLn5IIePprJR1QxA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=tesarici.cz; spf=pass smtp.mailfrom=tesarici.cz; dkim=pass (2048-bit key) header.d=tesarici.cz header.i=@tesarici.cz header.b=UxgrDlqj; arc=none smtp.client-ip=37.205.15.56
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=tesarici.cz
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=tesarici.cz
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8EDBB188CAD
+	for <iommu@lists.linux.dev>; Wed, 28 Aug 2024 13:43:42 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.93.60
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1724852624; cv=fail; b=bXtST+xYzqXz2Yj+pjRhHkcykfcSLNIZBU+N70l/AdqE29UzDmk8unAnMhKr2E61vqEO9GzR50zxg/fPdt+upm5HLdsshfAh3e0XTv4b67qqMLVOghXSSBtyxsSwbWsFNue4HXKelrdXwesTwTDZ0T4Givmf3Bvwc2GS1xRsmlY=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1724852624; c=relaxed/simple;
+	bh=guv0xA890NGakFWVojPK4a5ZPjE+BnYFm24i52xVPDw=;
+	h=From:To:CC:Subject:Date:Message-ID:MIME-Version:Content-Type; b=omJ48rx+eeZJCHizSxVjkLUehS0mYAG+5cHO80L50du9jBwDzQ2XrQindFZUQmWuGoibuiUAOuZmKOWzZNTb4IcH42lqYXJq6AtB46uD9qiOsPVeFSV6//kcbcVgndINxWwuRlEJoytE2JNJ1+/YY4wzegpmjVfDVbqkwD+QsL4=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com; spf=fail smtp.mailfrom=amd.com; dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b=yWRX0LM+; arc=fail smtp.client-ip=40.107.93.60
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=amd.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=tesarici.cz header.i=@tesarici.cz header.b="UxgrDlqj"
-Received: from mordecai.tesarici.cz (dynamic-2a00-1028-83b8-1e7a-3010-3bd6-8521-caf1.ipv6.o2.cz [IPv6:2a00:1028:83b8:1e7a:3010:3bd6:8521:caf1])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange ECDHE (P-256) server-signature RSA-PSS (2048 bits) server-digest SHA256)
-	(No client certificate requested)
-	by bee.tesarici.cz (Postfix) with ESMTPSA id 86D131F8271;
-	Wed, 28 Aug 2024 15:04:01 +0200 (CEST)
-Authentication-Results: mail.tesarici.cz; dmarc=fail (p=quarantine dis=none) header.from=tesarici.cz
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=tesarici.cz; s=mail;
-	t=1724850241; bh=3Vqr2fZUfLOM+B3Ne+7VT9mnLrdqdBH/WIKDFPQWeXw=;
-	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-	b=UxgrDlqjgvzOYqiQlbrUgEnTR7bKPjukXPM4NFseUr/EVOvXLhoEuiqojfBBawAdB
-	 RfaXgKQC0k2t2+dxrkTF+kuBVceJq5NHdLJTpT4wn/fr881r7MSZP1myhqiOJI/jof
-	 OJxzFU+Bg0WZMGXxm2f5ZbEc1MbEKaXmxXjvrMbzPNj1Urk7FzRH6KvKFZX7LHn+b4
-	 i7mv5SVRK33IjXoB2wSPHaRwTPsLBOlt7cpF0SVUb9P4c4pGduYtGweGp7AckOkviI
-	 a+TRfOIBNnT0s1CPZjnKCQQXofBSupy8KkfwTafKlBXyhzzH4OqiDW1IEkg86RLpfc
-	 xAWxQaCMag6hw==
-Date: Wed, 28 Aug 2024 15:03:56 +0200
-From: Petr =?UTF-8?B?VGVzYcWZw61r?= <petr@tesarici.cz>
-To: Robin Murphy <robin.murphy@arm.com>
-Cc: mhklinux@outlook.com, kbusch@kernel.org, axboe@kernel.dk,
- sagi@grimberg.me, James.Bottomley@HansenPartnership.com,
- martin.petersen@oracle.com, kys@microsoft.com, haiyangz@microsoft.com,
- wei.liu@kernel.org, decui@microsoft.com, hch@lst.de,
- m.szyprowski@samsung.com, iommu@lists.linux.dev,
- linux-kernel@vger.kernel.org, linux-nvme@lists.infradead.org,
- linux-scsi@vger.kernel.org, linux-hyperv@vger.kernel.org,
- linux-coco@lists.linux.dev
-Subject: Re: [RFC 0/7] Introduce swiotlb throttling
-Message-ID: <20240828150356.46d3d3dc@mordecai.tesarici.cz>
-In-Reply-To: <efc1eafc-dba4-4991-9f9a-58ceca1d9a35@arm.com>
-References: <20240822183718.1234-1-mhklinux@outlook.com>
-	<efc1eafc-dba4-4991-9f9a-58ceca1d9a35@arm.com>
-X-Mailer: Claws Mail 4.3.0 (GTK 3.24.43; x86_64-suse-linux-gnu)
+	dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b="yWRX0LM+"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=APqdIHSsefdTQfi6DIpZXp4IKRUrwTDs8hoBINP9DzSYmCZuSbtIW6oxjZc0wwqp37YpqHyrQNQmzL5wKePJCz9yaKZnX7QTg9EY//AxHdNu/ZoFs6UcQNYSjVpt3FQZKtZZr7itA6rT8i04fhUJNRl24POWt8Z4rhgj3kqpJdHKVH5TQ/Bsu1mOf4yemRHnXz9sgOleDboJcfgi+Ah6Pnrtl9hlAoNilxVhFT88scCVSZvVLkbv9hhz1SI2k5nqJOTocfLH/s8hEwCF5XpPXtGs+RHjYKnAg2m/hWxuG8AzSv3SArrU4sNmVZePZClIVRDtSN97e/5jpaCuZXcPww==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=ngv5cqdqHKDoUFUsiAfTMdXKhD2teAxkoTMufbXaKTw=;
+ b=jd5xk2hETBeqhayZ41n5F8eZLmqUo7piRz4MBURqmlEjf4rvDARwuHkt41R9h6dhQmSQyVYdcuZxjT+M2RkeAEMlMrnaaMXL8BXjQH6gtimlrLbzs8N+md8zTlHe6Zih/snu5koCwPEj3jW9NsdBzhdhpURAk/bXTBTLs29sTPBHs3TWfDRKwh150YovPhm44Vg2sk4EcXRwx6qq4MQw/UloGrs+Z8jPFqvY7OBKTEaWvUAnPU4PNbtKQ/DiXXZw4lL9P9ZeANUrWpPXm7FQRNhkrfCT8Cfld/lr8Pz2SxJw2bOuYvpfjdFLCbi4IaJ0z5kje5m4bQPoBFVq0/pa9A==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 165.204.84.17) smtp.rcpttodomain=lists.linux.dev smtp.mailfrom=amd.com;
+ dmarc=pass (p=quarantine sp=quarantine pct=100) action=none
+ header.from=amd.com; dkim=none (message not signed); arc=none (0)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=ngv5cqdqHKDoUFUsiAfTMdXKhD2teAxkoTMufbXaKTw=;
+ b=yWRX0LM+byYb0cj/Zhfdner0qxUuxYSiphnnyhX3lREb3FXWjU2/WaCQtVhlE1I+sY5cjSqrU0QCxcKb+Sl+QaXfvKZqLC1MuWsLi0wtbm4wOGtWLaHWUTNOy9kyOrK7UTN88FvevBj1smRQfk87do/qkP75Iu8HCvGb07xZJTE=
+Received: from SA1P222CA0045.NAMP222.PROD.OUTLOOK.COM (2603:10b6:806:2d0::22)
+ by CY5PR12MB6372.namprd12.prod.outlook.com (2603:10b6:930:e::5) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7897.27; Wed, 28 Aug
+ 2024 13:43:39 +0000
+Received: from SN1PEPF0002636E.namprd02.prod.outlook.com
+ (2603:10b6:806:2d0:cafe::49) by SA1P222CA0045.outlook.office365.com
+ (2603:10b6:806:2d0::22) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7897.28 via Frontend
+ Transport; Wed, 28 Aug 2024 13:43:39 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 165.204.84.17)
+ smtp.mailfrom=amd.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=amd.com;
+Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
+ 165.204.84.17 as permitted sender) receiver=protection.outlook.com;
+ client-ip=165.204.84.17; helo=SATLEXMB04.amd.com; pr=C
+Received: from SATLEXMB04.amd.com (165.204.84.17) by
+ SN1PEPF0002636E.mail.protection.outlook.com (10.167.241.139) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.20.7918.13 via Frontend Transport; Wed, 28 Aug 2024 13:43:38 +0000
+Received: from kali.amd.com (10.180.168.240) by SATLEXMB04.amd.com
+ (10.181.40.145) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2507.39; Wed, 28 Aug
+ 2024 08:43:36 -0500
+From: Vasant Hegde <vasant.hegde@amd.com>
+To: <iommu@lists.linux.dev>, <joro@8bytes.org>
+CC: <will@kernel.org>, <robin.murphy@arm.com>,
+	<suravee.suthikulpanit@amd.com>, Vasant Hegde <vasant.hegde@amd.com>
+Subject: [PATCH 00/10] iommu/amd: Improve domain allocator and device attach code path
+Date: Wed, 28 Aug 2024 13:43:07 +0000
+Message-ID: <20240828134317.6239-1-vasant.hegde@amd.com>
+X-Mailer: git-send-email 2.34.1
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-ClientProxiedBy: SATLEXMB03.amd.com (10.181.40.144) To SATLEXMB04.amd.com
+ (10.181.40.145)
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: SN1PEPF0002636E:EE_|CY5PR12MB6372:EE_
+X-MS-Office365-Filtering-Correlation-Id: 948f94a1-6699-4a78-ed46-08dcc7676c18
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam:
+	BCL:0;ARA:13230040|1800799024|82310400026|36860700013|376014;
+X-Microsoft-Antispam-Message-Info:
+	=?us-ascii?Q?y46Qm/OlDGlw2tKMmA5bGISPQcEjPR27HGY8EnJNuq34fz3sv7SKKeY0WH7M?=
+ =?us-ascii?Q?mU1Z5Eg6/pA6UZclqiE00Es1XdQMEL+YWNotnGKC68HFL+unIXhd2osv/JxI?=
+ =?us-ascii?Q?D/dAduL3x/GbKi8f+KXbJUl2zSB8a82Y4ig8P7vEKehbZC3OYOuuBrsRA6EL?=
+ =?us-ascii?Q?hV+1HT0G/QxOkeZbPFeYgZZHzB/A0d0BFIPzp0cTDSh0Vk33eieWAZaXeiTj?=
+ =?us-ascii?Q?8nAMhG/skGSKaGxDXFIkbp5AxQe8XPJCuBhLsMS+7VYJFbBEvwyszExwqS+u?=
+ =?us-ascii?Q?mYtNUmGgmxyX/meeldqpb1aB9bQ+TQp1FltCfMYltE5aznO6qxbsKW2YDUZd?=
+ =?us-ascii?Q?zLZloe5quNzDphN987q5PvZFfITcounJUac+Cmy9DxCcsCFJVhyHI6ksy68p?=
+ =?us-ascii?Q?5ZvUS8+rBcWFCZefKqYNOFCtbymiR4Mjp9WazKDCG1WKkcaMUy9yXJXyNLrf?=
+ =?us-ascii?Q?OkgOTF+vpIUWbOH12+uqJA7oYh3BA9DklKazemwsZ70MMeYUjQFPgy9DtV40?=
+ =?us-ascii?Q?HmG/l+a6IDAkaj48oahoXkpYjX5/cNHgHmlotOWJfHZeBJlQHgAMK1Zg9jbU?=
+ =?us-ascii?Q?WpR4Jh3ILZ6nVlfVNiImZO2LMbbxQENzJ00POOJJCFFMPwLBo+g8R4aoIC7d?=
+ =?us-ascii?Q?ga4TyaZmUG+zqqUcgDocljQbz7j2cxkupDaOAsX03ZaBVAvrcFdV68aMz+bN?=
+ =?us-ascii?Q?hTAQV4dLR0CYXinPd5x7Pf5/l6bFXQ0ipOkL7o0D+B+xjxUNK0xyLUvNAPCZ?=
+ =?us-ascii?Q?sDZbzUOY0oZ+bIS/2byLgIHMZodgKP38FPw442++bX0cQp79eMrGk04xP4w+?=
+ =?us-ascii?Q?oa3hgeyrNkCXAUStTKXa3Y5DkCd2Du/bG47rhiQIdJyWqZ7vxuX52aqlwAnr?=
+ =?us-ascii?Q?W8vg4RyInAj+NIWQd4NLVU8t3hyKO4M8+6KYWTYnazjiiKz/qzXbGzRs8XeQ?=
+ =?us-ascii?Q?FZfRngQsnjBkXwUBpqHNotiQ6nbPdAtUxCSNd1HkQT9ZOwWE3l55ZD/f0ahc?=
+ =?us-ascii?Q?uZTDrGQ2euWx5DkPiO+6/JNJ7reIR/VgkPx6xyxELJRaRyZNrYdiZ5cWLAk/?=
+ =?us-ascii?Q?7BfC9DnWS/noBs0W+yamJIpvoJ4RB5wZ9PFgc8j4RmKJSPPE+RJeT9K7hl4g?=
+ =?us-ascii?Q?8V2i44yTpq58PXQzWZCLtPW4Sb7kZTX+l+eWhN4bXQQuKYssYnE53ZChnG0I?=
+ =?us-ascii?Q?LDDv0IJSbVwklpHlTh6mK0HJ9EbTaYSIdO63MhctRv8T00TNOdjSnbnbTjBc?=
+ =?us-ascii?Q?xuxTqzAlnlgN7OdOuL3311CJtsQGwCsFbxkItoPDgM2vuYKi7cgdQAonN1L6?=
+ =?us-ascii?Q?WH4xYNYHnenVPB4sfNRD4/0/1kcrvfap3hFspi9JvkURSyR+5bgtbZLGyoOb?=
+ =?us-ascii?Q?Q5ws44mQw7oYz2BLGIpcPjbb7SPOd2Lq77InBs3NYpnxPR1RmQ=3D=3D?=
+X-Forefront-Antispam-Report:
+	CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB04.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230040)(1800799024)(82310400026)(36860700013)(376014);DIR:OUT;SFP:1101;
+X-OriginatorOrg: amd.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 28 Aug 2024 13:43:38.8120
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: 948f94a1-6699-4a78-ed46-08dcc7676c18
+X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[SATLEXMB04.amd.com]
+X-MS-Exchange-CrossTenant-AuthSource:
+	SN1PEPF0002636E.namprd02.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: CY5PR12MB6372
 
-On Wed, 28 Aug 2024 13:02:31 +0100
-Robin Murphy <robin.murphy@arm.com> wrote:
+This series aims to improve domain allocator and attach device code path.
+  - Replace custom domain ID allocator with IDA allocator.
+  - Improve protection domain data structure
+  - Improve attach device code path and replace dev_data spinlock with mutex
 
-> On 2024-08-22 7:37 pm, mhkelley58@gmail.com wrote:
-> > From: Michael Kelley <mhklinux@outlook.com>
-> > 
-> > Background
-> > ==========
-> > Linux device drivers may make DMA map/unmap calls in contexts that
-> > cannot block, such as in an interrupt handler. Consequently, when a
-> > DMA map call must use a bounce buffer, the allocation of swiotlb
-> > memory must always succeed immediately. If swiotlb memory is
-> > exhausted, the DMA map call cannot wait for memory to be released. The
-> > call fails, which usually results in an I/O error.
-> > 
-> > Bounce buffers are usually used infrequently for a few corner cases,
-> > so the default swiotlb memory allocation of 64 MiB is more than
-> > sufficient to avoid running out and causing errors. However, recently
-> > introduced Confidential Computing (CoCo) VMs must use bounce buffers
-> > for all DMA I/O because the VM's memory is encrypted. In CoCo VMs
-> > a new heuristic allocates ~6% of the VM's memory, up to 1 GiB, for
-> > swiotlb memory. This large allocation reduces the likelihood of a
-> > spike in usage causing DMA map failures. Unfortunately for most
-> > workloads, this insurance against spikes comes at the cost of
-> > potentially "wasting" hundreds of MiB's of the VM's memory, as swiotlb
-> > memory can't be used for other purposes.
-> > 
-> > Approach
-> > ========
-> > The goal is to significantly reduce the amount of memory reserved as
-> > swiotlb memory in CoCo VMs, while not unduly increasing the risk of
-> > DMA map failures due to memory exhaustion.  
-> 
-> Isn't that fundamentally the same thing that SWIOTLB_DYNAMIC was already 
-> meant to address? Of course the implementation of that is still young 
-> and has plenty of scope to be made more effective, and some of the ideas 
-> here could very much help with that, but I'm struggling a little to see 
-> what's really beneficial about having a completely disjoint mechanism 
-> for sitting around doing nothing in the precise circumstances where it 
-> would seem most possible to allocate a transient buffer and get on with it.
+This series is on top of iommu/next and cleanup series [1].
 
-This question can be probably best answered by Michael, but let me give
-my understanding of the differences. First the similarity: Yes, one
-of the key new concepts is that swiotlb allocation may block, and I
-introduced a similar attribute in one of my dynamic SWIOTLB patches; it
-was later dropped, but dynamic SWIOTLB would still benefit from it.
+[1] https://lore.kernel.org/linux-iommu/20240828111029.5429-1-vasant.hegde@amd.com/T/#t
 
-More importantly, dynamic SWIOTLB may deplete memory following an I/O
-spike. I do have some ideas how memory could be returned back to the
-allocator, but the code is not ready (unlike this patch series).
-Moreover, it may still be a better idea to throttle the devices
-instead, because returning DMA'able memory is not always cheap. In a
-CoCo VM, this memory must be re-encrypted, and that requires a
-hypercall that I'm told is expensive.
+This is also available at github :
+  https://github.com/AMDESE/linux-iommu/tree/iommu_rework_attach_dev_v1
 
-In short, IIUC it is faster in a CoCo VM to delay some requests a bit
-than to grow the swiotlb.
+-Vasant
 
-Michael, please add your insights.
+Vasant Hegde (10):
+  iommu/amd: Use ida interface to manage protection domain ID
+  iommu/amd: Remove protection_domain.dev_cnt variable
+  iommu/amd: xarray to track protection_domain->iommu list
+  iommu/amd: Remove unused amd_iommus variable
+  iommu/amd: Do not detach devices in domain free path
+  iommu/amd: Reduce domain lock scope in attach device path
+  iommu/amd: Rearrange attach device code
+  iommu/amd: Convert dev_data lock from spinlock to mutex
+  iommu/amd: Reorder attach device code
+  iommu/amd: Improve amd_iommu_release_device()
 
-Petr T
+ drivers/iommu/amd/amd_iommu.h       |   2 +
+ drivers/iommu/amd/amd_iommu_types.h |  20 +-
+ drivers/iommu/amd/init.c            |  35 +--
+ drivers/iommu/amd/iommu.c           | 340 ++++++++++++++--------------
+ 4 files changed, 185 insertions(+), 212 deletions(-)
 
-> > To reach this goal, this patch set introduces the concept of swiotlb
-> > throttling, which can delay swiotlb allocation requests when swiotlb
-> > memory usage is high. This approach depends on the fact that some
-> > DMA map requests are made from contexts where it's OK to block.
-> > Throttling such requests is acceptable to spread out a spike in usage.
-> > 
-> > Because it's not possible to detect at runtime whether a DMA map call
-> > is made in a context that can block, the calls in key device drivers
-> > must be updated with a MAY_BLOCK attribute, if appropriate. When this
-> > attribute is set and swiotlb memory usage is above a threshold, the
-> > swiotlb allocation code can serialize swiotlb memory usage to help
-> > ensure that it is not exhausted.
-> > 
-> > In general, storage device drivers can take advantage of the MAY_BLOCK
-> > option, while network device drivers cannot. The Linux block layer
-> > already allows storage requests to block when the BLK_MQ_F_BLOCKING
-> > flag is present on the request queue. In a CoCo VM environment,
-> > relatively few device types are used for storage devices, and updating
-> > these drivers is feasible. This patch set updates the NVMe driver and
-> > the Hyper-V storvsc synthetic storage driver. A few other drivers
-> > might also need to be updated to handle the key CoCo VM storage
-> > devices.
-> > 
-> > Because network drivers generally cannot use swiotlb throttling, it is
-> > still possible for swiotlb memory to become exhausted. But blunting
-> > the maximum swiotlb memory used by storage devices can significantly
-> > reduce the peak usage, and a smaller amount of swiotlb memory can be
-> > allocated in a CoCo VM. Also, usage by storage drivers is likely to
-> > overall be larger than for network drivers, especially when large
-> > numbers of disk devices are in use, each with many I/O requests in-
-> > flight.
-> > 
-> > swiotlb throttling does not affect the context requirements of DMA
-> > unmap calls. These always complete without blocking, even if the
-> > corresponding DMA map call was throttled.
-> > 
-> > Patches
-> > =======
-> > Patches 1 and 2 implement the core of swiotlb throttling. They define
-> > DMA attribute flag DMA_ATTR_MAY_BLOCK that device drivers use to
-> > indicate that a DMA map call is allowed to block, and therefore can be
-> > throttled. They update swiotlb_tbl_map_single() to detect this flag and
-> > implement the throttling. Similarly, swiotlb_tbl_unmap_single() is
-> > updated to handle a previously throttled request that has now freed
-> > its swiotlb memory.
-> > 
-> > Patch 3 adds the dma_recommend_may_block() call that device drivers
-> > can use to know if there's benefit in using the MAY_BLOCK option on
-> > DMA map calls. If not in a CoCo VM, this call returns "false" because
-> > swiotlb is not being used for all DMA I/O. This allows the driver to
-> > set the BLK_MQ_F_BLOCKING flag on blk-mq request queues only when
-> > there is benefit.
-> > 
-> > Patch 4 updates the SCSI-specific DMA map calls to add a "_attrs"
-> > variant to allow passing the MAY_BLOCK attribute.
-> > 
-> > Patch 5 adds the MAY_BLOCK option to the Hyper-V storvsc driver, which
-> > is used for storage in CoCo VMs in the Azure public cloud.
-> > 
-> > Patches 6 and 7 add the MAY_BLOCK option to the NVMe PCI host driver.
-> > 
-> > Discussion
-> > ==========
-> > * Since swiotlb isn't visible to device drivers, I've specifically
-> > named the DMA attribute as MAY_BLOCK instead of MAY_THROTTLE or
-> > something swiotlb specific. While this patch set consumes MAY_BLOCK
-> > only on the DMA direct path to do throttling in the swiotlb code,
-> > there might be other uses in the future outside of CoCo VMs, or
-> > perhaps on the IOMMU path.
-> > 
-> > * The swiotlb throttling code in this patch set throttles by
-> > serializing the use of swiotlb memory when usage is above a designated
-> > threshold: i.e., only one new swiotlb request is allowed to proceed at
-> > a time. When the corresponding unmap is done to release its swiotlb
-> > memory, the next request is allowed to proceed. This serialization is
-> > global and without knowledge of swiotlb areas. From a storage I/O
-> > performance standpoint, the serialization is a bit restrictive, but
-> > the code isn't trying to optimize for being above the threshold. If a
-> > workload regularly runs above the threshold, the size of the swiotlb
-> > memory should be increased.
-> > 
-> > * Except for knowing how much swiotlb memory is currently allocated,
-> > throttle accounting is done without locking or atomic operations. For
-> > example, multiple requests could proceed in parallel when usage is
-> > just under the threshold, putting usage above the threshold by the
-> > aggregate size of the parallel requests. The threshold must already be
-> > set relatively conservatively because of drivers that can't enable
-> > throttling, so this slop in the accounting shouldn't be a problem.
-> > It's better than the potential bottleneck of a globally synchronized
-> > reservation mechanism.
-> > 
-> > * In a CoCo VM, mapping a scatter/gather list makes an independent
-> > swiotlb request for each entry. Throttling each independent request
-> > wouldn't really work, so the code throttles only the first SGL entry.
-> > Once that entry passes any throttle, subsequent entries in the SGL
-> > proceed without throttling. When the SGL is unmapped, entries 1 thru
-> > N-1 are unmapped first, then entry 0 is unmapped, allowing the next
-> > serialized request to proceed.
-> > 
-> > Open Topics
-> > ===========
-> > 1. swiotlb allocations from Xen and the IOMMU code don't make use of
-> > throttling. This could be added if beneficial.
-> > 
-> > 2. The throttling values are currently exposed and adjustable in
-> > /sys/kernel/debug/swiotlb. Should any of this be moved so it is
-> > visible even without CONFIG_DEBUG_FS?
-> > 
-> > 3. I have not changed the current heuristic for the swiotlb memory
-> > size in CoCo VMs. It's not clear to me how to link this to whether the
-> > key storage drivers have been updated to allow throttling. For now,
-> > the benefit of reduced swiotlb memory size must be realized using the
-> > swiotlb= kernel boot line option.
-> > 
-> > 4. I need to update the swiotlb documentation to describe throttling.
-> > 
-> > This patch set is built against linux-next-20240816.
-> > 
-> > Michael Kelley (7):
-> >    swiotlb: Introduce swiotlb throttling
-> >    dma: Handle swiotlb throttling for SGLs
-> >    dma: Add function for drivers to know if allowing blocking is useful
-> >    scsi_lib_dma: Add _attrs variant of scsi_dma_map()
-> >    scsi: storvsc: Enable swiotlb throttling
-> >    nvme: Move BLK_MQ_F_BLOCKING indicator to struct nvme_ctrl
-> >    nvme: Enable swiotlb throttling for NVMe PCI devices
-> > 
-> >   drivers/nvme/host/core.c    |   4 +-
-> >   drivers/nvme/host/nvme.h    |   2 +-
-> >   drivers/nvme/host/pci.c     |  18 ++++--
-> >   drivers/nvme/host/tcp.c     |   3 +-
-> >   drivers/scsi/scsi_lib_dma.c |  13 ++--
-> >   drivers/scsi/storvsc_drv.c  |   9 ++-
-> >   include/linux/dma-mapping.h |  13 ++++
-> >   include/linux/swiotlb.h     |  15 ++++-
-> >   include/scsi/scsi_cmnd.h    |   7 ++-
-> >   kernel/dma/Kconfig          |  13 ++++
-> >   kernel/dma/direct.c         |  41 +++++++++++--
-> >   kernel/dma/direct.h         |   1 +
-> >   kernel/dma/mapping.c        |  10 ++++
-> >   kernel/dma/swiotlb.c        | 114 ++++++++++++++++++++++++++++++++----
-> >   14 files changed, 227 insertions(+), 36 deletions(-)
-> >   
+-- 
+2.31.1
 
