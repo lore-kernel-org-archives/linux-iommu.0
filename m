@@ -1,46 +1,46 @@
 Received: from mx0b-0031df01.pphosted.com (mx0b-0031df01.pphosted.com [205.220.180.131])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 36A2E1AED3E
-	for <iommu@lists.linux.dev>; Wed, 28 Aug 2024 20:38:33 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 722041B012F
+	for <iommu@lists.linux.dev>; Wed, 28 Aug 2024 20:38:35 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.180.131
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1724877514; cv=none; b=DhN6Bc5aD7FoOnrki+p3CY04XukYPydPtRaM8o3IlWkCTlr3hd617HjDNnYDymRmJBIOljhcFRdJE5CEenvH1RMgcEfKw7e6eI2GQ4JzfN1m7GQpLYPbOhEXHr9ECiiwnd+FgJ349wJ/Q5Jh2EYW0n7LwWBGkolRaUsSySlyJ0s=
+	t=1724877517; cv=none; b=BelZ7V92ILb5w20Tg720DLYRBmKU8Y11zE+jyDgrobBC63NoMKLen6wQ1ORsqVzyZjZMrJEa8SSDepCXeEgC1hP1byyg2fMpp6bH+pwyac9t/pj3baSNMqz0diTSzEZ3/OnMn9LOqdvm5GHBJ+7uLEkpC7hW94t7+cO3HFO7b8o=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1724877514; c=relaxed/simple;
-	bh=k2a1vZw71+L3bchz4Rndvna3m9p7JIovSgKrV2hK8fk=;
+	s=arc-20240116; t=1724877517; c=relaxed/simple;
+	bh=r6A5x6neGN/gqm6/YpxaKazVoTk/J4JEjs+0+MW+bBs=;
 	h=From:To:CC:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=EUX89y5V46wkgAVzum7YhbxAfaY42E92tD1Q4ra8MSuUK9jy+4YhK6VUsj10GzbSu09EdhBEgOgnHf/DOdDh3iUR+ObR4cZxJvclap9NeatjEn4IZUk2cKXnhJ2psUkJWTENCXdBVxGYKZkEVyrQ7Qhtj2hGD8JpvSD5wMfuOnw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com; spf=pass smtp.mailfrom=quicinc.com; dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b=nzh/gRDh; arc=none smtp.client-ip=205.220.180.131
+	 MIME-Version:Content-Type; b=dg3KAKvP1Lz7Wz4SucFixaJ/QmsuTRqjrI1vzzh3PQc77/8MYupBt0vwJ+dlCxtjcMZ5Wt2ZkhUJ+/YmaLja7gN3uwByfktwZZn+Ec/sGduaWedRjHIHz3YWKsI1zR7f+KW+A63lJez1F9OqbhdGBTWgEScIch3bOXvOX/2AFWw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com; spf=pass smtp.mailfrom=quicinc.com; dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b=kduSaAB4; arc=none smtp.client-ip=205.220.180.131
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=quicinc.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b="nzh/gRDh"
+	dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b="kduSaAB4"
 Received: from pps.filterd (m0279868.ppops.net [127.0.0.1])
-	by mx0a-0031df01.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 47SJM4lp019869;
-	Wed, 28 Aug 2024 20:38:15 GMT
+	by mx0a-0031df01.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 47SJM4JS019866;
+	Wed, 28 Aug 2024 20:38:17 GMT
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=quicinc.com; h=
 	cc:content-transfer-encoding:content-type:date:from:in-reply-to
 	:message-id:mime-version:references:subject:to; s=qcppdkim1; bh=
-	jGyCPGpLI2lIbiBh5RYLDxsuylz28OWUQKVgAwX36Vw=; b=nzh/gRDhVrFAl0DS
-	yXKLGFVJ4JjdZEyK3/IPKaVomcxAKpgTGi/L5AQUvGfGXnT3MIP8Qirbep2r3ewS
-	pHEiUfTkpUBp/cyRemMQbkcSiM2YU8KhD9oKg/dz+4xCMr7ilB1xY/3QblTKKCyO
-	XzWmncmHH82dowT3zLhif/p1xJ5wm5SCT6xcc2cg1NWGZSeArs67kua2CYOptdcq
-	JZB32ShHbRjaKKkex3250ufpXGtCzsA/eghlthYbNtmgaxEZmSpDKuyvRXnrTDth
-	agoYdB3+nTqzwcTLt7c2NmlSjgE9sPVa0U0E2XP4bf7N2+4rfro5bT9kWaBoUGOO
-	JDDROQ==
-Received: from nasanppmta05.qualcomm.com (i-global254.qualcomm.com [199.106.103.254])
-	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 419q2xu0q4-1
+	1ogm+uahN8ntWDNctVAKdHEFeX2pjjyNnQRIIojb8BM=; b=kduSaAB4Jvzqrvat
+	3hqRJ4OJJPE1pi+EBK10nkMBzNRCObyx9ivUh+FSePSzNRdLe4bZ3gww/cAuxFi3
+	WUBrdE/2VTIEKpeOKJ6VzTy3H56asVaTyUD7otcAXw/fVCwISWwz53/SmgMBqrn8
+	BY5a72jAkDQXarI3PAy3OQ39z1xrSnHb8ygx9Wh8KXmwTH8v/O6ty3ORHRfaTySy
+	wZvL4IJWGEkH1EJxmIuRvhBHxfiGSUYricr4k3NheqccOpF/vjqNNNGx92A2KzCu
+	yOOXzWZ3GHeShiaXCHW79YCLJg/23QjLJK7p15eXrM2Qt8JGgaL3TS7W7hV9ch1b
+	WY4z1A==
+Received: from nasanppmta03.qualcomm.com (i-global254.qualcomm.com [199.106.103.254])
+	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 419q2xu0q8-1
 	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Wed, 28 Aug 2024 20:38:15 +0000 (GMT)
+	Wed, 28 Aug 2024 20:38:17 +0000 (GMT)
 Received: from nasanex01b.na.qualcomm.com (nasanex01b.na.qualcomm.com [10.46.141.250])
-	by NASANPPMTA05.qualcomm.com (8.18.1.2/8.18.1.2) with ESMTPS id 47SKcDSa015590
+	by NASANPPMTA03.qualcomm.com (8.18.1.2/8.18.1.2) with ESMTPS id 47SKcFUR014342
 	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Wed, 28 Aug 2024 20:38:13 GMT
+	Wed, 28 Aug 2024 20:38:15 GMT
 Received: from hu-nkela-lv.qualcomm.com (10.49.16.6) by
  nasanex01b.na.qualcomm.com (10.46.141.250) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.1544.9; Wed, 28 Aug 2024 13:38:10 -0700
+ 15.2.1544.9; Wed, 28 Aug 2024 13:38:11 -0700
 From: Nikunj Kela <quic_nkela@quicinc.com>
 To: <andersson@kernel.org>, <konradybcio@kernel.org>, <robh@kernel.org>,
         <krzk+dt@kernel.org>, <conor+dt@kernel.org>, <rafael@kernel.org>,
@@ -66,9 +66,9 @@ CC: <robin.murphy@arm.com>, <cristian.marussi@arm.com>, <rui.zhang@intel.com>,
         <quic_shazhuss@quicinc.com>, Nikunj Kela <quic_nkela@quicinc.com>,
         "Praveen
  Talari" <quic_ptalari@quicinc.com>
-Subject: [PATCH 17/22] dt-bindings: serial: document support for SA8255p
-Date: Wed, 28 Aug 2024 13:37:16 -0700
-Message-ID: <20240828203721.2751904-18-quic_nkela@quicinc.com>
+Subject: [PATCH 19/22] dt-bindings: i2c: document support for SA8255p
+Date: Wed, 28 Aug 2024 13:37:18 -0700
+Message-ID: <20240828203721.2751904-20-quic_nkela@quicinc.com>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20240828203721.2751904-1-quic_nkela@quicinc.com>
 References: <20240828203721.2751904-1-quic_nkela@quicinc.com>
@@ -84,8 +84,8 @@ X-ClientProxiedBy: nalasex01c.na.qualcomm.com (10.47.97.35) To
  nasanex01b.na.qualcomm.com (10.46.141.250)
 X-QCInternal: smtphost
 X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
-X-Proofpoint-ORIG-GUID: La2gYDAdRbh4F5L0dmV_q1s5osbysFkQ
-X-Proofpoint-GUID: La2gYDAdRbh4F5L0dmV_q1s5osbysFkQ
+X-Proofpoint-ORIG-GUID: PQNtLENXd5OWtZe41yvCqgXLeHMXIdF0
+X-Proofpoint-GUID: PQNtLENXd5OWtZe41yvCqgXLeHMXIdF0
 X-Proofpoint-Virus-Version: vendor=baseguard
  engine=ICAP:2.0.293,Aquarius:18.0.1039,Hydra:6.0.680,FMLib:17.12.28.16
  definitions=2024-08-28_08,2024-08-28_01,2024-05-17_01
@@ -95,116 +95,120 @@ X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 suspect
  malwarescore=0 classifier=spam adjust=0 reason=mlx scancount=1
  engine=8.19.0-2407110000 definitions=main-2408280149
 
-Add compatibles representing UART support on SA8255p.
+Add compatible representing i2c support on SA8255p.
 
-Clocks and interconnects are being configured in the firmware VM
-on SA8255p platform, therefore making them optional.
+Clocks and interconnects are being configured in Firmware VM
+on SA8255p, therefore making them optional.
 
 CC: Praveen Talari <quic_ptalari@quicinc.com>
 Signed-off-by: Nikunj Kela <quic_nkela@quicinc.com>
 ---
- .../serial/qcom,serial-geni-qcom.yaml         | 58 ++++++++++++++++---
- 1 file changed, 51 insertions(+), 7 deletions(-)
+ .../bindings/i2c/qcom,i2c-geni-qcom.yaml      | 56 ++++++++++++-------
+ 1 file changed, 36 insertions(+), 20 deletions(-)
 
-diff --git a/Documentation/devicetree/bindings/serial/qcom,serial-geni-qcom.yaml b/Documentation/devicetree/bindings/serial/qcom,serial-geni-qcom.yaml
-index dd33794b3534..dcd43e1353ec 100644
---- a/Documentation/devicetree/bindings/serial/qcom,serial-geni-qcom.yaml
-+++ b/Documentation/devicetree/bindings/serial/qcom,serial-geni-qcom.yaml
-@@ -13,11 +13,42 @@ maintainers:
- allOf:
-   - $ref: /schemas/serial/serial.yaml#
+diff --git a/Documentation/devicetree/bindings/i2c/qcom,i2c-geni-qcom.yaml b/Documentation/devicetree/bindings/i2c/qcom,i2c-geni-qcom.yaml
+index 9f66a3bb1f80..88f513fc5b08 100644
+--- a/Documentation/devicetree/bindings/i2c/qcom,i2c-geni-qcom.yaml
++++ b/Documentation/devicetree/bindings/i2c/qcom,i2c-geni-qcom.yaml
+@@ -15,14 +15,13 @@ properties:
+     enum:
+       - qcom,geni-i2c
+       - qcom,geni-i2c-master-hub
++      - qcom,sa8255p-geni-i2c
  
+   clocks:
+-    minItems: 1
+-    maxItems: 2
++    description: phandles for the clock providers
+ 
+   clock-names:
+-    minItems: 1
+-    maxItems: 2
++    description: names for the clocks
+ 
+   clock-frequency:
+     default: 100000
+@@ -36,12 +35,13 @@ properties:
+       - const: rx
+ 
+   interconnects:
+-    minItems: 2
+-    maxItems: 3
++    description: phandles of interconnect bw provider
+ 
+   interconnect-names:
+-    minItems: 2
+-    maxItems: 3
++    items:
++      - const: qup-core
++      - const: qup-config
++      - const: qup-memory
+ 
+   interrupts:
+     maxItems: 1
+@@ -69,8 +69,6 @@ properties:
+ required:
+   - compatible
+   - interrupts
+-  - clocks
+-  - clock-names
+   - reg
+ 
+ allOf:
+@@ -100,22 +98,28 @@ allOf:
+           items:
+             - const: qup-core
+             - const: qup-config
 +  - if:
 +      properties:
 +        compatible:
 +          contains:
-+            enum:
-+              - qcom,sa8255p-geni-uart
-+              - qcom,sa8255p-geni-debug-uart
++            const: qcom,sa8255p-geni-i2c
 +    then:
 +      required:
 +        - power-domains
-+        - power-domain-names
-+      properties:
-+        power-domains:
+     else:
+       properties:
+         clocks:
+-          maxItems: 1
+-
++          minItems: 1
++          maxItems: 2
+         clock-names:
+-          const: se
+-
++          minItems: 1
++          maxItems: 2
+         interconnects:
+-          minItems: 3
+-
 +          minItems: 2
-+          maxItems: 2
-+    else:
-+      required:
-+        - clocks
-+        - clock-names
-+      properties:
-+        power-domains:
-+          maxItems: 1
-+        interconnects:
-+          maxItems: 2
-+        interconnect-names:
-+          items:
-+            - const: qup-core
-+            - const: qup-config
-+
- properties:
-   compatible:
-     enum:
-       - qcom,geni-uart
-       - qcom,geni-debug-uart
-+      - qcom,sa8255p-geni-uart
-+      - qcom,sa8255p-geni-debug-uart
++          maxItems: 3
+         interconnect-names:
+-          items:
+-            - const: qup-core
+-            - const: qup-config
+-            - const: qup-memory
++          minItems: 2
++          maxItems: 3
  
-   clocks:
-     maxItems: 1
-@@ -26,12 +57,10 @@ properties:
-     const: se
+ unevaluatedProperties: false
  
-   interconnects:
--    maxItems: 2
-+    description: phandles of interconnect bw provider
- 
-   interconnect-names:
--    items:
--      - const: qup-core
--      - const: qup-config
-+    description: names of interconnects
- 
-   interrupts:
-     minItems: 1
-@@ -51,15 +80,19 @@ properties:
-       - const: sleep
- 
-   power-domains:
--    maxItems: 1
-+    minItems: 1
-+    maxItems: 2
-+
-+  power-domain-names:
-+    items:
-+      - const: power
-+      - const: perf
- 
-   reg:
-     maxItems: 1
- 
- required:
-   - compatible
--  - clocks
--  - clock-names
-   - interrupts
-   - reg
- 
-@@ -83,4 +116,15 @@ examples:
-                         <&gem_noc MASTER_APPSS_PROC 0 &config_noc SLAVE_QUP_0 0>;
-         interconnect-names = "qup-core", "qup-config";
+@@ -143,4 +147,16 @@ examples:
+         power-domains = <&rpmhpd SC7180_CX>;
+         required-opps = <&rpmhpd_opp_low_svs>;
      };
 +
 +  - |
 +    #include <dt-bindings/interrupt-controller/arm-gic.h>
 +
-+    serial@990000 {
-+        compatible = "qcom,sa8255p-geni-uart";
-+        reg = <0x990000 0x4000>;
-+        interrupts = <GIC_SPI 531 IRQ_TYPE_LEVEL_HIGH>;
-+        power-domains = <&scmi11_pd 4>, <&scmi11_dvfs 4>;
-+        power-domain-names = "power", "perf";
++    i2c@a90000 {
++        compatible = "qcom,sa8255p-geni-i2c";
++        reg = <0xa90000 0x4000>;
++        interrupts = <GIC_SPI 357 IRQ_TYPE_LEVEL_HIGH>;
++        #address-cells = <1>;
++        #size-cells = <0>;
++        power-domains = <&scmi9_pd 11>;
 +    };
  ...
 -- 
