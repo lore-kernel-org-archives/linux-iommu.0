@@ -1,118 +1,307 @@
-Received: from mail.tkos.co.il (mail.tkos.co.il [84.110.109.230])
+Received: from bee.tesarici.cz (bee.tesarici.cz [37.205.15.56])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 166E33D96A
-	for <iommu@lists.linux.dev>; Wed, 28 Aug 2024 04:14:59 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=84.110.109.230
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 103C254648;
+	Wed, 28 Aug 2024 05:16:03 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=37.205.15.56
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1724818503; cv=none; b=cGptf/FnOj/SlPj931SK76TsQPiqH3KnQ8dt3zPlxAbROAtajAjL52Am82XPU/M6kVYyoLsXwuiDtRDyEYHN9SpUpx/jW0nxfi+RUre4rU8kMqUIgI8rL6sUr47YwccVR5iA7bqvIjHjU07BnBfc3s9Q7yb4F82SPPrhl4zs2U0=
+	t=1724822168; cv=none; b=MFonw/kv00IoTqSyZqW9iS82cBB1mSjz/81Bl3GlWRgDQk0s3WqiQsxj0jrc6T6JPyuJApu3WKVwK27GwATrre5wvDkFJS+lxOIq+MdEgO6Qpxl3RWRTB9aEv69h9q5zLxoIDMx+jvJ6xt6KbWhU3G9TaWy8rEZ1bn8hjTM0E50=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1724818503; c=relaxed/simple;
-	bh=HDk7c503UbfGOlzje5ZzCxaJMFZSS4/0pwfqqArE/9I=;
-	h=From:To:Cc:Subject:In-Reply-To:References:Date:Message-ID:
-	 MIME-Version:Content-Type; b=VWLwJAs06XxkB/Q/vJ1eSf1UOH1TxiweBq6so86fzvn2UupzmljrAKy2UVbplC/5fnPr+euMMtfTHiKH4Ed79+O/aj/DUcue0rzVMULF/4XF4OBR0c3Iw/kO9O+ftlABnn0rwqxuTqscovdmNnAKEKsq+RPpcUVDthPmRyW4gLQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=tkos.co.il; spf=pass smtp.mailfrom=tkos.co.il; dkim=pass (2048-bit key) header.d=tkos.co.il header.i=@tkos.co.il header.b=ArST6Ntb; arc=none smtp.client-ip=84.110.109.230
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=tkos.co.il
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=tkos.co.il
+	s=arc-20240116; t=1724822168; c=relaxed/simple;
+	bh=6qhXRzKsK9p2z8WH7e0mY+BuINu9v2vjbAykO4GMhIk=;
+	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=UxPldndfGOEj5R+X4o1Lsl/iSx/KzL7vBsRlVRkDy6HTC/3f8v6IVFnsXx2W7xVj780wC/sA2dqrJv8jXtY1QKWMMQUR4dOgN9Ml8Izi8lHC0Ub3QEGSzMc48uAuEuD9cq/liHzO7KhLibBo5YGWT3vfhR4FNeJl9E+iAOylS74=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=tesarici.cz; spf=pass smtp.mailfrom=tesarici.cz; dkim=pass (2048-bit key) header.d=tesarici.cz header.i=@tesarici.cz header.b=2A3vENwm; arc=none smtp.client-ip=37.205.15.56
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=tesarici.cz
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=tesarici.cz
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=tkos.co.il header.i=@tkos.co.il header.b="ArST6Ntb"
-Received: from localhost (unknown [10.0.8.3])
-	by mail.tkos.co.il (Postfix) with ESMTP id A7195440F90;
-	Wed, 28 Aug 2024 07:13:03 +0300 (IDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=tkos.co.il;
-	s=default; t=1724818383;
-	bh=HDk7c503UbfGOlzje5ZzCxaJMFZSS4/0pwfqqArE/9I=;
-	h=From:To:Cc:Subject:In-Reply-To:References:Date:From;
-	b=ArST6NtbDOFjm4LykbnIQT39RmzOiJmByFAQjNooW5e+R//nJd6BzdQgdTZWq2Gz7
-	 MUsAsGpoMBzc0KIqopaPcWmY8Et5CKqgrnnaFAisIlIUT/ZvcnILJnW3Z/StqiM3OY
-	 aJdLs4YAjKFqEhTWE50sgdx7VlM8kB5nv+uzUya2/hkHqi7I0LDA2V3ZnChm4cKZj3
-	 1lHFIb3w4h8s8ppaOgAk2EELgFqxXeASYYfwLk5atekiLdI0FvvAzz7gscLWjbyQ2j
-	 mn4DMWKbqGGlFLR09qM/9XFu5try/KEdpwDVmX4TYD4aHYscXZl1yIiLduezho7Mol
-	 ZQyuikyzxV30g==
-From: Baruch Siach <baruch@tkos.co.il>
-To: Robin Murphy <robin.murphy@arm.com>
-Cc: Christoph Hellwig <hch@lst.de>,  Marek Szyprowski
- <m.szyprowski@samsung.com>,  Catalin Marinas <catalin.marinas@arm.com>,
-  Will Deacon <will@kernel.org>,  iommu@lists.linux.dev,
-  linux-arm-kernel@lists.infradead.org,  Petr =?utf-8?B?VGVzYcWZw61r?=
- <petr@tesarici.cz>,
-  Ramon Fried <ramon@neureality.ai>,  Elad Nachman <enachman@marvell.com>
-Subject: Re: [PATCH] arm64: mm: fix DMA zone when dma-ranges is missing
-In-Reply-To: <53679dda-178c-435b-81c5-42d139911cef@arm.com> (Robin Murphy's
-	message of "Tue, 27 Aug 2024 11:22:28 +0100")
-References: <731d204f5f556ad61bbaf004b1d984f83c90b4f5.1724748249.git.baruch@tkos.co.il>
-	<53679dda-178c-435b-81c5-42d139911cef@arm.com>
-Date: Wed, 28 Aug 2024 07:14:56 +0300
-Message-ID: <87ed69uvun.fsf@tarshish>
+	dkim=pass (2048-bit key) header.d=tesarici.cz header.i=@tesarici.cz header.b="2A3vENwm"
+Received: from meshulam.tesarici.cz (dynamic-2a00-1028-83b8-1e7a-4427-cc85-6706-c595.ipv6.o2.cz [IPv6:2a00:1028:83b8:1e7a:4427:cc85:6706:c595])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange ECDHE (P-256) server-signature RSA-PSS (2048 bits) server-digest SHA256)
+	(No client certificate requested)
+	by bee.tesarici.cz (Postfix) with ESMTPSA id C996D1F9182;
+	Wed, 28 Aug 2024 07:15:55 +0200 (CEST)
+Authentication-Results: mail.tesarici.cz; dmarc=fail (p=quarantine dis=none) header.from=tesarici.cz
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=tesarici.cz; s=mail;
+	t=1724822156; bh=rWHvUa9BCo3b2+TaKpVzF7XSwOb4cg0tBQGpt2tEfQs=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+	b=2A3vENwmCH5KAKaCrOl0QHIgazofDMhQN8Ve2DKmxNFnRk5Z+zSAyEYlacVMIO0o1
+	 sCmyJF3+5+viqVuRVDCCVKJ6OCAMDI65gZDSCrBuf3AUcKGp/gPFHT2ME+YzixeAkb
+	 /Xwf6yHmHn30G0jh1mg+E92Z7lwhiDEMtJfBhjfpoBRVIzTG8tRGe3I0HxfJLkO+em
+	 BraJvYmqOUmzlOM9E4q9/GaIUJWuDSBkL2ZAHeiUt/6k+jcqiZHRbVIB40qjpRa4jQ
+	 LXRNfXh4OaeNwYYLvXW5bvgvHDKW8izE23nrjkwHfyTgpDwLKwsfZ87NmBjfVgyjXI
+	 5Zy76aRunyyeQ==
+Date: Wed, 28 Aug 2024 07:15:54 +0200
+From: Petr =?UTF-8?B?VGVzYcWZw61r?= <petr@tesarici.cz>
+To: Michael Kelley <mhklinux@outlook.com>
+Cc: "mhkelley58@gmail.com" <mhkelley58@gmail.com>, "kbusch@kernel.org"
+ <kbusch@kernel.org>, "axboe@kernel.dk" <axboe@kernel.dk>,
+ "sagi@grimberg.me" <sagi@grimberg.me>,
+ "James.Bottomley@HansenPartnership.com"
+ <James.Bottomley@HansenPartnership.com>, "martin.petersen@oracle.com"
+ <martin.petersen@oracle.com>, "kys@microsoft.com" <kys@microsoft.com>,
+ "haiyangz@microsoft.com" <haiyangz@microsoft.com>, "wei.liu@kernel.org"
+ <wei.liu@kernel.org>, "decui@microsoft.com" <decui@microsoft.com>,
+ "robin.murphy@arm.com" <robin.murphy@arm.com>, "hch@lst.de" <hch@lst.de>,
+ "m.szyprowski@samsung.com" <m.szyprowski@samsung.com>,
+ "iommu@lists.linux.dev" <iommu@lists.linux.dev>,
+ "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+ "linux-nvme@lists.infradead.org" <linux-nvme@lists.infradead.org>,
+ "linux-scsi@vger.kernel.org" <linux-scsi@vger.kernel.org>,
+ "linux-hyperv@vger.kernel.org" <linux-hyperv@vger.kernel.org>,
+ "linux-coco@lists.linux.dev" <linux-coco@lists.linux.dev>
+Subject: Re: [RFC 1/7] swiotlb: Introduce swiotlb throttling
+Message-ID: <20240828071554.433b3308@meshulam.tesarici.cz>
+In-Reply-To: <SN6PR02MB41577B7C11ECF060FC3FB8FDD4942@SN6PR02MB4157.namprd02.prod.outlook.com>
+References: <20240822183718.1234-1-mhklinux@outlook.com>
+	<20240822183718.1234-2-mhklinux@outlook.com>
+	<20240823094101.07ba5e0f@meshulam.tesarici.cz>
+	<SN6PR02MB4157AE3FA2E0D2227CC94CC0D4882@SN6PR02MB4157.namprd02.prod.outlook.com>
+	<20240827175536.004785f3@mordecai.tesarici.cz>
+	<SN6PR02MB41577B7C11ECF060FC3FB8FDD4942@SN6PR02MB4157.namprd02.prod.outlook.com>
+X-Mailer: Claws Mail 4.3.0 (GTK 3.24.43; x86_64-suse-linux-gnu)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 
-Hi Robin,
+On Tue, 27 Aug 2024 17:30:59 +0000
+Michael Kelley <mhklinux@outlook.com> wrote:
 
-On Tue, Aug 27 2024, Robin Murphy wrote:
-> On 2024-08-27 9:44 am, Baruch Siach wrote:
->> Some platforms, like Rockchip RK3568 based Odroid M1, do not provide DMA
->> limits information in device-tree dma-ranges property. Still some device
->> drivers set DMA limit that relies on DMA zone at low 4GB memory area.
->> Until commit ba0fb44aed47 ("dma-mapping: replace zone_dma_bits by
->> zone_dma_limit"), zone_sizes_init() restricted DMA zone to low 32-bit
->> when there is RAM there.
->> Restore DMA zone 32-bit limit for platforms that have RAM in this area.
->> Fixes: ba0fb44aed47 ("dma-mapping: replace zone_dma_bits by zone_dma_limit")
->> Reported-by: Marek Szyprowski <m.szyprowski@samsung.com>
->> Tested-by: Marek Szyprowski <m.szyprowski@samsung.com>
->> Signed-off-by: Baruch Siach <baruch@tkos.co.il>
->> ---
->> This should go via the dma-mapping tree that contains the fixed commit.
->> ---
->>   arch/arm64/mm/init.c | 3 +++
->>   1 file changed, 3 insertions(+)
->> diff --git a/arch/arm64/mm/init.c b/arch/arm64/mm/init.c
->> index bfb10969cbf0..7fcd0aaa9bb6 100644
->> --- a/arch/arm64/mm/init.c
->> +++ b/arch/arm64/mm/init.c
->> @@ -116,6 +116,9 @@ static void __init arch_reserve_crashkernel(void)
->>     static phys_addr_t __init max_zone_phys(phys_addr_t zone_limit)
->>   {
->> +	if (memblock_start_of_DRAM() < U32_MAX)
->> +		zone_limit = min(zone_limit, U32_MAX);
+> From: Petr Tesa=C5=99=C3=ADk <petr@tesarici.cz> Sent: Tuesday, August 27,=
+ 2024 8:56 AM
+> >=20
+> > On Fri, 23 Aug 2024 20:41:15 +0000
+> > Michael Kelley <mhklinux@outlook.com> wrote:
+> >  =20
+> > > From: Petr Tesa=C5=99=C3=ADk <petr@tesarici.cz> Sent: Friday, August =
+23, 2024 12:41 AM =20
+> > > >
+> > > > On Thu, 22 Aug 2024 11:37:12 -0700
+> > > > mhkelley58@gmail.com wrote: =20
+> > >[...] =20
+> > > > > @@ -71,12 +72,15 @@
+> > > > >   *		from each index.
+> > > > >   * @pad_slots:	Number of preceding padding slots. Valid only in =
+the first
+> > > > >   *		allocated non-padding slot.
+> > > > > + * @throttled:  Boolean indicating the slot is used by a request=
+ that was
+> > > > > + *		throttled. Valid only in the first allocated non-padding slo=
+t.
+> > > > >   */
+> > > > >  struct io_tlb_slot {
+> > > > >  	phys_addr_t orig_addr;
+> > > > >  	size_t alloc_size;
+> > > > >  	unsigned short list;
+> > > > > -	unsigned short pad_slots;
+> > > > > +	u8 pad_slots;
+> > > > > +	u8 throttled; =20
+> > > >
+> > > > I'm not sure this flag is needed for each slot.
+> > > >
+> > > > SWIOTLB mappings should be throttled when the total SWIOTLB usage is
+> > > > above a threshold. Conversely, it can be unthrottled when the total
+> > > > usage goes below a threshold, and it should not matter if that happ=
+ens
+> > > > due to an unmap of the exact buffer which previously pushed the usa=
+ge
+> > > > over the edge, or due to an unmap of any other unrelated buffer. =20
+> > >
+> > > I think I understand what you are proposing. But I don't see a way
+> > > to make it work without adding global synchronization beyond
+> > > the current atomic counter for the number of uI'm sed slabs. At a min=
+imum
+> > > we would need a global spin lock instead of the atomic counter. The s=
+pin
+> > > lock would protect the (non-atomic) slab count along with some other
+> > > accounting, and that's more global references. As described in the
+> > > cover letter, I was trying to avoid doing that. =20
+> >=20
+> > I have thought about this for a few days. And I'm still not convinced.
+> > You have made it clear in multiple places that the threshold is a soft
+> > limit, and there are many ways the SWIOTLB utilization may exceed the
+> > threshold. In fact I'm not even 100% sure that an atomic counter is
+> > needed, because the check is racy anyway. =20
+>=20
+> Atomic operations are expensive at the memory bus level, particularly
+> in high CPU count systems with NUMA topologies. However,
+
+Sure, the CPU must ensure exclusive access to the underlying memory and
+cache coherency across all CPUs. I know how these things work...
+
+> maintaining an imprecise global count doesn't work because the
+> divergence from reality can become unbounded over time. The
+> alternative is to sum up all the per-area counters each time a
+> reasonably good global value is needed, and that can be expensive itself
+> with high area counts. A hybrid might be to maintain an imprecise global
+> count, but periodically update it by summing up all the per-area counters
+> so that the divergence from reality isn't unbounded.
+
+Yes, this is what I had in mind, but I'm not sure which option is
+worse. Let me run a micro-benchmark on a 192-core AmpereOne system.
+
+> > Another task may increase
+> > (or decrease) the counter between atomic_long_read(&mem->total_used)
+> > and a subsequent down(&mem->throttle_sem).
+> >=20
+> > I consider it a feature, not a flaw, because the real important checks
+> > happen later while searching for free slots, and those are protected
+> > with a spinlock.
+> >  =20
+> > > If you can see how to do what you propose with just the current
+> > > atomic counter, please describe. =20
+> >=20
+> > I think I'm certainly missing something obvious, but let me open the
+> > discussion to improve my understanding of the matter.
+> >=20
+> > Suppose we don't protect the slab count with anything. What is the
+> > worst possible outcome? IIUC the worst scenario is that multiple tasks
+> > unmap swiotlb buffers simultaneously and all of them believe that their
+> > action made the total usage go below the low threshold, so all of them
+> > try to release the semaphore.
+> >=20
+> > That's obviously not good, but AFAICS all that's needed is a
+> > test_and_clear_bit() on a per-io_tlb_mem throttled flag just before
+> > calling up(). Since up() would acquire the semaphore's spinlock, and
+> > there's only one semaphore per io_tlb_mem, adding an atomic flag doesn't
+> > look like too much overhead to me, especially if it ends up in the same
+> > cache line as the semaphore. =20
+>=20
+> Yes, the semaphore management is the problem. Presumably we want
+> each throttled request to wait on the semaphore, forming an ordered
+> queue of waiters. Each up() on the semaphore releases one of those
+> waiters. We don=E2=80=99t want to release all the waiters when the slab c=
+ount
+> transitions from "above throttle" to "below throttle" because that
+> creates a thundering herd problem.
 >
-> This seems like a bit of a bodge, since it now means we either get the old or
-> the new behaviour depending on where DRAM is, so if, say, RAM starts at 3GB
-> but all devices have a 3GB DMA offset, we still can't have a properly-sized
-> DMA zone.
+> So consider this example scenario:
+> 1) Two waiters ("A" and "B") are queued the semaphore, each wanting 2 sla=
+bs.
+> 2) An unrelated swiotlb unmap frees 10 slabs, taking the slab count
+> from 2 above threshold to 8 below threshold. This does up() on
+> the semaphore and awakens "A".
+> 3) "A" does his request for 2 slabs, and the slab count is now 6 below
+> threshold.
+> 4) "A" does swiotlb unmap.  The slab count goes from 6 below threshold ba=
+ck
+> to 8 below threshold, so no semaphore operation is done. "B" is still wai=
+ting.
+> 5) System-wide, swiotlb requests decline, and the slab count never goes a=
+bove
+> the threshold again. At this point, "B" is still waiting and never gets a=
+wakened.
+>=20
+> An ordered queue of waiters is incompatible with wakeups determined solely
+> on whether the slab count is below the threshold after swiotlb unmap. You
+> would have to wait up all waiters and let them re-contend for the slots t=
+hat
+> are available below the threshold, with most probably losing out and going
+> back on the semaphore wait queue (i.e., a thundering herd).
 
-I'm not following your example here. What is "3GB DMA offset"? Is it
-relative to 0? Relative to start of RAM?
+Ah, right, the semaphore must be released as many times as it is
+acquired. Thank you for your patience.
 
-> Really it comes down to this change:
->
-> -       zone_dma_bits = min3(32U, dt_zone_dma_bits, acpi_zone_dma_bits);
-> +       zone_dma_limit = min(dt_zone_dma_limit, acpi_zone_dma_limit);
->
-> where although the "32" represented the assumption of RAM starting at 0, it
-> also implicitly removed the handling of the case where no DMA ranges are
-> specified. Per the commit message, it's that which we want to account for, not
-> the placement of RAM.
->
-> I think the more correct version should be:
->
-> 	if (zone_limit == PHYS_ADDR_MAX)
-> 		zone_limit = U32_MAX;
+> Separately, what does a swiotlb unmap do if it takes the slab count from =
+above
+> threshold to below threshold, and there are no waiters? It should not do =
+up()
+> in that case, but how can it make that decision in a way that doesn't race
+> with a swiotlb map operation running at the same time?
 
-I like your proposal. The condition of no dma-ranges data is explicit.
+Hm, this confirms my gut feeling that the atomic counter alone would
+not be sufficient.
 
-I'll post v2 later today.
+I think I can follow your reasoning now:
 
-Thanks,
-baruch
+1. Kernels which enable CONFIG_SWIOTLB_THROTTLE are likely to have
+   CONFIG_DEBUG_FS as well, so the price for an atomic operation on
+   total_used is already paid.
+2. There are no pre-existing per-io_tlb_mem ordering constraints on
+   unmap, except the used counter, which is insufficient.
+3. Slot data is already protected by its area spinlock, so adding
+   something there does not increase the price.
 
--- 
-                                                     ~. .~   Tk Open Systems
-=}------------------------------------------------ooO--U--Ooo------------{=
-   - baruch@tkos.co.il - tel: +972.52.368.4656, http://www.tkos.co.il -
+I don't have an immediate idea, but I still believe we can do better.
+For one thing, your scheme is susceptible to excessive throttling in
+degenerate cases, e.g.:
+
+1. A spike in network traffic temporarily increases swiotlb usage above
+   the threshold, but it is not throttled because the network driver
+   does not use SWIOTLB_ATTR_MAY_BLOCK.
+2. A slow disk "Snail" maps a buffer and acquires the semaphore.
+3. A fast disk "Cheetah" tries to map a buffer and goes on the
+   semaphore wait queue.
+4. Network buffers are unmapped, dropping usage below the threshold,
+   but since the throttle flag was not set, the semaphore is not
+   touched.
+5. "Cheetah" is unnecessarily waiting for "Snail" to finish.
+
+You may have never hit this scenario in your testing, because you
+presumably had only fast virtual block devices.
+
+I'm currently thinking along the lines of waking up the semaphore
+on unmap whenever current usage is above the threshold and there is a
+waiter.
+
+As a side note, I get your concerns about the thundering herd effect,
+but keep in mind that bounce buffers are not necessarily equal. If four
+devices are blocked on mapping a single slot, you can actually wake up
+all of them after you release four slots. For SG lists, you even add
+explicit logic to trigger the wakeup only on the last segment...
+
+BTW as we talk about the semaphore queue, it reminds me of an issue I
+had with your proposed patch:
+
+> @@ -1398,6 +1431,32 @@ phys_addr_t swiotlb_tbl_map_single(struct device *=
+dev, phys_addr_t orig_addr,
+>  	dev_WARN_ONCE(dev, alloc_align_mask > ~PAGE_MASK,
+>  		"Alloc alignment may prevent fulfilling requests with max mapping_size=
+\n");
+> =20
+> +	if (IS_ENABLED(CONFIG_SWIOTLB_THROTTLE) && attrs & DMA_ATTR_MAY_BLOCK) {
+> +		unsigned long used =3D atomic_long_read(&mem->total_used);
+> +
+> +		/*
+> +		 * Determining whether to throttle is intentionally done without
+> +		 * atomicity. For example, multiple requests could proceed in
+> +		 * parallel when usage is just under the threshold, putting
+> +		 * usage above the threshold by the aggregate size of the
+> +		 * parallel requests. The thresholds must already be set
+> +		 * conservatively because of drivers that can't enable
+> +		 * throttling, so this slop in the accounting shouldn't be
+> +		 * problem. It's better than the potential bottleneck of a
+> +		 * globally synchronzied reservation mechanism.
+> +		 */
+> +		if (used > mem->high_throttle) {
+> +			throttle =3D true;
+> +			mem->high_throttle_count++;
+> +		} else if ((used > mem->low_throttle) &&
+> +					(mem->throttle_sem.count <=3D 0)) {
+                                              ^^^^^^^^^^^^^^^^^^
+
+Is it safe to access the semaphore count like this without taking the
+semaphore spinlock? If it is, then it deserves a comment to explain why
+you can ignore this comment in include/linux/semaphore.h:
+
+/* Please don't access any members of this structure directly */
+
+Petr T
+
+> +			throttle =3D true;
+> +			mem->low_throttle_count++;
+> +		}
+> +		if (throttle)
+> +			down(&mem->throttle_sem);
+> +	}
+> +
+>  	offset =3D swiotlb_align_offset(dev, alloc_align_mask, orig_addr);
+>  	size =3D ALIGN(mapping_size + offset, alloc_align_mask + 1);
+>  	index =3D swiotlb_find_slots(dev, orig_addr, size, alloc_align_mask, &p=
+ool);
