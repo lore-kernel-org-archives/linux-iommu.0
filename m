@@ -1,119 +1,87 @@
-Received: from mail-wm1-f54.google.com (mail-wm1-f54.google.com [209.85.128.54])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B7DF31A2C2D
-	for <iommu@lists.linux.dev>; Wed, 28 Aug 2024 15:12:44 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.54
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 7CE2F19E83D
+	for <iommu@lists.linux.dev>; Wed, 28 Aug 2024 15:24:44 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1724857966; cv=none; b=hZmp5j6LK86EJL9uaqw342d9dJoWX+/1vl2NGWUR3CQwgLG8Z61WFMu4SRaqFx0r1ytghMG3L371s56Z/uQ/FpnRkQEuw0NCXvpyFq+wHlDa5xzaAdQLE31PQ92mfWIng7vcN5zRZHavnSaVc6ynOriLFeuzis/KdJjYGvr4rIc=
+	t=1724858687; cv=none; b=l9WJoRaxeiKzwetLe+hZxGkBYCVr8H1oJtDKTyWfyYpsF4zoVtdK18Ob/rlKNEh0odRWywt9U1t7fpEPWWB8bjSsUynwWPwV/38oCkvuYsWSEn9KDmJruyWJy8eLtwBPOLZn3yYJct602NBAi4JDB9xYfL5srUAxpswTwNd9J4Q=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1724857966; c=relaxed/simple;
-	bh=/IyRKuOeEvyqdB4QfYijTcKAfdptVOGW+q1DNzAAB5Q=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=pJaP8C5JFLlZgL8yM5ZJdpAX4tOF+OdtFxWDcoUyFUTOrQnJVYK6Ay3y9PaKCayDy+wPGE4pp46kg2ngXVSE91f5gPzJSdPS3GR5NOSkrk2AQmYEb20JoVCr55NKZeXfER+4YxpK8Eamxg740iEBhq/vMPhtPM2/ENo4qEay29s=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=LTgETd2b; arc=none smtp.client-ip=209.85.128.54
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="LTgETd2b"
-Received: by mail-wm1-f54.google.com with SMTP id 5b1f17b1804b1-428178fc07eso57779475e9.3
-        for <iommu@lists.linux.dev>; Wed, 28 Aug 2024 08:12:44 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1724857963; x=1725462763; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=kbaH3V7Lk+uax03Oqau7bBE1nBYKOYJZ2EVryMzrRy4=;
-        b=LTgETd2b4DdYbJJ1ztAP7iEDw5KYQDf4GkNHW7jSfgmqMCgY9dr+vXnFyWXVGOP3Og
-         08Fhix3rJkOs9WvcIpvStd+gJOqNJsJwAP3gq9pd7VbgJJ+aae3ufJhhX87ynAd76or1
-         dGZnukpzf0v6hy8E2irdiW7FXRUAuzFq4x+sAztqiNwaMi9MOphlzMwQddI26PNlnnuK
-         p+4KnsmhOsW9E4AB1NWTKRsx/TKorU1xpU18g6/THVi4+2uhMXbC7UlpDSvetfrO5Fyv
-         1GKwAASEJIC5aGNp0OOt58x2GpONyqVtC15CZg4R/F18CqM1Ol0uuEWlhh+p/ezU+QeT
-         r7Qw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1724857963; x=1725462763;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=kbaH3V7Lk+uax03Oqau7bBE1nBYKOYJZ2EVryMzrRy4=;
-        b=AI+C1S0WIH8ZeEvulEZ4xzalHn8r2gAnWwLlRo0DY5wPKp6abO/8KfhBXRxg7EDbPQ
-         5dNkhB0TV2WF876PouiolAQ3EzAisTJ6WWK8SCURPVLxg5ZFHqJT7NDxFZq2LBP/WpQ0
-         LjPU/ORKnj6DUblikVwVZwVQEwaLPxKkO4WeEyBChk+P873unBk1t2+Yybn1DvM2bVh5
-         n0WhB2yK9GeKQ43e7I7D3xtES/ZNBxRjPl9BL+wfJWj3XLwOzm56duJJks79m3XDFlW9
-         JyiHnZ9fyLwcIfEg38afeo1ycn3bkwDKZFmNmf91cTnf6QR+4/FNcAA9S5iV3GULBSzS
-         UycQ==
-X-Forwarded-Encrypted: i=1; AJvYcCUeTAxnbK1o6EruG411JjX29itZ2M1/UZ77GIzQELqibe3+pc/wearT6zlK7SVVfCcukyxpkw==@lists.linux.dev
-X-Gm-Message-State: AOJu0YwCSHXQ0X5NhED8kBk/kLN707EW5q+LyNzHsNI4g6/YvC4O19za
-	VxuhYhyao7E9DSyJr2kFowqBiTcx+R8P8Ii4ksiLu5OX5pFU5Okd
-X-Google-Smtp-Source: AGHT+IGQW0+v8moibSdO2Q/RDfDjaFv/WD0sbqLqA5iBEEKPuRh2zkLaDWQrYYlWkKTTw2QwiUONiA==
-X-Received: by 2002:a05:600c:310f:b0:426:51ce:bb14 with SMTP id 5b1f17b1804b1-42acd5d79b1mr105634055e9.30.1724857962403;
-        Wed, 28 Aug 2024 08:12:42 -0700 (PDT)
-Received: from orome (p200300e41f29d300f22f74fffe1f3a53.dip0.t-ipconnect.de. [2003:e4:1f29:d300:f22f:74ff:fe1f:3a53])
-        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-42ba63965dbsm24684245e9.6.2024.08.28.08.12.41
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 28 Aug 2024 08:12:42 -0700 (PDT)
-Date: Wed, 28 Aug 2024 17:12:40 +0200
-From: Thierry Reding <thierry.reding@gmail.com>
-To: Lu Baolu <baolu.lu@linux.intel.com>
-Cc: Mikko Perttunen <mperttunen@nvidia.com>, 
-	David Airlie <airlied@gmail.com>, Daniel Vetter <daniel@ffwll.ch>, Joerg Roedel <joro@8bytes.org>, 
-	Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>, 
-	Jason Gunthorpe <jgg@ziepe.ca>, Kevin Tian <kevin.tian@intel.com>, 
-	dri-devel@lists.freedesktop.org, linux-tegra@vger.kernel.org, iommu@lists.linux.dev, 
-	linux-kernel@vger.kernel.org, Jason Gunthorpe <jgg@nvidia.com>
-Subject: Re: [PATCH 1/1] gpu: host1x: Use iommu_paging_domain_alloc()
-Message-ID: <5bckndhbbvbvkt2bqxseyeo43qzvy6h2oykqbkhnfrpw7zjwu4@ziztccfxccv6>
-References: <20240812071605.9513-1-baolu.lu@linux.intel.com>
+	s=arc-20240116; t=1724858687; c=relaxed/simple;
+	bh=51xBBmdPEWsklZN52ULuaYNrZcsOdYPotwbhGXMEGzs=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=kV6TcLC40NiRMkv5GGZ2EMgfhVcTyh+4L6FyAQ+iAtZgijs6xEYFvZzbTWCsKuAveRiahDuMYbYZorsObWADZKwcV+MwkaKAyiAAYvzqL4E+yNjsMDwCSZKuUA/n0kwygtBj1PPnpR+POz1qCaWtQtUTIOEyIUxzS/X7gqtZvCI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; arc=none smtp.client-ip=217.140.110.172
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 920B6DA7;
+	Wed, 28 Aug 2024 08:25:09 -0700 (PDT)
+Received: from [10.57.15.188] (unknown [10.57.15.188])
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 969FE3F73B;
+	Wed, 28 Aug 2024 08:24:42 -0700 (PDT)
+Message-ID: <8d47c290-8146-4a3a-b163-e60b605557fe@arm.com>
+Date: Wed, 28 Aug 2024 16:24:40 +0100
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-	protocol="application/pgp-signature"; boundary="7mk5vwuaumccccci"
-Content-Disposition: inline
-In-Reply-To: <20240812071605.9513-1-baolu.lu@linux.intel.com>
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH -next] iommu/omap: Use IS_ERR_OR_NULL() helper function
+To: Hongbo Li <lihongbo22@huawei.com>, joro@8bytes.org, will@kernel.org
+Cc: iommu@lists.linux.dev
+References: <20240828122152.3697094-1-lihongbo22@huawei.com>
+ <ee9b096a-7d23-47ed-850f-f8ca2c9af97f@arm.com>
+ <29458d89-132e-4069-81f4-a5b02598590c@huawei.com>
+From: Robin Murphy <robin.murphy@arm.com>
+Content-Language: en-GB
+In-Reply-To: <29458d89-132e-4069-81f4-a5b02598590c@huawei.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 
+On 2024-08-28 1:31 pm, Hongbo Li wrote:
+> 
+> 
+> On 2024/8/28 20:24, Robin Murphy wrote:
+>> On 2024-08-28 1:21 pm, Hongbo Li wrote:
+>>> Use the IS_ERR_OR_NULL() helper instead of open-coding a
+>>> NULL and an error pointer checks to simplify the code and
+>>> improve readability.
+>>
+>> IS_ERR_OR_NULL() is usually a bad smell to begin with... Sure enough, 
+>> if you really want to simplify and improve this code, it doesn't take 
+>> much to look a little further and see that the suspicious checks are 
+>> entirely pointless anyway. Both callsites have this pattern:
+>>
+>>          omap_iommu_detach(oiommu);
+>>          ...
+>>          oiommu->domain = NULL;
+>>
+>> so clearly the pointer must always be valid.
+> 
+> Yes, in IS_ERR_OR_NULL, the ptr is unlikely NULL, it match this 
+> condition. But the original condition does not have this expectation.
 
---7mk5vwuaumccccci
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+My point is that the original condition here serves no purpose, so 
+refactoring it is a waste of time, and the only cleanup worth making is 
+to delete it.
 
-On Mon, Aug 12, 2024 at 03:16:05PM GMT, Lu Baolu wrote:
-> An iommu domain is allocated in host1x_iommu_attach() and is attached to
-> host->dev. Use iommu_paging_domain_alloc() to make it explicit.
->=20
-> Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
-> Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
-> Link: https://lore.kernel.org/r/20240610085555.88197-8-baolu.lu@linux.int=
-el.com
-> ---
->  drivers/gpu/host1x/dev.c | 7 ++++---
->  1 file changed, 4 insertions(+), 3 deletions(-)
+Open-coded or not, the fact is that if we ever _could_ take that early 
+return by virtue of either caller's "oiommu" pointer being NULL or an 
+error value, then we'd still crash by unconditionally dereferencing it 
+two lines later. And it's pretty clear from the rest of the flow of 
+->iommu_dev pointers through omap_iommu_probe_device() and 
+omap_iommu_attach_dev() that a NULL value cannot get here by 
+construction. As far as I can see nothing anywhere *ever* assigns an 
+ERR_PTR() value to one...
 
-Applied, thanks.
+Churning pointless dead code into slightly different pointless dead code 
+is not valuable to anyone. Churning ugly code into slightly different 
+ugly code is still questionable at best. If you're finding places which 
+look like they could use IS_ERR_OR_NULL(), then be aware that often at 
+least one of the two conditions might be erroneous anyway. Otherwise, it 
+usually represents some badly-designed interface which really wants to 
+be fixed properly such that it *would* only need one or other condition.
 
-Thierry
-
---7mk5vwuaumccccci
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQIzBAABCAAdFiEEiOrDCAFJzPfAjcif3SOs138+s6EFAmbPPmgACgkQ3SOs138+
-s6ErLBAArXWV8KB6676S4Mww6EFpvjmqtdeUPZADFF5+D4qAXK+eqPe/rprOAwCd
-6+tCPTAkEGrym0m4qeV44txjQOtxEM4a+YWx6WxQfCYg+oprDa/jtEF+ysICSiwe
-3fJRnrb16N/fFTaEHub+y+gAtr1BlhHmRt+zZKyNv7eCfM3tk5sMd6WcR8UCp/Ey
-zBFXXmcC5ugNsZtxITQWGcHaY6dotmlkqQpRq41NMRr4tSnJgmR3z0PwCVftt23x
-B+agCPY9txwY+vSCIwrQ/zQwP924utFtkf2avxSLhU8E/RabXCJFUtbKhe017SJC
-mNw7Ahz2a5QHaXKTjNCrO/xczR2i9RK9VOsJUgOl85zQEVE66XoFzMlkpKNZZKze
-B5jMd5Lm19Cqpl2wTRgqK5B4oulDKgwkusWOXuPTFZjocpKOzW6SsKzrmy/+/Ie+
-ICZNIv3Op1m6Bc8rK5WWHFYsY7584/3yDqmpI9pb3JeB9+VMU0UCEz7bNBHTZCAK
-kcj4LAOzk9oSvlN2h1oUBQzM+3tqh4v7Y++VVJxPi8ecNbgXekw8V76uKW0iKz9O
-uzq198fgfG0P1TvN15AtUueY3d6J8lGZuVH8FEphvkNagj6+x/dx/dJW9tu//poK
-Y8pQfxFEVSY4oC8gRlgIPwCEgFCSWKRatLXAokmYvhy3IRNc6Dc=
-=cWHB
------END PGP SIGNATURE-----
-
---7mk5vwuaumccccci--
+Thanks,
+Robin.
