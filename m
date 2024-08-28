@@ -1,46 +1,44 @@
 Received: from mx0b-0031df01.pphosted.com (mx0b-0031df01.pphosted.com [205.220.180.131])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 444B71AC8A1
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BDFCD1AC8A5
 	for <iommu@lists.linux.dev>; Wed, 28 Aug 2024 20:38:23 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.180.131
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1724877504; cv=none; b=j2D//vyPpcFY8fd4KVGBlf/BjnDeclNEEgsmVoAKH/SG1bf0NIozjpSUksXkbybOCdbfdY/nPE9LEeIDcnXPUvrrIYox1uGzIo2C1qlUWJQcmaP3nECmxkrpJAArHtNGIu7n6kqP/1y9T5bad2Wbmty1+QCzF355FuuXIHpfcAc=
+	t=1724877505; cv=none; b=PCZ4VHwBJrlwb/QvDiMy+jq4NWUdNiauubz2E1LiEjmDYwhCnz7olIqRhZozGMF1/JYikLx3+sNl7kkseavqZMkYM+hUpsRZoQYi9/t3AlimsQKgv20sth2nBd1YNMuFgnno82QD47btm6zMk7opUBQ54IAuwxr6HoSA1R+3fgY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1724877504; c=relaxed/simple;
-	bh=57TFlPCLyLtoKaA/8dRbE0/JWYy3IxYI4SajCYgiASQ=;
-	h=From:To:CC:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=llJWLOKVDFT0OzYuZcSICh9kftcy8qOGz2MOcs0j6puHHzmHDy2VjFzKdoqcGsTR0UzgYhhTcNHt77HAGfcHqNyDhYOy/BJp8+WoHnibX82lwKw1UZOegFubsKzIPzx/mzFhlRuUbIiH0YKX7Iz0pQlz0b4rg9DLrDyzH+uu1fk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com; spf=pass smtp.mailfrom=quicinc.com; dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b=XiHAvRXX; arc=none smtp.client-ip=205.220.180.131
+	s=arc-20240116; t=1724877505; c=relaxed/simple;
+	bh=/yymFjL50o5Zg1/Oz9wfTE6QtWKCFxKe43Nmczc8wKM=;
+	h=From:To:CC:Subject:Date:Message-ID:MIME-Version:Content-Type; b=eS1R1ueYV+BgudJah2ZIlEobz3KTtx+DysYsBL9yDWoBZg/mmk8btGSLdiKpfa3h4x+MEB04IgF7yZQMEsi73w5mEqpeG9QIkNz2YFJLRf93OqEd1yDbAPhh9ksoyhMRtrFi/ZHXjBDutI6RYDlatR9WMLMSy2pho8BK3t96XKo=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com; spf=pass smtp.mailfrom=quicinc.com; dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b=ggcAgUyh; arc=none smtp.client-ip=205.220.180.131
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=quicinc.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b="XiHAvRXX"
-Received: from pps.filterd (m0279870.ppops.net [127.0.0.1])
-	by mx0a-0031df01.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 47SJMBDg010668;
-	Wed, 28 Aug 2024 20:38:04 GMT
+	dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b="ggcAgUyh"
+Received: from pps.filterd (m0279868.ppops.net [127.0.0.1])
+	by mx0a-0031df01.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 47SJM9JE020195;
+	Wed, 28 Aug 2024 20:38:00 GMT
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=quicinc.com; h=
-	cc:content-transfer-encoding:content-type:date:from:in-reply-to
-	:message-id:mime-version:references:subject:to; s=qcppdkim1; bh=
-	jZavDW8fg11NUMqq3WaDaXSe+n/yovNTknUtz86EX+E=; b=XiHAvRXXsjxrODN3
-	aakIzA5tZkjTkLt12lqNLUILd3USx5x6POcIp5yjNTyPSEsO4CVOLC5gYh5bINoZ
-	QXZc+/NWEeP0LGONmZ8KRFofSuc6RmkBrpe+IcZHYOg9jMfyzcriVO9NVFpj7kg0
-	/qdNPW3k3S2lQPrFGCJjcUtT5mQ6hRYwPItnAhe+8g7Fl2Z1u4FzcyQsUWqfbIuL
-	ad6Pe5hWOd9v+56NxWkNoYgPs58Ezk2+juTJg7IGQhDI20c1VArHv9MXaYBAFmH+
-	pXBRrwR80b5wBvFrW6Bbf7t1wprk7yla85P35zI0OsohzZeCVLgqLrwEnGIIgVdc
-	YmglYw==
-Received: from nasanppmta01.qualcomm.com (i-global254.qualcomm.com [199.106.103.254])
-	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 419pv0k2px-1
+	cc:content-transfer-encoding:content-type:date:from:message-id
+	:mime-version:subject:to; s=qcppdkim1; bh=xeeUQWrnLTgtne5Sska/XG
+	p/Bbu7fevfNvIu/F++8w4=; b=ggcAgUyh89PGlTg/iPE2d5FrXnPPmfCLIZt2eb
+	Ue6/e7daRGKpQGfZZgrQ1y773hB+/Y9F6qDtjeHDghEntmeeehP9B6pTTTRx/UlQ
+	a1ufZwa7UklwndWGufCXmhRlsGqwgrXPIBDThJnn7y1mmL26ZPgjsRWDydOXtKhG
+	5QAN0fb0pHM6XnNLHuVcZ/J8LFcY6q4xB4sieVe3w8jG85Eonv1pILampVRmSniW
+	3anepte9Uko0j2eL5K3+vUBiRNaB5gSXi/6sEmni6STjykNHmCmRlJVM33I5Q0Qn
+	CwZUeHCPypvX6dvhMSy81icNa2Uz8p6C6b3oRei29FSx3EBA==
+Received: from nasanppmta03.qualcomm.com (i-global254.qualcomm.com [199.106.103.254])
+	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 419q2xu0pc-1
 	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Wed, 28 Aug 2024 20:38:04 +0000 (GMT)
+	Wed, 28 Aug 2024 20:38:00 +0000 (GMT)
 Received: from nasanex01b.na.qualcomm.com (nasanex01b.na.qualcomm.com [10.46.141.250])
-	by NASANPPMTA01.qualcomm.com (8.18.1.2/8.18.1.2) with ESMTPS id 47SKc2nZ004579
+	by NASANPPMTA03.qualcomm.com (8.18.1.2/8.18.1.2) with ESMTPS id 47SKbwM9014092
 	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Wed, 28 Aug 2024 20:38:02 GMT
+	Wed, 28 Aug 2024 20:37:58 GMT
 Received: from hu-nkela-lv.qualcomm.com (10.49.16.6) by
  nasanex01b.na.qualcomm.com (10.46.141.250) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.1544.9; Wed, 28 Aug 2024 13:37:58 -0700
+ 15.2.1544.9; Wed, 28 Aug 2024 13:37:54 -0700
 From: Nikunj Kela <quic_nkela@quicinc.com>
 To: <andersson@kernel.org>, <konradybcio@kernel.org>, <robh@kernel.org>,
         <krzk+dt@kernel.org>, <conor+dt@kernel.org>, <rafael@kernel.org>,
@@ -64,12 +62,10 @@ CC: <robin.murphy@arm.com>, <cristian.marussi@arm.com>, <rui.zhang@intel.com>,
         <linux-watchdog@vger.kernel.org>, <kernel@quicinc.com>,
         <quic_psodagud@quicinc.com>, <quic_tsoni@quicinc.com>,
         <quic_shazhuss@quicinc.com>, Nikunj Kela <quic_nkela@quicinc.com>
-Subject: [PATCH 05/22] dt-bindings: mailbox: qcom-ipcc: document the support for SA8255p
-Date: Wed, 28 Aug 2024 13:37:04 -0700
-Message-ID: <20240828203721.2751904-6-quic_nkela@quicinc.com>
+Subject: [PATCH 00/22] arm64: qcom: Introduce SA8255p Ride platform
+Date: Wed, 28 Aug 2024 13:36:59 -0700
+Message-ID: <20240828203721.2751904-1-quic_nkela@quicinc.com>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20240828203721.2751904-1-quic_nkela@quicinc.com>
-References: <20240828203721.2751904-1-quic_nkela@quicinc.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -82,36 +78,135 @@ X-ClientProxiedBy: nalasex01c.na.qualcomm.com (10.47.97.35) To
  nasanex01b.na.qualcomm.com (10.46.141.250)
 X-QCInternal: smtphost
 X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
-X-Proofpoint-GUID: H3kret-9XVB_Db9GxtOi-e_BT7r9y4vJ
-X-Proofpoint-ORIG-GUID: H3kret-9XVB_Db9GxtOi-e_BT7r9y4vJ
+X-Proofpoint-ORIG-GUID: BP50-BomuXv-vA3xS-Kwd9hXtYqUKPSr
+X-Proofpoint-GUID: BP50-BomuXv-vA3xS-Kwd9hXtYqUKPSr
 X-Proofpoint-Virus-Version: vendor=baseguard
  engine=ICAP:2.0.293,Aquarius:18.0.1039,Hydra:6.0.680,FMLib:17.12.28.16
  definitions=2024-08-28_08,2024-08-28_01,2024-05-17_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 lowpriorityscore=0
- mlxlogscore=999 bulkscore=0 impostorscore=0 phishscore=0 clxscore=1015
- mlxscore=0 spamscore=0 suspectscore=0 malwarescore=0 adultscore=0
- priorityscore=1501 classifier=spam adjust=0 reason=mlx scancount=1
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 suspectscore=0 mlxscore=0
+ clxscore=1015 priorityscore=1501 lowpriorityscore=0 spamscore=0
+ impostorscore=0 mlxlogscore=999 phishscore=0 adultscore=0 bulkscore=0
+ malwarescore=0 classifier=spam adjust=0 reason=mlx scancount=1
  engine=8.19.0-2407110000 definitions=main-2408280149
 
-Add a compatible for the ipcc on SA8255p platforms.
+This series enables the support for SA8255p Qualcomm SoC and Ride
+platform. This platform uses SCMI power, reset, performance, sensor
+protocols for resources(e.g. clocks, regulator, interconnect, phy etc.)
+management. SA8255p is a virtual platforms that uses Qualcomm smc/hvc
+transport driver.
 
-Signed-off-by: Nikunj Kela <quic_nkela@quicinc.com>
----
- Documentation/devicetree/bindings/mailbox/qcom-ipcc.yaml | 1 +
- 1 file changed, 1 insertion(+)
+Multiple virtual SCMI instances are being used to achieve the parallelism.
+SCMI platform stack runs in SMP enabled VM hence allows platform to service
+multiple resource requests in parallel. Each device is assigned its own
+dedicated SCMI channel and Tx/Rx doorbells.
 
-diff --git a/Documentation/devicetree/bindings/mailbox/qcom-ipcc.yaml b/Documentation/devicetree/bindings/mailbox/qcom-ipcc.yaml
-index 05e4e1d51713..bc108b8db9f4 100644
---- a/Documentation/devicetree/bindings/mailbox/qcom-ipcc.yaml
-+++ b/Documentation/devicetree/bindings/mailbox/qcom-ipcc.yaml
-@@ -25,6 +25,7 @@ properties:
-     items:
-       - enum:
-           - qcom,qdu1000-ipcc
-+          - qcom,sa8255p-ipcc
-           - qcom,sa8775p-ipcc
-           - qcom,sc7280-ipcc
-           - qcom,sc8280xp-ipcc
+Resource operations are grouped together to achieve better abstraction
+and to reduce the number of requests being sent to SCMI platform(server)
+thus improving boot time KPIs. This design approach was presented during
+LinaroConnect 2024 conference[1].
+
+Architecture:
+------------
+                                                          +--------------------+
+                                                          |   Shared Memory    |
+                                                          |                    |
+                                                          | +----------------+ |                +----------------------------------+
+     +----------------------------+                     +-+->  ufs-shmem     <-+---+            |            Linux VM              |
+     |        Firmware VM         |                     | | +----------------+ |   |            |   +----------+   +----------+    |
+     |                            |                     | |                    |   |            |   |   UFS    |   |   PCIe   |    |
+     | +---------+ f +----------+ |                     | |                    |   |            |   |  Driver  |   |  Driver  |    |
+     | |Drivers  <---+  SCMI    | |        e            | |         |          |   |            |   +--+----^--+   +----------+    |
+     | | (clks,  | g | Server   +-+---------------------+ |                    |   |            |      |    |                      |
+     | |  vreg,  +--->          | |        h              |         |          |  b|k           |     a|   l|                      |
+     | |  gpio,  |   +--^-----+-+ |                       |                    |   |            |      |    |                      |
+     | |  phy,   |      |     |   |                       |         |          |   |            |  +---v----+----+  +----------+   |
+     | |  etc.)  |      |     |   |                       |                    |   +------------+--+  UFS SCMI   |  | PCIe SCMI|   |
+     | +---------+      |     |   |                       |                    |                |  |  INSTANCE   |  | INSTANCE |   |
+     |                  |     |   |                       |  +---------------+ |                |  +-^-----+-----+  +----------+   |
+     |                  |     |   |                       |  |  pcie-shmem   | |                |    |     |                       |
+     +------------------+-----+---+                       |  +---------------+ |                +----+-----+-----------------------+
+                        |     |                           |                    |                     |     |
+                        |     |                           +--------------------+                     |     |
+                       d|IRQ i|HVC                                                                  j|IRQ c|HVC
+                        |     |                                                                      |     |
+                        |     |                                                                      |     |
++-----------------------+-----v----------------------------------------------------------------------+-----v------------------------------+
+|                                                                                                                                         |
+|                                                                                                                                         |
+|                                                                                                                                         |
+|                                                               HYPERVISOR                                                                |
+|                                                                                                                                         |
+|                                                                                                                                         |
++-----------------------------------------------------------------------------------------------------------------------------------------+
+
+        +--------+   +--------+                                                                         +----------+  +-----------+
+        | CLOCK  |   |  PHY   |                                                                         |   UFS    |  |   PCIe    |
+        +--------+   +--------+                                                                         +----------+  +-----------+
+
+
+This series is based on next-20240828.
+
+[1]: https://resources.linaro.org/en/resource/wfnfEwBhRjLV1PEAJoDDte
+
+Nikunj Kela (22):
+  dt-bindings: arm: qcom: add the SoC ID for SA8255P
+  soc: qcom: socinfo: add support for SA8255P
+  dt-bindings: arm: qcom: add SA8255p Ride board
+  dt-bindings: firmware: qcom,scm: document support for SA8255p
+  dt-bindings: mailbox: qcom-ipcc: document the support for SA8255p
+  dt-bindings: watchdog: qcom-wdt: document support on SA8255p
+  dt-bindings: crypto: qcom,prng: document support for SA8255p
+  dt-bindings: interrupt-controller: qcom-pdc: document support for
+    SA8255p
+  dt-bindings: soc: qcom: aoss-qmp: document support for SA8255p
+  dt-bindings: pinctrl: document support for SA8255p
+  pinctrl: qcom: sa8775p: Add support for SA8255p SoC
+  dt-bindings: cpufreq: qcom-hw: document support for SA8255p
+  dt-bindings: thermal: tsens: document support on SA8255p
+  dt-bindings: arm-smmu: document the support on SA8255p
+  dt-bindings: mfd: qcom,tcsr: document support for SA8255p
+  dt-bindings: qcom: geni-se: document support for SA8255P
+  dt-bindings: serial: document support for SA8255p
+  dt-bindings: spi: document support for SA8255p
+  dt-bindings: i2c: document support for SA8255p
+  dt-bindings: firmware: arm,scmi: allow multiple virtual instances
+  ARM: dt: GIC: add extended SPI specifier
+  arm64: dts: qcom: Add reduced functional DT for SA8255p Ride platform
+
+ .../devicetree/bindings/arm/qcom.yaml         |    6 +
+ .../bindings/cpufreq/cpufreq-qcom-hw.yaml     |    1 +
+ .../devicetree/bindings/crypto/qcom,prng.yaml |    1 +
+ .../bindings/firmware/arm,scmi.yaml           |    2 +-
+ .../bindings/firmware/qcom,scm.yaml           |    2 +
+ .../bindings/i2c/qcom,i2c-geni-qcom.yaml      |   56 +-
+ .../interrupt-controller/qcom,pdc.yaml        |    1 +
+ .../devicetree/bindings/iommu/arm,smmu.yaml   |    3 +
+ .../bindings/mailbox/qcom-ipcc.yaml           |    1 +
+ .../devicetree/bindings/mfd/qcom,tcsr.yaml    |    1 +
+ .../bindings/pinctrl/qcom,sa8775p-tlmm.yaml   |    4 +-
+ .../serial/qcom,serial-geni-qcom.yaml         |   58 +-
+ .../bindings/soc/qcom/qcom,aoss-qmp.yaml      |    1 +
+ .../bindings/soc/qcom/qcom,geni-se.yaml       |   47 +-
+ .../bindings/spi/qcom,spi-geni-qcom.yaml      |   64 +-
+ .../bindings/thermal/qcom-tsens.yaml          |    1 +
+ .../bindings/watchdog/qcom-wdt.yaml           |    1 +
+ arch/arm64/boot/dts/qcom/Makefile             |    1 +
+ arch/arm64/boot/dts/qcom/sa8255p-pmics.dtsi   |   80 +
+ arch/arm64/boot/dts/qcom/sa8255p-ride.dts     |  149 +
+ arch/arm64/boot/dts/qcom/sa8255p-scmi.dtsi    | 2312 ++++++++++++++++
+ arch/arm64/boot/dts/qcom/sa8255p.dtsi         | 2405 +++++++++++++++++
+ drivers/pinctrl/qcom/pinctrl-sa8775p.c        |    1 +
+ drivers/soc/qcom/socinfo.c                    |    1 +
+ include/dt-bindings/arm/qcom,ids.h            |    1 +
+ .../interrupt-controller/arm-gic.h            |    1 +
+ 26 files changed, 5157 insertions(+), 44 deletions(-)
+ create mode 100644 arch/arm64/boot/dts/qcom/sa8255p-pmics.dtsi
+ create mode 100644 arch/arm64/boot/dts/qcom/sa8255p-ride.dts
+ create mode 100644 arch/arm64/boot/dts/qcom/sa8255p-scmi.dtsi
+ create mode 100644 arch/arm64/boot/dts/qcom/sa8255p.dtsi
+
+
+base-commit: 195a402a75791e6e0d96d9da27ca77671bc656a8
 -- 
 2.34.1
 
