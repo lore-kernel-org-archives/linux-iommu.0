@@ -1,155 +1,469 @@
-Received: from mail-wm1-f45.google.com (mail-wm1-f45.google.com [209.85.128.45])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 44F2D1A3BDA
-	for <iommu@lists.linux.dev>; Wed, 28 Aug 2024 15:27:29 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.45
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 09E2B14831D;
+	Wed, 28 Aug 2024 15:39:35 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.176.79.56
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1724858850; cv=none; b=RBAVFKM5mjbbNbq1z2hmmOSFyvvzz6w/Yn6rIlFKtMPv9q9GlbOJf2JNvOyl2YilqEX6o0+5jny7BCZT5LnyWB5/FQhIfLxiT09vn/pYrXhOl0dAND7A+HPMsuZKEpeMCEWIVveJzDHwZb6OMV2lg9vi7YZ5dHb11OeeZ4BUYhg=
+	t=1724859579; cv=none; b=PeHskwIk3Ke7PIwqsTJjcJd0Dl6H54+cVn9a3/m77BvwyJ4o6U1tmh1BYRWvNZItNo40bcrhikFTazvy0L0/+PGEnvwNu1uGhN4zcyqqIXBY+C8uGMIW/k+WcZXMW5w/4bP565771PaFPxRqlnni7e/hk+g9QnG7eVfyS8g/KCc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1724858850; c=relaxed/simple;
-	bh=BtVyzWMVALC/1EFZ2S7XKeV0QsA+D5/40hYHNVrXqJs=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=onjQtlCcrqo9FhWI6lrdAwLKLUMi3qBjqFZiUcLzrN3U7Tq6o08hnr1lRjlmYdS4+CI+9d7YTvptuD7NMtrT55qbyKovBs87nKOjUVQIFQ94MXQxEn5ZIfqDyaQ+DV1qjkHOHpdWcDvxi+GxqFkX1IrFFpgN6+Pz0Bzwl0AVOxM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=PapHwSzS; arc=none smtp.client-ip=209.85.128.45
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="PapHwSzS"
-Received: by mail-wm1-f45.google.com with SMTP id 5b1f17b1804b1-42808071810so59335655e9.1
-        for <iommu@lists.linux.dev>; Wed, 28 Aug 2024 08:27:29 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1724858848; x=1725463648; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=7d72c/mj/2Z6FiVdpOBNTFT01VdBmf1RNvsZEcgNCnA=;
-        b=PapHwSzSvuh7cHuT2sz5doyQmB/FqcVs2biqRyeIiq1mEmkd3997XHCbnBZ+Zgcb7Q
-         RnTolplyjUC4rAd1pJ+3eniX1LiuUez74+5eB129bDJOQVWf7bEscQygpfhL8okcTuYZ
-         DltOzn9qORLwFQtvcrXn1MQTbm2Ff5UeasuCicZCLN7yNj5JjWeykkmcH4l3H/il7rey
-         WGL+1X8wKpff7W2y6Q+eEpQI2Bp0YvEUs1+oCrpX79GQ28G+MQ7znXV08NgQBSc+oglR
-         eOwXNAIdpM3znH4C66Y86YNWNgxz+OBqli97Ocg7vmtbhJsCJDv3g+X5huYgnhZOcNh1
-         8jCQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1724858848; x=1725463648;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=7d72c/mj/2Z6FiVdpOBNTFT01VdBmf1RNvsZEcgNCnA=;
-        b=mNvDKVbz6GM40T9LuYtWHLERZksjARlTXhidEsvX3m2qZAm7KB7erNaaVE+XrbnSKi
-         KZ/lh1V+WzWMhlhGgQZwy3XbPlvt4Vnwz/zXndmoQRZg6kvy7jmqJ2yy4b5p/wJVN1/T
-         ncEnRA3N08/7jwC4wm8v/KxULjipM9aWGknfgTNbVnSu8FGB7iF8vUb3Tt8+eU5nFa0k
-         Oy3w+CPnjTPqPiHLlv6GoyXiZDvlfFoCK3Tg/IbBR6+q2ocLHiYuLJ1aNCFq4UDRJktG
-         yMeusvwgLBEdJTs38enZzfykoLaKGamAjdv3MfXL1OVFa7x3HHa39PcNs5NnzlZcdQA9
-         HZmw==
-X-Forwarded-Encrypted: i=1; AJvYcCUWrz0oJPkfHPk/zM12nZ3n/+HfzeL4gqif1l+lk8uAb5ZanfFVuAHl/YVt68fKkpe0V7EnzQ==@lists.linux.dev
-X-Gm-Message-State: AOJu0YyIz16UEvl2ZQ2JUzhzEnQezMBqWSmXZVCLHJzQVmqLieib9oJb
-	KvAnppL2oOlzxlIZX8xrKoUZN3ncnk2adQW7iuBp8uX0rKUZy6uX
-X-Google-Smtp-Source: AGHT+IFy+N6MNpikAMD3IJYGiP5Mfu8DbpT3WuOqB9zdjdgMg/vD1umE1XlYBlEzFehtYhZBgfMtDQ==
-X-Received: by 2002:adf:a3dd:0:b0:371:7e73:de6e with SMTP id ffacd0b85a97d-3749685b56fmr1596718f8f.52.1724858847009;
-        Wed, 28 Aug 2024 08:27:27 -0700 (PDT)
-Received: from orome (p200300e41f29d300f22f74fffe1f3a53.dip0.t-ipconnect.de. [2003:e4:1f29:d300:f22f:74ff:fe1f:3a53])
-        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-3749b238cf7sm81389f8f.33.2024.08.28.08.27.25
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 28 Aug 2024 08:27:26 -0700 (PDT)
-Date: Wed, 28 Aug 2024 17:27:24 +0200
-From: Thierry Reding <thierry.reding@gmail.com>
-To: Lu Baolu <baolu.lu@linux.intel.com>
-Cc: Karol Herbst <kherbst@redhat.com>, Lyude Paul <lyude@redhat.com>, 
-	Danilo Krummrich <dakr@redhat.com>, David Airlie <airlied@gmail.com>, 
-	Daniel Vetter <daniel@ffwll.ch>, Jonathan Hunter <jonathanh@nvidia.com>, 
-	Sandy Huang <hjc@rock-chips.com>, Maarten Lankhorst <maarten.lankhorst@linux.intel.com>, 
-	Maxime Ripard <mripard@kernel.org>, Thomas Zimmermann <tzimmermann@suse.de>, 
-	Mikko Perttunen <mperttunen@nvidia.com>, Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>, 
-	Robin Murphy <robin.murphy@arm.com>, Jason Gunthorpe <jgg@ziepe.ca>, 
-	Kevin Tian <kevin.tian@intel.com>, dri-devel@lists.freedesktop.org, nouveau@lists.freedesktop.org, 
-	linux-tegra@vger.kernel.org, linux-arm-kernel@lists.infradead.org, 
-	linux-rockchip@lists.infradead.org, linux-media@vger.kernel.org, iommu@lists.linux.dev, 
-	linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 3/3] drm/tegra: Remove call to iommu_domain_alloc()
-Message-ID: <qyvyd2ftebjlgmzyayfvxsqa64c4wgx7keix3a6eexdspbvawy@a5ffnm5h5tgp>
-References: <20240812071034.9443-1-baolu.lu@linux.intel.com>
- <20240812071034.9443-3-baolu.lu@linux.intel.com>
+	s=arc-20240116; t=1724859579; c=relaxed/simple;
+	bh=xbdydoh2u22vINByRrRMIya2lqnh9w4150zXJqURBUw=;
+	h=Date:From:To:CC:Subject:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=OMq2Uv3WDywh7xtz9dX0IEiW4E7YJ9v81bWMRLNGwT9vFQCeo9uH0qIP6yHTlftZwhZ0qKHMKs6Nrv2DYhw0ZirZGVQWmsWDuUkvhiHnXJqBMcrXVx0KDXaQ6jWLaFVlTbVeYi3DMLdAfufC0fBMtcwrondRe6/omGT7XADpAvE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=Huawei.com; spf=pass smtp.mailfrom=huawei.com; arc=none smtp.client-ip=185.176.79.56
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=Huawei.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=huawei.com
+Received: from mail.maildlp.com (unknown [172.18.186.231])
+	by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4Wv7mZ3bWYz6K99Y;
+	Wed, 28 Aug 2024 23:36:14 +0800 (CST)
+Received: from lhrpeml500005.china.huawei.com (unknown [7.191.163.240])
+	by mail.maildlp.com (Postfix) with ESMTPS id 236191400D4;
+	Wed, 28 Aug 2024 23:39:33 +0800 (CST)
+Received: from localhost (10.203.177.66) by lhrpeml500005.china.huawei.com
+ (7.191.163.240) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.1.2507.39; Wed, 28 Aug
+ 2024 16:39:32 +0100
+Date: Wed, 28 Aug 2024 16:39:31 +0100
+From: Jonathan Cameron <Jonathan.Cameron@Huawei.com>
+To: Alexey Kardashevskiy <aik@amd.com>
+CC: <kvm@vger.kernel.org>, <iommu@lists.linux.dev>,
+	<linux-coco@lists.linux.dev>, <linux-pci@vger.kernel.org>, "Suravee
+ Suthikulpanit" <suravee.suthikulpanit@amd.com>, Alex Williamson
+	<alex.williamson@redhat.com>, Dan Williams <dan.j.williams@intel.com>,
+	<pratikrajesh.sampat@amd.com>, <michael.day@amd.com>, <david.kaplan@amd.com>,
+	<dhaval.giani@amd.com>, Santosh Shukla <santosh.shukla@amd.com>, Tom Lendacky
+	<thomas.lendacky@amd.com>, "Michael Roth" <michael.roth@amd.com>, Alexander
+ Graf <agraf@suse.de>, "Nikunj A Dadhania" <nikunj@amd.com>, Vasant Hegde
+	<vasant.hegde@amd.com>, "Lukas Wunner" <lukas@wunner.de>
+Subject: Re: [RFC PATCH 08/21] crypto/ccp: Implement SEV TIO firmware
+ interface
+Message-ID: <20240828163931.0000673b@Huawei.com>
+In-Reply-To: <20240823132137.336874-9-aik@amd.com>
+References: <20240823132137.336874-1-aik@amd.com>
+	<20240823132137.336874-9-aik@amd.com>
+Organization: Huawei Technologies Research and Development (UK) Ltd.
+X-Mailer: Claws Mail 4.1.0 (GTK 3.24.33; x86_64-w64-mingw32)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-	protocol="application/pgp-signature"; boundary="fslg44mz7bzr7agv"
-Content-Disposition: inline
-In-Reply-To: <20240812071034.9443-3-baolu.lu@linux.intel.com>
+Content-Type: text/plain; charset="US-ASCII"
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: lhrpeml500004.china.huawei.com (7.191.163.9) To
+ lhrpeml500005.china.huawei.com (7.191.163.240)
 
+On Fri, 23 Aug 2024 23:21:22 +1000
+Alexey Kardashevskiy <aik@amd.com> wrote:
 
---fslg44mz7bzr7agv
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+> Implement SEV TIO PSP command wrappers in sev-dev-tio.c, these make
+> SPDM calls and store the data in the SEV-TIO-specific structs.
+> 
+> Implement tsm_ops for the hypervisor, the TSM module will call these
+> when loaded on the host and its tsm_set_ops() is called. The HV ops
+> are implemented in sev-dev-tsm.c.
+> 
+> Signed-off-by: Alexey Kardashevskiy <aik@amd.com>
+Superficial comments online inline.
 
-On Mon, Aug 12, 2024 at 03:10:34PM GMT, Lu Baolu wrote:
-> Commit <17de3f5fdd35> ("iommu: Retire bus ops") removes iommu ops from
-> the bus structure. The iommu subsystem no longer relies on bus for
-> operations. So iommu_domain_alloc() interface is no longer relevant.
->=20
-> Normally, iommu_paging_domain_alloc() could be a replacement for
-> iommu_domain_alloc() if the caller has the right device for IOMMU API
-> use. Unfortunately, this is not the case for this driver.
->=20
-> Iterate the devices on the platform bus and find a suitable device
-> whose device DMA is translated by an IOMMU. Then use this device to
-> allocate an iommu domain. The iommu subsystem prevents domains
-> allocated by one iommu driver from being attached to devices managed
-> by any different iommu driver.
->=20
-> Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
-> Link: https://lore.kernel.org/r/20240610085555.88197-20-baolu.lu@linux.in=
-tel.com
+Jonathan
+
 > ---
->  drivers/gpu/drm/tegra/drm.c | 34 +++++++++++++++++++++++++---------
->  1 file changed, 25 insertions(+), 9 deletions(-)
+>  drivers/crypto/ccp/Makefile      |    2 +
+>  arch/x86/include/asm/sev.h       |   20 +
+>  drivers/crypto/ccp/sev-dev-tio.h |  105 ++
+>  drivers/crypto/ccp/sev-dev.h     |    2 +
+>  include/linux/psp-sev.h          |   60 +
+>  drivers/crypto/ccp/sev-dev-tio.c | 1565 ++++++++++++++++++++
+>  drivers/crypto/ccp/sev-dev-tsm.c |  397 +++++
+>  drivers/crypto/ccp/sev-dev.c     |   10 +-
+>  8 files changed, 2159 insertions(+), 2 deletions(-)
+> 
+> diff --git a/drivers/crypto/ccp/Makefile b/drivers/crypto/ccp/Makefile
+> index 394484929dae..d9871465dd08 100644
+> --- a/drivers/crypto/ccp/Makefile
+> +++ b/drivers/crypto/ccp/Makefile
+> @@ -11,6 +11,8 @@ ccp-$(CONFIG_PCI) += sp-pci.o
+>  ccp-$(CONFIG_CRYPTO_DEV_SP_PSP) += psp-dev.o \
+>                                     sev-dev.o \
+>                                     tee-dev.o \
+> +				   sev-dev-tio.o \
+> +				   sev-dev-tsm.o \
+spaces vs tabs. I guess go for consistency.
 
-Actually I think we can just do something like this:
+>                                     platform-access.o \
+>                                     dbc.o \
+>                                     hsti.o
 
---- >8 ---
-diff --git a/drivers/gpu/drm/tegra/drm.c b/drivers/gpu/drm/tegra/drm.c
-index d9f0728c3afd..d35e411d536b 100644
---- a/drivers/gpu/drm/tegra/drm.c
-+++ b/drivers/gpu/drm/tegra/drm.c
-@@ -1150,7 +1150,7 @@ static int host1x_drm_probe(struct host1x_device *dev)
- 	}
-=20
- 	if (host1x_drm_wants_iommu(dev) && iommu_present(&platform_bus_type)) {
--		tegra->domain =3D iommu_domain_alloc(&platform_bus_type);
-+		tegra->domain =3D iommu_paging_domain_alloc(dev->dev.parent);
- 		if (!tegra->domain) {
- 			err =3D -ENOMEM;
- 			goto free;
---- >8 ---
+> diff --git a/drivers/crypto/ccp/sev-dev-tio.c b/drivers/crypto/ccp/sev-dev-tio.c
+> new file mode 100644
+> index 000000000000..42741b17c747
+> --- /dev/null
+> +++ b/drivers/crypto/ccp/sev-dev-tio.c
+> @@ -0,0 +1,1565 @@
+> +// SPDX-License-Identifier: GPL-2.0-only
 
-That refers to the physical device that the host1x_device virtual device
-was instantiated from and is a common parent to all physical devices
-that are part of the virtual device.
+> +static size_t sla_dobj_id_to_size(u8 id)
+> +{
+> +	size_t n;
+> +
+> +	BUILD_BUG_ON(sizeof(struct spdm_dobj_hdr_resp) != 0x10);
+> +	switch (id) {
+> +	case SPDM_DOBJ_ID_REQ:
+> +		n = sizeof(struct spdm_dobj_hdr_req);
+> +		break;
+> +	case SPDM_DOBJ_ID_RESP:
+> +		n = sizeof(struct spdm_dobj_hdr_resp);
+> +		break;
+> +	case SPDM_DOBJ_ID_CERTIFICATE:
+> +		n = sizeof(struct spdm_dobj_hdr_cert);
+> +		break;
+> +	case SPDM_DOBJ_ID_MEASUREMENT:
+> +		n = sizeof(struct spdm_dobj_hdr_meas);
+> +		break;
+> +	case SPDM_DOBJ_ID_REPORT:
+> +		n = sizeof(struct spdm_dobj_hdr_report);
+> +		break;
+> +	default:
+> +		WARN_ON(1);
+> +		n = 0;
+> +		break;
+> +	}
+> +
+> +	return n;
 
-Thierry
+Early returns will make this more readable.
 
---fslg44mz7bzr7agv
-Content-Type: application/pgp-signature; name="signature.asc"
+> +}
 
------BEGIN PGP SIGNATURE-----
 
-iQIzBAABCAAdFiEEiOrDCAFJzPfAjcif3SOs138+s6EFAmbPQdkACgkQ3SOs138+
-s6Faag/+PLNW+D2IJ1ANTAMAHn0fybn2aGa6fRFPkVgUQSXQP4OlfAdV1W2+DKPi
-CSLmOHisUapqMwyMZECKEkXHkM7+i7Snhz+D6gHCMx7YWFQiLGi0j9KZfT3kfX5V
-tOIVJXrEAcJZN9htxoPZ842Z5QrrzTNgVkvhmC2lhqA6sjy3BbyK8TgncUVpceMC
-wPCVwjnNyJZUxK/MZgyj5OywXC9emVXY5Y0WgjJ14D1KNPScAsSCLKbIvAS5Pku8
-8K0m4Dzv4+WtNRhr42OVrtji9VJwnrjVgJZXuGgJC7aQVDFbghM9rQ2NnaHAztOK
-EL+9DKRDLXo+MwQmvqSWTkY1OEd0Y2cJsagqS9363Q5Xau7Iwrxa2vAXgXUwkWyP
-/Z4cZYzatMr+CF+165NbtQYlJlRqBpW8kDslxGR1DT1NhNLbpE6y0FKaBp9YWXhA
-U8AkaTSeeuO96M7c9jr2sLyHIxIYzMPvsC5vvw44NQRty78DyLp9wE90r0Z954C+
-6DJMnKQIsoa+rCnof94BhK9ThweuwyWWMc/7755EWJoUo2g8VVyDei6m2GBMj5zT
-kkkzVeWz8F1cV3zDn8aa0hYje3tzVdvChHSMXHU44wRHSD6xaoI9KgxehV6TYlCI
-G3/NyFMo6sIP/I5hnEpQmI3pF5641WaJSYeocgjLIRESADr7+Dk=
-=Ka+K
------END PGP SIGNATURE-----
+> +/**
+> + * struct sev_data_tio_dev_connect - TIO_DEV_CONNECT
+> + *
+> + * @length: Length in bytes of this command buffer.
+> + * @spdm_ctrl: SPDM control structure defined in Section 5.1.
+> + * @device_id: The PCIe Routing Identifier of the device to connect to.
+> + * @root_port_id: The PCIe Routing Identifier of the root port of the device.
+> + * @segment_id: The PCIe Segment Identifier of the device to connect to.
 
---fslg44mz7bzr7agv--
+Doesn't seem to be there.
+
+> + * @dev_ctx_sla: Scatter list address of the device context buffer.
+> + * @tc_mask: Bitmask of the traffic classes to initialize for SEV-TIO usage.
+> + *           Setting the kth bit of the TC_MASK to 1 indicates that the traffic
+> + *           class k will be initialized.
+> + * @cert_slot: Slot number of the certificate requested for constructing the SPDM session.
+> + * @ide_stream_id: IDE stream IDs to be associated with this device.
+> + *                 Valid only if corresponding bit in TC_MASK is set.
+> + */
+> +struct sev_data_tio_dev_connect {
+> +	u32 length;
+> +	u32 reserved1;
+> +	struct spdm_ctrl spdm_ctrl;
+> +	u8 reserved2[8];
+> +	struct sla_addr_t dev_ctx_sla;
+> +	u8 tc_mask;
+> +	u8 cert_slot;
+> +	u8 reserved3[6];
+> +	u8 ide_stream_id[8];
+> +	u8 reserved4[8];
+> +} __packed;
+> +
+
+
+> +/**
+> + * struct sev_data_tio_guest_request - TIO_GUEST_REQUEST command
+> + *
+> + * @length: Length in bytes of this command buffer
+> + * @spdm_ctrl: SPDM control structure defined in Chapter 2.
+
+Some more fields that aren't documented.  They all should be for
+kernel-doc or the scripts will moan. 
+I'd just run the script and fixup all the warnings and errors.
+
+
+> + * @gctx_paddr: system physical address of guest context page
+> + * @tdi_ctx_paddr: SPA of page donated by hypervisor
+> + * @req_paddr: system physical address of request page
+> + * @res_paddr: system physical address of response page
+> + */
+> +struct sev_data_tio_guest_request {
+> +	u32 length;				/* In */
+> +	u32 reserved;
+> +	struct spdm_ctrl spdm_ctrl;		/* In */
+> +	struct sla_addr_t dev_ctx_sla;
+> +	struct sla_addr_t tdi_ctx_sla;
+> +	u64 gctx_paddr;
+> +	u64 req_paddr;				/* In */
+> +	u64 res_paddr;				/* In */
+> +} __packed;
+> +
+
+
+
+> +int sev_tio_tdi_status(struct tsm_dev_tio *dev_data, struct tsm_tdi_tio *tdi_data,
+> +		       struct tsm_spdm *spdm)
+> +{
+> +	struct sev_tio_tdi_status_data *data = (struct sev_tio_tdi_status_data *) dev_data->data;
+> +	struct sev_data_tio_tdi_status status = {
+> +		.length = sizeof(status),
+> +		.dev_ctx_sla = dev_data->dev_ctx,
+> +		.tdi_ctx_sla = tdi_data->tdi_ctx,
+> +	};
+> +	int ret;
+> +
+> +	if (IS_SLA_NULL(dev_data->dev_ctx) || IS_SLA_NULL(tdi_data->tdi_ctx))
+> +		return -ENXIO;
+> +
+> +	memset(data, 0, sizeof(*data));
+> +
+> +	spdm_ctrl_init(spdm, &status.spdm_ctrl, dev_data);
+> +	status.status_paddr = __psp_pa(data);
+> +
+> +	ret = sev_tio_do_cmd(SEV_CMD_TIO_TDI_STATUS, &status, sizeof(status),
+> +			     &dev_data->psp_ret, dev_data, spdm);
+> +
+> +	return ret;
+
+return sev_tio_do_cmd()
+
+Same in other similar cases.
+
+> +}
+
+
+> diff --git a/drivers/crypto/ccp/sev-dev-tsm.c b/drivers/crypto/ccp/sev-dev-tsm.c
+> new file mode 100644
+> index 000000000000..a11dea482d4b
+> --- /dev/null
+> +++ b/drivers/crypto/ccp/sev-dev-tsm.c
+> @@ -0,0 +1,397 @@
+> +// SPDX-License-Identifier: GPL-2.0-only
+> +
+> +// Interface to CCP/SEV-TIO for generic PCIe TDISP module
+> +
+> +#include <linux/pci.h>
+> +#include <linux/pci-doe.h>
+> +#include <linux/tsm.h>
+> +
+> +#include <linux/smp.h>
+> +#include <asm/sev-common.h>
+> +
+> +#include "psp-dev.h"
+> +#include "sev-dev.h"
+> +#include "sev-dev-tio.h"
+> +
+> +static int mkret(int ret, struct tsm_dev_tio *dev_data)
+> +{
+> +	if (ret)
+> +		return ret;
+> +
+> +	if (dev_data->psp_ret == SEV_RET_SUCCESS)
+> +		return 0;
+> +
+> +	pr_err("PSP returned an error %d\n", dev_data->psp_ret);
+I'm not totally convinced this is worth while vs simply checking
+at call sites.
+
+> +	return -EINVAL;
+> +}
+> +
+> +static int dev_connect(struct tsm_dev *tdev, void *private_data)
+> +{
+> +	u16 device_id = pci_dev_id(tdev->pdev);
+> +	u16 root_port_id = 0; // FIXME: this is NOT PCI id, need to figure out how to calculate this
+> +	u8 segment_id = tdev->pdev->bus ? pci_domain_nr(tdev->pdev->bus) : 0;
+> +	struct tsm_dev_tio *dev_data = tdev->data;
+> +	int ret;
+> +
+> +	if (!dev_data) {
+> +		dev_data = kzalloc(sizeof(*dev_data), GFP_KERNEL);
+> +		if (!dev_data)
+> +			return -ENOMEM;
+> +
+> +		ret = sev_tio_dev_create(dev_data, device_id, root_port_id, segment_id);
+> +		if (ret)
+> +			goto free_exit;
+> +
+> +		tdev->data = dev_data;
+> +	}
+...
+
+> +
+> +free_exit:
+> +	sev_tio_dev_reclaim(dev_data, &tdev->spdm);
+> +	kfree(dev_data);
+
+Correct to free even if not allocated here?
+Perhaps a comment if so.
+
+> +
+> +	return ret;
+> +}
+> +
+
+
+> +static int ide_refresh(struct tsm_dev *tdev, void *private_data)
+> +{
+> +	struct tsm_dev_tio *dev_data = tdev->data;
+> +	int ret;
+> +
+> +	if (!dev_data)
+> +		return -ENODEV;
+> +
+> +	ret = sev_tio_ide_refresh(dev_data, &tdev->spdm);
+> +
+> +	return ret;
+
+	return sev_tio_ide_refresh()
+
+> +}
+
+> +
+> +static int tdi_create(struct tsm_tdi *tdi)
+> +{
+> +	struct tsm_tdi_tio *tdi_data = tdi->data;
+> +	int ret;
+> +
+> +	if (tdi_data)
+> +		return -EBUSY;
+> +
+> +	tdi_data = kzalloc(sizeof(*tdi_data), GFP_KERNEL);
+> +	if (!tdi_data)
+> +		return -ENOMEM;
+> +
+> +	ret = sev_tio_tdi_create(tdi->tdev->data, tdi_data, pci_dev_id(tdi->pdev),
+> +				 tdi->rseg, tdi->rseg_valid);
+> +	if (ret)
+> +		kfree(tdi_data);
+	if (ret) {
+		kfree(tdi_data);
+		return ret;
+	}
+
+	tid->data = tdi_data;
+
+	return 0;
+
+is slightly longer but a more standard form so easier to review.
+
+> +	else
+> +		tdi->data = tdi_data;
+> +
+> +	return ret;
+> +}
+> +
+
+> +
+> +static int guest_request(struct tsm_tdi *tdi, u32 guest_rid, u64 kvmid, void *req_data,
+
+Probably wrap nearer 80 chars.
+
+> +			 enum tsm_tdisp_state *state, void *private_data)
+> +{
+> +	struct tsm_dev_tio *dev_data = tdi->tdev->data;
+> +	struct tio_guest_request *req = req_data;
+> +	int ret;
+> +
+> +	if (!tdi->data)
+> +		return -EFAULT;
+> +
+> +	if (dev_data->cmd == 0) {
+> +		ret = sev_tio_guest_request(&req->data, guest_rid, kvmid,
+> +					    dev_data, tdi->data, &tdi->tdev->spdm);
+> +		req->fw_err = dev_data->psp_ret;
+
+If the above returned an error is psp_ret always set? I think not.
+So maybe separate if (ret) condition, then set this and finally call
+the code below.
+
+> +		ret = mkret(ret, dev_data);
+> +		if (ret > 0)
+> +			return ret;
+> +	} else if (dev_data->cmd == SEV_CMD_TIO_GUEST_REQUEST) {
+> +		ret = sev_tio_continue(dev_data, &tdi->tdev->spdm);
+> +		ret = mkret(ret, dev_data);
+> +		if (ret > 0)
+> +			return ret;
+> +	}
+> +
+> +	if (dev_data->cmd == 0 && state) {
+> +		ret = sev_tio_tdi_status(tdi->tdev->data, tdi->data, &tdi->tdev->spdm);
+> +		ret = mkret(ret, dev_data);
+> +		if (ret > 0)
+> +			return ret;
+> +	} else if (dev_data->cmd == SEV_CMD_TIO_TDI_STATUS) {
+> +		ret = sev_tio_continue(dev_data, &tdi->tdev->spdm);
+> +		ret = mkret(ret, dev_data);
+> +		if (ret > 0)
+> +			return ret;
+> +
+> +		ret = sev_tio_tdi_status_fin(tdi->tdev->data, tdi->data, state);
+> +	}
+> +
+> +	return ret;
+> +}
+> +
+> +static int tdi_status(struct tsm_tdi *tdi, void *private_data, struct tsm_tdi_status *ts)
+> +{
+> +	struct tsm_dev_tio *dev_data = tdi->tdev->data;
+> +	int ret;
+> +
+> +	if (!tdi->data)
+> +		return -ENODEV;
+> +
+> +#if 0 /* Not implemented yet */
+> +	if (dev_data->cmd == 0) {
+> +		ret = sev_tio_tdi_info(tdi->tdev->data, tdi->data, ts);
+> +		ret = mkret(ret, dev_data);
+> +		if (ret)
+> +			return ret;
+> +	}
+> +#endif
+> +
+> +	if (dev_data->cmd == 0) {
+> +		ret = sev_tio_tdi_status(tdi->tdev->data, tdi->data, &tdi->tdev->spdm);
+> +		ret = mkret(ret, dev_data);
+> +		if (ret)
+> +			return ret;
+> +
+> +		ret = sev_tio_tdi_status_fin(tdi->tdev->data, tdi->data, &ts->state);
+
+Given code as it stands. Might as well return here.
+
+> +	} else if (dev_data->cmd == SEV_CMD_TIO_TDI_STATUS) {
+Making this just an if.
+
+> +		ret = sev_tio_continue(dev_data, &tdi->tdev->spdm);
+> +		ret = mkret(ret, dev_data);
+> +		if (ret)
+> +			return ret;
+> +
+> +		ret = sev_tio_tdi_status_fin(tdi->tdev->data, tdi->data, &ts->state);
+and here.
+
+> +	} else {
+
+Making this the inline code as no need for else.
+
+> +		pci_err(tdi->pdev, "Wrong state, cmd 0x%x in flight\n",
+> +			dev_data->cmd);
+> +	}
+> +
+> +	return ret;
+> +}
+> +
+> +struct tsm_ops sev_tsm_ops = {
+> +	.dev_connect = dev_connect,
+> +	.dev_reclaim = dev_reclaim,
+> +	.dev_status = dev_status,
+> +	.ide_refresh = ide_refresh,
+> +	.tdi_bind = tdi_bind,
+> +	.tdi_reclaim = tdi_reclaim,
+> +	.guest_request = guest_request,
+> +	.tdi_status = tdi_status,
+> +};
+
+
