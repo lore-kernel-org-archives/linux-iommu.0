@@ -1,46 +1,46 @@
-Received: from mx0b-0031df01.pphosted.com (mx0b-0031df01.pphosted.com [205.220.180.131])
+Received: from mx0a-0031df01.pphosted.com (mx0a-0031df01.pphosted.com [205.220.168.131])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EED2D1B0123
-	for <iommu@lists.linux.dev>; Wed, 28 Aug 2024 20:38:35 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.180.131
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 81DDF1B251F
+	for <iommu@lists.linux.dev>; Wed, 28 Aug 2024 20:38:37 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.168.131
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1724877517; cv=none; b=im3hovGGKg4uwk8YF9DOfSj2GaQYSUYhxgyaekkE+R45iRbg6+M8Q2s965T15fJzR/9+e7H5pONbOVe+dmaqZLbipexwK7WzKHjblGUIj3Dfu2803Pe65KnCtgnyoUzk/1MXBiWeeXCvSc6+6TUYA3avkoQZ0PqexSXBuCzcV5U=
+	t=1724877519; cv=none; b=BRLq7H6745rqo12afCxAsQeP+eoW9nZGQtkQ+dOsF+RdWFEB6H4PXXRf0Thu42JC/NO0Us0VOG1XkBS69rIrhLUNLsI7H57ySHVl5CiD1SEAxMrpvKmP1eGCvIFixgANIIlfnAQ2SYHIOutriuCXpdc5OT5XYzBfGIEA0Vstktk=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1724877517; c=relaxed/simple;
-	bh=g0SLOxQZpnjgSHdRI4s0y1AELLANh8KmK8Yvl2bmLAw=;
+	s=arc-20240116; t=1724877519; c=relaxed/simple;
+	bh=tR3oFeK+MRScvoo6q/RXi9/a/5uo9KhPGN8a307ZOBk=;
 	h=From:To:CC:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=mgKYRiDdUfnOoyKvkWq3qsD+QmhoyKFuW7tAc8Z1m2O06pyebpmnChNzLGu/Ul7L2Ahq9xp4ZVwJ+3OUB25vyaO6MnkCkAz4m4N+cGpIriFI0rwMEe8cUXf+WBb7UtZvuctx+LFfU86Lq0jv0aepEk+lRbxrB1hGThALAy6q2mw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com; spf=pass smtp.mailfrom=quicinc.com; dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b=l7MS6ofL; arc=none smtp.client-ip=205.220.180.131
+	 MIME-Version:Content-Type; b=dcSrrEHKA5e1bBsz2BuaiDavJX766cJj6iBVmGX8Fwdok/KrXsxOJqx8xqVYb7guKprevdZPZzF2LOX4XIEPflhQ8I7sqtYAn2rSkrYw5Mhs6/DpvTf1Gg7nqNxGZz3G8049dOS1Mo7XjoSFMBX/N7RIlxgb1CBd95fNa3qHHi0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com; spf=pass smtp.mailfrom=quicinc.com; dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b=j4bRYfPe; arc=none smtp.client-ip=205.220.168.131
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=quicinc.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b="l7MS6ofL"
-Received: from pps.filterd (m0279871.ppops.net [127.0.0.1])
-	by mx0a-0031df01.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 47SJM2Xo007623;
-	Wed, 28 Aug 2024 20:38:19 GMT
+	dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b="j4bRYfPe"
+Received: from pps.filterd (m0279864.ppops.net [127.0.0.1])
+	by mx0a-0031df01.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 47SJMNeR013613;
+	Wed, 28 Aug 2024 20:38:09 GMT
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=quicinc.com; h=
 	cc:content-transfer-encoding:content-type:date:from:in-reply-to
 	:message-id:mime-version:references:subject:to; s=qcppdkim1; bh=
-	OU0QRdJ6B3ALlG/18MSlc3NXidoM0rbfFB9pS9XKrFo=; b=l7MS6ofLZOtnSLnb
-	+ymDEhx9emdqDm/6aER98TDUbS999qM3YDjGRQvNm8omccgual9uamICKaetd4nF
-	mkwZkSnFdcMUKjLudtB5qNEt2tda2OKelzaNHA7meSZaP8xHt4dxU/mnQyD0J4AR
-	tdVe82NFTlclLd2/8UmKwarEYFsae/ZwvsHTEzkmaVbSQCfUb3lmazc0TUnxtn7O
-	f9A1HkO4u8NMdAt0X3m5rzEwvwx/kpbsFsWYMHS3R9InkwFJozgxDdNSg6Wemxxs
-	ETJXBXF4KTekGXw8PrCpa3Ytb6jKqUEduSKu2zlvv6MTwDBm3CnSALXtdd6fZz64
-	Tc5Xaw==
+	VrUrfvvTbkR8lpQLzQjX8IiQmvFPW2U7aDaTXDtPm1I=; b=j4bRYfPeeP3LbkDU
+	iH2BKcArOHE+LbNOUwl1C4ym7+RO2K2rjGGHtm2vpTe3BVkEZZA+2z3yFh8pCv97
+	PndLrMDWlzEUBvV83UAGWjC19qDJbn3+WfvW5lwg8AqIgItsz8J6oGvaGDNMIb71
+	D8s/Dprut/ECUvpU25t8rdybeTCHrgduL4autsZzv1q8uo8jrKaDbuKzYHPb/WxC
+	8zvFZAR0RB9Q5ume9fF4qVM30xvr2zidJflM0Nx6PNxspI45kVEFaezFloTqAH+j
+	TpbTYxyuh6L70vGTX4rl3ZaTKZbBvI+k2y8g/jxwcapnwwsDHkvwmvOzCufYwwsJ
+	6O7ACw==
 Received: from nasanppmta04.qualcomm.com (i-global254.qualcomm.com [199.106.103.254])
-	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 419pv0b0y2-1
+	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 419px5k09e-1
 	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Wed, 28 Aug 2024 20:38:18 +0000 (GMT)
+	Wed, 28 Aug 2024 20:38:08 +0000 (GMT)
 Received: from nasanex01b.na.qualcomm.com (nasanex01b.na.qualcomm.com [10.46.141.250])
-	by NASANPPMTA04.qualcomm.com (8.18.1.2/8.18.1.2) with ESMTPS id 47SKcH2X025954
+	by NASANPPMTA04.qualcomm.com (8.18.1.2/8.18.1.2) with ESMTPS id 47SKc7Hh025856
 	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Wed, 28 Aug 2024 20:38:17 GMT
+	Wed, 28 Aug 2024 20:38:07 GMT
 Received: from hu-nkela-lv.qualcomm.com (10.49.16.6) by
  nasanex01b.na.qualcomm.com (10.46.141.250) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.1544.9; Wed, 28 Aug 2024 13:38:13 -0700
+ 15.2.1544.9; Wed, 28 Aug 2024 13:38:03 -0700
 From: Nikunj Kela <quic_nkela@quicinc.com>
 To: <andersson@kernel.org>, <konradybcio@kernel.org>, <robh@kernel.org>,
         <krzk+dt@kernel.org>, <conor+dt@kernel.org>, <rafael@kernel.org>,
@@ -64,9 +64,9 @@ CC: <robin.murphy@arm.com>, <cristian.marussi@arm.com>, <rui.zhang@intel.com>,
         <linux-watchdog@vger.kernel.org>, <kernel@quicinc.com>,
         <quic_psodagud@quicinc.com>, <quic_tsoni@quicinc.com>,
         <quic_shazhuss@quicinc.com>, Nikunj Kela <quic_nkela@quicinc.com>
-Subject: [PATCH 21/22] ARM: dt: GIC: add extended SPI specifier
-Date: Wed, 28 Aug 2024 13:37:20 -0700
-Message-ID: <20240828203721.2751904-22-quic_nkela@quicinc.com>
+Subject: [PATCH 10/22] dt-bindings: pinctrl: document support for SA8255p
+Date: Wed, 28 Aug 2024 13:37:09 -0700
+Message-ID: <20240828203721.2751904-11-quic_nkela@quicinc.com>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20240828203721.2751904-1-quic_nkela@quicinc.com>
 References: <20240828203721.2751904-1-quic_nkela@quicinc.com>
@@ -82,38 +82,45 @@ X-ClientProxiedBy: nalasex01c.na.qualcomm.com (10.47.97.35) To
  nasanex01b.na.qualcomm.com (10.46.141.250)
 X-QCInternal: smtphost
 X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
-X-Proofpoint-GUID: BukNh8J1_NOG2ICllLKjmEpps5vQtIgg
-X-Proofpoint-ORIG-GUID: BukNh8J1_NOG2ICllLKjmEpps5vQtIgg
+X-Proofpoint-ORIG-GUID: pJXZs3ggEU0Rq8p2NWHSt2-rJSrrnBBS
+X-Proofpoint-GUID: pJXZs3ggEU0Rq8p2NWHSt2-rJSrrnBBS
 X-Proofpoint-Virus-Version: vendor=baseguard
  engine=ICAP:2.0.293,Aquarius:18.0.1039,Hydra:6.0.680,FMLib:17.12.28.16
  definitions=2024-08-28_08,2024-08-28_01,2024-05-17_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 adultscore=0 clxscore=1015
- priorityscore=1501 impostorscore=0 suspectscore=0 lowpriorityscore=0
- malwarescore=0 spamscore=0 mlxlogscore=750 mlxscore=0 bulkscore=0
- phishscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.19.0-2407110000 definitions=main-2408280149
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 phishscore=0 clxscore=1015
+ adultscore=0 suspectscore=0 lowpriorityscore=0 mlxlogscore=999 spamscore=0
+ priorityscore=1501 bulkscore=0 mlxscore=0 malwarescore=0 impostorscore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.19.0-2407110000
+ definitions=main-2408280149
 
-Add interrupt specifier for extended SPI interrupts.
+Add compatible for pincontrol representing support on SA8255p.
 
-Qualcomm SA8255p platform uses extended SPI for SCMI 'a2p' doorbells.
+SA8255p uses the same TLMM block as SA8775p however the ownership
+of pins are split between Firmware VM and Linux VM on SA8255p. For
+example, pins used by UART are owned and configured by Firmware VM
+while pins used by ethernet are owned and configured by Linux VM.
+Therefore, adding a sa8255p specific compatible to mark the difference.
 
 Signed-off-by: Nikunj Kela <quic_nkela@quicinc.com>
 ---
- include/dt-bindings/interrupt-controller/arm-gic.h | 1 +
- 1 file changed, 1 insertion(+)
+ .../devicetree/bindings/pinctrl/qcom,sa8775p-tlmm.yaml        | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
-diff --git a/include/dt-bindings/interrupt-controller/arm-gic.h b/include/dt-bindings/interrupt-controller/arm-gic.h
-index 35b6f69b7db6..9c06248446b7 100644
---- a/include/dt-bindings/interrupt-controller/arm-gic.h
-+++ b/include/dt-bindings/interrupt-controller/arm-gic.h
-@@ -12,6 +12,7 @@
+diff --git a/Documentation/devicetree/bindings/pinctrl/qcom,sa8775p-tlmm.yaml b/Documentation/devicetree/bindings/pinctrl/qcom,sa8775p-tlmm.yaml
+index e9abbf2c0689..0d712153f9d7 100644
+--- a/Documentation/devicetree/bindings/pinctrl/qcom,sa8775p-tlmm.yaml
++++ b/Documentation/devicetree/bindings/pinctrl/qcom,sa8775p-tlmm.yaml
+@@ -17,7 +17,9 @@ allOf:
  
- #define GIC_SPI 0
- #define GIC_PPI 1
-+#define GIC_ESPI 2
+ properties:
+   compatible:
+-    const: qcom,sa8775p-tlmm
++    enum:
++      - qcom,sa8255p-tlmm
++      - qcom,sa8775p-tlmm
  
- /*
-  * Interrupt specifier cell 2.
+   reg:
+     maxItems: 1
 -- 
 2.34.1
 
