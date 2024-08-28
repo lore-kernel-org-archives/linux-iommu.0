@@ -1,148 +1,137 @@
-Received: from mail-lf1-f51.google.com (mail-lf1-f51.google.com [209.85.167.51])
+Received: from mail-oa1-f51.google.com (mail-oa1-f51.google.com [209.85.160.51])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D45091AC45C
-	for <iommu@lists.linux.dev>; Wed, 28 Aug 2024 20:49:33 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.51
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 216DB1AD41B
+	for <iommu@lists.linux.dev>; Wed, 28 Aug 2024 21:05:39 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.160.51
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1724878175; cv=none; b=HwA2sgPsOwY1HLVpFmHNKqT3umSHxPCmOSQnEiHOQBq9VC3x4odQW0xp5qKg+m5AKnDbNtagJnfJSqij+eh7sAabCAiWqEuKM3kJzplhqXIIsFnOsk0me0xoepFCyqdwB1X7o8rkvbDy6m7fgw8l9jlwN0ki/5ifntAZRRCcv1g=
+	t=1724879140; cv=none; b=Nr2W5KhHJ32Ty6/c6FGXfOGGXHIoRWJsFAXuAPTiuGUA4sZefp6vmm++NFNPdhQveA779+BId1M+gSHjK7B44rP2qqoOEAXpkfucpiH9hmhYC5YF/wCLycRHgtzyCn613NmZFrv7UQNmhrcC7duRZ66kEcXoJtXQXzMJQf1gfVY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1724878175; c=relaxed/simple;
-	bh=SI+regcL35D2pgjCxxik/DYpB87OSLp3n3YVroEysHE=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=QT/ZO4Xy5+M4w3ZpSigDp2hVTD+f4tq0JJR++AwgrmkjpXN2c2u9bQ24mCDb72rKmYY8SQkfkXUspb031OEDBZa2E88JmPqzLk8MDQ0vc/x7ta9fsGuMSAum6Jyh5NaEVZEtceaZ9PgbSz8Hs0dngMtbiYMBxQvGtsAk1d5JOYk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org; spf=pass smtp.mailfrom=linaro.org; dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b=cL3uv/9+; arc=none smtp.client-ip=209.85.167.51
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linaro.org
+	s=arc-20240116; t=1724879140; c=relaxed/simple;
+	bh=O9b/h1jt0My8mMuBRswwTJvmsfyAIhLbUG7uWzm2irg=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=bAlF707fDA21wo7s8i7kUk3S5sxHB6sEohQkYdEv3jvw8qxDzeTsz3hVSQKojVs8mtQRUOogGGMWS0VMJb2ejidQ+rJWFtfQ2CMngSALgYrbEGO8u6wTb+dn5XCF8YaOYrJq33phzKWk0EVxkpgvQ1HPtZ616K/dR/W8ozDG+7c=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=chromium.org; spf=pass smtp.mailfrom=chromium.org; dkim=pass (1024-bit key) header.d=chromium.org header.i=@chromium.org header.b=Ar53gRKs; arc=none smtp.client-ip=209.85.160.51
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=chromium.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=chromium.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="cL3uv/9+"
-Received: by mail-lf1-f51.google.com with SMTP id 2adb3069b0e04-53346132365so8606092e87.1
-        for <iommu@lists.linux.dev>; Wed, 28 Aug 2024 13:49:33 -0700 (PDT)
+	dkim=pass (1024-bit key) header.d=chromium.org header.i=@chromium.org header.b="Ar53gRKs"
+Received: by mail-oa1-f51.google.com with SMTP id 586e51a60fabf-268eec6c7c1so4798608fac.3
+        for <iommu@lists.linux.dev>; Wed, 28 Aug 2024 14:05:38 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1724878172; x=1725482972; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=b7iL+wVZPXpJO8ClTV1l/2A644kBdScvCJ/IGN2rpT8=;
-        b=cL3uv/9+a2OxQ431CklD3Jt0sv2q1gB9MfUVGA/IKBU0o5QwhBK0d46PNoy4wyYuLd
-         aeRpyt1DqaMxWC4KMuu09/aUilsh1HFyOtg7v0o8Co/aaOAxJNtn32hSBZ62t+tgGjbW
-         QbjkfdytAVE80Xp/AdmiJJw3BJFp+czE2Vn6gDKMo56oLk8E5XED7NH1OgZTmrUiDFxh
-         JPcFs2hM13ASpAwXk/mmchr/wc9mqxmqA61wwQRx+yLeArh+oqL7viiOu10FxOnIFp6W
-         4OM1Yoa6d4X2jgGbMawK/7T9rdfG7X6tqf7pDumDq5dxV6nVBs1eir+q16/FaTg4Pk2v
-         oeMQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1724878172; x=1725482972;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+        d=chromium.org; s=google; t=1724879138; x=1725483938; darn=lists.linux.dev;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=b7iL+wVZPXpJO8ClTV1l/2A644kBdScvCJ/IGN2rpT8=;
-        b=X3sP28hcpe4dgyW/4UscHL6MgIJWqfsh8kYia81oWiWf553n2VxmUjUPlPWGcT2Rjv
-         tOfW8tS3GWqXw1FLtMuI+6Gh/G0Tk2MqffGGUAEnVswnbTTVjfu73qZdszMvcfAnNFdr
-         ltuYisOjogxircGFyHIknbvegrYk0PqOCnOkTIDYGeZ4gIXZvmzuVoymxk92hPHahnT6
-         xqjh2WborQTO+CwiWO/drQPPMexjUvhq8psnWfkxfJx7Un0qgTeNKUFVvotW57tzMXAm
-         vUL91UkH5WR2qgUDOwVbFO74U9wEnd8ttoNLH7oHLPyJgO4HtxN7AH4dzi9Omq670LFb
-         PswA==
-X-Forwarded-Encrypted: i=1; AJvYcCUUEkoKcqjAFm7PHRS6YujCVwbjITMNcsYW5U1PrOZyY/QgYPqK3fckyPHPy0ZSjfnlZRDdjg==@lists.linux.dev
-X-Gm-Message-State: AOJu0YzW/FM5PgJdgxxbM7zsIF4Vou/dRRH9I48JsKB8LfgW3khKcEh9
-	McKx/Ojf55Cc89213KKL5t8FyeSH2W0ndjNhij07eUCc/Wzsdx9MoQLzGV9nT6Y=
-X-Google-Smtp-Source: AGHT+IGFlooROX7KAAWEZ3u9MgehYtM/1Q4NV0a/4GC6vjfI00yn1fIiQPQwXUf0jAQZYDlL800GWg==
-X-Received: by 2002:a05:6512:ac9:b0:533:4591:fbf1 with SMTP id 2adb3069b0e04-5353e567669mr289888e87.15.1724878171237;
-        Wed, 28 Aug 2024 13:49:31 -0700 (PDT)
-Received: from eriador.lumag.spb.ru (2001-14ba-a0c3-3a00--7a1.rev.dnainternet.fi. [2001:14ba:a0c3:3a00::7a1])
-        by smtp.gmail.com with ESMTPSA id 2adb3069b0e04-5334ea36413sm2299368e87.79.2024.08.28.13.49.30
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 28 Aug 2024 13:49:30 -0700 (PDT)
-Date: Wed, 28 Aug 2024 23:49:29 +0300
-From: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
-To: Marc Gonzalez <mgonzalez@freebox.fr>
-Cc: Rob Clark <robdclark@gmail.com>, Will Deacon <will@kernel.org>, 
-	Robin Murphy <robin.murphy@arm.com>, Joerg Roedel <joro@8bytes.org>, Rob Herring <robh@kernel.org>, 
-	Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, iommu@lists.linux.dev, 
-	linux-arm-msm@vger.kernel.org, linux-arm-kernel@lists.infradead.org, 
-	linux-kernel@vger.kernel.org, devicetree@vger.kernel.org, 
-	Bjorn Andersson <andersson@kernel.org>, Konrad Dybcio <konradybcio@kernel.org>, 
-	Arnaud Vrac <avrac@freebox.fr>, Pierre-Hugues Husson <phhusson@freebox.fr>, 
-	Marijn Suijten <marijn.suijten@somainline.org>, Caleb Connolly <caleb.connolly@linaro.org>
-Subject: Re: [PATCH 1/2] iommu/arm-smmu-qcom: hide last LPASS SMMU context
- bank from linux
-Message-ID: <jxxstowusullmfvtee7xvabc7s3ifele5xlc6muem65dnvzxih@e2nm7ln5n2qv>
-References: <20240819-smmu-v1-0-bce6e4738825@freebox.fr>
- <20240819-smmu-v1-1-bce6e4738825@freebox.fr>
+        bh=HA3aO0qLDpyT16ckHiIzKiYud21+kmk7/MoRxGGoBJw=;
+        b=Ar53gRKsnbXJkGT3incfRw7uf+8tafOtrwG9ARwyEGjZsB192E0hNK2HH31WvKn9ul
+         qbGRVla4nKEN96uN8aSkiMDOZH8ckBMrUUmvVrRIYuGy76j3eysnJ5fcChW3LqBedGlT
+         tY45JHGPW9uUK7wA6J5rvPJlzq/FgsfJYcFWU=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1724879138; x=1725483938;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=HA3aO0qLDpyT16ckHiIzKiYud21+kmk7/MoRxGGoBJw=;
+        b=b48HN6lwsrV3etF+XichoXztks1+wZno/EFJxCNGHS0bmqEnOdMCVCJGRAN6kFXMcs
+         KgSEledF4lRha2vUZK4lcZbnClAjDGToYJNdWbsHHz1p/U/gZb/Frc6LKclKbwKiqVcG
+         KjTl8/mJfLahYRi2U0OP0Ztdv3qDI2zbpSeRi40qSkegyG8gybGVULLT/2Wo51nrpCZR
+         Hk/0OT5ds6w3fiVWt2W3l5FuD7B/fvnpVmMyPbPvtJdEiW73QV442tBzN+XbaFZgarJJ
+         tPHApb7ujzatkri4xNnmzVKD0yCzOWnRe5t9ckrauiCEOZdR93sDq0pCeTk+AsPbpG9b
+         d+NA==
+X-Forwarded-Encrypted: i=1; AJvYcCX4ko7R2Ld+Fbqm8vc7qTEEoEC+id+xd/WViNy35tEB+s6d0OwQoBdqi8g4+sSAmDtQg1VxCg==@lists.linux.dev
+X-Gm-Message-State: AOJu0YyD+nlD3E8VHhtLJ9E1AxOzVjg5IFYa9ZeonVhD+TsEtjrQFqRV
+	MzHU70l+0YJ1xmjYfM6ULl0efn+dUrM3tRG4xqTCWJZicZEc+62uQClpetNCVlnMZFwnH+T4HjP
+	WypCnS83jLC1z5PfsVZXoT3msP68ngbe7QuU4
+X-Google-Smtp-Source: AGHT+IFkr3UUR7vNkihwV0658E6D/8y47NeG4vVj6D6jdZc4LVGV+LUY7bY+mTRSOKkQNEJpatTy/+JmHeXTT68DFDY=
+X-Received: by 2002:a05:6870:d6a3:b0:264:956e:6207 with SMTP id
+ 586e51a60fabf-2779013e008mr992999fac.27.1724879138177; Wed, 28 Aug 2024
+ 14:05:38 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20240819-smmu-v1-1-bce6e4738825@freebox.fr>
+References: <20240824042635.GM1532424@black.fi.intel.com> <20240824162042.GA411509@bhelgaas>
+In-Reply-To: <20240824162042.GA411509@bhelgaas>
+From: Esther Shimanovich <eshimanovich@chromium.org>
+Date: Wed, 28 Aug 2024 17:05:27 -0400
+Message-ID: <CA+Y6NJEm8UH5H1zE1Kgz9sKcv2xKKUzR5n=xNdOqyBYocyyCgg@mail.gmail.com>
+Subject: Re: [PATCH v4] PCI: Detect and trust built-in Thunderbolt chips
+To: Bjorn Helgaas <helgaas@kernel.org>
+Cc: Mika Westerberg <mika.westerberg@linux.intel.com>, Bjorn Helgaas <bhelgaas@google.com>, 
+	Rajat Jain <rajatja@google.com>, "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>, 
+	Mario Limonciello <mario.limonciello@amd.com>, 
+	=?UTF-8?Q?Ilpo_J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>, 
+	iommu@lists.linux.dev, Lukas Wunner <lukas@wunner.de>, linux-pci@vger.kernel.org, 
+	linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-On Mon, Aug 19, 2024 at 02:59:35PM GMT, Marc Gonzalez wrote:
-> On qcom msm8998, writing to the last context bank of lpass_q6_smmu
-> (base address 0x05100000) produces a system freeze & reboot.
-> 
-> The hardware/hypervisor reports 13 context banks for the LPASS SMMU
-> on msm8998, but only the first 12 are accessible...
-> Override the number of context banks
-> 
-> [    2.546101] arm-smmu 5100000.iommu: probing hardware configuration...
-> [    2.552439] arm-smmu 5100000.iommu: SMMUv2 with:
-> [    2.558945] arm-smmu 5100000.iommu: 	stage 1 translation
-> [    2.563627] arm-smmu 5100000.iommu: 	address translation ops
-> [    2.568923] arm-smmu 5100000.iommu: 	non-coherent table walk
-> [    2.574566] arm-smmu 5100000.iommu: 	(IDR0.CTTW overridden by FW configuration)
-> [    2.580220] arm-smmu 5100000.iommu: 	stream matching with 12 register groups
-> [    2.587263] arm-smmu 5100000.iommu: 	13 context banks (0 stage-2 only)
-> [    2.614447] arm-smmu 5100000.iommu: 	Supported page sizes: 0x63315000
-> [    2.621358] arm-smmu 5100000.iommu: 	Stage-1: 36-bit VA -> 36-bit IPA
-> [    2.627772] arm-smmu 5100000.iommu: 	preserved 0 boot mappings
-> 
-> Specifically, the crashes occur here:
-> 
-> 	qsmmu->bypass_cbndx = smmu->num_context_banks - 1;
-> 	arm_smmu_cb_write(smmu, qsmmu->bypass_cbndx, ARM_SMMU_CB_SCTLR, 0);
-> 
-> and here:
-> 
-> 	arm_smmu_write_context_bank(smmu, i);
-> 	arm_smmu_cb_write(smmu, i, ARM_SMMU_CB_FSR, ARM_SMMU_CB_FSR_FAULT);
-> 
-> It is likely that FW reserves the last context bank for its own use,
-> thus a simple work-around is: DON'T USE IT in Linux.
-> 
-> If we decrease the number of context banks, last one will be "hidden".
-> 
-> Signed-off-by: Marc Gonzalez <mgonzalez@freebox.fr>
-> ---
->  drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c | 5 +++++
->  1 file changed, 5 insertions(+)
-> 
-> diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
-> index 7e65189ca7b8c..d08c18edf5732 100644
-> --- a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
-> +++ b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
-> @@ -282,6 +282,11 @@ static int qcom_smmu_cfg_probe(struct arm_smmu_device *smmu)
->  	u32 smr;
->  	int i;
->  
-> +	if (of_device_is_compatible(smmu->dev->of_node, "qcom,msm8998-lpass-smmu")) {
-> +		dev_warn(smmu->dev, "hide last ctx bank from linux");
+On Sat, Aug 24, 2024 at 12:20=E2=80=AFPM Bjorn Helgaas <helgaas@kernel.org>=
+ wrote:
+>
+> On Sat, Aug 24, 2024 at 07:26:35AM +0300, Mika Westerberg wrote:
+> > On Fri, Aug 23, 2024 at 04:12:54PM -0500, Bjorn Helgaas wrote:
+> > > On Fri, Aug 23, 2024 at 04:53:16PM +0000, Esther Shimanovich wrote:
+> > > > Some computers with CPUs that lack Thunderbolt features use discret=
+e
+> > > > Thunderbolt chips to add Thunderbolt functionality. These Thunderbo=
+lt
+> > > > chips are located within the chassis; between the root port labeled
+> > > > ExternalFacingPort and the USB-C port.
+> > >
+> > > Is this a firmware defect?  I asked this before, and I interpret your
+> > > answer of "ExternalFacingPort is not 100% accurate all of the time" a=
+s
+> > > "yes, this is a firmware defect."  That should be part of the commit
+> > > log and code comments.
+> > >
 
-dev_info() or dev_dbg(). dev_warn should be reserved to the case when
-you need to warn the user that something went wrong. In this case it is
-expected that the last bank is unusable.
+I like how Lukas explained it here:
+https://lore.kernel.org/all/ZstGP0EgttNAxjp2@wunner.de/
 
-> +		--smmu->num_context_banks;
-> +	}
-> +
->  	/*
->  	 * Some platforms support more than the Arm SMMU architected maximum of
->  	 * 128 stream matching groups. For unknown reasons, the additional
-> 
-> -- 
-> 2.34.1
-> 
+It's a bit unclear whether this is firmware implemented incorrectly or
+the spec not being specific enough.
+Being that I see this interpretation of the spec on all devices with
+discrete Thunderbolt chips (across different manufacturers)--that
+makes me think that this is an ambiguity on the spec's part.
 
--- 
-With best wishes
-Dmitry
+Given that, how do you suggest I modify the commit log and code comments?
+
+> > > > 2) If a root port does not have integrated Thunderbolt capabilities=
+, but
+> > > >    has the ExternalFacingPort ACPI property, that means the manufac=
+turer
+> > > >    has opted to use a discrete Thunderbolt host controller that is
+> > > >    built into the computer.
+> > >
+> > > Unconvincing.  If a Root Port has an external connector, is it
+> > > impossible to plug in a Thunderbolt device to that connector?  I
+> > > assume the wires from a Root Port could be traces on a PCB to a
+> > > soldered-down Thunderbolt controller, OR could be wires to a connecto=
+r
+> > > where a Thunderbolt controller could be plugged in.  How could we tel=
+l
+> > > the difference?
+> >
+We may assume this both because of how the spec is worded, and how
+I've seen it implemented in the case of a discrete Thunderbolt
+controller, across all cases.
+https://learn.microsoft.com/en-us/windows-hardware/drivers/pci/dsd-for-pcie=
+-root-ports#mapping-native-protocols-pcie-displayport-tunneled-through-usb4=
+-to-usb4-host-routers
+
+"ExternalFacingPort" is only used when there is an externally exposed
+PCIe hierarchy. (Never otherwise)
+I don't know any other examples of externally exposed PCIe hierarchies
+other than Thunderbolt.
+Therefore I assume, that if there is "ExternalFacingPort", that means
+the device has Thunderbolt capabilities.
+If we have confirmed that the device has no integrated thunderbolt
+capabilities, that means the device MUST expect a discrete thunderbolt
+chip outside of its ExternalFacing root port.
+
+That is my understanding of this. Also let me know how I can reword
+here as well.
