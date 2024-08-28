@@ -1,137 +1,108 @@
-Received: from mail-oa1-f51.google.com (mail-oa1-f51.google.com [209.85.160.51])
+Received: from mail-oi1-f175.google.com (mail-oi1-f175.google.com [209.85.167.175])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 216DB1AD41B
-	for <iommu@lists.linux.dev>; Wed, 28 Aug 2024 21:05:39 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.160.51
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D2A701A7074
+	for <iommu@lists.linux.dev>; Wed, 28 Aug 2024 21:15:35 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.175
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1724879140; cv=none; b=Nr2W5KhHJ32Ty6/c6FGXfOGGXHIoRWJsFAXuAPTiuGUA4sZefp6vmm++NFNPdhQveA779+BId1M+gSHjK7B44rP2qqoOEAXpkfucpiH9hmhYC5YF/wCLycRHgtzyCn613NmZFrv7UQNmhrcC7duRZ66kEcXoJtXQXzMJQf1gfVY=
+	t=1724879737; cv=none; b=smzLkVDFxyB/OnT5mwVcD+GWSQs+CPuToZfu4c2iHTJgn+SfRBOIBOiJ8+qLIPSiDncFIH7flBSQgWz2E5Km3Q/QWzbqWrewZ3mcxmkT1mVhhXsenBR8pP4Sn2ZQEPzCt9I3PTzcanSZEocjyI9Jh+OcQW9qgKN/xYd1iKRWQNs=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1724879140; c=relaxed/simple;
-	bh=O9b/h1jt0My8mMuBRswwTJvmsfyAIhLbUG7uWzm2irg=;
+	s=arc-20240116; t=1724879737; c=relaxed/simple;
+	bh=rZ0hzRuydgbsTmzNxJW5qDg7GgFGEViAZUQW/xwoQg8=;
 	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=bAlF707fDA21wo7s8i7kUk3S5sxHB6sEohQkYdEv3jvw8qxDzeTsz3hVSQKojVs8mtQRUOogGGMWS0VMJb2ejidQ+rJWFtfQ2CMngSALgYrbEGO8u6wTb+dn5XCF8YaOYrJq33phzKWk0EVxkpgvQ1HPtZ616K/dR/W8ozDG+7c=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=chromium.org; spf=pass smtp.mailfrom=chromium.org; dkim=pass (1024-bit key) header.d=chromium.org header.i=@chromium.org header.b=Ar53gRKs; arc=none smtp.client-ip=209.85.160.51
+	 To:Cc:Content-Type; b=OAG+63GaeNUncjy5rDjOqYv4PAuz7oIiR8rb4BKYU1+gaEaxafTcuUgB2net0NG6FkbGPc2TC7OXUKEbxDN3r1AL/pPIGRQB1OlDkbne7OITB+848+cE8Pm78/8EEXjvEJmNE+T2650hGS37LwFHkiCac1IbS2qbH09Rr1IWit0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=chromium.org; spf=pass smtp.mailfrom=chromium.org; dkim=pass (1024-bit key) header.d=chromium.org header.i=@chromium.org header.b=BriXmh6I; arc=none smtp.client-ip=209.85.167.175
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=chromium.org
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=chromium.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=chromium.org header.i=@chromium.org header.b="Ar53gRKs"
-Received: by mail-oa1-f51.google.com with SMTP id 586e51a60fabf-268eec6c7c1so4798608fac.3
-        for <iommu@lists.linux.dev>; Wed, 28 Aug 2024 14:05:38 -0700 (PDT)
+	dkim=pass (1024-bit key) header.d=chromium.org header.i=@chromium.org header.b="BriXmh6I"
+Received: by mail-oi1-f175.google.com with SMTP id 5614622812f47-3db14930a1aso1484661b6e.3
+        for <iommu@lists.linux.dev>; Wed, 28 Aug 2024 14:15:35 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google; t=1724879138; x=1725483938; darn=lists.linux.dev;
+        d=chromium.org; s=google; t=1724879735; x=1725484535; darn=lists.linux.dev;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=HA3aO0qLDpyT16ckHiIzKiYud21+kmk7/MoRxGGoBJw=;
-        b=Ar53gRKsnbXJkGT3incfRw7uf+8tafOtrwG9ARwyEGjZsB192E0hNK2HH31WvKn9ul
-         qbGRVla4nKEN96uN8aSkiMDOZH8ckBMrUUmvVrRIYuGy76j3eysnJ5fcChW3LqBedGlT
-         tY45JHGPW9uUK7wA6J5rvPJlzq/FgsfJYcFWU=
+        bh=wroWp6ZdRx4y4EGEIviQ1d0CtpBbTRnZ8bxPpcNXhAI=;
+        b=BriXmh6ICYiuvv2Saqs2ho++L4RLAj94pI5LE7oqEVMi+0oamrWht0dR5ulIVU2Y1r
+         JE0mXeXgjLViENxwoxvjvWIE1yyJRhDrMwxQVXXloEwOYY6LUQaoHHX6zoxsw7eyIVRF
+         TVrB/8aafJcWjz3Kht//xPtIpKYpsgjDWWhFw=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1724879138; x=1725483938;
+        d=1e100.net; s=20230601; t=1724879735; x=1725484535;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=HA3aO0qLDpyT16ckHiIzKiYud21+kmk7/MoRxGGoBJw=;
-        b=b48HN6lwsrV3etF+XichoXztks1+wZno/EFJxCNGHS0bmqEnOdMCVCJGRAN6kFXMcs
-         KgSEledF4lRha2vUZK4lcZbnClAjDGToYJNdWbsHHz1p/U/gZb/Frc6LKclKbwKiqVcG
-         KjTl8/mJfLahYRi2U0OP0Ztdv3qDI2zbpSeRi40qSkegyG8gybGVULLT/2Wo51nrpCZR
-         Hk/0OT5ds6w3fiVWt2W3l5FuD7B/fvnpVmMyPbPvtJdEiW73QV442tBzN+XbaFZgarJJ
-         tPHApb7ujzatkri4xNnmzVKD0yCzOWnRe5t9ckrauiCEOZdR93sDq0pCeTk+AsPbpG9b
-         d+NA==
-X-Forwarded-Encrypted: i=1; AJvYcCX4ko7R2Ld+Fbqm8vc7qTEEoEC+id+xd/WViNy35tEB+s6d0OwQoBdqi8g4+sSAmDtQg1VxCg==@lists.linux.dev
-X-Gm-Message-State: AOJu0YyD+nlD3E8VHhtLJ9E1AxOzVjg5IFYa9ZeonVhD+TsEtjrQFqRV
-	MzHU70l+0YJ1xmjYfM6ULl0efn+dUrM3tRG4xqTCWJZicZEc+62uQClpetNCVlnMZFwnH+T4HjP
-	WypCnS83jLC1z5PfsVZXoT3msP68ngbe7QuU4
-X-Google-Smtp-Source: AGHT+IFkr3UUR7vNkihwV0658E6D/8y47NeG4vVj6D6jdZc4LVGV+LUY7bY+mTRSOKkQNEJpatTy/+JmHeXTT68DFDY=
-X-Received: by 2002:a05:6870:d6a3:b0:264:956e:6207 with SMTP id
- 586e51a60fabf-2779013e008mr992999fac.27.1724879138177; Wed, 28 Aug 2024
- 14:05:38 -0700 (PDT)
+        bh=wroWp6ZdRx4y4EGEIviQ1d0CtpBbTRnZ8bxPpcNXhAI=;
+        b=uG5FYBv8EDwUQOjb+kZHeU0vzRh7FXqb8U79k3cSvXmAFNoe2hGYq1viiHW6APrM9B
+         4n3GspAHQBMafQMGmIyts0xJet4ggNz2fmui7P5RSQRH0o79BIuFCZpcsw7mXV1KlBeO
+         447w752tsHoiFDxUO5axWidSNbaJXopxljhlL9coPjXaY15fbAJWI7quHCY77YWZ5+5j
+         fGzfF0Fw3UIwjeqqCu1AlhEa93P01S28Jju8mnRGVCcyri3lMhFSbP4r2N0HwDitMpHT
+         SSytJOejV9ifzTGV8TJSCSS2NlQsgGqDyI0ZlzZvY4j5K1kq5swcx9V85XREN1v0/TND
+         CNAQ==
+X-Forwarded-Encrypted: i=1; AJvYcCUcvAcVHluxZwWiTm3mTSeola95miyIDmoF247+H1GwP6GJx0poR0+ul2v4ko7B2pfxEGnycw==@lists.linux.dev
+X-Gm-Message-State: AOJu0Yy4iQN47wwdvG1PEt0ntmpUSomQlFCEkfvT4ZcgsVQLZApaoCYu
+	tnmRQWcQwJX6cgv+M/ZfUNZQbbfsHbo72H39cY3E2ujSzcdRZbgomcJ2a3r/B/dJcJp7mlcFjRW
+	2u5O3egPxuf0bneJU5f23dAQdBepdSjwsX79T
+X-Google-Smtp-Source: AGHT+IHpc1TwQ/elzvJfTT8LvKlPqSoX8Jgij02Zkapj6rbYbejYym0vJh0kKtUwFwrIDA0pdyfbKUIckcCIzSc/5qU=
+X-Received: by 2002:a05:6870:1586:b0:260:ebf7:d0e7 with SMTP id
+ 586e51a60fabf-277900cfd7dmr1020924fac.15.1724879734799; Wed, 28 Aug 2024
+ 14:15:34 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <20240824042635.GM1532424@black.fi.intel.com> <20240824162042.GA411509@bhelgaas>
-In-Reply-To: <20240824162042.GA411509@bhelgaas>
+References: <20240823-trust-tbt-fix-v4-1-c6f1e3bdd9be@chromium.org> <ZstCyti3FHZIeFO8@wunner.de>
+In-Reply-To: <ZstCyti3FHZIeFO8@wunner.de>
 From: Esther Shimanovich <eshimanovich@chromium.org>
-Date: Wed, 28 Aug 2024 17:05:27 -0400
-Message-ID: <CA+Y6NJEm8UH5H1zE1Kgz9sKcv2xKKUzR5n=xNdOqyBYocyyCgg@mail.gmail.com>
+Date: Wed, 28 Aug 2024 17:15:24 -0400
+Message-ID: <CA+Y6NJE1p-nidmCZzJ7j-mJAmCLmC2q2meUf-5FFSWofWES-qA@mail.gmail.com>
 Subject: Re: [PATCH v4] PCI: Detect and trust built-in Thunderbolt chips
-To: Bjorn Helgaas <helgaas@kernel.org>
-Cc: Mika Westerberg <mika.westerberg@linux.intel.com>, Bjorn Helgaas <bhelgaas@google.com>, 
-	Rajat Jain <rajatja@google.com>, "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>, 
-	Mario Limonciello <mario.limonciello@amd.com>, 
+To: Lukas Wunner <lukas@wunner.de>
+Cc: Bjorn Helgaas <bhelgaas@google.com>, Rajat Jain <rajatja@google.com>, 
+	"Rafael J. Wysocki" <rafael.j.wysocki@intel.com>, Mario Limonciello <mario.limonciello@amd.com>, 
 	=?UTF-8?Q?Ilpo_J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>, 
-	iommu@lists.linux.dev, Lukas Wunner <lukas@wunner.de>, linux-pci@vger.kernel.org, 
-	linux-kernel@vger.kernel.org
+	iommu@lists.linux.dev, Mika Westerberg <mika.westerberg@linux.intel.com>, 
+	linux-pci@vger.kernel.org, linux-kernel@vger.kernel.org
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-On Sat, Aug 24, 2024 at 12:20=E2=80=AFPM Bjorn Helgaas <helgaas@kernel.org>=
- wrote:
+On Sun, Aug 25, 2024 at 10:49=E2=80=AFAM Lukas Wunner <lukas@wunner.de> wro=
+te:
 >
-> On Sat, Aug 24, 2024 at 07:26:35AM +0300, Mika Westerberg wrote:
-> > On Fri, Aug 23, 2024 at 04:12:54PM -0500, Bjorn Helgaas wrote:
-> > > On Fri, Aug 23, 2024 at 04:53:16PM +0000, Esther Shimanovich wrote:
-> > > > Some computers with CPUs that lack Thunderbolt features use discret=
-e
-> > > > Thunderbolt chips to add Thunderbolt functionality. These Thunderbo=
-lt
-> > > > chips are located within the chassis; between the root port labeled
-> > > > ExternalFacingPort and the USB-C port.
-> > >
-> > > Is this a firmware defect?  I asked this before, and I interpret your
-> > > answer of "ExternalFacingPort is not 100% accurate all of the time" a=
-s
-> > > "yes, this is a firmware defect."  That should be part of the commit
-> > > log and code comments.
-> > >
+> On Fri, Aug 23, 2024 at 04:53:16PM +0000, Esther Shimanovich wrote:
+> > --- a/drivers/pci/probe.c
+> > +++ b/drivers/pci/probe.c
+> > +static bool pcie_has_usb4_host_interface(struct pci_dev *pdev)
+> > +{
+> > +     struct fwnode_handle *fwnode;
+> > +
+> > +     /*
+> > +      * For USB4, the tunneled PCIe root or downstream ports are marke=
+d
+> > +      * with the "usb4-host-interface" ACPI property, so we look for
+> > +      * that first. This should cover most cases.
+> > +      */
+> > +     fwnode =3D fwnode_find_reference(dev_fwnode(&pdev->dev),
+> > +                                    "usb4-host-interface", 0);
+>
+> This is all ACPI only, so it should either be #ifdef'ed to CONFIG_ACPI
+> or moved to drivers/pci/pci-acpi.c.
+>
+> Alternatively, it could be moved to arch/x86/pci/ because ACPI can also
+> be enabled on arm64 or riscv but the issue seems to only affect x86.
 
-I like how Lukas explained it here:
-https://lore.kernel.org/all/ZstGP0EgttNAxjp2@wunner.de/
+Thanks for the feedback! Adding an #ifdef to CONFIG_ACPI seems more
+straightforward, but I do like the idea of not having unnecessary code
+run on non-x86 systems.
 
-It's a bit unclear whether this is firmware implemented incorrectly or
-the spec not being specific enough.
-Being that I see this interpretation of the spec on all devices with
-discrete Thunderbolt chips (across different manufacturers)--that
-makes me think that this is an ambiguity on the spec's part.
-
-Given that, how do you suggest I modify the commit log and code comments?
-
-> > > > 2) If a root port does not have integrated Thunderbolt capabilities=
-, but
-> > > >    has the ExternalFacingPort ACPI property, that means the manufac=
-turer
-> > > >    has opted to use a discrete Thunderbolt host controller that is
-> > > >    built into the computer.
-> > >
-> > > Unconvincing.  If a Root Port has an external connector, is it
-> > > impossible to plug in a Thunderbolt device to that connector?  I
-> > > assume the wires from a Root Port could be traces on a PCB to a
-> > > soldered-down Thunderbolt controller, OR could be wires to a connecto=
-r
-> > > where a Thunderbolt controller could be plugged in.  How could we tel=
-l
-> > > the difference?
-> >
-We may assume this both because of how the spec is worded, and how
-I've seen it implemented in the case of a discrete Thunderbolt
-controller, across all cases.
-https://learn.microsoft.com/en-us/windows-hardware/drivers/pci/dsd-for-pcie=
--root-ports#mapping-native-protocols-pcie-displayport-tunneled-through-usb4=
--to-usb4-host-routers
-
-"ExternalFacingPort" is only used when there is an externally exposed
-PCIe hierarchy. (Never otherwise)
-I don't know any other examples of externally exposed PCIe hierarchies
-other than Thunderbolt.
-Therefore I assume, that if there is "ExternalFacingPort", that means
-the device has Thunderbolt capabilities.
-If we have confirmed that the device has no integrated thunderbolt
-capabilities, that means the device MUST expect a discrete thunderbolt
-chip outside of its ExternalFacing root port.
-
-That is my understanding of this. Also let me know how I can reword
-here as well.
+I'd appreciate some guidance here. How would I move a portion of a
+function into a completely different location in the kernel src?
+Could you show me an example?
+I'm assuming you'd want me to write another function elsewhere.
+Shouldn't it be in some existing file in
+`include/linux/platform_data/x86`? I don't see `arch/x86/pci/`
+included anywhere.
+Or would CONFIG_X86 be sufficient? (instead of or in addition to CONFIG_ACP=
+I?)
