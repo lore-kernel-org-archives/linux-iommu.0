@@ -1,233 +1,152 @@
-Received: from NAM04-MW2-obe.outbound.protection.outlook.com (mail-mw2nam04on2043.outbound.protection.outlook.com [40.107.101.43])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 603482868B;
-	Wed, 28 Aug 2024 19:47:50 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.101.43
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1724874472; cv=fail; b=fgCs4AWgpCOCwU3r4Pj/aIPmkbU0BBuj9IwrvnFjQAU7U+FzvMcCzY2eS32MYn5BhT34/zG+R7shilmT2sSLVxZK194EpSzgvgYx/IXAxXoRydnsmRIyvnAA+z9yT/l9dqSi400c7Ipk1iaLPHc3wK3t954N4cwEq265r5t3TFo=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1724874472; c=relaxed/simple;
-	bh=WxkCoWcl5vdYbEz1zhwmjSYnKl53fLuAIdMMBTM6HRQ=;
-	h=Date:From:To:CC:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=ZYjnMGdW8mQGD1d1Ehy2nWxNSQslxzAHnzTOh26XZRyUSNIdydrJdyICqzUZQtPeZ4SfZhoL43Hbkon7xomd3X5gaZKPZp3gwvePJk+aKBPF0MBZxP4kWfXd959zKnoLz2jOxS8oQVu6pU4ApLDiBplxJtLbCuAKw3dC+UFtPtg=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=mwe8p9L1; arc=fail smtp.client-ip=40.107.101.43
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="mwe8p9L1"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=MxbBurpFvkGFo/0j70qQ+kDfK5FfapAudGxhBfQ4k+m16MrHRSghieppBCJH75S6bl6/ThC8zKBocoqOwZMLvwoPOc9LWn7ebQl6xbj3MLq169WuGyYMrF6U81qS9fZ6jhK+DNMAcg3Gib48v4itUXbvDZS/E1Fv/0fav/75Ft0u+90lOFTQBQDafPW4dckhJV3UPB90HlaUp7m0Gsh2eg5CBh3z6SG/qS/UaGZ70UDKJ42LNM2wgcvakTOwq0viP/pdukZBlcOyLqJfex9HsJNWUiMWGgmJGOraqPuoPi+KhVdtgyElSmC3p3kfMe/VSqr7ZZWZO1q4mIaq8XltCg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=/kMWr+JM6EHaPoCU9Pu7dCGEQ2cPpjuKSvSsnsL3r9c=;
- b=OBhpx+NpNsXYDxkCF7N5d5pJb1CYzPBNp+D20wyuSpHm6OtiCccH1ODZIZj53s+xYyNfJE9UUIlP+iWXGKYHQQAUcPvT4lewRyNaRP/W0j6C+Ykkq/g41ZtFdw5eNZicsHh3qWVzCamwMq2Ijv5vztGYNdWq9gfHwLmAUNF4PqDNIg8rUgE4ImYoXAdmcsaE7MeIcBbMtg5Jl6CdaUtzlNyTyKVzMRsRmNE6lOPEplHqxcLH3rd/luNzyMcFKMIjL3Vg2k08eXVvJHW4VkkXRITJ/1uEmq6wpQza/lXzYr9zXeD0Bc/FBYjOkuG29CSFRFNyjquyCZuFo0fGG76SDA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 216.228.118.232) smtp.rcpttodomain=lists.linux.dev smtp.mailfrom=nvidia.com;
- dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
- dkim=none (message not signed); arc=none (0)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=/kMWr+JM6EHaPoCU9Pu7dCGEQ2cPpjuKSvSsnsL3r9c=;
- b=mwe8p9L1AYlSNbPvCriDWTUmJiF/vjmJAfiXTEfEfxQOKwRxuRxN01wu1gTtOBpXB/kW/Casng2R8MhYQ2fA8C6HdFWm2DJA5kcWKDV/EwNADxkfjuZsYWrZWGbZdFaBxB8w1VIJ/tUHWy7xMEa2Ytmq8J7AfEq9XsxmzkpJC/C0jMLdDtHpjVJZntZf7GHN0JtsmdVNsDlt0jDRpEiY0Zjek0ZiJAMp0DwWkWLQD5r/efxROjyPgaOCfTx1QA/k5Kka5bEZjrpPsBbQN4kpoMbprXGxryINOEHHzd6xjD0lHFkn/MIGovhewHEowoT5JxW4EbNbTolreOShSCAEwQ==
-Received: from PH8PR07CA0015.namprd07.prod.outlook.com (2603:10b6:510:2cd::20)
- by PH7PR12MB9103.namprd12.prod.outlook.com (2603:10b6:510:2f5::18) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7897.26; Wed, 28 Aug
- 2024 19:47:44 +0000
-Received: from MWH0EPF000A672E.namprd04.prod.outlook.com
- (2603:10b6:510:2cd:cafe::74) by PH8PR07CA0015.outlook.office365.com
- (2603:10b6:510:2cd::20) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7784.29 via Frontend
- Transport; Wed, 28 Aug 2024 19:46:45 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.118.232)
- smtp.mailfrom=nvidia.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=nvidia.com;
-Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 216.228.118.232 as permitted sender) receiver=protection.outlook.com;
- client-ip=216.228.118.232; helo=mail.nvidia.com; pr=C
-Received: from mail.nvidia.com (216.228.118.232) by
- MWH0EPF000A672E.mail.protection.outlook.com (10.167.249.20) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.7918.13 via Frontend Transport; Wed, 28 Aug 2024 19:47:43 +0000
-Received: from drhqmail203.nvidia.com (10.126.190.182) by mail.nvidia.com
- (10.127.129.5) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1544.4; Wed, 28 Aug
- 2024 12:47:37 -0700
-Received: from drhqmail202.nvidia.com (10.126.190.181) by
- drhqmail203.nvidia.com (10.126.190.182) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.1544.4; Wed, 28 Aug 2024 12:47:37 -0700
-Received: from Asurada-Nvidia (10.127.8.13) by mail.nvidia.com
- (10.126.190.181) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1544.4 via Frontend
- Transport; Wed, 28 Aug 2024 12:47:36 -0700
-Date: Wed, 28 Aug 2024 12:47:35 -0700
-From: Nicolin Chen <nicolinc@nvidia.com>
-To: Jason Gunthorpe <jgg@nvidia.com>
-CC: <acpica-devel@lists.linux.dev>, Hanjun Guo <guohanjun@huawei.com>,
-	<iommu@lists.linux.dev>, Joerg Roedel <joro@8bytes.org>, Kevin Tian
-	<kevin.tian@intel.com>, <kvm@vger.kernel.org>, Len Brown <lenb@kernel.org>,
-	<linux-acpi@vger.kernel.org>, <linux-arm-kernel@lists.infradead.org>,
-	"Lorenzo Pieralisi" <lpieralisi@kernel.org>, "Rafael J. Wysocki"
-	<rafael@kernel.org>, Robert Moore <robert.moore@intel.com>, Robin Murphy
-	<robin.murphy@arm.com>, Sudeep Holla <sudeep.holla@arm.com>, Will Deacon
-	<will@kernel.org>, "Alex Williamson" <alex.williamson@redhat.com>, Eric Auger
-	<eric.auger@redhat.com>, Jean-Philippe Brucker <jean-philippe@linaro.org>,
-	Moritz Fischer <mdf@kernel.org>, Michael Shavit <mshavit@google.com>,
-	<patches@lists.linux.dev>, Shameerali Kolothum Thodi
-	<shameerali.kolothum.thodi@huawei.com>, Mostafa Saleh <smostafa@google.com>
-Subject: Re: [PATCH v2 2/8] iommu/arm-smmu-v3: Use S2FWB when available
-Message-ID: <Zs9+1wTLFCJGm3gm@Asurada-Nvidia>
-References: <0-v2-621370057090+91fec-smmuv3_nesting_jgg@nvidia.com>
- <2-v2-621370057090+91fec-smmuv3_nesting_jgg@nvidia.com>
- <Zs4tffQ9twCLL9+6@Asurada-Nvidia>
- <20240828183037.GC3773488@nvidia.com>
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id B6E6D156669;
+	Wed, 28 Aug 2024 19:50:26 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1724874629; cv=none; b=YOdXC8fcWuAXeBBEUNJ4x10RhUhWfhnSNL99mSpU9N0P3qSzBg91sodtACZkDseUsuXpMXoJ1Cp2hIk5Hk2Ke6/tfYuVlFkALggSoDD9tDxAQoomq8p7nUnzoSuKKlE83KtObp7CrlsfLnNaOZLr4qBRalaC7WIPclR+v2QJAUU=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1724874629; c=relaxed/simple;
+	bh=J5uLwfIH0C5JMzfyTNRjXZlVW+LbfOQyjRaqBUfyWGc=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=PJ+JqbJt4HbfXY5pypZqMqVdM+kbQG4MUjSf0/50wk45wOaje4a+wSDw988Lr9ydy91pF2N+bfhlO9Quz1Ta18CJ8pRaWxuXsrKtMpcnyQGXCwT6Ru5DBctnG5vzau3tF2gWAF5Rl4F85I4kTT8GzBCe0/YGeL3RbKwv6H8nG/k=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; arc=none smtp.client-ip=217.140.110.172
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 18CDDDA7;
+	Wed, 28 Aug 2024 12:50:52 -0700 (PDT)
+Received: from [10.57.15.188] (unknown [10.57.15.188])
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 269DF3F762;
+	Wed, 28 Aug 2024 12:50:23 -0700 (PDT)
+Message-ID: <bb7dd4ca-948f-4af7-b2ac-3ca02e82699f@arm.com>
+Date: Wed, 28 Aug 2024 20:50:21 +0100
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: inline
-In-Reply-To: <20240828183037.GC3773488@nvidia.com>
-X-NV-OnPremToCloud: ExternallySecured
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: MWH0EPF000A672E:EE_|PH7PR12MB9103:EE_
-X-MS-Office365-Filtering-Correlation-Id: e1b884fb-2178-40ad-96f1-08dcc79a48b0
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|82310400026|1800799024|36860700013|7416014|376014;
-X-Microsoft-Antispam-Message-Info:
-	=?us-ascii?Q?UrzA1/nVyJet2Dbg93TJP05rMzT2O2nq8GzVB+VWpf3UEgr/5QzlYdF6DtaA?=
- =?us-ascii?Q?An6/EsSviM2gNoJYBq65jTEoYQvs4VDQtVm7hJX0+c7ScOob8CaCx/BLXe0a?=
- =?us-ascii?Q?UOZKUFgOO958GJfNPgaImqVtGGorg0BWuIpz1lKUvhN72IhNMsKjS0Vk/Lzc?=
- =?us-ascii?Q?Yx5gw8ra+XXGFF5B7O1muW+N5BRvOVMEjhDDoxqlYeh6e24XAmfjYs+ehf1v?=
- =?us-ascii?Q?UMNFVFzNjUnJz/Xs+BG9fZKY/pWMY5QYu8m6KArhSSSuy7JNM7NxK97QYcWi?=
- =?us-ascii?Q?zIgNLAeIw8VaUnCPyuZw+Du0jQqJWYb3PxYNZXG8WoAb+NPs7osa4D7TRHyl?=
- =?us-ascii?Q?Ce//i+W40kXW1SiQUNkLZyKXW3uvMK+CCZtyRnWjWlZoYkDEgwVK9RsmhKVT?=
- =?us-ascii?Q?dDbAThxQ3fMyC4QjpnzGA2rKaslFOW0KHWYlr6m5JgMqf6SAQl+4PQSoen4i?=
- =?us-ascii?Q?nTiLtRscX+Y2hSVvoRhKw3KfmKpq+6iaWB7Rb5jCjRZaXMp20CoK6JA8ulcA?=
- =?us-ascii?Q?LGmP+xGIMJxpkVbAQONUsfhHAGbvEJDzP1fAGSipWT3g4NG1ubTOiAzR1mz1?=
- =?us-ascii?Q?uNrT5b5uQNsejPxBSR9YQxcuwC32AFBnzYcrZ6DH0nSRYxXMCmbAJ/FKfrUN?=
- =?us-ascii?Q?13TyNhL4DZvBjZyEZRJ4FU5HJogl1uxlVra2pY97RxBeg6LWM1KCo0UBMd+N?=
- =?us-ascii?Q?TM5/1pMzgMibR94Q7OCNMmPOVJQ7MAPZUEKeQvH6IFfndL0oeFGcVsd7ENJJ?=
- =?us-ascii?Q?bx9/sCqDwccF7faSuhZ08pdsVOCw5Q8RfqLRO1vB1bb8UlNmxQink2fLDO36?=
- =?us-ascii?Q?PIdYLTRYcuLyuSakmgnyv2On0Yl5HQ5FGmSESYG6wIrE5gsAHX6MlKBvZiZS?=
- =?us-ascii?Q?rzU2X863SjFInZnPwZHIePbf6WSXlHvViyLI+bhKthH16l5u39Hdp9wXDMTq?=
- =?us-ascii?Q?UlbJEAvOdJQq9zbH+5fsVB/6xLFLyQiYMeF08MOvvrdITWfWE6atMJcJ/OQN?=
- =?us-ascii?Q?l92F5rzSsqhFDdU+0qloduV0vjPbieJJVzRGyLsHFGdJc9ygJQ26wU/3oxB6?=
- =?us-ascii?Q?BLhDLwY3uTWCKM5TVeqjteX01V5ScjdIU1XjJHnUj0f/LX1WGIRYiUN2BofT?=
- =?us-ascii?Q?EmpOzTtK+ykhD941vtb7jC/pBU5mOp84SRpTJf+knBFmNYSO2yRqND56pGO3?=
- =?us-ascii?Q?13GkLQQlPejVszU/qfxSwWwfEMDyxPxrRFx99Rrc+0BXGJhlK7OL7QXAXtOB?=
- =?us-ascii?Q?UpXwsrb2g+n4ELhBeQsuI9YAUQbPqX9Zl1P73ZXl+YDAqM92Mvm0L/6kRv7B?=
- =?us-ascii?Q?k9oX46VXzikgeiz0EjclEejRbcSw8fnEDB0UU+tYdVtOcK0zCfQbvJxTAAgN?=
- =?us-ascii?Q?FKibgsK2aHBu8CswvGySk+IW5zqhaPbhQuaM96SFYhf8bhZeLnjWbT21Qsub?=
- =?us-ascii?Q?o+FeozyKIRj9V5vxFCFsk4V9g9O7ff2z?=
-X-Forefront-Antispam-Report:
-	CIP:216.228.118.232;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc7edge1.nvidia.com;CAT:NONE;SFS:(13230040)(82310400026)(1800799024)(36860700013)(7416014)(376014);DIR:OUT;SFP:1101;
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 28 Aug 2024 19:47:43.7566
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: e1b884fb-2178-40ad-96f1-08dcc79a48b0
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.118.232];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource:
-	MWH0EPF000A672E.namprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH7PR12MB9103
+User-Agent: Mozilla Thunderbird
+Subject: Re: [RFC 0/7] Introduce swiotlb throttling
+To: =?UTF-8?B?UGV0ciBUZXNhxZnDrWs=?= <petr@tesarici.cz>
+Cc: mhklinux@outlook.com, kbusch@kernel.org, axboe@kernel.dk,
+ sagi@grimberg.me, James.Bottomley@HansenPartnership.com,
+ martin.petersen@oracle.com, kys@microsoft.com, haiyangz@microsoft.com,
+ wei.liu@kernel.org, decui@microsoft.com, hch@lst.de,
+ m.szyprowski@samsung.com, iommu@lists.linux.dev,
+ linux-kernel@vger.kernel.org, linux-nvme@lists.infradead.org,
+ linux-scsi@vger.kernel.org, linux-hyperv@vger.kernel.org,
+ linux-coco@lists.linux.dev
+References: <20240822183718.1234-1-mhklinux@outlook.com>
+ <efc1eafc-dba4-4991-9f9a-58ceca1d9a35@arm.com>
+ <20240828150356.46d3d3dc@mordecai.tesarici.cz>
+From: Robin Murphy <robin.murphy@arm.com>
+Content-Language: en-GB
+In-Reply-To: <20240828150356.46d3d3dc@mordecai.tesarici.cz>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 
-On Wed, Aug 28, 2024 at 03:30:37PM -0300, Jason Gunthorpe wrote:
-> On Tue, Aug 27, 2024 at 12:48:13PM -0700, Nicolin Chen wrote:
-> > Hi Jason,
-> > 
-> > On Tue, Aug 27, 2024 at 12:51:32PM -0300, Jason Gunthorpe wrote:
-> > > diff --git a/drivers/iommu/io-pgtable-arm.c b/drivers/iommu/io-pgtable-arm.c
-> > > index f5d9fd1f45bf49..9b3658aae21005 100644
-> > > --- a/drivers/iommu/io-pgtable-arm.c
-> > > +++ b/drivers/iommu/io-pgtable-arm.c
-> > > @@ -106,6 +106,18 @@
-> > >  #define ARM_LPAE_PTE_HAP_FAULT		(((arm_lpae_iopte)0) << 6)
-> > >  #define ARM_LPAE_PTE_HAP_READ		(((arm_lpae_iopte)1) << 6)
-> > >  #define ARM_LPAE_PTE_HAP_WRITE		(((arm_lpae_iopte)2) << 6)
-> > > +/*
-> > > + * For !FWB these code to:
-> > > + *  1111 = Normal outer write back cachable / Inner Write Back Cachable
-> > > + *         Permit S1 to override
-> > > + *  0101 = Normal Non-cachable / Inner Non-cachable
-> > > + *  0001 = Device / Device-nGnRE
-> > > + * For S2FWB these code:
-> > > + *  0110 Force Normal Write Back
-> > > + *  0101 Normal* is forced Normal-NC, Device unchanged
-> > > + *  0001 Force Device-nGnRE
-> > > + */
-> > > +#define ARM_LPAE_PTE_MEMATTR_FWB_WB	(((arm_lpae_iopte)0x6) << 2)
-> > 
-> > The other part looks good. Yet, would you mind sharing the location
-> > that defines this 0x6 explicitly?
+On 2024-08-28 2:03 pm, Petr Tesařík wrote:
+> On Wed, 28 Aug 2024 13:02:31 +0100
+> Robin Murphy <robin.murphy@arm.com> wrote:
 > 
-> I'm looking at an older one ARM DDI 0487F.c
+>> On 2024-08-22 7:37 pm, mhkelley58@gmail.com wrote:
+>>> From: Michael Kelley <mhklinux@outlook.com>
+>>>
+>>> Background
+>>> ==========
+>>> Linux device drivers may make DMA map/unmap calls in contexts that
+>>> cannot block, such as in an interrupt handler. Consequently, when a
+>>> DMA map call must use a bounce buffer, the allocation of swiotlb
+>>> memory must always succeed immediately. If swiotlb memory is
+>>> exhausted, the DMA map call cannot wait for memory to be released. The
+>>> call fails, which usually results in an I/O error.
+>>>
+>>> Bounce buffers are usually used infrequently for a few corner cases,
+>>> so the default swiotlb memory allocation of 64 MiB is more than
+>>> sufficient to avoid running out and causing errors. However, recently
+>>> introduced Confidential Computing (CoCo) VMs must use bounce buffers
+>>> for all DMA I/O because the VM's memory is encrypted. In CoCo VMs
+>>> a new heuristic allocates ~6% of the VM's memory, up to 1 GiB, for
+>>> swiotlb memory. This large allocation reduces the likelihood of a
+>>> spike in usage causing DMA map failures. Unfortunately for most
+>>> workloads, this insurance against spikes comes at the cost of
+>>> potentially "wasting" hundreds of MiB's of the VM's memory, as swiotlb
+>>> memory can't be used for other purposes.
+>>>
+>>> Approach
+>>> ========
+>>> The goal is to significantly reduce the amount of memory reserved as
+>>> swiotlb memory in CoCo VMs, while not unduly increasing the risk of
+>>> DMA map failures due to memory exhaustion.
+>>
+>> Isn't that fundamentally the same thing that SWIOTLB_DYNAMIC was already
+>> meant to address? Of course the implementation of that is still young
+>> and has plenty of scope to be made more effective, and some of the ideas
+>> here could very much help with that, but I'm struggling a little to see
+>> what's really beneficial about having a completely disjoint mechanism
+>> for sitting around doing nothing in the precise circumstances where it
+>> would seem most possible to allocate a transient buffer and get on with it.
 > 
-> D5.5.5 Stage 2 memory region type and Cacheability attributes when FEAT_S2FWB is implemented
+> This question can be probably best answered by Michael, but let me give
+> my understanding of the differences. First the similarity: Yes, one
+> of the key new concepts is that swiotlb allocation may block, and I
+> introduced a similar attribute in one of my dynamic SWIOTLB patches; it
+> was later dropped, but dynamic SWIOTLB would still benefit from it.
 > 
-> The text talks about the bits in the PTE, not relative to the MEMATTR
-> field, so 6 << 2 encodes to:
-> 
->  543210
->  011000
-> 
-> Then see table D5-40 Effect of bit[4] == 1 on Cacheability and Memory Type)
-> 
->  Bit[5] = 0 = is RES0.
->  Bit[4] = 1 = determines the interpretation of bits [3:2].
->  Bits[3:2] == 10 == Normal Write-Back 
-> 
-> Here Bit means 'bit of the PTE' because the MemAttr does not have 5
-> bits.
-> 
-> > Where it has the followings in D8.6.6:
-> >  "For stage 2 translations, if FEAT_MTE_PERM is not implemented, then
-> >   FEAT_S2FWB has all of the following effects on the MemAttr[3:2] bits:
-> >    - MemAttr[3] is RES0.
-> >    - The value of MemAttr[2] determines the interpretation of the
-> >      MemAttr[1:0] bits.
-> 
-> And here the text switches from talking about the PTE bits to the
-> Field bits. MemAttr[3] == PTE[5], and the above text matches D5.5
-> 
-> The use of numbering schemes relative to the start of the field and
-> also relative to the PTE is tricky.
+> More importantly, dynamic SWIOTLB may deplete memory following an I/O
+> spike. I do have some ideas how memory could be returned back to the
+> allocator, but the code is not ready (unlike this patch series).
+> Moreover, it may still be a better idea to throttle the devices
+> instead, because returning DMA'able memory is not always cheap. In a
+> CoCo VM, this memory must be re-encrypted, and that requires a
+> hypercall that I'm told is expensive.
 
-I download the version F.c, and the chapter looks cleaner than
-the one in K.a. I guess the FEAT_MTE_PERM complicates that...
+Sure, making a hypercall in order to progress is expensive relative to 
+being able to progress without doing that, but waiting on a lock for an 
+unbounded time in the hope that other drivers might release their DMA 
+mappings soon represents a potentially unbounded expense, since it 
+doesn't even carry any promise of progress at all - oops userspace just 
+filled up SWIOTLB with a misguided dma-buf import and now the OS has 
+livelocked on stalled I/O threads fighting to retry :(
 
-I double checked the K.a doc, and found a piece of pseudocode
-that seems to confirm 0b0110 (0x6) is the correct value:
+As soon as we start tracking thresholds etc. then that should equally 
+put us in the position to be able to manage the lifecycle of both 
+dynamic and transient pools more effectively - larger allocations which 
+can be reused by multiple mappings until the I/O load drops again could 
+amortise that initial cost quite a bit.
 
-MemoryAttributes AArch64.S2ApplyFWBMemAttrs(MemoryAttributes s1_memattrs,
-					    S2TTWParams walkparams,
-					    bits(N) descriptor)
-	MemoryAttributes memattrs;
-	s2_attr = descriptor<5:2>;
-	s2_sh = if walkparams.ds == '1' then walkparams.sh else descriptor<9:8>;
-	s2_fnxs = descriptor<11>;
-	if s2_attr<2> == '0' then // S2 Device, S1 any
-		s2_device = DecodeDevice(s2_attr<1:0>);
-		memattrs.memtype = MemType_Device;
-		if s1_memattrs.memtype == MemType_Device then
-			memattrs.device = S2CombineS1Device(s1_memattrs.device, s2_device);
-		else
-			memattrs.device = s2_device;
-		memattrs.xs = s1_memattrs.xs;
-	elsif s2_attr<1:0> == '11' then // S2 attr = S1 attr
-		memattrs = s1_memattrs;
-	elsif s2_attr<1:0> == '10' then // Force writeback
+Furthermore I'm not entirely convinced that the rationale for throttling 
+being beneficial is even all that sound. Serialising requests doesn't 
+make them somehow use less memory, it just makes them use it... 
+serially. If a single CPU is capable of queueing enough requests at once 
+to fill the SWIOTLB, this is going to do absolutely nothing; if two CPUs 
+are capable of queueing enough requests together to fill the SWIOTLB, 
+making them take slightly longer to do so doesn't inherently mean 
+anything more than reaching the same outcome more slowly. At worst, if a 
+thread is blocked from polling for completion and releasing a bunch of 
+mappings of already-finished descriptors because it's stuck on an unfair 
+lock trying to get one last one submitted, then throttling has actively 
+harmed the situation.
 
-Thanks
-Nicolin
+AFAICS this is dependent on rather particular assumptions of driver 
+behaviour in terms of DMA mapping patterns and interrupts, plus the 
+overall I/O workload shape, and it's not clear to me how well that 
+really generalises.
+
+> In short, IIUC it is faster in a CoCo VM to delay some requests a bit
+> than to grow the swiotlb.
+
+I'm not necessarily disputing that for the cases where the assumptions 
+do hold, it's still more a question of why those two things should be 
+separate and largely incompatible (I've only skimmed the patches here, 
+but my impression is that it doesn't look like they'd play all that 
+nicely together if both enabled). To me it would make far more sense for 
+this to be a tuneable policy of a more holistic SWIOTLB_DYNAMIC itself, 
+i.e. blockable calls can opportunistically wait for free space up to a 
+well-defined timeout, but then also fall back to synchronously 
+allocating a new pool in order to assure a definite outcome of success 
+or system-is-dying-level failure.
+
+Thanks,
+Robin.
