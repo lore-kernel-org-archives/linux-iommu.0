@@ -1,127 +1,189 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-yw1-f171.google.com (mail-yw1-f171.google.com [209.85.128.171])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0714E1B813;
-	Thu, 29 Aug 2024 07:58:05 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 40C7915E5D2;
+	Thu, 29 Aug 2024 08:34:03 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.171
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1724918285; cv=none; b=nDZ5sERqZXUwLVc6NgAdVYNsqD9Ed/pO4ZwZvjXPAasfV0U9IVeM3W4kntiYw/lrzriyqz27uz/MNTNYe+0wtmOhUPVZb/KtJlL/JvlfdVVl7qIjIRr4NZcckJB2O83yFNu/eDIbtnXbESARVnXBp7CGvVeglJcbJriBvqJzqSs=
+	t=1724920444; cv=none; b=fn4GHqft+/CXaDSBlZiJZpzg/dlOekBoTZ6fJE0JhztBqJBFYpWg3Q3LhtxwU5fTAbHfnD0zcvDvI86FW9NSvXs7miPIUAnLbw8RxKMU0l3keTdZRxqFhYJMuMzesXlarL4t0bSOHvKMUpQ3++QbrVT/I5wtr1rGYlTvBs0znys=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1724918285; c=relaxed/simple;
-	bh=xxaLtv0q8WiO22sQEm0ulKg7KPVsl9z0GngcTOmfnXo=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=ToXypwPasHKSGzK2/e1aGQINpq6dQzIiT7kA9S7FI7V5mdxOK1s3py2GpG/aXNZBoUakBs1jbNCOFDHku5xQ0YNIVsrM0S2p5xK6+CaUSn/Qd401J60eBnvr2PBPxrfzh+v6TOLrQVBP5IKpre9BaSRmIkfFM3paK6OcCuV/qas=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=c2cimbev; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1724920444; c=relaxed/simple;
+	bh=xnO6Vk/kr83JqD3+FgZr+ybVhaKA2iYaHmoGntXHCUI=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=rLv6dS+/WKk+XGpoRTlLME5Z7FQ4qNmOPtwtSkj248s3fuMwokj7R38C8xlnzIHeaolMAqiM9aqRjMUgnA8P9eHaWwd8bu8adi1fbnNZ4XoUnEbE8h+na9+2Q3/Tr0bg0Br8jzlAsPoee/8tutrwwkDwXBe9oEkdd54ja9x7ack=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=ZvWtyZKe; arc=none smtp.client-ip=209.85.128.171
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="c2cimbev"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 55287C4CEC1;
-	Thu, 29 Aug 2024 07:57:45 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1724918284;
-	bh=xxaLtv0q8WiO22sQEm0ulKg7KPVsl9z0GngcTOmfnXo=;
-	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-	b=c2cimbevF8UQ8GLpaB0G5GGZz3Vi4r0CXj5nxuxOWbEMi9HqKxloOM+fldlyFIh6d
-	 Sqk64XiHSNlK73PHI4yfg9L94pje7akTIE1gJTqeUbr6fsDu6nYWtfpKAou3o5s+jD
-	 f8U8FB/4G+9Ji/n/Hfm5ExoVJ4wrJH8bqlAqCA2fMYsF8trznpd9nHORfOOnzJoG5c
-	 sLpPzXKcDH1w5zIdYV967zFFVcKodJeUibp7vM259IC/GSHbfxcbjb0uksg3n2EOjV
-	 YMCgQTT+CXRqUIrHSzBpNReYFzdbZ7YzwhkxTcuCGajwRbBdDmobHrRqZF9OuTvRJV
-	 hs3NIMhFuop1g==
-Message-ID: <11c897d7-ea9c-4474-81f6-1fc2198d289d@kernel.org>
-Date: Thu, 29 Aug 2024 09:57:43 +0200
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="ZvWtyZKe"
+Received: by mail-yw1-f171.google.com with SMTP id 00721157ae682-6b5b65b1b9fso3619217b3.2;
+        Thu, 29 Aug 2024 01:34:03 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20230601; t=1724920442; x=1725525242; darn=lists.linux.dev;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date:message-id:reply-to;
+        bh=nZH8C/6+CJkUjQ49MDGAsBNiI4/0rHnzfSpqasFYyAQ=;
+        b=ZvWtyZKe8RMqNaxBV8Das0pu+nKdPtnkIo+KP/HyKn0UyIty0wYuohf72Yl5ylPAUI
+         AOCTGsZy9SJUn6UyggsgOddSBhmPv+Zw9qOTwm2WJec6MCA1I/HRMRKQ8EqI6oGUA1os
+         t7IVkIzS7sk4YHNjo/tfbFTWvq7vfZszelWluePU9M1M5wWHvaVnqAVjP0jyScivizDc
+         Tk2cOdiBIOYFOnw/roDc78fvD/rLG8AciFi1kcAuGYitI5wru9HhPPJODIZ0qpH6vvhZ
+         0pov7vzd5CFli20GWPxelVMFliAnktY12OUUoDlY7NytonDObnsph8k9YsCDo7K1Ihai
+         nJgA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1724920442; x=1725525242;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=nZH8C/6+CJkUjQ49MDGAsBNiI4/0rHnzfSpqasFYyAQ=;
+        b=iwzqaH2M+CPx9qK4q79IczsEl0fduOKsUUwlFTPfOSUCSSoBiknA8fq3vvOPe1eEd3
+         OUx3YM69atstAgWiTwEwLIN7SJnpBTktwJDXoYV1UCKOm98H/HVnHa6YC2/k8X+2QvpG
+         4fFb9YTkhYUgCda3Yo0Yp8YdcnlO74KJ87I1IFJvZhosWORv+OVPrbQt/PZqo0nrXH7k
+         hxObX7BVqOFtpqzIhOpL5AwQRBbipIK3PpbhV0bqiJTmIW3lX9KnJmW2GjNBgNXj3vlf
+         srLzFitqnIbe3mRDgveLcWE8tJzpMbCHTPVkkk9OQND3maBlqYEprnPbHZkihmy7ua5+
+         14jA==
+X-Forwarded-Encrypted: i=1; AJvYcCVg0BbxLKshBPHuwozk1Pht2Jw5i4C2ekwTmHVATe2817W0UCiRi+ItHUh87BEUDv9Lwdqvqw==@lists.linux.dev
+X-Gm-Message-State: AOJu0Yz6kq0U8yDpuOIKuU5PTO76aUQ8wp14lkc34c+WQF2Zmstya61D
+	RC4rcBS4Fndd5eamv8J+gw5ToTYTy1kIkPcUR2SjEHBn/6qzeDRmb2Te7y2c1h2Q+i3SW7JQkfa
+	9tHwOBkGBGAO5oPmETcI/5P2HyQs=
+X-Google-Smtp-Source: AGHT+IFIIJBgW3DmgTVJDmDJspPS4/uQxe5thXeBxoW8qdyKIaXW/D3gCaAHqkLJr6InbrRLPMRAFDNFKsLa8HWjQDk=
+X-Received: by 2002:a05:690c:a96:b0:664:5957:f7a with SMTP id
+ 00721157ae682-6d27620cb1fmr23909667b3.15.1724920442069; Thu, 29 Aug 2024
+ 01:34:02 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH 00/22] arm64: qcom: Introduce SA8255p Ride platform
-To: Nikunj Kela <quic_nkela@quicinc.com>, andersson@kernel.org,
- konradybcio@kernel.org, robh@kernel.org, krzk+dt@kernel.org,
- conor+dt@kernel.org, rafael@kernel.org, viresh.kumar@linaro.org,
- herbert@gondor.apana.org.au, davem@davemloft.net, sudeep.holla@arm.com,
- andi.shyti@kernel.org, tglx@linutronix.de, will@kernel.org, joro@8bytes.org,
- jassisinghbrar@gmail.com, lee@kernel.org, linus.walleij@linaro.org,
- amitk@kernel.org, thara.gopinath@gmail.com, broonie@kernel.org,
- wim@linux-watchdog.org, linux@roeck-us.net
-Cc: robin.murphy@arm.com, cristian.marussi@arm.com, rui.zhang@intel.com,
- lukasz.luba@arm.com, vkoul@kernel.org, quic_gurus@quicinc.com,
- agross@kernel.org, bartosz.golaszewski@linaro.org, quic_rjendra@quicinc.com,
- robimarko@gmail.com, linux-arm-msm@vger.kernel.org,
- devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
- linux-pm@vger.kernel.org, linux-crypto@vger.kernel.org,
- arm-scmi@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
- linux-i2c@vger.kernel.org, iommu@lists.linux.dev,
- linux-gpio@vger.kernel.org, linux-serial@vger.kernel.org,
- linux-spi@vger.kernel.org, linux-watchdog@vger.kernel.org,
- kernel@quicinc.com, quic_psodagud@quicinc.com, quic_tsoni@quicinc.com,
- quic_shazhuss@quicinc.com
-References: <20240828203721.2751904-1-quic_nkela@quicinc.com>
-From: Krzysztof Kozlowski <krzk@kernel.org>
-Content-Language: en-US
-Autocrypt: addr=krzk@kernel.org; keydata=
- xsFNBFVDQq4BEAC6KeLOfFsAvFMBsrCrJ2bCalhPv5+KQF2PS2+iwZI8BpRZoV+Bd5kWvN79
- cFgcqTTuNHjAvxtUG8pQgGTHAObYs6xeYJtjUH0ZX6ndJ33FJYf5V3yXqqjcZ30FgHzJCFUu
- JMp7PSyMPzpUXfU12yfcRYVEMQrmplNZssmYhiTeVicuOOypWugZKVLGNm0IweVCaZ/DJDIH
- gNbpvVwjcKYrx85m9cBVEBUGaQP6AT7qlVCkrf50v8bofSIyVa2xmubbAwwFA1oxoOusjPIE
- J3iadrwpFvsZjF5uHAKS+7wHLoW9hVzOnLbX6ajk5Hf8Pb1m+VH/E8bPBNNYKkfTtypTDUCj
- NYcd27tjnXfG+SDs/EXNUAIRefCyvaRG7oRYF3Ec+2RgQDRnmmjCjoQNbFrJvJkFHlPeHaeS
- BosGY+XWKydnmsfY7SSnjAzLUGAFhLd/XDVpb1Een2XucPpKvt9ORF+48gy12FA5GduRLhQU
- vK4tU7ojoem/G23PcowM1CwPurC8sAVsQb9KmwTGh7rVz3ks3w/zfGBy3+WmLg++C2Wct6nM
- Pd8/6CBVjEWqD06/RjI2AnjIq5fSEH/BIfXXfC68nMp9BZoy3So4ZsbOlBmtAPvMYX6U8VwD
- TNeBxJu5Ex0Izf1NV9CzC3nNaFUYOY8KfN01X5SExAoVTr09ewARAQABzSVLcnp5c3p0b2Yg
- S296bG93c2tpIDxrcnprQGtlcm5lbC5vcmc+wsGVBBMBCgA/AhsDBgsJCAcDAgYVCAIJCgsE
- FgIDAQIeAQIXgBYhBJvQfg4MUfjVlne3VBuTQ307QWKbBQJgPO8PBQkUX63hAAoJEBuTQ307
- QWKbBn8P+QFxwl7pDsAKR1InemMAmuykCHl+XgC0LDqrsWhAH5TYeTVXGSyDsuZjHvj+FRP+
- gZaEIYSw2Yf0e91U9HXo3RYhEwSmxUQ4Fjhc9qAwGKVPQf6YuQ5yy6pzI8brcKmHHOGrB3tP
- /MODPt81M1zpograAC2WTDzkICfHKj8LpXp45PylD99J9q0Y+gb04CG5/wXs+1hJy/dz0tYy
- iua4nCuSRbxnSHKBS5vvjosWWjWQXsRKd+zzXp6kfRHHpzJkhRwF6ArXi4XnQ+REnoTfM5Fk
- VmVmSQ3yFKKePEzoIriT1b2sXO0g5QXOAvFqB65LZjXG9jGJoVG6ZJrUV1MVK8vamKoVbUEe
- 0NlLl/tX96HLowHHoKhxEsbFzGzKiFLh7hyboTpy2whdonkDxpnv/H8wE9M3VW/fPgnL2nPe
- xaBLqyHxy9hA9JrZvxg3IQ61x7rtBWBUQPmEaK0azW+l3ysiNpBhISkZrsW3ZUdknWu87nh6
- eTB7mR7xBcVxnomxWwJI4B0wuMwCPdgbV6YDUKCuSgRMUEiVry10xd9KLypR9Vfyn1AhROrq
- AubRPVeJBf9zR5UW1trJNfwVt3XmbHX50HCcHdEdCKiT9O+FiEcahIaWh9lihvO0ci0TtVGZ
- MCEtaCE80Q3Ma9RdHYB3uVF930jwquplFLNF+IBCn5JRzsFNBFVDXDQBEADNkrQYSREUL4D3
- Gws46JEoZ9HEQOKtkrwjrzlw/tCmqVzERRPvz2Xg8n7+HRCrgqnodIYoUh5WsU84N03KlLue
- MNsWLJBvBaubYN4JuJIdRr4dS4oyF1/fQAQPHh8Thpiz0SAZFx6iWKB7Qrz3OrGCjTPcW6ei
- OMheesVS5hxietSmlin+SilmIAPZHx7n242u6kdHOh+/SyLImKn/dh9RzatVpUKbv34eP1wA
- GldWsRxbf3WP9pFNObSzI/Bo3kA89Xx2rO2roC+Gq4LeHvo7ptzcLcrqaHUAcZ3CgFG88CnA
- 6z6lBZn0WyewEcPOPdcUB2Q7D/NiUY+HDiV99rAYPJztjeTrBSTnHeSBPb+qn5ZZGQwIdUW9
- YegxWKvXXHTwB5eMzo/RB6vffwqcnHDoe0q7VgzRRZJwpi6aMIXLfeWZ5Wrwaw2zldFuO4Dt
- 91pFzBSOIpeMtfgb/Pfe/a1WJ/GgaIRIBE+NUqckM+3zJHGmVPqJP/h2Iwv6nw8U+7Yyl6gU
- BLHFTg2hYnLFJI4Xjg+AX1hHFVKmvl3VBHIsBv0oDcsQWXqY+NaFahT0lRPjYtrTa1v3tem/
- JoFzZ4B0p27K+qQCF2R96hVvuEyjzBmdq2esyE6zIqftdo4MOJho8uctOiWbwNNq2U9pPWmu
- 4vXVFBYIGmpyNPYzRm0QPwARAQABwsF8BBgBCgAmAhsMFiEEm9B+DgxR+NWWd7dUG5NDfTtB
- YpsFAmA872oFCRRflLYACgkQG5NDfTtBYpvScw/9GrqBrVLuJoJ52qBBKUBDo4E+5fU1bjt0
- Gv0nh/hNJuecuRY6aemU6HOPNc2t8QHMSvwbSF+Vp9ZkOvrM36yUOufctoqON+wXrliEY0J4
- ksR89ZILRRAold9Mh0YDqEJc1HmuxYLJ7lnbLYH1oui8bLbMBM8S2Uo9RKqV2GROLi44enVt
- vdrDvo+CxKj2K+d4cleCNiz5qbTxPUW/cgkwG0lJc4I4sso7l4XMDKn95c7JtNsuzqKvhEVS
- oic5by3fbUnuI0cemeizF4QdtX2uQxrP7RwHFBd+YUia7zCcz0//rv6FZmAxWZGy5arNl6Vm
- lQqNo7/Poh8WWfRS+xegBxc6hBXahpyUKphAKYkah+m+I0QToCfnGKnPqyYIMDEHCS/RfqA5
- t8F+O56+oyLBAeWX7XcmyM6TGeVfb+OZVMJnZzK0s2VYAuI0Rl87FBFYgULdgqKV7R7WHzwD
- uZwJCLykjad45hsWcOGk3OcaAGQS6NDlfhM6O9aYNwGL6tGt/6BkRikNOs7VDEa4/HlbaSJo
- 7FgndGw1kWmkeL6oQh7wBvYll2buKod4qYntmNKEicoHGU+x91Gcan8mCoqhJkbqrL7+nXG2
- 5Q/GS5M9RFWS+nYyJh+c3OcfKqVcZQNANItt7+ULzdNJuhvTRRdC3g9hmCEuNSr+CLMdnRBY fv0=
-In-Reply-To: <20240828203721.2751904-1-quic_nkela@quicinc.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+References: <c844faa0-343a-46f4-a54f-0fd65f4d4679@leemhuis.info>
+ <BN9PR11MB5276CA2E1922D9FD6B9F2ECF8C962@BN9PR11MB5276.namprd11.prod.outlook.com>
+ <CAOcK=CN3-v=dgMC9XTbh-h0zaD01uatOZKjvSF7ocofTCOGp7Q@mail.gmail.com>
+ <CAOcK=CPi1TokgySF77X+zuQ10kxfsfCXekYVanPhF51+Ow1XRg@mail.gmail.com> <CAOcK=CM4Poawy2AN3f6C2ooPdoT=dg4J9Bg1Fu=gsFjvkrBpQw@mail.gmail.com>
+In-Reply-To: <CAOcK=CM4Poawy2AN3f6C2ooPdoT=dg4J9Bg1Fu=gsFjvkrBpQw@mail.gmail.com>
+From: Markus Rathgeb <maggu2810@gmail.com>
+Date: Thu, 29 Aug 2024 10:33:50 +0200
+Message-ID: <CAOcK=COEd0njBPGhJ8idaLbaqvATr_zSB1O9dyzwi+fbU8GhqA@mail.gmail.com>
+Subject: Re: [regression] usb and thunderbould are misbehaving or broken due
+ to iommu/vt-d change
+To: "Tian, Kevin" <kevin.tian@intel.com>
+Cc: Linux regressions mailing list <regressions@lists.linux.dev>, Lu Baolu <baolu.lu@linux.intel.com>, 
+	Will Deacon <will@kernel.org>, David Woodhouse <dwmw2@infradead.org>, Joerg Roedel <joro@8bytes.org>, 
+	"iommu@lists.linux.dev" <iommu@lists.linux.dev>, LKML <linux-kernel@vger.kernel.org>, 
+	Jacob Pan <jacob.jun.pan@linux.intel.com>, Adam Williamson <awilliam@redhat.com>
+Content-Type: text/plain; charset="UTF-8"
 
-On 28/08/2024 22:36, Nikunj Kela wrote:
-> This series enables the support for SA8255p Qualcomm SoC and Ride
-> platform. This platform uses SCMI power, reset, performance, sensor
-> protocols for resources(e.g. clocks, regulator, interconnect, phy etc.)
-> management. SA8255p is a virtual platforms that uses Qualcomm smc/hvc
-> transport driver.
-> 
+With respect to my previous comment I tested to fix it myself (I am
+not a kernel hacker and do not know anything about iommu etc.).
 
-Who is supposed to merge it? The Cc-list is quite enormous and I got now
-20 bounces:
+After applying the following change to the v6.11-rc5 it seems to fix my problem.
+I can connect, disconnect and connect the dock and USB is working and
+no DMAR error.
 
-"    Too many recipients to the message"
 
-at least drop some non-maintainer related, I counted 5-7 Qualcomm ones
-which should not be needed.
 
-Best regards,
-Krzysztof
 
+From 5f621c079f0f8bce9895ae05a9cd81b001a58089 Mon Sep 17 00:00:00 2001
+From: Markus Rathgeb <maggu2810@gmail.com>
+Date: Thu, 29 Aug 2024 09:37:17 +0200
+Subject: [PATCH] fix: iommu/vt-d: Add helper to flush caches for context
+ change
+
+Signed-off-by: Markus Rathgeb <maggu2810@gmail.com>
+---
+ drivers/iommu/intel/iommu.c | 7 +++++--
+ drivers/iommu/intel/iommu.h | 3 ++-
+ drivers/iommu/intel/pasid.c | 4 ++--
+ 3 files changed, 9 insertions(+), 5 deletions(-)
+
+diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
+index 9ff8b83c19a3..e92e06e604b2 100644
+--- a/drivers/iommu/intel/iommu.c
++++ b/drivers/iommu/intel/iommu.c
+@@ -1944,6 +1944,7 @@ static void domain_context_clear_one(struct
+device_domain_info *info, u8 bus, u8
+ {
+     struct intel_iommu *iommu = info->iommu;
+     struct context_entry *context;
++    u16 did_old;
+
+     spin_lock(&iommu->lock);
+     context = iommu_context_addr(iommu, bus, devfn, 0);
+@@ -1952,10 +1953,12 @@ static void domain_context_clear_one(struct
+device_domain_info *info, u8 bus, u8
+         return;
+     }
+
++    did_old = context_domain_id(context);
++
+     context_clear_entry(context);
+     __iommu_flush_cache(iommu, context, sizeof(*context));
+     spin_unlock(&iommu->lock);
+-    intel_context_flush_present(info, context, true);
++    intel_context_flush_present(info, context, did_old, true);
+ }
+
+ static int domain_setup_first_level(struct intel_iommu *iommu,
+@@ -4269,7 +4272,7 @@ static int context_flip_pri(struct
+device_domain_info *info, bool enable)
+
+     if (!ecap_coherent(iommu->ecap))
+         clflush_cache_range(context, sizeof(*context));
+-    intel_context_flush_present(info, context, true);
++    intel_context_flush_present(info, context,
+context_domain_id(context), true);
+     spin_unlock(&iommu->lock);
+
+     return 0;
+diff --git a/drivers/iommu/intel/iommu.h b/drivers/iommu/intel/iommu.h
+index b67c14da1240..0a4ce98faa60 100644
+--- a/drivers/iommu/intel/iommu.h
++++ b/drivers/iommu/intel/iommu.h
+@@ -988,7 +988,7 @@ static inline int context_domain_id(struct context_entry *c)
+     return((c->hi >> 8) & 0xffff);
+ }
+
+-static inline void context_clear_entry(struct context_entry *context)
++static inline void     context_clear_entry(struct context_entry *context)
+ {
+     context->lo = 0;
+     context->hi = 0;
+@@ -1154,6 +1154,7 @@ void cache_tag_flush_range_np(struct dmar_domain
+*domain, unsigned long start,
+
+ void intel_context_flush_present(struct device_domain_info *info,
+                  struct context_entry *context,
++                 u16 did,
+                  bool affect_domains);
+
+ #ifdef CONFIG_INTEL_IOMMU_SVM
+diff --git a/drivers/iommu/intel/pasid.c b/drivers/iommu/intel/pasid.c
+index 5792c817cefa..cb4bbb45ac2a 100644
+--- a/drivers/iommu/intel/pasid.c
++++ b/drivers/iommu/intel/pasid.c
+@@ -694,7 +694,7 @@ static void device_pasid_table_teardown(struct
+device *dev, u8 bus, u8 devfn)
+     context_clear_entry(context);
+     __iommu_flush_cache(iommu, context, sizeof(*context));
+     spin_unlock(&iommu->lock);
+-    intel_context_flush_present(info, context, false);
++    intel_context_flush_present(info, context,
+context_domain_id(context), false);
+ }
+
+ static int pci_pasid_table_teardown(struct pci_dev *pdev, u16 alias,
+void *data)
+@@ -885,10 +885,10 @@ static void __context_flush_dev_iotlb(struct
+device_domain_info *info)
+  */
+ void intel_context_flush_present(struct device_domain_info *info,
+                  struct context_entry *context,
++                 u16 did,
+                  bool flush_domains)
+ {
+     struct intel_iommu *iommu = info->iommu;
+-    u16 did = context_domain_id(context);
+     struct pasid_entry *pte;
+     int i;
+
+-- 
+2.46.0
