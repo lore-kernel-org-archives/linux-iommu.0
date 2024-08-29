@@ -1,140 +1,192 @@
-Received: from szxga03-in.huawei.com (szxga03-in.huawei.com [45.249.212.189])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-wr1-f41.google.com (mail-wr1-f41.google.com [209.85.221.41])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9404C1B1402;
-	Thu, 29 Aug 2024 14:52:28 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=45.249.212.189
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 33C0B1B14E2
+	for <iommu@lists.linux.dev>; Thu, 29 Aug 2024 14:54:31 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.41
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1724943151; cv=none; b=I7jYFRMbSlFdXrasg32v1nszNiGsp/l08iLV9oF9PaaqX5HyR2RlSrYtzL1M9EkdwnZ+NHx2d+nHGDdZjS4PjpCAYVBtj+elkGuSJ3WDcXBoZXiLn1rBf7Of62mdhwWvJyitypVjPHlTCnIMGIHMY9dybX6idjyM16FwpFhf/c4=
+	t=1724943273; cv=none; b=VPYWi7Bpppv8P2dotj89PynNzqYetYNADgLgtkcotNvrDittMQ8PeLCtC9N0Hab3sbBTNETIao8m9rJ6C3ubJZ/yWL6IuYi2kzG91Gq+UaRsb25Pnbaq8sc5/woEv1P+nmL8zyTpnGtHdkLeTvjm9+WQK8AtMQ3/v2q8phuvOuo=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1724943151; c=relaxed/simple;
-	bh=uS6ZUGkMELokJhjp5dBYR6LbnxF19SksPUR5GdIllFM=;
-	h=From:To:CC:Subject:Date:Message-ID:References:In-Reply-To:
-	 Content-Type:MIME-Version; b=cbMAp4AxESOLxLwhbbHstube1b7QUa6XGp1yTN6RvAXY4wqgbd0kj+hS/k5HGfUmH9fAcJqCAvmHDaFPc2EpLyOg7fTZ1ESIxxdEAd9y7DeoIIK+mgkNPuZZuDuLMGxvteB7e3HaL17oHR9H3eCprnUflUDLQbZIekmzASjOt7s=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=huawei.com; spf=pass smtp.mailfrom=huawei.com; arc=none smtp.client-ip=45.249.212.189
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=huawei.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=huawei.com
-Received: from mail.maildlp.com (unknown [172.19.88.194])
-	by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4Wvkdy6wLJzQr6Y;
-	Thu, 29 Aug 2024 22:47:34 +0800 (CST)
-Received: from dggpemf500003.china.huawei.com (unknown [7.185.36.204])
-	by mail.maildlp.com (Postfix) with ESMTPS id 108351401E0;
-	Thu, 29 Aug 2024 22:52:26 +0800 (CST)
-Received: from lhrpeml500005.china.huawei.com (7.191.163.240) by
- dggpemf500003.china.huawei.com (7.185.36.204) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.1544.11; Thu, 29 Aug 2024 22:52:25 +0800
-Received: from lhrpeml500005.china.huawei.com ([7.191.163.240]) by
- lhrpeml500005.china.huawei.com ([7.191.163.240]) with mapi id 15.01.2507.039;
- Thu, 29 Aug 2024 15:52:23 +0100
-From: Shameerali Kolothum Thodi <shameerali.kolothum.thodi@huawei.com>
-To: Nicolin Chen <nicolinc@nvidia.com>
-CC: Jason Gunthorpe <jgg@nvidia.com>, "acpica-devel@lists.linux.dev"
-	<acpica-devel@lists.linux.dev>, "Guohanjun (Hanjun Guo)"
-	<guohanjun@huawei.com>, "iommu@lists.linux.dev" <iommu@lists.linux.dev>,
-	Joerg Roedel <joro@8bytes.org>, Kevin Tian <kevin.tian@intel.com>,
-	"kvm@vger.kernel.org" <kvm@vger.kernel.org>, Len Brown <lenb@kernel.org>,
-	"linux-acpi@vger.kernel.org" <linux-acpi@vger.kernel.org>,
-	"linux-arm-kernel@lists.infradead.org"
-	<linux-arm-kernel@lists.infradead.org>, Lorenzo Pieralisi
-	<lpieralisi@kernel.org>, "Rafael J. Wysocki" <rafael@kernel.org>, "Robert
- Moore" <robert.moore@intel.com>, Robin Murphy <robin.murphy@arm.com>, "Sudeep
- Holla" <sudeep.holla@arm.com>, Will Deacon <will@kernel.org>, Alex Williamson
-	<alex.williamson@redhat.com>, Eric Auger <eric.auger@redhat.com>,
-	Jean-Philippe Brucker <jean-philippe@linaro.org>, Moritz Fischer
-	<mdf@kernel.org>, Michael Shavit <mshavit@google.com>,
-	"patches@lists.linux.dev" <patches@lists.linux.dev>, Mostafa Saleh
-	<smostafa@google.com>
-Subject: RE: [PATCH v2 0/8] Initial support for SMMUv3 nested translation
-Thread-Topic: [PATCH v2 0/8] Initial support for SMMUv3 nested translation
-Thread-Index: AQHa+JkQkcFFSAeDsUqyXyGP6/LaZLI7ju0AgAFNDID///2PgIAAHqvg///xn4CAAU4tEIAAHHjg
-Date: Thu, 29 Aug 2024 14:52:23 +0000
-Message-ID: <d1dc23f484784413bb3f6658717de516@huawei.com>
-References: <0-v2-621370057090+91fec-smmuv3_nesting_jgg@nvidia.com>
- <Zs5Fom+JFZimFpeS@Asurada-Nvidia>
- <7debe8f99afa4e33aa1872be0d4a63e1@huawei.com>
- <Zs9a9/Dc0vBxp/33@Asurada-Nvidia>
- <cd36b0e460734df0ae95f5e82bfebaef@huawei.com>
- <Zs9ooZLNtPZ8PwJh@Asurada-Nvidia>
- <d2ad792fe9dd44d38396c5646fa956c6@huawei.com>
-In-Reply-To: <d2ad792fe9dd44d38396c5646fa956c6@huawei.com>
-Accept-Language: en-GB, en-US
-Content-Language: en-US
-X-MS-Has-Attach:
-X-MS-TNEF-Correlator:
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+	s=arc-20240116; t=1724943273; c=relaxed/simple;
+	bh=WVKIpxyvSxvXJXDMoFBBlYcfXvBhD3sx8jPRqfscME4=;
+	h=Message-ID:Date:MIME-Version:From:Subject:To:Cc:References:
+	 In-Reply-To:Content-Type; b=dF9DhsqbaIgtMjfToECf0ZGopKESVJIaA+DhzK/+yOTqEzKuuhsT4X8ObvpqKTgCygQS81LVyvUWhzMZ5ALd7F0Zuw9FgIZOI+b4oLRAtEfK981+uxaeI1THYL6LCuH/9JNAsLnne9dNU74Dzj3rsUIzisJ3pg5sSI1A38+ihk4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org; spf=pass smtp.mailfrom=linaro.org; dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b=oX+vnqMB; arc=none smtp.client-ip=209.85.221.41
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linaro.org
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="oX+vnqMB"
+Received: by mail-wr1-f41.google.com with SMTP id ffacd0b85a97d-37193ef72a4so503645f8f.1
+        for <iommu@lists.linux.dev>; Thu, 29 Aug 2024 07:54:30 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google; t=1724943269; x=1725548069; darn=lists.linux.dev;
+        h=content-transfer-encoding:in-reply-to:organization:autocrypt
+         :content-language:references:cc:to:subject:reply-to:from:user-agent
+         :mime-version:date:message-id:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=65MyFHHTA1PsDIlSg/rTxhPf0z2KfhQQqeQtyDirckk=;
+        b=oX+vnqMBHPYc3WfFoWHk7GFjJjk5U/6bxssIQTdrZYefYmaE9JjqAQBxJfoMyRhdpA
+         1+qB7YPmM0Kf5dBQanhcyXbie4PgwxW8Ujbovbj7LtMSKm1pLzmNlYY+5+dVQ2zGZZpL
+         3HY8jn4271d4FsD8kNt/s2DLOTwJ/AwrmnZ0tZqhReox5ra5h1FRFqDZ5eIFGuaL6KDc
+         yUmwoiqBnYsWe/J3/cP8aE0A7lhvv1d8awp7ly9lhN98kuNXcDitx7f9q+48ry9FQW1c
+         wGwCtYykerM29kpG+rojILctX40KoNwxxhW7g153VtGEbpgThHaS0Lp09ZY9RwZBD7pt
+         HXGg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1724943269; x=1725548069;
+        h=content-transfer-encoding:in-reply-to:organization:autocrypt
+         :content-language:references:cc:to:subject:reply-to:from:user-agent
+         :mime-version:date:message-id:x-gm-message-state:from:to:cc:subject
+         :date:message-id:reply-to;
+        bh=65MyFHHTA1PsDIlSg/rTxhPf0z2KfhQQqeQtyDirckk=;
+        b=wppC0PiJRXH3G9wddAq77+prdBe/5XQrBkzj3oQgmIwlu/gwUY0zglFWlr4X2nC8Yn
+         TyUXDjQMNCKZmlq2KqPDoEqnbR6m2sS7npVMvEo27bCGpPpLiFSiuij8M0TzEucFZOFw
+         +wq2WGtlumLsggTg0QbSxGdsp5MkMesgv0ia6ne2UsoW08T/OfAq8x+ZwIrmaxNZ0Iwu
+         GNE5uoEmYr1sca6hdtc4IIZTMisNkfsTNUwH4CmE32OJfaeSLPDrdQuJndxTYELkyn+2
+         mQm7fzPWNGmWRfhMruFOvQgGQcqvYc5qqYWbqQbIfw9rWvLhRlacVD18lnLQELK1Xref
+         5Q5A==
+X-Gm-Message-State: AOJu0Yw8T6rQpNqq3VgbbtE84ScESPG7L9zWbk1WdsPK/yH74r5EhOsJ
+	FBYxIV7FNXlZHUK93byS2wZoA8GzARIk1wGOmwGUnfjj3i5afkKTBJPWQHAm/Hk=
+X-Google-Smtp-Source: AGHT+IHZH6stL4551rGqzrB66QW6+0W2V+BEhTdVDMA/uaumsNpkCQJsZo6bnlAOMG7WaWFSPvBr0g==
+X-Received: by 2002:a05:600c:3596:b0:426:61e8:fb35 with SMTP id 5b1f17b1804b1-42bb02812aamr25983165e9.4.1724943268906;
+        Thu, 29 Aug 2024 07:54:28 -0700 (PDT)
+Received: from ?IPV6:2a01:e0a:982:cbb0:12f5:c9c:a0e1:6915? ([2a01:e0a:982:cbb0:12f5:c9c:a0e1:6915])
+        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-42bb6a10353sm17740285e9.1.2024.08.29.07.54.27
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 29 Aug 2024 07:54:28 -0700 (PDT)
+Message-ID: <8d630ba4-8f6d-427d-bfa3-8eeba002517c@linaro.org>
+Date: Thu, 29 Aug 2024 16:54:27 +0200
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
+User-Agent: Mozilla Thunderbird
+From: neil.armstrong@linaro.org
+Reply-To: neil.armstrong@linaro.org
+Subject: Re: [PATCH v6 RESED 1/2] dma: replace zone_dma_bits by zone_dma_limit
+To: Robin Murphy <robin.murphy@arm.com>, Baruch Siach <baruch@tkos.co.il>,
+ Christoph Hellwig <hch@lst.de>, Marek Szyprowski <m.szyprowski@samsung.com>,
+ Catalin Marinas <catalin.marinas@arm.com>, Will Deacon <will@kernel.org>
+Cc: iommu@lists.linux.dev, linux-arm-kernel@lists.infradead.org,
+ linux-kernel@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
+ linux-s390@vger.kernel.org, =?UTF-8?B?UGV0ciBUZXNhxZnDrWs=?=
+ <petr@tesarici.cz>, Ramon Fried <ramon@neureality.ai>,
+ Elad Nachman <enachman@marvell.com>,
+ linux-arm-msm <linux-arm-msm@vger.kernel.org>
+References: <cover.1723359916.git.baruch@tkos.co.il>
+ <17c067618b93e5d71f19c37826d54db4299621a3.1723359916.git.baruch@tkos.co.il>
+ <1a0c7282-63e0-4add-8e38-3abe3e0a8e2f@linaro.org>
+ <1a7ab0db-646d-4975-9974-7b911990055a@arm.com>
+Content-Language: en-US, fr
+Autocrypt: addr=neil.armstrong@linaro.org; keydata=
+ xsBNBE1ZBs8BCAD78xVLsXPwV/2qQx2FaO/7mhWL0Qodw8UcQJnkrWmgTFRobtTWxuRx8WWP
+ GTjuhvbleoQ5Cxjr+v+1ARGCH46MxFP5DwauzPekwJUD5QKZlaw/bURTLmS2id5wWi3lqVH4
+ BVF2WzvGyyeV1o4RTCYDnZ9VLLylJ9bneEaIs/7cjCEbipGGFlfIML3sfqnIvMAxIMZrvcl9
+ qPV2k+KQ7q+aXavU5W+yLNn7QtXUB530Zlk/d2ETgzQ5FLYYnUDAaRl+8JUTjc0CNOTpCeik
+ 80TZcE6f8M76Xa6yU8VcNko94Ck7iB4vj70q76P/J7kt98hklrr85/3NU3oti3nrIHmHABEB
+ AAHNKk5laWwgQXJtc3Ryb25nIDxuZWlsLmFybXN0cm9uZ0BsaW5hcm8ub3JnPsLAkQQTAQoA
+ OwIbIwULCQgHAwUVCgkICwUWAgMBAAIeAQIXgBYhBInsPQWERiF0UPIoSBaat7Gkz/iuBQJk
+ Q5wSAhkBAAoJEBaat7Gkz/iuyhMIANiD94qDtUTJRfEW6GwXmtKWwl/mvqQtaTtZID2dos04
+ YqBbshiJbejgVJjy+HODcNUIKBB3PSLaln4ltdsV73SBcwUNdzebfKspAQunCM22Mn6FBIxQ
+ GizsMLcP/0FX4en9NaKGfK6ZdKK6kN1GR9YffMJd2P08EO8mHowmSRe/ExAODhAs9W7XXExw
+ UNCY4pVJyRPpEhv373vvff60bHxc1k/FF9WaPscMt7hlkbFLUs85kHtQAmr8pV5Hy9ezsSRa
+ GzJmiVclkPc2BY592IGBXRDQ38urXeM4nfhhvqA50b/nAEXc6FzqgXqDkEIwR66/Gbp0t3+r
+ yQzpKRyQif3OwE0ETVkGzwEIALyKDN/OGURaHBVzwjgYq+ZtifvekdrSNl8TIDH8g1xicBYp
+ QTbPn6bbSZbdvfeQPNCcD4/EhXZuhQXMcoJsQQQnO4vwVULmPGgtGf8PVc7dxKOeta+qUh6+
+ SRh3vIcAUFHDT3f/Zdspz+e2E0hPV2hiSvICLk11qO6cyJE13zeNFoeY3ggrKY+IzbFomIZY
+ 4yG6xI99NIPEVE9lNBXBKIlewIyVlkOaYvJWSV+p5gdJXOvScNN1epm5YHmf9aE2ZjnqZGoM
+ Mtsyw18YoX9BqMFInxqYQQ3j/HpVgTSvmo5ea5qQDDUaCsaTf8UeDcwYOtgI8iL4oHcsGtUX
+ oUk33HEAEQEAAcLAXwQYAQIACQUCTVkGzwIbDAAKCRAWmrexpM/4rrXiB/sGbkQ6itMrAIfn
+ M7IbRuiSZS1unlySUVYu3SD6YBYnNi3G5EpbwfBNuT3H8//rVvtOFK4OD8cRYkxXRQmTvqa3
+ 3eDIHu/zr1HMKErm+2SD6PO9umRef8V82o2oaCLvf4WeIssFjwB0b6a12opuRP7yo3E3gTCS
+ KmbUuLv1CtxKQF+fUV1cVaTPMyT25Od+RC1K+iOR0F54oUJvJeq7fUzbn/KdlhA8XPGzwGRy
+ 4zcsPWvwnXgfe5tk680fEKZVwOZKIEuJC3v+/yZpQzDvGYJvbyix0lHnrCzq43WefRHI5XTT
+ QbM0WUIBIcGmq38+OgUsMYu4NzLu7uZFAcmp6h8g
+Organization: Linaro
+In-Reply-To: <1a7ab0db-646d-4975-9974-7b911990055a@arm.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 
+Hi Robin,
 
+On 29/08/2024 16:38, Robin Murphy wrote:
+> On 2024-08-29 2:42 pm, Neil Armstrong wrote:
+>> Hi,
+>>
+>> On 11/08/2024 09:09, Baruch Siach wrote:
+>>> From: Catalin Marinas <catalin.marinas@arm.com>
+>>>
+>>> Hardware DMA limit might not be power of 2. When RAM range starts above
+>>> 0, say 4GB, DMA limit of 30 bits should end at 5GB. A single high bit
+>>> can not encode this limit.
+>>>
+>>> Use plain address for DMA zone limit.
+>>>
+>>> Since DMA zone can now potentially span beyond 4GB physical limit of
+>>> DMA32, make sure to use DMA zone for GFP_DMA32 allocations in that case.
+>>>
+>>> Signed-off-by: Catalin Marinas <catalin.marinas@arm.com>
+>>> Co-developed-by: Baruch Siach <baruch@tkos.co.il>
+>>> Signed-off-by: Baruch Siach <baruch@tkos.co.il>
+>>> ---
+>>>   arch/arm64/mm/init.c       | 30 +++++++++++++++---------------
+>>>   arch/powerpc/mm/mem.c      |  5 ++++-
+>>>   arch/s390/mm/init.c        |  2 +-
+>>>   include/linux/dma-direct.h |  2 +-
+>>>   kernel/dma/direct.c        |  6 +++---
+>>>   kernel/dma/pool.c          |  4 ++--
+>>>   kernel/dma/swiotlb.c       |  6 +++---
+>>>   7 files changed, 29 insertions(+), 26 deletions(-)
+>>>
+>>
+>> <snip>
+>>
+>> This change breaks the Qualcomm SM8550-HDK boot since next-20240826.
+>> It doesn't affect SM8550-QRD or other similar SoCs like SM8650 or SM8450.
+>> The last CI run on next-20240828 can be found at:
+>> https://git.codelinaro.org/linaro/qcomlt/ci/staging/cdba-tester/-/pipelines/100936
+>>
+>> SM8550-HDK boot log:
+>> https://git.codelinaro.org/linaro/qcomlt/ci/staging/cdba-tester/-/jobs/165617
+>>
+> [...]
+> 
+> Yeah, a 35-bit ZONE_DMA is sure to make stuff go wrong:
+> 
+>> [    0.000000] Zone ranges:
+>> [    0.000000]   DMA      [mem 0x0000000080000000-0x0000000affffffff]
+>> [    0.000000]   DMA32    empty
+>> [    0.000000]   Normal   empty
+> 
+> Compared to before:
+> 
+> [    0.000000]   DMA      [mem 0x0000000080000000-0x00000000ffffffff]
+> [    0.000000]   DMA32    empty
+> [    0.000000]   Normal   [mem 0x0000000100000000-0x0000000affffffff]
+> 
+> This'll be because the SoC DT is describing a general non-restrictive range:
+>          dma-ranges = <0 0 0 0 0x10 0>;
+> 
+> Which proves we need more information than {acpi,of}_dma_get_max_cpu_address() are currently able to give us, because what zone_dma_limit actually wants to be is the *minimum* of the lowest highest CPU address of any DMA range, and the lowest CPU address of any DMA range + 2^32. I was thinking it had all ended up looking a bit too easy... :)
+> 
+> I think v1 of the fix[1] might actually work out for this, albeit still for the wrong reasons - if so, I concede that maybe at this point it might be safest to go back to that one as a quick short-term fix (with a big fat comment to say so) rather than try to rush the proper solution or revert everything.
 
-> -----Original Message-----
-> From: Shameerali Kolothum Thodi
-> Sent: Thursday, August 29, 2024 2:15 PM
-> To: 'Nicolin Chen' <nicolinc@nvidia.com>
-> Cc: Jason Gunthorpe <jgg@nvidia.com>; acpica-devel@lists.linux.dev;
-> Guohanjun (Hanjun Guo) <guohanjun@huawei.com>;
-> iommu@lists.linux.dev; Joerg Roedel <joro@8bytes.org>; Kevin Tian
-> <kevin.tian@intel.com>; kvm@vger.kernel.org; Len Brown
-> <lenb@kernel.org>; linux-acpi@vger.kernel.org; linux-arm-
-> kernel@lists.infradead.org; Lorenzo Pieralisi <lpieralisi@kernel.org>; Ra=
-fael J.
-> Wysocki <rafael@kernel.org>; Robert Moore <robert.moore@intel.com>;
-> Robin Murphy <robin.murphy@arm.com>; Sudeep Holla
-> <sudeep.holla@arm.com>; Will Deacon <will@kernel.org>; Alex Williamson
-> <alex.williamson@redhat.com>; Eric Auger <eric.auger@redhat.com>; Jean-
-> Philippe Brucker <jean-philippe@linaro.org>; Moritz Fischer
-> <mdf@kernel.org>; Michael Shavit <mshavit@google.com>;
-> patches@lists.linux.dev; Mostafa Saleh <smostafa@google.com>
-> Subject: RE: [PATCH v2 0/8] Initial support for SMMUv3 nested translation
->=20
-> That makes some progress. But still I am not seeing the assigned dev  in
-> Guest.
->=20
-> -device vfio-pci-nohotplug,host=3D0000:75:00.1,iommufd=3Diommufd0
->=20
-> root@ubuntu:/# lspci -tv#
->=20
-> root@ubuntu:/# lspci -tv
-> -+-[0000:ca]---00.0-[cb]--
->  \-[0000:00]-+-00.0  Red Hat, Inc. QEMU PCIe Host bridge
->              +-01.0  Red Hat, Inc Virtio network device
->              +-02.0  Red Hat, Inc. QEMU PCIe Expander bridge
->              +-03.0  Red Hat, Inc. QEMU PCIe Expander bridge
->              +-04.0  Red Hat, Inc. QEMU PCIe Expander bridge
->              +-05.0  Red Hat, Inc. QEMU PCIe Expander bridge
->              +-06.0  Red Hat, Inc. QEMU PCIe Expander bridge
->              +-07.0  Red Hat, Inc. QEMU PCIe Expander bridge
->              +-08.0  Red Hat, Inc. QEMU PCIe Expander bridge
->              \-09.0  Red Hat, Inc. QEMU PCIe Expander bridge
->=20
-> The new root port is created, but no device attached.
-It looks like Guest finds the config invalid:
+Indeed v1 patches makes boot work again:
+[    0.000000] Zone ranges:
+[    0.000000]   DMA      [mem 0x0000000080000000-0x00000000ffffffff]
+[    0.000000]   DMA32    empty
+[    0.000000]   Normal   [mem 0x0000000100000000-0x0000000affffffff]
 
-[    0.283618] PCI host bridge to bus 0000:ca
-[    0.284064] ACPI BIOS Error (bug): \_SB.PCF7.PCEE.PCE5.PCDC.PCD3.PCCA._D=
-SM: Excess arguments - ASL declared 5, ACPI requires 4 (20240322/nsargument=
-s-162)
-[    0.285533] pci_bus 0000:ca: root bus resource [bus ca]
-[    0.286214] pci 0000:ca:00.0: [1b36:000c] type 01 class 0x060400 PCIe Ro=
-ot Port
-[    0.287717] pci 0000:ca:00.0: BAR 0 [mem 0x00000000-0x00000fff]
-[    0.288431] pci 0000:ca:00.0: PCI bridge to [bus 00]
-[    0.290649] pci 0000:ca:00.0: bridge configuration invalid ([bus 00-00])=
-, reconfiguring
-[    0.292476] pci_bus 0000:cb: busn_res: can not insert [bus cb-ca] under =
-[bus ca] (conflicts with (null) [bus ca])
-[    0.293597] pci_bus 0000:cb: busn_res: [bus cb-ca] end is updated to cb
-[    0.294300] pci_bus 0000:cb: busn_res: can not insert [bus cb] under [bu=
-s ca] (conflicts with (null) [bus ca])
-
-Let me know if you have any clue.=20
+Please add my:
+Tested-by: Neil Armstrong <neil.armstrong@linaro.org> # on SM8550-HDK
 
 Thanks,
-Shameer
+Neil
+
+> 
+> Thanks,
+> Robin.
+> 
+> [1] https://lore.kernel.org/linux-arm-kernel/731d204f5f556ad61bbaf004b1d984f83c90b4f5.1724748249.git.baruch@tkos.co.il/
 
