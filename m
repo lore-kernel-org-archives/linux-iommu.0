@@ -1,585 +1,247 @@
-Received: from mx0a-0031df01.pphosted.com (mx0a-0031df01.pphosted.com [205.220.168.131])
+Received: from NAM12-DM6-obe.outbound.protection.outlook.com (mail-dm6nam12on2064.outbound.protection.outlook.com [40.107.243.64])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5D9051B6540
-	for <iommu@lists.linux.dev>; Thu, 29 Aug 2024 19:12:16 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.168.131
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1724958738; cv=none; b=SuTyqdwu8jvNqvN3Dlm5XMuHxu/jU+vUlbTJPJdqVDPC/9Y5XssP40Ql9BuTxnAJezG2eZSPqPrRhXGeBou9CFpfEzKf8dKzMTuHNSAPQb6KxDkUt9Mv1ii8x6z6D8w5HK6n2IHJaVwJpHc76t3QlceYIkeqPraIbqApTsW1SYw=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1724958738; c=relaxed/simple;
-	bh=IccCRubsZkcY5u3qNEH7PHyogwGX+dXPNc8wVEM5Uj0=;
-	h=Message-ID:Date:MIME-Version:Subject:To:CC:References:From:
-	 In-Reply-To:Content-Type; b=Ci5PQeuXyGV/DMJT2OKa0J7b0s1hb2tftoziQak6/JtZuRrg2btqmawW0T4jf+n7cMY7ShmLiiIwuChtTvqSGeA5oZHSvIx4SmgnWEiGrFnn4KAWoTDkMAolNK6mm1pahxGEMvh6FhSQdbZx1EfptZB7XCns9r645XFrRujzaHY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com; spf=pass smtp.mailfrom=quicinc.com; dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b=hfyPmOCI; arc=none smtp.client-ip=205.220.168.131
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=quicinc.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1392247A76
+	for <iommu@lists.linux.dev>; Thu, 29 Aug 2024 19:28:08 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.243.64
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1724959690; cv=fail; b=lpZK6Dw0yW6nslAbA2vd/d5iEaLTPgpM1332P9ERxzHCd40ATERGqeKcvEqaNpUKMi65KZVfcmlJwZtcla/Ki7oFqfWbnyPmehAif52ln919JaVeK1wVeNN0dQj/7Q5IMVRYxfiqhl9aXDFqq4K6Xp/aFErbSti1P1q+B+iSuvA=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1724959690; c=relaxed/simple;
+	bh=coGYRfLgwm3qX9fO5kaV2pYHkX4MAzbWJyyxX6032yM=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:Content-Type:
+	 Content-Disposition:In-Reply-To:MIME-Version; b=Hmx78iHwDC4WKzH1CAnrLEm5zdAz1pWLlVwukaah9AmUa9/BrJPGbGXkCwigk4SDq2aqbwKL1S+H25p4DGB0NKQ1iMkzFZuvfWWLcgMsblcDASAvnY5Grspw3AReLHrv7NBA2KVaQkYz70wdevSlzEFhLf090wvVRENK9aEZw74=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=bvYAYyTz; arc=fail smtp.client-ip=40.107.243.64
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b="hfyPmOCI"
-Received: from pps.filterd (m0279863.ppops.net [127.0.0.1])
-	by mx0a-0031df01.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 47TGK93O024486;
-	Thu, 29 Aug 2024 19:06:52 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=quicinc.com; h=
-	cc:content-transfer-encoding:content-type:date:from:in-reply-to
-	:message-id:mime-version:references:subject:to; s=qcppdkim1; bh=
-	XDi8cWM8np1l+qyak2upQZYRIHORj4j79K4H6ISldk8=; b=hfyPmOCIbJzySDql
-	OmdQD12Zz2sJREaZberhLneflE/hOKYVZZofyBK6QxUqr+18/e7B2woskKUH04yX
-	P9M6Vu7XCzs0Sw1UkxkCGUDZsLS2J/ybso0t3LyLX392wvtW70b21D/3qIl5LXMA
-	moO9LAh5TzBMpGjBBvPoAERhy5GgXTVGwzuYgryZAtMF714InpSKXglhAg/IpGDL
-	onNsTohtbQclmqE+Ke7mTlocsMoR/YNkSWUnZwb0lG3imy41+HiXq8RBvXvyElo7
-	Sz/h8Nr/0cTtOzqvqIu0+E1ab50ffotira891aDv2XBw5h9QpcpLs73DzIoO7eBM
-	PC1l5w==
-Received: from nasanppmta01.qualcomm.com (i-global254.qualcomm.com [199.106.103.254])
-	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 419puvedfy-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Thu, 29 Aug 2024 19:06:52 +0000 (GMT)
-Received: from nasanex01b.na.qualcomm.com (nasanex01b.na.qualcomm.com [10.46.141.250])
-	by NASANPPMTA01.qualcomm.com (8.18.1.2/8.18.1.2) with ESMTPS id 47TJ6ppS019360
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Thu, 29 Aug 2024 19:06:51 GMT
-Received: from [10.110.28.107] (10.80.80.8) by nasanex01b.na.qualcomm.com
- (10.46.141.250) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1544.9; Thu, 29 Aug
- 2024 12:06:47 -0700
-Message-ID: <57eee144-cdc4-48e7-838b-103cda6ec1dd@quicinc.com>
-Date: Thu, 29 Aug 2024 12:06:46 -0700
+	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="bvYAYyTz"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=OB6b77qTNqya0lnPLwESAVT6GFCTztgxHqDfoS4nnh9V+gox1vxqEz8B+Rw5hDLohheo0W3ELuQaudcUsmGAuJE7crUGqgSrlAa85Yzux5X+x/JVza9KjFYdsUc0kDUgybWgFxJH7Wm1hhNvSot5JCD4tAHIOIIZZQpE/VfM9kf4wgpg9sLhxSn/ETbZNICyvPLRFhnXmIjmae8fXBJFxdzV7Ipg1CDNNKF3oGwHz1ESXOEIklxXvq+f7O1iY88k4n9B4ec5GWMcAPX7qWzLKUJO8wfaDS0fDXiqFMI62NB1GMcTQNfy1JC9uXvYXmlihExVeL7VLE1sGFEIgQB7+A==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=CoqU0lDBcVdLB9w3KsvGWxIGk8WSaycVlKCCt6Grncg=;
+ b=OeeEyi2X0cT2Ko39NRnyuz8ZjHGFSMLHu8VWEsoEMpX4+xGCzmj+1qjRBmRZ0avf0fejEb9WdqxEJ3nwGlusRRkyids9Lf3ZgWYZuhHFplO3h7m1uUwYIuKF0GO0cwgvNHQ+0Pb9V0Hydrug6ftjg6wIZGGlq2878QGQnlrc3EEnrOpoIghfG0Wr5vEUyIuRLZ48NbLzmg48wuMoV/oKnoBynG5dDifFEV7fQkb2XjfuAV7HBHBM4kjLVY/Cy7CXF6or0cWXQ7yLKvIf7ozP6mcEGVeO1N6UXDNSJD9HwaWVkcg2SOXl75MnMJygTr5lGX6a4WTo9HuxQ8AZ3y2NRQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=CoqU0lDBcVdLB9w3KsvGWxIGk8WSaycVlKCCt6Grncg=;
+ b=bvYAYyTzWS2+zt+B9LqLGZODsatIQY+KV3jZkdse6x3MfHbv0h3UorsQ/02F+szyG5y+++twDXkpDBe6kaGedABvDlyPXwk9LbzrZ/mTZrcqyKGtau8xdJsfmJ3nPHNJAeWJAyA+qMCCwxNKXavhb2HXMchoc3AOYWGrUtZi4Y6FLkYvbxxhqOwftzFZ3J6ZWk8XHYOpOaRCfEe66JdMhjlqFuhA+khkDwk6DY5NE5akbxPAQs8e1EYyrmPLbHjr6hinfd7Mc9G4KdkbqmJH6pidO5NRu+oFVkLdhUlnX6pULQhp7SAM3eCv7zoZ08cZnbo9XWmT6zrOJue/jQudlQ==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nvidia.com;
+Received: from CH3PR12MB7763.namprd12.prod.outlook.com (2603:10b6:610:145::10)
+ by MN2PR12MB4189.namprd12.prod.outlook.com (2603:10b6:208:1d8::22) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7918.20; Thu, 29 Aug
+ 2024 19:28:05 +0000
+Received: from CH3PR12MB7763.namprd12.prod.outlook.com
+ ([fe80::8b63:dd80:c182:4ce8]) by CH3PR12MB7763.namprd12.prod.outlook.com
+ ([fe80::8b63:dd80:c182:4ce8%3]) with mapi id 15.20.7897.027; Thu, 29 Aug 2024
+ 19:28:05 +0000
+Date: Thu, 29 Aug 2024 16:28:04 -0300
+From: Jason Gunthorpe <jgg@nvidia.com>
+To: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
+Cc: linux-kernel@vger.kernel.org, iommu@lists.linux.dev, joro@8bytes.org,
+	robin.murphy@arm.com, vasant.hegde@amd.com, ubizjak@gmail.com,
+	jon.grimm@amd.com, santosh.shukla@amd.com, pandoh@google.com,
+	kumaranand@google.com
+Subject: Re: [PATCH v2 3/5] iommu/amd: Introduce helper functions to access
+ and update 256-bit DTE
+Message-ID: <20240829192804.GJ3773488@nvidia.com>
+References: <20240829180726.5022-1-suravee.suthikulpanit@amd.com>
+ <20240829180726.5022-4-suravee.suthikulpanit@amd.com>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20240829180726.5022-4-suravee.suthikulpanit@amd.com>
+X-ClientProxiedBy: BN9PR03CA0861.namprd03.prod.outlook.com
+ (2603:10b6:408:13d::26) To CH3PR12MB7763.namprd12.prod.outlook.com
+ (2603:10b6:610:145::10)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH 22/22] arm64: dts: qcom: Add reduced functional DT for
- SA8255p Ride platform
-Content-Language: en-US
-To: Krzysztof Kozlowski <krzk@kernel.org>, <andersson@kernel.org>,
-        <konradybcio@kernel.org>, <robh@kernel.org>, <krzk+dt@kernel.org>,
-        <conor+dt@kernel.org>, <rafael@kernel.org>, <viresh.kumar@linaro.org>,
-        <herbert@gondor.apana.org.au>, <davem@davemloft.net>,
-        <sudeep.holla@arm.com>, <andi.shyti@kernel.org>, <tglx@linutronix.de>,
-        <will@kernel.org>, <joro@8bytes.org>, <jassisinghbrar@gmail.com>,
-        <lee@kernel.org>, <linus.walleij@linaro.org>, <amitk@kernel.org>,
-        <thara.gopinath@gmail.com>, <broonie@kernel.org>,
-        <wim@linux-watchdog.org>, <linux@roeck-us.net>
-CC: <robin.murphy@arm.com>, <cristian.marussi@arm.com>, <rui.zhang@intel.com>,
-        <lukasz.luba@arm.com>, <vkoul@kernel.org>, <quic_gurus@quicinc.com>,
-        <agross@kernel.org>, <bartosz.golaszewski@linaro.org>,
-        <quic_rjendra@quicinc.com>, <robimarko@gmail.com>,
-        <linux-arm-msm@vger.kernel.org>, <devicetree@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, <linux-pm@vger.kernel.org>,
-        <linux-crypto@vger.kernel.org>, <arm-scmi@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>, <linux-i2c@vger.kernel.org>,
-        <iommu@lists.linux.dev>, <linux-gpio@vger.kernel.org>,
-        <linux-serial@vger.kernel.org>, <linux-spi@vger.kernel.org>,
-        <linux-watchdog@vger.kernel.org>, <kernel@quicinc.com>,
-        <quic_psodagud@quicinc.com>, <quic_tsoni@quicinc.com>,
-        <quic_shazhuss@quicinc.com>
-References: <20240828203721.2751904-1-quic_nkela@quicinc.com>
- <20240828203721.2751904-23-quic_nkela@quicinc.com>
- <746be896-8798-44b0-aa86-e77cf34655e1@kernel.org>
-From: Nikunj Kela <quic_nkela@quicinc.com>
-In-Reply-To: <746be896-8798-44b0-aa86-e77cf34655e1@kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
- nasanex01b.na.qualcomm.com (10.46.141.250)
-X-QCInternal: smtphost
-X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
-X-Proofpoint-ORIG-GUID: 1DMGIf9YfzGAwuDSquaVObGA-TL4ZKmm
-X-Proofpoint-GUID: 1DMGIf9YfzGAwuDSquaVObGA-TL4ZKmm
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.293,Aquarius:18.0.1039,Hydra:6.0.680,FMLib:17.12.28.16
- definitions=2024-08-29_06,2024-08-29_02,2024-05-17_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 suspectscore=0
- mlxlogscore=999 priorityscore=1501 bulkscore=0 impostorscore=0
- adultscore=0 malwarescore=0 phishscore=0 lowpriorityscore=0 mlxscore=0
- spamscore=0 clxscore=1015 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.19.0-2407110000 definitions=main-2408290136
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: CH3PR12MB7763:EE_|MN2PR12MB4189:EE_
+X-MS-Office365-Filtering-Correlation-Id: 0c3149fd-4625-4d89-5268-08dcc860b495
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;ARA:13230040|376014|7416014|1800799024|366016;
+X-Microsoft-Antispam-Message-Info:
+	=?us-ascii?Q?a6Hf8CPWNi6uc6setUKWt/ePbcHSCtGKDm+tcZanBIsYprsixQZSX5YdyLeL?=
+ =?us-ascii?Q?gGkNIPn45NP23oU0ikTlJsVt5p0he95l9jerVl3wuCf+5SN/dRdMvNc+bCoX?=
+ =?us-ascii?Q?8UHSGQk3Hft4rkWKv4bCZ5o3UN0x2wJiw5nrwataJ8/PZ+y8Hq6FQouW4dSq?=
+ =?us-ascii?Q?UPCW7OXCorNPKcbFe3NBlyPJHvTZBHdBfEbOgcjylShN5XqY2qDBUsx+xiAt?=
+ =?us-ascii?Q?/+fZ4d6zH30xyWE5p+CJyatuwWZJcx4InPEO6QZOvOebQ8UlZVjw/kxeiAhf?=
+ =?us-ascii?Q?rjm96A5Ykoo3y8ZUWicyk3ElScLT5SvLr5NbKOVrekUSOFyJBDDi7+H+jvSb?=
+ =?us-ascii?Q?2zU1E3i+cJnmzS3OUJl918OOHAbnNw9DYM7pJW4dE1nHfp8mnkSIEaTLG39i?=
+ =?us-ascii?Q?8wM0G3bjMpdKd5EPIKcQXunzaOKEMcOQYMAy5KfGMNOzn00oMkbsjqNmHgkk?=
+ =?us-ascii?Q?zjipH5JRq8GenDaDzrz+cf/seQM6El+fBGtm6dvCINuRnKZ1BV1fu9+Q2P2c?=
+ =?us-ascii?Q?ko2DjWTKuZYh8smvQ0o25Bt84jUF/tg2+13CrCkeVNWoyWfwKafQYnG+s/yy?=
+ =?us-ascii?Q?OZOfevH33BLqIG5cZ9zkzcQgvwT5D5avdXzxArvyllX5mpT8HZFiMOkt5px1?=
+ =?us-ascii?Q?8KpoC4e2mpMGwKG4v+eMJfCdBmybPsj56/k0pUxd2V8gaNijJ22cEJxmQCk9?=
+ =?us-ascii?Q?MDErFXAu64rVlh4B6HUEx6nVfq68I2UfpSFi5LG6DvsvviKnadAdPg+7P7AD?=
+ =?us-ascii?Q?EG9pi0C4jq6W9AEomxR2xdHaGwmNFyGWzhzq2l0Ke7PjH4SNhjiMGwOS1xMV?=
+ =?us-ascii?Q?I5iXUbRQ8cztaW6uquJI7Z2sOOcSfKyeWclt1U4AeMAvaU5sWWFqMfLIuhas?=
+ =?us-ascii?Q?DINewck+F9c31mUF+WWpL476KPjMkOVZZTCjPIU2CJzzS0FD6Ht7LUgiHQ67?=
+ =?us-ascii?Q?/pOsmNvvWjb4d+HK7nVBkeoM9VKD0k0LEkkx0qjAzR+F8WOlJO0vvOdl3v6o?=
+ =?us-ascii?Q?/1plXaMQzbHZLygCFMXIdI10370uLd0BOeziknYP3QTj2rdjHaS/DCvHYvEJ?=
+ =?us-ascii?Q?ikwBzOh2XBf6hkHp2iFaZ3WWR1HAyNc+KiP2kVIKBGKLjMOFq40cUYLzsx13?=
+ =?us-ascii?Q?Ja8bkDnjVOChWcGnQbkOO42EBp7cOaERbHA+umBmFmauEOHbqW1cx1JsPKXK?=
+ =?us-ascii?Q?ufg1C5FBH71YnX+SpcJ9EmH02JzvIXS+NdJD1xm8aIM7+51cjxEbp8W0nmfk?=
+ =?us-ascii?Q?6r1t/IA30UQd+eICZuSjpPyVYf/ANOvCa27myRQV5cUxBb+iFAM6Ky9Jhx/+?=
+ =?us-ascii?Q?mHgkxV+C7voGmodoI5DmAuFZDxBCG6GAPBLntkI4w2lt2g=3D=3D?=
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CH3PR12MB7763.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(376014)(7416014)(1800799024)(366016);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?us-ascii?Q?d54/FWiHd+NPObmns9OMavr7L5zHoCXqaJK85iCBoj0dxHXCcaHEZsIiQqjc?=
+ =?us-ascii?Q?/Cc7RPbSwDkNRlongSpF/WuILlNdZGM2+Wv8+jemE05cqmiDMB/XJ5qOGu7s?=
+ =?us-ascii?Q?RCchAC1bQqodR3sO9Jyd3s6isEDzSMHrT8pjdRTUIndwaYDbF0GcGsFy3bu2?=
+ =?us-ascii?Q?uP7o4vidBFuIJcedeIVfAB5fwFiRw08dfz8H4Kb/whqgwXhhQQrgdGFeFD2t?=
+ =?us-ascii?Q?dWA+dplG47g8ZN3K6e5zCGVgK92g0e379+ZKY6yyTvjkhpVJFB/F85XGK8+T?=
+ =?us-ascii?Q?CwL1VV2u6IrNmDdUaSOXasBTCws1csKg8y5jBcVOQVaAxjbR3y9+arWWyS5K?=
+ =?us-ascii?Q?1/RpCoE6hQ3QLiA+CsxOBJSYGWSHJYOcdMaT69CqEGZI4n/B7HIdsLXzsfqh?=
+ =?us-ascii?Q?awZrAwDbgUriOOwdhBu8LE93uvEwDyj0SoC8k+mClf8c5d4q2PxthA7ah0PE?=
+ =?us-ascii?Q?BQPlk+yMkPeUm07+qXR3Kz2Bw48Q04CVdFt+ivk1DtwxOJlVH3w0aS9GqxSL?=
+ =?us-ascii?Q?JfrHm9p7bDWEwx7dnr3lkYXN1c024cKsyDDBr3m1q1os9AbZla3jkfhdQJ3B?=
+ =?us-ascii?Q?oG8OEiKuwt1UUR+twjeYqbzma0I2YbkavQcaXZDHXd8V8z7h3eaZ4HW7o46t?=
+ =?us-ascii?Q?g34NS+2WeyXYaWWA83vTDTHb/gSWZoXrvN0+TfPeaPuNsy3kvjPaVGQgqKjc?=
+ =?us-ascii?Q?J8r53i9JZgknhfjKosBD9x1ruJzdysUGLsOcmHcP8uYfT+kTrvyTUVsnXw2o?=
+ =?us-ascii?Q?2vFr+mLXDhecfTW4U8yXsY6Rady69xsdd+nZ0eNE36QorAsj4tadd+6+7LMM?=
+ =?us-ascii?Q?wV7x/CmwJFQQEm3B5zdaeKMsiAacw3QhXxwISkDilcR0NxGv2lFlZ4QePZZ6?=
+ =?us-ascii?Q?0pfBAErZiNX3hsokiRHHiIMKeAnhp5z12pYQPkWeWozdKbcZE+vwoLZtDuTV?=
+ =?us-ascii?Q?048EbrctnlaKc491BTY4ELJHQZngJOLclpDLU5EiQERlbPKeZ2li3A48HYDU?=
+ =?us-ascii?Q?tU20HaRPi4WlV10NB0MF26808kY7uPw3PgrSh9yssxdgc+DDOJYtHBC7uaGM?=
+ =?us-ascii?Q?uaZ0y1D1hkVFQ4M32bo2Mltw/xwbCoBtcPC4ZIwpjFuJMypJxRLeJ5CbJkyg?=
+ =?us-ascii?Q?3VCMc1OJdY6Ii+NsPib3noLn1FFdhdrQc7caZcsg2gddtYP9KEAgOHFOFmJa?=
+ =?us-ascii?Q?+OGx+xEfLOJaRNNLRrTb+WIUgkbwyHRNe/75bhLgXJweJBdsTprgITVFfw6A?=
+ =?us-ascii?Q?4B0fdIF0M1XW3fy84UJVPpTyAkz+d6YAxNcPbSxQfHBTJ00/lnXpR2bZHYux?=
+ =?us-ascii?Q?u+hWRXRXu5DHihP9E4EaD3k8q1CiypUQ5kUlatRR5dV8HH6HvpEZ9AjWf7Vh?=
+ =?us-ascii?Q?Mq7QwggMtrENN56+ggnp7Jy7Icvr9UMz6CuMoTDLeaGTSSYpTexREJ8y5cRF?=
+ =?us-ascii?Q?BiSpBuWztsVUOZCmSfte6XahW5eqwBLbp/uNn0DygaDqiBPhc+GzDEhjCFxv?=
+ =?us-ascii?Q?sN/AGH2Eo35oX1urWH++ZJDSMfoLq5q3EA6c9wfBMlGalL2y4defRLtvJ7Pn?=
+ =?us-ascii?Q?sLhqd2NJbGhcjEIS6lg=3D?=
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 0c3149fd-4625-4d89-5268-08dcc860b495
+X-MS-Exchange-CrossTenant-AuthSource: CH3PR12MB7763.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 29 Aug 2024 19:28:05.3282
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: NQkVL2AsDViSjEauNPk+P7UukFZ31hwOm+adNr32kNYXWew/k0YMe7/rIswGdRPV
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN2PR12MB4189
 
+On Thu, Aug 29, 2024 at 06:07:24PM +0000, Suravee Suthikulpanit wrote:
 
-On 8/29/2024 12:49 AM, Krzysztof Kozlowski wrote:
-> On 28/08/2024 22:37, Nikunj Kela wrote:
->> SA8255p Ride platform is an automotive virtual platform. This platform
->> abstracts resources such as clocks, regulators etc. in the firmware VM.
->> The device drivers request resources operations over SCMI using power,
->> performance, reset and sensor protocols.
->>
->> Multiple virtual SCMI instances are being employed for greater parallelism.
->> These instances are tied to devices such that devices can have dedicated
->> SCMI channel. Firmware VM (runs SCMI platform stack) is SMP enabled and
->> can process requests from agents in parallel. Qualcomm smc transport is
->> used for communication between SCMI agent and platform.
->>
->> Let's add the reduced functional support for SA8255p Ride board.
->> Subsequently, the support for PCIe, USB, UFS, Ethernet will be added.
->>
->> Co-developed-by: Shazad Hussain <quic_shazhuss@quicinc.com>
->> Signed-off-by: Shazad Hussain <quic_shazhuss@quicinc.com>
->> Signed-off-by: Nikunj Kela <quic_nkela@quicinc.com>
->> ---
->>  arch/arm64/boot/dts/qcom/Makefile           |    1 +
->>  arch/arm64/boot/dts/qcom/sa8255p-pmics.dtsi |   80 +
->>  arch/arm64/boot/dts/qcom/sa8255p-ride.dts   |  149 ++
->>  arch/arm64/boot/dts/qcom/sa8255p-scmi.dtsi  | 2312 ++++++++++++++++++
->>  arch/arm64/boot/dts/qcom/sa8255p.dtsi       | 2405 +++++++++++++++++++
->>  5 files changed, 4947 insertions(+)
->>  create mode 100644 arch/arm64/boot/dts/qcom/sa8255p-pmics.dtsi
->>  create mode 100644 arch/arm64/boot/dts/qcom/sa8255p-ride.dts
->>  create mode 100644 arch/arm64/boot/dts/qcom/sa8255p-scmi.dtsi
->>  create mode 100644 arch/arm64/boot/dts/qcom/sa8255p.dtsi
->>
-> ...
->
->> diff --git a/arch/arm64/boot/dts/qcom/sa8255p-ride.dts b/arch/arm64/boot/dts/qcom/sa8255p-ride.dts
->> new file mode 100644
->> index 000000000000..1dc03051ad92
->> --- /dev/null
->> +++ b/arch/arm64/boot/dts/qcom/sa8255p-ride.dts
->> @@ -0,0 +1,149 @@
->> +// SPDX-License-Identifier: BSD-3-Clause
->> +/*
->> + * Copyright (c) 2024 Qualcomm Innovation Center, Inc. All rights reserved.
->> + */
->> +
->> +/dts-v1/;
->> +
->> +#include <dt-bindings/gpio/gpio.h>
->> +
->> +#include "sa8255p.dtsi"
->> +#include "sa8255p-pmics.dtsi"
->> +#include "sa8255p-scmi.dtsi"
->> +
->> +/ {
->> +	model = "Qualcomm Technologies, Inc. SA8255P Ride";
->> +	compatible = "qcom,sa8255p-ride", "qcom,sa8255p";
->> +
->> +	aliases {
->> +		i2c11 = &i2c11;
->> +		i2c18 = &i2c18;
->> +		serial0 = &uart10;
->> +		serial1 = &uart4;
->> +		spi16 = &spi16;
->> +		scmichannels = &scmichannels;
-> Nothing parses this.
->
-We are using this alias in bootloader to speed up the parsing. Since we
-are using 64 SCMI instances and SCMI smc transport driver for
-Qualcomm(drivers/firmware/arm_scmi/transports/smc.c) expects
-cap-id(created by hypervisor at boot time), our bootloader gets those
-cap-id for each channel and populate them. This alias is an optimization
-to save boottime as in automotive, boot KPIs are critical.
+> diff --git a/drivers/iommu/amd/iommu.c b/drivers/iommu/amd/iommu.c
+> index 994ed02842b9..93bca5c68bca 100644
+> --- a/drivers/iommu/amd/iommu.c
+> +++ b/drivers/iommu/amd/iommu.c
+> @@ -85,6 +85,47 @@ static void set_dte_entry(struct amd_iommu *iommu,
+>   *
+>   ****************************************************************************/
+>  
+> +static void update_dte256(struct amd_iommu *iommu, struct iommu_dev_data *dev_data,
+> +			  struct dev_table_entry *new)
+> +{
+> +	struct dev_table_entry *dev_table = get_dev_table(iommu);
+> +	struct dev_table_entry *ptr = &dev_table[dev_data->devid];
+> +	struct dev_table_entry old;
+> +	u128 tmp;
+> +
+> +	down_write(&dev_data->dte_sem);
 
+This locking is too narrow, you need the critical region to span from
+the get_dte256() till the update_dte256() because the get is
+retrieving the value written by set_dte_irq_entry(), and it must not
+change while the new DTE is worked on.
 
+I suggest you copy the IRQ data here in this function under the lock
+from old to new and then store it so it is always fresh.
+
+Ideally you would remove get_dte256() because the driver *really*
+shouldn't be changing the DTE in some way that already assumes
+something is in the DTE (for instance my remarks on the nesting work)
+
+Really the only reason to read the DTE is the get the IRQ data..
+
+> +	old.data128[0] = ptr->data128[0];
+> +	old.data128[1] = ptr->data128[1];
+> +
+> +	tmp = cmpxchg128(&ptr->data128[1], old.data128[1], new->data128[1]);
+> +	if (tmp == old.data128[1]) {
+> +		if (!try_cmpxchg128(&ptr->data128[0], &old.data128[0], new->data128[0])) {
+> +			/* Restore hi 128-bit */
+> +			cmpxchg128(&ptr->data128[1], new->data128[1], tmp);
+
+I don't think you should restore, this should reflect a locking error
+but we still need to move forward and put some kind of correct
+data.. The code can't go backwards so it should try to move forwards..
+
+On ordering, I don't know, is this OK?
+
+If you are leaving/entering nesting mode I think you have to write the
+[2] value in the right sequence, you don't want to have the viommu
+enabled unless the host page table is setup properly. So [2] is
+written last when enabling, and first when disabling. Flushes required
+after each write to ensure the HW doesn't see a cross-128 word bit
+tear.
+
+GuestPagingMode also has to be sequenced correctly, the GCR3 table
+pointer should be invalid when it is changed, meaning you have to
+write it and flush before storing the GCR3 table, and the reverse to
+undo it.
+
+The ordering, including when DTE flushes are needed, is pretty
+hard. This is much simpler than, say, ARM, so I think you could open
+code it, but it should be a pretty sizable bit of logic to figure out
+what to do.
+
+> +static void get_dte256(struct amd_iommu *iommu, struct iommu_dev_data *dev_data,
+> +		      struct dev_table_entry *dte)
+> +{
+> +	struct dev_table_entry *ptr;
+> +	struct dev_table_entry *dev_table = get_dev_table(iommu);
+> +
+> +	ptr = &dev_table[dev_data->devid];
+> +
+> +	down_read(&dev_data->dte_sem);
+> +	dte->data128[0] = ptr->data128[0];
+> +	dte->data128[1] = ptr->data128[1];
+> +	up_read(&dev_data->dte_sem);
+
+I don't think you need a rwsem either. As above, you shouldn't be
+reading anyhow to build a DTE, and you can't allow the interrupt
+update to run regardless, so a simple spinlock would be sufficient and
+faster, I think.
+
+> @@ -2681,16 +2732,16 @@ static int amd_iommu_set_dirty_tracking(struct iommu_domain *domain,
+>  	}
+>  
+>  	list_for_each_entry(dev_data, &pdomain->dev_list, list) {
+> -		iommu = get_amd_iommu_from_dev_data(dev_data);
+> +		struct dev_table_entry dte;
+>  
+> -		dev_table = get_dev_table(iommu);
+> -		pte_root = dev_table[dev_data->devid].data[0];
+> +		iommu = get_amd_iommu_from_dev_data(dev_data);
+> +		get_dte256(iommu, dev_data, &dte);
+>  
+> -		pte_root = (enable ? pte_root | DTE_FLAG_HAD :
+> -				     pte_root & ~DTE_FLAG_HAD);
+> +		dte.data[0] = (enable ? dte.data[0] | DTE_FLAG_HAD :
+> +				     dte.data[0] & ~DTE_FLAG_HAD);
 >
->> +
->> +#include <dt-bindings/interrupt-controller/arm-gic.h>
->> +
->> +&firmware {
->> +	scmi0: scmi0 {
-> scmi-0
->
-ACK!
->> +		compatible = "qcom,scmi-smc";
->> +		arm,smc-id = <0xc6008012>;
->> +		shmem = <&shmem0>;
->> +
->> +		interrupts = <GIC_SPI 963 IRQ_TYPE_EDGE_RISING>;
->> +		interrupt-names = "a2p";
->> +
->> +		max-rx-timeout-ms = <3000>;
->> +
->> +		status = "disabled";
-> status is the last property (from properties)
->
-ACK!
-> ...
->
->> +
->> +&soc {
->> +	scmichannels: sram@d0000000 {
->> +		#address-cells = <1>;
->> +		#size-cells = <1>;
->> +		compatible = "mmio-sram";
->> +		reg = <0x0 0xd0000000 0x0 0x40000>;
->> +		ranges = <0x0 0x0 0x0 0xffffffff>;
->> +
->> +		shmem0: scmi-sram@d0000000 {
->> +			compatible = "arm,scmi-shmem";
->> +			reg = <0xd0000000 0x1000>;
->> +		};
->> +
->> +		shmem1: scmi-sram@d0001000 {
->> +			compatible = "arm,scmi-shmem";
->> +			reg = <0xd0001000 0x1000>;
->> +		};
->> +
->> +		shmem2: scmi-sram@d0002000 {
->> +			compatible = "arm,scmi-shmem";
->> +			reg = <0xd0002000 0x1000>;
->> +		};
->> +
->> +		shmem3: scmi-sram@d0003000 {
->> +			compatible = "arm,scmi-shmem";
->> +			reg = <0xd0003000 0x1000>;
->> +		};
->> +
->> +		shmem4: scmi-sram@d0004000 {
->> +			compatible = "arm,scmi-shmem";
->> +			reg = <0xd0004000 0x1000>;
->> +		};
->> +
->> +		shmem5: scmi-sram@d0005000 {
->> +			compatible = "arm,scmi-shmem";
->> +			reg = <0xd0005000 0x1000>;
->> +		};
->> +
->> +		shmem6: scmi-sram@d0006000 {
->> +			compatible = "arm,scmi-shmem";
->> +			reg = <0xd0006000 0x1000>;
->> +		};
->> +
->> +		shmem7: scmi-sram@d0007000 {
->> +			compatible = "arm,scmi-shmem";
->> +			reg = <0xd0007000 0x1000>;
->> +		};
->> +
->> +		shmem8: scmi-sram@d0008000 {
->> +			compatible = "arm,scmi-shmem";
->> +			reg = <0xd0008000 0x1000>;
->> +		};
->> +
->> +		shmem9: scmi-sram@d0009000 {
->> +			compatible = "arm,scmi-shmem";
->> +			reg = <0xd0009000 0x1000>;
->> +		};
->> +
->> +		shmem10: scmi-sram@d000a000 {
->> +			compatible = "arm,scmi-shmem";
->> +			reg = <0xd000a000 0x1000>;
->> +		};
->> +
->> +		shmem11: scmi-sram@d000b000 {
->> +			compatible = "arm,scmi-shmem";
->> +			reg = <0xd000b000 0x1000>;
->> +		};
->> +
->> +		shmem12: scmi-sram@d000c000 {
->> +			compatible = "arm,scmi-shmem";
->> +			reg = <0xd000c000 0x1000>;
->> +		};
->> +
->> +		shmem13: scmi-sram@d000d000 {
->> +			compatible = "arm,scmi-shmem";
->> +			reg = <0xd000d000 0x1000>;
->> +		};
->> +
->> +		shmem14: scmi-sram@d000e000 {
->> +			compatible = "arm,scmi-shmem";
->> +			reg = <0xd000e000 0x1000>;
->> +		};
->> +
->> +		shmem15: scmi-sram@d000f000 {
->> +			compatible = "arm,scmi-shmem";
->> +			reg = <0xd000f000 0x1000>;
->> +		};
->> +
->> +		shmem16: scmi-sram@d0010000 {
->> +			compatible = "arm,scmi-shmem";
->> +			reg = <0xd0010000 0x1000>;
->> +		};
->> +
->> +		shmem17: scmi-sram@d0011000 {
->> +			compatible = "arm,scmi-shmem";
->> +			reg = <0xd0011000 0x1000>;
->> +		};
->> +
->> +		shmem18: scmi-sram@d0012000 {
->> +			compatible = "arm,scmi-shmem";
->> +			reg = <0xd0012000 0x1000>;
->> +		};
->> +
->> +		shmem19: scmi-sram@d0013000 {
->> +			compatible = "arm,scmi-shmem";
->> +			reg = <0xd0013000 0x1000>;
->> +		};
->> +
->> +		shmem20: scmi-sram@d0014000 {
->> +			compatible = "arm,scmi-shmem";
->> +			reg = <0xd0014000 0x1000>;
->> +		};
->> +
->> +		shmem21: scmi-sram@d0015000 {
->> +			compatible = "arm,scmi-shmem";
->> +			reg = <0xd0015000 0x1000>;
->> +		};
->> +
->> +		shmem22: scmi-sram@d0016000 {
->> +			compatible = "arm,scmi-shmem";
->> +			reg = <0xd0016000 0x1000>;
->> +		};
->> +
->> +		shmem23: scmi-sram@d0017000 {
->> +			compatible = "arm,scmi-shmem";
->> +			reg = <0xd0017000 0x1000>;
->> +		};
->> +
->> +		shmem24: scmi-sram@d0018000 {
->> +			compatible = "arm,scmi-shmem";
->> +			reg = <0xd0018000 0x1000>;
->> +		};
->> +
->> +		shmem25: scmi-sram@d0019000 {
->> +			compatible = "arm,scmi-shmem";
->> +			reg = <0xd0019000 0x1000>;
->> +		};
->> +
->> +		shmem26: scmi-sram@d001a000 {
->> +			compatible = "arm,scmi-shmem";
->> +			reg = <0xd001a000 0x1000>;
->> +		};
->> +
->> +		shmem27: scmi-sram@d001b000 {
->> +			compatible = "arm,scmi-shmem";
->> +			reg = <0xd001b000 0x1000>;
->> +		};
->> +
->> +		shmem28: scmi-sram@d001c000 {
->> +			compatible = "arm,scmi-shmem";
->> +			reg = <0xd001c000 0x1000>;
->> +		};
->> +
->> +		shmem29: scmi-sram@d001d000 {
->> +			compatible = "arm,scmi-shmem";
->> +			reg = <0xd001d000 0x1000>;
->> +		};
->> +
->> +		shmem30: scmi-sram@d001e000 {
->> +			compatible = "arm,scmi-shmem";
->> +			reg = <0xd001e000 0x1000>;
->> +		};
->> +
->> +		shmem31: scmi-sram@d001f000 {
->> +			compatible = "arm,scmi-shmem";
->> +			reg = <0xd001f000 0x1000>;
->> +		};
->> +
->> +		shmem32: scmi-sram@d0020000 {
->> +			compatible = "arm,scmi-shmem";
->> +			reg = <0xd0020000 0x1000>;
->> +		};
->> +
->> +		shmem33: scmi-sram@d0021000 {
->> +			compatible = "arm,scmi-shmem";
->> +			reg = <0xd0021000 0x1000>;
->> +		};
->> +
->> +		shmem34: scmi-sram@d0022000 {
->> +			compatible = "arm,scmi-shmem";
->> +			reg = <0xd0022000 0x1000>;
->> +		};
->> +
->> +		shmem35: scmi-sram@d0023000 {
->> +			compatible = "arm,scmi-shmem";
->> +			reg = <0xd0023000 0x1000>;
->> +		};
->> +
->> +		shmem36: scmi-sram@d0024000 {
->> +			compatible = "arm,scmi-shmem";
->> +			reg = <0xd0024000 0x1000>;
->> +		};
->> +
->> +		shmem37: scmi-sram@d0025000 {
->> +			compatible = "arm,scmi-shmem";
->> +			reg = <0xd0025000 0x1000>;
->> +		};
->> +
->> +		shmem38: scmi-sram@d0026000 {
->> +			compatible = "arm,scmi-shmem";
->> +			reg = <0xd0026000 0x1000>;
->> +		};
->> +
->> +		shmem39: scmi-sram@d0027000 {
->> +			compatible = "arm,scmi-shmem";
->> +			reg = <0xd0027000 0x1000>;
->> +		};
->> +
->> +		shmem40: scmi-sram@d0028000 {
->> +			compatible = "arm,scmi-shmem";
->> +			reg = <0xd0028000 0x1000>;
->> +		};
->> +
->> +		shmem41: scmi-sram@d0029000 {
->> +			compatible = "arm,scmi-shmem";
->> +			reg = <0xd0029000 0x1000>;
->> +		};
->> +
->> +		shmem42: scmi-sram@d002a000 {
->> +			compatible = "arm,scmi-shmem";
->> +			reg = <0xd002a000 0x1000>;
->> +		};
->> +
->> +		shmem43: scmi-sram@d002b000 {
->> +			compatible = "arm,scmi-shmem";
->> +			reg = <0xd002b000 0x1000>;
->> +		};
->> +
->> +		shmem44: scmi-sram@d002c000 {
->> +			compatible = "arm,scmi-shmem";
->> +			reg = <0xd002c000 0x1000>;
->> +		};
->> +
->> +		shmem45: scmi-sram@d002d000 {
->> +			compatible = "arm,scmi-shmem";
->> +			reg = <0xd002d000 0x1000>;
->> +		};
->> +
->> +		shmem46: scmi-sram@d002e000 {
->> +			compatible = "arm,scmi-shmem";
->> +			reg = <0xd002e000 0x1000>;
->> +		};
->> +
->> +		shmem47: scmi-sram@d002f000 {
->> +			compatible = "arm,scmi-shmem";
->> +			reg = <0xd002f000 0x1000>;
->> +		};
->> +
->> +		shmem48: scmi-sram@d0030000 {
->> +			compatible = "arm,scmi-shmem";
->> +			reg = <0xd0030000 0x1000>;
->> +		};
->> +
->> +		shmem49: scmi-sram@d0031000 {
->> +			compatible = "arm,scmi-shmem";
->> +			reg = <0xd0031000 0x1000>;
->> +		};
->> +
->> +		shmem50: scmi-sram@d0032000 {
->> +			compatible = "arm,scmi-shmem";
->> +			reg = <0xd0032000 0x1000>;
->> +		};
->> +
->> +		shmem51: scmi-sram@d0033000 {
->> +			compatible = "arm,scmi-shmem";
->> +			reg = <0xd0033000 0x1000>;
->> +		};
->> +
->> +		shmem52: scmi-sram@d0034000 {
->> +			compatible = "arm,scmi-shmem";
->> +			reg = <0xd0034000 0x1000>;
->> +		};
->> +
->> +		shmem53: scmi-sram@d0035000 {
->> +			compatible = "arm,scmi-shmem";
->> +			reg = <0xd0035000 0x1000>;
->> +		};
->> +
->> +		shmem54: scmi-sram@d0036000 {
->> +			compatible = "arm,scmi-shmem";
->> +			reg = <0xd0036000 0x1000>;
->> +		};
->> +
->> +		shmem55: scmi-sram@d0037000 {
->> +			compatible = "arm,scmi-shmem";
->> +			reg = <0xd0037000 0x1000>;
->> +		};
->> +
->> +		shmem56: scmi-sram@d0038000 {
->> +			compatible = "arm,scmi-shmem";
->> +			reg = <0xd0038000 0x1000>;
->> +		};
->> +
->> +		shmem57: scmi-sram@d0039000 {
->> +			compatible = "arm,scmi-shmem";
->> +			reg = <0xd0039000 0x1000>;
->> +		};
->> +
->> +		shmem58: scmi-sram@d003a000 {
->> +			compatible = "arm,scmi-shmem";
->> +			reg = <0xd003a000 0x1000>;
->> +		};
->> +
->> +		shmem59: scmi-sram@d003b000 {
->> +			compatible = "arm,scmi-shmem";
->> +			reg = <0xd003b000 0x1000>;
->> +		};
->> +
->> +		shmem60: scmi-sram@d003c000 {
->> +			compatible = "arm,scmi-shmem";
->> +			reg = <0xd003c000 0x1000>;
->> +		};
->> +
->> +		shmem61: scmi-sram@d003d000 {
->> +			compatible = "arm,scmi-shmem";
->> +			reg = <0xd003d000 0x1000>;
->> +		};
->> +
->> +		shmem62: scmi-sram@d003e000 {
->> +			compatible = "arm,scmi-shmem";
->> +			reg = <0xd003e000 0x1000>;
->> +		};
->> +
->> +		shmem63: scmi-sram@d003f000 {
->> +			compatible = "arm,scmi-shmem";
->> +			reg = <0xd003f000 0x1000>;
->> +		};
->> +	};
->> +};
->> diff --git a/arch/arm64/boot/dts/qcom/sa8255p.dtsi b/arch/arm64/boot/dts/qcom/sa8255p.dtsi
->> new file mode 100644
->> index 000000000000..c354f76ffa5e
->> --- /dev/null
->> +++ b/arch/arm64/boot/dts/qcom/sa8255p.dtsi
->> @@ -0,0 +1,2405 @@
->> +// SPDX-License-Identifier: BSD-3-Clause
->> +/*
->> + * Copyright (c) 2024 Qualcomm Innovation Center, Inc. All rights reserved.
->> + */
->> +
->> +#include <dt-bindings/interrupt-controller/arm-gic.h>
->> +#include <dt-bindings/mailbox/qcom-ipcc.h>
->> +
->> +/ {
->> +	interrupt-parent = <&intc>;
->> +
->> +	#address-cells = <2>;
->> +	#size-cells = <2>;
->> +
->> +	clocks {
->> +		xo_board_clk: xo-board-clk {
->> +			compatible = "fixed-clock";
->> +			#clock-cells = <0>;
->> +		};
->> +
->> +		sleep_clk: sleep-clk {
->> +			compatible = "fixed-clock";
->> +			#clock-cells = <0>;
->> +		};
->> +
->> +		gpll0_board_clk: gpll0-board-clk {
->> +			compatible = "fixed-clock";
->> +			#clock-cells = <0>;
->> +		};
->> +
->> +		bi_tcxo_div2: bi-tcxo-div2-clk {
->> +			compatible = "fixed-factor-clock";
->> +			clocks = <&xo_board_clk>;
->> +			clock-mult = <1>;
->> +			clock-div = <2>;
->> +			#clock-cells = <0>;
->> +		};
->> +	};
->> +
->> +	cpus {
->> +		#address-cells = <2>;
->> +		#size-cells = <0>;
->> +
->> +		CPU0: cpu@0 {
-> Lowercase label.
-ACK!
->
-> ...
->
-> Best regards,
-> Krzysztof
->
+
+And this doesn't need all the logic just to flip one bit in a single
+64bit quantity..
+
+Jason
