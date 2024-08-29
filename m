@@ -1,76 +1,67 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.13])
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.7])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2C03918DF7A;
-	Thu, 29 Aug 2024 09:37:27 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.13
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8E7431591E8;
+	Thu, 29 Aug 2024 10:11:18 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.7
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1724924249; cv=none; b=EwPhNAXX04cX2lc4JXeB5K5WsWmEKxxHN71CM9e/7dD7LmN/wqdAxXto+BVxQd7UgWZaDoZ3SvpMZqY0jv7EHYsMbTrK8uVUqtSpSY0awzoxj9Vh0sPH1g0vmf4+M97pMMSHJWnti1FZoqQBNJMUevYLf1cTX9AAVfs41x1Nw58=
+	t=1724926280; cv=none; b=UpRX4en7MSvby/T7CY9XcRysWkHxpY1y2dC4+dRfWIr5zUy6u/c+A8FuopPkLpdUSDPyHSC0kaLZ+hwyMWX2APgkrruyYsPvhb3lYHUd9g64c7VkcPRGN5XgWRLGkyFPpmqqCYd2LQLIBbqOrFPq1j+3eCYi+W4/Y6ICDNrnZeA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1724924249; c=relaxed/simple;
-	bh=AsQiOUdqeFNaOGTs/WOSOkZKmODY99yIldxyKcZ3eP0=;
+	s=arc-20240116; t=1724926280; c=relaxed/simple;
+	bh=94IiuIvOyuRU0qMnj7v0g0Xw4A2gYZ1syGqXRZ+CIaU=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=bhv+ZT3+21VCb11jLa+Cp1S09uKA2eX6gFDTvg5RzYviJMHi36eIOGJbvuc0YmedZmJhfaNELYIIAAzANva822WQbVwpvqOP5Y7cZwHnM2gO7c9bFqN7N23XJrdvO6LYBBVB10uZBK/v4975UJvECZb4PyrWJ9+L34xaLVkXCAo=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=V0k1Ed0p; arc=none smtp.client-ip=198.175.65.13
+	 Content-Type:Content-Disposition:In-Reply-To; b=MQtmo2eqlId7KGPLHFKaahu5HgHXkFM8XYDdHi1pQe/mLQm8VhBv6bcf9thwCrwDMEBRcz52A8f8Oi5XyE0XmXkc1ncC7/P+8Iqd1BqIuh4zQ4FE1XEwD1zwcwsqr6lUjTsjBURBmyarLU8hJ2Arj/ou/r+kde3/4hTZkzly9PY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=Lur3fVn3; arc=none smtp.client-ip=192.198.163.7
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="V0k1Ed0p"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="Lur3fVn3"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1724924248; x=1756460248;
+  t=1724926279; x=1756462279;
   h=date:from:to:cc:subject:message-id:references:
    mime-version:in-reply-to;
-  bh=AsQiOUdqeFNaOGTs/WOSOkZKmODY99yIldxyKcZ3eP0=;
-  b=V0k1Ed0p0KORm8YAKC0XRtqNSJIYuGZrws9omNF9KysP02l0cRzkhwrn
-   HWVWJtt9gdZskHmY5G3/Jk3EZSwtaBnoBOH2UklQ6T1d1Wbiy1QPKXiez
-   Klwnw4f28KljQlLZDy/Olv2loWU3yYfBCjLPNLiucXRawDUvDUxadZaKS
-   6U9FRXrckYY3lzaUwDomvOPx9cPZyQbPn3+DHAyPsJcFR455CKkIWUdnK
-   Kfgv+VZSK+hR2iTielyxo0uqLXF8DXpXu0PS6R1lUo06zpLwwtEQXre9l
-   zporukM29EO/MLxTR+e9TdTT6SXVdDiFoutkhpBLx7DHRkzVoCOdlAfSp
-   Q==;
-X-CSE-ConnectionGUID: UDYxJb9rSUy3pdNRY6oa4w==
-X-CSE-MsgGUID: o3B72SAJQZOVHDDM1ShKFw==
-X-IronPort-AV: E=McAfee;i="6700,10204,11178"; a="34659696"
+  bh=94IiuIvOyuRU0qMnj7v0g0Xw4A2gYZ1syGqXRZ+CIaU=;
+  b=Lur3fVn3K0P+DXtLjRblEZhhvxJ0prfShysdZO6Nn+43ePTKCOm5uYLu
+   oXP9aMmgBArS4lGWyMq3cT7b5Me7EpfXZ8k/T467uKgmFQtbyiBZvzDpL
+   YTe8U4lidfpX7+KR0QZAGitSuoGct+++35MDesc8ER38BgMQDzieCjPBA
+   Ptfw8AogfsapkJZiURO8TEz6xC6O/xtk0eK5yQwhoSsYMyA8HOtDBE4Jv
+   GeOAvKz2zRilJ4NJw4NOr2d6nFL/3Unn8wP8oEjRmWWsg1zXGI1EOb8qT
+   YgA3Gmrl1QoGuLpoK3RQXt3BcxNkzp05siloz2fVcW8yZ4cGo1cW4ZYzB
+   w==;
+X-CSE-ConnectionGUID: euS1SoxhTAKh7FUw258krw==
+X-CSE-MsgGUID: 4zhYTaPnSVatysStdUOIMQ==
+X-IronPort-AV: E=McAfee;i="6700,10204,11178"; a="48890782"
 X-IronPort-AV: E=Sophos;i="6.10,185,1719903600"; 
-   d="scan'208";a="34659696"
-Received: from orviesa006.jf.intel.com ([10.64.159.146])
-  by orvoesa105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Aug 2024 02:37:28 -0700
-X-CSE-ConnectionGUID: +v6HzWNLTYGlHe9yRXv/xg==
-X-CSE-MsgGUID: nuiL9r1NRTaSeHbvhO9P7A==
+   d="scan'208";a="48890782"
+Received: from fmviesa010.fm.intel.com ([10.60.135.150])
+  by fmvoesa101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Aug 2024 03:11:18 -0700
+X-CSE-ConnectionGUID: Ajut8FPHT1+YMFmHPeQN8g==
+X-CSE-MsgGUID: uJo872E1Td+a1ZuXluMi9w==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.10,185,1719903600"; 
-   d="scan'208";a="63859002"
+   d="scan'208";a="63726679"
 Received: from yilunxu-optiplex-7050.sh.intel.com (HELO localhost) ([10.239.159.165])
-  by orviesa006.jf.intel.com with ESMTP; 29 Aug 2024 02:37:23 -0700
-Date: Thu, 29 Aug 2024 17:34:52 +0800
+  by fmviesa010.fm.intel.com with ESMTP; 29 Aug 2024 03:11:14 -0700
+Date: Thu, 29 Aug 2024 18:08:47 +0800
 From: Xu Yilun <yilun.xu@linux.intel.com>
-To: Jason Gunthorpe <jgg@nvidia.com>
-Cc: "Tian, Kevin" <kevin.tian@intel.com>,
-	Alexey Kardashevskiy <aik@amd.com>,
-	"kvm@vger.kernel.org" <kvm@vger.kernel.org>,
-	"iommu@lists.linux.dev" <iommu@lists.linux.dev>,
-	"linux-coco@lists.linux.dev" <linux-coco@lists.linux.dev>,
-	"linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>,
+To: Alexey Kardashevskiy <aik@amd.com>
+Cc: kvm@vger.kernel.org, iommu@lists.linux.dev, linux-coco@lists.linux.dev,
+	linux-pci@vger.kernel.org,
 	Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
 	Alex Williamson <alex.williamson@redhat.com>,
-	"Williams, Dan J" <dan.j.williams@intel.com>,
-	"pratikrajesh.sampat@amd.com" <pratikrajesh.sampat@amd.com>,
-	"michael.day@amd.com" <michael.day@amd.com>,
-	"david.kaplan@amd.com" <david.kaplan@amd.com>,
-	"dhaval.giani@amd.com" <dhaval.giani@amd.com>,
+	Dan Williams <dan.j.williams@intel.com>,
+	pratikrajesh.sampat@amd.com, michael.day@amd.com,
+	david.kaplan@amd.com, dhaval.giani@amd.com,
 	Santosh Shukla <santosh.shukla@amd.com>,
 	Tom Lendacky <thomas.lendacky@amd.com>,
 	Michael Roth <michael.roth@amd.com>, Alexander Graf <agraf@suse.de>,
 	Nikunj A Dadhania <nikunj@amd.com>,
-	Vasant Hegde <vasant.hegde@amd.com>, Lukas Wunner <lukas@wunner.de>,
-	"david@redhat.com" <david@redhat.com>
-Subject: Re: [RFC PATCH 12/21] KVM: IOMMUFD: MEMFD: Map private pages
-Message-ID: <ZtBAvKyWWiF5mYqc@yilunxu-OptiPlex-7050>
+	Vasant Hegde <vasant.hegde@amd.com>, Lukas Wunner <lukas@wunner.de>
+Subject: Re: [RFC PATCH 11/21] KVM: SEV: Add TIO VMGEXIT and bind TDI
+Message-ID: <ZtBIr5IrnZF4z3cp@yilunxu-OptiPlex-7050>
 References: <20240823132137.336874-1-aik@amd.com>
- <20240823132137.336874-13-aik@amd.com>
- <BN9PR11MB5276D14D4E3F9CB26FBDE36C8C8B2@BN9PR11MB5276.namprd11.prod.outlook.com>
- <20240826123024.GF3773488@nvidia.com>
+ <20240823132137.336874-12-aik@amd.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -79,58 +70,159 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20240826123024.GF3773488@nvidia.com>
+In-Reply-To: <20240823132137.336874-12-aik@amd.com>
 
-On Mon, Aug 26, 2024 at 09:30:24AM -0300, Jason Gunthorpe wrote:
-> On Mon, Aug 26, 2024 at 08:39:25AM +0000, Tian, Kevin wrote:
-> > > IOMMUFD calls get_user_pages() for every mapping which will allocate
-> > > shared memory instead of using private memory managed by the KVM and
-> > > MEMFD.
-> > > 
-> > > Add support for IOMMUFD fd to the VFIO KVM device's KVM_DEV_VFIO_FILE
-> > > API
-> > > similar to already existing VFIO device and VFIO group fds.
-> > > This addition registers the KVM in IOMMUFD with a callback to get a pfn
-> > > for guest private memory for mapping it later in the IOMMU.
-> > > No callback for free as it is generic folio_put() for now.
-> > > 
-> > > The aforementioned callback uses uptr to calculate the offset into
-> > > the KVM memory slot and find private backing pfn, copies
-> > > kvm_gmem_get_pfn() pretty much.
-> > > 
-> > > This relies on private pages to be pinned beforehand.
-> > > 
-> > 
-> > There was a related discussion [1] which leans toward the conclusion
-> > that the IOMMU page table for private memory will be managed by
-> > the secure world i.e. the KVM path.
-> 
-> It is still effectively true, AMD's design has duplication, the RMP
-> table has the mappings to validate GPA and that is all managed in the
-> secure world.
-> 
-> They just want another copy of that information in the unsecure world
-> in the form of page tables :\
-> 
-> > btw going down this path it's clearer to extend the MAP_DMA
-> > uAPI to accept {gmemfd, offset} than adding a callback to KVM.
-> 
-> Yes, we want a DMA MAP from memfd sort of API in general. So it should
-> go directly to guest memfd with no kvm entanglement.
+> diff --git a/virt/kvm/vfio.c b/virt/kvm/vfio.c
+> index 76b7f6085dcd..a4e9db212adc 100644
+> --- a/virt/kvm/vfio.c
+> +++ b/virt/kvm/vfio.c
+> @@ -15,6 +15,7 @@
+>  #include <linux/slab.h>
+>  #include <linux/uaccess.h>
+>  #include <linux/vfio.h>
+> +#include <linux/tsm.h>
+>  #include "vfio.h"
+>  
+>  #ifdef CONFIG_SPAPR_TCE_IOMMU
+> @@ -29,8 +30,14 @@ struct kvm_vfio_file {
+>  #endif
+>  };
+>  
+> +struct kvm_vfio_tdi {
+> +	struct list_head node;
+> +	struct vfio_device *vdev;
+> +};
+> +
+>  struct kvm_vfio {
+>  	struct list_head file_list;
+> +	struct list_head tdi_list;
+>  	struct mutex lock;
+>  	bool noncoherent;
+>  };
+> @@ -80,6 +87,22 @@ static bool kvm_vfio_file_is_valid(struct file *file)
+>  	return ret;
+>  }
+>  
+> +static struct vfio_device *kvm_vfio_file_device(struct file *file)
+> +{
+> +	struct vfio_device *(*fn)(struct file *file);
+> +	struct vfio_device *ret;
+> +
+> +	fn = symbol_get(vfio_file_device);
+> +	if (!fn)
+> +		return NULL;
+> +
+> +	ret = fn(file);
+> +
+> +	symbol_put(vfio_file_device);
+> +
+> +	return ret;
+> +}
+> +
+>  #ifdef CONFIG_SPAPR_TCE_IOMMU
+>  static struct iommu_group *kvm_vfio_file_iommu_group(struct file *file)
+>  {
+> @@ -297,6 +320,103 @@ static int kvm_vfio_set_file(struct kvm_device *dev, long attr,
+>  	return -ENXIO;
+>  }
+>  
+> +static int kvm_dev_tsm_bind(struct kvm_device *dev, void __user *arg)
+> +{
+> +	struct kvm_vfio *kv = dev->private;
+> +	struct kvm_vfio_tsm_bind tb;
+> +	struct kvm_vfio_tdi *ktdi;
+> +	struct vfio_device *vdev;
+> +	struct fd fdev;
+> +	int ret;
+> +
+> +	if (copy_from_user(&tb, arg, sizeof(tb)))
+> +		return -EFAULT;
+> +
+> +	ktdi = kzalloc(sizeof(*ktdi), GFP_KERNEL_ACCOUNT);
+> +	if (!ktdi)
+> +		return -ENOMEM;
+> +
+> +	fdev = fdget(tb.devfd);
+> +	if (!fdev.file)
+> +		return -EBADF;
+> +
+> +	ret = -ENOENT;
+> +
+> +	mutex_lock(&kv->lock);
+> +
+> +	vdev = kvm_vfio_file_device(fdev.file);
+> +	if (vdev) {
+> +		ret = kvm_arch_tsm_bind(dev->kvm, vdev->dev, tb.guest_rid);
+> +		if (!ret) {
+> +			ktdi->vdev = vdev;
+> +			list_add_tail(&ktdi->node, &kv->tdi_list);
+> +		} else {
+> +			vfio_put_device(vdev);
+> +		}
+> +	}
+> +
+> +	fdput(fdev);
+> +	mutex_unlock(&kv->lock);
+> +	if (ret)
+> +		kfree(ktdi);
+> +
+> +	return ret;
+> +}
+> +
+> +static int kvm_dev_tsm_unbind(struct kvm_device *dev, void __user *arg)
+> +{
+> +	struct kvm_vfio *kv = dev->private;
+> +	struct kvm_vfio_tsm_bind tb;
+> +	struct kvm_vfio_tdi *ktdi;
+> +	struct vfio_device *vdev;
+> +	struct fd fdev;
+> +	int ret;
+> +
+> +	if (copy_from_user(&tb, arg, sizeof(tb)))
+> +		return -EFAULT;
+> +
+> +	fdev = fdget(tb.devfd);
+> +	if (!fdev.file)
+> +		return -EBADF;
+> +
+> +	ret = -ENOENT;
+> +
+> +	mutex_lock(&kv->lock);
+> +
+> +	vdev = kvm_vfio_file_device(fdev.file);
+> +	if (vdev) {
+> +		list_for_each_entry(ktdi, &kv->tdi_list, node) {
+> +			if (ktdi->vdev != vdev)
+> +				continue;
+> +
+> +			kvm_arch_tsm_unbind(dev->kvm, vdev->dev);
+> +			list_del(&ktdi->node);
+> +			kfree(ktdi);
+> +			vfio_put_device(vdev);
+> +			ret = 0;
+> +			break;
+> +		}
+> +		vfio_put_device(vdev);
+> +	}
+> +
+> +	fdput(fdev);
+> +	mutex_unlock(&kv->lock);
+> +	return ret;
+> +}
+> +
+> +static int kvm_vfio_set_device(struct kvm_device *dev, long attr,
+> +			       void __user *arg)
+> +{
+> +	switch (attr) {
+> +	case KVM_DEV_VFIO_DEVICE_TDI_BIND:
+> +		return kvm_dev_tsm_bind(dev, arg);
 
-A uAPI like ioctl(MAP_DMA, gmemfd, offset, iova) still means userspace
-takes control of the IOMMU mapping in the unsecure world. But as
-mentioned, the unsecure world mapping is just a "copy" and has no
-generic meaning without the CoCo-VM context. Seems no need for userspace
-to repeat the "copy" for IOMMU.
-
-Maybe userspace could just find a way to link the KVM context to IOMMU
-at the first place, then let KVM & IOMMU directly negotiate the mapping
-at runtime.
+I think the TDI bind operation should be under the control of the device
+owner (i.e. VFIO driver), rather than in this bridge driver. The TDI bind
+means TDI would be transitioned to CONFIG_LOCKED state, and a bunch of
+device configurations breaks the state (TDISP spec 11.4.5/8/9). So the
+VFIO driver should be fully aware of the TDI bind and manage unwanted
+breakage.
 
 Thanks,
 Yilun
-
-> 
-> Jason
-> 
