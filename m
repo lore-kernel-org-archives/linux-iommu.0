@@ -1,165 +1,353 @@
-Received: from NAM11-CO1-obe.outbound.protection.outlook.com (mail-co1nam11on2067.outbound.protection.outlook.com [40.107.220.67])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-wr1-f45.google.com (mail-wr1-f45.google.com [209.85.221.45])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A837619FA93;
-	Thu, 29 Aug 2024 13:20:08 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.220.67
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1724937610; cv=fail; b=YXCxs+iaJViYVcIEdUmiV+3sAJatrqy58I9n9ep1S28z/LrnWehUhiwxSS6PdXS4mVc5tPzmsQYyBBZ6+kpcWfF1AdngvOfuWWT5tSFbXGk9gZ6HT0wcNO2QYIwepfGFffeM6JQqHxvp79qK4QlqfFsv9y33DpiZN97n4YjaGHE=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1724937610; c=relaxed/simple;
-	bh=xWqM8lzQ3bs/DJ8qYHpn6vt2WyfT6R6cdTAGDOolOgA=;
-	h=From:To:Cc:Subject:Date:Message-ID:Content-Type:MIME-Version; b=ul80GWfNidLiQAyCTXfFz9hHZ6uHpqKD/X0j/9Bk629xhlyXQBKae/I0j57AWuhcPHqYxxBjkpWB3w4OmQQJ6No63HMEowHoY/A3MS0yLelNI+rlpHrKPYQ5w146V29D6YeJK9xov1K09A+2W9woaUcUsme+ChKsna14hCcd9hs=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=dpRYlynr; arc=fail smtp.client-ip=40.107.220.67
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 066B61A76CD
+	for <iommu@lists.linux.dev>; Thu, 29 Aug 2024 13:42:18 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.45
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1724938941; cv=none; b=QVDzZR1NNF4odxww1Oae/Le/16U2emQTT6zX/6QFS01PjBg0gEOAMpoaBlyIUO1pJviGDm8JPUYQpoeMxPNcA8OcF/3faqyN1lCQfeFfwpckqLlOX5kIKE7S/dEsYTl80znyJmLxYLNiJYPzLS80uSKTI9tociEYcd3Kjkl4cZA=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1724938941; c=relaxed/simple;
+	bh=L76/jqU1d7ykiedxMf5jftkbRCnxP2rtHG9Zh6FhgQI=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=SxGdpwbzq2/dW8HlDV41WZS4d2GscS7usLEmq/KtemB8CYEv2MJuQHeEmJvmofIPkuNNOMUSqkmlBJDT7FK/UeC4tSs15+Ydz3SqGHZTQtUBdOS+okYZRV2FigxBDpQ7cYSDVsL4VGXfrRytGW0Ca6HskZfiOlhSd3n4XjKqut8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org; spf=pass smtp.mailfrom=linaro.org; dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b=zNGqQC87; arc=none smtp.client-ip=209.85.221.45
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linaro.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="dpRYlynr"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=K7/hJ4tCV0HMo+rDJhZdwS/i0wzQ4bUAkoqjmL256uL55mML2d5qKOsiRO6iMsemxeMB5ol3MocYiwjjuF7cWrYrJbDLCxTUeACqY9P/PokaUAUdsjDbhz5SfDepqqV/EtVUnB2JMjpdrJYU0N1XvS6lvkEk/uNMJDaQeNT2Asdavxbi1nVwBhAOZr+hIhcn3jZ3rnOQRfPBIeomzkT4Dc2C4McqvW1aphS1TmeiXwbIqVkWJWOSC1cX1+/xKfIGsVd0UY8KN9NO5Y9ySG1hBDXzHXRDdblo8ckat8h89rbZqFAbyyyAoNRZVKku3wpGi0Khr8QyJOctMSeD/ZOdiA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=9aG7zfSlS0Km1IyMVw4CfuEN8YAJe51S1HsVnLiCuH4=;
- b=eQ+Jln45ZEbqDCUViWNtrtlbB5CDcsDJKmvGIRF2kpnBsh3wbdPH4bmOTxRKuNzROqK/7dQFn/rQjaKVHt9/Eh0YctD7a0X4T4fgxOqv8tJwXOkGcRWZXM/bkVau1obviNMRErkzEaPy7/VswW63ynOdZBhrnl4Mnb7GLeoJ6Y8GZ+d/ZNM5ah2iM0RCTUCRQna4kpc47Bms1rKBSU0Wox2TdC4dpV7D04d/UlsCZoXlbTsWwJBiTIDwpPIgVMiboEktPVl4xaqhZY/yonQ6e8qpRTA52ehS1a4QdSUiRSpVxDR77xYeWU5GclH6KwslEBwBkKcdEm8BA72xIiUM1A==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=9aG7zfSlS0Km1IyMVw4CfuEN8YAJe51S1HsVnLiCuH4=;
- b=dpRYlynrLmaLpreWZnGEQ+ctHfe64fFYckNdvoQECEQ7uvEk8ainq2TF8Ad+vN5GD3AsEw4WVC5sRCZDa7kzkLGO0YEiibBxu/im3A6PCY7OwNLy2YqYc/ohkIFCbiD4WJ5I4BeYLNP4OzqzS6VQwdqxkeHJlaF2e5niEcMKZC8OVPnn5FlkIHkJJo8b/6117DxkulJmbzTaplOkggwr07HtZEG3nNGqLukXB4SF169nJJZ9hBCZqsETFX2Ozz9zit6o2ZF6G/OIksJRavHBrvryTzi8uPa17WYxMaelbtCiJT7GhA7HUjY4eaOWgnSvq4eF+NhpaVfZDuHEVcAFaw==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-Received: from CH3PR12MB7763.namprd12.prod.outlook.com (2603:10b6:610:145::10)
- by CYYPR12MB8921.namprd12.prod.outlook.com (2603:10b6:930:c7::14) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7897.28; Thu, 29 Aug
- 2024 13:20:03 +0000
-Received: from CH3PR12MB7763.namprd12.prod.outlook.com
- ([fe80::8b63:dd80:c182:4ce8]) by CH3PR12MB7763.namprd12.prod.outlook.com
- ([fe80::8b63:dd80:c182:4ce8%3]) with mapi id 15.20.7897.027; Thu, 29 Aug 2024
- 13:20:00 +0000
-From: Jason Gunthorpe <jgg@nvidia.com>
-To: iommu@lists.linux.dev
-Cc: Kevin Tian <kevin.tian@intel.com>,
-	Nicolin Chen <nicolinc@nvidia.com>,
-	patches@lists.linux.dev,
-	Yi Liu <yi.l.liu@intel.com>
-Subject: [PATCH] iommufd: Check the domain owner of the parent before creating a nesting domain
-Date: Thu, 29 Aug 2024 10:19:59 -0300
-Message-ID: <0-v1-c8770519edde+1a-iommufd_nesting_ops_jgg@nvidia.com>
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-ClientProxiedBy: MN0P222CA0021.NAMP222.PROD.OUTLOOK.COM
- (2603:10b6:208:531::28) To CH3PR12MB7763.namprd12.prod.outlook.com
- (2603:10b6:610:145::10)
+	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="zNGqQC87"
+Received: by mail-wr1-f45.google.com with SMTP id ffacd0b85a97d-3718acbc87fso402340f8f.3
+        for <iommu@lists.linux.dev>; Thu, 29 Aug 2024 06:42:18 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google; t=1724938937; x=1725543737; darn=lists.linux.dev;
+        h=content-transfer-encoding:in-reply-to:organization:reply-to
+         :autocrypt:from:content-language:references:cc:to:subject:user-agent
+         :mime-version:date:message-id:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=FoG6gOdHf1HP1VTDv7088giQSQCBpAPPzy76E7CMM/M=;
+        b=zNGqQC87IghtZG3Gpa8LmChXgwBR6RPPjNX6n8ap4+p8KRgZB5M41TyIFC8FA1q0rG
+         75cE+/0SKhR3UACuur3t4ogP+HxTzj+xG1rAwcul9PSQ9r1LRUMAyrg26HVN0fZ5CIPG
+         ocYPyixYBWnR7Q6bLdXX2Hpb9KavbxB4238n+TJEIwXKK2uFL0FaZCfyH2xRkj2bhp2f
+         smeymuepcQ63djQnZmlxLedUfX312Gif2ct3uqBk3aBFD9wswMuLqyopQXQkF19dVgar
+         DQ+20UsDlF+2V9sxeBQerbMYseyKslAX8DPb+Fa/j2gHdVl3eoehaRICYV2KmOt85M64
+         ICIA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1724938937; x=1725543737;
+        h=content-transfer-encoding:in-reply-to:organization:reply-to
+         :autocrypt:from:content-language:references:cc:to:subject:user-agent
+         :mime-version:date:message-id:x-gm-message-state:from:to:cc:subject
+         :date:message-id:reply-to;
+        bh=FoG6gOdHf1HP1VTDv7088giQSQCBpAPPzy76E7CMM/M=;
+        b=VlYHhdURpJ5yoYJeA3WFDAQpG3b68bXGRG02d8CEE7znGJOJohg07fc8ZpMcuIkNsy
+         b5ihA6ut8dywbBbJRX/G/yCLVPDgR74p89J7lJNY60Gaz1t6lPDuc3Jue80OJCnIZfQD
+         PdWW1hcVmLQJ5+vGpDUxJRUJDYGEYyTttSVw3mg9jDBpSAh/gy52SKy7BxWv/noiVlF3
+         qfgRALnitOtI3Ivtqaz4Rlu327KGR5r5MwVZGNP3aRgIBACoJtmQdYlcJ/BOg4fTkbx6
+         LZR+YhEPITjFLcTLmUhwPS9xGRJ4oOFXzoRfMtgfRq+rADXw/VLYsxNHpTS8D2ew5ZL6
+         NooQ==
+X-Forwarded-Encrypted: i=1; AJvYcCUiY29rlrJnTfIy/0hDNyUfw/guGCUisoxXF18QxlNby4vuqFwECLAEt/QTOTSme/oHtqAWNQ==@lists.linux.dev
+X-Gm-Message-State: AOJu0YwMXJ7DJBvDmwlMrumRxzajKHyTScsE4McuJCYcnLqnC7WiCa4R
+	mBW/3Wg70tzaCEerx+t+am5i6rDIiAg1ls6spCCECmGwHKmyCVKAooWHD32x4IlvyFy7ZQbVInW
+	1
+X-Google-Smtp-Source: AGHT+IGwp2POMNuFsNOjvR1h4v001LYW5woE4Fg94qROfG+HCsBrUKihhEXJ04uGl/HbRFmrohuXlg==
+X-Received: by 2002:a05:6000:1a47:b0:367:95e6:158a with SMTP id ffacd0b85a97d-3749b58e42bmr1623520f8f.63.1724938936800;
+        Thu, 29 Aug 2024 06:42:16 -0700 (PDT)
+Received: from ?IPV6:2a01:e0a:982:cbb0:12f5:c9c:a0e1:6915? ([2a01:e0a:982:cbb0:12f5:c9c:a0e1:6915])
+        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-42ba639d440sm52654195e9.13.2024.08.29.06.42.15
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 29 Aug 2024 06:42:16 -0700 (PDT)
+Message-ID: <1a0c7282-63e0-4add-8e38-3abe3e0a8e2f@linaro.org>
+Date: Thu, 29 Aug 2024 15:42:14 +0200
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: CH3PR12MB7763:EE_|CYYPR12MB8921:EE_
-X-MS-Office365-Filtering-Correlation-Id: 5dc921d2-8e37-4c16-9a85-08dcc82d4925
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;ARA:13230040|376014|1800799024|366016;
-X-Microsoft-Antispam-Message-Info:
-	=?us-ascii?Q?V1szBfLLMjO9jE4gBpTFjiUTTIGkbO01MK0cUeguvHSgmamP4QoEopvlpO/e?=
- =?us-ascii?Q?WyvEpaLw3l98DMtyOvt4xacRd/WjLe1YN2o61sZYsYNsvAWNgEDK6MITgkjK?=
- =?us-ascii?Q?Y1HL8iYYhvLDMx4GfUI1dABK4MM6i8LoAslhaCpvAjDeK8QPFl8PiCdG0ucc?=
- =?us-ascii?Q?YWoHHL1JsBWvvcB7iRgz4LhEXjqmZmM5gThfzAyTxmRwOl1tSPgVAvwrghkm?=
- =?us-ascii?Q?KotOx1A8j5HN9Yt7CEqfrumLc9yKR+FkiRWwpxvKanadJ+mxxSyWscV2R/RR?=
- =?us-ascii?Q?8u5+BbC37Itz3hxlMpjIt1wQi7Luj3CtX/Kjf0A4sriVl3u/jqvoRNZ3BpwB?=
- =?us-ascii?Q?RD58NwPFDP187JEGG7Yz6GWjpJ4KGKPeWNZyg1wVNp1fEJlm3wicmi2lRUj1?=
- =?us-ascii?Q?9cl3iM747zyPTe+r3uXuT2x8VBrji1ZustRb//gZgEr+BE4G1dFasdLFAmfe?=
- =?us-ascii?Q?W2LPz+goQtksgQcIrEQUvWwKDHum/BZh5HdiOOYp08vd1EcxzvVGSyPeNavH?=
- =?us-ascii?Q?mT7tfiN29l4as8ZVADFjfSpkUvwEhKPdbVm6TrDUsQgVdrttnU9S8NI/IOie?=
- =?us-ascii?Q?HOKLs9gEPvTQuXBGUAuouje63p9TvJCQ1dzmgA110wjvbnuGZMlyGdI1gdo7?=
- =?us-ascii?Q?sPSAD3fnEao2TmjGCIwrtvI/L1t2qGifI87qS0ZtWL2zoPscx+Ft/zxiQrcg?=
- =?us-ascii?Q?faOp3TG+65jge9b1Po3980L/QpMauqa28VxmkSl8NphZXwljmiNS1m9A+M8H?=
- =?us-ascii?Q?NH65oYSViKF1tZGoqwzbe00yklIBkA3Y8P3LYT6zbZ8yco0VhwtcQFRIG0uf?=
- =?us-ascii?Q?UXdMnplUJfY32/OJxHe7J4wz6k5w9D3YZtT/iiSCfXP2qs+mqu/C2HGEM0jf?=
- =?us-ascii?Q?y7++cq4qifSATfLzcINCqb1Zdeyvl3t2XgbUCj5oLwsHrxdehR9Cee39/BDO?=
- =?us-ascii?Q?LkZrufjStYOyYX4YN0RpSlCVA2hGHOLJAvuXMlKzWge4QjBioPwi4ptUFAqH?=
- =?us-ascii?Q?FKcTLhLzkMfcA8a+xuZjYKdW3sC9flbaPejUwXOASx/zv7ADkY2H3vR6Z/kT?=
- =?us-ascii?Q?yN9onjqpU/0dcG/Ke5ISXxtR5Tk4/M1MGob8bFS/iH8DulNNr4RWLdYpgddE?=
- =?us-ascii?Q?xti9drz/tUwKCwTuKXA9M2mjDf1Wf7dh9PWP8cMeLSPRl3XIlLA1hOBen/6s?=
- =?us-ascii?Q?Zkb++6sCIX3zCZSEEScQI1Gh/bHuCkzWZVVYAuFtHKOBZpcTwMGcXrvOW8U5?=
- =?us-ascii?Q?Rk4L8xtADuV0tAgVlTKc6Gr/yM+Imf5dOVaBx+C3BDbgkJs/DvpJRFLHVuS1?=
- =?us-ascii?Q?PTdQvW2Xxn/WVXrnzondXr33nvBHMvfFyJ5XszcIXaRcXg=3D=3D?=
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CH3PR12MB7763.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(376014)(1800799024)(366016);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?us-ascii?Q?zEekORMOZwUGAYQ7BDx9xklq5nY0cMk9T0w618xoF9rx7/ge5LBkoI033Hg1?=
- =?us-ascii?Q?Jd8K7Qw+V6iHMu1aTDXCCRrR2hgpnS29C5BiI76gPFVDicD8FM6d2OTOG2C8?=
- =?us-ascii?Q?FaJfvnF512BDo2E75+s3CWsQ8XxDmmEDDNyKrr2Ctz82BlhEXM/ncwPS9dKE?=
- =?us-ascii?Q?r0YLkWvf4kRQHogyjchedeTXXTyFlInDjTzIyjGsaH89dawQHBInsuPb5ve9?=
- =?us-ascii?Q?+p22QqAvWKuJ/UfYBI/Ew20BuVv9X6kavxn7BzC6Ig5izNkMuo/dwWk0tx2+?=
- =?us-ascii?Q?qoBTSu2ZM/s+XEH1PJkd24u51nfZgwk9c3Q5alGqZajj/fhqntDeuv48RpNY?=
- =?us-ascii?Q?B434QltrUK5jNC3Hf+ko2mwaxYah/YiN9+8DuAlMyypyhfE9Q0r6WZEpSy6d?=
- =?us-ascii?Q?vXF4Z3OI5ASWs46EL15NjSQrFGiKnAkuLMtotTleE7paKgyMF7ggX1ER8nDy?=
- =?us-ascii?Q?SdeJYD9RbdgrU38jUoim+xg3gH1eT0yBxm89wa7RznL/vtqDZ9KJxozagAP0?=
- =?us-ascii?Q?vqTnwY3+dpxzIO+PpKrw7GzPphs5Xueqs8HXFIimDar2Pv+ocAx4pHB+sSlk?=
- =?us-ascii?Q?j7VUrapELHXX3c354/iJBlvBHG3vs1eE6q0RhSaakrTYMnUDwvcVoq+Vi26r?=
- =?us-ascii?Q?rWAWNJXDQhbdylwJ4bQ/fFw4S731zx4vnPmtvkiCwlyzQ8awR8TPv0PsNZ3L?=
- =?us-ascii?Q?pEi4HWxfAGker/ZAWC6UAuN/5L/1G6L9qv/d1qxiIgwa8Ay3qQ2sy1QE8Ynb?=
- =?us-ascii?Q?/PpkM7rNvLX0wVND4vECpx/c8JOi6tebQYs8CPdkW2SMWn7wb8sBMSNO1Ydg?=
- =?us-ascii?Q?6KEUGvWF4N+F6rPQoLFvCaJxESntJiqV+8+BjJDvWZgs3qhmPAFNni5Nt8we?=
- =?us-ascii?Q?e/EsOPXNJLuhP8rN7/jORKB+T66p9+S9rJCnj+m1yxaUxbiXWkdD4T3E6n43?=
- =?us-ascii?Q?Hw0rNbSvnJD+TNglDTSYtT9tb1VMcoqUvHdWfKjGbg0wNEdMGG955gGB7Pue?=
- =?us-ascii?Q?meqxC7iOYdYNJkcVA6LraPyhA4jz4C+bMXsHv5g1khy1m9WADyZD8GGeW0gX?=
- =?us-ascii?Q?nTlg9sooSXPI8LQiFiNKvYMHkvOKIit5e1MxkZku+ExIEh2gRc/Y0KKrCewr?=
- =?us-ascii?Q?E4kbI7MFgqMs642tEx8/RKD8VTB4OjDitjx8odeleW82+3GRWsG8/bNZekWO?=
- =?us-ascii?Q?yl0kv6SVpNjzJajUSvqbu5crWGuOaNc5rJ/dzpSzdZEAmtM9/3PFKdugUI3y?=
- =?us-ascii?Q?jLAr9nkgUvhVKsDpe9R6JQ1KLfCTkwG0Xlmi6nmp1G07wPFv26rPj68dRmmR?=
- =?us-ascii?Q?CVcU5HEOOhy2G0THEVHsuik3MXb7vDX30iPh2FpxEEndp6LoH42yky0n4Tjh?=
- =?us-ascii?Q?423HcCvN3KSDc8JyAeL5HQXhMOtkAqyk6miX+Mv92aLPrzpS5nxsj25Y5mcZ?=
- =?us-ascii?Q?JXtAAKgLpQRUbi2WCf0vPiQJmjIqZJZTSlqRcfp8ehKP58I3QoprmTRLRnnO?=
- =?us-ascii?Q?XKz85im/UhlUeS/TpcqcTm2XIF9Ipp0sGLXsW3oNeqh68bcp1I2mrfFdrVUV?=
- =?us-ascii?Q?MpeCzu7zB1OhoJTiFvemmOXdTMherGFZ3GLfl5yT?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 5dc921d2-8e37-4c16-9a85-08dcc82d4925
-X-MS-Exchange-CrossTenant-AuthSource: CH3PR12MB7763.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 29 Aug 2024 13:20:00.7290
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: FAItdkMD9dqixVc9odQrtxOtH9du3323zNzkyPvcQy76flBC0TWKEDOtEMWVNmHK
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: CYYPR12MB8921
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v6 RESED 1/2] dma: replace zone_dma_bits by zone_dma_limit
+To: Baruch Siach <baruch@tkos.co.il>, Christoph Hellwig <hch@lst.de>,
+ Marek Szyprowski <m.szyprowski@samsung.com>,
+ Catalin Marinas <catalin.marinas@arm.com>, Will Deacon <will@kernel.org>
+Cc: Robin Murphy <robin.murphy@arm.com>, iommu@lists.linux.dev,
+ linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+ linuxppc-dev@lists.ozlabs.org, linux-s390@vger.kernel.org,
+ =?UTF-8?B?UGV0ciBUZXNhxZnDrWs=?= <petr@tesarici.cz>,
+ Ramon Fried <ramon@neureality.ai>, Elad Nachman <enachman@marvell.com>,
+ linux-arm-msm <linux-arm-msm@vger.kernel.org>
+References: <cover.1723359916.git.baruch@tkos.co.il>
+ <17c067618b93e5d71f19c37826d54db4299621a3.1723359916.git.baruch@tkos.co.il>
+Content-Language: en-US, fr
+From: Neil Armstrong <neil.armstrong@linaro.org>
+Autocrypt: addr=neil.armstrong@linaro.org; keydata=
+ xsBNBE1ZBs8BCAD78xVLsXPwV/2qQx2FaO/7mhWL0Qodw8UcQJnkrWmgTFRobtTWxuRx8WWP
+ GTjuhvbleoQ5Cxjr+v+1ARGCH46MxFP5DwauzPekwJUD5QKZlaw/bURTLmS2id5wWi3lqVH4
+ BVF2WzvGyyeV1o4RTCYDnZ9VLLylJ9bneEaIs/7cjCEbipGGFlfIML3sfqnIvMAxIMZrvcl9
+ qPV2k+KQ7q+aXavU5W+yLNn7QtXUB530Zlk/d2ETgzQ5FLYYnUDAaRl+8JUTjc0CNOTpCeik
+ 80TZcE6f8M76Xa6yU8VcNko94Ck7iB4vj70q76P/J7kt98hklrr85/3NU3oti3nrIHmHABEB
+ AAHNKk5laWwgQXJtc3Ryb25nIDxuZWlsLmFybXN0cm9uZ0BsaW5hcm8ub3JnPsLAkQQTAQoA
+ OwIbIwULCQgHAwUVCgkICwUWAgMBAAIeAQIXgBYhBInsPQWERiF0UPIoSBaat7Gkz/iuBQJk
+ Q5wSAhkBAAoJEBaat7Gkz/iuyhMIANiD94qDtUTJRfEW6GwXmtKWwl/mvqQtaTtZID2dos04
+ YqBbshiJbejgVJjy+HODcNUIKBB3PSLaln4ltdsV73SBcwUNdzebfKspAQunCM22Mn6FBIxQ
+ GizsMLcP/0FX4en9NaKGfK6ZdKK6kN1GR9YffMJd2P08EO8mHowmSRe/ExAODhAs9W7XXExw
+ UNCY4pVJyRPpEhv373vvff60bHxc1k/FF9WaPscMt7hlkbFLUs85kHtQAmr8pV5Hy9ezsSRa
+ GzJmiVclkPc2BY592IGBXRDQ38urXeM4nfhhvqA50b/nAEXc6FzqgXqDkEIwR66/Gbp0t3+r
+ yQzpKRyQif3OwE0ETVkGzwEIALyKDN/OGURaHBVzwjgYq+ZtifvekdrSNl8TIDH8g1xicBYp
+ QTbPn6bbSZbdvfeQPNCcD4/EhXZuhQXMcoJsQQQnO4vwVULmPGgtGf8PVc7dxKOeta+qUh6+
+ SRh3vIcAUFHDT3f/Zdspz+e2E0hPV2hiSvICLk11qO6cyJE13zeNFoeY3ggrKY+IzbFomIZY
+ 4yG6xI99NIPEVE9lNBXBKIlewIyVlkOaYvJWSV+p5gdJXOvScNN1epm5YHmf9aE2ZjnqZGoM
+ Mtsyw18YoX9BqMFInxqYQQ3j/HpVgTSvmo5ea5qQDDUaCsaTf8UeDcwYOtgI8iL4oHcsGtUX
+ oUk33HEAEQEAAcLAXwQYAQIACQUCTVkGzwIbDAAKCRAWmrexpM/4rrXiB/sGbkQ6itMrAIfn
+ M7IbRuiSZS1unlySUVYu3SD6YBYnNi3G5EpbwfBNuT3H8//rVvtOFK4OD8cRYkxXRQmTvqa3
+ 3eDIHu/zr1HMKErm+2SD6PO9umRef8V82o2oaCLvf4WeIssFjwB0b6a12opuRP7yo3E3gTCS
+ KmbUuLv1CtxKQF+fUV1cVaTPMyT25Od+RC1K+iOR0F54oUJvJeq7fUzbn/KdlhA8XPGzwGRy
+ 4zcsPWvwnXgfe5tk680fEKZVwOZKIEuJC3v+/yZpQzDvGYJvbyix0lHnrCzq43WefRHI5XTT
+ QbM0WUIBIcGmq38+OgUsMYu4NzLu7uZFAcmp6h8g
+Reply-To: neil.armstrong@linaro.org
+Organization: Linaro
+In-Reply-To: <17c067618b93e5d71f19c37826d54db4299621a3.1723359916.git.baruch@tkos.co.il>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-This check was missed, before we can pass a struct iommu_domain to a
-driver callback we need to validate that the domain was created by that
-driver.
+Hi,
 
-Fixes: bd529dbb661d ("iommufd: Add a nested HW pagetable object")
-Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
----
- drivers/iommu/iommufd/hw_pagetable.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+On 11/08/2024 09:09, Baruch Siach wrote:
+> From: Catalin Marinas <catalin.marinas@arm.com>
+> 
+> Hardware DMA limit might not be power of 2. When RAM range starts above
+> 0, say 4GB, DMA limit of 30 bits should end at 5GB. A single high bit
+> can not encode this limit.
+> 
+> Use plain address for DMA zone limit.
+> 
+> Since DMA zone can now potentially span beyond 4GB physical limit of
+> DMA32, make sure to use DMA zone for GFP_DMA32 allocations in that case.
+> 
+> Signed-off-by: Catalin Marinas <catalin.marinas@arm.com>
+> Co-developed-by: Baruch Siach <baruch@tkos.co.il>
+> Signed-off-by: Baruch Siach <baruch@tkos.co.il>
+> ---
+>   arch/arm64/mm/init.c       | 30 +++++++++++++++---------------
+>   arch/powerpc/mm/mem.c      |  5 ++++-
+>   arch/s390/mm/init.c        |  2 +-
+>   include/linux/dma-direct.h |  2 +-
+>   kernel/dma/direct.c        |  6 +++---
+>   kernel/dma/pool.c          |  4 ++--
+>   kernel/dma/swiotlb.c       |  6 +++---
+>   7 files changed, 29 insertions(+), 26 deletions(-)
+> 
 
-diff --git a/drivers/iommu/iommufd/hw_pagetable.c b/drivers/iommu/iommufd/hw_pagetable.c
-index aefde4443671ed..d06bf6e6c19fd2 100644
---- a/drivers/iommu/iommufd/hw_pagetable.c
-+++ b/drivers/iommu/iommufd/hw_pagetable.c
-@@ -225,7 +225,8 @@ iommufd_hwpt_nested_alloc(struct iommufd_ctx *ictx,
- 	if ((flags & ~IOMMU_HWPT_FAULT_ID_VALID) ||
- 	    !user_data->len || !ops->domain_alloc_user)
- 		return ERR_PTR(-EOPNOTSUPP);
--	if (parent->auto_domain || !parent->nest_parent)
-+	if (parent->auto_domain || !parent->nest_parent ||
-+	    parent->common.domain->owner != ops)
- 		return ERR_PTR(-EINVAL);
- 
- 	hwpt_nested = __iommufd_object_alloc(
+<snip>
 
-base-commit: d2138b9e6ff3f3261b68066313b69adc05af1929
--- 
-2.46.0
+This change breaks the Qualcomm SM8550-HDK boot since next-20240826.
+It doesn't affect SM8550-QRD or other similar SoCs like SM8650 or SM8450.
+The last CI run on next-20240828 can be found at:
+https://git.codelinaro.org/linaro/qcomlt/ci/staging/cdba-tester/-/pipelines/100936
+
+SM8550-HDK boot log:
+https://git.codelinaro.org/linaro/qcomlt/ci/staging/cdba-tester/-/jobs/165617
+
+bisect log:
+# bad: [b18bbfc14a38b5234e09c2adcf713e38063a7e6e] Add linux-next specific files for 20240829
+# good: [5be63fc19fcaa4c236b307420483578a56986a37] Linux 6.11-rc5
+git bisect start 'FETCH_HEAD' 'v6.11-rc5'
+# bad: [dc09f0263a0accf41821d260f4bf7ad9a4f7b7d8] Merge branch 'for-next' of git://git.kernel.org/pub/scm/linux/kernel/git/bpf/bpf-next.git
+git bisect bad dc09f0263a0accf41821d260f4bf7ad9a4f7b7d8
+# bad: [97c7e618752776e03f50311400bb73c01489fb17] Merge branch 'for-next' of git://github.com/Xilinx/linux-xlnx.git
+git bisect bad 97c7e618752776e03f50311400bb73c01489fb17
+# good: [27ad8eb339a5e3f96aed5f3a3b5901994ce7856d] Merge branch 'clang-format' of https://github.com/ojeda/linux.git
+git bisect good 27ad8eb339a5e3f96aed5f3a3b5901994ce7856d
+# bad: [fd34d49f6d8dbd157b17b675dc51a145cdad580c] Merge branch 'for-next' of git://git.kernel.org/pub/scm/linux/kernel/git/khilman/linux-omap.git
+git bisect bad fd34d49f6d8dbd157b17b675dc51a145cdad580c
+# bad: [29f35e8cf8bff7c69a740edb1cf3d62d211f5a43] Merge branch 'for-next' of git://git.kernel.org/pub/scm/linux/kernel/git/amlogic/linux.git
+git bisect bad 29f35e8cf8bff7c69a740edb1cf3d62d211f5a43
+# good: [41860d49473c0c09dc0a2a4d148047f97aaa2539] perf sched: Use perf_tool__init()
+git bisect good 41860d49473c0c09dc0a2a4d148047f97aaa2539
+# good: [6236ebe07131a7746d870f1d8eb3637a8df13e70] perf daemon: Fix the build on more 32-bit architectures
+git bisect good 6236ebe07131a7746d870f1d8eb3637a8df13e70
+# good: [92b0d033c80c882e6be26dfeeb2f24c53bdeeee6] Merge branches 'for-next/acpi', 'for-next/misc', 'for-next/perf', 'for-next/selftests' and 'for-next/timers' into for-next/core
+git bisect good 92b0d033c80c882e6be26dfeeb2f24c53bdeeee6
+# bad: [5db893307df81f0c1dd6b6f167dc263e88ba855a] Merge branch 'for-next' of git://git.kernel.org/pub/scm/linux/kernel/git/rmk/linux.git
+git bisect bad 5db893307df81f0c1dd6b6f167dc263e88ba855a
+# bad: [f65eaf209abc5f4761623aaa1e110bdb6de124ed] Merge branch 'for-next' of git://git.infradead.org/users/hch/dma-mapping.git
+git bisect bad f65eaf209abc5f4761623aaa1e110bdb6de124ed
+# bad: [f69e342eec008e1bab772d3963c3dd9979293e13] dma-mapping: call ->unmap_page and ->unmap_sg unconditionally
+git bisect bad f69e342eec008e1bab772d3963c3dd9979293e13
+# bad: [ba0fb44aed47693cc2482427f63ba6cd19051327] dma-mapping: replace zone_dma_bits by zone_dma_limit
+git bisect bad ba0fb44aed47693cc2482427f63ba6cd19051327
+# good: [fa3c109a6d302b56437a6412c5f3044c3e12de03] dma-mapping: use bit masking to check VM_DMA_COHERENT
+git bisect good fa3c109a6d302b56437a6412c5f3044c3e12de03
+# first bad commit: [ba0fb44aed47693cc2482427f63ba6cd19051327] dma-mapping: replace zone_dma_bits by zone_dma_limit
+
+Boot log with earlycon:
+[    0.000000] Booting Linux on physical CPU 0x0000000000 [0x411fd461]
+[    0.000000] Linux version 6.11.0-rc5-next-20240829-07694-gb36219e63903 (narmstrong@arrakeen.starnux.net) (aarch64-none-linux-gnu-gcc (Arm GNU Toolchain 13.2.rel1 (Build arm-13.7)) 13.2.1 20231009, GNU ld (Arm GNU Toolchain 13.2.rel1 (Build arm-13.7)) 2.41.0.20231009) #397 SMP PREEMPT Thu Aug 29 15:25:39 CEST 2024
+[    0.000000] KASLR enabled
+[    0.000000] random: crng init done
+[    0.000000] Machine model: Qualcomm Technologies, Inc. SM8550 HDK
+[    0.000000] printk: debug: ignoring loglevel setting.
+[    0.000000] efi: UEFI not found.
+[    0.000000] [Firmware Bug]: Kernel image misaligned at boot, please fix your bootloader!
+[    0.000000] OF: reserved mem: 0x0000000080000000..0x00000000809fffff (10240 KiB) nomap non-reusable hyp-region@80000000
+[    0.000000] OF: reserved mem: 0x0000000080a00000..0x0000000080dfffff (4096 KiB) nomap non-reusable cpusys-vm-region@80a00000
+[    0.000000] OF: reserved mem: 0x0000000080e00000..0x00000000811cffff (3904 KiB) nomap non-reusable hyp-tags-region@80e00000
+[    0.000000] OF: reserved mem: 0x00000000811d0000..0x00000000811fffff (192 KiB) nomap non-reusable hyp-tags-reserved-region@811d0000
+[    0.000000] OF: reserved mem: 0x0000000081a00000..0x0000000081c5ffff (2432 KiB) nomap non-reusable xbl-dt-log-merged-region@81a00000
+[    0.000000] OF: reserved mem: 0x0000000081c60000..0x0000000081c7ffff (128 KiB) nomap non-reusable aop-cmd-db-region@81c60000
+[    0.000000] OF: reserved mem: 0x0000000081c80000..0x0000000081cf3fff (464 KiB) nomap non-reusable aop-config-merged-region@81c80000
+[    0.000000] OF: reserved mem: 0x0000000081d00000..0x0000000081efffff (2048 KiB) nomap non-reusable smem@81d00000
+[    0.000000] OF: reserved mem: 0x0000000081f00000..0x0000000081f1ffff (128 KiB) nomap non-reusable adsp-mhi-region@81f00000
+[    0.000000] OF: reserved mem: 0x0000000082600000..0x00000000826fffff (1024 KiB) nomap non-reusable global-sync-region@82600000
+[    0.000000] OF: reserved mem: 0x0000000082700000..0x00000000827fffff (1024 KiB) nomap non-reusable tz-stat-region@82700000
+[    0.000000] OF: reserved mem: 0x0000000082800000..0x0000000086dfffff (71680 KiB) nomap non-reusable cdsp-secure-heap-region@82800000
+[    0.000000] OF: reserved mem: 0x000000008a800000..0x000000009affffff (270336 KiB) nomap non-reusable mpss-region@8a800000
+[    0.000000] OF: reserved mem: 0x000000009b000000..0x000000009b07ffff (512 KiB) nomap non-reusable q6-mpss-dtb-region@9b000000
+[    0.000000] OF: reserved mem: 0x000000009b080000..0x000000009b08ffff (64 KiB) nomap non-reusable ipa-fw-region@9b080000
+[    0.000000] OF: reserved mem: 0x000000009b090000..0x000000009b099fff (40 KiB) nomap non-reusable ipa-gsi-region@9b090000
+[    0.000000] OF: reserved mem: 0x000000009b09a000..0x000000009b09bfff (8 KiB) nomap non-reusable gpu-micro-code-region@9b09a000
+[    0.000000] OF: reserved mem: 0x000000009b100000..0x000000009b27ffff (1536 KiB) nomap non-reusable spss-region@9b100000
+[    0.000000] OF: reserved mem: 0x000000009b280000..0x000000009b2dffff (384 KiB) nomap non-reusable spu-tz-shared-region@9b280000
+[    0.000000] OF: reserved mem: 0x000000009b2e0000..0x000000009b2fffff (128 KiB) nomap non-reusable spu-modem-shared-region@9b2e0000
+[    0.000000] OF: reserved mem: 0x000000009b300000..0x000000009bafffff (8192 KiB) nomap non-reusable camera-region@9b300000
+[    0.000000] OF: reserved mem: 0x000000009bb00000..0x000000009c1fffff (7168 KiB) nomap non-reusable video-region@9bb00000
+[    0.000000] OF: reserved mem: 0x000000009c200000..0x000000009c8fffff (7168 KiB) nomap non-reusable cvp-region@9c200000
+[    0.000000] OF: reserved mem: 0x000000009c900000..0x000000009e8fffff (32768 KiB) nomap non-reusable cdsp-region@9c900000
+[    0.000000] OF: reserved mem: 0x000000009e900000..0x000000009e97ffff (512 KiB) nomap non-reusable q6-cdsp-dtb-region@9e900000
+[    0.000000] OF: reserved mem: 0x000000009e980000..0x000000009e9fffff (512 KiB) nomap non-reusable q6-adsp-dtb-region@9e980000
+[    0.000000] OF: reserved mem: 0x000000009ea00000..0x00000000a2a7ffff (66048 KiB) nomap non-reusable adspslpi-region@9ea00000
+[    0.000000] OF: reserved mem: 0x00000000d4a80000..0x00000000d4cfffff (2560 KiB) nomap non-reusable rmtfs-region@d4a80000
+[    0.000000] OF: reserved mem: 0x00000000d4d00000..0x00000000d7ffffff (52224 KiB) nomap non-reusable mpss-dsm-region@d4d00000
+[    0.000000] OF: reserved mem: 0x00000000d8000000..0x00000000d80fffff (1024 KiB) nomap non-reusable tz-reserved-region@d8000000
+[    0.000000] OF: reserved mem: 0x00000000d8100000..0x00000000d813ffff (256 KiB) nomap non-reusable xbl-sc-region@d8100000
+[    0.000000] OF: reserved mem: 0x00000000d8140000..0x00000000d82fffff (1792 KiB) nomap non-reusable cpucp-fw-region@d8140000
+[    0.000000] OF: reserved mem: 0x00000000d8300000..0x00000000d87fffff (5120 KiB) nomap non-reusable qtee-region@d8300000
+[    0.000000] OF: reserved mem: 0x00000000d8800000..0x00000000e11fffff (141312 KiB) nomap non-reusable ta-region@d8800000
+[    0.000000] OF: reserved mem: 0x00000000e1200000..0x00000000e393ffff (40192 KiB) nomap non-reusable tz-tags-region@e1200000
+[    0.000000] OF: reserved mem: 0x00000000e6440000..0x00000000e66b8fff (2532 KiB) nomap non-reusable hwfence-shbuf-region@e6440000
+[    0.000000] OF: reserved mem: 0x00000000f3600000..0x00000000f80edfff (76728 KiB) nomap non-reusable trust-ui-vm-region@f3600000
+[    0.000000] OF: reserved mem: 0x00000000f80ee000..0x00000000f80eefff (4 KiB) nomap non-reusable trust-ui-vm-dump-region@f80ee000
+[    0.000000] OF: reserved mem: 0x00000000f80ef000..0x00000000f80f7fff (36 KiB) nomap non-reusable trust-ui-vm-qrt-region@f80ef000
+[    0.000000] OF: reserved mem: 0x00000000f80f8000..0x00000000f80fbfff (16 KiB) nomap non-reusable trust-ui-vm-vblk0-ring-region@f80f8000
+[    0.000000] OF: reserved mem: 0x00000000f80fc000..0x00000000f80fffff (16 KiB) nomap non-reusable trust-ui-vm-vblk1-ring-region@f80fc000
+[    0.000000] OF: reserved mem: 0x00000000f8100000..0x00000000f81fffff (1024 KiB) nomap non-reusable trust-ui-vm-swiotlb-region@f8100000
+[    0.000000] OF: reserved mem: 0x00000000f8400000..0x00000000fcbfffff (73728 KiB) nomap non-reusable oem-vm-region@f8400000
+[    0.000000] OF: reserved mem: 0x00000000fcc00000..0x00000000fcc03fff (16 KiB) nomap non-reusable oem-vm-vblk0-ring-region@fcc00000
+[    0.000000] OF: reserved mem: 0x00000000fcc04000..0x00000000fcd03fff (1024 KiB) nomap non-reusable oem-vm-swiotlb-region@fcc04000
+[    0.000000] OF: reserved mem: 0x00000000fce00000..0x00000000ff6fffff (41984 KiB) nomap non-reusable hyp-ext-tags-region@fce00000
+[    0.000000] OF: reserved mem: 0x00000000ff700000..0x00000000ff7fffff (1024 KiB) nomap non-reusable hyp-ext-reserved-region@ff700000
+[    0.000000] earlycon: qcom_geni0 at MMIO 0x0000000000a9c000 (options '115200n8')
+[    0.000000] printk: legacy bootconsole [qcom_geni0] enabled
+[    0.000000] NUMA: Faking a node at [mem 0x0000000080000000-0x0000000affffffff]
+[    0.000000] NODE_DATA(0) allocated [mem 0xafe933200-0xafe93583f]
+[    0.000000] Zone ranges:
+[    0.000000]   DMA      [mem 0x0000000080000000-0x0000000affffffff]
+[    0.000000]   DMA32    empty
+[    0.000000]   Normal   empty
+[    0.000000] Movable zone start for each node
+[    0.000000] Early memory node ranges
+[    0.000000]   node   0: [mem 0x0000000080000000-0x0000000080dfffff]
+[    0.000000]   node   0: [mem 0x00000000811d0000-0x00000000811fffff]
+[    0.000000]   node   0: [mem 0x0000000081200000-0x00000000819fffff]
+[    0.000000]   node   0: [mem 0x0000000081a00000-0x0000000081cf3fff]
+[    0.000000]   node   0: [mem 0x0000000081cf4000-0x0000000081cfffff]
+[    0.000000]   node   0: [mem 0x0000000081d00000-0x0000000081f1ffff]
+[    0.000000]   node   0: [mem 0x0000000081f20000-0x00000000825fffff]
+[    0.000000]   node   0: [mem 0x0000000082600000-0x0000000086dfffff]
+[    0.000000]   node   0: [mem 0x0000000086e00000-0x000000008a7fffff]
+[    0.000000]   node   0: [mem 0x000000008a800000-0x000000009b09bfff]
+[    0.000000]   node   0: [mem 0x000000009b09c000-0x000000009b0fffff]
+[    0.000000]   node   0: [mem 0x000000009b100000-0x00000000a2a7ffff]
+[    0.000000]   node   0: [mem 0x00000000a2a80000-0x00000000d4a7ffff]
+[    0.000000]   node   0: [mem 0x00000000d4a80000-0x00000000d7ffffff]
+[    0.000000]   node   0: [mem 0x00000000d8140000-0x00000000d815ffff]
+[    0.000000]   node   0: [mem 0x00000000e1bb0000-0x00000000e393ffff]
+[    0.000000]   node   0: [mem 0x00000000e3940000-0x00000000e643ffff]
+[    0.000000]   node   0: [mem 0x00000000e6440000-0x00000000e66b8fff]
+[    0.000000]   node   0: [mem 0x00000000e66b9000-0x00000000f35fffff]
+[    0.000000]   node   0: [mem 0x00000000f3600000-0x00000000f81fffff]
+[    0.000000]   node   0: [mem 0x00000000f8200000-0x00000000f83fffff]
+[    0.000000]   node   0: [mem 0x00000000f8400000-0x00000000fcd03fff]
+[    0.000000]   node   0: [mem 0x00000000fcd04000-0x00000000fcdfffff]
+[    0.000000]   node   0: [mem 0x00000000fce00000-0x00000000ff7fffff]
+[    0.000000]   node   0: [mem 0x00000000ff800000-0x00000000ffffffff]
+[    0.000000]   node   0: [mem 0x0000000880000000-0x00000008b99fffff]
+[    0.000000]   node   0: [mem 0x00000008c0000000-0x0000000affffffff]
+[    0.000000] Initmem setup node 0 [mem 0x0000000080000000-0x0000000affffffff]
+[    0.000000] On node 0, zone DMA: 976 pages in unavailable ranges
+[    0.000000] On node 0, zone DMA: 320 pages in unavailable ranges
+[    0.000000] On node 0, zone DMA: 39504 pages in unavailable ranges
+[    0.000000] On node 0, zone DMA: 26112 pages in unavailable ranges
+[    0.000000] cma: Reserved 32 MiB at 0x0000000880000000 on node -1
+[    0.000000] psci: probing for conduit method from DT.
+[    0.000000] psci: PSCIv1.1 detected in firmware.
+[    0.000000] psci: Using standard PSCI v0.2 function IDs
+[    0.000000] psci: MIGRATE_INFO_TYPE not supported.
+[    0.000000] psci: SMC Calling Convention v1.3
+[    0.000000] psci: OSI mode supported.
+[    0.000000] percpu: Embedded 25 pages/cpu s61656 r8192 d32552 u102400
+[    0.000000] pcpu-alloc: s61656 r8192 d32552 u102400 alloc=25*4096
+[    0.000000] pcpu-alloc: [0] 0 [0] 1 [0] 2 [0] 3 [0] 4 [0] 5 [0] 6 [0] 7
+[    0.000000] Detected PIPT I-cache on CPU0
+[    0.000000] CPU features: detected: Address authentication (architected QARMA5 algorithm)
+[    0.000000] CPU features: detected: GIC system register CPU interface
+[    0.000000] CPU features: detected: Spectre-v4
+[    0.000000] CPU features: detected: ARM erratum 2457168
+[    0.000000] CPU features: detected: ARM erratum 2658417
+[    0.000000] CPU features: detected: ARM errata 2966298, 3117295
+[    0.000000] alternatives: applying boot alternatives
+[    0.000000] Kernel command line: earlycon root= allow_mismatched_32bit_el0 clk_ignore_unused pd_ignore_unused systemd.mask=rmtfs.service ignore_loglevel -- androidboot.verifiedbootstate=orange androidboot.keymaster=1  androidboot.bootdevice=1d84000.ufshc androidboot.fstab_suffix=default androidboot.boot_devices=soc/1d84000.ufshc androidboot.serialno=2a7a254f androidboot.baseband=apq androidboot.force_normal_boot=1
+[    0.000000] Dentry cache hash table entries: 2097152 (order: 12, 16777216 bytes, linear)
+[    0.000000] Inode-cache hash table entries: 1048576 (order: 11, 8388608 bytes, linear)
+[    0.000000] Fallback order for Node 0: 0
+[    0.000000] Built 1 zonelists, mobility grouping on.  Total pages: 3078816
+[    0.000000] Policy zone: DMA
+[    0.000000] mem auto-init: stack:all(zero), heap alloc:off, heap free:off
+[    0.000000] software IO TLB: SWIOTLB bounce buffer size adjusted to 11MB
+[    0.000000] software IO TLB: area num 8.
+[    0.000000] software IO TLB: SWIOTLB bounce buffer size roundup to 16MB
+[    0.000000] software IO TLB: mapped [mem 0x0000000aeff38000-0x0000000af0f38000] (16MB)
+[    0.000000] SLUB: HWalign=64, Order=0-3, MinObjects=0, CPUs=8, Nodes=1
+[    0.000000] rcu: Preemptible hierarchical RCU implementation.
+[    0.000000] rcu: 	RCU event tracing is enabled.
+[    0.000000] rcu: 	RCU restricting CPUs from NR_CPUS=512 to nr_cpu_ids=8.
+[    0.000000] 	Trampoline variant of Tasks RCU enabled.
+[    0.000000] 	Tracing variant of Tasks RCU enabled.
+[    0.000000] rcu: RCU calculated value of scheduler-enlistment delay is 25 jiffies.
+[    0.000000] rcu: Adjusting geometry for rcu_fanout_leaf=16, nr_cpu_ids=8
+[    0.000000] RCU Tasks: Setting shift to 3 and lim to 1 rcu_task_cb_adjust=1 rcu_task_cpu_ids=8.
+[    0.000000] RCU Tasks Trace: Setting shift to 3 and lim to 1 rcu_task_cb_adjust=1 rcu_task_cpu_ids=8.
+[    0.000000] NR_IRQS: 64, nr_irqs: 64, preallocated irqs: 0
+[    0.000000] GICv3: 988 SPIs implemented
+[    0.000000] GICv3: 0 Extended SPIs implemented
+[    0.000000] Root IRQ handler: gic_handle_irq
+[    0.000000] GICv3: GICv3 features: 16 PPIs, DirectLPI
+[    0.000000] GICv3: GICD_CTRL.DS=1, SCR_EL3.FIQ=0
+[    0.000000] GICv3: Enabling SGIs without active state
+[    0.000000] GICv3: CPU0: found redistributor 0 region 0:0x0000000017180000
+[    0.000000] ITS [mem 0x17140000-0x1715ffff]
+[    0.000000] ITS@0x0000000017140000: Devices Table too large, reduce ids 32->19
+[    0.000000] ITS@0x0000000017140000: Devices too large, reduce ITS pages 1024->256
+[    0.000000] ITS@0x0000000017140000: allocated 131072 Devices @81500000 (indirect, esz 8, psz 4K, shr 1)
+[    0.000000] ITS@0x0000000017140000: allocated 4096 Interrupt Collections @8145b000 (flat, esz 1, psz 4K, shr 1)
+[    0.000000] GICv3: using LPI property table @0x0000000081470000
+[    0.000000] GICv3: CPU0: using allocated LPI pending table @0x0000000081480000
+[    0.000000] rcu: srcu_init: Setting srcu_struct sizes based on contention.
+[    0.000000] arch_timer: cp15 and mmio timer(s) running at 19.20MHz (virt/virt).
+[    0.000000] clocksource: arch_sys_counter: mask: 0xffffffffffffff max_cycles: 0x46d987e47, max_idle_ns: 440795202767 ns
+[    0.000000] sched_clock: 56 bits at 19MHz, resolution 52ns, wraps every 4398046511078ns
+[    0.008355] arm-pv: using stolen time PV
+[    0.012595] Console: colour dummy device 80x25
+[    0.017182] printk: legacy console [tty0] enabled
+[    0.022031] printk: legacy bootconsole [qcom_geni0] disabled
+<----------------->
+
+System handler takes over, I'll analyze the system firmware logs to understand which access made the crash.
+
+I tested the "arm64: mm: fix DMA zone when dma-ranges is missing" patch at [1], but it doesn't help.
+
+[1] https://lore.kernel.org/all/d8e92b14181fc815773ac4f4bba70b5d48bc390e.1724838684.git.baruch@tkos.co.il/
+
+Neil
+
+#regzbot introduced: ba0fb44aed47693cc2482427f63ba6cd19051327
+
 
