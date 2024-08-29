@@ -1,154 +1,118 @@
-Received: from mail-yb1-f201.google.com (mail-yb1-f201.google.com [209.85.219.201])
+Received: from mail-qt1-f174.google.com (mail-qt1-f174.google.com [209.85.160.174])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 37A76191F7C
-	for <iommu@lists.linux.dev>; Thu, 29 Aug 2024 12:05:12 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.219.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DA1941922F2
+	for <iommu@lists.linux.dev>; Thu, 29 Aug 2024 12:07:56 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.160.174
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1724933113; cv=none; b=ufkGcnu1UElssipN4V8JsxLDQr9yosdxgvya0nPus7cWMrBIBpF7fvvounTmm14r4SFvB+uFMAoYa/BqvbGXp+m8jUSLkIIkyh5Ji6L2Q51nIwE5q7eQfnh0mu5YdMd9MPRES8mrm2B2zc1EMeYDv6wBIUjErWbi55sghYmVGM0=
+	t=1724933278; cv=none; b=LfGy4FQrygC7LljqcZlKvZLqv6bmjQK4W9ZxTtrPg4A4msYrhKj1y5au15SqwxoLkIuvw8Dp85CWOpsTjBLStt2BNmfGnz0xfqn0oo/5HTcz9KbmwaVxzKffB1dVHjv9CdvjKN9swsi9k7xiUFrK7LqMEgGC+lXkvZnnPn2vE9I=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1724933113; c=relaxed/simple;
-	bh=nBoN1yavaittbk+d7DraufNBYnZMycnA9WfuTETAQTE=;
-	h=Date:Mime-Version:Message-ID:Subject:From:To:Cc:Content-Type; b=dt+uu1lMesXKeDSoX5/7mnm7wU1B71MnWSw6ZYW6S5BhRMUxLOL1JiZRusM9hfA9GjciKtU8bbo1YuhRZmqszCzq59voRq+rAU2A8QG4Pnxx7cp8HmBW6XDSP9vhX3KCL0qHzhJtihTGM9VSTenfs6sPx0MpqcqOL2Np9W0Huss=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=flex--sachinparekh.bounces.google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=KVZEOFwO; arc=none smtp.client-ip=209.85.219.201
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=flex--sachinparekh.bounces.google.com
+	s=arc-20240116; t=1724933278; c=relaxed/simple;
+	bh=Nf3CAxLtlz8uAbGAT+7taAPjope5qXY1PBkjsxs7vdA=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=URiENSpa7Oga8BQvVNBJAshsZeEkQsRBQgB1WdryI+/NJJSDkJWKn4aMZDvD/czsXlSnw8I5q0A6ZDkeWcjCPm32Fc4z1Hwme2rhdIUc3C+qrwidPoH8JFL33pXqHgHyO/HwLG4tdIImI8ZRECt05qPWdLsZzf8s9n2dmzwxKtI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=DXdBoHti; arc=none smtp.client-ip=209.85.160.174
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="KVZEOFwO"
-Received: by mail-yb1-f201.google.com with SMTP id 3f1490d57ef6-e164e64efb6so968032276.3
-        for <iommu@lists.linux.dev>; Thu, 29 Aug 2024 05:05:11 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="DXdBoHti"
+Received: by mail-qt1-f174.google.com with SMTP id d75a77b69052e-45685a3b1d8so2425491cf.1
+        for <iommu@lists.linux.dev>; Thu, 29 Aug 2024 05:07:56 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20230601; t=1724933111; x=1725537911; darn=lists.linux.dev;
-        h=cc:to:from:subject:message-id:mime-version:date:from:to:cc:subject
-         :date:message-id:reply-to;
-        bh=L0mys/2tQCcs3OTEBY7NrCgOPWFXZx1s1qQWQxRmqLc=;
-        b=KVZEOFwOcY4uYveo7DKh0KMfC5+5/4oZjojSXI4qAzwjCYwGYFWB9zZ4m77eWqZEsM
-         9tUDGUbD/Yp3TvqIl4VgF2UL3J6y54AX0yCcYxf9h06oPJ214TnnI4qTD+G1P7Bwr1sv
-         7nLeZ+UX7klCuY/wP0wu0+8DDen9tWQ5wDWcd9uofu7FTzk/gfN1H2igQ3s9ikEuqS9M
-         o+aVBlbuViAQvVVFA80VZ1Uv0faUW3nrq2qkZBAjXAnwd39d0F2JrKqGqfatg9uDyvMa
-         CX5bcv22v9G0sXMm41vS2SqIFG5xsMum+pB7vCxPl7PTd7j2DiFV/CuTtxGwGSPkXxvt
-         0IrA==
+        d=ziepe.ca; s=google; t=1724933276; x=1725538076; darn=lists.linux.dev;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=xb3+07iy9NTaVPK92198+wLvvVC/Nq0ZQtaVfVkE/gM=;
+        b=DXdBoHtiEBRPECnJ3sScQfV4QGQghFBb0k7snClTnYIGEtF3c1TF+OcHzZCw0zqBPX
+         59yXR9Bzmlv55/KsvSA8EOWyJqloIyAYyifTeMXsyPdktu4rbLo/QUrbKIdd6Edb7zFX
+         CLhpTocLB6WVupEX6g02AYKRmQdzRCzmiP0PX+DiGiM7Vfx/en366oRwlMRQa4iCvKPQ
+         JgH4mgiNbl+ljmGokGzI87yDdbS8U78f+TS8VdFuU4gnna8j0nAD5wXuHfDBC43Gt2Ti
+         TiBVu2G7UU91FReinS4B8l5hQQ3UP3Bh0ht9udDqqftRYToHKyT+FLJ+5M4wWyREVj4X
+         bPUA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1724933111; x=1725537911;
-        h=cc:to:from:subject:message-id:mime-version:date:x-gm-message-state
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=L0mys/2tQCcs3OTEBY7NrCgOPWFXZx1s1qQWQxRmqLc=;
-        b=Igl5L1C9rFmXaacWDR4qpTguDRcVgFFyTtyN4urNskIljmWO46UpsOy2Ul1Kyjngi1
-         x/JE4mkvKwzPEtpk0AFm3E6f3743nszbNnaDc0M/jRMRjJrXZiClOrIvs72XzcD5tmWl
-         FBREWyB6FPIDDIggtfZ/55GZ0WYAHU4z9n4ghdzDo434UcG2MRu5kDcveM+heQGGIdhR
-         nYeE6Z9xT1cOjllIjIfoC5ZKAW5l3SYnZ3hAu/0LsovB9wkmWjGXzOdpOoEMa6tVg63b
-         xtlRLOc5h/6eRqgpJXTSPkpG2fbeXyPHhBsZNSURafd6T9zYc3iDt5cYD0qflfJL65+O
-         AQGA==
-X-Forwarded-Encrypted: i=1; AJvYcCXPDznDZU2PF/p7atMs3Tuc7awaBviYeOhCEVKA1HlG6xdLdZ6CWFW/gvowqYoLkmEbAeVErA==@lists.linux.dev
-X-Gm-Message-State: AOJu0YwEt2Htkjdyo+PX2JETE8oR0cCvDJwaC0ODvTqhLBShaKHw1WIS
-	CX5StYjyAXWaKtOBbYFUcRJgO0qwRxyBlPLsLyDotGxyFLkVzqihOesbO1joOMdHSq5cO2ZoyNT
-	/BhSx1jm2XGMLTrksxZJD0oDWww==
-X-Google-Smtp-Source: AGHT+IEIajcciXNXA9eAeI82KfBygYUO7hs4LPpXBbMDBnoip8dz1YA1Le2XY66UJM87v8KnyRRyKfiIMLUeWk2hEcQ=
-X-Received: from sachinparekh.c.googlers.com ([fda3:e722:ac3:cc00:4f:4b78:c0a8:596d])
- (user=sachinparekh job=sendgmr) by 2002:a25:29c4:0:b0:e0b:cce3:45c7 with SMTP
- id 3f1490d57ef6-e1a5ae0d8e5mr3845276.9.1724933111089; Thu, 29 Aug 2024
- 05:05:11 -0700 (PDT)
-Date: Thu, 29 Aug 2024 12:05:04 +0000
+        d=1e100.net; s=20230601; t=1724933276; x=1725538076;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=xb3+07iy9NTaVPK92198+wLvvVC/Nq0ZQtaVfVkE/gM=;
+        b=VfXEB6DfMo9OzKc3AH//HTLxutauzUn3FDwdm5Hu7/gh5G4cnZ9X0unubjc4TsRm6y
+         vEviRM1NpskYC3mqnTBvA8Wy5ucfAh+sid5VaN+nRQ0gYp9u9HlzsGMVWgUEuRfl+0Rk
+         cS6V9Fmfq1G0usVNHuYKKqbFnu2djZbjVRA4eJ8VfX70t6RYU2ULT88+4lJejpMx8PSH
+         4rZ0lAPvGVzjiNDgYZCZ7mf6ii+0vMBhQ9IRV/pj0ZwbzIW/GLJz8DtBIJz5XzbRcmdn
+         4RJlDNQVvgg301BncGuRU2V1JOROoAVFh/8xYkKT8frzNegaHLK8FuUK20qwfAJuKsD2
+         VAQQ==
+X-Forwarded-Encrypted: i=1; AJvYcCWNRFdDywyPbp3oHp/ms/Y8nxCcH5TO8NrXs2PhsM5+MwDKdjKeg1QL3ptdLoUybVfywP5xjw==@lists.linux.dev
+X-Gm-Message-State: AOJu0YycDeCP59GPc+iag6HSggDrzOVCwETxFsemP0fmyMd8s9YBFFYZ
+	K2ZuuUomtfQjaEwKPqQTbtZ3m3y4o0AGrZg/C5848wss7L4YfzclogSFBt1AwAY=
+X-Google-Smtp-Source: AGHT+IH/5FQ+vPJhqbN9c15Uc86CJ39bOFxfZbCDjJIWH/ya9lQDuX9DcvEIhSSVh+BpE3Fy6Cl/pQ==
+X-Received: by 2002:ac8:7dc6:0:b0:456:4736:7dc1 with SMTP id d75a77b69052e-45680320e35mr32266511cf.29.1724933275823;
+        Thu, 29 Aug 2024 05:07:55 -0700 (PDT)
+Received: from ziepe.ca (hlfxns017vw-142-68-80-239.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.68.80.239])
+        by smtp.gmail.com with ESMTPSA id d75a77b69052e-45682c82882sm4308951cf.13.2024.08.29.05.07.53
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 29 Aug 2024 05:07:54 -0700 (PDT)
+Received: from jgg by wakko with local (Exim 4.95)
+	(envelope-from <jgg@ziepe.ca>)
+	id 1sjdwP-007TcX-Ew;
+	Thu, 29 Aug 2024 09:07:53 -0300
+Date: Thu, 29 Aug 2024 09:07:53 -0300
+From: Jason Gunthorpe <jgg@ziepe.ca>
+To: Alexey Kardashevskiy <aik@amd.com>
+Cc: kvm@vger.kernel.org, iommu@lists.linux.dev, linux-coco@lists.linux.dev,
+	linux-pci@vger.kernel.org,
+	Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
+	Alex Williamson <alex.williamson@redhat.com>,
+	Dan Williams <dan.j.williams@intel.com>,
+	pratikrajesh.sampat@amd.com, michael.day@amd.com,
+	david.kaplan@amd.com, dhaval.giani@amd.com,
+	Santosh Shukla <santosh.shukla@amd.com>,
+	Tom Lendacky <thomas.lendacky@amd.com>,
+	Michael Roth <michael.roth@amd.com>, Alexander Graf <agraf@suse.de>,
+	Nikunj A Dadhania <nikunj@amd.com>,
+	Vasant Hegde <vasant.hegde@amd.com>, Lukas Wunner <lukas@wunner.de>
+Subject: Re: [RFC PATCH 07/21] pci/tdisp: Introduce tsm module
+Message-ID: <20240829120753.GU3468552@ziepe.ca>
+References: <20240823132137.336874-1-aik@amd.com>
+ <20240823132137.336874-8-aik@amd.com>
+ <20240827123242.GM3468552@ziepe.ca>
+ <6e9e4945-8508-4f48-874e-9150fd2e38f3@amd.com>
+ <20240828234240.GR3468552@ziepe.ca>
+ <d9bd104b-e1a0-4619-977c-02a27fc2e5b0@amd.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
-Mime-Version: 1.0
-X-Mailer: git-send-email 2.46.0.295.g3b9ea8a38a-goog
-Message-ID: <20240829120504.2976612-1-sachinparekh@google.com>
-Subject: [RFC PATCH] driver core: platform: Call iommu_release_device in dma_cleanup
-From: Sachin Parekh <sachinparekh@google.com>
-To: gregkh@linuxfoundation.org, rafael@kernel.org, will@kernel.org, 
-	robin.murphy@arm.com
-Cc: sachinparekh@google.com, lokeshvutla@google.com, 
-	linux-kernel@vger.kernel.org, iommu@lists.linux.dev
-Content-Type: text/plain; charset="UTF-8"
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <d9bd104b-e1a0-4619-977c-02a27fc2e5b0@amd.com>
 
-Installing a kernel module that has an iommu node in its
-device tree increments corresponding iommu kernel module
-reference count during driver_register.
-Removing the same kernel module doesn't decrement the
-iommu reference count resulting in error while
-removing the iommu kernel module
+On Thu, Aug 29, 2024 at 02:57:34PM +1000, Alexey Kardashevskiy wrote:
 
-    $ modprobe arm-smmu-v3
-    $ modprobe test_module
-    $ modprobe -r test_module
-    $ modprobe -r arm-smmu-v3
-    modprobe: can't unload module arm_smmu_v3: Resource temporarily unavailable
+> > > Is "extend the MAP_DMA uAPI to accept {gmemfd, offset}" enough for the VFIO
+> > > context, or there is more and I am missing it?
+> > 
+> > No, you need to have all the virtual PCI device creation stuff linked
+> > to a VFIO cdev to prove you have rights to do things to the physical
+> > device.
+> 
+> The VM-to-VFIOdevice binding is already in the KVM VFIO device, the rest is
+> the same old VFIO.
 
-Cause:
-    platform_driver_register
-        ...
-        -> platform_dma_configure
-            ...
-            -> iommu_probe_device (Increments reference count)
+Frankly, I'd rather not add any more VFIO stuff to KVM. Today KVM has
+no idea of a VFIO on most platforms.
 
-    platform_driver_unregister
-        ...
-        -> platform_dma_cleanup
-            ...
-            -> No corresponding iommu_release_device call
+Given you already have an issue with iommu driver synchronization this
+looks like it might be a poor choice anyhow..
 
-Fix:
-    Call iommu_release_device in platform_dma_cleanup to remove the
-    iommu from the corresponding kernel module
+> I wonder if there is enough value to try keeping the TIO_DEV_* and TIO_TDI_*
+> API together or having TIO_DEV_* in some PCI module and TIO_TDI_* in KVM is
+> a non-confusing way to proceed with this. Adding things to the PCI's sysfs
+> from more places bothers me more than this frankenmodule. Thanks,
 
-Signed-off-by: Sachin Parekh <sachinparekh@google.com>
----
- drivers/base/platform.c | 3 +++
- drivers/iommu/iommu.c   | 3 +--
- include/linux/iommu.h   | 1 +
- 3 files changed, 5 insertions(+), 2 deletions(-)
+I wouldn't mix them up, they are very different. Just because they are
+RPCs to the same bit of FW doesn't really mean they should be together
+in the same interfaces or ops structures.
 
-diff --git a/drivers/base/platform.c b/drivers/base/platform.c
-index 4c3ee6521ba5..c8125325a5e9 100644
---- a/drivers/base/platform.c
-+++ b/drivers/base/platform.c
-@@ -1467,6 +1467,9 @@ static void platform_dma_cleanup(struct device *dev)
- 
- 	if (!drv->driver_managed_dma)
- 		iommu_device_unuse_default_domain(dev);
-+
-+	if (dev_of_node(dev))
-+		iommu_release_device(dev);
- }
- 
- static const struct dev_pm_ops platform_dev_pm_ops = {
-diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-index ed6c5cb60c5a..495f548fd4b9 100644
---- a/drivers/iommu/iommu.c
-+++ b/drivers/iommu/iommu.c
-@@ -92,7 +92,6 @@ static const char * const iommu_group_resv_type_string[] = {
- 
- static int iommu_bus_notifier(struct notifier_block *nb,
- 			      unsigned long action, void *data);
--static void iommu_release_device(struct device *dev);
- static struct iommu_domain *
- __iommu_group_domain_alloc(struct iommu_group *group, unsigned int type);
- static int __iommu_attach_device(struct iommu_domain *domain,
-@@ -663,7 +662,7 @@ static void __iommu_group_remove_device(struct device *dev)
- 	iommu_group_put(group);
- }
- 
--static void iommu_release_device(struct device *dev)
-+void iommu_release_device(struct device *dev)
- {
- 	struct iommu_group *group = dev->iommu_group;
- 
-diff --git a/include/linux/iommu.h b/include/linux/iommu.h
-index 04cbdae0052e..2f9cb7d9dadf 100644
---- a/include/linux/iommu.h
-+++ b/include/linux/iommu.h
-@@ -1049,6 +1049,7 @@ void dev_iommu_priv_set(struct device *dev, void *priv);
- 
- extern struct mutex iommu_probe_device_lock;
- int iommu_probe_device(struct device *dev);
-+void iommu_release_device(struct device *dev);
- 
- int iommu_dev_enable_feature(struct device *dev, enum iommu_dev_features f);
- int iommu_dev_disable_feature(struct device *dev, enum iommu_dev_features f);
--- 
-2.46.0.295.g3b9ea8a38a-goog
-
+Jason
