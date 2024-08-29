@@ -1,138 +1,84 @@
-Received: from lelv0142.ext.ti.com (lelv0142.ext.ti.com [198.47.23.249])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-yw1-f176.google.com (mail-yw1-f176.google.com [209.85.128.176])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3A64645014
-	for <iommu@lists.linux.dev>; Thu, 29 Aug 2024 06:17:51 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.47.23.249
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5D9C214B949;
+	Thu, 29 Aug 2024 06:21:33 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.176
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1724912273; cv=none; b=tvChX5kiigvZXCp50nmYFROxTflRjb+l7QKxU//TULUbTSKJON7zP/OH4yvsSm3LZoLQf/zOwudUKQjsw7sTGqGO4M2+j8skIWD3PoTuhMXEJIkBkLj/jRo+qF4jj+mqozk++z1OqFwjCeRW60dT3qvQfsW6G++QUDtJYSR1oCc=
+	t=1724912494; cv=none; b=DrOzx71u8S059cx+V+RNcGo/2sePiXKWW8aA084KvS/uK9dVDhhhIpMYWmaifnEIPQiFpwSBytPPNZuM6IY0tqPXi3T+HQk5faxpPXHGzi3jD/v/PtsvR0+LYBAvdT+DRjDWeU3xUlFb7Kcn+/YHsyh+MzfLWIV9xt7k3v3hi4w=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1724912273; c=relaxed/simple;
-	bh=6RzSrv3nyFuhiKzG5BP3qCVTA/Grb69zizAwthqsJEs=;
-	h=Message-ID:Date:MIME-Version:Subject:To:CC:References:From:
-	 In-Reply-To:Content-Type; b=GtFrHvaVpM0RizhpRS8D5yFXtgWO8WgMySrbZDdwnz/8Nhk5G0CvgZzxIafa9gT8hW/O2qWlHoD1FCxXcxx4n3bvTwqaMnVr3suIwlGyxXQQuMYi9lYdyP+ClOTiZDpduBYcjqbSp1D6AKHMZmPUSXYRAuzv7GPsqTqIwKaPBJQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=ti.com; spf=pass smtp.mailfrom=ti.com; dkim=pass (1024-bit key) header.d=ti.com header.i=@ti.com header.b=L3Z4eUpr; arc=none smtp.client-ip=198.47.23.249
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=ti.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ti.com
+	s=arc-20240116; t=1724912494; c=relaxed/simple;
+	bh=4m+yGSdBhixhxvtmH1e1egnd1m06G0SnfHvjAyZhdsc=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=ZWjFassIY4ueL1vkjEf/oR/XHFNnMc4iSOc+d4ouLfxFNTEjLYBVYjH5189FmuvEoLk+7T+eVRq43a9t1KWl4hZfaozeBJbdzX6omLntwIotBpbcPonmXtFpkcdBn4U8Rt9zGZlVnkh8x+y1vcgOkZ5wG4GKCMhxgjOUDCa0uaQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=RiVOVFUr; arc=none smtp.client-ip=209.85.128.176
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=ti.com header.i=@ti.com header.b="L3Z4eUpr"
-Received: from fllv0034.itg.ti.com ([10.64.40.246])
-	by lelv0142.ext.ti.com (8.15.2/8.15.2) with ESMTP id 47T6HV1q054780;
-	Thu, 29 Aug 2024 01:17:31 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
-	s=ti-com-17Q1; t=1724912251;
-	bh=fnhuBR25tOtm6jBNJ0bOgimcMKg7qyAIojAku3kruEc=;
-	h=Date:Subject:To:CC:References:From:In-Reply-To;
-	b=L3Z4eUprXD7YUdSkcNFy8hxBfzjN8NrY3Q1WgAWllUfzCMM9638lihZyWduviwW77
-	 046oaK3cPf3Cr1AKUQTK3sn/3+yzMC4i71mrXtbxeCnEm4WB+PRESR/NTWZKEfbOzX
-	 sGROUxxO4C6Din3SBKlVCwiZ9ICqD8g8f9FWDuus=
-Received: from DLEE102.ent.ti.com (dlee102.ent.ti.com [157.170.170.32])
-	by fllv0034.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 47T6HVnO052987
-	(version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
-	Thu, 29 Aug 2024 01:17:31 -0500
-Received: from DLEE112.ent.ti.com (157.170.170.23) by DLEE102.ent.ti.com
- (157.170.170.32) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2507.23; Thu, 29
- Aug 2024 01:17:31 -0500
-Received: from lelvsmtp6.itg.ti.com (10.180.75.249) by DLEE112.ent.ti.com
- (157.170.170.23) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2507.23 via
- Frontend Transport; Thu, 29 Aug 2024 01:17:31 -0500
-Received: from [172.24.227.151] (uda0510294.dhcp.ti.com [172.24.227.151])
-	by lelvsmtp6.itg.ti.com (8.15.2/8.15.2) with ESMTP id 47T6HQa9007117;
-	Thu, 29 Aug 2024 01:17:27 -0500
-Message-ID: <99c874f1-3d85-43b2-a3a0-40e1e0c25696@ti.com>
-Date: Thu, 29 Aug 2024 11:47:25 +0530
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="RiVOVFUr"
+Received: by mail-yw1-f176.google.com with SMTP id 00721157ae682-6c32daf0797so3029267b3.0;
+        Wed, 28 Aug 2024 23:21:33 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20230601; t=1724912492; x=1725517292; darn=lists.linux.dev;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date:message-id:reply-to;
+        bh=4m+yGSdBhixhxvtmH1e1egnd1m06G0SnfHvjAyZhdsc=;
+        b=RiVOVFUrXPJiIrJLz0/SM+HkMMQ/wK2cI4xRiT+R6GPTSP1WRljVLjp5zq/gXzGlQL
+         9RtkdFhg560BC+jEQbADLPwae4i86uYa1BnivzU0EHpd3DVAwVKJxgt0vCAd9Nudp3dC
+         IpfUS6qPrRXwD7EK8OZtJ+pkeLrqI+axobU1ck56CgNFHHDue/IkSKsrKaYq1566tFY/
+         R+GRHNUAE/XRlV1nLBUtDd3RZZcjoscwXSzrkCy7XHFxbqrHrJtbsaR9O7u5IR4XpZtA
+         ViAnOCp65gJqMKhH7/idn4kqRlKhA45TErgztn/9NiXpZaQLcoqpFmEclqrERsj6qZ/E
+         YxeQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1724912492; x=1725517292;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=4m+yGSdBhixhxvtmH1e1egnd1m06G0SnfHvjAyZhdsc=;
+        b=Vh/BfBMk7GtUToBq3++VeJjeyOow5TORE6v3yFhDerZtA9VogCU74CPO0K3AJUCLr/
+         6EwIYSdOXMxo37k+uFP9/p0h6CX8HXvFAbcFz+UjHYHs1EKq51L15xLMaNpjLwN/5UNb
+         9Yj29WfqxHfN9y1t6bkfZ35IG5odFH+ulKbtOCaOpRc9ImWk8Q1eu575vjvUAktwZkEi
+         wD5XZA/jC+dv0PZnEYBDhzRwHxdeYG9FLFCecXxB3fIvo86JASVKYNzhmMOqoYa/9lyo
+         5hzXzgVwP2vmHeznh+BMlXaujKXLWxYQTqxApxiof3IfwMJ8e7k9SndivrRZbiICpYzv
+         0krw==
+X-Forwarded-Encrypted: i=1; AJvYcCUho34zclj2b8Ybwgz/gENUBB1W4x1f4fLp6LMj1qIgH42kz4vFkDt17PjJTEPau1QMq0mtFg==@lists.linux.dev
+X-Gm-Message-State: AOJu0YxSZygvZeFKsiLLQzCNoScjwxDwpKmAYxb1HT9nWp4i1bKbV2N2
+	CTayrFtBevExkWX7ktS5ykrZpcCyegRXxr7Iv0GPY+USrcHST1p8dCjwa9x07/aETTTOTc0xA9R
+	Uwg4s8D1ZR3612cbhsFo6ALADm9g=
+X-Google-Smtp-Source: AGHT+IHMLEKsLhvNrpFB2co1aHPpoSBzoSmaC8bal4WcNj5PJZQOLOS3kwAZjR3oI8mxlBYACeDUFi9uQ35Ii9qQaX0=
+X-Received: by 2002:a05:690c:38b:b0:61b:342e:91ae with SMTP id
+ 00721157ae682-6d277778e64mr16682037b3.36.1724912492142; Wed, 28 Aug 2024
+ 23:21:32 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH 1/1] remoteproc: Use iommu_paging_domain_alloc()
-To: Mathieu Poirier <mathieu.poirier@linaro.org>,
-        Lu Baolu
-	<baolu.lu@linux.intel.com>, <andersson@kernel.org>,
-        <afd@ti.com>, <nm@ti.com>, <hnagalla@ti.com>
-CC: Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
-        Robin
- Murphy <robin.murphy@arm.com>, Jason Gunthorpe <jgg@ziepe.ca>,
-        Kevin Tian
-	<kevin.tian@intel.com>, <linux-remoteproc@vger.kernel.org>,
-        <iommu@lists.linux.dev>, <linux-kernel@vger.kernel.org>,
-        Jason Gunthorpe
-	<jgg@nvidia.com>
-References: <20240812072811.9737-1-baolu.lu@linux.intel.com>
- <ZsdktJEqR9BOgivK@p14s>
-Content-Language: en-US
-From: Beleswar Prasad Padhi <b-padhi@ti.com>
-In-Reply-To: <ZsdktJEqR9BOgivK@p14s>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 7bit
-X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
+References: <c844faa0-343a-46f4-a54f-0fd65f4d4679@leemhuis.info> <BN9PR11MB5276CA2E1922D9FD6B9F2ECF8C962@BN9PR11MB5276.namprd11.prod.outlook.com>
+In-Reply-To: <BN9PR11MB5276CA2E1922D9FD6B9F2ECF8C962@BN9PR11MB5276.namprd11.prod.outlook.com>
+From: Markus Rathgeb <maggu2810@gmail.com>
+Date: Thu, 29 Aug 2024 08:21:20 +0200
+Message-ID: <CAOcK=CN3-v=dgMC9XTbh-h0zaD01uatOZKjvSF7ocofTCOGp7Q@mail.gmail.com>
+Subject: Re: [regression] usb and thunderbould are misbehaving or broken due
+ to iommu/vt-d change
+To: "Tian, Kevin" <kevin.tian@intel.com>
+Cc: Linux regressions mailing list <regressions@lists.linux.dev>, Lu Baolu <baolu.lu@linux.intel.com>, 
+	Will Deacon <will@kernel.org>, David Woodhouse <dwmw2@infradead.org>, Joerg Roedel <joro@8bytes.org>, 
+	"iommu@lists.linux.dev" <iommu@lists.linux.dev>, LKML <linux-kernel@vger.kernel.org>, 
+	Jacob Pan <jacob.jun.pan@linux.intel.com>, Adam Williamson <awilliam@redhat.com>
+Content-Type: text/plain; charset="UTF-8"
 
-Hi All,
+> Probably f90584f4beb8 ("iommu/vt-d: Add helper to flush caches
+> for context change") is more relevant. There was a bug reported
+> against it and fixed a few days ago:
 
-On 22/08/24 21:47, Mathieu Poirier wrote:
-> Hi Baolu,
->
-> Sorry for the late reply, this slipped through the cracks.
->
-> On Mon, Aug 12, 2024 at 03:28:11PM +0800, Lu Baolu wrote:
-> > An iommu domain is allocated in rproc_enable_iommu() and is attached to
-> > rproc->dev.parent in the same function.
-> > 
-> > Use iommu_paging_domain_alloc() to make it explicit.
-> > 
-> > Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
-> > Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
-> > Link: https://lore.kernel.org/r/20240610085555.88197-13-baolu.lu@linux.intel.com
-> > ---
-> >  drivers/remoteproc/remoteproc_core.c | 6 +++---
-> >  1 file changed, 3 insertions(+), 3 deletions(-)
-> > 
-> > diff --git a/drivers/remoteproc/remoteproc_core.c b/drivers/remoteproc/remoteproc_core.c
-> > index f276956f2c5c..eb66f78ec8b7 100644
-> > --- a/drivers/remoteproc/remoteproc_core.c
-> > +++ b/drivers/remoteproc/remoteproc_core.c
-> > @@ -109,10 +109,10 @@ static int rproc_enable_iommu(struct rproc *rproc)
-> >  		return 0;
-> >  	}
-> >  
-> > -	domain = iommu_domain_alloc(dev->bus);
-> > -	if (!domain) {
-> > +	domain = iommu_paging_domain_alloc(dev);
->
-> I'm a little hesitant here.  Function iommu_domain_alloc() passes NULL two the
-> second argument of __iommu_domain_alloc() while iommu_paging_domain_alloc()
-> provides a 'dev'.  I don't have any HW to test on and I am not familiar enough
-> with the IOMMU subsystem to confidently more forward.
->
-> I am asking the Qualcomm (Bjorn and friends) and TI crew (Beleswar, Andrew,
-> Nishanth and Hari) to test this patch on their IOMMU devices and get back to me
-> with a "Tested-by".
+I added a comment on bugzilla, too.
+While adding additional logs to the bugzilla entry I realized that one
+commit has not been tested.
 
+good: 804f98e224e41c16e3b70f97790f84894745a392
+untested: 2b989ab9bc89b29dd4b5509408b8fa42337eda56
+bad: f90584f4beb84211c4d21b319cc13f391fe9f3c2
 
-Just a heads-up. Currently, I am seeing boot failures while booting 
-remotecores in TI's IOMMU devices with mainline kernel. Working on the 
-the fix, once it is done, will apply the above patch and test it ASAP.
-
-Thanks,
-Beleswar
-
->
-> Thanks,
-> Mathieu
->
-> > +	if (IS_ERR(domain)) {
-> >  		dev_err(dev, "can't alloc iommu domain\n");
-> > -		return -ENOMEM;
-> > +		return PTR_ERR(domain);
-> >  	}
-> >  
-> >  	iommu_set_fault_handler(domain, rproc_iommu_fault, rproc);
-> > -- 
-> > 2.34.1
-> > 
->
+I do not understand why git bisect told me there is no remaining commit to test.
