@@ -1,119 +1,128 @@
-Received: from mail-wm1-f46.google.com (mail-wm1-f46.google.com [209.85.128.46])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mx0a-0031df01.pphosted.com (mx0a-0031df01.pphosted.com [205.220.168.131])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 004774084E
-	for <iommu@lists.linux.dev>; Thu, 29 Aug 2024 15:25:16 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.46
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 04B3A3A1B5
+	for <iommu@lists.linux.dev>; Thu, 29 Aug 2024 15:39:31 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.168.131
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1724945118; cv=none; b=kMfT49C6KyP2nvOUdwBX8q0mj5cNfVBPukMyjZ1K510y1D/N6qlF9WDHmdFe3j5mZdubuEgFLrF2LOSS3EGTb92L3o6C3jAXab5getKN8MBLbUCIH/FTh/Xp3yEIynwjPC6QCUd+gK9K+homkaacsRqNaF9ABBNrzieRUuIDg44=
+	t=1724945973; cv=none; b=k3bkRUAxf9hb1JXyfAKTT6ZWBGmi9xldQ4UP/3UPeWI9fmawQ5D6gpeu5dXSt9VILZlXQGGf0r2vm42pyrQP9vbRm6p/T1/JNlWH1QfFFc+AX0Jcsoghn803Mnz8+ZVYCG1LwW74LqFIS52+IMGLnfqnD06to2a8fnAFlTamg9A=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1724945118; c=relaxed/simple;
-	bh=W5GQhkVjz2wwdC5lXitoDCDre3m21qvN2+9J1ktg/iQ=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=CCeBhvOO4/roSTwe6K6usqLu+IsRn5Rz1nqdMswJ0fy8DX6juH3/VkTk1m3LRMcyRenHds0C9SpqeEM7ER37HrwHrtenFwOIGq+ZNaX7MmWFNtdMgnAUXp5TjOgpQt0vNzSirAsQ28coWfCEUgwiBMdI0urME5LW2EXTe3nvXPU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=DR/6iKaN; arc=none smtp.client-ip=209.85.128.46
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1724945973; c=relaxed/simple;
+	bh=irlj6udq+ajkTOZDEaMhoHi3gHxomUq9PIygsVw5x/E=;
+	h=Message-ID:Date:MIME-Version:Subject:To:CC:References:From:
+	 In-Reply-To:Content-Type; b=elrPBVX8e1Di10nMVT3twjL4/yE538tZ1iYoq/rC1Ps5wFDkzJuY/rb3f5jp6+/YbrQqhRfOzRGsEbx5EkouYnpgCHjiohhLwIwaGXFkzOjAzxUbQy+cdPDpqKqhZcSHQZN9/HvmfGgfwrPAOSmPaEj2eIeuQsy25cZuMllAoos=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com; spf=pass smtp.mailfrom=quicinc.com; dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b=cz5wRa62; arc=none smtp.client-ip=205.220.168.131
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=quicinc.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="DR/6iKaN"
-Received: by mail-wm1-f46.google.com with SMTP id 5b1f17b1804b1-42bb72a5e0bso6487775e9.1
-        for <iommu@lists.linux.dev>; Thu, 29 Aug 2024 08:25:16 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1724945115; x=1725549915; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=3CePclmUlJ9R5wUKygyM22ovfabY44x27bhlzsShvYo=;
-        b=DR/6iKaNPCwYTRIb6C4ZhfZySlAimjkx8fMNmFBI/atiQgf8dDwn7n582xuiV1pfSz
-         FhR3g2Q1Qy2uokq6EEuwzgacGOgsmiwG8HGeig3E+iwqygQmHiSCZrP2BMK1zqP6Z6Kn
-         ZZaXpsUPFXjsDTSj5hfN98slQljouSIafqG/ELlbRth1MYBrX9g+nRwKRK2owabks/VM
-         /LrL3S9eYDRSVPlc0kFXMZwVWtgqzlkB6WQN8cRrIyMsr8Dps1P+QXQ2KLdzocgTWo3X
-         YrnH+jDZcC2vO5SIGN98xvaI8AYNq/S+gAyjg/S+qkOjQ/6VKpuuuGNmueRFZjdKXLm9
-         O7Dw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1724945115; x=1725549915;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=3CePclmUlJ9R5wUKygyM22ovfabY44x27bhlzsShvYo=;
-        b=ok40UtX8UaLW1jwXhTe3MKrLdmLGx8XSk6fOBOp6YudXfqDqYTCBEp6JX86AsBYHYQ
-         Lk786ktvvyES2p6zJsb0IpxZQGewV58E7NZUiAk9aZluLvDsq2WUGJLHMP9VvASQTMIP
-         0H/9MR/A1hl0652Y7u2tjdENt4Q/aRRMg6MceMlAE//ky+mD5UF4dy0aueHshIH5qNL4
-         CDhsEv0Nftj0dYIv5nEOgCTGg9IrcGutSDD9lzLzxmYATvJG5XtYICrryH10fAzEMEPN
-         bBnkK4xOVGbKoTvbyxp6myFv2vKLANOYe935rD443t5rhdyZ4nIpDSV1BTs/5KsqaWfo
-         IjWQ==
-X-Forwarded-Encrypted: i=1; AJvYcCVTHdPl3DHFUlkzog/YNYnJS1/qGTZLqHmpf2eUYLACLAS712tcSFgVOb2hAlLB66HwqGT2FA==@lists.linux.dev
-X-Gm-Message-State: AOJu0YxsXQwlDOzThz4V/zJEUTlAwjQC7YEFQfE9zD4qk3LFP90//3jg
-	28uIMtLFaCVAh2P1U7eLguU2tDNeZhIftvqJf7OeZacoF8NCA2vV
-X-Google-Smtp-Source: AGHT+IHB9DwVQH+LaPCki7l5s2XbNvXlqbr5f4VqUYxz7BdDtbuqto3Zl5PtmeS+7pmQVpMQVL7Cmg==
-X-Received: by 2002:a05:600c:474c:b0:426:6e95:78d6 with SMTP id 5b1f17b1804b1-42bb01aa1fdmr26574845e9.4.1724945114644;
-        Thu, 29 Aug 2024 08:25:14 -0700 (PDT)
-Received: from orome (p200300e41f29d300f22f74fffe1f3a53.dip0.t-ipconnect.de. [2003:e4:1f29:d300:f22f:74ff:fe1f:3a53])
-        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-42bb37f7849sm25800085e9.7.2024.08.29.08.25.13
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 29 Aug 2024 08:25:13 -0700 (PDT)
-Date: Thu, 29 Aug 2024 17:25:12 +0200
-From: Thierry Reding <thierry.reding@gmail.com>
-To: Lu Baolu <baolu.lu@linux.intel.com>
-Cc: Dmitry Osipenko <digetx@gmail.com>, 
-	Mauro Carvalho Chehab <mchehab@kernel.org>, Jonathan Hunter <jonathanh@nvidia.com>, 
-	Stanimir Varbanov <stanimir.k.varbanov@gmail.com>, Vikash Garodia <quic_vgarodia@quicinc.com>, 
-	Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>, 
-	Robin Murphy <robin.murphy@arm.com>, Jason Gunthorpe <jgg@ziepe.ca>, 
-	Kevin Tian <kevin.tian@intel.com>, linux-media@vger.kernel.org, linux-tegra@vger.kernel.org, 
-	linux-arm-msm@vger.kernel.org, iommu@lists.linux.dev, linux-kernel@vger.kernel.org, 
-	Jason Gunthorpe <jgg@nvidia.com>
-Subject: Re: [PATCH 1/2] media: nvidia: tegra: Use iommu_paging_domain_alloc()
-Message-ID: <2o6gpxknio4kvf5fmqgai5jaov65semmw3wvtmt4gdauwzhbti@ii3ydtlmp2sb>
-References: <20240812072105.9578-1-baolu.lu@linux.intel.com>
+	dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b="cz5wRa62"
+Received: from pps.filterd (m0279867.ppops.net [127.0.0.1])
+	by mx0a-0031df01.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 47T8iLKF019432;
+	Thu, 29 Aug 2024 15:39:12 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=quicinc.com; h=
+	cc:content-transfer-encoding:content-type:date:from:in-reply-to
+	:message-id:mime-version:references:subject:to; s=qcppdkim1; bh=
+	+oZZN423x3H8FcKjymhNN5um5bqyqXeBRwGPv3NzEfU=; b=cz5wRa62qjH8a5jV
+	7KkORyfpxFDnzfftfFP/PECkCs+D//aVBf0ez7mtdGCRq/4bA3izvRuLicMgvraT
+	/pr4/nmcAMeRtgCYgHQ6tQQ3hBLiITAsyGMf3cfewFd/Q4SNWAURhUa0QgJzxrIu
+	5nnCBuY2xq2OcniNEtDhG8efy3lG3OUMjG8hFikG+x46D5jDTbBXb69CccXEReTY
+	LDLB55/ztC0UrTN/3ZwjAac+zWWDeAUrxtJP4kMRB2U4wjWrVg2lOfiw6QNWuA1q
+	TYfbpTsi0NI7wicV6EA3efdjs84QBnVeGjqUy+QUHUOQf8znKuSs14Vy/GTDbNFk
+	+acI+Q==
+Received: from nasanppmta02.qualcomm.com (i-global254.qualcomm.com [199.106.103.254])
+	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 419putntxy-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Thu, 29 Aug 2024 15:39:11 +0000 (GMT)
+Received: from nasanex01b.na.qualcomm.com (nasanex01b.na.qualcomm.com [10.46.141.250])
+	by NASANPPMTA02.qualcomm.com (8.18.1.2/8.18.1.2) with ESMTPS id 47TFdAdg021485
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Thu, 29 Aug 2024 15:39:10 GMT
+Received: from [10.110.28.107] (10.80.80.8) by nasanex01b.na.qualcomm.com
+ (10.46.141.250) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1544.9; Thu, 29 Aug
+ 2024 08:39:06 -0700
+Message-ID: <e8e9cdcf-63c8-4bfa-aacc-d99338c7f8fa@quicinc.com>
+Date: Thu, 29 Aug 2024 08:39:06 -0700
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-	protocol="application/pgp-signature"; boundary="cowfqq5j65e3ovof"
-Content-Disposition: inline
-In-Reply-To: <20240812072105.9578-1-baolu.lu@linux.intel.com>
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH 14/22] dt-bindings: arm-smmu: document the support on
+ SA8255p
+To: Krzysztof Kozlowski <krzk@kernel.org>
+CC: <andersson@kernel.org>, <konradybcio@kernel.org>, <robh@kernel.org>,
+        <krzk+dt@kernel.org>, <conor+dt@kernel.org>, <rafael@kernel.org>,
+        <viresh.kumar@linaro.org>, <herbert@gondor.apana.org.au>,
+        <davem@davemloft.net>, <sudeep.holla@arm.com>, <andi.shyti@kernel.org>,
+        <tglx@linutronix.de>, <will@kernel.org>, <joro@8bytes.org>,
+        <jassisinghbrar@gmail.com>, <lee@kernel.org>,
+        <linus.walleij@linaro.org>, <amitk@kernel.org>,
+        <thara.gopinath@gmail.com>, <broonie@kernel.org>,
+        <wim@linux-watchdog.org>, <linux@roeck-us.net>, <robin.murphy@arm.com>,
+        <cristian.marussi@arm.com>, <rui.zhang@intel.com>,
+        <lukasz.luba@arm.com>, <vkoul@kernel.org>, <quic_gurus@quicinc.com>,
+        <agross@kernel.org>, <bartosz.golaszewski@linaro.org>,
+        <quic_rjendra@quicinc.com>, <robimarko@gmail.com>,
+        <linux-arm-msm@vger.kernel.org>, <devicetree@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>, <linux-pm@vger.kernel.org>,
+        <linux-crypto@vger.kernel.org>, <arm-scmi@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>, <linux-i2c@vger.kernel.org>,
+        <iommu@lists.linux.dev>, <linux-gpio@vger.kernel.org>,
+        <linux-serial@vger.kernel.org>, <linux-spi@vger.kernel.org>,
+        <linux-watchdog@vger.kernel.org>, <kernel@quicinc.com>,
+        <quic_psodagud@quicinc.com>, <quic_tsoni@quicinc.com>,
+        <quic_shazhuss@quicinc.com>
+References: <20240828203721.2751904-1-quic_nkela@quicinc.com>
+ <20240828203721.2751904-15-quic_nkela@quicinc.com>
+ <ompfueg7civ5spjdumkhd7qgx4cnvjcftznf3z3q5duuxppt5d@fao7zx4oxfm3>
+Content-Language: en-US
+From: Nikunj Kela <quic_nkela@quicinc.com>
+In-Reply-To: <ompfueg7civ5spjdumkhd7qgx4cnvjcftznf3z3q5duuxppt5d@fao7zx4oxfm3>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
+ nasanex01b.na.qualcomm.com (10.46.141.250)
+X-QCInternal: smtphost
+X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
+X-Proofpoint-GUID: SpEicdg2VgDAFzoy96fzPwPyuZgqW6b8
+X-Proofpoint-ORIG-GUID: SpEicdg2VgDAFzoy96fzPwPyuZgqW6b8
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.293,Aquarius:18.0.1039,Hydra:6.0.680,FMLib:17.12.28.16
+ definitions=2024-08-29_04,2024-08-29_02,2024-05-17_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 clxscore=1015
+ lowpriorityscore=0 mlxscore=0 phishscore=0 adultscore=0 priorityscore=1501
+ impostorscore=0 malwarescore=0 suspectscore=0 spamscore=0 bulkscore=0
+ mlxlogscore=999 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.19.0-2407110000 definitions=main-2408290109
 
 
---cowfqq5j65e3ovof
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+On 8/29/2024 12:36 AM, Krzysztof Kozlowski wrote:
+> On Wed, Aug 28, 2024 at 01:37:13PM -0700, Nikunj Kela wrote:
+>> Add compatible for smmu representing support on SA8255p.
+>>
+>> Signed-off-by: Nikunj Kela <quic_nkela@quicinc.com>
+>> ---
+>>  Documentation/devicetree/bindings/iommu/arm,smmu.yaml | 3 +++
+>>  1 file changed, 3 insertions(+)
+>>
+> Your subjects contain quite redundant/excessive information. In the same
+> time they lack information about device. 
+>
+> 1. s/document the support on/add/
+> 2. s/SA8255p/SA8255p SMMU-or-whatever-device-it-is/
+>
+> Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+>
+> Best regards,
+> Krzysztof
 
-On Mon, Aug 12, 2024 at 03:21:04PM GMT, Lu Baolu wrote:
-> An iommu domain is allocated in tegra_vde_iommu_init() and is attached to
-> vde->dev. Use iommu_paging_domain_alloc() to make it explicit.
->=20
-> Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
-> Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
-> Link: https://lore.kernel.org/r/20240610085555.88197-9-baolu.lu@linux.int=
-el.com
-> ---
->  drivers/media/platform/nvidia/tegra-vde/iommu.c | 7 ++++---
->  1 file changed, 4 insertions(+), 3 deletions(-)
+Okay. I thought arm-smmu tag already indicate which device this patch is
+for but would put SMMU explicitly in the subject.
 
-Acked-by: Thierry Reding <treding@nvidia.com>
+Thanks,
 
---cowfqq5j65e3ovof
-Content-Type: application/pgp-signature; name="signature.asc"
+-Nikunj
 
------BEGIN PGP SIGNATURE-----
-
-iQIzBAABCAAdFiEEiOrDCAFJzPfAjcif3SOs138+s6EFAmbQktQACgkQ3SOs138+
-s6EUfRAAme7fMme4dA56e6MubG7cFGGWr8iHzpMLzb7Gxi4bRxcYB/Gtn/cepURr
-Ybbn9lG86we9+zbd+FNlPWTKXxFFZG3kDfKnU4eILM2y56SQApilQzwwicdOgN5a
-7aqDJu0/eEIwagudME6HYDlALal0MCib/UblMbReIP7XnAcrR+HhO1aRMy95l6P+
-xYD6VzW7evnIR1BRkz5CHS9Dgo7o3ykNsGr0wDkYjK6oFjF5g9Y6LZCZIRO3sZxe
-jqijysA0g9cAk+NsDNmWKbd0UEMM3DX1ROebrEzbBkXC9+PWe56LmP77zigyPHVr
-aVXBy9edGGmkJfKvwvkJJLAs3wpjN2cHVO8zPjg2bntFR5VhAPgMo7RJKt4Tj/A9
-rEcmcaPggDUVVgJEbogj1zZtpeTp89+56tGcFjJvMi1sVbudisnejl4aSfx/Hnzc
-4QKrj/ajGfmJkPJbjjUEIzTSV+Z7L3M06jC9eLrgKzURdymvDUAPuVaZWkPcT/DK
-hqiTAVU43r+yr40ZwRoxyuHIQLxGIxmUtnjk96uQhKa7bs3loD4KR00EIX590fGL
-cRL3yZFx2G7ILQ1Cnru0vXA3iF9RxG1eikHZHtqTPsInPseAMx6QpE0Vn0I/gT0G
-S/cBJhFE3NxmP45u2DKKrhq7+pRf6AEpKh1tnwZoB6NIx5cwGG0=
-=3ZMs
------END PGP SIGNATURE-----
-
---cowfqq5j65e3ovof--
