@@ -1,192 +1,119 @@
-Received: from mail-wr1-f41.google.com (mail-wr1-f41.google.com [209.85.221.41])
+Received: from mail-wm1-f46.google.com (mail-wm1-f46.google.com [209.85.128.46])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 33C0B1B14E2
-	for <iommu@lists.linux.dev>; Thu, 29 Aug 2024 14:54:31 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.41
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 004774084E
+	for <iommu@lists.linux.dev>; Thu, 29 Aug 2024 15:25:16 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.46
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1724943273; cv=none; b=VPYWi7Bpppv8P2dotj89PynNzqYetYNADgLgtkcotNvrDittMQ8PeLCtC9N0Hab3sbBTNETIao8m9rJ6C3ubJZ/yWL6IuYi2kzG91Gq+UaRsb25Pnbaq8sc5/woEv1P+nmL8zyTpnGtHdkLeTvjm9+WQK8AtMQ3/v2q8phuvOuo=
+	t=1724945118; cv=none; b=kMfT49C6KyP2nvOUdwBX8q0mj5cNfVBPukMyjZ1K510y1D/N6qlF9WDHmdFe3j5mZdubuEgFLrF2LOSS3EGTb92L3o6C3jAXab5getKN8MBLbUCIH/FTh/Xp3yEIynwjPC6QCUd+gK9K+homkaacsRqNaF9ABBNrzieRUuIDg44=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1724943273; c=relaxed/simple;
-	bh=WVKIpxyvSxvXJXDMoFBBlYcfXvBhD3sx8jPRqfscME4=;
-	h=Message-ID:Date:MIME-Version:From:Subject:To:Cc:References:
-	 In-Reply-To:Content-Type; b=dF9DhsqbaIgtMjfToECf0ZGopKESVJIaA+DhzK/+yOTqEzKuuhsT4X8ObvpqKTgCygQS81LVyvUWhzMZ5ALd7F0Zuw9FgIZOI+b4oLRAtEfK981+uxaeI1THYL6LCuH/9JNAsLnne9dNU74Dzj3rsUIzisJ3pg5sSI1A38+ihk4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org; spf=pass smtp.mailfrom=linaro.org; dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b=oX+vnqMB; arc=none smtp.client-ip=209.85.221.41
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linaro.org
+	s=arc-20240116; t=1724945118; c=relaxed/simple;
+	bh=W5GQhkVjz2wwdC5lXitoDCDre3m21qvN2+9J1ktg/iQ=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=CCeBhvOO4/roSTwe6K6usqLu+IsRn5Rz1nqdMswJ0fy8DX6juH3/VkTk1m3LRMcyRenHds0C9SpqeEM7ER37HrwHrtenFwOIGq+ZNaX7MmWFNtdMgnAUXp5TjOgpQt0vNzSirAsQ28coWfCEUgwiBMdI0urME5LW2EXTe3nvXPU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=DR/6iKaN; arc=none smtp.client-ip=209.85.128.46
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="oX+vnqMB"
-Received: by mail-wr1-f41.google.com with SMTP id ffacd0b85a97d-37193ef72a4so503645f8f.1
-        for <iommu@lists.linux.dev>; Thu, 29 Aug 2024 07:54:30 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="DR/6iKaN"
+Received: by mail-wm1-f46.google.com with SMTP id 5b1f17b1804b1-42bb72a5e0bso6487775e9.1
+        for <iommu@lists.linux.dev>; Thu, 29 Aug 2024 08:25:16 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1724943269; x=1725548069; darn=lists.linux.dev;
-        h=content-transfer-encoding:in-reply-to:organization:autocrypt
-         :content-language:references:cc:to:subject:reply-to:from:user-agent
-         :mime-version:date:message-id:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=65MyFHHTA1PsDIlSg/rTxhPf0z2KfhQQqeQtyDirckk=;
-        b=oX+vnqMBHPYc3WfFoWHk7GFjJjk5U/6bxssIQTdrZYefYmaE9JjqAQBxJfoMyRhdpA
-         1+qB7YPmM0Kf5dBQanhcyXbie4PgwxW8Ujbovbj7LtMSKm1pLzmNlYY+5+dVQ2zGZZpL
-         3HY8jn4271d4FsD8kNt/s2DLOTwJ/AwrmnZ0tZqhReox5ra5h1FRFqDZ5eIFGuaL6KDc
-         yUmwoiqBnYsWe/J3/cP8aE0A7lhvv1d8awp7ly9lhN98kuNXcDitx7f9q+48ry9FQW1c
-         wGwCtYykerM29kpG+rojILctX40KoNwxxhW7g153VtGEbpgThHaS0Lp09ZY9RwZBD7pt
-         HXGg==
+        d=gmail.com; s=20230601; t=1724945115; x=1725549915; darn=lists.linux.dev;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=3CePclmUlJ9R5wUKygyM22ovfabY44x27bhlzsShvYo=;
+        b=DR/6iKaNPCwYTRIb6C4ZhfZySlAimjkx8fMNmFBI/atiQgf8dDwn7n582xuiV1pfSz
+         FhR3g2Q1Qy2uokq6EEuwzgacGOgsmiwG8HGeig3E+iwqygQmHiSCZrP2BMK1zqP6Z6Kn
+         ZZaXpsUPFXjsDTSj5hfN98slQljouSIafqG/ELlbRth1MYBrX9g+nRwKRK2owabks/VM
+         /LrL3S9eYDRSVPlc0kFXMZwVWtgqzlkB6WQN8cRrIyMsr8Dps1P+QXQ2KLdzocgTWo3X
+         YrnH+jDZcC2vO5SIGN98xvaI8AYNq/S+gAyjg/S+qkOjQ/6VKpuuuGNmueRFZjdKXLm9
+         O7Dw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1724943269; x=1725548069;
-        h=content-transfer-encoding:in-reply-to:organization:autocrypt
-         :content-language:references:cc:to:subject:reply-to:from:user-agent
-         :mime-version:date:message-id:x-gm-message-state:from:to:cc:subject
-         :date:message-id:reply-to;
-        bh=65MyFHHTA1PsDIlSg/rTxhPf0z2KfhQQqeQtyDirckk=;
-        b=wppC0PiJRXH3G9wddAq77+prdBe/5XQrBkzj3oQgmIwlu/gwUY0zglFWlr4X2nC8Yn
-         TyUXDjQMNCKZmlq2KqPDoEqnbR6m2sS7npVMvEo27bCGpPpLiFSiuij8M0TzEucFZOFw
-         +wq2WGtlumLsggTg0QbSxGdsp5MkMesgv0ia6ne2UsoW08T/OfAq8x+ZwIrmaxNZ0Iwu
-         GNE5uoEmYr1sca6hdtc4IIZTMisNkfsTNUwH4CmE32OJfaeSLPDrdQuJndxTYELkyn+2
-         mQm7fzPWNGmWRfhMruFOvQgGQcqvYc5qqYWbqQbIfw9rWvLhRlacVD18lnLQELK1Xref
-         5Q5A==
-X-Gm-Message-State: AOJu0Yw8T6rQpNqq3VgbbtE84ScESPG7L9zWbk1WdsPK/yH74r5EhOsJ
-	FBYxIV7FNXlZHUK93byS2wZoA8GzARIk1wGOmwGUnfjj3i5afkKTBJPWQHAm/Hk=
-X-Google-Smtp-Source: AGHT+IHZH6stL4551rGqzrB66QW6+0W2V+BEhTdVDMA/uaumsNpkCQJsZo6bnlAOMG7WaWFSPvBr0g==
-X-Received: by 2002:a05:600c:3596:b0:426:61e8:fb35 with SMTP id 5b1f17b1804b1-42bb02812aamr25983165e9.4.1724943268906;
-        Thu, 29 Aug 2024 07:54:28 -0700 (PDT)
-Received: from ?IPV6:2a01:e0a:982:cbb0:12f5:c9c:a0e1:6915? ([2a01:e0a:982:cbb0:12f5:c9c:a0e1:6915])
-        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-42bb6a10353sm17740285e9.1.2024.08.29.07.54.27
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 29 Aug 2024 07:54:28 -0700 (PDT)
-Message-ID: <8d630ba4-8f6d-427d-bfa3-8eeba002517c@linaro.org>
-Date: Thu, 29 Aug 2024 16:54:27 +0200
+        d=1e100.net; s=20230601; t=1724945115; x=1725549915;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=3CePclmUlJ9R5wUKygyM22ovfabY44x27bhlzsShvYo=;
+        b=ok40UtX8UaLW1jwXhTe3MKrLdmLGx8XSk6fOBOp6YudXfqDqYTCBEp6JX86AsBYHYQ
+         Lk786ktvvyES2p6zJsb0IpxZQGewV58E7NZUiAk9aZluLvDsq2WUGJLHMP9VvASQTMIP
+         0H/9MR/A1hl0652Y7u2tjdENt4Q/aRRMg6MceMlAE//ky+mD5UF4dy0aueHshIH5qNL4
+         CDhsEv0Nftj0dYIv5nEOgCTGg9IrcGutSDD9lzLzxmYATvJG5XtYICrryH10fAzEMEPN
+         bBnkK4xOVGbKoTvbyxp6myFv2vKLANOYe935rD443t5rhdyZ4nIpDSV1BTs/5KsqaWfo
+         IjWQ==
+X-Forwarded-Encrypted: i=1; AJvYcCVTHdPl3DHFUlkzog/YNYnJS1/qGTZLqHmpf2eUYLACLAS712tcSFgVOb2hAlLB66HwqGT2FA==@lists.linux.dev
+X-Gm-Message-State: AOJu0YxsXQwlDOzThz4V/zJEUTlAwjQC7YEFQfE9zD4qk3LFP90//3jg
+	28uIMtLFaCVAh2P1U7eLguU2tDNeZhIftvqJf7OeZacoF8NCA2vV
+X-Google-Smtp-Source: AGHT+IHB9DwVQH+LaPCki7l5s2XbNvXlqbr5f4VqUYxz7BdDtbuqto3Zl5PtmeS+7pmQVpMQVL7Cmg==
+X-Received: by 2002:a05:600c:474c:b0:426:6e95:78d6 with SMTP id 5b1f17b1804b1-42bb01aa1fdmr26574845e9.4.1724945114644;
+        Thu, 29 Aug 2024 08:25:14 -0700 (PDT)
+Received: from orome (p200300e41f29d300f22f74fffe1f3a53.dip0.t-ipconnect.de. [2003:e4:1f29:d300:f22f:74ff:fe1f:3a53])
+        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-42bb37f7849sm25800085e9.7.2024.08.29.08.25.13
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 29 Aug 2024 08:25:13 -0700 (PDT)
+Date: Thu, 29 Aug 2024 17:25:12 +0200
+From: Thierry Reding <thierry.reding@gmail.com>
+To: Lu Baolu <baolu.lu@linux.intel.com>
+Cc: Dmitry Osipenko <digetx@gmail.com>, 
+	Mauro Carvalho Chehab <mchehab@kernel.org>, Jonathan Hunter <jonathanh@nvidia.com>, 
+	Stanimir Varbanov <stanimir.k.varbanov@gmail.com>, Vikash Garodia <quic_vgarodia@quicinc.com>, 
+	Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>, 
+	Robin Murphy <robin.murphy@arm.com>, Jason Gunthorpe <jgg@ziepe.ca>, 
+	Kevin Tian <kevin.tian@intel.com>, linux-media@vger.kernel.org, linux-tegra@vger.kernel.org, 
+	linux-arm-msm@vger.kernel.org, iommu@lists.linux.dev, linux-kernel@vger.kernel.org, 
+	Jason Gunthorpe <jgg@nvidia.com>
+Subject: Re: [PATCH 1/2] media: nvidia: tegra: Use iommu_paging_domain_alloc()
+Message-ID: <2o6gpxknio4kvf5fmqgai5jaov65semmw3wvtmt4gdauwzhbti@ii3ydtlmp2sb>
+References: <20240812072105.9578-1-baolu.lu@linux.intel.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-From: neil.armstrong@linaro.org
-Reply-To: neil.armstrong@linaro.org
-Subject: Re: [PATCH v6 RESED 1/2] dma: replace zone_dma_bits by zone_dma_limit
-To: Robin Murphy <robin.murphy@arm.com>, Baruch Siach <baruch@tkos.co.il>,
- Christoph Hellwig <hch@lst.de>, Marek Szyprowski <m.szyprowski@samsung.com>,
- Catalin Marinas <catalin.marinas@arm.com>, Will Deacon <will@kernel.org>
-Cc: iommu@lists.linux.dev, linux-arm-kernel@lists.infradead.org,
- linux-kernel@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
- linux-s390@vger.kernel.org, =?UTF-8?B?UGV0ciBUZXNhxZnDrWs=?=
- <petr@tesarici.cz>, Ramon Fried <ramon@neureality.ai>,
- Elad Nachman <enachman@marvell.com>,
- linux-arm-msm <linux-arm-msm@vger.kernel.org>
-References: <cover.1723359916.git.baruch@tkos.co.il>
- <17c067618b93e5d71f19c37826d54db4299621a3.1723359916.git.baruch@tkos.co.il>
- <1a0c7282-63e0-4add-8e38-3abe3e0a8e2f@linaro.org>
- <1a7ab0db-646d-4975-9974-7b911990055a@arm.com>
-Content-Language: en-US, fr
-Autocrypt: addr=neil.armstrong@linaro.org; keydata=
- xsBNBE1ZBs8BCAD78xVLsXPwV/2qQx2FaO/7mhWL0Qodw8UcQJnkrWmgTFRobtTWxuRx8WWP
- GTjuhvbleoQ5Cxjr+v+1ARGCH46MxFP5DwauzPekwJUD5QKZlaw/bURTLmS2id5wWi3lqVH4
- BVF2WzvGyyeV1o4RTCYDnZ9VLLylJ9bneEaIs/7cjCEbipGGFlfIML3sfqnIvMAxIMZrvcl9
- qPV2k+KQ7q+aXavU5W+yLNn7QtXUB530Zlk/d2ETgzQ5FLYYnUDAaRl+8JUTjc0CNOTpCeik
- 80TZcE6f8M76Xa6yU8VcNko94Ck7iB4vj70q76P/J7kt98hklrr85/3NU3oti3nrIHmHABEB
- AAHNKk5laWwgQXJtc3Ryb25nIDxuZWlsLmFybXN0cm9uZ0BsaW5hcm8ub3JnPsLAkQQTAQoA
- OwIbIwULCQgHAwUVCgkICwUWAgMBAAIeAQIXgBYhBInsPQWERiF0UPIoSBaat7Gkz/iuBQJk
- Q5wSAhkBAAoJEBaat7Gkz/iuyhMIANiD94qDtUTJRfEW6GwXmtKWwl/mvqQtaTtZID2dos04
- YqBbshiJbejgVJjy+HODcNUIKBB3PSLaln4ltdsV73SBcwUNdzebfKspAQunCM22Mn6FBIxQ
- GizsMLcP/0FX4en9NaKGfK6ZdKK6kN1GR9YffMJd2P08EO8mHowmSRe/ExAODhAs9W7XXExw
- UNCY4pVJyRPpEhv373vvff60bHxc1k/FF9WaPscMt7hlkbFLUs85kHtQAmr8pV5Hy9ezsSRa
- GzJmiVclkPc2BY592IGBXRDQ38urXeM4nfhhvqA50b/nAEXc6FzqgXqDkEIwR66/Gbp0t3+r
- yQzpKRyQif3OwE0ETVkGzwEIALyKDN/OGURaHBVzwjgYq+ZtifvekdrSNl8TIDH8g1xicBYp
- QTbPn6bbSZbdvfeQPNCcD4/EhXZuhQXMcoJsQQQnO4vwVULmPGgtGf8PVc7dxKOeta+qUh6+
- SRh3vIcAUFHDT3f/Zdspz+e2E0hPV2hiSvICLk11qO6cyJE13zeNFoeY3ggrKY+IzbFomIZY
- 4yG6xI99NIPEVE9lNBXBKIlewIyVlkOaYvJWSV+p5gdJXOvScNN1epm5YHmf9aE2ZjnqZGoM
- Mtsyw18YoX9BqMFInxqYQQ3j/HpVgTSvmo5ea5qQDDUaCsaTf8UeDcwYOtgI8iL4oHcsGtUX
- oUk33HEAEQEAAcLAXwQYAQIACQUCTVkGzwIbDAAKCRAWmrexpM/4rrXiB/sGbkQ6itMrAIfn
- M7IbRuiSZS1unlySUVYu3SD6YBYnNi3G5EpbwfBNuT3H8//rVvtOFK4OD8cRYkxXRQmTvqa3
- 3eDIHu/zr1HMKErm+2SD6PO9umRef8V82o2oaCLvf4WeIssFjwB0b6a12opuRP7yo3E3gTCS
- KmbUuLv1CtxKQF+fUV1cVaTPMyT25Od+RC1K+iOR0F54oUJvJeq7fUzbn/KdlhA8XPGzwGRy
- 4zcsPWvwnXgfe5tk680fEKZVwOZKIEuJC3v+/yZpQzDvGYJvbyix0lHnrCzq43WefRHI5XTT
- QbM0WUIBIcGmq38+OgUsMYu4NzLu7uZFAcmp6h8g
-Organization: Linaro
-In-Reply-To: <1a7ab0db-646d-4975-9974-7b911990055a@arm.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+Content-Type: multipart/signed; micalg=pgp-sha256;
+	protocol="application/pgp-signature"; boundary="cowfqq5j65e3ovof"
+Content-Disposition: inline
+In-Reply-To: <20240812072105.9578-1-baolu.lu@linux.intel.com>
 
-Hi Robin,
 
-On 29/08/2024 16:38, Robin Murphy wrote:
-> On 2024-08-29 2:42 pm, Neil Armstrong wrote:
->> Hi,
->>
->> On 11/08/2024 09:09, Baruch Siach wrote:
->>> From: Catalin Marinas <catalin.marinas@arm.com>
->>>
->>> Hardware DMA limit might not be power of 2. When RAM range starts above
->>> 0, say 4GB, DMA limit of 30 bits should end at 5GB. A single high bit
->>> can not encode this limit.
->>>
->>> Use plain address for DMA zone limit.
->>>
->>> Since DMA zone can now potentially span beyond 4GB physical limit of
->>> DMA32, make sure to use DMA zone for GFP_DMA32 allocations in that case.
->>>
->>> Signed-off-by: Catalin Marinas <catalin.marinas@arm.com>
->>> Co-developed-by: Baruch Siach <baruch@tkos.co.il>
->>> Signed-off-by: Baruch Siach <baruch@tkos.co.il>
->>> ---
->>>   arch/arm64/mm/init.c       | 30 +++++++++++++++---------------
->>>   arch/powerpc/mm/mem.c      |  5 ++++-
->>>   arch/s390/mm/init.c        |  2 +-
->>>   include/linux/dma-direct.h |  2 +-
->>>   kernel/dma/direct.c        |  6 +++---
->>>   kernel/dma/pool.c          |  4 ++--
->>>   kernel/dma/swiotlb.c       |  6 +++---
->>>   7 files changed, 29 insertions(+), 26 deletions(-)
->>>
->>
->> <snip>
->>
->> This change breaks the Qualcomm SM8550-HDK boot since next-20240826.
->> It doesn't affect SM8550-QRD or other similar SoCs like SM8650 or SM8450.
->> The last CI run on next-20240828 can be found at:
->> https://git.codelinaro.org/linaro/qcomlt/ci/staging/cdba-tester/-/pipelines/100936
->>
->> SM8550-HDK boot log:
->> https://git.codelinaro.org/linaro/qcomlt/ci/staging/cdba-tester/-/jobs/165617
->>
-> [...]
-> 
-> Yeah, a 35-bit ZONE_DMA is sure to make stuff go wrong:
-> 
->> [    0.000000] Zone ranges:
->> [    0.000000]   DMA      [mem 0x0000000080000000-0x0000000affffffff]
->> [    0.000000]   DMA32    empty
->> [    0.000000]   Normal   empty
-> 
-> Compared to before:
-> 
-> [    0.000000]   DMA      [mem 0x0000000080000000-0x00000000ffffffff]
-> [    0.000000]   DMA32    empty
-> [    0.000000]   Normal   [mem 0x0000000100000000-0x0000000affffffff]
-> 
-> This'll be because the SoC DT is describing a general non-restrictive range:
->          dma-ranges = <0 0 0 0 0x10 0>;
-> 
-> Which proves we need more information than {acpi,of}_dma_get_max_cpu_address() are currently able to give us, because what zone_dma_limit actually wants to be is the *minimum* of the lowest highest CPU address of any DMA range, and the lowest CPU address of any DMA range + 2^32. I was thinking it had all ended up looking a bit too easy... :)
-> 
-> I think v1 of the fix[1] might actually work out for this, albeit still for the wrong reasons - if so, I concede that maybe at this point it might be safest to go back to that one as a quick short-term fix (with a big fat comment to say so) rather than try to rush the proper solution or revert everything.
+--cowfqq5j65e3ovof
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-Indeed v1 patches makes boot work again:
-[    0.000000] Zone ranges:
-[    0.000000]   DMA      [mem 0x0000000080000000-0x00000000ffffffff]
-[    0.000000]   DMA32    empty
-[    0.000000]   Normal   [mem 0x0000000100000000-0x0000000affffffff]
+On Mon, Aug 12, 2024 at 03:21:04PM GMT, Lu Baolu wrote:
+> An iommu domain is allocated in tegra_vde_iommu_init() and is attached to
+> vde->dev. Use iommu_paging_domain_alloc() to make it explicit.
+>=20
+> Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
+> Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
+> Link: https://lore.kernel.org/r/20240610085555.88197-9-baolu.lu@linux.int=
+el.com
+> ---
+>  drivers/media/platform/nvidia/tegra-vde/iommu.c | 7 ++++---
+>  1 file changed, 4 insertions(+), 3 deletions(-)
 
-Please add my:
-Tested-by: Neil Armstrong <neil.armstrong@linaro.org> # on SM8550-HDK
+Acked-by: Thierry Reding <treding@nvidia.com>
 
-Thanks,
-Neil
+--cowfqq5j65e3ovof
+Content-Type: application/pgp-signature; name="signature.asc"
 
-> 
-> Thanks,
-> Robin.
-> 
-> [1] https://lore.kernel.org/linux-arm-kernel/731d204f5f556ad61bbaf004b1d984f83c90b4f5.1724748249.git.baruch@tkos.co.il/
+-----BEGIN PGP SIGNATURE-----
 
+iQIzBAABCAAdFiEEiOrDCAFJzPfAjcif3SOs138+s6EFAmbQktQACgkQ3SOs138+
+s6EUfRAAme7fMme4dA56e6MubG7cFGGWr8iHzpMLzb7Gxi4bRxcYB/Gtn/cepURr
+Ybbn9lG86we9+zbd+FNlPWTKXxFFZG3kDfKnU4eILM2y56SQApilQzwwicdOgN5a
+7aqDJu0/eEIwagudME6HYDlALal0MCib/UblMbReIP7XnAcrR+HhO1aRMy95l6P+
+xYD6VzW7evnIR1BRkz5CHS9Dgo7o3ykNsGr0wDkYjK6oFjF5g9Y6LZCZIRO3sZxe
+jqijysA0g9cAk+NsDNmWKbd0UEMM3DX1ROebrEzbBkXC9+PWe56LmP77zigyPHVr
+aVXBy9edGGmkJfKvwvkJJLAs3wpjN2cHVO8zPjg2bntFR5VhAPgMo7RJKt4Tj/A9
+rEcmcaPggDUVVgJEbogj1zZtpeTp89+56tGcFjJvMi1sVbudisnejl4aSfx/Hnzc
+4QKrj/ajGfmJkPJbjjUEIzTSV+Z7L3M06jC9eLrgKzURdymvDUAPuVaZWkPcT/DK
+hqiTAVU43r+yr40ZwRoxyuHIQLxGIxmUtnjk96uQhKa7bs3loD4KR00EIX590fGL
+cRL3yZFx2G7ILQ1Cnru0vXA3iF9RxG1eikHZHtqTPsInPseAMx6QpE0Vn0I/gT0G
+S/cBJhFE3NxmP45u2DKKrhq7+pRf6AEpKh1tnwZoB6NIx5cwGG0=
+=3ZMs
+-----END PGP SIGNATURE-----
+
+--cowfqq5j65e3ovof--
