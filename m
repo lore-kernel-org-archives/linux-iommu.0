@@ -1,76 +1,193 @@
-Received: from out-188.mta1.migadu.com (out-188.mta1.migadu.com [95.215.58.188])
+Received: from mx0b-0031df01.pphosted.com (mx0b-0031df01.pphosted.com [205.220.180.131])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1422D18A923
-	for <iommu@lists.linux.dev>; Thu, 29 Aug 2024 14:24:57 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=95.215.58.188
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 621941A76C1
+	for <iommu@lists.linux.dev>; Thu, 29 Aug 2024 14:27:50 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.180.131
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1724941500; cv=none; b=tZ/21LaKIW73dy2VrcuFZGxYJpGdF66sZ/xWTAqQsTwv15pj0gr2nXJGCuwMayKalBCKlgyE1OcxvP4osrlVjs4v3ZdHS+DOUPMTCrFhnsXAbm5GGFkntpTM1nEFJU4y3mVZ1A12zG1Z/sNhFhS9rlv2PVf7mRZz4xvSx/l/KSg=
+	t=1724941672; cv=none; b=pUHq83ZRbPRWKp+ccMYXvAJMOnLcaLfBJ12BKRFMG9Zk1IKrOgm/leJs0ekzIMwgJZCR49tvpTV2+1LLFn55Ocvg0ZYniZnHeAGN9TBiv1zNo0EErYuUKxVzH+yJFx0cqrwsLFAidYat/4pDY/bPwehz2CV2nW/iyPnjbo0LIDk=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1724941500; c=relaxed/simple;
-	bh=n8olwhAyvGIBu+ixAeLQGoRfqSJdXwVMscwROp79R1Y=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=biVzVCeCdLW/T8pWETFzNbiSPFGrJakjPqNjqY/sCd1rIL8HvV5c/v/vzOKX0E4mxrEhg3wnWiztQ3ePg+TG/ywLkjha/v3zDK5Ds0pNt2ubvCmWHnxlQWVzslSQJ38aAHrQM9C7WccjjBvZXbcj0Kx+Hlyeecd/yrUzWKMSeng=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.dev; spf=pass smtp.mailfrom=linux.dev; dkim=pass (1024-bit key) header.d=linux.dev header.i=@linux.dev header.b=d8lHUvKm; arc=none smtp.client-ip=95.215.58.188
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.dev
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.dev
+	s=arc-20240116; t=1724941672; c=relaxed/simple;
+	bh=BmWjnAijfw6T7UxB+tkThQpa/pIriw7JMt+dzMxcamc=;
+	h=Message-ID:Date:MIME-Version:Subject:To:CC:References:From:
+	 In-Reply-To:Content-Type; b=Aq/S1MRSgHroC74FzeOnSzFyMYtTlEp8gfWDaCR14QuxW10sqGeS4FoO2Xy1jS2MUez/q87G4veGE48kGVmi+o/HbPfGoaIgZ02ub/pRgzAnAHwIEDaW0WfS+gDpWkb91X6A+tL01IGosXdkqwVxvQCvTyGumGIPk128++yQDTE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com; spf=pass smtp.mailfrom=quicinc.com; dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b=BG2jd9hy; arc=none smtp.client-ip=205.220.180.131
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=quicinc.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linux.dev header.i=@linux.dev header.b="d8lHUvKm"
-Message-ID: <4c2c6b24-aee1-495f-ab47-662e1e818f4b@linux.dev>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
-	t=1724941496;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references;
-	bh=4bjuMojYk0Mfw4UQTElf/K+iWHCGHyxVpLzKL0LF+2Q=;
-	b=d8lHUvKmV+VKcyz1W/qDC/BKHy8AUSznJO9kEtiZ7GQEXB1e6u543nQ3iv4bUTWvAmNtVv
-	jiJGT9en4Ato0ZKcOhBQ9dWN1L9IZZrvquYRCzjeMypaz1iVs+l+checkeoJeptrXp0fJD
-	VLypxmSZKgyd6YlI9JLmcV6vjR7P3eU=
-Date: Thu, 29 Aug 2024 10:24:52 -0400
+	dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b="BG2jd9hy"
+Received: from pps.filterd (m0279873.ppops.net [127.0.0.1])
+	by mx0a-0031df01.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 47T8HlKv031817;
+	Thu, 29 Aug 2024 14:27:21 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=quicinc.com; h=
+	cc:content-transfer-encoding:content-type:date:from:in-reply-to
+	:message-id:mime-version:references:subject:to; s=qcppdkim1; bh=
+	1s4+RPa5fTYDeOi0K3UjRSPTnkLkZRQOrwdHKLhFCs0=; b=BG2jd9hyiuyvAIEl
+	s8u0X9WRaiq1saQo74VPL2NCcxjODyemQD9GFPGFb8UQIvP3Lm+LaDVm58jcxuuN
+	wbQt6Jrs/N77ZKZoTgOr/JkDE6sPy+CBEUy3v4hRILl/0C6x6Naw5vfFOwrAVPzN
+	BPRwNkVZyq48rMOwH9MSF6YVpAatS1OjoY6qhhqealsjt5XJpldKKGtiSgY+86V+
+	gcdwC4ja529t/2D50tFqhyJHpvSeVubaveMouh2oVPe8tv3XPwxp7IaSMm6Cf9su
+	XmNeNzXCFF61YnhNtRtC3GjRZ06zSAr78vOwr6XhQkEUQzsya8bOCVcvYJ/KGK7O
+	jEP+NA==
+Received: from nasanppmta03.qualcomm.com (i-global254.qualcomm.com [199.106.103.254])
+	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 419puw5hps-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Thu, 29 Aug 2024 14:27:21 +0000 (GMT)
+Received: from nasanex01b.na.qualcomm.com (nasanex01b.na.qualcomm.com [10.46.141.250])
+	by NASANPPMTA03.qualcomm.com (8.18.1.2/8.18.1.2) with ESMTPS id 47TERJOl015048
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Thu, 29 Aug 2024 14:27:19 GMT
+Received: from [10.110.28.107] (10.80.80.8) by nasanex01b.na.qualcomm.com
+ (10.46.141.250) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1544.9; Thu, 29 Aug
+ 2024 07:27:15 -0700
+Message-ID: <19f5389a-a88b-4f29-98fd-c9d539c7c225@quicinc.com>
+Date: Thu, 29 Aug 2024 07:27:15 -0700
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Subject: Re: [PATCH v3] dma: Trace API
-To: Christoph Hellwig <hch@lst.de>
-Cc: Marek Szyprowski <m.szyprowski@samsung.com>,
- Robin Murphy <robin.murphy@arm.com>, iommu@lists.linux.dev,
- linux-kernel@vger.kernel.org
-References: <20240826203240.2234615-1-sean.anderson@linux.dev>
- <20240829041912.GB4408@lst.de>
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH 17/22] dt-bindings: serial: document support for SA8255p
 Content-Language: en-US
-X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
-From: Sean Anderson <sean.anderson@linux.dev>
-In-Reply-To: <20240829041912.GB4408@lst.de>
-Content-Type: text/plain; charset=UTF-8
+To: Krzysztof Kozlowski <krzk@kernel.org>
+CC: <andersson@kernel.org>, <konradybcio@kernel.org>, <robh@kernel.org>,
+        <krzk+dt@kernel.org>, <conor+dt@kernel.org>, <rafael@kernel.org>,
+        <viresh.kumar@linaro.org>, <herbert@gondor.apana.org.au>,
+        <davem@davemloft.net>, <sudeep.holla@arm.com>, <andi.shyti@kernel.org>,
+        <tglx@linutronix.de>, <will@kernel.org>, <joro@8bytes.org>,
+        <jassisinghbrar@gmail.com>, <lee@kernel.org>,
+        <linus.walleij@linaro.org>, <amitk@kernel.org>,
+        <thara.gopinath@gmail.com>, <broonie@kernel.org>,
+        <wim@linux-watchdog.org>, <linux@roeck-us.net>, <robin.murphy@arm.com>,
+        <cristian.marussi@arm.com>, <rui.zhang@intel.com>,
+        <lukasz.luba@arm.com>, <vkoul@kernel.org>, <quic_gurus@quicinc.com>,
+        <agross@kernel.org>, <bartosz.golaszewski@linaro.org>,
+        <quic_rjendra@quicinc.com>, <robimarko@gmail.com>,
+        <linux-arm-msm@vger.kernel.org>, <devicetree@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>, <linux-pm@vger.kernel.org>,
+        <linux-crypto@vger.kernel.org>, <arm-scmi@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>, <linux-i2c@vger.kernel.org>,
+        <iommu@lists.linux.dev>, <linux-gpio@vger.kernel.org>,
+        <linux-serial@vger.kernel.org>, <linux-spi@vger.kernel.org>,
+        <linux-watchdog@vger.kernel.org>, <kernel@quicinc.com>,
+        <quic_psodagud@quicinc.com>, <quic_tsoni@quicinc.com>,
+        <quic_shazhuss@quicinc.com>, Praveen Talari <quic_ptalari@quicinc.com>
+References: <20240828203721.2751904-1-quic_nkela@quicinc.com>
+ <20240828203721.2751904-18-quic_nkela@quicinc.com>
+ <esl3zcntkewslcredif54venyopwgj2niruoeqcvbhqmbyt5qc@odixl23o7omk>
+From: Nikunj Kela <quic_nkela@quicinc.com>
+In-Reply-To: <esl3zcntkewslcredif54venyopwgj2niruoeqcvbhqmbyt5qc@odixl23o7omk>
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: 7bit
-X-Migadu-Flow: FLOW_OUT
+X-ClientProxiedBy: nasanex01a.na.qualcomm.com (10.52.223.231) To
+ nasanex01b.na.qualcomm.com (10.46.141.250)
+X-QCInternal: smtphost
+X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
+X-Proofpoint-ORIG-GUID: Uur1LjkVDPzDxrIosfw2P0DSrkNvBKO-
+X-Proofpoint-GUID: Uur1LjkVDPzDxrIosfw2P0DSrkNvBKO-
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.293,Aquarius:18.0.1039,Hydra:6.0.680,FMLib:17.12.28.16
+ definitions=2024-08-29_03,2024-08-29_02,2024-05-17_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 clxscore=1015
+ priorityscore=1501 malwarescore=0 bulkscore=0 mlxscore=0
+ lowpriorityscore=0 phishscore=0 mlxlogscore=999 suspectscore=0
+ adultscore=0 spamscore=0 impostorscore=0 classifier=spam adjust=0
+ reason=mlx scancount=1 engine=8.19.0-2407110000
+ definitions=main-2408290100
 
-On 8/29/24 00:19, Christoph Hellwig wrote:
-> I'd change the subject to
-> 
-> dma-mapping: add tracing for dma-mapping API calls
 
-OK
+On 8/29/2024 12:41 AM, Krzysztof Kozlowski wrote:
+> On Wed, Aug 28, 2024 at 01:37:16PM -0700, Nikunj Kela wrote:
+>> Add compatibles representing UART support on SA8255p.
+>>
+>> Clocks and interconnects are being configured in the firmware VM
+>> on SA8255p platform, therefore making them optional.
+>>
+>> CC: Praveen Talari <quic_ptalari@quicinc.com>
+>> Signed-off-by: Nikunj Kela <quic_nkela@quicinc.com>
+>> ---
+>>  .../serial/qcom,serial-geni-qcom.yaml         | 58 ++++++++++++++++---
+>>  1 file changed, 51 insertions(+), 7 deletions(-)
+>>
+>> diff --git a/Documentation/devicetree/bindings/serial/qcom,serial-geni-qcom.yaml b/Documentation/devicetree/bindings/serial/qcom,serial-geni-qcom.yaml
+>> index dd33794b3534..dcd43e1353ec 100644
+>> --- a/Documentation/devicetree/bindings/serial/qcom,serial-geni-qcom.yaml
+>> +++ b/Documentation/devicetree/bindings/serial/qcom,serial-geni-qcom.yaml
+>> @@ -13,11 +13,42 @@ maintainers:
+>>  allOf:
+>>    - $ref: /schemas/serial/serial.yaml#
+> Please move entire allOf: to the place after "required:" block.
+>
+>>  
+>> +  - if:
+>> +      properties:
+>> +        compatible:
+>> +          contains:
+>> +            enum:
+>> +              - qcom,sa8255p-geni-uart
+>> +              - qcom,sa8255p-geni-debug-uart
+>> +    then:
+>> +      required:
+>> +        - power-domains
+>> +        - power-domain-names
+>> +      properties:
+>> +        power-domains:
+>> +          minItems: 2
+>> +          maxItems: 2
+>> +    else:
+>> +      required:
+>> +        - clocks
+>> +        - clock-names
+>> +      properties:
+>> +        power-domains:
+>> +          maxItems: 1
+>> +        interconnects:
+>> +          maxItems: 2
+>> +        interconnect-names:
+>> +          items:
+>> +            - const: qup-core
+>> +            - const: qup-config
+>> +
+>>  properties:
+>>    compatible:
+>>      enum:
+>>        - qcom,geni-uart
+>>        - qcom,geni-debug-uart
+>> +      - qcom,sa8255p-geni-uart
+>> +      - qcom,sa8255p-geni-debug-uart
+> Not compatible with the old ones? Well, it is impossible. Generic
+> compatible like "qcom,geni-uart" means ALL DEVICES forever will be
+> compatible, because otherwise it just does not make any sense.  Of
+> course "all devices forever will be compatible" is impossible as well,
+> thus DT maintainers are suggesting SoC-specific compatibles all the
+> time, but if developers decide that they know the future, you should
+> keep it, right?
 
-> On Mon, Aug 26, 2024 at 04:32:40PM -0400, Sean Anderson wrote:
->> When debugging drivers, it can often be useful to trace when memory gets
->> (un)mapped for DMA (and can be accessed by the device). Add some
->> tracepoints for this purpose.
->> 
->> We use unsigned long long instead of phys_addr_t and dma_addr_t (and
->> similarly %llx instead of %pa) because libtraceevent can't handle
->> typedefs.
-> 
-> and a __u64 would seem like the better type here.
+Hi Krzysztof,
 
-libtraceevent can't handle typedefs, including u64.
+SA8255p uart is not compatible with generic ones. While I get your
+point, could you please advise how to proceed on this? Of course, no one
+could predict the future at the time generic compatibles were added but
+here we are now with the usecase!
 
-> otherwise this looks fine to me.  I can do the tweaks as I'll apply
-> the patch if needed.
-> 
+Thanks,
 
---Sean
+-Nikunj
+
+>>  
+>>    clocks:
+>>      maxItems: 1
+>> @@ -26,12 +57,10 @@ properties:
+>>      const: se
+>>  
+>>    interconnects:
+>> -    maxItems: 2
+>> +    description: phandles of interconnect bw provider
+> Constraints must stay in top-level.
+>
+> Best regards,
+> Krzysztof
+>
