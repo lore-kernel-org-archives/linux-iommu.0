@@ -1,125 +1,76 @@
-Received: from mx0a-0031df01.pphosted.com (mx0a-0031df01.pphosted.com [205.220.168.131])
+Received: from out-188.mta1.migadu.com (out-188.mta1.migadu.com [95.215.58.188])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 62CA41AD9E9
-	for <iommu@lists.linux.dev>; Thu, 29 Aug 2024 14:17:56 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.168.131
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1422D18A923
+	for <iommu@lists.linux.dev>; Thu, 29 Aug 2024 14:24:57 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=95.215.58.188
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1724941077; cv=none; b=O/kIttiRlYAItUYEcC1+zEiG3lELYQvZ0KXDyVpQ+4BDSdO4C3ImN66EP8+gOOoNvMN4o4QRbeBVEtVlnJ6nrZiSSgNVoeUd4niuP32EhgYd1pSdIpwMhu3VHwqrtLBuxmb3N/UhxHa1j2JPkv0y8B5Xx+cWvIK9XE0rHRC+bpE=
+	t=1724941500; cv=none; b=tZ/21LaKIW73dy2VrcuFZGxYJpGdF66sZ/xWTAqQsTwv15pj0gr2nXJGCuwMayKalBCKlgyE1OcxvP4osrlVjs4v3ZdHS+DOUPMTCrFhnsXAbm5GGFkntpTM1nEFJU4y3mVZ1A12zG1Z/sNhFhS9rlv2PVf7mRZz4xvSx/l/KSg=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1724941077; c=relaxed/simple;
-	bh=t+RKO9TNWxY4HrBdBWb9BA8+VLsmoITn4UlYlIT7srY=;
-	h=Message-ID:Date:MIME-Version:Subject:To:CC:References:From:
-	 In-Reply-To:Content-Type; b=RLoiLewfXwQ0pJbWq0ktoC8z9ZDt4FqWe7XtdyDAMJD0vW8FnSkYfAa/X/ZI9hAm/METJ/weDbaeAjeAKQtMs2DrqfTtpDWZNLIDEA3SuoBXff8j5MAmT0j/ag+HfRaqhODidr5K/z+Qi5XG5m4MOFHJPt4TufbpU4CSdAMUToQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com; spf=pass smtp.mailfrom=quicinc.com; dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b=DKZih9YA; arc=none smtp.client-ip=205.220.168.131
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=quicinc.com
+	s=arc-20240116; t=1724941500; c=relaxed/simple;
+	bh=n8olwhAyvGIBu+ixAeLQGoRfqSJdXwVMscwROp79R1Y=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=biVzVCeCdLW/T8pWETFzNbiSPFGrJakjPqNjqY/sCd1rIL8HvV5c/v/vzOKX0E4mxrEhg3wnWiztQ3ePg+TG/ywLkjha/v3zDK5Ds0pNt2ubvCmWHnxlQWVzslSQJ38aAHrQM9C7WccjjBvZXbcj0Kx+Hlyeecd/yrUzWKMSeng=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.dev; spf=pass smtp.mailfrom=linux.dev; dkim=pass (1024-bit key) header.d=linux.dev header.i=@linux.dev header.b=d8lHUvKm; arc=none smtp.client-ip=95.215.58.188
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.dev
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.dev
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b="DKZih9YA"
-Received: from pps.filterd (m0279862.ppops.net [127.0.0.1])
-	by mx0a-0031df01.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 47T8qot9013831;
-	Thu, 29 Aug 2024 14:17:26 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=quicinc.com; h=
-	cc:content-transfer-encoding:content-type:date:from:in-reply-to
-	:message-id:mime-version:references:subject:to; s=qcppdkim1; bh=
-	t+RKO9TNWxY4HrBdBWb9BA8+VLsmoITn4UlYlIT7srY=; b=DKZih9YAEWADMmXQ
-	sdVY89ixeiTr1iAWqukECdtYmZU3kK9mfKqDrNlx/2MVx07VTIMwYLUdAekmAwsY
-	idKsx1qQdliqNzMmL9RdIXevrNeCfsoOIu/ELTc56mEmrWjf8bp7ZM12e/GI96Ej
-	DaSElKuQYHRAdPzjCAJIT0bHx6RK176n9KnCyta/tsltRB8wTbcScppbSRTcVubo
-	j99yRUOew5+8MtfigQ8/CLlhRpcCeCY/3hx7u7J9A04mimYzRX4/Qhb9YlYA2RQK
-	n/OXRIp5JXMJRqhqv0LSHxthi6XoKGt/pFOZp7J5QLRmghU7c6sH5h4ksvCOZnOx
-	pIT7gw==
-Received: from nasanppmta03.qualcomm.com (i-global254.qualcomm.com [199.106.103.254])
-	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 419pv15ejs-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Thu, 29 Aug 2024 14:17:26 +0000 (GMT)
-Received: from nasanex01b.na.qualcomm.com (nasanex01b.na.qualcomm.com [10.46.141.250])
-	by NASANPPMTA03.qualcomm.com (8.18.1.2/8.18.1.2) with ESMTPS id 47TEHPsx001357
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Thu, 29 Aug 2024 14:17:25 GMT
-Received: from [10.110.28.107] (10.80.80.8) by nasanex01b.na.qualcomm.com
- (10.46.141.250) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1544.9; Thu, 29 Aug
- 2024 07:17:21 -0700
-Message-ID: <d15927f9-bd00-4e32-9c25-535c69fe56f6@quicinc.com>
-Date: Thu, 29 Aug 2024 07:17:20 -0700
+	dkim=pass (1024-bit key) header.d=linux.dev header.i=@linux.dev header.b="d8lHUvKm"
+Message-ID: <4c2c6b24-aee1-495f-ab47-662e1e818f4b@linux.dev>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
+	t=1724941496;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding:
+	 in-reply-to:in-reply-to:references:references;
+	bh=4bjuMojYk0Mfw4UQTElf/K+iWHCGHyxVpLzKL0LF+2Q=;
+	b=d8lHUvKmV+VKcyz1W/qDC/BKHy8AUSznJO9kEtiZ7GQEXB1e6u543nQ3iv4bUTWvAmNtVv
+	jiJGT9en4Ato0ZKcOhBQ9dWN1L9IZZrvquYRCzjeMypaz1iVs+l+checkeoJeptrXp0fJD
+	VLypxmSZKgyd6YlI9JLmcV6vjR7P3eU=
+Date: Thu, 29 Aug 2024 10:24:52 -0400
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH 11/22] pinctrl: qcom: sa8775p: Add support for SA8255p SoC
-To: Krzysztof Kozlowski <krzk@kernel.org>
-CC: <andersson@kernel.org>, <konradybcio@kernel.org>, <robh@kernel.org>,
-        <krzk+dt@kernel.org>, <conor+dt@kernel.org>, <rafael@kernel.org>,
-        <viresh.kumar@linaro.org>, <herbert@gondor.apana.org.au>,
-        <davem@davemloft.net>, <sudeep.holla@arm.com>, <andi.shyti@kernel.org>,
-        <tglx@linutronix.de>, <will@kernel.org>, <joro@8bytes.org>,
-        <jassisinghbrar@gmail.com>, <lee@kernel.org>,
-        <linus.walleij@linaro.org>, <amitk@kernel.org>,
-        <thara.gopinath@gmail.com>, <broonie@kernel.org>,
-        <wim@linux-watchdog.org>, <linux@roeck-us.net>, <robin.murphy@arm.com>,
-        <cristian.marussi@arm.com>, <rui.zhang@intel.com>,
-        <lukasz.luba@arm.com>, <vkoul@kernel.org>, <quic_gurus@quicinc.com>,
-        <agross@kernel.org>, <bartosz.golaszewski@linaro.org>,
-        <quic_rjendra@quicinc.com>, <robimarko@gmail.com>,
-        <linux-arm-msm@vger.kernel.org>, <devicetree@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, <linux-pm@vger.kernel.org>,
-        <linux-crypto@vger.kernel.org>, <arm-scmi@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>, <linux-i2c@vger.kernel.org>,
-        <iommu@lists.linux.dev>, <linux-gpio@vger.kernel.org>,
-        <linux-serial@vger.kernel.org>, <linux-spi@vger.kernel.org>,
-        <linux-watchdog@vger.kernel.org>, <kernel@quicinc.com>,
-        <quic_psodagud@quicinc.com>, <quic_tsoni@quicinc.com>,
-        <quic_shazhuss@quicinc.com>
-References: <20240828203721.2751904-1-quic_nkela@quicinc.com>
- <20240828203721.2751904-12-quic_nkela@quicinc.com>
- <erlzqkxrogk24ugfahfsxrramay6tfhljnxrcfcuhe24pla7k3@lytnz3kmszyj>
+Subject: Re: [PATCH v3] dma: Trace API
+To: Christoph Hellwig <hch@lst.de>
+Cc: Marek Szyprowski <m.szyprowski@samsung.com>,
+ Robin Murphy <robin.murphy@arm.com>, iommu@lists.linux.dev,
+ linux-kernel@vger.kernel.org
+References: <20240826203240.2234615-1-sean.anderson@linux.dev>
+ <20240829041912.GB4408@lst.de>
 Content-Language: en-US
-From: Nikunj Kela <quic_nkela@quicinc.com>
-In-Reply-To: <erlzqkxrogk24ugfahfsxrramay6tfhljnxrcfcuhe24pla7k3@lytnz3kmszyj>
-Content-Type: text/plain; charset="UTF-8"
+X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
+From: Sean Anderson <sean.anderson@linux.dev>
+In-Reply-To: <20240829041912.GB4408@lst.de>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: nasanex01a.na.qualcomm.com (10.52.223.231) To
- nasanex01b.na.qualcomm.com (10.46.141.250)
-X-QCInternal: smtphost
-X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
-X-Proofpoint-GUID: 5ZcCT-ksT85jhXv9aplZcsONon_gYS75
-X-Proofpoint-ORIG-GUID: 5ZcCT-ksT85jhXv9aplZcsONon_gYS75
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.293,Aquarius:18.0.1039,Hydra:6.0.680,FMLib:17.12.28.16
- definitions=2024-08-29_03,2024-08-29_02,2024-05-17_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 priorityscore=1501
- suspectscore=0 clxscore=1011 lowpriorityscore=0 mlxscore=0 bulkscore=0
- mlxlogscore=999 impostorscore=0 malwarescore=0 spamscore=0 phishscore=0
- adultscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.19.0-2407110000 definitions=main-2408290098
+X-Migadu-Flow: FLOW_OUT
 
+On 8/29/24 00:19, Christoph Hellwig wrote:
+> I'd change the subject to
+> 
+> dma-mapping: add tracing for dma-mapping API calls
 
-On 8/29/2024 12:29 AM, Krzysztof Kozlowski wrote:
-> On Wed, Aug 28, 2024 at 01:37:10PM -0700, Nikunj Kela wrote:
->> SA8255p platform uses the same TLMM block as used in SA8775p,
->> though the pins are split between Firmware VM and Linux VM.
->> let's add SA8255p specific compatible.
-> The change suggests devices are fully compatible, but above description
-> does not.
->
-> This looks conflicting.
->
-> Best regards,
-> Krzysztof
+OK
 
-Hi Krzysztof,
+> On Mon, Aug 26, 2024 at 04:32:40PM -0400, Sean Anderson wrote:
+>> When debugging drivers, it can often be useful to trace when memory gets
+>> (un)mapped for DMA (and can be accessed by the device). Add some
+>> tracepoints for this purpose.
+>> 
+>> We use unsigned long long instead of phys_addr_t and dma_addr_t (and
+>> similarly %llx instead of %pa) because libtraceevent can't handle
+>> typedefs.
+> 
+> and a __u64 would seem like the better type here.
 
-Thanks for reviewing patches. TLMM HW block is exactly same as used in
-SA8775p however ownership of pins can be split between firmware VM and
-Linux VM. It is upto devices to decide what pins they want to use in
-what VM. I will extend the subject with same description as used in DT
-binding.
+libtraceevent can't handle typedefs, including u64.
 
-Regards,
+> otherwise this looks fine to me.  I can do the tweaks as I'll apply
+> the patch if needed.
+> 
 
--Nikunj
-
+--Sean
