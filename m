@@ -1,240 +1,201 @@
-Received: from szxga03-in.huawei.com (szxga03-in.huawei.com [45.249.212.189])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6E00E133987;
-	Fri, 30 Aug 2024 09:07:22 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=45.249.212.189
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 51AE91531CD;
+	Fri, 30 Aug 2024 09:51:40 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1725008845; cv=none; b=Wh3fkXKjWnLyLVXrqyOTzn1OH+pHnJGVB8QG23OmscbaADUB9I6vLFfuVLfG1utq70+mfRwAiTpvt9+d8+siBo6lGKbQ5VFB3KmH0jXFS8jbC37VMnPQ4GuYKlJ57hFJX1RAEiOiDicINfvQYQOB5CIpG5oOTcJd0QpfhueMb2Q=
+	t=1725011500; cv=none; b=kqgj/fmkmyCMtMA7fvjxPFD9NwpF42GYq0692v6/VicGceMPphlzJfXkSNDkgBOlnCJ/wmXk1FfNfrwMGCWO/9NqSDQWxg5EswDNaEy9fUHphF/l9uXXK1evBOgB+5duMr1HyOWYZmFa6StplkwKzDh8Tto+B0XPNGxk++1USR8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1725008845; c=relaxed/simple;
-	bh=iuEsNRJ1f9bQ5sE4VjORXs3N3K9LStzfvHVKVl4XWb8=;
-	h=From:To:CC:Subject:Date:Message-ID:References:In-Reply-To:
-	 Content-Type:MIME-Version; b=pODS0XffR4Wv+XKf2mvgxkyXbzEX0osxHIyOLmRk6HXSZ/1OAOAynMQ1+mnvwg9V03NR4F3nUrBoHLu2TZVYRrY9v/8Fky+pxQyzRAQ64c9cg3fHcIc8KxK854hF86fiPKaWzY5k45YiQM7F56c3LwrtBOwkJkhlh2+ixcl8/Qo=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=huawei.com; spf=pass smtp.mailfrom=huawei.com; arc=none smtp.client-ip=45.249.212.189
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=huawei.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=huawei.com
-Received: from mail.maildlp.com (unknown [172.19.88.194])
-	by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4WwBxH4p6vzQqpk;
-	Fri, 30 Aug 2024 17:02:27 +0800 (CST)
-Received: from dggpemf200003.china.huawei.com (unknown [7.185.36.52])
-	by mail.maildlp.com (Postfix) with ESMTPS id 93FB9140202;
-	Fri, 30 Aug 2024 17:07:19 +0800 (CST)
-Received: from lhrpeml500005.china.huawei.com (7.191.163.240) by
- dggpemf200003.china.huawei.com (7.185.36.52) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.1544.11; Fri, 30 Aug 2024 17:07:18 +0800
-Received: from lhrpeml500005.china.huawei.com ([7.191.163.240]) by
- lhrpeml500005.china.huawei.com ([7.191.163.240]) with mapi id 15.01.2507.039;
- Fri, 30 Aug 2024 10:07:16 +0100
-From: Shameerali Kolothum Thodi <shameerali.kolothum.thodi@huawei.com>
-To: Nicolin Chen <nicolinc@nvidia.com>
-CC: Jason Gunthorpe <jgg@nvidia.com>, "acpica-devel@lists.linux.dev"
-	<acpica-devel@lists.linux.dev>, "Guohanjun (Hanjun Guo)"
-	<guohanjun@huawei.com>, "iommu@lists.linux.dev" <iommu@lists.linux.dev>,
-	Joerg Roedel <joro@8bytes.org>, Kevin Tian <kevin.tian@intel.com>,
-	"kvm@vger.kernel.org" <kvm@vger.kernel.org>, Len Brown <lenb@kernel.org>,
-	"linux-acpi@vger.kernel.org" <linux-acpi@vger.kernel.org>,
-	"linux-arm-kernel@lists.infradead.org"
-	<linux-arm-kernel@lists.infradead.org>, Lorenzo Pieralisi
-	<lpieralisi@kernel.org>, "Rafael J. Wysocki" <rafael@kernel.org>, "Robert
- Moore" <robert.moore@intel.com>, Robin Murphy <robin.murphy@arm.com>, "Sudeep
- Holla" <sudeep.holla@arm.com>, Will Deacon <will@kernel.org>, Alex Williamson
-	<alex.williamson@redhat.com>, Eric Auger <eric.auger@redhat.com>,
-	Jean-Philippe Brucker <jean-philippe@linaro.org>, Moritz Fischer
-	<mdf@kernel.org>, Michael Shavit <mshavit@google.com>,
-	"patches@lists.linux.dev" <patches@lists.linux.dev>, Mostafa Saleh
-	<smostafa@google.com>
-Subject: RE: [PATCH v2 0/8] Initial support for SMMUv3 nested translation
-Thread-Topic: [PATCH v2 0/8] Initial support for SMMUv3 nested translation
-Thread-Index: AQHa+JkQkcFFSAeDsUqyXyGP6/LaZLI7ju0AgAFNDID///2PgIAAHqvg///xn4CAAU4tEIAAHHjggAAFZgCAASrxMA==
-Date: Fri, 30 Aug 2024 09:07:16 +0000
-Message-ID: <a008993d270b4cc381abbcc5c44e5bb9@huawei.com>
-References: <0-v2-621370057090+91fec-smmuv3_nesting_jgg@nvidia.com>
- <Zs5Fom+JFZimFpeS@Asurada-Nvidia>
- <7debe8f99afa4e33aa1872be0d4a63e1@huawei.com>
- <Zs9a9/Dc0vBxp/33@Asurada-Nvidia>
- <cd36b0e460734df0ae95f5e82bfebaef@huawei.com>
- <Zs9ooZLNtPZ8PwJh@Asurada-Nvidia>
- <d2ad792fe9dd44d38396c5646fa956c6@huawei.com>
- <d1dc23f484784413bb3f6658717de516@huawei.com>
- <ZtCdXjkzVbFMBJjy@Asurada-Nvidia>
-In-Reply-To: <ZtCdXjkzVbFMBJjy@Asurada-Nvidia>
-Accept-Language: en-GB, en-US
-Content-Language: en-US
-X-MS-Has-Attach:
-X-MS-TNEF-Correlator:
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+	s=arc-20240116; t=1725011500; c=relaxed/simple;
+	bh=NDukMRi0OurMDQvb5Qn4QuwFUZUeJJQIQoFalgKICzI=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=h1pm6g9KKFmLKPAK422LO1MB6gKcsUfBgnzNfoWgcj0zJnSsIbqgb+/QZcEYkgjRTfEU8biR2OxwxU4DZxlw8k4ElzKDekExeCQ06SmGHC8EiuhO4e1UtKfTbiffVbBEOchyEKIS9pTnURVyq8zpCZBElR4caWqWfrAQuKH1djM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=jICfdczX; arc=none smtp.client-ip=10.30.226.201
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="jICfdczX"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 981B9C4CEC2;
+	Fri, 30 Aug 2024 09:51:23 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1725011499;
+	bh=NDukMRi0OurMDQvb5Qn4QuwFUZUeJJQIQoFalgKICzI=;
+	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+	b=jICfdczXbXRdkEcM9Xcn4s8UALWsaTcW+IxWBMT057MQ09wJVZduiDaJVbGZoks9I
+	 S5Iw6ni1FK8QoyFwfn2TarwefKowsrASoq1u2Gz5Dmf4AVVtMfF3u/1QYP7mMiWDyG
+	 FvSNza0qF9lYEVEsk9Um162KDVu2Zzue5dp1rqws5KLWyj1w+d63Bbg88CGdSnJr8T
+	 r2pmxgVPrAOxoSSzJOsodyUEp4psJVqEW2PPPTRiYwuPRjhu9uqqvU63u81uN7NIzD
+	 8ViVemtWP21Zqmcw0IkAmjyF+GeGqXNasiXqm6oQFCr+yPTvXUmTNuaZKvy3exh10e
+	 WPLYsJFx+M3lQ==
+Message-ID: <095f5048-5c39-438d-b5a9-7519199a8e9f@kernel.org>
+Date: Fri, 30 Aug 2024 11:51:20 +0200
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH 22/22] arm64: dts: qcom: Add reduced functional DT for
+ SA8255p Ride platform
+To: Nikunj Kela <quic_nkela@quicinc.com>, andersson@kernel.org,
+ konradybcio@kernel.org, robh@kernel.org, krzk+dt@kernel.org,
+ conor+dt@kernel.org, rafael@kernel.org, viresh.kumar@linaro.org,
+ herbert@gondor.apana.org.au, davem@davemloft.net, sudeep.holla@arm.com,
+ andi.shyti@kernel.org, tglx@linutronix.de, will@kernel.org, joro@8bytes.org,
+ jassisinghbrar@gmail.com, lee@kernel.org, linus.walleij@linaro.org,
+ amitk@kernel.org, thara.gopinath@gmail.com, broonie@kernel.org,
+ wim@linux-watchdog.org, linux@roeck-us.net
+Cc: robin.murphy@arm.com, cristian.marussi@arm.com, rui.zhang@intel.com,
+ lukasz.luba@arm.com, vkoul@kernel.org, quic_gurus@quicinc.com,
+ agross@kernel.org, bartosz.golaszewski@linaro.org, quic_rjendra@quicinc.com,
+ robimarko@gmail.com, linux-arm-msm@vger.kernel.org,
+ devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+ linux-pm@vger.kernel.org, linux-crypto@vger.kernel.org,
+ arm-scmi@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+ linux-i2c@vger.kernel.org, iommu@lists.linux.dev,
+ linux-gpio@vger.kernel.org, linux-serial@vger.kernel.org,
+ linux-spi@vger.kernel.org, linux-watchdog@vger.kernel.org,
+ kernel@quicinc.com, quic_psodagud@quicinc.com, quic_tsoni@quicinc.com,
+ quic_shazhuss@quicinc.com
+References: <20240828203721.2751904-1-quic_nkela@quicinc.com>
+ <20240828203721.2751904-23-quic_nkela@quicinc.com>
+ <746be896-8798-44b0-aa86-e77cf34655e1@kernel.org>
+ <57eee144-cdc4-48e7-838b-103cda6ec1dd@quicinc.com>
+From: Krzysztof Kozlowski <krzk@kernel.org>
+Content-Language: en-US
+Autocrypt: addr=krzk@kernel.org; keydata=
+ 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 fv0=
+In-Reply-To: <57eee144-cdc4-48e7-838b-103cda6ec1dd@quicinc.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+
+On 29/08/2024 21:06, Nikunj Kela wrote:
+> 
+> On 8/29/2024 12:49 AM, Krzysztof Kozlowski wrote:
+>> On 28/08/2024 22:37, Nikunj Kela wrote:
+>>> SA8255p Ride platform is an automotive virtual platform. This platform
+>>> abstracts resources such as clocks, regulators etc. in the firmware VM.
+>>> The device drivers request resources operations over SCMI using power,
+>>> performance, reset and sensor protocols.
+>>>
+>>> Multiple virtual SCMI instances are being employed for greater parallelism.
+>>> These instances are tied to devices such that devices can have dedicated
+>>> SCMI channel. Firmware VM (runs SCMI platform stack) is SMP enabled and
+>>> can process requests from agents in parallel. Qualcomm smc transport is
+>>> used for communication between SCMI agent and platform.
+>>>
+>>> Let's add the reduced functional support for SA8255p Ride board.
+>>> Subsequently, the support for PCIe, USB, UFS, Ethernet will be added.
+>>>
+>>> Co-developed-by: Shazad Hussain <quic_shazhuss@quicinc.com>
+>>> Signed-off-by: Shazad Hussain <quic_shazhuss@quicinc.com>
+>>> Signed-off-by: Nikunj Kela <quic_nkela@quicinc.com>
+>>> ---
+>>>  arch/arm64/boot/dts/qcom/Makefile           |    1 +
+>>>  arch/arm64/boot/dts/qcom/sa8255p-pmics.dtsi |   80 +
+>>>  arch/arm64/boot/dts/qcom/sa8255p-ride.dts   |  149 ++
+>>>  arch/arm64/boot/dts/qcom/sa8255p-scmi.dtsi  | 2312 ++++++++++++++++++
+>>>  arch/arm64/boot/dts/qcom/sa8255p.dtsi       | 2405 +++++++++++++++++++
+>>>  5 files changed, 4947 insertions(+)
+>>>  create mode 100644 arch/arm64/boot/dts/qcom/sa8255p-pmics.dtsi
+>>>  create mode 100644 arch/arm64/boot/dts/qcom/sa8255p-ride.dts
+>>>  create mode 100644 arch/arm64/boot/dts/qcom/sa8255p-scmi.dtsi
+>>>  create mode 100644 arch/arm64/boot/dts/qcom/sa8255p.dtsi
+>>>
+>> ...
+>>
+>>> diff --git a/arch/arm64/boot/dts/qcom/sa8255p-ride.dts b/arch/arm64/boot/dts/qcom/sa8255p-ride.dts
+>>> new file mode 100644
+>>> index 000000000000..1dc03051ad92
+>>> --- /dev/null
+>>> +++ b/arch/arm64/boot/dts/qcom/sa8255p-ride.dts
+>>> @@ -0,0 +1,149 @@
+>>> +// SPDX-License-Identifier: BSD-3-Clause
+>>> +/*
+>>> + * Copyright (c) 2024 Qualcomm Innovation Center, Inc. All rights reserved.
+>>> + */
+>>> +
+>>> +/dts-v1/;
+>>> +
+>>> +#include <dt-bindings/gpio/gpio.h>
+>>> +
+>>> +#include "sa8255p.dtsi"
+>>> +#include "sa8255p-pmics.dtsi"
+>>> +#include "sa8255p-scmi.dtsi"
+>>> +
+>>> +/ {
+>>> +	model = "Qualcomm Technologies, Inc. SA8255P Ride";
+>>> +	compatible = "qcom,sa8255p-ride", "qcom,sa8255p";
+>>> +
+>>> +	aliases {
+>>> +		i2c11 = &i2c11;
+>>> +		i2c18 = &i2c18;
+>>> +		serial0 = &uart10;
+>>> +		serial1 = &uart4;
+>>> +		spi16 = &spi16;
+>>> +		scmichannels = &scmichannels;
+>> Nothing parses this.
+>>
+> We are using this alias in bootloader to speed up the parsing. Since we
+
+Then please provide link to the bindings in this open-source upstream
+bootloader.
+
+Otherwise it is a clear no-go for me. We don't add properties because
+some downstream wants them. Imagine what would happen if we opened that
+can of worms...
+
+> are using 64 SCMI instances and SCMI smc transport driver for
+> Qualcomm(drivers/firmware/arm_scmi/transports/smc.c) expects
+> cap-id(created by hypervisor at boot time), our bootloader gets those
+> cap-id for each channel and populate them. This alias is an optimization
+> to save boottime as in automotive, boot KPIs are critical.
+
+I will refrain about commenting on KPIs...
 
 
 
-> -----Original Message-----
-> From: Nicolin Chen <nicolinc@nvidia.com>
-> Sent: Thursday, August 29, 2024 5:10 PM
-> To: Shameerali Kolothum Thodi <shameerali.kolothum.thodi@huawei.com>
-> Cc: Jason Gunthorpe <jgg@nvidia.com>; acpica-devel@lists.linux.dev;
-> Guohanjun (Hanjun Guo) <guohanjun@huawei.com>; iommu@lists.linux.dev;
-> Joerg Roedel <joro@8bytes.org>; Kevin Tian <kevin.tian@intel.com>;
-> kvm@vger.kernel.org; Len Brown <lenb@kernel.org>; linux-
-> acpi@vger.kernel.org; linux-arm-kernel@lists.infradead.org; Lorenzo Piera=
-lisi
-> <lpieralisi@kernel.org>; Rafael J. Wysocki <rafael@kernel.org>; Robert Mo=
-ore
-> <robert.moore@intel.com>; Robin Murphy <robin.murphy@arm.com>; Sudeep
-> Holla <sudeep.holla@arm.com>; Will Deacon <will@kernel.org>; Alex
-> Williamson <alex.williamson@redhat.com>; Eric Auger
-> <eric.auger@redhat.com>; Jean-Philippe Brucker <jean-philippe@linaro.org>=
-;
-> Moritz Fischer <mdf@kernel.org>; Michael Shavit <mshavit@google.com>;
-> patches@lists.linux.dev; Mostafa Saleh <smostafa@google.com>
-> Subject: Re: [PATCH v2 0/8] Initial support for SMMUv3 nested translation
->=20
-> On Thu, Aug 29, 2024 at 02:52:23PM +0000, Shameerali Kolothum Thodi wrote=
-:
-> > > That makes some progress. But still I am not seeing the assigned dev =
- in
-> > > Guest.
-> > >
-> > > -device vfio-pci-nohotplug,host=3D0000:75:00.1,iommufd=3Diommufd0
-> > >
-> > > root@ubuntu:/# lspci -tv#
-> > >
-> > > root@ubuntu:/# lspci -tv
-> > > -+-[0000:ca]---00.0-[cb]--
-> > >  \-[0000:00]-+-00.0  Red Hat, Inc. QEMU PCIe Host bridge
-> > >              +-01.0  Red Hat, Inc Virtio network device
-> > >              +-02.0  Red Hat, Inc. QEMU PCIe Expander bridge
-> > >              +-03.0  Red Hat, Inc. QEMU PCIe Expander bridge
-> > >              +-04.0  Red Hat, Inc. QEMU PCIe Expander bridge
-> > >              +-05.0  Red Hat, Inc. QEMU PCIe Expander bridge
-> > >              +-06.0  Red Hat, Inc. QEMU PCIe Expander bridge
-> > >              +-07.0  Red Hat, Inc. QEMU PCIe Expander bridge
-> > >              +-08.0  Red Hat, Inc. QEMU PCIe Expander bridge
-> > >              \-09.0  Red Hat, Inc. QEMU PCIe Expander bridge
->=20
-> Hmm, the tree looks correct..
->=20
-> > > The new root port is created, but no device attached.
-> > It looks like Guest finds the config invalid:
-> >
-> > [    0.283618] PCI host bridge to bus 0000:ca
-> > [    0.284064] ACPI BIOS Error (bug):
-> \_SB.PCF7.PCEE.PCE5.PCDC.PCD3.PCCA._DSM: Excess arguments - ASL declared
-> 5, ACPI requires 4 (20240322/nsarguments-162)
->=20
-> Looks like the DSM change wasn't clean. Yet, this might not be the
-> root cause, as mine could boot with it.
-
-Yes. This is not the culprit in this case and was reported earlier as well,
-
-https://patchew.org/QEMU/20211005085313.493858-1-eric.auger@redhat.com/2021=
-1005085313.493858-2-eric.auger@redhat.com/
-
-> Here is mine (I added a print to that conflict part, for success):
->=20
-> [    0.340733] ACPI BIOS Error (bug): \_SB.PCF7.PCEE.PCE5.PCDC._DSM: Exce=
-ss
-> arguments - ASL declared 5, ACPI requires 4 (20230628/nsarguments-162)
-> [    0.341776] pci 0000:dc:00.0: [1b36:000c] type 01 class 0x060400 PCIe =
-Root
-> Port
-> [    0.344895] pci 0000:dc:00.0: BAR 0 [mem 0x10400000-0x10400fff]
-> [    0.347935] pci 0000:dc:00.0: PCI bridge to [bus dd]
-> [    0.348410] pci 0000:dc:00.0:   bridge window [mem 0x10200000-0x103fff=
-ff]
-> [    0.349483] pci 0000:dc:00.0:   bridge window [mem 0x42000000000-
-> 0x44080ffffff 64bit pref]
-> [    0.351459] pci_bus 0000:dd: busn_res: insert [bus dd] under [bus dc-d=
-d]
->=20
-> In my case:
-> [root bus (00)] <---[pxb (dc)] <--- [root-port (dd)] <--- dev
->=20
-> In your case:
-> [root bus (00)] <---[pxb (ca)] <--- [root-port (cb)] <--- dev
->=20
-> > [    0.285533] pci_bus 0000:ca: root bus resource [bus ca]
-> > [    0.286214] pci 0000:ca:00.0: [1b36:000c] type 01 class 0x060400 PCI=
-e Root
-> Port
-> > [    0.287717] pci 0000:ca:00.0: BAR 0 [mem 0x00000000-0x00000fff]
-> > [    0.288431] pci 0000:ca:00.0: PCI bridge to [bus 00]
->=20
-> This starts to diff. Somehow the link is reversed? It should be:
->  [    0.288431] pci 0000:ca:00.0: PCI bridge to [bus cb]
->=20
-> > [    0.290649] pci 0000:ca:00.0: bridge configuration invalid ([bus 00-=
-00]),
-> reconfiguring
-> > [    0.292476] pci_bus 0000:cb: busn_res: can not insert [bus cb-ca] un=
-der [bus
-> ca] (conflicts with (null) [bus ca])
-> > [    0.293597] pci_bus 0000:cb: busn_res: [bus cb-ca] end is updated to=
- cb
-> > [    0.294300] pci_bus 0000:cb: busn_res: can not insert [bus cb] under=
- [bus ca]
-> (conflicts with (null) [bus ca])
->=20
-> And then everything went south...
->=20
-> Would you please try adding some prints?
-> ----------------------------------------------------------------------
-> @@ -1556,6 +1556,7 @@ static char *create_new_pcie_port(VirtNestedSmmu
-> *nested_smmu, Error **errp)
->      uint32_t bus_nr =3D pci_bus_num(nested_smmu->pci_bus);
->      DeviceState *dev;
->      char *name_port;
-> +    bool ret;
->=20
->      /* Create a root port */
->      dev =3D qdev_new("pcie-root-port");
-> @@ -1571,7 +1572,9 @@ static char *create_new_pcie_port(VirtNestedSmmu
-> *nested_smmu, Error **errp)
->      qdev_prop_set_uint32(dev, "chassis", chassis_nr);
->      qdev_prop_set_uint32(dev, "slot", port_nr);
->      qdev_prop_set_uint64(dev, "io-reserve", 0);
-> -    qdev_realize_and_unref(dev, BUS(nested_smmu->pci_bus), &error_fatal)=
-;
-> +    ret =3D qdev_realize_and_unref(dev, BUS(nested_smmu->pci_bus),
-> &error_fatal);
-> +    fprintf(stderr, "ret=3D%d, pcie-root-port ID: %s, added to pxb_bus n=
-um: %x,
-> chassis: %d\n",
-> +            ret, name_port, pci_bus_num(nested_smmu->pci_bus), chassis_n=
-r);
->      return name_port;
->  }
-
-Print shows everything fine:
-create_new_pcie_port: name_port smmu_bus0xca_port0, bus_nr 0xca chassis_nr =
-0xfd, nested_smmu->index 0x2, pci_bus_num 0xca, ret 1
-
-It looks like a problem with old QEMU_EFI.fd(2022 build and before).
-I tried with 2023 QEMU_EFI.fd and with that it looks fine.
-
-root@ubuntu:/# lspci -tv
--+-[0000:ca]---00.0-[cb]----00.0  Huawei Technologies Co., Ltd. Device a251
- \-[0000:00]-+-00.0  Red Hat, Inc. QEMU PCIe Host bridge
-             +-01.0  Red Hat, Inc Virtio network device
-             +-02.0  Red Hat, Inc. QEMU PCIe Expander bridge
-             +-03.0  Red Hat, Inc. QEMU PCIe Expander bridge
-             +-04.0  Red Hat, Inc. QEMU PCIe Expander bridge
-             +-05.0  Red Hat, Inc. QEMU PCIe Expander bridge
-             +-06.0  Red Hat, Inc. QEMU PCIe Expander bridge
-             +-07.0  Red Hat, Inc. QEMU PCIe Expander bridge
-             +-08.0  Red Hat, Inc. QEMU PCIe Expander bridge
-             \-09.0  Red Hat, Inc. QEMU PCIe Expander bridge
-
-So for now, I can proceed.
-
-Thanks,
-Shameer
-
+Best regards,
+Krzysztof
 
