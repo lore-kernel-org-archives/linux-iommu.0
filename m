@@ -1,143 +1,182 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.15])
+Received: from NAM04-MW2-obe.outbound.protection.outlook.com (mail-mw2nam04on2063.outbound.protection.outlook.com [40.107.101.63])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2DE8E14B949;
-	Fri, 30 Aug 2024 16:59:42 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.15
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1725037186; cv=none; b=E/gtiysytRjYVvLfOgo0Qe1iR7vrU07mjf/1GxQl6WrRk/u85dHv1+6TxYxjf174GSQmtL8Z9IqHfSeg0EjDMTsGBDmBzlIDcSwGtgLr6d3JOetKTVz3JEMswOO8rdysD1plwOsnQ4daam2275ug4anzHa8PHmZ8mLnhJMKXdGg=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1725037186; c=relaxed/simple;
-	bh=g+CDz/qgnDvPGrRMnmHjXJO8gZVIdvkxBnTYdMpl1Eo=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=qj/3u2q6jxDUWf91mXh82mDEmSW907lp1LF+Q2glhNygtVafZaruSuVGOrpnEGrnEpgsJl1n9MnXF50N5LD6n0foLZtik3CUKofJhMdyv39daAjUz6EG3UI4Iw+zWzAF8brpzhZLnBlx6mAshKHQtXAUSy8++Tf44cQi52m84bU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=i4ib93TQ; arc=none smtp.client-ip=192.198.163.15
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E88A013BAF1;
+	Fri, 30 Aug 2024 17:01:36 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.101.63
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1725037298; cv=fail; b=YaIOcpclNrsgqmtCnn3GS4O4Xy25h4KXcxlzbe2eeVr/5J708CxZaH3Ykn0114nCd60anUPBnF+7qRGCCid68mJbk0L301uMcJ1ErCNi0v6osvWLqnCyWLRCB27PSRO1pU/qID/z8nOlQr++mir2yTseDuBDnDCM1CPCKAMWo5g=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1725037298; c=relaxed/simple;
+	bh=5WkAFc/A6RhmNyDp0osYPEUYTgi5idPoKX1skSWzy98=;
+	h=Date:From:To:CC:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=TjEwdZL2cia3EN2IMgzUSRHcXVUesuoxrkQ70LpSVV/VwxKIfcTtxiBSAqM+skFIX6lDxkudWM72XoN8P/MnlGreoKsLkC8fwbHQAXVx7Em+qnGb84pi4jiF6V2Ftnf5DNyKeqCmCNMvwArWEKUiMw2PjUgLI6tVc6i5OaZVkXM=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=S07qUyA8; arc=fail smtp.client-ip=40.107.101.63
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="i4ib93TQ"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1725037183; x=1756573183;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=g+CDz/qgnDvPGrRMnmHjXJO8gZVIdvkxBnTYdMpl1Eo=;
-  b=i4ib93TQs4gLyG8nEDEVLi1RRLCsqU03GLbmmJnjF+GrVabuc4T8i3QX
-   pLMpX2scEmzWO7bs3p4QRnnVntyWVFtph28EccT7aR9K+Gws+pow7WYVk
-   Ej0tr93SsGAlpebRkPw9oTk0J7BPqx3SG0qJPm5EzOlA81qhi1Rm2rKye
-   ILd68NTQ5r8QmzDD4iA/NWOXoPa4eGHVWwmGXA+PK52XyWO/dWtv6XjzJ
-   70o5Y6/Lv+82/bwApqfyHuAoMvKIq+5hvlztvnbILbzSsHqLa89f+0OE3
-   z8sBRhbTs5hQh9Mi1qo6eQU5SXVg8aZanpAbU8TQ64aCxZ9GSilBclgaB
-   g==;
-X-CSE-ConnectionGUID: 8gjQMlfbRzekDk71M2y+qg==
-X-CSE-MsgGUID: k+KSlKSmTWeS7Wp80eigoQ==
-X-IronPort-AV: E=McAfee;i="6700,10204,11180"; a="23850880"
-X-IronPort-AV: E=Sophos;i="6.10,189,1719903600"; 
-   d="scan'208";a="23850880"
-Received: from orviesa004.jf.intel.com ([10.64.159.144])
-  by fmvoesa109.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Aug 2024 09:59:42 -0700
-X-CSE-ConnectionGUID: 8WJvFrZ1S4S5x2a3h0WlzA==
-X-CSE-MsgGUID: 5ROgX7cgTDCCRTrQKpm91w==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.10,189,1719903600"; 
-   d="scan'208";a="68842950"
-Received: from yilunxu-optiplex-7050.sh.intel.com (HELO localhost) ([10.239.159.165])
-  by orviesa004.jf.intel.com with ESMTP; 30 Aug 2024 09:59:38 -0700
-Date: Sat, 31 Aug 2024 00:57:10 +0800
-From: Xu Yilun <yilun.xu@linux.intel.com>
-To: Alexey Kardashevskiy <aik@amd.com>
-Cc: kvm@vger.kernel.org, iommu@lists.linux.dev, linux-coco@lists.linux.dev,
-	linux-pci@vger.kernel.org,
-	Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
-	Alex Williamson <alex.williamson@redhat.com>,
-	Dan Williams <dan.j.williams@intel.com>,
-	pratikrajesh.sampat@amd.com, michael.day@amd.com,
-	david.kaplan@amd.com, dhaval.giani@amd.com,
-	Santosh Shukla <santosh.shukla@amd.com>,
-	Tom Lendacky <thomas.lendacky@amd.com>,
-	Michael Roth <michael.roth@amd.com>, Alexander Graf <agraf@suse.de>,
-	Nikunj A Dadhania <nikunj@amd.com>,
-	Vasant Hegde <vasant.hegde@amd.com>, Lukas Wunner <lukas@wunner.de>
-Subject: Re: [RFC PATCH 13/21] KVM: X86: Handle private MMIO as shared
-Message-ID: <ZtH55q0Ho1DLm5ka@yilunxu-OptiPlex-7050>
-References: <20240823132137.336874-1-aik@amd.com>
- <20240823132137.336874-14-aik@amd.com>
+	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="S07qUyA8"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=vAzJ1O4EJIezj6B9InOWU4ts/gGEil0o7IgQPF3AHpDOhNMzvvxaI+nOARlmC4ybVIci7MaIHh5Pu3+DfysF9t5fPOBy8MeT+artrPjuGzFrOoyHBflPZPc0D8qInYoKURQhe/G9XX3dv8FFCqmXzeMBggJyt8CCr7KqKlcoMGakBA0gqeaZmCtjYyv2J/Zotfz263blbeidSees7AXLni30pDDijQfLiuk4NGOMmTN7DE647Os4Lacc9rsFa3RKoPEvw8aLSrWRmb0da3Wf9gYnkTnwV8PUuc8JO/ILw+4zWfjzc6+GeOQXNJiHFkNTFO0PcnJ0E3LsE/DOz7fXIQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=TGkPVwFE8ed47bEAXwh8ZJ0Swmi3nNqrmDxnD6Z+Qi8=;
+ b=VOmHE9Cdedq+ErwwqlhbDrXS6t2NM1wBSqp6q/RJAxcYP6GHhuKwWR+5iZCi8q43PGYZFXD7b8vWU2dHBqdJ0dc6fXit+hSDu7wXqcmZAxyaXnSoplBCrA4IBYAKU9iD6cd+3w7E24FGGajAF70NaoLGhzEilhR75Qhfe/WRNRZvTcS3CvKirvzVGybtgJWTgCnJ/ay4D8+u4oCal76JkDA34o+zuaMk2sE0YbWxaiV4jn4pPu6xth6ktc/mYBqnc8GoAmE9BSE5tqqAM7ebPVnjMj6MxclnlrtY0PyOAecomoxekX4rKHKKK4CFWvKcuoGLWgLPx4tpolkNLeFxrw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 216.228.118.232) smtp.rcpttodomain=huawei.com smtp.mailfrom=nvidia.com;
+ dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
+ dkim=none (message not signed); arc=none (0)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=TGkPVwFE8ed47bEAXwh8ZJ0Swmi3nNqrmDxnD6Z+Qi8=;
+ b=S07qUyA8aRNexh8Ka/2dFQlcak0a72usMOZqfnKRtAs3kvusce3hTBnr3kWbNasSzmP2by09w3i4gZAdiJ93qijj6wqir/3Hddc1yyuArRKR+tLPhEvRNZ9nWwB6EyIpHiA4WbnTRcy1eedxiCnwYTDh9LmN+KhfPwWySWgCVo2bnO0NsA9lO5vv1t8T/GpbpCLYXQGZqzvTcolOVoFwdZmtgvcfo1AIO51SVgogbAQJN0Kp5OIZS5tQo/ggrGPpYMK9VLUukRrGS22JsJdr6+lBR37P0cckXti98rMIZ+xPUAiA9F4f7rDOmhSZ2xxJo/4t0KDwAj80VcxvAj6FTA==
+Received: from PH7PR17CA0023.namprd17.prod.outlook.com (2603:10b6:510:324::24)
+ by PH7PR12MB8039.namprd12.prod.outlook.com (2603:10b6:510:26a::14) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7918.20; Fri, 30 Aug
+ 2024 17:01:31 +0000
+Received: from CY4PEPF0000FCC3.namprd03.prod.outlook.com
+ (2603:10b6:510:324:cafe::e) by PH7PR17CA0023.outlook.office365.com
+ (2603:10b6:510:324::24) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7918.21 via Frontend
+ Transport; Fri, 30 Aug 2024 17:01:31 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.118.232)
+ smtp.mailfrom=nvidia.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=nvidia.com;
+Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
+ 216.228.118.232 as permitted sender) receiver=protection.outlook.com;
+ client-ip=216.228.118.232; helo=mail.nvidia.com; pr=C
+Received: from mail.nvidia.com (216.228.118.232) by
+ CY4PEPF0000FCC3.mail.protection.outlook.com (10.167.242.105) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.7918.13 via Frontend Transport; Fri, 30 Aug 2024 17:01:29 +0000
+Received: from drhqmail203.nvidia.com (10.126.190.182) by mail.nvidia.com
+ (10.127.129.5) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1544.4; Fri, 30 Aug
+ 2024 10:01:17 -0700
+Received: from drhqmail201.nvidia.com (10.126.190.180) by
+ drhqmail203.nvidia.com (10.126.190.182) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.1544.4; Fri, 30 Aug 2024 10:01:16 -0700
+Received: from Asurada-Nvidia (10.127.8.13) by mail.nvidia.com
+ (10.126.190.180) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1544.4 via Frontend
+ Transport; Fri, 30 Aug 2024 10:01:15 -0700
+Date: Fri, 30 Aug 2024 10:01:14 -0700
+From: Nicolin Chen <nicolinc@nvidia.com>
+To: Shameerali Kolothum Thodi <shameerali.kolothum.thodi@huawei.com>
+CC: Jason Gunthorpe <jgg@nvidia.com>, "acpica-devel@lists.linux.dev"
+	<acpica-devel@lists.linux.dev>, "Guohanjun (Hanjun Guo)"
+	<guohanjun@huawei.com>, "iommu@lists.linux.dev" <iommu@lists.linux.dev>,
+	Joerg Roedel <joro@8bytes.org>, Kevin Tian <kevin.tian@intel.com>,
+	"kvm@vger.kernel.org" <kvm@vger.kernel.org>, Len Brown <lenb@kernel.org>,
+	"linux-acpi@vger.kernel.org" <linux-acpi@vger.kernel.org>,
+	"linux-arm-kernel@lists.infradead.org"
+	<linux-arm-kernel@lists.infradead.org>, Lorenzo Pieralisi
+	<lpieralisi@kernel.org>, "Rafael J. Wysocki" <rafael@kernel.org>, "Robert
+ Moore" <robert.moore@intel.com>, Robin Murphy <robin.murphy@arm.com>, "Sudeep
+ Holla" <sudeep.holla@arm.com>, Will Deacon <will@kernel.org>, Alex Williamson
+	<alex.williamson@redhat.com>, Eric Auger <eric.auger@redhat.com>,
+	Jean-Philippe Brucker <jean-philippe@linaro.org>, Moritz Fischer
+	<mdf@kernel.org>, Michael Shavit <mshavit@google.com>,
+	"patches@lists.linux.dev" <patches@lists.linux.dev>, Mostafa Saleh
+	<smostafa@google.com>
+Subject: Re: [PATCH v2 0/8] Initial support for SMMUv3 nested translation
+Message-ID: <ZtH62jiG43DHPWvm@Asurada-Nvidia>
+References: <0-v2-621370057090+91fec-smmuv3_nesting_jgg@nvidia.com>
+ <Zs5Fom+JFZimFpeS@Asurada-Nvidia>
+ <7debe8f99afa4e33aa1872be0d4a63e1@huawei.com>
+ <Zs9a9/Dc0vBxp/33@Asurada-Nvidia>
+ <cd36b0e460734df0ae95f5e82bfebaef@huawei.com>
+ <Zs9ooZLNtPZ8PwJh@Asurada-Nvidia>
+ <d2ad792fe9dd44d38396c5646fa956c6@huawei.com>
+ <d1dc23f484784413bb3f6658717de516@huawei.com>
+ <ZtCdXjkzVbFMBJjy@Asurada-Nvidia>
+ <a008993d270b4cc381abbcc5c44e5bb9@huawei.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset="us-ascii"
 Content-Disposition: inline
-In-Reply-To: <20240823132137.336874-14-aik@amd.com>
+In-Reply-To: <a008993d270b4cc381abbcc5c44e5bb9@huawei.com>
+X-NV-OnPremToCloud: ExternallySecured
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: CY4PEPF0000FCC3:EE_|PH7PR12MB8039:EE_
+X-MS-Office365-Filtering-Correlation-Id: f0ff76d8-989c-4dac-bf57-08dcc915647b
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam:
+	BCL:0;ARA:13230040|1800799024|376014|7416014|36860700013|82310400026;
+X-Microsoft-Antispam-Message-Info:
+	=?us-ascii?Q?TVnVxDZ/w/rvLXVVr2+vt1H/QV2IFyC2nKqzALZlThLy/cD2jKQNFOsp5HLW?=
+ =?us-ascii?Q?eWoVhOeflsMyNGUAjVV9CAjy2MmgM53Mi9iabjz2BD/m1gEnCrK+yk6vaPpy?=
+ =?us-ascii?Q?53yTlhL5EtlMjvhLfQswMnU9fzLCC3Je230OGVULV43vSHIfjL77Sc47foKI?=
+ =?us-ascii?Q?BzL5D8P0JQ97nSjQzx7jo5UpjrJQFCMKnVj320y30KUpNUTHyk+rmKpg0WIh?=
+ =?us-ascii?Q?3cUew87L3aHZ/dVTQTW/G+d64lp1+bilIZOgWpKZ8jzK2WgISrCmyvgIQqpk?=
+ =?us-ascii?Q?adojPNBMKhtdbOQU9s545hrjPutmQlBci1rqAZxBCL5E+eerQ6L8Q/Mq7g07?=
+ =?us-ascii?Q?HqyBpsFpG+fG1I5Edg7uFw+QY4xa2G6sdK+7oTXAqm21UUOERSIt10bp2QTe?=
+ =?us-ascii?Q?wCa8FwzNCbDG4/qrPNqxQIVwdvxDNismX3P6P8xKomv8YAjsjxQ94DlAOyzb?=
+ =?us-ascii?Q?UoEy+WW0q0n0OHvxVXh3faslZao2cGCvACrJqeS0u8AIaaVlRdGuFD6hSzz1?=
+ =?us-ascii?Q?DZllsklDSe5IhjZurScQJLwxTebWlafpiE49wgacJhEtI0OU5RSWZeLDJPGG?=
+ =?us-ascii?Q?FrA8elwi5F9BLEa7atdreFok2TjBKM/PcSeUUw4V/hYkSrsMobB7t5NlMTPJ?=
+ =?us-ascii?Q?q/j4ZNA4gZMYmzWOkl6DlyShcYGHtnc/TA3mtbXAveSZonyc9KFXnirLP0Ap?=
+ =?us-ascii?Q?UsDQWRex3SoEdNwkw9ikW/ZBd+4FeBp408KUHmD3oQ05bjnz6S0zt4vm32xy?=
+ =?us-ascii?Q?FVRZm5Dtc/o5JjXugSfOSqbk0cG3B3qB9YUTtXjekeHRdwjaCqQrinUUBMfW?=
+ =?us-ascii?Q?9oddUlU26XWTFa/uS5rXw7j4swHdumic7bM/e5gyZ0l5+lMwd6+aSKU5pDpJ?=
+ =?us-ascii?Q?X+RHn0EJSi2VC8okRBbuhp95iVKqozzdcsgE3sxcSrXA60dshnkI3Bz28hVN?=
+ =?us-ascii?Q?wFZMVh246KcLXglAnDRcGbl/AcBfZjek5fHGOHdJzgrJqZa5deis/ad+bDuw?=
+ =?us-ascii?Q?TFfKJWfSyRBwwFaco2jzKJUVlvF57Zag2xYcG2pSfw1WSgZHovrVvVGfuOej?=
+ =?us-ascii?Q?EaMjSdV46xf+22ymmch0c0hFuZ4o4OvVASYGMS3eJRSONVOK4cQqM6jneNLF?=
+ =?us-ascii?Q?x0kX11Yh+E+Ve74mi6km63RDPk8IA+n11SsUNz4E8S8Fg7rv4sFyz1MXJ3Pm?=
+ =?us-ascii?Q?1Js/BLrOuDjIOQU2xOSRIyEqK/wROPsMxzgbe18cBdsPAufBdwDdRsw8xccK?=
+ =?us-ascii?Q?FXgSOfaOlsjoDtA4cOV5j4JGnq0lWQX9bpcqU9mhNC8afUQHlIGyRFiwKF4f?=
+ =?us-ascii?Q?wCmc2vCujbu09ZqP6yetx67f0ydl85AvxPSj/lmDn3KNY2ILBcghYsU3+WKf?=
+ =?us-ascii?Q?g1YsgRjlWSpCgK0KF12DIQfVMlLqCNFW6pgUB4KjErfeEP9AQC3Z8lmOk86u?=
+ =?us-ascii?Q?l7FL0feBx+V3y2KA+0HUOx0BffCXMiJV?=
+X-Forefront-Antispam-Report:
+	CIP:216.228.118.232;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc7edge1.nvidia.com;CAT:NONE;SFS:(13230040)(1800799024)(376014)(7416014)(36860700013)(82310400026);DIR:OUT;SFP:1101;
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 30 Aug 2024 17:01:29.6158
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: f0ff76d8-989c-4dac-bf57-08dcc915647b
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.118.232];Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-AuthSource:
+	CY4PEPF0000FCC3.namprd03.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH7PR12MB8039
 
-On Fri, Aug 23, 2024 at 11:21:27PM +1000, Alexey Kardashevskiy wrote:
-> Currently private MMIO nested page faults are not expected so when such
-> fault occurs, KVM tries moving the faulted page from private to shared
-> which is not going to work as private MMIO is not backed by memfd.
+On Fri, Aug 30, 2024 at 09:07:16AM +0000, Shameerali Kolothum Thodi wrote:
+
+> Print shows everything fine:
+> create_new_pcie_port: name_port smmu_bus0xca_port0, bus_nr 0xca chassis_nr 0xfd, nested_smmu->index 0x2, pci_bus_num 0xca, ret 1
 > 
-> Handle private MMIO as shared: skip page state change and memfd
-
-This means host keeps the mapping for private MMIO, which is different
-from private memory. Not sure if it is expected, and I want to get
-some directions here.
-
-From HW perspective, private MMIO is not intended to be accessed by
-host, but the consequence may varies. According to TDISP spec 11.2,
-my understanding is private device (known as TDI) should reject the
-TLP and transition to TDISP ERROR state. But no further error
-reporting or logging is mandated. So the impact to the host system
-is specific to each device. In my test environment, an AER
-NonFatalErr is reported and nothing more, much better than host
-accessing private memory.
-
-On SW side, my concern is how to deal with mmu_notifier. In theory, if
-we get pfn from hva we should follow the userspace mapping change. But
-that makes no sense. Especially for TDX TEE-IO, private MMIO mapping
-in SEPT cannot be changed or invalidated as long as TDI is running.
-
-Another concern may be specific for TDX TEE-IO. Allowing both userspace
-mapping and SEPT mapping may be safe for private MMIO, but on
-KVM_SET_USER_MEMORY_REGION2,  KVM cannot actually tell if a userspace
-addr is really for private MMIO. I.e. user could provide shared memory
-addr to KVM but declare it is for private MMIO. The shared memory then
-could be mapped in SEPT and cause problem.
-
-So personally I prefer no host mapping for private MMIO.
-
-Thanks,
-Yilun
-
-> page state tracking.
+> It looks like a problem with old QEMU_EFI.fd(2022 build and before).
+> I tried with 2023 QEMU_EFI.fd and with that it looks fine.
 > 
-> The MMIO KVM memory slot is still marked as shared as the guest can
-> access it as private or shared so marking the MMIO slot as private
-> is not going to help.
+> root@ubuntu:/# lspci -tv
+> -+-[0000:ca]---00.0-[cb]----00.0  Huawei Technologies Co., Ltd. Device a251
+>  \-[0000:00]-+-00.0  Red Hat, Inc. QEMU PCIe Host bridge
+>              +-01.0  Red Hat, Inc Virtio network device
+>              +-02.0  Red Hat, Inc. QEMU PCIe Expander bridge
+>              +-03.0  Red Hat, Inc. QEMU PCIe Expander bridge
+>              +-04.0  Red Hat, Inc. QEMU PCIe Expander bridge
+>              +-05.0  Red Hat, Inc. QEMU PCIe Expander bridge
+>              +-06.0  Red Hat, Inc. QEMU PCIe Expander bridge
+>              +-07.0  Red Hat, Inc. QEMU PCIe Expander bridge
+>              +-08.0  Red Hat, Inc. QEMU PCIe Expander bridge
+>              \-09.0  Red Hat, Inc. QEMU PCIe Expander bridge
 > 
-> Signed-off-by: Alexey Kardashevskiy <aik@amd.com>
-> ---
->  arch/x86/kvm/mmu/mmu.c | 6 +++++-
->  1 file changed, 5 insertions(+), 1 deletion(-)
-> 
-> diff --git a/arch/x86/kvm/mmu/mmu.c b/arch/x86/kvm/mmu/mmu.c
-> index 928cf84778b0..e74f5c3d0821 100644
-> --- a/arch/x86/kvm/mmu/mmu.c
-> +++ b/arch/x86/kvm/mmu/mmu.c
-> @@ -4366,7 +4366,11 @@ static int __kvm_faultin_pfn(struct kvm_vcpu *vcpu, struct kvm_page_fault *fault
->  {
->  	bool async;
->  
-> -	if (fault->is_private)
-> +	if (fault->slot && fault->is_private && !kvm_slot_can_be_private(fault->slot) &&
-> +	    (vcpu->kvm->arch.vm_type == KVM_X86_SNP_VM))
-> +		pr_warn("%s: private SEV TIO MMIO fault for fault->gfn=%llx\n",
-> +			__func__, fault->gfn);
-> +	else if (fault->is_private)
->  		return kvm_faultin_pfn_private(vcpu, fault);
->  
->  	async = false;
-> -- 
-> 2.45.2
-> 
-> 
+> So for now, I can proceed.
+
+Nice! That's a relief, for now :)
+
+Thanks
+Nicolin
