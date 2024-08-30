@@ -1,285 +1,379 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.17])
+Received: from NAM12-BN8-obe.outbound.protection.outlook.com (mail-bn8nam12on2067.outbound.protection.outlook.com [40.107.237.67])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DEA421D131F;
-	Fri, 30 Aug 2024 00:30:03 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=198.175.65.17
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6116279F4
+	for <iommu@lists.linux.dev>; Fri, 30 Aug 2024 01:46:17 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.237.67
 ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1724977806; cv=fail; b=dUFTzJQys2ZdH2GA2jp8iIHuB2quulqDcQw9UAhQa9H0ZMTqevjbVbNCsW/Pl7Z8hBjNrZKDhqb8Jl2qm4AtJNnRIIQKyIPcGA8lmOt4EXzawrMHjhcO8xAGLj6y5fKnL0aPY0MCq6sM9I2lWUIC5dX4V6BZIcDoopfKWj20rFg=
+	t=1724982379; cv=fail; b=lMslSryI8WK6fmOTIera3itYSFF3YoMN9cAW2iU82bLEf2Zbtr0l/sLTsBsMSGViw+FzI5vV13JB/U9JjlBFvCFmeq1b4NR5PihigOyGhdFBgpjyC8zX2ob/asQBMBlHRR/wLawFOMoIfKQCZMhf4rx1WMnqkNuL6azdUIl9Luo=
 ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1724977806; c=relaxed/simple;
-	bh=t4ZEFMf+odOHy2sT4cSn1+oLdGgQIX9wZl+j2GRawpo=;
-	h=From:To:CC:Subject:Date:Message-ID:References:In-Reply-To:
-	 Content-Type:MIME-Version; b=sGQvh/DLYJSQmVggUerjfezqlkopHq778gVmpyIu0E7Mtl11O5fDLkxZThKdl3iZNQVsOJaA2WG6AqbOy/hQb+Oa5RMhSpjplHxrplrtxbI6y8Nw9eaicze7fD+MpR/3CIGyW38nKRLCZbTAmhtfkQBVWKRAohsXAwlQtWzpT+Q=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=PXcGKA3l; arc=fail smtp.client-ip=198.175.65.17
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	s=arc-20240116; t=1724982379; c=relaxed/simple;
+	bh=aePcsJc8HUE7pMmcMy8htZWrmIfAvxScTF4DSnrX9v8=;
+	h=Date:From:To:CC:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=J2Di1oxkZcXRCGMlVtGbOYwS1Rom3PY++Skq9XWgsrs4T/hHTA3rypVQneLVaacT5b13+PjKnEhid5AtXcFFkgyDp8MFRAZV5PNjAmYUl7xcRV+np4ZnkKL9an8GLKllnD8IvxCl52Qm4kx9Y5F1xLzGcAWEoMDFvweWzBTfTfQ=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=CI9iQCDB; arc=fail smtp.client-ip=40.107.237.67
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="PXcGKA3l"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1724977804; x=1756513804;
-  h=from:to:cc:subject:date:message-id:references:
-   in-reply-to:content-transfer-encoding:mime-version;
-  bh=t4ZEFMf+odOHy2sT4cSn1+oLdGgQIX9wZl+j2GRawpo=;
-  b=PXcGKA3lMHnTRzQxf7tEREAfyjZ+r7PAWSJ0lAUoxC18OSXkcdLANCvG
-   kaqCu/OyKkK4UpRUtYwMzUoTOUuIEerVdgHwrjydBOy8/QTRSzD6cJRXn
-   kTLtCxixZImx1ndfj1uEpT+0+vtLaWeVajxfYbbLyamy2/B9lkTPIOus8
-   IMeZb9L9BCObJnctAgaHYgAjsQcxwN0TqnLqvlcYm9R9NqZJLGxNP722L
-   0vsEzFrGzOCH/BVMWehzoGafAVpDcQ+EnnNKkRucILwqb5fPFhoE4VXA3
-   SZWnQ0AdZcOovUMB3zngeEp7I4PtaxwsmfBysjVeMSY42oan8hQ7l6xLO
-   w==;
-X-CSE-ConnectionGUID: iT3hIf5zQpy2aGGx25QDUw==
-X-CSE-MsgGUID: p64YQICNQlKio8boYz4fBw==
-X-IronPort-AV: E=McAfee;i="6700,10204,11179"; a="23763731"
-X-IronPort-AV: E=Sophos;i="6.10,187,1719903600"; 
-   d="scan'208";a="23763731"
-Received: from orviesa008.jf.intel.com ([10.64.159.148])
-  by orvoesa109.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Aug 2024 17:30:03 -0700
-X-CSE-ConnectionGUID: 165e/x6RQN6JaYtjszkGow==
-X-CSE-MsgGUID: Zq3R+0zhTmGGGU1OGszWSg==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.10,187,1719903600"; 
-   d="scan'208";a="64477228"
-Received: from orsmsx602.amr.corp.intel.com ([10.22.229.15])
-  by orviesa008.jf.intel.com with ESMTP/TLS/AES256-GCM-SHA384; 29 Aug 2024 17:30:03 -0700
-Received: from orsmsx610.amr.corp.intel.com (10.22.229.23) by
- ORSMSX602.amr.corp.intel.com (10.22.229.15) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.39; Thu, 29 Aug 2024 17:30:02 -0700
-Received: from orsmsx610.amr.corp.intel.com (10.22.229.23) by
- ORSMSX610.amr.corp.intel.com (10.22.229.23) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.39; Thu, 29 Aug 2024 17:30:01 -0700
-Received: from ORSEDG602.ED.cps.intel.com (10.7.248.7) by
- orsmsx610.amr.corp.intel.com (10.22.229.23) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.39 via Frontend Transport; Thu, 29 Aug 2024 17:30:01 -0700
-Received: from NAM02-SN1-obe.outbound.protection.outlook.com (104.47.57.41) by
- edgegateway.intel.com (134.134.137.103) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.1.2507.39; Thu, 29 Aug 2024 17:30:01 -0700
+	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="CI9iQCDB"
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=SxfVvZOKpHXrInt7IvJgY3t4vic8bjr/Uui7+MOzBjF49MXeU6ZIif/rcz5l2PL0q93z4vAJxH7T7KgwZLpj3w9QDvbATUrfEQ0yWGhLstYYUTO5Mr1C5MMjn6y3lXETwy7sKSbxU30tXIdXsV+H+Kf/Ja/qB4zkJ60ybh4fXkbem2PWf9X7yYoAA2jQbufUiy0+hLUM7D8yvCARaH7owuYqGkWEp5SHpqDHlihqVlnGJPXvnFiFXaLfwvb46U81ibc8fdoWD4K8gf+5imOa3sRSReTrhBGb5JsDLISlafeuFP3wfRh4umrnJzyamFS/IVknVCY26zFk4G5R0ceNkA==
+ b=BanSPWcNJaQHMZdgUSrjmZKNc6cV9AbOtNDbysunYl5Kg0s7kLCJbYUAFMYEykXXfjcEjjBK9W9tK/ptUKHJlyUdo1nM/1vWV4XCedpQZBIF7OZibTmP8AcbBaVxSLE0G8zhtlQ48krDbyuKqcMQoHXgZvLehIlN/lzc137tdPDeRHKJ/S+3IbpYB4Mjj6ZwKTgyDLeNbesjHalPMFll6bUKxzQZuCVDGOWhHzwJmJ4klJjGTbOfs4t73n1mGb/8bQGjs2zv+D9uU5f3VGTfh83PCk0MrIb1RzSbLW5v56ANs+p1YQ0THxjAGbg0e/AGVb6EFg3EiVFqwoihN7gF5g==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector10001;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=t4ZEFMf+odOHy2sT4cSn1+oLdGgQIX9wZl+j2GRawpo=;
- b=xhi651En8s/Y43/8swSL9OX6f4adLDFgkGSUQ6Qe0guHfbagi7L5tTBtM02tVT2R8EkFIK7wmyG+W4CyzW0wCGMDolvZRddvfJkddGIjtMqIIxLTqPIMHnxvOdUCpFfHwG0KkHywT+A5syqMkuimzi1MwFoMnEeYi+K5cbRN00z1jPZxOUfb2iUd97ljA1CILHEI/JWx8BpHarxRjjIy7VDf8VLjWJCcrwzkS0zpjTjfrLigdPzWKqF/3bHp9luQb5zklhSoFsWtvk73cVYyxJv6PGPChr3V8+EQkr/q3mzaHFYaXZVafAKfEqn0AXVbmTrK+S63vA7rj7MK5tTjCQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
- dkim=pass header.d=intel.com; arc=none
-Received: from BN9PR11MB5276.namprd11.prod.outlook.com (2603:10b6:408:135::18)
- by DS0PR11MB7336.namprd11.prod.outlook.com (2603:10b6:8:11f::17) with
+ bh=zl2uUCl8cLpjM3JorUBanPkd1Soqu5tmEw4wY+NGfh4=;
+ b=dl2UcmnY97eONL2TdabHFCdCgXi6+6zaoGANluNMplbGAbViCn8v2qG+otLMx0nHwmFK6eJaCdZDJZR6EkMaInpKotUfNTakG/OTHHhTsODvtbxy2BnzZoxK8ZvK2rXdlKNmA3U/rbpTKW3mgDa/au3hMpUVIeaLgdoTtUWv9u1HLgac+8seSpAQUsjvZlB1WQ54iiRTjxamUAmwl7dWEL0ZGC1NDCTBF77LHln3caGLaXXYEFze8DtKmijLmGDpqAmdqosZlObQNE80Pfhe3xfVLrbYPxWvJqaiiWj07y/kjId9Q+MAeqmOwKQIA3zaax+2HHoz6WhSsxBcvsTIMQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 216.228.117.161) smtp.rcpttodomain=google.com smtp.mailfrom=nvidia.com;
+ dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
+ dkim=none (message not signed); arc=none (0)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=zl2uUCl8cLpjM3JorUBanPkd1Soqu5tmEw4wY+NGfh4=;
+ b=CI9iQCDBCR9Quig5de5ICfOgR4z8mi24i6qklRdUq+iw2to5gjR+tRTJis0c3lJEqgXv6pXxvJ+xxKCTOkXdcHT+DflwisAHhGk0wwSnzVw4DdjxnHtQI4SKd59ZpEX5+b4+9XHDjEZDy2blISBStA7tvNX+vc8ZW42JCz6hOqo0ztcj4KeWvvc4u8L0ARKVIt6aLKNCPX6yU+UBQk4lm9VTjpFVd8IYpAxBlKpH6qq2mv8ODbMurvSlhhacj4iD8GheuyhH17UQhwwW34l3tNfRZdC+LTEIMbb95fC33Nnp7uYZRVl7jL4YlP1oqxzOWW4bMkAY7vRSF9IHST5jIw==
+Received: from IA1P220CA0022.NAMP220.PROD.OUTLOOK.COM (2603:10b6:208:464::11)
+ by IA0PR12MB8931.namprd12.prod.outlook.com (2603:10b6:208:48a::14) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7918.20; Fri, 30 Aug
- 2024 00:29:53 +0000
-Received: from BN9PR11MB5276.namprd11.prod.outlook.com
- ([fe80::b576:d3bd:c8e0:4bc1]) by BN9PR11MB5276.namprd11.prod.outlook.com
- ([fe80::b576:d3bd:c8e0:4bc1%3]) with mapi id 15.20.7918.019; Fri, 30 Aug 2024
- 00:29:52 +0000
-From: "Tian, Kevin" <kevin.tian@intel.com>
-To: Markus Rathgeb <maggu2810@gmail.com>
-CC: Linux regressions mailing list <regressions@lists.linux.dev>, Lu Baolu
-	<baolu.lu@linux.intel.com>, Will Deacon <will@kernel.org>, David Woodhouse
-	<dwmw2@infradead.org>, Joerg Roedel <joro@8bytes.org>,
-	"iommu@lists.linux.dev" <iommu@lists.linux.dev>, LKML
-	<linux-kernel@vger.kernel.org>, Jacob Pan <jacob.jun.pan@linux.intel.com>,
-	Adam Williamson <awilliam@redhat.com>
-Subject: RE: [regression] usb and thunderbould are misbehaving or broken due
- to iommu/vt-d change
-Thread-Topic: [regression] usb and thunderbould are misbehaving or broken due
- to iommu/vt-d change
-Thread-Index: AQHa+TT2MgK5ERDS1Ey44fCKLWFprbI9Z5sAgABdTgCAAA0fAIAABD8AgAATpwCAAQqgwA==
-Date: Fri, 30 Aug 2024 00:29:51 +0000
-Message-ID: <BN9PR11MB5276F533DC882B182F1A4C268C972@BN9PR11MB5276.namprd11.prod.outlook.com>
-References: <c844faa0-343a-46f4-a54f-0fd65f4d4679@leemhuis.info>
- <BN9PR11MB5276CA2E1922D9FD6B9F2ECF8C962@BN9PR11MB5276.namprd11.prod.outlook.com>
- <CAOcK=CN3-v=dgMC9XTbh-h0zaD01uatOZKjvSF7ocofTCOGp7Q@mail.gmail.com>
- <CAOcK=CPi1TokgySF77X+zuQ10kxfsfCXekYVanPhF51+Ow1XRg@mail.gmail.com>
- <CAOcK=CM4Poawy2AN3f6C2ooPdoT=dg4J9Bg1Fu=gsFjvkrBpQw@mail.gmail.com>
- <CAOcK=COEd0njBPGhJ8idaLbaqvATr_zSB1O9dyzwi+fbU8GhqA@mail.gmail.com>
-In-Reply-To: <CAOcK=COEd0njBPGhJ8idaLbaqvATr_zSB1O9dyzwi+fbU8GhqA@mail.gmail.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach:
-X-MS-TNEF-Correlator:
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=intel.com;
-x-ms-publictraffictype: Email
-x-ms-traffictypediagnostic: BN9PR11MB5276:EE_|DS0PR11MB7336:EE_
-x-ms-office365-filtering-correlation-id: 34a80e24-8a00-4238-fe28-08dcc88add14
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;ARA:13230040|7416014|376014|366016|1800799024|38070700018;
-x-microsoft-antispam-message-info: =?utf-8?B?d1J1MWU2NWMzc0hFVXZjQ0FJMFFGMFI1bE8zN3MwNjJJdEx6V25pajh5L2to?=
- =?utf-8?B?TS9zUStsT3BQMnNpaytObE8rMjNPWUxucTRkRHhLaU8zQUZUeEt3bHFJNUl2?=
- =?utf-8?B?U1RiVjR6azZpOFJwbFRDUlpKZkpIUTNFTDRVRi9wNjRVMFJxNlo3bG9ETkpJ?=
- =?utf-8?B?dm9XODYwWDRIOVlxenIzcnhXbWduLzRQZGF0V3F2S1hnNUVtWWhDTEErT2Zm?=
- =?utf-8?B?ZXhLNU9XY0xreGVvbmt6b201RGJJQnEwNWRhbWZzYU4yR1lKK0xyUG4zNG42?=
- =?utf-8?B?UkFqa05GTnEvdTFZMGF1dDJZbDRqTUVyejVzQXhJeGRLMTdYYU1KNVZ0bmlR?=
- =?utf-8?B?YStWUnN5aEVveTZFRjRnMVFpQ0tIaVMwc2U1Y2pOblM4OUMwalA0OXA0ekxp?=
- =?utf-8?B?NUNVQWZyVEdUVlljTFVpVE9LN3hsYlhnUXRUL1J4QlArY29UWWszTElrVHpC?=
- =?utf-8?B?L2c1U0JmVFA2WmtYSWNINVVFbVlyUE8zaWxRYXJNeTkzcnJKZlJZdGd2Y05a?=
- =?utf-8?B?SXJTcHNERDZKMFFrTTlzTlBzUTVyTWdaWEJIWEVYMDdMOERBMTdIMkxwSnli?=
- =?utf-8?B?YUhxTkF0UmJMdDV0djhINlk1aVpYaXhZZkx1NFA3d2RoQU5pN2RnM0tYK3ZX?=
- =?utf-8?B?dmlBdDdwMWdvc3dueDZYM0ZIb3MrcXE5bzJ0S3EySnJUandySDVNUmFqMDlF?=
- =?utf-8?B?bncvallGYkVYa2xZSHAreHAyU3hUWkY5aXJ6WWJEaG13Q2RGTEF0b0hVdzJY?=
- =?utf-8?B?RnAreTgyMEcxcENuV3lTdjRtdmJWWmxtU1lLb0tKWWJWMExLZWw5NERvc0NT?=
- =?utf-8?B?YXp6WWNpdzZweFFsQUZ5akIwYnFDNFRrN0loTDBMNnNzdUJtSkt4Z1R6WGNx?=
- =?utf-8?B?clYvRUV0M0RzRG94aTNmWTNqUXpJTmtSMGYwVVZXdHl5RExVeldBVUt1Ym1j?=
- =?utf-8?B?dG9IeVE0eXZqQzdVOENOejN0dXNhajVvanVKNktKeHJyZ0o3MGVpSjV6T0tZ?=
- =?utf-8?B?VU9iSFNzMC9lRi9QT3ZOank1L3RoaFFSNDBGRXYwY1BudVg5bHpXNWo3OVI4?=
- =?utf-8?B?ZzFNODF3WCs5WFB0NzhnVG5TSHJiVXMwdGhJNlVRallKRUI3RzFJRll0ZjRK?=
- =?utf-8?B?eFpIS3FVWHh6MjFBZk9mZHFEbVY5Z2wyZUJwT0R5QlgwVHVLdEtUL0JkTVVX?=
- =?utf-8?B?Z0tTNC8wTzVvTHlVSkE2OFM2ZWNPZUJzRCtMdEE2YTA3U3pQbWt3NnZvdFpn?=
- =?utf-8?B?b1BBekYyeHpYdUJmWFBSY21WUks4ZGxzMDRwKzVrVnRlNm92ZHRjMWh5d2hV?=
- =?utf-8?B?RVJ3Vm10WHlYeE5BRFYyK1FkWXF4Mm5sc1EyY3FvSjhWRXprTExtNnZzMHBF?=
- =?utf-8?B?alZpWnFQK0xTSGo1QU5SUVBuVEtzejk5c3lQR29GVGlGY25ZT01QVEJCQjI1?=
- =?utf-8?B?Vk9JL2k2dU51ZGoxTHBQSDY3Tm05YUd5K3Q2QXZvWGM4WDVKU015RmE0N09V?=
- =?utf-8?B?V2VqWFpySUVkTmZjRG1nWFdDWG13alB1bDZHVkQ1OENSRTVaU1Z0d0hpKzJx?=
- =?utf-8?B?TjllTWJ1Yk9qT3RibVBFYlJoUEpnVUQ5SmFjMWFGQXhvTnVLc0xNTzhlWWNL?=
- =?utf-8?B?d0RwcUFNTWJzZE1qMlBDYTEwL3l0aEVnVmNjRHloaHNUbmxiMzlxOVB0Qno0?=
- =?utf-8?B?RmFnM3lFTE14UktUb3RZcDlSS2lya0NtSnA3NGxmMWViRHBiMHBkQi9FRDMv?=
- =?utf-8?B?bjRWNTJPVlo4NVo4eWNzTjN3c2ZRV2NSWDdkK1hMT2kzNUQzN3lVMmNhYVE1?=
- =?utf-8?B?Nm1rS1F0d2NuWFBNcWtlbkdDbWlCajJ1OCs2KzBjNnprOGN0Y251blB1S0RN?=
- =?utf-8?B?TzlBdi80WklXWjVsRVRlSzVNM2dGUldtYlk0MmtUTUtaa2c9PQ==?=
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BN9PR11MB5276.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(7416014)(376014)(366016)(1800799024)(38070700018);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?utf-8?B?Z0RWaS9KTjJGTDBnMmpicmcwWTc5TTBOQXY1YnBqKzFXMm9JR04xK1ZHcElu?=
- =?utf-8?B?a3F2dmRXdEpFQ1Bhb2N4TURTUnorVFFZdk1FZ1kwQ056d2paL0pzRFVRbDJU?=
- =?utf-8?B?dlJ6OW02dTNZM3R6akRrc2FGc2J0d0haY0NhNlpSZ0FraVdOVXFvVHBvcEFN?=
- =?utf-8?B?K2k0TnpwUnQ0RFViUlQ1RjNOOVNmTXhUbzRMOW45ZCtaZ2lhblB3TE9oSExI?=
- =?utf-8?B?TjkxbTJJTllES3ZiVG1lY0RrdUZ4dFlocUM3T0ZQVTI4S0xTbG1lZVVPbVJt?=
- =?utf-8?B?K1M3anZvcmFmZC9TTzBodm5hYXFuMmgvcDExbHdtblhrUDV1UHVSejk3eWNk?=
- =?utf-8?B?Yjk1L0x2S0ZobDVLNzdUNnJSUzN2TzhRSDJ3MVhqTDI0a2k1Tko0THRGYmli?=
- =?utf-8?B?bVkySUVFVkN5MUdGcUowd0ZCUEl2U0JvU0VYL2ZUcnFYR1J2YmszR2Nld3hH?=
- =?utf-8?B?d1dCenRMaTlLVUJiZ1g4V2dQUFMrRnd5dEF5NlpIdk0ybjdHWmRZNTlDc2JU?=
- =?utf-8?B?MUlkNDdoTDNiK2Y1clhveUlTZUhaOHZ4ZGxwNmErTnZUb09jSmJzckcweEly?=
- =?utf-8?B?T05JeVRzRHBkVEVIS1JIVWY3YTlUdE1uUHVVRGkvbFVWbmR0QmpuMmVBeG5U?=
- =?utf-8?B?cnlxMDV2OVdwWllFSjBFMGlEazVZckc5ME9mL0VRL2c5STVtYSswTXZBMlc0?=
- =?utf-8?B?WU9NaUkrN3cwZDNXMmFMWUpib01OUGFjd0NSYmhYelRJNTBoNjZOWDJxa3JW?=
- =?utf-8?B?S2ZJYXJOUDQyMzMwMlRZMS9xdUZBdG9keUtXRElseStrdE1pUlVoaUdja0ph?=
- =?utf-8?B?VGEyRkYrYjNERHdsQy9OaXBaTjJtU1dSRHNzQmV2MlJkRDBJVWFsRnMvSFo4?=
- =?utf-8?B?VDQwRHp5LzB6LzdnMDB5OUpQZ0txMjdaZjFaek5hODZIdTF4T1ZRTlI1aXd6?=
- =?utf-8?B?MEMrK3FTNkJYUmVmR3kxWnl0REdFK3F5U3NvODM0VC84ZisxK2t2c2JmVEFx?=
- =?utf-8?B?QkFzNkNSaVJkZmpMM3MybWk1K2svT1ZQY2tob2cwZTZlckxscG9senJlbFlG?=
- =?utf-8?B?WGtQTmtOS1FTS0Voc2hSRTlRbmZEZDA5NTZTQ25vTTJLbGxGbXFLZUdsRC9m?=
- =?utf-8?B?RUY1bFp6NzdtUkI4bWtWU29TUTRXVkd0Wi9jMlBoOXRkWnJrdkUyNWVuelpS?=
- =?utf-8?B?ejhONEtiWTVqZFNaMWdlZ2dRRGJjcm91SkZqalpOSmVWSThDZHVvY0NHYXFp?=
- =?utf-8?B?bFRpWkFHeXo1cXJuc2wwN2RRSkpyY2pOVnlSaXFmRlZmRllQSi9KZkU1Qndh?=
- =?utf-8?B?MktIZG5KZ3B0TEpNWUhyS05OVWtKUkdyWnFLRllZdGpYdHRZemdUZlJWZnlW?=
- =?utf-8?B?aXlVSGdxdmhyUHZJL3JwVmJneC9jRGJHUStybFVZV2JmODJKb3hpNFplUzVW?=
- =?utf-8?B?SnZsb2hmT0k1dGdkdERqeHBUQ09kcmM3Ky9SODM4cGdTYk1paUs0aHFIWDkr?=
- =?utf-8?B?VjhmR05OSE5FY3YzQmRMYVQzcGtZaDFDT2o5WjlrTWRab0h3TVQ3K3cyb3ly?=
- =?utf-8?B?Ym5KQTVTUEJSQXFVVXlsVVE4WVFST3FKckwzWVAxUTRaZ0NFdUJGeHF5T243?=
- =?utf-8?B?Vmtld0UrbEhTeHN0bUxLeGVEUlNaZkVaamxvSUl5WG9GSTB0QzFpVExPOEFE?=
- =?utf-8?B?VjdJUGxyeUoySitwMTkwN2FxSFpISkt6MndzVW40YUk1K2preHd4YmRFdUNY?=
- =?utf-8?B?QmZUMnlCbVd1ZldXTGZwM29tOVBMY0pyaWJxOFl3WDJVQnpJNjlVQi9oRkx2?=
- =?utf-8?B?d2N2WWMxL0ZVTElQV1VHbCtCZG0yUU92NTZZWXNWY2JkaHlYcUt1UGRtQk5T?=
- =?utf-8?B?d2ZEOCtnS2RSRGJlSnBYS0ZMbFkzcXNQcFV6eTh4bENzTUpaNWlHK1pvWFN1?=
- =?utf-8?B?UUtGWCsvWG5PVHRCamZGcW0rUFBMUTRzQ3hpMUh5KzRPeHV2UTJkc0lGUlQ3?=
- =?utf-8?B?SXAzcTZ1VExNUWZRUDRTQzc0SkpGM3AzRkJxaUZyL2VtcFgydGlVc3RQb09W?=
- =?utf-8?B?SjNLOC9DYXlSRWtEazFjMVFJajUzS0drV29zTStqRjR1cFZCMlJaRjdNdVo3?=
- =?utf-8?Q?AVieJbg5GCH78vdY3L7DJRIAL?=
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7897.26; Fri, 30 Aug
+ 2024 01:46:11 +0000
+Received: from BL6PEPF00022575.namprd02.prod.outlook.com
+ (2603:10b6:208:464:cafe::18) by IA1P220CA0022.outlook.office365.com
+ (2603:10b6:208:464::11) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7918.20 via Frontend
+ Transport; Fri, 30 Aug 2024 01:46:11 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.117.161)
+ smtp.mailfrom=nvidia.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=nvidia.com;
+Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
+ 216.228.117.161 as permitted sender) receiver=protection.outlook.com;
+ client-ip=216.228.117.161; helo=mail.nvidia.com; pr=C
+Received: from mail.nvidia.com (216.228.117.161) by
+ BL6PEPF00022575.mail.protection.outlook.com (10.167.249.43) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.7918.13 via Frontend Transport; Fri, 30 Aug 2024 01:46:11 +0000
+Received: from rnnvmail204.nvidia.com (10.129.68.6) by mail.nvidia.com
+ (10.129.200.67) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1544.4; Thu, 29 Aug
+ 2024 18:45:56 -0700
+Received: from rnnvmail202.nvidia.com (10.129.68.7) by rnnvmail204.nvidia.com
+ (10.129.68.6) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1544.4; Thu, 29 Aug
+ 2024 18:45:55 -0700
+Received: from Asurada-Nvidia (10.127.8.13) by mail.nvidia.com (10.129.68.7)
+ with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1544.4 via Frontend
+ Transport; Thu, 29 Aug 2024 18:45:55 -0700
+Date: Thu, 29 Aug 2024 18:45:53 -0700
+From: Nicolin Chen <nicolinc@nvidia.com>
+To: Pranjal Shrivastava <praan@google.com>
+CC: Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>, "Robin
+ Murphy" <robin.murphy@arm.com>, Mostafa Saleh <smostafa@google.com>,
+	"iommu@lists.linux.dev" <iommu@lists.linux.dev>, Daniel Mentz
+	<danielmentz@google.com>
+Subject: Re: [PATCH v2 1/2] iommu/arm-smmu-v3: Print better events records
+Message-ID: <ZtEkUQ7tI3Nb0NOc@Asurada-Nvidia>
+References: <20240827193026.3993039-1-praan@google.com>
+ <20240827193026.3993039-2-praan@google.com>
+ <ZtAW0hVPFD6JbLTL@Asurada-Nvidia>
+ <ZtEKMknbGaD9q170@google.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: BN9PR11MB5276.namprd11.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 34a80e24-8a00-4238-fe28-08dcc88add14
-X-MS-Exchange-CrossTenant-originalarrivaltime: 30 Aug 2024 00:29:51.9339
+Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: inline
+In-Reply-To: <ZtEKMknbGaD9q170@google.com>
+X-NV-OnPremToCloud: ExternallySecured
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: BL6PEPF00022575:EE_|IA0PR12MB8931:EE_
+X-MS-Office365-Filtering-Correlation-Id: 9ce6b89c-e4fa-4d9b-0cde-08dcc89586aa
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam:
+	BCL:0;ARA:13230040|82310400026|376014|36860700013|1800799024;
+X-Microsoft-Antispam-Message-Info:
+	=?us-ascii?Q?/TaiMYLaHaYu1eGR1s4++eL6FQXeTCVnmF9AD2mgnjWl6YGrP7SiMCO75rEK?=
+ =?us-ascii?Q?TYAe7M11IJphllcfg4dYbVQ2W87ajkYEK7KAOfCMtXTUqhrcmBGgs98UQ3Zi?=
+ =?us-ascii?Q?BlYV5Fgf0w+s8RlcfPr6Z8D1NIGZtjXd6V/6I9RoxrH8GzSs8zzvjADd01Rq?=
+ =?us-ascii?Q?3kHUoT5hPEPPPcvCVqVmQgN+OSqNsE/Wpk/3qH7pX4LA0Z/6rSb38MwDWf+L?=
+ =?us-ascii?Q?SUuTa/Mh9+5osoNPA7DHtZKEWvzan/5DCzbvkF/HfXkDs2G7JsvypoWbAMyp?=
+ =?us-ascii?Q?jA8owO1iDlUn+tlLFTz9PJ3SlSdaYSQZzwb16bwjI3pvf5y1pvgCmLnNHJXE?=
+ =?us-ascii?Q?PaseRP1h5C9lyQBmauyEz2qdgJYjxnWl/kdKvyd0gcYr04e46j1Xu/8AW7ub?=
+ =?us-ascii?Q?RCDvB/XiDF4BXyy16DCt0O2WURtu2ABkjw6HjclZxxFlhSK4qSURtsb8te7s?=
+ =?us-ascii?Q?Nyrk55RCO7NTV3gLZhQVRk/Va1lgj+yH1lIQXqmEIEt5BG2WsmWTlC2acRJt?=
+ =?us-ascii?Q?VFEJz51ybp9WwmuV5SvnRdx7QSo0MRSIKPvMa4srx4FDXgG9xdw2VY9i2Eyo?=
+ =?us-ascii?Q?oJRcKcy0TackDav97xWSUv7cMouZ4KdGDzJkkAJV0sm2SZ91wqx3VrnxYLlO?=
+ =?us-ascii?Q?uWR0TbB2GUFQ3FtKNXyLLIvLzZB8RyA3MbsNhYi6YUVjRTV6Bs145DpfCESb?=
+ =?us-ascii?Q?36tWNgMB5uw3fq6LAoo6dEdWLxvf+LjgVnaqZcVIrM4St96NBrYGItvj7k2S?=
+ =?us-ascii?Q?g9XQcw1bGxddxdrZDShijzdulBDJeBPOeWj7YLiapwx+mGH9BAXAT839D9v6?=
+ =?us-ascii?Q?XaqKnyA5PZHeY84YBkyi4wZumPLEosj6+GTs7vc6AuMKTCu/YPqutCqC/2Nl?=
+ =?us-ascii?Q?GX27URX5N7dak4xQ06sD3CVG2hS4bFjq3+57OxZwOifuhg8LPP9GDfAiCI7y?=
+ =?us-ascii?Q?mxsBcLSKGCXMRi1Lj63EU39Aau1e7NI3pCq0QZjBUD4nI67Kakb/zipVUyjC?=
+ =?us-ascii?Q?PnpHOuafrG32Al6ucBhRIZNuaSeqMaVSjWWHz/TwVxQKTQsIvwVmDVmmSDc+?=
+ =?us-ascii?Q?w6vaEgWxABV7bfZoPvo+boafgoxKnJjIpsGQ1DflgPITObMGFoLxnB3ehU5/?=
+ =?us-ascii?Q?b6pGtrj+0kO4LxKtdT5ht1F/0I66udK3nmYKem4p/GV0YIgTz1NY4LzMTT4p?=
+ =?us-ascii?Q?7Hb2dORe1Ey0znAyxo2QVDjbeJwYtKhgGNzX9BIFnf+p2iBfphjccDEdhVZA?=
+ =?us-ascii?Q?j4d0CUQVQBgRV+oARkjFyICRQ0zjqB5UQ6q+G+Ui2DB0zKT986S35av8JyLX?=
+ =?us-ascii?Q?rZbwwMmae7O9PAb+02Z/X0gD5X54kYmDHmmQIi4KbJHD2YrvOyecaOibIkHd?=
+ =?us-ascii?Q?ESPOqBeGqIhhRQq5M7VQW3HGHa1kN+zJb/0NDsh9cKIlpisKgTglJ97Z0Jvu?=
+ =?us-ascii?Q?BRU58r3Dki9rwgsd5kC5MFEdeH9hg6hS?=
+X-Forefront-Antispam-Report:
+	CIP:216.228.117.161;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc6edge2.nvidia.com;CAT:NONE;SFS:(13230040)(82310400026)(376014)(36860700013)(1800799024);DIR:OUT;SFP:1101;
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 30 Aug 2024 01:46:11.2710
  (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 46c98d88-e344-4ed4-8496-4ed7712e255d
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: Nm4AwCxO7otgXGaSMc4nw/0sLNDBwtkVUgQTISBoT2B5s+TkQyMRvR8ubOUkkIQJLFSjrZwy3WDDXRBQfqLO2w==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DS0PR11MB7336
-X-OriginatorOrg: intel.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 9ce6b89c-e4fa-4d9b-0cde-08dcc89586aa
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.117.161];Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-AuthSource: BL6PEPF00022575.namprd02.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: IA0PR12MB8931
 
-PiBGcm9tOiBNYXJrdXMgUmF0aGdlYiA8bWFnZ3UyODEwQGdtYWlsLmNvbT4NCj4gU2VudDogVGh1
-cnNkYXksIEF1Z3VzdCAyOSwgMjAyNCA0OjM0IFBNDQo+IA0KPiBXaXRoIHJlc3BlY3QgdG8gbXkg
-cHJldmlvdXMgY29tbWVudCBJIHRlc3RlZCB0byBmaXggaXQgbXlzZWxmIChJIGFtDQo+IG5vdCBh
-IGtlcm5lbCBoYWNrZXIgYW5kIGRvIG5vdCBrbm93IGFueXRoaW5nIGFib3V0IGlvbW11IGV0Yy4p
-Lg0KPiANCj4gQWZ0ZXIgYXBwbHlpbmcgdGhlIGZvbGxvd2luZyBjaGFuZ2UgdG8gdGhlIHY2LjEx
-LXJjNSBpdCBzZWVtcyB0byBmaXggbXkNCj4gcHJvYmxlbS4NCj4gSSBjYW4gY29ubmVjdCwgZGlz
-Y29ubmVjdCBhbmQgY29ubmVjdCB0aGUgZG9jayBhbmQgVVNCIGlzIHdvcmtpbmcgYW5kDQo+IG5v
-IERNQVIgZXJyb3IuDQo+IA0KDQphcyBzYWlkIHRoZXJlIHdhcyBhbHJlYWR5IGEgZml4IHBvc3Rl
-ZCB3aGljaCBpcyBzaW1pbGFyIHRvIGJlbG93Og0KDQpodHRwczovL2xvcmUua2VybmVsLm9yZy9s
-aW51eC1pb21tdS8yMDI0MDgxNTEyNDg1Ny43MDAzOC0xLWJhb2x1Lmx1QGxpbnV4LmludGVsLmNv
-bS8NCg0KPiANCj4gDQo+IA0KPiBGcm9tIDVmNjIxYzA3OWYwZjhiY2U5ODk1YWUwNWE5Y2Q4MWIw
-MDFhNTgwODkgTW9uIFNlcCAxNyAwMDowMDowMA0KPiAyMDAxDQo+IEZyb206IE1hcmt1cyBSYXRo
-Z2ViIDxtYWdndTI4MTBAZ21haWwuY29tPg0KPiBEYXRlOiBUaHUsIDI5IEF1ZyAyMDI0IDA5OjM3
-OjE3ICswMjAwDQo+IFN1YmplY3Q6IFtQQVRDSF0gZml4OiBpb21tdS92dC1kOiBBZGQgaGVscGVy
-IHRvIGZsdXNoIGNhY2hlcyBmb3IgY29udGV4dA0KPiAgY2hhbmdlDQo+IA0KPiBTaWduZWQtb2Zm
-LWJ5OiBNYXJrdXMgUmF0aGdlYiA8bWFnZ3UyODEwQGdtYWlsLmNvbT4NCj4gLS0tDQo+ICBkcml2
-ZXJzL2lvbW11L2ludGVsL2lvbW11LmMgfCA3ICsrKysrLS0NCj4gIGRyaXZlcnMvaW9tbXUvaW50
-ZWwvaW9tbXUuaCB8IDMgKystDQo+ICBkcml2ZXJzL2lvbW11L2ludGVsL3Bhc2lkLmMgfCA0ICsr
-LS0NCj4gIDMgZmlsZXMgY2hhbmdlZCwgOSBpbnNlcnRpb25zKCspLCA1IGRlbGV0aW9ucygtKQ0K
-PiANCj4gZGlmZiAtLWdpdCBhL2RyaXZlcnMvaW9tbXUvaW50ZWwvaW9tbXUuYyBiL2RyaXZlcnMv
-aW9tbXUvaW50ZWwvaW9tbXUuYw0KPiBpbmRleCA5ZmY4YjgzYzE5YTMuLmU5MmUwNmU2MDRiMiAx
-MDA2NDQNCj4gLS0tIGEvZHJpdmVycy9pb21tdS9pbnRlbC9pb21tdS5jDQo+ICsrKyBiL2RyaXZl
-cnMvaW9tbXUvaW50ZWwvaW9tbXUuYw0KPiBAQCAtMTk0NCw2ICsxOTQ0LDcgQEAgc3RhdGljIHZv
-aWQgZG9tYWluX2NvbnRleHRfY2xlYXJfb25lKHN0cnVjdA0KPiBkZXZpY2VfZG9tYWluX2luZm8g
-KmluZm8sIHU4IGJ1cywgdTgNCj4gIHsNCj4gICAgICBzdHJ1Y3QgaW50ZWxfaW9tbXUgKmlvbW11
-ID0gaW5mby0+aW9tbXU7DQo+ICAgICAgc3RydWN0IGNvbnRleHRfZW50cnkgKmNvbnRleHQ7DQo+
-ICsgICAgdTE2IGRpZF9vbGQ7DQo+IA0KPiAgICAgIHNwaW5fbG9jaygmaW9tbXUtPmxvY2spOw0K
-PiAgICAgIGNvbnRleHQgPSBpb21tdV9jb250ZXh0X2FkZHIoaW9tbXUsIGJ1cywgZGV2Zm4sIDAp
-Ow0KPiBAQCAtMTk1MiwxMCArMTk1MywxMiBAQCBzdGF0aWMgdm9pZCBkb21haW5fY29udGV4dF9j
-bGVhcl9vbmUoc3RydWN0DQo+IGRldmljZV9kb21haW5faW5mbyAqaW5mbywgdTggYnVzLCB1OA0K
-PiAgICAgICAgICByZXR1cm47DQo+ICAgICAgfQ0KPiANCj4gKyAgICBkaWRfb2xkID0gY29udGV4
-dF9kb21haW5faWQoY29udGV4dCk7DQo+ICsNCj4gICAgICBjb250ZXh0X2NsZWFyX2VudHJ5KGNv
-bnRleHQpOw0KPiAgICAgIF9faW9tbXVfZmx1c2hfY2FjaGUoaW9tbXUsIGNvbnRleHQsIHNpemVv
-ZigqY29udGV4dCkpOw0KPiAgICAgIHNwaW5fdW5sb2NrKCZpb21tdS0+bG9jayk7DQo+IC0gICAg
-aW50ZWxfY29udGV4dF9mbHVzaF9wcmVzZW50KGluZm8sIGNvbnRleHQsIHRydWUpOw0KPiArICAg
-IGludGVsX2NvbnRleHRfZmx1c2hfcHJlc2VudChpbmZvLCBjb250ZXh0LCBkaWRfb2xkLCB0cnVl
-KTsNCj4gIH0NCj4gDQo+ICBzdGF0aWMgaW50IGRvbWFpbl9zZXR1cF9maXJzdF9sZXZlbChzdHJ1
-Y3QgaW50ZWxfaW9tbXUgKmlvbW11LA0KPiBAQCAtNDI2OSw3ICs0MjcyLDcgQEAgc3RhdGljIGlu
-dCBjb250ZXh0X2ZsaXBfcHJpKHN0cnVjdA0KPiBkZXZpY2VfZG9tYWluX2luZm8gKmluZm8sIGJv
-b2wgZW5hYmxlKQ0KPiANCj4gICAgICBpZiAoIWVjYXBfY29oZXJlbnQoaW9tbXUtPmVjYXApKQ0K
-PiAgICAgICAgICBjbGZsdXNoX2NhY2hlX3JhbmdlKGNvbnRleHQsIHNpemVvZigqY29udGV4dCkp
-Ow0KPiAtICAgIGludGVsX2NvbnRleHRfZmx1c2hfcHJlc2VudChpbmZvLCBjb250ZXh0LCB0cnVl
-KTsNCj4gKyAgICBpbnRlbF9jb250ZXh0X2ZsdXNoX3ByZXNlbnQoaW5mbywgY29udGV4dCwNCj4g
-Y29udGV4dF9kb21haW5faWQoY29udGV4dCksIHRydWUpOw0KPiAgICAgIHNwaW5fdW5sb2NrKCZp
-b21tdS0+bG9jayk7DQo+IA0KPiAgICAgIHJldHVybiAwOw0KPiBkaWZmIC0tZ2l0IGEvZHJpdmVy
-cy9pb21tdS9pbnRlbC9pb21tdS5oIGIvZHJpdmVycy9pb21tdS9pbnRlbC9pb21tdS5oDQo+IGlu
-ZGV4IGI2N2MxNGRhMTI0MC4uMGE0Y2U5OGZhYTYwIDEwMDY0NA0KPiAtLS0gYS9kcml2ZXJzL2lv
-bW11L2ludGVsL2lvbW11LmgNCj4gKysrIGIvZHJpdmVycy9pb21tdS9pbnRlbC9pb21tdS5oDQo+
-IEBAIC05ODgsNyArOTg4LDcgQEAgc3RhdGljIGlubGluZSBpbnQgY29udGV4dF9kb21haW5faWQo
-c3RydWN0DQo+IGNvbnRleHRfZW50cnkgKmMpDQo+ICAgICAgcmV0dXJuKChjLT5oaSA+PiA4KSAm
-IDB4ZmZmZik7DQo+ICB9DQo+IA0KPiAtc3RhdGljIGlubGluZSB2b2lkIGNvbnRleHRfY2xlYXJf
-ZW50cnkoc3RydWN0IGNvbnRleHRfZW50cnkgKmNvbnRleHQpDQo+ICtzdGF0aWMgaW5saW5lIHZv
-aWQgICAgIGNvbnRleHRfY2xlYXJfZW50cnkoc3RydWN0IGNvbnRleHRfZW50cnkgKmNvbnRleHQp
-DQo+ICB7DQo+ICAgICAgY29udGV4dC0+bG8gPSAwOw0KPiAgICAgIGNvbnRleHQtPmhpID0gMDsN
-Cj4gQEAgLTExNTQsNiArMTE1NCw3IEBAIHZvaWQgY2FjaGVfdGFnX2ZsdXNoX3JhbmdlX25wKHN0
-cnVjdA0KPiBkbWFyX2RvbWFpbg0KPiAqZG9tYWluLCB1bnNpZ25lZCBsb25nIHN0YXJ0LA0KPiAN
-Cj4gIHZvaWQgaW50ZWxfY29udGV4dF9mbHVzaF9wcmVzZW50KHN0cnVjdCBkZXZpY2VfZG9tYWlu
-X2luZm8gKmluZm8sDQo+ICAgICAgICAgICAgICAgICAgIHN0cnVjdCBjb250ZXh0X2VudHJ5ICpj
-b250ZXh0LA0KPiArICAgICAgICAgICAgICAgICB1MTYgZGlkLA0KPiAgICAgICAgICAgICAgICAg
-ICBib29sIGFmZmVjdF9kb21haW5zKTsNCj4gDQo+ICAjaWZkZWYgQ09ORklHX0lOVEVMX0lPTU1V
-X1NWTQ0KPiBkaWZmIC0tZ2l0IGEvZHJpdmVycy9pb21tdS9pbnRlbC9wYXNpZC5jIGIvZHJpdmVy
-cy9pb21tdS9pbnRlbC9wYXNpZC5jDQo+IGluZGV4IDU3OTJjODE3Y2VmYS4uY2I0YmJiNDVhYzJh
-IDEwMDY0NA0KPiAtLS0gYS9kcml2ZXJzL2lvbW11L2ludGVsL3Bhc2lkLmMNCj4gKysrIGIvZHJp
-dmVycy9pb21tdS9pbnRlbC9wYXNpZC5jDQo+IEBAIC02OTQsNyArNjk0LDcgQEAgc3RhdGljIHZv
-aWQgZGV2aWNlX3Bhc2lkX3RhYmxlX3RlYXJkb3duKHN0cnVjdA0KPiBkZXZpY2UgKmRldiwgdTgg
-YnVzLCB1OCBkZXZmbikNCj4gICAgICBjb250ZXh0X2NsZWFyX2VudHJ5KGNvbnRleHQpOw0KPiAg
-ICAgIF9faW9tbXVfZmx1c2hfY2FjaGUoaW9tbXUsIGNvbnRleHQsIHNpemVvZigqY29udGV4dCkp
-Ow0KPiAgICAgIHNwaW5fdW5sb2NrKCZpb21tdS0+bG9jayk7DQo+IC0gICAgaW50ZWxfY29udGV4
-dF9mbHVzaF9wcmVzZW50KGluZm8sIGNvbnRleHQsIGZhbHNlKTsNCj4gKyAgICBpbnRlbF9jb250
-ZXh0X2ZsdXNoX3ByZXNlbnQoaW5mbywgY29udGV4dCwNCj4gY29udGV4dF9kb21haW5faWQoY29u
-dGV4dCksIGZhbHNlKTsNCj4gIH0NCj4gDQo+ICBzdGF0aWMgaW50IHBjaV9wYXNpZF90YWJsZV90
-ZWFyZG93bihzdHJ1Y3QgcGNpX2RldiAqcGRldiwgdTE2IGFsaWFzLA0KPiB2b2lkICpkYXRhKQ0K
-PiBAQCAtODg1LDEwICs4ODUsMTAgQEAgc3RhdGljIHZvaWQgX19jb250ZXh0X2ZsdXNoX2Rldl9p
-b3RsYihzdHJ1Y3QNCj4gZGV2aWNlX2RvbWFpbl9pbmZvICppbmZvKQ0KPiAgICovDQo+ICB2b2lk
-IGludGVsX2NvbnRleHRfZmx1c2hfcHJlc2VudChzdHJ1Y3QgZGV2aWNlX2RvbWFpbl9pbmZvICpp
-bmZvLA0KPiAgICAgICAgICAgICAgICAgICBzdHJ1Y3QgY29udGV4dF9lbnRyeSAqY29udGV4dCwN
-Cj4gKyAgICAgICAgICAgICAgICAgdTE2IGRpZCwNCj4gICAgICAgICAgICAgICAgICAgYm9vbCBm
-bHVzaF9kb21haW5zKQ0KPiAgew0KPiAgICAgIHN0cnVjdCBpbnRlbF9pb21tdSAqaW9tbXUgPSBp
-bmZvLT5pb21tdTsNCj4gLSAgICB1MTYgZGlkID0gY29udGV4dF9kb21haW5faWQoY29udGV4dCk7
-DQo+ICAgICAgc3RydWN0IHBhc2lkX2VudHJ5ICpwdGU7DQo+ICAgICAgaW50IGk7DQo+IA0KPiAt
-LQ0KPiAyLjQ2LjANCg==
+On Thu, Aug 29, 2024 at 11:54:26PM +0000, Pranjal Shrivastava wrote:
+
+> > > +static const char * const class_str[] = {
+> > > +       [0] = "CD",
+> > > +       [1] = "TTD",
+> > > +       [2] = "IN",
+> > > +       [3] = "RES",
+> > > +};
+> >
+> > Unlike the event IDs, these class code names are still uneasy to
+> > read. Though it'd result in a print-format change, yet could we
+> > simply dump full strings instead?
+> >
+> 
+> By "full strings" do you mean "CD => CD Fetch" as mentioned in the spec?
+
+Yes.
+
+> > > +static void arm_smmu_get_evt_info(struct arm_smmu_device *smmu, u64 *evt,
+> > > +                                 struct arm_smmu_event *event)
+> > > +{
+> > > +       /* Pick out the good stuff */
+> > > +       event->id = FIELD_GET(EVTQ_0_ID, evt[0]);
+> > > +       event->sid = FIELD_GET(EVTQ_0_SID, evt[0]);
+> > > +       event->ssid_valid = evt[0] & EVTQ_0_SSV;
+> > > +       event->ssid = event->ssid_valid ? FIELD_GET(EVTQ_0_SSID, evt[0]) : IOMMU_NO_PASID;
+> > > +       event->class = FIELD_GET(EVTQ_1_CLASS, evt[1]);
+> > > +       event->iova = FIELD_GET(EVTQ_2_ADDR, evt[2]);
+> > > +       event->ipa = FIELD_GET(EVTQ_3_IPA, evt[3]);
+> > > +       event->privileged = FIELD_GET(EVTQ_1_PnU, evt[1]);
+> > > +       event->instruction = FIELD_GET(EVTQ_1_InD, evt[1]);
+> > > +       event->stage = FIELD_GET(EVTQ_1_S2, evt[1]);
+> > > +       event->read = FIELD_GET(EVTQ_1_RnW, evt[1]);
+> > > +       event->raw = evt;
+> >
+> > Maybe we could define struct arm_smmu_event in this way:
+> >
+> > +struct arm_smmu_event {
+> > +     union {
+> > +             u64 evt[4];
+> > +             struct {
+> > +                     /* Bit 0:63 */
+> > +                     u64 id : 8;
+> > +                     u64 _res0 : 3;
+> > +                     u64 ssv : 1;
+> > +                     u64 ssid : 20;
+> > +                     u64 sid : 32;
+> > +                     /* Bit 64:127 */
+> > +                     u64 stag : 16;
+> > +                     u64 _res1 : 15;
+> > +                     u64 stall : 1;
+> > +                     u64 _res2 : 1;
+> > +                     u64 pnu : 1;
+> > +                     u64 ind : 1;
+> > +                     u64 rnw : 1;
+> > +                     u64 _res3 : 2;
+> > +                     u64 nsipa : 1;
+> > +                     u64 s2 : 1;
+> > +                     u64 class : 2;
+> > +                     u64 _res4 : 6;
+> > +                     u64 impl_def : 16;
+> > +                     /* Bit 128:191 */
+> > +                     u64 inputaddr;
+> > +                     /* Bit 192:255 */
+> > +                     u64 _res5 : 12;
+> > +                     u64 ipa : 40;
+> > +                     u64 _res6 : 12;
+> > +             } f_trans;
+> > +             /* FIXME Add other event structs */
+> > +     };
+> > +};
+> >
+> > Then, event would be just:
+> > +             struct arm_smmu_event *event = (struct arm_smmu_event *)evt;
+> >
+> > Not sure if Will would like this though...
+> 
+> Yea, I thought about this too but I felt that it'd bloat up the code
+> for every new event that's introduced.
+
+That'd be in the header. The IRQ Handler would be always clean
+and fast.
+
+> Also, the printing would become
+> more complicated as we'd have to log different fields for different
+> events. Additionally, I don't see that many unions being defined
+> elsewhere in the kernel.
+
+OK. That's a fair point. I think we could have just one common
+union for the "good stuff" fields. Then, if something isn't in
+the common union, do a FIELD_GET(raw)?
+
+> > > +       mutex_lock(&smmu->streams_mutex);
+> > > +       event->master = arm_smmu_find_master(smmu, event->sid);
+> > > +       mutex_unlock(&smmu->streams_mutex);
+> >
+> > Same as I pointed out at the other patch, "master" is unprotected
+> > after the unlock. It can unlikely-yet-still-possibly race against
+> > arm_smmu_release_device.
+> >
+> 
+> Hmm.. are you suggesting that the `master` could've been removed by the
+> arm_smmu_release_device while we access it in an event handler?
+> 
+> As in, something like the following situation:
+> 
+> 1. The evtq_thread gets scheduled
+> 2. arm_smmu_release_device removes the `master` & its streams
+> 3. In the `handle_evt` we dereference `master` which has been `kfree`ed
+>    (also, we don't return -EINVAL like we ideally should)
+> 
+> In that case, I think I should add back the `arm_smmu_find_master` to
+> the `arm_smmu_handle_evt` along with the locks. Nice catch! :)
+
+Probably could lock the entire iteration, master pointer could
+be then passed in safely between the helper functions.
+
+> > And it'd feel clearer to have an "ssid". And perhaps adding commas
+> > to separate them too.
+> 
+> I referred to the log in `arm_smmu_handle_ppr` for the sid.ssid format.
+> If we'd prefer a separate "ssid", should we change the one in ppr too?
+> LMK, what you and Will think about that?
+
+Didn't realize arm_smmu_handle_ppr does that. It's fine to keep
+the format in that way then.
+
+> > > +                       evts[event->id], event->master_name, event->sid, event->ssid);
+> > > +       dev_err(smmu->dev, "\tiova = %#llx ipa = %#llx (%s%s%s%s%s%s)\n", event->iova, event->ipa,
+> > > +                   event->privileged ? "Priv " : "Unpriv ",
+> > > +                   event->instruction ? "Inst " : "Data ",
+> > > +                   event->read ? "Read " : "Write ",
+> > > +                   event->stage ? "S2 " : "S1 ", class_str[event->class],
+> > > +                   ((event->id == EVT_ID_PERMISSION_FAULT) && (event->class == EVTQ_1_CLASS_TT)) ?
+> > > +                   (FIELD_GET(EVTQ_1_TT_READ, event->raw[1]) ? " TTD Read" : " TTD Write")
+> > > +                   : "");
+> >
+> > Indentation should follow the existing printk() in this driver. And
+> 
+> I'm sorry but I'm not sure if I understand what is meant by "the
+> existing printk indentation in this driver", do you mean aligning the
+> next line with the opening brace? For example:
+> 
+>         dev_err(smmu->dev,
+>                 "failed to allocate queue (0x%zx
+>                 bytes) for %s\n",
+>                 qsz, name);
+
+Yea, just to keep the same coding style, line wrapping can still
+happen to 80 characters in general though.
+
+> > those ternary operators at the last field(s?) are hard to ready..
+> >
+> 
+> Hmm, I wanted the last fields to be printed only when the fault was
+> F_PERMISSION, in the same log. Any suggestions on what might make it
+> easier to read? Some helpful comments around it? Something else?
+
+With an "other" string, we could sprintf on conditions inside the
+"case F_PERMISSION:".
+
+> > > +static void arm_smmu_dump_fetch_fault(struct arm_smmu_device *smmu,
+> > > +                                     struct arm_smmu_event *event)
+> > > +{
+> > > +       dev_err(smmu->dev, "Bad fetch: %s client %s sid 0x%08x.0x%05x: fetch addr = %#llx\n",
+> > > +                       evts[event->id], event->master_name, event->sid, event->ssid, event->ipa);
+> >
+> > Actually, the "Fault", "Bad fetch", and "Bad smmu config" doesn't
+> > feel very necessary, since we prints the event string already.
+> >
+> 
+> That makes sense, I'll remove those in a follow up patch.
+> Although, I guess we should still say "fault" somewhere to hint folks
+> without arm-smmu-v3 knowledge that the event wasn't normal operation.
+> 
+> LMK what you think? I've had a few interactions where clients tend to
+> ignore the current "event received" dump considering that to be a part
+> of normal SMMU operation.
+
+Well, we could improve the event_str with human-readable ones:
+	s/F_TRANSLATION/Translation\ Fault
+
+> > > +}
+> > > +
+> > > +static void arm_smmu_dump_raw_event(struct arm_smmu_device *smmu,
+> > > +                                   struct arm_smmu_event *event)
+> > > +{
+> > > +       int i;
+> > > +
+> > > +       dev_err(smmu->dev, "event 0x%02x received: client %s:\n", event->id, event->master_name);
+> >
+> > Looks like it would print another title that's sorta duplicated to
+> > other dump functions yet less informative?
+> >
+> 
+> Yea, I didn't wanna break backward compatibility, people might have
+> tools to parse out the existing dump, lol!
+>
+> On a serious note, I believe it'd be better to print this as some
+> implmentations might have some "IMPLEMENTATION DEFINED" fields which
+> people might be interested to look at.
+> 
+> Although, we can dump the raw event only in the `default` case, i.e.
+> when we don't have a dumper function for that particular event ID but
+> that might still avoid printing the IMPL_DEFINED fields in fetch faults
+
+Makes sense to me by having a different title for the default case.
+
+> > > +       for (i = 0; i < EVTQ_ENT_DWORDS; ++i)
+> > > +               dev_err(smmu->dev, "\t0x%016llx\n",
+> > > +                        (unsigned long long)event->raw[i]);
+> > > +}
+> > > +
+> > > +static void arm_smmu_dump_event(struct arm_smmu_device *smmu,
+> > > +    
+> 
+> I thought about something similar as well, but then referred to Robin's
+> comments on [1]. Also, printing strings in 3 different `dev_err` logs
+> could result in interruptions from other logs in dmesg, I'd prefer to
+
+Ack.
+
+> see the entire log in a single `dev_err` for ease. Although, I think we
+> should be able to do something like the following to achieve that:
+>         ...
+> 
+>         dev_err(%s %s %s, strlen(title) ? title : ""
+>                 strlen(addrs) ? addrs : ""
+>                 strlen(other) ? other : ""
+
+That is fine, though should break the lines too. Maybe:
+	dev_err(smmu->dev, "%s%s%s%s%s\n", title,
+		strlen(addrs) ? "\n" : "", addrs,
+		strlen(other) ? "\n" : "", other);
+?
+
+> 
+>         for (i = 0; i < EVTQ_ENT_DWORDS; ++i)
+>                 dev_err(smmu->dev, "\t0x%016llx\n", event->evt[i]);
+
+Maybe merge the four dev_err iterations too?
+
+Nicolin
