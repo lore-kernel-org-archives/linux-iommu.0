@@ -1,59 +1,25 @@
-Received: from mail-pf1-f181.google.com (mail-pf1-f181.google.com [209.85.210.181])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3284356440
-	for <iommu@lists.linux.dev>; Fri, 30 Aug 2024 12:01:12 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.181
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 658CC192D95
+	for <iommu@lists.linux.dev>; Fri, 30 Aug 2024 12:31:24 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1725019273; cv=none; b=L68FaRsVAeWc+zt9wRmdyA+ZsYI3EyAYDX2XgNo2DD8qbtNONOIrYULdLrWQDcUfR7kYIV8GVRK+NDeR8KgPtl0agtwTjX02s4Whxs4n+fNmpakB+nCArfA1Osxo4KGf80Zxm/wu7Oxg5adsEA/VateHhzB8gjUoMcv46Z1S6YY=
+	t=1725021086; cv=none; b=fFvhmBKaiNdo/KrAOKcO7zL6JzFAINc+smUXTVCyW5hn9XocOUj5lcw7dVV1uNcnkJVHLNtAi/Ra17pS8tg5LOSKvhNMcLpHrzJl8hdASi0VrSt15zoa7ktdeAWLWOrI3hOMod0D1Ld9gJFMq0yAWKuacEDiF2HQrv5Ge+sybH8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1725019273; c=relaxed/simple;
-	bh=bHtLDn0Wsn5DAZMI5MFUbrKX2XmlMvWqakZmLM6IBYI=;
+	s=arc-20240116; t=1725021086; c=relaxed/simple;
+	bh=oof5KM6kmb1k0VNrztj4BbtVdtVtzGXFeVrQdpuiNh8=;
 	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=agWbZ0l0vfhoL2eEMR4/x0NJlRJYC6Mtm6RHSaxI2vzbgquEFyPuBI8Tv8xFVQHa0B/eZyuvN6jRtqPE27IMt97VThJ2szPlHmW801BGgs3xhxdqsgIofJkkEw6aVYQrSEumi/Xqd9KtzSu2IKzOzUBu1raBh2MxO7QIGgLbWnY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ventanamicro.com; spf=pass smtp.mailfrom=ventanamicro.com; dkim=pass (2048-bit key) header.d=ventanamicro.com header.i=@ventanamicro.com header.b=eGF1LJWY; arc=none smtp.client-ip=209.85.210.181
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ventanamicro.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ventanamicro.com
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=ventanamicro.com header.i=@ventanamicro.com header.b="eGF1LJWY"
-Received: by mail-pf1-f181.google.com with SMTP id d2e1a72fcca58-71433096e89so1425086b3a.3
-        for <iommu@lists.linux.dev>; Fri, 30 Aug 2024 05:01:12 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ventanamicro.com; s=google; t=1725019271; x=1725624071; darn=lists.linux.dev;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=S+J8nDWKmcjiFDnbhyvi48+lL6iNF2GBrnR+36Q3WWM=;
-        b=eGF1LJWYTGX+XAfdX0iKzKrSoT/BB2kopiFvTXHp/gGgkABUv2FxvE1YarO7naiR0/
-         9R5SHroJQpE+HSnCnW8o+rCgjbiaKCj9cFMDz4jMJl+OrJSEwwNhP3zN7KRIvDR9UC5S
-         PN++kXhDM+zPctC1BOqFTbsgqANuQpsZ5WHgof4PIqEgH0twMX7rH5Oh/sNFHBB+4M7V
-         FjedmKnZgnVqRnFxR7WTK5yCTBOtEV8toBfbPfeEJhWXNwbJBofVZdzVZY0GB7xyBgxV
-         7jt40CLjxxJiO/pjpZv1wgLRGBhSVi9UTSBBtNIYgqjxA4gy9JXYQPMtBoIwRpVDJ6lF
-         kRHw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1725019271; x=1725624071;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=S+J8nDWKmcjiFDnbhyvi48+lL6iNF2GBrnR+36Q3WWM=;
-        b=QrOQC9FyUIUgCysWo3mx0qP5RkQzcifGacZ1zpnycpdqtPhWKQQzx0Nls2TZOepx0Y
-         5iog9NkIrbOtppEWDQFOFoFBuB0m1nvAeIUTIFG+lBP82Co/9ZjY6/oITlB1x7IjnlKV
-         7xI4XmQXO+AiEkJtxblK+x3ddQjilQMmLFJANgf6dgXpFPgqKId1D0iS6IsZ8n5QDswB
-         yI7kI+YiSpa64KMJfnAqoT9wuXv91zFFWkjGeiC9XgTi/mdiqzUC/pA5Sgnvk59sh5Fk
-         i0305evrWbYJjLn1PtyeczyrOJ6C0OvI94ZoUatWz4yRQeM4zsk/Ehjik2PogvqgStKW
-         dqkg==
-X-Forwarded-Encrypted: i=1; AJvYcCX0sakGIRok/O6yvXkmQLW/NqjmP8IyXdRGHWI5sAzs9Wz0zn+dSBxLR/m5XZf84nIfpW3jQA==@lists.linux.dev
-X-Gm-Message-State: AOJu0YxLMsI1h2y6hMGMf7k5bG230lyAVcpW9epA2oUA7BwZpzKk6PsS
-	oImZWtizpPdgr1KOT/tbDq4y4RlBu2NdU01+MGE8oHpIrFkdFuW2dEzd/ILSDDM=
-X-Google-Smtp-Source: AGHT+IGKLvAFAz/eBLXMb30uIZ9vdANBzSIr6ORPbKAbI0x7ooOqoOsCu8d84XfIMHbv7krKGeaTpw==
-X-Received: by 2002:a05:6a00:981:b0:706:58ef:613 with SMTP id d2e1a72fcca58-715dfc72cfdmr7188548b3a.27.1725019269804;
-        Fri, 30 Aug 2024 05:01:09 -0700 (PDT)
-Received: from [192.168.68.110] ([177.170.227.130])
-        by smtp.gmail.com with ESMTPSA id d2e1a72fcca58-715e569ef15sm2599685b3a.105.2024.08.30.05.01.04
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 30 Aug 2024 05:01:09 -0700 (PDT)
-Message-ID: <3fdb33d3-16cd-49a6-bad7-81631f99c291@ventanamicro.com>
-Date: Fri, 30 Aug 2024 09:01:02 -0300
+	 In-Reply-To:Content-Type; b=JaBbMTzmPuTl7ZtsGB0wuKCTKbtlcy7aghVJLUbLmdrGdBQTZK+a+Jf2HMH7hdiah5mR74Pg3OZQudrYDgkshuoLKzQvKRycBym/+pTqtmxr1yQyw3YyHpZXzNC2n3nZ/m+BlvMVKJCsGyPiTMreM7fFbf0qF84DpQexVXGgs0g=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; arc=none smtp.client-ip=217.140.110.172
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 1592A152B;
+	Fri, 30 Aug 2024 05:31:50 -0700 (PDT)
+Received: from [10.1.196.40] (e121345-lin.cambridge.arm.com [10.1.196.40])
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 229553F762;
+	Fri, 30 Aug 2024 05:31:22 -0700 (PDT)
+Message-ID: <35849d74-1197-446b-9a4c-1b8aabb38427@arm.com>
+Date: Fri, 30 Aug 2024 13:31:20 +0100
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -61,262 +27,174 @@ List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v8 3/7] iommu/riscv: Add RISC-V IOMMU PCIe device driver
-To: Jim Shu <jim.shu@sifive.com>, Tomasz Jeznach <tjeznach@rivosinc.com>
-Cc: Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
- Robin Murphy <robin.murphy@arm.com>, Paul Walmsley
- <paul.walmsley@sifive.com>, Anup Patel <apatel@ventanamicro.com>,
- devicetree@vger.kernel.org, Conor Dooley <conor+dt@kernel.org>,
- Albert Ou <aou@eecs.berkeley.edu>, linux@rivosinc.com,
- linux-kernel@vger.kernel.org, Rob Herring <robh+dt@kernel.org>,
- Sebastien Boeuf <seb@rivosinc.com>, iommu@lists.linux.dev,
- Palmer Dabbelt <palmer@dabbelt.com>, Nick Kossifidis <mick@ics.forth.gr>,
- Krzysztof Kozlowski <krzk+dt@kernel.org>, linux-riscv@lists.infradead.org,
- Lu Baolu <baolu.lu@linux.intel.com>, Zong Li <zong.li@sifive.com>
-References: <cover.1718388908.git.tjeznach@rivosinc.com>
- <e2792d6559f9f3e02b2243538647ef60f14176fd.1718388909.git.tjeznach@rivosinc.com>
- <CALw707q=B4h4CF3CvJOiRMMYqzvO_NG+taMLzZquCP=A9bgu0g@mail.gmail.com>
-Content-Language: en-US
-From: Daniel Henrique Barboza <dbarboza@ventanamicro.com>
-In-Reply-To: <CALw707q=B4h4CF3CvJOiRMMYqzvO_NG+taMLzZquCP=A9bgu0g@mail.gmail.com>
+Subject: Re: [PATCH v14 5/6] iommu/arm-smmu: add ACTLR data and support for
+ SC7280
+To: Bibek Kumar Patro <quic_bibekkum@quicinc.com>,
+ Will Deacon <will@kernel.org>
+Cc: robdclark@gmail.com, joro@8bytes.org, jgg@ziepe.ca, jsnitsel@redhat.com,
+ robh@kernel.org, krzysztof.kozlowski@linaro.org, quic_c_gdjako@quicinc.com,
+ dmitry.baryshkov@linaro.org, konrad.dybcio@linaro.org,
+ iommu@lists.linux.dev, linux-arm-msm@vger.kernel.org,
+ linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+References: <20240816174259.2056829-1-quic_bibekkum@quicinc.com>
+ <20240816174259.2056829-6-quic_bibekkum@quicinc.com>
+ <20240823155918.GD525@willie-the-truck>
+ <3ae75a75-1717-40b6-9149-bc3673d520d6@quicinc.com>
+ <20240827124714.GB4772@willie-the-truck>
+ <b335452a-977e-41cc-9424-a2244fbe20de@quicinc.com>
+From: Robin Murphy <robin.murphy@arm.com>
+Content-Language: en-GB
+In-Reply-To: <b335452a-977e-41cc-9424-a2244fbe20de@quicinc.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
 
-
-
-On 8/30/24 4:04 AM, Jim Shu wrote:
-> Hi Tomasz,
+On 30/08/2024 11:00 am, Bibek Kumar Patro wrote:
 > 
-> QEMU RISC-V IOMMU will switch the PCIe vendor/device ID to Red Hat one
-> [1] in the latest v6 patch.
-> Will we also support the PCIe ID of Red Hat one in the Linux driver?
 > 
-> [1] https://patchew.org/QEMU/20240801154334.1009852-1-dbarboza@ventanamicro.com/20240801154334.1009852-5-dbarboza@ventanamicro.com/
+> On 8/27/2024 6:17 PM, Will Deacon wrote:
+>> On Mon, Aug 26, 2024 at 04:33:24PM +0530, Bibek Kumar Patro wrote:
+>>>
+>>>
+>>> On 8/23/2024 9:29 PM, Will Deacon wrote:
+>>>> On Fri, Aug 16, 2024 at 11:12:58PM +0530, Bibek Kumar Patro wrote:
+>>>>> Add ACTLR data table for SC7280 along with support for
+>>>>> same including SC7280 specific implementation operations.
+>>>>>
+>>>>> Signed-off-by: Bibek Kumar Patro <quic_bibekkum@quicinc.com>
+>>>>> ---
+>>>>>    drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c | 58 
+>>>>> +++++++++++++++++++++-
+>>>>>    1 file changed, 57 insertions(+), 1 deletion(-)
+>>>>>
+>>>>> diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c 
+>>>>> b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
+>>>>> index dc143b250704..a776c7906c76 100644
+>>>>> --- a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
+>>>>> +++ b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
+>>>>> @@ -31,6 +31,55 @@
+>>>>>    #define PREFETCH_MODERATE    (2 << PREFETCH_SHIFT)
+>>>>>    #define PREFETCH_DEEP        (3 << PREFETCH_SHIFT)
+>>>>>
+>>>>> +static const struct actlr_config sc7280_apps_actlr_cfg[] = {
+>>>>> +    { 0x0800, 0x04e0, PREFETCH_DEFAULT | CMTLB },
+>>>>> +    { 0x0900, 0x0402, PREFETCH_SHALLOW | CPRE | CMTLB },
+>>>>> +    { 0x0901, 0x0000, PREFETCH_SHALLOW | CPRE | CMTLB },
+>>>>> +    { 0x0d01, 0x0000, PREFETCH_SHALLOW | CPRE | CMTLB },
+>>>>> +    { 0x1181, 0x0420, PREFETCH_DEEP | CPRE | CMTLB },
+>>>>> +    { 0x1182, 0x0420, PREFETCH_DEEP | CPRE | CMTLB },
+>>>>> +    { 0x1183, 0x0420, PREFETCH_DEEP | CPRE | CMTLB },
+>>>>> +    { 0x1184, 0x0420, PREFETCH_DEEP | CPRE | CMTLB },
+>>>>> +    { 0x1185, 0x0420, PREFETCH_DEEP | CPRE | CMTLB },
+>>>>> +    { 0x1186, 0x0420, PREFETCH_DEEP | CPRE | CMTLB },
+>>>>> +    { 0x1187, 0x0420, PREFETCH_DEEP | CPRE | CMTLB },
+>>>>> +    { 0x1188, 0x0420, PREFETCH_DEEP | CPRE | CMTLB },
+>>>>> +    { 0x1189, 0x0420, PREFETCH_DEEP | CPRE | CMTLB },
+>>>>> +    { 0x118b, 0x0420, PREFETCH_DEEP | CPRE | CMTLB },
+>>>>> +    { 0x118c, 0x0420, PREFETCH_DEEP | CPRE | CMTLB },
+>>>>> +    { 0x118d, 0x0420, PREFETCH_DEEP | CPRE | CMTLB },
+>>>>> +    { 0x118e, 0x0420, PREFETCH_DEEP | CPRE | CMTLB },
+>>>>> +    { 0x118f, 0x0420, PREFETCH_DEEP | CPRE | CMTLB },
+>>>>> +    { 0x2000, 0x0020, PREFETCH_DEFAULT | CMTLB },
+>>>>> +    { 0x2040, 0x0000, PREFETCH_DEFAULT | CMTLB },
+>>>>> +    { 0x2062, 0x0000, PREFETCH_DEFAULT | CMTLB },
+>>>>> +    { 0x2080, 0x0020, PREFETCH_DEFAULT | CMTLB },
+>>>>> +    { 0x20c0, 0x0020, PREFETCH_DEFAULT | CMTLB },
+>>>>> +    { 0x2100, 0x0020, PREFETCH_DEFAULT | CMTLB },
+>>>>> +    { 0x2140, 0x0000, PREFETCH_DEFAULT | CMTLB },
+>>>>> +    { 0x2180, 0x0020, PREFETCH_SHALLOW | CPRE | CMTLB },
+>>>>> +    { 0x2181, 0x0004, PREFETCH_SHALLOW | CPRE | CMTLB },
+>>>>> +    { 0x2183, 0x0000, PREFETCH_SHALLOW | CPRE | CMTLB },
+>>>>> +    { 0x2184, 0x0020, PREFETCH_SHALLOW | CPRE | CMTLB },
+>>>>> +    { 0x2187, 0x0000, PREFETCH_SHALLOW | CPRE | CMTLB },
+>>>>> +};
+>>>>> +
+>>>>> +static const struct actlr_config sc7280_gfx_actlr_cfg[] = {
+>>>>> +    { 0x0000, 0x07ff, PREFETCH_DEEP | CPRE | CMTLB },
+>>>>> +};
+>>>>
+>>>> It's Will "stuck record" Deacon here again to say that I don't think
+>>>> this data belongs in the driver.
+>>>>
+>>>
+>>> Hi Will,
+>>>
+>>> It will be difficult to reach a consensus here, with Robin and the DT 
+>>> folks
+>>> okay to keep it in the driver, while you believe it doesn't belong 
+>>> there.
+>>>
+>>> Robin, Rob, could you please share your thoughts on concluding the 
+>>> placement
+>>> of this prefetch data?
+>>>
+>>> As discussed earlier [1], the prefetch value for each client doesn’t 
+>>> define
+>>> the hardware topology and is implementation-defined register writes 
+>>> used by
+>>> the software driver.
+>>
+>> It does reflect the hardware topology though, doesn't it? Those magic hex
+>> masks above refer to stream ids, so the table is hard-coding the prefetch
+>> values for particular matches.
+> 
+> That is correct in the sense that stream id is mapped to context bank
+> where these configurations are applied.
+> However the other part of it is implementation-defined register/values
+> for which community opinion was register/value kind of data, should not
+> belong to device tree and are not generally approved of.
+> 
+> Would also like to point out that the prefetch values are recommended
+> settings and doesn’t mean these are the only configuration which would
+> work for the soc.
+> So the SID-to-prefetch isn't strictly SoC defined but is a software
+> configuration, IMO.
 
-The QEMU-side background of this change: the original patches from Tomasz was
-hardcoding a Rivos PCI ID, i.e. the device was being registered as a Rivos IOMMU
-PCI device. The thing is that there isn't anything  Rivos specific in the QEMU
-IOMMU emulation, since we're adhering to the riscv-iommu spec entirely (with a
-couple of design choices here and there), thus we decided it would be better to
-get a generic PCI IOMMU ID.
+What's particularly confusing is that most of the IDs encoded here don't 
+actually seem to line up with what's in the respective SoC DTSIs...
 
-Red Hat was kind enough to gave us one from their PCI ID space, since RVI didn't
-bother getting an ID for this reference device, and we're using the Red Hat ID
-in the QEMU emulation. The QEMU IOMMU PCI device is by default reported as
-1b36:0014 (PCI_VENDOR_ID_REDHAT : PCI_DEVICE_ID_REDHAT_RISCV_IOMMU).
-
-This change happened in v3, sent in May 2024:
-
-https://lore.kernel.org/qemu-riscv/20240523173955.1940072-1-dbarboza@ventanamicro.com/
-
-This change would make the QEMU IOMMU PCI device incompatible with this kernel
-support, so we added a capability to set the PCI ID for the device in the QEMU
-command line. To make the IOMMU PCI device work with the current kernel support, that
-is being set to a Rivos PCI device, change the vendor/device ID to match what the
-kernel driver expects:
-
-(...)  -device riscv-iommu-pci,vendor-id=0x1efd,device-id=0xedf1
-
-The ability to set vendor-id/device-id of this device will allow an easier development
-of other proprietary IOMMU PCI drivers, i.e. it's not a hack to make the current kernel
-support work.
-
-As for this kernel support, I didn't fully review it to see if there is a Rivos specific
-behavior being implemented. If this isn't the case perhaps there is a case to be made
-to also make the kernel driver more generic - in this case feel free to use the same as
-QEMU is going to use (PCI_VENDOR_ID_REDHAT : PCI_DEVICE_ID_REDHAT_RISCV_IOMMU - 1b36:0014).
-
+However by this point I'm wary of whether we've lost sight of *why* 
+we're doing this, and that we're deep into begging the question of 
+whether identifying devices by StreamID is the right thing to do in the 
+first place. For example, as best I can tell from a quick skim, we have 
+over 2 dozen lines of data here which all serve the exact same purpose 
+of applying PREFETCH_DEEP | CPRE | CMTLB to instances of 
+"qcom,fastrpc-compute-cb". In general it seems unlikely that the same 
+device would want wildly different prefetch settings across different 
+SoCs, or even between different instances in the same SoC, so I'm really 
+coming round to the conclusion that this data would probably be best 
+handled as an extension of the existing qcom_smmu_client_of_match mechanism.
 
 Thanks,
-
-Daniel
-
+Robin.
 
 > 
+>> If I run on a different SoC configuration > with the same table, then 
+>> the prefetch settings will be applied to the
+>> wrong devices. How is that not hardware topology?
+>>
 > 
-> Regards,
-> Jim Shu
+> The configuration table is tied to SoC compatible string however as I
+> mentioned above, its basically a s/w recommended setting.
+> (using prefetch settings other than the recommended values e.g 
+> PREFECH_DEFAULT instead of PREFETCH_DEEP would not render the device 
+> unusable unlike changing stream-ids which can make it unusable).
 > 
+> Since it is implementation specific we cannot have a generic DT binding,
+> tying stream ids to these recommended settings.
+> Even with qcom specific binding due to dependency on implementation, not
+> sure if we would be able to maintain consistency.
 > 
+> So from maintenance perspective carrying these in driver appear to be
+> simpler/flexible. And if it doesn’t violate existing precedence, we
+> would prefer to carry it that way.
 > 
-> On Sat, Jun 15, 2024 at 1:29 PM Tomasz Jeznach <tjeznach@rivosinc.com> wrote:
->>
->> Introduce device driver for PCIe implementation
->> of RISC-V IOMMU architected hardware.
->>
->> IOMMU hardware and system support for MSI or MSI-X is
->> required by this implementation.
->>
->> Vendor and device identifiers used in this patch
->> matches QEMU implementation of the RISC-V IOMMU PCIe
->> device, from Rivos VID (0x1efd) range allocated by the PCI-SIG.
->>
->> MAINTAINERS | added iommu-pci.c already covered by matching pattern.
->>
->> Link: https://lore.kernel.org/qemu-devel/20240307160319.675044-1-dbarboza@ventanamicro.com/
->> Co-developed-by: Nick Kossifidis <mick@ics.forth.gr>
->> Signed-off-by: Nick Kossifidis <mick@ics.forth.gr>
->> Reviewed-by: Lu Baolu <baolu.lu@linux.intel.com>
->> Signed-off-by: Tomasz Jeznach <tjeznach@rivosinc.com>
->> ---
->>   drivers/iommu/riscv/Kconfig     |   5 ++
->>   drivers/iommu/riscv/Makefile    |   1 +
->>   drivers/iommu/riscv/iommu-pci.c | 119 ++++++++++++++++++++++++++++++++
->>   3 files changed, 125 insertions(+)
->>   create mode 100644 drivers/iommu/riscv/iommu-pci.c
->>
->> diff --git a/drivers/iommu/riscv/Kconfig b/drivers/iommu/riscv/Kconfig
->> index 5dcc5c45aa50..c071816f59a6 100644
->> --- a/drivers/iommu/riscv/Kconfig
->> +++ b/drivers/iommu/riscv/Kconfig
->> @@ -13,3 +13,8 @@ config RISCV_IOMMU
->>
->>            Say Y here if your SoC includes an IOMMU device implementing
->>            the RISC-V IOMMU architecture.
->> +
->> +config RISCV_IOMMU_PCI
->> +       def_bool y if RISCV_IOMMU && PCI_MSI
->> +       help
->> +         Support for the PCIe implementation of RISC-V IOMMU architecture.
->> diff --git a/drivers/iommu/riscv/Makefile b/drivers/iommu/riscv/Makefile
->> index e4c189de58d3..f54c9ed17d41 100644
->> --- a/drivers/iommu/riscv/Makefile
->> +++ b/drivers/iommu/riscv/Makefile
->> @@ -1,2 +1,3 @@
->>   # SPDX-License-Identifier: GPL-2.0-only
->>   obj-$(CONFIG_RISCV_IOMMU) += iommu.o iommu-platform.o
->> +obj-$(CONFIG_RISCV_IOMMU_PCI) += iommu-pci.o
->> diff --git a/drivers/iommu/riscv/iommu-pci.c b/drivers/iommu/riscv/iommu-pci.c
->> new file mode 100644
->> index 000000000000..e675acceb290
->> --- /dev/null
->> +++ b/drivers/iommu/riscv/iommu-pci.c
->> @@ -0,0 +1,119 @@
->> +// SPDX-License-Identifier: GPL-2.0-only
->> +
->> +/*
->> + * Copyright © 2022-2024 Rivos Inc.
->> + * Copyright © 2023 FORTH-ICS/CARV
->> + *
->> + * RISCV IOMMU as a PCIe device
->> + *
->> + * Authors
->> + *     Tomasz Jeznach <tjeznach@rivosinc.com>
->> + *     Nick Kossifidis <mick@ics.forth.gr>
->> + */
->> +
->> +#include <linux/compiler.h>
->> +#include <linux/init.h>
->> +#include <linux/iommu.h>
->> +#include <linux/kernel.h>
->> +#include <linux/pci.h>
->> +
->> +#include "iommu-bits.h"
->> +#include "iommu.h"
->> +
->> +/* Rivos Inc. assigned PCI Vendor and Device IDs */
->> +#ifndef PCI_VENDOR_ID_RIVOS
->> +#define PCI_VENDOR_ID_RIVOS             0x1efd
->> +#endif
->> +
->> +#ifndef PCI_DEVICE_ID_RIVOS_IOMMU
->> +#define PCI_DEVICE_ID_RIVOS_IOMMU       0xedf1
->> +#endif
->> +
->> +static int riscv_iommu_pci_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
->> +{
->> +       struct device *dev = &pdev->dev;
->> +       struct riscv_iommu_device *iommu;
->> +       int rc, vec;
->> +
->> +       rc = pcim_enable_device(pdev);
->> +       if (rc)
->> +               return rc;
->> +
->> +       if (!(pci_resource_flags(pdev, 0) & IORESOURCE_MEM))
->> +               return -ENODEV;
->> +
->> +       if (pci_resource_len(pdev, 0) < RISCV_IOMMU_REG_SIZE)
->> +               return -ENODEV;
->> +
->> +       rc = pcim_iomap_regions(pdev, BIT(0), pci_name(pdev));
->> +       if (rc)
->> +               return dev_err_probe(dev, rc, "pcim_iomap_regions failed\n");
->> +
->> +       iommu = devm_kzalloc(dev, sizeof(*iommu), GFP_KERNEL);
->> +       if (!iommu)
->> +               return -ENOMEM;
->> +
->> +       iommu->dev = dev;
->> +       iommu->reg = pcim_iomap_table(pdev)[0];
->> +
->> +       pci_set_master(pdev);
->> +       dev_set_drvdata(dev, iommu);
->> +
->> +       /* Check device reported capabilities / features. */
->> +       iommu->caps = riscv_iommu_readq(iommu, RISCV_IOMMU_REG_CAPABILITIES);
->> +       iommu->fctl = riscv_iommu_readl(iommu, RISCV_IOMMU_REG_FCTL);
->> +
->> +       /* The PCI driver only uses MSIs, make sure the IOMMU supports this */
->> +       switch (FIELD_GET(RISCV_IOMMU_CAPABILITIES_IGS, iommu->caps)) {
->> +       case RISCV_IOMMU_CAPABILITIES_IGS_MSI:
->> +       case RISCV_IOMMU_CAPABILITIES_IGS_BOTH:
->> +               break;
->> +       default:
->> +               return dev_err_probe(dev, -ENODEV,
->> +                                    "unable to use message-signaled interrupts\n");
->> +       }
->> +
->> +       /* Allocate and assign IRQ vectors for the various events */
->> +       rc = pci_alloc_irq_vectors(pdev, 1, RISCV_IOMMU_INTR_COUNT,
->> +                                  PCI_IRQ_MSIX | PCI_IRQ_MSI);
->> +       if (rc <= 0)
->> +               return dev_err_probe(dev, -ENODEV,
->> +                                    "unable to allocate irq vectors\n");
->> +
->> +       iommu->irqs_count = rc;
->> +       for (vec = 0; vec < iommu->irqs_count; vec++)
->> +               iommu->irqs[vec] = msi_get_virq(dev, vec);
->> +
->> +       /* Enable message-signaled interrupts, fctl.WSI */
->> +       if (iommu->fctl & RISCV_IOMMU_FCTL_WSI) {
->> +               iommu->fctl ^= RISCV_IOMMU_FCTL_WSI;
->> +               riscv_iommu_writel(iommu, RISCV_IOMMU_REG_FCTL, iommu->fctl);
->> +       }
->> +
->> +       return riscv_iommu_init(iommu);
->> +}
->> +
->> +static void riscv_iommu_pci_remove(struct pci_dev *pdev)
->> +{
->> +       struct riscv_iommu_device *iommu = dev_get_drvdata(&pdev->dev);
->> +
->> +       riscv_iommu_remove(iommu);
->> +}
->> +
->> +static const struct pci_device_id riscv_iommu_pci_tbl[] = {
->> +       {PCI_VENDOR_ID_RIVOS, PCI_DEVICE_ID_RIVOS_IOMMU,
->> +        PCI_ANY_ID, PCI_ANY_ID, 0, 0, 0},
->> +       {0,}
->> +};
->> +
->> +static struct pci_driver riscv_iommu_pci_driver = {
->> +       .name = KBUILD_MODNAME,
->> +       .id_table = riscv_iommu_pci_tbl,
->> +       .probe = riscv_iommu_pci_probe,
->> +       .remove = riscv_iommu_pci_remove,
->> +       .driver = {
->> +               .suppress_bind_attrs = true,
->> +       },
->> +};
->> +
->> +builtin_pci_driver(riscv_iommu_pci_driver);
->> --
->> 2.34.1
->>
->>
->> _______________________________________________
->> linux-riscv mailing list
->> linux-riscv@lists.infradead.org
->> http://lists.infradead.org/mailman/listinfo/linux-riscv
+> This parallels how _"QoS settings"_ are handled within the driver 
+> (similar to this example [1]).
 > 
+> [1]. 
+> https://lore.kernel.org/linux-arm-msm/20231030-sc8280xp-dpu-safe-lut-v1-1-6d485d7b428f@quicinc.com/#t
+> 
+> Thanks & regards,
+> Bibek
+> 
+>> WIll
