@@ -1,193 +1,105 @@
-Received: from mx0a-0031df01.pphosted.com (mx0a-0031df01.pphosted.com [205.220.168.131])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-qt1-f180.google.com (mail-qt1-f180.google.com [209.85.160.180])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1207E1AF4E4
-	for <iommu@lists.linux.dev>; Fri, 30 Aug 2024 14:59:23 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.168.131
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E0D5626281
+	for <iommu@lists.linux.dev>; Fri, 30 Aug 2024 15:00:35 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.160.180
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1725029965; cv=none; b=WIIIRoqN0KCR2aqTQYYGnFG69zme82KzmHSbDUlaRnXhRpulPzqB/AxQspV9NlIo/Ox+mGY+R5tXnVb8+qjFWT9hXqMdiMY/DEWJN8DnhlAKhRFLFp4T3LcOZt2kKybvO6mtnX9bZyFOgzbu5IyuiyFMrPt1HCiL69Lp0gw5e58=
+	t=1725030039; cv=none; b=dH6D74ROobzmUdgf4LrssmspficcBlJcym9QT/4inQL/xTcEm+y3wXCyBFuu5SGI0+v6G9p52VKp3uGGVh2xFep+ZRZZ+s5V5bJTOin/4z2bMcwCq+s3lMxqAI9eK61atLQUDIwzLTUoN6xkKQcmMT3I0SG89iwyAn8fuyfq7ss=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1725029965; c=relaxed/simple;
-	bh=ZNinG2P8QRlT1ahrPp1CbuKepet2IrmxrveZ7JQJiWw=;
-	h=Message-ID:Date:MIME-Version:Subject:To:CC:References:From:
-	 In-Reply-To:Content-Type; b=n6NLh3NkVv+ymVioBwQbalVFHx9QAmtKNzqfYTAixM0/o4iwLDmBUazkeXbBcIa4GUGKimAJjdZ/gxml7g9Zb1JlX9aG+aMFfHXuM/ujHBtmwAEAaKC0QtIlc1f9cxacblQRxP5p2WnKQNzloC1aCKS4HUJQJSU0l0++yQJEdTo=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com; spf=pass smtp.mailfrom=quicinc.com; dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b=JW+UgMY0; arc=none smtp.client-ip=205.220.168.131
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=quicinc.com
+	s=arc-20240116; t=1725030039; c=relaxed/simple;
+	bh=CZxWnHerUwknQInwDf3MAXdREsTwGqmmI6An0t2uETg=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=U1kTtH9EB2gwrANKoDurv+1NXWu4v3zG+gxlP379bHFFe2wgBFLRShCfoDD/wo7T0AEjGS+wKgaSRPiYi9G035CHD0n1vv+ku8pPczx1Z7r8ckdOUc4dDhWRWwxfzOZPMt4i1cHAQKi5Gva+3XjyvWohGBnjvmZG0eHSVfgF9Go=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=G2fBmbz7; arc=none smtp.client-ip=209.85.160.180
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b="JW+UgMY0"
-Received: from pps.filterd (m0279867.ppops.net [127.0.0.1])
-	by mx0a-0031df01.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 47U80U5h017955;
-	Fri, 30 Aug 2024 14:59:00 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=quicinc.com; h=
-	cc:content-transfer-encoding:content-type:date:from:in-reply-to
-	:message-id:mime-version:references:subject:to; s=qcppdkim1; bh=
-	LgF5ZYD5IR1SwpOQJWoYZ0vhtIBCV/uVX/Uy6jMvB+U=; b=JW+UgMY0WG7cYPxh
-	h5qbUmrcF7dtTxFEkfIeAqxlqBgxYcB+3CZny67trU3LOtF+0U4HIpspMGfzcOhq
-	msC1wvhSlwj8bpmjQ/Tx+Gmc2P2XwrixJ2abHLWGTV2V+mjBVoNI4jPgIB84/6F9
-	25Az8Tx0hT92YLi3vrSd2cTMoSUyzlfR+w7D5Q9y82On5OgO9C4F4VkLGgoi89xc
-	DhYo9p18OVlaEX4o56acMPom2eulqSSvGMtkGCvBAiWSOMs6zao8l0CHKTmVcMyq
-	RHawE0M2mn2qdcjMXxSqmkWQFSpRi6RsTP31Dv58UYgGmZptMM7CpgAhaCGnDrDu
-	e/jQsg==
-Received: from nasanppmta05.qualcomm.com (i-global254.qualcomm.com [199.106.103.254])
-	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 419puts9dj-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Fri, 30 Aug 2024 14:58:59 +0000 (GMT)
-Received: from nasanex01b.na.qualcomm.com (nasanex01b.na.qualcomm.com [10.46.141.250])
-	by NASANPPMTA05.qualcomm.com (8.18.1.2/8.18.1.2) with ESMTPS id 47UEwwPD011056
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Fri, 30 Aug 2024 14:58:58 GMT
-Received: from [10.110.28.107] (10.80.80.8) by nasanex01b.na.qualcomm.com
- (10.46.141.250) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1544.9; Fri, 30 Aug
- 2024 07:58:55 -0700
-Message-ID: <9befe692-a05d-4fa0-9ff9-8d6030e4cb66@quicinc.com>
-Date: Fri, 30 Aug 2024 07:58:54 -0700
+	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="G2fBmbz7"
+Received: by mail-qt1-f180.google.com with SMTP id d75a77b69052e-4567f2cbdb9so10838371cf.2
+        for <iommu@lists.linux.dev>; Fri, 30 Aug 2024 08:00:35 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=ziepe.ca; s=google; t=1725030035; x=1725634835; darn=lists.linux.dev;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=CZxWnHerUwknQInwDf3MAXdREsTwGqmmI6An0t2uETg=;
+        b=G2fBmbz7uWbDE/VuFS1kQH9BrXiWxOhzoM/81+nCJdZA1/onrGg3h9d3ktoAhHMgR4
+         zDzZTuD+P6/JlvyZkzMVVyEmJuglLaHr2Rj9Shf2NOhUX7eDjZdlAqqDoTBwwX1Qlc89
+         1ujN+1eF9t7b2oqcCwYB+9N1bv7H06o10eleOuo3UVPfXIg0cAZU+flany69mIio2xOC
+         n2M4lb7DkQEpAJiKOlko6k3pajWKKXB2Top1tiD1MA8Opl0wtRNGh3sl5pBBOXF5FRCg
+         4bVoAKKLAu5IJPQOEy3HSZW2WdbTMcQJXYhYBLNZc81pzfkfeywTrhKZ+Ivf1NWPylWb
+         uZ2A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1725030035; x=1725634835;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=CZxWnHerUwknQInwDf3MAXdREsTwGqmmI6An0t2uETg=;
+        b=VV+SQSfjGZeqgVZUIQ6wvFeo/BdfXfcvsxU3Vfc4IpOaSdve9ds+fbro1sUwhvxyvL
+         Ynj2IG/M8r/w6WtEU0qiIht+zOcpDYZvnCIBxfZSUKEDorfGR7FRK3a46hdB4wBP8ZoK
+         tPhnsw5EWv5cnZKealRFlqqAJ6y/1828A9hnBPZHCjR4Z4raRkcJ+TfmVQ1zTYLpntp2
+         FkuHKRi/fC7Gbm/KxSO9xEcBwHJrfEmpXcMmDbTXQcEiceXkhWRqFypwOFi1DCZgAZmQ
+         WTfA9lritw1D4YoCcWan4bW9tmNpIEr6kW79ZAWFQpsSK+7n/sUd/jGkRDiJ2H9kr0C/
+         lD1Q==
+X-Forwarded-Encrypted: i=1; AJvYcCUmWDic5Phu5cjjHgnMdvS0ANQF80Nkld4IOezmyiruh9puDwW83zqTxBmDjU6hgjsSBs27pw==@lists.linux.dev
+X-Gm-Message-State: AOJu0YzBVhlYxW8q/aK3hhWgGrXVsvuPWQvKC5oqz52a6/pAYHjPYwax
+	aC6WV8YI1W1hnQ58FEhzoCXsR7YPDfUrjKhQVzCRrQUovHGmP0XQKvmpDslQHtw=
+X-Google-Smtp-Source: AGHT+IElIUqrt5sS7F4ypb9DraPgPEV2K4gWAVFF0YKZjiQa6YPStGdN6kelSB4X0H8dc5LaKheAyw==
+X-Received: by 2002:a05:6214:4a8c:b0:6b5:ea0e:98f with SMTP id 6a1803df08f44-6c33e4f00eamr82628556d6.0.1725030034716;
+        Fri, 30 Aug 2024 08:00:34 -0700 (PDT)
+Received: from ziepe.ca (hlfxns017vw-142-68-80-239.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.68.80.239])
+        by smtp.gmail.com with ESMTPSA id 6a1803df08f44-6c340bfa7b4sm15144086d6.28.2024.08.30.08.00.33
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 30 Aug 2024 08:00:33 -0700 (PDT)
+Received: from jgg by wakko with local (Exim 4.95)
+	(envelope-from <jgg@ziepe.ca>)
+	id 1sk372-00Ebsx-DP;
+	Fri, 30 Aug 2024 12:00:32 -0300
+Date: Fri, 30 Aug 2024 12:00:32 -0300
+From: Jason Gunthorpe <jgg@ziepe.ca>
+To: Jacob Pan <jacob.pan@linux.microsoft.com>
+Cc: Vasant Hegde <vasant.hegde@amd.com>, Yi Liu <yi.l.liu@intel.com>,
+	iommu@lists.linux.dev, joro@8bytes.org, will@kernel.org,
+	robin.murphy@arm.com, suravee.suthikulpanit@amd.com,
+	baolu.lu@linux.intel.com, kevin.tian@intel.com
+Subject: Re: [PATCH 1/5] iommu: Enhance domain allocation code to take
+ additional flags
+Message-ID: <20240830150032.GZ3468552@ziepe.ca>
+References: <20240821163147.GZ3468552@ziepe.ca>
+ <67436cba-3d05-4528-9519-231b8396ed51@intel.com>
+ <20240822124433.GD3468552@ziepe.ca>
+ <0ca31cc6-1741-40d1-b8c1-20e6b4fc955a@intel.com>
+ <8215e4d4-2077-4fca-a002-27ddbfc0ddf2@amd.com>
+ <20240828145224.2e949806@DESKTOP-0403QTC.>
+ <6741bdcc-d9ca-4090-805b-3a7f4a4d650a@amd.com>
+ <20240829121002.GV3468552@ziepe.ca>
+ <b57b8846-9d13-4ede-98ba-2d09268c15ce@amd.com>
+ <66d0b2a1.630a0220.1dd301.daceSMTPIN_ADDED_BROKEN@mx.google.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH 22/22] arm64: dts: qcom: Add reduced functional DT for
- SA8255p Ride platform
-Content-Language: en-US
-To: Krzysztof Kozlowski <krzk@kernel.org>, <andersson@kernel.org>,
-        <konradybcio@kernel.org>, <robh@kernel.org>, <krzk+dt@kernel.org>,
-        <conor+dt@kernel.org>, <rafael@kernel.org>, <viresh.kumar@linaro.org>,
-        <herbert@gondor.apana.org.au>, <davem@davemloft.net>,
-        <sudeep.holla@arm.com>, <andi.shyti@kernel.org>, <tglx@linutronix.de>,
-        <will@kernel.org>, <joro@8bytes.org>, <jassisinghbrar@gmail.com>,
-        <lee@kernel.org>, <linus.walleij@linaro.org>, <amitk@kernel.org>,
-        <thara.gopinath@gmail.com>, <broonie@kernel.org>,
-        <wim@linux-watchdog.org>, <linux@roeck-us.net>
-CC: <robin.murphy@arm.com>, <cristian.marussi@arm.com>, <rui.zhang@intel.com>,
-        <lukasz.luba@arm.com>, <vkoul@kernel.org>, <quic_gurus@quicinc.com>,
-        <agross@kernel.org>, <bartosz.golaszewski@linaro.org>,
-        <quic_rjendra@quicinc.com>, <robimarko@gmail.com>,
-        <linux-arm-msm@vger.kernel.org>, <devicetree@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, <linux-pm@vger.kernel.org>,
-        <linux-crypto@vger.kernel.org>, <arm-scmi@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>, <linux-i2c@vger.kernel.org>,
-        <iommu@lists.linux.dev>, <linux-gpio@vger.kernel.org>,
-        <linux-serial@vger.kernel.org>, <linux-spi@vger.kernel.org>,
-        <linux-watchdog@vger.kernel.org>, <kernel@quicinc.com>,
-        <quic_psodagud@quicinc.com>, <quic_tsoni@quicinc.com>,
-        <quic_shazhuss@quicinc.com>
-References: <20240828203721.2751904-1-quic_nkela@quicinc.com>
- <20240828203721.2751904-23-quic_nkela@quicinc.com>
- <746be896-8798-44b0-aa86-e77cf34655e1@kernel.org>
- <57eee144-cdc4-48e7-838b-103cda6ec1dd@quicinc.com>
- <095f5048-5c39-438d-b5a9-7519199a8e9f@kernel.org>
-From: Nikunj Kela <quic_nkela@quicinc.com>
-In-Reply-To: <095f5048-5c39-438d-b5a9-7519199a8e9f@kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: nasanex01a.na.qualcomm.com (10.52.223.231) To
- nasanex01b.na.qualcomm.com (10.46.141.250)
-X-QCInternal: smtphost
-X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
-X-Proofpoint-GUID: SkQErJ6yG1XnlEy5h9kGSvc-Bpyu79A9
-X-Proofpoint-ORIG-GUID: SkQErJ6yG1XnlEy5h9kGSvc-Bpyu79A9
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.293,Aquarius:18.0.1039,Hydra:6.0.680,FMLib:17.12.28.16
- definitions=2024-08-30_09,2024-08-30_01,2024-05-17_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 clxscore=1015
- lowpriorityscore=0 mlxscore=0 phishscore=0 adultscore=0 priorityscore=1501
- impostorscore=0 malwarescore=0 suspectscore=0 spamscore=0 bulkscore=0
- mlxlogscore=999 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.19.0-2407110000 definitions=main-2408300114
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <66d0b2a1.630a0220.1dd301.daceSMTPIN_ADDED_BROKEN@mx.google.com>
 
+On Thu, Aug 29, 2024 at 10:40:47AM -0700, Jacob Pan wrote:
 
-On 8/30/2024 2:51 AM, Krzysztof Kozlowski wrote:
-> On 29/08/2024 21:06, Nikunj Kela wrote:
->> On 8/29/2024 12:49 AM, Krzysztof Kozlowski wrote:
->>> On 28/08/2024 22:37, Nikunj Kela wrote:
->>>> SA8255p Ride platform is an automotive virtual platform. This platform
->>>> abstracts resources such as clocks, regulators etc. in the firmware VM.
->>>> The device drivers request resources operations over SCMI using power,
->>>> performance, reset and sensor protocols.
->>>>
->>>> Multiple virtual SCMI instances are being employed for greater parallelism.
->>>> These instances are tied to devices such that devices can have dedicated
->>>> SCMI channel. Firmware VM (runs SCMI platform stack) is SMP enabled and
->>>> can process requests from agents in parallel. Qualcomm smc transport is
->>>> used for communication between SCMI agent and platform.
->>>>
->>>> Let's add the reduced functional support for SA8255p Ride board.
->>>> Subsequently, the support for PCIe, USB, UFS, Ethernet will be added.
->>>>
->>>> Co-developed-by: Shazad Hussain <quic_shazhuss@quicinc.com>
->>>> Signed-off-by: Shazad Hussain <quic_shazhuss@quicinc.com>
->>>> Signed-off-by: Nikunj Kela <quic_nkela@quicinc.com>
->>>> ---
->>>>  arch/arm64/boot/dts/qcom/Makefile           |    1 +
->>>>  arch/arm64/boot/dts/qcom/sa8255p-pmics.dtsi |   80 +
->>>>  arch/arm64/boot/dts/qcom/sa8255p-ride.dts   |  149 ++
->>>>  arch/arm64/boot/dts/qcom/sa8255p-scmi.dtsi  | 2312 ++++++++++++++++++
->>>>  arch/arm64/boot/dts/qcom/sa8255p.dtsi       | 2405 +++++++++++++++++++
->>>>  5 files changed, 4947 insertions(+)
->>>>  create mode 100644 arch/arm64/boot/dts/qcom/sa8255p-pmics.dtsi
->>>>  create mode 100644 arch/arm64/boot/dts/qcom/sa8255p-ride.dts
->>>>  create mode 100644 arch/arm64/boot/dts/qcom/sa8255p-scmi.dtsi
->>>>  create mode 100644 arch/arm64/boot/dts/qcom/sa8255p.dtsi
->>>>
->>> ...
->>>
->>>> diff --git a/arch/arm64/boot/dts/qcom/sa8255p-ride.dts b/arch/arm64/boot/dts/qcom/sa8255p-ride.dts
->>>> new file mode 100644
->>>> index 000000000000..1dc03051ad92
->>>> --- /dev/null
->>>> +++ b/arch/arm64/boot/dts/qcom/sa8255p-ride.dts
->>>> @@ -0,0 +1,149 @@
->>>> +// SPDX-License-Identifier: BSD-3-Clause
->>>> +/*
->>>> + * Copyright (c) 2024 Qualcomm Innovation Center, Inc. All rights reserved.
->>>> + */
->>>> +
->>>> +/dts-v1/;
->>>> +
->>>> +#include <dt-bindings/gpio/gpio.h>
->>>> +
->>>> +#include "sa8255p.dtsi"
->>>> +#include "sa8255p-pmics.dtsi"
->>>> +#include "sa8255p-scmi.dtsi"
->>>> +
->>>> +/ {
->>>> +	model = "Qualcomm Technologies, Inc. SA8255P Ride";
->>>> +	compatible = "qcom,sa8255p-ride", "qcom,sa8255p";
->>>> +
->>>> +	aliases {
->>>> +		i2c11 = &i2c11;
->>>> +		i2c18 = &i2c18;
->>>> +		serial0 = &uart10;
->>>> +		serial1 = &uart4;
->>>> +		spi16 = &spi16;
->>>> +		scmichannels = &scmichannels;
->>> Nothing parses this.
->>>
->> We are using this alias in bootloader to speed up the parsing. Since we
-> Then please provide link to the bindings in this open-source upstream
-> bootloader.
->
-> Otherwise it is a clear no-go for me. We don't add properties because
-> some downstream wants them. Imagine what would happen if we opened that
-> can of worms...
+> I don't know where the guest can get the host page table root pointer,
+> perhaps just ignored?
 
-Point taken! I will remove this alias and label from DT in next version.
-We can add it back if/once the bootloader changes are upstreamed. Thanks!
+The vDTE created by the guest will have host translation disabled, and
+no host page table pointer. The vDTE will only point to a GCR3
+table. Same as ARM.
 
+> On Intel, guest can just do S1 only, S2 pointer can be ignored
+> architectually based on PGTT (PASID Granular Translation Type).
 
->> are using 64 SCMI instances and SCMI smc transport driver for
->> Qualcomm(drivers/firmware/arm_scmi/transports/smc.c) expects
->> cap-id(created by hypervisor at boot time), our bootloader gets those
->> cap-id for each channel and populate them. This alias is an optimization
->> to save boottime as in automotive, boot KPIs are critical.
-> I will refrain about commenting on KPIs...
->
->
->
-> Best regards,
-> Krzysztof
->
+Yes, same idea.
+
+AMD is just lacking a bit to tell the guest that the HW doesn't
+support host translation :( :( :(
+
+Jason
