@@ -1,321 +1,322 @@
-Received: from mail-yb1-f201.google.com (mail-yb1-f201.google.com [209.85.219.201])
+Received: from mail-pf1-f181.google.com (mail-pf1-f181.google.com [209.85.210.181])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 06667196C86
-	for <iommu@lists.linux.dev>; Fri, 30 Aug 2024 11:04:02 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.219.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3284356440
+	for <iommu@lists.linux.dev>; Fri, 30 Aug 2024 12:01:12 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.181
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1725015844; cv=none; b=qGbaIPv43+kqxKbNBC9ZrviB22nZSdn7pNBOcUTSTN5X8eJYTPtE/LmzJXSSGH/CbGlB6aTypBqsFmDeU0v8PT1fMadSEEz6dcwm+mzEczKPu9hnHfz1I5fHjKtFjf+earQltLu2gnbVQy9E9bks1F9Czd7lcOMtaNyekZeejgk=
+	t=1725019273; cv=none; b=L68FaRsVAeWc+zt9wRmdyA+ZsYI3EyAYDX2XgNo2DD8qbtNONOIrYULdLrWQDcUfR7kYIV8GVRK+NDeR8KgPtl0agtwTjX02s4Whxs4n+fNmpakB+nCArfA1Osxo4KGf80Zxm/wu7Oxg5adsEA/VateHhzB8gjUoMcv46Z1S6YY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1725015844; c=relaxed/simple;
-	bh=ab9XIFNRkElNQpuGfoqIdx/EdnklAjwA/TWC7rptbwA=;
-	h=Date:In-Reply-To:Mime-Version:References:Message-ID:Subject:From:
-	 To:Cc:Content-Type; b=fKFplIPP9pvXwiTmM1OI+4YWZNYJkwmoMSLMWtV7I1D25M2kDuWT6q+e3r+uKNjCuV+A/CS58fKk2uF1MPIx4iTt4Juoz6UuU/R/dUxdlrhQ2QlNv/6Qh3fYRjldMBEAD5rQKS82HTi/z7OvTwy7rCDE4QVwmem+w0ZtukUBSI4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=flex--smostafa.bounces.google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=pjNE5Zcz; arc=none smtp.client-ip=209.85.219.201
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=flex--smostafa.bounces.google.com
+	s=arc-20240116; t=1725019273; c=relaxed/simple;
+	bh=bHtLDn0Wsn5DAZMI5MFUbrKX2XmlMvWqakZmLM6IBYI=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=agWbZ0l0vfhoL2eEMR4/x0NJlRJYC6Mtm6RHSaxI2vzbgquEFyPuBI8Tv8xFVQHa0B/eZyuvN6jRtqPE27IMt97VThJ2szPlHmW801BGgs3xhxdqsgIofJkkEw6aVYQrSEumi/Xqd9KtzSu2IKzOzUBu1raBh2MxO7QIGgLbWnY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ventanamicro.com; spf=pass smtp.mailfrom=ventanamicro.com; dkim=pass (2048-bit key) header.d=ventanamicro.com header.i=@ventanamicro.com header.b=eGF1LJWY; arc=none smtp.client-ip=209.85.210.181
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ventanamicro.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ventanamicro.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="pjNE5Zcz"
-Received: by mail-yb1-f201.google.com with SMTP id 3f1490d57ef6-e0353b731b8so2977783276.2
-        for <iommu@lists.linux.dev>; Fri, 30 Aug 2024 04:04:02 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=ventanamicro.com header.i=@ventanamicro.com header.b="eGF1LJWY"
+Received: by mail-pf1-f181.google.com with SMTP id d2e1a72fcca58-71433096e89so1425086b3a.3
+        for <iommu@lists.linux.dev>; Fri, 30 Aug 2024 05:01:12 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20230601; t=1725015842; x=1725620642; darn=lists.linux.dev;
-        h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
-         :date:from:to:cc:subject:date:message-id:reply-to;
-        bh=q/mKrNSDKBnu5yum3y3zhooOe1T+Lz6kz3xJIzbyQqs=;
-        b=pjNE5ZczsrXsvaDecdOoYhK5cAwbMIPw4JkW3BkRV4C9j4nsvPv88OXy6ltcgMET0A
-         EXOFb8b0Jqev81tXMEsGtuEEY9MaEcm+F52wu1q8bk2J0T2atUiZynVdPYKcbdWgVrA3
-         DJ9R9t0u7JzF0POyrR9+g4QIKkOgYn3aU1FczfGIJgStP5S6jMVgg9+JYWm0tYzkBpjh
-         E35IXhixhRmEtFv/+edbkyBvL9M7ufsFEVthZ8XTJylbGreUbczrU2Ndn7UohDs8dHbD
-         XkDwpXjrfu1Q8XstJLQ1FhSn/SXAPK7bPaBTzZJWGxJzCmdIE+awmA3sZc3Af1kJktOf
-         +meQ==
+        d=ventanamicro.com; s=google; t=1725019271; x=1725624071; darn=lists.linux.dev;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=S+J8nDWKmcjiFDnbhyvi48+lL6iNF2GBrnR+36Q3WWM=;
+        b=eGF1LJWYTGX+XAfdX0iKzKrSoT/BB2kopiFvTXHp/gGgkABUv2FxvE1YarO7naiR0/
+         9R5SHroJQpE+HSnCnW8o+rCgjbiaKCj9cFMDz4jMJl+OrJSEwwNhP3zN7KRIvDR9UC5S
+         PN++kXhDM+zPctC1BOqFTbsgqANuQpsZ5WHgof4PIqEgH0twMX7rH5Oh/sNFHBB+4M7V
+         FjedmKnZgnVqRnFxR7WTK5yCTBOtEV8toBfbPfeEJhWXNwbJBofVZdzVZY0GB7xyBgxV
+         7jt40CLjxxJiO/pjpZv1wgLRGBhSVi9UTSBBtNIYgqjxA4gy9JXYQPMtBoIwRpVDJ6lF
+         kRHw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1725015842; x=1725620642;
-        h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
-         :date:x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=q/mKrNSDKBnu5yum3y3zhooOe1T+Lz6kz3xJIzbyQqs=;
-        b=KfSkeC2D/B/99d0rNyBeIVUFPQBMi6iWQD2NcMrpblEoA33A7GqJ+j160gQZTTcPLk
-         iraoW/JACV2VWE6dSVhvG3LO2rYHxFqg8NrnB/aW/Jr+FNbRtBOZjditB3xsVyD2eUV3
-         1D5beXr0KvdbzVNXRFUeN7WZbNU6ZQUDgKWugYh0w0YBc2THpH9UqDjKsnsUlZD/BRwC
-         9N9RidQE35n8kJ22rWo6nU1c7gQfPr1fqSix5o0QgQGf2ivTQwiTaaUA6UUokpVQoFNz
-         7MLxRsXnUZuMYh438yqCrJdL6mEnVVaYIaXw2GOXow+y7cwqDRaIvA3jr4t60PxsmUBX
-         FsEw==
-X-Forwarded-Encrypted: i=1; AJvYcCXLj5IAJ0OmuFPyJx6crjPQjLgnTKgx1SDEbR3V+rhnKu0HNEg9ANAbYAJXERPvA99DQyEc9w==@lists.linux.dev
-X-Gm-Message-State: AOJu0YygQBLFoEWHGmZTXMJmvRUiBCm4DeGOIDyiE8U7xkRGB+FnzjX0
-	8EhzLw29TIMwn0S/Z6xnVI3fthY8tYQ3jBOaUQ2lfILfS85NvlN5P8UwHa4DW5HyjjnNgC0v1mK
-	mrq2owEYwDw==
-X-Google-Smtp-Source: AGHT+IHCT4BVIVvVKE9Liin+BCArrCMLiB0xZjSA3o/HnMqT8IOHQAQ0c34vg5JpBmozpHBlZUKNiQlne5c01Q==
-X-Received: from mostafa.c.googlers.com ([fda3:e722:ac3:cc00:28:9cb1:c0a8:333c])
- (user=smostafa job=sendgmr) by 2002:a25:a208:0:b0:e11:5e87:aa9 with SMTP id
- 3f1490d57ef6-e1a7a179ee1mr2994276.8.1725015842037; Fri, 30 Aug 2024 04:04:02
- -0700 (PDT)
-Date: Fri, 30 Aug 2024 11:03:48 +0000
-In-Reply-To: <20240830110349.797399-1-smostafa@google.com>
+        d=1e100.net; s=20230601; t=1725019271; x=1725624071;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=S+J8nDWKmcjiFDnbhyvi48+lL6iNF2GBrnR+36Q3WWM=;
+        b=QrOQC9FyUIUgCysWo3mx0qP5RkQzcifGacZ1zpnycpdqtPhWKQQzx0Nls2TZOepx0Y
+         5iog9NkIrbOtppEWDQFOFoFBuB0m1nvAeIUTIFG+lBP82Co/9ZjY6/oITlB1x7IjnlKV
+         7xI4XmQXO+AiEkJtxblK+x3ddQjilQMmLFJANgf6dgXpFPgqKId1D0iS6IsZ8n5QDswB
+         yI7kI+YiSpa64KMJfnAqoT9wuXv91zFFWkjGeiC9XgTi/mdiqzUC/pA5Sgnvk59sh5Fk
+         i0305evrWbYJjLn1PtyeczyrOJ6C0OvI94ZoUatWz4yRQeM4zsk/Ehjik2PogvqgStKW
+         dqkg==
+X-Forwarded-Encrypted: i=1; AJvYcCX0sakGIRok/O6yvXkmQLW/NqjmP8IyXdRGHWI5sAzs9Wz0zn+dSBxLR/m5XZf84nIfpW3jQA==@lists.linux.dev
+X-Gm-Message-State: AOJu0YxLMsI1h2y6hMGMf7k5bG230lyAVcpW9epA2oUA7BwZpzKk6PsS
+	oImZWtizpPdgr1KOT/tbDq4y4RlBu2NdU01+MGE8oHpIrFkdFuW2dEzd/ILSDDM=
+X-Google-Smtp-Source: AGHT+IGKLvAFAz/eBLXMb30uIZ9vdANBzSIr6ORPbKAbI0x7ooOqoOsCu8d84XfIMHbv7krKGeaTpw==
+X-Received: by 2002:a05:6a00:981:b0:706:58ef:613 with SMTP id d2e1a72fcca58-715dfc72cfdmr7188548b3a.27.1725019269804;
+        Fri, 30 Aug 2024 05:01:09 -0700 (PDT)
+Received: from [192.168.68.110] ([177.170.227.130])
+        by smtp.gmail.com with ESMTPSA id d2e1a72fcca58-715e569ef15sm2599685b3a.105.2024.08.30.05.01.04
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 30 Aug 2024 05:01:09 -0700 (PDT)
+Message-ID: <3fdb33d3-16cd-49a6-bad7-81631f99c291@ventanamicro.com>
+Date: Fri, 30 Aug 2024 09:01:02 -0300
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
-Mime-Version: 1.0
-References: <20240830110349.797399-1-smostafa@google.com>
-X-Mailer: git-send-email 2.46.0.469.g59c65b2a67-goog
-Message-ID: <20240830110349.797399-3-smostafa@google.com>
-Subject: [PATCH v4 2/2] iommu/arm-smmu-v3-test: Test masters with stall enabled
-From: Mostafa Saleh <smostafa@google.com>
-To: linux-kernel@vger.kernel.org, iommu@lists.linux.dev, 
-	linux-arm-kernel@lists.infradead.org, will@kernel.org, robin.murphy@arm.com, 
-	joro@8bytes.org
-Cc: jean-philippe@linaro.org, jgg@ziepe.ca, nicolinc@nvidia.com, 
-	mshavit@google.com, Mostafa Saleh <smostafa@google.com>
-Content-Type: text/plain; charset="UTF-8"
+MIME-Version: 1.0
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v8 3/7] iommu/riscv: Add RISC-V IOMMU PCIe device driver
+To: Jim Shu <jim.shu@sifive.com>, Tomasz Jeznach <tjeznach@rivosinc.com>
+Cc: Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
+ Robin Murphy <robin.murphy@arm.com>, Paul Walmsley
+ <paul.walmsley@sifive.com>, Anup Patel <apatel@ventanamicro.com>,
+ devicetree@vger.kernel.org, Conor Dooley <conor+dt@kernel.org>,
+ Albert Ou <aou@eecs.berkeley.edu>, linux@rivosinc.com,
+ linux-kernel@vger.kernel.org, Rob Herring <robh+dt@kernel.org>,
+ Sebastien Boeuf <seb@rivosinc.com>, iommu@lists.linux.dev,
+ Palmer Dabbelt <palmer@dabbelt.com>, Nick Kossifidis <mick@ics.forth.gr>,
+ Krzysztof Kozlowski <krzk+dt@kernel.org>, linux-riscv@lists.infradead.org,
+ Lu Baolu <baolu.lu@linux.intel.com>, Zong Li <zong.li@sifive.com>
+References: <cover.1718388908.git.tjeznach@rivosinc.com>
+ <e2792d6559f9f3e02b2243538647ef60f14176fd.1718388909.git.tjeznach@rivosinc.com>
+ <CALw707q=B4h4CF3CvJOiRMMYqzvO_NG+taMLzZquCP=A9bgu0g@mail.gmail.com>
+Content-Language: en-US
+From: Daniel Henrique Barboza <dbarboza@ventanamicro.com>
+In-Reply-To: <CALw707q=B4h4CF3CvJOiRMMYqzvO_NG+taMLzZquCP=A9bgu0g@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 
-At the moment, the SMMUv3 unit tests assume ATS is always enabled,
-although this is sufficient to test hitless/non-hitless transitions,
-but exercising other features is useful to check ste/cd population
-logic (for example the .get_used logic).
 
-Add an enum where bits define features per-master, at the moment there
-is only ATS and STALLs which are mutually exclusive, but this would
-make it easier to extend with other features in the future.
 
-Also, Add 2 more tests for s1 <-> s2 transitions with stalls enabled.
+On 8/30/24 4:04 AM, Jim Shu wrote:
+> Hi Tomasz,
+> 
+> QEMU RISC-V IOMMU will switch the PCIe vendor/device ID to Red Hat one
+> [1] in the latest v6 patch.
+> Will we also support the PCIe ID of Red Hat one in the Linux driver?
+> 
+> [1] https://patchew.org/QEMU/20240801154334.1009852-1-dbarboza@ventanamicro.com/20240801154334.1009852-5-dbarboza@ventanamicro.com/
 
-Signed-off-by: Mostafa Saleh <smostafa@google.com>
----
- .../iommu/arm/arm-smmu-v3/arm-smmu-v3-test.c  | 83 ++++++++++++++-----
- 1 file changed, 62 insertions(+), 21 deletions(-)
+The QEMU-side background of this change: the original patches from Tomasz was
+hardcoding a Rivos PCI ID, i.e. the device was being registered as a Rivos IOMMU
+PCI device. The thing is that there isn't anything  Rivos specific in the QEMU
+IOMMU emulation, since we're adhering to the riscv-iommu spec entirely (with a
+couple of design choices here and there), thus we decided it would be better to
+get a generic PCI IOMMU ID.
 
-diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-test.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-test.c
-index cceb737a7001..84baa021370a 100644
---- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-test.c
-+++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-test.c
-@@ -30,6 +30,11 @@ static struct mm_struct sva_mm = {
- 	.pgd = (void *)0xdaedbeefdeadbeefULL,
- };
- 
-+enum arm_smmu_test_master_feat {
-+	ARM_SMMU_MASTER_TEST_ATS = BIT(0),
-+	ARM_SMMU_MASTER_TEST_STALL = BIT(1),
-+};
-+
- static bool arm_smmu_entry_differs_in_used_bits(const __le64 *entry,
- 						const __le64 *used_bits,
- 						const __le64 *target,
-@@ -164,16 +169,22 @@ static const dma_addr_t fake_cdtab_dma_addr = 0xF0F0F0F0F0F0;
- 
- static void arm_smmu_test_make_cdtable_ste(struct arm_smmu_ste *ste,
- 					   unsigned int s1dss,
--					   const dma_addr_t dma_addr)
-+					   const dma_addr_t dma_addr,
-+					   enum arm_smmu_test_master_feat feat)
- {
-+	bool ats_enabled = feat & ARM_SMMU_MASTER_TEST_ATS;
-+	bool stall_enabled = feat & ARM_SMMU_MASTER_TEST_STALL;
-+
- 	struct arm_smmu_master master = {
-+		.ats_enabled = ats_enabled,
- 		.cd_table.cdtab_dma = dma_addr,
- 		.cd_table.s1cdmax = 0xFF,
- 		.cd_table.s1fmt = STRTAB_STE_0_S1FMT_64K_L2,
- 		.smmu = &smmu,
-+		.stall_enabled = stall_enabled,
- 	};
- 
--	arm_smmu_make_cdtable_ste(ste, &master, true, s1dss);
-+	arm_smmu_make_cdtable_ste(ste, &master, ats_enabled, s1dss);
- }
- 
- static void arm_smmu_v3_write_ste_test_bypass_to_abort(struct kunit *test)
-@@ -204,7 +215,7 @@ static void arm_smmu_v3_write_ste_test_cdtable_to_abort(struct kunit *test)
- 	struct arm_smmu_ste ste;
- 
- 	arm_smmu_test_make_cdtable_ste(&ste, STRTAB_STE_1_S1DSS_SSID0,
--				       fake_cdtab_dma_addr);
-+				       fake_cdtab_dma_addr, ARM_SMMU_MASTER_TEST_ATS);
- 	arm_smmu_v3_test_ste_expect_hitless_transition(test, &ste, &abort_ste,
- 						       NUM_EXPECTED_SYNCS(2));
- }
-@@ -214,7 +225,7 @@ static void arm_smmu_v3_write_ste_test_abort_to_cdtable(struct kunit *test)
- 	struct arm_smmu_ste ste;
- 
- 	arm_smmu_test_make_cdtable_ste(&ste, STRTAB_STE_1_S1DSS_SSID0,
--				       fake_cdtab_dma_addr);
-+				       fake_cdtab_dma_addr, ARM_SMMU_MASTER_TEST_ATS);
- 	arm_smmu_v3_test_ste_expect_hitless_transition(test, &abort_ste, &ste,
- 						       NUM_EXPECTED_SYNCS(2));
- }
-@@ -224,7 +235,7 @@ static void arm_smmu_v3_write_ste_test_cdtable_to_bypass(struct kunit *test)
- 	struct arm_smmu_ste ste;
- 
- 	arm_smmu_test_make_cdtable_ste(&ste, STRTAB_STE_1_S1DSS_SSID0,
--				       fake_cdtab_dma_addr);
-+				       fake_cdtab_dma_addr, ARM_SMMU_MASTER_TEST_ATS);
- 	arm_smmu_v3_test_ste_expect_hitless_transition(test, &ste, &bypass_ste,
- 						       NUM_EXPECTED_SYNCS(3));
- }
-@@ -234,7 +245,7 @@ static void arm_smmu_v3_write_ste_test_bypass_to_cdtable(struct kunit *test)
- 	struct arm_smmu_ste ste;
- 
- 	arm_smmu_test_make_cdtable_ste(&ste, STRTAB_STE_1_S1DSS_SSID0,
--				       fake_cdtab_dma_addr);
-+				       fake_cdtab_dma_addr, ARM_SMMU_MASTER_TEST_ATS);
- 	arm_smmu_v3_test_ste_expect_hitless_transition(test, &bypass_ste, &ste,
- 						       NUM_EXPECTED_SYNCS(3));
- }
-@@ -245,9 +256,9 @@ static void arm_smmu_v3_write_ste_test_cdtable_s1dss_change(struct kunit *test)
- 	struct arm_smmu_ste s1dss_bypass;
- 
- 	arm_smmu_test_make_cdtable_ste(&ste, STRTAB_STE_1_S1DSS_SSID0,
--				       fake_cdtab_dma_addr);
-+				       fake_cdtab_dma_addr, ARM_SMMU_MASTER_TEST_ATS);
- 	arm_smmu_test_make_cdtable_ste(&s1dss_bypass, STRTAB_STE_1_S1DSS_BYPASS,
--				       fake_cdtab_dma_addr);
-+				       fake_cdtab_dma_addr, ARM_SMMU_MASTER_TEST_ATS);
- 
- 	/*
- 	 * Flipping s1dss on a CD table STE only involves changes to the second
-@@ -265,7 +276,7 @@ arm_smmu_v3_write_ste_test_s1dssbypass_to_stebypass(struct kunit *test)
- 	struct arm_smmu_ste s1dss_bypass;
- 
- 	arm_smmu_test_make_cdtable_ste(&s1dss_bypass, STRTAB_STE_1_S1DSS_BYPASS,
--				       fake_cdtab_dma_addr);
-+				       fake_cdtab_dma_addr, ARM_SMMU_MASTER_TEST_ATS);
- 	arm_smmu_v3_test_ste_expect_hitless_transition(
- 		test, &s1dss_bypass, &bypass_ste, NUM_EXPECTED_SYNCS(2));
- }
-@@ -276,16 +287,20 @@ arm_smmu_v3_write_ste_test_stebypass_to_s1dssbypass(struct kunit *test)
- 	struct arm_smmu_ste s1dss_bypass;
- 
- 	arm_smmu_test_make_cdtable_ste(&s1dss_bypass, STRTAB_STE_1_S1DSS_BYPASS,
--				       fake_cdtab_dma_addr);
-+				       fake_cdtab_dma_addr, ARM_SMMU_MASTER_TEST_ATS);
- 	arm_smmu_v3_test_ste_expect_hitless_transition(
- 		test, &bypass_ste, &s1dss_bypass, NUM_EXPECTED_SYNCS(2));
- }
- 
- static void arm_smmu_test_make_s2_ste(struct arm_smmu_ste *ste,
--				      bool ats_enabled)
-+				      enum arm_smmu_test_master_feat feat)
- {
-+	bool ats_enabled = feat & ARM_SMMU_MASTER_TEST_ATS;
-+	bool stall_enabled = feat & ARM_SMMU_MASTER_TEST_STALL;
- 	struct arm_smmu_master master = {
-+		.ats_enabled = ats_enabled,
- 		.smmu = &smmu,
-+		.stall_enabled = stall_enabled,
- 	};
- 	struct io_pgtable io_pgtable = {};
- 	struct arm_smmu_domain smmu_domain = {
-@@ -308,7 +323,7 @@ static void arm_smmu_v3_write_ste_test_s2_to_abort(struct kunit *test)
- {
- 	struct arm_smmu_ste ste;
- 
--	arm_smmu_test_make_s2_ste(&ste, true);
-+	arm_smmu_test_make_s2_ste(&ste, ARM_SMMU_MASTER_TEST_ATS);
- 	arm_smmu_v3_test_ste_expect_hitless_transition(test, &ste, &abort_ste,
- 						       NUM_EXPECTED_SYNCS(2));
- }
-@@ -317,7 +332,7 @@ static void arm_smmu_v3_write_ste_test_abort_to_s2(struct kunit *test)
- {
- 	struct arm_smmu_ste ste;
- 
--	arm_smmu_test_make_s2_ste(&ste, true);
-+	arm_smmu_test_make_s2_ste(&ste, ARM_SMMU_MASTER_TEST_ATS);
- 	arm_smmu_v3_test_ste_expect_hitless_transition(test, &abort_ste, &ste,
- 						       NUM_EXPECTED_SYNCS(2));
- }
-@@ -326,7 +341,7 @@ static void arm_smmu_v3_write_ste_test_s2_to_bypass(struct kunit *test)
- {
- 	struct arm_smmu_ste ste;
- 
--	arm_smmu_test_make_s2_ste(&ste, true);
-+	arm_smmu_test_make_s2_ste(&ste, ARM_SMMU_MASTER_TEST_ATS);
- 	arm_smmu_v3_test_ste_expect_hitless_transition(test, &ste, &bypass_ste,
- 						       NUM_EXPECTED_SYNCS(2));
- }
-@@ -335,7 +350,7 @@ static void arm_smmu_v3_write_ste_test_bypass_to_s2(struct kunit *test)
- {
- 	struct arm_smmu_ste ste;
- 
--	arm_smmu_test_make_s2_ste(&ste, true);
-+	arm_smmu_test_make_s2_ste(&ste, ARM_SMMU_MASTER_TEST_ATS);
- 	arm_smmu_v3_test_ste_expect_hitless_transition(test, &bypass_ste, &ste,
- 						       NUM_EXPECTED_SYNCS(2));
- }
-@@ -346,8 +361,8 @@ static void arm_smmu_v3_write_ste_test_s1_to_s2(struct kunit *test)
- 	struct arm_smmu_ste s2_ste;
- 
- 	arm_smmu_test_make_cdtable_ste(&s1_ste, STRTAB_STE_1_S1DSS_SSID0,
--				       fake_cdtab_dma_addr);
--	arm_smmu_test_make_s2_ste(&s2_ste, true);
-+				       fake_cdtab_dma_addr, ARM_SMMU_MASTER_TEST_ATS);
-+	arm_smmu_test_make_s2_ste(&s2_ste, ARM_SMMU_MASTER_TEST_ATS);
- 	arm_smmu_v3_test_ste_expect_hitless_transition(test, &s1_ste, &s2_ste,
- 						       NUM_EXPECTED_SYNCS(3));
- }
-@@ -358,8 +373,8 @@ static void arm_smmu_v3_write_ste_test_s2_to_s1(struct kunit *test)
- 	struct arm_smmu_ste s2_ste;
- 
- 	arm_smmu_test_make_cdtable_ste(&s1_ste, STRTAB_STE_1_S1DSS_SSID0,
--				       fake_cdtab_dma_addr);
--	arm_smmu_test_make_s2_ste(&s2_ste, true);
-+				       fake_cdtab_dma_addr, ARM_SMMU_MASTER_TEST_ATS);
-+	arm_smmu_test_make_s2_ste(&s2_ste, ARM_SMMU_MASTER_TEST_ATS);
- 	arm_smmu_v3_test_ste_expect_hitless_transition(test, &s2_ste, &s1_ste,
- 						       NUM_EXPECTED_SYNCS(3));
- }
-@@ -375,9 +390,9 @@ static void arm_smmu_v3_write_ste_test_non_hitless(struct kunit *test)
- 	 * s1 dss field in the same update.
- 	 */
- 	arm_smmu_test_make_cdtable_ste(&ste, STRTAB_STE_1_S1DSS_SSID0,
--				       fake_cdtab_dma_addr);
-+				       fake_cdtab_dma_addr, ARM_SMMU_MASTER_TEST_ATS);
- 	arm_smmu_test_make_cdtable_ste(&ste_2, STRTAB_STE_1_S1DSS_BYPASS,
--				       0x4B4B4b4B4B);
-+				       0x4B4B4b4B4B, ARM_SMMU_MASTER_TEST_ATS);
- 	arm_smmu_v3_test_ste_expect_non_hitless_transition(
- 		test, &ste, &ste_2, NUM_EXPECTED_SYNCS(3));
- }
-@@ -503,6 +518,30 @@ static void arm_smmu_test_make_sva_release_cd(struct arm_smmu_cd *cd,
- 	arm_smmu_make_sva_cd(cd, &master, NULL, asid);
- }
- 
-+static void arm_smmu_v3_write_ste_test_s1_to_s2_stall(struct kunit *test)
-+{
-+	struct arm_smmu_ste s1_ste;
-+	struct arm_smmu_ste s2_ste;
-+
-+	arm_smmu_test_make_cdtable_ste(&s1_ste, STRTAB_STE_1_S1DSS_SSID0,
-+				       fake_cdtab_dma_addr, ARM_SMMU_MASTER_TEST_STALL);
-+	arm_smmu_test_make_s2_ste(&s2_ste, ARM_SMMU_MASTER_TEST_STALL);
-+	arm_smmu_v3_test_ste_expect_hitless_transition(test, &s1_ste, &s2_ste,
-+						       NUM_EXPECTED_SYNCS(3));
-+}
-+
-+static void arm_smmu_v3_write_ste_test_s2_to_s1_stall(struct kunit *test)
-+{
-+	struct arm_smmu_ste s1_ste;
-+	struct arm_smmu_ste s2_ste;
-+
-+	arm_smmu_test_make_cdtable_ste(&s1_ste, STRTAB_STE_1_S1DSS_SSID0,
-+				       fake_cdtab_dma_addr, ARM_SMMU_MASTER_TEST_STALL);
-+	arm_smmu_test_make_s2_ste(&s2_ste, ARM_SMMU_MASTER_TEST_STALL);
-+	arm_smmu_v3_test_ste_expect_hitless_transition(test, &s2_ste, &s1_ste,
-+						       NUM_EXPECTED_SYNCS(3));
-+}
-+
- static void arm_smmu_v3_write_cd_test_sva_clear(struct kunit *test)
- {
- 	struct arm_smmu_cd cd = {};
-@@ -547,6 +586,8 @@ static struct kunit_case arm_smmu_v3_test_cases[] = {
- 	KUNIT_CASE(arm_smmu_v3_write_ste_test_non_hitless),
- 	KUNIT_CASE(arm_smmu_v3_write_cd_test_s1_clear),
- 	KUNIT_CASE(arm_smmu_v3_write_cd_test_s1_change_asid),
-+	KUNIT_CASE(arm_smmu_v3_write_ste_test_s1_to_s2_stall),
-+	KUNIT_CASE(arm_smmu_v3_write_ste_test_s2_to_s1_stall),
- 	KUNIT_CASE(arm_smmu_v3_write_cd_test_sva_clear),
- 	KUNIT_CASE(arm_smmu_v3_write_cd_test_sva_release),
- 	{},
--- 
-2.46.0.469.g59c65b2a67-goog
+Red Hat was kind enough to gave us one from their PCI ID space, since RVI didn't
+bother getting an ID for this reference device, and we're using the Red Hat ID
+in the QEMU emulation. The QEMU IOMMU PCI device is by default reported as
+1b36:0014 (PCI_VENDOR_ID_REDHAT : PCI_DEVICE_ID_REDHAT_RISCV_IOMMU).
 
+This change happened in v3, sent in May 2024:
+
+https://lore.kernel.org/qemu-riscv/20240523173955.1940072-1-dbarboza@ventanamicro.com/
+
+This change would make the QEMU IOMMU PCI device incompatible with this kernel
+support, so we added a capability to set the PCI ID for the device in the QEMU
+command line. To make the IOMMU PCI device work with the current kernel support, that
+is being set to a Rivos PCI device, change the vendor/device ID to match what the
+kernel driver expects:
+
+(...)  -device riscv-iommu-pci,vendor-id=0x1efd,device-id=0xedf1
+
+The ability to set vendor-id/device-id of this device will allow an easier development
+of other proprietary IOMMU PCI drivers, i.e. it's not a hack to make the current kernel
+support work.
+
+As for this kernel support, I didn't fully review it to see if there is a Rivos specific
+behavior being implemented. If this isn't the case perhaps there is a case to be made
+to also make the kernel driver more generic - in this case feel free to use the same as
+QEMU is going to use (PCI_VENDOR_ID_REDHAT : PCI_DEVICE_ID_REDHAT_RISCV_IOMMU - 1b36:0014).
+
+
+Thanks,
+
+Daniel
+
+
+> 
+> 
+> Regards,
+> Jim Shu
+> 
+> 
+> 
+> On Sat, Jun 15, 2024 at 1:29 PM Tomasz Jeznach <tjeznach@rivosinc.com> wrote:
+>>
+>> Introduce device driver for PCIe implementation
+>> of RISC-V IOMMU architected hardware.
+>>
+>> IOMMU hardware and system support for MSI or MSI-X is
+>> required by this implementation.
+>>
+>> Vendor and device identifiers used in this patch
+>> matches QEMU implementation of the RISC-V IOMMU PCIe
+>> device, from Rivos VID (0x1efd) range allocated by the PCI-SIG.
+>>
+>> MAINTAINERS | added iommu-pci.c already covered by matching pattern.
+>>
+>> Link: https://lore.kernel.org/qemu-devel/20240307160319.675044-1-dbarboza@ventanamicro.com/
+>> Co-developed-by: Nick Kossifidis <mick@ics.forth.gr>
+>> Signed-off-by: Nick Kossifidis <mick@ics.forth.gr>
+>> Reviewed-by: Lu Baolu <baolu.lu@linux.intel.com>
+>> Signed-off-by: Tomasz Jeznach <tjeznach@rivosinc.com>
+>> ---
+>>   drivers/iommu/riscv/Kconfig     |   5 ++
+>>   drivers/iommu/riscv/Makefile    |   1 +
+>>   drivers/iommu/riscv/iommu-pci.c | 119 ++++++++++++++++++++++++++++++++
+>>   3 files changed, 125 insertions(+)
+>>   create mode 100644 drivers/iommu/riscv/iommu-pci.c
+>>
+>> diff --git a/drivers/iommu/riscv/Kconfig b/drivers/iommu/riscv/Kconfig
+>> index 5dcc5c45aa50..c071816f59a6 100644
+>> --- a/drivers/iommu/riscv/Kconfig
+>> +++ b/drivers/iommu/riscv/Kconfig
+>> @@ -13,3 +13,8 @@ config RISCV_IOMMU
+>>
+>>            Say Y here if your SoC includes an IOMMU device implementing
+>>            the RISC-V IOMMU architecture.
+>> +
+>> +config RISCV_IOMMU_PCI
+>> +       def_bool y if RISCV_IOMMU && PCI_MSI
+>> +       help
+>> +         Support for the PCIe implementation of RISC-V IOMMU architecture.
+>> diff --git a/drivers/iommu/riscv/Makefile b/drivers/iommu/riscv/Makefile
+>> index e4c189de58d3..f54c9ed17d41 100644
+>> --- a/drivers/iommu/riscv/Makefile
+>> +++ b/drivers/iommu/riscv/Makefile
+>> @@ -1,2 +1,3 @@
+>>   # SPDX-License-Identifier: GPL-2.0-only
+>>   obj-$(CONFIG_RISCV_IOMMU) += iommu.o iommu-platform.o
+>> +obj-$(CONFIG_RISCV_IOMMU_PCI) += iommu-pci.o
+>> diff --git a/drivers/iommu/riscv/iommu-pci.c b/drivers/iommu/riscv/iommu-pci.c
+>> new file mode 100644
+>> index 000000000000..e675acceb290
+>> --- /dev/null
+>> +++ b/drivers/iommu/riscv/iommu-pci.c
+>> @@ -0,0 +1,119 @@
+>> +// SPDX-License-Identifier: GPL-2.0-only
+>> +
+>> +/*
+>> + * Copyright © 2022-2024 Rivos Inc.
+>> + * Copyright © 2023 FORTH-ICS/CARV
+>> + *
+>> + * RISCV IOMMU as a PCIe device
+>> + *
+>> + * Authors
+>> + *     Tomasz Jeznach <tjeznach@rivosinc.com>
+>> + *     Nick Kossifidis <mick@ics.forth.gr>
+>> + */
+>> +
+>> +#include <linux/compiler.h>
+>> +#include <linux/init.h>
+>> +#include <linux/iommu.h>
+>> +#include <linux/kernel.h>
+>> +#include <linux/pci.h>
+>> +
+>> +#include "iommu-bits.h"
+>> +#include "iommu.h"
+>> +
+>> +/* Rivos Inc. assigned PCI Vendor and Device IDs */
+>> +#ifndef PCI_VENDOR_ID_RIVOS
+>> +#define PCI_VENDOR_ID_RIVOS             0x1efd
+>> +#endif
+>> +
+>> +#ifndef PCI_DEVICE_ID_RIVOS_IOMMU
+>> +#define PCI_DEVICE_ID_RIVOS_IOMMU       0xedf1
+>> +#endif
+>> +
+>> +static int riscv_iommu_pci_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
+>> +{
+>> +       struct device *dev = &pdev->dev;
+>> +       struct riscv_iommu_device *iommu;
+>> +       int rc, vec;
+>> +
+>> +       rc = pcim_enable_device(pdev);
+>> +       if (rc)
+>> +               return rc;
+>> +
+>> +       if (!(pci_resource_flags(pdev, 0) & IORESOURCE_MEM))
+>> +               return -ENODEV;
+>> +
+>> +       if (pci_resource_len(pdev, 0) < RISCV_IOMMU_REG_SIZE)
+>> +               return -ENODEV;
+>> +
+>> +       rc = pcim_iomap_regions(pdev, BIT(0), pci_name(pdev));
+>> +       if (rc)
+>> +               return dev_err_probe(dev, rc, "pcim_iomap_regions failed\n");
+>> +
+>> +       iommu = devm_kzalloc(dev, sizeof(*iommu), GFP_KERNEL);
+>> +       if (!iommu)
+>> +               return -ENOMEM;
+>> +
+>> +       iommu->dev = dev;
+>> +       iommu->reg = pcim_iomap_table(pdev)[0];
+>> +
+>> +       pci_set_master(pdev);
+>> +       dev_set_drvdata(dev, iommu);
+>> +
+>> +       /* Check device reported capabilities / features. */
+>> +       iommu->caps = riscv_iommu_readq(iommu, RISCV_IOMMU_REG_CAPABILITIES);
+>> +       iommu->fctl = riscv_iommu_readl(iommu, RISCV_IOMMU_REG_FCTL);
+>> +
+>> +       /* The PCI driver only uses MSIs, make sure the IOMMU supports this */
+>> +       switch (FIELD_GET(RISCV_IOMMU_CAPABILITIES_IGS, iommu->caps)) {
+>> +       case RISCV_IOMMU_CAPABILITIES_IGS_MSI:
+>> +       case RISCV_IOMMU_CAPABILITIES_IGS_BOTH:
+>> +               break;
+>> +       default:
+>> +               return dev_err_probe(dev, -ENODEV,
+>> +                                    "unable to use message-signaled interrupts\n");
+>> +       }
+>> +
+>> +       /* Allocate and assign IRQ vectors for the various events */
+>> +       rc = pci_alloc_irq_vectors(pdev, 1, RISCV_IOMMU_INTR_COUNT,
+>> +                                  PCI_IRQ_MSIX | PCI_IRQ_MSI);
+>> +       if (rc <= 0)
+>> +               return dev_err_probe(dev, -ENODEV,
+>> +                                    "unable to allocate irq vectors\n");
+>> +
+>> +       iommu->irqs_count = rc;
+>> +       for (vec = 0; vec < iommu->irqs_count; vec++)
+>> +               iommu->irqs[vec] = msi_get_virq(dev, vec);
+>> +
+>> +       /* Enable message-signaled interrupts, fctl.WSI */
+>> +       if (iommu->fctl & RISCV_IOMMU_FCTL_WSI) {
+>> +               iommu->fctl ^= RISCV_IOMMU_FCTL_WSI;
+>> +               riscv_iommu_writel(iommu, RISCV_IOMMU_REG_FCTL, iommu->fctl);
+>> +       }
+>> +
+>> +       return riscv_iommu_init(iommu);
+>> +}
+>> +
+>> +static void riscv_iommu_pci_remove(struct pci_dev *pdev)
+>> +{
+>> +       struct riscv_iommu_device *iommu = dev_get_drvdata(&pdev->dev);
+>> +
+>> +       riscv_iommu_remove(iommu);
+>> +}
+>> +
+>> +static const struct pci_device_id riscv_iommu_pci_tbl[] = {
+>> +       {PCI_VENDOR_ID_RIVOS, PCI_DEVICE_ID_RIVOS_IOMMU,
+>> +        PCI_ANY_ID, PCI_ANY_ID, 0, 0, 0},
+>> +       {0,}
+>> +};
+>> +
+>> +static struct pci_driver riscv_iommu_pci_driver = {
+>> +       .name = KBUILD_MODNAME,
+>> +       .id_table = riscv_iommu_pci_tbl,
+>> +       .probe = riscv_iommu_pci_probe,
+>> +       .remove = riscv_iommu_pci_remove,
+>> +       .driver = {
+>> +               .suppress_bind_attrs = true,
+>> +       },
+>> +};
+>> +
+>> +builtin_pci_driver(riscv_iommu_pci_driver);
+>> --
+>> 2.34.1
+>>
+>>
+>> _______________________________________________
+>> linux-riscv mailing list
+>> linux-riscv@lists.infradead.org
+>> http://lists.infradead.org/mailman/listinfo/linux-riscv
+> 
