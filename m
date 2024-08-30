@@ -1,143 +1,89 @@
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id AB62517BB0C
-	for <iommu@lists.linux.dev>; Fri, 30 Aug 2024 12:54:01 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 740331DA26;
+	Fri, 30 Aug 2024 13:20:16 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1725022443; cv=none; b=IKIQfQ5q320bh17fXBaGyYBWe7Z7nM5bqQi4XpJHIz2RHvJ7NX7V/4+ANCMRiG2J4THzbJgnL3J88ICncwYhjY21vfOkYeLXF5HAaJfjpuN/SaFPsKgrruN6OnC3vDHJvQigaftP/JPzfxJugGhmtlqu8HLvJkaQoLwHoz0+MvU=
+	t=1725024016; cv=none; b=ZzgRyZ3Bq0KU1viL2wzcxpWe5oXHFKVzaJMNXmx3+sfjy+n2xgJYDpn0oTzUp3801iPg9l1bHn55bwRIdZuF44Sqw3XbIVeHfOEovgszUiTJiGosMJC3Gzhb4dqFPqDq31vVwh2UCthScKcgtFvQCoO/j4IeD+RV2A5o81K3mhY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1725022443; c=relaxed/simple;
-	bh=Zq61/A7v10LBO9Fzob+2az5/LlVNojC3XIEiFP1NTi4=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=YU8IF4oxii6BovxnC9KQKVyJc3Tozr93RWDOR784Xt2oOswlil3IKzc7k0P/K6cmjuykSFAAdqDAXpdgUZf2N7fNlAzZyDHo46XfwZVcdqey/VN4SELIq6aSch9JfW26Doy3a0oTWVruhyN48jNPmgeQc8f2+T1nEtUCd72PEks=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; arc=none smtp.client-ip=217.140.110.172
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 0D46A1063;
-	Fri, 30 Aug 2024 05:54:27 -0700 (PDT)
-Received: from [10.1.196.40] (e121345-lin.cambridge.arm.com [10.1.196.40])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id B12D83F66E;
-	Fri, 30 Aug 2024 05:53:58 -0700 (PDT)
-Message-ID: <fe5fcd06-ff28-4171-aa22-1bdc1e8510d0@arm.com>
-Date: Fri, 30 Aug 2024 13:53:57 +0100
+	s=arc-20240116; t=1725024016; c=relaxed/simple;
+	bh=94Welc0bGrekE34PhslUKoQ0m9+lfFsFIl7PO49TEhk=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=E5hEJFvHAr4zLCn9uXyxNh/zjie9/XDqT9XEhZc0vJZs79+8ISiFbET43ZTVMWtbvAKdGoPo/xJr4zBIDi17iE4IuK6+yDk5ALsUpNP4MUbLMAuOj0KaLB6hBNjd7gBg4bk0OrSlIT0UjsCzHwJtgV1hmRrFzamJwNwSbSw/iMU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=qLAEfU4b; arc=none smtp.client-ip=10.30.226.201
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="qLAEfU4b"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0728AC4CEC5;
+	Fri, 30 Aug 2024 13:20:13 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1725024016;
+	bh=94Welc0bGrekE34PhslUKoQ0m9+lfFsFIl7PO49TEhk=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=qLAEfU4b1/TtXoNEjWy8QSUhNrzegmDQaXsBsjbx4MU6FwUwUdxQvlEr5NsvmVSBf
+	 4Xpx0xsFr06IzDPJ1fHSXDq99qxuYLh6dFSitkupG9xyQiFORsm83k4iC7QFSxR1tN
+	 6Yw5tItwrxvTBFl2cOVEbir8Mek5tZbZ6CM/Y2heGSMGjt2dUXPtYZefL5g+cGeAup
+	 PB/h7rDhhDq/EIG+YvRaU/A7XZwmFmLwnW6sx8wSR/uM+pM39CZG9JjxIW4R7II9lr
+	 KttAbtkHle5a0j2+FrIAX8FZBZDIOGmgJXuAjwK6WhrDgYnMtHfmQbV4eSpOylDjLh
+	 c6psNc7lsa6cw==
+Date: Fri, 30 Aug 2024 14:20:10 +0100
+From: Will Deacon <will@kernel.org>
+To: Rob Clark <robdclark@gmail.com>
+Cc: iommu@lists.linux.dev, Robin Murphy <robin.murphy@arm.com>,
+	Rob Clark <robdclark@chromium.org>, Joerg Roedel <joro@8bytes.org>,
+	Jason Gunthorpe <jgg@ziepe.ca>,
+	Joao Martins <joao.m.martins@oracle.com>,
+	Kevin Tian <kevin.tian@intel.com>,
+	Steven Price <steven.price@arm.com>,
+	Lu Baolu <baolu.lu@linux.intel.com>,
+	Boris Brezillon <boris.brezillon@collabora.com>,
+	"moderated list:ARM SMMU DRIVERS" <linux-arm-kernel@lists.infradead.org>,
+	open list <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH v9 3/4] iommu/io-pgtable-arm: Add way to debug pgtable
+ walk
+Message-ID: <20240830132009.GB8615@willie-the-truck>
+References: <20240827181717.187245-1-robdclark@gmail.com>
+ <20240827181717.187245-4-robdclark@gmail.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v14 1/6] iommu/arm-smmu: re-enable context caching in smmu
- reset operation
-To: Bibek Kumar Patro <quic_bibekkum@quicinc.com>, robdclark@gmail.com,
- will@kernel.org, joro@8bytes.org, jgg@ziepe.ca, jsnitsel@redhat.com,
- robh@kernel.org, krzysztof.kozlowski@linaro.org, quic_c_gdjako@quicinc.com,
- dmitry.baryshkov@linaro.org, konrad.dybcio@linaro.org
-Cc: iommu@lists.linux.dev, linux-arm-msm@vger.kernel.org,
- linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
-References: <20240816174259.2056829-1-quic_bibekkum@quicinc.com>
- <20240816174259.2056829-2-quic_bibekkum@quicinc.com>
-From: Robin Murphy <robin.murphy@arm.com>
-Content-Language: en-GB
-In-Reply-To: <20240816174259.2056829-2-quic_bibekkum@quicinc.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20240827181717.187245-4-robdclark@gmail.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 
-On 16/08/2024 6:42 pm, Bibek Kumar Patro wrote:
-> Default MMU-500 reset operation disables context caching in
-> prefetch buffer. It is however expected for context banks using
-> the ACTLR register to retain their prefetch value during reset
-> and runtime suspend.
+On Tue, Aug 27, 2024 at 11:17:11AM -0700, Rob Clark wrote:
+> From: Rob Clark <robdclark@chromium.org>
 > 
-> Replace default MMU-500 reset operation with Qualcomm specific reset
-> operation which envelope the default reset operation and re-enables
-> context caching in prefetch buffer for Qualcomm SoCs.
+> Add an io-pgtable method to walk the pgtable returning the raw PTEs that
+> would be traversed for a given iova access.
 > 
-> Reviewed-by: Konrad Dybcio <konrad.dybcio@linaro.org>
-> Signed-off-by: Bibek Kumar Patro <quic_bibekkum@quicinc.com>
+> Signed-off-by: Rob Clark <robdclark@chromium.org>
 > ---
->   drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c | 36 ++++++++++++++++++++--
->   1 file changed, 33 insertions(+), 3 deletions(-)
+>  drivers/iommu/io-pgtable-arm.c | 25 +++++++++++++++++++++++++
+>  include/linux/io-pgtable.h     | 15 +++++++++++++++
+>  2 files changed, 40 insertions(+)
 > 
-> diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
-> index 36c6b36ad4ff..8ac1850b852f 100644
-> --- a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
-> +++ b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
-> @@ -16,6 +16,16 @@
-> 
->   #define QCOM_DUMMY_VAL	-1
-> 
-> +/*
-> + * SMMU-500 TRM defines BIT(0) as CMTLB (Enable context caching in the
-> + * macro TLB) and BIT(1) as CPRE (Enable context caching in the prefetch
-> + * buffer). The remaining bits are implementation defined and vary across
-> + * SoCs.
-> + */
-> +
-> +#define CPRE			(1 << 1)
-> +#define CMTLB			(1 << 0)
-> +
->   static struct qcom_smmu *to_qcom_smmu(struct arm_smmu_device *smmu)
->   {
->   	return container_of(smmu, struct qcom_smmu, smmu);
-> @@ -381,11 +391,31 @@ static int qcom_smmu_def_domain_type(struct device *dev)
->   	return match ? IOMMU_DOMAIN_IDENTITY : 0;
->   }
-> 
-> +static int qcom_smmu500_reset(struct arm_smmu_device *smmu)
+> diff --git a/drivers/iommu/io-pgtable-arm.c b/drivers/iommu/io-pgtable-arm.c
+> index efed8e519111..11af49119f37 100644
+> --- a/drivers/iommu/io-pgtable-arm.c
+> +++ b/drivers/iommu/io-pgtable-arm.c
+> @@ -759,6 +759,30 @@ static phys_addr_t arm_lpae_iova_to_phys(struct io_pgtable_ops *ops,
+>  	return iopte_to_paddr(d.pte, data) | iova;
+>  }
+>  
+> +static int visit_pgtable_walk(struct io_pgtable_walk_data *walk_data, int lvl,
+> +			      arm_lpae_iopte *ptep, size_t size)
 > +{
-> +	int ret;
-> +	u32 val;
-> +	int i;
-> +
-> +	ret = arm_mmu500_reset(smmu);
-> +	if (ret)
-> +		return ret;
-> +
-> +	/* arm_mmu500_reset() disables CPRE which is re-enabled here */
-
-I still think it would be good to document why we think this is OK, 
-given the reasons for disabling CPRE to begin with.
-
-Thanks,
-Robin.
-
-> +	for (i = 0; i < smmu->num_context_banks; ++i) {
-> +		val = arm_smmu_cb_read(smmu, i, ARM_SMMU_CB_ACTLR);
-> +		val |= CPRE;
-> +		arm_smmu_cb_write(smmu, i, ARM_SMMU_CB_ACTLR, val);
-> +	}
-> +
+> +	struct arm_lpae_io_pgtable_walk_data *data = walk_data->data;
+> +	data->ptes[data->level++] = *ptep;
 > +	return 0;
 > +}
-> +
->   static int qcom_sdm845_smmu500_reset(struct arm_smmu_device *smmu)
->   {
->   	int ret;
-> 
-> -	arm_mmu500_reset(smmu);
-> +	qcom_smmu500_reset(smmu);
-> 
->   	/*
->   	 * To address performance degradation in non-real time clients,
-> @@ -412,7 +442,7 @@ static const struct arm_smmu_impl qcom_smmu_500_impl = {
->   	.init_context = qcom_smmu_init_context,
->   	.cfg_probe = qcom_smmu_cfg_probe,
->   	.def_domain_type = qcom_smmu_def_domain_type,
-> -	.reset = arm_mmu500_reset,
-> +	.reset = qcom_smmu500_reset,
->   	.write_s2cr = qcom_smmu_write_s2cr,
->   	.tlb_sync = qcom_smmu_tlb_sync,
->   #ifdef CONFIG_ARM_SMMU_QCOM_DEBUG
-> @@ -445,7 +475,7 @@ static const struct arm_smmu_impl qcom_adreno_smmu_v2_impl = {
->   static const struct arm_smmu_impl qcom_adreno_smmu_500_impl = {
->   	.init_context = qcom_adreno_smmu_init_context,
->   	.def_domain_type = qcom_smmu_def_domain_type,
-> -	.reset = arm_mmu500_reset,
-> +	.reset = qcom_smmu500_reset,
->   	.alloc_context_bank = qcom_adreno_smmu_alloc_context_bank,
->   	.write_sctlr = qcom_adreno_smmu_write_sctlr,
->   	.tlb_sync = qcom_smmu_tlb_sync,
-> --
-> 2.34.1
-> 
+
+I'm struggling to see how this works given that the ->visit() callback
+is only called for leaf entries in the page-table. What am I missing?
+
+Will
