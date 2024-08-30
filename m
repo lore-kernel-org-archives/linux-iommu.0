@@ -1,329 +1,554 @@
-Received: from mail-pj1-f52.google.com (mail-pj1-f52.google.com [209.85.216.52])
+Received: from mail-wm1-f43.google.com (mail-wm1-f43.google.com [209.85.128.43])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 356231B652F
-	for <iommu@lists.linux.dev>; Fri, 30 Aug 2024 15:54:07 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.216.52
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id ED77F1B81D4
+	for <iommu@lists.linux.dev>; Fri, 30 Aug 2024 16:09:10 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.43
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1725033250; cv=none; b=rg0Q8gnEN/pOVPudW5OtJ2sOmTe7L4Y3zP4ugl3qJ2b3CskMQromaw0iF5A+NOOKL6Qn8be63KcMYYsGq1HEEPouFNisGTdZBrkvuH+J7muOJfuLkmW5Lm3ND/DZvpT45d7V1+hULplQOkR/pvqBAYpX2VfLNgHgOADoBSUMznQ=
+	t=1725034153; cv=none; b=OAXAwmdz3u8oOpnt1a5oVCxuKTLZZG5TIAjWsvBmEB2V13kiSz8jdopgl0R51yiDf+GFGvyt+lcRduHqfE60yaI9QXQdrCHzw8Jkm2B4pn3MwT4CRNlDcjgjUDc5lTNhl/yJ9DwP8SFDbvkNEUT8lPrVsl9iEqxkIBduFABGspU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1725033250; c=relaxed/simple;
-	bh=jbMTfg+uDRYs2k1IxLMPWLaXOBcla/O/urjT8XyOs2g=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=kCM3g9TV7sL3ZGDfFrrE4GDwSDzVFL4a673xn1ipH5VH6OA+40huUeKRT/njyxV2N8zfyMikpZ3lpFuZqw9Jkqsdxs5HZGz2INc/0dmJqDruvHsqBRAg+esv/9clAH8DtSq8+n04Xn0mQhvSM017rgdf6r+oZM/eLqx/fuZUhOM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=rivosinc.com; spf=pass smtp.mailfrom=rivosinc.com; dkim=pass (2048-bit key) header.d=rivosinc-com.20230601.gappssmtp.com header.i=@rivosinc-com.20230601.gappssmtp.com header.b=1e5bsnNA; arc=none smtp.client-ip=209.85.216.52
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=rivosinc.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=rivosinc.com
+	s=arc-20240116; t=1725034153; c=relaxed/simple;
+	bh=7rBQFpn3FjGjlRb5BTY+59xG7djlagD94WOjLBNAm9g=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=ZYcYjZbQNWTS/C+UKqNP1PLWORIP7HY2D3OwG1oCddEfWAWYQMuVJJ6alkNLFRbZ1zljb1zGnGiAFbtM7YcNqdLy8zIOFN6QRlKb2YMzTqU8kaJngt+zMNaf08G1lyUblvUMX/sLmH+QJumiXOKLd/ZutfJU9eG7sjQsd+FNzCE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=fF/azhXg; arc=none smtp.client-ip=209.85.128.43
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=rivosinc-com.20230601.gappssmtp.com header.i=@rivosinc-com.20230601.gappssmtp.com header.b="1e5bsnNA"
-Received: by mail-pj1-f52.google.com with SMTP id 98e67ed59e1d1-2d87176316eso531082a91.0
-        for <iommu@lists.linux.dev>; Fri, 30 Aug 2024 08:54:07 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="fF/azhXg"
+Received: by mail-wm1-f43.google.com with SMTP id 5b1f17b1804b1-429d1a9363aso57055e9.1
+        for <iommu@lists.linux.dev>; Fri, 30 Aug 2024 09:09:10 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=rivosinc-com.20230601.gappssmtp.com; s=20230601; t=1725033247; x=1725638047; darn=lists.linux.dev;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=6zFrMVsJYl3sotqJz8TrPZcTYV/4zTZNt2ckjtky3/Y=;
-        b=1e5bsnNAeX/fIilP+fMxoPpDmnT7o/oRienfk4O4eMi/eslY35QSutCIGMfC4L6cEG
-         6oYFVRvjcqr4VlQYTnoya68DWzhkhrzLuORyOJ5xDMZnBaB560aJuQQ+5xrWpOezrakf
-         J9BvUXLlUS2/alHYtKIUmQLmSWFF+J8Ya1IAdNprXW00PYez913zQhz2+yvoTmbqXwOt
-         Pot9PqoDbTe8muGIOJ8oJFg8P8NZLYVLfZdaJdLDVi035rzYTmMaXLdgU+RKMKqR6V0T
-         a9rSbN2PXwA+wheR2i4EbZ949D0QvJysuhGPoBjQI92eIpDQiOe/XOoQPRwUM8MS1XtI
-         Xvxg==
+        d=google.com; s=20230601; t=1725034149; x=1725638949; darn=lists.linux.dev;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=vv0fuL087x3MhC6ya2Rf+1FppafAgNLtVp021iq6Ns4=;
+        b=fF/azhXgnDHmUljBE7gCGZCUgj3ng6gDQ1bw5DUZq+3bYp464wATNKBwUMI3+ih/fc
+         acfu+E4BXYALPqFv4UGWDhKiTiT8ffDpg8t30bY36CnVdKr15l97A+FNo7nKSsQipydx
+         65MmAMwI9uqJfM+rn9BXnDI03LAtLQTcW7rxDa2jFm2cjqiImBkI32tYVzJezyqmUA7u
+         Jx1hLauSZd/DF1W3z1S4bBCkHFpOrtpVF0/8G4owWR7z6/pfJXq+jc3ulyqGwXJL/kX8
+         xOqpupLCg66YZD+w25sp+neM0/EhrafO0yan74lnmjyYgR4vhCUnPxUxK9Py1gqNpe0T
+         kBOg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1725033247; x=1725638047;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=6zFrMVsJYl3sotqJz8TrPZcTYV/4zTZNt2ckjtky3/Y=;
-        b=iwXyAZm+bWdczm+iA8AEwQ7wEbzIiERcWtyQat/M9/jdqGa7AGx8M9SooZ8ZrVUxCe
-         GmqMx9nYTU0bM5RhQ7tca33R6yLSslJrGEwCJUekfJAt8W0YTV0BZv0zXP56nb3JyIxa
-         u5flkcPE5GTStdvcFD0klZXLqtSE4ni71y3HVqVUeKWBS4u5TkaUxZlPpLL3tvngNrX6
-         m8C3b/iYx68SqdPGU19H9bCMPFDF3Fn0oUIT4+ODDcEZ8M362thCbITHXMRbNK84CteO
-         TTvsKCuZPV4YA8ShVaI2MzsyIzlzPG7796Acigmy7CHXiMJNdixtKk7BBU5ZNCH53Zxt
-         GJ0A==
-X-Forwarded-Encrypted: i=1; AJvYcCUaeLdwRpXUGgevCBx0yKExdwH+55nhVrEg+0TC1GQ37KGdESsY6LzDwVgY/MtNxFTYn9ztxg==@lists.linux.dev
-X-Gm-Message-State: AOJu0YzJwTmif7knZNQTrqeJSM33T0uE9p5STfzo0l6/TOT+lsADIfZN
-	fdkR02E7JQdDfKKfZ1Gtj43UGEgo9CJD/TiztDyjvM2EWtDSvi7YmJL49sWjXdXcCiPtlsV6J/z
-	w0+HDmR1kgN6O0FksOA327AFf+HoDzMzE18MsOA==
-X-Google-Smtp-Source: AGHT+IHqww2BN0wkQwPYdMhnQTg3TxCGlp9Mk+rODktSERGIPDWIjWzjq9myksdgfoZJdBK+HY3p2Z1cUXjFTbwu1Bo=
-X-Received: by 2002:a17:90b:17c5:b0:2c2:d590:808e with SMTP id
- 98e67ed59e1d1-2d86b00d06fmr4398660a91.13.1725033247242; Fri, 30 Aug 2024
- 08:54:07 -0700 (PDT)
+        d=1e100.net; s=20230601; t=1725034149; x=1725638949;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=vv0fuL087x3MhC6ya2Rf+1FppafAgNLtVp021iq6Ns4=;
+        b=g2Vmzvc8hYJDmJDiu9yi665JqNNzRREA5jOZ76kcaHtICe3nj0m1x6KLI9cbynNZ0E
+         sVcFVvbjUR3+wWqw0vXbMF26lzp2bOFj97VUVRJlIbL2uXF49Ewb0KLfEUt8lzcPgbwr
+         vUfe9DkHZN9Dmv1Rd1V7J1bVJbkj2XC1qWgpZg2ltrdHtS/qWzOIwm85uq3QhCCvVp8X
+         Bs6GrgfhsJHRYj9iEpcErE+o488lJcSwfjoN8WuCfHR63zUSGvCosGjQcUl1mnN9b5eJ
+         sapvq5vmfIJ/aK6qXae/fXX5Q1EVpbsj9smr3VjwppnQMRwHEOFJwxvwjelPsgmyAGzL
+         iJGw==
+X-Forwarded-Encrypted: i=1; AJvYcCXDQWr5ux8sYflgHy6/oGSLH7GOe5AilbIB0jI2QAYVcnFrO2XEE0UpTaA6rbO9Ggofnqb36w==@lists.linux.dev
+X-Gm-Message-State: AOJu0YxObUDW+5Y0Kkokwtoi5h7yXh/MFA1vOfo6blge6eVzt53vESDl
+	xHbmiz9ACMGCmMHpsVt29CjJ3djYGXapYYhUOSvejg7lzm0KxW0yX9IvFrGiJg==
+X-Google-Smtp-Source: AGHT+IFDKw+hmg6UDKgRNwErXouL/84n0xlJsA/x2jAYR4WonwLW5J8HQmXP4JmIMEjB7oqEYgQQ2Q==
+X-Received: by 2002:a05:600c:b91:b0:426:66a0:6df6 with SMTP id 5b1f17b1804b1-42bba7e2adbmr1505105e9.0.1725034148699;
+        Fri, 30 Aug 2024 09:09:08 -0700 (PDT)
+Received: from google.com (109.36.187.35.bc.googleusercontent.com. [35.187.36.109])
+        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-3749ee4abe4sm4388376f8f.17.2024.08.30.09.09.08
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 30 Aug 2024 09:09:08 -0700 (PDT)
+Date: Fri, 30 Aug 2024 16:09:04 +0000
+From: Mostafa Saleh <smostafa@google.com>
+To: Jason Gunthorpe <jgg@nvidia.com>
+Cc: acpica-devel@lists.linux.dev, Hanjun Guo <guohanjun@huawei.com>,
+	iommu@lists.linux.dev, Joerg Roedel <joro@8bytes.org>,
+	Kevin Tian <kevin.tian@intel.com>, kvm@vger.kernel.org,
+	Len Brown <lenb@kernel.org>, linux-acpi@vger.kernel.org,
+	linux-arm-kernel@lists.infradead.org,
+	Lorenzo Pieralisi <lpieralisi@kernel.org>,
+	"Rafael J. Wysocki" <rafael@kernel.org>,
+	Robert Moore <robert.moore@intel.com>,
+	Robin Murphy <robin.murphy@arm.com>,
+	Sudeep Holla <sudeep.holla@arm.com>, Will Deacon <will@kernel.org>,
+	Alex Williamson <alex.williamson@redhat.com>,
+	Eric Auger <eric.auger@redhat.com>,
+	Jean-Philippe Brucker <jean-philippe@linaro.org>,
+	Moritz Fischer <mdf@kernel.org>,
+	Michael Shavit <mshavit@google.com>,
+	Nicolin Chen <nicolinc@nvidia.com>, patches@lists.linux.dev,
+	Shameerali Kolothum Thodi <shameerali.kolothum.thodi@huawei.com>
+Subject: Re: [PATCH v2 8/8] iommu/arm-smmu-v3: Support IOMMU_DOMAIN_NESTED
+Message-ID: <ZtHuoDWbe54H1nhZ@google.com>
+References: <0-v2-621370057090+91fec-smmuv3_nesting_jgg@nvidia.com>
+ <8-v2-621370057090+91fec-smmuv3_nesting_jgg@nvidia.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <cover.1718388908.git.tjeznach@rivosinc.com> <e2792d6559f9f3e02b2243538647ef60f14176fd.1718388909.git.tjeznach@rivosinc.com>
- <CALw707q=B4h4CF3CvJOiRMMYqzvO_NG+taMLzZquCP=A9bgu0g@mail.gmail.com>
- <CAH2o1u5qU8y=FHRANQ74WnGfMim24Pho2av17rE5ZObZywjB4g@mail.gmail.com> <f330e50c-677a-4982-8ede-dd1e35cc3954@arm.com>
-In-Reply-To: <f330e50c-677a-4982-8ede-dd1e35cc3954@arm.com>
-From: Tomasz Jeznach <tjeznach@rivosinc.com>
-Date: Fri, 30 Aug 2024 08:53:56 -0700
-Message-ID: <CAH2o1u7OO5C7+0uhXg_pVWAekT4=EzZe_uMpziLCun769iLDPA@mail.gmail.com>
-Subject: Re: [PATCH v8 3/7] iommu/riscv: Add RISC-V IOMMU PCIe device driver
-To: Robin Murphy <robin.murphy@arm.com>
-Cc: Jim Shu <jim.shu@sifive.com>, Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>, 
-	Paul Walmsley <paul.walmsley@sifive.com>, Anup Patel <apatel@ventanamicro.com>, 
-	devicetree@vger.kernel.org, Conor Dooley <conor+dt@kernel.org>, 
-	Albert Ou <aou@eecs.berkeley.edu>, linux@rivosinc.com, linux-kernel@vger.kernel.org, 
-	Rob Herring <robh+dt@kernel.org>, Sebastien Boeuf <seb@rivosinc.com>, iommu@lists.linux.dev, 
-	Palmer Dabbelt <palmer@dabbelt.com>, Nick Kossifidis <mick@ics.forth.gr>, 
-	Krzysztof Kozlowski <krzk+dt@kernel.org>, linux-riscv@lists.infradead.org, 
-	Lu Baolu <baolu.lu@linux.intel.com>, Zong Li <zong.li@sifive.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <8-v2-621370057090+91fec-smmuv3_nesting_jgg@nvidia.com>
 
-On Fri, Aug 30, 2024 at 8:49=E2=80=AFAM Robin Murphy <robin.murphy@arm.com>=
- wrote:
->
-> On 30/08/2024 4:37 pm, Tomasz Jeznach wrote:
-> > On Fri, Aug 30, 2024 at 12:04=E2=80=AFAM Jim Shu <jim.shu@sifive.com> w=
-rote:
-> >>
-> >> Hi Tomasz,
-> >>
-> >> QEMU RISC-V IOMMU will switch the PCIe vendor/device ID to Red Hat one
-> >> [1] in the latest v6 patch.
-> >> Will we also support the PCIe ID of Red Hat one in the Linux driver?
-> >>
-> >
-> > Absolutely yes. I've been holding of with adding Red Hat PID/VID to
-> > limit number of changes outside iommu subsystem in this patch series,
-> > planing to sent single change adding new PCI IDs once this series is
-> > accepted.
->
-> It shouldn't entail any changes outside this code - per pci_ids.h,
-> PCI_VENDOR_ID_REDHAT is already defined, while the individual IOMMU
-> device IDs *should* stay local to this driver as the only user of them.
-> Similarly, the Rivos vendor ID would only warrant factoring out once
-> another driver turns up wanting to share it.
->
-> Thanks,
-> Robin.
->
+Hi Jason,
 
-Ok, keeping device ID local will make the change simpler. Will add in
-next revision.
-Thank you for this comment.
+On Tue, Aug 27, 2024 at 12:51:38PM -0300, Jason Gunthorpe wrote:
+> For SMMUv3 a IOMMU_DOMAIN_NESTED is composed of a S2 iommu_domain acting
+> as the parent and a user provided STE fragment that defines the CD table
+> and related data with addresses translated by the S2 iommu_domain.
+> 
+> The kernel only permits userspace to control certain allowed bits of the
+> STE that are safe for user/guest control.
+> 
+> IOTLB maintenance is a bit subtle here, the S1 implicitly includes the S2
+> translation, but there is no way of knowing which S1 entries refer to a
+> range of S2.
+> 
+> For the IOTLB we follow ARM's guidance and issue a CMDQ_OP_TLBI_NH_ALL to
+> flush all ASIDs from the VMID after flushing the S2 on any change to the
+> S2.
+> 
+> Similarly we have to flush the entire ATC if the S2 is changed.
+> 
 
-Best,
-- Tomasz
+I am still reviewing this patch, but just some quick questions.
 
+1) How does userspace do IOTLB maintenance for S1 in that case?
 
-> > Driver implementation is generic and should correctly
-> > interact with QEMU model and other hardware implementations of RISC-V
-> > IOMMU specification.
-> >
-> > Best regards,
-> >   - Tomasz
-> >
-> >> [1] https://patchew.org/QEMU/20240801154334.1009852-1-dbarboza@ventana=
-micro.com/20240801154334.1009852-5-dbarboza@ventanamicro.com/
-> >>
-> >>
-> >> Regards,
-> >> Jim Shu
-> >>
-> >>
-> >>
-> >> On Sat, Jun 15, 2024 at 1:29=E2=80=AFPM Tomasz Jeznach <tjeznach@rivos=
-inc.com> wrote:
-> >>>
-> >>> Introduce device driver for PCIe implementation
-> >>> of RISC-V IOMMU architected hardware.
-> >>>
-> >>> IOMMU hardware and system support for MSI or MSI-X is
-> >>> required by this implementation.
-> >>>
-> >>> Vendor and device identifiers used in this patch
-> >>> matches QEMU implementation of the RISC-V IOMMU PCIe
-> >>> device, from Rivos VID (0x1efd) range allocated by the PCI-SIG.
-> >>>
-> >>> MAINTAINERS | added iommu-pci.c already covered by matching pattern.
-> >>>
-> >>> Link: https://lore.kernel.org/qemu-devel/20240307160319.675044-1-dbar=
-boza@ventanamicro.com/
-> >>> Co-developed-by: Nick Kossifidis <mick@ics.forth.gr>
-> >>> Signed-off-by: Nick Kossifidis <mick@ics.forth.gr>
-> >>> Reviewed-by: Lu Baolu <baolu.lu@linux.intel.com>
-> >>> Signed-off-by: Tomasz Jeznach <tjeznach@rivosinc.com>
-> >>> ---
-> >>>   drivers/iommu/riscv/Kconfig     |   5 ++
-> >>>   drivers/iommu/riscv/Makefile    |   1 +
-> >>>   drivers/iommu/riscv/iommu-pci.c | 119 +++++++++++++++++++++++++++++=
-+++
-> >>>   3 files changed, 125 insertions(+)
-> >>>   create mode 100644 drivers/iommu/riscv/iommu-pci.c
-> >>>
-> >>> diff --git a/drivers/iommu/riscv/Kconfig b/drivers/iommu/riscv/Kconfi=
-g
-> >>> index 5dcc5c45aa50..c071816f59a6 100644
-> >>> --- a/drivers/iommu/riscv/Kconfig
-> >>> +++ b/drivers/iommu/riscv/Kconfig
-> >>> @@ -13,3 +13,8 @@ config RISCV_IOMMU
-> >>>
-> >>>            Say Y here if your SoC includes an IOMMU device implementi=
-ng
-> >>>            the RISC-V IOMMU architecture.
-> >>> +
-> >>> +config RISCV_IOMMU_PCI
-> >>> +       def_bool y if RISCV_IOMMU && PCI_MSI
-> >>> +       help
-> >>> +         Support for the PCIe implementation of RISC-V IOMMU archite=
-cture.
-> >>> diff --git a/drivers/iommu/riscv/Makefile b/drivers/iommu/riscv/Makef=
-ile
-> >>> index e4c189de58d3..f54c9ed17d41 100644
-> >>> --- a/drivers/iommu/riscv/Makefile
-> >>> +++ b/drivers/iommu/riscv/Makefile
-> >>> @@ -1,2 +1,3 @@
-> >>>   # SPDX-License-Identifier: GPL-2.0-only
-> >>>   obj-$(CONFIG_RISCV_IOMMU) +=3D iommu.o iommu-platform.o
-> >>> +obj-$(CONFIG_RISCV_IOMMU_PCI) +=3D iommu-pci.o
-> >>> diff --git a/drivers/iommu/riscv/iommu-pci.c b/drivers/iommu/riscv/io=
-mmu-pci.c
-> >>> new file mode 100644
-> >>> index 000000000000..e675acceb290
-> >>> --- /dev/null
-> >>> +++ b/drivers/iommu/riscv/iommu-pci.c
-> >>> @@ -0,0 +1,119 @@
-> >>> +// SPDX-License-Identifier: GPL-2.0-only
-> >>> +
-> >>> +/*
-> >>> + * Copyright =C2=A9 2022-2024 Rivos Inc.
-> >>> + * Copyright =C2=A9 2023 FORTH-ICS/CARV
-> >>> + *
-> >>> + * RISCV IOMMU as a PCIe device
-> >>> + *
-> >>> + * Authors
-> >>> + *     Tomasz Jeznach <tjeznach@rivosinc.com>
-> >>> + *     Nick Kossifidis <mick@ics.forth.gr>
-> >>> + */
-> >>> +
-> >>> +#include <linux/compiler.h>
-> >>> +#include <linux/init.h>
-> >>> +#include <linux/iommu.h>
-> >>> +#include <linux/kernel.h>
-> >>> +#include <linux/pci.h>
-> >>> +
-> >>> +#include "iommu-bits.h"
-> >>> +#include "iommu.h"
-> >>> +
-> >>> +/* Rivos Inc. assigned PCI Vendor and Device IDs */
-> >>> +#ifndef PCI_VENDOR_ID_RIVOS
-> >>> +#define PCI_VENDOR_ID_RIVOS             0x1efd
-> >>> +#endif
-> >>> +
-> >>> +#ifndef PCI_DEVICE_ID_RIVOS_IOMMU
-> >>> +#define PCI_DEVICE_ID_RIVOS_IOMMU       0xedf1
-> >>> +#endif
-> >>> +
-> >>> +static int riscv_iommu_pci_probe(struct pci_dev *pdev, const struct =
-pci_device_id *ent)
-> >>> +{
-> >>> +       struct device *dev =3D &pdev->dev;
-> >>> +       struct riscv_iommu_device *iommu;
-> >>> +       int rc, vec;
-> >>> +
-> >>> +       rc =3D pcim_enable_device(pdev);
-> >>> +       if (rc)
-> >>> +               return rc;
-> >>> +
-> >>> +       if (!(pci_resource_flags(pdev, 0) & IORESOURCE_MEM))
-> >>> +               return -ENODEV;
-> >>> +
-> >>> +       if (pci_resource_len(pdev, 0) < RISCV_IOMMU_REG_SIZE)
-> >>> +               return -ENODEV;
-> >>> +
-> >>> +       rc =3D pcim_iomap_regions(pdev, BIT(0), pci_name(pdev));
-> >>> +       if (rc)
-> >>> +               return dev_err_probe(dev, rc, "pcim_iomap_regions fai=
-led\n");
-> >>> +
-> >>> +       iommu =3D devm_kzalloc(dev, sizeof(*iommu), GFP_KERNEL);
-> >>> +       if (!iommu)
-> >>> +               return -ENOMEM;
-> >>> +
-> >>> +       iommu->dev =3D dev;
-> >>> +       iommu->reg =3D pcim_iomap_table(pdev)[0];
-> >>> +
-> >>> +       pci_set_master(pdev);
-> >>> +       dev_set_drvdata(dev, iommu);
-> >>> +
-> >>> +       /* Check device reported capabilities / features. */
-> >>> +       iommu->caps =3D riscv_iommu_readq(iommu, RISCV_IOMMU_REG_CAPA=
-BILITIES);
-> >>> +       iommu->fctl =3D riscv_iommu_readl(iommu, RISCV_IOMMU_REG_FCTL=
-);
-> >>> +
-> >>> +       /* The PCI driver only uses MSIs, make sure the IOMMU support=
-s this */
-> >>> +       switch (FIELD_GET(RISCV_IOMMU_CAPABILITIES_IGS, iommu->caps))=
- {
-> >>> +       case RISCV_IOMMU_CAPABILITIES_IGS_MSI:
-> >>> +       case RISCV_IOMMU_CAPABILITIES_IGS_BOTH:
-> >>> +               break;
-> >>> +       default:
-> >>> +               return dev_err_probe(dev, -ENODEV,
-> >>> +                                    "unable to use message-signaled =
-interrupts\n");
-> >>> +       }
-> >>> +
-> >>> +       /* Allocate and assign IRQ vectors for the various events */
-> >>> +       rc =3D pci_alloc_irq_vectors(pdev, 1, RISCV_IOMMU_INTR_COUNT,
-> >>> +                                  PCI_IRQ_MSIX | PCI_IRQ_MSI);
-> >>> +       if (rc <=3D 0)
-> >>> +               return dev_err_probe(dev, -ENODEV,
-> >>> +                                    "unable to allocate irq vectors\=
-n");
-> >>> +
-> >>> +       iommu->irqs_count =3D rc;
-> >>> +       for (vec =3D 0; vec < iommu->irqs_count; vec++)
-> >>> +               iommu->irqs[vec] =3D msi_get_virq(dev, vec);
-> >>> +
-> >>> +       /* Enable message-signaled interrupts, fctl.WSI */
-> >>> +       if (iommu->fctl & RISCV_IOMMU_FCTL_WSI) {
-> >>> +               iommu->fctl ^=3D RISCV_IOMMU_FCTL_WSI;
-> >>> +               riscv_iommu_writel(iommu, RISCV_IOMMU_REG_FCTL, iommu=
-->fctl);
-> >>> +       }
-> >>> +
-> >>> +       return riscv_iommu_init(iommu);
-> >>> +}
-> >>> +
-> >>> +static void riscv_iommu_pci_remove(struct pci_dev *pdev)
-> >>> +{
-> >>> +       struct riscv_iommu_device *iommu =3D dev_get_drvdata(&pdev->d=
-ev);
-> >>> +
-> >>> +       riscv_iommu_remove(iommu);
-> >>> +}
-> >>> +
-> >>> +static const struct pci_device_id riscv_iommu_pci_tbl[] =3D {
-> >>> +       {PCI_VENDOR_ID_RIVOS, PCI_DEVICE_ID_RIVOS_IOMMU,
-> >>> +        PCI_ANY_ID, PCI_ANY_ID, 0, 0, 0},
-> >>> +       {0,}
-> >>> +};
-> >>> +
-> >>> +static struct pci_driver riscv_iommu_pci_driver =3D {
-> >>> +       .name =3D KBUILD_MODNAME,
-> >>> +       .id_table =3D riscv_iommu_pci_tbl,
-> >>> +       .probe =3D riscv_iommu_pci_probe,
-> >>> +       .remove =3D riscv_iommu_pci_remove,
-> >>> +       .driver =3D {
-> >>> +               .suppress_bind_attrs =3D true,
-> >>> +       },
-> >>> +};
-> >>> +
-> >>> +builtin_pci_driver(riscv_iommu_pci_driver);
-> >>> --
-> >>> 2.34.1
-> >>>
-> >>>
-> >>> _______________________________________________
-> >>> linux-riscv mailing list
-> >>> linux-riscv@lists.infradead.org
-> >>> http://lists.infradead.org/mailman/listinfo/linux-riscv
+2) Is there a reason the UAPI is designed this way?
+The way I imagined this, is that userspace will pass the pointer to the CD
+(+ format) not the STE (or part of it).
+Making user space messing with shareability and cacheability of S1 CD access
+feels odd. (Although CD configure page table access which is similar).
+
+Thanks,
+Mostafa
+
+> Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
+> ---
+>  drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 217 +++++++++++++++++++-
+>  drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h |  20 ++
+>  include/uapi/linux/iommufd.h                |  20 ++
+>  3 files changed, 250 insertions(+), 7 deletions(-)
+> 
+> diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+> index 8db3db6328f8b7..a21dce1f25cb95 100644
+> --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+> +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+> @@ -295,6 +295,7 @@ static int arm_smmu_cmdq_build_cmd(u64 *cmd, struct arm_smmu_cmdq_ent *ent)
+>  	case CMDQ_OP_TLBI_NH_ASID:
+>  		cmd[0] |= FIELD_PREP(CMDQ_TLBI_0_ASID, ent->tlbi.asid);
+>  		fallthrough;
+> +	case CMDQ_OP_TLBI_NH_ALL:
+>  	case CMDQ_OP_TLBI_S12_VMALL:
+>  		cmd[0] |= FIELD_PREP(CMDQ_TLBI_0_VMID, ent->tlbi.vmid);
+>  		break;
+> @@ -1640,6 +1641,59 @@ void arm_smmu_make_s2_domain_ste(struct arm_smmu_ste *target,
+>  }
+>  EXPORT_SYMBOL_IF_KUNIT(arm_smmu_make_s2_domain_ste);
+>  
+> +static void arm_smmu_make_nested_cd_table_ste(
+> +	struct arm_smmu_ste *target, struct arm_smmu_master *master,
+> +	struct arm_smmu_nested_domain *nested_domain, bool ats_enabled)
+> +{
+> +	arm_smmu_make_s2_domain_ste(target, master, nested_domain->s2_parent,
+> +				    ats_enabled);
+> +
+> +	target->data[0] = cpu_to_le64(STRTAB_STE_0_V |
+> +				      FIELD_PREP(STRTAB_STE_0_CFG,
+> +						 STRTAB_STE_0_CFG_NESTED)) |
+> +			  (nested_domain->ste[0] & ~STRTAB_STE_0_CFG);
+> +	target->data[1] |= nested_domain->ste[1];
+> +}
+> +
+> +/*
+> + * Create a physical STE from the virtual STE that userspace provided when it
+> + * created the nested domain. Using the vSTE userspace can request:
+> + * - Non-valid STE
+> + * - Abort STE
+> + * - Bypass STE (install the S2, no CD table)
+> + * - CD table STE (install the S2 and the userspace CD table)
+> + */
+> +static void arm_smmu_make_nested_domain_ste(
+> +	struct arm_smmu_ste *target, struct arm_smmu_master *master,
+> +	struct arm_smmu_nested_domain *nested_domain, bool ats_enabled)
+> +{
+> +	/*
+> +	 * Userspace can request a non-valid STE through the nesting interface.
+> +	 * We relay that into an abort physical STE with the intention that
+> +	 * C_BAD_STE for this SID can be generated to userspace.
+> +	 */
+> +	if (!(nested_domain->ste[0] & cpu_to_le64(STRTAB_STE_0_V))) {
+> +		arm_smmu_make_abort_ste(target);
+> +		return;
+> +	}
+> +
+> +	switch (FIELD_GET(STRTAB_STE_0_CFG,
+> +			  le64_to_cpu(nested_domain->ste[0]))) {
+> +	case STRTAB_STE_0_CFG_S1_TRANS:
+> +		arm_smmu_make_nested_cd_table_ste(target, master, nested_domain,
+> +						  ats_enabled);
+> +		break;
+> +	case STRTAB_STE_0_CFG_BYPASS:
+> +		arm_smmu_make_s2_domain_ste(
+> +			target, master, nested_domain->s2_parent, ats_enabled);
+> +		break;
+> +	case STRTAB_STE_0_CFG_ABORT:
+> +	default:
+> +		arm_smmu_make_abort_ste(target);
+> +		break;
+> +	}
+> +}
+> +
+>  /*
+>   * This can safely directly manipulate the STE memory without a sync sequence
+>   * because the STE table has not been installed in the SMMU yet.
+> @@ -2065,7 +2119,16 @@ int arm_smmu_atc_inv_domain(struct arm_smmu_domain *smmu_domain,
+>  		if (!master->ats_enabled)
+>  			continue;
+>  
+> -		arm_smmu_atc_inv_to_cmd(master_domain->ssid, iova, size, &cmd);
+> +		if (master_domain->nest_parent) {
+> +			/*
+> +			 * If a S2 used as a nesting parent is changed we have
+> +			 * no option but to completely flush the ATC.
+> +			 */
+> +			arm_smmu_atc_inv_to_cmd(IOMMU_NO_PASID, 0, 0, &cmd);
+> +		} else {
+> +			arm_smmu_atc_inv_to_cmd(master_domain->ssid, iova, size,
+> +						&cmd);
+> +		}
+>  
+>  		for (i = 0; i < master->num_streams; i++) {
+>  			cmd.atc.sid = master->streams[i].id;
+> @@ -2192,6 +2255,16 @@ static void arm_smmu_tlb_inv_range_domain(unsigned long iova, size_t size,
+>  	}
+>  	__arm_smmu_tlb_inv_range(&cmd, iova, size, granule, smmu_domain);
+>  
+> +	if (smmu_domain->stage == ARM_SMMU_DOMAIN_S2 &&
+> +	    smmu_domain->nest_parent) {
+> +		/*
+> +		 * When the S2 domain changes all the nested S1 ASIDs have to be
+> +		 * flushed too.
+> +		 */
+> +		cmd.opcode = CMDQ_OP_TLBI_NH_ALL;
+> +		arm_smmu_cmdq_issue_cmd_with_sync(smmu_domain->smmu, &cmd);
+> +	}
+> +
+>  	/*
+>  	 * Unfortunately, this can't be leaf-only since we may have
+>  	 * zapped an entire table.
+> @@ -2604,8 +2677,8 @@ static void arm_smmu_disable_pasid(struct arm_smmu_master *master)
+>  
+>  static struct arm_smmu_master_domain *
+>  arm_smmu_find_master_domain(struct arm_smmu_domain *smmu_domain,
+> -			    struct arm_smmu_master *master,
+> -			    ioasid_t ssid)
+> +			    struct arm_smmu_master *master, ioasid_t ssid,
+> +			    bool nest_parent)
+>  {
+>  	struct arm_smmu_master_domain *master_domain;
+>  
+> @@ -2614,7 +2687,8 @@ arm_smmu_find_master_domain(struct arm_smmu_domain *smmu_domain,
+>  	list_for_each_entry(master_domain, &smmu_domain->devices,
+>  			    devices_elm) {
+>  		if (master_domain->master == master &&
+> -		    master_domain->ssid == ssid)
+> +		    master_domain->ssid == ssid &&
+> +		    master_domain->nest_parent == nest_parent)
+>  			return master_domain;
+>  	}
+>  	return NULL;
+> @@ -2634,6 +2708,9 @@ to_smmu_domain_devices(struct iommu_domain *domain)
+>  	if ((domain->type & __IOMMU_DOMAIN_PAGING) ||
+>  	    domain->type == IOMMU_DOMAIN_SVA)
+>  		return to_smmu_domain(domain);
+> +	if (domain->type == IOMMU_DOMAIN_NESTED)
+> +		return container_of(domain, struct arm_smmu_nested_domain,
+> +				    domain)->s2_parent;
+>  	return NULL;
+>  }
+>  
+> @@ -2649,7 +2726,8 @@ static void arm_smmu_remove_master_domain(struct arm_smmu_master *master,
+>  		return;
+>  
+>  	spin_lock_irqsave(&smmu_domain->devices_lock, flags);
+> -	master_domain = arm_smmu_find_master_domain(smmu_domain, master, ssid);
+> +	master_domain = arm_smmu_find_master_domain(
+> +		smmu_domain, master, ssid, domain->type == IOMMU_DOMAIN_NESTED);
+>  	if (master_domain) {
+>  		list_del(&master_domain->devices_elm);
+>  		kfree(master_domain);
+> @@ -2664,6 +2742,7 @@ struct arm_smmu_attach_state {
+>  	struct iommu_domain *old_domain;
+>  	struct arm_smmu_master *master;
+>  	bool cd_needs_ats;
+> +	bool disable_ats;
+>  	ioasid_t ssid;
+>  	/* Resulting state */
+>  	bool ats_enabled;
+> @@ -2716,7 +2795,8 @@ static int arm_smmu_attach_prepare(struct arm_smmu_attach_state *state,
+>  		 * enabled if we have arm_smmu_domain, those always have page
+>  		 * tables.
+>  		 */
+> -		state->ats_enabled = arm_smmu_ats_supported(master);
+> +		state->ats_enabled = !state->disable_ats &&
+> +				     arm_smmu_ats_supported(master);
+>  	}
+>  
+>  	if (smmu_domain) {
+> @@ -2725,6 +2805,8 @@ static int arm_smmu_attach_prepare(struct arm_smmu_attach_state *state,
+>  			return -ENOMEM;
+>  		master_domain->master = master;
+>  		master_domain->ssid = state->ssid;
+> +		master_domain->nest_parent = new_domain->type ==
+> +					       IOMMU_DOMAIN_NESTED;
+>  
+>  		/*
+>  		 * During prepare we want the current smmu_domain and new
+> @@ -3097,6 +3179,122 @@ static struct iommu_domain arm_smmu_blocked_domain = {
+>  	.ops = &arm_smmu_blocked_ops,
+>  };
+>  
+> +static int arm_smmu_attach_dev_nested(struct iommu_domain *domain,
+> +				      struct device *dev)
+> +{
+> +	struct arm_smmu_nested_domain *nested_domain =
+> +		container_of(domain, struct arm_smmu_nested_domain, domain);
+> +	struct arm_smmu_master *master = dev_iommu_priv_get(dev);
+> +	struct arm_smmu_attach_state state = {
+> +		.master = master,
+> +		.old_domain = iommu_get_domain_for_dev(dev),
+> +		.ssid = IOMMU_NO_PASID,
+> +		/* Currently invalidation of ATC is not supported */
+> +		.disable_ats = true,
+> +	};
+> +	struct arm_smmu_ste ste;
+> +	int ret;
+> +
+> +	if (arm_smmu_ssids_in_use(&master->cd_table) ||
+> +	    nested_domain->s2_parent->smmu != master->smmu)
+> +		return -EINVAL;
+> +
+> +	mutex_lock(&arm_smmu_asid_lock);
+> +	ret = arm_smmu_attach_prepare(&state, domain);
+> +	if (ret) {
+> +		mutex_unlock(&arm_smmu_asid_lock);
+> +		return ret;
+> +	}
+> +
+> +	arm_smmu_make_nested_domain_ste(&ste, master, nested_domain,
+> +					state.ats_enabled);
+> +	arm_smmu_install_ste_for_dev(master, &ste);
+> +	arm_smmu_attach_commit(&state);
+> +	mutex_unlock(&arm_smmu_asid_lock);
+> +	return 0;
+> +}
+> +
+> +static void arm_smmu_domain_nested_free(struct iommu_domain *domain)
+> +{
+> +	kfree(container_of(domain, struct arm_smmu_nested_domain, domain));
+> +}
+> +
+> +static const struct iommu_domain_ops arm_smmu_nested_ops = {
+> +	.attach_dev = arm_smmu_attach_dev_nested,
+> +	.free = arm_smmu_domain_nested_free,
+> +};
+> +
+> +static struct iommu_domain *
+> +arm_smmu_domain_alloc_nesting(struct device *dev, u32 flags,
+> +			      struct iommu_domain *parent,
+> +			      const struct iommu_user_data *user_data)
+> +{
+> +	struct arm_smmu_master *master = dev_iommu_priv_get(dev);
+> +	struct iommu_fwspec *fwspec = dev_iommu_fwspec_get(dev);
+> +	struct arm_smmu_nested_domain *nested_domain;
+> +	struct arm_smmu_domain *smmu_parent;
+> +	struct iommu_hwpt_arm_smmuv3 arg;
+> +	unsigned int eats;
+> +	unsigned int cfg;
+> +	int ret;
+> +
+> +	if (!(master->smmu->features & ARM_SMMU_FEAT_NESTING))
+> +		return ERR_PTR(-EOPNOTSUPP);
+> +
+> +	/*
+> +	 * Must support some way to prevent the VM from bypassing the cache
+> +	 * because VFIO currently does not do any cache maintenance.
+> +	 */
+> +	if (!(fwspec->flags & IOMMU_FWSPEC_PCI_RC_CANWBS) &&
+> +	    !(master->smmu->features & ARM_SMMU_FEAT_S2FWB))
+> +		return ERR_PTR(-EOPNOTSUPP);
+> +
+> +	ret = iommu_copy_struct_from_user(&arg, user_data,
+> +					  IOMMU_HWPT_DATA_ARM_SMMUV3, ste);
+> +	if (ret)
+> +		return ERR_PTR(ret);
+> +
+> +	if (flags || !(master->smmu->features & ARM_SMMU_FEAT_TRANS_S1))
+> +		return ERR_PTR(-EOPNOTSUPP);
+> +
+> +	if (!(parent->type & __IOMMU_DOMAIN_PAGING))
+> +		return ERR_PTR(-EINVAL);
+> +
+> +	smmu_parent = to_smmu_domain(parent);
+> +	if (smmu_parent->stage != ARM_SMMU_DOMAIN_S2 ||
+> +	    smmu_parent->smmu != master->smmu)
+> +		return ERR_PTR(-EINVAL);
+> +
+> +	/* EIO is reserved for invalid STE data. */
+> +	if ((arg.ste[0] & ~STRTAB_STE_0_NESTING_ALLOWED) ||
+> +	    (arg.ste[1] & ~STRTAB_STE_1_NESTING_ALLOWED))
+> +		return ERR_PTR(-EIO);
+> +
+> +	cfg = FIELD_GET(STRTAB_STE_0_CFG, le64_to_cpu(arg.ste[0]));
+> +	if (cfg != STRTAB_STE_0_CFG_ABORT && cfg != STRTAB_STE_0_CFG_BYPASS &&
+> +	    cfg != STRTAB_STE_0_CFG_S1_TRANS)
+> +		return ERR_PTR(-EIO);
+> +
+> +	eats = FIELD_GET(STRTAB_STE_1_EATS, le64_to_cpu(arg.ste[1]));
+> +	if (eats != STRTAB_STE_1_EATS_ABT)
+> +		return ERR_PTR(-EIO);
+> +
+> +	if (cfg != STRTAB_STE_0_CFG_S1_TRANS)
+> +		eats = STRTAB_STE_1_EATS_ABT;
+> +
+> +	nested_domain = kzalloc(sizeof(*nested_domain), GFP_KERNEL_ACCOUNT);
+> +	if (!nested_domain)
+> +		return ERR_PTR(-ENOMEM);
+> +
+> +	nested_domain->domain.type = IOMMU_DOMAIN_NESTED;
+> +	nested_domain->domain.ops = &arm_smmu_nested_ops;
+> +	nested_domain->s2_parent = smmu_parent;
+> +	nested_domain->ste[0] = arg.ste[0];
+> +	nested_domain->ste[1] = arg.ste[1] & ~cpu_to_le64(STRTAB_STE_1_EATS);
+> +
+> +	return &nested_domain->domain;
+> +}
+> +
+>  static struct iommu_domain *
+>  arm_smmu_domain_alloc_user(struct device *dev, u32 flags,
+>  			   struct iommu_domain *parent,
+> @@ -3108,9 +3306,13 @@ arm_smmu_domain_alloc_user(struct device *dev, u32 flags,
+>  	struct arm_smmu_domain *smmu_domain;
+>  	int ret;
+>  
+> +	if (parent)
+> +		return arm_smmu_domain_alloc_nesting(dev, flags, parent,
+> +						     user_data);
+> +
+>  	if (flags & ~PAGING_FLAGS)
+>  		return ERR_PTR(-EOPNOTSUPP);
+> -	if (parent || user_data)
+> +	if (user_data)
+>  		return ERR_PTR(-EOPNOTSUPP);
+>  
+>  	smmu_domain = arm_smmu_domain_alloc();
+> @@ -3123,6 +3325,7 @@ arm_smmu_domain_alloc_user(struct device *dev, u32 flags,
+>  			goto err_free;
+>  		}
+>  		smmu_domain->stage = ARM_SMMU_DOMAIN_S2;
+> +		smmu_domain->nest_parent = true;
+>  	}
+>  
+>  	smmu_domain->domain.type = IOMMU_DOMAIN_UNMANAGED;
+> diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
+> index 4b05c81b181a82..b563cfedf22e91 100644
+> --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
+> +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
+> @@ -240,6 +240,7 @@ static inline u32 arm_smmu_strtab_l2_idx(u32 sid)
+>  #define STRTAB_STE_0_CFG_BYPASS		4
+>  #define STRTAB_STE_0_CFG_S1_TRANS	5
+>  #define STRTAB_STE_0_CFG_S2_TRANS	6
+> +#define STRTAB_STE_0_CFG_NESTED		7
+>  
+>  #define STRTAB_STE_0_S1FMT		GENMASK_ULL(5, 4)
+>  #define STRTAB_STE_0_S1FMT_LINEAR	0
+> @@ -291,6 +292,15 @@ static inline u32 arm_smmu_strtab_l2_idx(u32 sid)
+>  
+>  #define STRTAB_STE_3_S2TTB_MASK		GENMASK_ULL(51, 4)
+>  
+> +/* These bits can be controlled by userspace for STRTAB_STE_0_CFG_NESTED */
+> +#define STRTAB_STE_0_NESTING_ALLOWED                                         \
+> +	cpu_to_le64(STRTAB_STE_0_V | STRTAB_STE_0_CFG | STRTAB_STE_0_S1FMT | \
+> +		    STRTAB_STE_0_S1CTXPTR_MASK | STRTAB_STE_0_S1CDMAX)
+> +#define STRTAB_STE_1_NESTING_ALLOWED                            \
+> +	cpu_to_le64(STRTAB_STE_1_S1DSS | STRTAB_STE_1_S1CIR |   \
+> +		    STRTAB_STE_1_S1COR | STRTAB_STE_1_S1CSH |   \
+> +		    STRTAB_STE_1_S1STALLD | STRTAB_STE_1_EATS)
+> +
+>  /*
+>   * Context descriptors.
+>   *
+> @@ -508,6 +518,7 @@ struct arm_smmu_cmdq_ent {
+>  			};
+>  		} cfgi;
+>  
+> +		#define CMDQ_OP_TLBI_NH_ALL     0x10
+>  		#define CMDQ_OP_TLBI_NH_ASID	0x11
+>  		#define CMDQ_OP_TLBI_NH_VA	0x12
+>  		#define CMDQ_OP_TLBI_EL2_ALL	0x20
+> @@ -790,10 +801,18 @@ struct arm_smmu_domain {
+>  	struct list_head		devices;
+>  	spinlock_t			devices_lock;
+>  	bool				enforce_cache_coherency : 1;
+> +	bool				nest_parent : 1;
+>  
+>  	struct mmu_notifier		mmu_notifier;
+>  };
+>  
+> +struct arm_smmu_nested_domain {
+> +	struct iommu_domain domain;
+> +	struct arm_smmu_domain *s2_parent;
+> +
+> +	__le64 ste[2];
+> +};
+> +
+>  /* The following are exposed for testing purposes. */
+>  struct arm_smmu_entry_writer_ops;
+>  struct arm_smmu_entry_writer {
+> @@ -830,6 +849,7 @@ struct arm_smmu_master_domain {
+>  	struct list_head devices_elm;
+>  	struct arm_smmu_master *master;
+>  	ioasid_t ssid;
+> +	u8 nest_parent;
+>  };
+>  
+>  static inline struct arm_smmu_domain *to_smmu_domain(struct iommu_domain *dom)
+> diff --git a/include/uapi/linux/iommufd.h b/include/uapi/linux/iommufd.h
+> index 83b6e1cd338d8f..76e9ad6c9403af 100644
+> --- a/include/uapi/linux/iommufd.h
+> +++ b/include/uapi/linux/iommufd.h
+> @@ -394,14 +394,34 @@ struct iommu_hwpt_vtd_s1 {
+>  	__u32 __reserved;
+>  };
+>  
+> +/**
+> + * struct iommu_hwpt_arm_smmuv3 - ARM SMMUv3 Context Descriptor Table info
+> + *                                (IOMMU_HWPT_DATA_ARM_SMMUV3)
+> + *
+> + * @ste: The first two double words of the user space Stream Table Entry for
+> + *       a user stage-1 Context Descriptor Table. Must be little-endian.
+> + *       Allowed fields: (Refer to "5.2 Stream Table Entry" in SMMUv3 HW Spec)
+> + *       - word-0: V, Cfg, S1Fmt, S1ContextPtr, S1CDMax
+> + *       - word-1: S1DSS, S1CIR, S1COR, S1CSH, S1STALLD
+> + *
+> + * -EIO will be returned if @ste is not legal or contains any non-allowed field.
+> + * Cfg can be used to select a S1, Bypass or Abort configuration. A Bypass
+> + * nested domain will translate the same as the nesting parent.
+> + */
+> +struct iommu_hwpt_arm_smmuv3 {
+> +	__aligned_le64 ste[2];
+> +};
+> +
+>  /**
+>   * enum iommu_hwpt_data_type - IOMMU HWPT Data Type
+>   * @IOMMU_HWPT_DATA_NONE: no data
+>   * @IOMMU_HWPT_DATA_VTD_S1: Intel VT-d stage-1 page table
+> + * @IOMMU_HWPT_DATA_ARM_SMMUV3: ARM SMMUv3 Context Descriptor Table
+>   */
+>  enum iommu_hwpt_data_type {
+>  	IOMMU_HWPT_DATA_NONE = 0,
+>  	IOMMU_HWPT_DATA_VTD_S1 = 1,
+> +	IOMMU_HWPT_DATA_ARM_SMMUV3 = 2,
+>  };
+>  
+>  /**
+> -- 
+> 2.46.0
+> 
