@@ -1,273 +1,237 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.19])
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.7])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D8C3D380;
-	Fri, 30 Aug 2024 07:05:21 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.19
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1725001524; cv=none; b=BOp3T+o2SKBOtDuqFoLtsSTqLEpg60Mi1cTS7fqg56NtJ/vToBKQGIkJ4H9kTIBiYFfrQtZ95PMJy7pNOTdrLW4mqp2p5OASLwwO/Iq5401gVe/xcIQlvnpNb1RSEimUFba8XRRW/tCZ8/ixJuLh8a1zCC2Pdr2kWRXsBv6vHd4=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1725001524; c=relaxed/simple;
-	bh=fs7dwCcIGstjP+8EDLC7kaBlHBE+/dzsUlL4+b4g1A8=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=HP+Vdd6Bd8Qz6bi/FJLMNfnX0w4jfYZL+IN5JRzFTEMY6oVHQ+tBuUdto4HAkbNTzh9D6BOxJJziEIOB5jJMp7fAqxhxDA0GuD5sXge8GNRfVEQgiF35HLVm8RmODlSc1KLc1BCqWDzpikAezEooGd1WC6Wy2te7HViJz0m6qK4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=hWPYb+WA; arc=none smtp.client-ip=198.175.65.19
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 492C21662F8;
+	Fri, 30 Aug 2024 07:41:43 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=192.198.163.7
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1725003706; cv=fail; b=F8MLwih6NBHG3aCxaoiWLU+84Te5DLNsijsqQHuto+NSds4A5pwuiiYdDHtB4XmFp/J5dLbhD98fTaSsxsnMYGDvT0Tpqsyq47H12dnNu8AatQGzF+ACuRxi9iV0lURWTp9RRi+FpZtQibGcfk5RUDA8X4DEEMJ1R6PTzUTi/aM=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1725003706; c=relaxed/simple;
+	bh=sDCkmVZNet13W+aArK923lDlPytJFx3vHwZMbw9gpKo=;
+	h=From:To:CC:Subject:Date:Message-ID:References:In-Reply-To:
+	 Content-Type:MIME-Version; b=ZHX6+MCfkRnQlSmAQogqqD9Kbl1Fe4ADdZ30IwsLsGrc1i8uYI+hhsqXSaIdxR7G4BhfYc5Kle4WcfIrqqghAkZXDDYtxi5Yy70azuRB8JJvm4pCl4uuWsXX496Wg8RkD1dHIDNcx2TA6H/BRvM7LSu55Mnm3/jRAWAJucb7if4=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=lR+lH1cP; arc=fail smtp.client-ip=192.198.163.7
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="hWPYb+WA"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="lR+lH1cP"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1725001522; x=1756537522;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=fs7dwCcIGstjP+8EDLC7kaBlHBE+/dzsUlL4+b4g1A8=;
-  b=hWPYb+WAalEHSUYhF5wkvpvUUIY0QRtPmbCgh1IYQ/rVmxfn6K0Vo9J7
-   lvQZwRKi7Ju0lzhccIHyi99N5l/7YCa348cL6mkVSyAdpRjiYvSrtmn0Q
-   sua2BloyMmcrVymQRkk7FmkUBn7ZE+F9Gxk3D+Hh/sksS35eBOrv4HNvI
-   eJELDdXHMzcEwL+jVweVwSI27WUNnkSP0blPy+maQOm3zmQUatnUvnwOe
-   oc3pR1+oploRew5JLVEDxCXhW1k2iVCd18xdA/Wt+HF0KfGti1P9PEx9z
-   0ipjJ70ewFrg2GzFupB8GFuuwfesZ/VUSJh3v9idNpWgOPafMfxr3+lD7
-   A==;
-X-CSE-ConnectionGUID: W+KK9r8eSqmAMRG+3LJAdw==
-X-CSE-MsgGUID: 17Ci3ZxqT2GsGHiTsHGuQg==
-X-IronPort-AV: E=McAfee;i="6700,10204,11179"; a="23495461"
+  t=1725003703; x=1756539703;
+  h=from:to:cc:subject:date:message-id:references:
+   in-reply-to:content-transfer-encoding:mime-version;
+  bh=sDCkmVZNet13W+aArK923lDlPytJFx3vHwZMbw9gpKo=;
+  b=lR+lH1cPTr2FPPnji1btOqLnxV4fumTFqHvAZI8fkaURFC3uxDUUjlwQ
+   E5Q4SRHkNcALkFTobgai/ns7dHk3QOrbXsnipFoBoyAx+43qUJP49Dau5
+   Uvd6nr19oYwbUut4bFgKHO5kjXkmL5Vvbz7UUHMbMapnQjB74rRVWQHrM
+   +PxDeo+a+vuRwM5J643Rh3ZH0EvAKcQPkpLQOTBg7vy/7PvZjNKRJ8Zzo
+   WFhQjTi+ti0yHzj2IQmBG/TfgQMqb8RNXfacHT/r2lV6UGBP7SEU/TJUV
+   ZW8McmPomMbz0+0tYTeHCcVXX4XlPHD62+sJ14hxRTr1zJC1VN2FpJl1s
+   w==;
+X-CSE-ConnectionGUID: c0NOlwGYTqOfCEdIFJtuRw==
+X-CSE-MsgGUID: fauGUOL/TdesyzaeDsQMVw==
+X-IronPort-AV: E=McAfee;i="6700,10204,11179"; a="49018966"
 X-IronPort-AV: E=Sophos;i="6.10,188,1719903600"; 
-   d="scan'208";a="23495461"
-Received: from orviesa004.jf.intel.com ([10.64.159.144])
-  by orvoesa111.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Aug 2024 00:05:22 -0700
-X-CSE-ConnectionGUID: gWAF0oB3R/iao1boJz3F7Q==
-X-CSE-MsgGUID: mb7SY/8sSaSNPXvLqiy6oA==
+   d="scan'208";a="49018966"
+Received: from fmviesa010.fm.intel.com ([10.60.135.150])
+  by fmvoesa101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Aug 2024 00:40:34 -0700
+X-CSE-ConnectionGUID: z/MiR91+T+qwcwU+M1viiA==
+X-CSE-MsgGUID: jhKEl6rYTKmKLz9r0NeFWg==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.10,188,1719903600"; 
-   d="scan'208";a="68708882"
-Received: from yilunxu-optiplex-7050.sh.intel.com (HELO localhost) ([10.239.159.165])
-  by orviesa004.jf.intel.com with ESMTP; 30 Aug 2024 00:05:17 -0700
-Date: Fri, 30 Aug 2024 15:02:49 +0800
-From: Xu Yilun <yilun.xu@linux.intel.com>
-To: Alexey Kardashevskiy <aik@amd.com>
-Cc: kvm@vger.kernel.org, iommu@lists.linux.dev, linux-coco@lists.linux.dev,
-	linux-pci@vger.kernel.org,
-	Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
-	Alex Williamson <alex.williamson@redhat.com>,
-	Dan Williams <dan.j.williams@intel.com>,
-	pratikrajesh.sampat@amd.com, michael.day@amd.com,
-	david.kaplan@amd.com, dhaval.giani@amd.com,
-	Santosh Shukla <santosh.shukla@amd.com>,
-	Tom Lendacky <thomas.lendacky@amd.com>,
-	Michael Roth <michael.roth@amd.com>, Alexander Graf <agraf@suse.de>,
-	Nikunj A Dadhania <nikunj@amd.com>,
-	Vasant Hegde <vasant.hegde@amd.com>, Lukas Wunner <lukas@wunner.de>
-Subject: Re: [RFC PATCH 11/21] KVM: SEV: Add TIO VMGEXIT and bind TDI
-Message-ID: <ZtFumVbgXf9RBNxP@yilunxu-OptiPlex-7050>
-References: <20240823132137.336874-1-aik@amd.com>
- <20240823132137.336874-12-aik@amd.com>
- <ZtBIr5IrnZF4z3cp@yilunxu-OptiPlex-7050>
- <db05ceb5-d38b-45b8-81c9-c84c0d8fbd96@amd.com>
+   d="scan'208";a="64010658"
+Received: from orsmsx602.amr.corp.intel.com ([10.22.229.15])
+  by fmviesa010.fm.intel.com with ESMTP/TLS/AES256-GCM-SHA384; 30 Aug 2024 00:40:34 -0700
+Received: from orsmsx610.amr.corp.intel.com (10.22.229.23) by
+ ORSMSX602.amr.corp.intel.com (10.22.229.15) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.39; Fri, 30 Aug 2024 00:40:33 -0700
+Received: from orsedg603.ED.cps.intel.com (10.7.248.4) by
+ orsmsx610.amr.corp.intel.com (10.22.229.23) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.39 via Frontend Transport; Fri, 30 Aug 2024 00:40:33 -0700
+Received: from NAM11-BN8-obe.outbound.protection.outlook.com (104.47.58.174)
+ by edgegateway.intel.com (134.134.137.100) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.1.2507.39; Fri, 30 Aug 2024 00:40:33 -0700
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=Ue5JgkqornA+QhDzqKYHgYg/UAO7ThpA0umQxHqzSDtqKMDeiGU+OKjbMO/2DAzA8smpoUmmVV9T2HbFyhpVIe788VRYkzv4D80pV5tye5Zdi9cy7x1dvZOruLsTPx2MYj6UPy4UUrZ7yWbY2WMAm3e6gKcuqINaEXpZdwK2DQEk/nMAw/bMBo6qNOhW1dvuxQjwqC1hcS5IwREUvKcmMR6GLFDEtaYmqsUNVl4aPcQvWQl6POnWE69UkK/tn2crutpKpbkRnsz1IOAWGJ5ZdWmG+0B+yZSWL2/5hxYS2sSqUAdPWh0FZbUUmrmZBKIGU3Lckx4B4frM4uk2mzeEXQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=UN8qttGQycXgladUcQfD8lS1AZLSP1kIR9eXBrLfpFk=;
+ b=yYc9KGrmNEMSUbbFZy/YunBLdXTu0ZYUyTfOE+f/pn7HrMDNLXlPz90si6XGN6Spe7KCivQ9BWw7eAghQWN7jReSjLGM1ySsEb0eElekeHSh22ZOu84/o6MgStdpRMkoNVNmnNEtOqoj38acRFEa9svr96tPqrytSCCNPBBJllo8lFOc+zrMB1/PpHKF3Beu0v7P/Z59CFkHJrh/Op7it6+HtMrgPnkPy5oQSbgGwx2k+jGXckf7PPms09HroDTLgjD9m9Gb2oKlHQGrCvjriPwzVZXSuQai5m8mE1PTaaVqf8sv9/oFcocFItjaZCnXjk4u5aN6qbw+5f09480SHQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
+ dkim=pass header.d=intel.com; arc=none
+Received: from BN9PR11MB5276.namprd11.prod.outlook.com (2603:10b6:408:135::18)
+ by DS0PR11MB7459.namprd11.prod.outlook.com (2603:10b6:8:144::22) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7918.20; Fri, 30 Aug
+ 2024 07:40:30 +0000
+Received: from BN9PR11MB5276.namprd11.prod.outlook.com
+ ([fe80::b576:d3bd:c8e0:4bc1]) by BN9PR11MB5276.namprd11.prod.outlook.com
+ ([fe80::b576:d3bd:c8e0:4bc1%3]) with mapi id 15.20.7918.019; Fri, 30 Aug 2024
+ 07:40:30 +0000
+From: "Tian, Kevin" <kevin.tian@intel.com>
+To: Jason Gunthorpe <jgg@nvidia.com>, "acpica-devel@lists.linux.dev"
+	<acpica-devel@lists.linux.dev>, Hanjun Guo <guohanjun@huawei.com>,
+	"iommu@lists.linux.dev" <iommu@lists.linux.dev>, Joerg Roedel
+	<joro@8bytes.org>, "kvm@vger.kernel.org" <kvm@vger.kernel.org>, Len Brown
+	<lenb@kernel.org>, "linux-acpi@vger.kernel.org" <linux-acpi@vger.kernel.org>,
+	"linux-arm-kernel@lists.infradead.org"
+	<linux-arm-kernel@lists.infradead.org>, Lorenzo Pieralisi
+	<lpieralisi@kernel.org>, "Rafael J. Wysocki" <rafael@kernel.org>, "Moore,
+ Robert" <robert.moore@intel.com>, Robin Murphy <robin.murphy@arm.com>, Sudeep
+ Holla <sudeep.holla@arm.com>, Will Deacon <will@kernel.org>
+CC: Alex Williamson <alex.williamson@redhat.com>, Eric Auger
+	<eric.auger@redhat.com>, Jean-Philippe Brucker <jean-philippe@linaro.org>,
+	Moritz Fischer <mdf@kernel.org>, Michael Shavit <mshavit@google.com>, Nicolin
+ Chen <nicolinc@nvidia.com>, "patches@lists.linux.dev"
+	<patches@lists.linux.dev>, Shameerali Kolothum Thodi
+	<shameerali.kolothum.thodi@huawei.com>, Mostafa Saleh <smostafa@google.com>
+Subject: RE: [PATCH v2 1/8] vfio: Remove VFIO_TYPE1_NESTING_IOMMU
+Thread-Topic: [PATCH v2 1/8] vfio: Remove VFIO_TYPE1_NESTING_IOMMU
+Thread-Index: AQHa+JkRShYcEgF0W0ijVi7Y0E1AK7I/bUFQ
+Date: Fri, 30 Aug 2024 07:40:30 +0000
+Message-ID: <BN9PR11MB52760C7D96310C934AABCED98C972@BN9PR11MB5276.namprd11.prod.outlook.com>
+References: <0-v2-621370057090+91fec-smmuv3_nesting_jgg@nvidia.com>
+ <1-v2-621370057090+91fec-smmuv3_nesting_jgg@nvidia.com>
+In-Reply-To: <1-v2-621370057090+91fec-smmuv3_nesting_jgg@nvidia.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach:
+X-MS-TNEF-Correlator:
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=intel.com;
+x-ms-publictraffictype: Email
+x-ms-traffictypediagnostic: BN9PR11MB5276:EE_|DS0PR11MB7459:EE_
+x-ms-office365-filtering-correlation-id: 562fe538-f99a-469e-1780-08dcc8c705f4
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;ARA:13230040|366016|7416014|376014|1800799024|38070700018|921020;
+x-microsoft-antispam-message-info: =?us-ascii?Q?vxX3sksZAgVPDYTX1WxtX/cBHVX30PFNxTE45QwwLsGudrvhB8RQasub/KDc?=
+ =?us-ascii?Q?/QuhhotvNk4bCVs10XcC4A5vGDrIwLVwRN6ZsNVfn76Rte9jw5EnBURFYXqU?=
+ =?us-ascii?Q?RfqALr+552hKaZ7/b7hSVZfr8bm+4asVCWS3XkRwAzj1Sphbl1inPRb5r9y5?=
+ =?us-ascii?Q?GuEpG2THN+p110n24DYH6cY/1gZDHZbwkpzH+b8+G1CM9sHg7Z6cNECF/rN+?=
+ =?us-ascii?Q?Xc9BJ+pqP159gbC2+tFd6MqASCHdQg7VTBWWTbcjaAiuAuXJrHGlMD6k/qoz?=
+ =?us-ascii?Q?q6+X9oYlU/+mvu/xziIBlehzp6Lxd0xILD8lag9YjfFEwLyg+ubmarUt69Bw?=
+ =?us-ascii?Q?dgHIw+V12b/XMg/Q1b3N5SL5YtNuI27v7k8ap+a+cuvCTYG0eBBlsbE4LOii?=
+ =?us-ascii?Q?zi62RXd0nsglFhlwToUsXkAkSqcY9gk/FEFRhOcijQZtulPhS+2olwaPlJDf?=
+ =?us-ascii?Q?2hd7mNAyniPG7B9VLw+2QIkbJoMBliEqnHldCZXsQAOdldY+X0nrOiDULH7V?=
+ =?us-ascii?Q?f34WfuAsJq1klIrKRxiTObumBO9kLH2FAEBw58JNW6T+AUgrG79PKMDOO2nM?=
+ =?us-ascii?Q?wcnrasDro0n7eY3vf7A/gebXTBG7tLWSZVHwxiqeEozeo+jFmtfS6MfqT4hB?=
+ =?us-ascii?Q?6986hTuI3XRyVRB0Hkrv1QuiW9CqXGURIegwbaB/+laAuaI9dO0Y9gFCVQbF?=
+ =?us-ascii?Q?kZ6HAM6m0DiGxUqZ328reQvRg2ASTnw/IAftI1HR5T1n5F6VnFjfT3nTV/Qq?=
+ =?us-ascii?Q?H/888Oh6fm8gj1pAtA/l88MY18NPEmRz4Az3DVHVOp9gO0au+ko3pMY4+krk?=
+ =?us-ascii?Q?1Jds4JeGUp6PbSMAdtkkXD1HrDbnRaoFHuDPrr93w0uSbfU0b2LAB+XKahtQ?=
+ =?us-ascii?Q?ZGbl53pv5uyxOQD6DIwyHPcsWL8+Rq5MAFsqbVStxxdX18flpEjPfSnYiDr7?=
+ =?us-ascii?Q?qJ0esanRINpXktQGcGHK7oT5SuTF4Ig9tVuloE34ZDJCYtLSO3p9bdE7asRV?=
+ =?us-ascii?Q?KcUOFj9MBc+lOa29zv8L0igc1ZzzjqCcGR8mH2y9rmCBy/FueCrixrptjjz9?=
+ =?us-ascii?Q?txVk5A9Yp0/Ql2oXSpL1PzvaWjFAxDhnm4/EHP9ePS8jWl25DsnHZAb8YV0i?=
+ =?us-ascii?Q?UXKNKP++KzzPa0Xrh1SgBMrJfhmr2YOKfpLMY9YP7RD05pDW/IpirQcd52+u?=
+ =?us-ascii?Q?jdaZgOycIH0vF7mBz4GNiclfV8vv/qhvSsa9higNKQRKbtbiKU/Frd8WKthX?=
+ =?us-ascii?Q?dIjWhokoak8Y1obMZPopVuqz5637ksg95F8khdnGKjqyHEBVEB7BQcRV1edm?=
+ =?us-ascii?Q?eZh1qqhn+AlNGEehb1OOSDbEXqXAnUVaO3Jl9N87kogfGj/RgE+3Af0UJHII?=
+ =?us-ascii?Q?rms2jMT83yLiW3b9m8i2RtkJ5fGiDfIQEL9nl27kEGtX9LqNRxengXNwRzRE?=
+ =?us-ascii?Q?WJH+0/dBUec=3D?=
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BN9PR11MB5276.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(366016)(7416014)(376014)(1800799024)(38070700018)(921020);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?RnmyP34D0HLcf2j82aTm07Md8gZjUdHKzV5RKdHrANt2lHk2+Poqdm3D/F6X?=
+ =?us-ascii?Q?JNsS04RhSZpAEhtCdWcKgeQACiBTG7n+J5jCbzlvhDO3CBpOgijy2a+J5Ymn?=
+ =?us-ascii?Q?wFDjod1oMCqYg7vSYhTdLJaUamqH9dNM35PvEandCy3z3MuQS3x+POzbCwQh?=
+ =?us-ascii?Q?cTEPb1/0v9zyAIAf+yqnacua46TSk0yPtRZTwtRr7fLQbbCgUIgxCxf+OBnT?=
+ =?us-ascii?Q?zOOpfvPSkR5wxbYDT35F0IVWxKZGsKhY/ts6FkU78kKatvBMgDARu46Vp7/8?=
+ =?us-ascii?Q?tMbm+yIxmyTrnHhE4j7+rbe2LBaEEQOk53IjIlkySV8TVk24rw82JJTZyrNW?=
+ =?us-ascii?Q?0AKDyiI71o7GwZe0kIdatzD8BTrGb8HafyrCdlRb3bvNrLVkZIrws+Vey56W?=
+ =?us-ascii?Q?BiMwBqxDDcUpCdgh9FoKXugh6RZnHKZGdo4VERqXPC5wST5pAcv+5xkHDsJ8?=
+ =?us-ascii?Q?3qSCkNX5uAjL7ntrbd5/BS+KltKiGVuLOXPk8L3KVaxl5v2KiNEv0lvxBmiG?=
+ =?us-ascii?Q?9qHkkqjSNb+VtJpnbIv9typndZPkSdPRPTyibmfDWvmVpBqNRpMvm42oeTgt?=
+ =?us-ascii?Q?5/AxsRZDg85Y4FZTuHE7tjFTSdfvbD/bR8NVQt2/xuFniMrcz2UmFeppObfA?=
+ =?us-ascii?Q?YYlDHTy36tJ2aBAIEjo9zq3xJzaebkywTkgav3W3HKj0I0RoToZLEhdICMFa?=
+ =?us-ascii?Q?FDf52pfZ5h93eNL5FkFYWQm+L3WRVpIsMzdQBaWZn5kWMvt4xvnkrgRn5XMg?=
+ =?us-ascii?Q?M/glzL7+hV7/VIldKgZWLuv0uabAoQjghAPPGgzIu3nL0QOP2HRdp1rjPmCy?=
+ =?us-ascii?Q?b+SYL7Ef/BVCtndQCGPuXbWI31LMHKdSUJdHVRkah3kTibFRqKnMn4NwO7G/?=
+ =?us-ascii?Q?mAdE6jHby5dcU2zHc3J+75mKGVOv7TP2sMnTFPgl+qbBhah77k3tj5rLVTJj?=
+ =?us-ascii?Q?CP2W/AWpBOtHn1eHdES7yQ407ls9oq4fYhSsVQDMoDUKZfhBmJuFi0kjNGTt?=
+ =?us-ascii?Q?ar4XHEYEaYlbsjKGmQ7lP8Jp60Xwrj1hToEApWIPhQdeJ2TFTpVo0VhqCfua?=
+ =?us-ascii?Q?M/5u0KPBl544PDwJNFJsVVWAqixg6yKsOOSyRji9FUA1zb9FukHG4MNPRFo1?=
+ =?us-ascii?Q?dZuBaW+SD0N0pPPU5LGv+/JQvc07FfAvKFih2V+CgolOWeSbJfI+Bio5UO4X?=
+ =?us-ascii?Q?bxGEAhg4FLQCJPrHOamHBRdfjky6Rk9amk1TNDJsCkzyhO+QPypwjjxB7Qxo?=
+ =?us-ascii?Q?YBTd8NknbEGQ52N07Tik3MpYf89aVAkxSbkvXUM4WP15yrXKEAxpLUAhhiMG?=
+ =?us-ascii?Q?FW9knBA/9iSMLM3cz4iJrQNbmZV5L6UZKZ6wYxzAPLFHksqkMdjq8YUL66Rt?=
+ =?us-ascii?Q?RRJMWegEgIiX5l6I/20Vw/QZQaAAs3jkK6QYxmB40C+bqqP8J0lBd0+8ZPna?=
+ =?us-ascii?Q?G+jj991deodtlsBcwSq79ecaaqSF+auJP/7Gr10C1WTnL4svkykRn0tJWL/E?=
+ =?us-ascii?Q?GRq/X5v/mW5XU+WF/KZ+CK2PJU5tYhX8aK1BdrlXlFF1pn5FeBUkrV98Pac9?=
+ =?us-ascii?Q?n0ROoDkgC8ZZGO0sB3+J1TGGYPlSAaXCGAHkQwr2?=
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <db05ceb5-d38b-45b8-81c9-c84c0d8fbd96@amd.com>
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: BN9PR11MB5276.namprd11.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 562fe538-f99a-469e-1780-08dcc8c705f4
+X-MS-Exchange-CrossTenant-originalarrivaltime: 30 Aug 2024 07:40:30.3490
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 46c98d88-e344-4ed4-8496-4ed7712e255d
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: UFLtwJrd7fBCxMafylq4WL8++UlytXmr6FNw3hrDhEFjPONvVNIaee9D9xHjVWuS/988L1xyIzZ/SpaE2rDERw==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DS0PR11MB7459
+X-OriginatorOrg: intel.com
 
-On Fri, Aug 30, 2024 at 02:00:30PM +1000, Alexey Kardashevskiy wrote:
-> 
-> 
-> On 29/8/24 20:08, Xu Yilun wrote:
-> > > diff --git a/virt/kvm/vfio.c b/virt/kvm/vfio.c
-> > > index 76b7f6085dcd..a4e9db212adc 100644
-> > > --- a/virt/kvm/vfio.c
-> > > +++ b/virt/kvm/vfio.c
-> > > @@ -15,6 +15,7 @@
-> > >   #include <linux/slab.h>
-> > >   #include <linux/uaccess.h>
-> > >   #include <linux/vfio.h>
-> > > +#include <linux/tsm.h>
-> > >   #include "vfio.h"
-> > >   #ifdef CONFIG_SPAPR_TCE_IOMMU
-> > > @@ -29,8 +30,14 @@ struct kvm_vfio_file {
-> > >   #endif
-> > >   };
-> > > +struct kvm_vfio_tdi {
-> > > +	struct list_head node;
-> > > +	struct vfio_device *vdev;
-> > > +};
-> > > +
-> > >   struct kvm_vfio {
-> > >   	struct list_head file_list;
-> > > +	struct list_head tdi_list;
-> > >   	struct mutex lock;
-> > >   	bool noncoherent;
-> > >   };
-> > > @@ -80,6 +87,22 @@ static bool kvm_vfio_file_is_valid(struct file *file)
-> > >   	return ret;
-> > >   }
-> > > +static struct vfio_device *kvm_vfio_file_device(struct file *file)
-> > > +{
-> > > +	struct vfio_device *(*fn)(struct file *file);
-> > > +	struct vfio_device *ret;
-> > > +
-> > > +	fn = symbol_get(vfio_file_device);
-> > > +	if (!fn)
-> > > +		return NULL;
-> > > +
-> > > +	ret = fn(file);
-> > > +
-> > > +	symbol_put(vfio_file_device);
-> > > +
-> > > +	return ret;
-> > > +}
-> > > +
-> > >   #ifdef CONFIG_SPAPR_TCE_IOMMU
-> > >   static struct iommu_group *kvm_vfio_file_iommu_group(struct file *file)
-> > >   {
-> > > @@ -297,6 +320,103 @@ static int kvm_vfio_set_file(struct kvm_device *dev, long attr,
-> > >   	return -ENXIO;
-> > >   }
-> > > +static int kvm_dev_tsm_bind(struct kvm_device *dev, void __user *arg)
-> > > +{
-> > > +	struct kvm_vfio *kv = dev->private;
-> > > +	struct kvm_vfio_tsm_bind tb;
-> > > +	struct kvm_vfio_tdi *ktdi;
-> > > +	struct vfio_device *vdev;
-> > > +	struct fd fdev;
-> > > +	int ret;
-> > > +
-> > > +	if (copy_from_user(&tb, arg, sizeof(tb)))
-> > > +		return -EFAULT;
-> > > +
-> > > +	ktdi = kzalloc(sizeof(*ktdi), GFP_KERNEL_ACCOUNT);
-> > > +	if (!ktdi)
-> > > +		return -ENOMEM;
-> > > +
-> > > +	fdev = fdget(tb.devfd);
-> > > +	if (!fdev.file)
-> > > +		return -EBADF;
-> > > +
-> > > +	ret = -ENOENT;
-> > > +
-> > > +	mutex_lock(&kv->lock);
-> > > +
-> > > +	vdev = kvm_vfio_file_device(fdev.file);
-> > > +	if (vdev) {
-> > > +		ret = kvm_arch_tsm_bind(dev->kvm, vdev->dev, tb.guest_rid);
-> > > +		if (!ret) {
-> > > +			ktdi->vdev = vdev;
-> > > +			list_add_tail(&ktdi->node, &kv->tdi_list);
-> > > +		} else {
-> > > +			vfio_put_device(vdev);
-> > > +		}
-> > > +	}
-> > > +
-> > > +	fdput(fdev);
-> > > +	mutex_unlock(&kv->lock);
-> > > +	if (ret)
-> > > +		kfree(ktdi);
-> > > +
-> > > +	return ret;
-> > > +}
-> > > +
-> > > +static int kvm_dev_tsm_unbind(struct kvm_device *dev, void __user *arg)
-> > > +{
-> > > +	struct kvm_vfio *kv = dev->private;
-> > > +	struct kvm_vfio_tsm_bind tb;
-> > > +	struct kvm_vfio_tdi *ktdi;
-> > > +	struct vfio_device *vdev;
-> > > +	struct fd fdev;
-> > > +	int ret;
-> > > +
-> > > +	if (copy_from_user(&tb, arg, sizeof(tb)))
-> > > +		return -EFAULT;
-> > > +
-> > > +	fdev = fdget(tb.devfd);
-> > > +	if (!fdev.file)
-> > > +		return -EBADF;
-> > > +
-> > > +	ret = -ENOENT;
-> > > +
-> > > +	mutex_lock(&kv->lock);
-> > > +
-> > > +	vdev = kvm_vfio_file_device(fdev.file);
-> > > +	if (vdev) {
-> > > +		list_for_each_entry(ktdi, &kv->tdi_list, node) {
-> > > +			if (ktdi->vdev != vdev)
-> > > +				continue;
-> > > +
-> > > +			kvm_arch_tsm_unbind(dev->kvm, vdev->dev);
-> > > +			list_del(&ktdi->node);
-> > > +			kfree(ktdi);
-> > > +			vfio_put_device(vdev);
-> > > +			ret = 0;
-> > > +			break;
-> > > +		}
-> > > +		vfio_put_device(vdev);
-> > > +	}
-> > > +
-> > > +	fdput(fdev);
-> > > +	mutex_unlock(&kv->lock);
-> > > +	return ret;
-> > > +}
-> > > +
-> > > +static int kvm_vfio_set_device(struct kvm_device *dev, long attr,
-> > > +			       void __user *arg)
-> > > +{
-> > > +	switch (attr) {
-> > > +	case KVM_DEV_VFIO_DEVICE_TDI_BIND:
-> > > +		return kvm_dev_tsm_bind(dev, arg);
-> > 
-> > I think the TDI bind operation should be under the control of the device
-> > owner (i.e. VFIO driver), rather than in this bridge driver.
-> 
-> This is a valid point, although this means teaching VFIO about the KVM
-> lifetime (and KVM already holds references to VFIO groups) and
+> From: Jason Gunthorpe <jgg@nvidia.com>
+> Sent: Tuesday, August 27, 2024 11:52 PM
+>=20
+> This control causes the ARM SMMU drivers to choose a stage 2
+> implementation for the IO pagetable (vs the stage 1 usual default),
+> however this choice has no significant visible impact to the VFIO
+> user. Further qemu never implemented this and no other userspace user is
+> known.
+>=20
+> The original description in commit f5c9ecebaf2a ("vfio/iommu_type1: add
+> new VFIO_TYPE1_NESTING_IOMMU IOMMU type") suggested this was to
+> "provide
+> SMMU translation services to the guest operating system" however the rest
+> of the API to set the guest table pointer for the stage 1 and manage
+> invalidation was never completed, or at least never upstreamed, rendering
+> this part useless dead code.
+>=20
+> Upstream has now settled on iommufd as the uAPI for controlling nested
+> translation. Choosing the stage 2 implementation should be done by throug=
+h
+> the IOMMU_HWPT_ALLOC_NEST_PARENT flag during domain allocation.
+>=20
+> Remove VFIO_TYPE1_NESTING_IOMMU and everything under it including the
+> enable_nesting iommu_domain_op.
+>=20
+> Just in-case there is some userspace using this continue to treat
+> requesting it as a NOP, but do not advertise support any more.
 
-Not sure if I understand, VFIO already knows KVM lifetime via
-vfio_device_get_kvm_safe(), is it?
+It took me a while to understand why we still allow the user setting the
+IOMMU type to nesting below...
 
-> guest BDFns (which have no meaning for VFIO in the host kernel).
+> @@ -2545,9 +2538,7 @@ static void *vfio_iommu_type1_open(unsigned
+> long arg)
+>  	switch (arg) {
+>  	case VFIO_TYPE1_IOMMU:
+>  		break;
+> -	case VFIO_TYPE1_NESTING_IOMMU:
+> -		iommu->nesting =3D true;
+> -		fallthrough;
+> +	case __VFIO_RESERVED_TYPE1_NESTING_IOMMU:
+>  	case VFIO_TYPE1v2_IOMMU:
+>  		iommu->v2 =3D true;
+>  		break;
 
-KVM is not aware of the guest BDF today.
+I guess the reason was that NESTING_IOMMU implies V2 so an user can
+legitimately uses it as V2 w/o counting on any removed nesting logic.
 
-I think we need to pass a firmware recognizable TDI identifier, which
-is actually a magic number and specific to vendors. For TDX, it is the
-FUNCTION_ID. So I didn't think too much to whom the identifier is
-meaningful.
+So,
 
-> 
-> > The TDI bind
-> > means TDI would be transitioned to CONFIG_LOCKED state, and a bunch of
-> > device configurations breaks the state (TDISP spec 11.4.5/8/9). So the
-> > VFIO driver should be fully aware of the TDI bind and manage unwanted
-> > breakage.
-> 
-> VFIO has no control over TDI any way, cannot even know what state it is in
-> without talking to the firmware.
-
-I think VFIO could talk to the firmware, that's part of the reason we are
-working on the TSM module independent to KVM.
-
-> When TDI goes into ERROR, this needs to be
-> propagated to the VM. At the moment (afaik) it does not tell the
-
-I assume when TDISP ERROR happens, an interrupt (e.g. AER) would be sent
-to OS and VFIO driver is the one who handles it in the first place. So
-maybe there has to be some TDI stuff in VFIO?
-
-Thanks,
-Yilun
-
-> userspace/guest about IOMMU errors and it probably should but the existing
-> mechanism should be able to do so. Thanks,
-> 
-> 
-> > 
-> > Thanks,
-> > Yilun
-> 
-> -- 
-> Alexey
-> 
+Reviewed-by: Kevin Tian <kevin.tian@intel.com>
