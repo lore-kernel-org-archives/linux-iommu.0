@@ -1,207 +1,109 @@
-Received: from mx0b-0031df01.pphosted.com (mx0b-0031df01.pphosted.com [205.220.180.131])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-yw1-f201.google.com (mail-yw1-f201.google.com [209.85.128.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EB33317BB01
-	for <iommu@lists.linux.dev>; Fri, 30 Aug 2024 10:01:22 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.180.131
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 980FE1917E2
+	for <iommu@lists.linux.dev>; Fri, 30 Aug 2024 11:03:58 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1725012084; cv=none; b=F33JJV6ghaTSejz2h2yGs1FnJQfQ83aKT9RXpP7qZvx5heaUG5veIVmMRClXZTFEnuRrq0S970MWIzwW0TdCZYhwmhbv/shIHIY7jNl5WFWyXOepez8qEBODFdzjHKFiykpXvxAcJ7CGaaEBnXBBhNPflbaX8K1NBJhp4oe6k1E=
+	t=1725015840; cv=none; b=p5vjzAZbb53OdYZjF1aofgy8yzXxQxwQmiisYkuMUsX94XkkdWbRDtI84GhNs2SAJb3dwHitcKrWW/ZYuJsVwI2xK9fzf5uELYYBVPzk3c1b3F1N5UlC4cjFkvyida9pmlEIVTr7LuhTyNn8cHd9cF0DmDeuTkPUwjOgJSc9oKk=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1725012084; c=relaxed/simple;
-	bh=3gEEC4Ok+koYvLUVDxue9rWqkYti5189hpAZpkMKn5M=;
-	h=Message-ID:Date:MIME-Version:From:Subject:To:CC:References:
-	 In-Reply-To:Content-Type; b=dZShqKPf5pnJ4l1OFfEvKMOlSG6yZvpUEPzjfFqqf9ado61I8YjLyFDmPLPWxXgT6D2AASRzdETOnMhLJpQRqhYjOO4dPGruqrjjlf3j+OOLTZ2yAUCMwesMn8J5slNhiiVG+kx4Ij9NRbuzq5GAx/nT2iNIMTcDSFqx/Fzh5o8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com; spf=pass smtp.mailfrom=quicinc.com; dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b=gAVPbM2n; arc=none smtp.client-ip=205.220.180.131
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=quicinc.com
+	s=arc-20240116; t=1725015840; c=relaxed/simple;
+	bh=0ffy6KqD2ZsBlubMNAmxaGladd4Gg5hkg0zx+QhJMCU=;
+	h=Date:Mime-Version:Message-ID:Subject:From:To:Cc:Content-Type; b=AtQkWMTgvlgoYLAgGFud+DzQ37gLBBlSxjhAo80HntGdQqy0dIXUK4gjItn+NqP32qLmw6fDv8LpRA8YUhiUzNcjwSJlI/Bx70FnpMZ1XlM4f26arVPMb91Caru3JZMwIiXaHCH+DFVl8hkWLbtFmf+ybo+mEmVVSfinNmiB7M4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=flex--smostafa.bounces.google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=F88OOpB3; arc=none smtp.client-ip=209.85.128.201
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=flex--smostafa.bounces.google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b="gAVPbM2n"
-Received: from pps.filterd (m0279869.ppops.net [127.0.0.1])
-	by mx0a-0031df01.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 47U867fo026218;
-	Fri, 30 Aug 2024 10:01:05 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=quicinc.com; h=
-	cc:content-transfer-encoding:content-type:date:from:in-reply-to
-	:message-id:mime-version:references:subject:to; s=qcppdkim1; bh=
-	DYk8xpnFqCsmU51gGjLMAjTQwUjVEAesOfknEHqYUYg=; b=gAVPbM2n/uocP5cU
-	f8zGtWMOnfah4gSBxO6pANEOXCKh2MlWJsr27YupR632uOmy0dcNfQT//gXMGvf5
-	R9c1M5UHHCG6AMkbHg6Pn1Tx9HXTDJLeb32GfIiKzp4DYaecN+rPwLDNfqEU+pv4
-	RuAocxzDxoqZp9ynCNMJ9fZR/vWERWTQ+YJVBjEd2QQaDuSbz1cEW8ZFLAla+FNp
-	95+rbxdtVBw4RHq84ebr79eGWb16Eq+5w+K5dhpCx7py8TwTZpuVU1rZMCu0u4Vy
-	QVq/107Qt0FhdyY/nl0P3Z3lKhs50dJZRv8BVVXibs5qdBylOGP0HymaAGq7QS1w
-	8baDjw==
-Received: from nalasppmta01.qualcomm.com (Global_NAT1.qualcomm.com [129.46.96.20])
-	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 41a612p6jv-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Fri, 30 Aug 2024 10:01:05 +0000 (GMT)
-Received: from nalasex01c.na.qualcomm.com (nalasex01c.na.qualcomm.com [10.47.97.35])
-	by NALASPPMTA01.qualcomm.com (8.18.1.2/8.18.1.2) with ESMTPS id 47UA13Ja003560
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Fri, 30 Aug 2024 10:01:03 GMT
-Received: from [10.214.66.253] (10.80.80.8) by nalasex01c.na.qualcomm.com
- (10.47.97.35) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1544.9; Fri, 30 Aug
- 2024 03:00:59 -0700
-Message-ID: <b335452a-977e-41cc-9424-a2244fbe20de@quicinc.com>
-Date: Fri, 30 Aug 2024 15:30:16 +0530
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="F88OOpB3"
+Received: by mail-yw1-f201.google.com with SMTP id 00721157ae682-6d3e062dbeeso8805097b3.0
+        for <iommu@lists.linux.dev>; Fri, 30 Aug 2024 04:03:58 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20230601; t=1725015837; x=1725620637; darn=lists.linux.dev;
+        h=content-transfer-encoding:cc:to:from:subject:message-id
+         :mime-version:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=obthWJJQx048EnN2AOC6zuK5QgHhreZNXc1GxoMBMd4=;
+        b=F88OOpB3owARNEWHHNSEiemCmoWZtzCi7j93sIIl8kO1gx+ndcBke+kcZe5BtBawNM
+         y4ecodbsaUK4Dvawwt6zndd0rkz8urLYRF1IjxRg03LmtswU7FYDsduQ32yml4hxn9pL
+         PmzJXKDhtzbNjPZlLX5rviTC4MIoxYKddFUPPM4qI/kmVnp29S8i+kSrkav/j+W4/BXM
+         IUGJjMFGdpSfc3cSvSiEavdofo+01o1F6fi0Ign0h3ON1qc1WO4ZZ8xiy5atWdK6rTHX
+         DkZa71HGYP4vvpgS2aaQH1G60E0kJ2LAn9QBHk5RtAylZOCu+rN8/dY95D7YeUV85ssA
+         mJiw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1725015837; x=1725620637;
+        h=content-transfer-encoding:cc:to:from:subject:message-id
+         :mime-version:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=obthWJJQx048EnN2AOC6zuK5QgHhreZNXc1GxoMBMd4=;
+        b=vFu946KJ86OMtRJ3ZYaaMG0zY6YHDde+arK2zNb9QDnSTduUQ7qEl8HoQbVbn78/1k
+         bOBoeMkQuRGrWJAecpm//KTKcjQhkTMuBeUq7GFO2Z6+OrdfadLRqLSzkKGCl5aKdu2O
+         5MLVutgI2tip0ZonPpN+WdEiLqTc0GEisa0uYVP2BGdHDozxCTdK28nV4JgdNZ/oAJp9
+         4Jfh7HiKBMaItNhZXmGovEqY+i0PHFjjNA+oS4OraJ6s5U6yAXnmmwWsXbbjTju7H7M8
+         UB8rq/Tonc79wroFxQqPgKmLoHTgaVr+vTP6jWSyCoFLpqIrcVDrP3cYebMDptBIZ3qD
+         /+Bw==
+X-Forwarded-Encrypted: i=1; AJvYcCWMd04Df9p+wfd0DazqEVbIS96Az91zCKMjI68OrWooJDPQsEbhO3IKqEVtfxOXEtyCaEmlnw==@lists.linux.dev
+X-Gm-Message-State: AOJu0YyUXpv3a+nYf2sYjotIqfDLk5hzBuoho2M2Jvs1NWsXTTQaxYI6
+	SOJhtj00NMNA9TSml2lv5bQYwH7VkLaFFtnNUbuCWOhG5B7S0bYzADlLEe4IpRuHgfc7nM3B50M
+	xUXa5Xmeh9w==
+X-Google-Smtp-Source: AGHT+IHkyHjn4rwsHHaBZz13oCcDK5Wif55SRe6/R2eIzxGkPl4d+94YtRJamqf/F9SQM1XvqVn7meehMJtJLw==
+X-Received: from mostafa.c.googlers.com ([fda3:e722:ac3:cc00:28:9cb1:c0a8:333c])
+ (user=smostafa job=sendgmr) by 2002:a81:cb0d:0:b0:651:2eea:4dfe with SMTP id
+ 00721157ae682-6d2818a64f4mr1646297b3.0.1725015837461; Fri, 30 Aug 2024
+ 04:03:57 -0700 (PDT)
+Date: Fri, 30 Aug 2024 11:03:46 +0000
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
-MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-From: Bibek Kumar Patro <quic_bibekkum@quicinc.com>
-Subject: Re: [PATCH v14 5/6] iommu/arm-smmu: add ACTLR data and support for
- SC7280
-To: Will Deacon <will@kernel.org>
-CC: <robdclark@gmail.com>, <robin.murphy@arm.com>, <joro@8bytes.org>,
-        <jgg@ziepe.ca>, <jsnitsel@redhat.com>, <robh@kernel.org>,
-        <krzysztof.kozlowski@linaro.org>, <quic_c_gdjako@quicinc.com>,
-        <dmitry.baryshkov@linaro.org>, <konrad.dybcio@linaro.org>,
-        <iommu@lists.linux.dev>, <linux-arm-msm@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>, <linux-kernel@vger.kernel.org>
-References: <20240816174259.2056829-1-quic_bibekkum@quicinc.com>
- <20240816174259.2056829-6-quic_bibekkum@quicinc.com>
- <20240823155918.GD525@willie-the-truck>
- <3ae75a75-1717-40b6-9149-bc3673d520d6@quicinc.com>
- <20240827124714.GB4772@willie-the-truck>
-Content-Language: en-US
-In-Reply-To: <20240827124714.GB4772@willie-the-truck>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 8bit
-X-ClientProxiedBy: nasanex01a.na.qualcomm.com (10.52.223.231) To
- nalasex01c.na.qualcomm.com (10.47.97.35)
-X-QCInternal: smtphost
-X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
-X-Proofpoint-GUID: LscdnjTnYV7YYH3hD7yDGq0DEoiWdYci
-X-Proofpoint-ORIG-GUID: LscdnjTnYV7YYH3hD7yDGq0DEoiWdYci
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.293,Aquarius:18.0.1039,Hydra:6.0.680,FMLib:17.12.28.16
- definitions=2024-08-30_04,2024-08-30_01,2024-05-17_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 phishscore=0 malwarescore=0
- spamscore=0 mlxlogscore=999 adultscore=0 suspectscore=0 mlxscore=0
- bulkscore=0 lowpriorityscore=0 classifier=spam adjust=0 reason=mlx
- scancount=1 engine=8.19.0-2407110000 definitions=main-2408300075
+Mime-Version: 1.0
+X-Mailer: git-send-email 2.46.0.469.g59c65b2a67-goog
+Message-ID: <20240830110349.797399-1-smostafa@google.com>
+Subject: [PATCH v4 0/2] Fix handling of S2 stalls
+From: Mostafa Saleh <smostafa@google.com>
+To: linux-kernel@vger.kernel.org, iommu@lists.linux.dev, 
+	linux-arm-kernel@lists.infradead.org, will@kernel.org, robin.murphy@arm.com, 
+	joro@8bytes.org
+Cc: jean-philippe@linaro.org, jgg@ziepe.ca, nicolinc@nvidia.com, 
+	mshavit@google.com, Mostafa Saleh <smostafa@google.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
+While debugging something else, I spent hours looking at hexdumps of
+STEs, CDs and commands while comparing them against the arch specs,
+where I noticed a minor violation in the driver regarding handling of
+S2S bit in the STE.
 
+This has been there for ages, so it=E2=80=99s highly unlikely that any HW (=
+if
+it exists with such features) running Linux is affected.
 
-On 8/27/2024 6:17 PM, Will Deacon wrote:
-> On Mon, Aug 26, 2024 at 04:33:24PM +0530, Bibek Kumar Patro wrote:
->>
->>
->> On 8/23/2024 9:29 PM, Will Deacon wrote:
->>> On Fri, Aug 16, 2024 at 11:12:58PM +0530, Bibek Kumar Patro wrote:
->>>> Add ACTLR data table for SC7280 along with support for
->>>> same including SC7280 specific implementation operations.
->>>>
->>>> Signed-off-by: Bibek Kumar Patro <quic_bibekkum@quicinc.com>
->>>> ---
->>>>    drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c | 58 +++++++++++++++++++++-
->>>>    1 file changed, 57 insertions(+), 1 deletion(-)
->>>>
->>>> diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
->>>> index dc143b250704..a776c7906c76 100644
->>>> --- a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
->>>> +++ b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
->>>> @@ -31,6 +31,55 @@
->>>>    #define PREFETCH_MODERATE	(2 << PREFETCH_SHIFT)
->>>>    #define PREFETCH_DEEP		(3 << PREFETCH_SHIFT)
->>>>
->>>> +static const struct actlr_config sc7280_apps_actlr_cfg[] = {
->>>> +	{ 0x0800, 0x04e0, PREFETCH_DEFAULT | CMTLB },
->>>> +	{ 0x0900, 0x0402, PREFETCH_SHALLOW | CPRE | CMTLB },
->>>> +	{ 0x0901, 0x0000, PREFETCH_SHALLOW | CPRE | CMTLB },
->>>> +	{ 0x0d01, 0x0000, PREFETCH_SHALLOW | CPRE | CMTLB },
->>>> +	{ 0x1181, 0x0420, PREFETCH_DEEP | CPRE | CMTLB },
->>>> +	{ 0x1182, 0x0420, PREFETCH_DEEP | CPRE | CMTLB },
->>>> +	{ 0x1183, 0x0420, PREFETCH_DEEP | CPRE | CMTLB },
->>>> +	{ 0x1184, 0x0420, PREFETCH_DEEP | CPRE | CMTLB },
->>>> +	{ 0x1185, 0x0420, PREFETCH_DEEP | CPRE | CMTLB },
->>>> +	{ 0x1186, 0x0420, PREFETCH_DEEP | CPRE | CMTLB },
->>>> +	{ 0x1187, 0x0420, PREFETCH_DEEP | CPRE | CMTLB },
->>>> +	{ 0x1188, 0x0420, PREFETCH_DEEP | CPRE | CMTLB },
->>>> +	{ 0x1189, 0x0420, PREFETCH_DEEP | CPRE | CMTLB },
->>>> +	{ 0x118b, 0x0420, PREFETCH_DEEP | CPRE | CMTLB },
->>>> +	{ 0x118c, 0x0420, PREFETCH_DEEP | CPRE | CMTLB },
->>>> +	{ 0x118d, 0x0420, PREFETCH_DEEP | CPRE | CMTLB },
->>>> +	{ 0x118e, 0x0420, PREFETCH_DEEP | CPRE | CMTLB },
->>>> +	{ 0x118f, 0x0420, PREFETCH_DEEP | CPRE | CMTLB },
->>>> +	{ 0x2000, 0x0020, PREFETCH_DEFAULT | CMTLB },
->>>> +	{ 0x2040, 0x0000, PREFETCH_DEFAULT | CMTLB },
->>>> +	{ 0x2062, 0x0000, PREFETCH_DEFAULT | CMTLB },
->>>> +	{ 0x2080, 0x0020, PREFETCH_DEFAULT | CMTLB },
->>>> +	{ 0x20c0, 0x0020, PREFETCH_DEFAULT | CMTLB },
->>>> +	{ 0x2100, 0x0020, PREFETCH_DEFAULT | CMTLB },
->>>> +	{ 0x2140, 0x0000, PREFETCH_DEFAULT | CMTLB },
->>>> +	{ 0x2180, 0x0020, PREFETCH_SHALLOW | CPRE | CMTLB },
->>>> +	{ 0x2181, 0x0004, PREFETCH_SHALLOW | CPRE | CMTLB },
->>>> +	{ 0x2183, 0x0000, PREFETCH_SHALLOW | CPRE | CMTLB },
->>>> +	{ 0x2184, 0x0020, PREFETCH_SHALLOW | CPRE | CMTLB },
->>>> +	{ 0x2187, 0x0000, PREFETCH_SHALLOW | CPRE | CMTLB },
->>>> +};
->>>> +
->>>> +static const struct actlr_config sc7280_gfx_actlr_cfg[] = {
->>>> +	{ 0x0000, 0x07ff, PREFETCH_DEEP | CPRE | CMTLB },
->>>> +};
->>>
->>> It's Will "stuck record" Deacon here again to say that I don't think
->>> this data belongs in the driver.
->>>
->>
->> Hi Will,
->>
->> It will be difficult to reach a consensus here, with Robin and the DT folks
->> okay to keep it in the driver, while you believe it doesn't belong there.
->>
->> Robin, Rob, could you please share your thoughts on concluding the placement
->> of this prefetch data?
->>
->> As discussed earlier [1], the prefetch value for each client doesn’t define
->> the hardware topology and is implementation-defined register writes used by
->> the software driver.
-> 
-> It does reflect the hardware topology though, doesn't it? Those magic hex
-> masks above refer to stream ids, so the table is hard-coding the prefetch
-> values for particular matches.
+I don=E2=80=99t have access to HW with stalls so I just tested normal usage
+and (terminated) translation fault events.
 
-That is correct in the sense that stream id is mapped to context bank
-where these configurations are applied.
-However the other part of it is implementation-defined register/values
-for which community opinion was register/value kind of data, should not
-belong to device tree and are not generally approved of.
+Also, add some unit tests for stall enabled masters.
 
-Would also like to point out that the prefetch values are recommended
-settings and doesn’t mean these are the only configuration which would
-work for the soc.
-So the SID-to-prefetch isn't strictly SoC defined but is a software
-configuration, IMO.
+Mostafa Saleh (2):
+  iommu/arm-smmu-v3: Match Stall behaviour for S2
+  iommu/arm-smmu-v3-test: Test masters with stall enabled
 
-> If I run on a different SoC configuration > with the same table, then the prefetch settings will be applied to the
-> wrong devices. How is that not hardware topology?
-> 
+ .../iommu/arm/arm-smmu-v3/arm-smmu-v3-test.c  | 83 ++++++++++++++-----
+ drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c   |  8 +-
+ drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h   |  1 +
+ 3 files changed, 66 insertions(+), 26 deletions(-)
 
-The configuration table is tied to SoC compatible string however as I
-mentioned above, its basically a s/w recommended setting.
-(using prefetch settings other than the recommended values e.g 
-PREFECH_DEFAULT instead of PREFETCH_DEEP would not render the device 
-unusable unlike changing stream-ids which can make it unusable).
+v4:
+- Add S2S bit to get_used for stage-2
+- Add unit tests for masters with stall enabled
 
-Since it is implementation specific we cannot have a generic DT binding,
-tying stream ids to these recommended settings.
-Even with qcom specific binding due to dependency on implementation, not
-sure if we would be able to maintain consistency.
+v3:
+- Set S2S for s2 and not s1 domain
+- Ignore ats check
 
-So from maintenance perspective carrying these in driver appear to be
-simpler/flexible. And if it doesn’t violate existing precedence, we
-would prefer to carry it that way.
+v2:
+- Fix index of the STE
+- Fix conflict with ATS
+- Squash the 2 patches and drop enable_nesting
 
-This parallels how _"QoS settings"_ are handled within the driver 
-(similar to this example [1]).
+--=20
+2.46.0.469.g59c65b2a67-goog
 
-[1]. 
-https://lore.kernel.org/linux-arm-msm/20231030-sc8280xp-dpu-safe-lut-v1-1-6d485d7b428f@quicinc.com/#t
-
-Thanks & regards,
-Bibek
-
-> WIll
