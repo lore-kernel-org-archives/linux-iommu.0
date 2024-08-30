@@ -1,408 +1,250 @@
-Received: from mail-pl1-f180.google.com (mail-pl1-f180.google.com [209.85.214.180])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from NAM11-CO1-obe.outbound.protection.outlook.com (mail-co1nam11on2046.outbound.protection.outlook.com [40.107.220.46])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B993818991C
-	for <iommu@lists.linux.dev>; Thu, 29 Aug 2024 23:54:35 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.180
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1724975677; cv=none; b=LzYPAtl6IX9gvPxo0JznujHzRkdalaK0xF465fYrAlZ7X2UVzDw27iSazIvRC9NjUVoHdo7OpH6XIbYo4sh5hDZ2Im5XuW1RrdTAknOuLJHs5zNPMm87v+8JdCfGZ94EpePmyfh4BUMtKEOJy6nBrKAwSo1GilbB6EQXy/qEMrI=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1724975677; c=relaxed/simple;
-	bh=HUuc23I/QH9KzDBkBxcAiKY9JJEzIyafG8tosmYfCxM=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=KKWekjEMYWfEA+Ur92fsiaPAIYBOMxdQsTyEPJM/LqbOQKmmF5txps1pNmbrzbNFpuu4yYcLdrgQH7/XqwLZna/5Edr8O9sXVunu8pHZMWLlfaNxt+vBoHnGjmo9jScpmdp//iOeJbaJ3c+OgWGQaMQdN6qZgZdBvA4Rq9fSzBk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=3e7OZwc9; arc=none smtp.client-ip=209.85.214.180
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C685E182;
+	Fri, 30 Aug 2024 00:06:29 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.220.46
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1724976391; cv=fail; b=qP+grTAMd6itrLk3JX52+H6w+WlHLlh4VAgEbkbg1bjNCFJydRESnGg5FZxakzItF8em3Gz1yweeUUfmJkY2Wb6UcYnM7mNcRv2Me+GXUyPijUY2V0dC1yhfgktTnCCONBVnK3EKz/XHNyu8a8lWT/fzHDtfajNmOct5wxfxrG0=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1724976391; c=relaxed/simple;
+	bh=dQF/BJWuYD5NsNrdTChgMsE2omHCyaq6JqiJYrUcFhY=;
+	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
+	 Content-Type:MIME-Version; b=hPVDxAKhQh5dZEb0Z/LZrIiXpheNMRSU+32hWDfvSaJGdph+8TdM9v2XnJnLJl6cp+M9TYOyQmH+zR8sEu24qNYXUfy8VlMfisJUMT0ioOcU7zCEB1ejN1P190qFfkoAhIDH0/wl2RvvZVFgUPQGQCBrrJppTRf0JqftN3hONwA=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=io1qjPdI; arc=fail smtp.client-ip=40.107.220.46
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="3e7OZwc9"
-Received: by mail-pl1-f180.google.com with SMTP id d9443c01a7336-202018541afso50925ad.1
-        for <iommu@lists.linux.dev>; Thu, 29 Aug 2024 16:54:35 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20230601; t=1724975675; x=1725580475; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=ge4/5mRfM2hHbGcZxNEoskkxEOLD5n6rhL/4y25lQw0=;
-        b=3e7OZwc9FFpa5NjsN7yHH1/bRBeuPIzGiKyy5tsO3QFwhDV4aKuhIyXNrULbpI8tii
-         sD8fzMnZ/ToqGHDvHjVNSDcpazgseRYg5tOk/EtkpF4Z5eClvZcdNct4soy/n4QjeN1N
-         ac9Y2PMJIEWYFsa06SFkfVCPtywM9ZDCJg07qdUVX8w9MxBF+2EP6b3CEPunW3Ud5zey
-         S8jtPvFuZ95eSVZ7oTkIezoizJiC5NJJrhD1b24+1uVLmMhFITbM/pCe1irQ+EcZMMFT
-         /9RjdeMGnLRfcSTMfCppNwoSv/htW/FYBMgUFRK+rU49/+GllQGawvJT0cXEIkeFm7AT
-         h9vQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1724975675; x=1725580475;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=ge4/5mRfM2hHbGcZxNEoskkxEOLD5n6rhL/4y25lQw0=;
-        b=ftufrk1zvJMP79kFufbnzyqnj/Qh893iihBwDQotxzEWGE+JC17SLosMWRIVx1IuI0
-         tNnuRh7aLdXMnoVk5G/C7wQhc/f8jhBzPdwGjygQUVMGxVIZmrBGf0tJ++7vFLlYcwTX
-         NekGlKh7zKjWeS3Zx0VlWn6Bz7EA/GPEnVrL/7YzSQj201kTZc3fNJxXQrMlGlJ/pRRA
-         QbdMJNZAk3FUireOSLP/JNGoFvfVDvGx6DPtg3Kh5DpH/k7aPmA0IFkzkBDrKcVByDpV
-         TZMuc9kPziSrOu7jbHr2ZBmiv4qD/Z74ghMRyKWrUsEp8ffv/m8pYaKQ9mapZTCf0Ee0
-         IjHg==
-X-Forwarded-Encrypted: i=1; AJvYcCUCjUJaW1Xy07i61dwCBF8XXAqC5vR4a5o3Gp1H3av39pJ6oIuN1j4huGsq3yCmLZPMwdijXg==@lists.linux.dev
-X-Gm-Message-State: AOJu0YyYIaf+NCgDB4BPJKXb7OStgGzxthoavz+5gmXdzJTGuxdOY+K8
-	R4vHOxWPSCK/QYOeKVuSKicq6qrL2NAc4eqsei4HyZlID/LlTvjW70AhnPiPPg==
-X-Google-Smtp-Source: AGHT+IFaLrKeXbQ0epsyT/cncb9jFc9JXOvO7JvFrMwiUirx/h/13BQnWoqDbhPYHs56EFsbhc0jgg==
-X-Received: by 2002:a17:902:e801:b0:1fe:d7da:cd22 with SMTP id d9443c01a7336-20528817c64mr580785ad.29.1724975674645;
-        Thu, 29 Aug 2024 16:54:34 -0700 (PDT)
-Received: from google.com (202.141.197.35.bc.googleusercontent.com. [35.197.141.202])
-        by smtp.gmail.com with ESMTPSA id d9443c01a7336-205152cedb9sm16614315ad.79.2024.08.29.16.54.32
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 29 Aug 2024 16:54:34 -0700 (PDT)
-Date: Thu, 29 Aug 2024 23:54:26 +0000
-From: Pranjal Shrivastava <praan@google.com>
-To: Nicolin Chen <nicolinc@nvidia.com>
-Cc: Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
+	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="io1qjPdI"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=G2MMk3KVG6c/E4G+EwQdwq2Ush5mjBmlxtNB1e8Bk+pDcb57zdl+mRMZznDvDVeYzMSQY0dZ8PxKYt8xr3pnWXrtgVPSssNbqlZm+PC9tQ9WFQYv9h6nK+xObMYKTBDO5/HVNwxa/48+FFEAehtn8g8qGp85eRJ4EKNowycJQW/j8xUQiLGEKYbnaoHv58jGenT+cob0w8AIEek/2/pRdL0TBqkJlskJZ3ZEp2AQtYBvH3y51nVAj/DBEcjw/x2B+MT+fj/6VR2DadujHVOP/8PrTQ9YXCZiI2YIHpAjScsHQbnCrrpVWiAPlbpvcxXwXV1+ZuOF5stQZOAcjhXv3g==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=KbgRCdIRGRtW05ktzOFJoZ8KoQxcJIrJlGBeAgAlt2I=;
+ b=LbZYrY1qm2dT0w84isdV+w/NXCYMdjIUFsOG9cpy8z/y4T9NfD94z9SxjveWd05Ge7SySdOpnZGBGX+JBq606cZf6mpDk5Bsl4a1uBVDZS6qI1RcyHHQrKOQnBCkwmn+JThFq6RiUS+sZ0pjKT6OizGXGZHEi6+kmBAOuGj5KKG5J4E8DxY3jxtQGGLQnkFilX5W1yvlidaVuUWw5eFzplA18T5SCjuMVWLCF3hMjconqNyt1mTYZmrx78DMCB9U00bEOKxB6GguzoZi3ZXDtTWq0mFYJ2/8iWyXExNZQ1F0laQsaNsrwGhe6yiYuDQ/lRb2w/pR+gmn6XKlZCImRw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=KbgRCdIRGRtW05ktzOFJoZ8KoQxcJIrJlGBeAgAlt2I=;
+ b=io1qjPdIjK+POh0qxto9toaVaCQeHxTFrpjPRwz8NFUf95a7xA1EQm0DW1HPVsp0070GOp2NCL7Ykv4rdvU9taTOgt9Mf9GlKEHUMW9UhI1BYyZjYVo/ADTF70JrN6Jf3DHd/YkBxCgKr7C2YMhi+YJd6ak1HPN/Dl34/rBml7ART5vqtBGNnZwZoh+pbRmsI9Rah5QJb2We5avTECgKNf9C1A6NsjOM3VusKO6mUfCxtEwjMW+iirayBoXek6J3KI3wPAS3uCDoETwcir4thRMu4e0ImyfAw5G+p0uyofdc2qQmvSXxYZ+pLvgEVVIYNKQkX6GrmpNaKmAuI03GMA==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nvidia.com;
+Received: from CH3PR12MB7763.namprd12.prod.outlook.com (2603:10b6:610:145::10)
+ by CY8PR12MB7415.namprd12.prod.outlook.com (2603:10b6:930:5d::22) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7918.20; Fri, 30 Aug
+ 2024 00:06:25 +0000
+Received: from CH3PR12MB7763.namprd12.prod.outlook.com
+ ([fe80::8b63:dd80:c182:4ce8]) by CH3PR12MB7763.namprd12.prod.outlook.com
+ ([fe80::8b63:dd80:c182:4ce8%3]) with mapi id 15.20.7897.027; Fri, 30 Aug 2024
+ 00:06:24 +0000
+From: Jason Gunthorpe <jgg@nvidia.com>
+To: iommu@lists.linux.dev,
+	Joerg Roedel <joro@8bytes.org>,
 	Robin Murphy <robin.murphy@arm.com>,
-	Mostafa Saleh <smostafa@google.com>,
-	"iommu@lists.linux.dev" <iommu@lists.linux.dev>,
-	Daniel Mentz <danielmentz@google.com>
-Subject: Re: [PATCH v2 1/2] iommu/arm-smmu-v3: Print better events records
-Message-ID: <ZtEKMknbGaD9q170@google.com>
-References: <20240827193026.3993039-1-praan@google.com>
- <20240827193026.3993039-2-praan@google.com>
- <ZtAW0hVPFD6JbLTL@Asurada-Nvidia>
+	Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
+	Will Deacon <will@kernel.org>
+Cc: Alejandro Jimenez <alejandro.j.jimenez@oracle.com>,
+	Joao Martins <joao.m.martins@oracle.com>,
+	Joerg Roedel <jroedel@suse.de>,
+	patches@lists.linux.dev,
+	Vasant Hegde <vasant.hegde@amd.com>
+Subject: [PATCH v2 05/14] iommu/amd: Remove the amd_iommu_domain_set_pt_root() and related
+Date: Thu, 29 Aug 2024 21:06:14 -0300
+Message-ID: <5-v2-831cdc4d00f3+1a315-amd_iopgtbl_jgg@nvidia.com>
+In-Reply-To: <0-v2-831cdc4d00f3+1a315-amd_iopgtbl_jgg@nvidia.com>
+References:
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-ClientProxiedBy: BN9PR03CA0791.namprd03.prod.outlook.com
+ (2603:10b6:408:13f::16) To CH3PR12MB7763.namprd12.prod.outlook.com
+ (2603:10b6:610:145::10)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <ZtAW0hVPFD6JbLTL@Asurada-Nvidia>
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: CH3PR12MB7763:EE_|CY8PR12MB7415:EE_
+X-MS-Office365-Filtering-Correlation-Id: 038825c4-8a05-49e7-0f41-08dcc88795ee
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;ARA:13230040|376014|7416014|366016|1800799024;
+X-Microsoft-Antispam-Message-Info:
+	=?us-ascii?Q?qEuhUl7+N/LI++inopm0E9xnyOn0t7fW/v/ZtPkZZpphtCNuca/sAwlnDihX?=
+ =?us-ascii?Q?Dm4K68PL/cM2tvaYBwurRWxFjSwWjhOOSgeDqbp0tLqMKq+oP7wg5QtL9eH0?=
+ =?us-ascii?Q?tOlWKpq/6MEGiuDPXqXidt86CwWfBaWFf0wyovl92qHxzhQpL0oUFVW8E6fP?=
+ =?us-ascii?Q?nH2pkoeLh9tNieGHEKkRxG8XxoNQO7Hn+qDoVjMdvVcKo5gPFobl10CLGaCO?=
+ =?us-ascii?Q?6M4We+Z87dyz0/MUQMRmKSynalwzpnxI9Bj8AOJtYDKEtyCnyXX5qvN2iKw8?=
+ =?us-ascii?Q?UlIjKVvj1zllEiq9sBVMuu+uDICfZmE2H94QERSGXZZOBJvXys78pYz4hzsC?=
+ =?us-ascii?Q?aLkek2XaOsnAeivXgWtvnnP+Q/WAFl6FtlUiYhNXxqoTVEDrfhr7kAOjxwMN?=
+ =?us-ascii?Q?Oxs4eaB/Vc1GqhhgyVI2MCDnJ8A1U4d9N+zLplrrDbcdyqB1cCH3UgrYeBLy?=
+ =?us-ascii?Q?f4EP/jjirv5gbAGM6IrH0kg6t5dWXE2zRjvX0dC405PViW2loAuvLFfOibBc?=
+ =?us-ascii?Q?FqlQCkINTkhJs3HRJVOLX6JKo0ngdn2qYW8Lr0CHHnPX2FE16TnqKsm0yoIA?=
+ =?us-ascii?Q?zkro3Wg9kd2R9FhzBaXiwOsazKC1qx9TVAI20KVSKUXVOHBYRC3sP5mDdywI?=
+ =?us-ascii?Q?uXqEKM0NhtzDf0mbj1p3pMnfjjuhBrMy5rujgx1e1qqDvGdoiqvxwAjGR+Eh?=
+ =?us-ascii?Q?DGRcQQN1wtN0szbvWWAWR+G0nQcbm0MrwClnXXULihjyRLqKzTl6OUKisUYT?=
+ =?us-ascii?Q?syVIpBleTc22BcNVSHc5rOJdfqU/17Z3ljEfEkA5c1PmTsI8D1pk5k3KnkN/?=
+ =?us-ascii?Q?EQscJ7H1eauHhBu+OHfBEKGFtB2rnbkeuF2E43FMGClluPTqWmYnGC3M4ddL?=
+ =?us-ascii?Q?RcJx98b0Cas8TzIktOdJ6c1V4ZhHHrqgsiOSy7gs8RwLnKi4QoXLdHlhbLra?=
+ =?us-ascii?Q?nuWY/pEOMbIiaQddPX/04ebrHKn62y/PnLuxqYvHzB0ho10Af0uMiup69lDw?=
+ =?us-ascii?Q?PB6WkonvmyHvmBwcyTNF0/SDfF+a+uOsJdy0/BkLOWC1zIUykCNM8qhrtZkS?=
+ =?us-ascii?Q?mK8Z1ddELKIhIU71TRKVdUU+PNmYE0r+uIBvIjjy7vSdN/pcWfDapPteGdUz?=
+ =?us-ascii?Q?M0f4x+apibymCe1stOF1BFD3vDdjdzLWDV1qs7Dgcm63jcXo1po9cntrJePW?=
+ =?us-ascii?Q?KRm4rbq6EgQTwbtDXnZ23J1wqu3Pm1tKdtsY1Dv+uniX+ZYqUylDnyFJFGD7?=
+ =?us-ascii?Q?2ij6dYlMNM9aC0qXW9f4Xr2UEU5nBwxr5lAjMalRZVMu2ePkHm0Lo0a6gK6p?=
+ =?us-ascii?Q?R/Rt53E7uHEsV+Rd7TvY7YKGhwMFysASvIRdQBCufla2/g=3D=3D?=
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CH3PR12MB7763.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(376014)(7416014)(366016)(1800799024);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?us-ascii?Q?xaNN6PbPN1LfmO3FSIKoRa7pkjBINqjFg4SQLp79lZerorSFdMxYmVF613wo?=
+ =?us-ascii?Q?CX7vHM/NAo97NL7MwAh/9XYir4MC4m3ROscYlJ9VN1k5IoJJ3xpKJkKVChrq?=
+ =?us-ascii?Q?Y/PyXEGdN6hTsSLTIlBqpq7jPFRWWwvQ8UhTGNpsjv1c8iiHiJ/ReCuauUEP?=
+ =?us-ascii?Q?oU+6XRj0q79uBmq3K7V4VAoe+7OWErLpGVEXKbDJ3nMGgjMTB/jC2rWW8OKH?=
+ =?us-ascii?Q?91g3D/3R5oiexk/SPx4UTVpM5p1nf4x07X5DuOZ9YYuzSk2mURGKTCMmZ9dn?=
+ =?us-ascii?Q?ptOe0miSdqAuU5+ZkPI7oysOEdcjbxRmsyBpiNwhDxs+pgMaCXHy901jv5zN?=
+ =?us-ascii?Q?VyCkkJFrzzIKKsjmKXrgQG9mgDwUw5PyC5ujPXz9Mww9o64gdNPacttkpRgF?=
+ =?us-ascii?Q?oNDLhgAHyOAPj7dCShhimQrVla9HExi7FkRCEyQS0eDYUq/d161CGS64FNiN?=
+ =?us-ascii?Q?91RAev/ZVDSTEaH2Cwb0qDvroPmsJDSIZJ4rztrk3V9zzw65n4nRVgdGWfFn?=
+ =?us-ascii?Q?ZeaxvDRdfWZysoxf8OJw/PLIC3v7hWiknME8Bnlo6+IktHCusiJxg/kAXQKc?=
+ =?us-ascii?Q?bUK5d1TYOSYhD2sGbYYgm+Md88Dbiy5Hvo15EcKA1hlUCZUUdZfAzZJ6wYvG?=
+ =?us-ascii?Q?yqDjQhsC3ru7us5LOD9Nd+ME942Lev4+Md/fXKl9DJqAwX0qkF5jcDkbxqF8?=
+ =?us-ascii?Q?FPZvgj4t5v7aERgVIrQ4VS0OzJBOhas58/uhzjUhQSm98R0hqupPwUN3Aoay?=
+ =?us-ascii?Q?RYHpAVAy381KUi27V3OM1BlBp2TuK704oGWepqVVHZQH5ivJ/PdS/J3Glj65?=
+ =?us-ascii?Q?yEgfzlcHCBy9kqWXgHWN6cmEVOY1PXaeS9yUiFQ8XxHrwpAJ4pbvt9qLCZhx?=
+ =?us-ascii?Q?8tiWT9mrZVuvwXfOzP3+jAXBx+G2rCKj/q89LMSHTwGc5NE8clv97VuYP3k1?=
+ =?us-ascii?Q?+vzc7EbhxLOUYFXvGoTaCCU7o7SEDge3udb5HQxpm6fjy7MawCZS00PLN5Fp?=
+ =?us-ascii?Q?coDHwfdYpRqj3sYkEBdi23uXN10a3eeTcubIExpj4hlNVQDJT7a1qsDzIRvA?=
+ =?us-ascii?Q?FHwAhTLHd2jOl5YqNDR1Dj/lLKVN/JTG929F1RQraiw/uXw/1hJ0c68lC76i?=
+ =?us-ascii?Q?omfvcDPkK1lyTgrNdWaVxDBZXEZCykH8sOIdqYWsc1uVEszeokrPDTsFrBtb?=
+ =?us-ascii?Q?HL8qCGHgEMftOUofeedMRzAdV9S7GDAhSeQA9SixGk719qXxCU1omoRfpgDv?=
+ =?us-ascii?Q?r/5nGhYGfhN6imLqTv8WVxQJCTOpAalFRKUX5lN0em0cyStJYk5519FabYlA?=
+ =?us-ascii?Q?nKvJnTCiRSiuYISoJwrvLbfqQEwTjTtOKHKOdrTDmK9NBhyIIhj9fZmpD47g?=
+ =?us-ascii?Q?UqVyYh+RDjQVAl2Rn8RokQn+9epwOdLY0z2O1X2m5XVnhsUOICuzb0o7zbNM?=
+ =?us-ascii?Q?NxjRPri7N00QoMUTTuhfxabi+VGNv8CNo6DUiZ0LnJ/bFGeiMrZKO+xTpYeP?=
+ =?us-ascii?Q?leKTfJNwezvGFAq3yLXdP/7Gu8rOoTA3yQiYzUVRRBMYCkLZtGyfgoyH3BWE?=
+ =?us-ascii?Q?5/82Z+79BOoC5kcQm6tfp2sdDfMsI/b0gmOIb//r?=
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 038825c4-8a05-49e7-0f41-08dcc88795ee
+X-MS-Exchange-CrossTenant-AuthSource: CH3PR12MB7763.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 30 Aug 2024 00:06:24.2472
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: xgSiriXFBOE7j0DrAMuEdETRk+ZVRu94uJNK4pRbmL8EVZol9AjXoJ40sMBT1ohd
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: CY8PR12MB7415
 
-On Wed, Aug 28, 2024 at 11:36:02PM -0700, Nicolin Chen wrote:
-Hi Nicolin,
-> Hi Pranjal,
-> 
-> The prints would be very helpful for debugging. Thanks for the
-> patch!
-> 
-> I have some personally thoughts here, so hopefully we can make
-> it cleaner and more readable.
-> 
-> On Tue, Aug 27, 2024 at 12:30:25PM -0700, Pranjal Shrivastava wrote:
-> 
-> > +static const char * const evts[] = {
-> 
-> s/evts/event_str
-> 
+Looks like many refactorings here have left this confused. There is only
+one storage of the root/mode, it is in the iop struct.
 
-Ack, would change that in the follow up patch.
+increase_address_space() calls amd_iommu_domain_set_pgtable() with values
+that it already stored in iop a few lines above.
 
-> > +       /* Bad config events */
-> > +       [EVT_ID_BAD_SID_CONFIG] = "C_BAD_STREAMID",
-> > +       [EVT_ID_BAD_STE_CONFIG] = "C_BAD_STE",
-> > +       [EVT_ID_BAD_CD_CONFIG] = "C_BAD_CD",
-> > +       [EVT_ID_BAD_SSID_CONFIG] = "C_BAD_SUBSTREAMID",
-> > +       [EVT_ID_STREAM_DISABLED] = "F_STREAM_DISABLED",
-> > +
-> > +       /* Bad translation events */
-> > +       [EVT_ID_TRANSLATION_FAULT] = "F_TRANSLATION",
-> > +       [EVT_ID_ADDR_SIZE_FAULT] = "F_ADDR_SIZE",
-> > +       [EVT_ID_ACCESS_FAULT] = "F_ACCESS",
-> > +       [EVT_ID_PERMISSION_FAULT] = "F_PERMISSION",
-> > +
-> > +       /* Bad fetch events */
-> > +       [EVT_ID_STE_FETCH_FAULT] = "F_STE_FETCH",
-> > +       [EVT_ID_CD_FETCH_FAULT] = "F_CD_FETCH",
-> > +       [EVT_ID_VMS_FETCH_FAULT] = "F_VMS_FAULT"
-> > +};
-> > +
-> > +static const char * const class_str[] = {
-> > +       [0] = "CD",
-> > +       [1] = "TTD",
-> > +       [2] = "IN",
-> > +       [3] = "RES",
-> > +};
-> 
-> Unlike the event IDs, these class code names are still uneasy to
-> read. Though it'd result in a print-format change, yet could we
-> simply dump full strings instead?
-> 
+amd_iommu_domain_clr_pt_root() is zero'ing memory we are about to free. It
+used to protect against a double free of root, but that is gone now.
 
-By "full strings" do you mean "CD => CD Fetch" as mentioned in the spec?
-Or do you mean "Context Descriptor", "Translation Table Desc" etc.? I'm
-afraid that the latter would make the printed string much longer.
-Although, I wouldn't mind doing that if we have consensus.
+Remove amd_iommu_domain_set_pgtable(), amd_iommu_domain_set_pt_root(),
+amd_iommu_domain_clr_pt_root() as they are all pointless.
 
-> > +static void arm_smmu_get_evt_info(struct arm_smmu_device *smmu, u64 *evt,
-> > +                                 struct arm_smmu_event *event)
-> > +{
-> > +       /* Pick out the good stuff */
-> > +       event->id = FIELD_GET(EVTQ_0_ID, evt[0]);
-> > +       event->sid = FIELD_GET(EVTQ_0_SID, evt[0]);
-> > +       event->ssid_valid = evt[0] & EVTQ_0_SSV;
-> > +       event->ssid = event->ssid_valid ? FIELD_GET(EVTQ_0_SSID, evt[0]) : IOMMU_NO_PASID;
-> > +       event->class = FIELD_GET(EVTQ_1_CLASS, evt[1]);
-> > +       event->iova = FIELD_GET(EVTQ_2_ADDR, evt[2]);
-> > +       event->ipa = FIELD_GET(EVTQ_3_IPA, evt[3]);
-> > +       event->privileged = FIELD_GET(EVTQ_1_PnU, evt[1]);
-> > +       event->instruction = FIELD_GET(EVTQ_1_InD, evt[1]);
-> > +       event->stage = FIELD_GET(EVTQ_1_S2, evt[1]);
-> > +       event->read = FIELD_GET(EVTQ_1_RnW, evt[1]);
-> > +       event->raw = evt;
-> 
-> Maybe we could define struct arm_smmu_event in this way:
-> 
-> +struct arm_smmu_event {
-> +	union {
-> +		u64 evt[4];
-> +		struct {
-> +			/* Bit 0:63 */
-> +			u64 id : 8;
-> +			u64 _res0 : 3;
-> +			u64 ssv : 1;
-> +			u64 ssid : 20;
-> +			u64 sid : 32;
-> +			/* Bit 64:127 */
-> +			u64 stag : 16;
-> +			u64 _res1 : 15;
-> +			u64 stall : 1;
-> +			u64 _res2 : 1;
-> +			u64 pnu : 1;
-> +			u64 ind : 1;
-> +			u64 rnw : 1;
-> +			u64 _res3 : 2;
-> +			u64 nsipa : 1;
-> +			u64 s2 : 1;
-> +			u64 class : 2;
-> +			u64 _res4 : 6;
-> +			u64 impl_def : 16;
-> +			/* Bit 128:191 */
-> +			u64 inputaddr;
-> +			/* Bit 192:255 */
-> +			u64 _res5 : 12;
-> +			u64 ipa : 40;
-> +			u64 _res6 : 12;
-> +		} f_trans;
-> +		/* FIXME Add other event structs */
-> +	};
-> +};
-> 
-> Then, event would be just:
-> +		struct arm_smmu_event *event = (struct arm_smmu_event *)evt;
-> 
-> Not sure if Will would like this though...
+Reviewed-by: Vasant Hegde <vasant.hegde@amd.com>
+Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
+---
+ drivers/iommu/amd/amd_iommu.h  | 13 -------------
+ drivers/iommu/amd/io_pgtable.c | 24 ------------------------
+ 2 files changed, 37 deletions(-)
 
-Yea, I thought about this too but I felt that it'd bloat up the code
-for every new event that's introduced. Also, the printing would become
-more complicated as we'd have to log different fields for different
-events. Additionally, I don't see that many unions being defined
-elsewhere in the kernel.
+diff --git a/drivers/iommu/amd/amd_iommu.h b/drivers/iommu/amd/amd_iommu.h
+index 2d5945c982bde5..5a050080d2e814 100644
+--- a/drivers/iommu/amd/amd_iommu.h
++++ b/drivers/iommu/amd/amd_iommu.h
+@@ -143,19 +143,6 @@ static inline void *iommu_phys_to_virt(unsigned long paddr)
+ 	return phys_to_virt(__sme_clr(paddr));
+ }
+ 
+-static inline
+-void amd_iommu_domain_set_pt_root(struct protection_domain *domain, u64 root)
+-{
+-	domain->iop.root = (u64 *)(root & PAGE_MASK);
+-	domain->iop.mode = root & 7; /* lowest 3 bits encode pgtable mode */
+-}
+-
+-static inline
+-void amd_iommu_domain_clr_pt_root(struct protection_domain *domain)
+-{
+-	amd_iommu_domain_set_pt_root(domain, 0);
+-}
+-
+ static inline int get_pci_sbdf_id(struct pci_dev *pdev)
+ {
+ 	int seg = pci_domain_nr(pdev->bus);
+diff --git a/drivers/iommu/amd/io_pgtable.c b/drivers/iommu/amd/io_pgtable.c
+index b3991ad1ae8ea3..5278ba3f676c45 100644
+--- a/drivers/iommu/amd/io_pgtable.c
++++ b/drivers/iommu/amd/io_pgtable.c
+@@ -132,18 +132,6 @@ static void free_sub_pt(u64 *root, int mode, struct list_head *freelist)
+ 	}
+ }
+ 
+-void amd_iommu_domain_set_pgtable(struct protection_domain *domain,
+-				  u64 *root, int mode)
+-{
+-	u64 pt_root;
+-
+-	/* lowest 3 bits encode pgtable mode */
+-	pt_root = mode & 7;
+-	pt_root |= (u64)root;
+-
+-	amd_iommu_domain_set_pt_root(domain, pt_root);
+-}
+-
+ /*
+  * This function is used to add another level to an IO page table. Adding
+  * another level increases the size of the address space by 9 bits to a size up
+@@ -177,12 +165,6 @@ static bool increase_address_space(struct protection_domain *domain,
+ 	amd_iommu_update_and_flush_device_table(domain);
+ 	amd_iommu_domain_flush_complete(domain);
+ 
+-	/*
+-	 * Device Table needs to be updated and flushed before the new root can
+-	 * be published.
+-	 */
+-	amd_iommu_domain_set_pgtable(domain, pte, domain->iop.mode);
+-
+ 	pte = NULL;
+ 	ret = true;
+ 
+@@ -561,23 +543,17 @@ static int iommu_v1_read_and_clear_dirty(struct io_pgtable_ops *ops,
+ static void v1_free_pgtable(struct io_pgtable *iop)
+ {
+ 	struct amd_io_pgtable *pgtable = container_of(iop, struct amd_io_pgtable, iop);
+-	struct protection_domain *dom;
+ 	LIST_HEAD(freelist);
+ 
+ 	if (pgtable->mode == PAGE_MODE_NONE)
+ 		return;
+ 
+-	dom = container_of(pgtable, struct protection_domain, iop);
+-
+ 	/* Page-table is not visible to IOMMU anymore, so free it */
+ 	BUG_ON(pgtable->mode < PAGE_MODE_NONE ||
+ 	       pgtable->mode > PAGE_MODE_6_LEVEL);
+ 
+ 	free_sub_pt(pgtable->root, pgtable->mode, &freelist);
+ 	iommu_put_pages_list(&freelist);
+-
+-	/* Update data structure */
+-	amd_iommu_domain_clr_pt_root(dom);
+ }
+ 
+ static struct io_pgtable *v1_alloc_pgtable(struct io_pgtable_cfg *cfg, void *cookie)
+-- 
+2.46.0
 
-...and, I'm not a fan of too many unions (personally) :) 
-
-> 
-> > +
-> > +       mutex_lock(&smmu->streams_mutex);
-> > +       event->master = arm_smmu_find_master(smmu, event->sid);
-> > +       mutex_unlock(&smmu->streams_mutex);
-> 
-> Same as I pointed out at the other patch, "master" is unprotected
-> after the unlock. It can unlikely-yet-still-possibly race against
-> arm_smmu_release_device.
->
-
-Hmm.. are you suggesting that the `master` could've been removed by the
-arm_smmu_release_device while we access it in an event handler?
-
-As in, something like the following situation:
-
-1. The evtq_thread gets scheduled
-2. arm_smmu_release_device removes the `master` & its streams
-3. In the `handle_evt` we dereference `master` which has been `kfree`ed
-   (also, we don't return -EINVAL like we ideally should)
-
-In that case, I think I should add back the `arm_smmu_find_master` to
-the `arm_smmu_handle_evt` along with the locks. Nice catch! :)
-
-
-> > +static void arm_smmu_dump_xlation_fault(struct arm_smmu_device *smmu,
-> > +                                       struct arm_smmu_event *event)
-> > +{
-> > +       dev_err(smmu->dev, "Fault: %s client %s sid 0x%08x.0x%05x:\n",
-> 
-> "client" doesn't seem to be used anywhere in this driver, I would:
-> s/client/master
-> 
-
-Ack, would change this to "master".
-
-> And it'd feel clearer to have an "ssid". And perhaps adding commas
-> to separate them too.
-
-I referred to the log in `arm_smmu_handle_ppr` for the sid.ssid format.
-If we'd prefer a separate "ssid", should we change the one in ppr too?
-LMK, what you and Will think about that?
-
-> 
-> > +                       evts[event->id], event->master_name, event->sid, event->ssid);
-> > +       dev_err(smmu->dev, "\tiova = %#llx ipa = %#llx (%s%s%s%s%s%s)\n", event->iova, event->ipa,
-> > +                   event->privileged ? "Priv " : "Unpriv ",
-> > +                   event->instruction ? "Inst " : "Data ",
-> > +                   event->read ? "Read " : "Write ",
-> > +                   event->stage ? "S2 " : "S1 ", class_str[event->class],
-> > +                   ((event->id == EVT_ID_PERMISSION_FAULT) && (event->class == EVTQ_1_CLASS_TT)) ?
-> > +                   (FIELD_GET(EVTQ_1_TT_READ, event->raw[1]) ? " TTD Read" : " TTD Write")
-> > +                   : "");
-> 
-> Indentation should follow the existing printk() in this driver. And
-
-I'm sorry but I'm not sure if I understand what is meant by "the
-existing printk indentation in this driver", do you mean aligning the
-next line with the opening brace? For example:
-
-	dev_err(smmu->dev,
-		"failed to allocate queue (0x%zx
-		bytes) for %s\n",
-		qsz, name);
-
-> those ternary operators at the last field(s?) are hard to ready..
->
-
-Hmm, I wanted the last fields to be printed only when the fault was
-F_PERMISSION, in the same log. Any suggestions on what might make it
-easier to read? Some helpful comments around it? Something else?
-
-I just noticed that I've missed the `STAG` field in the in xlation_fault
-dump, would add that too in the next version of this patch.
-
-> > +static void arm_smmu_dump_fetch_fault(struct arm_smmu_device *smmu,
-> > +                                     struct arm_smmu_event *event)
-> > +{
-> > +       dev_err(smmu->dev, "Bad fetch: %s client %s sid 0x%08x.0x%05x: fetch addr = %#llx\n",
-> > +                       evts[event->id], event->master_name, event->sid, event->ssid, event->ipa);
-> 
-> Actually, the "Fault", "Bad fetch", and "Bad smmu config" doesn't
-> feel very necessary, since we prints the event string already.
-> 
-
-That makes sense, I'll remove those in a follow up patch.
-Although, I guess we should still say "fault" somewhere to hint folks
-without arm-smmu-v3 knowledge that the event wasn't normal operation.
-
-LMK what you think? I've had a few interactions where clients tend to
-ignore the current "event received" dump considering that to be a part
-of normal SMMU operation.
-
-> > +}
-> > +
-> > +static void arm_smmu_dump_raw_event(struct arm_smmu_device *smmu,
-> > +                                   struct arm_smmu_event *event)
-> > +{
-> > +       int i;
-> > +
-> > +       dev_err(smmu->dev, "event 0x%02x received: client %s:\n", event->id, event->master_name);
-> 
-> Looks like it would print another title that's sorta duplicated to
-> other dump functions yet less informative?
->
-
-Yea, I didn't wanna break backward compatibility, people might have
-tools to parse out the existing dump, lol!
-
-On a serious note, I believe it'd be better to print this as some
-implmentations might have some "IMPLEMENTATION DEFINED" fields which
-people might be interested to look at.
-
-Although, we can dump the raw event only in the `default` case, i.e.
-when we don't have a dumper function for that particular event ID but
-that might still avoid printing the IMPL_DEFINED fields in fetch faults
-
-> > +       for (i = 0; i < EVTQ_ENT_DWORDS; ++i)
-> > +               dev_err(smmu->dev, "\t0x%016llx\n",
-> > +                        (unsigned long long)event->raw[i]);
-> > +}
-> > +
-> > +static void arm_smmu_dump_event(struct arm_smmu_device *smmu,
-> > +                                struct arm_smmu_event *event)
-> > +{
-> > +       switch (event->id) {
-> > +       case EVT_ID_BAD_SID_CONFIG:
-> > +       case EVT_ID_BAD_STE_CONFIG:
-> > +       case EVT_ID_BAD_SSID_CONFIG:
-> > +       case EVT_ID_BAD_CD_CONFIG:
-> > +       case EVT_ID_STREAM_DISABLED:
-> > +               dev_err(smmu->dev, "Bad smmu config - %s client %s sid 0x%08x.0x%05x\n",
-> > +                               evts[event->id], event->master_name, event->sid, event->ssid);
-> > +               break;
-> > +
-> > +       case EVT_ID_TRANSLATION_FAULT:
-> > +       case EVT_ID_ADDR_SIZE_FAULT:
-> > +       case EVT_ID_ACCESS_FAULT:
-> > +       case EVT_ID_PERMISSION_FAULT:
-> > +               arm_smmu_dump_xlation_fault(smmu, event);
-> > +               break;
-> > +
-> > +       case EVT_ID_STE_FETCH_FAULT:
-> > +       case EVT_ID_CD_FETCH_FAULT:
-> > +       case EVT_ID_VMS_FETCH_FAULT:
-> > +               arm_smmu_dump_fetch_fault(smmu, event);
-> > +               break;
-> > +       }
-> > +
-> > +       arm_smmu_dump_raw_event(smmu, event);
-> 
-> I wonder if something like this would be cleaner:
-> 
-> 	...
-> 	char title[256];
-> 	char addrs[256];
-> 	char other[256];
-> 	int i;
-> 
-> 	switch () {
-> 	case xxxx:
-> 		/* If duplicated between cases, put them into helpers */
-> 		snprintf(title, 256, "%s: Master %s, sid 0x%08x, ssid 0x%05x\n",
-> 			 event_str(event->id], dev_name(master->dev),
-> 			 event->sid, event->ssid);
-> 		snprintf(addrs, 256, .....);
-> 		snprintf(other, 256, .....);
-> 		break;
-> 	...
-> 	default:
-> 		/* snprintf raw title */
-> 		break;
-> 	}
-> 	if (strlen(title))
-> 		dev_err(smmu->dev, "%s", title);
-> 	if (strlen(addrs))
-> 		dev_err(smmu->dev, "%s", addrs);
-> 	if (strlen(other))
-> 		dev_err(smmu->dev, "%s", other);
-> 	for (i = 0; i < EVTQ_ENT_DWORDS; ++i)
-> 		dev_err(smmu->dev, "\t0x%016llx\n", event->evt[i]);
-> 	...
-> 
-
-I thought about something similar as well, but then referred to Robin's
-comments on [1]. Also, printing strings in 3 different `dev_err` logs
-could result in interruptions from other logs in dmesg, I'd prefer to
-see the entire log in a single `dev_err` for ease. Although, I think we
-should be able to do something like the following to achieve that:
-	...
-
-	dev_err(%s %s %s, strlen(title) ? title : ""
-		strlen(addrs) ? addrs : ""
-		strlen(other) ? other : ""
-
-	for (i = 0; i < EVTQ_ENT_DWORDS; ++i)
-		dev_err(smmu->dev, "\t0x%016llx\n", event->evt[i]);
-
-	...
-
-It does look cleaner to me as well. I'd wait for what other have to say.
-
-> Thanks
-> Nicolin
-
-[1]
-https://lore.kernel.org/linux-arm-kernel/07c7426c-7d01-4160-a344-1857b738e9c4@arm.com/T/#m9c38920897999c56f0b135556133cae38f40b754a
-
-Thanks,
-Pranjal
