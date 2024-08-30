@@ -1,179 +1,141 @@
-Received: from NAM10-DM6-obe.outbound.protection.outlook.com (mail-dm6nam10on2077.outbound.protection.outlook.com [40.107.93.77])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 357B41898E5;
-	Fri, 30 Aug 2024 12:37:02 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.93.77
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1725021423; cv=fail; b=CETVog1p6UGq+2fYsu5O5p/lHASa2YiUfobpL0uHChDN1VtqzhKRYBwh2LOasVpjQbKusDIaLassVD6niBXPV4hnWolxhDxnaVHXQQvwThlbDCTBDDfpmNgSrz2j05mqwVGx63K4vQS4H0gDgJKY36iMxkXVXRHchU1WUM/cXQY=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1725021423; c=relaxed/simple;
-	bh=bgFOxfkLz2osJqmAK+wPO8fCNVMbZnv4twWf413Wau0=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:Content-Type:
-	 Content-Disposition:In-Reply-To:MIME-Version; b=Vdem+8lpyRQr1eTZiMP26aXuYL3NFcn1R/jXT/hdV5yiwZmOHMaqOO7gyTB8tGnx0WJ0cPOxloRvNsbMb3Shyd1y2dHXQwQbzXZQ0d486jIJVItX1Yb6CljI6OxKuF+aZuC3wVI/pHas4rFgnYl6boeTxx66wk8pkVhfu2r3/WA=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=G3JFkbU5; arc=fail smtp.client-ip=40.107.93.77
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
+Received: from mail.8bytes.org (mail.8bytes.org [85.214.250.239])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 7C094179652
+	for <iommu@lists.linux.dev>; Fri, 30 Aug 2024 12:48:57 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=85.214.250.239
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1725022139; cv=none; b=GAJFPK0rXPf8qhQjPWuQe5StQ1BSEpJdzdrytLbvY7eUH/12HisOZGx5JL56c5B22hXQ9uBvaoSkDdZ4d2XMg5mjOilMdQH8sXG+DahL4aU7LY39gzPEeZ6jd373rYlapM8RJZlo2jjfgdAZkmDXVlaEMeXKh2TQoVK9cn+lsWU=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1725022139; c=relaxed/simple;
+	bh=jUhwG5R0qWnWJOpTzFrDht5qN55ooWMDoFdCvpBkkkg=;
+	h=Date:From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:
+	 Content-Disposition; b=L+Sj18lpvDA9V1ooOHY3plm0JDlzfoZyLD8G9SQ0v77owz0JqYsqqSjLKjWcBcENePfSkoGE0G98xgFjseRM1huqzaS9gtFH+N0S4CIWDge5YO10a4lELJUwZJ16UoeBBO8lBil3TEuWTqjWGZTs1Gk1G68qOpGKAabdzmzATMA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=8bytes.org; spf=pass smtp.mailfrom=8bytes.org; dkim=pass (2048-bit key) header.d=8bytes.org header.i=@8bytes.org header.b=R/C2yv+l; arc=none smtp.client-ip=85.214.250.239
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=8bytes.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=8bytes.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="G3JFkbU5"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=Ar3yUeHuZmaSZ9PSfw+rw9Y2ZrBIBMH6aSdNIdmDdshmitLQDiCWDPxnDoXGP6zorXh+9POK+CFYaOeXK7PyUmAQsneNMqwn6yd9/WdDEUbmcgmJ70hFNlsvJe9qTV4HYml4s90HMXVtTttlDEBThpDQdy/csMAMfvRnqLBFY10SukX97l3CECaHpO4lSbP7hR5FMz3jPjDpJOkroec3hqQu41doqjmDKg/r1DlgYUihwmpU1L6EHsBlnlZUqmkD4eKbJ6RZVq1CdylPGAnKbhR6HzSKdEUn1xuVj7d88/H8Hg6csqwsGdjD5ZVWdrAQ6gg2gceTyRjex1+36jKzyQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=CmmiDq7Ez5iYFB2mp+jE9Ha+Vx/mszjc+aw4ozHW5Uw=;
- b=u7wj+2hH5j1J8i1l8OlD5x+f3F8q+Txf8XyKZHcIbU6uxNAyVK41i0rTmLdY3y6MvD1jhuC2yYJvzN+bmjVnvnl4xTomIqo2FgvYPCcrYkRAxiwxLo0Ys2p/xZTM9/09IZkVd4wkBpEvNtOQOE0+mdo8qidknST3/Iu8kdFSb7M+EUdDWTR1Im5BLYarf+oMFRL6CoMFJs1he7F0Lx3eFeGl5jYibSXoRRClJwx7NR+O3mRWfwDEloVENJWwL0uSgf2DGpIMSWj5flk0nYflLO3u4S/OTJ//K1hTfFsQLCVX+U9BcNmr5G7+0ZOXUQ94tCreDk9N2xutJ4wooTU/6A==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=CmmiDq7Ez5iYFB2mp+jE9Ha+Vx/mszjc+aw4ozHW5Uw=;
- b=G3JFkbU5GlCdnlCo4lpz3/PL5x31o0TD4rEtn54eVe4zFp3myC36KbtBFCCPdcEUYZw6I/AHco5Hhdw/iJ+j/FaB0bWqRxTOXI7nCQSFxLhkYxEapGylqa/Z048URHhPK33PRlKZP85mjKgwIio7Q/eJz4FkGa48+vFc06SY2DvDtDXMmRW2RRJeic8YQubdRvIljXxdlCnGYk9PYtZcB+XxLQedvDQX5cajgorAmA/0LfsM6ZOmDMHJrBJe18s4ppgeVrEhb+M9NFMxOG+f4AL4tepTrd8lRd+v8D8if6JADXwLZLPKbkPswUDRwgPwgU6RwkRkV3+HifIP+j9UUg==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-Received: from CH3PR12MB7763.namprd12.prod.outlook.com (2603:10b6:610:145::10)
- by SJ1PR12MB6194.namprd12.prod.outlook.com (2603:10b6:a03:458::12) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7918.20; Fri, 30 Aug
- 2024 12:36:58 +0000
-Received: from CH3PR12MB7763.namprd12.prod.outlook.com
- ([fe80::8b63:dd80:c182:4ce8]) by CH3PR12MB7763.namprd12.prod.outlook.com
- ([fe80::8b63:dd80:c182:4ce8%3]) with mapi id 15.20.7897.027; Fri, 30 Aug 2024
- 12:36:58 +0000
-Date: Fri, 30 Aug 2024 09:36:58 -0300
-From: Jason Gunthorpe <jgg@nvidia.com>
-To: Xu Yilun <yilun.xu@linux.intel.com>
-Cc: "Tian, Kevin" <kevin.tian@intel.com>,
-	Alexey Kardashevskiy <aik@amd.com>,
-	"kvm@vger.kernel.org" <kvm@vger.kernel.org>,
-	"iommu@lists.linux.dev" <iommu@lists.linux.dev>,
-	"linux-coco@lists.linux.dev" <linux-coco@lists.linux.dev>,
-	"linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>,
-	Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
-	Alex Williamson <alex.williamson@redhat.com>,
-	"Williams, Dan J" <dan.j.williams@intel.com>,
-	"pratikrajesh.sampat@amd.com" <pratikrajesh.sampat@amd.com>,
-	"michael.day@amd.com" <michael.day@amd.com>,
-	"david.kaplan@amd.com" <david.kaplan@amd.com>,
-	"dhaval.giani@amd.com" <dhaval.giani@amd.com>,
-	Santosh Shukla <santosh.shukla@amd.com>,
-	Tom Lendacky <thomas.lendacky@amd.com>,
-	Michael Roth <michael.roth@amd.com>, Alexander Graf <agraf@suse.de>,
-	Nikunj A Dadhania <nikunj@amd.com>,
-	Vasant Hegde <vasant.hegde@amd.com>, Lukas Wunner <lukas@wunner.de>,
-	"david@redhat.com" <david@redhat.com>
-Subject: Re: [RFC PATCH 12/21] KVM: IOMMUFD: MEMFD: Map private pages
-Message-ID: <20240830123658.GO3773488@nvidia.com>
-References: <20240823132137.336874-1-aik@amd.com>
- <20240823132137.336874-13-aik@amd.com>
- <BN9PR11MB5276D14D4E3F9CB26FBDE36C8C8B2@BN9PR11MB5276.namprd11.prod.outlook.com>
- <20240826123024.GF3773488@nvidia.com>
- <ZtBAvKyWWiF5mYqc@yilunxu-OptiPlex-7050>
- <20240829121549.GF3773488@nvidia.com>
- <ZtFWjHPv79u8eQFG@yilunxu-OptiPlex-7050>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <ZtFWjHPv79u8eQFG@yilunxu-OptiPlex-7050>
-X-ClientProxiedBy: IA1P220CA0001.NAMP220.PROD.OUTLOOK.COM
- (2603:10b6:208:461::15) To CH3PR12MB7763.namprd12.prod.outlook.com
- (2603:10b6:610:145::10)
+	dkim=pass (2048-bit key) header.d=8bytes.org header.i=@8bytes.org header.b="R/C2yv+l"
+Received: from 8bytes.org (pd9fe9dd8.dip0.t-ipconnect.de [217.254.157.216])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange ECDHE (P-256) server-signature RSA-PSS (2048 bits) server-digest SHA256)
+	(No client certificate requested)
+	by mail.8bytes.org (Postfix) with ESMTPSA id 6ECD628719D;
+	Fri, 30 Aug 2024 14:48:50 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=8bytes.org;
+	s=default; t=1725022130;
+	bh=jUhwG5R0qWnWJOpTzFrDht5qN55ooWMDoFdCvpBkkkg=;
+	h=Date:From:To:Cc:Subject:From;
+	b=R/C2yv+lXYWup8HEUUBUXbkonNWKHCIVBwAR1uLB9PLpjeicjEfzKisceowgQoNy1
+	 VDZm+7P9WIi37ihBxdmPMMj2RwSxJv2olWzWfNefq+zEhwOaKC3IQQS/iZCvJpCJdt
+	 crLPW5tQecE3cvkZV/K7gnfcU17qkKkYAB85Ozwwa2kTDhqABO9JvoeYr//egnaehK
+	 uF38XzMoXs5LPoY7WH9hkPjvrKedEfsDdDqDkyXUvkSfmcwnmOaIWPi4+uj0PjHgZC
+	 ALvn/Ns6RKO8Npsz/V1r/DP7JMbzF1pWSqY9X9U9PAvCnx4iZs1CJkz00Xl9XasrWm
+	 9oW+jSAqkoSkA==
+Date: Fri, 30 Aug 2024 14:48:49 +0200
+From: Joerg Roedel <joro@8bytes.org>
+To: Linus Torvalds <torvalds@linux-foundation.org>
+Cc: Will Deacon <will@kernel.org>, linux-kernel@vger.kernel.org,
+	iommu@lists.linux.dev
+Subject: [git pull] IOMMU Fixes for Linux v6.11-rc5
+Message-ID: <ZtG_sa5UUrAoYkKd@8bytes.org>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: CH3PR12MB7763:EE_|SJ1PR12MB6194:EE_
-X-MS-Office365-Filtering-Correlation-Id: 38e5ea3f-aa3b-4bc1-d875-08dcc8f070a0
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;ARA:13230040|366016|1800799024|376014|7416014;
-X-Microsoft-Antispam-Message-Info:
-	=?us-ascii?Q?z+GzEtdrSHibc3yeoxhiyZ/5qJDaRSUCUjcHkernRiI499OJDa065ssZTywO?=
- =?us-ascii?Q?5n+Mvm9sYerkVCB181XoHEtMFpOURNeQ1WVHDSSWq8+ndap12/Hxbzik6fCR?=
- =?us-ascii?Q?35vgW8zNPbcCzEgJTIkVEoq/1PMqmXM/r8m/jEMnOfG8nO8zfr3N3RNDcnBv?=
- =?us-ascii?Q?ZmcEB8OIyZA6vYkY0AGWFGOKy9AXPifCvOofPeFE9oUMf+SivXH2O5DktQKN?=
- =?us-ascii?Q?fx/k4iomvXr+TyJyHmhtmZgXgtnYxhIbKtkjaYPI8tuIWxGCAoJklFG9vh/t?=
- =?us-ascii?Q?LdVeD21pfLiFrI9P8Ya+5A5QfLJlep50uSdxgU/XTRVZq34biDGLoZZUGKRC?=
- =?us-ascii?Q?Nzac1eQ9iNx9PNvCJSS4yzqx6en0nHiOvkrENEADnqaFcwRFvj2/YVTOYJPd?=
- =?us-ascii?Q?rDy5q04rWbBqmmNOsM3J0kU5bs8OFSVYv6xHcDUGP3Ht96QdoRcKi0UsuMwF?=
- =?us-ascii?Q?c+TgDKVAMWLRn/plm1ozhDoGqWxZtQ6c8GoDdperlU0EGJLFAOVKwpzfLcZZ?=
- =?us-ascii?Q?8/MtdSJ0xXfLhe8B7MusPqiOjxo4SptZVipMu517KpsC2r6HI3LlGIVH65fU?=
- =?us-ascii?Q?3/ELaskdmbsqK+RfFgM7dkEviFXcIQY2YX4NkLBHwGUKR2sSJ3LkfoL1YueE?=
- =?us-ascii?Q?VIUurxZA3SHqPbEK9J6v01CYnDjXHcCPhtvMkd+Wvus66SCB+uvJkPLJ6qoA?=
- =?us-ascii?Q?29PuPwePapfo4tcnIVuZHeA2sOWrTOta/T3nRv8IjOAlOv4AaQpjzi5s+JQo?=
- =?us-ascii?Q?dYLUob1WDcF/nc+XGwXO8lYM3yCN5vLJtU9jt37k/FnAFlkfW7YbLrwNqH2E?=
- =?us-ascii?Q?iGIYdPWDpslT3VFnbguk/27I9xoXRsFpZLbL2Ot0tiKzCShYPnwQU9rrPW8T?=
- =?us-ascii?Q?siyeItHbsd3blA8O0DBLRMtDvt/o/XtWFUsEOmtDKVclj9f6BSMKrANOXUlW?=
- =?us-ascii?Q?wAt16wZ/3nNCpPzidSMjDfx1eWgfgFtWSPJJ0BDFSbpTrDwFip1YSLIHSbfE?=
- =?us-ascii?Q?lYvMDOJBJctr9EZD9iXKVqBOwhayBYDZS1xhSFwWvVP8Y/g+pY6QSZYTpfWz?=
- =?us-ascii?Q?ff1ZtRnH+g/euRkGDJRulkN6iA6SXwHF50+ZqgJNi62g2K/LmOhRdh2KxT6U?=
- =?us-ascii?Q?S/rgHVCx7n+YYfbTPnYg+51lSQ42oZZyCoH4MndP96UUuLyIXguh8nkMYcR8?=
- =?us-ascii?Q?vJyCHiVEoHbeWSBONrekehFyOs2fLfsb29ZX2Lrvw20AUecIkmQTSpYIbPvJ?=
- =?us-ascii?Q?ASIUwe/oYn5pR4p8tsUzaGAk/Odq848H4BkInizropaV286sUsuccAiQWzLJ?=
- =?us-ascii?Q?5+pi5dfD2f2QC9V/cq+/hyDpkLDHB59yjFq0IRI002sl9g=3D=3D?=
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CH3PR12MB7763.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(366016)(1800799024)(376014)(7416014);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?us-ascii?Q?di5edH2COgAWReCO8OuLyxWyP9zQhZMpRdroF3HQEohDdiutrdzwtVZsArZ1?=
- =?us-ascii?Q?zQ8/+20KkVeT9bzT5A38Xx7rVnU6LFFHaWSgFoIbZBmrMeFH/N7iUywyzuMj?=
- =?us-ascii?Q?mgJEuEzDgUk4x896MYIbxbxEOpfE995u74bPHJRY5L8FeBDQ5yIKQtQZ2pZO?=
- =?us-ascii?Q?AIMFhy/cpcDDLlAbXE+kzzKxyDJEd5o0mMACGuKLnGwY5i95EbZ7Yh8DfJI4?=
- =?us-ascii?Q?Rww7fyDFAqnMCQaqYsN6rfJKYxfWxz0jnncHSeyMLNqjJhLmQ7XdwFQJa6/u?=
- =?us-ascii?Q?aWhsoRwZ662cmmGPd8IeOAEorwFEUn4iap2d5aaZUTEdy0u+nps7XZA5gj8o?=
- =?us-ascii?Q?tKfEaVfu0Lefe7sSAcACX6VmgYmbkopiZplSmlpgSvkCUkmSK4OISiHGjz5n?=
- =?us-ascii?Q?0vevIHrpTNJZ1K3FRLuEq63giANNkRrsm0ZPg/jRQzaPbMPqdihu/cXw8yy6?=
- =?us-ascii?Q?WvqmFgopULnFqoLqgPo3jxcBZY0R6VFReOEq4vMf6XLl9nZ4PQNaewHV1E8g?=
- =?us-ascii?Q?7nwPMhpgVJX/aRvpK4p52+KU4lxXVQwYjPU/dfwWK8eVz4xolSiuuRQJbBeq?=
- =?us-ascii?Q?BI02AC+gv0mScAcQPrd3OufCqdknX0526Hn00907U2/vS6M5JD9Kq3RI4FNF?=
- =?us-ascii?Q?sdYV3AwsbmMa3njRWDc6Xy9sAhutTh95xNDCFSrnNmrnQyNSoqLFzkuibT6P?=
- =?us-ascii?Q?RHE28LPyb8j9j9FXRHUQk6SI7idnI6I1fApxehxc5I8oItTYi3fJOgqZZCt7?=
- =?us-ascii?Q?zpNIQwa0YvtjkJ2MMaOBnlNkq9UmgaEg8fZzEuJBszrQtEr2Gh/srOslRb+M?=
- =?us-ascii?Q?7UoQ5CkX1O6eZ45clfgFKhKcjtVc3oAT6PekC6eTl+T9mzyTQlacVauZBvLZ?=
- =?us-ascii?Q?hgO4VjGtg/60nNS8xFxbMPxHAq0D0o7t2GS0ZWnxe5Nn7Xuzjr+vH/tYJjk0?=
- =?us-ascii?Q?Vw+4Bcdhwk87c3l1rX5q9Zb3yL+S5R8/FmkCN9/1Gvy9kYMqrB+iTK0SnWfV?=
- =?us-ascii?Q?MSBRtPssqWg5wiZS50sgYS5msd0h9O7hlld6hrs/n8pXnn13qq1u46sa1QAV?=
- =?us-ascii?Q?6GwR/dO1zhQ+DX6dYnyKdFoTXE0fpKXenm/Lr3gg2n5pj20+yYs74yYuubfp?=
- =?us-ascii?Q?S4Kh6ZnYY27ytrPF5FTY+08aGkntwZD8TH4t4pnHe2sw4mbb5AA8TZiPF1L7?=
- =?us-ascii?Q?ButOckxOTdviz6cAjCNWX91fPNsMqmhmd3Ti7EZaxJ+4AdKNOOkNOtQ29i52?=
- =?us-ascii?Q?rjjvtcfdm20+AvHlQuf5kmuFXofgsMENEEIe5AceRUOF0EQSaMlk13kDAWr9?=
- =?us-ascii?Q?+iLrIE1Njrylvu4ayzJAgdb6x6nz2mH17tfgIwRp4y/WHXPL7SqhYiTmvKC4?=
- =?us-ascii?Q?bBWj57TxqJuFd0+E+5WXU9T9wVbaide34KYGFITp2cxY+lGQg6sPs7QkQUev?=
- =?us-ascii?Q?ocb6lJ+y/sUhLqgC1CgpcJaru4vTQg0Z/c4zYWLI9aAU4MGgMyygYpfg2F13?=
- =?us-ascii?Q?HNjtlG77ia/dNSFh8UM+KhH4U50aF47hzP2RGz30s1CHGbAped5EeRWiFY5D?=
- =?us-ascii?Q?YXnyfROO4xOvhAwdLlj5aJwLO26+vtdV5FTGh0jX?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 38e5ea3f-aa3b-4bc1-d875-08dcc8f070a0
-X-MS-Exchange-CrossTenant-AuthSource: CH3PR12MB7763.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 30 Aug 2024 12:36:58.8185
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: 32XEZd6ZoiK/fNKkxnHHnQTwhyxldPz9tYaFddBX79+VGNKdhwBJN4raPgsm71DO
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SJ1PR12MB6194
+Content-Type: multipart/signed; micalg=pgp-sha256;
+	protocol="application/pgp-signature"; boundary="7GN+MAVE67h3RWRK"
+Content-Disposition: inline
 
-On Fri, Aug 30, 2024 at 01:20:12PM +0800, Xu Yilun wrote:
 
-> > If that is true for the confidential compute, I don't know.
-> 
-> For Intel TDX TEE-IO, there may be a different story.
-> 
-> Architechturely the secure IOMMU page table has to share with KVM secure
-> stage 2 (SEPT). The SEPT is managed by firmware (TDX Module), TDX Module
-> ensures the SEPT operations good for secure IOMMU, so there is no much
-> trick to play for SEPT.
+--7GN+MAVE67h3RWRK
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 
-Yes, I think ARM will do the same as well.
+Hi Linus,
 
-From a uAPI perspective we need some way to create a secure vPCI
-function linked to a KVM and some IOMMUs will implicitly get a
-translation from the secure world and some IOMMUs will need to manage
-it in untrusted hypervisor memory.
+The following changes since commit 47ac09b91befbb6a235ab620c32af719f8208399:
 
-Jason
+  Linux 6.11-rc4 (2024-08-18 13:17:27 -0700)
+
+are available in the Git repository at:
+
+  git://git.kernel.org/pub/scm/linux/kernel/git/iommu/linux.git tags/iommu-fixes-v6.11-rc5
+
+for you to fetch changes up to 51eeef9a482bcb00f6f75eda4de9bd013092b76f:
+
+  MAINTAINERS: Add Jean-Philippe as SMMUv3 SVA reviewer (2024-08-26 09:17:36 +0200)
+
+----------------------------------------------------------------
+IOMMU Fixes for Linux v6.11-rc5
+
+Including:
+
+	- Fix a device-stall problem in bad io-page-fault setups (faults
+	  received from devices with no supporting domain attached).
+
+	- Context flush fix for Intel VT-d.
+
+	- Do not allow non-read+non-write mapping through iommufd as most
+	  implementations can not handle that.
+
+	- Fix a possible infinite-loop issue in map_pages() path.
+
+	- Add Jean-Philippe as reviewer for SMMUv3 SVA support
+
+----------------------------------------------------------------
+Jason Gunthorpe (2):
+      iommufd: Do not allow creating areas without READ or WRITE
+      iommu: Do not return 0 from map_pages if it doesn't do anything
+
+Lu Baolu (1):
+      iommu/vt-d: Fix incorrect domain ID in context flush helper
+
+Pranjal Shrivastava (1):
+      iommu: Handle iommu faults for a bad iopf setup
+
+Will Deacon (1):
+      MAINTAINERS: Add Jean-Philippe as SMMUv3 SVA reviewer
+
+ MAINTAINERS                                 |   4 +
+ drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c |   2 +-
+ drivers/iommu/intel/iommu.c                 |   8 +-
+ drivers/iommu/intel/iommu.h                 |   2 +-
+ drivers/iommu/intel/pasid.c                 |   7 +-
+ drivers/iommu/io-pgfault.c                  | 121 +++++++++++++++++++---------
+ drivers/iommu/io-pgtable-arm-v7s.c          |   3 +-
+ drivers/iommu/io-pgtable-arm.c              |   3 +-
+ drivers/iommu/io-pgtable-dart.c             |   3 +-
+ drivers/iommu/iommufd/ioas.c                |   8 ++
+ include/linux/iommu.h                       |   5 +-
+ tools/testing/selftests/iommu/iommufd.c     |   6 +-
+ 12 files changed, 116 insertions(+), 56 deletions(-)
+
+Please pull.
+
+Thanks,
+
+	Joerg
+
+--7GN+MAVE67h3RWRK
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: Digital signature
+
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAEBCAAdFiEEr9jSbILcajRFYWYyK/BELZcBGuMFAmbRv7EACgkQK/BELZcB
+GuN4fg/+NoQ1blmYcWF59PAblVXqjulH33l7FjZERNVrLa0X5IBj7VC5HRebFm3O
+8iiSrTs3zkYB4axrJWi6NzNpR+Yfiw29Rrvfjtha8b/zqRdF4YXAQYWcjKCu5EOa
+NhFIMoFDTYW5pnQKS6fWXZZsroud0oCf6p63kfH/qcrTI4CK2Rxt7pxHWVX1JAxp
+xNz9j1jcJ7NVZjGnrAbGOLAjrEJzvWUmnHCSpyANaArSWPPmCYXhkXI+qghGPKrx
+KPGpT6u6p6LH60aENcs24Mw7vTi/3wf5MTbGaCM1y8Wxvsb/OiycnNb/hu55uZIY
+uRb+TijEgycKvyaqkhqET7V96ku5loIcQPn7zzNwxQROR36KNfqrRz4Q7HU2ilQU
+VNlqHLZ390PJqCcxvIvnaqB0A3JDoVqCTGvK199CLJLjyi3YqzwT00+4Tf++kcwj
+NLrOPZphXXZpJ+lFi+x6PH9anKS07szY2lEsTqySqJG+GVreOOcMLtl/QbcbECFS
+wQa9DYWVqZWKZfNfb5xthDsIFNm/W7YMVlcPUvkQ+EqSlUmWvwa8qYdSy9D4E36q
+NEerK9rNyQFgyHaOjZmRnyRLlQylRUAHa64Iho4tktx/I6TOZpETzYnTkM6noI46
+E+DYLkG6SjfSpcN4ZlqqyyrDhNIO+aJrG2dGi6UaZ/bbM2vk8D8=
+=kdPw
+-----END PGP SIGNATURE-----
+
+--7GN+MAVE67h3RWRK--
