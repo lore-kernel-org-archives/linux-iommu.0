@@ -1,244 +1,185 @@
-Received: from mx0b-0031df01.pphosted.com (mx0b-0031df01.pphosted.com [205.220.180.131])
+Received: from NAM12-BN8-obe.outbound.protection.outlook.com (mail-bn8nam12on2053.outbound.protection.outlook.com [40.107.237.53])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 219AA199FCD
-	for <iommu@lists.linux.dev>; Fri, 30 Aug 2024 16:29:44 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.180.131
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1725035386; cv=none; b=KLF6GCRwIc8VjbX4ZuVRY3jkzqP48IqqxCUTSyDhzs4MRjcc6mm4ZWC6g6vmD8q+67ql4C7M4HSeFbBiFRS5dtyuA81mISi4EdeaQPzyu9wQMoXig5vsOEGWXa5bIJ+3AdXsXE5dJYhYMb6M7rzHO0sYxZYtis5oy3r5ha9meu4=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1725035386; c=relaxed/simple;
-	bh=Sca1w6+M1Fa4xga2IU+7IGr5WdrMm9HCmGgNEibQRIs=;
-	h=From:To:CC:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=AFsjMeyidozKBBgymOPPz3AYU2HoLT6NIx4p+5Q27aIZchAyL08QTxYUvp7Y9fUFbP3e43pqI0Kmjtgjl00C3/0TKgWsbskuam40xWWQ20Lk1zT6st41PgNo64/p0PhFSjUV4D2UpdEF6yItzrTaOMkaoFtsN0F7bMPRS6gyl2o=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com; spf=pass smtp.mailfrom=quicinc.com; dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b=K7BEYuBh; arc=none smtp.client-ip=205.220.180.131
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=quicinc.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2D8F71B5820
+	for <iommu@lists.linux.dev>; Fri, 30 Aug 2024 16:30:48 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.237.53
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1725035450; cv=fail; b=gFJDkDpt+cJtyUZyp9ZkJmSwMcIr33zrDxDWMsN5/kAsTUNUu9UxB5YblM8YX6TaGR8dc4i1iAsyK/pKeNvvjk+J0E6IOX7edQvVNTKTn+7/hdeRZMnge2yCJbBqnqCEO5UXKRKIid1JMWWlbV+Lfavssb9KjS7xzujKuwyymAE=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1725035450; c=relaxed/simple;
+	bh=GpupvoCVrFMd6yTLHO0MZPNxiSKzf+qqtDoaLploWfY=;
+	h=Date:From:To:CC:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=Gp07PUiNwGiVkPD+IVDipgLBaNsrogjt0eXbC9Eyxo9qT9vS30m/VKM7OYC4xFD2XwD2gzgeMRMbTKMKo7rga3Ne02bEO1tZxsnxG+UX1n6GEifsaadqNEnwNl200mksduA1Kq1U5nwWiggjk0ZrONSZ3ZKijDIDUPnNInHcsQA=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=up2673x7; arc=fail smtp.client-ip=40.107.237.53
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b="K7BEYuBh"
-Received: from pps.filterd (m0279870.ppops.net [127.0.0.1])
-	by mx0a-0031df01.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 47UFBfMW010668;
-	Fri, 30 Aug 2024 16:29:35 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=quicinc.com; h=
-	cc:content-transfer-encoding:content-type:date:from:in-reply-to
-	:message-id:mime-version:references:subject:to; s=qcppdkim1; bh=
-	QDcyp35+X/FDNH02/gmXctPetcl8NyWSGu4roXmGmf8=; b=K7BEYuBhPKxRDY8f
-	FDEAwmhyIwby7EXcUE6+AqeLvM8fiovzyCNjW/V/i24cwKhlNYyhUYjGu6d/aDgv
-	Ltv2S1NWtuFyNF1LoPhnryJs93JuBdInIanaPPACPcMVs7S5XO38LPW79qagv80/
-	oJ8HgtSXt/eTieOPgQbsEGLNs1qDaFIbHFb4IEy520mc27im25o1/CQGOnk6Iw/+
-	EyVWv6yxMjNVN36UiFl3SPBTMtLnj2qu2vx/AqhJCVS8B732VA19pn+yV9hQ9CFA
-	fPVW1b3lGE6MfqrHdk3E4+vhO9IFWK5CJS1b6JCa/s5by0qx5medVKd/MXK74gUS
-	vCSPng==
-Received: from nalasppmta04.qualcomm.com (Global_NAT1.qualcomm.com [129.46.96.20])
-	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 419pv0spr1-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Fri, 30 Aug 2024 16:29:35 +0000 (GMT)
-Received: from nalasex01b.na.qualcomm.com (nalasex01b.na.qualcomm.com [10.47.209.197])
-	by NALASPPMTA04.qualcomm.com (8.18.1.2/8.18.1.2) with ESMTPS id 47UGTXYC011671
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Fri, 30 Aug 2024 16:29:33 GMT
-Received: from hu-obabatun-lv.qualcomm.com (10.49.16.6) by
- nalasex01b.na.qualcomm.com (10.47.209.197) with Microsoft SMTP Server
+	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="up2673x7"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=Nn790UHXWQzE/0Ne1crF6zmJ+N7eoKzC4ZyZkhj9HstDJzksBof5PAc+rQvbKhLczJ64LF6hzLW1UguJLu7ZKJFIBdHyXbwoLU9ey1zOKKnirahboNwzoPzQJ61qsYUcFTL9qAAkMK+5voDxPCWk9xdJuLny/nW0MOdvjFkAw0N70lnjPEIiX9+ptnXFVPTMfqdGzwPCnp07jGbqGb+rqDUmDVNgSIU9PA4DwGl23NII18T7DKiI0cOaeLDhNBOXdhOaBAUZm6F0Spp7qkfdSsnUwkdkleqWrtE+h4kfJmNmCrL3/MKBxIWsVJdw6joYgAoNnp7mXrHAQS0WN0pk5g==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=zX9ik2NRuW6q/jmgZ3VkgI165ur1I8C22sNhcZJ85uE=;
+ b=dPGwR0uC3JttEMMqGOBAFihuwBvQiobt+I/g93LSukT4+VoIJgBJ75/pOkQFN1K0Dy5fpLSPsJ2MfEMNZYgxcpesDw1IbudgDSXnxNyh1Ordz2xdjr5/ro15COzeohIAcSqZ4na0knyqLA5dn03eqWkkoqRyt+n041jOvesHC/2nj5SisTPcVOXDCvwm2kqZ90/CkPs0haICWBb60jLf3PB+cxReWIF1VRrzUr5p6Bq8hNtoXzXSBWg3Mxpp+F20QY4zkMH1r/cESBKYowHi91SvwGdnl5bXlB3yNnDBFwS7rQiPfAP3uo4MHh/bhhhIgH2PmvFUYbQFsLdCmbh3NA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 216.228.118.232) smtp.rcpttodomain=google.com smtp.mailfrom=nvidia.com;
+ dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
+ dkim=none (message not signed); arc=none (0)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=zX9ik2NRuW6q/jmgZ3VkgI165ur1I8C22sNhcZJ85uE=;
+ b=up2673x7QEXG6YSu8225/9IxqrX7MLpaj3q5hmqMt2cEAO0QSDqiSr4ilaB+QiBSnijfR2YJLyWRr2GDzmd5aVlsQGY+x697y3xABpbTJajAPccIYthz6mbdQqblxfY+o6iECsTiNyWByQApL9avt6FVMtn8hF7Cp4edOWodggXom4ffIxY28e3SZYeFbnCH/0BPsskA1aRaOoMcaPq9GuzxEr4KQLq9RonX6zxCJKTy9mxQfZvtqThSkE9XVVPnJdb9SBOuDGUQbmmeNTENaOaMFyzaRygeT1s3hfgxue+2ZxOSzy6/3LJPDoF67ZUsPWdAz13OxJT0HqaORyqUIQ==
+Received: from BN6PR17CA0037.namprd17.prod.outlook.com (2603:10b6:405:75::26)
+ by SJ2PR12MB8036.namprd12.prod.outlook.com (2603:10b6:a03:4c1::22) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7897.27; Fri, 30 Aug
+ 2024 16:30:43 +0000
+Received: from MN1PEPF0000F0DE.namprd04.prod.outlook.com
+ (2603:10b6:405:75:cafe::a9) by BN6PR17CA0037.outlook.office365.com
+ (2603:10b6:405:75::26) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7918.20 via Frontend
+ Transport; Fri, 30 Aug 2024 16:30:43 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.118.232)
+ smtp.mailfrom=nvidia.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=nvidia.com;
+Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
+ 216.228.118.232 as permitted sender) receiver=protection.outlook.com;
+ client-ip=216.228.118.232; helo=mail.nvidia.com; pr=C
+Received: from mail.nvidia.com (216.228.118.232) by
+ MN1PEPF0000F0DE.mail.protection.outlook.com (10.167.242.36) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.7918.13 via Frontend Transport; Fri, 30 Aug 2024 16:30:42 +0000
+Received: from drhqmail201.nvidia.com (10.126.190.180) by mail.nvidia.com
+ (10.127.129.5) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1544.4; Fri, 30 Aug
+ 2024 09:30:23 -0700
+Received: from drhqmail203.nvidia.com (10.126.190.182) by
+ drhqmail201.nvidia.com (10.126.190.180) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.1544.9; Fri, 30 Aug 2024 09:29:30 -0700
-From: Oreoluwa Babatunde <quic_obabatun@quicinc.com>
-To: <robh@kernel.org>
-CC: <andy@black.fi.intel.com>, <aisheng.dong@nxp.com>,
-        <catalin.marinas@arm.com>, <devicetree@vger.kernel.org>, <hch@lst.de>,
-        <iommu@lists.linux.dev>, <kernel@quicinc.com>, <klarasmodin@gmail.com>,
-        <linux-kernel@vger.kernel.org>, <m.szyprowski@samsung.com>,
-        <quic_obabatun@quicinc.com>, <robin.murphy@arm.com>,
-        <saravanak@google.com>, <will@kernel.org>
-Subject: [PATCH v8 2/2] of: reserved_mem: Add code to dynamically allocate reserved_mem array
-Date: Fri, 30 Aug 2024 09:28:57 -0700
-Message-ID: <20240830162857.2821502-3-quic_obabatun@quicinc.com>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20240830162857.2821502-1-quic_obabatun@quicinc.com>
-References: <20240830162857.2821502-1-quic_obabatun@quicinc.com>
+ 15.2.1544.4; Fri, 30 Aug 2024 09:30:23 -0700
+Received: from Asurada-Nvidia (10.127.8.13) by mail.nvidia.com
+ (10.126.190.182) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1544.4 via Frontend
+ Transport; Fri, 30 Aug 2024 09:30:22 -0700
+Date: Fri, 30 Aug 2024 09:30:21 -0700
+From: Nicolin Chen <nicolinc@nvidia.com>
+To: Mostafa Saleh <smostafa@google.com>
+CC: <linux-kernel@vger.kernel.org>, <iommu@lists.linux.dev>,
+	<linux-arm-kernel@lists.infradead.org>, <will@kernel.org>,
+	<robin.murphy@arm.com>, <joro@8bytes.org>, <jean-philippe@linaro.org>,
+	<jgg@ziepe.ca>, <mshavit@google.com>
+Subject: Re: [PATCH v4 1/2] iommu/arm-smmu-v3: Match Stall behaviour for S2
+Message-ID: <ZtHznQwkJmugKef2@Asurada-Nvidia>
+References: <20240830110349.797399-1-smostafa@google.com>
+ <20240830110349.797399-2-smostafa@google.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
+Content-Type: text/plain; charset="utf-8"
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-ClientProxiedBy: nalasex01c.na.qualcomm.com (10.47.97.35) To
- nalasex01b.na.qualcomm.com (10.47.209.197)
-X-QCInternal: smtphost
-X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
-X-Proofpoint-GUID: 7erGiJ-mlvAvMBf9NB_2-aAoi1xa05Wm
-X-Proofpoint-ORIG-GUID: 7erGiJ-mlvAvMBf9NB_2-aAoi1xa05Wm
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.293,Aquarius:18.0.1039,Hydra:6.0.680,FMLib:17.12.28.16
- definitions=2024-08-30_10,2024-08-30_01,2024-05-17_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 lowpriorityscore=0
- mlxlogscore=999 bulkscore=0 impostorscore=0 phishscore=0 clxscore=1015
- mlxscore=0 spamscore=0 suspectscore=0 malwarescore=0 adultscore=0
- priorityscore=1501 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.19.0-2407110000 definitions=main-2408300126
+In-Reply-To: <20240830110349.797399-2-smostafa@google.com>
+X-NV-OnPremToCloud: ExternallySecured
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: MN1PEPF0000F0DE:EE_|SJ2PR12MB8036:EE_
+X-MS-Office365-Filtering-Correlation-Id: 36b1e6e2-6724-4b5b-457b-08dcc91117a6
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam:
+	BCL:0;ARA:13230040|376014|82310400026|7416014|1800799024|36860700013;
+X-Microsoft-Antispam-Message-Info:
+	=?utf-8?B?VDlFT0R3NW0zdDduUkdKZ3FadXVRaGliWjNpQWZXVSsxMGZjUm0xcXhqZVJM?=
+ =?utf-8?B?eDRPcEF3M2ptb0ZRSlQ3bURVa2krRCtvOEczY1p6eEwxUDZBV1NQU3VzaFpv?=
+ =?utf-8?B?eHlkS0lIVnhlSmRSeUpNV2NlMHNGU2cwekt5VFN6NzZsT1hFcWZKM1ZNZTNp?=
+ =?utf-8?B?Q00wb0lFWTRQQzdTRm5oaW1seU5mbTRxU2lSSkQrTkEydUtSVWV2TlBFeGNs?=
+ =?utf-8?B?VmtWTW9sdGNsWFlGYzlzK3E3MXBCOTI2Vjh0SnJKZ1gybnJyd3NIdVEzWXpV?=
+ =?utf-8?B?Ty9EZWt6dGxQS0VOUjlqaXN5NHMyNjNlM0lFQVNuMG4xQnFKWGVjU20vN2tQ?=
+ =?utf-8?B?c1I1Wk5iSUV1OVFsL01XOFI1N2hqNGZMTVlaUVMxQWsxS0RPdEtZWis1dWZi?=
+ =?utf-8?B?K0RRcHFHcTRTTHBSMWNsV0lDQkwrSnNRdHBpM2NTMlEyR0dCWVNndElQNHZ4?=
+ =?utf-8?B?cmVLTHNQVUhXb3MyZHZjdldjbFpRZGkyZnI0czNFei83NTJKQnRWbHNzelJW?=
+ =?utf-8?B?T01IczhxeWRIaXhLcGUyeWg2R0ZJeU93UnhMdUprdVdUY3JPZlk2Y25BR3lI?=
+ =?utf-8?B?MjBHNG5CVWZEa1RoQzhvaFM1eU81ZWRXM0pnQ1dnenRmZWVxSWFhTlIva2FO?=
+ =?utf-8?B?ZjZtZklLdFMxUHJLRjZ5SnpySHpCK2NIYUJ1UHRaZ2JiZ0dWNlM1NUsxaFhK?=
+ =?utf-8?B?UmVGdDVwTncxdUhvNSt6OGFLM0J6OWYrZlErTXdEY1BjRm1tQnhLT2MzaTlw?=
+ =?utf-8?B?ck8zZWFqSlpzMGRQT3owVkxsZUo1dnh5OWFuQi9rc0k2VjltZmhIZ2doN3NH?=
+ =?utf-8?B?ajhQN3NPalRDKzR6QmNyK05CZlFzYzVVWS9waWhDWUEyUmQ2ei94N1BNNDli?=
+ =?utf-8?B?aGVZWUVlNzU3T21LaTJMSGVwTG90WTBLU1lGMnFISU0ycjRnVWFCS3hheTRv?=
+ =?utf-8?B?V1dMeWFpZ2l1Y0dpZXB0WnlzdERiNzBFQmk4cXdMSUZuUlYreFliVDFDcTVE?=
+ =?utf-8?B?UHIyU3Azckl5bU9HK0NwbFVjYXlvUzU3eEZBT3ZJZytKVEVWNUJsR1Nqb2sr?=
+ =?utf-8?B?c00waUk4RVRPVHdJWlAzRzNaVUpKV0pueWVxaXgyWFA5bGwyZm1ROVhuVjRJ?=
+ =?utf-8?B?UHZSZ2EwbEd0L0NQM3IyaGlDM1VBNVZZNlc0NFBmSGE0TUZXTVBMcGhxS0Nw?=
+ =?utf-8?B?bVo2aGFaaGc5SXc5bk5GTXZmNFdFdUFxN1VjK0hCT1FTYmV3OVhEdFpQdE14?=
+ =?utf-8?B?a2p3WGFoaU9aaWpGTTFCeTVPb09OeXVmczFCeFZETzhhMnJlVitQWHIzVi9T?=
+ =?utf-8?B?UFNvejlqQk80N3RQU3VTYjBtQzlRRmxQSzc0RDBMMFhqVHZ4UU1XM3BZektH?=
+ =?utf-8?B?bmZuRmRaelFBY0l5OHJRSm9YdGtXWEM1YnRUS2FUbDlvVDErQXoxbGlicVdr?=
+ =?utf-8?B?N1NDaHMyc08zOVdVbVFlK295bVgydUxYdG1WS0R1Qms2M0FmMTZ2bjdCaGg4?=
+ =?utf-8?B?dGxPTStsd1c0UDJnMHZ4cURpTEtmdCtBOWl5QmtWdWRSdktmeXBtL05MTi9G?=
+ =?utf-8?B?QS9oNmxCNFNEZ1JNc1FoSkNHRWMzL2VoZERhcXR2OS9PMU9hRThHTStNQmZS?=
+ =?utf-8?B?ZEtKS3RFUUdjU2p5UDA2UmhkYSs1alB2TElQQVlsZFRYOVNsMVJIVGpDOWhl?=
+ =?utf-8?B?TWhpU3IzTWRYRFdTRm9FaHdxTVRGSnpLaDBWbFJzTjRkSk9kUUJGdHljYTgv?=
+ =?utf-8?B?ZERkUnZMR2NGLzFHcTkwMzZjMmlHVkVrRFdaekRLYzJoK2RpL2dTWXNUMThw?=
+ =?utf-8?B?eVpRNHAvVXlIYmVkMFVmM2hndnAxb2tpOEdkbGtGU21SSGxicEVPcHhTQ0U4?=
+ =?utf-8?B?eFMvY1h0N0x4RitzRWtnVHhHWU1BSkVDVjR0a3RRYXhSeTFHV3AzZExuYlUv?=
+ =?utf-8?Q?GmVJklUFld/8TgP2Xvklpi6tSIeAL2sp?=
+X-Forefront-Antispam-Report:
+	CIP:216.228.118.232;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc7edge1.nvidia.com;CAT:NONE;SFS:(13230040)(376014)(82310400026)(7416014)(1800799024)(36860700013);DIR:OUT;SFP:1101;
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 30 Aug 2024 16:30:42.6292
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: 36b1e6e2-6724-4b5b-457b-08dcc91117a6
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.118.232];Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-AuthSource:
+	MN1PEPF0000F0DE.namprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SJ2PR12MB8036
 
-The reserved_mem array is statically allocated with a size of
-MAX_RESERVED_REGIONS(64). Therefore, if the number of reserved_mem
-regions exceeds this size, there will not be enough space to store
-all the data.
+On Fri, Aug 30, 2024 at 11:03:47AM +0000, Mostafa Saleh wrote:
+ 
+> According to the spec (ARM IHI 0070 F.b), in
+> "5.5 Fault configuration (A, R, S bits)":
+>     A STE with stage 2 translation enabled and STE.S2S == 0 is
+>     considered ILLEGAL if SMMU_IDR0.STALL_MODEL == 0b10.
+> 
+> Also described in the pseudocode “SteIllegal()”
+>     if STE.Config == '11x' then
+>         [..]
+>         if eff_idr0_stall_model == '10' && STE.S2S == '0' then
+>             // stall_model forcing stall, but S2S == 0
+>             return TRUE;
+> 
+> Which means, S2S must be set when stall model is
+> "ARM_SMMU_FEAT_STALL_FORCE", but currently the driver ignores that.
+> 
+> Although, the driver can do the minimum and only set S2S for
+> “ARM_SMMU_FEAT_STALL_FORCE”, it is more consistent to match S1
+> behaviour, which also sets it for “ARM_SMMU_FEAT_STALL” if the
+> master has requested stalls.
 
-Hence, extend the use of the static array by introducing a
-dynamically allocated array based on the number of reserved memory
-regions specified in the DT.
+If I read the SteIllegal() correctly, it seems S2S would conflict
+against the STE.EATS settings?
 
-On architectures such as arm64, memblock allocated memory is not
-writable until after the page tables have been setup. Hence, the
-dynamic allocation of the reserved_mem array will need to be done only
-after the page tables have been setup.
+// Check ATS configuration
+if ((sec_sid == SS_NonSecure && SMMU_IDR0.ATS == '1') ||
+    (sec_sid == SS_Realm && SMMU_R_IDR0.ATS == '1')) &&
+    STE.Config != 'x00' then
+    // Needs to be NS/Realm, ATS enabled, and not Bypass
+        if STE.EATS == '01' && STE.S2S == '1' then
+            // Full ATS mode
+            if STE.Config == '11x' || constr_unpred_EATS_S2S then
+                // if stage 2 enabled or CONSTRAINED UNPREDICTABLE for SMMUv3.0
+                return TRUE;
+	
+So, if master->stall_enabled and master->ats_enabled, there would
+be a bad STE?
 
-As a result, a temporary static array is still needed in the initial
-stages to store the information of the dynamically-placed reserved
-memory regions because the start address is selected only at run-time
-and is not stored anywhere else.
-It is not possible to wait until the reserved_mem array is allocated
-because this is done after the page tables are setup and the reserved
-memory regions need to be initialized before then.
-
-After the reserved_mem array is allocated, all entries from the static
-array is copied over to the new array, and the rest of the information
-for the statically-placed reserved memory regions are read in from the
-DT and stored in the new array as well.
-
-Once the init process is completed, the temporary static array is
-released back to the system because it is no longer needed. This is
-achieved by marking it as __initdata.
-
-Signed-off-by: Oreoluwa Babatunde <quic_obabatun@quicinc.com>
----
- drivers/of/of_reserved_mem.c | 68 +++++++++++++++++++++++++++++++++---
- 1 file changed, 64 insertions(+), 4 deletions(-)
-
-diff --git a/drivers/of/of_reserved_mem.c b/drivers/of/of_reserved_mem.c
-index a4487ee6c5ca..7452a2af7f1b 100644
---- a/drivers/of/of_reserved_mem.c
-+++ b/drivers/of/of_reserved_mem.c
-@@ -27,7 +27,9 @@
- 
- #include "of_private.h"
- 
--static struct reserved_mem reserved_mem[MAX_RESERVED_REGIONS];
-+static struct reserved_mem reserved_mem_array[MAX_RESERVED_REGIONS] __initdata;
-+static struct reserved_mem *reserved_mem __refdata = reserved_mem_array;
-+static int total_reserved_mem_cnt = MAX_RESERVED_REGIONS;
- static int reserved_mem_count;
- 
- static int __init early_init_dt_alloc_reserved_memory_arch(phys_addr_t size,
-@@ -55,6 +57,50 @@ static int __init early_init_dt_alloc_reserved_memory_arch(phys_addr_t size,
- 	return err;
- }
- 
-+/*
-+ * alloc_reserved_mem_array() - allocate memory for the reserved_mem
-+ * array using memblock
-+ *
-+ * This function is used to allocate memory for the reserved_mem
-+ * array according to the total number of reserved memory regions
-+ * defined in the DT.
-+ * After the new array is allocated, the information stored in
-+ * the initial static array is copied over to this new array and
-+ * the new array is used from this point on.
-+ */
-+static void __init alloc_reserved_mem_array(void)
-+{
-+	struct reserved_mem *new_array;
-+	size_t alloc_size, copy_size, memset_size;
-+
-+	alloc_size = array_size(total_reserved_mem_cnt, sizeof(*new_array));
-+	if (alloc_size == SIZE_MAX) {
-+		pr_err("Failed to allocate memory for reserved_mem array with err: %d", -EOVERFLOW);
-+		return;
-+	}
-+
-+	new_array = memblock_alloc(alloc_size, SMP_CACHE_BYTES);
-+	if (!new_array) {
-+		pr_err("Failed to allocate memory for reserved_mem array with err: %d", -ENOMEM);
-+		return;
-+	}
-+
-+	copy_size = array_size(reserved_mem_count, sizeof(*new_array));
-+	if (copy_size == SIZE_MAX) {
-+		memblock_free(new_array, alloc_size);
-+		total_reserved_mem_cnt = MAX_RESERVED_REGIONS;
-+		pr_err("Failed to allocate memory for reserved_mem array with err: %d", -EOVERFLOW);
-+		return;
-+	}
-+
-+	memset_size = alloc_size - copy_size;
-+
-+	memcpy(new_array, reserved_mem, copy_size);
-+	memset(new_array + reserved_mem_count, 0, memset_size);
-+
-+	reserved_mem = new_array;
-+}
-+
- /*
-  * fdt_reserved_mem_save_node() - save fdt node for second pass initialization
-  */
-@@ -63,7 +109,7 @@ static void __init fdt_reserved_mem_save_node(unsigned long node, const char *un
- {
- 	struct reserved_mem *rmem = &reserved_mem[reserved_mem_count];
- 
--	if (reserved_mem_count == ARRAY_SIZE(reserved_mem)) {
-+	if (reserved_mem_count == total_reserved_mem_cnt) {
- 		pr_err("not enough space for all defined regions.\n");
- 		return;
- 	}
-@@ -202,6 +248,13 @@ void __init fdt_scan_reserved_mem_reg_nodes(void)
- 		return;
- 	}
- 
-+	/*
-+	 * Allocate the exact size needed for the reserved_mem array and
-+	 * copy all the contents from the previous array if allocation
-+	 * is successful.
-+	 */
-+	alloc_reserved_mem_array();
-+
- 	fdt_for_each_subnode(child, fdt, node) {
- 		const char *uname;
- 
-@@ -236,7 +289,7 @@ static int __init __reserved_mem_alloc_size(unsigned long node, const char *unam
- int __init fdt_scan_reserved_mem(void)
- {
- 	int node, child;
--	int dynamic_nodes_cnt = 0;
-+	int dynamic_nodes_cnt = 0, count = 0;
- 	int dynamic_nodes[MAX_RESERVED_REGIONS];
- 	const void *fdt = initial_boot_params;
- 
-@@ -259,6 +312,9 @@ int __init fdt_scan_reserved_mem(void)
- 		uname = fdt_get_name(fdt, child, NULL);
- 
- 		err = __reserved_mem_reserve_reg(child, uname);
-+		if (!err)
-+			count++;
-+
- 		/*
- 		 * Save the nodes for the dynamically-placed regions
- 		 * into an array which will be used for allocation right
-@@ -273,11 +329,15 @@ int __init fdt_scan_reserved_mem(void)
- 	}
- 	for (int i = 0; i < dynamic_nodes_cnt; i++) {
- 		const char *uname;
-+		int err;
- 
- 		child = dynamic_nodes[i];
- 		uname = fdt_get_name(fdt, child, NULL);
--		__reserved_mem_alloc_size(child, uname);
-+		err = __reserved_mem_alloc_size(child, uname);
-+		if (!err)
-+			count++;
- 	}
-+	total_reserved_mem_cnt = count;
- 	return 0;
- }
- 
--- 
-2.34.1
-
+Thanks
+Nicolin
