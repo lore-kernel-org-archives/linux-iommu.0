@@ -1,57 +1,58 @@
-Received: from mail-wm1-f45.google.com (mail-wm1-f45.google.com [209.85.128.45])
+Received: from mail-ed1-f42.google.com (mail-ed1-f42.google.com [209.85.208.42])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 57D9B187350
-	for <iommu@lists.linux.dev>; Mon,  2 Sep 2024 08:57:57 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.45
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 223A4187326
+	for <iommu@lists.linux.dev>; Mon,  2 Sep 2024 09:29:59 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.42
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1725267479; cv=none; b=GG3IWaGkrBRfIhcvz1RzwT/GTuuPem98pwOdlSh+e5fLI5cwmrXgjBsmpMZZu7QPDj3oB/vtUkLB98ELhS1JN13LCXttyAFFRzZ8JhI/LTTIKmUrTHIIVhTNPES7wAMSJ0B7AElDmNaJ7MlffK7IpaSQYuNZM3nVUzgbhJS9A4Q=
+	t=1725269401; cv=none; b=iDeojuDm9/FN1S3p0EldkkTEuPz+dvfYY2tVBqIazhQ1oz3Vmo7kgmit/6gBohsD45rC8jEUo5RLUNa+pQkWNRky7WLQBxMwk+ypbwpI8DMdOrAeXh3YCZMq5Sei2X+8CTGUPHLXEqPkXItU6bY0HLzRGglx3bBquNXUbWHNaLA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1725267479; c=relaxed/simple;
-	bh=c0OW0xQ0WrcxXFjOgX053qT4DVNz5MYcUfMesZuHjIU=;
+	s=arc-20240116; t=1725269401; c=relaxed/simple;
+	bh=B1qmeunmzRW7j1S/b5dM9pv6wNVyxv2E53BOHoVet/M=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=bLtIptr2M8yyaLGPYLGid7L2ARIx7GES6TTjAsIsdqoF5sdzZ4ILJqcJWDtkvkCsJuWVb8nXJgjDJ4bKn/aW8NdeeuO9jxqih/07jB0JqgWE9QnhQ0wcbQVmyLSS8gMijmykJALDTVFZTCFphPP2ha6zGyj/7jBELL2I/lWjWfs=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=4eqNLuEL; arc=none smtp.client-ip=209.85.128.45
+	 Content-Type:Content-Disposition:In-Reply-To; b=aJ1K84BZK8ARSVoLqxFCk3PqgVIWlrLTrhtwU9iqzvvGWChb2HmDbWxi+sX2KusmHSJiH2WAZZuayBRT3toPVzjtpiTeXcoCLmgLPRCrNgwEasY0U0GCq60zM6MG250YhsD7Uif4RP55fBmiEXZGDo9vGlPFZ+K6HYB2+oKKxbA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=y9M49Ctp; arc=none smtp.client-ip=209.85.208.42
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="4eqNLuEL"
-Received: by mail-wm1-f45.google.com with SMTP id 5b1f17b1804b1-429d1a9363aso60925e9.1
-        for <iommu@lists.linux.dev>; Mon, 02 Sep 2024 01:57:57 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="y9M49Ctp"
+Received: by mail-ed1-f42.google.com with SMTP id 4fb4d7f45d1cf-5c247dd0899so9300a12.1
+        for <iommu@lists.linux.dev>; Mon, 02 Sep 2024 02:29:59 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20230601; t=1725267476; x=1725872276; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=rDJ3c/SnX1xtZaObviOe/fqhAy0qt+DAWX/W/IrfKf8=;
-        b=4eqNLuELYs/7+9NBZ1UQqLFA/vVDk3ATw8lQMFwdf4XRAahGEijDOAxo26kzs0VXFF
-         0WNFIsRLzO8pq2hmYSbMZrd8HE1XmIlDausdD9u+dznlkBVcnvcuXA3hJpiAOmQIVaOk
-         aX03K6V0JUxEgTljdZ+V3ih1JTI56LP0G4DcLYMl4d89lSw/RusoKsH+brFuLJxOrYpA
-         XRhZe9mmUVaD4xhZd2xkZSBFqMxs+81u9UJT5IgtSep3dvzcOlJ8+AxYIlrTzoaC5Es8
-         2zREKSzc3Q59zHLF8K1aBjQqq+9Cot5+BYiPhF8kuj+mcnMKuBtWzA1Q5QxHw4M81Qre
-         qCnw==
+        d=google.com; s=20230601; t=1725269398; x=1725874198; darn=lists.linux.dev;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :mime-version:references:message-id:subject:cc:to:from:date:from:to
+         :cc:subject:date:message-id:reply-to;
+        bh=VJE54eIljBo+04QQocBk6CxFcwFwa7n+6hpWhqzR/Xc=;
+        b=y9M49CtpgC2bHPPtjwcnBJc9wiArXISlJ21iSN0RbL3/ot7eEFpowl2Q6KhQ+Q+5c4
+         Ey9dzAUuW8Ov1gnpdJWNZ6aeQ6H8bGNt0gMbJ4ZJFsuwJHH4YZXqNzNjboxY2PGmCeze
+         IiRLbIoecLYhgWw8Hl24R9XiZv3pqcIFEqwwR0Drg8ns14gRp8MFSfldq0BcX3PuyzUR
+         1CKGb+uzzognOIVITOP8JZAhW8W0N06qTVa6jptx/9lcHps+SJEpCzvYbfwph2AXRcz2
+         rOlgxC7lD8hO92xso597AzwmTzG3Hldt6wSdj6hiNeUI0KrcVUMYfusRDg73s1kjZv+U
+         PqLQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1725267476; x=1725872276;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=rDJ3c/SnX1xtZaObviOe/fqhAy0qt+DAWX/W/IrfKf8=;
-        b=SOo0sAyf87yINhj6mG5H2ICnNunHPFnX4uh2TTq/fll4q8ff0W+EgANUdhWv/eDtS/
-         yzm29wR+vhOY8H8e+puAC0bCpalch4RTEsRixnI0JAdoWk7q+bq9DDzm1ywZlaaAMcnR
-         sprpEnOWVBPpMCNZ43HxB8ftbv5lSsP+fb9nOE6Ov9M3bLV8kfLFa+9bQNf0affoue2I
-         2t8X5Zf/mwDKKXaIpGHr4OdBfAW+mVSdiK8ZP1JDuUQzHSP/q591/XM69etkOSKn1uxo
-         adOinfidwCbdKINtnXCa17re6GJQxytDqgzV9GI4BQjwwlJqme+eZKG66O01VeR8HpOI
-         k0Mg==
-X-Forwarded-Encrypted: i=1; AJvYcCWXmpxKl0KAMQvaWwQWHWA7gz8wUI9tXwWF5ERLwpN7kCrbJ6ejCrOsXbIDbYk+bsIv9YwTjg==@lists.linux.dev
-X-Gm-Message-State: AOJu0YxxbyGrju0egQnxT0I5AChZsZET9rmmHxOs8R/RnFT49ivi/9qy
-	FQSGFk2lxUeLk72XhTcpLWHEp55SX7TbYTAWDwFT3gksKk26LZzoioxe+VRbMw==
-X-Google-Smtp-Source: AGHT+IEaLVJ/wTV51wop3m+lk/qJDgyUDoC18kpCfu1q8TvT9dKkREX0von9jbn66ji3B2gnWNgrVA==
-X-Received: by 2002:a05:600c:3ac8:b0:428:31c:5a4f with SMTP id 5b1f17b1804b1-42c787685fbmr1905585e9.3.1725267475261;
-        Mon, 02 Sep 2024 01:57:55 -0700 (PDT)
+        d=1e100.net; s=20230601; t=1725269398; x=1725874198;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :mime-version:references:message-id:subject:cc:to:from:date
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=VJE54eIljBo+04QQocBk6CxFcwFwa7n+6hpWhqzR/Xc=;
+        b=bEyaAd4W8k6cxazIOBus1hGN4OEz4co/OR0i2O0g9d4pTPA2FW3RridNcwYyOhLwZu
+         grLatiQ/uysw9TvYzfjMDg210tlex4XfGXwval9A4VlmNcmtyRowBOGw3STbeddX1NYI
+         /QuV710EovBM0xHtnPfKeKTmD4SbYydP6nDiJD4jMcvOZ5LoeSi1ppq9BfnKfjKj5j6A
+         27yO3EAzx6yCPIYAqrDC9QA10w0d8iO/b9s0srHIIpxhkG/Z21QAlTttEdOsUMdedvli
+         Y8Jd4bgmLqUCx0lxvGluFHGMKHTITOfuahIrGFf1A5mBwmsz4oRSTPiDXbIfoBqu9sq4
+         wYHQ==
+X-Forwarded-Encrypted: i=1; AJvYcCWxld3L3Ha+tLNRo7Cic4uQAFG/aRLKm3HqomdByD9GIKN+5QEAf/2BKSQMulXbx4w8LUXP/w==@lists.linux.dev
+X-Gm-Message-State: AOJu0YwNOCcnVF0y+IRnsa7j0wE9A0ODCeHbDhY9sDxUawRInFVAHTvP
+	9lgOtvOfFx0EYktnCEBi+j8HGzHMFdCwzrEROWXHxrLbNaLKoAkHmhrGPEURpA==
+X-Google-Smtp-Source: AGHT+IHjBDWncMa0JFzAVRBZvunVV3/xf27Bk1UBfEqTh/oBWIS4ZrnlqS4ID0HplL23Cxhn09935A==
+X-Received: by 2002:a05:6402:51c8:b0:5c2:62c8:30a with SMTP id 4fb4d7f45d1cf-5c262c80401mr55276a12.1.1725269398075;
+        Mon, 02 Sep 2024 02:29:58 -0700 (PDT)
 Received: from google.com (109.36.187.35.bc.googleusercontent.com. [35.187.36.109])
-        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-374c2ffe062sm4918816f8f.29.2024.09.02.01.57.54
+        by smtp.gmail.com with ESMTPSA id a640c23a62f3a-a8989021960sm532554566b.79.2024.09.02.02.29.57
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 02 Sep 2024 01:57:54 -0700 (PDT)
-Date: Mon, 2 Sep 2024 08:57:50 +0000
+        Mon, 02 Sep 2024 02:29:57 -0700 (PDT)
+Date: Mon, 2 Sep 2024 09:29:53 +0000
 From: Mostafa Saleh <smostafa@google.com>
 To: Jason Gunthorpe <jgg@nvidia.com>
 Cc: acpica-devel@lists.linux.dev, Hanjun Guo <guohanjun@huawei.com>,
@@ -71,85 +72,87 @@ Cc: acpica-devel@lists.linux.dev, Hanjun Guo <guohanjun@huawei.com>,
 	Michael Shavit <mshavit@google.com>,
 	Nicolin Chen <nicolinc@nvidia.com>, patches@lists.linux.dev,
 	Shameerali Kolothum Thodi <shameerali.kolothum.thodi@huawei.com>
-Subject: Re: [PATCH v2 7/8] iommu/arm-smmu-v3: Implement
- IOMMU_HWPT_ALLOC_NEST_PARENT
-Message-ID: <ZtV-DvqIDx5ZFAph@google.com>
+Subject: Re: [PATCH v2 2/8] iommu/arm-smmu-v3: Use S2FWB when available
+Message-ID: <ZtWFkR0eSRM4ogJL@google.com>
 References: <0-v2-621370057090+91fec-smmuv3_nesting_jgg@nvidia.com>
- <7-v2-621370057090+91fec-smmuv3_nesting_jgg@nvidia.com>
- <ZtHkxFrojjXplvvn@google.com>
- <20240830171817.GY3773488@nvidia.com>
+ <2-v2-621370057090+91fec-smmuv3_nesting_jgg@nvidia.com>
+ <ZtHhdj6RAKACBCUG@google.com>
+ <20240830164019.GU3773488@nvidia.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <20240830171817.GY3773488@nvidia.com>
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20240830164019.GU3773488@nvidia.com>
 
-On Fri, Aug 30, 2024 at 02:18:17PM -0300, Jason Gunthorpe wrote:
-> On Fri, Aug 30, 2024 at 03:27:00PM +0000, Mostafa Saleh wrote:
-> > Hi Jason,
-> > 
-> > On Tue, Aug 27, 2024 at 12:51:37PM -0300, Jason Gunthorpe wrote:
-> > > For SMMUv3 the parent must be a S2 domain, which can be composed
-> > > into a IOMMU_DOMAIN_NESTED.
-> > > 
-> > > In future the S2 parent will also need a VMID linked to the VIOMMU and
-> > > even to KVM.
-> > > 
-> > > Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
-> > > ---
-> > >  drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 11 ++++++++++-
-> > >  1 file changed, 10 insertions(+), 1 deletion(-)
-> > > 
-> > > diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-> > > index ec2fcdd4523a26..8db3db6328f8b7 100644
-> > > --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-> > > +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-> > > @@ -3103,7 +3103,8 @@ arm_smmu_domain_alloc_user(struct device *dev, u32 flags,
-> > >  			   const struct iommu_user_data *user_data)
-> > >  {
-> > >  	struct arm_smmu_master *master = dev_iommu_priv_get(dev);
-> > > -	const u32 PAGING_FLAGS = IOMMU_HWPT_ALLOC_DIRTY_TRACKING;
-> > > +	const u32 PAGING_FLAGS = IOMMU_HWPT_ALLOC_DIRTY_TRACKING |
-> > > +				 IOMMU_HWPT_ALLOC_NEST_PARENT;
-> > >  	struct arm_smmu_domain *smmu_domain;
-> > >  	int ret;
-> > >  
-> > > @@ -3116,6 +3117,14 @@ arm_smmu_domain_alloc_user(struct device *dev, u32 flags,
-> > >  	if (!smmu_domain)
-> > >  		return ERR_PTR(-ENOMEM);
-> > >  
-> > > +	if (flags & IOMMU_HWPT_ALLOC_NEST_PARENT) {
-> > > +		if (!(master->smmu->features & ARM_SMMU_FEAT_NESTING)) {
-> > > +			ret = -EOPNOTSUPP;
-> > I think that should be:
-> > 	ret = ERR_PTR(-EOPNOTSUPP);
+On Fri, Aug 30, 2024 at 01:40:19PM -0300, Jason Gunthorpe wrote:
+> On Fri, Aug 30, 2024 at 03:12:54PM +0000, Mostafa Saleh wrote:
+> > > +	/*
+> > > +	 * If for some reason the HW does not support DMA coherency then using
+> > > +	 * S2FWB won't work. This will also disable nesting support.
+> > > +	 */
+> > > +	if (FIELD_GET(IDR3_FWB, reg) &&
+> > > +	    (smmu->features & ARM_SMMU_FEAT_COHERENCY))
+> > > +		smmu->features |= ARM_SMMU_FEAT_S2FWB;
+> > I think that’s for the SMMU coherency which in theory is not related to the
+> > master which FWB overrides, so this check is not correct.
 > 
-> Read again :)
+> Yes, I agree, in theory.
+> 
+> However the driver today already links them together:
+> 
+> 	case IOMMU_CAP_CACHE_COHERENCY:
+> 		/* Assume that a coherent TCU implies coherent TBUs */
+> 		return master->smmu->features & ARM_SMMU_FEAT_COHERENCY;
+> 
+> So this hunk was a continuation of that design.
+> 
+> > What I meant in the previous thread that we should set FWB only for coherent
+> > masters as (in attach s2):
+> > 	if (smmu->features & ARM_SMMU_FEAT_S2FWB && dev_is_dma_coherent(master->dev)
+> > 		// set S2FWB in STE
+> 
+> I think as I explained in that thread, it is not really correct
+> either. There is no reason to block using S2FWB for non-coherent
+> masters that are not used with VFIO. The page table will still place
+> the correct memattr according to the IOMMU_CACHE flag, S2FWB just
+> slightly changes the encoding.
 
-Oops, sorry about the noise.
+It’s not just the encoding that changes, as
+- Without FWB, stage-2 combine attributes
+- While with FWB, it overrides them.
+
+So a cacheable mapping in stage-2 can lead to a non-cacheable
+(or with different cachableitiy attributes) transaction based on the
+input. I am not sure though if there is such case in the kernel.
+
+Also, that logic doesn't only apply to VFIO, but also for stage-2
+only SMMUs that use stage-2 for kernel DMA.
+
+> 
+> For VFIO, non-coherent masters need to be blocked from VFIO entirely
+> and should never get even be allowed to get here.
+> 
+> If anything should be changed then it would be the above
+> IOMMU_CAP_CACHE_COHERENCY test, and I don't know if
+> dev_is_dma_coherent() would be correct there, or if it should do some
+> ACPI inspection or what.
+
+I agree, I believe that this assumption is not accurate, I am not sure
+what is the right approach here, but in concept I think we shouldn’t
+enable FWB for non-coherent devices (using dev_is_dma_coherent() or
+other check)
 
 Thanks,
 Mostafa
 > 
-> static struct iommu_domain *
-> arm_smmu_domain_alloc_user(struct device *dev, u32 flags,
-> 			   struct iommu_domain *parent,
-> 			   const struct iommu_user_data *user_data)
-> {
-> 	struct arm_smmu_master *master = dev_iommu_priv_get(dev);
-> 	const u32 PAGING_FLAGS = IOMMU_HWPT_ALLOC_DIRTY_TRACKING |
-> 				 IOMMU_HWPT_ALLOC_NEST_PARENT;
-> 	struct arm_smmu_domain *smmu_domain;
-> 	int ret;
->      ^^^^^^^^^^^^^^
+> So let's drop the above hunk, it already happens implicitly because
+> VFIO checks it via IOMMU_CAP_CACHE_COHERENCY and it makes more sense
+> to put the assumption in one place.
 > 
-> err_free:
-> 	kfree(smmu_domain);
-> 	return ERR_PTR(ret);
->            ^^^^^^^^^^^^^^^^^^
-> 
+> Thanks,
 > Jason
