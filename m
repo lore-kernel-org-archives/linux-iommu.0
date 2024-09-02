@@ -1,50 +1,50 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.15])
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.13])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 05CCD273FD
-	for <iommu@lists.linux.dev>; Mon,  2 Sep 2024 02:38:03 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.15
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 48F0A179AA
+	for <iommu@lists.linux.dev>; Mon,  2 Sep 2024 02:39:50 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.13
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1725244685; cv=none; b=XeRnEpe6ZVPy7glaKDw8C74WxcKqENJHYSnXt8ZZLK8yqytd2IvQS0pH8xMbYA8tR+nw3hGFeFA+M01j+Zxr3mYXXJ4fIpS8hnRh9xqcjsV6gUfdT0Xg1kG9onFWQ6FiaOkzpwmuZoENlZUwc00kj4h99P91vFEJpcKHQEYaY/c=
+	t=1725244791; cv=none; b=D9pACd9rEFLOEIm26oMxjSqEY2eNrehszbQi8thFzh7OtYJrwWUucDrKy/1LP0zZ88Gpn7tGwP/k5QJoLNAAM8C+HAqnQE4iG2+7JR6m4ZrFBZmbTFCZe0Wzh2Y5uJY7YFNnqcy3nQE4E+2mfxfyE/eBzoqBXfNbXt5uM+WYcak=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1725244685; c=relaxed/simple;
-	bh=ZuAo2ecop6gc7mqzQ6fpPAqXDU8HXYGy/NGQivWqyfE=;
+	s=arc-20240116; t=1725244791; c=relaxed/simple;
+	bh=hCD0lhf9UrsR3cHabJeE+8UdsFm02SwQKqkiHbb+S2g=;
 	h=Message-ID:Date:MIME-Version:Cc:Subject:To:References:From:
-	 In-Reply-To:Content-Type; b=Ls0dwX75No4Si+RyWnSZ1sQrUUeHTUToEtyPHIshz3yYe18030hTBBqjdtlO0y015hmGXTVjOWSnGFAX5WkX+xLWz92UOSktvvL+YPjn9FguMvBHr26QMQTlqRJAHkTxLpit7JyAqi3dMVxbie4PyzI7USS+hZ3Aavuyos3wKXo=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=Hi7CnpxQ; arc=none smtp.client-ip=198.175.65.15
+	 In-Reply-To:Content-Type; b=AJtbCC2d+CjzZzuYJprdraFUymTaRN/8EkYW48esjV5fcHOOP8k6IL7e6S/RaJQhBKb8t44hcnI0tUv+Y7L44vHkRWVCjJbO7hH36h/iUC1+jKrdH3P5a/cgRYvwCE68AZ2rbXkNWnOeXLwnGWrx4qTObElwy2SW7osP8zlLscc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=Pg9pjjbm; arc=none smtp.client-ip=198.175.65.13
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="Hi7CnpxQ"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="Pg9pjjbm"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1725244684; x=1756780684;
+  t=1725244791; x=1756780791;
   h=message-id:date:mime-version:cc:subject:to:references:
    from:in-reply-to:content-transfer-encoding;
-  bh=ZuAo2ecop6gc7mqzQ6fpPAqXDU8HXYGy/NGQivWqyfE=;
-  b=Hi7CnpxQug9eT5XAgSSdQvjFzd4rNX20OKYflZSAeSqqnw0UGV2qM2+q
-   i9hqLTep+8bnyVQ7Dsx821nQK+8zkyFp61jRtQWFDGEMtj0ysI63sMKXj
-   XLdRDHbXvMOBOKhzDMDBCZedS6fnohP5Tu3EQHeTxmprOgHbX5ABMB4Y5
-   39t7RxY+8DrCcDiX3nfQZPsQGYTnbsDHute3AupRRvcDIFp28s34kSc5t
-   ebAA0cTz1fSf7pB0uvFQBaRJSIdqPCZCb99BbhKU6tvT5XVi57HbcBr+S
-   c1f/pWTdzH+X93i99ee3VOgFIGB+7P60kdyOFQSP/Ap29/SODIlsVAdu8
-   A==;
-X-CSE-ConnectionGUID: AR4SofE4QuiaZiCqUnqO1w==
-X-CSE-MsgGUID: TtfGse1YRhOdXKYPedK7gw==
-X-IronPort-AV: E=McAfee;i="6700,10204,11182"; a="27572840"
+  bh=hCD0lhf9UrsR3cHabJeE+8UdsFm02SwQKqkiHbb+S2g=;
+  b=Pg9pjjbmvDziHVEJkBWD1PM8bOvKJX6GWs+fbokZRXXEVQoVUMpi3gKt
+   Yuxm/OG+wkcA5DosF6fl14hvOOjVwMakrFB1eBtHmB7EYXpU0ODCrzFT4
+   orDbXfT7+vzFryvdoBmUCa0LQ2vIiREiVv3Vc8yXIU0OuPI4Ei82SbFYi
+   ED/TzdMbsB59WTR5YU7LdnS0CBmKQ5VYI9/DAw6CjL1mjI4V94QY9ZoZE
+   iMSGdLsi4r4Xt/oWkD59wBiw8cYzxIsmoIhgLzKwjktFsfQALEx5CWk1Y
+   HrvyOwyX9cmDZTbIEz3rLBYB1LgEGPq2b8r5PdDKPmN9vOJXs7UkRVNgZ
+   Q==;
+X-CSE-ConnectionGUID: 8WKqg/BMQ/WM4vS6v4J+pQ==
+X-CSE-MsgGUID: ArCD1oqVReuW/orpMogJTQ==
+X-IronPort-AV: E=McAfee;i="6700,10204,11182"; a="34970978"
 X-IronPort-AV: E=Sophos;i="6.10,195,1719903600"; 
-   d="scan'208";a="27572840"
-Received: from orviesa003.jf.intel.com ([10.64.159.143])
-  by orvoesa107.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Sep 2024 19:38:04 -0700
-X-CSE-ConnectionGUID: 4r16Da/8RNSJRPL2iE8G8w==
-X-CSE-MsgGUID: L9CtQ+afQvipDyErkYAYTw==
+   d="scan'208";a="34970978"
+Received: from fmviesa009.fm.intel.com ([10.60.135.149])
+  by orvoesa105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Sep 2024 19:39:50 -0700
+X-CSE-ConnectionGUID: Vvw2S6LERzmBwcXvTVFedg==
+X-CSE-MsgGUID: JrQGoICJTqqoV9nwgTGo1w==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.10,195,1719903600"; 
-   d="scan'208";a="69271303"
+   d="scan'208";a="64505180"
 Received: from allen-box.sh.intel.com (HELO [10.239.159.127]) ([10.239.159.127])
-  by orviesa003.jf.intel.com with ESMTP; 01 Sep 2024 19:38:01 -0700
-Message-ID: <59fe0bf4-76e2-43cb-84e7-e044c2407c4c@linux.intel.com>
-Date: Mon, 2 Sep 2024 10:34:08 +0800
+  by fmviesa009.fm.intel.com with ESMTP; 01 Sep 2024 19:39:48 -0700
+Message-ID: <b64d095e-a9a6-4df9-b693-9cd6018eb1a5@linux.intel.com>
+Date: Mon, 2 Sep 2024 10:35:54 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -52,89 +52,95 @@ List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Cc: baolu.lu@linux.intel.com, iommu@lists.linux.dev,
- linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v4 0/7] iommu/vt-d: Convert to use static identity domain
-To: Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
- Robin Murphy <robin.murphy@arm.com>, Jason Gunthorpe <jgg@ziepe.ca>,
- Kevin Tian <kevin.tian@intel.com>
-References: <20240809055431.36513-1-baolu.lu@linux.intel.com>
+Cc: baolu.lu@linux.intel.com, Yi Liu <yi.l.liu@intel.com>,
+ "Tian, Kevin" <kevin.tian@intel.com>, tina.zhang@intel.com,
+ Sanjay K Kumar <sanjay.k.kumar@intel.com>
+Subject: Re: [PATCH v2] iommu/vt-d: Fix potential lockup if qi_submit_sync
+ called with 0 count
+To: Jacob Pan <jacob.jun.pan@linux.intel.com>, iommu@lists.linux.dev,
+ LKML <linux-kernel@vger.kernel.org>
+References: <20240728210059.1964602-1-jacob.jun.pan@linux.intel.com>
 Content-Language: en-US
 From: Baolu Lu <baolu.lu@linux.intel.com>
-In-Reply-To: <20240809055431.36513-1-baolu.lu@linux.intel.com>
+In-Reply-To: <20240728210059.1964602-1-jacob.jun.pan@linux.intel.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 
-On 8/9/24 1:54 PM, Lu Baolu wrote:
-> Intel's IOMMU driver used a special domain called 1:1 mapping domain to
-> support the domain of type IOMMU_DOMAIN_IDENTITY, which enables device
-> drivers to directly utilize physical addresses for DMA access despite
-> the presence of IOMMU units.
+On 7/29/24 5:00 AM, Jacob Pan wrote:
+> From: Sanjay K Kumar<sanjay.k.kumar@intel.com>
 > 
-> The implementation of the 1:1 mapping domain is influenced by hardware
-> differences. While modern Intel VT-d implementations support hardware
-> passthrough translation mode, earlier versions lacked this feature,
-> which requires a more complex implementation approach.
+> If qi_submit_sync() is invoked with 0 invalidation descriptors (for
+> instance, for DMA draining purposes), we can run into a bug where a
+> submitting thread fails to detect the completion of invalidation_wait.
+> Subsequently, this led to a soft lockup. Currently, there is no impact
+> by this bug on the existing users because no callers are submitting
+> invalidations with 0 descriptors. This fix will enable future users
+> (such as DMA drain) calling qi_submit_sync() with 0 count.
 > 
-> The 1:1 mapping domain for earlier hardware was implemented by associating
-> a DMA domain with an IOVA (IO Virtual Address) equivalent to the
-> physical address. While, for most hardware supporting passthrough mode,
-> simply setting the hardware's passthrough mode is sufficient. These two
-> modes were merged together in si_domain, which is a special DMA domain
-> sharing the domain ops of an ordinary DMA domain.
+> Suppose thread T1 invokes qi_submit_sync() with non-zero descriptors, while
+> concurrently, thread T2 calls qi_submit_sync() with zero descriptors. Both
+> threads then enter a while loop, waiting for their respective descriptors
+> to complete. T1 detects its completion (i.e., T1's invalidation_wait status
+> changes to QI_DONE by HW) and proceeds to call reclaim_free_desc() to
+> reclaim all descriptors, potentially including adjacent ones of other
+> threads that are also marked as QI_DONE.
 > 
-> As the iommu core has evolved, it has introduced global static identity
-> domain with "never fail" attach semantics. This means that the domain is
-> always available and cannot fail to attach. The iommu driver now assigns
-> this domain directly at iommu_ops->identity_domain instead of allocating
-> it through the domain allocation interface.
+> During this time, while T2 is waiting to acquire the qi->q_lock, the IOMMU
+> hardware may complete the invalidation for T2, setting its status to
+> QI_DONE. However, if T1's execution of reclaim_free_desc() frees T2's
+> invalidation_wait descriptor and changes its status to QI_FREE, T2 will
+> not observe the QI_DONE status for its invalidation_wait and will
+> indefinitely remain stuck.
 > 
-> This converts the Intel IOMMU driver to embrace the global static
-> identity domain. For early legacy hardwares that don't support
-> passthrough translation mode, ask the iommu core to use a DMA type of
-> default domain. For modern hardwares that support passthrough
-> translation mode, implement a static global identity domain.
+> This soft lockup does not occur when only non-zero descriptors are
+> submitted.In such cases, invalidation descriptors are interspersed among
+> wait descriptors with the status QI_IN_USE, acting as barriers. These
+> barriers prevent the reclaim code from mistakenly freeing descriptors
+> belonging to other submitters.
 > 
-> The whole series is also available at
+> Considered the following example timeline:
+> 	T1			T2
+> ========================================
+> 	ID1
+> 	WD1
+> 	while(WD1!=QI_DONE)
+> 	unlock
+> 				lock
+> 	WD1=QI_DONE*		WD2
+> 				while(WD2!=QI_DONE)
+> 				unlock
+> 	lock
+> 	WD1==QI_DONE?
+> 	ID1=QI_DONE		WD2=DONE*
+> 	reclaim()
+> 	ID1=FREE
+> 	WD1=FREE
+> 	WD2=FREE
+> 	unlock
+> 				soft lockup! T2 never sees QI_DONE in WD2
 > 
-> https://github.com/LuBaolu/intel-iommu/commits/vtd-static-identity-domain-v4
+> Where:
+> ID = invalidation descriptor
+> WD = wait descriptor
+> * Written by hardware
 > 
-> Change log:
-> v4:
->   - Add a new patch to remove has_iotlb_device flag as suggested by
->     Jason.
->     https://lore.kernel.org/linux-iommu/20240807121712.GD8473@ziepe.ca/
+> The root of the problem is that the descriptor status QI_DONE flag is used
+> for two conflicting purposes:
+> 1. signal a descriptor is ready for reclaim (to be freed)
+> 2. signal by the hardware that a wait descriptor is complete
 > 
-> v3:https://lore.kernel.org/linux-iommu/20240806023941.93454-1-baolu.lu@linux.intel.com/
->   - Kevin worried that some graphic devices might still require identity
->     domain. Forcing DMA domain for those drivers might break the existing
->     functionality.
->     https://lore.kernel.org/linux-iommu/BN9PR11MB52761FF9AB496B422596DDDF8C8AA@BN9PR11MB5276.namprd11.prod.outlook.com/
+> The solution (in this patch) is state separation by using QI_FREE flag
+> for #1.
 > 
->     After confirmed with the graphic community, we decouple "igfx_off"
->     kernel command from graphic identity mapping with the following commits:
->     ba00196ca41c ("iommu/vt-d: Decouple igfx_off from graphic identity mapping")
->     4b8d18c0c986 ("iommu/vt-d: Remove INTEL_IOMMU_BROKEN_GFX_WA").
+> Once a thread's invalidation descriptors are complete, their status would
+> be set to QI_FREE. The reclaim_free_desc() function would then only
+> free descriptors marked as QI_FREE instead of those marked as
+> QI_DONE. This change ensures that T2 (from the previous example) will
+> correctly observe the completion of its invalidation_wait (marked as
+> QI_DONE).
 > 
-> v2:https://lore.kernel.org/linux-iommu/20231205012203.244584-1-baolu.lu@linux.intel.com/
->   - Re-orgnize the patches by removing 1:1 mappings before implementing
->     global static domain.
-> 
-> v1:https://lore.kernel.org/linux-iommu/20231120112944.142741-1-baolu.lu@linux.intel.com/  
-> 
-> Lu Baolu (7):
->    iommu/vt-d: Require DMA domain if hardware not support passthrough
->    iommu/vt-d: Remove identity mappings from si_domain
->    iommu/vt-d: Always reserve a domain ID for identity setup
->    iommu/vt-d: Remove has_iotlb_device flag
->    iommu/vt-d: Factor out helpers from domain_context_mapping_one()
->    iommu/vt-d: Add support for static identity domain
->    iommu/vt-d: Cleanup si_domain
-> 
->   drivers/iommu/intel/iommu.h  |   2 -
->   drivers/iommu/intel/iommu.c  | 468 +++++++++++++++--------------------
->   drivers/iommu/intel/nested.c |   2 -
->   3 files changed, 201 insertions(+), 271 deletions(-)
+> Signed-off-by: Sanjay K Kumar<sanjay.k.kumar@intel.com>
+> Signed-off-by: Jacob Pan<jacob.jun.pan@linux.intel.com>
 
 Queued for v6.12-rc1.
 
