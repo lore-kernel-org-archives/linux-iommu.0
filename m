@@ -1,46 +1,46 @@
 Received: from mx0b-0031df01.pphosted.com (mx0b-0031df01.pphosted.com [205.220.180.131])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 35C581EBFE6
-	for <iommu@lists.linux.dev>; Tue,  3 Sep 2024 22:03:21 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B40451EC009
+	for <iommu@lists.linux.dev>; Tue,  3 Sep 2024 22:03:23 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.180.131
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1725401003; cv=none; b=UWEGsFosS4ium714AwO0lePwF+k8SR5Y75+4G17M+CG4cJyMKBCd1++SWzrzP3u8/eEAdOJGECGLI2/1+oeEOXeNM1zCK5dbNz7LrgwMyi8lo9/6cWc1piY79MWmSUekZM98ykEi0WGOdTCpG2pDJH2mC6dYy9GafNtVSYs7YEs=
+	t=1725401005; cv=none; b=a1vZDL7DTJz1VxgTOY2cNKhPFWPuB6+nowEx3aA0nGcEwnH5NEuePyp9vSgBGKA9x91ZU1jjGhNGk9ZoxvuQwSMJuAXjK6zHTLPCJ6x5M4gsKTepMgAIWPtAJwWB6TfAHq5N8Psoem4M3E+MhJqcQOcTZJgBYelL0AUWubwB4gY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1725401003; c=relaxed/simple;
-	bh=Igs2yFIp+pWCOiSSXSYk/H3lyu1/KWdiP9m372yePY8=;
+	s=arc-20240116; t=1725401005; c=relaxed/simple;
+	bh=4TGvrcBVb33RUS2pUQQKywPSyLIHH3PxCXqpQAImRxs=;
 	h=From:To:CC:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=hL/6JLYqz5dz2Naxbm23YgPHGxeGm1c0roDCYG+D9uqSzleZtqMmut19uoUqOPcUNyOtGDnkz5oNJrgbbZO8B3Vglkakb8RkTVlGg/EexR2KEbP0YDBrPnaZ1eL/NuG9tkNArrbuKlRfwdU8eEpDXRb/25x+4F2SCjYebDuUg2o=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com; spf=pass smtp.mailfrom=quicinc.com; dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b=YEw8UnAD; arc=none smtp.client-ip=205.220.180.131
+	 MIME-Version:Content-Type; b=TJQ5Zezp0rX1q5KuPGUmylRTExx12FdpsRe/54wRidc5jpQgbxcZgKBYWA4gh8Xi4mB7YovlVaxQhVz2obE8sjV/RSekvjVRqbv03E5mSUpF1S2q5v4r2xHY8jsEyQIu/rywCQ/2kXjM5V6NPXkF98ZfVFJedh9Rr4JbKnefa5U=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com; spf=pass smtp.mailfrom=quicinc.com; dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b=UrcNGuVv; arc=none smtp.client-ip=205.220.180.131
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=quicinc.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b="YEw8UnAD"
-Received: from pps.filterd (m0279872.ppops.net [127.0.0.1])
-	by mx0a-0031df01.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 483IKWa7009464;
-	Tue, 3 Sep 2024 22:03:02 GMT
+	dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b="UrcNGuVv"
+Received: from pps.filterd (m0279873.ppops.net [127.0.0.1])
+	by mx0a-0031df01.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 483B9BHT032349;
+	Tue, 3 Sep 2024 22:03:07 GMT
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=quicinc.com; h=
 	cc:content-transfer-encoding:content-type:date:from:in-reply-to
 	:message-id:mime-version:references:subject:to; s=qcppdkim1; bh=
-	7u3jQr4BnWQUZGOpL/ca0WT3lCGtYvtNTRZCdcyAxAw=; b=YEw8UnAD34JKtyEm
-	9XBSuvtZPBZYxxcX10nsb+KIdSc1SkkXM6TSQpcANt9BmY1844Eo/RFfGDxSwK4f
-	fr79/CiDEZBHoZivFrVQ+eobtFRMuXVwBpaqQHCVIFVhnYzBFJdVMqYT/qpS5IXz
-	AT7v5jAKPJvZgmn14IizOogWuy20cEnFcOiO5Rve8SAhCfWC89DdaMDADu3rwS+Q
-	EzmAz5Jf/1gzsoXAKFHyxr2+HOhEDeoGPFl06++Pry8LR4jtzKO5gsIVdNCWROyr
-	aAyxPl+CIdMuug+O3ISUFSAtYoBRuIjA8UJVBiZ/B+w4cHCFS39KV9sa46s4OB6n
-	kbb/NQ==
-Received: from nasanppmta05.qualcomm.com (i-global254.qualcomm.com [199.106.103.254])
-	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 41e0bhj11j-1
+	dfph64obzYGqepYZzLXdVt8Bl3Wrm1icOCzNjmCR6Lk=; b=UrcNGuVv3/aDUYBK
+	FQNLeYSrieO1tr0XJvWuIYeuLZYUci9cT/9Xm99MFNCNZznnSxdyoqPBmhUA9aj8
+	dOMg28mbm8bqVcMEWg7kmbaoUrs60Gj2joNWG1wEWT2RUWrJHmq1BmuwlQ+3HQvY
+	zjaylaCMrdO/ORrgFcDODbITBngrUH1hyhYCQdhaByWAyA/jL8B11LL86/nlXHQv
+	PUY4wdESIK+W8HE6Qgv9I/EWDX3Y0XB8ArVGPKpski1JFGe0poasWZ8675T25d4E
+	/NZJRhe/4e7vVv968FIT2DrilJGOX2hdhBlpeHVsLg0T3PmtljWaYflCdWMZl0f9
+	Wqu13Q==
+Received: from nasanppmta04.qualcomm.com (i-global254.qualcomm.com [199.106.103.254])
+	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 41drqe344c-1
 	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Tue, 03 Sep 2024 22:03:01 +0000 (GMT)
+	Tue, 03 Sep 2024 22:03:06 +0000 (GMT)
 Received: from nasanex01b.na.qualcomm.com (nasanex01b.na.qualcomm.com [10.46.141.250])
-	by NASANPPMTA05.qualcomm.com (8.18.1.2/8.18.1.2) with ESMTPS id 483M2xaA007295
+	by NASANPPMTA04.qualcomm.com (8.18.1.2/8.18.1.2) with ESMTPS id 483M352g002514
 	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Tue, 3 Sep 2024 22:02:59 GMT
+	Tue, 3 Sep 2024 22:03:05 GMT
 Received: from hu-nkela-lv.qualcomm.com (10.49.16.6) by
  nasanex01b.na.qualcomm.com (10.46.141.250) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.1544.9; Tue, 3 Sep 2024 15:02:56 -0700
+ 15.2.1544.9; Tue, 3 Sep 2024 15:03:01 -0700
 From: Nikunj Kela <quic_nkela@quicinc.com>
 To: <quic_nkela@quicinc.com>
 CC: <andersson@kernel.org>, <konradybcio@kernel.org>, <robh@kernel.org>,
@@ -63,9 +63,9 @@ CC: <andersson@kernel.org>, <konradybcio@kernel.org>, <robh@kernel.org>,
         <quic_psodagud@quicinc.com>,
         Krzysztof Kozlowski
 	<krzysztof.kozlowski@linaro.org>
-Subject: [PATCH v2 01/21] dt-bindings: arm: qcom: add the SoC ID for SA8255P
-Date: Tue, 3 Sep 2024 15:02:20 -0700
-Message-ID: <20240903220240.2594102-2-quic_nkela@quicinc.com>
+Subject: [PATCH v2 07/21] dt-bindings: crypto: qcom,prng: document support for SA8255p
+Date: Tue, 3 Sep 2024 15:02:26 -0700
+Message-ID: <20240903220240.2594102-8-quic_nkela@quicinc.com>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20240903220240.2594102-1-quic_nkela@quicinc.com>
 References: <20240828203721.2751904-1-quic_nkela@quicinc.com>
@@ -82,37 +82,37 @@ X-ClientProxiedBy: nalasex01a.na.qualcomm.com (10.47.209.196) To
  nasanex01b.na.qualcomm.com (10.46.141.250)
 X-QCInternal: smtphost
 X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
-X-Proofpoint-ORIG-GUID: 0inew7XBIKuf1z0s9sVT1S6arnWfpoR4
-X-Proofpoint-GUID: 0inew7XBIKuf1z0s9sVT1S6arnWfpoR4
+X-Proofpoint-GUID: LzmoKfnWguw7QDQOkf3ezlqxFIRQYpTm
+X-Proofpoint-ORIG-GUID: LzmoKfnWguw7QDQOkf3ezlqxFIRQYpTm
 X-Proofpoint-Virus-Version: vendor=baseguard
  engine=ICAP:2.0.293,Aquarius:18.0.1039,Hydra:6.0.680,FMLib:17.12.60.29
  definitions=2024-09-03_10,2024-09-03_01,2024-09-02_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 mlxlogscore=900
- priorityscore=1501 suspectscore=0 adultscore=0 bulkscore=0 malwarescore=0
- spamscore=0 lowpriorityscore=0 clxscore=1011 impostorscore=0 mlxscore=0
- phishscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.19.0-2407110000 definitions=main-2409030177
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 lowpriorityscore=0 mlxscore=0
+ phishscore=0 adultscore=0 suspectscore=0 priorityscore=1501 clxscore=1015
+ impostorscore=0 spamscore=0 mlxlogscore=999 bulkscore=0 malwarescore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.19.0-2407110000
+ definitions=main-2409030177
 
-Add the SoC ID entry for SA8255P.
+Document SA8255p compatible for the True Random Number Generator.
 
 Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 Signed-off-by: Nikunj Kela <quic_nkela@quicinc.com>
 ---
- include/dt-bindings/arm/qcom,ids.h | 1 +
+ Documentation/devicetree/bindings/crypto/qcom,prng.yaml | 1 +
  1 file changed, 1 insertion(+)
 
-diff --git a/include/dt-bindings/arm/qcom,ids.h b/include/dt-bindings/arm/qcom,ids.h
-index 8332f8d82f96..16f00ecdcc09 100644
---- a/include/dt-bindings/arm/qcom,ids.h
-+++ b/include/dt-bindings/arm/qcom,ids.h
-@@ -257,6 +257,7 @@
- #define QCOM_ID_QRB2210			524
- #define QCOM_ID_SM8475			530
- #define QCOM_ID_SM8475P			531
-+#define QCOM_ID_SA8255P			532
- #define QCOM_ID_SA8775P			534
- #define QCOM_ID_QRU1000			539
- #define QCOM_ID_SM8475_2		540
+diff --git a/Documentation/devicetree/bindings/crypto/qcom,prng.yaml b/Documentation/devicetree/bindings/crypto/qcom,prng.yaml
+index 89c88004b41b..048b769a73c0 100644
+--- a/Documentation/devicetree/bindings/crypto/qcom,prng.yaml
++++ b/Documentation/devicetree/bindings/crypto/qcom,prng.yaml
+@@ -17,6 +17,7 @@ properties:
+           - qcom,prng-ee  # 8996 and later using EE
+       - items:
+           - enum:
++              - qcom,sa8255p-trng
+               - qcom,sa8775p-trng
+               - qcom,sc7280-trng
+               - qcom,sm8450-trng
 -- 
 2.34.1
 
