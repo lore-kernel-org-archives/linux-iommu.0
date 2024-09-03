@@ -1,198 +1,117 @@
-Received: from mail-wm1-f54.google.com (mail-wm1-f54.google.com [209.85.128.54])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A69FB1C767C
-	for <iommu@lists.linux.dev>; Tue,  3 Sep 2024 09:00:39 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.54
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 701AB1A0BC4
+	for <iommu@lists.linux.dev>; Tue,  3 Sep 2024 09:39:15 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=170.10.133.124
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1725354041; cv=none; b=qJjE7nWruRWMBFzFPGmqyAbqK9hY1LVDJnn6e9o+EgNnEdtPWNNb/9otPUFt0OAEATpo8bfIZs9Q8tnK12epv7RgeHMh8TQnSieH0SbOXeERvidY7kQep6wTMWKAsSa1IWi22rMzP5rxgTHvwu3yPR9kG0vrvgKoNO8ON2pG7p0=
+	t=1725356356; cv=none; b=WsTWQF7rMnHIBboVlPWnpmfCjZ/cIwFqq62qJWeeHN5NbqNViPNCrLiEgNp90UHhv0VtHPZD4jBo//I/WpdDVctsI9Hm3G0naAp7gZ432yQE4T9ew5yhd5j/XOPEa6ElVtYJWfV3XeihAa7ZTPginspMfW6UeXCIRhlRet8Cjos=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1725354041; c=relaxed/simple;
-	bh=1L04pRJHwpqlONziVoFoJ3562XOYBoFFgUHaSW/QS5A=;
+	s=arc-20240116; t=1725356356; c=relaxed/simple;
+	bh=Roj+Ea7LEvenEhyYiuiVmXINZE+I65g3EEz0Bl+4ooc=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=fqNsnt/BfGz0/8JEKN9dJWY31mttni0QDFpJUHg9duhf5EWUxNpuae3m2jSsqzxWwGsYYxOMPvwDAj1zhrPM4BgxmJOrWFvfxA/H7hkGesJzAU4WjOCyTeWz1zkgQLhlJl/kKwl70DomUNXyZ8wplioMCtvbO/tSg9+pqBdA43g=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=0VlC8vx8; arc=none smtp.client-ip=209.85.128.54
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
+	 In-Reply-To:Content-Type:Content-Disposition; b=HTlSQqq+BCXYE5gV9PoT9TwMwOMq/++6PA02zm2uInTWuLlSS/uxN9kKa/pci1uEb7mYg+A7aCPUuw58CLTnvC/ylRUV29rzOuOPGYruEQ9DdXjYVeeYj9zaZcuclsGQ96eG4AP9JimHvIkWV8r3HsdG/P5h4Jfud9vvdMCET7A=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=redhat.com; spf=pass smtp.mailfrom=redhat.com; dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b=IwA87VLU; arc=none smtp.client-ip=170.10.133.124
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=redhat.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=redhat.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="0VlC8vx8"
-Received: by mail-wm1-f54.google.com with SMTP id 5b1f17b1804b1-429d1a9363aso108165e9.1
-        for <iommu@lists.linux.dev>; Tue, 03 Sep 2024 02:00:39 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20230601; t=1725354038; x=1725958838; darn=lists.linux.dev;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :mime-version:references:message-id:subject:cc:to:from:date:from:to
-         :cc:subject:date:message-id:reply-to;
-        bh=mcAweApl0SMnSEwpMO3VeLlceofmGojlXD55ghcyISI=;
-        b=0VlC8vx8+ZShvomUuSGutDDIguTYBshu2TEExzBEw/cotwRPHFYecL3PimRKB6EbQ8
-         UJQCSslkNH1vDzGn1bST/7bJWP4O+0bfmOC8FU1Mkw1vxp0h8OflFrbyHv3N4DsIxOpe
-         jDbmOM3MiOF/Az0luqj6+PDJY8TNCuHCnLvBdtVZCorPtB8Cp5n3F7MsFm+PoYTgCLdd
-         vrDtECjpiDqYQWWAM355A/mPzmaqZmAL731tJjtNtemLqvyCAjr/+RMHumTuPj5rc3vU
-         +YmJgmNij40l4VqrqppHdsR5OxWcTfqjL3HQGLoGdeZzEitQYDOOEp2lW+NSylHhnpxD
-         gzIw==
+	dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="IwA87VLU"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+	s=mimecast20190719; t=1725356354;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 in-reply-to:in-reply-to:references:references;
+	bh=ROekkmcoe+OX/H/SJ0CegmonvJxcYbn0m80zXzGYZLw=;
+	b=IwA87VLU+B12aZLCohRZrPV2pic9PLha3G0m5T5TWCcH3QKKC/vMrXUPMlbTsT2neoVRnX
+	wOchTASGIpXfEAO4QV67XpxWCZYXTB7HXJRa4AeAXitSpTuMhluM0QA2GBhKVcULC4ZAG1
+	etPzDYBqId3NBfUj3zhBQDpJp6A5/VQ=
+Received: from mail-wm1-f71.google.com (mail-wm1-f71.google.com
+ [209.85.128.71]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
+ us-mta-434-EXxoGuU5PDORAVIbsqnb_w-1; Tue, 03 Sep 2024 05:39:11 -0400
+X-MC-Unique: EXxoGuU5PDORAVIbsqnb_w-1
+Received: by mail-wm1-f71.google.com with SMTP id 5b1f17b1804b1-42bbd062ac1so37185235e9.0
+        for <iommu@lists.linux.dev>; Tue, 03 Sep 2024 02:39:11 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1725354038; x=1725958838;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :mime-version:references:message-id:subject:cc:to:from:date
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=mcAweApl0SMnSEwpMO3VeLlceofmGojlXD55ghcyISI=;
-        b=PduqxfRmbOOtsn/5bhMtxLbjGlQTov6+t5rnejb038CAShMsEzW9btI/aZTfX724Tv
-         o+H607oDalqZBQXVTYBHZBbDY4wEjkx5W0ve9vp9UQkQH0j5RWxgOZS/39jYvHItXdV3
-         dMBNf4SDQoP+zoRzsBiDcRInpdDJhNbPpTFRkQeXSCz0IcwgmyYauQfZLWMg43DEMCwL
-         XGy3EAy+evnRZSGXOLwmM8rtj/HJU99wvUIRKE/+3jS1eO18bnHJnfImCUW29YAt4DCu
-         aCQbJ1Crbbh4/yWm0oM/A2JQmxDGkQIp9DgqUojLBH1YmViRrCO/ecf77tYey4RlMS53
-         9urQ==
-X-Forwarded-Encrypted: i=1; AJvYcCW0YghQMXvARLYQ3rP0+Jn0du96OVVgQCKL0VSQ/ujeuHaWkk9b+1KCqDhdPFnilIVHzedmKw==@lists.linux.dev
-X-Gm-Message-State: AOJu0Yz2RjEna5iJzEbI1sqq6tghW++seQuRPbTcLge+Z13SgI1U5wc9
-	t//r/tmgw/DorgPs2Eds9+wqaf0gLpraUpJSkfkHG0nW6FOVorNzwX1X5ssKSg==
-X-Google-Smtp-Source: AGHT+IE6lmyFVDIzRDjMNMDJr7ziWFO9lcVLRUhmriJlMF/fW0JeEBIeoIvfxe2utlR5wgFziPhLlg==
-X-Received: by 2002:a05:600c:3485:b0:426:66a0:6df6 with SMTP id 5b1f17b1804b1-42c29f25f8bmr3176475e9.0.1725354037545;
-        Tue, 03 Sep 2024 02:00:37 -0700 (PDT)
-Received: from google.com (109.36.187.35.bc.googleusercontent.com. [35.187.36.109])
-        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-42bb6df84b9sm163907905e9.24.2024.09.03.02.00.36
+        d=1e100.net; s=20230601; t=1725356350; x=1725961150;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=ROekkmcoe+OX/H/SJ0CegmonvJxcYbn0m80zXzGYZLw=;
+        b=fRbcjXp6YqYkGs4S2/7V5JoSZ0et2n1LA+FAoBnb/ctMi37Px6scHeW5xvql3t++jD
+         8MFaOw8qMXlHYl7+oC9s2U4fCnwL3FWRt0QDM6nukVVsXk7wDojlOIsdYP5xy4d6Xb7g
+         FalqhPYCvRKpzMp9a/o8U6yEYlgTVTV4bhm9KAmaPyz8TxXtZpfupR82V6KIDCw9nyYW
+         yIQadO4Mp/6IDN5L+vT5gMRmKHoHm8vCCkyQHcy/4VXspcqQF8A7LnlWlXGI89Zc3n+T
+         6MIltxwN8B12BnjKycMFgFUIBhjs5urn5U+6T78GGurJGrVCXN0oHuET57YvkOH7LHr5
+         2/iA==
+X-Gm-Message-State: AOJu0Yzv3wRz8H47o03/4BQVmXYRZ1IMvFh4rBS9AHT5WCVlilNnqQiR
+	JlPXx+TKFeWFKX7QzrkWguwOfrb3+MEYsULWo9VT4ixmDwYCe1QaASWIL2fTH7TTWPiAhL6Kb6V
+	qByEPFPt+ylO0KnEFcN2BsJ0+raejl9GrYwo8dkQuRe5lLYduMiOa
+X-Received: by 2002:a05:600c:3d0d:b0:426:4f47:6037 with SMTP id 5b1f17b1804b1-42bdc6375abmr66533115e9.19.1725356350124;
+        Tue, 03 Sep 2024 02:39:10 -0700 (PDT)
+X-Google-Smtp-Source: AGHT+IGmeosf/mJIf4OuBVOC1FXDQtaN47WobnVUFS/lrBzspPK+LAJFhvAiwYTR4QIKkjIzV+Hhfw==
+X-Received: by 2002:a05:600c:3d0d:b0:426:4f47:6037 with SMTP id 5b1f17b1804b1-42bdc6375abmr66532735e9.19.1725356349385;
+        Tue, 03 Sep 2024 02:39:09 -0700 (PDT)
+Received: from redhat.com ([2a0d:6fc7:441:95c6:9977:c577:f3d1:99e1])
+        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-42bba57bb20sm142356975e9.4.2024.09.03.02.39.06
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 03 Sep 2024 02:00:37 -0700 (PDT)
-Date: Tue, 3 Sep 2024 09:00:32 +0000
-From: Mostafa Saleh <smostafa@google.com>
-To: Jason Gunthorpe <jgg@nvidia.com>
-Cc: acpica-devel@lists.linux.dev, Hanjun Guo <guohanjun@huawei.com>,
-	iommu@lists.linux.dev, Joerg Roedel <joro@8bytes.org>,
-	Kevin Tian <kevin.tian@intel.com>, kvm@vger.kernel.org,
-	Len Brown <lenb@kernel.org>, linux-acpi@vger.kernel.org,
-	linux-arm-kernel@lists.infradead.org,
-	Lorenzo Pieralisi <lpieralisi@kernel.org>,
-	"Rafael J. Wysocki" <rafael@kernel.org>,
-	Robert Moore <robert.moore@intel.com>,
+        Tue, 03 Sep 2024 02:39:08 -0700 (PDT)
+Date: Tue, 3 Sep 2024 05:39:04 -0400
+From: "Michael S. Tsirkin" <mst@redhat.com>
+To: Christoph Hellwig <hch@lst.de>
+Cc: iommu@lists.linux.dev, Marek Szyprowski <m.szyprowski@samsung.com>,
 	Robin Murphy <robin.murphy@arm.com>,
-	Sudeep Holla <sudeep.holla@arm.com>, Will Deacon <will@kernel.org>,
-	Alex Williamson <alex.williamson@redhat.com>,
-	Eric Auger <eric.auger@redhat.com>,
-	Jean-Philippe Brucker <jean-philippe@linaro.org>,
-	Moritz Fischer <mdf@kernel.org>,
-	Michael Shavit <mshavit@google.com>,
-	Nicolin Chen <nicolinc@nvidia.com>, patches@lists.linux.dev,
-	Shameerali Kolothum Thodi <shameerali.kolothum.thodi@huawei.com>
-Subject: Re: [PATCH v2 8/8] iommu/arm-smmu-v3: Support IOMMU_DOMAIN_NESTED
-Message-ID: <ZtbQMDxKZUZCGfrR@google.com>
-References: <0-v2-621370057090+91fec-smmuv3_nesting_jgg@nvidia.com>
- <8-v2-621370057090+91fec-smmuv3_nesting_jgg@nvidia.com>
- <ZtHuoDWbe54H1nhZ@google.com>
- <20240830170426.GV3773488@nvidia.com>
- <ZtWMGQAdR6sjBmer@google.com>
- <20240903003022.GF3773488@nvidia.com>
+	Sakari Ailus <sakari.ailus@linux.intel.com>,
+	Bingbu Cao <bingbu.cao@intel.com>, Jason Wang <jasowang@redhat.com>,
+	linux-kernel@vger.kernel.org, linux-alpha@vger.kernel.org,
+	linux-arm-kernel@lists.infradead.org, linux-mips@vger.kernel.org,
+	linux-parisc@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
+	linux-s390@vger.kernel.org, sparclinux@vger.kernel.org,
+	linux-media@vger.kernel.org, virtualization@lists.linux.dev,
+	xen-devel@lists.xenproject.org
+Subject: Re: [PATCH 1/2] vdpa_sim: don't select DMA_OPS
+Message-ID: <20240903053857-mutt-send-email-mst@kernel.org>
+References: <20240828061104.1925127-1-hch@lst.de>
+ <20240828061104.1925127-2-hch@lst.de>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+In-Reply-To: <20240828061104.1925127-2-hch@lst.de>
+X-Mimecast-Spam-Score: 0
+X-Mimecast-Originator: redhat.com
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20240903003022.GF3773488@nvidia.com>
 
-On Mon, Sep 02, 2024 at 09:30:22PM -0300, Jason Gunthorpe wrote:
-> On Mon, Sep 02, 2024 at 09:57:45AM +0000, Mostafa Saleh wrote:
-> > > > 2) Is there a reason the UAPI is designed this way?
-> > > > The way I imagined this, is that userspace will pass the pointer to the CD
-> > > > (+ format) not the STE (or part of it).
-> > > 
-> > > Yes, we need more information from the STE than just that. EATS and
-> > > STALL for instance. And the cachability below. Who knows what else in
-> > > the future.
-> > 
-> > But for example if that was extended later, how can user space know
-> > which fields are allowed and which are not?
+On Wed, Aug 28, 2024 at 09:10:28AM +0300, Christoph Hellwig wrote:
+> vdpa_sim has been fixed to not override the dma_map_ops in commit
+> 6c3d329e6486 ("vdpa_sim: get rid of DMA ops"), so don't select the
+> symbol and don't depend on HAS_DMA.
 > 
-> Changes the vSTE rules that require userspace being aware would have
-> to be signaled in the GET_INFO answer. This is the same process no
-> matter how you encode the STE bits in the structure.
-> 
-How? And why changing that in the future is not a problem as sanitising IDRs?
+> Signed-off-by: Christoph Hellwig <hch@lst.de>
 
-> This confirmation of kernel support would then be reflected in the
-> vIDRs to the VM and the VM could know to set the extended bits.
-> 
-> Otherwise setting an invalidate vSTE will fail the ioctl, the VMM can
-> log the event, generate an event and install an abort vSTE.
-> 
-> > > Overall this sort of direct transparency is how I prefer to see these
-> > > kinds of iommufd HW specific interfaces designed. From a lot of
-> > > experience here, arbitary marshall/unmarshall is often an
-> > > antipattern :)
-> > 
-> > Is there any documentation for the (proposed) SMMUv3 UAPI for IOMMUFD?
-> 
-> Just the comments in this series?
+Acked-by: Michael S. Tsirkin <mst@redhat.com>
 
-But this is a UAPI. How can userspace implement that if it has no
-documentation, and how can it be maintained if there is no clear
-interface with userspace with what is expected/returned...
+> ---
+>  drivers/vdpa/Kconfig | 3 +--
+>  1 file changed, 1 insertion(+), 2 deletions(-)
+> 
+> diff --git a/drivers/vdpa/Kconfig b/drivers/vdpa/Kconfig
+> index 5265d09fc1c409..b08de3b7706109 100644
+> --- a/drivers/vdpa/Kconfig
+> +++ b/drivers/vdpa/Kconfig
+> @@ -11,8 +11,7 @@ if VDPA
+>  
+>  config VDPA_SIM
+>  	tristate "vDPA device simulator core"
+> -	depends on RUNTIME_TESTING_MENU && HAS_DMA
+> -	select DMA_OPS
+> +	depends on RUNTIME_TESTING_MENU
+>  	select VHOST_RING
+>  	select IOMMU_IOVA
+>  	help
+> -- 
+> 2.43.0
 
-> 
-> > I can understand reading IDRs from userspace (with some sanitation),
-> > but adding some more logic to map vSTE to STE needs more care of what
-> > kind of semantics are provided.
-> 
-> We can enhance the comment if you think it is not clear enough. It
-> lists the fields the userspace should pass through.
-> 
-> > Also, I am working on similar interface for pKVM where we “paravirtualize”
-> > the SMMU access for guests, it’s different semantics, but I hope we can
-> > align that with IOMMUFD (but it’s nowhere near upstream now)
-> 
-> Well, if you do paravirt where you just do map/unmap calls to the
-> hypervisor (ie classic virtio-iommu) then you don't need to do very
-> much.
-
-But we have a different model, with virtio-iommu, it typically presents
-the device to the VM and on the backend it calls VFIO MAP/UNMAP.
-Although technically we can have virtio-iommu in the hypervisor (EL2),
-that is a lot of complexit and increase in the TCB of pKVM.
-
-For pKVM, the VMM is not trusted and the hypervisor would do the map/unmap...,
-but the VMM will have to configure the virtual view of the device (Mapping of
-endpoints to virtual endpoints, vIRQs…), this requires a userspace interface
-to query some HW info (similar to VFIO VFIO_DEVICE_GET_IRQ_INFO and then mapping
-it to a GSI through KVM, but for IOMMUs)
-Though, this design is very early and in progress.
-
-> 
-> If you want to do nesting, then IMHO, just present a real vSMMU. It is
-> already intended to be paravirtualized and this is what the
-> confidential compute people are going to be doing as well.
-> 
-> Otherwise I'd expect you'd get more value to align with the
-> virtio-iommu nesting stuff, where they have layed out what information
-> the VM needs. iommufd is not intended to be just jammed directly into
-> a VM. There is an expectation that a VMM will sit there on top and
-> massage things.
-
-I haven’t been keeping up with iommufd lately, I will try to spend more
-time on that in the future.
-But my idea is that we would create an IOMMUFD, attach it to a device and then
-through some extra IOCTLs, we can configure some “virtual” topology for it which
-then relies on KVM, again this is very early, and we need to support pKVM IOMMUs
-in the host first (I plan to send v2 RFC soon for that)
-
-> 
-> > I see you are talking in LPC about IOMMUFD:
-> > https://lore.kernel.org/linux-iommu/0-v1-01fa10580981+1d-iommu_pt_jgg@nvidia.com/T/#m2dbb08f3bf8506a492bc7dda2de662e42371e683
-> > 
-> > Do you have any plans to talk about this also?
-> 
-> Nothing specific, this is LPC so if people in the room would like to
-> use the session for that then we can talk about it. Last year the room
-> wanted to talk about PASID mostly.
-> 
-> I haven't heard if someone is going to KVM forum to talk about
-> vSMMUv3? Eric? Nicolin do you know?
-
-I see, I won’t be in KVM forum, but I plan to attend LPC, we can discuss
-further there if people are interested.
-
-Thanks,
-Mostafa
-
-> 
-> Jason
