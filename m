@@ -1,107 +1,117 @@
-Received: from mail-pj1-f74.google.com (mail-pj1-f74.google.com [209.85.216.74])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A6A1B2A1C5
-	for <iommu@lists.linux.dev>; Tue,  3 Sep 2024 15:56:18 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.216.74
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D8BD918F2CF
+	for <iommu@lists.linux.dev>; Tue,  3 Sep 2024 19:20:40 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1725378980; cv=none; b=rHbAPvwpiHMt/ZE6Dw6yL8BYTATLfc7gWzhNOdTORO1ouSlpCvioUFahXeMk6QrM0i8Iydp0i786A4O4mLzKyWh829BiVOHRGXlWKBsL0mojCbzREiQ377OufJFGff1Snmd8M3bke7FOh3wIFW6KYwLXwe+xcUoYqv5bcjR0jUc=
+	t=1725391240; cv=none; b=KpAnxK1eoXA9jtU+6rjm/HY9LX16XxYsktP81jYTRrZS+LElEGpFoOO0ux7LXH1hJgzQU6+yYqP5Fi1HsrkMrGAwOSSDKTjmKqvNOgoTie2lRdiEx/AY0/uj4YGW/Plr/IbNj/9m/4KLLYg/aLTC8rzKueB5a0l4QK5N0gJFPuA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1725378980; c=relaxed/simple;
-	bh=Mzgy4Zfk7DBRAXkLZqlzskQY/R1zzzcOZXHvCA6PQXE=;
-	h=Date:In-Reply-To:Mime-Version:References:Message-ID:Subject:From:
-	 To:Cc:Content-Type; b=ZQwDYpDxkAnGzvcaLjMkfVg7QeUOKrq+As4tK4I+Bk/jUZoiB/+JptwQnkfswNMckTTtNqiEAqlR5vHugBNPVcww5KcyqsijGVqcE6QQ6Du1FG3mcL3Q93ShnlzvSZ7Xpb4QmI4TZHcAcyptpEM844nCQS8XAKDQJGA/+jaXX2E=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=flex--seanjc.bounces.google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=dupU4j2f; arc=none smtp.client-ip=209.85.216.74
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=flex--seanjc.bounces.google.com
+	s=arc-20240116; t=1725391240; c=relaxed/simple;
+	bh=X6XtPCWO0ok2gFlBZfY7nQ1xeBg83zqwM9z4A9P8jZo=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=jMdRzQwYbli7q02lI690z6pKsY8hD5m3SP7KBRFulVUIHm/dhqIE4IErXRCMIxGfKsKwh+ulnrcMomvnQOjEMPUEXZ+k2V0YG25MYR9giR4gh8ru2Xba/ZewdB1OuJQ9JatngDKoH+aeOj/RpApH7DN2zBo7FwnT8ONpBtYB/z4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=AOnGooX/; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="dupU4j2f"
-Received: by mail-pj1-f74.google.com with SMTP id 98e67ed59e1d1-2d8859d6e9dso3377117a91.1
-        for <iommu@lists.linux.dev>; Tue, 03 Sep 2024 08:56:18 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20230601; t=1725378978; x=1725983778; darn=lists.linux.dev;
-        h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
-         :date:from:to:cc:subject:date:message-id:reply-to;
-        bh=GWzaB2zVBiJq7ajI0wtzRO85aFP0qg9gF2s4BJREzmU=;
-        b=dupU4j2fSjbuRPhcSIPlTG6y39f9Ks5/5xHvFw5evc1o4wnPZKH4kucF9MaEuov7a/
-         RAu2dv/elaH+iBDQ/NBk/XOdE/J5wEqo1sPpZhNJQhieC20RQqq7RsOfjiDxMgoblhAA
-         4VZmwIUvW6eyigz9Ki81A2rRn7XFnqcmplP2rbjDlfpc9GNvbXH/uYJ+uV9gl2vP5Ssc
-         1ZZ7U5X4C4dprj8sCpB4eTARXWxoWi8a9JcWa2WBkDeXgNUi1fwXGYDLuhK1y+t+UYq7
-         9F8a6hW4wOLwjg4/lrTZqEl1vlxXH1LBrXVwJZy6m/7yIY7R4v4VuzapUNXGu7suRSou
-         AlOQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1725378978; x=1725983778;
-        h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
-         :date:x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=GWzaB2zVBiJq7ajI0wtzRO85aFP0qg9gF2s4BJREzmU=;
-        b=wzlTH+sjZEN8tsc/nZNxhpHaa3/SRssnb1lkZnp243lN6cCITXMqizugpDGxB9Lv+m
-         b8ors3sRpnEZNI5ob0nxlb7ac1U6cLKk7pJxToKCXsVa+xDwGP3NS2CI+KNPw7K0cKT8
-         C8WWfopxHBvFnvxHETWylUt9fb5wLJRTzTTxTSRDDrHX3BKQoCO4k7IXiGEVA5U9HZLR
-         dPxYM4AeMae70z53wYzWTk9jKcgjL1OwAq0ViptHgJlLcIgAZZ7ZnW1eWr8WxwOgTNaR
-         lCTeH/u3dD8CXnL95e72yWDmOiJmBVqogO1nU1vPj7x6o+FVgOeFI7RAqS1uC9aMOW6j
-         TjXg==
-X-Forwarded-Encrypted: i=1; AJvYcCVw9ykRTfPAyZn6+TarN0HpOVhsi1f5Tl144tzY1vsiOvtOfPNFhlCg0a3qoB0uxr2XF/tW8w==@lists.linux.dev
-X-Gm-Message-State: AOJu0YzsIPg7ZUpYt/g/74goZCloKNLunQr2L5D/XK2s8//jSyFn40S7
-	r32m/dLR8NBu5432iytalXr+jR4fhPzfUB2m+azF06tMjrBE89tfRIvvTDi/KUtF7cHDB78D9Rq
-	4bw==
-X-Google-Smtp-Source: AGHT+IEU1849ih3tqcS05odvzRPeJyVpF9Fkthp9R0njzfPmkPWPuM+m0PM+Icyr5mRhgGWG26r/jNAQht0=
-X-Received: from zagreus.c.googlers.com ([fda3:e722:ac3:cc00:7f:e700:c0a8:5c37])
- (user=seanjc job=sendgmr) by 2002:a17:90b:3013:b0:2d8:9dd1:d9aa with SMTP id
- 98e67ed59e1d1-2d89dd1da1emr23806a91.8.1725378977841; Tue, 03 Sep 2024
- 08:56:17 -0700 (PDT)
-Date: Tue, 3 Sep 2024 08:56:16 -0700
-In-Reply-To: <20240823132137.336874-1-aik@amd.com>
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="AOnGooX/"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3C8DFC4CEC5
+	for <iommu@lists.linux.dev>; Tue,  3 Sep 2024 19:20:40 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1725391240;
+	bh=X6XtPCWO0ok2gFlBZfY7nQ1xeBg83zqwM9z4A9P8jZo=;
+	h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+	b=AOnGooX/hpJZjbVzqHnwllgMy+gI/SL/fhdMnrw9mpQNnfQ76dfEhLf+fXXH8R7Ew
+	 1+kYy/9FYTzduExSN5oDvD42+nljUqglPO1DUsxEo2TtNVfoMa/rZR+pdwqS19/Z3o
+	 tKXol1B2rEWG7I1kqpWDbz912A9/ekGGN4TaBtngcfQN2pCklhBC41cDFCdTjM9rhJ
+	 zQy0NkzHVuuVWnRWv0AAjetWvxZjhvgrHLSzmyiXLzgT4ocz1Z+oxT99stqjKXihHd
+	 10aISAjLJ9i5EtNrfvbuZTV8zYjqpm3n4NhvWvsporFTJQklai00YeVXOHHG//7iWP
+	 ZVHVvmo7j6zbg==
+Received: by mail-lf1-f43.google.com with SMTP id 2adb3069b0e04-5342109d726so4135827e87.0
+        for <iommu@lists.linux.dev>; Tue, 03 Sep 2024 12:20:40 -0700 (PDT)
+X-Gm-Message-State: AOJu0Ywq0JZXOWd8ivVZ5wx5xV0OEdpJ+09Afc/6Fq9QZcWR+uFkIEDN
+	d7dQk0/YyRFhTvgUahmzg461y0h/I53OB5VYYTlcdlaZRyfB8wKZTGWEzQcq+mNNlAu7QQPzwO9
+	DgHrCDyZvS3Po9vYP9DSTaPXMAQ==
+X-Google-Smtp-Source: AGHT+IEO8+TpEsd33CZ0Mf74xjT6tw/Gkb3NEipRAAblad7qK2mRr99zUAAn51a3sx4CzGhjSLA2yF6P2Ebn+PUSWGc=
+X-Received: by 2002:ac2:4e09:0:b0:52f:c281:72de with SMTP id
+ 2adb3069b0e04-53546306584mr4621799e87.15.1725391238537; Tue, 03 Sep 2024
+ 12:20:38 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
-Mime-Version: 1.0
-References: <20240823132137.336874-1-aik@amd.com>
-Message-ID: <ZtcxoPl302h77pb9@google.com>
-Subject: Re: [RFC PATCH 00/21] Secure VFIO, TDISP, SEV TIO
-From: Sean Christopherson <seanjc@google.com>
-To: Alexey Kardashevskiy <aik@amd.com>
-Cc: kvm@vger.kernel.org, iommu@lists.linux.dev, linux-coco@lists.linux.dev, 
-	linux-pci@vger.kernel.org, 
-	Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>, 
-	Alex Williamson <alex.williamson@redhat.com>, Dan Williams <dan.j.williams@intel.com>, 
-	pratikrajesh.sampat@amd.com, michael.day@amd.com, david.kaplan@amd.com, 
-	dhaval.giani@amd.com, Santosh Shukla <santosh.shukla@amd.com>, 
-	Tom Lendacky <thomas.lendacky@amd.com>, Michael Roth <michael.roth@amd.com>, 
-	Alexander Graf <agraf@suse.de>, Nikunj A Dadhania <nikunj@amd.com>, Vasant Hegde <vasant.hegde@amd.com>, 
-	Lukas Wunner <lukas@wunner.de>
-Content-Type: text/plain; charset="us-ascii"
+MIME-Version: 1.0
+References: <20240731191312.1710417-6-robh@kernel.org>
+In-Reply-To: <20240731191312.1710417-6-robh@kernel.org>
+From: Rob Herring <robh@kernel.org>
+Date: Tue, 3 Sep 2024 14:20:26 -0500
+X-Gmail-Original-Message-ID: <CAL_JsqJt4FUTwMggsPOxC7vPoajN_yAdH+C0JH-OKQ7CiE=9kA@mail.gmail.com>
+Message-ID: <CAL_JsqJt4FUTwMggsPOxC7vPoajN_yAdH+C0JH-OKQ7CiE=9kA@mail.gmail.com>
+Subject: Re: [PATCH] iommu: Use of_property_present()
+To: Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>, 
+	Robin Murphy <robin.murphy@arm.com>
+Cc: iommu@lists.linux.dev, linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-On Fri, Aug 23, 2024, Alexey Kardashevskiy wrote:
-> Hi everyone,
-> 
-> Here are some patches to enable SEV-TIO (aka TDISP, aka secure VFIO)
-> on AMD Turin.
-> 
-> The basic idea is to allow DMA to/from encrypted memory of SNP VMs and
-> secure MMIO in SNP VMs (i.e. with Cbit set) as well.
-> 
-> These include both guest and host support. QEMU also requires
-> some patches, links below.
-> 
-> The patches are organized as:
-> 01..06 - preparing the host OS;
-> 07 - new TSM module;
-> 08 - add PSP SEV TIO ABI (IDE should start working at this point);
-> 09..14 - add KVM support (TDI binding, MMIO faulting, etc);
-> 15..19 - guest changes (the rest of SEV TIO ABI, DMA, secure MMIO).
-> 20, 21 - some helpers for guest OS to use encrypted MMIO
-> 
-> This is based on a merge of
-> ee3248f9f8d6 Lukas Wunner spdm: Allow control of next requester nonce
-> through sysfs
-> 85ef1ac03941 (AMDESE/snp-host-latest) 4 days ago Michael Roth [TEMP] KVM: guest_memfd: Update gmem_prep are hook to handle partially-allocated folios
-> 
-> 
-> Please comment. Thanks.
+On Wed, Jul 31, 2024 at 2:13=E2=80=AFPM Rob Herring (Arm) <robh@kernel.org>=
+ wrote:
+>
+> Use of_property_present() to test for property presence rather than
+> of_(find|get)_property(). This is part of a larger effort to remove
+> callers of of_find_property() and similar functions. of_find_property()
+> leaks the DT struct property and data pointers which is a problem for
+> dynamically allocated nodes which may be freed.
+>
+> Signed-off-by: Rob Herring (Arm) <robh@kernel.org>
+> ---
+>  drivers/iommu/fsl_pamu_domain.c | 4 +---
+>  drivers/iommu/of_iommu.c        | 2 +-
+>  2 files changed, 2 insertions(+), 4 deletions(-)
 
-1. Use scripts/get_maintainer.pl
-2. Fix your MUA to wrap closer to 80 chars
-3. Explain the core design, e.g. roles and responsibilities, coordination between
-   KVM, VFIO/IOMMUFD, userspace, etc.
+Ping!
+
+>
+> diff --git a/drivers/iommu/fsl_pamu_domain.c b/drivers/iommu/fsl_pamu_dom=
+ain.c
+> index e9d2bff4659b..30be786bff11 100644
+> --- a/drivers/iommu/fsl_pamu_domain.c
+> +++ b/drivers/iommu/fsl_pamu_domain.c
+> @@ -416,14 +416,12 @@ static struct iommu_group *fsl_pamu_device_group(st=
+ruct device *dev)
+>
+>  static struct iommu_device *fsl_pamu_probe_device(struct device *dev)
+>  {
+> -       int len;
+> -
+>         /*
+>          * uboot must fill the fsl,liodn for platform devices to be suppo=
+rted by
+>          * the iommu.
+>          */
+>         if (!dev_is_pci(dev) &&
+> -           !of_get_property(dev->of_node, "fsl,liodn", &len))
+> +           !of_property_present(dev->of_node, "fsl,liodn"))
+>                 return ERR_PTR(-ENODEV);
+>
+>         return &pamu_iommu;
+> diff --git a/drivers/iommu/of_iommu.c b/drivers/iommu/of_iommu.c
+> index 78d61da75257..e7a6a1611d19 100644
+> --- a/drivers/iommu/of_iommu.c
+> +++ b/drivers/iommu/of_iommu.c
+> @@ -214,7 +214,7 @@ void of_iommu_get_resv_regions(struct device *dev, st=
+ruct list_head *list)
+>                  * that represent reservations in the IOVA space, which a=
+re regions that should
+>                  * not be mapped.
+>                  */
+> -               if (of_find_property(it.node, "reg", NULL)) {
+> +               if (of_property_present(it.node, "reg")) {
+>                         err =3D of_address_to_resource(it.node, 0, &phys)=
+;
+>                         if (err < 0) {
+>                                 dev_err(dev, "failed to parse memory regi=
+on %pOF: %d\n",
+> --
+> 2.43.0
+>
