@@ -1,196 +1,223 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.15])
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.13])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DF3F2320E;
-	Tue,  3 Sep 2024 05:15:37 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.15
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1725340539; cv=none; b=gc7frc0P5Vvuh66FnqF9xTfzwfzL/5rfi2QQ39Bxd33rf6O6eOnmKSwUSXLRWMtx4juutAblQnj7R28tSHyzeCDoVRHb7GEDcZw506x3vNOSTAOQTXcCdlKa9TTDBOri0ygBHil2vcgoaJp7zo3H7xYZL+fxUJ10jJttLhtDumE=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1725340539; c=relaxed/simple;
-	bh=5pGzzaXFHuizYR7w0upkczQmmZoRE5GU/jg2UXe6CBM=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=Pwbnaj5/TIPm+A4y90UMECylViwyA2HC/M5BDNP9QmUiNylO+5ymM7hrxUR1dSYfv6y7TXET+yYs7+OOTsb4Uqceo/Fzhjo2+iyx5ZOVWNWYHRvW/G7bQS5qmdd1nVJI6fnNrP1y9KaI3yvS716BoR8qS1TzArW5h+X9dT1ncXI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=NzAd7adt; arc=none smtp.client-ip=192.198.163.15
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 52D01370;
+	Tue,  3 Sep 2024 07:14:57 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=192.198.163.13
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1725347698; cv=fail; b=eLjfy+lvhvWdb4BRY1/SanrKMteun+J9N3uw6SqbSFxQE1mr9VMERJoIe38ZUsREYoUqsVAuCNOUT6pUNZDndQC7AHeKt1wRxn9rpKC2teKLBj3NTCD8+SSWa8ENxo6aoZo2rbP4l/9/euvpkJwQl73MoHaZNFaGRLRdjRgHDRc=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1725347698; c=relaxed/simple;
+	bh=Qt+BHuIt4bQiFrH/OsNnap9bmppvdHCqMf0h6G9rqXM=;
+	h=From:To:CC:Subject:Date:Message-ID:References:In-Reply-To:
+	 Content-Type:MIME-Version; b=GrqRIirVqhB9Oxev/Udn6xzq0herAM35q181GE4qPzbcj9k9pl7Ku2kw46o66a13p3g15Rc96lbYN5D90XaLVrYDKuN1Eg3UZkv16Ur9t9757kFzOdpDWt1bFWtbLtbEsg+pmu2eEx7A+oClCKJEiYj/SQBFlL/yvpi0gzeWVws=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=ncfav2BX; arc=fail smtp.client-ip=192.198.163.13
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="NzAd7adt"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="ncfav2BX"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1725340538; x=1756876538;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=5pGzzaXFHuizYR7w0upkczQmmZoRE5GU/jg2UXe6CBM=;
-  b=NzAd7adtDGezX5ODj+t+Bxql5GwxMLLfLTkB6E9CduqQ874r46NuYryJ
-   1LawrlLj8l619q/hGWi8+7gkhIw9er0TtODWQyCZWT2vkobp104QFnMas
-   6WFZ/1jS4+2TzbiMkiWhaWRACX0kA9o69+ZQp34VrLNtJF6NVq32KVkSP
-   AN1DKzZOl0GoyZE5mZD0VbFUtzh8wCApKv5JUnDyHgzaKkqaq1/AM8ORr
-   c5qw/qsqlNYKoSmfeMambOwRS+heqC/Az+p0nMn8T1nfdg/8HDlsY2Of5
-   d0LhJYPuu8yjBmcGpVkJAxqxXP5c1lSAD/yV+j4uganG4w/T98UtpioAP
+  t=1725347697; x=1756883697;
+  h=from:to:cc:subject:date:message-id:references:
+   in-reply-to:content-transfer-encoding:mime-version;
+  bh=Qt+BHuIt4bQiFrH/OsNnap9bmppvdHCqMf0h6G9rqXM=;
+  b=ncfav2BXFvyFuQVAQd2OefR13OjAKukha2Jkk/vrWEuqNzdSxAuRS7+u
+   51UGC7vbp1+YXKyzHXgwgI5qZDK/Yqn8FWBd2PWWk1QBpfCdGSLf584Xw
+   DQkysz1B7x2hDaoU7gvkyOCxlNzsJmO06vWiv72/h/pdRQToXcX8jnaSH
+   KThs/yTpv7UYJMN8HWNB5dVOfWS+rpuKRuXt/CGa1+cYqEowMDloSZjLz
+   qDKzvFRRnwIjjbhB61fmDCDp+3H1ERZjavNjp7j2ybSYV1PskEVbOc1iJ
+   Yr/01VaKcotA3v8HaMBxYDjZ9PDRgwn5S+p4Q/hewtyEFjPg9MK8w3t1p
    A==;
-X-CSE-ConnectionGUID: 9kUilTQ/RQG20my6vjcwqA==
-X-CSE-MsgGUID: rKcnR6jUTUW2yrFXvitRSg==
-X-IronPort-AV: E=McAfee;i="6700,10204,11183"; a="24073150"
-X-IronPort-AV: E=Sophos;i="6.10,197,1719903600"; 
-   d="scan'208";a="24073150"
-Received: from orviesa007.jf.intel.com ([10.64.159.147])
-  by fmvoesa109.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Sep 2024 22:15:37 -0700
-X-CSE-ConnectionGUID: r0q2XG+lQgCbT/VErKTA3Q==
-X-CSE-MsgGUID: XMz0dyqBR5akKaAgCllmgQ==
+X-CSE-ConnectionGUID: 6kCD7nLjTDC6ySidvWQRmg==
+X-CSE-MsgGUID: 7FN7oJFpRG+4aBGKl/IxNQ==
+X-IronPort-AV: E=McAfee;i="6700,10204,11183"; a="26841485"
+X-IronPort-AV: E=Sophos;i="6.10,198,1719903600"; 
+   d="scan'208";a="26841485"
+Received: from fmviesa008.fm.intel.com ([10.60.135.148])
+  by fmvoesa107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Sep 2024 00:14:55 -0700
+X-CSE-ConnectionGUID: OAe3txaoSOasqB/lA30aTA==
+X-CSE-MsgGUID: OLIkn8SSRgqsyapJ8QqC8w==
 X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.10,197,1719903600"; 
-   d="scan'208";a="65286268"
-Received: from yilunxu-optiplex-7050.sh.intel.com (HELO localhost) ([10.239.159.165])
-  by orviesa007.jf.intel.com with ESMTP; 02 Sep 2024 22:15:32 -0700
-Date: Tue, 3 Sep 2024 13:13:01 +0800
-From: Xu Yilun <yilun.xu@linux.intel.com>
-To: Alexey Kardashevskiy <aik@amd.com>
-Cc: kvm@vger.kernel.org, iommu@lists.linux.dev, linux-coco@lists.linux.dev,
-	linux-pci@vger.kernel.org,
-	Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
-	Alex Williamson <alex.williamson@redhat.com>,
-	Dan Williams <dan.j.williams@intel.com>,
-	pratikrajesh.sampat@amd.com, michael.day@amd.com,
-	david.kaplan@amd.com, dhaval.giani@amd.com,
-	Santosh Shukla <santosh.shukla@amd.com>,
-	Tom Lendacky <thomas.lendacky@amd.com>,
-	Michael Roth <michael.roth@amd.com>, Alexander Graf <agraf@suse.de>,
-	Nikunj A Dadhania <nikunj@amd.com>,
-	Vasant Hegde <vasant.hegde@amd.com>, Lukas Wunner <lukas@wunner.de>
-Subject: Re: [RFC PATCH 13/21] KVM: X86: Handle private MMIO as shared
-Message-ID: <Ztaa3TpDLKrEY0Ys@yilunxu-OptiPlex-7050>
-References: <20240823132137.336874-1-aik@amd.com>
- <20240823132137.336874-14-aik@amd.com>
- <ZtH55q0Ho1DLm5ka@yilunxu-OptiPlex-7050>
- <49226b61-e7d3-477f-980b-30567eb4d069@amd.com>
+X-IronPort-AV: E=Sophos;i="6.10,198,1719903600"; 
+   d="scan'208";a="64822231"
+Received: from fmsmsx601.amr.corp.intel.com ([10.18.126.81])
+  by fmviesa008.fm.intel.com with ESMTP/TLS/AES256-GCM-SHA384; 03 Sep 2024 00:14:47 -0700
+Received: from fmsmsx611.amr.corp.intel.com (10.18.126.91) by
+ fmsmsx601.amr.corp.intel.com (10.18.126.81) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.39; Tue, 3 Sep 2024 00:14:46 -0700
+Received: from fmsmsx603.amr.corp.intel.com (10.18.126.83) by
+ fmsmsx611.amr.corp.intel.com (10.18.126.91) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.39; Tue, 3 Sep 2024 00:14:46 -0700
+Received: from FMSEDG603.ED.cps.intel.com (10.1.192.133) by
+ fmsmsx603.amr.corp.intel.com (10.18.126.83) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.39 via Frontend Transport; Tue, 3 Sep 2024 00:14:46 -0700
+Received: from NAM11-DM6-obe.outbound.protection.outlook.com (104.47.57.173)
+ by edgegateway.intel.com (192.55.55.68) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.1.2507.39; Tue, 3 Sep 2024 00:14:45 -0700
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=w7c2ZR5zcZnvqVmc3W/jEXVHgI4Jag25yDy+74yZZIHdzxb4jVVIVHUQqIudpeiEyXNT0G2nBJpfJ28BpLS6mPbvoJpMmfvgcOhQhHN+OoAOPGl77JZNJb0Mp20f9R+3gmSQEVXfVWpVDTwvwDC9XtGDOBa+jManpcL0xIOSFQ/qOH62nLV6TtQ4x9pgWPQnn7Wwu0Q5PkP4Ovxd+KxnNN33ic11WbdWN1e6BMn3CSb9P589+y5pEjXhNNOeNb89vOpUCdp+0ZqohHnHTqPmzCEOa0TmoqWjh68Wj8zU0iw+voNzTZjsG3dk6FK3aUXvN0hm1693Hbs/NJ4GkY0nuw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=Qt+BHuIt4bQiFrH/OsNnap9bmppvdHCqMf0h6G9rqXM=;
+ b=jKsvHIWHaPiSvVls/GfArkhoK1Gl9JJ3mX+Q/HvKM8jeGKZamsQvA9exY5X9SJg/00TAi1lfTL5jIge/57d56Rwz5yd8RLNd6BgigI45anji4eP06YtB33RY8mYSq4+tgwlcrfIuqesFUJ5wwhSBzCxhsaxllgMpKuEdgQnq25gq7FFhmm7YboKfpZvUgPchZMrh2HvG1MDQA/OXR8xZazTMkptJSNTa680Hpmo85cc9qUnjVd8KVMJHFXKtDg4/8lGVAFbKFU9NkxD3O436swl7DhWMu5xJEmubVGZk8L/CG1kXsvkPfPivVeVGo9QnJninfEcwdkPhT1oxv/dKXQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
+ dkim=pass header.d=intel.com; arc=none
+Received: from BN9PR11MB5276.namprd11.prod.outlook.com (2603:10b6:408:135::18)
+ by PH8PR11MB8107.namprd11.prod.outlook.com (2603:10b6:510:256::6) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7918.25; Tue, 3 Sep
+ 2024 07:14:43 +0000
+Received: from BN9PR11MB5276.namprd11.prod.outlook.com
+ ([fe80::b576:d3bd:c8e0:4bc1]) by BN9PR11MB5276.namprd11.prod.outlook.com
+ ([fe80::b576:d3bd:c8e0:4bc1%3]) with mapi id 15.20.7918.024; Tue, 3 Sep 2024
+ 07:14:43 +0000
+From: "Tian, Kevin" <kevin.tian@intel.com>
+To: Jason Gunthorpe <jgg@nvidia.com>
+CC: "acpica-devel@lists.linux.dev" <acpica-devel@lists.linux.dev>, Hanjun Guo
+	<guohanjun@huawei.com>, "iommu@lists.linux.dev" <iommu@lists.linux.dev>,
+	Joerg Roedel <joro@8bytes.org>, "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
+	Len Brown <lenb@kernel.org>, "linux-acpi@vger.kernel.org"
+	<linux-acpi@vger.kernel.org>, "linux-arm-kernel@lists.infradead.org"
+	<linux-arm-kernel@lists.infradead.org>, Lorenzo Pieralisi
+	<lpieralisi@kernel.org>, "Rafael J. Wysocki" <rafael@kernel.org>, "Moore,
+ Robert" <robert.moore@intel.com>, Robin Murphy <robin.murphy@arm.com>,
+	"Sudeep Holla" <sudeep.holla@arm.com>, Will Deacon <will@kernel.org>, "Alex
+ Williamson" <alex.williamson@redhat.com>, Eric Auger <eric.auger@redhat.com>,
+	Jean-Philippe Brucker <jean-philippe@linaro.org>, Moritz Fischer
+	<mdf@kernel.org>, Michael Shavit <mshavit@google.com>, Nicolin Chen
+	<nicolinc@nvidia.com>, "patches@lists.linux.dev" <patches@lists.linux.dev>,
+	Shameerali Kolothum Thodi <shameerali.kolothum.thodi@huawei.com>, "Mostafa
+ Saleh" <smostafa@google.com>
+Subject: RE: [PATCH v2 4/8] ACPI/IORT: Support CANWBS memory access flag
+Thread-Topic: [PATCH v2 4/8] ACPI/IORT: Support CANWBS memory access flag
+Thread-Index: AQHa+JkhqkLnJjngX0qHXNW/ip5jXLI/cGLAgABmwwCABdlLcA==
+Date: Tue, 3 Sep 2024 07:14:43 +0000
+Message-ID: <BN9PR11MB52767F630CEC29646A7322BF8C932@BN9PR11MB5276.namprd11.prod.outlook.com>
+References: <0-v2-621370057090+91fec-smmuv3_nesting_jgg@nvidia.com>
+ <4-v2-621370057090+91fec-smmuv3_nesting_jgg@nvidia.com>
+ <BN9PR11MB5276313B7EE893B59FBD46F58C972@BN9PR11MB5276.namprd11.prod.outlook.com>
+ <20240830135446.GP3773488@nvidia.com>
+In-Reply-To: <20240830135446.GP3773488@nvidia.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach:
+X-MS-TNEF-Correlator:
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=intel.com;
+x-ms-publictraffictype: Email
+x-ms-traffictypediagnostic: BN9PR11MB5276:EE_|PH8PR11MB8107:EE_
+x-ms-office365-filtering-correlation-id: 475ad5f7-14ad-4923-215d-08dccbe815bf
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;ARA:13230040|376014|7416014|1800799024|366016|38070700018;
+x-microsoft-antispam-message-info: =?us-ascii?Q?riG2Y8GmdpTfmLJCKjRbhyp/mwt/vcaOhY0uDry9JrELgK2GHQ7bcC3w2s2P?=
+ =?us-ascii?Q?GjKIlE2Qf1TdAdIVyZTUh0Gi64NolRzLQZv+gqDEWJCBsp5zi8FaGlJMtpAj?=
+ =?us-ascii?Q?fzulyA5+y7GHzu/bFsv7LERv9uJ7CbZX7Gjb2Kbb04Mlqutz5FXrZhI/1Bst?=
+ =?us-ascii?Q?PO3vOD44N9fu2YofRC2qYhVcKq4RMeicG7GqZ2IrgXkocv8LBf+71nyN8RU5?=
+ =?us-ascii?Q?g+IZ/zpXltIan/pEqCJ7/f9CLHSfzqJWYOVjn6bkWh/BWnoYB7R9yayyGPKO?=
+ =?us-ascii?Q?V5QWGa4f4qjrHtxce/d1DRqo0kHX3PLEw/YKql7Y1oPCNkfyPCKAl8mCnuQG?=
+ =?us-ascii?Q?1gTjCi2LFY48RVkZS+yV6tA9Mafft39O1VZGfBdlMSNXplMBZmqoJ07WsLj9?=
+ =?us-ascii?Q?lCUl+C8GLdB/5qNKbKpXh8wOMMGg5afrCoOayLNxvXL3QEoQEH0+iqmM/WMJ?=
+ =?us-ascii?Q?WgKyUkq8odcNnV/5qJ60k3oWk/DMxoUQwIcghUB6S+k3Hcq/ZroDjpATthlI?=
+ =?us-ascii?Q?2iGrmRsgW2+qZgPaUaE5WTuxrlk6NKH8Jbfx/JXVCf6bz8xR97yMBrFi5MlW?=
+ =?us-ascii?Q?9Hw7XyTdCKNxLzyibzF9rGJYHT8cYWWXRro/ecvpJl7adhfYM1EFH3TliOwU?=
+ =?us-ascii?Q?n92ngzbqUKP9Lrr8RaFNYOAU8F/lNxllUSqkeny2k7YO8O6g9GagDbGkDJPC?=
+ =?us-ascii?Q?kIlOxdXKifLg8W7nv4OG25B5fltPqehcdKa7Rwgw+opPSqSCCrnCzWOzUtai?=
+ =?us-ascii?Q?l571I9V9sz8jL7gQ1aat5gYHo2z6HBMCgFEIVWZwZYxX20+gTxANxHApWANf?=
+ =?us-ascii?Q?CopbtQEqYMTGjodoYJj0PteG1LwLggRQ8i+Qtqnyzyg3wgyk5R0YI4zAlKrG?=
+ =?us-ascii?Q?35axWVU5qdIag9qxX+l8esxn/l7pirUrigYMvzVBjADQE/KpqzcHGOOO+jYT?=
+ =?us-ascii?Q?yChVAJl3QvHHyKQwgtGA1fpnO/GqnHXqy8jf0lqUkvi2UgciJ/uU8exDrgfJ?=
+ =?us-ascii?Q?8GyQw2iCv5p+aq4jeXeCKDQfw7Rsy7YIAg/T/YXgdwOko1o0C1KcQdZ9kcnU?=
+ =?us-ascii?Q?pgm1d7ZzeMPN++sZMxZHs3BrCQlnpy/K6XCCa49ewb6yLysKVrzra8lWUphd?=
+ =?us-ascii?Q?TaWJ1iUFmYlFCKSrr+niy4kgY/c91pSfv72nkfc+hsbYcMKPSJN8WHqxKqcU?=
+ =?us-ascii?Q?bcANy72EYMH/wwHzbF9K+y04tRH1te/vCn32jXCktodyVM+JMJRS3f6zWNVP?=
+ =?us-ascii?Q?9Q2fy3OrAFQSuTQYJ/HRVXBVifo+cDC9NWfhV3mizMv/afxm2NqeDMci5Ddb?=
+ =?us-ascii?Q?qHh+4lgW13sgX+RinmNnOOkmp9+jfNti8I6h6guCf/dVcZN4r0OVLrglU2M/?=
+ =?us-ascii?Q?c0LQaZPLFvwKPX3i/lNOMqmWL4BiIx0Ywx+wv0Yn8d+De7SNwg=3D=3D?=
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BN9PR11MB5276.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(376014)(7416014)(1800799024)(366016)(38070700018);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?gRPKz5TPvpnO12+kWhGlM7QtKtsBKOIXpoe68wtJ6KD+XNVZyxWPKTelS0fg?=
+ =?us-ascii?Q?EPiozsq3wMJG6u0VWZQy/807vo9bUnVa0lsIj70F8w9pbCv2RSeAoa8rSYWz?=
+ =?us-ascii?Q?Bh7IJ4YjVgTbVewG24DVuev0D/IMs2nDoykCJMWbxSP9AzyqEWhm31B4Gsl6?=
+ =?us-ascii?Q?ye7ppG/8IpJ7e6wjPaYzL6rsI3bLf1GtQfTn2dlkd6L5e75nIty1iQWqaROu?=
+ =?us-ascii?Q?wKNVvBVaJwU/aJWDaCevBuEuLzU4uG3a4N29FMTgStTrRJB81GQAN+8UdRDx?=
+ =?us-ascii?Q?1AnvJWSB9Us3EX2gpRExTmJC3608cX8p+V+KKAF5lh/kiuBIf40Q65L3VFs8?=
+ =?us-ascii?Q?B/E0z9bjZBmfAITphG08QtxINePD8hJq98F8aMu/aBsPFf6Se+JD7fRQFRWV?=
+ =?us-ascii?Q?SSatMjVOF4KjuAUVh489vju5bGv7FXjL5O0XTLrojypqRY3zeUCYLXpbjjV2?=
+ =?us-ascii?Q?pFdjuAeH9Qnj72ncNOmkz28Ti0F0zXybCVxoE+vJa+5iNsNWZZxcOXxnxZW7?=
+ =?us-ascii?Q?wsVRONOLdW+LYkgzdaK6iZbHvF7x2Mj6DEXh0GeWFn6IToyt49s8N6Mp8Vko?=
+ =?us-ascii?Q?fVrcFN2QbyiEpi77shuP1SsWsbppYYUY6wsQ1UABMcledmvXnhFHuDSEqPR7?=
+ =?us-ascii?Q?u0otvOqzjJ0r1QJRD08uncjE0oUU6jL2prcHsphgYFbu+7x3DUbzDiVtRAze?=
+ =?us-ascii?Q?DgotbCUFyg0WtUIuorr1z3YoakL/D2ZpLFJYlzIsAVdVild7ysb/S4Eww5HR?=
+ =?us-ascii?Q?wzkbhs2dwWseCwzwSka3F7Sb5v2f1hohGqgafsM+mWhFlLwZOSRkIl+d6PYh?=
+ =?us-ascii?Q?ooc6Q0EvPhBG1pqxjNLxuaeXw59K0AFexMCtDIvELuvapqxOaSOKwW8+nVzB?=
+ =?us-ascii?Q?KG+rCC6vET6ifodvVJkokzR0yjyMdqHTaBV86vdteXUfHJDwyJNep7+MmMgw?=
+ =?us-ascii?Q?4aRLauZ5QsMJYPYRzdh+/q1ZiFrRYI6VBWfaaN6z9/iZrsRyb6UwIgOamOYw?=
+ =?us-ascii?Q?JjGamGdv+tvWoCnELkaQbfydcLao8xVFr9zIMcyMeEczGqSA6nCcVErF7NAB?=
+ =?us-ascii?Q?/fDLhvbmE66dBv/WJyeL1Cwg2TfSlY1xzyu5xlzuCfnygFw8oxF5k6sb6pAV?=
+ =?us-ascii?Q?WXklN+M8/Taqt5Vu+Ze3w/qoTTUm8+ZpR/uAqMqqbPnH0R9+zQOvEv0XkfAW?=
+ =?us-ascii?Q?R7wDGLIessF4GhWcyOd9J1YpywNnq5UINiq4y56nZ1YEcP2u0nGSZWls4vVO?=
+ =?us-ascii?Q?6ZpaWmxeNSuhRN54hSyAurzXArWUFBH/I+rPHRbffoWXD4A2CBAnB/L9j0d+?=
+ =?us-ascii?Q?KKDaU7XCVwHEy0mjWc+uS8DjF2IfkYcHEbgX8PTyqLjA6E3KACMm40LVaIN9?=
+ =?us-ascii?Q?u1K4V2WR6/lC4+tEs85RvD8z+aNqZhcYGnSMJsky3e5eWq993+CHa84RIJUb?=
+ =?us-ascii?Q?fTlnId7MTf1rWhITOg9SavNoh30QPs/+IyQSA6Evwl9Iowvx2YmGelCB5V/L?=
+ =?us-ascii?Q?7WArvJ9FazlkxI7u+57FjnLmAbUMGZj9ZHzMKzE2E+qzQkEdpAOPi33XvjkD?=
+ =?us-ascii?Q?YlzstlFUtuzqKlQPLDhWNuEa+wVOVwg22q0yJagK?=
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <49226b61-e7d3-477f-980b-30567eb4d069@amd.com>
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: BN9PR11MB5276.namprd11.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 475ad5f7-14ad-4923-215d-08dccbe815bf
+X-MS-Exchange-CrossTenant-originalarrivaltime: 03 Sep 2024 07:14:43.7061
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 46c98d88-e344-4ed4-8496-4ed7712e255d
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: sXwisxXT6vCI2Mfy1+SHHYWt3uO2Br8h6ovE4rt+2mrYES5FFkN9iEhqOy/sdvTkAge/WCQMPZlLhc7r9o39Fw==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH8PR11MB8107
+X-OriginatorOrg: intel.com
 
-On Mon, Sep 02, 2024 at 12:22:56PM +1000, Alexey Kardashevskiy wrote:
-> 
-> 
-> On 31/8/24 02:57, Xu Yilun wrote:
-> > On Fri, Aug 23, 2024 at 11:21:27PM +1000, Alexey Kardashevskiy wrote:
-> > > Currently private MMIO nested page faults are not expected so when such
-> > > fault occurs, KVM tries moving the faulted page from private to shared
-> > > which is not going to work as private MMIO is not backed by memfd.
-> > > 
-> > > Handle private MMIO as shared: skip page state change and memfd
-> > 
-> > This means host keeps the mapping for private MMIO, which is different
-> > from private memory. Not sure if it is expected, and I want to get
-> > some directions here.
-> 
-> There is no other translation table on AMD though, the same NPT. The
+> From: Jason Gunthorpe <jgg@nvidia.com>
+> Sent: Friday, August 30, 2024 9:55 PM
+>=20
+> On Fri, Aug 30, 2024 at 07:52:41AM +0000, Tian, Kevin wrote:
+>=20
+> > But according to above description S2FWB cannot 100% guarantee it
+> > due to PCI No Snoop. Does it suggest that we should only allow nesting
+> > only for CANWBS, or disable/hide PCI No Snoop cap from the guest
+> > in case of S2FWB?
+>=20
+> ARM has always had an issue with no-snoop and VFIO. The ARM
+> expectation is that VFIO/VMM would block no-snoop in the PCI config
+> space.
+>=20
+> From a VM perspective, any VMM on ARM has to take care to do this
+> today already.
+>=20
+> For instance a VMM could choose to only assign devices which never use
+> no-snoop, which describes almost all of what people actually do :)
+>=20
+> The purpose of S2FWB is to keep that approach working. If the VMM has
+> blocked no-snoop then S2FWB ensures that the VM can't use IOPTE bits
+> to break cachability and it remains safe.
+>=20
+> From a VFIO perspective ARM has always had a security hole similer to
+> what Yan is trying to fix on Intel, that is a separate pre-existing
+> topic. Ideally the VFIO kernel would block PCI config space no-snoop
+> for alot of cases.
+>=20
 
-Sorry for not being clear, when I say "host mapping" I mean host
-userspace mapping (host CR3 mapping). By using guest_memfd, there is no
-host CR3 mapping for private memory. I'm wondering if we could keep host
-CR3 mapping for private MMIO.
-
-> security is enforced by the RMP table. A device says "bar#x is private" so
-> the host + firmware ensure the each corresponding RMP entry is "assigned" +
-> "validated" and has a correct IDE stream ID and ASID, and the VM's kernel
-> maps it with the Cbit set.
-> 
-> >  From HW perspective, private MMIO is not intended to be accessed by
-> > host, but the consequence may varies. According to TDISP spec 11.2,
-> > my understanding is private device (known as TDI) should reject the
-> > TLP and transition to TDISP ERROR state. But no further error
-> > reporting or logging is mandated. So the impact to the host system
-> > is specific to each device. In my test environment, an AER
-> > NonFatalErr is reported and nothing more, much better than host
-> > accessing private memory.
-> 
-> afair I get an non-fatal RMP fault so the device does not even notice.
-> 
-> > On SW side, my concern is how to deal with mmu_notifier. In theory, if
-> > we get pfn from hva we should follow the userspace mapping change. But
-> > that makes no sense. Especially for TDX TEE-IO, private MMIO mapping
-> > in SEPT cannot be changed or invalidated as long as TDI is running.
-> 
-> > Another concern may be specific for TDX TEE-IO. Allowing both userspace
-> > mapping and SEPT mapping may be safe for private MMIO, but on
-> > KVM_SET_USER_MEMORY_REGION2,  KVM cannot actually tell if a userspace
-> > addr is really for private MMIO. I.e. user could provide shared memory
-> > addr to KVM but declare it is for private MMIO. The shared memory then
-> > could be mapped in SEPT and cause problem.
-> 
-> I am missing lots of context here. When you are starting a guest with a
-> passed through device, until the TDISP machinery transitions the TDI into
-> RUN, this TDI's MMIO is shared and mapped everywhere. And after
-
-Yes, that's the situation nowadays. I think if we need to eliminate
-host CR3 mapping for private MMIO, a simple way is we don't allow host
-CR3 mapping at the first place, even for shared pass through. It is
-doable cause:
-
- 1. IIUC, host CR3 mapping for assigned MMIO is only used for pfn
-    finding, i.e. host doesn't really (or shouldn't?) access them.
- 2. The hint from guest_memfd shows KVM doesn't have to rely on host
-    CR3 mapping to find pfn.
-
-> transitioning to RUN you move mappings from EPT to SEPT?
-
-Mostly correct, TDX move mapping from EPT to SEPT after LOCKED and
-right before RUN.
-
-> 
-> > So personally I prefer no host mapping for private MMIO.
-> 
-> Nah, cannot skip this step on AMD. Thanks,
-
-Not sure if we are on the same page. I assume from HW perspective, host
-CR3 mapping is not necessary for NPT/RMP build?
-
-Thanks,
-Yilun
-
-> 
-> 
-> > 
-> > Thanks,
-> > Yilun
-> > 
-> > > page state tracking.
-> > > 
-> > > The MMIO KVM memory slot is still marked as shared as the guest can
-> > > access it as private or shared so marking the MMIO slot as private
-> > > is not going to help.
-> > > 
-> > > Signed-off-by: Alexey Kardashevskiy <aik@amd.com>
-> > > ---
-> > >   arch/x86/kvm/mmu/mmu.c | 6 +++++-
-> > >   1 file changed, 5 insertions(+), 1 deletion(-)
-> > > 
-> > > diff --git a/arch/x86/kvm/mmu/mmu.c b/arch/x86/kvm/mmu/mmu.c
-> > > index 928cf84778b0..e74f5c3d0821 100644
-> > > --- a/arch/x86/kvm/mmu/mmu.c
-> > > +++ b/arch/x86/kvm/mmu/mmu.c
-> > > @@ -4366,7 +4366,11 @@ static int __kvm_faultin_pfn(struct kvm_vcpu *vcpu, struct kvm_page_fault *fault
-> > >   {
-> > >   	bool async;
-> > > -	if (fault->is_private)
-> > > +	if (fault->slot && fault->is_private && !kvm_slot_can_be_private(fault->slot) &&
-> > > +	    (vcpu->kvm->arch.vm_type == KVM_X86_SNP_VM))
-> > > +		pr_warn("%s: private SEV TIO MMIO fault for fault->gfn=%llx\n",
-> > > +			__func__, fault->gfn);
-> > > +	else if (fault->is_private)
-> > >   		return kvm_faultin_pfn_private(vcpu, fault);
-> > >   	async = false;
-> > > -- 
-> > > 2.45.2
-> > > 
-> > > 
-> 
-> -- 
-> Alexey
-> 
+Make sense. It'd be helpful putting some words in the commit msg too.
