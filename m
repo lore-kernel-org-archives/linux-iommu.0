@@ -1,57 +1,185 @@
-Received: from verein.lst.de (verein.lst.de [213.95.11.211])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-wm1-f54.google.com (mail-wm1-f54.google.com [209.85.128.54])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 95D061C62B1
-	for <iommu@lists.linux.dev>; Tue,  3 Sep 2024 07:35:25 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=213.95.11.211
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B99311DAC7D
+	for <iommu@lists.linux.dev>; Tue,  3 Sep 2024 07:57:07 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.54
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1725348926; cv=none; b=XPrkrQzQqJA9+KB4SaiueIJv8Y4NW5mcXHxQFSzLf6AemiuwgnRkqRi0aboQJd+5D5UobQAgScyyjRqsE0/dl5niMU2ECqg08AqGMw0dIcRl+e6OD24DfRKxCXrxuqra7EP9fz2/gL4nHLomY/AF7U6FqDNCCUck3ujPOee9GKc=
+	t=1725350229; cv=none; b=Wi2TVb8XwxIuVhvddeDMPHZ/ciA4nUvqv//FrcXbjGm+K16OQ1BFJ3tKN8e6/ZlFMlxoTi4RUqDtHiyvYgoaMXfhhoDPuc7icRsPJTqudhd+Dl+olk0r/eAbxg63jwbuYh8dLjHWYsGQ+0x1Tefx4QCB4O2L4ESCfg2G/Zm9+CE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1725348926; c=relaxed/simple;
-	bh=L5dtt8qQfTMhLLtafcf0rW50PFnHUJ9iWp786DZnYaQ=;
+	s=arc-20240116; t=1725350229; c=relaxed/simple;
+	bh=bLFrm8+W36cFU2HdRdXUPsjNB7gq91ms8m5UZQZPs/g=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=J0x5vfEBlLoClm7bX6R6mU16DqvMEp4iaUdWYbdpmUUGmLYwOK2+j5Nw0GU/KNz9BeXk/0dei8Jroh6HtKh2IPDUuhf382wor1mZh9Ah9GUt3kLZqJ69PKu7N3s8z1I4XuBaGmd5A+RSPfLPEn9BLWot82ESHrCZWuyTM0+7wTo=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=lst.de; spf=pass smtp.mailfrom=lst.de; arc=none smtp.client-ip=213.95.11.211
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=lst.de
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=lst.de
-Received: by verein.lst.de (Postfix, from userid 2407)
-	id D800C227A87; Tue,  3 Sep 2024 09:35:21 +0200 (CEST)
-Date: Tue, 3 Sep 2024 09:35:21 +0200
-From: Christoph Hellwig <hch@lst.de>
-To: Chen Yu <yu.c.chen@intel.com>
-Cc: Christoph Hellwig <hch@lst.de>,
-	Marek Szyprowski <m.szyprowski@samsung.com>,
-	Robin Murphy <robin.murphy@arm.com>, Baolu Lu <baolu.lu@intel.com>,
-	Kevin Tian <kevin.tian@intel.com>, iommu@lists.linux.dev,
-	linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] dma-direct: fix the page free when it is not
- addressable
-Message-ID: <20240903073521.GA2269@lst.de>
-References: <20240831110119.200377-1-yu.c.chen@intel.com>
+	 Content-Type:Content-Disposition:In-Reply-To; b=kwLB7ljMkvSmWBn7ObIZ204cCQ4EPhzhTD0dDHlHTdf6nG/EvARa6TMzYNk9DQluFg9Zq5Ib4Yn72Ms6XduPeEo0XpYTdfib1SuZglC/ZSOaH9CRilVZhgev6zI0W1KLONFrlv13lqsDZW42pRJDXHK9CspZwChCvWt3r7NOAP8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=ZnuqnHAj; arc=none smtp.client-ip=209.85.128.54
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="ZnuqnHAj"
+Received: by mail-wm1-f54.google.com with SMTP id 5b1f17b1804b1-42ba8928f1dso111275e9.1
+        for <iommu@lists.linux.dev>; Tue, 03 Sep 2024 00:57:07 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20230601; t=1725350226; x=1725955026; darn=lists.linux.dev;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :mime-version:references:message-id:subject:cc:to:from:date:from:to
+         :cc:subject:date:message-id:reply-to;
+        bh=EpqgvHYsrTqtiBbD2gubTtjEbMzyUsaQNI2kDwROGw4=;
+        b=ZnuqnHAjb7+lrNwPOhLhdA2JKB2kvffia+aMxY98xxoBYz7/NTeJOt3fAxXXq1E6/W
+         mHP6DTn1k9nHE1Hh3+pG5rSv6DfnDGhLzCCacGgrtORCaQiztBtjUreCbr+7D9VpNs9A
+         YT7YR9nQW4Y2CkU+7KPB7SgHRgcZHZdMxlNEQ+OKfE695tjyBBeIiw3sQEHseLRjKQUU
+         3ICcHmrUjB7ZPqWuOw4fpGz+RnrhDo8Hj05Y6WLNpdnCJeMhL2aUGME+bBbW9GBxmdK9
+         4Ot1/sx1LvrAXxDpOLg/dkSPul5keRZngBjAtBiNfN4qwi57Klmy50p5AbTMjDK5A0aU
+         Sbog==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1725350226; x=1725955026;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :mime-version:references:message-id:subject:cc:to:from:date
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=EpqgvHYsrTqtiBbD2gubTtjEbMzyUsaQNI2kDwROGw4=;
+        b=bg7l9OSsKOG1gR9vZCIcP5MQR9xO8j7Zi6rSXx8n0g8BIFGEcY0GgD1AmoQ9O4OqYa
+         mx7YTX5WOsgIFvBvUYy8xCaW3cGdprbe6JzcC2eeld4s5VaI6HFNUwLUav/FyCEaRBd1
+         B9dxGn66yy1RUmtGj04cv5E2L8PAJRd0Rx6fh/TJk5oeDxElmgqQT6BqX5BaRgCJwJ+G
+         +q0ZaaNurzQ9Ty3qWnRskXElBNEbSsUTeVDPniohYWsdTg8alVmmdrmZ92vKMzIOzGN6
+         NI4Vd63QpoGg73XT5tRVnvjk5cd5Cxjuh4wwcuO/NzKwmIeIECll54nXrfvFzPpHOqvq
+         jg3A==
+X-Forwarded-Encrypted: i=1; AJvYcCW8nkfFpdHmnnQt2mrsrPD4neHG3r4/PNMguwLGc2u2L3anrA+eJvMX6MxL/0x2BxyC/ykL9Q==@lists.linux.dev
+X-Gm-Message-State: AOJu0YzpM9UHCqCPOhkD4g0lz40apmedMRuwVwUSO7zvW7mLXR9BsbMU
+	/qH6fIpRPVrTTos7a49clMj/cQBeskfLaPB9hpuJjrmPK6/7lhUzyma8jV3sxg==
+X-Google-Smtp-Source: AGHT+IHgA6nmHG1PnRdTR7J4T9ZeBV+88BPig2e5l9HlhMUvcfgRj5uIoCkj4peI2Tcgr2az2ArssQ==
+X-Received: by 2002:a05:600c:1d9f:b0:428:e6eb:1340 with SMTP id 5b1f17b1804b1-42c33a5fb71mr3188345e9.4.1725350225593;
+        Tue, 03 Sep 2024 00:57:05 -0700 (PDT)
+Received: from google.com (109.36.187.35.bc.googleusercontent.com. [35.187.36.109])
+        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-42bb5969234sm165927345e9.17.2024.09.03.00.57.04
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 03 Sep 2024 00:57:05 -0700 (PDT)
+Date: Tue, 3 Sep 2024 07:57:01 +0000
+From: Mostafa Saleh <smostafa@google.com>
+To: Jason Gunthorpe <jgg@nvidia.com>
+Cc: acpica-devel@lists.linux.dev, Hanjun Guo <guohanjun@huawei.com>,
+	iommu@lists.linux.dev, Joerg Roedel <joro@8bytes.org>,
+	Kevin Tian <kevin.tian@intel.com>, kvm@vger.kernel.org,
+	Len Brown <lenb@kernel.org>, linux-acpi@vger.kernel.org,
+	linux-arm-kernel@lists.infradead.org,
+	Lorenzo Pieralisi <lpieralisi@kernel.org>,
+	"Rafael J. Wysocki" <rafael@kernel.org>,
+	Robert Moore <robert.moore@intel.com>,
+	Robin Murphy <robin.murphy@arm.com>,
+	Sudeep Holla <sudeep.holla@arm.com>, Will Deacon <will@kernel.org>,
+	Alex Williamson <alex.williamson@redhat.com>,
+	Eric Auger <eric.auger@redhat.com>,
+	Jean-Philippe Brucker <jean-philippe@linaro.org>,
+	Moritz Fischer <mdf@kernel.org>,
+	Michael Shavit <mshavit@google.com>,
+	Nicolin Chen <nicolinc@nvidia.com>, patches@lists.linux.dev,
+	Shameerali Kolothum Thodi <shameerali.kolothum.thodi@huawei.com>
+Subject: Re: [PATCH v2 2/8] iommu/arm-smmu-v3: Use S2FWB when available
+Message-ID: <ZtbBTX96OWdONhaQ@google.com>
+References: <0-v2-621370057090+91fec-smmuv3_nesting_jgg@nvidia.com>
+ <2-v2-621370057090+91fec-smmuv3_nesting_jgg@nvidia.com>
+ <ZtHhdj6RAKACBCUG@google.com>
+ <20240830164019.GU3773488@nvidia.com>
+ <ZtWFkR0eSRM4ogJL@google.com>
+ <20240903000546.GD3773488@nvidia.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <20240831110119.200377-1-yu.c.chen@intel.com>
-User-Agent: Mutt/1.5.17 (2007-11-01)
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20240903000546.GD3773488@nvidia.com>
 
-On Sat, Aug 31, 2024 at 07:01:19PM +0800, Chen Yu wrote:
-> When the CMA allocation succeeds but isn't addressable, its
-> buffer has already been released and the page is set to NULL.
-> So later when the normal page allocation succeeds but isn't
-> addressable, __free_pages() should be used to free that normal
-> page rather than freeing continuous page(CMA).
+On Mon, Sep 02, 2024 at 09:05:46PM -0300, Jason Gunthorpe wrote:
+> On Mon, Sep 02, 2024 at 09:29:53AM +0000, Mostafa Saleh wrote:
+> > On Fri, Aug 30, 2024 at 01:40:19PM -0300, Jason Gunthorpe wrote:
+> > > On Fri, Aug 30, 2024 at 03:12:54PM +0000, Mostafa Saleh wrote:
+> > > > > +	/*
+> > > > > +	 * If for some reason the HW does not support DMA coherency then using
+> > > > > +	 * S2FWB won't work. This will also disable nesting support.
+> > > > > +	 */
+> > > > > +	if (FIELD_GET(IDR3_FWB, reg) &&
+> > > > > +	    (smmu->features & ARM_SMMU_FEAT_COHERENCY))
+> > > > > +		smmu->features |= ARM_SMMU_FEAT_S2FWB;
+> > > > I think that’s for the SMMU coherency which in theory is not related to the
+> > > > master which FWB overrides, so this check is not correct.
+> > > 
+> > > Yes, I agree, in theory.
+> > > 
+> > > However the driver today already links them together:
+> > > 
+> > > 	case IOMMU_CAP_CACHE_COHERENCY:
+> > > 		/* Assume that a coherent TCU implies coherent TBUs */
+> > > 		return master->smmu->features & ARM_SMMU_FEAT_COHERENCY;
+> > > 
+> > > So this hunk was a continuation of that design.
+> > > 
+> > > > What I meant in the previous thread that we should set FWB only for coherent
+> > > > masters as (in attach s2):
+> > > > 	if (smmu->features & ARM_SMMU_FEAT_S2FWB && dev_is_dma_coherent(master->dev)
+> > > > 		// set S2FWB in STE
+> > > 
+> > > I think as I explained in that thread, it is not really correct
+> > > either. There is no reason to block using S2FWB for non-coherent
+> > > masters that are not used with VFIO. The page table will still place
+> > > the correct memattr according to the IOMMU_CACHE flag, S2FWB just
+> > > slightly changes the encoding.
+> > 
+> > It’s not just the encoding that changes, as
+> > - Without FWB, stage-2 combine attributes
+> > - While with FWB, it overrides them.
+> 
+> You mean there is some incomming attribute in the transaction
+> (obviously not talking PCI here) and S2FWB combines with that?
 
-So the patch is obviously correct and probably useful, but I don't think
-the existing code is buggy.
+Yes, stuff as cacheability (as defined by Arm spec)
+I am not sure about PCI, but according to the spec:
+	“PCIe does not contain memory type attributes, and each transaction
+	takes a system-defined memory type when it progresses into the system”
 
-dma_free_contiguous calls into cma_release, which uses cma_pages_valid to
-check if the page belongs to the CMA pool and retuns early if not,
-letting dma_free_contiguous fall back to __free_pages eventually.
+> 
+> > So a cacheable mapping in stage-2 can lead to a non-cacheable
+> > (or with different cachableitiy attributes) transaction based on the
+> > input. I am not sure though if there is such case in the kernel.
+> 
+> If the kernel supplies IOMMU_CACHE then the kernel also skips all the
+> cache flushing. So it would be a functional problem if combining was
+> causing a non-cachable access through a IOMMU_CACHE S2 already. The
+> DMA API would fail if that was the case.
 
-What am I missing here?
+Correct, but it’s not just about cacheable/non-cacheable, as I mentioned
+it’s about other attributes also, this is a very niche case, and again I
+am not sure if there are devices affected in the kernel, but I just
+wanted to highlight it’s not just a different encoding for stage-2.
 
+> 
+> > > If anything should be changed then it would be the above
+> > > IOMMU_CAP_CACHE_COHERENCY test, and I don't know if
+> > > dev_is_dma_coherent() would be correct there, or if it should do some
+> > > ACPI inspection or what.
+> > 
+> > I agree, I believe that this assumption is not accurate, I am not sure
+> > what is the right approach here, but in concept I think we shouldn’t
+> > enable FWB for non-coherent devices (using dev_is_dma_coherent() or
+> > other check)
+> 
+> The DMA API requires that the cachability rules it sets via
+> IOMMU_CACHE are followed. In this way the stricter behavior of S2FWB
+> is a benefit, not a draw back.
+> 
+> I'm still not seeing a problm here??
+
+Basically, I believe we shouldn’t set FWB blindly just because it’s supported,
+I don’t see how it’s useful for stage-2 only domains.
+
+And I believe making assumptions about VFIO (which actually is not correctly
+enforced at the moment) is fragile, and we should only set FWB for coherent
+devices in nested setup only where the VMM(or hypervisor) knows better than
+the VM.
+
+Thanks,
+Mostafa
+
+> 
+> Jason
