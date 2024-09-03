@@ -1,155 +1,107 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-pj1-f74.google.com (mail-pj1-f74.google.com [209.85.216.74])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 76C741AACA;
-	Tue,  3 Sep 2024 15:34:54 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A6A1B2A1C5
+	for <iommu@lists.linux.dev>; Tue,  3 Sep 2024 15:56:18 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.216.74
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1725377694; cv=none; b=cia2+ErG+TxgLJ4KaPkun1N6Yh9OFR04cqDyKUB6Wb44eW31e+GXxKRaLBk6IuiVFI3NJiPu/YWPHkq+o6brHTG4dEFWrTrYVh+FCeQo2dZqcTVgfxBHEfmJ5IVY64aIJlr+ps0Jx7j5D2I0Jkckqsaat1HqLQT4yjEykDGM38o=
+	t=1725378980; cv=none; b=rHbAPvwpiHMt/ZE6Dw6yL8BYTATLfc7gWzhNOdTORO1ouSlpCvioUFahXeMk6QrM0i8Iydp0i786A4O4mLzKyWh829BiVOHRGXlWKBsL0mojCbzREiQ377OufJFGff1Snmd8M3bke7FOh3wIFW6KYwLXwe+xcUoYqv5bcjR0jUc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1725377694; c=relaxed/simple;
-	bh=g6ObcrgDOboADgb9kxpvqEpUpqwiJLyBdTwwo5QBF3w=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=t5xNanDfzptdr+FT6tSvl8qMSI91y1LisrvdoB50VrjsnG3gQRt8H2GXxXM70m251qx4mwlomygzmgECedwSyD7jgxssdZnZDz9HZR5Jl5NDrzYCs5T0Jt3Bx6AZG+ci1CcSvuear27coNXCIAHv8M9eVN4XSSe7Xupl1AUihM4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=lwCJbWvl; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1725378980; c=relaxed/simple;
+	bh=Mzgy4Zfk7DBRAXkLZqlzskQY/R1zzzcOZXHvCA6PQXE=;
+	h=Date:In-Reply-To:Mime-Version:References:Message-ID:Subject:From:
+	 To:Cc:Content-Type; b=ZQwDYpDxkAnGzvcaLjMkfVg7QeUOKrq+As4tK4I+Bk/jUZoiB/+JptwQnkfswNMckTTtNqiEAqlR5vHugBNPVcww5KcyqsijGVqcE6QQ6Du1FG3mcL3Q93ShnlzvSZ7Xpb4QmI4TZHcAcyptpEM844nCQS8XAKDQJGA/+jaXX2E=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=flex--seanjc.bounces.google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=dupU4j2f; arc=none smtp.client-ip=209.85.216.74
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=flex--seanjc.bounces.google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="lwCJbWvl"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0ED45C4CEC4;
-	Tue,  3 Sep 2024 15:34:37 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1725377694;
-	bh=g6ObcrgDOboADgb9kxpvqEpUpqwiJLyBdTwwo5QBF3w=;
-	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-	b=lwCJbWvlDhTrMoiODgJrGz4VH5T1ut2MZIAiJShiRwGLg2wCHJ3m4zQQQ6gND5PiB
-	 4/Uw1jWtHtWecvL+0nAE2Hah+5FEu+5A2n203Xd/s5JVvkn+ANobATSuCFjKf/nZMG
-	 xrrrdfhPHCned2wjT1yeGRZzzbVk7AjnLdbm35wK/fhBfqoYSo+6r/J4UfBVxxExnk
-	 fdj7cdu9QegUxWGZsAJWo91zXIpYkBtP6G1+Rf/jdugGhjjcvgE9qTVjV3qX+sQknt
-	 P8H0L9UPyT1AAwMXxcHMnzXxs3PG0Z4SWPFq5L7LPCszBq2zAQUzvq1o8xaFXn9dSR
-	 mlZbFJ9P2SOnw==
-Message-ID: <19902a34-e02d-4ffc-a2f7-64ccdf06ded6@kernel.org>
-Date: Tue, 3 Sep 2024 17:34:31 +0200
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="dupU4j2f"
+Received: by mail-pj1-f74.google.com with SMTP id 98e67ed59e1d1-2d8859d6e9dso3377117a91.1
+        for <iommu@lists.linux.dev>; Tue, 03 Sep 2024 08:56:18 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20230601; t=1725378978; x=1725983778; darn=lists.linux.dev;
+        h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
+         :date:from:to:cc:subject:date:message-id:reply-to;
+        bh=GWzaB2zVBiJq7ajI0wtzRO85aFP0qg9gF2s4BJREzmU=;
+        b=dupU4j2fSjbuRPhcSIPlTG6y39f9Ks5/5xHvFw5evc1o4wnPZKH4kucF9MaEuov7a/
+         RAu2dv/elaH+iBDQ/NBk/XOdE/J5wEqo1sPpZhNJQhieC20RQqq7RsOfjiDxMgoblhAA
+         4VZmwIUvW6eyigz9Ki81A2rRn7XFnqcmplP2rbjDlfpc9GNvbXH/uYJ+uV9gl2vP5Ssc
+         1ZZ7U5X4C4dprj8sCpB4eTARXWxoWi8a9JcWa2WBkDeXgNUi1fwXGYDLuhK1y+t+UYq7
+         9F8a6hW4wOLwjg4/lrTZqEl1vlxXH1LBrXVwJZy6m/7yIY7R4v4VuzapUNXGu7suRSou
+         AlOQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1725378978; x=1725983778;
+        h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
+         :date:x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=GWzaB2zVBiJq7ajI0wtzRO85aFP0qg9gF2s4BJREzmU=;
+        b=wzlTH+sjZEN8tsc/nZNxhpHaa3/SRssnb1lkZnp243lN6cCITXMqizugpDGxB9Lv+m
+         b8ors3sRpnEZNI5ob0nxlb7ac1U6cLKk7pJxToKCXsVa+xDwGP3NS2CI+KNPw7K0cKT8
+         C8WWfopxHBvFnvxHETWylUt9fb5wLJRTzTTxTSRDDrHX3BKQoCO4k7IXiGEVA5U9HZLR
+         dPxYM4AeMae70z53wYzWTk9jKcgjL1OwAq0ViptHgJlLcIgAZZ7ZnW1eWr8WxwOgTNaR
+         lCTeH/u3dD8CXnL95e72yWDmOiJmBVqogO1nU1vPj7x6o+FVgOeFI7RAqS1uC9aMOW6j
+         TjXg==
+X-Forwarded-Encrypted: i=1; AJvYcCVw9ykRTfPAyZn6+TarN0HpOVhsi1f5Tl144tzY1vsiOvtOfPNFhlCg0a3qoB0uxr2XF/tW8w==@lists.linux.dev
+X-Gm-Message-State: AOJu0YzsIPg7ZUpYt/g/74goZCloKNLunQr2L5D/XK2s8//jSyFn40S7
+	r32m/dLR8NBu5432iytalXr+jR4fhPzfUB2m+azF06tMjrBE89tfRIvvTDi/KUtF7cHDB78D9Rq
+	4bw==
+X-Google-Smtp-Source: AGHT+IEU1849ih3tqcS05odvzRPeJyVpF9Fkthp9R0njzfPmkPWPuM+m0PM+Icyr5mRhgGWG26r/jNAQht0=
+X-Received: from zagreus.c.googlers.com ([fda3:e722:ac3:cc00:7f:e700:c0a8:5c37])
+ (user=seanjc job=sendgmr) by 2002:a17:90b:3013:b0:2d8:9dd1:d9aa with SMTP id
+ 98e67ed59e1d1-2d89dd1da1emr23806a91.8.1725378977841; Tue, 03 Sep 2024
+ 08:56:17 -0700 (PDT)
+Date: Tue, 3 Sep 2024 08:56:16 -0700
+In-Reply-To: <20240823132137.336874-1-aik@amd.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
-MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH 11/22] pinctrl: qcom: sa8775p: Add support for SA8255p SoC
-To: Nikunj Kela <quic_nkela@quicinc.com>
-Cc: andersson@kernel.org, konradybcio@kernel.org, robh@kernel.org,
- krzk+dt@kernel.org, conor+dt@kernel.org, rafael@kernel.org,
- viresh.kumar@linaro.org, herbert@gondor.apana.org.au, davem@davemloft.net,
- sudeep.holla@arm.com, andi.shyti@kernel.org, tglx@linutronix.de,
- will@kernel.org, joro@8bytes.org, jassisinghbrar@gmail.com, lee@kernel.org,
- linus.walleij@linaro.org, amitk@kernel.org, thara.gopinath@gmail.com,
- broonie@kernel.org, wim@linux-watchdog.org, linux@roeck-us.net,
- robin.murphy@arm.com, cristian.marussi@arm.com, rui.zhang@intel.com,
- lukasz.luba@arm.com, vkoul@kernel.org, quic_gurus@quicinc.com,
- agross@kernel.org, bartosz.golaszewski@linaro.org, quic_rjendra@quicinc.com,
- robimarko@gmail.com, linux-arm-msm@vger.kernel.org,
- devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
- linux-pm@vger.kernel.org, linux-crypto@vger.kernel.org,
- arm-scmi@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
- linux-i2c@vger.kernel.org, iommu@lists.linux.dev,
- linux-gpio@vger.kernel.org, linux-serial@vger.kernel.org,
- linux-spi@vger.kernel.org, linux-watchdog@vger.kernel.org,
- kernel@quicinc.com, quic_psodagud@quicinc.com, quic_tsoni@quicinc.com,
- quic_shazhuss@quicinc.com
-References: <20240828203721.2751904-1-quic_nkela@quicinc.com>
- <20240828203721.2751904-12-quic_nkela@quicinc.com>
- <erlzqkxrogk24ugfahfsxrramay6tfhljnxrcfcuhe24pla7k3@lytnz3kmszyj>
- <d15927f9-bd00-4e32-9c25-535c69fe56f6@quicinc.com>
- <f227c799-cf9a-481a-b359-21828d6e8bca@kernel.org>
- <b855f1a9-35c2-4c53-9485-0989b3eb5a6b@quicinc.com>
-From: Krzysztof Kozlowski <krzk@kernel.org>
-Content-Language: en-US
-Autocrypt: addr=krzk@kernel.org; keydata=
- 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 fv0=
-In-Reply-To: <b855f1a9-35c2-4c53-9485-0989b3eb5a6b@quicinc.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Mime-Version: 1.0
+References: <20240823132137.336874-1-aik@amd.com>
+Message-ID: <ZtcxoPl302h77pb9@google.com>
+Subject: Re: [RFC PATCH 00/21] Secure VFIO, TDISP, SEV TIO
+From: Sean Christopherson <seanjc@google.com>
+To: Alexey Kardashevskiy <aik@amd.com>
+Cc: kvm@vger.kernel.org, iommu@lists.linux.dev, linux-coco@lists.linux.dev, 
+	linux-pci@vger.kernel.org, 
+	Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>, 
+	Alex Williamson <alex.williamson@redhat.com>, Dan Williams <dan.j.williams@intel.com>, 
+	pratikrajesh.sampat@amd.com, michael.day@amd.com, david.kaplan@amd.com, 
+	dhaval.giani@amd.com, Santosh Shukla <santosh.shukla@amd.com>, 
+	Tom Lendacky <thomas.lendacky@amd.com>, Michael Roth <michael.roth@amd.com>, 
+	Alexander Graf <agraf@suse.de>, Nikunj A Dadhania <nikunj@amd.com>, Vasant Hegde <vasant.hegde@amd.com>, 
+	Lukas Wunner <lukas@wunner.de>
+Content-Type: text/plain; charset="us-ascii"
 
-On 03/09/2024 17:24, Nikunj Kela wrote:
+On Fri, Aug 23, 2024, Alexey Kardashevskiy wrote:
+> Hi everyone,
 > 
-> On 8/30/2024 2:52 AM, Krzysztof Kozlowski wrote:
->> On 29/08/2024 16:17, Nikunj Kela wrote:
->>> On 8/29/2024 12:29 AM, Krzysztof Kozlowski wrote:
->>>> On Wed, Aug 28, 2024 at 01:37:10PM -0700, Nikunj Kela wrote:
->>>>> SA8255p platform uses the same TLMM block as used in SA8775p,
->>>>> though the pins are split between Firmware VM and Linux VM.
->>>>> let's add SA8255p specific compatible.
->>>> The change suggests devices are fully compatible, but above description
->>>> does not.
->>>>
->>>> This looks conflicting.
->>>>
->>>> Best regards,
->>>> Krzysztof
->>> Hi Krzysztof,
->>>
->>> Thanks for reviewing patches. TLMM HW block is exactly same as used in
->>> SA8775p however ownership of pins can be split between firmware VM and
->>> Linux VM. It is upto devices to decide what pins they want to use in
->>> what VM. I will extend the subject with same description as used in DT
->>> binding.
->> So there is no difference? Then devices should be made compatible with
->> fallback.
->>
->> Best regards,
->> Krzysztof
+> Here are some patches to enable SEV-TIO (aka TDISP, aka secure VFIO)
+> on AMD Turin.
 > 
-> Yes, I get your point now. I will discuss internally. I am leaning
-> towards using sa8775p-tlmm compatible in SA8255p TLMM node so there is
-> no need for adding new compatible. Will drop the two pincontrol related
-> patches from the series in next version if agreed internally.
+> The basic idea is to allow DMA to/from encrypted memory of SNP VMs and
+> secure MMIO in SNP VMs (i.e. with Cbit set) as well.
 > 
+> These include both guest and host support. QEMU also requires
+> some patches, links below.
+> 
+> The patches are organized as:
+> 01..06 - preparing the host OS;
+> 07 - new TSM module;
+> 08 - add PSP SEV TIO ABI (IDE should start working at this point);
+> 09..14 - add KVM support (TDI binding, MMIO faulting, etc);
+> 15..19 - guest changes (the rest of SEV TIO ABI, DMA, secure MMIO).
+> 20, 21 - some helpers for guest OS to use encrypted MMIO
+> 
+> This is based on a merge of
+> ee3248f9f8d6 Lukas Wunner spdm: Allow control of next requester nonce
+> through sysfs
+> 85ef1ac03941 (AMDESE/snp-host-latest) 4 days ago Michael Roth [TEMP] KVM: guest_memfd: Update gmem_prep are hook to handle partially-allocated folios
+> 
+> 
+> Please comment. Thanks.
 
-You need compatible followed by fallback (and therefore drop driver
-change). That's how compatibility is expressed.
-
-
-Best regards,
-Krzysztof
-
+1. Use scripts/get_maintainer.pl
+2. Fix your MUA to wrap closer to 80 chars
+3. Explain the core design, e.g. roles and responsibilities, coordination between
+   KVM, VFIO/IOMMUFD, userspace, etc.
