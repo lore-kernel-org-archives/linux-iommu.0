@@ -1,94 +1,208 @@
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+Received: from mx0a-0031df01.pphosted.com (mx0a-0031df01.pphosted.com [205.220.168.131])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 62F1F1A0BE4
-	for <iommu@lists.linux.dev>; Tue,  3 Sep 2024 09:39:48 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=170.10.133.124
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B74DC1CA6A7
+	for <iommu@lists.linux.dev>; Tue,  3 Sep 2024 12:59:45 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.168.131
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1725356389; cv=none; b=As9T0hiKrgc8GoeNzIjsFlh2B0Dmlt75eLab7O6mIdemhle9GwsTEnnM4RdDOJ1cpp8F0IaUOEOpxuNg2T0n7lhj2TfXNF100C71o0leSFXcWnDptMsiqYjHQN3aInChLYJ9rq+GQSgNLQSlrDdfCT/oiJr7VDKjQ0QrkZLcMfU=
+	t=1725368388; cv=none; b=ll/gN+PcDz9BXjqJEpE+AjpXLVTNoSzEFBOo7W3bvpPWjLQGWO6aiDxbmgRbHrJKPWOuQBP2aqQKPbMNgN9UUUuHwYUNZnBImsICYnFs8sg7SPGnLzTVo6Rfbm7Yk41NvK+q6HRxFrBgIFtMTBEsNXveq1K2Q8mQNvpfnY863ig=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1725356389; c=relaxed/simple;
-	bh=pE3Mr0PnS9xl+CUiCEH2hxI4fWM92/vwv+iNfIiq4l8=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 In-Reply-To:Content-Type:Content-Disposition; b=tq3uFtJ/ksZW6eildbAXpJKN4cfR8dQsaokqHG5aPoYuUktpi/BF/bjyMUwLNjDHqW4MRJWDx6XqQqond8btb/fWGCIoi2+vxi0ETdEybmCllu7yqHzw3kIynKPplCSYGg9R50oYwowzewIq8TUzAZyxYzlqbDSZGNpfzAwYt9s=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=redhat.com; spf=pass smtp.mailfrom=redhat.com; dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b=Hh5kBEjO; arc=none smtp.client-ip=170.10.133.124
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=redhat.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=redhat.com
+	s=arc-20240116; t=1725368388; c=relaxed/simple;
+	bh=jHyzpKqHokvHJ6S6KmoMJTRdJ5y0C642VzrrUor11Ts=;
+	h=Message-ID:Date:MIME-Version:Subject:To:CC:References:From:
+	 In-Reply-To:Content-Type; b=uw+TtR22z0D8guZeN8pwuQc96ebJD1TxYiM8TX6GX2GRaHaSJgrQccDxjBREwXNsQUkU9oSyh0ibqMcmAVbv/u0qBY6gbVIsoF4H7FfxfEODpddoPvT5bJXFckMWZZgmiNLlSCfl/+WGAKrJcUOloECzwDp8XzY4l6VuFyeGCTY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com; spf=pass smtp.mailfrom=quicinc.com; dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b=BP1eNfZt; arc=none smtp.client-ip=205.220.168.131
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=quicinc.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="Hh5kBEjO"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-	s=mimecast20190719; t=1725356387;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 in-reply-to:in-reply-to:references:references;
-	bh=cIxA/7+yR2jXA4ieeKPuD5EUL5lArHR8csGiCMl6eW4=;
-	b=Hh5kBEjOrdKZk3kRJinPc6wdUa5u6DXLTuWECSxYMTKrHHUGqSFrQ2EZzMzn9n3jPjSkDp
-	GC6ifzE63Y1thpL3mpxcPpx/fxnMhjD+tQ5mrxZr3Pk0X0fXkFZ29JbgHWf97tb3WJzpaF
-	VBc2DqBSZXXc3dJ3AutwG9VxR12KmZ0=
-Received: from mail-wr1-f70.google.com (mail-wr1-f70.google.com
- [209.85.221.70]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
- us-mta-34-j_0E7m3xM9eVuyGADtmYug-1; Tue, 03 Sep 2024 05:39:46 -0400
-X-MC-Unique: j_0E7m3xM9eVuyGADtmYug-1
-Received: by mail-wr1-f70.google.com with SMTP id ffacd0b85a97d-374b9617ab0so2221246f8f.3
-        for <iommu@lists.linux.dev>; Tue, 03 Sep 2024 02:39:46 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1725356385; x=1725961185;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=cIxA/7+yR2jXA4ieeKPuD5EUL5lArHR8csGiCMl6eW4=;
-        b=uxUvI7c6xYmp+Khmrvb6Bt+aiBxlDYXdRMLzxlIPfSBFaOPHaoNkzg+2YgShHaEvhn
-         zdA2IDarQD4bUv0DwS3oBS6rxKqC9DIHpImuakZ9NUBgAcz7nGi0ALbP1djHLn4ovX6h
-         pzHGJTwu6fClneNIJbTZykavCGGvtC9+NMduT3mubvmigEjSYxU2jmUAzpURfwRUz2az
-         EFut61xPVE5ZrLGfE4f474T3YJtIMn8ul+tiX08xwQ6H0XCxly/KopJJBpWemzqu2MfT
-         /kW9TcUsxsydCsLJPvcS1Gb71CYYAxoLiKnH7AHZu9iGOOqjHZvVrTqhbtz2mvny3/Pl
-         dkVA==
-X-Gm-Message-State: AOJu0Yzi78aroJjhHBM5JAXiziInj9k1TZS/UFS9/j0ROGZgZpUsDXOb
-	vsCj4RakPOyfSobX7Tc8j2upgYlvnZ5kxun3H6qmPO7jYERgOfC/iEGH0vh2vEhUs1ilwIqkEBJ
-	Ogq9kLV70kAwETGg4iliZYtgAO0c7Jlh9TxThq98Fz2J98dWgem3F
-X-Received: by 2002:a05:600c:1f90:b0:429:dc88:7e65 with SMTP id 5b1f17b1804b1-42bb02ecb7emr124596395e9.12.1725356385059;
-        Tue, 03 Sep 2024 02:39:45 -0700 (PDT)
-X-Google-Smtp-Source: AGHT+IEx9ZT+cp/JOzMdJ0eMMwlRMn2QkU5Mi38V0c6sZIqJTMhc/MD50iSbcQF046e0ymvaKlJlng==
-X-Received: by 2002:a05:600c:1f90:b0:429:dc88:7e65 with SMTP id 5b1f17b1804b1-42bb02ecb7emr124595995e9.12.1725356384137;
-        Tue, 03 Sep 2024 02:39:44 -0700 (PDT)
-Received: from redhat.com ([2a0d:6fc7:441:95c6:9977:c577:f3d1:99e1])
-        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-42bb6df0f41sm164222235e9.19.2024.09.03.02.39.41
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 03 Sep 2024 02:39:43 -0700 (PDT)
-Date: Tue, 3 Sep 2024 05:39:39 -0400
-From: "Michael S. Tsirkin" <mst@redhat.com>
-To: Christoph Hellwig <hch@lst.de>
-Cc: iommu@lists.linux.dev, Marek Szyprowski <m.szyprowski@samsung.com>,
-	Robin Murphy <robin.murphy@arm.com>,
-	Sakari Ailus <sakari.ailus@linux.intel.com>,
-	Bingbu Cao <bingbu.cao@intel.com>, Jason Wang <jasowang@redhat.com>,
-	linux-kernel@vger.kernel.org, linux-alpha@vger.kernel.org,
-	linux-arm-kernel@lists.infradead.org, linux-mips@vger.kernel.org,
-	linux-parisc@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
-	linux-s390@vger.kernel.org, sparclinux@vger.kernel.org,
-	linux-media@vger.kernel.org, virtualization@lists.linux.dev,
-	xen-devel@lists.xenproject.org
-Subject: Re: clearly mark DMA_OPS support as an architecture feature v2
-Message-ID: <20240903053917-mutt-send-email-mst@kernel.org>
-References: <20240828061104.1925127-1-hch@lst.de>
- <20240903072744.GA2082@lst.de>
+	dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b="BP1eNfZt"
+Received: from pps.filterd (m0279865.ppops.net [127.0.0.1])
+	by mx0a-0031df01.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 483BcUfk007584;
+	Tue, 3 Sep 2024 12:59:33 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=quicinc.com; h=
+	cc:content-transfer-encoding:content-type:date:from:in-reply-to
+	:message-id:mime-version:references:subject:to; s=qcppdkim1; bh=
+	gcyjG8QKOoXWSL8QH8MzR7ntKgb2gNkywn39XRQw5Wg=; b=BP1eNfZtuMUUfHfu
+	xpRLG9tB7x3CoQSQtQ8lODh3TnVtvcFaaqrdMRQvPCREVLow834i9seVI5MHwF4Y
+	L9hKH5sXhncDa9VJbifiHPjq0NwanuVLkHj6CPJC7loakY3xGDfrCWsWhBftljGP
+	vujXuBcNJMUnKou8gEQ9bdj3LrTfuEmLR3qyE6yn7ZoeY9NJcdFS3mu7ClmjMEyY
+	WtG0u5bi/EGd4nOZ9dxyEGiRuPzm040DpM7sp0dEHBJ4EDOe7/fbwCRKA6rHnptO
+	162aTP23uefr1J0kXy2cgcP2//XdAgcAF3QWaEh2ZkjSYc95b1tSqFPbPy2MNEQI
+	8aN0AA==
+Received: from nalasppmta05.qualcomm.com (Global_NAT1.qualcomm.com [129.46.96.20])
+	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 41bt4rfcxx-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Tue, 03 Sep 2024 12:59:32 +0000 (GMT)
+Received: from nalasex01c.na.qualcomm.com (nalasex01c.na.qualcomm.com [10.47.97.35])
+	by NALASPPMTA05.qualcomm.com (8.18.1.2/8.18.1.2) with ESMTPS id 483CxV5M026573
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Tue, 3 Sep 2024 12:59:31 GMT
+Received: from [10.214.66.253] (10.80.80.8) by nalasex01c.na.qualcomm.com
+ (10.47.97.35) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1544.9; Tue, 3 Sep 2024
+ 05:59:25 -0700
+Message-ID: <f5121a5f-86f3-4c14-93ed-581b8ef82797@quicinc.com>
+Date: Tue, 3 Sep 2024 18:29:16 +0530
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-In-Reply-To: <20240903072744.GA2082@lst.de>
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: redhat.com
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v14 1/6] iommu/arm-smmu: re-enable context caching in smmu
+ reset operation
+To: Robin Murphy <robin.murphy@arm.com>, <robdclark@gmail.com>,
+        <will@kernel.org>, <joro@8bytes.org>, <jgg@ziepe.ca>,
+        <jsnitsel@redhat.com>, <robh@kernel.org>,
+        <krzysztof.kozlowski@linaro.org>, <quic_c_gdjako@quicinc.com>,
+        <dmitry.baryshkov@linaro.org>, <konrad.dybcio@linaro.org>
+CC: <iommu@lists.linux.dev>, <linux-arm-msm@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>, <linux-kernel@vger.kernel.org>
+References: <20240816174259.2056829-1-quic_bibekkum@quicinc.com>
+ <20240816174259.2056829-2-quic_bibekkum@quicinc.com>
+ <fe5fcd06-ff28-4171-aa22-1bdc1e8510d0@arm.com>
+Content-Language: en-US
+From: Bibek Kumar Patro <quic_bibekkum@quicinc.com>
+In-Reply-To: <fe5fcd06-ff28-4171-aa22-1bdc1e8510d0@arm.com>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 8bit
+X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
+ nalasex01c.na.qualcomm.com (10.47.97.35)
+X-QCInternal: smtphost
+X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
+X-Proofpoint-GUID: saTMxbKunqahZcuz22Pw9UQJvnNCBwCH
+X-Proofpoint-ORIG-GUID: saTMxbKunqahZcuz22Pw9UQJvnNCBwCH
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.293,Aquarius:18.0.1039,Hydra:6.0.680,FMLib:17.12.60.29
+ definitions=2024-09-02_06,2024-09-03_01,2024-09-02_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 suspectscore=0 phishscore=0
+ bulkscore=0 malwarescore=0 impostorscore=0 mlxlogscore=999
+ priorityscore=1501 spamscore=0 mlxscore=0 clxscore=1015 adultscore=0
+ lowpriorityscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.19.0-2407110000 definitions=main-2409030105
 
-On Tue, Sep 03, 2024 at 09:27:44AM +0200, Christoph Hellwig wrote:
-> I've pulled this into the dma-mapping for-next tree, although I'd
-> love to see one of the vdpa maintainers look over patch 1.  I'm
-> pretty sure it's correct, but a confirmation would be good.
 
-Missed patch 1, I was wondering why I'm CC'd. Looks good, thanks.
 
+On 8/30/2024 6:23 PM, Robin Murphy wrote:
+> On 16/08/2024 6:42 pm, Bibek Kumar Patro wrote:
+>> Default MMU-500 reset operation disables context caching in
+>> prefetch buffer. It is however expected for context banks using
+>> the ACTLR register to retain their prefetch value during reset
+>> and runtime suspend.
+>>
+>> Replace default MMU-500 reset operation with Qualcomm specific reset
+>> operation which envelope the default reset operation and re-enables
+>> context caching in prefetch buffer for Qualcomm SoCs.
+>>
+>> Reviewed-by: Konrad Dybcio <konrad.dybcio@linaro.org>
+>> Signed-off-by: Bibek Kumar Patro <quic_bibekkum@quicinc.com>
+>> ---
+>>   drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c | 36 ++++++++++++++++++++--
+>>   1 file changed, 33 insertions(+), 3 deletions(-)
+>>
+>> diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c 
+>> b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
+>> index 36c6b36ad4ff..8ac1850b852f 100644
+>> --- a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
+>> +++ b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
+>> @@ -16,6 +16,16 @@
+>>
+>>   #define QCOM_DUMMY_VAL    -1
+>>
+>> +/*
+>> + * SMMU-500 TRM defines BIT(0) as CMTLB (Enable context caching in the
+>> + * macro TLB) and BIT(1) as CPRE (Enable context caching in the prefetch
+>> + * buffer). The remaining bits are implementation defined and vary 
+>> across
+>> + * SoCs.
+>> + */
+>> +
+>> +#define CPRE            (1 << 1)
+>> +#define CMTLB            (1 << 0)
+>> +
+>>   static struct qcom_smmu *to_qcom_smmu(struct arm_smmu_device *smmu)
+>>   {
+>>       return container_of(smmu, struct qcom_smmu, smmu);
+>> @@ -381,11 +391,31 @@ static int qcom_smmu_def_domain_type(struct 
+>> device *dev)
+>>       return match ? IOMMU_DOMAIN_IDENTITY : 0;
+>>   }
+>>
+>> +static int qcom_smmu500_reset(struct arm_smmu_device *smmu)
+>> +{
+>> +    int ret;
+>> +    u32 val;
+>> +    int i;
+>> +
+>> +    ret = arm_mmu500_reset(smmu);
+>> +    if (ret)
+>> +        return ret;
+>> +
+>> +    /* arm_mmu500_reset() disables CPRE which is re-enabled here */
+> 
+> I still think it would be good to document why we think this is OK, 
+> given the reasons for disabling CPRE to begin with.
+> 
+
+Hi Robin,
+
+Sure, I agree with your point. I’ll elaborate on the comment here to 
+document the reason for re-enabling CPRE.
+
+/* The errata for MMU-500 before the r2p2 revision requires CPRE to be
+disabled. The arm_mmu500_reset function disables CPRE to accommodate all
+RTL revisions. Since all Qualcomm SoCs are on the r2p4 revision, where
+the CPRE bit can be enabled, the qcom_smmu500_reset function re-enables
+the CPRE bit for the next-page prefetcher to retain the prefetch value
+during reset and runtime suspend operations. */
+
+Does this sound good, let me know of your suggestions as well incase.
+
+Thanks & regards,
+Bibek
+
+> Thanks,
+> Robin.
+> 
+>> +    for (i = 0; i < smmu->num_context_banks; ++i) {
+>> +        val = arm_smmu_cb_read(smmu, i, ARM_SMMU_CB_ACTLR);
+>> +        val |= CPRE;
+>> +        arm_smmu_cb_write(smmu, i, ARM_SMMU_CB_ACTLR, val);
+>> +    }
+>> +
+>> +    return 0;
+>> +}
+>> +
+>>   static int qcom_sdm845_smmu500_reset(struct arm_smmu_device *smmu)
+>>   {
+>>       int ret;
+>>
+>> -    arm_mmu500_reset(smmu);
+>> +    qcom_smmu500_reset(smmu);
+>>
+>>       /*
+>>        * To address performance degradation in non-real time clients,
+>> @@ -412,7 +442,7 @@ static const struct arm_smmu_impl 
+>> qcom_smmu_500_impl = {
+>>       .init_context = qcom_smmu_init_context,
+>>       .cfg_probe = qcom_smmu_cfg_probe,
+>>       .def_domain_type = qcom_smmu_def_domain_type,
+>> -    .reset = arm_mmu500_reset,
+>> +    .reset = qcom_smmu500_reset,
+>>       .write_s2cr = qcom_smmu_write_s2cr,
+>>       .tlb_sync = qcom_smmu_tlb_sync,
+>>   #ifdef CONFIG_ARM_SMMU_QCOM_DEBUG
+>> @@ -445,7 +475,7 @@ static const struct arm_smmu_impl 
+>> qcom_adreno_smmu_v2_impl = {
+>>   static const struct arm_smmu_impl qcom_adreno_smmu_500_impl = {
+>>       .init_context = qcom_adreno_smmu_init_context,
+>>       .def_domain_type = qcom_smmu_def_domain_type,
+>> -    .reset = arm_mmu500_reset,
+>> +    .reset = qcom_smmu500_reset,
+>>       .alloc_context_bank = qcom_adreno_smmu_alloc_context_bank,
+>>       .write_sctlr = qcom_adreno_smmu_write_sctlr,
+>>       .tlb_sync = qcom_smmu_tlb_sync,
+>> -- 
+>> 2.34.1
+>>
