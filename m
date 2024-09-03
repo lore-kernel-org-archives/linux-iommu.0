@@ -1,61 +1,40 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.17])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8B88D811E2
-	for <iommu@lists.linux.dev>; Wed,  4 Sep 2024 06:11:06 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.17
+Received: from cmccmta2.chinamobile.com (cmccmta8.chinamobile.com [111.22.67.151])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 90E8881742
+	for <iommu@lists.linux.dev>; Wed,  4 Sep 2024 06:26:26 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=111.22.67.151
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1725430270; cv=none; b=XkuJGwPCT2nkDI6VWFlyGcl/zSHZ7xG5GObqWvWv//2029ErxD1WT6FW3ivmHUew224CNH9hvul5p6U9A2p+sZPo6PUeCcPPli/rBa3OWaM6kPGQuJ7mVEXnmMl/czv4u1e9QC4MNw0nzzjAGiB3W2+2PtHV0db+GrEKqEKCvX4=
+	t=1725431192; cv=none; b=QAIx7mLYgf3TlMHrxMgON9qSHsrETybKveHoe8WvxzckqUxooBDLeuA4WlrLrrrtX7iaEoquakScEx0wa2QxSfT66iOciSXhv+1vQwwaE+qs71gpNPzvAknOWR85dzV78YGmqMtgwSv5CLr0BrIQoGCOLcn4twSuFBYE7iGT2tU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1725430270; c=relaxed/simple;
-	bh=aCL6Zb5OWsKvfMi2Mef+7SbyF16Z/0kioNzL8s98yzY=;
-	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version; b=fHkIamCtXycMY46/BEH7U5HB7sG3PtFQDezyK27U87mljvVv/t8OriKCVdc4ySpyezQ3xA/YlrKUEOp39o+oBnWe/CRU2b20v+0EYNK2DH0qBUFf50c4Wio3JGinCgB6bgQJQVER+CDhtQCIz2tOTdFaxcwIvRQMa/h4U0zCOQU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=C8pPL0f0; arc=none smtp.client-ip=198.175.65.17
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="C8pPL0f0"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1725430267; x=1756966267;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=aCL6Zb5OWsKvfMi2Mef+7SbyF16Z/0kioNzL8s98yzY=;
-  b=C8pPL0f0bZh+fYb4u05yMbJXBDC0B60FMb9nSHZI3Q0yyJOAZmKKyqQc
-   SJBxQcvSIwiQPTJVrUpFESi0Yrzv9cyN7tpzfqfMtZfz+hX4lzedvPJ8c
-   L7weEBDA/XeNCa2EWJZGTZ4Np1Fs2NIPqRLr6QwZd4gC95X9bDXxIb2Rt
-   HqqjCj3ihueWffCQA7JH3Oo/bGvvmQjiFUtRo77QGWT8PgoMRtnj1FUFv
-   2L/5s21oCFZlcXGKpb+fh7UMknLRB91iLXSarmhLGQNL7ZH0SxUah1Xci
-   wD2kCL9P2LVWwvSApWmRb6kJenjXVW/qwqOFjb+RQAR01kzSytP7zic1q
-   w==;
-X-CSE-ConnectionGUID: k0anWn3oQDSsojHzNbwIJQ==
-X-CSE-MsgGUID: 0ZVRbLUuR2O3CvYpbaGOIA==
-X-IronPort-AV: E=McAfee;i="6700,10204,11184"; a="24228423"
-X-IronPort-AV: E=Sophos;i="6.10,201,1719903600"; 
-   d="scan'208";a="24228423"
-Received: from orviesa004.jf.intel.com ([10.64.159.144])
-  by orvoesa109.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Sep 2024 23:11:07 -0700
-X-CSE-ConnectionGUID: KzfF9kMAQ0OqQa6Zrw86Ig==
-X-CSE-MsgGUID: 9BOHvZ2FQ4G8g0K6TXpRig==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.10,201,1719903600"; 
-   d="scan'208";a="70018930"
-Received: from allen-box.sh.intel.com ([10.239.159.127])
-  by orviesa004.jf.intel.com with ESMTP; 03 Sep 2024 23:11:04 -0700
-From: Lu Baolu <baolu.lu@linux.intel.com>
-To: Joerg Roedel <joro@8bytes.org>,
-	Will Deacon <will@kernel.org>,
-	Robin Murphy <robin.murphy@arm.com>,
-	Kevin Tian <kevin.tian@intel.com>
-Cc: jani.saarinen@intel.com,
+	s=arc-20240116; t=1725431192; c=relaxed/simple;
+	bh=5dFgjk/oabilpVeol8G0eWL9U9/xLN3c1TXk+PgZ3AQ=;
+	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version; b=bskejJvS9I63/x/tcNn4J8nkBkrmzSaEQV76MN//F1fsXP4Gm401GxJ8yEkGE4VIaLDN/Ng4EDUVU32wCpjCeBQHfZpPOWUiI2LbhMEl+0wbiskW+wmlHVCaaOzSoa0tF2n3rRFiC2u60ChAk5gMMSFrjjItkjx33rQaUwx9YSc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=cmss.chinamobile.com; spf=pass smtp.mailfrom=cmss.chinamobile.com; arc=none smtp.client-ip=111.22.67.151
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=cmss.chinamobile.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=cmss.chinamobile.com
+X-RM-TagInfo: emlType=0                                       
+X-RM-SPAM-FLAG:00000000
+Received:from spf.mail.chinamobile.com (unknown[10.188.0.87])
+	by rmmx-syy-dmz-app06-12006 (RichMail) with SMTP id 2ee666d7fd9000a-b18cc;
+	Wed, 04 Sep 2024 14:26:25 +0800 (CST)
+X-RM-TRANSID:2ee666d7fd9000a-b18cc
+X-RM-TagInfo: emlType=0                                       
+X-RM-SPAM-FLAG:00000000
+Received:from localhost.localdomain (unknown[223.108.79.99])
+	by rmsmtp-syy-appsvr10-12010 (RichMail) with SMTP id 2eea66d7fd908e5-15f73;
+	Wed, 04 Sep 2024 14:26:24 +0800 (CST)
+X-RM-TRANSID:2eea66d7fd908e5-15f73
+From: Liu Jing <liujing@cmss.chinamobile.com>
+To: jgg@ziepe.ca
+Cc: kevin.tian@intel.com,
+	shuah@kernel.org,
 	iommu@lists.linux.dev,
+	linux-kselftest@vger.kernel.org,
 	linux-kernel@vger.kernel.org,
-	Lu Baolu <baolu.lu@linux.intel.com>,
-	stable@vger.kernel.org
-Subject: [PATCH 1/1] iommu/vt-d: Prevent boot failure with devices requiring ATS
-Date: Wed,  4 Sep 2024 14:07:05 +0800
-Message-Id: <20240904060705.90452-1-baolu.lu@linux.intel.com>
-X-Mailer: git-send-email 2.34.1
+	Liu Jing <liujing@cmss.chinamobile.com>
+Subject: [PATCH] iommufd/selftest:fix a resource leak
+Date: Wed,  4 Sep 2024 04:08:06 +0800
+Message-Id: <20240903200806.9803-1-liujing@cmss.chinamobile.com>
+X-Mailer: git-send-email 2.33.0
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -64,63 +43,420 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-SOC-integrated devices on some platforms require their PCI ATS enabled
-for operation when the IOMMU is in scalable mode. Those devices are
-reported via ACPI/SATC table with the ATC_REQUIRED bit set in the Flags
-field.
+If the file fails to open, not only return return1 but also close the file descriptor,otherwise resource
+leak will occur
 
-The PCI subsystem offers the 'pci=noats' kernel command to disable PCI
-ATS on all devices. Using 'pci=noat' with devices that require PCI ATS
-can cause a conflict, leading to boot failure, especially if the device
-is a graphics device.
-
-To prevent this issue, check PCI ATS support before enumerating the IOMMU
-devices. If any device requires PCI ATS, but PCI ATS is disabled by
-'pci=noats', switch the IOMMU to operate in legacy mode to ensure
-successful booting.
-
-Fixes: 97f2f2c5317f ("iommu/vt-d: Enable ATS for the devices in SATC table")
-Closes: https://gitlab.freedesktop.org/drm/i915/kernel/-/issues/12036
-Cc: stable@vger.kernel.org
-Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
+Signed-off-by: Liu Jing <liujing@cmss.chinamobile.com>
 ---
- drivers/iommu/intel/iommu.c | 22 +++++++++++++++++++---
- 1 file changed, 19 insertions(+), 3 deletions(-)
+ .../selftests/iommu/iommufd_fail_nth.c        | 143 ++++++++++--------
+ 1 file changed, 83 insertions(+), 60 deletions(-)
 
-diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
-index 4aa070cf56e7..8f275e046e91 100644
---- a/drivers/iommu/intel/iommu.c
-+++ b/drivers/iommu/intel/iommu.c
-@@ -3127,10 +3127,26 @@ int dmar_iommu_notify_scope_dev(struct dmar_pci_notify_info *info)
- 					(void *)satc + satc->header.length,
- 					satc->segment, satcu->devices,
- 					satcu->devices_cnt);
--			if (ret > 0)
--				break;
--			else if (ret < 0)
-+			if (ret < 0)
- 				return ret;
+diff --git a/tools/testing/selftests/iommu/iommufd_fail_nth.c b/tools/testing/selftests/iommu/iommufd_fail_nth.c
+index c5d5e69452b0..ff4e5d8aad57 100644
+--- a/tools/testing/selftests/iommu/iommufd_fail_nth.c
++++ b/tools/testing/selftests/iommu/iommufd_fail_nth.c
+@@ -237,10 +237,10 @@ TEST_FAIL_NTH(basic_fail_nth, basic)
+ 
+ 	self->fd = open("/dev/iommu", O_RDWR);
+ 	if (self->fd == -1)
+-		return -1;
++		goto close;
+ 
+ 	if (_test_ioctl_ioas_alloc(self->fd, &ioas_id))
+-		return -1;
++		goto close;
+ 
+ 	{
+ 		struct iommu_ioas_iova_ranges ranges_cmd = {
+@@ -250,7 +250,7 @@ TEST_FAIL_NTH(basic_fail_nth, basic)
+ 			.allowed_iovas = (uintptr_t)ranges,
+ 		};
+ 		if (ioctl(self->fd, IOMMU_IOAS_IOVA_RANGES, &ranges_cmd))
+-			return -1;
++			goto close;
+ 	}
+ 
+ 	{
+@@ -264,13 +264,13 @@ TEST_FAIL_NTH(basic_fail_nth, basic)
+ 		ranges[0].start = 16*1024;
+ 		ranges[0].last = BUFFER_SIZE + 16 * 1024 * 600 - 1;
+ 		if (ioctl(self->fd, IOMMU_IOAS_ALLOW_IOVAS, &allow_cmd))
+-			return -1;
++			goto close;
+ 	}
+ 
+ 	if (_test_ioctl_ioas_map(self->fd, ioas_id, buffer, BUFFER_SIZE, &iova,
+ 				 IOMMU_IOAS_MAP_WRITEABLE |
+ 					 IOMMU_IOAS_MAP_READABLE))
+-		return -1;
++		goto close;
+ 
+ 	{
+ 		struct iommu_ioas_copy copy_cmd = {
+@@ -284,15 +284,19 @@ TEST_FAIL_NTH(basic_fail_nth, basic)
+ 		};
+ 
+ 		if (ioctl(self->fd, IOMMU_IOAS_COPY, &copy_cmd))
+-			return -1;
++			goto close;
+ 	}
+ 
+ 	if (_test_ioctl_ioas_unmap(self->fd, ioas_id, iova, BUFFER_SIZE,
+ 				   NULL))
+-		return -1;
++		goto close;
+ 	/* Failure path of no IOVA to unmap */
+ 	_test_ioctl_ioas_unmap(self->fd, ioas_id, iova, BUFFER_SIZE, NULL);
+ 	return 0;
 +
-+			if (ret > 0) {
-+				/*
-+				 * The device requires PCI/ATS when the IOMMU
-+				 * works in the scalable mode. If PCI/ATS is
-+				 * disabled using the pci=noats kernel parameter,
-+				 * the IOMMU will default to legacy mode. Users
-+				 * are informed of this change.
-+				 */
-+				if (intel_iommu_sm && satcu->atc_required &&
-+				    !pci_ats_supported(info->dev)) {
-+					pci_warn(info->dev,
-+						 "PCI/ATS not supported, system working in IOMMU legacy mode\n");
-+					intel_iommu_sm = 0;
-+				}
++close:
++	close(self->fd);
++	return -1;
+ }
+ 
+ /* iopt_area_fill_domains() and iopt_area_fill_domain() */
+@@ -305,30 +309,33 @@ TEST_FAIL_NTH(basic_fail_nth, map_domain)
+ 
+ 	self->fd = open("/dev/iommu", O_RDWR);
+ 	if (self->fd == -1)
+-		return -1;
++		goto close;
+ 
+ 	if (_test_ioctl_ioas_alloc(self->fd, &ioas_id))
+-		return -1;
++		goto close;
+ 
+ 	if (_test_ioctl_set_temp_memory_limit(self->fd, 32))
+-		return -1;
++		goto close;
+ 
+ 	fail_nth_enable();
+ 
+ 	if (_test_cmd_mock_domain(self->fd, ioas_id, &stdev_id, &hwpt_id, NULL))
+-		return -1;
++		goto close;
+ 
+ 	if (_test_ioctl_ioas_map(self->fd, ioas_id, buffer, 262144, &iova,
+ 				 IOMMU_IOAS_MAP_WRITEABLE |
+ 					 IOMMU_IOAS_MAP_READABLE))
+-		return -1;
++		goto close;
+ 
+ 	if (_test_ioctl_destroy(self->fd, stdev_id))
+-		return -1;
++		goto close;
+ 
+ 	if (_test_cmd_mock_domain(self->fd, ioas_id, &stdev_id, &hwpt_id, NULL))
+-		return -1;
++		goto close;
+ 	return 0;
++close:
++	close(self->fd);
++	return -1;
+ }
+ 
+ TEST_FAIL_NTH(basic_fail_nth, map_two_domains)
+@@ -342,40 +349,43 @@ TEST_FAIL_NTH(basic_fail_nth, map_two_domains)
+ 
+ 	self->fd = open("/dev/iommu", O_RDWR);
+ 	if (self->fd == -1)
+-		return -1;
++		goto close;
+ 
+ 	if (_test_ioctl_ioas_alloc(self->fd, &ioas_id))
+-		return -1;
++		goto close;
+ 
+ 	if (_test_ioctl_set_temp_memory_limit(self->fd, 32))
+-		return -1;
++		goto close;
+ 
+ 	if (_test_cmd_mock_domain(self->fd, ioas_id, &stdev_id, &hwpt_id, NULL))
+-		return -1;
++		goto close;
+ 
+ 	fail_nth_enable();
+ 
+ 	if (_test_cmd_mock_domain(self->fd, ioas_id, &stdev_id2, &hwpt_id2,
+ 				  NULL))
+-		return -1;
++		goto close;
+ 
+ 	if (_test_ioctl_ioas_map(self->fd, ioas_id, buffer, 262144, &iova,
+ 				 IOMMU_IOAS_MAP_WRITEABLE |
+ 					 IOMMU_IOAS_MAP_READABLE))
+-		return -1;
++		goto close;
+ 
+ 	if (_test_ioctl_destroy(self->fd, stdev_id))
+-		return -1;
++		goto close;
+ 
+ 	if (_test_ioctl_destroy(self->fd, stdev_id2))
+-		return -1;
++		goto close;
+ 
+ 	if (_test_cmd_mock_domain(self->fd, ioas_id, &stdev_id, &hwpt_id, NULL))
+-		return -1;
++		goto close;
+ 	if (_test_cmd_mock_domain(self->fd, ioas_id, &stdev_id2, &hwpt_id2,
+ 				  NULL))
+-		return -1;
++		goto close;
+ 	return 0;
++close:
++	close(self->fd);
++	return -1;
+ }
+ 
+ TEST_FAIL_NTH(basic_fail_nth, access_rw)
+@@ -387,23 +397,23 @@ TEST_FAIL_NTH(basic_fail_nth, access_rw)
+ 
+ 	self->fd = open("/dev/iommu", O_RDWR);
+ 	if (self->fd == -1)
+-		return -1;
++		goto close;
+ 
+ 	if (_test_ioctl_ioas_alloc(self->fd, &ioas_id))
+-		return -1;
++		goto close;
+ 
+ 	if (_test_ioctl_set_temp_memory_limit(self->fd, 32))
+-		return -1;
++		goto close;
+ 
+ 	if (_test_ioctl_ioas_map(self->fd, ioas_id, buffer, 262144, &iova,
+ 				 IOMMU_IOAS_MAP_WRITEABLE |
+ 					 IOMMU_IOAS_MAP_READABLE))
+-		return -1;
++		goto close;
+ 
+ 	fail_nth_enable();
+ 
+ 	if (_test_cmd_create_access(self->fd, ioas_id, &self->access_id, 0))
+-		return -1;
++		goto close;
+ 
+ 	{
+ 		struct iommu_test_cmd access_cmd = {
+@@ -418,22 +428,22 @@ TEST_FAIL_NTH(basic_fail_nth, access_rw)
+ 		// READ
+ 		if (ioctl(self->fd, _IOMMU_TEST_CMD(IOMMU_TEST_OP_ACCESS_RW),
+ 			  &access_cmd))
+-			return -1;
++			goto close;
+ 
+ 		access_cmd.access_rw.flags = MOCK_ACCESS_RW_WRITE;
+ 		if (ioctl(self->fd, _IOMMU_TEST_CMD(IOMMU_TEST_OP_ACCESS_RW),
+ 			  &access_cmd))
+-			return -1;
++			goto close;
+ 
+ 		access_cmd.access_rw.flags = MOCK_ACCESS_RW_SLOW_PATH;
+ 		if (ioctl(self->fd, _IOMMU_TEST_CMD(IOMMU_TEST_OP_ACCESS_RW),
+ 			  &access_cmd))
+-			return -1;
++			goto close;
+ 		access_cmd.access_rw.flags = MOCK_ACCESS_RW_SLOW_PATH |
+ 					     MOCK_ACCESS_RW_WRITE;
+ 		if (ioctl(self->fd, _IOMMU_TEST_CMD(IOMMU_TEST_OP_ACCESS_RW),
+ 			  &access_cmd))
+-			return -1;
++			goto close;
+ 	}
+ 
+ 	{
+@@ -449,12 +459,15 @@ TEST_FAIL_NTH(basic_fail_nth, access_rw)
+ 
+ 		if (ioctl(self->fd, _IOMMU_TEST_CMD(IOMMU_TEST_OP_ACCESS_RW),
+ 			  &access_cmd))
+-			return -1;
++			goto close;
+ 	}
+ 	if (_test_cmd_destroy_access(self->access_id))
+ 		return -1;
+ 	self->access_id = 0;
+ 	return 0;
++close:
++	close(self->fd);
++	return -1;
+ }
+ 
+ /* pages.c access functions */
+@@ -466,22 +479,22 @@ TEST_FAIL_NTH(basic_fail_nth, access_pin)
+ 
+ 	self->fd = open("/dev/iommu", O_RDWR);
+ 	if (self->fd == -1)
+-		return -1;
++		goto close;
+ 
+ 	if (_test_ioctl_ioas_alloc(self->fd, &ioas_id))
+-		return -1;
++		goto close;
+ 
+ 	if (_test_ioctl_set_temp_memory_limit(self->fd, 32))
+-		return -1;
++		goto close;
+ 
+ 	if (_test_ioctl_ioas_map(self->fd, ioas_id, buffer, BUFFER_SIZE, &iova,
+ 				 IOMMU_IOAS_MAP_WRITEABLE |
+ 					 IOMMU_IOAS_MAP_READABLE))
+-		return -1;
++		goto close;
+ 
+ 	if (_test_cmd_create_access(self->fd, ioas_id, &self->access_id,
+ 				    MOCK_FLAGS_ACCESS_CREATE_NEEDS_PIN_PAGES))
+-		return -1;
++		goto close;
+ 
+ 	fail_nth_enable();
+ 
+@@ -497,18 +510,21 @@ TEST_FAIL_NTH(basic_fail_nth, access_pin)
+ 
+ 		if (ioctl(self->fd, _IOMMU_TEST_CMD(IOMMU_TEST_OP_ACCESS_RW),
+ 			  &access_cmd))
+-			return -1;
++			goto close;
+ 		access_pages_id = access_cmd.access_pages.out_access_pages_id;
+ 	}
+ 
+ 	if (_test_cmd_destroy_access_pages(self->fd, self->access_id,
+ 					   access_pages_id))
+-		return -1;
++		goto close;
+ 
+ 	if (_test_cmd_destroy_access(self->access_id))
+ 		return -1;
+ 	self->access_id = 0;
+ 	return 0;
++close:
++	close(self->fd);
++	return -1;
+ }
+ 
+ /* iopt_pages_fill_xarray() */
+@@ -522,25 +538,25 @@ TEST_FAIL_NTH(basic_fail_nth, access_pin_domain)
+ 
+ 	self->fd = open("/dev/iommu", O_RDWR);
+ 	if (self->fd == -1)
+-		return -1;
++		goto close;
+ 
+ 	if (_test_ioctl_ioas_alloc(self->fd, &ioas_id))
+-		return -1;
++		goto close;
+ 
+ 	if (_test_ioctl_set_temp_memory_limit(self->fd, 32))
+-		return -1;
++		goto close;
+ 
+ 	if (_test_cmd_mock_domain(self->fd, ioas_id, &stdev_id, &hwpt_id, NULL))
+-		return -1;
++		goto close;
+ 
+ 	if (_test_ioctl_ioas_map(self->fd, ioas_id, buffer, BUFFER_SIZE, &iova,
+ 				 IOMMU_IOAS_MAP_WRITEABLE |
+ 					 IOMMU_IOAS_MAP_READABLE))
+-		return -1;
++		goto close;
+ 
+ 	if (_test_cmd_create_access(self->fd, ioas_id, &self->access_id,
+ 				    MOCK_FLAGS_ACCESS_CREATE_NEEDS_PIN_PAGES))
+-		return -1;
++		goto close;
+ 
+ 	fail_nth_enable();
+ 
+@@ -556,21 +572,24 @@ TEST_FAIL_NTH(basic_fail_nth, access_pin_domain)
+ 
+ 		if (ioctl(self->fd, _IOMMU_TEST_CMD(IOMMU_TEST_OP_ACCESS_RW),
+ 			  &access_cmd))
+-			return -1;
++			goto close;
+ 		access_pages_id = access_cmd.access_pages.out_access_pages_id;
+ 	}
+ 
+ 	if (_test_cmd_destroy_access_pages(self->fd, self->access_id,
+ 					   access_pages_id))
+-		return -1;
++		goto close;
+ 
+ 	if (_test_cmd_destroy_access(self->access_id))
+ 		return -1;
+ 	self->access_id = 0;
+ 
+ 	if (_test_ioctl_destroy(self->fd, stdev_id))
+-		return -1;
++		goto close;
+ 	return 0;
++close:
++	close(self->fd);
++	return -1;
+ }
+ 
+ /* device.c */
+@@ -586,45 +605,49 @@ TEST_FAIL_NTH(basic_fail_nth, device)
+ 
+ 	self->fd = open("/dev/iommu", O_RDWR);
+ 	if (self->fd == -1)
+-		return -1;
++		goto close;
+ 
+ 	if (_test_ioctl_ioas_alloc(self->fd, &ioas_id))
+-		return -1;
++		goto close;
+ 
+ 	if (_test_ioctl_ioas_alloc(self->fd, &ioas_id2))
+-		return -1;
++		goto close;
+ 
+ 	iova = MOCK_APERTURE_START;
+ 	if (_test_ioctl_ioas_map(self->fd, ioas_id, buffer, PAGE_SIZE, &iova,
+ 				 IOMMU_IOAS_MAP_FIXED_IOVA |
+ 					 IOMMU_IOAS_MAP_WRITEABLE |
+ 					 IOMMU_IOAS_MAP_READABLE))
+-		return -1;
++		goto close;
+ 	if (_test_ioctl_ioas_map(self->fd, ioas_id2, buffer, PAGE_SIZE, &iova,
+ 				 IOMMU_IOAS_MAP_FIXED_IOVA |
+ 					 IOMMU_IOAS_MAP_WRITEABLE |
+ 					 IOMMU_IOAS_MAP_READABLE))
+-		return -1;
++		goto close;
+ 
+ 	fail_nth_enable();
+ 
+ 	if (_test_cmd_mock_domain(self->fd, ioas_id, &stdev_id, NULL,
+ 				  &idev_id))
+-		return -1;
++		goto close;
+ 
+ 	if (_test_cmd_get_hw_info(self->fd, idev_id, &info, sizeof(info), NULL))
+-		return -1;
++		goto close;
+ 
+ 	if (_test_cmd_hwpt_alloc(self->fd, idev_id, ioas_id, 0, 0, &hwpt_id,
+ 				 IOMMU_HWPT_DATA_NONE, 0, 0))
+-		return -1;
++		goto close;
+ 
+ 	if (_test_cmd_mock_domain_replace(self->fd, stdev_id, ioas_id2, NULL))
+-		return -1;
++		goto close;
+ 
+ 	if (_test_cmd_mock_domain_replace(self->fd, stdev_id, hwpt_id, NULL))
+-		return -1;
++		goto close;
+ 	return 0;
++close:
++	close(self->fd);
++	return -1;
 +
-+				break;
-+			}
- 		} else if (info->event == BUS_NOTIFY_REMOVED_DEVICE) {
- 			if (dmar_remove_dev_scope(info, satc->segment,
- 					satcu->devices, satcu->devices_cnt))
+ }
+ 
+ TEST_HARNESS_MAIN
 -- 
-2.34.1
+2.33.0
+
+
 
