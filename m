@@ -1,72 +1,138 @@
-Received: from m15.mail.163.com (m16.mail.163.com [220.197.31.5])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 34A5B6F30D
-	for <iommu@lists.linux.dev>; Tue,  3 Sep 2024 14:50:43 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=220.197.31.5
+Received: from mx0b-0031df01.pphosted.com (mx0b-0031df01.pphosted.com [205.220.180.131])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AD8822A1BF
+	for <iommu@lists.linux.dev>; Tue,  3 Sep 2024 15:30:09 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.180.131
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1725375047; cv=none; b=aDfqeQEl5nArNXVQfrIfpO9SX81KxRqDryeWZycTN98ovA91hUCmSh00tY8jffiYs6zA5RZRDrDPYNOwvtrljwnb5ct/tjIWCJRKQkKTh36GPczEbcJ5BQnTZBuGmOqddQNgVE+DyvNKI9OAORvCws5015iwaAGKthHFGZ45SKI=
+	t=1725377411; cv=none; b=ZBWXsBIWQhhswBYbd0Zw8ldWmQXbBhJsMfnWj5EUoyDh9dhZIMMRWHToTWxSSiC2S1tk9yyOmSHrzZ04Xsxwu4ksCVq4Zkb9SfYWAZoJoB/NuqJRsnPJAnLDW58gW21IHwm/3Oim3CaozaOOg8NjE9BYBl1VtH6VgAI6bU4Twx4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1725375047; c=relaxed/simple;
-	bh=k5utM3wgHf32qhGpen5q4SK8rJu+bGuDYsx7xhGgVa0=;
-	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version; b=iT/k3j9WmtjZgz8gEiGae/SwPrFC9nwTbtFlMHmFyLkdHltQbNW+cN2+01x5Jhb3zuUjTHJemiUouyH3zuDAZ8HsAXCUxt4zz7OUE+ff4aWgqTI1TIeM+DayznUfl4tbNJafiG2K28rr/eTdO4FHGMyIv4z1yMZl+3E+cIv2Ruk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=163.com; spf=pass smtp.mailfrom=163.com; dkim=pass (1024-bit key) header.d=163.com header.i=@163.com header.b=YGMFrdY2; arc=none smtp.client-ip=220.197.31.5
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=163.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=163.com
+	s=arc-20240116; t=1725377411; c=relaxed/simple;
+	bh=6piqvsdwZK7m2rQI2xaAzlLX4itMjm+cIfYUK76i/9c=;
+	h=Message-ID:Date:MIME-Version:Subject:To:CC:References:From:
+	 In-Reply-To:Content-Type; b=KD9wS8vZXLlPiHhmnYIdcbFRlWs03GGmwKRR6KlALlMyKIgbv2gUpwq5TpHOZ5eZ0VahNkgNcMPnrO0hL3YkseyEF33/ctpGzI/xo2LlZ+8N+M3vpK77RnIL0y7TErwlvdFWt+m3f2bF4/k3oDV7PGzfn73X7j/fBXG6o1CvTcA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com; spf=pass smtp.mailfrom=quicinc.com; dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b=B8uH/Hu5; arc=none smtp.client-ip=205.220.180.131
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=quicinc.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=163.com header.i=@163.com header.b="YGMFrdY2"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
-	s=s110527; h=From:Subject:Date:Message-Id:MIME-Version; bh=PgJJ8
-	SX8BUGlB9T2TFFYMz+dTL9blm1JY4VAnKEEgSk=; b=YGMFrdY2hD/RwPtYoX1sb
-	CiJ85ureLALodvKkINXul3lnJIO5FT+wJEWZsGijMP8pbRk/v8hbIkb4laQ7Ptdl
-	2ZL6E3tw/6arTnorTJfhRvR64YDa7RaV61Z7WTW4hqfku2IdgtIRG6dfpVBfwSZQ
-	IENmUnrj1i1OrZc63OqEzM=
-Received: from localhost.localdomain (unknown [36.33.36.240])
-	by gzga-smtp-mta-g0-0 (Coremail) with SMTP id _____wDX_18bItdm5cJoFQ--.14451S2;
-	Tue, 03 Sep 2024 22:50:04 +0800 (CST)
-From: Qianqiang Liu <qianqiang.liu@163.com>
-To: dwmw2@infradead.org,
-	baolu.lu@linux.intel.com
-Cc: iommu@lists.linux.dev,
-	linux-kernel@vger.kernel.org,
-	Qianqiang Liu <qianqiang.liu@163.com>
-Subject: [PATCH] iommu/vt-d: Fix 'Null pointer dereferences' issue
-Date: Tue,  3 Sep 2024 22:46:01 +0800
-Message-Id: <20240903144601.8149-1-qianqiang.liu@163.com>
-X-Mailer: git-send-email 2.39.2
+	dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b="B8uH/Hu5"
+Received: from pps.filterd (m0279871.ppops.net [127.0.0.1])
+	by mx0a-0031df01.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 483C6D5a009100;
+	Tue, 3 Sep 2024 15:24:35 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=quicinc.com; h=
+	cc:content-transfer-encoding:content-type:date:from:in-reply-to
+	:message-id:mime-version:references:subject:to; s=qcppdkim1; bh=
+	6piqvsdwZK7m2rQI2xaAzlLX4itMjm+cIfYUK76i/9c=; b=B8uH/Hu5GO1wPnC+
+	V7P+1suidAjBz8algBBAEisJFWoejjT+7IiHvbN989/gYH6/qFw0rveL7SE5ZLZx
+	0IEQkeyq/8J3O2O6670dOXhxPPWRy3Ikvswir+YwzzYKWHxkKiexh8NZDaTYPUw4
+	VX+/duYB69K9KB6BApD64+Vtl0+m/xA5OkGzRJZvJbLpAYPusr1hq0LK4wvgCFQr
+	GNH9+/upDX42qqTPWBcKRcKwtxTpmmp04D19xSewG8ve1oTVl28ZMFOhizAI/e+S
+	c46/mv5mhsEUJ1NGAi7RHvauXR6a7SZaXAIFcNCCn7k3FKY+h4MmtxZUrltx4ymk
+	D8a3Dw==
+Received: from nasanppmta04.qualcomm.com (i-global254.qualcomm.com [199.106.103.254])
+	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 41btrxqt7a-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Tue, 03 Sep 2024 15:24:35 +0000 (GMT)
+Received: from nasanex01b.na.qualcomm.com (nasanex01b.na.qualcomm.com [10.46.141.250])
+	by NASANPPMTA04.qualcomm.com (8.18.1.2/8.18.1.2) with ESMTPS id 483FOXh5020808
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Tue, 3 Sep 2024 15:24:33 GMT
+Received: from [10.110.120.207] (10.80.80.8) by nasanex01b.na.qualcomm.com
+ (10.46.141.250) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1544.9; Tue, 3 Sep 2024
+ 08:24:29 -0700
+Message-ID: <b855f1a9-35c2-4c53-9485-0989b3eb5a6b@quicinc.com>
+Date: Tue, 3 Sep 2024 08:24:29 -0700
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-CM-TRANSID:_____wDX_18bItdm5cJoFQ--.14451S2
-X-Coremail-Antispam: 1Uf129KBjvdXoW7Jr1kGF17Gryruw45CFWrAFb_yoWfWrXEkr
-	y8ZFs7ury5Zr48Z3WayFnruryqqw12vFZ3Z3y0grySqFn8Zrn5Cana9FWfJr45G3yUJFya
-	yF4UWF4fuFyxCjkaLaAFLSUrUUUUjb8apTn2vfkv8UJUUUU8Yxn0WfASr-VFAUDa7-sFnT
-	9fnUUvcSsGvfC2KfnxnUUI43ZEXa7IUU2Nt5UUUUU==
-X-CM-SenderInfo: xtld01pldqwhxolxqiywtou0bp/1tbiYBZPamV4I-QKmQABsL
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH 11/22] pinctrl: qcom: sa8775p: Add support for SA8255p SoC
+To: Krzysztof Kozlowski <krzk@kernel.org>
+CC: <andersson@kernel.org>, <konradybcio@kernel.org>, <robh@kernel.org>,
+        <krzk+dt@kernel.org>, <conor+dt@kernel.org>, <rafael@kernel.org>,
+        <viresh.kumar@linaro.org>, <herbert@gondor.apana.org.au>,
+        <davem@davemloft.net>, <sudeep.holla@arm.com>, <andi.shyti@kernel.org>,
+        <tglx@linutronix.de>, <will@kernel.org>, <joro@8bytes.org>,
+        <jassisinghbrar@gmail.com>, <lee@kernel.org>,
+        <linus.walleij@linaro.org>, <amitk@kernel.org>,
+        <thara.gopinath@gmail.com>, <broonie@kernel.org>,
+        <wim@linux-watchdog.org>, <linux@roeck-us.net>, <robin.murphy@arm.com>,
+        <cristian.marussi@arm.com>, <rui.zhang@intel.com>,
+        <lukasz.luba@arm.com>, <vkoul@kernel.org>, <quic_gurus@quicinc.com>,
+        <agross@kernel.org>, <bartosz.golaszewski@linaro.org>,
+        <quic_rjendra@quicinc.com>, <robimarko@gmail.com>,
+        <linux-arm-msm@vger.kernel.org>, <devicetree@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>, <linux-pm@vger.kernel.org>,
+        <linux-crypto@vger.kernel.org>, <arm-scmi@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>, <linux-i2c@vger.kernel.org>,
+        <iommu@lists.linux.dev>, <linux-gpio@vger.kernel.org>,
+        <linux-serial@vger.kernel.org>, <linux-spi@vger.kernel.org>,
+        <linux-watchdog@vger.kernel.org>, <kernel@quicinc.com>,
+        <quic_psodagud@quicinc.com>, <quic_tsoni@quicinc.com>,
+        <quic_shazhuss@quicinc.com>
+References: <20240828203721.2751904-1-quic_nkela@quicinc.com>
+ <20240828203721.2751904-12-quic_nkela@quicinc.com>
+ <erlzqkxrogk24ugfahfsxrramay6tfhljnxrcfcuhe24pla7k3@lytnz3kmszyj>
+ <d15927f9-bd00-4e32-9c25-535c69fe56f6@quicinc.com>
+ <f227c799-cf9a-481a-b359-21828d6e8bca@kernel.org>
+Content-Language: en-US
+From: Nikunj Kela <quic_nkela@quicinc.com>
+In-Reply-To: <f227c799-cf9a-481a-b359-21828d6e8bca@kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: nasanex01a.na.qualcomm.com (10.52.223.231) To
+ nasanex01b.na.qualcomm.com (10.46.141.250)
+X-QCInternal: smtphost
+X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
+X-Proofpoint-GUID: bWyf1ZPtHhHPINAXIshQXWfk8GFZ_w_W
+X-Proofpoint-ORIG-GUID: bWyf1ZPtHhHPINAXIshQXWfk8GFZ_w_W
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.293,Aquarius:18.0.1039,Hydra:6.0.680,FMLib:17.12.60.29
+ definitions=2024-09-03_03,2024-09-03_01,2024-09-02_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 malwarescore=0 bulkscore=0
+ clxscore=1015 suspectscore=0 phishscore=0 impostorscore=0
+ priorityscore=1501 mlxscore=0 mlxlogscore=999 spamscore=0
+ lowpriorityscore=0 adultscore=0 classifier=spam adjust=0 reason=mlx
+ scancount=1 engine=8.19.0-2407110000 definitions=main-2409030125
 
-Passing null pointer "pdev" to "pci_enable_pasid", which dereferences it.
-Check the "pdev" is null or not before passing to "pci_enable_pasid".
 
-Signed-off-by: Qianqiang Liu <qianqiang.liu@163.com>
----
- drivers/iommu/intel/iommu.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+On 8/30/2024 2:52 AM, Krzysztof Kozlowski wrote:
+> On 29/08/2024 16:17, Nikunj Kela wrote:
+>> On 8/29/2024 12:29 AM, Krzysztof Kozlowski wrote:
+>>> On Wed, Aug 28, 2024 at 01:37:10PM -0700, Nikunj Kela wrote:
+>>>> SA8255p platform uses the same TLMM block as used in SA8775p,
+>>>> though the pins are split between Firmware VM and Linux VM.
+>>>> let's add SA8255p specific compatible.
+>>> The change suggests devices are fully compatible, but above description
+>>> does not.
+>>>
+>>> This looks conflicting.
+>>>
+>>> Best regards,
+>>> Krzysztof
+>> Hi Krzysztof,
+>>
+>> Thanks for reviewing patches. TLMM HW block is exactly same as used in
+>> SA8775p however ownership of pins can be split between firmware VM and
+>> Linux VM. It is upto devices to decide what pins they want to use in
+>> what VM. I will extend the subject with same description as used in DT
+>> binding.
+> So there is no difference? Then devices should be made compatible with
+> fallback.
+>
+> Best regards,
+> Krzysztof
 
-diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
-index 9f6b0780f2ef..a1e54f334330 100644
---- a/drivers/iommu/intel/iommu.c
-+++ b/drivers/iommu/intel/iommu.c
-@@ -3935,7 +3935,7 @@ static struct iommu_device *intel_iommu_probe_device(struct device *dev)
- 	 * So always enable PASID support on devices which have it, even if
- 	 * we can't yet know if we're ever going to use it.
- 	 */
--	if (info->pasid_supported &&
-+	if (info->pasid_supported && pdev &&
- 	    !pci_enable_pasid(pdev, info->pasid_supported & ~1))
- 		info->pasid_enabled = 1;
- 
--- 
-2.39.2
+Yes, I get your point now. I will discuss internally. I am leaning
+towards using sa8775p-tlmm compatible in SA8255p TLMM node so there is
+no need for adding new compatible. Will drop the two pincontrol related
+patches from the series in next version if agreed internally.
+
+Thanks,
+
+-Nikunj
 
