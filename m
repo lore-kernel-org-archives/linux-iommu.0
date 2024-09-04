@@ -1,202 +1,184 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from szxga04-in.huawei.com (szxga04-in.huawei.com [45.249.212.190])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 67A9D1DC18F;
-	Wed,  4 Sep 2024 13:36:49 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C8D941D014A;
+	Wed,  4 Sep 2024 14:20:42 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=45.249.212.190
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1725457009; cv=none; b=Ec5ZDd7ti8vJN94mGmkXpYALnGWRGk6bmo2H/dVG5PdMvppgK9XCfwOcjEx5H4JU5FIjXVz0tAv/UuutaKv7mN0N3wbIyF1EEwOmkN9/FlBBXWGbrDVphAKrLrNkDGYa6k2ewd1vBAZc6t9PbB2ijBmP0w1IY1roAgrWUIVBF54=
+	t=1725459646; cv=none; b=Mz2l1NC5bAlt2opP6B1RZsAUNzo8OXfrIyj+AWdWLYZXH6pjywSqHywG/AkIDkl8Vq34elDcYLMg8/EwCjrEAr6ch9XalJZlkbga0H3pAyoxQuZkLJeZubSUw+r4rGeTeg4zB6CYsEOge/5xpJ5w69MW3sJgeO0gQYcLUMH0YhM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1725457009; c=relaxed/simple;
-	bh=qWY32TQVxIiG/7F7JcJ2JBNdihZus2JMmzuFFBXoAw8=;
-	h=Date:Content-Type:MIME-Version:From:To:Cc:In-Reply-To:References:
-	 Message-Id:Subject; b=Q+CnMXO2VeWWxwZxDADuTJ1+jO+ewC+o04j/9xkLXpN0gFzct3/BWEbzJSTPALToSGByfHXMtboAJm8nJM68KI6DJsM9bHNqZ2ecJsnkWx2SLeWmZkCSgSIE/PPkoziip6c7Gceir2qiPxDnY4jqfyTkx4VLsuetcu+VV0fDtsU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Of09j7Bu; arc=none smtp.client-ip=10.30.226.201
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Of09j7Bu"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B510CC4CECC;
-	Wed,  4 Sep 2024 13:36:48 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1725457009;
-	bh=qWY32TQVxIiG/7F7JcJ2JBNdihZus2JMmzuFFBXoAw8=;
-	h=Date:From:To:Cc:In-Reply-To:References:Subject:From;
-	b=Of09j7BuUK/iZCc5Z6JVx/0geBcWgWdJG67JTXEoneZVqv1rdanX4h73G7aKpgK+s
-	 hD3JEuO1EEHmeCIi293LsmozCAvh6CqWjLjGb4mT5mjZqES2YNBb3IcLCPxwbhq4H9
-	 ZZlljf7w7/j5c32YHnmbd+MI24QJHgmzEJwoA2gRYxBcrU2+Obu6TcnFrlTsrvsyMp
-	 J0JuUk363D9BYB9AUuq896Y0DcZaOM09RRE5RpJhaQg/g76hJIQB1+LwVzeA5nEkjv
-	 m2mYOdANauOKn78/QjnaVZN8Ti/7bc9vRxNaDR0yOJ/47+WNxrtFSfHRcPG6EABZRr
-	 Ag+Z3bw7Lj99Q==
-Date: Wed, 04 Sep 2024 08:36:47 -0500
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
+	s=arc-20240116; t=1725459646; c=relaxed/simple;
+	bh=3NFixX3Kl1y5WBzsUh6ZkbNWiMteGWvyfBElaxW/K1Q=;
+	h=From:To:CC:Subject:Date:Message-ID:References:In-Reply-To:
+	 Content-Type:MIME-Version; b=l2QLUHXJus5lU1mL+mwmEzMj5CVoMG4BgXilP/F9inBCtanX6Vkmedz33nsKIMiH32cEtSRu2CR/y3AvMZc5rVCVPgVOIMqq+412sNTj4mC+pTN3cFU4Sq70gwTbl4y/W7HGHJiMBt5SX5Lf+G17f+iLtwL5fuD1BmkoEN1/WA8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=huawei.com; spf=pass smtp.mailfrom=huawei.com; arc=none smtp.client-ip=45.249.212.190
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=huawei.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=huawei.com
+Received: from mail.maildlp.com (unknown [172.19.163.44])
+	by szxga04-in.huawei.com (SkyGuard) with ESMTP id 4WzPfQ4FJsz20nLZ;
+	Wed,  4 Sep 2024 22:15:42 +0800 (CST)
+Received: from dggpemf500002.china.huawei.com (unknown [7.185.36.57])
+	by mail.maildlp.com (Postfix) with ESMTPS id CDD681400D7;
+	Wed,  4 Sep 2024 22:20:39 +0800 (CST)
+Received: from lhrpeml500005.china.huawei.com (7.191.163.240) by
+ dggpemf500002.china.huawei.com (7.185.36.57) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.1544.11; Wed, 4 Sep 2024 22:20:38 +0800
+Received: from lhrpeml500005.china.huawei.com ([7.191.163.240]) by
+ lhrpeml500005.china.huawei.com ([7.191.163.240]) with mapi id 15.01.2507.039;
+ Wed, 4 Sep 2024 15:20:37 +0100
+From: Shameerali Kolothum Thodi <shameerali.kolothum.thodi@huawei.com>
+To: Jason Gunthorpe <jgg@nvidia.com>, "acpica-devel@lists.linux.dev"
+	<acpica-devel@lists.linux.dev>, "Guohanjun (Hanjun Guo)"
+	<guohanjun@huawei.com>, "iommu@lists.linux.dev" <iommu@lists.linux.dev>,
+	Joerg Roedel <joro@8bytes.org>, Kevin Tian <kevin.tian@intel.com>,
+	"kvm@vger.kernel.org" <kvm@vger.kernel.org>, Len Brown <lenb@kernel.org>,
+	"linux-acpi@vger.kernel.org" <linux-acpi@vger.kernel.org>,
+	"linux-arm-kernel@lists.infradead.org"
+	<linux-arm-kernel@lists.infradead.org>, Lorenzo Pieralisi
+	<lpieralisi@kernel.org>, "Rafael J. Wysocki" <rafael@kernel.org>, "Robert
+ Moore" <robert.moore@intel.com>, Robin Murphy <robin.murphy@arm.com>, "Sudeep
+ Holla" <sudeep.holla@arm.com>, Will Deacon <will@kernel.org>
+CC: Alex Williamson <alex.williamson@redhat.com>, Eric Auger
+	<eric.auger@redhat.com>, Jean-Philippe Brucker <jean-philippe@linaro.org>,
+	Moritz Fischer <mdf@kernel.org>, Michael Shavit <mshavit@google.com>,
+	"Nicolin Chen" <nicolinc@nvidia.com>, "patches@lists.linux.dev"
+	<patches@lists.linux.dev>, Mostafa Saleh <smostafa@google.com>
+Subject: RE: [PATCH v2 2/8] iommu/arm-smmu-v3: Use S2FWB when available
+Thread-Topic: [PATCH v2 2/8] iommu/arm-smmu-v3: Use S2FWB when available
+Thread-Index: AQHa+JkNXX8oIDp/tkauz0b2cgKn4bJHsELw
+Date: Wed, 4 Sep 2024 14:20:36 +0000
+Message-ID: <85aa5e8eb6f243fd9df754fdc96471b8@huawei.com>
+References: <0-v2-621370057090+91fec-smmuv3_nesting_jgg@nvidia.com>
+ <2-v2-621370057090+91fec-smmuv3_nesting_jgg@nvidia.com>
+In-Reply-To: <2-v2-621370057090+91fec-smmuv3_nesting_jgg@nvidia.com>
+Accept-Language: en-GB, en-US
+Content-Language: en-US
+X-MS-Has-Attach:
+X-MS-TNEF-Correlator:
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-From: "Rob Herring (Arm)" <robh@kernel.org>
-To: Jingyi Wang <quic_jingyw@quicinc.com>
-Cc: Kishon Vijay Abraham I <kishon@kernel.org>, 
- Mathieu Poirier <mathieu.poirier@linaro.org>, Vinod Koul <vkoul@kernel.org>, 
- Zhenhua Huang <quic_zhenhuah@quicinc.com>, Andy Gross <agross@kernel.org>, 
- Ulf Hansson <ulf.hansson@linaro.org>, Robin Murphy <robin.murphy@arm.com>, 
- Avri Altman <avri.altman@wdc.com>, 
- Catalin Marinas <catalin.marinas@arm.com>, linux-arm-msm@vger.kernel.org, 
- Kyle Deng <quic_chunkaid@quicinc.com>, linux-kernel@vger.kernel.org, 
- Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>, 
- Conor Dooley <conor+dt@kernel.org>, 
- Tingguo Cheng <quic_tingguoc@quicinc.com>, linux-scsi@vger.kernel.org, 
- Krzysztof Kozlowski <krzk+dt@kernel.org>, 
- Das Srinagesh <quic_gurus@quicinc.com>, iommu@lists.linux.dev, 
- Srinivas Kandagatla <srinivas.kandagatla@linaro.org>, 
- Will Deacon <will@kernel.org>, Joerg Roedel <joro@8bytes.org>, 
- Konrad Dybcio <konradybcio@kernel.org>, Robert Marko <robimarko@gmail.com>, 
- linux-arm-kernel@lists.infradead.org, Jassi Brar <jassisinghbrar@gmail.com>, 
- Bjorn Andersson <andersson@kernel.org>, linux-remoteproc@vger.kernel.org, 
- Raviteja Laggyshetty <quic_rlaggysh@quicinc.com>, 
- Bartosz Golaszewski <bartosz.golaszewski@linaro.org>, 
- Lee Jones <lee@kernel.org>, Xin Liu <quic_liuxin@quicinc.com>, 
- Thomas Gleixner <tglx@linutronix.de>, linux-pm@vger.kernel.org, 
- Shazad Hussain <quic_shazhuss@quicinc.com>, linux-phy@lists.infradead.org, 
- Alim Akhtar <alim.akhtar@samsung.com>, Bart Van Assche <bvanassche@acm.org>, 
- devicetree@vger.kernel.org
-In-Reply-To: <20240904-qcs8300_initial_dtsi-v1-0-d0ea9afdc007@quicinc.com>
-References: <20240904-qcs8300_initial_dtsi-v1-0-d0ea9afdc007@quicinc.com>
-Message-Id: <172545686260.2410635.12324465724634886770.robh@kernel.org>
-Subject: Re: [PATCH 00/19] Add initial support for QCS8300
 
 
-On Wed, 04 Sep 2024 16:33:41 +0800, Jingyi Wang wrote:
-> Add initial support for QCS8300 SoC and QCS8300 RIDE board.
-> 
-> This revision brings support for:
-> - CPUs with cpu idle
-> - interrupt-controller with PDC wakeup support
-> - gcc
-> - TLMM
-> - interconnect
-> - qup with uart
-> - smmu
-> - pmic
-> - ufs
-> - ipcc
-> - sram
-> - remoteprocs including ADSP,CDSP and GPDSP
-> 
-> Signed-off-by: Jingyi Wang <quic_jingyw@quicinc.com>
+
+> -----Original Message-----
+> From: Jason Gunthorpe <jgg@nvidia.com>
+> Sent: Tuesday, August 27, 2024 4:52 PM
+> To: acpica-devel@lists.linux.dev; Guohanjun (Hanjun Guo)
+> <guohanjun@huawei.com>; iommu@lists.linux.dev; Joerg Roedel
+> <joro@8bytes.org>; Kevin Tian <kevin.tian@intel.com>;
+> kvm@vger.kernel.org; Len Brown <lenb@kernel.org>; linux-
+> acpi@vger.kernel.org; linux-arm-kernel@lists.infradead.org; Lorenzo Piera=
+lisi
+> <lpieralisi@kernel.org>; Rafael J. Wysocki <rafael@kernel.org>; Robert
+> Moore <robert.moore@intel.com>; Robin Murphy
+> <robin.murphy@arm.com>; Sudeep Holla <sudeep.holla@arm.com>; Will
+> Deacon <will@kernel.org>
+> Cc: Alex Williamson <alex.williamson@redhat.com>; Eric Auger
+> <eric.auger@redhat.com>; Jean-Philippe Brucker <jean-
+> philippe@linaro.org>; Moritz Fischer <mdf@kernel.org>; Michael Shavit
+> <mshavit@google.com>; Nicolin Chen <nicolinc@nvidia.com>;
+> patches@lists.linux.dev; Shameerali Kolothum Thodi
+> <shameerali.kolothum.thodi@huawei.com>; Mostafa Saleh
+> <smostafa@google.com>
+> Subject: [PATCH v2 2/8] iommu/arm-smmu-v3: Use S2FWB when available
+>=20
+> Force Write Back (FWB) changes how the S2 IOPTE's MemAttr field
+> works. When S2FWB is supported and enabled the IOPTE will force cachable
+> access to IOMMU_CACHE memory when nesting with a S1 and deny cachable
+> access otherwise.
+>=20
+> When using a single stage of translation, a simple S2 domain, it doesn't
+> change anything as it is just a different encoding for the exsting mappin=
+g
+> of the IOMMU protection flags to cachability attributes.
+>=20
+> However, when used with a nested S1, FWB has the effect of preventing the
+> guest from choosing a MemAttr in it's S1 that would cause ordinary DMA to
+> bypass the cache. Consistent with KVM we wish to deny the guest the
+> ability to become incoherent with cached memory the hypervisor believes i=
+s
+> cachable so we don't have to flush it.
+>=20
+> Turn on S2FWB whenever the SMMU supports it and use it for all S2
+> mappings.
+>=20
+> Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
 > ---
-> patch series organized as:
-> - 1-2: remoteproc binding and driver
-> - 3-5: ufs binding and driver
-> - 6-7: rpmhpd binding and driver
-> - 8-15: bindings for other components found on the SoC
-> - 16-19: changes to support the device tree
-> 
-> dependencies:
-> tlmm: https://lore.kernel.org/linux-arm-msm/20240819064933.1778204-1-quic_jingyw@quicinc.com/
-> gcc: https://lore.kernel.org/all/20240820-qcs8300-gcc-v1-0-d81720517a82@quicinc.com/
-> interconnect: https://lore.kernel.org/linux-arm-msm/20240827151622.305-1-quic_rlaggysh@quicinc.com/
-> 
-> dtb check got following err:
-> /local/mnt/workspace/jingyi/aim500/linux/arch/arm64/boot/dts/qcom/qcs8300-ride.dtb: interconnect@1680000: Unevaluated properties are not allowed ('reg' was unexpected)
-> which is cause by "reg" compatible missing in dt binding, will be fixed in interconnect patch series.
-> 
-> ---
-> Jingyi Wang (11):
->       dt-bindings: remoteproc: qcom,sa8775p-pas: Document QCS8300 remoteproc
->       remoteproc: qcom: pas: Add QCS8300 remoteproc support
->       dt-bindings: qcom,pdc: document QCS8300 Power Domain Controller
->       dt-bindings: soc: qcom: add qcom,qcs8300-imem compatible
->       dt-bindings: mailbox: qcom-ipcc: Document QCS8300 IPCC
->       dt-bindings: mfd: qcom,tcsr: Add compatible for QCS8300
->       dt-bindings: nvmem: qfprom: Add compatible for QCS8300
->       dt-bindings: arm: qcom: document QCS8275/QCS8300 SoC and reference board
->       arm64: defconfig: enable clock controller, interconnect and pinctrl for QCS8300
->       arm64: dts: qcom: add initial support for QCS8300 DTSI
->       arm64: dts: qcom: add base QCS8300 RIDE dts
-> 
-> Kyle Deng (1):
->       dt-bindings: soc: qcom,aoss-qmp: Document the QCS8300 AOSS channel
-> 
-> Shazad Hussain (1):
->       dt-bindings: power: rpmpd: Add QCS8300 power domains
-> 
-> Tingguo Cheng (1):
->       pmdomain: qcom: rpmhpd: Add QCS8300 power domains
-> 
-> Xin Liu (3):
->       dt-bindings: phy: Add QMP UFS PHY comptible for QCS8300
->       dt-bindings: ufs: qcom: Document the QCS8300 UFS Controller
->       phy: qcom-qmp-ufs: Add support for QCS8300
-> 
-> Zhenhua Huang (2):
->       dt-bindings: arm-smmu: Add compatible for QCS8300 SoC
->       dt-bindings: firmware: qcom,scm: document SCM on QCS8300 SoCs
-> 
->  Documentation/devicetree/bindings/arm/qcom.yaml    |    8 +
->  .../devicetree/bindings/firmware/qcom,scm.yaml     |    1 +
->  .../bindings/interrupt-controller/qcom,pdc.yaml    |    1 +
->  .../devicetree/bindings/iommu/arm,smmu.yaml        |    2 +
->  .../devicetree/bindings/mailbox/qcom-ipcc.yaml     |    1 +
->  .../devicetree/bindings/mfd/qcom,tcsr.yaml         |    1 +
->  .../devicetree/bindings/nvmem/qcom,qfprom.yaml     |    1 +
->  .../bindings/phy/qcom,sc8280xp-qmp-ufs-phy.yaml    |    2 +
->  .../devicetree/bindings/power/qcom,rpmpd.yaml      |    1 +
->  .../bindings/remoteproc/qcom,sa8775p-pas.yaml      |    6 +
->  .../bindings/soc/qcom/qcom,aoss-qmp.yaml           |    1 +
->  .../devicetree/bindings/sram/qcom,imem.yaml        |    1 +
->  .../devicetree/bindings/ufs/qcom,ufs.yaml          |    2 +
->  arch/arm64/boot/dts/qcom/Makefile                  |    1 +
->  arch/arm64/boot/dts/qcom/qcs8300-ride.dts          |  246 ++++
->  arch/arm64/boot/dts/qcom/qcs8300.dtsi              | 1282 ++++++++++++++++++++
->  arch/arm64/configs/defconfig                       |    3 +
->  drivers/phy/qualcomm/phy-qcom-qmp-ufs.c            |    3 +
->  drivers/pmdomain/qcom/rpmhpd.c                     |   24 +
->  drivers/remoteproc/qcom_q6v5_pas.c                 |    3 +
->  include/dt-bindings/power/qcom-rpmpd.h             |   19 +
->  21 files changed, 1609 insertions(+)
-> ---
-> base-commit: eb8c5ca373cbb018a84eb4db25c863302c9b6314
-> change-id: 20240829-qcs8300_initial_dtsi-1a386eb317d3
-> 
-> Best regards,
-> --
-> Jingyi Wang <quic_jingyw@quicinc.com>
-> 
-> 
-> 
+
+(...)
+
+> @@ -932,7 +948,8 @@ arm_64_lpae_alloc_pgtable_s1(struct io_pgtable_cfg
+> *cfg, void *cookie)
+>  	if (cfg->quirks & ~(IO_PGTABLE_QUIRK_ARM_NS |
+>  			    IO_PGTABLE_QUIRK_ARM_TTBR1 |
+>  			    IO_PGTABLE_QUIRK_ARM_OUTER_WBWA |
+> -			    IO_PGTABLE_QUIRK_ARM_HD))
+> +			    IO_PGTABLE_QUIRK_ARM_HD |
+> +			    IO_PGTABLE_QUIRK_ARM_S2FWB))
+>  		return NULL;
+
+This should be added to arm_64_lpae_alloc_pgtable_s2(), not here.
+
+With the above fixed, I was able to assign a n/w VF dev to a Guest on a
+test hardware that supports S2FWB.
+
+However host kernel has this WARN message:
+[ 1546.165105] WARNING: CPU: 5 PID: 7047 at drivers/iommu/arm/arm-smmu-v3/a=
+rm-smmu-v3.c:1086 arm_smmu_entry_qword_diff+0x124/0x138
+....
+[ 1546.330312]  arm_smmu_entry_qword_diff+0x124/0x138
+[ 1546.335090]  arm_smmu_write_entry+0x38/0x22c
+[ 1546.339346]  arm_smmu_install_ste_for_dev+0x158/0x1ac
+[ 1546.344383]  arm_smmu_attach_dev+0x138/0x240
+[ 1546.348639]  __iommu_device_set_domain+0x7c/0x11c
+[ 1546.353330]  __iommu_group_set_domain_internal+0x60/0x134
+[ 1546.358714]  iommu_group_replace_domain+0x3c/0x68
+[ 1546.363404]  iommufd_device_do_replace+0x334/0x398
+[ 1546.368181]  iommufd_device_change_pt+0x26c/0x650
+[ 1546.372871]  iommufd_device_replace+0x18/0x24
+[ 1546.377214]  vfio_iommufd_physical_attach_ioas+0x28/0x68
+[ 1546.382514]  vfio_df_ioctl_attach_pt+0x98/0x170
 
 
-My bot found new DTB warnings on the .dts files added or changed in this
-series.
+And when I tried to use the assigned n/w dev, it seems to do a reset
+continuously.
 
-Some warnings may be from an existing SoC .dtsi. Or perhaps the warnings
-are fixed by another series. Ultimately, it is up to the platform
-maintainer whether these warnings are acceptable or not. No need to reply
-unless the platform maintainer has comments.
+root@localhost:/# ping 150.0.124.42
+PING 150.0.124.42 (150.0.124.42): 56 data bytes
+64 bytes from 150.0.124.42: seq=3D0 ttl=3D64 time=3D47.648 ms
+[ 1395.958630] hns3 0000:c2:00.0 eth1: NETDEV WATCHDOG: CPU: 1: transmit qu=
+eue 10 timed out 5260 ms
+[ 1395.960187] hns3 0000:c2:00.0 eth1: DQL info last_cnt: 42, queued: 42, a=
+dj_limit: 0, completed: 0
+[ 1395.961758] hns3 0000:c2:00.0 eth1: queue state: 0x6, delta msecs: 5260
+[ 1395.962925] hns3 0000:c2:00.0 eth1: tx_timeout count: 1, queue id: 10, S=
+W_NTU: 0x1, SW_NTC: 0x0, napi state: 16
+[ 1395.964677] hns3 0000:c2:00.0 eth1: tx_pkts: 0, tx_bytes: 0, sw_err_cnt:=
+ 0, tx_pending: 0
+[ 1395.966114] hns3 0000:c2:00.0 eth1: seg_pkt_cnt: 0, tx_more: 0, restart_=
+queue: 0, tx_busy: 0
+[ 1395.967598] hns3 0000:c2:00.0 eth1: tx_push: 1, tx_mem_doorbell: 0
+[ 1395.968687] hns3 0000:c2:00.0 eth1: BD_NUM: 0x7f HW_HEAD: 0x0, HW_TAIL: =
+0x0, BD_ERR: 0x0, INT: 0x1
+[ 1395.970291] hns3 0000:c2:00.0 eth1: RING_EN: 0x1, TC: 0x0, FBD_NUM: 0x0 =
+FBD_OFT: 0x0, EBD_NUM: 0x400, EBD_OFT: 0x0
+[ 1395.972134] hns3 0000:c2:00.0: received reset request from VF enet
 
-If you already ran DT checks and didn't see these error(s), then
-make sure dt-schema is up to date:
+All this works fine on a hardware without S2FWB though.
 
-  pip3 install dtschema --upgrade
+Also on this test hardware, it works fine with legacy VFIO assignment.
 
+Not debugged further. Please let me know if you have any hunch.
 
-New warnings running 'make CHECK_DTBS=y qcom/qcs8300-ride.dtb' for 20240904-qcs8300_initial_dtsi-v1-0-d0ea9afdc007@quicinc.com:
-
-In file included from arch/arm64/boot/dts/qcom/qcs8300-ride.dts:11:
-arch/arm64/boot/dts/qcom/qcs8300.dtsi:6:10: fatal error: dt-bindings/clock/qcom,qcs8300-gcc.h: No such file or directory
-    6 | #include <dt-bindings/clock/qcom,qcs8300-gcc.h>
-      |          ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-compilation terminated.
-make[3]: *** [scripts/Makefile.lib:434: arch/arm64/boot/dts/qcom/qcs8300-ride.dtb] Error 1
-make[2]: *** [scripts/Makefile.build:490: arch/arm64/boot/dts/qcom] Error 2
-make[2]: Target 'arch/arm64/boot/dts/qcom/qcs8300-ride.dtb' not remade because of errors.
-make[1]: *** [/home/rob/proj/linux-dt-testing/Makefile:1390: qcom/qcs8300-ride.dtb] Error 2
-make: *** [Makefile:224: __sub-make] Error 2
-make: Target 'qcom/qcs8300-ride.dtb' not remade because of errors.
-
-
+Thanks,
+Shameer
 
 
 
