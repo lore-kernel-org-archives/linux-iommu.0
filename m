@@ -1,195 +1,254 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 92BB81DB523;
-	Wed,  4 Sep 2024 13:18:13 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id ACBA01D88DA;
+	Wed,  4 Sep 2024 13:20:19 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1725455893; cv=none; b=hKFg4HGb8KAA9esg0I1Q8cKIHcRDtnfR2btRXJnnoCtskivadIa9OT2Zav/AqEpIIhcOls/JJLC7QA4Yxq4L6JbJ/RvZojl+vB3xVZNm16kBlijftn/LNfYmzJBzJB5ymHEcCtcY5dyWtsJ9veFNu/90tEpAmVj9iYhGYIpR22w=
+	t=1725456019; cv=none; b=idn+Ezh6RhDaiNKbUetCjJZA9PoDujXb7/jqdJXzebD2+1L2KkGYj9kl/rgM3QgLSdI5kOF9d32VEi2lXQsyI10Ai5alHSR85aCc7V5F3wOU7935cE8vfuvIF7lef8nUvmlaRpxeMb9Ohi3bpbjW0cmG2YyVv47QeKyFJQc3ky4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1725455893; c=relaxed/simple;
-	bh=UWgbkMn/UR7qk35hkkCjrqGkuDRLwBRgx9io5zfFQAM=;
-	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=X0wtaz351dft6CUThY4rci8nG9Ozb1+UYW6KSRQFDtJihR90Ox9pbNdr5DZIChfavPpKloi5CR8JojWze3kywAGMxXELnt12CvnWPF+m5ntLsukceaXb4tdG/wc1yGuLdpmscRuPZHUydiyMQuhYXh3fdR2NA/tp0gQEcevOfw4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=YHrDxhvS; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1725456019; c=relaxed/simple;
+	bh=ji3ee7bEt2Ak5byQ+v6Y2EgVTfP+Cys2lyvNsofcdoA=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=Fcfmn1IhOuxbIqQpFAGaczpIgl5XziHWxFSjOx90H8IZQePvQ8FdJNUakOeakW2Y6XjiLDn6GKB7FXMsBZKt95JXTgeFGi1UXF7rxL34C9wjys+ERB9Ih5Z1qFtx81cS5BNgYkyDAcA4Xgv0xHnTMXo1T+un62P3NqtDX+WBzz0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=PZTNG3ml; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="YHrDxhvS"
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 052C4C4CECE;
-	Wed,  4 Sep 2024 13:18:13 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="PZTNG3ml"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 96A20C4CEC2;
+	Wed,  4 Sep 2024 13:20:05 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1725455893;
-	bh=UWgbkMn/UR7qk35hkkCjrqGkuDRLwBRgx9io5zfFQAM=;
-	h=From:Date:Subject:References:In-Reply-To:To:Cc:Reply-To:From;
-	b=YHrDxhvSuBZPGMEOUdxszLH4hFZUJGd1sDfUetNoxaJZx6YZXaIWLosteY3XOEJ56
-	 qOxRUJuASLtbeE5Xtw7pBDPyWkpIvt8tbO1DLEW7w3NTt+R9ihpyQfTWGKQWrCjPx3
-	 fuFji01h453lUitBNlL7GW4/CBNI5Qxm8Gps2jINAu9U3sFG82CgKrWlWHmEMaASXn
-	 Xo8VdbUn2wAr5iuvOZOW+U79XoSf7JB24Jk+yEa6Bhob38hM9sb4YEerhnW7Kf9+aj
-	 mraWIeYvrbSQI/sWnZkOP8xiCHT+k0n9Z7ZjdpGHHmgVEU85/lbiYXYqLCJq8Nm9N3
-	 RzN9yZEIT525g==
-Received: from aws-us-west-2-korg-lkml-1.web.codeaurora.org (localhost.localdomain [127.0.0.1])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F19F1CD484C;
-	Wed,  4 Sep 2024 13:18:12 +0000 (UTC)
-From: Joel Granados via B4 Relay <devnull+j.granados.samsung.com@kernel.org>
-Date: Wed, 04 Sep 2024 15:17:16 +0200
-Subject: [PATCH 5/6] iommu: init pasid array while doing domain_replace and
- iopf is active
+	s=k20201202; t=1725456019;
+	bh=ji3ee7bEt2Ak5byQ+v6Y2EgVTfP+Cys2lyvNsofcdoA=;
+	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+	b=PZTNG3mlNHjLFyRUe+aJGbLfCjMrZHGnPiJXxH3DOSQkSOUGQs4G1MqXKAQkZyMrD
+	 MTPyenlX1AWmw2AOBy1sY7GVkv2BU9rJk8HM/lpS91WTlZqVQP5UBe4apMEgMTkBdf
+	 +WorKXTE07Nv0zr+NiGRnLGLkHQo2dbYIeDRA0hGWXQeuYP32Zm6wNXmTw3f3nzQFM
+	 EGDXdyY99qaV0ua7gq/OR8v8iaiyQl0QIXNbsNzLCHif1FGPXRiaVI1r3VvPFgdKoo
+	 OK9iF56M4geqQmx8wHFNK5Phqh8UhvZxUHYcRHuDw2Vs6HAAVlsFlMyvkE14qOJqJE
+	 nrgxHXpA3wpww==
+Message-ID: <3529c7ef-95e1-42b0-93c3-6ac4266c4b19@kernel.org>
+Date: Wed, 4 Sep 2024 15:20:01 +0200
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v2 15/21] dt-bindings: i2c: document support for SA8255p
+To: Nikunj Kela <quic_nkela@quicinc.com>
+Cc: andersson@kernel.org, konradybcio@kernel.org, robh@kernel.org,
+ krzk+dt@kernel.org, conor+dt@kernel.org, rafael@kernel.org,
+ viresh.kumar@linaro.org, herbert@gondor.apana.org.au, davem@davemloft.net,
+ sudeep.holla@arm.com, andi.shyti@kernel.org, tglx@linutronix.de,
+ will@kernel.org, robin.murphy@arm.com, joro@8bytes.org,
+ jassisinghbrar@gmail.com, lee@kernel.org, linus.walleij@linaro.org,
+ amitk@kernel.org, thara.gopinath@gmail.com, broonie@kernel.org,
+ cristian.marussi@arm.com, rui.zhang@intel.com, lukasz.luba@arm.com,
+ wim@linux-watchdog.org, linux@roeck-us.net, linux-arm-msm@vger.kernel.org,
+ devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+ linux-pm@vger.kernel.org, linux-crypto@vger.kernel.org,
+ arm-scmi@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+ linux-i2c@vger.kernel.org, iommu@lists.linux.dev,
+ linux-gpio@vger.kernel.org, linux-serial@vger.kernel.org,
+ linux-spi@vger.kernel.org, linux-watchdog@vger.kernel.org,
+ kernel@quicinc.com, quic_psodagud@quicinc.com,
+ Praveen Talari <quic_ptalari@quicinc.com>
+References: <20240828203721.2751904-1-quic_nkela@quicinc.com>
+ <20240903220240.2594102-1-quic_nkela@quicinc.com>
+ <20240903220240.2594102-16-quic_nkela@quicinc.com>
+ <xtguaoof7iblrtd2idsa2k4ml64qkttgliyijbeqw5thkdcbx3@jnm75a4wmbqd>
+ <06968d9d-0428-4fe8-8526-c91db3d9f0e7@quicinc.com>
+From: Krzysztof Kozlowski <krzk@kernel.org>
+Content-Language: en-US
+Autocrypt: addr=krzk@kernel.org; keydata=
+ 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 fv0=
+In-Reply-To: <06968d9d-0428-4fe8-8526-c91db3d9f0e7@quicinc.com>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-Message-Id: <20240904-jag-iopfv8-v1-5-e3549920adf3@samsung.com>
-References: <20240904-jag-iopfv8-v1-0-e3549920adf3@samsung.com>
-In-Reply-To: <20240904-jag-iopfv8-v1-0-e3549920adf3@samsung.com>
-To: David Woodhouse <dwmw2@infradead.org>, 
- Lu Baolu <baolu.lu@linux.intel.com>, Joerg Roedel <joro@8bytes.org>, 
- Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>, 
- Jason Gunthorpe <jgg@ziepe.ca>, Kevin Tian <kevin.tian@intel.com>, 
- Klaus Jensen <its@irrelevant.dk>
-Cc: linux-kernel@vger.kernel.org, iommu@lists.linux.dev, 
- Joel Granados <j.granados@samsung.com>
-X-Mailer: b4 0.15-dev-00a43
-X-Developer-Signature: v=1; a=openpgp-sha256; l=3911;
- i=j.granados@samsung.com; h=from:subject:message-id;
- bh=pU8Ysqx41tEvpDjmz62CzUVFAwe2mnVh/jqq0I7a6v8=;
- b=owJ4nAHtARL+kA0DAAoBupfNUreWQU8ByyZiAGbYXhL2ESnsvHmBgN6QUX2UvqogpeVAeLBju
- RlQvGICyARVfokBswQAAQoAHRYhBK5HCVcl5jElzssnkLqXzVK3lkFPBQJm2F4SAAoJELqXzVK3
- lkFPKPEL/0W3YFk6CZ063mfvqtAhaSNefjunJndB/tIn3/8SYtcSFlkwcglU8f60FsycxaA7pQP
- wt5i8nC1bKuklEe+/HFO59YQP3qJrA6ksrA2GxSpimLj7zGZ+5A4T+Igv+1xPAio8xmLyDin6F8
- c7hHnssgc6MnWXBt21Z+SuJHSOGH2ZZt42uGRa2dfiedbJ/R+1EASlhK7/PpjUWVcwu6m1qWLAk
- sUVTtQ+3/ububVeuQluvvqEoRYIQckZs/TQckdGyQiloAB0oDAC658bLVAM9XO3Z7JyAcl2bo9W
- x8kShMtes53jIJMB9X+new/KNrut3AXrgijUe8V6kGQsRG0sj5gWo8pkUg/CJlUy6/cMsTq708h
- 1QjmCnMk0UbHCJoFao7QR/UlOZhnmGzf0wwxz92yzVkTCc1DvvqqiNUSyeK9IdQoqu5Sq1jRTx6
- AKweNOKGOmdB3N+t/LPplSwKiq8ku4dUY1Yf5ys7tPN/KvQsuvpxrHqGYsYKc0WD596hKRiV8o6
- kw=
-X-Developer-Key: i=j.granados@samsung.com; a=openpgp;
- fpr=F1F8E46D30F0F6C4A45FF4465895FAAC338C6E77
-X-Endpoint-Received: by B4 Relay for j.granados@samsung.com/default with
- auth_id=70
-X-Original-From: Joel Granados <j.granados@samsung.com>
-Reply-To: j.granados@samsung.com
 
-From: Joel Granados <j.granados@samsung.com>
+On 04/09/2024 14:41, Nikunj Kela wrote:
+> 
+> On 9/3/2024 11:31 PM, Krzysztof Kozlowski wrote:
+>> On Tue, Sep 03, 2024 at 03:02:34PM -0700, Nikunj Kela wrote:
+>>> Add compatible representing i2c support on SA8255p.
+>>>
+>>> Clocks and interconnects are being configured in Firmware VM
+>>> on SA8255p, therefore making them optional.
+>>>
+>>> CC: Praveen Talari <quic_ptalari@quicinc.com>
+>>> Signed-off-by: Nikunj Kela <quic_nkela@quicinc.com>
+>>> ---
+>>>  .../bindings/i2c/qcom,i2c-geni-qcom.yaml      | 33 +++++++++++++++++--
+>>>  1 file changed, 31 insertions(+), 2 deletions(-)
+>>>
+>> I don't know what to do with this patch. Using specific compatibles next
+>> to generic compatible is just wrong, although mistake was probably
+>> allowing generic compatible. The patch does not explain the differences
+>> in interface which would explain why devices are not compatible.
+> 
+> I mentioned in the description that clocks and interconnects on this
+> platform are configured in Firmware VM(over SCMI using power and perf
+> domains) therefore this is not compatible with existing generic compatible.
 
-iommu_report_device_fault expects a pasid array to have an
-iommu_attach_handle when a fault is detected. Add this handle when the
-replacing hwpt has a valid iommufd fault object. Remove it when we
-release ownership of the group.
+It is not obvious to me. I doubt it is obvious to others. Commit msg
+does not say they are compatible and usually difference in
+clocks/interconnects is not reason of incompatibility. So why suddenly
+here we would understand it differently?
 
-Signed-off-by: Joel Granados <j.granados@samsung.com>
----
- drivers/iommu/iommu-priv.h    |  3 +++
- drivers/iommu/iommu.c         | 30 ++++++++++++++++++++++++++++++
- drivers/iommu/iommufd/fault.c | 22 ++++++++++++++++++++++
- 3 files changed, 55 insertions(+)
 
-diff --git a/drivers/iommu/iommu-priv.h b/drivers/iommu/iommu-priv.h
-index de5b54eaa8bf..493e501badc7 100644
---- a/drivers/iommu/iommu-priv.h
-+++ b/drivers/iommu/iommu-priv.h
-@@ -38,6 +38,9 @@ void iommu_device_unregister_bus(struct iommu_device *iommu,
- struct iommu_attach_handle *iommu_attach_handle_get(struct iommu_group *group,
- 						    ioasid_t pasid,
- 						    unsigned int type);
-+int iommu_init_pasid_array(struct iommu_domain *domain,
-+			   struct iommu_group *group,
-+			   struct iommu_attach_handle *handle);
- int iommu_attach_group_handle(struct iommu_domain *domain,
- 			      struct iommu_group *group,
- 			      struct iommu_attach_handle *handle);
-diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-index ed6c5cb60c5a..64ae1cf571aa 100644
---- a/drivers/iommu/iommu.c
-+++ b/drivers/iommu/iommu.c
-@@ -3262,6 +3262,9 @@ EXPORT_SYMBOL_GPL(iommu_device_claim_dma_owner);
- 
- static void __iommu_release_dma_ownership(struct iommu_group *group)
- {
-+	if (!xa_empty(&group->pasid_array))
-+		xa_erase(&group->pasid_array, IOMMU_NO_PASID);
-+
- 	if (WARN_ON(!group->owner_cnt || !group->owner ||
- 		    !xa_empty(&group->pasid_array)))
- 		return;
-@@ -3495,6 +3498,33 @@ iommu_attach_handle_get(struct iommu_group *group, ioasid_t pasid, unsigned int
- }
- EXPORT_SYMBOL_NS_GPL(iommu_attach_handle_get, IOMMUFD_INTERNAL);
- 
-+/**
-+ * iommu_init_pasid_array - Initialize pasid array in the domain group
-+ *
-+ * Returns 0 on success. Error code on failure
-+ *
-+ * An IOMMU_NO_PASID element is *NOT* replaced if there is one already there.
-+ */
-+int iommu_init_pasid_array(struct iommu_domain *domain,
-+			   struct iommu_group *group,
-+			   struct iommu_attach_handle *handle)
-+{
-+	int ret;
-+
-+	if (handle)
-+		handle->domain = domain;
-+
-+	mutex_lock(&group->mutex);
-+	ret = xa_insert(&group->pasid_array, IOMMU_NO_PASID, handle, GFP_KERNEL);
-+	mutex_unlock(&group->mutex);
-+
-+	if (ret == -EBUSY)
-+		ret = 0;
-+
-+	return ret;
-+}
-+EXPORT_SYMBOL_NS_GPL(iommu_init_pasid_array, IOMMUFD_INTERNAL);
-+
- /**
-  * iommu_attach_group_handle - Attach an IOMMU domain to an IOMMU group
-  * @domain: IOMMU domain to attach
-diff --git a/drivers/iommu/iommufd/fault.c b/drivers/iommu/iommufd/fault.c
-index a643d5c7c535..ea7f1bf64892 100644
---- a/drivers/iommu/iommufd/fault.c
-+++ b/drivers/iommu/iommufd/fault.c
-@@ -178,6 +178,25 @@ static int __fault_domain_replace_dev(struct iommufd_device *idev,
- 	return ret;
- }
- 
-+static int iommufd_init_pasid_array(struct iommu_domain *domain,
-+				  struct iommufd_device *idev)
-+{
-+	int ret;
-+	struct iommufd_attach_handle *handle;
-+	struct iommu_group *group = idev->igroup->group;
-+
-+	handle = kzalloc(sizeof(*handle), GFP_KERNEL);
-+	if (!handle)
-+		return -ENOMEM;
-+	handle->idev = idev;
-+
-+	ret = iommu_init_pasid_array(domain, group, &handle->handle);
-+	if (ret)
-+		kfree(handle);
-+
-+	return ret;
-+}
-+
- int iommufd_fault_domain_replace_dev(struct iommufd_device *idev,
- 				     struct iommufd_hw_pagetable *hwpt,
- 				     struct iommufd_hw_pagetable *old)
-@@ -190,6 +209,9 @@ int iommufd_fault_domain_replace_dev(struct iommufd_device *idev,
- 		ret = iommufd_fault_iopf_enable(idev);
- 		if (ret)
- 			return ret;
-+
-+		if (iommufd_init_pasid_array(hwpt->domain, idev))
-+			return -EINVAL;
- 	}
- 
- 	ret = __fault_domain_replace_dev(idev, hwpt, old);
+> 
+> 
+>>  In the
+>> same time my advice of separate binding was not followed, because maybe
+>> these devices are compatible? But then it should be expressed...
+> 
+> Sorry, I missed that. You want me to use 'oneOf' expression with this
+> compatible?
 
--- 
-2.43.0
+I proposed separate binding file. But your commit msg suggested these
+are compatible. Lack of driver change is also proof of that.
 
+I don't want to keep discussing this because it does not lead to
+anywhere. We keep repeating the same.
+
+> 
+> 
+>>
+>> You have entire commit msg to explain what and why.
+> 
+> Will put more details in description.
+> 
+> 
+>>> diff --git a/Documentation/devicetree/bindings/i2c/qcom,i2c-geni-qcom.yaml b/Documentation/devicetree/bindings/i2c/qcom,i2c-geni-qcom.yaml
+>>> index 9f66a3bb1f80..b477fae734b6 100644
+>>> --- a/Documentation/devicetree/bindings/i2c/qcom,i2c-geni-qcom.yaml
+>>> +++ b/Documentation/devicetree/bindings/i2c/qcom,i2c-geni-qcom.yaml
+>>> @@ -15,6 +15,7 @@ properties:
+>>>      enum:
+>>>        - qcom,geni-i2c
+>>>        - qcom,geni-i2c-master-hub
+>>> +      - qcom,sa8255p-geni-i2c
+>>>  
+>>>    clocks:
+>>>      minItems: 1
+>>> @@ -69,8 +70,6 @@ properties:
+>>>  required:
+>>>    - compatible
+>>>    - interrupts
+>>> -  - clocks
+>>> -  - clock-names
+>>>    - reg
+>>>  
+>>>  allOf:
+>>> @@ -81,6 +80,10 @@ allOf:
+>>>            contains:
+>>>              const: qcom,geni-i2c-master-hub
+>>>      then:
+>>> +      required:
+>>> +        - clocks
+>>> +        - clock-names
+>>
+>> So it is required here?
+> 
+> We are removing clocks from generic required list and enforcing rules
+> for all compatibles other than sa8255p.
+> 
+> 
+>>> +
+>>>        properties:
+>>>          clocks:
+>>>            minItems: 2
+>>> @@ -100,7 +103,21 @@ allOf:
+>>>            items:
+>>>              - const: qup-core
+>>>              - const: qup-config
+>>> +
+>>> +  - if:
+>>> +      properties:
+>>> +        compatible:
+>>> +          contains:
+>>> +            const: qcom,sa8255p-geni-i2c
+>>> +    then:
+>>> +      required:
+>>> +        - power-domains
+>>> +
+>> And possible here? I assume with the same clocks? The same for
+>> interconnects - same values are valid?
+> 
+> I guess I need to put here the same description as in the cover letter
+> to make it more clear. We are not using clocks and interconnects in this
+> platform in Linux. Instead, sending request to Firmware VM over
+> SCMI(using power and perf protocols)
+> 
+> 
+>>
+>>>      else:
+>>> +      required:
+>>> +        - clocks
+>>> +        - clock-names
+>> And clocks are required again?
+> Explained above.
+>>> +
+>>>        properties:
+>>>          clocks:
+>>>            maxItems: 1
+>> Eeee? So now all other variants have max 1 clock?
+> 
+> I will make if block for sa8255p up so else is not applied to rest of
+> the platforms.
+> 
+> 
+>>
+>> Nope, this wasn't ever tested on real DTS.
+> 
+> This is tested on SA8255p DTS and I ran DT schema check on SA8775p DT as
+> well.
+
+You just affected all the DTS everywhere. It's your task to check all
+DTS everywhere. Not ours.
+
+Best regards,
+Krzysztof
 
