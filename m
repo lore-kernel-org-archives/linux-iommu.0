@@ -1,123 +1,103 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.19])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 66A34BE6F
-	for <iommu@lists.linux.dev>; Wed,  4 Sep 2024 01:41:35 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.19
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 59D6A3211;
+	Wed,  4 Sep 2024 01:50:08 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1725414097; cv=none; b=HonpS1HUTv+DGBNmBjWI5KkiV1cdlOs5uPnvwXtMdgMLU+O9rjABjjVdbrzWpOliynsA7Nk9PDT5VK1BWI/HTojy05fUFk7yQhMZeOvdayvBvi/Tf+he0URusgZyvMEX1hrO5ox4AfkAAzMfNjhovFQuy6QkMLTcCuzXTdwmT3Y=
+	t=1725414608; cv=none; b=P/ngmW3zT49Xqd2PnAeBwkh+ve5BVICmDE1NTYJJdge74KefuwVaHAus5pnukVrZSS2SSLiCWPVFgajGbLhQmUgfgv7Maiu2IiHL7mIEzJCKeaKEm22D8AYgHVw20feYYaYE8TzUddHTEotVZfuAFLz1TJFNODzCZo2g5GsHyL0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1725414097; c=relaxed/simple;
-	bh=UnnpCwlE+so5Kv+8OWodgftABGvoZ8EJKADD4dklPFs=;
-	h=Message-ID:Date:MIME-Version:Cc:Subject:To:References:From:
-	 In-Reply-To:Content-Type; b=E1cSNO2FD+lIfmpisWgx5nWfzLez/nQmsbC6uNbC4+U31GrdWdTARWKs+x2dbLN8MEgDQlLgVUHkkWxAEacWchz6o28OQxZkh1OOJxmWw1w526PIHJffjWCTxNhETlN/SbxkHqimfkIZoVLMcvPKz+Fulb7jdQ/r9Cx5H6xHXTU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=XUF1/3BS; arc=none smtp.client-ip=198.175.65.19
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
+	s=arc-20240116; t=1725414608; c=relaxed/simple;
+	bh=4AQxlfwksI8M0lXuPBfgDWfUUeO7Xwm6/Q69FGEDaqE=;
+	h=Date:Content-Type:MIME-Version:From:To:Cc:In-Reply-To:References:
+	 Message-Id:Subject; b=Bf07VAvSoWJ+nAeiW8MfCQS4ADKdpvknOTWLeIM8dFcLjGGXZAONCiXaRg7qZNZ2BiKBX2f3e3TFVIpfhMebThfTvG/O8+fTMhxTGCR3iI+i/Qg1FonPxKcOSLwCsAI0s53+Zpasrty0f5gmxRpP7ePt9KgKuoto+FQ0/NAIxqY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=jsadccl/; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="XUF1/3BS"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1725414096; x=1756950096;
-  h=message-id:date:mime-version:cc:subject:to:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=UnnpCwlE+so5Kv+8OWodgftABGvoZ8EJKADD4dklPFs=;
-  b=XUF1/3BS6hVZtyI3ZKOLUcRozj11k17OIPO5dfRFUhr5ks6mvtk5bSkN
-   CdklSPvucRbScXQo0anDSt+ilwQOnHf7AI8/IYcmawfLnxpKptkdi9fh6
-   yQGg9gB70UsGw8mbMHjGKbrVJ7rBaahOmiyJ90pQtWfvW+VRT10E4y8kS
-   SqJDx5xqxqfSIPi2tFxnEYPfqIAfpXXvkcOwOi1oZAwzNTHIUdMmVmUF1
-   I+CrB3AUYMpXEwwc+BBBWX696NYClK0RJFf3nNeaLj8hYUILecUSBVt14
-   KtQHsmwyawW7HPvmXflLceraHaH/K5cRXYzoMbcvnSCcgwLpxPYV9aevc
-   w==;
-X-CSE-ConnectionGUID: koDjhGlxT8ah9raZAmuBHg==
-X-CSE-MsgGUID: GOWxITsBQ2qh2/g/uOrv/Q==
-X-IronPort-AV: E=McAfee;i="6700,10204,11184"; a="23909352"
-X-IronPort-AV: E=Sophos;i="6.10,200,1719903600"; 
-   d="scan'208";a="23909352"
-Received: from orviesa005.jf.intel.com ([10.64.159.145])
-  by orvoesa111.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Sep 2024 18:41:34 -0700
-X-CSE-ConnectionGUID: agDQG6ANS5aB5angA94v7g==
-X-CSE-MsgGUID: TrK6lBzwST6Nh/6mqu1t2g==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.10,200,1719903600"; 
-   d="scan'208";a="69927690"
-Received: from allen-box.sh.intel.com (HELO [10.239.159.127]) ([10.239.159.127])
-  by orviesa005.jf.intel.com with ESMTP; 03 Sep 2024 18:41:32 -0700
-Message-ID: <8ab86203-ce4e-464d-81ea-2425e769d8a1@linux.intel.com>
-Date: Wed, 4 Sep 2024 09:37:35 +0800
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="jsadccl/"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 853F8C4CEC4;
+	Wed,  4 Sep 2024 01:50:07 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1725414607;
+	bh=4AQxlfwksI8M0lXuPBfgDWfUUeO7Xwm6/Q69FGEDaqE=;
+	h=Date:From:To:Cc:In-Reply-To:References:Subject:From;
+	b=jsadccl/9E+PbXaq+qBmbPd7/PjPSWuCGCCzZgXrCdzxotTCt+t4Jh4/bmoJd9CVw
+	 H8TFVkWCnT6PO3N5msofWRplIEzvDa/Eg5k4rOBS65A+0zhdG8IyexgNbEl8PJPjw+
+	 IPqvsG8xcWU4KoDxTm0aKsnESTEtPBfW/2JJhC2yZ7oNtXlbcdYda/gKsGnl9kjiks
+	 zYIezEibBc9qTHTav6i6r2l9PCUv9D8lgvmxWdNEEHSR/qOB+sf1qlb4hUUhVYAkeY
+	 sRh9O478wwJmKVRY2p7fE4R/AvzwSGarhGRI5N4ZYyVZuwxFz3ZGhNiy/K7VPANfL9
+	 HopuyFoAQZ++g==
+Date: Tue, 03 Sep 2024 20:50:06 -0500
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Cc: baolu.lu@linux.intel.com, Jason Gunthorpe <jgg@ziepe.ca>,
- Klaus Jensen <its@irrelevant.dk>, David Woodhouse <dwmw2@infradead.org>,
- Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
- Robin Murphy <robin.murphy@arm.com>, Kevin Tian <kevin.tian@intel.com>,
- Minwoo Im <minwoo.im@samsung.com>, linux-kernel@vger.kernel.org,
- iommu@lists.linux.dev, Klaus Jensen <k.jensen@samsung.com>
-Subject: Re: [PATCH RFC PREVIEW 0/6] iommu: enable user space iopfs in
- non-nested and non-svm cases
-To: Joel Granados <j.granados@samsung.com>
-References: <20240826-iopf-for-all-v1-0-59174e6a7528@samsung.com>
- <CGME20240826140000eucas1p2b422169d0d2c633f64461b2152e9ae97@eucas1p2.samsung.com>
- <20240826135955.GI3468552@ziepe.ca>
- <20240902104819.a2jto6l3tv2h5wvq@joelS2.panther.com>
- <d1e1370a-0714-4da8-b645-f56d83ab0159@linux.intel.com>
- <20240903132018.yi2xuyrp7v3npfmt@joelS2.panther.com>
-Content-Language: en-US
-From: Baolu Lu <baolu.lu@linux.intel.com>
-In-Reply-To: <20240903132018.yi2xuyrp7v3npfmt@joelS2.panther.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+From: "Rob Herring (Arm)" <robh@kernel.org>
+To: Nikunj Kela <quic_nkela@quicinc.com>
+Cc: devicetree@vger.kernel.org, cristian.marussi@arm.com, 
+ rui.zhang@intel.com, linux-spi@vger.kernel.org, lee@kernel.org, 
+ krzk+dt@kernel.org, will@kernel.org, linux-arm-msm@vger.kernel.org, 
+ linus.walleij@linaro.org, joro@8bytes.org, linux-kernel@vger.kernel.org, 
+ robin.murphy@arm.com, quic_psodagud@quicinc.com, conor+dt@kernel.org, 
+ kernel@quicinc.com, sudeep.holla@arm.com, linux-serial@vger.kernel.org, 
+ linux-i2c@vger.kernel.org, herbert@gondor.apana.org.au, 
+ konradybcio@kernel.org, jassisinghbrar@gmail.com, 
+ linux-gpio@vger.kernel.org, linux-pm@vger.kernel.org, andersson@kernel.org, 
+ lukasz.luba@arm.com, iommu@lists.linux.dev, linux-watchdog@vger.kernel.org, 
+ broonie@kernel.org, rafael@kernel.org, davem@davemloft.net, 
+ arm-scmi@vger.kernel.org, thara.gopinath@gmail.com, viresh.kumar@linaro.org, 
+ linux@roeck-us.net, amitk@kernel.org, wim@linux-watchdog.org, 
+ andi.shyti@kernel.org, linux-arm-kernel@lists.infradead.org, 
+ tglx@linutronix.de, linux-crypto@vger.kernel.org
+In-Reply-To: <20240903220240.2594102-14-quic_nkela@quicinc.com>
+References: <20240828203721.2751904-1-quic_nkela@quicinc.com>
+ <20240903220240.2594102-1-quic_nkela@quicinc.com>
+ <20240903220240.2594102-14-quic_nkela@quicinc.com>
+Message-Id: <172541460656.3237041.12121704663662726692.robh@kernel.org>
+Subject: Re: [PATCH v2 13/21] dt-bindings: pinctrl: Add SA8255p TLMM
 
-On 9/3/24 9:20 PM, Joel Granados wrote:
-> On Mon, Sep 02, 2024 at 08:47:21PM +0800, Baolu Lu wrote:
->> On 2024/9/2 18:48, Joel Granados wrote:
->>>> I definitely expect PRI to work outside PASID and SVA cases, so this
->>>> is going in a good direction
->>> This touches on a detail (at least in Intel's vtd-io spec) that is not
->>> 100% clear to me. Second paragraph of section "3.4.3 Scalable Mode
->>> Address Translation" reads:
->>> "
->>>     ... Scalable-mode context-entries support both requests-without-PASID
->>>     and requests-with-PASID. However unlike legacy mode, in scalable-mode,
->>>     requests-without-PASID obtain a PASID value from the RID_PASID field of
->>>     the scalable-mode context- entry and are processed similarly to
->>>     requests-with-PASID.Implementations not supporting RID_PASID capability
->>>     (ECAP_REG.RPS is 0b), use a PASID value of 0 to perform address
->>>     translation for requests without PASID.
->>> "
->>> This basically means that a default PASID is used even though the
->>> request is without PASID. Right? Therefore "outside PASID" means with
->>> the default PASID (at least in Intels case). Right?
->> Kind of yes.
->>
->> The PCI specification defines the concept of PASID and its role in
->> transaction routing. We refer to PCI transactions with a PASID prefix as
->> "request-with-PASID" and those without a PASID prefix as "request-
->> without-PASID." Consequently, I understand 'outside PASID' to mean
->> transactions that do not have a PASID prefix.
->>
->> The VT-d specification describes how the IOMMU hardware handles request-
->> without-PASID. It uses a reserved PASID for its internal routing and
->> handling purposes. If RID_PASID is supported (ECAP_REG.RPS=1), software
->> can select its own reserved PASID. Otherwise, the IOMMU hardware will
->> use a default value of 0.
->>
-> Thx for getting back to me. This generates another doubt in my head
-> regarding the published capabilities from the intel IOMMU Hardware:
+
+On Tue, 03 Sep 2024 15:02:32 -0700, Nikunj Kela wrote:
+> Add compatible for TLMM block representing support on SA8255p.
 > 
-> So ecap_pasid [1] does not have to be set in scalable-mode. Right? This
-> allows hardware supporting scalable-mode to reject transactions with
-> PASID whenever ecap_pasid is*NOT*  set; even though internally things
-> are handled with a PASID. This question is directly related to the two
-> last patches in the set.5/6 and 6/6.
+> SA8255p uses the same TLMM block as SA8775p however the ownership
+> of pins are split between Firmware VM and Linux VM on SA8255p. For
+> example, pins used by UART are owned and configured by Firmware VM
+> while pins used by ethernet are owned and configured by Linux VM.
+> Therefore, adding a sa8255p specific compatible to mark the difference.
+> 
+> Signed-off-by: Nikunj Kela <quic_nkela@quicinc.com>
+> ---
+>  .../devicetree/bindings/pinctrl/qcom,sa8775p-tlmm.yaml    | 8 +++++++-
+>  1 file changed, 7 insertions(+), 1 deletion(-)
+> 
 
-Yes. And 5/6, 6/6 make sense to me. We should remove the PASID
-restriction from the code once PRI is split from SVA.
+My bot found errors running 'make dt_binding_check' on your patch:
 
-Thanks,
-baolu
+yamllint warnings/errors:
+./Documentation/devicetree/bindings/pinctrl/qcom,sa8775p-tlmm.yaml:22:9: [warning] wrong indentation: expected 10 but found 8 (indentation)
+./Documentation/devicetree/bindings/pinctrl/qcom,sa8775p-tlmm.yaml:23:11: [warning] wrong indentation: expected 12 but found 10 (indentation)
+./Documentation/devicetree/bindings/pinctrl/qcom,sa8775p-tlmm.yaml:26:9: [warning] wrong indentation: expected 10 but found 8 (indentation)
+
+dtschema/dtc warnings/errors:
+
+doc reference errors (make refcheckdocs):
+
+See https://patchwork.ozlabs.org/project/devicetree-bindings/patch/20240903220240.2594102-14-quic_nkela@quicinc.com
+
+The base for the series is generally the latest rc1. A different dependency
+should be noted in *this* patch.
+
+If you already ran 'make dt_binding_check' and didn't see the above
+error(s), then make sure 'yamllint' is installed and dt-schema is up to
+date:
+
+pip3 install dtschema --upgrade
+
+Please check and re-submit after running the above command yourself. Note
+that DT_SCHEMA_FILES can be set to your schema file to speed up checking
+your schema. However, it must be unset to test all examples with your schema.
+
