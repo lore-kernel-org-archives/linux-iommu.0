@@ -1,150 +1,207 @@
-Received: from NAM11-CO1-obe.outbound.protection.outlook.com (mail-co1nam11on2085.outbound.protection.outlook.com [40.107.220.85])
+Received: from bali.collaboradmins.com (bali.collaboradmins.com [148.251.105.195])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7C89B1DA2FD
-	for <iommu@lists.linux.dev>; Wed,  4 Sep 2024 14:51:11 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.220.85
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1725461472; cv=fail; b=X+QzX1H4vNOAIjrRF2k85Y2E9Y7XDhzBkoyaff4lmcEDrsUwAmvIsHlQtkIdkHb03VF+W4dU31Rh8p882k+WU4szZra8XDdEeSwM/OepGfkfmr4R2mMCrAoULa4EuC3f2AjPIg9serqGFfnHRkHKcL83ltLiSx231rcA6uWrkFo=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1725461472; c=relaxed/simple;
-	bh=n2Rqw8vl0YBx+YD80PjfVx0tCiDU8kdvnYRSqcDcxK8=;
-	h=Date:From:To:CC:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=Rz7Q5gsf63HVNBO627WREE4oZ9PmRPrII94CHlGXybGK1VveOjEAiG93ZZGGNOO4CsaRPzIM0OUyK/VVaOGvleAGdBSXV3DFo3AJzRoNie2nn/myWk6hU2nn0eduZirVrPyEFndmVFDxCEYc+ZCr1m5srKKe6CDZCQW7ENNk+5A=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=XuqZKLlG; arc=fail smtp.client-ip=40.107.220.85
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 394C41DC078;
+	Wed,  4 Sep 2024 14:59:38 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=148.251.105.195
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1725461982; cv=none; b=fB6vZiLpBP6QtlkoT7YKo92zJtuSb8Yg4TtmnRaIBdQF3j254bCf1MwSBoWLBKwEm8nFDMg8dXE2ImkI2N2dKrZ4zJcQz4XonWelqStj1CZSc359oxyTU/xaH14g7Xu/wDlpBIgSSaFdBUdcOmVjU/1tibA6XuKcg1c6HOh7QZQ=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1725461982; c=relaxed/simple;
+	bh=un8Ep5MZe8u3hniH8cbxJUJwLU4jDlXGHUAN0L4HI0U=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=cEjkWnPrbiCHiFR8F3kQI9diMjmDRevZaA3Mdm6SxJ9w/l5UmP4JT+RDK+eI/pzhaZC25tyae1oLVNvF7hb5pOAZ0SxLxxnmjEYvczHy5bqNOUG/mIDhRkLjFIA8ZarmaY56yYJGaLTu9FNf+4BgjL315kTEQGJTdUuDP0qBNxY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=collabora.com; spf=pass smtp.mailfrom=collabora.com; dkim=pass (2048-bit key) header.d=collabora.com header.i=@collabora.com header.b=Dk0Gkft5; arc=none smtp.client-ip=148.251.105.195
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=collabora.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=collabora.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="XuqZKLlG"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=G9XyH3JNI0jysIDvPZfjkRH01K79nhasrZICBqnMf5LbKuf7km++2/mDd+i5X7zZoeW2+TFdZHctAgtownOOU+wP6/YI52ipgLi3UVmNZDRhliuIj4r4ol4ByCSSh5xcrnGCagvBHfenP4o2tErseAqZXqyv7/up1BlgCcT7Y+70s5WTB5ucC4ALIjDVImpH1KdJKO84Xj6GyCRYoxAzCWh6Jqrc4xy4hubbDVtplZA3i4O38XyGWW3/28bRFJrrE89jRYqGCBZmZpArWjgiS30D/7CUQ5r0TAj2HL8mDPqZv35LmgPAf1j2pxqYMqmcaVcpZHJj+GJkeNR1e86Z5g==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=I+bG+zeJ/DwHwhkzkrhIE6ZfSfIQNLp3o8ruvVhFs4k=;
- b=Xax4mIRnhPJQ1X0Lwa1ujNewl/1O/45iNwRbt8pkUMFbe5/3eL0ycyCWic98v84ZAGeOG70DVYCi7a9Cvm2lMdeML2+OiQ3bxikjY64iVe7f32TnsQnUn6WN5ExrIHKhtX40MrTpaMUxFXto6Og4Diqh0zVbAC+YCZZIqL6l2l41wa4DcrZoNaKwx7gQ2X5A7U1Ahnu6+9mf5vIS3yq3tBtOLxGscp2g7MKkQ5bOvjlcnCwDjAgv5hZ9jlgo6L9I3TqPMfLL8FqpvJ9nESvgqT5vr5bgPGXEAAwIwrPpk4FJbxpyD0wDAA+AMWeC9mNSCzqO9valqwMdX76jE5E/tA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 216.228.117.161) smtp.rcpttodomain=linaro.org smtp.mailfrom=nvidia.com;
- dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
- dkim=none (message not signed); arc=none (0)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=I+bG+zeJ/DwHwhkzkrhIE6ZfSfIQNLp3o8ruvVhFs4k=;
- b=XuqZKLlGI0VkYCjKIYZkmoTi6nsWkN/msTHIPSdZQ34UPKYbv3uF0u5cHBqSFQXuOhcAjoIxtNjgFQh5mKAuKfCuUzIRhWbeiIFvZ7f7JqB01Y9VS5Dd7GEOCvfAXIxF3WHxMxYBC3aKBfEo53ZyZ8NZFKac3rucfuxTV78aiGu3eCI/3aU1HPZSfsJ/oKI/LpHHC/qAAC3oo7H5tUvms2xJ9rTtrHjk54LuWNEJ1yD/EG31bpy/GzpNeFc8x0aqx/xFUU5qWHCfvvdACv0wuJ79taew561NdVw9KQgkhZll+XQJaG9sBsTlmYEPLlRukKC4oDmfpd0ZdIRERoQAZA==
-Received: from CY5PR13CA0002.namprd13.prod.outlook.com (2603:10b6:930::10) by
- MW6PR12MB7085.namprd12.prod.outlook.com (2603:10b6:303:238::9) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.7918.27; Wed, 4 Sep 2024 14:51:07 +0000
-Received: from CY4PEPF0000FCBF.namprd03.prod.outlook.com
- (2603:10b6:930:0:cafe::8f) by CY5PR13CA0002.outlook.office365.com
- (2603:10b6:930::10) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7939.14 via Frontend
- Transport; Wed, 4 Sep 2024 14:51:07 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.117.161)
- smtp.mailfrom=nvidia.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=nvidia.com;
-Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 216.228.117.161 as permitted sender) receiver=protection.outlook.com;
- client-ip=216.228.117.161; helo=mail.nvidia.com; pr=C
-Received: from mail.nvidia.com (216.228.117.161) by
- CY4PEPF0000FCBF.mail.protection.outlook.com (10.167.242.101) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.7918.13 via Frontend Transport; Wed, 4 Sep 2024 14:51:07 +0000
-Received: from rnnvmail201.nvidia.com (10.129.68.8) by mail.nvidia.com
- (10.129.200.67) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1544.4; Wed, 4 Sep 2024
- 07:50:50 -0700
-Received: from rnnvmail202.nvidia.com (10.129.68.7) by rnnvmail201.nvidia.com
- (10.129.68.8) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1544.4; Wed, 4 Sep 2024
- 07:50:49 -0700
-Received: from Asurada-Nvidia (10.127.8.9) by mail.nvidia.com (10.129.68.7)
- with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1544.4 via Frontend
- Transport; Wed, 4 Sep 2024 07:50:48 -0700
-Date: Wed, 4 Sep 2024 07:50:47 -0700
-From: Nicolin Chen <nicolinc@nvidia.com>
-To: Dan Carpenter <dan.carpenter@linaro.org>
-CC: Nate Watterson <nwatterson@nvidia.com>, Thierry Reding
-	<thierry.reding@gmail.com>, Krishna Reddy <vdumpa@nvidia.com>, Will Deacon
-	<will@kernel.org>, Robin Murphy <robin.murphy@arm.com>, Joerg Roedel
-	<joro@8bytes.org>, Jonathan Hunter <jonathanh@nvidia.com>, Jason Gunthorpe
-	<jgg@ziepe.ca>, <linux-tegra@vger.kernel.org>,
-	<linux-arm-kernel@lists.infradead.org>, <iommu@lists.linux.dev>,
-	<linux-kernel@vger.kernel.org>, <kernel-janitors@vger.kernel.org>
-Subject: Re: [PATCH next] iommu/tegra241-cmdqv: Fix ioremap() error handling
- in probe()
-Message-ID: <Zthzx06kZv+FyXJT@Asurada-Nvidia>
-References: <5a6c1e9a-0724-41b1-86d4-36335d3768ea@stanley.mountain>
+	dkim=pass (2048-bit key) header.d=collabora.com header.i=@collabora.com header.b="Dk0Gkft5"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
+	s=mail; t=1725461977;
+	bh=un8Ep5MZe8u3hniH8cbxJUJwLU4jDlXGHUAN0L4HI0U=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=Dk0Gkft5rcrtZdfjiqMcr0oDrSCNuMgFxap/sNFLJnMvND2nKf/va+cLk+PgpQ9+v
+	 LqZXFZgFksy7UC/S5B14DKgBe9ZFbbVz0TJuRht+rmCIqngELplbLyiatEW0iJ15qO
+	 /XSsHXg3jf2ESrN58o8eNQQB+9O5tp0CwpWXBL5FFfP9ozQcvYphLul7KLci7uonX8
+	 jMtGd8Bm7gRcpKatdpycE6VuvKZTi/8hDBW+cTbnQMrCS9MICx5657lQK3O/Pd6wlc
+	 EONQTVN/jqynTCVTUneFQbc82988ILWzeXKCwKpvxoYCkBO3Ko2V/oZenwET+CWprs
+	 NT1nnCMEQx6sg==
+Received: from notapiano (pool-100-2-116-133.nycmny.fios.verizon.net [100.2.116.133])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange ECDHE (prime256v1) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+	(No client certificate requested)
+	(Authenticated sender: nfraprado)
+	by bali.collaboradmins.com (Postfix) with ESMTPSA id 8C8D817E1167;
+	Wed,  4 Sep 2024 16:59:35 +0200 (CEST)
+Date: Wed, 4 Sep 2024 10:59:33 -0400
+From: =?utf-8?B?TsOtY29sYXMgRi4gUi4gQS4=?= Prado <nfraprado@collabora.com>
+To: Leon Romanovsky <leon@kernel.org>
+Cc: Christoph Hellwig <hch@lst.de>, Robin Murphy <robin.murphy@arm.com>,
+	Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
+	Marek Szyprowski <m.szyprowski@samsung.com>,
+	Leon Romanovsky <leonro@nvidia.com>,
+	Easwar Hariharan <eahariha@linux.microsoft.com>,
+	linux-kernel@vger.kernel.org, iommu@lists.linux.dev,
+	Jason Gunthorpe <jgg@nvidia.com>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	regressions@lists.linux.dev, kernelci@lists.linux.dev,
+	kernel@collabora.com
+Subject: Re: [PATCH v4 2/2] dma: add IOMMU static calls with clear default ops
+Message-ID: <10431dfd-ce04-4e0f-973b-c78477303c18@notapiano>
+References: <cover.1721818168.git.leon@kernel.org>
+ <c3179690b16d790d5bfd7d0afabac9b90922ec28.1721818168.git.leon@kernel.org>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset=iso-8859-1
 Content-Disposition: inline
-In-Reply-To: <5a6c1e9a-0724-41b1-86d4-36335d3768ea@stanley.mountain>
-X-NV-OnPremToCloud: ExternallySecured
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: CY4PEPF0000FCBF:EE_|MW6PR12MB7085:EE_
-X-MS-Office365-Filtering-Correlation-Id: 386db542-abb9-4c0b-e1a5-08dcccf10224
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|376014|82310400026|7416014|36860700013|1800799024;
-X-Microsoft-Antispam-Message-Info:
-	=?us-ascii?Q?QxMWuZ3jQELLbkYHEAkX+rmjYsC670/Nj90adwYhU3m6k7ZNZ9nlz9ivhBiP?=
- =?us-ascii?Q?LUiqd4Zs20EyWifmqX+uOtR5n6hl7dGCyneTy5CLmlhRnKgS5bULL8I3k7tu?=
- =?us-ascii?Q?PsGeCptzj2bQ8QSPqhKyK6uu6jcYuaZfXHq1lK40MbJ61nUymxiY/NNcrtpw?=
- =?us-ascii?Q?DbBPHLIKMboylZ6bJ8Q1pqjo/BMD/29Q7UT2eA+qL52gUJ9pfQMEl2jIIG5Z?=
- =?us-ascii?Q?LR+rgtMKTifENBgA3Qj2adQLhTLOpPDzHW9WFwJBXmvSco7abLLDrqJNWF2N?=
- =?us-ascii?Q?UGQVu7/fXyCsegSp0j+/jBdJMzWo7oHKLpCrKfJAOKqgvtqqqK3LcpyjoxuT?=
- =?us-ascii?Q?S5IOpNDY1/3U73Uj0mQv/gL3r/jnLAqzT+ILW5P0iLlRDSU7N3RhXUPxdScu?=
- =?us-ascii?Q?yrp1ga9xt/IEou0EqCgUYX9n4muYaNDbmEQCuH2pInzji9T05+CAhb9NCJCx?=
- =?us-ascii?Q?XRLNLaA7qej8YXQDS9UnjGBFzbmUFCHsX2lxXDTEg5AxV6LYNUlNAwJTyXyv?=
- =?us-ascii?Q?zJU82maZ8ioyPYKk2eujhDbUIwuGTvUVWtzVBFR1KWxMHjn25Q/l7VsSVV6u?=
- =?us-ascii?Q?HxIu1aB1Ef1bOD8Rutz4X0aXVBXqelVxkcIPlB/lUxM+nTpN+VtrM+FarmJt?=
- =?us-ascii?Q?IYsmVFw0jkbOYUwsjkSyR0JO/GDQpQZo9UCoQF0iR08c8czWv7FKEwRb7LHd?=
- =?us-ascii?Q?Ko/EiSeGisB2tOs5QVdz+tWplvt3P11Vj9Vg0F0ZAdx+ZTpGCZCJgXT4EMG3?=
- =?us-ascii?Q?7dclzWZZfJj2i/X1W/gR/6mZlIcm7J2tyht16OXSjzRHkGx9G9gkh6VRdyY+?=
- =?us-ascii?Q?4/7WcrbLgTlU3wKTzmHVZGLe9RyAOhCkQ45XGbKeSWGJqz8Xe+yns5iaJEi6?=
- =?us-ascii?Q?7szmTXEw+ApDfIMQKkfTeKHokQNadI4/j8ar/aY4KFEo8o5sGpjMvdEFv21e?=
- =?us-ascii?Q?Esa+3wNgHCES53c7u3uVZh+73I1Z61EDrc9NB8xH9/UK5hTqnXRecr+QOgmk?=
- =?us-ascii?Q?iVGwxToUGTAukD8eI7U5OGJLpqYkXmV3nTkvQoubkzdOXzL3lxy1gQZIA9G+?=
- =?us-ascii?Q?aGwnO9LqaL83CQ5AN/TD2EcRyE0h03lGNWDYfleSvaS8XjV4qCZQlUKdKAwM?=
- =?us-ascii?Q?g9STLKl8y/sMfb181aOSYhJ4XeMPjWkDgUvsUnC6ICqbuyuA5oNS1cRV1yyM?=
- =?us-ascii?Q?4zL7RWQUoWnJKCs4Q/Nd49GX0pqiRxdFK1iEOectyCmMJseSBFNl9VxgtdqU?=
- =?us-ascii?Q?RyCTkjV3EsNLRcc3ILoiZSVr1XnTmpfP75ZAhmHe6g3F0E5Giipv+KC5pFXs?=
- =?us-ascii?Q?YwtpUuu+SvUixoWXT5hgycSSlCaNhnl+OsquJ+5GqZK1F6WVQWKqkG1sl6Mi?=
- =?us-ascii?Q?fxGfpiKuFUBIYqGsRgnF3S8BNMFSVFlolbkgCgXfFvUGnssuB1dH+d/jThKw?=
- =?us-ascii?Q?hmoBRB7cdO52RTi203nYIfUIrZ22jlD9?=
-X-Forefront-Antispam-Report:
-	CIP:216.228.117.161;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc6edge2.nvidia.com;CAT:NONE;SFS:(13230040)(376014)(82310400026)(7416014)(36860700013)(1800799024);DIR:OUT;SFP:1101;
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 04 Sep 2024 14:51:07.3517
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 386db542-abb9-4c0b-e1a5-08dcccf10224
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.117.161];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource:
-	CY4PEPF0000FCBF.namprd03.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MW6PR12MB7085
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <c3179690b16d790d5bfd7d0afabac9b90922ec28.1721818168.git.leon@kernel.org>
 
-On Wed, Sep 04, 2024 at 11:02:43AM +0300, Dan Carpenter wrote:
-> The ioremap() function doesn't return error pointers, it returns NULL
-> on error so update the error handling.  Also just return directly
-> instead of calling iounmap() on the NULL pointer.  Calling
-> iounmap(NULL) doesn't cause a problem on ARM but on other architectures
-> it can trigger a warning so it'a bad habbit.
+On Wed, Jul 24, 2024 at 09:04:49PM +0300, Leon Romanovsky wrote:
+> From: Leon Romanovsky <leonro@nvidia.com>
 > 
-> Fixes: 918eb5c856f6 ("iommu/arm-smmu-v3: Add in-kernel support for NVIDIA Tegra241 (Grace) CMDQV")
-> Signed-off-by: Dan Carpenter <dan.carpenter@linaro.org>
+> Most of the arch DMA ops (which often, but not always, involve
+> some sort of IOMMU) are using the same DMA operations, but for all
+> modern platforms dma-iommu implementation is really matters.
+> 
+> So let's make sure to call them directly without need to perform
+> function pointers dereference.
+> 
+> During system initialization, the arch can set its own DMA and in such
+> case, the default DMA operations will be overridden.
+> 
+> Signed-off-by: Leon Romanovsky <leonro@nvidia.com>
+> Signed-off-by: Leon Romanovsky <leon@kernel.org>
+> ---
 
-Reviewed-by: Nicolin Chen <nicolinc@nvidia.com>
+Hi,
 
-Thanks!
+KernelCI has identified a boot regression originating from this patch. I've
+verified that reverting the patch fixes the issue.
+
+Affected platforms:
+* sc7180-trogdor-kingoftown
+* sc7180-trogdor-lazor-limozeen
+
+Relevant kernel log:
+
+[    5.790809] Unable to handle kernel NULL pointer dereference at virtual address 0000000000000040
+[    5.799844] Mem abort info:
+[    5.799846]   ESR = 0x0000000096000006
+[    5.808708]   EC = 0x25: DABT (current EL), IL = 32 bits
+[    5.808712]   SET = 0, FnV = 0
+[    5.808714]   EA = 0, S1PTW = 0
+[    5.818465]   FSC = 0x06: level 2 translation fault
+[    5.818468] Data abort info:
+[    5.818469]   ISV = 0, ISS = 0x00000006, ISS2 = 0x00000000
+[    5.827063]   CM = 0, WnR = 0, TnD = 0, TagAccess = 0
+[    5.827065]   GCS = 0, Overlay = 0, DirtyBit = 0, Xs = 0
+[    5.838768] user pgtable: 4k pages, 48-bit VAs, pgdp=00000000d20bb000
+[    5.838771] [0000000000000040] pgd=08000000d20c1003
+[    5.863071] , p4d=08000000d20c1003
+[    5.898011] , pud=08000000d20c2003, pmd=0000000000000000
+[    5.898014] Internal error: Oops: 0000000096000006 [#1] PREEMPT SMP
+[    5.898016] Modules linked in: ipv6 hci_uart venus_core btqca v4l2_mem2mem btrtl qcom_spmi_adc5 sbs_battery btbcm qcom_vadc_common cros_ec_typec videobuf2_v4l2 leds_cros_ec cros_kbd_led_backlight cros_ec_chardev videodev elan_i2c videobuf2_common qcom_stats mc bluetooth coresight_stm stm_core ecdh_generic ecc pwrseq_core panel_edp icc_bwmon ath10k_snoc ath10k_core ath mac80211 phy_qcom_qmp_combo aux_bridge libarc4 coresight_replicator coresight_etm4x coresight_tmc coresight_funnel cfg80211 rfkill coresight qcom_wdt cbmem ramoops reed_solomon pwm_bl coreboot_table backlight crct10dif_ce
+[    5.898057] CPU: 7 UID: 0 PID: 70 Comm: kworker/u32:4 Not tainted 6.11.0-rc6-next-20240903-00003-gdfc6015d0711 #660
+[    5.898061] Hardware name: Google Lazor Limozeen without Touchscreen (rev5 - rev8) (DT)
+[    5.898062] Workqueue: events_unbound deferred_probe_work_func
+[    5.904227] hub 2-1:1.0: 4 ports detected
+[    5.906827]
+[    5.906828] pstate: 80400009 (Nzcv daif +PAN -UAO -TCO -DIT -SSBS BTYPE=--)
+[    5.906831] pc : dma_common_alloc_pages+0x54/0x1b4
+[    5.906837] lr : dma_common_alloc_pages+0x4c/0x1b4
+[    5.906839] sp : ffff8000807d3730
+[    5.906840] x29: ffff8000807d3730 x28: ffff02a7d312f880 x27: 0000000000000001
+[    5.906843] x26: 000000000000c000 x25: 0000000000000000 x24: 0000000000000001
+[    5.906845] x23: ffff02a7d23b6898 x22: 0000000000006cc0 x21: 000000000000c000
+[    5.906847] x20: ffff02a7858bf410 x19: fffffe0a60006000 x18: 0000000000000001
+[    5.906850] x17: 00000000000000d5 x16: 1fffe054f0bcc261 x15: 0000000000000001
+[    5.906852] x14: ffff02a7844dc680 x13: 0000000000100180 x12: dead000000000100
+[    5.906855] x11: dead000000000122 x10: 00000000001001ff x9 : ffff02a87f7b7b00
+[    5.906857] x8 : ffff02a87f7b7b00 x7 : ffff405977d6b000 x6 : ffff8000807d3310
+[    5.906860] x5 : ffff02a87f6b6398 x4 : 0000000000000001 x3 : ffff405977d6b000
+[    6.092491] x2 : ffff02a7844dc600 x1 : 0000000100000000 x0 : fffffe0a60006000
+[    6.099809] Call trace:
+[    6.102327]  dma_common_alloc_pages+0x54/0x1b4
+[    6.106895]  __dma_alloc_pages+0x68/0x90
+[    6.110921]  dma_alloc_pages+0x10/0x1c
+[    6.114772]  snd_dma_noncoherent_alloc+0x28/0x8c
+[    6.119514]  __snd_dma_alloc_pages+0x30/0x50
+[    6.123897]  snd_dma_alloc_dir_pages+0x40/0x80
+[    6.128465]  do_alloc_pages+0xb8/0x13c
+[    6.132315]  preallocate_pcm_pages+0x6c/0xf8
+[    6.132317]  preallocate_pages+0x160/0x1a4
+[    6.132319]  snd_pcm_set_managed_buffer_all+0x64/0xb0
+[    6.152964]  lpass_platform_pcm_new+0xc0/0xe8
+[    6.157443]  snd_soc_pcm_component_new+0x3c/0xc8
+[    6.162184]  soc_new_pcm+0x4fc/0x668
+[    6.165853]  snd_soc_bind_card+0xabc/0xbac
+[    6.170063]  snd_soc_register_card+0xf0/0x108
+[    6.174533]  devm_snd_soc_register_card+0x4c/0xa4
+[    6.179361]  sc7180_snd_platform_probe+0x180/0x224
+[    6.184285]  platform_probe+0x68/0xc0
+[    6.188050]  really_probe+0xbc/0x298
+[    6.191717]  __driver_probe_device+0x78/0x12c
+[    6.196186]  driver_probe_device+0x3c/0x15c
+[    6.200481]  __device_attach_driver+0xb8/0x134
+[    6.205047]  bus_for_each_drv+0x84/0xe0
+[    6.208985]  __device_attach+0x9c/0x188
+[    6.212924]  device_initial_probe+0x14/0x20
+[    6.217219]  bus_probe_device+0xac/0xb0
+[    6.221157]  deferred_probe_work_func+0x88/0xc0
+[    6.225810]  process_one_work+0x14c/0x28c
+[    6.229923]  worker_thread+0x2cc/0x3d4
+[    6.233773]  kthread+0x114/0x118
+[    6.237093]  ret_from_fork+0x10/0x20
+[    6.240763] Code: f9411c19 940000c9 aa0003f3 b4000460 (f9402326)
+[    6.247012] ---[ end trace 0000000000000000 ]---
+
+See below for the suspicious hunk.
+
+[..]
+> diff --git a/kernel/dma/mapping.c b/kernel/dma/mapping.c
+> index 6832fd6f0796..02451e27e0b1 100644
+> --- a/kernel/dma/mapping.c
+> +++ b/kernel/dma/mapping.c
+[..]
+> @@ -611,6 +662,8 @@ static struct page *__dma_alloc_pages(struct device *dev, size_t size,
+>  	size = PAGE_ALIGN(size);
+>  	if (dma_alloc_direct(dev, ops))
+>  		return dma_direct_alloc_pages(dev, size, dma_handle, dir, gfp);
+> +	if (use_dma_iommu(dev))
+> +		return dma_common_alloc_pages(dev, size, dma_handle, dir, gfp);
+
+Is this check correct? dma_common_alloc_pages uses the dma_ops, but the comment
+in dma_iommu said it meant that dma_ops wouldn't be used.
+
+And similarly for dma_common_free_pages below.
+
+>  	if (!ops->alloc_pages_op)
+>  		return NULL;
+>  	return ops->alloc_pages_op(dev, size, dma_handle, dir, gfp);
+> @@ -635,6 +688,8 @@ static void __dma_free_pages(struct device *dev, size_t size, struct page *page,
+>  	size = PAGE_ALIGN(size);
+>  	if (dma_alloc_direct(dev, ops))
+>  		dma_direct_free_pages(dev, size, page, dma_handle, dir);
+> +	else if (use_dma_iommu(dev))
+> +		dma_common_free_pages(dev, size, page, dma_handle, dir);
+>  	else if (ops->free_pages)
+>  		ops->free_pages(dev, size, page, dma_handle, dir);
+>  }
+[..]
+
+Please add
+Reported-by: Nícolas F. R. A. Prado <nfraprado@collabora.com> #KernelCI
+when fixing this.
+
+Happy to provide any other details necessary.
+
+#regzbot introduced: next-20240822..20240823
+#regzbot title: Null pointer dereference in dma_common_alloc_pages() for sc7180 platforms
+
+Thanks,
+Nícolas
