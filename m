@@ -1,115 +1,121 @@
-Received: from szxga05-in.huawei.com (szxga05-in.huawei.com [45.249.212.191])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-wr1-f44.google.com (mail-wr1-f44.google.com [209.85.221.44])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2E8CB83CA3;
-	Wed,  4 Sep 2024 07:11:24 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=45.249.212.191
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4D0AC146D7F
+	for <iommu@lists.linux.dev>; Wed,  4 Sep 2024 07:29:33 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.44
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1725433887; cv=none; b=EQKwgrSY3IzI2owztw/Jec02rOWIfOQ7bDSl//ulXQsF83j+GBrYS2LoawbPWW+926xkgAB9qYPyK8D5MRj2IK9ke9m0EoAHpJgvXqa0j0Ie0moxkBIu+cdrFe5tNklm4/nQcoG5I8mCOeaAYz9uTQ+heT0Z4+0iC64VhA+XgKs=
+	t=1725434975; cv=none; b=GvYJPIjhR9n/35dwiPl1zXyPiilLkjVpqLg6z7NfVMH5Kc5A1kkBgtZ7WlQ/nKOB0VvURUPq9IZOXFnJXXu8Tl32Afw2bG7ZPLr8iQVyelGj9BZyTPiwn3hQNIluYB/0oCgqJJZeITn5nvhyTWoIdwT+oB9zyBP+o9TEJWVuQIw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1725433887; c=relaxed/simple;
-	bh=XUia+7rc1rUXT14/Otf2vEXD49C/QKG8Z2n50lG3/SI=;
-	h=From:To:CC:Subject:Date:Message-ID:References:In-Reply-To:
-	 Content-Type:MIME-Version; b=kRXp3+Ms7w+ge6M0aLWOmUXhsD3fmkNo6gUVBsvMO0/IDSK+pJ2rneeTC7EDal+O6t6pCHP5423B87EmTq20vBaJAkQ3XAiz9MYzVOdgjltLhH8w73Vf5zYkutELBW/AfqIiJxOnKUnEBVj0pXv/l3p/MEJke2ZbHmzjTFVUgA8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=huawei.com; spf=pass smtp.mailfrom=huawei.com; arc=none smtp.client-ip=45.249.212.191
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=huawei.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=huawei.com
-Received: from mail.maildlp.com (unknown [172.19.163.44])
-	by szxga05-in.huawei.com (SkyGuard) with ESMTP id 4WzD8q1Tdvz1HJ84;
-	Wed,  4 Sep 2024 15:07:55 +0800 (CST)
-Received: from dggpemf200002.china.huawei.com (unknown [7.185.36.244])
-	by mail.maildlp.com (Postfix) with ESMTPS id 8227714011D;
-	Wed,  4 Sep 2024 15:11:22 +0800 (CST)
-Received: from lhrpeml500005.china.huawei.com (7.191.163.240) by
- dggpemf200002.china.huawei.com (7.185.36.244) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.1544.11; Wed, 4 Sep 2024 15:11:21 +0800
-Received: from lhrpeml500005.china.huawei.com ([7.191.163.240]) by
- lhrpeml500005.china.huawei.com ([7.191.163.240]) with mapi id 15.01.2507.039;
- Wed, 4 Sep 2024 08:11:19 +0100
-From: Shameerali Kolothum Thodi <shameerali.kolothum.thodi@huawei.com>
-To: Jason Gunthorpe <jgg@nvidia.com>, Mostafa Saleh <smostafa@google.com>
-CC: "acpica-devel@lists.linux.dev" <acpica-devel@lists.linux.dev>, "Guohanjun
- (Hanjun Guo)" <guohanjun@huawei.com>, "iommu@lists.linux.dev"
-	<iommu@lists.linux.dev>, Joerg Roedel <joro@8bytes.org>, Kevin Tian
-	<kevin.tian@intel.com>, "kvm@vger.kernel.org" <kvm@vger.kernel.org>, "Len
- Brown" <lenb@kernel.org>, "linux-acpi@vger.kernel.org"
-	<linux-acpi@vger.kernel.org>, "linux-arm-kernel@lists.infradead.org"
-	<linux-arm-kernel@lists.infradead.org>, Lorenzo Pieralisi
-	<lpieralisi@kernel.org>, "Rafael J. Wysocki" <rafael@kernel.org>, "Robert
- Moore" <robert.moore@intel.com>, Robin Murphy <robin.murphy@arm.com>, "Sudeep
- Holla" <sudeep.holla@arm.com>, Will Deacon <will@kernel.org>, Alex Williamson
-	<alex.williamson@redhat.com>, Eric Auger <eric.auger@redhat.com>,
-	Jean-Philippe Brucker <jean-philippe@linaro.org>, Moritz Fischer
-	<mdf@kernel.org>, Michael Shavit <mshavit@google.com>, Nicolin Chen
-	<nicolinc@nvidia.com>, "patches@lists.linux.dev" <patches@lists.linux.dev>
-Subject: RE: [PATCH v2 6/8] iommu/arm-smmu-v3: Support IOMMU_GET_HW_INFO via
- struct arm_smmu_hw_info
-Thread-Topic: [PATCH v2 6/8] iommu/arm-smmu-v3: Support IOMMU_GET_HW_INFO via
- struct arm_smmu_hw_info
-Thread-Index: AQHa+JkM44hgQT3eCE+0H/cNBDIGbrI/3zqAgAAfZACABEBRAIAA7EQAgACK+ICAAP0kgIAAil8A
-Date: Wed, 4 Sep 2024 07:11:19 +0000
-Message-ID: <9e8153c95b664726bd7fcb6d0605610a@huawei.com>
-References: <0-v2-621370057090+91fec-smmuv3_nesting_jgg@nvidia.com>
- <6-v2-621370057090+91fec-smmuv3_nesting_jgg@nvidia.com>
- <ZtHj_X6Gt91TlUZG@google.com> <20240830171602.GX3773488@nvidia.com>
- <ZtWPRDsQ-VV-6juL@google.com> <20240903001654.GE3773488@nvidia.com>
- <ZtbKCb9FTt5gjERf@google.com> <20240903234019.GI3773488@nvidia.com>
-In-Reply-To: <20240903234019.GI3773488@nvidia.com>
-Accept-Language: en-GB, en-US
-Content-Language: en-US
-X-MS-Has-Attach:
-X-MS-TNEF-Correlator:
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+	s=arc-20240116; t=1725434975; c=relaxed/simple;
+	bh=pRN7+oax/Nx7fvJN49hPQ3AHM2UQgGliWcqGdCj8pt8=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=ezs3MTc83+iDzv+JSZ91EW0DACI86r9CfgXqrsngqFrmbQc+dqKFzomZ2+XIy94qr17276wz1xlpUecPK7wxsFTcDOY5gVPHEAdWXYeOc0Rn2sLDxAQaCEtXy7JyelhP6LuKNUQxXJ5hihJotPri+qGTH3OmDu4aNHBznhzIbiI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org; spf=pass smtp.mailfrom=linaro.org; dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b=M5LvlQN6; arc=none smtp.client-ip=209.85.221.44
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linaro.org
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="M5LvlQN6"
+Received: by mail-wr1-f44.google.com with SMTP id ffacd0b85a97d-3780c8d689aso42793f8f.0
+        for <iommu@lists.linux.dev>; Wed, 04 Sep 2024 00:29:33 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google; t=1725434972; x=1726039772; darn=lists.linux.dev;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=fxPvC9OW9Ktpk2Avz/xTd0h7tOPJO4rWjfU5sl7IhvM=;
+        b=M5LvlQN6KBcsHIFTUIQ149djFfOQ0tZet0DuhB8n7tO6RN3mKqUUlI3MyOGgFbbqR3
+         nKkBCraS5p4s32+PzOHlPHxc4Ifss8QhsOFquJH7L6deCa7LbYSBCpH4jvmx2jk1BvfP
+         +dkQ8wpyjSY7vRWJCPQ7Uy9VR9IpGy15Lw+09E9TVLmUKoeaEsPOEc9raTZGWKoAFtzx
+         8KaZhIt6Llby4VVFOjIGFdRah8U74ftD8JhdfuYGQ/KSIkjJHuxX465aZnn7WKxAGDiN
+         quXQff+BITF4UG1iFc9e8B/BpT1b7xsQVm9WLuvatIFnKdf8677SgdwqETVg/CtZq5Rx
+         h6sA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1725434972; x=1726039772;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=fxPvC9OW9Ktpk2Avz/xTd0h7tOPJO4rWjfU5sl7IhvM=;
+        b=J/G7ATAqyGWT0FhlZOrgjcyxxwIspfkUdcMjA7zTLEczKrNzoTxSLoP0UHThDIf1Ix
+         zi3dSVMOsbA0Q88doDey4t8j66bF4lmieSQ0Yr73l7z1S7IMu4TE2Rvg1s4A4pBLQtlc
+         PXUYYypOVtjhRW/WwxHndAHdZaBy2jzm9iQ1gN9/IYGVOpkdr6kPke+wzqv1pSYZElhH
+         2TQ78L7sjludCbh2IL82bPZo372ngb4YH022+wy/bAnp/HH43FI1+O1wzha8E5TkmNhw
+         OKpZa24eQXFompk0r630fwgRAOCtxIFU4E7fMSo/lCEeEwAtYScTJ4S/If08cfm7ESIV
+         +3Uw==
+X-Forwarded-Encrypted: i=1; AJvYcCVwCprtAEGiNvxUXfyPwtPGZbVcvi9hjR7qUg/gb/b1LavGNro+misd5vpqwIUUqdtJi4vApw==@lists.linux.dev
+X-Gm-Message-State: AOJu0Yw4MFn1JzrtBB5tD6eZjBxu9rnCeTYtGr4rIfCyQIb+ndFwmMeY
+	gGxkto773sGm6sZHOnv5DrJapuNZBogjdHwFlcU+POmjwFcj9vuGW7Kr4dYy2wo=
+X-Google-Smtp-Source: AGHT+IHS2N4DM93OxlN4GCTiko29IiTesLd3W6cV51JphfgkdKeiGc8BCj/MKUEwKpW7mkvvyUK9wA==
+X-Received: by 2002:a5d:514c:0:b0:374:bdd7:f848 with SMTP id ffacd0b85a97d-376df0055acmr2155949f8f.59.1725434971515;
+        Wed, 04 Sep 2024 00:29:31 -0700 (PDT)
+Received: from localhost ([196.207.164.177])
+        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-42ba639671dsm232317455e9.5.2024.09.04.00.29.30
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 04 Sep 2024 00:29:31 -0700 (PDT)
+Date: Wed, 4 Sep 2024 10:29:26 +0300
+From: Dan Carpenter <dan.carpenter@linaro.org>
+To: Nicolin Chen <nicolinc@nvidia.com>
+Cc: will@kernel.org, robin.murphy@arm.com, joro@8bytes.org, jgg@nvidia.com,
+	thierry.reding@gmail.com, vdumpa@nvidia.com, jonathanh@nvidia.com,
+	linux-kernel@vger.kernel.org, iommu@lists.linux.dev,
+	linux-arm-kernel@lists.infradead.org, linux-tegra@vger.kernel.org
+Subject: Re: [PATCH v14 08/10] iommu/arm-smmu-v3: Add in-kernel support for
+ NVIDIA Tegra241 (Grace) CMDQV
+Message-ID: <38b6ed33-886f-4ec7-9196-1728f1d8c1b3@stanley.mountain>
+References: <cover.1724970714.git.nicolinc@nvidia.com>
+ <dce50490b2c10b7254fb36aa73ed7ffd812b283a.1724970714.git.nicolinc@nvidia.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <dce50490b2c10b7254fb36aa73ed7ffd812b283a.1724970714.git.nicolinc@nvidia.com>
 
-DQoNCj4gLS0tLS1PcmlnaW5hbCBNZXNzYWdlLS0tLS0NCj4gRnJvbTogSmFzb24gR3VudGhvcnBl
-IDxqZ2dAbnZpZGlhLmNvbT4NCj4gU2VudDogV2VkbmVzZGF5LCBTZXB0ZW1iZXIgNCwgMjAyNCAx
-Mjo0MCBBTQ0KPiBUbzogTW9zdGFmYSBTYWxlaCA8c21vc3RhZmFAZ29vZ2xlLmNvbT4NCj4gQ2M6
-IGFjcGljYS1kZXZlbEBsaXN0cy5saW51eC5kZXY7IEd1b2hhbmp1biAoSGFuanVuIEd1bykNCj4g
-PGd1b2hhbmp1bkBodWF3ZWkuY29tPjsgaW9tbXVAbGlzdHMubGludXguZGV2OyBKb2VyZyBSb2Vk
-ZWwNCj4gPGpvcm9AOGJ5dGVzLm9yZz47IEtldmluIFRpYW4gPGtldmluLnRpYW5AaW50ZWwuY29t
-PjsNCj4ga3ZtQHZnZXIua2VybmVsLm9yZzsgTGVuIEJyb3duIDxsZW5iQGtlcm5lbC5vcmc+OyBs
-aW51eC0NCj4gYWNwaUB2Z2VyLmtlcm5lbC5vcmc7IGxpbnV4LWFybS1rZXJuZWxAbGlzdHMuaW5m
-cmFkZWFkLm9yZzsgTG9yZW56byBQaWVyYWxpc2kNCj4gPGxwaWVyYWxpc2lAa2VybmVsLm9yZz47
-IFJhZmFlbCBKLiBXeXNvY2tpIDxyYWZhZWxAa2VybmVsLm9yZz47IFJvYmVydA0KPiBNb29yZSA8
-cm9iZXJ0Lm1vb3JlQGludGVsLmNvbT47IFJvYmluIE11cnBoeQ0KPiA8cm9iaW4ubXVycGh5QGFy
-bS5jb20+OyBTdWRlZXAgSG9sbGEgPHN1ZGVlcC5ob2xsYUBhcm0uY29tPjsgV2lsbA0KPiBEZWFj
-b24gPHdpbGxAa2VybmVsLm9yZz47IEFsZXggV2lsbGlhbXNvbiA8YWxleC53aWxsaWFtc29uQHJl
-ZGhhdC5jb20+Ow0KPiBFcmljIEF1Z2VyIDxlcmljLmF1Z2VyQHJlZGhhdC5jb20+OyBKZWFuLVBo
-aWxpcHBlIEJydWNrZXIgPGplYW4tDQo+IHBoaWxpcHBlQGxpbmFyby5vcmc+OyBNb3JpdHogRmlz
-Y2hlciA8bWRmQGtlcm5lbC5vcmc+OyBNaWNoYWVsIFNoYXZpdA0KPiA8bXNoYXZpdEBnb29nbGUu
-Y29tPjsgTmljb2xpbiBDaGVuIDxuaWNvbGluY0BudmlkaWEuY29tPjsNCj4gcGF0Y2hlc0BsaXN0
-cy5saW51eC5kZXY7IFNoYW1lZXJhbGkgS29sb3RodW0gVGhvZGkNCj4gPHNoYW1lZXJhbGkua29s
-b3RodW0udGhvZGlAaHVhd2VpLmNvbT4NCj4gU3ViamVjdDogUmU6IFtQQVRDSCB2MiA2LzhdIGlv
-bW11L2FybS1zbW11LXYzOiBTdXBwb3J0DQo+IElPTU1VX0dFVF9IV19JTkZPIHZpYSBzdHJ1Y3Qg
-YXJtX3NtbXVfaHdfaW5mbw0KPiANCj4gT24gVHVlLCBTZXAgMDMsIDIwMjQgYXQgMDg6MzQ6MTdB
-TSArMDAwMCwgTW9zdGFmYSBTYWxlaCB3cm90ZToNCj4gDQo+ID4gPiA+IEZvciBleGFtcGxlLCBL
-Vk0gZG9lc27igJl0IGFsbG93IHJlYWRpbmcgcmVhZGluZyB0aGUgQ1BVIHN5c3RlbQ0KPiA+ID4g
-PiByZWdpc3RlcnMgdG8ga25vdyBpZiBTVkUob3Igb3RoZXIgZmVhdHVyZXMpIGlzIHN1cHBvcnRl
-ZCBidXQgaGlkZXMNCj4gPiA+ID4gdGhhdCBieSBhIENBUCBpbiBLVk1fQ0hFQ0tfRVhURU5TSU9O
-DQo+ID4gPg0KPiA+ID4gRG8geW91IGtub3cgd2h5Pw0KPiA+DQo+ID4gSSBhbSBub3QgcmVhbGx5
-IHN1cmUsIGJ1dCBJIGJlbGlldmUgaXTigJlzIGEgdXNlZnVsIGFic3RyYWN0aW9uDQo+IA0KPiBJ
-dCBzZWVtcyBvZGQgdG8gbWUsIHVucHJpdiB1c2Vyc3BhY2UgY2FuIGxvb2sgaW4gL3Byb2MvY3B1
-aW5mbyBhbmQgc2VlDQo+IFNFViwgd2h5IHdvdWxkIGt2bSBoaWRlIHRoZSBzYW1lIGluZm9ybWF0
-aW9uIGJlaGluZCBhDQo+IENBUF9TWVNfQURNSU4vd2hhdGV2ZXIgY2hlY2s/DQoNCkkgZG9u4oCZ
-dCB0aGluayBLVk0gaGlkZXMgU1ZFIGFsd2F5cy4gSXQgYWxzbyBkZXBlbmRzIG9uIHdoZXRoZXIg
-dGhlIFZNTSBoYXMNCnJlcXVlc3RlZCBzdmUgZm9yIGEgc3BlY2lmaWMgR3Vlc3Qgb3Igbm90KFFl
-bXUgaGFzIG9wdGlvbiB0byB0dXJuIHN2ZSBvbi9vZmYsIHNpbWlsYXJseSBwbXUNCmFzIHdlbGwp
-LiAgQmFzZWQgb24gdGhhdCBLVk0gcG9wdWxhdGVzIHRoZSBHdWVzdCBzcGVjaWZpYyBJRCByZWdp
-c3RlcnMuICBBbmQgR3Vlc3QNCi9wcm9jL2NwdWluZm8gcmVmbGVjdHMgdGhhdC4NCg0KQW5kIGZv
-ciBzb21lIGZlYXR1cmVzIGlmIEtWTSBpcyBub3QgaGFuZGxpbmcgdGhlIGZlYXR1cmUgcHJvcGVy
-bHkgb3Igbm90IG1ha2luZyBhbnkgc2Vuc2UNCnRvIGJlIGV4cG9zZWQgdG8gR3Vlc3QsIHRob3Nl
-IGZlYXR1cmVzIGFyZSBtYXNrZWQgaW4gSUQgcmVnaXN0ZXJzLg0KDQpSZWNlbnRseSBBUk02NCBJ
-RCByZWdpc3RlcnMgaGFzIGJlZW4gbWFkZSB3cml0YWJsZSBmcm9tIHVzZXJzcGFjZSB0byBhbGxv
-dyBWTU0gdG8gdHVybg0Kb24vb2ZmIGZlYXR1cmVzLCBzbyB0aGF0IFZNcyBjYW4gYmUgbWlncmF0
-ZWQgYmV0d2VlbiBob3N0cyB0aGF0IGRpZmZlciBpbiBmZWF0dXJlIHN1cHBvcnQuDQoNCmh0dHBz
-Oi8vbG9yZS5rZXJuZWwub3JnL2FsbC9aUjJZZkFpeFpnYkNGbmI4QGxpbnV4LmRldi9ULyNtN2My
-NDkzZmQyZDQzYzEzYTMzMzZkMTlmMmRjMDZhODk4MDNjNmZkYg0KDQpUaGFua3MsDQpTaGFtZWVy
-DQo=
+I was reviewing Smatch warnings:
+
+    drivers/iommu/arm/arm-smmu-v3/tegra241-cmdqv.c:616 tegra241_cmdqv_init_vintf()
+    error: Calling ida_alloc_max() with a 'max' argument which is a power of 2. -1 missing?
+
+The problem is that we're calling ida_alloc_max() where max is always zero.
+
+> +static int tegra241_cmdqv_init_vintf(struct tegra241_cmdqv *cmdqv, u16 max_idx,
+> +				     struct tegra241_vintf *vintf)
+> +{
+> +
+> +	u16 idx;
+> +	int ret;
+> +
+> +	ret = ida_alloc_max(&cmdqv->vintf_ids, max_idx, GFP_KERNEL);
+> +	if (ret < 0)
+> +		return ret;
+> +	idx = ret;
+
+max_idx is always zero so idx is always zero.
+
+> +
+> +	vintf->idx = idx;
+> +	vintf->cmdqv = cmdqv;
+> +	vintf->base = cmdqv->base + TEGRA241_VINTF(idx);
+> +
+> +	vintf->lvcmdqs = kcalloc(cmdqv->num_lvcmdqs_per_vintf,
+> +				 sizeof(*vintf->lvcmdqs), GFP_KERNEL);
+> +	if (!vintf->lvcmdqs) {
+> +		ida_free(&cmdqv->vintf_ids, idx);
+> +		return -ENOMEM;
+> +	}
+> +
+> +	cmdqv->vintfs[idx] = vintf;
+
+We only use the first element of this array.
+
+> +	return ret;
+> +}
+
+We could get rid of the ida_ stuff and change the cmdqv->vintfs[] array to a
+pointer.  It would simplify the code.
+
+regards,
+dan carpenter
+
