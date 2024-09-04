@@ -1,127 +1,86 @@
-Received: from mx0b-0031df01.pphosted.com (mx0b-0031df01.pphosted.com [205.220.180.131])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-il1-f171.google.com (mail-il1-f171.google.com [209.85.166.171])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E89FC1DB55E
-	for <iommu@lists.linux.dev>; Wed,  4 Sep 2024 16:20:13 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.180.131
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 586564778C
+	for <iommu@lists.linux.dev>; Wed,  4 Sep 2024 16:24:47 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.166.171
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1725466815; cv=none; b=D5hOLB2vw0k0tkgJANzrlkkbeZI3xLTiXb4VlPjJprsQFxWENRjwpk867kof63NCP42bEo+MNZD4QFd8z1paZhbZdKy5NALOxR1ajItBAIPEHgpJTsjztuT2p3z6+uJg0tecLozO63M31Jv5kzPVeD6tBQz/0A1ZnSnqR5mJG4s=
+	t=1725467088; cv=none; b=Jem25IbC+upHV1QmChdsVVyzl6rtFSdLHMR2HbN9xT/fCuW9gdFDsX6alcAYzkcDD2deDhTgHHZ/XrykR0leafNH6gAI+bOEJFNwbe57ucpqWz1pN60ey8vvYaWnNH29pKAFqKP4mcNjhTrtNIaW19M3YuPep8oK6e9WK9PlyTc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1725466815; c=relaxed/simple;
-	bh=slp4Etgtje6DftRnYdPJeioWj7wktBRDfx/cy4K30Uw=;
-	h=Message-ID:Date:MIME-Version:Subject:To:CC:References:From:
-	 In-Reply-To:Content-Type; b=KtIUizBP9nkxXfTBGIUIXwE+nHrKYoIqXZJ2galKxemg74hWVk3uwRAj2jHv2YWYJ+PcOIQ3xc5NNUnE8bRxVLwCbYBtttrxhgtUp/JPjan4g6P5w70hhv9c7ywjIipDHK4XD2hT3sIIggwez14kqSDKgZmbdQo49wXc4IMkIwQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com; spf=pass smtp.mailfrom=quicinc.com; dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b=aaeATE33; arc=none smtp.client-ip=205.220.180.131
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=quicinc.com
+	s=arc-20240116; t=1725467088; c=relaxed/simple;
+	bh=/7cDYAlEqe7bWicn0Va7ROpOHLi0iVmUDmVo+jOORyY=;
+	h=MIME-Version:From:Date:Message-ID:Subject:To:Cc:Content-Type; b=n7QwOQlsoENaiqX0eNhSYtZjthf4XZDi5IEQGDCV9VIdfg0m6Yoz7aTsh4j2ToYpY6zIc0161Mq3TVUxCKHL8k7kd0WnctBjoPjT7KyBVxjAg1eaVm8xPpCoL7vmngtGXW+MfQ4Adz9qfufuyx9XZ8BLJKsZUZesXyZjSL3XOIk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=CEjfCA1G; arc=none smtp.client-ip=209.85.166.171
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b="aaeATE33"
-Received: from pps.filterd (m0279869.ppops.net [127.0.0.1])
-	by mx0a-0031df01.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 4849PTY6009594;
-	Wed, 4 Sep 2024 16:14:41 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=quicinc.com; h=
-	cc:content-transfer-encoding:content-type:date:from:in-reply-to
-	:message-id:mime-version:references:subject:to; s=qcppdkim1; bh=
-	4tfCwaUW/WwBvYfCjaPsziSdag+8xEQTbzrRZv1pCws=; b=aaeATE33NrzMA9M0
-	px93HoAXCZOVGr2WMAB2SuORYYT81rCQ1bepqH61oJFCrqF3m7OhF9wsQ+rATsmM
-	t2GG8O5SliCekAxmEkLcSAUmdCtMylh5B1YAlbkCKHZqJiLrSp0LgLJAnbUT8xjK
-	8ItQbd/G1taBxm8jLSvN11Lze/nz0Af3U2tEIqr6omopQ/kt0ju6YvzFzSX6SN+I
-	JGYh8TGI+mmwf1QShoOpL5HgYfy32QuIDPmIeBBPCJqhclVnWLsI0IvbcMcFsPev
-	B2ezLccZ3gFaenort01OBiMe5Ir3FQKWfKTKn2Bbsnvtl3aW5TiIM7Q1hO+rOISb
-	lAlozg==
-Received: from nasanppmta01.qualcomm.com (i-global254.qualcomm.com [199.106.103.254])
-	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 41bt673g4w-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Wed, 04 Sep 2024 16:14:40 +0000 (GMT)
-Received: from nasanex01b.na.qualcomm.com (nasanex01b.na.qualcomm.com [10.46.141.250])
-	by NASANPPMTA01.qualcomm.com (8.18.1.2/8.18.1.2) with ESMTPS id 484GEdLo011756
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Wed, 4 Sep 2024 16:14:39 GMT
-Received: from [10.110.102.234] (10.80.80.8) by nasanex01b.na.qualcomm.com
- (10.46.141.250) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1544.9; Wed, 4 Sep 2024
- 09:14:35 -0700
-Message-ID: <516f17e6-b4b4-4f88-a39f-cc47a507716a@quicinc.com>
-Date: Wed, 4 Sep 2024 09:14:35 -0700
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="CEjfCA1G"
+Received: by mail-il1-f171.google.com with SMTP id e9e14a558f8ab-39f4827a07aso18330385ab.1
+        for <iommu@lists.linux.dev>; Wed, 04 Sep 2024 09:24:47 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20230601; t=1725467086; x=1726071886; darn=lists.linux.dev;
+        h=cc:to:subject:message-id:date:from:mime-version:from:to:cc:subject
+         :date:message-id:reply-to;
+        bh=+KkAQjjotCRZ4CfWuR8BuZVWPds5hg7Zc/7KBaAAyJM=;
+        b=CEjfCA1GJUU24Ek31mXvCNcuKOLdStaX+Vnn5IVQSN5djWhsWeOOxFREti5/HdSqfJ
+         Kqu8IE7EaQYQ1FThROFBAs2kovFnG4sy6hFoycjlQSbD3QaBqtiQwhwDvdVoD9bYRk+C
+         aQmH6DyrX9++hvhD/hzQb90FEX16QTKP+Q2ZRUa9KRZbhXxraBuQjOVVK8b5QkobG15R
+         G2lFzH1bQ8U9/o4SubJ1BboO2jE2rmpgrGd27fenceR0MGNfHwy4hfk/GJmFQSUPcWhh
+         V+bN/I0tmWWMuIiLkshncV3cnax4ocDKCFZ7xq2n+Bo5DbBfd9Ul/Wufcxxz6yUHLBx/
+         movw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1725467086; x=1726071886;
+        h=cc:to:subject:message-id:date:from:mime-version:x-gm-message-state
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=+KkAQjjotCRZ4CfWuR8BuZVWPds5hg7Zc/7KBaAAyJM=;
+        b=aooTYBbXblv25qk0VdafDbGiHs/NI8KGoX+M/eYrIcEeUH6orL3rM+qeMJL/1jt+5j
+         HxDKsGDqa2WQHpiafxFgg4xKq/ynKt2t2H/5xZI9Vq8Ygc6fVVDdckV5msJOLEQxy02j
+         NEVXYxHFIx3kWicfxfbtJkop+X6WNzJlAcC9r6X21ONen7oTO1ijOjhHHxkMKX3eg1Zt
+         rvM4O0UcysWIhMoGVFza7GFM98jfp7ncCcYhqvqDkh/Cpmrfq5KuZjA/WZtEHoRq8FFx
+         bXwBhd/AJkZWUpp6Kse2eH1650xAHwUtbB9sT1D+JY5RpF/rhYdASl2VVkQCI6f0fixe
+         R85Q==
+X-Gm-Message-State: AOJu0YyVG/2SCjO1CjVYgEo7vsxqat6iWQynFmnUrE5x41NuwUW8GKwq
+	7CM1iMXDT0lCSHXdSCwKl+00zJljvvhmDrjS8dJZg8H4U7K0Tn8pzm55LyidA9Ux2EifR3mwECW
+	mU6H4KJ4/Pcfuu3J0611ui6OzW+U=
+X-Google-Smtp-Source: AGHT+IG7Vz+T5qXl228WIdHsyu+M/jpDgswlSvzOewXBN7HGjjAubTwZpX8iIycVwNxPh5j/KRpzh0cJdVcgtU6Cnww=
+X-Received: by 2002:a05:6e02:b2c:b0:39a:e9f4:87b7 with SMTP id
+ e9e14a558f8ab-39f4f6ca345mr177420315ab.26.1725467086333; Wed, 04 Sep 2024
+ 09:24:46 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v2 16/21] dt-bindings: spi: document support for SA8255p
-To: Krzysztof Kozlowski <krzk@kernel.org>
-CC: <andersson@kernel.org>, <konradybcio@kernel.org>, <robh@kernel.org>,
-        <krzk+dt@kernel.org>, <conor+dt@kernel.org>, <rafael@kernel.org>,
-        <viresh.kumar@linaro.org>, <herbert@gondor.apana.org.au>,
-        <davem@davemloft.net>, <sudeep.holla@arm.com>, <andi.shyti@kernel.org>,
-        <tglx@linutronix.de>, <will@kernel.org>, <robin.murphy@arm.com>,
-        <joro@8bytes.org>, <jassisinghbrar@gmail.com>, <lee@kernel.org>,
-        <linus.walleij@linaro.org>, <amitk@kernel.org>,
-        <thara.gopinath@gmail.com>, <broonie@kernel.org>,
-        <cristian.marussi@arm.com>, <rui.zhang@intel.com>,
-        <lukasz.luba@arm.com>, <wim@linux-watchdog.org>, <linux@roeck-us.net>,
-        <linux-arm-msm@vger.kernel.org>, <devicetree@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, <linux-pm@vger.kernel.org>,
-        <linux-crypto@vger.kernel.org>, <arm-scmi@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>, <linux-i2c@vger.kernel.org>,
-        <iommu@lists.linux.dev>, <linux-gpio@vger.kernel.org>,
-        <linux-serial@vger.kernel.org>, <linux-spi@vger.kernel.org>,
-        <linux-watchdog@vger.kernel.org>, <kernel@quicinc.com>,
-        <quic_psodagud@quicinc.com>, Praveen Talari <quic_ptalari@quicinc.com>
-References: <20240828203721.2751904-1-quic_nkela@quicinc.com>
- <20240903220240.2594102-1-quic_nkela@quicinc.com>
- <20240903220240.2594102-17-quic_nkela@quicinc.com>
- <sdxhnqvdbcpmbp3l7hcnsrducpa5zrgbmkykwfluhrthqhznxi@6i4xiqrre3qg>
- <b369bd73-ce2f-4373-8172-82c0cca53793@quicinc.com>
- <9a655c1c-97f6-4606-8400-b3ce1ed3c8bf@kernel.org>
-Content-Language: en-US
-From: Nikunj Kela <quic_nkela@quicinc.com>
-In-Reply-To: <9a655c1c-97f6-4606-8400-b3ce1ed3c8bf@kernel.org>
+From: Rob Clark <robdclark@gmail.com>
+Date: Wed, 4 Sep 2024 09:24:34 -0700
+Message-ID: <CAF6AEGvAEgFeoaxpkNw52fkt73RFg4g8+nhdR++m0ZhVsis=mA@mail.gmail.com>
+Subject: Re: [PATCH V4] iommu/io-pgtable-arm: Optimise non-coherent unmap
+To: amhetre@nvidia.com
+Cc: "open list:IOMMU DRIVERS" <iommu@lists.linux.dev>, Joerg Roedel <joro@8bytes.org>, 
+	"moderated list:ARM/FREESCALE IMX / MXC ARM ARCHITECTURE" <linux-arm-kernel@lists.infradead.org>, 
+	Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, 
+	"open list:TEGRA IOMMU DRIVERS" <linux-tegra@vger.kernel.org>, Robin Murphy <robin.murphy@arm.com>, 
+	Will Deacon <will@kernel.org>, Rob Clark <robdclark@chromium.org>, 
+	linux-arm-msm <linux-arm-msm@vger.kernel.org>
 Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
- nasanex01b.na.qualcomm.com (10.46.141.250)
-X-QCInternal: smtphost
-X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
-X-Proofpoint-ORIG-GUID: v4i211HQiaCallbwRmUsKmac0hXr1oKi
-X-Proofpoint-GUID: v4i211HQiaCallbwRmUsKmac0hXr1oKi
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.293,Aquarius:18.0.1039,Hydra:6.0.680,FMLib:17.12.60.29
- definitions=2024-09-04_13,2024-09-04_01,2024-09-02_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 malwarescore=0 adultscore=0
- bulkscore=0 mlxscore=0 impostorscore=0 suspectscore=0 phishscore=0
- mlxlogscore=999 lowpriorityscore=0 spamscore=0 clxscore=1015
- priorityscore=1501 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.19.0-2407110000 definitions=main-2409040123
 
+Btw, this seems to be causing iommu faults for me for what (according
+to a sw pgtable walk) should be a valid mapping, indicating
+missing/incomplete tlb invalidation.  This is with drm/msm (which
+probably matters, since it implements it's own iommu_flush_ops) on
+x1e80100 (which probably doesn't matter.. but it is an mmu-500 in case
+it does).
 
-On 9/4/2024 6:21 AM, Krzysztof Kozlowski wrote:
-> On 04/09/2024 14:48, Nikunj Kela wrote:
->> On 9/3/2024 11:34 PM, Krzysztof Kozlowski wrote:
->>> On Tue, Sep 03, 2024 at 03:02:35PM -0700, Nikunj Kela wrote:
->>>> Add compatible representing spi support on SA8255p.
->>>>
->>>> Clocks and interconnects are being configured in firmware VM
->>>> on SA8255p platform, therefore making them optional.
->>>>
->>> Please use standard email subjects, so with the PATCH keyword in the
->>> title.  helps here to create proper versioned patches.
->> Where did I miss PATCH keyword in the subject here? It says "[PATCH v2
->> 16/21] dt-bindings: spi: document support for SA8255p"
-> Oh, wrong template. It was about spi prefix, should be this one:
+I _think_ what is causing this is the change in ordering of
+__arm_lpae_clear_pte() (dma_sync_single_for_device() on the pgtable
+memory) and io_pgtable_tlb_flush_walk().  I'm not entirely sure how
+this patch is supposed to work correctly in the face of other
+concurrent translations (to buffers unrelated to the one being
+unmapped(), because after the io_pgtable_tlb_flush_walk() we can have
+stale data read back into the tlb.
 
-Sorry, didn't realize SPI uses different subject format than other
-subsystems. Will fix in v3. Thanks
+How is this supposed to work?
 
-
-> Please use subject prefixes matching the subsystem. You can get them for
-> example with `git log --oneline -- DIRECTORY_OR_FILE` on the directory
-> your patch is touching. For bindings, the preferred subjects are
-> explained here:
-> https://www.kernel.org/doc/html/latest/devicetree/bindings/submitting-patches.html#i-for-patch-submitters
->
-> Best regards,
-> Krzysztof
->
+BR,
+-R
