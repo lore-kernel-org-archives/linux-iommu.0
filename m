@@ -1,59 +1,59 @@
 Received: from mailout2.w1.samsung.com (mailout2.w1.samsung.com [210.118.77.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9B44B17BEC7
-	for <iommu@lists.linux.dev>; Wed,  4 Sep 2024 08:39:53 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 637721A727F
+	for <iommu@lists.linux.dev>; Wed,  4 Sep 2024 09:12:35 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=210.118.77.12
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1725439196; cv=none; b=siZzLIJCuCO0/rGZ5ok6Gh1vTe3A+3gyV08QOp7r+nzoU3v3S+aVONla5ggjqUts8I5yFCP3tTr/mAQ8W/WeMQDGYwLSym2awE4fMvc+VbwR59Up0pVR6PMEiEub/Z9Pjtn6hSb1xBISM34vvYMCdT2oIjLuedHYRJQPpstJfmY=
+	t=1725441157; cv=none; b=rmfJgWKiXD+XHF09rmGnjqMRSa9BMQ8ECyd6SEQQlI8CDDhNNlEmK64ebOw4qXLjcYUI6W2n+Xtwklol2EntPYENKeJjW1nY9y3VuGqmJ2zW0cgMxYVnm3o4X4yZy2o2XAonafg3saL8ESdhscvrO34703UevCxLoi9nJnVg+Uc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1725439196; c=relaxed/simple;
-	bh=r82FA6nPpW5RfY9hlelJ5OUi9Pd7zZXF6VLiolBkOsI=;
+	s=arc-20240116; t=1725441157; c=relaxed/simple;
+	bh=8uIojRuUuh/ITTtgr6KCPgIS+H0p20N1kXWqEKyAHtk=;
 	h=Date:From:To:CC:Subject:Message-ID:MIME-Version:Content-Type:
-	 Content-Disposition:In-Reply-To:References; b=TywGmqG/rivwIbIvoUJBKcjdJEvw52fFsuUvsGKlqiVOCu9caiA5DZwC0jN8QLVVABwF4o10axD17NUoWunUCWtrkcLEhHmoH7JH5mECsxV6dBTsuMFzQFPfCHID6B1cmqI+137ddkmr6ZOgWvXqJrBr0equ3NWvqkawPvLUyDQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=samsung.com; spf=pass smtp.mailfrom=samsung.com; dkim=pass (1024-bit key) header.d=samsung.com header.i=@samsung.com header.b=c+UIsG1X; arc=none smtp.client-ip=210.118.77.12
+	 Content-Disposition:In-Reply-To:References; b=Ah3NkvfvjrnKO+Qh9LvjjoaZaZqnYpbJoGSlJXYTIOeXCvrUwRxVUz41vOulau0PYrbyb0P/NGehUj/6yXv5h7RR7UmpUBVxiz34t5Ogpax0MGgy7+9IIR7L7Fv02UnlwgvVSTjrcil56Iq2m12sESDvwyWw0MDXaXexjygsvNs=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=samsung.com; spf=pass smtp.mailfrom=samsung.com; dkim=pass (1024-bit key) header.d=samsung.com header.i=@samsung.com header.b=Vb6oO/A4; arc=none smtp.client-ip=210.118.77.12
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=samsung.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=samsung.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=samsung.com header.i=@samsung.com header.b="c+UIsG1X"
-Received: from eucas1p2.samsung.com (unknown [182.198.249.207])
-	by mailout2.w1.samsung.com (KnoxPortal) with ESMTP id 20240904083946euoutp02d47099168a7fcb650acd7e5d46d7ec2e~x-cxcJVej1338813388euoutp02Z
-	for <iommu@lists.linux.dev>; Wed,  4 Sep 2024 08:39:46 +0000 (GMT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 mailout2.w1.samsung.com 20240904083946euoutp02d47099168a7fcb650acd7e5d46d7ec2e~x-cxcJVej1338813388euoutp02Z
+	dkim=pass (1024-bit key) header.d=samsung.com header.i=@samsung.com header.b="Vb6oO/A4"
+Received: from eucas1p1.samsung.com (unknown [182.198.249.206])
+	by mailout2.w1.samsung.com (KnoxPortal) with ESMTP id 20240904091233euoutp02c744957b7f4a086f77c61587fcac6318~x-5ZlpKFJ1684116841euoutp02k
+	for <iommu@lists.linux.dev>; Wed,  4 Sep 2024 09:12:33 +0000 (GMT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 mailout2.w1.samsung.com 20240904091233euoutp02c744957b7f4a086f77c61587fcac6318~x-5ZlpKFJ1684116841euoutp02k
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
-	s=mail20170921; t=1725439186;
-	bh=QhPV2sVUc1lKE1/z5DgSRnIGJ8zJuuo9oNVersZODxI=;
+	s=mail20170921; t=1725441153;
+	bh=qNCe5lDbU9IwCknv8oknYeAE3i96AqlNVmC+nptC8QU=;
 	h=Date:From:To:CC:Subject:In-Reply-To:References:From;
-	b=c+UIsG1XJPXX7M63mw3BiKR6+ttdYcv70pf9n+GJDVvfHUj+xN5Iymh5A2nlTgrzd
-	 3+udtBWTea+ELTbgHUDLgCAX8U783BfoHUdOFbL2nealLf3PhZO2IGrQTMUy3Y/d0K
-	 nMTHqSKjeorRwomXIXevPQtlFk6lH2fTE+L3lGtg=
-Received: from eusmges3new.samsung.com (unknown [203.254.199.245]) by
-	eucas1p2.samsung.com (KnoxPortal) with ESMTP id
-	20240904083946eucas1p28082ce4850ed9aa3c53b6db414f9988e~x-cxLd6JW1069310693eucas1p2f;
-	Wed,  4 Sep 2024 08:39:46 +0000 (GMT)
-Received: from eucas1p2.samsung.com ( [182.198.249.207]) by
-	eusmges3new.samsung.com (EUCPMTA) with SMTP id F5.BA.09620.1DC18D66; Wed,  4
-	Sep 2024 09:39:45 +0100 (BST)
-Received: from eusmtrp2.samsung.com (unknown [182.198.249.139]) by
+	b=Vb6oO/A4HE0MLLSeOQxKPwAB9jF1YHsvxwCryCn42rZ1x7bY9UEsAIDR983dQj1Vc
+	 nprMHSIinTp8g0/54PWp3MX2mhXVNdwknAiov3JZEsy8gD3e5ppI2FRC0hFMBVZHVm
+	 +kbVIInOumTHW36KjXU6RYXrXWcJGXZnaZWQm51Q=
+Received: from eusmges2new.samsung.com (unknown [203.254.199.244]) by
+	eucas1p1.samsung.com (KnoxPortal) with ESMTP id
+	20240904091233eucas1p14c334c438221935d3334208e3b47aadb~x-5ZRbd762523625236eucas1p1e;
+	Wed,  4 Sep 2024 09:12:33 +0000 (GMT)
+Received: from eucas1p1.samsung.com ( [182.198.249.206]) by
+	eusmges2new.samsung.com (EUCPMTA) with SMTP id E7.39.09875.18428D66; Wed,  4
+	Sep 2024 10:12:33 +0100 (BST)
+Received: from eusmtrp1.samsung.com (unknown [182.198.249.138]) by
 	eucas1p2.samsung.com (KnoxPortal) with ESMTPA id
-	20240904083945eucas1p2a444ad211bdccb73cb638f37cbddcade~x-cwrWM-u0099700997eucas1p2-;
-	Wed,  4 Sep 2024 08:39:45 +0000 (GMT)
-Received: from eusmgms1.samsung.com (unknown [182.198.249.179]) by
-	eusmtrp2.samsung.com (KnoxPortal) with ESMTP id
-	20240904083945eusmtrp2cf3c17962314a9a952a089e6c15c1b1c~x-cwneHiN2481324813eusmtrp2f;
-	Wed,  4 Sep 2024 08:39:45 +0000 (GMT)
-X-AuditID: cbfec7f5-d1bff70000002594-f5-66d81cd1ebf3
+	20240904091232eucas1p23cc532e9cd4acdbb7f3d2c7ad0073eca~x-5Yt0Oj72250522505eucas1p2j;
+	Wed,  4 Sep 2024 09:12:32 +0000 (GMT)
+Received: from eusmgms2.samsung.com (unknown [182.198.249.180]) by
+	eusmtrp1.samsung.com (KnoxPortal) with ESMTP id
+	20240904091232eusmtrp1f68797bd09f4a3efe112ec34e912568d~x-5YtLCaH1929319293eusmtrp1h;
+	Wed,  4 Sep 2024 09:12:32 +0000 (GMT)
+X-AuditID: cbfec7f4-131ff70000002693-41-66d82481ad97
 Received: from eusmtip1.samsung.com ( [203.254.199.221]) by
-	eusmgms1.samsung.com (EUCPMTA) with SMTP id 6C.8B.14621.1DC18D66; Wed,  4
-	Sep 2024 09:39:45 +0100 (BST)
+	eusmgms2.samsung.com (EUCPMTA) with SMTP id 12.A3.19096.08428D66; Wed,  4
+	Sep 2024 10:12:32 +0100 (BST)
 Received: from CAMSVWEXC02.scsc.local (unknown [106.1.227.72]) by
 	eusmtip1.samsung.com (KnoxPortal) with ESMTPA id
-	20240904083945eusmtip1201173e2c3d3ace8c626ac1eca08e6bb~x-cwZE8mL1801518015eusmtip1g;
-	Wed,  4 Sep 2024 08:39:45 +0000 (GMT)
+	20240904091232eusmtip1b77e812b7d40ab4f8927fb666b12dad3~x-5YfRP6s0064500645eusmtip1c;
+	Wed,  4 Sep 2024 09:12:32 +0000 (GMT)
 Received: from localhost (106.210.248.110) by CAMSVWEXC02.scsc.local
 	(2002:6a01:e348::6a01:e348) with Microsoft SMTP Server (TLS) id 15.0.1497.2;
-	Wed, 4 Sep 2024 09:39:40 +0100
-Date: Wed, 4 Sep 2024 10:39:36 +0200
+	Wed, 4 Sep 2024 10:12:27 +0100
+Date: Wed, 4 Sep 2024 11:12:23 +0200
 From: Joel Granados <j.granados@samsung.com>
 To: Baolu Lu <baolu.lu@linux.intel.com>
 CC: Klaus Jensen <its@irrelevant.dk>, David Woodhouse <dwmw2@infradead.org>,
@@ -64,64 +64,63 @@ CC: Klaus Jensen <its@irrelevant.dk>, David Woodhouse <dwmw2@infradead.org>,
 	<k.jensen@samsung.com>
 Subject: Re: [PATCH RFC PREVIEW 1/6] iommu/vt-d: Separate page request queue
  from SVM
-Message-ID: <20240904083936.ftqz4sbuykk6mbjy@joelS2.panther.com>
+Message-ID: <20240904091223.f3olpzrv5lkgekfe@joelS2.panther.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="iso-8859-1"
+Content-Type: text/plain; charset="us-ascii"
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <e3f3e82e-8884-48da-b5ed-e0016fc27b04@linux.intel.com>
+In-Reply-To: <242056a5-9d16-415a-9913-0add5b050f47@linux.intel.com>
 X-ClientProxiedBy: CAMSVWEXC01.scsc.local (2002:6a01:e347::6a01:e347) To
 	CAMSVWEXC02.scsc.local (2002:6a01:e348::6a01:e348)
-X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFjrMKsWRmVeSWpSXmKPExsWy7djP87oXZW6kGax5amGxeeJWNouJKycz
-	W/z6YmGx/+A3VouZM04wWnTO3sBusfTtVnaLy7vmsFkc/PCE1aLljqkDl8eTg/OYPNbMW8Po
-	sXmFlsfiPS+ZPM7tOM/usWlVJ5vHvJOBHi82z2T0+LxJzmPr59ssAVxRXDYpqTmZZalF+nYJ
-	XBmzlvawFvRpVpz4sIG9gfGzfBcjJ4eEgInEvF132boYuTiEBFYwSvTc/8sK4XxhlDg65T2U
-	85lR4uXqX4xdjBxgLTcOckHElzNKzD7znB1kFFhR62R7iMQWRoldK+ewgCRYBFQk3p/dwQZi
-	swnoSJx/c4cZxBYRUJdoatwLtptZ4C+TxNLdT8AmCQuES7Re2Q/WzCvgIHHw+W42CFtQ4uTM
-	J2BxZgE9iRtTp7CBXMQsIC2x/B8HRFheonnrbLD5nALOEhPe7GOB+FNZ4uCyQ+wQdq3EqS23
-	mED2Sgis55SYv34+M0TCRWLh5ltQDcISr45vgWqQkfi/cz5Uw2RGif3/PrBDOKsZJZY1fmWC
-	qLKWaLnyBKrDUeLNn00skPDik7jxVhDiOj6JSdumM0OEeSU62oQmMKrMQvLaLCSvzUJ4bRaS
-	1xYwsqxiFE8tLc5NTy02zkst1ytOzC0uzUvXS87P3cQITGen/x3/uoNxxauPeocYmTgYDzFK
-	cDArifC+FrmRJsSbklhZlVqUH19UmpNafIhRmoNFSZxXNUU+VUggPbEkNTs1tSC1CCbLxMEp
-	1cCUwD9zVfms84t5+uKlEr4eTFvgpNz/dTdfzepJi3597zlq7pxwwNhhRUTRvoAXxo8LjZ5I
-	dD57cHv/Cfn8vxesfa46SRwXlNRRW3gk3ON9sEqRPMNSU/6pLwKlbthK29l92vJOnC3NW0xq
-	jmUs2/L7cVN5N9rHl8d9/xc4MfcF707zewkz+VR2aApc9Cuaod7/1FRjqfc68/qp6jMV21LC
-	y1MrN+p/u29vcPr95oQHhpkfuTfzey1TuFKs3v4k/K5b358p2ZKH1pWGRs4J2Jhj6J5w4uT8
-	bR9+b3wrEhD4/+jnQzPMJO7HH4qM2KzRn1xi2HDgsrVI46TOMo/F9qL7mZwiHond81hds3KT
-	dokSS3FGoqEWc1FxIgCH0ZX51gMAAA==
-X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFnrNIsWRmVeSWpSXmKPExsVy+t/xu7oXZW6kGbxbJ2mxeeJWNouJKycz
-	W/z6YmGx/+A3VouZM04wWnTO3sBusfTtVnaLy7vmsFkc/PCE1aLljqkDl8eTg/OYPNbMW8Po
-	sXmFlsfiPS+ZPM7tOM/usWlVJ5vHvJOBHi82z2T0+LxJzmPr59ssAVxRejZF+aUlqQoZ+cUl
-	tkrRhhZGeoaWFnpGJpZ6hsbmsVZGpkr6djYpqTmZZalF+nYJehmzlvawFvRpVpz4sIG9gfGz
-	fBcjB4eEgInEjYNcXYxcHEICSxklZux5wdrFyAkUl5HY+OUqlC0s8edaFxuILSTwkVFi+UxT
-	iIYtjBKHes6DFbEIqEi8P7sDrIhNQEfi/Js7zCC2iIC6RFPjXjaQBmaBv0wSS3c/YQdJCAuE
-	S7Re2c8CYvMKOEgcfL6bDWJqG5PEwb+dUAlBiZMzn4DZzAJ6EjemTmEDOZtZQFpi+T8OiLC8
-	RPPW2WDLOAWcJSa82ccCcbWyxMFlh9gh7FqJz3+fMU5gFJmFZOosJFNnIUydhWTqAkaWVYwi
-	qaXFuem5xYZ6xYm5xaV56XrJ+bmbGIGxvu3Yz807GOe9+qh3iJGJg/EQowQHs5II72uRG2lC
-	vCmJlVWpRfnxRaU5qcWHGE2BYTSRWUo0OR+YbPJK4g3NDEwNTcwsDUwtzYyVxHndLp9PExJI
-	TyxJzU5NLUgtgulj4uCUamAqlm0Nfj69SEZ0uX18b3flVU0vFjbWl/7FdaHiG2xbdrpsefE8
-	+1Pwh28ZB9Wu2zI53/4uH1lzTbg0duVPYcNp6yP3SN1OehWbbKipLjpJKf7EFDWNGRsnu/z+
-	saq+3/sjf4RxXufVlP+rZn8376uMjLshmLiFO+peZkRsc8iruM7sbyvjT7/afM0gLlEt7OCb
-	E6dNV3AzaGbZK6p1Kvr8/sh7LWWT++luDdYHc369zj36UPvWvp4wg9Vak3jUE836frTkqKx8
-	9bwt8iBH7qol9usKKl1XxF2YIr1MPeNH6pvO40bviz3ypTac80jIefop7YHNBKcDWgfc9v31
-	m31S24wtj4V37o2HG3VU1yuxFGckGmoxFxUnAgCrcILrfgMAAA==
-X-CMS-MailID: 20240904083945eucas1p2a444ad211bdccb73cb638f37cbddcade
+X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFtrBKsWRmVeSWpSXmKPExsWy7djPc7qNKjfSDO7dZ7fYPHErm8XElZOZ
+	LX59sbDYf/Abq8XMGScYLTpnb2C3WPp2K7vF5V1z2CwOfnjCatFyx9SBy+PJwXlMHmvmrWH0
+	2LxCy2PxnpdMHud2nGf32LSqk81j3slAjxebZzJ6fN4k57H1822WAK4oLpuU1JzMstQifbsE
+	rozt/x6xFvwTrZh/bS5TA+NkwS5GTg4JAROJWbeusHcxcnEICaxglHg86zkThPOFUWLfvH5W
+	COczo8Sm/x2MMC13P82GalnOKDG39TUjXNW5ucuYQaqEBLYwSqydXgZiswioSGyeeB0sziag
+	I3H+zR0wW0RAXaKpcS8bSDOzwF8miaW7n7CDJIQFwiVar+xnAbF5BRwkGrs6mSFsQYmTM5+A
+	xZmBBi3Y/QmomQPIlpZY/o8DJMwp4Cxx9/ApqEuVJQ4uO8QOYddKnNpyC+w3CYHZnBKtl16w
+	QiRcJG42zIcqEpZ4dXwLlC0jcXpyDwtEw2RGif3/PrBDOKsZJZY1fmWCqLKWaLnyBKrDUeL/
+	/80sIBdJCPBJ3HgrCHEon8SkbdOZIcK8Eh1tQhDVahKr771hmcCoPAvJa7OQvDYL4bUFjMyr
+	GMVTS4tz01OLjfJSy/WKE3OLS/PS9ZLzczcxAhPX6X/Hv+xgXP7qo94hRiYOxkOMEhzMSiK8
+	r0VupAnxpiRWVqUW5ccXleakFh9ilOZgURLnVU2RTxUSSE8sSc1OTS1ILYLJMnFwSjUwTdlW
+	M/XitcOBkbsC7itxFSy2dDc69vDG0wU7xPfKqz0In/M/ZldrvISg3z2l2/es5B7u5r0flOcz
+	ozr1P0PTD9vsjoJgK62YVfwbCqK+nWrYvW6js2sb/5Q5T7yWcKUmvIy5JsT5kVW6frXveeHH
+	mzckWEfoHjIIn5e5plj6UFT7k8D0PyfNb7LKeOtMjuu+92XjdIng7NWc0gp2R1/snvBl+uPJ
+	E4Lkglg7jBasdfF+zuj2bfeV3VycLY9XFobvjfQLT/Jbc7B6YePxqTE7pPIz/yj8jHvsljKT
+	he/D4urOz9cE2f+G6qpJvmKuPLCjY7uScepRnVX9NlvsfU5bm75e+eq9tsyE7jUn9zmvV2Ip
+	zkg01GIuKk4EAKymABXLAwAA
+X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFrrCIsWRmVeSWpSXmKPExsVy+t/xu7oNKjfSDP5OV7XYPHErm8XElZOZ
+	LX59sbDYf/Abq8XMGScYLTpnb2C3WPp2K7vF5V1z2CwOfnjCatFyx9SBy+PJwXlMHmvmrWH0
+	2LxCy2PxnpdMHud2nGf32LSqk81j3slAjxebZzJ6fN4k57H1822WAK4oPZui/NKSVIWM/OIS
+	W6VoQwsjPUNLCz0jE0s9Q2PzWCsjUyV9O5uU1JzMstQifbsEvYzt/x6xFvwTrZh/bS5TA+Nk
+	wS5GTg4JAROJu59ms4PYQgJLGSXObpWEiMtIbPxylRXCFpb4c62LrYuRC6jmI6PE438n2SGc
+	LYwS3fMesoBUsQioSGyeeJ0ZxGYT0JE4/+YOmC0ioC7R1LgXrJtZ4C+TxNLdT8DWCQuES7Re
+	2Q/WzCvgINHY1ckMMbWNSeLN7MeMEAlBiZMzn4AVMQNNXbD7E9AkDiBbWmL5Pw6QMKeAs8Td
+	w6cYIU5Vlji47BA7hF0r8fnvM8YJjMKzkEyahWTSLIRJCxiZVzGKpJYW56bnFhvpFSfmFpfm
+	pesl5+duYgRG77ZjP7fsYFz56qPeIUYmDsZDjBIczEoivK9FbqQJ8aYkVlalFuXHF5XmpBYf
+	YjQFhsVEZinR5Hxg+sgriTc0MzA1NDGzNDC1NDNWEudlu3I+TUggPbEkNTs1tSC1CKaPiYNT
+	qoEpS/dl+utpnkG1U1fUtgcyTrVjO3iTo3yWAWv/tytZPA7hGonuGifumKacC6yR6K8X3Nm+
+	1+3PkZmqjX99PwRPnvSG+YnKf5ejpU7Kdp9qlk/T+hd+3cfnvOPKF5eO8rRrW2StlJi1a84y
+	VYWNGRH57ydKnQzYlNWyPSO7+8e1GCbrg+c8H7x5+fUtO+POeXt9pj/czCs9jyvev8tveve8
+	x9s3/IrVPrOgWOD1HqEH39WXBZcubnicln9b722IlmO+zoKlL6q011+78+O/TI6wR+eHXH7f
+	xpA0tfSW9j9HFxbKHZA1OX16PWNP/pWXTYd6Wvk0/dQDmGzT7zvPtfnxpLotKtLw3eLWR+Ib
+	zjIqsRRnJBpqMRcVJwIAvV2NrWcDAAA=
+X-CMS-MailID: 20240904091232eucas1p23cc532e9cd4acdbb7f3d2c7ad0073eca
 X-Msg-Generator: CA
-X-RootMTR: 20240901051654eucas1p283642707d8dfafef7ce45b37c7685204
+X-RootMTR: 20240826130923eucas1p285627a5a210e62fbb0187962b1f8dde5
 X-EPHeader: CA
 CMS-TYPE: 201P
-X-CMS-RootMailID: 20240901051654eucas1p283642707d8dfafef7ce45b37c7685204
+X-CMS-RootMailID: 20240826130923eucas1p285627a5a210e62fbb0187962b1f8dde5
 References: <20240826-iopf-for-all-v1-0-59174e6a7528@samsung.com>
 	<20240826-iopf-for-all-v1-1-59174e6a7528@samsung.com>
-	<CGME20240901051654eucas1p283642707d8dfafef7ce45b37c7685204@eucas1p2.samsung.com>
-	<e3f3e82e-8884-48da-b5ed-e0016fc27b04@linux.intel.com>
+	<CGME20240826130923eucas1p285627a5a210e62fbb0187962b1f8dde5@eucas1p2.samsung.com>
+	<242056a5-9d16-415a-9913-0add5b050f47@linux.intel.com>
 
-On Sun, Sep 01, 2024 at 01:16:43PM +0800, Baolu Lu wrote:
+On Mon, Aug 26, 2024 at 09:09:14PM +0800, Baolu Lu wrote:
 > On 2024/8/26 19:40, Klaus Jensen wrote:
 > > From: Joel Granados<j.granados@samsung.com>
 > > 
@@ -141,140 +140,55 @@ On Sun, Sep 01, 2024 at 01:16:43PM +0800, Baolu Lu wrote:
 > >   drivers/iommu/intel/prq.c    | 290 ++++++++++++++++++++++++++++++++++++++++
 > >   drivers/iommu/intel/svm.c    | 308 -------------------------------------------
 > >   5 files changed, 331 insertions(+), 327 deletions(-)
-...
-> > diff --git a/drivers/iommu/intel/iommu.h b/drivers/iommu/intel/iommu.h
-> > index b67c14da1240..b3d98e706ed8 100644
-> > --- a/drivers/iommu/intel/iommu.h
-> > +++ b/drivers/iommu/intel/iommu.h
-> > @@ -694,6 +694,35 @@ struct iommu_pmu {
-> >   #define IOMMU_IRQ_ID_OFFSET_PRQ		(DMAR_UNITS_SUPPORTED)
-> >   #define IOMMU_IRQ_ID_OFFSET_PERF	(2 * DMAR_UNITS_SUPPORTED)
-> >   
-> > +/* Page request queue descriptor */
-> > +struct page_req_dsc {
-> > +	union {
-> > +		struct {
-> > +			u64 type:8;
-> > +			u64 pasid_present:1;
-> > +			u64 rsvd:7;
-> > +			u64 rid:16;
-> > +			u64 pasid:20;
-> > +			u64 exe_req:1;
-> > +			u64 pm_req:1;
-> > +			u64 rsvd2:10;
-> > +		};
-> > +		u64 qw_0;
-> > +	};
-> > +	union {
-> > +		struct {
-> > +			u64 rd_req:1;
-> > +			u64 wr_req:1;
-> > +			u64 lpig:1;
-> > +			u64 prg_index:9;
-> > +			u64 addr:52;
-> > +		};
-> > +		u64 qw_1;
-> > +	};
-> > +	u64 qw_2;
-> > +	u64 qw_3;
-> > +};
+> > 
+> > diff --git a/drivers/iommu/intel/Makefile b/drivers/iommu/intel/Makefile
+> > index c8beb0281559..d3bb0798092d 100644
+> > --- a/drivers/iommu/intel/Makefile
+> > +++ b/drivers/iommu/intel/Makefile
+> > @@ -1,6 +1,6 @@
+> >   # SPDX-License-Identifier: GPL-2.0
+> >   obj-$(CONFIG_DMAR_TABLE) += dmar.o
+> > -obj-$(CONFIG_INTEL_IOMMU) += iommu.o pasid.o nested.o cache.o
+> > +obj-$(CONFIG_INTEL_IOMMU) += iommu.o pasid.o nested.o cache.o prq.o
+> >   obj-$(CONFIG_DMAR_TABLE) += trace.o cap_audit.o
+> >   obj-$(CONFIG_DMAR_PERF) += perf.o
+> >   obj-$(CONFIG_INTEL_IOMMU_DEBUGFS) += debugfs.o
 > 
-> Why not move this structure to prq.c? It is specific to that file. Or
-> not?
-I had left it here because it was included in `struct intel_iommu` but
-since it is just a pointer, I think it can be put there if it makes more
-sense.
+> Thanks for the patch! Now that IOPF is separate from SVA, the Kconfig
+> needs to be updated accordingly.
+> 
+> diff --git a/drivers/iommu/intel/Kconfig b/drivers/iommu/intel/Kconfig
+> index f52fb39c968e..2888671c9278 100644
+> --- a/drivers/iommu/intel/Kconfig
+> +++ b/drivers/iommu/intel/Kconfig
+> @@ -15,6 +15,7 @@ config INTEL_IOMMU
+>          select DMA_OPS
+>          select IOMMU_API
+>          select IOMMU_IOVA
+> +       select IOMMU_IOPF
+This will force IOMMU_IOPF when INTEL_IOMMU is selected. You do this in
+order to use IOPF if available, but it wont conflict with Intel IOMMU's
+that do not support IOPF. right?
 
+>          select IOMMUFD_DRIVER if IOMMUFD
+>          select NEED_DMA_MAP_STATE
+>          select DMAR_TABLE
+> @@ -51,7 +52,6 @@ config INTEL_IOMMU_SVM
+>          depends on X86_64
+>          select MMU_NOTIFIER
+>          select IOMMU_SVA
+> -       select IOMMU_IOPF
+I already had this one
+>          help
+>            Shared Virtual Memory (SVM) provides a facility for devices
+>            to access DMA resources through process address space by
 > 
-> > +
-> >   struct intel_iommu {
-> >   	void __iomem	*reg; /* Pointer to hardware regs, virtual addr */
-> >   	u64 		reg_phys; /* physical address of hw register set */
-> > @@ -719,12 +748,10 @@ struct intel_iommu {
-> >   
-> >   	struct iommu_flush flush;
-> >   #endif
-> > -#ifdef CONFIG_INTEL_IOMMU_SVM
-> >   	struct page_req_dsc *prq;
-> >   	unsigned char prq_name[16];    /* Name for PRQ interrupt */
-> >   	unsigned long prq_seq_number;
-> >   	struct completion prq_complete;
-> > -#endif
-> >   	struct iopf_queue *iopf_queue;
-> >   	unsigned char iopfq_name[16];
-> >   	/* Synchronization between fault report and iommu device release. */
-> > @@ -1156,12 +1183,13 @@ void intel_context_flush_present(struct device_domain_info *info,
-> >   				 struct context_entry *context,
-> >   				 bool affect_domains);
-> >   
-> > +int intel_enable_prq(struct intel_iommu *iommu);
-> > +int intel_finish_prq(struct intel_iommu *iommu);
-> > +void intel_page_response(struct device *dev, struct iopf_fault *evt,
-> > +			struct iommu_page_response *msg);
-> > +
-> >   #ifdef CONFIG_INTEL_IOMMU_SVM
-> >   void intel_svm_check(struct intel_iommu *iommu);
-> > -int intel_svm_enable_prq(struct intel_iommu *iommu);
-> > -int intel_svm_finish_prq(struct intel_iommu *iommu);
-> > -void intel_svm_page_response(struct device *dev, struct iopf_fault *evt,
-> > -			     struct iommu_page_response *msg);
-> >   struct iommu_domain *intel_svm_domain_alloc(struct device *dev,
-> >   					    struct mm_struct *mm);
-> >   void intel_drain_pasid_prq(struct device *dev, u32 pasid);
-> > diff --git a/drivers/iommu/intel/prq.c b/drivers/iommu/intel/prq.c
-> > new file mode 100644
-> > index 000000000000..2814373e95d8
-> > --- /dev/null
-> > +++ b/drivers/iommu/intel/prq.c
-> > @@ -0,0 +1,290 @@
-> > +// SPDX-License-Identifier: GPL-2.0-only
-> > +/*
-> > + * Copyright © 2015 Intel Corporation.
-> > + *
-> > + * Authors: David Woodhouse<dwmw2@infradead.org>
-> 
-> Many contributors have worked on the code moved in this change. The
-> original authorship is no longer relevant.
-> 
-> Consider adding a comment like 'Split from svm.c' to document the
-> origin.
-Good point. Will do that.
-
-> > + */
-> > +
-> > +#include <linux/pci.h>
-> > +
-> > +#include "iommu.h"
-> > +#include "../iommu-pages.h"
-> > +#include "trace.h"
-> > +
-> > +static bool is_canonical_address(u64 addr)
-> > +{
-> > +	int shift = 64 - (__VIRTUAL_MASK_SHIFT + 1);
-> > +	long saddr = (long) addr;
-> > +
-> > +	return (((saddr << shift) >> shift) == saddr);
-> > +}
-...
-> > +			QI_PGRP_RESP_CODE(msg->code) |
-> > +			QI_PGRP_RESP_TYPE;
-> > +	desc.qw1 = QI_PGRP_IDX(prm->grpid) | QI_PGRP_LPIG(last_page);
-> > +	desc.qw2 = 0;
-> > +	desc.qw3 = 0;
-> > +
-> > +	qi_submit_sync(iommu, &desc, 1, 0);
-> > +}
-> 
-> The intel_drain_pasid_prq() helper should be moved to prq.c. It's no
-> longer specific to SVM.
-Oops. missed that one. Will do.
-
-Will address these and the rest of the comments in my V1
+> Thanks,
+> baolu
 
 Thx for the review
 
-Best
-
+best
 -- 
 
 Joel Granados
