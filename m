@@ -1,170 +1,176 @@
-Received: from mailout2.w1.samsung.com (mailout2.w1.samsung.com [210.118.77.12])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 63C7F1CCB29
-	for <iommu@lists.linux.dev>; Wed,  4 Sep 2024 10:19:26 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=210.118.77.12
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 69E6D14658C;
+	Wed,  4 Sep 2024 10:19:36 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1725445169; cv=none; b=QOx3qbZp6Kj27XsH89lOkObVeDU93Jv5P9WuXov/mh/Z/ahOhjaGCAk0U7QMJ5sxb/PoO5qdCv4qItyygUGuxXCR30dIS4ziurHGDX6ZY8F5tvkRF2wTbsSPJEoKwAojaOZeuCogk16PfMLQg0e6w8Tr0IDi37omFwH1N3BJPt0=
+	t=1725445176; cv=none; b=lgwNsGX+Mgh/pkExg8n6GuitrhdXxYaH9DLPtnFON8FAqjNoxUEqBcKAhmiOe7yzXUFR2UhviZyqVqLR4gvPvUILac8qjY5Jr+VS0z17Insogz4H4EBbKUWUQoypqElVWanGYuROxdU/7WDK5lUjscvA3s1i92r3b+UaKzqAgi4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1725445169; c=relaxed/simple;
-	bh=yENLbIwzaSXudtAKO8rxWrLEYSmWs26lPwRqbk3Tc1I=;
-	h=Date:From:To:CC:Subject:Message-ID:MIME-Version:Content-Type:
-	 Content-Disposition:In-Reply-To:References; b=nDzOllzQ0C2OTSUZgS8Kg0wfSk+dDgCDwjfABAgsy40N+hdvmgdZhoXQWXJQd0hl7fuaT4gOT9Mg/6zeYShpD7fJVwiK9fXuqSlYP0f+Bftbbn/+N3WXu3ALXroa9jljJCsMoBKjHDDhTCVkWTEbVOSoYUTbNMMWn6noImDxSi4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=samsung.com; spf=pass smtp.mailfrom=samsung.com; dkim=pass (1024-bit key) header.d=samsung.com header.i=@samsung.com header.b=MQXJw79Z; arc=none smtp.client-ip=210.118.77.12
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=samsung.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=samsung.com
+	s=arc-20240116; t=1725445176; c=relaxed/simple;
+	bh=zlaZcOaZM0dFAhQZuIhuVd2ZdREG27vDZ8dz/g7nXL4=;
+	h=Message-ID:Date:MIME-Version:Subject:From:To:Cc:References:
+	 In-Reply-To:Content-Type; b=L5/utgZ+umU0Cc5LgFPPfKiCuF4VMGkGCAPAbkVILSZTzThCtsL9X1AXQ0kre3bEhOUBg+UOWvTfk7yYSu/jNZdAfLAC6xsF4B/JxM+yDe2qNqjUeCr7h6cLvEBtjVwwijN+GpwH3h2nv6uZCDDMdibntPKs09drR8yvUFKbOvE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=uYVOEWkp; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=samsung.com header.i=@samsung.com header.b="MQXJw79Z"
-Received: from eucas1p2.samsung.com (unknown [182.198.249.207])
-	by mailout2.w1.samsung.com (KnoxPortal) with ESMTP id 20240904101924euoutp020869412c93ce281a69bab8d4fbd9f392~yAzxBlIWa2791427914euoutp02R
-	for <iommu@lists.linux.dev>; Wed,  4 Sep 2024 10:19:24 +0000 (GMT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 mailout2.w1.samsung.com 20240904101924euoutp020869412c93ce281a69bab8d4fbd9f392~yAzxBlIWa2791427914euoutp02R
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
-	s=mail20170921; t=1725445164;
-	bh=2E3980v8yN3y/wrC2ukf22OKX1OaZcxCNFuPShUMfHE=;
-	h=Date:From:To:CC:Subject:In-Reply-To:References:From;
-	b=MQXJw79ZtCwKfFbtRqnFD8krq+k7EXZb2jdOdjL0RKMFVOlMvaIp33xuauyIhU/Px
-	 iRxb+J9he2RedwF+93E0DQy3CSGgyn+5HsKM3o5dPzXUUatvC7S8TJEdczZ00sVRrJ
-	 4c3hBLxZmSTAb/0nAmiZQoMwUwDHG6sfOn6/Dzzo=
-Received: from eusmges1new.samsung.com (unknown [203.254.199.242]) by
-	eucas1p1.samsung.com (KnoxPortal) with ESMTP id
-	20240904101924eucas1p1f5f430b337daf63daba12eafce9a4fcd~yAzwm6DwB0099000990eucas1p1h;
-	Wed,  4 Sep 2024 10:19:24 +0000 (GMT)
-Received: from eucas1p1.samsung.com ( [182.198.249.206]) by
-	eusmges1new.samsung.com (EUCPMTA) with SMTP id CB.4B.09624.B2438D66; Wed,  4
-	Sep 2024 11:19:23 +0100 (BST)
-Received: from eusmtrp1.samsung.com (unknown [182.198.249.138]) by
-	eucas1p1.samsung.com (KnoxPortal) with ESMTPA id
-	20240904101923eucas1p138ef42fb306d27c0f693e71708f7500d~yAzwEdEVh0099000990eucas1p1g;
-	Wed,  4 Sep 2024 10:19:23 +0000 (GMT)
-Received: from eusmgms2.samsung.com (unknown [182.198.249.180]) by
-	eusmtrp1.samsung.com (KnoxPortal) with ESMTP id
-	20240904101923eusmtrp197ad8fd8ddd912eebdb109fa1e37f5a0~yAzwDmggy2782327823eusmtrp1W;
-	Wed,  4 Sep 2024 10:19:23 +0000 (GMT)
-X-AuditID: cbfec7f2-c11ff70000002598-93-66d8342b5843
-Received: from eusmtip1.samsung.com ( [203.254.199.221]) by
-	eusmgms2.samsung.com (EUCPMTA) with SMTP id E5.CE.19096.B2438D66; Wed,  4
-	Sep 2024 11:19:23 +0100 (BST)
-Received: from CAMSVWEXC02.scsc.local (unknown [106.1.227.72]) by
-	eusmtip1.samsung.com (KnoxPortal) with ESMTPA id
-	20240904101923eusmtip1953528a14a8142e81bc27de1020ff889~yAzvzp2Xk1230312303eusmtip1q;
-	Wed,  4 Sep 2024 10:19:23 +0000 (GMT)
-Received: from localhost (106.210.248.110) by CAMSVWEXC02.scsc.local
-	(2002:6a01:e348::6a01:e348) with Microsoft SMTP Server (TLS) id 15.0.1497.2;
-	Wed, 4 Sep 2024 11:19:19 +0100
-Date: Wed, 4 Sep 2024 12:19:16 +0200
-From: Joel Granados <j.granados@samsung.com>
-To: Klaus Jensen <its@irrelevant.dk>
-CC: David Woodhouse <dwmw2@infradead.org>, Lu Baolu
-	<baolu.lu@linux.intel.com>, Joerg Roedel <joro@8bytes.org>, Will Deacon
-	<will@kernel.org>, Robin Murphy <robin.murphy@arm.com>, Jason Gunthorpe
-	<jgg@ziepe.ca>, Kevin Tian <kevin.tian@intel.com>, Minwoo Im
-	<minwoo.im@samsung.com>, <linux-kernel@vger.kernel.org>,
-	<iommu@lists.linux.dev>, Klaus Jensen <k.jensen@samsung.com>
-Subject: Re: [PATCH RFC PREVIEW 6/6] iommu/vt-d: do not require a PASID in
- page requests
-Message-ID: <20240904101916.ia5n7s4tbczkqnws@joelS2.panther.com>
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="uYVOEWkp"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 008A9C4CEC2;
+	Wed,  4 Sep 2024 10:19:22 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1725445176;
+	bh=zlaZcOaZM0dFAhQZuIhuVd2ZdREG27vDZ8dz/g7nXL4=;
+	h=Date:Subject:From:To:Cc:References:In-Reply-To:From;
+	b=uYVOEWkpqETakooK2/HOVDqhaXgvcvfW5LXQB7Eya90zPhhAiP61p0sjkmecSJ9H+
+	 rI8LHkD2POHt8IN3KC2hR7cMqtPEeFU//AL5L1s+oMPQoKYBoCvYsIxq9TnnBXOSB+
+	 Wqgy1e5kq4juehbhYYXpUfYqtwJtzVbTtmvm1IsyDLHnRTZBBk6IIHBZCJbknyoXaz
+	 LndSPQao15U2+i0OT9K2Sancv4wSpgjK0ypos5OdhJ2qIYzN7tv5Eq8VTRrO8diOMQ
+	 dKayNvpbInuOlBeVS33eiwEehui8PpvaQKUQDrX2A+Y6Nod7Un0g6t6hcdSaQnHzVd
+	 MbOyDlWtzA1Uw==
+Message-ID: <3535a897-8708-463d-b931-fa344a967f18@kernel.org>
+Date: Wed, 4 Sep 2024 12:19:19 +0200
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: inline
-In-Reply-To: <20240826-iopf-for-all-v1-6-59174e6a7528@samsung.com>
-X-ClientProxiedBy: CAMSVWEXC01.scsc.local (2002:6a01:e347::6a01:e347) To
-	CAMSVWEXC02.scsc.local (2002:6a01:e348::6a01:e348)
-X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFtrOKsWRmVeSWpSXmKPExsWy7djPc7raJjfSDO5/sLbYPHErm8XElZOZ
-	LX59sbDYf/Abq8XMGScYLTpnb2C3WPp2K7vF5V1z2CwOfnjCatFyx9SBy+PJwXlMHmvmrWH0
-	2LxCy2PxnpdMHud2nGf32LSqk81j3slAjxebZzJ6fN4k57H1822WAK4oLpuU1JzMstQifbsE
-	roymdU0sBbO4K1q+HGJuYHzB0cXIySEhYCLR/+MnWxcjF4eQwApGiUsLFrCDJIQEvjBKzLgX
-	DpH4zCgxaf8NRpiOt1Nms0EULWeU2NilDVf08eopqFFbGCVWf9/JClLFIqAisbR/JZjNJqAj
-	cf7NHWYQWwQo/vTfXhaQBmaBBmaJrzfPgo0VFoiS+DBjA9gdvAIOErPXtzFC2IISJ2c+YQGx
-	mYEGLdj9CaieA8iWllj+D+wfTgEnic6P3VCXKkscXHaIHcKulTi15RYTyC4JgdmcEvOvToEq
-	cpHYe/4+VJGwxKvjW6BsGYnTk3tYIBomM0rs//eBHcJZzSixrPErE0SVtUTLlSdQHY4SM/pB
-	VnAA2XwSN94KQhzKJzFp23RmiDCvREebEES1msTqe29YJjAqz0Ly2iwkr81CeG0BI/MqRvHU
-	0uLc9NRiw7zUcr3ixNzi0rx0veT83E2MwLR1+t/xTzsY5776qHeIkYmD8RCjBAezkgjva5Eb
-	aUK8KYmVValF+fFFpTmpxYcYpTlYlMR5VVPkU4UE0hNLUrNTUwtSi2CyTBycUg1ME0UOpm2W
-	/fVy4aKWm/N7poab7byfvmzx7SV1qwwZngj0FDE61bVuNFxj8yDy9MdpTYcmsk5mU157deei
-	1fxCcdqOHPNt3O0Yd+2ZOWNtFR/7x+4G99NGjOFFXu9kgzIbijf2G7w5eyE05u+66Dc8y92e
-	ibdn9Px84P5hd4Ld0+elF1O1VibKMK9e8PxPU7HDrX0TQ1sF05k1rHyvWh5esmvi3rcs5lYK
-	1gubnP0Vfh+dFMAi1aggn3+4bcOXm7M0237ND2l7+eSP04MAb8Xce6u21bDq6QUkyDq3Tzrz
-	qFf5lCh37IsTK7ZGXGf7Xdr+crrdvZJ9L9IKH/57zOcref3i44jns6/2GzB9fOibocRSnJFo
-	qMVcVJwIADPe+hDKAwAA
-X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFrrKIsWRmVeSWpSXmKPExsVy+t/xu7raJjfSDN7sk7TYPHErm8XElZOZ
-	LX59sbDYf/Abq8XMGScYLTpnb2C3WPp2K7vF5V1z2CwOfnjCatFyx9SBy+PJwXlMHmvmrWH0
-	2LxCy2PxnpdMHud2nGf32LSqk81j3slAjxebZzJ6fN4k57H1822WAK4oPZui/NKSVIWM/OIS
-	W6VoQwsjPUNLCz0jE0s9Q2PzWCsjUyV9O5uU1JzMstQifbsEvYymdU0sBbO4K1q+HGJuYHzB
-	0cXIySEhYCLxdspsti5GLg4hgaWMEifXdDJBJGQkNn65ygphC0v8udYFVfSRUeLg1hMsEM4W
-	RokF97vYQapYBFQklvavBOtgE9CROP/mDjOILQIUf/pvL1gDs0ADs8TXm2fZQBLCAlESH2Zs
-	AGvmFXCQmL2+jRFi6llGidvP77JBJAQlTs58wgJiMwNNXbD7E1CcA8iWllj+D+wHTgEnic6P
-	3YwQpypLHFx2iB3CrpX4/PcZ4wRG4VlIJs1CMmkWwqQFjMyrGEVSS4tz03OLjfSKE3OLS/PS
-	9ZLzczcxAuN327GfW3Ywrnz1Ue8QIxMH4yFGCQ5mJRHe1yI30oR4UxIrq1KL8uOLSnNSiw8x
-	mgLDYiKzlGhyPjCB5JXEG5oZmBqamFkamFqaGSuJ87JdOZ8mJJCeWJKanZpakFoE08fEwSnV
-	wMQ8k19jwp0FF7fekPltlcoRdjHD/LTZuf/T/mz4c/7wpIN/Jl19+ufACTY2uYsb5u2verD/
-	0pvNvzeeNL/6Q/WHRj332teHa3k51zNOEra/dcarsOWbaNfNHdP+rebUOc0SZezy8tbfIrEM
-	ycCZWw0dvKdt2eAY5cwYa/cnXrelZs32kqst5rl3KjVXmhWbGTAIvE51mDldXHDfS7vznol1
-	/Bp+Kpcq5znN5rF44H4ttm/P5bL6fOV32cV8Ue/5Bd14DVzO3yneFfpt3vLeJ7N27N/oNMf1
-	cPPtexqrTp3kmmZ3bwuDisqty7sYM/fPePdr9VMZnbMpFZeizf5K7/fUE2K8t91FztnVfNmc
-	zNXtSizFGYmGWsxFxYkAEy99PWgDAAA=
-X-CMS-MailID: 20240904101923eucas1p138ef42fb306d27c0f693e71708f7500d
-X-Msg-Generator: CA
-X-RootMTR: 20240826114110eucas1p2de6af1717324c944cd3036826492df44
-X-EPHeader: CA
-CMS-TYPE: 201P
-X-CMS-RootMailID: 20240826114110eucas1p2de6af1717324c944cd3036826492df44
-References: <20240826-iopf-for-all-v1-0-59174e6a7528@samsung.com>
-	<CGME20240826114110eucas1p2de6af1717324c944cd3036826492df44@eucas1p2.samsung.com>
-	<20240826-iopf-for-all-v1-6-59174e6a7528@samsung.com>
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH 00/19] Add initial support for QCS8300
+From: Krzysztof Kozlowski <krzk@kernel.org>
+To: Bjorn Andersson <andersson@kernel.org>, Rob Herring <robh@kernel.org>,
+ Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>
+Cc: Kishon Vijay Abraham I <kishon@kernel.org>,
+ Jassi Brar <jassisinghbrar@gmail.com>,
+ Mathieu Poirier <mathieu.poirier@linaro.org>, Will Deacon <will@kernel.org>,
+ Jingyi Wang <quic_jingyw@quicinc.com>,
+ Bartosz Golaszewski <bartosz.golaszewski@linaro.org>,
+ Thomas Gleixner <tglx@linutronix.de>, Das Srinagesh
+ <quic_gurus@quicinc.com>, Ulf Hansson <ulf.hansson@linaro.org>,
+ Konrad Dybcio <konradybcio@kernel.org>, Andy Gross <agross@kernel.org>,
+ Bart Van Assche <bvanassche@acm.org>, linux-arm-msm@vger.kernel.org,
+ Robert Marko <robimarko@gmail.com>, Joerg Roedel <joro@8bytes.org>,
+ linux-remoteproc@vger.kernel.org, devicetree@vger.kernel.org,
+ linux-kernel@vger.kernel.org, Alim Akhtar <alim.akhtar@samsung.com>,
+ linux-phy@lists.infradead.org, linux-scsi@vger.kernel.org,
+ linux-pm@vger.kernel.org,
+ Srinivas Kandagatla <srinivas.kandagatla@linaro.org>,
+ linux-arm-kernel@lists.infradead.org,
+ Catalin Marinas <catalin.marinas@arm.com>, iommu@lists.linux.dev,
+ Xin Liu <quic_liuxin@quicinc.com>, Shazad Hussain
+ <quic_shazhuss@quicinc.com>, Tingguo Cheng <quic_tingguoc@quicinc.com>,
+ Zhenhua Huang <quic_zhenhuah@quicinc.com>,
+ Kyle Deng <quic_chunkaid@quicinc.com>,
+ Raviteja Laggyshetty <quic_rlaggysh@quicinc.com>, Lee Jones
+ <lee@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
+ Avri Altman <avri.altman@wdc.com>,
+ Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>,
+ Vinod Koul <vkoul@kernel.org>
+References: <20240904-qcs8300_initial_dtsi-v1-0-d0ea9afdc007@quicinc.com>
+ <fcfaeed3-8544-4e98-9f95-f43346dc83e8@kernel.org>
+Content-Language: en-US
+Autocrypt: addr=krzk@kernel.org; keydata=
+ xsFNBFVDQq4BEAC6KeLOfFsAvFMBsrCrJ2bCalhPv5+KQF2PS2+iwZI8BpRZoV+Bd5kWvN79
+ cFgcqTTuNHjAvxtUG8pQgGTHAObYs6xeYJtjUH0ZX6ndJ33FJYf5V3yXqqjcZ30FgHzJCFUu
+ JMp7PSyMPzpUXfU12yfcRYVEMQrmplNZssmYhiTeVicuOOypWugZKVLGNm0IweVCaZ/DJDIH
+ gNbpvVwjcKYrx85m9cBVEBUGaQP6AT7qlVCkrf50v8bofSIyVa2xmubbAwwFA1oxoOusjPIE
+ J3iadrwpFvsZjF5uHAKS+7wHLoW9hVzOnLbX6ajk5Hf8Pb1m+VH/E8bPBNNYKkfTtypTDUCj
+ NYcd27tjnXfG+SDs/EXNUAIRefCyvaRG7oRYF3Ec+2RgQDRnmmjCjoQNbFrJvJkFHlPeHaeS
+ BosGY+XWKydnmsfY7SSnjAzLUGAFhLd/XDVpb1Een2XucPpKvt9ORF+48gy12FA5GduRLhQU
+ vK4tU7ojoem/G23PcowM1CwPurC8sAVsQb9KmwTGh7rVz3ks3w/zfGBy3+WmLg++C2Wct6nM
+ Pd8/6CBVjEWqD06/RjI2AnjIq5fSEH/BIfXXfC68nMp9BZoy3So4ZsbOlBmtAPvMYX6U8VwD
+ TNeBxJu5Ex0Izf1NV9CzC3nNaFUYOY8KfN01X5SExAoVTr09ewARAQABzSVLcnp5c3p0b2Yg
+ S296bG93c2tpIDxrcnprQGtlcm5lbC5vcmc+wsGVBBMBCgA/AhsDBgsJCAcDAgYVCAIJCgsE
+ FgIDAQIeAQIXgBYhBJvQfg4MUfjVlne3VBuTQ307QWKbBQJgPO8PBQkUX63hAAoJEBuTQ307
+ QWKbBn8P+QFxwl7pDsAKR1InemMAmuykCHl+XgC0LDqrsWhAH5TYeTVXGSyDsuZjHvj+FRP+
+ gZaEIYSw2Yf0e91U9HXo3RYhEwSmxUQ4Fjhc9qAwGKVPQf6YuQ5yy6pzI8brcKmHHOGrB3tP
+ /MODPt81M1zpograAC2WTDzkICfHKj8LpXp45PylD99J9q0Y+gb04CG5/wXs+1hJy/dz0tYy
+ iua4nCuSRbxnSHKBS5vvjosWWjWQXsRKd+zzXp6kfRHHpzJkhRwF6ArXi4XnQ+REnoTfM5Fk
+ VmVmSQ3yFKKePEzoIriT1b2sXO0g5QXOAvFqB65LZjXG9jGJoVG6ZJrUV1MVK8vamKoVbUEe
+ 0NlLl/tX96HLowHHoKhxEsbFzGzKiFLh7hyboTpy2whdonkDxpnv/H8wE9M3VW/fPgnL2nPe
+ xaBLqyHxy9hA9JrZvxg3IQ61x7rtBWBUQPmEaK0azW+l3ysiNpBhISkZrsW3ZUdknWu87nh6
+ eTB7mR7xBcVxnomxWwJI4B0wuMwCPdgbV6YDUKCuSgRMUEiVry10xd9KLypR9Vfyn1AhROrq
+ AubRPVeJBf9zR5UW1trJNfwVt3XmbHX50HCcHdEdCKiT9O+FiEcahIaWh9lihvO0ci0TtVGZ
+ MCEtaCE80Q3Ma9RdHYB3uVF930jwquplFLNF+IBCn5JRzsFNBFVDXDQBEADNkrQYSREUL4D3
+ Gws46JEoZ9HEQOKtkrwjrzlw/tCmqVzERRPvz2Xg8n7+HRCrgqnodIYoUh5WsU84N03KlLue
+ MNsWLJBvBaubYN4JuJIdRr4dS4oyF1/fQAQPHh8Thpiz0SAZFx6iWKB7Qrz3OrGCjTPcW6ei
+ OMheesVS5hxietSmlin+SilmIAPZHx7n242u6kdHOh+/SyLImKn/dh9RzatVpUKbv34eP1wA
+ GldWsRxbf3WP9pFNObSzI/Bo3kA89Xx2rO2roC+Gq4LeHvo7ptzcLcrqaHUAcZ3CgFG88CnA
+ 6z6lBZn0WyewEcPOPdcUB2Q7D/NiUY+HDiV99rAYPJztjeTrBSTnHeSBPb+qn5ZZGQwIdUW9
+ YegxWKvXXHTwB5eMzo/RB6vffwqcnHDoe0q7VgzRRZJwpi6aMIXLfeWZ5Wrwaw2zldFuO4Dt
+ 91pFzBSOIpeMtfgb/Pfe/a1WJ/GgaIRIBE+NUqckM+3zJHGmVPqJP/h2Iwv6nw8U+7Yyl6gU
+ BLHFTg2hYnLFJI4Xjg+AX1hHFVKmvl3VBHIsBv0oDcsQWXqY+NaFahT0lRPjYtrTa1v3tem/
+ JoFzZ4B0p27K+qQCF2R96hVvuEyjzBmdq2esyE6zIqftdo4MOJho8uctOiWbwNNq2U9pPWmu
+ 4vXVFBYIGmpyNPYzRm0QPwARAQABwsF8BBgBCgAmAhsMFiEEm9B+DgxR+NWWd7dUG5NDfTtB
+ YpsFAmA872oFCRRflLYACgkQG5NDfTtBYpvScw/9GrqBrVLuJoJ52qBBKUBDo4E+5fU1bjt0
+ Gv0nh/hNJuecuRY6aemU6HOPNc2t8QHMSvwbSF+Vp9ZkOvrM36yUOufctoqON+wXrliEY0J4
+ ksR89ZILRRAold9Mh0YDqEJc1HmuxYLJ7lnbLYH1oui8bLbMBM8S2Uo9RKqV2GROLi44enVt
+ vdrDvo+CxKj2K+d4cleCNiz5qbTxPUW/cgkwG0lJc4I4sso7l4XMDKn95c7JtNsuzqKvhEVS
+ oic5by3fbUnuI0cemeizF4QdtX2uQxrP7RwHFBd+YUia7zCcz0//rv6FZmAxWZGy5arNl6Vm
+ lQqNo7/Poh8WWfRS+xegBxc6hBXahpyUKphAKYkah+m+I0QToCfnGKnPqyYIMDEHCS/RfqA5
+ t8F+O56+oyLBAeWX7XcmyM6TGeVfb+OZVMJnZzK0s2VYAuI0Rl87FBFYgULdgqKV7R7WHzwD
+ uZwJCLykjad45hsWcOGk3OcaAGQS6NDlfhM6O9aYNwGL6tGt/6BkRikNOs7VDEa4/HlbaSJo
+ 7FgndGw1kWmkeL6oQh7wBvYll2buKod4qYntmNKEicoHGU+x91Gcan8mCoqhJkbqrL7+nXG2
+ 5Q/GS5M9RFWS+nYyJh+c3OcfKqVcZQNANItt7+ULzdNJuhvTRRdC3g9hmCEuNSr+CLMdnRBY fv0=
+In-Reply-To: <fcfaeed3-8544-4e98-9f95-f43346dc83e8@kernel.org>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 
-On Mon, Aug 26, 2024 at 01:40:32PM +0200, Klaus Jensen wrote:
-> From: Klaus Jensen <k.jensen@samsung.com>
+On 04/09/2024 11:34, Krzysztof Kozlowski wrote:
+> On 04/09/2024 10:33, Jingyi Wang wrote:
+>> Add initial support for QCS8300 SoC and QCS8300 RIDE board.
+>>
+>> This revision brings support for:
+>> - CPUs with cpu idle
+>> - interrupt-controller with PDC wakeup support
+>> - gcc
+>> - TLMM
+>> - interconnect
+>> - qup with uart
+>> - smmu
+>> - pmic
+>> - ufs
+>> - ipcc
+>> - sram
+>> - remoteprocs including ADSP,CDSP and GPDSP
+>>
+>> Signed-off-by: Jingyi Wang <quic_jingyw@quicinc.com>
+>> ---
+>> patch series organized as:
+>> - 1-2: remoteproc binding and driver
+>> - 3-5: ufs binding and driver
+>> - 6-7: rpmhpd binding and driver
+>> - 8-15: bindings for other components found on the SoC
 > 
-> PRQ events can now be handled without a PASID being present. Remove the
-> restriction.
+> Limit your CC list. I found like 8 unnecessary addresses for already
+> huge Cc list. Or organize your patches per subsystem, as we usually expect.
 > 
-> Signed-off-by: Klaus Jensen <k.jensen@samsung.com>
-> ---
->  drivers/iommu/intel/prq.c | 12 +++---------
->  1 file changed, 3 insertions(+), 9 deletions(-)
+>> - 16-19: changes to support the device tree
+>>
+>> dependencies:
+>> tlmm: https://lore.kernel.org/linux-arm-msm/20240819064933.1778204-1-quic_jingyw@quicinc.com/
+>> gcc: https://lore.kernel.org/all/20240820-qcs8300-gcc-v1-0-d81720517a82@quicinc.com/
+>> interconnect: https://lore.kernel.org/linux-arm-msm/20240827151622.305-1-quic_rlaggysh@quicinc.com/
 > 
-> diff --git a/drivers/iommu/intel/prq.c b/drivers/iommu/intel/prq.c
-> index 2814373e95d8..cc36198ebf91 100644
-> --- a/drivers/iommu/intel/prq.c
-> +++ b/drivers/iommu/intel/prq.c
-> @@ -101,18 +101,12 @@ static irqreturn_t prq_event_thread(int irq, void *d)
->  		req = &iommu->prq[head / sizeof(*req)];
->  		address = (u64)req->addr << VTD_PAGE_SHIFT;
->  
-> -		if (unlikely(!req->pasid_present)) {
-> -			pr_err("IOMMU: %s: Page request without PASID\n",
-> -			       iommu->name);
-> -bad_req:
-> -			handle_bad_prq_event(iommu, req, QI_RESP_INVALID);
-> -			goto prq_advance;
-> -		}
-> -
->  		if (unlikely(!is_canonical_address(address))) {
->  			pr_err("IOMMU: %s: Address is not canonical\n",
->  			       iommu->name);
-> -			goto bad_req;
-> +bad_req:
-> +			handle_bad_prq_event(iommu, req, QI_RESP_INVALID);
-> +			goto prq_advance;
->  		}
->  
->  		if (unlikely(req->pm_req && (req->rd_req | req->wr_req))) {
+> Why? UFS cannot depend on pinctrl for example.
 > 
-> -- 
-> 2.45.2
+> This blocks testing and merging.
 > 
+> Please organize properly (so decouple) your patches, so that there is no
+> fake dependency.
 
-I'll squash this commit with the one that introduces the prq.c file.
+Let me also add here one more thought. That's like fourth or fifth
+QCS/SA patchset last two weeks from Qualcomm and they repeat the same
+mistakes. Not correctly organized, huge cc list, same problems with
+bindings or drivers.
 
-Best
+I am giving much more comments to fix than review/ack tags.
 
--- 
+I am not going to review this. I will also slow down with reviewing
+other Qualcomm patches. Why? Because you post simultaneously, apparently
+you do not learn from other review, so I have to keep repeating the same.
 
-Joel Granados
+I am overwhelmed with this, so please expect two week review time from me.
+
+Best regards,
+Krzysztof
+
