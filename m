@@ -1,224 +1,179 @@
-Received: from mx0b-0031df01.pphosted.com (mx0b-0031df01.pphosted.com [205.220.180.131])
+Received: from NAM12-DM6-obe.outbound.protection.outlook.com (mail-dm6nam12on2086.outbound.protection.outlook.com [40.107.243.86])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BD4981D933D
-	for <iommu@lists.linux.dev>; Wed,  4 Sep 2024 12:41:29 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.180.131
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1725453691; cv=none; b=rJJ2bN3vw28cM2I5Yttgfa9WL46Yz3iU7UtHVAAR54E0/BmDNtWPv3pmf5ASHK2/62BJwSFS5/3av+2AeiiCsyQroMf3YSpAx9WI9E1mOz9d4hpwvpjSos2ZKtQFOoNaGwbOvIrEn4n4oyvZFVHTt5p1B/0HZnJv7nFWDqdaUAM=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1725453691; c=relaxed/simple;
-	bh=uN5W47xKqiofsiRvLQO9FgZG32WsSONW8PUWzSbP6NI=;
-	h=Message-ID:Date:MIME-Version:Subject:To:CC:References:From:
-	 In-Reply-To:Content-Type; b=E3FdVSrQEL8/1vQpdSx0XHsSIiaYsSsA1/Am/O/nXshEPy+MZUNy/BRXlu4tX1qOBSX1VH8YXc3YVFGMHXXeQQlwg9dLdxAuYUWGK0JBzwIp2nn/c8dLTErSrK0u/aVBb4og8V4I9Rbptn037899xYqbeZ9HcMWLEMXvUWrQSls=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com; spf=pass smtp.mailfrom=quicinc.com; dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b=NwSW2uSS; arc=none smtp.client-ip=205.220.180.131
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=quicinc.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9F2DF1D58B9
+	for <iommu@lists.linux.dev>; Wed,  4 Sep 2024 12:44:10 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.243.86
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1725453852; cv=fail; b=GD/R8mV/sLbucztbgI8lKrcVJEUvgPBhbl4JOSZWVLCojiQCJE6evk9ZOwtWUafDSv/h3fp5+JmogLNhJerEoJRs4PyMjgEjvn+04YnhRHDdeCQdYj17OZ9ljxQBL/nza3vKTFimGFde8u3L2w+oFb81bTRYEFswwn3vLRT880k=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1725453852; c=relaxed/simple;
+	bh=dhIi90Xjlzr1VMsiqknAXUy6v+z6EBakFXLQZbtsbn4=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:Content-Type:
+	 Content-Disposition:In-Reply-To:MIME-Version; b=aVFmbT7EgH9QMxfXqA21krrmG4m4IecrfU+qydxvJn41pTouQfLzttjzdcLvFNM6IFj9yOkK9bGLsl/lVjAUHdwVlAJHxXWUgYeUegW439tG3XWLXEmIZsVicaKEFlSP31N4NW1nPkFJh8iZPvr/9vXkQtT34Suz5oKhSdvURQM=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=MphXv6kY; arc=fail smtp.client-ip=40.107.243.86
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b="NwSW2uSS"
-Received: from pps.filterd (m0279868.ppops.net [127.0.0.1])
-	by mx0a-0031df01.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 484C1A6Q015388;
-	Wed, 4 Sep 2024 12:41:07 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=quicinc.com; h=
-	cc:content-transfer-encoding:content-type:date:from:in-reply-to
-	:message-id:mime-version:references:subject:to; s=qcppdkim1; bh=
-	vvnHrvOk02BNsBCgS1kD4aYGDPo30suEFW3uLxKtM4c=; b=NwSW2uSSUuAG7akB
-	Q3GJEiSZMlKd963W2n9NL5Q3cctGTTLPe8zYwIrVyqOQv4Ih335M/gBDRkzkDZAi
-	b0Q7oakZt7XUYN11S9Z4KSAyd+JYGEj4yXwUKxTK3WpLJmqO+XaROd01biwIB/YN
-	eHlZZtK4xfz+SNXzr4ifPeE8Zv8xlAwq+LqBgeV1PRrWC+MuRHQgz3o1j/XT96cH
-	/OmJXQBFJiBhyUz45vrGbJ7mqeWJi4s9jaTqyfWQf9k8ibPVY0cUi8/A578sJxUA
-	VRTGzLqM5WAp91JFqIhFEnk1CebrvmaqHMya0qRA2Lte3OaPJzaW2aoS1HMPiN3L
-	Jof2aQ==
-Received: from nasanppmta01.qualcomm.com (i-global254.qualcomm.com [199.106.103.254])
-	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 41dt69cuj5-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Wed, 04 Sep 2024 12:41:06 +0000 (GMT)
-Received: from nasanex01b.na.qualcomm.com (nasanex01b.na.qualcomm.com [10.46.141.250])
-	by NASANPPMTA01.qualcomm.com (8.18.1.2/8.18.1.2) with ESMTPS id 484Cf4LT023068
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Wed, 4 Sep 2024 12:41:05 GMT
-Received: from [10.110.120.207] (10.80.80.8) by nasanex01b.na.qualcomm.com
- (10.46.141.250) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1544.9; Wed, 4 Sep 2024
- 05:41:01 -0700
-Message-ID: <06968d9d-0428-4fe8-8526-c91db3d9f0e7@quicinc.com>
-Date: Wed, 4 Sep 2024 05:41:01 -0700
+	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="MphXv6kY"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=c+Rk2riH+pkwLuA83ff+t9sf4pqy7uMhVZ2Zn964lZer9brDumTvfVCiPnHR1E3SQfpgljCdfTTmYr2neBlWRcjFeEvKtbUs/b4rKzkG72bH/P6rvLVperjiMWwW33VwUScJYjtVD3InjUJfVfSg2oQNVM/ijKGD32xJDZdI7kG9qWnHNsw5W0NJXvrLlWH4VzFdMc4sG6LOGEngKmkuKAdLOPX+IlDPoE40sjzGjWzWjopjjuIvw5vnHxLuhKRBeXbWKhXKSDyXFLMEDhQL2LHGaTYx5raMQfI3HP/YN4ZU6as9+I0aVHUt6fOnROQJ/3a/ITH4tRXnxPXjyKg+ag==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=RLumYPqDPg7PvF2Q4xs+85cKU2fUuXlTiNQsEu7UeFQ=;
+ b=cCxqhAhfxdEv3s2ouoYctt9lXDZ5uYC9beOB7NxAtK17lvSLCpxAVV8vd41bO6EJLZHxRrhJEtQa0pst8Ib45DSjr7cpHHyuLt+BkXRDIyi86HMlJ0EseTHrqnkDL22LtV1A4OLJUlUKXtdjRtgh+x3LtXrpLTVSS7KKUXUbE7xxF0pK8xtSUxNNKVSBrpIijATC+WvDZ8nXOuED0drYHLtAeF2sb0y6ru1iXzM084X7NNGZXZ+35zfu5gk7aESeP8eRaqxbDpNjTze+eyU0DtNoDI27OUBce2sikT1EQQF/ilrRr5OVjAYV5clrKEMN3mVsbM/zdppkziIY75UMTg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=RLumYPqDPg7PvF2Q4xs+85cKU2fUuXlTiNQsEu7UeFQ=;
+ b=MphXv6kYPbilm74kDLemcD9lh6ISEUeYdie+KEtjGf0/WJPR6Cd4q3Ovn+LK7HrkIxOw8lDrm0Sj021cplpLNwX5PRuwqxKgHFfQJyQ2TpveVCHQd5j9CThgur/m92i6yeojBk/jUqwCJ2KtSTOOluSUzZmQmqRx6f8np0J/TnrQBG48ACobpu6Ib6EbtNeTSCykck4TO47f09t53xUHtRArctI2lpqU16vGwOOFn4imQDYK4qDQzQqNQdml3LwcvY/6Ad+weHqHBly6HlGQ3/KFI03Tx+WOLcW/s8U2+V+p4OAHhOpHiR7rwZjyMD0pVFHMwzaGLlbW7BmOcneo/g==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nvidia.com;
+Received: from CH3PR12MB7763.namprd12.prod.outlook.com (2603:10b6:610:145::10)
+ by DM6PR12MB4370.namprd12.prod.outlook.com (2603:10b6:5:2aa::10) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7918.27; Wed, 4 Sep
+ 2024 12:44:07 +0000
+Received: from CH3PR12MB7763.namprd12.prod.outlook.com
+ ([fe80::8b63:dd80:c182:4ce8]) by CH3PR12MB7763.namprd12.prod.outlook.com
+ ([fe80::8b63:dd80:c182:4ce8%3]) with mapi id 15.20.7918.024; Wed, 4 Sep 2024
+ 12:44:07 +0000
+Date: Wed, 4 Sep 2024 09:44:05 -0300
+From: Jason Gunthorpe <jgg@nvidia.com>
+To: Lu Baolu <baolu.lu@linux.intel.com>,
+	Russell King <linux@armlinux.org.uk>
+Cc: Inki Dae <inki.dae@samsung.com>, Seung-Woo Kim <sw0312.kim@samsung.com>,
+	Kyungmin Park <kyungmin.park@samsung.com>,
+	David Airlie <airlied@gmail.com>, Daniel Vetter <daniel@ffwll.ch>,
+	Krzysztof Kozlowski <krzk@kernel.org>,
+	Alim Akhtar <alim.akhtar@samsung.com>,
+	Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
+	Robin Murphy <robin.murphy@arm.com>,
+	Kevin Tian <kevin.tian@intel.com>, Yi Liu <yi.l.liu@intel.com>,
+	iommu@lists.linux.dev, linux-arm-kernel@lists.infradead.org,
+	linux-media@vger.kernel.org, dri-devel@lists.freedesktop.org,
+	linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 1/2] ARM: dma-mapping: Pass device to
+ arm_iommu_create_mapping()
+Message-ID: <20240904124405.GA825382@nvidia.com>
+References: <20240812070202.9366-1-baolu.lu@linux.intel.com>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20240812070202.9366-1-baolu.lu@linux.intel.com>
+X-ClientProxiedBy: BN0PR10CA0029.namprd10.prod.outlook.com
+ (2603:10b6:408:143::7) To CH3PR12MB7763.namprd12.prod.outlook.com
+ (2603:10b6:610:145::10)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v2 15/21] dt-bindings: i2c: document support for SA8255p
-Content-Language: en-US
-To: Krzysztof Kozlowski <krzk@kernel.org>
-CC: <andersson@kernel.org>, <konradybcio@kernel.org>, <robh@kernel.org>,
-        <krzk+dt@kernel.org>, <conor+dt@kernel.org>, <rafael@kernel.org>,
-        <viresh.kumar@linaro.org>, <herbert@gondor.apana.org.au>,
-        <davem@davemloft.net>, <sudeep.holla@arm.com>, <andi.shyti@kernel.org>,
-        <tglx@linutronix.de>, <will@kernel.org>, <robin.murphy@arm.com>,
-        <joro@8bytes.org>, <jassisinghbrar@gmail.com>, <lee@kernel.org>,
-        <linus.walleij@linaro.org>, <amitk@kernel.org>,
-        <thara.gopinath@gmail.com>, <broonie@kernel.org>,
-        <cristian.marussi@arm.com>, <rui.zhang@intel.com>,
-        <lukasz.luba@arm.com>, <wim@linux-watchdog.org>, <linux@roeck-us.net>,
-        <linux-arm-msm@vger.kernel.org>, <devicetree@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, <linux-pm@vger.kernel.org>,
-        <linux-crypto@vger.kernel.org>, <arm-scmi@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>, <linux-i2c@vger.kernel.org>,
-        <iommu@lists.linux.dev>, <linux-gpio@vger.kernel.org>,
-        <linux-serial@vger.kernel.org>, <linux-spi@vger.kernel.org>,
-        <linux-watchdog@vger.kernel.org>, <kernel@quicinc.com>,
-        <quic_psodagud@quicinc.com>, Praveen Talari <quic_ptalari@quicinc.com>
-References: <20240828203721.2751904-1-quic_nkela@quicinc.com>
- <20240903220240.2594102-1-quic_nkela@quicinc.com>
- <20240903220240.2594102-16-quic_nkela@quicinc.com>
- <xtguaoof7iblrtd2idsa2k4ml64qkttgliyijbeqw5thkdcbx3@jnm75a4wmbqd>
-From: Nikunj Kela <quic_nkela@quicinc.com>
-In-Reply-To: <xtguaoof7iblrtd2idsa2k4ml64qkttgliyijbeqw5thkdcbx3@jnm75a4wmbqd>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
- nasanex01b.na.qualcomm.com (10.46.141.250)
-X-QCInternal: smtphost
-X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
-X-Proofpoint-GUID: CmrIEOmtqvMg8k9u_x-TRH3ehu6PryTp
-X-Proofpoint-ORIG-GUID: CmrIEOmtqvMg8k9u_x-TRH3ehu6PryTp
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.293,Aquarius:18.0.1039,Hydra:6.0.680,FMLib:17.12.60.29
- definitions=2024-09-04_10,2024-09-04_01,2024-09-02_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 impostorscore=0
- suspectscore=0 bulkscore=0 mlxlogscore=999 mlxscore=0 lowpriorityscore=0
- phishscore=0 priorityscore=1501 malwarescore=0 adultscore=0 spamscore=0
- clxscore=1015 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.19.0-2407110000 definitions=main-2409040095
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: CH3PR12MB7763:EE_|DM6PR12MB4370:EE_
+X-MS-Office365-Filtering-Correlation-Id: defa86f5-bcca-47e8-f69a-08dcccdf43c8
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;ARA:13230040|1800799024|7416014|376014|366016;
+X-Microsoft-Antispam-Message-Info:
+	=?us-ascii?Q?gt25Wv87fBtW9fLKMh7IfRijuOc4AVYivoq5fT3UU/ZSiw5+R/rm82l6oI4o?=
+ =?us-ascii?Q?er8Ocwu8iCsmSZApxapDixl5zqnyDwLUesc2moWItT9mP4tyfnndoE33VMxF?=
+ =?us-ascii?Q?voNQFtwNgBq0NSr+f4f4eSUDQg3t4w57AestUHhyGdNehR0dcWQNPKSOgnme?=
+ =?us-ascii?Q?0qjIYsiUDETwf8gYkDsWCrMZC8BO5aiNqrMBBwPNBnwU3mOnFGf9Pc3l3Byq?=
+ =?us-ascii?Q?uJZSqiQaX7bisubRcgXtThslgzSl9Ulq8JHpv5u0T7ksb4JWnjP6PZkq1e3H?=
+ =?us-ascii?Q?ESZfDOrq7sXIJdXZlbkOFbnxR+rJRdWcbdjhZQHan3PVYa+t1LJhJBqE53DB?=
+ =?us-ascii?Q?OCQqYhn93q5QrzcB0vEMwJUIznu9SAxVyKBcyaXCKM8PlayBPgoMDdYxPQx+?=
+ =?us-ascii?Q?s5Xn5h8widrDeS/jgzdRmtGmJTVjB1tNelAJnPDgkksiUgpE0gyxymKITvxh?=
+ =?us-ascii?Q?VzfOJ+65PYedjdYAiN9dGIi2CMR8z4k48gEhKbZj4vMplrpQ0829+U2rGdeL?=
+ =?us-ascii?Q?EH3yGTqJbJ8Ue6IhsIwfe52N3sxC13tQ/hzDEKS4Q0PDWbP+04ajy+eWvDq4?=
+ =?us-ascii?Q?x/y7Tp7C7mqgOYeUf8kAAmVhWB+h96WbiUYVy0j76NTXz3XImGwWgG0PIyfx?=
+ =?us-ascii?Q?0XRpTHF9WvPcR9iKHS0wFpURu3Q4DFOQtrAxGGLIB2fyfjovtWRzPF0BkZVs?=
+ =?us-ascii?Q?L9BsZ1GgV1kPdxGZGIL/zH/Q6UN0mlQ5RUaYf1njEiARaogRWj1YGEXKDlVb?=
+ =?us-ascii?Q?8CrY7DqhsiHqInCS7xx3nEdNuMxU12z1GtRyjvb0C8KroTmRsJrgI2gJrWVR?=
+ =?us-ascii?Q?EyFsABozTk9fwIA/uZBpUU8OFnps5Gi0PU/KZ6fj7yLCDZmbnUD6mgHyvBII?=
+ =?us-ascii?Q?qfMf6SWIc7cF5y3qc/WhyaBWW2kslsTgmOjo5f4ai4q9zw8pvf18F5LMtqa2?=
+ =?us-ascii?Q?wDEdwkDavJXArDzY0OBlsqpgIBR01KeSubbq9ocDRGyQceVm/Ud0hBnMbIXs?=
+ =?us-ascii?Q?elxModuuHWK6YTWq6jdEEeQBIrDyLpKeCClSfR7tkDCdDvBN7A2H9uQQA/yG?=
+ =?us-ascii?Q?gbCrTwYdq5GELew+UYMzTLNHxjF8MU1tk1JTn1/zUras6hUx88vEZhgULUiy?=
+ =?us-ascii?Q?qz1J9+3TdQmFo38x88zhVhHUUKRG6tNkmkdX4hUSgKtkF1jndWwj4q6l5dTA?=
+ =?us-ascii?Q?iQkEstV+vqF4WfEaKPUT3z9bRQS6K/tLBSBHdwP8eddmxxoq6CsUoaUBlO/z?=
+ =?us-ascii?Q?sJx6vU8z9Vq5nLCpcP2et68SGEdivF60TbbsoGxSkFvISXDlsgfoO2v/Si70?=
+ =?us-ascii?Q?o9e/vFSNeys46zn0R7/VZj3QwUvc9MTCPXCs8RqjkTLDLw=3D=3D?=
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CH3PR12MB7763.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(1800799024)(7416014)(376014)(366016);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?us-ascii?Q?5rjlqD3mLjn+GGgHQT5yTY7RHmQ8NPV7Zp6ySDL0VN26ajLE+JgtnKezH0ci?=
+ =?us-ascii?Q?OlHECwCood/lc24E0X3nVxhsKU5bLJiVj280cZ699BGyymDdLcBlxGLznNYJ?=
+ =?us-ascii?Q?NjYP+cMY+ei3SR67JdklBBTb+dyU92nDUOJkM2chu4iqkc/ewziSquAPzt9Z?=
+ =?us-ascii?Q?2ueAWDBKivoFvwSRl8m39OMQknYD02ERn3YxRht6iwPwJY0vrINmbHHySlX6?=
+ =?us-ascii?Q?tWCJurZNCc/jYWXGtdBU01q6aM2Br5H94r7POrpFzt3eMG1+w7tZfI0TAgIy?=
+ =?us-ascii?Q?aVrS5JDcfINmjc/bXb9XDclozhbFR8/ITtldHQWLmZd+FbTJ0Lt1D3WjVwix?=
+ =?us-ascii?Q?l8cXuLrIUzh0oBrPWY53mGbPpWwUUOUXw/q98Aa5MhqokF9ImZjlj4K/iY7F?=
+ =?us-ascii?Q?QyC4IdDC+6tFiS8czPmwzyxqhTQ2tRWt7+PMQr0stJiJBjpAN+q7F4TeVHM8?=
+ =?us-ascii?Q?zvO2MuQ1mM/4Mbbl4aLJ7gxKwldoNbf9ZDrVeCw1KCpkfzwymsiPvnMEfK25?=
+ =?us-ascii?Q?vpu6dhtyZnFHzisKFHUH8Ixap4H91gGBetlYYMRAk9v3w+zeb8vRtuQl4Hjk?=
+ =?us-ascii?Q?t7Za5hAMlAxYlBhyiFgPPzPpPbKgcWBmxxuFm8ldH2gFXNpXitbzWe+8udQ6?=
+ =?us-ascii?Q?YGyhBl5S2Zre7N3auqkpdghbWxlwRyUhQtxXVKBQciT7R09qhYk4ZR+25O4m?=
+ =?us-ascii?Q?Z2SUpGBsKl5WSOuq1gSi3i/lZQMfWZ28Jw02yWYqVCwI1pGwMuJculGuNV6i?=
+ =?us-ascii?Q?UXQPzE7gJxScF36RX5ebINBbvwZ5Npdobod/2Yr4QdpZSu6yRsuVnr70Wrst?=
+ =?us-ascii?Q?EywnvSZf8YsPH904LwKFyhxiKYhcHXIAwmUmo2jt92Flxx+aK5yhvekIkfoB?=
+ =?us-ascii?Q?y/ZLc2VI63NZpgjKDPUh/O1rGXpIkOhvhDoR2iSCp7MG6oFjTBVrrQ7RoBeU?=
+ =?us-ascii?Q?H74dR3C6E61sEQ17tvpHxowXDc3ggvg0mx4qLUf2OrBXJ/rnoSlVrOtTv19d?=
+ =?us-ascii?Q?TdP0aw2xPJEJtkOT7FTAqAhDGUmxOuHLuBFLCT4w3qB5GkeHphVan8QSCtnt?=
+ =?us-ascii?Q?gRh6l8nZAV7GLnXSXgh8RLdUR2hqGDtNa3zOM4cZW7+JtKRsI1va3Co8PVy8?=
+ =?us-ascii?Q?vHHfDjtW9yyApgqKmGvNVlzalZuUKqoMjQn5r/BhyERwuOn8+MZJJx0/eMwk?=
+ =?us-ascii?Q?Q22CGek34h7nw6PUyL9xWzUjxQHB7Zn2nsnWSoh9VveSDsXfuY9dvynf1fz/?=
+ =?us-ascii?Q?LjA14QfkLkyS6U3jr0y3UsX0sOOpXSsJLdSzLgLZxorYA7KDuMfXVeX1D/A4?=
+ =?us-ascii?Q?/R9/tCVKXTi64fezAEuUrgU02cEsh3++brDMM+/kztZEEbSE/u6aea0W+qDE?=
+ =?us-ascii?Q?Hyh0cqzfFF6caEkb5qjNvmXNgeHCa/iYL7gi7ISlsl8CaUk2HtYv1O5PQh4u?=
+ =?us-ascii?Q?o3eWKwj6TsAFh/wFJEXluv6arJyEbpz2QX5Iz4sZjSZ3PqK0vT8wx2kPueD+?=
+ =?us-ascii?Q?oKYtPqTpqGUxt7l7mPk25RisKFyhcJiPaA/1T3FsF0ejKwgJ/x5Q8CanMx+j?=
+ =?us-ascii?Q?4+0OMLNWzRBgYYnRv3VXdKAWajilscxiWlozhzHi?=
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: defa86f5-bcca-47e8-f69a-08dcccdf43c8
+X-MS-Exchange-CrossTenant-AuthSource: CH3PR12MB7763.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 04 Sep 2024 12:44:06.7905
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: 8z1aTVh3A0x+ztsdFiclfhDA7HMCLW689oEaaA+3JpHBDLtkvVUHyVjlxXJ1f0hT
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR12MB4370
 
+On Mon, Aug 12, 2024 at 03:02:01PM +0800, Lu Baolu wrote:
+> From: Robin Murphy <robin.murphy@arm.com>
+> 
+> All users of ARM IOMMU mappings create them for a particular device, so
+> change the interface to accept the device rather than forcing a vague
+> indirection through a bus type. This prepares for making a similar
+> change to iommu_domain_alloc() itself.
+> 
+> Signed-off-by: Robin Murphy <robin.murphy@arm.com>
+> Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
+> Link: https://lore.kernel.org/r/20240610085555.88197-17-baolu.lu@linux.intel.com
+> ---
+>  arch/arm/include/asm/dma-iommu.h         | 2 +-
+>  arch/arm/mm/dma-mapping.c                | 8 ++++----
+>  drivers/gpu/drm/exynos/exynos_drm_dma.c  | 2 +-
+>  drivers/iommu/ipmmu-vmsa.c               | 3 +--
+>  drivers/iommu/mtk_iommu_v1.c             | 3 +--
+>  drivers/media/platform/ti/omap3isp/isp.c | 2 +-
+>  6 files changed, 9 insertions(+), 11 deletions(-)
 
-On 9/3/2024 11:31 PM, Krzysztof Kozlowski wrote:
-> On Tue, Sep 03, 2024 at 03:02:34PM -0700, Nikunj Kela wrote:
->> Add compatible representing i2c support on SA8255p.
->>
->> Clocks and interconnects are being configured in Firmware VM
->> on SA8255p, therefore making them optional.
->>
->> CC: Praveen Talari <quic_ptalari@quicinc.com>
->> Signed-off-by: Nikunj Kela <quic_nkela@quicinc.com>
->> ---
->>  .../bindings/i2c/qcom,i2c-geni-qcom.yaml      | 33 +++++++++++++++++--
->>  1 file changed, 31 insertions(+), 2 deletions(-)
->>
-> I don't know what to do with this patch. Using specific compatibles next
-> to generic compatible is just wrong, although mistake was probably
-> allowing generic compatible. The patch does not explain the differences
-> in interface which would explain why devices are not compatible.
+I still have an account with RMK's patch tracking system, so I went
+ahead and put these there so Russell can pick them up:
 
-I mentioned in the description that clocks and interconnects on this
-platform are configured in Firmware VM(over SCMI using power and perf
-domains) therefore this is not compatible with existing generic compatible.
+ https://www.arm.linux.org.uk/developer/patches/viewpatch.php?id=9417/1
+ https://www.arm.linux.org.uk/developer/patches/viewpatch.php?id=9418/1
 
+I think I did it right, though it has been a decade since I last did
+this..
 
->  In the
-> same time my advice of separate binding was not followed, because maybe
-> these devices are compatible? But then it should be expressed...
-
-Sorry, I missed that. You want me to use 'oneOf' expression with this
-compatible?
-
-
->
-> You have entire commit msg to explain what and why.
-
-Will put more details in description.
-
-
->> diff --git a/Documentation/devicetree/bindings/i2c/qcom,i2c-geni-qcom.yaml b/Documentation/devicetree/bindings/i2c/qcom,i2c-geni-qcom.yaml
->> index 9f66a3bb1f80..b477fae734b6 100644
->> --- a/Documentation/devicetree/bindings/i2c/qcom,i2c-geni-qcom.yaml
->> +++ b/Documentation/devicetree/bindings/i2c/qcom,i2c-geni-qcom.yaml
->> @@ -15,6 +15,7 @@ properties:
->>      enum:
->>        - qcom,geni-i2c
->>        - qcom,geni-i2c-master-hub
->> +      - qcom,sa8255p-geni-i2c
->>  
->>    clocks:
->>      minItems: 1
->> @@ -69,8 +70,6 @@ properties:
->>  required:
->>    - compatible
->>    - interrupts
->> -  - clocks
->> -  - clock-names
->>    - reg
->>  
->>  allOf:
->> @@ -81,6 +80,10 @@ allOf:
->>            contains:
->>              const: qcom,geni-i2c-master-hub
->>      then:
->> +      required:
->> +        - clocks
->> +        - clock-names
->
-> So it is required here?
-
-We are removing clocks from generic required list and enforcing rules
-for all compatibles other than sa8255p.
-
-
->> +
->>        properties:
->>          clocks:
->>            minItems: 2
->> @@ -100,7 +103,21 @@ allOf:
->>            items:
->>              - const: qup-core
->>              - const: qup-config
->> +
->> +  - if:
->> +      properties:
->> +        compatible:
->> +          contains:
->> +            const: qcom,sa8255p-geni-i2c
->> +    then:
->> +      required:
->> +        - power-domains
->> +
-> And possible here? I assume with the same clocks? The same for
-> interconnects - same values are valid?
-
-I guess I need to put here the same description as in the cover letter
-to make it more clear. We are not using clocks and interconnects in this
-platform in Linux. Instead, sending request to Firmware VM over
-SCMI(using power and perf protocols)
-
-
->
->>      else:
->> +      required:
->> +        - clocks
->> +        - clock-names
-> And clocks are required again?
-Explained above.
->> +
->>        properties:
->>          clocks:
->>            maxItems: 1
-> Eeee? So now all other variants have max 1 clock?
-
-I will make if block for sa8255p up so else is not applied to rest of
-the platforms.
-
-
->
-> Nope, this wasn't ever tested on real DTS.
-
-This is tested on SA8255p DTS and I ran DT schema check on SA8775p DT as
-well.
-
-
->
-> Best regards,
-> Krzysztof
->
+Regards,
+Jason
