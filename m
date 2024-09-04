@@ -1,189 +1,150 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from NAM11-CO1-obe.outbound.protection.outlook.com (mail-co1nam11on2085.outbound.protection.outlook.com [40.107.220.85])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0B4A15C96;
-	Wed,  4 Sep 2024 14:30:06 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1725460207; cv=none; b=me18HeMv54gU0GLRlFxyhD9PAQcn6zotz6QAeOjuF+BW9GRsje7/ZRGo6mEc9TVJcYEHLXC1E+kAORKobbtcS9PeNaDNFXd8wJtHEB//r8pFoMcszK5Xj5YmKC9sK/sqrgYHnGe1pDWScDXPoJU2NF6Xg64W6Z8LrkAiNjnOAlo=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1725460207; c=relaxed/simple;
-	bh=IGbzTX5KEMiOqp/btvJ1ccQvnyeDHf44Oxf/FGejqvI=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=WRHYE0L6C4sOLIdV5AHD7QNnFcePc+p8lQ/CSmEmVqoL6dq6yZPHw5hInxNgas9I5Apr+lxM8rlNOFLR0wsnwQf8Gst2IX2zrqNsiQZUeAJgvKYTIn6vWrqB5aNq5/plLiZVWHgmwn6zs8+A8vCC2u+EzZJMTHDJ+C2PisZKUNI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Gw5+6Lru; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7C89B1DA2FD
+	for <iommu@lists.linux.dev>; Wed,  4 Sep 2024 14:51:11 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.220.85
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1725461472; cv=fail; b=X+QzX1H4vNOAIjrRF2k85Y2E9Y7XDhzBkoyaff4lmcEDrsUwAmvIsHlQtkIdkHb03VF+W4dU31Rh8p882k+WU4szZra8XDdEeSwM/OepGfkfmr4R2mMCrAoULa4EuC3f2AjPIg9serqGFfnHRkHKcL83ltLiSx231rcA6uWrkFo=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1725461472; c=relaxed/simple;
+	bh=n2Rqw8vl0YBx+YD80PjfVx0tCiDU8kdvnYRSqcDcxK8=;
+	h=Date:From:To:CC:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=Rz7Q5gsf63HVNBO627WREE4oZ9PmRPrII94CHlGXybGK1VveOjEAiG93ZZGGNOO4CsaRPzIM0OUyK/VVaOGvleAGdBSXV3DFo3AJzRoNie2nn/myWk6hU2nn0eduZirVrPyEFndmVFDxCEYc+ZCr1m5srKKe6CDZCQW7ENNk+5A=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=XuqZKLlG; arc=fail smtp.client-ip=40.107.220.85
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Gw5+6Lru"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id AF92EC4CEC2;
-	Wed,  4 Sep 2024 14:29:54 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1725460206;
-	bh=IGbzTX5KEMiOqp/btvJ1ccQvnyeDHf44Oxf/FGejqvI=;
-	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-	b=Gw5+6LrupMCviKvLpbyxwQl6v/VPtEtiCInsUzN21yDLYNvAh2KUEHQH2txBVglAo
-	 Bk+eOg5sZgyG7I0KR4rzFmIEUhJRQ/Q12D3hI3cyiJZVVUd8OzL63w8FFWtzImM7RT
-	 WcN+SP8JJT+Om8z05RBN4wfGSVT3UWfiIegxoPdzHEDNhNabk+128mWyfAvYKMbBHo
-	 XGg6IBIp/bkR3O7YKhmhqAmCqpXxKew2wOm6id79OZdMKaRtv6Ey7StboL101Mf8pU
-	 xUJxeZ0H98YDzFet19o2GdTx5kI9PMulaDv9g3R1YIOuit0PxbEgRUbAy8iBRAd3Hp
-	 80+WccgKKSBSg==
-Message-ID: <51e9fa5a-ac6f-42e8-85e5-7c5c02075a56@kernel.org>
-Date: Wed, 4 Sep 2024 16:29:52 +0200
+	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="XuqZKLlG"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=G9XyH3JNI0jysIDvPZfjkRH01K79nhasrZICBqnMf5LbKuf7km++2/mDd+i5X7zZoeW2+TFdZHctAgtownOOU+wP6/YI52ipgLi3UVmNZDRhliuIj4r4ol4ByCSSh5xcrnGCagvBHfenP4o2tErseAqZXqyv7/up1BlgCcT7Y+70s5WTB5ucC4ALIjDVImpH1KdJKO84Xj6GyCRYoxAzCWh6Jqrc4xy4hubbDVtplZA3i4O38XyGWW3/28bRFJrrE89jRYqGCBZmZpArWjgiS30D/7CUQ5r0TAj2HL8mDPqZv35LmgPAf1j2pxqYMqmcaVcpZHJj+GJkeNR1e86Z5g==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=I+bG+zeJ/DwHwhkzkrhIE6ZfSfIQNLp3o8ruvVhFs4k=;
+ b=Xax4mIRnhPJQ1X0Lwa1ujNewl/1O/45iNwRbt8pkUMFbe5/3eL0ycyCWic98v84ZAGeOG70DVYCi7a9Cvm2lMdeML2+OiQ3bxikjY64iVe7f32TnsQnUn6WN5ExrIHKhtX40MrTpaMUxFXto6Og4Diqh0zVbAC+YCZZIqL6l2l41wa4DcrZoNaKwx7gQ2X5A7U1Ahnu6+9mf5vIS3yq3tBtOLxGscp2g7MKkQ5bOvjlcnCwDjAgv5hZ9jlgo6L9I3TqPMfLL8FqpvJ9nESvgqT5vr5bgPGXEAAwIwrPpk4FJbxpyD0wDAA+AMWeC9mNSCzqO9valqwMdX76jE5E/tA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 216.228.117.161) smtp.rcpttodomain=linaro.org smtp.mailfrom=nvidia.com;
+ dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
+ dkim=none (message not signed); arc=none (0)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=I+bG+zeJ/DwHwhkzkrhIE6ZfSfIQNLp3o8ruvVhFs4k=;
+ b=XuqZKLlGI0VkYCjKIYZkmoTi6nsWkN/msTHIPSdZQ34UPKYbv3uF0u5cHBqSFQXuOhcAjoIxtNjgFQh5mKAuKfCuUzIRhWbeiIFvZ7f7JqB01Y9VS5Dd7GEOCvfAXIxF3WHxMxYBC3aKBfEo53ZyZ8NZFKac3rucfuxTV78aiGu3eCI/3aU1HPZSfsJ/oKI/LpHHC/qAAC3oo7H5tUvms2xJ9rTtrHjk54LuWNEJ1yD/EG31bpy/GzpNeFc8x0aqx/xFUU5qWHCfvvdACv0wuJ79taew561NdVw9KQgkhZll+XQJaG9sBsTlmYEPLlRukKC4oDmfpd0ZdIRERoQAZA==
+Received: from CY5PR13CA0002.namprd13.prod.outlook.com (2603:10b6:930::10) by
+ MW6PR12MB7085.namprd12.prod.outlook.com (2603:10b6:303:238::9) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.7918.27; Wed, 4 Sep 2024 14:51:07 +0000
+Received: from CY4PEPF0000FCBF.namprd03.prod.outlook.com
+ (2603:10b6:930:0:cafe::8f) by CY5PR13CA0002.outlook.office365.com
+ (2603:10b6:930::10) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7939.14 via Frontend
+ Transport; Wed, 4 Sep 2024 14:51:07 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.117.161)
+ smtp.mailfrom=nvidia.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=nvidia.com;
+Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
+ 216.228.117.161 as permitted sender) receiver=protection.outlook.com;
+ client-ip=216.228.117.161; helo=mail.nvidia.com; pr=C
+Received: from mail.nvidia.com (216.228.117.161) by
+ CY4PEPF0000FCBF.mail.protection.outlook.com (10.167.242.101) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.7918.13 via Frontend Transport; Wed, 4 Sep 2024 14:51:07 +0000
+Received: from rnnvmail201.nvidia.com (10.129.68.8) by mail.nvidia.com
+ (10.129.200.67) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1544.4; Wed, 4 Sep 2024
+ 07:50:50 -0700
+Received: from rnnvmail202.nvidia.com (10.129.68.7) by rnnvmail201.nvidia.com
+ (10.129.68.8) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1544.4; Wed, 4 Sep 2024
+ 07:50:49 -0700
+Received: from Asurada-Nvidia (10.127.8.9) by mail.nvidia.com (10.129.68.7)
+ with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1544.4 via Frontend
+ Transport; Wed, 4 Sep 2024 07:50:48 -0700
+Date: Wed, 4 Sep 2024 07:50:47 -0700
+From: Nicolin Chen <nicolinc@nvidia.com>
+To: Dan Carpenter <dan.carpenter@linaro.org>
+CC: Nate Watterson <nwatterson@nvidia.com>, Thierry Reding
+	<thierry.reding@gmail.com>, Krishna Reddy <vdumpa@nvidia.com>, Will Deacon
+	<will@kernel.org>, Robin Murphy <robin.murphy@arm.com>, Joerg Roedel
+	<joro@8bytes.org>, Jonathan Hunter <jonathanh@nvidia.com>, Jason Gunthorpe
+	<jgg@ziepe.ca>, <linux-tegra@vger.kernel.org>,
+	<linux-arm-kernel@lists.infradead.org>, <iommu@lists.linux.dev>,
+	<linux-kernel@vger.kernel.org>, <kernel-janitors@vger.kernel.org>
+Subject: Re: [PATCH next] iommu/tegra241-cmdqv: Fix ioremap() error handling
+ in probe()
+Message-ID: <Zthzx06kZv+FyXJT@Asurada-Nvidia>
+References: <5a6c1e9a-0724-41b1-86d4-36335d3768ea@stanley.mountain>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v2 14/21] dt-bindings: cpufreq: qcom-hw: document support
- for SA8255p
-To: Nikunj Kela <quic_nkela@quicinc.com>
-Cc: andersson@kernel.org, konradybcio@kernel.org, robh@kernel.org,
- krzk+dt@kernel.org, conor+dt@kernel.org, rafael@kernel.org,
- viresh.kumar@linaro.org, herbert@gondor.apana.org.au, davem@davemloft.net,
- sudeep.holla@arm.com, andi.shyti@kernel.org, tglx@linutronix.de,
- will@kernel.org, robin.murphy@arm.com, joro@8bytes.org,
- jassisinghbrar@gmail.com, lee@kernel.org, linus.walleij@linaro.org,
- amitk@kernel.org, thara.gopinath@gmail.com, broonie@kernel.org,
- cristian.marussi@arm.com, rui.zhang@intel.com, lukasz.luba@arm.com,
- wim@linux-watchdog.org, linux@roeck-us.net, linux-arm-msm@vger.kernel.org,
- devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
- linux-pm@vger.kernel.org, linux-crypto@vger.kernel.org,
- arm-scmi@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
- linux-i2c@vger.kernel.org, iommu@lists.linux.dev,
- linux-gpio@vger.kernel.org, linux-serial@vger.kernel.org,
- linux-spi@vger.kernel.org, linux-watchdog@vger.kernel.org,
- kernel@quicinc.com, quic_psodagud@quicinc.com
-References: <20240828203721.2751904-1-quic_nkela@quicinc.com>
- <20240903220240.2594102-1-quic_nkela@quicinc.com>
- <20240903220240.2594102-15-quic_nkela@quicinc.com>
- <odg5ssqu2soaqp6m4rambj7qhqiyp7othkvu4v6fu6xtuhbdho@vccya6qcwgoz>
- <1b831fc1-9360-4038-91b2-b2c0cea513ed@quicinc.com>
- <baf00e50-10b2-410b-9c56-713564a2d1b9@kernel.org>
- <c163149b-bdf1-423b-ab51-f734d00277fe@quicinc.com>
-From: Krzysztof Kozlowski <krzk@kernel.org>
-Content-Language: en-US
-Autocrypt: addr=krzk@kernel.org; keydata=
- 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 fv0=
-In-Reply-To: <c163149b-bdf1-423b-ab51-f734d00277fe@quicinc.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: inline
+In-Reply-To: <5a6c1e9a-0724-41b1-86d4-36335d3768ea@stanley.mountain>
+X-NV-OnPremToCloud: ExternallySecured
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: CY4PEPF0000FCBF:EE_|MW6PR12MB7085:EE_
+X-MS-Office365-Filtering-Correlation-Id: 386db542-abb9-4c0b-e1a5-08dcccf10224
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam:
+	BCL:0;ARA:13230040|376014|82310400026|7416014|36860700013|1800799024;
+X-Microsoft-Antispam-Message-Info:
+	=?us-ascii?Q?QxMWuZ3jQELLbkYHEAkX+rmjYsC670/Nj90adwYhU3m6k7ZNZ9nlz9ivhBiP?=
+ =?us-ascii?Q?LUiqd4Zs20EyWifmqX+uOtR5n6hl7dGCyneTy5CLmlhRnKgS5bULL8I3k7tu?=
+ =?us-ascii?Q?PsGeCptzj2bQ8QSPqhKyK6uu6jcYuaZfXHq1lK40MbJ61nUymxiY/NNcrtpw?=
+ =?us-ascii?Q?DbBPHLIKMboylZ6bJ8Q1pqjo/BMD/29Q7UT2eA+qL52gUJ9pfQMEl2jIIG5Z?=
+ =?us-ascii?Q?LR+rgtMKTifENBgA3Qj2adQLhTLOpPDzHW9WFwJBXmvSco7abLLDrqJNWF2N?=
+ =?us-ascii?Q?UGQVu7/fXyCsegSp0j+/jBdJMzWo7oHKLpCrKfJAOKqgvtqqqK3LcpyjoxuT?=
+ =?us-ascii?Q?S5IOpNDY1/3U73Uj0mQv/gL3r/jnLAqzT+ILW5P0iLlRDSU7N3RhXUPxdScu?=
+ =?us-ascii?Q?yrp1ga9xt/IEou0EqCgUYX9n4muYaNDbmEQCuH2pInzji9T05+CAhb9NCJCx?=
+ =?us-ascii?Q?XRLNLaA7qej8YXQDS9UnjGBFzbmUFCHsX2lxXDTEg5AxV6LYNUlNAwJTyXyv?=
+ =?us-ascii?Q?zJU82maZ8ioyPYKk2eujhDbUIwuGTvUVWtzVBFR1KWxMHjn25Q/l7VsSVV6u?=
+ =?us-ascii?Q?HxIu1aB1Ef1bOD8Rutz4X0aXVBXqelVxkcIPlB/lUxM+nTpN+VtrM+FarmJt?=
+ =?us-ascii?Q?IYsmVFw0jkbOYUwsjkSyR0JO/GDQpQZo9UCoQF0iR08c8czWv7FKEwRb7LHd?=
+ =?us-ascii?Q?Ko/EiSeGisB2tOs5QVdz+tWplvt3P11Vj9Vg0F0ZAdx+ZTpGCZCJgXT4EMG3?=
+ =?us-ascii?Q?7dclzWZZfJj2i/X1W/gR/6mZlIcm7J2tyht16OXSjzRHkGx9G9gkh6VRdyY+?=
+ =?us-ascii?Q?4/7WcrbLgTlU3wKTzmHVZGLe9RyAOhCkQ45XGbKeSWGJqz8Xe+yns5iaJEi6?=
+ =?us-ascii?Q?7szmTXEw+ApDfIMQKkfTeKHokQNadI4/j8ar/aY4KFEo8o5sGpjMvdEFv21e?=
+ =?us-ascii?Q?Esa+3wNgHCES53c7u3uVZh+73I1Z61EDrc9NB8xH9/UK5hTqnXRecr+QOgmk?=
+ =?us-ascii?Q?iVGwxToUGTAukD8eI7U5OGJLpqYkXmV3nTkvQoubkzdOXzL3lxy1gQZIA9G+?=
+ =?us-ascii?Q?aGwnO9LqaL83CQ5AN/TD2EcRyE0h03lGNWDYfleSvaS8XjV4qCZQlUKdKAwM?=
+ =?us-ascii?Q?g9STLKl8y/sMfb181aOSYhJ4XeMPjWkDgUvsUnC6ICqbuyuA5oNS1cRV1yyM?=
+ =?us-ascii?Q?4zL7RWQUoWnJKCs4Q/Nd49GX0pqiRxdFK1iEOectyCmMJseSBFNl9VxgtdqU?=
+ =?us-ascii?Q?RyCTkjV3EsNLRcc3ILoiZSVr1XnTmpfP75ZAhmHe6g3F0E5Giipv+KC5pFXs?=
+ =?us-ascii?Q?YwtpUuu+SvUixoWXT5hgycSSlCaNhnl+OsquJ+5GqZK1F6WVQWKqkG1sl6Mi?=
+ =?us-ascii?Q?fxGfpiKuFUBIYqGsRgnF3S8BNMFSVFlolbkgCgXfFvUGnssuB1dH+d/jThKw?=
+ =?us-ascii?Q?hmoBRB7cdO52RTi203nYIfUIrZ22jlD9?=
+X-Forefront-Antispam-Report:
+	CIP:216.228.117.161;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc6edge2.nvidia.com;CAT:NONE;SFS:(13230040)(376014)(82310400026)(7416014)(36860700013)(1800799024);DIR:OUT;SFP:1101;
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 04 Sep 2024 14:51:07.3517
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: 386db542-abb9-4c0b-e1a5-08dcccf10224
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.117.161];Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-AuthSource:
+	CY4PEPF0000FCBF.namprd03.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MW6PR12MB7085
 
-On 04/09/2024 16:19, Nikunj Kela wrote:
+On Wed, Sep 04, 2024 at 11:02:43AM +0300, Dan Carpenter wrote:
+> The ioremap() function doesn't return error pointers, it returns NULL
+> on error so update the error handling.  Also just return directly
+> instead of calling iounmap() on the NULL pointer.  Calling
+> iounmap(NULL) doesn't cause a problem on ARM but on other architectures
+> it can trigger a warning so it'a bad habbit.
 > 
-> On 9/4/2024 6:17 AM, Krzysztof Kozlowski wrote:
->> On 04/09/2024 14:27, Nikunj Kela wrote:
->>> On 9/3/2024 11:26 PM, Krzysztof Kozlowski wrote:
->>>> On Tue, Sep 03, 2024 at 03:02:33PM -0700, Nikunj Kela wrote:
->>>>> Add compatible for the cpufreq engine representing support on SA8255p.
->>>>>
->>>>> Signed-off-by: Nikunj Kela <quic_nkela@quicinc.com>
->>>>> ---
->>>>>  .../bindings/cpufreq/cpufreq-qcom-hw.yaml        | 16 ++++++++++++++++
->>>>>  1 file changed, 16 insertions(+)
->>>>>
->>>>> diff --git a/Documentation/devicetree/bindings/cpufreq/cpufreq-qcom-hw.yaml b/Documentation/devicetree/bindings/cpufreq/cpufreq-qcom-hw.yaml
->>>>> index 1e9797f96410..84865e553c8b 100644
->>>>> --- a/Documentation/devicetree/bindings/cpufreq/cpufreq-qcom-hw.yaml
->>>>> +++ b/Documentation/devicetree/bindings/cpufreq/cpufreq-qcom-hw.yaml
->>>>> @@ -34,6 +34,7 @@ properties:
->>>>>          items:
->>>>>            - enum:
->>>>>                - qcom,qdu1000-cpufreq-epss
->>>>> +              - qcom,sa8255p-cpufreq-epss
->>>>>                - qcom,sa8775p-cpufreq-epss
->>>>>                - qcom,sc7280-cpufreq-epss
->>>>>                - qcom,sc8280xp-cpufreq-epss
->>>>> @@ -206,6 +207,21 @@ allOf:
->>>>>          interrupt-names:
->>>>>            minItems: 2
->>>>>  
->>>>> +  - if:
->>>>> +      properties:
->>>>> +        compatible:
->>>>> +          contains:
->>>>> +            enum:
->>>>> +              - qcom,sa8255p-cpufreq-epss
->>>>> +    then:
->>>>> +      properties:
->>>>> +        reg:
->>>>> +          minItems: 2
->>>>> +          maxItems: 2
->>>>> +
->>>>> +        reg-names:
->>>>> +          minItems: 2
->>>>> +          maxItems: 2
->>>> What about interrupts? You need to constrain each of such lists.
->>>>
->>>> Best regards,
->>>> Krzysztof
->>> Interrupts are not required, I still need to put constraints for
->> It's irrelevant whether they are required or not. Each property should
->> be narrowed.
-> 
-> So evenif we don't use interrupts property in our DT(patch#21), we need
-> to mention interrupts here? You suggest we put interrupts with maxItems: 0?
+> Fixes: 918eb5c856f6 ("iommu/arm-smmu-v3: Add in-kernel support for NVIDIA Tegra241 (Grace) CMDQV")
+> Signed-off-by: Dan Carpenter <dan.carpenter@linaro.org>
 
-I don't understand. You use three quite separate statements. "Not
-required", "don't use" and here "maxItems: 0" which means not allowed.
+Reviewed-by: Nicolin Chen <nicolinc@nvidia.com>
 
-All of these mean something else and I keep guessing and responding
-according to what you write. Probably half of my advises are just trash,
-because it turns out it is something entirely else than what I read.
-
-Make a decision how the hardware looks like.
-
-> 
-> I wonder why SA8775p compatible is not in constraint list..
-> 
->>> interrupts? BTW, there is no if block for SA8775p binding in this file.
->>
->>
->> Best regards,
->> Krzysztof
->>
-
-Best regards,
-Krzysztof
-
+Thanks!
