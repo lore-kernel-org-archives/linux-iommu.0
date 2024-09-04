@@ -1,103 +1,48 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from verein.lst.de (verein.lst.de [213.95.11.211])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 59D6A3211;
-	Wed,  4 Sep 2024 01:50:08 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 35BBA2F43
+	for <iommu@lists.linux.dev>; Wed,  4 Sep 2024 04:15:26 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=213.95.11.211
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1725414608; cv=none; b=P/ngmW3zT49Xqd2PnAeBwkh+ve5BVICmDE1NTYJJdge74KefuwVaHAus5pnukVrZSS2SSLiCWPVFgajGbLhQmUgfgv7Maiu2IiHL7mIEzJCKeaKEm22D8AYgHVw20feYYaYE8TzUddHTEotVZfuAFLz1TJFNODzCZo2g5GsHyL0=
+	t=1725423328; cv=none; b=sDxO5Eb7IyEFwH6SLIqMBVmHvrLCehIuMOefJZ/F/vzUnhqNiDSuURgSSlpl+4rKfFa7TBdnFMfn5vrofVg2q/zKPx9sX08VjA+sHlootAnGAx2yr0BCjzVTzKtDFmoXSVZX5I+TS39jLU0FKrK2CxOipzv3HShw6/YlJFnLLFE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1725414608; c=relaxed/simple;
-	bh=4AQxlfwksI8M0lXuPBfgDWfUUeO7Xwm6/Q69FGEDaqE=;
-	h=Date:Content-Type:MIME-Version:From:To:Cc:In-Reply-To:References:
-	 Message-Id:Subject; b=Bf07VAvSoWJ+nAeiW8MfCQS4ADKdpvknOTWLeIM8dFcLjGGXZAONCiXaRg7qZNZ2BiKBX2f3e3TFVIpfhMebThfTvG/O8+fTMhxTGCR3iI+i/Qg1FonPxKcOSLwCsAI0s53+Zpasrty0f5gmxRpP7ePt9KgKuoto+FQ0/NAIxqY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=jsadccl/; arc=none smtp.client-ip=10.30.226.201
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="jsadccl/"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 853F8C4CEC4;
-	Wed,  4 Sep 2024 01:50:07 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1725414607;
-	bh=4AQxlfwksI8M0lXuPBfgDWfUUeO7Xwm6/Q69FGEDaqE=;
-	h=Date:From:To:Cc:In-Reply-To:References:Subject:From;
-	b=jsadccl/9E+PbXaq+qBmbPd7/PjPSWuCGCCzZgXrCdzxotTCt+t4Jh4/bmoJd9CVw
-	 H8TFVkWCnT6PO3N5msofWRplIEzvDa/Eg5k4rOBS65A+0zhdG8IyexgNbEl8PJPjw+
-	 IPqvsG8xcWU4KoDxTm0aKsnESTEtPBfW/2JJhC2yZ7oNtXlbcdYda/gKsGnl9kjiks
-	 zYIezEibBc9qTHTav6i6r2l9PCUv9D8lgvmxWdNEEHSR/qOB+sf1qlb4hUUhVYAkeY
-	 sRh9O478wwJmKVRY2p7fE4R/AvzwSGarhGRI5N4ZYyVZuwxFz3ZGhNiy/K7VPANfL9
-	 HopuyFoAQZ++g==
-Date: Tue, 03 Sep 2024 20:50:06 -0500
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
+	s=arc-20240116; t=1725423328; c=relaxed/simple;
+	bh=J2aRFA2pMhcoLz++9eY15O2uQJaPDBQeqT83I3XGURc=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=YeLi4w4XdXG6H9rGnHC/Ii6W/h20HIIEZWbra3lDmLRfRSg08e/+GE6a3QCge8Zr1gjy1qFAE4259+QQg/7EmZK69k9ZCMZRSH1IBCCkKhYOk+BE8B5bpGVZzHIvxAa/F+TbAZNaDpkRYxmvbe17MrEdgo8kUSQk/tKUIu2cJto=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=lst.de; spf=pass smtp.mailfrom=lst.de; arc=none smtp.client-ip=213.95.11.211
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=lst.de
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=lst.de
+Received: by verein.lst.de (Postfix, from userid 2407)
+	id C25DA68AA6; Wed,  4 Sep 2024 06:15:22 +0200 (CEST)
+Date: Wed, 4 Sep 2024 06:15:22 +0200
+From: Christoph Hellwig <hch@lst.de>
+To: Steven Rostedt <rostedt@goodmis.org>
+Cc: Sean Anderson <sean.anderson@linux.dev>, Christoph Hellwig <hch@lst.de>,
+	Marek Szyprowski <m.szyprowski@samsung.com>,
+	Robin Murphy <robin.murphy@arm.com>, iommu@lists.linux.dev,
+	linux-kernel@vger.kernel.org,
+	Masami Hiramatsu <mhiramat@kernel.org>,
+	Mathieu Desnoyers <mathieu.desnoyers@efficios.com>,
+	linux-trace-kernel@vger.kernel.org
+Subject: Re: [PATCH v3] dma: Trace API
+Message-ID: <20240904041522.GA13349@lst.de>
+References: <20240826203240.2234615-1-sean.anderson@linux.dev> <20240829041912.GB4408@lst.de> <4c2c6b24-aee1-495f-ab47-662e1e818f4b@linux.dev> <20240903072512.GA1521@lst.de> <20240903092154.5f0bfafe@gandalf.local.home> <d8936bfc-1ea3-4142-8035-0dfb8e491c31@linux.dev> <20240903205322.69d7638c@gandalf.local.home>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-From: "Rob Herring (Arm)" <robh@kernel.org>
-To: Nikunj Kela <quic_nkela@quicinc.com>
-Cc: devicetree@vger.kernel.org, cristian.marussi@arm.com, 
- rui.zhang@intel.com, linux-spi@vger.kernel.org, lee@kernel.org, 
- krzk+dt@kernel.org, will@kernel.org, linux-arm-msm@vger.kernel.org, 
- linus.walleij@linaro.org, joro@8bytes.org, linux-kernel@vger.kernel.org, 
- robin.murphy@arm.com, quic_psodagud@quicinc.com, conor+dt@kernel.org, 
- kernel@quicinc.com, sudeep.holla@arm.com, linux-serial@vger.kernel.org, 
- linux-i2c@vger.kernel.org, herbert@gondor.apana.org.au, 
- konradybcio@kernel.org, jassisinghbrar@gmail.com, 
- linux-gpio@vger.kernel.org, linux-pm@vger.kernel.org, andersson@kernel.org, 
- lukasz.luba@arm.com, iommu@lists.linux.dev, linux-watchdog@vger.kernel.org, 
- broonie@kernel.org, rafael@kernel.org, davem@davemloft.net, 
- arm-scmi@vger.kernel.org, thara.gopinath@gmail.com, viresh.kumar@linaro.org, 
- linux@roeck-us.net, amitk@kernel.org, wim@linux-watchdog.org, 
- andi.shyti@kernel.org, linux-arm-kernel@lists.infradead.org, 
- tglx@linutronix.de, linux-crypto@vger.kernel.org
-In-Reply-To: <20240903220240.2594102-14-quic_nkela@quicinc.com>
-References: <20240828203721.2751904-1-quic_nkela@quicinc.com>
- <20240903220240.2594102-1-quic_nkela@quicinc.com>
- <20240903220240.2594102-14-quic_nkela@quicinc.com>
-Message-Id: <172541460656.3237041.12121704663662726692.robh@kernel.org>
-Subject: Re: [PATCH v2 13/21] dt-bindings: pinctrl: Add SA8255p TLMM
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20240903205322.69d7638c@gandalf.local.home>
+User-Agent: Mutt/1.5.17 (2007-11-01)
 
+On Tue, Sep 03, 2024 at 08:53:22PM -0400, Steven Rostedt wrote:
+> This should do. I could get it into the next minor version.
 
-On Tue, 03 Sep 2024 15:02:32 -0700, Nikunj Kela wrote:
-> Add compatible for TLMM block representing support on SA8255p.
-> 
-> SA8255p uses the same TLMM block as SA8775p however the ownership
-> of pins are split between Firmware VM and Linux VM on SA8255p. For
-> example, pins used by UART are owned and configured by Firmware VM
-> while pins used by ethernet are owned and configured by Linux VM.
-> Therefore, adding a sa8255p specific compatible to mark the difference.
-> 
-> Signed-off-by: Nikunj Kela <quic_nkela@quicinc.com>
-> ---
->  .../devicetree/bindings/pinctrl/qcom,sa8775p-tlmm.yaml    | 8 +++++++-
->  1 file changed, 7 insertions(+), 1 deletion(-)
-> 
-
-My bot found errors running 'make dt_binding_check' on your patch:
-
-yamllint warnings/errors:
-./Documentation/devicetree/bindings/pinctrl/qcom,sa8775p-tlmm.yaml:22:9: [warning] wrong indentation: expected 10 but found 8 (indentation)
-./Documentation/devicetree/bindings/pinctrl/qcom,sa8775p-tlmm.yaml:23:11: [warning] wrong indentation: expected 12 but found 10 (indentation)
-./Documentation/devicetree/bindings/pinctrl/qcom,sa8775p-tlmm.yaml:26:9: [warning] wrong indentation: expected 10 but found 8 (indentation)
-
-dtschema/dtc warnings/errors:
-
-doc reference errors (make refcheckdocs):
-
-See https://patchwork.ozlabs.org/project/devicetree-bindings/patch/20240903220240.2594102-14-quic_nkela@quicinc.com
-
-The base for the series is generally the latest rc1. A different dependency
-should be noted in *this* patch.
-
-If you already ran 'make dt_binding_check' and didn't see the above
-error(s), then make sure 'yamllint' is installed and dt-schema is up to
-date:
-
-pip3 install dtschema --upgrade
-
-Please check and re-submit after running the above command yourself. Note
-that DT_SCHEMA_FILES can be set to your schema file to speed up checking
-your schema. However, it must be unset to test all examples with your schema.
-
+Sean, is that enough for your use case?  Otherwise I'd keep the
+unsigned long long for the _sg array, and use the proper types
+elsewhere.
