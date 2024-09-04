@@ -1,176 +1,220 @@
-Received: from mailout2.w1.samsung.com (mailout2.w1.samsung.com [210.118.77.12])
+Received: from NAM11-DM6-obe.outbound.protection.outlook.com (mail-dm6nam11on2067.outbound.protection.outlook.com [40.107.223.67])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C7DB91D0152
-	for <iommu@lists.linux.dev>; Wed,  4 Sep 2024 11:39:37 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=210.118.77.12
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1725449980; cv=none; b=LoOQqcs/M/OxGIKhlKYUp2rSLBEyHr2rwSCH805fapSLZO1pMTyopZ80pQcv2typ4sllkvHBrxX9+CPmcEWlIwWv/OvoKpnaORj4spZ/LGu3ofIf5LevoPNY9YPw57f6ezUsQ8U1xCc4SZ/tBZbvqN377eZtC4Itwi2GTJq4qnM=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1725449980; c=relaxed/simple;
-	bh=BQJeSS6zRJ+NgR1rjvQRaeNKt6ErNK9rbLSyjBuiAyg=;
-	h=Date:From:To:CC:Subject:Message-ID:MIME-Version:Content-Type:
-	 Content-Disposition:In-Reply-To:References; b=kQ0bgydS8UUuOdbQjP6kUPiwT0uL74P5BaDPSzhuYLOnQXSo4qYcRdizKqIB1a9eCaBpabzRWeZFt7mPx0xHl/hy4r8Tp04ajFWfhP70+5clV7u4E275RlpBjTB0S+ZXGEAtAknWBc8FFhpUuxAgMQXL6asDiEEPdDpgYtq1sGM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=samsung.com; spf=pass smtp.mailfrom=samsung.com; dkim=pass (1024-bit key) header.d=samsung.com header.i=@samsung.com header.b=BihiCRYh; arc=none smtp.client-ip=210.118.77.12
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=samsung.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=samsung.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 11E8D1D58B5;
+	Wed,  4 Sep 2024 12:01:08 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.223.67
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1725451273; cv=fail; b=peXoARmVUP1ddiOFwDCOFDX9mQeXqq492Fle6xaE+elvhNlQ7jEw4mnRfYvO7+TTrNQsopYOTFzZWpyNqD9MYVpkFl4wWGBmQgLQ4pZUkj8jvwuNi4aZgUcpqRxANprkh6O213YRzjv5+LoyIsFU9ZDIccN7TMrhHmBwxtxf3gs=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1725451273; c=relaxed/simple;
+	bh=zyH7Kpi+T0Ety3nenMg7Qz5Kf606rAjg1cQRWNU7mRM=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:Content-Type:
+	 Content-Disposition:In-Reply-To:MIME-Version; b=W+z3Z5lX021Cb6YJJKdkc2goT8BPUO+IMuhvU79IolqOTYvUUes0mQA9SOVfD8qBiPzfrmNx1Aa3V49yy/3u1Uey07i7Eb4eG/fxSkg10vcQwbEkUkB+LJZAIoyyctBz5GH6Gu11WGO8XhrJVW0wiDvEOQMy4Ysk63syIH63Ia0=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=kz/o9aU+; arc=fail smtp.client-ip=40.107.223.67
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=samsung.com header.i=@samsung.com header.b="BihiCRYh"
-Received: from eucas1p2.samsung.com (unknown [182.198.249.207])
-	by mailout2.w1.samsung.com (KnoxPortal) with ESMTP id 20240904113936euoutp02a8cd6af126a27b8b69b7a8f7d44cd1ff~yB5yD0ao72112521125euoutp02V
-	for <iommu@lists.linux.dev>; Wed,  4 Sep 2024 11:39:36 +0000 (GMT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 mailout2.w1.samsung.com 20240904113936euoutp02a8cd6af126a27b8b69b7a8f7d44cd1ff~yB5yD0ao72112521125euoutp02V
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
-	s=mail20170921; t=1725449976;
-	bh=EGFj9Lt3U6NEqj732WrUihZyBNzE5JpUCAm9adYfXVA=;
-	h=Date:From:To:CC:Subject:In-Reply-To:References:From;
-	b=BihiCRYhZuWs7WsiH0EVUsKUe83dajXPKd7AlreVFfQN1ROVL1lyMBzCS1ovX5XHv
-	 qlRQl2lf1n2N1Oo1PTziPnsqg1rh9bJcE1DJhdx2qwL4r4qDPcwTnyho6bNgj9VuYc
-	 VrYF3I/6Wu8SZLDm10xI6Yjiz9fo5erDcx2hvHAA=
-Received: from eusmges3new.samsung.com (unknown [203.254.199.245]) by
-	eucas1p1.samsung.com (KnoxPortal) with ESMTP id
-	20240904113935eucas1p19aaff846f2dde90710a991ae1ad85b5d~yB5xwse_Q2497324973eucas1p1W;
-	Wed,  4 Sep 2024 11:39:35 +0000 (GMT)
-Received: from eucas1p1.samsung.com ( [182.198.249.206]) by
-	eusmges3new.samsung.com (EUCPMTA) with SMTP id 53.06.09620.7F648D66; Wed,  4
-	Sep 2024 12:39:35 +0100 (BST)
-Received: from eusmtrp1.samsung.com (unknown [182.198.249.138]) by
-	eucas1p1.samsung.com (KnoxPortal) with ESMTPA id
-	20240904113935eucas1p15916049ce037ad579a1b095e35cbc59c~yB5xGzl211822318223eucas1p1-;
-	Wed,  4 Sep 2024 11:39:35 +0000 (GMT)
-Received: from eusmgms1.samsung.com (unknown [182.198.249.179]) by
-	eusmtrp1.samsung.com (KnoxPortal) with ESMTP id
-	20240904113935eusmtrp12bce0583f0a63605cc8926dacbf8a6ae~yB5xF6dl11271512715eusmtrp1S;
-	Wed,  4 Sep 2024 11:39:35 +0000 (GMT)
-X-AuditID: cbfec7f5-d1bff70000002594-fb-66d846f75153
-Received: from eusmtip2.samsung.com ( [203.254.199.222]) by
-	eusmgms1.samsung.com (EUCPMTA) with SMTP id 52.D8.14621.6F648D66; Wed,  4
-	Sep 2024 12:39:34 +0100 (BST)
-Received: from CAMSVWEXC02.scsc.local (unknown [106.1.227.72]) by
-	eusmtip2.samsung.com (KnoxPortal) with ESMTPA id
-	20240904113934eusmtip23bbd296a6fd04b69addea4babd0ad253~yB5w6o_521668916689eusmtip2Y;
-	Wed,  4 Sep 2024 11:39:34 +0000 (GMT)
-Received: from localhost (106.210.248.110) by CAMSVWEXC02.scsc.local
-	(2002:6a01:e348::6a01:e348) with Microsoft SMTP Server (TLS) id 15.0.1497.2;
-	Wed, 4 Sep 2024 12:39:33 +0100
-Date: Wed, 4 Sep 2024 13:39:30 +0200
-From: Joel Granados <j.granados@samsung.com>
-To: Klaus Jensen <its@irrelevant.dk>
-CC: David Woodhouse <dwmw2@infradead.org>, Lu Baolu
-	<baolu.lu@linux.intel.com>, Joerg Roedel <joro@8bytes.org>, Will Deacon
-	<will@kernel.org>, Robin Murphy <robin.murphy@arm.com>, Jason Gunthorpe
-	<jgg@ziepe.ca>, Kevin Tian <kevin.tian@intel.com>, Minwoo Im
-	<minwoo.im@samsung.com>, <linux-kernel@vger.kernel.org>,
-	<iommu@lists.linux.dev>, Klaus Jensen <k.jensen@samsung.com>
-Subject: Re: [PATCH RFC PREVIEW 6/6] iommu/vt-d: do not require a PASID in
- page requests
-Message-ID: <20240904113930.zzlrcyui6mwxjzb5@joelS2.panther.com>
+	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="kz/o9aU+"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=t72KmuTDdMAGxPtgDvi4/cUi/reQcKJ/kk0BmeZ2yaTBytHtC51TJDGszikY9JzRxPTduTNrmDtWd/FfETpVqaRzaxbY9zX780NFUziRSHimrrs6wkELO0r0h9YpkdvhRB2AmcvzQAr2kyorf/ni3SWofmuLmfzOdo8iIvMZRUNa2vr2ba5c1Iu+nWXn8DMEgqqE0WIOdD9gV9LvlmAPWTh31D6OQnSghBeKZC/9Wa0ZtNf1AFUnjf1tp9ceSAYNFnnoAog+VgWyaQ2HwCQf/PxFDjCFgqwBzQnpv/odpY0GvL3UmSKFgZd4Um85DAN7QrnVS60LgC1tvvmZdl+rZg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=18WgC/YD8FGZD37SfXhhhAnO8yp7qKVhB9weAsro6zk=;
+ b=TsMzMFbfDsu/ex3T12sutBFE5gBP2wWxENbMn0XVjsxUwLm6QvWX341jWskUmBK9MDcAzdf9uLH527kWxsNnl33i1Hhin537BAIQAb9RIN+YLITeoGEFFobYf2L/+QuHT3ftlJS3b2zER6ImenWmLU4k/ms240OL0TjrqjcpACMRufIWzZV85Z19LucRw+8pxIFetcg2D0t+JwWm+GihUY04/Pkbgkq6jrRZrpWOiM7rKHTqnbgiH+kKFgffbOLf94xx32Ooi7h/mJfitpTh83uyiyX0DlgOS/7XlDdniuyd5Mba32LtMDSdb7sTmBPV+b3G5Hrh/HQxz9ToPd/jfA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=18WgC/YD8FGZD37SfXhhhAnO8yp7qKVhB9weAsro6zk=;
+ b=kz/o9aU+Y1h/IJDn0YZ1Coe2RWQCubmwYT5Va7M48euuG+CqLHXnMdFCqxhnXF0/wLGfhIKCqrr0Ryie22Sspcd6xgUXccE35xFb1RoCGjqF2fjDx87Hvl5sgY+6GY1Gn6xws6LEsNp19rg5iw6LdG1A32sKmHez3ZkSM3fVZ+g5UvszCV4Nkjp1F+hsy/FADT0rt/jg72Tvikugk2yqOrEDPKFsNbiaen1q8C0KSm27x0Hk73iuPXV8OiRObn+RTLgQgKZXuB95fKf3Q9+GczHoWNPCFcadPix2e0Mh6ttM4+Xc70bb/kQRaLFOUxoUzx+O4CLzQq6QSG8Dxw7Zmw==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nvidia.com;
+Received: from CH3PR12MB7763.namprd12.prod.outlook.com (2603:10b6:610:145::10)
+ by PH8PR12MB6794.namprd12.prod.outlook.com (2603:10b6:510:1c5::17) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7918.25; Wed, 4 Sep
+ 2024 12:01:04 +0000
+Received: from CH3PR12MB7763.namprd12.prod.outlook.com
+ ([fe80::8b63:dd80:c182:4ce8]) by CH3PR12MB7763.namprd12.prod.outlook.com
+ ([fe80::8b63:dd80:c182:4ce8%3]) with mapi id 15.20.7918.024; Wed, 4 Sep 2024
+ 12:01:04 +0000
+Date: Wed, 4 Sep 2024 09:01:03 -0300
+From: Jason Gunthorpe <jgg@nvidia.com>
+To: Shameerali Kolothum Thodi <shameerali.kolothum.thodi@huawei.com>
+Cc: Mostafa Saleh <smostafa@google.com>,
+	"acpica-devel@lists.linux.dev" <acpica-devel@lists.linux.dev>,
+	"Guohanjun (Hanjun Guo)" <guohanjun@huawei.com>,
+	"iommu@lists.linux.dev" <iommu@lists.linux.dev>,
+	Joerg Roedel <joro@8bytes.org>, Kevin Tian <kevin.tian@intel.com>,
+	"kvm@vger.kernel.org" <kvm@vger.kernel.org>,
+	Len Brown <lenb@kernel.org>,
+	"linux-acpi@vger.kernel.org" <linux-acpi@vger.kernel.org>,
+	"linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>,
+	Lorenzo Pieralisi <lpieralisi@kernel.org>,
+	"Rafael J. Wysocki" <rafael@kernel.org>,
+	Robert Moore <robert.moore@intel.com>,
+	Robin Murphy <robin.murphy@arm.com>,
+	Sudeep Holla <sudeep.holla@arm.com>, Will Deacon <will@kernel.org>,
+	Alex Williamson <alex.williamson@redhat.com>,
+	Eric Auger <eric.auger@redhat.com>,
+	Jean-Philippe Brucker <jean-philippe@linaro.org>,
+	Moritz Fischer <mdf@kernel.org>,
+	Michael Shavit <mshavit@google.com>,
+	Nicolin Chen <nicolinc@nvidia.com>,
+	"patches@lists.linux.dev" <patches@lists.linux.dev>
+Subject: Re: [PATCH v2 6/8] iommu/arm-smmu-v3: Support IOMMU_GET_HW_INFO via
+ struct arm_smmu_hw_info
+Message-ID: <20240904120103.GB3915968@nvidia.com>
+References: <0-v2-621370057090+91fec-smmuv3_nesting_jgg@nvidia.com>
+ <6-v2-621370057090+91fec-smmuv3_nesting_jgg@nvidia.com>
+ <ZtHj_X6Gt91TlUZG@google.com>
+ <20240830171602.GX3773488@nvidia.com>
+ <ZtWPRDsQ-VV-6juL@google.com>
+ <20240903001654.GE3773488@nvidia.com>
+ <ZtbKCb9FTt5gjERf@google.com>
+ <20240903234019.GI3773488@nvidia.com>
+ <9e8153c95b664726bd7fcb6d0605610a@huawei.com>
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <9e8153c95b664726bd7fcb6d0605610a@huawei.com>
+X-ClientProxiedBy: MN2PR04CA0022.namprd04.prod.outlook.com
+ (2603:10b6:208:d4::35) To CH3PR12MB7763.namprd12.prod.outlook.com
+ (2603:10b6:610:145::10)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: inline
-In-Reply-To: <20240904101916.ia5n7s4tbczkqnws@joelS2.panther.com>
-X-ClientProxiedBy: CAMSVWEXC01.scsc.local (2002:6a01:e347::6a01:e347) To
-	CAMSVWEXC02.scsc.local (2002:6a01:e348::6a01:e348)
-X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFtrKKsWRmVeSWpSXmKPExsWy7djPc7rf3W6kGew8q2qxeeJWNouJKycz
-	W/z6YmGx/+A3VouZM04wWnTO3sBusfTtVnaLy7vmsFkc/PCE1aLljqkDl8eTg/OYPNbMW8Po
-	sXmFlsfiPS+ZPM7tOM/usWlVJ5vHvJOBHi82z2T0+LxJzmPr59ssAVxRXDYpqTmZZalF+nYJ
-	XBnn/m5kK9jIV3GmYTtLA+NE7i5GTg4JAROJOaf+M3UxcnEICaxglOhb+4UVJCEk8IVR4scL
-	L4jEZ0aJ2YsmMcF0vPmzmgWiaDmjxIU3zhA2UNG+i3IQDVsYJR7dWMoOkmARUJFYOOcgG4jN
-	JqAjcf7NHWYQWwQo/vTfXhaQBmaBBmaJrzfPghUJC0RJfJixAayZV8BB4vTrKUwQtqDEyZlP
-	wDYzAw1asPsTUD0HkC0tsfwfB0iYU8BRYsX3u1CHKkscXHaIHcKulTi15RZUfDanxI9OHwjb
-	ReL41DYWCFtY4tXxLVD1MhKnJ/eA3SYhMJlRYv+/D+wQzmpGiWWNX6EmWUu0XHkC1eEoMaMf
-	ZAMHkM0nceOtIMSdfBKTtk1nhgjzSnS0CUFUq0msvveGZQKj8iwkn81C8tkshM8WMDKvYhRP
-	LS3OTU8tNs5LLdcrTswtLs1L10vOz93ECExZp/8d/7qDccWrj3qHGJk4GA8xSnAwK4nwvha5
-	kSbEm5JYWZValB9fVJqTWnyIUZqDRUmcVzVFPlVIID2xJDU7NbUgtQgmy8TBKdXApMXvekAl
-	JmVFmoy6xtUF2Se3tM9dLrJi/b95IqsvtJ4PXOV6plTxxi7/iptmkuumTa4wdzT8UzXR7+mx
-	C/t2cT37cWwB78XCd/2l/WvD1tx/1LHSJqRN282Ml0F8VblL6LTSV6tf8669093w79TWRVPT
-	TzVt2LnYd+++PW2O76Umb9hef2mr4P0z88pvB09w/Lp/p5OE+YtjV79u5/ZPaMsX/Rr8/WRz
-	t8/EK2u+rF64T3iCpd432zVNT3wKa+dzHYhQ1b0bwv6nSVfcYbOloOtWs/QLNVv2xwcanWl4
-	+kJv8UuZK7v+NKrvi7bOnxZzXPBEYC+XkObZcwK5UrskFrz6d1HsnEDvu4gNq69e+rhXiaU4
-	I9FQi7moOBEASnLmlsgDAAA=
-X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFrrCIsWRmVeSWpSXmKPExsVy+t/xe7rf3G6kGZzeZWGxeeJWNouJKycz
-	W/z6YmGx/+A3VouZM04wWnTO3sBusfTtVnaLy7vmsFkc/PCE1aLljqkDl8eTg/OYPNbMW8Po
-	sXmFlsfiPS+ZPM7tOM/usWlVJ5vHvJOBHi82z2T0+LxJzmPr59ssAVxRejZF+aUlqQoZ+cUl
-	tkrRhhZGeoaWFnpGJpZ6hsbmsVZGpkr6djYpqTmZZalF+nYJehnn/m5kK9jIV3GmYTtLA+NE
-	7i5GTg4JAROJN39Ws3QxcnEICSxllNhyppsFIiEjsfHLVVYIW1jiz7UuNhBbSOAjo8TStmyI
-	hi2MEm29D5lBEiwCKhIL5xwEK2IT0JE4/+YOWFwEKP70316wDcwCDcwSX2+eBSsSFoiS+DBj
-	AzuIzSvgIHH69RQmiKktTBJXPrSwQiQEJU7OfAJ2EjPQ1AW7PwE1cwDZ0hLL/3GAhDkFHCVW
-	fL/LBHGpssTBZYfYIexaic9/nzFOYBSehWTSLCSTZiFMWsDIvIpRJLW0ODc9t9hQrzgxt7g0
-	L10vOT93EyMwercd+7l5B+O8Vx/1DjEycTAeYpTgYFYS4X0tciNNiDclsbIqtSg/vqg0J7X4
-	EKMpMCwmMkuJJucD00deSbyhmYGpoYmZpYGppZmxkjiv2+XzaUIC6YklqdmpqQWpRTB9TByc
-	Ug1MzMYi652sFW6oBz7S17nJXMeXs35T9Ab/aIbCH7En37JwKBW5514wT1I0OyI59eHWSpfF
-	96yOsbwSr5RbuuG19Z8vB87Pad5w1Cxo4Z1rMW4TRAXY73YweG6o76/4r8Kivz3UbbrvzcS2
-	o3uudM3z13itn7o0STiXV9i48LbctcCjb5LSPjvVts78qWT9YeF0PeWKWctenjB/9C/UIu3B
-	8YUTGIPuFJX0Jn7xc5n5ukZ7+cxy62RL671PxTKN7x5a5WUuI/3VpaTvSMJ7q9KMHzPMSzrO
-	9mfbP2Y4/0u4s2Cl4ivXoviZu73Oin3slXV5ZKtf/Esto+/GPLOEc0fKKo7uerk3IaoocDN3
-	wxElluKMREMt5qLiRACwLRodZwMAAA==
-X-CMS-MailID: 20240904113935eucas1p15916049ce037ad579a1b095e35cbc59c
-X-Msg-Generator: CA
-X-RootMTR: 20240826114110eucas1p2de6af1717324c944cd3036826492df44
-X-EPHeader: CA
-CMS-TYPE: 201P
-X-CMS-RootMailID: 20240826114110eucas1p2de6af1717324c944cd3036826492df44
-References: <20240826-iopf-for-all-v1-0-59174e6a7528@samsung.com>
-	<CGME20240826114110eucas1p2de6af1717324c944cd3036826492df44@eucas1p2.samsung.com>
-	<20240826-iopf-for-all-v1-6-59174e6a7528@samsung.com>
-	<20240904101916.ia5n7s4tbczkqnws@joelS2.panther.com>
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: CH3PR12MB7763:EE_|PH8PR12MB6794:EE_
+X-MS-Office365-Filtering-Correlation-Id: 865fc5a9-7054-4fe5-95d1-08dcccd9408a
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;ARA:13230040|366016|376014|1800799024|7416014;
+X-Microsoft-Antispam-Message-Info:
+	=?utf-8?B?SnliQnh1eDlSdElPMDdFRVpod1N4TGc4QkhUbWM1UWxWbFhxMUVvY0hlSXAy?=
+ =?utf-8?B?U1FPOHB6cXpBb1FCeC85eE1VR1Y3STAzbDdESmp3QXhOQXNVRzZtbjIvNUoy?=
+ =?utf-8?B?QVc3TDZrb0JnQndBTHpPdXV3VWhld1Q4TjhQYnB1VTNCOHlZYWk4TEZ1Tm5K?=
+ =?utf-8?B?OVlpTnV4SytaWjJ0TVZIR1EvTFk5QVRBMmtQMzFuR1ZESDFUWUhoQ2h0SlJz?=
+ =?utf-8?B?QlpLN2VhT25sdnJGWWxhaVg5emxJbzFvMHpMUXlleE5mL1FwNEFNSDliaFRH?=
+ =?utf-8?B?cGhSK210ZTBBZlBKaUlnSkVIOUh0RDJSc0RoV0JWVHNwVFlRelU2cU1qZ0t5?=
+ =?utf-8?B?N3R4OTFXY3VZSU1oVkFxVVpvY3E4VWw2OTFtT0YrbWNacE9oTndleHVzblR2?=
+ =?utf-8?B?NW5PT2U0ODNlL3pHTnZlb1JDMktwMFd3ejlGV0VnNFpWZmNXZGl6UHRZbnZZ?=
+ =?utf-8?B?dFowL1ZWKy9sU0xNYnZnMjJNcXlZS3AvSXA4RGxuK1h4OTh2dlRtMlM4MkRG?=
+ =?utf-8?B?V25QcFJyWjNSOTlYYU1Vc2toUGVNeUgrNUtDdkk2ckI1REZqSWtCekZFZGtX?=
+ =?utf-8?B?R2w2dXRneTZvbWx5MUhwU2sxd0F1em1pc055YkFKZk1RUDA4VjJjb1dkbjBY?=
+ =?utf-8?B?NVNHU0NjYlIyQnluaWZGY0kxNWxzdlhoU3g2WGNFb01XcmZCUjN5N2FMdHRi?=
+ =?utf-8?B?MVVzd2FqVUt4TjdsemF0UHl1MkV3c05Ga3lVVXFJMWd4Lyt4MUNaT1dXcExt?=
+ =?utf-8?B?U3lUQlJ2VUUzUHhwS3hXT05BR09jOUZmVjlDUUFzcnNGV1V6akYyM2FTK0k2?=
+ =?utf-8?B?b0tITXk5WVJmYUZXUTl6dlIzcDJMV3pUWUQvZDU0VndKc213ckg5NVZvNmVj?=
+ =?utf-8?B?dE9EMThMeEtSTlB5TTVLQVdFcjRjQ2hxNm80dlB3WEhZbUc0Y2U0MGJFQW82?=
+ =?utf-8?B?VnlWUGRsTDhXL3YvaXF3WFh2dFpiTVdCS0ZUTk56RVFEQm40Um9VRUFDdEdt?=
+ =?utf-8?B?ZVNXaTFONGJDanBYWVc2ZHVVRXVZMEpOS3ZmZXFFMnVlVUZtaitKYW90cWZF?=
+ =?utf-8?B?TmYwa3RleGc1bURSYVROZG5ROUg0ZzlOK1FOcjFUdU5HZVBIYi9BVGxUV3hv?=
+ =?utf-8?B?VU9QaTdVam5CSlRzNVBMd25XMGErQmw1VmJyR2NLZ0RtUnJmNVdkNDk0eCtP?=
+ =?utf-8?B?ZVdBUDFaR2ZOY3l3REdFWjJscC9acmhONFlRMWRRanJ2a1FNU25kNFdLT0VE?=
+ =?utf-8?B?UDB4c3hPbXBHdyswWHM0bkZkcjAyK2krYTYrb1JtYkQ3L2tpOWJlQ0tRdEY4?=
+ =?utf-8?B?ZVY1QTlyeGhTRnpVV1NOZWMwQTJNdU1EZ0VJckoxT3Z4cHRrbUQyMi8yejB1?=
+ =?utf-8?B?WUNLMHhrN1ZsRmQ3YkhlOFVISmN5SEpvUnNGUTVmYkN3WlJGVVFiYmNqN3Z4?=
+ =?utf-8?B?QzMwMlZHT1lYZ0NWUnU4SkFnQnpLdjIrdjZLNXZQVWErVlJMSHJxZ2lCSDZV?=
+ =?utf-8?B?b2Ryb05EZ2NWbmJ0a0I4bFJ2SmJtOGFUQ3BGd0FYMmFXaFRpTnJzeTN4QjRP?=
+ =?utf-8?B?U25pZHVuZXJTdXlscEh1M0M1MzlUazd5R1BvR0pPVmNObUxFR2tkZXZyNHlI?=
+ =?utf-8?B?Lzd1UjF6bDR6VmVmZlFjM3VYMEJOR1BqaDZwcUdvell2Z1A4ZDQwU2tIcGpW?=
+ =?utf-8?B?aDRSdXoxRHNSK1J6WnJtNEhlUTNJeUxNaWNPV09WWXVXRFpFRElUU20vSW1W?=
+ =?utf-8?B?b3p1OFZuTkEwd2ZGT3FPempGeHRUYjZQcW95NzN3bEMza29VT3p2OWJMYmMv?=
+ =?utf-8?Q?n2zA8N/kQl5w/iV24obNuGFp6M5+nfTyActXc=3D?=
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CH3PR12MB7763.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(366016)(376014)(1800799024)(7416014);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?utf-8?B?MlJ6bE9nSUVib25YQmtIWFdTcnM2VGpBZE1nR1YrZ3NBWWUxNjhBeHJPeEdy?=
+ =?utf-8?B?dUppOS9NMzFHbnY0REl6R2hDTXNsTWNhY3ZZWks3MmY1c29GeHhuY2hKWVpU?=
+ =?utf-8?B?WG1Cd1BSTldhWTZydmZxTUpLRTg5OEFIOXlsMDlSR1dHcXJJMFVwOHRUZDVQ?=
+ =?utf-8?B?bHZWQlVDQWhvekp1VWJtT1pqQWRGTi9rN09sVEpHZXQ3Qm8weVkzbHBxNFFP?=
+ =?utf-8?B?c0x6Y2IvU2ErcU0reXptVU1zbElidDBKeVBHNkw3TXc5Mit1UnN3NDZxc0RF?=
+ =?utf-8?B?eVdlNmtGNnAvNFlQYWtQdUN4YldDSGpib2hGcTFXaTJrbGhCNDVCTGttVHE5?=
+ =?utf-8?B?d0pWTU9tQmZJYXNMZ0dsQzVYb01VbTY0bytyd0F5clp3ajQ2UFc5cTFpc2c5?=
+ =?utf-8?B?RWpoV011UXZ1WVF4WE40b1ppd0tIcVA4ekkyK0l3aTduU012L2E2TGsvQUxt?=
+ =?utf-8?B?SHMydXRjZy9Cc0c2NUNXYitwekR4Z3FWb2xxWm5KSkcyNmlETUI4cnFrSXBS?=
+ =?utf-8?B?SlBvRWJLeEtKZXBlZlFOV0xpZG1acWlVK1pydEU2ZVB2S1I0VFoxaGpPenpN?=
+ =?utf-8?B?RFZIcEdpNzdibVcyOG1lY3FFWEo4aWJNTk9Selg1cW93K0tmQWlPTjRFU0Iz?=
+ =?utf-8?B?eTdzRHdOVUdsSEFuU0dIcnRFU3F5SGdKN05peWM0cHhPZDhNamJKMWRnT0lv?=
+ =?utf-8?B?V2J1K1ZMbTJDZnpqNGpxNXhYWml0Vit2MytiNEFkeVJiTkJ2L2k2RjJndzBS?=
+ =?utf-8?B?d3ltTmlkZWh1UnlZVnNJaW5hN090cGZpWnlhMjEzK0NoZk9Jam1WKzk4REZ1?=
+ =?utf-8?B?WGJEUjlaMTdJcHB2MC80OFV1MTl1NHcrY2gwTmUraEtOeWU0N1RVaXk2UXp5?=
+ =?utf-8?B?R0pQNU1LZExSRTg2aGtLYUtFVHhkS1BHdGQxS2RjRFBUclZNNzQydEh2a0ZK?=
+ =?utf-8?B?Rlhod05WcHdZckVncG1DRUlwdTJkUmgvMDJRSWYvTERkMUZ2R2tNTis4Lzd3?=
+ =?utf-8?B?cWFydVJyM09LRjZxZ2c2RWZCM1VwUDdrZFlBMmNtajhkZHBFMHZubVY4cFpQ?=
+ =?utf-8?B?K2RjUXZOWDhlTjl2MXNMYU5hbFZMZTFITXdSNnBOUzJZUU9GNllNMmZmeXdV?=
+ =?utf-8?B?d0RUR0piUTY3M1lwL0hHank4MUJOYUYxdGowdi8wcUlyeHZmNVdGdS9veDIy?=
+ =?utf-8?B?SCtwb1E2aFEwblBmSllaSEJqWWRsN0xsNEltQkVmRmh5dCtEWi8xL1lLcW1I?=
+ =?utf-8?B?WG9zWTY3cUVCbGt0c0kwVWNrcGVuWkhxUlZNUFoxaHVGSkRqYld5akhRZ2w2?=
+ =?utf-8?B?U2JsdWRacUM3cHl3UlRuQlRLN2pZeU1VT01MWUJVSE51TkRwU0RvSTEyNnBv?=
+ =?utf-8?B?aitsRzZ2S3Z5THU3NGhDSDMrUVR2ZFU4bThlUkV5RXZIZmNpTGV1cmxiLzQ3?=
+ =?utf-8?B?aUF2eTY2TkpzOHkzZ3gyRFpkdWVrRlIybXpaQlZnSjc1eGJYU0dpdXlhcmNw?=
+ =?utf-8?B?dnV6VkxIdGkzcDc4RGJwSklINFRMT0Z5SEQwL0FwV1krRGpzT3BrS0xQWElj?=
+ =?utf-8?B?aytkMlVtZFZRUDhEK1hWSGhLUFUxcUtZQU9palUvNDNWWCszK0sycWdyYXlp?=
+ =?utf-8?B?bWRMV1dxeWZCRlJJdU0zdkN1eUtJeWpFRlVuRnhqT3NycmRCa1RLL29Qb1Zp?=
+ =?utf-8?B?RzFZSVAwblRkY3I2LzB4aEJ3ZXNMcDZ5TVVmS21HakhpK1kwUkRiUElIOEZD?=
+ =?utf-8?B?VitZM2ZtSkNSQ1hFeUFPTHBydGlLbWhxbzJmS3lxd1pmbVRSRXVjRzFzRzFI?=
+ =?utf-8?B?M2ViVmZvek1YK2lRRDQrQVp6YlV0THpFWXE2Vit3TTZjMUw2K21BOHhXS1pk?=
+ =?utf-8?B?bnJENmJwbkZ4eXJoUmwrNFBOb2ZvVDNtSXRJcXJSVE5pamw4alhhRjBnS0dR?=
+ =?utf-8?B?cDRwcGx0aHZQOHlCdjUvNm5IRXhaTllCOVhwVjlmTVR0S1RORThlSkdnTVhK?=
+ =?utf-8?B?RmFyS0ZBQ0Voa01vTmdSOUpXMmtMTjBEcTRJc1M3ejFrNms5RlpsOHU1bW5Q?=
+ =?utf-8?B?dWYyQXUvbnR6bHR1V2xERnBIdmkwdzUrckJRRjNmdEFtSEhTY2JrTFZ3cWk0?=
+ =?utf-8?Q?AZc8NJbNVh8twmxPwlimOWHM1?=
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 865fc5a9-7054-4fe5-95d1-08dcccd9408a
+X-MS-Exchange-CrossTenant-AuthSource: CH3PR12MB7763.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 04 Sep 2024 12:01:04.4001
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: AdiamznpW45ZHHUMllRyI4Uhs7eWB0PjwC7TQhHUZeXsRYHntvbo68zDqjK5njZj
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH8PR12MB6794
 
-On Wed, Sep 04, 2024 at 12:19:16PM +0200, Joel Granados wrote:
-> On Mon, Aug 26, 2024 at 01:40:32PM +0200, Klaus Jensen wrote:
-> > From: Klaus Jensen <k.jensen@samsung.com>
+On Wed, Sep 04, 2024 at 07:11:19AM +0000, Shameerali Kolothum Thodi wrote:
+
+> > On Tue, Sep 03, 2024 at 08:34:17AM +0000, Mostafa Saleh wrote:
 > > 
-> > PRQ events can now be handled without a PASID being present. Remove the
-> > restriction.
+> > > > > For example, KVM doesn’t allow reading reading the CPU system
+> > > > > registers to know if SVE(or other features) is supported but hides
+> > > > > that by a CAP in KVM_CHECK_EXTENSION
+> > > >
+> > > > Do you know why?
+> > >
+> > > I am not really sure, but I believe it’s a useful abstraction
 > > 
-> > Signed-off-by: Klaus Jensen <k.jensen@samsung.com>
-> > ---
-> >  drivers/iommu/intel/prq.c | 12 +++---------
-> >  1 file changed, 3 insertions(+), 9 deletions(-)
-> > 
-> > diff --git a/drivers/iommu/intel/prq.c b/drivers/iommu/intel/prq.c
-> > index 2814373e95d8..cc36198ebf91 100644
-> > --- a/drivers/iommu/intel/prq.c
-> > +++ b/drivers/iommu/intel/prq.c
-> > @@ -101,18 +101,12 @@ static irqreturn_t prq_event_thread(int irq, void *d)
-> >  		req = &iommu->prq[head / sizeof(*req)];
-> >  		address = (u64)req->addr << VTD_PAGE_SHIFT;
-> >  
-> > -		if (unlikely(!req->pasid_present)) {
-> > -			pr_err("IOMMU: %s: Page request without PASID\n",
-> > -			       iommu->name);
-> > -bad_req:
-> > -			handle_bad_prq_event(iommu, req, QI_RESP_INVALID);
-> > -			goto prq_advance;
-> > -		}
-> > -
-> >  		if (unlikely(!is_canonical_address(address))) {
-> >  			pr_err("IOMMU: %s: Address is not canonical\n",
-> >  			       iommu->name);
-> > -			goto bad_req;
-> > +bad_req:
-> > +			handle_bad_prq_event(iommu, req, QI_RESP_INVALID);
-> > +			goto prq_advance;
-> >  		}
-> >  
-> >  		if (unlikely(req->pm_req && (req->rd_req | req->wr_req))) {
-> > 
-> > -- 
-> > 2.45.2
-> > 
+> > It seems odd to me, unpriv userspace can look in /proc/cpuinfo and see
+> > SEV, why would kvm hide the same information behind a
+> > CAP_SYS_ADMIN/whatever check?
 > 
-> I'll squash this commit with the one that introduces the prq.c file.
-On second thought. I'll leave it as a separate commit. The first one
-will be the "copy all the code to a new file" commit and the second one
-will be "remove the pasid check" I'll change the commit message a bit so
-it is clear why they are not together.
+> I don’t think KVM hides SVE always. It also depends on whether the
+> VMM has requested sve for a specific Guest or not(Qemu has option to
+> turn sve on/off, similarly pmu as well).  Based on that KVM
+> populates the Guest specific ID registers.  And Guest /proc/cpuinfo
+> reflects that.
+> 
+> And for some features if KVM is not handling the feature properly or
+> not making any sense to be exposed to Guest, those features are
+> masked in ID registers.
+> 
+> Recently ARM64 ID registers has been made writable from userspace to
+> allow VMM to turn on/off features, so that VMs can be migrated
+> between hosts that differ in feature support.
+> 
+> https://lore.kernel.org/all/ZR2YfAixZgbCFnb8@linux.dev/T/#m7c2493fd2d43c13a3336d19f2dc06a89803c6fdb
 
-Best
+I see, so there is a significant difference - in KVM the kernel
+controls what ID values the VM observes and in vSMMU the VMM controls
+it.
 
--- 
-
-Joel Granados
+Jason
