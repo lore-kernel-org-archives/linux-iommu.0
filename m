@@ -1,184 +1,161 @@
-Received: from szxga04-in.huawei.com (szxga04-in.huawei.com [45.249.212.190])
+Received: from mx0a-0031df01.pphosted.com (mx0a-0031df01.pphosted.com [205.220.168.131])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C8D941D014A;
-	Wed,  4 Sep 2024 14:20:42 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=45.249.212.190
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EFAA51386C9
+	for <iommu@lists.linux.dev>; Wed,  4 Sep 2024 14:25:21 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.168.131
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1725459646; cv=none; b=Mz2l1NC5bAlt2opP6B1RZsAUNzo8OXfrIyj+AWdWLYZXH6pjywSqHywG/AkIDkl8Vq34elDcYLMg8/EwCjrEAr6ch9XalJZlkbga0H3pAyoxQuZkLJeZubSUw+r4rGeTeg4zB6CYsEOge/5xpJ5w69MW3sJgeO0gQYcLUMH0YhM=
+	t=1725459923; cv=none; b=jBnJJcgNDY1my1B7AUvcdKa0UqwtCOkB/vHqk0HqjBnyhFnjtDiPemPcRSoYGem0QfzKCAagMuM53Pt3dpuZj7TxZj7LB5tNdo2iNAhKrf24tdf2McfqpM+gGpJBPJKcX2pyI0ob8VABo5QUW2ZEmORu9w/aGGwek110tct96wU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1725459646; c=relaxed/simple;
-	bh=3NFixX3Kl1y5WBzsUh6ZkbNWiMteGWvyfBElaxW/K1Q=;
-	h=From:To:CC:Subject:Date:Message-ID:References:In-Reply-To:
-	 Content-Type:MIME-Version; b=l2QLUHXJus5lU1mL+mwmEzMj5CVoMG4BgXilP/F9inBCtanX6Vkmedz33nsKIMiH32cEtSRu2CR/y3AvMZc5rVCVPgVOIMqq+412sNTj4mC+pTN3cFU4Sq70gwTbl4y/W7HGHJiMBt5SX5Lf+G17f+iLtwL5fuD1BmkoEN1/WA8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=huawei.com; spf=pass smtp.mailfrom=huawei.com; arc=none smtp.client-ip=45.249.212.190
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=huawei.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=huawei.com
-Received: from mail.maildlp.com (unknown [172.19.163.44])
-	by szxga04-in.huawei.com (SkyGuard) with ESMTP id 4WzPfQ4FJsz20nLZ;
-	Wed,  4 Sep 2024 22:15:42 +0800 (CST)
-Received: from dggpemf500002.china.huawei.com (unknown [7.185.36.57])
-	by mail.maildlp.com (Postfix) with ESMTPS id CDD681400D7;
-	Wed,  4 Sep 2024 22:20:39 +0800 (CST)
-Received: from lhrpeml500005.china.huawei.com (7.191.163.240) by
- dggpemf500002.china.huawei.com (7.185.36.57) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.1544.11; Wed, 4 Sep 2024 22:20:38 +0800
-Received: from lhrpeml500005.china.huawei.com ([7.191.163.240]) by
- lhrpeml500005.china.huawei.com ([7.191.163.240]) with mapi id 15.01.2507.039;
- Wed, 4 Sep 2024 15:20:37 +0100
-From: Shameerali Kolothum Thodi <shameerali.kolothum.thodi@huawei.com>
-To: Jason Gunthorpe <jgg@nvidia.com>, "acpica-devel@lists.linux.dev"
-	<acpica-devel@lists.linux.dev>, "Guohanjun (Hanjun Guo)"
-	<guohanjun@huawei.com>, "iommu@lists.linux.dev" <iommu@lists.linux.dev>,
-	Joerg Roedel <joro@8bytes.org>, Kevin Tian <kevin.tian@intel.com>,
-	"kvm@vger.kernel.org" <kvm@vger.kernel.org>, Len Brown <lenb@kernel.org>,
-	"linux-acpi@vger.kernel.org" <linux-acpi@vger.kernel.org>,
-	"linux-arm-kernel@lists.infradead.org"
-	<linux-arm-kernel@lists.infradead.org>, Lorenzo Pieralisi
-	<lpieralisi@kernel.org>, "Rafael J. Wysocki" <rafael@kernel.org>, "Robert
- Moore" <robert.moore@intel.com>, Robin Murphy <robin.murphy@arm.com>, "Sudeep
- Holla" <sudeep.holla@arm.com>, Will Deacon <will@kernel.org>
-CC: Alex Williamson <alex.williamson@redhat.com>, Eric Auger
-	<eric.auger@redhat.com>, Jean-Philippe Brucker <jean-philippe@linaro.org>,
-	Moritz Fischer <mdf@kernel.org>, Michael Shavit <mshavit@google.com>,
-	"Nicolin Chen" <nicolinc@nvidia.com>, "patches@lists.linux.dev"
-	<patches@lists.linux.dev>, Mostafa Saleh <smostafa@google.com>
-Subject: RE: [PATCH v2 2/8] iommu/arm-smmu-v3: Use S2FWB when available
-Thread-Topic: [PATCH v2 2/8] iommu/arm-smmu-v3: Use S2FWB when available
-Thread-Index: AQHa+JkNXX8oIDp/tkauz0b2cgKn4bJHsELw
-Date: Wed, 4 Sep 2024 14:20:36 +0000
-Message-ID: <85aa5e8eb6f243fd9df754fdc96471b8@huawei.com>
-References: <0-v2-621370057090+91fec-smmuv3_nesting_jgg@nvidia.com>
- <2-v2-621370057090+91fec-smmuv3_nesting_jgg@nvidia.com>
-In-Reply-To: <2-v2-621370057090+91fec-smmuv3_nesting_jgg@nvidia.com>
-Accept-Language: en-GB, en-US
-Content-Language: en-US
-X-MS-Has-Attach:
-X-MS-TNEF-Correlator:
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+	s=arc-20240116; t=1725459923; c=relaxed/simple;
+	bh=yId2XFcDum53FDLUrvJJqxl53SGALFaHo7PGfKocJpA=;
+	h=Message-ID:Date:MIME-Version:Subject:To:CC:References:From:
+	 In-Reply-To:Content-Type; b=UfxKLibM+5VYI7I0Z4b+g9EHzcy0qX0DS1YfDoyLPDcZbke/BOsn0D8lOAgdESxyHVTTjZ5SNipAaceuxKlmKfvUA8BmmKhF4aJ/RpQbYzAMdO9ptHurqNfxPwPYntx1YPuWOwOGAe3a+Z007EL/8xh4ZXO/FS6NT4vbYyWpPoU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com; spf=pass smtp.mailfrom=quicinc.com; dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b=OZ/aWonB; arc=none smtp.client-ip=205.220.168.131
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=quicinc.com
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b="OZ/aWonB"
+Received: from pps.filterd (m0279866.ppops.net [127.0.0.1])
+	by mx0a-0031df01.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 48479q8J021795;
+	Wed, 4 Sep 2024 14:19:57 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=quicinc.com; h=
+	cc:content-transfer-encoding:content-type:date:from:in-reply-to
+	:message-id:mime-version:references:subject:to; s=qcppdkim1; bh=
+	r+HWRwR//pa8nxnPX/XXNKjHo7VyGMD3KsrkE9xrHQ8=; b=OZ/aWonBk+wqOZrE
+	rVBOE33PX7sgoLNRXFUJrywo6mqjOsyT6hK1zRby/g2IM0zHh67VfBo+IKAsIfuO
+	6Xi7dfLgfLpM/ofFVXImR0qO2frbBQJ6yA4kajMvC0hBPU1N4YPNyBEw5qBsXrJs
+	2uYFq7wTQfZ8j0XjiJI/jXoq8t0+UnKHs73QJYUP3xsFYTJRfb+Eb/BbpXe5nutQ
+	oeX+tsq5kr2xId75Uub7bgnnJM9NwBWE0vfdDEzHQ0PRBb4+82gJcTqDTdBkSWGG
+	tSyM2sKheoI7p5bIFVUBZ+UXjZPz/vPUdBjRYEJfgVk0Wf5XX2ZfXbGzfBtV9e3B
+	5oNZkg==
+Received: from nasanppmta03.qualcomm.com (i-global254.qualcomm.com [199.106.103.254])
+	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 41dxy24ddn-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Wed, 04 Sep 2024 14:19:57 +0000 (GMT)
+Received: from nasanex01b.na.qualcomm.com (nasanex01b.na.qualcomm.com [10.46.141.250])
+	by NASANPPMTA03.qualcomm.com (8.18.1.2/8.18.1.2) with ESMTPS id 484EJuD9018659
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Wed, 4 Sep 2024 14:19:56 GMT
+Received: from [10.110.120.207] (10.80.80.8) by nasanex01b.na.qualcomm.com
+ (10.46.141.250) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1544.9; Wed, 4 Sep 2024
+ 07:19:52 -0700
+Message-ID: <c163149b-bdf1-423b-ab51-f734d00277fe@quicinc.com>
+Date: Wed, 4 Sep 2024 07:19:52 -0700
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v2 14/21] dt-bindings: cpufreq: qcom-hw: document support
+ for SA8255p
+To: Krzysztof Kozlowski <krzk@kernel.org>
+CC: <andersson@kernel.org>, <konradybcio@kernel.org>, <robh@kernel.org>,
+        <krzk+dt@kernel.org>, <conor+dt@kernel.org>, <rafael@kernel.org>,
+        <viresh.kumar@linaro.org>, <herbert@gondor.apana.org.au>,
+        <davem@davemloft.net>, <sudeep.holla@arm.com>, <andi.shyti@kernel.org>,
+        <tglx@linutronix.de>, <will@kernel.org>, <robin.murphy@arm.com>,
+        <joro@8bytes.org>, <jassisinghbrar@gmail.com>, <lee@kernel.org>,
+        <linus.walleij@linaro.org>, <amitk@kernel.org>,
+        <thara.gopinath@gmail.com>, <broonie@kernel.org>,
+        <cristian.marussi@arm.com>, <rui.zhang@intel.com>,
+        <lukasz.luba@arm.com>, <wim@linux-watchdog.org>, <linux@roeck-us.net>,
+        <linux-arm-msm@vger.kernel.org>, <devicetree@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>, <linux-pm@vger.kernel.org>,
+        <linux-crypto@vger.kernel.org>, <arm-scmi@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>, <linux-i2c@vger.kernel.org>,
+        <iommu@lists.linux.dev>, <linux-gpio@vger.kernel.org>,
+        <linux-serial@vger.kernel.org>, <linux-spi@vger.kernel.org>,
+        <linux-watchdog@vger.kernel.org>, <kernel@quicinc.com>,
+        <quic_psodagud@quicinc.com>
+References: <20240828203721.2751904-1-quic_nkela@quicinc.com>
+ <20240903220240.2594102-1-quic_nkela@quicinc.com>
+ <20240903220240.2594102-15-quic_nkela@quicinc.com>
+ <odg5ssqu2soaqp6m4rambj7qhqiyp7othkvu4v6fu6xtuhbdho@vccya6qcwgoz>
+ <1b831fc1-9360-4038-91b2-b2c0cea513ed@quicinc.com>
+ <baf00e50-10b2-410b-9c56-713564a2d1b9@kernel.org>
+Content-Language: en-US
+From: Nikunj Kela <quic_nkela@quicinc.com>
+In-Reply-To: <baf00e50-10b2-410b-9c56-713564a2d1b9@kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
+ nasanex01b.na.qualcomm.com (10.46.141.250)
+X-QCInternal: smtphost
+X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
+X-Proofpoint-GUID: ehT9Yu2c61CM5jE4p6KmfozbRKh_7JF8
+X-Proofpoint-ORIG-GUID: ehT9Yu2c61CM5jE4p6KmfozbRKh_7JF8
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.293,Aquarius:18.0.1039,Hydra:6.0.680,FMLib:17.12.60.29
+ definitions=2024-09-04_11,2024-09-04_01,2024-09-02_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 mlxscore=0 adultscore=0
+ impostorscore=0 bulkscore=0 priorityscore=1501 phishscore=0 suspectscore=0
+ lowpriorityscore=0 mlxlogscore=941 spamscore=0 clxscore=1015
+ malwarescore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.19.0-2407110000 definitions=main-2409040108
 
 
+On 9/4/2024 6:17 AM, Krzysztof Kozlowski wrote:
+> On 04/09/2024 14:27, Nikunj Kela wrote:
+>> On 9/3/2024 11:26 PM, Krzysztof Kozlowski wrote:
+>>> On Tue, Sep 03, 2024 at 03:02:33PM -0700, Nikunj Kela wrote:
+>>>> Add compatible for the cpufreq engine representing support on SA8255p.
+>>>>
+>>>> Signed-off-by: Nikunj Kela <quic_nkela@quicinc.com>
+>>>> ---
+>>>>  .../bindings/cpufreq/cpufreq-qcom-hw.yaml        | 16 ++++++++++++++++
+>>>>  1 file changed, 16 insertions(+)
+>>>>
+>>>> diff --git a/Documentation/devicetree/bindings/cpufreq/cpufreq-qcom-hw.yaml b/Documentation/devicetree/bindings/cpufreq/cpufreq-qcom-hw.yaml
+>>>> index 1e9797f96410..84865e553c8b 100644
+>>>> --- a/Documentation/devicetree/bindings/cpufreq/cpufreq-qcom-hw.yaml
+>>>> +++ b/Documentation/devicetree/bindings/cpufreq/cpufreq-qcom-hw.yaml
+>>>> @@ -34,6 +34,7 @@ properties:
+>>>>          items:
+>>>>            - enum:
+>>>>                - qcom,qdu1000-cpufreq-epss
+>>>> +              - qcom,sa8255p-cpufreq-epss
+>>>>                - qcom,sa8775p-cpufreq-epss
+>>>>                - qcom,sc7280-cpufreq-epss
+>>>>                - qcom,sc8280xp-cpufreq-epss
+>>>> @@ -206,6 +207,21 @@ allOf:
+>>>>          interrupt-names:
+>>>>            minItems: 2
+>>>>  
+>>>> +  - if:
+>>>> +      properties:
+>>>> +        compatible:
+>>>> +          contains:
+>>>> +            enum:
+>>>> +              - qcom,sa8255p-cpufreq-epss
+>>>> +    then:
+>>>> +      properties:
+>>>> +        reg:
+>>>> +          minItems: 2
+>>>> +          maxItems: 2
+>>>> +
+>>>> +        reg-names:
+>>>> +          minItems: 2
+>>>> +          maxItems: 2
+>>> What about interrupts? You need to constrain each of such lists.
+>>>
+>>> Best regards,
+>>> Krzysztof
+>> Interrupts are not required, I still need to put constraints for
+> It's irrelevant whether they are required or not. Each property should
+> be narrowed.
 
-> -----Original Message-----
-> From: Jason Gunthorpe <jgg@nvidia.com>
-> Sent: Tuesday, August 27, 2024 4:52 PM
-> To: acpica-devel@lists.linux.dev; Guohanjun (Hanjun Guo)
-> <guohanjun@huawei.com>; iommu@lists.linux.dev; Joerg Roedel
-> <joro@8bytes.org>; Kevin Tian <kevin.tian@intel.com>;
-> kvm@vger.kernel.org; Len Brown <lenb@kernel.org>; linux-
-> acpi@vger.kernel.org; linux-arm-kernel@lists.infradead.org; Lorenzo Piera=
-lisi
-> <lpieralisi@kernel.org>; Rafael J. Wysocki <rafael@kernel.org>; Robert
-> Moore <robert.moore@intel.com>; Robin Murphy
-> <robin.murphy@arm.com>; Sudeep Holla <sudeep.holla@arm.com>; Will
-> Deacon <will@kernel.org>
-> Cc: Alex Williamson <alex.williamson@redhat.com>; Eric Auger
-> <eric.auger@redhat.com>; Jean-Philippe Brucker <jean-
-> philippe@linaro.org>; Moritz Fischer <mdf@kernel.org>; Michael Shavit
-> <mshavit@google.com>; Nicolin Chen <nicolinc@nvidia.com>;
-> patches@lists.linux.dev; Shameerali Kolothum Thodi
-> <shameerali.kolothum.thodi@huawei.com>; Mostafa Saleh
-> <smostafa@google.com>
-> Subject: [PATCH v2 2/8] iommu/arm-smmu-v3: Use S2FWB when available
->=20
-> Force Write Back (FWB) changes how the S2 IOPTE's MemAttr field
-> works. When S2FWB is supported and enabled the IOPTE will force cachable
-> access to IOMMU_CACHE memory when nesting with a S1 and deny cachable
-> access otherwise.
->=20
-> When using a single stage of translation, a simple S2 domain, it doesn't
-> change anything as it is just a different encoding for the exsting mappin=
-g
-> of the IOMMU protection flags to cachability attributes.
->=20
-> However, when used with a nested S1, FWB has the effect of preventing the
-> guest from choosing a MemAttr in it's S1 that would cause ordinary DMA to
-> bypass the cache. Consistent with KVM we wish to deny the guest the
-> ability to become incoherent with cached memory the hypervisor believes i=
-s
-> cachable so we don't have to flush it.
->=20
-> Turn on S2FWB whenever the SMMU supports it and use it for all S2
-> mappings.
->=20
-> Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
-> ---
+So evenif we don't use interrupts property in our DT(patch#21), we need
+to mention interrupts here? You suggest we put interrupts with maxItems: 0?
 
-(...)
+I wonder why SA8775p compatible is not in constraint list..
 
-> @@ -932,7 +948,8 @@ arm_64_lpae_alloc_pgtable_s1(struct io_pgtable_cfg
-> *cfg, void *cookie)
->  	if (cfg->quirks & ~(IO_PGTABLE_QUIRK_ARM_NS |
->  			    IO_PGTABLE_QUIRK_ARM_TTBR1 |
->  			    IO_PGTABLE_QUIRK_ARM_OUTER_WBWA |
-> -			    IO_PGTABLE_QUIRK_ARM_HD))
-> +			    IO_PGTABLE_QUIRK_ARM_HD |
-> +			    IO_PGTABLE_QUIRK_ARM_S2FWB))
->  		return NULL;
-
-This should be added to arm_64_lpae_alloc_pgtable_s2(), not here.
-
-With the above fixed, I was able to assign a n/w VF dev to a Guest on a
-test hardware that supports S2FWB.
-
-However host kernel has this WARN message:
-[ 1546.165105] WARNING: CPU: 5 PID: 7047 at drivers/iommu/arm/arm-smmu-v3/a=
-rm-smmu-v3.c:1086 arm_smmu_entry_qword_diff+0x124/0x138
-....
-[ 1546.330312]  arm_smmu_entry_qword_diff+0x124/0x138
-[ 1546.335090]  arm_smmu_write_entry+0x38/0x22c
-[ 1546.339346]  arm_smmu_install_ste_for_dev+0x158/0x1ac
-[ 1546.344383]  arm_smmu_attach_dev+0x138/0x240
-[ 1546.348639]  __iommu_device_set_domain+0x7c/0x11c
-[ 1546.353330]  __iommu_group_set_domain_internal+0x60/0x134
-[ 1546.358714]  iommu_group_replace_domain+0x3c/0x68
-[ 1546.363404]  iommufd_device_do_replace+0x334/0x398
-[ 1546.368181]  iommufd_device_change_pt+0x26c/0x650
-[ 1546.372871]  iommufd_device_replace+0x18/0x24
-[ 1546.377214]  vfio_iommufd_physical_attach_ioas+0x28/0x68
-[ 1546.382514]  vfio_df_ioctl_attach_pt+0x98/0x170
-
-
-And when I tried to use the assigned n/w dev, it seems to do a reset
-continuously.
-
-root@localhost:/# ping 150.0.124.42
-PING 150.0.124.42 (150.0.124.42): 56 data bytes
-64 bytes from 150.0.124.42: seq=3D0 ttl=3D64 time=3D47.648 ms
-[ 1395.958630] hns3 0000:c2:00.0 eth1: NETDEV WATCHDOG: CPU: 1: transmit qu=
-eue 10 timed out 5260 ms
-[ 1395.960187] hns3 0000:c2:00.0 eth1: DQL info last_cnt: 42, queued: 42, a=
-dj_limit: 0, completed: 0
-[ 1395.961758] hns3 0000:c2:00.0 eth1: queue state: 0x6, delta msecs: 5260
-[ 1395.962925] hns3 0000:c2:00.0 eth1: tx_timeout count: 1, queue id: 10, S=
-W_NTU: 0x1, SW_NTC: 0x0, napi state: 16
-[ 1395.964677] hns3 0000:c2:00.0 eth1: tx_pkts: 0, tx_bytes: 0, sw_err_cnt:=
- 0, tx_pending: 0
-[ 1395.966114] hns3 0000:c2:00.0 eth1: seg_pkt_cnt: 0, tx_more: 0, restart_=
-queue: 0, tx_busy: 0
-[ 1395.967598] hns3 0000:c2:00.0 eth1: tx_push: 1, tx_mem_doorbell: 0
-[ 1395.968687] hns3 0000:c2:00.0 eth1: BD_NUM: 0x7f HW_HEAD: 0x0, HW_TAIL: =
-0x0, BD_ERR: 0x0, INT: 0x1
-[ 1395.970291] hns3 0000:c2:00.0 eth1: RING_EN: 0x1, TC: 0x0, FBD_NUM: 0x0 =
-FBD_OFT: 0x0, EBD_NUM: 0x400, EBD_OFT: 0x0
-[ 1395.972134] hns3 0000:c2:00.0: received reset request from VF enet
-
-All this works fine on a hardware without S2FWB though.
-
-Also on this test hardware, it works fine with legacy VFIO assignment.
-
-Not debugged further. Please let me know if you have any hunch.
-
-Thanks,
-Shameer
-
-
-
+>> interrupts? BTW, there is no if block for SA8775p binding in this file.
+>
+>
+> Best regards,
+> Krzysztof
+>
