@@ -1,50 +1,50 @@
 Received: from mx0b-0031df01.pphosted.com (mx0b-0031df01.pphosted.com [205.220.180.131])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A55CD1CC165
-	for <iommu@lists.linux.dev>; Wed,  4 Sep 2024 08:36:30 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 115331D0DF3
+	for <iommu@lists.linux.dev>; Wed,  4 Sep 2024 08:36:37 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.180.131
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1725438992; cv=none; b=tRpXV2PWkxZBJ3kWmLNfB49gEQBN1Azx7hRKWm0Y2WjU6ztq+2oQCVRsCFNvn/47rxx3TLp53JHM19hf+Unkj3ULc4ZnYuD0pvmRgTp6YRVUQjAEL63+t/xbMqhjAkeP5h3HdUJ1vEyb03GOuUf041IIezDYpOVASVuztDsE3/4=
+	t=1725439000; cv=none; b=Lz/JRsf1rb7Pfm3xUtaMS+jD/2mAAVooEpXNgGvDRZ0MPAlkPFds5JKya/Kh/UG16iKV69Yx/kmZc/G+o7rvXRe5Nfy5WrL/FxDCaDUXtGHkxWzMY+v8tR/5Y5fhVhK4CP57r/vHP10VfSn7ol36pC06oROH7W8kfhJuz/Ri3rU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1725438992; c=relaxed/simple;
-	bh=7EaqWptRZY3vl/ONPARInWkCCBx096nfU8RsWjDs+lM=;
+	s=arc-20240116; t=1725439000; c=relaxed/simple;
+	bh=Zc0fxQeUJ7ZIlBQqvIlPa4VKd2nOvNMmfA4NksJ6Qdc=;
 	h=From:Date:Subject:MIME-Version:Content-Type:Message-ID:References:
-	 In-Reply-To:To:CC; b=BATmDxcO/+xBgD4VjAW7N3ztigkFdN6sX8O0CuIgGiNQ2IjxO2mr+SqZk/2I57BXmAgjEDwnz6lzJ1Vg5zy+psSR+jZWxxU6kW9tpMTqSoBmf0lX2yWr/uEMGDMi/6/+oDP5ClkppE+kg3kMezf3Zrp7XtZz1aC2Vuk1eLQWHa8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com; spf=pass smtp.mailfrom=quicinc.com; dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b=TNY4el5x; arc=none smtp.client-ip=205.220.180.131
+	 In-Reply-To:To:CC; b=oMIvjYcM8A87fXzSA0HpUvuYD2S5bGGrQIZqm0amUuZEGXdUtU2vwU6zIn3hsHeKqfZsydFaQFAcC+vis/unY8SeN8SDvKUZQTGID+xatQstWPApwK3IXSrooSKbKWFAqGlAZY9zzz/4oFaOuVwGtrZHq1XdQHjd8SAAgMMWNyE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com; spf=pass smtp.mailfrom=quicinc.com; dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b=Ms3wDdlg; arc=none smtp.client-ip=205.220.180.131
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=quicinc.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b="TNY4el5x"
-Received: from pps.filterd (m0279868.ppops.net [127.0.0.1])
-	by mx0a-0031df01.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 4841FTNr014384;
-	Wed, 4 Sep 2024 08:36:16 GMT
+	dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b="Ms3wDdlg"
+Received: from pps.filterd (m0279869.ppops.net [127.0.0.1])
+	by mx0a-0031df01.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 483M4SqV011452;
+	Wed, 4 Sep 2024 08:36:25 GMT
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=quicinc.com; h=
 	cc:content-transfer-encoding:content-type:date:from:in-reply-to
 	:message-id:mime-version:references:subject:to; s=qcppdkim1; bh=
-	hjUg6dp8iv/xDnMO2y+98MESdKSTd9GcT+uDkUnJ3Cs=; b=TNY4el5xJqL/cV/R
-	RoWf3d3Pa/03mxlZwUYVhYk3M+IyusRw+g6LD4LxDeHj2ydbnxQzulkZh8BSDNxr
-	O1CjkmwG6W3hnFW5062woLCXjREPwgogV/R2rnYwSxQUWS3DszCcLF0xJH/ApW4j
-	tyMnE4VbSNUtNKdy3WLqoKK6ofjxbIHZjyTO47yPPgksWjb/D3D0JRwrqxc2iMhc
-	ZHLWVID50yxDrOAhTfLNj0Y8YllRb3xSxKHc+ZcA+rb06Mhf5IGyGyQAzENKf7vZ
-	AQG3Qydk9CO/TGhtXFAyKYSmQyHjhZ+Grtw2cIP1qlrtBZ6nBqpbzVpMy481dheh
-	q2zHsA==
-Received: from nalasppmta04.qualcomm.com (Global_NAT1.qualcomm.com [129.46.96.20])
-	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 41dt69c67g-1
+	yF3Sb+YUTon5vuC1qtjEJ9QB8ns6d+9RqX0vLIwrZP8=; b=Ms3wDdlgn1FUz5QZ
+	cDd9O97EwRpIeOfWOBCLw9mGOIVmh+rFwFazvjgaAxmVIsWOC5ilHwE0r5Nx9cmr
+	I2pdI0JM1z+SSmi9QQnjtWju4iu5DfVLKhXLks013fm9R4plE0D/S1emg/1KoTqS
+	dNzLn3NTCx6velDKeZnEIqDda9GcmZl6Zm4wkATUbMd95tBLuXwufA7tguj5FehV
+	7HFygadDHkxR/5a7/Prd52dtGbQnrw+BMuKB6hpxq4gtVeiAuz46JRufp7kcYZnx
+	Fwf2hA0gDVJ/6whux5g653ryRTCKMOcVwQBk6BXwYVbGHcQQ10vnP773MVr1E8CK
+	TWdZFg==
+Received: from nalasppmta03.qualcomm.com (Global_NAT1.qualcomm.com [129.46.96.20])
+	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 41bt67261v-1
 	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Wed, 04 Sep 2024 08:36:16 +0000 (GMT)
+	Wed, 04 Sep 2024 08:36:24 +0000 (GMT)
 Received: from nalasex01b.na.qualcomm.com (nalasex01b.na.qualcomm.com [10.47.209.197])
-	by NALASPPMTA04.qualcomm.com (8.18.1.2/8.18.1.2) with ESMTPS id 4848aFsZ007740
+	by NALASPPMTA03.qualcomm.com (8.18.1.2/8.18.1.2) with ESMTPS id 4848aNGc031436
 	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Wed, 4 Sep 2024 08:36:15 GMT
+	Wed, 4 Sep 2024 08:36:23 GMT
 Received: from jingyw-gv.qualcomm.com (10.80.80.8) by
  nalasex01b.na.qualcomm.com (10.47.209.197) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.1544.9; Wed, 4 Sep 2024 01:36:06 -0700
+ 15.2.1544.9; Wed, 4 Sep 2024 01:36:15 -0700
 From: Jingyi Wang <quic_jingyw@quicinc.com>
-Date: Wed, 4 Sep 2024 16:33:56 +0800
-Subject: [PATCH 15/19] dt-bindings: soc: qcom,aoss-qmp: Document the
- QCS8300 AOSS channel
+Date: Wed, 4 Sep 2024 16:33:57 +0800
+Subject: [PATCH 16/19] dt-bindings: arm: qcom: document QCS8275/QCS8300 SoC
+ and reference board
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -53,7 +53,7 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Message-ID: <20240904-qcs8300_initial_dtsi-v1-15-d0ea9afdc007@quicinc.com>
+Message-ID: <20240904-qcs8300_initial_dtsi-v1-16-d0ea9afdc007@quicinc.com>
 References: <20240904-qcs8300_initial_dtsi-v1-0-d0ea9afdc007@quicinc.com>
 In-Reply-To: <20240904-qcs8300_initial_dtsi-v1-0-d0ea9afdc007@quicinc.com>
 To: Bjorn Andersson <andersson@kernel.org>,
@@ -89,55 +89,65 @@ CC: <linux-arm-msm@vger.kernel.org>, <linux-remoteproc@vger.kernel.org>,
         <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
         <linux-phy@lists.infradead.org>, <linux-scsi@vger.kernel.org>,
         <linux-pm@vger.kernel.org>, <linux-arm-kernel@lists.infradead.org>,
-        <iommu@lists.linux.dev>, Jingyi Wang <quic_jingyw@quicinc.com>,
-        Kyle Deng
-	<quic_chunkaid@quicinc.com>
+        <iommu@lists.linux.dev>, Jingyi Wang <quic_jingyw@quicinc.com>
 X-Mailer: b4 0.15-dev-99b12
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1725438840; l=913;
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1725438840; l=1145;
  i=quic_jingyw@quicinc.com; s=20240829; h=from:subject:message-id;
- bh=wUD+32/ntljbFyo5WHh0uyngC23i5+SdymUp6DFqee0=;
- b=9ZseKVOz9nW8H32uNOHjrVQileRjSxOCj1NBHls8n+Q7oCIE0OoPoLPEIyYFCkZRXxi1jwPRI
- QDnExKI7CLaCPcXPAd0GpZw1CYE0f/BOZYFU8uqtpfDlgKp3walfCOR
+ bh=Zc0fxQeUJ7ZIlBQqvIlPa4VKd2nOvNMmfA4NksJ6Qdc=;
+ b=d/16zc+kivvwDt5t7WO7F0CetXZ/0pHs2cdYIXGK0t0tkhGQB5kWyin/9CDVlEOgsD8Pek+6S
+ jC34eeEDZLmCQytLlL7x3I2D6ywa8JhA+B1VzbiqpWxaLf/mTTOkw/l
 X-Developer-Key: i=quic_jingyw@quicinc.com; a=ed25519;
  pk=3tHAHZsIl3cClXtU9HGR1okpPOs9Xyy1M0jzHw6A/qs=
 X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
  nalasex01b.na.qualcomm.com (10.47.209.197)
 X-QCInternal: smtphost
 X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
-X-Proofpoint-GUID: FKBjZJOI5-CSDngJKHKPcoSRlTbfR3Uv
-X-Proofpoint-ORIG-GUID: FKBjZJOI5-CSDngJKHKPcoSRlTbfR3Uv
+X-Proofpoint-ORIG-GUID: jQNqBXc420QCmFFzGCuJFaEUPVPoyE1c
+X-Proofpoint-GUID: jQNqBXc420QCmFFzGCuJFaEUPVPoyE1c
 X-Proofpoint-Virus-Version: vendor=baseguard
  engine=ICAP:2.0.293,Aquarius:18.0.1039,Hydra:6.0.680,FMLib:17.12.60.29
  definitions=2024-09-04_05,2024-09-04_01,2024-09-02_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 impostorscore=0
- suspectscore=0 bulkscore=0 mlxlogscore=999 mlxscore=0 lowpriorityscore=0
- phishscore=0 priorityscore=1501 malwarescore=0 adultscore=0 spamscore=0
- clxscore=1015 classifier=spam adjust=0 reason=mlx scancount=1
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 malwarescore=0 adultscore=0
+ bulkscore=0 mlxscore=0 impostorscore=0 suspectscore=0 phishscore=0
+ mlxlogscore=999 lowpriorityscore=0 spamscore=0 clxscore=1015
+ priorityscore=1501 classifier=spam adjust=0 reason=mlx scancount=1
  engine=8.19.0-2407110000 definitions=main-2409040065
 
-From: Kyle Deng <quic_chunkaid@quicinc.com>
+Document the QCS8275/QCS8300 SoC and its reference board QCS8300 RIDE.
+QCS8300 is an Industrial Safe SoC, while QCS8275 is the Industrial
+Non-Safe version which can share the same SoC dtsi and board DTS.
 
-Document the Always-On Subsystem side channel on the QCS8300 platform for
-communication with client found on the SoC such as remoteprocs.
-
-Signed-off-by: Kyle Deng <quic_chunkaid@quicinc.com>
 Signed-off-by: Jingyi Wang <quic_jingyw@quicinc.com>
 ---
- Documentation/devicetree/bindings/soc/qcom/qcom,aoss-qmp.yaml | 1 +
- 1 file changed, 1 insertion(+)
+ Documentation/devicetree/bindings/arm/qcom.yaml | 8 ++++++++
+ 1 file changed, 8 insertions(+)
 
-diff --git a/Documentation/devicetree/bindings/soc/qcom/qcom,aoss-qmp.yaml b/Documentation/devicetree/bindings/soc/qcom/qcom,aoss-qmp.yaml
-index 7afdb60edb22..6f5c2609e82a 100644
---- a/Documentation/devicetree/bindings/soc/qcom/qcom,aoss-qmp.yaml
-+++ b/Documentation/devicetree/bindings/soc/qcom/qcom,aoss-qmp.yaml
-@@ -25,6 +25,7 @@ properties:
-   compatible:
-     items:
-       - enum:
-+          - qcom,qcs8300-aoss-qmp
-           - qcom,qdu1000-aoss-qmp
-           - qcom,sa8775p-aoss-qmp
-           - qcom,sc7180-aoss-qmp
+diff --git a/Documentation/devicetree/bindings/arm/qcom.yaml b/Documentation/devicetree/bindings/arm/qcom.yaml
+index c0529486810f..ccf9a166368f 100644
+--- a/Documentation/devicetree/bindings/arm/qcom.yaml
++++ b/Documentation/devicetree/bindings/arm/qcom.yaml
+@@ -42,6 +42,8 @@ description: |
+         msm8996
+         msm8998
+         qcs404
++        qcs8275
++        qcs8300
+         qcs8550
+         qcm2290
+         qcm6490
+@@ -895,6 +897,12 @@ properties:
+           - const: qcom,qcs404-evb
+           - const: qcom,qcs404
+ 
++      - items:
++          - enum:
++              - qcom,qcs8300-ride
++          - const: qcom,qcs8275
++          - const: qcom,qcs8300
++
+       - items:
+           - enum:
+               - qcom,sa8155p-adp
 
 -- 
 2.25.1
