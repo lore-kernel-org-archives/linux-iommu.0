@@ -1,120 +1,124 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.18])
+Received: from mail.zeus03.de (zeus03.de [194.117.254.33])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4285015623B
-	for <iommu@lists.linux.dev>; Wed,  4 Sep 2024 07:49:59 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 64741170A11
+	for <iommu@lists.linux.dev>; Wed,  4 Sep 2024 07:55:46 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=194.117.254.33
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1725436202; cv=none; b=isS1dL4z1yJtLEMe1673Y66XHPY77F7vmWOsRzDaoPrB+UZmKUwQgbkcMOT0cD1tg1ZopJKAHGRm6thq47rnjGClvujpRL5GCfwEsa5ts8qPCsnOvIUBEILb2zt9rkJKkoost6C96HGRB532zmiGmjZLfBOIoAVs2rZOAAD7e9U=
+	t=1725436549; cv=none; b=T8QWY91gJ8WNNlIlSBQ4ZshtmXiUqdYVlRDeHdzA11Tht+PWXx53xJzHREHbz19SCGlyUDY+egMUO1DMdD69KNbVBeUwTUx0mc+6ZO9eIeyVxx0OURFYu4x6toJvclR80hw2y1NpU8uxDJaW+bAH8n3ENIWwPe3xM6o1qNGfwnU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1725436202; c=relaxed/simple;
-	bh=n11IIAFOIZVYrv0u/r7HWhEJ8P8Nh5SNpfJZTS/XAjA=;
-	h=Message-ID:Date:MIME-Version:Cc:Subject:To:References:From:
-	 In-Reply-To:Content-Type; b=AfGP3GHMqUuImyz8g4sihtjVfiKajr1RbcOosQaqMOFsmKLseNaHZEye1z/NJ39MPhskbyaZW/XG0N7dod6Fe44CpTebqaeDMLvGxrlABhFhShscweiZRTV/0gP+Pt7Elvv8sRUAwB8lQZdxtpXe/32lIDk1ORP6RsR9+VvsSj0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=Uv75SECy; arc=none smtp.client-ip=192.198.163.18
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
+	s=arc-20240116; t=1725436549; c=relaxed/simple;
+	bh=aKREuGuvO5ZHE1yHZZsfwqNwpc5ngWPlAvJqmQi/mFA=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=rCV1GY2QvWz5ApCxJDrUnrwaq1xo/qwh+l0Svko25NxEuxTjlZeDlfQLjt83/QQq81E9aSyE+hUDEQ1s+9W4zhOL8G9ke/qoxFnjnCF9G+HcKYZMnfPcy7JS1yPtoFBxeb/nb7tHChI2R/+85dZdJtz1iOPanJZ6SoN3cBz1VJQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=sang-engineering.com; spf=pass smtp.mailfrom=sang-engineering.com; dkim=pass (2048-bit key) header.d=sang-engineering.com header.i=@sang-engineering.com header.b=lHJfC8NL; arc=none smtp.client-ip=194.117.254.33
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=sang-engineering.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=sang-engineering.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="Uv75SECy"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1725436200; x=1756972200;
-  h=message-id:date:mime-version:cc:subject:to:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=n11IIAFOIZVYrv0u/r7HWhEJ8P8Nh5SNpfJZTS/XAjA=;
-  b=Uv75SECyOAJ4BEwdN1Bo8qJ7XTTvyZ5NlBkGwCuEm/6GVzQTnEhHNzyv
-   /EL9irednMA+w5CQl98pVIjq6y+IQV08G5Xu+Xwgn9yGAEldTkpsehOom
-   5pim1sAhXfLmqk19ijolwOs/8si5XEuhXL3PE4bKikbJcrvYDKtbgs8q3
-   FBWPNg4+Ym32oV5x8c41MjGASJhtM5cBjL0dwWwyqiI/ip35pBAfrIFUU
-   sgYrYkoz5QTjY6PS3pwpgy2pw7uhSPFlrykfDE7pwk2y56Lxky25rKQaM
-   QCnHHRJ4U1c86/4/Vt9NLEw1E6JA1ChB2ywT9qwU0RTMgwuROl7549/wL
-   w==;
-X-CSE-ConnectionGUID: Zy/rmOwuSJ+8abByodiXtA==
-X-CSE-MsgGUID: 4eparrzvS2SSWnm4YIGqig==
-X-IronPort-AV: E=McAfee;i="6700,10204,11184"; a="23590572"
-X-IronPort-AV: E=Sophos;i="6.10,201,1719903600"; 
-   d="scan'208";a="23590572"
-Received: from orviesa007.jf.intel.com ([10.64.159.147])
-  by fmvoesa112.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Sep 2024 00:49:49 -0700
-X-CSE-ConnectionGUID: J/BDhSG6SB+HftCxRzxsbA==
-X-CSE-MsgGUID: ZzFbso7eSf+ZuzZcEokpwQ==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.10,201,1719903600"; 
-   d="scan'208";a="65706875"
-Received: from blu2-mobl.ccr.corp.intel.com (HELO [10.124.229.145]) ([10.124.229.145])
-  by orviesa007-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Sep 2024 00:49:47 -0700
-Message-ID: <9e183ce2-060a-4e0b-a956-03d767368ca4@linux.intel.com>
-Date: Wed, 4 Sep 2024 15:49:44 +0800
+	dkim=pass (2048-bit key) header.d=sang-engineering.com header.i=@sang-engineering.com header.b="lHJfC8NL"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+	sang-engineering.com; h=date:from:to:cc:subject:message-id
+	:references:mime-version:content-type:in-reply-to; s=k1; bh=aKRE
+	uGuvO5ZHE1yHZZsfwqNwpc5ngWPlAvJqmQi/mFA=; b=lHJfC8NLL5hM1d99YWjb
+	k8hDKbwT7sQf8dInSNM2O1kpA1swfRUSh15nms8BwX4XK7sQOPW/xU646LChoL7s
+	MlL6mj1/2d4+GpkSgFJnakGliodkpCyjufupzv5XqiJo4TZN0ytxUDDuqoOtWhcw
+	Ftacip61yFvUV0V9V8Eyu/o1oSEVbgN2RdE8+kWEb7GCFzV5oAi5AyzCYkfoebJA
+	/7HgHZSVS4QsdZaaMW51/42QLG8Wzrtmb4XGaKBOfOAaMiycCkPj2/JN9DPa+haG
+	ze9bm6J1gbHzupDjyCxJh3vuGJwM0K55flbm52CyxTjg8jfMmmuw6GBpIF2P5GCE
+	Gg==
+Received: (qmail 509259 invoked from network); 4 Sep 2024 09:55:35 +0200
+Received: by mail.zeus03.de with ESMTPSA (TLS_AES_256_GCM_SHA384 encrypted, authenticated); 4 Sep 2024 09:55:35 +0200
+X-UD-Smtp-Session: l3s3148p1@4iHCf0YhlpwgAwDPXwdRANgvu6DX4+2c
+Date: Wed, 4 Sep 2024 09:55:35 +0200
+From: Wolfram Sang <wsa+renesas@sang-engineering.com>
+To: Krzysztof Kozlowski <krzk@kernel.org>
+Cc: Nikunj Kela <quic_nkela@quicinc.com>, andersson@kernel.org,
+	konradybcio@kernel.org, robh@kernel.org, krzk+dt@kernel.org,
+	conor+dt@kernel.org, rafael@kernel.org, viresh.kumar@linaro.org,
+	herbert@gondor.apana.org.au, davem@davemloft.net,
+	sudeep.holla@arm.com, andi.shyti@kernel.org, tglx@linutronix.de,
+	will@kernel.org, robin.murphy@arm.com, joro@8bytes.org,
+	jassisinghbrar@gmail.com, lee@kernel.org, linus.walleij@linaro.org,
+	amitk@kernel.org, thara.gopinath@gmail.com, broonie@kernel.org,
+	cristian.marussi@arm.com, rui.zhang@intel.com, lukasz.luba@arm.com,
+	wim@linux-watchdog.org, linux@roeck-us.net,
+	linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org,
+	linux-kernel@vger.kernel.org, linux-pm@vger.kernel.org,
+	linux-crypto@vger.kernel.org, arm-scmi@vger.kernel.org,
+	linux-arm-kernel@lists.infradead.org, linux-i2c@vger.kernel.org,
+	iommu@lists.linux.dev, linux-gpio@vger.kernel.org,
+	linux-serial@vger.kernel.org, linux-spi@vger.kernel.org,
+	linux-watchdog@vger.kernel.org, kernel@quicinc.com,
+	quic_psodagud@quicinc.com,
+	Praveen Talari <quic_ptalari@quicinc.com>
+Subject: Re: [PATCH v2 15/21] dt-bindings: i2c: document support for SA8255p
+Message-ID: <ZtgSd_SLndvLLVYF@shikoro>
+Mail-Followup-To: Wolfram Sang <wsa+renesas@sang-engineering.com>,
+	Krzysztof Kozlowski <krzk@kernel.org>,
+	Nikunj Kela <quic_nkela@quicinc.com>, andersson@kernel.org,
+	konradybcio@kernel.org, robh@kernel.org, krzk+dt@kernel.org,
+	conor+dt@kernel.org, rafael@kernel.org, viresh.kumar@linaro.org,
+	herbert@gondor.apana.org.au, davem@davemloft.net,
+	sudeep.holla@arm.com, andi.shyti@kernel.org, tglx@linutronix.de,
+	will@kernel.org, robin.murphy@arm.com, joro@8bytes.org,
+	jassisinghbrar@gmail.com, lee@kernel.org, linus.walleij@linaro.org,
+	amitk@kernel.org, thara.gopinath@gmail.com, broonie@kernel.org,
+	cristian.marussi@arm.com, rui.zhang@intel.com, lukasz.luba@arm.com,
+	wim@linux-watchdog.org, linux@roeck-us.net,
+	linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org,
+	linux-kernel@vger.kernel.org, linux-pm@vger.kernel.org,
+	linux-crypto@vger.kernel.org, arm-scmi@vger.kernel.org,
+	linux-arm-kernel@lists.infradead.org, linux-i2c@vger.kernel.org,
+	iommu@lists.linux.dev, linux-gpio@vger.kernel.org,
+	linux-serial@vger.kernel.org, linux-spi@vger.kernel.org,
+	linux-watchdog@vger.kernel.org, kernel@quicinc.com,
+	quic_psodagud@quicinc.com,
+	Praveen Talari <quic_ptalari@quicinc.com>
+References: <20240828203721.2751904-1-quic_nkela@quicinc.com>
+ <20240903220240.2594102-1-quic_nkela@quicinc.com>
+ <20240903220240.2594102-16-quic_nkela@quicinc.com>
+ <7fc1e4c3-ca09-4a0a-b072-0c4f1d21e44f@kernel.org>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Cc: baolu.lu@linux.intel.com, "Saarinen, Jani" <jani.saarinen@intel.com>,
- "iommu@lists.linux.dev" <iommu@lists.linux.dev>,
- "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
- "stable@vger.kernel.org" <stable@vger.kernel.org>
-Subject: Re: [PATCH 1/1] iommu/vt-d: Prevent boot failure with devices
- requiring ATS
-To: "Tian, Kevin" <kevin.tian@intel.com>, Joerg Roedel <joro@8bytes.org>,
- Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>
-References: <20240904060705.90452-1-baolu.lu@linux.intel.com>
- <BN9PR11MB5276428A5462738F89190A5A8C9C2@BN9PR11MB5276.namprd11.prod.outlook.com>
-Content-Language: en-US
-From: Baolu Lu <baolu.lu@linux.intel.com>
-In-Reply-To: <BN9PR11MB5276428A5462738F89190A5A8C9C2@BN9PR11MB5276.namprd11.prod.outlook.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: multipart/signed; micalg=pgp-sha512;
+	protocol="application/pgp-signature"; boundary="FHEJDPFXKqntwo2j"
+Content-Disposition: inline
+In-Reply-To: <7fc1e4c3-ca09-4a0a-b072-0c4f1d21e44f@kernel.org>
 
-On 2024/9/4 14:49, Tian, Kevin wrote:
->> From: Lu Baolu <baolu.lu@linux.intel.com>
->> Sent: Wednesday, September 4, 2024 2:07 PM
->>
->> SOC-integrated devices on some platforms require their PCI ATS enabled
->> for operation when the IOMMU is in scalable mode. Those devices are
->> reported via ACPI/SATC table with the ATC_REQUIRED bit set in the Flags
->> field.
->>
->> The PCI subsystem offers the 'pci=noats' kernel command to disable PCI
->> ATS on all devices. Using 'pci=noat' with devices that require PCI ATS
->> can cause a conflict, leading to boot failure, especially if the device
->> is a graphics device.
->>
->> To prevent this issue, check PCI ATS support before enumerating the IOMMU
->> devices. If any device requires PCI ATS, but PCI ATS is disabled by
->> 'pci=noats', switch the IOMMU to operate in legacy mode to ensure
->> successful booting.
-> 
-> I guess the reason of switching to legacy mode is because the platform
-> automatically enables ATS in this mode, as the comment says in
-> dmar_ats_supported(). This should be explained otherwise it's unclear
-> why switching the mode can make ATS working for those devices.
 
-Not 'automatically enable ATS,' but hardware provides something that is
-equivalent to PCI ATS. The ATS capability on the device is still
-disabled. That's the reason why such device must be an SOC-integrated
-one.
+--FHEJDPFXKqntwo2j
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 
-> 
-> But then doesn't it break the meaning of 'pci=noats' which means
-> disabling ATS physically? It's described as "do not use PCIe ATS and
-> IOMMU device IOTLB" in kernel doc, which is not equivalent to
-> "leave PCIe ATS to be managed by HW".
 
-Therefore, the PCI ATS is not used and the syntax of pci=noats is not
-broken.
+> Just to clarify to I2C maintainers:
+> This is incomplete. Missing driver changes.
 
-> and why would one want to use 'pci=noats' on a platform which
-> requires ats?
+Thanks, Krzysztof!
 
-We don't recommend users to disable ATS on a platform which has devices
-that rely on it. But nothing can prevent users from doing so. I am not
-sure why it is needed. One possible reason that I can think of is about
-security. Sometimes, people don't trust ATS because it allows devices to
-access the memory with translated requests directly without any
-permission check on the IOMMU end.
 
-Thanks,
-baolu
+--FHEJDPFXKqntwo2j
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAABCgAdFiEEOZGx6rniZ1Gk92RdFA3kzBSgKbYFAmbYEnYACgkQFA3kzBSg
+KbZVYBAAiXNxlHjbEKLTGAkGhtvJsfotjpV3nCHTOIX/wTow3SIk/EuRFp+rNX9D
+bvnB135tiFbnLkTasCvFaDoz1L5wOf3pnguvdpQAIauuzlIznrT6k//2iFhEBwKV
+FgaVWIWUvfGw6LMCubL9h54kRsAVjdMBb4pN4C0U4cQh63+3nbJYGsqgTaxVyFR8
+1vBhtghAuAT9uFYeOPgP4GsV0wm4G4far6kM9R0wdaiu/abnMT7aiIa7T2eGps1+
+N+NerB2mmf6E+XEDnK9eDRCNMUJcam4IfYVjaQzwC//aFSFdmVvvjXKfbnssf+JF
+Vfn0hqkLmMSxL37rtuVH9v1JE+QJ8yPCwNzJpey+GWDInsux2gFaEsj5y7DNaXz9
+rJl6yjzKGUEIaB3unQqDNIXOYa8t54sZOVPMiXyiwRf3n+itlcgM1UyIAhcJL62u
+khTLRb01S4AJCQU0i/tkvtxjThP+U40p/2HWHcvNIdv+FAvNwpP3Hwbr7hthVHXo
+yoOMh7BeGjoG2Kp9/5JanWIWUy4RiAVJiKKZA6wP+QQhnpRldvAbfv56htszdT8F
+epR8Zsy8YVvVQbgzZcCmFkKY5tHrkfOYaURZFpE5stum6qKUSt/asnkEsDxqkCss
+4D9DFaqxYU6zv5TvPEk8Ht4P+xoSS9D6XBET6SgXeNARud2kCSw=
+=F3tI
+-----END PGP SIGNATURE-----
+
+--FHEJDPFXKqntwo2j--
