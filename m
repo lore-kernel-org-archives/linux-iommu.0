@@ -1,121 +1,149 @@
-Received: from mail-wr1-f44.google.com (mail-wr1-f44.google.com [209.85.221.44])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4D0AC146D7F
-	for <iommu@lists.linux.dev>; Wed,  4 Sep 2024 07:29:33 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.44
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AF4611482E7;
+	Wed,  4 Sep 2024 07:47:51 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1725434975; cv=none; b=GvYJPIjhR9n/35dwiPl1zXyPiilLkjVpqLg6z7NfVMH5Kc5A1kkBgtZ7WlQ/nKOB0VvURUPq9IZOXFnJXXu8Tl32Afw2bG7ZPLr8iQVyelGj9BZyTPiwn3hQNIluYB/0oCgqJJZeITn5nvhyTWoIdwT+oB9zyBP+o9TEJWVuQIw=
+	t=1725436072; cv=none; b=LKMOt1biQ8i156GhT/tatD6YU9vPZ+t9624ky7vLGaqeIM8wv1z6zkvHdpG0e8arSJaIEeXAwcGF0jADdl6Ff45udgLBt0xciEFHgsIlD2SEW0seH6hwbacVc9daMxi8yMb/y1heF2gmaT+OjqD0/44I89vQXuRBYObIU+IpAtw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1725434975; c=relaxed/simple;
-	bh=pRN7+oax/Nx7fvJN49hPQ3AHM2UQgGliWcqGdCj8pt8=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=ezs3MTc83+iDzv+JSZ91EW0DACI86r9CfgXqrsngqFrmbQc+dqKFzomZ2+XIy94qr17276wz1xlpUecPK7wxsFTcDOY5gVPHEAdWXYeOc0Rn2sLDxAQaCEtXy7JyelhP6LuKNUQxXJ5hihJotPri+qGTH3OmDu4aNHBznhzIbiI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org; spf=pass smtp.mailfrom=linaro.org; dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b=M5LvlQN6; arc=none smtp.client-ip=209.85.221.44
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linaro.org
+	s=arc-20240116; t=1725436072; c=relaxed/simple;
+	bh=eIKr8cAo4XHci2u7+szz00vb8bkmDe1laUVSo8kbitM=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=IvtoVSOWBQ/1Izd0umuBxu02LjyHQgNDPgG6MrDjQ7578K5zPxOUUS6TGfCU0u2srOjSdrETzXZR4lQ71r1O6ZugALkyvrs7WeOrIr2Fw1x+7W/bivfWcRGQsVxy1zpZG/CvUJk2xj/mU/AKU0L2R9NoSawNXUt3rZ5tqoU/+yM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=kIj+oy0x; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="M5LvlQN6"
-Received: by mail-wr1-f44.google.com with SMTP id ffacd0b85a97d-3780c8d689aso42793f8f.0
-        for <iommu@lists.linux.dev>; Wed, 04 Sep 2024 00:29:33 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1725434972; x=1726039772; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=fxPvC9OW9Ktpk2Avz/xTd0h7tOPJO4rWjfU5sl7IhvM=;
-        b=M5LvlQN6KBcsHIFTUIQ149djFfOQ0tZet0DuhB8n7tO6RN3mKqUUlI3MyOGgFbbqR3
-         nKkBCraS5p4s32+PzOHlPHxc4Ifss8QhsOFquJH7L6deCa7LbYSBCpH4jvmx2jk1BvfP
-         +dkQ8wpyjSY7vRWJCPQ7Uy9VR9IpGy15Lw+09E9TVLmUKoeaEsPOEc9raTZGWKoAFtzx
-         8KaZhIt6Llby4VVFOjIGFdRah8U74ftD8JhdfuYGQ/KSIkjJHuxX465aZnn7WKxAGDiN
-         quXQff+BITF4UG1iFc9e8B/BpT1b7xsQVm9WLuvatIFnKdf8677SgdwqETVg/CtZq5Rx
-         h6sA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1725434972; x=1726039772;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=fxPvC9OW9Ktpk2Avz/xTd0h7tOPJO4rWjfU5sl7IhvM=;
-        b=J/G7ATAqyGWT0FhlZOrgjcyxxwIspfkUdcMjA7zTLEczKrNzoTxSLoP0UHThDIf1Ix
-         zi3dSVMOsbA0Q88doDey4t8j66bF4lmieSQ0Yr73l7z1S7IMu4TE2Rvg1s4A4pBLQtlc
-         PXUYYypOVtjhRW/WwxHndAHdZaBy2jzm9iQ1gN9/IYGVOpkdr6kPke+wzqv1pSYZElhH
-         2TQ78L7sjludCbh2IL82bPZo372ngb4YH022+wy/bAnp/HH43FI1+O1wzha8E5TkmNhw
-         OKpZa24eQXFompk0r630fwgRAOCtxIFU4E7fMSo/lCEeEwAtYScTJ4S/If08cfm7ESIV
-         +3Uw==
-X-Forwarded-Encrypted: i=1; AJvYcCVwCprtAEGiNvxUXfyPwtPGZbVcvi9hjR7qUg/gb/b1LavGNro+misd5vpqwIUUqdtJi4vApw==@lists.linux.dev
-X-Gm-Message-State: AOJu0Yw4MFn1JzrtBB5tD6eZjBxu9rnCeTYtGr4rIfCyQIb+ndFwmMeY
-	gGxkto773sGm6sZHOnv5DrJapuNZBogjdHwFlcU+POmjwFcj9vuGW7Kr4dYy2wo=
-X-Google-Smtp-Source: AGHT+IHS2N4DM93OxlN4GCTiko29IiTesLd3W6cV51JphfgkdKeiGc8BCj/MKUEwKpW7mkvvyUK9wA==
-X-Received: by 2002:a5d:514c:0:b0:374:bdd7:f848 with SMTP id ffacd0b85a97d-376df0055acmr2155949f8f.59.1725434971515;
-        Wed, 04 Sep 2024 00:29:31 -0700 (PDT)
-Received: from localhost ([196.207.164.177])
-        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-42ba639671dsm232317455e9.5.2024.09.04.00.29.30
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 04 Sep 2024 00:29:31 -0700 (PDT)
-Date: Wed, 4 Sep 2024 10:29:26 +0300
-From: Dan Carpenter <dan.carpenter@linaro.org>
-To: Nicolin Chen <nicolinc@nvidia.com>
-Cc: will@kernel.org, robin.murphy@arm.com, joro@8bytes.org, jgg@nvidia.com,
-	thierry.reding@gmail.com, vdumpa@nvidia.com, jonathanh@nvidia.com,
-	linux-kernel@vger.kernel.org, iommu@lists.linux.dev,
-	linux-arm-kernel@lists.infradead.org, linux-tegra@vger.kernel.org
-Subject: Re: [PATCH v14 08/10] iommu/arm-smmu-v3: Add in-kernel support for
- NVIDIA Tegra241 (Grace) CMDQV
-Message-ID: <38b6ed33-886f-4ec7-9196-1728f1d8c1b3@stanley.mountain>
-References: <cover.1724970714.git.nicolinc@nvidia.com>
- <dce50490b2c10b7254fb36aa73ed7ffd812b283a.1724970714.git.nicolinc@nvidia.com>
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="kIj+oy0x"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C708DC4CEC8;
+	Wed,  4 Sep 2024 07:47:36 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1725436071;
+	bh=eIKr8cAo4XHci2u7+szz00vb8bkmDe1laUVSo8kbitM=;
+	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+	b=kIj+oy0xywVYlEUt1FPAKZEIbvjbWV7hk9mI8N4Mic+IL0QO0ob9XYDk+saKva8dv
+	 tllMyQdDS/2QqMOR2u80cxl9+6qD5CspOE+4ZEqMwwl2UjmeYCKV9/Lnz7+MfWzP6p
+	 N9hKTDiiA6HmeVtxuGZapuATd7S2EiMc1YnhFX/CsifFWoMXhRd/ZvkDcMJlrWzIle
+	 wj3lKayasljlQ6QGL5dCdPD5j8Tiog4sYsluE3046xO4M13REYdlMHOBKNSxeDsJQ5
+	 EEurUwQX+VHpPwLDRGLPq3UC230jmdkgbPhtxjGzhPL3VbgBIrLW5QqH3Fjz4tO/fn
+	 kbrcX98yIQbqA==
+Message-ID: <db4cb31f-b219-4ee8-b519-fdec7f7b8760@kernel.org>
+Date: Wed, 4 Sep 2024 09:47:34 +0200
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <dce50490b2c10b7254fb36aa73ed7ffd812b283a.1724970714.git.nicolinc@nvidia.com>
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v2 17/21] dt-bindings: serial: document support for
+ SA8255p
+To: Nikunj Kela <quic_nkela@quicinc.com>
+Cc: andersson@kernel.org, konradybcio@kernel.org, robh@kernel.org,
+ krzk+dt@kernel.org, conor+dt@kernel.org, rafael@kernel.org,
+ viresh.kumar@linaro.org, herbert@gondor.apana.org.au, davem@davemloft.net,
+ sudeep.holla@arm.com, andi.shyti@kernel.org, tglx@linutronix.de,
+ will@kernel.org, robin.murphy@arm.com, joro@8bytes.org,
+ jassisinghbrar@gmail.com, lee@kernel.org, linus.walleij@linaro.org,
+ amitk@kernel.org, thara.gopinath@gmail.com, broonie@kernel.org,
+ cristian.marussi@arm.com, rui.zhang@intel.com, lukasz.luba@arm.com,
+ wim@linux-watchdog.org, linux@roeck-us.net, linux-arm-msm@vger.kernel.org,
+ devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+ linux-pm@vger.kernel.org, linux-crypto@vger.kernel.org,
+ arm-scmi@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+ linux-i2c@vger.kernel.org, iommu@lists.linux.dev,
+ linux-gpio@vger.kernel.org, linux-serial@vger.kernel.org,
+ linux-spi@vger.kernel.org, linux-watchdog@vger.kernel.org,
+ kernel@quicinc.com, quic_psodagud@quicinc.com,
+ Praveen Talari <quic_ptalari@quicinc.com>
+References: <20240828203721.2751904-1-quic_nkela@quicinc.com>
+ <20240903220240.2594102-1-quic_nkela@quicinc.com>
+ <20240903220240.2594102-18-quic_nkela@quicinc.com>
+From: Krzysztof Kozlowski <krzk@kernel.org>
+Content-Language: en-US
+Autocrypt: addr=krzk@kernel.org; keydata=
+ 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 fv0=
+In-Reply-To: <20240903220240.2594102-18-quic_nkela@quicinc.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 
-I was reviewing Smatch warnings:
+On 04/09/2024 00:02, Nikunj Kela wrote:
+> Add compatibles representing UART support on SA8255p.
+> 
+> Clocks and interconnects are being configured in the firmware VM
+> on SA8255p platform, therefore making them optional.
+> 
+> CC: Praveen Talari <quic_ptalari@quicinc.com>
+> Signed-off-by: Nikunj Kela <quic_nkela@quicinc.com>
+> ---
+>  .../serial/qcom,serial-geni-qcom.yaml         | 53 ++++++++++++++++---
+>  1 file changed, 47 insertions(+), 6 deletions(-)
+> 
+> diff --git a/Documentation/devicetree/bindings/serial/qcom,serial-geni-qcom.yaml b/Documentation/devicetree/bindings/serial/qcom,serial-geni-qcom.yaml
+> index dd33794b3534..b63c984684f3 100644
+> --- a/Documentation/devicetree/bindings/serial/qcom,serial-geni-qcom.yaml
+> +++ b/Documentation/devicetree/bindings/serial/qcom,serial-geni-qcom.yaml
+> @@ -10,14 +10,13 @@ maintainers:
+>    - Andy Gross <agross@kernel.org>
+>    - Bjorn Andersson <bjorn.andersson@linaro.org>
+>  
+> -allOf:
+> -  - $ref: /schemas/serial/serial.yaml#
+> -
+>  properties:
+>    compatible:
+>      enum:
+>        - qcom,geni-uart
+>        - qcom,geni-debug-uart
+> +      - qcom,sa8255p-geni-uart
+> +      - qcom,sa8255p-geni-debug-uart
 
-    drivers/iommu/arm/arm-smmu-v3/tegra241-cmdqv.c:616 tegra241_cmdqv_init_vintf()
-    error: Calling ida_alloc_max() with a 'max' argument which is a power of 2. -1 missing?
 
-The problem is that we're calling ida_alloc_max() where max is always zero.
+Anyway, the entire patchset is organized wrong. Or you sent only subset.
 
-> +static int tegra241_cmdqv_init_vintf(struct tegra241_cmdqv *cmdqv, u16 max_idx,
-> +				     struct tegra241_vintf *vintf)
-> +{
-> +
-> +	u16 idx;
-> +	int ret;
-> +
-> +	ret = ida_alloc_max(&cmdqv->vintf_ids, max_idx, GFP_KERNEL);
-> +	if (ret < 0)
-> +		return ret;
-> +	idx = ret;
+Where is the driver change? This cannot work. To remind bindings go with
+the driver (nothing new here).
 
-max_idx is always zero so idx is always zero.
-
-> +
-> +	vintf->idx = idx;
-> +	vintf->cmdqv = cmdqv;
-> +	vintf->base = cmdqv->base + TEGRA241_VINTF(idx);
-> +
-> +	vintf->lvcmdqs = kcalloc(cmdqv->num_lvcmdqs_per_vintf,
-> +				 sizeof(*vintf->lvcmdqs), GFP_KERNEL);
-> +	if (!vintf->lvcmdqs) {
-> +		ida_free(&cmdqv->vintf_ids, idx);
-> +		return -ENOMEM;
-> +	}
-> +
-> +	cmdqv->vintfs[idx] = vintf;
-
-We only use the first element of this array.
-
-> +	return ret;
-> +}
-
-We could get rid of the ida_ stuff and change the cmdqv->vintfs[] array to a
-pointer.  It would simplify the code.
-
-regards,
-dan carpenter
+Best regards,
+Krzysztof
 
