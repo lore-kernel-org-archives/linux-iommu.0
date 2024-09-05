@@ -1,154 +1,157 @@
-Received: from NAM11-DM6-obe.outbound.protection.outlook.com (mail-dm6nam11on2041.outbound.protection.outlook.com [40.107.223.41])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-pg1-f179.google.com (mail-pg1-f179.google.com [209.85.215.179])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5F737198A37
-	for <iommu@lists.linux.dev>; Thu,  5 Sep 2024 12:30:17 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.223.41
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1725539418; cv=fail; b=mz1ZOtM05LsIx3Ps8viJpqugc3dcc4NmhAQX/eYUtoanOlwMeNDadNRFhOBF4l6jZ5blI9LUpaApb3koSQbcvq7Ap7xyv9X/BwO3czY47Vf+5007/Q7wHlap8xm2Tomzxki4qvS/6OD1O52YVpUkA+YFauI+ZtFbAJnYTSou//Q=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1725539418; c=relaxed/simple;
-	bh=oEpXjsrxAgSoLJ2X6++44HtoVtPs6mvKW1LJR5/EaLw=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:Content-Type:
-	 Content-Disposition:In-Reply-To:MIME-Version; b=Y3tZQJAei4RvSPetdcrpwqEkpBsldr6eIZ48QhLjKTsjD57cn+C1ORw9bhWmLCQ+tTZQ20ezBP3R4KiVAHGAU8T7jFspIAsyn1684gQoXj4+oF5hcj4MmYxrGIapnisyY7aGvpeiFGofBEH9dommzlStFHVRV/4LjYbZCh0tSmk=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=efIXoug8; arc=fail smtp.client-ip=40.107.223.41
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 17E2119CC2E
+	for <iommu@lists.linux.dev>; Thu,  5 Sep 2024 12:50:07 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.215.179
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1725540609; cv=none; b=HlAH6DivB8fu7lmCfTazNT+YulbIjGDVsAlh/xikhbg4nz10/hLVUfs+4pvk8KLpbxOSGDnh6a5KzDCoBUK4jcnxt1QXtbDG8OPtD3VcRiuTjDyb+GLfKxWW339wEp/atKiRx9XnHKl9N0qfjo//rBbMgATWyIzoKj9Aj9O2bU8=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1725540609; c=relaxed/simple;
+	bh=qce84B5NvR44kujqZ9743ui8j6Mh4hdIIbcIDgaypKY=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=LGM0cozJTmjk2XBqqCRZLJN57O8uxFtPPP+wrs2X/+qNQqnAEirciD6Mmar1+1aJ9tOmU1hRhqY/exyuzE93hUHWNpxj6RC+ddTim6mV6OT58b+yRqj5DU0WZbJIePh0kxEWERJiniIPdRULD4fPOF1dAB4o7GPhBzQxA7D34nQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=SvO7MAyJ; arc=none smtp.client-ip=209.85.215.179
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="efIXoug8"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=i4J/Je3GaTA91C935ErNxv4YgCtGxZi/Wf5/tydHwjhRniMe1LlXDiM3x60ba1jE/8G5EFNUWR5h4FVEgddKUmvLSQR13BKXvSSdQt75CE8xA7QlH0ZqVBhv3h9lvHt8MfYe4GaxXEI07xWF3sZ27/GOqMop7lH8YfSrEZSuKgBVhsS+x/pr5i+5S7pqXU2/IYXRnm4Owuio0Bck7+Kgi6S0lW4lQ8uz17TS8CSNAEFPr9Z2vD1HPoxJfBMNP4FsWcQ1RC4oLMDvnqYIotOGjS4yix9odWL/FHID3TkA7nYXOkDRwROWklldyakilE39CAYnUJRPLzucbqG6w7oxSg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=tqSoOYM7XT/AyVi/hfEgD1aYP7d7EhtOmZ2CemmMsNw=;
- b=XfHeFT5wwG+n08itF1DjYPb+3lTlDOaL4/dB8Jm5FER1RQIJ9QDlxHtT52nslYL5axCjadl646zl8bG4YuORf4Gki0CaE5AiUvsFnbk65d+tV5Vh3vGl6V71Ohkszebjx8Q2JQ+ohmgSvvu63V1zSUSiI97uDyD4RJwdiJ+LFIZ3BqbjyEXMS67odpitAF6GiwyZNsIdDBriqG03l4Q7fdAi+XqpBld42R5lKWzWTCsRlw76tKUXjweTu4GXPBobFCfZI4gsJi27/nZwBDmfsqVM9T6VgjV7Fnu5nWe/Gs0slE5YJGcSxkD/A31UZ8/OBs87JzDeln3wJEsjG4QOtQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=tqSoOYM7XT/AyVi/hfEgD1aYP7d7EhtOmZ2CemmMsNw=;
- b=efIXoug8TbJR0BPjXijngXmEvswRcOyR758b9p03CTDRMWwalyPZL34PXWvCSAb3PXxBnOkFyue0wC+jE9bvKNODo3uPAa5cPj4vk60yrpCmLnTdWdzoQVLKtswQhsBtJUrXdBv7eK7ZlotM9EqyCtzN8I9rYeikHYjNrRTWrS7xOftZO3XhMmmlByWcCBrBohIMLOS1ewIiH41p6l0tmZlquVXNDkAQTX0eEX4h3TGyywp/d/3CZL9mLj1Nel5HgMzFLkuJWm1VN27Rb3NUgJL/fOnczgidobjaWRDLqV1JnWCs64qBQgL0eg5l7kJobFBW8M5K7KGKWocqSkF13A==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-Received: from CH3PR12MB7763.namprd12.prod.outlook.com (2603:10b6:610:145::10)
- by CY8PR12MB9034.namprd12.prod.outlook.com (2603:10b6:930:76::15) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7918.23; Thu, 5 Sep
- 2024 12:30:13 +0000
-Received: from CH3PR12MB7763.namprd12.prod.outlook.com
- ([fe80::8b63:dd80:c182:4ce8]) by CH3PR12MB7763.namprd12.prod.outlook.com
- ([fe80::8b63:dd80:c182:4ce8%3]) with mapi id 15.20.7918.024; Thu, 5 Sep 2024
- 12:30:13 +0000
-Date: Thu, 5 Sep 2024 09:30:12 -0300
-From: Jason Gunthorpe <jgg@nvidia.com>
-To: Nicolin Chen <nicolinc@nvidia.com>
-Cc: will@kernel.org, thierry.reding@gmail.com, vdumpa@nvidia.com,
-	robin.murphy@arm.com, joro@8bytes.org, jonathanh@nvidia.com,
-	linux-tegra@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-	iommu@lists.linux.dev, linux-kernel@vger.kernel.org,
-	mochs@nvidia.com
-Subject: Re: [PATCH next 1/2] iommu/tegra241-cmdqv: Drop static at local
- variable
-Message-ID: <20240905123012.GH1358970@nvidia.com>
-References: <cover.1725503154.git.nicolinc@nvidia.com>
- <13fd3accb5b7ed6ec11cc6b7435f79f84af9f45f.1725503154.git.nicolinc@nvidia.com>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <13fd3accb5b7ed6ec11cc6b7435f79f84af9f45f.1725503154.git.nicolinc@nvidia.com>
-X-ClientProxiedBy: BN1PR10CA0018.namprd10.prod.outlook.com
- (2603:10b6:408:e0::23) To CH3PR12MB7763.namprd12.prod.outlook.com
- (2603:10b6:610:145::10)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="SvO7MAyJ"
+Received: by mail-pg1-f179.google.com with SMTP id 41be03b00d2f7-7c6aee8e8daso588914a12.0
+        for <iommu@lists.linux.dev>; Thu, 05 Sep 2024 05:50:07 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20230601; t=1725540607; x=1726145407; darn=lists.linux.dev;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=AbIcFL6KLZXMYP15JMSrziSxqWJs9UyvqU1aIaWK9pI=;
+        b=SvO7MAyJnGAOCjj5YjZpTj+vnQkMthV7cZJ6DuzGvzk2zuKl2tZPlWUtsBZRHtMYfk
+         Fow0Qq/rhS1Mau/4tCrLk20VyVjPgjnrjsvKThmyZ+G+4MKqOmLXMiuh9KLjYPoU5EeL
+         FebEU0BgwcYhR1OAO59832paP2YGiO/xxfvPpRjK2qbM4y8noiddBH/bGU9Ds69uch4q
+         /Jp1vujn0JdYzdzzeGdz+rHXaEDGWJ0gSv+xeX2p354SbFI7XAXiFo72YoDz4fNwPQ9n
+         NaKu36hIU0NPhuN23W0wrXkNRG3rf63HR043wgMOPrvQV8gzCgbfc5Ew8XAC2spa8O8+
+         Eg5w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1725540607; x=1726145407;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=AbIcFL6KLZXMYP15JMSrziSxqWJs9UyvqU1aIaWK9pI=;
+        b=lrK9C+evr6wQPfwSvWi6nmh50w62Ot1EJSnJg4HX3AAii1Nkc5kaOQOK1G+IYuFA03
+         PmAb6xFvKG5DeEu1vu93Z38Rd0SGiY0tVJasDQE3cH5vpJ3J5dgJrOLhjpGpvnl3ehUf
+         F+mc87WxrkJdX9m3DWqMSR4Yur5aqjP+W2t6EEUmD5OVCcjRxwUY6z0/gPZSSxIw7NZl
+         ikrc+GFVg3WrzGDf4SnU2ZImQVzVF6wF2LEBG/5iuLlcxIL60qeDUsjAikcgtg7Lqswd
+         kH4tw9v09tO4X6XziLEfv8J/mmerqz9Nsu8R7CsqK80C5HszToj0JPx/oRbIw2BsUd+/
+         G2iQ==
+X-Gm-Message-State: AOJu0YzPZBOvHpgLvuV8S0RrOqcbeDnlOxYU8d9cFXcjwI/3qts0Bdql
+	YNZpteoLTUrAsJqdcc0LCh4Gcj51Flv2BDdrflBPhC8SSlaGjjxNTfwTWA==
+X-Google-Smtp-Source: AGHT+IGWH67j9Ae4z1bWCKkTMqpdz15WdakR2Z0nl3EE0ssMBp8RIbo+r/JoS6LCLi9xCGkqsJVTDA==
+X-Received: by 2002:a17:902:ecc3:b0:205:6a9b:7e3e with SMTP id d9443c01a7336-20584230d32mr143491935ad.56.1725540606654;
+        Thu, 05 Sep 2024 05:50:06 -0700 (PDT)
+Received: from localhost (c-73-37-105-206.hsd1.or.comcast.net. [73.37.105.206])
+        by smtp.gmail.com with ESMTPSA id d9443c01a7336-206aea38c91sm28345915ad.169.2024.09.05.05.50.05
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 05 Sep 2024 05:50:05 -0700 (PDT)
+From: Rob Clark <robdclark@gmail.com>
+To: iommu@lists.linux.dev
+Cc: linux-arm-msm@vger.kernel.org,
+	freedreno@lists.freedesktop.org,
+	Ashish Mhetre <amhetre@nvidia.com>,
+	Rob Clark <robdclark@chromium.org>,
+	Will Deacon <will@kernel.org>,
+	Robin Murphy <robin.murphy@arm.com>,
+	Joerg Roedel <joro@8bytes.org>,
+	linux-arm-kernel@lists.infradead.org (moderated list:ARM SMMU DRIVERS),
+	linux-kernel@vger.kernel.org (open list)
+Subject: [PATCH] Revert "iommu/io-pgtable-arm: Optimise non-coherent unmap"
+Date: Thu,  5 Sep 2024 05:49:56 -0700
+Message-ID: <20240905124956.84932-1-robdclark@gmail.com>
+X-Mailer: git-send-email 2.46.0
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: CH3PR12MB7763:EE_|CY8PR12MB9034:EE_
-X-MS-Office365-Filtering-Correlation-Id: aa965697-e9a5-4583-e130-08dccda67d92
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;ARA:13230040|376014|1800799024|366016;
-X-Microsoft-Antispam-Message-Info:
-	=?us-ascii?Q?P+4qm2Z6gF1LlO45jPbvuzw0rfQQG4XUvCOz4fMUwLhib3+H+mtCyba6D4EC?=
- =?us-ascii?Q?1YKilyiJf/eP3pxOoOSn5lyn/uvf2ywsmM5didpOHAJ4UgCf78UYcHrJ9/H4?=
- =?us-ascii?Q?qKm+wKg+dWh+I7tVgPhTeJAMdtg7V4d9ZIjV0zOVuUjsctN/E05buty+/8Dc?=
- =?us-ascii?Q?svDe+WPsoxVHIDMlAe3PbxTao03XX4E3eUDYBrn8X01Am7ge6lgNt7OVf40X?=
- =?us-ascii?Q?8bQy93q8pJTJ+TuExcEiu4p/mQRVOeXHVp/cRWAZko8Fe7SnxV6BfPAt53Yz?=
- =?us-ascii?Q?M+DfXl7KOBreZ/DaaqyzUo54Elq3wkw74FFlqzTXBmsaWDsnXIvbayRxZx93?=
- =?us-ascii?Q?U7T+JGHCJ94vwAWP/Bs8NLM6d8LxqX7EEH4iHobgWXltY4v2n2eNR24vQ2LT?=
- =?us-ascii?Q?C6CzhNvfv8gd3JmibrmHN1LPvUchoayBBfLIf0NlFfnemSpbvGpzyjqtxyKE?=
- =?us-ascii?Q?qkgwDuQDtQlQHrg8GKyGX9kHF7E4QwgoOyRmXF7ttpBX6f6p7tJXJK0+BoYO?=
- =?us-ascii?Q?+k7WqcVXoeLirAc6lHT7uRVlH0lrB4flJunHwqlmBxQBHrWm6qalZIEpuo+N?=
- =?us-ascii?Q?zx+NgeQkn956eO1lNNfgAoqv8dqI4ISSJpwrim4+iESI4IRFDBBySoXh7CLB?=
- =?us-ascii?Q?JS6ZIrS039mnwtCRpHZuP7SmXVT6UwnhrzM3ZNo5WUNGbMMCZgpoyESyAFZZ?=
- =?us-ascii?Q?dobV2XAiWSBvlpnZCv5EeM5YdxVcJITi/UfPZ/beMhQwup56ISu3qBubyWG7?=
- =?us-ascii?Q?yUC/ISBMIqLEG0Dz73forB57XllB4XWkP8vwz0nE226CoV19hdwvVkouQdxT?=
- =?us-ascii?Q?Bm8/rAyvAPwDrUnwJ2Z+iNJ0mr9ekPaYDPblFRJp+qw53y+S2/y7AZLj1Jia?=
- =?us-ascii?Q?HKCgfbDUX9I6djYkd5dZHXdBF+gnC/gmCzoyYjhssz3f2ri1tGqz5s6EKkUD?=
- =?us-ascii?Q?L6c4ViI5MwlthwukrfYDYU8vPfrNG6MWofjXLOeKyRtKsiWzE/HOJBdVTtvd?=
- =?us-ascii?Q?A1Ig9iYzbStksigmuCRJFoRsDbDXlH3+4jJMLaMtwTcthhBuhrmSOHaVyQvX?=
- =?us-ascii?Q?2jfdC+YrYwaPRsoWfYqYNnlW32Z0UMme6FibsrvBmSz+6whXzb4xO7cGOaib?=
- =?us-ascii?Q?y5zl0iQg/IdSWhUE7Jx15GN8nq0Rx1Ip9YiKtLmfW3ls6lmsVUJMcOqOGrsQ?=
- =?us-ascii?Q?b2m7OIJMHsybzaTaNula2P3EzlQ00tH306E/fU8Qgvie0Lzz9SgVHdANPr21?=
- =?us-ascii?Q?KEdVO0sjuBeVNOx9xw7XaZeWPowwy4wkzLPEW3HPEZ1ULvaX6mkTuR0s5l1z?=
- =?us-ascii?Q?XafJvk44Fc6ZLueo54vJPts+BDDQzWsoj5VFsXwntT4/FQ=3D=3D?=
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CH3PR12MB7763.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(376014)(1800799024)(366016);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?us-ascii?Q?3ZaKFBUXgeGw3pKj7G/cnZnIeivwV1ymhbgFfPxCFnr9hnNxd4tYs02eQCMU?=
- =?us-ascii?Q?i2z7hHEqZgRqtzipMX0aGsUGApKcwc7s1uaVTC8iO5uqYl3sFSYBWKUbXDqT?=
- =?us-ascii?Q?3jWX7/RF4HEgrEcN9IDBhoBmmZzYpknbYkEufWoeFR69H9Wzz9vKzPw8Cbyt?=
- =?us-ascii?Q?5D4WN6bJQ0mmE4JeJ2QHpV9JusWeYpcaqwEBQyGPYSjNTy4HCa3enENhJxTl?=
- =?us-ascii?Q?zsbd7xhloqloJwG44V8dZ2Hk+m8eFIeQ13qub4+jmInu88KacbN93WLoo0Tj?=
- =?us-ascii?Q?iCXXhx/7OJN9dCkAyUbjUMHr9n7zpj9zB0SsWV3VghN9vlgxF4y7ePDLXYKN?=
- =?us-ascii?Q?e9t+BR+3farD7ukAnGz72F4O3CqR/5u6+0Zb489lI1SKNk87SeCeU2ypkRmt?=
- =?us-ascii?Q?ut2RwQdtPDiZjKH0y2MkYIDi9s39YzFt1aQZVqBLeCAfkBUGlfPpRrEeqHoF?=
- =?us-ascii?Q?IJ84IqTUHQK+79tcBC1vNVIqFiJLTF6GxVcxFMTVePBPvatdC5An0d1fmYxp?=
- =?us-ascii?Q?oFFUMu3/ZsX3zNemJgPGaD+Vhxk1DAzpmYLxFUib2ro7VKmURp9zvdqgi1hy?=
- =?us-ascii?Q?EjWtnWXUEo9oPUzwLTmM6K86mlMoEJx3FVwWRT9pS5qynoY6JedsT+2A/Ifc?=
- =?us-ascii?Q?xkimAG1KCzdMdWlY5bNz0245pFH0lpzLuMJY98jw0FqP3ELP/y+HeM5HBESc?=
- =?us-ascii?Q?6ofkB8e90Qy943Ur+hDCLcWeS/NTkyDp+o6ibiuWJ93vTAwptNN3IoDy4nqA?=
- =?us-ascii?Q?qw2HShaO94goibndfFSqZtcEJlyNLqv/Ow8QCJhB17y4Je+lQNf7h047IPJX?=
- =?us-ascii?Q?mct4ENNPvQ5IfIBIGKdf1EDx4EadbGtMzmuuh3ZDmpr4LVO6e9G6uSCCHSJt?=
- =?us-ascii?Q?9bDU2f77PJZP0SemUgnhYdUAdPe7gKK9Lls3TxYZotudpWjRGXGvfFvknDrc?=
- =?us-ascii?Q?3lU8UtS7hIH3wl0kSZ8UA4uUTwciqM+SBxC6QA9T/Srnjqd70QbBQ++zAfnD?=
- =?us-ascii?Q?PWLKcFJq/5JuMAS26wvmBAH24zBlg6+/kgbxLLzOk/dmi6BlPnkBf6enRMob?=
- =?us-ascii?Q?56+gnR0u+gMne6bmjqYaGnGJ0wA8tvm9MrP1A+4qJMscKKDKAyonQ9PZ5zB3?=
- =?us-ascii?Q?ZtOKIR34ULQoHaM+aaOJQZBHRC/HCtwnLkwII8B907ef0w2wmJa+yLA1KPI7?=
- =?us-ascii?Q?5/+5vARyAFEpQxxe689HHfS0VPP0+03SBgNQGTU0U5d1VE8i3iyYRdqM36qu?=
- =?us-ascii?Q?zFRhYEnrdkR55Tc2qiy5KYYjU/pcouONKL1LHMEGg7dcYIJWKWQYcnE9FkUb?=
- =?us-ascii?Q?cUbp/J2p1prQA/3CvEorLaGP8oII/brhM5dbNXkIURN5AkOILHEF3prAoTZ2?=
- =?us-ascii?Q?h8VMbXQNIhcIlbgnaSftI5OWImCNDCBDhCk5jCNj+JLS+UDMJJ+lUuFiK5Af?=
- =?us-ascii?Q?I8FnYXixIYpuhoq+WILp7LX16wFZuPklbZNIuf98GQm3zqxYZH4hl7+knY+O?=
- =?us-ascii?Q?V5EpTGYkCWjwTWfiE07cgBbawIyP0nv3lnMLJ+WUCugOLKGNoUyW4i4AKwCp?=
- =?us-ascii?Q?dgnqB4S24sKC8XC6m7N4yggT6iMAEtaky4SFM0qy?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: aa965697-e9a5-4583-e130-08dccda67d92
-X-MS-Exchange-CrossTenant-AuthSource: CH3PR12MB7763.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 05 Sep 2024 12:30:13.6472
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: VpwXbybVl1WV5vRdzSN+7870E45UEPbZJc/C4LFqlwMSyJEkKIoEWtbNrM2vLaZ2
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: CY8PR12MB9034
+Content-Transfer-Encoding: 8bit
 
-On Wed, Sep 04, 2024 at 07:40:42PM -0700, Nicolin Chen wrote:
-> This is likely a typo. Drop it.
-> 
-> Fixes: 918eb5c856f6 ("iommu/arm-smmu-v3: Add in-kernel support for NVIDIA Tegra241 (Grace) CMDQV")
-> Signed-off-by: Nicolin Chen <nicolinc@nvidia.com>
-> ---
->  drivers/iommu/arm/arm-smmu-v3/tegra241-cmdqv.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
+From: Rob Clark <robdclark@chromium.org>
 
-Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
+This reverts commit 85b715a334583488ad7fbd3001fe6fd617b7d4c0.
 
-Jason
+It was causing gpu smmu faults on x1e80100.
+
+I _think_ what is causing this is the change in ordering of
+__arm_lpae_clear_pte() (dma_sync_single_for_device() on the pgtable
+memory) and io_pgtable_tlb_flush_walk().  I'm not entirely sure how
+this patch is supposed to work correctly in the face of other
+concurrent translations (to buffers unrelated to the one being
+unmapped(), because after the io_pgtable_tlb_flush_walk() we can have
+stale data read back into the tlb.
+
+Signed-off-by: Rob Clark <robdclark@chromium.org>
+---
+ drivers/iommu/io-pgtable-arm.c | 31 ++++++++++++++-----------------
+ 1 file changed, 14 insertions(+), 17 deletions(-)
+
+diff --git a/drivers/iommu/io-pgtable-arm.c b/drivers/iommu/io-pgtable-arm.c
+index 16e51528772d..85261baa3a04 100644
+--- a/drivers/iommu/io-pgtable-arm.c
++++ b/drivers/iommu/io-pgtable-arm.c
+@@ -274,13 +274,13 @@ static void __arm_lpae_sync_pte(arm_lpae_iopte *ptep, int num_entries,
+ 				   sizeof(*ptep) * num_entries, DMA_TO_DEVICE);
+ }
+ 
+-static void __arm_lpae_clear_pte(arm_lpae_iopte *ptep, struct io_pgtable_cfg *cfg, int num_entries)
++static void __arm_lpae_clear_pte(arm_lpae_iopte *ptep, struct io_pgtable_cfg *cfg)
+ {
+-	for (int i = 0; i < num_entries; i++)
+-		ptep[i] = 0;
+ 
+-	if (!cfg->coherent_walk && num_entries)
+-		__arm_lpae_sync_pte(ptep, num_entries, cfg);
++	*ptep = 0;
++
++	if (!cfg->coherent_walk)
++		__arm_lpae_sync_pte(ptep, 1, cfg);
+ }
+ 
+ static size_t __arm_lpae_unmap(struct arm_lpae_io_pgtable *data,
+@@ -653,28 +653,25 @@ static size_t __arm_lpae_unmap(struct arm_lpae_io_pgtable *data,
+ 		max_entries = ARM_LPAE_PTES_PER_TABLE(data) - unmap_idx_start;
+ 		num_entries = min_t(int, pgcount, max_entries);
+ 
+-		/* Find and handle non-leaf entries */
+-		for (i = 0; i < num_entries; i++) {
+-			pte = READ_ONCE(ptep[i]);
++		while (i < num_entries) {
++			pte = READ_ONCE(*ptep);
+ 			if (WARN_ON(!pte))
+ 				break;
+ 
+-			if (!iopte_leaf(pte, lvl, iop->fmt)) {
+-				__arm_lpae_clear_pte(&ptep[i], &iop->cfg, 1);
++			__arm_lpae_clear_pte(ptep, &iop->cfg);
+ 
++			if (!iopte_leaf(pte, lvl, iop->fmt)) {
+ 				/* Also flush any partial walks */
+ 				io_pgtable_tlb_flush_walk(iop, iova + i * size, size,
+ 							  ARM_LPAE_GRANULE(data));
+ 				__arm_lpae_free_pgtable(data, lvl + 1, iopte_deref(pte, data));
++			} else if (!iommu_iotlb_gather_queued(gather)) {
++				io_pgtable_tlb_add_page(iop, gather, iova + i * size, size);
+ 			}
+-		}
+ 
+-		/* Clear the remaining entries */
+-		__arm_lpae_clear_pte(ptep, &iop->cfg, i);
+-
+-		if (gather && !iommu_iotlb_gather_queued(gather))
+-			for (int j = 0; j < i; j++)
+-				io_pgtable_tlb_add_page(iop, gather, iova + j * size, size);
++			ptep++;
++			i++;
++		}
+ 
+ 		return i * size;
+ 	} else if (iopte_leaf(pte, lvl, iop->fmt)) {
+-- 
+2.46.0
+
