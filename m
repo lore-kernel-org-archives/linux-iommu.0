@@ -1,50 +1,50 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.19])
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.16])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F070D13B7AF
-	for <iommu@lists.linux.dev>; Thu,  5 Sep 2024 03:49:54 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.19
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E6CE42BB15
+	for <iommu@lists.linux.dev>; Thu,  5 Sep 2024 04:24:35 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.16
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1725508197; cv=none; b=tzOC6KvbMpuFZoKGXOucOQY1xpE3P0WLqgvGFiMYL9SA12wv16NuqbAijoK8u0wWavGbobSGOQmVwNwk+LfQm3ragDXCpy5S4RBWM0IozsXXi5+Ehf20YLYzj1M7og6nbVjwO+A0ZyXl+x6OMjHoeiwClBoHzi6OCZThrY2bFmE=
+	t=1725510277; cv=none; b=a7gguKKLOtfnvwr212K80yfQQNBXQMWOKNjU2pdzyQcSFZ/2ZsPw+/sLa/nefoQnCOtm867upy4EelqDoYFBnNKtSDCjf5kdj9Xqkv6bRu4tEtwFDFvMtZmUI0SCDFr8jhrOfDe8D0AKCvhkT1q7SC4fHsngHFJaCulhIU2jZTA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1725508197; c=relaxed/simple;
-	bh=RAteYIaNnUAZW65hHa+40QC8nCjTx4WeIyD12L3SoJE=;
-	h=Message-ID:Date:MIME-Version:Cc:Subject:To:References:From:
-	 In-Reply-To:Content-Type; b=XjhJVbB0JnyOR0UxrbtrOpPw9AzSLVwcIRgdDl5IhFwzKkvbTv20JumhU+4zqn4qCi202YKHXQJ6SS7MlsLkRqFArWQXL9xWp5XcabOnS0t6fQwKC5aaIAZKb9JJ1kaX1VPLCMtbcvncjF+nCJivzq8lIyHk+tkPavLGi3TvOtc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=OCHlZUwI; arc=none smtp.client-ip=192.198.163.19
+	s=arc-20240116; t=1725510277; c=relaxed/simple;
+	bh=6MfL0Y9QFnUqWm2/ZVpAP33O/HYuWfUIjk+V0ytEdks=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=gWyWeeGQqm3r4mMso5ICfDu8XDgMkv8CezNAnjEku40j7wI+9e14y/WcCunAMRbqjWiR6o8bWGew9jm0X9UNLLDQTt2rCS2CMnFT+HAasav3LIPQGHxPUr0lfVDu97IXAjQJwoC4S6DE3gzdwoSvi7KXYXT1kvY0L9+a5bQD2f4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=kBaABYRn; arc=none smtp.client-ip=198.175.65.16
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="OCHlZUwI"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="kBaABYRn"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1725508195; x=1757044195;
-  h=message-id:date:mime-version:cc:subject:to:references:
+  t=1725510276; x=1757046276;
+  h=message-id:date:mime-version:subject:to:cc:references:
    from:in-reply-to:content-transfer-encoding;
-  bh=RAteYIaNnUAZW65hHa+40QC8nCjTx4WeIyD12L3SoJE=;
-  b=OCHlZUwIolb3ClLVcyxnThY4gQoA1LoStASsXO+Kdw7k9l0XkyZmCiFT
-   ptxdVs+551IcnJGVn31z9wKKQ6n0MZbdiFfwZ/0ifKOoDslILUZ1FKWqF
-   P6Uxcyfb4upyzYUkD7nGqrUtGH1FBlZFiAH0ipn/Ju7iD64EmFHt92l69
-   qitN3N9cMXX+KMYc3F4k2QrziRIhAcD87BEvKeh6P35p9tXUUOgJ7laBz
-   BLVeHjbsgEIjF2+2BXkLpXzy1Sw9G/p1knNVJ8cYhKzTitqEadCQdIo2C
-   qsoDGPomLoQci8QVrDCp8bpiQnxMOIJYyPfLyQHsHputOVDpI5GMlHGn7
+  bh=6MfL0Y9QFnUqWm2/ZVpAP33O/HYuWfUIjk+V0ytEdks=;
+  b=kBaABYRnscshrzIVdoImbiWTBNQGYTqQIu54xa1paGLx5TMTEvgenImJ
+   5TJRwUsBPaaX1XQkRn+GfUDeQAKXE3ROIQj2aQ7C594TldJ2GkA/8rEzq
+   LKnULRwkoiyLGr3jTL5StI96WAUYVmHJo1/Klu2ax38tMVOrVvi0uUpQS
+   sLy8JB4x03DfoWitbmZG8jyx5saN8erBN9miPjjrgo2L66LiiX68NP7Yy
+   IdiQUtyntI0ZYF0n9f9CLG1D/N+UxRZNaURjelFavxv++NRk/EPoa3nJi
+   eM4E0u4ciRmClTHhURVRSrIkuF4qsb2nsJVVf86ne9Nfu3yIVoW8nqde+
    A==;
-X-CSE-ConnectionGUID: m4vqPFr0QQGxhyI22JBbkw==
-X-CSE-MsgGUID: yDxJONihR9CxGXHcDZ5Oug==
-X-IronPort-AV: E=McAfee;i="6700,10204,11185"; a="23761798"
+X-CSE-ConnectionGUID: Z975oyT/QiWv/5DscBOwQA==
+X-CSE-MsgGUID: GgdXzOipSZCT1Njb5YM1tA==
+X-IronPort-AV: E=McAfee;i="6700,10204,11185"; a="24320002"
 X-IronPort-AV: E=Sophos;i="6.10,203,1719903600"; 
-   d="scan'208";a="23761798"
-Received: from fmviesa010.fm.intel.com ([10.60.135.150])
-  by fmvoesa113.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Sep 2024 20:49:54 -0700
-X-CSE-ConnectionGUID: UXc+KRgWS2u2yWZRevyL/w==
-X-CSE-MsgGUID: k84odTRHTHGLh5cC11PvSg==
+   d="scan'208";a="24320002"
+Received: from fmviesa001.fm.intel.com ([10.60.135.141])
+  by orvoesa108.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Sep 2024 21:24:35 -0700
+X-CSE-ConnectionGUID: AuTVCwsDS/m+Cgh02KTsmg==
+X-CSE-MsgGUID: AF3U6TvdTyW0jYKR7O4jvw==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.10,203,1719903600"; 
-   d="scan'208";a="65722623"
-Received: from allen-box.sh.intel.com (HELO [10.239.159.127]) ([10.239.159.127])
-  by fmviesa010.fm.intel.com with ESMTP; 04 Sep 2024 20:49:52 -0700
-Message-ID: <97bc177f-49ba-48cc-9dd3-37f79b1432b6@linux.intel.com>
-Date: Thu, 5 Sep 2024 11:45:55 +0800
+   d="scan'208";a="96284840"
+Received: from shuangy2-mobl.ccr.corp.intel.com (HELO [10.238.129.122]) ([10.238.129.122])
+  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Sep 2024 21:24:33 -0700
+Message-ID: <98de8dbd-1a83-40e1-ad5a-a86b1441bb08@linux.intel.com>
+Date: Thu, 5 Sep 2024 12:24:30 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -52,46 +52,87 @@ List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Cc: baolu.lu@linux.intel.com, jani.saarinen@intel.com, iommu@lists.linux.dev,
- linux-kernel@vger.kernel.org, stable@vger.kernel.org
 Subject: Re: [PATCH 1/1] iommu/vt-d: Prevent boot failure with devices
  requiring ATS
-To: Mark Pearson <mpearson-lenovo@squebb.ca>, Joerg Roedel <joro@8bytes.org>,
- Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
- Kevin Tian <kevin.tian@intel.com>
+To: Baolu Lu <baolu.lu@linux.intel.com>, "Tian, Kevin"
+ <kevin.tian@intel.com>, Joerg Roedel <joro@8bytes.org>,
+ Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>
+Cc: "Saarinen, Jani" <jani.saarinen@intel.com>,
+ "iommu@lists.linux.dev" <iommu@lists.linux.dev>,
+ "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+ "stable@vger.kernel.org" <stable@vger.kernel.org>
 References: <20240904060705.90452-1-baolu.lu@linux.intel.com>
- <0dc9ac00-1148-4c64-8c12-4d08a2a27429@app.fastmail.com>
-Content-Language: en-US
-From: Baolu Lu <baolu.lu@linux.intel.com>
-In-Reply-To: <0dc9ac00-1148-4c64-8c12-4d08a2a27429@app.fastmail.com>
+ <BN9PR11MB5276428A5462738F89190A5A8C9C2@BN9PR11MB5276.namprd11.prod.outlook.com>
+ <9e183ce2-060a-4e0b-a956-03d767368ca4@linux.intel.com>
+From: Ethan Zhao <haifeng.zhao@linux.intel.com>
+In-Reply-To: <9e183ce2-060a-4e0b-a956-03d767368ca4@linux.intel.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 
-On 9/5/24 2:00 AM, Mark Pearson wrote:
-> Hi Lu,
-> 
-> Tested this on an X1 Carbon G12 with a kernel built form drm-tip and this patch - and was able to boot successfully with pci=noats
-> 
-> Tested-by: Mark Pearson<mpearson-lenovo@squebb.ca>
-
-Thank you!
-
-> 
-> Mark
-> 
-> PS - note on small typo below.
-> 
-> On Wed, Sep 4, 2024, at 2:07 AM, Lu Baolu wrote:
->> SOC-integrated devices on some platforms require their PCI ATS enabled
->> for operation when the IOMMU is in scalable mode. Those devices are
->> reported via ACPI/SATC table with the ATC_REQUIRED bit set in the Flags
->> field.
+On 9/4/2024 3:49 PM, Baolu Lu wrote:
+> On 2024/9/4 14:49, Tian, Kevin wrote:
+>>> From: Lu Baolu <baolu.lu@linux.intel.com>
+>>> Sent: Wednesday, September 4, 2024 2:07 PM
+>>>
+>>> SOC-integrated devices on some platforms require their PCI ATS enabled
+>>> for operation when the IOMMU is in scalable mode. Those devices are
+>>> reported via ACPI/SATC table with the ATC_REQUIRED bit set in the Flags
+>>> field.
+>>>
+>>> The PCI subsystem offers the 'pci=noats' kernel command to disable PCI
+>>> ATS on all devices. Using 'pci=noat' with devices that require PCI ATS
+>>> can cause a conflict, leading to boot failure, especially if the device
+>>> is a graphics device.
+>>>
+>>> To prevent this issue, check PCI ATS support before enumerating the 
+>>> IOMMU
+>>> devices. If any device requires PCI ATS, but PCI ATS is disabled by
+>>> 'pci=noats', switch the IOMMU to operate in legacy mode to ensure
+>>> successful booting.
 >>
->> The PCI subsystem offers the 'pci=noats' kernel command to disable PCI
->> ATS on all devices. Using 'pci=noat' with devices that require PCI ATS
-> pci=noats
+>> I guess the reason of switching to legacy mode is because the platform
+>> automatically enables ATS in this mode, as the comment says in
+>> dmar_ats_supported(). This should be explained otherwise it's unclear
+>> why switching the mode can make ATS working for those devices.
+>
+> Not 'automatically enable ATS,' but hardware provides something that is
+> equivalent to PCI ATS. The ATS capability on the device is still
+> disabled. That's the reason why such device must be an SOC-integrated
+> one.
 
-Fixed.
+That is confusing, how to know the "hardware provides something that is
+equivalent to PCI ATS" ? any public docs to say that ?
+
+>
+>>
+>> But then doesn't it break the meaning of 'pci=noats' which means
+>> disabling ATS physically? It's described as "do not use PCIe ATS and
+>> IOMMU device IOTLB" in kernel doc, which is not equivalent to
+>> "leave PCIe ATS to be managed by HW".
+>
+> Therefore, the PCI ATS is not used and the syntax of pci=noats is not
+> broken.
+>
+>> and why would one want to use 'pci=noats' on a platform which
+>> requires ats?
+>
+> We don't recommend users to disable ATS on a platform which has devices
+> that rely on it. But nothing can prevent users from doing so. I am not
+> sure why it is needed. One possible reason that I can think of is about
+> security. Sometimes, people don't trust ATS because it allows devices to
+> access the memory with translated requests directly without any
+> permission check on the IOMMU end.
+
+Appears that would happen with CXL link, while PCI link still will do
+some checking (per VT-d spec sec 4.2.4). I have question here, such behaviour
+happens with HW passthrough, also does to software passthrough (removed identity
+mapping) ?
+
 
 Thanks,
-baolu
+Ethan
+
+>
+> Thanks,
+> baolu
+>
