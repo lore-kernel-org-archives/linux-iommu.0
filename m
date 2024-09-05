@@ -1,155 +1,102 @@
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 59A6219AA56
-	for <iommu@lists.linux.dev>; Thu,  5 Sep 2024 13:24:18 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
+Received: from mail-qv1-f42.google.com (mail-qv1-f42.google.com [209.85.219.42])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0B51719CD19
+	for <iommu@lists.linux.dev>; Thu,  5 Sep 2024 13:25:01 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.219.42
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1725542659; cv=none; b=cOKOsHGGqPGqdH5Vz0HzO2XQJL64195g9yLB6mZEDwIkyjTeAiN2r0PQukJ4GGVTiAnb7ljp3DyJAOh0G9bqkv/Op1TaqErpqOaZIgil6zztLFR8WdyRzFGgjuJ3TPXxZ2/0ZhN8Pp/qnZH7+iu2PJfioZ6qxBMDPU4vMgKm4hc=
+	t=1725542704; cv=none; b=YWQ8wI08XihCTSNC2fryarQgLD7BCyNYt3O3VvSHWs3+L7bTP+Uo9pI63TQuIlhyhJ0sKARtP86rkkZuOeaxPief90IHOJrrzOQDhjwoegsAMn9Z1fCxm2ef9n+ivwxVAEuIckKUDBO+baEeeXIFhJQfHlrlWMD7jF+D42jBtY0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1725542659; c=relaxed/simple;
-	bh=rM/wBWPr26fVgdZjczjk5Z21mwxZ3d1vEzmRuZNZLnY=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=sJMWqzxIywtYAUGsMhR8aBC0iDpZIjjqylxDIYk8T+HU50zfaO3+uVGtWps7dp69h56R16okXZsIoTs/uNue38hcfaOE9byGKWHfeLjYetrTWtTahdKWqQ7celtIMtrj8gtL23KIX+N0crYExxRqKTrjP9qqr7ywUeCP8yT/Zfw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; arc=none smtp.client-ip=217.140.110.172
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 7C1A5FEC;
-	Thu,  5 Sep 2024 06:24:44 -0700 (PDT)
-Received: from [10.1.196.40] (e121345-lin.cambridge.arm.com [10.1.196.40])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 6ED823F73F;
-	Thu,  5 Sep 2024 06:24:16 -0700 (PDT)
-Message-ID: <fb54ef8d-f769-47d5-8a9d-aa93f96d5c41@arm.com>
-Date: Thu, 5 Sep 2024 14:24:14 +0100
+	s=arc-20240116; t=1725542704; c=relaxed/simple;
+	bh=zDCA23YGQ/Y69ta8sNwCokd06k4hwHincXxUa2TuAnE=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=h/ZStn4SPiODH7b4HCdJ7u3HIJtgQ4VoxW3LfRawx14FjZ/KQZSkyhzQNQRf58sK5OP4eCK3D3xLSZnGUdt1xIbesfr0ZK3n8iNkq1HQ1EfGGl3MICIGBfHNhZGPLa3taPGCXZ1MwncnLTCaITDtf71eagOf276dKACwowjxP1w=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=YwMhtwPf; arc=none smtp.client-ip=209.85.219.42
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="YwMhtwPf"
+Received: by mail-qv1-f42.google.com with SMTP id 6a1803df08f44-6c35b545b41so17988086d6.1
+        for <iommu@lists.linux.dev>; Thu, 05 Sep 2024 06:25:01 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=ziepe.ca; s=google; t=1725542701; x=1726147501; darn=lists.linux.dev;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=QQZ/prAHSJzNYvQ41aDnul/jxJL4VTE2Yg49JItkgwg=;
+        b=YwMhtwPfHjcSA12/wiBERS36Q4IitLQQYUrVoW2TCBH5Q7GE35q72cLe2H28USZIKV
+         NceRidEN2yMxKdtH6iSVjzMmsCB7i0zLFELQPTSu6phd7j3+I+39EHWr/PSmcyIUfsl2
+         Y5m5U3zJppugoQwardNvGgCLGe59+1pXMX9oCL1HJcHx89QXMRdY0gtbNORr9krB84r8
+         8sPn6WVNynC5sE7WLDMKoJ18pq7edPpMxi8cx3EACFSF2hulSiRkhTwan3YylhugJKxU
+         V94Qi4Wyodt5TLisaq3u+Xu4oRu/1DUr1WGXmRovDKeczFPajn26HsR5SHtVn9Ucp27t
+         TMlw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1725542701; x=1726147501;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=QQZ/prAHSJzNYvQ41aDnul/jxJL4VTE2Yg49JItkgwg=;
+        b=CsKC5UxI1cU2gFviZHuI3Ibe80keojjEbIm4Ywol3aYEJqsfxSL55OWMIvKZ/sPr4U
+         7Qn5zOLQ5UrjslLGixQcvjfV+gYUnXRk/jl2duI8xjc0Xr30Rn81qj/+oPIy1RAK2Yyc
+         1u0cSmJn/JIgx16a0O1m1y+LY3VPzgk5s0k0i6tXWUmjaf3NVN9t9WppRSjbooHKmrBk
+         2tMmPiOHI43n11fMU2RBakPTaHdX3c7ooC9ytjg+421jB1vd9/JrHQcQTxCOHz5KbhwL
+         JO5Lm4J2iMmEW1+enzg+r49t7CtCivD4esLpnJwOp8GD/0oy7AefBiYnGJt0IJ207cLb
+         nzfA==
+X-Forwarded-Encrypted: i=1; AJvYcCXCJuW/74Q71mkx9v2/Lb1B51pA4qUas9WxTIKY5Bzd5gQQGwvnLTvqqwcKg8CaGMKstg3nmg==@lists.linux.dev
+X-Gm-Message-State: AOJu0YyybQlPNSI8n8rF8pIjPeqm+kkRkTsNzwuRXNz34MmcIUTPtFJ4
+	OqRK2Kbe24+tqOIUr/2rJCrj9J3v3/1xNhGtqyjAkVLeG+DUdOkAFqXcnL6uiOw=
+X-Google-Smtp-Source: AGHT+IEDu6pY51+TBXvcoJ6tFwe8exqs/WY3csyGmyVmQ8kYoFXlzHQS0zH+YsMUz1IR39QgtqrhaA==
+X-Received: by 2002:ad4:44a8:0:b0:6c3:6799:dde3 with SMTP id 6a1803df08f44-6c5191197b4mr91124026d6.23.1725542700794;
+        Thu, 05 Sep 2024 06:25:00 -0700 (PDT)
+Received: from ziepe.ca (hlfxns017vw-142-68-80-239.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.68.80.239])
+        by smtp.gmail.com with ESMTPSA id 6a1803df08f44-6c5201dff49sm7525176d6.15.2024.09.05.06.25.00
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 05 Sep 2024 06:25:00 -0700 (PDT)
+Received: from jgg by wakko with local (Exim 4.95)
+	(envelope-from <jgg@ziepe.ca>)
+	id 1smCTr-00CTrV-Rv;
+	Thu, 05 Sep 2024 10:24:59 -0300
+Date: Thu, 5 Sep 2024 10:24:59 -0300
+From: Jason Gunthorpe <jgg@ziepe.ca>
+To: Lyude Paul <lyude@redhat.com>, David Airlie <airlied@gmail.com>,
+	Daniel Vetter <daniel@ffwll.ch>
+Cc: Lu Baolu <baolu.lu@linux.intel.com>, Karol Herbst <kherbst@redhat.com>,
+	Danilo Krummrich <dakr@redhat.com>,
+	Thierry Reding <thierry.reding@gmail.com>,
+	Jonathan Hunter <jonathanh@nvidia.com>,
+	Sandy Huang <hjc@rock-chips.com>,
+	Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
+	Maxime Ripard <mripard@kernel.org>,
+	Thomas Zimmermann <tzimmermann@suse.de>,
+	Mikko Perttunen <mperttunen@nvidia.com>,
+	Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
+	Robin Murphy <robin.murphy@arm.com>,
+	Kevin Tian <kevin.tian@intel.com>, dri-devel@lists.freedesktop.org,
+	nouveau@lists.freedesktop.org, linux-tegra@vger.kernel.org,
+	linux-arm-kernel@lists.infradead.org,
+	linux-rockchip@lists.infradead.org, linux-media@vger.kernel.org,
+	iommu@lists.linux.dev, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2 1/3] drm/nouveau/tegra: Use iommu_paging_domain_alloc()
+Message-ID: <20240905132459.GG1909087@ziepe.ca>
+References: <20240902014700.66095-1-baolu.lu@linux.intel.com>
+ <20240902014700.66095-2-baolu.lu@linux.intel.com>
+ <a43c31da6a6989874eb0998dc937d7a611ec542c.camel@redhat.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH] Revert "iommu/io-pgtable-arm: Optimise non-coherent
- unmap"
-To: Rob Clark <robdclark@gmail.com>, iommu@lists.linux.dev
-Cc: linux-arm-msm@vger.kernel.org, freedreno@lists.freedesktop.org,
- Ashish Mhetre <amhetre@nvidia.com>, Rob Clark <robdclark@chromium.org>,
- Will Deacon <will@kernel.org>, Joerg Roedel <joro@8bytes.org>,
- "moderated list:ARM SMMU DRIVERS" <linux-arm-kernel@lists.infradead.org>,
- open list <linux-kernel@vger.kernel.org>
-References: <20240905124956.84932-1-robdclark@gmail.com>
-From: Robin Murphy <robin.murphy@arm.com>
-Content-Language: en-GB
-In-Reply-To: <20240905124956.84932-1-robdclark@gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <a43c31da6a6989874eb0998dc937d7a611ec542c.camel@redhat.com>
 
-On 05/09/2024 1:49 pm, Rob Clark wrote:
-> From: Rob Clark <robdclark@chromium.org>
+On Wed, Sep 04, 2024 at 03:06:07PM -0400, Lyude Paul wrote:
+> Reviewed-by: Lyude Paul <lyude@redhat.com>
 > 
-> This reverts commit 85b715a334583488ad7fbd3001fe6fd617b7d4c0.
-> 
-> It was causing gpu smmu faults on x1e80100.
-> 
-> I _think_ what is causing this is the change in ordering of
-> __arm_lpae_clear_pte() (dma_sync_single_for_device() on the pgtable
-> memory) and io_pgtable_tlb_flush_walk().
+> Will handle pushing it to drm-misc in just a moment
 
-As I just commented, how do you believe the order of operations between:
+Did you just take this one patch? 
 
-	__arm_lpae_clear_pte();
-  	if (!iopte_leaf()) {
-  		io_pgtable_tlb_flush_walk();
+Who will take the rest of the series for DRM?
 
-and:
-  	
-  	if (!iopte_leaf()) {
-		__arm_lpae_clear_pte();
-  		io_pgtable_tlb_flush_walk();
-
-fundamentally differs?
-
-I'm not saying there couldn't be some subtle bug in the implementation 
-which we've all missed, but I still can't see an issue with the intended 
-logic.
-
->  I'm not entirely sure how
-> this patch is supposed to work correctly in the face of other
-> concurrent translations (to buffers unrelated to the one being
-> unmapped(), because after the io_pgtable_tlb_flush_walk() we can have
-> stale data read back into the tlb.
-
-Read back from where? The ex-table PTE which was already set to zero 
-before tlb_flush_walk was called?
-
-And isn't the hilariously overcomplicated TBU driver supposed to be 
-telling you exactly what happened here? Otherwise I'm going to continue 
-to seriously question the purpose of shoehorning that upstream at all...
-
-Thanks,
-Robin.
-
-> Signed-off-by: Rob Clark <robdclark@chromium.org>
-> ---
->   drivers/iommu/io-pgtable-arm.c | 31 ++++++++++++++-----------------
->   1 file changed, 14 insertions(+), 17 deletions(-)
-> 
-> diff --git a/drivers/iommu/io-pgtable-arm.c b/drivers/iommu/io-pgtable-arm.c
-> index 16e51528772d..85261baa3a04 100644
-> --- a/drivers/iommu/io-pgtable-arm.c
-> +++ b/drivers/iommu/io-pgtable-arm.c
-> @@ -274,13 +274,13 @@ static void __arm_lpae_sync_pte(arm_lpae_iopte *ptep, int num_entries,
->   				   sizeof(*ptep) * num_entries, DMA_TO_DEVICE);
->   }
->   
-> -static void __arm_lpae_clear_pte(arm_lpae_iopte *ptep, struct io_pgtable_cfg *cfg, int num_entries)
-> +static void __arm_lpae_clear_pte(arm_lpae_iopte *ptep, struct io_pgtable_cfg *cfg)
->   {
-> -	for (int i = 0; i < num_entries; i++)
-> -		ptep[i] = 0;
->   
-> -	if (!cfg->coherent_walk && num_entries)
-> -		__arm_lpae_sync_pte(ptep, num_entries, cfg);
-> +	*ptep = 0;
-> +
-> +	if (!cfg->coherent_walk)
-> +		__arm_lpae_sync_pte(ptep, 1, cfg);
->   }
->   
->   static size_t __arm_lpae_unmap(struct arm_lpae_io_pgtable *data,
-> @@ -653,28 +653,25 @@ static size_t __arm_lpae_unmap(struct arm_lpae_io_pgtable *data,
->   		max_entries = ARM_LPAE_PTES_PER_TABLE(data) - unmap_idx_start;
->   		num_entries = min_t(int, pgcount, max_entries);
->   
-> -		/* Find and handle non-leaf entries */
-> -		for (i = 0; i < num_entries; i++) {
-> -			pte = READ_ONCE(ptep[i]);
-> +		while (i < num_entries) {
-> +			pte = READ_ONCE(*ptep);
->   			if (WARN_ON(!pte))
->   				break;
->   
-> -			if (!iopte_leaf(pte, lvl, iop->fmt)) {
-> -				__arm_lpae_clear_pte(&ptep[i], &iop->cfg, 1);
-> +			__arm_lpae_clear_pte(ptep, &iop->cfg);
->   
-> +			if (!iopte_leaf(pte, lvl, iop->fmt)) {
->   				/* Also flush any partial walks */
->   				io_pgtable_tlb_flush_walk(iop, iova + i * size, size,
->   							  ARM_LPAE_GRANULE(data));
->   				__arm_lpae_free_pgtable(data, lvl + 1, iopte_deref(pte, data));
-> +			} else if (!iommu_iotlb_gather_queued(gather)) {
-> +				io_pgtable_tlb_add_page(iop, gather, iova + i * size, size);
->   			}
-> -		}
->   
-> -		/* Clear the remaining entries */
-> -		__arm_lpae_clear_pte(ptep, &iop->cfg, i);
-> -
-> -		if (gather && !iommu_iotlb_gather_queued(gather))
-> -			for (int j = 0; j < i; j++)
-> -				io_pgtable_tlb_add_page(iop, gather, iova + j * size, size);
-> +			ptep++;
-> +			i++;
-> +		}
->   
->   		return i * size;
->   	} else if (iopte_leaf(pte, lvl, iop->fmt)) {
+Jason
