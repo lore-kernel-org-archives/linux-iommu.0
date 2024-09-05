@@ -1,25 +1,48 @@
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 8957819EEBF
-	for <iommu@lists.linux.dev>; Thu,  5 Sep 2024 16:27:40 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
+Received: from mx0a-0031df01.pphosted.com (mx0a-0031df01.pphosted.com [205.220.168.131])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4217E17BCA
+	for <iommu@lists.linux.dev>; Thu,  5 Sep 2024 16:45:27 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.168.131
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1725553662; cv=none; b=Z0EgjTmPomVufOO9+6lmoVhpI/R0SGmUs9jzUxyzTUgCXLgb82nYcw0COxz1eH0ucahKaabQKGXXObnTeFix/vULbytSTgatzvZQ66La/GC/fTYjdL9ezRLCJTI2KIVCDW2AXuiVY/PGvbmx+Ge2Q5KUNg+PHnIMQBz51QlSaAw=
+	t=1725554729; cv=none; b=pcvHKCtj1j2GGdEraCCxFSfryEgkz1qNEJ506PL0zwRxpZ42myMUtiEEE8M9m0eD6e/ss9SX53fUCuoVGsSX2ckWd2DQgutzfV6QORkLmpJhnNdv+oeh6BkCIWan0AGUf39cSuM4doctIxJsT3qXb2a3qvYQLohaS+nwUXiGnX8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1725553662; c=relaxed/simple;
-	bh=81fAHoIzFt6ZxG85spJwq3b7CR/qS9ElMhacK1ReKZM=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=qDqMwqeEFYTz7V6pmkO1BPzOok/JpFMOl92H/NKWMkl7xrrCWcnpiUrJYRvwopvQ9+J4pLiu+XNgrzguDcpTLBSNbIfHgV+98sX97sWJsDwScF0rCPXfs/OPkfBrNB1rUb34HrmyLNQtRsLdnsmz0zZXsbNvqyvlsOQMOV2aYSE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; arc=none smtp.client-ip=217.140.110.172
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 9F38CFEC;
-	Thu,  5 Sep 2024 09:28:06 -0700 (PDT)
-Received: from [10.1.196.40] (e121345-lin.cambridge.arm.com [10.1.196.40])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 836863F73B;
-	Thu,  5 Sep 2024 09:27:32 -0700 (PDT)
-Message-ID: <53f13813-a515-475a-836d-0b6017a117eb@arm.com>
-Date: Thu, 5 Sep 2024 17:27:28 +0100
+	s=arc-20240116; t=1725554729; c=relaxed/simple;
+	bh=YWwbPzF+sNkt5ZpTARioh/0x0WR47L48CO6YcSiPyKw=;
+	h=Message-ID:Date:MIME-Version:Subject:To:CC:References:From:
+	 In-Reply-To:Content-Type; b=GB26VdlVncZ1mploTem5fpwubTjqqy5J8GBPbcgVdd4Y4ezdeHLkhGiG1LGyOaVyrob1yF73Cb6LqctacQlUrr6WdUlbbVbGIPsBlqUeMrbgiuIsnCjZ8eEkIwg8vddJl5Z0y0K1pqz8u5V2SOvpvS1HCpjOF6Xt1Vyqj2QS8V0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com; spf=pass smtp.mailfrom=quicinc.com; dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b=nerlkPCY; arc=none smtp.client-ip=205.220.168.131
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=quicinc.com
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b="nerlkPCY"
+Received: from pps.filterd (m0279867.ppops.net [127.0.0.1])
+	by mx0a-0031df01.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 485974JZ016158;
+	Thu, 5 Sep 2024 16:40:00 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=quicinc.com; h=
+	cc:content-transfer-encoding:content-type:date:from:in-reply-to
+	:message-id:mime-version:references:subject:to; s=qcppdkim1; bh=
+	gH2m8z07VyC9Rs4uG0Uvl0zZaPASslF/e9Q/tX9hoOk=; b=nerlkPCYZhbbBpBr
+	NSScHB2ruGVyMU95nTcKEy0ov3a15xf+EL/4EkQVy2x2jk6QiHENXdA3nRD8sM2g
+	t8LR2skwquCdUa8Wcmy6aApm20yGV0zO7V7NEUVKiyUKQjKjyqxNFfjNu6fdBXC4
+	yc+nNrkQN5ErZhn8q7JWuScM0KiAP2JM+SDJtkaiKrZYx6DkkeZ7HOYPxL8B5PCn
+	XTivXST2ASE0Eb4RfwykgJk6eTUEZolAQ5OHpi6dglMdc5u+2CUS8SnxoyMWc7xc
+	KxqLtZeX+V1pbKCEYC6iW/oKwWiM/fvwlMqeg3LLwpJkuMIKFDlp+h3U7KTb/N21
+	PVEkHw==
+Received: from nasanppmta05.qualcomm.com (i-global254.qualcomm.com [199.106.103.254])
+	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 41egmrn4rf-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Thu, 05 Sep 2024 16:39:59 +0000 (GMT)
+Received: from nasanex01b.na.qualcomm.com (nasanex01b.na.qualcomm.com [10.46.141.250])
+	by NASANPPMTA05.qualcomm.com (8.18.1.2/8.18.1.2) with ESMTPS id 485GdwfI007444
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Thu, 5 Sep 2024 16:39:58 GMT
+Received: from [10.110.102.234] (10.80.80.8) by nasanex01b.na.qualcomm.com
+ (10.46.141.250) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1544.9; Thu, 5 Sep 2024
+ 09:39:55 -0700
+Message-ID: <63f988eb-e638-48fa-b566-3df39588bf7c@quicinc.com>
+Date: Thu, 5 Sep 2024 09:39:54 -0700
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -27,78 +50,90 @@ List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH] Revert "iommu/io-pgtable-arm: Optimise non-coherent
- unmap"
-To: Will Deacon <will@kernel.org>, Rob Clark <robdclark@gmail.com>
-Cc: iommu@lists.linux.dev, linux-arm-msm@vger.kernel.org,
- freedreno@lists.freedesktop.org, Ashish Mhetre <amhetre@nvidia.com>,
- Rob Clark <robdclark@chromium.org>, Joerg Roedel <joro@8bytes.org>,
- "moderated list:ARM SMMU DRIVERS" <linux-arm-kernel@lists.infradead.org>,
- open list <linux-kernel@vger.kernel.org>
-References: <20240905124956.84932-1-robdclark@gmail.com>
- <20240905155330.GA15246@willie-the-truck>
-From: Robin Murphy <robin.murphy@arm.com>
-Content-Language: en-GB
-In-Reply-To: <20240905155330.GA15246@willie-the-truck>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Subject: Re: [PATCH v2 16/21] dt-bindings: spi: document support for SA8255p
+To: Andrew Lunn <andrew@lunn.ch>
+CC: Krzysztof Kozlowski <krzk@kernel.org>, <andersson@kernel.org>,
+        <konradybcio@kernel.org>, <robh@kernel.org>, <krzk+dt@kernel.org>,
+        <conor+dt@kernel.org>, <rafael@kernel.org>, <viresh.kumar@linaro.org>,
+        <herbert@gondor.apana.org.au>, <davem@davemloft.net>,
+        <sudeep.holla@arm.com>, <andi.shyti@kernel.org>, <tglx@linutronix.de>,
+        <will@kernel.org>, <robin.murphy@arm.com>, <joro@8bytes.org>,
+        <jassisinghbrar@gmail.com>, <lee@kernel.org>,
+        <linus.walleij@linaro.org>, <amitk@kernel.org>,
+        <thara.gopinath@gmail.com>, <broonie@kernel.org>,
+        <cristian.marussi@arm.com>, <rui.zhang@intel.com>,
+        <lukasz.luba@arm.com>, <wim@linux-watchdog.org>, <linux@roeck-us.net>,
+        <linux-arm-msm@vger.kernel.org>, <devicetree@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>, <linux-pm@vger.kernel.org>,
+        <linux-crypto@vger.kernel.org>, <arm-scmi@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>, <linux-i2c@vger.kernel.org>,
+        <iommu@lists.linux.dev>, <linux-gpio@vger.kernel.org>,
+        <linux-serial@vger.kernel.org>, <linux-spi@vger.kernel.org>,
+        <linux-watchdog@vger.kernel.org>, <kernel@quicinc.com>,
+        <quic_psodagud@quicinc.com>,
+        Praveen Talari
+	<quic_ptalari@quicinc.com>
+References: <9a655c1c-97f6-4606-8400-b3ce1ed3c8bf@kernel.org>
+ <516f17e6-b4b4-4f88-a39f-cc47a507716a@quicinc.com>
+ <2f11f622-1a00-4558-bde9-4871cdc3d1a6@lunn.ch>
+ <204f5cfe-d1ed-40dc-9175-d45f72395361@quicinc.com>
+ <70c75241-b6f1-4e61-8451-26839ec71317@kernel.org>
+ <75768451-4c85-41fa-82b0-8847a118ea0a@quicinc.com>
+ <ce4d6ea9-0ba7-4587-b4a7-3dcb2d6bb1a6@kernel.org>
+ <4896510e-6e97-44e0-b3d7-7a7230f935ec@quicinc.com>
+ <b1ad1c7a-0995-48e0-8ebc-46a39a5ef4b3@kernel.org>
+ <515a2837-69c3-47b2-978b-68ad3f6ad0fc@quicinc.com>
+ <0ba03b8e-4dd5-4234-823e-db4c457fa292@lunn.ch>
+Content-Language: en-US
+From: Nikunj Kela <quic_nkela@quicinc.com>
+In-Reply-To: <0ba03b8e-4dd5-4234-823e-db4c457fa292@lunn.ch>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+X-ClientProxiedBy: nasanex01a.na.qualcomm.com (10.52.223.231) To
+ nasanex01b.na.qualcomm.com (10.46.141.250)
+X-QCInternal: smtphost
+X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
+X-Proofpoint-GUID: l_oq1IAyrxiZBlBS8JOfAaNdh9tdibTi
+X-Proofpoint-ORIG-GUID: l_oq1IAyrxiZBlBS8JOfAaNdh9tdibTi
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.293,Aquarius:18.0.1039,Hydra:6.0.680,FMLib:17.12.60.29
+ definitions=2024-09-05_12,2024-09-04_01,2024-09-02_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 clxscore=1015 mlxscore=0
+ suspectscore=0 lowpriorityscore=0 mlxlogscore=999 priorityscore=1501
+ spamscore=0 malwarescore=0 adultscore=0 bulkscore=0 impostorscore=0
+ phishscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.19.0-2407110000 definitions=main-2409050124
 
-On 05/09/2024 4:53 pm, Will Deacon wrote:
-> Hi Rob,
-> 
-> On Thu, Sep 05, 2024 at 05:49:56AM -0700, Rob Clark wrote:
->> From: Rob Clark <robdclark@chromium.org>
+
+On 9/5/2024 9:23 AM, Andrew Lunn wrote:
+>> If the QUPs yaml changes are not included in the same series with
+>> i2c,serial yaml changes, you see these errors:
 >>
->> This reverts commit 85b715a334583488ad7fbd3001fe6fd617b7d4c0.
->>
->> It was causing gpu smmu faults on x1e80100.
->>
->> I _think_ what is causing this is the change in ordering of
->> __arm_lpae_clear_pte() (dma_sync_single_for_device() on the pgtable
->> memory) and io_pgtable_tlb_flush_walk().  I'm not entirely sure how
->> this patch is supposed to work correctly in the face of other
->> concurrent translations (to buffers unrelated to the one being
->> unmapped(), because after the io_pgtable_tlb_flush_walk() we can have
->> stale data read back into the tlb.
->>
->> Signed-off-by: Rob Clark <robdclark@chromium.org>
->> ---
->>   drivers/iommu/io-pgtable-arm.c | 31 ++++++++++++++-----------------
->>   1 file changed, 14 insertions(+), 17 deletions(-)
-> 
-> Please can you try the diff below, instead?
+>> /builds/robherring/dt-review-ci/linux/Documentation/devicetree/bindings/soc/qcom/qcom,geni-se.example.dtb: geniqup@9c0000: serial@990000:compatible:0: 'qcom,sa8255p-geni-uart' is not one of ['qcom,geni-uart', 'qcom,geni-debug-uart']
+>> /builds/robherring/dt-review-ci/linux/Documentation/devicetree/bindings/soc/qcom/qcom,geni-se.example.dtb: geniqup@9c0000: i2c@984000:compatible:0: 'qcom,sa8255p-geni-i2c' is not one of ['qcom,geni-i2c', 'qcom,geni-i2c-master-hub']
+> So you have a couple of options:
+>
+> 1) It sounds like you should get the QUP changes merged first. Then
+>    submit the i2c,serial changes. Is there a reason you cannot do
+>    this? Is there a mutual dependency between these two series, or
+>    just a one way dependency?
 
-Given that the GPU driver's .tlb_add_page is a no-op, I can't see this 
-making a difference. In fact, given that msm_iommu_pagetable_unmap() 
-still does a brute-force iommu_flush_iotlb_all() after io-pgtable 
-returns, and in fact only recently made .tlb_flush_walk start doing 
-anything either for the sake of the map path, I'm now really wondering 
-how this patch has had any effect at all... :/
+The ask in this thread is to create new yaml files since existing one is
+using generic compatibles. With new yaml, we would need to provide
+example and can't avoid it. If we have to provide example of QUP node,
+IMO, we should provide a few subnodes as well since just QUP node
+without subnodes(i2c/serial/spi)  will not be very useful.
 
-> 
-> Will
-> 
-> --->8
-> 
-> diff --git a/drivers/iommu/io-pgtable-arm.c b/drivers/iommu/io-pgtable-arm.c
-> index 0e67f1721a3d..0a32e9499e2c 100644
-> --- a/drivers/iommu/io-pgtable-arm.c
-> +++ b/drivers/iommu/io-pgtable-arm.c
-> @@ -672,7 +672,7 @@ static size_t __arm_lpae_unmap(struct arm_lpae_io_pgtable *data,
->                  /* Clear the remaining entries */
->                  __arm_lpae_clear_pte(ptep, &iop->cfg, i);
->   
-> -               if (gather && !iommu_iotlb_gather_queued(gather))
-> +               if (!iommu_iotlb_gather_queued(gather))
+We can possibly skip all 3 subnode and only keep one subsystem(e.g.
+serial) so QUP and UART yaml can go together(still need two subsystems)
+while SPI and I2C can go independently after QUP series is accepted. Not
+sure if that is acceptable to maintainers though. QUP node in actual DT
+will have all 3 types of subnodes(i2c,spi, serial) so example in this
+case won't be complete.
 
-Note that this would reintroduce the latent issue which was present 
-originally, wherein iommu_iotlb_gather_queued(NULL) is false, but if we 
-actually allow a NULL gather to be passed to io_pgtable_tlb_add_page() 
-it may end up being dereferenced (e.g. in arm-smmu-v3).
-
-Thanks,
-Robin.
-
->                          for (int j = 0; j < i; j++)
->                                  io_pgtable_tlb_add_page(iop, gather, iova + j * size, size);
->   
+>
+> 2) Explain in the commit message that following errors are expected
+>    because ... And explain in detail why the dependency cannot be
+>    broken to avoid the errors.
+>
+> Andrew
