@@ -1,272 +1,408 @@
-Received: from mx0b-0031df01.pphosted.com (mx0b-0031df01.pphosted.com [205.220.180.131])
+Received: from NAM11-DM6-obe.outbound.protection.outlook.com (mail-dm6nam11on2079.outbound.protection.outlook.com [40.107.223.79])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 87566149C7B
-	for <iommu@lists.linux.dev>; Wed,  4 Sep 2024 23:51:26 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.180.131
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1725493889; cv=none; b=PXN7eGNtO+RZepf3EcCsVKKrdBjO8fb3TUYDVjLJI3laJbHkoxfm32SqfC/a9MYO8Lfdgpu/alHzjcFytGVHv2qWlZXuQ1taGpaCjMBB/f/h4GL0BZea0SY05pIrOD0YLd6YE3BVjLMDPjHWgCgtC/73IqsHn5QjkpbRygXZyuk=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1725493889; c=relaxed/simple;
-	bh=KdN6M0uDTjRcTutonoP706+oqdXzsVro5VbFV4XpmDo=;
-	h=Message-ID:Date:MIME-Version:Subject:CC:References:From:
-	 In-Reply-To:Content-Type; b=tKgvn8n9rY43xs7II1oSpYW3idAzSQxnec/JBejR/mTuRUpUdWGvv8KUUwBVw0crqbiT5M9kD5PJgC/IAP1mwEciAP4mIt4sGP5zM2hzW3HWbjiu/iZOVuQ8a5MCPIgn1x3WzBi3kxRHBK7kNAW9adK6qd7HHm4NOE8chbICk/c=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com; spf=pass smtp.mailfrom=quicinc.com; dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b=jzSdou/9; arc=none smtp.client-ip=205.220.180.131
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=quicinc.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 03996EADB;
+	Thu,  5 Sep 2024 02:29:50 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.223.79
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1725503392; cv=fail; b=daJR0JTsEqyY9C/4FZQvEOvIC4hxyGUn2ZGgww+p+IbRoPyYiEcmVRL8tXth3cGgAu4gxFrdakg5mKQ3i0NTLCLoUHzaXuNQTvghEBzpqyJzv4+WqdpWZcFkraYCYpU5NidvhGS7jRpzbX0EIM5bxFKIAyMkSB+UeLKv0D4VpRc=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1725503392; c=relaxed/simple;
+	bh=kPPUVltUoY7cIte8h0pHzSdf5HjsrYI+O8lohdK8mro=;
+	h=Message-ID:Date:Subject:To:Cc:References:From:In-Reply-To:
+	 Content-Type:MIME-Version; b=hfxcbGrSBoPDz3zq92y+yZbU04izkwmxnld7fOpjhOeePL9opzDDrRUupv0puZ1Uu3r/v1hHCgez2lkbCqM1uXVk8JzuJ3S9WZuaLV+6QlHueEe5pDM6NH5PQFhIGVbvltNxvQOCpyZoDZJ3EUeGv0MBAuvICM27DQ0gsa0ME68=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com; spf=fail smtp.mailfrom=amd.com; dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b=ZyVUsJJz; arc=fail smtp.client-ip=40.107.223.79
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=amd.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b="jzSdou/9"
-Received: from pps.filterd (m0279869.ppops.net [127.0.0.1])
-	by mx0a-0031df01.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 484N5KDK031912;
-	Wed, 4 Sep 2024 23:51:04 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=quicinc.com; h=
-	cc:content-transfer-encoding:content-type:date:from:in-reply-to
-	:message-id:mime-version:references:subject; s=qcppdkim1; bh=4/l
-	hBqWBq1YTQ539+j2Ux48JjcsIdAodVI3iskgBfkg=; b=jzSdou/9Ek+6lJRwJyk
-	KhUFI7YCM1sAif6GkLWh8Wxn0VfFuFVphGUEvt9JcahSXLMijZjCgvNLVVNgWlPx
-	cEhKzNUGbRHBVBHGgBeQHTyj44y/NNChvStZEk2mDWHm1ifIGxP9tr3mWyMDxZqS
-	3kh8HBKV08jJY7bqZ1NAGGZCaXkIw4VlcA1sNKhbS6eLsDVZ6mvYp933ytSEtKl3
-	c06GSRHyJVMwF1xKAmzxlgTQi673R+qHk7kG7Xv7gkGglN/qHk4MhWcqkeCsQNda
-	76DZK+RD8kDLiZsA2fnelMLnRw0VDENjRiFiD8NosSduOPc5RgZwaXLFDYkclGQP
-	vzw==
-Received: from nasanppmta01.qualcomm.com (i-global254.qualcomm.com [199.106.103.254])
-	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 41bt674cha-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Wed, 04 Sep 2024 23:51:04 +0000 (GMT)
-Received: from nasanex01b.na.qualcomm.com (nasanex01b.na.qualcomm.com [10.46.141.250])
-	by NASANPPMTA01.qualcomm.com (8.18.1.2/8.18.1.2) with ESMTPS id 484Np2fZ012201
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Wed, 4 Sep 2024 23:51:02 GMT
-Received: from [10.110.102.234] (10.80.80.8) by nasanex01b.na.qualcomm.com
- (10.46.141.250) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1544.9; Wed, 4 Sep 2024
- 16:50:58 -0700
-Message-ID: <1732bde7-aa72-4861-aa0a-414d55f68107@quicinc.com>
-Date: Wed, 4 Sep 2024 16:50:58 -0700
+	dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b="ZyVUsJJz"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=Yrxbmlj8hBAmhE5tqc2h7Gyzc+F/hPclv4V1kChLc7CKJms+yOrtBVJB0HAo31kyKwqsseYPpgwBQzOkMwogqjDT629k8k22sx/lwO2nE2FwS3F8HhFbtj6z1LTIekn/4I/KafRNJ2+YACGXInpUiNx4LTIDSAmrjOpOUsXjrjFVhteV2vebwdj7zvI8Vya3FvROXbIceMeerX/QPU5fu6Dyz5bbz/UYx3WV6OqbQQgiNbUdOl8oEXv/5UQkbHZ/FAyqNL6+16Y7fX4zi24UKoIqt5PLKoNWS46XwJypeApQZopWaV+8hD9cKLhfV8DGTe+Mn7JWWJv7Ytq4pOXAVw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=SmI9XP1ponenCwRfQSUxKXwHULKjk0JpS0YI0GCU1E4=;
+ b=StY9zanmQssTpVbm/fUGkZjfPmSO58a/ebFpcLVzFrhsuk7qfMVJidsZqs30kzHPMUrF2srlK3k9Wu+2pue0OISXpwEegY5J507ybQyPyyXSp7M7WsZZASAHbE13CqvsI7V/a7GaCRSTglTstFrjNf1Jzbk+8IuJtzNIuBwV4yezdMf2KFZclFwqS3AuMYwbzptHIHjj2MGpYDgQ5OVaV07pdwZ1ootSpN4v4dMAjc0eHXqk/Rjung09zJShPfuiEKO4PpSB/sLYkwXuCuM5+rNinQsrW3NYY97NeS10hFWPmutUDmvvjhzMmi+8L4WajxBLhtHMimEjF7doZ0OziA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=amd.com; dmarc=pass action=none header.from=amd.com; dkim=pass
+ header.d=amd.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=SmI9XP1ponenCwRfQSUxKXwHULKjk0JpS0YI0GCU1E4=;
+ b=ZyVUsJJzSYiDQ/N0kSW7n1QQpzGRg5fdu9Eo3sLsTsG9c7r4JGh3SKrNlHYJ849xuYZjZUcpHS4ZjLEo9tsIuEX6RHqZvXTQOPv8ENV77X9mA5HH/aof2yQc3toOWy2x9wWk/rGy7fknZjPFUITj8I7n7qfFyOuee6a8460sSBE=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=amd.com;
+Received: from CH3PR12MB9194.namprd12.prod.outlook.com (2603:10b6:610:19f::7)
+ by LV8PR12MB9231.namprd12.prod.outlook.com (2603:10b6:408:192::18) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7918.27; Thu, 5 Sep
+ 2024 02:29:47 +0000
+Received: from CH3PR12MB9194.namprd12.prod.outlook.com
+ ([fe80::53fb:bf76:727f:d00f]) by CH3PR12MB9194.namprd12.prod.outlook.com
+ ([fe80::53fb:bf76:727f:d00f%6]) with mapi id 15.20.7918.024; Thu, 5 Sep 2024
+ 02:29:47 +0000
+Message-ID: <16182660-3eb0-4df0-95a5-d4d2c4598319@amd.com>
+Date: Thu, 5 Sep 2024 12:29:38 +1000
+User-Agent: Mozilla Thunderbird Beta
+Subject: Re: [RFC PATCH 06/21] crypto: ccp: Enable SEV-TIO feature in the PSP
+ when supported
+Content-Language: en-US
+To: Dan Williams <dan.j.williams@intel.com>, kvm@vger.kernel.org
+Cc: iommu@lists.linux.dev, linux-coco@lists.linux.dev,
+ linux-pci@vger.kernel.org,
+ Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
+ Alex Williamson <alex.williamson@redhat.com>, pratikrajesh.sampat@amd.com,
+ michael.day@amd.com, david.kaplan@amd.com, dhaval.giani@amd.com,
+ Santosh Shukla <santosh.shukla@amd.com>,
+ Tom Lendacky <thomas.lendacky@amd.com>, Michael Roth <michael.roth@amd.com>,
+ Alexander Graf <agraf@suse.de>, Nikunj A Dadhania <nikunj@amd.com>,
+ Vasant Hegde <vasant.hegde@amd.com>, Lukas Wunner <lukas@wunner.de>
+References: <20240823132137.336874-1-aik@amd.com>
+ <20240823132137.336874-7-aik@amd.com>
+ <66d77f5ec9da8_3975294d7@dwillia2-xfh.jf.intel.com.notmuch>
+From: Alexey Kardashevskiy <aik@amd.com>
+In-Reply-To: <66d77f5ec9da8_3975294d7@dwillia2-xfh.jf.intel.com.notmuch>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: SYBPR01CA0078.ausprd01.prod.outlook.com
+ (2603:10c6:10:3::18) To CH3PR12MB9194.namprd12.prod.outlook.com
+ (2603:10b6:610:19f::7)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v2 00/21] arm64: qcom: Introduce SA8255p Ride platform
-CC: <andersson@kernel.org>, <konradybcio@kernel.org>, <robh@kernel.org>,
-        <krzk+dt@kernel.org>, <conor+dt@kernel.org>, <rafael@kernel.org>,
-        <viresh.kumar@linaro.org>, <herbert@gondor.apana.org.au>,
-        <davem@davemloft.net>, <sudeep.holla@arm.com>, <andi.shyti@kernel.org>,
-        <tglx@linutronix.de>, <will@kernel.org>, <robin.murphy@arm.com>,
-        <joro@8bytes.org>, <jassisinghbrar@gmail.com>, <lee@kernel.org>,
-        <linus.walleij@linaro.org>, <amitk@kernel.org>,
-        <thara.gopinath@gmail.com>, <broonie@kernel.org>,
-        <cristian.marussi@arm.com>, <rui.zhang@intel.com>,
-        <lukasz.luba@arm.com>, <wim@linux-watchdog.org>, <linux@roeck-us.net>,
-        <linux-arm-msm@vger.kernel.org>, <devicetree@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, <linux-pm@vger.kernel.org>,
-        <linux-crypto@vger.kernel.org>, <arm-scmi@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>, <linux-i2c@vger.kernel.org>,
-        <iommu@lists.linux.dev>, <linux-gpio@vger.kernel.org>,
-        <linux-serial@vger.kernel.org>, <linux-spi@vger.kernel.org>,
-        <linux-watchdog@vger.kernel.org>, <kernel@quicinc.com>,
-        <quic_psodagud@quicinc.com>
-References: <20240828203721.2751904-1-quic_nkela@quicinc.com>
- <20240903220240.2594102-1-quic_nkela@quicinc.com>
-Content-Language: en-US
-From: Nikunj Kela <quic_nkela@quicinc.com>
-In-Reply-To: <20240903220240.2594102-1-quic_nkela@quicinc.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
- nasanex01b.na.qualcomm.com (10.46.141.250)
-X-QCInternal: smtphost
-X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
-X-Proofpoint-ORIG-GUID: mGB5siCCyWRh_cGjj_b1FVY16FVhkQZJ
-X-Proofpoint-GUID: mGB5siCCyWRh_cGjj_b1FVY16FVhkQZJ
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.293,Aquarius:18.0.1039,Hydra:6.0.680,FMLib:17.12.60.29
- definitions=2024-09-04_21,2024-09-04_01,2024-09-02_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 malwarescore=0 adultscore=0
- bulkscore=0 mlxscore=0 impostorscore=0 suspectscore=0 phishscore=0
- mlxlogscore=999 lowpriorityscore=0 spamscore=0 clxscore=1015
- priorityscore=1501 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.19.0-2407110000 definitions=main-2409040180
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: CH3PR12MB9194:EE_|LV8PR12MB9231:EE_
+X-MS-Office365-Filtering-Correlation-Id: 3c3c8a6b-35d3-4b08-9798-08dccd529bf7
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;ARA:13230040|1800799024|376014|366016;
+X-Microsoft-Antispam-Message-Info:
+	=?utf-8?B?RGorcHQwTThvekN2NUwrLzExTFIvLy9FNGtDbWZjc2E1TFBWUzg5TG1qZWRu?=
+ =?utf-8?B?MXczeDB1Qm9Da2pVMjVZMlFNU3gzZDE0L2kxaGFUSEc1QVNNa2FMMEVwWDdJ?=
+ =?utf-8?B?TnRLODlMQk5zU3JUWU1MOFhXOU05ZHVUaDZFWm9xMGRDbmk5TGFwK2wzTFM1?=
+ =?utf-8?B?UE5YK3VmOWF1MDZiOCtZTUp3SENBYWNaSTRwajJwWGkrek1ROTNQTVdpSkRQ?=
+ =?utf-8?B?NWZTNmNYR1lIemNJUm82RXdEeC9xTzJBekdLbzJVSkdCVmFGZzFYVjU3a1Iz?=
+ =?utf-8?B?OUJRNGQ2cGhoemlUVHV1c0RaaDJiRjhJRGpWV1B5WktXd3BpSGZjSU1EWWQy?=
+ =?utf-8?B?dzFwSWNDTEJjOHE3aFVPRnRHcExYNTdRL0RHSFNSOWFDZ0t4YlNncWJucjdx?=
+ =?utf-8?B?QUZ3dUY3d0FSZ01JOXpKdDVEbGR1VU5WeTRyenRsUTc4dGxEZGUranF5U1k0?=
+ =?utf-8?B?OHRVUkJxWTIyRzlRdmN5UjFkL1FiQktjcmM2OFNSM01odzl6SzRaMlNXV3R3?=
+ =?utf-8?B?NXRqQkE4U01NMEUxM2MzZGRNcGFjUDdwR3FTaGg4ZnN3L2JDWFVEVENiWnJZ?=
+ =?utf-8?B?WW1wTXpQTUNTNmR4OVdzNlFINEdYSWUwY0N2djh0TERQa09NSlU0RXl3bzdo?=
+ =?utf-8?B?L25ONncxUS9ZWElSaUEvVEFMdjU5ajFXUG5WakZBcmtCSGdQMFQ0dHFkL2tQ?=
+ =?utf-8?B?RFNEU05maWZDdE9leTdTY3FpOHNqKzYxSy9OMjlSQm9GNklVc1dncHlkbWdo?=
+ =?utf-8?B?ZzdvajZFMGpuWXpPZDZSS0N1U3k5YnBRSW5WY0R4TjRaYnZlcFRzUmd1Y2Qw?=
+ =?utf-8?B?T0x4cmpiTmhQUkxRai9vZ3pqODI1aWZyKzEzM0tVZnFNTWt4TkErcnQ2TUc0?=
+ =?utf-8?B?QWkwMUZvams3VnZqM0lDN2VpUExuay8yMi9FRzlvdXVkWFBnUE1qSTF2MjZM?=
+ =?utf-8?B?RGMyODFMSm5UcENZQWM1NXg5WmJzbzNBTFJvVEs0ZVVtWnBpcklOTlpuNXRk?=
+ =?utf-8?B?MHZzR3NzY1g5ZFUvQ1o5eGJiSnMvQlA5NHh1TTBPWHZSWllzclJZTERjR21v?=
+ =?utf-8?B?SlBGVGgrTzFRczJHcFNMRGRmZkZHV1N2UVEvV1JKNEhoazRXMDFBUjhYVkt2?=
+ =?utf-8?B?dkc0QmN0bmdYcXJ6RnFQK3puVkgyeGtuMDZybjFhQ2J3VE84eU9ja0wwWkdh?=
+ =?utf-8?B?b3hhYVVWbnNFV01FbHVBVE5KWGNYRkFDb2JZeWl0T1VZYjdoVW1nRDRkK3VF?=
+ =?utf-8?B?cE5OY2cydER1bW5CM2FLWHZmeTVzK0taSzZoNmVUQmJMZzJsNEt1RXlja0l1?=
+ =?utf-8?B?V2pVTVVmWDhDcTlQQWIwTG1sODk0UGwrR0tZZzdYR1kyQXJXM2lWbXlublQ3?=
+ =?utf-8?B?a21CNlhrSXVxMnk4eloyaHdOSGNhdWRCT1E1ZDA5R2N4ak80cmFWY21ITi9D?=
+ =?utf-8?B?NERwQWk3dEc2UWFlSElXT3pidHZwbXFlSXRrMlo1eEh0T2M4QzVSaU9ZS1Y3?=
+ =?utf-8?B?NlcyeE9HQ0NnMlZDWDBoWDR2VzFENVVGS2g0dERNbnprQUtEUUhIa3lKL0RG?=
+ =?utf-8?B?Q3NwQWgzSjNySTlHTnNJb3RsSjVUdUZDQzhpcE5ZQUxaWVAwakdGUHRWSGJT?=
+ =?utf-8?B?dVVJc0lYaEtuZnR5TUJlK2ErdWs5b1Qvc1NXNzRQamluaStoaWd3UDcwTmRm?=
+ =?utf-8?B?STF1cmpoOUdLcXBqVS8zVTRQZkFoejM0MUdWejZFRnoybEsyYzRTVkRXSGcv?=
+ =?utf-8?B?a3FMbHFtYjB4c0VadDVYS0tna2hQZnZOSngyaDZweWlVc08wL21oTjBhdnU1?=
+ =?utf-8?B?am0yMUtYSGRIcThmcXdEUT09?=
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CH3PR12MB9194.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(1800799024)(376014)(366016);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?utf-8?B?L1hhREdRTEowTUpESjZOMTlWQnhzZCtuWnhoR3RiYUF5VTBWK3g4enozZ0FC?=
+ =?utf-8?B?amZRMzAwNHp5dzdrTkRSU3MvL2I5NGlCZmpvQjdsRWtjZXBud3BJb3BmVEhE?=
+ =?utf-8?B?RkNqSmNuZnpHSnRScjFWNXlVYlFjeTJQZGJrbnpjd0hDWlp0eXNoSk9rbElI?=
+ =?utf-8?B?VzN4ZHlGRlFKT0UwMG9tTzdGRUJINVNOOHVGdUtoa1pncHBXZkw5OWNCTURS?=
+ =?utf-8?B?b0w3K3hWNEZudFY4QVYyZkhvbFFwSHozSEVOMEtWdUhzMkFMT0hEV05IK1pX?=
+ =?utf-8?B?N091Y2FwMmdNQUdKRTk2QXhwSjJ5WmU1YzAzcjZJWjM4ZVlrTHlUdHcxRXF4?=
+ =?utf-8?B?SVd1aGlBY0FWcURSVUttSE9xb0hUZm1GaHhadDhPOXErSXYwekhQVzhmV05j?=
+ =?utf-8?B?dE10WjJTRjA3UkMwQlJMSGJaZjFkREd1d2t4YllobmUzb0JyYkpYd1VYaXVz?=
+ =?utf-8?B?OEt0M252U1RHQXFNcGphTjZrK1o4UEk4T1o5cWlqbzgxTmlyWWErczdHYVda?=
+ =?utf-8?B?RWE4ZTdRanhzTHBJVEtHU3BxdzBaRmZKbVp0OTdsYmFHNkZTUkFWQmRZR1VE?=
+ =?utf-8?B?cUlrS2x1SXhSMmE3ZXA2M1FhZFhYRGZ5ejNQUjZvTDREZzF0TXljbllRYUdp?=
+ =?utf-8?B?QUNFZFh4N0d5RytZOHhLZHNMdjRHUVpBY1hBTmVuNVlMNHJKVC9zMm8yVVBh?=
+ =?utf-8?B?YzJ5N2plWVEzNUh1UzRoR0tFaWNBU3VJY3ZabXdNVWpYNzZnNWlXOEQzWU5p?=
+ =?utf-8?B?bkRrN2x1ZkhySzJtWm91Vi9ZMFFCdnhYUEtraFIvVFJKWkhaUURZaG5tNVhq?=
+ =?utf-8?B?S3kyUVYxdGxqYkhMTEIxUzFubk4rSk1rV2pwWjA3dFp5MUh5SHBjVk1KaVdH?=
+ =?utf-8?B?NmhZbzhYNkRYVk9TR3hYV3B2Q2czRnFoUG1Ddk1jaWQvWmNkS1ZoRWx0c3dt?=
+ =?utf-8?B?RENBNlM4Z09rRTdvbGJwcW4xWkZ3a2Z1TWpPeHJQY2dSeGlXL1RscEhyVUxu?=
+ =?utf-8?B?eC9rcVV1andkMlpBSnBhTlJUL1FzWTVBRENXdUlscG5LNm9SWDdNZTdEbXlK?=
+ =?utf-8?B?WlMyVGtPaE0wUW00NzA5WU1GNXQ5QjhTQTQ1d3RnaU1VODlDb0JodzEzMnZy?=
+ =?utf-8?B?UkRwSzNpcjluRS9GN2MyNkhNM2pObS9FdXdKaDFldXh2YUMwRVVGYzlYRG9n?=
+ =?utf-8?B?KzhoUnhXZzhQWDNGeTUwWVMzUkxmMjRyU05rMW82cXZrSWJoYzREZVFzRkZP?=
+ =?utf-8?B?NFdGSHE4T0hJWVJmWVkwbUYyendmYVk4c3NvTHkzRUpLSlhld3FSV3pqUEpk?=
+ =?utf-8?B?ZmxMU283eW1mYk92b0VRaUptTXpNSVNkdE5ONXpldGVZaHlrZUZ3Q1FWWUpp?=
+ =?utf-8?B?NTdOa2VLbnFtOWl1cDBPa1ZHQ3ZiTFhtWVdRaGFyRkJWazRaWDJ1MUN1cG1w?=
+ =?utf-8?B?bmxmMVQwVXY5LzVMTVRqRkJ5Q3FGMDZSc01rTTNvc05FV0lDQUxFTlVKeU9U?=
+ =?utf-8?B?M3VRY3Q1TzFqaVBtU21BSy9NUnIwVVgwbWZmeDNRTU1ub0E3Z2V1Qk1wRzVH?=
+ =?utf-8?B?WU1sMTVnSDlSRmxrR1MvcmNTZnRHZkhKQ0pBajAzU3JUdnpUZVF4Q2NMUGJh?=
+ =?utf-8?B?V1ltcFNzNkYrcEQ1WDIyYVc4RHkvNWx6TmJBSUNleVAxZWZFZ1RrQzUzSDRL?=
+ =?utf-8?B?Qms5NEpKeS9UQUFyVGw4dXpNL1pwVSt2RXI0eUJlTFY4Y0laMFB1NDRQWnlz?=
+ =?utf-8?B?K1gwWFI1VUN6SXg4cGd4UmhlYXZqaHZ4M2lDV3VNYzN0eGJsbG1VSUdJSTFH?=
+ =?utf-8?B?WlNQQzZHOEhFdGZJU2Z2NE5MaHBwOEdmRCtKZjhSazd0TTRva2djQ1RBTjVq?=
+ =?utf-8?B?bVd1Ukl1UWRkL00wS1AwMFh4Tk1UNlhJTmlDYmYrUXFYM0VuaVpLdjhobXZX?=
+ =?utf-8?B?T1h3aVQreHdKdk5jTEFYemFLR2QyVmJKRnJRUWZRMjQ3SndvZ2t0azVtR2tn?=
+ =?utf-8?B?T3kybzV6Q25YeXFMSHRZd0pUMjZBOVVWaGtQWmcvTUFkU2wzc1V6QTY0MVR5?=
+ =?utf-8?B?bFFCTzJZdWJNVTRFYllSYXY1bjNUR1B1R29kRjJNUjVxbWxiRGZJZzN5Ymsw?=
+ =?utf-8?Q?ZuS0Vc412Oay93xlC3/N4zX/C?=
+X-OriginatorOrg: amd.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 3c3c8a6b-35d3-4b08-9798-08dccd529bf7
+X-MS-Exchange-CrossTenant-AuthSource: CH3PR12MB9194.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 05 Sep 2024 02:29:46.9110
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: B25ATLFUhe4hL1JYnihVdzpfPzJr/TuF1Cz3KYANJzWnxTGWp/lDz8EgBgHIuElik9laZCaUZTTKeBEZ4nVdHA==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: LV8PR12MB9231
 
-Hi All,
-
-I have decided to split this series into multiple smaller ones as follows:
-
-- Patches 1/21 - 11/21, 13/21 - 14/21, 19/21: will split them to each
-subsystem specific patch sets.
-
-- Patches 15/21 - 18/21: will come in separate series along with QUPs
-driver changes.
-
-- Patches 20/21 - 21/21: will come in separate series after above two
-sets are accepted.
-
-Thanks,
-
--Nikunj
 
 
-On 9/3/2024 3:02 PM, Nikunj Kela wrote:
-> This series enables the support for SA8255p Qualcomm SoC and Ride
-> platform. This platform uses SCMI power, reset, performance, sensor
-> protocols for resources(e.g. clocks, regulator, interconnect, phy etc.)
-> management. SA8255p is a virtual platforms that uses Qualcomm smc/hvc
-> transport driver.
->
-> Multiple virtual SCMI instances are being used to achieve the parallelism.
-> SCMI platform stack runs in SMP enabled VM hence allows platform to service
-> multiple resource requests in parallel. Each device is assigned its own
-> dedicated SCMI channel and Tx/Rx doorbells.
->
-> Resource operations are grouped together to achieve better abstraction
-> and to reduce the number of requests being sent to SCMI platform(server)
-> thus improving boot time KPIs. This design approach was presented during
-> LinaroConnect 2024 conference[1].
->
-> Architecture:
-> ------------
->                                                           +--------------------+
->                                                           |   Shared Memory    |
->                                                           |                    |
->                                                           | +----------------+ |                +----------------------------------+
->      +----------------------------+                     +-+->  ufs-shmem     <-+---+            |            Linux VM              |
->      |        Firmware VM         |                     | | +----------------+ |   |            |   +----------+   +----------+    |
->      |                            |                     | |                    |   |            |   |   UFS    |   |   PCIe   |    |
->      | +---------+ f +----------+ |                     | |                    |   |            |   |  Driver  |   |  Driver  |    |
->      | |Drivers  <---+  SCMI    | |        e            | |         |          |   |            |   +--+----^--+   +----------+    |
->      | | (clks,  | g | Server   +-+---------------------+ |                    |   |            |      |    |                      |
->      | |  vreg,  +--->          | |        h              |         |          |  b|k           |     a|   l|                      |
->      | |  gpio,  |   +--^-----+-+ |                       |                    |   |            |      |    |                      |
->      | |  phy,   |      |     |   |                       |         |          |   |            |  +---v----+----+  +----------+   |
->      | |  etc.)  |      |     |   |                       |                    |   +------------+--+  UFS SCMI   |  | PCIe SCMI|   |
->      | +---------+      |     |   |                       |                    |                |  |  INSTANCE   |  | INSTANCE |   |
->      |                  |     |   |                       |  +---------------+ |                |  +-^-----+-----+  +----------+   |
->      |                  |     |   |                       |  |  pcie-shmem   | |                |    |     |                       |
->      +------------------+-----+---+                       |  +---------------+ |                +----+-----+-----------------------+
->                         |     |                           |                    |                     |     |
->                         |     |                           +--------------------+                     |     |
->                        d|IRQ i|HVC                                                                  j|IRQ c|HVC
->                         |     |                                                                      |     |
->                         |     |                                                                      |     |
-> +-----------------------+-----v----------------------------------------------------------------------+-----v------------------------------+
-> |                                                                                                                                         |
-> |                                                                                                                                         |
-> |                                                                                                                                         |
-> |                                                               HYPERVISOR                                                                |
-> |                                                                                                                                         |
-> |                                                                                                                                         |
-> +-----------------------------------------------------------------------------------------------------------------------------------------+
->
->         +--------+   +--------+                                                                         +----------+  +-----------+
->         | CLOCK  |   |  PHY   |                                                                         |   UFS    |  |   PCIe    |
->         +--------+   +--------+                                                                         +----------+  +-----------+
->
->
-> This series is based on next-20240903.
->
-> [1]: https://resources.linaro.org/en/resource/wfnfEwBhRjLV1PEAJoDDte
->
-> ---
-> Changes in v2:
->   - Patch 1/21 - 11/21
->     - Added Reviewed-by tag
->
->   - Patch 12/21
->     - Already applied in the maintainers tree
->
->   - Patch 13/21
->     - Modified subject line
->     - Fixed schema to include fallback
->
->   - Patch 14/21
->     - Added constraints
->
->   - Patch 15/21
->     - Modified schema to remove useless text
->    
->   - Patch 16/21
->     - Modified schema formatting
->     - Amended schema definition as advised
->
->   - Patch 17/21
->     - Moved allOf block after required
->     - Fixed formatting
->     - Modified schema to remove useless text
->
->   - Patch 18/21
->     - Fixed clock property changes
->
->   - Patch 19/21
->     - Fixed scmi nodename pattern
->
->   - Patch 20/21
->     - Modified subject line and description
->     - Added EPPI macro
->
->   - Patch 21/21
->     - Removed scmichannels label and alias
->     - Modified scmi node name to conform to schema
->     - Moved status property to be the last one in scmi instances
->     - Changed to lower case for cpu labels
->     - Added fallback compatible for tlmm node
->
-> Nikunj Kela (21):
->   dt-bindings: arm: qcom: add the SoC ID for SA8255P
->   soc: qcom: socinfo: add support for SA8255P
->   dt-bindings: arm: qcom: add SA8255p Ride board
->   dt-bindings: firmware: qcom,scm: document support for SA8255p
->   dt-bindings: mailbox: qcom-ipcc: document the support for SA8255p
->   dt-bindings: watchdog: qcom-wdt: document support on SA8255p
->   dt-bindings: crypto: qcom,prng: document support for SA8255p
->   dt-bindings: interrupt-controller: qcom-pdc: document support for
->     SA8255p
->   dt-bindings: soc: qcom: aoss-qmp: document support for SA8255p
->   dt-bindings: arm-smmu: document the support on SA8255p
->   dt-bindings: mfd: qcom,tcsr: document support for SA8255p
->   dt-bindings: thermal: tsens: document support on SA8255p
->   dt-bindings: pinctrl: Add SA8255p TLMM
->   dt-bindings: cpufreq: qcom-hw: document support for SA8255p
->   dt-bindings: i2c: document support for SA8255p
->   dt-bindings: spi: document support for SA8255p
->   dt-bindings: serial: document support for SA8255p
->   dt-bindings: qcom: geni-se: document support for SA8255P
->   dt-bindings: firmware: arm,scmi: allow multiple virtual instances
->   dt-bindings: arm: GIC: add ESPI and EPPI specifiers
->   arm64: dts: qcom: Add reduced functional DT for SA8255p Ride platform
->
->  .../devicetree/bindings/arm/qcom.yaml         |    6 +
->  .../bindings/cpufreq/cpufreq-qcom-hw.yaml     |   16 +
->  .../devicetree/bindings/crypto/qcom,prng.yaml |    1 +
->  .../bindings/firmware/arm,scmi.yaml           |    2 +-
->  .../bindings/firmware/qcom,scm.yaml           |    2 +
->  .../bindings/i2c/qcom,i2c-geni-qcom.yaml      |   33 +-
->  .../interrupt-controller/qcom,pdc.yaml        |    1 +
->  .../devicetree/bindings/iommu/arm,smmu.yaml   |    3 +
->  .../bindings/mailbox/qcom-ipcc.yaml           |    1 +
->  .../devicetree/bindings/mfd/qcom,tcsr.yaml    |    1 +
->  .../bindings/pinctrl/qcom,sa8775p-tlmm.yaml   |    8 +-
->  .../serial/qcom,serial-geni-qcom.yaml         |   53 +-
->  .../bindings/soc/qcom/qcom,aoss-qmp.yaml      |    1 +
->  .../bindings/soc/qcom/qcom,geni-se.yaml       |   45 +-
->  .../bindings/spi/qcom,spi-geni-qcom.yaml      |   60 +-
->  .../bindings/thermal/qcom-tsens.yaml          |    1 +
->  .../bindings/watchdog/qcom-wdt.yaml           |    1 +
->  arch/arm64/boot/dts/qcom/Makefile             |    1 +
->  arch/arm64/boot/dts/qcom/sa8255p-pmics.dtsi   |   80 +
->  arch/arm64/boot/dts/qcom/sa8255p-ride.dts     |  148 +
->  arch/arm64/boot/dts/qcom/sa8255p-scmi.dtsi    | 2312 ++++++++++++++++
->  arch/arm64/boot/dts/qcom/sa8255p.dtsi         | 2405 +++++++++++++++++
->  drivers/soc/qcom/socinfo.c                    |    1 +
->  include/dt-bindings/arm/qcom,ids.h            |    1 +
->  .../interrupt-controller/arm-gic.h            |    2 +
->  25 files changed, 5169 insertions(+), 16 deletions(-)
->  create mode 100644 arch/arm64/boot/dts/qcom/sa8255p-pmics.dtsi
->  create mode 100644 arch/arm64/boot/dts/qcom/sa8255p-ride.dts
->  create mode 100644 arch/arm64/boot/dts/qcom/sa8255p-scmi.dtsi
->  create mode 100644 arch/arm64/boot/dts/qcom/sa8255p.dtsi
->
->
-> base-commit: 6804f0edbe7747774e6ae60f20cec4ee3ad7c187
+On 4/9/24 07:27, Dan Williams wrote:
+> Alexey Kardashevskiy wrote:
+>> The PSP advertises the SEV-TIO support via the FEATURE_INFO command
+>> support of which is advertised via SNP_PLATFORM_STATUS.
+>>
+>> Add FEATURE_INFO and use it to detect the TIO support in the PSP.
+>> If present, enable TIO in the SNP_INIT_EX call.
+>>
+>> While at this, add new bits to sev_data_snp_init_ex() from SEV-SNP 1.55.
+>>
+>> Note that this tests the PSP firmware support but not if the feature
+>> is enabled in the BIOS.
+>>
+>> While at this, add new sev_data_snp_shutdown_ex::x86_snp_shutdown
+>>
+>> Signed-off-by: Alexey Kardashevskiy <aik@amd.com>
+>> ---
+>>   include/linux/psp-sev.h      | 31 ++++++++-
+>>   include/uapi/linux/psp-sev.h |  4 +-
+>>   drivers/crypto/ccp/sev-dev.c | 73 ++++++++++++++++++++
+>>   3 files changed, 104 insertions(+), 4 deletions(-)
+> 
+> Taking a peek to familiarize myself with that is required for TIO
+> enabling in the PSP driver...
+> 
+>>
+>> diff --git a/include/linux/psp-sev.h b/include/linux/psp-sev.h
+>> index 52d5ee101d3a..1d63044f66be 100644
+>> --- a/include/linux/psp-sev.h
+>> +++ b/include/linux/psp-sev.h
+>> @@ -107,6 +107,7 @@ enum sev_cmd {
+>>   	SEV_CMD_SNP_DOWNLOAD_FIRMWARE_EX = 0x0CA,
+>>   	SEV_CMD_SNP_COMMIT		= 0x0CB,
+>>   	SEV_CMD_SNP_VLEK_LOAD		= 0x0CD,
+>> +	SEV_CMD_SNP_FEATURE_INFO	= 0x0CE,
+>>   
+>>   	SEV_CMD_MAX,
+>>   };
+>> @@ -584,6 +585,25 @@ struct sev_data_snp_addr {
+>>   	u64 address;				/* In/Out */
+>>   } __packed;
+>>   
+>> +/**
+>> + * struct sev_data_snp_feature_info - SEV_CMD_SNP_FEATURE_INFO command params
+>> + *
+>> + * @len: length of this struct
+>> + * @ecx_in: subfunction index of CPUID Fn8000_0024
+>> + * @feature_info_paddr: physical address of a page with sev_snp_feature_info
+>> + */
+>> +#define SNP_FEATURE_FN8000_0024_EBX_X00_SEVTIO	1
+>> +
+>> +struct sev_snp_feature_info {
+>> +	u32 eax, ebx, ecx, edx;			/* Out */
+>> +} __packed;
+>> +
+>> +struct sev_data_snp_feature_info {
+>> +	u32 length;				/* In */
+>> +	u32 ecx_in;				/* In */
+>> +	u64 feature_info_paddr;			/* In */
+>> +} __packed;
+> 
+> Why use CPU register names in C structures? I would hope the spec
+> renames these parameters to something meaninful?
+
+This mimics the CPUID instruction and (my guess) x86 people are used to 
+"CPUID's ECX" == "Subfunction index". The spec (the one I mention below) 
+calls it precisely "ECX_IN".
+
+
+>> +
+>>   /**
+>>    * struct sev_data_snp_launch_start - SNP_LAUNCH_START command params
+>>    *
+>> @@ -745,10 +765,14 @@ struct sev_data_snp_guest_request {
+> 
+> Would be nice to have direct pointer to the spec and spec chapter
+> documented for these command structure fields.
+
+For every command? Seems overkill. Any good example?
+
+Although the file could have mentioned in the header that SNP_xxx are 
+from "SEV Secure Nested Paging Firmware ABI Specification" which google 
+easily finds, and search on that pdf for "SNP_INIT_EX" finds the 
+structure layout. Using the exact chapter numbers/titles means they 
+cannot change, or someone has to track the changes.
+
+> 
+>>   struct sev_data_snp_init_ex {
+>>   	u32 init_rmp:1;
+>>   	u32 list_paddr_en:1;
+>> -	u32 rsvd:30;
+>> +	u32 rapl_dis:1;
+>> +	u32 ciphertext_hiding_en:1;
+>> +	u32 tio_en:1;
+>> +	u32 rsvd:27;
+>>   	u32 rsvd1;
+>>   	u64 list_paddr;
+>> -	u8  rsvd2[48];
+>> +	u16 max_snp_asid;
+>> +	u8  rsvd2[46];
+>>   } __packed;
+>>   
+>>   /**
+>> @@ -787,7 +811,8 @@ struct sev_data_range_list {
+>>   struct sev_data_snp_shutdown_ex {
+>>   	u32 len;
+>>   	u32 iommu_snp_shutdown:1;
+>> -	u32 rsvd1:31;
+>> +	u32 x86_snp_shutdown:1;
+>> +	u32 rsvd1:30;
+>>   } __packed;
+>>   
+>>   /**
+> [..]
+>> diff --git a/drivers/crypto/ccp/sev-dev.c b/drivers/crypto/ccp/sev-dev.c
+>> index f6eafde584d9..a49fe54b8dd8 100644
+>> --- a/drivers/crypto/ccp/sev-dev.c
+>> +++ b/drivers/crypto/ccp/sev-dev.c
+>> @@ -223,6 +223,7 @@ static int sev_cmd_buffer_len(int cmd)
+>>   	case SEV_CMD_SNP_GUEST_REQUEST:		return sizeof(struct sev_data_snp_guest_request);
+>>   	case SEV_CMD_SNP_CONFIG:		return sizeof(struct sev_user_data_snp_config);
+>>   	case SEV_CMD_SNP_COMMIT:		return sizeof(struct sev_data_snp_commit);
+>> +	case SEV_CMD_SNP_FEATURE_INFO:		return sizeof(struct sev_data_snp_feature_info);
+>>   	default:				return 0;
+>>   	}
+>>   
+>> @@ -1125,6 +1126,77 @@ static int snp_platform_status_locked(struct sev_device *sev,
+>>   	return ret;
+>>   }
+>>   
+>> +static int snp_feature_info_locked(struct sev_device *sev, u32 ecx,
+>> +				   struct sev_snp_feature_info *fi, int *psp_ret)
+>> +{
+>> +	struct sev_data_snp_feature_info buf = {
+>> +		.length = sizeof(buf),
+>> +		.ecx_in = ecx,
+>> +	};
+>> +	struct page *status_page;
+>> +	void *data;
+>> +	int ret;
+>> +
+>> +	status_page = alloc_page(GFP_KERNEL_ACCOUNT);
+>> +	if (!status_page)
+>> +		return -ENOMEM;
+>> +
+>> +	data = page_address(status_page);
+>> +
+>> +	if (sev->snp_initialized && rmp_mark_pages_firmware(__pa(data), 1, true)) {
+>> +		ret = -EFAULT;
+>> +		goto cleanup;
+> 
+> Jonathan already mentioned this, but "goto cleanup" is so 2022.
+
+This requires DEFINE_FREE() which yet another place to look at. When I 
+Then, no_free_ptr() just hurts to read (cold breath of c++). It is not 
+needed here but unavoidably will be in other places when I start using 
+__free(kfree). But alright, I'll switch.
+
+> 
+>> +	}
+>> +
+>> +	buf.feature_info_paddr = __psp_pa(data);
+>> +	ret = __sev_do_cmd_locked(SEV_CMD_SNP_FEATURE_INFO, &buf, psp_ret);
+>> +
+>> +	if (sev->snp_initialized && snp_reclaim_pages(__pa(data), 1, true))
+>> +		ret = -EFAULT;
+>> +
+>> +	if (!ret)
+>> +		memcpy(fi, data, sizeof(*fi));
+>> +
+>> +cleanup:
+>> +	__free_pages(status_page, 0);
+>> +	return ret;
+>> +}
+>> +
+>> +static int snp_get_feature_info(struct sev_device *sev, u32 ecx, struct sev_snp_feature_info *fi)
+> 
+> Why not make this bool...
+> 
+>> +{
+>> +	struct sev_user_data_snp_status status = { 0 };
+>> +	int psp_ret = 0, ret;
+>> +
+>> +	ret = snp_platform_status_locked(sev, &status, &psp_ret);
+>> +	if (ret)
+>> +		return ret;
+>> +	if (ret != SEV_RET_SUCCESS)
+>> +		return -EFAULT;
+>> +	if (!status.feature_info)
+>> +		return -ENOENT;
+>> +
+>> +	ret = snp_feature_info_locked(sev, ecx, fi, &psp_ret);
+>> +	if (ret)
+>> +		return ret;
+>> +	if (ret != SEV_RET_SUCCESS)
+>> +		return -EFAULT;
+>> +
+>> +	return 0;
+>> +}
+>> +
+>> +static bool sev_tio_present(struct sev_device *sev)
+>> +{
+>> +	struct sev_snp_feature_info fi = { 0 };
+>> +	bool present;
+>> +
+>> +	if (snp_get_feature_info(sev, 0, &fi))
+> 
+> ...since the caller does not care?
+
+
+sev_tio_present() does not but other users of snp_get_feature_info() 
+(one is coming sooner that TIO) might, WIP.
+
+
+>> +		return false;
+>> +
+>> +	present = (fi.ebx & SNP_FEATURE_FN8000_0024_EBX_X00_SEVTIO) != 0;
+>> +	dev_info(sev->dev, "SEV-TIO support is %s\n", present ? "present" : "not present");
+>> +	return present;
+>> +}
+>> +
+>>   static int __sev_snp_init_locked(int *error)
+>>   {
+>>   	struct psp_device *psp = psp_master;
+>> @@ -1189,6 +1261,7 @@ static int __sev_snp_init_locked(int *error)
+>>   		data.init_rmp = 1;
+>>   		data.list_paddr_en = 1;
+>>   		data.list_paddr = __psp_pa(snp_range_list);
+>> +		data.tio_en = sev_tio_present(sev);
+> 
+> Where does this get saved for follow-on code to consume that TIO is
+> active?
+
+Oh. It is not saved, whether TIO is actually active is determined by the 
+result of calling PSP's TIO_STATUS (which I should skip if tio_en == 
+false in the first place). Thanks,
+
+
+-- 
+Alexey
+
