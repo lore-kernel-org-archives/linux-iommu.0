@@ -1,113 +1,155 @@
-Received: from mail-lf1-f53.google.com (mail-lf1-f53.google.com [209.85.167.53])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 961C619D062
-	for <iommu@lists.linux.dev>; Thu,  5 Sep 2024 13:23:02 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.53
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 59A6219AA56
+	for <iommu@lists.linux.dev>; Thu,  5 Sep 2024 13:24:18 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1725542585; cv=none; b=u5mmmA4sWEIBkm0TQwwmtezzdItthnYKnhOqtVomJYfDLgnNw5jFNe2YFOKwxuhum64bQQbJDp9oG9GbqHpEGQm/NufcZp3W+6AbQJWdiw0fWNUsQ5z9XR3YQ667LKakvMxBPsciDx9RzBrsMV3KQU+dMivBSXU1yVtYwIcrMG8=
+	t=1725542659; cv=none; b=cOKOsHGGqPGqdH5Vz0HzO2XQJL64195g9yLB6mZEDwIkyjTeAiN2r0PQukJ4GGVTiAnb7ljp3DyJAOh0G9bqkv/Op1TaqErpqOaZIgil6zztLFR8WdyRzFGgjuJ3TPXxZ2/0ZhN8Pp/qnZH7+iu2PJfioZ6qxBMDPU4vMgKm4hc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1725542585; c=relaxed/simple;
-	bh=kidWxzS9Q95Q5dbm7Dd7JdsGGV+Dkyu2kbgsrCl8iIc=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=kNU5cdrE0gR/10pEHUEI1VUhaQB82kUYr/omf0dO7OZN/nG7Kf8yvErMvukHulBfwcuMyA+Owrwa3h6et9PhQ2K1FqkuJpf9OtT9WgcPIZm2wkVBsLlv/7IkU976f3sJAXpeOBCXBoGnPXWG9m7bZCap0NBO8OxVoH5D8wD46YA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org; spf=pass smtp.mailfrom=linaro.org; dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b=UnodgqYV; arc=none smtp.client-ip=209.85.167.53
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linaro.org
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="UnodgqYV"
-Received: by mail-lf1-f53.google.com with SMTP id 2adb3069b0e04-53438aa64a4so815818e87.3
-        for <iommu@lists.linux.dev>; Thu, 05 Sep 2024 06:23:02 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1725542581; x=1726147381; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=vgOzNn37XJnh9r05Bul3VVmu7PlnqW66dmTY+HEc/b0=;
-        b=UnodgqYVnGVybJI2gLT/+kvn1adQzauqF+KLl+d8FuqZlmE4ufD14W4fbMwDNGmg2/
-         jR0M8Ih7hL1FUBLTrOICIOPWHmYlK/q91UcxgSXzs6uPsgF4Fta3gJg/6JzZAtP2a/f9
-         Dk3XcKjxPO3AKM2/f7mH0kkxli8v9VmzWBxGbC+KsJAJgJidkNpjKTJWJU5Dc0w6iP1r
-         RCmjIWSdYVYwMbXZAuEVW1iR7hHiNKBal5bXF/NMAZCXkKV4Pl7OwWtAnNGVWC9SDV4G
-         me9VyhV6wp4BpZ2wZhrSmSUFxp7+xKPcePz7AaBCDndWDP9ZKwKU1dxKsAaO1gtS44fJ
-         RfWg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1725542581; x=1726147381;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=vgOzNn37XJnh9r05Bul3VVmu7PlnqW66dmTY+HEc/b0=;
-        b=QhtZT/+8Ww2msVQWFHumxESmg67NY89KpDJ+03vtlSWlP+9/44u7agWH0Qf2hX+iHR
-         FiZ7GmMWaiGL1WGiAcnjoQxZioNJ8eJlpMvxjTjJUY/ny3bo9iXB+FGbN8ZjO63WxfdB
-         e38jJJ9ExoCM9yyUH7njpzG+7b36cc4x7S3zudBBZHOp8YBplah3NZ8s4F0TBpRsMQ8y
-         A8gwSeFzfOhulGP5nCQI85dXhQcQt4eCr8nPvOj3e6/PRZlcpknSZw9RUM2D3wU/iNXQ
-         APKeXv4Hd36DEFEQEGQOyOmHOc6bScc9YpSpbYA0p3ZzYcHvIm5VGRH4jkFjFpWIoXEC
-         MXsQ==
-X-Forwarded-Encrypted: i=1; AJvYcCXa6P1BTejmcZY7fON6XriDgZzikhEf6DXMemfRB8PkPU4zyQM41/PF8BJMCo5FNIw/NHTCaw==@lists.linux.dev
-X-Gm-Message-State: AOJu0Yxg5sVyqzC1Ekvqhp93VAsH59gnvQHGxJeBfArQRr0+jz2B4Q70
-	STCc3sgQTBVVDM41mWhJGvejHWgSp6ipp5cyjrbfcApCinqkC8FTTXFyeXhuAfI=
-X-Google-Smtp-Source: AGHT+IFQNXuLaQLGzDvCoIvfmxCmDxrL6iOajkCgUhh3bCEud0vFaRWrE+nDSh1i5VB6t3aa0vfOqg==
-X-Received: by 2002:a05:6512:2c90:b0:535:698e:6e2e with SMTP id 2adb3069b0e04-535698e718dmr3322918e87.18.1725542579933;
-        Thu, 05 Sep 2024 06:22:59 -0700 (PDT)
-Received: from eriador.lumag.spb.ru (2001-14ba-a0c3-3a00--7a1.rev.dnainternet.fi. [2001:14ba:a0c3:3a00::7a1])
-        by smtp.gmail.com with ESMTPSA id 2adb3069b0e04-535681cfa59sm434490e87.187.2024.09.05.06.22.58
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 05 Sep 2024 06:22:59 -0700 (PDT)
-Date: Thu, 5 Sep 2024 16:22:57 +0300
-From: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
-To: Nikunj Kela <quic_nkela@quicinc.com>
-Cc: Krzysztof Kozlowski <krzk@kernel.org>, andersson@kernel.org, 
-	konradybcio@kernel.org, robh@kernel.org, krzk+dt@kernel.org, conor+dt@kernel.org, 
-	rafael@kernel.org, viresh.kumar@linaro.org, herbert@gondor.apana.org.au, 
-	davem@davemloft.net, sudeep.holla@arm.com, andi.shyti@kernel.org, tglx@linutronix.de, 
-	will@kernel.org, robin.murphy@arm.com, joro@8bytes.org, jassisinghbrar@gmail.com, 
-	lee@kernel.org, linus.walleij@linaro.org, amitk@kernel.org, 
-	thara.gopinath@gmail.com, broonie@kernel.org, cristian.marussi@arm.com, 
-	rui.zhang@intel.com, lukasz.luba@arm.com, wim@linux-watchdog.org, linux@roeck-us.net, 
-	linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, 
-	linux-pm@vger.kernel.org, linux-crypto@vger.kernel.org, arm-scmi@vger.kernel.org, 
-	linux-arm-kernel@lists.infradead.org, linux-i2c@vger.kernel.org, iommu@lists.linux.dev, 
-	linux-gpio@vger.kernel.org, linux-serial@vger.kernel.org, linux-spi@vger.kernel.org, 
-	linux-watchdog@vger.kernel.org, kernel@quicinc.com, quic_psodagud@quicinc.com, 
-	Praveen Talari <quic_ptalari@quicinc.com>
-Subject: Re: [PATCH v2 16/21] dt-bindings: spi: document support for SA8255p
-Message-ID: <vk2jiq2rjgz7fdoq65qdhxdx37lbkoe4uq2c2fmu7aiu3c5pmn@l5skg7xvogun>
-References: <20240828203721.2751904-1-quic_nkela@quicinc.com>
- <20240903220240.2594102-1-quic_nkela@quicinc.com>
- <20240903220240.2594102-17-quic_nkela@quicinc.com>
- <66458a5c-5054-44ac-914f-e66281ee43a9@kernel.org>
- <9394ce8b-9a43-485b-8d7f-33930251ccac@quicinc.com>
+	s=arc-20240116; t=1725542659; c=relaxed/simple;
+	bh=rM/wBWPr26fVgdZjczjk5Z21mwxZ3d1vEzmRuZNZLnY=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=sJMWqzxIywtYAUGsMhR8aBC0iDpZIjjqylxDIYk8T+HU50zfaO3+uVGtWps7dp69h56R16okXZsIoTs/uNue38hcfaOE9byGKWHfeLjYetrTWtTahdKWqQ7celtIMtrj8gtL23KIX+N0crYExxRqKTrjP9qqr7ywUeCP8yT/Zfw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; arc=none smtp.client-ip=217.140.110.172
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 7C1A5FEC;
+	Thu,  5 Sep 2024 06:24:44 -0700 (PDT)
+Received: from [10.1.196.40] (e121345-lin.cambridge.arm.com [10.1.196.40])
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 6ED823F73F;
+	Thu,  5 Sep 2024 06:24:16 -0700 (PDT)
+Message-ID: <fb54ef8d-f769-47d5-8a9d-aa93f96d5c41@arm.com>
+Date: Thu, 5 Sep 2024 14:24:14 +0100
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <9394ce8b-9a43-485b-8d7f-33930251ccac@quicinc.com>
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH] Revert "iommu/io-pgtable-arm: Optimise non-coherent
+ unmap"
+To: Rob Clark <robdclark@gmail.com>, iommu@lists.linux.dev
+Cc: linux-arm-msm@vger.kernel.org, freedreno@lists.freedesktop.org,
+ Ashish Mhetre <amhetre@nvidia.com>, Rob Clark <robdclark@chromium.org>,
+ Will Deacon <will@kernel.org>, Joerg Roedel <joro@8bytes.org>,
+ "moderated list:ARM SMMU DRIVERS" <linux-arm-kernel@lists.infradead.org>,
+ open list <linux-kernel@vger.kernel.org>
+References: <20240905124956.84932-1-robdclark@gmail.com>
+From: Robin Murphy <robin.murphy@arm.com>
+Content-Language: en-GB
+In-Reply-To: <20240905124956.84932-1-robdclark@gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-On Wed, Sep 04, 2024 at 05:49:40AM GMT, Nikunj Kela wrote:
+On 05/09/2024 1:49 pm, Rob Clark wrote:
+> From: Rob Clark <robdclark@chromium.org>
 > 
-> On 9/4/2024 12:48 AM, Krzysztof Kozlowski wrote:
-> > On 04/09/2024 00:02, Nikunj Kela wrote:
-> >> Add compatible representing spi support on SA8255p.
-> >>
-> >> Clocks and interconnects are being configured in firmware VM
-> >> on SA8255p platform, therefore making them optional.
-> >>
-> >> CC: Praveen Talari <quic_ptalari@quicinc.com>
-> >> Signed-off-by: Nikunj Kela <quic_nkela@quicinc.com>
-> > Also this is incomplete - adding compatible without driver change is not
-> > expected. It cannot even work.
-> >
-> > Best regards,
-> > Krzysztof
+> This reverts commit 85b715a334583488ad7fbd3001fe6fd617b7d4c0.
 > 
-> Link for CLO branch is provided in I2C patch series. The driver changes
-> will soon follow.
+> It was causing gpu smmu faults on x1e80100.
+> 
+> I _think_ what is causing this is the change in ordering of
+> __arm_lpae_clear_pte() (dma_sync_single_for_device() on the pgtable
+> memory) and io_pgtable_tlb_flush_walk().
 
-So, what's the point of posting the dt-bindings without corresponding
-driver changes?
+As I just commented, how do you believe the order of operations between:
 
--- 
-With best wishes
-Dmitry
+	__arm_lpae_clear_pte();
+  	if (!iopte_leaf()) {
+  		io_pgtable_tlb_flush_walk();
+
+and:
+  	
+  	if (!iopte_leaf()) {
+		__arm_lpae_clear_pte();
+  		io_pgtable_tlb_flush_walk();
+
+fundamentally differs?
+
+I'm not saying there couldn't be some subtle bug in the implementation 
+which we've all missed, but I still can't see an issue with the intended 
+logic.
+
+>  I'm not entirely sure how
+> this patch is supposed to work correctly in the face of other
+> concurrent translations (to buffers unrelated to the one being
+> unmapped(), because after the io_pgtable_tlb_flush_walk() we can have
+> stale data read back into the tlb.
+
+Read back from where? The ex-table PTE which was already set to zero 
+before tlb_flush_walk was called?
+
+And isn't the hilariously overcomplicated TBU driver supposed to be 
+telling you exactly what happened here? Otherwise I'm going to continue 
+to seriously question the purpose of shoehorning that upstream at all...
+
+Thanks,
+Robin.
+
+> Signed-off-by: Rob Clark <robdclark@chromium.org>
+> ---
+>   drivers/iommu/io-pgtable-arm.c | 31 ++++++++++++++-----------------
+>   1 file changed, 14 insertions(+), 17 deletions(-)
+> 
+> diff --git a/drivers/iommu/io-pgtable-arm.c b/drivers/iommu/io-pgtable-arm.c
+> index 16e51528772d..85261baa3a04 100644
+> --- a/drivers/iommu/io-pgtable-arm.c
+> +++ b/drivers/iommu/io-pgtable-arm.c
+> @@ -274,13 +274,13 @@ static void __arm_lpae_sync_pte(arm_lpae_iopte *ptep, int num_entries,
+>   				   sizeof(*ptep) * num_entries, DMA_TO_DEVICE);
+>   }
+>   
+> -static void __arm_lpae_clear_pte(arm_lpae_iopte *ptep, struct io_pgtable_cfg *cfg, int num_entries)
+> +static void __arm_lpae_clear_pte(arm_lpae_iopte *ptep, struct io_pgtable_cfg *cfg)
+>   {
+> -	for (int i = 0; i < num_entries; i++)
+> -		ptep[i] = 0;
+>   
+> -	if (!cfg->coherent_walk && num_entries)
+> -		__arm_lpae_sync_pte(ptep, num_entries, cfg);
+> +	*ptep = 0;
+> +
+> +	if (!cfg->coherent_walk)
+> +		__arm_lpae_sync_pte(ptep, 1, cfg);
+>   }
+>   
+>   static size_t __arm_lpae_unmap(struct arm_lpae_io_pgtable *data,
+> @@ -653,28 +653,25 @@ static size_t __arm_lpae_unmap(struct arm_lpae_io_pgtable *data,
+>   		max_entries = ARM_LPAE_PTES_PER_TABLE(data) - unmap_idx_start;
+>   		num_entries = min_t(int, pgcount, max_entries);
+>   
+> -		/* Find and handle non-leaf entries */
+> -		for (i = 0; i < num_entries; i++) {
+> -			pte = READ_ONCE(ptep[i]);
+> +		while (i < num_entries) {
+> +			pte = READ_ONCE(*ptep);
+>   			if (WARN_ON(!pte))
+>   				break;
+>   
+> -			if (!iopte_leaf(pte, lvl, iop->fmt)) {
+> -				__arm_lpae_clear_pte(&ptep[i], &iop->cfg, 1);
+> +			__arm_lpae_clear_pte(ptep, &iop->cfg);
+>   
+> +			if (!iopte_leaf(pte, lvl, iop->fmt)) {
+>   				/* Also flush any partial walks */
+>   				io_pgtable_tlb_flush_walk(iop, iova + i * size, size,
+>   							  ARM_LPAE_GRANULE(data));
+>   				__arm_lpae_free_pgtable(data, lvl + 1, iopte_deref(pte, data));
+> +			} else if (!iommu_iotlb_gather_queued(gather)) {
+> +				io_pgtable_tlb_add_page(iop, gather, iova + i * size, size);
+>   			}
+> -		}
+>   
+> -		/* Clear the remaining entries */
+> -		__arm_lpae_clear_pte(ptep, &iop->cfg, i);
+> -
+> -		if (gather && !iommu_iotlb_gather_queued(gather))
+> -			for (int j = 0; j < i; j++)
+> -				io_pgtable_tlb_add_page(iop, gather, iova + j * size, size);
+> +			ptep++;
+> +			i++;
+> +		}
+>   
+>   		return i * size;
+>   	} else if (iopte_leaf(pte, lvl, iop->fmt)) {
