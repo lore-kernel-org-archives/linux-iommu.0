@@ -1,130 +1,48 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from verein.lst.de (verein.lst.de [213.95.11.211])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EC827199E88;
-	Thu,  5 Sep 2024 11:31:00 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 18FB219882C
+	for <iommu@lists.linux.dev>; Thu,  5 Sep 2024 11:32:01 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=213.95.11.211
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1725535861; cv=none; b=P3iGQPd6weBtBghUi3vOJRrsovJaddphKTdrq6R+AibnbMafsA82ojtyQ+GBKPQUDjDzHYDyM0Gv3uph/sbIbi3g3Kq5SK5ZRE8hg5HGKZfE/Dj0bQKFbDVzsSCBfwwya6CviSF+Xg/LJs2rskaCCVxd8cZENfqiczMAegNYAg8=
+	t=1725535924; cv=none; b=i+BmLVUd51mF+gktbx99s0xiyz9WS8omXtD/tzEcDIZLXE6PeVgYWWiY/oPVF2RO+TnMdUb3Qmg2MLrcOgR0ib3+fsnE7EYI5D3IJtPW/VJHLvIAmmniGa/sm+UJs+Y6MNb8thK8RqUC99eGBCAF1ZJH9fQZ3F0FYJQRB711BRg=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1725535861; c=relaxed/simple;
-	bh=aTcY6lnCeCXuN+hBR/lTjApexCcG5nl9Skw7Ca45bF0=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=NxM+GTcKCpfZZQRk46TPSy+x5CAnSQyk9C+mGLA7QzJQ1tmWAKVSDQEwah3IvS176UztJZ2qG2k29bCn6NpIBSaoz3KpAPpZz53vrLGyw/wL4QKkbWXsPOIpHVTW8Umm+FZDlfizfY8bDvAjqyLC+OgqbuG1qyzaGue6FJJYL4w=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=X7GKr78v; arc=none smtp.client-ip=10.30.226.201
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="X7GKr78v"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3E207C4CEC3;
-	Thu,  5 Sep 2024 11:30:52 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1725535860;
-	bh=aTcY6lnCeCXuN+hBR/lTjApexCcG5nl9Skw7Ca45bF0=;
-	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-	b=X7GKr78v0KZSNjtPief4MGOvOX4Z7dQlMmWRBIpTU1p13LSzit5Su1pTaielep1O7
-	 nFVcp3oxh6jjpSMAIINYxPiRmE+AKjLiCo1KluI7uRmpH8IM8bjm+5uOgWvRRrW34Q
-	 SEIl6tqmJE+99KgmZZBjoJXm5YYjbvB9/+xlkE6SVOSYibxY33HZlmGVFMhg/ePM25
-	 AqHzGdkKE2cumqW4AGDK7UMY1dK/zM/1MfbPQGBPXFfTi/LMxxRJ22WQ+u97zxcsUS
-	 PT/P9fsSxWW9VT8MvPSPcrSawtpyg+Eaqh7U5bZdYSpr5RcoMaiZaDa94gU6n0rCC2
-	 J4BIvJw8awzOQ==
-Message-ID: <d5e338fe-bd38-49f7-b69f-fc27f9f87495@kernel.org>
-Date: Thu, 5 Sep 2024 13:30:49 +0200
+	s=arc-20240116; t=1725535924; c=relaxed/simple;
+	bh=T7WiwVoh2MQnzNFVZdq26Es8RT3gR+RuYUQYn6pY3dI=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=fAYAfk0b0aA9K0xlGqsHIgya6AklI0s1Mw3IyVn1wwm+8k2a9KvOTptONawCIDA7DM7DAckDt7msFhiIarviKqhryOaTpBF78ey88yMCY/zbF/3lWZuwbGlYJZoif24prtxi3pDwLtjbmYC/iC2HoZ09M84qR3RJQ6R3LwPGSYs=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=lst.de; spf=pass smtp.mailfrom=lst.de; arc=none smtp.client-ip=213.95.11.211
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=lst.de
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=lst.de
+Received: by verein.lst.de (Postfix, from userid 2407)
+	id 18C5268AFE; Thu,  5 Sep 2024 13:31:52 +0200 (CEST)
+Date: Thu, 5 Sep 2024 13:31:51 +0200
+From: Christoph Hellwig <hch@lst.de>
+To: Leon Romanovsky <leon@kernel.org>
+Cc: Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
+	Robin Murphy <robin.murphy@arm.com>, Christoph Hellwig <hch@lst.de>,
+	Marek Szyprowski <m.szyprowski@samsung.com>,
+	Leon Romanovsky <leonro@nvidia.com>, iommu@lists.linux.dev,
+	linux-kernel@vger.kernel.org,
+	=?iso-8859-1?Q?N=EDcolas_F_=2E_R_=2E_A_=2E?= Prado <nfraprado@collabora.com>
+Subject: Re: [PATCH] dma-mapping: Use IOMMU DMA calls for common alloc/free
+ page calls
+Message-ID: <20240905113151.GA25243@lst.de>
+References: <62ce544e41d233eb6f591514a53f2eaabf488a7b.1725519850.git.leonro@nvidia.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH 06/19] dt-bindings: power: rpmpd: Add QCS8300 power
- domains
-To: Jingyi Wang <quic_jingyw@quicinc.com>,
- Bjorn Andersson <andersson@kernel.org>,
- Mathieu Poirier <mathieu.poirier@linaro.org>, Rob Herring <robh@kernel.org>,
- Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley
- <conor+dt@kernel.org>, Bartosz Golaszewski <bartosz.golaszewski@linaro.org>,
- Vinod Koul <vkoul@kernel.org>, Kishon Vijay Abraham I <kishon@kernel.org>,
- Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>,
- Alim Akhtar <alim.akhtar@samsung.com>, Avri Altman <avri.altman@wdc.com>,
- Bart Van Assche <bvanassche@acm.org>, Andy Gross <agross@kernel.org>,
- Ulf Hansson <ulf.hansson@linaro.org>, Thomas Gleixner <tglx@linutronix.de>,
- Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
- Joerg Roedel <joro@8bytes.org>, Konrad Dybcio <konradybcio@kernel.org>,
- Robert Marko <robimarko@gmail.com>, Das Srinagesh <quic_gurus@quicinc.com>,
- Jassi Brar <jassisinghbrar@gmail.com>, Lee Jones <lee@kernel.org>,
- Srinivas Kandagatla <srinivas.kandagatla@linaro.org>,
- Catalin Marinas <catalin.marinas@arm.com>
-Cc: linux-arm-msm@vger.kernel.org, linux-remoteproc@vger.kernel.org,
- devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
- linux-phy@lists.infradead.org, linux-scsi@vger.kernel.org,
- linux-pm@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
- iommu@lists.linux.dev, Shazad Hussain <quic_shazhuss@quicinc.com>,
- Tingguo Cheng <quic_tingguoc@quicinc.com>
-References: <20240904-qcs8300_initial_dtsi-v1-0-d0ea9afdc007@quicinc.com>
- <20240904-qcs8300_initial_dtsi-v1-6-d0ea9afdc007@quicinc.com>
-Content-Language: en-US
-From: Konrad Dybcio <konradybcio@kernel.org>
-In-Reply-To: <20240904-qcs8300_initial_dtsi-v1-6-d0ea9afdc007@quicinc.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <62ce544e41d233eb6f591514a53f2eaabf488a7b.1725519850.git.leonro@nvidia.com>
+User-Agent: Mutt/1.5.17 (2007-11-01)
 
-On 4.09.2024 10:33 AM, Jingyi Wang wrote:
-> From: Shazad Hussain <quic_shazhuss@quicinc.com>
-> 
-> Add compatible and constants for the power domains exposed by the RPMH
-> in the Qualcomm QCS8300 platform.
-> 
-> Signed-off-by: Shazad Hussain <quic_shazhuss@quicinc.com>
-> Signed-off-by: Tingguo Cheng <quic_tingguoc@quicinc.com>
-> Signed-off-by: Jingyi Wang <quic_jingyw@quicinc.com>
-> ---
->  .../devicetree/bindings/power/qcom,rpmpd.yaml         |  1 +
->  include/dt-bindings/power/qcom-rpmpd.h                | 19 +++++++++++++++++++
->  2 files changed, 20 insertions(+)
-> 
-> diff --git a/Documentation/devicetree/bindings/power/qcom,rpmpd.yaml b/Documentation/devicetree/bindings/power/qcom,rpmpd.yaml
-> index 929b7ef9c1bc..be1a9cb71a9b 100644
-> --- a/Documentation/devicetree/bindings/power/qcom,rpmpd.yaml
-> +++ b/Documentation/devicetree/bindings/power/qcom,rpmpd.yaml
-> @@ -32,6 +32,7 @@ properties:
->            - qcom,msm8998-rpmpd
->            - qcom,qcm2290-rpmpd
->            - qcom,qcs404-rpmpd
-> +          - qcom,qcs8300-rpmhpd
->            - qcom,qdu1000-rpmhpd
->            - qcom,qm215-rpmpd
->            - qcom,sa8155p-rpmhpd
-> diff --git a/include/dt-bindings/power/qcom-rpmpd.h b/include/dt-bindings/power/qcom-rpmpd.h
-> index 608087fb9a3d..7dd7b9ebc480 100644
-> --- a/include/dt-bindings/power/qcom-rpmpd.h
-> +++ b/include/dt-bindings/power/qcom-rpmpd.h
-> @@ -4,6 +4,25 @@
->  #ifndef _DT_BINDINGS_POWER_QCOM_RPMPD_H
->  #define _DT_BINDINGS_POWER_QCOM_RPMPD_H
->  
-> +/* QCS8300 Power Domain Indexes */
-> +#define QCS8300_CX	0
-> +#define QCS8300_CX_AO	1
-> +#define QCS8300_DDR	2
-> +#define QCS8300_EBI	3
-> +#define QCS8300_GFX	4
-> +#define QCS8300_LCX	5
-> +#define QCS8300_LMX	6
-> +#define QCS8300_MMCX	7
-> +#define QCS8300_MMCX_AO	8
-> +#define QCS8300_MSS	9
-> +#define QCS8300_MX	10
-> +#define QCS8300_MX_AO	11
-> +#define QCS8300_MXC	12
-> +#define QCS8300_MXC_AO	13
-> +#define QCS8300_NSP0	14
-> +#define QCS8300_NSP1	15
-> +#define QCS8300_XO	16
+Thanks  applied.
 
-Some time ago we moved RPM*h*pd to common defines.. we should
-definitely do the same here. Please reuse the RPMPD_xxx definitions
-from [1] and credit Rohit in the commit message, as he did some
-processing on that to make sure they're ordered based on usage
+I'm not entirely sure if simply duplicating the helper logic in dma-iommu
+would be better, but unless Robin has a strong preference we can just
+go with this version for now.
 
-Konrad
-
-[1] https://lore.kernel.org/all/1688647793-20950-2-git-send-email-quic_rohiagar@quicinc.com/
