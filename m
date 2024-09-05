@@ -1,170 +1,279 @@
-Received: from NAM10-DM6-obe.outbound.protection.outlook.com (mail-dm6nam10on2088.outbound.protection.outlook.com [40.107.93.88])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-pl1-f177.google.com (mail-pl1-f177.google.com [209.85.214.177])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9051CFBF6
-	for <iommu@lists.linux.dev>; Thu,  5 Sep 2024 16:05:08 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.93.88
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1725552310; cv=fail; b=uI929fFESffQtmHNsE2C10QLl8JRa/oQWYIRZM49h9Pm+XiZDmFZsQCkpi//8olTC6MzeDacX1a3TBPE3abKTMRYJJyZjiAWPO+5Guz2pBj0Z/FQ9wgGEm+hU90vFnZbb/CDcbe0N2e7n5E/BrEgV/bZjeXPPbk4SP76315SEtU=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1725552310; c=relaxed/simple;
-	bh=bsWX2CGjjsAZzOtx5FWlLYxgCXLpJgUOjeq8ziJHIbA=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:Content-Type:
-	 Content-Disposition:In-Reply-To:MIME-Version; b=Vkm/9p3aGfU7E8IGs8uV//MstYzTcaxp6O7vgpJ5aPVouMjtWhCUBFTQqxp4Z973aq4bYNm+rAnO5ge2SUvIscfT0O0oOP37Ws3GX9dxcRynx+AlPZPj2G5ax3TCyFJVdkwGwxgVQRBiQRZ7iWlup9dyg6W5sOsig8vxaJYWGR8=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=ryjZAvHi; arc=fail smtp.client-ip=40.107.93.88
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8FFFD4AEF5
+	for <iommu@lists.linux.dev>; Thu,  5 Sep 2024 16:06:41 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.177
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1725552404; cv=none; b=sDTP8YRoM6xbZyiEWLTGi+hr1mGOcBE/LLUS1SSkIyHlpOkmErtCWerIqk072qSuRzBNkKcvNmQiISRYqP8tRKR/LrNELdV9Rxgx+lmEe6M9RkqLRkkdnXQH7A083NThmyU9w87O1SsbwPMhXbT58967TQFVWTPXxOdvs9x13fI=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1725552404; c=relaxed/simple;
+	bh=06f2z3YWOXnCV6KDNAI1EHdlH88PSFaLdb30+6TtAKU=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=G/6fFDO39qcMjRM3eluE4YoH/ACG/nIoH8l4YiND+Eb2SKvQyQ/Jo5dhsdPKMhDoMs8XaJrb3SxD5NxZVbVBRE70iElisOLKifnxHg74feoMp0MaJ8VaYXXwzTMqO0k8SoxZeTbBYkCA79QVrNIHfHeJ91vGxXJKQ4jxlhmWG9I=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=F9oR0amf; arc=none smtp.client-ip=209.85.214.177
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="ryjZAvHi"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=nK0G8KdP2HveFm7T4fBRUUuI+Ko7jiXZsVGeSGPuGAb1V/FcDmbO1c3wFua4IwpqMo3S9EYi15+2v/G28EOcFBvJ0P+QRspLTcw4LyDYNL3zBfbra5tAAnGDkmZ1c668pMqRx0nZaPliK4zSKpC45ZMbRpBAV9yu20rZyvTh17kEzwbHQtQTcQZ/QE5Uy0mgBrHiId7oMm2lz3nA4Ap2gtkJv51KL1ofPpm+weUB4WrtwNuuaxamQDLkrcT9GVERtX5bNC90qtdycQXo3hlhocZF4kQCvMUPrg86RAIY7QD6Cfn5Aa198vJ3yL0Qaztng8/qSfuPtvBb5kEX+Xowvw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=w3uLjvYVv9caHuZIpGX+LlN6v5j5cnAToY46Jsu1S5c=;
- b=tro1uANV+5Yt8uRdVxoR1qtyyg9jwrbbvPxEUJ6G9h6tgXye+wfQB/ESye3ddWXvsKiYUvpoT429hNhS7OJZkahOgbHxwXtqXje7KXiwpuqujwdzBuTi4wxAfivQfVWifiltE70Z5wwDj+ZvcX6o8PtP8vU+GipsItswbBZcMroeeIo5qnUMRN+fnEa60mPJkL+I6FxACnicqdtSzAtgD/MX279MNDJ8DIHQmCQaqr7jpiJkS4TkG1Zzm5NmPg0UVMpHHO8jqbOu4f6D3xtpsf+dJa5VZIfx+d/PcMun3twbdltK80bOrrr0jNWRz/61roAbMYiIpbwBTDtVEzAS2g==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=w3uLjvYVv9caHuZIpGX+LlN6v5j5cnAToY46Jsu1S5c=;
- b=ryjZAvHiiJtkZ418c92grpez3V7Y5EhjlfEt3LbDoum/SN7M7Ub0r/gZHaAk6/+atm1D13889uhXAd7O6qvQpRc9r75ddERTDu9GxNYFcnWve7/BRuW4kivuPj6QPvWOjxXq0N+3AinQ3GmpgTh03BLK/87iFvSVdCHtKRSrCm6YKAVANV+edNBdelrB/d1jv5YiY6x/IRZkm44mwK6jZanj6TEkEVFPtUAPwBfiohiKZNUO5b6XgBVtQRptOABijaan0mAVDBF4slAhNOGzXv39IjvMXFjHi7p/nvAntxf5zuZQIo/X5ThVVU7e+lCKBulmF0TErlATPGoq1FiHBg==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-Received: from CH3PR12MB7763.namprd12.prod.outlook.com (2603:10b6:610:145::10)
- by MW4PR12MB6825.namprd12.prod.outlook.com (2603:10b6:303:20d::17) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7918.28; Thu, 5 Sep
- 2024 16:05:05 +0000
-Received: from CH3PR12MB7763.namprd12.prod.outlook.com
- ([fe80::8b63:dd80:c182:4ce8]) by CH3PR12MB7763.namprd12.prod.outlook.com
- ([fe80::8b63:dd80:c182:4ce8%3]) with mapi id 15.20.7918.024; Thu, 5 Sep 2024
- 16:05:05 +0000
-Date: Thu, 5 Sep 2024 13:05:04 -0300
-From: Jason Gunthorpe <jgg@nvidia.com>
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="F9oR0amf"
+Received: by mail-pl1-f177.google.com with SMTP id d9443c01a7336-20546b8e754so248995ad.1
+        for <iommu@lists.linux.dev>; Thu, 05 Sep 2024 09:06:41 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20230601; t=1725552401; x=1726157201; darn=lists.linux.dev;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=0Uuf1DXGf38xZCtdCxBraq1atf4CT+75BadBjIhqd5w=;
+        b=F9oR0amfRFLSshc7yrOOJeg7Q2aKed4VsL/VEmw/ysZ+14yOPrQbWCjaHo0fvNxI3N
+         zWFxqxp94s66inHC3CTEhM0UOrpLHRnBUVM1rEyB5/ex1JnHvkYRYbDXlF0iuUsJ2iwZ
+         9bDA4CpCY5hmPP93k42myjlff/qbIOmb+xhOQ/om/HSjpl7BvyFj0WSpc5IHjmrULJDT
+         vOkVTWHFCOF4d0Iw5b4yn0rQpqFri7961Mr/BwK+pb76Q4aOvKzBYxz97Lr06FKyDjxE
+         +2IjPegG/GnJ8N7HmnqlivbVVHhOkpah4pxP8TtMvlca9v2kbSwsxv6PZXp72uGQcBCG
+         kTxw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1725552401; x=1726157201;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=0Uuf1DXGf38xZCtdCxBraq1atf4CT+75BadBjIhqd5w=;
+        b=deInyuH43evDW326O5WEXCmjKEH9N/pJvxcL5p7Wp9GNm5w8ztBMSragQg4AKZUq4B
+         xW9znJbIa4+BLuoQt9Aiq0Jv6uEvsVxgAFGfPlA5mrLY026YkTG1UbUXE0B/obP0C8tg
+         Jaqmam1djVS0eqCiICjasv5rN+m4v4oILGV779mGWwnUeasdNw5LNT209W2VDW89ajCw
+         glJ/cKSpS7bz/wXjYghyREVB62dl980NT2NSnnPIr8MitrkzsBeqGtgB5L8MmFHpNDWn
+         8dq4Z8FtYpDMkprvGZ1DtmhtoFBhwHE86LxMa4Ak7fVklbNNhB7doh/PUksQlC7tXBz7
+         bjcw==
+X-Forwarded-Encrypted: i=1; AJvYcCWfpSt5zgBB2CFje6CPZsk8Qa0FPYMcCDBtfbIWVAEf/LgIEe7jIdj6OSbR5U8mOYzSUUGLaA==@lists.linux.dev
+X-Gm-Message-State: AOJu0YxNl2hRcYJG+ktj2LAUffG9fxkjGhe9nJzrTHtE3HCUzZrhCKl2
+	bKlV7QAhsc2xgWob5n6NElWGrjPhkRbDgxtAcKJrce+JScPQQHhJ/K0ccKjs765oA4nqynTF3mr
+	OWA==
+X-Google-Smtp-Source: AGHT+IGWy13DxvLS8K17pmxDGUBkxFXcjzvU8RO/2RKiwpAO7/OxStb99Fys+L7g5ZVeJZqwWhsmEQ==
+X-Received: by 2002:a17:903:234d:b0:206:bf6e:6001 with SMTP id d9443c01a7336-206d37adc8bmr3157705ad.17.1725552399349;
+        Thu, 05 Sep 2024 09:06:39 -0700 (PDT)
+Received: from google.com (202.141.197.35.bc.googleusercontent.com. [35.197.141.202])
+        by smtp.gmail.com with ESMTPSA id d2e1a72fcca58-717785b4b4bsm3389215b3a.199.2024.09.05.09.06.37
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 05 Sep 2024 09:06:38 -0700 (PDT)
+Date: Thu, 5 Sep 2024 16:06:24 +0000
+From: Pranjal Shrivastava <praan@google.com>
 To: Nicolin Chen <nicolinc@nvidia.com>
-Cc: kevin.tian@intel.com, will@kernel.org, joro@8bytes.org,
-	suravee.suthikulpanit@amd.com, robin.murphy@arm.com,
-	dwmw2@infradead.org, baolu.lu@linux.intel.com, shuah@kernel.org,
-	linux-kernel@vger.kernel.org, iommu@lists.linux.dev,
-	linux-arm-kernel@lists.infradead.org,
-	linux-kselftest@vger.kernel.org, eric.auger@redhat.com,
-	jean-philippe@linaro.org, mdf@kernel.org, mshavit@google.com,
-	shameerali.kolothum.thodi@huawei.com, smostafa@google.com,
-	yi.l.liu@intel.com
-Subject: Re: [PATCH v2 08/19] iommufd/viommu: Add cache_invalidate for
- IOMMU_VIOMMU_TYPE_DEFAULT
-Message-ID: <20240905160504.GQ1358970@nvidia.com>
-References: <cover.1724776335.git.nicolinc@nvidia.com>
- <224732696abf91f220585bb26fa44314d7d2f425.1724776335.git.nicolinc@nvidia.com>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <224732696abf91f220585bb26fa44314d7d2f425.1724776335.git.nicolinc@nvidia.com>
-X-ClientProxiedBy: BLAPR03CA0045.namprd03.prod.outlook.com
- (2603:10b6:208:32d::20) To CH3PR12MB7763.namprd12.prod.outlook.com
- (2603:10b6:610:145::10)
+Cc: Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
+	Robin Murphy <robin.murphy@arm.com>,
+	Mostafa Saleh <smostafa@google.com>,
+	"iommu@lists.linux.dev" <iommu@lists.linux.dev>,
+	Daniel Mentz <danielmentz@google.com>
+Subject: Re: [PATCH v2 1/2] iommu/arm-smmu-v3: Print better events records
+Message-ID: <ZtnXADX3b6qdqVs0@google.com>
+References: <20240827193026.3993039-1-praan@google.com>
+ <20240827193026.3993039-2-praan@google.com>
+ <ZtAW0hVPFD6JbLTL@Asurada-Nvidia>
+ <ZtEKMknbGaD9q170@google.com>
+ <ZtEkUQ7tI3Nb0NOc@Asurada-Nvidia>
+ <ZtV1-IL8AZu--jGp@google.com>
+ <ZtZEFKnKasX6433r@Asurada-Nvidia>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: CH3PR12MB7763:EE_|MW4PR12MB6825:EE_
-X-MS-Office365-Filtering-Correlation-Id: a610e0c3-21f0-43b7-7310-08dccdc48175
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;ARA:13230040|1800799024|7416014|376014|366016;
-X-Microsoft-Antispam-Message-Info:
-	=?us-ascii?Q?7eVEXbID3xhEfKCCW1FbMiLzr7+jf4W22nG/hASP4IFCsQe/zuzwBHg/FZbJ?=
- =?us-ascii?Q?GoKQaOtIQemiqDE5PvGhWYPsY89HGWWnaeqXU5bkhrz1DOMO1AGnOhAgYSAN?=
- =?us-ascii?Q?1WJRU7eMzhRHk4P+DoEcZp6S4kqAr8UuMCFwmzjScexpRR6XEZPctj+MCuWa?=
- =?us-ascii?Q?aNqAk4HXlPBGF9kIj4EERPpKRcgKidfoK8+je5Hp34FtQS9uXISvJ87jUPp6?=
- =?us-ascii?Q?6gq+pPSWgGfpc/h/++Zhp+p+7672y82/SteRHd8GV1FFaRSx4eXw8AKwH1aQ?=
- =?us-ascii?Q?+RWXFo1NZBgOyvOY0Rjobj/YTqD8x8NaT8Bd38GUdG/T38qL79xVgJqwfLTt?=
- =?us-ascii?Q?rbgJY8qCztwXXgODexT24efw6f81+nBGYHeWIvv26vcdeIUNRT+WGQFp2dmW?=
- =?us-ascii?Q?VklHKluiXnMCF1QWoOpuam3dM/Fs4U1vlELdlVrZhTTHHvXdt38ZXkExZD1H?=
- =?us-ascii?Q?w+81V62vRGYH1vI4heijVWleNsu7D/gaHClXFuAtWMJmNpv69A5iSBLSeR9X?=
- =?us-ascii?Q?RbfgckryprCBmoD1ixSGyr6xVZ3/1zy6SW8jmO4f8+vTgf/yAtq3K33FTULH?=
- =?us-ascii?Q?EnfSpGbyca3IWvr8jlCqLathaO6yQ1LHbpC6joNSw9PLP0ODxEgYErGMN8T7?=
- =?us-ascii?Q?+89rHHdMztLl3m2uMVOS9qsd2rJjRGhNJMy0vcYL+eSyt4ELjVQhrBNXmc0j?=
- =?us-ascii?Q?Mo0TcLQ7UG+LFsJtY1Btu2OYW/oAYZiHP0oiwlcfYJWEPuiQB8x5DhasNa9p?=
- =?us-ascii?Q?Ne7MWRAw4UGkls7lHR5F5WBz91xIvtKNX6bNZ+tcJJcYJixVMaxtLxMgrExw?=
- =?us-ascii?Q?/N1RZLe+L6PTdkYKCypDOs9kFEL6FNwPugLElc0dPlQVw2/pOZzFJ9UKz9ZR?=
- =?us-ascii?Q?LMrGS4JwagUwDjfB4ZZFlX8JRmlAjhvcPVYO4P5GZncSfMsuUp363/CV4Lys?=
- =?us-ascii?Q?X5GZvgswHRBg/EzgVwm604GY9oRHyXyeRTTyyuY/iL/E8q/UwNmNehwVAQOF?=
- =?us-ascii?Q?K64U7r+gldf9NGnKaKlwEupXVWpul3WlqcRIqNoPx0hfBQGRJ4XHnbir0frV?=
- =?us-ascii?Q?OR906orqQR8XKQxcpVjDDCGyfMYwOte/3mDF7BLs7D9LXEjmcPcTxYJ9HU7/?=
- =?us-ascii?Q?cOVQ/oEFOk7VqnTM9JVUhxtfxjN6B2mmr9kx5vaVsd9S7mYoa4y6F/Mdmyvu?=
- =?us-ascii?Q?EdJ1w13X/qcZtAA2ISDlAyD5KuYteoL3O8U4/UDo31P26fIHjQPzLfuxavF0?=
- =?us-ascii?Q?12x+K6ywNsN64yVBU9dZQ/sgNiUQx6cu0DB23rQVq4A2EIzGf4jt5eeTMy53?=
- =?us-ascii?Q?7GjoPn7ZVNGyIwSNTdoIeia9R03Mf1Ri2S0O2Xmv4AQSCA=3D=3D?=
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CH3PR12MB7763.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(1800799024)(7416014)(376014)(366016);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?us-ascii?Q?YSOlPZod70XQWO9U8BX8sEkjiHF8Gc7/pYMXNmuKeXN/Ja04d/SWAt+WkLzy?=
- =?us-ascii?Q?W/eJ0mrcSJVwDK+vUlFc+Vld81aG7znBf1Lhfoq1aRHZk/0bmrI9K17t7aYz?=
- =?us-ascii?Q?ozE4pcOB2wIh/bifAO757VyE3nj3ZhWcl9ciHcgxKgjYt1BplT+7siYArU1A?=
- =?us-ascii?Q?K5Nbrz9rsGijw9vNXNVSMzQAMXZqo+fgwiso5hi+7aXBNgwgJQw8xyVcFyCF?=
- =?us-ascii?Q?jc2x6jRweSiGny2elTTnmjtzrY3qc18iu5PKKQs/vON4qKN8eCQHWk6WRIXE?=
- =?us-ascii?Q?dFq8mAi4B2EeFHWUnlBmQq6R3U25lsjbISegYu8MSvaSUe35/MDJWvDntURp?=
- =?us-ascii?Q?Zn9BHpIj2lw5DZ6cNkU+xr8IGzVh5BijXDGio0ybusG2EhWxiabLJJdK7CZY?=
- =?us-ascii?Q?W8EubfchtrK85Txd5ey3j6QMfJ22a4WIeTCeL8zplQVey8UxkcktMiRn/4Xx?=
- =?us-ascii?Q?r35l3fIWxpFuL0U/dUh3P9bMZM8qDAf/XhLd+vokvF5u4wl+kXHU0lvNkSo6?=
- =?us-ascii?Q?wlpF0C4IeJLC0YIEB4rpO14c0HulV8/lPfr3NBConEVahUfXJWOqG8FBOg3p?=
- =?us-ascii?Q?QgjCNg6n50K5i5+U50TrebHYdJlI/hG2lenzO+LQ3mKHL790y8s4oKeW9DK1?=
- =?us-ascii?Q?u9UC/adlZlRsNU5K1Jxk2MsGCyX7wpdp+2Cj3KxHP7onKpAFCnjo9rYkbdME?=
- =?us-ascii?Q?s2WLhmM/YWkq5XYTWBRHCiq5DapfuGEgM3BoHdZcZOdYTfiZuKmvQrEAIhoZ?=
- =?us-ascii?Q?+VFQkAO8q+WzGdv+YWjg4Pr4TwiGRxbVt+SZSd9YuxDR3MVOJoZ0+G834nts?=
- =?us-ascii?Q?mQU5/u0L+H6dSEjJMjV28EglY+ZMrZvhpGkSQZL0vGiKCOUY80BGCGtWl+O/?=
- =?us-ascii?Q?trME/gdk6oYGmIZ1Z4AU60u+eHkx2YFDG6IXbMNNMnuPU/EUzq9AjwmMjetI?=
- =?us-ascii?Q?1/6sO2UKWeTbPuQwuTKy4NZgFfMeHReU4Qimhrw2Fa0tOmtYTiKoaSqF6NXF?=
- =?us-ascii?Q?d2UbCqbjc3YrZHo+2cwJxL1JUswEmcwqRirq5fFUiDAIs8d9hsLL58A14SEs?=
- =?us-ascii?Q?1im9ctrG1heUkSZPCf4V1IB+plxMc88kHaVZYxaUU24N29hEi0DWyvr0iJer?=
- =?us-ascii?Q?mP1leEnrEGdvIAvCo4rVsui8bULDK0ZU84curaZFlGBl+gN3fX/IlIPUH9B+?=
- =?us-ascii?Q?I8umgVii46/F7Ze+4xEfNLGcxRLutf6zp2cqeLHLVhLnlvJxRQwLrouCPMWU?=
- =?us-ascii?Q?zrMz30PEmdg5c28fdq1OYOXfP2y8z+Hvwj70FOpZdQoL14KBqqJ8gmHpZF/k?=
- =?us-ascii?Q?bOP1x5mFknmX5kx5Pyc5318OHdpp7XA/6Zfaed2IOWQErI9usGHgRl6+Exzv?=
- =?us-ascii?Q?CrHP668u0S+axUVbLAEfwPre2zfFGDNs6DNnsSmFQ6kbDWz65NT6FdgGMlpJ?=
- =?us-ascii?Q?ByYekk/75mJYdfMcTBGeX9mNGDxMbEY7FbUQEYK0oWVEheuoaqghtBXo8Hnq?=
- =?us-ascii?Q?vieQuBDVdCBhS/16Mp564BfieS0i1pklR+mq2wJ7lkviyA0/Fzdmum29lOL2?=
- =?us-ascii?Q?pnRT2sMrkVeO/7GZe7+v50n/629jxipdkdQpFNnN?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: a610e0c3-21f0-43b7-7310-08dccdc48175
-X-MS-Exchange-CrossTenant-AuthSource: CH3PR12MB7763.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 05 Sep 2024 16:05:05.0229
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: hMEPEHP8i6sRo9mAiJp5cqSX/m7Dnrg+7cHd6U8SMh4Hpw5cW6q0cwelBzGAskKO
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MW4PR12MB6825
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <ZtZEFKnKasX6433r@Asurada-Nvidia>
 
-On Tue, Aug 27, 2024 at 09:59:45AM -0700, Nicolin Chen wrote:
-> Add a default_viommu_ops with a new op for cache invaldiation, similar to
-> the cache_invalidate_user op in structure iommu_domain_ops, but wider. An
-> IOMMU driver that allocated a nested domain with a core-managed viommu is
-> able to use the same viommu pointer for this cache invalidation API.
+On Mon, Sep 02, 2024 at 04:02:44PM -0700, Nicolin Chen wrote:
+> On Mon, Sep 02, 2024 at 08:23:20AM +0000, Pranjal Shrivastava wrote:
 > 
-> ARM SMMUv3 for example supports IOTLB and ATC device cache invaldiations.
-> The IOTLB invalidation is per-VMID, held currently by a parent S2 domain.
-> The ATC invalidation is per device (Stream ID) that should be tranlsated
-> by a virtual device ID lookup table. Either case fits the viommu context.
+> > On Thu, Aug 29, 2024 at 06:45:53PM -0700, Nicolin Chen wrote:
+> > > On Thu, Aug 29, 2024 at 11:54:26PM +0000, Pranjal Shrivastava wrote:
+> > >
+> > > > > > +static const char * const class_str[] = {
+> > > > > > +       [0] = "CD",
+> > > > > > +       [1] = "TTD",
+> > > > > > +       [2] = "IN",
+> > > > > > +       [3] = "RES",
+> > > > > > +};
+> > > > >
+> > > > > Unlike the event IDs, these class code names are still uneasy to
+> > > > > read. Though it'd result in a print-format change, yet could we
+> > > > > simply dump full strings instead?
+> > > > >
+> > > >
+> > > > By "full strings" do you mean "CD => CD Fetch" as mentioned in the spec?
+> > >
+> > > Yes.
+> > 
+> > Ack. So, just for confirmation we want the following 4 class strings:
+> > "CD Fetch"
+> > "Stage 1 translation table fetch"
+> > "Input address caused fault"
+> > "Reserved"
+> > 
+> > Right?
 > 
-> Signed-off-by: Nicolin Chen <nicolinc@nvidia.com>
-> ---
->  drivers/iommu/iommufd/iommufd_private.h |  3 +++
->  drivers/iommu/iommufd/viommu.c          |  3 +++
->  include/linux/iommu.h                   |  5 +++++
->  include/linux/iommufd.h                 | 19 +++++++++++++++++++
->  4 files changed, 30 insertions(+)
+> Yes. I know they are longer, but more readable. So, you might want
+> to arrange the output format to present them nicely.
+> 
 
-It looks OK
+Ack, thanks for confirming!
 
-Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
+> > > > Also, the printing would become
+> > > > more complicated as we'd have to log different fields for different
+> > > > events. Additionally, I don't see that many unions being defined
+> > > > elsewhere in the kernel.
+> > >
+> > > OK. That's a fair point. I think we could have just one common
+> > > union for the "good stuff" fields. Then, if something isn't in
+> > > the common union, do a FIELD_GET(raw)?
+> > >
+> > 
+> > I'm not sure if I get this right, but are you suggesting something like:
+> > 
+> > +struct arm_smmu_event {
+> > +       union {
+> > +       u64 raw_evt[4];
+> > +       struct {
+> > +               /* "Good stuff" fields */
+> > +       };
+> > +};
+> > 
+> > and then based on the fault type we can use the "good stuff" or raw_evt?
+> > So, basically just add a union between raw_evt and the other fields to
+> > improve struct arm_smmu_event present in v2?
+> 
+> Yea, I attached a test code at the EOM for your reference. Please
+> feel free to drop fields if they aren't common enough, and confirm
+> those bits are correctly written too.
+> 
 
-Jason
+Hmm, so you're suggesting to make the event a union instead of a struct
+thus, making reading event fields easy.
+
+The only thing I'm slightly worried about is if the bitfields don't
+remain constant if more events are added in the future.
+
+For example, the "IPA" field is in dword[3] for now, but if it changes
+in the future, it may get difficult to scale the union for future events
+If we can guarantee that it doesn't happen then I think union is better.
+
+Will, do you have any suggestions here?
+
+> > > > > > +       mutex_lock(&smmu->streams_mutex);
+> > > > > > +       event->master = arm_smmu_find_master(smmu, event->sid);
+> > > > > > +       mutex_unlock(&smmu->streams_mutex);
+> > > > >
+> > > > > Same as I pointed out at the other patch, "master" is unprotected
+> > > > > after the unlock. It can unlikely-yet-still-possibly race against
+> > > > > arm_smmu_release_device.
+> > > > >
+> > > >
+> > > > Hmm.. are you suggesting that the `master` could've been removed by the
+> > > > arm_smmu_release_device while we access it in an event handler?
+> > > >
+> > > > As in, something like the following situation:
+> > > >
+> > > > 1. The evtq_thread gets scheduled
+> > > > 2. arm_smmu_release_device removes the `master` & its streams
+> > > > 3. In the `handle_evt` we dereference `master` which has been `kfree`ed
+> > > >    (also, we don't return -EINVAL like we ideally should)
+> > > >
+> > > > In that case, I think I should add back the `arm_smmu_find_master` to
+> > > > the `arm_smmu_handle_evt` along with the locks. Nice catch! :)
+> > >
+> > > Probably could lock the entire iteration, master pointer could
+> > > be then passed in safely between the helper functions.
+> > 
+> > I'm just wondering if that'd be too much to print the "master_name", I
+> > mean what if we simply save the master_name in `struct arm_smmu_event`?
+> > That way, we can keep the locking as is in `arm_smmu_handle_evt` and
+> > simply print the stored "master_name".
+> > 
+> > Note: I'm suggesting to store the entire string and not just the ptr
+> > returned by dev_name(master->dev)), something like:
+> > 
+> > `strcpy(event->master_name, dev_name(master->dev))`
+> 
+> I'd probably move the dump() call inside arm_smmu_handle_evt(), and
+> within the lock to avoid strcpy. And eventually it would be located
+> at "else { /* Unhandled events should be pinned */ ret = -EFAULT; }:
+> https://lore.kernel.org/linux-iommu/8b93be1d913f9e227748de2d07e8540ddc2372ab.1724777091.git.nicolinc@nvidia.com/
+> 
+
+I think we'll still need to dump the event for other cases, such as the
+case where the master wasn't found, we return `-EINVAL` and the case
+where EVTQ_1_S2 is set. I guess, we should have a case under the label
+`out_unlock` we can call the dump function based on the ret value. E.g.:
+
+out_unlock:
++	if (ret)
++		arm_smmu_dump_event(smmu, evt);
+ 	mutex_unlock(&smmu->streams_mutex);
+ 	return ret;
+
+> > > > > Actually, the "Fault", "Bad fetch", and "Bad smmu config" doesn't
+> > > > > feel very necessary, since we prints the event string already.
+> > > > >
+> > > >
+> > > > That makes sense, I'll remove those in a follow up patch.
+> > > > Although, I guess we should still say "fault" somewhere to hint folks
+> > > > without arm-smmu-v3 knowledge that the event wasn't normal operation.
+> > > >
+> > > > LMK what you think? I've had a few interactions where clients tend to
+> > > > ignore the current "event received" dump considering that to be a part
+> > > > of normal SMMU operation.
+> > >
+> > > Well, we could improve the event_str with human-readable ones:
+> > >       s/F_TRANSLATION/Translation\ Fault
+> > >
+> > 
+> > Yea, but I'd still want to see a "spec searchable" name for the fault.
+> > Maybe we can have "Unexpected event recieved:<spec_fault_name>" in the
+> > "title" string?
+> 
+> That looks good to me.
+> 
+
+Ack.
+
+> > > > Although, we can dump the raw event only in the `default` case, i.e.
+> > > > when we don't have a dumper function for that particular event ID but
+> > > > that might still avoid printing the IMPL_DEFINED fields in fetch faults
+> > >
+> > > Makes sense to me by having a different title for the default case.
+> > >
+> > 
+> > Ack, we can have a different title for the default case. However, on a
+> > second thought, I believe we should log the "raw" event in all cases,
+> > since we aren't printing all the fields anyway. For example, for
+> > F_TRANSLATION we don't print IMPL_DEF fields, NSIPA etc. It might be
+> > helpful to see the raw event even for the "non-default" cases.
+> 
+> That makes sense. I'd dump the raw dwords outside the switch-case,
+> i.e. in the common path.
+> 
+
+Ack. I'd dump the raw dwords outside the switch-case in v3.
+
+> > > That is fine, though should break the lines too. Maybe:
+> > >       dev_err(smmu->dev, "%s%s%s%s%s\n", title,
+> > >               strlen(addrs) ? "\n" : "", addrs,
+> > >               strlen(other) ? "\n" : "", other);
+> > > ?
+> > >
+> > 
+> > I'd like line-feeds too, but I'm unsure if that could cause dmesg log
+> > interruptions? I assume adding a "\n" flushes the console buffer, i.e.
+> > we might get interrupted logs (I maybe wrong here).
+> 
+> I think the console_lock is grabbed per printk call, not per "\n".
+
+Ahh okay! I took the opportunity to read up the printk implementation.
+I see the `vprintk_store` stores a single log as a unit in the buffer,
+and the `console_unlock` actually flushes it out to the console. That
+said, I think nothing (other than hard IRQs printing logs) should cause
+interleaving between the log. Interesting stuff!
+
+> 
+> Thanks
+> Nicolin
+
+Thanks,
+Pranjal
