@@ -1,184 +1,163 @@
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 5BC3119FA98
-	for <iommu@lists.linux.dev>; Thu,  5 Sep 2024 16:22:58 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1725553381; cv=none; b=J1MA5tg8YRUQGaUKXf6asQ+RWeI1jBusPYpx3n8ylfxICUCVYq5ArTWIgoSolaZ1pvBO4/VUkFMZaj+6altZmx0S/7oR6RmPlpbFOqUN3UNtUvE1ysfr05a0wC+lPhozw3CRojKDV2/C5hXuc28OS5IbN+JLRIumi4B7wrTVgFY=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1725553381; c=relaxed/simple;
-	bh=uaScPftzw46kfudcvhqBtQpzC3pXNqXq1+GzDuS1Ax0=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=NtYVVIHmaKaCUxoqr0uJgAYVrtgtSe3KZ7G8QUBpIHhBpucu/7wENei6iRzt2iM0vPqgftMup07xY/lxG7LayeC++ceABw5UkK7eaq6OuZDr5Y8LOEKo8OBGaAQqGxcagGaZLE4RgW5j5UB9WvCmlkw0nF6nqk/9muHXk3EcrLk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; arc=none smtp.client-ip=217.140.110.172
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 81016FEC;
-	Thu,  5 Sep 2024 09:23:24 -0700 (PDT)
-Received: from [10.1.196.40] (e121345-lin.cambridge.arm.com [10.1.196.40])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 342573F73B;
-	Thu,  5 Sep 2024 09:22:53 -0700 (PDT)
-Message-ID: <7f4ee8d7-0e17-4363-bf91-d67846157c67@arm.com>
-Date: Thu, 5 Sep 2024 17:22:51 +0100
+Received: from NAM11-BN8-obe.outbound.protection.outlook.com (mail-bn8nam11on2067.outbound.protection.outlook.com [40.107.236.67])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 528F81A00CE
+	for <iommu@lists.linux.dev>; Thu,  5 Sep 2024 16:23:22 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.236.67
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1725553403; cv=fail; b=KrVhm4+hL+7ogw+qB4gVpuNULDWGlD4cnhBtZuwpLd6rfn/LgCFUygDvPAB4VBzoV6g4h3nLpT6lax8IK2iIiJyf2us+xEk/YVG+6rxkaCkJOpjEFbLoCx0Mtt/A94ph4bh7ilJl+1WHjFjtKlQVpjQYXgfwTuQqHJ+faL1gNIg=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1725553403; c=relaxed/simple;
+	bh=LmwEowQcsH8+e78EZLXIT1io9ZemMe+NEb2+Xa5azD0=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:Content-Type:
+	 Content-Disposition:In-Reply-To:MIME-Version; b=PggW33893l8vaL5gAjGCcJJnkzrf/LlIEkAEsZVTrCE9ujhPK6GDut6yVjPLfCWg36Y98PyCoxENpCaICcodony9hcHLWKsPWC0osq6+07TxkgTFUvfHKjfeftYpIj7smHcbHbIm2G2ynwOq4qn9JWitywRtLaNejpCC26gvhbc=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=kI0scIcP; arc=fail smtp.client-ip=40.107.236.67
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="kI0scIcP"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=OiEvG+JRosCkhSw0DnZ/kcVdXygxhaqep/sWnKQBQ9mrCw35S/XYNtJiZEsDKyz8vmB4ocqHgXWBtISYMQkJdRQ0xmUjW5zUejuYMLv4aMACQyIIqQvBZ/4BH0GnQBeTaKCRQ5CRYv83iGEOiO26eQEqbPAq1AJQlLzBWfDOO6yradb64AgD2XquuPf10rxQe09+rsUi/LT/wsqBd+rZVu8/+iiXlqxA3+ZEcG9+uGXTRgZ90VjobPvNCHeVUKnYBVCrw0pVsNVWQyhFCPPEFHGW31VesCpxTXVl8qFcSlDRoMpil1PQJWu7jPIORwpJGTn6+smCasRp0rHTVKPfuQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=MNUVPg48vb76OaduxAU42VliJn10NX8pWVKeRNwu6Mg=;
+ b=VF6X/pxqGiJq8YptbRcuiy8RDuz6S7jZxKueODIkwHBhs942efMp7BOe2X1lcuwJdT3AexAeq8mKnYiVQlVNyRq6ck3jTACF4IziUuQmG3oTvjmUkaQ6T2UxZA3PI5kte8xC2e4tXp0McYPDbGykv8mWDKREaP1V5PKeVGtxOdKmnykM5QhwbpU5q0Km+olY5Ya25UjpjRwYid/5g/F63o+nWPLAzANxd94yR64OuA1dAcnA3bj+6gWrt+nv9L/FqcXkoCSGBAAzOydiHSZ9j1imMXO1rgW/m/8ps5WNP9+D80hQHWeqgaDdwhvkYUqHZiOEOxdHfM+4u8BEtTSIWA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=MNUVPg48vb76OaduxAU42VliJn10NX8pWVKeRNwu6Mg=;
+ b=kI0scIcPlpR0OOApftxYRPSX2tF3//mPS+l/zV/noCvTCH4VdFg2CWq3jCQX/XxHf8b5gIfjy7WqEsREnKBQAuxJUGAgX7uPocH7nqGu+AjfeU32kac0hIG5AKBWPfNNvgeKy5a03F7YV7p/TMBALDNpl6x0zZIXpDleNck1vmzOq7dkjwIyg661GWJ7oqucsEWC2qdMA6g1ECDROC5/s1p6AP2Pvn4TkhC2IpGSEVDFbLzPm2R7ZxDsLjV7cup3lHQHNLtpbIkZFZsNcAi2bT+7b2zO8oRYtSt8doGsKzRsVSUbCXOXEKKFMsWhe1kXMmHL6vZ2vpsLp7AlYsF+Cw==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nvidia.com;
+Received: from CH3PR12MB7763.namprd12.prod.outlook.com (2603:10b6:610:145::10)
+ by DM4PR12MB6664.namprd12.prod.outlook.com (2603:10b6:8:bb::18) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7918.27; Thu, 5 Sep
+ 2024 16:23:18 +0000
+Received: from CH3PR12MB7763.namprd12.prod.outlook.com
+ ([fe80::8b63:dd80:c182:4ce8]) by CH3PR12MB7763.namprd12.prod.outlook.com
+ ([fe80::8b63:dd80:c182:4ce8%3]) with mapi id 15.20.7918.024; Thu, 5 Sep 2024
+ 16:23:18 +0000
+Date: Thu, 5 Sep 2024 13:23:17 -0300
+From: Jason Gunthorpe <jgg@nvidia.com>
+To: Nicolin Chen <nicolinc@nvidia.com>
+Cc: kevin.tian@intel.com, will@kernel.org, joro@8bytes.org,
+	suravee.suthikulpanit@amd.com, robin.murphy@arm.com,
+	dwmw2@infradead.org, baolu.lu@linux.intel.com, shuah@kernel.org,
+	linux-kernel@vger.kernel.org, iommu@lists.linux.dev,
+	linux-arm-kernel@lists.infradead.org,
+	linux-kselftest@vger.kernel.org, eric.auger@redhat.com,
+	jean-philippe@linaro.org, mdf@kernel.org, mshavit@google.com,
+	shameerali.kolothum.thodi@huawei.com, smostafa@google.com,
+	yi.l.liu@intel.com
+Subject: Re: [PATCH v2 16/19] iommu/arm-smmu-v3: Add
+ arm_smmu_cache_invalidate_user
+Message-ID: <20240905162317.GU1358970@nvidia.com>
+References: <cover.1724776335.git.nicolinc@nvidia.com>
+ <3548bfff43a0e1c072b77fc37a1a8a6c930bcec9.1724776335.git.nicolinc@nvidia.com>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <3548bfff43a0e1c072b77fc37a1a8a6c930bcec9.1724776335.git.nicolinc@nvidia.com>
+X-ClientProxiedBy: BN9PR03CA0076.namprd03.prod.outlook.com
+ (2603:10b6:408:fc::21) To CH3PR12MB7763.namprd12.prod.outlook.com
+ (2603:10b6:610:145::10)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH] Revert "iommu/io-pgtable-arm: Optimise non-coherent
- unmap"
-To: Rob Clark <robdclark@gmail.com>
-Cc: iommu@lists.linux.dev, linux-arm-msm@vger.kernel.org,
- freedreno@lists.freedesktop.org, Ashish Mhetre <amhetre@nvidia.com>,
- Rob Clark <robdclark@chromium.org>, Will Deacon <will@kernel.org>,
- Joerg Roedel <joro@8bytes.org>,
- "moderated list:ARM SMMU DRIVERS" <linux-arm-kernel@lists.infradead.org>,
- open list <linux-kernel@vger.kernel.org>
-References: <20240905124956.84932-1-robdclark@gmail.com>
- <fb54ef8d-f769-47d5-8a9d-aa93f96d5c41@arm.com>
- <CAF6AEGuv=yyVDx58iWU203BQPp-pT2SAC9yW-JMm2U+MTsGUaQ@mail.gmail.com>
-From: Robin Murphy <robin.murphy@arm.com>
-Content-Language: en-GB
-In-Reply-To: <CAF6AEGuv=yyVDx58iWU203BQPp-pT2SAC9yW-JMm2U+MTsGUaQ@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: CH3PR12MB7763:EE_|DM4PR12MB6664:EE_
+X-MS-Office365-Filtering-Correlation-Id: ee421739-f424-4a39-f042-08dccdc70d32
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;ARA:13230040|1800799024|376014|7416014|366016;
+X-Microsoft-Antispam-Message-Info:
+	=?us-ascii?Q?pCi7Ga7FRmPCdQvpArvTso5oTdZGL1n3BxB2zcHwkM89vIC5yYZclsCSTf2m?=
+ =?us-ascii?Q?dpJeMpJToZfQUwWQs0ah4kyLDi3VazzDlg2Z7cNn54fcxel6w0K0ku87WMBC?=
+ =?us-ascii?Q?g8dvR121pKect5DV7Y5SSurMWIiMIl2Ky9z2E+bSu5O3iQTlSeUElZiDcwVb?=
+ =?us-ascii?Q?sYGAFOVXXH2QF3gGQ2NICYMnBUtUhsg5yD1yQ92M+LqLch3LK3/+I1JgnagO?=
+ =?us-ascii?Q?8MKztVFzm4ToJBhh789WQIHDWjnciv301p4zzSxAm/Dxmnisz1+MRlPjSpku?=
+ =?us-ascii?Q?g5hvodUbWwfd54n8RLZxWimam53x6P46DVkclV/wSQ1L0umrGECyxt5YYdwU?=
+ =?us-ascii?Q?W6y1BX8WCYCZqnSLTYbk3HOlMMHMvtvWJUyqyiy0ggLHycfLVkA8+Fnxvwy5?=
+ =?us-ascii?Q?FRqtFnKX7jhdGW0l1B74YBO9VRikTLr5IWC2m+Q9fgj7G5JlksZ7HjJCuhxe?=
+ =?us-ascii?Q?ED4vr7i6Vj4njb4DGogz/SROkhc6P9RNsX/lvBW3rOL6/mMiStxdh6nxdrCD?=
+ =?us-ascii?Q?2+9ozTjoWKXFF+0hkS+LjYtdXvEItg30k7wxg9rNeKIzOR41pKGTArQdat5A?=
+ =?us-ascii?Q?x+B/MbrOUrScH7ibMc9XH34dSDSt3n88fmu/+ORo2b0M8vTm0GiHMyOsCiO5?=
+ =?us-ascii?Q?Dcx7fTEFlPJkpOrkrvSHyQXLTHT3aydlDQ2z5jXoOpo1ANYKl6pZOosbeYDe?=
+ =?us-ascii?Q?qHqtZUl2YJuuGw1Yclf86JQJvyBBpjfbN8ebFxWaOUc+kEB4rdTArEKRhYVW?=
+ =?us-ascii?Q?HCXrLViiXUnOGIlViKL1EoLt4Xnqvxfz/IVEDw+SZ9g2XmHUeI0PUVOwmzr3?=
+ =?us-ascii?Q?Oi24S2tl8EZC0I99xAuANnUb9Jyfy09P95ohAConP/tY66GsLsYHMC2MWBeo?=
+ =?us-ascii?Q?TCQsthumxwranhuhKSAG1Qpw5eDoK5/4+/bmSY9RdfKCMJUbwzmY+IOwnrqt?=
+ =?us-ascii?Q?jkkOKUehg+4Nf8nElAzE+Pqzqmltt8/QttKFJTL5QhgKosKDW3w7hp8kPckF?=
+ =?us-ascii?Q?hqA55eZW6dsLJ1fBJ9mphzs82hQG1G1tFb8yJsB7E39FiPOoCCWr6aslfxtz?=
+ =?us-ascii?Q?NxLjnbyiqj7L6CkYZjl4mdOk6fRQB5gYiUc09RgT16sKs1IJUy7j7o9cMwbK?=
+ =?us-ascii?Q?gTHJxKsKN9basevh1TeAHm13UlTw0DgQcXWcmmQlZHB9oLPeOmI5feAwu4XS?=
+ =?us-ascii?Q?7KblYQonczYQsQHSNMChgrc7/nkITqK2NPlcCZI6uZODrArq2dLWS6wl39Ai?=
+ =?us-ascii?Q?FThL+KyRSy0lbinsJhLxdSDkoo0cTrJDDERPi17xXlSmmXG9hg+mEZni8BVv?=
+ =?us-ascii?Q?VKapOr4MIHmsi2UcVw4zsC7lxfO207rIuLwotK5niCFRAA=3D=3D?=
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CH3PR12MB7763.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(1800799024)(376014)(7416014)(366016);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?us-ascii?Q?1Z/RTezHUty44jSlZaH0e52ZV198JgIS9QiAGh/A+0p+kBEB0lCQyz/DjMWV?=
+ =?us-ascii?Q?DODovhYnbQxhlHjQVF31GnlseMN7dJM2yQOgSYgTStSMAQmZBfpqPI/YNuvD?=
+ =?us-ascii?Q?HBAbouGeiSk+lSAlBqpoGgbQiBjf1ta86kL08Yt2U5svdorxq82bYhS0SRg3?=
+ =?us-ascii?Q?8A6+8PP4bfZAjqhPbUCNJEH6xyWDRR+RgXRbvr0JmE5iDvBYGUAKGt8haS0o?=
+ =?us-ascii?Q?HC3T/+q5JM6sShrJ2JXEYT+k62sQzsES84v3aaHAvmZQfhuWA6OHc6sIQZIy?=
+ =?us-ascii?Q?FTnoQH1K12HIamRlyfFLlOz4plHNokSvsy5fyNSf6aqRWaaVrJNc20TRPBMv?=
+ =?us-ascii?Q?cUDtQag0xxP2s+9Y001zT0ZPsIGY+LeAwxSBW7yUfBFCW4w3qyh5/S+AvX19?=
+ =?us-ascii?Q?Xfuo9IAglR0vaY7kdmjDUgM9KYYgY9S/d0dRBtm91mDy8t1gX0BfsQdj1Cga?=
+ =?us-ascii?Q?jaQ5zXbmNeEOUETP6yTHlOpZGnDi79XNSWW5eYDEacNmdIZqVz7U2cWLiFon?=
+ =?us-ascii?Q?fJFSv8vrFe6dzj/JtQSUHsZGip37d6LtEmCK/+Clgo3CE1Yjd6mU8ZV3TGRO?=
+ =?us-ascii?Q?Z1MvdKA1OhXwGjNfJPvzWhQkiQlKlNqOegF4V+lnOL4ML+88u652ah4XuqRb?=
+ =?us-ascii?Q?5i1v7tOtDZ0KGxiJKAVKanBav3ElfgAOX6N55oiVWliQ0b5C4E3b3mnpT6PR?=
+ =?us-ascii?Q?KzanOqt4c9N2rDvDrQnrCedoeiDWnKtKw0903r98v+OfV3QO0mZw1oTgAHHn?=
+ =?us-ascii?Q?QiFXPeAJwxWA5gIzvj+znxNnHRDloiaMcsRumQd1nAnJuGwgoXmMISSY3mOt?=
+ =?us-ascii?Q?lln7X24fq2mG6kFSShydytoYlRik8CnSVimMo64Oo2B6nT6Ytf2nfr6Fn3+Z?=
+ =?us-ascii?Q?YYtnjU4EF3o/SiQtOMyXSRnbFleQLotUBCnlQN8GRpRzOEP5CeVT688K4+Yd?=
+ =?us-ascii?Q?NUQ+hjIHTH2pZxjLuHqoqfXw8+YaTQuP8GSFjfFq5udALZ3OpPT2pTZ6K59Y?=
+ =?us-ascii?Q?VV6jk5kpdsLTcjv6Kr8us88lG5aHmKlBwF5weU1/yDwQsOheUfEQbtk5y4Eq?=
+ =?us-ascii?Q?QQPlqDRLfbJCDaUcuhqNXMwYeic9G7Qg3QHylIra+lhZC1+XQDhLDP/f2YyT?=
+ =?us-ascii?Q?gFrKOaTtDtI88TVs+7/JUkAmQow34nUOHV7jQSMud0tSqq6xKTsBnaq8jo5w?=
+ =?us-ascii?Q?1CE1gd1PM4ECfs4+8VyWa6Mr3+2GucVvM7zTGXFtwQksxpoYfqPVnpfXeYk3?=
+ =?us-ascii?Q?HjNsiWS/g+RLnfisGEduy6JnN7mTPAnZqBgh+jfEScl15ya/c74Mh2/bkOXL?=
+ =?us-ascii?Q?eWkaXcPB398JTcrQUKL74kT+eJ5NnT4QLbefYp900vC6HX8GAe3e6GEjjSRj?=
+ =?us-ascii?Q?3CV3Ca0PZjeFk+nitYhXfgMsLsvHFQXHzEWK9kqF9CMmRos4ADo0cEDWHwYJ?=
+ =?us-ascii?Q?XQb3l3xngCK0uNLR6+1q8I2dzVLxH4POVfRyTE78W5kFz149vh/TbUn8XCft?=
+ =?us-ascii?Q?XHxm7VhceleQpQcR5aIqh39gYqtqOPzOBohwYZqlaCOGjGaPLeN1hMUKls3G?=
+ =?us-ascii?Q?a+Tw63jVb/mH4A6a5HimgXg36wIDjwRAxtBnu9hL?=
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: ee421739-f424-4a39-f042-08dccdc70d32
+X-MS-Exchange-CrossTenant-AuthSource: CH3PR12MB7763.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 05 Sep 2024 16:23:18.4625
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: kRL1+wiPj7WnUBY1chhEer6WJWhzkVgYBFSbIvPQU4oD2/alt9kRCwGYHFgd1HDF
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM4PR12MB6664
 
-On 05/09/2024 2:57 pm, Rob Clark wrote:
-> On Thu, Sep 5, 2024 at 6:24 AM Robin Murphy <robin.murphy@arm.com> wrote:
->>
->> On 05/09/2024 1:49 pm, Rob Clark wrote:
->>> From: Rob Clark <robdclark@chromium.org>
->>>
->>> This reverts commit 85b715a334583488ad7fbd3001fe6fd617b7d4c0.
->>>
->>> It was causing gpu smmu faults on x1e80100.
->>>
->>> I _think_ what is causing this is the change in ordering of
->>> __arm_lpae_clear_pte() (dma_sync_single_for_device() on the pgtable
->>> memory) and io_pgtable_tlb_flush_walk().
->>
->> As I just commented, how do you believe the order of operations between:
->>
->>          __arm_lpae_clear_pte();
->>          if (!iopte_leaf()) {
->>                  io_pgtable_tlb_flush_walk();
->>
->> and:
->>
->>          if (!iopte_leaf()) {
->>                  __arm_lpae_clear_pte();
->>                  io_pgtable_tlb_flush_walk();
->>
->> fundamentally differs?
-> 
-> from my reading of the original patch, the ordering is the same for
-> non-leaf nodes, but not for leaf nodes
+On Tue, Aug 27, 2024 at 09:59:53AM -0700, Nicolin Chen wrote:
 
-But tlb_flush_walk is never called for leaf entries either way, so no 
-such ordering exists... And the non-leaf path still calls 
-__arm_lpae_clear_pte() and io_pgtable_tlb_add_page() in the same order 
-relative to each other too, it's just now done for the whole range in 
-one go, after any non-leaf entries have already been dealt with.
+>  static const struct iommu_domain_ops arm_smmu_nested_ops = {
+>  	.get_msi_mapping_domain	= arm_smmu_get_msi_mapping_domain,
+>  	.attach_dev = arm_smmu_attach_dev_nested,
+>  	.free = arm_smmu_domain_nested_free,
+> +	.cache_invalidate_user	= arm_smmu_cache_invalidate_user,
+>  };
 
-Thanks,
-Robin.
+I think we should drop this op. The original intention was to do
+things in parts to split up the patches, but it turns out this is
+functionally useless so lets not even expose it to userspace.
 
-> 
->> I'm not saying there couldn't be some subtle bug in the implementation
->> which we've all missed, but I still can't see an issue with the intended
->> logic.
->>
->>>   I'm not entirely sure how
->>> this patch is supposed to work correctly in the face of other
->>> concurrent translations (to buffers unrelated to the one being
->>> unmapped(), because after the io_pgtable_tlb_flush_walk() we can have
->>> stale data read back into the tlb.
->>
->> Read back from where? The ex-table PTE which was already set to zero
->> before tlb_flush_walk was called?
->>
->> And isn't the hilariously overcomplicated TBU driver supposed to be
->> telling you exactly what happened here? Otherwise I'm going to continue
->> to seriously question the purpose of shoehorning that upstream at all...
-> 
-> I guess I could try the TBU driver.  But I already had my patchset to
-> extract the pgtable walk for gpu devcore dump, and that is telling me
-> that the CPU view of the pgtable is fine.  Which I think just leaves a
-> tlbinv problem.  If that is the case, swapping the order of leaf node
-> cpu cache ops and tlbinv ops seems like the cause.  But maybe I'm
-> missing something.
-> 
-> BR,
-> -R
-> 
->> Thanks,
->> Robin.
->>
->>> Signed-off-by: Rob Clark <robdclark@chromium.org>
->>> ---
->>>    drivers/iommu/io-pgtable-arm.c | 31 ++++++++++++++-----------------
->>>    1 file changed, 14 insertions(+), 17 deletions(-)
->>>
->>> diff --git a/drivers/iommu/io-pgtable-arm.c b/drivers/iommu/io-pgtable-arm.c
->>> index 16e51528772d..85261baa3a04 100644
->>> --- a/drivers/iommu/io-pgtable-arm.c
->>> +++ b/drivers/iommu/io-pgtable-arm.c
->>> @@ -274,13 +274,13 @@ static void __arm_lpae_sync_pte(arm_lpae_iopte *ptep, int num_entries,
->>>                                   sizeof(*ptep) * num_entries, DMA_TO_DEVICE);
->>>    }
->>>
->>> -static void __arm_lpae_clear_pte(arm_lpae_iopte *ptep, struct io_pgtable_cfg *cfg, int num_entries)
->>> +static void __arm_lpae_clear_pte(arm_lpae_iopte *ptep, struct io_pgtable_cfg *cfg)
->>>    {
->>> -     for (int i = 0; i < num_entries; i++)
->>> -             ptep[i] = 0;
->>>
->>> -     if (!cfg->coherent_walk && num_entries)
->>> -             __arm_lpae_sync_pte(ptep, num_entries, cfg);
->>> +     *ptep = 0;
->>> +
->>> +     if (!cfg->coherent_walk)
->>> +             __arm_lpae_sync_pte(ptep, 1, cfg);
->>>    }
->>>
->>>    static size_t __arm_lpae_unmap(struct arm_lpae_io_pgtable *data,
->>> @@ -653,28 +653,25 @@ static size_t __arm_lpae_unmap(struct arm_lpae_io_pgtable *data,
->>>                max_entries = ARM_LPAE_PTES_PER_TABLE(data) - unmap_idx_start;
->>>                num_entries = min_t(int, pgcount, max_entries);
->>>
->>> -             /* Find and handle non-leaf entries */
->>> -             for (i = 0; i < num_entries; i++) {
->>> -                     pte = READ_ONCE(ptep[i]);
->>> +             while (i < num_entries) {
->>> +                     pte = READ_ONCE(*ptep);
->>>                        if (WARN_ON(!pte))
->>>                                break;
->>>
->>> -                     if (!iopte_leaf(pte, lvl, iop->fmt)) {
->>> -                             __arm_lpae_clear_pte(&ptep[i], &iop->cfg, 1);
->>> +                     __arm_lpae_clear_pte(ptep, &iop->cfg);
->>>
->>> +                     if (!iopte_leaf(pte, lvl, iop->fmt)) {
->>>                                /* Also flush any partial walks */
->>>                                io_pgtable_tlb_flush_walk(iop, iova + i * size, size,
->>>                                                          ARM_LPAE_GRANULE(data));
->>>                                __arm_lpae_free_pgtable(data, lvl + 1, iopte_deref(pte, data));
->>> +                     } else if (!iommu_iotlb_gather_queued(gather)) {
->>> +                             io_pgtable_tlb_add_page(iop, gather, iova + i * size, size);
->>>                        }
->>> -             }
->>>
->>> -             /* Clear the remaining entries */
->>> -             __arm_lpae_clear_pte(ptep, &iop->cfg, i);
->>> -
->>> -             if (gather && !iommu_iotlb_gather_queued(gather))
->>> -                     for (int j = 0; j < i; j++)
->>> -                             io_pgtable_tlb_add_page(iop, gather, iova + j * size, size);
->>> +                     ptep++;
->>> +                     i++;
->>> +             }
->>>
->>>                return i * size;
->>>        } else if (iopte_leaf(pte, lvl, iop->fmt)) {
+So the patch can maybe be split differently and combined with the next
+patch
+
+Jason
