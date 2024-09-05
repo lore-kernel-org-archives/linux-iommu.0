@@ -1,213 +1,240 @@
-Received: from NAM10-BN7-obe.outbound.protection.outlook.com (mail-bn7nam10on2080.outbound.protection.outlook.com [40.107.92.80])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 63D74185941
-	for <iommu@lists.linux.dev>; Thu,  5 Sep 2024 06:20:54 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.92.80
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1725517256; cv=fail; b=WjNHSrmpmG4BSh00c71bOWwHrBtQ4kvWWzFJBOhD7KPfqNnY8JND6Ar52h88i1HVGnPgnioEkwVy54Kl7mVOCdAJ2TIRuo8oOXfTvev7u6a+F5muoMcZUgElSVlvb+c+B4LhphouSLirAUAFjuFXzYhnk+8PW5kQ5sIIbMxFRG4=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1725517256; c=relaxed/simple;
-	bh=CJer7SAp7nv+9dG5Km/8FyHc8e6Gv0pdplhXLsqGOp8=;
-	h=Message-ID:Date:From:Subject:To:Cc:References:In-Reply-To:
-	 Content-Type:MIME-Version; b=ZWPucDFmkE5FsShLIUNsHXesRoZljqaruV30ACR4IKfEBU8AM7Cxn7owyPGklvnsVtQ0xLQYnfnmMvwDU9bmpT7spDqgtqolUvQoIj91gUSSMQi6f6HUc/5yOtPtnqLJq+8wI8uSADrffmK2lbAOt4k8m7EXV1J8GnxlU6Yukw0=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com; spf=fail smtp.mailfrom=amd.com; dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b=QfB937sA; arc=fail smtp.client-ip=40.107.92.80
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=amd.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DA0F415B541;
+	Thu,  5 Sep 2024 07:14:14 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1725520455; cv=none; b=FfGemoEfdXD/eZIpMR1DoT+awZ0QYIvtvnkRFshNN/8s8h1d1FF5xWyVj6vjbvd8CCcXsmfABdhIzcPGGJ7XwcCL1vPhuMvVnbCe7LmWLlSfDjnDNWMowTCo4bbsLA3eQxdmL2DwSfOhRpHeFbN8k8jmh8n8HFoBqbiHNkIrLgw=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1725520455; c=relaxed/simple;
+	bh=tu9tbaEU4ijWM0enZT92UQ4CLRzHDPCr/gNb6HsSjkg=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version:Content-Type; b=EJCKAilM66ynODr8FDmnSaxDqtNQO1c/dETM/mONm4ooeZRS1C8QjnE79BT21xgIIHGv5AecZZUlEjIMvGAAQCbrRBVIPQZVq5JfUBTkx56nROgLZsR+3l6K5034wrLAZ2L1N/KGozo855cqRRBKHjIOR3OE5Mop3IaF80WNue0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=L/9MeWZN; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b="QfB937sA"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=eDSZRwPRgdl5GbRruv9W2YU9FYDw3SARvhau8BlH8Pobt3BOrwFbIu9rcqOMx2bO27EGzobA+86Yyu+q0jnZ2VnyqxrY7N+Ucf/r11xqOY9r19SVKYCULeUEY+mgz+ktRfHBijaPx7Vp71lj/lGgCCkgLIPy+789OK2srUNE4U0+F1l+zsDwt81QsLsW68avoZnLjnJ5PtjKZyADk7GTWq/uV5wIMW3L3yX8/OTR13wW7DcTeh1ZS48kjSVdJhaFnnUaNPcZ5K1zVgEdPYEZvv0rqGhDkzEWKRHPc6eW3T+hncl3N+HgMlUHnRPPDOTiY064SRtzULlyoSlqWnjh9Q==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=/29XfKg+aiXSBuqaqkUMlqy+y8/+u21QMeVxOeilaOE=;
- b=BthtbXAArEamHmerlYbALikGRhs+DPWGgo2yZTleoytCzHgpQaxYxfxPWjVzR29N2Jfr/DSu9SfRmgP98RXX9Bw7S6HwdpQA8XeCiU2DgtXql8Efi2pj2Bj2ghxJGUxVJ+VXEuG4LTHQ5ppstE2hK800O7OjlyKfyY03NQkaoFM9iopq+AtyVyP9b3dq5oKmagJQ/afhxWiqYTEwambaAULXhuXA8bb5bOLsPd+aqz7Vx8SsNDcikXcZbG+JmDB6M/vuE4pvv/0uHpz+hR8EyjheumZWDH/uhAx44jA7ihxsjrRkIjkydBxEK21Oata4kZrHCN/lCEOLFPbAQA/QOQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=amd.com; dmarc=pass action=none header.from=amd.com; dkim=pass
- header.d=amd.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=/29XfKg+aiXSBuqaqkUMlqy+y8/+u21QMeVxOeilaOE=;
- b=QfB937sAJ1t5Vnkzz2juIMEBb7Txm7egVSQgSQ7LdS26UKBuIcFMH2O/7Ttp7OFmjeCqi79ycWmEa0j6neF+Bd5slRphn8Dy/WRmyjvvBtIq25Q2vG/0oDSDoS2dhNZG2GS317vjFFsB2QVXY8ZSAdmuQ5W9XVdXM4HYP89CNgI=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=amd.com;
-Received: from DM8PR12MB5445.namprd12.prod.outlook.com (2603:10b6:8:24::7) by
- CY5PR12MB6645.namprd12.prod.outlook.com (2603:10b6:930:42::15) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.7918.27; Thu, 5 Sep 2024 06:20:51 +0000
-Received: from DM8PR12MB5445.namprd12.prod.outlook.com
- ([fe80::a544:caf8:b505:5db6]) by DM8PR12MB5445.namprd12.prod.outlook.com
- ([fe80::a544:caf8:b505:5db6%5]) with mapi id 15.20.7918.024; Thu, 5 Sep 2024
- 06:20:51 +0000
-Message-ID: <096dc644-c42b-4d59-9306-4007d04b779e@amd.com>
-Date: Thu, 5 Sep 2024 13:20:42 +0700
-User-Agent: Mozilla Thunderbird
-From: "Suthikulpanit, Suravee" <suravee.suthikulpanit@amd.com>
-Subject: Re: [PATCH v2 2/5] iommu/amd: Introduce rw_semaphore for Device Table
- Entry (DTE)
-To: Jason Gunthorpe <jgg@nvidia.com>
-Cc: linux-kernel@vger.kernel.org, iommu@lists.linux.dev, joro@8bytes.org,
- robin.murphy@arm.com, vasant.hegde@amd.com, ubizjak@gmail.com,
- jon.grimm@amd.com, santosh.shukla@amd.com, pandoh@google.com,
- kumaranand@google.com
-References: <20240829180726.5022-1-suravee.suthikulpanit@amd.com>
- <20240829180726.5022-3-suravee.suthikulpanit@amd.com>
- <20240829193402.GK3773488@nvidia.com>
-Content-Language: en-US
-In-Reply-To: <20240829193402.GK3773488@nvidia.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: SG2PR06CA0203.apcprd06.prod.outlook.com (2603:1096:4:1::35)
- To DM8PR12MB5445.namprd12.prod.outlook.com (2603:10b6:8:24::7)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="L/9MeWZN"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6774AC4CEC4;
+	Thu,  5 Sep 2024 07:14:13 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1725520454;
+	bh=tu9tbaEU4ijWM0enZT92UQ4CLRzHDPCr/gNb6HsSjkg=;
+	h=From:To:Cc:Subject:Date:From;
+	b=L/9MeWZNavHbMSBFbd5n1/9QcgbGq8fQ+1c+6Hy8/egjAepKq3s6/fxynaJnhQWnA
+	 hD5U0xsox8h9NchTUbPwR8Dprs3S2A0NOUOtdh3lRGPKD+N5LfsooFPWxk7PV2H4gw
+	 83iir5l91URXhFrvyw+Hm+ss2MYrHkdAK030561B45akpVtnmFQuDbOumeUSgi2MvD
+	 aSRRmAf0fcf3Du3uns6ODcgR90VWyvd0oh2qNbMcwN3Q5K0qUHbJlcp3XmY3654ipl
+	 GPAtlRoAIFkFKLAqZwyaRrLMwAjLm03G8prPPqquM+JxlJNT6be5M/ATCAAeCHB8Ud
+	 y4rRnOaOaJHNQ==
+From: Leon Romanovsky <leon@kernel.org>
+To: Joerg Roedel <joro@8bytes.org>,
+	Will Deacon <will@kernel.org>,
+	Robin Murphy <robin.murphy@arm.com>,
+	Christoph Hellwig <hch@lst.de>,
+	Marek Szyprowski <m.szyprowski@samsung.com>
+Cc: Leon Romanovsky <leonro@nvidia.com>,
+	iommu@lists.linux.dev,
+	linux-kernel@vger.kernel.org,
+	=?UTF-8?q?N=C3=ADcolas=20F=20=2E=20R=20=2E=20A=20=2E=20Prado?= <nfraprado@collabora.com>
+Subject: [PATCH] dma-mapping: Use IOMMU DMA calls for common alloc/free page calls
+Date: Thu,  5 Sep 2024 10:14:05 +0300
+Message-ID: <62ce544e41d233eb6f591514a53f2eaabf488a7b.1725519850.git.leonro@nvidia.com>
+X-Mailer: git-send-email 2.46.0
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: DM8PR12MB5445:EE_|CY5PR12MB6645:EE_
-X-MS-Office365-Filtering-Correlation-Id: c41197bb-ecb3-4bc1-7cb2-08dccd72e388
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;ARA:13230040|376014|366016|1800799024;
-X-Microsoft-Antispam-Message-Info:
-	=?utf-8?B?cks1TC9yWXdQTGprMkp2RmhwbUp2bWlwb3BZMXNvbHlKanIycUt2UFg2dk9G?=
- =?utf-8?B?dHBRT0p2MWxLMWQxRGY2N2prU1NwS3A3R05hd3FISzArV2kvdnFZRWwvbGxD?=
- =?utf-8?B?NUR5UmtKb01mTUl4dW5pMXY5eTR6S3NNTDNZV2VXWjdsUkdwOE8wTm1zSnRT?=
- =?utf-8?B?Skt0QnVXajdTWkFWSjRhNFhMWTA0aXVhOTVsbFBGdmlhakRzMGMxTnl1eTdj?=
- =?utf-8?B?dWZOYi92RkJRUEZWalZCZDBRRDdYSEpJSTV5a2YxVnRyVHFCR1pmTktjWFFI?=
- =?utf-8?B?NzV6ZHVZZERnNmlReU5RM1pQK2g1TjQyWUxtNnIreWdaZk5RZlo2em9JcjZE?=
- =?utf-8?B?Z1gvQlZUS2RkQ3pvamxTTkliVEtaZmJHL1dwRUxQRnk3YVA5SUFDUDduRG13?=
- =?utf-8?B?MnhMV3p5c1FPcEJWd0l6ZytyNGFmNlY0YmdUWGRvNlFvbmd6S3pkYjl3dHJF?=
- =?utf-8?B?RjlSVk5JaTdpeFd2RGZydDVUZ3FoVkdBUFRVVG52aWRqWEJERTNTSktjWkQ3?=
- =?utf-8?B?WG4vYWdnSEszSkkvWGhadkUzdkNHSlFJSnlaOUY0Q2NPK2haZS9zd1JlWWdM?=
- =?utf-8?B?dFBHMDc0cVVrck1NOVVCVDJzeGNmdksvSk05YmxsV0lTS2t2OE1JaGhLL1Q2?=
- =?utf-8?B?ZkdBN1N2RnBTR0FwemtTcnA1MDBxSEFkcmczT04xWHR3bkozdGJRd3NVSGpr?=
- =?utf-8?B?OFpoQWY1OUdhbFgxbnYvei83MCtSZXVJUjMzNFpkd1d5S3I0YnZ2bFZLZi92?=
- =?utf-8?B?Q3BPa1RGS3dQb2RUL2hzVm5uLzYrSHJadndwMDZ6SnppeXVkbXJVdlhvYmM2?=
- =?utf-8?B?NVh4NVZld0poTkxSS2ZobWVNSEVGeXZWQ0dUSVFzR0dMT2poS0JWYTFGYnF4?=
- =?utf-8?B?b3lGeUR6VS8vS3hyMHdRVW5vWXdsQjBnNVBHUjh5bW40MTdUS3hWc2NCMXBw?=
- =?utf-8?B?cWp4bGJvN0xKK3p4Tms4eEdjRDVxNm1sTGtoVTVtbFRrcjN5bGM3QXFYNnJM?=
- =?utf-8?B?TzFHeEMvU0lxQko4YlpPcENmUVNUN3RnUWRZK1JxcUdzZGlsb0R5bHlmMis5?=
- =?utf-8?B?WlBYaVBYOVZMN3Q4eUVBQmJ4ZmFUc29hMUdUSFFUTG1vbStQLzFBdHd2azVa?=
- =?utf-8?B?d3BFVmZDQXRJTFVDMEpQZTg3bERIbGoyK1Zxc0NDMTBXbGE1Ykdtd0h1aGY3?=
- =?utf-8?B?OEtiU1NVc1czaCtxNzdUdGgvTFZwMXNrUjF6d01HRkF0cWhlQzNRclZTYitk?=
- =?utf-8?B?Z2d3aWdJY013YWZHd1hSMHNWOC81Wk9BOFJIb1FVSlZSb3hXSnR0VGpCditW?=
- =?utf-8?B?T2xVSzJ0Ly94U3ZHMGp3NUVuRGxOMVJaRFJYYXR3VGM5c1hrZThuTXp3Y0RW?=
- =?utf-8?B?Y2ZqTWxQai9yY3J5M2pFQXJsR0NwOUdpeUc1enRYL0ZNVy9NU0d3SDJQUS8y?=
- =?utf-8?B?OXd5cHg0T2V2NU1xRzR3VnFoZ3orUENGeDhWK0xIanhLbzJmaGc1VWpycGtw?=
- =?utf-8?B?dnEweGhSNkl5dnU5dU5oRUtZV0J1cUttZjRleEFhUEh2UlRFSW1NT2RzSTlU?=
- =?utf-8?B?S0xISGdBZmdNaGVhcnFMWDUzeXU1VjRnNjIxV0FDZUIxcXZPczFNcHZPUHlw?=
- =?utf-8?B?N0VZMC9JaWxNMG1Obnh0azZudXFXUUNzZHN6dUtIaEliUmp0MXJhVU1kbXU3?=
- =?utf-8?B?MUZSbDhyQWJXWjBsczg1cVNJaWZNMkRva0tuMk5rQ2lSVFJzZE40bzJOaHBu?=
- =?utf-8?B?OE1pNDlRbS92QVg5eWVxY3lQTXN2K0M4cmFaNXlMOFZHblppaEZOY2h0bU5H?=
- =?utf-8?B?MHJObFBBNVh1bU42VGhaUT09?=
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM8PR12MB5445.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(376014)(366016)(1800799024);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?utf-8?B?SlE1ekc5SzJJZnZCUTdEbDFzdlQ4K281clR1L1Q0Z0w0UDFNMjVIMk4vRGRO?=
- =?utf-8?B?V3V1MEVnekZmTlNQa1VzZWxjejFQYWovRGtvS3ZKdE9xMC8rVkgrSmJuV0tv?=
- =?utf-8?B?cFNINWNDU2VlVXIvTlNhL0Z3ZDkraVFpdG9HUkRHYTAyT1FaaWtoeSt4aVZN?=
- =?utf-8?B?WURpUVNWanNNbWlGWXB4V21pRmw2OFhyQ2l4Vm0yVjhNNVVWamFJZGgrTnBR?=
- =?utf-8?B?V2FBSDhyL05SZElFcDJpa1grREZ5SnFIaDlTQWRzK1pXeGdLNURlMUkxOStx?=
- =?utf-8?B?OVBjWFluS2lQVzVvZ2VNbTkxa0YxbDVzOXdOdVkxbGFFQm55S0RNM3lJUmtt?=
- =?utf-8?B?dDRjTzdZN290dzZqYjFFTXhPeEpGSThhSHNQU3VnU3dGZkF3aGlLS2VsS1hy?=
- =?utf-8?B?NlNyRkpreUhqcTBVdzRvVWMyTjFLWmFDTlc0YXlmU3VVOEhiR0RaeW5TanNL?=
- =?utf-8?B?a3piMTNnNXVJSWJydHJVMzRiYkw2Z1ZUY2dQZjJnZ0tteGgvVUh2UmU4SHRo?=
- =?utf-8?B?c09WbE1SRVFQMHM4T1VLalhjcVgvc295Q21PUkZ1ZkFVY2UveFhQMXJSemtn?=
- =?utf-8?B?QXVDcEZtMGR1ZXFHcGZyV2YxQTZsZTJ1VytGQnVsY1NSdFhoK3FFWTVUWDds?=
- =?utf-8?B?YXhlcHJTRG1QU0VnbWxhWGtsMC9YMFhpOTJIUXNKV3ROR2dJdTBOemF3VEM3?=
- =?utf-8?B?amRJZGc3SEJmUGlMM2ZzdVdubjdTK3ZsMHRFcUNmMnFRVGYrZE51N3ExUVZH?=
- =?utf-8?B?cUFBMGxNTWFHUkdPc2M1NjNGaTJXQ1FITkhVMmQwalBrQis4SG8zQit2NUtE?=
- =?utf-8?B?cW9qV25ZcUFPcnR2OVVNaisrTXZsVWNJeWtVM0ZZYTRiRllISGlxTnFCeTRK?=
- =?utf-8?B?a0ZZTFZRamJKUklkWjQ1aDdjRG0xVjRLcUhvOGxhVUxMbFNLTHVqUCtiSlFO?=
- =?utf-8?B?OG1uMG9ic0RrM3hPdjFrWkF5S3Q3M2VZcXhiZHZFa085eG9jcUhrTkl1SEpj?=
- =?utf-8?B?bFBTZ1BJbzNabTRpTzl2dkJiQVdFU0c3YmhaaEcvbkhlZCtrSmRWbGlnRFlF?=
- =?utf-8?B?aWpzSlFJanZkMzI4WEdYZjFIWHRlZU5SN3JPRGtDWjU3WXNOOTZjK1ZPWEdR?=
- =?utf-8?B?alF4WVMzUkQ0dVlPYlBHSVVVNkl5S1R3b2MrYjR5Q050K2hsOFVsQ3R0QzVZ?=
- =?utf-8?B?eUlXdXRWWmxHazRCemRLWGIwcXdjdVRWRElwWVNSREdDMHhvaWs5b084bFE1?=
- =?utf-8?B?bjJ3K0tXcmNUV1NqU2Nhd3M0SHZjVFBHL081OUI1RFVoajdSVXJFOHhIb0Vj?=
- =?utf-8?B?ajNMcXZtSkRBQk5iY3E4R0lZNTJWeGczcEROaTNhMDJ1cW1oOURwanNtdzNJ?=
- =?utf-8?B?Y3BjbGdKS1o0SmFHY2JTMmJXZnhXQjR2bkxrc2JuSUZDUVpOZ01PUjdvUW1w?=
- =?utf-8?B?YlVwZlRQN0cxZUNJcDRXRnd5Y05aU0EyZEpBQlZDSTd5emJWQi8zdmNQeFZY?=
- =?utf-8?B?aWtGcDNZNTF2TGNTYVExUGgxYUhQTXR1aENkdkxvQysvNW8zMnptaXgvZGJt?=
- =?utf-8?B?ZE1ESW11cVJYL3BKVTVpY2R4WjMrMXlESU1LTkEzcUMrYjJKZkJwNzJzZHBi?=
- =?utf-8?B?L2FlQUgwNm1oZ1BlbTdteHEyZmxtcUN4dkZQT3crVktmcDJuZWpwY1lDQUdC?=
- =?utf-8?B?T2prRmZyYTNIWk5iekRMSndESXAvc29CUDlRemFoNGRhWlczVmVZeTNrL3E1?=
- =?utf-8?B?Z0JpYld6VDZQUkltLy91cVpnTkU1dTNOcW1wdlluaDJYRGJQc0Y2ZjVjcU5N?=
- =?utf-8?B?MEtuUDlsMk5mdkZ2bWh0M0VHbURtNk00RGUrclI5cmhDM21sQzNtZ2dTMjVZ?=
- =?utf-8?B?MTIwRmZqTUtHTjVoVGc5cXJWa0t2WExldTM1VW9aK1FNK3p0dmZsZjRRcXBp?=
- =?utf-8?B?WFByTDRzSmtENUxRZ21qQ2JaQmIzQzA1WkRHVUprYnRiZEZHMDhKamt5WEU5?=
- =?utf-8?B?a3AvbWRvNUtldVdWN3hQYWVFcFpXZzZMTDl4MnR6bWluU3NKQWJZREw0TDZB?=
- =?utf-8?B?WDhtR0pzMUMvam1TdUlEOE96dFVtTDZnUFdEVTdZMnJhK3Q5bnhaMXRSY2Rs?=
- =?utf-8?Q?9CwMmhwx5JgF6KKSofCPwQa4w?=
-X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: c41197bb-ecb3-4bc1-7cb2-08dccd72e388
-X-MS-Exchange-CrossTenant-AuthSource: DM8PR12MB5445.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 05 Sep 2024 06:20:51.0458
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: 9GTeSY2L0y87CmPPZoM6KGLjWro2+uzomslyjrQc6zlPLulollRkHJJC2pGiQUhmtEI+x9zRW/PhYsn3IMLMbg==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: CY5PR12MB6645
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 
-Hi,
+From: Leon Romanovsky <leonro@nvidia.com>
 
-On 8/30/2024 2:34 AM, Jason Gunthorpe wrote:
-> On Thu, Aug 29, 2024 at 06:07:23PM +0000, Suravee Suthikulpanit wrote:
-> 
->> -static void clear_dte_entry(struct amd_iommu *iommu, u16 devid)
->> +static void clear_dte_entry(struct amd_iommu *iommu, struct iommu_dev_data *dev_data)
->>   {
->> +	u16 devid = dev_data->devid;
->>   	struct dev_table_entry *dev_table = get_dev_table(iommu);
->>   
->> +	down_write(&dev_data->dte_sem);
->> +
->>   	/* remove entry from the device table seen by the hardware */
->>   	dev_table[devid].data[0]  = DTE_FLAG_V;
-> 
-> The rest of this function doesn't seem very good either:
-> 
-> 	/* remove entry from the device table seen by the hardware */
-> 	dev_table[devid].data[0]  = DTE_FLAG_V;
-> 
-> 	if (!amd_iommu_snp_en)
-> 		dev_table[devid].data[0] |= DTE_FLAG_TV;
-> 
-> 	dev_table[devid].data[1] &= DTE_FLAG_MASK;
-> 
-> This should also cmpxchg the whole 128 bit quantity, you don't want
-> the HW to see a tear on HostPageTableRootPtr.
-> 
-> Which is back to my other point. Don't edit the DTE in place.
+Common alloca and free pages routines are called when IOMMU DMA is used,
+and internally it calls to DMA ops structure which is not available for
+default IOMMU. This patch adds necessary if checks to call IOMMU DMA.
 
-Thanks for pointing this out. I missed the detail in this function while 
-going through the driver to update the code, which updates live DTE. 
-I'll change this.
+It fixes the following crash:
 
-> There is no such thing as 'clear' in the iommu domain API. The DTE is
-> either PAGING, BLOCKED or IDENTITY, and any write to it should be
-> writing an entire DTE for that target.
-> 
-> I guess clear is actually trying to set the DTE to BLOCKING?
+ Unable to handle kernel NULL pointer dereference at virtual address 0000000000000040
+ Mem abort info:
+   ESR = 0x0000000096000006
+   EC = 0x25: DABT (current EL), IL = 32 bits
+   SET = 0, FnV = 0
+   EA = 0, S1PTW = 0
+   FSC = 0x06: level 2 translation fault
+ Data abort info:
+   ISV = 0, ISS = 0x00000006, ISS2 = 0x00000000
+   CM = 0, WnR = 0, TnD = 0, TagAccess = 0
+   GCS = 0, Overlay = 0, DirtyBit = 0, Xs = 0
+ user pgtable: 4k pages, 48-bit VAs, pgdp=00000000d20bb000
+ [0000000000000040] pgd=08000000d20c1003
+ , p4d=08000000d20c1003
+ , pud=08000000d20c2003, pmd=0000000000000000
+ Internal error: Oops: 0000000096000006 [#1] PREEMPT SMP
+ Modules linked in: ipv6 hci_uart venus_core btqca
+v4l2_mem2mem btrtl qcom_spmi_adc5 sbs_battery btbcm qcom_vadc_common
+cros_ec_typec videobuf2_v4l2 leds_cros_ec cros_kbd_led_backlight
+cros_ec_chardev videodev elan_i2c
+videobuf2_common qcom_stats mc bluetooth coresight_stm stm_core
+ecdh_generic ecc pwrseq_core panel_edp icc_bwmon ath10k_snoc ath10k_core
+ath mac80211 phy_qcom_qmp_combo aux_bridge libarc4 coresight_replicator
+coresight_etm4x coresight_tmc
+coresight_funnel cfg80211 rfkill coresight qcom_wdt cbmem ramoops
+reed_solomon pwm_bl coreboot_table backlight crct10dif_ce
+ CPU: 7 UID: 0 PID: 70 Comm: kworker/u32:4 Not tainted 6.11.0-rc6-next-20240903-00003-gdfc6015d0711 #660
+ Hardware name: Google Lazor Limozeen without Touchscreen (rev5 - rev8) (DT)
+ Workqueue: events_unbound deferred_probe_work_func
+ hub 2-1:1.0: 4 ports detected
 
-Yes, it's called from blocked_domain->attach_dev() and when doing 
-amd_iommu_detach_device().
+ pstate: 80400009 (Nzcv daif +PAN -UAO -TCO -DIT -SSBS BTYPE=--)
+ pc : dma_common_alloc_pages+0x54/0x1b4
+ lr : dma_common_alloc_pages+0x4c/0x1b4
+ sp : ffff8000807d3730
+ x29: ffff8000807d3730 x28: ffff02a7d312f880 x27: 0000000000000001
+ x26: 000000000000c000 x25: 0000000000000000 x24: 0000000000000001
+ x23: ffff02a7d23b6898 x22: 0000000000006cc0 x21: 000000000000c000
+ x20: ffff02a7858bf410 x19: fffffe0a60006000 x18: 0000000000000001
+ x17: 00000000000000d5 x16: 1fffe054f0bcc261 x15: 0000000000000001
+ x14: ffff02a7844dc680 x13: 0000000000100180 x12: dead000000000100
+ x11: dead000000000122 x10: 00000000001001ff x9 : ffff02a87f7b7b00
+ x8 : ffff02a87f7b7b00 x7 : ffff405977d6b000 x6 : ffff8000807d3310
+ x5 : ffff02a87f6b6398 x4 : 0000000000000001 x3 : ffff405977d6b000
+ x2 : ffff02a7844dc600 x1 : 0000000100000000 x0 : fffffe0a60006000
+ Call trace:
+  dma_common_alloc_pages+0x54/0x1b4
+  __dma_alloc_pages+0x68/0x90
+  dma_alloc_pages+0x10/0x1c
+  snd_dma_noncoherent_alloc+0x28/0x8c
+  __snd_dma_alloc_pages+0x30/0x50
+  snd_dma_alloc_dir_pages+0x40/0x80
+  do_alloc_pages+0xb8/0x13c
+  preallocate_pcm_pages+0x6c/0xf8
+  preallocate_pages+0x160/0x1a4
+  snd_pcm_set_managed_buffer_all+0x64/0xb0
+  lpass_platform_pcm_new+0xc0/0xe8
+  snd_soc_pcm_component_new+0x3c/0xc8
+  soc_new_pcm+0x4fc/0x668
+  snd_soc_bind_card+0xabc/0xbac
+  snd_soc_register_card+0xf0/0x108
+  devm_snd_soc_register_card+0x4c/0xa4
+  sc7180_snd_platform_probe+0x180/0x224
+  platform_probe+0x68/0xc0
+  really_probe+0xbc/0x298
+  __driver_probe_device+0x78/0x12c
+  driver_probe_device+0x3c/0x15c
+  __device_attach_driver+0xb8/0x134
+  bus_for_each_drv+0x84/0xe0
+  __device_attach+0x9c/0x188
+  device_initial_probe+0x14/0x20
+  bus_probe_device+0xac/0xb0
+  deferred_probe_work_func+0x88/0xc0
+  process_one_work+0x14c/0x28c
+  worker_thread+0x2cc/0x3d4
+  kthread+0x114/0x118
+  ret_from_fork+0x10/0x20
+ Code: f9411c19 940000c9 aa0003f3 b4000460 (f9402326)
+ ---[ end trace 0000000000000000 ]---
 
-> Also no need to get the lock here because you don't touch 128 bit
-> quanta [1] which holds the IRQ stuff that is racey. This is already
-> locked by the iommu core group lock.
+Fixes: b5c58b2fdc42 ("dma-mapping: direct calls for dma-iommu")
+Reported-by: Nícolas F. R. A. Prado <nfraprado@collabora.com> #KernelCI
+Closes: https://lore.kernel.org/all/10431dfd-ce04-4e0f-973b-c78477303c18@notapiano
+Tested-by: Nícolas F. R. A. Prado <nfraprado@collabora.com>
+Signed-off-by: Leon Romanovsky <leonro@nvidia.com>
+---
+ include/linux/iommu-dma.h |  8 ++++++++
+ kernel/dma/mapping.c      | 12 ------------
+ kernel/dma/ops_helpers.c  | 14 +++++++++++---
+ 3 files changed, 19 insertions(+), 15 deletions(-)
 
-Actually, we Need to preserve DTE[96:106] because certain fields are 
-programmed using value in IVRS table from early init phase. So, to avoid 
-try_cmpxchg128 failure, I need to spin_lock on dte_lock across the 
-get_dte256() and update_dte256()
+diff --git a/include/linux/iommu-dma.h b/include/linux/iommu-dma.h
+index 011e5453d56b..561d81b12d9c 100644
+--- a/include/linux/iommu-dma.h
++++ b/include/linux/iommu-dma.h
+@@ -10,6 +10,10 @@
+ #include <linux/dma-mapping.h>
+ 
+ #ifdef CONFIG_IOMMU_DMA
++static inline bool use_dma_iommu(struct device *dev)
++{
++	return dev->dma_iommu;
++}
+ dma_addr_t iommu_dma_map_page(struct device *dev, struct page *page,
+ 			      unsigned long offset, size_t size,
+ 			      enum dma_data_direction dir, unsigned long attrs);
+@@ -65,6 +69,10 @@ void iommu_dma_unlink_range(struct device *dev, dma_addr_t start, size_t size,
+ bool iommu_can_use_iova(struct device *dev, struct page *page, size_t size,
+ 			enum dma_data_direction dir);
+ #else
++static inline bool use_dma_iommu(struct device *dev)
++{
++	return false;
++}
+ static inline dma_addr_t iommu_dma_map_page(struct device *dev,
+ 					    struct page *page,
+ 					    unsigned long offset, size_t size,
+diff --git a/kernel/dma/mapping.c b/kernel/dma/mapping.c
+index 9ce34bd4d407..7ec3deb7630d 100644
+--- a/kernel/dma/mapping.c
++++ b/kernel/dma/mapping.c
+@@ -117,18 +117,6 @@ void *dmam_alloc_attrs(struct device *dev, size_t size, dma_addr_t *dma_handle,
+ }
+ EXPORT_SYMBOL(dmam_alloc_attrs);
+ 
+-#ifdef CONFIG_IOMMU_DMA
+-static bool use_dma_iommu(struct device *dev)
+-{
+-	return dev->dma_iommu;
+-}
+-#else
+-static bool use_dma_iommu(struct device *dev)
+-{
+-	return false;
+-}
+-#endif
+-
+ static bool dma_go_direct(struct device *dev, dma_addr_t mask,
+ 		const struct dma_map_ops *ops)
+ {
+diff --git a/kernel/dma/ops_helpers.c b/kernel/dma/ops_helpers.c
+index af4a6ef48ce0..9afd569eadb9 100644
+--- a/kernel/dma/ops_helpers.c
++++ b/kernel/dma/ops_helpers.c
+@@ -4,6 +4,7 @@
+  * the allocated memory contains normal pages in the direct kernel mapping.
+  */
+ #include <linux/dma-map-ops.h>
++#include <linux/iommu-dma.h>
+ 
+ static struct page *dma_common_vaddr_to_page(void *cpu_addr)
+ {
+@@ -70,8 +71,12 @@ struct page *dma_common_alloc_pages(struct device *dev, size_t size,
+ 	if (!page)
+ 		return NULL;
+ 
+-	*dma_handle = ops->map_page(dev, page, 0, size, dir,
+-				    DMA_ATTR_SKIP_CPU_SYNC);
++	if (use_dma_iommu(dev))
++		*dma_handle = iommu_dma_map_page(dev, page, 0, size, dir,
++						 DMA_ATTR_SKIP_CPU_SYNC);
++	else
++		*dma_handle = ops->map_page(dev, page, 0, size, dir,
++					    DMA_ATTR_SKIP_CPU_SYNC);
+ 	if (*dma_handle == DMA_MAPPING_ERROR) {
+ 		dma_free_contiguous(dev, page, size);
+ 		return NULL;
+@@ -86,7 +91,10 @@ void dma_common_free_pages(struct device *dev, size_t size, struct page *page,
+ {
+ 	const struct dma_map_ops *ops = get_dma_ops(dev);
+ 
+-	if (ops->unmap_page)
++	if (use_dma_iommu(dev))
++		iommu_dma_unmap_page(dev, dma_handle, size, dir,
++				     DMA_ATTR_SKIP_CPU_SYNC);
++	else if (ops->unmap_page)
+ 		ops->unmap_page(dev, dma_handle, size, dir,
+ 				DMA_ATTR_SKIP_CPU_SYNC);
+ 	dma_free_contiguous(dev, page, size);
+-- 
+2.46.0
 
-Thanks,
-Suravee
