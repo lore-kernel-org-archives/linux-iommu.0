@@ -1,279 +1,153 @@
-Received: from mail-pl1-f177.google.com (mail-pl1-f177.google.com [209.85.214.177])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mx0a-0031df01.pphosted.com (mx0a-0031df01.pphosted.com [205.220.168.131])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8FFFD4AEF5
-	for <iommu@lists.linux.dev>; Thu,  5 Sep 2024 16:06:41 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.177
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DB527168B7
+	for <iommu@lists.linux.dev>; Thu,  5 Sep 2024 16:08:50 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.168.131
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1725552404; cv=none; b=sDTP8YRoM6xbZyiEWLTGi+hr1mGOcBE/LLUS1SSkIyHlpOkmErtCWerIqk072qSuRzBNkKcvNmQiISRYqP8tRKR/LrNELdV9Rxgx+lmEe6M9RkqLRkkdnXQH7A083NThmyU9w87O1SsbwPMhXbT58967TQFVWTPXxOdvs9x13fI=
+	t=1725552532; cv=none; b=oueWZSC2ueCl46s5QlyoNGl2n2kXOKza4jJkVDFf77QV4EVFtrjLob6v2Gpt5ZAU6+PTUJH3oClFFWsvkt9j7yp7ZjQBq+jiuuG9QwhEjYAMj2HZpwXhhoRCt0dws9xiPt/GWiou/Jz+N9AKDZn6XT2LANfiO+FHmaLpOWWqUJI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1725552404; c=relaxed/simple;
-	bh=06f2z3YWOXnCV6KDNAI1EHdlH88PSFaLdb30+6TtAKU=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=G/6fFDO39qcMjRM3eluE4YoH/ACG/nIoH8l4YiND+Eb2SKvQyQ/Jo5dhsdPKMhDoMs8XaJrb3SxD5NxZVbVBRE70iElisOLKifnxHg74feoMp0MaJ8VaYXXwzTMqO0k8SoxZeTbBYkCA79QVrNIHfHeJ91vGxXJKQ4jxlhmWG9I=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=F9oR0amf; arc=none smtp.client-ip=209.85.214.177
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
+	s=arc-20240116; t=1725552532; c=relaxed/simple;
+	bh=Bn9OO23V/NtPesZCtF85oZlvJ2DsoA31jL73sUuUa3A=;
+	h=Message-ID:Date:MIME-Version:Subject:To:CC:References:From:
+	 In-Reply-To:Content-Type; b=IDrGNkzfbcjSQlJ/WarmzgoQnY9J17bZ2exNEBD3a95WpNxC0QwEI49rEu8v7sJPXcBlT1qsheBTN7pU/SyYBBBEMFPDRtH3sQ90yMe/ejKFtkItktWtQ9kW0clAlnArsa6YWrhcSPRntvwiA4Tx/HKsDIP3fs0sBi8Z9u7qf2w=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com; spf=pass smtp.mailfrom=quicinc.com; dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b=brgDPUjn; arc=none smtp.client-ip=205.220.168.131
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=quicinc.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="F9oR0amf"
-Received: by mail-pl1-f177.google.com with SMTP id d9443c01a7336-20546b8e754so248995ad.1
-        for <iommu@lists.linux.dev>; Thu, 05 Sep 2024 09:06:41 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20230601; t=1725552401; x=1726157201; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=0Uuf1DXGf38xZCtdCxBraq1atf4CT+75BadBjIhqd5w=;
-        b=F9oR0amfRFLSshc7yrOOJeg7Q2aKed4VsL/VEmw/ysZ+14yOPrQbWCjaHo0fvNxI3N
-         zWFxqxp94s66inHC3CTEhM0UOrpLHRnBUVM1rEyB5/ex1JnHvkYRYbDXlF0iuUsJ2iwZ
-         9bDA4CpCY5hmPP93k42myjlff/qbIOmb+xhOQ/om/HSjpl7BvyFj0WSpc5IHjmrULJDT
-         vOkVTWHFCOF4d0Iw5b4yn0rQpqFri7961Mr/BwK+pb76Q4aOvKzBYxz97Lr06FKyDjxE
-         +2IjPegG/GnJ8N7HmnqlivbVVHhOkpah4pxP8TtMvlca9v2kbSwsxv6PZXp72uGQcBCG
-         kTxw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1725552401; x=1726157201;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=0Uuf1DXGf38xZCtdCxBraq1atf4CT+75BadBjIhqd5w=;
-        b=deInyuH43evDW326O5WEXCmjKEH9N/pJvxcL5p7Wp9GNm5w8ztBMSragQg4AKZUq4B
-         xW9znJbIa4+BLuoQt9Aiq0Jv6uEvsVxgAFGfPlA5mrLY026YkTG1UbUXE0B/obP0C8tg
-         Jaqmam1djVS0eqCiICjasv5rN+m4v4oILGV779mGWwnUeasdNw5LNT209W2VDW89ajCw
-         glJ/cKSpS7bz/wXjYghyREVB62dl980NT2NSnnPIr8MitrkzsBeqGtgB5L8MmFHpNDWn
-         8dq4Z8FtYpDMkprvGZ1DtmhtoFBhwHE86LxMa4Ak7fVklbNNhB7doh/PUksQlC7tXBz7
-         bjcw==
-X-Forwarded-Encrypted: i=1; AJvYcCWfpSt5zgBB2CFje6CPZsk8Qa0FPYMcCDBtfbIWVAEf/LgIEe7jIdj6OSbR5U8mOYzSUUGLaA==@lists.linux.dev
-X-Gm-Message-State: AOJu0YxNl2hRcYJG+ktj2LAUffG9fxkjGhe9nJzrTHtE3HCUzZrhCKl2
-	bKlV7QAhsc2xgWob5n6NElWGrjPhkRbDgxtAcKJrce+JScPQQHhJ/K0ccKjs765oA4nqynTF3mr
-	OWA==
-X-Google-Smtp-Source: AGHT+IGWy13DxvLS8K17pmxDGUBkxFXcjzvU8RO/2RKiwpAO7/OxStb99Fys+L7g5ZVeJZqwWhsmEQ==
-X-Received: by 2002:a17:903:234d:b0:206:bf6e:6001 with SMTP id d9443c01a7336-206d37adc8bmr3157705ad.17.1725552399349;
-        Thu, 05 Sep 2024 09:06:39 -0700 (PDT)
-Received: from google.com (202.141.197.35.bc.googleusercontent.com. [35.197.141.202])
-        by smtp.gmail.com with ESMTPSA id d2e1a72fcca58-717785b4b4bsm3389215b3a.199.2024.09.05.09.06.37
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 05 Sep 2024 09:06:38 -0700 (PDT)
-Date: Thu, 5 Sep 2024 16:06:24 +0000
-From: Pranjal Shrivastava <praan@google.com>
-To: Nicolin Chen <nicolinc@nvidia.com>
-Cc: Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
-	Robin Murphy <robin.murphy@arm.com>,
-	Mostafa Saleh <smostafa@google.com>,
-	"iommu@lists.linux.dev" <iommu@lists.linux.dev>,
-	Daniel Mentz <danielmentz@google.com>
-Subject: Re: [PATCH v2 1/2] iommu/arm-smmu-v3: Print better events records
-Message-ID: <ZtnXADX3b6qdqVs0@google.com>
-References: <20240827193026.3993039-1-praan@google.com>
- <20240827193026.3993039-2-praan@google.com>
- <ZtAW0hVPFD6JbLTL@Asurada-Nvidia>
- <ZtEKMknbGaD9q170@google.com>
- <ZtEkUQ7tI3Nb0NOc@Asurada-Nvidia>
- <ZtV1-IL8AZu--jGp@google.com>
- <ZtZEFKnKasX6433r@Asurada-Nvidia>
+	dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b="brgDPUjn"
+Received: from pps.filterd (m0279863.ppops.net [127.0.0.1])
+	by mx0a-0031df01.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 48597OTm013539;
+	Thu, 5 Sep 2024 16:08:32 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=quicinc.com; h=
+	cc:content-transfer-encoding:content-type:date:from:in-reply-to
+	:message-id:mime-version:references:subject:to; s=qcppdkim1; bh=
+	LkliPMTK5r2MbIJ2PjBJ+/FLqZ7lN6OBhil7wXHgQ0k=; b=brgDPUjnvT8HYdWy
+	5lK52bT4j/228fVwW+9pzg5KSUXjio3vpZPpC9JG8j1JWrvAFuHal19236TRNOK5
+	sN3vDX13SXop1VEmyrLNerxkKOl1Jl4hlClo/P8RETfoatjbrsp6LunGoT2HwknQ
+	L2SHVuhGX1BvG+iiIqyXS97zfTZ/39/KPTuml8wMs3skEqTzdguao5STIb2hWIup
+	diKjigvub1fF49iaHwQJj6ssmYULoPrEJt2k5N+sAtR+eMTF0LiJAYD3dkMbP4ME
+	VO77NeFgcOqqMRx7a0Xlg/8P+MsXSJ9vDx8rLCiyV8sSajA602ONdbyyq9oARnW7
+	+2+mSw==
+Received: from nasanppmta05.qualcomm.com (i-global254.qualcomm.com [199.106.103.254])
+	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 41epwe41hh-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Thu, 05 Sep 2024 16:08:32 +0000 (GMT)
+Received: from nasanex01b.na.qualcomm.com (nasanex01b.na.qualcomm.com [10.46.141.250])
+	by NASANPPMTA05.qualcomm.com (8.18.1.2/8.18.1.2) with ESMTPS id 485G8VMI026084
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Thu, 5 Sep 2024 16:08:31 GMT
+Received: from [10.110.102.234] (10.80.80.8) by nasanex01b.na.qualcomm.com
+ (10.46.141.250) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1544.9; Thu, 5 Sep 2024
+ 09:08:27 -0700
+Message-ID: <515a2837-69c3-47b2-978b-68ad3f6ad0fc@quicinc.com>
+Date: Thu, 5 Sep 2024 09:08:27 -0700
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <ZtZEFKnKasX6433r@Asurada-Nvidia>
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v2 16/21] dt-bindings: spi: document support for SA8255p
+To: Krzysztof Kozlowski <krzk@kernel.org>, Andrew Lunn <andrew@lunn.ch>
+CC: <andersson@kernel.org>, <konradybcio@kernel.org>, <robh@kernel.org>,
+        <krzk+dt@kernel.org>, <conor+dt@kernel.org>, <rafael@kernel.org>,
+        <viresh.kumar@linaro.org>, <herbert@gondor.apana.org.au>,
+        <davem@davemloft.net>, <sudeep.holla@arm.com>, <andi.shyti@kernel.org>,
+        <tglx@linutronix.de>, <will@kernel.org>, <robin.murphy@arm.com>,
+        <joro@8bytes.org>, <jassisinghbrar@gmail.com>, <lee@kernel.org>,
+        <linus.walleij@linaro.org>, <amitk@kernel.org>,
+        <thara.gopinath@gmail.com>, <broonie@kernel.org>,
+        <cristian.marussi@arm.com>, <rui.zhang@intel.com>,
+        <lukasz.luba@arm.com>, <wim@linux-watchdog.org>, <linux@roeck-us.net>,
+        <linux-arm-msm@vger.kernel.org>, <devicetree@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>, <linux-pm@vger.kernel.org>,
+        <linux-crypto@vger.kernel.org>, <arm-scmi@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>, <linux-i2c@vger.kernel.org>,
+        <iommu@lists.linux.dev>, <linux-gpio@vger.kernel.org>,
+        <linux-serial@vger.kernel.org>, <linux-spi@vger.kernel.org>,
+        <linux-watchdog@vger.kernel.org>, <kernel@quicinc.com>,
+        <quic_psodagud@quicinc.com>, Praveen Talari <quic_ptalari@quicinc.com>
+References: <20240828203721.2751904-1-quic_nkela@quicinc.com>
+ <20240903220240.2594102-1-quic_nkela@quicinc.com>
+ <20240903220240.2594102-17-quic_nkela@quicinc.com>
+ <sdxhnqvdbcpmbp3l7hcnsrducpa5zrgbmkykwfluhrthqhznxi@6i4xiqrre3qg>
+ <b369bd73-ce2f-4373-8172-82c0cca53793@quicinc.com>
+ <9a655c1c-97f6-4606-8400-b3ce1ed3c8bf@kernel.org>
+ <516f17e6-b4b4-4f88-a39f-cc47a507716a@quicinc.com>
+ <2f11f622-1a00-4558-bde9-4871cdc3d1a6@lunn.ch>
+ <204f5cfe-d1ed-40dc-9175-d45f72395361@quicinc.com>
+ <70c75241-b6f1-4e61-8451-26839ec71317@kernel.org>
+ <75768451-4c85-41fa-82b0-8847a118ea0a@quicinc.com>
+ <ce4d6ea9-0ba7-4587-b4a7-3dcb2d6bb1a6@kernel.org>
+ <4896510e-6e97-44e0-b3d7-7a7230f935ec@quicinc.com>
+ <b1ad1c7a-0995-48e0-8ebc-46a39a5ef4b3@kernel.org>
+Content-Language: en-US
+From: Nikunj Kela <quic_nkela@quicinc.com>
+In-Reply-To: <b1ad1c7a-0995-48e0-8ebc-46a39a5ef4b3@kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: nasanex01a.na.qualcomm.com (10.52.223.231) To
+ nasanex01b.na.qualcomm.com (10.46.141.250)
+X-QCInternal: smtphost
+X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
+X-Proofpoint-ORIG-GUID: -LGl1Qpf7lJx26QAmJxpxVgv0VrmW08G
+X-Proofpoint-GUID: -LGl1Qpf7lJx26QAmJxpxVgv0VrmW08G
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.293,Aquarius:18.0.1039,Hydra:6.0.680,FMLib:17.12.60.29
+ definitions=2024-09-05_11,2024-09-04_01,2024-09-02_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 clxscore=1015 bulkscore=0
+ spamscore=0 mlxscore=0 phishscore=0 mlxlogscore=999 lowpriorityscore=0
+ suspectscore=0 adultscore=0 impostorscore=0 malwarescore=0
+ priorityscore=1501 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.19.0-2407110000 definitions=main-2409050120
 
-On Mon, Sep 02, 2024 at 04:02:44PM -0700, Nicolin Chen wrote:
-> On Mon, Sep 02, 2024 at 08:23:20AM +0000, Pranjal Shrivastava wrote:
-> 
-> > On Thu, Aug 29, 2024 at 06:45:53PM -0700, Nicolin Chen wrote:
-> > > On Thu, Aug 29, 2024 at 11:54:26PM +0000, Pranjal Shrivastava wrote:
-> > >
-> > > > > > +static const char * const class_str[] = {
-> > > > > > +       [0] = "CD",
-> > > > > > +       [1] = "TTD",
-> > > > > > +       [2] = "IN",
-> > > > > > +       [3] = "RES",
-> > > > > > +};
-> > > > >
-> > > > > Unlike the event IDs, these class code names are still uneasy to
-> > > > > read. Though it'd result in a print-format change, yet could we
-> > > > > simply dump full strings instead?
-> > > > >
-> > > >
-> > > > By "full strings" do you mean "CD => CD Fetch" as mentioned in the spec?
-> > >
-> > > Yes.
-> > 
-> > Ack. So, just for confirmation we want the following 4 class strings:
-> > "CD Fetch"
-> > "Stage 1 translation table fetch"
-> > "Input address caused fault"
-> > "Reserved"
-> > 
-> > Right?
-> 
-> Yes. I know they are longer, but more readable. So, you might want
-> to arrange the output format to present them nicely.
-> 
 
-Ack, thanks for confirming!
+On 9/5/2024 7:39 AM, Krzysztof Kozlowski wrote:
+> On 05/09/2024 16:15, Nikunj Kela wrote:
+>> On 9/5/2024 7:09 AM, Krzysztof Kozlowski wrote:
+>>> On 05/09/2024 16:03, Nikunj Kela wrote:
+>>>> On 9/5/2024 1:04 AM, Krzysztof Kozlowski wrote:
+>>>>> On 04/09/2024 23:06, Nikunj Kela wrote:
+>>>>>> On 9/4/2024 9:58 AM, Andrew Lunn wrote:
+>>>>>>>> Sorry, didn't realize SPI uses different subject format than other
+>>>>>>>> subsystems. Will fix in v3. Thanks
+>>>>>>> Each subsystem is free to use its own form. e.g for netdev you will
+>>>>>>> want the prefix [PATCH net-next v42] net: stmmac: dwmac-qcom-ethqos:
+>>>>>> of course they are! No one is disputing that.
+>>>>>>> This is another reason why you should be splitting these patches per
+>>>>>>> subsystem, and submitting both the DT bindings and the code changes as
+>>>>>>> a two patch patchset. You can then learn how each subsystem names its
+>>>>>>> patches.
+>>>>>> Qualcomm QUPs chips have serial engines that can be configured as
+>>>>>> UART/I2C/SPI so QUPs changes require to be pushed in one series for all
+>>>>>> 3 subsystems as they all are dependent.
+>>>>> No, they are not dependent. They have never been. Look how all other
+>>>>> upstreaming process worked in the past.
+>>>> Top level QUP node(patch#18) includes i2c,spi,uart nodes.
+>>>> soc/qcom/qcom,geni-se.yaml validate those subnodes against respective
+>>>> yaml. The example that is added in YAML file for QUP node will not find
+>>>> sa8255p compatibles if all 4 yaml(qup, i2c, spi, serial nodes) are not
+>>>> included in the same series.
+>>>>
+>>> So where is the dependency? I don't see it. 
+>> Ok, what is your suggestion on dt-schema check failure in that case as I
+>> mentioned above? Shall we remove examples from yaml that we added?
+> I don't understand what sort of failure you want to fix and why examples
+> have any problem here. 
 
-> > > > Also, the printing would become
-> > > > more complicated as we'd have to log different fields for different
-> > > > events. Additionally, I don't see that many unions being defined
-> > > > elsewhere in the kernel.
-> > >
-> > > OK. That's a fair point. I think we could have just one common
-> > > union for the "good stuff" fields. Then, if something isn't in
-> > > the common union, do a FIELD_GET(raw)?
-> > >
-> > 
-> > I'm not sure if I get this right, but are you suggesting something like:
-> > 
-> > +struct arm_smmu_event {
-> > +       union {
-> > +       u64 raw_evt[4];
-> > +       struct {
-> > +               /* "Good stuff" fields */
-> > +       };
-> > +};
-> > 
-> > and then based on the fault type we can use the "good stuff" or raw_evt?
-> > So, basically just add a union between raw_evt and the other fields to
-> > improve struct arm_smmu_event present in v2?
-> 
-> Yea, I attached a test code at the EOM for your reference. Please
-> feel free to drop fields if they aren't common enough, and confirm
-> those bits are correctly written too.
-> 
+If the QUPs yaml changes are not included in the same series with
+i2c,serial yaml changes, you see these errors:
 
-Hmm, so you're suggesting to make the event a union instead of a struct
-thus, making reading event fields easy.
+/builds/robherring/dt-review-ci/linux/Documentation/devicetree/bindings/soc/qcom/qcom,geni-se.example.dtb: geniqup@9c0000: serial@990000:compatible:0: 'qcom,sa8255p-geni-uart' is not one of ['qcom,geni-uart', 'qcom,geni-debug-uart']
+/builds/robherring/dt-review-ci/linux/Documentation/devicetree/bindings/soc/qcom/qcom,geni-se.example.dtb: geniqup@9c0000: i2c@984000:compatible:0: 'qcom,sa8255p-geni-i2c' is not one of ['qcom,geni-i2c', 'qcom,geni-i2c-master-hub']
 
-The only thing I'm slightly worried about is if the bitfields don't
-remain constant if more events are added in the future.
-
-For example, the "IPA" field is in dword[3] for now, but if it changes
-in the future, it may get difficult to scale the union for future events
-If we can guarantee that it doesn't happen then I think union is better.
-
-Will, do you have any suggestions here?
-
-> > > > > > +       mutex_lock(&smmu->streams_mutex);
-> > > > > > +       event->master = arm_smmu_find_master(smmu, event->sid);
-> > > > > > +       mutex_unlock(&smmu->streams_mutex);
-> > > > >
-> > > > > Same as I pointed out at the other patch, "master" is unprotected
-> > > > > after the unlock. It can unlikely-yet-still-possibly race against
-> > > > > arm_smmu_release_device.
-> > > > >
-> > > >
-> > > > Hmm.. are you suggesting that the `master` could've been removed by the
-> > > > arm_smmu_release_device while we access it in an event handler?
-> > > >
-> > > > As in, something like the following situation:
-> > > >
-> > > > 1. The evtq_thread gets scheduled
-> > > > 2. arm_smmu_release_device removes the `master` & its streams
-> > > > 3. In the `handle_evt` we dereference `master` which has been `kfree`ed
-> > > >    (also, we don't return -EINVAL like we ideally should)
-> > > >
-> > > > In that case, I think I should add back the `arm_smmu_find_master` to
-> > > > the `arm_smmu_handle_evt` along with the locks. Nice catch! :)
-> > >
-> > > Probably could lock the entire iteration, master pointer could
-> > > be then passed in safely between the helper functions.
-> > 
-> > I'm just wondering if that'd be too much to print the "master_name", I
-> > mean what if we simply save the master_name in `struct arm_smmu_event`?
-> > That way, we can keep the locking as is in `arm_smmu_handle_evt` and
-> > simply print the stored "master_name".
-> > 
-> > Note: I'm suggesting to store the entire string and not just the ptr
-> > returned by dev_name(master->dev)), something like:
-> > 
-> > `strcpy(event->master_name, dev_name(master->dev))`
-> 
-> I'd probably move the dump() call inside arm_smmu_handle_evt(), and
-> within the lock to avoid strcpy. And eventually it would be located
-> at "else { /* Unhandled events should be pinned */ ret = -EFAULT; }:
-> https://lore.kernel.org/linux-iommu/8b93be1d913f9e227748de2d07e8540ddc2372ab.1724777091.git.nicolinc@nvidia.com/
-> 
-
-I think we'll still need to dump the event for other cases, such as the
-case where the master wasn't found, we return `-EINVAL` and the case
-where EVTQ_1_S2 is set. I guess, we should have a case under the label
-`out_unlock` we can call the dump function based on the ret value. E.g.:
-
-out_unlock:
-+	if (ret)
-+		arm_smmu_dump_event(smmu, evt);
- 	mutex_unlock(&smmu->streams_mutex);
- 	return ret;
-
-> > > > > Actually, the "Fault", "Bad fetch", and "Bad smmu config" doesn't
-> > > > > feel very necessary, since we prints the event string already.
-> > > > >
-> > > >
-> > > > That makes sense, I'll remove those in a follow up patch.
-> > > > Although, I guess we should still say "fault" somewhere to hint folks
-> > > > without arm-smmu-v3 knowledge that the event wasn't normal operation.
-> > > >
-> > > > LMK what you think? I've had a few interactions where clients tend to
-> > > > ignore the current "event received" dump considering that to be a part
-> > > > of normal SMMU operation.
-> > >
-> > > Well, we could improve the event_str with human-readable ones:
-> > >       s/F_TRANSLATION/Translation\ Fault
-> > >
-> > 
-> > Yea, but I'd still want to see a "spec searchable" name for the fault.
-> > Maybe we can have "Unexpected event recieved:<spec_fault_name>" in the
-> > "title" string?
-> 
-> That looks good to me.
-> 
-
-Ack.
-
-> > > > Although, we can dump the raw event only in the `default` case, i.e.
-> > > > when we don't have a dumper function for that particular event ID but
-> > > > that might still avoid printing the IMPL_DEFINED fields in fetch faults
-> > >
-> > > Makes sense to me by having a different title for the default case.
-> > >
-> > 
-> > Ack, we can have a different title for the default case. However, on a
-> > second thought, I believe we should log the "raw" event in all cases,
-> > since we aren't printing all the fields anyway. For example, for
-> > F_TRANSLATION we don't print IMPL_DEF fields, NSIPA etc. It might be
-> > helpful to see the raw event even for the "non-default" cases.
-> 
-> That makes sense. I'd dump the raw dwords outside the switch-case,
-> i.e. in the common path.
-> 
-
-Ack. I'd dump the raw dwords outside the switch-case in v3.
-
-> > > That is fine, though should break the lines too. Maybe:
-> > >       dev_err(smmu->dev, "%s%s%s%s%s\n", title,
-> > >               strlen(addrs) ? "\n" : "", addrs,
-> > >               strlen(other) ? "\n" : "", other);
-> > > ?
-> > >
-> > 
-> > I'd like line-feeds too, but I'm unsure if that could cause dmesg log
-> > interruptions? I assume adding a "\n" flushes the console buffer, i.e.
-> > we might get interrupted logs (I maybe wrong here).
-> 
-> I think the console_lock is grabbed per printk call, not per "\n".
-
-Ahh okay! I took the opportunity to read up the printk implementation.
-I see the `vprintk_store` stores a single log as a unit in the buffer,
-and the `console_unlock` actually flushes it out to the console. That
-said, I think nothing (other than hard IRQs printing logs) should cause
-interleaving between the log. Interesting stuff!
-
-> 
-> Thanks
-> Nicolin
-
-Thanks,
-Pranjal
+> I said it multiple times already but I think you
+> never confirmed. Do you understand how patches are merged? That they go
+> via different trees but everything must be 100% bisectable?
+>
+> Best regards,
+> Krzysztof
+>
