@@ -1,221 +1,116 @@
-Received: from NAM04-BN8-obe.outbound.protection.outlook.com (mail-bn8nam04on2075.outbound.protection.outlook.com [40.107.100.75])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 773CB1CE711
-	for <iommu@lists.linux.dev>; Fri,  6 Sep 2024 12:14:04 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.100.75
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1725624846; cv=fail; b=lRH9shUMJVBrpLoZHhjUh48pA2K9vvEqlAuP5itYpZSk5V7pU815yjcSIO4oeZEflBQlBHM4F6YPN0dXrjTNzI8utEx7F1QZYked3swfm2hjiffEwZdIGO+VT5C6jSmxpQoQbrhn5qQcXCxxLJ3+jrmMwaLWupJlIwHvefW4fzY=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1725624846; c=relaxed/simple;
-	bh=2nVnvikOUIsFUodik3VP1JBoAfE933fafZNky8D8X/0=;
-	h=From:To:CC:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=Sgpq1m6zEaIrvyoApnVHO6Sf1pkYuvp75+bTpfyCf/ZOCKfjqhUSA24RIfo/hLQWcSdCZ3Nz4nVEZZKkZjeX51zaKA5eDtfyazH9eFYqfwXiQAPSOgc8w00c/wQLn34f5ZbIWhohooOpUnTO3dqznP0pIxXptfVZw9vBMP0qTBQ=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com; spf=fail smtp.mailfrom=amd.com; dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b=by0x15ku; arc=fail smtp.client-ip=40.107.100.75
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=amd.com
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b="by0x15ku"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=nd5DwerbRlFarzMulc0D/rcLrTDyncrvrXlqXkhuS2J7tsug2d7pqULwq9E8xzvCjk+9ASGuKuQw5tvoWieRb1Z7RrZDquHSEo13v7iiARFKqtpbVDx5+DUacCDkHEqviPq3eus041FEw9xU0b3ltIMEZ+B14uMaRNDoiIS+PTM3tjzLovG2Nu5/9FOOfXW/8ywq3hxyjQVZqii8BlNVLm1gyINLPS3ThvH4fDnrppr25GGHYGo7lUi40LHggeqyXQzNHn8/m5o5UqrRVdz5sT57Yu0fs9GkuP8Wc03Invp0zLaQcqtUp1Ee5CEQAKBuTe31QqlUd1+v7PHe8G7/Vw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=kICso5MGfTTzA8tSvNrzoXPcRm//xOf2qPNobYpXia0=;
- b=iruqxDAZhYNtDztHiRUqTnRS2YPEynv/URzYXAqe0a00likkSVJC1mQGAZxZQ0Ca+6cQefrSJnjRzlZq2GEyuITxcWirLGHbzBu3MqO1ilB8qQmsa42L8hK5Ms59AbCMIkdjJB0j/cDQLae4Q1T84ZekKMpXRf2m9HPkrLxYbHx1yVHh8NvAPgWUeQs/OgvFznOgqd9VeOjQPG6kjTR4rqicjjaTcgu/v6EZlH+uYlcijEpQf2cIyLjL8U6TWSwMlY6HVhqoqOth0rruuWjQ/koauAkcVuK5UW9GJP4O2sEZ8gADCMNpn0z9Dy/EmfnN3VKhQFfLpL1er3b+6x/ZZA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 165.204.84.17) smtp.rcpttodomain=vger.kernel.org smtp.mailfrom=amd.com;
- dmarc=pass (p=quarantine sp=quarantine pct=100) action=none
- header.from=amd.com; dkim=none (message not signed); arc=none (0)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=kICso5MGfTTzA8tSvNrzoXPcRm//xOf2qPNobYpXia0=;
- b=by0x15kuPLMSaAuExrZCcToZGMIZ//EQxPMIfI/BaMfTMX5fcCmPle5AF9YJEmWz4ucvJmQljZJQYbr6Ej/YJDNmgJ0v6ct8DfGHX1S7wNy8v7X5Ff/kNuHpy0tuWMvUjVLZ2rHoJpi5An7JFdg4+Gt81KiU6B0ksYlTbrAQs98=
-Received: from MN2PR03CA0030.namprd03.prod.outlook.com (2603:10b6:208:23a::35)
- by SJ0PR12MB8614.namprd12.prod.outlook.com (2603:10b6:a03:47d::17) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7918.27; Fri, 6 Sep
- 2024 12:14:00 +0000
-Received: from BL6PEPF0001AB54.namprd02.prod.outlook.com
- (2603:10b6:208:23a:cafe::4c) by MN2PR03CA0030.outlook.office365.com
- (2603:10b6:208:23a::35) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7939.17 via Frontend
- Transport; Fri, 6 Sep 2024 12:13:59 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 165.204.84.17)
- smtp.mailfrom=amd.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=amd.com;
-Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
- 165.204.84.17 as permitted sender) receiver=protection.outlook.com;
- client-ip=165.204.84.17; helo=SATLEXMB03.amd.com; pr=C
-Received: from SATLEXMB03.amd.com (165.204.84.17) by
- BL6PEPF0001AB54.mail.protection.outlook.com (10.167.241.6) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.20.7918.13 via Frontend Transport; Fri, 6 Sep 2024 12:13:59 +0000
-Received: from purico-ed03host.amd.com (10.180.168.240) by SATLEXMB03.amd.com
- (10.181.40.144) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2507.39; Fri, 6 Sep
- 2024 07:13:55 -0500
-From: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
-To: <linux-kernel@vger.kernel.org>, <iommu@lists.linux.dev>
-CC: <joro@8bytes.org>, <robin.murphy@arm.com>, <vasant.hegde@amd.com>,
-	<ubizjak@gmail.com>, <jgg@nvidia.com>, <jon.grimm@amd.com>,
-	<santosh.shukla@amd.com>, <pandoh@google.com>, <kumaranand@google.com>,
-	Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
-Subject: [PATCH v3 5/5] iommu/amd: Do not update DTE in-place in amd_iommu_set_dirty_tracking and set_dte_irq_entry
-Date: Fri, 6 Sep 2024 12:13:08 +0000
-Message-ID: <20240906121308.5013-6-suravee.suthikulpanit@amd.com>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20240906121308.5013-1-suravee.suthikulpanit@amd.com>
-References: <20240906121308.5013-1-suravee.suthikulpanit@amd.com>
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 0B0D41CB313
+	for <iommu@lists.linux.dev>; Fri,  6 Sep 2024 12:24:44 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1725625487; cv=none; b=aDO0afcGHAnHAIXIxOlDa2whjw9cLrLg/MMCLOlQjKjwHq2UpuSmYMLMCKo/zme8Irxubpw0wk706x6OsYtooEvImFJCWqCQ1oQu/Kb1wikIJIwxxfnovWMi9fhcTb8wyPXlPjOdryDADdhcUSoVzIvaAjNfLQfqhR9j7tcW8zI=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1725625487; c=relaxed/simple;
+	bh=afDotwk1goIpE4/B9AcsfhwAPXbo1B75M+DlwUkKNE4=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=uytDT5lHcegA+OxjR2ILU7pJrHm+fhSVlhPF3pg9fbkX9PV7/OCEjZn2neks+hVq8yK5n+hrRQMBJHh4w2yWORru2n2+CSR9hA1/kHc8/GAOHq2QBtcNE7X0Og2O1JGG1qEk3ckbW97Ol+/v1Y5oNE2AXrA4YKrxZ2Qk9InbmNI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; arc=none smtp.client-ip=217.140.110.172
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 84D70113E;
+	Fri,  6 Sep 2024 05:25:11 -0700 (PDT)
+Received: from [10.1.36.41] (010265703453.arm.com [10.1.36.41])
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id EFE513F73B;
+	Fri,  6 Sep 2024 05:24:42 -0700 (PDT)
+Message-ID: <a30d3968-5fb8-423d-9524-0e694930a6b1@arm.com>
+Date: Fri, 6 Sep 2024 13:24:37 +0100
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH] Revert "iommu/io-pgtable-arm: Optimise non-coherent
+ unmap"
+To: Rob Clark <robdclark@gmail.com>
+Cc: Will Deacon <will@kernel.org>, iommu@lists.linux.dev,
+ linux-arm-msm@vger.kernel.org, freedreno@lists.freedesktop.org,
+ Ashish Mhetre <amhetre@nvidia.com>, Rob Clark <robdclark@chromium.org>,
+ Joerg Roedel <joro@8bytes.org>,
+ "moderated list:ARM SMMU DRIVERS" <linux-arm-kernel@lists.infradead.org>,
+ open list <linux-kernel@vger.kernel.org>
+References: <20240905124956.84932-1-robdclark@gmail.com>
+ <20240905155330.GA15246@willie-the-truck>
+ <53f13813-a515-475a-836d-0b6017a117eb@arm.com>
+ <CAF6AEGs3aRXbnnhD84GBbz9wJmyNR=dA3hbGuMLcM22Vs8CU_g@mail.gmail.com>
+ <CAF6AEGsqdxO4+kaz6jOLBS_syjEkZg-7Veqh3j-o=RiGNcBH8A@mail.gmail.com>
+From: Robin Murphy <robin.murphy@arm.com>
+Content-Language: en-GB
+In-Reply-To: <CAF6AEGsqdxO4+kaz6jOLBS_syjEkZg-7Veqh3j-o=RiGNcBH8A@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-ClientProxiedBy: SATLEXMB03.amd.com (10.181.40.144) To SATLEXMB03.amd.com
- (10.181.40.144)
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: BL6PEPF0001AB54:EE_|SJ0PR12MB8614:EE_
-X-MS-Office365-Filtering-Correlation-Id: 183d2a8f-bf1a-4094-486a-08dcce6d6358
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|376014|36860700013|82310400026|1800799024;
-X-Microsoft-Antispam-Message-Info:
-	=?us-ascii?Q?M/O7OCg7WAQdLx2LhPMh7YvtLnfGNkJc0e7gK/0AVuVYOva5gO02EutMhtl7?=
- =?us-ascii?Q?DYV8BFJbns6mN1h66SWiwP4Z0YojC6bAd/M+HIEGRCIooXcdtpk0uQj7PdWU?=
- =?us-ascii?Q?VYr4ZpjvZNJjyUno+CVHx0uB8gjHNvnPVaChWCiG7+Um+219jxQB/a+z8BTV?=
- =?us-ascii?Q?Ip1AU9ZHZzEEe4BM/YkV1n13MC2kCeq+w0X0WdoQR7uCQo43HBc1F/9mBgu5?=
- =?us-ascii?Q?toswmmuflpQLxNEJn8mM9lCCxOMCCqkUWaIpstRanIShjUnhdsaV9jRViRZ/?=
- =?us-ascii?Q?ITCTRS+D0xIfyWtS5Rr767uiyNOdDy2xFZKLxooZpxa0P0sjIk1i/cpZQYbc?=
- =?us-ascii?Q?EVo8+jzWlsPE1/GNfvI7CFbK/LBf7MSdYRyuPWq2SxPme9g2oIZl9lWRFXoa?=
- =?us-ascii?Q?5HlOwTFexmlmMxwuK+iY5ptvNN3xPDC7Cj9vvchejUWkniWRp/2RlPuwByZy?=
- =?us-ascii?Q?cteyWFEkMxDjaYApIfbyiEz68u0CvY6d129XY/DLDAyEstjPq/T5coRXxXgR?=
- =?us-ascii?Q?Ey5K9m66fRwhfwk4cLAXn0BI3aSd2Ng8XCzRYeO+ojJwKEPhMbonZwSQPU+h?=
- =?us-ascii?Q?zwWE0MkXJUaXgj4MJnRC+ztblhEDSkK5NQHWVJvYa9lXxqkurtZYQWWULtpp?=
- =?us-ascii?Q?sQ0odrvkqtyuc6QJvZgOnqj5svsUrr//k01B1wb4M4kzTlnUI91iwVhAtcjQ?=
- =?us-ascii?Q?ENFk+mtQ6xAJr2qZjY/wg+E8mdlG2ZIL6LQG7ztA5iVxZNCE+xqVXjI5bwkn?=
- =?us-ascii?Q?lkQF/x+9iHxvZZobOE1HY9H1TV3K3BFzo3chJlHFeIVfd5agVNjC6LZhpLKK?=
- =?us-ascii?Q?u20sNRLuxQkwViuUXJdrYbWNSKqj/lc18F0OmnHKpTQPHOzFUovmxXrtj+T8?=
- =?us-ascii?Q?rgegVahgPGJ/xsEhk7d3iWRfqIGkXTEvaedNo+Plz6ppJjebgXAWFfe+0wKv?=
- =?us-ascii?Q?JvnVglwjdpsZeafowoYxLgA5x0AlWdgzXmiGbOwnGTLiNG77b+r7tUTEuulB?=
- =?us-ascii?Q?O/WqWvA+8fwIXjsMtpAoOkAAJmxxeSeEFzKPCTE5+Mfp1F46ZLlNbac6vz1A?=
- =?us-ascii?Q?M/jDo95dKm8XylFR4GYE3U/+lAWWqU1AD1cGIMNBzwbCntZn+S3Kex625cwa?=
- =?us-ascii?Q?QLQYmMT7Lj3EVKsymV7ssJ0ukBK6FMJTtkjFwfwxq9HkFyGyElzukrPhrTWJ?=
- =?us-ascii?Q?+xhPTfrhUnPx9YiVkapMyEiv+Ono8MKa7BASHraL4JwQbmX3/gmAySbaA7vV?=
- =?us-ascii?Q?vBCON79wYvcUPHPIPcbSmbj8+Z+XouW+5+ICJeEPgBlZYw/OR6IP/kH/d6JJ?=
- =?us-ascii?Q?g7rYfYc6Ei5kjQ8/y9/2qPaV+Lj1F8u+DDdcbAUgfdD9X2xd5O4lgbe0VIsq?=
- =?us-ascii?Q?mfKKpHua4TFeVxoleA83c3pJiA+tZn3G0m8iJ/QvWJkTJJgHq4MoUU8xZss/?=
- =?us-ascii?Q?eegv4VYZLnk=3D?=
-X-Forefront-Antispam-Report:
-	CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB03.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230040)(376014)(36860700013)(82310400026)(1800799024);DIR:OUT;SFP:1101;
-X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 06 Sep 2024 12:13:59.2473
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 183d2a8f-bf1a-4094-486a-08dcce6d6358
-X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[SATLEXMB03.amd.com]
-X-MS-Exchange-CrossTenant-AuthSource:
-	BL6PEPF0001AB54.namprd02.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SJ0PR12MB8614
 
-Update the DTE in place could result in data tearing since the AMD IOMMU
-hardware reads the entire DTE either in two 128-bit transactions or
-a single 256-bit transaction.
+On 2024-09-05 6:10 pm, Rob Clark wrote:
+> On Thu, Sep 5, 2024 at 10:00 AM Rob Clark <robdclark@gmail.com> wrote:
+>>
+>> On Thu, Sep 5, 2024 at 9:27 AM Robin Murphy <robin.murphy@arm.com> wrote:
+>>>
+>>> On 05/09/2024 4:53 pm, Will Deacon wrote:
+>>>> Hi Rob,
+>>>>
+>>>> On Thu, Sep 05, 2024 at 05:49:56AM -0700, Rob Clark wrote:
+>>>>> From: Rob Clark <robdclark@chromium.org>
+>>>>>
+>>>>> This reverts commit 85b715a334583488ad7fbd3001fe6fd617b7d4c0.
+>>>>>
+>>>>> It was causing gpu smmu faults on x1e80100.
+>>>>>
+>>>>> I _think_ what is causing this is the change in ordering of
+>>>>> __arm_lpae_clear_pte() (dma_sync_single_for_device() on the pgtable
+>>>>> memory) and io_pgtable_tlb_flush_walk().  I'm not entirely sure how
+>>>>> this patch is supposed to work correctly in the face of other
+>>>>> concurrent translations (to buffers unrelated to the one being
+>>>>> unmapped(), because after the io_pgtable_tlb_flush_walk() we can have
+>>>>> stale data read back into the tlb.
+>>>>>
+>>>>> Signed-off-by: Rob Clark <robdclark@chromium.org>
+>>>>> ---
+>>>>>    drivers/iommu/io-pgtable-arm.c | 31 ++++++++++++++-----------------
+>>>>>    1 file changed, 14 insertions(+), 17 deletions(-)
+>>>>
+>>>> Please can you try the diff below, instead?
+>>>
+>>> Given that the GPU driver's .tlb_add_page is a no-op, I can't see this
+>>> making a difference. In fact, given that msm_iommu_pagetable_unmap()
+>>> still does a brute-force iommu_flush_iotlb_all() after io-pgtable
+>>> returns, and in fact only recently made .tlb_flush_walk start doing
+>>> anything either for the sake of the map path, I'm now really wondering
+>>> how this patch has had any effect at all... :/
+>>
+>> Yeah..  and unfortunately the TBU code only supports two devices so
+>> far, so I can't easily repro with TBU enabled atm.  Hmm..
+>> __arm_lpae_unmap() is also called in the ->map() path, although not
+>> sure how that changes things.
+> 
+> Ok, an update.. after a reboot, still with this patch reverted, I once
+> again see faults.  So I guess that vindicates the original patch, and
+> leaves me still searching..
+> 
+> fwiw, fault info from the gpu devcore:
+> 
+> -------------
+> fault-info:
+>    - ttbr0=0000000919306000
+>    - iova=0000000100c17000
+>    - dir=WRITE
+>    - type=UNKNOWN
+>    - source=CP
+> pgtable-fault-info:
+>    - ttbr0: 000000090ca40000
+>    - asid: 0
+>    - ptes: 000000095db47003 000000095db48003 0000000914c8f003 00000008fd7f0f47
+> -------------
+> 
+> the 'ptes' part shows the table walk, which looks ok to me..
 
-In case of updating only single 64-bit, it is sufficient to lock use
-WRITE_ONCE() beaucse it is writing to memory read back by HW.
+But is it the right pagetable at all, given that the "ttbr0" values 
+appear to be indicating different places?
 
-Also, lock the DTE before updating.
-
-Suggested-by: Jason Gunthorpe <jgg@nvidia.com>
-Signed-off-by: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
----
- drivers/iommu/amd/iommu.c | 42 ++++++++++++++++++++++-----------------
- 1 file changed, 24 insertions(+), 18 deletions(-)
-
-diff --git a/drivers/iommu/amd/iommu.c b/drivers/iommu/amd/iommu.c
-index 15eb816d4313..e9cfe9238e83 100644
---- a/drivers/iommu/amd/iommu.c
-+++ b/drivers/iommu/amd/iommu.c
-@@ -2753,12 +2753,12 @@ static int amd_iommu_set_dirty_tracking(struct iommu_domain *domain,
- 					bool enable)
- {
- 	struct protection_domain *pdomain = to_pdomain(domain);
--	struct dev_table_entry *dev_table;
-+	struct dev_table_entry *dte;
- 	struct iommu_dev_data *dev_data;
- 	bool domain_flush = false;
- 	struct amd_iommu *iommu;
- 	unsigned long flags;
--	u64 pte_root;
-+	u64 new;
- 
- 	spin_lock_irqsave(&pdomain->lock, flags);
- 	if (!(pdomain->dirty_tracking ^ enable)) {
-@@ -2767,16 +2767,15 @@ static int amd_iommu_set_dirty_tracking(struct iommu_domain *domain,
- 	}
- 
- 	list_for_each_entry(dev_data, &pdomain->dev_list, list) {
-+		spin_lock(&dev_data->dte_lock);
- 		iommu = get_amd_iommu_from_dev_data(dev_data);
--
--		dev_table = get_dev_table(iommu);
--		pte_root = dev_table[dev_data->devid].data[0];
--
--		pte_root = (enable ? pte_root | DTE_FLAG_HAD :
--				     pte_root & ~DTE_FLAG_HAD);
-+		dte = &get_dev_table(iommu)[dev_data->devid];
-+		new = dte->data[0];
-+		new = (enable ? new | DTE_FLAG_HAD : new & ~DTE_FLAG_HAD);
-+		WRITE_ONCE(dte->data[0], new);
-+		spin_unlock(&dev_data->dte_lock);
- 
- 		/* Flush device DTE */
--		dev_table[dev_data->devid].data[0] = pte_root;
- 		device_flush_dte(dev_data);
- 		domain_flush = true;
- 	}
-@@ -3042,17 +3041,24 @@ static void iommu_flush_irt_and_complete(struct amd_iommu *iommu, u16 devid)
- static void set_dte_irq_entry(struct amd_iommu *iommu, u16 devid,
- 			      struct irq_remap_table *table)
- {
--	u64 dte;
--	struct dev_table_entry *dev_table = get_dev_table(iommu);
-+	u64 new;
-+	struct dev_table_entry *dte = &get_dev_table(iommu)[devid];
-+	struct iommu_dev_data *dev_data = search_dev_data(iommu, devid);
-+
-+	if (dev_data)
-+		spin_lock(&dev_data->dte_lock);
-+
-+	new = dte->data[2];
-+	new &= ~DTE_IRQ_PHYS_ADDR_MASK;
-+	new |= iommu_virt_to_phys(table->table);
-+	new |= DTE_IRQ_REMAP_INTCTL;
-+	new |= DTE_INTTABLEN;
-+	new |= DTE_IRQ_REMAP_ENABLE;
- 
--	dte	= dev_table[devid].data[2];
--	dte	&= ~DTE_IRQ_PHYS_ADDR_MASK;
--	dte	|= iommu_virt_to_phys(table->table);
--	dte	|= DTE_IRQ_REMAP_INTCTL;
--	dte	|= DTE_INTTABLEN;
--	dte	|= DTE_IRQ_REMAP_ENABLE;
-+	WRITE_ONCE(dte->data[2], new);
- 
--	dev_table[devid].data[2] = dte;
-+	if (dev_data)
-+		spin_unlock(&dev_data->dte_lock);
- }
- 
- static struct irq_remap_table *get_irq_table(struct amd_iommu *iommu, u16 devid)
--- 
-2.34.1
-
+Robin.
