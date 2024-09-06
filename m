@@ -1,116 +1,125 @@
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 0B0D41CB313
-	for <iommu@lists.linux.dev>; Fri,  6 Sep 2024 12:24:44 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 993221552FA
+	for <iommu@lists.linux.dev>; Fri,  6 Sep 2024 12:55:29 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1725625487; cv=none; b=aDO0afcGHAnHAIXIxOlDa2whjw9cLrLg/MMCLOlQjKjwHq2UpuSmYMLMCKo/zme8Irxubpw0wk706x6OsYtooEvImFJCWqCQ1oQu/Kb1wikIJIwxxfnovWMi9fhcTb8wyPXlPjOdryDADdhcUSoVzIvaAjNfLQfqhR9j7tcW8zI=
+	t=1725627329; cv=none; b=ckFGAgwiqtJvRs6JUaJ5rV7VPwonns9h7DeDiUq/Q4+HFxq4PARJci8X0tyKhypmvtgHudNtjH7wwAvyPIVNfcDDD1MyFamd6kWeM3tHkXYNHqZehp5f0XNOuTP0KMVZOaI2rgh3DyChGoHjjssaPFwHH1+64VNrFS5mWd16Sdo=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1725625487; c=relaxed/simple;
-	bh=afDotwk1goIpE4/B9AcsfhwAPXbo1B75M+DlwUkKNE4=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=uytDT5lHcegA+OxjR2ILU7pJrHm+fhSVlhPF3pg9fbkX9PV7/OCEjZn2neks+hVq8yK5n+hrRQMBJHh4w2yWORru2n2+CSR9hA1/kHc8/GAOHq2QBtcNE7X0Og2O1JGG1qEk3ckbW97Ol+/v1Y5oNE2AXrA4YKrxZ2Qk9InbmNI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; arc=none smtp.client-ip=217.140.110.172
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 84D70113E;
-	Fri,  6 Sep 2024 05:25:11 -0700 (PDT)
-Received: from [10.1.36.41] (010265703453.arm.com [10.1.36.41])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id EFE513F73B;
-	Fri,  6 Sep 2024 05:24:42 -0700 (PDT)
-Message-ID: <a30d3968-5fb8-423d-9524-0e694930a6b1@arm.com>
-Date: Fri, 6 Sep 2024 13:24:37 +0100
+	s=arc-20240116; t=1725627329; c=relaxed/simple;
+	bh=UVmiROn4eJIlVWV4bbqb1IOXlCLFfoLnm5/daV8XhR4=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=YOlg0MNXCHD1H9ugv+b/zXzgE+AHOsIP+otO9JgkFdo9iBYPX+9v/PNe2WvAR+Ero+jPslXbr8wO7JfR3fTfQIUw1xXlyVUiorEbyQqeHKpZqgaUPlnEaCo3oTvKJJ5Vcc1mpTYoNd+mDBgJ5ZEpIM/hbo89Y38/VD0MsConQII=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=TPDT4eT3; arc=none smtp.client-ip=10.30.226.201
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="TPDT4eT3"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D10D1C4CEC4;
+	Fri,  6 Sep 2024 12:55:27 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1725627329;
+	bh=UVmiROn4eJIlVWV4bbqb1IOXlCLFfoLnm5/daV8XhR4=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=TPDT4eT3fX6kvBmQPY4OP3135rkBsy+Hx0rFM9nepE0oLpICBprkn8rZRxmjwMxVF
+	 E/OL+SlEiGhHSGuv1okVttqp8tha6h8yo4D1o3DuWUC5e6SW5KuIPcp5dAVPujaIsh
+	 GT0b3q8ppOg6zEd2Brk2/ro5HXd7XZYo3JYzTAVeB/nCF65hKV2kiBgXUWFeY84vHY
+	 mEN60NK8sGXPknfrFcAVwBu9Mt0iT0yzd4aqBsRi2wuXrc9U2Jl9gFUFjx8dgUO/Y0
+	 ql3gbSjKUeFO3/0z6erK4DWvaqYuv6zkwS6oZOCXGJ5VwjsmGRvpQr8fzxM6/Up01+
+	 MDDpN7msbKELw==
+Date: Fri, 6 Sep 2024 13:55:24 +0100
+From: Will Deacon <will@kernel.org>
+To: Nicolin Chen <nicolinc@nvidia.com>
+Cc: Pranjal Shrivastava <praan@google.com>, Joerg Roedel <joro@8bytes.org>,
+	Robin Murphy <robin.murphy@arm.com>,
+	Mostafa Saleh <smostafa@google.com>,
+	"iommu@lists.linux.dev" <iommu@lists.linux.dev>,
+	Daniel Mentz <danielmentz@google.com>
+Subject: Re: [PATCH v2 1/2] iommu/arm-smmu-v3: Print better events records
+Message-ID: <20240906125524.GA16773@willie-the-truck>
+References: <20240827193026.3993039-1-praan@google.com>
+ <20240827193026.3993039-2-praan@google.com>
+ <ZtAW0hVPFD6JbLTL@Asurada-Nvidia>
+ <ZtEKMknbGaD9q170@google.com>
+ <ZtEkUQ7tI3Nb0NOc@Asurada-Nvidia>
+ <ZtV1-IL8AZu--jGp@google.com>
+ <ZtZEFKnKasX6433r@Asurada-Nvidia>
+ <ZtnXADX3b6qdqVs0@google.com>
+ <ZtphFYr1jUhHOSnC@nvidia.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH] Revert "iommu/io-pgtable-arm: Optimise non-coherent
- unmap"
-To: Rob Clark <robdclark@gmail.com>
-Cc: Will Deacon <will@kernel.org>, iommu@lists.linux.dev,
- linux-arm-msm@vger.kernel.org, freedreno@lists.freedesktop.org,
- Ashish Mhetre <amhetre@nvidia.com>, Rob Clark <robdclark@chromium.org>,
- Joerg Roedel <joro@8bytes.org>,
- "moderated list:ARM SMMU DRIVERS" <linux-arm-kernel@lists.infradead.org>,
- open list <linux-kernel@vger.kernel.org>
-References: <20240905124956.84932-1-robdclark@gmail.com>
- <20240905155330.GA15246@willie-the-truck>
- <53f13813-a515-475a-836d-0b6017a117eb@arm.com>
- <CAF6AEGs3aRXbnnhD84GBbz9wJmyNR=dA3hbGuMLcM22Vs8CU_g@mail.gmail.com>
- <CAF6AEGsqdxO4+kaz6jOLBS_syjEkZg-7Veqh3j-o=RiGNcBH8A@mail.gmail.com>
-From: Robin Murphy <robin.murphy@arm.com>
-Content-Language: en-GB
-In-Reply-To: <CAF6AEGsqdxO4+kaz6jOLBS_syjEkZg-7Veqh3j-o=RiGNcBH8A@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <ZtphFYr1jUhHOSnC@nvidia.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 
-On 2024-09-05 6:10 pm, Rob Clark wrote:
-> On Thu, Sep 5, 2024 at 10:00 AM Rob Clark <robdclark@gmail.com> wrote:
->>
->> On Thu, Sep 5, 2024 at 9:27 AM Robin Murphy <robin.murphy@arm.com> wrote:
->>>
->>> On 05/09/2024 4:53 pm, Will Deacon wrote:
->>>> Hi Rob,
->>>>
->>>> On Thu, Sep 05, 2024 at 05:49:56AM -0700, Rob Clark wrote:
->>>>> From: Rob Clark <robdclark@chromium.org>
->>>>>
->>>>> This reverts commit 85b715a334583488ad7fbd3001fe6fd617b7d4c0.
->>>>>
->>>>> It was causing gpu smmu faults on x1e80100.
->>>>>
->>>>> I _think_ what is causing this is the change in ordering of
->>>>> __arm_lpae_clear_pte() (dma_sync_single_for_device() on the pgtable
->>>>> memory) and io_pgtable_tlb_flush_walk().  I'm not entirely sure how
->>>>> this patch is supposed to work correctly in the face of other
->>>>> concurrent translations (to buffers unrelated to the one being
->>>>> unmapped(), because after the io_pgtable_tlb_flush_walk() we can have
->>>>> stale data read back into the tlb.
->>>>>
->>>>> Signed-off-by: Rob Clark <robdclark@chromium.org>
->>>>> ---
->>>>>    drivers/iommu/io-pgtable-arm.c | 31 ++++++++++++++-----------------
->>>>>    1 file changed, 14 insertions(+), 17 deletions(-)
->>>>
->>>> Please can you try the diff below, instead?
->>>
->>> Given that the GPU driver's .tlb_add_page is a no-op, I can't see this
->>> making a difference. In fact, given that msm_iommu_pagetable_unmap()
->>> still does a brute-force iommu_flush_iotlb_all() after io-pgtable
->>> returns, and in fact only recently made .tlb_flush_walk start doing
->>> anything either for the sake of the map path, I'm now really wondering
->>> how this patch has had any effect at all... :/
->>
->> Yeah..  and unfortunately the TBU code only supports two devices so
->> far, so I can't easily repro with TBU enabled atm.  Hmm..
->> __arm_lpae_unmap() is also called in the ->map() path, although not
->> sure how that changes things.
+On Thu, Sep 05, 2024 at 06:55:33PM -0700, Nicolin Chen wrote:
+> On Thu, Sep 05, 2024 at 04:06:24PM +0000, Pranjal Shrivastava wrote:
 > 
-> Ok, an update.. after a reboot, still with this patch reverted, I once
-> again see faults.  So I guess that vindicates the original patch, and
-> leaves me still searching..
+> > > > > > Also, the printing would become
+> > > > > > more complicated as we'd have to log different fields for different
+> > > > > > events. Additionally, I don't see that many unions being defined
+> > > > > > elsewhere in the kernel.
+> > > > >
+> > > > > OK. That's a fair point. I think we could have just one common
+> > > > > union for the "good stuff" fields. Then, if something isn't in
+> > > > > the common union, do a FIELD_GET(raw)?
+> > > > >
+> > > >
+> > > > I'm not sure if I get this right, but are you suggesting something like:
+> > > >
+> > > > +struct arm_smmu_event {
+> > > > +       union {
+> > > > +       u64 raw_evt[4];
+> > > > +       struct {
+> > > > +               /* "Good stuff" fields */
+> > > > +       };
+> > > > +};
+> > > >
+> > > > and then based on the fault type we can use the "good stuff" or raw_evt?
+> > > > So, basically just add a union between raw_evt and the other fields to
+> > > > improve struct arm_smmu_event present in v2?
+> > >
+> > > Yea, I attached a test code at the EOM for your reference. Please
+> > > feel free to drop fields if they aren't common enough, and confirm
+> > > those bits are correctly written too.
+> > >
+> > 
+> > Hmm, so you're suggesting to make the event a union instead of a struct
+> > thus, making reading event fields easy.
+> > 
+> > The only thing I'm slightly worried about is if the bitfields don't
+> > remain constant if more events are added in the future.
+> > 
+> > For example, the "IPA" field is in dword[3] for now, but if it changes
+> > in the future, it may get difficult to scale the union for future events
+> > If we can guarantee that it doesn't happen then I think union is better.
 > 
-> fwiw, fault info from the gpu devcore:
+> I believe HW has its own reason to put those fields constantly
+> following the same pattern, and must have its tendency to keep
+> in that way.
 > 
-> -------------
-> fault-info:
->    - ttbr0=0000000919306000
->    - iova=0000000100c17000
->    - dir=WRITE
->    - type=UNKNOWN
->    - source=CP
-> pgtable-fault-info:
->    - ttbr0: 000000090ca40000
->    - asid: 0
->    - ptes: 000000095db47003 000000095db48003 0000000914c8f003 00000008fd7f0f47
-> -------------
+> The "union { u64 raw; struct {} }" way isn't that uncommon in
+> the kernel, here are a few existing examples:
+> 	drivers/crypto/marvell/octeontx2/otx2_cpt_hw_types.h
+> 	drivers/crypto/cavium/nitrox/nitrox_req.h
+> 	include/asm-generic/hyperv-tlfs.h
 > 
-> the 'ptes' part shows the table walk, which looks ok to me..
+> Taking a step back, if one field in a new event in the future
+> happens to be odd, we could still fetch field in its own way:
+> event->evt[4] is still available to extract via FIELD_GET; or
+> just define another union exclusively for that event, neither
+> of which sounds like the end of world.
+> 
+> Having said that, I'd defer to Will. So, here is just my two
+> cents.
 
-But is it the right pagetable at all, given that the "ttbr0" values 
-appear to be indicating different places?
+My only real concern is the fragility of using bitfields. I don't _think_
+the compiler is obliged to lay them out in the obvious way and I can't
+think of anything worse than being given a bad pretty-print when debugging
+a real driver issue!
 
-Robin.
+Will
