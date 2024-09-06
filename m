@@ -1,180 +1,118 @@
-Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.223.131])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0051C15530B
-	for <iommu@lists.linux.dev>; Fri,  6 Sep 2024 09:51:26 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=195.135.223.131
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F3907158866;
+	Fri,  6 Sep 2024 10:57:01 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1725616288; cv=none; b=E19lcmwzbap+yvTbsyQZL0znknUmb81r1pi7VntLgwHhAUFnDUvYLj5AZvNq1EQGuj/MzQqSZrXDgPiC/aAezQqkAaNhhnLUdvWGzwPtBoEgkqvBpWnrWr0EJn430PxlKlV6ORNoafW2OMJ0mAcari/7JCzsT63yrYRzJdJGrI4=
+	t=1725620222; cv=none; b=EjK+MhYvC2wgcVJgJDeuzavJX59dyVIHaLJ4AqeM6oBebLPOSz4XEob9nxvETojUEfR30+eQ3t0fpr38aWVDFnJAxcOPPFHYttOYEvp60JGNINN3BkPhCnaweE2GL+XMrvPzgmReEm5Jwpp5RMNDtQ9XbPP5GZiuo11pr3Rdbr0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1725616288; c=relaxed/simple;
-	bh=r9CQiv9e/H0QQPL0VCa/kPrvaWEFJIp6VitNELBRy98=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=QjE8GjC/DQtjDDysktHj2Z5cuNDxUCIhJbWwcWN/43JrEmS/Y0U7jilJSMl6ad/gYMbxUs/h2+r8ubXrcAH2BvzMXPAGxEVqlw5OR2S7eASCSh5sJ2r1sYBY0NUbA+LeO5HxiGvPVW0h0vMcbvCW4HNC1QS0MKRgkOxftIu1jpg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=suse.de; spf=pass smtp.mailfrom=suse.de; dkim=pass (1024-bit key) header.d=suse.de header.i=@suse.de header.b=gqbT+Lke; dkim=permerror (0-bit key) header.d=suse.de header.i=@suse.de header.b=QZtuf0/q; dkim=pass (1024-bit key) header.d=suse.de header.i=@suse.de header.b=gqbT+Lke; dkim=permerror (0-bit key) header.d=suse.de header.i=@suse.de header.b=QZtuf0/q; arc=none smtp.client-ip=195.135.223.131
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=suse.de
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=suse.de
+	s=arc-20240116; t=1725620222; c=relaxed/simple;
+	bh=Y1Xu/m4qEradqB0WQJLayaC6i5KppBg/Aq1cg8q0uks=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=YS2VsFZFDNa1FZrbmSl5e+DGeegBbjvnH6LqsLL5QXGD3LNT4nSA70NL3jgCy4FmGH4vVsO2H01+9PLCSx7EjnbnNBN7/NFUc9C/9X8Ij1m73HVJaSoamqqoGhILEDBUb1CiGrQEuzof7eIqsfhG53POajfPRiuPHnFOOce7Zn4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=jWtY/qrc; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=suse.de header.i=@suse.de header.b="gqbT+Lke";
-	dkim=permerror (0-bit key) header.d=suse.de header.i=@suse.de header.b="QZtuf0/q";
-	dkim=pass (1024-bit key) header.d=suse.de header.i=@suse.de header.b="gqbT+Lke";
-	dkim=permerror (0-bit key) header.d=suse.de header.i=@suse.de header.b="QZtuf0/q"
-Received: from imap1.dmz-prg2.suse.org (imap1.dmz-prg2.suse.org [IPv6:2a07:de40:b281:104:10:150:64:97])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
-	(No client certificate requested)
-	by smtp-out2.suse.de (Postfix) with ESMTPS id 081D71F8AE;
-	Fri,  6 Sep 2024 09:51:25 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
-	t=1725616285; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-	 mime-version:mime-version:content-type:content-type:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references;
-	bh=rx7d4m2HIkXffxsAPOa/6tFUzQ3aGNt1wI/K/bs5f34=;
-	b=gqbT+LkeHNlV6ckPNOCGOuyBlOEEi5I+xpmrXWSb8FiUOySh/fJKRl+BFTZjXCGHAdMtRB
-	VsKudgVNLAa/p7i9OC0OEUzxlKNFhnT2E6DE04TDzUeN+/DYOnelJprmdMrQPQpiABp48i
-	TAB9sbxUUUWxzKYSSMgJb380r+vSDc4=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
-	s=susede2_ed25519; t=1725616285;
-	h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-	 mime-version:mime-version:content-type:content-type:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references;
-	bh=rx7d4m2HIkXffxsAPOa/6tFUzQ3aGNt1wI/K/bs5f34=;
-	b=QZtuf0/qw/2OVRuGbMOExaH2QJboUnseDWwUIbjB2vl8jrv/7elLUaTN1CNgyyeeNRWPuL
-	KpMPKg8+jgwEQGDg==
-Authentication-Results: smtp-out2.suse.de;
-	dkim=pass header.d=suse.de header.s=susede2_rsa header.b=gqbT+Lke;
-	dkim=pass header.d=suse.de header.s=susede2_ed25519 header.b="QZtuf0/q"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
-	t=1725616285; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-	 mime-version:mime-version:content-type:content-type:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references;
-	bh=rx7d4m2HIkXffxsAPOa/6tFUzQ3aGNt1wI/K/bs5f34=;
-	b=gqbT+LkeHNlV6ckPNOCGOuyBlOEEi5I+xpmrXWSb8FiUOySh/fJKRl+BFTZjXCGHAdMtRB
-	VsKudgVNLAa/p7i9OC0OEUzxlKNFhnT2E6DE04TDzUeN+/DYOnelJprmdMrQPQpiABp48i
-	TAB9sbxUUUWxzKYSSMgJb380r+vSDc4=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
-	s=susede2_ed25519; t=1725616285;
-	h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-	 mime-version:mime-version:content-type:content-type:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references;
-	bh=rx7d4m2HIkXffxsAPOa/6tFUzQ3aGNt1wI/K/bs5f34=;
-	b=QZtuf0/qw/2OVRuGbMOExaH2QJboUnseDWwUIbjB2vl8jrv/7elLUaTN1CNgyyeeNRWPuL
-	KpMPKg8+jgwEQGDg==
-Received: from imap1.dmz-prg2.suse.org (localhost [127.0.0.1])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
-	(No client certificate requested)
-	by imap1.dmz-prg2.suse.org (Postfix) with ESMTPS id 197871395F;
-	Fri,  6 Sep 2024 09:51:24 +0000 (UTC)
-Received: from dovecot-director2.suse.de ([2a07:de40:b281:106:10:150:64:167])
-	by imap1.dmz-prg2.suse.org with ESMTPSA
-	id OEtAAZzQ2maDYAAAD6G6ig
-	(envelope-from <svarbanov@suse.de>); Fri, 06 Sep 2024 09:51:24 +0000
-Message-ID: <d6d5490e-7270-4391-b91a-72af551c6e7d@suse.de>
-Date: Fri, 6 Sep 2024 12:51:08 +0300
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="jWtY/qrc"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9E3C6C4CEC4;
+	Fri,  6 Sep 2024 10:56:59 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1725620221;
+	bh=Y1Xu/m4qEradqB0WQJLayaC6i5KppBg/Aq1cg8q0uks=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=jWtY/qrch76CwBkJQSxyyCYzfJfg/Dp/dtzl6Vk4UMJGfJwQQNbuRQBJowgjqRMq2
+	 lYC6Q6V1dwGdbAnw90ZBGuBCjJVUtF8mqpB62kgQzfopU1hYTJ3BNCm9I1CKgDaG+G
+	 MvU9FTQaPwdyiGYFFKTT9nXTWmb1jflToY7+kFZo4oCEbNQ4pUHoXq5dEp+ztjSQI4
+	 QCmZ0JE5Ix2Yl1OmtK2mGcNhqu4OMWNlOCTHC+ldeHoEqjBF9Q84jMNipfJccPHEJI
+	 pRNeFJk98EcALV/DM4cLL6hsX1mHwxD8W08K0wuGX3KdVOh4Qpu223CLTTB2RRP3d+
+	 E08jvNH8noIOw==
+Date: Fri, 6 Sep 2024 11:56:56 +0100
+From: Will Deacon <will@kernel.org>
+To: Robin Murphy <robin.murphy@arm.com>
+Cc: Rob Clark <robdclark@gmail.com>, iommu@lists.linux.dev,
+	linux-arm-msm@vger.kernel.org, freedreno@lists.freedesktop.org,
+	Ashish Mhetre <amhetre@nvidia.com>,
+	Rob Clark <robdclark@chromium.org>, Joerg Roedel <joro@8bytes.org>,
+	"moderated list:ARM SMMU DRIVERS" <linux-arm-kernel@lists.infradead.org>,
+	open list <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH] Revert "iommu/io-pgtable-arm: Optimise non-coherent
+ unmap"
+Message-ID: <20240906105656.GA16124@willie-the-truck>
+References: <20240905124956.84932-1-robdclark@gmail.com>
+ <20240905155330.GA15246@willie-the-truck>
+ <53f13813-a515-475a-836d-0b6017a117eb@arm.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH 2/2] media: venus: firmware: Use
- iommu_paging_domain_alloc()
-To: Jason Gunthorpe <jgg@nvidia.com>,
- Stanimir Varbanov <stanimir.k.varbanov@gmail.com>
-Cc: Lu Baolu <baolu.lu@linux.intel.com>, Dmitry Osipenko <digetx@gmail.com>,
- Mauro Carvalho Chehab <mchehab@kernel.org>,
- Thierry Reding <thierry.reding@gmail.com>,
- Jonathan Hunter <jonathanh@nvidia.com>,
- Vikash Garodia <quic_vgarodia@quicinc.com>, Joerg Roedel <joro@8bytes.org>,
- Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
- Kevin Tian <kevin.tian@intel.com>, linux-media@vger.kernel.org,
- linux-tegra@vger.kernel.org, linux-arm-msm@vger.kernel.org,
- iommu@lists.linux.dev, linux-kernel@vger.kernel.org
-References: <20240812072105.9578-1-baolu.lu@linux.intel.com>
- <20240812072105.9578-2-baolu.lu@linux.intel.com>
- <c5141c18-3f7b-41ac-a064-9911873d0bf9@gmail.com>
- <20240904121614.GA782327@nvidia.com>
-Content-Language: en-US
-From: Stanimir Varbanov <svarbanov@suse.de>
-In-Reply-To: <20240904121614.GA782327@nvidia.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-X-Rspamd-Queue-Id: 081D71F8AE
-X-Spam-Level: 
-X-Spamd-Result: default: False [-5.01 / 50.00];
-	BAYES_HAM(-3.00)[100.00%];
-	DWL_DNSWL_MED(-2.00)[suse.de:dkim];
-	SUSPICIOUS_RECIPS(1.50)[];
-	NEURAL_HAM_LONG(-1.00)[-1.000];
-	NEURAL_HAM_SHORT(-0.20)[-1.000];
-	R_DKIM_ALLOW(-0.20)[suse.de:s=susede2_rsa,suse.de:s=susede2_ed25519];
-	MIME_GOOD(-0.10)[text/plain];
-	MX_GOOD(-0.01)[];
-	FUZZY_BLOCKED(0.00)[rspamd.com];
-	DKIM_SIGNED(0.00)[suse.de:s=susede2_rsa,suse.de:s=susede2_ed25519];
-	RBL_SPAMHAUS_BLOCKED_OPENRESOLVER(0.00)[2a07:de40:b281:104:10:150:64:97:from];
-	ARC_NA(0.00)[];
-	RCPT_COUNT_TWELVE(0.00)[17];
-	FREEMAIL_TO(0.00)[nvidia.com,gmail.com];
-	MIME_TRACE(0.00)[0:+];
-	SPAMHAUS_XBL(0.00)[2a07:de40:b281:104:10:150:64:97:from];
-	TO_MATCH_ENVRCPT_ALL(0.00)[];
-	FREEMAIL_ENVRCPT(0.00)[gmail.com];
-	FREEMAIL_CC(0.00)[linux.intel.com,gmail.com,kernel.org,nvidia.com,quicinc.com,8bytes.org,arm.com,intel.com,vger.kernel.org,lists.linux.dev];
-	RCVD_COUNT_TWO(0.00)[2];
-	MID_RHS_MATCH_FROM(0.00)[];
-	FROM_EQ_ENVFROM(0.00)[];
-	FROM_HAS_DN(0.00)[];
-	TO_DN_SOME(0.00)[];
-	RECEIVED_SPAMHAUS_BLOCKED_OPENRESOLVER(0.00)[2a07:de40:b281:106:10:150:64:167:received];
-	RCVD_VIA_SMTP_AUTH(0.00)[];
-	TAGGED_RCPT(0.00)[];
-	RCVD_TLS_ALL(0.00)[];
-	DKIM_TRACE(0.00)[suse.de:+];
-	DBL_BLOCKED_OPENRESOLVER(0.00)[imap1.dmz-prg2.suse.org:helo,imap1.dmz-prg2.suse.org:rdns,suse.de:dkim,suse.de:mid]
-X-Rspamd-Server: rspamd2.dmz-prg2.suse.org
-X-Rspamd-Action: no action
-X-Spam-Score: -5.01
-X-Spam-Flag: NO
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <53f13813-a515-475a-836d-0b6017a117eb@arm.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 
-Hi Jason,
-
-On 9/4/24 15:16, Jason Gunthorpe wrote:
-> On Tue, Aug 20, 2024 at 11:43:50PM +0300, Stanimir Varbanov wrote:
->> Hi,
->>
->> Thank you for the patch!
->>
->> On 12.08.24 г. 10:21 ч., Lu Baolu wrote:
->>> An iommu domain is allocated in venus_firmware_init() and is attached to
->>> core->fw.dev in the same function. Use iommu_paging_domain_alloc() to
->>> make it explicit.
->>>
->>> Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
->>> Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
->>> Link: https://lore.kernel.org/r/20240610085555.88197-10-baolu.lu@linux.intel.com
->>> ---
->>>   drivers/media/platform/qcom/venus/firmware.c | 6 +++---
->>>   1 file changed, 3 insertions(+), 3 deletions(-)
->>>
->>> diff --git a/drivers/media/platform/qcom/venus/firmware.c b/drivers/media/platform/qcom/venus/firmware.c
->>> index fe7da2b30482..66a18830e66d 100644
->>> --- a/drivers/media/platform/qcom/venus/firmware.c
->>> +++ b/drivers/media/platform/qcom/venus/firmware.ced
->>
->> Acked-by: Stanimir Varbanov <stanimir.k.varbanov@gmail.com>
->>
->> I'll take the patch through linux-media tree.
+On Thu, Sep 05, 2024 at 05:27:28PM +0100, Robin Murphy wrote:
+> On 05/09/2024 4:53 pm, Will Deacon wrote:
+> > On Thu, Sep 05, 2024 at 05:49:56AM -0700, Rob Clark wrote:
+> > > From: Rob Clark <robdclark@chromium.org>
+> > > 
+> > > This reverts commit 85b715a334583488ad7fbd3001fe6fd617b7d4c0.
+> > > 
+> > > It was causing gpu smmu faults on x1e80100.
+> > > 
+> > > I _think_ what is causing this is the change in ordering of
+> > > __arm_lpae_clear_pte() (dma_sync_single_for_device() on the pgtable
+> > > memory) and io_pgtable_tlb_flush_walk().  I'm not entirely sure how
+> > > this patch is supposed to work correctly in the face of other
+> > > concurrent translations (to buffers unrelated to the one being
+> > > unmapped(), because after the io_pgtable_tlb_flush_walk() we can have
+> > > stale data read back into the tlb.
+> > > 
+> > > Signed-off-by: Rob Clark <robdclark@chromium.org>
+> > > ---
+> > >   drivers/iommu/io-pgtable-arm.c | 31 ++++++++++++++-----------------
+> > >   1 file changed, 14 insertions(+), 17 deletions(-)
+> > 
+> > Please can you try the diff below, instead?
 > 
-> Did this patch and the 1/2:
+> Given that the GPU driver's .tlb_add_page is a no-op, I can't see this
+> making a difference. In fact, given that msm_iommu_pagetable_unmap() still
+> does a brute-force iommu_flush_iotlb_all() after io-pgtable returns, and in
+> fact only recently made .tlb_flush_walk start doing anything either for the
+> sake of the map path, I'm now really wondering how this patch has had any
+> effect at all... :/
 
-2/2 is in linux-next now.
+Hmm, yup. Looks like Rob has come back to say the problem lies elsewhere
+anyway.
 
-~Stan
+One thing below though...
 
+> > 
+> > Will
+> > 
+> > --->8
+> > 
+> > diff --git a/drivers/iommu/io-pgtable-arm.c b/drivers/iommu/io-pgtable-arm.c
+> > index 0e67f1721a3d..0a32e9499e2c 100644
+> > --- a/drivers/iommu/io-pgtable-arm.c
+> > +++ b/drivers/iommu/io-pgtable-arm.c
+> > @@ -672,7 +672,7 @@ static size_t __arm_lpae_unmap(struct arm_lpae_io_pgtable *data,
+> >                  /* Clear the remaining entries */
+> >                  __arm_lpae_clear_pte(ptep, &iop->cfg, i);
+> > -               if (gather && !iommu_iotlb_gather_queued(gather))
+> > +               if (!iommu_iotlb_gather_queued(gather))
+> 
+> Note that this would reintroduce the latent issue which was present
+> originally, wherein iommu_iotlb_gather_queued(NULL) is false, but if we
+> actually allow a NULL gather to be passed to io_pgtable_tlb_add_page() it
+> may end up being dereferenced (e.g. in arm-smmu-v3).
+
+I think there is still something to fix here. arm_lpae_init_pte() can
+pass a NULL gather to __arm_lpae_unmap() and I don't think skipping the
+invalidation is correct in that case. Either the drivers need to handle
+that or we shouldn't be passing NULL.
+
+What do you think?
+
+Will
