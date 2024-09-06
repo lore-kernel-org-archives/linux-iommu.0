@@ -1,118 +1,284 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-wm1-f53.google.com (mail-wm1-f53.google.com [209.85.128.53])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F3907158866;
-	Fri,  6 Sep 2024 10:57:01 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6046E1CB12B
+	for <iommu@lists.linux.dev>; Fri,  6 Sep 2024 11:07:54 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.53
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1725620222; cv=none; b=EjK+MhYvC2wgcVJgJDeuzavJX59dyVIHaLJ4AqeM6oBebLPOSz4XEob9nxvETojUEfR30+eQ3t0fpr38aWVDFnJAxcOPPFHYttOYEvp60JGNINN3BkPhCnaweE2GL+XMrvPzgmReEm5Jwpp5RMNDtQ9XbPP5GZiuo11pr3Rdbr0=
+	t=1725620877; cv=none; b=GVEgOeoEHAdTm1glr8jPmBrruMKmDvNsEZlrDGMkYSczuYzYuljIqmBkF0E5M4ykibGngtGfYVSUgs2542P3OOfphAlzYRQQ8lICrTdlEVQBieRvFCRQu+6HKbS6k1gLQtvoz22Jq4C/pOn1zSJFm2T9OczY18nFDuoWSCGdVFo=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1725620222; c=relaxed/simple;
-	bh=Y1Xu/m4qEradqB0WQJLayaC6i5KppBg/Aq1cg8q0uks=;
+	s=arc-20240116; t=1725620877; c=relaxed/simple;
+	bh=ttK9YiDCtOuh+peKXiWIt9Alg2m1IOKcYSf0Jb/ZpLo=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=YS2VsFZFDNa1FZrbmSl5e+DGeegBbjvnH6LqsLL5QXGD3LNT4nSA70NL3jgCy4FmGH4vVsO2H01+9PLCSx7EjnbnNBN7/NFUc9C/9X8Ij1m73HVJaSoamqqoGhILEDBUb1CiGrQEuzof7eIqsfhG53POajfPRiuPHnFOOce7Zn4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=jWtY/qrc; arc=none smtp.client-ip=10.30.226.201
+	 Content-Type:Content-Disposition:In-Reply-To; b=hUM9VQgTmaIr2spawPceeSUw5ggK52td3T/kmTMce1vHJbLFy8C1hhMvYnqx76o1YzMYZK30dC9kxJ41X+RTAD9w2tZScsPan0ngJw1Zd9ajeKrk8Pjq2c9DslJIaWLefmgbiv8BL80AXcF5rWwY7izG2MyP1VLFw2fX0JK451Q=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=YYLl+OXe; arc=none smtp.client-ip=209.85.128.53
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="jWtY/qrc"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9E3C6C4CEC4;
-	Fri,  6 Sep 2024 10:56:59 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1725620221;
-	bh=Y1Xu/m4qEradqB0WQJLayaC6i5KppBg/Aq1cg8q0uks=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=jWtY/qrch76CwBkJQSxyyCYzfJfg/Dp/dtzl6Vk4UMJGfJwQQNbuRQBJowgjqRMq2
-	 lYC6Q6V1dwGdbAnw90ZBGuBCjJVUtF8mqpB62kgQzfopU1hYTJ3BNCm9I1CKgDaG+G
-	 MvU9FTQaPwdyiGYFFKTT9nXTWmb1jflToY7+kFZo4oCEbNQ4pUHoXq5dEp+ztjSQI4
-	 QCmZ0JE5Ix2Yl1OmtK2mGcNhqu4OMWNlOCTHC+ldeHoEqjBF9Q84jMNipfJccPHEJI
-	 pRNeFJk98EcALV/DM4cLL6hsX1mHwxD8W08K0wuGX3KdVOh4Qpu223CLTTB2RRP3d+
-	 E08jvNH8noIOw==
-Date: Fri, 6 Sep 2024 11:56:56 +0100
-From: Will Deacon <will@kernel.org>
-To: Robin Murphy <robin.murphy@arm.com>
-Cc: Rob Clark <robdclark@gmail.com>, iommu@lists.linux.dev,
-	linux-arm-msm@vger.kernel.org, freedreno@lists.freedesktop.org,
-	Ashish Mhetre <amhetre@nvidia.com>,
-	Rob Clark <robdclark@chromium.org>, Joerg Roedel <joro@8bytes.org>,
-	"moderated list:ARM SMMU DRIVERS" <linux-arm-kernel@lists.infradead.org>,
-	open list <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH] Revert "iommu/io-pgtable-arm: Optimise non-coherent
- unmap"
-Message-ID: <20240906105656.GA16124@willie-the-truck>
-References: <20240905124956.84932-1-robdclark@gmail.com>
- <20240905155330.GA15246@willie-the-truck>
- <53f13813-a515-475a-836d-0b6017a117eb@arm.com>
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="YYLl+OXe"
+Received: by mail-wm1-f53.google.com with SMTP id 5b1f17b1804b1-42ba8928f1dso35375e9.1
+        for <iommu@lists.linux.dev>; Fri, 06 Sep 2024 04:07:54 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20230601; t=1725620873; x=1726225673; darn=lists.linux.dev;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :mime-version:references:message-id:subject:cc:to:from:date:from:to
+         :cc:subject:date:message-id:reply-to;
+        bh=1kfdlvi3htUX5t/uzYteyfrsdGm7wcbhZeedCN8JXH8=;
+        b=YYLl+OXelnh1NemKMGQkb4mAFroS9VE3spwylYvrBPZ+kteyCJEXfZi6SSU9dMkC/6
+         oQWWywnnn6OBev2unYGp3RpEJ4ES9UlNgakCCSeY0Gx/WJJph6BnBuOMKuQVSV6WV4+L
+         gzaHH7Cfn9I3uCjkjcQ0U6rE8/rDydCNwVS5twheC6oe9jbVyBjBUpDL5vRH9lyHQXZL
+         WnPfXD903s73mT5twNp+O+0eYokJU5Yqq5nyWhCU5mDFZytILwlqkyEkjAqfcI6SlgaT
+         a3lLPWapljEZp2eCQhXcAl1cnhk5MqYIYNawpBzuyZz6acZP76SmMAql5+6lFjBarxSq
+         MODw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1725620873; x=1726225673;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :mime-version:references:message-id:subject:cc:to:from:date
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=1kfdlvi3htUX5t/uzYteyfrsdGm7wcbhZeedCN8JXH8=;
+        b=tDAcBk6LM2sV1UumFrbChWos3NVbHPlyuedZXFE797ZRZWS5X8wKpB86PxDbdY1NAA
+         F9Jei5nMqaZ3NPFmvWSb8JkI6rbFQLjxETfGywlWL9jMKPx4C18JVbFgD/JmhSR4Auzw
+         6PSNHCXN2pWvLxNq1wSJiJoFR6s+V3KDMyLWjIVvJTZ1T+CeZOR9MYZNIGAOrdB9tTa1
+         NFNHMm6tCJqrOQ65o4S9zpMBNyT2vnbzJ4sYamJ9llFpK06ATWRG7CLJspyXAwJLN5Sn
+         ORyZkbGaQ2PtpuNTDOGNIM+cmRzE/HhW9kLeO11Gbyr38qna6KWB9+IJVOkt5CRKD5Ql
+         0c+Q==
+X-Forwarded-Encrypted: i=1; AJvYcCVUVNsS00rz4QvavqHUg3sqUrZQa1i13pLl8njUW55aocKvxWMI8YPPrZSvuimXsoPpOh++ng==@lists.linux.dev
+X-Gm-Message-State: AOJu0YxW8zjMyi0IxfNKSxf3q5y5bDIv0UbRDWht11ZMYpg5LluZ+++5
+	dO82vQKLN6sFcxYWMNFMcnR4xlUdiK9R99T1yeD37HZ+onrHpsS0kdFRVKze9w==
+X-Google-Smtp-Source: AGHT+IErQWOce1aTO7QUQS6iDDj2x0dGhvkowMBDS1btzgPV98ts3aP/uP28acSxLiOr1pFciOVHDg==
+X-Received: by 2002:a05:600c:b93:b0:42b:8ff7:bee2 with SMTP id 5b1f17b1804b1-42ca05fbaccmr693485e9.5.1725620872291;
+        Fri, 06 Sep 2024 04:07:52 -0700 (PDT)
+Received: from google.com (109.36.187.35.bc.googleusercontent.com. [35.187.36.109])
+        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-374c2ffe062sm15554875f8f.29.2024.09.06.04.07.51
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 06 Sep 2024 04:07:51 -0700 (PDT)
+Date: Fri, 6 Sep 2024 11:07:47 +0000
+From: Mostafa Saleh <smostafa@google.com>
+To: Jason Gunthorpe <jgg@nvidia.com>
+Cc: acpica-devel@lists.linux.dev, Hanjun Guo <guohanjun@huawei.com>,
+	iommu@lists.linux.dev, Joerg Roedel <joro@8bytes.org>,
+	Kevin Tian <kevin.tian@intel.com>, kvm@vger.kernel.org,
+	Len Brown <lenb@kernel.org>, linux-acpi@vger.kernel.org,
+	linux-arm-kernel@lists.infradead.org,
+	Lorenzo Pieralisi <lpieralisi@kernel.org>,
+	"Rafael J. Wysocki" <rafael@kernel.org>,
+	Robert Moore <robert.moore@intel.com>,
+	Robin Murphy <robin.murphy@arm.com>,
+	Sudeep Holla <sudeep.holla@arm.com>, Will Deacon <will@kernel.org>,
+	Alex Williamson <alex.williamson@redhat.com>,
+	Eric Auger <eric.auger@redhat.com>,
+	Jean-Philippe Brucker <jean-philippe@linaro.org>,
+	Moritz Fischer <mdf@kernel.org>,
+	Michael Shavit <mshavit@google.com>,
+	Nicolin Chen <nicolinc@nvidia.com>, patches@lists.linux.dev,
+	Shameerali Kolothum Thodi <shameerali.kolothum.thodi@huawei.com>
+Subject: Re: [PATCH v2 8/8] iommu/arm-smmu-v3: Support IOMMU_DOMAIN_NESTED
+Message-ID: <Ztrigx4LmpbFiMba@google.com>
+References: <0-v2-621370057090+91fec-smmuv3_nesting_jgg@nvidia.com>
+ <8-v2-621370057090+91fec-smmuv3_nesting_jgg@nvidia.com>
+ <ZtHuoDWbe54H1nhZ@google.com>
+ <20240830170426.GV3773488@nvidia.com>
+ <ZtWMGQAdR6sjBmer@google.com>
+ <20240903003022.GF3773488@nvidia.com>
+ <ZtbQMDxKZUZCGfrR@google.com>
+ <20240903235532.GJ3773488@nvidia.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <53f13813-a515-475a-836d-0b6017a117eb@arm.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20240903235532.GJ3773488@nvidia.com>
 
-On Thu, Sep 05, 2024 at 05:27:28PM +0100, Robin Murphy wrote:
-> On 05/09/2024 4:53 pm, Will Deacon wrote:
-> > On Thu, Sep 05, 2024 at 05:49:56AM -0700, Rob Clark wrote:
-> > > From: Rob Clark <robdclark@chromium.org>
+On Tue, Sep 03, 2024 at 08:55:32PM -0300, Jason Gunthorpe wrote:
+> On Tue, Sep 03, 2024 at 09:00:32AM +0000, Mostafa Saleh wrote:
+> > On Mon, Sep 02, 2024 at 09:30:22PM -0300, Jason Gunthorpe wrote:
+> > > On Mon, Sep 02, 2024 at 09:57:45AM +0000, Mostafa Saleh wrote:
+> > > > > > 2) Is there a reason the UAPI is designed this way?
+> > > > > > The way I imagined this, is that userspace will pass the pointer to the CD
+> > > > > > (+ format) not the STE (or part of it).
+> > > > > 
+> > > > > Yes, we need more information from the STE than just that. EATS and
+> > > > > STALL for instance. And the cachability below. Who knows what else in
+> > > > > the future.
+> > > > 
+> > > > But for example if that was extended later, how can user space know
+> > > > which fields are allowed and which are not?
 > > > 
-> > > This reverts commit 85b715a334583488ad7fbd3001fe6fd617b7d4c0.
-> > > 
-> > > It was causing gpu smmu faults on x1e80100.
-> > > 
-> > > I _think_ what is causing this is the change in ordering of
-> > > __arm_lpae_clear_pte() (dma_sync_single_for_device() on the pgtable
-> > > memory) and io_pgtable_tlb_flush_walk().  I'm not entirely sure how
-> > > this patch is supposed to work correctly in the face of other
-> > > concurrent translations (to buffers unrelated to the one being
-> > > unmapped(), because after the io_pgtable_tlb_flush_walk() we can have
-> > > stale data read back into the tlb.
-> > > 
-> > > Signed-off-by: Rob Clark <robdclark@chromium.org>
-> > > ---
-> > >   drivers/iommu/io-pgtable-arm.c | 31 ++++++++++++++-----------------
-> > >   1 file changed, 14 insertions(+), 17 deletions(-)
-> > 
-> > Please can you try the diff below, instead?
+> > > Changes the vSTE rules that require userspace being aware would have
+> > > to be signaled in the GET_INFO answer. This is the same process no
+> > > matter how you encode the STE bits in the structure.
+> >
+> > How? 
 > 
-> Given that the GPU driver's .tlb_add_page is a no-op, I can't see this
-> making a difference. In fact, given that msm_iommu_pagetable_unmap() still
-> does a brute-force iommu_flush_iotlb_all() after io-pgtable returns, and in
-> fact only recently made .tlb_flush_walk start doing anything either for the
-> sake of the map path, I'm now really wondering how this patch has had any
-> effect at all... :/
-
-Hmm, yup. Looks like Rob has come back to say the problem lies elsewhere
-anyway.
-
-One thing below though...
-
-> > 
-> > Will
-> > 
-> > --->8
-> > 
-> > diff --git a/drivers/iommu/io-pgtable-arm.c b/drivers/iommu/io-pgtable-arm.c
-> > index 0e67f1721a3d..0a32e9499e2c 100644
-> > --- a/drivers/iommu/io-pgtable-arm.c
-> > +++ b/drivers/iommu/io-pgtable-arm.c
-> > @@ -672,7 +672,7 @@ static size_t __arm_lpae_unmap(struct arm_lpae_io_pgtable *data,
-> >                  /* Clear the remaining entries */
-> >                  __arm_lpae_clear_pte(ptep, &iop->cfg, i);
-> > -               if (gather && !iommu_iotlb_gather_queued(gather))
-> > +               if (!iommu_iotlb_gather_queued(gather))
+> --- a/include/uapi/linux/iommufd.h
+> +++ b/include/uapi/linux/iommufd.h
+> @@ -504,6 +504,11 @@ struct iommu_hw_info_vtd {
+>         __aligned_u64 ecap_reg;
+>  };
+>  
+> +enum {
+> +       /* The kernel understand field NEW in the STE */
+> +       IOMMU_HW_INFO_ARM_SMMUV3_VSTE_NEW = 1 << 0,
+> +};
+> +
+>  /**
+>   * struct iommu_hw_info_arm_smmuv3 - ARM SMMUv3 hardware information
+>   *                                   (IOMMU_HW_INFO_TYPE_ARM_SMMUV3)
+> @@ -514,6 +519,7 @@ struct iommu_hw_info_vtd {
+>   * @iidr: Information about the implementation and implementer of ARM SMMU,
+>   *        and architecture version supported
+>   * @aidr: ARM SMMU architecture version
+> + * @kernel_capabilities: Bitmask of IOMMU_HW_INFO_ARM_SMMUV3_*
+>   *
+>   * For the details of @idr, @iidr and @aidr, please refer to the chapters
+>   * from 6.3.1 to 6.3.6 in the SMMUv3 Spec.
+> @@ -535,6 +541,7 @@ struct iommu_hw_info_arm_smmuv3 {
+>         __u32 idr[6];
+>         __u32 iidr;
+>         __u32 aidr;
+> +       __u32 kernel_capabilities;
+>  };
+>  
+>  /**
 > 
-> Note that this would reintroduce the latent issue which was present
-> originally, wherein iommu_iotlb_gather_queued(NULL) is false, but if we
-> actually allow a NULL gather to be passed to io_pgtable_tlb_add_page() it
-> may end up being dereferenced (e.g. in arm-smmu-v3).
+> For example. There are all sorts of rules about 0 filling and things
+> that make this work trivially for the userspace.
 
-I think there is still something to fix here. arm_lpae_init_pte() can
-pass a NULL gather to __arm_lpae_unmap() and I don't think skipping the
-invalidation is correct in that case. Either the drivers need to handle
-that or we shouldn't be passing NULL.
+I see, that makes sense to have.
+However, I believe the UAPI can be more clear and solid in terms of
+what is supported (maybe a typical struct with the CD, and some
+extra configs?) I will give it a think.
 
-What do you think?
+> 
+> > And why changing that in the future is not a problem as
+> > sanitising IDRs?
+> 
+> Reporting a static kernel capability through GET_INFO output is
+> easier/saner than providing some kind of policy flags in the GET_INFO
+> input to specify how the sanitization should work.
 
-Will
+I don’t think it’s “policy”, it’s just giving userspace the minimum
+knowledge it needs to create the vSMMU, but again no really strong
+opinion about that.
+
+> 
+> > > This confirmation of kernel support would then be reflected in the
+> > > vIDRs to the VM and the VM could know to set the extended bits.
+> > > 
+> > > Otherwise setting an invalidate vSTE will fail the ioctl, the VMM can
+> > > log the event, generate an event and install an abort vSTE.
+> > > 
+> > > > > Overall this sort of direct transparency is how I prefer to see these
+> > > > > kinds of iommufd HW specific interfaces designed. From a lot of
+> > > > > experience here, arbitary marshall/unmarshall is often an
+> > > > > antipattern :)
+> > > > 
+> > > > Is there any documentation for the (proposed) SMMUv3 UAPI for IOMMUFD?
+> > > 
+> > > Just the comments in this series?
+> > 
+> > But this is a UAPI. How can userspace implement that if it has no
+> > documentation, and how can it be maintained if there is no clear
+> > interface with userspace with what is expected/returned...
+> 
+> I'm not sure what you are looking for here? I don't think an entire
+> tutorial on how to build a paravirtualized vSMMU is appropriate to
+> put in comments?
+
+Sorry, I don’t think I was clear, I meant actual documentation for
+the UAPI, as in RST files for example. If I want to support that
+in kvmtool how can I implement it? I think we should have clear
+docs for the UAPI with what is exposed from the driver, what are the
+possible returns, expected behaviour of abort, bypass in the vSTE...,
+it also makes it easier to reason about some of the choices.
+
+> 
+> The behavior of the vSTE processing as a single feature should be
+> understandable, and I think it is from the comments and code. If it
+> isn't, lets improve that.
+> 
+> There is definitely a jump from knowing how these point items work to
+> knowing how to build a para virtualized vSMMU in your VMM. This is
+> likely a gap of thousands of lines of code in userspace :\
+> 
+> > But we have a different model, with virtio-iommu, it typically presents
+> > the device to the VM and on the backend it calls VFIO MAP/UNMAP.
+> 
+> I thought pkvm's model was also map/unmap - so it could suppor HW
+> without nesting?
+> 
+
+Yes, it’s map/unmap based, but it has to be implemented in the
+hypervisor, it doesn’t rely on VFIO.
+
+Also, I have been looking at nesting recently (but for the host).
+
+>
+> > Although technically we can have virtio-iommu in the hypervisor (EL2),
+> > that is a lot of complexit and increase in the TCB of pKVM.
+> 
+> That is too bad, it would be nice to not have to do everything new
+> from scratch to just get to the same outcome. :(
+> 
+
+Yeah, I agree, yet a new pv interface :/
+Although, it’s quite simple as it follows Linux IOMMU semantics with
+HVC as transport and no in-memory data structures, queues...
+
+Not implementing virtio in the hypervisor was an initial design choice
+as it would be very challenging in terms of reasoning about the TCB.
+
+> > I haven’t been keeping up with iommufd lately, I will try to spend more
+> > time on that in the future.
+> > But my idea is that we would create an IOMMUFD, attach it to a device and then
+> > through some extra IOCTLs, we can configure some “virtual” topology for it which
+> > then relies on KVM, again this is very early, and we need to support pKVM IOMMUs
+> > in the host first (I plan to send v2 RFC soon for that)
+> 
+> Most likely your needs here will match the needs of the confidential
+> compute people which are basically doing that same stuf. The way pKVM
+> wants to operate looks really similar to me to how the confidential
+> compute stuff wants to work where the VMM is untrusted and operations
+> are delegated to some kind of secure world.
+> 
+
+Exactly.
+
+> So, for instance, AMD recently posted patches about how they would
+> create vPCI devices in their secure world, and there are various
+> things in the works for secure IOMMUs and so forth all with the
+> intention of not trusting the VMM, or permitting the VMM to compromise
+> the VM.
+> 
+
+I have seen those, but didn't get the time to read them
+
+> I would *really* like everyone to sit down and figure out how to
+> manage virtual device lifecycle in a single language!
+
+Yes, just like the guest_memfd work. There has been also
+some work to unify some of the guest HVC bits:
+https://lore.kernel.org/all/20240830130150.8568-1-will@kernel.org/
+
+We should do the same for IOMMUs and IO.
+
+> 
+> > > I haven't heard if someone is going to KVM forum to talk about
+> > > vSMMUv3? Eric? Nicolin do you know?
+> > 
+> > I see, I won’t be in KVM forum, but I plan to attend LPC, we can discuss
+> > further there if people are interested.
+> 
+> Sure, definately, look forward to meeting you!
+
+Great, me too!
+
+Thanks,
+Mostafa
+
+> 
+> Jason
