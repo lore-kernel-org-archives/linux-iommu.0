@@ -1,59 +1,81 @@
-Received: from mail-wr1-f53.google.com (mail-wr1-f53.google.com [209.85.221.53])
+Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.223.131])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D810314E2C2
-	for <iommu@lists.linux.dev>; Fri,  6 Sep 2024 07:39:00 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.53
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0051C15530B
+	for <iommu@lists.linux.dev>; Fri,  6 Sep 2024 09:51:26 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=195.135.223.131
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1725608343; cv=none; b=lwTsO6vQO8oZJq7czvDpXWcBjw3Fgrv2OVnftntxHkFEJe3smvccHJHMP9/22W97/KDvhAfBQm6Q3mZLejr8cTB1kHA9MHbpHyvMMqXvueZGH5nWRXlPyIPznCDVIutPZQ5TlitA68AJ8UR6ia0tKEmA4NmRMs1lebaBad2pcLc=
+	t=1725616288; cv=none; b=E19lcmwzbap+yvTbsyQZL0znknUmb81r1pi7VntLgwHhAUFnDUvYLj5AZvNq1EQGuj/MzQqSZrXDgPiC/aAezQqkAaNhhnLUdvWGzwPtBoEgkqvBpWnrWr0EJn430PxlKlV6ORNoafW2OMJ0mAcari/7JCzsT63yrYRzJdJGrI4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1725608343; c=relaxed/simple;
-	bh=/VfN5TZBKFESX0ktdJnLpkP+3s1XJrbvW7+e2JjstSQ=;
+	s=arc-20240116; t=1725616288; c=relaxed/simple;
+	bh=r9CQiv9e/H0QQPL0VCa/kPrvaWEFJIp6VitNELBRy98=;
 	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=JMghxj7WmLQtA8pb2S+INt3F1Zm52tNx32j1kIropDG1Obe/y9f+CQ3alpnLBOlHtQXgd1ls9Bf0i0PxToiWvytTWY6vFngXyHg5U/WeIgpM1TuSqUmN2Yqqil8o2dsvuhKhaBbCL+/QvmWnYZ4TYtui9zImLt8jm9R+jos7Eio=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org; spf=pass smtp.mailfrom=linaro.org; dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b=Dza5a7V5; arc=none smtp.client-ip=209.85.221.53
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linaro.org
+	 In-Reply-To:Content-Type; b=QjE8GjC/DQtjDDysktHj2Z5cuNDxUCIhJbWwcWN/43JrEmS/Y0U7jilJSMl6ad/gYMbxUs/h2+r8ubXrcAH2BvzMXPAGxEVqlw5OR2S7eASCSh5sJ2r1sYBY0NUbA+LeO5HxiGvPVW0h0vMcbvCW4HNC1QS0MKRgkOxftIu1jpg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=suse.de; spf=pass smtp.mailfrom=suse.de; dkim=pass (1024-bit key) header.d=suse.de header.i=@suse.de header.b=gqbT+Lke; dkim=permerror (0-bit key) header.d=suse.de header.i=@suse.de header.b=QZtuf0/q; dkim=pass (1024-bit key) header.d=suse.de header.i=@suse.de header.b=gqbT+Lke; dkim=permerror (0-bit key) header.d=suse.de header.i=@suse.de header.b=QZtuf0/q; arc=none smtp.client-ip=195.135.223.131
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=suse.de
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=suse.de
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="Dza5a7V5"
-Received: by mail-wr1-f53.google.com with SMTP id ffacd0b85a97d-374bd059b12so936396f8f.1
-        for <iommu@lists.linux.dev>; Fri, 06 Sep 2024 00:39:00 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1725608339; x=1726213139; darn=lists.linux.dev;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=xz9IdLmzy/T20GbDRPSYjXR1GKGx3xeoUvnivTDuQzM=;
-        b=Dza5a7V5Vkh9Q2o4sbCcRV5U67fitSyYZHMO30eFfMaHCn0bLqZX4DWEAVR8JNqKrn
-         qFmHQLbP9xJAX2miob53Ev49ZK7zOnGKllqSsK/iiQ03wkMtj4XilJHjbSYntM9jMjDv
-         T4r2XDVb44xsDRkXo+8Pnb05XAxzc2v9+QdkdUrE1BF8Am1cP23pgEHqE3ovC3cetXQY
-         SQPM+lSEulkyMkelpXITIpB7uou1KAnGx3BvFR06WhXaoPG0TEX+59BAAZTFsL0FbzlM
-         swE7An4R9dghHj/aWM1AWTzuxJiQyt0VtqAd/ZX5tMx2TW4lq3R5Yw+fQCe5Pni0Hics
-         cVHg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1725608339; x=1726213139;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=xz9IdLmzy/T20GbDRPSYjXR1GKGx3xeoUvnivTDuQzM=;
-        b=o0YVQtiVinfhTTfUw8bgN/pCKWM6YQuoz2NcBpJbLL+RlRjx6LCSmx/OpDEkPjVwb4
-         YHscNWVGZ6ctjkgdVHBL4RjlKNaK+nRHoinKTrRSsy7IerX/AwCYZd5DEF8gjIVGCe6Y
-         shUh8PyRxO9xkYFrUc/WQmAML843oYgCIU7+z9mnl58Vq8/rRYAmp4kCeqNiCwf8enfv
-         l0o3P2Nx9XJkJx1j6SIjOCf7ACmhmwVj7ZW6AMzXlidPv+3GuWcFrZyVnEbPKMl5OFS+
-         fhIEMmFNeK7V4+lPcue680pLzyhqWWbUQoWiUDTs+8HYaag3zW46K1XQnj5t4Jgp4ZV0
-         FoFA==
-X-Forwarded-Encrypted: i=1; AJvYcCUi9qOKQmrm64ZK90wCde4o4Dfi1AUIqvZJWRDX2fR4EwHPmE4vW+UwweNbo/7XhmRysA8MSA==@lists.linux.dev
-X-Gm-Message-State: AOJu0Yxl4RNSYX0bPrdgIc8pkm+FlBlWqjMfH7HUPjHz8zHLi6+yHyGW
-	fIt5iAD4uJR1heiySySarvylWzkF8JYiHi5NRosi/UVXAbxbfyJASfjqjLd7VEE=
-X-Google-Smtp-Source: AGHT+IGFHwFQ99mHOKHLLsrCtuLnOv+VrrxaTcWgKFCATGwuZhLv7Zk5Z474pGF9RhYDinH0QTPZug==
-X-Received: by 2002:a5d:5f4a:0:b0:374:c269:df79 with SMTP id ffacd0b85a97d-374c269e0d7mr16000044f8f.22.1725608338871;
-        Fri, 06 Sep 2024 00:38:58 -0700 (PDT)
-Received: from [192.168.10.46] (146725694.box.freepro.com. [130.180.211.218])
-        by smtp.googlemail.com with ESMTPSA id ffacd0b85a97d-3749eea60e2sm21002351f8f.62.2024.09.06.00.38.57
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 06 Sep 2024 00:38:58 -0700 (PDT)
-Message-ID: <64758ccf-7ad4-4490-b938-864ade9ae74c@linaro.org>
-Date: Fri, 6 Sep 2024 09:38:56 +0200
+	dkim=pass (1024-bit key) header.d=suse.de header.i=@suse.de header.b="gqbT+Lke";
+	dkim=permerror (0-bit key) header.d=suse.de header.i=@suse.de header.b="QZtuf0/q";
+	dkim=pass (1024-bit key) header.d=suse.de header.i=@suse.de header.b="gqbT+Lke";
+	dkim=permerror (0-bit key) header.d=suse.de header.i=@suse.de header.b="QZtuf0/q"
+Received: from imap1.dmz-prg2.suse.org (imap1.dmz-prg2.suse.org [IPv6:2a07:de40:b281:104:10:150:64:97])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+	(No client certificate requested)
+	by smtp-out2.suse.de (Postfix) with ESMTPS id 081D71F8AE;
+	Fri,  6 Sep 2024 09:51:25 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
+	t=1725616285; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+	 mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding:
+	 in-reply-to:in-reply-to:references:references;
+	bh=rx7d4m2HIkXffxsAPOa/6tFUzQ3aGNt1wI/K/bs5f34=;
+	b=gqbT+LkeHNlV6ckPNOCGOuyBlOEEi5I+xpmrXWSb8FiUOySh/fJKRl+BFTZjXCGHAdMtRB
+	VsKudgVNLAa/p7i9OC0OEUzxlKNFhnT2E6DE04TDzUeN+/DYOnelJprmdMrQPQpiABp48i
+	TAB9sbxUUUWxzKYSSMgJb380r+vSDc4=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
+	s=susede2_ed25519; t=1725616285;
+	h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+	 mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding:
+	 in-reply-to:in-reply-to:references:references;
+	bh=rx7d4m2HIkXffxsAPOa/6tFUzQ3aGNt1wI/K/bs5f34=;
+	b=QZtuf0/qw/2OVRuGbMOExaH2QJboUnseDWwUIbjB2vl8jrv/7elLUaTN1CNgyyeeNRWPuL
+	KpMPKg8+jgwEQGDg==
+Authentication-Results: smtp-out2.suse.de;
+	dkim=pass header.d=suse.de header.s=susede2_rsa header.b=gqbT+Lke;
+	dkim=pass header.d=suse.de header.s=susede2_ed25519 header.b="QZtuf0/q"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
+	t=1725616285; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+	 mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding:
+	 in-reply-to:in-reply-to:references:references;
+	bh=rx7d4m2HIkXffxsAPOa/6tFUzQ3aGNt1wI/K/bs5f34=;
+	b=gqbT+LkeHNlV6ckPNOCGOuyBlOEEi5I+xpmrXWSb8FiUOySh/fJKRl+BFTZjXCGHAdMtRB
+	VsKudgVNLAa/p7i9OC0OEUzxlKNFhnT2E6DE04TDzUeN+/DYOnelJprmdMrQPQpiABp48i
+	TAB9sbxUUUWxzKYSSMgJb380r+vSDc4=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
+	s=susede2_ed25519; t=1725616285;
+	h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+	 mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding:
+	 in-reply-to:in-reply-to:references:references;
+	bh=rx7d4m2HIkXffxsAPOa/6tFUzQ3aGNt1wI/K/bs5f34=;
+	b=QZtuf0/qw/2OVRuGbMOExaH2QJboUnseDWwUIbjB2vl8jrv/7elLUaTN1CNgyyeeNRWPuL
+	KpMPKg8+jgwEQGDg==
+Received: from imap1.dmz-prg2.suse.org (localhost [127.0.0.1])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+	(No client certificate requested)
+	by imap1.dmz-prg2.suse.org (Postfix) with ESMTPS id 197871395F;
+	Fri,  6 Sep 2024 09:51:24 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([2a07:de40:b281:106:10:150:64:167])
+	by imap1.dmz-prg2.suse.org with ESMTPSA
+	id OEtAAZzQ2maDYAAAD6G6ig
+	(envelope-from <svarbanov@suse.de>); Fri, 06 Sep 2024 09:51:24 +0000
+Message-ID: <d6d5490e-7270-4391-b91a-72af551c6e7d@suse.de>
+Date: Fri, 6 Sep 2024 12:51:08 +0300
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -61,48 +83,98 @@ List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v2 12/21] dt-bindings: thermal: tsens: document support on
- SA8255p
-To: Nikunj Kela <quic_nkela@quicinc.com>
-Cc: andersson@kernel.org, konradybcio@kernel.org, robh@kernel.org,
- krzk+dt@kernel.org, conor+dt@kernel.org, rafael@kernel.org,
- viresh.kumar@linaro.org, herbert@gondor.apana.org.au, davem@davemloft.net,
- sudeep.holla@arm.com, andi.shyti@kernel.org, tglx@linutronix.de,
- will@kernel.org, robin.murphy@arm.com, joro@8bytes.org,
- jassisinghbrar@gmail.com, lee@kernel.org, linus.walleij@linaro.org,
- amitk@kernel.org, thara.gopinath@gmail.com, broonie@kernel.org,
- cristian.marussi@arm.com, rui.zhang@intel.com, lukasz.luba@arm.com,
- wim@linux-watchdog.org, linux@roeck-us.net, linux-arm-msm@vger.kernel.org,
- devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
- linux-pm@vger.kernel.org, linux-crypto@vger.kernel.org,
- arm-scmi@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
- linux-i2c@vger.kernel.org, iommu@lists.linux.dev,
- linux-gpio@vger.kernel.org, linux-serial@vger.kernel.org,
- linux-spi@vger.kernel.org, linux-watchdog@vger.kernel.org,
- kernel@quicinc.com, quic_psodagud@quicinc.com,
- Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-References: <20240828203721.2751904-1-quic_nkela@quicinc.com>
- <20240903220240.2594102-1-quic_nkela@quicinc.com>
- <20240903220240.2594102-13-quic_nkela@quicinc.com>
+Subject: Re: [PATCH 2/2] media: venus: firmware: Use
+ iommu_paging_domain_alloc()
+To: Jason Gunthorpe <jgg@nvidia.com>,
+ Stanimir Varbanov <stanimir.k.varbanov@gmail.com>
+Cc: Lu Baolu <baolu.lu@linux.intel.com>, Dmitry Osipenko <digetx@gmail.com>,
+ Mauro Carvalho Chehab <mchehab@kernel.org>,
+ Thierry Reding <thierry.reding@gmail.com>,
+ Jonathan Hunter <jonathanh@nvidia.com>,
+ Vikash Garodia <quic_vgarodia@quicinc.com>, Joerg Roedel <joro@8bytes.org>,
+ Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
+ Kevin Tian <kevin.tian@intel.com>, linux-media@vger.kernel.org,
+ linux-tegra@vger.kernel.org, linux-arm-msm@vger.kernel.org,
+ iommu@lists.linux.dev, linux-kernel@vger.kernel.org
+References: <20240812072105.9578-1-baolu.lu@linux.intel.com>
+ <20240812072105.9578-2-baolu.lu@linux.intel.com>
+ <c5141c18-3f7b-41ac-a064-9911873d0bf9@gmail.com>
+ <20240904121614.GA782327@nvidia.com>
 Content-Language: en-US
-From: Daniel Lezcano <daniel.lezcano@linaro.org>
-In-Reply-To: <20240903220240.2594102-13-quic_nkela@quicinc.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+From: Stanimir Varbanov <svarbanov@suse.de>
+In-Reply-To: <20240904121614.GA782327@nvidia.com>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
+X-Rspamd-Queue-Id: 081D71F8AE
+X-Spam-Level: 
+X-Spamd-Result: default: False [-5.01 / 50.00];
+	BAYES_HAM(-3.00)[100.00%];
+	DWL_DNSWL_MED(-2.00)[suse.de:dkim];
+	SUSPICIOUS_RECIPS(1.50)[];
+	NEURAL_HAM_LONG(-1.00)[-1.000];
+	NEURAL_HAM_SHORT(-0.20)[-1.000];
+	R_DKIM_ALLOW(-0.20)[suse.de:s=susede2_rsa,suse.de:s=susede2_ed25519];
+	MIME_GOOD(-0.10)[text/plain];
+	MX_GOOD(-0.01)[];
+	FUZZY_BLOCKED(0.00)[rspamd.com];
+	DKIM_SIGNED(0.00)[suse.de:s=susede2_rsa,suse.de:s=susede2_ed25519];
+	RBL_SPAMHAUS_BLOCKED_OPENRESOLVER(0.00)[2a07:de40:b281:104:10:150:64:97:from];
+	ARC_NA(0.00)[];
+	RCPT_COUNT_TWELVE(0.00)[17];
+	FREEMAIL_TO(0.00)[nvidia.com,gmail.com];
+	MIME_TRACE(0.00)[0:+];
+	SPAMHAUS_XBL(0.00)[2a07:de40:b281:104:10:150:64:97:from];
+	TO_MATCH_ENVRCPT_ALL(0.00)[];
+	FREEMAIL_ENVRCPT(0.00)[gmail.com];
+	FREEMAIL_CC(0.00)[linux.intel.com,gmail.com,kernel.org,nvidia.com,quicinc.com,8bytes.org,arm.com,intel.com,vger.kernel.org,lists.linux.dev];
+	RCVD_COUNT_TWO(0.00)[2];
+	MID_RHS_MATCH_FROM(0.00)[];
+	FROM_EQ_ENVFROM(0.00)[];
+	FROM_HAS_DN(0.00)[];
+	TO_DN_SOME(0.00)[];
+	RECEIVED_SPAMHAUS_BLOCKED_OPENRESOLVER(0.00)[2a07:de40:b281:106:10:150:64:167:received];
+	RCVD_VIA_SMTP_AUTH(0.00)[];
+	TAGGED_RCPT(0.00)[];
+	RCVD_TLS_ALL(0.00)[];
+	DKIM_TRACE(0.00)[suse.de:+];
+	DBL_BLOCKED_OPENRESOLVER(0.00)[imap1.dmz-prg2.suse.org:helo,imap1.dmz-prg2.suse.org:rdns,suse.de:dkim,suse.de:mid]
+X-Rspamd-Server: rspamd2.dmz-prg2.suse.org
+X-Rspamd-Action: no action
+X-Spam-Score: -5.01
+X-Spam-Flag: NO
 
-On 04/09/2024 00:02, Nikunj Kela wrote:
-> Add compatible for sensors representing support on SA8255p.
+Hi Jason,
+
+On 9/4/24 15:16, Jason Gunthorpe wrote:
+> On Tue, Aug 20, 2024 at 11:43:50PM +0300, Stanimir Varbanov wrote:
+>> Hi,
+>>
+>> Thank you for the patch!
+>>
+>> On 12.08.24 г. 10:21 ч., Lu Baolu wrote:
+>>> An iommu domain is allocated in venus_firmware_init() and is attached to
+>>> core->fw.dev in the same function. Use iommu_paging_domain_alloc() to
+>>> make it explicit.
+>>>
+>>> Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
+>>> Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
+>>> Link: https://lore.kernel.org/r/20240610085555.88197-10-baolu.lu@linux.intel.com
+>>> ---
+>>>   drivers/media/platform/qcom/venus/firmware.c | 6 +++---
+>>>   1 file changed, 3 insertions(+), 3 deletions(-)
+>>>
+>>> diff --git a/drivers/media/platform/qcom/venus/firmware.c b/drivers/media/platform/qcom/venus/firmware.c
+>>> index fe7da2b30482..66a18830e66d 100644
+>>> --- a/drivers/media/platform/qcom/venus/firmware.c
+>>> +++ b/drivers/media/platform/qcom/venus/firmware.ced
+>>
+>> Acked-by: Stanimir Varbanov <stanimir.k.varbanov@gmail.com>
+>>
+>> I'll take the patch through linux-media tree.
 > 
-> Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-> Signed-off-by: Nikunj Kela <quic_nkela@quicinc.com>
-> ---
+> Did this patch and the 1/2:
 
-Applied, thanks
+2/2 is in linux-next now.
 
+~Stan
 
--- 
-<http://www.linaro.org/> Linaro.org │ Open source software for ARM SoCs
-
-Follow Linaro:  <http://www.facebook.com/pages/Linaro> Facebook |
-<http://twitter.com/#!/linaroorg> Twitter |
-<http://www.linaro.org/linaro-blog/> Blog
