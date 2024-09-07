@@ -1,59 +1,59 @@
 Received: from mail-lj1-f174.google.com (mail-lj1-f174.google.com [209.85.208.174])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AAC0216089A
-	for <iommu@lists.linux.dev>; Sat,  7 Sep 2024 18:48:22 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C789B165F14
+	for <iommu@lists.linux.dev>; Sat,  7 Sep 2024 18:48:23 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.174
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1725734904; cv=none; b=dYT0OQrhfTeP0pBMI4T98P8V7cDXj4cz4FF/1FPKjBXMMfhdMScZf6TdYZem89BDhmg+vriYwKqdvkj/GH34I0BIrycoQYY9Db9Y/I8vssHfeM/Q7aurmlfdthm+3tJbb5wZF2iY+hJcKQfcO5ugeMwaja/GXdKPFh43CyMhwPM=
+	t=1725734905; cv=none; b=dPo9V3VzWtvgGfGRsQVxTpvFMgQ4lEgPZa+6H1aFyTMW7VCE4hjOTIuDsqPCnLDqn6j2bjXUCgp/Y5/PqpxAPNRjTDF7X8+BwK/t2cL/wszaZ2VaSgXI6053mner8DVjVsRCXMXcXcd34jM1EDL/MSnzW44j2TfAiJNIbpE9piU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1725734904; c=relaxed/simple;
-	bh=G8XjAsr7l2bULeKDkj37t5ZchnBw4CW6FlfjTvSZkX0=;
+	s=arc-20240116; t=1725734905; c=relaxed/simple;
+	bh=czZ7T+mf6XqWzU6Vf6WURi7MEzoc/X2h0XJq3zPX//0=;
 	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=C0PzxBGkWGetDzTelrwB/Av7d/yO5YAMYWoBujKRrwsx9WnW9YzTPaiCWizuPVlkpvulEqngzKL13U/g1uIgb6T9ZE7nDnfHVl4t9CQEA+WF0xusQ6WC7E2RNLzKVq4YsIaOIZSOoaiIe8+0sT7qaxLhh/b7p3YwUT72Pbt32ZA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org; spf=pass smtp.mailfrom=linaro.org; dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b=UPoY/dm+; arc=none smtp.client-ip=209.85.208.174
+	 In-Reply-To:To:Cc; b=rHtVD/DIjNEzdMalNsZE1w4S0AVewXHJdCpHbqh5FiwR0XB9lQaQR2ibio5FXS8wvDs+XiKVoo3z/dXq0G1Y0lbhPNn0sntXuEhMooR/RDh9nb1jmr6yacBvZxo72a+K5pF6aDiqdefEG2dSp/c57l9ZFIYsDrU9mU3aSnns63Q=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org; spf=pass smtp.mailfrom=linaro.org; dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b=lSq5eLEP; arc=none smtp.client-ip=209.85.208.174
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linaro.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="UPoY/dm+"
-Received: by mail-lj1-f174.google.com with SMTP id 38308e7fff4ca-2f75c0b78fbso6944581fa.1
-        for <iommu@lists.linux.dev>; Sat, 07 Sep 2024 11:48:22 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="lSq5eLEP"
+Received: by mail-lj1-f174.google.com with SMTP id 38308e7fff4ca-2f759b87f83so7922441fa.2
+        for <iommu@lists.linux.dev>; Sat, 07 Sep 2024 11:48:23 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1725734901; x=1726339701; darn=lists.linux.dev;
+        d=linaro.org; s=google; t=1725734902; x=1726339702; darn=lists.linux.dev;
         h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
          :mime-version:subject:date:from:from:to:cc:subject:date:message-id
          :reply-to;
-        bh=jpkFdCDWxG+jHgwK52QzUzAkGgglAsm4AAFdePfcRFY=;
-        b=UPoY/dm+WphYDlSNcYqXNQas2e6jMpk8suqZ4rphAn6kE3jo6R3/qAvpDDK42MAGyE
-         6MsCjvcMdTiFjX1waZA+ZJ3CujOxdddNHMKS8GEBDICkQQoASiZ3b6YgnQC6JjRuwMsx
-         BTnrByJX2hk1ZZUM8sbeIukp1BzrFda7aWuE6t9sZXvdn+/rwggzmp8CD/R2/uSYroQZ
-         +OzcsKdWuz7Gl9wI07F0ozcQIQfmZMtfVTO98Se64OoU7/Reg469ZEOdI5loSNHI2YjO
-         a/dyqXVKOoWdNO0hVFcpt7coaYJnCdyMLbL4Q7msCJ3x67ub30zwGTQQTRUThW8dWIRn
-         kTgw==
+        bh=+MQl+w+EtPc0//xS+aXieS9CbUw0+8xjxLVKoHk7Lo0=;
+        b=lSq5eLEPqVycF5W9HH7ymIlkQUoitK+ckzo98PZmSlV/eJMN7+EDyGOrHTySUXnLsO
+         hdHzZKYby5vztmmbylytOko/Yy4NfrAoN4UufBVNKrhnwjwNWP6KyKNlijyyi1SfTi2c
+         YGf1FrgRFEV0bGwdhjhkxeVPY3aPPrq34IngNkPEw0Ww6cnT0V2DdcU7qutSPbTBwVJZ
+         yBR2tKp7d98aiuCROFfeDHskRLgZpzA4EYk2MV5qE0/yIwheXgjnErMSk78j+pmGE0WZ
+         PO2XNFzj1ky6svA8g7PqRrY4PcHbi7e2b/S519D6cpKevqIOEYSkASIxQKl9ZecYMb9D
+         /PNA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1725734901; x=1726339701;
+        d=1e100.net; s=20230601; t=1725734902; x=1726339702;
         h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
          :mime-version:subject:date:from:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=jpkFdCDWxG+jHgwK52QzUzAkGgglAsm4AAFdePfcRFY=;
-        b=aa9msXoTxjiYr9EERmqbikJjrGvyzmQKG7OH3nbnieiWPdlFxwQBhU5aVoJOw8VzZv
-         ZlT9uyEV0NAN+1SKcmYiO9uywWSHS1TGhTuESzBqk3qAsn+5EqtfcYrAYxyn8qFg2J+g
-         ySwyxdwARYmt+NDoIl9WNvTFcvVo44mffvlO+0kvQB06iEBjOlXURg8apCywwNlkM58z
-         J6R1bhk6yJIZ4/u9sdqKcbOHJOZK6Ct4YpzKQjevgS4aFQy31E63mQFq1bG9wMzsKq/B
-         yMQWL6P8Er6Gs5gVbS90mvWfGoECpTzwudW3uHT82nejNwYYA3bZa1TbZ5/GSnA20l5U
-         mUQg==
-X-Gm-Message-State: AOJu0Yw/7HQ8rHR1ZUdCS4U6IzXMqoln96A+5n61HqIPoRiUkSB/kn2G
-	eXbLNthw6Sg9dE00wK6VEiC9zM3/c0fWbm2yeAKN+m9Q/U26L+x6FgoyKXJIAVs=
-X-Google-Smtp-Source: AGHT+IEGc+rw8n897S3k/I+r66uqWMoCaEiaxiGscVL7WMTLCAC9tURU0h8WtjoSPAnSuDv8f4FDdg==
-X-Received: by 2002:a2e:6111:0:b0:2f3:e2fd:7dcd with SMTP id 38308e7fff4ca-2f751ea7abdmr36668801fa.6.1725734900596;
-        Sat, 07 Sep 2024 11:48:20 -0700 (PDT)
+        bh=+MQl+w+EtPc0//xS+aXieS9CbUw0+8xjxLVKoHk7Lo0=;
+        b=Py54ipIMRvxEsjjj6gApeOvp8/cHnC9OTUEa+aEjW3Xf4TQlhrb2agdZXuYWw5Vdvm
+         TQlbOj5LxXscFsw3hzRzYSn8d+aQMfnxfzacGD1v4DH390JH44HwqJqRg0bY/XIeYYt+
+         M70m4XBcLQpe6rLA8c8GeciYp2OGQgGthwReKUDnIj3xBKrV5qhMYMeeoHkKOwY25YVf
+         E7+0T2qXcuFvMiZYD3By/48l1CMTmLpIp0BtETS9uF7v2bjTVIxnH3PDb6qJnNBnEJDz
+         n8M7j8JsSMdbm5DCY28AJEuFoKQtTQwRWqlOirFEeNcj+FctPgr2CHRwZU1fqh+LV73g
+         x6Zg==
+X-Gm-Message-State: AOJu0Yz/NAivzsLauyR1siQ2C+LvWSmbr1HRXLOZCeQRX24YP4njclmx
+	MAwRxQfCQ8l1jR7kxZeX/6gL5mXUFjnuCSu7FUzXMDlLHsJ0jVMjDFZc31B8V54=
+X-Google-Smtp-Source: AGHT+IFt/F9gdcOgwpNi7fafKgTp/rZCPURIU7Ulv5ZyfJmoQN15S9LX022Fh+nYO3YABMxPYuOVhw==
+X-Received: by 2002:a2e:d02:0:b0:2f6:5d4e:bead with SMTP id 38308e7fff4ca-2f751f2b131mr30255761fa.21.1725734901592;
+        Sat, 07 Sep 2024 11:48:21 -0700 (PDT)
 Received: from umbar.lan ([192.130.178.90])
         by smtp.gmail.com with ESMTPSA id 38308e7fff4ca-2f75c0b1af3sm2271861fa.129.2024.09.07.11.48.20
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
         Sat, 07 Sep 2024 11:48:20 -0700 (PDT)
 From: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
-Date: Sat, 07 Sep 2024 21:48:13 +0300
-Subject: [PATCH 2/7] arm64: dts: qcom: sdm630: enable GPU SMMU and GPUCC
+Date: Sat, 07 Sep 2024 21:48:14 +0300
+Subject: [PATCH 3/7] arm64: dts: qcom: sda660-ifc6560: enable GPU
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -62,7 +62,7 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Message-Id: <20240907-sdm660-wifi-v1-2-e316055142f8@linaro.org>
+Message-Id: <20240907-sdm660-wifi-v1-3-e316055142f8@linaro.org>
 References: <20240907-sdm660-wifi-v1-0-e316055142f8@linaro.org>
 In-Reply-To: <20240907-sdm660-wifi-v1-0-e316055142f8@linaro.org>
 To: Rob Clark <robdclark@gmail.com>, Will Deacon <will@kernel.org>, 
@@ -76,50 +76,62 @@ Cc: iommu@lists.linux.dev, linux-arm-msm@vger.kernel.org,
  linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, 
  devicetree@vger.kernel.org
 X-Mailer: b4 0.14.0
-X-Developer-Signature: v=1; a=openpgp-sha256; l=1099;
+X-Developer-Signature: v=1; a=openpgp-sha256; l=1341;
  i=dmitry.baryshkov@linaro.org; h=from:subject:message-id;
- bh=G8XjAsr7l2bULeKDkj37t5ZchnBw4CW6FlfjTvSZkX0=;
- b=owEBbQGS/pANAwAKAYs8ij4CKSjVAcsmYgBm3J/xN40BsuEdXIGn7p9ScsoJtdiTQB8SViteB
- gBGFCIKcZuJATMEAAEKAB0WIQRMcISVXLJjVvC4lX+LPIo+Aiko1QUCZtyf8QAKCRCLPIo+Aiko
- 1ZcRB/9PjGkhtUodJVh3czV+ADqc3yYyhY69r+wl7qdHHU3JzuspOjFVoU7ZuoqO/THcsYrx6wh
- LmYqzCA+xmVgYwm4sp07bWG0O/4lMNAv/3BR6OdEHyfP82lLpx+ZRsb2ivv8ccP9rOMYaQWe1G3
- F7ay5oXlt3EUu5Nexny42eGZI8QY4Zq1ojF6hIcbwAZbrHXQcIwpkR9G78ACDBjodJIKCBrxWTR
- eDgg+hxpGLLGDqvotRO5ud5gXAlZiU0EstTkAygeVPGOOC2TqSTfXGMXNtcnVrSHx6ltk2oZmFq
- maTpaJaHMZmCeRXNHNAhZlTM9sgMK7AvwdhJx2gZlUV2akfY
+ bh=czZ7T+mf6XqWzU6Vf6WURi7MEzoc/X2h0XJq3zPX//0=;
+ b=owEBbQGS/pANAwAKAYs8ij4CKSjVAcsmYgBm3J/x7F2PoifzzkkFHxz2+pRkYLt9ML0xZEW+o
+ 3DWhVRfPlCJATMEAAEKAB0WIQRMcISVXLJjVvC4lX+LPIo+Aiko1QUCZtyf8QAKCRCLPIo+Aiko
+ 1bLJCACJMd8jResuMsuhYfRhbO4DeTthTfGRK4rkPdDurx7rNtoeMvbbUL5rG3y2eVui87VLDfN
+ EUAEwA6xXp4405PqYaI4rFWM0vWw5e4NEETlX0rgWjkglYhwNw5kN7xAA9SNakt27ds/M6MuN3L
+ tJUM4EdZkcZfx4LF9qOlqX+JYa8SL+KidSHFtDbqK/3XYBqaIDYNWQUPwiUkbTbdqwgCGJrO+/J
+ 3zWN7oDuWEH6MUsiyP9+fryFrqlDqZhw4/Ru3fQAias+d6YtPv/AT9ZEuLLrBKzyb1XV0t9g0mV
+ dx6JraJkMAwruTpCoJiLcV8qTA2QHCIeT1IO2T8HP7OBYSqA
 X-Developer-Key: i=dmitry.baryshkov@linaro.org; a=openpgp;
  fpr=8F88381DD5C873E4AE487DA5199BF1243632046A
 
-Now as the arm-smmu-qcom driver gained workarounds for the Adreno SMMU,
-it becomes possible to safely enable GPU on the devices. Enable GPU SMMU
-and GPU clock controller. GPU should be enabled for target devices that
-have ZAP shader blob.
+Enable Adreno GPU on the Inforce IFC6560 SBC. It requires the Zap shader
+binary that was provided by the vendor.
 
 Signed-off-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
 ---
- arch/arm64/boot/dts/qcom/sdm630.dtsi | 3 ---
- 1 file changed, 3 deletions(-)
+ arch/arm64/boot/dts/qcom/sda660-inforce-ifc6560.dts | 8 ++++++++
+ arch/arm64/boot/dts/qcom/sdm630.dtsi                | 4 ++++
+ 2 files changed, 12 insertions(+)
 
+diff --git a/arch/arm64/boot/dts/qcom/sda660-inforce-ifc6560.dts b/arch/arm64/boot/dts/qcom/sda660-inforce-ifc6560.dts
+index 60412281ab27..ac0197624c09 100644
+--- a/arch/arm64/boot/dts/qcom/sda660-inforce-ifc6560.dts
++++ b/arch/arm64/boot/dts/qcom/sda660-inforce-ifc6560.dts
+@@ -110,6 +110,14 @@ vreg_l10a_1p8: vreg-l10a-regulator {
+ 	};
+ };
+ 
++&adreno_gpu {
++	status = "okay";
++};
++
++&adreno_gpu_zap {
++	firmware-name = "qcom/sda660/a512_zap.mbn";
++};
++
+ &adsp_pil {
+ 	firmware-name = "qcom/sda660/adsp.mbn";
+ };
 diff --git a/arch/arm64/boot/dts/qcom/sdm630.dtsi b/arch/arm64/boot/dts/qcom/sdm630.dtsi
-index c8da5cb8d04e..40ad99d75738 100644
+index 40ad99d75738..92695375a63b 100644
 --- a/arch/arm64/boot/dts/qcom/sdm630.dtsi
 +++ b/arch/arm64/boot/dts/qcom/sdm630.dtsi
-@@ -1186,8 +1186,6 @@ kgsl_smmu: iommu@5040000 {
- 				<GIC_SPI 117 IRQ_TYPE_LEVEL_HIGH>,
- 				<GIC_SPI 349 IRQ_TYPE_LEVEL_HIGH>,
- 				<GIC_SPI 350 IRQ_TYPE_LEVEL_HIGH>;
--
--			status = "disabled";
+@@ -1150,6 +1150,10 @@ opp-160000000 {
+ 					opp-supported-hw = <0xff>;
+ 				};
+ 			};
++
++			adreno_gpu_zap: zap-shader {
++				memory-region = <&zap_shader_region>;
++			};
  		};
  
- 		gpucc: clock-controller@5065000 {
-@@ -1203,7 +1201,6 @@ gpucc: clock-controller@5065000 {
- 			clock-names = "xo",
- 				      "gcc_gpu_gpll0_clk",
- 				      "gcc_gpu_gpll0_div_clk";
--			status = "disabled";
- 		};
- 
- 		lpass_smmu: iommu@5100000 {
+ 		kgsl_smmu: iommu@5040000 {
 
 -- 
 2.39.2
