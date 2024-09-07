@@ -1,59 +1,59 @@
-Received: from mail-lj1-f171.google.com (mail-lj1-f171.google.com [209.85.208.171])
+Received: from mail-lj1-f173.google.com (mail-lj1-f173.google.com [209.85.208.173])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 39405166F10
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D2286166F38
 	for <iommu@lists.linux.dev>; Sat,  7 Sep 2024 18:48:25 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.171
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.173
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1725734907; cv=none; b=FhJcIqWkvRKIT2mY/MDTEL+opGejJMXC+e1fdPeoQfAYxe3kU+g445xuughYilE6iDCSluqkT7oPDGf9BDWX0+v2gjRhCbv3jJ4tiwtQknQWMl1N+tfuVDlwJSzxWCz6Gilvkfb84oy2fFQ26v5yTFLdtTWbueTc7N+dNDej+7Y=
+	t=1725734907; cv=none; b=KQTQHXE4+PhO947YlBsQfRY2VK+uXMaVcDo3S1CjV+BsiEgJMWm+61Eqq5C/LU7FlBNPVyv9FdKd8+bbsuyhqG9wrk40U5/sGkrxZ7Qe91dEdkT9fsfOt+637yDAq/0Qm60fNmJJ1ZjeDce35jBO5jh61rvFRCpUlHDzq306d0I=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
 	s=arc-20240116; t=1725734907; c=relaxed/simple;
-	bh=gth7VehLLAYczDDqOTK1mioSLmcntX+IjHSeS1+PsRg=;
+	bh=m8Zi+I7r4mzRkaQx4Q0uAvjUN8Er2tlAYnR9jC1UHiY=;
 	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=gv0ppzwc3b9WvcuJwfRfO3FcoTwEUtaHNrcY8cSkbw7zZyJmEklAVAF8F9yapvWJUyR0rodxHU/+mVQTOmowiVMpzSStN3NoTD2WrAcSokosKdVUZUfhhEF0azwcxhUcnDoTWKvCcTHEWSjpkfgNRuPFdwCRIGCc/+EP6rfBmOs=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org; spf=pass smtp.mailfrom=linaro.org; dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b=FCHHREXg; arc=none smtp.client-ip=209.85.208.171
+	 In-Reply-To:To:Cc; b=nvXDPQubSMm/QN1EIUS+NsYlDu1oBa7cTnGztL5tiJGUxGAV7RWdbrz6UyAMjF95mj6T8o5fqtcn/K763fOIvrKUxhlH3TTmZMQU0RnGQzqf/0+Eorrs1SQXQVZbYof97qmgNrapD87FSQtA23RyOmWJJtLWxZzyaZbs/xO1t+4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org; spf=pass smtp.mailfrom=linaro.org; dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b=cG1iXatg; arc=none smtp.client-ip=209.85.208.173
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linaro.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="FCHHREXg"
-Received: by mail-lj1-f171.google.com with SMTP id 38308e7fff4ca-2f762de00e5so243411fa.3
+	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="cG1iXatg"
+Received: by mail-lj1-f173.google.com with SMTP id 38308e7fff4ca-2f761cfa5e6so1581671fa.0
         for <iommu@lists.linux.dev>; Sat, 07 Sep 2024 11:48:25 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1725734903; x=1726339703; darn=lists.linux.dev;
+        d=linaro.org; s=google; t=1725734904; x=1726339704; darn=lists.linux.dev;
         h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
          :mime-version:subject:date:from:from:to:cc:subject:date:message-id
          :reply-to;
-        bh=u7LsuAqj5Yv+PzKysRic0Rp3tIs0Hiyq7Bki4F0WIhU=;
-        b=FCHHREXgbPNq7P77YkRmY/hcRmj7uAVXvp7opixENmUmK9N3+E/zGoKb2hhdvzpkoR
-         ZzQC12rjq2bZawqJLL7rTDFlTaQO/h2xZd7gGIGG+aQfRCKbuEPR9CEn8GMw5k4Aai2V
-         rD70dM+QC1PqOOMLBB8+unYrLa7MwU2/SLKLXMrQc5j2yxG6rewOB4d1huUGQGsp3wJu
-         hdM5XiCswbyVvrFYqxIA7lRaOIbdF0WKXVQoYj9QA9UFYJsmQKzv2S0d86RSCTP5x7AO
-         3Tbotx2PtlqiyQmzjk+o+ovUUO0bxxojgcERpwjpWGA269tMp6id2y36mVLn6ckhZv7m
-         4Weg==
+        bh=hL1dl2amOVSJoO70LsDuP43oRXVn+WYe2abWDJx9WBc=;
+        b=cG1iXatgq2WG5elwD2e6kpUaD8jbBnCH705l+htYNaeMsMhu9dEgPkjTOBUoKLxoiB
+         pXqgVleVASg0g4QxBYWVsFLWf4RD8d/EX9/j1RFsBNq5xBwwzBvSO9X5dNHU+vcmLk9l
+         0VXS8mbkKL0W8/UXshWIE8QZuwWYAXt1XzrbTRZkubv1b/BlkjfGCZpBHp/8llPGDrVm
+         1q6WZ5Wu2jAzXnb48svK0Vld8GxD1QQf3nukdirDcWKgLHTQEEW0TYnHEcnHUdVOIodI
+         xFY/JRmwX+jofGwbXaf+Svru2l/GNPuzUjZrpl+XiwXPxwZrVjk4qsLJsUZzLhi4KRVn
+         bJkg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1725734903; x=1726339703;
+        d=1e100.net; s=20230601; t=1725734904; x=1726339704;
         h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
          :mime-version:subject:date:from:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=u7LsuAqj5Yv+PzKysRic0Rp3tIs0Hiyq7Bki4F0WIhU=;
-        b=QEsok5o9IayTcEmetdsySfbj9yq0AGYhek+K9/6SaCZ02UGNPZLUji/bFNkUnD59zz
-         ZHFX1sXJDkZ7LwWdG5fVJ4D1k6g5h1+Y+hxa4VPloHvlG9vDc+1oIU/YfurvF9wGsvJv
-         xenYuv803wqyWEDo9tLJ3Tyb3c5uHzjTa1npaB3RbfR6qvAaJ93kaXvM3Z/3IhBUf+tF
-         0CxMZoTGAmgBQlQvfi7h5vuO0V360KPAKfJYP+nMugVEIZCoGKZru4K8G9fZvPq/6Swg
-         Bktlo8zOhBk+27ROvk4VtjwSE+A/kza+Dab8GuQzZoD073GspbIs3SChy47hvBumR1Bl
-         ohbQ==
-X-Gm-Message-State: AOJu0YwdtJaplM48EPczTdyXDdIl/BX0DsBsSBkfpvpK/IjyCOu2uzuI
-	9E1E1lKjXyGvoU0tCbnsqb9u69rTs3n8d2LzMTwwJDcE0tlzJ6ivm2N11hBK0uc=
-X-Google-Smtp-Source: AGHT+IG6Er2WTTB9ykLtsnwLJMIhAvVqgLPtZjGk+LCEAz8mWM1M2LvXxH2Ll6NQE9F97hNSetaCCQ==
-X-Received: by 2002:a2e:be83:0:b0:2ee:8453:5164 with SMTP id 38308e7fff4ca-2f751db7570mr44719081fa.0.1725734903101;
+        bh=hL1dl2amOVSJoO70LsDuP43oRXVn+WYe2abWDJx9WBc=;
+        b=E3KM1MoBkRls17TMdhiTv2BawTvZYe32YTJB1pOT7aOvoHDYoeOB6CPdAdiPTPwKRd
+         gZ+QU7szF7giW8B9sAHDYV8pBgbAscPbRAoK0AWuV4qgKNU+IkY91aDscaKD+v0L0b4e
+         F/X6Lher937QZJ4vE7gDf8vYYvYM5PkoCUvBT5iWbuttYnSFHgUmgZ6TTilqX2sbKAI3
+         /+U1gRtxVeBpsPtnEsrrYxAGHbZCSgqJRXnpD45MiWtfXRKEzX8cJ2NuYdOw3JNsTEge
+         lyuKWBrLVyoFhe3J84QQ/XINh2xNdebUg4UNXUd/yXtDX1XcsGg+qylEBug6msk1ii5X
+         QA0A==
+X-Gm-Message-State: AOJu0Yyp3NFTVpCAlL9bMVd2ybGgRdKI75oWCby1Yhxl3IzCCDDc+D9Q
+	UlVAZ9nltnavk7fR5BNMsfe42jYfnu/HfczTPVUZ+AZhaqcUGRl//3xpr8ZN+kU=
+X-Google-Smtp-Source: AGHT+IG58gmWVk9fhlraqb5aPvd2mdHJvcE/HBMUnVruL6uhb+sYPDa968ikGXxOgKNrOey3AJXC2A==
+X-Received: by 2002:a2e:be9e:0:b0:2f7:5914:c22e with SMTP id 38308e7fff4ca-2f75b87ec72mr17930011fa.6.1725734903789;
         Sat, 07 Sep 2024 11:48:23 -0700 (PDT)
 Received: from umbar.lan ([192.130.178.90])
-        by smtp.gmail.com with ESMTPSA id 38308e7fff4ca-2f75c0b1af3sm2271861fa.129.2024.09.07.11.48.22
+        by smtp.gmail.com with ESMTPSA id 38308e7fff4ca-2f75c0b1af3sm2271861fa.129.2024.09.07.11.48.23
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 07 Sep 2024 11:48:22 -0700 (PDT)
+        Sat, 07 Sep 2024 11:48:23 -0700 (PDT)
 From: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
-Date: Sat, 07 Sep 2024 21:48:16 +0300
-Subject: [PATCH 5/7] arm64: dts: qcom: sdm630: enable A2NOC and LPASS SMMU
+Date: Sat, 07 Sep 2024 21:48:17 +0300
+Subject: [PATCH 6/7] arm64: dts: qcom: sdm630: add WiFI device node
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -62,7 +62,7 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Message-Id: <20240907-sdm660-wifi-v1-5-e316055142f8@linaro.org>
+Message-Id: <20240907-sdm660-wifi-v1-6-e316055142f8@linaro.org>
 References: <20240907-sdm660-wifi-v1-0-e316055142f8@linaro.org>
 In-Reply-To: <20240907-sdm660-wifi-v1-0-e316055142f8@linaro.org>
 To: Rob Clark <robdclark@gmail.com>, Will Deacon <will@kernel.org>, 
@@ -76,49 +76,65 @@ Cc: iommu@lists.linux.dev, linux-arm-msm@vger.kernel.org,
  linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, 
  devicetree@vger.kernel.org
 X-Mailer: b4 0.14.0
-X-Developer-Signature: v=1; a=openpgp-sha256; l=980;
+X-Developer-Signature: v=1; a=openpgp-sha256; l=1627;
  i=dmitry.baryshkov@linaro.org; h=from:subject:message-id;
- bh=gth7VehLLAYczDDqOTK1mioSLmcntX+IjHSeS1+PsRg=;
- b=owEBbQGS/pANAwAKAYs8ij4CKSjVAcsmYgBm3J/yK0Kr6gfauwYtKBj2YifOOoYasEb2/KJQy
- oQEzjAtvuWJATMEAAEKAB0WIQRMcISVXLJjVvC4lX+LPIo+Aiko1QUCZtyf8gAKCRCLPIo+Aiko
- 1eXDB/9YMK3v0BNnzKGqm5xYDSjWyN0LHPfuoGLoxqF11BB6jzZ6HjSdbB6BPi6n8/uMcF2CYCU
- pUhc1bXjxfVuHGaf6cHWqtrnm7QnBYbY9S7oexm20BZreHSMx1mnvyugF1faew9zNq1i2P1VmaW
- tewDNsm9c7RZhrMo8cO/oHOa9PCy0u9yKVQlnBYbWFEdjODYF+LEK4HQTo3Nz/eca3UAyniGYYK
- NoyD5wvdIVIhaTLstIx19dmx4DHhmbkyOR5XRyfpvPD6mMbJJQd3pK9+vtPWua3amdHbpfVaJaS
- UyTHeyQAsEcjpl2psOw4Yjpzg+Yj+fS2DFCA/EGPiMz/yeke
+ bh=m8Zi+I7r4mzRkaQx4Q0uAvjUN8Er2tlAYnR9jC1UHiY=;
+ b=owEBbQGS/pANAwAKAYs8ij4CKSjVAcsmYgBm3J/ySmr6XcpVpgukwQyVFouN74yoqzLc+oHg4
+ jmtygX/pVqJATMEAAEKAB0WIQRMcISVXLJjVvC4lX+LPIo+Aiko1QUCZtyf8gAKCRCLPIo+Aiko
+ 1dPwCACKHKRnAYP+o0a7nDiomZPJ1StU5CG1h4B+3pdo2s5q7n4Cbpk91b5RsdifWtVHW4QQO4K
+ vnX2NV+OIvBQhHNbNCSANijMPk8Hf4DbIinGV1I9G1ShIdGjvv7rfq9Su2OPFFg1WOussGxre+E
+ 6hGbLT2YrlZKtO5HKTYhEC7IrlftsXKHlCPxZeld61nTxWJZNvzJoifbqZMCT3UCIy8SWngE7j2
+ YOKLzOU67j4Li2c1yO/AaIGhjx1DYnn9rOP6hAe+cmgxifCW0XjMTv4uEqV06Ulh8b2qFaSWHZh
+ QCeOWE4asT4+t9tcQaVmspLRVXYSq5CtCSAJNYxAMMUcHmts
 X-Developer-Key: i=dmitry.baryshkov@linaro.org; a=openpgp;
  fpr=8F88381DD5C873E4AE487DA5199BF1243632046A
 
-Now as the arm-smmu-qcom driver gained workarounds for the A2NOC and
-LPASS SMMU devices, enable those two devices.
+Add device node for the WiFi device being a part of the integrated
+SDM660 / SDM630 platforms.
 
 Signed-off-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
 ---
- arch/arm64/boot/dts/qcom/sdm630.dtsi | 4 ----
- 1 file changed, 4 deletions(-)
+ arch/arm64/boot/dts/qcom/sdm630.dtsi | 27 +++++++++++++++++++++++++++
+ 1 file changed, 27 insertions(+)
 
 diff --git a/arch/arm64/boot/dts/qcom/sdm630.dtsi b/arch/arm64/boot/dts/qcom/sdm630.dtsi
-index 92695375a63b..dc8bc63bdc70 100644
+index dc8bc63bdc70..4536fa45869a 100644
 --- a/arch/arm64/boot/dts/qcom/sdm630.dtsi
 +++ b/arch/arm64/boot/dts/qcom/sdm630.dtsi
-@@ -665,8 +665,6 @@ anoc2_smmu: iommu@16c0000 {
- 				<GIC_SPI 472 IRQ_TYPE_LEVEL_HIGH>,
- 				<GIC_SPI 473 IRQ_TYPE_LEVEL_HIGH>,
- 				<GIC_SPI 474 IRQ_TYPE_LEVEL_HIGH>;
--
--			status = "disabled";
+@@ -2412,6 +2412,33 @@ intc: interrupt-controller@17a00000 {
+ 			redistributor-stride = <0x0 0x20000>;
+ 			interrupts = <GIC_PPI 9 IRQ_TYPE_LEVEL_HIGH>;
  		};
++
++		wifi: wifi@18800000 {
++			compatible = "qcom,wcn3990-wifi";
++			reg = <0x18800000 0x800000>;
++			reg-names = "membase";
++			memory-region = <&wlan_msa_mem>;
++			clocks = <&rpmcc RPM_SMD_RF_CLK1_PIN>;
++			clock-names = "cxo_ref_clk_pin";
++			interrupts =
++				<GIC_SPI 413 IRQ_TYPE_LEVEL_HIGH>,
++				<GIC_SPI 414 IRQ_TYPE_LEVEL_HIGH>,
++				<GIC_SPI 415 IRQ_TYPE_LEVEL_HIGH>,
++				<GIC_SPI 416 IRQ_TYPE_LEVEL_HIGH>,
++				<GIC_SPI 417 IRQ_TYPE_LEVEL_HIGH>,
++				<GIC_SPI 418 IRQ_TYPE_LEVEL_HIGH>,
++				<GIC_SPI 420 IRQ_TYPE_LEVEL_HIGH>,
++				<GIC_SPI 421 IRQ_TYPE_LEVEL_HIGH>,
++				<GIC_SPI 422 IRQ_TYPE_LEVEL_HIGH>,
++				<GIC_SPI 423 IRQ_TYPE_LEVEL_HIGH>,
++				<GIC_SPI 424 IRQ_TYPE_LEVEL_HIGH>,
++				<GIC_SPI 425 IRQ_TYPE_LEVEL_HIGH>;
++			iommus = <&anoc2_smmu 0x1a00>,
++				 <&anoc2_smmu 0x1a01>;
++			qcom,snoc-host-cap-8bit-quirk;
++			qcom,no-msa-ready-indicator;
++			status = "disabled";
++		};
+ 	};
  
- 		a2noc: interconnect@1704000 {
-@@ -1234,8 +1232,6 @@ lpass_smmu: iommu@5100000 {
- 				<GIC_SPI 225 IRQ_TYPE_LEVEL_HIGH>,
- 				<GIC_SPI 310 IRQ_TYPE_LEVEL_HIGH>,
- 				<GIC_SPI 404 IRQ_TYPE_LEVEL_HIGH>;
--
--			status = "disabled";
- 		};
- 
- 		sram@290000 {
+ 	sound: sound {
 
 -- 
 2.39.2
