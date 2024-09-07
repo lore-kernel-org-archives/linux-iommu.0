@@ -1,159 +1,130 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.14])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-lj1-f182.google.com (mail-lj1-f182.google.com [209.85.208.182])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 373E215C126;
-	Sat,  7 Sep 2024 13:37:46 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.14
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1033F1494B2
+	for <iommu@lists.linux.dev>; Sat,  7 Sep 2024 18:48:21 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.182
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1725716270; cv=none; b=MlF2LobqUw9Spoy43+YByWtyr6bQ1PsqSawwIsO9nj7WnAac2OFFPdQJB/Yussq5Oy5hmL4F3Jmr8tVa9BT/DZE8+0TIenvf/xzJau9aBbSW/jXUpnyJjBTwid/QXknNpPhB9j3GD5cRY1TNplGw9ostiO6kz6TKNhsD4HoUPQY=
+	t=1725734903; cv=none; b=nS7o8l/YyjNzWn8YfMoHFxLHQI3eC8KRflp3RiGMHm7WRdU8lmg8sEECVS+uiRlcxFGGow72oylKG56WtJreHTSutEOD8ELcXG9Viv6ABc62NqmaXyTpbff4xj2BHoyIIi4cHHenR5KUzcI+/bcE68MKaeP4BZ4lZZUjGNt/8DA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1725716270; c=relaxed/simple;
-	bh=xtrkjOHGGevMlNpIsMiOVof/a2y3wxes9ScvEXZzsx8=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=L6W0r+CPJ3CpmurTr02vhgg6XA+5laLfiOPEwOvUytLe3USQWirkNgO0A8Vh+E0QD/avnW35a4JOTY1cTEmn65nB232YYF8hqupQmjfk7eaZF97NuefuJ72nJAncJ7OiHeC+UHIY/tyLMQkxuDfOoXRD5XPhW1ZSzHAiNkNW0W0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=ly94zhzW; arc=none smtp.client-ip=192.198.163.14
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	s=arc-20240116; t=1725734903; c=relaxed/simple;
+	bh=j2MGhLcuLoVLWg4I2MuE84ebYpICQobwJaU/0pV8mPM=;
+	h=From:Subject:Date:Message-Id:MIME-Version:Content-Type:To:Cc; b=Pr6P5vZECtsRZkAFZzBHEun3+UOKa+s9faU71pB5TnqUFKaIFHczDngqtT7B387O0lvncRvN1PxJd2PzJaqbSyTgrLWi7Rf/s7N9hAi1VI+nPHTzM2Fn0dEWzI2zz3UopUJoS8Yg6SvgLZFQi+eW+u6nUrYOz9UwdNE3AXfRey0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org; spf=pass smtp.mailfrom=linaro.org; dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b=N1FSC0J+; arc=none smtp.client-ip=209.85.208.182
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linaro.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="ly94zhzW"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1725716267; x=1757252267;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=xtrkjOHGGevMlNpIsMiOVof/a2y3wxes9ScvEXZzsx8=;
-  b=ly94zhzWU7KISHcTYeRK0s0d34NZLRVAUnP3rNxB6OwquceQFjZHOHV4
-   EnWpHK7K8fzhS4PAheyQHc2rpvnE8O3mKdRd8cPfhxUISIdvPad4aoYd2
-   9/63Zsw+yu+WrxahSH9lTapjJsMz2U92hhMlt9rR0rzVfiaUnk/ueSCxb
-   XnemUdiF7o2cR8Ut7y13NHYP4yC+nJ0b8a/yf+JZFSotaX3oSLIVd77sU
-   TEqyjvUViT2OT++f2UBBybb3dVSqsYVaRIRM+TRfJ19knJsHGfRk5XWlo
-   xjrmQj0/ivnkynYuDx+TsMv/eAHGjPPcAcpU1dG6oVgbho11mCeutSKu2
-   g==;
-X-CSE-ConnectionGUID: sNvulLAoRgibCP2UBCXbsA==
-X-CSE-MsgGUID: bBU4MWVlQ+edfZpEqBDCEA==
-X-IronPort-AV: E=McAfee;i="6700,10204,11188"; a="24656489"
-X-IronPort-AV: E=Sophos;i="6.10,210,1719903600"; 
-   d="scan'208";a="24656489"
-Received: from fmviesa002.fm.intel.com ([10.60.135.142])
-  by fmvoesa108.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Sep 2024 06:37:47 -0700
-X-CSE-ConnectionGUID: Ya/UwRVhRJmfAeJC8+8PXA==
-X-CSE-MsgGUID: PU+2OfopTCG9a4Aj+3uTPg==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.10,210,1719903600"; 
-   d="scan'208";a="89485404"
-Received: from lkp-server01.sh.intel.com (HELO 9c6b1c7d3b50) ([10.239.97.150])
-  by fmviesa002.fm.intel.com with ESMTP; 07 Sep 2024 06:37:43 -0700
-Received: from kbuild by 9c6b1c7d3b50 with local (Exim 4.96)
-	(envelope-from <lkp@intel.com>)
-	id 1smvdF-000Cac-16;
-	Sat, 07 Sep 2024 13:37:41 +0000
-Date: Sat, 7 Sep 2024 21:36:46 +0800
-From: kernel test robot <lkp@intel.com>
-To: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
-	linux-kernel@vger.kernel.org, iommu@lists.linux.dev
-Cc: llvm@lists.linux.dev, oe-kbuild-all@lists.linux.dev, joro@8bytes.org,
-	robin.murphy@arm.com, vasant.hegde@amd.com, ubizjak@gmail.com,
-	jgg@nvidia.com, jon.grimm@amd.com, santosh.shukla@amd.com,
-	pandoh@google.com, kumaranand@google.com,
-	Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
-Subject: Re: [PATCH v3 2/5] iommu/amd: Introduce helper functions to access
- and update 256-bit DTE
-Message-ID: <202409072100.WaB846Yg-lkp@intel.com>
-References: <20240906121308.5013-3-suravee.suthikulpanit@amd.com>
+	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="N1FSC0J+"
+Received: by mail-lj1-f182.google.com with SMTP id 38308e7fff4ca-2f75a81b6d5so7986271fa.1
+        for <iommu@lists.linux.dev>; Sat, 07 Sep 2024 11:48:21 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google; t=1725734900; x=1726339700; darn=lists.linux.dev;
+        h=cc:to:content-transfer-encoding:mime-version:message-id:date
+         :subject:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=Bp2f3Cd3xUZZx5mV8or2w5DKaQxEUtdkX4okocf5JKQ=;
+        b=N1FSC0J+l/PnGWLW2NPKigrIebB/iWZnKE81wFWnWy0G3HzptNeZPM2SzNssev3xSD
+         zK6M4KXC1wxFIu4lQFHj3UzTd8yk5SBE0sT+0BQjxWxCYZoxyNU0wuk/9F6Z1WLtKsL2
+         MKgcRtnJeysHObQmHuQsQ8N9LlogyVs9uPNbMF82KqZH39sWe6+TIAMTv6X3YWwgcjHM
+         tgHFQVyz4xJ3hG1I7iJ0SDMRgSngP3n5nLXo2XnbxQRcqiaOoPMlNdNfeSsostiG6F7+
+         eK+rdu2gsEZqKlqjJiBTRz3f0nOnMGSaYEmN24mTg7LadK4cNnrBfxPSwuapiPA4ddEh
+         X4MQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1725734900; x=1726339700;
+        h=cc:to:content-transfer-encoding:mime-version:message-id:date
+         :subject:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=Bp2f3Cd3xUZZx5mV8or2w5DKaQxEUtdkX4okocf5JKQ=;
+        b=jiOq8ANkUmbaItom4cDIrLcJpDRaTTMoRidvGQcxnbPLjjwbxUKMhEcO5xSuguMF9B
+         kpmD1Ixd4rQSfOsDh2OXgrWqsjop/laBYYE6azZZuyBu/8VOTrTJC/Zmoi5G8KS1gVro
+         WRndrGn7jrjbljqGSt6FXGbpDtettpfrGJkWn8FIX5kbeOMfwH5JwDM/RCmLc4P5YyyA
+         JYrfG22vGZ4NnJY0qmLS1ruxt6hWo3K0k8yUBDLZR9L0s50aoO1wKjMK4DCD/NHGLe+s
+         F9U7hWciUA3XZcKhr9YdhQu8VuLk2/f9nxZc7j1vB1aG+Fsqm7TbGujXj6KZKTZEF0fZ
+         tr/A==
+X-Gm-Message-State: AOJu0YwH0jX/K/7olJOryiMVopZVZqxxehZEhTpt9wIGzO7JycmYQ8oN
+	TXx+YBYjWA2Puuvq2MGIKcmGys6yzJnDX7Q6F7mhpXU8w4a3C/G+rRhbvTm0sU4=
+X-Google-Smtp-Source: AGHT+IGO0WNu0PFOcRrTUtNd5FKi2izDYAt1p3P/Gtjx0bVcVZuQjc3v0I9yiOFDdx9qV8/gFlWDQg==
+X-Received: by 2002:a2e:4c19:0:b0:2ef:2c0f:283e with SMTP id 38308e7fff4ca-2f751ec89bamr35682181fa.12.1725734899190;
+        Sat, 07 Sep 2024 11:48:19 -0700 (PDT)
+Received: from umbar.lan ([192.130.178.90])
+        by smtp.gmail.com with ESMTPSA id 38308e7fff4ca-2f75c0b1af3sm2271861fa.129.2024.09.07.11.48.18
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sat, 07 Sep 2024 11:48:18 -0700 (PDT)
+From: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+Subject: [PATCH 0/7] arm64: qcom: sda660-ifc6560: enable GPU and WiFi
+ support
+Date: Sat, 07 Sep 2024 21:48:11 +0300
+Message-Id: <20240907-sdm660-wifi-v1-0-e316055142f8@linaro.org>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20240906121308.5013-3-suravee.suthikulpanit@amd.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+X-B4-Tracking: v=1; b=H4sIAOuf3GYC/6tWKk4tykwtVrJSqFYqSi3LLM7MzwNyDHUUlJIzE
+ vPSU3UzU4B8JSMDIxMDEwNj3eKUXDMzA93yzLRM3URTi1QL8ySLNPMUQyWgjoKi1LTMCrBp0bG
+ 1tQAf8W+jXQAAAA==
+To: Rob Clark <robdclark@gmail.com>, Will Deacon <will@kernel.org>, 
+ Robin Murphy <robin.murphy@arm.com>, Joerg Roedel <joro@8bytes.org>, 
+ AngeloGioacchino Del Regno <angelogioacchino.delregno@somainline.org>, 
+ Konrad Dybcio <konradybcio@kernel.org>, 
+ Bjorn Andersson <andersson@kernel.org>, Rob Herring <robh@kernel.org>, 
+ Krzysztof Kozlowski <krzk+dt@kernel.org>, 
+ Conor Dooley <conor+dt@kernel.org>
+Cc: iommu@lists.linux.dev, linux-arm-msm@vger.kernel.org, 
+ linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, 
+ devicetree@vger.kernel.org, ath11k@lists.infradead.org, 
+ Kalle Valo <kvalo@kernel.org>
+X-Mailer: b4 0.14.0
+X-Developer-Signature: v=1; a=openpgp-sha256; l=1756;
+ i=dmitry.baryshkov@linaro.org; h=from:subject:message-id;
+ bh=j2MGhLcuLoVLWg4I2MuE84ebYpICQobwJaU/0pV8mPM=;
+ b=owEBbQGS/pANAwAKAYs8ij4CKSjVAcsmYgBm3J/s3aD3giiWStxq0Uq71R3ZAHngRAI9exh4S
+ gvabAQfWrKJATMEAAEKAB0WIQRMcISVXLJjVvC4lX+LPIo+Aiko1QUCZtyf7AAKCRCLPIo+Aiko
+ 1WpICAClKoPTaFjA24SOWFpGheQP76MScFD8h1Cc7JoNZyGlm/c9t3JtblTAopntkVLPeWJ3e/R
+ weoly+63q++LVTgHBNDieyj/sKCanLvE/GbQdmsaQfZUhorPpYC2nivqtNLjxEduVwDZNQ0Oivd
+ e2g9mjU/97PGn+LIx9M4O8IzAYqd5z125QWqX2An9MwNmzZZkfYd1NsuKzQMFqXSPl0oSU8CnfQ
+ RdgDEKYZJQfPFWInCTMpMc6D68DYCBhrkvC/z0jyFvcOeuXdAGl2xFzObLWF4eK4cWmETcQseuC
+ NgOMqyDQ4aXXsSqhzTnVB0VWFvFE5f7tVAq6VeA9Z2nrxz51
+X-Developer-Key: i=dmitry.baryshkov@linaro.org; a=openpgp;
+ fpr=8F88381DD5C873E4AE487DA5199BF1243632046A
 
-Hi Suravee,
+Follow the MSM8998 example and limit num_context_banks on SDM630 /
+SDM660 platforms. This allows Linux to make use of the A2NOC and KGSL
+SMMU, making it possible to enable GPU and WiFi on those platforms, and,
+in particular, Inforce IFC6560 SBC.
 
-kernel test robot noticed the following build warnings:
+Note, while WiFI starts up and can work for a short amount of time, MSS
+starts crashing with the following message:
 
-[auto build test WARNING on linus/master]
-[also build test WARNING on joro-iommu/next v6.11-rc6 next-20240906]
-[If your patch is applied to the wrong git tree, kindly drop us a note.
-And when submitting patch, we suggest to use '--base' as documented in
-https://git-scm.com/docs/git-format-patch#_base_tree_information]
+qcom-q6v5-mss 4080000.remoteproc: fatal error received: dog_hb.c:266:Task starvation: diag, ping: 4, triage with owner(d.dump 0xde5825
 
-url:    https://github.com/intel-lab-lkp/linux/commits/Suravee-Suthikulpanit/iommu-amd-Disable-AMD-IOMMU-if-CMPXCHG16B-feature-is-not-supported/20240906-201533
-base:   linus/master
-patch link:    https://lore.kernel.org/r/20240906121308.5013-3-suravee.suthikulpanit%40amd.com
-patch subject: [PATCH v3 2/5] iommu/amd: Introduce helper functions to access and update 256-bit DTE
-config: x86_64-rhel-8.3-rust (https://download.01.org/0day-ci/archive/20240907/202409072100.WaB846Yg-lkp@intel.com/config)
-compiler: clang version 18.1.5 (https://github.com/llvm/llvm-project 617a15a9eac96088ae5e9134248d8236e34b91b1)
-reproduce (this is a W=1 build): (https://download.01.org/0day-ci/archive/20240907/202409072100.WaB846Yg-lkp@intel.com/reproduce)
+Note2: DTS changes should be applied only after IOMMU chages get merged.
+If it is not possible to get IOMMU changes into 6.12 in its last days of
+the merge window, I'd kindly ask for the immutable branch from the iommu
+subsys to be submerged into MSM tree.
 
-If you fix the issue in a separate patch/commit (i.e. not just a new version of
-the same patch/commit), kindly add following tags
-| Reported-by: kernel test robot <lkp@intel.com>
-| Closes: https://lore.kernel.org/oe-kbuild-all/202409072100.WaB846Yg-lkp@intel.com/
+Signed-off-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+---
+Dmitry Baryshkov (7):
+      iommu/arm-smmu-qcom: apply num_context_bank fixes for SDM630 / SDM660
+      arm64: dts: qcom: sdm630: enable GPU SMMU and GPUCC
+      arm64: dts: qcom: sda660-ifc6560: enable GPU
+      arm64: dts: qcom: sda660-ifc6560: fix l10a voltage ranges
+      arm64: dts: qcom: sdm630: enable A2NOC and LPASS SMMU
+      arm64: dts: qcom: sdm630: add WiFI device node
+      arm64: dts: qcom: sda660-ifc6560: enable mDSP and WiFi devices
 
-All warnings (new ones prefixed by >>):
+ .../arm64/boot/dts/qcom/sda660-inforce-ifc6560.dts | 32 +++++++++++++++++-
+ arch/arm64/boot/dts/qcom/sdm630.dtsi               | 38 ++++++++++++++++++----
+ drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c         | 11 +++++++
+ 3 files changed, 73 insertions(+), 8 deletions(-)
+---
+base-commit: f70cb2e8ce3f8883a526a28f93b7744d1a1a9ce0
+change-id: 20240403-sdm660-wifi-a58e87b8f7d1
 
->> drivers/iommu/amd/iommu.c:299:6: warning: variable 'ret' is used uninitialized whenever 'if' condition is false [-Wsometimes-uninitialized]
-     299 |         if (!alias_data) {
-         |             ^~~~~~~~~~~
-   drivers/iommu/amd/iommu.c:309:9: note: uninitialized use occurs here
-     309 |         return ret;
-         |                ^~~
-   drivers/iommu/amd/iommu.c:299:2: note: remove the 'if' if its condition is always true
-     299 |         if (!alias_data) {
-         |         ^~~~~~~~~~~~~~~~
-   drivers/iommu/amd/iommu.c:279:9: note: initialize the variable 'ret' to silence this warning
-     279 |         int ret;
-         |                ^
-         |                 = 0
-   1 warning generated.
-
-
-vim +299 drivers/iommu/amd/iommu.c
-
-   272	
-   273	static int clone_alias(struct pci_dev *pdev, u16 alias, void *data)
-   274	{
-   275		struct dev_table_entry dte;
-   276		struct amd_iommu *iommu;
-   277		struct iommu_dev_data *dev_data, *alias_data;
-   278		u16 devid = pci_dev_id(pdev);
-   279		int ret;
-   280	
-   281		if (devid == alias)
-   282			return 0;
-   283	
-   284		iommu = rlookup_amd_iommu(&pdev->dev);
-   285		if (!iommu)
-   286			return 0;
-   287	
-   288		/* Get DTE for pdev */
-   289		dev_data = dev_iommu_priv_get(&pdev->dev);
-   290		if (!dev_data)
-   291			return -EINVAL;
-   292	
-   293		spin_lock(&dev_data->dte_lock);
-   294		get_dte256(iommu, dev_data, &dte);
-   295		spin_unlock(&dev_data->dte_lock);
-   296	
-   297		/* Setup for alias */
-   298		alias_data = search_dev_data(iommu, alias);
- > 299		if (!alias_data) {
-   300			ret = -EINVAL;
-   301			goto out;
-   302		}
-   303	
-   304		spin_lock(&alias_data->dte_lock);
-   305		update_dte256(iommu, alias_data, &dte);
-   306		amd_iommu_set_rlookup_table(iommu, alias);
-   307		spin_unlock(&alias_data->dte_lock);
-   308	out:
-   309		return ret;
-   310	}
-   311	
-
+Best regards,
 -- 
-0-DAY CI Kernel Test Service
-https://github.com/intel/lkp-tests/wiki
+Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+
