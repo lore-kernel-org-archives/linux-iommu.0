@@ -1,108 +1,84 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.13])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C1B1F45C0B;
-	Sun,  8 Sep 2024 03:25:19 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2274F18C22
+	for <iommu@lists.linux.dev>; Sun,  8 Sep 2024 11:42:57 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.13
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1725765919; cv=none; b=LTNoKVWitu6JjMNPG7TRqwO/+lb0IvtK3YrJ5ERcqaarJg72Pnea9IRCt+fiIlkIMuRhq28uYhlScuDRuGVYZVadDl+POWgwqyN3GOHKQv0Q7JEJ36GC6JnccmIQTFOif1RrDeDsVMww0zwGlWSWk6uCJROGlGVmxrmk2eZDwr8=
+	t=1725795780; cv=none; b=UmximPJpO38oHqFA/b8iPs30jlnbGUi0PqLQIQI6gNCx9/euprJjPvn6+EFSNMgmRgK3Jg9a/FzdcPCVCeQfK+IQB6nIx4YzIWaaj0KsmLUyuQJ99i5K9i5ahche4Sykamc5qazde3FH1MNNUs5sYI1TDF26eZo5zoreepK3ZdY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1725765919; c=relaxed/simple;
-	bh=izGX5IudWXgEPrTjrFt+ZvVIsIuXuq42/A8TQru98MI=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=KNJPXLWtW9cwGdzDWlqKanODutkSmzprLbBqbaI9B1Yj2H1kz48/c8wMpM3CTCn4PQ/jH+nkUrQY9qUOoN9a7fOzx5nJJ8vw3Ir+owQmI9XjRRsaps3LQouVHGgq6KvSJ+EhqNVdpzsIidNmE/CjBOZC8ixm/pQ8+WDmueJK2EU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=bgSr9YUl; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1725795780; c=relaxed/simple;
+	bh=t2sLnkInQWUKNBGiID4AD2togWX10HSlRhLqej6PRdM=;
+	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version; b=Kr9h5Gl5ZDhqKlhtHZl4+hzqQtoOZ4/8UCe6HcjNIq0TJSM6W4tl/dT8tycY/z8NSRiu9K3ecL1Kz58Ga7z0UhUGrPfv+g95cayJKh7Vw6v9g628oR3wgTVHRB7xLUJjTRHiIprQxH4p/IEGF6lt8x+XbcCXZuOZfqEIHeXkVis=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=C9s0byn1; arc=none smtp.client-ip=192.198.163.13
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="bgSr9YUl"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5BF81C4CEC4;
-	Sun,  8 Sep 2024 03:25:18 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1725765919;
-	bh=izGX5IudWXgEPrTjrFt+ZvVIsIuXuq42/A8TQru98MI=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=bgSr9YUl3ec2QDIJBhlp9ubWExTyxIkzDjQN8a9tGQFMqFE/HCfJF+2j6BqWybUQ4
-	 rxAWSxKi9BrdJndn7N+koNEgWja7ktN6MPpupqSUMosOrMtJZK4k/4MrnZqIu1IcZ6
-	 +TIIIyn/xxJ0TeV1W2nGXcugc+abm6flwytC+s6f9fP/72+4uVUM7wI+SSUjD5uXQH
-	 HsWTfoKQDwDLS9IPk0pZI2L86uv7Ld9DbJa1V2BFMcbKI9Ci+UuIR6oYTPvP9gNnom
-	 EEOFI81IAdmB7Jvj+CZUOtt2m6ZZDJWlCMoHO/GB81BUj22Dyh+d/5+PB5kKTJKVpZ
-	 K3Mm26tEWtq3Q==
-Date: Sat, 7 Sep 2024 22:25:16 -0500
-From: Bjorn Andersson <andersson@kernel.org>
-To: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
-Cc: Rob Clark <robdclark@gmail.com>, Will Deacon <will@kernel.org>, 
-	Robin Murphy <robin.murphy@arm.com>, Joerg Roedel <joro@8bytes.org>, 
-	AngeloGioacchino Del Regno <angelogioacchino.delregno@somainline.org>, Konrad Dybcio <konradybcio@kernel.org>, 
-	Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>, 
-	Conor Dooley <conor+dt@kernel.org>, iommu@lists.linux.dev, linux-arm-msm@vger.kernel.org, 
-	linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, devicetree@vger.kernel.org
-Subject: Re: [PATCH 1/7] iommu/arm-smmu-qcom: apply num_context_bank fixes
- for SDM630 / SDM660
-Message-ID: <ptugcisjsh6mdnkhrdhbtetykjpeya4epmlbqbuayst5efgjq4@mzan2bvz74r7>
-References: <20240907-sdm660-wifi-v1-0-e316055142f8@linaro.org>
- <20240907-sdm660-wifi-v1-1-e316055142f8@linaro.org>
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="C9s0byn1"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1725795778; x=1757331778;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=t2sLnkInQWUKNBGiID4AD2togWX10HSlRhLqej6PRdM=;
+  b=C9s0byn1djIEwfqNw1qLfTSV/t2SRRqwdiZnnetpO1KYVOWEKUPKT5AK
+   ch3VGtLEBMZ5pQLRgPxwaEQUhtVgV00QipEYwTTMm5ylDTtUrweqv1YZZ
+   rVHeMn0T9s7HY4CrdOT0gdWEA8EJU7eY3A32Z+R++If+S/zxJ1cQQTKAy
+   WVb4X39g3Vv9rH9fWNnEJn3Xgk9bU9BHSgh4uhi6xNF2s8xdnJXMpc7cz
+   2Ju2o8e3uBbaFW690ihdM+JY6hDup/4TOpw0gkNoF3uodISI/uqCh2Evj
+   YUTZAf+XPsC0kYTcVZSm+wgdFW77xRSi7wgxgKoPgeut/J3Vxoo+4lci7
+   A==;
+X-CSE-ConnectionGUID: UE+r7XH4QCuTiWzmVk1U/w==
+X-CSE-MsgGUID: 3ni8e3PhRBeRcvS9dD8zKA==
+X-IronPort-AV: E=McAfee;i="6700,10204,11188"; a="27418268"
+X-IronPort-AV: E=Sophos;i="6.10,212,1719903600"; 
+   d="scan'208";a="27418268"
+Received: from fmviesa002.fm.intel.com ([10.60.135.142])
+  by fmvoesa107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Sep 2024 04:42:58 -0700
+X-CSE-ConnectionGUID: z+zkYa8NTmeLIAV4cQu1IA==
+X-CSE-MsgGUID: Wn6TD4u6R7SeBhRWM+nDRA==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.10,212,1719903600"; 
+   d="scan'208";a="89668161"
+Received: from 984fee00a4c6.jf.intel.com ([10.165.58.231])
+  by fmviesa002.fm.intel.com with ESMTP; 08 Sep 2024 04:42:57 -0700
+From: Yi Liu <yi.l.liu@intel.com>
+To: joro@8bytes.org,
+	jgg@nvidia.com,
+	kevin.tian@intel.com
+Cc: nicolinc@nvidia.com,
+	kvm@vger.kernel.org,
+	yi.l.liu@intel.com,
+	iommu@lists.linux.dev,
+	baolu.lu@linux.intel.com
+Subject: [PATCH 0/2] iommufd: Misc cleanups per iommufd iopf merging
+Date: Sun,  8 Sep 2024 04:42:54 -0700
+Message-Id: <20240908114256.979518-1-yi.l.liu@intel.com>
+X-Mailer: git-send-email 2.34.1
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20240907-sdm660-wifi-v1-1-e316055142f8@linaro.org>
+Content-Transfer-Encoding: 8bit
 
-On Sat, Sep 07, 2024 at 09:48:12PM GMT, Dmitry Baryshkov wrote:
-> The Qualcomm SDM630 / SDM660 platform requires the same kind of
-> workaround as MSM8998: some IOMMUs have context banks reserved by
-> firmware / TZ, touching those banks resets the board.
-> 
-> Apply the num_context_bank workaround to those two SMMU devices in order
-> to allow them to be used by Linux.
-> 
-> Fixes: b812834b5329 ("iommu: arm-smmu-qcom: Add sdm630/msm8998 compatibles for qcom quirks")
-> Signed-off-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+Hi,
 
-Reviewed-by: Bjorn Andersson <andersson@kernel.org>
-
-> ---
->  drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c | 11 +++++++++++
->  1 file changed, 11 insertions(+)
-> 
-> diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
-> index 087fb4f6f4d3..13a3e3585c89 100644
-> --- a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
-> +++ b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
-> @@ -288,6 +288,12 @@ static int qcom_smmu_cfg_probe(struct arm_smmu_device *smmu)
->  	 */
->  	if (of_device_is_compatible(smmu->dev->of_node, "qcom,msm8998-smmu-v2") && smmu->num_context_banks == 13)
->  		smmu->num_context_banks = 12;
-
-This should now be wrapped in {}
+Two misc patches per the iommufd iopf merging. Please feel free comment.
 
 Regards,
-Bjorn
+	Yi Liu
 
-> +	else if (of_device_is_compatible(smmu->dev->of_node, "qcom,sdm630-smmu-v2")) {
-> +		if (smmu->num_context_banks == 21) /* SDM630 / SDM660 A2NOC SMMU */
-> +			smmu->num_context_banks = 7;
-> +		else if (smmu->num_context_banks == 14) /* SDM630 / SDM660 LPASS SMMU */
-> +			smmu->num_context_banks = 13;
-> +	}
->  
->  	/*
->  	 * Some platforms support more than the Arm SMMU architected maximum of
-> @@ -350,6 +356,11 @@ static int qcom_adreno_smmuv2_cfg_probe(struct arm_smmu_device *smmu)
->  	/* Support for 16K pages is advertised on some SoCs, but it doesn't seem to work */
->  	smmu->features &= ~ARM_SMMU_FEAT_FMT_AARCH64_16K;
->  
-> +	/* TZ protects several last context banks, hide them from Linux */
-> +	if (of_device_is_compatible(smmu->dev->of_node, "qcom,sdm630-smmu-v2") &&
-> +	    smmu->num_context_banks == 5)
-> +		smmu->num_context_banks = 2;
-> +
->  	return 0;
->  }
->  
-> 
-> -- 
-> 2.39.2
-> 
+Yi Liu (2):
+  iommufd: Avoid duplicated __iommu_group_set_core_domain() call
+  iommu: Set iommu_attach_handle->domain in core
+
+ drivers/iommu/iommu.c                   | 1 +
+ drivers/iommu/iommufd/fault.c           | 1 -
+ drivers/iommu/iommufd/iommufd_private.h | 4 +++-
+ 3 files changed, 4 insertions(+), 2 deletions(-)
+
+-- 
+2.34.1
+
