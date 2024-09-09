@@ -1,33 +1,33 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 10EDF1B7909;
-	Mon,  9 Sep 2024 11:03:07 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C11041B583E;
+	Mon,  9 Sep 2024 11:40:40 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1725879788; cv=none; b=NJUwbRqxiurGiG2h9HKAOXMJI691HEsQjut44Y2fWPATn2rwFeFAxgiabQf4NLTs6We0WP16ffOV0dDt8EFd2q55thJ6xA0hk2oXS7sm4ZG/WuLvuynWh5TSJKcS0PYlR1lU5OgHuuV5Aij/mLFlF+lJzuWomDBB9bePVkcXUTs=
+	t=1725882040; cv=none; b=oqeJeEQno53vjA5CqurpqOtdmCwLMaDOKGwkbdEYNRazNpK5fg62HLBcC9G5IXUWYoQSJAqDplAIHq3snKYaEtdS6yaZf18suFumn/Gc0+txIEkTsjSdCeWyu41GSMh+3VLOB2VxtgfZupPHjkf0bPK2MKfIFZ5oDDfT5H8P3oM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1725879788; c=relaxed/simple;
-	bh=zsF0vIn3x0rHoU069/VAoTa8W/MZZb7KoYuQdVVkKyA=;
+	s=arc-20240116; t=1725882040; c=relaxed/simple;
+	bh=FECvUa62XYAhauGPX0bNJRvN06psBjXU5Mu1nsIE7S4=;
 	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=Qcfahx7sX8MsLP9MI53PCsGRUNiJdS/1G2/9Br6INBOrW+zaGq1WTZpapyaJR28gY+LXpSdhDc67QS1X/kB4eYGc80wStHoihMsugkoAoLwvWgiR1Mh3JT6SUgAWtCK8IT7rYYtUJJP7x+btJGmx61iWTBe6LQtliIbGcZjzyBY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=LbRqcZS/; arc=none smtp.client-ip=10.30.226.201
+	 In-Reply-To:Content-Type; b=hPX0DC0HKo47goQo60JyZ5sABuDzbW3Hu62r7sZAhswwg89SrwcLg3S2Yino5YDkRo5SS4aR4F/HF/BlKhxwbQJRYhKDKLic0crqzLOnyhKhEysF3+ZD/apK3h6q0WlnRv4MTjqNUGEqQi+St31ryXZ9eZvczjLDiyRP9VnrsIQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=uP3Mdw9x; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="LbRqcZS/"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1B00EC4CEC6;
-	Mon,  9 Sep 2024 11:03:03 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="uP3Mdw9x"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BA43AC4CEC5;
+	Mon,  9 Sep 2024 11:40:34 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1725879787;
-	bh=zsF0vIn3x0rHoU069/VAoTa8W/MZZb7KoYuQdVVkKyA=;
+	s=k20201202; t=1725882040;
+	bh=FECvUa62XYAhauGPX0bNJRvN06psBjXU5Mu1nsIE7S4=;
 	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-	b=LbRqcZS/RPwPg4kymD1ouV4V+qEdPsTkXQHtsNWbArrII6eO5WTUCMf9TmcOH4VKP
-	 UGqd1e68wgX7yyG7x8/FeCXZSmtIHW4D5rfedHF7urXtRjwByn3oU7skZuzTbfndGx
-	 TLkQwUbhK+D+ETMR0/vE8SMQK2mFF9SzDd5lBBPB26/6DdbzocmYTpxqnP1kcYrKU0
-	 eY3fjvB2HYDg/jkrLj+7TUaGff4V/zXzXCIneaFEKw6mdEIe8AaXhtHVChZIW16SDo
-	 +dLWPShw3t5VK4XMit8CoxL8rVHjSCoXEnxwn0kDC6+O9Wl6PG3WyGzEmzmC49RXMB
-	 BE2PTsQzIagYA==
-Message-ID: <815f1244-ef5c-4384-81ba-8fd75cd31a1c@kernel.org>
-Date: Mon, 9 Sep 2024 13:03:02 +0200
+	b=uP3Mdw9xbCJOrYpy52XRlxODeyAu4atg8NQTX01qHHZGqtjf/155APDqsWqB3uEbX
+	 b5rtUTC1y/WDL7ksLzmsXvzKOAnwRICxVc2lWNyWbPwo5ZmzMFLLZNBAZmICcJs4Ql
+	 OZqnmCDYXp/4/MHpPEzjZ6sS+VNzY8H/ZOAZVugYN/V93X1EfXhoZ/EZfWAj+r0PW0
+	 Fgi9kIrtamOqmMGgzxEpIxKSc0R4FUtngtHre3Sf1BCnZ6qQDcrtJLBwUwAI8d4qzC
+	 8MEO4EfoZcsWqfxOFC+hlxkso/EHQRJJafFAjd3yPkVFt9miDJs89lGDHirnlcmvrG
+	 UDvpuPH10H7tQ==
+Message-ID: <be9460a4-0f19-4acb-9b81-5a3d61eeb28f@kernel.org>
+Date: Mon, 9 Sep 2024 13:40:32 +0200
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -35,7 +35,8 @@ List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH 6/7] arm64: dts: qcom: sdm630: add WiFI device node
+Subject: Re: [PATCH 7/7] arm64: dts: qcom: sda660-ifc6560: enable mDSP and
+ WiFi devices
 To: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
  Rob Clark <robdclark@gmail.com>, Will Deacon <will@kernel.org>,
  Robin Murphy <robin.murphy@arm.com>, Joerg Roedel <joro@8bytes.org>,
@@ -45,43 +46,83 @@ To: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
  Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>
 Cc: iommu@lists.linux.dev, linux-arm-msm@vger.kernel.org,
  linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
- devicetree@vger.kernel.org
+ devicetree@vger.kernel.org, ath11k@lists.infradead.org,
+ Kalle Valo <kvalo@kernel.org>
 References: <20240907-sdm660-wifi-v1-0-e316055142f8@linaro.org>
- <20240907-sdm660-wifi-v1-6-e316055142f8@linaro.org>
+ <20240907-sdm660-wifi-v1-7-e316055142f8@linaro.org>
 Content-Language: en-US
 From: Konrad Dybcio <konradybcio@kernel.org>
-In-Reply-To: <20240907-sdm660-wifi-v1-6-e316055142f8@linaro.org>
+In-Reply-To: <20240907-sdm660-wifi-v1-7-e316055142f8@linaro.org>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 
 On 7.09.2024 8:48 PM, Dmitry Baryshkov wrote:
-> Add device node for the WiFi device being a part of the integrated
-> SDM660 / SDM630 platforms.
+> Enable the onboard WiFi device present on the Inforce IFC6560 SBC.
+> Pretty much like MSM8998 this device also doesn't generate the
+> MSA_READY_IND indication.
+> 
+> For the reference:
+> 
+> ath10k_snoc 18800000.wifi: qmi chip_id 0x30214 chip_family 0x4001 board_id 0xff soc_id 0x40050000
+> ath10k_snoc 18800000.wifi: qmi fw_version 0x101d01da fw_build_timestamp 2018-07-26 21:42 fw_build_id QC_IMAGE_VERSION_STRING=WLAN.HL.1.0.1.c2-00474-QCAHLSWMTPLZ-1
+> ath10k_snoc 18800000.wifi: qmi not waiting for msa_ready indicator
+> ath10k_snoc 18800000.wifi: wcn3990 hw1.0 target 0x00000008 chip_id 0x00000000 sub 0000:0000
+> ath10k_snoc 18800000.wifi: kconfig debug 1 debugfs 0 tracing 0 dfs 0 testmode 0
+> ath10k_snoc 18800000.wifi: firmware ver  api 5 features wowlan,mgmt-tx-by-reference,non-bmi crc32 b3d4b790
+> ath10k_snoc 18800000.wifi: htt-ver 3.54 wmi-op 4 htt-op 3 cal file max-sta 32 raw 0 hwcrypto 1
+> ath10k_snoc 18800000.wifi: invalid MAC address; choosing random
 > 
 > Signed-off-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
-> ---
->  arch/arm64/boot/dts/qcom/sdm630.dtsi | 27 +++++++++++++++++++++++++++
->  1 file changed, 27 insertions(+)
 > 
-> diff --git a/arch/arm64/boot/dts/qcom/sdm630.dtsi b/arch/arm64/boot/dts/qcom/sdm630.dtsi
-> index dc8bc63bdc70..4536fa45869a 100644
-> --- a/arch/arm64/boot/dts/qcom/sdm630.dtsi
-> +++ b/arch/arm64/boot/dts/qcom/sdm630.dtsi
-> @@ -2412,6 +2412,33 @@ intc: interrupt-controller@17a00000 {
->  			redistributor-stride = <0x0 0x20000>;
->  			interrupts = <GIC_PPI 9 IRQ_TYPE_LEVEL_HIGH>;
->  		};
+> ---
+> Cc: ath11k@lists.infradead.org
+> Cc: Kalle Valo <kvalo@kernel.org>
+> ---
+>  .../arm64/boot/dts/qcom/sda660-inforce-ifc6560.dts | 22 ++++++++++++++++++++++
+>  1 file changed, 22 insertions(+)
+> 
+> diff --git a/arch/arm64/boot/dts/qcom/sda660-inforce-ifc6560.dts b/arch/arm64/boot/dts/qcom/sda660-inforce-ifc6560.dts
+> index 09bc010ce56a..7948c8f6ab64 100644
+> --- a/arch/arm64/boot/dts/qcom/sda660-inforce-ifc6560.dts
+> +++ b/arch/arm64/boot/dts/qcom/sda660-inforce-ifc6560.dts
+> @@ -252,6 +252,11 @@ &qusb2phy1 {
+>  	vdda-phy-dpdm-supply = <&vreg_l7b_3p125>;
+>  };
+>  
+> +&remoteproc_mss {
+> +	firmware-name = "qcom/sda660/mba.mbn", "qcom/sda660/modem.mbn";
+> +	status = "okay";
+> +};
 > +
-> +		wifi: wifi@18800000 {
-> +			compatible = "qcom,wcn3990-wifi";
-> +			reg = <0x18800000 0x800000>;
-> +			reg-names = "membase";
-> +			memory-region = <&wlan_msa_mem>;
-> +			clocks = <&rpmcc RPM_SMD_RF_CLK1_PIN>;
-> +			clock-names = "cxo_ref_clk_pin";
-> +			interrupts =
-> +				<GIC_SPI 413 IRQ_TYPE_LEVEL_HIGH>,
+>  &rpm_requests {
+>  	regulators-0 {
+>  		compatible = "qcom,rpm-pm660-regulators";
+> @@ -291,6 +296,11 @@ vreg_l1a_1p225: l1 {
+>  			regulator-allow-set-load;
+>  		};
+>  
+> +		vreg_l5a_0p8: l5 {
+> +			regulator-min-microvolt = <848000>;
+> +			regulator-max-microvolt = <848000>;
+> +		};
+> +
+>  		vreg_l6a_1p3: l6 {
+>  			regulator-min-microvolt = <1304000>;
+>  			regulator-max-microvolt = <1368000>;
+> @@ -489,3 +499,15 @@ &usb3_qmpphy {
+>  	vdda-pll-supply = <&vreg_l10a_1p8>;
+>  	status = "okay";
+>  };
+> +
+> +&wifi {
+> +	status = "okay";
 
-Please unbreak this line
+You placed status last in the addition above but not here :P
+
+with that fixed:
+
+
+
+Reviewed-by: Konrad Dybcio <konradybcio@kernel.org>
 
 Konrad
