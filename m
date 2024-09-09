@@ -1,57 +1,57 @@
-Received: from mail-wm1-f48.google.com (mail-wm1-f48.google.com [209.85.128.48])
+Received: from mail-wm1-f54.google.com (mail-wm1-f54.google.com [209.85.128.54])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 323711EEFC
-	for <iommu@lists.linux.dev>; Mon,  9 Sep 2024 13:50:32 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.48
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EFFE91BA26A
+	for <iommu@lists.linux.dev>; Mon,  9 Sep 2024 13:50:56 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.54
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1725889833; cv=none; b=ImI9NCDIV28OT5wqmBi9LCCHc9f5X+k+UdnvrhD977VyuL71rop0DFfmgrMB/FRZhxbQfBkFSZhqAnbeOW1OdNBAmSWVmyLnH6RoEXMydJxs8w0yxW3q96+I8ydh0UxDqBJVqcPVS6P89lHX4miCAW+Bu2kxIO+vuvHk038Bh8g=
+	t=1725889858; cv=none; b=eaKLeqT/ZOR1smlnvtuV5luGlduZZrYmFdvIcSE0IoPb14DqlH3Q0U7Stsreho/CwaYxcVR3cJGLbezfJ7IhjBUF2djSMBK+q+h97JkemnwaY1FQPqjfEuAn09ZhQjbYxtY0zAlX4PiSMkYHFwrPTpuS/buSi2VAN7UL1i3WBd8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1725889833; c=relaxed/simple;
-	bh=itxo6/62dv5QH54RJ3ls+SJy/YuQMZMxrdupV5XIk/U=;
+	s=arc-20240116; t=1725889858; c=relaxed/simple;
+	bh=5QUD7zyAM2DO5ygjJ1ToYT6vN4jD55DHZMUlXm30lVM=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=AGyeQN6Ufk9+72IeryCbaOCQtHlyw3MNnX8U02sbrcyh5D3DWeZ49/itlcBN62ZPkVsaM3/F5Rj6WjTTOEIcE54tl56hes37KmkTmhsjsjK5Ei/QtRuPW2vnrNSA/x4qxTtppN/bzctXUn0TgRNWYLlSAKmDXOCbROTVNNi1aDI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=J/LKRDrP; arc=none smtp.client-ip=209.85.128.48
+	 Content-Type:Content-Disposition:In-Reply-To; b=amqDBJRrEYNWGmPdCvkQZqOEcPpQluo/Lcl63mrKNJDhuHif9kGZH7V6FqdUxGl97GvHciwjSdBKfUvQop18S+ag7kx89Y8SnXegShzrKO42WUABNLYuBgHC322hmHMVS6FI03yfaS2gRkoGzfGxpyFRI2/ev0i0NHdiw6PyJq0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=Dx7eMcK0; arc=none smtp.client-ip=209.85.128.54
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="J/LKRDrP"
-Received: by mail-wm1-f48.google.com with SMTP id 5b1f17b1804b1-42cb60aff1eso11215925e9.0
-        for <iommu@lists.linux.dev>; Mon, 09 Sep 2024 06:50:32 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="Dx7eMcK0"
+Received: by mail-wm1-f54.google.com with SMTP id 5b1f17b1804b1-42bbe908380so39092375e9.2
+        for <iommu@lists.linux.dev>; Mon, 09 Sep 2024 06:50:56 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1725889830; x=1726494630; darn=lists.linux.dev;
+        d=gmail.com; s=20230601; t=1725889855; x=1726494655; darn=lists.linux.dev;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=uTmI7FKnXchw996SUeECY59GrYXxeJtGeoLPHxq544M=;
-        b=J/LKRDrPS3MEY17xwNIReXKMpkeiYTxHj3ZeIxuqmYFkGxrLH2dE6rfIBFhTRqa8eZ
-         7bz+l0fDia+goOTyN+J8xU/t+t2JkMNtRpf5OuspiWkNibZsrZ6Qv2s6+QElEeNtvrwa
-         v5+fgRjfa5jZguWwliLxOXnVOaOy01jljS9wh7s6lOT9zzAmpgos//My2CrzB0MI+OF8
-         Zw1xIUq1fjn+gEGI2qcYPFCi7ueEe+d7+cV8wccu2lWs1fIbh79+1U49XkM2mMV9fDZl
-         UOTjDwHt6QJGxMHU2RlVfpknYuy0bsmz67/LdnOcMIVTKJqpkEJBpiJciNSkjOhXXD+O
-         33VA==
+        bh=lMG5CBAWeO4ejfahNXtDesCRER8MZqFkLGpgD/QrZx0=;
+        b=Dx7eMcK0SarsYEFtkrR1aGvUjdum7ZfRnwReIGXuAj9ra8n3mZ8mm2LRNJLJGk6v/J
+         R4adHwez35Fzd1ojP1ExVHZ1tVSzI4E0MLjNTnqSXuQHC42aBqIa/mqDckf+VXqBiLnO
+         2IOlVeV+Ndr8fOuP5p/QdWPLUvclT3mQe8HvwYHMdUmvIWyjuVAoT7/RCOpuj06hIhLn
+         Wr6mmDk9jFR/su94ZIpeC97K3SbicGOg4Dlu4D48SDGwQglbrL7wEZ+KlEEEdjDY7ZPI
+         ipk5srCyX/98nTANcDY2zIqRtP89XKmbF8D1qqUN/B/WbP5gq4Q0prFk9WOlUOyhHXfJ
+         iBIg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1725889830; x=1726494630;
+        d=1e100.net; s=20230601; t=1725889855; x=1726494655;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=uTmI7FKnXchw996SUeECY59GrYXxeJtGeoLPHxq544M=;
-        b=E/uzthrmm9fcr7vqJauP+po8NiXlkliCCluUVoPLOxwxFw3ftWvy2+1Y34jUCe3u4c
-         Rh7iaTKb9j+dsbjMaqTmWoX32Atk1mhW4mAK4qvdAXNhNsO88NtGidYQX/+n7fhjQ89R
-         RjIThwelezS5cXUxWSHQHk/RoYvN6pSXvj/xZOhQDCy1XcdYe2KNfZ6N0m8VLe3ElKtw
-         ckNW+07tPp+X7pbyBbHAGUTDJRSbxvDW6DWbl6ahsgaoFsxki4akLdUCp1lkPu4SKpcM
-         Ao4hClOE4/Kmqkn7a5W2VjCGzYuWDrnL5tEIppPKniHNCIE4zNUVR9fxf7usKQ0ig5QT
-         pXjg==
-X-Forwarded-Encrypted: i=1; AJvYcCXChcZvuqd8I+ykYTQXTaOfNw6gS5/iqCR2omf2YZHXyk5S1zxKPrfHdNXY0oMT8AHTztHcLg==@lists.linux.dev
-X-Gm-Message-State: AOJu0YxzOTygo8yPjiZoccZkvspDZne4QJfya+++pNJ4yPobXOyZG5N3
-	NQ1DZKn/7pPkh3nobMJ27zOtekHagpvC8T2+9JXyAXDRNkn4VPnt
-X-Google-Smtp-Source: AGHT+IFWznISjjxuV7eQKDlaN9b6a4OoZXrdhN32jKOPKPIhtjTxNr0Q41kQYaOLItLh2+izQfDzHw==
-X-Received: by 2002:a05:600c:19ce:b0:42c:aeff:9766 with SMTP id 5b1f17b1804b1-42caeff99aamr49332695e9.20.1725889829441;
-        Mon, 09 Sep 2024 06:50:29 -0700 (PDT)
+        bh=lMG5CBAWeO4ejfahNXtDesCRER8MZqFkLGpgD/QrZx0=;
+        b=rZm8UTdY265xE9j9vUzf53jlXYH4jBajZ+X3mm7eHRCotsAtIrzC6sMTd0XoQNbQpK
+         K8ZMizLcM2mLNRPVdXN2YNNFcxVdpD/WZIMjCv9uI6uqAED3pVHyepke1Vct/kOdcC10
+         czHyVbEUrwwPV+ZteC+dLO9F/2Ph0j5QGbK1h3/T7rFW0DalomzWoY+U3tldfczvlN7G
+         Jzg61CeyvzkAaug2YEi/19wxM+8LSmMGtZvoMzz7du01z4bozTWMk7Rm7rPWsSvepzMi
+         F2Q672GjGggf4ebGftnXkhfTSG/z4aLXZ/mlf50k05Qdo8p7Cfi6R5s19sJS5wpera9p
+         WHqw==
+X-Forwarded-Encrypted: i=1; AJvYcCW67N6vNOlxfrhWRFR9Ds6/8dVvWt+I19a6zP2KsbUpaU8awoUYIUelGmd5Z3PLwn5TwTx3ZQ==@lists.linux.dev
+X-Gm-Message-State: AOJu0YzAVPdCKsEXbVXxXzg/vcRWmG/vNYDpMkEekv6x57d6V+ngM1Sx
+	BByHDhk33mGE7k+XYTOHrA0pL9NXrAQR+cnWkEawZiuMc4SzeuMe
+X-Google-Smtp-Source: AGHT+IH7gctIpKVybmTJbCiBDVWk+ue5UJ4VaJ0e/g/b1ur+KjZ/0Qi53vCEo48IGD4SKCIPKcrAhw==
+X-Received: by 2002:a05:600c:4692:b0:428:10d7:a4b1 with SMTP id 5b1f17b1804b1-42c9f9d6f06mr85546235e9.25.1725889854108;
+        Mon, 09 Sep 2024 06:50:54 -0700 (PDT)
 Received: from orome (p200300e41f29d300f22f74fffe1f3a53.dip0.t-ipconnect.de. [2003:e4:1f29:d300:f22f:74ff:fe1f:3a53])
-        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-42caeb81ac0sm78365275e9.34.2024.09.09.06.50.27
+        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-42cabd05496sm89431845e9.27.2024.09.09.06.50.52
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 09 Sep 2024 06:50:28 -0700 (PDT)
-Date: Mon, 9 Sep 2024 15:50:26 +0200
+        Mon, 09 Sep 2024 06:50:53 -0700 (PDT)
+Date: Mon, 9 Sep 2024 15:50:51 +0200
 From: Thierry Reding <thierry.reding@gmail.com>
 To: Lu Baolu <baolu.lu@linux.intel.com>
 Cc: Karol Herbst <kherbst@redhat.com>, Lyude Paul <lyude@redhat.com>, 
@@ -65,10 +65,10 @@ Cc: Karol Herbst <kherbst@redhat.com>, Lyude Paul <lyude@redhat.com>,
 	linux-tegra@vger.kernel.org, linux-arm-kernel@lists.infradead.org, 
 	linux-rockchip@lists.infradead.org, linux-media@vger.kernel.org, iommu@lists.linux.dev, 
 	linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2 3/3] drm/tegra: Use iommu_paging_domain_alloc()
-Message-ID: <7unmvrhiydje2fqcrmj6flbvdbpexujibatpgoqcqevmuhkcgs@pa62yzobzajj>
+Subject: Re: [PATCH v2 1/3] drm/nouveau/tegra: Use iommu_paging_domain_alloc()
+Message-ID: <zpk3oj47djrrrkxpe6airhiaoe7xr3pvxyqotac2jqmhoerg6h@lp5d5ziiq453>
 References: <20240902014700.66095-1-baolu.lu@linux.intel.com>
- <20240902014700.66095-4-baolu.lu@linux.intel.com>
+ <20240902014700.66095-2-baolu.lu@linux.intel.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -76,52 +76,46 @@ List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha256;
-	protocol="application/pgp-signature"; boundary="sekau6utgzc3r2ki"
+	protocol="application/pgp-signature"; boundary="cbx2ef5ohko5pqdz"
 Content-Disposition: inline
-In-Reply-To: <20240902014700.66095-4-baolu.lu@linux.intel.com>
+In-Reply-To: <20240902014700.66095-2-baolu.lu@linux.intel.com>
 
 
---sekau6utgzc3r2ki
+--cbx2ef5ohko5pqdz
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
 Content-Transfer-Encoding: quoted-printable
 
-On Mon, Sep 02, 2024 at 09:47:00AM GMT, Lu Baolu wrote:
-> Commit <17de3f5fdd35> ("iommu: Retire bus ops") removes iommu ops from
-> the bus structure. The iommu subsystem no longer relies on bus for
-> operations. So iommu_domain_alloc() interface is no longer relevant.
+On Mon, Sep 02, 2024 at 09:46:58AM GMT, Lu Baolu wrote:
+> In nvkm_device_tegra_probe_iommu(), a paging domain is allocated for @dev
+> and attached to it on success. Use iommu_paging_domain_alloc() to make it
+> explicit.
 >=20
-> Replace iommu_domain_alloc() with iommu_paging_domain_alloc() which takes
-> the physical device from which the host1x_device virtual device was
-> instantiated. This physical device is a common parent to all physical
-> devices that are part of the virtual device.
->=20
-> Suggested-by: Thierry Reding <thierry.reding@gmail.com>
 > Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
 > ---
->  drivers/gpu/drm/tegra/drm.c | 5 +++--
->  1 file changed, 3 insertions(+), 2 deletions(-)
+>  drivers/gpu/drm/nouveau/nvkm/engine/device/tegra.c | 4 ++--
+>  1 file changed, 2 insertions(+), 2 deletions(-)
 
 Acked-by: Thierry Reding <treding@nvidia.com>
 
---sekau6utgzc3r2ki
+--cbx2ef5ohko5pqdz
 Content-Type: application/pgp-signature; name="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 
-iQIzBAABCAAdFiEEiOrDCAFJzPfAjcif3SOs138+s6EFAmbe/SIACgkQ3SOs138+
-s6GivQ/+JSKDqhg5e7WkMv/tttd5OTC46SSL0+cobiyQfyKnv+49GXf27ORgQw1S
-aVk1ecp/nPSd0KksxiAd/ZDwulfWcOZSEVKSNhhm8Ju3WrCAZcDoI7wjiOjhNK4U
-o1kbLg2ly3JhXkEhPuyvfW+1pk6rNt/xcqY5NrpW8Fh6/G1K5AJiC6oCEAsS65Ak
-QejXU8T/A6s4jfBOd3O23td1serVya4AAc+wJzKgGcmVsG6ELwWbJSD0rGX+Ai5a
-vO2IGIt5qzeibQIP/ZSOLX0lacV028ZEc0zCK/0tgoLkk/TiMfraIO6Ay3Ok5wdo
-WiLZ/VYBfsxlQO/IqlgI/WbmhwcTReCK+T46GoyFAW6fvS2TP4YQ0JGJsubrxUby
-zk8Bt9oUwJcAq9LotbPSaXgHgrkbUq1Zg4AX53UoZi6n2ClKsMusqx60Z7kbKBTU
-MefEmbsZaQCoY6PdDZPYHehE08YC3d0RlojHdxwrzJM2UHfn9fCtdD5HQJGnpGxi
-tgNrxCPCUNa7EzE0lqRIkDM3QoBaoxAQVf6Q2uI3BG3HPBowuwXXcTayfrKPJEoP
-IVZHM9lH1aEo6B2iT1zE4oXbNS8PFeJPLkzS4XEZk+Ct0ytaBLLoGykSvvk8xE5h
-oSnbslewV6UY1RVPQyOSGA/kxxwOhbB9hd65dQ87qSyKaXwc1u4=
-=K/dz
+iQIzBAABCAAdFiEEiOrDCAFJzPfAjcif3SOs138+s6EFAmbe/TsACgkQ3SOs138+
+s6HxRhAAo/V2yRjVbLpppk3RuhOIcoErbyCc0GlXoAWEjqyBXH3YkzOVeaKlu8iR
+cexHENRfvc2/AnQ4DZd43yo3DXB4RL06245qE5NmyTSs1/uzrcwHGrIxYLS2M5NV
+GNRWjLVkVVMzZL8+WAVpZlu5Z4EjJiLYWi9ZAeOrK6Pf3KhAKfzNjVALOoLD6V3A
+qMfXYpQc9yx8QnBJ/sVC6Jz11kUgDGMjz68rr3vyFftxvownjajcwpa6NvkEBaUW
+a1vLHY9T4W4qt0df3VhQM2wmidkF5AFhSNRZvELogwVmVOh06W9sXIe1O79CzJ9d
+vnjemWkF3w/d2qqjzSqdktYKDEwECa+f0LiCs0eYgx8btQkevTLqNoZP7f6vKG+5
+ELXTVH2DHYbzMQXMnrN73uyd2WUtAP9JeoE+rcTQXv4jpkLx8JnV7cenBYTgl3Tv
+xibyj23MiXDiPSX+ZQAs0fMJK9L/MSukej9WyuD95WvqadTCO7qG2DmMcklcoAe9
+ZGIXvgwG429t1ttFF6Gd5FfrizP8cQPZAOQ9YgydfSgUrJRIkJJeIO9G3wcJBy4G
+2kElKIFxevKxizhPmyAFJMoJCl4I2Ma/OnfVNFvuaJPhYqqfU38RxF6sV+JuwdWM
+bg9Bp+0RuHrepTbQn4sGrGK3BLWeeiCoEyECMGc3V5BURxImEfo=
+=IgSG
 -----END PGP SIGNATURE-----
 
---sekau6utgzc3r2ki--
+--cbx2ef5ohko5pqdz--
