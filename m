@@ -1,59 +1,58 @@
 Received: from mail-ed1-f44.google.com (mail-ed1-f44.google.com [209.85.208.44])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 21200184549
-	for <iommu@lists.linux.dev>; Tue, 10 Sep 2024 10:56:00 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 74740184555
+	for <iommu@lists.linux.dev>; Tue, 10 Sep 2024 11:12:27 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.44
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1725965762; cv=none; b=QismVWpHTCiXAn/AeYlQ7yldDe2BN0A6Qa4vKbbG0oq95jOaG5gsuoQva0168HZDZG0fPUbu0LvuZNdcbOgept+UwgFVjN8kgm1XBEYFLQHOVK0WfyxUieRxtMykoMrgYz/3rQvzSGNI4X/WTk3Vmwflq65tqu5TFAbdjMzFLmI=
+	t=1725966749; cv=none; b=NUGDZd4XFqBY0S8q8V745rNqPV6gENuzfXtaLnJNyd1M+t6Prjg/aj2HtwFxVOBwC0KGNxU5gc06LDVbk9oPjtMXFI9W+a6owxONcqx/HIBEbcoUNiPzewNSq8TsGiN4d8RMy78UCetyuAxLV4vHRLR0Qwewurktr+B0ayPI0qU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1725965762; c=relaxed/simple;
-	bh=E0rU2Bx/jS99DDu2M3sefvBWt8JU8LAOi0vcShQGr6c=;
+	s=arc-20240116; t=1725966749; c=relaxed/simple;
+	bh=UYj7aweKY056oMs7GM5XXWBsu2TkMRaSALM5bW7LDJc=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=QoYkpOxm1LHCLaySLumnTmLBmHbaJG8lRKDoa/r8TruMyKm5RbRr1BWj/qUsHdGL4mFuAonhdDvzZU3baPkBrZRXGBwMuxCnQUcqTbV06alsgJqAJBObwuB6NF0BJrLS+SzlHZSSrq4dZElYGP4Y2d3Tv+uHT9d9EoyuOgOYJMQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=tccIYrXe; arc=none smtp.client-ip=209.85.208.44
+	 Content-Type:Content-Disposition:In-Reply-To; b=m6rYbneS9FjOrVYPy1a7o2cfpARYZiT+r1DcjDVEJDk5ywA53FRrDzydk+decI5YZy3TNe/A5reht772onJ4+1mVN6YC3gsPJN/KYx0iI6wmAGoli5Gu1oeQo4LA+nDnzbPq3fGsZBRrNXds/RcsxFZV/fz99XZO/Sgbd2i2IOk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=R+XesfXh; arc=none smtp.client-ip=209.85.208.44
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="tccIYrXe"
-Received: by mail-ed1-f44.google.com with SMTP id 4fb4d7f45d1cf-5c247dd0899so6443a12.1
-        for <iommu@lists.linux.dev>; Tue, 10 Sep 2024 03:56:00 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="R+XesfXh"
+Received: by mail-ed1-f44.google.com with SMTP id 4fb4d7f45d1cf-5c2460e885dso11996a12.0
+        for <iommu@lists.linux.dev>; Tue, 10 Sep 2024 04:12:27 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20230601; t=1725965759; x=1726570559; darn=lists.linux.dev;
+        d=google.com; s=20230601; t=1725966746; x=1726571546; darn=lists.linux.dev;
         h=in-reply-to:content-transfer-encoding:content-disposition
          :mime-version:references:message-id:subject:cc:to:from:date:from:to
          :cc:subject:date:message-id:reply-to;
-        bh=vHmk114QIZCjlFSKd2nx+MtW7wZ0G3Zn0tQIsPkVXhc=;
-        b=tccIYrXeJRbx6bDXptKACn3OD7VEG4KYRlc/aeUX4L0sqiy9gWinrOjXF5zIamGU64
-         RtlGMfIinJ+UR+qVR9xiyaR3pTko4CuWhkqLq/zxBpql5bwqgiKxnLPem7DTMxwCmeoX
-         JbLCNfVd1MvWO+ywmF/qPomvI6gMOvTDk0zguvI/c6xXYhNf2xyq9D5jTxVpUurxC7r7
-         QfcX5o6vF2LBIvqA2qBCOg6E6pZpe1EnoYVU3ND3Juq1W6YE7MiRrQlfq1v5UC7F9l/V
-         Is9ubnJccQ3X1UUOtS5wE/32rbxGkEmTjenjQ5UP3uJzEkT57CcNgvzCmaPCEBbschpL
-         qBvA==
+        bh=UYy4DmMGHFHCTGKn7bORTP8d4lFk3R5EHaNq4YeXwzM=;
+        b=R+XesfXh8B4AVb3ykIwSvW4kepJ4WfPCcVg3bUsVdhp9I1jcK6Hue/dc62GR4MABJM
+         sTEKzOIj+5V5u7uFEDonSYDIzYQwX035AcOMZG6Yi/YG36lPEoPvLGmyJ1Ml87wd+3xf
+         4vZiwLkkIzQcNn9L0Hikbny7CSTW727jElP1JZO8b9GjcQ3OgKL37DQ48MavVWVQfNkc
+         zjSnAsn/RoNtIlWK8ajUvfzGeN/GRLBgXDwHkzLwNwn9E006dxthaC3t5LQ1+8DLZL/E
+         47J0HYbpG2OLyYOkCjUusBiF0yOrpeYn0LvplfwV/MGvxRUBmh77iXCKZ7Y7tGON4M0M
+         NL0w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1725965759; x=1726570559;
+        d=1e100.net; s=20230601; t=1725966746; x=1726571546;
         h=in-reply-to:content-transfer-encoding:content-disposition
          :mime-version:references:message-id:subject:cc:to:from:date
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=vHmk114QIZCjlFSKd2nx+MtW7wZ0G3Zn0tQIsPkVXhc=;
-        b=hDoCnut0RF/JQVoM4qjj44O/5jMiLahRRWOn0LniAYjx4iAhx1XmlO5AJ2tidJyuXf
-         8IoPvlidYQbzfgmWiXD+8uXpFB8Sao8hDFMbylHJVWpIB6Z/F97G2SYgmxLCArCzt01L
-         nUDFkiOwtNYia0b6ylMGcKYR73h8EITL8UAbYlFqweE82Z5aiCvkkWcOvzCvMQsCQqi0
-         jdlSXv9phRlFPwiwQ0rtq0NbsLhEo4epLcFfiM6IKvrKfLJS/YgyQbf0p48W3+HQUrgS
-         lFxE/cuGiqlhWNGgMO+89rkLFm+LVGoYqTaH8JJ7ooy3tafEWAt/gk1swW4VK7z8ys16
-         kWRA==
-X-Forwarded-Encrypted: i=1; AJvYcCXGPLoUC41Cv6/f2+OTmvynsV/LzBseeIeKEG2FdWA14/1P8C9dG3dy9yjDGZNNWdgIQMfWFg==@lists.linux.dev
-X-Gm-Message-State: AOJu0YwGkucIlNOx2LNBLjhfcz4JeFmEOopOle0+aN0FG8Hi7tq+6SeH
-	VBspoDhXNYZ+EIDlPelk2xLTqcttSjj9Ez7FtHQcs46UfK8FqRYxd7132LOhz0Du12Nqy+dAGQ+
-	fxA==
-X-Google-Smtp-Source: AGHT+IH5Z6CO+MKfDYUG1iOU31Fa2e8Ac+77rN2VKHvSd6OZvtfGFA8hOAHmo3xhEkofbaoqsCkAhQ==
-X-Received: by 2002:a05:6402:34d5:b0:58b:15e4:d786 with SMTP id 4fb4d7f45d1cf-5c4040d9d24mr152948a12.5.1725965758834;
-        Tue, 10 Sep 2024 03:55:58 -0700 (PDT)
+        bh=UYy4DmMGHFHCTGKn7bORTP8d4lFk3R5EHaNq4YeXwzM=;
+        b=FXclw0WvLdA/bKX+pWh+dN1Nt8fFqiQ1o3mqRbcFoXbus8fEDL+J23wAKFbggoRrpO
+         /VXYJGpDy2u7FoXFrNnZZyAQTZJqyeJ8LVs19F7anlJhyv/9XutRv4CgH/qvkiEpY7kJ
+         WrJ2Ao5bKH/J8FlT/y7R2xz44SuF8jkBcOo5uZTwhnmH6bnRbcHdh/l9iDHqquRqpSEF
+         19G3e20875r5oszon+OCjA9n2ZTiNcK+eYrYygo8Df1UAnT/84jllypSrc8XpPrQhhF+
+         s0y6QelvdVQhHsYLhPHAonBKJVWJ0VISpRYktGzYbdF/P+K9J0dDQ5UVEa2LIegVCv7C
+         yCjQ==
+X-Forwarded-Encrypted: i=1; AJvYcCUO6W5o01ZdeskFvSCFiRqx35w6emf+gNiKNge9guZUqQ5+wo4dhzBM/3/xt97GuzqcbhS8mw==@lists.linux.dev
+X-Gm-Message-State: AOJu0YyBTiICM/WWoqIv5532QbINUhQjrGcVSjBACaDLbzXEKpSieSa3
+	WxO6YC5wzs1aQxITcagKBU+uzruOtHtOyHUg5II/YU4LAmvTTh86kq+GFQp6TA==
+X-Google-Smtp-Source: AGHT+IFie5nPTW6D5tNlRl7qFWvNiI/ySCh0zgRrb+aBAPhZhb7eVrcOK1eXSiw1bugwbN+BJ9aSog==
+X-Received: by 2002:a05:6402:1ec4:b0:59f:9f59:9b07 with SMTP id 4fb4d7f45d1cf-5c4029ef54amr158266a12.4.1725966745263;
+        Tue, 10 Sep 2024 04:12:25 -0700 (PDT)
 Received: from google.com (205.215.190.35.bc.googleusercontent.com. [35.190.215.205])
-        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-42caeb8afc9sm108460105e9.44.2024.09.10.03.55.58
+        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-42caeb8120asm107512605e9.37.2024.09.10.04.12.24
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 10 Sep 2024 03:55:58 -0700 (PDT)
-Date: Tue, 10 Sep 2024 10:55:51 +0000
+        Tue, 10 Sep 2024 04:12:24 -0700 (PDT)
+Date: Tue, 10 Sep 2024 11:12:20 +0000
 From: Mostafa Saleh <smostafa@google.com>
 To: Jason Gunthorpe <jgg@nvidia.com>
 Cc: acpica-devel@lists.linux.dev, Hanjun Guo <guohanjun@huawei.com>,
@@ -73,16 +72,18 @@ Cc: acpica-devel@lists.linux.dev, Hanjun Guo <guohanjun@huawei.com>,
 	Michael Shavit <mshavit@google.com>,
 	Nicolin Chen <nicolinc@nvidia.com>, patches@lists.linux.dev,
 	Shameerali Kolothum Thodi <shameerali.kolothum.thodi@huawei.com>
-Subject: Re: [PATCH v2 2/8] iommu/arm-smmu-v3: Use S2FWB when available
-Message-ID: <ZuAlt9SsijRxuGLk@google.com>
+Subject: Re: [PATCH v2 8/8] iommu/arm-smmu-v3: Support IOMMU_DOMAIN_NESTED
+Message-ID: <ZuAplEO7wyFahr6Z@google.com>
 References: <0-v2-621370057090+91fec-smmuv3_nesting_jgg@nvidia.com>
- <2-v2-621370057090+91fec-smmuv3_nesting_jgg@nvidia.com>
- <ZtHhdj6RAKACBCUG@google.com>
- <20240830164019.GU3773488@nvidia.com>
- <ZtWFkR0eSRM4ogJL@google.com>
- <20240903000546.GD3773488@nvidia.com>
- <ZtbBTX96OWdONhaQ@google.com>
- <20240903233340.GH3773488@nvidia.com>
+ <8-v2-621370057090+91fec-smmuv3_nesting_jgg@nvidia.com>
+ <ZtHuoDWbe54H1nhZ@google.com>
+ <20240830170426.GV3773488@nvidia.com>
+ <ZtWMGQAdR6sjBmer@google.com>
+ <20240903003022.GF3773488@nvidia.com>
+ <ZtbQMDxKZUZCGfrR@google.com>
+ <20240903235532.GJ3773488@nvidia.com>
+ <Ztrigx4LmpbFiMba@google.com>
+ <20240906133444.GE1358970@nvidia.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -92,74 +93,105 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <20240903233340.GH3773488@nvidia.com>
+In-Reply-To: <20240906133444.GE1358970@nvidia.com>
 
-On Tue, Sep 03, 2024 at 08:33:40PM -0300, Jason Gunthorpe wrote:
-> On Tue, Sep 03, 2024 at 07:57:01AM +0000, Mostafa Saleh wrote:
+On Fri, Sep 06, 2024 at 10:34:44AM -0300, Jason Gunthorpe wrote:
+> On Fri, Sep 06, 2024 at 11:07:47AM +0000, Mostafa Saleh wrote:
 > 
-> > Basically, I believe we shouldn’t set FWB blindly just because it’s supported,
-> > I don’t see how it’s useful for stage-2 only domains.
+> > However, I believe the UAPI can be more clear and solid in terms of
+> > what is supported (maybe a typical struct with the CD, and some
+> > extra configs?) I will give it a think.
 > 
-> And the only problem we can see is some niche scenario where incoming
-> memory attributes that are already requesting cachable combine to a
-> different kind of cachable?
+> I don't think breaking up the STE into fields in another struct is
+> going to be a big improvement, it adds more code and corner cases to
+> break up and reassemble it.
+> 
+> #define STRTAB_STE_0_NESTING_ALLOWED                                         \
+> 	cpu_to_le64(STRTAB_STE_0_V | STRTAB_STE_0_CFG | STRTAB_STE_0_S1FMT | \
+> 		    STRTAB_STE_0_S1CTXPTR_MASK | STRTAB_STE_0_S1CDMAX)
+> #define STRTAB_STE_1_NESTING_ALLOWED                            \
+> 	cpu_to_le64(STRTAB_STE_1_S1DSS | STRTAB_STE_1_S1CIR |   \
+> 		    STRTAB_STE_1_S1COR | STRTAB_STE_1_S1CSH |   \
+> 		    STRTAB_STE_1_S1STALLD | STRTAB_STE_1_EATS)
+> 
+> It is 11 fields that would need to be recoded, that's alot.. Even if
+> you say the 3 cache ones are not needed it is still alot.
 
-No, it’s not about the niche scenario, as I mentioned I don’t think
-we should enable FWB because it just exists. One can argue the opposite,
-if S2FWB is no different why enable it?
+I was thinking of providing a higher level semantics
+(no need for caching, valid...), something like:
 
-AFAIU, FWB would be useful in cases where the hypervisor(or VMM) knows
-better than the VM, for example some devices MMIO space are emulated so
-they are normal memory and it’s more efficient to use memory attributes.
+struct smmu_user_table {
+	u64 cd_table;
+	u32 smmu_cd_cfg;  /* linear or 2lvl,.... */
+	u32 smmu_trans_cfg; /* Translate, bypass, abort */
+	u32 dev_feat; /*ATS, STALL, …*/
+};
 
-Taking into consideration all the hassle that can happen if non-coherent
-devices use the wrong attribute, I’d suggest either set FWB only for
-coherent devices (I know it’s not easy to define, but maybe be should?)
-or we have a new CAP where the caller is aware of that. But I don’t think
-the driver should decide that on behalf of the caller.
+I feel that is a bit more clear for user space? Instead of
+partially setting the STE, and it should be easier to extend than
+masking the STE.
+
+I’am not opposed to the vSTE, I just feel it's loosely defined,
+that's why I was asking for the docs.
 
 > 
-> > And I believe making assumptions about VFIO (which actually is not correctly
-> > enforced at the moment) is fragile.
+> > > Reporting a static kernel capability through GET_INFO output is
+> > > easier/saner than providing some kind of policy flags in the GET_INFO
+> > > input to specify how the sanitization should work.
+> > 
+> > I don’t think it’s “policy”, it’s just giving userspace the minimum
+> > knowledge it needs to create the vSMMU, but again no really strong
+> > opinion about that.
 > 
-> VFIO requiring cachable is definately not fragile, and it also sets
-> the IOMMU_CACHE flag to indicate this. Revising VFIO to allow
-> non-cachable would be a signficant change and would also change what
-> IOMMU_CACHE flag it sets.
+> There is no single "minimum knowledge" though, it depends on what the
+> VMM is able to support. IMHO once you go over to the "VMM has to
+> ignore bits it doesn't understand" you may as well just show
+> everything. Then the kernel side can't be wrong.
 > 
+> If the kernel side can be wrong, then you are back to handshaking
+> policy because the kernel can't assume that all existing VMMs wil not
+> rely on the kernel to do the masking.
+>
 
-I meant the driver shouldn't assume the caller behaviour, if it's VFIO
-or something new.
+I agree it’s tricky, again no strong opinion on that, although I doubt
+that a VMM would care about all the SMMU features.
 
-> > and we should only set FWB for coherent
-> > devices in nested setup only where the VMM(or hypervisor) knows better than
-> > the VM.
+> > > > But this is a UAPI. How can userspace implement that if it has no
+> > > > documentation, and how can it be maintained if there is no clear
+> > > > interface with userspace with what is expected/returned...
+> > > 
+> > > I'm not sure what you are looking for here? I don't think an entire
+> > > tutorial on how to build a paravirtualized vSMMU is appropriate to
+> > > put in comments?
+> > 
+> > Sorry, I don’t think I was clear, I meant actual documentation for
+> > the UAPI, as in RST files for example. If I want to support that
+> > in kvmtool how can I implement it? 
 > 
-> I don't want to touch the 'only coherent devices' question. Last time
-> I tried to do that I got told every option was wrong.
+> Well, you need thousands of lines of code in kvtool to build a vIOMMU :)
 > 
-> I would be fine to only enable for nesting parent domains. It is
-> mandatory here and we definitely don't support non-cachable nesting
-> today.  Can we agree on that?
+> Nicolin is looking at writing something, lets see.
 > 
-Why is it mandatory?
+> I think for here we should focus on the comments being succinct but
+> sufficient to understand what the uAPI does itself.
+> 
+Actually I think the opposite, I think UAPI docs is more important
+here, especially for the vSTE, that's how we can compare the code to
+what is expected from user-space.
 
-I think a supporting point for this, is that KVM does the same for
-the CPU, where it enables FWB for VMs if supported. I have this on
-my list to study if that can be improved. But may be if we are out
-of options that would be a start.
-
-> Keep in mind SMMU S2FWB is really new and probably very little HW
-> supports it right now. So we are not breaking anything existing
-> here. IMHO it is better to always enable the stricter features going
-> forward, and then evaluate an in-kernel opt-out if someone comes with
-> a concrete use case.
+> > > I would *really* like everyone to sit down and figure out how to
+> > > manage virtual device lifecycle in a single language!
+> > 
+> > Yes, just like the guest_memfd work. There has been also
+> > some work to unify some of the guest HVC bits:
+> > https://lore.kernel.org/all/20240830130150.8568-1-will@kernel.org/
 > 
+> I think Dan Williams is being ringleader for the PCI side effort on CC
 
-I agree, it’s unlikely that this breaks existing hardware, but I’d
-be concerned if FWB is enabled unconditionally it breaks devices in
-the future and we end up restricting it more.
+Thanks, I will try to spend some time on the secure VFIO work.
 
 Thanks,
 Mostafa
+
+> 
 > Jason
