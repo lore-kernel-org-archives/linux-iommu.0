@@ -1,171 +1,167 @@
-Received: from mailout2.w1.samsung.com (mailout2.w1.samsung.com [210.118.77.12])
+Received: from NAM10-BN7-obe.outbound.protection.outlook.com (mail-bn7nam10on2089.outbound.protection.outlook.com [40.107.92.89])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3C4EB178CE4
-	for <iommu@lists.linux.dev>; Tue, 10 Sep 2024 06:27:06 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=210.118.77.12
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1725949629; cv=none; b=p6UUQ9esO1gAEPmnRn3tlZl338b69c+NU2dllOQJPd/Fwmg+cdQZAYoc1Ji8Ld0WhYpM5vYEYiAxRb7zB6P9BwqjdswmoLEKxriH+QfsuOof4XM+D9OvFniDqDmKZqiS6AzYjeqy2sE3T38ecZA5N6WuiPyWIh91I4+K0imMAvQ=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1725949629; c=relaxed/simple;
-	bh=gBSpn0+a/kGfSVjDSYxy6KPnKqHkaFUodo08onrpc7A=;
-	h=Date:From:To:CC:Subject:Message-ID:MIME-Version:Content-Type:
-	 Content-Disposition:In-Reply-To:References; b=K/eLbBgo5gHlmeRuxJmidwlslgNu9kXFpDC5Lv/uCygP/kZP22flRdlj1WvpCjpO81zWimlf2S/xGablJSNy1Ydb5udCPb2pCfsOKFHdCm91VZIG5TeNvXvvV+f21R332AuO5lbB9VQCWThz5UidWIDR0Pwm7T+ClqxzEFNT/dk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=samsung.com; spf=pass smtp.mailfrom=samsung.com; dkim=pass (1024-bit key) header.d=samsung.com header.i=@samsung.com header.b=gUgUACYR; arc=none smtp.client-ip=210.118.77.12
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=samsung.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=samsung.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3353B17B427
+	for <iommu@lists.linux.dev>; Tue, 10 Sep 2024 06:58:34 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.92.89
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1725951516; cv=fail; b=RteYC44B4YNPbgf4Fs4eK0Bmiw2FoPJo8k0+e8HG51nXXAKrcAD19fBgtih1/QpkIKHLreijEH96mQ3ZGEtK0Wz9W6ugaKIEozKEZcP8gBl+4TFa89TZIs5EKC45lXgspo5+J5j+xgkPTapjmUICOxC2wEuzG0PV40YPEu3gM+8=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1725951516; c=relaxed/simple;
+	bh=uBj2jL76iES5roAUh5qdFbsBecPR1930WUb+V4YqjEQ=;
+	h=From:To:CC:Subject:Date:Message-ID:MIME-Version:Content-Type; b=j0mNc7C2R4oUyxo5C2/Gd/UcV21WvQDUqbY6oiIu5r0NqFpe7DiM1L3tRz015x+YWvzCYnhFUXbdMEVTKYDL8TgywAawSsPRiOE3JHOO1MQEOxMNTU6JqukDdUsZbF79zanveebOCbK6n2CC1A8OUJrRahOIXj5RaPpvSgzgBgk=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com; spf=fail smtp.mailfrom=amd.com; dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b=RULxZTLf; arc=fail smtp.client-ip=40.107.92.89
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=amd.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=samsung.com header.i=@samsung.com header.b="gUgUACYR"
-Received: from eucas1p1.samsung.com (unknown [182.198.249.206])
-	by mailout2.w1.samsung.com (KnoxPortal) with ESMTP id 20240910061938euoutp0206275fbe7706759b87b10e754419cb8e~zzaI5aW-k3036930369euoutp02S
-	for <iommu@lists.linux.dev>; Tue, 10 Sep 2024 06:19:38 +0000 (GMT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 mailout2.w1.samsung.com 20240910061938euoutp0206275fbe7706759b87b10e754419cb8e~zzaI5aW-k3036930369euoutp02S
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
-	s=mail20170921; t=1725949178;
-	bh=Um/elcx0Nv3kpTzyB5+UQQqdSo4Gc94HySx+FZ1SXmw=;
-	h=Date:From:To:CC:Subject:In-Reply-To:References:From;
-	b=gUgUACYRCVaMdTx5I5Em31zhLCKJuRo0zXjo5EK4beIquqwfma5CqWuccWWNgyd8h
-	 nPhqoPncO77pVW+rjEjIeqSpu1+MsPgmBEbtiPFOgh3dxDpfSHfXR87XQBpJCyp+zK
-	 Gz1MLldbOvDtScdDNfJQxFk62mJhBhRYPIrvGCGI=
-Received: from eusmges2new.samsung.com (unknown [203.254.199.244]) by
-	eucas1p2.samsung.com (KnoxPortal) with ESMTP id
-	20240910061938eucas1p25e8fa38df93e8d1813a9ef4019682711~zzaIm2cRC2717127171eucas1p2s;
-	Tue, 10 Sep 2024 06:19:38 +0000 (GMT)
-Received: from eucas1p2.samsung.com ( [182.198.249.207]) by
-	eusmges2new.samsung.com (EUCPMTA) with SMTP id 4D.F6.09875.AF4EFD66; Tue, 10
-	Sep 2024 07:19:38 +0100 (BST)
-Received: from eusmtrp2.samsung.com (unknown [182.198.249.139]) by
-	eucas1p1.samsung.com (KnoxPortal) with ESMTPA id
-	20240910061938eucas1p10fa941904d238a03d5817d79800355ad~zzaILyH071849618496eucas1p1B;
-	Tue, 10 Sep 2024 06:19:37 +0000 (GMT)
-Received: from eusmgms1.samsung.com (unknown [182.198.249.179]) by
-	eusmtrp2.samsung.com (KnoxPortal) with ESMTP id
-	20240910061937eusmtrp23614bf6da9e8186f89d06d86f06f14ef~zzaIDuAbl2136121361eusmtrp2D;
-	Tue, 10 Sep 2024 06:19:37 +0000 (GMT)
-X-AuditID: cbfec7f4-11bff70000002693-e6-66dfe4fae8b4
-Received: from eusmtip2.samsung.com ( [203.254.199.222]) by
-	eusmgms1.samsung.com (EUCPMTA) with SMTP id 77.D9.14621.9F4EFD66; Tue, 10
-	Sep 2024 07:19:37 +0100 (BST)
-Received: from CAMSVWEXC02.scsc.local (unknown [106.1.227.72]) by
-	eusmtip2.samsung.com (KnoxPortal) with ESMTPA id
-	20240910061937eusmtip26590695d27fedfa04a4455516d64bee8~zzaH28iIO2703027030eusmtip2L;
-	Tue, 10 Sep 2024 06:19:37 +0000 (GMT)
-Received: from localhost (106.110.32.44) by CAMSVWEXC02.scsc.local
-	(2002:6a01:e348::6a01:e348) with Microsoft SMTP Server (TLS) id 15.0.1497.2;
-	Tue, 10 Sep 2024 07:19:33 +0100
-Date: Mon, 9 Sep 2024 16:46:23 +0200
-From: Joel Granados <j.granados@samsung.com>
-To: Jason Gunthorpe <jgg@ziepe.ca>
-CC: Klaus Jensen <its@irrelevant.dk>, David Woodhouse <dwmw2@infradead.org>,
-	Lu Baolu <baolu.lu@linux.intel.com>, Joerg Roedel <joro@8bytes.org>, "Will
- Deacon" <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>, Kevin Tian
-	<kevin.tian@intel.com>, Minwoo Im <minwoo.im@samsung.com>,
-	<linux-kernel@vger.kernel.org>, <iommu@lists.linux.dev>, Klaus Jensen
-	<k.jensen@samsung.com>
-Subject: Re: [PATCH RFC PREVIEW 0/6] iommu: enable user space iopfs in
- non-nested and non-svm cases
-Message-ID: <20240909144623.kunm4xg4sglv77wb@joelS2.panther.com>
+	dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b="RULxZTLf"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=eT/rV2NMEALeFvt1FXh1jB0P6KYxMTCE7eZ/5PHXJigDcWTnbID4qgNt2m3195wTmz+aGcR5XtH8nOZk5MMpevSu/0N8KS3spK1Cg7GewVS9ZWjPQRMiBCKMUdmpS3Ru4yb7Nojf75Cw3OKAe1MvfhFR+Mw770wZrQRdcEQ4IUZGCJ6vDmI9D2lWqI/xqK6jqNx+gWg+hcFUTWNVBLyHNiawoX/OlM5O3TOTADajnBeabbFRlNgcG+H8kYnzDToP3Pl8bBsXk8V7LR0/uU0bFFSZsAqmNcvXWl3gpPETIQVa6Ac/SuciDJ7FuO8eg5hTtk10JFhxrzu1xPYbXAoq/Q==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=+abEW7r0FtA27odKohZQJ6u2gFzMy6uU5FqTtpeZVhE=;
+ b=Gsnx6GgYzVsLR/7eEqpj+l7Ngkwqq6w5dWAjAeev6HICJnJHvyvUibnU2H9sK8TDz/qi9n6MSSazrgpkWsggiKYrVsuK1/i9s3xERtD7zlisqaaFDatmgRcO5ypITg0t+ru+zRScbMrZ9ITQCeo/odE99lkc0AM07cMrKgUG5nCOdk0ayez5wmeKRDcF5nDPafrNXUFlfkTmdpArXXrmbw9VkAYwemmCoyH1IbQbDEurhUO6X/bt5RGxKUl+dIRJngh+hH8DN79G1tyITXiiBzI1EROIUY2REDfuRIjTZlj9TqdILWYbpko+iuyLrTN+8uzVg/pIcYdFvc3aj5eBOw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 165.204.84.17) smtp.rcpttodomain=lists.linux.dev smtp.mailfrom=amd.com;
+ dmarc=pass (p=quarantine sp=quarantine pct=100) action=none
+ header.from=amd.com; dkim=none (message not signed); arc=none (0)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=+abEW7r0FtA27odKohZQJ6u2gFzMy6uU5FqTtpeZVhE=;
+ b=RULxZTLfrfHJt8T/HJEMHGpVuBKbC4y88cZz19fqlriN0IyRrgCBP8a6th9IS5vhXlwWZWgaBhgrrvMeM/Z89Ec+uwfSL7xcSKbKdNJ5U95ftnp+F4bvch1qT2R72KOTNWP+vCGLN3OfMZ2/8w0EkkWA/ZQKul8XB4gHuoAjGOg=
+Received: from BL0PR02CA0072.namprd02.prod.outlook.com (2603:10b6:207:3d::49)
+ by BL3PR12MB6380.namprd12.prod.outlook.com (2603:10b6:208:38d::18) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7939.24; Tue, 10 Sep
+ 2024 06:58:31 +0000
+Received: from BN2PEPF00004FBB.namprd04.prod.outlook.com
+ (2603:10b6:207:3d:cafe::9d) by BL0PR02CA0072.outlook.office365.com
+ (2603:10b6:207:3d::49) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7939.24 via Frontend
+ Transport; Tue, 10 Sep 2024 06:58:31 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 165.204.84.17)
+ smtp.mailfrom=amd.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=amd.com;
+Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
+ 165.204.84.17 as permitted sender) receiver=protection.outlook.com;
+ client-ip=165.204.84.17; helo=SATLEXMB03.amd.com; pr=C
+Received: from SATLEXMB03.amd.com (165.204.84.17) by
+ BN2PEPF00004FBB.mail.protection.outlook.com (10.167.243.181) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.20.7918.13 via Frontend Transport; Tue, 10 Sep 2024 06:58:31 +0000
+Received: from kali.amd.com (10.180.168.240) by SATLEXMB03.amd.com
+ (10.181.40.144) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2507.39; Tue, 10 Sep
+ 2024 01:58:28 -0500
+From: Vasant Hegde <vasant.hegde@amd.com>
+To: <iommu@lists.linux.dev>, <joro@8bytes.org>
+CC: <will@kernel.org>, <robin.murphy@arm.com>,
+	<suravee.suthikulpanit@amd.com>, Vasant Hegde <vasant.hegde@amd.com>
+Subject: [PATCH v2 00/10] iommu/amd: Improve domain allocator and device attach code path
+Date: Tue, 10 Sep 2024 06:58:02 +0000
+Message-ID: <20240910065812.6091-1-vasant.hegde@amd.com>
+X-Mailer: git-send-email 2.34.1
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: inline
-In-Reply-To: <20240904161350.GE1909087@ziepe.ca>
-X-ClientProxiedBy: CAMSVWEXC01.scsc.local (2002:6a01:e347::6a01:e347) To
-	CAMSVWEXC02.scsc.local (2002:6a01:e348::6a01:e348)
-X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFtrGKsWRmVeSWpSXmKPExsWy7djP87q/ntxPM1jVIGWxeeJWNouJKycz
-	W/z6YmGx/+A3VouZM04wWnTO3sBusfTtVnaLy7vmsFkc/PCE1aLljqkDl8eTg/OYPNbMW8Po
-	sXmFlsfiPS+ZPM7tOM/usWlVJ5vHvJOBHi82z2T0+LxJzmPr59ssAVxRXDYpqTmZZalF+nYJ
-	XBnP93WyFfzir1h6djFrA+MGni5GTg4JAROJ5a8fsHQxcnEICaxglHh/azIbhPOFUeLFglYm
-	COczo8SFH/cZYVq2fu9lhUgsZ5S482wPQtXe/WvZIZzNjBLbHxxhBmlhEVCR+LN0IiuIzSag
-	I3H+zR2wuIiAksS+XRPBGpgFWpgldr9tZgNJCAukSixZuYEJxOYVcJDYuv8OI4QtKHFy5hMW
-	EJsZaNCC3Z+A6jmAbGmJ5f84QExOAQOJ1+t9IS5VlPi6+B4LhF0rcWrLLbBDJQRmc0psu7CY
-	EaReQsBF4sqndIgaYYlXx7ewQ9gyEv93zoeqn8wosf/fB3YIZzWjxLLGr0wQVdYSLVeesEMM
-	cpR4cjMCwuSTuPFWEOJKPolJ26YzQ4R5JTrahCAa1SRW33vDMoFReRaSv2Yh+WsWwl8LGJlX
-	MYqnlhbnpqcWG+WllusVJ+YWl+al6yXn525iBCat0/+Of9nBuPzVR71DjEwcjIcYJTiYlUR4
-	++3upQnxpiRWVqUW5ccXleakFh9ilOZgURLnVU2RTxUSSE8sSc1OTS1ILYLJMnFwSjUwtXz2
-	lT91PFYznfP2ac5Nqo+8l977IW07Z973kroF/9WibSd4NTjaxd6e2RUjd0rgkUzRArUdjuee
-	RfC9ebtt+rR8e7PuqT9n7l99dNd+xp6PzZXFFx8Xys60+fRmbcZF0dmtph0OXqHCF++pCkkq
-	b/ZR6cqseKrSyRQzu6RvnY3Sj+86xi2Hfu8udn3QVPRdwFXlzVzj1ElaLAtnKm3d0cUUnZhs
-	w5ezdK1Kbde3TUd+7Hy98cecbR6Fkkendd6r0ynPPrUzc9OR6dGHltccW3XSzCP2lv+PKAt1
-	lv+/vMpWGr28P2FD/Wrx8DsLg1vMO8o0pptrt8h+cGt3rcvyP+ZWHbb4xg/3T3fLc6Y9V2Ip
-	zkg01GIuKk4EAKHWelfJAwAA
-X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFrrCIsWRmVeSWpSXmKPExsVy+t/xe7o/n9xPM1jXa2yxeeJWNouJKycz
-	W/z6YmGx/+A3VouZM04wWnTO3sBusfTtVnaLy7vmsFkc/PCE1aLljqkDl8eTg/OYPNbMW8Po
-	sXmFlsfiPS+ZPM7tOM/usWlVJ5vHvJOBHi82z2T0+LxJzmPr59ssAVxRejZF+aUlqQoZ+cUl
-	tkrRhhZGeoaWFnpGJpZ6hsbmsVZGpkr6djYpqTmZZalF+nYJehnP93WyFfzir1h6djFrA+MG
-	ni5GTg4JAROJrd97WbsYuTiEBJYySuxdeZUZIiEjsfHLVVYIW1jiz7UuNoiij4wS53cehurY
-	zChx/cNiFpAqFgEViT9LJ4J1sAnoSJx/cwdskoiAksS+XRPZQRqYBVqYJXa/bWYDSQgLpEos
-	WbmBCcTmFXCQ2Lr/DiPE1BlMElP7tzBCJAQlTs58AraBGWjqgt2fgJo5gGxpieX/OEBMTgED
-	idfrfSEuVZT4uvgeC4RdK/H57zPGCYzCs5AMmoVk0CyEQQsYmVcxiqSWFuem5xYb6hUn5haX
-	5qXrJefnbmIERu+2Yz8372Cc9+qj3iFGJg7GQ4wSHMxKIrz9dvfShHhTEiurUovy44tKc1KL
-	DzGaAoNiIrOUaHI+MH3klcQbmhmYGpqYWRqYWpoZK4nzul0+nyYkkJ5YkpqdmlqQWgTTx8TB
-	KdXAlLCp+X9cM/eeezOso0MyTbtbPbZZMf8Iuell3vT4z44tq69w1259ZaR1ZoGW90ame/Xm
-	QRYTNj9IUDzvvWJWgL+lgx/b6vqE/h//OHwmz3Ff2Fw9OeRybJ+W/THGxJj306/E/uu7epqH
-	eW/4i5Vdt2xVp6Ypta56ym06tZP1wpW7SbbLXr7IO2UjqsdXz/PaK6PDwjJmxbUvhrHRc1ed
-	ftHLznq/pPq7tMGUWQ4PXO0vsRcc8naNazD6uPGShtvH76/XZGur5HNnLbqurth8rq/n0v/G
-	BSpORWYlYvzrby/cOvmHXyvjrgwRQ/6eKg9jv4t35Kda9H3/d2Sienjmhp6JLKpcfhnXO4Ot
-	nkxXYinOSDTUYi4qTgQAeSmB2GcDAAA=
-X-CMS-MailID: 20240910061938eucas1p10fa941904d238a03d5817d79800355ad
-X-Msg-Generator: CA
-X-RootMTR: 20240826140000eucas1p2b422169d0d2c633f64461b2152e9ae97
-X-EPHeader: CA
-CMS-TYPE: 201P
-X-CMS-RootMailID: 20240826140000eucas1p2b422169d0d2c633f64461b2152e9ae97
-References: <20240826-iopf-for-all-v1-0-59174e6a7528@samsung.com>
-	<CGME20240826140000eucas1p2b422169d0d2c633f64461b2152e9ae97@eucas1p2.samsung.com>
-	<20240826135955.GI3468552@ziepe.ca>
-	<20240902104819.a2jto6l3tv2h5wvq@joelS2.panther.com>
-	<20240904161350.GE1909087@ziepe.ca>
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-ClientProxiedBy: SATLEXMB03.amd.com (10.181.40.144) To SATLEXMB03.amd.com
+ (10.181.40.144)
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: BN2PEPF00004FBB:EE_|BL3PR12MB6380:EE_
+X-MS-Office365-Filtering-Correlation-Id: a2d4fde3-2070-4c70-4989-08dcd165faf8
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam:
+	BCL:0;ARA:13230040|36860700013|82310400026|376014|1800799024;
+X-Microsoft-Antispam-Message-Info:
+	=?us-ascii?Q?0rQI0s67wOh5WBal9Jrg63ilJ1WMUF8bwz3gyXxVw0ia9mGwZJGrfiyM+opQ?=
+ =?us-ascii?Q?PiVoAukxMpI3IHp1Knl1T5srrvShhxGJcJF4XTNkUnHnsZQc1ZdKOlkLRAFt?=
+ =?us-ascii?Q?wHE/PTsEMfKBwRabqEoDrIKv7F6o5fSyqqY9KH+gv1RLUac+GaMRRKMAAXz6?=
+ =?us-ascii?Q?HT+CinrpOtMWCwulo9A8Pt5y6DvOFPbG2OoGUswROt1fbSgMi4lYrstjgIKe?=
+ =?us-ascii?Q?LJmuT1OQfNVaHQfqPSfibl6CtsMqlksUJtZnUMRij5P2r57TYUx5D253gbsP?=
+ =?us-ascii?Q?Kg++XNgFm4t/UocoUuw3eD7eh+Uaob42RA7jhTol8vwo+ad3ROLeQZHxfhdr?=
+ =?us-ascii?Q?xjLAJ1pWrFt5v3q2DwyAfHUMxqzqITywXzdeetJfC66coB7fWrOPHEPFHRNM?=
+ =?us-ascii?Q?f19BMEiwHfR5Xxqn/e7TPiitgmcBxP4RpB7EKydrgwH0U5+cs3b+ruJPXYe2?=
+ =?us-ascii?Q?BnoyYOMW+65D7zF9+SZuY6i9P0nPYgqbI3dNA7YhgCJQ+drMk+qDJ3qLI3nm?=
+ =?us-ascii?Q?I0RaqNckdsjXcl+murYTSduLPPqFVeX+N4i7uT9R70jUvxPjAt2k3VGLTUha?=
+ =?us-ascii?Q?LC697t9bYlDbD/pM9BjbxCqGwBNvoVWbl5Tymba8sWOtvoFERmKJk4Q9OLYe?=
+ =?us-ascii?Q?lnhZeprTmBW+ghWrjb8M3IWZw62XdRCvffrmxpWJ76NJI3tdIHWnTf4pWoNL?=
+ =?us-ascii?Q?fwi88VIOvyP4HoBp4Of+1+2epU/H3Sqst3Jo7D+kSuZ3bLmUjVpyLIED6dL7?=
+ =?us-ascii?Q?6rM1bFPmaV2ox02nsj/bSf2+/kKMz0gpdcHxSE7C/+PoL3nn/n2bG7cUCDnG?=
+ =?us-ascii?Q?0Pk4P4Y0PM24RmcoPF5Bt5+p+QEFoK141N1YVh4rtumRCWOTufSm7vCac6jb?=
+ =?us-ascii?Q?tQnY14dIGJtItIrsyvolRm7olUgSImuEkxSqRQ9t0+V5Q0oYTobgLnk9EKVQ?=
+ =?us-ascii?Q?qTGef8rV40UH/t+wxlIvtHa85bWTxtvDvhA2WxMgtcDFjn5tG2StZvSCSnur?=
+ =?us-ascii?Q?3ctbgCOB0YVMgl6V1EmTRhYXqvnfYDoN3HbNg8+YGVinxgVx4a62ZZLEfkBo?=
+ =?us-ascii?Q?3IvZ27Ouv7VXVGrjuhLSzQJXp2LqV10UJ7V4DYlLMtbYKRjp3vgKZoiPmTk9?=
+ =?us-ascii?Q?qiRyQWErP5EOUAHRcWrNFAe6Ba45hF0HBDv2EP0/heantxr+FqFrxQOGFce2?=
+ =?us-ascii?Q?uLc87s6eCwED5AG2Dx5l2FU3VV9F5BD46RFTHCsd99x1KI6RPHYomyx3zYON?=
+ =?us-ascii?Q?whZYCoRYfp83f0Z9kya4wxRMn3WZGhypRYnXD4JvZddpN5/MG/qlM8SE5DW3?=
+ =?us-ascii?Q?6XDMD3dbgME8tF0JWFxx1h7WBGjt+SMPsVL250D5DPm9W4IcmFd/MxMxZl3V?=
+ =?us-ascii?Q?f4h6g3PU6OkSy2lFkzx5BQ67RMoobe2Z7ntMi4F9qPTLy8G8W8qvLWHkEgGC?=
+ =?us-ascii?Q?HlFSwcp3yHXhs5Vm4Na4C4BIxwwJTXOtrcq1SK/qMxOU+nQl2MWoGQ=3D=3D?=
+X-Forefront-Antispam-Report:
+	CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB03.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230040)(36860700013)(82310400026)(376014)(1800799024);DIR:OUT;SFP:1101;
+X-OriginatorOrg: amd.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 10 Sep 2024 06:58:31.1464
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: a2d4fde3-2070-4c70-4989-08dcd165faf8
+X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[SATLEXMB03.amd.com]
+X-MS-Exchange-CrossTenant-AuthSource:
+	BN2PEPF00004FBB.namprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BL3PR12MB6380
 
-On Wed, Sep 04, 2024 at 01:13:50PM -0300, Jason Gunthorpe wrote:
-> On Mon, Sep 02, 2024 at 12:48:19PM +0200, Joel Granados wrote:
-> > > >   Supplementary repositories supporting this patchset:
-> > > >     1. A user space library libvfn [1] which is used for testing and
-> > > >        verification (see examples/iopf.c), and
-> > > 
-> > > That's pretty neat, I've been wanting to see some kind of IOMMU test
-> > > suite based around a capable widely available device. This is the
-> > > closest I've seen..
-> >
-> > Yes! This is an obvious application of libvfn. Do you see it as a
-> > something that can be included in tools/selftests/iommu?
-> 
-> Maybe? What would it look like in-kernel?
-Having it in-kernel with libvfn might be a bit too much because we would
-have to bring libvfn into the kernel sources. But we can have some sort
-of DMA test suit that runs as CI. Similar to what fstests or blktest do
-(dmatests?). And we can automate it all with kdevops.
+This series aims to improve domain allocator and attach device code path.
+  - Replace custom domain ID allocator with IDA allocator.
+  - Improve protection domain data structure
+  - Improve attach device code path and replace dev_data spinlock with mutex
 
-Here is a very rough run down of the idea.
-1. We create (or use if there is one already) a DMA test suit. That has
-can run on its own
-2. Use libvfn to create commands that poke at the iommu{,fd}, intel)
-amd, arm drivers.
-3. Use qemu iommu implementation as well as pci dma enabled devices as
-the test devices.
-4. Can use hardware if it is detected.
-5. Can use kdevops to bring up the different environments (e.g. kernel and
-qemu branch combinations) needed for the test.
-6. And finally put the kdevops test targets into some existing kernel CI
-like linux-next or 0day (or whatever makes sense).
+This series is on top of iommu/next (Commit 72e7bac4135e) and a minor patch
+to fix protection_domain_free() code path [1].
 
-> 
-> I've been thinking the same thing with mlx5
-Not too familiar with this driver, but if it makes sense to reuse it (or
-part of it) to make the test happen, I'm all for that.
+[1] https://lore.kernel.org/linux-iommu/23a7c339-a7ba-447e-a4fa-935250f771eb@amd.com/T/#m870159022b8e1141d6b9c6ef87c6ee6821d0428d
 
-> 
-> Maybe some kind of test runner with a plugin driver that has some kind
-> of 'do dma', 'generate interrupt', etc sort of operations, IDK.
-Yes. If you are up for it, we can maybe discuss it a bit in LPC and
-flesh it out a bit more?
+This is also available at github :
+  https://github.com/AMDESE/linux-iommu/tree/iommu_rework_attach_dev_v2
 
-Best
+
+Changes from v1 -> v2:
+  - Rebased on top of iommu/next
+  - Minor fixes.
+
+
+V1 : https://lore.kernel.org/linux-iommu/20240828134317.6239-1-vasant.hegde@amd.com/T/#t
+
+-Vasant
+
+
+Vasant Hegde (10):
+  iommu/amd: Use ida interface to manage protection domain ID
+  iommu/amd: Remove protection_domain.dev_cnt variable
+  iommu/amd: xarray to track protection_domain->iommu list
+  iommu/amd: Remove unused amd_iommus variable
+  iommu/amd: Do not detach devices in domain free path
+  iommu/amd: Reduce domain lock scope in attach device path
+  iommu/amd: Rearrange attach device code
+  iommu/amd: Convert dev_data lock from spinlock to mutex
+  iommu/amd: Reorder attach device code
+  iommu/amd: Improve amd_iommu_release_device()
+
+ drivers/iommu/amd/amd_iommu.h       |   2 +
+ drivers/iommu/amd/amd_iommu_types.h |  20 +-
+ drivers/iommu/amd/init.c            |  35 +--
+ drivers/iommu/amd/iommu.c           | 349 +++++++++++++---------------
+ 4 files changed, 188 insertions(+), 218 deletions(-)
 
 -- 
+2.31.1
 
-Joel Granados
