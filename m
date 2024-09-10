@@ -1,77 +1,67 @@
-Received: from NAM10-BN7-obe.outbound.protection.outlook.com (mail-bn7nam10on2073.outbound.protection.outlook.com [40.107.92.73])
+Received: from mx0b-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 17E0C1A76C9
-	for <iommu@lists.linux.dev>; Tue, 10 Sep 2024 20:41:51 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.92.73
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1726000914; cv=fail; b=RMFkVDvTKnSDL614KlyczigRiqdH+xaB0cf/JfMC1DKySwRQ5/MdjViJ6Wr7RrgHSHI+K9N8NoltvhkRbw030kAa0xPvqlaEtCnkHzBK8iszWnT9HlQtOpHtMNXhOGe8d4XF2iaRWL1oZjP/a3rheOp4S7P+wDHaTYYeyc1bzJc=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1726000914; c=relaxed/simple;
-	bh=2pWRwSd+Gc5o+ja40Qrw49l3v3+aIi9Y/kdPneJoz7A=;
-	h=From:To:CC:Subject:Date:Message-ID:MIME-Version:Content-Type; b=KkQlJbNpSp6mpyLKY3oKzX8fDBfIM3poJdZJmhYjHFcbwR5FHauO0s2VnuoXx4E64b3v0VFgI6jicuAD2rfQCLKbDRNbtiaIzdbFmqUvxC2EnTL7a39043WvBBZc9xPKZxdTmiOqeBeZKpWv0oXdV4p7skKisiWnRkQ1SKMRA2M=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=sWdOYIUU; arc=fail smtp.client-ip=40.107.92.73
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id ADCBE176FCF
+	for <iommu@lists.linux.dev>; Tue, 10 Sep 2024 21:15:32 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=148.163.158.5
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1726002936; cv=none; b=sj1F1q8YxCAOlUL+XvRABIqiYfcTNT/cZUyRyhgWaU0bxvkEl/1OEIb/3NmF6kLsPVwt/MFRJ5Fx1oWHwhwSywsEgLg5Xojxle6jCtBZ3i6c4SmJRH9GomW63xwfHlSIpKapq6YHOIY+FXCqZjem39eRg0/DyT6qQQn/DBysXsw=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1726002936; c=relaxed/simple;
+	bh=Fh0U+pSTwGimFfvklPVKJACUpUFnD0QxSyZiD5dwI+s=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=dwk1T2EDl+sS/8e42KqQkQo878s4kVpxi6eTe1AUXHoFrU+x0B0pQzO05ysPnRk+aXBA7dOTYzBXO7qwTz+BuNaKP50Z6KkmykD8vqg+7PX5nE9Mx28obcI0d1uw0G8aHLWAv/4PgYt1U3z85iD7RwFsk4dwv70fGyqyTdJtYLw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.ibm.com; spf=pass smtp.mailfrom=linux.ibm.com; dkim=pass (2048-bit key) header.d=ibm.com header.i=@ibm.com header.b=OIfpKAzH; arc=none smtp.client-ip=148.163.158.5
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.ibm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.ibm.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="sWdOYIUU"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=S8Ppgy7+ssScw7HIhtbsuCz+6qzQu5oGXLpVJdBlF6uBeTb6Pbp5llu3fKf5reO50qiIKBLRSglHg1ynuy2ThAjqMugcazBI8emNXi0KgNbKvPSkKpJXbm+1TS9HFolxexJMRF8WlLkWPwhawe/sRCyILiqhpHFb6GoQAAVn3w6vPiA/QBcgaCQMd3ai+kBfJ9zccz3CYPSyf3XjW3Ku7Tsw3RjSx0739USiTs57GWzYEkWd/NtksaDyyqyLwsdxCOw5CZIaEgTbdQMHG4obl5vUo1Etz61YP4OxjGSIRMjENnC9cnEmyKIe0O4i8GnbrvyHlJ4F9Dey8vNfpRkpCQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=v0uHozzWz811i2pojcrClwyeC133/2l9qaA9oielkDo=;
- b=db+fmocOyPVh0NNzTO0aZFcMUEa3QHXVA8J62xQYlGMsrTBHfZ2WPmj+CuslvON3CWwe5ecr+FFsNnJilGZk51JhReF5Ql8FG2d8FzQu4n2FdynIz6+x+QLd0ckdpW9eYIOs/y5GGBvaBCdIVsEH3sWMIlgfvZaFDLiaGhkA3WpUB53arjHqDAa4tE9bTHb/92LrU4LMgyXDIlKDKLpcHJ2dll9ngA7RHT1mjmaOhI3dP+8Fms/VjNqUDcC0QxpbgYK/nWDUZRT/CDy79AL4VLcRQmf7hpwmBDHK3JB79Vqyv+Vv6h7GzIvzZruryTaBLViBIUIdOcMTcVp0eepTWA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 216.228.117.161) smtp.rcpttodomain=intel.com smtp.mailfrom=nvidia.com;
- dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
- dkim=none (message not signed); arc=none (0)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=v0uHozzWz811i2pojcrClwyeC133/2l9qaA9oielkDo=;
- b=sWdOYIUU3L1hiSGXTVy2yM9wXDzFXYx/jVLiw5fY6nDwbTkwgb7xlIcU8BSQmDckBNBVB90vEOgR6dxpdzafgAENLRrO/WB3PYfhmXgUfVBTO+8qzGFWu0xcVrq5Dj7QkngVqxk+rujKufNJQeOvSz5ONDt7vZLLnvo9zZxH2PU81iWTdgMFD42Ndw4d317oddJwj1qPcmLRx5ys1cK3Czfrk+EHO3wgM8SCT1NWtrMGvHKtKUXB5ejt1o2O0Jdn4JiMDkPoXkZVVVERsFQPk4QxyhR9aARU7md6nEITjNuV34X4kfolDXSP/ZBWgWtn02nqNuyO+hhJ0L7mJApcVQ==
-Received: from SJ0PR05CA0060.namprd05.prod.outlook.com (2603:10b6:a03:33f::35)
- by PH7PR12MB7986.namprd12.prod.outlook.com (2603:10b6:510:27d::17) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7918.27; Tue, 10 Sep
- 2024 20:41:46 +0000
-Received: from SJ1PEPF00002314.namprd03.prod.outlook.com
- (2603:10b6:a03:33f:cafe::34) by SJ0PR05CA0060.outlook.office365.com
- (2603:10b6:a03:33f::35) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7939.24 via Frontend
- Transport; Tue, 10 Sep 2024 20:41:46 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.117.161)
- smtp.mailfrom=nvidia.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=nvidia.com;
-Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 216.228.117.161 as permitted sender) receiver=protection.outlook.com;
- client-ip=216.228.117.161; helo=mail.nvidia.com; pr=C
-Received: from mail.nvidia.com (216.228.117.161) by
- SJ1PEPF00002314.mail.protection.outlook.com (10.167.242.168) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.7918.13 via Frontend Transport; Tue, 10 Sep 2024 20:41:45 +0000
-Received: from rnnvmail204.nvidia.com (10.129.68.6) by mail.nvidia.com
- (10.129.200.67) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1544.4; Tue, 10 Sep
- 2024 13:41:35 -0700
-Received: from rnnvmail204.nvidia.com (10.129.68.6) by rnnvmail204.nvidia.com
- (10.129.68.6) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1544.4; Tue, 10 Sep
- 2024 13:41:35 -0700
-Received: from Asurada-9440.nvidia.com (10.127.8.11) by mail.nvidia.com
- (10.129.68.6) with Microsoft SMTP Server id 15.2.1544.4 via Frontend
- Transport; Tue, 10 Sep 2024 13:41:33 -0700
-From: Nicolin Chen <nicolinc@nvidia.com>
-To: <jgg@nvidia.com>, <kevin.tian@intel.com>
-CC: <corbet@lwn.net>, <iommu@lists.linux.dev>, <linux-doc@vger.kernel.org>,
-	<linux-kernel@vger.kernel.org>, <yi.l.liu@intel.com>,
-	<eric.auger@redhat.com>, <shameerali.kolothum.thodi@huawei.com>,
-	<smostafa@google.com>, <baolu.lu@linux.intel.com>
-Subject: [PATCH] Documentation: userspace-api: iommufd: Update HWPT_PAGING and HWPT_NESTED
-Date: Tue, 10 Sep 2024 13:41:11 -0700
-Message-ID: <20240910204111.7969-1-nicolinc@nvidia.com>
-X-Mailer: git-send-email 2.34.1
+	dkim=pass (2048-bit key) header.d=ibm.com header.i=@ibm.com header.b="OIfpKAzH"
+Received: from pps.filterd (m0360072.ppops.net [127.0.0.1])
+	by mx0a-001b2d01.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 48ADACaA002900;
+	Tue, 10 Sep 2024 21:15:22 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=from
+	:to:cc:subject:date:message-id:mime-version
+	:content-transfer-encoding; s=pp1; bh=YboOhgCfgBs89KiTnDPVxVE2Yz
+	sIU18gVzvQuu26dDI=; b=OIfpKAzH09u0RZZcfWxtKu9H1IORUrDPd5/9HpAGHS
+	5OjKlQZNh6PyBw9wZ+OIC4COtIwz2PqrEJ9g5hTFsQdeVUEQH32UNqUZaVYqkZYc
+	1QzSw5je+WrAo7jUGBFlogNL5rb9MdW6kHlG82oYZqa4a8X/13Qu4GFZTxCPODgl
+	QZyjpM0ng40tDsCbdkqW759snyAhOEUR7i7ye0I/BEV5kcI7QN4jtdgTqa5TqcTz
+	Uwbeur8/mkba09Qpb+6e+mtlIQXU8pvADlstt9fUxnWR3Sfpie95sCuTylf10pLw
+	lIYcPOK2cvuHX7W+e4U0I3oPcSPYzsiPvSLb2x8Nw2YA==
+Received: from ppma13.dal12v.mail.ibm.com (dd.9e.1632.ip4.static.sl-reverse.com [50.22.158.221])
+	by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 41gefyhsnw-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Tue, 10 Sep 2024 21:15:22 +0000 (GMT)
+Received: from pps.filterd (ppma13.dal12v.mail.ibm.com [127.0.0.1])
+	by ppma13.dal12v.mail.ibm.com (8.18.1.2/8.18.1.2) with ESMTP id 48AK5OJa013468;
+	Tue, 10 Sep 2024 21:15:21 GMT
+Received: from smtprelay07.wdc07v.mail.ibm.com ([172.16.1.74])
+	by ppma13.dal12v.mail.ibm.com (PPS) with ESMTPS id 41h3cm5bk6-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Tue, 10 Sep 2024 21:15:21 +0000
+Received: from smtpav01.wdc07v.mail.ibm.com (smtpav01.wdc07v.mail.ibm.com [10.39.53.228])
+	by smtprelay07.wdc07v.mail.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 48ALFJE527525844
+	(version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+	Tue, 10 Sep 2024 21:15:19 GMT
+Received: from smtpav01.wdc07v.mail.ibm.com (unknown [127.0.0.1])
+	by IMSVA (Postfix) with ESMTP id 76A3058055;
+	Tue, 10 Sep 2024 21:15:19 +0000 (GMT)
+Received: from smtpav01.wdc07v.mail.ibm.com (unknown [127.0.0.1])
+	by IMSVA (Postfix) with ESMTP id B50865804B;
+	Tue, 10 Sep 2024 21:15:17 +0000 (GMT)
+Received: from li-2311da4c-2e09-11b2-a85c-c003041e9174.ibm.com.com (unknown [9.61.185.100])
+	by smtpav01.wdc07v.mail.ibm.com (Postfix) with ESMTP;
+	Tue, 10 Sep 2024 21:15:17 +0000 (GMT)
+From: Matthew Rosato <mjrosato@linux.ibm.com>
+To: joro@8bytes.org, will@kernel.org, robin.murphy@arm.com,
+        gerald.schaefer@linux.ibm.com, schnelle@linux.ibm.com
+Cc: jgg@ziepe.ca, baolu.lu@linux.intel.com, hca@linux.ibm.com,
+        gor@linux.ibm.com, agordeev@linux.ibm.com, svens@linux.ibm.com,
+        jroedel@suse.de, iommu@lists.linux.dev, linux-kernel@vger.kernel.org,
+        linux-s390@vger.kernel.org
+Subject: [PATCH v4] iommu/s390: Implement blocking domain
+Date: Tue, 10 Sep 2024 17:15:16 -0400
+Message-ID: <20240910211516.137933-1-mjrosato@linux.ibm.com>
+X-Mailer: git-send-email 2.46.0
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -79,238 +69,272 @@ List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-NV-OnPremToCloud: ExternallySecured
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: SJ1PEPF00002314:EE_|PH7PR12MB7986:EE_
-X-MS-Office365-Filtering-Correlation-Id: 6fde957f-5d27-4c15-1be6-08dcd1d8fc91
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|36860700013|1800799024|376014|7416014|82310400026;
-X-Microsoft-Antispam-Message-Info:
-	=?us-ascii?Q?0V+Oulc+/fyiRXFVRAgQjBEHr6ng/6izgAzkNHTrNgRCG3ZeK5Q4lUGQk/zb?=
- =?us-ascii?Q?4cvJeqiB8MXKYfXIdkYfaW4vaKm8lsh9e+wgfY5tRO93exK3M0cqNQBLv2dM?=
- =?us-ascii?Q?nDrqdMvwCQisIu2RW6bj17E4/DetKiVcH3jQnNrsGICr71CJ5ExNZkJap0vE?=
- =?us-ascii?Q?NmHIOaB52xXOFDf72w2abBAV409nq13PVuTX73nEA44CnlgYCPLd4/PCb5BD?=
- =?us-ascii?Q?GDXdF118V1RcCSanlHZQCml0yhAfqxcgOTIHfNAJrgTiYjSsdNu1lv4khFet?=
- =?us-ascii?Q?awuHRwUr8S4U3qGLZJbM2FBjoEAjpxa5CJXNauudEQb1bH9j67IrJfw1C+vF?=
- =?us-ascii?Q?RgjWPcqZt2w9ZkvMgkeYCWdRg/UoAvJIS/nkDf9up8rv3ttM/0dICUp3am4e?=
- =?us-ascii?Q?FYJwhv0RYfYJDThnX304ipyRpYTPd1ot/AztUEWyETfk4EpRgHTPNAv3P/0n?=
- =?us-ascii?Q?rf96/1grpDTy/k7fHtBAkYi6epX9E7CYFa8OKxygVd1zJsoExpgrfcT5Bhd6?=
- =?us-ascii?Q?Y3Db194r/T9LxpEc9LUygsmG/6IJM4NsGhLzTD751+OdbeCVeUvb0oEbCYQw?=
- =?us-ascii?Q?NXRYNWEFMjw5o15sGnkCXTZf7S7mXiR7WHCBtw8SgVYeIDAQ/bYQ4zsEJNqE?=
- =?us-ascii?Q?DetQjEasqIJ7AttQqz7zL6axH0OfwLKuv3/2p3xgMY+VJ74e/9maYzZzj4PT?=
- =?us-ascii?Q?7yBMMwe4oE0mexywd9t32kBj5Vv38fbH0nQys/3epZNVHFcdkGJCPsKCvNbk?=
- =?us-ascii?Q?JAf0cRPNInj4m7E8HmEPm+87LSDFgEERL+S7TXVAPtWe0iWNrJ8DGxE36Joz?=
- =?us-ascii?Q?ez9ZBZF5gozoOXwF8+uSjDxirHmiVJuSvS+ZGCq/ugaIUNngkC3+4TLKP7QL?=
- =?us-ascii?Q?6Eahkdk9X5lA6bVrecMVpP4oBEKYfK4JckE+bcW3i7K9YRHX88h5jvy8TRT6?=
- =?us-ascii?Q?T54n7O+uhr5DrI+cx5jzw8m76Z4gd5ZEfsomKjHgkGh3zPrJybfpfCWlS7k9?=
- =?us-ascii?Q?LvG+9RkfA2Df7yW6ezBqdRIIkpjUAdc4l9WXcjKcYy+MkN/qfIgRjH5WFYDp?=
- =?us-ascii?Q?gdRl2/rMkXo5LVCQPKRJN3l3EvI9Lc9iderbIdBQ4MujoZzXQO0G0Jd9fBl/?=
- =?us-ascii?Q?Rr4kP+zcoB+0Pe4cfVhKYtBlkx3d21Og8P4NAKSpiqvC/xq42JatXmxoQuWs?=
- =?us-ascii?Q?0QwX6GOuxTbjO6JR1PlRYFW5GV1G0B/FiTVBbPwOcUQOH+dPYam8mo6fgO8J?=
- =?us-ascii?Q?Lnh5YCB7/I5knYmszSG7mB1zwdGTUAAXbnXX+gp5445iIiKGjYx6YwX3CJkE?=
- =?us-ascii?Q?VCg7FW+v0h51B6rTedugAWuCwN0Qur8Qy7O9iVh+xbNY6D86CRAK3WWavgJY?=
- =?us-ascii?Q?mAyIw3xLBit6QLKmmbkEFssfYQvzqCrq4sm6KUnY1ecucQgEENrfcPjEPUS8?=
- =?us-ascii?Q?jf0ivH0og+uw8jjgsaQoAfmQl3gFASxi?=
-X-Forefront-Antispam-Report:
-	CIP:216.228.117.161;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc6edge2.nvidia.com;CAT:NONE;SFS:(13230040)(36860700013)(1800799024)(376014)(7416014)(82310400026);DIR:OUT;SFP:1101;
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 10 Sep 2024 20:41:45.9027
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 6fde957f-5d27-4c15-1be6-08dcd1d8fc91
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.117.161];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource:
-	SJ1PEPF00002314.namprd03.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH7PR12MB7986
+X-TM-AS-GCONF: 00
+X-Proofpoint-GUID: otH8z5dxvysCfInhUp3PcQkQaE2iK6F_
+X-Proofpoint-ORIG-GUID: otH8z5dxvysCfInhUp3PcQkQaE2iK6F_
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.293,Aquarius:18.0.1039,Hydra:6.0.680,FMLib:17.12.60.29
+ definitions=2024-09-10_08,2024-09-09_02,2024-09-02_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 mlxscore=0 malwarescore=0
+ lowpriorityscore=0 suspectscore=0 mlxlogscore=779 priorityscore=1501
+ adultscore=0 clxscore=1015 spamscore=0 bulkscore=0 phishscore=0
+ impostorscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.19.0-2408220000 definitions=main-2409100157
 
-The previous IOMMUFD_OBJ_HW_PAGETABLE has been reworked to two separated
-objects: IOMMUFD_OBJ_HWPT_PAGING and IOMMUFD_OBJ_HWPT_NESTED in order to
-support a nested translation context.
+This fixes a crash when surprise hot-unplugging a PCI device. This crash
+happens because during hot-unplug __iommu_group_set_domain_nofail()
+attaching the default domain fails when the platform no longer
+recognizes the device as it has already been removed and we end up with
+a NULL domain pointer and UAF. This is exactly the case referred to in
+the second comment in __iommu_device_set_domain() and just as stated
+there if we can instead attach the blocking domain the UAF is prevented
+as this can handle the already removed device. Implement the blocking
+domain to use this handling.  With this change, the crash is fixed but
+we still hit a warning attempting to change DMA ownership on a blocked
+device.
 
-Corresponding to the latest iommufd APIs and uAPIs, update the doc so as
-to reflect the new design.
-
-Signed-off-by: Nicolin Chen <nicolinc@nvidia.com>
+Fixes: c76c067e488c ("s390/pci: Use dma-iommu layer")
+Co-developed-by: Niklas Schnelle <schnelle@linux.ibm.com>
+Signed-off-by: Niklas Schnelle <schnelle@linux.ibm.com>
+Signed-off-by: Matthew Rosato <mjrosato@linux.ibm.com>
 ---
- Documentation/userspace-api/iommufd.rst | 131 ++++++++++++++++--------
- 1 file changed, 89 insertions(+), 42 deletions(-)
+Changes for v4:
+- fix lockdep assert
+Changes for v3:
+- make blocking_domain type iommu_domain
+- change zdev->s390_domain to type iommu_domain and remove most uses
+- remove s390_iommu_detach_device, use blocking domain attach
+- add spinlock to serialize zdev->s390_domain change / access to counters
+---
+ arch/s390/include/asm/pci.h |  4 +-
+ arch/s390/pci/pci.c         |  3 ++
+ arch/s390/pci/pci_debug.c   | 10 ++++-
+ drivers/iommu/s390-iommu.c  | 73 +++++++++++++++++++++++--------------
+ 4 files changed, 59 insertions(+), 31 deletions(-)
 
-diff --git a/Documentation/userspace-api/iommufd.rst b/Documentation/userspace-api/iommufd.rst
-index aa004faed5fd..3b0e46017dce 100644
---- a/Documentation/userspace-api/iommufd.rst
-+++ b/Documentation/userspace-api/iommufd.rst
-@@ -41,46 +41,65 @@ Following IOMMUFD objects are exposed to userspace:
- - IOMMUFD_OBJ_DEVICE, representing a device that is bound to iommufd by an
-   external driver.
+diff --git a/arch/s390/include/asm/pci.h b/arch/s390/include/asm/pci.h
+index 30820a649e6e..a60a291fbd58 100644
+--- a/arch/s390/include/asm/pci.h
++++ b/arch/s390/include/asm/pci.h
+@@ -96,7 +96,6 @@ struct zpci_bar_struct {
+ 	u8		size;		/* order 2 exponent */
+ };
  
--- IOMMUFD_OBJ_HW_PAGETABLE, representing an actual hardware I/O page table
--  (i.e. a single struct iommu_domain) managed by the iommu driver.
+-struct s390_domain;
+ struct kvm_zdev;
+ 
+ #define ZPCI_FUNCTIONS_PER_BUS 256
+@@ -181,9 +180,10 @@ struct zpci_dev {
+ 	struct dentry	*debugfs_dev;
+ 
+ 	/* IOMMU and passthrough */
+-	struct s390_domain *s390_domain; /* s390 IOMMU domain data */
++	struct iommu_domain *s390_domain; /* attached IOMMU domain */
+ 	struct kvm_zdev *kzdev;
+ 	struct mutex kzdev_lock;
++	spinlock_t dom_lock;		/* protect s390_domain change */
+ };
+ 
+ static inline bool zdev_enabled(struct zpci_dev *zdev)
+diff --git a/arch/s390/pci/pci.c b/arch/s390/pci/pci.c
+index cff4838fad21..759983d0e63e 100644
+--- a/arch/s390/pci/pci.c
++++ b/arch/s390/pci/pci.c
+@@ -160,6 +160,7 @@ int zpci_fmb_enable_device(struct zpci_dev *zdev)
+ 	u64 req = ZPCI_CREATE_REQ(zdev->fh, 0, ZPCI_MOD_FC_SET_MEASURE);
+ 	struct zpci_iommu_ctrs *ctrs;
+ 	struct zpci_fib fib = {0};
++	unsigned long flags;
+ 	u8 cc, status;
+ 
+ 	if (zdev->fmb || sizeof(*zdev->fmb) < zdev->fmb_length)
+@@ -171,6 +172,7 @@ int zpci_fmb_enable_device(struct zpci_dev *zdev)
+ 	WARN_ON((u64) zdev->fmb & 0xf);
+ 
+ 	/* reset software counters */
++	spin_lock_irqsave(&zdev->dom_lock, flags);
+ 	ctrs = zpci_get_iommu_ctrs(zdev);
+ 	if (ctrs) {
+ 		atomic64_set(&ctrs->mapped_pages, 0);
+@@ -179,6 +181,7 @@ int zpci_fmb_enable_device(struct zpci_dev *zdev)
+ 		atomic64_set(&ctrs->sync_map_rpcits, 0);
+ 		atomic64_set(&ctrs->sync_rpcits, 0);
+ 	}
++	spin_unlock_irqrestore(&zdev->dom_lock, flags);
+ 
+ 
+ 	fib.fmb_addr = virt_to_phys(zdev->fmb);
+diff --git a/arch/s390/pci/pci_debug.c b/arch/s390/pci/pci_debug.c
+index 2cb5043a997d..38014206c16b 100644
+--- a/arch/s390/pci/pci_debug.c
++++ b/arch/s390/pci/pci_debug.c
+@@ -71,17 +71,23 @@ static void pci_fmb_show(struct seq_file *m, char *name[], int length,
+ 
+ static void pci_sw_counter_show(struct seq_file *m)
+ {
+-	struct zpci_iommu_ctrs  *ctrs = zpci_get_iommu_ctrs(m->private);
++	struct zpci_dev *zdev = m->private;
++	struct zpci_iommu_ctrs *ctrs;
+ 	atomic64_t *counter;
++	unsigned long flags;
+ 	int i;
+ 
++	spin_lock_irqsave(&zdev->dom_lock, flags);
++	ctrs = zpci_get_iommu_ctrs(m->private);
+ 	if (!ctrs)
+-		return;
++		goto unlock;
+ 
+ 	counter = &ctrs->mapped_pages;
+ 	for (i = 0; i < ARRAY_SIZE(pci_sw_names); i++, counter++)
+ 		seq_printf(m, "%26s:\t%llu\n", pci_sw_names[i],
+ 			   atomic64_read(counter));
++unlock:
++	spin_unlock_irqrestore(&zdev->dom_lock, flags);
+ }
+ 
+ static int pci_perf_show(struct seq_file *m, void *v)
+diff --git a/drivers/iommu/s390-iommu.c b/drivers/iommu/s390-iommu.c
+index d8eaa7ea380b..fbdeded3d48b 100644
+--- a/drivers/iommu/s390-iommu.c
++++ b/drivers/iommu/s390-iommu.c
+@@ -33,6 +33,8 @@ struct s390_domain {
+ 	struct rcu_head		rcu;
+ };
+ 
++static struct iommu_domain blocking_domain;
++
+ static inline unsigned int calc_rtx(dma_addr_t ptr)
+ {
+ 	return ((unsigned long)ptr >> ZPCI_RT_SHIFT) & ZPCI_INDEX_MASK;
+@@ -369,20 +371,36 @@ static void s390_domain_free(struct iommu_domain *domain)
+ 	call_rcu(&s390_domain->rcu, s390_iommu_rcu_free_domain);
+ }
+ 
+-static void s390_iommu_detach_device(struct iommu_domain *domain,
+-				     struct device *dev)
++static void zdev_s390_domain_update(struct zpci_dev *zdev,
++				    struct iommu_domain *domain)
++{
++	unsigned long flags;
++
++	spin_lock_irqsave(&zdev->dom_lock, flags);
++	zdev->s390_domain = domain;
++	spin_unlock_irqrestore(&zdev->dom_lock, flags);
++}
++
++static int blocking_domain_attach_device(struct iommu_domain *domain,
++					 struct device *dev)
+ {
+-	struct s390_domain *s390_domain = to_s390_domain(domain);
+ 	struct zpci_dev *zdev = to_zpci_dev(dev);
++	struct s390_domain *s390_domain;
+ 	unsigned long flags;
+ 
++	if (zdev->s390_domain->type == IOMMU_DOMAIN_BLOCKED)
++		return 0;
++
++	s390_domain = to_s390_domain(zdev->s390_domain);
+ 	spin_lock_irqsave(&s390_domain->list_lock, flags);
+ 	list_del_rcu(&zdev->iommu_list);
+ 	spin_unlock_irqrestore(&s390_domain->list_lock, flags);
+ 
+ 	zpci_unregister_ioat(zdev, 0);
+-	zdev->s390_domain = NULL;
+ 	zdev->dma_table = NULL;
++	zdev_s390_domain_update(zdev, domain);
++
++	return 0;
+ }
+ 
+ static int s390_iommu_attach_device(struct iommu_domain *domain,
+@@ -401,20 +419,15 @@ static int s390_iommu_attach_device(struct iommu_domain *domain,
+ 		domain->geometry.aperture_end < zdev->start_dma))
+ 		return -EINVAL;
+ 
+-	if (zdev->s390_domain)
+-		s390_iommu_detach_device(&zdev->s390_domain->domain, dev);
++	blocking_domain_attach_device(&blocking_domain, dev);
+ 
++	/* If we fail now DMA remains blocked via blocking domain */
+ 	cc = zpci_register_ioat(zdev, 0, zdev->start_dma, zdev->end_dma,
+ 				virt_to_phys(s390_domain->dma_table), &status);
+-	/*
+-	 * If the device is undergoing error recovery the reset code
+-	 * will re-establish the new domain.
+-	 */
+ 	if (cc && status != ZPCI_PCI_ST_FUNC_NOT_AVAIL)
+ 		return -EIO;
 -
--  The IOAS has a list of HW_PAGETABLES that share the same IOVA mapping and
--  it will synchronize its mapping with each member HW_PAGETABLE.
-+- IOMMUFD_OBJ_HWPT_PAGING, representing an actual hardware I/O page table
-+  (i.e. a single struct iommu_domain) managed by the iommu driver. "PAGING"
-+  primarly indicates this type of HWPT should be linked to an IOAS. It also
-+  indicates that it is backed by an iommu_domain with __IOMMU_DOMAIN_PAGING
-+  feature flag. This can be either an UNMANAGED stage-1 domain for a device
-+  running in the user space, or a nesting parent stage-2 domain for mappings
-+  from guest-level physical addresses to host-level physical addresses.
-+
-+  The IOAS has a list of HWPT_PAGINGs that share the same IOVA mapping and
-+  it will synchronize its mapping with each member HWPT_PAGING.
-+
-+- IOMMUFD_OBJ_HWPT_NESTED, representing an actual hardware I/O page table
-+  (i.e. a single struct iommu_domain) managed by user space (e.g. guest OS).
-+  "NESTED" indicates that this type of HWPT can be linked to an HWPT_PAGING.
-+  It also indicates that it is backed by an iommu_domain that has a type of
-+  IOMMU_DOMAIN_NESTED. This must be a stage-1 domain for a device running in
-+  the user space (e.g. in a guest VM enabling the IOMMU nested translation
-+  feature.) So it must be created with a given nesting parent stage-2 domain
-+  to associate to. This nested stage-1 page table managed by the user space
-+  usually has mappings from guest-level I/O virtual addresses to guest-level
-+  physical addresses.
+ 	zdev->dma_table = s390_domain->dma_table;
+-	zdev->s390_domain = s390_domain;
++	zdev_s390_domain_update(zdev, domain);
  
- All user-visible objects are destroyed via the IOMMU_DESTROY uAPI.
+ 	spin_lock_irqsave(&s390_domain->list_lock, flags);
+ 	list_add_rcu(&zdev->iommu_list, &s390_domain->devices);
+@@ -466,19 +479,11 @@ static struct iommu_device *s390_iommu_probe_device(struct device *dev)
+ 	if (zdev->tlb_refresh)
+ 		dev->iommu->shadow_on_flush = 1;
  
--The diagram below shows relationship between user-visible objects and kernel
-+The diagrams below show relationships between user-visible objects and kernel
- datastructures (external to iommufd), with numbers referred to operations
- creating the objects and links::
+-	return &zdev->iommu_dev;
+-}
++	/* Start with DMA blocked */
++	spin_lock_init(&zdev->dom_lock);
++	zdev_s390_domain_update(zdev, &blocking_domain);
  
--  _________________________________________________________
-- |                         iommufd                         |
-- |       [1]                                               |
-- |  _________________                                      |
-- | |                 |                                     |
-- | |                 |                                     |
-- | |                 |                                     |
-- | |                 |                                     |
-- | |                 |                                     |
-- | |                 |                                     |
-- | |                 |        [3]                 [2]      |
-- | |                 |    ____________         __________  |
-- | |      IOAS       |<--|            |<------|          | |
-- | |                 |   |HW_PAGETABLE|       |  DEVICE  | |
-- | |                 |   |____________|       |__________| |
-- | |                 |         |                   |       |
-- | |                 |         |                   |       |
-- | |                 |         |                   |       |
-- | |                 |         |                   |       |
-- | |                 |         |                   |       |
-- | |_________________|         |                   |       |
-- |         |                   |                   |       |
-- |_________|___________________|___________________|_______|
--           |                   |                   |
--           |              _____v______      _______v_____
--           | PFN storage |            |    |             |
--           |------------>|iommu_domain|    |struct device|
--                         |____________|    |_____________|
-+  _______________________________________________________________________
-+ |                      iommufd (HWPT_PAGING only)                       |
-+ |                                                                       |
-+ |        [1]                  [3]                                [2]    |
-+ |  ________________      _____________                        ________  |
-+ | |                |    |             |                      |        | |
-+ | |      IOAS      |<---| HWPT_PAGING |<---------------------| DEVICE | |
-+ | |________________|    |_____________|                      |________| |
-+ |         |                    |                                  |     |
-+ |_________|____________________|__________________________________|_____|
-+           |                    |                                  |
-+           |              ______v_____                          ___v__
-+           | PFN storage |  (paging)  |                        |struct|
-+           |------------>|iommu_domain|<-----------------------|device|
-+                         |____________|                        |______|
-+
-+  _______________________________________________________________________
-+ |                      iommufd (with HWPT_NESTED)                       |
-+ |                                                                       |
-+ |        [1]                  [3]                [4]             [2]    |
-+ |  ________________      _____________      _____________     ________  |
-+ | |                |    |             |    |             |   |        | |
-+ | |      IOAS      |<---| HWPT_PAGING |<---| HWPT_NESTED |<--| DEVICE | |
-+ | |________________|    |_____________|    |_____________|   |________| |
-+ |         |                    |                  |               |     |
-+ |_________|____________________|__________________|_______________|_____|
-+           |                    |                  |               |
-+           |              ______v_____       ______v_____       ___v__
-+           | PFN storage |  (paging)  |     |  (nested)  |     |struct|
-+           |------------>|iommu_domain|<----|iommu_domain|<----|device|
-+                         |____________|     |____________|     |______|
- 
- 1. IOMMUFD_OBJ_IOAS is created via the IOMMU_IOAS_ALLOC uAPI. An iommufd can
-    hold multiple IOAS objects. IOAS is the most generic object and does not
-@@ -94,21 +113,48 @@ creating the objects and links::
-    device. The driver must also set the driver_managed_dma flag and must not
-    touch the device until this operation succeeds.
- 
--3. IOMMUFD_OBJ_HW_PAGETABLE is created when an external driver calls the IOMMUFD
-+3. IOMMUFD_OBJ_HWPT_PAGING can be created in two ways:
-+
-+   IOMMUFD_OBJ_HWPT_PAGING is created when an external driver calls the IOMMUFD
-    kAPI to attach a bound device to an IOAS. Similarly the external driver uAPI
-    allows userspace to initiate the attaching operation. If a compatible
-    pagetable already exists then it is reused for the attachment. Otherwise a
-    new pagetable object and iommu_domain is created. Successful completion of
-    this operation sets up the linkages among IOAS, device and iommu_domain. Once
--   this completes the device could do DMA.
+-static void s390_iommu_release_device(struct device *dev)
+-{
+-	struct zpci_dev *zdev = to_zpci_dev(dev);
 -
--   Every iommu_domain inside the IOAS is also represented to userspace as a
--   HW_PAGETABLE object.
-+   this completes the device could do DMA. Note that every iommu_domain inside
-+   the IOAS is also represented to userspace as an IOMMUFD_OBJ_HWPT_PAGING.
+-	/*
+-	 * release_device is expected to detach any domain currently attached
+-	 * to the device, but keep it attached to other devices in the group.
+-	 */
+-	if (zdev)
+-		s390_iommu_detach_device(&zdev->s390_domain->domain, dev);
++	return &zdev->iommu_dev;
+ }
+ 
+ static int zpci_refresh_all(struct zpci_dev *zdev)
+@@ -697,9 +702,15 @@ static size_t s390_iommu_unmap_pages(struct iommu_domain *domain,
+ 
+ struct zpci_iommu_ctrs *zpci_get_iommu_ctrs(struct zpci_dev *zdev)
+ {
+-	if (!zdev || !zdev->s390_domain)
++	struct s390_domain *s390_domain;
 +
-+   IOMMUFD_OBJ_HWPT_PAGING can be also manually created via the IOMMU_HWPT_ALLOC
-+   uAPI, provided an ioas_id via @pt_id to associate the new HWPT_PAGING object
-+   to the corresponding IOAS object. The benefit of this manual allocation is to
-+   provide allocation flags (defined in enum iommufd_hwpt_alloc_flags), e.g. it
-+   allocates a nesting parent HWPT_PAGING, if the IOMMU_HWPT_ALLOC_NEST_PARENT
-+   flag is set.
++	lockdep_assert_held(&zdev->dom_lock);
 +
-+4. IOMMUFD_OBJ_HWPT_NESTED can be only manually created via the IOMMU_HWPT_ALLOC
-+   uAPI, provided an hwpt_id via @pt_id to associate the new HWPT_NESTED object
-+   to the corresponding HWPT_PAGING object. The associating HWPT_PAGING object
-+   must be a nesting parent manually allocated via the same uAPI previously with
-+   an IOMMU_HWPT_ALLOC_NEST_PARENT flag, otherwise the allocation will fail. The
-+   allocation will be further validated by the IOMMU driver of an IOMMU hardware
-+   that the given device (via @dev_id) is physically linked to, to ensure that
-+   the nesting parent domain and a nested domain being allocated are compatible.
-+   Successful completion of this operation sets up linkages among IOAS, device,
-+   and iommu_domains. Once this completes the device could do DMA via a 2-stage
-+   translation, a.k.a nested translation. Note that multiple HWPT_NESTED objects
-+   can be allocated by (and then associated to) the same nesting parent.
++	if (zdev->s390_domain->type == IOMMU_DOMAIN_BLOCKED)
+ 		return NULL;
+-	return &zdev->s390_domain->ctrs;
++
++	s390_domain = to_s390_domain(zdev->s390_domain);
++	return &s390_domain->ctrs;
+ }
  
-    .. note::
+ int zpci_init_iommu(struct zpci_dev *zdev)
+@@ -776,11 +787,19 @@ static int __init s390_iommu_init(void)
+ }
+ subsys_initcall(s390_iommu_init);
  
--      Future IOMMUFD updates will provide an API to create and manipulate the
--      HW_PAGETABLE directly.
-+      Either a manual IOMMUFD_OBJ_HWPT_PAGING or an IOMMUFD_OBJ_HWPT_NESTED is
-+      created via the same IOMMU_HWPT_ALLOC uAPI. The difference is at the type
-+      of the object passed in via the @pt_id field of struct iommufd_hwpt_alloc:
-+      When @pt_id carries an ioas_id to an IOAS object, the IOMMU_HWPT_ALLOC
-+      call is instructed to allocate an HWPT_PAGING object only.
-+      When @pt_id carries an hwpt_id to an HWPT_PAGING object, the uAPI call
-+      is instructed to allocate an HWPT_NESTED object only.
-+      If any other type of object is passed in via the @pt_id, the uAPI call
-+      will fail.
- 
- A device can only bind to an iommufd due to DMA ownership claim and attach to at
- most one IOAS object (no support of PASID yet).
-@@ -120,7 +166,8 @@ User visible objects are backed by following datastructures:
- 
- - iommufd_ioas for IOMMUFD_OBJ_IOAS.
- - iommufd_device for IOMMUFD_OBJ_DEVICE.
--- iommufd_hw_pagetable for IOMMUFD_OBJ_HW_PAGETABLE.
-+- iommufd_hwpt_paging for IOMMUFD_OBJ_HWPT_PAGING.
-+- iommufd_hwpt_nested for IOMMUFD_OBJ_HWPT_NESTED.
- 
- Several terminologies when looking at these datastructures:
- 
++static struct iommu_domain blocking_domain = {
++	.type = IOMMU_DOMAIN_BLOCKED,
++	.ops = &(const struct iommu_domain_ops) {
++		.attach_dev	= blocking_domain_attach_device,
++	}
++};
++
+ static const struct iommu_ops s390_iommu_ops = {
++	.blocked_domain		= &blocking_domain,
++	.release_domain		= &blocking_domain,
+ 	.capable = s390_iommu_capable,
+ 	.domain_alloc_paging = s390_domain_alloc_paging,
+ 	.probe_device = s390_iommu_probe_device,
+-	.release_device = s390_iommu_release_device,
+ 	.device_group = generic_device_group,
+ 	.pgsize_bitmap = SZ_4K,
+ 	.get_resv_regions = s390_iommu_get_resv_regions,
 -- 
-2.34.1
+2.46.0
 
