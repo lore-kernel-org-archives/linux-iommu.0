@@ -1,308 +1,196 @@
-Received: from NAM11-CO1-obe.outbound.protection.outlook.com (mail-co1nam11on2067.outbound.protection.outlook.com [40.107.220.67])
+Received: from NAM12-DM6-obe.outbound.protection.outlook.com (mail-dm6nam12on2043.outbound.protection.outlook.com [40.107.243.43])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 78F9D36AE0;
-	Tue, 10 Sep 2024 01:29:09 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.220.67
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9A0DC4D8A1
+	for <iommu@lists.linux.dev>; Tue, 10 Sep 2024 04:43:24 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.243.43
 ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1725931751; cv=fail; b=jDalhPynEb+wgmFmnk4G5uS/GiANCkjA79iCvroVYguul23uS+iSNBcLTBfQCy0NSj8STnfxgxKrOdPg/giS4Nai/wD94GAQaD6qI5Tr7+pu0vjedELt1QBnaHvFK2j/oHF5Ivm7mWyneGJWHzPT6UtJrmm0fn0sEnJi9IrRo/I=
+	t=1725943407; cv=fail; b=oQlO3Q6AQRjP+vVWynO3eqfkCzcjNU+FsbMJtKp6sb2+1DpqiggF58AERtEBeZoUxljXYKyEYbadUaJwGGWOKG5UrKGrfPeyxuVy8/zk2yllYFMA9h4GxOFhHVAVLJ3bdAU1RCbk4NPEd+M1pwcbbZpGdlMxqNsHtnSfmwTN2IU=
 ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1725931751; c=relaxed/simple;
-	bh=Cg/TZDAfsmehX0/CEOPN0E0t9DWHjH32j6xeYslQYXQ=;
-	h=Message-ID:Date:Subject:To:Cc:References:From:In-Reply-To:
-	 Content-Type:MIME-Version; b=aYwHn48VrpxAQY0LXw0WZmIUYRyGodC9T6c9TwFmem2kEiDgvjxodG+j8DvL3H5zAq6rBIYGZvfrp7LKTghLet6JCxdKGj+uNYo3s/o+neHwV/SwkXzLCB3FenmmZhMQAcK9K/8bNeV4GUQYXRryNCJXF0qCioPKqHnT9I7nBw4=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com; spf=fail smtp.mailfrom=amd.com; dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b=r0ftJUVx; arc=fail smtp.client-ip=40.107.220.67
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=amd.com
+	s=arc-20240116; t=1725943407; c=relaxed/simple;
+	bh=N4SqfAQwiVGpDLgzt+YXyanlmI/Lj55BK2TIG+wDrJs=;
+	h=Date:From:To:CC:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=ovbpKCKlB0KT8otwF3LUFQQV3uTSyQtESUb6QKbnnahw3hn65dkWrxk19WM+HmnTYa/+In3UDEVE1px5Xv6OD960LiEI4G0dnZ427hdH/xP/MZ9PCWCE4IWrHFadqY/kSx2CqQKYf+xOZ0QNHNdB8mPhSJ0zvxHXkLoEwUOZNk8=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=pXGGUWcr; arc=fail smtp.client-ip=40.107.243.43
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b="r0ftJUVx"
+	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="pXGGUWcr"
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=tcCJ91uSxNsSHWGWIvdKoR5MxR6WDMG854Q+QtmIANlWtp4M2l/+uYmj5sXWrLU2kc7/yshAKS6WHy9jY1ycR0xi8bU/uqBzxT0TcaqgHdJdAai4vEkFe5ubWgUnoZSbdLmhObVRMJIg1m1lGPS6WCd090Lbz/5zuU/r2RrE/F8qebqIx1JA7zElJCmH0sj3BClOqlkIV+HD3DoSo8DW/kkHRhm3rmAA0ArOKkrDrqMHGE2ywe07gXCDnYuj5FlVoDt61umDlSe0FBqtXnoyP/WUhKHTYHYzeFQEr56IEsCTurh6oYRb8BGE18zs13/T7YTEXZXApjFTN5+H6I6CnA==
+ b=DKmPe5A/EHCjvT0y+J5+tjpHDvRkW2ZFkw6pAzu32IEd+SOlLusRHyb+KydagIQYBwU1ODHQ3yR3hqMESk4gg9uyygiWYaqALJoIZkH6OV8lSxE489+Lf15DbtckvLCRnxwUaUWRzURP9HYamDKwEQCSvRbjuVQqW19VBjUoHSotvaWX9jOvltN+/qP8zJhFsJyZp/N6gI1DaJ+FI+C/gNM71rViEkJWew8bgIFzpVRBNoM66T82q66Ft0Q8xywaHT4Peu+mEdVJ37Mzzwil+rQlq5484nx0q6ltM0KJ9jvMkGh/olNaqcc5OuMudxbJJ08Lq++2HocdE2nVrjtnDw==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector10001;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=uVOBvfgNNkDTnaQHaEXVk8dmg3Dbd4+qFIBsX3H2q74=;
- b=ZbjDWhvnqZpZd2GE4YWdJQbgSmVeiSI8+8KnY/hd1+SSD6sgXRXfDjymITd1kWsqw4e69bDLdGHux5xZi68pB5YINOInnwWlg46pokD185pBkGGndrma1IUpr07W2sAJ9WPx6MI4XW6jXacBvMTTqHdY/KkhSTeFVEFo/UuJxXUCWuwCtwStfFMujwl1oAfnfy0cUgNsiDycX8i/XHkDQqrjhNla8719PNUXoDijmgIfTMgUFPtBywr3hSM5J6Yr6WZqysybRsq8H1cLJWve6KgCm6kOdBvthu3WUi+m5amWyXC+RmuD5oy9OC3oIXw+V2vhyCDBaODyvlUxp9WRzA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=amd.com; dmarc=pass action=none header.from=amd.com; dkim=pass
- header.d=amd.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
+ bh=Hpb3feNQGAtQK+QbQnjoiVX2JMpWiUkqeS6adhEnl8M=;
+ b=ZTh0t7GDexRovkYn2SiJVr+K7AHVQt+mMAWY+YwSdPoat8lGfO0WR141JXPZDC64Kq9ZRRNH6wFFoz6qCOQuUkQKVDrhwMLBbINbaldCUfk2WozCl6TfC4VkOospR1HQ4CQ7vM6YXNt9JEQrp+5SCsprIN8mtms8kTclt5WVZVnbkSbCSH0Bi+Az6KFX31MxEF9wiaf8DaCPOBiDLXSnaox/QC05PVWPfQOqtP/9z0hMkXYILl5jdVMAzPMoc16OYaqzfH9ImRPbMw2c7t0nZQXEEbUZ4wb72q8cFDofyhWpH9ljy4BMXJ1tYmMULBGcSp3CA312NB57My9z9LPSHg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 216.228.118.233) smtp.rcpttodomain=google.com smtp.mailfrom=nvidia.com;
+ dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
+ dkim=none (message not signed); arc=none (0)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=uVOBvfgNNkDTnaQHaEXVk8dmg3Dbd4+qFIBsX3H2q74=;
- b=r0ftJUVxfYaYk9y3U0guMPU6F8RxkBXrMkY6Wl3UYnnfjqisbEA0/3OKEvIGf3LfhM22rDjyIc7s5yWIl/miYv/XPNhviW0kWYbnFHORQUV2TPzanXcFZ0Pukyysz2FpfUVe8Z3MNCvzWKA9YtNznM5Po3dQnQ5lC/I4cczafSE=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=amd.com;
-Received: from CH3PR12MB9194.namprd12.prod.outlook.com (2603:10b6:610:19f::7)
- by PH7PR12MB6953.namprd12.prod.outlook.com (2603:10b6:510:1ac::21) with
+ bh=Hpb3feNQGAtQK+QbQnjoiVX2JMpWiUkqeS6adhEnl8M=;
+ b=pXGGUWcrE8oiV5hzTcxujjGRCZV0VG7rQjakH1mbIGNy5DhYjwZQj+CsPWInuiHbSxjkujmKJU7v+nqPiifvyCkEipGxN8Lgp692YlDOLXFJ7pfy/Z5FKriVDXuvc6eUwbf/m4nvtMn0dE97KYQTA1JHJPf7aWhWjr9YGdajmTWcEdXLoBQRcFoQtnnrfLay6xob3TXjcD28ESUHoDBhWwBW0YQD/3nUL8PxYFM0vIDN4u6+EvN5uDDX2+MKK0L3yt7w+jDhf6Cnk+UY4osQvzS8CBSo6XJUImD8GsOjwZK21zKY89P9YZQexoQmKBavVKMhYkiBCiY0bhzAdQda4w==
+Received: from SJ0PR05CA0100.namprd05.prod.outlook.com (2603:10b6:a03:334::15)
+ by CY8PR12MB7611.namprd12.prod.outlook.com (2603:10b6:930:9b::19) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7918.27; Tue, 10 Sep
- 2024 01:29:06 +0000
-Received: from CH3PR12MB9194.namprd12.prod.outlook.com
- ([fe80::53fb:bf76:727f:d00f]) by CH3PR12MB9194.namprd12.prod.outlook.com
- ([fe80::53fb:bf76:727f:d00f%6]) with mapi id 15.20.7918.024; Tue, 10 Sep 2024
- 01:29:06 +0000
-Message-ID: <523fc716-51ae-4fb0-9e7c-5d49bbd33e22@amd.com>
-Date: Tue, 10 Sep 2024 11:28:56 +1000
-User-Agent: Mozilla Thunderbird Beta
-Subject: Re: [RFC PATCH 13/21] KVM: X86: Handle private MMIO as shared
-Content-Language: en-US
-To: Xu Yilun <yilun.xu@linux.intel.com>
-Cc: kvm@vger.kernel.org, iommu@lists.linux.dev, linux-coco@lists.linux.dev,
- linux-pci@vger.kernel.org,
- Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
- Alex Williamson <alex.williamson@redhat.com>,
- Dan Williams <dan.j.williams@intel.com>, pratikrajesh.sampat@amd.com,
- michael.day@amd.com, david.kaplan@amd.com, dhaval.giani@amd.com,
- Santosh Shukla <santosh.shukla@amd.com>,
- Tom Lendacky <thomas.lendacky@amd.com>, Michael Roth <michael.roth@amd.com>,
- Alexander Graf <agraf@suse.de>, Nikunj A Dadhania <nikunj@amd.com>,
- Vasant Hegde <vasant.hegde@amd.com>, Lukas Wunner <lukas@wunner.de>
-References: <20240823132137.336874-1-aik@amd.com>
- <20240823132137.336874-14-aik@amd.com>
- <ZtH55q0Ho1DLm5ka@yilunxu-OptiPlex-7050>
- <49226b61-e7d3-477f-980b-30567eb4d069@amd.com>
- <Ztaa3TpDLKrEY0Ys@yilunxu-OptiPlex-7050>
- <262bee4e-7e60-45e6-8920-ec6b8dd0a526@amd.com>
- <Zt7I51r6dqkwkPAz@yilunxu-OptiPlex-7050>
-From: Alexey Kardashevskiy <aik@amd.com>
-In-Reply-To: <Zt7I51r6dqkwkPAz@yilunxu-OptiPlex-7050>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: SY5PR01CA0054.ausprd01.prod.outlook.com
- (2603:10c6:10:1fc::20) To CH3PR12MB9194.namprd12.prod.outlook.com
- (2603:10b6:610:19f::7)
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7918.24; Tue, 10 Sep
+ 2024 04:43:20 +0000
+Received: from SJ5PEPF00000208.namprd05.prod.outlook.com
+ (2603:10b6:a03:334:cafe::88) by SJ0PR05CA0100.outlook.office365.com
+ (2603:10b6:a03:334::15) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7939.25 via Frontend
+ Transport; Tue, 10 Sep 2024 04:43:20 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.118.233)
+ smtp.mailfrom=nvidia.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=nvidia.com;
+Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
+ 216.228.118.233 as permitted sender) receiver=protection.outlook.com;
+ client-ip=216.228.118.233; helo=mail.nvidia.com; pr=C
+Received: from mail.nvidia.com (216.228.118.233) by
+ SJ5PEPF00000208.mail.protection.outlook.com (10.167.244.41) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.7918.13 via Frontend Transport; Tue, 10 Sep 2024 04:43:20 +0000
+Received: from drhqmail202.nvidia.com (10.126.190.181) by mail.nvidia.com
+ (10.127.129.6) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1544.4; Mon, 9 Sep 2024
+ 21:43:19 -0700
+Received: from drhqmail201.nvidia.com (10.126.190.180) by
+ drhqmail202.nvidia.com (10.126.190.181) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.1544.4; Mon, 9 Sep 2024 21:43:19 -0700
+Received: from nvidia.com (10.127.8.9) by mail.nvidia.com (10.126.190.180)
+ with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1544.4 via Frontend
+ Transport; Mon, 9 Sep 2024 21:43:17 -0700
+Date: Mon, 9 Sep 2024 21:43:15 -0700
+From: Nicolin Chen <nicolinc@nvidia.com>
+To: Pranjal Shrivastava <praan@google.com>
+CC: Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>, "Joerg
+ Roedel" <joro@8bytes.org>, Mostafa Saleh <smostafa@google.com>,
+	"iommu@lists.linux.dev" <iommu@lists.linux.dev>, Daniel Mentz
+	<danielmentz@google.com>
+Subject: Re: [PATCH v2 1/2] iommu/arm-smmu-v3: Print better events records
+Message-ID: <Zt/OY4mKZhnOqyhG@nvidia.com>
+References: <ZtEkUQ7tI3Nb0NOc@Asurada-Nvidia>
+ <ZtV1-IL8AZu--jGp@google.com>
+ <ZtZEFKnKasX6433r@Asurada-Nvidia>
+ <ZtnXADX3b6qdqVs0@google.com>
+ <ZtphFYr1jUhHOSnC@nvidia.com>
+ <20240906125524.GA16773@willie-the-truck>
+ <392451a1-784c-4c35-9924-1a1f4cba9120@arm.com>
+ <ZttNF5qcc+jH/3yE@nvidia.com>
+ <20240909144506.GA19863@willie-the-truck>
+ <Zt8wrkj7Fg4W8lUf@google.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: inline
+In-Reply-To: <Zt8wrkj7Fg4W8lUf@google.com>
+X-NV-OnPremToCloud: ExternallySecured
+X-EOPAttributedMessage: 0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: CH3PR12MB9194:EE_|PH7PR12MB6953:EE_
-X-MS-Office365-Filtering-Correlation-Id: a0b101d7-eaab-4a74-f2b4-08dcd137f60b
+X-MS-TrafficTypeDiagnostic: SJ5PEPF00000208:EE_|CY8PR12MB7611:EE_
+X-MS-Office365-Filtering-Correlation-Id: bac09053-834f-4552-5957-08dcd1531864
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;ARA:13230040|366016|1800799024|376014;
+X-Microsoft-Antispam:
+	BCL:0;ARA:13230040|36860700013|1800799024|376014|82310400026;
 X-Microsoft-Antispam-Message-Info:
-	=?utf-8?B?ZnpFUWdhbStnaDJHekthNlJseXBlK3FHd3hyVmtMVGRNY1NkYmRRUkZqQ0Vh?=
- =?utf-8?B?eVF1enZ6VFl2dkRYT2JoQkw5MVpHS2w5QVFWaGFjRW5CT2d3L1ZSZ09aVkg1?=
- =?utf-8?B?SEdkTmhDTjd6dmpjcHVpWG9GVDcwVkdpY1psYVhmQkthdnByMDBrMXRjV2E4?=
- =?utf-8?B?TFI5SUdBdC9Pb0I3T1RKWWlwQkdjbFpGaGlDbGwrakhhb2ZpWjZNcGYxYUxa?=
- =?utf-8?B?aVBJaUNJN05MZjdZUzlDczRjc2ltQzZTakxtSWRWRSs2bUxtS2l6RkQra0h6?=
- =?utf-8?B?RldVTEQyRlVTWVFyMEVqMndoSDhFTGh1L0VIc1ZFd0RCbHFTeGc5ZzFMSUo3?=
- =?utf-8?B?bFBEQ3g4M3p0cXNpN1kwVnU2OVlsN2dmb0g2MHdGdUQ1azRFWlZscnRQbXpv?=
- =?utf-8?B?OW1odlJCdUVySko3dEFXa0hEdWJsRUZ0UE9RS2JWWXRyVnBGVFFURzltWFlE?=
- =?utf-8?B?WGJ1eldFYlk0NlhDVE9uUWd6RE03RTFXKzRRWnQvQWNkUW10UVh2N0lzdTRL?=
- =?utf-8?B?RGZRWXFqeGFDM2RNQS90WDREMVp6V256Z1A2L3JBenZHSGFrSndvMlNVZTZR?=
- =?utf-8?B?dHdDUG1aQ0FCWXVrQVFaVkhidWhmcW0vQi80WnFXd25Ca3FEd3VDemc1UmJs?=
- =?utf-8?B?YXdtdHV5M2xFc1prdjZkczRHRkJvSXFBeUw4SGxjTFp1MFlEaXNkM0NCMHVn?=
- =?utf-8?B?Y2VHZFVFMXZLQkxQSm8wWFRqUjdGOWdGYk95QzRsd3dnazl6anRJN2xVcVRR?=
- =?utf-8?B?SVNPVkdNcFJYMGlFMFF3RmFFeG1NVWZVb0J2WWNoU1VCNy9GaE9IQW1IL1Ew?=
- =?utf-8?B?ekRPVWFjQUE4eUg3aXZIdjNYT1RrNVhNU29IVkZ1ZXJEaEE3MkpCR1M4bFZ5?=
- =?utf-8?B?Y1lBQjdpMytKbE9hS244YnBXRzZXRlJqQmJYYUZxaHo2dlhIL0RpLy9UUzdX?=
- =?utf-8?B?N3V5aGJyalJ0TUtOenF5a1RkZkFyY1Z4c0IzbGRYRG9HQ29xeWRZaWU5b2RG?=
- =?utf-8?B?YmU0U3AxOHI1OGpYZTdrd0Qrc2VOV2prV29kQWdPUFpvSnoxSXlRZWZZQTdE?=
- =?utf-8?B?eFhCcElJa2FtcWJaVnZyNCswY2NhVEF3cEJEaDJZQ1BsL3hiUnZoVTFaT2w0?=
- =?utf-8?B?UmFjNG5DZlk0QThtcGxLNUplWnROVXFCeWFzSTM4U0poZVZDQUpBcm1ET0dT?=
- =?utf-8?B?RXBDY0dTR1dib1VIcitrbFhVTFkrSFhTWngwNDB0NERmT2lHK2pPOWpDbVEr?=
- =?utf-8?B?OC81K3hIK3dRWUt0RWQzaVpWQzVZY2JpeEY5MzJURXVSeXMrSXQ5YTd5K1pp?=
- =?utf-8?B?cHJTUUpYZi9BM0lKMzdHWGQ2OWZTOS9kUlZUKzV6OU9HdGttYWZIU1BLUUhK?=
- =?utf-8?B?WGI1eEE3YzFWUU5Ybjg5TzJyWUhjY0pPdkRhanBlbUFYc0JDU3ZERUhuVElk?=
- =?utf-8?B?SXZZS0hQendNcHR1bnFHdHNWRXJVdEZ2TTFGZEpweHRJN2FUOCtCNWhJNnhu?=
- =?utf-8?B?VnpFV3BCSDJDbGVCMmdxYWpyWlUxQ2h6OWUwV2ZTQ2RuUWNndTgwcXYyWkE0?=
- =?utf-8?B?dU9lRFYwdXVOMUdaUGhmOUJmMjkzTzBwcXlYYTVZcWprVzlKWFo4VlNxYkNM?=
- =?utf-8?B?VmN3RFloejU5SUlJZkRZMUJES1grc1ltZUhza01kcEFJbGRqcEdwUURFdWdO?=
- =?utf-8?B?SWdTN1NYT3lablZSRjQ3eThCR0RvZEJGdHE2N0s2Z2JqMWJHVSsxeEZiUnM4?=
- =?utf-8?B?M1N0UGRVVFM4Sk1Kc1dmbEVWSHp3L0NCNmVrSll5aC9jb3dtOFduTXQ3S245?=
- =?utf-8?B?K0Y0THAxeHFxQWdWU2NSZz09?=
+	=?us-ascii?Q?tyMLHGvbwe++D1Jo5t2ZzBuM3r+TJx6kaIY5YAGas7MrvZ/M7UYXPBryPsy9?=
+ =?us-ascii?Q?mQEhuXrJiPd89VhGbz/JX7IaLQflXA5ybtPm2CLvaJ8bKaXO5ZFYEMtHg934?=
+ =?us-ascii?Q?mGa38r4+ZM2ZPXRXNg6I2WGoPAju9q43RqsFgAH+anDi2TkQIy6fsUnqWGfy?=
+ =?us-ascii?Q?I4v6fk6QnGH/aZC5KFt5TYh7PqWh0xwKC+KuufCkP8imaXmB2ua5ECzOFcKB?=
+ =?us-ascii?Q?w+E1mPTKGZFV3TkIc+MgWazdaIh/VQtghgZK1pFhRtOx0EYBn1NnpBePNvXs?=
+ =?us-ascii?Q?WnDD8923bZ2eW8pNGvBpCoeSxJmtsWMr3aZpaIGibIDx6FSC/OwAHr64jDaQ?=
+ =?us-ascii?Q?SwqGaGeVA6/Z3mtBFe9QzcRAUDDctBcNv6OAsotZohmv41zMVxC/p8yEHGE3?=
+ =?us-ascii?Q?4dGyCQDaNpojy057k0fuo/qY/lLpCumzb8OK01DrYD7/g9x9O5Ili6uRz2z6?=
+ =?us-ascii?Q?FO4jLxg0Ro32v0bLIFbanPDogDVAPGKcDRptA9GY2sIu0brggVtyhXYhjHfN?=
+ =?us-ascii?Q?Tn2MKQRBQwGXJyN3kiZ+b61ydJl3GwoLgTeFacsu+0P+5i22DQnT0whF0n4i?=
+ =?us-ascii?Q?fTBa7ZUGbzrLTXm+7VcWjDJhN2COiPgQmUSiOIcXo+qjbcSV4PAbMWeqdSR6?=
+ =?us-ascii?Q?qGhaB9NX2JVAGsLcrlpTX0dsRBAREjPyf6NUPlFHG/hViBACiaWd8YrYH/gM?=
+ =?us-ascii?Q?ZcJMXG5VTxTHs6mYpHmo/ADDQFVu9dRFarF9vt8grzXeoWgU8X2Jz7cJf8bl?=
+ =?us-ascii?Q?NDebQ7F7X6aRvq2MtUmak/hn5bZD4wBxrZX9jh//gsIo2bZjxUMOVPDx++rN?=
+ =?us-ascii?Q?f4YxXOn9XRdI677boAyK8JjrOT5eFu8qWS8HlkNkeQLKsZAWLQ57BzMEpUi2?=
+ =?us-ascii?Q?oCaz4V0gsyjjDfyiuMTZoAfLHDQ5+a204L8ChfHd7wG+EYtMm4d7qsy5B9ZQ?=
+ =?us-ascii?Q?Rh1nE1/s71gVQt4cELgxc3tE4gJA9MKAwhEVOceZfX4+kOZUzBfluioUVxGF?=
+ =?us-ascii?Q?nhDgD8Ebmo0I3TjRrWHuOouukoZ+GFZysfHWGXJZgaDqWDboZtR3a7F11VFS?=
+ =?us-ascii?Q?QinTNpiKyEMi3fD5Fz445P2eH/Hqq3ZlWGb/ESOs9W4dFp30f/BqLNkhqzDr?=
+ =?us-ascii?Q?OKp0dA+f4SiEVsQQTIo/v7tvd2c1BaEqU+cXEZLmX7SQTYI77ede7sIhvUQ0?=
+ =?us-ascii?Q?+WIKIy717j2zkaYmQDWZ4tbYOm1uzYHI1o1eQCV0zEJU4L1kWjNOoLRipZ6V?=
+ =?us-ascii?Q?Dl3jAxKEgw4JFIWxJFkJq5Z9y9kEYMem7nds70Pkda5Fvz0gfgQUsel0nXCh?=
+ =?us-ascii?Q?7+mvwn0upD6WiZYpWOnqvsdYU61o/xo42RX9/6kWTYdvPFnXq3gNd/8rAgJE?=
+ =?us-ascii?Q?dS+beafdODgIp5WgwFW5RNxWrNRIbqrOFYv0nCKqX71bV7TOkE7SfpqL1de9?=
+ =?us-ascii?Q?uM+ls1JwSIxZfPhgY+HQx39ogaBtdUF2?=
 X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CH3PR12MB9194.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(366016)(1800799024)(376014);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?utf-8?B?TmZtci9ZM2NTZFlwdk55WXQ3bmtuQUk4Y2luTmRKei9JV0FuZXI3RGw1NzFT?=
- =?utf-8?B?VURleWlQbXM1TDViajV5ZzJyRUNWcWVHUjd5UmNOSjVWRElDNkRhakVydTBv?=
- =?utf-8?B?V3g1RXlxU0xJajUwOUdMdGdVRUhsQzJnWTRqVi9paG9FNysyeTgvdElST3pm?=
- =?utf-8?B?eCtrbzJ3ZGlpODBlYTE3VHhqMHdIT1owMUo4L1Jwa3NTalJETlZZTmgvSHZn?=
- =?utf-8?B?RnpXSGdZeS9wMkU4aGprZGQxTVlFUHZiOUU4d0crYlBvOXM5RWJTMWwvaFFy?=
- =?utf-8?B?elJzMXBONVJFQTI5cE4rUVkzWlBWb0VXNXNIcXRqaGlpak1CVi9WWkpIajNL?=
- =?utf-8?B?a0dNekNpako4TU5PVUc0U1lWdVJQQTFTYjFoNEYyaEpYWFdaanJHRHBnRFNY?=
- =?utf-8?B?S25PdER3WGNLaVp3TEFTUGhPZmtYck1aU2x3NlIwYUNjaG5lRnc0cVhzRXpI?=
- =?utf-8?B?K1VMOEREc25xSSsybHVoMEZ1Q3QwR0duRUZQNnlmV05wUEZrZldXYlM2VGx2?=
- =?utf-8?B?SjFCa3YvdXByQmN4QnRBbnB1MEZmUmM3dDhGNXphK2VsdnFhd0pRaUZ2MWJG?=
- =?utf-8?B?TWs3T29HSnVBSkpLaklNcFkrSFpVWVJHa2c4M01rZlpRdXY3VGVibzBvWEZW?=
- =?utf-8?B?K2FxamVIZW13TVlBN2VnVWpjZTgzenlLWU1ZWXBVVVVpWUI2aGNVV05EaHVh?=
- =?utf-8?B?d2JrUllleW12Zk81Q2xDK2R3VjV0MjlUaW0vbnZXODcwNzlVaVZ2aDZqVkI0?=
- =?utf-8?B?QUZSaVlLVVpua3BLR2tuMmhIOHEvUlJ5S0haWVJCeFlpMjJtamhZSWRDeExo?=
- =?utf-8?B?VnpLTGVYUDZwZGpHbDBvelBmYktmcThVeVYvOExXSStyd1N3MEpjQWJoR0h4?=
- =?utf-8?B?aFg3TEZzWG1HbmFRWTBiQ1hVc2djd0RRSGd1ZE9LVXhMRUlsMlpZeFpoK3ZG?=
- =?utf-8?B?QTBXS2ZMeHNPc3lOdlQzQlcwVFV5SmU2ODFOOEt5bU9IYUJlZ3VhTGFHSDRx?=
- =?utf-8?B?dFN3WWZMVFVFY0RMTVhXSFlOYTBLVTRsMmhrdDJvbktidTJrYmtZTytWcGZO?=
- =?utf-8?B?Q0p3UzZXTDdGQlRsMTR5aS9UNWVBQzVHT2tsU3gxOHZwWTZLbTlJSDlMRzF5?=
- =?utf-8?B?TUM3dm1TMHEvTVFOQTcwNVNLRmNBdmdwZzNzRmo0Z3hlaThLK25tc3NGMDV5?=
- =?utf-8?B?Z2cvWXF2RFd0OVpIT2M5M2NxbHlqeklzcWNNT2JCQ0NGUDlqTS80WHdpRDRX?=
- =?utf-8?B?eXZqYWJ3WDlLcG1ob3FRTld0eVlmK2ZEcmJXM3ZBQXFWQUJHak1KQkpZR1lI?=
- =?utf-8?B?TlNGS2l4TXQvWjdsNXhkR0VHWU1jYWlqN0FjZGUrVzNTd09SSVBETTVBTG1m?=
- =?utf-8?B?REtsSU40eFhKUFJKcWJVaitSc01aeGpuTVBJdkJNSTRIZjRQbWxvTExuOXFJ?=
- =?utf-8?B?MFdCT1N3QkxoQTZrQUR6Z25QOWdXTTcxUlRpZUQrQzZiWGUyTW9iNkNybG5a?=
- =?utf-8?B?aGV5aTh5R0xpb2w4MTJRdU1TeWtvOTJnSjNXcDYrajZlRk9XMnZEY3U1NnVM?=
- =?utf-8?B?WVpKdE8xcFhJS0N1ZlkyL1RORlF2TGE4N0kwU0pyTWV3dVJReU5FQm5SS21J?=
- =?utf-8?B?bm0vTnNpa3JabzM2bnk4TDBoQkVscEF0VldRZVdGQWdheWlNSVlsTE5pQVpC?=
- =?utf-8?B?SFFSODlEc3kzRk9iSjFMajRsTzVJSnZwOEZZM2hXeUN4RGVaVEtwZCt6c3JP?=
- =?utf-8?B?UGt4bGdVSDFqRXlnUGlRQWFvN1pSTGpkRnJEc1dCaXZ6WEpuWHBES1NZdmNz?=
- =?utf-8?B?aWNZMHc2clB6OCs2MExLYTFYQ0RyRFZCVTdRdlczVTVYRWMvSHFPeCtnVy93?=
- =?utf-8?B?bFBYamxKdjkwTUFBbnlVS3gxaENEWm1PbHJBR2E3dE5kcEwyVTc0SFhrUXZQ?=
- =?utf-8?B?RG5hRkptdXMvZUtQQWlRTTRRZ3RPODIwaWYvSWIxZDF5VG5kUW11aStMZmZo?=
- =?utf-8?B?M2NDSGxzMEhQd3dUdGFHbXBaeUs3N3FXLy81WW1YTEx0ZVg5aHN4cDZsVW9K?=
- =?utf-8?B?M2Z5ck5KYkhNZG9QRkZYT253SmcwK1ZSbU1QdVQwOFFMN0g4MHdKS01keHk5?=
- =?utf-8?Q?ULIWwO1uBJZDG61pif8cJ1Quz?=
-X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: a0b101d7-eaab-4a74-f2b4-08dcd137f60b
-X-MS-Exchange-CrossTenant-AuthSource: CH3PR12MB9194.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 10 Sep 2024 01:29:06.4567
+	CIP:216.228.118.233;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc7edge2.nvidia.com;CAT:NONE;SFS:(13230040)(36860700013)(1800799024)(376014)(82310400026);DIR:OUT;SFP:1101;
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 10 Sep 2024 04:43:20.1175
  (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: 7mE9rGtJ278qqcgC3gyebeoutg5XcmtiaULCcg1EUBOs1fqroUyw2LZO8MHCTBbX8AW8A07EcwYhIu3pfvCa0g==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH7PR12MB6953
+X-MS-Exchange-CrossTenant-Network-Message-Id: bac09053-834f-4552-5957-08dcd1531864
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.118.233];Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-AuthSource: SJ5PEPF00000208.namprd05.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: CY8PR12MB7611
 
+On Mon, Sep 09, 2024 at 05:30:22PM +0000, Pranjal Shrivastava wrote:
 
+> > > > > My only real concern is the fragility of using bitfields. I don't _think_
+> > > > > the compiler is obliged to lay them out in the obvious way and I can't
+> > > > > think of anything worse than being given a bad pretty-print when debugging
+> > > > > a real driver issue!
+> > >
+> > > Well, if compiler is going to be an issue, I can't disagree with
+> > > your point.
+> > >
+> > > Any reference to some existing issue with compiler failing to lay
+> > > out properly? I wonder how other headers could define their unions
+> > > using bitfields and stay safe..
+> >
+> > It's not so much about buggy compilers, but more that I don't think the
+> > C standard defines the order and so relying on it can be fragile. If you
+> > fancy going to the effort of ensuring that LLVM and GCC will agree on
+> > the "obvious" layout forever more, then don't let me stop you ;)
 
-On 9/9/24 20:07, Xu Yilun wrote:
-> On Fri, Sep 06, 2024 at 01:31:48PM +1000, Alexey Kardashevskiy wrote:
->>
->>
->> On 3/9/24 15:13, Xu Yilun wrote:
->>> On Mon, Sep 02, 2024 at 12:22:56PM +1000, Alexey Kardashevskiy wrote:
->>>>
->>>>
->>>> On 31/8/24 02:57, Xu Yilun wrote:
->>>>> On Fri, Aug 23, 2024 at 11:21:27PM +1000, Alexey Kardashevskiy wrote:
->>>>>> Currently private MMIO nested page faults are not expected so when such
->>>>>> fault occurs, KVM tries moving the faulted page from private to shared
->>>>>> which is not going to work as private MMIO is not backed by memfd.
->>>>>>
->>>>>> Handle private MMIO as shared: skip page state change and memfd
->>>>>
->>>>> This means host keeps the mapping for private MMIO, which is different
->>>>> from private memory. Not sure if it is expected, and I want to get
->>>>> some directions here.
->>>>
->>>> There is no other translation table on AMD though, the same NPT. The
->>>
->>> Sorry for not being clear, when I say "host mapping" I mean host
->>> userspace mapping (host CR3 mapping). By using guest_memfd, there is no
->>> host CR3 mapping for private memory. I'm wondering if we could keep host
->>> CR3 mapping for private MMIO.
->>>>> security is enforced by the RMP table. A device says "bar#x is
->> private" so
->>>> the host + firmware ensure the each corresponding RMP entry is "assigned" +
->>>> "validated" and has a correct IDE stream ID and ASID, and the VM's kernel
->>>> maps it with the Cbit set.
->>>>
->>>>>    From HW perspective, private MMIO is not intended to be accessed by
->>>>> host, but the consequence may varies. According to TDISP spec 11.2,
->>>>> my understanding is private device (known as TDI) should reject the
->>>>> TLP and transition to TDISP ERROR state. But no further error
->>>>> reporting or logging is mandated. So the impact to the host system
->>>>> is specific to each device. In my test environment, an AER
->>>>> NonFatalErr is reported and nothing more, much better than host
->>>>> accessing private memory.
->>>>
->>>> afair I get an non-fatal RMP fault so the device does not even notice.
->>>>
->>>>> On SW side, my concern is how to deal with mmu_notifier. In theory, if
->>>>> we get pfn from hva we should follow the userspace mapping change. But
->>>>> that makes no sense. Especially for TDX TEE-IO, private MMIO mapping
->>>>> in SEPT cannot be changed or invalidated as long as TDI is running.
->>>>
->>>>> Another concern may be specific for TDX TEE-IO. Allowing both userspace
->>>>> mapping and SEPT mapping may be safe for private MMIO, but on
->>>>> KVM_SET_USER_MEMORY_REGION2,  KVM cannot actually tell if a userspace
->>>>> addr is really for private MMIO. I.e. user could provide shared memory
->>>>> addr to KVM but declare it is for private MMIO. The shared memory then
->>>>> could be mapped in SEPT and cause problem.
->>>>
->>>> I am missing lots of context here. When you are starting a guest with a
->>>> passed through device, until the TDISP machinery transitions the TDI into
->>>> RUN, this TDI's MMIO is shared and mapped everywhere. And after
->>>
->>> Yes, that's the situation nowadays. I think if we need to eliminate
->>> host CR3 mapping for private MMIO, a simple way is we don't allow host
->>> CR3 mapping at the first place, even for shared pass through. It is
->>> doable cause:
->>>
->>>    1. IIUC, host CR3 mapping for assigned MMIO is only used for pfn
->>>       finding, i.e. host doesn't really (or shouldn't?) access them.
->>
->> Well, the host userspace might also want to access MMIO via mmap'ed region
->> if it is, say, DPDK.
+I see!
+ 
+> Hmmm.. +1
+> I had some time, so.. I dived into the C specification[1] (free draft)
+> to look for bitfield layouts, under section 6.7.2.1, point 11
+> (page 101 of the pdf), and I see the following paragraph:
 > 
-> Yes for DPDK. But I mean for virtualization cases, host doesn't access
-> assigned MMIO.
+> "An implementation may allocate any addressable storage unit large
+> enough to hold a bit-field. If enough space remains, a bit-field that
+> immediately follows another bit-field in a structure shall be packed
+> into adjacent bits of the same unit. If insufficient space remains,
+> whether a bit-field that does not fit is put into the next unit or
+> overlaps adjacent units is implementation-defined. The order of
+> allocation of bit-fields within a unit (high-order to low-order or
+> low-order to high-order) is implementation-defined. The alignment
+> of the addressable storage unit is unspecified."
+
+Thanks for digging into the standard doc!
+
+> However, I'm not sure how these "implementations" comprehend the spec.
 > 
-> I'm not suggesting we remove the entire mmap functionality in VFIO, but
-> may have a user-optional no-mmap mode for private capable device.
- >
->>
->>>    2. The hint from guest_memfd shows KVM doesn't have to rely on host
->>>       CR3 mapping to find pfn.
->>
->> True.
->>
->>>> transitioning to RUN you move mappings from EPT to SEPT?
->>>
->>> Mostly correct, TDX move mapping from EPT to SEPT after LOCKED and
->>> right before RUN.
->>>
->>>>
->>>>> So personally I prefer no host mapping for private MMIO.
->>>>
->>>> Nah, cannot skip this step on AMD. Thanks,
->>>
->>> Not sure if we are on the same page.
->>
->> With the above explanation, we are.
->>
->>> I assume from HW perspective, host
->>> CR3 mapping is not necessary for NPT/RMP build?
->>
->> Yeah, the hw does not require that afaik. But the existing code continues
->> working for AMD, and I am guessing it is still true for your case too,
+> > Will
 > 
-> It works for TDX with some minor changes similar as this patch does. But
-> still see some concerns on my side, E.g. mmu_notifier. Unlike SEV-SNP,
-> TDX firmware controls private MMIO accessing by building private S2 page
-> table. If I still follow the HVA based page fault routine, then I should
-> also follow the mmu_notifier, i.e. change private S2 mapping when HVA
-> mapping changes. But private MMIO accessing is part of the private dev
-> configuration and enforced (by firmware) not to be changed when TDI is
-> RUNning. My effort for this issue is that, don't use HVA based page
-> fault routine, switch to do like guest_memfd does.
-
-ah I see, thanks.
-
-> I see SEV-SNP prebuilds RMP to control private MMIO accessing, S2 page
-> table modification is allowed at anytime. mmu_notifier only makes
-> private access dis-functional. I assume that could also be nice to
-> avoid.
+> > > I am trying to learn here: apart from what Will mentioned above,
+> > > is there any other reason to stay away from bitfield?
 > 
->> right? Unless the host userspace tries accessing the private MMIO and some
->> horrible stuff happens? Thanks,
-> 
-> The common part for all vendors is, the private device will be
-> disturbed and enter TDISP ERROR state. I'm not sure if this is OK or can
-> also be nice to avoid.
+> One more thing I can think of is Alignment faults on certain archs.
+> Accessing individual bitfields within the struct could lead to unaligned
+> memory accesses. I have run into alignment faults on $ARCH=arm64 couple
+> of times while using packed structs in the kernel code.
 
-For this instance, on AMD, I expect an RMP fault and no device 
-disturbance, no TDISP ERROR. Thanks,
+OK. It seems that we should stay safe with verbose FIELD_GETs then.
 
-
-> 
-> Thanks,
-> Yilun
-
--- 
-Alexey
-
+Thank you
+Nicolin
