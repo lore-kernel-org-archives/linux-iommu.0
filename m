@@ -1,138 +1,110 @@
-Received: from mailout1.w1.samsung.com (mailout1.w1.samsung.com [210.118.77.11])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6215515665E
-	for <iommu@lists.linux.dev>; Wed, 11 Sep 2024 08:42:20 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=210.118.77.11
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A75562AF1D;
+	Wed, 11 Sep 2024 09:05:13 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1726044142; cv=none; b=O+iujYt8+MjwcngcdP2W0gSkqB7rusto2RGMQEFTivxZbLrLkGCCb7c10ib2d5CN8SfGeaYGE/aliFSRW48+N4aSimSPeUMLmArj60Bj4d97aaRcRW3bmgVlPzu7xYoQuplgPnXkf6Q7R80a4C86Hkz9QhxH+KkaBGQwJzA7jys=
+	t=1726045513; cv=none; b=U5Pe7kx8kyNEWi1Xvfm66QjHdn45JiyGGJUIC3Fkx4MeXOfHKqnvmu7SipWugD78L+GpKIstVyqrmL3iZ6JKlP5Fmn8Vbxt5N00G+w6hWFnjFa02T6jDAE+Ru4jx5CZDa0RhSvBnszx4Ds2feyocG/2jDPDIK9jGF9bkODqdSL4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1726044142; c=relaxed/simple;
-	bh=lWcvgcpXFfD0LiIyh8fiFShe2yixbkA4oXcwss+L+/E=;
-	h=Date:From:To:CC:Subject:Message-ID:MIME-Version:Content-Type:
-	 Content-Disposition:In-Reply-To:References; b=b34Np7AIRrqJfkYzYXy3ZkA8yyHoYN5RcadKN9RKIghj6lFfrprkJXc4Zq1Z3lVfUVRKtluoFKve1nHmbpClFXLx8duE+BeN0ne9OnGbVZE3G5ub8vn9kRW/2XWiXzIrlmHLLtgChBi6KyXEb9UmCqPMa2qQ4kTdQgJGZIfSG/c=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=samsung.com; spf=pass smtp.mailfrom=samsung.com; dkim=pass (1024-bit key) header.d=samsung.com header.i=@samsung.com header.b=S/iNXc68; arc=none smtp.client-ip=210.118.77.11
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=samsung.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=samsung.com
+	s=arc-20240116; t=1726045513; c=relaxed/simple;
+	bh=K48R2AqNc1vFJQtIxz9U5zj+7HE5QnbwjJNno4GynFo=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=AvVvJNWJ0BuEGSJzriGvUzi9/6jV2Tug5UFd18OTX0TdiSu/1YEZsAmn7Ht97+us7khRG3RDTyZYh8wxn4dq28FDqHAa5Duy+YnXAaETFVDV2pDMIlt/nXN4BLgcsLXAEV1bzINmdXTApRd1ydzMYbqlCZmxNhQleKppGFjQbnY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=AekrqQzH; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=samsung.com header.i=@samsung.com header.b="S/iNXc68"
-Received: from eucas1p2.samsung.com (unknown [182.198.249.207])
-	by mailout1.w1.samsung.com (KnoxPortal) with ESMTP id 20240911084212euoutp01eff4ccac253ec8edf0966f88da5fdc08~0I-5w9XyS0190601906euoutp01J
-	for <iommu@lists.linux.dev>; Wed, 11 Sep 2024 08:42:12 +0000 (GMT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 mailout1.w1.samsung.com 20240911084212euoutp01eff4ccac253ec8edf0966f88da5fdc08~0I-5w9XyS0190601906euoutp01J
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
-	s=mail20170921; t=1726044132;
-	bh=P8Y2JKzGo93bR6n3j3ntff8Z9u6c14CWqudvn1yYg6k=;
-	h=Date:From:To:CC:Subject:In-Reply-To:References:From;
-	b=S/iNXc68JzxgrCX9MF/rIVFknSkEJkY2m0z8QKQF098zFWVE0mvJ5/fHiBgqxvXY6
-	 3EcuNRtAinpSN1ZNMTZZRsSiH82kkG+Cjt+KjaWYqD/lqn2XQ0Dx0Gys2qhydDuG2F
-	 VJVTG6YCyYJe83Pr/AVn/WvBqgHvJx6IAUO1YoEs=
-Received: from eusmges2new.samsung.com (unknown [203.254.199.244]) by
-	eucas1p1.samsung.com (KnoxPortal) with ESMTP id
-	20240911084212eucas1p15da32c0dbca8825d345f3cacd2733744~0I-5dsufc0782707827eucas1p1j;
-	Wed, 11 Sep 2024 08:42:12 +0000 (GMT)
-Received: from eucas1p1.samsung.com ( [182.198.249.206]) by
-	eusmges2new.samsung.com (EUCPMTA) with SMTP id A2.01.09875.4E751E66; Wed, 11
-	Sep 2024 09:42:12 +0100 (BST)
-Received: from eusmtrp1.samsung.com (unknown [182.198.249.138]) by
-	eucas1p2.samsung.com (KnoxPortal) with ESMTPA id
-	20240911084212eucas1p2266e0807bc628806014a4aff9500f7d2~0I-47QIdw1367013670eucas1p2f;
-	Wed, 11 Sep 2024 08:42:12 +0000 (GMT)
-Received: from eusmgms2.samsung.com (unknown [182.198.249.180]) by
-	eusmtrp1.samsung.com (KnoxPortal) with ESMTP id
-	20240911084212eusmtrp1c32ee2fc4ffde3ebe5359c17697bdba4~0I-46uoDL2353523535eusmtrp1D;
-	Wed, 11 Sep 2024 08:42:12 +0000 (GMT)
-X-AuditID: cbfec7f4-131ff70000002693-55-66e157e49777
-Received: from eusmtip1.samsung.com ( [203.254.199.221]) by
-	eusmgms2.samsung.com (EUCPMTA) with SMTP id 56.E9.19096.3E751E66; Wed, 11
-	Sep 2024 09:42:11 +0100 (BST)
-Received: from CAMSVWEXC02.scsc.local (unknown [106.1.227.72]) by
-	eusmtip1.samsung.com (KnoxPortal) with ESMTPA id
-	20240911084211eusmtip165d828774c4052fbd66f73bee6a28a16~0I-4sCS8j1189711897eusmtip1_;
-	Wed, 11 Sep 2024 08:42:11 +0000 (GMT)
-Received: from localhost (106.110.32.44) by CAMSVWEXC02.scsc.local
-	(2002:6a01:e348::6a01:e348) with Microsoft SMTP Server (TLS) id 15.0.1497.2;
-	Wed, 11 Sep 2024 09:42:10 +0100
-Date: Wed, 11 Sep 2024 09:40:59 +0200
-From: Joel Granados <j.granados@samsung.com>
-To: Jason Gunthorpe <jgg@ziepe.ca>
-CC: David Woodhouse <dwmw2@infradead.org>, Lu Baolu
-	<baolu.lu@linux.intel.com>, Joerg Roedel <joro@8bytes.org>, Will Deacon
-	<will@kernel.org>, Robin Murphy <robin.murphy@arm.com>, Kevin Tian
-	<kevin.tian@intel.com>, Klaus Jensen <its@irrelevant.dk>,
-	<linux-kernel@vger.kernel.org>, <iommu@lists.linux.dev>
-Subject: Re: [PATCH 3/6] iommu: kconfig: Move IOMMU_IOPF into INTEL_IOMMU
-Message-ID: <20240911074059.f3i22vso6g6payrj@joelS2.panther.com>
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="AekrqQzH"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8F102C4CEC5;
+	Wed, 11 Sep 2024 09:05:12 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1726045513;
+	bh=K48R2AqNc1vFJQtIxz9U5zj+7HE5QnbwjJNno4GynFo=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=AekrqQzHiZY5vPZa6yk0wFld8leztOXpq9L/aM2A+Sp9NSQm+vSzafXIbL4MDJWa5
+	 Tw6usR9VNpoM3iWiNMyAq6TeKDpgPs/GMs1KWkS3qel1zbKFZinSLASAoVk6oYXujn
+	 A8wyCQY0KFJVBrsxjC7AZnsJjnQoptkwjbytpFZbUWwIby/HhxpGwhQwg8zlcAgt+f
+	 h9L+ar4kIxtarjEIyobFW6n5TEY7VCtKphqLowsb79NII+wWeZk65hBiB9dbG55cyQ
+	 pbmzep3VZk1p1/wr/+l2e9Ca/lfFhCHJIxNGmDBFa4UVqSku+m1v/c7yeeAHkFrwxw
+	 fzBVKnm25+idg==
+Date: Wed, 11 Sep 2024 12:05:08 +0300
+From: Leon Romanovsky <leon@kernel.org>
+To: Christoph Hellwig <hch@lst.de>
+Cc: =?iso-8859-1?Q?N=EDcolas_F=2E_R=2E_A=2E?= Prado <nfraprado@collabora.com>,
+	Robin Murphy <robin.murphy@arm.com>, Joerg Roedel <joro@8bytes.org>,
+	Will Deacon <will@kernel.org>,
+	Marek Szyprowski <m.szyprowski@samsung.com>,
+	Easwar Hariharan <eahariha@linux.microsoft.com>,
+	linux-kernel@vger.kernel.org, iommu@lists.linux.dev,
+	Jason Gunthorpe <jgg@nvidia.com>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	regressions@lists.linux.dev, kernelci@lists.linux.dev,
+	kernel@collabora.com
+Subject: Re: [PATCH v4 2/2] dma: add IOMMU static calls with clear default ops
+Message-ID: <20240911090508.GE4026@unreal>
+References: <cover.1721818168.git.leon@kernel.org>
+ <c3179690b16d790d5bfd7d0afabac9b90922ec28.1721818168.git.leon@kernel.org>
+ <181e06ff-35a3-434f-b505-672f430bd1cb@notapiano>
+ <20240911064305.GD4026@unreal>
+ <20240911080445.GA5950@lst.de>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <ZtxFAxM6QQBYVSJp@ziepe.ca>
-X-ClientProxiedBy: CAMSVWEXC01.scsc.local (2002:6a01:e347::6a01:e347) To
-	CAMSVWEXC02.scsc.local (2002:6a01:e348::6a01:e348)
-X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFtrBKsWRmVeSWpSXmKPExsWy7djPc7pPwh+mGbTeULDYPHErm8XElZOZ
-	LX59sbDYf/Abq8XMGScYLTpnb2C3WPp2K7vF5V1z2CwOfnjCatFyx9SBy+PJwXlMHmvmrWH0
-	2LxCy2PxnpdMHud2nGf32LSqk81j3slAjxebZzJ6fN4k57H1822WAK4oLpuU1JzMstQifbsE
-	rowXm9cwFWxnqfjV8J2pgXEjcxcjJ4eEgInE9SnzWbsYuTiEBFYwSrx6tIIZwvnCKPH7xyOw
-	KiGBz4wSG55awnTcvbuJCaJoOaPEkqUzoNqBihav+MsI4WxmlHj+pZUVpIVFQFXiybI1LCA2
-	m4COxPk3d8DGiggoSezbNZEdpIFZYAeTRN/sSWwgCWEBT4mHbd/AbF4BB4n/qzugbEGJkzOf
-	gA1iBhq0YPcnoDgHkC0tsfwfB0iYU0BD4tmkN0wQpypKfF18jwXCrpU4teUW2NkSArM5Jb7u
-	WAyVcJFYeHgnlC0s8er4FnYIW0bi9OQeFoiGyYwS+/99YIdwVjNKLGv8CrXCWqLlyhOoDkeJ
-	b0/esYJcJCHAJ3HjrSDEoXwSk7ZNZ4YI80p0tAlBVKtJrL73hmUCo/IsJK/NQvLaLITXFjAy
-	r2IUTy0tzk1PLTbKSy3XK07MLS7NS9dLzs/dxAhMXKf/Hf+yg3H5q496hxiZOBgPMUpwMCuJ
-	8Pbb3UsT4k1JrKxKLcqPLyrNSS0+xCjNwaIkzquaIp8qJJCeWJKanZpakFoEk2Xi4JRqYFJN
-	3jDh4suDVtZHHTjmVtgLbLz5nTe/LsUoxoyNzzno8f0SA+2TcdNlBPlOiF+6zjmvVNPPf7N7
-	ZOqxh4al0/mav981LK43yChTPVdZIvaXm//rb+l3S49onN63f93eLXMNHz2UOm8UNN1u+hHX
-	lkSbR8VinTbT7ovazI+5Y/NUQHziodPHOpzf9rjey1ssEfZIucBRVXxRRMad36t8fO2Mbp+X
-	3dDQVneyrkDyivovV5uur38Wx/I71Ph/Mb6oUcK67/rn1Mk5pxeKiFkv43YI/J8rZJ9jWl+2
-	8MZl8aXbq4U0XSzlxbJ+aGlM3H3t+p3akhkqZ7xCdN2ShcpK59XuyT/RVfhcLfXKP+svSizF
-	GYmGWsxFxYkAfKDh6MsDAAA=
-X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFrrCIsWRmVeSWpSXmKPExsVy+t/xu7qPwx+mGfzZa2axeeJWNouJKycz
-	W/z6YmGx/+A3VouZM04wWnTO3sBusfTtVnaLy7vmsFkc/PCE1aLljqkDl8eTg/OYPNbMW8Po
-	sXmFlsfiPS+ZPM7tOM/usWlVJ5vHvJOBHi82z2T0+LxJzmPr59ssAVxRejZF+aUlqQoZ+cUl
-	tkrRhhZGeoaWFnpGJpZ6hsbmsVZGpkr6djYpqTmZZalF+nYJehkvNq9hKtjOUvGr4TtTA+NG
-	5i5GTg4JAROJu3c3MXUxcnEICSxllFg4eQ8rREJGYuOXq1C2sMSfa11sILaQwEdGiQebVCAa
-	NjNK3G7YwgKSYBFQlXiybA2YzSagI3H+zR2wDSICShL7dk1kB2lgFtjBJNE3exLYJGEBT4mH
-	bd/AbF4BB4n/qzvYIKY+Z5S4enktI0RCUOLkzCdgU5mBpi7Y/QmoiAPIlpZY/o8DJMwpoCHx
-	bNIbJohLFSW+Lr7HAmHXSnz++4xxAqPwLCSTZiGZNAth0gJG5lWMIqmlxbnpucVGesWJucWl
-	eel6yfm5mxiB0bvt2M8tOxhXvvqod4iRiYPxEKMEB7OSCG+/3b00Id6UxMqq1KL8+KLSnNTi
-	Q4ymwLCYyCwlmpwPTB95JfGGZgamhiZmlgamlmbGSuK8bFfOpwkJpCeWpGanphakFsH0MXFw
-	SjUwhQhez1KtLHzh5VE77/LZq7I1bBqWUxeu8ZxtUT230ai5K+/Rssa5QZ17ZY9/O9JTfXm1
-	bBHv5FrvCeuYmlfd33mdY3pw0MTTR6wXONvUZk+8cYrVgUf67zm90xNX7ef2WBkySfzo/m36
-	e89c/yK/oK++dFf54k2H10vHWtRdfFYgEtooPcH8tE79zbIW0cSouxJ1Ory/SqSWMi06zqV7
-	xETiamJM21FRg51Ppu8svu4vaHDtequjVefa9p9cvCe5Twhfb/65yCjo3YNqX/0ttw6+F4m4
-	p9U/4Y9TkR3/LuN7BdKrxYNqp139UBB373XkZZ39r7Q/ym1KcdJlYb4qdnpDQXGJvtPKpdcP
-	mTkdVGIpzkg01GIuKk4EANvlLl1nAwAA
-X-CMS-MailID: 20240911084212eucas1p2266e0807bc628806014a4aff9500f7d2
-X-Msg-Generator: CA
-X-RootMTR: 20240907122025eucas1p26776e1be9713e21ecd4ee612e470d5ba
-X-EPHeader: CA
-CMS-TYPE: 201P
-X-CMS-RootMailID: 20240907122025eucas1p26776e1be9713e21ecd4ee612e470d5ba
-References: <20240904-jag-iopfv8-v1-0-e3549920adf3@samsung.com>
-	<20240904-jag-iopfv8-v1-3-e3549920adf3@samsung.com>
-	<CGME20240907122025eucas1p26776e1be9713e21ecd4ee612e470d5ba@eucas1p2.samsung.com>
-	<ZtxFAxM6QQBYVSJp@ziepe.ca>
+In-Reply-To: <20240911080445.GA5950@lst.de>
 
-On Sat, Sep 07, 2024 at 09:20:19AM -0300, Jason Gunthorpe wrote:
-> On Wed, Sep 04, 2024 at 03:17:14PM +0200, Joel Granados via B4 Relay wrote:
-> > @@ -51,7 +52,6 @@ config INTEL_IOMMU_SVM
-> >  	depends on X86_64
-> >  	select MMU_NOTIFIER
-> >  	select IOMMU_SVA
-> > -	select IOMMU_IOPF
+On Wed, Sep 11, 2024 at 10:04:45AM +0200, Christoph Hellwig wrote:
+> On Wed, Sep 11, 2024 at 09:43:05AM +0300, Leon Romanovsky wrote:
+> > Thanks for the report, I'm looking into it. However, it is unclear to me
+> > why my patch is causing this issue. The change in dma_supported() should
+> > produce WARN_ON [1] if new path is taken, otherwise, we return to
+> > previous behavior.
 > 
-> Does patch 1 still compile if INTEL_IOMMU_SVM=n?
-It does for me. With and without INTEL_IOMMU_SVM. Is there a config that
-is not compiling for you? You can send that you to me and I can give it
-a try, to see if I get the same issue.
+> dma-iommu never implemented .dma_supported and thus claims to support
+> all dma masks.  To restore that behavior we'd need something like the
+> patch below:
+> 
+> diff --git a/kernel/dma/mapping.c b/kernel/dma/mapping.c
+> index 7550b5dc5e55df..d23a4d5a6b31a1 100644
+> --- a/kernel/dma/mapping.c
+> +++ b/kernel/dma/mapping.c
+> @@ -841,17 +841,19 @@ static int dma_supported(struct device *dev, u64 mask)
+>  {
+>  	const struct dma_map_ops *ops = get_dma_ops(dev);
+>  
+> -	if (WARN_ON(ops && use_dma_iommu(dev)))
+> -		return false;
 
-Best
+The below code still has merit. It is an error to have ops and take
+dma-iommu path.
 
--- 
+>  	/*
+>  	 * ->dma_supported sets the bypass flag, so we must always call
+>  	 * into the method here unless the device is truly direct mapped.
+>  	 */
+> -	if (!ops)
+> -		return dma_direct_supported(dev, mask);
+> -	if (!ops->dma_supported)
+> -		return 1;
+> -	return ops->dma_supported(dev, mask);
+> +	if (ops) {
+> +		if (!ops->dma_supported)
+> +			return 1;
+> +		return ops->dma_supported(dev, mask);
+> +	}
+> +
+> +	if (use_dma_iommu(dev))
+> +		return true;
 
-Joel Granados
+I would simply put this hunk below if (WARN_ON ...) without any other
+changes. Should I send a patch?
+
+Thanks
+
+> +	return dma_direct_supported(dev, mask);
+>  }
+>  
+>  bool dma_pci_p2pdma_supported(struct device *dev)
