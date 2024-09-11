@@ -1,136 +1,87 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.21])
+Received: from verein.lst.de (verein.lst.de [213.95.11.211])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C69B513A265
-	for <iommu@lists.linux.dev>; Wed, 11 Sep 2024 07:51:06 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.21
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4BBE7153820;
+	Wed, 11 Sep 2024 08:04:49 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=213.95.11.211
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1726041068; cv=none; b=cX7LyZAayxSAt6CZIkGHLih4ewofHcOIw1mObeYXGnJlH3VBOuoyjoPInMPNGBvgOk1kpOGffo50FNXryRGqD6HpUKoqOlNCtXgluRDPIKbPAUCOX5EsKQeGabfOV422i1a8fo2Z3Tjk7yR5Kww1Il02qmp2XqT1dD4WrlrCR+c=
+	t=1726041892; cv=none; b=az1kbAxbFiu3zxYlFF/dd3axx2+okByuf2wHnT0KzIsL5/BrszpUqIM0nR2jt7qVljObhPvxlaqLAWTdyii8bxsFIMUBDgQ15uXaEwkKRkUOrwJmFQKq9h28emphhTBrEIAYc1zOHt7Ssv6xE17XPmrYN9n6EyNEuD2WLo0TM7Q=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1726041068; c=relaxed/simple;
-	bh=M9fkehi060zC3DImk/9ShDxtYwI5FbQzctu+1KRlBI8=;
-	h=Message-ID:Date:MIME-Version:Cc:Subject:To:References:From:
-	 In-Reply-To:Content-Type; b=P0MNgeiDuFETdc+LO8gRC+xvnOzmRoY082x5ymeeBq9o8ht6jeawc18MDgZevDAzu89wQmzC206hFwrlLdEhLo2DVGyxGBus23qxvOjyZVyPD5dVFsb9EPpmLSZ044URydYbyjQ7bGtxY83sZZFdTV74vhHRhjibQ2oQ0GsIhiM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=Uq34vW2h; arc=none smtp.client-ip=198.175.65.21
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="Uq34vW2h"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1726041067; x=1757577067;
-  h=message-id:date:mime-version:cc:subject:to:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=M9fkehi060zC3DImk/9ShDxtYwI5FbQzctu+1KRlBI8=;
-  b=Uq34vW2h8VSCkk0u+4388hHLn2D6Q7hR+9kBq7rK8UW0kPc5vg5QaoPZ
-   gK6sCxuSzIcgKUBHDG4lUAsnlfjIijHDxd8do5/HMJMGgkScpmcxm76JS
-   wfs2LcdsCrJMrx8APcP4fs/e/B4XjiAGxsiH0lG/eE2fpwpR4cKgcZyPi
-   hzzX/31PxPFRKcGyT0qleyn5PTQaPtQxe1GOacsjlyVCyY1/z1FYV7e88
-   sV8fBLWZmIK2JpSoBEq2PiHJhX7Jajbabz5mFvQuCFIABik3jainYuIqY
-   ygWzv9QrD2hV+eiXUlkcCYPBS9Rd6xNKx0eoB687bWDr8XjzujdowziyK
-   w==;
-X-CSE-ConnectionGUID: +woNAkYERM6ploryarbdnQ==
-X-CSE-MsgGUID: sy2mvMS7Rz6kgLc0wNZl7w==
-X-IronPort-AV: E=McAfee;i="6700,10204,11191"; a="24761671"
-X-IronPort-AV: E=Sophos;i="6.10,219,1719903600"; 
-   d="scan'208";a="24761671"
-Received: from fmviesa006.fm.intel.com ([10.60.135.146])
-  by orvoesa113.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Sep 2024 00:51:06 -0700
-X-CSE-ConnectionGUID: ajRXdtpPQNKqOYG+oecUHg==
-X-CSE-MsgGUID: cFStQAe4QEW8m1wuEEJ7DQ==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.10,219,1719903600"; 
-   d="scan'208";a="66915156"
-Received: from lizhiqua-mobl.ccr.corp.intel.com (HELO [10.124.240.228]) ([10.124.240.228])
-  by fmviesa006-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Sep 2024 00:51:01 -0700
-Message-ID: <bf0a3891-f7b5-4a19-a86d-c115ab2d6b88@linux.intel.com>
-Date: Wed, 11 Sep 2024 15:50:59 +0800
+	s=arc-20240116; t=1726041892; c=relaxed/simple;
+	bh=/CSb5i4eKb9gqo1hmpGIH5jyrntUD/keY6VmktfO7S0=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=bwslzb0TKAGp4JkwOMkbPgSNYit9Z5VHimHmkjeol3i7z/JnIHbyg6CBQyGYQAkFnDYhQ5tcGmqQVWMhJ6gCm616vlMw8sLNgaknYBrxHTlJ716DOgU/VuprwF2TwJrqjrOXgAa+ZzGZXlzPdLkHtuO5SYqn7rYU7EvbxsiREz8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=lst.de; spf=pass smtp.mailfrom=lst.de; arc=none smtp.client-ip=213.95.11.211
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=lst.de
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=lst.de
+Received: by verein.lst.de (Postfix, from userid 2407)
+	id 25B37227AB5; Wed, 11 Sep 2024 10:04:46 +0200 (CEST)
+Date: Wed, 11 Sep 2024 10:04:45 +0200
+From: Christoph Hellwig <hch@lst.de>
+To: Leon Romanovsky <leon@kernel.org>
+Cc: =?iso-8859-1?Q?N=EDcolas_F=2E_R=2E_A=2E?= Prado <nfraprado@collabora.com>,
+	Christoph Hellwig <hch@lst.de>, Robin Murphy <robin.murphy@arm.com>,
+	Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
+	Marek Szyprowski <m.szyprowski@samsung.com>,
+	Easwar Hariharan <eahariha@linux.microsoft.com>,
+	linux-kernel@vger.kernel.org, iommu@lists.linux.dev,
+	Jason Gunthorpe <jgg@nvidia.com>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	regressions@lists.linux.dev, kernelci@lists.linux.dev,
+	kernel@collabora.com
+Subject: Re: [PATCH v4 2/2] dma: add IOMMU static calls with clear default
+ ops
+Message-ID: <20240911080445.GA5950@lst.de>
+References: <cover.1721818168.git.leon@kernel.org> <c3179690b16d790d5bfd7d0afabac9b90922ec28.1721818168.git.leon@kernel.org> <181e06ff-35a3-434f-b505-672f430bd1cb@notapiano> <20240911064305.GD4026@unreal>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Cc: baolu.lu@linux.intel.com, Jason Gunthorpe <jgg@nvidia.com>,
- "will@kernel.org" <will@kernel.org>, "joro@8bytes.org" <joro@8bytes.org>,
- "suravee.suthikulpanit@amd.com" <suravee.suthikulpanit@amd.com>,
- "robin.murphy@arm.com" <robin.murphy@arm.com>,
- "dwmw2@infradead.org" <dwmw2@infradead.org>,
- "shuah@kernel.org" <shuah@kernel.org>,
- "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
- "iommu@lists.linux.dev" <iommu@lists.linux.dev>,
- "linux-arm-kernel@lists.infradead.org"
- <linux-arm-kernel@lists.infradead.org>,
- "linux-kselftest@vger.kernel.org" <linux-kselftest@vger.kernel.org>,
- "eric.auger@redhat.com" <eric.auger@redhat.com>,
- "jean-philippe@linaro.org" <jean-philippe@linaro.org>,
- "mdf@kernel.org" <mdf@kernel.org>, "mshavit@google.com"
- <mshavit@google.com>,
- "shameerali.kolothum.thodi@huawei.com"
- <shameerali.kolothum.thodi@huawei.com>,
- "smostafa@google.com" <smostafa@google.com>, "Liu, Yi L" <yi.l.liu@intel.com>
-Subject: Re: [PATCH v2 17/19] iommu/arm-smmu-v3: Add
- arm_smmu_viommu_cache_invalidate
-To: Nicolin Chen <nicolinc@nvidia.com>, "Tian, Kevin" <kevin.tian@intel.com>
-References: <cover.1724776335.git.nicolinc@nvidia.com>
- <4b61aba3bc6c1cce628d9db44d5b18ea567a8be1.1724776335.git.nicolinc@nvidia.com>
- <20240905162039.GT1358970@nvidia.com> <Ztnx0c4BpGt6umrM@nvidia.com>
- <20240905182148.GA1358970@nvidia.com>
- <BL1PR11MB52712F4AAF7D1388A080A49E8C9B2@BL1PR11MB5271.namprd11.prod.outlook.com>
- <ZuFEx7mp3v0/lY/g@nvidia.com>
-Content-Language: en-US
-From: Baolu Lu <baolu.lu@linux.intel.com>
-In-Reply-To: <ZuFEx7mp3v0/lY/g@nvidia.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20240911064305.GD4026@unreal>
+User-Agent: Mutt/1.5.17 (2007-11-01)
 
-On 2024/9/11 15:20, Nicolin Chen wrote:
-> On Wed, Sep 11, 2024 at 06:25:16AM +0000, Tian, Kevin wrote:
->>> From: Jason Gunthorpe<jgg@nvidia.com>
->>> Sent: Friday, September 6, 2024 2:22 AM
->>>
->>> On Thu, Sep 05, 2024 at 11:00:49AM -0700, Nicolin Chen wrote:
->>>> On Thu, Sep 05, 2024 at 01:20:39PM -0300, Jason Gunthorpe wrote:
->>>>> On Tue, Aug 27, 2024 at 09:59:54AM -0700, Nicolin Chen wrote:
->>>>>
->>>>>> +static int arm_smmu_viommu_cache_invalidate(struct
->>> iommufd_viommu *viommu,
->>>>>> +                                           struct iommu_user_data_array
->>> *array)
->>>>>> +{
->>>>>> +       struct iommu_domain *domain =
->>> iommufd_viommu_to_parent_domain(viommu);
->>>>>> +
->>>>>> +       return __arm_smmu_cache_invalidate_user(
->>>>>> +                       to_smmu_domain(domain), viommu, array);
->>>>> I'd like to have the viommu struct directly hold the VMID. The nested
->>>>> parent should be sharable between multiple viommus, it doesn't make
->>>>> any sense that it would hold the vmid.
->>>>>
->>>>> This is struggling because it is trying too hard to not have the
->>>>> driver allocate the viommu, and I think we should just go ahead and do
->>>>> that. Store the vmid, today copied from the nesting parent in the vmid
->>>>> private struct. No need for iommufd_viommu_to_parent_domain(), just
->>>>> rework the APIs to pass the vmid down not a domain.
->>>> OK. When I designed all this stuff, we still haven't made mind
->>>> about sharing the s2 domain, i.e. moving the VMID, which might
->>>> need a couple of more patches to achieve.
->>> Yes, many more patches, and don't try to do it now.. But we can copy
->>> the vmid from the s2 and place it in the viommu struct during
->>> allocation time.
->>>
->> does it assume that a viommu object cannot span multiple physical
->> IOMMUs so there is only one vmid per viommu?
-> I think so. One the reasons of introducing vIOMMU is to maintain
-> the shareability across physical IOMMUs at the s2 HWPT_PAGING.
+On Wed, Sep 11, 2024 at 09:43:05AM +0300, Leon Romanovsky wrote:
+> Thanks for the report, I'm looking into it. However, it is unclear to me
+> why my patch is causing this issue. The change in dma_supported() should
+> produce WARN_ON [1] if new path is taken, otherwise, we return to
+> previous behavior.
 
-My understanding of VMID is something like domain id in x86 arch's. Is
-my understanding correct?
+dma-iommu never implemented .dma_supported and thus claims to support
+all dma masks.  To restore that behavior we'd need something like the
+patch below:
 
-If a VMID for an S2 hwpt is valid on physical IOMMU A but has already
-been allocated for another purpose on physical IOMMU B, how can it be
-shared across both IOMMUs? Or the VMID is allocated globally?
-
-Thanks,
-baolu
+diff --git a/kernel/dma/mapping.c b/kernel/dma/mapping.c
+index 7550b5dc5e55df..d23a4d5a6b31a1 100644
+--- a/kernel/dma/mapping.c
++++ b/kernel/dma/mapping.c
+@@ -841,17 +841,19 @@ static int dma_supported(struct device *dev, u64 mask)
+ {
+ 	const struct dma_map_ops *ops = get_dma_ops(dev);
+ 
+-	if (WARN_ON(ops && use_dma_iommu(dev)))
+-		return false;
+ 	/*
+ 	 * ->dma_supported sets the bypass flag, so we must always call
+ 	 * into the method here unless the device is truly direct mapped.
+ 	 */
+-	if (!ops)
+-		return dma_direct_supported(dev, mask);
+-	if (!ops->dma_supported)
+-		return 1;
+-	return ops->dma_supported(dev, mask);
++	if (ops) {
++		if (!ops->dma_supported)
++			return 1;
++		return ops->dma_supported(dev, mask);
++	}
++
++	if (use_dma_iommu(dev))
++		return true;
++	return dma_direct_supported(dev, mask);
+ }
+ 
+ bool dma_pci_p2pdma_supported(struct device *dev)
