@@ -1,48 +1,47 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.10])
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.11])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C01311A76A6
-	for <iommu@lists.linux.dev>; Thu, 12 Sep 2024 13:04:37 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.10
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BEBDF19F42D
+	for <iommu@lists.linux.dev>; Thu, 12 Sep 2024 13:06:55 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.11
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1726146279; cv=none; b=VHkaUQfGLX5rFQoY+7XkxtPzkL9aTzZPgW2KmsH/nA2C50KslFqBiLL3JZuM06sFP8252HAL/pPzW6080eZhC9oF1cU/Kq8zNUkma0muAR6SxRASqUa2FLBoRbe9iUSsRQuI8nFcRZFMM8P4Jf/hqT7NiRS/r48WCmCPZLuKYjY=
+	t=1726146417; cv=none; b=Gldhwm/25P5IvVRPC2JJRnyueAYhR24yLZ3Fel5JwB2Bh2fvNT7Inu+kWjWUKmbUqciBSyiL19dPfuhE3xVfAZFQ9m1+PM+LeEtwPDgd2I8Bh5U2qKaQoRG0yvRe355QfBVDffD8EXaZ8SfJ4C4ZdkcWBQTgrumnnQMKrQEZYw0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1726146279; c=relaxed/simple;
-	bh=pOcQU08N3lTvDhVfmas/O1+D4tqbqbVhqCIeSVYwjvw=;
-	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
-	 MIME-Version; b=X2xOtD3c4xgVgCNfPDdgrld5/2yTaEWujcKY8jVhTNKfBkJbezwuzl9IJs1gYUfHME/B8Ng6UkGrayDdDHBqkfT82jTBzPKFhUkWxH39hwma9nGQDGcG0/Ul6T5ASWSpnLKgJozCnnOyndWOw1U0mcDwmA4Nd1G+8rlgI23lVJo=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=fail smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=FGyamm9m; arc=none smtp.client-ip=192.198.163.10
+	s=arc-20240116; t=1726146417; c=relaxed/simple;
+	bh=WGNva7lCjkS+Ss6lxS/Wf8hPh3EcDCZagdLFiyY9rAc=;
+	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version; b=MtgsRsK1Ebowl20w6crLm2L4kqEzekvlTsBU7Cvz5LywBRArZjGOy4rJGzKu297ySwP6og3wTLGrlEgzOgqfQrcUjBo9vc7DkbJs2Sjuw4yNZIitR8en2twtdjxMccApYZJvHF8Mp5jAUh4B92nt9ig2s83NHOUBC9XOCEoZ3VI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=V0xNv0lw; arc=none smtp.client-ip=192.198.163.11
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="FGyamm9m"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="V0xNv0lw"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1726146278; x=1757682278;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=pOcQU08N3lTvDhVfmas/O1+D4tqbqbVhqCIeSVYwjvw=;
-  b=FGyamm9mAEBj9CANypj86w1itJ+Kfpc3FAU64C0u4wK5WoAUoks08SDu
-   1b3eGKxWu9ILIDe5gFZXnIIfjIXlEbZhqPHQ4F4Ezw5B0YO1eP0YH+8OK
-   b1BoLdfVqF9guOlCa9c0Xm5Wub85EdKSiuP29279eW5Zy8P62OzNLGR0p
-   Q6O480TnNQIGjCBROb/jvIY75gd8QsJ1E/PEeU8t6HPPOTq+hz5R8D3Uu
-   5q4UTtU1yKJurY7FJlG6J4y7/tAr+Hycyq0vEtGVWyCGqqW9lnEjOOyjo
-   AOCkz2xn/MfnJ66KpYK1xB9LhodfVan/zvpHZ6VbJTguxXIx/P79dvBZd
-   A==;
-X-CSE-ConnectionGUID: LMdj+iqeTGuFMkuRkT0m0Q==
-X-CSE-MsgGUID: ng1V12TMQO2enI0JX8yZbw==
-X-IronPort-AV: E=McAfee;i="6700,10204,11192"; a="36380568"
+  t=1726146416; x=1757682416;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=WGNva7lCjkS+Ss6lxS/Wf8hPh3EcDCZagdLFiyY9rAc=;
+  b=V0xNv0lwOPKiC+EYaig+OqpPBkN3IVxP8tLq8zwlvr2PgjHrPdnlZFqf
+   jVsL1WtRF3HBH9NfJ29eIGfsusLeMBP5CIlR6VMcwLg2ERmWG5rh/s93e
+   48Iqr5F/SQrIvj+osaWiVOnc6RlJVIlABkOmWdR9c0a3dt82Vj9W1chCU
+   zQmjGPuc2cLU+J1ef73m66xBs8XhY00eqVK0iybalaiyetRnJoHNa3YRd
+   gQyO3ghgSIqJ8jCbcdU6l8O4rAXFSFT0ZATfhp1Ko/hrZfGzjBKEy0RXP
+   b8i2Vt8y+i908AlCwWQ0WSUemBtkBK25u80H962stC0xJnWmSEHG94twi
+   g==;
+X-CSE-ConnectionGUID: 7IVfxOqYQS+FMA4fhx9o2A==
+X-CSE-MsgGUID: corQRVibSRev8Q+8hSha4Q==
+X-IronPort-AV: E=McAfee;i="6700,10204,11192"; a="35585680"
 X-IronPort-AV: E=Sophos;i="6.10,223,1719903600"; 
-   d="scan'208";a="36380568"
-Received: from orviesa005.jf.intel.com ([10.64.159.145])
-  by fmvoesa104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Sep 2024 06:04:37 -0700
-X-CSE-ConnectionGUID: X2m9O3BmS7aeLajwak7SsQ==
-X-CSE-MsgGUID: LKbIz317Q1O8OKN0VEIhPw==
+   d="scan'208";a="35585680"
+Received: from orviesa007.jf.intel.com ([10.64.159.147])
+  by fmvoesa105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Sep 2024 06:06:55 -0700
+X-CSE-ConnectionGUID: 8VtqP9XbSp2Fq2QTjcSmIg==
+X-CSE-MsgGUID: 9Z11/YJCTfuEcLz0TIQKJg==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.10,223,1719903600"; 
-   d="scan'208";a="72509976"
+   d="scan'208";a="68211605"
 Received: from 984fee00a4c6.jf.intel.com ([10.165.58.231])
-  by orviesa005.jf.intel.com with ESMTP; 12 Sep 2024 06:04:37 -0700
+  by orviesa007.jf.intel.com with ESMTP; 12 Sep 2024 06:06:56 -0700
 From: Yi Liu <yi.l.liu@intel.com>
 To: joro@8bytes.org,
 	jgg@nvidia.com,
@@ -57,12 +56,10 @@ Cc: alex.williamson@redhat.com,
 	zhenzhong.duan@intel.com,
 	linux-kselftest@vger.kernel.org,
 	vasant.hegde@amd.com
-Subject: [PATCH v2 6/6] iommu: Make set_dev_pasid op support domain replacement
-Date: Thu, 12 Sep 2024 06:04:27 -0700
-Message-Id: <20240912130427.10119-7-yi.l.liu@intel.com>
+Subject: [PATCH 0/3] Support attaching PASID to the blocked_domain
+Date: Thu, 12 Sep 2024 06:06:50 -0700
+Message-Id: <20240912130653.11028-1-yi.l.liu@intel.com>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20240912130427.10119-1-yi.l.liu@intel.com>
-References: <20240912130427.10119-1-yi.l.liu@intel.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -71,49 +68,35 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-The iommu core is going to support domain replacement for pasid, it needs
-to make the set_dev_pasid op support replacing domain and keep the old
-domain config in the failure case.
+During the review of iommufd pasid series, Kevin and Jason suggested
+attaching PASID to the blocked domain hence replacing the usage of
+remove_dev_pasid() op [1]. This makes sense as it makes the PASID path
+aligned with the RID path which attaches the RID to the blocked_domain
+when it is to be blocked. To do it, it requires passing the old domain
+to the iommu driver. This has been done in [2].
 
-AMD iommu driver does not support domain replacement for pasid yet, so it
-would fail the set_dev_pasid op to keep the old config if the input @old
-is non-NULL.
+This series makes the Intel iommu driver and ARM SMMUv3 driver support
+attaching PASID to the blocked domain. While the AMD iommu driver does
+not have the blocked domain yet, so still uses the remove_dev_pasid() op.
 
-Suggested-by: Jason Gunthorpe <jgg@nvidia.com>
-Signed-off-by: Yi Liu <yi.l.liu@intel.com>
----
- drivers/iommu/amd/pasid.c | 3 +++
- include/linux/iommu.h     | 3 ++-
- 2 files changed, 5 insertions(+), 1 deletion(-)
+[1] https://lore.kernel.org/linux-iommu/20240816130202.GB2032816@nvidia.com/
+[2] https://lore.kernel.org/linux-iommu/20240912130427.10119-1-yi.l.liu@intel.com/
 
-diff --git a/drivers/iommu/amd/pasid.c b/drivers/iommu/amd/pasid.c
-index 77bf5f5f947a..30e27bda3fac 100644
---- a/drivers/iommu/amd/pasid.c
-+++ b/drivers/iommu/amd/pasid.c
-@@ -109,6 +109,9 @@ int iommu_sva_set_dev_pasid(struct iommu_domain *domain,
- 	unsigned long flags;
- 	int ret = -EINVAL;
- 
-+	if (old)
-+		return -EOPNOTSUPP;
-+
- 	/* PASID zero is used for requests from the I/O device without PASID */
- 	if (!is_pasid_valid(dev_data, pasid))
- 		return ret;
-diff --git a/include/linux/iommu.h b/include/linux/iommu.h
-index 32dce80aa7fd..27f923450a7c 100644
---- a/include/linux/iommu.h
-+++ b/include/linux/iommu.h
-@@ -616,7 +616,8 @@ struct iommu_ops {
-  * * EBUSY	- device is attached to a domain and cannot be changed
-  * * ENODEV	- device specific errors, not able to be attached
-  * * <others>	- treated as ENODEV by the caller. Use is discouraged
-- * @set_dev_pasid: set an iommu domain to a pasid of device
-+ * @set_dev_pasid: set or replace an iommu domain to a pasid of device. The pasid of
-+ *                 the device should be left in the old config in error case.
-  * @map_pages: map a physically contiguous set of pages of the same size to
-  *             an iommu domain.
-  * @unmap_pages: unmap a number of pages of the same size from an iommu domain
+Regards,
+	Yi Liu
+
+Jason Gunthorpe (1):
+  iommu/arm-smmu-v3: Make smmuv3 blocked domain support PASID
+
+Yi Liu (2):
+  iommu/vt-d: Make blocked domain support PASID
+  iommu: Add a wrapper for remove_dev_pasid
+
+ drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 12 ++++-----
+ drivers/iommu/intel/iommu.c                 | 17 ++++++++----
+ drivers/iommu/iommu.c                       | 30 ++++++++++++++++-----
+ 3 files changed, 42 insertions(+), 17 deletions(-)
+
 -- 
 2.34.1
 
