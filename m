@@ -1,50 +1,50 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.14])
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.16])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0CA4A20DF4
-	for <iommu@lists.linux.dev>; Thu, 12 Sep 2024 04:26:00 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.14
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 67CE6126BFC;
+	Thu, 12 Sep 2024 04:29:36 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.16
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1726115162; cv=none; b=KQg7EfIXw8QwyyOos4X2IB5pt87sPXQpp4ow6vYDSNysJMZKkt9lyRlMmHDyf369CE0jPxWFLtcGrX1BwK9hZY2pyKfraMu2OuXOYgVg5r2itXmc7oJDArDnnia6W7uDM7Q4YWx7sSP0uNorXL1IjlTNgD2m4RU0Li2FwWHny+0=
+	t=1726115377; cv=none; b=tuj6YOE2qLaLiyR2oxp7OsLHXZg5TrYSjylxkK09sO/MXj1RuR/FlI8giBJrKLGzc1dIO3tQejewuVe+Nosc57rXtPUIT8/Zk4VZDAJvbXpCZqorv9PGo0inU8lhsOrdUKIILiVk3r0q+acq7FLASyhWSPKdcCt2wY/cIlNQKWw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1726115162; c=relaxed/simple;
-	bh=xyQE2gfxqTLxiYV5xveoltC/aFuv60BdDvSHOVM/TD0=;
+	s=arc-20240116; t=1726115377; c=relaxed/simple;
+	bh=2htbrfTbDoYOyrx6HE0Z48NeXXb8ZCZ77dDRQxdrY68=;
 	h=Message-ID:Date:MIME-Version:Cc:Subject:To:References:From:
-	 In-Reply-To:Content-Type; b=qANFL+WHW1oAOcyDLvKjFnvb/LI0vHNLY60jJzhTK+SUZbUStQkynwy4ueZa0IfqPaZXymAQkPBoVSozewvpG2N+85DbVAxOB8CeVTmJxYSdlDVEnDTP8JvDFNXZp++k9fuDPW11iPsV7C25I0GiOpwrswKQgX/vPrOaPOdUFr0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=a5kOC/gT; arc=none smtp.client-ip=198.175.65.14
+	 In-Reply-To:Content-Type; b=WOeZU4MOZtQ8hm/H54f/i0Wsy6+XaYPSG5+FP0zhbqHRlYgMsMQ8bOZkSLA+Btukk8ZCwwmZODRJj2WmGxhxRA1HYDzI4HIEew8ZekfhHixNczuWllm7SHKORvC9vXDBZL33TeMOqEvQ3BAWHt30ihVg8IPH5tLJ1PTWgjZXFp0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=Bw0XmD3f; arc=none smtp.client-ip=198.175.65.16
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="a5kOC/gT"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="Bw0XmD3f"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1726115161; x=1757651161;
+  t=1726115376; x=1757651376;
   h=message-id:date:mime-version:cc:subject:to:references:
    from:in-reply-to:content-transfer-encoding;
-  bh=xyQE2gfxqTLxiYV5xveoltC/aFuv60BdDvSHOVM/TD0=;
-  b=a5kOC/gTpeTjigx2BQ1cTygI2vkTgkm1/aDG3drnwa01f93NfcsVv9Qo
-   kk4iMBdl+UJ8QW6e2EcpefumSjEjo/tAqguIUAj1NFJWRqs/EEi8TFYcZ
-   8mB2N7rs+peO8qeE3BMMONDBV61tSAzFNThsWYJ0AYwGuPGcOkv6KtzRS
-   wzpPrsYGkIlBWw87spWpWPZrkeo0ilN+IJ+TxYV/+ZimkMAa3l3QSKlSy
-   sv8HDIfl36pW6CEQnM1DwFuCFaZk6jdfYpoICz0ugL+h/SxDMV+Yc684y
-   hLUUFHjrJ372esR1zBIl3mkRVC1Lvg3J3a9fcemG7WXPOkL1O+31kdEVk
-   A==;
-X-CSE-ConnectionGUID: gOVkOrUqRySKOZGrI6YIxg==
-X-CSE-MsgGUID: EStFLblcRSa62LqGsaYqIQ==
-X-IronPort-AV: E=McAfee;i="6700,10204,11192"; a="28725255"
+  bh=2htbrfTbDoYOyrx6HE0Z48NeXXb8ZCZ77dDRQxdrY68=;
+  b=Bw0XmD3f5LjEGkDbU56wDA87KerY9tZw+6JRISgMOJbVtYJbWkn6Wux8
+   sntvuDWsagAdjlbuW4KqZ+NEespBBH0O2V5RdSeeVnuLuDyw0PTM+7MAT
+   OsPV49KUug7n0D67XKoYENohbb8xcmbmsNxESPwBHGOVUWtzzR3gghYlG
+   hgVsGI/W3RFKfm0Xn657Q4XqKKWF7xO6NkjnUKODyMDJKqV1O4ep2qdQj
+   EHy9er4SCTWYFihFuCRFuJaWCwhmzxzQ6Pa0N8In0b+G0erSMumVEBivr
+   Eahfx9DRrsU+5f1PZ2Ek9fu+wt6noVeaVecJKN5tQEtMgIBhca1MJn98N
+   g==;
+X-CSE-ConnectionGUID: /J9NVO2xQm+PIQIp7wNiuw==
+X-CSE-MsgGUID: JF8bFlpyQ2WOtKlsxfuQBA==
+X-IronPort-AV: E=McAfee;i="6700,10204,11192"; a="25050148"
 X-IronPort-AV: E=Sophos;i="6.10,221,1719903600"; 
-   d="scan'208";a="28725255"
-Received: from orviesa008.jf.intel.com ([10.64.159.148])
-  by orvoesa106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Sep 2024 21:26:01 -0700
-X-CSE-ConnectionGUID: zpmbRlnQQCmvIL+aZltn8w==
-X-CSE-MsgGUID: G4YwYM1rSwyIPZD7ACm+/g==
+   d="scan'208";a="25050148"
+Received: from fmviesa006.fm.intel.com ([10.60.135.146])
+  by orvoesa108.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Sep 2024 21:29:35 -0700
+X-CSE-ConnectionGUID: wBTofcTnRmibyrXMjsPvvA==
+X-CSE-MsgGUID: sgRejlZ+S2qkKv9CuIlBYA==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.10,221,1719903600"; 
-   d="scan'208";a="68369594"
+   d="scan'208";a="67202475"
 Received: from allen-box.sh.intel.com (HELO [10.239.159.127]) ([10.239.159.127])
-  by orviesa008.jf.intel.com with ESMTP; 11 Sep 2024 21:25:58 -0700
-Message-ID: <b7a68539-3a3c-4cd9-922b-bfb9db8e7e0b@linux.intel.com>
-Date: Thu, 12 Sep 2024 12:21:53 +0800
+  by fmviesa006.fm.intel.com with ESMTP; 11 Sep 2024 21:29:29 -0700
+Message-ID: <ee50c648-3fb5-4cb4-bc59-2283489be10e@linux.intel.com>
+Date: Thu, 12 Sep 2024 12:25:24 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -52,75 +52,118 @@ List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Cc: baolu.lu@linux.intel.com, David Woodhouse <dwmw2@infradead.org>,
- Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
- Robin Murphy <robin.murphy@arm.com>, Jason Gunthorpe <jgg@ziepe.ca>,
- Kevin Tian <kevin.tian@intel.com>, Klaus Jensen <its@irrelevant.dk>,
- linux-kernel@vger.kernel.org, iommu@lists.linux.dev
-Subject: Re: [PATCH 5/6] iommu: init pasid array while doing domain_replace
- and iopf is active
-To: Joel Granados <j.granados@samsung.com>
-References: <20240904-jag-iopfv8-v1-0-e3549920adf3@samsung.com>
- <20240904-jag-iopfv8-v1-5-e3549920adf3@samsung.com>
- <CGME20240905033408eucas1p2ad508d4f3377f4daa38f28bf6c3d1118@eucas1p2.samsung.com>
- <c2e765a8-d935-42db-bd22-c12e7960f2f0@linux.intel.com>
- <20240911105657.iesajd4d5va3wc5y@joelS2.panther.com>
+Cc: baolu.lu@linux.intel.com, Jason Gunthorpe <jgg@nvidia.com>,
+ acpica-devel@lists.linux.dev, Hanjun Guo <guohanjun@huawei.com>,
+ iommu@lists.linux.dev, Joerg Roedel <joro@8bytes.org>,
+ Kevin Tian <kevin.tian@intel.com>, kvm@vger.kernel.org,
+ Len Brown <lenb@kernel.org>, linux-acpi@vger.kernel.org,
+ linux-arm-kernel@lists.infradead.org,
+ Lorenzo Pieralisi <lpieralisi@kernel.org>,
+ "Rafael J. Wysocki" <rafael@kernel.org>,
+ Robert Moore <robert.moore@intel.com>, Robin Murphy <robin.murphy@arm.com>,
+ Sudeep Holla <sudeep.holla@arm.com>, Will Deacon <will@kernel.org>,
+ Alex Williamson <alex.williamson@redhat.com>,
+ Eric Auger <eric.auger@redhat.com>,
+ Jean-Philippe Brucker <jean-philippe@linaro.org>,
+ Moritz Fischer <mdf@kernel.org>, Michael Shavit <mshavit@google.com>,
+ patches@lists.linux.dev,
+ Shameerali Kolothum Thodi <shameerali.kolothum.thodi@huawei.com>,
+ Mostafa Saleh <smostafa@google.com>
+Subject: Re: [PATCH v2 0/8] Initial support for SMMUv3 nested translation
+To: Zhangfei Gao <zhangfei.gao@linaro.org>, Nicolin Chen <nicolinc@nvidia.com>
+References: <0-v2-621370057090+91fec-smmuv3_nesting_jgg@nvidia.com>
+ <Zs5Fom+JFZimFpeS@Asurada-Nvidia>
+ <CABQgh9HChfeD-H-ghntqBxA3xHrySShy+3xJCNzHB74FuncFNw@mail.gmail.com>
 Content-Language: en-US
 From: Baolu Lu <baolu.lu@linux.intel.com>
-In-Reply-To: <20240911105657.iesajd4d5va3wc5y@joelS2.panther.com>
+In-Reply-To: <CABQgh9HChfeD-H-ghntqBxA3xHrySShy+3xJCNzHB74FuncFNw@mail.gmail.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 
-On 9/11/24 6:56 PM, Joel Granados wrote:
-> On Thu, Sep 05, 2024 at 11:30:05AM +0800, Baolu Lu wrote:
->> On 9/4/24 9:17 PM, Joel Granados via B4 Relay wrote:
->>> From: Joel Granados<j.granados@samsung.com>
+On 9/12/24 11:42 AM, Zhangfei Gao wrote:
+> On Wed, 28 Aug 2024 at 05:32, Nicolin Chen<nicolinc@nvidia.com>  wrote:
+>> On Tue, Aug 27, 2024 at 12:51:30PM -0300, Jason Gunthorpe wrote:
+>>> This brings support for the IOMMFD ioctls:
 >>>
->>> iommu_report_device_fault expects a pasid array to have an
->>> iommu_attach_handle when a fault is detected.
->> The iommu_attach_handle is expected only when an iopf-capable domain is
->> attached to the device or PASID. The iommu_report_device_fault() treats
->> it as a fault when a fault occurs, but no iopf-capable domain is
->> attached.
+>>>   - IOMMU_GET_HW_INFO
+>>>   - IOMMU_HWPT_ALLOC_NEST_PARENT
+>>>   - IOMMU_DOMAIN_NESTED
+>>>   - ops->enforce_cache_coherency()
+>>>
+>>> This is quite straightforward as the nested STE can just be built in the
+>>> special NESTED domain op and fed through the generic update machinery.
+>>>
+>>> The design allows the user provided STE fragment to control several
+>>> aspects of the translation, including putting the STE into a "virtual
+>>> bypass" or a aborting state. This duplicates functionality available by
+>>> other means, but it allows trivially preserving the VMID in the STE as we
+>>> eventually move towards the VIOMMU owning the VMID.
+>>>
+>>> Nesting support requires the system to either support S2FWB or the
+>>> stronger CANWBS ACPI flag. This is to ensure the VM cannot bypass the
+>>> cache and view incoherent data, currently VFIO lacks any cache flushing
+>>> that would make this safe.
+>>>
+>>> Yan has a series to add some of the needed infrastructure for VFIO cache
+>>> flushing here:
+>>>
+>>>   https://lore.kernel.org/linux-iommu/20240507061802.20184-1-yan.y.zhao@intel.com/
+>>>
+>>> Which may someday allow relaxing this further.
+>>>
+>>> Remove VFIO_TYPE1_NESTING_IOMMU since it was never used and superseded by
+>>> this.
+>>>
+>>> This is the first series in what will be several to complete nesting
+>>> support. At least:
+>>>   - IOMMU_RESV_SW_MSI related fixups
+>>>      https://lore.kernel.org/linux-iommu/cover.1722644866.git.nicolinc@nvidia.com/
+>>>   - VIOMMU object support to allow ATS and CD invalidations
+>>>      https://lore.kernel.org/linux-iommu/cover.1723061377.git.nicolinc@nvidia.com/
+>>>   - vCMDQ hypervisor support for direct invalidation queue assignment
+>>>      https://lore.kernel.org/linux-iommu/cover.1712978212.git.nicolinc@nvidia.com/
+>>>   - KVM pinned VMID using VIOMMU for vBTM
+>>>      https://lore.kernel.org/linux-iommu/20240208151837.35068-1-shameerali.kolothum.thodi@huawei.com/
+>>>   - Cross instance S2 sharing
+>>>   - Virtual Machine Structure using VIOMMU (for vMPAM?)
+>>>   - Fault forwarding support through IOMMUFD's fault fd for vSVA
+>>>
+>>> The VIOMMU series is essential to allow the invalidations to be processed
+>>> for the CD as well.
+>>>
+>>> It is enough to allow qemu work to progress.
+>>>
+>>> This is on github:https://github.com/jgunthorpe/linux/commits/smmuv3_nesting
+>>>
+>>> v2:
+>> As mentioned above, the VIOMMU series would be required to test
+>> the entire nesting feature, which now has a v2 rebasing on this
+>> series. I tested it with a paring QEMU branch. Please refer to:
+>> https://lore.kernel.org/linux-iommu/cover.1724776335.git.nicolinc@nvidia.com/
+>> Also, there is another new VIRQ series on top of the VIOMMU one
+>> and this nesting series. And I tested it too. Please refer to:
+>> https://lore.kernel.org/linux-iommu/cover.1724777091.git.nicolinc@nvidia.com/
 >>
->>> Add this handle when the
->>> replacing hwpt has a valid iommufd fault object. Remove it when we
->>> release ownership of the group.
->> The iommu_attach_handle is managed by the caller (iommufd here for
->> example). Therefore, before iommu_attach_handle tries to attach a domain
->> to an iopf-capable device or pasid, it should allocate the handle and
->> pass it to the domain attachment interfaces.
-> What do you mean here?
-> 1. Do you want to move the iommufd_init_pasid_array call up to
-> iommufd_hwpt_replace_device?
-> 2. Do you want to move it further up to iommufd_device_do_replace?
-
-I'm having trouble understanding the need for iommu_init_pasid_array()
-in the core.
-
+>> With that,
+>>
+>> Tested-by: Nicolin Chen<nicolinc@nvidia.com>
+>>
+> Have you tested the user page fault?
 > 
-> Note that all this implemented on a call to replace HWPT. So a
-> non-iopf-capable VFIO_DEVICE_ATTACH_IOMMUFD_PT ioctl has already been
-> completed before the one that calls iommufd_device_do_replace.
+> I got an issue, when a user page fault happens,
+>   group->attach_handle = iommu_attach_handle_get(pasid)
+> return NULL.
 > 
->> Conversely, the handle can
->> only be freed after the domain is detached.
-> Do you have a function in specific where you would put the free handle
-> logic?
+> A bit confused here, only find IOMMU_NO_PASID is used when attaching
+> 
+>   __fault_domain_replace_dev
+> ret = iommu_replace_group_handle(idev->igroup->group, hwpt->domain,
+> &handle->handle);
+> curr = xa_store(&group->pasid_array, IOMMU_NO_PASID, handle, GFP_KERNEL);
+> 
+> not find where the code attach user pasid with the attach_handle.
 
-drivers/iommu/iommufd/fault.c
-
-void iommufd_fault_domain_detach_dev(struct iommufd_hw_pagetable *hwpt,
-                                      struct iommufd_device *idev)
-{
-         struct iommufd_attach_handle *handle;
-
-         handle = iommufd_device_get_attach_handle(idev);
-         iommu_detach_group_handle(hwpt->domain, idev->igroup->group);
-         iommufd_auto_response_faults(hwpt, handle);
-         iommufd_fault_iopf_disable(idev);
-         kfree(handle);
-}
+Have you set iommu_ops::user_pasid_table for SMMUv3 driver?
 
 Thanks,
 baolu
