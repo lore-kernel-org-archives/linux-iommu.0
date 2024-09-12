@@ -1,50 +1,50 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.14])
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.15])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D8E912629D
-	for <iommu@lists.linux.dev>; Thu, 12 Sep 2024 04:18:13 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.14
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 24DAC2629D
+	for <iommu@lists.linux.dev>; Thu, 12 Sep 2024 04:21:42 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.15
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1726114695; cv=none; b=pdGY7X2eCafPfNWUInKS07pz8bWPUBs4r9PRiAkregV3ZUZFvfebcq8M8lYWo+XrUjqPygQeF1lmNWu5sRGfL3mQB+k0x7MXu0StiH0DW+E9QC4V1mj+FcI+fn07Qn6hQ5RihgGcjrQr6OjAM+Aa5UziLK6qL/pfg2xkUlJHOZM=
+	t=1726114904; cv=none; b=i9pRsDJGZOR7WdUzUqBIAgLwyFwttAPzmfNCmsBmSWVSpXtMBzE47zh8NUcb2cRufarLHpnrDR8Z7ih2gPnhTQ86FWvPKqQKa39XDltUhkZf9RpxNBmrNk2efXH5JPB2DpZKD+NQ+tOiVFwxex9AGDrd0K4xbqWj3V6idd1uPsc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1726114695; c=relaxed/simple;
-	bh=ZDQtMMKUiZL3xipxRmpdhkUXy7XbQ0MmOjQTb0b3kwE=;
+	s=arc-20240116; t=1726114904; c=relaxed/simple;
+	bh=LOwOrrEd5V9kC4PV9dh2XF1Ia+QPcKZnVrhHbMhSQzU=;
 	h=Message-ID:Date:MIME-Version:Cc:Subject:To:References:From:
-	 In-Reply-To:Content-Type; b=c/zIjjWQVSP1bZNUDcxCGCXMqYktsKbRS7Di5IEjFq6jxKbgEgqDetQwEPxF932FFro0rMUKx+BAytfcknY/jUOYD1Ooaoy7m8x2vEWuWVC38OkxzojHwx/gyirhrVKX+A7ZNGJJKoIL/w4tfVISl14mMLt5AMjn1FJe6cKwy4o=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=h+WCN9M7; arc=none smtp.client-ip=198.175.65.14
+	 In-Reply-To:Content-Type; b=Wy8kvqMgMEKJ8yapGfz6jK7svdnAg+zZP2ViE58CIUeG1okcmdl/LZ14za5PNATnBZnryOVeCO/0EadfVaQANmBHBfS2i1e4VixFatkRBwIzEcCbUJ58vb10Ydf5mMlOhb9VCxf2wlEVF0EQonBTerGh3Q79lgE4Guk6KIJ0VRg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=enxgjC3F; arc=none smtp.client-ip=198.175.65.15
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="h+WCN9M7"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="enxgjC3F"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1726114694; x=1757650694;
+  t=1726114903; x=1757650903;
   h=message-id:date:mime-version:cc:subject:to:references:
    from:in-reply-to:content-transfer-encoding;
-  bh=ZDQtMMKUiZL3xipxRmpdhkUXy7XbQ0MmOjQTb0b3kwE=;
-  b=h+WCN9M7JmFyl4LIasVseYkAae5tu4ZTui7r35TVbspj4BFAKBHNwY2u
-   UlPT3a+CFeEUjGK3i3fZ6kdzKIXHvUNLg3XyoDFhB6wq3q8fgdy2Thpyz
-   4uo9yZSYWAjtBF8ro0X2YND5miXMcdFuTL3oUxm/wseRPrKwdHtLPt7Jf
-   /O3kHEpTBZJYLI8ezqJX76MDoTN77M7NTzsFUexTvhtnLFmksarueheLp
-   njX+Gd01LndsVm1Wx+9+4C85QywVVPS0AqFBUX6FMjvYMVqS4CrV681Ok
-   tT1qcdCN0ivPD7cAbYy6QYWL0S4JlIjzTZNBx/IyIYQx6VXx+fUcneeTS
+  bh=LOwOrrEd5V9kC4PV9dh2XF1Ia+QPcKZnVrhHbMhSQzU=;
+  b=enxgjC3FUPh1+2jtT+k67SQRCGNVeOUK9XTP33I9KKUT1wrFE/f1RvB1
+   +3zQUJhP4znE/CBHOEyCSKe8mPvBlVNfAaguXpz70C2MPxYMKOzEYYit9
+   9Hv5acDJakrk7ZPVL5Qusg+Dyn5alPRyjmWnUBZp3KQlw5WNuuhlKYdB+
+   Yd2Md/gmF9dOJANfblCsyS6QFeGSnrV3Sbth+9oa6zTbfWjvOD7SDRZeA
+   /2FLvpur8NUIMUfGaSdsTGV8E4wNmhi3xAmiQXKN+zOxRCMQswx4nd0CO
+   dmo3SeZrXBf/2zBsYaRdeuVkK8rTqv/WfDdWCGNhMaBHFfn22jcy+BYag
    w==;
-X-CSE-ConnectionGUID: IMtTglwcQj6l22PwxzTBLw==
-X-CSE-MsgGUID: tWIGTs7YTO6q+pkI8ZmShA==
-X-IronPort-AV: E=McAfee;i="6700,10204,11192"; a="28724937"
+X-CSE-ConnectionGUID: GKFBMasCQ0CjyS8hHTRk3w==
+X-CSE-MsgGUID: 4H5ighC2TweVQOa6oBbvIA==
+X-IronPort-AV: E=McAfee;i="6700,10204,11192"; a="28682534"
 X-IronPort-AV: E=Sophos;i="6.10,221,1719903600"; 
-   d="scan'208";a="28724937"
-Received: from orviesa005.jf.intel.com ([10.64.159.145])
-  by orvoesa106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Sep 2024 21:18:13 -0700
-X-CSE-ConnectionGUID: e1e3hx1lR/u8xN3KQX8YfQ==
-X-CSE-MsgGUID: 3mosQg6ARI6f+pQI2V1Z6w==
+   d="scan'208";a="28682534"
+Received: from orviesa009.jf.intel.com ([10.64.159.149])
+  by orvoesa107.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Sep 2024 21:21:42 -0700
+X-CSE-ConnectionGUID: JZMo6NzPRKmkUWViTvaLIQ==
+X-CSE-MsgGUID: G9pzfVkaT1iqS0zn6JR7eA==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.10,221,1719903600"; 
-   d="scan'208";a="72379190"
+   d="scan'208";a="67510649"
 Received: from allen-box.sh.intel.com (HELO [10.239.159.127]) ([10.239.159.127])
-  by orviesa005.jf.intel.com with ESMTP; 11 Sep 2024 21:18:11 -0700
-Message-ID: <a3e09a90-0b63-4332-9e25-a5832d5ec8b2@linux.intel.com>
-Date: Thu, 12 Sep 2024 12:14:06 +0800
+  by orviesa009.jf.intel.com with ESMTP; 11 Sep 2024 21:21:40 -0700
+Message-ID: <f4ea2a66-49ac-41ae-94c4-2832f08303f1@linux.intel.com>
+Date: Thu, 12 Sep 2024 12:17:35 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -52,85 +52,51 @@ List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Cc: baolu.lu@linux.intel.com, will@kernel.org, robin.murphy@arm.com,
- suravee.suthikulpanit@amd.com, jgg@ziepe.ca, yi.l.liu@intel.com,
- kevin.tian@intel.com, jacob.pan@linux.microsoft.com
-Subject: Re: [PATCH v2 3/8] iommu: Add new flag to explictly request PASID
- capable domain
-To: Vasant Hegde <vasant.hegde@amd.com>, iommu@lists.linux.dev,
- joro@8bytes.org
-References: <20240911101911.6269-1-vasant.hegde@amd.com>
- <20240911101911.6269-4-vasant.hegde@amd.com>
+Cc: baolu.lu@linux.intel.com, David Woodhouse <dwmw2@infradead.org>,
+ Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
+ Robin Murphy <robin.murphy@arm.com>, Jason Gunthorpe <jgg@ziepe.ca>,
+ Kevin Tian <kevin.tian@intel.com>, Klaus Jensen <its@irrelevant.dk>,
+ linux-kernel@vger.kernel.org, iommu@lists.linux.dev
+Subject: Re: [PATCH 5/6] iommu: init pasid array while doing domain_replace
+ and iopf is active
+To: Joel Granados <j.granados@samsung.com>
+References: <20240904-jag-iopfv8-v1-0-e3549920adf3@samsung.com>
+ <20240904-jag-iopfv8-v1-5-e3549920adf3@samsung.com>
+ <CGME20240905033408eucas1p2ad508d4f3377f4daa38f28bf6c3d1118@eucas1p2.samsung.com>
+ <c2e765a8-d935-42db-bd22-c12e7960f2f0@linux.intel.com>
+ <20240911095544.4ad3u6jxgsdsymhj@joelS2.panther.com>
 Content-Language: en-US
 From: Baolu Lu <baolu.lu@linux.intel.com>
-In-Reply-To: <20240911101911.6269-4-vasant.hegde@amd.com>
+In-Reply-To: <20240911095544.4ad3u6jxgsdsymhj@joelS2.panther.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 
-On 9/11/24 6:19 PM, Vasant Hegde wrote:
-> From: Jason Gunthorpe<jgg@ziepe.ca>
+On 9/11/24 5:55 PM, Joel Granados wrote:
+> On Thu, Sep 05, 2024 at 11:30:05AM +0800, Baolu Lu wrote:
+>> On 9/4/24 9:17 PM, Joel Granados via B4 Relay wrote:
+>>> From: Joel Granados<j.granados@samsung.com>
+>>>
+>>> iommu_report_device_fault expects a pasid array to have an
+>>> iommu_attach_handle when a fault is detected.
+>> The iommu_attach_handle is expected only when an iopf-capable domain is
+>> attached to the device or PASID. The iommu_report_device_fault() treats
+>> it as a fault when a fault occurs, but no iopf-capable domain is
+>> attached.
+> I don't follow. The way that I read it: if the pasid_array x-array does
+> not have an iommu_attach_handle indexed by either fault->prm.pasid or
+> IOMMU_NO_PASID, it will follow the err_bad_iopf and return -EINVAL
+> (please correct me if I'm wrong). So the iommu_attach_handle is*always*
+> expected.
 > 
-> Introduce new flag (IOMMU_HWPT_ALLOC_PASID) to domain_alloc_users() ops.
-> If both IOMMU and device supports PASID it will allocate domain.
-> Otherwise return error.
-> 
-> Also modify __iommu_group_alloc_default_domain() to call
-> iommu_paging_domain_alloc_flags() with appropriate flag when allocating
-> paging domain.
-> 
-> Signed-off-by: Jason Gunthorpe<jgg@ziepe.ca>
-> [Added __iommu_paging_domain_alloc_flags() and description - Vasant]
-> Signed-off-by: Vasant Hegde<vasant.hegde@amd.com>
-> ---
->   drivers/iommu/iommu.c        | 45 +++++++++++++++++++++++++++---------
->   include/uapi/linux/iommufd.h |  6 +++++
->   2 files changed, 40 insertions(+), 11 deletions(-)
-> 
-> diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-> index 5d1cef36f633..f3f1244fe90a 100644
-> --- a/drivers/iommu/iommu.c
-> +++ b/drivers/iommu/iommu.c
-> @@ -32,6 +32,7 @@
->   #include <trace/events/iommu.h>
->   #include <linux/sched/mm.h>
->   #include <linux/msi.h>
-> +#include <uapi/linux/iommufd.h>
->   
->   #include "dma-iommu.h"
->   #include "iommu-priv.h"
-> @@ -99,6 +100,9 @@ static int __iommu_attach_device(struct iommu_domain *domain,
->   				 struct device *dev);
->   static int __iommu_attach_group(struct iommu_domain *domain,
->   				struct iommu_group *group);
-> +static struct iommu_domain *__iommu_paging_domain_alloc_flags(struct device *dev,
-> +						       unsigned int type,
-> +						       unsigned int flags);
->   
->   enum {
->   	IOMMU_SET_DOMAIN_MUST_SUCCEED = 1 << 0,
-> @@ -1589,8 +1593,19 @@ EXPORT_SYMBOL_GPL(fsl_mc_device_group);
->   static struct iommu_domain *
->   __iommu_group_alloc_default_domain(struct iommu_group *group, int req_type)
->   {
-> +	struct device *dev = iommu_group_first_dev(group);
-> +
->   	if (group->default_domain && group->default_domain->type == req_type)
->   		return group->default_domain;
-> +
-> +	/*
-> +	 * When allocating the DMA API domain assume that the driver is going to
-> +	 * use PASID and make sure the RID's domain is PASID compatible.
-> +	 */
-> +	if (req_type & __IOMMU_DOMAIN_PAGING)
-> +		return __iommu_paging_domain_alloc_flags(dev, req_type,
-> +				dev->iommu->max_pasids ? IOMMU_HWPT_ALLOC_PASID : 0);
+> Would it be more clear for it to be:
+> """
+> The iommu_report_device_fault function expects the pasid_array x-array
+> to have an iommu_attach_handle indexed by a PASID. Add one indexed with
+> IOMMU_NO_PASID when the replacing HWPT has a valid iommufd fault object.
+> Remove it when we release ownership of the group.
 
-This changes default domain allocation paths.
-
-Previously, the default domain was allocated by domain_alloc_paging or
-domain_alloc. Now, it will be allocated through domain_alloc_user,
-which, based on my understanding, is intended for user domain
-allocation.
+Can you please explain why iommu core needs to remove the attach handle
+when the ownership of the group is changed?
 
 Thanks,
 baolu
