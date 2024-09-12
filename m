@@ -1,122 +1,200 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 86ADA19E980;
-	Thu, 12 Sep 2024 10:50:15 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 226A6145B14;
+	Thu, 12 Sep 2024 11:16:03 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1726138215; cv=none; b=Lowf53JE00XnZWeCtM/yLrk/8YDh7i5eYsU2YKHrabrnBlb3HYFH+FYvOWjFB4R4RySkjwsaPWlmFTFicakn1WB9yPfYB6K5OChEIMMwHLTRgxkE3k/JIBcwtG78Ct+0RiMIHpOqC61c7paMrhJdOXj8ERWXa9bOEVZjOwxGyo4=
+	t=1726139764; cv=none; b=SSm11tKSJeXoX5CBBNgRTZ+Zr35SawmL/OGCOXDdv5EyqdkRmLdkG0of/YW1cvZXPS0w6FvsfpXoWW9M+56IwczwQCRRFxt/u09Y9Kt9BTWYdK7vM5sDgbQdJUDEPuPQTb+w5KKI0/wstQAz5OCBkAu1T2iQpqsvYA97V1GE87o=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1726138215; c=relaxed/simple;
-	bh=UWFisCX+sP/FaVH9HnCW6SytHIDbBrmpiDvtn7Hz5v0=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=tX/8naZDUh6tnQHrNdn+UB/wSZzEqPmIgUHrkM/pfmhtGLQcrLmCHDIhYBSVJLogC70Jg28Wi42xJLvOfj6Xi1MmowS3SXH1fm2jVXiqoQkAjvDv3mdcs8OfZz5HAr10HdidsVvFPq3OecLXmGZpACUBqcucTUKTOgjhyAPgfl4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=txyInzL2; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1726139764; c=relaxed/simple;
+	bh=xHiv+64ufjlfaZB+1birEmDSAEqJIKZbsr4qpKOqPrE=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version:Content-Type; b=ZSTTG7FeqLoE/F9bKBWu71KjO3PneOmmOp7IvGRgcz5u2OiU6Jg7OoDYQiIqvK+QlFMviVqfnyn18vzFAflommA7kOUB1/Lu6waiBB+7Rbwe4g6rUDOTGP8zeZ4TVyur8AYwGn3+1kZUnMHM/B+Fq9ZxrUlrvEGyz8hzPJxHE0A=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=HnlDHW0a; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="txyInzL2"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7F10DC4CEC3;
-	Thu, 12 Sep 2024 10:50:14 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="HnlDHW0a"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AE95BC4CECC;
+	Thu, 12 Sep 2024 11:16:02 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1726138215;
-	bh=UWFisCX+sP/FaVH9HnCW6SytHIDbBrmpiDvtn7Hz5v0=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=txyInzL2qqrbBqay2W29wImzJWkeTAgAsudRseh/S/q+yCXLm7ChXt/pc0BT0KUx/
-	 IDcBj7iaNRsKOzLPdssblGGTbKiNvl8M/7ZMSTPRslxQrk/S93jvWwNI4FjFnfdg1A
-	 s1GUq1p0+qYje+edihX6i0NDLOSoEPfWm1TTA92ZmZCJEw2kknQ/la0Pg1QJczagXA
-	 tUJdjJyucazFqGIQj7Z84MbfJWiG6RRduH+lOBTJirsgJKATmM8i6bKieWB9Dos6If
-	 rNQEwiZo560q6Ny9ZVlInoGRaytCp8Fk1HymShREHmmFBOww6SrxXSDg8dDK2g7/8a
-	 vE6Ze6Wv7clXg==
-Date: Thu, 12 Sep 2024 13:50:09 +0300
+	s=k20201202; t=1726139763;
+	bh=xHiv+64ufjlfaZB+1birEmDSAEqJIKZbsr4qpKOqPrE=;
+	h=From:To:Cc:Subject:Date:From;
+	b=HnlDHW0aJOlZ/mQyNxg12Vfl1QyQgA+4ialoezfo+MkiMtzpo37W3A7XFZzNSS2gV
+	 nCy6S4qzhyg3yiWGrpjkJ7XXOwsjJGLduW17gDQ2j01fra/JxTwTC8bIEzsO37Jy3O
+	 tWtJI3x5KEzkYDPDEvpo4btQfTc/iM6jDN4b9cWi2x7dl8qZl6FekY1wFay7lNo6Ii
+	 IJZ7rjlAzG15afy2OtWqIvnGmh3J6ojSrsIxH92HPrMct8haQWjgPUjLGLnJK+FdOA
+	 egzwYBUFcoq09uv/i0x7cvVS0WkLeIYtdOhFJpeYR+kGOqMRlQvQJEwypNBVn2bnZB
+	 jTk09N6hrZ0Fw==
 From: Leon Romanovsky <leon@kernel.org>
-To: Christoph Hellwig <hch@lst.de>
-Cc: Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
+To: Jens Axboe <axboe@kernel.dk>,
+	Jason Gunthorpe <jgg@ziepe.ca>,
 	Robin Murphy <robin.murphy@arm.com>,
-	Marek Szyprowski <m.szyprowski@samsung.com>, iommu@lists.linux.dev,
+	Joerg Roedel <joro@8bytes.org>,
+	Will Deacon <will@kernel.org>,
+	Keith Busch <kbusch@kernel.org>,
+	Christoph Hellwig <hch@lst.de>,
+	"Zeng, Oak" <oak.zeng@intel.com>,
+	Chaitanya Kulkarni <kch@nvidia.com>
+Cc: Sagi Grimberg <sagi@grimberg.me>,
+	Bjorn Helgaas <bhelgaas@google.com>,
+	Logan Gunthorpe <logang@deltatee.com>,
+	Yishai Hadas <yishaih@nvidia.com>,
+	Shameer Kolothum <shameerali.kolothum.thodi@huawei.com>,
+	Kevin Tian <kevin.tian@intel.com>,
+	Alex Williamson <alex.williamson@redhat.com>,
+	Marek Szyprowski <m.szyprowski@samsung.com>,
+	=?UTF-8?q?J=C3=A9r=C3=B4me=20Glisse?= <jglisse@redhat.com>,
+	Andrew Morton <akpm@linux-foundation.org>,
+	linux-block@vger.kernel.org,
 	linux-kernel@vger.kernel.org,
-	=?iso-8859-1?Q?N=EDcolas_F=2E_R=2E_A=2E?= Prado <nfraprado@collabora.com>
-Subject: Re: [PATCH] dma-mapping: reliably inform about DMA support for IOMMU
-Message-ID: <20240912105009.GI4026@unreal>
-References: <7bbedc085ce87b121b9d0cb33eca8fba2fbdddbc.1726049194.git.leonro@nvidia.com>
- <20240912072954.GC7614@lst.de>
+	linux-rdma@vger.kernel.org,
+	iommu@lists.linux.dev,
+	linux-nvme@lists.infradead.org,
+	linux-pci@vger.kernel.org,
+	kvm@vger.kernel.org,
+	linux-mm@kvack.org
+Subject: [RFC v2 00/21] Provide a new two step DMA API mapping API
+Date: Thu, 12 Sep 2024 14:15:35 +0300
+Message-ID: <cover.1726138681.git.leon@kernel.org>
+X-Mailer: git-send-email 2.46.0
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20240912072954.GC7614@lst.de>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 
-On Thu, Sep 12, 2024 at 09:29:54AM +0200, Christoph Hellwig wrote:
-> Thanks, I've applied this.  I do like the flow of dma_supported even
-> less with the duplicate condition now.  Can I get a quick review for
-> this incremental cleanup, please?
-> 
-> ---
-> From d311bfe189d12a836b4add55fdb946f37f8697fa Mon Sep 17 00:00:00 2001
-> From: Christoph Hellwig <hch@lst.de>
-> Date: Thu, 12 Sep 2024 09:21:18 +0200
-> Subject: dma-mapping: reflow dma_supported
-> 
-> dma_supported has become too much spaghetti for my taste.  Reflow it to
-> remove the duplicate use_dma_iommu condition and make the main path more
-> obvious.
-> 
-> Signed-off-by: Christoph Hellwig <hch@lst.de>
-> ---
->  kernel/dma/mapping.c | 25 ++++++++++++++-----------
->  1 file changed, 14 insertions(+), 11 deletions(-)
+Instead of waiting and waiting when I finally fix NVMe patch which
+doesn't work correctly in DMA direct mode (it causes to failures in
+module reload), I decided to send the series as is to at least get
+a feedback about API and the overall direction.
 
-Reviewed-by: Leon Romanovsky <leon@kernel.org>
+Thanks
 
-> 
-> diff --git a/kernel/dma/mapping.c b/kernel/dma/mapping.c
-> index 022d670f8cad29..cd2a97d362cd24 100644
-> --- a/kernel/dma/mapping.c
-> +++ b/kernel/dma/mapping.c
-> @@ -841,20 +841,23 @@ static int dma_supported(struct device *dev, u64 mask)
->  {
->  	const struct dma_map_ops *ops = get_dma_ops(dev);
->  
-> -	if (WARN_ON(ops && use_dma_iommu(dev)))
-> -		return false;
-> -
-> -	if (use_dma_iommu(dev))
-> +	if (use_dma_iommu(dev)) {
-> +		if (WARN_ON(ops))
-> +			return false;
->  		return true;
+-------------------------------------------------------------------------
+Changelog:
+v2:
+ * Remove attr field from dma_iova_attrs
+ * Added attr parameter to every new API call except alloc_iova
+ * Embed use_iova boolean into struct dma_iova_state
+ * Embed struct dma_memory_type into struct dma_iova_state
+ * Changed function signatures and added new function to initialize state
+ * Combined dma_set_memory_type() and dma_can_use_iova() to one function, they were used together anyway
+ * Made dma_start_range/dma_end_range to be NOP for non-iommu case
+ * Restructured the code to avoid inclusion of linux/pci.h in global header
+ * Based on DMA static calls series
+ * Changed iommu/dma functions to get parameters instead of dma_iova_state
+ * Removed iommu domain pointer from dma_iova_state
+ * dma_link_range now returns DMA address
+ * Rewrote NVMe patch
+v1: https://lore.kernel.org/all/cover.1719909395.git.leon@kernel.org
+ * Rewrote cover letter
+ * Changed to API as proposed
+   https://lore.kernel.org/linux-rdma/20240322184330.GL66976@ziepe.ca/
+ * Removed IB DMA wrappers and use DMA API directly
+v0: https://lore.kernel.org/all/cover.1709635535.git.leon@kernel.org
+-------------------------------------------------------------------------
 
-You can write it as "return !WARN_ON(ops);" if you want to be fancy, but
-your version is perfectly fine too, so ignore this comment :).
+Currently the only efficient way to map a complex memory description through
+the DMA API is by using the scatterlist APIs. The SG APIs are unique in that
+they efficiently combine the two fundamental operations of sizing and allocating
+a large IOVA window from the IOMMU and processing all the per-address
+swiotlb/flushing/p2p/map details.
 
-> +	}
-> +
->  	/*
-> -	 * ->dma_supported sets the bypass flag, so we must always call
-> -	 * into the method here unless the device is truly direct mapped.
-> +	 * ->dma_supported sets and clears the bypass flag, so ignore it here
-> +	 * and always call into the method if there is one.
->  	 */
-> -	if (!ops)
-> -		return dma_direct_supported(dev, mask);
-> -	if (!ops->dma_supported)
-> -		return 1;
-> -	return ops->dma_supported(dev, mask);
-> +	if (ops) {
-> +		if (!ops->dma_supported)
-> +			return 1;
+This uniqueness has been a long standing pain point as the scatterlist API
+is mandatory, but expensive to use. It prevents any kind of optimization or
+feature improvement (such as avoiding struct page for P2P) due to the
+impossibility of improving the scatterlist.
 
-Worth to change it to be "return true;"
+Several approaches have been explored to expand the DMA API with additional
+scatterlist-like structures (BIO[1], rlist[2]), instead split up the DMAAPI
+to allow callers to bring their own data structure.
 
-> +		return ops->dma_supported(dev, mask);
-> +	}
-> +
-> +	return dma_direct_supported(dev, mask);
->  }
->  
->  bool dma_pci_p2pdma_supported(struct device *dev)
-> -- 
-> 2.45.2
-> 
+The API is split up into parts:
+ - dma_alloc_iova() / dma_free_iova()
+   To do any pre-allocation required. This is done based on the caller
+   supplying some details about how much IOMMU address space it would need
+   in worst case.
+ - dma_link_range() / dma_unlink_range()
+   Perform the actual mapping into the pre-allocated IOVA. This is very
+   similar to dma_map_page().
+
+A driver will extent its mapping size using its own data structure, such as
+BIO, to request the required IOVA. Then it will iterate directly over it's
+data structure to DMA map each range. The result can then be stored directly
+into the HW specific DMA list. No intermediate scatterlist is required.
+
+In this series, examples of three users are converted to the new API to show
+the benefits. Each user has a unique flow:
+ 1. RDMA ODP is an example of "SVA mirroring" using HMM that needs to
+    dynamically map/unmap large numbers of single pages. This becomes
+    significantly faster in the IOMMU case as the map/unmap is now just
+    a page table walk, the IOVA allocation is pre-computed once. Significant
+    amounts of memory are saved as there is no longer a need to store the
+    dma_addr_t of each page.
+ 2. VFIO PCI live migration code is building a very large "page list"
+    for the device. Instead of allocating a scatter list entry per allocated
+    page it can just allocate an array of 'struct page *', saving a large
+    amount of memory.
+ 3. NVMe PCI demonstrates how a BIO can be converted to a HW scatter
+    list without having to allocate then populate an intermediate SG table.
+
+This step is first along a path to provide alternatives to scatterlist
+and solve some of the abuses and design mistakes, for instance in DMABUF's
+P2P support.
+
+The ODP and VFIO versions are complete and fully tested, they can be the
+users of the new API to merge it. The NVMe requires more work.
+
+[1] https://lore.kernel.org/all/169772852492.5232.17148564580779995849.stgit@klimt.1015granger.net/
+[2] https://lore.kernel.org/all/ZD2lMvprVxu23BXZ@ziepe.ca/
+
+Thanks
+
+Leon Romanovsky (21):
+  iommu/dma: Provide an interface to allow preallocate IOVA
+  iommu/dma: Implement link/unlink ranges callbacks
+  iommu/dma: Add check if IOVA can be used
+  dma-mapping: initialize IOVA state struct
+  dma-mapping: provide an interface to allocate IOVA
+  dma-mapping: set and query DMA IOVA state
+  dma-mapping: implement link range API
+  mm/hmm: let users to tag specific PFN with DMA mapped bit
+  dma-mapping: provide callbacks to link/unlink HMM PFNs to specific
+    IOVA
+  RDMA/umem: Preallocate and cache IOVA for UMEM ODP
+  RDMA/umem: Store ODP access mask information in PFN
+  RDMA/core: Separate DMA mapping to caching IOVA and page linkage
+  RDMA/umem: Prevent UMEM ODP creation with SWIOTLB
+  vfio/mlx5: Explicitly use number of pages instead of allocated length
+  vfio/mlx5: Rewrite create mkey flow to allow better code reuse
+  vfio/mlx5: Explicitly store page list
+  vfio/mlx5: Convert vfio to use DMA link API
+  nvme-pci: remove optimizations for single DMA entry
+  nvme-pci: precalculate number of DMA entries for each command
+  nvme-pci: use new dma API
+  nvme-pci: don't allow mapping of bvecs with offset
+
+ drivers/infiniband/core/umem_odp.c   | 216 +++++---------
+ drivers/infiniband/hw/mlx5/mlx5_ib.h |   1 +
+ drivers/infiniband/hw/mlx5/odp.c     |  44 +--
+ drivers/iommu/dma-iommu.c            | 165 ++++++++++-
+ drivers/nvme/host/pci.c              | 428 ++++++++++++++-------------
+ drivers/pci/p2pdma.c                 |   4 +-
+ drivers/vfio/pci/mlx5/cmd.c          | 312 ++++++++++---------
+ drivers/vfio/pci/mlx5/cmd.h          |  23 +-
+ drivers/vfio/pci/mlx5/main.c         |  89 +++---
+ include/linux/dma-map-ops.h          |   7 +
+ include/linux/dma-mapping.h          |  85 ++++++
+ include/linux/hmm.h                  |   4 +
+ include/linux/iommu-dma.h            |  43 +++
+ include/rdma/ib_umem_odp.h           |  23 +-
+ kernel/dma/mapping.c                 | 232 +++++++++++++++
+ mm/hmm.c                             |  34 ++-
+ 16 files changed, 1096 insertions(+), 614 deletions(-)
+
+-- 
+2.46.0
+
