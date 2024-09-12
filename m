@@ -1,48 +1,48 @@
 Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.13])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A782A1A76C7
-	for <iommu@lists.linux.dev>; Thu, 12 Sep 2024 13:12:58 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BB13B1AAE07
+	for <iommu@lists.linux.dev>; Thu, 12 Sep 2024 13:12:59 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.13
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1726146780; cv=none; b=pOzodMLF7Ds1rNqa18dgIK0Bnr1XXSFePzTDOJFBBAnfSgM05K1xnBxrCfadJaDAwCqkjPq7CLiYX6Eu6wOVZP0pRDRSpd0ws3ImEh9lRsNxxJmiKqIFW9bommhj6dw1/v+YoThb0An/3AHIrlyDg58zMyGvwMbHM4cHd45bKdo=
+	t=1726146781; cv=none; b=pMyoqaPYILNRHtHfxU+pMFXe2EjfxeZbBhhUB0bNpnmF40IHKSDH/9puGxStKIyRFZ7PoeKgdwHQ5EJDYxjhS4daXNdmYRztWQxAaWQrlpUnD66s5JdJ/Us3vzqKtVzgKbEw4UIpNTtawWc7qKz2J8b5MVbcxTRKDFS55k4SopM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1726146780; c=relaxed/simple;
-	bh=0XxKBaycudG+spAOHgQrx0ct4g0+tJZYEtf66Xv1DFc=;
+	s=arc-20240116; t=1726146781; c=relaxed/simple;
+	bh=+RrM8RnHiQcNHpfSMob6Sud/wYOiWahLrKt6W9NEt54=;
 	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
-	 MIME-Version; b=qwe+/0+s/H2aSwwAn4WpW/QSQmzzkFwS6RakuvbdHBtboE9aspycOS+0qduaj+obof8hyK4pBtrIZdp8FxvvClinUVXzG2ejpRyt6K51XZIUdMwATWz0Ej33zYrnAVvIPZBgJNrDiNv+hKVIljbMhYj9r7fjBH4v+/K4qWwHaRA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=ntVvClJL; arc=none smtp.client-ip=192.198.163.13
+	 MIME-Version; b=mF3J/TTEWQz0VlmsxCn7nfI1hq8GFQ5mErwmUOMC0LvkDpMZ13ugUHX9UKC8V21Ivq5q2a+u7kYwcP32CXam+LdLiSycUHk53ql1tTv0F38RwFvlYuqcjxwkFBqPLIwHM/wxGDA2j4lfo1Y+nMus+dUy6aHeNKCpIMQQUCWxEIY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=d0L/N11Y; arc=none smtp.client-ip=192.198.163.13
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="ntVvClJL"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="d0L/N11Y"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1726146778; x=1757682778;
+  t=1726146780; x=1757682780;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=0XxKBaycudG+spAOHgQrx0ct4g0+tJZYEtf66Xv1DFc=;
-  b=ntVvClJLziuHr9vpm9gqfZAqyL5AJTjcYqMDFn87eTcaNQSiW2RozzUy
-   ebY8n23fvSzGTIBpBzKN06LaTA+9Jetw/LnB0Ywx1WpfIQUD4m2NtNx91
-   3tfP0POH9lFWDRTrn8nkcWWJaZJRLDsooDMPlSogNU1s3aWZuigtJv2fK
-   JCio1Y6tUpVQ0HyqvTUqfFxLG0MqeRdgIX/92W2aZvV63ioF/1yKToCjQ
-   fXDYiKvXeABZPEcQhEqejS53JPUx7eykt0EUrjXDxDv4YZKKtMZf9HGzH
-   M9/zTSUq9odYd8uwTLuAB/q/cYuejvkRUm6Fu4VgaOvw8BvlqzDOl9bRQ
-   w==;
-X-CSE-ConnectionGUID: BLi9RQlKTLm91aMurfAHfA==
-X-CSE-MsgGUID: xkmrQZNjSBqN6cbnLsspaA==
-X-IronPort-AV: E=McAfee;i="6700,10204,11192"; a="27911197"
+  bh=+RrM8RnHiQcNHpfSMob6Sud/wYOiWahLrKt6W9NEt54=;
+  b=d0L/N11Ynnh6CXwKXZu1k4n9wwwpuFhoTM5AwuFz79qsntBe3PvJNrDH
+   g4SGYkQaVJklvLWW4TuEct+ZQLNS2N4XPLkbFrnnE7NF9c+fxNvfYhpZb
+   q8NyWvCQXvNBXYwoZKUt6/6EHWmtvS6RI3cUrAgLVvgDvSYRVjxxyLD7i
+   zEx7xeE9b7mNbXLI13oqIsLNjsEYyMKT4flUsko5dr84FB9duaJeiowlK
+   QoijOOkYkkhwCMHE1k5Thv8OwPpZnMiXQn6/7CqwLq5XoZvNoC2eGRuZw
+   XUnFGwq6NBg+eL45V18jRKrARUpl4nuKGJDWeHpXUnjfaa8Mwr4Gh91Au
+   Q==;
+X-CSE-ConnectionGUID: 7vuIbyVkQuKdJpgpUUxEdg==
+X-CSE-MsgGUID: wQ9IqwoMTXuTTjUeDorWxQ==
+X-IronPort-AV: E=McAfee;i="6700,10204,11192"; a="27911210"
 X-IronPort-AV: E=Sophos;i="6.10,223,1719903600"; 
-   d="scan'208";a="27911197"
+   d="scan'208";a="27911210"
 Received: from orviesa006.jf.intel.com ([10.64.159.146])
-  by fmvoesa107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Sep 2024 06:12:57 -0700
-X-CSE-ConnectionGUID: 8LM3Ao2LT3CR5aFJdHc1aw==
-X-CSE-MsgGUID: yH/YYeBNRfyVFuK1Ro4NeA==
+  by fmvoesa107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Sep 2024 06:12:59 -0700
+X-CSE-ConnectionGUID: d3p+8L0XTR611IAwn7kRSA==
+X-CSE-MsgGUID: OSIlxOrXQ3qfmDCqJl7/aQ==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.10,223,1719903600"; 
-   d="scan'208";a="67996540"
+   d="scan'208";a="67996553"
 Received: from 984fee00a4c6.jf.intel.com ([10.165.58.231])
-  by orviesa006.jf.intel.com with ESMTP; 12 Sep 2024 06:12:57 -0700
+  by orviesa006.jf.intel.com with ESMTP; 12 Sep 2024 06:12:58 -0700
 From: Yi Liu <yi.l.liu@intel.com>
 To: joro@8bytes.org,
 	jgg@nvidia.com,
@@ -57,9 +57,9 @@ Cc: alex.williamson@redhat.com,
 	zhenzhong.duan@intel.com,
 	linux-kselftest@vger.kernel.org,
 	vasant.hegde@amd.com
-Subject: [PATCH v4 01/10] iommu: Introduce a replace API for device pasid
-Date: Thu, 12 Sep 2024 06:12:46 -0700
-Message-Id: <20240912131255.13305-2-yi.l.liu@intel.com>
+Subject: [PATCH v4 03/10] iommufd: Move the iommufd_handle helpers to iommufd_private.h
+Date: Thu, 12 Sep 2024 06:12:48 -0700
+Message-Id: <20240912131255.13305-4-yi.l.liu@intel.com>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20240912131255.13305-1-yi.l.liu@intel.com>
 References: <20240912131255.13305-1-yi.l.liu@intel.com>
@@ -71,162 +71,184 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-Provide a high-level API to allow replacements of one domain with
-another for specific pasid of a device. This is similar to
-iommu_group_replace_domain() and it is expected to be used only by
-IOMMUFD.
+iommufd plans to always pass in an iommu_attach_handle to the iommu
+core, so it's no longer fault specific, hence move the helpers out
+of the fault.c
 
-Co-developed-by: Lu Baolu <baolu.lu@linux.intel.com>
-Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
 Signed-off-by: Yi Liu <yi.l.liu@intel.com>
 ---
- drivers/iommu/iommu-priv.h |  4 ++
- drivers/iommu/iommu.c      | 90 ++++++++++++++++++++++++++++++++++++--
- 2 files changed, 90 insertions(+), 4 deletions(-)
+ drivers/iommu/iommufd/fault.c           | 61 +------------------------
+ drivers/iommu/iommufd/iommufd_private.h | 57 +++++++++++++++++++++++
+ 2 files changed, 59 insertions(+), 59 deletions(-)
 
-diff --git a/drivers/iommu/iommu-priv.h b/drivers/iommu/iommu-priv.h
-index de5b54eaa8bf..90b367de267e 100644
---- a/drivers/iommu/iommu-priv.h
-+++ b/drivers/iommu/iommu-priv.h
-@@ -27,6 +27,10 @@ static inline const struct iommu_ops *iommu_fwspec_ops(struct iommu_fwspec *fwsp
- int iommu_group_replace_domain(struct iommu_group *group,
- 			       struct iommu_domain *new_domain);
- 
-+int iommu_replace_device_pasid(struct iommu_domain *domain,
-+			       struct device *dev, ioasid_t pasid,
-+			       struct iommu_attach_handle *handle);
-+
- int iommu_device_register_bus(struct iommu_device *iommu,
- 			      const struct iommu_ops *ops,
- 			      const struct bus_type *bus,
-diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-index b6b44b184004..066f659018a5 100644
---- a/drivers/iommu/iommu.c
-+++ b/drivers/iommu/iommu.c
-@@ -3347,14 +3347,15 @@ static void iommu_remove_dev_pasid(struct device *dev, ioasid_t pasid,
+diff --git a/drivers/iommu/iommufd/fault.c b/drivers/iommu/iommufd/fault.c
+index cd56745f3003..50ce6c6e61be 100644
+--- a/drivers/iommu/iommufd/fault.c
++++ b/drivers/iommu/iommufd/fault.c
+@@ -55,25 +55,6 @@ static void iommufd_fault_iopf_disable(struct iommufd_device *idev)
+ 	mutex_unlock(&idev->iopf_lock);
  }
  
- static int __iommu_set_group_pasid(struct iommu_domain *domain,
--				   struct iommu_group *group, ioasid_t pasid)
-+				   struct iommu_group *group, ioasid_t pasid,
-+				   struct iommu_domain *old)
+-static int __fault_domain_attach_dev(struct iommufd_hw_pagetable *hwpt,
+-				     struct iommufd_device *idev)
+-{
+-	struct iommufd_attach_handle *handle;
+-	int ret;
+-
+-	handle = kzalloc(sizeof(*handle), GFP_KERNEL);
+-	if (!handle)
+-		return -ENOMEM;
+-
+-	handle->idev = idev;
+-	ret = iommu_attach_group_handle(hwpt->domain, idev->igroup->group,
+-					&handle->handle);
+-	if (ret)
+-		kfree(handle);
+-
+-	return ret;
+-}
+-
+ int iommufd_fault_domain_attach_dev(struct iommufd_hw_pagetable *hwpt,
+ 				    struct iommufd_device *idev)
  {
- 	struct group_device *device, *last_gdev;
- 	int ret;
- 
- 	for_each_group_device(group, device) {
- 		ret = domain->ops->set_dev_pasid(domain, device->dev,
--						 pasid, NULL);
-+						 pasid, old);
- 		if (ret)
- 			goto err_revert;
- 	}
-@@ -3366,7 +3367,20 @@ static int __iommu_set_group_pasid(struct iommu_domain *domain,
- 	for_each_group_device(group, device) {
- 		if (device == last_gdev)
- 			break;
--		iommu_remove_dev_pasid(device->dev, pasid, domain);
-+		/* If no old domain, undo the succeeded devices/pasid */
-+		if (!old) {
-+			iommu_remove_dev_pasid(device->dev, pasid, domain);
-+			continue;
-+		}
-+
-+		/*
-+		 * Rollback the succeeded devices/pasid to the old domain.
-+		 * And it is a driver bug to fail attaching with a previously
-+		 * good domain.
-+		 */
-+		if (WARN_ON(old->ops->set_dev_pasid(old, device->dev,
-+						    pasid, domain)))
-+			iommu_remove_dev_pasid(device->dev, pasid, domain);
- 	}
- 	return ret;
- }
-@@ -3425,7 +3439,7 @@ int iommu_attach_device_pasid(struct iommu_domain *domain,
+@@ -86,7 +67,7 @@ int iommufd_fault_domain_attach_dev(struct iommufd_hw_pagetable *hwpt,
  	if (ret)
- 		goto out_unlock;
+ 		return ret;
  
--	ret = __iommu_set_group_pasid(domain, group, pasid);
-+	ret = __iommu_set_group_pasid(domain, group, pasid, NULL);
+-	ret = __fault_domain_attach_dev(hwpt, idev);
++	ret = iommufd_dev_attach_handle(hwpt, idev);
  	if (ret)
- 		xa_erase(&group->pasid_array, pasid);
- out_unlock:
-@@ -3434,6 +3448,74 @@ int iommu_attach_device_pasid(struct iommu_domain *domain,
- }
- EXPORT_SYMBOL_GPL(iommu_attach_device_pasid);
+ 		iommufd_fault_iopf_disable(idev);
  
-+/**
-+ * iommu_replace_device_pasid - Replace the domain that a pasid is attached to
-+ * @domain: the new iommu domain
-+ * @dev: the attached device.
-+ * @pasid: the pasid of the device.
-+ * @handle: the attach handle.
-+ *
-+ * This API allows the pasid to switch domains. Return 0 on success, or an
-+ * error. The pasid will keep the old configuration if replacement failed.
-+ * This is supposed to be used by iommufd, and iommufd can guarantee that
-+ * both iommu_attach_device_pasid() and iommu_replace_device_pasid() would
-+ * pass in a valid @handle.
-+ */
-+int iommu_replace_device_pasid(struct iommu_domain *domain,
-+			       struct device *dev, ioasid_t pasid,
-+			       struct iommu_attach_handle *handle)
+@@ -122,18 +103,6 @@ static void iommufd_auto_response_faults(struct iommufd_hw_pagetable *hwpt,
+ 	mutex_unlock(&fault->mutex);
+ }
+ 
+-static struct iommufd_attach_handle *
+-iommufd_device_get_attach_handle(struct iommufd_device *idev)
+-{
+-	struct iommu_attach_handle *handle;
+-
+-	handle = iommu_attach_handle_get(idev->igroup->group, IOMMU_NO_PASID, 0);
+-	if (IS_ERR(handle))
+-		return NULL;
+-
+-	return to_iommufd_handle(handle);
+-}
+-
+ void iommufd_fault_domain_detach_dev(struct iommufd_hw_pagetable *hwpt,
+ 				     struct iommufd_device *idev)
+ {
+@@ -146,32 +115,6 @@ void iommufd_fault_domain_detach_dev(struct iommufd_hw_pagetable *hwpt,
+ 	kfree(handle);
+ }
+ 
+-/* Caller to free the old iommufd_attach_handle */
+-static struct iommufd_attach_handle *
+-__fault_domain_replace_dev(struct iommufd_device *idev,
+-			   struct iommufd_hw_pagetable *hwpt,
+-			   struct iommufd_hw_pagetable *old)
+-{
+-	struct iommufd_attach_handle *handle, *curr;
+-	int ret;
+-
+-	curr = iommufd_device_get_attach_handle(idev);
+-
+-	handle = kzalloc(sizeof(*handle), GFP_KERNEL);
+-	if (!handle)
+-		return ERR_PTR(-ENOMEM);
+-
+-	handle->idev = idev;
+-	ret = iommu_replace_group_handle(idev->igroup->group,
+-					 hwpt->domain, &handle->handle);
+-	if (ret) {
+-		kfree(handle);
+-		return ERR_PTR(ret);
+-	}
+-
+-	return curr;
+-}
+-
+ int iommufd_fault_domain_replace_dev(struct iommufd_device *idev,
+ 				     struct iommufd_hw_pagetable *hwpt,
+ 				     struct iommufd_hw_pagetable *old)
+@@ -188,7 +131,7 @@ int iommufd_fault_domain_replace_dev(struct iommufd_device *idev,
+ 	}
+ 
+ 	if (hwpt->fault) {
+-		curr = __fault_domain_replace_dev(idev, hwpt, old);
++		curr = iommufd_dev_replace_handle(idev, hwpt, old);
+ 		ret = IS_ERR(curr) ? PTR_ERR(curr) : 0;
+ 	} else {
+ 		ret = iommu_replace_group_handle(idev->igroup->group,
+diff --git a/drivers/iommu/iommufd/iommufd_private.h b/drivers/iommu/iommufd/iommufd_private.h
+index 1141c0633dc9..7039c86d9981 100644
+--- a/drivers/iommu/iommufd/iommufd_private.h
++++ b/drivers/iommu/iommufd/iommufd_private.h
+@@ -458,6 +458,63 @@ struct iommufd_attach_handle {
+ /* Convert an iommu attach handle to iommufd handle. */
+ #define to_iommufd_handle(hdl)	container_of(hdl, struct iommufd_attach_handle, handle)
+ 
++static inline struct iommufd_attach_handle *
++iommufd_device_get_attach_handle(struct iommufd_device *idev)
 +{
-+	/* Caller must be a probed driver on dev */
-+	struct iommu_group *group = dev->iommu_group;
-+	struct iommu_attach_handle *curr;
++	struct iommu_attach_handle *handle;
++
++	handle = iommu_attach_handle_get(idev->igroup->group, IOMMU_NO_PASID, 0);
++	if (IS_ERR(handle))
++		return NULL;
++
++	return to_iommufd_handle(handle);
++}
++
++static inline int iommufd_dev_attach_handle(struct iommufd_hw_pagetable *hwpt,
++					    struct iommufd_device *idev)
++{
++	struct iommufd_attach_handle *handle;
 +	int ret;
 +
-+	if (!domain->ops->set_dev_pasid)
-+		return -EOPNOTSUPP;
++	handle = kzalloc(sizeof(*handle), GFP_KERNEL);
++	if (!handle)
++		return -ENOMEM;
 +
-+	if (!group)
-+		return -ENODEV;
-+
-+	if (!dev_has_iommu(dev) || dev_iommu_ops(dev) != domain->owner ||
-+	    pasid == IOMMU_NO_PASID || !handle)
-+		return -EINVAL;
-+
-+	handle->domain = domain;
-+
-+	mutex_lock(&group->mutex);
-+	/*
-+	 * The iommu_attach_handle of the pasid becomes inconsistent with the
-+	 * actual handle per the below operation. The concurrent PRI path will
-+	 * deliver the PRQs per the new handle, this does not have a function
-+	 * impact. The PRI path would eventually become consistent when the
-+	 * replacement is done.
-+	 */
-+	curr = (struct iommu_attach_handle *)xa_store(&group->pasid_array,
-+						      pasid, handle,
-+						      GFP_KERNEL);
-+	if (!curr) {
-+		xa_erase(&group->pasid_array, pasid);
-+		ret = -EINVAL;
-+		goto out_unlock;
-+	}
-+
-+	ret = xa_err(curr);
++	handle->idev = idev;
++	ret = iommu_attach_group_handle(hwpt->domain, idev->igroup->group,
++					&handle->handle);
 +	if (ret)
-+		goto out_unlock;
++		kfree(handle);
 +
-+	if (curr->domain == domain)
-+		goto out_unlock;
-+
-+	ret = __iommu_set_group_pasid(domain, group, pasid, curr->domain);
-+	if (ret)
-+		WARN_ON(handle != xa_store(&group->pasid_array, pasid,
-+					   curr, GFP_KERNEL));
-+out_unlock:
-+	mutex_unlock(&group->mutex);
 +	return ret;
 +}
-+EXPORT_SYMBOL_NS_GPL(iommu_replace_device_pasid, IOMMUFD_INTERNAL);
 +
- /*
-  * iommu_detach_device_pasid() - Detach the domain from pasid of device
-  * @domain: the iommu domain.
++/* Caller to free the old iommufd_attach_handle */
++static inline struct iommufd_attach_handle *
++iommufd_dev_replace_handle(struct iommufd_device *idev,
++			   struct iommufd_hw_pagetable *hwpt,
++			   struct iommufd_hw_pagetable *old)
++{
++	struct iommufd_attach_handle *handle, *curr;
++	int ret;
++
++	curr = iommufd_device_get_attach_handle(idev);
++
++	handle = kzalloc(sizeof(*handle), GFP_KERNEL);
++	if (!handle)
++		return ERR_PTR(-ENOMEM);
++
++	handle->idev = idev;
++	ret = iommu_replace_group_handle(idev->igroup->group,
++					 hwpt->domain, &handle->handle);
++	if (ret) {
++		kfree(handle);
++		return ERR_PTR(ret);
++	}
++
++	return curr;
++}
++
+ static inline struct iommufd_fault *
+ iommufd_get_fault(struct iommufd_ucmd *ucmd, u32 id)
+ {
 -- 
 2.34.1
 
