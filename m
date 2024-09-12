@@ -1,59 +1,59 @@
 Received: from mailout1.w1.samsung.com (mailout1.w1.samsung.com [210.118.77.11])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id ECF4B18BBAF
-	for <iommu@lists.linux.dev>; Thu, 12 Sep 2024 10:01:11 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 472FA19CC1E
+	for <iommu@lists.linux.dev>; Thu, 12 Sep 2024 10:22:22 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=210.118.77.11
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1726135274; cv=none; b=GxFyG8HRMIEee3ExTSWIC/fIFVyhXzvd3TWoKo8l2K7+cPuuC/+4Fbed928kGexOFnZJe1U80KAzkXbs1FCGO5om+p77Td6OmYxKBNuniOhGlsFB+22c/On1x5FU4nail5xSPH9ItPI/xOF7Q0YxOO6bQefR4IrCg8Cz3/JfnQY=
+	t=1726136544; cv=none; b=m+lZOL5+cr+J+m9eCaEJTJ4qJbHUfjyt2eDBPla5R14smJpT8Y1E32AV4Xnnx4u4QuA/vZdSnIDxRgkkuPDIG6P5blJdNmMC3IDlHF1lATLv1NKw++8KdvOZOOT1qzpPHG9OEhq7eHEUY6Q9zxtfeIz2of/6XR2JXvYtcsYVcUc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1726135274; c=relaxed/simple;
-	bh=ZJbpese5RZT8YL1u8KtGYTsz4zXxz+MqpuybLonvrHI=;
+	s=arc-20240116; t=1726136544; c=relaxed/simple;
+	bh=GqGNl2cvaxnSSGV3vv4hFetX6g9Rbsqk/j353xdYtt8=;
 	h=Date:From:To:CC:Subject:Message-ID:MIME-Version:Content-Type:
-	 Content-Disposition:In-Reply-To:References; b=oIKDurTOByWMJKNzoRT1GsWNysNKR001TpZ7JOc1r43+VtiUL9OoLzVKv7wqynpRuF2JCaJkaKKrO4fe9hc7wJVV9T2cSzlNWBiRs6j9P6qGybAaHS1NByjk/+Kd5kIJls34yeN9RWjsJ8S0Vlb6GxbPLkmOGTR0dGdlAqH9Xeo=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=samsung.com; spf=pass smtp.mailfrom=samsung.com; dkim=pass (1024-bit key) header.d=samsung.com header.i=@samsung.com header.b=oEyH99Il; arc=none smtp.client-ip=210.118.77.11
+	 Content-Disposition:In-Reply-To:References; b=PNYM8bzRt2iGJZ0JjKRjSRdpaEFiWt+1w2W+CPIFPQoNrge/ODSQ1nSzpgu345KypRGRrrCFKW1BwEVYqHJXP3vJKTHE7pI1efCmuxYyiG7btAacb5mv/EehVSXeSohjdSwILAiOmfBmoOYzaeB1jTyIHX3FVAZcOGGX/tjpclU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=samsung.com; spf=pass smtp.mailfrom=samsung.com; dkim=pass (1024-bit key) header.d=samsung.com header.i=@samsung.com header.b=XX6T7/4Y; arc=none smtp.client-ip=210.118.77.11
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=samsung.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=samsung.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=samsung.com header.i=@samsung.com header.b="oEyH99Il"
-Received: from eucas1p1.samsung.com (unknown [182.198.249.206])
-	by mailout1.w1.samsung.com (KnoxPortal) with ESMTP id 20240912100104euoutp0108b8337c430e77b577b716b55233b165~0duCpnfjN1431714317euoutp013
-	for <iommu@lists.linux.dev>; Thu, 12 Sep 2024 10:01:04 +0000 (GMT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 mailout1.w1.samsung.com 20240912100104euoutp0108b8337c430e77b577b716b55233b165~0duCpnfjN1431714317euoutp013
+	dkim=pass (1024-bit key) header.d=samsung.com header.i=@samsung.com header.b="XX6T7/4Y"
+Received: from eucas1p2.samsung.com (unknown [182.198.249.207])
+	by mailout1.w1.samsung.com (KnoxPortal) with ESMTP id 20240912102220euoutp01c4f042bca969610d2db4af477126a17d~0eAm6ZoWM0910209102euoutp01C
+	for <iommu@lists.linux.dev>; Thu, 12 Sep 2024 10:22:20 +0000 (GMT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 mailout1.w1.samsung.com 20240912102220euoutp01c4f042bca969610d2db4af477126a17d~0eAm6ZoWM0910209102euoutp01C
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
-	s=mail20170921; t=1726135264;
-	bh=3SM6XCwkhoPIiqGRlmU90zlGgBibxjG4qVHDIdzFxMg=;
+	s=mail20170921; t=1726136540;
+	bh=Upb81ayzgBYd/XD/Nl0eMEAkU3/9VteA/VsZ8XSOugo=;
 	h=Date:From:To:CC:Subject:In-Reply-To:References:From;
-	b=oEyH99IlYO65MEfqxSSH2rZ8o4iV9FUvHD+K/aXG89B+j0a3qkNcVxd4MNpC+oqiM
-	 qHL6yKx5BmoDk+aFruTEb0xVCmQjj84OZmvbGlYaOs7qdxlo3ZTBUSsKWwZMbzJkDy
-	 BKQ7DLajpcBnxkHixErVV3Cy91ch6akGJ3j+scN8=
-Received: from eusmges1new.samsung.com (unknown [203.254.199.242]) by
+	b=XX6T7/4YbyhxqPNDGv/IOPI7AvXFBlJt76/PrzMJktfcbP1kSqSDkQXx822DaacgN
+	 0CvYpV/e8qN3KYhGEW9frh/BZAfGHvQs1XVrSeVafe9tOiwc+NB+VZYTD1hRDC8asj
+	 7sRGAGHzds3lNbUw6ifnM4Fkq86qGzHCdbalJksY=
+Received: from eusmges2new.samsung.com (unknown [203.254.199.244]) by
 	eucas1p2.samsung.com (KnoxPortal) with ESMTP id
-	20240912100104eucas1p29c2d20c13c46ef55d9f7fb7e2f5c5af0~0duCSJKM-1249412494eucas1p2o;
-	Thu, 12 Sep 2024 10:01:04 +0000 (GMT)
+	20240912102220eucas1p2131b3412b6d9c827b5a64a695cba6ee8~0eAmnj8ZZ1878718787eucas1p24;
+	Thu, 12 Sep 2024 10:22:20 +0000 (GMT)
 Received: from eucas1p1.samsung.com ( [182.198.249.206]) by
-	eusmges1new.samsung.com (EUCPMTA) with SMTP id 22.F1.09624.FDBB2E66; Thu, 12
-	Sep 2024 11:01:03 +0100 (BST)
+	eusmges2new.samsung.com (EUCPMTA) with SMTP id 7F.06.09875.BD0C2E66; Thu, 12
+	Sep 2024 11:22:19 +0100 (BST)
 Received: from eusmtrp2.samsung.com (unknown [182.198.249.139]) by
-	eucas1p1.samsung.com (KnoxPortal) with ESMTPA id
-	20240912100103eucas1p18874d5b8478f49be488672c830f85aa6~0duBveOnT2672626726eucas1p1R;
-	Thu, 12 Sep 2024 10:01:03 +0000 (GMT)
+	eucas1p2.samsung.com (KnoxPortal) with ESMTPA id
+	20240912102219eucas1p2b310a28fa8aaf4f953ca61b344ced642~0eAl-Ecip2081820818eucas1p27;
+	Thu, 12 Sep 2024 10:22:19 +0000 (GMT)
 Received: from eusmgms2.samsung.com (unknown [182.198.249.180]) by
 	eusmtrp2.samsung.com (KnoxPortal) with ESMTP id
-	20240912100103eusmtrp26159b1c98b975d4c9dcf9a783a105a59~0duBupyJk0753107531eusmtrp2G;
-	Thu, 12 Sep 2024 10:01:03 +0000 (GMT)
-X-AuditID: cbfec7f2-c11ff70000002598-e8-66e2bbdfce55
-Received: from eusmtip2.samsung.com ( [203.254.199.222]) by
-	eusmgms2.samsung.com (EUCPMTA) with SMTP id A0.E9.19096.FDBB2E66; Thu, 12
-	Sep 2024 11:01:03 +0100 (BST)
+	20240912102219eusmtrp2b21701c32f27f908523475b9ddb80d27~0eAl_YpEP2158521585eusmtrp2k;
+	Thu, 12 Sep 2024 10:22:19 +0000 (GMT)
+X-AuditID: cbfec7f4-131ff70000002693-4a-66e2c0dbe1b8
+Received: from eusmtip1.samsung.com ( [203.254.199.221]) by
+	eusmgms2.samsung.com (EUCPMTA) with SMTP id 1B.1D.19096.BD0C2E66; Thu, 12
+	Sep 2024 11:22:19 +0100 (BST)
 Received: from CAMSVWEXC02.scsc.local (unknown [106.1.227.72]) by
-	eusmtip2.samsung.com (KnoxPortal) with ESMTPA id
-	20240912100103eusmtip2645ce8b54654d24a3e29a3d1aaa0abb4~0duBg58OW2944229442eusmtip28;
-	Thu, 12 Sep 2024 10:01:03 +0000 (GMT)
+	eusmtip1.samsung.com (KnoxPortal) with ESMTPA id
+	20240912102219eusmtip15415699d16f9c4397a38c0b5cbe796f8~0eAls4HJ11997919979eusmtip1t;
+	Thu, 12 Sep 2024 10:22:19 +0000 (GMT)
 Received: from localhost (106.110.32.44) by CAMSVWEXC02.scsc.local
 	(2002:6a01:e348::6a01:e348) with Microsoft SMTP Server (TLS) id 15.0.1497.2;
-	Thu, 12 Sep 2024 11:01:02 +0100
-Date: Thu, 12 Sep 2024 12:00:58 +0200
+	Thu, 12 Sep 2024 11:22:18 +0100
+Date: Thu, 12 Sep 2024 12:22:14 +0200
 From: Joel Granados <j.granados@samsung.com>
 To: Baolu Lu <baolu.lu@linux.intel.com>
 CC: David Woodhouse <dwmw2@infradead.org>, Joerg Roedel <joro@8bytes.org>,
@@ -62,7 +62,7 @@ CC: David Woodhouse <dwmw2@infradead.org>, Joerg Roedel <joro@8bytes.org>,
 	<its@irrelevant.dk>, <linux-kernel@vger.kernel.org>, <iommu@lists.linux.dev>
 Subject: Re: [PATCH 5/6] iommu: init pasid array while doing domain_replace
  and iopf is active
-Message-ID: <20240912100058.gnu2bzytexhdfq7e@joelS2.panther.com>
+Message-ID: <20240912102214.gvgj5jmuzbcpr7aa@joelS2.panther.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -71,43 +71,43 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Disposition: inline
-In-Reply-To: <b7a68539-3a3c-4cd9-922b-bfb9db8e7e0b@linux.intel.com>
+In-Reply-To: <f4ea2a66-49ac-41ae-94c4-2832f08303f1@linux.intel.com>
 X-ClientProxiedBy: CAMSVWEXC01.scsc.local (2002:6a01:e347::6a01:e347) To
 	CAMSVWEXC02.scsc.local (2002:6a01:e348::6a01:e348)
-X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFtrBKsWRmVeSWpSXmKPExsWy7djPc7r3dz9KM3j4y9Ji88StbBYTV05m
-	tvj1xcJi/8FvrBYzZ5xgtOicvYHdYunbrewWl3fNYbM4+OEJq0XLHVMHLo8nB+cxeayZt4bR
-	Y/MKLY/Fe14yeZzbcZ7dY9OqTjaPeScDPV5snsno8XmTnMfWz7dZAriiuGxSUnMyy1KL9O0S
-	uDL2HJ7DWjBBpOLFvldsDYzP+LsYOTkkBEwkNraeYe1i5OIQEljBKNGxbgs7hPOFUWLjxJdQ
-	zmdGiceXL7DAtExfMYkFIrGcUeL68W+McFW/fj9ihnA2M0o8OzONDaSFRUBVYvb1E0wgNpuA
-	jsT5N3eYQWwRAXWJpsa9bCANzAIbmSTm/jsMlhAWSJCY+fcMWAOvgIPEv1Wd7BC2oMTJmU/A
-	7mAGGrRg9yegZg4gW1pi+T8OEJNTwFli2Zk0iEsVJb4uvgd1da3EqS23mEBWSQjM5pS4sm4/
-	E0TCRWLJqYvsELawxKvjW6BsGYn/O+dDNUxmlNj/7wM7hLOaUWJZ41eobmuJlitPoDocJfo+
-	dzOBXCEhwCdx460gxJ18EpO2TWeGCPNKdLQJQVSrSay+94ZlAqPyLCSfzULy2SyEzxYwMq9i
-	FE8tLc5NTy02zEst1ytOzC0uzUvXS87P3cQITFyn/x3/tINx7quPeocYmTgYDzFKcDArifBO
-	YnuUJsSbklhZlVqUH19UmpNafIhRmoNFSZxXNUU+VUggPbEkNTs1tSC1CCbLxMEp1cDUXPG6
-	0l/59f1/dxhldtoH3tk1Pbzoueiyljl25tVV/ZVWVu59PO6ti3jeMfyWEz8s88w9YZmq47sn
-	6rHOn3ifsiknqMlcn/fj0J074oe6+lzPuu/v3p3vz/Gv+of6iXfcU3murHmZXpK4XC5iqvtf
-	3l/zrN+k66ZkL+PgCsiU2rywPpDZ3iSlP/b9V1d+gYZG7f0zf779FH9X+JTV/WD1f4ezcmwc
-	eR5GuSyNtnRLl11faPvK9dDyCxldll9mpEnu4uibkCn0QKqR52vjPE+/lRN1/L6b5a7urquR
-	vrS2+raNymnfSZbhRYXhBov2N0+anvLkUvSSypUZtloPItUvbDyuLWRjvejsxssfzJRYijMS
-	DbWYi4oTAd7j6tbLAwAA
-X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFrrCIsWRmVeSWpSXmKPExsVy+t/xe7r3dz9KM9h6Ttxi88StbBYTV05m
+X-Brightmail-Tracker: H4sIAAAAAAAAA02Se1BMcRTH53fv3bu3Hbtz25jOhCjvkJhwqUlN/rjjD48RBjO06pbYit0S
+	ZsxUnptHWozaVRqVjR7S9rArZaMQbWaUUB6T/SMpYtcrWbruevz3+Z5zvucxcyhcXivyouIS
+	kjhVgkLpS0qImuZv1tldN3tiAvabGMaYVU0yWZdO4cyQg2EaLJ9FTE72XcRo9BVipmigWsw8
+	Mp8jGcugTcQc6J4fKmFtljyMLc0rRayx2I8tqHuDsdZrbWK28rKGZPPurWJ7jTmItVd6s9X2
+	LmKlZIMkOJpTxu3iVHNCIiVbM2s/iHbUSHcbNb14KuqRZCA3CuhAePx9gMxAEkpOFyN43/PK
+	JRwI2k3dSBB2BGf6zOiP5c27IjHPctqAoLZ51N+iuvznuCCMCGxZTSMOiiLoKaAzTOcNJD0L
+	2vq7cZ5H09MgPe3G73E4fRWDXOet3wkPOhJyfjzAeJbSoWCtMbrYHe7l2Aie8ZFG+dc/knx/
+	nB4LBifFh93ocMg1V2PCoj7wqeAFIfA+aKl6hvGzgNa7QYX+oyuxFIpLD5MCe0DfnSqxwOPg
+	p+m8y3AKQYNzUCyIEgQX0z65RgTBgXabyxEGJ+xHMX4joGXwZMBdWFQG2pqzuBCWwpFDcqF6
+	KpS86CdOokm6/07T/Xea7t9p+Qi/jDy5ZHV8LKeel8Cl+KsV8erkhFj/qMT4SjTyW/eddxzX
+	kKHvg38jwijUiIDCfUdLtWRPjFwardizl1MlblYlKzl1IxpLEb6e0inREzg5HatI4rZz3A5O
+	9SeLUW5eqdj8otTkJiYs0ZxeFhsQHIa5010lxzZFDO1+Ln/1sDVEFhgzfjy5B+paqyxmZXug
+	2j68rXmmZ8z3C+ULJj5qe6DStGSUn3y7WVth6tRPlRJXS16X9XsPyi6FFL51ar0ybw92rI26
+	TUwovLnx9IKdfpm95aufSr4GFCrxixO/Le94lzKkihq2BIsSrx+MS3mtu5XE9O6SrdKEz6lH
+	revk1sl36+cGvbyhrTykJYoGOuuvlDWInM3iiDHenDU0K2p4y+qOFcziyLTs4zPWhFJei5YY
+	tjg61z3be3xFsL4lvaouzSNwWUAS6WNSfF44RIzyWB8073D4kYM+ubWLHcSVJvgyyZdQb1XM
+	9cNVasUvQYcDW8oDAAA=
+X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFrrEIsWRmVeSWpSXmKPExsVy+t/xu7q3DzxKM/i0i8di88StbBYTV05m
 	tvj1xcJi/8FvrBYzZ5xgtOicvYHdYunbrewWl3fNYbM4+OEJq0XLHVMHLo8nB+cxeayZt4bR
 	Y/MKLY/Fe14yeZzbcZ7dY9OqTjaPeScDPV5snsno8XmTnMfWz7dZArii9GyK8ktLUhUy8otL
-	bJWiDS2M9AwtLfSMTCz1DI3NY62MTJX07WxSUnMyy1KL9O0S9DL2HJ7DWjBBpOLFvldsDYzP
-	+LsYOTkkBEwkpq+YxNLFyMUhJLCUUWLbzFusEAkZiY1frkLZwhJ/rnWxQRR9ZJSYdmU7K4Sz
-	mVHi6cZpYFUsAqoSs6+fYAKx2QR0JM6/ucMMYosIqEs0Ne4F62YW2MgkceNcE1iRsECCxMy/
-	Z8BsXgEHiX+rOtkhpn5ikrj+9A0bREJQ4uTMJywgNjPQ1AW7PwHFOYBsaYnl/zhATE4BZ4ll
-	Z9IgLlWU+Lr4HguEXSvx+e8zxgmMwrOQDJqFZNAshEELGJlXMYqklhbnpucWG+kVJ+YWl+al
-	6yXn525iBEbvtmM/t+xgXPnqo94hRiYOxkOMEhzMSiK8k9gepQnxpiRWVqUW5ccXleakFh9i
-	NAUGxURmKdHkfGD6yCuJNzQzMDU0MbM0MLU0M1YS52W7cj5NSCA9sSQ1OzW1ILUIpo+Jg1Oq
-	gcnZaLVgNf/qFTXvMs4v2f9Mm2/NgbuKQf6f+g0vM5QvdVWVney9TvXWS81SCbUP639/fep5
-	a0/4XPXlDP+OfxK/Oml2QtCSl7P/qT+oif1wZ/114Y+TDvc08qxP3mUv98NnxYzFsQHyRXwv
-	DNZG8Z90fn3i0pxNf0RbpM9e39/96ErpdoWVKX/qfIzPes9ydxF5EKHrXvVXrG9/xL0FXBfW
-	G9U/mjXxrtnOFUesT4cIm0yxd97QWFbLwfr29IoN1h2N9p3MFpU5p29Mv3/ZikGtgi0557FL
-	VI6/iRZnqrZ2ec0HTW/ep3X/16turQ9+w2J88t16h1wPHqYnz3NkfibcaPiwUVDCYRv36jVR
-	rkVKLMUZiYZazEXFiQDFg3CuZwMAAA==
-X-CMS-MailID: 20240912100103eucas1p18874d5b8478f49be488672c830f85aa6
+	bJWiDS2M9AwtLfSMTCz1DI3NY62MTJX07WxSUnMyy1KL9O0S9DL6t39kLdjGW7G58wVzA+Mj
+	ri5GTg4JAROJl++WsoPYQgJLGSVar8hDxGUkNn65ygphC0v8udbFBlHzkVHiVw9fFyMXkL2Z
+	UWLR3b1ACQ4OFgFViVnLNUBq2AR0JM6/ucMMYosIqEs0NYKUcHEwC2xkkrhxrokJJCEskCAx
+	8+8ZMJtXwEHi3LbNTBBDPzFJTH53FCohKHFy5hMWEJsZaOqC3Z/AljELSEss/8cBEuYUcJaY
+	u2srE8ShihJfF99jgbBrJT7/fcY4gVF4FpJJs5BMmoUwaQEj8ypGkdTS4tz03GIjveLE3OLS
+	vHS95PzcTYzAyN127OeWHYwrX33UO8TIxMF4iFGCg1lJhHcS26M0Id6UxMqq1KL8+KLSnNTi
+	Q4ymwKCYyCwlmpwPTB15JfGGZgamhiZmlgamlmbGSuK8bFfOpwkJpCeWpGanphakFsH0MXFw
+	SjUwTfwnZPr8caRu8rwvaps8rx9ePb+V9dT2fIXdSUXhUz22Cuvev3h7w+OljwLSptuzCct6
+	ed/xDU2PYTg6PVH73h3Gcs/Zcz8+sZcQ+lIasyrzxKvl1X8XTzmQ57Y3Pcehe/3lYwp6W9pn
+	/703zT7TzL3yt6l3fXKig4S9u9J18f6fFubPpi4+2Fr9/6TTyeWPPqXPX9eySOiWXs8zic6H
+	Lm8jJocmWKQrp27jyCwIzqzYLfj+TvK8U8E///VuWJa/yN6j6FUvd8qiqElPT5nZfjm4XIV3
+	Tk1uedTeDX8yFj43aDkfXiXFFFsTETUpI/jmWqOviU+DfvpLnXdVcdguP5F3JyvTTtMDuxgP
+	bnPZo8RSnJFoqMVcVJwIAAF3sL5lAwAA
+X-CMS-MailID: 20240912102219eucas1p2b310a28fa8aaf4f953ca61b344ced642
 X-Msg-Generator: CA
 X-RootMTR: 20240905033408eucas1p2ad508d4f3377f4daa38f28bf6c3d1118
 X-EPHeader: CA
@@ -117,11 +117,11 @@ References: <20240904-jag-iopfv8-v1-0-e3549920adf3@samsung.com>
 	<20240904-jag-iopfv8-v1-5-e3549920adf3@samsung.com>
 	<CGME20240905033408eucas1p2ad508d4f3377f4daa38f28bf6c3d1118@eucas1p2.samsung.com>
 	<c2e765a8-d935-42db-bd22-c12e7960f2f0@linux.intel.com>
-	<20240911105657.iesajd4d5va3wc5y@joelS2.panther.com>
-	<b7a68539-3a3c-4cd9-922b-bfb9db8e7e0b@linux.intel.com>
+	<20240911095544.4ad3u6jxgsdsymhj@joelS2.panther.com>
+	<f4ea2a66-49ac-41ae-94c4-2832f08303f1@linux.intel.com>
 
-On Thu, Sep 12, 2024 at 12:21:53PM +0800, Baolu Lu wrote:
-> On 9/11/24 6:56 PM, Joel Granados wrote:
+On Thu, Sep 12, 2024 at 12:17:35PM +0800, Baolu Lu wrote:
+> On 9/11/24 5:55 PM, Joel Granados wrote:
 > > On Thu, Sep 05, 2024 at 11:30:05AM +0800, Baolu Lu wrote:
 > >> On 9/4/24 9:17 PM, Joel Granados via B4 Relay wrote:
 > >>> From: Joel Granados<j.granados@samsung.com>
@@ -132,51 +132,28 @@ On Thu, Sep 12, 2024 at 12:21:53PM +0800, Baolu Lu wrote:
 > >> attached to the device or PASID. The iommu_report_device_fault() treats
 > >> it as a fault when a fault occurs, but no iopf-capable domain is
 > >> attached.
-> >>
-> >>> Add this handle when the
-> >>> replacing hwpt has a valid iommufd fault object. Remove it when we
-> >>> release ownership of the group.
-> >> The iommu_attach_handle is managed by the caller (iommufd here for
-> >> example). Therefore, before iommu_attach_handle tries to attach a domain
-> >> to an iopf-capable device or pasid, it should allocate the handle and
-> >> pass it to the domain attachment interfaces.
-> > What do you mean here?
-> > 1. Do you want to move the iommufd_init_pasid_array call up to
-> > iommufd_hwpt_replace_device?
-> > 2. Do you want to move it further up to iommufd_device_do_replace?
-> 
-> I'm having trouble understanding the need for iommu_init_pasid_array()
-> in the core.
-> 
+> > I don't follow. The way that I read it: if the pasid_array x-array does
+> > not have an iommu_attach_handle indexed by either fault->prm.pasid or
+> > IOMMU_NO_PASID, it will follow the err_bad_iopf and return -EINVAL
+> > (please correct me if I'm wrong). So the iommu_attach_handle is*always*
+> > expected.
 > > 
-> > Note that all this implemented on a call to replace HWPT. So a
-> > non-iopf-capable VFIO_DEVICE_ATTACH_IOMMUFD_PT ioctl has already been
-> > completed before the one that calls iommufd_device_do_replace.
-> > 
-> >> Conversely, the handle can
-> >> only be freed after the domain is detached.
-> > Do you have a function in specific where you would put the free handle
-> > logic?
+> > Would it be more clear for it to be:
+> > """
+> > The iommu_report_device_fault function expects the pasid_array x-array
+> > to have an iommu_attach_handle indexed by a PASID. Add one indexed with
+> > IOMMU_NO_PASID when the replacing HWPT has a valid iommufd fault object.
+> > Remove it when we release ownership of the group.
 > 
-> drivers/iommu/iommufd/fault.c
-> 
-> void iommufd_fault_domain_detach_dev(struct iommufd_hw_pagetable *hwpt,
->                                       struct iommufd_device *idev)
-> {
->          struct iommufd_attach_handle *handle;
-> 
->          handle = iommufd_device_get_attach_handle(idev);
->          iommu_detach_group_handle(hwpt->domain, idev->igroup->group);
->          iommufd_auto_response_faults(hwpt, handle);
->          iommufd_fault_iopf_disable(idev);
->          kfree(handle);
-> }
-Actually there is no need to add the xa_erase call in
-__iommu_release_dma_ownership because it is *already* handled here.
-Sorry about this, I think this was left from a previous version of the
-patch. I'll remove the superfluous xa_erase call.
+> Can you please explain why iommu core needs to remove the attach handle
+> when the ownership of the group is changed?
 
-Thx for the review
+It does not. Probably left from a previous version of the patch. Sorry
+for the noise. I have reamoved the xa_erase from
+__iommu_release_dma_ownership. Will send a V2 once we finish discussing
+the rest of your comments.
+
+Best and thankyou for your feedback
 
 -- 
 
