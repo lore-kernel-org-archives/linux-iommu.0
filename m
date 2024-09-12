@@ -1,129 +1,109 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.11])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4D0101BBBCB;
-	Thu, 12 Sep 2024 11:17:29 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6F67F1A2C1B
+	for <iommu@lists.linux.dev>; Thu, 12 Sep 2024 11:22:36 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.11
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1726139850; cv=none; b=sHfOuN4fR0Oq+D3V6FWCudeKmNoS3KZ5lmwPp3nEVhBhBvducIBr/lD517gFsPv56y3Pz6xKWzpNHFIBFmA8ojK/RQpOOiFQxJAhyHsJ9nq0EGUtahCqUaXVy6U3hATeRwsVBTtf/YE/7TEwzfT/7jxJ1lY296mX4zs42s85CY0=
+	t=1726140158; cv=none; b=ccQXCiFlvO1Wv4A8sgAqof2FQDeKx2Q8yDyRmLeGgytAGedQJagTtbIkiX/nYX8wnHEx4EvNVxk5EBDIERAnga+jiqWnzewruowMW0u36XPh6kJ5KCpeKIvmLSe0Yyj8XMTguMLawDZZUeuOsl3X4hpgNQFAIGNExc3CxkP3LK0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1726139850; c=relaxed/simple;
-	bh=Ch307cuLMtu9IkxYPq9fEPmV/1GlNElaatF0p6+K/3o=;
-	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=fpym9wnWzy48ngUNVe2+2Mazkp9ae4Lh6KSykxQtPULo2+U5AZmWTPXkXMwbmez3p9ZH5pKWECs/VP89Bx9z4R0PAWfAVmSU2LeN3npFFFxFWc1eSBnP4esgrmy01GwZA3UYrtrx5M3kQ61VUPQ+2B+tvKDds7o9gykfrSW4/sA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=rjQEVR0W; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1726140158; c=relaxed/simple;
+	bh=QCP4AJW1JaH+8hd8JK1O6YZA3Brj57hPM3FVDUPpbmk=;
+	h=Message-ID:Date:MIME-Version:Cc:Subject:To:References:From:
+	 In-Reply-To:Content-Type; b=m+HT882tMbIkKNTGgXPrzgS3XFht0i64s+aEpiHK7wfp0jFEC12KVCCvJfQD6EIgtpQawqeKmDAe7Rg8xyDLliEIdZqS1uD3uadXbwjxGZOo+acIr5X2/fIJ2EV2DEksDQMDh3e7uxOgFbvaCRXaXcRrV6GgxuNazSY+csjZcTo=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=SbMlHKaJ; arc=none smtp.client-ip=192.198.163.11
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="rjQEVR0W"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0B911C4CECE;
-	Thu, 12 Sep 2024 11:17:29 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1726139849;
-	bh=Ch307cuLMtu9IkxYPq9fEPmV/1GlNElaatF0p6+K/3o=;
-	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-	b=rjQEVR0WNIDFIumqiRWFBZ/LeaRIQrWt7cRNRpwd5Qr3Ery2891OThDNpX5O70OkA
-	 3u+K7SybOwx4RJVpNWxWVcp9dPJOARjRDtQ5bfDWc6ZBdwjeLjroi/LGRBt7k8iEnk
-	 rrKGRP00PzsLM6BQjTbD0bOTaSYxwnYo6ipA4GhON7Q3sfr8WoiFk8o1QO2Fv+ILhF
-	 /xfjffj8UsYtxpX9Wuzy0IcN8Uxvpj7UQIuJSgTBOPVfFQgt+1eyO4AqZDO/l5tLYd
-	 5CdaCvA6GAmBErDw8MkhJzDPoXCGNeg9rN3Ks4+pahOUrr4xwY6R/1BbLfmuF5yF5c
-	 mxeUvTEss0paA==
-From: Leon Romanovsky <leon@kernel.org>
-To: Jens Axboe <axboe@kernel.dk>,
-	Jason Gunthorpe <jgg@ziepe.ca>,
-	Robin Murphy <robin.murphy@arm.com>,
-	Joerg Roedel <joro@8bytes.org>,
-	Will Deacon <will@kernel.org>,
-	Keith Busch <kbusch@kernel.org>,
-	Christoph Hellwig <hch@lst.de>,
-	"Zeng, Oak" <oak.zeng@intel.com>,
-	Chaitanya Kulkarni <kch@nvidia.com>
-Cc: Leon Romanovsky <leonro@nvidia.com>,
-	Sagi Grimberg <sagi@grimberg.me>,
-	Bjorn Helgaas <bhelgaas@google.com>,
-	Logan Gunthorpe <logang@deltatee.com>,
-	Yishai Hadas <yishaih@nvidia.com>,
-	Shameer Kolothum <shameerali.kolothum.thodi@huawei.com>,
-	Kevin Tian <kevin.tian@intel.com>,
-	Alex Williamson <alex.williamson@redhat.com>,
-	Marek Szyprowski <m.szyprowski@samsung.com>,
-	=?UTF-8?q?J=C3=A9r=C3=B4me=20Glisse?= <jglisse@redhat.com>,
-	Andrew Morton <akpm@linux-foundation.org>,
-	linux-block@vger.kernel.org,
-	linux-kernel@vger.kernel.org,
-	linux-rdma@vger.kernel.org,
-	iommu@lists.linux.dev,
-	linux-nvme@lists.infradead.org,
-	linux-pci@vger.kernel.org,
-	kvm@vger.kernel.org,
-	linux-mm@kvack.org
-Subject: [RFC v2 19/21] nvme-pci: precalculate number of DMA entries for each command
-Date: Thu, 12 Sep 2024 14:15:54 +0300
-Message-ID: <8c5b0e5ab1716166fc93e76cb2d3e01ca9cf8769.1726138681.git.leon@kernel.org>
-X-Mailer: git-send-email 2.46.0
-In-Reply-To: <cover.1726138681.git.leon@kernel.org>
-References: <cover.1726138681.git.leon@kernel.org>
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="SbMlHKaJ"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1726140157; x=1757676157;
+  h=message-id:date:mime-version:cc:subject:to:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=QCP4AJW1JaH+8hd8JK1O6YZA3Brj57hPM3FVDUPpbmk=;
+  b=SbMlHKaJKPb3RkjPssh2XkAkQUkePv0t19UDNuP4FgZIDeUEUTsPrq78
+   GgA4+YB8TIfZuaSRnOuFTkhp4jmtnBY/EDZQisq5BkI47eDsY+vyf523v
+   Szn5m6RlJ+h06nk2MgosH3KOnxA39/+a5FKKzWmADIIecQOyigpLnQ4oJ
+   JhsGY1wtujc+O9b114nYjxGv11dTK/knpyi5YMA5y2yMB+Gx1vBH9QfJo
+   1raBUvq0beumzP18hmKamRoXh/l/QurkSC+yuQGXdicZ7fAcyslX0tYAN
+   ygbwX79p7j6e1fOYub1/craayfxAE6M4FzwQ2D4U+IgQgdF9pjgl8QVod
+   Q==;
+X-CSE-ConnectionGUID: u7tmvmU8SyKYeoyzqI6tbg==
+X-CSE-MsgGUID: RYms74cmS0KOODvTHgho2A==
+X-IronPort-AV: E=McAfee;i="6700,10204,11192"; a="35575309"
+X-IronPort-AV: E=Sophos;i="6.10,222,1719903600"; 
+   d="scan'208";a="35575309"
+Received: from orviesa003.jf.intel.com ([10.64.159.143])
+  by fmvoesa105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Sep 2024 04:22:35 -0700
+X-CSE-ConnectionGUID: xohJ6hctR+W48kSoxFT5Mw==
+X-CSE-MsgGUID: EDwLMJCnSgGiUkvmSpO/+A==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.10,222,1719903600"; 
+   d="scan'208";a="72463031"
+Received: from blu2-mobl.ccr.corp.intel.com (HELO [10.124.239.20]) ([10.124.239.20])
+  by ORVIESA003-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Sep 2024 04:22:33 -0700
+Message-ID: <71f61d8a-9188-4e67-88ca-e5b48a91e6b5@linux.intel.com>
+Date: Thu, 12 Sep 2024 19:22:30 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla Thunderbird
+Cc: baolu.lu@linux.intel.com, David Woodhouse <dwmw2@infradead.org>,
+ Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
+ Robin Murphy <robin.murphy@arm.com>, Jason Gunthorpe <jgg@ziepe.ca>,
+ Kevin Tian <kevin.tian@intel.com>, Klaus Jensen <its@irrelevant.dk>,
+ linux-kernel@vger.kernel.org, iommu@lists.linux.dev
+Subject: Re: [PATCH 5/6] iommu: init pasid array while doing domain_replace
+ and iopf is active
+To: Joel Granados <j.granados@samsung.com>
+References: <20240904-jag-iopfv8-v1-0-e3549920adf3@samsung.com>
+ <20240904-jag-iopfv8-v1-5-e3549920adf3@samsung.com>
+ <CGME20240905033408eucas1p2ad508d4f3377f4daa38f28bf6c3d1118@eucas1p2.samsung.com>
+ <c2e765a8-d935-42db-bd22-c12e7960f2f0@linux.intel.com>
+ <20240911105657.iesajd4d5va3wc5y@joelS2.panther.com>
+ <b7a68539-3a3c-4cd9-922b-bfb9db8e7e0b@linux.intel.com>
+ <20240912082512.ydzmmlwpvkcukbt2@joelS2.panther.com>
+Content-Language: en-US
+From: Baolu Lu <baolu.lu@linux.intel.com>
+In-Reply-To: <20240912082512.ydzmmlwpvkcukbt2@joelS2.panther.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-From: Leon Romanovsky <leonro@nvidia.com>
+On 2024/9/12 16:25, Joel Granados wrote:
+>   /**
+>    * iommu_attach_group_handle - Attach an IOMMU domain to an IOMMU group
+>    * @domain: IOMMU domain to attach
+> diff --git i/drivers/iommu/iommufd/fault.c w/drivers/iommu/iommufd/fault.c
+> index ea7f1bf64892..51cb70465b87 100644
+> --- i/drivers/iommu/iommufd/fault.c
+> +++ w/drivers/iommu/iommufd/fault.c
+> @@ -189,8 +189,15 @@ static int iommufd_init_pasid_array(struct iommu_domain *domain,
+>   	if (!handle)
+>   		return -ENOMEM;
+>   	handle->idev = idev;
+> +	handle->handle.domain = domain;
+> +
+> +	mutex_lock(&group->mutex);
+> +	ret = xa_insert(&group->pasid_array, IOMMU_NO_PASID, handle, GFP_KERNEL);
+> +	mutex_unlock(&group->mutex);
+> +
+> +	if (ret == -EBUSY)
+> +		ret = 0;
+>   
+> -	ret = iommu_init_pasid_array(domain, group, &handle->handle);
+>   	if (ret)
+>   		kfree(handle);
 
-Calculate the number of DMA entries for each command in the request in
-advance.
+This is supposed to be done automatically when an iopf capable domain is
+attached to or replaced with a device. Please refer to
+iommufd_fault_domain_attach_dev() and
+iommufd_fault_domain_replace_dev().
 
-Signed-off-by: Leon Romanovsky <leonro@nvidia.com>
----
- drivers/nvme/host/pci.c | 20 ++++++++++++++++++++
- 1 file changed, 20 insertions(+)
+Is there anything preventing this from happening?
 
-diff --git a/drivers/nvme/host/pci.c b/drivers/nvme/host/pci.c
-index a9a66f184138..2b236b1d209e 100644
---- a/drivers/nvme/host/pci.c
-+++ b/drivers/nvme/host/pci.c
-@@ -231,6 +231,7 @@ struct nvme_iod {
- 	struct nvme_request req;
- 	struct nvme_command cmd;
- 	bool aborted;
-+	u8 nr_dmas;
- 	s8 nr_allocations;	/* PRP list pool allocations. 0 means small
- 				   pool in use */
- 	dma_addr_t first_dma;
-@@ -766,6 +767,23 @@ static blk_status_t nvme_map_metadata(struct nvme_dev *dev, struct request *req,
- 	return BLK_STS_OK;
- }
- 
-+static u8 nvme_calc_num_dmas(struct request *req)
-+{
-+	struct bio_vec bv;
-+	u8 nr_dmas;
-+
-+	if (blk_rq_nr_phys_segments(req) == 0)
-+		return 0;
-+
-+	nr_dmas = DIV_ROUND_UP(blk_rq_payload_bytes(req), NVME_CTRL_PAGE_SIZE);
-+	bv = req_bvec(req);
-+	if (bv.bv_offset && (bv.bv_offset + bv.bv_len) >= NVME_CTRL_PAGE_SIZE)
-+		/* Accommodate for unaligned first page */
-+		nr_dmas++;
-+
-+	return nr_dmas;
-+}
-+
- static blk_status_t nvme_prep_rq(struct nvme_dev *dev, struct request *req)
- {
- 	struct nvme_iod *iod = blk_mq_rq_to_pdu(req);
-@@ -779,6 +797,8 @@ static blk_status_t nvme_prep_rq(struct nvme_dev *dev, struct request *req)
- 	if (ret)
- 		return ret;
- 
-+	iod->nr_dmas = nvme_calc_num_dmas(req);
-+
- 	if (blk_rq_nr_phys_segments(req)) {
- 		ret = nvme_map_data(dev, req, &iod->cmd);
- 		if (ret)
--- 
-2.46.0
-
+Thanks,
+baolu
