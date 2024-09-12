@@ -1,48 +1,48 @@
 Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.10])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A1C9C1A7249
-	for <iommu@lists.linux.dev>; Thu, 12 Sep 2024 13:04:36 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DB9D51A4E8A
+	for <iommu@lists.linux.dev>; Thu, 12 Sep 2024 13:04:35 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.10
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1726146278; cv=none; b=Mvn75wPU+ElYs0fOavwDS+9IQtqQush0uRNPH9lApRRO9l6V8EdCfeHSTSR0BTiX14SPwiTtWiXCOaZVjxJS+91UVW182zOUqA+mFivFGnikBXHR3NdWKIo0cBQcnptuM5NWsqDk4K3M3sl2Bphq1Ml4i0aj4lQ2UNAGRVZZTWk=
+	t=1726146279; cv=none; b=Wxe/rVOX8VPMWXo/uFQqzsxjLmTYuJdQ/XeHLLoHkkAJEnURgrCjP9Vh3Vtc0t3Sx/s0SXB0V0lB8ZlvUi9Qm/jWawzRh6z7SQ3pJJjk0RWN7sObVKvMviZcWH5wPrRHch2D8SrQ3U5arwmVi2FVk0SiMWLYjllFeV/359SvfEE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1726146278; c=relaxed/simple;
-	bh=yUnDh/XVxNNztWNMVHOs6+vmvy06PcZACc3G0r/NzUE=;
+	s=arc-20240116; t=1726146279; c=relaxed/simple;
+	bh=7Mou63F6Si0LBgDAYfUJIlqLAYZyr2Fjly0h3zS3O/0=;
 	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
-	 MIME-Version; b=XR2EwfcKrfp0q2MTKHwOFlP5TuAUc78wq2Tzu7mu4AHi1nON1RbAdXVS/s1/77Cq033Qxw9B+EgHQPHMNpO4kFat/stPHR2Qhk7wjJw/6p2FD5svRrKinOXkOeuZaj6+nmSU+j3/3KCrRHC7pOlz8JPWEudlk+whqK+NjeKIQ0s=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=aAkIO6dx; arc=none smtp.client-ip=192.198.163.10
+	 MIME-Version; b=TTriQ0QC+7kw8ryp55Lj+UGg0E0i2yMhoKSLtus3ikzEtQ6u42DpOAGYa5EOkEyKW7WT8qeDbFjM9JHAm3S5X8ux0C8wERseM1Svex4Pg/MiVhgFNMF+8Vs6EQ/WVWvhLgfkZ7YETKUic1DebNK89NSn/nJV2xK1xOE4SHvgZ0Y=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=ApvJcn3i; arc=none smtp.client-ip=192.198.163.10
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="aAkIO6dx"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="ApvJcn3i"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
   t=1726146276; x=1757682276;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=yUnDh/XVxNNztWNMVHOs6+vmvy06PcZACc3G0r/NzUE=;
-  b=aAkIO6dx8XphfjkhZZqS4EES6I3oLxyLBJL5Ew0Q5XA1Gi3Gu03WC1KY
-   lVEKr/3xUYwFfP8B0QAvDr/yNuNPM+I4eg5oN91B7sVxKEb5vRLlprvnB
-   C1yJNYwJ8kh6zzuyqtW9rLdI1oodTk0qqZNf7JjKIP/8EnhnqyD/LXexr
-   NSW1+83Fa1Fwu7A5FetsaZzzLk/3bc0k19yP3nyrv3+Bmsaz8243oaktR
-   0LQfVh9b1D3RWtYK/LnkGoTZs+zwEG4Gt9/ZkcI0oRmM/vRzZ4DFvAz91
-   2s7jx+i7U/QTvc21U075krkLtVKHmi2MkzCNzD/4sYNH21yaHp3upXejm
-   Q==;
-X-CSE-ConnectionGUID: UbF0RbPjQT6HeCoru6CMTg==
-X-CSE-MsgGUID: XQGj7VP7S56W/fAjpDgcHQ==
-X-IronPort-AV: E=McAfee;i="6700,10204,11192"; a="36380562"
+  bh=7Mou63F6Si0LBgDAYfUJIlqLAYZyr2Fjly0h3zS3O/0=;
+  b=ApvJcn3i+Sx+qKWQPT6J9i1t8bkaxBvp7An3olKeIq9dzxPAodGHK2pU
+   mi8g1UQhTz08svyVnzySXZIWhchXejAIsFN2b/9/ez1W+ecDbTjMUHcmn
+   Os4WBfBwXTmH57EAY0kH4a8FWgB2gE8+P2MU5KTmgTdpkr0ngUJRoCNNY
+   SMC28IMWWHJ8p/P89ecfLjHGt1UEabXtvN4yTCK+6YrqslEQoBGidfsvr
+   tSEqcFUKHtZe/WPhQjmZvtyH+8ZonqjcGMoSmzgnfUlpogS4zYEW4In9C
+   9tmc7LX6Po+BBC1uymdmONgykGt9f+2yF9ok8OMkJH55dnEMTQNovlfqJ
+   g==;
+X-CSE-ConnectionGUID: evVSoAUCRUmpsvU1r+GVjQ==
+X-CSE-MsgGUID: cGCLnNz5Tk6k4UMRQOnPJQ==
+X-IronPort-AV: E=McAfee;i="6700,10204,11192"; a="36380543"
 X-IronPort-AV: E=Sophos;i="6.10,223,1719903600"; 
-   d="scan'208";a="36380562"
+   d="scan'208";a="36380543"
 Received: from orviesa005.jf.intel.com ([10.64.159.145])
-  by fmvoesa104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Sep 2024 06:04:36 -0700
-X-CSE-ConnectionGUID: qCedCvb+Q0aIuejJ+PRLtA==
-X-CSE-MsgGUID: /KlSP8I1TCWoP9TOjFhB2w==
+  by fmvoesa104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Sep 2024 06:04:34 -0700
+X-CSE-ConnectionGUID: DgeXWjRESTGSgIThZMByGA==
+X-CSE-MsgGUID: OuXIn9GITSi37F24G3eRqA==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.10,223,1719903600"; 
-   d="scan'208";a="72509960"
+   d="scan'208";a="72509934"
 Received: from 984fee00a4c6.jf.intel.com ([10.165.58.231])
-  by orviesa005.jf.intel.com with ESMTP; 12 Sep 2024 06:04:36 -0700
+  by orviesa005.jf.intel.com with ESMTP; 12 Sep 2024 06:04:34 -0700
 From: Yi Liu <yi.l.liu@intel.com>
 To: joro@8bytes.org,
 	jgg@nvidia.com,
@@ -57,9 +57,9 @@ Cc: alex.williamson@redhat.com,
 	zhenzhong.duan@intel.com,
 	linux-kselftest@vger.kernel.org,
 	vasant.hegde@amd.com
-Subject: [PATCH v2 5/6] iommu/arm-smmu-v3: Make smmuv3 set_dev_pasid() op support replace
-Date: Thu, 12 Sep 2024 06:04:26 -0700
-Message-Id: <20240912130427.10119-6-yi.l.liu@intel.com>
+Subject: [PATCH v2 3/6] iommu/vt-d: Make intel_iommu_set_dev_pasid() to handle domain replacement
+Date: Thu, 12 Sep 2024 06:04:24 -0700
+Message-Id: <20240912130427.10119-4-yi.l.liu@intel.com>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20240912130427.10119-1-yi.l.liu@intel.com>
 References: <20240912130427.10119-1-yi.l.liu@intel.com>
@@ -71,85 +71,174 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-From: Jason Gunthorpe <jgg@nvidia.com>
+set_dev_pasid op is going to support domain replacement and keep the old
+hardware config if it fails. Make the Intel iommu driver be prepared for
+it.
 
-set_dev_pasid() op is going to be enhanced to support domain replacement
-of a pasid. This prepares for this op definition.
-
-Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
 Signed-off-by: Yi Liu <yi.l.liu@intel.com>
 ---
- drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c | 2 +-
- drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c     | 8 +++++---
- drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h     | 2 +-
- 3 files changed, 7 insertions(+), 5 deletions(-)
+ drivers/iommu/intel/iommu.c | 98 ++++++++++++++++++++++++-------------
+ 1 file changed, 65 insertions(+), 33 deletions(-)
 
-diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c
-index 645da7b69bed..1d3e71569775 100644
---- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c
-+++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c
-@@ -349,7 +349,7 @@ static int arm_smmu_sva_set_dev_pasid(struct iommu_domain *domain,
- 	 * get reassigned
- 	 */
- 	arm_smmu_make_sva_cd(&target, master, domain->mm, smmu_domain->cd.asid);
--	ret = arm_smmu_set_pasid(master, smmu_domain, id, &target);
-+	ret = arm_smmu_set_pasid(master, smmu_domain, id, &target, old);
- 
- 	mmput(domain->mm);
- 	return ret;
-diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-index ed2b106e02dd..f7a73b854151 100644
---- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-+++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-@@ -2824,7 +2824,8 @@ static int arm_smmu_attach_dev(struct iommu_domain *domain, struct device *dev)
+diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
+index 80b587de226d..6f5a8e549f3f 100644
+--- a/drivers/iommu/intel/iommu.c
++++ b/drivers/iommu/intel/iommu.c
+@@ -4248,8 +4248,8 @@ static int intel_iommu_iotlb_sync_map(struct iommu_domain *domain,
+ 	return 0;
  }
  
- static int arm_smmu_s1_set_dev_pasid(struct iommu_domain *domain,
--				      struct device *dev, ioasid_t id)
-+				     struct device *dev, ioasid_t id,
-+				     struct iommu_domain *old)
+-static void intel_iommu_remove_dev_pasid(struct device *dev, ioasid_t pasid,
+-					 struct iommu_domain *domain)
++static void domain_remove_dev_pasid(struct iommu_domain *domain,
++				    struct device *dev, ioasid_t pasid)
  {
- 	struct arm_smmu_domain *smmu_domain = to_smmu_domain(domain);
- 	struct arm_smmu_master *master = dev_iommu_priv_get(dev);
-@@ -2850,7 +2851,7 @@ static int arm_smmu_s1_set_dev_pasid(struct iommu_domain *domain,
- 	 */
- 	arm_smmu_make_s1_cd(&target_cd, master, smmu_domain);
- 	return arm_smmu_set_pasid(master, to_smmu_domain(domain), id,
--				  &target_cd);
-+				  &target_cd, old);
+ 	struct device_domain_info *info = dev_iommu_priv_get(dev);
+ 	struct dev_pasid_info *curr, *dev_pasid = NULL;
+@@ -4257,11 +4257,6 @@ static void intel_iommu_remove_dev_pasid(struct device *dev, ioasid_t pasid,
+ 	struct dmar_domain *dmar_domain;
+ 	unsigned long flags;
+ 
+-	if (domain->type == IOMMU_DOMAIN_IDENTITY) {
+-		intel_pasid_tear_down_entry(iommu, dev, pasid, 0);
+-		return;
+-	}
+-
+ 	dmar_domain = to_dmar_domain(domain);
+ 	spin_lock_irqsave(&dmar_domain->lock, flags);
+ 	list_for_each_entry(curr, &dmar_domain->dev_pasids, link_domain) {
+@@ -4278,13 +4273,24 @@ static void intel_iommu_remove_dev_pasid(struct device *dev, ioasid_t pasid,
+ 	domain_detach_iommu(dmar_domain, iommu);
+ 	intel_iommu_debugfs_remove_dev_pasid(dev_pasid);
+ 	kfree(dev_pasid);
++}
++
++static void intel_iommu_remove_dev_pasid(struct device *dev, ioasid_t pasid,
++					 struct iommu_domain *domain)
++{
++	struct device_domain_info *info = dev_iommu_priv_get(dev);
++	struct intel_iommu *iommu = info->iommu;
++
+ 	intel_pasid_tear_down_entry(iommu, dev, pasid,
+ 				    INTEL_PASID_TEARDOWN_DRAIN_PRQ);
++	if (domain->type == IOMMU_DOMAIN_IDENTITY)
++		return;
++	domain_remove_dev_pasid(domain, dev, pasid);
  }
  
- static void arm_smmu_update_ste(struct arm_smmu_master *master,
-@@ -2880,7 +2881,7 @@ static void arm_smmu_update_ste(struct arm_smmu_master *master,
- 
- int arm_smmu_set_pasid(struct arm_smmu_master *master,
- 		       struct arm_smmu_domain *smmu_domain, ioasid_t pasid,
--		       struct arm_smmu_cd *cd)
-+		       struct arm_smmu_cd *cd, struct iommu_domain *old)
+-static int intel_iommu_set_dev_pasid(struct iommu_domain *domain,
+-				     struct device *dev, ioasid_t pasid,
+-				     struct iommu_domain *old)
++static struct dev_pasid_info *
++domain_prepare_dev_pasid(struct iommu_domain *domain,
++			 struct device *dev, ioasid_t pasid)
  {
- 	struct iommu_domain *sid_domain = iommu_get_domain_for_dev(master->dev);
- 	struct arm_smmu_attach_state state = {
-@@ -2890,6 +2891,7 @@ int arm_smmu_set_pasid(struct arm_smmu_master *master,
- 		 * already attached, no need to set old_domain.
- 		 */
- 		.ssid = pasid,
-+		.old_domain = old,
- 	};
- 	struct arm_smmu_cd *cdptr;
+ 	struct device_domain_info *info = dev_iommu_priv_get(dev);
+ 	struct dmar_domain *dmar_domain = to_dmar_domain(domain);
+@@ -4293,22 +4299,13 @@ static int intel_iommu_set_dev_pasid(struct iommu_domain *domain,
+ 	unsigned long flags;
  	int ret;
-diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
-index 14bca41a981b..a942f5d40051 100644
---- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
-+++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
-@@ -806,7 +806,7 @@ void arm_smmu_write_cd_entry(struct arm_smmu_master *master, int ssid,
  
- int arm_smmu_set_pasid(struct arm_smmu_master *master,
- 		       struct arm_smmu_domain *smmu_domain, ioasid_t pasid,
--		       struct arm_smmu_cd *cd);
-+		       struct arm_smmu_cd *cd, struct iommu_domain *old);
+-	if (!pasid_supported(iommu) || dev_is_real_dma_subdevice(dev))
+-		return -EOPNOTSUPP;
+-
+-	if (domain->dirty_ops)
+-		return -EINVAL;
+-
+-	if (context_copied(iommu, info->bus, info->devfn))
+-		return -EBUSY;
+-
+ 	ret = prepare_domain_attach_device(domain, dev);
+ 	if (ret)
+-		return ret;
++		return ERR_PTR(ret);
  
- void arm_smmu_tlb_inv_asid(struct arm_smmu_device *smmu, u16 asid);
- void arm_smmu_tlb_inv_range_asid(unsigned long iova, size_t size, int asid,
+ 	dev_pasid = kzalloc(sizeof(*dev_pasid), GFP_KERNEL);
+ 	if (!dev_pasid)
+-		return -ENOMEM;
++		return ERR_PTR(-ENOMEM);
+ 
+ 	ret = domain_attach_iommu(dmar_domain, iommu);
+ 	if (ret)
+@@ -4318,6 +4315,47 @@ static int intel_iommu_set_dev_pasid(struct iommu_domain *domain,
+ 	if (ret)
+ 		goto out_detach_iommu;
+ 
++	dev_pasid->dev = dev;
++	dev_pasid->pasid = pasid;
++	spin_lock_irqsave(&dmar_domain->lock, flags);
++	list_add(&dev_pasid->link_domain, &dmar_domain->dev_pasids);
++	spin_unlock_irqrestore(&dmar_domain->lock, flags);
++
++	return dev_pasid;
++out_detach_iommu:
++	domain_detach_iommu(dmar_domain, iommu);
++out_free:
++	kfree(dev_pasid);
++	return ERR_PTR(ret);
++}
++
++static int intel_iommu_set_dev_pasid(struct iommu_domain *domain,
++				     struct device *dev, ioasid_t pasid,
++				     struct iommu_domain *old)
++{
++	struct device_domain_info *info = dev_iommu_priv_get(dev);
++	struct dmar_domain *dmar_domain = to_dmar_domain(domain);
++	struct intel_iommu *iommu = info->iommu;
++	struct dev_pasid_info *dev_pasid;
++	int ret;
++
++	if (!pasid_supported(iommu) || dev_is_real_dma_subdevice(dev))
++		return -EOPNOTSUPP;
++
++	if (domain->dirty_ops)
++		return -EINVAL;
++
++	if (context_copied(iommu, info->bus, info->devfn))
++		return -EBUSY;
++
++	dev_pasid = domain_prepare_dev_pasid(domain, dev, pasid);
++	if (IS_ERR(dev_pasid))
++		return PTR_ERR(dev_pasid);
++
++	/* Clear the old configuration if it already exists */
++	intel_pasid_tear_down_entry(iommu, dev, pasid,
++				    INTEL_PASID_TEARDOWN_DRAIN_PRQ);
++
+ 	if (dmar_domain->use_first_level)
+ 		ret = domain_setup_first_level(iommu, dmar_domain,
+ 					       dev, pasid);
+@@ -4325,24 +4363,18 @@ static int intel_iommu_set_dev_pasid(struct iommu_domain *domain,
+ 		ret = intel_pasid_setup_second_level(iommu, dmar_domain,
+ 						     dev, pasid);
+ 	if (ret)
+-		goto out_unassign_tag;
++		goto out_undo_dev_pasid;
+ 
+-	dev_pasid->dev = dev;
+-	dev_pasid->pasid = pasid;
+-	spin_lock_irqsave(&dmar_domain->lock, flags);
+-	list_add(&dev_pasid->link_domain, &dmar_domain->dev_pasids);
+-	spin_unlock_irqrestore(&dmar_domain->lock, flags);
++	if (old)
++		domain_remove_dev_pasid(old, dev, pasid);
+ 
+ 	if (domain->type & __IOMMU_DOMAIN_PAGING)
+ 		intel_iommu_debugfs_create_dev_pasid(dev_pasid);
+ 
+ 	return 0;
+-out_unassign_tag:
+-	cache_tag_unassign_domain(dmar_domain, dev, pasid);
+-out_detach_iommu:
+-	domain_detach_iommu(dmar_domain, iommu);
+-out_free:
+-	kfree(dev_pasid);
++
++out_undo_dev_pasid:
++	domain_remove_dev_pasid(domain, dev, pasid);
+ 	return ret;
+ }
+ 
 -- 
 2.34.1
 
