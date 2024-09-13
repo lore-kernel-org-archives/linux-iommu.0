@@ -1,248 +1,101 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.12])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 667F52A1D2
-	for <iommu@lists.linux.dev>; Fri, 13 Sep 2024 02:48:54 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.12
+Received: from linux.microsoft.com (linux.microsoft.com [13.77.154.182])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id C94FE2F34
+	for <iommu@lists.linux.dev>; Fri, 13 Sep 2024 04:02:10 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=13.77.154.182
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1726195736; cv=none; b=lwgBwY4vs/MmTUxNsFVqXG5Df5+N7kjAo9183p8Kmh8ZgYGcm2V30Kzprq7AZ2Aq7HxIHWHLz0IdHDG0AdhKmGa9l5DORSR9lXYUHs+n/IbyvHYoeGTPZxqD8DlpfH0/lJXb4Gyxq9tIAaR38Mbi7hODb7+tFavtZ+Fsr33qCkU=
+	t=1726200132; cv=none; b=X4FQMcwodjYxDGIRlznoJlZq2EdSN+awP5g6kN44c8qJUtD1+WYmOxmQx1iLIXAIUN986m7xJqDcjBaEOiDNOb6V+XNduZs/t9NZAwNQQQqOlE6WWpo7EN1fH7Jja1v6JMeSBePp3/4Qg4oWGJ7KOfOCMykXf5qdE5a+T37IxaU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1726195736; c=relaxed/simple;
-	bh=E1Md7vX5L+kHzpqM8CuOjXPzaGWsw8gfFZfrd0Ya2W8=;
-	h=Message-ID:Date:MIME-Version:Cc:Subject:To:References:From:
-	 In-Reply-To:Content-Type; b=kyieAV2GrCSlCX1dXr08kw1SJItwsR/dD6lTIWWIwkEpJbSMNx6uQWZCjsd1LmsVQ6YBy/Ka4PeWzVfZl+dVDZp+BAjhXZk/CFXI+ga2ugpI9GC4p1VgrXy22A5Fp/Cn6swfAeaXrLwRvIIQBuxZNcS2bbwQo1HoQQ1I/Irxw24=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=Mw8zt8n1; arc=none smtp.client-ip=198.175.65.12
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
+	s=arc-20240116; t=1726200132; c=relaxed/simple;
+	bh=QRilgyJufoEFrkA/x6t+A1oMgJ7I3O3rDLsQ9bU7Nik=;
+	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=UX9/23OhuY78vfPr5RvosEyADb6oJilDaxx3uiq2w3z7aMBMvL5CKlTVItB3tyQ4nDKATp+RVVehXAxt8iB4Enhj0uQJKQkLR3i8RZvbtRu+6fzdJvDwxUoNlwFzlAw0JSrvtnSdjd+w7G0GqyCeqbsnAGVwStTKpZ8+bTE08wM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com; spf=pass smtp.mailfrom=linux.microsoft.com; dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b=S2p0rEco; arc=none smtp.client-ip=13.77.154.182
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.microsoft.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="Mw8zt8n1"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1726195734; x=1757731734;
-  h=message-id:date:mime-version:cc:subject:to:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=E1Md7vX5L+kHzpqM8CuOjXPzaGWsw8gfFZfrd0Ya2W8=;
-  b=Mw8zt8n1t3HXl98NqfiJ1+MsJae8S3AeTPIXu94c32sLVHR8eiHCJ7za
-   bpxiS1EDSnLMO0fvJs6idi+ve3+8VQHI/r7wVAR3Y3T2tNqP6z1Bf5TZ8
-   y8q685y+JU57F7uLr4H33/fzNzyJYbMuQe1xtpgQL+TJBzdhcbkKEA2nr
-   FICAcDZjnFecOgemflMlxlpkdF9K13Y/UgtRKHGvV6S8RuiP05ouAaQal
-   6ZNhW7eXD8lpe0oMGTdqUELOd3egvgXuiOJkDvJVmLmlU8Bzb1nUC2Hi3
-   k1Pl/QXSJ1rff4deQGV0FBqs67xhNknH7V6JrAsOpy8EN9YOKvSZACkAb
-   w==;
-X-CSE-ConnectionGUID: moc08qCQQe6z9PVftLaBcQ==
-X-CSE-MsgGUID: OFt8F/W+Q1iz5FcfSeLMvg==
-X-IronPort-AV: E=McAfee;i="6700,10204,11193"; a="36432252"
-X-IronPort-AV: E=Sophos;i="6.10,224,1719903600"; 
-   d="scan'208";a="36432252"
-Received: from orviesa003.jf.intel.com ([10.64.159.143])
-  by orvoesa104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Sep 2024 19:48:53 -0700
-X-CSE-ConnectionGUID: F31Oz+1iSmOqFyk3RJ0hWg==
-X-CSE-MsgGUID: EhithrKSTr+pJ98Xw/egPQ==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.10,224,1719903600"; 
-   d="scan'208";a="72688636"
-Received: from allen-box.sh.intel.com (HELO [10.239.159.127]) ([10.239.159.127])
-  by orviesa003.jf.intel.com with ESMTP; 12 Sep 2024 19:48:50 -0700
-Message-ID: <881fd7d0-dd9e-4d9d-9529-c9ff03088351@linux.intel.com>
-Date: Fri, 13 Sep 2024 10:44:44 +0800
+	dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b="S2p0rEco"
+Received: from DESKTOP-0403QTC. (unknown [20.236.10.163])
+	by linux.microsoft.com (Postfix) with ESMTPSA id DD4B120BE556;
+	Thu, 12 Sep 2024 21:02:09 -0700 (PDT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com DD4B120BE556
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
+	s=default; t=1726200130;
+	bh=gPQTVSysG+zCOwKw/4DjvygFwXlOFPnequTPwrt6exc=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:References:Reply-To:From;
+	b=S2p0rEcoxbSnTevuEemSfQhIy58U3na7Gy+6+HD4iT//QX+uYCFtgeii4L+r4t/FT
+	 gF3Xete00GtBD6TlLxtm1vHqFGOA1pcvhUW60zgLjKA8VgAD82EI6Tmddvg5G1VsHe
+	 jYhnbQfTxQ/dmL6hbMs2ly/RCaeC96AaD7D0H8vU=
+Date: Thu, 12 Sep 2024 21:02:07 -0700
+From: Jacob Pan <jacob.pan@linux.microsoft.com>
+To: Vasant Hegde <vasant.hegde@amd.com>
+Cc: <iommu@lists.linux.dev>, <joro@8bytes.org>, <will@kernel.org>,
+ <robin.murphy@arm.com>, <suravee.suthikulpanit@amd.com>, <jgg@ziepe.ca>,
+ <yi.l.liu@intel.com>, <baolu.lu@linux.intel.com>, <kevin.tian@intel.com>,
+ jacob.pan@linux.microsoft.com
+Subject: Re: [PATCH v2 1/8] iommu: Refactor __iommu_domain_alloc()
+Message-ID: <20240912210207.4ba164c2@DESKTOP-0403QTC.>
+In-Reply-To: <20240911101911.6269-2-vasant.hegde@amd.com>
+References: <20240911101911.6269-1-vasant.hegde@amd.com>
+	<20240911101911.6269-2-vasant.hegde@amd.com>
+Reply-To: jacob.pan@linux.microsoft.com
+X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.33; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Cc: baolu.lu@linux.intel.com, alex.williamson@redhat.com,
- eric.auger@redhat.com, nicolinc@nvidia.com, chao.p.peng@linux.intel.com,
- iommu@lists.linux.dev, zhenzhong.duan@intel.com,
- linux-kselftest@vger.kernel.org, vasant.hegde@amd.com
-Subject: Re: [PATCH v4 01/10] iommu: Introduce a replace API for device pasid
-To: Yi Liu <yi.l.liu@intel.com>, joro@8bytes.org, jgg@nvidia.com,
- kevin.tian@intel.com
-References: <20240912131255.13305-1-yi.l.liu@intel.com>
- <20240912131255.13305-2-yi.l.liu@intel.com>
-Content-Language: en-US
-From: Baolu Lu <baolu.lu@linux.intel.com>
-In-Reply-To: <20240912131255.13305-2-yi.l.liu@intel.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On 9/12/24 9:12 PM, Yi Liu wrote:
-> Provide a high-level API to allow replacements of one domain with
-> another for specific pasid of a device. This is similar to
-> iommu_group_replace_domain() and it is expected to be used only by
-> IOMMUFD.
-> 
-> Co-developed-by: Lu Baolu <baolu.lu@linux.intel.com>
-> Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
-> Signed-off-by: Yi Liu <yi.l.liu@intel.com>
-> ---
->   drivers/iommu/iommu-priv.h |  4 ++
->   drivers/iommu/iommu.c      | 90 ++++++++++++++++++++++++++++++++++++--
->   2 files changed, 90 insertions(+), 4 deletions(-)
-> 
-> diff --git a/drivers/iommu/iommu-priv.h b/drivers/iommu/iommu-priv.h
-> index de5b54eaa8bf..90b367de267e 100644
-> --- a/drivers/iommu/iommu-priv.h
-> +++ b/drivers/iommu/iommu-priv.h
-> @@ -27,6 +27,10 @@ static inline const struct iommu_ops *iommu_fwspec_ops(struct iommu_fwspec *fwsp
->   int iommu_group_replace_domain(struct iommu_group *group,
->   			       struct iommu_domain *new_domain);
->   
-> +int iommu_replace_device_pasid(struct iommu_domain *domain,
-> +			       struct device *dev, ioasid_t pasid,
-> +			       struct iommu_attach_handle *handle);
-> +
->   int iommu_device_register_bus(struct iommu_device *iommu,
->   			      const struct iommu_ops *ops,
->   			      const struct bus_type *bus,
-> diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-> index b6b44b184004..066f659018a5 100644
-> --- a/drivers/iommu/iommu.c
-> +++ b/drivers/iommu/iommu.c
-> @@ -3347,14 +3347,15 @@ static void iommu_remove_dev_pasid(struct device *dev, ioasid_t pasid,
->   }
->   
->   static int __iommu_set_group_pasid(struct iommu_domain *domain,
-> -				   struct iommu_group *group, ioasid_t pasid)
-> +				   struct iommu_group *group, ioasid_t pasid,
-> +				   struct iommu_domain *old)
->   {
->   	struct group_device *device, *last_gdev;
->   	int ret;
->   
->   	for_each_group_device(group, device) {
->   		ret = domain->ops->set_dev_pasid(domain, device->dev,
-> -						 pasid, NULL);
-> +						 pasid, old);
->   		if (ret)
->   			goto err_revert;
->   	}
-> @@ -3366,7 +3367,20 @@ static int __iommu_set_group_pasid(struct iommu_domain *domain,
->   	for_each_group_device(group, device) {
->   		if (device == last_gdev)
->   			break;
-> -		iommu_remove_dev_pasid(device->dev, pasid, domain);
-> +		/* If no old domain, undo the succeeded devices/pasid */
-> +		if (!old) {
-> +			iommu_remove_dev_pasid(device->dev, pasid, domain);
-> +			continue;
+Hi Vasant,
+
+On Wed, 11 Sep 2024 10:19:04 +0000
+Vasant Hegde <vasant.hegde@amd.com> wrote:
+
+> @@ -1962,27 +1978,7 @@ static struct iommu_domain
+> *__iommu_domain_alloc(const struct iommu_ops *ops, if (!domain)
+>  		return ERR_PTR(-ENOMEM);
+>  
+> -	domain->type = type;
+> -	domain->owner = ops;
+> -	/*
+> -	 * If not already set, assume all sizes by default; the
+> driver
+> -	 * may override this later
+> -	 */
+> -	if (!domain->pgsize_bitmap)
+> -		domain->pgsize_bitmap = ops->pgsize_bitmap;
+> -
+> -	if (!domain->ops)
+> -		domain->ops = ops->default_domain_ops;
+> -
+> -	if (iommu_is_dma_domain(domain)) {
+> -		int rc;
+> -
+> -		rc = iommu_get_dma_cookie(domain);
+> -		if (rc) {
+> -			iommu_domain_free(domain);
+> -			return ERR_PTR(rc);
+> -		}
+> -	}
+> +	iommu_domain_init(domain, type, ops);
+>  	return domain;
+>  }
+>  
+> @@ -2965,6 +2961,14 @@ static int iommu_setup_default_domain(struct
+> iommu_group *group, if (group->default_domain == dom)
+>  		return 0;
+>  
+> +	if (iommu_is_dma_domain(dom)) {
+> +		ret = iommu_get_dma_cookie(dom);
+> +		if (ret) {
+> +			iommu_domain_free(dom);
+> +			return ret;
 > +		}
-> +
-> +		/*
-> +		 * Rollback the succeeded devices/pasid to the old domain.
-> +		 * And it is a driver bug to fail attaching with a previously
-> +		 * good domain.
-> +		 */
-> +		if (WARN_ON(old->ops->set_dev_pasid(old, device->dev,
-> +						    pasid, domain)))
-> +			iommu_remove_dev_pasid(device->dev, pasid, domain);
-
-You want to rollback to the 'old' domain, right? So, %s/domain/old/ ?
-
->   	}
->   	return ret;
->   }
-> @@ -3425,7 +3439,7 @@ int iommu_attach_device_pasid(struct iommu_domain *domain,
->   	if (ret)
->   		goto out_unlock;
->   
-> -	ret = __iommu_set_group_pasid(domain, group, pasid);
-> +	ret = __iommu_set_group_pasid(domain, group, pasid, NULL);
->   	if (ret)
->   		xa_erase(&group->pasid_array, pasid);
->   out_unlock:
-> @@ -3434,6 +3448,74 @@ int iommu_attach_device_pasid(struct iommu_domain *domain,
->   }
->   EXPORT_SYMBOL_GPL(iommu_attach_device_pasid);
->   
-> +/**
-> + * iommu_replace_device_pasid - Replace the domain that a pasid is attached to
-> + * @domain: the new iommu domain
-> + * @dev: the attached device.
-> + * @pasid: the pasid of the device.
-> + * @handle: the attach handle.
-> + *
-> + * This API allows the pasid to switch domains. Return 0 on success, or an
-> + * error. The pasid will keep the old configuration if replacement failed.
-> + * This is supposed to be used by iommufd, and iommufd can guarantee that
-> + * both iommu_attach_device_pasid() and iommu_replace_device_pasid() would
-> + * pass in a valid @handle.
-> + */
-> +int iommu_replace_device_pasid(struct iommu_domain *domain,
-> +			       struct device *dev, ioasid_t pasid,
-> +			       struct iommu_attach_handle *handle)
-
-How about passing the old domain as a parameter?
-
-> +{
-> +	/* Caller must be a probed driver on dev */
-> +	struct iommu_group *group = dev->iommu_group;
-> +	struct iommu_attach_handle *curr;
-> +	int ret;
-> +
-> +	if (!domain->ops->set_dev_pasid)
-> +		return -EOPNOTSUPP;
-> +
-> +	if (!group)
-> +		return -ENODEV;
-> +
-> +	if (!dev_has_iommu(dev) || dev_iommu_ops(dev) != domain->owner ||
-> +	    pasid == IOMMU_NO_PASID || !handle)
-
-dev_has_iommu() check is duplicate with above if (!group) check.
-
-By the way, why do you require a non-NULL attach handle? In the current
-design, attach handles are only used for domains with iopf capability.
-
-> +		return -EINVAL;
-> +
-> +	handle->domain = domain;
-> +
-> +	mutex_lock(&group->mutex);
-> +	/*
-> +	 * The iommu_attach_handle of the pasid becomes inconsistent with the
-> +	 * actual handle per the below operation. The concurrent PRI path will
-> +	 * deliver the PRQs per the new handle, this does not have a function
-> +	 * impact. The PRI path would eventually become consistent when the
-> +	 * replacement is done.
-> +	 */
-> +	curr = (struct iommu_attach_handle *)xa_store(&group->pasid_array,
-> +						      pasid, handle,
-> +						      GFP_KERNEL);
-> +	if (!curr) {
-> +		xa_erase(&group->pasid_array, pasid);
-> +		ret = -EINVAL;
-> +		goto out_unlock;
 > +	}
-
-This seems to be broken as explained above. The attach handle is
-currently only for iopf-capable domains.
-
-If I understand it correctly, you just want the previous attached domain
-here, right? If so, why not just passing it to this helper from callers?
-
 > +
-> +	ret = xa_err(curr);
-> +	if (ret)
-> +		goto out_unlock;
-> +
-> +	if (curr->domain == domain)
-> +		goto out_unlock;
-> +
-> +	ret = __iommu_set_group_pasid(domain, group, pasid, curr->domain);
-> +	if (ret)
-> +		WARN_ON(handle != xa_store(&group->pasid_array, pasid,
-> +					   curr, GFP_KERNEL));
-> +out_unlock:
-> +	mutex_unlock(&group->mutex);
-> +	return ret;
-> +}
-> +EXPORT_SYMBOL_NS_GPL(iommu_replace_device_pasid, IOMMUFD_INTERNAL);
-> +
->   /*
->    * iommu_detach_device_pasid() - Detach the domain from pasid of device
->    * @domain: the iommu domain.
-
-Thanks,
-baolu
+nit, if a user changes default domain types via sysfs and the current
+domain is already DMA API type, i.e. DMA to DMA-FQ, I think it causes an
+extra round of iommu_get/put_dma_cookie() compared with doing this in
+allocation time.
