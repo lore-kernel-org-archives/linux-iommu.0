@@ -1,50 +1,60 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.10])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-ej1-f43.google.com (mail-ej1-f43.google.com [209.85.218.43])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 380822AD17
-	for <iommu@lists.linux.dev>; Sat, 14 Sep 2024 05:49:50 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.10
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4DAED539A
+	for <iommu@lists.linux.dev>; Sat, 14 Sep 2024 05:57:44 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.218.43
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1726292991; cv=none; b=glS6OP0ZwP99Y9C3S1muYqzLYGW7oz2+Z+iFElnLrKzW48GT45GeDVvsrzOXAGG+k6oXNBJKKOT2pV3PVFIFPoOLs7RWvBufCC8Vmxnw0HxsHwqvqoXzRpi78VO+CdnmLBkvBEJxbbux6HdWnpItauXnJI+7v7jK+ZklW3eZAF0=
+	t=1726293466; cv=none; b=k3qpHtAdKu1UaqeZYQXg1pQsha5n1yokXaJD8GKp7qzJS75Gvy8SKt0+9g9ATKhiH5eVOZSHKX98cj8IgmbJpRwY8Aakrci8ocrzafiLbMo8MjAnk6uIajhF5X3TRK2LKEUll57h05Pt/rrM1cJmeqg03b5RyEc6jfk6cI3BgnY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1726292991; c=relaxed/simple;
-	bh=aKFWUQ404h4zm3qUo72pHpV2BdBq+aBjiSEvde1qQgQ=;
-	h=Message-ID:Date:MIME-Version:Cc:Subject:To:References:From:
-	 In-Reply-To:Content-Type; b=KbU1ohPK0BaEuImc/lK+QY+RCukOn5hh0PLEhtaTmpYjaLdR0ctJxCSOID+8lu8OMBUGAOg1mq62RGDJMzm9qleyfwzuybd+0YVq/5WoEBCK8qlcROrfrWlkof27WKzxrHCQijAIfY3LnXfILdJxgDuhe2nBovPrAS/f0n12EMQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=ahyj0j+7; arc=none smtp.client-ip=198.175.65.10
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
+	s=arc-20240116; t=1726293466; c=relaxed/simple;
+	bh=yrxyEG+7h1OUZv+xEB0fzKoqpnFZveTpJbp5Nli51Wk=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=j9DlvD7DeXV2pfrqYEgXpqiTgRP/E41E1ExTaGFASjwwoIuqwLUavaLnUkpfpQsvm1QErVpDoGJfBgEHjLNRSk+sQcG6oiV66kUEj4NiJJ2Qf2OkhU4w6zbbuUpemGW6sHp1gijhExG/xgcsVynjT+Vhv0hB0BrDayEr6OVks28=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com; spf=pass smtp.mailfrom=suse.com; dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b=L7J2gq5E; arc=none smtp.client-ip=209.85.218.43
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=suse.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="ahyj0j+7"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1726292990; x=1757828990;
-  h=message-id:date:mime-version:cc:subject:to:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=aKFWUQ404h4zm3qUo72pHpV2BdBq+aBjiSEvde1qQgQ=;
-  b=ahyj0j+7H+L1GHFIu+02yRmpDuO2bMN8q5XdwWMDZ48K1+fyGKljWeNO
-   HOQrLiJ77LWNvd55wIFnczLDJPQlhDgJNjPbs2PLafX2Xlx3F1s103PTl
-   hc7QnCe2jI/KBA45FVSu5PXT1GDBUoA3V20cyV87PPhSzoEJPzTXKTee5
-   ZRUW8yJrDAmmET31m8uzQsOl7cIPHWXtDY0TBbNfXYvNwjKbqT7LueMzx
-   TbnPlcUjbJ3GxOFocu34P3O5jmDqUgypJYt4/rJwsUSfA6b9WkyukS7vA
-   bI20a38KdtMCr/tAYJvvSQfvHocsOgMQXfxnWnDAxwb8X+s6HwNQJkIT1
-   A==;
-X-CSE-ConnectionGUID: eKU40+JnT9ugLW92Q4AH2Q==
-X-CSE-MsgGUID: RfJopdpRTZi5jbzynb4lDg==
-X-IronPort-AV: E=McAfee;i="6700,10204,11194"; a="42678200"
-X-IronPort-AV: E=Sophos;i="6.10,228,1719903600"; 
-   d="scan'208";a="42678200"
-Received: from fmviesa003.fm.intel.com ([10.60.135.143])
-  by orvoesa102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Sep 2024 22:49:49 -0700
-X-CSE-ConnectionGUID: z4VUWwPCRu+A4afkSfh01Q==
-X-CSE-MsgGUID: WoIvm360SSyqmoBCE3/E5Q==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.10,228,1719903600"; 
-   d="scan'208";a="72434791"
-Received: from blu2-mobl.ccr.corp.intel.com (HELO [10.124.240.228]) ([10.124.240.228])
-  by fmviesa003-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Sep 2024 22:49:47 -0700
-Message-ID: <c8708b95-14b9-4545-84f7-6f45161456cc@linux.intel.com>
-Date: Sat, 14 Sep 2024 13:49:44 +0800
+	dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b="L7J2gq5E"
+Received: by mail-ej1-f43.google.com with SMTP id a640c23a62f3a-a8d13b83511so332449466b.2
+        for <iommu@lists.linux.dev>; Fri, 13 Sep 2024 22:57:44 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=suse.com; s=google; t=1726293463; x=1726898263; darn=lists.linux.dev;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=jj7BI1d/P05L4yR+fUrwV54+pcNt/eQNbd1AyE1f2W0=;
+        b=L7J2gq5EwCBNSAliE8pXfjbHFM5ny117SZ0yOcjlIJnuZ17uWkhrtnhQCDKEGzsGml
+         ymPvzy+aI33GyEuD60rMzA7muFGOOLsWM/FfmWca41zsPT79hOahSokwpKaalGNH+DLF
+         UBvP8ywsldajS7pxovy3KhfcZmYI37TieCzrybnTcdZtuXc9FT7grWV4icEVS9/aK0hJ
+         hwIv6nuxDgoCekIYSP8w5nPYZgSduJqlwE2NMgVnv3DPDrz+Tl7rOI4DgVoG/Wz3e/pk
+         oajeachnZ46ZCZFG+K2/AeWNu9/JX6nlh3mchuMwoJxILv5eH/BJelsVlhbxaRbdzxhG
+         lUdg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1726293463; x=1726898263;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=jj7BI1d/P05L4yR+fUrwV54+pcNt/eQNbd1AyE1f2W0=;
+        b=Z5yS5/P10KjNXNX+DtOWECldAcioatOo/uKlReNcuLxFc7Y3A+h8dNCkIgiIrhys/r
+         +Gm9pU8/kon1CfGspgLJTWNiZe2zYMkl5+NbCVkYK33cI6eRln0cUiTOnkITnnO0jT42
+         z3F/OTGF1R4C7XxmQc/aDKzbblCCpbTVzj6SlJC4LLxR5kZa3/nVUJ0PZW82YjEug3Zs
+         cXWZkqW8+sKFSQLZ70WuMeO8iFc6Bq0vSLmFHfzYDYIDwjk0sbGaJAwO5toOC3mZRNDc
+         jMPVOoHk3xKNrngA1U4VFvRPb0VVwuXiev9fLAOaA0EoXGpWJlL4ZtwelbhHLPMAVcSE
+         I5Mw==
+X-Forwarded-Encrypted: i=1; AJvYcCViKYy2SQxduUYiCbdBB1DqKIv4Re26agRDNbz380Pe30PFzm9aqjNUY+pnkAPpmIVh+dvpUg==@lists.linux.dev
+X-Gm-Message-State: AOJu0YzJ4foNvfldleFhpnY06pqojhMNEJK4UHeIx2/Qdz38StTH6G1Y
+	ol75RkzloNa+QuW6fddKVVZ8igmSdB8yDAjbUeL0aemaMy3zW+juwiVSP+Wh4Fvda+bbIC8z7Vk
+	ZGw==
+X-Google-Smtp-Source: AGHT+IHQRdOpdMJ4Y1cJj+samNp4BzlrRh+uCRWFfdK6L+8JVEJRsNx51Bj2WAtb1ztXOUZFBjsz3w==
+X-Received: by 2002:a17:907:94d4:b0:a90:34e8:780f with SMTP id a640c23a62f3a-a9034e87ae4mr673589866b.63.1726293462430;
+        Fri, 13 Sep 2024 22:57:42 -0700 (PDT)
+Received: from [172.31.47.100] ([193.118.249.27])
+        by smtp.gmail.com with ESMTPSA id a640c23a62f3a-a90610966ccsm37044366b.45.2024.09.13.22.57.41
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 13 Sep 2024 22:57:42 -0700 (PDT)
+Message-ID: <e5a05e0a-ce58-4779-ae7e-c3803af82d3a@suse.com>
+Date: Sat, 14 Sep 2024 07:57:41 +0200
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -52,67 +62,59 @@ List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Cc: baolu.lu@linux.intel.com,
- "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
- "iommu@lists.linux.dev" <iommu@lists.linux.dev>
-Subject: Re: [PATCH v2 1/5] iommu/vt-d: Separate page request queue from SVM
-To: "Tian, Kevin" <kevin.tian@intel.com>,
- "j.granados@samsung.com" <j.granados@samsung.com>,
- David Woodhouse <dwmw2@infradead.org>, Joerg Roedel <joro@8bytes.org>,
- Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
- Jason Gunthorpe <jgg@ziepe.ca>, Klaus Jensen <its@irrelevant.dk>
-References: <20240913-jag-iopfv8-v2-0-dea01c2343bc@samsung.com>
- <20240913-jag-iopfv8-v2-1-dea01c2343bc@samsung.com>
- <BL1PR11MB52713D3D5947C66AE463FA4B8C662@BL1PR11MB5271.namprd11.prod.outlook.com>
- <e0a1347f-877e-445c-9158-7584ae200bff@linux.intel.com>
- <BN9PR11MB527611131A808B78C8E0E8388C662@BN9PR11MB5276.namprd11.prod.outlook.com>
+Subject: Re: [PATCH] xen/swiotlb: add alignment check for dma buffers
+To: Stefano Stabellini <sstabellini@kernel.org>
+Cc: Juergen Gross <jgross@suse.com>,
+ Oleksandr Tyshchenko <oleksandr_tyshchenko@epam.com>,
+ xen-devel@lists.xenproject.org, linux-kernel@vger.kernel.org,
+ iommu@lists.linux.dev
+References: <20240913145655.10076-1-jgross@suse.com>
+ <a0b0dec5-03c1-4b69-aa0e-65771251d859@suse.com>
+ <alpine.DEB.2.22.394.2409131728420.1417852@ubuntu-linux-20-04-desktop>
 Content-Language: en-US
-From: Baolu Lu <baolu.lu@linux.intel.com>
-In-Reply-To: <BN9PR11MB527611131A808B78C8E0E8388C662@BN9PR11MB5276.namprd11.prod.outlook.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+From: Jan Beulich <jbeulich@suse.com>
+In-Reply-To: <alpine.DEB.2.22.394.2409131728420.1417852@ubuntu-linux-20-04-desktop>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 
-On 2024/9/14 10:53, Tian, Kevin wrote:
->> From: Baolu Lu<baolu.lu@linux.intel.com>
->> Sent: Saturday, September 14, 2024 9:18 AM
+On 14.09.2024 02:38, Stefano Stabellini wrote:
+> On Fri, 13 Sep 2024, Jan Beulich wrote:
+>> On 13.09.2024 16:56, Juergen Gross wrote:
+>>> --- a/drivers/xen/swiotlb-xen.c
+>>> +++ b/drivers/xen/swiotlb-xen.c
+>>> @@ -78,9 +78,15 @@ static inline int range_straddles_page_boundary(phys_addr_t p, size_t size)
+>>>  {
+>>>  	unsigned long next_bfn, xen_pfn = XEN_PFN_DOWN(p);
+>>>  	unsigned int i, nr_pages = XEN_PFN_UP(xen_offset_in_page(p) + size);
+>>> +	unsigned int order = get_order(size);
+>>>  
+>>>  	next_bfn = pfn_to_bfn(xen_pfn);
+>>>  
+>>> +	/* If buffer is physically aligned, ensure DMA alignment. */
+>>> +	if (IS_ALIGNED(p, 1UL << (order + PAGE_SHIFT)) &&
 >>
->> On 9/14/24 8:52 AM, Tian, Kevin wrote:
->>>> From: Joel Granados via B4 Relay
->>>> <devnull+j.granados.samsung.com@kernel.org>
->>>>
->>>> From: Joel Granados<j.granados@samsung.com>
->>>>
->>>> IO page faults are no longer dependent on CONFIG_INTEL_IOMMU_SVM.
->>>> Move
->>>> all Page Request Queue (PRQ) functions that handle prq events to a new
->>>> file in drivers/iommu/intel/prq.c. The page_req_des struct is now
->>>> declared in drivers/iommu/intel/prq.c.
->>>>
->>>> No functional changes are intended. This is a preparation patch to
->>>> enable the use of IO page faults outside the SVM/PASID use cases.
->>> Do we want to guard it under a new config option e.g.
->>> CONFIG_INTEL_IOMMU_IOPF? it's unnecessary to allocate resources
->>> for the majority usages which don't require IOPF.
->>>
->>> Baolu?
->> The OS builder doesn't know if Linux will run on a platform with PRI-
->> capable devices. They'll probably always enable this option if we
->> provide it.
-> hmm then why do we need a SVM option? In reality I haven't seen
-> a platform which supports IOPF but no pasid/SVM. so the reason
-> for whether to have an option should be same between IOPF/SVM.
+>> Why this check? xen_swiotlb_alloc_coherent() guarantees it, while
+>> xen_swiotlb_free_coherent() only checks properties of the original
+>> allocation. And for xen_swiotlb_map_page() this looks actively
+>> wrong to me, in case that function was called with offset non-zero.
 > 
-> IMHO the point of options is to allow reducing footprint of the kernel
-> image and many options are probably always enabled in distributions...
+> I understand xen_swiotlb_alloc_coherent and xen_swiotlb_free_coherent
+> not needing the check, but I think we might need the check for
+> xen_swiotlb_map_page. At that point, I would keep the check for all
+> callers.
 
-To be honest, I would hope to remove the SVM option some day. It's
-nothing special except listening to an external notification and
-synchronize the caches when the page table is updated. It's common to
-all cases where a page table is shared between the IOMMU and another
-component.
+Whereas I would be inclined to suggest to put it in the one place it's
+needed, not the least to avoid the abuse of the function (going just
+from its name).
 
-As for CONFIG_INTEL_IOMMU_IOPF, my suggestion is that we don't need to
-add any unnecessary options unless we see a real need.
+> Unless there is another way to detect whether the mapping needs
+> alignment specifically for map_page?
+> 
+> For the offset, in theory if the device needs alignment, the offset
+> should be zero? If the offset is not zero, then there should be no
+> alignment requirement. The way Juergen wrote the check, we would take
+> the fast path if offset != zero, which makes sense to me.
 
-Thanks,
-baolu
+Hmm, right.
+
+Jan
