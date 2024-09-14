@@ -1,232 +1,118 @@
-Received: from NAM10-BN7-obe.outbound.protection.outlook.com (mail-bn7nam10on2069.outbound.protection.outlook.com [40.107.92.69])
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.10])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9D00C17BCC;
-	Sat, 14 Sep 2024 05:19:56 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.92.69
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1726291198; cv=fail; b=TvlPM5pQgkbUGJRyb7I08LN0+9rfweWRdS3K3w5baklLshGWxc5dcvdqH+JiLfiNTUUX2py5rsf0cZGlJYUz00YHXTLFK3y0TAmxeAmqgMvt9voqoA5xiK7EdPQrdLQjVCmNG1Bhy1Tvw+iFBBM1FE5uP3Few90lFOJXV+X0Iq0=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1726291198; c=relaxed/simple;
-	bh=eyMGYVu739aNH7Ue0QjA3zV/5CXJrLNvV2WnvDezZnM=;
-	h=Date:From:To:CC:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=MHlVwasN4MjBFT2Z5XFYLXIXoF2sMY1H/4kzBF6iBE/DQG8jdKBKYWahL9shKihs+rJYeXRofzbchkqiYsCpnaom7XGOWIK/CtJC61xWp2/L0DPMPQlEAcdoIQnhk5kxaCHQA2eVkrCmoscv4DJo2q38V6c7k69JUoFnpG32XjQ=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=p6Y9AXic; arc=fail smtp.client-ip=40.107.92.69
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 380822AD17
+	for <iommu@lists.linux.dev>; Sat, 14 Sep 2024 05:49:50 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.10
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1726292991; cv=none; b=glS6OP0ZwP99Y9C3S1muYqzLYGW7oz2+Z+iFElnLrKzW48GT45GeDVvsrzOXAGG+k6oXNBJKKOT2pV3PVFIFPoOLs7RWvBufCC8Vmxnw0HxsHwqvqoXzRpi78VO+CdnmLBkvBEJxbbux6HdWnpItauXnJI+7v7jK+ZklW3eZAF0=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1726292991; c=relaxed/simple;
+	bh=aKFWUQ404h4zm3qUo72pHpV2BdBq+aBjiSEvde1qQgQ=;
+	h=Message-ID:Date:MIME-Version:Cc:Subject:To:References:From:
+	 In-Reply-To:Content-Type; b=KbU1ohPK0BaEuImc/lK+QY+RCukOn5hh0PLEhtaTmpYjaLdR0ctJxCSOID+8lu8OMBUGAOg1mq62RGDJMzm9qleyfwzuybd+0YVq/5WoEBCK8qlcROrfrWlkof27WKzxrHCQijAIfY3LnXfILdJxgDuhe2nBovPrAS/f0n12EMQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=ahyj0j+7; arc=none smtp.client-ip=198.175.65.10
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="p6Y9AXic"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=E56Bq6zdBiXG0FbMwtBl9vQRgGUWGzOB3VtnjNInr/qNagOAj5HZRf29gjo6/OTc3bgm6VTmCq7CAS7vEbKKifVmvWqErxMZfFym6rvBXdr+7cxRkSZgZ9DvxR9j3yxptQyYUhPq/wp4QpHntqZHWOwyd2A/vMkEZS48jqm5gKBp6Ct8KuFbYH8yqDCdMcGIK1YGcux5owr90U1D9ttqs2jxFXawP3bX9JUvky/8Pp+hgnem4XCh4IjfE7tdGDem8I4AMF9o/2bOjuW977ZafqdQqj9855WpOotFeKw5k1p7skGM3yi9SsCq/+NlGwog6I2wA+fqXjw/jM5BhjocDQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=ZLoaRkU5Utgm8w6CiVJcCn/Dn5HjvsePTBgWLbEanD0=;
- b=PguLN/L3CpkeJ2WbKNQ6LRAUXZi+6UNlIDIEgV8GN0Rf1bXv3bQPTUfQWhWrxostozojrhNS72zL24p+vDob06EdIkBwY4TJ2WFNagiskTNoEYvIgXLOt1HC9OTnVGRtA86rP9oD3XjiX3chrhTcYlQtO4LSLTYiIL757/R+sUm6HEUDMl23T2l633bt5cSywkU+WOJNEPVOe5pF7BY+hM8hJ+2RaOiGwVamb0FLTgIYrxmABccczKF1L0axuQ3fC0ppNy1eDZDn4l/oS88IzngUk3WN9rYzzatkudeRAUHfen4KHHMKfVxb/7PzMWkZFyaW2Oordlst51Y4ODhcow==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 216.228.118.232) smtp.rcpttodomain=intel.com smtp.mailfrom=nvidia.com;
- dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
- dkim=none (message not signed); arc=none (0)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=ZLoaRkU5Utgm8w6CiVJcCn/Dn5HjvsePTBgWLbEanD0=;
- b=p6Y9AXicZZ9A770waztS8+r/P36xulcktjwgo78dNHrIfWpP2VhfAHLUk3gm+dyaQMUwuVeYpT2twdzyUj4JRo1cvD0NRSHFCa9Hd2URL+KRkduCjuGbRlVnBZlQpQedzWPEXFsfZVUcAuZ+JxFShMyvyVZ88nbLsNzs2N4Axm9PinHLISHyeCb5dxiLRNtPR7hK7FFNMDbkGsAW9OF7YlmFxaqwvrDyxrFI8cv0m9fO8D7WrbpseQ7BbkUlSvQLQFKWiI91KanvXwC5aE741hoBcYm49ysP1j5YvlC1u4tAtCxgoUvhQ8Uq5T4WaJMewSCtrnhmV/55QMPY7rwjzA==
-Received: from CH0P221CA0010.NAMP221.PROD.OUTLOOK.COM (2603:10b6:610:11c::15)
- by PH8PR12MB6820.namprd12.prod.outlook.com (2603:10b6:510:1cb::13) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7939.24; Sat, 14 Sep
- 2024 05:19:51 +0000
-Received: from CH2PEPF00000144.namprd02.prod.outlook.com
- (2603:10b6:610:11c:cafe::16) by CH0P221CA0010.outlook.office365.com
- (2603:10b6:610:11c::15) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7939.26 via Frontend
- Transport; Sat, 14 Sep 2024 05:19:50 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.118.232)
- smtp.mailfrom=nvidia.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=nvidia.com;
-Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 216.228.118.232 as permitted sender) receiver=protection.outlook.com;
- client-ip=216.228.118.232; helo=mail.nvidia.com; pr=C
-Received: from mail.nvidia.com (216.228.118.232) by
- CH2PEPF00000144.mail.protection.outlook.com (10.167.244.101) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.7918.13 via Frontend Transport; Sat, 14 Sep 2024 05:19:50 +0000
-Received: from drhqmail202.nvidia.com (10.126.190.181) by mail.nvidia.com
- (10.127.129.5) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1544.4; Fri, 13 Sep
- 2024 22:19:49 -0700
-Received: from drhqmail202.nvidia.com (10.126.190.181) by
- drhqmail202.nvidia.com (10.126.190.181) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.1544.4; Fri, 13 Sep 2024 22:19:49 -0700
-Received: from localhost (10.127.8.11) by mail.nvidia.com (10.126.190.181)
- with Microsoft SMTP Server id 15.2.1544.4 via Frontend Transport; Fri, 13 Sep
- 2024 22:19:44 -0700
-Date: Sat, 14 Sep 2024 08:19:46 +0300
-From: Zhi Wang <zhiw@nvidia.com>
-To: "Tian, Kevin" <kevin.tian@intel.com>
-CC: "Williams, Dan J" <dan.j.williams@intel.com>, Zhi Wang
-	<zhiwang@kernel.org>, Alexey Kardashevskiy <aik@amd.com>,
-	"kvm@vger.kernel.org" <kvm@vger.kernel.org>, "iommu@lists.linux.dev"
-	<iommu@lists.linux.dev>, "linux-coco@lists.linux.dev"
-	<linux-coco@lists.linux.dev>, "linux-pci@vger.kernel.org"
-	<linux-pci@vger.kernel.org>, Suravee Suthikulpanit
-	<suravee.suthikulpanit@amd.com>, Alex Williamson
-	<alex.williamson@redhat.com>, "pratikrajesh.sampat@amd.com"
-	<pratikrajesh.sampat@amd.com>, "michael.day@amd.com" <michael.day@amd.com>,
-	"david.kaplan@amd.com" <david.kaplan@amd.com>, "dhaval.giani@amd.com"
-	<dhaval.giani@amd.com>, Santosh Shukla <santosh.shukla@amd.com>, "Tom
- Lendacky" <thomas.lendacky@amd.com>, Michael Roth <michael.roth@amd.com>,
-	Alexander Graf <agraf@suse.de>, Nikunj A Dadhania <nikunj@amd.com>, "Vasant
- Hegde" <vasant.hegde@amd.com>, Lukas Wunner <lukas@wunner.de>
-Subject: Re: [RFC PATCH 11/21] KVM: SEV: Add TIO VMGEXIT and bind TDI
-Message-ID: <20240914081946.000079ae.zhiw@nvidia.com>
-In-Reply-To: <BN9PR11MB527607712924E6574159C4908C662@BN9PR11MB5276.namprd11.prod.outlook.com>
-References: <20240823132137.336874-1-aik@amd.com>
-	<20240823132137.336874-12-aik@amd.com>
-	<20240913165011.000028f4.zhiwang@kernel.org>
-	<66e4b7fabf8df_ae21294c7@dwillia2-mobl3.amr.corp.intel.com.notmuch>
-	<BN9PR11MB527607712924E6574159C4908C662@BN9PR11MB5276.namprd11.prod.outlook.com>
-Organization: NVIDIA
-X-Mailer: Claws Mail 4.2.0 (GTK 3.24.38; x86_64-w64-mingw32)
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="ahyj0j+7"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1726292990; x=1757828990;
+  h=message-id:date:mime-version:cc:subject:to:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=aKFWUQ404h4zm3qUo72pHpV2BdBq+aBjiSEvde1qQgQ=;
+  b=ahyj0j+7H+L1GHFIu+02yRmpDuO2bMN8q5XdwWMDZ48K1+fyGKljWeNO
+   HOQrLiJ77LWNvd55wIFnczLDJPQlhDgJNjPbs2PLafX2Xlx3F1s103PTl
+   hc7QnCe2jI/KBA45FVSu5PXT1GDBUoA3V20cyV87PPhSzoEJPzTXKTee5
+   ZRUW8yJrDAmmET31m8uzQsOl7cIPHWXtDY0TBbNfXYvNwjKbqT7LueMzx
+   TbnPlcUjbJ3GxOFocu34P3O5jmDqUgypJYt4/rJwsUSfA6b9WkyukS7vA
+   bI20a38KdtMCr/tAYJvvSQfvHocsOgMQXfxnWnDAxwb8X+s6HwNQJkIT1
+   A==;
+X-CSE-ConnectionGUID: eKU40+JnT9ugLW92Q4AH2Q==
+X-CSE-MsgGUID: RfJopdpRTZi5jbzynb4lDg==
+X-IronPort-AV: E=McAfee;i="6700,10204,11194"; a="42678200"
+X-IronPort-AV: E=Sophos;i="6.10,228,1719903600"; 
+   d="scan'208";a="42678200"
+Received: from fmviesa003.fm.intel.com ([10.60.135.143])
+  by orvoesa102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Sep 2024 22:49:49 -0700
+X-CSE-ConnectionGUID: z4VUWwPCRu+A4afkSfh01Q==
+X-CSE-MsgGUID: WoIvm360SSyqmoBCE3/E5Q==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.10,228,1719903600"; 
+   d="scan'208";a="72434791"
+Received: from blu2-mobl.ccr.corp.intel.com (HELO [10.124.240.228]) ([10.124.240.228])
+  by fmviesa003-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Sep 2024 22:49:47 -0700
+Message-ID: <c8708b95-14b9-4545-84f7-6f45161456cc@linux.intel.com>
+Date: Sat, 14 Sep 2024 13:49:44 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="US-ASCII"
+User-Agent: Mozilla Thunderbird
+Cc: baolu.lu@linux.intel.com,
+ "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+ "iommu@lists.linux.dev" <iommu@lists.linux.dev>
+Subject: Re: [PATCH v2 1/5] iommu/vt-d: Separate page request queue from SVM
+To: "Tian, Kevin" <kevin.tian@intel.com>,
+ "j.granados@samsung.com" <j.granados@samsung.com>,
+ David Woodhouse <dwmw2@infradead.org>, Joerg Roedel <joro@8bytes.org>,
+ Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
+ Jason Gunthorpe <jgg@ziepe.ca>, Klaus Jensen <its@irrelevant.dk>
+References: <20240913-jag-iopfv8-v2-0-dea01c2343bc@samsung.com>
+ <20240913-jag-iopfv8-v2-1-dea01c2343bc@samsung.com>
+ <BL1PR11MB52713D3D5947C66AE463FA4B8C662@BL1PR11MB5271.namprd11.prod.outlook.com>
+ <e0a1347f-877e-445c-9158-7584ae200bff@linux.intel.com>
+ <BN9PR11MB527611131A808B78C8E0E8388C662@BN9PR11MB5276.namprd11.prod.outlook.com>
+Content-Language: en-US
+From: Baolu Lu <baolu.lu@linux.intel.com>
+In-Reply-To: <BN9PR11MB527611131A808B78C8E0E8388C662@BN9PR11MB5276.namprd11.prod.outlook.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
-X-NV-OnPremToCloud: ExternallySecured
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: CH2PEPF00000144:EE_|PH8PR12MB6820:EE_
-X-MS-Office365-Filtering-Correlation-Id: b7360809-5f26-46c4-0454-08dcd47cdb72
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|376014|1800799024|7416014|36860700013|82310400026;
-X-Microsoft-Antispam-Message-Info:
-	=?us-ascii?Q?PL8PgwCYOPuI2fny16LGJiyaoc2FFSVIi9bP8TzggpN8lPSacNtTL6Cvls+L?=
- =?us-ascii?Q?oiv2+XK0hArtiuUn40j9QJiQ8+5avDxYLZH+9cd6LQR+p//1L3ltixF4OOI0?=
- =?us-ascii?Q?uIIUGLx14s+ToUAGUVoPZvMugBfdPNx0m7lFYr1IFYdmr2t8cPVYcngSNXGN?=
- =?us-ascii?Q?O7/D8J3pAWG8kGg9S7UBe4LAVS81Mk/uc8EevR1TqQwL6NcLgQlp/LuX2nC4?=
- =?us-ascii?Q?i+t+azRoKNZg/f1ORygaoRkJi+zbNZbpOeolc6w0qvRCy5WlZLAkvbvHa7SK?=
- =?us-ascii?Q?Z1H9K4UMuiv973NxRVyJ6iGW75wmp2KvyqVKicuQGXf5PQ018jCsW0v/XZF8?=
- =?us-ascii?Q?QBVMwYb03TLHZ7y8VU6s0HcRJWkWdGBkaqz6Ai3aT/cDgSuZkDTYWTnMFt21?=
- =?us-ascii?Q?E3+8NZFFzK2IVu50B9GtchWOOkjMNlk5o2iCqVVYpqd+zxZkJTfLDGLcTL2i?=
- =?us-ascii?Q?nsMFa8z/FkgL/Q5B1E+/EV70MWqVHpsZbtWvyYPQx6AWaRJtETdXRS9biltW?=
- =?us-ascii?Q?al+ywXrvVcOfajHeKJBCyCPM3TYceoI/hWQMJ7MCfaegO4Ib8aPL/mGTfVuD?=
- =?us-ascii?Q?8D4cBzkUnuKP2iz9jla5u4/nMapkENwLHc4kKVYi11mjzFPl9E+lJbXfZtpf?=
- =?us-ascii?Q?9LJfi1cEZXvgEDnso/W+wsoJ00GznZJAIXHBkmUps+EECYkLWFeM8STUnFm5?=
- =?us-ascii?Q?aND+h0h8QCWbptyv7b742EoCUSGKnzn+WHqpQbEkBGq/sceE/fhn0t9gwp6S?=
- =?us-ascii?Q?uJjHuH/Wf6DII67WLp8uCyJZHeMXbdQ8lFVaC1QabFeGKeRUz4jHwHJuCyyI?=
- =?us-ascii?Q?gu5uDnCJwynrltcTMpL8mrWqoOEP51ZIqAzzVg1LN14Z+Hf4+YTF9yZZX8cE?=
- =?us-ascii?Q?/yhtYpZtA/EtA8Su/wHKdND2oRokaVjfmaTzXX4ZLFFuC0bf4EnX6qzq6XvN?=
- =?us-ascii?Q?abfQfXcg8FlbujYPuM+DP3QvK41YGuW8xDoXN3JHI80+yeZKkFD1JP4nchnF?=
- =?us-ascii?Q?xag+AnG2Znk8s5VGsDLwS4fBPfpFneyOhTJNS3SkqAH7U4kQwQqdvwnh30BS?=
- =?us-ascii?Q?RL3msRZqTA5aX8+SarNmUrk1A6Yp6x2oNrRnczMDpul7HWGFy6+133i7ZGmr?=
- =?us-ascii?Q?a5YKseME2EE5WfJsMKKXt0ebB1eo4gZt1y0zKX1W33nw5p7vRzgRs+euF4gT?=
- =?us-ascii?Q?1Q8ka33I9aO/Eu76uDKL1oN/ydj2EVaTUNd2lCiW9HTkzLYpXUzJBAnE1wxH?=
- =?us-ascii?Q?0lA5mA/1gtZXqjg7HJyNiu3Le8vL0cBrQOTstpkKg1pFknWDjs7PmVJCFNM0?=
- =?us-ascii?Q?TzjlW1IDlgJIwmeVSPNna8mY9ziAIzpoiyYXY5gmskTAB7ICdf8OAZsRSfgG?=
- =?us-ascii?Q?1xhlBztRcY3c1XSSINO8WZpkrxEfFci8MEJpbUkaBkjZI35CmyUBAesgXTqN?=
- =?us-ascii?Q?SC12bUNVAQjsPt9oBmOjAtxX19mMYLsV?=
-X-Forefront-Antispam-Report:
-	CIP:216.228.118.232;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc7edge1.nvidia.com;CAT:NONE;SFS:(13230040)(376014)(1800799024)(7416014)(36860700013)(82310400026);DIR:OUT;SFP:1101;
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 14 Sep 2024 05:19:50.0921
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: b7360809-5f26-46c4-0454-08dcd47cdb72
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.118.232];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource:
-	CH2PEPF00000144.namprd02.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH8PR12MB6820
 
-On Sat, 14 Sep 2024 02:47:27 +0000
-"Tian, Kevin" <kevin.tian@intel.com> wrote:
+On 2024/9/14 10:53, Tian, Kevin wrote:
+>> From: Baolu Lu<baolu.lu@linux.intel.com>
+>> Sent: Saturday, September 14, 2024 9:18 AM
+>>
+>> On 9/14/24 8:52 AM, Tian, Kevin wrote:
+>>>> From: Joel Granados via B4 Relay
+>>>> <devnull+j.granados.samsung.com@kernel.org>
+>>>>
+>>>> From: Joel Granados<j.granados@samsung.com>
+>>>>
+>>>> IO page faults are no longer dependent on CONFIG_INTEL_IOMMU_SVM.
+>>>> Move
+>>>> all Page Request Queue (PRQ) functions that handle prq events to a new
+>>>> file in drivers/iommu/intel/prq.c. The page_req_des struct is now
+>>>> declared in drivers/iommu/intel/prq.c.
+>>>>
+>>>> No functional changes are intended. This is a preparation patch to
+>>>> enable the use of IO page faults outside the SVM/PASID use cases.
+>>> Do we want to guard it under a new config option e.g.
+>>> CONFIG_INTEL_IOMMU_IOPF? it's unnecessary to allocate resources
+>>> for the majority usages which don't require IOPF.
+>>>
+>>> Baolu?
+>> The OS builder doesn't know if Linux will run on a platform with PRI-
+>> capable devices. They'll probably always enable this option if we
+>> provide it.
+> hmm then why do we need a SVM option? In reality I haven't seen
+> a platform which supports IOPF but no pasid/SVM. so the reason
+> for whether to have an option should be same between IOPF/SVM.
+> 
+> IMHO the point of options is to allow reducing footprint of the kernel
+> image and many options are probably always enabled in distributions...
 
-> > From: Dan Williams <dan.j.williams@intel.com>
-> > Sent: Saturday, September 14, 2024 6:09 AM
-> > 
-> > Zhi Wang wrote:
-> > > On Fri, 23 Aug 2024 23:21:25 +1000
-> > > Alexey Kardashevskiy <aik@amd.com> wrote:
-> > >
-> > > > The SEV TIO spec defines a new TIO_GUEST_MESSAGE message to
-> > > > provide a secure communication channel between a SNP VM and
-> > > > the PSP.
-> > > >
-> > > > The defined messages provide way to read TDI info and do secure
-> > > > MMIO/DMA setup.
-> > > >
-> > > > On top of this, GHCB defines an extension to return
-> > > > certificates/ measurements/report and TDI run status to the VM.
-> > > >
-> > > > The TIO_GUEST_MESSAGE handler also checks if a specific TDI
-> > > > bound to the VM and exits the KVM to allow the userspace to
-> > > > bind it.
-> > > >
-> > >
-> > > Out of curiosity, do we have to handle the TDI bind/unbind in the
-> > > kernel space? It seems we are get the relationship between
-> > > modules more complicated. What is the design concern that letting
-> > > QEMU to handle the TDI bind/unbind message, because QEMU can talk
-> > > to VFIO/KVM and also
-> > TSM.
-> > 
-> > Hmm, the flow I have in mind is:
-> > 
-> > Guest GHCx(BIND) => KVM => TSM GHCx handler => VFIO state update +
-> > TSM low-level BIND
-> > 
-> > vs this: (if I undertand your question correctly?)
-> > 
-> > Guest GHCx(BIND) => KVM => TSM GHCx handler => QEMU => VFIO => TSM
-> > low-level BIND
-> 
-> Reading this patch appears that it's implemented this way except QEMU
-> calls a KVM_DEV uAPI instead of going through VFIO (as Yilun
-> suggested).
-> 
-> > 
-> > Why exit to QEMU only to turn around and call back into the kernel?
-> > VFIO should already have the context from establishing the vPCI
-> > device as "bind-capable" at setup time.
-> > 
-> 
-> The general practice in VFIO is to design things around userspace
-> driver control over the device w/o assuming the existence of KVM.
-> When VMM comes to the picture the interaction with KVM is minimized
-> unless for functional or perf reasons.
-> 
-> e.g. KVM needs to know whether an assigned device allows non-coherent
-> DMA for proper cache control, or mdev/new vIOMMU object needs
-> a reference to struct kvm, etc. 
-> 
-> sometimes frequent trap-emulates is too costly then KVM/VFIO may
-> enable in-kernel acceleration to skip Qemu via eventfd, but in 
-> this case the slow-path via Qemu has been firstly implemented.
-> 
-> Ideally BIND/UNBIND is not a frequent operation, so falling back to
-> Qemu in a longer path is not a real problem. If no specific
-> functionality or security reason for doing it in-kernel, I'm inclined
-> to agree with Zhi here (though not about complexity).
-> 
-> 
+To be honest, I would hope to remove the SVM option some day. It's
+nothing special except listening to an external notification and
+synchronize the caches when the page table is updated. It's common to
+all cases where a page table is shared between the IOMMU and another
+component.
 
-Exactly what I was thinking. Folks had been spending quite some efforts
-on keeping VFIO and KVM independent. The existing shortcut calling
-between two modules is there because there is no other better way to do
-it.
+As for CONFIG_INTEL_IOMMU_IOPF, my suggestion is that we don't need to
+add any unnecessary options unless we see a real need.
 
-TSM BIND/UNBIND should not be a performance critical path. Thus falling
-back to QEMU would be fine. Besides, not sure about others' opinion, I
-don't think adding tsm_{bind, unbind} in kvm_x86_ops is a good idea.
-
-If we have to stick to the current approach, I think we need more
-justifications.
+Thanks,
+baolu
