@@ -1,264 +1,170 @@
-Received: from mail-ej1-f52.google.com (mail-ej1-f52.google.com [209.85.218.52])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mailout1.w1.samsung.com (mailout1.w1.samsung.com [210.118.77.11])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8E5E441C62
-	for <iommu@lists.linux.dev>; Mon, 16 Sep 2024 08:05:32 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.218.52
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B8001145A07
+	for <iommu@lists.linux.dev>; Mon, 16 Sep 2024 08:51:36 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=210.118.77.11
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1726473934; cv=none; b=Qgm8jFHjjt/3Kagb0iNg3L9c0SqTB8BGwlCA3h9WNcjQGi3KsZKSSAo3FPxpIhC7jbvYMqbY2CxIpgZlCZ7jdI773hLn0oeXU80Y/9xxVDawBwx31KnamUuDL05xBJli2iWqKzZvXzxXN/mLB7/Ahpr9euA72PS5ynBmKJWFg6k=
+	t=1726476699; cv=none; b=Rf+F7fgb7T50Xh7v41M/wvR9zP4Zks4zUirD6vm0aeQPF0O+h/49XL74T6JgzaCEMWwWDUbf72m8HvDfbPy3DtjeXiSCYFQKxjUlPGKVtLeWzzYRmvxlq8mnC8okSKBbGsDZx1KWDkuLBTGay7sTGgncykTrj//z20s1nKwqc4k=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1726473934; c=relaxed/simple;
-	bh=/KJbDQO8uUIVEF7hFjTLVCGL5q3ZnTP9mHtdr55srzQ=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=dXlhZ0C3fFbPx7JKje0S3OGLwsx+Ys6zSVIQpMOJLEM+Wa6TP6+nxfcMfZndQFaq9aKWdOp+KSQzSePSEF3QmxiH8JMdsLUgHOkx8pA3bRW70In3HmWee92grze2HhrLtBGsk453qvLctAKd+EYWKjZMuRAf9d1KwtgldyJjyF8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com; spf=pass smtp.mailfrom=suse.com; dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b=YiPFxCyi; arc=none smtp.client-ip=209.85.218.52
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=suse.com
+	s=arc-20240116; t=1726476699; c=relaxed/simple;
+	bh=sIi6lGnRDmnpWsFor1oMST/ypdc8o4B5UfnJGrhMCEA=;
+	h=Date:From:To:CC:Subject:Message-ID:MIME-Version:Content-Type:
+	 Content-Disposition:In-Reply-To:References; b=TKBeVqOS1X0pt/Ci/h8Z4cjgp8hc9+HJxAP+ynAOXbkU1mDEfXz4U5SRvBjO2m7wK4nhopuCSOgUf0SjLCUi+e2JkYCOrIiEdMx/qMgARXaR9I7O1qp6T+USGL9Y1xSCU37vFigl5y1geXEW9+5/yvlUG/TERdfr/7waxgbO/io=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=samsung.com; spf=pass smtp.mailfrom=samsung.com; dkim=pass (1024-bit key) header.d=samsung.com header.i=@samsung.com header.b=Y5XCUWus; arc=none smtp.client-ip=210.118.77.11
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=samsung.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=samsung.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b="YiPFxCyi"
-Received: by mail-ej1-f52.google.com with SMTP id a640c23a62f3a-a8d0d82e76aso683645866b.3
-        for <iommu@lists.linux.dev>; Mon, 16 Sep 2024 01:05:32 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=suse.com; s=google; t=1726473931; x=1727078731; darn=lists.linux.dev;
-        h=in-reply-to:autocrypt:from:content-language:references:cc:to
-         :subject:user-agent:mime-version:date:message-id:from:to:cc:subject
-         :date:message-id:reply-to;
-        bh=/KJbDQO8uUIVEF7hFjTLVCGL5q3ZnTP9mHtdr55srzQ=;
-        b=YiPFxCyiZdszLutOhSX67rES3NSs2jdVytVj6A3qlNm+u81uR+tHHiZW5jB1uvLXrH
-         pYOjxF3F6ouJhcY4IQm1U/nByfn9VQtUYqRmNF5qHlqBnwiuT2fHsatMkTPtTkicRWeW
-         FoTL5QvltSgORnVnb9W6xRzYloeR9FsyJ/oCoYTsVfPhRXbLyNwEH1f1cO63kO72TdrX
-         S10jaMb/3I7tojx1aihWjVGMR/40f+lpFL/SpAlD1LsEz0QictkGLGh0SnRqcWGTttpV
-         ct4wbO/X4UEPXzdPayLZkyks/IEhI7TyzG0euGuaAP0w4OSy4tEbltNAFUAycx4m6Ruu
-         HXAg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1726473931; x=1727078731;
-        h=in-reply-to:autocrypt:from:content-language:references:cc:to
-         :subject:user-agent:mime-version:date:message-id:x-gm-message-state
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=/KJbDQO8uUIVEF7hFjTLVCGL5q3ZnTP9mHtdr55srzQ=;
-        b=E6ezec3am0jZFQEK3qSCATaRVTbl9p+Cuy9cM/PLz/DskKqw6uIPhtrGmcwHE/MW0H
-         xy594poT9ER9w7BSblEqNTrXjInb/XCotTb/sy2SGj1I1FEz3l0VDvFyiunZs+3IueRE
-         Tj0KRiZ/YSrfNep60KEpO7Z/5z3XBusF549Sag4yhsPDa2MnvFyV3V/Ww9sgddnHO7v3
-         UJwfabSY6ymwEDvowU/A5YPeq3b/yEToth4U5mD7f9b0d4RsxSZ04bxMzOd9sjntmAuw
-         hXdQ2iSbgiAvTuaFwcPu2bDS3vaj4alLkYX9t3a9vWrhTdGmPllapBrEbhpQ26zim/QS
-         7zgA==
-X-Forwarded-Encrypted: i=1; AJvYcCXK3pwZqeKDuoJC6eaz49ndJanZ0F2Suifx8XmRd74EK38s2sajQoQ8vlgs0eS8NfN6VkiEGA==@lists.linux.dev
-X-Gm-Message-State: AOJu0YyLS7YDFUb6qqDI+g91czuOkK8dhx0k5VNztfPbw9heMZEI88DR
-	36glswnvK8oSvJ8aiU8HBT4RvhNglqqtYACJe1CQjIFTf6sIE1EE5vmbr3ahhOI=
-X-Google-Smtp-Source: AGHT+IHWqiYppXd+B3s7+awqBPqzOCm+2eQHRc84WN9eeWWHxKwfmFb/M7rP3LuC1l+9Volsh11AEw==
-X-Received: by 2002:a17:907:efc6:b0:a86:9c71:ec93 with SMTP id a640c23a62f3a-a9029438edemr1472722766b.24.1726473930291;
-        Mon, 16 Sep 2024 01:05:30 -0700 (PDT)
-Received: from ?IPV6:2003:e5:8741:4a00:60e5:7bee:fc48:e85c? (p200300e587414a0060e57beefc48e85c.dip0.t-ipconnect.de. [2003:e5:8741:4a00:60e5:7bee:fc48:e85c])
-        by smtp.gmail.com with ESMTPSA id a640c23a62f3a-a90610f44fasm275538066b.79.2024.09.16.01.05.29
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 16 Sep 2024 01:05:30 -0700 (PDT)
-Message-ID: <36f2bee7-f4d4-4e1e-9a68-cd7a5210eb1a@suse.com>
-Date: Mon, 16 Sep 2024 10:05:29 +0200
+	dkim=pass (1024-bit key) header.d=samsung.com header.i=@samsung.com header.b="Y5XCUWus"
+Received: from eucas1p1.samsung.com (unknown [182.198.249.206])
+	by mailout1.w1.samsung.com (KnoxPortal) with ESMTP id 20240916085129euoutp01fdcaf1fd376cd0ac0b4762ee2f61d42b~1rWbcoMbS1256612566euoutp01D
+	for <iommu@lists.linux.dev>; Mon, 16 Sep 2024 08:51:29 +0000 (GMT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 mailout1.w1.samsung.com 20240916085129euoutp01fdcaf1fd376cd0ac0b4762ee2f61d42b~1rWbcoMbS1256612566euoutp01D
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
+	s=mail20170921; t=1726476689;
+	bh=00zyv8CQAfu2svO5KB8AB1uhDRFJkT8EwN1UnOCwONY=;
+	h=Date:From:To:CC:Subject:In-Reply-To:References:From;
+	b=Y5XCUWusG+eMa/zKSvNH1oQ904PEahK3o99SgsVLK4KXV8hexryzMmI7EcaJFKAm5
+	 Q1YMh3uOqZvbNkZgnHhb96WKv5nGSGml+Rt/oTluJsgzRwyUwnDs3XIw2rV5amFOOq
+	 sPG0MBLEYpYqAQhWUajopUvSVuBexQn0n2HFxxPk=
+Received: from eusmges1new.samsung.com (unknown [203.254.199.242]) by
+	eucas1p1.samsung.com (KnoxPortal) with ESMTP id
+	20240916085129eucas1p1bbfe0f5e1670d7e87510212b07bb5c6e~1rWbInLq72956929569eucas1p1Z;
+	Mon, 16 Sep 2024 08:51:29 +0000 (GMT)
+Received: from eucas1p2.samsung.com ( [182.198.249.207]) by
+	eusmges1new.samsung.com (EUCPMTA) with SMTP id 2D.0A.09624.191F7E66; Mon, 16
+	Sep 2024 09:51:29 +0100 (BST)
+Received: from eusmtrp1.samsung.com (unknown [182.198.249.138]) by
+	eucas1p1.samsung.com (KnoxPortal) with ESMTPA id
+	20240916085128eucas1p1ac5a0605409839e99064198547ab1eb3~1rWanEuGe0804508045eucas1p1f;
+	Mon, 16 Sep 2024 08:51:28 +0000 (GMT)
+Received: from eusmgms2.samsung.com (unknown [182.198.249.180]) by
+	eusmtrp1.samsung.com (KnoxPortal) with ESMTP id
+	20240916085128eusmtrp12725bf46fa341d77854fdc1e0b7b65f3~1rWamOqL51596415964eusmtrp1j;
+	Mon, 16 Sep 2024 08:51:28 +0000 (GMT)
+X-AuditID: cbfec7f2-c11ff70000002598-d3-66e7f191dfaa
+Received: from eusmtip1.samsung.com ( [203.254.199.221]) by
+	eusmgms2.samsung.com (EUCPMTA) with SMTP id 59.51.19096.091F7E66; Mon, 16
+	Sep 2024 09:51:28 +0100 (BST)
+Received: from CAMSVWEXC02.scsc.local (unknown [106.1.227.72]) by
+	eusmtip1.samsung.com (KnoxPortal) with ESMTPA id
+	20240916085128eusmtip11f7e18116a28e61705840777542ff39e~1rWaW3Tr93124331243eusmtip1d;
+	Mon, 16 Sep 2024 08:51:28 +0000 (GMT)
+Received: from localhost (106.110.32.44) by CAMSVWEXC02.scsc.local
+	(2002:6a01:e348::6a01:e348) with Microsoft SMTP Server (TLS) id 15.0.1497.2;
+	Mon, 16 Sep 2024 09:51:26 +0100
+Date: Mon, 16 Sep 2024 10:50:54 +0200
+From: Joel Granados <j.granados@samsung.com>
+To: "Tian, Kevin" <kevin.tian@intel.com>
+CC: David Woodhouse <dwmw2@infradead.org>, Lu Baolu
+	<baolu.lu@linux.intel.com>, Joerg Roedel <joro@8bytes.org>, Will Deacon
+	<will@kernel.org>, Robin Murphy <robin.murphy@arm.com>, Jason Gunthorpe
+	<jgg@ziepe.ca>, Klaus Jensen <its@irrelevant.dk>,
+	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+	"iommu@lists.linux.dev" <iommu@lists.linux.dev>, Klaus Jensen
+	<k.jensen@samsung.com>
+Subject: Re: [PATCH v2 0/5] iommu: Enable user space IOPFs in non-PASID and
+ non-svm cases
+Message-ID: <20240916085054.gpan37ds7ea45pgh@joelS2.panther.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v2 2/2] xen/swiotlb: fix allocated size
-To: Jan Beulich <jbeulich@suse.com>
-Cc: Stefano Stabellini <sstabellini@kernel.org>,
- Oleksandr Tyshchenko <oleksandr_tyshchenko@epam.com>,
- xen-devel@lists.xenproject.org, linux-kernel@vger.kernel.org,
- iommu@lists.linux.dev
-References: <20240916064748.18071-1-jgross@suse.com>
- <20240916064748.18071-3-jgross@suse.com>
- <d0075562-6a21-4a87-b7f5-854f09c0743a@suse.com>
-Content-Language: en-US
-From: =?UTF-8?B?SsO8cmdlbiBHcm/Dnw==?= <jgross@suse.com>
-Autocrypt: addr=jgross@suse.com; keydata=
- xsBNBFOMcBYBCACgGjqjoGvbEouQZw/ToiBg9W98AlM2QHV+iNHsEs7kxWhKMjrioyspZKOB
- ycWxw3ie3j9uvg9EOB3aN4xiTv4qbnGiTr3oJhkB1gsb6ToJQZ8uxGq2kaV2KL9650I1SJve
- dYm8Of8Zd621lSmoKOwlNClALZNew72NjJLEzTalU1OdT7/i1TXkH09XSSI8mEQ/ouNcMvIJ
- NwQpd369y9bfIhWUiVXEK7MlRgUG6MvIj6Y3Am/BBLUVbDa4+gmzDC9ezlZkTZG2t14zWPvx
- XP3FAp2pkW0xqG7/377qptDmrk42GlSKN4z76ELnLxussxc7I2hx18NUcbP8+uty4bMxABEB
- AAHNH0p1ZXJnZW4gR3Jvc3MgPGpncm9zc0BzdXNlLmNvbT7CwHkEEwECACMFAlOMcK8CGwMH
- CwkIBwMCAQYVCAIJCgsEFgIDAQIeAQIXgAAKCRCw3p3WKL8TL8eZB/9G0juS/kDY9LhEXseh
- mE9U+iA1VsLhgDqVbsOtZ/S14LRFHczNd/Lqkn7souCSoyWsBs3/wO+OjPvxf7m+Ef+sMtr0
- G5lCWEWa9wa0IXx5HRPW/ScL+e4AVUbL7rurYMfwCzco+7TfjhMEOkC+va5gzi1KrErgNRHH
- kg3PhlnRY0Udyqx++UYkAsN4TQuEhNN32MvN0Np3WlBJOgKcuXpIElmMM5f1BBzJSKBkW0Jc
- Wy3h2Wy912vHKpPV/Xv7ZwVJ27v7KcuZcErtptDevAljxJtE7aJG6WiBzm+v9EswyWxwMCIO
- RoVBYuiocc51872tRGywc03xaQydB+9R7BHPzsBNBFOMcBYBCADLMfoA44MwGOB9YT1V4KCy
- vAfd7E0BTfaAurbG+Olacciz3yd09QOmejFZC6AnoykydyvTFLAWYcSCdISMr88COmmCbJzn
- sHAogjexXiif6ANUUlHpjxlHCCcELmZUzomNDnEOTxZFeWMTFF9Rf2k2F0Tl4E5kmsNGgtSa
- aMO0rNZoOEiD/7UfPP3dfh8JCQ1VtUUsQtT1sxos8Eb/HmriJhnaTZ7Hp3jtgTVkV0ybpgFg
- w6WMaRkrBh17mV0z2ajjmabB7SJxcouSkR0hcpNl4oM74d2/VqoW4BxxxOD1FcNCObCELfIS
- auZx+XT6s+CE7Qi/c44ibBMR7hyjdzWbABEBAAHCwF8EGAECAAkFAlOMcBYCGwwACgkQsN6d
- 1ii/Ey9D+Af/WFr3q+bg/8v5tCknCtn92d5lyYTBNt7xgWzDZX8G6/pngzKyWfedArllp0Pn
- fgIXtMNV+3t8Li1Tg843EXkP7+2+CQ98MB8XvvPLYAfW8nNDV85TyVgWlldNcgdv7nn1Sq8g
- HwB2BHdIAkYce3hEoDQXt/mKlgEGsLpzJcnLKimtPXQQy9TxUaLBe9PInPd+Ohix0XOlY+Uk
- QFEx50Ki3rSDl2Zt2tnkNYKUCvTJq7jvOlaPd6d/W0tZqpyy7KVay+K4aMobDsodB3dvEAs6
- ScCnh03dDAFgIq5nsB11j3KPKdVoPlfucX2c7kGNH+LUMbzqV6beIENfNexkOfxHfw==
-In-Reply-To: <d0075562-6a21-4a87-b7f5-854f09c0743a@suse.com>
-Content-Type: multipart/signed; micalg=pgp-sha256;
- protocol="application/pgp-signature";
- boundary="------------hJewHrES50GIzppl4G9zcljf"
+Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: inline
+In-Reply-To: <BL1PR11MB5271994848066586A098327F8C662@BL1PR11MB5271.namprd11.prod.outlook.com>
+X-ClientProxiedBy: CAMSVWEXC01.scsc.local (2002:6a01:e347::6a01:e347) To
+	CAMSVWEXC02.scsc.local (2002:6a01:e348::6a01:e348)
+X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFtrGKsWRmVeSWpSXmKPExsWy7djP87oTPz5PM7i8hNli88StbBYTV05m
+	tvj1xcJi/8FvrBYzZ5xgtOicvYHdYunbrewWl3fNYbM4+OEJq0XLHVMHLo8nB+cxeayZt4bR
+	Y/MKLY/Fe14yeZzbcZ7dY9OqTjaPeScDPV5snsno8XmTnMfWz7dZAriiuGxSUnMyy1KL9O0S
+	uDLar/5mK1jEVzGlMa6BcTp3FyMnh4SAicSXIxfYQWwhgRWMEpsmeXYxcgHZXxglZrzZwAzh
+	fGaUeNn9lgmm42vba2aIjuWMEns3VcIVfVt7nh3C2cwosf3AQxaQKhYBVYlfS96CdbAJ6Eic
+	f3MHzBYR0JD48X0G2ApmganMEg+OvGAESQgLREs0/7oGVsQr4CAx5+wcKFtQ4uTMJ2BDmYEG
+	Ldj9ia2LkQPIlpZY/o8DJMwpECtx4+JEqEsVJb4uvscCYddKnNpyiwlkl4TAbE6JiW+eMUIk
+	XCSeHNrBDGELS7w6voUdwpaROD25hwWiYTKjxP5/H9ghnNWMEssav0KtsJZoufIEqsNRYtXB
+	lUwgF0kI8EnceCsIcSifxKRt05khwrwSHW1CENVqEqvvvWGZwKg8C8lrs5C8NgvhtQWMzKsY
+	xVNLi3PTU4sN81LL9YoTc4tL89L1kvNzNzECk9bpf8c/7WCc++qj3iFGJg7GQ4wSHMxKIry2
+	v5+mCfGmJFZWpRblxxeV5qQWH2KU5mBREudVTZFPFRJITyxJzU5NLUgtgskycXBKNTBFBRoy
+	X9p9001fvJPzl2Ljm8onHKFvlh29bVazzuqT6excQ25HnaTlcdxLs0/fkLxdNiH/a4BwmOLL
+	cqt/6/4cvX5/ZWlLI5/R9tMGRnv6X5ToMiwqUFAx+5fYwhX4U7s8TIlzc41UV4FU56pvpo/Y
+	BAv02bJVXyxKEa1It7j23HKZQIvCv2mRiVq9F39fat82aadjcO++ZXpf+Bfo55tx6Pn8LTJg
+	N1wi8erTZbM7VocznhlkPe42zazOMxLK/7DLN01h/dcwf/d77dGFQunKsVMceoQkwh0n6W5h
+	UJ4vO6Mv3Thc3sKP95vfFM6Xba9fOhk9v+E1PX/h8mOnZpVMWnwl+cL8ypiF4dwGSizFGYmG
+	WsxFxYkAVclkvskDAAA=
+X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFrrMIsWRmVeSWpSXmKPExsVy+t/xu7oTPj5PMzi2Wcpi88StbBYTV05m
+	tvj1xcJi/8FvrBYzZ5xgtOicvYHdYunbrewWl3fNYbM4+OEJq0XLHVMHLo8nB+cxeayZt4bR
+	Y/MKLY/Fe14yeZzbcZ7dY9OqTjaPeScDPV5snsno8XmTnMfWz7dZArii9GyK8ktLUhUy8otL
+	bJWiDS2M9AwtLfSMTCz1DI3NY62MTJX07WxSUnMyy1KL9O0S9DLar/5mK1jEVzGlMa6BcTp3
+	FyMnh4SAicTXttfMXYxcHEICSxklWn+uYIRIyEhs/HKVFcIWlvhzrYsNougjo8T1l9OgnM2M
+	EreeH2EDqWIRUJX4teQtM4jNJqAjcf7NHTBbREBD4sf3GWArmAWmMks8OPICbIWwQLRE869r
+	YEW8Ag4Sc87OAbOFBJ4xStyeEgwRF5Q4OfMJC4jNDDR0we5PQMs4gGxpieX/OEDCnAKxEjcu
+	TmSCuFRR4uvieywQdq3E57/PGCcwCs9CMmkWkkmzECYtYGRexSiSWlqcm55bbKRXnJhbXJqX
+	rpecn7uJERi724793LKDceWrj3qHGJk4GA8xSnAwK4nw2v5+mibEm5JYWZValB9fVJqTWnyI
+	0RQYFBOZpUST84HJI68k3tDMwNTQxMzSwNTSzFhJnJftyvk0IYH0xJLU7NTUgtQimD4mDk6p
+	BiaLJyE5/8t7f/JUrTNfpbP/ucmpqZcUY7vvLlp384jIJgUVo96IxXZCW37MuKG4QcfwgueE
+	OcfYQiWYHiYdWHloyss7MsIctW9+Mral5Rnu6D42z9Gz2TYv3u+bwdTVBUxOG0MnfTeZ8W9/
+	3a6GYsOLy2rPmuxZyn3on+msWKni1mzNqMsG56NPX55Tfn7W2ym9n61FPTr2Tf7c6Oi0ym+/
+	dNO8tZt3vfudK6izYt0ejW3NkXv6TNZu2vM6ylAl4taXPLNJnzz/nD/K+X4H74rYz9xGPzIf
+	We7UeuN5OKvtkUBpmMYagyVax9c+M1AUXnQ+xGlrn+oeo2+CH+osFxaKdtpNmSDApGuYpJXC
+	9jBciaU4I9FQi7moOBEA30/pHmYDAAA=
+X-CMS-MailID: 20240916085128eucas1p1ac5a0605409839e99064198547ab1eb3
+X-Msg-Generator: CA
+X-RootMTR: 20240914004847eucas1p23af12d7ea9f70f0de6a9a900072bdad8
+X-EPHeader: CA
+CMS-TYPE: 201P
+X-CMS-RootMailID: 20240914004847eucas1p23af12d7ea9f70f0de6a9a900072bdad8
+References: <20240913-jag-iopfv8-v2-0-dea01c2343bc@samsung.com>
+	<CGME20240914004847eucas1p23af12d7ea9f70f0de6a9a900072bdad8@eucas1p2.samsung.com>
+	<BL1PR11MB5271994848066586A098327F8C662@BL1PR11MB5271.namprd11.prod.outlook.com>
 
-This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
---------------hJewHrES50GIzppl4G9zcljf
-Content-Type: multipart/mixed; boundary="------------Yl0lQ9LJFoUhiapj1tkCpSfR";
- protected-headers="v1"
-From: =?UTF-8?B?SsO8cmdlbiBHcm/Dnw==?= <jgross@suse.com>
-To: Jan Beulich <jbeulich@suse.com>
-Cc: Stefano Stabellini <sstabellini@kernel.org>,
- Oleksandr Tyshchenko <oleksandr_tyshchenko@epam.com>,
- xen-devel@lists.xenproject.org, linux-kernel@vger.kernel.org,
- iommu@lists.linux.dev
-Message-ID: <36f2bee7-f4d4-4e1e-9a68-cd7a5210eb1a@suse.com>
-Subject: Re: [PATCH v2 2/2] xen/swiotlb: fix allocated size
-References: <20240916064748.18071-1-jgross@suse.com>
- <20240916064748.18071-3-jgross@suse.com>
- <d0075562-6a21-4a87-b7f5-854f09c0743a@suse.com>
-In-Reply-To: <d0075562-6a21-4a87-b7f5-854f09c0743a@suse.com>
-Autocrypt-Gossip: addr=jbeulich@suse.com; keydata=
- xsDiBFk3nEQRBADAEaSw6zC/EJkiwGPXbWtPxl2xCdSoeepS07jW8UgcHNurfHvUzogEq5xk
- hu507c3BarVjyWCJOylMNR98Yd8VqD9UfmX0Hb8/BrA+Hl6/DB/eqGptrf4BSRwcZQM32aZK
- 7Pj2XbGWIUrZrd70x1eAP9QE3P79Y2oLrsCgbZJfEwCgvz9JjGmQqQkRiTVzlZVCJYcyGGsD
- /0tbFCzD2h20ahe8rC1gbb3K3qk+LpBtvjBu1RY9drYk0NymiGbJWZgab6t1jM7sk2vuf0Py
- O9Hf9XBmK0uE9IgMaiCpc32XV9oASz6UJebwkX+zF2jG5I1BfnO9g7KlotcA/v5ClMjgo6Gl
- MDY4HxoSRu3i1cqqSDtVlt+AOVBJBACrZcnHAUSuCXBPy0jOlBhxPqRWv6ND4c9PH1xjQ3NP
- nxJuMBS8rnNg22uyfAgmBKNLpLgAGVRMZGaGoJObGf72s6TeIqKJo/LtggAS9qAUiuKVnygo
- 3wjfkS9A3DRO+SpU7JqWdsveeIQyeyEJ/8PTowmSQLakF+3fote9ybzd880fSmFuIEJldWxp
- Y2ggPGpiZXVsaWNoQHN1c2UuY29tPsJ3BBMRAgAgBQJZN5xEAhsDBgsJCAcDAgQVAggDBBYC
- AwECHgECF4AAIQkQoDSui/t3IH4WIQQ+pJkfkcoLMCa4X6CgNK6L+3cgfgn7AJ9DmMd0SMJE
- ePbc7/m22D2v04iu7ACffXTdZQhNl557tJuDXZSBxDmW/tLOwU0EWTecRBAIAIK5OMKMU5R2
- Lk2bbjgX7vyQuCFFyKf9rC/4itNwhYWFSlKzVj3WJBDsoi2KvPm7AI+XB6NIkNAkshL5C0kd
- pcNd5Xo0jRR5/WE/bT7LyrJ0OJWS/qUit5eNNvsO+SxGAk28KRa1ieVLeZi9D03NL0+HIAtZ
- tecfqwgl3Y72UpLUyt+r7LQhcI/XR5IUUaD4C/chB4Vq2QkDKO7Q8+2HJOrFIjiVli4lU+Sf
- OBp64m//Y1xys++Z4ODoKh7tkh5DxiO3QBHG7bHK0CSQsJ6XUvPVYubAuy1XfSDzSeSBl//C
- v78Fclb+gi9GWidSTG/4hsEzd1fY5XwCZG/XJJY9M/sAAwUH/09Ar9W2U1Qm+DwZeP2ii3Ou
- 14Z9VlVVPhcEmR/AFykL9dw/OV2O/7cdi52+l00reUu6Nd4Dl8s4f5n8b1YFzmkVVIyhwjvU
- jxtPyUgDOt6DRa+RaDlXZZmxQyWcMv2anAgYWGVszeB8Myzsw8y7xhBEVV1S+1KloCzw4V8Z
- DSJrcsZlyMDoiTb7FyqxwQnM0f6qHxWbmOOnbzJmBqpNpFuDcz/4xNsymJylm6oXiucHQBAP
- Xb/cE1YNHpuaH4SRhIxwQilCYEznWowQphNAbJtEKOmcocY7EbSt8VjXTzmYENkIfkrHRyXQ
- dUm5AoL51XZljkCqNwrADGkTvkwsWSvCSQQYEQIACQUCWTecRAIbDAAKCRCgNK6L+3cgfuef
- AJ9wlZQNQUp0KwEf8Tl37RmcxCL4bQCcC5alCSMzUBJ5DBIcR4BY+CyQFAs=
+On Sat, Sep 14, 2024 at 12:48:31AM +0000, Tian, Kevin wrote:
+> > From: Joel Granados via B4 Relay
+> > <devnull+j.granados.samsung.com@kernel.org>
+> > 
+> > This series makes use of iommufd_hwpt_replace_device to execute
+> > non-pasid/non-svm user space IOPFs. Our main motivation is to enable
+> > user-space driver driven device verification without SVM/PASID.
+> 
+> can you elaborate why IOPFs are necessary to help verify such usage?
 
---------------Yl0lQ9LJFoUhiapj1tkCpSfR
-Content-Type: multipart/mixed; boundary="------------8VbxQznwabjvDPCeeRZEo7wR"
+In retrospect "enable" might not be the best word to use here. We are not
+"enabling" user-space driver driven device verification as it is already
+enabled; you could already poke a device from user space. But the whole poke
+space was not available, you could not test IOPF without having an SVM/PASID
+capable IOMMU. Therefore a better wording would be "Our main motivation is to
+expand or facilitate user-space driver driven device verification by enabling
+IOPF without SMV/PASID".
 
---------------8VbxQznwabjvDPCeeRZEo7wR
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: base64
+Does this address your concern?
 
-T24gMTYuMDkuMjQgMDk6NTksIEphbiBCZXVsaWNoIHdyb3RlOg0KPiBPbiAxNi4wOS4yMDI0
-IDA4OjQ3LCBKdWVyZ2VuIEdyb3NzIHdyb3RlOg0KPj4gVGhlIGFsbG9jYXRlZCBzaXplIGlu
-IHhlbl9zd2lvdGxiX2FsbG9jX2NvaGVyZW50KCkgYW5kDQo+PiB4ZW5fc3dpb3RsYl9mcmVl
-X2NvaGVyZW50KCkgaXMgY2FsY3VsYXRlZCB3cm9uZyBmb3IgdGhlIGNhc2Ugb2YNCj4+IFhF
-Tl9QQUdFX1NJWkUgbm90IG1hdGNoaW5nIFBBR0VfU0laRS4gRml4IHRoYXQuDQo+Pg0KPj4g
-Rml4ZXM6IDcyNTBmNDIyZGEwNCAoInhlbi1zd2lvdGxiOiB1c2UgYWN0dWFsbHkgYWxsb2Nh
-dGVkIHNpemUgb24gY2hlY2sgcGh5c2ljYWwgY29udGludW91cyIpDQo+PiBSZXBvcnRlZC1i
-eTogSmFuIEJldWxpY2ggPGpiZXVsaWNoQHN1c2UuY29tPg0KPj4gU2lnbmVkLW9mZi1ieTog
-SnVlcmdlbiBHcm9zcyA8amdyb3NzQHN1c2UuY29tPg0KPiANCj4gUmV2aWV3ZWQtYnk6IEph
-biBCZXVsaWNoIDxqYmV1bGljaEBzdXNlLmNvbT4NCj4gDQo+PiAtLS0gYS9kcml2ZXJzL3hl
-bi9zd2lvdGxiLXhlbi5jDQo+PiArKysgYi9kcml2ZXJzL3hlbi9zd2lvdGxiLXhlbi5jDQo+
-PiBAQCAtMTQ3LDcgKzE0Nyw3IEBAIHhlbl9zd2lvdGxiX2FsbG9jX2NvaGVyZW50KHN0cnVj
-dCBkZXZpY2UgKmRldiwgc2l6ZV90IHNpemUsDQo+PiAgIAl2b2lkICpyZXQ7DQo+PiAgIA0K
-Pj4gICAJLyogQWxpZ24gdGhlIGFsbG9jYXRpb24gdG8gdGhlIFhlbiBwYWdlIHNpemUgKi8N
-Cj4+IC0Jc2l6ZSA9IDFVTCA8PCAob3JkZXIgKyBYRU5fUEFHRV9TSElGVCk7DQo+PiArCXNp
-emUgPSBBTElHTihzaXplLCBYRU5fUEFHRV9TSVpFKTsNCj4gDQo+IFRoZSB3YXkgeW91J3Jl
-IGRvaW5nIGl0IGhhcyBmdXJ0aGVyIHBvc2l0aXZlIGVmZmVjdHMsIGFzIHRoZSBzaXplDQo+
-IGlzIG5vdyBhbHNvIG5vIGxvbmdlciBuZWVkbGVzc2x5IG92ZXItYWxpZ25lZC4gTWF5IHdh
-bnQgbWVudGlvbmluZw0KPiBpbiB0aGUgZGVzY3JpcHRpb24uIEhvcGUgb2YgY291cnNlIGlz
-IHRoYXQgbm8tb25lIGNhbWUgdG8gcmVseSBvbg0KPiB0aGUgdXAtdG8tbmV4dC1wb3dlci1v
-Zi0yIGFsbG9jYXRpb24gYW55d2hlcmUgKHdoaWNoIG9mIGNvdXJzZQ0KPiB3b3VsZCBiZSBh
-IGJ1ZyB0aGVyZSwgeWV0IG1pZ2h0IGVuZCBpbiBhIHBlcmNlaXZlZCByZWdyZXNzaW9uKS4N
-Cg0KUXVpdGUgdW5saWtlbHkgSU1ITywgYXMgdGhpcyBpcyBhIFhlbi1vbmx5IGJlaGF2aW9y
-LiBJJ20gbm90IGF3YXJlIG9mDQphbnkgaGFyZHdhcmUgdXNlZCB3aXRoIFhlbiBvbmx5LiBT
-byBmb3IgYSByZWdyZXNzaW9uIHRvIGhhcHBlbiB0aGUgZHJpdmVyDQphbGxvY2F0aW5nIERN
-QSBtZW1vcnkgd291bGQgbmVlZCB0byBoYXZlIGEgWGVuLXNwZWNpZmljIGhhbmRsaW5nIHJl
-bHlpbmcNCm9uIHRoZSBoaWdoZXIgYWxpZ25tZW50Lg0KDQoNCkp1ZXJnZW4NCg==
---------------8VbxQznwabjvDPCeeRZEo7wR
-Content-Type: application/pgp-keys; name="OpenPGP_0xB0DE9DD628BF132F.asc"
-Content-Disposition: attachment; filename="OpenPGP_0xB0DE9DD628BF132F.asc"
-Content-Description: OpenPGP public key
-Content-Transfer-Encoding: quoted-printable
+> 
+> > 
+> > What?
+> >   * Enable IO page fault handling in user space for a non-pasid, non-svm
+> >     and non-virtualised use case.
+> >   * Move IOMMU_IOPF configuration from INTEL_IOMMU_SVM into
+> > INTEL_IOMMU.
+> >   * Move all page request queue related logic to a new (prq.c) file.
+> >   * Remove PASID checks from PRQ event handling as well as PRQ
+> >     initialization.
+> >   * Allow execution of IOMMU_HWPT_ALLOC with a valid fault id
+> >     (IOMMU_HWPT_FAULT_ID_VALID)
+> >   * Insert a zero handle into the PASID array in dev->iommu_group when
+> >     replacing the old HWPT with an IOPF enabled HWPT.
+> 
+> the last bullet is stale now.
+oops. Missed that one; will correct in next version 
 
------BEGIN PGP PUBLIC KEY BLOCK-----
+> 
+> btw a selftest is expected too.
+I'll figure this out for the next version.
 
-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
-kt+z4drzFUyEjLM1vVvIMjkUoJs=3D
-=3DeeAB
------END PGP PUBLIC KEY BLOCK-----
+Thx for the review
 
---------------8VbxQznwabjvDPCeeRZEo7wR--
+Best
+-- 
 
---------------Yl0lQ9LJFoUhiapj1tkCpSfR--
-
---------------hJewHrES50GIzppl4G9zcljf
-Content-Type: application/pgp-signature; name="OpenPGP_signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="OpenPGP_signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-wsB5BAABCAAjFiEEhRJncuj2BJSl0Jf3sN6d1ii/Ey8FAmbn5skFAwAAAAAACgkQsN6d1ii/Ey9o
-Jgf/TLakFUOBMThxQ1bldaLkPgQF1JUOI5R2xkslmK+XSC+J4Raudwo9YtYY9VUrW4wvP3bjRQDx
-FKd2cIDDHhYXBiQU2vCGV2ssksPbwZmzHqj4E4nuSUChXfjIDOsiQdNLZnIF0aKaujdYWIQ8NgxH
-JStE/pX4l3Wnp2+Soos/Qx0uA7/Trniy8lYY4K4Rer0CfYZkmWZg1QLbcnPYvqVVqta7Zv0iq4tQ
-BlsZF+vQ0gsN5vw0Gaj7pPFqi+An0P9ZKf1Pvyneaeloje4cjnKqPVTIgMBvmJfAcKB2B2Cr3Bf2
-H1LwxoCzqxVnP/HR7yaQcBDYNek+U4caP7viHsPpOg==
-=a7W8
------END PGP SIGNATURE-----
-
---------------hJewHrES50GIzppl4G9zcljf--
+Joel Granados
