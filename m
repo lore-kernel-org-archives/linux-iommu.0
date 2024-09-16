@@ -1,166 +1,259 @@
-Received: from mailout2.w1.samsung.com (mailout2.w1.samsung.com [210.118.77.12])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 852E4482EF
-	for <iommu@lists.linux.dev>; Mon, 16 Sep 2024 09:24:29 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=210.118.77.12
+Received: from mail.8bytes.org (mail.8bytes.org [85.214.250.239])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id E5F3A41C62
+	for <iommu@lists.linux.dev>; Mon, 16 Sep 2024 10:07:54 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=85.214.250.239
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1726478672; cv=none; b=aL2N9BvzAiCSFnU35iveMsi4G/PuRqaVQyu5Gp5vliH3FfNMx3aA+zFJ7Cu7svsgZzXIYRJU3tL5AV3QD3uheiI23LTwDg4z+ZH+sA1s/uHG2ZtE9XwlV8HFrkEJs2WcGe13IfnPvfvUrBXdRe7uGR1C/qXni1oaEmrzh+Ug3RM=
+	t=1726481278; cv=none; b=aFHsWu5j7xO+v0GNqpkxnG4JzQ0fMIZHy0jyVZKDx9A2qqV0vZ49fSZ6mKI3P8t2Qmyo8v90Bx0CGH5QXSEG9+OfrgfAmyWR+AJjMXwStIlUuG0EEAo0BBGcSOQMy7x8Mo3hCrNzduKfIRwe8b+3IX4FYtqE48ezt9GJp2XmF2A=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1726478672; c=relaxed/simple;
-	bh=0tNkUVTgrLLAnl0jcRp96qRk0GeqKBpcWQgFcYgXF/M=;
-	h=Date:From:To:CC:Subject:Message-ID:MIME-Version:Content-Type:
-	 Content-Disposition:In-Reply-To:References; b=CEOqR0IKLzty4U+97/K+5m/apCNg9wTfb/+aKu81PssTZVJ0r+zeemnvyrgNcGHMCq/jbKWA5U9+SIjWqKEE2Mj0hnqVVneGOVtSBQ1tVAkYP8YSM2oc/nmZe6FFRNxk623I9eag3u9z7tOCPxUBG1ePUgmp1A0LKRB8f/DKPrA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=samsung.com; spf=pass smtp.mailfrom=samsung.com; dkim=pass (1024-bit key) header.d=samsung.com header.i=@samsung.com header.b=VGFr6wO8; arc=none smtp.client-ip=210.118.77.12
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=samsung.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=samsung.com
+	s=arc-20240116; t=1726481278; c=relaxed/simple;
+	bh=XUufz/EGTz/ak13opRJLjwcPvJPBFSb4L67dqYi2UHs=;
+	h=Date:From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:
+	 Content-Disposition; b=GUl+uTjXMns1U8ow1jHDEaNaNqurZe0XTuHYp51XQtgbIzWTBn8aDhSOAPPaKBmXPhwDgthiySq0OCOMk9qgt64bMTZ+Ucf0QCe5dPxTBBmQsTY7Fdpn70r2ZHs7e957g31hl3VjroQCKWLamBMxKz4V9Ig3XveKTdkI53nbuCk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=8bytes.org; spf=pass smtp.mailfrom=8bytes.org; dkim=pass (2048-bit key) header.d=8bytes.org header.i=@8bytes.org header.b=JGUwL6xG; arc=none smtp.client-ip=85.214.250.239
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=8bytes.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=8bytes.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=samsung.com header.i=@samsung.com header.b="VGFr6wO8"
-Received: from eucas1p1.samsung.com (unknown [182.198.249.206])
-	by mailout2.w1.samsung.com (KnoxPortal) with ESMTP id 20240916092427euoutp023f44d5817a961c4c81d89a50aac20e47~1rzN42qnq0162401624euoutp026
-	for <iommu@lists.linux.dev>; Mon, 16 Sep 2024 09:24:27 +0000 (GMT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 mailout2.w1.samsung.com 20240916092427euoutp023f44d5817a961c4c81d89a50aac20e47~1rzN42qnq0162401624euoutp026
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
-	s=mail20170921; t=1726478667;
-	bh=OqqmSEF2kg4JP4GvymfmY3lMlafexn4Xau9x4CD2fjk=;
-	h=Date:From:To:CC:Subject:In-Reply-To:References:From;
-	b=VGFr6wO8kTE5PI93+DokxvPKuNOHlHT2xejeAjrMP2i/KuErzOI5XV0gm+1C7YLah
-	 OhzC0GdJg9pKPKn5etmMfgmMN9naiSnsDkR9lQ4TV//bj7F/kruxY1SN+I7/U2ovYO
-	 IXxQXzhoqbX0x63t5gjU3RXLgv1Y09rCadzClHg8=
-Received: from eusmges1new.samsung.com (unknown [203.254.199.242]) by
-	eucas1p2.samsung.com (KnoxPortal) with ESMTP id
-	20240916092427eucas1p2c9c2de28823deafc35ced11d3cfd1bfe~1rzNhH2Qx1439714397eucas1p2u;
-	Mon, 16 Sep 2024 09:24:27 +0000 (GMT)
-Received: from eucas1p1.samsung.com ( [182.198.249.206]) by
-	eusmges1new.samsung.com (EUCPMTA) with SMTP id 1A.52.09624.B49F7E66; Mon, 16
-	Sep 2024 10:24:27 +0100 (BST)
-Received: from eusmtrp1.samsung.com (unknown [182.198.249.138]) by
-	eucas1p1.samsung.com (KnoxPortal) with ESMTPA id
-	20240916092426eucas1p14459d30965e9768af83f6e8b6fe94823~1rzNCZc-r1481814818eucas1p1r;
-	Mon, 16 Sep 2024 09:24:26 +0000 (GMT)
-Received: from eusmgms2.samsung.com (unknown [182.198.249.180]) by
-	eusmtrp1.samsung.com (KnoxPortal) with ESMTP id
-	20240916092426eusmtrp1f15879ad2710060cb2b41114e23fde33~1rzNBm1A-0459904599eusmtrp11;
-	Mon, 16 Sep 2024 09:24:26 +0000 (GMT)
-X-AuditID: cbfec7f2-c11ff70000002598-00-66e7f94be059
-Received: from eusmtip2.samsung.com ( [203.254.199.222]) by
-	eusmgms2.samsung.com (EUCPMTA) with SMTP id 14.28.19096.A49F7E66; Mon, 16
-	Sep 2024 10:24:26 +0100 (BST)
-Received: from CAMSVWEXC02.scsc.local (unknown [106.1.227.72]) by
-	eusmtip2.samsung.com (KnoxPortal) with ESMTPA id
-	20240916092426eusmtip2fe40b06f3d085cbf74b69437559d5db7~1rzMsacU-1983819838eusmtip2b;
-	Mon, 16 Sep 2024 09:24:26 +0000 (GMT)
-Received: from localhost (106.110.32.44) by CAMSVWEXC02.scsc.local
-	(2002:6a01:e348::6a01:e348) with Microsoft SMTP Server (TLS) id 15.0.1497.2;
-	Mon, 16 Sep 2024 10:24:24 +0100
-Date: Mon, 16 Sep 2024 11:24:22 +0200
-From: Joel Granados <j.granados@samsung.com>
-To: "Tian, Kevin" <kevin.tian@intel.com>
-CC: David Woodhouse <dwmw2@infradead.org>, Lu Baolu
-	<baolu.lu@linux.intel.com>, Joerg Roedel <joro@8bytes.org>, Will Deacon
-	<will@kernel.org>, Robin Murphy <robin.murphy@arm.com>, Jason Gunthorpe
-	<jgg@ziepe.ca>, Klaus Jensen <its@irrelevant.dk>,
-	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-	"iommu@lists.linux.dev" <iommu@lists.linux.dev>
-Subject: Re: [PATCH v2 1/5] iommu/vt-d: Separate page request queue from SVM
-Message-ID: <20240916092422.lasp556wb57em7hz@joelS2.panther.com>
+	dkim=pass (2048-bit key) header.d=8bytes.org header.i=@8bytes.org header.b="JGUwL6xG"
+Received: from 8bytes.org (p549211fd.dip0.t-ipconnect.de [84.146.17.253])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange ECDHE (P-256) server-signature RSA-PSS (2048 bits) server-digest SHA256)
+	(No client certificate requested)
+	by mail.8bytes.org (Postfix) with ESMTPSA id 2B3AD2A4E87;
+	Mon, 16 Sep 2024 12:07:48 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=8bytes.org;
+	s=default; t=1726481268;
+	bh=XUufz/EGTz/ak13opRJLjwcPvJPBFSb4L67dqYi2UHs=;
+	h=Date:From:To:Cc:Subject:From;
+	b=JGUwL6xG7Z7Em8ZEFiZHoOcUeNBTY7MNX4pPensoFrD6W1u2nosEdxTztwFnsuqx1
+	 8VNElXqL5+chLr4PasEW3MLBoaxoQtpF0sfXTI83exsq0oKBooPK2lqVj930BNX5AS
+	 KuX8xGczeS3a5D5Q9svQrJYVmbFZthbEU4g3kaecji4KucAYLU20jf/w6HYFwxEseJ
+	 2ZxOiHV2pPUrLPy+A4QUAAwfEXtPBcGGaTIo/NI8xBlLX6ptBmbPc7QYamWGmHD1wv
+	 iNW8K2Z8FFelWHzxDIDqUZbWIMhxZn1uepf+UZ/1eeACz0BbAI3FKOjdWP3kd3WeAF
+	 KplCWO+bhKI+g==
+Date: Mon, 16 Sep 2024 12:07:47 +0200
+From: Joerg Roedel <joro@8bytes.org>
+To: Linus Torvalds <torvalds@linux-foundation.org>
+Cc: Will Deacon <will@kernel.org>, linux-kernel@vger.kernel.org,
+	iommu@lists.linux.dev
+Subject: [git pull] IOMMU Updates for Linux v6.12
+Message-ID: <ZugDc8ryLmadGXyp@8bytes.org>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <BL1PR11MB52713D3D5947C66AE463FA4B8C662@BL1PR11MB5271.namprd11.prod.outlook.com>
-X-ClientProxiedBy: CAMSVWEXC01.scsc.local (2002:6a01:e347::6a01:e347) To
-	CAMSVWEXC02.scsc.local (2002:6a01:e348::6a01:e348)
-X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFtrBKsWRmVeSWpSXmKPExsWy7djPc7reP5+nGWz9zG+xeeJWNouJKycz
-	W/z6YmGx/+A3VouZM04wWnTO3sBusfTtVnaLy7vmsFkc/PCE1aLljqkDl8eTg/OYPNbMW8Po
-	sXmFlsfiPS+ZPM7tOM/usWlVJ5vHvJOBHi82z2T0+LxJzmPr59ssAVxRXDYpqTmZZalF+nYJ
-	XBnnZr1mKrjCVfGo+Q1LA+Nmji5GTg4JAROJdds6WbsYuTiEBFYwSlybdJsJwvnCKNG9aSJU
-	5jOjRO/Fx4wwLUcP3WOGSCxnlNg5+yhC1dGH59lBqoQENjNKrJriBWKzCKhKvD/8mgnEZhPQ
-	kTj/5g4ziC0ioCHx4/sMsEnMAu+YJOb1vmQBSQgL+Eh8bzsDZvMKOEhsWHqWDcIWlDg58wlY
-	nBlo0ILdn4DiHEC2tMTyf2APcQrESvw5tpYZ4lJFia+L77FA2LUSp7bcAvtNQmA6p8TtzT2s
-	EAkXieuPLjNB2MISr45vYYewZSROT+5hgWiYzCix/98HdghnNaPEssavUB3WEi1XnkB1OEr8
-	mPqLGeQiCQE+iRtvBSEO5ZOYtG06VJhXoqNNCKJaTWL1vTcsExiVZyF5bRaS12YhvLaAkXkV
-	o3hqaXFuemqxYV5quV5xYm5xaV66XnJ+7iZGYOI6/e/4px2Mc1991DvEyMTBeIhRgoNZSYTX
-	9vfTNCHelMTKqtSi/Pii0pzU4kOM0hwsSuK8qinyqUIC6YklqdmpqQWpRTBZJg5OqQYm0ZJn
-	iyJEf1UyXJ37fxrL1S2mUV+q37lWWz7sPZRyd25j/W/NkOfvup2vbdqxZ/7KP7MO9EzPVbyf
-	u6i61jlfUus+u/FslV61rt2W4fanK8UfchU0OSjU2mqc8b67xnf5S/3Vz0Sv/xQyn3z12Suj
-	BTzLzDZd2qCZ4u98Nm39bzl9ZoPgOamLP1ZdeqW5Te5vmvNP2W3uN3vnFRau11s0O0ooufvm
-	IefdfBq9ZquYmAO+F1zdLB2dpKd6TlIr5Gv9F8Pk1ta0xq/XTB4xajsJhHVMPXVswq+LjU2u
-	k+ynxWy5EdHdIJWz4sIDezdh5XreX2HmHBErq768zvV88F076yl7YqpbX1xLdarqaxYlluKM
-	REMt5qLiRACfOzYEywMAAA==
-X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFrrKIsWRmVeSWpSXmKPExsVy+t/xe7peP5+nGXxu0rfYPHErm8XElZOZ
-	LX59sbDYf/Abq8XMGScYLTpnb2C3WPp2K7vF5V1z2CwOfnjCatFyx9SBy+PJwXlMHmvmrWH0
-	2LxCy2PxnpdMHud2nGf32LSqk81j3slAjxebZzJ6fN4k57H1822WAK4oPZui/NKSVIWM/OIS
-	W6VoQwsjPUNLCz0jE0s9Q2PzWCsjUyV9O5uU1JzMstQifbsEvYxzs14zFVzhqnjU/IalgXEz
-	RxcjJ4eEgInE0UP3mLsYuTiEBJYySsz6vo8NIiEjsfHLVVYIW1jiz7UuNoiij4wSS1atYIdw
-	NjNKrNmwBayDRUBV4v3h10wgNpuAjsT5N3eYQWwRAQ2JH99ngK1gFnjHJDGv9yULSEJYwEfi
-	e9sZMJtXwEFiw9KzUCvmMEk8aX/GBJEQlDg58wlYETPQ1AW7PwEVcQDZ0hLL/4H9wCkQK/Hn
-	2FpmiFMVJb4uvscCYddKfP77jHECo/AsJJNmIZk0C2HSAkbmVYwiqaXFuem5xUZ6xYm5xaV5
-	6XrJ+bmbGIHxu+3Yzy07GFe++qh3iJGJg/EQowQHs5IIr+3vp2lCvCmJlVWpRfnxRaU5qcWH
-	GE2BYTGRWUo0OR+YQPJK4g3NDEwNTcwsDUwtzYyVxHnZrpxPExJITyxJzU5NLUgtgulj4uCU
-	amASV+AwDuQr3m2yz48nRL+yifOH7Q41V3H/V7LxMzmnvb4g/eb+vYtFbld8QqaLW2fM+1fb
-	wnjn3hXZWRl15WzVT9SOXPq7ryTlio7B1wSL9Qu6xTcmLdnCsdznUXeq8d7dvmYpvLOSOuR6
-	vz36d+fdt6txh9gP2O6+e42VKaXGxSxX/1IUn93u2d+PlZUXt1d4sZWLHater9wTrmJQd3+u
-	bKL8x0+7M9a9Wu6aHB0sk2P1Xzsnwq/xieqxo1xFb1jiXl2ZnF+0P6no6ZQFXSUFicpRdrI5
-	p7c+1OOLnnw3+fLHV5MtbZVi2WtVTs1fcSiOcdUBj9Ta79K/BSTvmF6Lq1/zbUfK4fu6hwoN
-	UpRYijMSDbWYi4oTAZz1sg1oAwAA
-X-CMS-MailID: 20240916092426eucas1p14459d30965e9768af83f6e8b6fe94823
-X-Msg-Generator: CA
-X-RootMTR: 20240914005236eucas1p2e1490741a98121e9e74d042aa76aa4d7
-X-EPHeader: CA
-CMS-TYPE: 201P
-X-CMS-RootMailID: 20240914005236eucas1p2e1490741a98121e9e74d042aa76aa4d7
-References: <20240913-jag-iopfv8-v2-0-dea01c2343bc@samsung.com>
-	<20240913-jag-iopfv8-v2-1-dea01c2343bc@samsung.com>
-	<CGME20240914005236eucas1p2e1490741a98121e9e74d042aa76aa4d7@eucas1p2.samsung.com>
-	<BL1PR11MB52713D3D5947C66AE463FA4B8C662@BL1PR11MB5271.namprd11.prod.outlook.com>
 
-On Sat, Sep 14, 2024 at 12:52:22AM +0000, Tian, Kevin wrote:
-> > From: Joel Granados via B4 Relay
-> > <devnull+j.granados.samsung.com@kernel.org>
-> > 
-> > From: Joel Granados <j.granados@samsung.com>
-> > 
-> > IO page faults are no longer dependent on CONFIG_INTEL_IOMMU_SVM.
-> > Move
-> > all Page Request Queue (PRQ) functions that handle prq events to a new
-> > file in drivers/iommu/intel/prq.c. The page_req_des struct is now
-> > declared in drivers/iommu/intel/prq.c.
-> > 
-> > No functional changes are intended. This is a preparation patch to
-> > enable the use of IO page faults outside the SVM/PASID use cases.
-> 
-> Do we want to guard it under a new config option e.g.
-> CONFIG_INTEL_IOMMU_IOPF? it's unnecessary to allocate resources
-> for the majority usages which don't require IOPF.
-> 
-> Baolu?
-> 
-> > -#ifdef CONFIG_INTEL_IOMMU_SVM
-> >  	if (pasid_supported(iommu)) {
-> >  		if (ecap_prs(iommu->ecap))
-> > -			intel_svm_finish_prq(iommu);
-> > +			intel_finish_prq(iommu);
-> >  	}
-> > -#endif
-> 
-> either intel_iommu_finish_prq() or intel_prq_finish().
+Hi Linus,
 
-Thx; I see the pattern now! The first (Adding "_iommu_" to the name)
-makes more sense to me as I see some intel_iommu_* function further down
-in the iommu.h file.
+The following changes since commit da3ea35007d0af457a0afc87e84fddaebc4e0b63:
 
-> 
-> same for other helpers.
+  Linux 6.11-rc7 (2024-09-08 14:50:28 -0700)
 
-Will change for the next version
+are available in the Git repository at:
 
-Best
+  git://git.kernel.org/pub/scm/linux/kernel/git/iommu/linux.git tags/iommu-updates-v6.12
 
--- 
+for you to fetch changes up to 97162f6093d263aa1c2c7e883912f922ea633512:
 
-Joel Granados
+  Merge branches 'fixes', 'arm/smmu', 'intel/vt-d', 'amd/amd-vi' and 'core' into next (2024-09-13 12:53:05 +0200)
+
+----------------------------------------------------------------
+IOMMU Updates for Linux v6.12
+
+Including:
+
+	- Core changes:
+	  - Allow ATS on VF when parent device is identity mapped.
+	  - Optimize unmap path on ARM io-pagetable implementation.
+	  - Use of_property_present().
+
+	- ARM-SMMU changes:
+	  - SMMUv2:
+	    - Devicetree binding updates for Qualcomm MMU-500 implementations.
+	    - Extend workarounds for broken Qualcomm hypervisor to avoid
+	      touching features that are not available (e.g. 16KiB page
+	      support, reserved context banks).
+	  - SMMUv3:
+	    - Support for NVIDIA's custom virtual command queue hardware.
+	    - Fix Stage-2 stall configuration and extend tests to cover this
+	      area.
+	    - A bunch of driver cleanups, including simplification of the
+	      master rbtree code.
+	  - Plus minor cleanups and fixes across both drivers.
+
+	- Intel VT-d changes:
+	  - Retire si_domain and convert to use static identity domain.
+	  - Batched IOTLB/dev-IOTLB invalidation.
+	  - Small code refactoring and cleanups.
+
+	- AMD-Vi changes:
+	  - Cleanup and refactoring of io-pagetable code.
+	  - Add parameter to limit the used io-pagesizes.
+	  - Other cleanups and fixes.
+
+----------------------------------------------------------------
+Ashish Mhetre (1):
+      iommu/io-pgtable-arm: Optimise non-coherent unmap
+
+Dan Carpenter (2):
+      iommu/arm-smmu-v3: Fix a NULL vs IS_ERR() check
+      iommu/tegra241-cmdqv: Fix ioremap() error handling in probe()
+
+Dmitry Baryshkov (1):
+      iommu/arm-smmu-qcom: apply num_context_bank fixes for SDM630 / SDM660
+
+Eliav Bar-ilan (1):
+      iommu/amd: Fix argument order in amd_iommu_dev_flush_pasid_all()
+
+Jason Gunthorpe (26):
+      iommu: Allow ATS to work on VFs when the PF uses IDENTITY
+      iommu/arm-smmu-v3: Add struct arm_smmu_impl_ops
+      iommu/amd: Move allocation of the top table into v1_alloc_pgtable
+      iommu/amd: Allocate the page table root using GFP_KERNEL
+      iommu/amd: Set the pgsize_bitmap correctly
+      iommu/amd: Remove amd_iommu_domain_update() from page table freeing
+      iommu/amd: Remove the amd_iommu_domain_set_pt_root() and related
+      iommu/amd: Rename struct amd_io_pgtable iopt to pgtbl
+      iommu/amd: Remove amd_io_pgtable::pgtbl_cfg
+      iommu/amd: Store the nid in io_pgtable_cfg instead of the domain
+      iommu/amd: Narrow the use of struct protection_domain to invalidation
+      iommu/amd: Remove conditions from domain free paths
+      iommu/amd: Fix typo of , instead of ;
+      iommu/amd: Remove the confusing dummy iommu_flush_ops tlb ops
+      iommu/amd: Correct the reported page sizes from the V1 table
+      iommu/amd: Do not set the D bit on AMD v2 table entries
+      iommu/arm-smmu-v3: Use the new rb tree helpers
+      iommu/arm-smmu-v3: Add arm_smmu_strtab_l1/2_idx()
+      iommu/arm-smmu-v3: Add types for each level of the 2 level stream table
+      iommu/arm-smmu-v3: Reorganize struct arm_smmu_strtab_cfg
+      iommu/arm-smmu-v3: Remove strtab_base/cfg
+      iommu/arm-smmu-v3: Do not use devm for the cd table allocations
+      iommu/arm-smmu-v3: Shrink the cdtab l1_desc array
+      iommu/arm-smmu-v3: Add types for each level of the CD table
+      iommu/arm-smmu-v3: Reorganize struct arm_smmu_ctx_desc_cfg
+      iommu/amd: Test for PAGING domains before freeing a domain
+
+Joerg Roedel (2):
+      iommu/amd: Add kernel parameters to limit V1 page-sizes
+      Merge branches 'fixes', 'arm/smmu', 'intel/vt-d', 'amd/amd-vi' and 'core' into next
+
+Konrad Dybcio (1):
+      iommu/arm-smmu-qcom: Work around SDM845 Adreno SMMU w/ 16K pages
+
+Lu Baolu (10):
+      iommu/vt-d: Require DMA domain if hardware not support passthrough
+      iommu/vt-d: Remove identity mappings from si_domain
+      iommu/vt-d: Always reserve a domain ID for identity setup
+      iommu/vt-d: Remove has_iotlb_device flag
+      iommu/vt-d: Factor out helpers from domain_context_mapping_one()
+      iommu/vt-d: Add support for static identity domain
+      iommu/vt-d: Cleanup si_domain
+      iommu/vt-d: Move PCI PASID enablement to probe path
+      iommu/vt-d: Unconditionally flush device TLB for pasid table updates
+      iommu/vt-d: Add qi_batch for dmar_domain
+
+Marc Gonzalez (1):
+      iommu/arm-smmu-qcom: hide last LPASS SMMU context bank from linux
+
+Mostafa Saleh (2):
+      iommu/arm-smmu-v3: Match Stall behaviour for S2
+      iommu/arm-smmu-v3-test: Test masters with stall enabled
+
+Nate Watterson (1):
+      iommu/arm-smmu-v3: Add in-kernel support for NVIDIA Tegra241 (Grace) CMDQV
+
+Nicolin Chen (11):
+      iommu/arm-smmu-v3: Issue a batch of commands to the same cmdq
+      iommu/arm-smmu-v3: Pass in cmdq pointer to arm_smmu_cmdq_build_sync_cmd
+      iommu/arm-smmu-v3: Pass in cmdq pointer to arm_smmu_cmdq_init
+      iommu/arm-smmu-v3: Make symbols public for CONFIG_TEGRA241_CMDQV
+      iommu/arm-smmu-v3: Add ARM_SMMU_OPT_TEGRA241_CMDQV
+      iommu/arm-smmu-v3: Add acpi_smmu_iort_probe_model for impl
+      iommu/arm-smmu-v3: Start a new batch if new command is not supported
+      iommu/tegra241-cmdqv: Limit CMDs for VCMDQs of a guest owned VINTF
+      iommu/tegra241-cmdqv: Fix -Wformat-truncation warnings in lvcmdq_error_header
+      iommu/tegra241-cmdqv: Drop static at local variable
+      iommu/tegra241-cmdqv: Do not allocate vcmdq until dma_set_mask_and_coherent
+
+Nikunj Kela (1):
+      dt-bindings: arm-smmu: document the support on SA8255p
+
+Rob Clark (1):
+      iommu/arm-smmu: Un-demote unhandled-fault msg
+
+Rob Herring (Arm) (1):
+      iommu: Use of_property_present()
+
+Sanjay K Kumar (1):
+      iommu/vt-d: Fix potential lockup if qi_submit_sync called with 0 count
+
+Suravee Suthikulpanit (1):
+      iommu/amd: Update PASID, GATS, GLX, SNPAVICSUP feature related macros
+
+Tina Zhang (3):
+      iommu/vt-d: Factor out invalidation descriptor composition
+      iommu/vt-d: Refactor IOTLB and Dev-IOTLB flush for batching
+      iommu/vt-d: Introduce batched cache invalidation
+
+Vasant Hegde (9):
+      iommu/amd: Add blocked domain support
+      iommu/amd: Update event log pointer as soon as processing is complete
+      iommu/amd: Make amd_iommu_is_attach_deferred() static
+      iommu/amd: Remove unused DTE_GCR3_INDEX_* macros
+      iommu/amd: Handle error path in amd_iommu_probe_device()
+      iommu/amd: Make amd_iommu_dev_flush_pasid_all() static
+      iommu/amd: Make amd_iommu_domain_flush_complete() static
+      iommu/amd: Rework amd_iommu_update_and_flush_device_table()
+      iommu/amd: Make amd_iommu_dev_update_dte() static
+
+Will Deacon (1):
+      Merge branch 'for-joerg/arm-smmu/bindings' into for-joerg/arm-smmu/updates
+
+Zhang Zekun (1):
+      iommu/arm-smmu-v3: Remove the unused empty definition
+
+Zhenhua Huang (1):
+      dt-bindings: arm-smmu: Add compatible for QCS8300 SoC
+
+ Documentation/admin-guide/kernel-parameters.txt    |  17 +-
+ .../devicetree/bindings/iommu/arm,smmu.yaml        |   5 +
+ MAINTAINERS                                        |   1 +
+ drivers/iommu/Kconfig                              |  11 +
+ drivers/iommu/amd/amd_iommu.h                      |  26 +-
+ drivers/iommu/amd/amd_iommu_types.h                |  35 +-
+ drivers/iommu/amd/init.c                           |  16 +-
+ drivers/iommu/amd/io_pgtable.c                     | 105 +--
+ drivers/iommu/amd/io_pgtable_v2.c                  |  56 +-
+ drivers/iommu/amd/iommu.c                          | 210 +++--
+ drivers/iommu/amd/pasid.c                          |   2 +-
+ drivers/iommu/arm/arm-smmu-v3/Makefile             |   1 +
+ drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-test.c   |  83 +-
+ drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c        | 578 +++++++------
+ drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h        | 135 ++-
+ drivers/iommu/arm/arm-smmu-v3/tegra241-cmdqv.c     | 909 +++++++++++++++++++++
+ drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c         |  28 +
+ drivers/iommu/arm/arm-smmu/arm-smmu.c              |   2 +-
+ drivers/iommu/fsl_pamu_domain.c                    |   4 +-
+ drivers/iommu/intel/cache.c                        | 239 ++++--
+ drivers/iommu/intel/dmar.c                         | 109 +--
+ drivers/iommu/intel/iommu.c                        | 504 +++++-------
+ drivers/iommu/intel/iommu.h                        | 128 ++-
+ drivers/iommu/intel/nested.c                       |   3 +-
+ drivers/iommu/intel/pasid.c                        |  12 +-
+ drivers/iommu/intel/svm.c                          |   7 +-
+ drivers/iommu/io-pgtable-arm.c                     |  31 +-
+ drivers/iommu/of_iommu.c                           |   2 +-
+ drivers/pci/ats.c                                  |  33 +
+ include/linux/io-pgtable.h                         |   4 +
+ include/linux/pci-ats.h                            |   3 +
+ 31 files changed, 2259 insertions(+), 1040 deletions(-)
+ create mode 100644 drivers/iommu/arm/arm-smmu-v3/tegra241-cmdqv.c
+
+Please pull.
+
+Thanks,
+
+	Joerg
