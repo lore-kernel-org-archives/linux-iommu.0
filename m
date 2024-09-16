@@ -1,68 +1,48 @@
 Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.223.130])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C7E4F136345
-	for <iommu@lists.linux.dev>; Mon, 16 Sep 2024 06:48:01 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3A13513211A
+	for <iommu@lists.linux.dev>; Mon, 16 Sep 2024 06:48:04 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=195.135.223.130
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1726469284; cv=none; b=r2oMKeIzneR+Cr7j0luTb+zdEP92Heswvl7rl90Tv+oJjnCF+UZimOpDuw5djup7U4j4engeqj/S5VAIfXJ4GSPxDC+RmbrJPMthsX92M3CFqIz7sSwMtf/FZ6NBCqp6CehvUOQDxByINidLs1wdwVTfm0UopO+HjksY69dFywI=
+	t=1726469285; cv=none; b=aOh8SLZsRso26no2ZAcz0D1FiKsImogNqVeWA9SArAQuUu3CQ5Ujz+AW8akHPKuXSI27FadRFTOqgXMmaUyr2YUHB9iPbL/DMC1pr+EY1DFvrJ5/K8qI6MEqj9b0q1TeyAskKwb/06Y639DRVFsa6MSITSc6Nq7pzWdwwppY/8g=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1726469284; c=relaxed/simple;
-	bh=tV5Te0ohFCyhe2p875NiYfrVs5TtDyC+bfMZYaJ9IOM=;
+	s=arc-20240116; t=1726469285; c=relaxed/simple;
+	bh=X+nYOOl5O5QuNHliXvszJubXKCo0cFjDXSRuni1z0Xg=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=AeYPU1n2BaeL3Z7rmB5zkjD/eUQwM8ZMJyUSzgOYcnUTFaftIjKfLoSkUidn/K1lnvPJTR/bXlA1/hXkWMC7S+YUD6eHQYx1xvZtYFhZpzmjJJLWtbj0vWQjg3TG30hQUrC2mN0dj71NOXhc9k9/UDms0dy0zZEOSc3yC9a3la0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com; spf=pass smtp.mailfrom=suse.com; dkim=pass (1024-bit key) header.d=suse.com header.i=@suse.com header.b=bJtJLvyx; dkim=pass (1024-bit key) header.d=suse.com header.i=@suse.com header.b=bJtJLvyx; arc=none smtp.client-ip=195.135.223.130
+	 MIME-Version; b=CcHtMPzXbMeBh4q4Yt1VyXDAZYH44oIvcYF0A2rNYlqEm/jZtAA9R2e4tJF0yzJ9zNl3rTYv2TiDqsOfziRk7nT9JEbqGZ4oF3RNEYRN5Nryu/wdajghDc8AKdcicKAEPgmT/2ohe84ZZvJDAeDolrh0CF+ukOSDaBpRtxk3zUg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com; spf=pass smtp.mailfrom=suse.com; arc=none smtp.client-ip=195.135.223.130
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=suse.com
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=suse.com header.i=@suse.com header.b="bJtJLvyx";
-	dkim=pass (1024-bit key) header.d=suse.com header.i=@suse.com header.b="bJtJLvyx"
-Received: from imap1.dmz-prg2.suse.org (unknown [10.150.64.97])
+Received: from imap1.dmz-prg2.suse.org (imap1.dmz-prg2.suse.org [IPv6:2a07:de40:b281:104:10:150:64:97])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
 	(No client certificate requested)
-	by smtp-out1.suse.de (Postfix) with ESMTPS id C6E1721BAD;
-	Mon, 16 Sep 2024 06:47:56 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
-	t=1726469276; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-	 mime-version:mime-version:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references;
-	bh=JBszN+nYRysjyJMENOdUJD1nUJzImv2ssH2bNj79Urk=;
-	b=bJtJLvyxBCA/NavfnlL2lyJw0Yw5R6IYBFkPb2dMF851JftbNmyZSJDysFgHUGo4x8uOdy
-	yzKePk68c8JC8S3HaVI58smWpnFeKHHtm/EBuzieqmrpKEdq8Fd7mMXAQ1TrXzeDxEjttJ
-	uwLg+sRHwYkSDjS7RAXQAJjl+Wv19C4=
+	by smtp-out1.suse.de (Postfix) with ESMTPS id 7837C21BEC;
+	Mon, 16 Sep 2024 06:48:02 +0000 (UTC)
 Authentication-Results: smtp-out1.suse.de;
 	none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
-	t=1726469276; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-	 mime-version:mime-version:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references;
-	bh=JBszN+nYRysjyJMENOdUJD1nUJzImv2ssH2bNj79Urk=;
-	b=bJtJLvyxBCA/NavfnlL2lyJw0Yw5R6IYBFkPb2dMF851JftbNmyZSJDysFgHUGo4x8uOdy
-	yzKePk68c8JC8S3HaVI58smWpnFeKHHtm/EBuzieqmrpKEdq8Fd7mMXAQ1TrXzeDxEjttJ
-	uwLg+sRHwYkSDjS7RAXQAJjl+Wv19C4=
 Received: from imap1.dmz-prg2.suse.org (localhost [127.0.0.1])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
 	(No client certificate requested)
-	by imap1.dmz-prg2.suse.org (Postfix) with ESMTPS id 8EA3C139CE;
-	Mon, 16 Sep 2024 06:47:56 +0000 (UTC)
+	by imap1.dmz-prg2.suse.org (Postfix) with ESMTPS id 39020139CE;
+	Mon, 16 Sep 2024 06:48:02 +0000 (UTC)
 Received: from dovecot-director2.suse.de ([2a07:de40:b281:106:10:150:64:167])
 	by imap1.dmz-prg2.suse.org with ESMTPSA
-	id GDVLIZzU52aJIAAAD6G6ig
-	(envelope-from <jgross@suse.com>); Mon, 16 Sep 2024 06:47:56 +0000
+	id DrJuDKLU52aOIAAAD6G6ig
+	(envelope-from <jgross@suse.com>); Mon, 16 Sep 2024 06:48:02 +0000
 From: Juergen Gross <jgross@suse.com>
 To: linux-kernel@vger.kernel.org,
 	iommu@lists.linux.dev
 Cc: Juergen Gross <jgross@suse.com>,
 	Stefano Stabellini <sstabellini@kernel.org>,
 	Oleksandr Tyshchenko <oleksandr_tyshchenko@epam.com>,
-	xen-devel@lists.xenproject.org
-Subject: [PATCH v2 1/2] xen/swiotlb: add alignment check for dma buffers
-Date: Mon, 16 Sep 2024 08:47:47 +0200
-Message-ID: <20240916064748.18071-2-jgross@suse.com>
+	xen-devel@lists.xenproject.org,
+	Jan Beulich <jbeulich@suse.com>
+Subject: [PATCH v2 2/2] xen/swiotlb: fix allocated size
+Date: Mon, 16 Sep 2024 08:47:48 +0200
+Message-ID: <20240916064748.18071-3-jgross@suse.com>
 X-Mailer: git-send-email 2.43.0
 In-Reply-To: <20240916064748.18071-1-jgross@suse.com>
 References: <20240916064748.18071-1-jgross@suse.com>
@@ -73,72 +53,57 @@ List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-Spam-Level: 
-X-Spamd-Result: default: False [-6.80 / 50.00];
-	REPLY(-4.00)[];
-	BAYES_HAM(-3.00)[99.99%];
-	MID_CONTAINS_FROM(1.00)[];
-	NEURAL_HAM_LONG(-1.00)[-1.000];
-	R_MISSING_CHARSET(0.50)[];
-	NEURAL_HAM_SHORT(-0.20)[-0.997];
-	MIME_GOOD(-0.10)[text/plain];
-	MIME_TRACE(0.00)[0:+];
-	TO_DN_SOME(0.00)[];
-	RCVD_VIA_SMTP_AUTH(0.00)[];
-	ARC_NA(0.00)[];
-	DKIM_SIGNED(0.00)[suse.com:s=susede1];
-	FUZZY_BLOCKED(0.00)[rspamd.com];
-	FROM_EQ_ENVFROM(0.00)[];
-	FROM_HAS_DN(0.00)[];
-	RCPT_COUNT_FIVE(0.00)[6];
-	DBL_BLOCKED_OPENRESOLVER(0.00)[suse.com:email,suse.com:mid];
-	RCVD_COUNT_TWO(0.00)[2];
-	TO_MATCH_ENVRCPT_ALL(0.00)[];
-	RCVD_TLS_ALL(0.00)[]
-X-Spam-Score: -6.80
+X-Rspamd-Pre-Result: action=no action;
+	module=replies;
+	Message is reply to one we originated
+X-Spamd-Result: default: False [-4.00 / 50.00];
+	REPLY(-4.00)[]
 X-Spam-Flag: NO
+X-Spam-Score: -4.00
+X-Rspamd-Queue-Id: 7837C21BEC
+X-Rspamd-Pre-Result: action=no action;
+	module=replies;
+	Message is reply to one we originated
+X-Rspamd-Action: no action
+X-Rspamd-Server: rspamd1.dmz-prg2.suse.org
+X-Spam-Level: 
 
-When checking a memory buffer to be consecutive in machine memory,
-the alignment needs to be checked, too. Failing to do so might result
-in DMA memory not being aligned according to its requested size,
-leading to error messages like:
+The allocated size in xen_swiotlb_alloc_coherent() and
+xen_swiotlb_free_coherent() is calculated wrong for the case of
+XEN_PAGE_SIZE not matching PAGE_SIZE. Fix that.
 
-  4xxx 0000:2b:00.0: enabling device (0140 -> 0142)
-  4xxx 0000:2b:00.0: Ring address not aligned
-  4xxx 0000:2b:00.0: Failed to initialise service qat_crypto
-  4xxx 0000:2b:00.0: Resetting device qat_dev0
-  4xxx: probe of 0000:2b:00.0 failed with error -14
-
-Fixes: 9435cce87950 ("xen/swiotlb: Add support for 64KB page granularity")
+Fixes: 7250f422da04 ("xen-swiotlb: use actually allocated size on check physical continuous")
+Reported-by: Jan Beulich <jbeulich@suse.com>
 Signed-off-by: Juergen Gross <jgross@suse.com>
 ---
 V2:
-- use 1ULL for creating align mask in order to cover ARM32 LPAE
-- fix case of XEN_PAGE_SIZE != PAGE_SIZE (Jan Beulich)
+- new patch
 ---
- drivers/xen/swiotlb-xen.c | 6 ++++++
- 1 file changed, 6 insertions(+)
+ drivers/xen/swiotlb-xen.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
 diff --git a/drivers/xen/swiotlb-xen.c b/drivers/xen/swiotlb-xen.c
-index 35155258a7e2..ddf5b1df632e 100644
+index ddf5b1df632e..faa2fb7c74ae 100644
 --- a/drivers/xen/swiotlb-xen.c
 +++ b/drivers/xen/swiotlb-xen.c
-@@ -78,9 +78,15 @@ static inline int range_straddles_page_boundary(phys_addr_t p, size_t size)
- {
- 	unsigned long next_bfn, xen_pfn = XEN_PFN_DOWN(p);
- 	unsigned int i, nr_pages = XEN_PFN_UP(xen_offset_in_page(p) + size);
-+	phys_addr_t algn = 1ULL << (get_order(size) + PAGE_SHIFT);
+@@ -147,7 +147,7 @@ xen_swiotlb_alloc_coherent(struct device *dev, size_t size,
+ 	void *ret;
  
- 	next_bfn = pfn_to_bfn(xen_pfn);
+ 	/* Align the allocation to the Xen page size */
+-	size = 1UL << (order + XEN_PAGE_SHIFT);
++	size = ALIGN(size, XEN_PAGE_SIZE);
  
-+	/* If buffer is physically aligned, ensure DMA alignment. */
-+	if (IS_ALIGNED(p, algn) &&
-+	    !IS_ALIGNED(next_bfn << XEN_PAGE_SHIFT, algn))
-+		return 1;
-+
- 	for (i = 1; i < nr_pages; i++)
- 		if (pfn_to_bfn(++xen_pfn) != ++next_bfn)
- 			return 1;
+ 	ret = (void *)__get_free_pages(flags, get_order(size));
+ 	if (!ret)
+@@ -179,7 +179,7 @@ xen_swiotlb_free_coherent(struct device *dev, size_t size, void *vaddr,
+ 	int order = get_order(size);
+ 
+ 	/* Convert the size to actually allocated. */
+-	size = 1UL << (order + XEN_PAGE_SHIFT);
++	size = ALIGN(size, XEN_PAGE_SIZE);
+ 
+ 	if (WARN_ON_ONCE(dma_handle + size - 1 > dev->coherent_dma_mask) ||
+ 	    WARN_ON_ONCE(range_straddles_page_boundary(phys, size)))
 -- 
 2.43.0
 
