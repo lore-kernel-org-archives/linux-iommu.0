@@ -1,138 +1,193 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.18])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-lf1-f41.google.com (mail-lf1-f41.google.com [209.85.167.41])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7407F18C22;
-	Tue, 17 Sep 2024 01:49:45 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 445F5175D2C
+	for <iommu@lists.linux.dev>; Tue, 17 Sep 2024 09:48:56 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.41
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1726537787; cv=none; b=cAgtWdOW/7Z/KM3z1xUoGeT+wf6YZ81kGVMMD1S1WAxKD/PSpPxbqHOu2rEYcF5ISlMt/zAe51ZMGjtE5aTyTeiv745jkyyCfBAm+DSPHQumJSZBwMRXsdjqIb7PIN66CFfOUPrwKIIP0SzPMqzOKnWGbWLDNn/78dg0emFaxYI=
+	t=1726566573; cv=none; b=KEZDQjNm5FglQtLUH2cUJpq0TkB5Is32MFjWx/J40TPQgxt12RsMaeMmdqvkzOBJHARy1F6JAL9cT5kywIuCHCWSH355S0vDENzjKBKagfwJw/Swzu9b724V8Kes3SgiGCvKHWqb4QWB5DhmLNfWbxzR/R5GRgJqCUEhvVvj6AI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1726537787; c=relaxed/simple;
-	bh=Eo77KNdi/8iemFjT6AdTWrK/OwDDlJo3jkg/LP3tlvI=;
+	s=arc-20240116; t=1726566573; c=relaxed/simple;
+	bh=x0Khn8huUisoszlE0mEAiaPbyYa2Sp+KfRqHCN9xHSg=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=an6xPIA+4jO2ZpNESZI7YI4uEpbSb9CWHQPuUmSZipTGAXR0sMQfb3eWnYE7USHxXNe5T/4eEU2Oig1o5FzHyiMRcqbLXobLyxNeipUy+0W+YLZm5KuafcpLrUC34I3nh7wzJS22rziSjWYvZN/hqUgpyMeqkRWfUEKM3VtW0cQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=f9Du/XMP; arc=none smtp.client-ip=198.175.65.18
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	 Content-Type:Content-Disposition:In-Reply-To; b=samWaSiUYArDJaRB/Bf9XPZf/nUAfl7jXKR/809evLBGf2XzUD9b66pWCbhnTfGPhxJhT04mb0chxoc95EyxCT5bq2JekWV14YRWSsjpIVng+cwiDAaRpvz0zaMP6EYoKToGFKGYZu1Ht5ZGPJU8gxNw+XDKuqMn064lU/WLQw0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=C48M+Coj; arc=none smtp.client-ip=209.85.167.41
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="f9Du/XMP"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1726537786; x=1758073786;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=Eo77KNdi/8iemFjT6AdTWrK/OwDDlJo3jkg/LP3tlvI=;
-  b=f9Du/XMPYKCwEW4cBs0GVacxJPIfDoMpVAN3pNyu8WDq8kuX36wd+nt/
-   v2zLZvlh7yoDcSw1xuW/h7yf+Hv92rn/azq5cq9RQy2dna9Gavt1zCkn4
-   EmQAOcFqc+TU5kX5uco3mimlKEa8I0OtbRYDs+EssOPhf1xmyjPzzecBa
-   Sozk6QG6L3izg6DzIG2LOKOhADzJFqX/HHKE4vlDnjxzWQVgIHgedz7/w
-   bHDWb+RB7MKr/VLr7YfwgXs4fvYLuLq4H4lezoeTILGeOrR8dtklZRzZb
-   xSlxdahAKubnWcZym958RPCj/gXTXj/F0xP+oitMGkwnK3RSGd3ywSbMi
-   g==;
-X-CSE-ConnectionGUID: +AlJMOi0SW2pCw7LE5bZ9g==
-X-CSE-MsgGUID: UXIHeLfETcele2nY2cTY6g==
-X-IronPort-AV: E=McAfee;i="6700,10204,11197"; a="25505118"
-X-IronPort-AV: E=Sophos;i="6.10,234,1719903600"; 
-   d="scan'208";a="25505118"
-Received: from fmviesa005.fm.intel.com ([10.60.135.145])
-  by orvoesa110.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Sep 2024 18:49:43 -0700
-X-CSE-ConnectionGUID: frMDvjj/Tz2Ey4ppVYuKoQ==
-X-CSE-MsgGUID: +VrRC8pQSDeB8SGeqHKZyQ==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.10,234,1719903600"; 
-   d="scan'208";a="73405347"
-Received: from lkp-server01.sh.intel.com (HELO 53e96f405c61) ([10.239.97.150])
-  by fmviesa005.fm.intel.com with ESMTP; 16 Sep 2024 18:49:41 -0700
-Received: from kbuild by 53e96f405c61 with local (Exim 4.96)
-	(envelope-from <lkp@intel.com>)
-	id 1sqNLW-000Ah4-2v;
-	Tue, 17 Sep 2024 01:49:38 +0000
-Date: Tue, 17 Sep 2024 09:48:52 +0800
-From: kernel test robot <lkp@intel.com>
-To: Steve Sistare <steven.sistare@oracle.com>, iommu@lists.linux.dev
-Cc: oe-kbuild-all@lists.linux.dev, Jason Gunthorpe <jgg@nvidia.com>,
-	Kevin Tian <kevin.tian@intel.com>,
-	Nicolin Chen <nicolinc@nvidia.com>,
-	Steve Sistare <steven.sistare@oracle.com>
-Subject: Re: [PATCH V1 6/9] iommufd: IOMMU_IOAS_MAP_FILE implementation
-Message-ID: <202409170940.No0O836I-lkp@intel.com>
-References: <1726319158-283074-7-git-send-email-steven.sistare@oracle.com>
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="C48M+Coj"
+Received: by mail-lf1-f41.google.com with SMTP id 2adb3069b0e04-53661d95508so7100e87.1
+        for <iommu@lists.linux.dev>; Tue, 17 Sep 2024 02:48:55 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20230601; t=1726566534; x=1727171334; darn=lists.linux.dev;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :mime-version:references:message-id:subject:cc:to:from:date:from:to
+         :cc:subject:date:message-id:reply-to;
+        bh=oNGxPHFyTwOGWUxhI2HLPoZN1QSNNpDRrCcM4Trhkt8=;
+        b=C48M+CojnFZogdsxjDV0Ro02RxRpcoHynSKa6k6lRTpf/vX2t0pkzoeylVydkgnzMN
+         SnjcubCZT5TYgIinK3EBzryv+JZfS+0VFSTRp9Tffobe/dzpw6PDI2VE/6bGDgnRqKKK
+         dOjuVE0115BhTKnwOzIBuuObKRXmC7S/jE8mpB4JriJdQhlBm1NxQqUY7JDBi90KKeL8
+         Eu83Mt6GDoXNJJB1x3VRPEHq5K240ZyEHRPWfTVt3O2/oNrZDmaywlEXzomMzixZE7xW
+         EBsO+7wHrff7RXwf+6m073+M/GV5Cl9t4g3Di97WglqxvT8SANjlgnQX3zxBAsQWgbbv
+         e31A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1726566534; x=1727171334;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :mime-version:references:message-id:subject:cc:to:from:date
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=oNGxPHFyTwOGWUxhI2HLPoZN1QSNNpDRrCcM4Trhkt8=;
+        b=OaG5ju3NdUx/JHbyJGanJITZ/91D5W9HdwAV/ktQlbdHTHSCt2sg6RMU6VLYIZkQvM
+         PpL2gt+MS4yyiscsYY6xF7jZMtW+bFh6KFM0ObRXsIOlOPd5uEJbdvTEoe8Q/avWeAJb
+         uzLLwTcbdtQ83C7hLyJi3h4gXbVWcHvSiVglXBAqG2Wm0FDs+YmDJ5/GbHhHla1l99Zo
+         w3nBgh4XHt2wpgeNuqYT+tGe2fHGbzLdFbKMewOY3/Sa6d0woacXzpjGvis1LdCr+cGP
+         fNuy6IwMeTfP6Os28+wtxra/utCSkTdEW0CcHEn8HllSK7CeIuXWccebil0pttjXzBXY
+         /SKA==
+X-Forwarded-Encrypted: i=1; AJvYcCWD/+j7YQz9o+LzxssE9zoUoAlmfh8l5l1KGysPc1uHOLfcq9d3aAtepd+RrYjZ/XVarrn4cQ==@lists.linux.dev
+X-Gm-Message-State: AOJu0YwU+FkT601zhzIgoPOvGTA7W4BYrGMmB2hfMUzYTXtuTg/YkR/w
+	LmrlQja6qBBBKrZOZ/KpAYR2LyyJmFXXRoH8Ws+86pdvmM1FJac6jJ9qtggjFQ==
+X-Google-Smtp-Source: AGHT+IG753oKcJhRrwoevlbm6QMdqTgcn7I6H4uCXXVzFfJ7Uy1lB5slwSYlnEJ6eqpTHciyovo7Lg==
+X-Received: by 2002:a05:6512:3da4:b0:536:52dc:291f with SMTP id 2adb3069b0e04-5369c3a3e71mr131542e87.1.1726566533718;
+        Tue, 17 Sep 2024 02:48:53 -0700 (PDT)
+Received: from google.com (205.215.190.35.bc.googleusercontent.com. [35.190.215.205])
+        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-378e780016asm9132715f8f.85.2024.09.17.02.48.52
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 17 Sep 2024 02:48:52 -0700 (PDT)
+Date: Tue, 17 Sep 2024 09:48:44 +0000
+From: Mostafa Saleh <smostafa@google.com>
+To: Jason Gunthorpe <jgg@nvidia.com>
+Cc: acpica-devel@lists.linux.dev, Hanjun Guo <guohanjun@huawei.com>,
+	iommu@lists.linux.dev, Joerg Roedel <joro@8bytes.org>,
+	Kevin Tian <kevin.tian@intel.com>, kvm@vger.kernel.org,
+	Len Brown <lenb@kernel.org>, linux-acpi@vger.kernel.org,
+	linux-arm-kernel@lists.infradead.org,
+	Lorenzo Pieralisi <lpieralisi@kernel.org>,
+	"Rafael J. Wysocki" <rafael@kernel.org>,
+	Robert Moore <robert.moore@intel.com>,
+	Robin Murphy <robin.murphy@arm.com>,
+	Sudeep Holla <sudeep.holla@arm.com>, Will Deacon <will@kernel.org>,
+	Alex Williamson <alex.williamson@redhat.com>,
+	Eric Auger <eric.auger@redhat.com>,
+	Jean-Philippe Brucker <jean-philippe@linaro.org>,
+	Moritz Fischer <mdf@kernel.org>,
+	Michael Shavit <mshavit@google.com>,
+	Nicolin Chen <nicolinc@nvidia.com>, patches@lists.linux.dev,
+	Shameerali Kolothum Thodi <shameerali.kolothum.thodi@huawei.com>
+Subject: Re: [PATCH v2 2/8] iommu/arm-smmu-v3: Use S2FWB when available
+Message-ID: <ZulQfG0fnGlABZrR@google.com>
+References: <0-v2-621370057090+91fec-smmuv3_nesting_jgg@nvidia.com>
+ <2-v2-621370057090+91fec-smmuv3_nesting_jgg@nvidia.com>
+ <ZtHhdj6RAKACBCUG@google.com>
+ <20240830164019.GU3773488@nvidia.com>
+ <ZtWFkR0eSRM4ogJL@google.com>
+ <20240903000546.GD3773488@nvidia.com>
+ <ZtbBTX96OWdONhaQ@google.com>
+ <20240903233340.GH3773488@nvidia.com>
+ <ZuAlt9SsijRxuGLk@google.com>
+ <20240910202251.GJ58321@nvidia.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <1726319158-283074-7-git-send-email-steven.sistare@oracle.com>
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20240910202251.GJ58321@nvidia.com>
 
-Hi Steve,
+On Tue, Sep 10, 2024 at 05:22:51PM -0300, Jason Gunthorpe wrote:
+> On Tue, Sep 10, 2024 at 10:55:51AM +0000, Mostafa Saleh wrote:
+> > On Tue, Sep 03, 2024 at 08:33:40PM -0300, Jason Gunthorpe wrote:
+> > > On Tue, Sep 03, 2024 at 07:57:01AM +0000, Mostafa Saleh wrote:
+> > > 
+> > > > Basically, I believe we shouldn’t set FWB blindly just because it’s supported,
+> > > > I don’t see how it’s useful for stage-2 only domains.
+> > > 
+> > > And the only problem we can see is some niche scenario where incoming
+> > > memory attributes that are already requesting cachable combine to a
+> > > different kind of cachable?
+> > 
+> > No, it’s not about the niche scenario, as I mentioned I don’t think
+> > we should enable FWB because it just exists. One can argue the opposite,
+> > if S2FWB is no different why enable it?
+> 
+> Well, I'd argue that it provides more certainty for the kernel that
+> the DMA API behavior is matched by HW behavior. But I don't feel strongly.
+> 
+> I adjusted the patch to only enable it for nesting parents.
+> 
+> > AFAIU, FWB would be useful in cases where the hypervisor(or VMM) knows
+> > better than the VM, for example some devices MMIO space are emulated so
+> > they are normal memory and it’s more efficient to use memory attributes.
+> 
+> Not quite, the purpose of FWB is to allow the hypervisor to avoid
+> costly cache flushing. It is specifically to protect the hypervisor
+> against a VM causing the caches to go incoherent.
+> 
+> Caches that are unexpectedly incoherent are a security problem for the
+> hypervisor.
 
-kernel test robot noticed the following build warnings:
+I see, thanks for explaining, I got confused about the device emulation case,
+it’s also about corruption because of a mismatch of memory attributes,
+something like:
+https://bugzilla.redhat.com/show_bug.cgi?id=1679680
 
-[auto build test WARNING on akpm-mm/mm-everything]
-[also build test WARNING on linus/master v6.11 next-20240916]
-[If your patch is applied to the wrong git tree, kindly drop us a note.
-And when submitting patch, we suggest to use '--base' as documented in
-https://git-scm.com/docs/git-format-patch#_base_tree_information]
+At the moment, I see KVM doesn’t really touch guest memory, but it does CMO for
+guest map(in case memslot had already some data) and on unmap, which I
+believe has significant performance improvement.
 
-url:    https://github.com/intel-lab-lkp/linux/commits/Steve-Sistare/mm-gup-repin_folio_unhugely/20240914-210746
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/akpm/mm.git mm-everything
-patch link:    https://lore.kernel.org/r/1726319158-283074-7-git-send-email-steven.sistare%40oracle.com
-patch subject: [PATCH V1 6/9] iommufd: IOMMU_IOAS_MAP_FILE implementation
-config: i386-allmodconfig (https://download.01.org/0day-ci/archive/20240917/202409170940.No0O836I-lkp@intel.com/config)
-compiler: gcc-12 (Debian 12.2.0-14) 12.2.0
-reproduce (this is a W=1 build): (https://download.01.org/0day-ci/archive/20240917/202409170940.No0O836I-lkp@intel.com/reproduce)
+> 
+> > > > and we should only set FWB for coherent
+> > > > devices in nested setup only where the VMM(or hypervisor) knows better than
+> > > > the VM.
+> > > 
+> > > I don't want to touch the 'only coherent devices' question. Last time
+> > > I tried to do that I got told every option was wrong.
+> > > 
+> > > I would be fine to only enable for nesting parent domains. It is
+> > > mandatory here and we definitely don't support non-cachable nesting
+> > > today.  Can we agree on that?
+> > 
+> > Why is it mandatory?
+> 
+> Because iommufd/vfio doesn't have cache flushing.
+>  
 
-If you fix the issue in a separate patch/commit (i.e. not just a new version of
-the same patch/commit), kindly add following tags
-| Reported-by: kernel test robot <lkp@intel.com>
-| Closes: https://lore.kernel.org/oe-kbuild-all/202409170940.No0O836I-lkp@intel.com/
+I see.
 
-All warnings (new ones prefixed by >>):
+> > I think a supporting point for this, is that KVM does the same for
+> > the CPU, where it enables FWB for VMs if supported. I have this on
+> > my list to study if that can be improved. But may be if we are out
+> > of options that would be a start.
+> 
+> When KVM turns on S2FWB it stops doing cache flushing. As I understand
+> it S2FWB is significantly a performance optimization.
+> 
+> On the VFIO side we don't have cache flushing at all. So enforcing
+> cache consistency is mandatory for security.
+> 
+> For native VFIO we set IOMMU_CACHE and expect that the contract with
+> the IOMMU is that no cache flushing is required.
+> 
+> For nested we set S2FWB/CANWBS to prevent the VM from disabling VFIO's
+> IOMMU_CACHE and again the contract with the HW is that no cache
+> flushing is required.
+> 
+> Thus VFIO is security correct even though it doesn't cache flush.
+> 
+> None of this has anything to do with device coherence capability. It
+> is why I keep saying incoherent devices must be blocked from VFIO
+> because it cannot operate them securely/correctly.
+> 
+> Fixing that is a whole other topic, Yi has a series for it on x86 at
+> least..
 
->> drivers/iommu/iommufd/io_pagetable.c:458: warning: Function parameter or struct member 'ictx' not described in 'iopt_map_file_pages'
->> drivers/iommu/iommufd/io_pagetable.c:458: warning: Function parameter or struct member 'iopt' not described in 'iopt_map_file_pages'
->> drivers/iommu/iommufd/io_pagetable.c:458: warning: Function parameter or struct member 'iova' not described in 'iopt_map_file_pages'
->> drivers/iommu/iommufd/io_pagetable.c:458: warning: Function parameter or struct member 'file' not described in 'iopt_map_file_pages'
->> drivers/iommu/iommufd/io_pagetable.c:458: warning: Function parameter or struct member 'start' not described in 'iopt_map_file_pages'
->> drivers/iommu/iommufd/io_pagetable.c:458: warning: Function parameter or struct member 'length' not described in 'iopt_map_file_pages'
->> drivers/iommu/iommufd/io_pagetable.c:458: warning: Function parameter or struct member 'iommu_prot' not described in 'iopt_map_file_pages'
->> drivers/iommu/iommufd/io_pagetable.c:458: warning: Function parameter or struct member 'flags' not described in 'iopt_map_file_pages'
+I see, that makes sense to only support it for nested domains on
+the assumption they are only used for VFIO/IOMMUFD till we figure out
+non-coherent devices, I guess you are referring to:
+https://lore.kernel.org/all/ZltQ3PyHKiQmN9SU@nvidia.com/t/#me702dd242782393eb7769000c96702a0fed7f6ca
 
-Kconfig warnings: (for reference only)
-   WARNING: unmet direct dependencies detected for GET_FREE_REGION
-   Depends on [n]: SPARSEMEM [=n]
-   Selected by [m]:
-   - RESOURCE_KUNIT_TEST [=m] && RUNTIME_TESTING_MENU [=y] && KUNIT [=m]
-
-
-vim +458 drivers/iommu/iommufd/io_pagetable.c
-
-   448	
-   449	/**
-   450	 * iopt_map_file_pages() - Like iopt_map_user_pages, but map @file starting
-   451	 * at byte offset @start.
-   452	 */
-   453	int iopt_map_file_pages(struct iommufd_ctx *ictx, struct io_pagetable *iopt,
-   454				unsigned long *iova,
-   455				struct file *file, unsigned long start,
-   456				unsigned long length, int iommu_prot,
-   457				unsigned int flags)
- > 458	{
-   459		struct iopt_pages *pages;
-   460	
-   461		pages = iopt_alloc_file_pages(file, start, length,
-   462					      iommu_prot & IOMMU_WRITE);
-   463		if (IS_ERR(pages))
-   464			return PTR_ERR(pages);
-   465		return iopt_map_common(ictx, iopt, pages, iova, length,
-   466				       start - pages->start,
-   467				       iommu_prot, flags);
-   468	}
-   469	
-
--- 
-0-DAY CI Kernel Test Service
-https://github.com/intel/lkp-tests/wiki
+Thanks,
+Mostafa
+> 
+> Jason
