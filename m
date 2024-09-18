@@ -1,226 +1,244 @@
-Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
+Received: from mx0a-00069f02.pphosted.com (mx0a-00069f02.pphosted.com [205.220.165.32])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CC668762E0
-	for <iommu@lists.linux.dev>; Wed, 18 Sep 2024 11:41:26 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=45.249.212.187
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1726659689; cv=none; b=bdrk0kGAJzGLqnDckts7d8O3u6qPAM+ZAhgmiRiejJvQVSYtWBRbYiX0UtfJnJvOijr1GmgltnFYBwC0unPYOcej0WO07IYINSbF0y2bJnUBqciFMLxFPZeFPYKA+RxbDCyPoJ3ocnzha7xwYK7HIaEh1H8PA8GtH41S0fw3l5c=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1726659689; c=relaxed/simple;
-	bh=yZqA0HU97VRFkqkKbQCUl5SiXbIKmeGlKqj5Gqax0fs=;
-	h=From:To:CC:Subject:Date:Message-ID:MIME-Version:Content-Type; b=U2mw/TV0GVSmF2ixtkNOHtGQs+SsjeGQhnaw7jf3fPQbMJEcaTL5NT6yQGW6E6BU048DrI2hcNR/k4d3yXX36nkmeRljkl6rm3wfA4pb7PsMzCbiQX4f6SwaBuQe7hoOqaBndTrBBQN4sfZBtv94E7aIINvvJcSEFE6vvcSH9wI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=huawei.com; spf=pass smtp.mailfrom=huawei.com; arc=none smtp.client-ip=45.249.212.187
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=huawei.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=huawei.com
-Received: from mail.maildlp.com (unknown [172.19.163.174])
-	by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4X7x8r3ylrzyRhL;
-	Wed, 18 Sep 2024 19:23:08 +0800 (CST)
-Received: from dggpemf200006.china.huawei.com (unknown [7.185.36.61])
-	by mail.maildlp.com (Postfix) with ESMTPS id A7D5B1400DD;
-	Wed, 18 Sep 2024 19:24:24 +0800 (CST)
-Received: from localhost.localdomain (10.90.30.45) by
- dggpemf200006.china.huawei.com (7.185.36.61) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.1544.11; Wed, 18 Sep 2024 19:24:24 +0800
-From: Yunsheng Lin <linyunsheng@huawei.com>
-To: <davem@davemloft.net>, <kuba@kernel.org>, <pabeni@redhat.com>
-CC: <liuyonglong@huawei.com>, <fanghaiqing@huawei.com>,
-	<zhangkun09@huawei.com>, Yunsheng Lin <linyunsheng@huawei.com>, Alexander
- Lobakin <aleksander.lobakin@intel.com>, Robin Murphy <robin.murphy@arm.com>,
-	Alexander Duyck <alexander.duyck@gmail.com>, IOMMU <iommu@lists.linux.dev>,
-	Alexei Starovoitov <ast@kernel.org>, Daniel Borkmann <daniel@iogearbox.net>,
-	Jesper Dangaard Brouer <hawk@kernel.org>, John Fastabend
-	<john.fastabend@gmail.com>, Matthias Brugger <matthias.bgg@gmail.com>,
-	AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>,
-	<netdev@vger.kernel.org>, <intel-wired-lan@lists.osuosl.org>,
-	<bpf@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-	<linux-arm-kernel@lists.infradead.org>, <linux-mediatek@lists.infradead.org>
-Subject: [PATCH net 0/2] fix two bugs related to page_pool
-Date: Wed, 18 Sep 2024 19:18:23 +0800
-Message-ID: <20240918111826.863596-1-linyunsheng@huawei.com>
-X-Mailer: git-send-email 2.30.0
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 08AAD1C173D
+	for <iommu@lists.linux.dev>; Wed, 18 Sep 2024 14:51:25 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=205.220.165.32
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1726671089; cv=fail; b=lGJ3tPGruoVukiaG4hc2tqwkMvAojFs0gwgoUyxsg2X0mUDlFKP513/YtnPxeSdZTopCu7viErmSuSXGaaOwDBnfjUCeTn8kNmOl4vi6lCIOIa9hmTOtyO+UJZfw3YpDV3ElrQtgG5xRDEHxfg/b1ardAyy0YJeZ0LZt0KhYUXI=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1726671089; c=relaxed/simple;
+	bh=MLwrY1W8495enm1UmFN/mVc9CIqwg0awk+IcTur6luc=;
+	h=Message-ID:Date:Subject:To:Cc:References:From:In-Reply-To:
+	 Content-Type:MIME-Version; b=cb0f3xsyVJBRxzyfTMX3wa3AicoTegmHpHsF6yvV/IYIjHkae0vdmOLAmTkempvvBJFa6Ge9iN3ujEBNLwT5v51KyLO2BOHsT8IWSoTQ2t8A4g7GyoKo3ORbJOYztuoWciZYH+w8CT6Mfh2897eeWpu6iIWZyyitmsRNdQOXKEc=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oracle.com; spf=pass smtp.mailfrom=oracle.com; dkim=pass (2048-bit key) header.d=oracle.com header.i=@oracle.com header.b=UBKU8k5L; dkim=pass (1024-bit key) header.d=oracle.onmicrosoft.com header.i=@oracle.onmicrosoft.com header.b=hP1DyUcr; arc=fail smtp.client-ip=205.220.165.32
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oracle.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=oracle.com
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=oracle.com header.i=@oracle.com header.b="UBKU8k5L";
+	dkim=pass (1024-bit key) header.d=oracle.onmicrosoft.com header.i=@oracle.onmicrosoft.com header.b="hP1DyUcr"
+Received: from pps.filterd (m0333521.ppops.net [127.0.0.1])
+	by mx0b-00069f02.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 48IEl1MP001173;
+	Wed, 18 Sep 2024 14:51:18 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=
+	message-id:date:subject:to:cc:references:from:in-reply-to
+	:content-type:content-transfer-encoding:mime-version; s=
+	corp-2023-11-20; bh=pS3KsQzgD/a6BDR/d2Q5sdYEySeApsgjfNoRR8K8fNE=; b=
+	UBKU8k5L81kYg9YpcO4HnXXWJZM8qJE3C6G1jvGJzC3il/qcE8k6HTSGiE7T8FsV
+	bQz8TGr5k47W1nMN2PSrKhFgZZawG0d/ftmwhKf5km3KP0zqGqB5+kXxzE2X2Iha
+	Gq2r93Tjxh/cBfZMiofTIIkkJJLPUPOVTqII8fCeP2iBDn8enaYRVlQYKGd1eDqo
+	MRac5x2drjgHAlloPPJNsnvN6xzsbFpBQNGNwKJX9Zzjh0RSZYi8Gp48hnBb2vKn
+	fa1eehvu81sHMGNWIjUPpfyW1c39T81+uphELsgrLbli5Al5dQ1XpRXsvnuWAgjl
+	2AWRUxOOIhRdtd00u498xA==
+Received: from iadpaimrmta03.imrmtpd1.prodappiadaev1.oraclevcn.com (iadpaimrmta03.appoci.oracle.com [130.35.103.27])
+	by mx0b-00069f02.pphosted.com (PPS) with ESMTPS id 41n3sfshrk-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+	Wed, 18 Sep 2024 14:51:18 +0000 (GMT)
+Received: from pps.filterd (iadpaimrmta03.imrmtpd1.prodappiadaev1.oraclevcn.com [127.0.0.1])
+	by iadpaimrmta03.imrmtpd1.prodappiadaev1.oraclevcn.com (8.18.1.2/8.18.1.2) with ESMTP id 48IEeesm015841;
+	Wed, 18 Sep 2024 14:51:16 GMT
+Received: from nam12-bn8-obe.outbound.protection.outlook.com (mail-bn8nam12lp2177.outbound.protection.outlook.com [104.47.55.177])
+	by iadpaimrmta03.imrmtpd1.prodappiadaev1.oraclevcn.com (PPS) with ESMTPS id 41nyg4q02x-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+	Wed, 18 Sep 2024 14:51:16 +0000
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=J38M7EiePeoQG1CDAA+SCKUeepIpkYksfDK2Ab9XYHU4q9dOZqJOiy90N8s2T3NGBjFY7xVODYyAanjOsO1X10HHTUUpulZxACrS3htepe7YIFm8KIUn3H+zkJCSb5/k6dHOhZsI4Doz83V6ArOzWLpZ/DbGuezivHX0JZCxCgbJt/Z76uQtBaY3LhSZTM6YviBBatIFVWhJByHUrSUaY15jrKlCDkqtck5qmv+KRNpHKyirO46ytJNeL0a9ek7JzbrgD+ahAE0oErNM7scvwzs+vzHthfxPPQqSVVcVyUeoXYSzx6SfWg+aLRcyelfNC3VdZd9QY66uJiPttNpN5A==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=pS3KsQzgD/a6BDR/d2Q5sdYEySeApsgjfNoRR8K8fNE=;
+ b=AhfPEsuuEHgEhMOdE7/8T2Tq7er+X0lUllrCB3lL/YCCntYUBk3jvVYcJ011qpwnH21IqTPyiw9ULCMQApeIXdBaMLOC0Eveo3byyFWIFDAV5XAuSVd1w8M3yadOlBkEMoxYQQWc0E3Owjlyj18w0miZYHXS8+ZLXyTHRQxHUMnTNeHtYIkE30sTDaQ29PyOSGDf0KX2i4lKcCv4fdqIcTtD9KTxKzduUD2GFZ99LQVxwJHdWQ7RkRdIMQ2IQgqlXmaKCZU4AFYj75R/XWqKYiuK9MM7/GKJPow8c+luNSKmssIGeqVmZl52FQAD4pjw3P4Uq99wUwJjCPuf9DhrbQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=oracle.com; dmarc=pass action=none header.from=oracle.com;
+ dkim=pass header.d=oracle.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=oracle.onmicrosoft.com; s=selector2-oracle-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=pS3KsQzgD/a6BDR/d2Q5sdYEySeApsgjfNoRR8K8fNE=;
+ b=hP1DyUcrc4bPx6OtlCS0fiEccD93bughmZ0g+z5A1lZVVSx+jkeBVgbDvwm/skdJcD969hjZRI02iyYp3uvkvpJmBZdp/4WbLy4K6YEt1wkGyAET9LY2T9yExU+QLMExIPP8wq2JffY194B74i+sDQnIiexs/bCxixgWufrq5ck=
+Received: from IA1PR10MB7447.namprd10.prod.outlook.com (2603:10b6:208:44c::10)
+ by SJ0PR10MB5672.namprd10.prod.outlook.com (2603:10b6:a03:3ef::21) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7982.16; Wed, 18 Sep
+ 2024 14:51:14 +0000
+Received: from IA1PR10MB7447.namprd10.prod.outlook.com
+ ([fe80::f2fe:d6c6:70c4:4572]) by IA1PR10MB7447.namprd10.prod.outlook.com
+ ([fe80::f2fe:d6c6:70c4:4572%7]) with mapi id 15.20.7982.012; Wed, 18 Sep 2024
+ 14:51:14 +0000
+Message-ID: <204fd4a6-6461-40ab-bcb4-066dbf087232@oracle.com>
+Date: Wed, 18 Sep 2024 10:51:11 -0400
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH V1 1/9] mm/gup: repin_folio_unhugely
+To: Jason Gunthorpe <jgg@nvidia.com>
+Cc: iommu@lists.linux.dev, Kevin Tian <kevin.tian@intel.com>,
+        Nicolin Chen <nicolinc@nvidia.com>,
+        David Hildenbrand <david@redhat.com>,
+        Andrew Morton <akpm@linux-foundation.org>, linux-mm@kvack.org
+References: <1726319158-283074-1-git-send-email-steven.sistare@oracle.com>
+ <1726319158-283074-2-git-send-email-steven.sistare@oracle.com>
+ <ZudFcANtENlaRJ+r@nvidia.com>
+Content-Language: en-US
+From: Steven Sistare <steven.sistare@oracle.com>
+Organization: Oracle Corporation
+In-Reply-To: <ZudFcANtENlaRJ+r@nvidia.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: BN9PR03CA0986.namprd03.prod.outlook.com
+ (2603:10b6:408:109::31) To IA1PR10MB7447.namprd10.prod.outlook.com
+ (2603:10b6:208:44c::10)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-ClientProxiedBy: dggems703-chm.china.huawei.com (10.3.19.180) To
- dggpemf200006.china.huawei.com (7.185.36.61)
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: IA1PR10MB7447:EE_|SJ0PR10MB5672:EE_
+X-MS-Office365-Filtering-Correlation-Id: 7a40c3cd-7659-475c-87f1-08dcd7f157bc
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;ARA:13230040|1800799024|376014|366016;
+X-Microsoft-Antispam-Message-Info:
+	=?utf-8?B?aFlrNWl1ZjkyN1RQNHVuUEpvQTYzR0J6SVNrMmNEODZwYkFUMmFDeDY4U3V0?=
+ =?utf-8?B?bE0rSmdqVjNoZTRHdmF6UW5qTEpBSmVWMDAwb3dWdEQvcEVvdWUxNXJCYlds?=
+ =?utf-8?B?NEEwK0Z5TVUvWjBkSkllMGZLbHRZUkVSa0RkRGd0OVgxNndtT0NwZnRtNHpn?=
+ =?utf-8?B?c3UwZ01NTlB6T0xvYjlITklPNklwVjl5YTBzaFM0c3lTVjVkY2ZCcjEvbThH?=
+ =?utf-8?B?bzc2eE5DeXlQSXR0MTd0emp0ZFZPdEZDaU1BOFJNa0hiUTV0dUJYSnI2aFg0?=
+ =?utf-8?B?a0FjTGM0WW5WaU9RNTNQQzI1ZXdFdjJqRkhYZWJERElZdGNyRUhDNEVtcDNy?=
+ =?utf-8?B?aTVIaFBBdmtiV1N5SjhlZ3NHYkRoRXhxNldLanhWVmtWNGkwRUNHZ3R0TytW?=
+ =?utf-8?B?WTM2SzEzV0FjdkxaNWY2ZWFKemR1eG5PK213K2JLbjJzaWdkbjFobGVZQ3hL?=
+ =?utf-8?B?M1ZZM2dPalBmTVZTelZ4Zm1XWGxvRHFLVkJ6ekI1L085RjRnQ2RTQkJIRkc5?=
+ =?utf-8?B?MVpEdGgrSVljbGt0R0daRTh4anhSMzFlajhPVFlFeE9rRWp6cTRZTnkzelZw?=
+ =?utf-8?B?ZWN2eG9lK2lMR0RWVGlVcWYwRG92R01kNlhQSElOYjNQaXM3ZTZpVDd6OTNz?=
+ =?utf-8?B?blM1VW9jM3ZPN1RuWjNsRlRDWXh3dW13MGdHUVk5T1d4by9EdnB0ZEZndkc0?=
+ =?utf-8?B?OFk0SFZkclU0Z0lYSzRsbXh3Z210RU9kL1hNWlVRSGRjR0NjUGZCUWRsZU9T?=
+ =?utf-8?B?R1duZ2Zkc0o4WURIS3FPODJYMjN4UmFEaGN0ZFFVbVUvNmVla1Z0MWNoeFE3?=
+ =?utf-8?B?NG9oZzFTOEwxT1B6Q3VSMVcxVWpkeFowclpkaDduTndub3JqM1ZBb1R2ZW9n?=
+ =?utf-8?B?TTM1VlliYWZzeExVZlFlRXhGR3htdnJzZCs0cGQvWGhBNVJnZWdmR3ZRcHE1?=
+ =?utf-8?B?VitzZ3Nod2MrY2xzVjlRS0JSM3IrZmpKSk5ueElnckxmQlQvUCtpS2hhUXht?=
+ =?utf-8?B?MEZyNkVyOTNmNkljRmJMV3JNL2U3ekt5YmZUL1kzZzQxcXdDNU52d0F2NHpj?=
+ =?utf-8?B?RlJqYllvdDAzZU55L0RyR2pnclkxOE82ZzFkWFRFLzI0T0MxYjhienBFNjRS?=
+ =?utf-8?B?NlYwTHhKcHI3ZllrR1VhQVBrSUg1SEpLVlBYY3BMRXJhVlRwbWZ2bURmZmFG?=
+ =?utf-8?B?a011eU40TnM2akVOY0FBZHQ4a2hKbTl0QUM4V1UwNGRHUFhIM2htZnpsVk0r?=
+ =?utf-8?B?Rm5xdXBJQUdlTG5hMUNxZU9nN0REeTJ1emVCZzUzYVZhQ2dFMkxRMnE1MTQ5?=
+ =?utf-8?B?MENvZU5mc1Q3MExoalVtT0l3NHZZZHprMm15RktaTkdJZ3MxV0M0U2UwTnRC?=
+ =?utf-8?B?WlpFTEhiSXVVSXdwWlZCSzlWTmtqUWNQVk43cHNlNFNLNTFzdzVkWlRxNGxX?=
+ =?utf-8?B?TktJdlQya05iR1FkT1lOVmZHU2RZV0ZVeEl2dnQwQVNYckdGZDFPMEtpTGRR?=
+ =?utf-8?B?RkR4NnZRRjV6aDJlQzl0ZUJKNUZKVm5rc1hObEpIZ3U0Ylpqd01ncmpFbk1s?=
+ =?utf-8?B?dzVWOGdHem5ieCtJN2JzYUdHOG9iQU1aYXVNUjJEVWxLUi82U0NjdzU3ZFRB?=
+ =?utf-8?B?Vnh6c0hsbVd4dXZwUVRCcjFUTDE3ck9ySCtNWFpFMmxYRnpET0gxL2hRYjgw?=
+ =?utf-8?B?VW5CKzBlVEQxMmVIaFQ3T1hKMWwwSWQyT2lwWmpjbzVoaWpJSHE1UDFDa2p5?=
+ =?utf-8?B?S0gybndlcDRuMEZEZVo3QzFDTmZKZ1R3SXFMWng2d0k0dWM5d0VLYVhTeGlB?=
+ =?utf-8?B?cEpCVXhYVFlRYW8vUWxlUT09?=
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:IA1PR10MB7447.namprd10.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(1800799024)(376014)(366016);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?utf-8?B?aEdtSVZBM0txN2hITkF3OEhmTTh3eWFLU25TdFpLdFBJZkZzR0hiQkQ4Vytu?=
+ =?utf-8?B?c3BheU45cWt5TXMxbTREUDcxOEV3THZjVUxuSmFBVjZmNCtxL1lJRnkzT293?=
+ =?utf-8?B?Wk9nRThqVUs5aFg4SFlXa3ppM21oRjdDT01VK21BdVJibllwcS9JUTlHL3Jz?=
+ =?utf-8?B?R1dwbndMb1NiN2gyZFpLSG9SVyt3cTRaMjR5VGdEalMyK1R0OE9CYkprYk5D?=
+ =?utf-8?B?aDdJcnR0Wjg2Q1VFUkc4dDAwS29PeUt3eTYxaEdiWTJxZGhTeXNwQTZoRHZE?=
+ =?utf-8?B?L0FRSEliSnVORXZ0anY1U0lEeGphS0VDNjdLakxOMzlHZFcyYTZqZ1kveFBK?=
+ =?utf-8?B?c0hKUUhFQ1NGaUphOFc3SjhxMTg4MVVjZ0RDZm81cHJ5RGxuejc2MktXSm42?=
+ =?utf-8?B?QWdiVVZ3U2I4QnJseUNISXFJelpuY2t1RjV3eTNGKzZnZG1oR3gxNnhCRllr?=
+ =?utf-8?B?Q3NIQkdINHA5eE9uSFVxU2tRZ3k5R25Mazd1U05naEN2NGJWMnczeVd4cTdN?=
+ =?utf-8?B?aGw2YzhWYjBHMVQ4YWxtbTErTjdUZU9md21Ba2ttMTlGYlpkT3BISHUyUFJX?=
+ =?utf-8?B?b2lXTGpVSFUybEdxajFoMDhGMThZWVdNTVpnUDdubko4SE85OWJXUDNtb2Fn?=
+ =?utf-8?B?MTVQdGVxNnF2eUpKSTVtME5HMG9HWkRLZkZXeVNEd0doR1BYaXA4MUdZNThs?=
+ =?utf-8?B?Z0hFbDlPdkZZZWJvaWdQdmg5b1N3NXRYVVdYV3N5NE11R1J6eGM0T2p1VlRn?=
+ =?utf-8?B?ZC9GYnpXdUk0dlRMYll0SlY4TjI0c0lOK1lzaE5GY2VBamZScnVRT2Q2Y0Ex?=
+ =?utf-8?B?RXh1ejc4ek5tTjkyN0NtWm44cTFTeWtNZVVNUmJGMEtWb1o5c0tSNlVNNVBo?=
+ =?utf-8?B?Rk1CUXpTaFhoc09HOFM4cGhhNHRvRE9mc3BxZ3I0eElqMUN3cFhCd3Rjd1l2?=
+ =?utf-8?B?emg4TE1qOVdPOXVaV2hLMitUQjNudll0MGVzbkR5Um1Fc0dXbnY2NWFPbDll?=
+ =?utf-8?B?R2xCN3QwQml5WFh4c3I3YnZRYnFJSTIyVFgvQkZTR1FVQ2ZMWXRmS0JSbGx2?=
+ =?utf-8?B?eTBFdVZSMkdEK2ZqZ2FZZm9oTjlTL3BvZ2E5RGpBY1huV1JsTjdpTVVRUXQ4?=
+ =?utf-8?B?WW40TzkwT25FcHFlT1JVQ0hMMDIyeEdFYk02dCtxeDlrcWdKWmNPQjBmUEJ5?=
+ =?utf-8?B?VzVpVEcwcm5XQWt2SkxPZ0FqaVBHN2JRbnQxcVpJWWd1YkY3SUJicEVUTW1O?=
+ =?utf-8?B?RlQ0Q1NCbFZyRmZiT0ZvMm1Rd3hyRTVlRW1jZ2xKUjBMSHplNDlWUlhZUTNj?=
+ =?utf-8?B?bzBCK05Qa3Q5ZnVhbCtRd3lrL25UNExIUVVRdkVyMExjdkYrdEZzV2Z0NC93?=
+ =?utf-8?B?YUVxTEE1SXNQMjJuYUE0NUpJcEJwdkNLZWswSXNxZWJoRWgyaHpUdHdxU2Y3?=
+ =?utf-8?B?c1EyYm1FQ0Q2dWdLck1XVnhTVVo0WnhsbHlmalFHSUdaRkljKzVzdTBZMDk2?=
+ =?utf-8?B?SWR0UU05TEFWc0k0bXlnRHVwZHR5TEFydXk1MnkzenVKNGh2Skt6ZERVTVpu?=
+ =?utf-8?B?TlpTcmNGQWhJU2VaT29mRXZVSFBnNnMwcUhqVTRURmxpUi9xWFZCTldDR1RO?=
+ =?utf-8?B?L1p6QWtkaXhQZlpTaXF6OVM2MzFERllOVkNnQytOVnIyRzNycFIrSlUwakJr?=
+ =?utf-8?B?OE40Y0hLaE85QzhoZlFQdTVibjVsK25sczkzOE80SXBnMlJNWkM0ZlEyS1hm?=
+ =?utf-8?B?SWJvc0w0c3hNL1ZmQ0drYk9pR0s3T0dXa0xvSENYS2h6TkgrcGhwV2ZtWkJ0?=
+ =?utf-8?B?aFk3SDVYaE16Umk2S1ZZNUF5TkRFamhHQlpJZlMyYjdSNjlCQTdNSXFCRllM?=
+ =?utf-8?B?Tm5rME9SUldpR2VKeW1KMmhFOFVlNUQ4RGJ1MzhHVnZTbG9xWmxVNi9adGgr?=
+ =?utf-8?B?SUxSUmtkT0k1RFhtOGlPVHJBZ3M1aThFVUVGRTFYSTh3NU5Mb1hUSUZ5ZTNB?=
+ =?utf-8?B?dW1oaVQ4WG5lcjB1bG0zR2ZQamxjL0c0OFhVakM1OVhsNEJCdnZ5eWZJUXU4?=
+ =?utf-8?B?K0FTV1YwVE5tSkNXUGptNmtreGxTNmFYUUVObjE4N2pWQnlNTExpZS92Q1l1?=
+ =?utf-8?B?VTQ4ZFNtRUdoWGFscGh3UGZRaHRYKzNmNkJVUDQ4R3JidC9PdmhxMkIrMlo3?=
+ =?utf-8?B?bVE9PQ==?=
+X-MS-Exchange-AntiSpam-ExternalHop-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-ExternalHop-MessageData-0:
+	Wmz7ODqE0wMmYSVzZi/1bGKIKSJ3LfsjNVlevxvyDgXaejmRvFpDIdDdXKDaszexKT4UB9rmapnmqUvGhdjNeoomTf6DZjMX7iDLZDsl6apBOHG4IHpO3KmxN+DMwVZd313gRH7SXRiHVnt7vb+RxgAkbLbLq+LCeBsFqG81OUSIwaDH50Ha5xqEOIGVwP0YRKhOfJVeayucj7xca3ZqLJCFCQEU+/SQB65gY2OSCrE7eZZaCIXm/q9RGbCL0M7Pk4BuB43WocZSEHGEtVYu30Fvq8ApJaHlhWoSVShLEDo6bb+WTfxJ+zrjMWU1e+qNjQpzDF39AJXu8UAKWQhms1e3H/TpE6zIQiA9rkYv4RUtTW9UhU6ZnnTM+mjLvj2+s0HZF+ms8kb2cH2wR7g43gxv8QPI6dIvnaHpnWRcdKzpkaFYs/SYxRbSYsWZQg176MvGyG9RCW+mk51+tILPv/i1hvlF/J7CzygTc+Q9Pa8lZk3LHBKfwBg0YQ9EVqio3/WLUhVfQqdCE/TwPtHM2Vr8RnoItKyg3oVVt5xL24oHkMr4zoGhp84FXHb7gkm5FgervpglDjQt9oxVOZkiIcfhBTso3fIV82kz1Jbwvcc=
+X-OriginatorOrg: oracle.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 7a40c3cd-7659-475c-87f1-08dcd7f157bc
+X-MS-Exchange-CrossTenant-AuthSource: IA1PR10MB7447.namprd10.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 18 Sep 2024 14:51:14.0077
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 4e2c6054-71cb-48f1-bd6c-3a9705aca71b
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: 1MJyOVxlViJRqal7wyjZl2Nrhdva++nuv3uq0IMuLNL8h8tzVZ/OQ/axRXN7sMkSuXgtvOalBb9jsSAZD/tqNBSmwuU5cX+a4ZHo0MtESuo=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SJ0PR10MB5672
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.293,Aquarius:18.0.1051,Hydra:6.0.680,FMLib:17.12.60.29
+ definitions=2024-09-18_10,2024-09-18_01,2024-09-02_01
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 spamscore=0 bulkscore=0 adultscore=0
+ suspectscore=0 mlxlogscore=999 phishscore=0 malwarescore=0 mlxscore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2408220000
+ definitions=main-2409180096
+X-Proofpoint-GUID: Dd0-l9XPMaaCWzPJ3IrzqPPHUmSTlndG
+X-Proofpoint-ORIG-GUID: Dd0-l9XPMaaCWzPJ3IrzqPPHUmSTlndG
 
-Patch 1 fix a possible time window problem for page_pool.
-Patch 2 fix the kernel crash problem at iommu_get_dma_domain
-reported in [1].
+On 9/15/2024 4:37 PM, Jason Gunthorpe wrote:
+> On Sat, Sep 14, 2024 at 06:05:50AM -0700, Steve Sistare wrote:
+>> diff --git a/mm/gup.c b/mm/gup.c
+>> index 947881ff..f8f3f2a 100644
+>> --- a/mm/gup.c
+>> +++ b/mm/gup.c
+>> @@ -3720,3 +3720,21 @@ long memfd_pin_folios(struct file *memfd, loff_t start, loff_t end,
+>>   	return ret;
+>>   }
+>>   EXPORT_SYMBOL_GPL(memfd_pin_folios);
+>> +
+>> +/**
+>> + * repin_folio_unhugely() - repin a folio at small page granularity
+>> + * @folio: the folio to repin
+>> + * @npin:  the number of pages pinned in the folio
+>> + *
+>> + * Given a huge page folio that is already pinned, and the number of small
+>> + * pages that are pinned in it, adjust the pincount to reflect small-page
+>> + * granularity.  Each small page can later be unpinned individually.
+>> + */
+> 
+> I think the language choice here is probably not entirely consistent
+> with the rest of the code
 
-When page_pool_put_unrefed_netmem() is called with allow_direct
-being true, there is added checking overhead introduced in patch
-1, which seem to be no noticeable performance impact.
+Yes, a good name was not obvious to me, to I submitted a slightly flippant
+name to generate some discussion :)
 
-When page_pool_put_unrefed_netmem() is called with allow_direct
-being false, there is a rcu read lock overhead introduced in
-patch 1, and the overhead is about 13ns using the below test code,
-but 'time_bench_page_pool02_ptr_ring' only show about 2ns overhead,
-which is about 2% degradation.
+> 
+> Maybe
+> 
+>   folio_split_user_page_pin(folio, npages)
+>   @npages: The new number of pages the folio pin reference should hold
+> 
+>   Given a high order folio that is already pinned adjust the reference
+>   count to allow unpin_user_page_range() and related to be called on a
+>   the folio. npages is the number of pages that will be passed to a
+>   future unpin_user_page_range().
+> 
+> Which anchors it in the purpose a little more
 
-+static int time_bench_rcu(
-+       struct time_bench_record *rec, void *data)
-+{
-+       uint64_t loops_cnt = 0;
-+       int i;
-+
-+       time_bench_start(rec);
-+       /** Loop to measure **/
-+       for (i = 0; i < rec->loops; i++) {
-+               rcu_read_lock();
-+               loops_cnt++;
-+               barrier(); /* avoid compiler to optimize this loop */
-+               rcu_read_unlock();
-+       }
-+       time_bench_stop(rec, loops_cnt);
-+       return loops_cnt;
-+}
+Thanks, I will use this if no one objects.
 
-When page_pool need to be refilled from or flushed to the page allocator,
-the added overhead is the page_pool_item_add() and page_pool_item_del()
-calling overhead, using below patch to enable Jesper's testing running in
-arm64, the overhead is 0~20ns, which is quite variable 
+- Steve
 
-Before this patchset:
-root@(none)$ taskset -c 1 insmod bench_page_pool_simple.ko
-[  136.641453] bench_page_pool_simple: Loaded
-[  136.722560] time_bench: Type:for_loop Per elem: 0 cycles(tsc) 0.769 ns (step:0) - (measurement period time:0.076968720 sec time_interval:76968720) - (invoke count:100000000 tsc_interval:7696855)
-[  137.317006] time_bench: Type:atomic_inc Per elem: 0 cycles(tsc) 5.771 ns (step:0) - (measurement period time:0.577164350 sec time_interval:577164350) - (invoke count:100000000 tsc_interval:57716429)
-[  137.480852] time_bench: Type:lock Per elem: 1 cycles(tsc) 14.621 ns (step:0) - (measurement period time:0.146218730 sec time_interval:146218730) - (invoke count:10000000 tsc_interval:14621868)
-[  138.842377] time_bench: Type:rcu Per elem: 1 cycles(tsc) 13.444 ns (step:0) - (measurement period time:1.344419820 sec time_interval:1344419820) - (invoke count:100000000 tsc_interval:134441975)
-[  138.859656] bench_page_pool_simple: time_bench_page_pool01_fast_path(): Cannot use page_pool fast-path
-[  139.132102] time_bench: Type:no-softirq-page_pool01 Per elem: 2 cycles(tsc) 26.315 ns (step:0) - (measurement period time:0.263151430 sec time_interval:263151430) - (invoke count:10000000 tsc_interval:26315135)
-[  139.150769] bench_page_pool_simple: time_bench_page_pool02_ptr_ring(): Cannot use page_pool fast-path
-[  139.910642] time_bench: Type:no-softirq-page_pool02 Per elem: 7 cycles(tsc) 75.066 ns (step:0) - (measurement period time:0.750663200 sec time_interval:750663200) - (invoke count:10000000 tsc_interval:75066312)
-[  139.929312] bench_page_pool_simple: time_bench_page_pool03_slow(): Cannot use page_pool fast-path
-[  141.673951] time_bench: Type:no-softirq-page_pool03 Per elem: 17 cycles(tsc) 173.578 ns (step:0) - (measurement period time:1.735781610 sec time_interval:1735781610) - (invoke count:10000000 tsc_interval:173578155)
-[  141.692970] bench_page_pool_simple: pp_tasklet_handler(): in_serving_softirq fast-path
-[  141.700874] bench_page_pool_simple: time_bench_page_pool01_fast_path(): in_serving_softirq fast-path
-[  141.973638] time_bench: Type:tasklet_page_pool01_fast_path Per elem: 2 cycles(tsc) 26.364 ns (step:0) - (measurement period time:0.263645150 sec time_interval:263645150) - (invoke count:10000000 tsc_interval:26364508)
-[  141.992912] bench_page_pool_simple: time_bench_page_pool02_ptr_ring(): in_serving_softirq fast-path
-[  142.531745] time_bench: Type:tasklet_page_pool02_ptr_ring Per elem: 5 cycles(tsc) 52.980 ns (step:0) - (measurement period time:0.529801250 sec time_interval:529801250) - (invoke count:10000000 tsc_interval:52980119)
-[  142.550933] bench_page_pool_simple: time_bench_page_pool03_slow(): in_serving_softirq fast-path
-[  144.297646] time_bench: Type:tasklet_page_pool03_slow Per elem: 17 cycles(tsc) 173.802 ns (step:0) - (measurement period time:1.738029000 sec time_interval:1738029000) - (invoke count:10000000 tsc_interval:173802894)
-
-After this patchset:
-root@(none)$ taskset -c 1 insmod bench_page_pool_simple.ko
-[  149.865799] bench_page_pool_simple: Loaded
-[  149.946907] time_bench: Type:for_loop Per elem: 0 cycles(tsc) 0.769 ns (step:0) - (measurement period time:0.076965620 sec time_interval:76965620) - (invoke count:100000000 tsc_interval:7696556)
-[  150.722282] time_bench: Type:atomic_inc Per elem: 0 cycles(tsc) 7.580 ns (step:0) - (measurement period time:0.758094660 sec time_interval:758094660) - (invoke count:100000000 tsc_interval:75809459)
-[  150.886335] time_bench: Type:lock Per elem: 1 cycles(tsc) 14.640 ns (step:0) - (measurement period time:0.146405830 sec time_interval:146405830) - (invoke count:10000000 tsc_interval:14640578)
-[  152.249454] time_bench: Type:rcu Per elem: 1 cycles(tsc) 13.460 ns (step:0) - (measurement period time:1.346009570 sec time_interval:1346009570) - (invoke count:100000000 tsc_interval:134600951)
-[  152.266734] bench_page_pool_simple: time_bench_page_pool01_fast_path(): Cannot use page_pool fast-path
-[  152.537046] time_bench: Type:no-softirq-page_pool01 Per elem: 2 cycles(tsc) 26.100 ns (step:0) - (measurement period time:0.261007670 sec time_interval:261007670) - (invoke count:10000000 tsc_interval:26100761)
-[  152.555714] bench_page_pool_simple: time_bench_page_pool02_ptr_ring(): Cannot use page_pool fast-path
-[  153.342212] time_bench: Type:no-softirq-page_pool02 Per elem: 7 cycles(tsc) 77.729 ns (step:0) - (measurement period time:0.777293380 sec time_interval:777293380) - (invoke count:10000000 tsc_interval:77729331)
-[  153.360881] bench_page_pool_simple: time_bench_page_pool03_slow(): Cannot use page_pool fast-path
-[  155.287747] time_bench: Type:no-softirq-page_pool03 Per elem: 19 cycles(tsc) 191.800 ns (step:0) - (measurement period time:1.918007990 sec time_interval:1918007990) - (invoke count:10000000 tsc_interval:191800791)
-[  155.306766] bench_page_pool_simple: pp_tasklet_handler(): in_serving_softirq fast-path
-[  155.314670] bench_page_pool_simple: time_bench_page_pool01_fast_path(): in_serving_softirq fast-path
-[  155.584313] time_bench: Type:tasklet_page_pool01_fast_path Per elem: 2 cycles(tsc) 26.052 ns (step:0) - (measurement period time:0.260524810 sec time_interval:260524810) - (invoke count:10000000 tsc_interval:26052476)
-[  155.603588] bench_page_pool_simple: time_bench_page_pool02_ptr_ring(): in_serving_softirq fast-path
-[  156.183214] time_bench: Type:tasklet_page_pool02_ptr_ring Per elem: 5 cycles(tsc) 57.059 ns (step:0) - (measurement period time:0.570594850 sec time_interval:570594850) - (invoke count:10000000 tsc_interval:57059478)
-[  156.202402] bench_page_pool_simple: time_bench_page_pool03_slow(): in_serving_softirq fast-path
-[  158.045594] time_bench: Type:tasklet_page_pool03_slow Per elem: 18 cycles(tsc) 183.450 ns (step:0) - (measurement period time:1.834507700 sec time_interval:1834507700) - (invoke count:10000000 tsc_interval:183450764)
-
-Patch for time_bench.h enable the out of tree testing on arm64 system:
-@@ -101,6 +101,7 @@ struct time_bench_cpu {
-  *  CPUID clears the high 32-bits of all (rax/rbx/rcx/rdx)
-  */
- static __always_inline uint64_t tsc_start_clock(void) {
-+#if defined(__i386__) || defined(__x86_64__)
-        /* See: Intel Doc #324264 */
-        unsigned hi, lo;
-        asm volatile (
-@@ -111,9 +112,13 @@ static __always_inline uint64_t tsc_start_clock(void) {
-                "%rax", "%rbx", "%rcx", "%rdx");
-        //FIXME: on 32bit use clobbered %eax + %edx
-        return ((uint64_t)lo) | (((uint64_t)hi) << 32);
-+#else
-+       return get_cycles();
-+#endif
- }
-
- static __always_inline uint64_t tsc_stop_clock(void) {
-+#if defined(__i386__) || defined(__x86_64__)
-        /* See: Intel Doc #324264 */
-        unsigned hi, lo;
-        asm volatile(
-@@ -123,6 +128,9 @@ static __always_inline uint64_t tsc_stop_clock(void) {
-                "CPUID\n\t": "=r" (hi), "=r" (lo)::
-                "%rax", "%rbx", "%rcx", "%rdx");
-        return ((uint64_t)lo) | (((uint64_t)hi) << 32);
-+#else
-+       return get_cycles();
-+#endif
- }
-
- /* Notes for RDTSC and RDTSCP
-@@ -186,10 +194,14 @@ enum {
-
- static __always_inline unsigned long long p_rdpmc(unsigned in)
- {
-+#if defined(__i386__) || defined(__x86_64__)
-        unsigned d, a;
-
-        asm volatile("rdpmc" : "=d" (d), "=a" (a) : "c" (in) : "memory");
-        return ((unsigned long long)d << 32) | a;
-+#else
-+       return 0;
-+#endif
- }
-
- /* These PMU counter needs to be enabled, but I don't have the
-@@ -216,7 +228,11 @@ static __always_inline unsigned long long pmc_clk(void)
- #define MSR_IA32_PCM2 0x400000C3
- inline uint64_t msr_inst(unsigned long long *msr_result)
- {
-+#if defined(__i386__) || defined(__x86_64__)
-        return rdmsrl_safe(MSR_IA32_PCM0, msr_result);
-+#else
-+       return 0;
-+#endif
- }
-
-1. https://lore.kernel.org/lkml/8067f204-1380-4d37-8ffd-007fc6f26738@kernel.org/T/
-
-CC: Alexander Lobakin <aleksander.lobakin@intel.com>
-CC: Robin Murphy <robin.murphy@arm.com>
-CC: Alexander Duyck <alexander.duyck@gmail.com>
-CC: IOMMU <iommu@lists.linux.dev>
-
-Yunsheng Lin (2):
-  page_pool: fix timing for checking and disabling napi_local
-  page_pool: fix IOMMU crash when driver has already unbound
-
- drivers/net/ethernet/freescale/fec_main.c     |   8 +-
- drivers/net/ethernet/intel/iavf/iavf_txrx.c   |   6 +-
- drivers/net/ethernet/intel/idpf/idpf_txrx.c   |  14 +-
- drivers/net/ethernet/intel/libeth/rx.c        |   2 +-
- .../net/ethernet/mellanox/mlx5/core/en/xdp.c  |   3 +-
- drivers/net/netdevsim/netdev.c                |   6 +-
- drivers/net/wireless/mediatek/mt76/mt76.h     |   2 +-
- include/linux/mm_types.h                      |   2 +-
- include/linux/skbuff.h                        |   1 +
- include/net/libeth/rx.h                       |   3 +-
- include/net/netmem.h                          |  10 +-
- include/net/page_pool/helpers.h               |  11 +
- include/net/page_pool/types.h                 |  15 +-
- net/core/devmem.c                             |   4 +-
- net/core/netmem_priv.h                        |   5 +-
- net/core/page_pool.c                          | 188 +++++++++++++++---
- net/core/page_pool_priv.h                     |  10 +-
- net/core/skbuff.c                             |   3 +-
- net/core/xdp.c                                |   3 +-
- 19 files changed, 238 insertions(+), 58 deletions(-)
-
--- 
-2.33.0
-
+> The implementation looked OK to me
+> 
+> Jason
