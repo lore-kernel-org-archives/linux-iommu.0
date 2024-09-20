@@ -1,87 +1,63 @@
-Received: from gloria.sntech.de (gloria.sntech.de [185.11.138.130])
+Received: from bombadil.infradead.org (bombadil.infradead.org [198.137.202.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0D4CA25776;
-	Fri, 20 Sep 2024 09:56:54 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.11.138.130
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9E4B914290;
+	Fri, 20 Sep 2024 11:26:02 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.137.202.133
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1726826217; cv=none; b=N3ncBnIe9NoM1ubAb2O+qHvDo75EwdNDg9Fk/AORWiynG+RANtwntYAit61deTXy3on8tRGyhkfkdbyV/atrmF9duqzQ5+++61XjL48hDaEpigGz0F1iRIsZwuIUi1PGEggIfgkbzbd6qugz+o8l8M1f8IjtzN8C4ucebG4+ujg=
+	t=1726831565; cv=none; b=izHMr63L9QVhbU0o1qX88LctFSmiAK58dUVwVInEmmlvPWGgFaVkkbf0SXH8PPPm7csAKA+ZrvrGbq9dlo/fjvvkuVpTvKH2uXfcvkjSEk5gjNOwcTiWJklDiQm8ljXg+iqcnpMuxiJe/Ccj12R+fF/pRLiSp3oPIaMpj1CVvxc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1726826217; c=relaxed/simple;
-	bh=WdDoGFPSTqZbec6YN4cQkS64m6JSU4DnTNwgzcZBjdA=;
-	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=WiSZsXYFVV+aqeo2JURO9zWkJlRqmAuX2fgargt0lcGti5vUeDzA7UkecD1ObqzU+DM2RGphbbwgA7bUyEg9HCd8hcURCjTZoOpbzO3QLYkhbvWIoj8bk4WGFP4eZPXjBEwavMer6uBsmqlilf7kyi9K8vRU55UZRurZyEBwPVs=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=sntech.de; spf=pass smtp.mailfrom=sntech.de; dkim=pass (2048-bit key) header.d=sntech.de header.i=@sntech.de header.b=sORopcg1; arc=none smtp.client-ip=185.11.138.130
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=sntech.de
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=sntech.de
+	s=arc-20240116; t=1726831565; c=relaxed/simple;
+	bh=0FTbkSuwF/nWhLWpO8SYLY2ED+F0e/TeFwLsP00CZgM=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=F5Hxi72P814UCSeFydLIxPkTmoNlihly7Er210gljvvu2Hx5nks4uPsXaZM4XIyNkXEVwdAaSQ6RL4aKQ10+9O6nVqElbS/asmNL9nIkqeUYXOaGNLTiJh5t7W2IJKAHqOI72H7KPgpDASGI8S1b791Vwr+52XcIdl2EDk0NuMQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=infradead.org; spf=none smtp.mailfrom=bombadil.srs.infradead.org; dkim=pass (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b=2/q3lxSI; arc=none smtp.client-ip=198.137.202.133
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=infradead.org
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=bombadil.srs.infradead.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=sntech.de header.i=@sntech.de header.b="sORopcg1"
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=sntech.de;
-	s=gloria202408; h=Content-Type:Content-Transfer-Encoding:MIME-Version:
-	References:In-Reply-To:Message-ID:Date:Subject:Cc:To:From:Sender:Reply-To:
-	Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
-	Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
-	List-Subscribe:List-Post:List-Owner:List-Archive;
-	bh=ZjYXtCI4nuFEDAhXrD2uZbQsprc9VRMwkexVscbAyM0=; b=sORopcg130vTP2BE+HEZOFpnfT
-	Zs6sk4eDWLQoVWqYfadzyCn7a2sdObvIjsa7Lql16zLwBNvae24aYxECwxyajBps4CHQsZe4cTwDc
-	izA6tjN0aAJ4JWz4kj8hmHSICwOj6Xquh9P4jv2p4Id/lxssuqTQFvddtru5NxexjFSeCWOJWHDDo
-	NXMJ8VQgG1g3ozMSc0ZReMf5QHUR3MnhMYHc7/9GlAwQlBVkEgHfJLU8+X+QdhaSXzhCjRepcSayx
-	QvCShrI3QKj5x6JbTH8hKvHJwXd61yikR5VGMVvp0PlIJxdyNhorXQtf3G98dOmlAfT07NEHCl8Yf
-	AehKMy7g==;
-Received: from ip092042140082.rev.nessus.at ([92.42.140.82] helo=phil.localnet)
-	by gloria.sntech.de with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-	(Exim 4.94.2)
-	(envelope-from <heiko@sntech.de>)
-	id 1sraNb-0000fJ-8O; Fri, 20 Sep 2024 11:56:47 +0200
-From: Heiko Stuebner <heiko@sntech.de>
-To: joro@8bytes.org, Andy Yan <andyshrk@163.com>
-Cc: conor+dt@kernel.org, krzk+dt@kernel.org, robh@kernel.org,
- devicetree@vger.kernel.org, iommu@lists.linux.dev,
- linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
- linux-rockchip@lists.infradead.org, Andy Yan <andy.yan@rock-chips.com>
-Subject: Re: [PATCH] dt-bindings: iommu: rockchip: Add Rockchip RK3576
-Date: Fri, 20 Sep 2024 11:56:46 +0200
-Message-ID: <2220454.C4sosBPzcN@phil>
-In-Reply-To: <20240920094947.7566-1-andyshrk@163.com>
-References: <20240920094947.7566-1-andyshrk@163.com>
+	dkim=pass (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b="2/q3lxSI"
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+	d=infradead.org; s=bombadil.20210309; h=In-Reply-To:Content-Type:MIME-Version
+	:References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+	Content-Transfer-Encoding:Content-ID:Content-Description;
+	bh=0FTbkSuwF/nWhLWpO8SYLY2ED+F0e/TeFwLsP00CZgM=; b=2/q3lxSIMR+4wZXiLxymHtJlZH
+	DBK4ZIJsJOA40RmIXCREbMe34xYvvYIrYANb9GxYotRneXQgn/qfEm/YeH28N+18Y14Lr38gMavGV
+	VLcDZUtNEiLJ2LgdRPflJFjtXsO7xUVHh0lIKlhrp390zyncdbC0JjMST5n6vVxKQJk8A4qxUSu1e
+	SP9azR7Z/7sDYlHjlnGLBh5ZxyvfUJSoIfuWBOlug4ttcar9yGhhWunpwvqW2iX8oK2PVMjfhJGOy
+	2RStJcBXT0NZ8caDPkq2fFEBOvP9szFpXcKxgdsvSKWY9S27ZGnDSQUdU7MCI2DgOA4qvumL7vdjw
+	8dYL3X/Q==;
+Received: from hch by bombadil.infradead.org with local (Exim 4.98 #2 (Red Hat Linux))
+	id 1srblx-0000000C5qv-44iz;
+	Fri, 20 Sep 2024 11:26:01 +0000
+Date: Fri, 20 Sep 2024 04:26:01 -0700
+From: Christoph Hellwig <hch@infradead.org>
+To: Xi Ruoyao <xry111@xry111.site>
+Cc: Christoph Hellwig <hch@infradead.org>,
+	Linus Torvalds <torvalds@linux-foundation.org>,
+	linux-kernel@vger.kernel.org, iommu@lists.linux.dev
+Subject: Re: [GIT PULL] dma-mapping updates for Linux 6.12
+Message-ID: <Zu1byUGU832iWBUp@infradead.org>
+References: <ZuvYnXzbM2qfXQPT@infradead.org>
+ <971fbb889da38ca4e60f3dedde29ea43e9338d68.camel@xry111.site>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7Bit
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <971fbb889da38ca4e60f3dedde29ea43e9338d68.camel@xry111.site>
+X-SRS-Rewrite: SMTP reverse-path rewritten from <hch@infradead.org> by bombadil.infradead.org. See http://www.infradead.org/rpr.html
 
-Am Freitag, 20. September 2024, 11:49:40 CEST schrieb Andy Yan:
-> From: Andy Yan <andy.yan@rock-chips.com>
-> 
-> Just like RK3588, RK3576 is compatible to the existing rk3568
-> binding.
-> 
-> Signed-off-by: Andy Yan <andy.yan@rock-chips.com>
+On Fri, Sep 20, 2024 at 05:41:51AM +0800, Xi Ruoyao wrote:
+> This breaks using my laptop camera with gstreamer (with "gst-launch-1.0
+> v4l2src ! videoconvert ! autovideosink" or GNOME snapshot).
 
-Reviewed-by: Heiko Stuebner <heiko@sntech.de>
+What camere and driver are you using?
 
-> ---
-> 
->  Documentation/devicetree/bindings/iommu/rockchip,iommu.yaml | 1 +
->  1 file changed, 1 insertion(+)
-> 
-> diff --git a/Documentation/devicetree/bindings/iommu/rockchip,iommu.yaml b/Documentation/devicetree/bindings/iommu/rockchip,iommu.yaml
-> index 621dde0e45d8..6ce41d11ff5e 100644
-> --- a/Documentation/devicetree/bindings/iommu/rockchip,iommu.yaml
-> +++ b/Documentation/devicetree/bindings/iommu/rockchip,iommu.yaml
-> @@ -25,6 +25,7 @@ properties:
->            - rockchip,rk3568-iommu
->        - items:
->            - enum:
-> +              - rockchip,rk3576-iommu
->                - rockchip,rk3588-iommu
->            - const: rockchip,rk3568-iommu
->  
-> 
+> (I had to use "git bisect skip" several times because I encountered
+> kernel panic on boot at some revisions.)
 
-
-
+Do you have any traces of that?
 
