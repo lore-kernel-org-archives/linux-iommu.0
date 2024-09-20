@@ -1,87 +1,185 @@
-Received: from xry111.site (xry111.site [89.208.246.23])
+Received: from mx0b-0031df01.pphosted.com (mx0b-0031df01.pphosted.com [205.220.180.131])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4711E17DFF3
-	for <iommu@lists.linux.dev>; Fri, 20 Sep 2024 17:48:27 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=89.208.246.23
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2A89114F98
+	for <iommu@lists.linux.dev>; Fri, 20 Sep 2024 19:34:51 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.180.131
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1726854508; cv=none; b=VAbu9haPfHKDJeMscxaM4QosQMqyQwjO/nsAxTMDiHeK0WQFrZSOFR4MRaZ69FPKyxJ8ke9sdSRXOjnRdRUl1yvjwWIPgGNy7dORXhYuJJWINODybSO/wR4LaHeNGdSx6/ObQoOMLZ4GGIp8iEMVcm36Kc+uvoWsJ0E4ZKiRn7A=
+	t=1726860893; cv=none; b=T7VZMduaXwwnO8vBNjKccNmCwcqcFZPHoV/o2LNjgBQjbfOXrxwgLWHACUwWXkBA630C2GARMobqMxtQ/CWV2FpqGNM8/jLE78O4ePd82WWDY8Nu/OG4lqdC96dGmUdcHz2HJ1rmgjMlH07Nhg7Yfg93JosQJPtBWqhueFDdQ8I=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1726854508; c=relaxed/simple;
-	bh=aWwPpZHzSlJfNdq3P5TS6avS7q24zoecm9lrazbcwBs=;
-	h=Message-ID:Subject:From:To:Cc:Date:In-Reply-To:References:
-	 Content-Type:MIME-Version; b=oMY1AyKvdb8li19XqM0s+CyiIMVZDo0QKdaOUrcQqSSa23BCOZz9w4poISCt9kgmPKGTwLNqSsHoDRPdaoWZwKEBRM6CFUCXpINmQmRb6XhGEovYzcrdCtPiU+gXOYRm45WNcZwQLxaYSeXtZJFpONLnVUXvA04/rFppERwwXiQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=xry111.site; spf=pass smtp.mailfrom=xry111.site; dkim=pass (1024-bit key) header.d=xry111.site header.i=@xry111.site header.b=cK9WSfKF; arc=none smtp.client-ip=89.208.246.23
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=xry111.site
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=xry111.site
+	s=arc-20240116; t=1726860893; c=relaxed/simple;
+	bh=JyqLtbe0E2IK4lZFZBmmOkz4o+sIiAwpR3NvNf0bGf4=;
+	h=Message-ID:Date:MIME-Version:Subject:To:CC:References:From:
+	 In-Reply-To:Content-Type; b=F3wKksf+71BnhK/L5y38ChGUoT156t7glXjad4tvGaAdn+Xpn4AATYBAyEa9DQvZW4mba+LNW2BqPwE9KGS0F3vra6ffn/49q0ojPCwP+0CAdo2Otp25BYum6KEtA6Ov6U8wSMkrwPT9R0+0xBYKc+gUE8ZTyj8NRC1AsPVJDGE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com; spf=pass smtp.mailfrom=quicinc.com; dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b=cl8SQ7e7; arc=none smtp.client-ip=205.220.180.131
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=quicinc.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=xry111.site header.i=@xry111.site header.b="cK9WSfKF"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=xry111.site;
-	s=default; t=1726854506;
-	bh=kj+DQMcZ1/5V7o0qstx3IiSUxd57rjtEsml9nY2PzME=;
-	h=Subject:From:To:Cc:Date:In-Reply-To:References:From;
-	b=cK9WSfKFZ11IvTeOGu56wfHqnoqfDd8ehNGEj3hTuFJUJiMDQAUlfCyLSAgirBCfp
-	 RZ6YsGeqTaiYfabHLmg++lQx/O6lagcm/LVoAS3drJ5Bz8G9BcpcQ8GbKsSeLXjzk0
-	 bIJike5iQIi/c/bzGsOHsCDln9DUFOwNr3334VOc=
-Received: from [IPv6:240e:358:11d4:4800:dc73:854d:832e:6] (unknown [IPv6:240e:358:11d4:4800:dc73:854d:832e:6])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange ECDHE (prime256v1) server-signature ECDSA (secp384r1) server-digest SHA384)
-	(Client did not present a certificate)
-	(Authenticated sender: xry111@xry111.site)
-	by xry111.site (Postfix) with ESMTPSA id 910CB66D2C;
-	Fri, 20 Sep 2024 13:48:24 -0400 (EDT)
-Message-ID: <9e2388993a63cfbb7f48e847852d308dee850109.camel@xry111.site>
-Subject: Re: [GIT PULL] dma-mapping updates for Linux 6.12
-From: Xi Ruoyao <xry111@xry111.site>
-To: Christoph Hellwig <hch@infradead.org>
-Cc: Linus Torvalds <torvalds@linux-foundation.org>, 
-	linux-kernel@vger.kernel.org, iommu@lists.linux.dev
-Date: Sat, 21 Sep 2024 01:48:20 +0800
-In-Reply-To: <19e4bdbcda78ace200c78c56eb7173097337b921.camel@xry111.site>
-References: <ZuvYnXzbM2qfXQPT@infradead.org>
-		 <971fbb889da38ca4e60f3dedde29ea43e9338d68.camel@xry111.site>
-		 <Zu1byUGU832iWBUp@infradead.org> <Zu2Bd50GdSxF_-eA@infradead.org>
-	 <19e4bdbcda78ace200c78c56eb7173097337b921.camel@xry111.site>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-User-Agent: Evolution 3.54.0 
+	dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b="cl8SQ7e7"
+Received: from pps.filterd (m0279871.ppops.net [127.0.0.1])
+	by mx0a-0031df01.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 48KI5hq3017169;
+	Fri, 20 Sep 2024 19:34:37 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=quicinc.com; h=
+	cc:content-transfer-encoding:content-type:date:from:in-reply-to
+	:message-id:mime-version:references:subject:to; s=qcppdkim1; bh=
+	ZKklw6VHAc7PtrhzAdiC/HmgH49cCYfgi4H2Fn8w8HA=; b=cl8SQ7e7rBJjg28O
+	PlLJq+kHfnZnoEhRG5EO4Wm/XVY+Vpf/dse6xXgSVNtGB+fsTe67m6SKlAzJ/cNP
+	BvwkFcFFbDSfyXGtkq7Q8mk42eYJhprl1SQGNs47nJykNtnKopwl4MsOP8nJMOTr
+	wCp6opT92PvOojvxs4qapi1u6XJf0F81Iw6VpzzEJKDE6vk5jyNagf/8U57OI2ch
+	82oPW+H3HpXuLyBggmdSGT8d3ETQuPszp/mT+CU+iRRX/uVmyQwreUpwGJNkEpE/
+	mSCxjWtJmtA+kdFomDDs3nOEU5EfMTKJjGI8b6O5vtzzbvvKPc1UMjT1gzlyHXKn
+	gjeZ3w==
+Received: from nalasppmta04.qualcomm.com (Global_NAT1.qualcomm.com [129.46.96.20])
+	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 41n4hhjb3c-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Fri, 20 Sep 2024 19:34:37 +0000 (GMT)
+Received: from nalasex01c.na.qualcomm.com (nalasex01c.na.qualcomm.com [10.47.97.35])
+	by NALASPPMTA04.qualcomm.com (8.18.1.2/8.18.1.2) with ESMTPS id 48KJYZAG007194
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Fri, 20 Sep 2024 19:34:35 GMT
+Received: from [10.216.31.199] (10.80.80.8) by nalasex01c.na.qualcomm.com
+ (10.47.97.35) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1544.9; Fri, 20 Sep
+ 2024 12:34:30 -0700
+Message-ID: <5d57669d-dce5-44de-963e-0997ac107c9b@quicinc.com>
+Date: Sat, 21 Sep 2024 01:04:16 +0530
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v15 4/5] iommu/arm-smmu: introduction of ACTLR for custom
+ prefetcher settings
+To: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+CC: <robdclark@gmail.com>, <will@kernel.org>, <robin.murphy@arm.com>,
+        <joro@8bytes.org>, <jgg@ziepe.ca>, <jsnitsel@redhat.com>,
+        <robh@kernel.org>, <krzysztof.kozlowski@linaro.org>,
+        <quic_c_gdjako@quicinc.com>, <iommu@lists.linux.dev>,
+        <linux-arm-msm@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>, <linux-kernel@vger.kernel.org>
+References: <20240920155813.3434021-1-quic_bibekkum@quicinc.com>
+ <20240920155813.3434021-5-quic_bibekkum@quicinc.com>
+ <hdel47qqf4tto34a5atbjyukameoweudywixuj24aisqoikhcq@v523pootitbg>
+Content-Language: en-US
+From: Bibek Kumar Patro <quic_bibekkum@quicinc.com>
+In-Reply-To: <hdel47qqf4tto34a5atbjyukameoweudywixuj24aisqoikhcq@v523pootitbg>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
+ nalasex01c.na.qualcomm.com (10.47.97.35)
+X-QCInternal: smtphost
+X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
+X-Proofpoint-GUID: itM2T97mlohOTpcr_8ns0Gu8Svu2fMBi
+X-Proofpoint-ORIG-GUID: itM2T97mlohOTpcr_8ns0Gu8Svu2fMBi
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.293,Aquarius:18.0.1039,Hydra:6.0.680,FMLib:17.12.60.29
+ definitions=2024-09-06_09,2024-09-06_01,2024-09-02_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 bulkscore=0 suspectscore=0
+ adultscore=0 impostorscore=0 phishscore=0 priorityscore=1501 clxscore=1015
+ mlxlogscore=999 mlxscore=0 spamscore=0 lowpriorityscore=0 malwarescore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.19.0-2408220000
+ definitions=main-2409200142
 
-On Sat, 2024-09-21 at 01:15 +0800, Xi Ruoyao wrote:
-> On Fri, 2024-09-20 at 07:06 -0700, Christoph Hellwig wrote:
-> > On Fri, Sep 20, 2024 at 04:26:01AM -0700, Christoph Hellwig wrote:
-> > > On Fri, Sep 20, 2024 at 05:41:51AM +0800, Xi Ruoyao wrote:
-> > > > This breaks using my laptop camera with gstreamer (with "gst-
-> > > > launch-1.0
-> > > > v4l2src ! videoconvert ! autovideosink" or GNOME snapshot).
-> > >=20
-> > > What camere and driver are you using?
->=20
-> Bus 003 Device 003: ID 0c45:6366 Microdia Webcam Vitade AF
->=20
-> The driver is uvcvideo.
 
-And I just borrowed a different camera:
 
-Bus 003 Device 010: ID 1bcf:2283 Sunplus Innovation Technology Inc. FULL HD=
- webcam
+On 9/20/2024 9:50 PM, Dmitry Baryshkov wrote:
+> On Fri, Sep 20, 2024 at 09:28:12PM GMT, Bibek Kumar Patro wrote:
+>> Currently in Qualcomm  SoCs the default prefetch is set to 1 which allows
+>> the TLB to fetch just the next page table. MMU-500 features ACTLR
+>> register which is implementation defined and is used for Qualcomm SoCs
+>> to have a custom prefetch setting enabling TLB to prefetch the next set
+>> of page tables accordingly allowing for faster translations.
+>>
+>> ACTLR value is unique for each SMR (Stream matching register) and stored
+>> in a pre-populated table. This value is set to the register during
+>> context bank initialisation.
+>>
+>> Signed-off-by: Bibek Kumar Patro <quic_bibekkum@quicinc.com>
+>> ---
+>>   drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c | 26 ++++++++++++++++++++++
+>>   drivers/iommu/arm/arm-smmu/arm-smmu-qcom.h |  1 +
+>>   2 files changed, 27 insertions(+)
+>>
+>> diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
+>> index 38ac9cab763b..4ac272d05843 100644
+>> --- a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
+>> +++ b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
+>> @@ -252,6 +252,20 @@ static bool qcom_adreno_can_do_ttbr1(struct arm_smmu_device *smmu)
+>>   	return true;
+>>   }
+>>
+>> +static void qcom_smmu_set_actlr_dev(struct device *dev, struct arm_smmu_device *smmu, int cbndx,
+>> +		const struct of_device_id *client_match)
+>> +{
+>> +	const struct of_device_id *match =
+>> +			of_match_device(client_match, dev);
+>> +
+>> +	if (!match) {
+>> +		dev_notice(dev, "no ACTLR settings present\n");
+> 
+> dev_dbg() or even dev_vdbg(), please. We do not want to spam people with
+> messages about a perfectly normal behaviour.
+> 
+> LGTM otherwise.
 
-It suffers the same issue so it's unlikely to be related to a specific
-camera model.  This camera is also driven by uvcvideo.
+Ack, thanks Dmitry for the suggestion.
+I was actually wondering if to broadcast this message
+over the logs through dev_notice or give a option to
+print it in debug level through dev_dbg.
 
-v4l2gl from v4l-utils-1.28.1 suffers the issue either, so it's unlikely
-to be related to a specific userspace v4l2 program too.
+But I'm inline with your suggestion now, will switch
+to dev_dbg for this message.
 
-> > And what architecture and platform are you on?=20
->=20
-> A x86_64 laptop (with Core i5-11300H CPU).
->=20
+Thanks & regards,
+Bibek
 
---=20
-Xi Ruoyao <xry111@xry111.site>
-School of Aerospace Science and Technology, Xidian University
+> 
+> 
+>> +		return;
+>> +	}
+>> +
+>> +	arm_smmu_cb_write(smmu, cbndx, ARM_SMMU_CB_ACTLR, (u64)match->data);
+>> +}
+>> +
+>>   static int qcom_adreno_smmu_init_context(struct arm_smmu_domain *smmu_domain,
+>>   		struct io_pgtable_cfg *pgtbl_cfg, struct device *dev)
+>>   {
+>> @@ -316,8 +330,20 @@ static const struct of_device_id qcom_smmu_client_of_match[] __maybe_unused = {
+>>   static int qcom_smmu_init_context(struct arm_smmu_domain *smmu_domain,
+>>   		struct io_pgtable_cfg *pgtbl_cfg, struct device *dev)
+>>   {
+>> +	struct arm_smmu_device *smmu = smmu_domain->smmu;
+>> +	struct qcom_smmu *qsmmu = to_qcom_smmu(smmu);
+>> +	const struct of_device_id *client_match;
+>> +	int cbndx = smmu_domain->cfg.cbndx;
+>> +
+>>   	smmu_domain->cfg.flush_walk_prefer_tlbiasid = true;
+>>
+>> +	client_match = qsmmu->data->client_match;
+>> +
+>> +	if (!client_match)
+>> +		return 0;
+>> +
+>> +	qcom_smmu_set_actlr_dev(dev, smmu, cbndx, client_match);
+>> +
+>>   	return 0;
+>>   }
+>>
+>> diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.h b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.h
+>> index b55cd3e3ae48..8addd453f5f1 100644
+>> --- a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.h
+>> +++ b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.h
+>> @@ -28,6 +28,7 @@ struct qcom_smmu_match_data {
+>>   	const struct qcom_smmu_config *cfg;
+>>   	const struct arm_smmu_impl *impl;
+>>   	const struct arm_smmu_impl *adreno_impl;
+>> +	const struct of_device_id * const client_match;
+>>   };
+>>
+>>   irqreturn_t qcom_smmu_context_fault(int irq, void *dev);
+>> --
+>> 2.34.1
+>>
+> 
