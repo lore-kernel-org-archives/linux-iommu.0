@@ -1,44 +1,71 @@
-Received: from bombadil.infradead.org (bombadil.infradead.org [198.137.202.133])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-ed1-f49.google.com (mail-ed1-f49.google.com [209.85.208.49])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9E4B914290;
-	Fri, 20 Sep 2024 11:26:02 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.137.202.133
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E13DC14EC42
+	for <iommu@lists.linux.dev>; Fri, 20 Sep 2024 12:50:08 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.49
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1726831565; cv=none; b=izHMr63L9QVhbU0o1qX88LctFSmiAK58dUVwVInEmmlvPWGgFaVkkbf0SXH8PPPm7csAKA+ZrvrGbq9dlo/fjvvkuVpTvKH2uXfcvkjSEk5gjNOwcTiWJklDiQm8ljXg+iqcnpMuxiJe/Ccj12R+fF/pRLiSp3oPIaMpj1CVvxc=
+	t=1726836611; cv=none; b=biVqpr2a2Kvsx5Zx+5QEJnMMDUgXxegebXUCOTTIsrahbEefeTTBbsc8FTjatvajdyE45HlLwmqX11uFCXS6Pxwax4opRnfZ+bIC3rOv/4G2KefU4GOyIAa5QWQGAk9e0ulk/R7Bue1uWlSphWG3iIr8WY3x62P+ZuXpI5tUO58=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1726831565; c=relaxed/simple;
-	bh=0FTbkSuwF/nWhLWpO8SYLY2ED+F0e/TeFwLsP00CZgM=;
+	s=arc-20240116; t=1726836611; c=relaxed/simple;
+	bh=OBrX2SPJ/cy3El5dwOb+gA0sMiQmSueLxgklcEUTSzQ=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=F5Hxi72P814UCSeFydLIxPkTmoNlihly7Er210gljvvu2Hx5nks4uPsXaZM4XIyNkXEVwdAaSQ6RL4aKQ10+9O6nVqElbS/asmNL9nIkqeUYXOaGNLTiJh5t7W2IJKAHqOI72H7KPgpDASGI8S1b791Vwr+52XcIdl2EDk0NuMQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=infradead.org; spf=none smtp.mailfrom=bombadil.srs.infradead.org; dkim=pass (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b=2/q3lxSI; arc=none smtp.client-ip=198.137.202.133
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=infradead.org
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=bombadil.srs.infradead.org
+	 Content-Type:Content-Disposition:In-Reply-To; b=iprEKnpY/mtOMnm/WB+xzHd1MstwjAXLydcKTLQ5qsSnzNXg4WHTErLjvxxORi6oqvatHrApgC2um7ECYDYFVUSqBkhJpxic/5AszbshVv+Zy/NK/tD7+fcnmZgspASIiM105M5blfehJ3pt5UTsX1z0ZdwjprXsO3SC8y6ZKaY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=JmZQW2mU; arc=none smtp.client-ip=209.85.208.49
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b="2/q3lxSI"
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-	d=infradead.org; s=bombadil.20210309; h=In-Reply-To:Content-Type:MIME-Version
-	:References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-	Content-Transfer-Encoding:Content-ID:Content-Description;
-	bh=0FTbkSuwF/nWhLWpO8SYLY2ED+F0e/TeFwLsP00CZgM=; b=2/q3lxSIMR+4wZXiLxymHtJlZH
-	DBK4ZIJsJOA40RmIXCREbMe34xYvvYIrYANb9GxYotRneXQgn/qfEm/YeH28N+18Y14Lr38gMavGV
-	VLcDZUtNEiLJ2LgdRPflJFjtXsO7xUVHh0lIKlhrp390zyncdbC0JjMST5n6vVxKQJk8A4qxUSu1e
-	SP9azR7Z/7sDYlHjlnGLBh5ZxyvfUJSoIfuWBOlug4ttcar9yGhhWunpwvqW2iX8oK2PVMjfhJGOy
-	2RStJcBXT0NZ8caDPkq2fFEBOvP9szFpXcKxgdsvSKWY9S27ZGnDSQUdU7MCI2DgOA4qvumL7vdjw
-	8dYL3X/Q==;
-Received: from hch by bombadil.infradead.org with local (Exim 4.98 #2 (Red Hat Linux))
-	id 1srblx-0000000C5qv-44iz;
-	Fri, 20 Sep 2024 11:26:01 +0000
-Date: Fri, 20 Sep 2024 04:26:01 -0700
-From: Christoph Hellwig <hch@infradead.org>
-To: Xi Ruoyao <xry111@xry111.site>
-Cc: Christoph Hellwig <hch@infradead.org>,
-	Linus Torvalds <torvalds@linux-foundation.org>,
-	linux-kernel@vger.kernel.org, iommu@lists.linux.dev
-Subject: Re: [GIT PULL] dma-mapping updates for Linux 6.12
-Message-ID: <Zu1byUGU832iWBUp@infradead.org>
-References: <ZuvYnXzbM2qfXQPT@infradead.org>
- <971fbb889da38ca4e60f3dedde29ea43e9338d68.camel@xry111.site>
+	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="JmZQW2mU"
+Received: by mail-ed1-f49.google.com with SMTP id 4fb4d7f45d1cf-5c25f01879fso2448822a12.1
+        for <iommu@lists.linux.dev>; Fri, 20 Sep 2024 05:50:08 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=ziepe.ca; s=google; t=1726836607; x=1727441407; darn=lists.linux.dev;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=BRXulz5VMdOActwNuWRT+AsW1pBw6lAA7iZwsxIHYO0=;
+        b=JmZQW2mUhRd+wAOYT0tBD5MDz/J9NtLaOVJ6o2n8LTftT1U0HQ3DVZdggW9lrpJiAw
+         ioVN8aMepE1EOepppeSuJPsIb+PFzmUPfl5MczZWPSZkI7+/EEbWD6Om53cF6n/ItFG+
+         oEfUVaS7eWCkAQxMiIdTSd4iSu8ge8oWMOXvpimOqineK6mDh62xzoFrfSJlTE6KpT2m
+         t9VeboT3czU4+HL9PHUAdjacJREdL2GNbhFg71wRf5huxtPDThpiNnFIpeOEBG2v5Sv5
+         tI0RJ07YJVztxro1bfqdflp601GUN0Ws79j93FYkzHfXDhUgmnwKFTaVi+3kaBSlck5I
+         v8Dg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1726836607; x=1727441407;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=BRXulz5VMdOActwNuWRT+AsW1pBw6lAA7iZwsxIHYO0=;
+        b=xLeJ+U/lQx8lb/3M06IjmVZPHmfhoeQb6F/8AIzj2RQespOTJco5st/5f8QD+P3W5F
+         R8imVdOwzqVsjb8PRXCJp9Lhdh/FGndS9Urwno+WaT1pQb6eWtSjLw+1L5Kz+jiBjaaN
+         HztP4lQcNb6TOx2a205twnDg98TnmugYzCX/HuyDlTUtgj6OhqDQXrnsuA2TOEIdUGD7
+         TGzji0lAoyeMfS8OAgSF83FP9HTE+hXNfkunqomccz8BPUGGDLYrQE/FApZ/Gevfqmcc
+         tUpuJ+JvBPcHzpd5vBXjYqGihaDgEaDAUNyO47C7qZPWsccE3o4JHbP0UDfUdLh3ksEa
+         58Aw==
+X-Forwarded-Encrypted: i=1; AJvYcCV/T0OHFL+7Cukh20jvuhOZ1jcwz+bw7bmCkJ29J4Awcc2zFTzJmJc5fd80tHCeqhvMuE/DyQ==@lists.linux.dev
+X-Gm-Message-State: AOJu0YxcrhSvRFfeNMcoRk6kq5WBPtnoerRoDnMdrnC3yVLGTI0bcqqc
+	Bq5XdPmuAI/M/337HXosfu9YALnWOKwWBNEQzKQUijg44zkVotL1bomrULRhI/Y=
+X-Google-Smtp-Source: AGHT+IGLI5JfAevbKAytrlds8J1QIXfY6Ge4HV9Rl/H/KbAR0IgFYHFmb2dXYfkU7QHPZn2hH+C85w==
+X-Received: by 2002:a17:907:782:b0:a8d:2ab2:c9b1 with SMTP id a640c23a62f3a-a90d512261amr243385366b.56.1726836607080;
+        Fri, 20 Sep 2024 05:50:07 -0700 (PDT)
+Received: from ziepe.ca ([83.68.141.146])
+        by smtp.gmail.com with ESMTPSA id a640c23a62f3a-a90610f4400sm845161466b.84.2024.09.20.05.50.05
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 20 Sep 2024 05:50:06 -0700 (PDT)
+Received: from jgg by jggl with local (Exim 4.95)
+	(envelope-from <jgg@ziepe.ca>)
+	id 1srd5J-00018q-Fy;
+	Fri, 20 Sep 2024 09:50:05 -0300
+Date: Fri, 20 Sep 2024 09:50:05 -0300
+From: Jason Gunthorpe <jgg@ziepe.ca>
+To: Baolu Lu <baolu.lu@linux.intel.com>
+Cc: Chen Ni <nichen@iscas.ac.cn>, will@kernel.org, robin.murphy@arm.com,
+	joro@8bytes.org, nicolinc@nvidia.com, mshavit@google.com,
+	smostafa@google.com, linux-arm-kernel@lists.infradead.org,
+	iommu@lists.linux.dev, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] iommu/arm-smmu-v3: Convert comma to semicolon
+Message-ID: <Zu1vfRGrBTfEAivT@ziepe.ca>
+References: <20240919035356.2798911-1-nichen@iscas.ac.cn>
+ <7a532573-9e59-41c6-bf57-f50cad502e57@linux.intel.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -47,17 +74,32 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <971fbb889da38ca4e60f3dedde29ea43e9338d68.camel@xry111.site>
-X-SRS-Rewrite: SMTP reverse-path rewritten from <hch@infradead.org> by bombadil.infradead.org. See http://www.infradead.org/rpr.html
+In-Reply-To: <7a532573-9e59-41c6-bf57-f50cad502e57@linux.intel.com>
 
-On Fri, Sep 20, 2024 at 05:41:51AM +0800, Xi Ruoyao wrote:
-> This breaks using my laptop camera with gstreamer (with "gst-launch-1.0
-> v4l2src ! videoconvert ! autovideosink" or GNOME snapshot).
+On Thu, Sep 19, 2024 at 12:45:18PM +0800, Baolu Lu wrote:
+> On 9/19/24 11:53 AM, Chen Ni wrote:
+> > Replace comma between expressions with semicolons.
+> > 
+> > Using a ',' in place of a ';' can have unintended side effects.
+> > Although that is not the case here, it is seems best to use ';'
+> > unless ',' is intended.
+> > 
+> > Found by inspection.
+> > No functional change intended.
+> > Compile tested only.
+> > 
+> > Signed-off-by: Chen Ni<nichen@iscas.ac.cn>
+> > ---
+> >   drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 2 +-
+> >   1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> A typo in commit e3b1be2e73dbe ("iommu/arm-smmu-v3: Reorganize struct
+> arm_smmu_ctx_desc_cfg").
+> 
+> Reviewed-by: Lu Baolu <baolu.lu@linux.intel.com>
 
-What camere and driver are you using?
+Yes should have a fixes line, plese include and resend it..
 
-> (I had to use "git bisect skip" several times because I encountered
-> kernel panic on boot at some revisions.)
+Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
 
-Do you have any traces of that?
-
+Jason
