@@ -1,140 +1,177 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.7])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5058626AC1;
-	Sun, 22 Sep 2024 17:34:07 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.7
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A22057E1
+	for <iommu@lists.linux.dev>; Sun, 22 Sep 2024 18:10:08 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1727026449; cv=none; b=RrSC+1Mpmoy2qSoqOVLJXy29mimKgqfLP78IpYC4BxZKd3RrHyfupXgiptEA/am3WaQNAwWDdDt5Y4b1I7ia8qJMZmJJcrYj5wucbZc2FvH4GlQIT85+z8s3iV+rMCRYzicuHr5b9rPu2uX47eOI3iNDvSAm0wGtd9Wy7F2dr0k=
+	t=1727028608; cv=none; b=BsZnr/5PW7WDYwuvfHxQa6bKQN0caiMVNJhwfMoN2XkIhQSsrCbKPhMlNF8kXgkq5IvZK7HuTv2SjthTcYa8HuR6Sp6v1hJZ6LbvsUUS8NFuAjTgco84zQg6AiOfAyAslV69ORFJRduotj+g8Y67sLpY8LFaXKcCyPZPVrcbZVQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1727026449; c=relaxed/simple;
-	bh=q+nY30eSQi8XhpsS8mansxxUAG2eTX42CgjWvRxksGM=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=svlfcUkK2qqei0SUGRRSxA8GNEBL7gHYt+MAbcKcJ6/H1ZuGzwfkGFgMLIYy6BEOb1s8lKXUwJWU6gUoGIpeVbKonR7+zGiCe8CgFIHNAA7S71dNEbI5NwMDVex5HltXqO/ia1PHjHvlMoYiyh73X0wEkF3k3N4cajtcfXwGvV8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=WMNn8DL8; arc=none smtp.client-ip=192.198.163.7
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	s=arc-20240116; t=1727028608; c=relaxed/simple;
+	bh=b8DS2kq3jUmUL4A06wKLTvW4DhahFHzhcjaKq1P7Dtw=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=t5XjBPWnwHByAid6wYllzS1OKtXAhXV3663znreRuLi2KC+VIErlea7lN9zzLCUJ6YC8NvD5dL2V3+Ii4whYNZkyoEipRr/EI4x5p68WVQPUOBi8p/ouVwE0ZgxJ9rvghlAvoXoQX5KU8SYg22JanuYxJrxqdMT+aaYbwt1Ogss=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=KcBg9HqL; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="WMNn8DL8"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1727026447; x=1758562447;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=q+nY30eSQi8XhpsS8mansxxUAG2eTX42CgjWvRxksGM=;
-  b=WMNn8DL8cSJ+WcLdQPDEP7UsWeHdd+jumg2ww5HPbw53sbUTagit+8mh
-   SwllYv9eoamvcDJ2XQPb1qnjzBbpnYAZnMYkm2yZtODgRNYQugFVKkZEc
-   Ql604dLsCZVh3NWzmK0U1pbj0Uspivr/NhrrVVObCkzKm8VfF8K9NSzeu
-   IcIgTfTPUhnkHZY0BsOAkNqFusOM6zR/4hdMaIPAn8Pwd/qy2vmu+Rvj6
-   nqaLqI0f3eQ6ECEl6TQNiNmQapc8GCZEvOo6gaLzwkTgTDIuSpS0oYGFr
-   Cx6rSQkXZnYoejuMtBuKycztWrqPu0jx/xwZ+57aqWT/uT733FQZviWlC
-   A==;
-X-CSE-ConnectionGUID: +6PtPCVDQESfpeNgWiR9HQ==
-X-CSE-MsgGUID: s8NZBlX4SpmAuYZ/2HHOCA==
-X-IronPort-AV: E=McAfee;i="6700,10204,11202"; a="51392055"
-X-IronPort-AV: E=Sophos;i="6.10,249,1719903600"; 
-   d="scan'208";a="51392055"
-Received: from fmviesa006.fm.intel.com ([10.60.135.146])
-  by fmvoesa101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Sep 2024 10:34:06 -0700
-X-CSE-ConnectionGUID: 7ae7EIceRbWpguvBDWASWA==
-X-CSE-MsgGUID: JdQfHlWjR6Slgp8P8Ek8UA==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.10,249,1719903600"; 
-   d="scan'208";a="70437983"
-Received: from lkp-server01.sh.intel.com (HELO 53e96f405c61) ([10.239.97.150])
-  by fmviesa006.fm.intel.com with ESMTP; 22 Sep 2024 10:34:04 -0700
-Received: from kbuild by 53e96f405c61 with local (Exim 4.96)
-	(envelope-from <lkp@intel.com>)
-	id 1ssQTC-000GXn-0P;
-	Sun, 22 Sep 2024 17:34:02 +0000
-Date: Mon, 23 Sep 2024 01:34:00 +0800
-From: kernel test robot <lkp@intel.com>
-To: Leon Romanovsky <leon@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="KcBg9HqL"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 53DAEC4CEC3;
+	Sun, 22 Sep 2024 18:10:06 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1727028608;
+	bh=b8DS2kq3jUmUL4A06wKLTvW4DhahFHzhcjaKq1P7Dtw=;
+	h=From:To:Cc:Subject:Date:From;
+	b=KcBg9HqLA8kx4xk1hE0Ubt81YoJs4aqK0XOjkaCWsSotS12iiUMMCdIY5tZdrgUfp
+	 172s7sphuUBTuVDfmM8qjG3ZYF5DfzMeZDLC4gEO9CBlkKr9KF+vrnB1qsXWh0PU6O
+	 Haf45oZ01oYFfwdR5+VfkxHAXM7t1wNiggeUz5oV+5OBNGxQteRG5k0siYIGectr/I
+	 RUgdkUp39n7r7b+JOrgCzVGanPEQzBxeRYNIOcnfA972iFIlOXBJvogUERMrlA1MH5
+	 SzFyyBYrXzBT/LBHB/nOJCSS4KMkiMilTUMNK/Qs2CSNAKYtNs8JYmfEeqinmVfMZH
+	 tJmY9cPl2IV9A==
+From: Leon Romanovsky <leon@kernel.org>
+To: Christoph Hellwig <hch@lst.de>,
+	Robin Murphy <robin.murphy@arm.com>,
 	iommu@lists.linux.dev
-Cc: oe-kbuild-all@lists.linux.dev, Joerg Roedel <joro@8bytes.org>,
+Cc: Joerg Roedel <joro@8bytes.org>,
 	Will Deacon <will@kernel.org>,
 	Marek Szyprowski <m.szyprowski@samsung.com>,
 	Xi Ruoyao <xry111@xry111.site>
-Subject: Re: [PATCH] dma-mapping: report unlimited DMA addressing in IOMMU
- DMA path
-Message-ID: <202409230154.l43KmO8q-lkp@intel.com>
-References: <92f61e9627003eeeee1bc5fc8b32e59d7c932a33.1727015030.git.leon@kernel.org>
+Subject: [PATCH v2] dma-mapping: report unlimited DMA addressing in IOMMU DMA path
+Date: Sun, 22 Sep 2024 21:09:48 +0300
+Message-ID: <c2671009f217bfc3c9f7fbda2eefb0c44768fc3b.1727028402.git.leon@kernel.org>
+X-Mailer: git-send-email 2.46.1
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <92f61e9627003eeeee1bc5fc8b32e59d7c932a33.1727015030.git.leon@kernel.org>
+Content-Transfer-Encoding: 8bit
 
-Hi Leon,
+While using the IOMMU DMA path, the dma_addressing_limited() function
+checks ops struct which doesn't exist in the IOMMU case. This causes
+to the kernel panic while loading ADMGPU driver.
 
-kernel test robot noticed the following build errors:
+BUG: kernel NULL pointer dereference, address: 00000000000000a0
+PGD 0 P4D 0
+Oops: Oops: 0000 [#1] PREEMPT SMP NOPTI
+CPU: 10 UID: 0 PID: 611 Comm: (udev-worker) Tainted: G                T  6.11.0-clang-07154-g726e2d0cf2bb #257
+Tainted: [T]=RANDSTRUCT
+Hardware name: ASUS System Product Name/ROG STRIX Z690-G GAMING WIFI, BIOS 3701 07/03/2024
+RIP: 0010:dma_addressing_limited+0x53/0xa0
+Code: 8b 93 48 02 00 00 48 39 d1 49 89 d6 4c 0f 42 f1 48 85 d2 4c 0f 44 f1 f6 83 fc 02 00 00 40 75 0a 48 89 df e8 1f 09 00 00 eb 24 <4c> 8b 1c 25 a0 00 00 00 4d 85 db 74 17 48 89 df 41 ba 8b 84 2d 55
+RSP: 0018:ffffa8d2c12cf740 EFLAGS: 00010202
+RAX: 00000000ffffffff RBX: ffff8948820220c8 RCX: 000000ffffffffff
+RDX: 0000000000000000 RSI: ffffffffc124dc6d RDI: ffff8948820220c8
+RBP: 0000000000000000 R08: 0000000000000000 R09: 0000000000000000
+R10: 0000000000000000 R11: 0000000000000000 R12: ffff894883c3f040
+R13: ffff89488dac8828 R14: 000000ffffffffff R15: ffff8948820220c8
+FS:  00007fe6ba881900(0000) GS:ffff894fdf700000(0000) knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 00000000000000a0 CR3: 0000000111984000 CR4: 0000000000f50ef0
+PKRU: 55555554
+Call Trace:
+ <TASK>
+ ? __die_body+0x65/0xc0
+ ? page_fault_oops+0x3b9/0x450
+ ? _prb_read_valid+0x212/0x390
+ ? do_user_addr_fault+0x608/0x680
+ ? exc_page_fault+0x4e/0xa0
+ ? asm_exc_page_fault+0x26/0x30
+ ? dma_addressing_limited+0x53/0xa0
+ amdgpu_ttm_init+0x56/0x4b0 [amdgpu]
+ gmc_v8_0_sw_init+0x561/0x670 [amdgpu]
+ amdgpu_device_ip_init+0xf5/0x570 [amdgpu]
+ amdgpu_device_init+0x1a57/0x1ea0 [amdgpu]
+ ? _raw_spin_unlock_irqrestore+0x1a/0x40
+ ? pci_conf1_read+0xc0/0xe0
+ ? pci_bus_read_config_word+0x52/0xa0
+ amdgpu_driver_load_kms+0x15/0xa0 [amdgpu]
+ amdgpu_pci_probe+0x1b7/0x4c0 [amdgpu]
+ pci_device_probe+0x1c5/0x260
+ really_probe+0x130/0x470
+ __driver_probe_device+0x77/0x150
+ driver_probe_device+0x19/0x120
+ __driver_attach+0xb1/0x1e0
+ ? __cfi___driver_attach+0x10/0x10
+ bus_for_each_dev+0x115/0x170
+ bus_add_driver+0x192/0x2d0
+ driver_register+0x5c/0xf0
+ ? __cfi_init_module+0x10/0x10 [amdgpu]
+ do_one_initcall+0x128/0x380
+ ? idr_alloc_cyclic+0x139/0x1d0
+ ? security_kernfs_init_security+0x42/0x140
+ ? __kernfs_new_node+0x1be/0x250
+ ? sysvec_apic_timer_interrupt+0xb6/0xc0
+ ? asm_sysvec_apic_timer_interrupt+0x1a/0x20
+ ? _raw_spin_unlock+0x11/0x30
+ ? free_unref_page+0x283/0x650
+ ? kfree+0x274/0x3a0
+ ? kfree+0x274/0x3a0
+ ? kfree+0x274/0x3a0
+ ? load_module+0xf2e/0x1130
+ ? __kmalloc_cache_noprof+0x12a/0x2e0
+ do_init_module+0x7d/0x240
+ __se_sys_init_module+0x19e/0x220
+ do_syscall_64+0x8a/0x150
+ ? __irq_exit_rcu+0x5e/0x100
+ entry_SYSCALL_64_after_hwframe+0x76/0x7e
+RIP: 0033:0x7fe6bb5980ee
+Code: 48 8b 0d 3d ed 12 00 f7 d8 64 89 01 48 83 c8 ff c3 66 2e 0f 1f 84 00 00 00 00 00 90 f3 0f 1e fa 49 89 ca b8 af 00 00 00 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 8b 0d 0a ed 12 00 f7 d8 64 89 01 48
+RSP: 002b:00007ffd462219d8 EFLAGS: 00000206 ORIG_RAX: 00000000000000af
+RAX: ffffffffffffffda RBX: 0000556caf0d0670 RCX: 00007fe6bb5980ee
+RDX: 0000556caf0d3080 RSI: 0000000002893458 RDI: 00007fe6b3400010
+RBP: 0000000000020000 R08: 0000000000020010 R09: 0000000000000080
+R10: c26073c166186e00 R11: 0000000000000206 R12: 0000556caf0d3430
+R13: 0000556caf0d0670 R14: 0000556caf0d3080 R15: 0000556caf0ce700
+ </TASK>
+Modules linked in: amdgpu(+) i915(+) drm_suballoc_helper intel_gtt drm_exec drm_buddy iTCO_wdt i2c_algo_bit intel_pmc_bxt drm_display_helper iTCO_vendor_support gpu_sched drm_ttm_helper cec ttm amdxcp video backlight pinctrl_alderlake nct6775 hwmon_vid nct6775_core coretemp
+CR2: 00000000000000a0
+---[ end trace 0000000000000000 ]---
+RIP: 0010:dma_addressing_limited+0x53/0xa0
+Code: 8b 93 48 02 00 00 48 39 d1 49 89 d6 4c 0f 42 f1 48 85 d2 4c 0f 44 f1 f6 83 fc 02 00 00 40 75 0a 48 89 df e8 1f 09 00 00 eb 24 <4c> 8b 1c 25 a0 00 00 00 4d 85 db 74 17 48 89 df 41 ba 8b 84 2d 55
+RSP: 0018:ffffa8d2c12cf740 EFLAGS: 00010202
+RAX: 00000000ffffffff RBX: ffff8948820220c8 RCX: 000000ffffffffff
+RDX: 0000000000000000 RSI: ffffffffc124dc6d RDI: ffff8948820220c8
+RBP: 0000000000000000 R08: 0000000000000000 R09: 0000000000000000
+R10: 0000000000000000 R11: 0000000000000000 R12: ffff894883c3f040
+R13: ffff89488dac8828 R14: 000000ffffffffff R15: ffff8948820220c8
+FS:  00007fe6ba881900(0000) GS:ffff894fdf700000(0000) knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 00000000000000a0 CR3: 0000000111984000 CR4: 0000000000f50ef0
+PKRU: 55555554
 
-[auto build test ERROR on linus/master]
-[also build test ERROR on v6.11 next-20240920]
-[If your patch is applied to the wrong git tree, kindly drop us a note.
-And when submitting patch, we suggest to use '--base' as documented in
-https://git-scm.com/docs/git-format-patch#_base_tree_information]
+Fixes: b5c58b2fdc42 ("dma-mapping: direct calls for dma-iommu")
+Closes: https://bugzilla.kernel.org/show_bug.cgi?id=219292
+Signed-off-by: Leon Romanovsky <leon@kernel.org>
+---
+Changelog:
+v2: Added missed bracket.
+---
+ kernel/dma/mapping.c | 6 +++++-
+ 1 file changed, 5 insertions(+), 1 deletion(-)
 
-url:    https://github.com/intel-lab-lkp/linux/commits/Leon-Romanovsky/dma-mapping-report-unlimited-DMA-addressing-in-IOMMU-DMA-path/20240922-222704
-base:   linus/master
-patch link:    https://lore.kernel.org/r/92f61e9627003eeeee1bc5fc8b32e59d7c932a33.1727015030.git.leon%40kernel.org
-patch subject: [PATCH] dma-mapping: report unlimited DMA addressing in IOMMU DMA path
-config: x86_64-rhel-8.3 (https://download.01.org/0day-ci/archive/20240923/202409230154.l43KmO8q-lkp@intel.com/config)
-compiler: gcc-12 (Debian 12.2.0-14) 12.2.0
-reproduce (this is a W=1 build): (https://download.01.org/0day-ci/archive/20240923/202409230154.l43KmO8q-lkp@intel.com/reproduce)
-
-If you fix the issue in a separate patch/commit (i.e. not just a new version of
-the same patch/commit), kindly add following tags
-| Reported-by: kernel test robot <lkp@intel.com>
-| Closes: https://lore.kernel.org/oe-kbuild-all/202409230154.l43KmO8q-lkp@intel.com/
-
-All error/warnings (new ones prefixed by >>):
-
-   kernel/dma/mapping.c: In function 'dma_addressing_limited':
->> kernel/dma/mapping.c:929:48: error: expected ')' before 'return'
-     929 |         if (unlikely(ops) || use_dma_iommu(dev)
-         |            ~                                   ^
-         |                                                )
-     930 |                 return false;
-         |                 ~~~~~~                          
->> kernel/dma/mapping.c:932:1: error: expected expression before '}' token
-     932 | }
-         | ^
->> kernel/dma/mapping.c:932:1: warning: control reaches end of non-void function [-Wreturn-type]
-     932 | }
-         | ^
-
-
-vim +929 kernel/dma/mapping.c
-
-   912	
-   913	/**
-   914	 * dma_addressing_limited - return if the device is addressing limited
-   915	 * @dev:	device to check
-   916	 *
-   917	 * Return %true if the devices DMA mask is too small to address all memory in
-   918	 * the system, else %false.  Lack of addressing bits is the prime reason for
-   919	 * bounce buffering, but might not be the only one.
-   920	 */
-   921	bool dma_addressing_limited(struct device *dev)
-   922	{
-   923		const struct dma_map_ops *ops = get_dma_ops(dev);
-   924	
-   925		if (min_not_zero(dma_get_mask(dev), dev->bus_dma_limit) <
-   926				 dma_get_required_mask(dev))
-   927			return true;
-   928	
- > 929		if (unlikely(ops) || use_dma_iommu(dev)
-   930			return false;
-   931		return !dma_direct_all_ram_mapped(dev);
- > 932	}
-   933	EXPORT_SYMBOL_GPL(dma_addressing_limited);
-   934	
-
+diff --git a/kernel/dma/mapping.c b/kernel/dma/mapping.c
+index b839683da0ba..bcb7a4aa8fa4 100644
+--- a/kernel/dma/mapping.c
++++ b/kernel/dma/mapping.c
+@@ -569,6 +569,10 @@ u64 dma_get_required_mask(struct device *dev)
+ 
+ 	if (dma_alloc_direct(dev, ops))
+ 		return dma_direct_get_required_mask(dev);
++
++	if (use_dma_iommu(dev))
++		return DMA_BIT_MASK(32);
++
+ 	if (ops->get_required_mask)
+ 		return ops->get_required_mask(dev);
+ 
+@@ -926,7 +930,7 @@ bool dma_addressing_limited(struct device *dev)
+ 			 dma_get_required_mask(dev))
+ 		return true;
+ 
+-	if (unlikely(ops))
++	if (unlikely(ops) || use_dma_iommu(dev))
+ 		return false;
+ 	return !dma_direct_all_ram_mapped(dev);
+ }
 -- 
-0-DAY CI Kernel Test Service
-https://github.com/intel/lkp-tests/wiki
+2.46.1
+
