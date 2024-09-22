@@ -1,43 +1,42 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 04ADCC144
-	for <iommu@lists.linux.dev>; Sun, 22 Sep 2024 15:02:17 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E37C92581
+	for <iommu@lists.linux.dev>; Sun, 22 Sep 2024 15:02:48 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1727017338; cv=none; b=p24TQRSSSGaO7+GeFeRFkS+4paD/043Kw0FjoStxlPfRrVLm5xByTxd17g+eL+VCr0CYA47z/cPBgtrU6RnIsOUZ0+ZyFUcTQbUVwKhVCUabKfvLJKZXk5jkzsxU43Q6nEEr/KAJKx/NK9xmty4lBf/shdUQKsptw2VSWkzx0do=
+	t=1727017369; cv=none; b=L5tQAmvhl/qqHlNBRgQRoPryKdYSh0e0EpRtHaTdgdjVgFxYjDGubjdTXalMUWLb9vnmXd0iB+2sOukPGV0mLPAzzIbeDgpI23SgonwbkqDzVdxXg7N1Y0AZqYOgD0GZmM6vc6HF4ZOvqQQOQVxlMCU9fuxT8H0vIRM1w1MuwMM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1727017338; c=relaxed/simple;
-	bh=4F00RqovIfyrSd5mQuI2EuhP8uxKErvLYeEpb8/EpBg=;
+	s=arc-20240116; t=1727017369; c=relaxed/simple;
+	bh=Q/RC40pMfl56VozCL24fdBw+6JPA88/CAtC1/VfzJbM=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=gNm+rSPWCNxjK3a/oZm8MtiFWj2LStlpM8m4erHQP3WZSDqpJKbHsuIHacxAhz4aTaWnh6382cz4WDIQbTZWn5jxGtqVrcX6wiiVCgJsa7mwEStNRcbaEzOgw+8u6sAZr+LbpM1gTcH4sC8kY5yFBuAaGN9FrNlwbNGio2QDPpo=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=jNUqhu/u; arc=none smtp.client-ip=10.30.226.201
+	 Content-Type:Content-Disposition:In-Reply-To; b=pFyYQTDXnyqABiIQrY6NfT0dr1DgGQEaIYjxdWh04ZlPslKmOLD31H0HSXPCEWovurJQdxQNF025PSMyeD1W1uhqoSTHPseFr/fSaTMKcgVow5E8sbwxRkERH1N9V6z3nj9od58UvGuacE8t+6IMKkHFsvtue8ah47mqlPhD9j8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=O3LylbwS; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="jNUqhu/u"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BA4F3C4CEC3;
-	Sun, 22 Sep 2024 15:02:16 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="O3LylbwS"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 17FEAC4CEC3;
+	Sun, 22 Sep 2024 15:02:46 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1727017337;
-	bh=4F00RqovIfyrSd5mQuI2EuhP8uxKErvLYeEpb8/EpBg=;
+	s=k20201202; t=1727017368;
+	bh=Q/RC40pMfl56VozCL24fdBw+6JPA88/CAtC1/VfzJbM=;
 	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=jNUqhu/uGe+CGKrg/EvXzlKh8haUFKEaznrALH3XTJ9jsctRB7la1G48X3uyu98vv
-	 94MnIcpzjLtxDF/KqvZhl0vbp9zVVBLH//CpauhPOIeb8aoFKE9MPUzLMUfhtKnnmA
-	 OeNVULvDIEuL93nPQsvTt6vAjzKRZt1p5/nsYLzkq8sollWTofU7DMIs2uO06a+NIK
-	 86N9Zo37ktTwvLQyStrJz028zc+yxGtZdJWZko9wp8GAZBdaPaMfZGEe9oJb8LueVk
-	 97frAgJrHVO22jbX4crDw8GqK8E9M3IkOEUn59/PXdmx6QXet+J7d99etVg1bp8QPh
-	 CJua1X/owUXZA==
-Date: Sun, 22 Sep 2024 18:02:06 +0300
+	b=O3LylbwSyq3KdA3n1QvzOm6M3EkmgelC87OnCiOX4WMBc3squQhONAxUw/kbpR2Ps
+	 jOTE0DR31GhIXcioPHe4gbv6i7LAsnUyia5biaKQagSoUHQfxlFcozNa8QMbSfhLN5
+	 RTRwpZN+2Ovvw3qScUHPH4tqLonMOTWRjC3LLeKHmlgXf/IIJhPi3/jTQ6Abbg0fO7
+	 RJ8msHknYHNTweB0EBKeN3+E0s8KkkdpYmK9Oq0ZbqtxvR54AsBHA/IDh8XYpMTIcb
+	 kGebRUmkqX4n+t04lYAz+u6ta+1XVC0rY9G4344SUd8ivYqCG/F3rM5SvkGXcE/c7G
+	 arnq/FHq36QxQ==
+Date: Sun, 22 Sep 2024 18:02:22 +0300
 From: Leon Romanovsky <leon@kernel.org>
 To: Christoph Hellwig <hch@lst.de>
 Cc: Robin Murphy <robin.murphy@arm.com>, iommu@lists.linux.dev,
 	Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
 	Marek Szyprowski <m.szyprowski@samsung.com>,
 	Xi Ruoyao <xry111@xry111.site>
-Subject: Re: [PATCH 1/2] dma-mapping: fix vmap and mmap of noncontiougs
- allocations
-Message-ID: <20240922150206.GE11337@unreal>
+Subject: Re: [PATCH 2/2] iommu/dma: remove most stubs in iommu-dma.h
+Message-ID: <20240922150222.GF11337@unreal>
 References: <20240922140743.1596763-1-hch@lst.de>
- <20240922140743.1596763-2-hch@lst.de>
+ <20240922140743.1596763-3-hch@lst.de>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -46,29 +45,17 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20240922140743.1596763-2-hch@lst.de>
+In-Reply-To: <20240922140743.1596763-3-hch@lst.de>
 
-On Sun, Sep 22, 2024 at 04:07:34PM +0200, Christoph Hellwig wrote:
-> Commit b5c58b2fdc42 ("dma-mapping: direct calls for dma-iommu") switched
-> to use direct calls to dma-iommu, but missed the dma_vmap_noncontiguous,
-> dma_vunmap_noncontiguous and dma_mmap_noncontiguous behavior keyed off the
-> presence of the alloc_noncontiguous method.
+On Sun, Sep 22, 2024 at 04:07:35PM +0200, Christoph Hellwig wrote:
+> The direct calls from mapping.c all guarded by use_dma_iommu(), so don't
+> bother to provide stubs, but instead just expose the prototypes
+> unconditionally.
 > 
-> Fix this by removing the now unused alloc_noncontiguous and
-> free_noncontiguous methods and moving the vmapping and mmaping of the
-> noncontiguous allocations into the iommu code, as it is the only provider
-> of actually noncontiguous allocations.
-> 
-> Fixes: b5c58b2fdc42 ("dma-mapping: direct calls for dma-iommu")
-> Reported-by: Xi Ruoyao <xry111@xry111.site>
 > Signed-off-by: Christoph Hellwig <hch@lst.de>
-> Tested-by: Xi Ruoyao <xry111@xry111.site>
 > ---
->  drivers/iommu/dma-iommu.c   | 33 +++++++++++++++++++++++++++++++++
->  include/linux/dma-map-ops.h | 19 -------------------
->  include/linux/iommu-dma.h   |  6 ++++++
->  kernel/dma/mapping.c        | 37 ++++++++++---------------------------
->  4 files changed, 49 insertions(+), 46 deletions(-)
+>  include/linux/iommu-dma.h | 108 +++-----------------------------------
+>  1 file changed, 8 insertions(+), 100 deletions(-)
 > 
 
 Thanks,
