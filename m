@@ -1,99 +1,126 @@
-Received: from cstnet.cn (smtp84.cstnet.cn [159.226.251.84])
-	(using TLSv1.2 with cipher DHE-RSA-AES256-SHA (256/256 bits))
+Received: from mail-il1-f179.google.com (mail-il1-f179.google.com [209.85.166.179])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EC2C9624
-	for <iommu@lists.linux.dev>; Mon, 23 Sep 2024 02:17:29 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=159.226.251.84
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AB156C2C6
+	for <iommu@lists.linux.dev>; Mon, 23 Sep 2024 03:10:17 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.166.179
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1727057853; cv=none; b=PRYAfgED5T45gInGbuZLwguQfHupPrE2StuWI1ezc0g1scmDeXXHG97sbvM56g2gs6VwOthOtQnlzU39e9hKXUbAzsoYk0QDQjxTEpTQhWIAk92qLvGHm7YiX45Dh8As7KOLffMTovX6+N7y59XzfhEn49DYPoFI0/sbPH9Vwdw=
+	t=1727061019; cv=none; b=attdCSySSNiFxBZK5zBlUWAXtasXYV4pV7O6vCSXaeL/F2ESkGihOq6+SqS3TNnicL5aA2Iz6EI349lBw5J/WcyKuk8Q1+45Tb7sgLCcH6BCy5K6nXpQV4HpArnvf+aGlsehrPfGAGc9ryenbdGnBowOEUuWx1uhNqZiM+z/iu4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1727057853; c=relaxed/simple;
-	bh=3WkHmC2flEor2WrmNEDGfLQBihSHEZf8aZWDpQMQkLU=;
-	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version; b=jepgQMfN3fWPZFmzXo8FcFQx1Vei0HNUktieZB1vJahzHtBSt7eBwvIYJxQAbn8lfouk94+8TXslipMf03jXfRoJAAAb8kI/fHettNg8f+gEH/+g5gnEhVJOdZQW0tlW7ZXhTeZlOAmN0xtZMLc0B96N3Boe2/+nf76h3w5vFEY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=iscas.ac.cn; spf=pass smtp.mailfrom=iscas.ac.cn; arc=none smtp.client-ip=159.226.251.84
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=iscas.ac.cn
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=iscas.ac.cn
-Received: from localhost (unknown [124.16.138.129])
-	by APP-05 (Coremail) with SMTP id zQCowAAHWW2kz_Bm9JhjAA--.6423S2;
-	Mon, 23 Sep 2024 10:17:09 +0800 (CST)
-From: Chen Ni <nichen@iscas.ac.cn>
-To: will@kernel.org,
-	robin.murphy@arm.com,
-	joro@8bytes.org,
-	jgg@ziepe.ca,
-	nicolinc@nvidia.com,
-	mshavit@google.com,
-	smostafa@google.com,
-	baolu.lu@linux.intel.com
-Cc: linux-arm-kernel@lists.infradead.org,
-	iommu@lists.linux.dev,
-	linux-kernel@vger.kernel.org,
-	Chen Ni <nichen@iscas.ac.cn>
-Subject: [PATCH v2] iommu/arm-smmu-v3: Convert comma to semicolon
-Date: Mon, 23 Sep 2024 10:15:57 +0800
-Message-Id: <20240923021557.3432068-1-nichen@iscas.ac.cn>
-X-Mailer: git-send-email 2.25.1
+	s=arc-20240116; t=1727061019; c=relaxed/simple;
+	bh=/d31PSOPr0RsVly3ijRCrupc38aH6Gm8vUS22l59aGI=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=VM2JtVRE2knyi9ZscIT1PSiv9CvMXfIkYOPgpWCSmLeEpWef0AvwijerQOh2gnDLNzdB9F8MN6yGuhmArRtSYYK4XhNq6nOT6n6pacG3ISXKHEip1AEiySahVcjPkM7n5KAnpyxZkp37Dt6DM5TgybHXGA2enQlUD3I6emY+U68=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=T+1WDA0Y; arc=none smtp.client-ip=209.85.166.179
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="T+1WDA0Y"
+Received: by mail-il1-f179.google.com with SMTP id e9e14a558f8ab-3a045f08fd6so608545ab.0
+        for <iommu@lists.linux.dev>; Sun, 22 Sep 2024 20:10:17 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20230601; t=1727061016; x=1727665816; darn=lists.linux.dev;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=IzUtqJjmty9wVx5yKerwbO2p6grMR3z7edk2LwQv0Vw=;
+        b=T+1WDA0YIJmCs57TCHgOklL/TKOmwcR4QZE07c5genJkIQjdkQJIgy99tZFbW9k+8O
+         QaM+MTnAKmEpSKQx3UITOwg+CHKgeznd3vt+BiNyaBdf/6PtUD0qn58w3BM6hCKGNz+K
+         BJ6dm6A9WTcCPxwTCm8Kllu7koVGIzFtqIaLQrMaLOsUg7FptLEz6UBUwqr1ZhjWvY6m
+         2l89Drl3+t16KfBDUrbdI8rJcmAanzhG6WpAWbfP3N1+GMCoWwIhjpcJEd9RrEym251H
+         A2reoHSAq3Hb6q8ffDM6xfaDXOjkQOQ9PWd1wWGzmlW5YB1SMA1caDcrmDY/rzzENqFM
+         MEQQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1727061016; x=1727665816;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=IzUtqJjmty9wVx5yKerwbO2p6grMR3z7edk2LwQv0Vw=;
+        b=RGIk736fm+jbM1zA9ULNh6zPaPzo5t1a6YLvBxBvCCoS9RJ0cf7zAN9Swztt0tf5Js
+         Dm5i0In++HILFEHFwvXqjGVIJegMtRDV4J9ZEgZ4OQ8UfpSugA20wiQzfLtmF5gOtiw/
+         MiMgrVYF+HTSgB/CBXga5DHdTk3bg1mvUACJqn0UrVNjWYHvcRFL9HZ7hzdh5d9tXALM
+         +apkM7Z6bmwucSF86pJJEabYuI/JjfGOBwLaO38yk9HeEwWMzg3bqd5ksvawBRaxOTgn
+         Md+/ION0d+/iyzRWokTi2uIQc4sgrl5HttaNDLWEIEQBXHq0tOOTogSFXw478b14EHIx
+         vqiw==
+X-Forwarded-Encrypted: i=1; AJvYcCXaR9scYusU+Z3lq16i5UpkVCc3Z35cCQSLFUyIeuxO270GDG/4GVE+AaF5YtY19lCfxMD89Q==@lists.linux.dev
+X-Gm-Message-State: AOJu0YxgbYCeH+Nba7WXhv3gvUDotmS4Bqu7BRT80Mq4zTrC0G7TpCnQ
+	Ze6ySssP3GS64Qnvz+0hMYQOBXWmvIocwsxOgXsO7I7B4TIL0vSonDF1Nhk6IQ==
+X-Google-Smtp-Source: AGHT+IEwsVm3Qzc9hp+i5gAkymfFTBQJmEMGtLHZj6/ElZzuHZFcBIjTnNj27NumbPM/W2PkBv+lHg==
+X-Received: by 2002:a05:6e02:12c9:b0:3a0:b0dc:abfc with SMTP id e9e14a558f8ab-3a192d3bd1cmr4622315ab.7.1727061016347;
+        Sun, 22 Sep 2024 20:10:16 -0700 (PDT)
+Received: from google.com (62.166.143.34.bc.googleusercontent.com. [34.143.166.62])
+        by smtp.gmail.com with ESMTPSA id d9443c01a7336-2079472e15esm124635595ad.244.2024.09.22.20.10.13
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 22 Sep 2024 20:10:15 -0700 (PDT)
+Date: Mon, 23 Sep 2024 03:10:08 +0000
+From: Pranjal Shrivastava <praan@google.com>
+To: Dipendra Khadka <kdipendra88@gmail.com>
+Cc: will@kernel.org, robin.murphy@arm.com, joro@8bytes.org,
+	baolu.lu@linux.intel.com, linux-arm-kernel@lists.infradead.org,
+	iommu@lists.linux.dev, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] Staging: iommu:  Replace null pointer check with IS_ERR
+ in arm_smmu_domain_alloc_user()
+Message-ID: <ZvDcEFXhpMo3K-Zd@google.com>
+References: <20240922155621.49432-1-kdipendra88@gmail.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-CM-TRANSID:zQCowAAHWW2kz_Bm9JhjAA--.6423S2
-X-Coremail-Antispam: 1UD129KBjvJXoW7KF17ur4DKrWUZrykJFyrZwb_yoW8JF4fpa
-	1DWryqvrsxW3WakasrXFs2vr98Wa95ZFW7KFyj9390qwn8try8GrZ7t3sxKrykCr1UJr43
-	Aws2q3yrXF45ArJanT9S1TB71UUUUUDqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
-	9KBjDU0xBIdaVrnRJUUUBj14x267AKxVW8JVW5JwAFc2x0x2IEx4CE42xK8VAvwI8IcIk0
-	rVWrJVCq3wAFIxvE14AKwVWUJVWUGwA2ocxC64kIII0Yj41l84x0c7CEw4AK67xGY2AK02
-	1l84ACjcxK6xIIjxv20xvE14v26r4j6ryUM28EF7xvwVC0I7IYx2IY6xkF7I0E14v26r4j
-	6F4UM28EF7xvwVC2z280aVAFwI0_Gr1j6F4UJwA2z4x0Y4vEx4A2jsIEc7CjxVAFwI0_Cr
-	1j6rxdM2AIxVAIcxkEcVAq07x20xvEncxIr21l5I8CrVACY4xI64kE6c02F40Ex7xfMcIj
-	6xIIjxv20xvE14v26r1j6r18McIj6I8E87Iv67AKxVWUJVW8JwAm72CE4IkC6x0Yz7v_Jr
-	0_Gr1lF7xvr2IYc2Ij64vIr41lF7I21c0EjII2zVCS5cI20VAGYxC7M4IIrI8v6xkF7I0E
-	8cxan2IY04v7MxkF7I0En4kS14v26r1q6r43MxkIecxEwVAFwVW8JwCF04k20xvY0x0EwI
-	xGrwCFx2IqxVCFs4IE7xkEbVWUJVW8JwC20s026c02F40E14v26r1j6r18MI8I3I0E7480
-	Y4vE14v26r106r1rMI8E67AF67kF1VAFwI0_Jw0_GFylIxkGc2Ij64vIr41lIxAIcVC0I7
-	IYx2IY67AKxVWUJVWUCwCI42IY6xIIjxv20xvEc7CjxVAFwI0_Gr0_Cr1lIxAIcVCF04k2
-	6cxKx2IYs7xG6r1j6r1xMIIF0xvEx4A2jsIE14v26r1j6r4UMIIF0xvEx4A2jsIEc7CjxV
-	AFwI0_Gr0_Gr1UYxBIdaVFxhVjvjDU0xZFpf9x0JUHyIUUUUUU=
-X-CM-SenderInfo: xqlfxv3q6l2u1dvotugofq/
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20240922155621.49432-1-kdipendra88@gmail.com>
 
-Replace comma between expressions with semicolons.
+On Sun, Sep 22, 2024 at 03:56:20PM +0000, Dipendra Khadka wrote:
+> The smatch reported following:
+> '''
+> drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c:3065 arm_smmu_domain_alloc_user() warn: 'smmu_domain' is an error pointer or valid
+> drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c:3068 arm_smmu_domain_alloc_user() error: 'smmu_domain' dereferencing possible ERR_PTR()
+> '''
+> 
+> The function arm_smmu_domain_alloc() handles the null pointer after
+> kzalloc and returns ERR_PTR(-ENOMEM).
+> 
+> Replacing condition check !smmu_domain with IS_ERR(smmu_domain) and
+> returning smmu_domain.
 
-Using a ',' in place of a ';' can have unintended side effects.
-Although that is not the case here, it is seems best to use ';'
-unless ',' is intended.
+Hi Dipendra,
 
-Found by inspection.
-No functional change intended.
-Compile tested only.
+Thanks for looking into the code. However, I think this was fixed last
+month by Dan's patch [1] and has been merged in the master branch.
+Please pull the latest. :)
 
-Fixes: e3b1be2e73db ("iommu/arm-smmu-v3: Reorganize struct arm_smmu_ctx_desc_cfg")
-Signed-off-by: Chen Ni <nichen@iscas.ac.cn>
----
-Changelog:
+[1]
+ https://lore.kernel.org/linux-arm-kernel/172381875518.1794999.1134549433569030700.b4-ty@kernel.org/T/
 
-v1 -> v2:
+> 
+> Signed-off-by: Dipendra Khadka <kdipendra88@gmail.com>
+> ---
+>  drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 4 ++--
+>  1 file changed, 2 insertions(+), 2 deletions(-)
+> 
+> diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+> index a31460f9f3d4..19c53c6f7578 100644
+> --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+> +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+> @@ -3062,8 +3062,8 @@ arm_smmu_domain_alloc_user(struct device *dev, u32 flags,
+>  		return ERR_PTR(-EOPNOTSUPP);
+>  
+>  	smmu_domain = arm_smmu_domain_alloc();
+> -	if (!smmu_domain)
+> -		return ERR_PTR(-ENOMEM);
+> +	if (IS_ERR(smmu_domain))
+> +		return smmu_domain;
 
-1. Add Fixes tag.
----
- drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+Quick note, using something like `ERR_CAST` is better in such cases.
 
-diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-index 737c5b882355..4815c5198642 100644
---- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-+++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-@@ -1420,7 +1420,7 @@ static int arm_smmu_alloc_cd_tables(struct arm_smmu_master *master)
- 		cd_table->s1fmt = STRTAB_STE_0_S1FMT_LINEAR;
- 		cd_table->linear.num_ents = max_contexts;
- 
--		l1size = max_contexts * sizeof(struct arm_smmu_cd),
-+		l1size = max_contexts * sizeof(struct arm_smmu_cd);
- 		cd_table->linear.table = dma_alloc_coherent(smmu->dev, l1size,
- 							    &cd_table->cdtab_dma,
- 							    GFP_KERNEL);
--- 
-2.25.1
+>  
+>  	smmu_domain->domain.type = IOMMU_DOMAIN_UNMANAGED;
+>  	smmu_domain->domain.ops = arm_smmu_ops.default_domain_ops;
+> -- 
+> 2.43.0
+> 
+> 
 
+Thanks,
+Pranjal
