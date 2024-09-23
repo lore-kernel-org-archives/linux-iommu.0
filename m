@@ -1,129 +1,99 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.17])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from cstnet.cn (smtp84.cstnet.cn [159.226.251.84])
+	(using TLSv1.2 with cipher DHE-RSA-AES256-SHA (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C4DE129CF4;
-	Sun, 22 Sep 2024 19:37:12 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.17
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EC2C9624
+	for <iommu@lists.linux.dev>; Mon, 23 Sep 2024 02:17:29 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=159.226.251.84
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1727033835; cv=none; b=inoBVXyDw7tY362ngQrM5tSBc1XN6rvTXuU3WGGxyXOHyZswvZWeeB+UlGTC4WDYZMDE2KMDwBjDaAgK1u6ycigvLEclQRXz1DAZNQX8KoiOuNg23QUPOsDcNHqpcS2h98TWV9jCz2lm9qxfVT7YqHzubL++SkziUfsA4O5OjEU=
+	t=1727057853; cv=none; b=PRYAfgED5T45gInGbuZLwguQfHupPrE2StuWI1ezc0g1scmDeXXHG97sbvM56g2gs6VwOthOtQnlzU39e9hKXUbAzsoYk0QDQjxTEpTQhWIAk92qLvGHm7YiX45Dh8As7KOLffMTovX6+N7y59XzfhEn49DYPoFI0/sbPH9Vwdw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1727033835; c=relaxed/simple;
-	bh=2elvPLDf2iP7pfvWrJF4PIrd717oYH/D7huh/K95R3k=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=qpdhEWgs63s33D2YUuS6sHyxQKTIG5U1MDXvTbIhQSFR42ExTKLd6B+zc1W+gN1IV4rgsLkx/l4OAXZXeBfIOagtBzEp8ueDSLBBENnnEY7jwwVK+8vPLPJm/TZ71kbBd1ALY/stohG9IUC6dOuYhkr8AOIGqSzlvTDfHlkGREw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=GC8Co70i; arc=none smtp.client-ip=198.175.65.17
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="GC8Co70i"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1727033833; x=1758569833;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=2elvPLDf2iP7pfvWrJF4PIrd717oYH/D7huh/K95R3k=;
-  b=GC8Co70iFJ5/fzNe9BYe2vffolDrvuaTRbUpMZ5vErbciomtcv3B+woH
-   QVDmEzz4d/b8qaOl5IvIeDZlnJXzf9mN3qorU0btwqYXPqm9a71I61oSP
-   mOkfKqcyphTaWbRMtyu8csbNmTjX7vwMUH3eGmIQlqY6hDbfDkQFnZnRj
-   fzivcxvIlciRpeRE4NRR9r+t63PPcAxR6jUF6lRN2a/cTj3dlXvCnMn3z
-   xFG6u++EWrvYl48Rzlj5FNc3lGFTxrDMgwepSlVoUYU5THHZQAj2xmAIM
-   mZUMnN1ehrElbG7Xdz/bgrYn5Ht1Ll4HGaWapLTt1j8A7N0lxDNR8K2lY
-   Q==;
-X-CSE-ConnectionGUID: hmAMBYa1TdK+ty6Q7/qcNA==
-X-CSE-MsgGUID: HnMjGzWiQZaTabyR38wM5g==
-X-IronPort-AV: E=McAfee;i="6700,10204,11202"; a="26133422"
-X-IronPort-AV: E=Sophos;i="6.10,250,1719903600"; 
-   d="scan'208";a="26133422"
-Received: from fmviesa004.fm.intel.com ([10.60.135.144])
-  by orvoesa109.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Sep 2024 12:37:12 -0700
-X-CSE-ConnectionGUID: 6LQoP8f1Tzq6X/iNwnEpiQ==
-X-CSE-MsgGUID: yCSyk3qATPian6mC4I7CBg==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.10,250,1719903600"; 
-   d="scan'208";a="75407740"
-Received: from lkp-server01.sh.intel.com (HELO 53e96f405c61) ([10.239.97.150])
-  by fmviesa004.fm.intel.com with ESMTP; 22 Sep 2024 12:37:08 -0700
-Received: from kbuild by 53e96f405c61 with local (Exim 4.96)
-	(envelope-from <lkp@intel.com>)
-	id 1ssSOI-000GcY-0i;
-	Sun, 22 Sep 2024 19:37:06 +0000
-Date: Mon, 23 Sep 2024 03:36:56 +0800
-From: kernel test robot <lkp@intel.com>
-To: Bibek Kumar Patro <quic_bibekkum@quicinc.com>, robdclark@gmail.com,
-	will@kernel.org, robin.murphy@arm.com, joro@8bytes.org,
-	jgg@ziepe.ca, jsnitsel@redhat.com, robh@kernel.org,
-	krzysztof.kozlowski@linaro.org, quic_c_gdjako@quicinc.com,
-	dmitry.baryshkov@linaro.org
-Cc: oe-kbuild-all@lists.linux.dev, iommu@lists.linux.dev,
-	linux-arm-msm@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-	linux-kernel@vger.kernel.org, quic_bibekkum@quicinc.com
-Subject: Re: [PATCH v15 4/5] iommu/arm-smmu: introduction of ACTLR for custom
- prefetcher settings
-Message-ID: <202409230343.Q8KnYl2w-lkp@intel.com>
-References: <20240920155813.3434021-5-quic_bibekkum@quicinc.com>
+	s=arc-20240116; t=1727057853; c=relaxed/simple;
+	bh=3WkHmC2flEor2WrmNEDGfLQBihSHEZf8aZWDpQMQkLU=;
+	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version; b=jepgQMfN3fWPZFmzXo8FcFQx1Vei0HNUktieZB1vJahzHtBSt7eBwvIYJxQAbn8lfouk94+8TXslipMf03jXfRoJAAAb8kI/fHettNg8f+gEH/+g5gnEhVJOdZQW0tlW7ZXhTeZlOAmN0xtZMLc0B96N3Boe2/+nf76h3w5vFEY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=iscas.ac.cn; spf=pass smtp.mailfrom=iscas.ac.cn; arc=none smtp.client-ip=159.226.251.84
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=iscas.ac.cn
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=iscas.ac.cn
+Received: from localhost (unknown [124.16.138.129])
+	by APP-05 (Coremail) with SMTP id zQCowAAHWW2kz_Bm9JhjAA--.6423S2;
+	Mon, 23 Sep 2024 10:17:09 +0800 (CST)
+From: Chen Ni <nichen@iscas.ac.cn>
+To: will@kernel.org,
+	robin.murphy@arm.com,
+	joro@8bytes.org,
+	jgg@ziepe.ca,
+	nicolinc@nvidia.com,
+	mshavit@google.com,
+	smostafa@google.com,
+	baolu.lu@linux.intel.com
+Cc: linux-arm-kernel@lists.infradead.org,
+	iommu@lists.linux.dev,
+	linux-kernel@vger.kernel.org,
+	Chen Ni <nichen@iscas.ac.cn>
+Subject: [PATCH v2] iommu/arm-smmu-v3: Convert comma to semicolon
+Date: Mon, 23 Sep 2024 10:15:57 +0800
+Message-Id: <20240923021557.3432068-1-nichen@iscas.ac.cn>
+X-Mailer: git-send-email 2.25.1
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20240920155813.3434021-5-quic_bibekkum@quicinc.com>
+Content-Transfer-Encoding: 8bit
+X-CM-TRANSID:zQCowAAHWW2kz_Bm9JhjAA--.6423S2
+X-Coremail-Antispam: 1UD129KBjvJXoW7KF17ur4DKrWUZrykJFyrZwb_yoW8JF4fpa
+	1DWryqvrsxW3WakasrXFs2vr98Wa95ZFW7KFyj9390qwn8try8GrZ7t3sxKrykCr1UJr43
+	Aws2q3yrXF45ArJanT9S1TB71UUUUUDqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
+	9KBjDU0xBIdaVrnRJUUUBj14x267AKxVW8JVW5JwAFc2x0x2IEx4CE42xK8VAvwI8IcIk0
+	rVWrJVCq3wAFIxvE14AKwVWUJVWUGwA2ocxC64kIII0Yj41l84x0c7CEw4AK67xGY2AK02
+	1l84ACjcxK6xIIjxv20xvE14v26r4j6ryUM28EF7xvwVC0I7IYx2IY6xkF7I0E14v26r4j
+	6F4UM28EF7xvwVC2z280aVAFwI0_Gr1j6F4UJwA2z4x0Y4vEx4A2jsIEc7CjxVAFwI0_Cr
+	1j6rxdM2AIxVAIcxkEcVAq07x20xvEncxIr21l5I8CrVACY4xI64kE6c02F40Ex7xfMcIj
+	6xIIjxv20xvE14v26r1j6r18McIj6I8E87Iv67AKxVWUJVW8JwAm72CE4IkC6x0Yz7v_Jr
+	0_Gr1lF7xvr2IYc2Ij64vIr41lF7I21c0EjII2zVCS5cI20VAGYxC7M4IIrI8v6xkF7I0E
+	8cxan2IY04v7MxkF7I0En4kS14v26r1q6r43MxkIecxEwVAFwVW8JwCF04k20xvY0x0EwI
+	xGrwCFx2IqxVCFs4IE7xkEbVWUJVW8JwC20s026c02F40E14v26r1j6r18MI8I3I0E7480
+	Y4vE14v26r106r1rMI8E67AF67kF1VAFwI0_Jw0_GFylIxkGc2Ij64vIr41lIxAIcVC0I7
+	IYx2IY67AKxVWUJVWUCwCI42IY6xIIjxv20xvEc7CjxVAFwI0_Gr0_Cr1lIxAIcVCF04k2
+	6cxKx2IYs7xG6r1j6r1xMIIF0xvEx4A2jsIE14v26r1j6r4UMIIF0xvEx4A2jsIEc7CjxV
+	AFwI0_Gr0_Gr1UYxBIdaVFxhVjvjDU0xZFpf9x0JUHyIUUUUUU=
+X-CM-SenderInfo: xqlfxv3q6l2u1dvotugofq/
 
-Hi Bibek,
+Replace comma between expressions with semicolons.
 
-kernel test robot noticed the following build warnings:
+Using a ',' in place of a ';' can have unintended side effects.
+Although that is not the case here, it is seems best to use ';'
+unless ',' is intended.
 
-[auto build test WARNING on linus/master]
-[also build test WARNING on joro-iommu/next v6.11 next-20240920]
-[If your patch is applied to the wrong git tree, kindly drop us a note.
-And when submitting patch, we suggest to use '--base' as documented in
-https://git-scm.com/docs/git-format-patch#_base_tree_information]
+Found by inspection.
+No functional change intended.
+Compile tested only.
 
-url:    https://github.com/intel-lab-lkp/linux/commits/Bibek-Kumar-Patro/iommu-arm-smmu-re-enable-context-caching-in-smmu-reset-operation/20240921-000146
-base:   linus/master
-patch link:    https://lore.kernel.org/r/20240920155813.3434021-5-quic_bibekkum%40quicinc.com
-patch subject: [PATCH v15 4/5] iommu/arm-smmu: introduction of ACTLR for custom prefetcher settings
-config: arm-qcom_defconfig (https://download.01.org/0day-ci/archive/20240923/202409230343.Q8KnYl2w-lkp@intel.com/config)
-compiler: arm-linux-gnueabi-gcc (GCC) 13.3.0
-reproduce (this is a W=1 build): (https://download.01.org/0day-ci/archive/20240923/202409230343.Q8KnYl2w-lkp@intel.com/reproduce)
+Fixes: e3b1be2e73db ("iommu/arm-smmu-v3: Reorganize struct arm_smmu_ctx_desc_cfg")
+Signed-off-by: Chen Ni <nichen@iscas.ac.cn>
+---
+Changelog:
 
-If you fix the issue in a separate patch/commit (i.e. not just a new version of
-the same patch/commit), kindly add following tags
-| Reported-by: kernel test robot <lkp@intel.com>
-| Closes: https://lore.kernel.org/oe-kbuild-all/202409230343.Q8KnYl2w-lkp@intel.com/
+v1 -> v2:
 
-All warnings (new ones prefixed by >>):
+1. Add Fixes tag.
+---
+ drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-   In file included from drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c:14:
-   drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c: In function 'qcom_smmu_set_actlr_dev':
->> drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c:266:59: warning: cast from pointer to integer of different size [-Wpointer-to-int-cast]
-     266 |         arm_smmu_cb_write(smmu, cbndx, ARM_SMMU_CB_ACTLR, (u64)match->data);
-         |                                                           ^
-   drivers/iommu/arm/arm-smmu/arm-smmu.h:533:59: note: in definition of macro 'arm_smmu_cb_write'
-     533 |         arm_smmu_writel((s), ARM_SMMU_CB((s), (n)), (o), (v))
-         |                                                           ^
-
-
-vim +266 drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
-
-   254	
-   255	static void qcom_smmu_set_actlr_dev(struct device *dev, struct arm_smmu_device *smmu, int cbndx,
-   256			const struct of_device_id *client_match)
-   257	{
-   258		const struct of_device_id *match =
-   259				of_match_device(client_match, dev);
-   260	
-   261		if (!match) {
-   262			dev_notice(dev, "no ACTLR settings present\n");
-   263			return;
-   264		}
-   265	
- > 266		arm_smmu_cb_write(smmu, cbndx, ARM_SMMU_CB_ACTLR, (u64)match->data);
-   267	}
-   268	
-
+diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+index 737c5b882355..4815c5198642 100644
+--- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
++++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+@@ -1420,7 +1420,7 @@ static int arm_smmu_alloc_cd_tables(struct arm_smmu_master *master)
+ 		cd_table->s1fmt = STRTAB_STE_0_S1FMT_LINEAR;
+ 		cd_table->linear.num_ents = max_contexts;
+ 
+-		l1size = max_contexts * sizeof(struct arm_smmu_cd),
++		l1size = max_contexts * sizeof(struct arm_smmu_cd);
+ 		cd_table->linear.table = dma_alloc_coherent(smmu->dev, l1size,
+ 							    &cd_table->cdtab_dma,
+ 							    GFP_KERNEL);
 -- 
-0-DAY CI Kernel Test Service
-https://github.com/intel/lkp-tests/wiki
+2.25.1
+
