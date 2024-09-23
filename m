@@ -1,133 +1,274 @@
-Received: from mail-pg1-f202.google.com (mail-pg1-f202.google.com [209.85.215.202])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mx0b-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9FBB81946D0
-	for <iommu@lists.linux.dev>; Mon, 23 Sep 2024 09:29:58 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.215.202
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 96915D528
+	for <iommu@lists.linux.dev>; Mon, 23 Sep 2024 09:35:12 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=148.163.158.5
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1727083800; cv=none; b=eGs/TkFvhQrW98Uy/srtAt9NPW2bok9ezeHvblsIL2zQ63bfVEtBQbqX0/aps9AVBx1hetufzmfW7N5d48l3Q/rsND34fntXx44Rdst/SNyBDdZiO0g3apm2sroUBz4EWSywqoGQPtIqYPi/X26rKrzbAItl3x87yhNTHrJjaz0=
+	t=1727084115; cv=none; b=lDgyBPjQR28O5abu17w62dntK/ZbkPbqHw3ITu1vEHpRpDo5nxOWUlp4ZEP7SNZYSvm59lS7hhaaPuf97kA8g8GgVprhLVy3CzIpRSKU42Zwq2m/KcABiJ/3L+PvZTxQs9i3BvJKbVbfE3eDZQN0V8jTcDhr68oggHfZai4sog0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1727083800; c=relaxed/simple;
-	bh=JxlWTKfLKfV1N7stRJBPiFZggE9mXH97QTo/q/pDES0=;
-	h=Date:In-Reply-To:Mime-Version:References:Message-ID:Subject:From:
-	 To:Cc:Content-Type; b=UGCaIKS6A6RkMvPXvG7jj/iSaFX0m2j+NeR8DgP1nZmQKNOjWePPmLJX293clIimSgdaUfu1HR6t9yP74G+YMIuaH0CW799jSokEszfB9gzYjDFllBlm4kj2AVG8+tCgBGdgmRjE5VSGqwaZfKAq09P/J7cedL9/qbTvgAgIjes=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=flex--seanjc.bounces.google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=TuYSLLhS; arc=none smtp.client-ip=209.85.215.202
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=flex--seanjc.bounces.google.com
+	s=arc-20240116; t=1727084115; c=relaxed/simple;
+	bh=eonJwap+XaW2/gbZIMYuyRKK/oMQubRIxSJoa9Wj3bg=;
+	h=Message-ID:Subject:From:To:Cc:Date:In-Reply-To:References:
+	 Content-Type:MIME-Version; b=vB4tDt91TQHyrFss+1eZezm0N2bfrAmohcc9dWycrXw3nVsgDwDhLPmgSWE1HSvkRbReVw0Nbv/inpFVQoFDoqn3D3Dm4RShD/68USbJOQoEdcfK0N38WiM/wKXWMYjI5BTOOuzwHzmMqextUVMnHY09NDRRfgkbWY1DPLCr/Fs=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.ibm.com; spf=pass smtp.mailfrom=linux.ibm.com; dkim=pass (2048-bit key) header.d=ibm.com header.i=@ibm.com header.b=CvOhGAfW; arc=none smtp.client-ip=148.163.158.5
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.ibm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.ibm.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="TuYSLLhS"
-Received: by mail-pg1-f202.google.com with SMTP id 41be03b00d2f7-7e6af43d0c5so135363a12.3
-        for <iommu@lists.linux.dev>; Mon, 23 Sep 2024 02:29:58 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20230601; t=1727083798; x=1727688598; darn=lists.linux.dev;
-        h=content-transfer-encoding:cc:to:from:subject:message-id:references
-         :mime-version:in-reply-to:date:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=JxlWTKfLKfV1N7stRJBPiFZggE9mXH97QTo/q/pDES0=;
-        b=TuYSLLhSt7ZOla/3IncEFTm4wTc2ppNzKLhZ/VmqmXz+GRASE3979+4qUPLlIhoTSr
-         6wLVpVXuU5RYxq3VCxSiXpvGFXmsv0eDOg3vMylolMYEApaACNekJQZrBZCZBQIgVJtY
-         Ape4WsGE2Zh1mnl84FHStdgvfKphZxiMAlTFC/pI+CA0mvKvxOote+ZM/mj/Z6gccpIH
-         EirnxQjWMBxzbKdsonblEiR5lao0vDiZUFzzR3ZKc7EhSdmY4lCf2P3+IgjItYId721k
-         mxaBigAjlfpv1I9MGY38iaEUGivlvg+CBlUWp4pCZvzjdqteo36JHcKOBntUrvjk3Tpy
-         fUiA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1727083798; x=1727688598;
-        h=content-transfer-encoding:cc:to:from:subject:message-id:references
-         :mime-version:in-reply-to:date:x-gm-message-state:from:to:cc:subject
-         :date:message-id:reply-to;
-        bh=JxlWTKfLKfV1N7stRJBPiFZggE9mXH97QTo/q/pDES0=;
-        b=MddjtP9hXVonEOIiJUR/j9lxtKnJQju0/ahbd3p7pXmh8lYGn6lgEpunczlwAY44GQ
-         fbzhNyyQBtC1bRUZB4n7jk+AqKtOFEDpI7FM1CahwJ+exVibNHPxEazDI4VgrVR3BUMI
-         vuPuM5RI+/I8ZDsxxA101//TVBXcYG+7WfZyqfs57cn/V/btChq1T7//DCSV0EmDEtfe
-         TaNrPo+jm9KkPtH05y9sApMvR/lXXp4rRu/TSDS0AmAfeyHiAmjuibR4vcc+gCif601l
-         N3h49PWz9LtnU6UBh34J/pmMtNyN0vYH+R+WFfXCPQnwLQuKXiiqaEJFQGTIrV2Ozj4b
-         px3A==
-X-Forwarded-Encrypted: i=1; AJvYcCUJgz8javIVxQtVlu4HNG19OkdKD8Ram0oYsirejdKDCCC6n6B9c0MecjES2WetLGGpZ2njYw==@lists.linux.dev
-X-Gm-Message-State: AOJu0YzbB2Vb76hMLv/vraEyVyOGNYsKYpV7lKlbGmaNF1AluzUNMK2R
-	vTl+P4WLX/sLnAw1uKDTw0BR2e5moZvjWlPjvNGCG2veJVtpMz69gu5FK98HUuTrcSFe/bNyVNZ
-	njw==
-X-Google-Smtp-Source: AGHT+IFSZX5FuNM8tCzpug601r0FUEjufJORJGp2xW2npv3HHNvfqWh9QPhzOBODH4in3nPCT3E6eApyC4U=
-X-Received: from zagreus.c.googlers.com ([fda3:e722:ac3:cc00:7f:e700:c0a8:5c37])
- (user=seanjc job=sendgmr) by 2002:a05:6a02:2305:b0:7db:2689:f6ee with SMTP id
- 41be03b00d2f7-7e6ae037512mr783a12.7.1727083797611; Mon, 23 Sep 2024 02:29:57
- -0700 (PDT)
-Date: Mon, 23 Sep 2024 02:29:55 -0700
-In-Reply-To: <e5218efaceec20920166bd907416d6f88905558d.camel@redhat.com>
+	dkim=pass (2048-bit key) header.d=ibm.com header.i=@ibm.com header.b="CvOhGAfW"
+Received: from pps.filterd (m0353725.ppops.net [127.0.0.1])
+	by mx0a-001b2d01.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 48MLuHqB025241;
+	Mon, 23 Sep 2024 09:34:54 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=
+	message-id:subject:from:to:cc:date:in-reply-to:references
+	:content-type:content-transfer-encoding:mime-version; s=pp1; bh=
+	pgdVWjvb7VmLv1WF02XWYlaHWZUm+oMkDNnFTZL6VRs=; b=CvOhGAfWPsSZnP+Y
+	E0hnmcbcOKimaHzRGAlZoLJkcJ/V/RzSEZLeihIkg22Rjf2bcBvK+P2YkUeJHORA
+	3Uq2mt9deSwtg96F+cabho5gDH0FLsIlTsgx6bG3lAAD+T8UhbNtvxwR41sMjg4y
+	iAHbhVYW3qEyE9kpzj0HUWQr/xscGvW0o3Sv/C9RiefcgGQCDN9kiNw+kDbt1Klg
+	1jKGvoElBeKUFclqpe7KsPOPK+n6xXxPZcCTOL7d83bfe4bl3KtGZVfvChEAZpWT
+	XrfJxVkpXb6R9EuwJqKlWUGE4eo/5OIm+aGZHcs3sO1lUp4qiZ6s7Lk0BiVq1rgU
+	01K9qQ==
+Received: from ppma21.wdc07v.mail.ibm.com (5b.69.3da9.ip4.static.sl-reverse.com [169.61.105.91])
+	by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 41smjjjp48-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Mon, 23 Sep 2024 09:34:53 +0000 (GMT)
+Received: from pps.filterd (ppma21.wdc07v.mail.ibm.com [127.0.0.1])
+	by ppma21.wdc07v.mail.ibm.com (8.18.1.2/8.18.1.2) with ESMTP id 48N7kw5q012524;
+	Mon, 23 Sep 2024 09:34:53 GMT
+Received: from smtprelay05.fra02v.mail.ibm.com ([9.218.2.225])
+	by ppma21.wdc07v.mail.ibm.com (PPS) with ESMTPS id 41t9fpnpsy-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Mon, 23 Sep 2024 09:34:53 +0000
+Received: from smtpav07.fra02v.mail.ibm.com (smtpav07.fra02v.mail.ibm.com [10.20.54.106])
+	by smtprelay05.fra02v.mail.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 48N9YpBi49873346
+	(version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+	Mon, 23 Sep 2024 09:34:51 GMT
+Received: from smtpav07.fra02v.mail.ibm.com (unknown [127.0.0.1])
+	by IMSVA (Postfix) with ESMTP id 2B59C20043;
+	Mon, 23 Sep 2024 09:34:51 +0000 (GMT)
+Received: from smtpav07.fra02v.mail.ibm.com (unknown [127.0.0.1])
+	by IMSVA (Postfix) with ESMTP id 0169020040;
+	Mon, 23 Sep 2024 09:34:51 +0000 (GMT)
+Received: from [9.152.224.39] (unknown [9.152.224.39])
+	by smtpav07.fra02v.mail.ibm.com (Postfix) with ESMTP;
+	Mon, 23 Sep 2024 09:34:50 +0000 (GMT)
+Message-ID: <31152f4714c644584db1e7e2506d0b434dff3fbc.camel@linux.ibm.com>
+Subject: Re: [PATCH v2] dma-mapping: report unlimited DMA addressing in
+ IOMMU DMA path
+From: Gerd Bayer <gbayer@linux.ibm.com>
+To: Leon Romanovsky <leon@kernel.org>, Christoph Hellwig <hch@lst.de>,
+        Robin
+ Murphy <robin.murphy@arm.com>, iommu@lists.linux.dev
+Cc: Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
+        Marek
+ Szyprowski <m.szyprowski@samsung.com>,
+        Xi Ruoyao <xry111@xry111.site>
+Date: Mon, 23 Sep 2024 11:34:49 +0200
+In-Reply-To: <c2671009f217bfc3c9f7fbda2eefb0c44768fc3b.1727028402.git.leon@kernel.org>
+References: 
+	<c2671009f217bfc3c9f7fbda2eefb0c44768fc3b.1727028402.git.leon@kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.52.4 (3.52.4-1.fc40) 
+X-TM-AS-GCONF: 00
+X-Proofpoint-ORIG-GUID: xSk0BksnI-Xz-bzPNuDY7_HlgYK0VCgu
+X-Proofpoint-GUID: xSk0BksnI-Xz-bzPNuDY7_HlgYK0VCgu
+Content-Transfer-Encoding: quoted-printable
+X-Proofpoint-UnRewURL: 0 URL was un-rewritten
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
-Mime-Version: 1.0
-References: <20231002115723.175344-1-mlevitsk@redhat.com> <ZRsYNnYEEaY1gMo5@google.com>
- <1d6044e0d71cd95c477e319d7e47819eee61a8fc.camel@redhat.com> <e5218efaceec20920166bd907416d6f88905558d.camel@redhat.com>
-Message-ID: <ZvE06wB0JGWXGxpK@google.com>
-Subject: Re: [PATCH v3 0/4] Allow AVIC's IPI virtualization to be optional
-From: Sean Christopherson <seanjc@google.com>
-To: Maxim Levitsky <mlevitsk@redhat.com>
-Cc: kvm@vger.kernel.org, Will Deacon <will@kernel.org>, linux-kernel@vger.kernel.org, 
-	Borislav Petkov <bp@alien8.de>, Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org, 
-	Ingo Molnar <mingo@redhat.com>, "H. Peter Anvin" <hpa@zytor.com>, Thomas Gleixner <tglx@linutronix.de>, 
-	Joerg Roedel <joro@8bytes.org>, Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>, 
-	Robin Murphy <robin.murphy@arm.com>, iommu@lists.linux.dev, 
-	Paolo Bonzini <pbonzini@redhat.com>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: quoted-printable
+MIME-Version: 1.0
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.293,Aquarius:18.0.1051,Hydra:6.0.680,FMLib:17.12.60.29
+ definitions=2024-09-23_05,2024-09-19_01,2024-09-02_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 priorityscore=1501
+ impostorscore=0 adultscore=0 malwarescore=0 suspectscore=0 bulkscore=0
+ spamscore=0 mlxscore=0 lowpriorityscore=0 phishscore=0 clxscore=1011
+ mlxlogscore=999 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.19.0-2408220000 definitions=main-2409230070
 
-On Tue, Sep 10, 2024, Maxim Levitsky wrote:
-> On Wed, 2023-10-04 at 16:14 +0300, Maxim Levitsky wrote:
-> > =D0=A3 =D0=BF=D0=BD, 2023-10-02 =D1=83 12:21 -0700, Sean Christopherson=
- =D0=BF=D0=B8=D1=88=D0=B5:
-> > > On Mon, Oct 02, 2023, Maxim Levitsky wrote:
-> > > > Hi!
-> > > >=20
-> > > > This patch allows AVIC's ICR emulation to be optional and thus allo=
-ws
-> > > > to workaround AVIC's errata #1235 by disabling this portion of the =
-feature.
-> > > >=20
-> > > > This is v3 of my patch series 'AVIC bugfixes and workarounds' inclu=
-ding
-> > > > review feedback.
-> > >=20
-> > > Please respond to my idea[*] instead of sending more patches.=20
-> >=20
-> > Hi,
-> >=20
-> > For the v2 of the patch I was already on the fence if to do it this way=
- or to refactor
-> > the code, and back when I posted it, I decided still to avoid the refac=
-toring.
-> >=20
-> > However, your idea of rewriting this patch, while it does change less l=
-ines of code,
-> > is even less obvious and consequently required you to write even longer=
- comment to=20
-> > justify it which is not a good sign.
-> >=20
-> > In particular I don't want someone to find out later, and in the hard w=
-ay that sometimes
-> > real physid table is accessed, and sometimes a fake copy of it is.
-> >=20
-> > So I decided to fix the root cause by not reading the physid table back=
-,
-> > which made the code cleaner, and even with the workaround the code=20
-> > IMHO is still simpler than it was before.
-> >=20
-> > About the added 'vcpu->loaded' variable, I added it also because it is =
-something that is=20
-> > long overdue to be added, I remember that in IPIv code there was also a=
- need for this,=20
-> > and probalby more places in KVM can be refactored to take advantage of =
-it,
-> > instead of various hacks.
-> >=20
-> > I did adopt your idea of using 'enable_ipiv', although I am still not 1=
-00% sure that this
-> > is more readable than 'avic_zen2_workaround'.
+On Sun, 2024-09-22 at 21:09 +0300, Leon Romanovsky wrote:
+> While using the IOMMU DMA path, the dma_addressing_limited() function
+> checks ops struct which doesn't exist in the IOMMU case. This causes
+> to the kernel panic while loading ADMGPU driver.
 >=20
-> Hi!
+> BUG: kernel NULL pointer dereference, address: 00000000000000a0
+> PGD 0 P4D 0
+> Oops: Oops: 0000 [#1] PREEMPT SMP NOPTI
+> CPU: 10 UID: 0 PID: 611 Comm: (udev-worker) Tainted: G=C2=A0=C2=A0=C2=A0=
+=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0
+> T=C2=A0 6.11.0-clang-07154-g726e2d0cf2bb #257
+> Tainted: [T]=3DRANDSTRUCT
+> Hardware name: ASUS System Product Name/ROG STRIX Z690-G GAMING WIFI,
+> BIOS 3701 07/03/2024
+> RIP: 0010:dma_addressing_limited+0x53/0xa0
+> Code: 8b 93 48 02 00 00 48 39 d1 49 89 d6 4c 0f 42 f1 48 85 d2 4c 0f
+> 44 f1 f6 83 fc 02 00 00 40 75 0a 48 89 df e8 1f 09 00 00 eb 24 <4c>
+> 8b 1c 25 a0 00 00 00 4d 85 db 74 17 48 89 df 41 ba 8b 84 2d 55
+> RSP: 0018:ffffa8d2c12cf740 EFLAGS: 00010202
+> RAX: 00000000ffffffff RBX: ffff8948820220c8 RCX: 000000ffffffffff
+> RDX: 0000000000000000 RSI: ffffffffc124dc6d RDI: ffff8948820220c8
+> RBP: 0000000000000000 R08: 0000000000000000 R09: 0000000000000000
+> R10: 0000000000000000 R11: 0000000000000000 R12: ffff894883c3f040
+> R13: ffff89488dac8828 R14: 000000ffffffffff R15: ffff8948820220c8
+> FS:=C2=A0 00007fe6ba881900(0000) GS:ffff894fdf700000(0000)
+> knlGS:0000000000000000
+> CS:=C2=A0 0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+> CR2: 00000000000000a0 CR3: 0000000111984000 CR4: 0000000000f50ef0
+> PKRU: 55555554
+> Call Trace:
+> =C2=A0<TASK>
+> =C2=A0? __die_body+0x65/0xc0
+> =C2=A0? page_fault_oops+0x3b9/0x450
+> =C2=A0? _prb_read_valid+0x212/0x390
+> =C2=A0? do_user_addr_fault+0x608/0x680
+> =C2=A0? exc_page_fault+0x4e/0xa0
+> =C2=A0? asm_exc_page_fault+0x26/0x30
+> =C2=A0? dma_addressing_limited+0x53/0xa0
+> =C2=A0amdgpu_ttm_init+0x56/0x4b0 [amdgpu]
+> =C2=A0gmc_v8_0_sw_init+0x561/0x670 [amdgpu]
+> =C2=A0amdgpu_device_ip_init+0xf5/0x570 [amdgpu]
+> =C2=A0amdgpu_device_init+0x1a57/0x1ea0 [amdgpu]
+> =C2=A0? _raw_spin_unlock_irqrestore+0x1a/0x40
+> =C2=A0? pci_conf1_read+0xc0/0xe0
+> =C2=A0? pci_bus_read_config_word+0x52/0xa0
+> =C2=A0amdgpu_driver_load_kms+0x15/0xa0 [amdgpu]
+> =C2=A0amdgpu_pci_probe+0x1b7/0x4c0 [amdgpu]
+> =C2=A0pci_device_probe+0x1c5/0x260
+> =C2=A0really_probe+0x130/0x470
+> =C2=A0__driver_probe_device+0x77/0x150
+> =C2=A0driver_probe_device+0x19/0x120
+> =C2=A0__driver_attach+0xb1/0x1e0
+> =C2=A0? __cfi___driver_attach+0x10/0x10
+> =C2=A0bus_for_each_dev+0x115/0x170
+> =C2=A0bus_add_driver+0x192/0x2d0
+> =C2=A0driver_register+0x5c/0xf0
+> =C2=A0? __cfi_init_module+0x10/0x10 [amdgpu]
+> =C2=A0do_one_initcall+0x128/0x380
+> =C2=A0? idr_alloc_cyclic+0x139/0x1d0
+> =C2=A0? security_kernfs_init_security+0x42/0x140
+> =C2=A0? __kernfs_new_node+0x1be/0x250
+> =C2=A0? sysvec_apic_timer_interrupt+0xb6/0xc0
+> =C2=A0? asm_sysvec_apic_timer_interrupt+0x1a/0x20
+> =C2=A0? _raw_spin_unlock+0x11/0x30
+> =C2=A0? free_unref_page+0x283/0x650
+> =C2=A0? kfree+0x274/0x3a0
+> =C2=A0? kfree+0x274/0x3a0
+> =C2=A0? kfree+0x274/0x3a0
+> =C2=A0? load_module+0xf2e/0x1130
+> =C2=A0? __kmalloc_cache_noprof+0x12a/0x2e0
+> =C2=A0do_init_module+0x7d/0x240
+> =C2=A0__se_sys_init_module+0x19e/0x220
+> =C2=A0do_syscall_64+0x8a/0x150
+> =C2=A0? __irq_exit_rcu+0x5e/0x100
+> =C2=A0entry_SYSCALL_64_after_hwframe+0x76/0x7e
+> RIP: 0033:0x7fe6bb5980ee
+> Code: 48 8b 0d 3d ed 12 00 f7 d8 64 89 01 48 83 c8 ff c3 66 2e 0f 1f
+> 84 00 00 00 00 00 90 f3 0f 1e fa 49 89 ca b8 af 00 00 00 0f 05 <48>
+> 3d 01 f0 ff ff 73 01 c3 48 8b 0d 0a ed 12 00 f7 d8 64 89 01 48
+> RSP: 002b:00007ffd462219d8 EFLAGS: 00000206 ORIG_RAX:
+> 00000000000000af
+> RAX: ffffffffffffffda RBX: 0000556caf0d0670 RCX: 00007fe6bb5980ee
+> RDX: 0000556caf0d3080 RSI: 0000000002893458 RDI: 00007fe6b3400010
+> RBP: 0000000000020000 R08: 0000000000020010 R09: 0000000000000080
+> R10: c26073c166186e00 R11: 0000000000000206 R12: 0000556caf0d3430
+> R13: 0000556caf0d0670 R14: 0000556caf0d3080 R15: 0000556caf0ce700
+> =C2=A0</TASK>
+> Modules linked in: amdgpu(+) i915(+) drm_suballoc_helper intel_gtt
+> drm_exec drm_buddy iTCO_wdt i2c_algo_bit intel_pmc_bxt
+> drm_display_helper iTCO_vendor_support gpu_sched drm_ttm_helper cec
+> ttm amdxcp video backlight pinctrl_alderlake nct6775 hwmon_vid
+> nct6775_core coretemp
+> CR2: 00000000000000a0
+> ---[ end trace 0000000000000000 ]---
+> RIP: 0010:dma_addressing_limited+0x53/0xa0
+> Code: 8b 93 48 02 00 00 48 39 d1 49 89 d6 4c 0f 42 f1 48 85 d2 4c 0f
+> 44 f1 f6 83 fc 02 00 00 40 75 0a 48 89 df e8 1f 09 00 00 eb 24 <4c>
+> 8b 1c 25 a0 00 00 00 4d 85 db 74 17 48 89 df 41 ba 8b 84 2d 55
+> RSP: 0018:ffffa8d2c12cf740 EFLAGS: 00010202
+> RAX: 00000000ffffffff RBX: ffff8948820220c8 RCX: 000000ffffffffff
+> RDX: 0000000000000000 RSI: ffffffffc124dc6d RDI: ffff8948820220c8
+> RBP: 0000000000000000 R08: 0000000000000000 R09: 0000000000000000
+> R10: 0000000000000000 R11: 0000000000000000 R12: ffff894883c3f040
+> R13: ffff89488dac8828 R14: 000000ffffffffff R15: ffff8948820220c8
+> FS:=C2=A0 00007fe6ba881900(0000) GS:ffff894fdf700000(0000)
+> knlGS:0000000000000000
+> CS:=C2=A0 0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+> CR2: 00000000000000a0 CR3: 0000000111984000 CR4: 0000000000f50ef0
+> PKRU: 55555554
 >=20
-> Sean, can you take another look at this patch series?
+> Fixes: b5c58b2fdc42 ("dma-mapping: direct calls for dma-iommu")
+> Closes: https://bugzilla.kernel.org/show_bug.cgi?id=3D219292
+> Signed-off-by: Leon Romanovsky <leon@kernel.org>
+> ---
+> Changelog:
+> v2: Added missed bracket.
+> ---
+> =C2=A0kernel/dma/mapping.c | 6 +++++-
+> =C2=A01 file changed, 5 insertions(+), 1 deletion(-)
+>=20
+> diff --git a/kernel/dma/mapping.c b/kernel/dma/mapping.c
+> index b839683da0ba..bcb7a4aa8fa4 100644
+> --- a/kernel/dma/mapping.c
+> +++ b/kernel/dma/mapping.c
+> @@ -569,6 +569,10 @@ u64 dma_get_required_mask(struct device *dev)
+> =C2=A0
+> =C2=A0	if (dma_alloc_direct(dev, ops))
+> =C2=A0		return dma_direct_get_required_mask(dev);
+> +
+> +	if (use_dma_iommu(dev))
+> +		return DMA_BIT_MASK(32);
+> +
+> =C2=A0	if (ops->get_required_mask)
+> =C2=A0		return ops->get_required_mask(dev);
+> =C2=A0
+> @@ -926,7 +930,7 @@ bool dma_addressing_limited(struct device *dev)
+> =C2=A0			 dma_get_required_mask(dev))
+> =C2=A0		return true;
+> =C2=A0
+> -	if (unlikely(ops))
+> +	if (unlikely(ops) || use_dma_iommu(dev))
+> =C2=A0		return false;
+> =C2=A0	return !dma_direct_all_ram_mapped(dev);
+> =C2=A0}
 
-Ya, it might take a week or two, but it's on my todo list.
+Hi,
+
+sorry for being nosy on this one - and I have to applogize for not
+following the original discussion.
+
+I'm just wondering, if it would not suffice to move the presence check
+for "ops" before the call to dma_get_required_mask() and make an early
+return in dma_addressing_limited()?
+
+Like this:
+
+
+diff --git a/kernel/dma/mapping.c b/kernel/dma/mapping.c
+index b1c18058d55f..e825b0a6db9e 100644
+--- a/kernel/dma/mapping.c
++++ b/kernel/dma/mapping.c
+@@ -848,12 +848,13 @@ bool dma_addressing_limited(struct device *dev)
+ {
+        const struct dma_map_ops *ops =3D get_dma_ops(dev);
+=20
++       if (unlikely(ops))
++               return false;
++
+        if (min_not_zero(dma_get_mask(dev), dev->bus_dma_limit) <
+                         dma_get_required_mask(dev))
+                return true;
+=20
+-       if (unlikely(ops))
+-               return false;
+        return !dma_direct_all_ram_mapped(dev);
+ }
+ EXPORT_SYMBOL_GPL(dma_addressing_limited);
+
+
+Thanks,
+Gerd
+
