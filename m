@@ -1,36 +1,35 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A3AC61B85D5;
-	Tue, 24 Sep 2024 16:00:42 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3F9FD1AB534;
+	Tue, 24 Sep 2024 16:03:01 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1727193642; cv=none; b=hfUJFlv46CqUMsLKV2w/qOjmoFkDBSdxza2KvV3RRwe9dh7EIIcrcay0UWVyn6f9CV3OsUltJYJ90dsEsCWxtVhyVGS5wCma4bFDvbdoikqA06kc2oC8oz3MS3HjOsgp77vKG4pn5u3Nil5lJ8RLKSCWB73vzPGX6n1pUdsM+ns=
+	t=1727193781; cv=none; b=SZb8r8/sWBB+QRPapbXJf15euZxY5lredX89IdHG4ktpKbjb9jI2ikFVFs9Rh4UcEjsK2aaUHGZ5xvTHqRvB8IZDssdhYovihp1pg8zFgUnDTuFZvei3XCe5Pu/31RjPSEo68FIotYGHvj5YefW8z4QYKCua9AkNrRBx1+ssdFo=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1727193642; c=relaxed/simple;
-	bh=RMVPLW4fWUk9yS+HMDAfSQbd+gQJXHQViB5tLV8d35M=;
+	s=arc-20240116; t=1727193781; c=relaxed/simple;
+	bh=gNBST40WMUJwlZASY6q+rRAwgxHXwJRFWLXq+ARmaaw=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=g1UF7MAIkAH+Ti/+bdLeU8KZ37oQw/IyLcjGD+3we9h19919pMuaaBnHy57p/DqYPfMktUK30UkBBC5NY7vCJ8DrpqS0xzjs46f7BuEZrVXh5umH5uioOJ1K+NkQAA2tD7H6zyGcBy3nmbHNjey5hS8FI4YLIFg9cGtFLWeEI9Q=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=GvK37+mp; arc=none smtp.client-ip=10.30.226.201
+	 Content-Type:Content-Disposition:In-Reply-To; b=WNPPdkfJc0N5orkZEY0rdlo55/XwAjIkx8gKXUx2mT4OsL75AbXk4hsEz0P7M5Ywy8XAs7fOFw6k5aqbZYL1l7bGd0/roHEmAlWP4/PaTv4u1CG5tleyNMs5aY+iHheyBs8F75G3qN7HKrymtDHQJxFmY3KgFiifE8edsHHAjOE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=EAqVdc6A; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="GvK37+mp"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E2AE1C4CEC4;
-	Tue, 24 Sep 2024 16:00:36 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="EAqVdc6A"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2D8BFC4CEC4;
+	Tue, 24 Sep 2024 16:02:55 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1727193642;
-	bh=RMVPLW4fWUk9yS+HMDAfSQbd+gQJXHQViB5tLV8d35M=;
+	s=k20201202; t=1727193780;
+	bh=gNBST40WMUJwlZASY6q+rRAwgxHXwJRFWLXq+ARmaaw=;
 	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=GvK37+mp+LghOmr6eoGoJcX94ZEdvjXe7wWGvJCkmU96Jfz4t9wQAMCcHrj456VMu
-	 CTvjH6AQSibawNgM6pXkiRUbDkbpb5OB2u6GHKkU3OdPWYRsMb7NsThJQgay3GxhP5
-	 Oof/N2yNvyvOKMabXyy38g7l3rPmArWwRrHFImcMLmP34qUsZxYMlYO/z5HZ4P0Tlj
-	 1ukf9n15+s9ktGDKRonsgiNiCoFNvXmAw7OCRlWWHp1KQxcofuJX8494GiYt5I/sbF
-	 IQTyI/Kf+rr/XySGhmQGVFj6Xz+1gwU2CDrVff0GanXwhe+9jxkxPT92QrSGMZJLsG
-	 hAPsxiBHsx+3w==
-Date: Tue, 24 Sep 2024 17:00:34 +0100
+	b=EAqVdc6A0KBeMrsaRZ8EFB352zM4hbWTUfu7glhXJLZNlIOlSI4F1w+ysHKilo3Su
+	 bN8S7HbO1pzZL3ScTi4wdq7HmDp4fM2HSUthPyqxrYspktSaYAdACu6Qy3FgP23t6b
+	 UvwL81EYw7a/iTTHVq1gOGeUWOagk02BLiDEDVEqQIZOSfDGMjQU3Uan1EdPchwWuC
+	 tQRyHHAu8jm7dExE60yfxEORrzap1lUje9jCK9+Z5Nd1wG6lACrn8W39EOI1yAw+af
+	 4u7VMvsHxRqUY1KJZ6SJbSNgH6itI1Ohf0UJI8ObRPJvrKy+QJP2LfhLQXhdruwOnp
+	 6C4oW7nkxlJlA==
+Date: Tue, 24 Sep 2024 17:02:53 +0100
 From: Conor Dooley <conor@kernel.org>
-To: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
-Cc: Macpaul Lin <macpaul.lin@mediatek.com>,
-	Chun-Kuang Hu <chunkuang.hu@kernel.org>,
+To: Macpaul Lin <macpaul.lin@mediatek.com>
+Cc: Chun-Kuang Hu <chunkuang.hu@kernel.org>,
 	Philipp Zabel <p.zabel@pengutronix.de>,
 	Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
 	Maxime Ripard <mripard@kernel.org>,
@@ -42,6 +41,7 @@ Cc: Macpaul Lin <macpaul.lin@mediatek.com>,
 	Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
 	Robin Murphy <robin.murphy@arm.com>,
 	Matthias Brugger <matthias.bgg@gmail.com>,
+	AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>,
 	dri-devel@lists.freedesktop.org, linux-mediatek@lists.infradead.org,
 	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
 	iommu@lists.linux.dev, linux-arm-kernel@lists.infradead.org,
@@ -52,12 +52,11 @@ Cc: Macpaul Lin <macpaul.lin@mediatek.com>,
 	Chris-qj chen <chris-qj.chen@mediatek.com>,
 	MediaTek Chromebook Upstream <Project_Global_Chrome_Upstream_Group@mediatek.com>,
 	Chen-Yu Tsai <wenst@chromium.org>
-Subject: Re: [PATCH 3/6] dt-bindings: display: mediatek: Fix clocks count
+Subject: Re: [PATCH 2/6] dt-bindings: iommu: mediatek: Fix interrupt count
  constraint for new SoCs
-Message-ID: <20240924-commute-collision-13ad39717d31@spud>
+Message-ID: <20240924-haiku-drudge-79e5824d4b6f@spud>
 References: <20240924103156.13119-1-macpaul.lin@mediatek.com>
- <20240924103156.13119-3-macpaul.lin@mediatek.com>
- <ffc1900b-3921-48ca-a2b2-1b798c57e572@collabora.com>
+ <20240924103156.13119-2-macpaul.lin@mediatek.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -65,73 +64,71 @@ List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha256;
-	protocol="application/pgp-signature"; boundary="sWezDfs+NRZqmEro"
+	protocol="application/pgp-signature"; boundary="jUN0h7erQf3dJLyh"
 Content-Disposition: inline
-In-Reply-To: <ffc1900b-3921-48ca-a2b2-1b798c57e572@collabora.com>
+In-Reply-To: <20240924103156.13119-2-macpaul.lin@mediatek.com>
 
 
---sWezDfs+NRZqmEro
+--jUN0h7erQf3dJLyh
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
 Content-Transfer-Encoding: quoted-printable
 
-On Tue, Sep 24, 2024 at 01:42:01PM +0200, AngeloGioacchino Del Regno wrote:
-> Il 24/09/24 12:31, Macpaul Lin ha scritto:
-> > The display node in mt8195.dtsi was triggering a CHECK_DTBS error due
-> > to an excessively long 'clocks' property:
-> >    display@14f06000: clocks: [[31, 14], [31, 43], [31, 44]] is too long
-> >=20
-> > To resolve this issue, add "maxItems: 3" to the 'clocks' property in
-> > the DT schema.
-> >=20
-> > Fixes: 4ed545e7d100 ("dt-bindings: display: mediatek: disp: split each =
-block to individual yaml")
-> > Signed-off-by: Macpaul Lin <macpaul.lin@mediatek.com>
-> > ---
-> >   .../devicetree/bindings/display/mediatek/mediatek,split.yaml     | 1 +
-> >   1 file changed, 1 insertion(+)
-> >=20
-> > diff --git a/Documentation/devicetree/bindings/display/mediatek/mediate=
-k,split.yaml b/Documentation/devicetree/bindings/display/mediatek/mediatek,=
-split.yaml
-> > index e4affc854f3d..42d2d483cc29 100644
-> > --- a/Documentation/devicetree/bindings/display/mediatek/mediatek,split=
-=2Eyaml
-> > +++ b/Documentation/devicetree/bindings/display/mediatek/mediatek,split=
-=2Eyaml
-> > @@ -57,6 +57,7 @@ properties:
-> >     clocks:
-> >       items:
-> >         - description: SPLIT Clock
+On Tue, Sep 24, 2024 at 06:31:52PM +0800, Macpaul Lin wrote:
+> The infra-iommu node in mt8195.dtsi was triggering a CHECK_DTBS error due
+> to an excessively long 'interrupts' property. The error message was:
 >=20
-> That's at least confusing (granted that it works) - either add a descript=
-ion for
-> each clock and then set `minItems: 1` (preferred), or remove this "SPLIT =
-Clock"
-> description and allow a maximum of 3 clocks.
+>   infra-iommu@10315000: interrupts: [[0, 795, 4, 0], [0, 796, 4, 0],
+>                      [0, 797, 4, 0], [0, 798, 4, 0], [0, 799, 4, 0]]
+>                      is too long
 >=20
-> Removing the description can be done - IMO - because "SPLIT Clock" is, we=
-ll,
-> saying that the SPLIT block gets a SPLIT clock ... stating the obvious, a=
-nyway.
+> To address this issue, add "minItems: 1" and "maxItems: 5" constraints to
+> the 'interrupts' property in the DT binding schema. This change allows for
+> flexibility in the number of interrupts for new SoCs
+>=20
+> Fixes: bca28426805d ("dt-bindings: iommu: mediatek: Convert IOMMU to DT s=
+chema")
+>=20
 
-Right, but what are the other two new clocks? Are they as obvious?
-There's no clock-names here to give any more information as to what the
-other clocks are supposed to be.
+This space should be removed.
 
-Kinda unrelated, but I think that "SPLIT Clock" probably isn't what the
-name of the clock in the IP block is anyway, sounds more like the name
-for it on the provider end..
+> Signed-off-by: Macpaul Lin <macpaul.lin@mediatek.com>
+> ---
+>  Documentation/devicetree/bindings/iommu/mediatek,iommu.yaml | 3 ++-
+>  1 file changed, 2 insertions(+), 1 deletion(-)
+>=20
+> diff --git a/Documentation/devicetree/bindings/iommu/mediatek,iommu.yaml =
+b/Documentation/devicetree/bindings/iommu/mediatek,iommu.yaml
+> index ea6b0f5f24de..a00f1f0045b1 100644
+> --- a/Documentation/devicetree/bindings/iommu/mediatek,iommu.yaml
+> +++ b/Documentation/devicetree/bindings/iommu/mediatek,iommu.yaml
+> @@ -96,7 +96,8 @@ properties:
+>      maxItems: 1
+> =20
+>    interrupts:
+> -    maxItems: 1
+> +    minItems: 1
+> +    maxItems: 5
 
---sWezDfs+NRZqmEro
+You need to add an items list here, and probably some per compatible
+constraints. What are each of the itnerrupts for?
+
+> =20
+>    clocks:
+>      items:
+> --=20
+> 2.45.2
+>=20
+
+--jUN0h7erQf3dJLyh
 Content-Type: application/pgp-signature; name="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 
-iHUEABYIAB0WIQRh246EGq/8RLhDjO14tDGHoIJi0gUCZvLiIgAKCRB4tDGHoIJi
-0jIKAP9UDveIts01lao6hVilWP0TMQRAzvdTTL1WDikEbViR4AD/fS4SyEZ73ptb
-5bNB6iILTufZlc7BaAK6cEiNDImPLAw=
-=ms3M
+iHUEABYIAB0WIQRh246EGq/8RLhDjO14tDGHoIJi0gUCZvLirAAKCRB4tDGHoIJi
+0qsPAP99nNo/hdDREunSkJ59dRVvVSRDmf4UoBpnLL9JFTwMHgD/SjkR4sBd/XO9
+MrEk/KC97quNhDCBzV3CTBvOk8laPww=
+=PT+k
 -----END PGP SIGNATURE-----
 
---sWezDfs+NRZqmEro--
+--jUN0h7erQf3dJLyh--
