@@ -1,156 +1,108 @@
-Received: from mail-lj1-f174.google.com (mail-lj1-f174.google.com [209.85.208.174])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EA3311422C7
-	for <iommu@lists.linux.dev>; Tue, 24 Sep 2024 09:39:15 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.174
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 61A4E19ADB9
+	for <iommu@lists.linux.dev>; Tue, 24 Sep 2024 10:32:11 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=60.244.123.138
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1727170757; cv=none; b=Zw/lsN6w/ZT1JszbiMt5RgW7+qiKz39Z8YXFX1OK00Eq/JN6r7c9AkQZUAiiXIcgRIv5+0SWo9/e1ZDsil3rJ8Rym7pHvb/CozCADLlooGyu1qpIUpkDV+qPHqxITVYLyPh0lQsO6MV1lfPrYTbIukcqCTHk1v9UAof35nSUb8g=
+	t=1727173933; cv=none; b=SANJjG8wAnjDYfCPCAAldmEayjDdn1HQO/FM2zy5zRi5OEcAOEuT385O5/E7GRWDYajHPKWlJdMuMIS/054VKJcNKJ+Jj8YY0m64BKViB3ZetGFyfB0+zL4+7XNykhLW1uycvY75NyGDxbiC4G0x10qQtj+JbLICCNjPM8y+PLI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1727170757; c=relaxed/simple;
-	bh=mf/yNQbTyBi6//hoU5xYaWDXLqvNOSROMW/L33As/p4=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=MD2afkm/7rUioXKUJgWE5ibvFSb8DLDjgZCFvEbX/B1i1Qj+7o6EbMEfj80hkSDPwczohlxcCHAkdBwjc5bMa3n8yCOdeO7/n1KgSbpiLIZpyCoIW/MorPU9akuEd8mDoICALKmL3nizR4H5h96GpVN/+ocCP3lAU3BWk6D2718=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org; spf=pass smtp.mailfrom=linaro.org; dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b=NCE7RlxK; arc=none smtp.client-ip=209.85.208.174
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linaro.org
+	s=arc-20240116; t=1727173933; c=relaxed/simple;
+	bh=uFkgC/HJ3QuYHN5vM9hqoWdJLetOv8EsvbWn+/yxmaI=;
+	h=From:To:CC:Subject:Date:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=qhsp+GeFaz/5GzrWN8X9x39gdG4nEV7msPYrGhySV3FR3yL9rRjS8CwoWHMOfOHWPK4gDu120LR5jnVrtlDiEwhHMe2NHFH/PYAaYIWKG4nVz4V6rc4ArAn3qScaXKx9IpQHPurXJGJJU3fl/WsqTFKMSJiwogzLpWqspnEz/Mw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=mediatek.com; spf=pass smtp.mailfrom=mediatek.com; dkim=pass (1024-bit key) header.d=mediatek.com header.i=@mediatek.com header.b=LRuCdmWI; arc=none smtp.client-ip=60.244.123.138
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=mediatek.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=mediatek.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="NCE7RlxK"
-Received: by mail-lj1-f174.google.com with SMTP id 38308e7fff4ca-2f7529203ddso59164361fa.0
-        for <iommu@lists.linux.dev>; Tue, 24 Sep 2024 02:39:15 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1727170754; x=1727775554; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=IdePYOwVLhdr7Z5Ai8vXonZrKUMVNJYnj4sOgIcjQV4=;
-        b=NCE7RlxKe5Z2pPionkOcIfjMpFgmriWiCint7ihne8ZpBsnHf/m3NcJv5I/+KV+aXS
-         uFssO6gk1ClzeQNdvbU0Qy/mu1SzlxlRRbuXnXMEYcgsbJSHGRXBdgSc88yQqmpGmY51
-         V5MjJe9OipVE68mq/bMyPI/bUkoq37RntHohAfMrPtYUQKh6RMtCXiSsVpbR8drNc4Cm
-         UHFga6jsMHS9WVjGaBqJO7MDvKkG3mU5QuwXE4F3hv+MTshbMJp0WkOK/7irUZ8edESf
-         nTiYjCWj85KLKODK7GJ16VgpNBfzSpIPjHxe7mc1dL4V1xAq9k0cwi1v/YAcUInherlA
-         iG9A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1727170754; x=1727775554;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=IdePYOwVLhdr7Z5Ai8vXonZrKUMVNJYnj4sOgIcjQV4=;
-        b=b8xmQFIP8PWr1jU3mrMDEeT2I+z+ZDWUoSfnO7j+5jLByOHFZH672owWmSy1ALOUij
-         MzIrc0RUWWv0cumHwsataOM4jxjxYDMw4zFzA2OkXw8YdhLtGXpPTfLywa1iiaYLnQ0K
-         QCXpH9rvukEyVsDrpqjs4WmBFF2suQTQeaLi0zofV8CSEk7cEC3Eak25sb7Ho4g5Ldny
-         UzllRnCYAtDl0Ra09U0Wt+kzwSuQ8AnjDMu4pE+S5iunq44iE+X3UZmwWF5NLyAyum0H
-         OKPIZFP6oZ7rPAbkv3d9xagbkpcTmnmTo7ohY2xHTW9QlK1/iCyT2MIj9pOrhWnCONta
-         9KWQ==
-X-Forwarded-Encrypted: i=1; AJvYcCWh8+w1BV1svSLOHKpU4U/r1ABkMUvg29+t7RphKKxvkPbTweNreNFH6SCG8tg4p1bxaUl7Eg==@lists.linux.dev
-X-Gm-Message-State: AOJu0Yzxscu5a3OGceAXPC9eyVfq2Y22fbGntbkHGRj0mBYcfuABVRmN
-	ekOccVnxd8CS2klkssS+rUEAQZcOwjRdGNG8Ng467EbkqvqSdK45xOYtZbFXSzQ=
-X-Google-Smtp-Source: AGHT+IGaSdkWJlPaDdNvVeB10oDjOeL9lA78zLl9tk9InZw6sDjbdJCQLJwiltHxpGb4QESfI1B8mA==
-X-Received: by 2002:a2e:801:0:b0:2f7:5ca2:6d10 with SMTP id 38308e7fff4ca-2f8d0b91516mr7459431fa.15.1727170747681;
-        Tue, 24 Sep 2024 02:39:07 -0700 (PDT)
-Received: from eriador.lumag.spb.ru (2001-14ba-a0c3-3a00--b8c.rev.dnainternet.fi. [2001:14ba:a0c3:3a00::b8c])
-        by smtp.gmail.com with ESMTPSA id 38308e7fff4ca-2f8d282fd34sm1606521fa.28.2024.09.24.02.39.05
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 24 Sep 2024 02:39:06 -0700 (PDT)
-Date: Tue, 24 Sep 2024 12:39:04 +0300
-From: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
-To: Bibek Kumar Patro <quic_bibekkum@quicinc.com>
-Cc: robdclark@gmail.com, will@kernel.org, robin.murphy@arm.com, 
-	joro@8bytes.org, jgg@ziepe.ca, jsnitsel@redhat.com, robh@kernel.org, 
-	krzysztof.kozlowski@linaro.org, quic_c_gdjako@quicinc.com, iommu@lists.linux.dev, 
-	linux-arm-msm@vger.kernel.org, linux-arm-kernel@lists.infradead.org, 
-	linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v15 5/5] iommu/arm-smmu: add ACTLR data and support for
- qcom_smmu_500
-Message-ID: <jqwm5ddslvpbdp4ngxxyfpeda2qoc2rsnxc5cwo3gy24mpd345@qkyxwggxk77m>
-References: <20240920155813.3434021-1-quic_bibekkum@quicinc.com>
- <20240920155813.3434021-6-quic_bibekkum@quicinc.com>
- <xxd74r5zzobcsg6joty4rxxmj4gaiezmj6bqlcdbcyhshchqq2@ljpxtgq2dthg>
- <66af599b-85a7-40fd-b550-346013028394@quicinc.com>
+	dkim=pass (1024-bit key) header.d=mediatek.com header.i=@mediatek.com header.b="LRuCdmWI"
+X-UUID: 3eeb3e587a6011efb66947d174671e26-20240924
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=mediatek.com; s=dk;
+	h=Content-Type:Content-Transfer-Encoding:MIME-Version:References:In-Reply-To:Message-ID:Date:Subject:CC:To:From; bh=vToQqSYhxoNIBKcHix7YuNNJbigjNkYAawVdnpO/pFY=;
+	b=LRuCdmWIG1+iUTP0SKCDZCV30F+iufAYypBygxoHJ/dks4q75b5n0UxFoBtgliq9gTln/BCukPdxsDDxa45Fu/aNji/4S9uHImdn1eoFszXQ+4GXPptSpxVxarveDADOyoSP8tfeTfqdlYMq27IpCFKC/G7/tZgw2w/d5nfW5tY=;
+X-CID-P-RULE: Release_Ham
+X-CID-O-INFO: VERSION:1.1.41,REQID:243263fb-3c96-489f-afeb-c75bea657c17,IP:0,U
+	RL:0,TC:0,Content:0,EDM:-30,RT:0,SF:0,FILE:0,BULK:0,RULE:Release_Ham,ACTIO
+	N:release,TS:-30
+X-CID-META: VersionHash:6dc6a47,CLOUDID:a0302c18-b42d-49a6-94d2-a75fa0df01d2,B
+	ulkID:nil,BulkQuantity:0,Recheck:0,SF:102,TC:nil,Content:0,EDM:2,IP:nil,UR
+	L:0,File:nil,RT:nil,Bulk:nil,QS:nil,BEC:nil,COL:0,OSI:0,OSA:0,AV:0,LES:1,S
+	PR:NO,DKR:0,DKP:0,BRR:0,BRE:0,ARC:0
+X-CID-BVR: 0
+X-CID-BAS: 0,_,0,_
+X-CID-FACTOR: TF_CID_SPAM_SNR
+X-UUID: 3eeb3e587a6011efb66947d174671e26-20240924
+Received: from mtkmbs14n2.mediatek.inc [(172.21.101.76)] by mailgw01.mediatek.com
+	(envelope-from <macpaul.lin@mediatek.com>)
+	(Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
+	with ESMTP id 584628722; Tue, 24 Sep 2024 18:32:06 +0800
+Received: from mtkmbs11n2.mediatek.inc (172.21.101.187) by
+ MTKMBS09N1.mediatek.inc (172.21.101.35) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.1118.26; Tue, 24 Sep 2024 18:32:05 +0800
+Received: from mtksdccf07.mediatek.inc (172.21.84.99) by
+ mtkmbs11n2.mediatek.inc (172.21.101.73) with Microsoft SMTP Server id
+ 15.2.1118.26 via Frontend Transport; Tue, 24 Sep 2024 18:32:05 +0800
+From: Macpaul Lin <macpaul.lin@mediatek.com>
+To: Chun-Kuang Hu <chunkuang.hu@kernel.org>, Philipp Zabel
+	<p.zabel@pengutronix.de>, Maarten Lankhorst
+	<maarten.lankhorst@linux.intel.com>, Maxime Ripard <mripard@kernel.org>,
+	Thomas Zimmermann <tzimmermann@suse.de>, David Airlie <airlied@gmail.com>,
+	Simona Vetter <simona@ffwll.ch>, Rob Herring <robh@kernel.org>, Krzysztof
+ Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, Yong Wu
+	<yong.wu@mediatek.com>, Joerg Roedel <joro@8bytes.org>, Will Deacon
+	<will@kernel.org>, Robin Murphy <robin.murphy@arm.com>, Matthias Brugger
+	<matthias.bgg@gmail.com>, AngeloGioacchino Del Regno
+	<angelogioacchino.delregno@collabora.com>, <dri-devel@lists.freedesktop.org>,
+	<linux-mediatek@lists.infradead.org>, <devicetree@vger.kernel.org>,
+	<linux-kernel@vger.kernel.org>, <iommu@lists.linux.dev>,
+	<linux-arm-kernel@lists.infradead.org>, Alexandre Mergnat
+	<amergnat@baylibre.com>
+CC: Bear Wang <bear.wang@mediatek.com>, Pablo Sun <pablo.sun@mediatek.com>,
+	Macpaul Lin <macpaul.lin@mediatek.com>, Macpaul Lin <macpaul@gmail.com>, Sen
+ Chu <sen.chu@mediatek.com>, Chris-qj chen <chris-qj.chen@mediatek.com>,
+	MediaTek Chromebook Upstream
+	<Project_Global_Chrome_Upstream_Group@mediatek.com>, Chen-Yu Tsai
+	<wenst@chromium.org>
+Subject: [PATCH 6/6] dt-bindings: display: mediatek: dpi: Add mt8195 support in power domains
+Date: Tue, 24 Sep 2024 18:31:56 +0800
+Message-ID: <20240924103156.13119-6-macpaul.lin@mediatek.com>
+X-Mailer: git-send-email 2.18.0
+In-Reply-To: <20240924103156.13119-1-macpaul.lin@mediatek.com>
+References: <20240924103156.13119-1-macpaul.lin@mediatek.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <66af599b-85a7-40fd-b550-346013028394@quicinc.com>
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-MTK: N
 
-On Sat, Sep 21, 2024 at 01:29:04AM GMT, Bibek Kumar Patro wrote:
-> 
-> 
-> On 9/20/2024 9:48 PM, Dmitry Baryshkov wrote:
-> > On Fri, Sep 20, 2024 at 09:28:13PM GMT, Bibek Kumar Patro wrote:
-> > > Add ACTLR data table for qcom_smmu_500 including
-> > > corresponding data entry and set prefetch value by
-> > > way of a list of compatible strings.
-> > > 
-> > > Signed-off-by: Bibek Kumar Patro <quic_bibekkum@quicinc.com>
-> > > ---
-> > >   drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c | 24 ++++++++++++++++++++++
-> > >   1 file changed, 24 insertions(+)
-> > > 
-> > > diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
-> > > index 4ac272d05843..e8f936a446df 100644
-> > > --- a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
-> > > +++ b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
-> > > @@ -25,8 +25,31 @@
-> > > 
-> > >   #define CPRE			(1 << 1)
-> > >   #define CMTLB			(1 << 0)
-> > > +#define PREFETCH_SHIFT		8
-> > > +#define PREFETCH_DEFAULT	0
-> > > +#define PREFETCH_SHALLOW	(1 << PREFETCH_SHIFT)
-> > > +#define PREFETCH_MODERATE	(2 << PREFETCH_SHIFT)
-> > > +#define PREFETCH_DEEP		(3 << PREFETCH_SHIFT)
-> > >   #define GFX_ACTLR_PRR		(1 << 5)
-> > > 
-> > > +static const struct of_device_id qcom_smmu_actlr_client_of_match[] = {
-> > > +	{ .compatible = "qcom,adreno",
-> > > +			.data = (const void *) (PREFETCH_DEEP | CPRE | CMTLB) },
-> > > +	{ .compatible = "qcom,adreno-gmu",
-> > > +			.data = (const void *) (PREFETCH_DEEP | CPRE | CMTLB) },
-> > > +	{ .compatible = "qcom,adreno-smmu",
-> > > +			.data = (const void *) (PREFETCH_DEEP | CPRE | CMTLB) },
-> > > +	{ .compatible = "qcom,fastrpc",
-> > > +			.data = (const void *) (PREFETCH_DEEP | CPRE | CMTLB) },
-> > > +	{ .compatible = "qcom,sc7280-mdss",
-> > > +			.data = (const void *) (PREFETCH_SHALLOW | CPRE | CMTLB) },
-> > > +	{ .compatible = "qcom,sc7280-venus",
-> > > +			.data = (const void *) (PREFETCH_SHALLOW | CPRE | CMTLB) },
-> > > +	{ .compatible = "qcom,sm8550-mdss",
-> > > +			.data = (const void *) (PREFETCH_DEFAULT | CMTLB) },
-> > > +	{ }
-> > > +};
-> > 
-> > Wow, this looks really nice now!
-> > 
-> 
-> I am also in favor of this compatible based approach now,
-> as it looks to be much cleaner implementation.
+Add power domain binding to the mediatek DPI controller for MT8185.
 
+The dpi node in mt8195.dtsi was triggering a dtbs_check error:
+  dp-intf@1c113000: power-domains: False schema does not allow [[44, 18]]
 
-Reviewed-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+Fixes: 5474d49b2f79 ("dt-bindings: display: mediatek: dpi: Add power domains")
+Signed-off-by: Macpaul Lin <macpaul.lin@mediatek.com>
+---
+ .../devicetree/bindings/display/mediatek/mediatek,dpi.yaml       | 1 +
+ 1 file changed, 1 insertion(+)
 
-
-> 
-> > > +
-> > >   static struct qcom_smmu *to_qcom_smmu(struct arm_smmu_device *smmu)
-> > >   {
-> > >   	return container_of(smmu, struct qcom_smmu, smmu);
-> > > @@ -640,6 +663,7 @@ static const struct qcom_smmu_match_data qcom_smmu_500_impl0_data = {
-> > >   	.impl = &qcom_smmu_500_impl,
-> > >   	.adreno_impl = &qcom_adreno_smmu_500_impl,
-> > >   	.cfg = &qcom_smmu_impl0_cfg,
-> > > +	.client_match = qcom_smmu_actlr_client_of_match,
-> > >   };
-> > > 
-> > >   /*
-> > > --
-> > > 2.34.1
-> > > 
-> > 
-
+diff --git a/Documentation/devicetree/bindings/display/mediatek/mediatek,dpi.yaml b/Documentation/devicetree/bindings/display/mediatek/mediatek,dpi.yaml
+index 3a82aec9021c..07acc8a76bfc 100644
+--- a/Documentation/devicetree/bindings/display/mediatek/mediatek,dpi.yaml
++++ b/Documentation/devicetree/bindings/display/mediatek/mediatek,dpi.yaml
+@@ -89,6 +89,7 @@ allOf:
+                 - mediatek,mt6795-dpi
+                 - mediatek,mt8173-dpi
+                 - mediatek,mt8186-dpi
++                - mediatek,mt8195-dp-intf
+     then:
+       properties:
+         power-domains: false
 -- 
-With best wishes
-Dmitry
+2.45.2
+
