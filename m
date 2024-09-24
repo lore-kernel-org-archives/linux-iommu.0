@@ -1,467 +1,137 @@
-Received: from mx0a-00069f02.pphosted.com (mx0a-00069f02.pphosted.com [205.220.165.32])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AEF931AB500
-	for <iommu@lists.linux.dev>; Tue, 24 Sep 2024 15:05:51 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.165.32
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A3AC61B85D5;
+	Tue, 24 Sep 2024 16:00:42 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1727190353; cv=none; b=XM8Qurmnkc/mbuh+JFI6WH+pTg30y0W7dRb1bPOqFyPut/3MTOHhoS+lB0gJCYEY+MOwxIQ+ghSZde03ZolfDYxA73njy0rsaYLoIOQ8W/ZS2wDSnkEeOTVOih7SYQ91Fttln+IBQQkeqfVP75Wmaj9AYRXzOOUEj+1JIT1JlGI=
+	t=1727193642; cv=none; b=hfUJFlv46CqUMsLKV2w/qOjmoFkDBSdxza2KvV3RRwe9dh7EIIcrcay0UWVyn6f9CV3OsUltJYJ90dsEsCWxtVhyVGS5wCma4bFDvbdoikqA06kc2oC8oz3MS3HjOsgp77vKG4pn5u3Nil5lJ8RLKSCWB73vzPGX6n1pUdsM+ns=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1727190353; c=relaxed/simple;
-	bh=jq36kHjtYNCmEf8GNQLJyUoyvAy2dTkwDlwWcbaAS9M=;
-	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References; b=qqn3ZnW3X6+bmcCs6MdeK8AEz3mOwIiwZKFNhw1LDiCqnKt965+S+CcSAcHuIskkqnJmK0P0pKgEJ6cYZYMtINQteH2kW/Gx8/U2Fhh1s1J3qU0BaJCUrwSOF3e3OL1t/ANjse/SMhmDBIjzP5J870/6dFKB24ublKsDFMWBi0U=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oracle.com; spf=pass smtp.mailfrom=oracle.com; dkim=pass (2048-bit key) header.d=oracle.com header.i=@oracle.com header.b=PKRhK1PV; arc=none smtp.client-ip=205.220.165.32
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oracle.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=oracle.com
+	s=arc-20240116; t=1727193642; c=relaxed/simple;
+	bh=RMVPLW4fWUk9yS+HMDAfSQbd+gQJXHQViB5tLV8d35M=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=g1UF7MAIkAH+Ti/+bdLeU8KZ37oQw/IyLcjGD+3we9h19919pMuaaBnHy57p/DqYPfMktUK30UkBBC5NY7vCJ8DrpqS0xzjs46f7BuEZrVXh5umH5uioOJ1K+NkQAA2tD7H6zyGcBy3nmbHNjey5hS8FI4YLIFg9cGtFLWeEI9Q=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=GvK37+mp; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=oracle.com header.i=@oracle.com header.b="PKRhK1PV"
-Received: from pps.filterd (m0246617.ppops.net [127.0.0.1])
-	by mx0b-00069f02.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 48OEQWGh032398;
-	Tue, 24 Sep 2024 15:05:50 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=
-	from:to:cc:subject:date:message-id:in-reply-to:references; s=
-	corp-2023-11-20; bh=WGEtjVZJhYFOlmN0vYCLAkQ+HOYEFmPQuEBIoa0yB+Q=; b=
-	PKRhK1PV/gzQuEmn8uqOD1ObE66z49MoAIk+IGPFUPAu6QOoQuPz2dR+Yd5AveRK
-	wEqbi8wK3BRwrRd2PuHsXRxs/z3VmvVCmX4RbQ/LPUYdJO3XvQ0jBexLNX+Tj/Mi
-	ntaR5ujg56HujmgEx26S3kSmVCDZg3vwCijUK/iJOnpFLv30hwpoEwvPo30qsZ4d
-	gQoUsm7DE/ZVJc9TFzSRHYx0Kdz/1fnxvViEidbINZziXlOpJuhnXE6Y1pFRk6Xq
-	MsH17t8S3yAVRLTRxuLuYPkeLLcQB2xa2Ey+BRJcuEbDKjMhUjPm6Tj0UVPNAvL3
-	99vjM6gS/PiY6Lc74ElovA==
-Received: from iadpaimrmta02.imrmtpd1.prodappiadaev1.oraclevcn.com (iadpaimrmta02.appoci.oracle.com [147.154.18.20])
-	by mx0b-00069f02.pphosted.com (PPS) with ESMTPS id 41sppu7qcs-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-	Tue, 24 Sep 2024 15:05:50 +0000 (GMT)
-Received: from pps.filterd (iadpaimrmta02.imrmtpd1.prodappiadaev1.oraclevcn.com [127.0.0.1])
-	by iadpaimrmta02.imrmtpd1.prodappiadaev1.oraclevcn.com (8.18.1.2/8.18.1.2) with ESMTP id 48OEHb2t005436;
-	Tue, 24 Sep 2024 15:05:48 GMT
-Received: from pps.reinject (localhost [127.0.0.1])
-	by iadpaimrmta02.imrmtpd1.prodappiadaev1.oraclevcn.com (PPS) with ESMTPS id 41smk9cr8g-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-	Tue, 24 Sep 2024 15:05:48 +0000
-Received: from iadpaimrmta02.imrmtpd1.prodappiadaev1.oraclevcn.com (iadpaimrmta02.imrmtpd1.prodappiadaev1.oraclevcn.com [127.0.0.1])
-	by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 48OF5dLT027122;
-	Tue, 24 Sep 2024 15:05:48 GMT
-Received: from ca-dev63.us.oracle.com (ca-dev63.us.oracle.com [10.211.8.221])
-	by iadpaimrmta02.imrmtpd1.prodappiadaev1.oraclevcn.com (PPS) with ESMTP id 41smk9cqxg-10;
-	Tue, 24 Sep 2024 15:05:48 +0000
-From: Steve Sistare <steven.sistare@oracle.com>
-To: iommu@lists.linux.dev
-Cc: Jason Gunthorpe <jgg@nvidia.com>, Kevin Tian <kevin.tian@intel.com>,
-        Nicolin Chen <nicolinc@nvidia.com>,
-        Steve Sistare <steven.sistare@oracle.com>
-Subject: [PATCH V2 9/9] iommufd: map file selftest
-Date: Tue, 24 Sep 2024 08:05:38 -0700
-Message-Id: <1727190338-385692-10-git-send-email-steven.sistare@oracle.com>
-X-Mailer: git-send-email 1.8.3.1
-In-Reply-To: <1727190338-385692-1-git-send-email-steven.sistare@oracle.com>
-References: <1727190338-385692-1-git-send-email-steven.sistare@oracle.com>
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.293,Aquarius:18.0.1051,Hydra:6.0.680,FMLib:17.12.60.29
- definitions=2024-09-24_02,2024-09-24_01,2024-09-02_01
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 adultscore=0 phishscore=0 spamscore=0
- bulkscore=0 suspectscore=0 malwarescore=0 mlxscore=0 mlxlogscore=999
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2408220000
- definitions=main-2409240108
-X-Proofpoint-GUID: T-J2aQyoHzik5w3VBO-BGRvmR2nZkgi8
-X-Proofpoint-ORIG-GUID: T-J2aQyoHzik5w3VBO-BGRvmR2nZkgi8
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="GvK37+mp"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E2AE1C4CEC4;
+	Tue, 24 Sep 2024 16:00:36 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1727193642;
+	bh=RMVPLW4fWUk9yS+HMDAfSQbd+gQJXHQViB5tLV8d35M=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=GvK37+mp+LghOmr6eoGoJcX94ZEdvjXe7wWGvJCkmU96Jfz4t9wQAMCcHrj456VMu
+	 CTvjH6AQSibawNgM6pXkiRUbDkbpb5OB2u6GHKkU3OdPWYRsMb7NsThJQgay3GxhP5
+	 Oof/N2yNvyvOKMabXyy38g7l3rPmArWwRrHFImcMLmP34qUsZxYMlYO/z5HZ4P0Tlj
+	 1ukf9n15+s9ktGDKRonsgiNiCoFNvXmAw7OCRlWWHp1KQxcofuJX8494GiYt5I/sbF
+	 IQTyI/Kf+rr/XySGhmQGVFj6Xz+1gwU2CDrVff0GanXwhe+9jxkxPT92QrSGMZJLsG
+	 hAPsxiBHsx+3w==
+Date: Tue, 24 Sep 2024 17:00:34 +0100
+From: Conor Dooley <conor@kernel.org>
+To: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
+Cc: Macpaul Lin <macpaul.lin@mediatek.com>,
+	Chun-Kuang Hu <chunkuang.hu@kernel.org>,
+	Philipp Zabel <p.zabel@pengutronix.de>,
+	Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
+	Maxime Ripard <mripard@kernel.org>,
+	Thomas Zimmermann <tzimmermann@suse.de>,
+	David Airlie <airlied@gmail.com>, Simona Vetter <simona@ffwll.ch>,
+	Rob Herring <robh@kernel.org>,
+	Krzysztof Kozlowski <krzk+dt@kernel.org>,
+	Conor Dooley <conor+dt@kernel.org>, Yong Wu <yong.wu@mediatek.com>,
+	Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
+	Robin Murphy <robin.murphy@arm.com>,
+	Matthias Brugger <matthias.bgg@gmail.com>,
+	dri-devel@lists.freedesktop.org, linux-mediatek@lists.infradead.org,
+	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+	iommu@lists.linux.dev, linux-arm-kernel@lists.infradead.org,
+	Alexandre Mergnat <amergnat@baylibre.com>,
+	Bear Wang <bear.wang@mediatek.com>,
+	Pablo Sun <pablo.sun@mediatek.com>, Macpaul Lin <macpaul@gmail.com>,
+	Sen Chu <sen.chu@mediatek.com>,
+	Chris-qj chen <chris-qj.chen@mediatek.com>,
+	MediaTek Chromebook Upstream <Project_Global_Chrome_Upstream_Group@mediatek.com>,
+	Chen-Yu Tsai <wenst@chromium.org>
+Subject: Re: [PATCH 3/6] dt-bindings: display: mediatek: Fix clocks count
+ constraint for new SoCs
+Message-ID: <20240924-commute-collision-13ad39717d31@spud>
+References: <20240924103156.13119-1-macpaul.lin@mediatek.com>
+ <20240924103156.13119-3-macpaul.lin@mediatek.com>
+ <ffc1900b-3921-48ca-a2b2-1b798c57e572@collabora.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
+MIME-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha256;
+	protocol="application/pgp-signature"; boundary="sWezDfs+NRZqmEro"
+Content-Disposition: inline
+In-Reply-To: <ffc1900b-3921-48ca-a2b2-1b798c57e572@collabora.com>
 
-Add test cases to exercise IOMMU_IOAS_MAP_FILE.
 
-Signed-off-by: Steve Sistare <steven.sistare@oracle.com>
----
- tools/testing/selftests/iommu/iommufd.c       | 156 +++++++++++++++++++++++---
- tools/testing/selftests/iommu/iommufd_utils.h |  41 +++++++
- 2 files changed, 182 insertions(+), 15 deletions(-)
+--sWezDfs+NRZqmEro
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-diff --git a/tools/testing/selftests/iommu/iommufd.c b/tools/testing/selftests/iommu/iommufd.c
-index 4927b9a..b1a3acc 100644
---- a/tools/testing/selftests/iommu/iommufd.c
-+++ b/tools/testing/selftests/iommu/iommufd.c
-@@ -3,6 +3,8 @@
- #include <stdlib.h>
- #include <sys/mman.h>
- #include <sys/eventfd.h>
-+#include <sys/syscall.h>
-+#include <asm/unistd.h>
- 
- #define __EXPORTED_HEADERS__
- #include <linux/vfio.h>
-@@ -10,6 +12,8 @@
- #include "iommufd_utils.h"
- 
- static unsigned long HUGEPAGE_SIZE;
-+static void *mfd_buffer;
-+static int mfd;
- 
- #define MOCK_PAGE_SIZE (PAGE_SIZE / 2)
- #define MOCK_HUGE_PAGE_SIZE (512 * MOCK_PAGE_SIZE)
-@@ -33,6 +37,24 @@ static unsigned long get_huge_page_size(void)
- 	return strtoul(buf, NULL, 10);
- }
- 
-+static int memfd_create(const char *name, unsigned int flags)
-+{
-+	return syscall(__NR_memfd_create, name, flags);
-+}
-+
-+static void *memfd_mmap(size_t length, int prot, int flags, int *mfd_p)
-+{
-+	int mfd_flags = (flags & MAP_HUGETLB) ? MFD_HUGETLB : 0;
-+	int mfd = memfd_create("buffer", mfd_flags);
-+
-+	if (mfd <= 0)
-+		return MAP_FAILED;
-+	if (ftruncate(mfd, length))
-+		return MAP_FAILED;
-+	*mfd_p = mfd;
-+	return mmap(0, length, prot, flags, mfd, 0);
-+}
-+
- static __attribute__((constructor)) void setup_sizes(void)
- {
- 	void *vrc;
-@@ -49,6 +71,9 @@ static __attribute__((constructor)) void setup_sizes(void)
- 	vrc = mmap(buffer, BUFFER_SIZE, PROT_READ | PROT_WRITE,
- 		   MAP_SHARED | MAP_ANONYMOUS | MAP_FIXED, -1, 0);
- 	assert(vrc == buffer);
-+
-+	mfd_buffer = memfd_mmap(BUFFER_SIZE, PROT_READ | PROT_WRITE, MAP_SHARED,
-+				&mfd);
- }
- 
- FIXTURE(iommufd)
-@@ -1372,6 +1397,7 @@ static void check_access_rw(struct __test_metadata *_metadata, int fd,
- {
- 	unsigned int mock_domains;
- 	bool hugepages;
-+	bool file;
- };
- 
- FIXTURE_SETUP(iommufd_mock_domain)
-@@ -1410,26 +1436,45 @@ static void check_access_rw(struct __test_metadata *_metadata, int fd,
- {
- 	.mock_domains = 1,
- 	.hugepages = false,
-+	.file = false,
- };
- 
- FIXTURE_VARIANT_ADD(iommufd_mock_domain, two_domains)
- {
- 	.mock_domains = 2,
- 	.hugepages = false,
-+	.file = false,
- };
- 
- FIXTURE_VARIANT_ADD(iommufd_mock_domain, one_domain_hugepage)
- {
- 	.mock_domains = 1,
- 	.hugepages = true,
-+	.file = false,
- };
- 
- FIXTURE_VARIANT_ADD(iommufd_mock_domain, two_domains_hugepage)
- {
- 	.mock_domains = 2,
- 	.hugepages = true,
-+	.file = false,
- };
- 
-+FIXTURE_VARIANT_ADD(iommufd_mock_domain, one_domain_file)
-+{
-+	.mock_domains = 1,
-+	.hugepages = false,
-+	.file = true,
-+};
-+
-+FIXTURE_VARIANT_ADD(iommufd_mock_domain, one_domain_file_hugepage)
-+{
-+	.mock_domains = 1,
-+	.hugepages = true,
-+	.file = true,
-+};
-+
-+
- /* Have the kernel check that the user pages made it to the iommu_domain */
- #define check_mock_iova(_ptr, _iova, _length)                                \
- 	({                                                                   \
-@@ -1455,7 +1500,10 @@ static void check_access_rw(struct __test_metadata *_metadata, int fd,
- 		}                                                            \
- 	})
- 
--TEST_F(iommufd_mock_domain, basic)
-+static void test_basic_mmap(
-+	struct __test_metadata *_metadata,
-+	struct _test_data_iommufd_mock_domain *self,
-+	const struct _fixture_variant_iommufd_mock_domain *variant)
- {
- 	size_t buf_size = self->mmap_buf_size;
- 	uint8_t *buf;
-@@ -1478,12 +1526,52 @@ static void check_access_rw(struct __test_metadata *_metadata, int fd,
- 	test_err_ioctl_ioas_map(EFAULT, buf, buf_size, &iova);
- }
- 
-+static void test_basic_file(
-+	struct __test_metadata *_metadata,
-+	struct _test_data_iommufd_mock_domain *self,
-+	const struct _fixture_variant_iommufd_mock_domain *variant)
-+{
-+	size_t buf_size = self->mmap_buf_size;
-+	uint8_t *buf;
-+	__u64 iova;
-+	int mfd_tmp;
-+	int prot = PROT_READ | PROT_WRITE;
-+
-+	/* Simple one page map */
-+	test_ioctl_ioas_map_file(mfd, 0, PAGE_SIZE, &iova);
-+	check_mock_iova(mfd_buffer, iova, PAGE_SIZE);
-+
-+	buf = memfd_mmap(buf_size, prot, MAP_SHARED, &mfd_tmp);
-+	ASSERT_NE(MAP_FAILED, buf);
-+
-+	/* EFAULT half way through mapping */
-+	ASSERT_EQ(0, munmap(buf + buf_size / 2, buf_size / 2));
-+	test_err_ioctl_ioas_map_file(EFAULT, 0, buf_size, &iova);
-+
-+	/* EFAULT on first page */
-+	ASSERT_EQ(0, munmap(buf, buf_size / 2));
-+	test_err_ioctl_ioas_map_file(EFAULT, 0, buf_size, &iova);
-+
-+	close(mfd_tmp);
-+}
-+
-+TEST_F(iommufd_mock_domain, basic)
-+{
-+	if (variant->file)
-+		test_basic_file(_metadata, self, variant);
-+	else
-+		test_basic_mmap(_metadata, self, variant);
-+}
-+
- TEST_F(iommufd_mock_domain, ro_unshare)
- {
- 	uint8_t *buf;
- 	__u64 iova;
- 	int fd;
- 
-+	if (variant->file)
-+		SKIP(return, "redundant test");
-+
- 	fd = open("/proc/self/exe", O_RDONLY);
- 	ASSERT_NE(-1, fd);
- 
-@@ -1513,9 +1601,13 @@ static void check_access_rw(struct __test_metadata *_metadata, int fd,
- 	unsigned int start;
- 	unsigned int end;
- 	uint8_t *buf;
-+	int prot = PROT_READ | PROT_WRITE;
-+	int mfd;
- 
--	buf = mmap(0, buf_size, PROT_READ | PROT_WRITE, self->mmap_flags, -1,
--		   0);
-+	if (variant->file)
-+		buf = memfd_mmap(buf_size, prot, MAP_SHARED, &mfd);
-+	else
-+		buf = mmap(0, buf_size, prot, self->mmap_flags, -1, 0);
- 	ASSERT_NE(MAP_FAILED, buf);
- 	check_refs(buf, buf_size, 0);
- 
-@@ -1532,7 +1624,12 @@ static void check_access_rw(struct __test_metadata *_metadata, int fd,
- 			size_t length = end - start;
- 			__u64 iova;
- 
--			test_ioctl_ioas_map(buf + start, length, &iova);
-+			if (variant->file) {
-+				test_ioctl_ioas_map_file(mfd, start, length,
-+							 &iova);
-+			} else {
-+				test_ioctl_ioas_map(buf + start, length, &iova);
-+			}
- 			check_mock_iova(buf + start, iova, length);
- 			check_refs(buf + start / PAGE_SIZE * PAGE_SIZE,
- 				   end / PAGE_SIZE * PAGE_SIZE -
-@@ -1544,6 +1641,8 @@ static void check_access_rw(struct __test_metadata *_metadata, int fd,
- 	}
- 	check_refs(buf, buf_size, 0);
- 	ASSERT_EQ(0, munmap(buf, buf_size));
-+	if (variant->file)
-+		close(mfd);
- }
- 
- TEST_F(iommufd_mock_domain, all_aligns_copy)
-@@ -1554,9 +1653,13 @@ static void check_access_rw(struct __test_metadata *_metadata, int fd,
- 	unsigned int start;
- 	unsigned int end;
- 	uint8_t *buf;
-+	int prot = PROT_READ | PROT_WRITE;
-+	int mfd;
- 
--	buf = mmap(0, buf_size, PROT_READ | PROT_WRITE, self->mmap_flags, -1,
--		   0);
-+	if (variant->file)
-+		buf = memfd_mmap(buf_size, prot, MAP_SHARED, &mfd);
-+	else
-+		buf = mmap(0, buf_size, prot, self->mmap_flags, -1, 0);
- 	ASSERT_NE(MAP_FAILED, buf);
- 	check_refs(buf, buf_size, 0);
- 
-@@ -1575,7 +1678,12 @@ static void check_access_rw(struct __test_metadata *_metadata, int fd,
- 			uint32_t mock_stdev_id;
- 			__u64 iova;
- 
--			test_ioctl_ioas_map(buf + start, length, &iova);
-+			if (variant->file) {
-+				test_ioctl_ioas_map_file(mfd, start, length,
-+							 &iova);
-+			} else {
-+				test_ioctl_ioas_map(buf + start, length, &iova);
-+			}
- 
- 			/* Add and destroy a domain while the area exists */
- 			old_id = self->hwpt_ids[1];
-@@ -1596,15 +1704,18 @@ static void check_access_rw(struct __test_metadata *_metadata, int fd,
- 	}
- 	check_refs(buf, buf_size, 0);
- 	ASSERT_EQ(0, munmap(buf, buf_size));
-+	if (variant->file)
-+		close(mfd);
- }
- 
- TEST_F(iommufd_mock_domain, user_copy)
- {
-+	void *buf = variant->file ? mfd_buffer : buffer;
- 	struct iommu_test_cmd access_cmd = {
- 		.size = sizeof(access_cmd),
- 		.op = IOMMU_TEST_OP_ACCESS_PAGES,
- 		.access_pages = { .length = BUFFER_SIZE,
--				  .uptr = (uintptr_t)buffer },
-+				  .uptr = (uintptr_t)buf },
- 	};
- 	struct iommu_ioas_copy copy_cmd = {
- 		.size = sizeof(copy_cmd),
-@@ -1623,9 +1734,13 @@ static void check_access_rw(struct __test_metadata *_metadata, int fd,
- 
- 	/* Pin the pages in an IOAS with no domains then copy to an IOAS with domains */
- 	test_ioctl_ioas_alloc(&ioas_id);
--	test_ioctl_ioas_map_id(ioas_id, buffer, BUFFER_SIZE,
--			       &copy_cmd.src_iova);
--
-+	if (variant->file) {
-+		test_ioctl_ioas_map_id_file(ioas_id, mfd, 0, BUFFER_SIZE,
-+					    &copy_cmd.src_iova);
-+	} else {
-+		test_ioctl_ioas_map_id(ioas_id, buf, BUFFER_SIZE,
-+				       &copy_cmd.src_iova);
-+	}
- 	test_cmd_create_access(ioas_id, &access_cmd.id,
- 			       MOCK_FLAGS_ACCESS_CREATE_NEEDS_PIN_PAGES);
- 
-@@ -1635,12 +1750,17 @@ static void check_access_rw(struct __test_metadata *_metadata, int fd,
- 			&access_cmd));
- 	copy_cmd.src_ioas_id = ioas_id;
- 	ASSERT_EQ(0, ioctl(self->fd, IOMMU_IOAS_COPY, &copy_cmd));
--	check_mock_iova(buffer, MOCK_APERTURE_START, BUFFER_SIZE);
-+	check_mock_iova(buf, MOCK_APERTURE_START, BUFFER_SIZE);
- 
- 	/* Now replace the ioas with a new one */
- 	test_ioctl_ioas_alloc(&new_ioas_id);
--	test_ioctl_ioas_map_id(new_ioas_id, buffer, BUFFER_SIZE,
--			       &copy_cmd.src_iova);
-+	if (variant->file) {
-+		test_ioctl_ioas_map_id_file(new_ioas_id, mfd, 0, BUFFER_SIZE,
-+					    &copy_cmd.src_iova);
-+	} else {
-+		test_ioctl_ioas_map_id(new_ioas_id, buf, BUFFER_SIZE,
-+				       &copy_cmd.src_iova);
-+	}
- 	test_cmd_access_replace_ioas(access_cmd.id, new_ioas_id);
- 
- 	/* Destroy the old ioas and cleanup copied mapping */
-@@ -1654,7 +1774,7 @@ static void check_access_rw(struct __test_metadata *_metadata, int fd,
- 			&access_cmd));
- 	copy_cmd.src_ioas_id = new_ioas_id;
- 	ASSERT_EQ(0, ioctl(self->fd, IOMMU_IOAS_COPY, &copy_cmd));
--	check_mock_iova(buffer, MOCK_APERTURE_START, BUFFER_SIZE);
-+	check_mock_iova(buf, MOCK_APERTURE_START, BUFFER_SIZE);
- 
- 	test_cmd_destroy_access_pages(
- 		access_cmd.id, access_cmd.access_pages.out_access_pages_id);
-@@ -1667,6 +1787,9 @@ static void check_access_rw(struct __test_metadata *_metadata, int fd,
- {
- 	uint32_t ioas_id;
- 
-+	if (variant->file)
-+		SKIP(return, "redundant test");
-+
- 	test_ioctl_ioas_alloc(&ioas_id);
- 
- 	test_cmd_mock_domain_replace(self->stdev_ids[0], ioas_id);
-@@ -1697,6 +1820,9 @@ static void check_access_rw(struct __test_metadata *_metadata, int fd,
- {
- 	int i;
- 
-+	if (variant->file)
-+		SKIP(return, "redundant test");
-+
- 	for (i = 0; i != variant->mock_domains; i++) {
- 		uint32_t hwpt_id[2];
- 		uint32_t stddev_id;
-diff --git a/tools/testing/selftests/iommu/iommufd_utils.h b/tools/testing/selftests/iommu/iommufd_utils.h
-index 40f6f14..7bc664e 100644
---- a/tools/testing/selftests/iommu/iommufd_utils.h
-+++ b/tools/testing/selftests/iommu/iommufd_utils.h
-@@ -589,6 +589,47 @@ static int _test_ioctl_ioas_unmap(int fd, unsigned int ioas_id, uint64_t iova,
- 	EXPECT_ERRNO(_errno, _test_ioctl_ioas_unmap(self->fd, self->ioas_id, \
- 						    iova, length, NULL))
- 
-+static int _test_ioctl_ioas_map_file(int fd, unsigned int ioas_id, int mfd,
-+				     size_t start, size_t length, __u64 *iova,
-+				     unsigned int flags)
-+{
-+	struct iommu_ioas_map_file cmd = {
-+		.size = sizeof(cmd),
-+		.flags = flags,
-+		.ioas_id = ioas_id,
-+		.fd = mfd,
-+		.start = start,
-+		.length = length,
-+	};
-+	int ret;
-+
-+	if (flags & IOMMU_IOAS_MAP_FIXED_IOVA)
-+		cmd.iova = *iova;
-+
-+	ret = ioctl(fd, IOMMU_IOAS_MAP_FILE, &cmd);
-+	*iova = cmd.iova;
-+	return ret;
-+}
-+
-+#define test_ioctl_ioas_map_file(mfd, start, length, iova_p)                 \
-+	ASSERT_EQ(0, _test_ioctl_ioas_map_file(self->fd, self->ioas_id, mfd, \
-+					       start, length, iova_p,        \
-+					       IOMMU_IOAS_MAP_WRITEABLE |    \
-+						   IOMMU_IOAS_MAP_READABLE))
-+
-+#define test_err_ioctl_ioas_map_file(_errno, start, length, iova_p)	     \
-+	EXPECT_ERRNO(_errno,                                                 \
-+		     _test_ioctl_ioas_map_file(self->fd, self->ioas_id, mfd, \
-+					       start, length, iova_p,        \
-+					       IOMMU_IOAS_MAP_WRITEABLE |    \
-+						   IOMMU_IOAS_MAP_READABLE))
-+
-+#define test_ioctl_ioas_map_id_file(ioas_id, mfd, start, length, iova_p)     \
-+	ASSERT_EQ(0, _test_ioctl_ioas_map_file(self->fd, ioas_id, mfd,       \
-+					  start, length, iova_p,             \
-+					  IOMMU_IOAS_MAP_WRITEABLE |         \
-+						  IOMMU_IOAS_MAP_READABLE))
-+
- static int _test_ioctl_set_temp_memory_limit(int fd, unsigned int limit)
- {
- 	struct iommu_test_cmd memlimit_cmd = {
--- 
-1.8.3.1
+On Tue, Sep 24, 2024 at 01:42:01PM +0200, AngeloGioacchino Del Regno wrote:
+> Il 24/09/24 12:31, Macpaul Lin ha scritto:
+> > The display node in mt8195.dtsi was triggering a CHECK_DTBS error due
+> > to an excessively long 'clocks' property:
+> >    display@14f06000: clocks: [[31, 14], [31, 43], [31, 44]] is too long
+> >=20
+> > To resolve this issue, add "maxItems: 3" to the 'clocks' property in
+> > the DT schema.
+> >=20
+> > Fixes: 4ed545e7d100 ("dt-bindings: display: mediatek: disp: split each =
+block to individual yaml")
+> > Signed-off-by: Macpaul Lin <macpaul.lin@mediatek.com>
+> > ---
+> >   .../devicetree/bindings/display/mediatek/mediatek,split.yaml     | 1 +
+> >   1 file changed, 1 insertion(+)
+> >=20
+> > diff --git a/Documentation/devicetree/bindings/display/mediatek/mediate=
+k,split.yaml b/Documentation/devicetree/bindings/display/mediatek/mediatek,=
+split.yaml
+> > index e4affc854f3d..42d2d483cc29 100644
+> > --- a/Documentation/devicetree/bindings/display/mediatek/mediatek,split=
+=2Eyaml
+> > +++ b/Documentation/devicetree/bindings/display/mediatek/mediatek,split=
+=2Eyaml
+> > @@ -57,6 +57,7 @@ properties:
+> >     clocks:
+> >       items:
+> >         - description: SPLIT Clock
+>=20
+> That's at least confusing (granted that it works) - either add a descript=
+ion for
+> each clock and then set `minItems: 1` (preferred), or remove this "SPLIT =
+Clock"
+> description and allow a maximum of 3 clocks.
+>=20
+> Removing the description can be done - IMO - because "SPLIT Clock" is, we=
+ll,
+> saying that the SPLIT block gets a SPLIT clock ... stating the obvious, a=
+nyway.
 
+Right, but what are the other two new clocks? Are they as obvious?
+There's no clock-names here to give any more information as to what the
+other clocks are supposed to be.
+
+Kinda unrelated, but I think that "SPLIT Clock" probably isn't what the
+name of the clock in the IP block is anyway, sounds more like the name
+for it on the provider end..
+
+--sWezDfs+NRZqmEro
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iHUEABYIAB0WIQRh246EGq/8RLhDjO14tDGHoIJi0gUCZvLiIgAKCRB4tDGHoIJi
+0jIKAP9UDveIts01lao6hVilWP0TMQRAzvdTTL1WDikEbViR4AD/fS4SyEZ73ptb
+5bNB6iILTufZlc7BaAK6cEiNDImPLAw=
+=ms3M
+-----END PGP SIGNATURE-----
+
+--sWezDfs+NRZqmEro--
