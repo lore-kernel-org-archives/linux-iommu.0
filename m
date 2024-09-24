@@ -1,57 +1,57 @@
 Received: from mx0b-00069f02.pphosted.com (mx0b-00069f02.pphosted.com [205.220.177.32])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8F99F1AAE2C
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 18C0F1AAE30
 	for <iommu@lists.linux.dev>; Tue, 24 Sep 2024 15:05:44 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.177.32
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1727190346; cv=none; b=DSohqtgWyJgSUyVP7TUGpKAkr2cAkEjX0pcEhTzrROemXIvqlj9ORMxAF/WmQNlGAQupeS4bmON3ZoJaPZauQLhmAQxX4pXMNVqoJ5VGDkxitQaDHGUZJDsyj9GmCnSQwxjj3PE2pH1y18thegb52NUEm+z/WYVq8mwq61RoUC4=
+	t=1727190346; cv=none; b=nNAGO3x6kTjqY42P2C6/6PZL8OKrmozoX5i8LMFIPeeDu4HFza/520XcuZUPdSummAwAdCiep31tcoKKb2/Qkl/R0AAx0GHwie7Ir974sjPQnE1Rm+uXTOb0t+vG70Y9u4LsWHlIXMh2YWJ3RDjc+Rff0wICiduFXcjvm33X0FU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
 	s=arc-20240116; t=1727190346; c=relaxed/simple;
-	bh=8V4vpanKPKVmLf9dsBJStnqF8maGU8Lew9ve82vJrKQ=;
-	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References; b=siE3d1aet49lKtActyB4zw4/ca4LQOdjtn+cnLxEtk4GTvP9m2pXuQeupZAOa+INbOw55UoiDHzrXzcsyJ8fBkePYTvcq4rI6W9GGgTMEY557WtLOF44Kl+g2ZesMXJdkjTNI8B1yn8Wje3z3gtKIzlk71UDepBFQqnNshyEldM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oracle.com; spf=pass smtp.mailfrom=oracle.com; dkim=pass (2048-bit key) header.d=oracle.com header.i=@oracle.com header.b=m88+K/XU; arc=none smtp.client-ip=205.220.177.32
+	bh=w5dAVnFnJrWnXfO8H0j5WkLL2WUNzKWMtfsXmwKOJVU=;
+	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References; b=dBbjzvSnsahCkEXJeuf148kceV8VvJRumUVWZZXNqK+wIPoP9H5S6Wt+Cn9slHsXuWKoT9/lthBVs/Pa4NXqAV5Yma1yYDeLvBh/r9Mtd4yebdvjFkuK2YixXWHmwDWC6hGboViiddLt6kZCU2DFYPHVYtMNu404JOVgsjt4jfA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oracle.com; spf=pass smtp.mailfrom=oracle.com; dkim=pass (2048-bit key) header.d=oracle.com header.i=@oracle.com header.b=asCozgal; arc=none smtp.client-ip=205.220.177.32
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oracle.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=oracle.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=oracle.com header.i=@oracle.com header.b="m88+K/XU"
+	dkim=pass (2048-bit key) header.d=oracle.com header.i=@oracle.com header.b="asCozgal"
 Received: from pps.filterd (m0246630.ppops.net [127.0.0.1])
-	by mx0b-00069f02.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 48OEQYb4012963;
-	Tue, 24 Sep 2024 15:05:41 GMT
+	by mx0b-00069f02.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 48OEQY0A012951;
+	Tue, 24 Sep 2024 15:05:42 GMT
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=
 	from:to:cc:subject:date:message-id:in-reply-to:references; s=
-	corp-2023-11-20; bh=MZl2nrWLAUfZ0een3hR1nHwPa0WKXP/ul6hBnoN6CzA=; b=
-	m88+K/XUfj+7r6WABcu3NqmTUFI5guZsmWknIGtydEZjBZsXjBJabnHVXPs9q2nt
-	jJSQ9d0P8NemVoiw9F24BENByfYdOi7juwgMHgevL49hkEcriDpN+vgIa0EweQxw
-	B+QknhvnobqN94hITjGix1zjuZFBLgpAAHFxkJiZY2RIo7lK37krmuBQXoWZ6Jsa
-	JpQ477NzSbZmXo/4aPlp0PX/z5lbFdNy8CijVr1neWcEENHW8f1RuMtQ0E9u80ev
-	c2aMS9KQ8z/eBqJSr+ySaIT0ENTLpTgX5JiYyekyQ0hcscXFIOvhlsy1Arkxp/8B
-	5/4qL/6hu00sK0xawCfZog==
+	corp-2023-11-20; bh=0b5ZPQfqR+1xmOQPKXudkQ7UT4a5P/veeG9P/O7+gD4=; b=
+	asCozgalcC2+FWc/h2n5Tcn2hyT4zLf2xA4yU3DHJ2FSpywCkeY7ohGgJtwCjlXu
+	AyXaTICO2m4mGdmS3CTktbX97qV9RNtj6dxUU/KJ45RIXZ9GY48q+FVi81fi+Hi6
+	PycHbWXvWNQO85oheD87PZ7BWGEMRg4u1XRnj60wKh6iFhXEjFhxv5qxh7eY4TTd
+	0F/mcZxl4ym+eaGdfT5R2lN/ksMTOGBb31dFNAY9QUTW3ykbIxzxM2LyLB02t2Vb
+	YgTf3Hvpar8rBJivxFsQ1Fql9ok5gb+M8N4XcRt8hXD15+97+AbC7xPiXmJ28Lws
+	68eStEWDjYwlbmExPrG75A==
 Received: from iadpaimrmta02.imrmtpd1.prodappiadaev1.oraclevcn.com (iadpaimrmta02.appoci.oracle.com [147.154.18.20])
-	by mx0b-00069f02.pphosted.com (PPS) with ESMTPS id 41smjd5826-1
+	by mx0b-00069f02.pphosted.com (PPS) with ESMTPS id 41smjd5828-1
 	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-	Tue, 24 Sep 2024 15:05:41 +0000 (GMT)
+	Tue, 24 Sep 2024 15:05:42 +0000 (GMT)
 Received: from pps.filterd (iadpaimrmta02.imrmtpd1.prodappiadaev1.oraclevcn.com [127.0.0.1])
-	by iadpaimrmta02.imrmtpd1.prodappiadaev1.oraclevcn.com (8.18.1.2/8.18.1.2) with ESMTP id 48OEHb2l005436;
-	Tue, 24 Sep 2024 15:05:40 GMT
+	by iadpaimrmta02.imrmtpd1.prodappiadaev1.oraclevcn.com (8.18.1.2/8.18.1.2) with ESMTP id 48OE2fC2004807;
+	Tue, 24 Sep 2024 15:05:41 GMT
 Received: from pps.reinject (localhost [127.0.0.1])
-	by iadpaimrmta02.imrmtpd1.prodappiadaev1.oraclevcn.com (PPS) with ESMTPS id 41smk9cr07-1
+	by iadpaimrmta02.imrmtpd1.prodappiadaev1.oraclevcn.com (PPS) with ESMTPS id 41smk9cr17-1
 	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-	Tue, 24 Sep 2024 15:05:40 +0000
+	Tue, 24 Sep 2024 15:05:41 +0000
 Received: from iadpaimrmta02.imrmtpd1.prodappiadaev1.oraclevcn.com (iadpaimrmta02.imrmtpd1.prodappiadaev1.oraclevcn.com [127.0.0.1])
-	by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 48OF5dLD027122;
-	Tue, 24 Sep 2024 15:05:40 GMT
+	by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 48OF5dLF027122;
+	Tue, 24 Sep 2024 15:05:41 GMT
 Received: from ca-dev63.us.oracle.com (ca-dev63.us.oracle.com [10.211.8.221])
-	by iadpaimrmta02.imrmtpd1.prodappiadaev1.oraclevcn.com (PPS) with ESMTP id 41smk9cqxg-2;
-	Tue, 24 Sep 2024 15:05:40 +0000
+	by iadpaimrmta02.imrmtpd1.prodappiadaev1.oraclevcn.com (PPS) with ESMTP id 41smk9cqxg-3;
+	Tue, 24 Sep 2024 15:05:41 +0000
 From: Steve Sistare <steven.sistare@oracle.com>
 To: iommu@lists.linux.dev
 Cc: Jason Gunthorpe <jgg@nvidia.com>, Kevin Tian <kevin.tian@intel.com>,
         Nicolin Chen <nicolinc@nvidia.com>,
         Steve Sistare <steven.sistare@oracle.com>
-Subject: [PATCH V2 1/9] iommufd: rename uptr in iopt_alloc_iova
-Date: Tue, 24 Sep 2024 08:05:30 -0700
-Message-Id: <1727190338-385692-2-git-send-email-steven.sistare@oracle.com>
+Subject: [PATCH V2 2/9] iommufd: generalize iopt_pages address
+Date: Tue, 24 Sep 2024 08:05:31 -0700
+Message-Id: <1727190338-385692-3-git-send-email-steven.sistare@oracle.com>
 X-Mailer: git-send-email 1.8.3.1
 In-Reply-To: <1727190338-385692-1-git-send-email-steven.sistare@oracle.com>
 References: <1727190338-385692-1-git-send-email-steven.sistare@oracle.com>
@@ -62,79 +62,208 @@ X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 adultscore=0 phis
  bulkscore=0 suspectscore=0 malwarescore=0 mlxscore=0 mlxlogscore=999
  classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2408220000
  definitions=main-2409240108
-X-Proofpoint-ORIG-GUID: r_EkPqD30thityEHR8fjGVOCh2RRFfjm
-X-Proofpoint-GUID: r_EkPqD30thityEHR8fjGVOCh2RRFfjm
+X-Proofpoint-ORIG-GUID: I2c8FxTV2MP00nNrqfl68Vizk841BVk5
+X-Proofpoint-GUID: I2c8FxTV2MP00nNrqfl68Vizk841BVk5
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 
-iopt_alloc_iova takes a uptr argument but only checks for its alignment.
-Generalize this to an unsigned address, which can be the offset from the
-start of a file in a subsequent patch.  No functional change.
+The starting address in iopt_pages is currently a __user *uptr.  Generalize
+to allow other types of addresses.  Refactor iopt_alloc_pages and
+iopt_map_user_pages into address-type specific and common functions.
 
+Suggested-by: Nicolin Chen <nicolinc@nvidia.com>
 Signed-off-by: Steve Sistare <steven.sistare@oracle.com>
 ---
- drivers/iommu/iommufd/io_pagetable.c | 17 ++++++++---------
- 1 file changed, 8 insertions(+), 9 deletions(-)
+ drivers/iommu/iommufd/io_pagetable.c | 60 +++++++++++++++++++++++-------------
+ drivers/iommu/iommufd/io_pagetable.h | 13 ++++++--
+ drivers/iommu/iommufd/pages.c        | 30 +++++++++++++-----
+ 3 files changed, 71 insertions(+), 32 deletions(-)
 
 diff --git a/drivers/iommu/iommufd/io_pagetable.c b/drivers/iommu/iommufd/io_pagetable.c
-index 05fd9d3..20e31e1 100644
+index 20e31e1..a0a66f1 100644
 --- a/drivers/iommu/iommufd/io_pagetable.c
 +++ b/drivers/iommu/iommufd/io_pagetable.c
-@@ -107,9 +107,9 @@ static bool __alloc_iova_check_used(struct interval_tree_span_iter *span,
-  * Does not return a 0 IOVA even if it is valid.
-  */
- static int iopt_alloc_iova(struct io_pagetable *iopt, unsigned long *iova,
--			   unsigned long uptr, unsigned long length)
-+			   unsigned long addr, unsigned long length)
+@@ -375,6 +375,38 @@ int iopt_map_pages(struct io_pagetable *iopt, struct list_head *pages_list,
+ 	return rc;
+ }
+ 
++static int iopt_map_common(struct iommufd_ctx *ictx,
++			   struct io_pagetable *iopt,
++			   struct iopt_pages *pages,
++			   unsigned long *iova,
++			   unsigned long length,
++			   unsigned long start_byte,
++			   int iommu_prot,
++			   unsigned int flags)
++{
++	struct iopt_pages_list elm = {};
++	LIST_HEAD(pages_list);
++	int rc;
++
++	elm.pages = pages;
++	elm.start_byte = start_byte;
++	if (ictx->account_mode == IOPT_PAGES_ACCOUNT_MM &&
++	    elm.pages->account_mode == IOPT_PAGES_ACCOUNT_USER)
++		elm.pages->account_mode = IOPT_PAGES_ACCOUNT_MM;
++	elm.length = length;
++	list_add(&elm.next, &pages_list);
++
++	rc = iopt_map_pages(iopt, &pages_list, length, iova, iommu_prot, flags);
++	if (rc) {
++		if (elm.area)
++			iopt_abort_area(elm.area);
++		if (elm.pages)
++			iopt_put_pages(elm.pages);
++		return rc;
++	}
++	return 0;
++}
++
+ /**
+  * iopt_map_user_pages() - Map a user VA to an iova in the io page table
+  * @ictx: iommufd_ctx the iopt is part of
+@@ -399,29 +431,15 @@ int iopt_map_user_pages(struct iommufd_ctx *ictx, struct io_pagetable *iopt,
+ 			unsigned long length, int iommu_prot,
+ 			unsigned int flags)
  {
--	unsigned long page_offset = uptr % PAGE_SIZE;
-+	unsigned long page_offset = addr % PAGE_SIZE;
- 	struct interval_tree_double_span_iter used_span;
- 	struct interval_tree_span_iter allowed_span;
- 	unsigned long iova_alignment;
-@@ -121,15 +121,15 @@ static int iopt_alloc_iova(struct io_pagetable *iopt, unsigned long *iova,
- 		return -EOVERFLOW;
+-	struct iopt_pages_list elm = {};
+-	LIST_HEAD(pages_list);
+-	int rc;
++	struct iopt_pages *pages;
+ 
+-	elm.pages = iopt_alloc_pages(uptr, length, iommu_prot & IOMMU_WRITE);
+-	if (IS_ERR(elm.pages))
+-		return PTR_ERR(elm.pages);
+-	if (ictx->account_mode == IOPT_PAGES_ACCOUNT_MM &&
+-	    elm.pages->account_mode == IOPT_PAGES_ACCOUNT_USER)
+-		elm.pages->account_mode = IOPT_PAGES_ACCOUNT_MM;
+-	elm.start_byte = uptr - elm.pages->uptr;
+-	elm.length = length;
+-	list_add(&elm.next, &pages_list);
++	pages = iopt_alloc_user_pages(uptr, length, iommu_prot & IOMMU_WRITE);
++	if (IS_ERR(pages))
++		return PTR_ERR(pages);
+ 
+-	rc = iopt_map_pages(iopt, &pages_list, length, iova, iommu_prot, flags);
+-	if (rc) {
+-		if (elm.area)
+-			iopt_abort_area(elm.area);
+-		if (elm.pages)
+-			iopt_put_pages(elm.pages);
+-		return rc;
+-	}
+-	return 0;
++	return iopt_map_common(ictx, iopt, pages, iova, length,
++			       uptr - pages->uptr,
++			       iommu_prot, flags);
+ }
+ 
+ struct iova_bitmap_fn_arg {
+diff --git a/drivers/iommu/iommufd/io_pagetable.h b/drivers/iommu/iommufd/io_pagetable.h
+index 0ec3509..7c4a338 100644
+--- a/drivers/iommu/iommufd/io_pagetable.h
++++ b/drivers/iommu/iommufd/io_pagetable.h
+@@ -175,6 +175,10 @@ enum {
+ 	IOPT_PAGES_ACCOUNT_MM = 2,
+ };
+ 
++enum iopt_address_type {
++	IOPT_ADDRESS_USER = 0,
++};
++
+ /*
+  * This holds a pinned page list for multiple areas of IO address space. The
+  * pages always originate from a linear chunk of userspace VA. Multiple
+@@ -195,7 +199,10 @@ struct iopt_pages {
+ 	struct task_struct *source_task;
+ 	struct mm_struct *source_mm;
+ 	struct user_struct *source_user;
+-	void __user *uptr;
++	enum iopt_address_type type;
++	union {
++		void __user *uptr;		/* IOPT_ADDRESS_USER */
++	};
+ 	bool writable:1;
+ 	u8 account_mode;
+ 
+@@ -206,8 +213,8 @@ struct iopt_pages {
+ 	struct rb_root_cached domains_itree;
+ };
+ 
+-struct iopt_pages *iopt_alloc_pages(void __user *uptr, unsigned long length,
+-				    bool writable);
++struct iopt_pages *iopt_alloc_user_pages(void __user *uptr,
++					 unsigned long length, bool writable);
+ void iopt_release_pages(struct kref *kref);
+ static inline void iopt_put_pages(struct iopt_pages *pages)
+ {
+diff --git a/drivers/iommu/iommufd/pages.c b/drivers/iommu/iommufd/pages.c
+index 117f644..69822d4 100644
+--- a/drivers/iommu/iommufd/pages.c
++++ b/drivers/iommu/iommufd/pages.c
+@@ -1139,11 +1139,11 @@ static int pfn_reader_first(struct pfn_reader *pfns, struct iopt_pages *pages,
+ 	return 0;
+ }
+ 
+-struct iopt_pages *iopt_alloc_pages(void __user *uptr, unsigned long length,
+-				    bool writable)
++static struct iopt_pages *iopt_alloc_pages(unsigned long length,
++					   unsigned long start_byte,
++					   bool writable)
+ {
+ 	struct iopt_pages *pages;
+-	unsigned long end;
  
  	/*
--	 * Keep alignment present in the uptr when building the IOVA, this
-+	 * Keep alignment present in addr when building the IOVA, which
- 	 * increases the chance we can map a THP.
- 	 */
--	if (!uptr)
-+	if (!addr)
- 		iova_alignment = roundup_pow_of_two(length);
- 	else
- 		iova_alignment = min_t(unsigned long,
- 				       roundup_pow_of_two(length),
--				       1UL << __ffs64(uptr));
-+				       1UL << __ffs64(addr));
+ 	 * The iommu API uses size_t as the length, and protect the DIV_ROUND_UP
+@@ -1152,9 +1152,6 @@ struct iopt_pages *iopt_alloc_pages(void __user *uptr, unsigned long length,
+ 	if (length > SIZE_MAX - PAGE_SIZE || length == 0)
+ 		return ERR_PTR(-EINVAL);
  
- 	if (iova_alignment < iopt->iova_alignment)
- 		return -EINVAL;
-@@ -240,7 +240,7 @@ static int iopt_alloc_area_pages(struct io_pagetable *iopt,
- 				 int iommu_prot, unsigned int flags)
+-	if (check_add_overflow((unsigned long)uptr, length, &end))
+-		return ERR_PTR(-EOVERFLOW);
+-
+ 	pages = kzalloc(sizeof(*pages), GFP_KERNEL_ACCOUNT);
+ 	if (!pages)
+ 		return ERR_PTR(-ENOMEM);
+@@ -1164,8 +1161,7 @@ struct iopt_pages *iopt_alloc_pages(void __user *uptr, unsigned long length,
+ 	mutex_init(&pages->mutex);
+ 	pages->source_mm = current->mm;
+ 	mmgrab(pages->source_mm);
+-	pages->uptr = (void __user *)ALIGN_DOWN((uintptr_t)uptr, PAGE_SIZE);
+-	pages->npages = DIV_ROUND_UP(length + (uptr - pages->uptr), PAGE_SIZE);
++	pages->npages = DIV_ROUND_UP(length + start_byte, PAGE_SIZE);
+ 	pages->access_itree = RB_ROOT_CACHED;
+ 	pages->domains_itree = RB_ROOT_CACHED;
+ 	pages->writable = writable;
+@@ -1179,6 +1175,24 @@ struct iopt_pages *iopt_alloc_pages(void __user *uptr, unsigned long length,
+ 	return pages;
+ }
+ 
++struct iopt_pages *iopt_alloc_user_pages(void __user *uptr,
++					 unsigned long length, bool writable)
++{
++	struct iopt_pages *pages;
++	unsigned long end;
++	void __user *uptr_down = (void __user *) ALIGN_DOWN((uintptr_t)uptr, PAGE_SIZE);
++
++	if (check_add_overflow((unsigned long)uptr, length, &end))
++		return ERR_PTR(-EOVERFLOW);
++
++	pages = iopt_alloc_pages(length, uptr - uptr_down, writable);
++	if (IS_ERR(pages))
++		return pages;
++	pages->uptr = uptr_down;
++	pages->type = IOPT_ADDRESS_USER;
++	return pages;
++}
++
+ void iopt_release_pages(struct kref *kref)
  {
- 	struct iopt_pages_list *elm;
--	unsigned long iova;
-+	unsigned long iova, start;
- 	int rc = 0;
- 
- 	list_for_each_entry(elm, pages_list, next) {
-@@ -259,9 +259,8 @@ static int iopt_alloc_area_pages(struct io_pagetable *iopt,
- 		/* Use the first entry to guess the ideal IOVA alignment */
- 		elm = list_first_entry(pages_list, struct iopt_pages_list,
- 				       next);
--		rc = iopt_alloc_iova(
--			iopt, dst_iova,
--			(uintptr_t)elm->pages->uptr + elm->start_byte, length);
-+		start = elm->start_byte + (uintptr_t)elm->pages->uptr;
-+		rc = iopt_alloc_iova(iopt, dst_iova, start, length);
- 		if (rc)
- 			goto out_unlock;
- 		if (IS_ENABLED(CONFIG_IOMMUFD_TEST) &&
+ 	struct iopt_pages *pages = container_of(kref, struct iopt_pages, kref);
 -- 
 1.8.3.1
 
