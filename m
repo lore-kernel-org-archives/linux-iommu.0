@@ -1,31 +1,48 @@
-Received: from szxga05-in.huawei.com (szxga05-in.huawei.com [45.249.212.191])
+Received: from mx0b-0031df01.pphosted.com (mx0b-0031df01.pphosted.com [205.220.180.131])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 155AD53363;
-	Tue, 24 Sep 2024 07:48:28 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=45.249.212.191
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 03A1114F9F7;
+	Tue, 24 Sep 2024 09:10:55 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.180.131
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1727164111; cv=none; b=BANCYoCdgcOl10Ad6BBse1rA56Jy+UvFSlYQqXhr9AtLit++McL+W05pEgv1JMLiAzAoOYycQuDk0U5XTpieUkNK3j61QxjuRoE2RrV+6XewHwhmTIHw3W5r+7w7fZ9OGVu+6s/tlRHmLdWQzv2J+bOcbKjJMNbpcUcBbk6eTBE=
+	t=1727169057; cv=none; b=mM9ZHTN+AhqUA6AV/r3gxitpkSTwTXrwo/q9NwRVQlVLCIGOijO3ZiJakz90jr8wt5/1ZxivOc79HxEhsxzemI9VgR//IdRAlfk048Tg4jljeu3rQaocSgDkpfQ591i7ZlJzF4E37EG2xeY1ovjYBqSUli1Q6HOAz9g3HStTMJg=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1727164111; c=relaxed/simple;
-	bh=CSwaPVNkAQ30B+hlvci2uTj9rmPm9lc0sX+C9imgF5s=;
+	s=arc-20240116; t=1727169057; c=relaxed/simple;
+	bh=cl6QxBEp6NbMB7XwMBpnznlpfAP8UEaKvAArML0poFw=;
 	h=Message-ID:Date:MIME-Version:Subject:To:CC:References:From:
-	 In-Reply-To:Content-Type; b=ryGFZ0qo9VDmiud3Uh9PNaj3EV9kkkeWhlRnO8KKUCPrIlagf8PpBFE2kUR48eOOJlHuYg5zfo6q3q4DAH7s2a7VsmVwDss6nDVpownawTHROt3FWMAe+pmv+qOX9fHYmJn+ntomucg10jS3D7jTqPhlK51SvV/n3EN7ZB/UCMk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=huawei.com; spf=pass smtp.mailfrom=huawei.com; arc=none smtp.client-ip=45.249.212.191
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=huawei.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=huawei.com
-Received: from mail.maildlp.com (unknown [172.19.88.214])
-	by szxga05-in.huawei.com (SkyGuard) with ESMTP id 4XCX5H6pvcz2QTxJ;
-	Tue, 24 Sep 2024 15:47:31 +0800 (CST)
-Received: from dggpemf200006.china.huawei.com (unknown [7.185.36.61])
-	by mail.maildlp.com (Postfix) with ESMTPS id A6BD31A016C;
-	Tue, 24 Sep 2024 15:48:17 +0800 (CST)
-Received: from [10.67.120.129] (10.67.120.129) by
- dggpemf200006.china.huawei.com (7.185.36.61) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.1544.11; Tue, 24 Sep 2024 15:48:17 +0800
-Message-ID: <64730d70-e5b7-4117-9ee8-43f23543eafd@huawei.com>
-Date: Tue, 24 Sep 2024 15:48:16 +0800
+	 In-Reply-To:Content-Type; b=QvzcnOKw2SSUuCklK34CtzBOJA1gKOB0TsdbyDX3UIXUuVMz468/VCEzOSgHsQevAN7dc4ckfb/FC1TYNkr2gPmx/66mqMwujyoBIWot8HM4Yz1d0UaLWbYKqVyKtmA8IoZw0r5oN2srMltBkcugUdZvhE1HAeTiSepiZfJHXr0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com; spf=pass smtp.mailfrom=quicinc.com; dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b=Oo+F5Ano; arc=none smtp.client-ip=205.220.180.131
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=quicinc.com
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b="Oo+F5Ano"
+Received: from pps.filterd (m0279869.ppops.net [127.0.0.1])
+	by mx0a-0031df01.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 48NMHrOZ007152;
+	Tue, 24 Sep 2024 09:10:41 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=quicinc.com; h=
+	cc:content-transfer-encoding:content-type:date:from:in-reply-to
+	:message-id:mime-version:references:subject:to; s=qcppdkim1; bh=
+	tyqDmuNItDIyc9GfGP2csWSUJF3TT4bqvFgUh0BiWf0=; b=Oo+F5AnorJcNi5Dc
+	fopQ+nDpFZBZIVHEhVz4LbwT41THcYEzKjjmJDnZHskcBbcRvYqRpt048i6M7AUc
+	v0RxN6TeLiPnwvhmUh/wgIT5TDal1U0Wdpf3KxFUNenu3EV/iNfLIq2F4cJD9gvv
+	FgAXEinZa8I+TJHYqF7volsY6/mLiTnDCPss8B7CsJHktQhQMjyWKUdpYeQ0YRzm
+	5psuLA1WX+U0FfC463zH34xnpNLOZREnP0c8bgUKIYsTOkbKR8LLAqx5RhjQJiGW
+	3iyRBnJNYbZuwwx7FhrAHblLNrSf9JjeHdw0Bv86tQK4zZPjOZvL+po6SzSCY6mq
+	C05Ksg==
+Received: from nalasppmta05.qualcomm.com (Global_NAT1.qualcomm.com [129.46.96.20])
+	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 41sn5bqyb7-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Tue, 24 Sep 2024 09:10:41 +0000 (GMT)
+Received: from nalasex01c.na.qualcomm.com (nalasex01c.na.qualcomm.com [10.47.97.35])
+	by NALASPPMTA05.qualcomm.com (8.18.1.2/8.18.1.2) with ESMTPS id 48O9AdTd032031
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Tue, 24 Sep 2024 09:10:39 GMT
+Received: from [10.214.227.50] (10.80.80.8) by nalasex01c.na.qualcomm.com
+ (10.47.97.35) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1544.9; Tue, 24 Sep
+ 2024 02:10:34 -0700
+Message-ID: <e96234cd-2278-4c06-9da5-f3fee90b8a53@quicinc.com>
+Date: Tue, 24 Sep 2024 14:40:21 +0530
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -33,100 +50,54 @@ List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH net 2/2] page_pool: fix IOMMU crash when driver has
- already unbound
-To: Gur Stavi <gur.stavi@huawei.com>
-CC: <akpm@linux-foundation.org>, <aleksander.lobakin@intel.com>,
-	<alexander.duyck@gmail.com>, <angelogioacchino.delregno@collabora.com>,
-	<anthony.l.nguyen@intel.com>, <ast@kernel.org>, <bpf@vger.kernel.org>,
-	<daniel@iogearbox.net>, <davem@davemloft.net>, <edumazet@google.com>,
-	<fanghaiqing@huawei.com>, <hawk@kernel.org>, <ilias.apalodimas@linaro.org>,
-	<imx@lists.linux.dev>, <intel-wired-lan@lists.osuosl.org>,
-	<iommu@lists.linux.dev>, <john.fastabend@gmail.com>, <kuba@kernel.org>,
-	<kvalo@kernel.org>, <leon@kernel.org>,
-	<linux-arm-kernel@lists.infradead.org>, <linux-kernel@vger.kernel.org>,
-	<linux-mediatek@lists.infradead.org>, <linux-mm@kvack.org>,
-	<linux-rdma@vger.kernel.org>, <linux-wireless@vger.kernel.org>,
-	<liuyonglong@huawei.com>, <lorenzo@kernel.org>, <matthias.bgg@gmail.com>,
-	<nbd@nbd.name>, <netdev@vger.kernel.org>, <pabeni@redhat.com>,
-	<przemyslaw.kitszel@intel.com>, <robin.murphy@arm.com>,
-	<ryder.lee@mediatek.com>, <saeedm@nvidia.com>, <sean.wang@mediatek.com>,
-	<shayne.chen@mediatek.com>, <shenwei.wang@nxp.com>, <tariqt@nvidia.com>,
-	<wei.fang@nxp.com>, <xiaoning.wang@nxp.com>, <zhangkun09@huawei.com>
-References: <2fb8d278-62e0-4a81-a537-8f601f61e81d@huawei.com>
- <20240924064559.1681488-1-gur.stavi@huawei.com>
+Subject: Re: [PATCH v15 4/5] iommu/arm-smmu: introduction of ACTLR for custom
+ prefetcher settings
+To: kernel test robot <lkp@intel.com>, <robdclark@gmail.com>,
+        <will@kernel.org>, <robin.murphy@arm.com>, <joro@8bytes.org>,
+        <jgg@ziepe.ca>, <jsnitsel@redhat.com>, <robh@kernel.org>,
+        <krzysztof.kozlowski@linaro.org>, <quic_c_gdjako@quicinc.com>,
+        <dmitry.baryshkov@linaro.org>
+CC: <oe-kbuild-all@lists.linux.dev>, <iommu@lists.linux.dev>,
+        <linux-arm-msm@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>, <linux-kernel@vger.kernel.org>
+References: <20240920155813.3434021-5-quic_bibekkum@quicinc.com>
+ <202409230343.Q8KnYl2w-lkp@intel.com>
 Content-Language: en-US
-From: Yunsheng Lin <linyunsheng@huawei.com>
-In-Reply-To: <20240924064559.1681488-1-gur.stavi@huawei.com>
-Content-Type: text/plain; charset="UTF-8"
+From: Bibek Kumar Patro <quic_bibekkum@quicinc.com>
+In-Reply-To: <202409230343.Q8KnYl2w-lkp@intel.com>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
 Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: dggems705-chm.china.huawei.com (10.3.19.182) To
- dggpemf200006.china.huawei.com (7.185.36.61)
+X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
+ nalasex01c.na.qualcomm.com (10.47.97.35)
+X-QCInternal: smtphost
+X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
+X-Proofpoint-ORIG-GUID: E1hNcWbfFYGKPqIgc0dVdRU9C7oDlNJ_
+X-Proofpoint-GUID: E1hNcWbfFYGKPqIgc0dVdRU9C7oDlNJ_
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.293,Aquarius:18.0.1039,Hydra:6.0.680,FMLib:17.12.60.29
+ definitions=2024-09-06_09,2024-09-06_01,2024-09-02_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 lowpriorityscore=0
+ suspectscore=0 adultscore=0 impostorscore=0 malwarescore=0 mlxlogscore=937
+ spamscore=0 mlxscore=0 priorityscore=1501 bulkscore=0 phishscore=0
+ clxscore=1011 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.19.0-2408220000 definitions=main-2409240063
 
-On 2024/9/24 14:45, Gur Stavi wrote:
->>>>> With all the caching in the network stack, some pages may be
->>>>> held in the network stack without returning to the page_pool
->>>>> soon enough, and with VF disable causing the driver unbound,
->>>>> the page_pool does not stop the driver from doing it's
->>>>> unbounding work, instead page_pool uses workqueue to check
->>>>> if there is some pages coming back from the network stack
->>>>> periodically, if there is any, it will do the dma unmmapping
->>>>> related cleanup work.
->>>>>
->>>>> As mentioned in [1], attempting DMA unmaps after the driver
->>>>> has already unbound may leak resources or at worst corrupt
->>>>> memory. Fundamentally, the page pool code cannot allow DMA
->>>>> mappings to outlive the driver they belong to.
->>>>>
->>>>> Currently it seems there are at least two cases that the page
->>>>> is not released fast enough causing dma unmmapping done after
->>>>> driver has already unbound:
->>>>> 1. ipv4 packet defragmentation timeout: this seems to cause
->>>>>    delay up to 30 secs:
->>>>>
->>>>> 2. skb_defer_free_flush(): this may cause infinite delay if
->>>>>    there is no triggering for net_rx_action().
->>>>>
->>>>> In order not to do the dma unmmapping after driver has already
->>>>> unbound and stall the unloading of the networking driver, add
->>>>> the pool->items array to record all the pages including the ones
->>>>> which are handed over to network stack, so the page_pool can
->>>>> do the dma unmmapping for those pages when page_pool_destroy()
->>>>> is called.
->>>>
->>>> So, I was thinking of a very similar idea. But what do you mean by
->>>> "all"? The pages that are still in caches (slow or fast) of the pool
->>>> will be unmapped during page_pool_destroy().
->>>
->>> Yes, it includes the one in pool->alloc and pool->ring.
->>
->> It worths mentioning that there is a semantics changing here:
->> Before this patch, there can be almost unlimited inflight pages used by
->> driver and network stack, as page_pool doesn't really track those pages.
->> After this patch, as we use a fixed-size pool->items array to track the
->> inflight pages, the inflight pages is limited by the pool->items, currently
->> the size of pool->items array is calculated as below in this patch:
->>
->> +#define PAGE_POOL_MIN_ITEM_CNT	512
->> +	unsigned int item_cnt = (params->pool_size ? : 1024) +
->> +				PP_ALLOC_CACHE_SIZE + PAGE_POOL_MIN_ITEM_CNT;
->>
->> Personally I would consider it is an advantage to limit how many pages which
->> are used by the driver and network stack, the problem seems to how to decide
->> the limited number of page used by network stack so that performance is not
->> impacted.
+
+
+On 9/23/2024 1:06 AM, kernel test robot wrote:
+> All warnings (new ones prefixed by >>):
 > 
-> In theory, with respect to the specific problem at hand, you only have
-> a limit on the number of mapped pages inflight. Once you reach this
-> limit you can unmap these old pages, forget about them and remember
-> new ones.
+>     In file included from drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c:14:
+>     drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c: In function 'qcom_smmu_set_actlr_dev':
+>>> drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c:266:59: warning: cast from pointer to integer of different size [-Wpointer-to-int-cast]
+>       266 |         arm_smmu_cb_write(smmu, cbndx, ARM_SMMU_CB_ACTLR, (u64)match->data);
+>           |                                                           ^
+>     drivers/iommu/arm/arm-smmu/arm-smmu.h:533:59: note: in definition of macro 'arm_smmu_cb_write'
+>       533 |         arm_smmu_writel((s), ARM_SMMU_CB((s), (n)), (o), (v))
+>           |
 
-Yes, it can be done theoretically.
-The tricky part seems to be how to handle the concurrency problem when
-we evict the old pages and the old pages are also returned back to the
-page_pool concurrently without any locking or lockless operation.
 
-For now each item has only one producer and one consumer, so we don't
-really have to worry about the concurrency problem before calling
-page_pool_item_uninit() in page_pool_destroy() to do the unmapping
-for the inflight pages by using a newly added 'destroy_lock' lock.
+I'll fix this warning in next revision after other reviews are received.
+
+regards,
+Bibek
