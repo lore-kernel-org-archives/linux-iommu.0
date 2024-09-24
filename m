@@ -1,41 +1,41 @@
 Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 603F519ADA6
-	for <iommu@lists.linux.dev>; Tue, 24 Sep 2024 10:32:11 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3523319B3DD
+	for <iommu@lists.linux.dev>; Tue, 24 Sep 2024 10:32:12 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=210.61.82.184
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1727173934; cv=none; b=caQERwiohMzWbPzIscYDEoIFPWi1NRNGgReFe205B4Czlg1Uye8zf2qD0X9nkM83sgguLD3tqPylx05woGO3M79b+dwN/NEOZZeMkPkeypNMKuoIWuQ2So8I6AUOalS3NnCkgXFgz0WnnHebHCkNVjzY4Er1vBxcMVC/YFVhdDk=
+	t=1727173934; cv=none; b=Ji5XLuXExYcAEkhUSzQIG/WvL1t42ClM/EpNfr1GhwDeud9SV6cENN9OYQcOExv3dZKxOT+gDDqgEVOKHtfEk4gwgr5cI5il527DGy1N+GxfYewZUIQbgQqf8Uv1pm/NHoD/0ywuQq2ESNwGqzTaomlJiIKfTgVNZscp0ieoc40=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
 	s=arc-20240116; t=1727173934; c=relaxed/simple;
-	bh=mxVO5E2wzoza9aozGwceZxMJa6iGe+g4SgzDXO3gkXo=;
+	bh=Irns9Gelwi5yRjyspkWdWAv06puhDn2KYzCPEmvWDLw=;
 	h=From:To:CC:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=AuGwE4khgyiRexXNrwPoT/uyjN3chIWVtTG7yb7onKoB3fJo0/bjqAQdX7BUwGD6GBWag63Jd84xR8teZVo3uvTR2FFmrVxqn3ypPGDjN1e61PL+OuP68LtTau4M+DlVrpxbffKGRZl2Qcv9rh+OHqoPrNDOefKnMZmvakk03f8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=mediatek.com; spf=pass smtp.mailfrom=mediatek.com; dkim=pass (1024-bit key) header.d=mediatek.com header.i=@mediatek.com header.b=EHR8K7ac; arc=none smtp.client-ip=210.61.82.184
+	 MIME-Version:Content-Type; b=SEj+LgO2mVGrKqCCHqHPOS5C7RkXvn0D+FR7z2UylsEZxE/ezrf2dMtD9jt6YwGKn+/fD3SE2Y40vX0TjWtC9Ccl+rMFXGotuLbC/ybBTbRbBgkMvHjHCv/b9BJRRPZhj/NqSkDPpeRbe5R5rhuqN+dL14dB/IWxiaW+JA6EP9Y=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=mediatek.com; spf=pass smtp.mailfrom=mediatek.com; dkim=pass (1024-bit key) header.d=mediatek.com header.i=@mediatek.com header.b=rXXw06Mz; arc=none smtp.client-ip=210.61.82.184
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=mediatek.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=mediatek.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=mediatek.com header.i=@mediatek.com header.b="EHR8K7ac"
-X-UUID: 3f958ef87a6011ef8b96093e013ec31c-20240924
+	dkim=pass (1024-bit key) header.d=mediatek.com header.i=@mediatek.com header.b="rXXw06Mz"
+X-UUID: 3f9b0ffe7a6011ef8b96093e013ec31c-20240924
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=mediatek.com; s=dk;
-	h=Content-Type:Content-Transfer-Encoding:MIME-Version:References:In-Reply-To:Message-ID:Date:Subject:CC:To:From; bh=mAyM0KsUrQn5kYjbZlC40aRnbg125gf/j0VqMjQTJ5g=;
-	b=EHR8K7acAa7NXk0MaPA3J5JxHphiCVVAgTx1x9xZyoGjBkwvrDUXuloBrDBUgQ8YVVK04zUoTyqa2FkPsLftlMAP486dVWy7nWcL62/W3VH19jl9WCOKfqhuoAkKO98Tc1pDMr47oIcrBQs7qgADeji6PpVU7ANypicHblUmJ4E=;
+	h=Content-Type:Content-Transfer-Encoding:MIME-Version:References:In-Reply-To:Message-ID:Date:Subject:CC:To:From; bh=WqMUkHibRFQJzxVRNs/YI4Ut6LjJ37Tr4E7dO4UTK5U=;
+	b=rXXw06MzgEnve7a2G0kNbpQd3kOGDYIXbRs3HLQsgGHSI80hykGIzcIneiLWk9DwBh+kiXCE3q2mJuRGdXWhA7k58WOObQ1XzFIg4O2mEpkjMW5WEb/yCiGaYXLZmzskQxUaeFzUQfa46oE+WIsU4Vc0J+FDEaHcBJm93wkJAfA=;
 X-CID-P-RULE: Release_Ham
-X-CID-O-INFO: VERSION:1.1.41,REQID:ca1d2907-db6a-44e0-b308-66e040f73e23,IP:0,U
+X-CID-O-INFO: VERSION:1.1.41,REQID:2a9f412b-e891-4962-b258-c5acfce7ffe8,IP:0,U
 	RL:0,TC:0,Content:0,EDM:0,RT:0,SF:0,FILE:0,BULK:0,RULE:Release_Ham,ACTION:
 	release,TS:0
-X-CID-META: VersionHash:6dc6a47,CLOUDID:2c847b9e-8e9a-4ac1-b510-390a86b53c0a,B
+X-CID-META: VersionHash:6dc6a47,CLOUDID:2d847b9e-8e9a-4ac1-b510-390a86b53c0a,B
 	ulkID:nil,BulkQuantity:0,Recheck:0,SF:102,TC:nil,Content:0,EDM:-3,IP:nil,U
 	RL:0,File:nil,RT:nil,Bulk:nil,QS:nil,BEC:nil,COL:0,OSI:0,OSA:0,AV:0,LES:1,
 	SPR:NO,DKR:0,DKP:0,BRR:0,BRE:0,ARC:0
 X-CID-BVR: 0
 X-CID-BAS: 0,_,0,_
 X-CID-FACTOR: TF_CID_SPAM_SNR
-X-UUID: 3f958ef87a6011ef8b96093e013ec31c-20240924
+X-UUID: 3f9b0ffe7a6011ef8b96093e013ec31c-20240924
 Received: from mtkmbs14n1.mediatek.inc [(172.21.101.75)] by mailgw02.mediatek.com
 	(envelope-from <macpaul.lin@mediatek.com>)
 	(Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
-	with ESMTP id 1277769090; Tue, 24 Sep 2024 18:32:07 +0800
+	with ESMTP id 1509937100; Tue, 24 Sep 2024 18:32:07 +0800
 Received: from mtkmbs11n2.mediatek.inc (172.21.101.187) by
  MTKMBS14N1.mediatek.inc (172.21.101.75) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
@@ -64,9 +64,9 @@ CC: Bear Wang <bear.wang@mediatek.com>, Pablo Sun <pablo.sun@mediatek.com>,
 	MediaTek Chromebook Upstream
 	<Project_Global_Chrome_Upstream_Group@mediatek.com>, Chen-Yu Tsai
 	<wenst@chromium.org>
-Subject: [PATCH 3/6] dt-bindings: display: mediatek: Fix clocks count constraint for new SoCs
-Date: Tue, 24 Sep 2024 18:31:53 +0800
-Message-ID: <20240924103156.13119-3-macpaul.lin@mediatek.com>
+Subject: [PATCH 4/6] arm64: dts: mediatek: mt8395-genio-1200-evk: Fix dtbs_check error for phy
+Date: Tue, 24 Sep 2024 18:31:54 +0800
+Message-ID: <20240924103156.13119-4-macpaul.lin@mediatek.com>
 X-Mailer: git-send-email 2.18.0
 In-Reply-To: <20240924103156.13119-1-macpaul.lin@mediatek.com>
 References: <20240924103156.13119-1-macpaul.lin@mediatek.com>
@@ -79,44 +79,43 @@ MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
 X-TM-AS-Product-Ver: SMEX-14.0.0.3152-9.1.1006-23728.005
-X-TM-AS-Result: No-10--4.531600-8.000000
-X-TMASE-MatchedRID: Wrb1MzA3JCo72d2F4DOSZIzb2GR6Ttd3sEf8CpnIYtnfUZT83lbkEDQz
-	47GqDWjpCmxAYbRsjBPSR2ouhnxhVR8TzIzimOwPC24oEZ6SpSmcfuxsiY4QFCmU1IJiwDkzYmm
-	AGY4XPwm8qqGul3EoMKl+jsxiwOcOKpyFGQ5bXGAK834sgRBBm34aK7DJzQRkPnRASFgM+BdjF2
-	WKXloe/vI2nuDg9d7QFezHPq6MHFSrV/xdKQcFSY0leYQxW8u2lExlQIQeRG0=
+X-TM-AS-Result: No-10--5.438800-8.000000
+X-TMASE-MatchedRID: EzeqGrx38DnwBTQ+XvV6VZdc7I2df+ms2D9FbDg9BP7HkH7uosEn7E/3
+	ZkXeY1OAsdosXJJWMVxc2EOZWhu2PoJrRWPc34Z+A9lly13c/gGL/KYnYVWDlJsoi2XrUn/Jn6K
+	dMrRsL14qtq5d3cxkNX0IQgVUelAtSSjjOiT/nEohOCA9g8Z/VG4DBjGd6CEytFKFEkw0fxM=
 X-TM-AS-User-Approved-Sender: No
 X-TM-AS-User-Blocked-Sender: No
-X-TMASE-Result: 10--4.531600-8.000000
+X-TMASE-Result: 10--5.438800-8.000000
 X-TMASE-Version: SMEX-14.0.0.3152-9.1.1006-23728.005
 X-TM-SNTS-SMTP:
-	0C3DC89B3AF622131E2ACB82100E884D37A19CC32BE1839B84DFE3C8C3744E1E2000:8
+	A59B566F2211A148FA8D553435D5BF7E7D13ED5B07B53F2AFF477E1B636851312000:8
 X-MTK: N
 
-The display node in mt8195.dtsi was triggering a CHECK_DTBS error due
-to an excessively long 'clocks' property:
-  display@14f06000: clocks: [[31, 14], [31, 43], [31, 44]] is too long
+The ethernet-phy node in mt8395-genio-1200-evk.dts was triggering a
+dtbs_check error. The error message was:
+  eth-phy0@1: $nodename:0: 'eth-phy0@1' does not match
+              '^ethernet-phy(@[a-f0-9]+)?$'
+Fix this issue by replacing 'eth-phy' node to generic 'ethernet-phy'.
 
-To resolve this issue, add "maxItems: 3" to the 'clocks' property in
-the DT schema.
-
-Fixes: 4ed545e7d100 ("dt-bindings: display: mediatek: disp: split each block to individual yaml")
+Fixes: f2b543a191b6 ("arm64: dts: mediatek: add device-tree for Genio 1200 EVK board")
 Signed-off-by: Macpaul Lin <macpaul.lin@mediatek.com>
 ---
- .../devicetree/bindings/display/mediatek/mediatek,split.yaml     | 1 +
- 1 file changed, 1 insertion(+)
+ arch/arm64/boot/dts/mediatek/mt8395-genio-1200-evk.dts | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/Documentation/devicetree/bindings/display/mediatek/mediatek,split.yaml b/Documentation/devicetree/bindings/display/mediatek/mediatek,split.yaml
-index e4affc854f3d..42d2d483cc29 100644
---- a/Documentation/devicetree/bindings/display/mediatek/mediatek,split.yaml
-+++ b/Documentation/devicetree/bindings/display/mediatek/mediatek,split.yaml
-@@ -57,6 +57,7 @@ properties:
-   clocks:
-     items:
-       - description: SPLIT Clock
-+    maxItems: 3
- 
- required:
-   - compatible
+diff --git a/arch/arm64/boot/dts/mediatek/mt8395-genio-1200-evk.dts b/arch/arm64/boot/dts/mediatek/mt8395-genio-1200-evk.dts
+index 1ef6262b65c9..b4b48eb93f3c 100644
+--- a/arch/arm64/boot/dts/mediatek/mt8395-genio-1200-evk.dts
++++ b/arch/arm64/boot/dts/mediatek/mt8395-genio-1200-evk.dts
+@@ -187,7 +187,7 @@ mdio {
+ 		compatible = "snps,dwmac-mdio";
+ 		#address-cells = <1>;
+ 		#size-cells = <0>;
+-		eth_phy0: eth-phy0@1 {
++		eth_phy0: ethernet-phy@1 {
+ 			compatible = "ethernet-phy-id001c.c916";
+ 			reg = <0x1>;
+ 		};
 -- 
 2.45.2
 
