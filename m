@@ -1,176 +1,267 @@
-Received: from NAM11-DM6-obe.outbound.protection.outlook.com (mail-dm6nam11on2083.outbound.protection.outlook.com [40.107.223.83])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.223.131])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AD60013342F;
-	Tue, 24 Sep 2024 12:07:41 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.223.83
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1727179664; cv=fail; b=VdoLoCWnTwsHQR+VwJA+WoJD7k5AoneMKulgykCGpHmxVQHy5OWggwNu9xR4ItLy/alHgADOnM9m7DMju6mYY34Hi/mU1rxx4N1/gIIxYuJetxX7DpRz5APQb0B7za54UlveaJrJD/h/hSEOvUpNbi6QWh4oovxCuC6Bfz6hydk=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1727179664; c=relaxed/simple;
-	bh=4/mtoymYQzJhy+yGtu6rH3tne3vgm2UfhlljFFvSSoo=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:Content-Type:
-	 Content-Disposition:In-Reply-To:MIME-Version; b=TSpUMrzI8cCWOwZji9kyFYPRuLg2qsF/EmHZQmaVQRiUqKn3Jo/Vf9ArWHd27M7C6ztidRtlCplJLInOkQvi9l4PmEqMzMocXjaDTWNCR0SrLGLOYH22ZjLjAwuA6SoPJkRneOOSyL8W8yoNDbZYvs5nC0qkbB57xjmRzEACgvs=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=dxb6ny+a; arc=fail smtp.client-ip=40.107.223.83
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6A599450EE
+	for <iommu@lists.linux.dev>; Tue, 24 Sep 2024 12:21:01 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=195.135.223.131
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1727180463; cv=none; b=Ka+TQbXjRmZbkHmzYsbr17NCaWFxVQWEY15+RGMAHjgpTAqjZPBCnnYZ4/yqATQ2x0ocu0SnQy8cb6PP8lwGjrxjBM0BiJoEFmPnMqBYGi8+3wYK+5oXsQXFjuI1eo37rWo3jBF5Mi7gT/bDUJls8rNjPLhikmn8jZEUKxexKB8=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1727180463; c=relaxed/simple;
+	bh=zTDcHn9JUDHRG4CApLI91U/iEllety/ixPPD4f+mdjE=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=tqHT1olv5Efn0DTmRte2IpHRLgO9SBz5e5O4ZgXNJ6mxK8XFZx8pH0totCp2L9QfrhLpi9Wa+z7mxdIJA53o0D1w0fprHLaDgUUpUp/NbjjpTYskqbLkse7RMsvjaWooWPUdGUKhTVZhQAG45FmKx3Ccdk0sJQJI76llO7V++Hg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=suse.de; spf=pass smtp.mailfrom=suse.de; dkim=pass (1024-bit key) header.d=suse.de header.i=@suse.de header.b=E6bejxMQ; dkim=permerror (0-bit key) header.d=suse.de header.i=@suse.de header.b=reJh85lX; dkim=pass (1024-bit key) header.d=suse.de header.i=@suse.de header.b=ZXMQbUXr; dkim=permerror (0-bit key) header.d=suse.de header.i=@suse.de header.b=aoY2/MUV; arc=none smtp.client-ip=195.135.223.131
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=suse.de
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=suse.de
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="dxb6ny+a"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=E8JN2y9fZO6EenHRP24TYWMssI6zvnZI1cqVsMwVSOUvIEc3/xUI4AI/3Yh1n3dVWZR4dYe15FFUQ3no2IOQhqybXYNgNJbnHsV4zL6ls7/Xk3hTxVClpoR5QN8DKYeU9klI5q/Rc0NzcRLd5dhdUbZ4CvFLWBXk5iCigKuEOgzZ5m+6GTQZWLfis6x4O9RT/ewKq26l78dcyXl6ud4TMcwsHhx4Ps9rpg9ZpkfrFxnKdLeImDuELNfAwgcaIuo654QcEcUQ2HJqsZxfviN05Abm4oiwNOJwF6b9icQDQSCjWUF92aFI020tmXbEPBR5mOEobcZ4JpBFGhlYdaamhA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=PDoFfHSW6IajwBEtxqfNFmLx8i525iSlsxg/Z45FzHQ=;
- b=Asc6X0uOkr7KGKbPiKRJDbUFghygCvgvHUbINmI+Ko0kcg/pIvVaCwXWyAUQmK1dhLTE9G1kv0sA7m6WlYj3EneKzPlB/wBNZQFhpAE7XXN+E8Rpjbh8Dgq4iX2AV8zozOkmxYQ89I3fjm8RqLvglKxMkZjSKjBOFxd8ysJsjLlug1xN6KtoBz5/kbhJjm0oM7bTmO6peNtc7YI3S/KyCG06TtEhatGJKJJDOckZBWz5x5CSxygdhYcD076WWIr+CU8f+V0H82229Zthj95Zu5UIkQIjyI1wSgPQCqDGjvtj11ewdPyKPW4bV+gpP9OuwKRhoGtPEg0exWzLHS0RCQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=PDoFfHSW6IajwBEtxqfNFmLx8i525iSlsxg/Z45FzHQ=;
- b=dxb6ny+aLNnv2bMVOif7+h1cX418ZPNHdNUObvUiDUHA4zhtAzyHWvq4OCnTtGFcyM38UXV7QX6fPALUK0E/E8GbyAw2bTH2rJKRiRKp1i/Ki1t7NeNXnGGXaLlE8IoDop2mIVRFqlreX3SuGf2+HoqkJxcEJOk1ZRP5fABnCYHZYfoWmtzZsmjIhcZEChez1fJnkDgt5aZ4fcaABjCG0Qu+mffEWGD+E//vqtdYkw4c31YB8OjiGuWIkIYMxH7yANuZjnrL/LFgY31bbd5HmUATrArgvLlj36WRZVwmhcKgSMbkDf3gPg0y3H17p2kwtl6CHcy/yIu/8Kz5snU8yQ==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-Received: from CH3PR12MB8659.namprd12.prod.outlook.com (2603:10b6:610:17c::13)
- by IA1PR12MB8466.namprd12.prod.outlook.com (2603:10b6:208:44b::7) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7982.25; Tue, 24 Sep
- 2024 12:07:36 +0000
-Received: from CH3PR12MB8659.namprd12.prod.outlook.com
- ([fe80::6eb6:7d37:7b4b:1732]) by CH3PR12MB8659.namprd12.prod.outlook.com
- ([fe80::6eb6:7d37:7b4b:1732%4]) with mapi id 15.20.7982.022; Tue, 24 Sep 2024
- 12:07:36 +0000
-Date: Tue, 24 Sep 2024 09:07:35 -0300
-From: Jason Gunthorpe <jgg@nvidia.com>
-To: "Tian, Kevin" <kevin.tian@intel.com>
-Cc: "Annapurve, Vishal" <vannapurve@google.com>,
-	Alexey Kardashevskiy <aik@amd.com>,
-	"kvm@vger.kernel.org" <kvm@vger.kernel.org>,
-	"iommu@lists.linux.dev" <iommu@lists.linux.dev>,
-	"linux-coco@lists.linux.dev" <linux-coco@lists.linux.dev>,
-	"linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>,
-	Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
-	Alex Williamson <alex.williamson@redhat.com>,
-	"Williams, Dan J" <dan.j.williams@intel.com>,
-	"pratikrajesh.sampat@amd.com" <pratikrajesh.sampat@amd.com>,
-	"michael.day@amd.com" <michael.day@amd.com>,
-	"david.kaplan@amd.com" <david.kaplan@amd.com>,
-	"dhaval.giani@amd.com" <dhaval.giani@amd.com>,
-	Santosh Shukla <santosh.shukla@amd.com>,
-	Tom Lendacky <thomas.lendacky@amd.com>,
-	Michael Roth <michael.roth@amd.com>, Alexander Graf <agraf@suse.de>,
-	Nikunj A Dadhania <nikunj@amd.com>,
-	Vasant Hegde <vasant.hegde@amd.com>, Lukas Wunner <lukas@wunner.de>
-Subject: Re: [RFC PATCH 12/21] KVM: IOMMUFD: MEMFD: Map private pages
-Message-ID: <20240924120735.GI9417@nvidia.com>
-References: <20240823132137.336874-1-aik@amd.com>
- <20240823132137.336874-13-aik@amd.com>
- <ZudMoBkGCi/dTKVo@nvidia.com>
- <CAGtprH8C4MQwVTFPBMbFWyW4BrK8-mDqjJn-UUFbFhw4w23f3A@mail.gmail.com>
- <BN9PR11MB527608E3B8B354502F22DFCA8C6F2@BN9PR11MB5276.namprd11.prod.outlook.com>
- <CAGtprH-bj_+1k-jwEVS9PcAmCOvo72Vec3VVKvL1te7T8R1ooQ@mail.gmail.com>
- <BL1PR11MB5271327169B23A60D66965F38C6F2@BL1PR11MB5271.namprd11.prod.outlook.com>
- <20240923160239.GD9417@nvidia.com>
- <BN9PR11MB527605EA6D4DB0C8A4D4AFD78C6F2@BN9PR11MB5276.namprd11.prod.outlook.com>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <BN9PR11MB527605EA6D4DB0C8A4D4AFD78C6F2@BN9PR11MB5276.namprd11.prod.outlook.com>
-X-ClientProxiedBy: BN9PR03CA0852.namprd03.prod.outlook.com
- (2603:10b6:408:13d::17) To CH3PR12MB8659.namprd12.prod.outlook.com
- (2603:10b6:610:17c::13)
+	dkim=pass (1024-bit key) header.d=suse.de header.i=@suse.de header.b="E6bejxMQ";
+	dkim=permerror (0-bit key) header.d=suse.de header.i=@suse.de header.b="reJh85lX";
+	dkim=pass (1024-bit key) header.d=suse.de header.i=@suse.de header.b="ZXMQbUXr";
+	dkim=permerror (0-bit key) header.d=suse.de header.i=@suse.de header.b="aoY2/MUV"
+Received: from imap1.dmz-prg2.suse.org (imap1.dmz-prg2.suse.org [IPv6:2a07:de40:b281:104:10:150:64:97])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+	(No client certificate requested)
+	by smtp-out2.suse.de (Postfix) with ESMTPS id 624271F792;
+	Tue, 24 Sep 2024 12:20:56 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
+	t=1727180457; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+	 mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding:
+	 in-reply-to:in-reply-to:references:references:autocrypt:autocrypt;
+	bh=/RdI90hqbd+U+GKYnDCuab+NMyzd7Sw92pEn9ihmru8=;
+	b=E6bejxMQd16DcVqoSdl0OPcMqUQUF7pPVKWlWHMT3n+Zy7hFSMQSO+ni4wSmDiP0NURdq4
+	Xz9lC8fVle+tw4JTUqbabURUxZV8GS0P7Ah8zpSR8CBLUb7KWvfOUiFGW/Kew3VwEzyvvK
+	ogViJ9UiHcDSxl8RVj99bU/ms1/jy8U=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
+	s=susede2_ed25519; t=1727180457;
+	h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+	 mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding:
+	 in-reply-to:in-reply-to:references:references:autocrypt:autocrypt;
+	bh=/RdI90hqbd+U+GKYnDCuab+NMyzd7Sw92pEn9ihmru8=;
+	b=reJh85lXZ9nL9RlLDKC/wy7MZYu5PH9Nss1Fa2IYwrTL1yridZLUcNL6u+6nHB2SZuY7Vx
+	jo1WawPUky91rcAQ==
+Authentication-Results: smtp-out2.suse.de;
+	dkim=pass header.d=suse.de header.s=susede2_rsa header.b=ZXMQbUXr;
+	dkim=pass header.d=suse.de header.s=susede2_ed25519 header.b="aoY2/MUV"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
+	t=1727180456; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+	 mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding:
+	 in-reply-to:in-reply-to:references:references:autocrypt:autocrypt;
+	bh=/RdI90hqbd+U+GKYnDCuab+NMyzd7Sw92pEn9ihmru8=;
+	b=ZXMQbUXrfx6iOJ7JdCNEP8q8y1jq1hja6NfeFhqQgJOLI2Wgmrs7q5ZdXz/QrCdrjvAMlG
+	XGTU7iflFqG4Shai+Jg9jJc3uls0gsbV+VzHeaeoQNqlfO/wStIVagnXz3mBy/J0+rl0/M
+	NlSNbk+4m16Vx0lCGxus6iwC/P3goTI=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
+	s=susede2_ed25519; t=1727180456;
+	h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+	 mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding:
+	 in-reply-to:in-reply-to:references:references:autocrypt:autocrypt;
+	bh=/RdI90hqbd+U+GKYnDCuab+NMyzd7Sw92pEn9ihmru8=;
+	b=aoY2/MUVKy6P8biYbvxCHUK/LggGaLEZDpuWI7RoTkfZYZLRlFtUDO6ATn88LGjrMC65u/
+	SpI5SyQGzgrF4eBg==
+Received: from imap1.dmz-prg2.suse.org (localhost [127.0.0.1])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+	(No client certificate requested)
+	by imap1.dmz-prg2.suse.org (Postfix) with ESMTPS id 0375F13AA8;
+	Tue, 24 Sep 2024 12:20:55 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([2a07:de40:b281:106:10:150:64:167])
+	by imap1.dmz-prg2.suse.org with ESMTPSA
+	id uKguO6eu8mbTQAAAD6G6ig
+	(envelope-from <tzimmermann@suse.de>); Tue, 24 Sep 2024 12:20:55 +0000
+Message-ID: <8eb45005-c6fb-4baa-a44a-243958a3a1ba@suse.de>
+Date: Tue, 24 Sep 2024 14:20:55 +0200
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: CH3PR12MB8659:EE_|IA1PR12MB8466:EE_
-X-MS-Office365-Filtering-Correlation-Id: a32ba90b-2ddc-4372-c8a9-08dcdc917a6a
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;ARA:13230040|366016|376014|7416014|1800799024;
-X-Microsoft-Antispam-Message-Info:
-	=?us-ascii?Q?OK9vrND0WbrM5jLm0EYG1+qHnCqs5M+ZuL+k2T9R2+z7rBDN5HrFv5eDBVsp?=
- =?us-ascii?Q?nHlBwbNn+7fZ7vTsxwmgxIelPSOw53HQE4ejaxG3UHF9CJU3ZWHYo3RfV9oy?=
- =?us-ascii?Q?Vv5byS5swrk7ATws3qt9Hf6Ciaxm2bEdSu11rOO1kIU0RcVjBy8q772J1pv+?=
- =?us-ascii?Q?7Zu+fThu5ZwWp/SVgCH0Bjz/eHLvrxz4uhq5+XAtxnDWq0kd/JqS1ZvmxOGN?=
- =?us-ascii?Q?2H/WWiKIJWjNvipaRaGsWcXds41ZKvRegHA12NAKi7ABC25NTXsooHN8p1F/?=
- =?us-ascii?Q?MatSjf+r8PaOinATAbW5Xfy91J80EBoibCNwr0gkcbmVz/l5G5sadGERsyiK?=
- =?us-ascii?Q?bYlfTpN3qoQsJ1eJCo17G0bMz9lVuFs7VaiiQvM+o3+gBeUwICFD1NsS3mo7?=
- =?us-ascii?Q?VTC5v8hAdFR6xi4s843njDKrL0wb2DVN4sknzleiiHOvfLuJ6M7WDpvuZRqQ?=
- =?us-ascii?Q?KZltmWylHD9QIp+xyaUtoIuK535BbrYDAArsx4QC5/vqURGidnWfzF0yYkl2?=
- =?us-ascii?Q?VT9x+uQfUTqpE4f7Yf8BcXkqAJxiKHjh6C8YPt4lQY+v8BT8XXt8/RZbs99L?=
- =?us-ascii?Q?6ODAvrN79ieCO5fURkHLv42dVAiCOtfCNJDHxnqNxKVUxEYfdOWsky04LGAZ?=
- =?us-ascii?Q?ryIBmKbC3N3t25vlaRMEr+KR8gFVI9KuAUzXEzyz9HXzQtQJx1LgRD5Ncyhm?=
- =?us-ascii?Q?2gc7Uf0oqleEkpydY8ApKxmRQl4cGSdX5v/aYqTqSVPn5FxrxINL/9AEpVNR?=
- =?us-ascii?Q?si/zfeH9mRhJ22kEJaDQ5MerPq419m3QxafaCTwSgZwG3G9ONgb7YZV6eugy?=
- =?us-ascii?Q?ayLFuBAOGYd9MIzEiwf/0/X8tyCenraJdvyE5d1WHdUboembnOXpBiZS6VtX?=
- =?us-ascii?Q?G0Ej0DHDDN9M4bZDHyeHBQgkGWFZmYtjHwr4spez2MmABT/0Ngt2+Gnl/nrb?=
- =?us-ascii?Q?HlpO2X065xDziaeIcUuLgbVlswzmTKnXGQilbLqQ5nq1P1F3NH9JHaLLyRO9?=
- =?us-ascii?Q?MbPIVqPTYQPCkkDuyJPEnfMwZVktBUkxXS8kV9QRnl6UMNHeXouEwTrbU/9W?=
- =?us-ascii?Q?x68LN93ojScuAcb8fEJLLBY5Pnfb1vIfycvRXab+h5TCpyHeGDBxpyZDZJEa?=
- =?us-ascii?Q?glfcDNIBUISy+8o2TU9JVjhzWWmXli+GCdbBEFfyurf5rp7GG2I5TD+1fyDX?=
- =?us-ascii?Q?Vwi+mQ1NO5AevVVgw8sdFXrlcbEhJ8gOktm29qAOxX/YNe5LLynlzPhaBlRI?=
- =?us-ascii?Q?sBAAAImnEjUa1M6Yeo5xvjdTYwQsBc2nKvfmDuTTnw=3D=3D?=
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CH3PR12MB8659.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(366016)(376014)(7416014)(1800799024);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?us-ascii?Q?gT5VBt0IKgJjos1n/WjZjCGRKM9MSRzOfNBhXmCVxdxvPAn+OyZtKDeLaZXc?=
- =?us-ascii?Q?XTlG4F754l6YoVF5OspoZQdukoZfCJYxmy11Sf6EIOb3wMTuBWHRRrVyWhcR?=
- =?us-ascii?Q?pARLUBf/3Yz7vp3Ip6gvJ5hVCmCTY39stef96N2A/LSpfM0Sjh4t0jLTqVx1?=
- =?us-ascii?Q?GWrhtY1T12568NOROWWVUxPKO4LjUcV2vCV1Fl7rQBrkLZ9VmnzXB5EcwVDM?=
- =?us-ascii?Q?+QprSo+9OwxbAmTA30nvVm+On5o5HbW1vi6I+QqiIbJUh1YaC7bk2O4ATjP2?=
- =?us-ascii?Q?MTX+j8t1bCjQGE0sUf8xBBPImPxScjpatxVKeW2ars+W1XUFYlXBHmOTb20y?=
- =?us-ascii?Q?VU6wAkIsaZQYT5ss65ZrX5bgKITpHD12zmPnPOWdgkNshh0AKgMr2BGcrv8Z?=
- =?us-ascii?Q?7bqVUzcUAXF7m9gExN2U3guxp9tyZWkzh+O8c49QyTwH3sDDc9BwvMNwE8FZ?=
- =?us-ascii?Q?/tlBYbdnhHRWzP3o/LjTgP4s8JvBAxe8XkT0u5xvht2GWJexUDE30RQJec1W?=
- =?us-ascii?Q?LPqCd2sma0Mp+cBUChrLGIpchtkZ4Mt//VHtSHygxDpgwR+1Twpz77Ou1sWq?=
- =?us-ascii?Q?e6U0lRXfDx42Jt3hDAP7sht1QobcmmQJtMPCZZtm8hiCv8N9fd4QfQiFpuLe?=
- =?us-ascii?Q?ctJ6hxNAUhxD9NkQ2pKMe5JOBkF311aM0BU5U+iPuyokFpaHInr+HdeKbp/d?=
- =?us-ascii?Q?5r4R/xR1ddrUO4CvEvAr2c3fbPdOUcnsqE47KRu3Y62P+rJEUipTcGqEcf9U?=
- =?us-ascii?Q?pDVn0mgMHWD4gEFNtOPTIENxQqneP0YHX5uUQbRkk5RxNL7YZmUo5wlEd8zU?=
- =?us-ascii?Q?mnBPNy+oTV+Gs2C2tahqPyOGzfNKX15TyIUnWeQ4FB3qHOAKwUC6X2gCEmE/?=
- =?us-ascii?Q?ErXeFmYf4wnnaFQvksDttGBdqzSo8Hj0CddYuJYeqjGk8DvBzo45+tS2mg1W?=
- =?us-ascii?Q?liYREAsPNnYWYClx2UPLVqZPZmB+P0MGY/ztYOxYS8/2Rd+R/2ddHccpHQdf?=
- =?us-ascii?Q?NvmLOjlbkm/SPVTnTkN44Fyh1lnRPQ8vW/a8U76zaeoDa+BxIrWl6RBcNiFT?=
- =?us-ascii?Q?GboUAKhdsA2orV8Ouk2cMI5r2+X+wgiXCk9aElX0WxzOHTxNdthTwr5Ng2Md?=
- =?us-ascii?Q?zfQHN1dmJENkHXFmGm8Jzg7bUT3uO56bYI+JS+Mcsw21k6dBJeJQSauz9XRK?=
- =?us-ascii?Q?XqVIFeL3ufzhcX4Wup/UVYpIUbLKO5ZUdKpi03JXBGE4GhZ5VovfeEJYBKdN?=
- =?us-ascii?Q?fGpXt+p2wRVY5GK256tLZRQ3crkksfByqET4LioHxt9gvD4MYhgUSrJnh+S1?=
- =?us-ascii?Q?OWsVr2+SlvnaNnzmU/LdDdC4xwW7Y+3Fec6M+lq2zc74kY02q3PBQo57G9GK?=
- =?us-ascii?Q?JnkYtiIUlB6KXNv0mzMg1CBViA+MI4vYdygP5rMh3jZs80sd6M+hR4L3n9sJ?=
- =?us-ascii?Q?NVoM0oxMEfHYB++XtVUI1K1n7PBM5ey2bkQ4pX8oAJZz8pQcusgWXRuymekU?=
- =?us-ascii?Q?X7/YLv/IWgbzBghYON0wcOJVObI1gA24KKA/LJvI6fb3f8p8TP+ktJ0QuZQh?=
- =?us-ascii?Q?s2bvrXvhh5z6oC5ax2E=3D?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: a32ba90b-2ddc-4372-c8a9-08dcdc917a6a
-X-MS-Exchange-CrossTenant-AuthSource: CH3PR12MB8659.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 24 Sep 2024 12:07:36.3719
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: C6Ibmr2NK8RUnFMEEebv1hBiDewDAiLCdHRIn5IQ+WhjCFALkbugxeyTxINwUlod
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: IA1PR12MB8466
+User-Agent: Mozilla Thunderbird
+Subject: Re: radeon ARUBA NULL pointer dereference
+To: Arthur Marsh <arthur.marsh@internode.on.net>
+Cc: Xinhui.Pan@amd.com, airlied@gmail.com, alexander.deucher@amd.com,
+ amd-gfx@lists.freedesktop.org, christian.koenig@amd.com, daniel@ffwll.ch,
+ dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org,
+ wuhoipok@gmail.com, iommu@lists.linux.dev,
+ the arch/x86 maintainers <x86@kernel.org>
+References: <20240919165641.4632-1-user@am64>
+ <20240924020824.6264-1-user@am64>
+Content-Language: en-US
+From: Thomas Zimmermann <tzimmermann@suse.de>
+Autocrypt: addr=tzimmermann@suse.de; keydata=
+ xsBNBFs50uABCADEHPidWt974CaxBVbrIBwqcq/WURinJ3+2WlIrKWspiP83vfZKaXhFYsdg
+ XH47fDVbPPj+d6tQrw5lPQCyqjwrCPYnq3WlIBnGPJ4/jreTL6V+qfKRDlGLWFjZcsrPJGE0
+ BeB5BbqP5erN1qylK9i3gPoQjXGhpBpQYwRrEyQyjuvk+Ev0K1Jc5tVDeJAuau3TGNgah4Yc
+ hdHm3bkPjz9EErV85RwvImQ1dptvx6s7xzwXTgGAsaYZsL8WCwDaTuqFa1d1jjlaxg6+tZsB
+ 9GluwvIhSezPgnEmimZDkGnZRRSFiGP8yjqTjjWuf0bSj5rUnTGiyLyRZRNGcXmu6hjlABEB
+ AAHNJ1Rob21hcyBaaW1tZXJtYW5uIDx0emltbWVybWFubkBzdXNlLmRlPsLAjgQTAQgAOAIb
+ AwULCQgHAgYVCgkICwIEFgIDAQIeAQIXgBYhBHIX+6yM6c9jRKFo5WgNwR1TC3ojBQJftODH
+ AAoJEGgNwR1TC3ojx1wH/0hKGWugiqDgLNXLRD/4TfHBEKmxIrmfu9Z5t7vwUKfwhFL6hqvo
+ lXPJJKQpQ2z8+X2vZm/slsLn7J1yjrOsoJhKABDi+3QWWSGkaGwRJAdPVVyJMfJRNNNIKwVb
+ U6B1BkX2XDKDGffF4TxlOpSQzdtNI/9gleOoUA8+jy8knnDYzjBNOZqLG2FuTdicBXblz0Mf
+ vg41gd9kCwYXDnD91rJU8tzylXv03E75NCaTxTM+FBXPmsAVYQ4GYhhgFt8S2UWMoaaABLDe
+ 7l5FdnLdDEcbmd8uLU2CaG4W2cLrUaI4jz2XbkcPQkqTQ3EB67hYkjiEE6Zy3ggOitiQGcqp
+ j//OwE0EWznS4AEIAMYmP4M/V+T5RY5at/g7rUdNsLhWv1APYrh9RQefODYHrNRHUE9eosYb
+ T6XMryR9hT8XlGOYRwKWwiQBoWSDiTMo/Xi29jUnn4BXfI2px2DTXwc22LKtLAgTRjP+qbU6
+ 3Y0xnQN29UGDbYgyyK51DW3H0If2a3JNsheAAK+Xc9baj0LGIc8T9uiEWHBnCH+RdhgATnWW
+ GKdDegUR5BkDfDg5O/FISymJBHx2Dyoklv5g4BzkgqTqwmaYzsl8UxZKvbaxq0zbehDda8lv
+ hFXodNFMAgTLJlLuDYOGLK2AwbrS3Sp0AEbkpdJBb44qVlGm5bApZouHeJ/+n+7r12+lqdsA
+ EQEAAcLAdgQYAQgAIAIbDBYhBHIX+6yM6c9jRKFo5WgNwR1TC3ojBQJftOH6AAoJEGgNwR1T
+ C3ojVSkIALpAPkIJPQoURPb1VWjh34l0HlglmYHvZszJWTXYwavHR8+k6Baa6H7ufXNQtThR
+ yIxJrQLW6rV5lm7TjhffEhxVCn37+cg0zZ3j7zIsSS0rx/aMwi6VhFJA5hfn3T0TtrijKP4A
+ SAQO9xD1Zk9/61JWk8OysuIh7MXkl0fxbRKWE93XeQBhIJHQfnc+YBLprdnxR446Sh8Wn/2D
+ Ya8cavuWf2zrB6cZurs048xe0UbSW5AOSo4V9M0jzYI4nZqTmPxYyXbm30Kvmz0rYVRaitYJ
+ 4kyYYMhuULvrJDMjZRvaNe52tkKAvMevcGdt38H4KSVXAylqyQOW5zvPc4/sq9c=
+In-Reply-To: <20240924020824.6264-1-user@am64>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Rspamd-Queue-Id: 624271F792
+X-Spam-Score: -6.51
+X-Rspamd-Action: no action
+X-Spamd-Result: default: False [-6.51 / 50.00];
+	BAYES_HAM(-3.00)[100.00%];
+	DWL_DNSWL_MED(-2.00)[suse.de:dkim];
+	NEURAL_HAM_LONG(-1.00)[-1.000];
+	R_DKIM_ALLOW(-0.20)[suse.de:s=susede2_rsa,suse.de:s=susede2_ed25519];
+	NEURAL_HAM_SHORT(-0.20)[-1.000];
+	MIME_GOOD(-0.10)[text/plain];
+	MX_GOOD(-0.01)[];
+	RCVD_TLS_ALL(0.00)[];
+	ARC_NA(0.00)[];
+	RCVD_VIA_SMTP_AUTH(0.00)[];
+	FREEMAIL_TO(0.00)[internode.on.net];
+	RCPT_COUNT_TWELVE(0.00)[12];
+	MIME_TRACE(0.00)[0:+];
+	FREEMAIL_ENVRCPT(0.00)[gmail.com,internode.on.net];
+	MID_RHS_MATCH_FROM(0.00)[];
+	FUZZY_BLOCKED(0.00)[rspamd.com];
+	FROM_EQ_ENVFROM(0.00)[];
+	FROM_HAS_DN(0.00)[];
+	FREEMAIL_CC(0.00)[amd.com,gmail.com,lists.freedesktop.org,ffwll.ch,vger.kernel.org,lists.linux.dev,kernel.org];
+	TO_DN_SOME(0.00)[];
+	RCVD_COUNT_TWO(0.00)[2];
+	TO_MATCH_ENVRCPT_ALL(0.00)[];
+	DBL_BLOCKED_OPENRESOLVER(0.00)[suse.de:mid,suse.de:dkim,bootlin.com:url,imap1.dmz-prg2.suse.org:rdns,imap1.dmz-prg2.suse.org:helo];
+	DKIM_SIGNED(0.00)[suse.de:s=susede2_rsa,suse.de:s=susede2_ed25519];
+	DKIM_TRACE(0.00)[suse.de:+]
+X-Rspamd-Server: rspamd1.dmz-prg2.suse.org
+X-Spam-Flag: NO
+X-Spam-Level: 
 
-On Mon, Sep 23, 2024 at 11:52:19PM +0000, Tian, Kevin wrote:
-> > IMHO we should try to do as best we can here, and the ideal interface
-> > would be a notifier to switch the shared/private pages in some portion
-> > of the guestmemfd. With the idea that iommufd could perhaps do it
-> > atomically.
-> 
-> yes atomic replacement is necessary here, as there might be in-fly
-> DMAs to pages adjacent to the one being converted in the same
-> 1G hunk. Unmap/remap could potentially break it.
+(cc: DMA and x86 folks)
 
-Yeah.. This integration is going to be much more complicated than I
-originally thought about. It will need the generic pt stuff as the
-hitless page table manipulations we are contemplating here are pretty
-complex.
+Hi
 
-Jason
+Am 24.09.24 um 04:08 schrieb Arthur Marsh:
+> Using current Linus git head kernel, I was able to save the dmesg output:
+>
+> [   17.218724] [drm] radeon kernel modesetting enabled.
+> [   17.218778] radeon 0000:00:01.0: vgaarb: deactivate vga console
+> [   17.219509] Console: switching to colour dummy device 80x25
+> [   17.219700] [drm] initializing kernel modesetting (ARUBA 0x1002:0x990C 0x1002:0x0123 0x00).
+> [   17.219773] ATOM BIOS: 113
+> [   17.219838] radeon 0000:00:01.0: VRAM: 768M 0x0000000000000000 - 0x000000002FFFFFFF (768M used)
+> [   17.219841] radeon 0000:00:01.0: GTT: 1024M 0x0000000030000000 - 0x000000006FFFFFFF
+> [   17.219844] [drm] Detected VRAM RAM=768M, BAR=256M
+> [   17.219845] [drm] RAM width 64bits DDR
+> [   17.219851] BUG: kernel NULL pointer dereference, address: 00000000000000a0
+
+This is 160 bytes behind NULL, which indicates a field within a struct.
+
+> [   17.219852] #PF: supervisor read access in kernel mode
+> [   17.219853] #PF: error_code(0x0000) - not-present page
+> [   17.219854] PGD 0 P4D 0
+> [   17.219856] Oops: Oops: 0000 [#1] PREEMPT_RT SMP NOPTI
+> [   17.219858] CPU: 0 UID: 0 PID: 451 Comm: udevd Not tainted 6.11.0+ #6121
+> [   17.219860] Hardware name: Gigabyte Technology Co., Ltd. To be filled by O.E.M./F2A78M-HD2, BIOS F2 05/28/2014
+> [   17.219862] RIP: 0010:dma_get_required_mask+0x11/0x50
+> [   17.219868] Code: 0f 1f 84 00 00 00 00 00 90 90 90 90 90 90 90 90 90 90 90 90 90 90 90 90 90 0f 1f 44 00 00 48 8b 87 68 02 00 00 48 85 c0 74 11 <48> 8b 80 a0 00 00 00 48 85 c0 74 1f e9 ee ed 94 00 f6 87 2c 03 00
+> [   17.219870] RSP: 0018:ffffa54bc13a7b00 EFLAGS: 00010202
+> [   17.219871] RAX: 0000000000000000 RBX: 000000ffffffffff RCX: 0000000000000000
+> [   17.219872] RDX: 0000000000000000 RSI: 0000000000000027 RDI: ffff976f44e720c8
+> [   17.219873] RBP: ffff976f44e720c8 R08: 00000000ffffefff R09: ffffffffab2aab08
+> [   17.219874] R10: 00000000fffff000 R11: 0000000000000002 R12: 0000000000000000
+> [   17.219875] R13: ffff976f48a4aa30 R14: 0000000000000000 R15: 0000000000000028
+> [   17.219876] FS:  00007f59a070d840(0000) GS:ffff97726f800000(0000) knlGS:0000000000000000
+> [   17.219878] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+> [   17.219879] CR2: 00000000000000a0 CR3: 00000001053b4000 CR4: 00000000000406f0
+> [   17.219880] Call Trace:
+> [   17.219881]  <TASK>
+> [   17.219882]  ? __die_body.cold+0x19/0x1e
+> [   17.219885]  ? page_fault_oops+0xa8/0x230
+> [   17.219889]  ? search_module_extables+0x4f/0x90
+> [   17.219891]  ? fixup_exception+0x36/0x2f0
+> [   17.219894]  ? exc_page_fault+0x88/0x1b0
+> [   17.219897]  ? asm_exc_page_fault+0x22/0x30
+> [   17.219900]  ? dma_get_required_mask+0x11/0x50
+
+This is not in the radeon driver but the DMA code. I'd say it's at [1], 
+as get_required_mask is 160 bytes within struct drm_map_ops. The call to 
+get_arch_dma_ops() probably returns NULL.
+
+Best regards
+Thomas
+
+[1] https://elixir.bootlin.com/linux/v6.11/source/kernel/dma/mapping.c#L523
+[2] 
+https://elixir.bootlin.com/linux/v6.11/source/include/linux/dma-map-ops.h#L98
+
+> [   17.219902]  dma_addressing_limited+0x6c/0xb0
+> [   17.219905]  radeon_ttm_init+0x3f/0x210 [radeon]
+> [   17.219977]  cayman_init+0x97/0x290 [radeon]
+> [   17.220057]  radeon_device_init+0x5e9/0xb40 [radeon]
+> [   17.220115]  radeon_driver_load_kms+0xb0/0x260 [radeon]
+> [   17.220174]  radeon_pci_probe+0xff/0x170 [radeon]
+> [   17.220231]  pci_device_probe+0xbe/0x1a0
+> [   17.220234]  really_probe+0xde/0x350
+> [   17.220237]  ? pm_runtime_barrier+0x61/0xb0
+> [   17.220240]  ? __pfx___driver_attach+0x10/0x10
+> [   17.220242]  __driver_probe_device+0x78/0x110
+> [   17.220245]  driver_probe_device+0x2d/0xc0
+> [   17.220247]  __driver_attach+0xc9/0x1c0
+> [   17.220249]  bus_for_each_dev+0x6a/0xb0
+> [   17.220251]  ? migrate_enable+0xbf/0xf0
+> [   17.220254]  bus_add_driver+0x139/0x220
+> [   17.220256]  driver_register+0x6e/0xc0
+> [   17.220258]  ? __pfx_radeon_module_init+0x10/0x10 [radeon]
+> [   17.220315]  do_one_initcall+0x42/0x210
+> [   17.220318]  ? __kmalloc_cache_noprof+0x89/0x230
+> [   17.220321]  do_init_module+0x60/0x210
+> [   17.220324]  init_module_from_file+0x89/0xc0
+> [   17.220326]  __x64_sys_finit_module+0x142/0x390
+> [   17.220329]  do_syscall_64+0x47/0x110
+> [   17.220331]  entry_SYSCALL_64_after_hwframe+0x76/0x7e
+> [   17.220334] RIP: 0033:0x7f59a0625279
+> [   17.220336] Code: ff c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 44 00 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 8b 0d 77 6b 0d 00 f7 d8 64 89 01 48
+> [   17.220337] RSP: 002b:00007ffd15ee7df8 EFLAGS: 00000246 ORIG_RAX: 0000000000000139
+> [   17.220339] RAX: ffffffffffffffda RBX: 00005578ae660840 RCX: 00007f59a0625279
+> [   17.220340] RDX: 0000000000000000 RSI: 00005578ae677fc0 RDI: 0000000000000011
+> [   17.220341] RBP: 0000000000000000 R08: 00007f59a06fcb20 R09: 00005578ae640550
+> [   17.220342] R10: 0000000000000040 R11: 0000000000000246 R12: 00005578ae677fc0
+> [   17.220342] R13: 0000000000020000 R14: 00005578ae651750 R15: 0000000000000000
+> [   17.220344]  </TASK>
+> [   17.220345] Modules linked in: radeon(+) snd_hda_codec_hdmi snd_seq_midi snd_seq_midi_event snd_seq snd_hda_intel snd_intel_dspcfg snd_emu10k1 snd_hda_codec drm_ttm_helper ttm snd_util_mem drm_suballoc_helper snd_ac97_codec snd_hda_core drm_display_helper ac97_bus snd_rawmidi snd_hwdep snd_seq_device snd_pcm drm_kms_helper edac_mce_amd sha512_ssse3 sha512_generic k10temp sha256_ssse3 sha1_ssse3 drm aesni_intel snd_timer gf128mul crypto_simd cryptd acpi_cpufreq evdev pcspkr serio_raw emu10k1_gp gameport at24 regmap_i2c i2c_algo_bit snd video soundcore wmi button sp5100_tco ext4 crc32c_generic crc16 mbcache jbd2 uas usb_storage hid_generic usbhid hid sg sr_mod sd_mod cdrom ata_generic firewire_ohci crc32_pclmul crc32c_intel firewire_core crc_itu_t pata_atiixp i2c_piix4 i2c_smbus ahci r8169 libahci xhci_pci ohci_pci realtek libata mdio_devres ehci_pci ohci_hcd xhci_hcd scsi_mod ehci_hcd scsi_common usbcore libphy usb_common
+> [   17.220388] CR2: 00000000000000a0
+> [   17.220390] ---[ end trace 0000000000000000 ]---
+>
+> Happy to provide additional information and run tests.
+>
+> Regards,
+>
+> Arthur Marsh.
+
+-- 
+--
+Thomas Zimmermann
+Graphics Driver Developer
+SUSE Software Solutions Germany GmbH
+Frankenstrasse 146, 90461 Nuernberg, Germany
+GF: Ivo Totev, Andrew Myers, Andrew McDonald, Boudien Moerman
+HRB 36809 (AG Nuernberg)
+
