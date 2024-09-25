@@ -1,46 +1,48 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B342D1B78F3;
-	Wed, 25 Sep 2024 11:42:29 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DEAE218CC08;
+	Wed, 25 Sep 2024 11:42:36 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1727264549; cv=none; b=siIfoE7YOLvTmIFBYFkNZV6f2ZT5cPkQknY7L6DfNbGdilg/a3L9aYuvgAMFunSvFtzN3dZL3V25lUEqaNqtUSG4M15zgXR2tbF24IefA/KCA9BCYZ4GA83Q9fWsHfazkwtx2NvFKAobLf6FVZjl6nOdL9wCg4RhG1N3HIIqmLQ=
+	t=1727264557; cv=none; b=fZjsTFl1TDifQDpfn1u56Wxp53awnvBty/piIqnY4wREKNbwFNnxrtKVNIGLNTjZL1mSjPlkLxZ5vZR40IsPAbOKl6O/jamJ+j0tsikkG2OxAtk4ZQ0F6oIOcPDVamZY3WjIoR1C2E0fbMfc7LUROqOVw92TnYg6QP4zwLrwrD0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1727264549; c=relaxed/simple;
-	bh=k4M4oCPrSASF+1TmGgx+cteJbKnwOS1p/HkflnkblY0=;
+	s=arc-20240116; t=1727264557; c=relaxed/simple;
+	bh=Shmt3mKVkE0PXK6LCkHXSwdxI7U+P22ERvevjRpPH8Q=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=bRj711dU1xSu7EJILWZu0aXhxis4OXekeKrLfELjiiS3wEAxNXj4vxx/DivQW0nGlno1k9PWhCnCEp7oxXIwFF9TFh/vNhSkf9VkHyDAg5ut5ogQbIid+bxocYWTIEiFmGjiGo620FaDwPXaeeL4noyoO5slP1P6UP4ijfwQjVg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=cW6yb2Pw; arc=none smtp.client-ip=10.30.226.201
+	 MIME-Version:Content-Type; b=OVyU+1EzIhJYcXFZMhtFFF8YV6tU/mGgrrrIIXZnuzchS6uQq/FWNscMexDzhMb5UtQ/TDfxmFDG4I+nTlSB5Oz09W9P97cRpUKHU5e/35ny/96o2KTrFaVASIi9iPyrGJ6bT6XaGmikzPcDI/jv0LfLkyn3x+olBxcJexPBn+g=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=dBi/Ve75; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="cW6yb2Pw"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 429C5C4CEC3;
-	Wed, 25 Sep 2024 11:42:28 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="dBi/Ve75"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 368A5C4CEC3;
+	Wed, 25 Sep 2024 11:42:35 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1727264549;
-	bh=k4M4oCPrSASF+1TmGgx+cteJbKnwOS1p/HkflnkblY0=;
+	s=k20201202; t=1727264556;
+	bh=Shmt3mKVkE0PXK6LCkHXSwdxI7U+P22ERvevjRpPH8Q=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-	b=cW6yb2PwyRCywxr0kyhm2lWNCBEuxQjkxA5hVREKgJT7xwgejDKlG8JdK5dEVwj1W
-	 s9AEHCq9yIoSTiyRBmcQJb56TvcbcDdq+w3phXNtYuG7UWWiHxuaCrYlyEBPyAhiRj
-	 M0laWb+BPS+Qsr1EDALY5dEQsSUBGKTyzUrbliJQ6dizMzfwGyPlRIt2CO33N9G10Q
-	 PG4jFam+AMg507RtHcJMda1vbaSu8U9g+1nEv19eP7tfYb/A7t4GOrG7RLXiLoY68r
-	 pprrQ4PjErOlT5tNifzAXkP75dof5lJ1dCNfC+ykSNx5TPWiHY8Zc23jW5pkvg3T+U
-	 Qm7N2eLRem9eQ==
+	b=dBi/Ve758p9HdawGAXSWJZ1ku3iYEP/HoxEMDB/7BwyLua7dv3W1drj1DZFOhLaTw
+	 hH2De0JpylmN4Xu+WLvSVwWvCqp9kB5vqpZWvdxxZPG35NHrwAEcwGLrAwaezB3QSM
+	 y8qHGnrivSn6rEJ4AcWKPQlfsUvtsZiQszs3fyRRGp016IPTsAM2Z/8mdJuPVu9znR
+	 a9UGZkW9fhb6Vrwajqm/JTM6UdUtUyprsszmfVH8Y568iBqXcKXYwOwVN20uR/Bt67
+	 iw5ZMwMDnCwJwmP2gbIa04r6nwilU+HFsOM7Ll4jiLmmy7hW67sSOLOFjX1iiU8ezs
+	 EGnUTmQPSJfzA==
 From: Sasha Levin <sashal@kernel.org>
 To: linux-kernel@vger.kernel.org,
 	stable@vger.kernel.org
-Cc: Konrad Dybcio <konrad.dybcio@linaro.org>,
-	Sumit Semwal <sumit.semwal@linaro.org>,
+Cc: Mostafa Saleh <smostafa@google.com>,
 	Will Deacon <will@kernel.org>,
 	Sasha Levin <sashal@kernel.org>,
-	robdclark@gmail.com,
 	joro@8bytes.org,
-	iommu@lists.linux.dev,
-	linux-arm-msm@vger.kernel.org,
-	linux-arm-kernel@lists.infradead.org
-Subject: [PATCH AUTOSEL 6.11 121/244] iommu/arm-smmu-qcom: Work around SDM845 Adreno SMMU w/ 16K pages
-Date: Wed, 25 Sep 2024 07:25:42 -0400
-Message-ID: <20240925113641.1297102-121-sashal@kernel.org>
+	jgg@ziepe.ca,
+	nicolinc@nvidia.com,
+	mshavit@google.com,
+	baolu.lu@linux.intel.com,
+	jsnitsel@redhat.com,
+	linux-arm-kernel@lists.infradead.org,
+	iommu@lists.linux.dev
+Subject: [PATCH AUTOSEL 6.11 123/244] iommu/arm-smmu-v3: Match Stall behaviour for S2
+Date: Wed, 25 Sep 2024 07:25:44 -0400
+Message-ID: <20240925113641.1297102-123-sashal@kernel.org>
 X-Mailer: git-send-email 2.43.0
 In-Reply-To: <20240925113641.1297102-1-sashal@kernel.org>
 References: <20240925113641.1297102-1-sashal@kernel.org>
@@ -50,72 +52,94 @@ List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 X-stable: review
 X-Patchwork-Hint: Ignore
 X-stable-base: Linux 6.11
 Content-Transfer-Encoding: 8bit
 
-From: Konrad Dybcio <konrad.dybcio@linaro.org>
+From: Mostafa Saleh <smostafa@google.com>
 
-[ Upstream commit 2d42d3ba443706c9164fa0bef4e5fd1c36bc1bd9 ]
+[ Upstream commit ce7cb08e22e09f43649b025c849a3ae3b80833c4 ]
 
-SDM845's Adreno SMMU is unique in that it actually advertizes support
-for 16K (and 32M) pages, which doesn't hold for newer SoCs.
+According to the spec (ARM IHI 0070 F.b), in
+"5.5 Fault configuration (A, R, S bits)":
+    A STE with stage 2 translation enabled and STE.S2S == 0 is
+    considered ILLEGAL if SMMU_IDR0.STALL_MODEL == 0b10.
 
-This however, seems either broken in the hardware implementation, the
-hypervisor middleware that abstracts the SMMU, or there's a bug in the
-Linux kernel somewhere down the line that nobody managed to track down.
+Also described in the pseudocode “SteIllegal()”
+    if STE.Config == '11x' then
+        [..]
+        if eff_idr0_stall_model == '10' && STE.S2S == '0' then
+            // stall_model forcing stall, but S2S == 0
+            return TRUE;
 
-Booting SDM845 with 16K page sizes and drm/msm results in:
+Which means, S2S must be set when stall model is
+"ARM_SMMU_FEAT_STALL_FORCE", but currently the driver ignores that.
 
-*** gpu fault: ttbr0=0000000000000000 iova=000100000000c000 dir=READ
-type=TRANSLATION source=CP (0,0,0,0)
+Although, the driver can do the minimum and only set S2S for
+“ARM_SMMU_FEAT_STALL_FORCE”, it is more consistent to match S1
+behaviour, which also sets it for “ARM_SMMU_FEAT_STALL” if the
+master has requested stalls.
 
-right after loading the firmware. The GPU then starts spitting out
-illegal intstruction errors, as it's quite obvious that it got a
-bogus pointer.
+Also, since S2 stalls are enabled now, report them to the IOMMU layer
+and for VFIO devices it will fail anyway as VFIO doesn’t register an
+iopf handler.
 
-Moreover, it seems like this issue also concerns other implementations
-of SMMUv2 on Qualcomm SoCs, such as the one on SC7180.
-
-Hide 16K support on such instances to work around this.
-
-Reported-by: Sumit Semwal <sumit.semwal@linaro.org>
-Signed-off-by: Konrad Dybcio <konrad.dybcio@linaro.org>
-Link: https://lore.kernel.org/r/20240824-topic-845_gpu_smmu-v2-1-a302b8acc052@quicinc.com
+Signed-off-by: Mostafa Saleh <smostafa@google.com>
+Link: https://lore.kernel.org/r/20240830110349.797399-2-smostafa@google.com
 Signed-off-by: Will Deacon <will@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c | 9 +++++++++
- 1 file changed, 9 insertions(+)
+ drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 8 +++-----
+ drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h | 1 +
+ 2 files changed, 4 insertions(+), 5 deletions(-)
 
-diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
-index b981ff25a983d..087fb4f6f4d3d 100644
---- a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
-+++ b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
-@@ -345,6 +345,14 @@ static int qcom_smmu_cfg_probe(struct arm_smmu_device *smmu)
- 	return 0;
- }
+diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+index ed2b106e02dd1..a7d2a6b8a4980 100644
+--- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
++++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+@@ -1012,7 +1012,8 @@ void arm_smmu_get_ste_used(const __le64 *ent, __le64 *used_bits)
+ 		used_bits[2] |=
+ 			cpu_to_le64(STRTAB_STE_2_S2VMID | STRTAB_STE_2_VTCR |
+ 				    STRTAB_STE_2_S2AA64 | STRTAB_STE_2_S2ENDI |
+-				    STRTAB_STE_2_S2PTW | STRTAB_STE_2_S2R);
++				    STRTAB_STE_2_S2PTW | STRTAB_STE_2_S2S |
++				    STRTAB_STE_2_S2R);
+ 		used_bits[3] |= cpu_to_le64(STRTAB_STE_3_S2TTB_MASK);
+ 	}
  
-+static int qcom_adreno_smmuv2_cfg_probe(struct arm_smmu_device *smmu)
-+{
-+	/* Support for 16K pages is advertised on some SoCs, but it doesn't seem to work */
-+	smmu->features &= ~ARM_SMMU_FEAT_FMT_AARCH64_16K;
-+
-+	return 0;
-+}
-+
- static void qcom_smmu_write_s2cr(struct arm_smmu_device *smmu, int idx)
- {
- 	struct arm_smmu_s2cr *s2cr = smmu->s2crs + idx;
-@@ -443,6 +451,7 @@ static const struct arm_smmu_impl sdm845_smmu_500_impl = {
+@@ -1646,6 +1647,7 @@ void arm_smmu_make_s2_domain_ste(struct arm_smmu_ste *target,
+ 		STRTAB_STE_2_S2ENDI |
+ #endif
+ 		STRTAB_STE_2_S2PTW |
++		(master->stall_enabled ? STRTAB_STE_2_S2S : 0) |
+ 		STRTAB_STE_2_S2R);
  
- static const struct arm_smmu_impl qcom_adreno_smmu_v2_impl = {
- 	.init_context = qcom_adreno_smmu_init_context,
-+	.cfg_probe = qcom_adreno_smmuv2_cfg_probe,
- 	.def_domain_type = qcom_smmu_def_domain_type,
- 	.alloc_context_bank = qcom_adreno_smmu_alloc_context_bank,
- 	.write_sctlr = qcom_adreno_smmu_write_sctlr,
+ 	target->data[3] = cpu_to_le64(pgtbl_cfg->arm_lpae_s2_cfg.vttbr &
+@@ -1739,10 +1741,6 @@ static int arm_smmu_handle_evt(struct arm_smmu_device *smmu, u64 *evt)
+ 		return -EOPNOTSUPP;
+ 	}
+ 
+-	/* Stage-2 is always pinned at the moment */
+-	if (evt[1] & EVTQ_1_S2)
+-		return -EFAULT;
+-
+ 	if (!(evt[1] & EVTQ_1_STALL))
+ 		return -EOPNOTSUPP;
+ 
+diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
+index 14bca41a981b4..0dc7ad43c64c0 100644
+--- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
++++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
+@@ -267,6 +267,7 @@ struct arm_smmu_ste {
+ #define STRTAB_STE_2_S2AA64		(1UL << 51)
+ #define STRTAB_STE_2_S2ENDI		(1UL << 52)
+ #define STRTAB_STE_2_S2PTW		(1UL << 54)
++#define STRTAB_STE_2_S2S		(1UL << 57)
+ #define STRTAB_STE_2_S2R		(1UL << 58)
+ 
+ #define STRTAB_STE_3_S2TTB_MASK		GENMASK_ULL(51, 4)
 -- 
 2.43.0
 
