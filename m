@@ -1,51 +1,50 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3FACE1E5022;
-	Wed, 25 Sep 2024 12:03:44 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C03E722169A;
+	Wed, 25 Sep 2024 12:15:09 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1727265824; cv=none; b=QBeL7j0Am6tvRjLOzBzU8xBRzdadFFisAMTGIrzFox+h1oTw1/nP7tATCC2uWvoJDsclKmnK3cJi6gJ5nnQ6VJhcJSc1DiAIe+efXC8eCJ1AJpnvThjr37xSDzQsSnnb35BQE81HCSHncV1Zhiv0MCih96iSzAhHg8A1Lcv7aWk=
+	t=1727266510; cv=none; b=WGoDFjAKBOvwSuvpHoN/HVrU2DRW3Ou8cfdNCEpe6GeDTS5XRJkUnva0q46Cc1YAlMElW/aA8yDlnCDmiQN9OMr95WiGgrT/t6Od1ALWmWmY7KufHyaICcLlsjnMDPey4QU5pRaazucyA4nm/E/biL33EcOYmvWZrJHzNdOjeEg=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1727265824; c=relaxed/simple;
-	bh=4bJ6Ecsr8hDmAVBWVoFuMy8iGnOIvzJGiuRfklYVu5c=;
+	s=arc-20240116; t=1727266510; c=relaxed/simple;
+	bh=RjfI/WLDaDkKY3bNpnRvp6mIPeVCIol/nkLfahx/6R8=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=fmAje8nXl7xMBt67xHqNisE/iNgug51RlzOWMFfAqFaZMvXwxy+dr2fqNWJO2DHQ29iUjhCeYjmPSLbdkVbkStJXa5pHRVuH/4c7ZJkhcNZXhvfMtwR/N/IF69w25A9qP2yUrp//NY5U0NUJqXVyfzUxntADwbR03bLRh6hzHaI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=As4GbYOD; arc=none smtp.client-ip=10.30.226.201
+	 MIME-Version; b=bMrJ3fgBqHBTU10G/cUCFxDm9kBi+a85ChmLDGz6xiKeOFCVsw3mb+NrWlbmOP5qA1wN/wl7BcRuHhqTklpDJgK44HcNoAF968JDnXqINIA9e0R+J22zQ8+EPBJWoCkSuCcm5FR55BbMKqRk2CrvC5LxgYlMnhiDUypvtIkevHc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=IwwRakfh; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="As4GbYOD"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8E7ABC4CEC3;
-	Wed, 25 Sep 2024 12:03:42 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="IwwRakfh"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D4FD2C4CECD;
+	Wed, 25 Sep 2024 12:15:07 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1727265824;
-	bh=4bJ6Ecsr8hDmAVBWVoFuMy8iGnOIvzJGiuRfklYVu5c=;
+	s=k20201202; t=1727266509;
+	bh=RjfI/WLDaDkKY3bNpnRvp6mIPeVCIol/nkLfahx/6R8=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-	b=As4GbYODHoXA/CSy0nh7/yxXAL7AsO1zoblO/GhA/56L75oqwyCvxLpx/o06j/+pi
-	 Gbf8xqKUV4alZqDVLGNDsT3ChXga2cxnqD5Zu7wnR//HEYG2qMzbED9EwsKWx15C+G
-	 0b2egKHtyS1tr5zf7cywvUi7jmwwC1lVD0kK9N+GLt8DJKN/DYBCx8RCh7av0HIWco
-	 FZoxgm68kl/KGaKBdbwlODGRNEkv3Bv81edPEysHs7UAc14tEmq9OnbG77w3JnAK74
-	 kRt8qhcfZDuDZSFliyvFk+PRb+7VNAk1ZFEhKe23OzIp7cvHLeSv2+xtbnyErtL19V
-	 NTMxK4CZ/5qZg==
+	b=IwwRakfhNdxyZRnozsRlBXsfEu45GK7pKqJUdsFGlDbcBo6qSEXlR+R6HiE/L07aD
+	 QUQ9B0KRWMuUxkWpVLmxivHPsbi5f+1Ed5juL5EMgQ3tmfyp13LXHCB3LlYS9gBIlm
+	 /15pq2B5STRQ2i6anjONjHp4eG0v7tjsg7rD3SEw5cIL/kbslS790r1T5s/CogeKL3
+	 TcD4xdfFnkF/4OVzER8yNlHzk4b+pGfmiYEiUu+w6p5EpDrImJVeEtM7+XFjBkCNGL
+	 SKKoGfM9fxOg7lBB8wBqjWNi78honceyV8XTBBHsbn2b05QSKKkBbpese06Krw6YOd
+	 hHQOY1j7ktVdw==
 From: Sasha Levin <sashal@kernel.org>
 To: linux-kernel@vger.kernel.org,
 	stable@vger.kernel.org
-Cc: Jason Gunthorpe <jgg@nvidia.com>,
-	Nicolin Chen <nicolinc@nvidia.com>,
+Cc: Marc Gonzalez <mgonzalez@freebox.fr>,
+	Caleb Connolly <caleb.connolly@linaro.org>,
+	Bjorn Andersson <andersson@kernel.org>,
 	Will Deacon <will@kernel.org>,
 	Sasha Levin <sashal@kernel.org>,
+	robdclark@gmail.com,
 	joro@8bytes.org,
-	jgg@ziepe.ca,
-	mshavit@google.com,
-	smostafa@google.com,
-	baolu.lu@linux.intel.com,
-	linux-arm-kernel@lists.infradead.org,
-	iommu@lists.linux.dev
-Subject: [PATCH AUTOSEL 6.10 110/197] iommu/arm-smmu-v3: Do not use devm for the cd table allocations
-Date: Wed, 25 Sep 2024 07:52:09 -0400
-Message-ID: <20240925115823.1303019-110-sashal@kernel.org>
+	iommu@lists.linux.dev,
+	linux-arm-msm@vger.kernel.org,
+	linux-arm-kernel@lists.infradead.org
+Subject: [PATCH AUTOSEL 6.6 078/139] iommu/arm-smmu-qcom: hide last LPASS SMMU context bank from linux
+Date: Wed, 25 Sep 2024 08:08:18 -0400
+Message-ID: <20240925121137.1307574-78-sashal@kernel.org>
 X-Mailer: git-send-email 2.43.0
-In-Reply-To: <20240925115823.1303019-1-sashal@kernel.org>
-References: <20240925115823.1303019-1-sashal@kernel.org>
+In-Reply-To: <20240925121137.1307574-1-sashal@kernel.org>
+References: <20240925121137.1307574-1-sashal@kernel.org>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -54,104 +53,75 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
-X-stable-base: Linux 6.10.11
+X-stable-base: Linux 6.6.52
 Content-Transfer-Encoding: 8bit
 
-From: Jason Gunthorpe <jgg@nvidia.com>
+From: Marc Gonzalez <mgonzalez@freebox.fr>
 
-[ Upstream commit 47b2de35cab2b683f69d03515c2658c2d8515323 ]
+[ Upstream commit 3a8990b8a778219327c5f8ecf10b5d81377b925a ]
 
-The master->cd_table is entirely contained within the struct
-arm_smmu_master which is guaranteed to be freed by the core code under
-arm_smmu_release_device().
+On qcom msm8998, writing to the last context bank of lpass_q6_smmu
+(base address 0x05100000) produces a system freeze & reboot.
 
-There is no reason to use devm here, arm_smmu_free_cd_tables() is reliably
-called to free the CD related memory. Remove it and save some memory.
+The hardware/hypervisor reports 13 context banks for the LPASS SMMU
+on msm8998, but only the first 12 are accessible...
+Override the number of context banks
 
-Tested-by: Nicolin Chen <nicolinc@nvidia.com>
-Reviewed-by: Nicolin Chen <nicolinc@nvidia.com>
-Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
-Link: https://lore.kernel.org/r/5-v4-6416877274e1+1af-smmuv3_tidy_jgg@nvidia.com
+[    2.546101] arm-smmu 5100000.iommu: probing hardware configuration...
+[    2.552439] arm-smmu 5100000.iommu: SMMUv2 with:
+[    2.558945] arm-smmu 5100000.iommu: 	stage 1 translation
+[    2.563627] arm-smmu 5100000.iommu: 	address translation ops
+[    2.568923] arm-smmu 5100000.iommu: 	non-coherent table walk
+[    2.574566] arm-smmu 5100000.iommu: 	(IDR0.CTTW overridden by FW configuration)
+[    2.580220] arm-smmu 5100000.iommu: 	stream matching with 12 register groups
+[    2.587263] arm-smmu 5100000.iommu: 	13 context banks (0 stage-2 only)
+[    2.614447] arm-smmu 5100000.iommu: 	Supported page sizes: 0x63315000
+[    2.621358] arm-smmu 5100000.iommu: 	Stage-1: 36-bit VA -> 36-bit IPA
+[    2.627772] arm-smmu 5100000.iommu: 	preserved 0 boot mappings
+
+Specifically, the crashes occur here:
+
+	qsmmu->bypass_cbndx = smmu->num_context_banks - 1;
+	arm_smmu_cb_write(smmu, qsmmu->bypass_cbndx, ARM_SMMU_CB_SCTLR, 0);
+
+and here:
+
+	arm_smmu_write_context_bank(smmu, i);
+	arm_smmu_cb_write(smmu, i, ARM_SMMU_CB_FSR, ARM_SMMU_CB_FSR_FAULT);
+
+It is likely that FW reserves the last context bank for its own use,
+thus a simple work-around is: DON'T USE IT in Linux.
+
+If we decrease the number of context banks, last one will be "hidden".
+
+Signed-off-by: Marc Gonzalez <mgonzalez@freebox.fr>
+Reviewed-by: Caleb Connolly <caleb.connolly@linaro.org>
+Reviewed-by: Bjorn Andersson <andersson@kernel.org>
+Link: https://lore.kernel.org/r/20240820-smmu-v3-1-2f71483b00ec@freebox.fr
 Signed-off-by: Will Deacon <will@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 29 +++++++++------------
- 1 file changed, 13 insertions(+), 16 deletions(-)
+ drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c | 7 +++++++
+ 1 file changed, 7 insertions(+)
 
-diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-index 1f38669b711d3..a5425519fecb8 100644
---- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-+++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-@@ -1173,8 +1173,8 @@ static int arm_smmu_alloc_cd_leaf_table(struct arm_smmu_device *smmu,
- {
- 	size_t size = CTXDESC_L2_ENTRIES * (CTXDESC_CD_DWORDS << 3);
+diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
+index 6e6cb19c81f59..b899a7b7fa935 100644
+--- a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
++++ b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
+@@ -278,6 +278,13 @@ static int qcom_smmu_cfg_probe(struct arm_smmu_device *smmu)
+ 	u32 smr;
+ 	int i;
  
--	l1_desc->l2ptr = dmam_alloc_coherent(smmu->dev, size,
--					     &l1_desc->l2ptr_dma, GFP_KERNEL);
-+	l1_desc->l2ptr = dma_alloc_coherent(smmu->dev, size,
-+					    &l1_desc->l2ptr_dma, GFP_KERNEL);
- 	if (!l1_desc->l2ptr) {
- 		dev_warn(smmu->dev,
- 			 "failed to allocate context descriptor table\n");
-@@ -1373,17 +1373,17 @@ static int arm_smmu_alloc_cd_tables(struct arm_smmu_master *master)
- 		cd_table->num_l1_ents = DIV_ROUND_UP(max_contexts,
- 						  CTXDESC_L2_ENTRIES);
- 
--		cd_table->l1_desc = devm_kcalloc(smmu->dev, cd_table->num_l1_ents,
--					      sizeof(*cd_table->l1_desc),
--					      GFP_KERNEL);
-+		cd_table->l1_desc = kcalloc(cd_table->num_l1_ents,
-+					    sizeof(*cd_table->l1_desc),
-+					    GFP_KERNEL);
- 		if (!cd_table->l1_desc)
- 			return -ENOMEM;
- 
- 		l1size = cd_table->num_l1_ents * (CTXDESC_L1_DESC_DWORDS << 3);
- 	}
- 
--	cd_table->cdtab = dmam_alloc_coherent(smmu->dev, l1size, &cd_table->cdtab_dma,
--					   GFP_KERNEL);
-+	cd_table->cdtab = dma_alloc_coherent(smmu->dev, l1size,
-+					     &cd_table->cdtab_dma, GFP_KERNEL);
- 	if (!cd_table->cdtab) {
- 		dev_warn(smmu->dev, "failed to allocate context descriptor\n");
- 		ret = -ENOMEM;
-@@ -1394,7 +1394,7 @@ static int arm_smmu_alloc_cd_tables(struct arm_smmu_master *master)
- 
- err_free_l1:
- 	if (cd_table->l1_desc) {
--		devm_kfree(smmu->dev, cd_table->l1_desc);
-+		kfree(cd_table->l1_desc);
- 		cd_table->l1_desc = NULL;
- 	}
- 	return ret;
-@@ -1414,21 +1414,18 @@ static void arm_smmu_free_cd_tables(struct arm_smmu_master *master)
- 			if (!cd_table->l1_desc[i].l2ptr)
- 				continue;
- 
--			dmam_free_coherent(smmu->dev, size,
--					   cd_table->l1_desc[i].l2ptr,
--					   cd_table->l1_desc[i].l2ptr_dma);
-+			dma_free_coherent(smmu->dev, size,
-+					  cd_table->l1_desc[i].l2ptr,
-+					  cd_table->l1_desc[i].l2ptr_dma);
- 		}
--		devm_kfree(smmu->dev, cd_table->l1_desc);
--		cd_table->l1_desc = NULL;
-+		kfree(cd_table->l1_desc);
- 
- 		l1size = cd_table->num_l1_ents * (CTXDESC_L1_DESC_DWORDS << 3);
- 	} else {
- 		l1size = cd_table->num_l1_ents * (CTXDESC_CD_DWORDS << 3);
- 	}
- 
--	dmam_free_coherent(smmu->dev, l1size, cd_table->cdtab, cd_table->cdtab_dma);
--	cd_table->cdtab_dma = 0;
--	cd_table->cdtab = NULL;
-+	dma_free_coherent(smmu->dev, l1size, cd_table->cdtab, cd_table->cdtab_dma);
- }
- 
- bool arm_smmu_free_asid(struct arm_smmu_ctx_desc *cd)
++	/*
++	 * MSM8998 LPASS SMMU reports 13 context banks, but accessing
++	 * the last context bank crashes the system.
++	 */
++	if (of_device_is_compatible(smmu->dev->of_node, "qcom,msm8998-smmu-v2") && smmu->num_context_banks == 13)
++		smmu->num_context_banks = 12;
++
+ 	/*
+ 	 * Some platforms support more than the Arm SMMU architected maximum of
+ 	 * 128 stream matching groups. For unknown reasons, the additional
 -- 
 2.43.0
 
