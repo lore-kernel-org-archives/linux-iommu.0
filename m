@@ -1,331 +1,232 @@
-Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.223.131])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from szxga04-in.huawei.com (szxga04-in.huawei.com [45.249.212.190])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 90F61158870
-	for <iommu@lists.linux.dev>; Wed, 25 Sep 2024 08:02:22 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=195.135.223.131
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 51B52154C19
+	for <iommu@lists.linux.dev>; Wed, 25 Sep 2024 08:03:21 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=45.249.212.190
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1727251344; cv=none; b=j8iTi+KOJ2BRy5C33/ufOTqmemnwVde2WEUXWs5ywTf5LdMNe7yogfe8Zqd9Qwf30GPlRmGlKs9Y7GGNTbi3oYD7XJsp/xolzE8xO0e/NRqgkI+2s8EA9nNbFe+URuGXIx3PojyxKlISIlSfeD12DFKlhaA5e1j9MCuUP7WCHPY=
+	t=1727251404; cv=none; b=bBSw+KKh4+23sECJBz5iISChX07Vn6Egu4UTnDBLf+aRi4scgc4Ip9qixYtU9jOShCmZoBgX/NHADTfV3+Hd8XMCsqadsQm5SYmiVkcCLULd4N7dNiHTB6Ff+/SNM4GiNgyJdUkYufTyJ9PATNM9fW3rmeNQ6599nydCSYLRyRk=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1727251344; c=relaxed/simple;
-	bh=g922HbZAMT/CQPXMHds4mltwe6sYDaXrkidRjdOYm6s=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=AjK+z/iRUN1N9inmNKqb1RSHaeLzYsrR4g5AXiax8Y+a2FdWLyDS4wi+f9Hw3MmFBQUrg9UvpBTuccr6L/r7+Ydr3uniwDBRpzpWKEotV7yezDIkXODNAocINp31OS7oApMn6DvoDlTo2jvlSSWEs7m51FLIJ7cXqYZRdVJClZA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=suse.de; spf=pass smtp.mailfrom=suse.de; dkim=pass (1024-bit key) header.d=suse.de header.i=@suse.de header.b=loBpt9Tt; dkim=permerror (0-bit key) header.d=suse.de header.i=@suse.de header.b=V/wUClqF; dkim=pass (1024-bit key) header.d=suse.de header.i=@suse.de header.b=loBpt9Tt; dkim=permerror (0-bit key) header.d=suse.de header.i=@suse.de header.b=V/wUClqF; arc=none smtp.client-ip=195.135.223.131
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=suse.de
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=suse.de
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=suse.de header.i=@suse.de header.b="loBpt9Tt";
-	dkim=permerror (0-bit key) header.d=suse.de header.i=@suse.de header.b="V/wUClqF";
-	dkim=pass (1024-bit key) header.d=suse.de header.i=@suse.de header.b="loBpt9Tt";
-	dkim=permerror (0-bit key) header.d=suse.de header.i=@suse.de header.b="V/wUClqF"
-Received: from imap1.dmz-prg2.suse.org (unknown [10.150.64.97])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
-	(No client certificate requested)
-	by smtp-out2.suse.de (Postfix) with ESMTPS id D9A4B1FD32;
-	Wed, 25 Sep 2024 08:02:20 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
-	t=1727251340; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-	 mime-version:mime-version:content-type:content-type:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references:autocrypt:autocrypt;
-	bh=g922HbZAMT/CQPXMHds4mltwe6sYDaXrkidRjdOYm6s=;
-	b=loBpt9Ttb7xBQU6oMAUdSw36x/fCnRqgqosgZYsyC5uwn4rMpZ2rORASOzfZwFzNeTLnRE
-	EaRH0oEHogp7yyYk2luyx85qaoMVBKE+kcLHzuY8LQp3Cab9QyOIWIJfep9wR0Cc6WLt+N
-	nrjouX5AozQw7NGOCbSaesYP/XOOalU=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
-	s=susede2_ed25519; t=1727251340;
-	h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-	 mime-version:mime-version:content-type:content-type:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references:autocrypt:autocrypt;
-	bh=g922HbZAMT/CQPXMHds4mltwe6sYDaXrkidRjdOYm6s=;
-	b=V/wUClqF8RmWhNNEpHFdLOeL4RA/ky86SH26t42uaZmL8ZuNK1Exjd8mm7f7P+G3Px37P/
-	4n+Zcds7UglyZRAg==
-Authentication-Results: smtp-out2.suse.de;
-	none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
-	t=1727251340; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-	 mime-version:mime-version:content-type:content-type:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references:autocrypt:autocrypt;
-	bh=g922HbZAMT/CQPXMHds4mltwe6sYDaXrkidRjdOYm6s=;
-	b=loBpt9Ttb7xBQU6oMAUdSw36x/fCnRqgqosgZYsyC5uwn4rMpZ2rORASOzfZwFzNeTLnRE
-	EaRH0oEHogp7yyYk2luyx85qaoMVBKE+kcLHzuY8LQp3Cab9QyOIWIJfep9wR0Cc6WLt+N
-	nrjouX5AozQw7NGOCbSaesYP/XOOalU=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
-	s=susede2_ed25519; t=1727251340;
-	h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-	 mime-version:mime-version:content-type:content-type:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references:autocrypt:autocrypt;
-	bh=g922HbZAMT/CQPXMHds4mltwe6sYDaXrkidRjdOYm6s=;
-	b=V/wUClqF8RmWhNNEpHFdLOeL4RA/ky86SH26t42uaZmL8ZuNK1Exjd8mm7f7P+G3Px37P/
-	4n+Zcds7UglyZRAg==
-Received: from imap1.dmz-prg2.suse.org (localhost [127.0.0.1])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
-	(No client certificate requested)
-	by imap1.dmz-prg2.suse.org (Postfix) with ESMTPS id 826E913A6A;
-	Wed, 25 Sep 2024 08:02:20 +0000 (UTC)
-Received: from dovecot-director2.suse.de ([2a07:de40:b281:106:10:150:64:167])
-	by imap1.dmz-prg2.suse.org with ESMTPSA
-	id 7hhIHozD82bteAAAD6G6ig
-	(envelope-from <tzimmermann@suse.de>); Wed, 25 Sep 2024 08:02:20 +0000
-Message-ID: <d95eca6e-0266-4ebe-b9d9-3e8552c5b09a@suse.de>
-Date: Wed, 25 Sep 2024 10:02:20 +0200
+	s=arc-20240116; t=1727251404; c=relaxed/simple;
+	bh=GfgCJD1+Lh3Rabp5DUKteK6uXZdxzDzdLe9UZgZIacU=;
+	h=From:To:CC:Subject:Date:Message-ID:MIME-Version:Content-Type; b=CYA1z8Xk7AhQFqCexHmjGcUvf7o+PEThdRzCOX/TdMoC2fDv8n4fKABb9oWvoJQqf9v06tnSy5KUudtvYDDi9Va0iUZ3hob0GsTcuxC/V87fFq/SsxSQyUOumrYe1P5JuytCR/ksG1+yYmS4qp2LH80TRNUBDDcINZcR5ibaT2Q=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=huawei.com; spf=pass smtp.mailfrom=huawei.com; arc=none smtp.client-ip=45.249.212.190
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=huawei.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=huawei.com
+Received: from mail.maildlp.com (unknown [172.19.163.44])
+	by szxga04-in.huawei.com (SkyGuard) with ESMTP id 4XD8N71qbrz2DcYY;
+	Wed, 25 Sep 2024 16:02:31 +0800 (CST)
+Received: from dggpemf200006.china.huawei.com (unknown [7.185.36.61])
+	by mail.maildlp.com (Postfix) with ESMTPS id 73A991401F4;
+	Wed, 25 Sep 2024 16:03:18 +0800 (CST)
+Received: from localhost.localdomain (10.90.30.45) by
+ dggpemf200006.china.huawei.com (7.185.36.61) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.1544.11; Wed, 25 Sep 2024 16:03:18 +0800
+From: Yunsheng Lin <linyunsheng@huawei.com>
+To: <davem@davemloft.net>, <kuba@kernel.org>, <pabeni@redhat.com>
+CC: <liuyonglong@huawei.com>, <fanghaiqing@huawei.com>,
+	<zhangkun09@huawei.com>, Yunsheng Lin <linyunsheng@huawei.com>, Alexander
+ Lobakin <aleksander.lobakin@intel.com>, Robin Murphy <robin.murphy@arm.com>,
+	Alexander Duyck <alexander.duyck@gmail.com>, IOMMU <iommu@lists.linux.dev>,
+	Alexei Starovoitov <ast@kernel.org>, Daniel Borkmann <daniel@iogearbox.net>,
+	Jesper Dangaard Brouer <hawk@kernel.org>, John Fastabend
+	<john.fastabend@gmail.com>, Matthias Brugger <matthias.bgg@gmail.com>,
+	AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>,
+	<netdev@vger.kernel.org>, <intel-wired-lan@lists.osuosl.org>,
+	<bpf@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+	<linux-arm-kernel@lists.infradead.org>, <linux-mediatek@lists.infradead.org>
+Subject: [PATCH net v2 0/2] fix two bugs related to page_pool
+Date: Wed, 25 Sep 2024 15:57:05 +0800
+Message-ID: <20240925075707.3970187-1-linyunsheng@huawei.com>
+X-Mailer: git-send-email 2.30.0
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: NULL pointer dereference after ib test on ring 7 succeeded
-To: Arthur Marsh <arthur.marsh@internode.on.net>, alexdeucher@gmail.com
-Cc: Xinhui.Pan@amd.com, airlied@gmail.com, alexander.deucher@amd.com,
- amd-gfx@lists.freedesktop.org, christian.koenig@amd.com, daniel@ffwll.ch,
- dri-devel@lists.freedesktop.org, iommu@lists.linux.dev,
- linux-kernel@vger.kernel.org, wuhoipok@gmail.com, x86@kernel.org
-References: <CADnq5_OtdUvOUPpq1aUoxtgpt6a4h598019SNhe+9ZWUaANYqg@mail.gmail.com>
- <20240925002205.4065-1-user@am64>
-Content-Language: en-US
-From: Thomas Zimmermann <tzimmermann@suse.de>
-Autocrypt: addr=tzimmermann@suse.de; keydata=
- xsBNBFs50uABCADEHPidWt974CaxBVbrIBwqcq/WURinJ3+2WlIrKWspiP83vfZKaXhFYsdg
- XH47fDVbPPj+d6tQrw5lPQCyqjwrCPYnq3WlIBnGPJ4/jreTL6V+qfKRDlGLWFjZcsrPJGE0
- BeB5BbqP5erN1qylK9i3gPoQjXGhpBpQYwRrEyQyjuvk+Ev0K1Jc5tVDeJAuau3TGNgah4Yc
- hdHm3bkPjz9EErV85RwvImQ1dptvx6s7xzwXTgGAsaYZsL8WCwDaTuqFa1d1jjlaxg6+tZsB
- 9GluwvIhSezPgnEmimZDkGnZRRSFiGP8yjqTjjWuf0bSj5rUnTGiyLyRZRNGcXmu6hjlABEB
- AAHNJ1Rob21hcyBaaW1tZXJtYW5uIDx0emltbWVybWFubkBzdXNlLmRlPsLAjgQTAQgAOAIb
- AwULCQgHAgYVCgkICwIEFgIDAQIeAQIXgBYhBHIX+6yM6c9jRKFo5WgNwR1TC3ojBQJftODH
- AAoJEGgNwR1TC3ojx1wH/0hKGWugiqDgLNXLRD/4TfHBEKmxIrmfu9Z5t7vwUKfwhFL6hqvo
- lXPJJKQpQ2z8+X2vZm/slsLn7J1yjrOsoJhKABDi+3QWWSGkaGwRJAdPVVyJMfJRNNNIKwVb
- U6B1BkX2XDKDGffF4TxlOpSQzdtNI/9gleOoUA8+jy8knnDYzjBNOZqLG2FuTdicBXblz0Mf
- vg41gd9kCwYXDnD91rJU8tzylXv03E75NCaTxTM+FBXPmsAVYQ4GYhhgFt8S2UWMoaaABLDe
- 7l5FdnLdDEcbmd8uLU2CaG4W2cLrUaI4jz2XbkcPQkqTQ3EB67hYkjiEE6Zy3ggOitiQGcqp
- j//OwE0EWznS4AEIAMYmP4M/V+T5RY5at/g7rUdNsLhWv1APYrh9RQefODYHrNRHUE9eosYb
- T6XMryR9hT8XlGOYRwKWwiQBoWSDiTMo/Xi29jUnn4BXfI2px2DTXwc22LKtLAgTRjP+qbU6
- 3Y0xnQN29UGDbYgyyK51DW3H0If2a3JNsheAAK+Xc9baj0LGIc8T9uiEWHBnCH+RdhgATnWW
- GKdDegUR5BkDfDg5O/FISymJBHx2Dyoklv5g4BzkgqTqwmaYzsl8UxZKvbaxq0zbehDda8lv
- hFXodNFMAgTLJlLuDYOGLK2AwbrS3Sp0AEbkpdJBb44qVlGm5bApZouHeJ/+n+7r12+lqdsA
- EQEAAcLAdgQYAQgAIAIbDBYhBHIX+6yM6c9jRKFo5WgNwR1TC3ojBQJftOH6AAoJEGgNwR1T
- C3ojVSkIALpAPkIJPQoURPb1VWjh34l0HlglmYHvZszJWTXYwavHR8+k6Baa6H7ufXNQtThR
- yIxJrQLW6rV5lm7TjhffEhxVCn37+cg0zZ3j7zIsSS0rx/aMwi6VhFJA5hfn3T0TtrijKP4A
- SAQO9xD1Zk9/61JWk8OysuIh7MXkl0fxbRKWE93XeQBhIJHQfnc+YBLprdnxR446Sh8Wn/2D
- Ya8cavuWf2zrB6cZurs048xe0UbSW5AOSo4V9M0jzYI4nZqTmPxYyXbm30Kvmz0rYVRaitYJ
- 4kyYYMhuULvrJDMjZRvaNe52tkKAvMevcGdt38H4KSVXAylqyQOW5zvPc4/sq9c=
-In-Reply-To: <20240925002205.4065-1-user@am64>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: base64
-X-Spam-Level: 
-X-Spamd-Result: default: False [-3.20 / 50.00];
-	BAYES_HAM(-3.00)[100.00%];
-	MIME_BASE64_TEXT_BOGUS(1.00)[];
-	NEURAL_HAM_LONG(-1.00)[-0.998];
-	NEURAL_HAM_SHORT(-0.20)[-1.000];
-	MIME_BASE64_TEXT(0.10)[];
-	MIME_GOOD(-0.10)[text/plain];
-	RCVD_TLS_ALL(0.00)[];
-	ARC_NA(0.00)[];
-	RCVD_VIA_SMTP_AUTH(0.00)[];
-	FREEMAIL_TO(0.00)[internode.on.net,gmail.com];
-	RCPT_COUNT_TWELVE(0.00)[13];
-	MIME_TRACE(0.00)[0:+];
-	MID_RHS_MATCH_FROM(0.00)[];
-	FREEMAIL_ENVRCPT(0.00)[gmail.com,internode.on.net];
-	FUZZY_BLOCKED(0.00)[rspamd.com];
-	FROM_HAS_DN(0.00)[];
-	FREEMAIL_CC(0.00)[amd.com,gmail.com,lists.freedesktop.org,ffwll.ch,lists.linux.dev,vger.kernel.org,kernel.org];
-	TO_DN_SOME(0.00)[];
-	FROM_EQ_ENVFROM(0.00)[];
-	TO_MATCH_ENVRCPT_ALL(0.00)[];
-	RCVD_COUNT_TWO(0.00)[2];
-	DKIM_SIGNED(0.00)[suse.de:s=susede2_rsa,suse.de:s=susede2_ed25519];
-	DBL_BLOCKED_OPENRESOLVER(0.00)[imap1.dmz-prg2.suse.org:helo,suse.de:mid]
-X-Spam-Score: -3.20
-X-Spam-Flag: NO
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-ClientProxiedBy: dggems705-chm.china.huawei.com (10.3.19.182) To
+ dggpemf200006.china.huawei.com (7.185.36.61)
 
-SGkNCg0KQW0gMjUuMDkuMjQgdW0gMDI6MjIgc2NocmllYiBBcnRodXIgTWFyc2g6DQo+IEFm
-dGVyIHJlYnVpbGRpbmcgY3VycmVudCBMaW51cyBnaXQgaGVhZCB3aXRoOg0KPg0KPiBkbWEt
-bWFwcGluZzogcmVwb3J0IHVubGltaXRlZCBETUEgYWRkcmVzc2luZyBpbiBJT01NVSBETUEg
-cGF0aA0KPiBiMzQ4YjZkMTdmZDFkNWQ4OWI4NmRiNjAyZjAyYmVhNTRhNzU0YmQ4DQoNCkkg
-Y2Fubm90IHlldCBhcHBseSB0aGlzIHBhdGNoIGxvY2FsbHkgYXMgYSBmdW5jdGlvbiBpcyBt
-aXNzaW5nLiBJJ2xsIA0Kd2FpdCBmb3IgLXJjMSB0byBkbyBmdXJ0aGVyIGRlYnVnZ2luZy4N
-Cg0KQmVzdCByZWdhcmRzDQpUaG9tYXMNCg0KPg0KPiBhcHBsaWVkLCB0aGUgcmFkZW9uIG1v
-ZHVsZSBsb2FkIGdldHMgZnVydGhlciBiZWZvcmUgaGl0dGluZyBhbm90aGVyDQo+IE5VTEwg
-cG9pbnRlciBkZXJlZmVyZW5jZToNCj4NCj4gWyAgIDE3Ljc3NzQ3Ml0gW2RybV0gcmFkZW9u
-IGtlcm5lbCBtb2Rlc2V0dGluZyBlbmFibGVkLg0KPiBbICAgMTcuNzc3NTM2XSByYWRlb24g
-MDAwMDowMDowMS4wOiB2Z2FhcmI6IGRlYWN0aXZhdGUgdmdhIGNvbnNvbGUNCj4gWyAgIDE3
-Ljc3ODI3Nl0gQ29uc29sZTogc3dpdGNoaW5nIHRvIGNvbG91ciBkdW1teSBkZXZpY2UgODB4
-MjUNCj4gWyAgIDE3Ljc3ODUxOV0gW2RybV0gaW5pdGlhbGl6aW5nIGtlcm5lbCBtb2Rlc2V0
-dGluZyAoQVJVQkEgMHgxMDAyOjB4OTkwQyAweDEwMDI6MHgwMTIzIDB4MDApLg0KPiBbICAg
-MTcuNzc4NjAwXSBBVE9NIEJJT1M6IDExMw0KPiBbICAgMTcuNzc4NjU4XSByYWRlb24gMDAw
-MDowMDowMS4wOiBWUkFNOiA3NjhNIDB4MDAwMDAwMDAwMDAwMDAwMCAtIDB4MDAwMDAwMDAy
-RkZGRkZGRiAoNzY4TSB1c2VkKQ0KPiBbICAgMTcuNzc4NjYxXSByYWRlb24gMDAwMDowMDow
-MS4wOiBHVFQ6IDEwMjRNIDB4MDAwMDAwMDAzMDAwMDAwMCAtIDB4MDAwMDAwMDA2RkZGRkZG
-Rg0KPiBbICAgMTcuNzc4NjY1XSBbZHJtXSBEZXRlY3RlZCBWUkFNIFJBTT03NjhNLCBCQVI9
-MjU2TQ0KPiBbICAgMTcuNzc4NjY1XSBbZHJtXSBSQU0gd2lkdGggNjRiaXRzIEREUg0KPiBb
-ICAgMTcuNzc4NzY0XSBbZHJtXSByYWRlb246IDc2OE0gb2YgVlJBTSBtZW1vcnkgcmVhZHkN
-Cj4gWyAgIDE3Ljc3ODc2Nl0gW2RybV0gcmFkZW9uOiAxMDI0TSBvZiBHVFQgbWVtb3J5IHJl
-YWR5Lg0KPiBbICAgMTcuNzc4Nzc3XSBbZHJtXSBMb2FkaW5nIEFSVUJBIE1pY3JvY29kZQ0K
-PiBbICAgMTguMDM4MDg0XSBbZHJtXSBJbnRlcm5hbCB0aGVybWFsIGNvbnRyb2xsZXIgd2l0
-aG91dCBmYW4gY29udHJvbA0KPiBbICAgMTguMDM4NDI1XSBbZHJtXSByYWRlb246IGRwbSBp
-bml0aWFsaXplZA0KPiBbICAgMTguMzMzNTA4XSBbZHJtXSBGb3VuZCBWQ0UgZmlybXdhcmUv
-ZmVlZGJhY2sgdmVyc2lvbiA1MC4wLjEgLyAxNyENCj4gWyAgIDE4LjMzMzU0OF0gW2RybV0g
-R0FSVDogbnVtIGNwdSBwYWdlcyAyNjIxNDQsIG51bSBncHUgcGFnZXMgMjYyMTQ0DQo+IFsg
-ICAxOC4zNTM2MjRdIFtkcm1dIFBDSUUgR0FSVCBvZiAxMDI0TSBlbmFibGVkICh0YWJsZSBh
-dCAweDAwMDAwMDAwMDAxRDYwMDApLg0KPiBbICAgMTguMzUzNzU1XSByYWRlb24gMDAwMDow
-MDowMS4wOiBXQiBlbmFibGVkDQo+IFsgICAxOC4zNTM3NThdIHJhZGVvbiAwMDAwOjAwOjAx
-LjA6IGZlbmNlIGRyaXZlciBvbiByaW5nIDAgdXNlIGdwdSBhZGRyIDB4MDAwMDAwMDAzMDAw
-MGMwMA0KPiBbICAgMTguMzU0MTM2XSByYWRlb24gMDAwMDowMDowMS4wOiBmZW5jZSBkcml2
-ZXIgb24gcmluZyA1IHVzZSBncHUgYWRkciAweDAwMDAwMDAwMDAwNzVhMTgNCj4gWyAgIDE4
-LjM3NDIwNl0gcmFkZW9uIDAwMDA6MDA6MDEuMDogZmVuY2UgZHJpdmVyIG9uIHJpbmcgNiB1
-c2UgZ3B1IGFkZHIgMHgwMDAwMDAwMDMwMDAwYzE4DQo+IFsgICAxOC4zNzQyMDhdIHJhZGVv
-biAwMDAwOjAwOjAxLjA6IGZlbmNlIGRyaXZlciBvbiByaW5nIDcgdXNlIGdwdSBhZGRyIDB4
-MDAwMDAwMDAzMDAwMGMxYw0KPiBbICAgMTguMzc0MjEwXSByYWRlb24gMDAwMDowMDowMS4w
-OiBmZW5jZSBkcml2ZXIgb24gcmluZyAxIHVzZSBncHUgYWRkciAweDAwMDAwMDAwMzAwMDBj
-MDQNCj4gWyAgIDE4LjM3NDIxMl0gcmFkZW9uIDAwMDA6MDA6MDEuMDogZmVuY2UgZHJpdmVy
-IG9uIHJpbmcgMiB1c2UgZ3B1IGFkZHIgMHgwMDAwMDAwMDMwMDAwYzA4DQo+IFsgICAxOC4z
-NzQyMTNdIHJhZGVvbiAwMDAwOjAwOjAxLjA6IGZlbmNlIGRyaXZlciBvbiByaW5nIDMgdXNl
-IGdwdSBhZGRyIDB4MDAwMDAwMDAzMDAwMGMwYw0KPiBbICAgMTguMzc0MjE0XSByYWRlb24g
-MDAwMDowMDowMS4wOiBmZW5jZSBkcml2ZXIgb24gcmluZyA0IHVzZSBncHUgYWRkciAweDAw
-MDAwMDAwMzAwMDBjMTANCj4gWyAgIDE4LjM3NDQ2OV0gcmFkZW9uIDAwMDA6MDA6MDEuMDog
-cmFkZW9uOiBNU0kgbGltaXRlZCB0byAzMi1iaXQNCj4gWyAgIDE4LjM3NDUyNV0gcmFkZW9u
-IDAwMDA6MDA6MDEuMDogcmFkZW9uOiB1c2luZyBNU0kuDQo+IFsgICAxOC4zNzQ2MDRdIFtk
-cm1dIHJhZGVvbjogaXJxIGluaXRpYWxpemVkLg0KPiBbICAgMTguMzkyODIzXSBbZHJtXSBy
-aW5nIHRlc3Qgb24gMCBzdWNjZWVkZWQgaW4gMyB1c2Vjcw0KPiBbICAgMTguMzkyODMxXSBb
-ZHJtXSByaW5nIHRlc3Qgb24gMyBzdWNjZWVkZWQgaW4gNCB1c2Vjcw0KPiBbICAgMTguMzky
-ODM2XSBbZHJtXSByaW5nIHRlc3Qgb24gNCBzdWNjZWVkZWQgaW4gMyB1c2Vjcw0KPiBbICAg
-MTguNDM4NTI2XSBbZHJtXSByaW5nIHRlc3Qgb24gNSBzdWNjZWVkZWQgaW4gMiB1c2Vjcw0K
-PiBbICAgMTguNDU4MzgwXSBbZHJtXSBVVkQgaW5pdGlhbGl6ZWQgc3VjY2Vzc2Z1bGx5Lg0K
-PiBbICAgMTguNTY3NjE2XSBbZHJtXSByaW5nIHRlc3Qgb24gNiBzdWNjZWVkZWQgaW4gMTgg
-dXNlY3MNCj4gWyAgIDE4LjU2NzYyNl0gW2RybV0gcmluZyB0ZXN0IG9uIDcgc3VjY2VlZGVk
-IGluIDMgdXNlY3MNCj4gWyAgIDE4LjU2NzYyN10gW2RybV0gVkNFIGluaXRpYWxpemVkIHN1
-Y2Nlc3NmdWxseS4NCj4gWyAgIDE4LjU2NzY4Nl0gc25kX2hkYV9pbnRlbCAwMDAwOjAwOjAx
-LjE6IGJvdW5kIDAwMDA6MDA6MDEuMCAob3BzIHJhZGVvbl9hdWRpb19jb21wb25lbnRfYmlu
-ZF9vcHMgW3JhZGVvbl0pDQo+IFsgICAxOC41Njc5MjVdIFtkcm1dIGliIHRlc3Qgb24gcmlu
-ZyAwIHN1Y2NlZWRlZCBpbiAwIHVzZWNzDQo+IFsgICAxOC41Njc5NjhdIFtkcm1dIGliIHRl
-c3Qgb24gcmluZyAzIHN1Y2NlZWRlZCBpbiAwIHVzZWNzDQo+IFsgICAxOC41NjgwMDhdIFtk
-cm1dIGliIHRlc3Qgb24gcmluZyA0IHN1Y2NlZWRlZCBpbiAwIHVzZWNzDQo+IFsgICAxOS4w
-OTQ1MjddIFtkcm1dIGliIHRlc3Qgb24gcmluZyA1IHN1Y2NlZWRlZA0KPiBbICAgMTkuMjU3
-NzEzXSBtYzogTGludXggbWVkaWEgaW50ZXJmYWNlOiB2MC4xMA0KPiBbICAgMTkuNjM4MjM1
-XSBbZHJtXSBpYiB0ZXN0IG9uIHJpbmcgNiBzdWNjZWVkZWQNCj4gWyAgIDIwLjAxNzA2OV0g
-dXNiIDEtMzogZHZiX3VzYl92MjogZm91bmQgYSAnUmVhbHRlayBSVEwyODMyVSByZWZlcmVu
-Y2UgZGVzaWduJyBpbiB3YXJtIHN0YXRlDQo+IFsgICAyMC4wNDg0NzNdIHVzYiAxLTM6IGR2
-Yl91c2JfdjI6IHdpbGwgcGFzcyB0aGUgY29tcGxldGUgTVBFRzIgdHJhbnNwb3J0IHN0cmVh
-bSB0byB0aGUgc29mdHdhcmUgZGVtdXhlcg0KPiBbICAgMjAuMDQ4NDkzXSBkdmJkZXY6IERW
-QjogcmVnaXN0ZXJpbmcgbmV3IGFkYXB0ZXIgKFJlYWx0ZWsgUlRMMjgzMlUgcmVmZXJlbmNl
-IGRlc2lnbikNCj4gWyAgIDIwLjA0ODQ5N10gdXNiIDEtMzogbWVkaWEgY29udHJvbGxlciBj
-cmVhdGVkDQo+IFsgICAyMC4wNDk0ODddIGR2YmRldjogZHZiX2NyZWF0ZV9tZWRpYV9lbnRp
-dHk6IG1lZGlhIGVudGl0eSAnZHZiLWRlbXV4JyByZWdpc3RlcmVkLg0KPiBbICAgMjAuMTUw
-MzYxXSBbZHJtXSBpYiB0ZXN0IG9uIHJpbmcgNyBzdWNjZWVkZWQNCj4gWyAgIDIwLjE1MDcw
-MF0gQlVHOiBrZXJuZWwgTlVMTCBwb2ludGVyIGRlcmVmZXJlbmNlLCBhZGRyZXNzOiAwMDAw
-MDAwMDAwMDAwMDUwDQo+IFsgICAyMC4xNTA3MDJdICNQRjogc3VwZXJ2aXNvciByZWFkIGFj
-Y2VzcyBpbiBrZXJuZWwgbW9kZQ0KPiBbICAgMjAuMTUwNzA0XSAjUEY6IGVycm9yX2NvZGUo
-MHgwMDAwKSAtIG5vdC1wcmVzZW50IHBhZ2UNCj4gWyAgIDIwLjE1MDcwNV0gUEdEIDAgUDRE
-IDANCj4gWyAgIDIwLjE1MDcwN10gT29wczogT29wczogMDAwMCBbIzFdIFBSRUVNUFRfUlQg
-U01QIE5PUFRJDQo+IFsgICAyMC4xNTA3MTBdIENQVTogMCBVSUQ6IDAgUElEOiA0NDYgQ29t
-bTogdWRldmQgTm90IHRhaW50ZWQgNi4xMS4wKyAjNjEyMg0KPiBbICAgMjAuMTUwNzEzXSBI
-YXJkd2FyZSBuYW1lOiBHaWdhYnl0ZSBUZWNobm9sb2d5IENvLiwgTHRkLiBUbyBiZSBmaWxs
-ZWQgYnkgTy5FLk0uL0YyQTc4TS1IRDIsIEJJT1MgRjIgMDUvMjgvMjAxNA0KPiBbICAgMjAu
-MTUwNzE0XSBSSVA6IDAwMTA6ZHJtX2RwX2F1eF9yZWdpc3RlcisweDU5LzB4MTEwIFtkcm1f
-ZGlzcGxheV9oZWxwZXJdDQo+IFsgICAyMC4xNTA3MzJdIENvZGU6IGExIGMwIDQ4IDg1IGY2
-IDQ4IDg5IDgzIGI4IDAwIDAwIDAwIDc0IDFjIDQ4IDhkIGJiIGI0IDAzIDAwIDAwIGJhIDMw
-IDAwIDAwIDAwIGU4IDUyIGU1IDYwIGRiIDQ4IDhkIDdiIDA4IDViIDVkIGU5IGI3IGVhIDM3
-IGRiIDw0OD4gOGIgNzAgNTAgNDggODUgZjYgNzUgZGIgNDggOGIgMzAgZWIgZDYgNDggOGQg
-YWIgODggMDQgMDAgMDAgNDgNCj4gWyAgIDIwLjE1MDczNF0gUlNQOiAwMDE4OmZmZmY5ZWI4
-MDEzY2I5NjAgRUZMQUdTOiAwMDAxMDI0Ng0KPiBbICAgMjAuMTUwNzM2XSBSQVg6IDAwMDAw
-MDAwMDAwMDAwMDAgUkJYOiBmZmZmOGYxOTgzYmZjNTA4IFJDWDogZmZmZmZmZmZjMGJkMWJj
-MA0KPiBbICAgMjAuMTUwNzM3XSBSRFg6IGZmZmZmZmZmYzBhMWRlNDAgUlNJOiAwMDAwMDAw
-MDAwMDAwMDAwIFJESTogZmZmZjhmMTk4M2JmYzlmMA0KPiBbICAgMjAuMTUwNzM4XSBSQlA6
-IGZmZmY4ZjE5ODNiZmM5ZjAgUjA4OiBmZmZmOGYxOTljYTcwMDA4IFIwOTogMDAwMDAwMDBj
-MGMwYzBjMA0KPiBbICAgMjAuMTUwNzM5XSBSMTA6IDAwMDAwMDAwMDAwMDAwMDAgUjExOiAw
-MDAwMDAwMDAwMDAwMDAxIFIxMjogZmZmZjhmMTk5ZGE5YWY1MA0KPiBbICAgMjAuMTUwNzQw
-XSBSMTM6IGZmZmY4ZjE5OWRhOWIwOTIgUjE0OiBmZmZmOGYxOTlkYTlhZjJlIFIxNTogMDAw
-MDAwMDAwMDAwMDAxOA0KPiBbICAgMjAuMTUwNzQxXSBGUzogIDAwMDA3ZmY5YjllNmE4NDAo
-MDAwMCkgR1M6ZmZmZjhmMWNhZjgwMDAwMCgwMDAwKSBrbmxHUzowMDAwMDAwMDAwMDAwMDAw
-DQo+IFsgICAyMC4xNTA3NDNdIENTOiAgMDAxMCBEUzogMDAwMCBFUzogMDAwMCBDUjA6IDAw
-MDAwMDAwODAwNTAwMzMNCj4gWyAgIDIwLjE1MDc0NF0gQ1IyOiAwMDAwMDAwMDAwMDAwMDUw
-IENSMzogMDAwMDAwMDEwMzNlNDAwMCBDUjQ6IDAwMDAwMDAwMDAwNDA2ZjANCj4gWyAgIDIw
-LjE1MDc0NV0gQ2FsbCBUcmFjZToNCj4gWyAgIDIwLjE1MDc0N10gIDxUQVNLPg0KPiBbICAg
-MjAuMTUwNzQ4XSAgPyBfX2RpZV9ib2R5LmNvbGQrMHgxOS8weDFlDQo+IFsgICAyMC4xNTA3
-NTNdICA/IHBhZ2VfZmF1bHRfb29wcysweGE4LzB4MjMwDQo+IFsgICAyMC4xNTA3NTddICA/
-IGRybV9kcF9hdXhfcmVnaXN0ZXIrMHg1OS8weDExMCBbZHJtX2Rpc3BsYXlfaGVscGVyXQ0K
-PiBbICAgMjAuMTUwNzY3XSAgPyBzZWFyY2hfbW9kdWxlX2V4dGFibGVzKzB4NGYvMHg5MA0K
-PiBbICAgMjAuMTUwNzcxXSAgPyBmaXh1cF9leGNlcHRpb24rMHgzNi8weDJmMA0KPiBbICAg
-MjAuMTUwNzczXSAgPyBleGNfcGFnZV9mYXVsdCsweDg4LzB4MWIwDQo+IFsgICAyMC4xNTA3
-NzZdICA/IGFzbV9leGNfcGFnZV9mYXVsdCsweDIyLzB4MzANCj4gWyAgIDIwLjE1MDc3OV0g
-ID8gX19wZnhfcmFkZW9uX2RwX2F1eF90cmFuc2Zlcl9hdG9tKzB4MTAvMHgxMCBbcmFkZW9u
-XQ0KPiBbICAgMjAuMTUwODg4XSAgPyBkcm1fZHBfYXV4X3JlZ2lzdGVyKzB4NTkvMHgxMTAg
-W2RybV9kaXNwbGF5X2hlbHBlcl0NCj4gWyAgIDIwLjE1MDkwMF0gIHJhZGVvbl9kcF9hdXhf
-aW5pdCsweDkxLzB4YzAgW3JhZGVvbl0NCj4gWyAgIDIwLjE1MDk4NF0gIHJhZGVvbl9nZXRf
-YXRvbV9jb25uZWN0b3JfaW5mb19mcm9tX29iamVjdF90YWJsZSsweDU4ZS8weDg4MCBbcmFk
-ZW9uXQ0KPiBbICAgMjAuMTUxMDQ3XSAgPyByYWRlb25fZ2V0X2F0b21fY29ubmVjdG9yX2lu
-Zm9fZnJvbV9zdXBwb3J0ZWRfZGV2aWNlc190YWJsZSsweDVjZi8weDYwMCBbcmFkZW9uXQ0K
-PiBbICAgMjAuMTUxMTExXSAgPyBrc3RyZHVwKzB4NGMvMHg3MA0KPiBbICAgMjAuMTUxMTE1
-XSAgPyBfX2ttYWxsb2Nfbm9wcm9mKzB4MjRkLzB4MzQwDQo+IFsgICAyMC4xNTExMThdICBy
-YWRlb25fbW9kZXNldF9pbml0KzB4Mzc1LzB4NDcwIFtyYWRlb25dDQo+IFsgICAyMC4xNTEx
-ODddICA/IHJhZGVvbl9kZXZpY2VfaW5pdCsweDY2Ny8weGI0MCBbcmFkZW9uXQ0KPiBbICAg
-MjAuMTUxMjUwXSAgcmFkZW9uX2RyaXZlcl9sb2FkX2ttcysweGMyLzB4MjYwIFtyYWRlb25d
-DQo+IFsgICAyMC4xNTEzMTJdICByYWRlb25fcGNpX3Byb2JlKzB4ZmYvMHgxNzAgW3JhZGVv
-bl0NCj4gWyAgIDIwLjE1MTM3NF0gIHBjaV9kZXZpY2VfcHJvYmUrMHhiZS8weDFhMA0KPiBb
-ICAgMjAuMTUxMzc3XSAgcmVhbGx5X3Byb2JlKzB4ZGUvMHgzNTANCj4gWyAgIDIwLjE1MTM4
-MF0gID8gcG1fcnVudGltZV9iYXJyaWVyKzB4NjEvMHhiMA0KPiBbICAgMjAuMTUxMzgzXSAg
-PyBfX3BmeF9fX2RyaXZlcl9hdHRhY2grMHgxMC8weDEwDQo+IFsgICAyMC4xNTEzODZdICBf
-X2RyaXZlcl9wcm9iZV9kZXZpY2UrMHg3OC8weDExMA0KPiBbICAgMjAuMTUxMzg4XSAgZHJp
-dmVyX3Byb2JlX2RldmljZSsweDJkLzB4YzANCj4gWyAgIDIwLjE1MTM5MF0gIF9fZHJpdmVy
-X2F0dGFjaCsweGM5LzB4MWMwDQo+IFsgICAyMC4xNTEzOTNdICBidXNfZm9yX2VhY2hfZGV2
-KzB4NmEvMHhiMA0KPiBbICAgMjAuMTUxMzk1XSAgPyBtaWdyYXRlX2VuYWJsZSsweGJmLzB4
-ZjANCj4gWyAgIDIwLjE1MTM5N10gIGJ1c19hZGRfZHJpdmVyKzB4MTM5LzB4MjIwDQo+IFsg
-ICAyMC4xNTE0MDBdICBkcml2ZXJfcmVnaXN0ZXIrMHg2ZS8weGMwDQo+IFsgICAyMC4xNTE0
-MDJdICA/IF9fcGZ4X3JhZGVvbl9tb2R1bGVfaW5pdCsweDEwLzB4MTAgW3JhZGVvbl0NCj4g
-WyAgIDIwLjE1MTQ2M10gIGRvX29uZV9pbml0Y2FsbCsweDQyLzB4MjEwDQo+IFsgICAyMC4x
-NTE0NjddICA/IF9fa21hbGxvY19jYWNoZV9ub3Byb2YrMHg4OS8weDIzMA0KPiBbICAgMjAu
-MTUxNDY5XSAgZG9faW5pdF9tb2R1bGUrMHg2MC8weDIxMA0KPiBbICAgMjAuMTUxNDcyXSAg
-aW5pdF9tb2R1bGVfZnJvbV9maWxlKzB4ODkvMHhjMA0KPiBbICAgMjAuMTUxNDc1XSAgX194
-NjRfc3lzX2Zpbml0X21vZHVsZSsweDE0Mi8weDM5MA0KPiBbICAgMjAuMTUxNDc3XSAgZG9f
-c3lzY2FsbF82NCsweDQ3LzB4MTEwDQo+IFsgICAyMC4xNTE0ODBdICBlbnRyeV9TWVNDQUxM
-XzY0X2FmdGVyX2h3ZnJhbWUrMHg3Ni8weDdlDQo+IFsgICAyMC4xNTE0ODNdIFJJUDogMDAz
-MzoweDdmZjliOWQ4MjI3OQ0KPiBbICAgMjAuMTUxNDg1XSBDb2RlOiBmZiBjMyA2NiAyZSAw
-ZiAxZiA4NCAwMCAwMCAwMCAwMCAwMCAwZiAxZiA0NCAwMCAwMCA0OCA4OSBmOCA0OCA4OSBm
-NyA0OCA4OSBkNiA0OCA4OSBjYSA0ZCA4OSBjMiA0ZCA4OSBjOCA0YyA4YiA0YyAyNCAwOCAw
-ZiAwNSA8NDg+IDNkIDAxIGYwIGZmIGZmIDczIDAxIGMzIDQ4IDhiIDBkIDc3IDZiIDBkIDAw
-IGY3IGQ4IDY0IDg5IDAxIDQ4DQo+IFsgICAyMC4xNTE0ODZdIFJTUDogMDAyYjowMDAwN2Zm
-ZmM1Zjg0NzA4IEVGTEFHUzogMDAwMDAyNDYgT1JJR19SQVg6IDAwMDAwMDAwMDAwMDAxMzkN
-Cj4gWyAgIDIwLjE1MTQ4OF0gUkFYOiBmZmZmZmZmZmZmZmZmZmRhIFJCWDogMDAwMDU1ZDAy
-MDY4ZDliMCBSQ1g6IDAwMDA3ZmY5YjlkODIyNzkNCj4gWyAgIDIwLjE1MTQ4OV0gUkRYOiAw
-MDAwMDAwMDAwMDAwMDAwIFJTSTogMDAwMDU1ZDAyMDY4MDdmMCBSREk6IDAwMDAwMDAwMDAw
-MDAwMTINCj4gWyAgIDIwLjE1MTQ5MF0gUkJQOiAwMDAwMDAwMDAwMDAwMDAwIFIwODogMDAw
-MDAwMDAwMDAwMDAwMSBSMDk6IDAwMDA1NWQwMjA2NmQ1NDANCj4gWyAgIDIwLjE1MTQ5MV0g
-UjEwOiAwMDAwMDAwMDAwMDAwMDQwIFIxMTogMDAwMDAwMDAwMDAwMDI0NiBSMTI6IDAwMDA1
-NWQwMjA2ODA3ZjANCj4gWyAgIDIwLjE1MTQ5Ml0gUjEzOiAwMDAwMDAwMDAwMDIwMDAwIFIx
-NDogMDAwMDU1ZDAyMDY3ZTUxMCBSMTU6IDAwMDAwMDAwMDAwMDAwMDANCj4gWyAgIDIwLjE1
-MTQ5NF0gIDwvVEFTSz4NCj4gWyAgIDIwLjE1MTQ5NF0gTW9kdWxlcyBsaW5rZWQgaW46IGky
-Y19tdXggZHZiX3VzYl9ydGwyOHh4dSgrKSBkdmJfdXNiX3YyIGR2Yl9jb3JlIG1jIHNuZF9l
-bXUxMGsxX3N5bnRoIHJhZGVvbigrKSBzbmRfZW11eF9zeW50aCBzbmRfc2VxX21pZGlfZW11
-bCBzbmRfc2VxX3Zpcm1pZGkgZHJtX3R0bV9oZWxwZXIgc25kX3NlcV9taWRpIHNuZF9zZXFf
-bWlkaV9ldmVudCB0dG0gc25kX3NlcSBlZGFjX21jZV9hbWQgc25kX2hkYV9jb2RlY19oZG1p
-IHNoYTUxMl9zc3NlMyBzaGE1MTJfZ2VuZXJpYyBzaGEyNTZfc3NzZTMgc2hhMV9zc3NlMyBz
-bmRfZW11MTBrMSBhZXNuaV9pbnRlbCBkcm1fc3ViYWxsb2NfaGVscGVyIHNuZF9oZGFfaW50
-ZWwgZHJtX2Rpc3BsYXlfaGVscGVyIHNuZF9pbnRlbF9kc3BjZmcgc25kX2hkYV9jb2RlYyBz
-bmRfdXRpbF9tZW0gZ2YxMjhtdWwgc25kX2FjOTdfY29kZWMgc25kX2hkYV9jb3JlIGRybV9r
-bXNfaGVscGVyIGNyeXB0b19zaW1kIGNyeXB0ZCBhYzk3X2J1cyBzbmRfcmF3bWlkaSBrMTB0
-ZW1wIHNuZF9zZXFfZGV2aWNlIHNuZF9od2RlcCBzbmRfcGNtIGRybSBhY3BpX2NwdWZyZXEg
-ZXZkZXYgc2VyaW9fcmF3IHBjc3BrciBhdDI0IGVtdTEwazFfZ3AgZ2FtZXBvcnQgcmVnbWFw
-X2kyYyBpMmNfYWxnb19iaXQgc25kX3RpbWVyIHZpZGVvIHNuZCBzcDUxMDBfdGNvIHNvdW5k
-Y29yZSB3bWkgYnV0dG9uIGV4dDQgY3JjMzJjX2dlbmVyaWMgY3JjMTYgbWJjYWNoZSBqYmQy
-IHVhcyB1c2Jfc3RvcmFnZSBoaWRfZ2VuZXJpYyB1c2JoaWQgaGlkIHNnIHNyX21vZCBjZHJv
-bSBzZF9tb2QgYXRhX2dlbmVyaWMgZmlyZXdpcmVfb2hjaSBjcmMzMl9wY2xtdWwgY3JjMzJj
-X2ludGVsIGFoY2kgaTJjX3BpaXg0IGZpcmV3aXJlX2NvcmUgY3JjX2l0dV90IHBhdGFfYXRp
-aXhwIGxpYmFoY2kgaTJjX3NtYnVzIG9oY2lfcGNpIHhoY2lfcGNpIGxpYmF0YSB4aGNpX2hj
-ZCBlaGNpX3BjaSBvaGNpX2hjZCByODE2OSBlaGNpX2hjZCByZWFsdGVrIHNjc2lfbW9kIG1k
-aW9fZGV2cmVzIHVzYmNvcmUNCj4gWyAgIDIwLjE1MTU1MF0gIHNjc2lfY29tbW9uIGxpYnBo
-eSB1c2JfY29tbW9uDQo+IFsgICAyMC4xNTE1NTNdIENSMjogMDAwMDAwMDAwMDAwMDA1MA0K
-PiBbICAgMjAuMTUxNTU1XSAtLS1bIGVuZCB0cmFjZSAwMDAwMDAwMDAwMDAwMDAwIF0tLS0N
-Cj4NCj4gUmVnYXJkcywNCj4NCj4gQXJ0aHVyLg0KDQotLSANCi0tDQpUaG9tYXMgWmltbWVy
-bWFubg0KR3JhcGhpY3MgRHJpdmVyIERldmVsb3Blcg0KU1VTRSBTb2Z0d2FyZSBTb2x1dGlv
-bnMgR2VybWFueSBHbWJIDQpGcmFua2Vuc3RyYXNzZSAxNDYsIDkwNDYxIE51ZXJuYmVyZywg
-R2VybWFueQ0KR0Y6IEl2byBUb3RldiwgQW5kcmV3IE15ZXJzLCBBbmRyZXcgTWNEb25hbGQs
-IEJvdWRpZW4gTW9lcm1hbg0KSFJCIDM2ODA5IChBRyBOdWVybmJlcmcpDQoNCg==
+Patch 1 fix a possible time window problem for page_pool.
+Patch 2 fix the kernel crash problem at iommu_get_dma_domain
+reported in [1].
+
+When page_pool_put_unrefed_netmem() is called with allow_direct
+being true, there is only a newly added checking overhead
+introduced in patch 1, which seem to be no noticeable performance
+impact.
+
+When page_pool_put_unrefed_netmem() is called with allow_direct
+being false, there is an added rcu read lock overhead introduced in
+patch 1, and the overhead is about 13ns using the below test code,
+but 'time_bench_page_pool02_ptr_ring' only show about 2ns overhead,
+which is about 2% degradation.
+
++static int time_bench_rcu(
++       struct time_bench_record *rec, void *data)
++{
++       uint64_t loops_cnt = 0;
++       int i;
++
++       time_bench_start(rec);
++       /** Loop to measure **/
++       for (i = 0; i < rec->loops; i++) {
++               rcu_read_lock();
++               loops_cnt++;
++               barrier(); /* avoid compiler to optimize this loop */
++               rcu_read_unlock();
++       }
++       time_bench_stop(rec, loops_cnt);
++       return loops_cnt;
++}
+
+When page_pool need to be refilled from or flushed to the page allocator,
+the added overhead is the page_pool_item_add() and page_pool_item_del()
+calling overhead, using below patch to enable Jesper's testing running in
+arm64, the overhead is 0~20ns, which is quite variable 
+
+Before this patchset:
+root@(none)$ taskset -c 1 insmod bench_page_pool_simple.ko
+[  136.641453] bench_page_pool_simple: Loaded
+[  136.722560] time_bench: Type:for_loop Per elem: 0 cycles(tsc) 0.769 ns (step:0) - (measurement period time:0.076968720 sec time_interval:76968720) - (invoke count:100000000 tsc_interval:7696855)
+[  137.317006] time_bench: Type:atomic_inc Per elem: 0 cycles(tsc) 5.771 ns (step:0) - (measurement period time:0.577164350 sec time_interval:577164350) - (invoke count:100000000 tsc_interval:57716429)
+[  137.480852] time_bench: Type:lock Per elem: 1 cycles(tsc) 14.621 ns (step:0) - (measurement period time:0.146218730 sec time_interval:146218730) - (invoke count:10000000 tsc_interval:14621868)
+[  138.842377] time_bench: Type:rcu Per elem: 1 cycles(tsc) 13.444 ns (step:0) - (measurement period time:1.344419820 sec time_interval:1344419820) - (invoke count:100000000 tsc_interval:134441975)
+[  138.859656] bench_page_pool_simple: time_bench_page_pool01_fast_path(): Cannot use page_pool fast-path
+[  139.132102] time_bench: Type:no-softirq-page_pool01 Per elem: 2 cycles(tsc) 26.315 ns (step:0) - (measurement period time:0.263151430 sec time_interval:263151430) - (invoke count:10000000 tsc_interval:26315135)
+[  139.150769] bench_page_pool_simple: time_bench_page_pool02_ptr_ring(): Cannot use page_pool fast-path
+[  139.910642] time_bench: Type:no-softirq-page_pool02 Per elem: 7 cycles(tsc) 75.066 ns (step:0) - (measurement period time:0.750663200 sec time_interval:750663200) - (invoke count:10000000 tsc_interval:75066312)
+[  139.929312] bench_page_pool_simple: time_bench_page_pool03_slow(): Cannot use page_pool fast-path
+[  141.673951] time_bench: Type:no-softirq-page_pool03 Per elem: 17 cycles(tsc) 173.578 ns (step:0) - (measurement period time:1.735781610 sec time_interval:1735781610) - (invoke count:10000000 tsc_interval:173578155)
+[  141.692970] bench_page_pool_simple: pp_tasklet_handler(): in_serving_softirq fast-path
+[  141.700874] bench_page_pool_simple: time_bench_page_pool01_fast_path(): in_serving_softirq fast-path
+[  141.973638] time_bench: Type:tasklet_page_pool01_fast_path Per elem: 2 cycles(tsc) 26.364 ns (step:0) - (measurement period time:0.263645150 sec time_interval:263645150) - (invoke count:10000000 tsc_interval:26364508)
+[  141.992912] bench_page_pool_simple: time_bench_page_pool02_ptr_ring(): in_serving_softirq fast-path
+[  142.531745] time_bench: Type:tasklet_page_pool02_ptr_ring Per elem: 5 cycles(tsc) 52.980 ns (step:0) - (measurement period time:0.529801250 sec time_interval:529801250) - (invoke count:10000000 tsc_interval:52980119)
+[  142.550933] bench_page_pool_simple: time_bench_page_pool03_slow(): in_serving_softirq fast-path
+[  144.297646] time_bench: Type:tasklet_page_pool03_slow Per elem: 17 cycles(tsc) 173.802 ns (step:0) - (measurement period time:1.738029000 sec time_interval:1738029000) - (invoke count:10000000 tsc_interval:173802894)
+
+After this patchset:
+root@(none)$ taskset -c 1 insmod bench_page_pool_simple.ko
+[  149.865799] bench_page_pool_simple: Loaded
+[  149.946907] time_bench: Type:for_loop Per elem: 0 cycles(tsc) 0.769 ns (step:0) - (measurement period time:0.076965620 sec time_interval:76965620) - (invoke count:100000000 tsc_interval:7696556)
+[  150.722282] time_bench: Type:atomic_inc Per elem: 0 cycles(tsc) 7.580 ns (step:0) - (measurement period time:0.758094660 sec time_interval:758094660) - (invoke count:100000000 tsc_interval:75809459)
+[  150.886335] time_bench: Type:lock Per elem: 1 cycles(tsc) 14.640 ns (step:0) - (measurement period time:0.146405830 sec time_interval:146405830) - (invoke count:10000000 tsc_interval:14640578)
+[  152.249454] time_bench: Type:rcu Per elem: 1 cycles(tsc) 13.460 ns (step:0) - (measurement period time:1.346009570 sec time_interval:1346009570) - (invoke count:100000000 tsc_interval:134600951)
+[  152.266734] bench_page_pool_simple: time_bench_page_pool01_fast_path(): Cannot use page_pool fast-path
+[  152.537046] time_bench: Type:no-softirq-page_pool01 Per elem: 2 cycles(tsc) 26.100 ns (step:0) - (measurement period time:0.261007670 sec time_interval:261007670) - (invoke count:10000000 tsc_interval:26100761)
+[  152.555714] bench_page_pool_simple: time_bench_page_pool02_ptr_ring(): Cannot use page_pool fast-path
+[  153.342212] time_bench: Type:no-softirq-page_pool02 Per elem: 7 cycles(tsc) 77.729 ns (step:0) - (measurement period time:0.777293380 sec time_interval:777293380) - (invoke count:10000000 tsc_interval:77729331)
+[  153.360881] bench_page_pool_simple: time_bench_page_pool03_slow(): Cannot use page_pool fast-path
+[  155.287747] time_bench: Type:no-softirq-page_pool03 Per elem: 19 cycles(tsc) 191.800 ns (step:0) - (measurement period time:1.918007990 sec time_interval:1918007990) - (invoke count:10000000 tsc_interval:191800791)
+[  155.306766] bench_page_pool_simple: pp_tasklet_handler(): in_serving_softirq fast-path
+[  155.314670] bench_page_pool_simple: time_bench_page_pool01_fast_path(): in_serving_softirq fast-path
+[  155.584313] time_bench: Type:tasklet_page_pool01_fast_path Per elem: 2 cycles(tsc) 26.052 ns (step:0) - (measurement period time:0.260524810 sec time_interval:260524810) - (invoke count:10000000 tsc_interval:26052476)
+[  155.603588] bench_page_pool_simple: time_bench_page_pool02_ptr_ring(): in_serving_softirq fast-path
+[  156.183214] time_bench: Type:tasklet_page_pool02_ptr_ring Per elem: 5 cycles(tsc) 57.059 ns (step:0) - (measurement period time:0.570594850 sec time_interval:570594850) - (invoke count:10000000 tsc_interval:57059478)
+[  156.202402] bench_page_pool_simple: time_bench_page_pool03_slow(): in_serving_softirq fast-path
+[  158.045594] time_bench: Type:tasklet_page_pool03_slow Per elem: 18 cycles(tsc) 183.450 ns (step:0) - (measurement period time:1.834507700 sec time_interval:1834507700) - (invoke count:10000000 tsc_interval:183450764)
+
+Patch for time_bench.h enable the out of tree testing on arm64 system:
+@@ -101,6 +101,7 @@ struct time_bench_cpu {
+  *  CPUID clears the high 32-bits of all (rax/rbx/rcx/rdx)
+  */
+ static __always_inline uint64_t tsc_start_clock(void) {
++#if defined(__i386__) || defined(__x86_64__)
+        /* See: Intel Doc #324264 */
+        unsigned hi, lo;
+        asm volatile (
+@@ -111,9 +112,13 @@ static __always_inline uint64_t tsc_start_clock(void) {
+                "%rax", "%rbx", "%rcx", "%rdx");
+        //FIXME: on 32bit use clobbered %eax + %edx
+        return ((uint64_t)lo) | (((uint64_t)hi) << 32);
++#else
++       return get_cycles();
++#endif
+ }
+
+ static __always_inline uint64_t tsc_stop_clock(void) {
++#if defined(__i386__) || defined(__x86_64__)
+        /* See: Intel Doc #324264 */
+        unsigned hi, lo;
+        asm volatile(
+@@ -123,6 +128,9 @@ static __always_inline uint64_t tsc_stop_clock(void) {
+                "CPUID\n\t": "=r" (hi), "=r" (lo)::
+                "%rax", "%rbx", "%rcx", "%rdx");
+        return ((uint64_t)lo) | (((uint64_t)hi) << 32);
++#else
++       return get_cycles();
++#endif
+ }
+
+ /* Notes for RDTSC and RDTSCP
+@@ -186,10 +194,14 @@ enum {
+
+ static __always_inline unsigned long long p_rdpmc(unsigned in)
+ {
++#if defined(__i386__) || defined(__x86_64__)
+        unsigned d, a;
+
+        asm volatile("rdpmc" : "=d" (d), "=a" (a) : "c" (in) : "memory");
+        return ((unsigned long long)d << 32) | a;
++#else
++       return 0;
++#endif
+ }
+
+ /* These PMU counter needs to be enabled, but I don't have the
+@@ -216,7 +228,11 @@ static __always_inline unsigned long long pmc_clk(void)
+ #define MSR_IA32_PCM2 0x400000C3
+ inline uint64_t msr_inst(unsigned long long *msr_result)
+ {
++#if defined(__i386__) || defined(__x86_64__)
+        return rdmsrl_safe(MSR_IA32_PCM0, msr_result);
++#else
++       return 0;
++#endif
+ }
+
+1. https://lore.kernel.org/lkml/8067f204-1380-4d37-8ffd-007fc6f26738@kernel.org/T/
+
+CC: Alexander Lobakin <aleksander.lobakin@intel.com>
+CC: Robin Murphy <robin.murphy@arm.com>
+CC: Alexander Duyck <alexander.duyck@gmail.com>
+CC: IOMMU <iommu@lists.linux.dev>
+
+Change log:
+V2:
+  1. Add a item_full stat.
+  2. Use container_of() for page_pool_to_pp().
+
+Yunsheng Lin (2):
+  page_pool: fix timing for checking and disabling napi_local
+  page_pool: fix IOMMU crash when driver has already unbound
+
+ drivers/net/ethernet/freescale/fec_main.c     |   8 +-
+ drivers/net/ethernet/intel/iavf/iavf_txrx.c   |   6 +-
+ drivers/net/ethernet/intel/idpf/idpf_txrx.c   |  14 +-
+ drivers/net/ethernet/intel/libeth/rx.c        |   2 +-
+ .../net/ethernet/mellanox/mlx5/core/en/xdp.c  |   3 +-
+ drivers/net/netdevsim/netdev.c                |   6 +-
+ drivers/net/wireless/mediatek/mt76/mt76.h     |   2 +-
+ include/linux/mm_types.h                      |   2 +-
+ include/linux/skbuff.h                        |   1 +
+ include/net/libeth/rx.h                       |   3 +-
+ include/net/netmem.h                          |  10 +-
+ include/net/page_pool/helpers.h               |   7 +
+ include/net/page_pool/types.h                 |  17 +-
+ net/core/devmem.c                             |   4 +-
+ net/core/netmem_priv.h                        |   5 +-
+ net/core/page_pool.c                          | 190 +++++++++++++++---
+ net/core/page_pool_priv.h                     |  10 +-
+ net/core/skbuff.c                             |   3 +-
+ net/core/xdp.c                                |   3 +-
+ 19 files changed, 238 insertions(+), 58 deletions(-)
+
+-- 
+2.33.0
+
