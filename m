@@ -1,180 +1,236 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from szxga08-in.huawei.com (szxga08-in.huawei.com [45.249.212.255])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 38F2B18892C;
-	Wed, 25 Sep 2024 12:15:17 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2DE2515DBAB
+	for <iommu@lists.linux.dev>; Wed, 25 Sep 2024 13:32:02 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=45.249.212.255
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1727266517; cv=none; b=mIhBv9GTB5x5Zf6qTi4B2IB81hLDB6aSMA/MyhhSSiWh+mTHY51QsXQM7yzO3yvHFBe9M1VWHi0YYq6dRt5COpVBB+ep2e+QGy7w/xxbBgqMAGMRwwpOAUHxodHkDzQbMMc8f9lJSxRPig1Fkc3dtiiNLgTA+pA3JVGV9RndRm0=
+	t=1727271126; cv=none; b=BwwhA4wqqNyK0yZTaHeaQPCn5p/HE1yCztLe1IAvcy9BNiJaYPsr2KPuXM/5d8DlVVgnEn45R4bDDttHZeFYKVISrEzMen+1fho7xMqnn6NcbnlT9aDRVesMT1p7HIv9vtfEs4SvIbpkoZurMJKciE53vNz4c/vxPRSsNQCiw3E=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1727266517; c=relaxed/simple;
-	bh=MVrHshqS6okqmx33IUUgWFbOHXM5m6ZOziCB0z65Fv4=;
-	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=pe0QkOgIWBg7QSnxE38hmV5IY6fuqLjQj8sbhMJPnMslW3puwchpyUpCV9N8ZRzaRB9zJffKyWrnkJTqd5rmtE/InJ4sQsZ234VJhiiK1h2TbT2BpV1Lnd0QJFsDUpslK23WPX+iv8hIrkBALKMT4f68VJyQLYj5leavUZnJ0CU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=uquDa7JQ; arc=none smtp.client-ip=10.30.226.201
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="uquDa7JQ"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 96965C4CEC7;
-	Wed, 25 Sep 2024 12:15:15 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1727266517;
-	bh=MVrHshqS6okqmx33IUUgWFbOHXM5m6ZOziCB0z65Fv4=;
-	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-	b=uquDa7JQL0z+5dTRRJAg1PNq1bUZc2jn35p+CrlM0BGMHMwMwjEhuewJlDXG7J1Ek
-	 z9nkvqltAs1k0MjZnR/PixQbYyXci+nL2ACauKy+rEYZXtzr/R4sVpuXnACAUhHpyF
-	 sYiPoVFUv6FrF5I4xz4fMn72Ifdc4SPugRXM3vnxoAjb7DK/QMUJgFAMwRahbfwOjx
-	 sE+SbEKuEiaccov1ZCLuoLaLVC+aFC/u+LD1SyZvkDVev+4eHXyjxjShxzdo/L52cR
-	 m3IIlJmK9vuzqOB2WM1dQqAq1Yrqygco90EyZo3wvN0JdKJvV8Me4cswsoODqj5rOa
-	 riObZQRcVYNPA==
-From: Sasha Levin <sashal@kernel.org>
-To: linux-kernel@vger.kernel.org,
-	stable@vger.kernel.org
-Cc: Sanjay K Kumar <sanjay.k.kumar@intel.com>,
-	Jacob Pan <jacob.jun.pan@linux.intel.com>,
-	Kevin Tian <kevin.tian@intel.com>,
-	Lu Baolu <baolu.lu@linux.intel.com>,
-	Joerg Roedel <jroedel@suse.de>,
-	Sasha Levin <sashal@kernel.org>,
-	dwmw2@infradead.org,
-	joro@8bytes.org,
-	will@kernel.org,
-	iommu@lists.linux.dev
-Subject: [PATCH AUTOSEL 6.6 082/139] iommu/vt-d: Fix potential lockup if qi_submit_sync called with 0 count
-Date: Wed, 25 Sep 2024 08:08:22 -0400
-Message-ID: <20240925121137.1307574-82-sashal@kernel.org>
-X-Mailer: git-send-email 2.43.0
-In-Reply-To: <20240925121137.1307574-1-sashal@kernel.org>
-References: <20240925121137.1307574-1-sashal@kernel.org>
+	s=arc-20240116; t=1727271126; c=relaxed/simple;
+	bh=qvJ+/AG4rYN3l9UpFuRhPA6wXOQLE49l5qwR7uwnP40=;
+	h=Message-ID:Date:MIME-Version:Subject:To:CC:References:From:
+	 In-Reply-To:Content-Type; b=tldUeylgl9VGQgmJBapA3j44GnvTrzybJw1mqWtCtITcxz8UcRWkHV0W+g9AJpZtvfSC8Almn9tbKaDDH5nM7h+z/32/ean05xnTXMzeoXqbgYs9pTa0u+at0s5P05jHLFV/DfFWbpHVg6n/7SWjVG4JCqp+FrQG3vQ15+H3Fuo=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=huawei.com; spf=pass smtp.mailfrom=huawei.com; arc=none smtp.client-ip=45.249.212.255
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=huawei.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=huawei.com
+Received: from mail.maildlp.com (unknown [172.19.163.48])
+	by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4XDHfg0sdzz1T7tx;
+	Wed, 25 Sep 2024 21:30:35 +0800 (CST)
+Received: from kwepemf200007.china.huawei.com (unknown [7.202.181.233])
+	by mail.maildlp.com (Postfix) with ESMTPS id 3C59F1800A4;
+	Wed, 25 Sep 2024 21:32:00 +0800 (CST)
+Received: from [10.67.121.184] (10.67.121.184) by
+ kwepemf200007.china.huawei.com (7.202.181.233) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.1544.11; Wed, 25 Sep 2024 21:31:59 +0800
+Message-ID: <282e3f4f-c3ef-4b42-bf9e-3a1ab25a8091@huawei.com>
+Date: Wed, 25 Sep 2024 21:31:58 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-stable: review
-X-Patchwork-Hint: Ignore
-X-stable-base: Linux 6.6.52
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH net v2 0/2] fix two bugs related to page_pool
+To: Yunsheng Lin <linyunsheng@huawei.com>, <davem@davemloft.net>,
+	<kuba@kernel.org>, <pabeni@redhat.com>
+CC: <fanghaiqing@huawei.com>, <zhangkun09@huawei.com>, Alexander Lobakin
+	<aleksander.lobakin@intel.com>, Robin Murphy <robin.murphy@arm.com>,
+	Alexander Duyck <alexander.duyck@gmail.com>, IOMMU <iommu@lists.linux.dev>,
+	Alexei Starovoitov <ast@kernel.org>, Daniel Borkmann <daniel@iogearbox.net>,
+	Jesper Dangaard Brouer <hawk@kernel.org>, John Fastabend
+	<john.fastabend@gmail.com>, Matthias Brugger <matthias.bgg@gmail.com>,
+	AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>,
+	<netdev@vger.kernel.org>, <intel-wired-lan@lists.osuosl.org>,
+	<bpf@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+	<linux-arm-kernel@lists.infradead.org>, <linux-mediatek@lists.infradead.org>
+References: <20240925075707.3970187-1-linyunsheng@huawei.com>
+Content-Language: en-US
+From: Yonglong Liu <liuyonglong@huawei.com>
+In-Reply-To: <20240925075707.3970187-1-linyunsheng@huawei.com>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: dggems705-chm.china.huawei.com (10.3.19.182) To
+ kwepemf200007.china.huawei.com (7.202.181.233)
 
-From: Sanjay K Kumar <sanjay.k.kumar@intel.com>
+Tested-by: Yonglong Liu <liuyonglong@huawei.com>
 
-[ Upstream commit 3cf74230c139f208b7fb313ae0054386eee31a81 ]
-
-If qi_submit_sync() is invoked with 0 invalidation descriptors (for
-instance, for DMA draining purposes), we can run into a bug where a
-submitting thread fails to detect the completion of invalidation_wait.
-Subsequently, this led to a soft lockup. Currently, there is no impact
-by this bug on the existing users because no callers are submitting
-invalidations with 0 descriptors. This fix will enable future users
-(such as DMA drain) calling qi_submit_sync() with 0 count.
-
-Suppose thread T1 invokes qi_submit_sync() with non-zero descriptors, while
-concurrently, thread T2 calls qi_submit_sync() with zero descriptors. Both
-threads then enter a while loop, waiting for their respective descriptors
-to complete. T1 detects its completion (i.e., T1's invalidation_wait status
-changes to QI_DONE by HW) and proceeds to call reclaim_free_desc() to
-reclaim all descriptors, potentially including adjacent ones of other
-threads that are also marked as QI_DONE.
-
-During this time, while T2 is waiting to acquire the qi->q_lock, the IOMMU
-hardware may complete the invalidation for T2, setting its status to
-QI_DONE. However, if T1's execution of reclaim_free_desc() frees T2's
-invalidation_wait descriptor and changes its status to QI_FREE, T2 will
-not observe the QI_DONE status for its invalidation_wait and will
-indefinitely remain stuck.
-
-This soft lockup does not occur when only non-zero descriptors are
-submitted.In such cases, invalidation descriptors are interspersed among
-wait descriptors with the status QI_IN_USE, acting as barriers. These
-barriers prevent the reclaim code from mistakenly freeing descriptors
-belonging to other submitters.
-
-Considered the following example timeline:
-	T1			T2
-========================================
-	ID1
-	WD1
-	while(WD1!=QI_DONE)
-	unlock
-				lock
-	WD1=QI_DONE*		WD2
-				while(WD2!=QI_DONE)
-				unlock
-	lock
-	WD1==QI_DONE?
-	ID1=QI_DONE		WD2=DONE*
-	reclaim()
-	ID1=FREE
-	WD1=FREE
-	WD2=FREE
-	unlock
-				soft lockup! T2 never sees QI_DONE in WD2
-
-Where:
-ID = invalidation descriptor
-WD = wait descriptor
-* Written by hardware
-
-The root of the problem is that the descriptor status QI_DONE flag is used
-for two conflicting purposes:
-1. signal a descriptor is ready for reclaim (to be freed)
-2. signal by the hardware that a wait descriptor is complete
-
-The solution (in this patch) is state separation by using QI_FREE flag
-for #1.
-
-Once a thread's invalidation descriptors are complete, their status would
-be set to QI_FREE. The reclaim_free_desc() function would then only
-free descriptors marked as QI_FREE instead of those marked as
-QI_DONE. This change ensures that T2 (from the previous example) will
-correctly observe the completion of its invalidation_wait (marked as
-QI_DONE).
-
-Signed-off-by: Sanjay K Kumar <sanjay.k.kumar@intel.com>
-Signed-off-by: Jacob Pan <jacob.jun.pan@linux.intel.com>
-Reviewed-by: Kevin Tian <kevin.tian@intel.com>
-Link: https://lore.kernel.org/r/20240728210059.1964602-1-jacob.jun.pan@linux.intel.com
-Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
-Signed-off-by: Joerg Roedel <jroedel@suse.de>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- drivers/iommu/intel/dmar.c | 16 +++++++++++-----
- 1 file changed, 11 insertions(+), 5 deletions(-)
-
-diff --git a/drivers/iommu/intel/dmar.c b/drivers/iommu/intel/dmar.c
-index 84f0459e503cf..7a38e18b18196 100644
---- a/drivers/iommu/intel/dmar.c
-+++ b/drivers/iommu/intel/dmar.c
-@@ -1202,9 +1202,7 @@ static void free_iommu(struct intel_iommu *iommu)
-  */
- static inline void reclaim_free_desc(struct q_inval *qi)
- {
--	while (qi->desc_status[qi->free_tail] == QI_DONE ||
--	       qi->desc_status[qi->free_tail] == QI_ABORT) {
--		qi->desc_status[qi->free_tail] = QI_FREE;
-+	while (qi->desc_status[qi->free_tail] == QI_FREE && qi->free_tail != qi->free_head) {
- 		qi->free_tail = (qi->free_tail + 1) % QI_LENGTH;
- 		qi->free_cnt++;
- 	}
-@@ -1439,8 +1437,16 @@ int qi_submit_sync(struct intel_iommu *iommu, struct qi_desc *desc,
- 		raw_spin_lock(&qi->q_lock);
- 	}
- 
--	for (i = 0; i < count; i++)
--		qi->desc_status[(index + i) % QI_LENGTH] = QI_DONE;
-+	/*
-+	 * The reclaim code can free descriptors from multiple submissions
-+	 * starting from the tail of the queue. When count == 0, the
-+	 * status of the standalone wait descriptor at the tail of the queue
-+	 * must be set to QI_FREE to allow the reclaim code to proceed.
-+	 * It is also possible that descriptors from one of the previous
-+	 * submissions has to be reclaimed by a subsequent submission.
-+	 */
-+	for (i = 0; i <= count; i++)
-+		qi->desc_status[(index + i) % QI_LENGTH] = QI_FREE;
- 
- 	reclaim_free_desc(qi);
- 	raw_spin_unlock_irqrestore(&qi->q_lock, flags);
--- 
-2.43.0
-
+On 2024/9/25 15:57, Yunsheng Lin wrote:
+> Patch 1 fix a possible time window problem for page_pool.
+> Patch 2 fix the kernel crash problem at iommu_get_dma_domain
+> reported in [1].
+>
+> When page_pool_put_unrefed_netmem() is called with allow_direct
+> being true, there is only a newly added checking overhead
+> introduced in patch 1, which seem to be no noticeable performance
+> impact.
+>
+> When page_pool_put_unrefed_netmem() is called with allow_direct
+> being false, there is an added rcu read lock overhead introduced in
+> patch 1, and the overhead is about 13ns using the below test code,
+> but 'time_bench_page_pool02_ptr_ring' only show about 2ns overhead,
+> which is about 2% degradation.
+>
+> +static int time_bench_rcu(
+> +       struct time_bench_record *rec, void *data)
+> +{
+> +       uint64_t loops_cnt = 0;
+> +       int i;
+> +
+> +       time_bench_start(rec);
+> +       /** Loop to measure **/
+> +       for (i = 0; i < rec->loops; i++) {
+> +               rcu_read_lock();
+> +               loops_cnt++;
+> +               barrier(); /* avoid compiler to optimize this loop */
+> +               rcu_read_unlock();
+> +       }
+> +       time_bench_stop(rec, loops_cnt);
+> +       return loops_cnt;
+> +}
+>
+> When page_pool need to be refilled from or flushed to the page allocator,
+> the added overhead is the page_pool_item_add() and page_pool_item_del()
+> calling overhead, using below patch to enable Jesper's testing running in
+> arm64, the overhead is 0~20ns, which is quite variable
+>
+> Before this patchset:
+> root@(none)$ taskset -c 1 insmod bench_page_pool_simple.ko
+> [  136.641453] bench_page_pool_simple: Loaded
+> [  136.722560] time_bench: Type:for_loop Per elem: 0 cycles(tsc) 0.769 ns (step:0) - (measurement period time:0.076968720 sec time_interval:76968720) - (invoke count:100000000 tsc_interval:7696855)
+> [  137.317006] time_bench: Type:atomic_inc Per elem: 0 cycles(tsc) 5.771 ns (step:0) - (measurement period time:0.577164350 sec time_interval:577164350) - (invoke count:100000000 tsc_interval:57716429)
+> [  137.480852] time_bench: Type:lock Per elem: 1 cycles(tsc) 14.621 ns (step:0) - (measurement period time:0.146218730 sec time_interval:146218730) - (invoke count:10000000 tsc_interval:14621868)
+> [  138.842377] time_bench: Type:rcu Per elem: 1 cycles(tsc) 13.444 ns (step:0) - (measurement period time:1.344419820 sec time_interval:1344419820) - (invoke count:100000000 tsc_interval:134441975)
+> [  138.859656] bench_page_pool_simple: time_bench_page_pool01_fast_path(): Cannot use page_pool fast-path
+> [  139.132102] time_bench: Type:no-softirq-page_pool01 Per elem: 2 cycles(tsc) 26.315 ns (step:0) - (measurement period time:0.263151430 sec time_interval:263151430) - (invoke count:10000000 tsc_interval:26315135)
+> [  139.150769] bench_page_pool_simple: time_bench_page_pool02_ptr_ring(): Cannot use page_pool fast-path
+> [  139.910642] time_bench: Type:no-softirq-page_pool02 Per elem: 7 cycles(tsc) 75.066 ns (step:0) - (measurement period time:0.750663200 sec time_interval:750663200) - (invoke count:10000000 tsc_interval:75066312)
+> [  139.929312] bench_page_pool_simple: time_bench_page_pool03_slow(): Cannot use page_pool fast-path
+> [  141.673951] time_bench: Type:no-softirq-page_pool03 Per elem: 17 cycles(tsc) 173.578 ns (step:0) - (measurement period time:1.735781610 sec time_interval:1735781610) - (invoke count:10000000 tsc_interval:173578155)
+> [  141.692970] bench_page_pool_simple: pp_tasklet_handler(): in_serving_softirq fast-path
+> [  141.700874] bench_page_pool_simple: time_bench_page_pool01_fast_path(): in_serving_softirq fast-path
+> [  141.973638] time_bench: Type:tasklet_page_pool01_fast_path Per elem: 2 cycles(tsc) 26.364 ns (step:0) - (measurement period time:0.263645150 sec time_interval:263645150) - (invoke count:10000000 tsc_interval:26364508)
+> [  141.992912] bench_page_pool_simple: time_bench_page_pool02_ptr_ring(): in_serving_softirq fast-path
+> [  142.531745] time_bench: Type:tasklet_page_pool02_ptr_ring Per elem: 5 cycles(tsc) 52.980 ns (step:0) - (measurement period time:0.529801250 sec time_interval:529801250) - (invoke count:10000000 tsc_interval:52980119)
+> [  142.550933] bench_page_pool_simple: time_bench_page_pool03_slow(): in_serving_softirq fast-path
+> [  144.297646] time_bench: Type:tasklet_page_pool03_slow Per elem: 17 cycles(tsc) 173.802 ns (step:0) - (measurement period time:1.738029000 sec time_interval:1738029000) - (invoke count:10000000 tsc_interval:173802894)
+>
+> After this patchset:
+> root@(none)$ taskset -c 1 insmod bench_page_pool_simple.ko
+> [  149.865799] bench_page_pool_simple: Loaded
+> [  149.946907] time_bench: Type:for_loop Per elem: 0 cycles(tsc) 0.769 ns (step:0) - (measurement period time:0.076965620 sec time_interval:76965620) - (invoke count:100000000 tsc_interval:7696556)
+> [  150.722282] time_bench: Type:atomic_inc Per elem: 0 cycles(tsc) 7.580 ns (step:0) - (measurement period time:0.758094660 sec time_interval:758094660) - (invoke count:100000000 tsc_interval:75809459)
+> [  150.886335] time_bench: Type:lock Per elem: 1 cycles(tsc) 14.640 ns (step:0) - (measurement period time:0.146405830 sec time_interval:146405830) - (invoke count:10000000 tsc_interval:14640578)
+> [  152.249454] time_bench: Type:rcu Per elem: 1 cycles(tsc) 13.460 ns (step:0) - (measurement period time:1.346009570 sec time_interval:1346009570) - (invoke count:100000000 tsc_interval:134600951)
+> [  152.266734] bench_page_pool_simple: time_bench_page_pool01_fast_path(): Cannot use page_pool fast-path
+> [  152.537046] time_bench: Type:no-softirq-page_pool01 Per elem: 2 cycles(tsc) 26.100 ns (step:0) - (measurement period time:0.261007670 sec time_interval:261007670) - (invoke count:10000000 tsc_interval:26100761)
+> [  152.555714] bench_page_pool_simple: time_bench_page_pool02_ptr_ring(): Cannot use page_pool fast-path
+> [  153.342212] time_bench: Type:no-softirq-page_pool02 Per elem: 7 cycles(tsc) 77.729 ns (step:0) - (measurement period time:0.777293380 sec time_interval:777293380) - (invoke count:10000000 tsc_interval:77729331)
+> [  153.360881] bench_page_pool_simple: time_bench_page_pool03_slow(): Cannot use page_pool fast-path
+> [  155.287747] time_bench: Type:no-softirq-page_pool03 Per elem: 19 cycles(tsc) 191.800 ns (step:0) - (measurement period time:1.918007990 sec time_interval:1918007990) - (invoke count:10000000 tsc_interval:191800791)
+> [  155.306766] bench_page_pool_simple: pp_tasklet_handler(): in_serving_softirq fast-path
+> [  155.314670] bench_page_pool_simple: time_bench_page_pool01_fast_path(): in_serving_softirq fast-path
+> [  155.584313] time_bench: Type:tasklet_page_pool01_fast_path Per elem: 2 cycles(tsc) 26.052 ns (step:0) - (measurement period time:0.260524810 sec time_interval:260524810) - (invoke count:10000000 tsc_interval:26052476)
+> [  155.603588] bench_page_pool_simple: time_bench_page_pool02_ptr_ring(): in_serving_softirq fast-path
+> [  156.183214] time_bench: Type:tasklet_page_pool02_ptr_ring Per elem: 5 cycles(tsc) 57.059 ns (step:0) - (measurement period time:0.570594850 sec time_interval:570594850) - (invoke count:10000000 tsc_interval:57059478)
+> [  156.202402] bench_page_pool_simple: time_bench_page_pool03_slow(): in_serving_softirq fast-path
+> [  158.045594] time_bench: Type:tasklet_page_pool03_slow Per elem: 18 cycles(tsc) 183.450 ns (step:0) - (measurement period time:1.834507700 sec time_interval:1834507700) - (invoke count:10000000 tsc_interval:183450764)
+>
+> Patch for time_bench.h enable the out of tree testing on arm64 system:
+> @@ -101,6 +101,7 @@ struct time_bench_cpu {
+>    *  CPUID clears the high 32-bits of all (rax/rbx/rcx/rdx)
+>    */
+>   static __always_inline uint64_t tsc_start_clock(void) {
+> +#if defined(__i386__) || defined(__x86_64__)
+>          /* See: Intel Doc #324264 */
+>          unsigned hi, lo;
+>          asm volatile (
+> @@ -111,9 +112,13 @@ static __always_inline uint64_t tsc_start_clock(void) {
+>                  "%rax", "%rbx", "%rcx", "%rdx");
+>          //FIXME: on 32bit use clobbered %eax + %edx
+>          return ((uint64_t)lo) | (((uint64_t)hi) << 32);
+> +#else
+> +       return get_cycles();
+> +#endif
+>   }
+>
+>   static __always_inline uint64_t tsc_stop_clock(void) {
+> +#if defined(__i386__) || defined(__x86_64__)
+>          /* See: Intel Doc #324264 */
+>          unsigned hi, lo;
+>          asm volatile(
+> @@ -123,6 +128,9 @@ static __always_inline uint64_t tsc_stop_clock(void) {
+>                  "CPUID\n\t": "=r" (hi), "=r" (lo)::
+>                  "%rax", "%rbx", "%rcx", "%rdx");
+>          return ((uint64_t)lo) | (((uint64_t)hi) << 32);
+> +#else
+> +       return get_cycles();
+> +#endif
+>   }
+>
+>   /* Notes for RDTSC and RDTSCP
+> @@ -186,10 +194,14 @@ enum {
+>
+>   static __always_inline unsigned long long p_rdpmc(unsigned in)
+>   {
+> +#if defined(__i386__) || defined(__x86_64__)
+>          unsigned d, a;
+>
+>          asm volatile("rdpmc" : "=d" (d), "=a" (a) : "c" (in) : "memory");
+>          return ((unsigned long long)d << 32) | a;
+> +#else
+> +       return 0;
+> +#endif
+>   }
+>
+>   /* These PMU counter needs to be enabled, but I don't have the
+> @@ -216,7 +228,11 @@ static __always_inline unsigned long long pmc_clk(void)
+>   #define MSR_IA32_PCM2 0x400000C3
+>   inline uint64_t msr_inst(unsigned long long *msr_result)
+>   {
+> +#if defined(__i386__) || defined(__x86_64__)
+>          return rdmsrl_safe(MSR_IA32_PCM0, msr_result);
+> +#else
+> +       return 0;
+> +#endif
+>   }
+>
+> 1. https://lore.kernel.org/lkml/8067f204-1380-4d37-8ffd-007fc6f26738@kernel.org/T/
+>
+> CC: Alexander Lobakin <aleksander.lobakin@intel.com>
+> CC: Robin Murphy <robin.murphy@arm.com>
+> CC: Alexander Duyck <alexander.duyck@gmail.com>
+> CC: IOMMU <iommu@lists.linux.dev>
+>
+> Change log:
+> V2:
+>    1. Add a item_full stat.
+>    2. Use container_of() for page_pool_to_pp().
+>
+> Yunsheng Lin (2):
+>    page_pool: fix timing for checking and disabling napi_local
+>    page_pool: fix IOMMU crash when driver has already unbound
+>
+>   drivers/net/ethernet/freescale/fec_main.c     |   8 +-
+>   drivers/net/ethernet/intel/iavf/iavf_txrx.c   |   6 +-
+>   drivers/net/ethernet/intel/idpf/idpf_txrx.c   |  14 +-
+>   drivers/net/ethernet/intel/libeth/rx.c        |   2 +-
+>   .../net/ethernet/mellanox/mlx5/core/en/xdp.c  |   3 +-
+>   drivers/net/netdevsim/netdev.c                |   6 +-
+>   drivers/net/wireless/mediatek/mt76/mt76.h     |   2 +-
+>   include/linux/mm_types.h                      |   2 +-
+>   include/linux/skbuff.h                        |   1 +
+>   include/net/libeth/rx.h                       |   3 +-
+>   include/net/netmem.h                          |  10 +-
+>   include/net/page_pool/helpers.h               |   7 +
+>   include/net/page_pool/types.h                 |  17 +-
+>   net/core/devmem.c                             |   4 +-
+>   net/core/netmem_priv.h                        |   5 +-
+>   net/core/page_pool.c                          | 190 +++++++++++++++---
+>   net/core/page_pool_priv.h                     |  10 +-
+>   net/core/skbuff.c                             |   3 +-
+>   net/core/xdp.c                                |   3 +-
+>   19 files changed, 238 insertions(+), 58 deletions(-)
+>
