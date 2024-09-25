@@ -1,147 +1,112 @@
-Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-ed1-f46.google.com (mail-ed1-f46.google.com [209.85.208.46])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5994815747D
-	for <iommu@lists.linux.dev>; Wed, 25 Sep 2024 08:43:11 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=210.61.82.184
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4842115AD9C
+	for <iommu@lists.linux.dev>; Wed, 25 Sep 2024 08:44:27 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.46
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1727253793; cv=none; b=hzhgx+48/mFtEG/EMRoV1lmMVsjcqnBz1cN5tkH5XWWgxDmTLwnKrfRTXZYmvVJNLc1yCNEELVzbSiJebVb/Iu8mUF2k3+HCWN4Jfd1yisYIObUczPU5B3hJh1YgiTF1cggxMd4/K+Amv2V6c8mGc0cXxr2GnmgnJoRmjD/abuI=
+	t=1727253868; cv=none; b=iFG7fIWclU4J6SiR/4nAWBQ4eEOuvutr6G86l8TQg+xjNEicDTVmKgu4R6VRDGaXYBmrhnadpvbFM05RQMtOtTK63ofNuc6AhzzG+smwOf6sJasILMnSz6qjCyZmJLXdscnXhJmBR7HXBPcrpbQogPtdAaJNekkv1TlqGEP08yQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1727253793; c=relaxed/simple;
-	bh=dI3IZSn8QJ5+D9rEhSc0z1pZ65+OKrZFPZp75fmOL3c=;
-	h=Message-ID:Date:MIME-Version:Subject:To:CC:References:From:
-	 In-Reply-To:Content-Type; b=N7ZXp4BzEklVosN6lA5c9ixmSZbktNSmjKIqlH+79jqcqC2JHPUdPSrL3Vl2aLKpbuyVVDa0gxjitcY1vgkFKhd878X0qKBZATxQqU+aR0+dFCqgLKsibm4nZZHIcvZHjQlNvYL0eWj5VTT8p9bwoRAkVLWYs9yGJtXjkc3vkuo=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=mediatek.com; spf=pass smtp.mailfrom=mediatek.com; dkim=pass (1024-bit key) header.d=mediatek.com header.i=@mediatek.com header.b=Mo1xlRuh; arc=none smtp.client-ip=210.61.82.184
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=mediatek.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=mediatek.com
+	s=arc-20240116; t=1727253868; c=relaxed/simple;
+	bh=fp5Mf7idLBODRJmfv1T3S/u+ul+mXmM0kO3BnThv8HA=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=d5+2rq6+rHJ0hYj1PCjDx1tZ4swlj0arg54GmRS06HmfiZggx+76oSppwD+mV4bGVdSxcatRNhWPx+8NiOVS1iTrGGU3cmqCDxNBEAulmnGOFtyet1HTjD/Liz1lAVOZkaeqbZRrweVdXbRQwvWwBKfSeEpdxpoEuOxv8dzdF4k=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=XT2jYL/9; arc=none smtp.client-ip=209.85.208.46
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=mediatek.com header.i=@mediatek.com header.b="Mo1xlRuh"
-X-UUID: 2e3b99f87b1a11ef8b96093e013ec31c-20240925
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=mediatek.com; s=dk;
-	h=Content-Transfer-Encoding:Content-Type:In-Reply-To:From:References:CC:To:Subject:MIME-Version:Date:Message-ID; bh=JrbVtDLJwECuyvPhK0BEV+KwQsj0q8fI1QSWfwxU1nE=;
-	b=Mo1xlRuhAzQobwoV5qygzF6o/nRQm+uZy6LeTFM2p3IOe2WmHz6dsVeJDNQbeqrZu2gPYXicr/MSNhpy55dcIABLvsLL23jFUDrnZdl2OYLehbx+lg+ZudLnvhKEw0lxcgDzu71I3eNwWoyKf2q/faCnTKGXIBth+2ei7hBHJKw=;
-X-CID-P-RULE: Release_Ham
-X-CID-O-INFO: VERSION:1.1.41,REQID:664a495c-7254-4e32-b0a8-7a062548c705,IP:0,U
-	RL:0,TC:0,Content:8,EDM:0,RT:0,SF:0,FILE:0,BULK:0,RULE:Release_Ham,ACTION:
-	release,TS:8
-X-CID-META: VersionHash:6dc6a47,CLOUDID:7490899e-8e9a-4ac1-b510-390a86b53c0a,B
-	ulkID:nil,BulkQuantity:0,Recheck:0,SF:102,TC:nil,Content:4|-5,EDM:-3,IP:ni
-	l,URL:0,File:nil,RT:nil,Bulk:nil,QS:nil,BEC:nil,COL:0,OSI:0,OSA:0,AV:0,LES
-	:1,SPR:NO,DKR:0,DKP:0,BRR:0,BRE:0,ARC:0
-X-CID-BVR: 0,NGT
-X-CID-BAS: 0,NGT,0,_
-X-CID-FACTOR: TF_CID_SPAM_SNR
-X-UUID: 2e3b99f87b1a11ef8b96093e013ec31c-20240925
-Received: from mtkmbs09n2.mediatek.inc [(172.21.101.94)] by mailgw02.mediatek.com
-	(envelope-from <macpaul.lin@mediatek.com>)
-	(Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
-	with ESMTP id 2138599595; Wed, 25 Sep 2024 16:43:04 +0800
-Received: from mtkmbs11n1.mediatek.inc (172.21.101.185) by
- mtkmbs10n1.mediatek.inc (172.21.101.34) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.1118.26; Wed, 25 Sep 2024 16:43:02 +0800
-Received: from [172.21.84.99] (172.21.84.99) by mtkmbs11n1.mediatek.inc
- (172.21.101.73) with Microsoft SMTP Server id 15.2.1118.26 via Frontend
- Transport; Wed, 25 Sep 2024 16:43:01 +0800
-Message-ID: <2821ef09-1b32-082d-69d1-e09a3a302447@mediatek.com>
-Date: Wed, 25 Sep 2024 16:42:59 +0800
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="XT2jYL/9"
+Received: by mail-ed1-f46.google.com with SMTP id 4fb4d7f45d1cf-5c71f2311f5so12800a12.1
+        for <iommu@lists.linux.dev>; Wed, 25 Sep 2024 01:44:26 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20230601; t=1727253865; x=1727858665; darn=lists.linux.dev;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=fp5Mf7idLBODRJmfv1T3S/u+ul+mXmM0kO3BnThv8HA=;
+        b=XT2jYL/9qx++aRWnh63H6jNXGrenwIVF3arAe4VKI89PXREOLkFwg/RA1XTfz70WHd
+         BvuSL7p9aekOFY1gG4nPtHJF49muN9rbxcDbj7b5hYS9kLh0qkcaZ3UtSzkd0xSSlhY8
+         Zuo3eVC15T3YUPDpW7DKir7U8rV+V/Ww+uKnCOEdhHJCPkXUKY41KfpsFwIBucd34Bd8
+         nzweYeVEQ1FeMRiNPhntOnvn4OYOIuhF5XgROBc6R63lHK1+72UG7JjjnU9my1q7JWmt
+         KMOkulnoWIjGZYri3BE4yTPLIrwicVmcq3CM50IVD0MVKj+fjRr8wYH5h3/40DlT07fS
+         POVQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1727253865; x=1727858665;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=fp5Mf7idLBODRJmfv1T3S/u+ul+mXmM0kO3BnThv8HA=;
+        b=sMpkGl6EsotuhD/OYcbEHU0DvjlKT2MSJrf8/p8iEYVglHMu9izkTJNhYu0dvIDsui
+         fFuL8tu9TZNpbEwqlsz24Tn3vMGsMpVmAdivEPb54q9+OKEGj/CvOP2sCnSLskATPuN0
+         pXiRkL3qFLOcFmJIvFk3+cAj9DQWYv3GJsA5JQEgfmbSo+XVVBH1q4mltHweUUnmFKHU
+         ND+CuGMc8wsGVsocmm0RDaJ4+onjf7XLaCU0Z6K8BODkvsU5zMomujTN/IUk2015aIaj
+         1/ISkT0sBTJuyec3TfQ/9X9fVsF3llNTKXDvQDYEqJiPLG22pJo5Ek9z/lKCkyfEifB3
+         v5eQ==
+X-Forwarded-Encrypted: i=1; AJvYcCW/F/lK5EZm3S1y8gfaELIAyU9Xgb4parB3TcHQrgyGtnG5KJK5nXaUvqVbXTTGnTtfRu+CXA==@lists.linux.dev
+X-Gm-Message-State: AOJu0YyK7FQkF2UIT1WkTSRJBCplDw5pnpyjQwmgBIXf7LpVOjdtPgdI
+	QbaoO7u2hIglv82SyuOcs5yA25F78ZIXwsxnl65RUH0CxdLMPMkEDbNImDQ+EzPPne4S59HTpCq
+	NyQjVphgij/f/Qx1LDybMgWEMyj0zHZh1UbZD
+X-Google-Smtp-Source: AGHT+IHKRTDGK6cO+UR0DQQih7mccHmFaGUU/bQ5I0XVaFXESymT4q9yT3f6r4WgiGSRT/MGKTkDivZYIrZJfRkqMX4=
+X-Received: by 2002:a05:6402:520b:b0:5c5:b8fe:d1ec with SMTP id
+ 4fb4d7f45d1cf-5c720fc0a58mr263957a12.3.1727253865144; Wed, 25 Sep 2024
+ 01:44:25 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.9.1
-Subject: Re: [PATCH 3/6] dt-bindings: display: mediatek: Fix clocks count
- constraint for new SoCs
-Content-Language: en-US
-To: Conor Dooley <conor@kernel.org>, AngeloGioacchino Del Regno
-	<angelogioacchino.delregno@collabora.com>, <moudy.ho@mediatek.com>,
-	<macross.chen@mediatek.com>
-CC: Chun-Kuang Hu <chunkuang.hu@kernel.org>, Philipp Zabel
-	<p.zabel@pengutronix.de>, Maarten Lankhorst
-	<maarten.lankhorst@linux.intel.com>, Maxime Ripard <mripard@kernel.org>,
-	Thomas Zimmermann <tzimmermann@suse.de>, David Airlie <airlied@gmail.com>,
-	Simona Vetter <simona@ffwll.ch>, Rob Herring <robh@kernel.org>, "Krzysztof
- Kozlowski" <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, Yong Wu
-	<yong.wu@mediatek.com>, Joerg Roedel <joro@8bytes.org>, Will Deacon
-	<will@kernel.org>, Robin Murphy <robin.murphy@arm.com>, Matthias Brugger
-	<matthias.bgg@gmail.com>, <dri-devel@lists.freedesktop.org>,
-	<linux-mediatek@lists.infradead.org>, <devicetree@vger.kernel.org>,
-	<linux-kernel@vger.kernel.org>, <iommu@lists.linux.dev>,
-	<linux-arm-kernel@lists.infradead.org>, Alexandre Mergnat
-	<amergnat@baylibre.com>, Bear Wang <bear.wang@mediatek.com>, Pablo Sun
-	<pablo.sun@mediatek.com>, Macpaul Lin <macpaul@gmail.com>, Sen Chu
-	<sen.chu@mediatek.com>, Chris-qj chen <chris-qj.chen@mediatek.com>, "MediaTek
- Chromebook Upstream" <Project_Global_Chrome_Upstream_Group@mediatek.com>,
-	Chen-Yu Tsai <wenst@chromium.org>
-References: <20240924103156.13119-1-macpaul.lin@mediatek.com>
- <20240924103156.13119-3-macpaul.lin@mediatek.com>
- <ffc1900b-3921-48ca-a2b2-1b798c57e572@collabora.com>
- <20240924-commute-collision-13ad39717d31@spud>
-From: Macpaul Lin <macpaul.lin@mediatek.com>
-In-Reply-To: <20240924-commute-collision-13ad39717d31@spud>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 7bit
-X-TM-AS-Product-Ver: SMEX-14.0.0.3152-9.1.1006-23728.005
-X-TM-AS-Result: No-10--11.313000-8.000000
-X-TMASE-MatchedRID: QfHZjzml1E8OwH4pD14DsPHkpkyUphL9Wot5Z16+u76+UkTh6A/DwT8f
-	ilvi6fr90mFsFMx0VZMOYgThO+DmXx2P280ZiGmRdARARTk4h59bAoaK+wS4jRSX1u8BLtZAFRE
-	6l+a4SRTiTN0gJqFURMzVnE1oQDqoavi5Lq9+Ha1s7yIvC2pwGtF9F+XaXgXeZ5yuplze9ptTyk
-	OINBDQU+cQv6iXuAzrwVMUpfyfKUIAwWnlblYdAsxmTzofEWOOazzS+36ix9ybKItl61J/ycnjL
-	TA/UDoAA6QGdvwfwZZWRVlrjsKO8N0H8LFZNFG7bkV4e2xSge75AqQykow+yePbmdtfeypRXtRV
-	FLwJOwOr2TwTTCELzrAUyUg9ogFt
-X-TM-AS-User-Approved-Sender: No
-X-TM-AS-User-Blocked-Sender: No
-X-TMASE-Result: 10--11.313000-8.000000
-X-TMASE-Version: SMEX-14.0.0.3152-9.1.1006-23728.005
-X-TM-SNTS-SMTP: 972967CB0576905A235A1CA79982300AA079E3A940A8E8B2F8C6AB1ADA60F2932000:8
+References: <20240823132137.336874-1-aik@amd.com> <20240823132137.336874-13-aik@amd.com>
+ <ZudMoBkGCi/dTKVo@nvidia.com> <CAGtprH8C4MQwVTFPBMbFWyW4BrK8-mDqjJn-UUFbFhw4w23f3A@mail.gmail.com>
+ <BN9PR11MB527608E3B8B354502F22DFCA8C6F2@BN9PR11MB5276.namprd11.prod.outlook.com>
+ <CAGtprH-bj_+1k-jwEVS9PcAmCOvo72Vec3VVKvL1te7T8R1ooQ@mail.gmail.com>
+ <BL1PR11MB5271327169B23A60D66965F38C6F2@BL1PR11MB5271.namprd11.prod.outlook.com>
+ <20240923160239.GD9417@nvidia.com> <BN9PR11MB527605EA6D4DB0C8A4D4AFD78C6F2@BN9PR11MB5276.namprd11.prod.outlook.com>
+ <20240924120735.GI9417@nvidia.com>
+In-Reply-To: <20240924120735.GI9417@nvidia.com>
+From: Vishal Annapurve <vannapurve@google.com>
+Date: Wed, 25 Sep 2024 10:44:12 +0200
+Message-ID: <CAGtprH__2qLkwu-FvKEECVDn=sek42rVLWHuin9cwSbYVAOi=w@mail.gmail.com>
+Subject: Re: [RFC PATCH 12/21] KVM: IOMMUFD: MEMFD: Map private pages
+To: Jason Gunthorpe <jgg@nvidia.com>
+Cc: "Tian, Kevin" <kevin.tian@intel.com>, Alexey Kardashevskiy <aik@amd.com>, 
+	"kvm@vger.kernel.org" <kvm@vger.kernel.org>, "iommu@lists.linux.dev" <iommu@lists.linux.dev>, 
+	"linux-coco@lists.linux.dev" <linux-coco@lists.linux.dev>, 
+	"linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>, 
+	Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>, 
+	Alex Williamson <alex.williamson@redhat.com>, "Williams, Dan J" <dan.j.williams@intel.com>, 
+	"pratikrajesh.sampat@amd.com" <pratikrajesh.sampat@amd.com>, "michael.day@amd.com" <michael.day@amd.com>, 
+	"david.kaplan@amd.com" <david.kaplan@amd.com>, "dhaval.giani@amd.com" <dhaval.giani@amd.com>, 
+	Santosh Shukla <santosh.shukla@amd.com>, Tom Lendacky <thomas.lendacky@amd.com>, 
+	Michael Roth <michael.roth@amd.com>, Alexander Graf <agraf@suse.de>, Nikunj A Dadhania <nikunj@amd.com>, 
+	Vasant Hegde <vasant.hegde@amd.com>, Lukas Wunner <lukas@wunner.de>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
+On Tue, Sep 24, 2024 at 2:07=E2=80=AFPM Jason Gunthorpe <jgg@nvidia.com> wr=
+ote:
+>
+> On Mon, Sep 23, 2024 at 11:52:19PM +0000, Tian, Kevin wrote:
+> > > IMHO we should try to do as best we can here, and the ideal interface
+> > > would be a notifier to switch the shared/private pages in some portio=
+n
+> > > of the guestmemfd. With the idea that iommufd could perhaps do it
+> > > atomically.
+> >
+> > yes atomic replacement is necessary here, as there might be in-fly
+> > DMAs to pages adjacent to the one being converted in the same
+> > 1G hunk. Unmap/remap could potentially break it.
+>
+> Yeah.. This integration is going to be much more complicated than I
+> originally thought about. It will need the generic pt stuff as the
+> hitless page table manipulations we are contemplating here are pretty
+> complex.
+>
+> Jason
 
-On 9/25/24 00:00, Conor Dooley wrote:
-> On Tue, Sep 24, 2024 at 01:42:01PM +0200, AngeloGioacchino Del Regno wrote:
->> Il 24/09/24 12:31, Macpaul Lin ha scritto:
->>> The display node in mt8195.dtsi was triggering a CHECK_DTBS error due
->>> to an excessively long 'clocks' property:
->>>     display@14f06000: clocks: [[31, 14], [31, 43], [31, 44]] is too long
->>>
->>> To resolve this issue, add "maxItems: 3" to the 'clocks' property in
->>> the DT schema.
->>>
->>> Fixes: 4ed545e7d100 ("dt-bindings: display: mediatek: disp: split each block to individual yaml")
->>> Signed-off-by: Macpaul Lin <macpaul.lin@mediatek.com>
->>> ---
->>>    .../devicetree/bindings/display/mediatek/mediatek,split.yaml     | 1 +
->>>    1 file changed, 1 insertion(+)
->>>
->>> diff --git a/Documentation/devicetree/bindings/display/mediatek/mediatek,split.yaml b/Documentation/devicetree/bindings/display/mediatek/mediatek,split.yaml
->>> index e4affc854f3d..42d2d483cc29 100644
->>> --- a/Documentation/devicetree/bindings/display/mediatek/mediatek,split.yaml
->>> +++ b/Documentation/devicetree/bindings/display/mediatek/mediatek,split.yaml
->>> @@ -57,6 +57,7 @@ properties:
->>>      clocks:
->>>        items:
->>>          - description: SPLIT Clock
->>
->> That's at least confusing (granted that it works) - either add a description for
->> each clock and then set `minItems: 1` (preferred), or remove this "SPLIT Clock"
->> description and allow a maximum of 3 clocks.
->>
->> Removing the description can be done - IMO - because "SPLIT Clock" is, well,
->> saying that the SPLIT block gets a SPLIT clock ... stating the obvious, anyway.
-> 
-> Right, but what are the other two new clocks? Are they as obvious?
-> There's no clock-names here to give any more information as to what the
-> other clocks are supposed to be.
-> 
-> Kinda unrelated, but I think that "SPLIT Clock" probably isn't what the
-> name of the clock in the IP block is anyway, sounds more like the name
-> for it on the provider end..
-
-Thanks for the suggestions. I think Moudy could help on the new fixes
-for both DT schem and mt8195.dtsi. This patch could be separated from
-origin patch set.
-
-Thanks
-Macpaul Lin
+ To ensure that I understand your concern properly, the complexity of
+handling hitless page manipulations is because guests can convert
+memory at smaller granularity than the physical page size used by the
+host software. Complexity remains the same irrespective of whether
+kvm/guest_memfd is notifying iommu driver to unmap converted ranges or
+if its userspace notifying iommu driver.
