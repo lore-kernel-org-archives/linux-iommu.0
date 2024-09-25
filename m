@@ -1,62 +1,63 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.8])
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.14])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5A6A3188582;
-	Tue, 24 Sep 2024 23:29:49 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.8
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 45CD62F5E;
+	Wed, 25 Sep 2024 00:00:51 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.14
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1727220591; cv=none; b=nAUomVDCFT1B1aR0NnXd7HTTENSWj2xLblNRIkPjTViprO+JIKzPd0RM2MObXQ19gmDP/yBgANpWhJdtm6DZJaieKEkpsMEXCLM5BDLSo1JE7B37qwcyFgTbQ4tv82FN06wWd5rkvJMKzVJFOtYU/aV8ngeynjhx6jF9cFcnjtA=
+	t=1727222453; cv=none; b=buBmKyhIbizUJDbMBplPcQ5v2RAdFIewn2KABTqpDU2Hqumn4YP3IGzcwqMVMDFb+ysvpFr03lV7Bp+KfUB8DO8d6mMVaR2NwGQdvn/AiSfrUBJv0T8eJYGn8DnyHcfWT6WgWy4InFc5LjAGvQ2xEtTLEEGZ3heZrwd/C3O8ANo=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1727220591; c=relaxed/simple;
-	bh=BL9wQg3EmpqGkCRLh57Z/pLM+zsTDky+PprLB+vZR20=;
+	s=arc-20240116; t=1727222453; c=relaxed/simple;
+	bh=xrDiBntnkYADoF8Z2z96ru7m5IezmardL6OOcKZEkRQ=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=jocthDeblTQskRhD2hMgPEoYpKSMXoQBFkzErW1Sj02SeBmtwY5x85vmSykK0LK82LDZ/bI4c4mWN9DijOU9gHXO1jIk1yOEzhQU3baol1eM5rHWYOYXSbPn2f9mjMwnA9rj7xZfs84n1/T9ai1vINZolr3PEhrEwH7uRYN+oSI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=L9wCQg0w; arc=none smtp.client-ip=192.198.163.8
+	 Content-Type:Content-Disposition:In-Reply-To; b=q6si5ZzQ5J/g+ol9C5891JBSXzYjJXNQxBwromGP0C1TjxLjmRufTyulh0rzZTkGGd5WA1HWpwD9Z2xxESZLcT8JAex70jpN3U7Aza4lREQFDPb+VfsDL0MfewnmHA6LBfdXPASCTIn/Ch5XfKMu8NWhw9C2juxHAKhpxI3qXso=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=cmeTM33+; arc=none smtp.client-ip=198.175.65.14
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="L9wCQg0w"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="cmeTM33+"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1727220589; x=1758756589;
+  t=1727222451; x=1758758451;
   h=date:from:to:cc:subject:message-id:references:
    mime-version:in-reply-to;
-  bh=BL9wQg3EmpqGkCRLh57Z/pLM+zsTDky+PprLB+vZR20=;
-  b=L9wCQg0wIAjIjnXpAFmlYqg10Dz8ULAeJql18TKmuQ/0tDlxh94/Agsa
-   PizAZTHdp2ZGrQCCO61SYOEtAxDQfWlRrxBdpjMsMLGgywwAVmfZ56UwF
-   XQJrDmbZegNgmYn27Rtm5O7SHUFV3Ro/kev07CQdeUsuXUCs6SX05/Xu7
-   mpBDtJQbRerRTFZbngnOv0rrSlhVXTnH3n8Hu5WpnpJ99JPqHDZq3mLTC
-   vOUZhANoU0N2ULwvGnIK+QTKFR+AoZMIoOGNR4etT1oYEQ/i9eMOsSB9w
-   wSkHoE3CrjjMwvpQeWyd1Ur3NakoK1/QV+yJ6+0phC5PKaiBcIzQCYQzy
-   g==;
-X-CSE-ConnectionGUID: hgrFYKqSTgue+qsWNxxcbw==
-X-CSE-MsgGUID: 8C1JF7i7Qrq10InAO5wZRQ==
-X-IronPort-AV: E=McAfee;i="6700,10204,11205"; a="43765129"
+  bh=xrDiBntnkYADoF8Z2z96ru7m5IezmardL6OOcKZEkRQ=;
+  b=cmeTM33+fgtCeWYTcRmLVKmGBi/RNCqoBRj+Bgczr0XQarfw6Cvj/LgV
+   5R30PGaCX3Ff6PxQNKLNaq0DvAbc/MripL41zBsCcCdadn5Yb2MK0PFAv
+   h3T8G2p6e+AR8E5OjcmnWCcpkWs/RBmjrkuEcDpDn9Czu85nPzJFAcZZZ
+   a6j4g8dV6X/MPlBEwqWHLZrg4/AcYYUNNLutAGqj7V6YmEF10yRwIOg/H
+   GxZWsubBLchPfh5b6jjPSE/UyHK3bCHZozR02ajO9c/i3aTqrTkM4F3SQ
+   wIYF1/JY6AQl1Fc7udDBhOKB8pPxNcJelQbV/9owEV/det0ui7/Eh37IO
+   A==;
+X-CSE-ConnectionGUID: f4HeF/OaQHy8yJioVAEd6A==
+X-CSE-MsgGUID: NvyV8+9HRySlt+ghepE5NA==
+X-IronPort-AV: E=McAfee;i="6700,10204,11205"; a="30037221"
 X-IronPort-AV: E=Sophos;i="6.10,256,1719903600"; 
-   d="scan'208";a="43765129"
-Received: from fmviesa002.fm.intel.com ([10.60.135.142])
-  by fmvoesa102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Sep 2024 16:29:49 -0700
-X-CSE-ConnectionGUID: YLJXeP3UQfe3KrMKz35BkA==
-X-CSE-MsgGUID: +RKT5L9lThKb4rhsCHrfxw==
+   d="scan'208";a="30037221"
+Received: from fmviesa007.fm.intel.com ([10.60.135.147])
+  by orvoesa106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Sep 2024 17:00:50 -0700
+X-CSE-ConnectionGUID: C5zgOdcWQy6HlX7MjgduhA==
+X-CSE-MsgGUID: MvFO1ljCQuSw85pjwxKGYQ==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.10,256,1719903600"; 
-   d="scan'208";a="94915419"
+   d="scan'208";a="71216609"
 Received: from lkp-server01.sh.intel.com (HELO 53e96f405c61) ([10.239.97.150])
-  by fmviesa002.fm.intel.com with ESMTP; 24 Sep 2024 16:29:46 -0700
+  by fmviesa007.fm.intel.com with ESMTP; 24 Sep 2024 17:00:47 -0700
 Received: from kbuild by 53e96f405c61 with local (Exim 4.96)
 	(envelope-from <lkp@intel.com>)
-	id 1stEyW-000IwD-1b;
-	Tue, 24 Sep 2024 23:29:44 +0000
-Date: Wed, 25 Sep 2024 07:29:18 +0800
+	id 1stFSX-000Ixa-1G;
+	Wed, 25 Sep 2024 00:00:45 +0000
+Date: Wed, 25 Sep 2024 08:00:23 +0800
 From: kernel test robot <lkp@intel.com>
 To: Dipendra Khadka <kdipendra88@gmail.com>, will@kernel.org,
 	robin.murphy@arm.com, joro@8bytes.org, baolu.lu@linux.intel.com
-Cc: oe-kbuild-all@lists.linux.dev, Dipendra Khadka <kdipendra88@gmail.com>,
+Cc: llvm@lists.linux.dev, oe-kbuild-all@lists.linux.dev,
+	Dipendra Khadka <kdipendra88@gmail.com>,
 	linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev,
 	linux-kernel@vger.kernel.org
 Subject: Re: [PATCH] Staging: iommu:  Replace null pointer check with IS_ERR
  in arm_smmu_domain_alloc_user()
-Message-ID: <202409250753.7q3zl3b8-lkp@intel.com>
+Message-ID: <202409250755.nLQtNlCf-lkp@intel.com>
 References: <20240922155621.49432-1-kdipendra88@gmail.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
@@ -78,21 +79,32 @@ url:    https://github.com/intel-lab-lkp/linux/commits/Dipendra-Khadka/Staging-i
 base:   staging/staging-testing
 patch link:    https://lore.kernel.org/r/20240922155621.49432-1-kdipendra88%40gmail.com
 patch subject: [PATCH] Staging: iommu:  Replace null pointer check with IS_ERR in arm_smmu_domain_alloc_user()
-config: arm64-randconfig-001-20240925 (https://download.01.org/0day-ci/archive/20240925/202409250753.7q3zl3b8-lkp@intel.com/config)
-compiler: aarch64-linux-gcc (GCC) 14.1.0
-reproduce (this is a W=1 build): (https://download.01.org/0day-ci/archive/20240925/202409250753.7q3zl3b8-lkp@intel.com/reproduce)
+config: arm64-randconfig-003-20240925 (https://download.01.org/0day-ci/archive/20240925/202409250755.nLQtNlCf-lkp@intel.com/config)
+compiler: clang version 20.0.0git (https://github.com/llvm/llvm-project 7773243d9916f98ba0ffce0c3a960e4aa9f03e81)
+reproduce (this is a W=1 build): (https://download.01.org/0day-ci/archive/20240925/202409250755.nLQtNlCf-lkp@intel.com/reproduce)
 
 If you fix the issue in a separate patch/commit (i.e. not just a new version of
 the same patch/commit), kindly add following tags
 | Reported-by: kernel test robot <lkp@intel.com>
-| Closes: https://lore.kernel.org/oe-kbuild-all/202409250753.7q3zl3b8-lkp@intel.com/
+| Closes: https://lore.kernel.org/oe-kbuild-all/202409250755.nLQtNlCf-lkp@intel.com/
 
 All errors (new ones prefixed by >>):
 
-   drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c: In function 'arm_smmu_domain_alloc_user':
->> drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c:3066:24: error: returning 'struct arm_smmu_domain *' from a function with incompatible return type 'struct iommu_domain *' [-Wincompatible-pointer-types]
+   In file included from drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c:15:
+   In file included from include/linux/crash_dump.h:5:
+   In file included from include/linux/kexec.h:18:
+   In file included from include/linux/vmcore_info.h:6:
+   In file included from include/linux/elfcore.h:11:
+   In file included from include/linux/ptrace.h:10:
+   In file included from include/linux/pid_namespace.h:7:
+   In file included from include/linux/mm.h:2228:
+   include/linux/vmstat.h:514:36: warning: arithmetic between different enumeration types ('enum node_stat_item' and 'enum lru_list') [-Wenum-enum-conversion]
+     514 |         return node_stat_name(NR_LRU_BASE + lru) + 3; // skip "nr_"
+         |                               ~~~~~~~~~~~ ^ ~~~
+>> drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c:3066:10: error: incompatible pointer types returning 'struct arm_smmu_domain *' from a function with result type 'struct iommu_domain *' [-Werror,-Wincompatible-pointer-types]
     3066 |                 return smmu_domain;
          |                        ^~~~~~~~~~~
+   1 warning and 1 error generated.
 
 
 vim +3066 drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
