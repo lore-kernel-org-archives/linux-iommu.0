@@ -1,236 +1,207 @@
-Received: from szxga08-in.huawei.com (szxga08-in.huawei.com [45.249.212.255])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-il1-f198.google.com (mail-il1-f198.google.com [209.85.166.198])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2DE2515DBAB
-	for <iommu@lists.linux.dev>; Wed, 25 Sep 2024 13:32:02 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=45.249.212.255
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2587113AD3F
+	for <iommu@lists.linux.dev>; Wed, 25 Sep 2024 13:45:30 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.166.198
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1727271126; cv=none; b=BwwhA4wqqNyK0yZTaHeaQPCn5p/HE1yCztLe1IAvcy9BNiJaYPsr2KPuXM/5d8DlVVgnEn45R4bDDttHZeFYKVISrEzMen+1fho7xMqnn6NcbnlT9aDRVesMT1p7HIv9vtfEs4SvIbpkoZurMJKciE53vNz4c/vxPRSsNQCiw3E=
+	t=1727271932; cv=none; b=ugVLAD/F0I1Gx8GWfm+uzqKCj7f6dk1IQGeam30om/zMp2kGyAPvUKSoc2qEpsaeLPNnOjYR5zW0Q4fNpW3FwcAZ+h7ZZNT6bfzYWCOp1yXWM+EibnYLhiZbZNSjKrLbbxAfhR20SYXLJdp9/iH+aMmdSI20+wDgRzz6snQDWHw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1727271126; c=relaxed/simple;
-	bh=qvJ+/AG4rYN3l9UpFuRhPA6wXOQLE49l5qwR7uwnP40=;
-	h=Message-ID:Date:MIME-Version:Subject:To:CC:References:From:
-	 In-Reply-To:Content-Type; b=tldUeylgl9VGQgmJBapA3j44GnvTrzybJw1mqWtCtITcxz8UcRWkHV0W+g9AJpZtvfSC8Almn9tbKaDDH5nM7h+z/32/ean05xnTXMzeoXqbgYs9pTa0u+at0s5P05jHLFV/DfFWbpHVg6n/7SWjVG4JCqp+FrQG3vQ15+H3Fuo=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=huawei.com; spf=pass smtp.mailfrom=huawei.com; arc=none smtp.client-ip=45.249.212.255
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=huawei.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=huawei.com
-Received: from mail.maildlp.com (unknown [172.19.163.48])
-	by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4XDHfg0sdzz1T7tx;
-	Wed, 25 Sep 2024 21:30:35 +0800 (CST)
-Received: from kwepemf200007.china.huawei.com (unknown [7.202.181.233])
-	by mail.maildlp.com (Postfix) with ESMTPS id 3C59F1800A4;
-	Wed, 25 Sep 2024 21:32:00 +0800 (CST)
-Received: from [10.67.121.184] (10.67.121.184) by
- kwepemf200007.china.huawei.com (7.202.181.233) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.1544.11; Wed, 25 Sep 2024 21:31:59 +0800
-Message-ID: <282e3f4f-c3ef-4b42-bf9e-3a1ab25a8091@huawei.com>
-Date: Wed, 25 Sep 2024 21:31:58 +0800
+	s=arc-20240116; t=1727271932; c=relaxed/simple;
+	bh=+ZKG31H3fAaEzdcyYn09k2egXs3dE0H/T+D5GvxwY9I=;
+	h=MIME-Version:Date:Message-ID:Subject:From:To:Content-Type; b=YJkzwo5NA8BHfkw3X5HqAEsiPEW5RHGcWR51h+pVVUoBeN3YMQma+crJG0+OaSlGle0rcrO7Z9Poi/xJxOcL+lR5kopUB88fTgCqn9HKMOEdPYxvMfLc/PJ8pmAzqfScvWeAoyWCmOdZtoAgGxWypGEr1gBk3mlxzohx45ADUWo=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.166.198
+Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com
+Received: by mail-il1-f198.google.com with SMTP id e9e14a558f8ab-3a04bf03b1aso76152155ab.1
+        for <iommu@lists.linux.dev>; Wed, 25 Sep 2024 06:45:30 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1727271930; x=1727876730;
+        h=to:from:subject:message-id:date:mime-version:x-gm-message-state
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=is1K5gecx6xdHsjAhZUx+Z6qmkYUnW93aVWBJa+eg4Q=;
+        b=HE5qximOKGu8pIYq94iqlHTUugYVZOr4ASDWwQtDaP1N0cZllvbm6K07g7R1NlByU6
+         usMmApLLVsu8XwwnZ6NNpwGW/MKKCjuPFtRVr99Hgu+48ZAFMhQHQW7pLf7rMb+I8w14
+         pEIBvR6Knml599VkKcV9CUn2ywRrME++fIgDzZ2HhPne14dHYZ/P3cFmF8PdapdXm0Zj
+         SjnmaJG0brvXx8VhtNtkNAwoU13VCIhYaQX9F+juBunOriqs4UzxVE3FLHnbBegubdH+
+         iKgj6QP3FSRBL5F5g0PzjFzO2GuZNoEPqcBN95ul3p0BCP8Vh/9pqt/70Yqlp9wj5VYM
+         Am+g==
+X-Forwarded-Encrypted: i=1; AJvYcCWOwUtDSlKli3FLd/okYw4kp7nc1JUPTFjJJTqc9KHam3OpekNg3WdYZIXmhGqPiufvjfFo1A==@lists.linux.dev
+X-Gm-Message-State: AOJu0YxhU4BBJKXANra5UrpHukK5Ngx9xgvdJ093LYzZO/YbvRzp+/nI
+	/K9/TC1XFJN2w298StxMJcJQWfqq1lvKKOywDawfnpvhm+ITidZ1qO2exJOqzHaXYBz4LB34o+D
+	Jb3GZMZMHHGq46GlWJ8+Ae8FudUCye3X5yueIARAEJnErxYHlWujlAEU=
+X-Google-Smtp-Source: AGHT+IGyrBZWFKg0GpuC3WhVxj7WTGQ8sPoK2Ow+DRtwUWnlP5ZssBnuWTy07h4RgwmjzTKdD/f0fkIXBFtgKvyfzomLIIfFBsF7
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH net v2 0/2] fix two bugs related to page_pool
-To: Yunsheng Lin <linyunsheng@huawei.com>, <davem@davemloft.net>,
-	<kuba@kernel.org>, <pabeni@redhat.com>
-CC: <fanghaiqing@huawei.com>, <zhangkun09@huawei.com>, Alexander Lobakin
-	<aleksander.lobakin@intel.com>, Robin Murphy <robin.murphy@arm.com>,
-	Alexander Duyck <alexander.duyck@gmail.com>, IOMMU <iommu@lists.linux.dev>,
-	Alexei Starovoitov <ast@kernel.org>, Daniel Borkmann <daniel@iogearbox.net>,
-	Jesper Dangaard Brouer <hawk@kernel.org>, John Fastabend
-	<john.fastabend@gmail.com>, Matthias Brugger <matthias.bgg@gmail.com>,
-	AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>,
-	<netdev@vger.kernel.org>, <intel-wired-lan@lists.osuosl.org>,
-	<bpf@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-	<linux-arm-kernel@lists.infradead.org>, <linux-mediatek@lists.infradead.org>
-References: <20240925075707.3970187-1-linyunsheng@huawei.com>
-Content-Language: en-US
-From: Yonglong Liu <liuyonglong@huawei.com>
-In-Reply-To: <20240925075707.3970187-1-linyunsheng@huawei.com>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: dggems705-chm.china.huawei.com (10.3.19.182) To
- kwepemf200007.china.huawei.com (7.202.181.233)
+X-Received: by 2002:a05:6e02:1d9d:b0:396:e8b8:88d with SMTP id
+ e9e14a558f8ab-3a26d77492amr31042835ab.11.1727271930011; Wed, 25 Sep 2024
+ 06:45:30 -0700 (PDT)
+Date: Wed, 25 Sep 2024 06:45:29 -0700
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <66f413f9.050a0220.211276.0031.GAE@google.com>
+Subject: [syzbot] [iommu?] kernel BUG in trace_dma_map_sg
+From: syzbot <syzbot+d409db2070842f867cd1@syzkaller.appspotmail.com>
+To: hch@lst.de, iommu@lists.linux.dev, linux-kernel@vger.kernel.org, 
+	m.szyprowski@samsung.com, robin.murphy@arm.com, 
+	syzkaller-bugs@googlegroups.com
+Content-Type: text/plain; charset="UTF-8"
 
-Tested-by: Yonglong Liu <liuyonglong@huawei.com>
+Hello,
 
-On 2024/9/25 15:57, Yunsheng Lin wrote:
-> Patch 1 fix a possible time window problem for page_pool.
-> Patch 2 fix the kernel crash problem at iommu_get_dma_domain
-> reported in [1].
->
-> When page_pool_put_unrefed_netmem() is called with allow_direct
-> being true, there is only a newly added checking overhead
-> introduced in patch 1, which seem to be no noticeable performance
-> impact.
->
-> When page_pool_put_unrefed_netmem() is called with allow_direct
-> being false, there is an added rcu read lock overhead introduced in
-> patch 1, and the overhead is about 13ns using the below test code,
-> but 'time_bench_page_pool02_ptr_ring' only show about 2ns overhead,
-> which is about 2% degradation.
->
-> +static int time_bench_rcu(
-> +       struct time_bench_record *rec, void *data)
-> +{
-> +       uint64_t loops_cnt = 0;
-> +       int i;
-> +
-> +       time_bench_start(rec);
-> +       /** Loop to measure **/
-> +       for (i = 0; i < rec->loops; i++) {
-> +               rcu_read_lock();
-> +               loops_cnt++;
-> +               barrier(); /* avoid compiler to optimize this loop */
-> +               rcu_read_unlock();
-> +       }
-> +       time_bench_stop(rec, loops_cnt);
-> +       return loops_cnt;
-> +}
->
-> When page_pool need to be refilled from or flushed to the page allocator,
-> the added overhead is the page_pool_item_add() and page_pool_item_del()
-> calling overhead, using below patch to enable Jesper's testing running in
-> arm64, the overhead is 0~20ns, which is quite variable
->
-> Before this patchset:
-> root@(none)$ taskset -c 1 insmod bench_page_pool_simple.ko
-> [  136.641453] bench_page_pool_simple: Loaded
-> [  136.722560] time_bench: Type:for_loop Per elem: 0 cycles(tsc) 0.769 ns (step:0) - (measurement period time:0.076968720 sec time_interval:76968720) - (invoke count:100000000 tsc_interval:7696855)
-> [  137.317006] time_bench: Type:atomic_inc Per elem: 0 cycles(tsc) 5.771 ns (step:0) - (measurement period time:0.577164350 sec time_interval:577164350) - (invoke count:100000000 tsc_interval:57716429)
-> [  137.480852] time_bench: Type:lock Per elem: 1 cycles(tsc) 14.621 ns (step:0) - (measurement period time:0.146218730 sec time_interval:146218730) - (invoke count:10000000 tsc_interval:14621868)
-> [  138.842377] time_bench: Type:rcu Per elem: 1 cycles(tsc) 13.444 ns (step:0) - (measurement period time:1.344419820 sec time_interval:1344419820) - (invoke count:100000000 tsc_interval:134441975)
-> [  138.859656] bench_page_pool_simple: time_bench_page_pool01_fast_path(): Cannot use page_pool fast-path
-> [  139.132102] time_bench: Type:no-softirq-page_pool01 Per elem: 2 cycles(tsc) 26.315 ns (step:0) - (measurement period time:0.263151430 sec time_interval:263151430) - (invoke count:10000000 tsc_interval:26315135)
-> [  139.150769] bench_page_pool_simple: time_bench_page_pool02_ptr_ring(): Cannot use page_pool fast-path
-> [  139.910642] time_bench: Type:no-softirq-page_pool02 Per elem: 7 cycles(tsc) 75.066 ns (step:0) - (measurement period time:0.750663200 sec time_interval:750663200) - (invoke count:10000000 tsc_interval:75066312)
-> [  139.929312] bench_page_pool_simple: time_bench_page_pool03_slow(): Cannot use page_pool fast-path
-> [  141.673951] time_bench: Type:no-softirq-page_pool03 Per elem: 17 cycles(tsc) 173.578 ns (step:0) - (measurement period time:1.735781610 sec time_interval:1735781610) - (invoke count:10000000 tsc_interval:173578155)
-> [  141.692970] bench_page_pool_simple: pp_tasklet_handler(): in_serving_softirq fast-path
-> [  141.700874] bench_page_pool_simple: time_bench_page_pool01_fast_path(): in_serving_softirq fast-path
-> [  141.973638] time_bench: Type:tasklet_page_pool01_fast_path Per elem: 2 cycles(tsc) 26.364 ns (step:0) - (measurement period time:0.263645150 sec time_interval:263645150) - (invoke count:10000000 tsc_interval:26364508)
-> [  141.992912] bench_page_pool_simple: time_bench_page_pool02_ptr_ring(): in_serving_softirq fast-path
-> [  142.531745] time_bench: Type:tasklet_page_pool02_ptr_ring Per elem: 5 cycles(tsc) 52.980 ns (step:0) - (measurement period time:0.529801250 sec time_interval:529801250) - (invoke count:10000000 tsc_interval:52980119)
-> [  142.550933] bench_page_pool_simple: time_bench_page_pool03_slow(): in_serving_softirq fast-path
-> [  144.297646] time_bench: Type:tasklet_page_pool03_slow Per elem: 17 cycles(tsc) 173.802 ns (step:0) - (measurement period time:1.738029000 sec time_interval:1738029000) - (invoke count:10000000 tsc_interval:173802894)
->
-> After this patchset:
-> root@(none)$ taskset -c 1 insmod bench_page_pool_simple.ko
-> [  149.865799] bench_page_pool_simple: Loaded
-> [  149.946907] time_bench: Type:for_loop Per elem: 0 cycles(tsc) 0.769 ns (step:0) - (measurement period time:0.076965620 sec time_interval:76965620) - (invoke count:100000000 tsc_interval:7696556)
-> [  150.722282] time_bench: Type:atomic_inc Per elem: 0 cycles(tsc) 7.580 ns (step:0) - (measurement period time:0.758094660 sec time_interval:758094660) - (invoke count:100000000 tsc_interval:75809459)
-> [  150.886335] time_bench: Type:lock Per elem: 1 cycles(tsc) 14.640 ns (step:0) - (measurement period time:0.146405830 sec time_interval:146405830) - (invoke count:10000000 tsc_interval:14640578)
-> [  152.249454] time_bench: Type:rcu Per elem: 1 cycles(tsc) 13.460 ns (step:0) - (measurement period time:1.346009570 sec time_interval:1346009570) - (invoke count:100000000 tsc_interval:134600951)
-> [  152.266734] bench_page_pool_simple: time_bench_page_pool01_fast_path(): Cannot use page_pool fast-path
-> [  152.537046] time_bench: Type:no-softirq-page_pool01 Per elem: 2 cycles(tsc) 26.100 ns (step:0) - (measurement period time:0.261007670 sec time_interval:261007670) - (invoke count:10000000 tsc_interval:26100761)
-> [  152.555714] bench_page_pool_simple: time_bench_page_pool02_ptr_ring(): Cannot use page_pool fast-path
-> [  153.342212] time_bench: Type:no-softirq-page_pool02 Per elem: 7 cycles(tsc) 77.729 ns (step:0) - (measurement period time:0.777293380 sec time_interval:777293380) - (invoke count:10000000 tsc_interval:77729331)
-> [  153.360881] bench_page_pool_simple: time_bench_page_pool03_slow(): Cannot use page_pool fast-path
-> [  155.287747] time_bench: Type:no-softirq-page_pool03 Per elem: 19 cycles(tsc) 191.800 ns (step:0) - (measurement period time:1.918007990 sec time_interval:1918007990) - (invoke count:10000000 tsc_interval:191800791)
-> [  155.306766] bench_page_pool_simple: pp_tasklet_handler(): in_serving_softirq fast-path
-> [  155.314670] bench_page_pool_simple: time_bench_page_pool01_fast_path(): in_serving_softirq fast-path
-> [  155.584313] time_bench: Type:tasklet_page_pool01_fast_path Per elem: 2 cycles(tsc) 26.052 ns (step:0) - (measurement period time:0.260524810 sec time_interval:260524810) - (invoke count:10000000 tsc_interval:26052476)
-> [  155.603588] bench_page_pool_simple: time_bench_page_pool02_ptr_ring(): in_serving_softirq fast-path
-> [  156.183214] time_bench: Type:tasklet_page_pool02_ptr_ring Per elem: 5 cycles(tsc) 57.059 ns (step:0) - (measurement period time:0.570594850 sec time_interval:570594850) - (invoke count:10000000 tsc_interval:57059478)
-> [  156.202402] bench_page_pool_simple: time_bench_page_pool03_slow(): in_serving_softirq fast-path
-> [  158.045594] time_bench: Type:tasklet_page_pool03_slow Per elem: 18 cycles(tsc) 183.450 ns (step:0) - (measurement period time:1.834507700 sec time_interval:1834507700) - (invoke count:10000000 tsc_interval:183450764)
->
-> Patch for time_bench.h enable the out of tree testing on arm64 system:
-> @@ -101,6 +101,7 @@ struct time_bench_cpu {
->    *  CPUID clears the high 32-bits of all (rax/rbx/rcx/rdx)
->    */
->   static __always_inline uint64_t tsc_start_clock(void) {
-> +#if defined(__i386__) || defined(__x86_64__)
->          /* See: Intel Doc #324264 */
->          unsigned hi, lo;
->          asm volatile (
-> @@ -111,9 +112,13 @@ static __always_inline uint64_t tsc_start_clock(void) {
->                  "%rax", "%rbx", "%rcx", "%rdx");
->          //FIXME: on 32bit use clobbered %eax + %edx
->          return ((uint64_t)lo) | (((uint64_t)hi) << 32);
-> +#else
-> +       return get_cycles();
-> +#endif
->   }
->
->   static __always_inline uint64_t tsc_stop_clock(void) {
-> +#if defined(__i386__) || defined(__x86_64__)
->          /* See: Intel Doc #324264 */
->          unsigned hi, lo;
->          asm volatile(
-> @@ -123,6 +128,9 @@ static __always_inline uint64_t tsc_stop_clock(void) {
->                  "CPUID\n\t": "=r" (hi), "=r" (lo)::
->                  "%rax", "%rbx", "%rcx", "%rdx");
->          return ((uint64_t)lo) | (((uint64_t)hi) << 32);
-> +#else
-> +       return get_cycles();
-> +#endif
->   }
->
->   /* Notes for RDTSC and RDTSCP
-> @@ -186,10 +194,14 @@ enum {
->
->   static __always_inline unsigned long long p_rdpmc(unsigned in)
->   {
-> +#if defined(__i386__) || defined(__x86_64__)
->          unsigned d, a;
->
->          asm volatile("rdpmc" : "=d" (d), "=a" (a) : "c" (in) : "memory");
->          return ((unsigned long long)d << 32) | a;
-> +#else
-> +       return 0;
-> +#endif
->   }
->
->   /* These PMU counter needs to be enabled, but I don't have the
-> @@ -216,7 +228,11 @@ static __always_inline unsigned long long pmc_clk(void)
->   #define MSR_IA32_PCM2 0x400000C3
->   inline uint64_t msr_inst(unsigned long long *msr_result)
->   {
-> +#if defined(__i386__) || defined(__x86_64__)
->          return rdmsrl_safe(MSR_IA32_PCM0, msr_result);
-> +#else
-> +       return 0;
-> +#endif
->   }
->
-> 1. https://lore.kernel.org/lkml/8067f204-1380-4d37-8ffd-007fc6f26738@kernel.org/T/
->
-> CC: Alexander Lobakin <aleksander.lobakin@intel.com>
-> CC: Robin Murphy <robin.murphy@arm.com>
-> CC: Alexander Duyck <alexander.duyck@gmail.com>
-> CC: IOMMU <iommu@lists.linux.dev>
->
-> Change log:
-> V2:
->    1. Add a item_full stat.
->    2. Use container_of() for page_pool_to_pp().
->
-> Yunsheng Lin (2):
->    page_pool: fix timing for checking and disabling napi_local
->    page_pool: fix IOMMU crash when driver has already unbound
->
->   drivers/net/ethernet/freescale/fec_main.c     |   8 +-
->   drivers/net/ethernet/intel/iavf/iavf_txrx.c   |   6 +-
->   drivers/net/ethernet/intel/idpf/idpf_txrx.c   |  14 +-
->   drivers/net/ethernet/intel/libeth/rx.c        |   2 +-
->   .../net/ethernet/mellanox/mlx5/core/en/xdp.c  |   3 +-
->   drivers/net/netdevsim/netdev.c                |   6 +-
->   drivers/net/wireless/mediatek/mt76/mt76.h     |   2 +-
->   include/linux/mm_types.h                      |   2 +-
->   include/linux/skbuff.h                        |   1 +
->   include/net/libeth/rx.h                       |   3 +-
->   include/net/netmem.h                          |  10 +-
->   include/net/page_pool/helpers.h               |   7 +
->   include/net/page_pool/types.h                 |  17 +-
->   net/core/devmem.c                             |   4 +-
->   net/core/netmem_priv.h                        |   5 +-
->   net/core/page_pool.c                          | 190 +++++++++++++++---
->   net/core/page_pool_priv.h                     |  10 +-
->   net/core/skbuff.c                             |   3 +-
->   net/core/xdp.c                                |   3 +-
->   19 files changed, 238 insertions(+), 58 deletions(-)
->
+syzbot found the following issue on:
+
+HEAD commit:    1868f9d0260e Merge tag 'for-linux-6.12-ofs1' of git://git...
+git tree:       upstream
+console output: https://syzkaller.appspot.com/x/log.txt?x=17d11e9f980000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=d0b35925215243c6
+dashboard link: https://syzkaller.appspot.com/bug?extid=d409db2070842f867cd1
+compiler:       Debian clang version 15.0.6, GNU ld (GNU Binutils for Debian) 2.40
+
+Unfortunately, I don't have any reproducer for this issue yet.
+
+Downloadable assets:
+disk image (non-bootable): https://storage.googleapis.com/syzbot-assets/7bc7510fe41f/non_bootable_disk-1868f9d0.raw.xz
+vmlinux: https://storage.googleapis.com/syzbot-assets/79ecea60635a/vmlinux-1868f9d0.xz
+kernel image: https://storage.googleapis.com/syzbot-assets/2e88a1660d19/bzImage-1868f9d0.xz
+
+IMPORTANT: if you fix the issue, please add the following tag to the commit:
+Reported-by: syzbot+d409db2070842f867cd1@syzkaller.appspotmail.com
+
+FAULT_INJECTION: forcing a failure.
+name fail_usercopy, interval 1, probability 0, space 0, times 1
+CPU: 0 UID: 0 PID: 5101 Comm: syz.0.0 Not tainted 6.11.0-syzkaller-07462-g1868f9d0260e #0
+Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.16.3-debian-1.16.3-2~bpo12+1 04/01/2014
+Call Trace:
+ <TASK>
+ __dump_stack lib/dump_stack.c:93 [inline]
+ dump_stack_lvl+0x241/0x360 lib/dump_stack.c:119
+ fail_dump lib/fault-inject.c:52 [inline]
+ should_fail_ex+0x3b0/0x4e0 lib/fault-inject.c:153
+ _inline_copy_to_user include/linux/uaccess.h:177 [inline]
+ _copy_to_user+0x2f/0xb0 lib/usercopy.c:26
+ copy_to_user include/linux/uaccess.h:209 [inline]
+ simple_read_from_buffer+0xca/0x150 fs/libfs.c:1124
+ proc_fail_nth_read+0x1e9/0x250 fs/proc/base.c:1481
+ vfs_read+0x201/0xbc0 fs/read_write.c:567
+ ksys_read+0x1a0/0x2c0 fs/read_write.c:712
+ do_syscall_x64 arch/x86/entry/common.c:52 [inline]
+ do_syscall_64+0xf3/0x230 arch/x86/entry/common.c:83
+ entry_SYSCALL_64_after_hwframe+0x77/0x7f
+RIP: 0033:0x7f145197c93c
+Code: ec 28 48 89 54 24 18 48 89 74 24 10 89 7c 24 08 e8 69 8e 02 00 48 8b 54 24 18 48 8b 74 24 10 41 89 c0 8b 7c 24 08 31 c0 0f 05 <48> 3d 00 f0 ff ff 77 34 44 89 c7 48 89 44 24 08 e8 bf 8e 02 00 48
+RSP: 002b:00007f1452852030 EFLAGS: 00000246 ORIG_RAX: 0000000000000000
+RAX: ffffffffffffffda RBX: 00007f1451b35f80 RCX: 00007f145197c93c
+RDX: 000000000000000f RSI: 00007f14528520a0 RDI: 0000000000000004
+RBP: 00007f1452852090 R08: 0000000000000000 R09: 0000000000000000
+R10: 0000000000000000 R11: 0000000000000246 R12: 0000000000000001
+R13: 0000000000000000 R14: 00007f1451b35f80 R15: 00007ffd70304738
+ </TASK>
+------------[ cut here ]------------
+kernel BUG at include/linux/scatterlist.h:171!
+Oops: invalid opcode: 0000 [#1] PREEMPT SMP KASAN NOPTI
+CPU: 0 UID: 0 PID: 5101 Comm: syz.0.0 Not tainted 6.11.0-syzkaller-07462-g1868f9d0260e #0
+Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.16.3-debian-1.16.3-2~bpo12+1 04/01/2014
+RIP: 0010:sg_page include/linux/scatterlist.h:171 [inline]
+RIP: 0010:sg_phys include/linux/scatterlist.h:389 [inline]
+RIP: 0010:perf_trace_dma_map_sg+0xf34/0xf40 include/trace/events/dma.h:178
+Code: 00 00 00 fc ff df e9 60 fc ff ff e8 c6 81 17 00 48 c7 c7 40 84 94 8e 4c 89 f6 e8 a7 70 72 03 e9 e3 f2 ff ff e8 ad 81 17 00 90 <0f> 0b e8 b5 eb 41 0a 0f 1f 44 00 00 90 90 90 90 90 90 90 90 90 90
+RSP: 0000:ffffc9000308e9e0 EFLAGS: 00010093
+RAX: ffffffff817d3d73 RBX: ffffe8ffffc40d6d RCX: ffff88801fb54880
+RDX: 0000000000000000 RSI: 0000000000000001 RDI: 0000000000000000
+RBP: ffffc9000308eb40 R08: ffffffff817d33c4 R09: 322e66313a30303a
+R10: dffffc0000000000 R11: fffff91ffff881ae R12: ffff888000ae26a8
+R13: 0000000000000038 R14: 0000000000000008 R15: ffff88804b9e1781
+FS:  00007f14528526c0(0000) GS:ffff88801fe00000(0000) knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 00007f14519dc900 CR3: 000000001ffb0000 CR4: 0000000000350ef0
+DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+Call Trace:
+ <TASK>
+ trace_dma_map_sg+0x1da/0x240 include/trace/events/dma.h:178
+ __dma_map_sg_attrs+0x106/0x1a0 kernel/dma/mapping.c:222
+ dma_map_sg_attrs+0x34/0x50 kernel/dma/mapping.c:254
+ ata_sg_setup drivers/ata/libata-core.c:4651 [inline]
+ ata_qc_issue+0x4cf/0xf40 drivers/ata/libata-core.c:4963
+ ata_scsi_translate drivers/ata/libata-scsi.c:1760 [inline]
+ __ata_scsi_queuecmd+0x9fb/0x1030 drivers/ata/libata-scsi.c:4189
+ ata_scsi_queuecmd+0x3bb/0x530 drivers/ata/libata-scsi.c:4234
+ scsi_dispatch_cmd drivers/scsi/scsi_lib.c:1608 [inline]
+ scsi_queue_rq+0x1d7c/0x2e90 drivers/scsi/scsi_lib.c:1850
+ blk_mq_dispatch_rq_list+0xb89/0x1b30 block/blk-mq.c:2032
+ __blk_mq_do_dispatch_sched block/blk-mq-sched.c:170 [inline]
+ blk_mq_do_dispatch_sched block/blk-mq-sched.c:184 [inline]
+ __blk_mq_sched_dispatch_requests+0xb8a/0x1840 block/blk-mq-sched.c:309
+ blk_mq_sched_dispatch_requests+0xcb/0x140 block/blk-mq-sched.c:331
+ blk_mq_run_hw_queue+0x9a5/0xae0 block/blk-mq.c:2245
+ blk_mq_flush_plug_list+0x1127/0x1890 block/blk-mq.c:2797
+ __blk_flush_plug+0x420/0x500 block/blk-core.c:1199
+ blk_finish_plug+0x5e/0x80 block/blk-core.c:1226
+ read_pages+0x644/0x840 mm/readahead.c:183
+ page_cache_ra_unbounded+0x24c/0x8a0 mm/readahead.c:257
+ do_sync_mmap_readahead+0x499/0x970
+ filemap_fault+0x820/0x1750 mm/filemap.c:3325
+ __do_fault+0x135/0x460 mm/memory.c:4670
+ do_read_fault mm/memory.c:5076 [inline]
+ do_fault mm/memory.c:5206 [inline]
+ do_pte_missing mm/memory.c:3962 [inline]
+ handle_pte_fault+0x3228/0x7010 mm/memory.c:5536
+ __handle_mm_fault mm/memory.c:5679 [inline]
+ handle_mm_fault+0x1106/0x1bb0 mm/memory.c:5847
+ do_user_addr_fault arch/x86/mm/fault.c:1338 [inline]
+ handle_page_fault arch/x86/mm/fault.c:1481 [inline]
+ exc_page_fault+0x459/0x8c0 arch/x86/mm/fault.c:1539
+ asm_exc_page_fault+0x26/0x30 arch/x86/include/asm/idtentry.h:623
+RIP: 0033:0x7f1451951958
+Code: 00 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 80 00 00 00 00 62 e2 7d 28 7a ce 89 f8 25 ff 0f 00 00 3d e0 0f 00 00 0f 87 b8 01 00 00 <62> e1 fe 28 6f 17 62 a1 f5 20 ef da 62 a1 6d 20 da db 62 b2 66 20
+RSP: 002b:00007f145284f8b8 EFLAGS: 00010283
+RAX: 0000000000000900 RBX: 00007f145284fe30 RCX: 0000000000000000
+RDX: 00007f1452851f78 RSI: 0000000000000025 RDI: 00007f14519dc900
+RBP: 00000000fbad8004 R08: 0000000000000000 R09: 0000000000000000
+R10: 0000000000000000 R11: 0000000000000246 R12: 00007f145284fe10
+R13: 00007f1452851f78 R14: 00007f1451b35f80 R15: 00007ffd70304738
+ </TASK>
+Modules linked in:
+---[ end trace 0000000000000000 ]---
+RIP: 0010:sg_page include/linux/scatterlist.h:171 [inline]
+RIP: 0010:sg_phys include/linux/scatterlist.h:389 [inline]
+RIP: 0010:perf_trace_dma_map_sg+0xf34/0xf40 include/trace/events/dma.h:178
+Code: 00 00 00 fc ff df e9 60 fc ff ff e8 c6 81 17 00 48 c7 c7 40 84 94 8e 4c 89 f6 e8 a7 70 72 03 e9 e3 f2 ff ff e8 ad 81 17 00 90 <0f> 0b e8 b5 eb 41 0a 0f 1f 44 00 00 90 90 90 90 90 90 90 90 90 90
+RSP: 0000:ffffc9000308e9e0 EFLAGS: 00010093
+RAX: ffffffff817d3d73 RBX: ffffe8ffffc40d6d RCX: ffff88801fb54880
+RDX: 0000000000000000 RSI: 0000000000000001 RDI: 0000000000000000
+RBP: ffffc9000308eb40 R08: ffffffff817d33c4 R09: 322e66313a30303a
+R10: dffffc0000000000 R11: fffff91ffff881ae R12: ffff888000ae26a8
+R13: 0000000000000038 R14: 0000000000000008 R15: ffff88804b9e1781
+FS:  00007f14528526c0(0000) GS:ffff88801fe00000(0000) knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 00007f14519dc900 CR3: 000000001ffb0000 CR4: 0000000000350ef0
+DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+
+
+---
+This report is generated by a bot. It may contain errors.
+See https://goo.gl/tpsmEJ for more information about syzbot.
+syzbot engineers can be reached at syzkaller@googlegroups.com.
+
+syzbot will keep track of this issue. See:
+https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
+
+If the report is already addressed, let syzbot know by replying with:
+#syz fix: exact-commit-title
+
+If you want to overwrite report's subsystems, reply with:
+#syz set subsystems: new-subsystem
+(See the list of subsystem names on the web dashboard)
+
+If the report is a duplicate of another one, reply with:
+#syz dup: exact-subject-of-another-report
+
+If you want to undo deduplication, reply with:
+#syz undup
