@@ -1,58 +1,58 @@
 Received: from mx0a-00069f02.pphosted.com (mx0a-00069f02.pphosted.com [205.220.165.32])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 76CF653368
-	for <iommu@lists.linux.dev>; Thu, 26 Sep 2024 13:53:57 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4844461FCE
+	for <iommu@lists.linux.dev>; Thu, 26 Sep 2024 13:53:58 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.165.32
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1727358839; cv=none; b=M5o0jlaD3WoXPLqF9IUyUnI7lWfM/20m8w7gtQB7Y/Gzz5NdyzfBRT9rEiDLDPFx7vRP0CCb8ig7LgI2snXtnuAb6CY4hWTOVcSvhHCc6No8G0/SU+351+3K94WT+cdQEYwpegSjRxC2kgn2LsIB/ozZEJ3/zbvhLxvPegjIxWg=
+	t=1727358839; cv=none; b=Owrj8foh9iVWtGwLdYzuNWA3TlwO6Se1xSEUYTxGO/MTBv3n3bhCK2Z4zb0IF0o/T3aQFNDNDx4n5LubOWPekkTs91WEn32PFJXbaXDbPlN9XdTfAYhPvEUWJ/4dMiJGxlC2/yr1nOF2L2fSCKy62eY5lbRgzj+kNnEPwM8jWNg=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
 	s=arc-20240116; t=1727358839; c=relaxed/simple;
-	bh=XbKd84wEZNsfBoLPq/X/a37LjZ3bgELvxIHNzERya1A=;
-	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References; b=WO369RC9OEYgSZd4KWzO6Y0ly3wruhh1sxDJmgprLT3/FF66kADScgt1j6VVQqcvTw7z9f7TW0D3a2ch58tFYVwBAYItBiJbKkl7zP0Mqd/neWtcNAwK77CfC4Rg41iNabEcFvcIQLvlbztjDrAO2nvlmDQMiFVM+A+rtyUGEdM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oracle.com; spf=pass smtp.mailfrom=oracle.com; dkim=pass (2048-bit key) header.d=oracle.com header.i=@oracle.com header.b=CZg91wM5; arc=none smtp.client-ip=205.220.165.32
+	bh=0AleG8ghKQMyVJe6XCCz+VLF4AwXWp8eKDj/9qGvOFk=;
+	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References; b=YuCKc1N7kOJiswOv/MOnINCKC+wIBqXNhk/aVq2gNhu5XM8pTQMbaXmU3KknTavLJrO3ia1QBNxYnXNTxv2h1pn+Y1+XQRWNuwaSChjTCG2X1kcWQa1j5h+vNULdsEbJvDtAJG5MM/NJbYv3x5IHsQ9kPuSDxF7785RUDntwsqU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oracle.com; spf=pass smtp.mailfrom=oracle.com; dkim=pass (2048-bit key) header.d=oracle.com header.i=@oracle.com header.b=gNlZ77bs; arc=none smtp.client-ip=205.220.165.32
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oracle.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=oracle.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=oracle.com header.i=@oracle.com header.b="CZg91wM5"
-Received: from pps.filterd (m0333521.ppops.net [127.0.0.1])
-	by mx0b-00069f02.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 48QAvrLT029222;
+	dkim=pass (2048-bit key) header.d=oracle.com header.i=@oracle.com header.b="gNlZ77bs"
+Received: from pps.filterd (m0246629.ppops.net [127.0.0.1])
+	by mx0b-00069f02.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 48QB4H1u008600;
 	Thu, 26 Sep 2024 13:53:56 GMT
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=
 	from:to:cc:subject:date:message-id:in-reply-to:references; s=
-	corp-2023-11-20; bh=MvQ54NV/eNOaScBFw1ThqqcnStZMjsCLAlMdYoQ0p6A=; b=
-	CZg91wM5dlj0jMrTHyD2DMQdcM1mm42MNS0V1W4SJL3BAelRWGhNzWdVD+ZLE7Pa
-	5XXMgaGHFL2hPYBQRs2JoRKUWDHdSq3ctNLXuWG+97RFr3nj2cboDr9pqW5/nl5J
-	VXfdwfFsmO93fH0cl5ZPdc7cTxRudC3e0cF50zEtr39OIkqsDU6tHzWv3JNYJ519
-	dSE8fh3xqS2gt8zmBxeTyAd6bQQPzA5DTRXNGy6SNCTg7zlbcA6c0WyYqepSUYY8
-	HJX3FXyxpNj4W0qG3BKuE4OCFGtvPz8U3r4nIlXRE5SVritIDVcga2HLDj7/7pgt
-	/tH2RpdKPMZCwDQr1WYG0g==
+	corp-2023-11-20; bh=CgO+3LsfyQZ2W04had61O2U4k17DqoiWdvrYi2y9HQ0=; b=
+	gNlZ77bsZ3ZRfEqe1+O4aFkqV8OA0jxXqh9+tDTNUOkfA+cNZpV/qulFb5zuC63x
+	IqyGxh7JVDYW0rtfOy7JjQI7FtI62C/14Q/zufPkQeU/eEnZursOJ6w5qiPdLa1i
+	tEZco7SsYIZ+4wjVn4brCZnvAxUHdgnjopf7U9C3pzH1KD7Af2fF9Z32wus5rFJ+
+	aQRpLs21picz6Pib7dikPdfIOUP+OA1rJZbgE4aR/p5JRTboDpPUzRF0E5VpHGYQ
+	Ey9kKoHfGESIw9mrCVinhr41asgpfc9caXFjPh+JH8We1tUxLGosApkBjAyTfgGj
+	5EnC/YQaXLfH8JYyp9Rn2Q==
 Received: from iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com (iadpaimrmta01.appoci.oracle.com [130.35.100.223])
-	by mx0b-00069f02.pphosted.com (PPS) with ESMTPS id 41sn2cwb44-1
+	by mx0b-00069f02.pphosted.com (PPS) with ESMTPS id 41sp1an3wc-1
 	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-	Thu, 26 Sep 2024 13:53:55 +0000 (GMT)
+	Thu, 26 Sep 2024 13:53:56 +0000 (GMT)
 Received: from pps.filterd (iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com [127.0.0.1])
-	by iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com (8.18.1.2/8.18.1.2) with ESMTP id 48QCmkm7032834;
-	Thu, 26 Sep 2024 13:53:54 GMT
+	by iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com (8.18.1.2/8.18.1.2) with ESMTP id 48QDnwZT032855;
+	Thu, 26 Sep 2024 13:53:55 GMT
 Received: from pps.reinject (localhost [127.0.0.1])
-	by iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com (PPS) with ESMTPS id 41smkjfd9j-1
+	by iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com (PPS) with ESMTPS id 41smkjfda9-1
 	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-	Thu, 26 Sep 2024 13:53:54 +0000
+	Thu, 26 Sep 2024 13:53:55 +0000
 Received: from iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com (iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com [127.0.0.1])
-	by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 48QDroXW027500;
-	Thu, 26 Sep 2024 13:53:53 GMT
+	by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 48QDroXY027500;
+	Thu, 26 Sep 2024 13:53:54 GMT
 Received: from ca-dev63.us.oracle.com (ca-dev63.us.oracle.com [10.211.8.221])
-	by iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com (PPS) with ESMTP id 41smkjfd62-4;
-	Thu, 26 Sep 2024 13:53:53 +0000
+	by iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com (PPS) with ESMTP id 41smkjfd62-5;
+	Thu, 26 Sep 2024 13:53:54 +0000
 From: Steve Sistare <steven.sistare@oracle.com>
 To: iommu@lists.linux.dev
 Cc: Jason Gunthorpe <jgg@nvidia.com>, Kevin Tian <kevin.tian@intel.com>,
         Alex Williamson <alex.williamson@redhat.com>,
         Cornelia Huck <cohuck@redhat.com>,
         Steve Sistare <steven.sistare@oracle.com>
-Subject: [PATCH V2 3/4] iommufd: Add IOMMU_IOAS_CHANGE_PROCESS
-Date: Thu, 26 Sep 2024 06:53:47 -0700
-Message-Id: <1727358828-97791-4-git-send-email-steven.sistare@oracle.com>
+Subject: [PATCH V2 4/4] iommufd: IOMMU_IOAS_CHANGE_PROCESS selftest
+Date: Thu, 26 Sep 2024 06:53:48 -0700
+Message-Id: <1727358828-97791-5-git-send-email-steven.sistare@oracle.com>
 X-Mailer: git-send-email 1.8.3.1
 In-Reply-To: <1727358828-97791-1-git-send-email-steven.sistare@oracle.com>
 References: <1727358828-97791-1-git-send-email-steven.sistare@oracle.com>
@@ -63,267 +63,235 @@ X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 spamscore=0 phish
  mlxlogscore=999 malwarescore=0 adultscore=0 bulkscore=0 mlxscore=0
  classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2408220000
  definitions=main-2409260096
-X-Proofpoint-GUID: MC2_MUMrngXGhAklY6xosZB8z-_pXeCq
-X-Proofpoint-ORIG-GUID: MC2_MUMrngXGhAklY6xosZB8z-_pXeCq
+X-Proofpoint-ORIG-GUID: fBazchcGln0a0fgYMdsL-jsmP4C18EVL
+X-Proofpoint-GUID: fBazchcGln0a0fgYMdsL-jsmP4C18EVL
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 
-Add an ioctl that updates all DMA mappings to reflect the current process,
-Change the mm and transfer locked memory accounting from old to current mm.
-This will be used for live update, allowing an old process to hand the
-iommufd device descriptor to a new process.  The new process calls the
-ioctl.
+Add selftest cases for IOMMU_IOAS_CHANGE_PROCESS.
 
-IOMMU_IOAS_CHANGE_PROCESS only supports DMA mappings created with
-IOMMU_IOAS_MAP_FILE, because the kernel metadata for such mappings does not
-depend on the userland VA of the pages (which is different in the new process).
-IOMMU_IOAS_CHANGE_PROCESS fails if other types of mappings are present.
-
-This code is substantially the same as an initial version provided by Jason,
-plus fixes.
-
-Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
 Signed-off-by: Steve Sistare <steven.sistare@oracle.com>
 ---
- drivers/iommu/iommufd/io_pagetable.h    |   1 +
- drivers/iommu/iommufd/ioas.c            | 142 ++++++++++++++++++++++++++++++++
- drivers/iommu/iommufd/iommufd_private.h |   1 +
- drivers/iommu/iommufd/main.c            |   2 +
- include/uapi/linux/iommufd.h            |  23 ++++++
- 5 files changed, 169 insertions(+)
+ tools/testing/selftests/iommu/Makefile        |   1 +
+ tools/testing/selftests/iommu/iommufd.c       | 148 ++++++++++++++++++++++++--
+ tools/testing/selftests/iommu/iommufd_utils.h |   8 +-
+ 3 files changed, 150 insertions(+), 7 deletions(-)
 
-diff --git a/drivers/iommu/iommufd/io_pagetable.h b/drivers/iommu/iommufd/io_pagetable.h
-index 5552911..255fb01 100644
---- a/drivers/iommu/iommufd/io_pagetable.h
-+++ b/drivers/iommu/iommufd/io_pagetable.h
-@@ -173,6 +173,7 @@ enum {
- 	IOPT_PAGES_ACCOUNT_NONE = 0,
- 	IOPT_PAGES_ACCOUNT_USER = 1,
- 	IOPT_PAGES_ACCOUNT_MM = 2,
-+	IOPT_PAGES_ACCOUNT_MODE_NUM = 3,
- };
+diff --git a/tools/testing/selftests/iommu/Makefile b/tools/testing/selftests/iommu/Makefile
+index fd64779..bd23ac9 100644
+--- a/tools/testing/selftests/iommu/Makefile
++++ b/tools/testing/selftests/iommu/Makefile
+@@ -1,6 +1,7 @@
+ # SPDX-License-Identifier: GPL-2.0-only
+ CFLAGS += -Wall -O2 -Wno-unused-function
+ CFLAGS += $(KHDR_INCLUDES)
++CFLAGS += -lcap
  
- enum iopt_address_type {
-diff --git a/drivers/iommu/iommufd/ioas.c b/drivers/iommu/iommufd/ioas.c
-index 8eb869d..122a40b 100644
---- a/drivers/iommu/iommufd/ioas.c
-+++ b/drivers/iommu/iommufd/ioas.c
-@@ -437,6 +437,148 @@ static int iommufd_take_all_iova_rwsem(struct iommufd_ctx *ictx,
- 	return 0;
+ TEST_GEN_PROGS :=
+ TEST_GEN_PROGS += iommufd
+diff --git a/tools/testing/selftests/iommu/iommufd.c b/tools/testing/selftests/iommu/iommufd.c
+index 6adf84f..5cb8b28 100644
+--- a/tools/testing/selftests/iommu/iommufd.c
++++ b/tools/testing/selftests/iommu/iommufd.c
+@@ -5,6 +5,7 @@
+ #include <sys/eventfd.h>
+ #include <sys/syscall.h>
+ #include <asm/unistd.h>
++#include <sys/capability.h>
+ 
+ #define __EXPORTED_HEADERS__
+ #include <linux/vfio.h>
+@@ -215,6 +216,144 @@ static __attribute__((constructor)) void setup_sizes(void)
+ 	EXPECT_ERRNO(ENOENT, ioctl(self->fd, IOMMU_OPTION, &cmd));
  }
  
-+static bool need_charge_update(struct iopt_pages *pages)
++static void drop_cap_ipc_lock(struct __test_metadata *_metadata)
 +{
-+	switch (pages->account_mode) {
-+	case IOPT_PAGES_ACCOUNT_NONE:
-+		return false;
-+	case IOPT_PAGES_ACCOUNT_MM:
-+		return pages->source_mm != current->mm;
-+	case IOPT_PAGES_ACCOUNT_USER:
-+		/*
-+		 * Update when mm changes because it also accounts
-+		 * in mm->pinned_vm.
-+		 */
-+		return (pages->source_user != current_user()) ||
-+		       (pages->source_mm != current->mm);
-+	}
-+	return true;
++	cap_t caps;
++	cap_value_t cap_list[1] = { CAP_IPC_LOCK };
++
++	caps = cap_get_proc();
++	ASSERT_NE(caps, NULL);
++	ASSERT_NE(-1,
++		  cap_set_flag(caps, CAP_EFFECTIVE, 1, cap_list, CAP_CLEAR));
++	ASSERT_NE(-1, cap_set_proc(caps));
++	cap_free(caps);
 +}
 +
-+static int charge_current(unsigned long *npinned)
++static long get_proc_status_value(pid_t pid, const char *var)
 +{
-+	struct iopt_pages tmp = {
-+		.source_mm = current->mm,
-+		.source_task = current->group_leader,
-+		.source_user = current_user(),
-+	};
-+	unsigned int account_mode;
-+	int rc;
++	FILE *fp;
++	char buf[80], tag[80];
++	long val = -1;
 +
-+	for (account_mode = 0; account_mode != IOPT_PAGES_ACCOUNT_MODE_NUM;
-+	     account_mode++) {
-+		if (!npinned[account_mode])
-+			continue;
++	snprintf(buf, sizeof(buf), "/proc/%d/status", pid);
++	fp = fopen(buf, "r");
++	if (!fp)
++		return val;
 +
-+		tmp.account_mode = account_mode;
-+		rc = iopt_update_pinned(&tmp, npinned[account_mode], true,
-+					NULL);
-+		if (rc)
-+			goto err_undo;
-+	}
-+	return 0;
++	while (fgets(buf, sizeof(buf), fp))
++		if (fscanf(fp, "%s %ld\n", tag, &val) == 2 && !strcmp(tag, var))
++			break;
 +
-+err_undo:
-+	while (account_mode != 0) {
-+		account_mode--;
-+		tmp.account_mode = account_mode;
-+		iopt_update_pinned(&tmp, npinned[account_mode], false, NULL);
-+	}
-+	return rc;
++	fclose(fp);
++	return val;
 +}
 +
-+static void change_mm(struct iopt_pages *pages)
++static long get_vm_pinned(pid_t pid)
 +{
-+	struct task_struct *old_task = pages->source_task;
-+	struct user_struct *old_user = pages->source_user;
-+	struct mm_struct *old_mm = pages->source_mm;
-+
-+	pages->source_mm = current->mm;
-+	mmgrab(pages->source_mm);
-+	mmdrop(old_mm);
-+
-+	pages->source_task = current->group_leader;
-+	get_task_struct(pages->source_task);
-+	put_task_struct(old_task);
-+
-+	pages->source_user = get_uid(current_user());
-+	free_uid(old_user);
++	return get_proc_status_value(pid, "VmPin:");
 +}
 +
-+#define for_each_ioas_area(_xa, _index, _ioas, _area) \
-+	xa_for_each((_xa), (_index), (_ioas)) \
-+		for (_area = iopt_area_iter_first(&_ioas->iopt, 0, ULONG_MAX); \
-+		     _area; \
-+		     _area = iopt_area_iter_next(_area, 0, ULONG_MAX))
-+
-+int iommufd_ioas_change_process(struct iommufd_ucmd *ucmd)
++static long get_vm_locked(pid_t pid)
 +{
-+	struct iommu_ioas_change_process *cmd = ucmd->cmd;
-+	struct iommufd_ctx *ictx = ucmd->ictx;
-+	unsigned long all_npinned[IOPT_PAGES_ACCOUNT_MODE_NUM] = {0, 0, 0};
-+	struct iommufd_ioas *ioas;
-+	struct iopt_area *area;
-+	struct iopt_pages *pages;
-+	struct xarray ioas_list;
-+	unsigned long index;
-+	int rc;
-+
-+	if (cmd->__reserved)
-+		return -EOPNOTSUPP;
-+
-+	xa_init(&ioas_list);
-+	rc = iommufd_take_all_iova_rwsem(ictx, &ioas_list);
-+	if (rc)
-+		goto out_no_release;
-+
-+	for_each_ioas_area(&ioas_list, index, ioas, area)  {
-+		if (area->pages->type != IOPT_ADDRESS_FILE) {
-+			rc = -EINVAL;
-+			goto out;
-+		}
-+	}
-+
-+	/*
-+	 * Count last_pinned pages, then clear it to avoid double counting
-+	 * if the same iopt_pages is visited multiple times in this loop.
-+	 * Since we are under all the locks, npinned == last_npinned, so we
-+	 * can easily restore last_npinned before we return.
-+	 */
-+	for_each_ioas_area(&ioas_list, index, ioas, area)  {
-+		pages = area->pages;
-+
-+		if (need_charge_update(pages)) {
-+			all_npinned[pages->account_mode] += pages->last_npinned;
-+			pages->last_npinned = 0;
-+		}
-+	}
-+
-+	rc = charge_current(all_npinned);
-+
-+	if (rc) {
-+		/* Charge failed.  Fix last_npinned and bail. */
-+		for_each_ioas_area(&ioas_list, index, ioas, area)
-+			area->pages->last_npinned = area->pages->npinned;
-+		goto out;
-+	}
-+
-+	for_each_ioas_area(&ioas_list, index, ioas, area) {
-+		pages = area->pages;
-+
-+		/* Uncharge the old one (which also restores last_npinned) */
-+		if (need_charge_update(pages))
-+			iopt_update_pinned(pages, pages->npinned, false, NULL);
-+
-+		change_mm(pages);
-+	}
-+
-+out:
-+	iommufd_release_all_iova_rwsem(ictx, &ioas_list);
-+
-+out_no_release:
-+	return rc;
++	return get_proc_status_value(pid, "VmLck:");
 +}
 +
- int iommufd_option_rlimit_mode(struct iommu_option *cmd,
- 			       struct iommufd_ctx *ictx)
- {
-diff --git a/drivers/iommu/iommufd/iommufd_private.h b/drivers/iommu/iommufd/iommufd_private.h
-index 06a52f2..968bc17 100644
---- a/drivers/iommu/iommufd/iommufd_private.h
-+++ b/drivers/iommu/iommufd/iommufd_private.h
-@@ -282,6 +282,7 @@ static inline struct iommufd_ioas *iommufd_get_ioas(struct iommufd_ctx *ictx,
- int iommufd_ioas_allow_iovas(struct iommufd_ucmd *ucmd);
- int iommufd_ioas_map(struct iommufd_ucmd *ucmd);
- int iommufd_ioas_map_file(struct iommufd_ucmd *ucmd);
-+int iommufd_ioas_change_process(struct iommufd_ucmd *ucmd);
- int iommufd_ioas_copy(struct iommufd_ucmd *ucmd);
- int iommufd_ioas_unmap(struct iommufd_ucmd *ucmd);
- int iommufd_ioas_option(struct iommufd_ucmd *ucmd);
-diff --git a/drivers/iommu/iommufd/main.c b/drivers/iommu/iommufd/main.c
-index 13ec031..244eb4d 100644
---- a/drivers/iommu/iommufd/main.c
-+++ b/drivers/iommu/iommufd/main.c
-@@ -373,6 +373,8 @@ struct iommufd_ioctl_op {
- 		 struct iommu_ioas_alloc, out_ioas_id),
- 	IOCTL_OP(IOMMU_IOAS_ALLOW_IOVAS, iommufd_ioas_allow_iovas,
- 		 struct iommu_ioas_allow_iovas, allowed_iovas),
-+	IOCTL_OP(IOMMU_IOAS_CHANGE_PROCESS, iommufd_ioas_change_process,
-+		 struct iommu_ioas_change_process, size),
- 	IOCTL_OP(IOMMU_IOAS_COPY, iommufd_ioas_copy, struct iommu_ioas_copy,
- 		 src_iova),
- 	IOCTL_OP(IOMMU_IOAS_IOVA_RANGES, iommufd_ioas_iova_ranges,
-diff --git a/include/uapi/linux/iommufd.h b/include/uapi/linux/iommufd.h
-index c484981..523de8c 100644
---- a/include/uapi/linux/iommufd.h
-+++ b/include/uapi/linux/iommufd.h
-@@ -52,6 +52,7 @@ enum {
- 	IOMMUFD_CMD_HWPT_INVALIDATE = 0x8d,
- 	IOMMUFD_CMD_FAULT_QUEUE_ALLOC = 0x8e,
- 	IOMMUFD_CMD_IOAS_MAP_FILE = 0x8f,
-+	IOMMUFD_CMD_IOAS_CHANGE_PROCESS = 0x90,
- };
- 
- /**
-@@ -822,4 +823,26 @@ struct iommu_fault_alloc {
- 	__u32 out_fault_fd;
- };
- #define IOMMU_FAULT_QUEUE_ALLOC _IO(IOMMUFD_TYPE, IOMMUFD_CMD_FAULT_QUEUE_ALLOC)
-+
-+/**
-+ * struct iommu_ioas_change_process - ioctl(VFIO_IOAS_CHANGE_PROCESS)
-+ * @size: sizeof(struct iommu_ioas_change_process)
-+ * @__reserved: Must be 0
-+ *
-+ * This transfers pinned memory counts for every memory map in every IOAS
-+ * in the context to the current process.  This only supports maps created
-+ * with IOMMU_IOAS_MAP_FILE, and returns EINVAL if other maps are present.
-+ * If the ioctl returns a failure status, then nothing is changed.
-+ *
-+ * This API is useful for transferring operation of a device from one process
-+ * to another, such as during userland live update.
-+ */
-+struct iommu_ioas_change_process {
-+	__u32 size;
-+	__u32 __reserved;
++FIXTURE(change_process)
++{
++	int fd;
++	uint32_t ioas_id;
 +};
 +
-+#define IOMMU_IOAS_CHANGE_PROCESS \
-+	_IO(IOMMUFD_TYPE, IOMMUFD_CMD_IOAS_CHANGE_PROCESS)
++FIXTURE_VARIANT(change_process)
++{
++	int accounting;
++};
 +
- #endif
++FIXTURE_SETUP(change_process)
++{
++	self->fd = open("/dev/iommu", O_RDWR);
++	ASSERT_NE(-1, self->fd);
++
++	drop_cap_ipc_lock(_metadata);
++	if (variant->accounting != IOPT_PAGES_ACCOUNT_NONE) {
++		struct iommu_option set_limit_cmd = {
++			.size = sizeof(set_limit_cmd),
++			.option_id = IOMMU_OPTION_RLIMIT_MODE,
++			.op = IOMMU_OPTION_OP_SET,
++			.val64 = (variant->accounting == IOPT_PAGES_ACCOUNT_MM),
++		};
++		ASSERT_EQ(0, ioctl(self->fd, IOMMU_OPTION, &set_limit_cmd));
++	}
++
++	test_ioctl_ioas_alloc(&self->ioas_id);
++	test_cmd_mock_domain(self->ioas_id, NULL, NULL, NULL);
++}
++
++FIXTURE_TEARDOWN(change_process)
++{
++	teardown_iommufd(self->fd, _metadata);
++}
++
++FIXTURE_VARIANT_ADD(change_process, account_none)
++{
++	.accounting = IOPT_PAGES_ACCOUNT_NONE,
++};
++
++FIXTURE_VARIANT_ADD(change_process, account_user)
++{
++	.accounting = IOPT_PAGES_ACCOUNT_USER,
++};
++
++FIXTURE_VARIANT_ADD(change_process, account_mm)
++{
++	.accounting = IOPT_PAGES_ACCOUNT_MM,
++};
++
++TEST_F(change_process, basic)
++{
++	pid_t parent = getpid();
++	pid_t child;
++	__u64 iova;
++	struct iommu_ioas_change_process cmd = {
++		.size = sizeof(cmd),
++	};
++
++	/* Expect failure if non-file maps exist */
++	test_ioctl_ioas_map(buffer, PAGE_SIZE, &iova);
++	EXPECT_ERRNO(EINVAL, ioctl(self->fd, IOMMU_IOAS_CHANGE_PROCESS, &cmd));
++	test_ioctl_ioas_unmap(iova, PAGE_SIZE);
++
++	/* Change process works in current process. */
++	test_ioctl_ioas_map_file(mfd, 0, PAGE_SIZE, &iova);
++	ASSERT_EQ(0, ioctl(self->fd, IOMMU_IOAS_CHANGE_PROCESS, &cmd));
++
++	/* Change process works in another process */
++	child = fork();
++	if (!child) {
++		int nlock = PAGE_SIZE / 1024;
++
++		/* Parent accounts for locked memory before */
++		ASSERT_EQ(nlock, get_vm_pinned(parent));
++		if (variant->accounting == IOPT_PAGES_ACCOUNT_MM)
++			ASSERT_EQ(nlock, get_vm_locked(parent));
++		ASSERT_EQ(0, get_vm_pinned(getpid()));
++		ASSERT_EQ(0, get_vm_locked(getpid()));
++
++		ASSERT_EQ(0, ioctl(self->fd, IOMMU_IOAS_CHANGE_PROCESS, &cmd));
++
++		/* Child accounts for locked memory after */
++		ASSERT_EQ(0, get_vm_pinned(parent));
++		ASSERT_EQ(0, get_vm_locked(parent));
++		ASSERT_EQ(nlock, get_vm_pinned(getpid()));
++		if (variant->accounting == IOPT_PAGES_ACCOUNT_MM)
++			ASSERT_EQ(nlock, get_vm_locked(getpid()));
++
++		exit(0);
++	}
++	ASSERT_NE(-1, child);
++	ASSERT_EQ(child, waitpid(child, NULL, 0));
++}
++
+ FIXTURE(iommufd_ioas)
+ {
+ 	int fd;
+@@ -1548,13 +1687,10 @@ static void test_basic_file(
+ 	buf = memfd_mmap(buf_size, prot, MAP_SHARED, &mfd_tmp);
+ 	ASSERT_NE(MAP_FAILED, buf);
+ 
+-	/* EFAULT half way through mapping */
+-	ASSERT_EQ(0, munmap(buf + buf_size / 2, buf_size / 2));
+-	test_err_ioctl_ioas_map_file(EFAULT, 0, buf_size, &iova);
++	test_err_ioctl_ioas_map_file(EINVAL, mfd_tmp, 0, buf_size + 1, &iova);
+ 
+-	/* EFAULT on first page */
+-	ASSERT_EQ(0, munmap(buf, buf_size / 2));
+-	test_err_ioctl_ioas_map_file(EFAULT, 0, buf_size, &iova);
++	ASSERT_EQ(0, ftruncate(mfd_tmp, 0));
++	test_err_ioctl_ioas_map_file(EINVAL, mfd_tmp, 0, buf_size, &iova);
+ 
+ 	close(mfd_tmp);
+ }
+diff --git a/tools/testing/selftests/iommu/iommufd_utils.h b/tools/testing/selftests/iommu/iommufd_utils.h
+index 7bc664e..14c9f9d 100644
+--- a/tools/testing/selftests/iommu/iommufd_utils.h
++++ b/tools/testing/selftests/iommu/iommufd_utils.h
+@@ -22,6 +22,12 @@
+ #define BIT_MASK(nr) (1UL << ((nr) % __BITS_PER_LONG))
+ #define BIT_WORD(nr) ((nr) / __BITS_PER_LONG)
+ 
++enum {
++	IOPT_PAGES_ACCOUNT_NONE = 0,
++	IOPT_PAGES_ACCOUNT_USER = 1,
++	IOPT_PAGES_ACCOUNT_MM = 2,
++};
++
+ #define DIV_ROUND_UP(n, d) (((n) + (d) - 1) / (d))
+ 
+ static inline void set_bit(unsigned int nr, unsigned long *addr)
+@@ -617,7 +623,7 @@ static int _test_ioctl_ioas_map_file(int fd, unsigned int ioas_id, int mfd,
+ 					       IOMMU_IOAS_MAP_WRITEABLE |    \
+ 						   IOMMU_IOAS_MAP_READABLE))
+ 
+-#define test_err_ioctl_ioas_map_file(_errno, start, length, iova_p)	     \
++#define test_err_ioctl_ioas_map_file(_errno, mfd, start, length, iova_p)     \
+ 	EXPECT_ERRNO(_errno,                                                 \
+ 		     _test_ioctl_ioas_map_file(self->fd, self->ioas_id, mfd, \
+ 					       start, length, iova_p,        \
 -- 
 1.8.3.1
 
