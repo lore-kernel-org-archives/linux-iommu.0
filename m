@@ -1,66 +1,66 @@
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E93BF1C6A5
-	for <iommu@lists.linux.dev>; Thu, 26 Sep 2024 12:57:49 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=170.10.133.124
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B65B717753
+	for <iommu@lists.linux.dev>; Thu, 26 Sep 2024 12:58:14 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=170.10.129.124
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1727355471; cv=none; b=rsT6bY0giSiwBw+NwDUXjaDY9unUZ+19+rnBueelldHmj47wE+FWELavjB8W+lvqkYT9fB8dyf6TkIWM/eVZBJeeGuz3n+eR4JdFqKomk8AKLqBaeaEYAZpWuvokZdbGLimxQTafi3M2dPZzv5na8aaxqvdtnLfqj20k4ibzNog=
+	t=1727355496; cv=none; b=MYUxd3UqdPGcORW7AxKtfNCYlqlaT88z9jgaOReoIUEtkPUrc7XtKTgu4l5OKhNAISwjdSanahD94TYj8bicyhaompw7umnReSweooY/ljDwn/Mf7QHkNU9To6PawdeDQZT/d71ev1bMGyPOb/nDd4KQCOeS0NMgDuJ1vSOZO3Y=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1727355471; c=relaxed/simple;
-	bh=zYEZIrEPsbgyeQAFf7uhiMNt3HkYO9kUgIIsnS5sJTI=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=sEmsERbJDqxrxTbhI5opY4KLFvmS/MIX2xlBWo6JdozOcqZrMBUdTYuU23f3mo5jAZ9ElrVOaryJXeFu7dyym7/oZ1f0Ym7jg+pq3aQDhRoMavMk4raSVr4J4Y3PrpC3fR2qMmdvyjY192GYeFcsHfTBBShYvgWbiB9ViDHViXc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=redhat.com; spf=pass smtp.mailfrom=redhat.com; dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b=BHDc+xHU; arc=none smtp.client-ip=170.10.133.124
+	s=arc-20240116; t=1727355496; c=relaxed/simple;
+	bh=wK/SGpUXU+7mz8rDobxIRw/i6TeahI7B2kdiEvCA6qs=;
+	h=Message-ID:Date:MIME-Version:Subject:From:To:Cc:References:
+	 In-Reply-To:Content-Type; b=UkY/xYMWNo6kHXK3aCNzrmH0hhfGsucFwjOJmk1GcVocOzEv1EzRL5CHuNXLJjeEx84TGG3u303WqxqA36Iw7lYw9lUtVhjiUZimB+nA8+vWnqdDxUa+KqdTienWZe17zKT6tIdO6JyvZ0ZsafE4bukfGgzr2ECyszgnYkAruP0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=redhat.com; spf=pass smtp.mailfrom=redhat.com; dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b=POLFBV+u; arc=none smtp.client-ip=170.10.129.124
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=redhat.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=redhat.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="BHDc+xHU"
+	dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="POLFBV+u"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-	s=mimecast20190719; t=1727355468;
+	s=mimecast20190719; t=1727355493;
 	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
 	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
 	 content-transfer-encoding:content-transfer-encoding:
 	 in-reply-to:in-reply-to:references:references:autocrypt:autocrypt;
-	bh=w5aVhgojZdD2dt5T9DQtW5tsGpyubA8XkXZ34ExGK2s=;
-	b=BHDc+xHU5SPyk7UTNg1DpYKiozo+bb3SlhS5hZUrsEIV3RwZWBhn0iN1Za46KKO6qRmS40
-	Lz9Livq68BXZ6LlXssTh0mYqYjLV/iooWh+GOqzDzZNLhzt8lWIfvg16VI0INvGdlb9YDp
-	KonYZgKwlD3A9X8J4wXgdR9aNmUPem4=
-Received: from mail-wm1-f69.google.com (mail-wm1-f69.google.com
- [209.85.128.69]) by relay.mimecast.com with ESMTP with STARTTLS
+	bh=dBhH7BEffqYew0a0qy+WrB9ksqzmVcoADZs7pD+b9rc=;
+	b=POLFBV+umWw/lJ+Rq27uhQk6uGUCoI7A+XAOb0ny/WW+1n7rrwjI5yUGBP9+C49u7oOS2b
+	vIGyhTDnmI4SPHMjRql2oTmlDmnTZ0a14v9UE/mGTKD8oUGhlESZEkGTQeB3AovNPuZ+7X
+	bmK9O+gPuxJsb9uTe2xG0dOjR3A6++w=
+Received: from mail-wr1-f72.google.com (mail-wr1-f72.google.com
+ [209.85.221.72]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
- us-mta-628-wlZS5FNQOyeWAqOdtVG_Lw-1; Thu, 26 Sep 2024 08:57:47 -0400
-X-MC-Unique: wlZS5FNQOyeWAqOdtVG_Lw-1
-Received: by mail-wm1-f69.google.com with SMTP id 5b1f17b1804b1-42cb471a230so7004125e9.3
-        for <iommu@lists.linux.dev>; Thu, 26 Sep 2024 05:57:47 -0700 (PDT)
+ us-mta-39-TeugIJ-UNiOaBcXNP6Ueog-1; Thu, 26 Sep 2024 08:58:12 -0400
+X-MC-Unique: TeugIJ-UNiOaBcXNP6Ueog-1
+Received: by mail-wr1-f72.google.com with SMTP id ffacd0b85a97d-3780c8d689bso418267f8f.2
+        for <iommu@lists.linux.dev>; Thu, 26 Sep 2024 05:58:12 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1727355466; x=1727960266;
-        h=content-transfer-encoding:in-reply-to:organization:autocrypt:from
-         :content-language:references:cc:to:subject:user-agent:mime-version
-         :date:message-id:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=w5aVhgojZdD2dt5T9DQtW5tsGpyubA8XkXZ34ExGK2s=;
-        b=AvbKyMKi8qQI+qIXumY7GSeKUYXiIxhy1UbHul439b4UEchiv+lROjyDvVoyVm7qIl
-         eSgreTP4cUscsqSqC0C6CMQXujISYpdXyXrBhUNjV3TqLYQrqAyEU3Cj14SuqCq/rAQY
-         sdaDdXC/lukbs+e0TYjAYksWlaJ9OIx74/xhT0QFqBRsM3UD6amn9Xj3TzP55IDBBH3y
-         y1pTRxYxQ/Sem39FU5IJtLO3Lcllb+PuUZvlebI8H6cGlo5kGIdEmJ1SzTB23Fv/+5sN
-         UkLY0X/GXOHEk1yL9nWfJNE7hQlr9Ro9kls1kYyxQWerY0S02iLtZmyu0u1q3uoe66fw
-         fS6A==
-X-Forwarded-Encrypted: i=1; AJvYcCW+8cNh2cVocwRM5H0QgNwVIlOiHfU6v4CJ2HUGDzNB4444j9bmflz1cHnvbM0UDf3mpcAazw==@lists.linux.dev
-X-Gm-Message-State: AOJu0YyakImylUXbLTnehF3Dp+MrXXhiw/utETBzxP9r7V4VqbupTIs7
-	KbhpiF4zDioZ7FIWv44hXRg4VK1uezhlrgIq1pResqkqIWnm59CL5F3VxBlAcErEDYLQP7pQcD0
-	gUEppdba9F/6TroMFTQ06d/c8KtPXDm/ZLU8jdb+l+DoygGjUu5CZ
-X-Received: by 2002:a05:600c:3b18:b0:426:66a2:b200 with SMTP id 5b1f17b1804b1-42e960ae1b1mr53738935e9.0.1727355466330;
-        Thu, 26 Sep 2024 05:57:46 -0700 (PDT)
-X-Google-Smtp-Source: AGHT+IEns+h3Z/jyL/s/5q4yB6cInewHtGCCPEdYNLeLgTPkO88oUEnZ2JJwv+TTp7jHQm/GrFkX7A==
-X-Received: by 2002:a05:600c:3b18:b0:426:66a2:b200 with SMTP id 5b1f17b1804b1-42e960ae1b1mr53738685e9.0.1727355465864;
-        Thu, 26 Sep 2024 05:57:45 -0700 (PDT)
+        d=1e100.net; s=20230601; t=1727355491; x=1727960291;
+        h=content-transfer-encoding:in-reply-to:organization:autocrypt
+         :content-language:references:cc:to:from:subject:user-agent
+         :mime-version:date:message-id:x-gm-message-state:from:to:cc:subject
+         :date:message-id:reply-to;
+        bh=dBhH7BEffqYew0a0qy+WrB9ksqzmVcoADZs7pD+b9rc=;
+        b=K1AAJX7PnroIbDHaUwTnlMsCEqWnRh4LRIQTRi7FpDX3F0k7n/YHi1JCdaQk5vDuYf
+         vSabXkWKSvIxqsXgi4K/CGZ4SEBKgmPZl/t5qVZlFprSBFIg0pGbOgypvYPIH7oHTg86
+         SkDBiSzwANkpvqlLwOcF5r+r49Q+Kvqv5SswfS4oVaKkTK/q1Qb6EiYco8jyHeG/wTk3
+         yD4GFVhAADjqTqWFUjHpZOqDCndR4TPkUnDZcOoh0DkMvKuu4JD7Lijjfv/eaLJqoMbD
+         NJcYfI2HUWB3wX5vHQu8kaCxUzaX2rJUUKENrv5zItdH4Mzpdbm3ByaugI1/hNGM89+A
+         KcdA==
+X-Forwarded-Encrypted: i=1; AJvYcCU2xVPjM/kyGMRhgWZtfKkW+rQQSMEuX8UJKeyw4STRQTef271ThzlBn27OdKL/QEPGEevkbw==@lists.linux.dev
+X-Gm-Message-State: AOJu0Yy3frb0PpGjQ+1dt6jlljrs3eO/GKIgP7mwFcl9DyqqJXGNAiTp
+	0dcBvbpTd1qP5MoxJ66e61pgUL/0i9CJMm9jYAywm/zD0OWJx+enMArQDyPjQ2Mh5DbFXvn8jrP
+	VSJdsd8HkVhtGh6MgUuuuPJHbLvminZ/HyumaojxpyF2zCoXmveKa
+X-Received: by 2002:a5d:5e04:0:b0:37c:c5da:eaf7 with SMTP id ffacd0b85a97d-37cc5daeb42mr3185988f8f.31.1727355491317;
+        Thu, 26 Sep 2024 05:58:11 -0700 (PDT)
+X-Google-Smtp-Source: AGHT+IEbdUKM1K/LwWJ8k5Jj9ZXE4ZcT9C6+A5fFifjMRdgk2Ha9BYREXpX43Akhn0JVShvkZBDlgw==
+X-Received: by 2002:a5d:5e04:0:b0:37c:c5da:eaf7 with SMTP id ffacd0b85a97d-37cc5daeb42mr3185971f8f.31.1727355490871;
+        Thu, 26 Sep 2024 05:58:10 -0700 (PDT)
 Received: from ?IPV6:2003:cb:c744:ac00:ef5c:b66d:1075:254a? (p200300cbc744ac00ef5cb66d1075254a.dip0.t-ipconnect.de. [2003:cb:c744:ac00:ef5c:b66d:1075:254a])
-        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-42e96a36597sm46260575e9.31.2024.09.26.05.57.44
+        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-37cbc2c1ea2sm6455232f8f.37.2024.09.26.05.58.09
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 26 Sep 2024 05:57:45 -0700 (PDT)
-Message-ID: <950cf384-03f4-466a-ac10-61c02dd2dc48@redhat.com>
-Date: Thu, 26 Sep 2024 14:57:43 +0200
+        Thu, 26 Sep 2024 05:58:10 -0700 (PDT)
+Message-ID: <f3f7d803-92af-4e22-afca-cb91f402a846@redhat.com>
+Date: Thu, 26 Sep 2024 14:58:08 +0200
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -69,6 +69,7 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
 Subject: Re: [PATCH V1 1/9] mm/gup: repin_folio_unhugely
+From: David Hildenbrand <david@redhat.com>
 To: Jason Gunthorpe <jgg@nvidia.com>
 Cc: Steven Sistare <steven.sistare@oracle.com>, linux-mm@kvack.org,
  Kevin Tian <kevin.tian@intel.com>, Nicolin Chen <nicolinc@nvidia.com>,
@@ -83,7 +84,7 @@ References: <1726319158-283074-1-git-send-email-steven.sistare@oracle.com>
  <Zu14fVDpw1RWYevL@nvidia.com>
  <27f8ff84-76cf-40ee-b391-e226218e5600@redhat.com>
  <20240926114000.GW9417@nvidia.com>
-From: David Hildenbrand <david@redhat.com>
+ <950cf384-03f4-466a-ac10-61c02dd2dc48@redhat.com>
 Autocrypt: addr=david@redhat.com; keydata=
  xsFNBFXLn5EBEAC+zYvAFJxCBY9Tr1xZgcESmxVNI/0ffzE/ZQOiHJl6mGkmA1R7/uUpiCjJ
  dBrn+lhhOYjjNefFQou6478faXE6o2AhmebqT4KiQoUQFV4R7y1KMEKoSyy8hQaK1umALTdL
@@ -129,47 +130,46 @@ Autocrypt: addr=david@redhat.com; keydata=
  jPrnvUsUUsjRoRNJjKKA/REq+sAnhkNPPZ/NNMjaZ5b8Tovi8C0tmxiCHaQYqj7G2rgnT0kt
  WNyWQQ==
 Organization: Red Hat
-In-Reply-To: <20240926114000.GW9417@nvidia.com>
+In-Reply-To: <950cf384-03f4-466a-ac10-61c02dd2dc48@redhat.com>
 X-Mimecast-Spam-Score: 0
 X-Mimecast-Originator: redhat.com
 Content-Language: en-US
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 
-On 26.09.24 13:40, Jason Gunthorpe wrote:
-> On Thu, Sep 26, 2024 at 01:32:09PM +0200, David Hildenbrand wrote:
->> On 20.09.24 15:28, Jason Gunthorpe wrote:
->>> On Thu, Sep 19, 2024 at 10:11:38AM +0200, David Hildenbrand wrote:
->>>
->>>>>> And repin is really misleading. We are simply adding more pins to an already pinned one ...
->>>>>
->>>>> Jason suggests a better name in the other thread.
+On 26.09.24 14:57, David Hildenbrand wrote:
+> On 26.09.24 13:40, Jason Gunthorpe wrote:
+>> On Thu, Sep 26, 2024 at 01:32:09PM +0200, David Hildenbrand wrote:
+>>> On 20.09.24 15:28, Jason Gunthorpe wrote:
+>>>> On Thu, Sep 19, 2024 at 10:11:38AM +0200, David Hildenbrand wrote:
 >>>>
->>>> I would prefer something that simply adds more pins to an already pinned
->>>> folio. Much easier to get.
+>>>>>>> And repin is really misleading. We are simply adding more pins to an already pinned one ...
+>>>>>>
+>>>>>> Jason suggests a better name in the other thread.
+>>>>>
+>>>>> I would prefer something that simply adds more pins to an already pinned
+>>>>> folio. Much easier to get.
+>>>>
+>>>> Yes, but also nobody should ever want to do that operation, it should
+>>>> always be part of some kind of "splitting" sort of behavior..
 >>>
->>> Yes, but also nobody should ever want to do that operation, it should
->>> always be part of some kind of "splitting" sort of behavior..
+>>> I remember patches from Dave Howells that needed that for O_DIRECT handling.
+>>> Never say never ;)
 >>
->> I remember patches from Dave Howells that needed that for O_DIRECT handling.
->> Never say never ;)
+>> Wouldn't O_DIRECT be the same splitting thing?
 > 
-> Wouldn't O_DIRECT be the same splitting thing?
-
-No, I recall the implementation had to duplicate pins, not split.
-
+> No, I recall the implementation had to duplicate pins, not split.
 > 
->> Adding is much more intuitive than splitting ... just like we add references
->> when splitting a THP, using folio_ref_add().
+>>
+>>> Adding is much more intuitive than splitting ... just like we add references
+>>> when splitting a THP, using folio_ref_add().
+>>
+>> Well, sure, it just seems harder to document so people can use it
+>> properly.
 > 
-> Well, sure, it just seems harder to document so people can use it
-> properly.
+> As soon as we have large GUP 
 
-As soon as we have large GUP and splitting might go to multiple PMDs, 
-multiple PTEs or a mixture, just being able to add the number of pins 
-you actually need might be cleaner ...
-
-Let me have a look at the latest reincarnation of this patch.
+s/GUP/PUD/
 
 -- 
 Cheers,
