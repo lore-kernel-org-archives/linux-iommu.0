@@ -1,128 +1,160 @@
-Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 51F781AED4D
-	for <iommu@lists.linux.dev>; Thu, 26 Sep 2024 11:15:11 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=60.244.123.138
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EFCA813DDDD
+	for <iommu@lists.linux.dev>; Thu, 26 Sep 2024 11:32:14 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=170.10.129.124
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1727349313; cv=none; b=R97MaTfDo5XN5BT8AHBmH1e+KMXJAhYJNwHbwdOkdBO/5e7/b8Aqy8K2isbzn6BRG/jrQJbfHHHhM8Q6x/WBgFV0TnAu7+dGRXxn7/WJBRhWuPawcGofogsk8IcTN7U5QQpqiWmhzEyxn+8bTEXb2IcajXejIw2xbFUUhPEjGfQ=
+	t=1727350336; cv=none; b=QeQvCt4Vb70m/+3ldKdU4AVgHI5d5hfyf01GOSXnTe7FAFL/cjhnGddmj6lI2eqOkSW0dRIvTK4Csxv/YRcu8OUba9zCiE+MERKaqsBmjkHf9a0C4APboTKirHHDJTCte/3cweiE3SPbzEGj/TddCj1mBG13+OvCdz6zsXj+UJI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1727349313; c=relaxed/simple;
-	bh=ZJbABkNIHSmHBd/jzTHrAdOzlXOlz9oyg+pH4rSyvww=;
-	h=From:To:CC:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=ugjdf5LyKxJnagRsvzLc7ynzx1+ObbZMiE0sSKh2C2JypgYLEnAd4zD9TNCjbCb8dxW4DtduhtgG8ZVtQc093diixJtLb2hzPzFUiC1MCVKL2jkhquaAwKQeGBi8I2aHtBoh/plfuvxEiIni9Pv3FiEg2aqOdvUFG4sUVdorL/w=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=mediatek.com; spf=pass smtp.mailfrom=mediatek.com; dkim=pass (1024-bit key) header.d=mediatek.com header.i=@mediatek.com header.b=Z03eHFDV; arc=none smtp.client-ip=60.244.123.138
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=mediatek.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=mediatek.com
+	s=arc-20240116; t=1727350336; c=relaxed/simple;
+	bh=j2SDaSspcZQzjzwtMqeqijKNspTwsIjVjlU06GM8cIY=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=KvmGZbFQVrVZH5DRyqhaYk0VNlm/Q25I1a7Sz+LMK4OlsP/pqRH6OiaWSpsl6dyfEWraJ0G6JqROJcgQy1c8NGWx9Cw9DDIPVjDn8UkcggkhTJN32CROF0wzFbqQGPxt7DRRcTpG9/3Lv6CYwRy1Y2LEcPxOMieuc+q3Crujsvc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=redhat.com; spf=pass smtp.mailfrom=redhat.com; dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b=K4WZjjAK; arc=none smtp.client-ip=170.10.129.124
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=redhat.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=redhat.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=mediatek.com header.i=@mediatek.com header.b="Z03eHFDV"
-X-UUID: 93d9a3207bf811efb66947d174671e26-20240926
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=mediatek.com; s=dk;
-	h=Content-Type:Content-Transfer-Encoding:MIME-Version:References:In-Reply-To:Message-ID:Date:Subject:CC:To:From; bh=xixyoP0Hapu1CBOBHfdxnjaDRdmMCplJBa5O9a/tS9U=;
-	b=Z03eHFDVzQVXAlsB/QX43hC3E5Fe6ABteHRsn+/VFjgsuTWcQB9F3Ps5wAFDEgYOcsE/rIKuBEV8QIDE9PJF8QgI8dDhO9b3alBgbPOIULuasTZMSOQq+1Vpi8YYcCTBul/jSR1nt5xBRuIKkAuDrFASlh4O9diC/iYg8UHTiIc=;
-X-CID-P-RULE: Release_Ham
-X-CID-O-INFO: VERSION:1.1.41,REQID:d8e78e8d-44a5-42e1-96f1-c47d8f9a074c,IP:0,U
-	RL:0,TC:0,Content:0,EDM:0,RT:0,SF:0,FILE:0,BULK:0,RULE:Release_Ham,ACTION:
-	release,TS:0
-X-CID-META: VersionHash:6dc6a47,CLOUDID:76f49a9e-8e9a-4ac1-b510-390a86b53c0a,B
-	ulkID:nil,BulkQuantity:0,Recheck:0,SF:102,TC:nil,Content:0,EDM:-3,IP:nil,U
-	RL:0,File:nil,RT:nil,Bulk:nil,QS:nil,BEC:nil,COL:0,OSI:0,OSA:0,AV:0,LES:1,
-	SPR:NO,DKR:0,DKP:0,BRR:0,BRE:0,ARC:0
-X-CID-BVR: 0
-X-CID-BAS: 0,_,0,_
-X-CID-FACTOR: TF_CID_SPAM_SNR
-X-UUID: 93d9a3207bf811efb66947d174671e26-20240926
-Received: from mtkmbs13n1.mediatek.inc [(172.21.101.193)] by mailgw01.mediatek.com
-	(envelope-from <macpaul.lin@mediatek.com>)
-	(Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
-	with ESMTP id 197197286; Thu, 26 Sep 2024 19:15:03 +0800
-Received: from mtkmbs11n2.mediatek.inc (172.21.101.187) by
- mtkmbs10n1.mediatek.inc (172.21.101.34) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.1118.26; Thu, 26 Sep 2024 19:15:00 +0800
-Received: from mtksdccf07.mediatek.inc (172.21.84.99) by
- mtkmbs11n2.mediatek.inc (172.21.101.73) with Microsoft SMTP Server id
- 15.2.1118.26 via Frontend Transport; Thu, 26 Sep 2024 19:15:00 +0800
-From: Macpaul Lin <macpaul.lin@mediatek.com>
-To: Chun-Kuang Hu <chunkuang.hu@kernel.org>, Philipp Zabel
-	<p.zabel@pengutronix.de>, David Airlie <airlied@gmail.com>, Simona Vetter
-	<simona@ffwll.ch>, Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
-	Maxime Ripard <mripard@kernel.org>, Thomas Zimmermann <tzimmermann@suse.de>,
-	Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>,
-	Conor Dooley <conor+dt@kernel.org>, Yong Wu <yong.wu@mediatek.com>, "Joerg
- Roedel" <joro@8bytes.org>, Will Deacon <will@kernel.org>, Robin Murphy
-	<robin.murphy@arm.com>, Matthias Brugger <matthias.bgg@gmail.com>,
-	AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>, CK Hu
-	<ck.hu@mediatek.com>, Jitao shi <jitao.shi@mediatek.com>, Tinghan Shen
-	<tinghan.shen@mediatek.com>, Seiya Wang <seiya.wang@mediatek.com>, Ben Lok
-	<ben.lok@mediatek.com>, Macpaul Lin <macpaul.lin@mediatek.com>, "Nancy . Lin"
-	<nancy.lin@mediatek.com>, <dri-devel@lists.freedesktop.org>,
-	<linux-mediatek@lists.infradead.org>, <devicetree@vger.kernel.org>,
-	<linux-kernel@vger.kernel.org>, <iommu@lists.linux.dev>,
-	<linux-arm-kernel@lists.infradead.org>, Alexandre Mergnat
-	<amergnat@baylibre.com>
-CC: Bear Wang <bear.wang@mediatek.com>, Pablo Sun <pablo.sun@mediatek.com>,
-	Macpaul Lin <macpaul@gmail.com>, Sen Chu <sen.chu@mediatek.com>, "Chris-qj
- chen" <chris-qj.chen@mediatek.com>, MediaTek Chromebook Upstream
-	<Project_Global_Chrome_Upstream_Group@mediatek.com>, Chen-Yu Tsai
-	<wenst@chromium.org>
-Subject: [PATCH v2 3/5] arm64: dts: mediatek: mt8395-genio-1200-evk: Fix dtbs_check error for phy
-Date: Thu, 26 Sep 2024 19:14:47 +0800
-Message-ID: <20240926111449.9245-3-macpaul.lin@mediatek.com>
-X-Mailer: git-send-email 2.18.0
-In-Reply-To: <20240926111449.9245-1-macpaul.lin@mediatek.com>
-References: <20240926111449.9245-1-macpaul.lin@mediatek.com>
+	dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="K4WZjjAK"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+	s=mimecast20190719; t=1727350334;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding:
+	 in-reply-to:in-reply-to:references:references:autocrypt:autocrypt;
+	bh=NUvdT/6VzD/N9xFL0vvfDArd4hGIXfIrgp9USblyYP8=;
+	b=K4WZjjAKBKWiBD1xTaz0QxaMiqiVbAs1aK2in1i8fYhELOf/eGst2sWQgewqN5gTDonCIa
+	YW7EferywTzbpFwKj4Lb5DNZpemWm5ruUhEhKnfI7fqPOV5E6kfLBKY7PMO4lDTjN2aMHu
+	gFUDh4R6yIkg3DmrLBMcNEUg1BlRKz8=
+Received: from mail-wr1-f69.google.com (mail-wr1-f69.google.com
+ [209.85.221.69]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
+ us-mta-147-UXeoBxgEN1G7hI-iJwsCJw-1; Thu, 26 Sep 2024 07:32:12 -0400
+X-MC-Unique: UXeoBxgEN1G7hI-iJwsCJw-1
+Received: by mail-wr1-f69.google.com with SMTP id ffacd0b85a97d-378ab5b74e1so335383f8f.3
+        for <iommu@lists.linux.dev>; Thu, 26 Sep 2024 04:32:12 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1727350331; x=1727955131;
+        h=content-transfer-encoding:in-reply-to:organization:autocrypt
+         :content-language:from:references:cc:to:subject:user-agent
+         :mime-version:date:message-id:x-gm-message-state:from:to:cc:subject
+         :date:message-id:reply-to;
+        bh=NUvdT/6VzD/N9xFL0vvfDArd4hGIXfIrgp9USblyYP8=;
+        b=l8N1G61HdR6etYKnpin0l/itWqMLwNAXvGBAOh1ryUFZM+2/fq3FrrgTKxNObMA8n2
+         HFXbrwBgo0a/+OBfb2ma4Gu/a/AWPSSnwjDXbZxYQ5iZkJQTwYCjHp502SSNaZud35kv
+         gGPOWNigSR06LlENmxD06LEGrHK1ODydN2/OzZzJwAho/4jHg/58vDTS++F7TY5W+V9L
+         9DaRAE0/dCfZsG3Yd58DE+54l48QmIbeSc+BFZC6T23HOtPDXonGmRp7aFjVDj1ZcmVP
+         Gr6kpPIEl2fo31rgzrqmL0ZLY7RctXnRrF7bNdY/fzWaYDN+19kqzUunKgD0wAcA017T
+         NEdA==
+X-Forwarded-Encrypted: i=1; AJvYcCUet5MEUssXN6vXu7ySiCEmVbOr78ptIEFTXF3SEIXAiqw00moal1ZysUbcHS2xUh9deOn9SQ==@lists.linux.dev
+X-Gm-Message-State: AOJu0YwToOXg7GmYCyh4frNubMBj20LXAZVmkoy3Md3KblrPNoLOBsxc
+	5TKnYl8T52sl/bZ36Hr6VpyGQNZwp59u6WkYcYL9FjUJDPhpYhpGPYejShNt4rfMz7J7ZG8zMq0
+	hlLJYX5q9+Wlm919RPGLni6B2GME0ka9fWYehE6Td9MPf8oK5yvJk
+X-Received: by 2002:a05:6000:1089:b0:37c:cfe4:6997 with SMTP id ffacd0b85a97d-37ccfe46a46mr810357f8f.47.1727350331492;
+        Thu, 26 Sep 2024 04:32:11 -0700 (PDT)
+X-Google-Smtp-Source: AGHT+IENY0Txg/mu9eaMVHHwBbA2+jP6JUxvEjpA7+Ipv3S4Ads9SUd5G0UGbnSt7/reA44BsBZMJA==
+X-Received: by 2002:a05:6000:1089:b0:37c:cfe4:6997 with SMTP id ffacd0b85a97d-37ccfe46a46mr810342f8f.47.1727350331107;
+        Thu, 26 Sep 2024 04:32:11 -0700 (PDT)
+Received: from ?IPV6:2003:cb:c744:ac00:ef5c:b66d:1075:254a? (p200300cbc744ac00ef5cb66d1075254a.dip0.t-ipconnect.de. [2003:cb:c744:ac00:ef5c:b66d:1075:254a])
+        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-37cbc2f9c27sm6265292f8f.70.2024.09.26.04.32.10
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 26 Sep 2024 04:32:10 -0700 (PDT)
+Message-ID: <27f8ff84-76cf-40ee-b391-e226218e5600@redhat.com>
+Date: Thu, 26 Sep 2024 13:32:09 +0200
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-TM-AS-Product-Ver: SMEX-14.0.0.3152-9.1.1006-23728.005
-X-TM-AS-Result: No-10--4.841900-8.000000
-X-TMASE-MatchedRID: zCWA9GkRdEXwBTQ+XvV6VZdc7I2df+ms2D9FbDg9BP7HkH7uosEn7E/3
-	ZkXeY1OAsdosXJJWMVwSc9Me4enxyKXzgcphDfm8i/b+LxU2p47Dx2NobQWtm3td2pOTSxFkZvo
-	+mFW19mDftLFtxOSbQ4Ay6p60ZV62fJ5/bZ6npdjGVuWouVipcjkzbH2/cwzqG3FlWg8Wu15a+q
-	AYo2zoni/AgRtxBKl7tewCAHVxRuJ3grRcsUQWCZ60EYyfuxecByDoLD/4fL2vQrnMxIR0Wm1Rj
-	oup2VCcWve+eVz4Pp5Vk5utmQ1VlGVF3+d9rnoxpI8EFEZVbig=
-X-TM-AS-User-Approved-Sender: No
-X-TM-AS-User-Blocked-Sender: No
-X-TMASE-Result: 10--4.841900-8.000000
-X-TMASE-Version: SMEX-14.0.0.3152-9.1.1006-23728.005
-X-TM-SNTS-SMTP: FADA7EAE08311BDB8676D42311BA4A442067F526B1A358799E617766A99071542000:8
-X-MTK: N
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH V1 1/9] mm/gup: repin_folio_unhugely
+To: Jason Gunthorpe <jgg@nvidia.com>
+Cc: Steven Sistare <steven.sistare@oracle.com>, linux-mm@kvack.org,
+ Kevin Tian <kevin.tian@intel.com>, Nicolin Chen <nicolinc@nvidia.com>,
+ iommu@lists.linux.dev, Andrew Morton <akpm@linux-foundation.org>,
+ Matthew Wilcox <willy@infradead.org>
+References: <1726319158-283074-1-git-send-email-steven.sistare@oracle.com>
+ <1726319158-283074-2-git-send-email-steven.sistare@oracle.com>
+ <d25fc25f-34aa-458b-973a-f7de2438b837@oracle.com>
+ <6aea6530-9f9c-4a9c-9c9c-2c29e8ae9e9d@redhat.com>
+ <98004c8e-f941-480e-b1be-8f6fd925871a@oracle.com>
+ <dd50a217-d492-471c-b708-a400c04e8444@redhat.com>
+ <Zu14fVDpw1RWYevL@nvidia.com>
+From: David Hildenbrand <david@redhat.com>
+Autocrypt: addr=david@redhat.com; keydata=
+ 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
+ WNyWQQ==
+Organization: Red Hat
+In-Reply-To: <Zu14fVDpw1RWYevL@nvidia.com>
+X-Mimecast-Spam-Score: 0
+X-Mimecast-Originator: redhat.com
+Content-Language: en-US
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-The ethernet-phy node in mt8395-genio-1200-evk.dts was triggering a
-dtbs_check error. The error message was:
-  eth-phy0@1: $nodename:0: 'eth-phy0@1' does not match
-              '^ethernet-phy(@[a-f0-9]+)?$'
-Fix this issue by replacing 'eth-phy' node to generic 'ethernet-phy'.
+On 20.09.24 15:28, Jason Gunthorpe wrote:
+> On Thu, Sep 19, 2024 at 10:11:38AM +0200, David Hildenbrand wrote:
+> 
+>>>> And repin is really misleading. We are simply adding more pins to an already pinned one ...
+>>>
+>>> Jason suggests a better name in the other thread.
+>>
+>> I would prefer something that simply adds more pins to an already pinned
+>> folio. Much easier to get.
+> 
+> Yes, but also nobody should ever want to do that operation, it should
+> always be part of some kind of "splitting" sort of behavior..
 
-Fixes: f2b543a191b6 ("arm64: dts: mediatek: add device-tree for Genio 1200 EVK board")
-Signed-off-by: Macpaul Lin <macpaul.lin@mediatek.com>
-Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
----
- arch/arm64/boot/dts/mediatek/mt8395-genio-1200-evk.dts | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+I remember patches from Dave Howells that needed that for O_DIRECT 
+handling. Never say never ;)
 
-Changes for v2:
- - No change.
+Adding is much more intuitive than splitting ... just like we add 
+references when splitting a THP, using folio_ref_add().
 
-diff --git a/arch/arm64/boot/dts/mediatek/mt8395-genio-1200-evk.dts b/arch/arm64/boot/dts/mediatek/mt8395-genio-1200-evk.dts
-index 1ef6262b65c9..b4b48eb93f3c 100644
---- a/arch/arm64/boot/dts/mediatek/mt8395-genio-1200-evk.dts
-+++ b/arch/arm64/boot/dts/mediatek/mt8395-genio-1200-evk.dts
-@@ -187,7 +187,7 @@ mdio {
- 		compatible = "snps,dwmac-mdio";
- 		#address-cells = <1>;
- 		#size-cells = <0>;
--		eth_phy0: eth-phy0@1 {
-+		eth_phy0: ethernet-phy@1 {
- 			compatible = "ethernet-phy-id001c.c916";
- 			reg = <0x1>;
- 		};
 -- 
-2.45.2
+Cheers,
+
+David / dhildenb
 
