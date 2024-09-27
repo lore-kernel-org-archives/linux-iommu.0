@@ -1,43 +1,43 @@
-Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
+Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6DAA5176ACA
-	for <iommu@lists.linux.dev>; Fri, 27 Sep 2024 06:50:53 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=60.244.123.138
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6752E1714AA
+	for <iommu@lists.linux.dev>; Fri, 27 Sep 2024 06:50:51 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=210.61.82.184
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1727419855; cv=none; b=A8S1/5c+4tTDvKqycbK4tujOMHAaPZtcJPvwzFOFDRM90Wh+KuEKcULISGvVtTs7Cb183y8Ydjri3Ws5JlePTB/MQL5zIUWpmRMh4pLEH7kxR+47qGeTxjsth3akKXECV7ZcgoMbUmh5efily7y45isRkx/59UYgAK20r+bp1i0=
+	t=1727419855; cv=none; b=H/qs4Wm1P0QANvu6EHvTMPbR3408tlcMLFV13r92lQgnPlS63jYtuO4m91T1LHlGO2FoFqWsMk2PakCqCNKmiW7j5HaGhhLEZEyXml+uD3XW2xEiKNrimtNnh9JUCyHR2FJp0cNjA8TFEah8BAXl6Pr4oTH9Ijgs+2emq0txyhY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
 	s=arc-20240116; t=1727419855; c=relaxed/simple;
-	bh=+EUnDO8epefw86A4hI6YHrvC5HVhUS2cHw/Zn1tTKIc=;
+	bh=0ELdn304xX9gBaR2x9msegY4okTfrmQTwwWI5isNW0w=;
 	h=From:To:CC:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=fOYq++vIM5iE6Sz+nsrhSt+YGMVdAcexXFVpcwvFCAbEK/s22pJcOxr93AkCY4P3uackJ+Nb320zgToACUA29ICp01bC+D7yz1AQGrK5IWujoxxKGLb8kL3yzeMp3rT1JYxRNBnxe3Ch+q+2aFJPQxbYrXlSynnm/7v5oucQdE4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=mediatek.com; spf=pass smtp.mailfrom=mediatek.com; dkim=pass (1024-bit key) header.d=mediatek.com header.i=@mediatek.com header.b=Gq3iIaAZ; arc=none smtp.client-ip=60.244.123.138
+	 MIME-Version:Content-Type; b=ezbw3htAAeESLrq4CIeEpATVFElxgbKQVHoNbmHFa6HOkjdfmNKwilVbTF25jtVhrpGlcL+kEQ9t/+vmlwWhqIhXpmErapfC3ziMAEMZblc8lJ59GTy1RSLO3n6HjRf7SoBBsIg9KiVvXPlYOoszc3Mblyvd8hKIDyd58Nqta2U=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=mediatek.com; spf=pass smtp.mailfrom=mediatek.com; dkim=pass (1024-bit key) header.d=mediatek.com header.i=@mediatek.com header.b=HBjJax65; arc=none smtp.client-ip=210.61.82.184
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=mediatek.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=mediatek.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=mediatek.com header.i=@mediatek.com header.b="Gq3iIaAZ"
-X-UUID: d2906a8c7c9c11efb66947d174671e26-20240927
+	dkim=pass (1024-bit key) header.d=mediatek.com header.i=@mediatek.com header.b="HBjJax65"
+X-UUID: d1a0c2e87c9c11ef8b96093e013ec31c-20240927
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=mediatek.com; s=dk;
-	h=Content-Type:Content-Transfer-Encoding:MIME-Version:References:In-Reply-To:Message-ID:Date:Subject:CC:To:From; bh=RZpSSmiWrdlkuYE2Rt8zGSrtAGkJklsWS24DG2VMGzI=;
-	b=Gq3iIaAZuLqFZbLIjrdAx5m3kle/L90rccX2lXtYom0PubFOMqjiCNpG0zkGuUlWIBRpH9StVzUzDtgxnqKDotAYxBfEqYieDUZ7RR3meuwNurOMVB8m7x92RZKF7bPeNH0gGZtTSwEUrQtTXeQ2qSIWwKACusUBuU+VVWil1y8=;
+	h=Content-Type:Content-Transfer-Encoding:MIME-Version:References:In-Reply-To:Message-ID:Date:Subject:CC:To:From; bh=x73fzQ1iBtBXNbD5gQqazkTyid377T6UD2pefzFgjGs=;
+	b=HBjJax65jrh0fwFFjyNj5ITWkFE25JUlMxMkoditWY3/Wm5wcACpTwgjGV5xC6itTrj+5y8Fv1dLTO270cyxTUwvLFsEBfpIUXHWrNi7u8L8llqx55KxFqR6t9I7od9O5X8bhNATxpv1mMA7h/bUUfDIXXXj+WywdgzalTqeVXc=;
 X-CID-P-RULE: Release_Ham
-X-CID-O-INFO: VERSION:1.1.41,REQID:fc988eb9-2c49-4568-aac5-cfeea35cc0a1,IP:0,U
+X-CID-O-INFO: VERSION:1.1.41,REQID:13e8fe6b-f189-411b-ab6c-7007c5219794,IP:0,U
 	RL:0,TC:0,Content:0,EDM:0,RT:0,SF:0,FILE:0,BULK:0,RULE:Release_Ham,ACTION:
 	release,TS:0
-X-CID-META: VersionHash:6dc6a47,CLOUDID:5d675718-b42d-49a6-94d2-a75fa0df01d2,B
+X-CID-META: VersionHash:6dc6a47,CLOUDID:5b675718-b42d-49a6-94d2-a75fa0df01d2,B
 	ulkID:nil,BulkQuantity:0,Recheck:0,SF:102,TC:nil,Content:0,EDM:-3,IP:nil,U
-	RL:1,File:nil,RT:nil,Bulk:nil,QS:nil,BEC:nil,COL:0,OSI:0,OSA:0,AV:0,LES:1,
+	RL:0,File:nil,RT:nil,Bulk:nil,QS:nil,BEC:nil,COL:0,OSI:0,OSA:0,AV:0,LES:1,
 	SPR:NO,DKR:0,DKP:0,BRR:0,BRE:0,ARC:0
 X-CID-BVR: 0
 X-CID-BAS: 0,_,0,_
-X-CID-FACTOR: TF_CID_SPAM_SNR,TF_CID_SPAM_ULS
-X-UUID: d2906a8c7c9c11efb66947d174671e26-20240927
-Received: from mtkmbs14n1.mediatek.inc [(172.21.101.75)] by mailgw01.mediatek.com
+X-CID-FACTOR: TF_CID_SPAM_SNR
+X-UUID: d1a0c2e87c9c11ef8b96093e013ec31c-20240927
+Received: from mtkmbs09n2.mediatek.inc [(172.21.101.94)] by mailgw02.mediatek.com
 	(envelope-from <macpaul.lin@mediatek.com>)
 	(Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
-	with ESMTP id 785076594; Fri, 27 Sep 2024 14:50:46 +0800
+	with ESMTP id 369317385; Fri, 27 Sep 2024 14:50:44 +0800
 Received: from mtkmbs13n1.mediatek.inc (172.21.101.193) by
- mtkmbs10n1.mediatek.inc (172.21.101.34) with Microsoft SMTP Server
+ mtkmbs13n2.mediatek.inc (172.21.101.108) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
  15.2.1118.26; Fri, 27 Sep 2024 14:50:43 +0800
 Received: from mtksdccf07.mediatek.inc (172.21.84.99) by
@@ -49,8 +49,8 @@ To: Chun-Kuang Hu <chunkuang.hu@kernel.org>, Philipp Zabel
 	<simona@ffwll.ch>, Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
 	Maxime Ripard <mripard@kernel.org>, Thomas Zimmermann <tzimmermann@suse.de>,
 	Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>,
-	Conor Dooley <conor+dt@kernel.org>, Yong Wu <yong.wu@mediatek.com>, "Joerg
- Roedel" <joro@8bytes.org>, Will Deacon <will@kernel.org>, Robin Murphy
+	Conor Dooley <conor+dt@kernel.org>, Yong Wu <yong.wu@mediatek.com>, Joerg
+ Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>, Robin Murphy
 	<robin.murphy@arm.com>, Matthias Brugger <matthias.bgg@gmail.com>,
 	AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>, CK Hu
 	<ck.hu@mediatek.com>, Jitao shi <jitao.shi@mediatek.com>, Tinghan Shen
@@ -62,13 +62,13 @@ To: Chun-Kuang Hu <chunkuang.hu@kernel.org>, Philipp Zabel
 	<linux-arm-kernel@lists.infradead.org>, Alexandre Mergnat
 	<amergnat@baylibre.com>
 CC: Bear Wang <bear.wang@mediatek.com>, Pablo Sun <pablo.sun@mediatek.com>,
-	Macpaul Lin <macpaul@gmail.com>, Sen Chu <sen.chu@mediatek.com>, "Chris-qj
- chen" <chris-qj.chen@mediatek.com>, MediaTek Chromebook Upstream
+	Macpaul Lin <macpaul@gmail.com>, Sen Chu <sen.chu@mediatek.com>, Chris-qj
+ chen <chris-qj.chen@mediatek.com>, MediaTek Chromebook Upstream
 	<Project_Global_Chrome_Upstream_Group@mediatek.com>, Chen-Yu Tsai
 	<wenst@chromium.org>
-Subject: [PATCH v3 5/5] dt-bindings: display: mediatek: dpi: correct power-domains property
-Date: Fri, 27 Sep 2024 14:50:41 +0800
-Message-ID: <20240927065041.15247-5-macpaul.lin@mediatek.com>
+Subject: [PATCH v3 2/5] dt-bindings: iommu: mediatek: Fix interrupt count constraint for new SoCs
+Date: Fri, 27 Sep 2024 14:50:38 +0800
+Message-ID: <20240927065041.15247-2-macpaul.lin@mediatek.com>
 X-Mailer: git-send-email 2.18.0
 In-Reply-To: <20240927065041.15247-1-macpaul.lin@mediatek.com>
 References: <20240927065041.15247-1-macpaul.lin@mediatek.com>
@@ -80,97 +80,77 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
-X-TM-AS-Product-Ver: SMEX-14.0.0.3152-9.1.1006-23728.005
-X-TM-AS-Result: No-10--9.384400-8.000000
-X-TMASE-MatchedRID: tfUp3kDdFrlpqqYAQ+J6uSYRREGYqtmUmoKXVHfiMM9KUzR+o2IehUGW
-	yClQhQkvKY6B7sY8Ci7dRIKCUEZlk77J5yv1W35KA9lly13c/gG+1Vx7rDn4ryJ8zskw0dbrzTO
-	MdSL65dGPBBqsttKK1ATOtv1QaDkraxXbwRJk57z0hv/rD7WVZA+jS+LRpl81pzPA3TKVblhgIS
-	cCiWkKENIS3Y3mrYfn3DCWtTm2Z99RAFy9FG9Tvev8QGaI25e3D+LwVja9M4GbKItl61J/yZ+in
-	TK0bC9eKrauXd3MZDUzaXOJNfDG7df9dBya+tT4Bm14c7FgKKADsOKi2fzUXUhbIc2LUS9M
-X-TM-AS-User-Approved-Sender: No
-X-TM-AS-User-Blocked-Sender: No
-X-TMASE-Result: 10--9.384400-8.000000
-X-TMASE-Version: SMEX-14.0.0.3152-9.1.1006-23728.005
-X-TM-SNTS-SMTP: E193EE1736A7BC2525CB5DE5945DF5D1462A8EE6C095E710895B52A9B4EA55682000:8
 X-MTK: N
 
-The MediaTek DPI module is typically associated with one of the
-following multimedia power domains:
- - POWER_DOMAIN_DISPLAY
- - POWER_DOMAIN_VDOSYS
- - POWER_DOMAIN_MM
-The specific power domain used varies depending on the SoC design.
+The infra-iommu node in mt8195.dtsi was triggering a CHECK_DTBS error due
+to an excessively long 'interrupts' property. The error message was:
 
-These power domains are shared by multiple devices within the SoC.
-In most cases, these power domains are enabled by other devices.
-As a result, the DPI module of legacy SoCs often functions correctly
-even without explicit configuration.
+  infra-iommu@10315000: interrupts: [[0, 795, 4, 0], [0, 796, 4, 0],
+                     [0, 797, 4, 0], [0, 798, 4, 0], [0, 799, 4, 0]]
+                     is too long
 
-It is recommended to explicitly add the appropriate power domain
-property to the DPI node in the device tree. Hence drop the
-compatible checking for specific SoCs.
+To address this issue, update the compatbile matching rule for
+'interrupts' property. This change allows flexibility in the number
+of interrupts for new SoCs like MT8195.
+The purpose of these 5 interrupts is also added into description.
 
-Fixes: 5474d49b2f79 ("dt-bindings: display: mediatek: dpi: Add power domains")
+Fixes: bca28426805d ("dt-bindings: iommu: mediatek: Convert IOMMU to DT schema")
 Signed-off-by: Macpaul Lin <macpaul.lin@mediatek.com>
-Signed-off-by: Jitao Shi <jitao.shi@mediatek.com>
-Signed-off-by: Pablo Sun <pablo.sun@mediatek.com>
 ---
- .../display/mediatek/mediatek,dpi.yaml        | 24 ++++++++-----------
- 1 file changed, 10 insertions(+), 14 deletions(-)
+ .../bindings/iommu/mediatek,iommu.yaml        | 25 ++++++++++++++++++-
+ 1 file changed, 24 insertions(+), 1 deletion(-)
 
 Changes for v2:
- - Because of the corresponding dts fix has been reviewed with a Reviewed-by: tag.
-   [1] https://lore.kernel.org/all/20240925080515.16377-1-macpaul.lin@mediatek.com/
-   We still need this change to fix the 2 dtbs_check errors.
-   So keeps no change here.
+ - commit message: re-formatting and add a description of adding 5 interrupts.
+ - add 'description' and 'maxItems: 5' for 'interrupt' property of
+   'mt8195-iommu-infra'
+ - others keeps 'maxItems: 1'
 
 Changes for v3:
- - The origin patch is [2]
-   https://lore.kernel.org/all/20240926111449.9245-2-macpaul.lin@mediatek.com/
- - Thanks for Conor's reminding, after MediaTek's internal discussion,
-   This patch v3 is the replacement of [2] v2.
-   Because the DPI module should has a explicit configuration with power domain.
- - Drop Acked-by: tag since v3 is nearly a new patch for different approach.
+ - Refine the description for 'interrupts' property and fixes the compatible
+   matching rules.
+ - Refine commit message.
 
-diff --git a/Documentation/devicetree/bindings/display/mediatek/mediatek,dpi.yaml b/Documentation/devicetree/bindings/display/mediatek/mediatek,dpi.yaml
-index 3a82aec9021c..497c0eb4ed0b 100644
---- a/Documentation/devicetree/bindings/display/mediatek/mediatek,dpi.yaml
-+++ b/Documentation/devicetree/bindings/display/mediatek/mediatek,dpi.yaml
-@@ -63,6 +63,16 @@ properties:
-       - const: sleep
- 
-   power-domains:
-+    description: |
-+      The MediaTek DPI module is typically associated with one of the
-+      following multimedia power domains:
-+        POWER_DOMAIN_DISPLAY
-+        POWER_DOMAIN_VDOSYS
-+        POWER_DOMAIN_MM
-+      The specific power domain used varies depending on the SoC design.
-+
-+      It is recommended to explicitly add the appropriate power domain
-+      property to the DPI node in the device tree.
+diff --git a/Documentation/devicetree/bindings/iommu/mediatek,iommu.yaml b/Documentation/devicetree/bindings/iommu/mediatek,iommu.yaml
+index ea6b0f5f24de..10e2bb0f0704 100644
+--- a/Documentation/devicetree/bindings/iommu/mediatek,iommu.yaml
++++ b/Documentation/devicetree/bindings/iommu/mediatek,iommu.yaml
+@@ -96,7 +96,13 @@ properties:
      maxItems: 1
  
-   port:
-@@ -79,20 +89,6 @@ required:
-   - clock-names
-   - port
+   interrupts:
+-    maxItems: 1
++    description: |
++      Usually, the IOMMU requires only 1 interrupt.
++
++      The IOMMU of MT8195 has 5 banks: 0/1/2/3/4.
++      Each bank has a set of APB registers corresponding to the
++      normal world, protected world 1/2/3, and secure world, respectively.
++      Therefore, 5 interrupt numbers are needed for MT8195.
  
--allOf:
--  - if:
--      not:
--        properties:
--          compatible:
--            contains:
--              enum:
--                - mediatek,mt6795-dpi
--                - mediatek,mt8173-dpi
--                - mediatek,mt8186-dpi
--    then:
--      properties:
--        power-domains: false
--
+   clocks:
+     items:
+@@ -210,6 +216,23 @@ allOf:
+       required:
+         - mediatek,larbs
+ 
++  - if:
++      properties:
++        compatible:
++          contains:
++            enum:
++              - mediatek,mt8195-iommu-infra
++
++    then:
++      properties:
++        interrupts:
++          maxItems: 5
++
++    else:
++      properties:
++        interrupts:
++          maxItems: 1
++
  additionalProperties: false
  
  examples:
