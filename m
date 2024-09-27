@@ -1,208 +1,196 @@
-Received: from mail-qt1-f172.google.com (mail-qt1-f172.google.com [209.85.160.172])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from NAM11-DM6-obe.outbound.protection.outlook.com (mail-dm6nam11on2071.outbound.protection.outlook.com [40.107.223.71])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B0A8D749C
-	for <iommu@lists.linux.dev>; Fri, 27 Sep 2024 05:54:16 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.160.172
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1727416458; cv=none; b=BQuZL8JuS62p8BO/WBT+DrRrR98fLanWmPzkpvX9f+AKJAUH477knJYnJ9YVxoMQX3wRhqq+YwgpBJ121j5UBQ5zzPiag+Vh6MZ+f3ZNi6WAPk7Olim9RywhIdsxDQxEnCo2bll1CFy9D4PfDfIkVjufTsZSQChS1WApB7FyR6Q=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1727416458; c=relaxed/simple;
-	bh=G4hpnvLo0m/PQe/eCqe2pef7O4TSc1+b2w1IPvUZUSM=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=UXFY+RNXJnisTe+hJN2s90aw/MTxl5NFL9w/NWwaskyRMHamLvcemi79NHJzOckplx0x53Hjs/omASW25xaMS44aL+nX85leckg9CBhLf3j1KqrA8NjZiECumw9Z4q7wWR+kWnxOqkQ9c8m96zGtBDMNQllIt1uwHZvygNWmrCE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=a5ft72qN; arc=none smtp.client-ip=209.85.160.172
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1D306158210
+	for <iommu@lists.linux.dev>; Fri, 27 Sep 2024 06:02:55 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.223.71
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1727416977; cv=fail; b=GhS0zD5LQuDzP0+jcl6YRewbJKVgTF53kBrzjlo13biz5yUmwPyXCC9UDAX4rcANtjIHtAaiIj5s/iD6xI0TEoyBu2Kmx2Z+iOPGLdDFdM3J3ChUfTuw4vjYEv6WlBjQzSY3OUT4jgpwvnQnt5coioUi2B5hHk/B9WtBILQA020=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1727416977; c=relaxed/simple;
+	bh=eaO+JPD3LgROeEqlIVirH/gBGaKeJV1frVLkLNTAGDU=;
+	h=Date:From:To:CC:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=Tbt7y36MZxEz1V5OOB2x6xb1eYbLlPtUCEE91eMRnRCnDkJJEFNQopxU6kKrNtfTVA/Ssh7meAYjl4anqPnoFUjU7g+eMP8gd9pdcOi9jbGyQ1QqZ3GoIhW5nE3aXtY9dIDsreRfgorlcQNWFghrUP65GnB+3Y4pOgoURuXBCk4=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=iZ2i9R7p; arc=fail smtp.client-ip=40.107.223.71
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="a5ft72qN"
-Received: by mail-qt1-f172.google.com with SMTP id d75a77b69052e-4582fa01090so166411cf.0
-        for <iommu@lists.linux.dev>; Thu, 26 Sep 2024 22:54:16 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20230601; t=1727416455; x=1728021255; darn=lists.linux.dev;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=Fbg8QJSSUgH7Q4nHSRemybsPSlB855qz0uznqiadyvc=;
-        b=a5ft72qNTcrstHqr3QFjA42smQNtFcR5mclzP1lQ8Ah3jCBmA0j0PMkh0I5TMmjK9N
-         zloAI/xj0caf8U45Nl9BYViVDGMv7F/wQFQJaCqafasWzm5703/+XdTypRpfbAC2Ep25
-         FQOnf4UbvBnwiUMSTgiax4fc7xbuK5sXOgCaWB/fHxotPHmw2z07NgVM7s5W5rhbKvo/
-         QHpZxtiaigOrmWhCBW11If81JrexW4NHZX+MmYF3BeiSkiA88mHtpO4AQA0ibqh4gChK
-         w85iRMpWmvQNCXI1pSqPDEhqAX51ioKYct58rrFcF7iYPiL9ma7M8zeGJSkVw+qvY4v/
-         c56A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1727416455; x=1728021255;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=Fbg8QJSSUgH7Q4nHSRemybsPSlB855qz0uznqiadyvc=;
-        b=l2/mN24jtNwzk8ytdmHlaviujYDR0azE9ZDFKxl4a+hxNaOyq2FEEV8tbmlnmCJoIE
-         TlrU/vPWzDv5mtCsubvmn9a1rzFFJCTKJxSn9DgF4WECHDkY964G/V9aaei8dMM3/dmd
-         67iPcJ+lciA5NRLHYcvxueZYllu6m1bNV3yfb1Idl+vJrpdAATrZBMBJMVjTYYKYalei
-         YOTPpX9lvPgS9DFOz459gxO1nB/0cN2iUthH0cndDjR8pwQwR1P7jYH5AcR1snw9MiSI
-         sDEtqq/2hdZi4URUj73VZxX8xJttkRIIQZ1U837NEb+9jFBaA5nGEX/6gt3vYTSKTmZy
-         bRkA==
-X-Forwarded-Encrypted: i=1; AJvYcCV0Yx+VVcMOcyD39PnYH8ooj0YtR9CXkFWFhJlUX/sAMxUye6DjhCp5gEPXsqS4uaWWKZAJ3Q==@lists.linux.dev
-X-Gm-Message-State: AOJu0YzsbqMVyjui6uNs2EL5y9AwlN7N+fTwYfxT6EnfS8IvPzj3OOtR
-	RB/95MYjdTHo3vkK7xj6bjjI9tRFNnRslyR63JdOFK5PPXoeYIwOfL84gGR8OkEo4sRE1NxKAW3
-	oW6+8xnYOF4mgqF3TqLbE4cczhDYqr4g6of4h
-X-Google-Smtp-Source: AGHT+IFlWAzqms00GpX5qYW9TQZFSIQORw0rsVCeZaOGfdUcQ3vPP90oLkUJ8sEZ5IgWc6qBEG83z217FGnc5KOy/AE=
-X-Received: by 2002:a05:622a:7d0e:b0:453:58b6:e022 with SMTP id
- d75a77b69052e-45ca02b0365mr2089571cf.28.1727416455179; Thu, 26 Sep 2024
- 22:54:15 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="iZ2i9R7p"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=XpfcbiLAkDnBRXCCO3B4u6BywE38sMdEt1fOJA7lHjfSswL9T7zADDZLPsL0oIhzibgjjAtZICjdak5Ev79nI/K1uM6Yy2dgB0+HG+ad5/VyF6RM5/IuDptEh4AZkbIqMYT6ZucY2jeMJpHGoEn2L/u2h+h40NB2MCpzg9IpQ8LkjU+oUWDyOBN2tIYOBcSVTahXPdWYriE5bRBYQzfpELKqL0l5n64+ORrdphdTTXP07rnmvSMIbb977sH8YxYrsk/dsIrtXAaZV8tbWw9TLJACcGZ6vEnaOgQNuMoEHcYvFZzD1NM6GugEAu5/Z4SAYehWUzpuTEFHdvKfBHqAmg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=zU+xFOLfZnYiqpCnUnB43gRbGglj94v9a9FEHesPXx4=;
+ b=Cl4aI+5pna667mcg7u1dcQAnX8Ss/4aaphSsphH4Zr6zMN0F1FaJNEnMcOHYwBMbz/enmkZiILKdP2v2qVM+jOUSfHLHCxZtcGJ077Pt5WKRhlAHz8kw2HDmiIVQzn0wHg8K2nkbw6Xrw1zV5FnOFVxfuocWoR6Qo0erwtKIMNW7FgdyX/hDBdu++JrVLBshSnbbzBvo5Ey7e6pw9SHfGMxnpqmbQ5M94H6mqliPKvsnX99udNRB7qXZo8cWV4GJYRRL6aEn75AB9qg0nEXXA4fBgkjHS44xpcghuU1CQXgYGGXtwpL7tV5xrsTCcdi6w6esw7zNlocvFO7Cb4K4eA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 216.228.117.161) smtp.rcpttodomain=intel.com smtp.mailfrom=nvidia.com;
+ dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
+ dkim=none (message not signed); arc=none (0)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=zU+xFOLfZnYiqpCnUnB43gRbGglj94v9a9FEHesPXx4=;
+ b=iZ2i9R7ppSaNQHtUbKdvZLojL4kZ0k4DrngQavZdXL1AVtMIGPJWG2eulMQyt/SU4i4tm+xjHsKQdtsodSHVW//0H7XCRrNQTKwX9hrj4VZ07ceAGufwSAWPJKDAdswTBgIHY16cxWb4pf0sqjR7Bl58puZMPdk+ilHAwXHkZvZfOpyMDMdPOKm4993Ma+aSZB8eV5JRFX1YnYkSe/FK+4q9aegt2Cg5gjz8TgwEgsfhZD87OQgdk1cT6sYvc+WHs/kxzIqO/BCoambEME86FoJ2/T1nfZgWtvE5KX9QeIoXWO9zQUoJo+gnS/9zWJe8Gy6T5Y0azoctNeJSZ21BXA==
+Received: from SJ0PR13CA0146.namprd13.prod.outlook.com (2603:10b6:a03:2c6::31)
+ by IA0PR12MB8976.namprd12.prod.outlook.com (2603:10b6:208:485::11) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.8005.22; Fri, 27 Sep
+ 2024 06:02:50 +0000
+Received: from CO1PEPF000044FC.namprd21.prod.outlook.com
+ (2603:10b6:a03:2c6:cafe::3d) by SJ0PR13CA0146.outlook.office365.com
+ (2603:10b6:a03:2c6::31) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.8005.17 via Frontend
+ Transport; Fri, 27 Sep 2024 06:02:50 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.117.161)
+ smtp.mailfrom=nvidia.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=nvidia.com;
+Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
+ 216.228.117.161 as permitted sender) receiver=protection.outlook.com;
+ client-ip=216.228.117.161; helo=mail.nvidia.com; pr=C
+Received: from mail.nvidia.com (216.228.117.161) by
+ CO1PEPF000044FC.mail.protection.outlook.com (10.167.241.202) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.8026.0 via Frontend Transport; Fri, 27 Sep 2024 06:02:50 +0000
+Received: from rnnvmail205.nvidia.com (10.129.68.10) by mail.nvidia.com
+ (10.129.200.67) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1544.4; Thu, 26 Sep
+ 2024 23:02:40 -0700
+Received: from rnnvmail203.nvidia.com (10.129.68.9) by rnnvmail205.nvidia.com
+ (10.129.68.10) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1544.4; Thu, 26 Sep
+ 2024 23:02:39 -0700
+Received: from Asurada-Nvidia (10.127.8.14) by mail.nvidia.com (10.129.68.9)
+ with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1544.4 via Frontend
+ Transport; Thu, 26 Sep 2024 23:02:38 -0700
+Date: Thu, 26 Sep 2024 23:02:37 -0700
+From: Nicolin Chen <nicolinc@nvidia.com>
+To: Yi Liu <yi.l.liu@intel.com>
+CC: <jgg@nvidia.com>, <kevin.tian@intel.com>, <will@kernel.org>,
+	<joro@8bytes.org>, <suravee.suthikulpanit@amd.com>, <robin.murphy@arm.com>,
+	<dwmw2@infradead.org>, <baolu.lu@linux.intel.com>, <shuah@kernel.org>,
+	<linux-kernel@vger.kernel.org>, <iommu@lists.linux.dev>,
+	<linux-arm-kernel@lists.infradead.org>, <linux-kselftest@vger.kernel.org>,
+	<eric.auger@redhat.com>, <jean-philippe@linaro.org>, <mdf@kernel.org>,
+	<mshavit@google.com>, <shameerali.kolothum.thodi@huawei.com>,
+	<smostafa@google.com>
+Subject: Re: [PATCH v2 04/19] iommufd: Allow pt_id to carry viommu_id for
+ IOMMU_HWPT_ALLOC
+Message-ID: <ZvZKfUQpiv33MQw+@Asurada-Nvidia>
+References: <cover.1724776335.git.nicolinc@nvidia.com>
+ <2d469a5279ef05820d5993df752d32239878338d.1724776335.git.nicolinc@nvidia.com>
+ <3ddf97a3-cf5b-4907-bbe4-296456951e6b@intel.com>
+ <ZvW/vS5/vulxw3co@Asurada-Nvidia>
+ <ac6c371b-857a-42f3-9b71-969ef19a54ba@intel.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <20240925075707.3970187-1-linyunsheng@huawei.com>
- <20240925075707.3970187-3-linyunsheng@huawei.com> <CAHS8izOxugzWJDTc-4CWqaKABTj=J4OHs=Lcb=SE9r8gX0J+yg@mail.gmail.com>
- <842c8cc6-f716-437a-bc98-70bc26d6fd38@huawei.com>
-In-Reply-To: <842c8cc6-f716-437a-bc98-70bc26d6fd38@huawei.com>
-From: Mina Almasry <almasrymina@google.com>
-Date: Thu, 26 Sep 2024 22:54:01 -0700
-Message-ID: <CAHS8izN-3Ooiexsr+Xp2234=GqMUy0sTTMqExKVkXAgmjeWQ6w@mail.gmail.com>
-Subject: Re: [PATCH net v2 2/2] page_pool: fix IOMMU crash when driver has
- already unbound
-To: Yunsheng Lin <linyunsheng@huawei.com>
-Cc: davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com, 
-	liuyonglong@huawei.com, fanghaiqing@huawei.com, zhangkun09@huawei.com, 
-	Robin Murphy <robin.murphy@arm.com>, Alexander Duyck <alexander.duyck@gmail.com>, 
-	IOMMU <iommu@lists.linux.dev>, Wei Fang <wei.fang@nxp.com>, 
-	Shenwei Wang <shenwei.wang@nxp.com>, Clark Wang <xiaoning.wang@nxp.com>, 
-	Eric Dumazet <edumazet@google.com>, Tony Nguyen <anthony.l.nguyen@intel.com>, 
-	Przemek Kitszel <przemyslaw.kitszel@intel.com>, 
-	Alexander Lobakin <aleksander.lobakin@intel.com>, Alexei Starovoitov <ast@kernel.org>, 
-	Daniel Borkmann <daniel@iogearbox.net>, Jesper Dangaard Brouer <hawk@kernel.org>, 
-	John Fastabend <john.fastabend@gmail.com>, Saeed Mahameed <saeedm@nvidia.com>, 
-	Leon Romanovsky <leon@kernel.org>, Tariq Toukan <tariqt@nvidia.com>, Felix Fietkau <nbd@nbd.name>, 
-	Lorenzo Bianconi <lorenzo@kernel.org>, Ryder Lee <ryder.lee@mediatek.com>, 
-	Shayne Chen <shayne.chen@mediatek.com>, Sean Wang <sean.wang@mediatek.com>, 
-	Kalle Valo <kvalo@kernel.org>, Matthias Brugger <matthias.bgg@gmail.com>, 
-	AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>, 
-	Andrew Morton <akpm@linux-foundation.org>, Ilias Apalodimas <ilias.apalodimas@linaro.org>, 
-	imx@lists.linux.dev, netdev@vger.kernel.org, linux-kernel@vger.kernel.org, 
-	intel-wired-lan@lists.osuosl.org, bpf@vger.kernel.org, 
-	linux-rdma@vger.kernel.org, linux-wireless@vger.kernel.org, 
-	linux-arm-kernel@lists.infradead.org, linux-mediatek@lists.infradead.org, 
-	linux-mm@kvack.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: inline
+In-Reply-To: <ac6c371b-857a-42f3-9b71-969ef19a54ba@intel.com>
+X-NV-OnPremToCloud: ExternallySecured
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: CO1PEPF000044FC:EE_|IA0PR12MB8976:EE_
+X-MS-Office365-Filtering-Correlation-Id: 2c42109f-fac4-4218-0d6a-08dcdeba04b3
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam:
+	BCL:0;ARA:13230040|376014|7416014|82310400026|1800799024|36860700013;
+X-Microsoft-Antispam-Message-Info:
+	=?us-ascii?Q?sFR//xfocYupMilAgcKfJ1p+iXNcD3C4NMcqdNM0016XYJDerjqh1XqqxeUk?=
+ =?us-ascii?Q?D1jB7HLFaVO6YFC1p0ZNjnxjc1N4AzE0vVOSj0pQY2eBlz0UrIgSLUU7+bS2?=
+ =?us-ascii?Q?6FvfrxLMS+oVevxbSg+pJjUFJq6tCyq3T1/6T+1pBIWmlO9+GRIrp3FstFv3?=
+ =?us-ascii?Q?cJrzn6hr2HPzfF0gljMgzftCQfgQwMrcH3eMFZZZZev1m1n5VhCcvgLumL3s?=
+ =?us-ascii?Q?73P+oTNP09ZyX3WDP9gh33vo8kQnhFKU8DTZsxo9XHq/nKrLgWgOZEJsiO2y?=
+ =?us-ascii?Q?q/Np0Lu8iE/Y77Zkyj47z1ZLoAA2CQFLsmu0ObEozBHo/3XtAbsk6ZVDu3LZ?=
+ =?us-ascii?Q?mcN9ZaolNr68rsW2NBuSTRI0dzcqEz6ZZ8faWx+qcK8RzR+bzS3uMar4aXQy?=
+ =?us-ascii?Q?gjnMn+2GlzuzK/r1oLGbNi57Nu5+87NAVfJvB3cRe1w5wz7OvC+FN4cWwCJ5?=
+ =?us-ascii?Q?1kq1KaPirrTeC7Wf643Vq9ZAhQ5CSjAtig9pgYwRH8zbCIDxRtEvHzFKr3yK?=
+ =?us-ascii?Q?Op1HGXMeN/WDAf3DC2zUFJ0QXVhM4eJCJCaMEEFhqEPOlvrCWrehZp73FkVT?=
+ =?us-ascii?Q?qhH6/Zya5zsNRCkyGBhS/yHkEeftdxvC5WOotyJ6kJSvu0a+MYu1nidxK8DU?=
+ =?us-ascii?Q?kZB3lEYwnLM10V74htO3H6BIgh2/f0vX/dnne3KLAWk/JgspB5vRJ3CikXfD?=
+ =?us-ascii?Q?jPyZu72gNBRBs/Eg/+qdmR9Dzt8rmuc/gEjb+ZbuilXCXbUGj7BFCV76UmsX?=
+ =?us-ascii?Q?qIcHwbib0/169YeDzyWFzBnRsIgSZD0BIpw+hAhwxv0TpCVGy1HLYSvohrlv?=
+ =?us-ascii?Q?UU3rAWgker2Gk3a+VYV+D3GqvIcNAAgb/sSu0prZ27IKjEXq1axLpRqAlt1h?=
+ =?us-ascii?Q?3ebiJrYIVCT+pHX4oAVOmQWo6k0mKKuu/2UtFPzVu6gqbsVmKsBtRfk/Mv5Y?=
+ =?us-ascii?Q?xrn0s+sacSdaMdRXkaTMuC1a5tjT42axx6m5d6+Hiux1TrC9yC6HdRJjIonj?=
+ =?us-ascii?Q?ERgVamBjRcjM4MLcUC/587JgHM4/AzDNRNHsp44SsyN5DPEVaw3e8vkunZWz?=
+ =?us-ascii?Q?1v+Avv65Rsr5WZNFdRBGwpydNkxh+2upguxNuYbIFMVVMYWXj+3/0O8sz7D2?=
+ =?us-ascii?Q?MIgE3uzLpaIdxSPOsY1NcKDXpzg/HF322G0Y+u8vIA+Vn5eBbqwRX0UU0FtW?=
+ =?us-ascii?Q?GMl6tHlLdt2nPvOfSGvlb4EpjRuNjC7gdGK5W8933CmmXC+Z22ex7LwTGdB/?=
+ =?us-ascii?Q?rsXwiCWUx3rf9xtrafpddz1uj2pHTevSpF4BNTq36a3+xUIamL3w57lnPT+y?=
+ =?us-ascii?Q?Dd1nbTb55cwZNcFFsbKU4Oyc/xd7m+3gwGOsckQRtB6sNx4YTewWJ+tXsyv/?=
+ =?us-ascii?Q?SDoBim871LmjlVbwUMgcMEwCAZH7DKy7twE3DbBzEJS6VrmXa003Sg5j73WK?=
+ =?us-ascii?Q?L0xKlczd60Et5YC5E9H6yu/GwM1isTpP?=
+X-Forefront-Antispam-Report:
+	CIP:216.228.117.161;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc6edge2.nvidia.com;CAT:NONE;SFS:(13230040)(376014)(7416014)(82310400026)(1800799024)(36860700013);DIR:OUT;SFP:1101;
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 27 Sep 2024 06:02:50.2956
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: 2c42109f-fac4-4218-0d6a-08dcdeba04b3
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.117.161];Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-AuthSource:
+	CO1PEPF000044FC.namprd21.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: IA0PR12MB8976
 
-On Thu, Sep 26, 2024 at 8:58=E2=80=AFPM Yunsheng Lin <linyunsheng@huawei.co=
-m> wrote:
->
-> On 2024/9/27 2:15, Mina Almasry wrote:
-> >
-> >> In order not to do the dma unmmapping after driver has already
-> >> unbound and stall the unloading of the networking driver, add
-> >> the pool->items array to record all the pages including the ones
-> >> which are handed over to network stack, so the page_pool can
-> >> do the dma unmmapping for those pages when page_pool_destroy()
-> >> is called.
-> >
-> > One thing I could not understand from looking at the code: if the
-> > items array is in the struct page_pool, why do you need to modify the
-> > page_pool entry in the struct page and in the struct net_iov? I think
-> > the code could be made much simpler if you can remove these changes,
-> > and you wouldn't need to modify the public api of the page_pool.
->
-> As mentioned in [1]:
-> "There is no space in 'struct page' to track the inflight pages, so
-> 'pp' in 'struct page' is renamed to 'pp_item' to enable the tracking
-> of inflight page"
->
-> As we still need pp for "struct page_pool" for page_pool_put_page()
-> related API, the container_of() trick is used to get the pp from the
-> pp_item.
->
-> As you had changed 'struct net_iov' to be mirroring the 'struct page',
-> so change 'struct net_iov' part accordingly.
->
-> 1. https://lore.kernel.org/all/50a463d5-a5a1-422f-a4f7-d3587b12c265@huawe=
-i.com/
->
+On Fri, Sep 27, 2024 at 01:38:08PM +0800, Yi Liu wrote:
+> > > Does it mean each vIOMMU of VM can only have
+> > > one s2 HWPT?
+> > 
+> > Giving some examples here:
+> >   - If a VM has 1 vIOMMU, there will be 1 vIOMMU object in the
+> >     kernel holding one S2 HWPT.
+> >   - If a VM has 2 vIOMMUs, there will be 2 vIOMMU objects in the
+> >     kernel that can hold two different S2 HWPTs, or share one S2
+> >     HWPT (saving memory).
+> 
+> So if you have two devices assigned to a VM, then you may have two
+> vIOMMUs or one vIOMMU exposed to guest. This depends on whether the two
+> devices are behind the same physical IOMMU. If it's two vIOMMUs, the two
+> can share the s2 hwpt if their physical IOMMU is compatible. is it?
 
-I'm not sure we need the pages themselves to have the list of pages
-that need to be dma unmapped on page_pool_destroy. The pool can have
-the list of pages that need to be unmapped on page_pool_destroy, and
-the individual pages need not track them, unless I'm missing
-something.
+Yes.
 
-> >
-> >> As the pool->items need to be large enough to avoid
-> >> performance degradation, add a 'item_full' stat to indicate the
-> >> allocation failure due to unavailability of pool->items.
-> >>
-> >
-> > I'm not sure there is any way to size the pool->items array correctly.
->
-> Currently the size of pool->items is calculated in page_pool_create_percp=
-u()
-> as below, to make sure the size of pool->items is somewhat twice of the
-> size of pool->ring so that the number of page sitting in the driver's rx
-> ring waiting for the new packet is the similar to the number of page that=
- is
-> still being handled in the network stack as most drivers seems to set the
-> pool->pool_size according to their rx ring size:
->
-> +#define PAGE_POOL_MIN_INFLIGHT_ITEMS           512
-> +       unsigned int item_cnt =3D (params->pool_size ? : 1024) +
-> +                               PP_ALLOC_CACHE_SIZE + PAGE_POOL_MIN_INFLI=
-GHT_ITEMS;
-> +       item_cnt =3D roundup_pow_of_two(item_cnt);
->
+> To achieve the above, you need to know if the physical IOMMUs of the
+> assigned devices, hence be able to tell if physical IOMMUs are the
+> same and if they are compatible. How would userspace know such infos?
 
-I'm not sure it's OK to add a limitation to the page_pool that it can
-only allocate N pages. At the moment, AFAIU, N is unlimited and it may
-become a regression if we add a limitation.
+My draft implementation with QEMU does something like this:
+ - List all viommu-matched iommu nodes under /sys/class/iommu: LINKs
+ - Get PCI device's /sys/bus/pci/devices/0000:00:00.0/iommu: LINK0
+ - Compare the LINK0 against the LINKs
 
-> > Can you use a data structure here that can grow? Linked list or
-> > xarray?
-> >
-> > AFAIU what we want is when the page pool allocates a netmem it will
-> > add the netmem to the items array, and when the pp releases a netmem
-> > it will remove it from the array. Both of these operations are slow
-> > paths, right? So the performance of a data structure more complicated
-> > than an array may be ok. bench_page_pool_simple will tell for sure.
->
-> The question would be why do we need the pool->items to grow with the
-> additional overhead and complication by dynamic allocation of item, using
-> complicated data structure and concurrent handling?
->
-> As mentioned in [2], it was the existing semantics, but it does not means
-> we need to keep it. The changing of semantics seems like an advantage
-> to me, as we are able to limit how many pages is allowed to be used by
-> a page_pool instance.
->
-> 2. https://lore.kernel.org/all/2fb8d278-62e0-4a81-a537-8f601f61e81d@huawe=
-i.com/
->
-> >
-> >> Note, the devmem patchset seems to make the bug harder to fix,
-> >> and may make backporting harder too. As there is no actual user
-> >> for the devmem and the fixing for devmem is unclear for now,
-> >> this patch does not consider fixing the case for devmem yet.
-> >>
-> >
-> > net_iovs don't hit this bug, dma_unmap_page_attrs() is never called on
-> > them, so no special handling is needed really. However for code
->
-> I am really doubtful about your above claim. As at least the below
-> implementaion of dma_buf_unmap_attachment_unlocked() called in
-> __net_devmem_dmabuf_binding_free() seems be using the DMA API directly:
->
-> https://elixir.bootlin.com/linux/v6.7-rc8/source/drivers/gpu/drm/amd/amdg=
-pu/amdgpu_dma_buf.c#L215
->
-> Or am I missing something obvious here?
->
+We so far don't have an ID for physical IOMMU instance, which can
+be an alternative to return via the hw_info call, otherwise.
 
-I mean currently net_iovs don't hit the __page_pool_release_page_dma
-function that causes the crash in the stack trace. The dmabuf layer
-handles the unmapping when the dmabuf dies (I assume correctly).
+QEMU then does the routing to assign PCI buses and IORT (or DT).
+This part is suggested now to move to libvirt though. So, I think
+at the end of the day, libvirt would run the sys check and assign
+a device to the corresponding pci bus backed by the correct IOMMU.
 
---=20
-Thanks,
-Mina
+This gives an example showing two devices behind iommu0 and third
+device behind iommu1 are assigned to a VM:
+  -device pxb-pcie.id=pcie.viommu0,bus=pcie.0.... \   # bus for viommu0
+  -device pxb-pcie.id=pcie.viommu1,bus=pcie.0.... \   # bus for viommu1
+  -device pcie-root-port,id=pcie.viommu0p0,bus=pcie.viommu0... \
+  -device pcie-root-port,id=pcie.viommu0p1,bus=pcie.viommu0... \
+  -device pcie-root-port,id=pcie.viommu1p0,bus=pcie.viommu1... \
+  -device vfio-pci,bus=pcie.viommu0p0... \  # connect to bus for viommu0
+  -device vfio-pci,bus=pcie.viommu0p1... \  # connect to bus for viommu0
+  -device vfio-pci,bus=pcie.viommu1p0...    # connect to bus for viommu1
+
+For compatibility to share a stage-2 HWPT, basically we would do
+a device attach to one of the stage-2 HWPT from the list that VMM
+should keep. This attach has all the compatibility test, down to
+the IOMMU driver. If it fails, just allocate a new stage-2 HWPT.
+
+Thanks
+Nic
