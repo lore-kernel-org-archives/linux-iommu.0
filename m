@@ -1,221 +1,116 @@
-Received: from NAM11-DM6-obe.outbound.protection.outlook.com (mail-dm6nam11on2081.outbound.protection.outlook.com [40.107.223.81])
+Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 276C715DBDD
-	for <iommu@lists.linux.dev>; Fri, 27 Sep 2024 06:32:32 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.223.81
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1727418754; cv=fail; b=OeHiFQ0bOfUimd+yLNk/kNhUDxLw51pJHi00RaIpZl35Z4e9i5GWEuG4zf9lmWX4cPNdCGbMsN8FACuZvLcXZn3cRJFpAgwrP+F0yCl6AfFa832qHjynje7pB5XaC+OK6p/JG51tBFbCd1g3mWDgX//LWOoUwv0gSNP6ywcvZNU=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1727418754; c=relaxed/simple;
-	bh=vWKSB/kiws/IK4EISfF50EtZnbe0fF0I7dg6ZjHcbCc=;
-	h=Date:From:To:CC:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=hCByroHT2UP3Nor7oqGxRH7ayi0ONC6idKvvfwlizmlbikB6/3SIuGvfjour6z1+pG5wieAuSZV1L3h37LK7nRZb1uy82l23E9ekX4/WtwgnzXpzxuDNEncIcFsrJQdDBw8ESRAywlXSqOx7QoYxlWxBtPKj+6l08G/sMyy3Jyw=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=qkJb8WEn; arc=fail smtp.client-ip=40.107.223.81
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 754BF173336
+	for <iommu@lists.linux.dev>; Fri, 27 Sep 2024 06:50:51 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=60.244.123.138
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1727419853; cv=none; b=eP9BnC8kWP3KObTsBThKmwHLhIPt+WY1q1joTrNI+9aM2IJhsqw7Sv7SydYIiYkzLLRayCQOOkkkUnaRe5ADQRGNUZR55E+e8MvX2MOiHiLHNWk1CpYtWwjxO01YKON0CpIe9P3cHSbkI8lKpDCjtSt3AqO3T9vuDvG6gK/GqDk=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1727419853; c=relaxed/simple;
+	bh=2epJ24lOq66xl+SuNkwsg3Bt29VRH+GED6ap3EN6t9g=;
+	h=From:To:CC:Subject:Date:Message-ID:MIME-Version:Content-Type; b=e1K2Jr497vsG682D+YUs4BfFrNTj8CANUKa/QZhWLkBjfChI9wXZVGXrFwdSZrNTMJuemh9Ec/51MVQ2EpbnugCs/44wCmZPmQB9wOu5d6z+od2NbcJsBp+3ZzDKmicTdWzr5RjYF00CxUJ2ykk7UI1gIxaYPmnK+rZ8ScS9auc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=mediatek.com; spf=pass smtp.mailfrom=mediatek.com; dkim=pass (1024-bit key) header.d=mediatek.com header.i=@mediatek.com header.b=az1WeokD; arc=none smtp.client-ip=60.244.123.138
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=mediatek.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=mediatek.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="qkJb8WEn"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=QnkzfgIG64gHqkh+9TknUsDnq+TMxBcGA2ekBNDC9U/pZrdKADF6phv6MOAqhBik2Q9dApOYZy2e1dfSXo7WsTlt9lfVB3vbOQjPpmAl5AdNUEepVTz5YQXSN92jdSmSlqXvWc+2wJM6trHJgUr6mG8tGI3oVQlYGlNkYLCO/xcfAqIBFHMG8GmHDA5rQaSPs6RBZfVyEChs/uuRTj/2fIw0bdoe1WcEJAZgujPJ5QtCHGPI2IuAspxhPapAxD5+HK/qpcOgR6oJUChSoJYRKW1QSrw1PMCnqGCACk+91ITMlZuZjLfc8/nY04z4/A7mhpABte0INZejatU0q/Tm2w==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=E4z4ynnFIkCcKK8awp8U9A13oSt62TfPGsZL+c/NkYA=;
- b=WM1ztTX4JAjwv7SRVxFoMTFnxiequQ025+N0XctNkRClqCmBS7hXgkpGf3wqEiNSB0mmhL/MnN16069T/6HLGixjTTgHjqGmHkVgWWUeoDCj7lnPqPv9LHSY1YHUq5EYxuKrB5p497M7fU6sNGpMt1J/Eya57GnPEWromU1RnnJtHee5wnT4s3CJwD0/k1EQCv6ArBVSVUIV8Z5IRnPKRF4ZVOqBJ2ok2BhpmU7+FxnDDwglFBtDPRmworWNDAy77c+Awpyn+Z0hEBP17jtSrr51sAkaPIKk9NvRvmT5H8H4nEbRaEyOUMgCq+2C5iCuHVUK1hYhGIRmlnw+8e4bUw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 216.228.117.161) smtp.rcpttodomain=intel.com smtp.mailfrom=nvidia.com;
- dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
- dkim=none (message not signed); arc=none (0)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=E4z4ynnFIkCcKK8awp8U9A13oSt62TfPGsZL+c/NkYA=;
- b=qkJb8WEnHQIKWcRDK75OonDF5VzSBIIgtb5vpaIxMaOMXEF9HMDMLCbkTOrCnlo11wfcwnBZ1cogc4XwmIQsQ8X91ejR/ISyfc0Iu6+/YOZCvVe2oSzqD/Yy5E3XcqqsnSrGu+g5s0sng3ASdKIW8mtQDW7o60VkQ+4XnEW8zA4/C2ybeTOQN3kSuJoPyp9QkXFn7lcmqmrRxjZInzce6WvmRJOxTM22nSM6uC4qIfSZBD+EBd5pJsE1GRUas9GO89UgZNEonUPsAIc6kdS0yonlZrmHdKRFtuq3tpjFPK4e7oBdv6NXWG3A6fgGXBPNFLN3cOnORxhQTf/eV1yiYQ==
-Received: from BYAPR05CA0097.namprd05.prod.outlook.com (2603:10b6:a03:e0::38)
- by DS7PR12MB5792.namprd12.prod.outlook.com (2603:10b6:8:77::22) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7982.28; Fri, 27 Sep
- 2024 06:32:28 +0000
-Received: from SJ1PEPF00002312.namprd03.prod.outlook.com
- (2603:10b6:a03:e0:cafe::11) by BYAPR05CA0097.outlook.office365.com
- (2603:10b6:a03:e0::38) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.8005.17 via Frontend
- Transport; Fri, 27 Sep 2024 06:32:28 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.117.161)
- smtp.mailfrom=nvidia.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=nvidia.com;
-Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 216.228.117.161 as permitted sender) receiver=protection.outlook.com;
- client-ip=216.228.117.161; helo=mail.nvidia.com; pr=C
-Received: from mail.nvidia.com (216.228.117.161) by
- SJ1PEPF00002312.mail.protection.outlook.com (10.167.242.166) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.8005.15 via Frontend Transport; Fri, 27 Sep 2024 06:32:27 +0000
-Received: from rnnvmail202.nvidia.com (10.129.68.7) by mail.nvidia.com
- (10.129.200.67) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1544.4; Thu, 26 Sep
- 2024 23:32:13 -0700
-Received: from rnnvmail201.nvidia.com (10.129.68.8) by rnnvmail202.nvidia.com
- (10.129.68.7) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1544.4; Thu, 26 Sep
- 2024 23:32:13 -0700
-Received: from Asurada-Nvidia (10.127.8.14) by mail.nvidia.com (10.129.68.8)
- with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1544.4 via Frontend
- Transport; Thu, 26 Sep 2024 23:32:11 -0700
-Date: Thu, 26 Sep 2024 23:32:10 -0700
-From: Nicolin Chen <nicolinc@nvidia.com>
-To: Yi Liu <yi.l.liu@intel.com>
-CC: <jgg@nvidia.com>, <kevin.tian@intel.com>, <will@kernel.org>,
-	<joro@8bytes.org>, <suravee.suthikulpanit@amd.com>, <robin.murphy@arm.com>,
-	<dwmw2@infradead.org>, <baolu.lu@linux.intel.com>, <shuah@kernel.org>,
+	dkim=pass (1024-bit key) header.d=mediatek.com header.i=@mediatek.com header.b="az1WeokD"
+X-UUID: d16b3db27c9c11efb66947d174671e26-20240927
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=mediatek.com; s=dk;
+	h=Content-Type:Content-Transfer-Encoding:MIME-Version:Message-ID:Date:Subject:CC:To:From; bh=GoF6SJc6wFMZEyc0BXdDEMxFE4JRik1GAvCk+nHZpN4=;
+	b=az1WeokDZGRi82UL/o/mNmP75tNjN5oaRjOKcgXvVlM0fLk/6rF7lgEm/Cy8dPKv2k9qSaZuYyX7bq7K5D+ysDL93Qhxgpt0x0RAUjfYmaLIg+m3JsCtsPb83Pp/E668N1/eK0XaxVVnZdHFbtvDUaUuXoRj6FNFC3lsznF5HPQ=;
+X-CID-P-RULE: Release_Ham
+X-CID-O-INFO: VERSION:1.1.41,REQID:7a126580-f70f-4747-b9ab-559b40f02486,IP:0,U
+	RL:0,TC:0,Content:0,EDM:0,RT:0,SF:0,FILE:0,BULK:0,RULE:Release_Ham,ACTION:
+	release,TS:0
+X-CID-META: VersionHash:6dc6a47,CLOUDID:c3bbdad0-7921-4900-88a1-3aef019a55ce,B
+	ulkID:nil,BulkQuantity:0,Recheck:0,SF:102,TC:nil,Content:0,EDM:-3,IP:nil,U
+	RL:0,File:nil,RT:nil,Bulk:nil,QS:nil,BEC:nil,COL:0,OSI:0,OSA:0,AV:0,LES:1,
+	SPR:NO,DKR:0,DKP:0,BRR:0,BRE:0,ARC:0
+X-CID-BVR: 0
+X-CID-BAS: 0,_,0,_
+X-CID-FACTOR: TF_CID_SPAM_SNR
+X-UUID: d16b3db27c9c11efb66947d174671e26-20240927
+Received: from mtkmbs11n2.mediatek.inc [(172.21.101.187)] by mailgw01.mediatek.com
+	(envelope-from <macpaul.lin@mediatek.com>)
+	(Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
+	with ESMTP id 1291877166; Fri, 27 Sep 2024 14:50:44 +0800
+Received: from mtkmbs13n1.mediatek.inc (172.21.101.193) by
+ mtkmbs11n2.mediatek.inc (172.21.101.187) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.1118.26; Fri, 27 Sep 2024 14:50:42 +0800
+Received: from mtksdccf07.mediatek.inc (172.21.84.99) by
+ mtkmbs13n1.mediatek.inc (172.21.101.73) with Microsoft SMTP Server id
+ 15.2.1118.26 via Frontend Transport; Fri, 27 Sep 2024 14:50:42 +0800
+From: Macpaul Lin <macpaul.lin@mediatek.com>
+To: Chun-Kuang Hu <chunkuang.hu@kernel.org>, Philipp Zabel
+	<p.zabel@pengutronix.de>, David Airlie <airlied@gmail.com>, Simona Vetter
+	<simona@ffwll.ch>, Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
+	Maxime Ripard <mripard@kernel.org>, Thomas Zimmermann <tzimmermann@suse.de>,
+	Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>,
+	Conor Dooley <conor+dt@kernel.org>, Yong Wu <yong.wu@mediatek.com>, Joerg
+ Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>, Robin Murphy
+	<robin.murphy@arm.com>, Matthias Brugger <matthias.bgg@gmail.com>,
+	AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>, CK Hu
+	<ck.hu@mediatek.com>, Jitao shi <jitao.shi@mediatek.com>, Tinghan Shen
+	<tinghan.shen@mediatek.com>, Seiya Wang <seiya.wang@mediatek.com>, Ben Lok
+	<ben.lok@mediatek.com>, Macpaul Lin <macpaul.lin@mediatek.com>, "Nancy . Lin"
+	<nancy.lin@mediatek.com>, <dri-devel@lists.freedesktop.org>,
+	<linux-mediatek@lists.infradead.org>, <devicetree@vger.kernel.org>,
 	<linux-kernel@vger.kernel.org>, <iommu@lists.linux.dev>,
-	<linux-arm-kernel@lists.infradead.org>, <linux-kselftest@vger.kernel.org>,
-	<eric.auger@redhat.com>, <jean-philippe@linaro.org>, <mdf@kernel.org>,
-	<mshavit@google.com>, <shameerali.kolothum.thodi@huawei.com>,
-	<smostafa@google.com>
-Subject: Re: [PATCH v2 00/19] iommufd: Add VIOMMU infrastructure (Part-1)
-Message-ID: <ZvZRapZlAsEGDIge@Asurada-Nvidia>
-References: <cover.1724776335.git.nicolinc@nvidia.com>
- <bf95f910-e837-4d79-8218-18d234ece730@intel.com>
- <ZvRcskGx2u94Vs+R@Asurada-Nvidia>
- <82632802-c55a-4199-b685-8b594a8e7104@intel.com>
- <ZvW+BoovlyJ/wziX@Asurada-Nvidia>
- <ff35efa5-ba7e-4974-94be-59bf794a14e3@intel.com>
+	<linux-arm-kernel@lists.infradead.org>, Alexandre Mergnat
+	<amergnat@baylibre.com>
+CC: Bear Wang <bear.wang@mediatek.com>, Pablo Sun <pablo.sun@mediatek.com>,
+	Macpaul Lin <macpaul@gmail.com>, Sen Chu <sen.chu@mediatek.com>, Chris-qj
+ chen <chris-qj.chen@mediatek.com>, MediaTek Chromebook Upstream
+	<Project_Global_Chrome_Upstream_Group@mediatek.com>, Chen-Yu Tsai
+	<wenst@chromium.org>
+Subject: [PATCH v3 1/5] arm64: dts: mt8195: Fix dtbs_check error for infracfg_ao node
+Date: Fri, 27 Sep 2024 14:50:37 +0800
+Message-ID: <20240927065041.15247-1-macpaul.lin@mediatek.com>
+X-Mailer: git-send-email 2.18.0
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: inline
-In-Reply-To: <ff35efa5-ba7e-4974-94be-59bf794a14e3@intel.com>
-X-NV-OnPremToCloud: ExternallySecured
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: SJ1PEPF00002312:EE_|DS7PR12MB5792:EE_
-X-MS-Office365-Filtering-Correlation-Id: d71aa1d9-9ac6-453b-9528-08dcdebe2841
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|36860700013|7416014|376014|82310400026|1800799024;
-X-Microsoft-Antispam-Message-Info:
-	=?us-ascii?Q?O96ifY1zdApHyjT5kYXjrDbN2aE3QIfscyIq9Mq4n3X6a/Hbka03Q/FyuIBq?=
- =?us-ascii?Q?wo/AkXv5dFzrT4ARiO7x9SIzh6W+i9QtBJJp++ELTIA1OK3F+VBFpP3lpsmF?=
- =?us-ascii?Q?cQhdXuqq8AfvV4dxahj4aFUD/zrVSXsc0y7QIJlivMQe/MzHnJV7tGLy88Sb?=
- =?us-ascii?Q?BszKP7Gx3mf/LyM/lqqUTex/Sx2J21G4GS6oqrUWXVS2uDhkDUJIDgELgTi/?=
- =?us-ascii?Q?EHEOsp1Zr5xECHU6OFamL03UB3GOlju0djFMN6Jhu4hnRcCMAxK6K8pjKh0Z?=
- =?us-ascii?Q?BpRsb7xVcdlVjAlHxWAkuGLqwyat5VuX/NR+GRmJaGi8BsmjwrjN4EmRt42U?=
- =?us-ascii?Q?1ICD5c25GQ5BpQ/CRuQa/hHZ1j0z79DWWossK4rzP8mAXgLIDpmDRMhDWInu?=
- =?us-ascii?Q?VqiE0Xugr8nxvmSe94iyi7a48aipfevcDLglniDHts6pxuUbZYfAj93bXsua?=
- =?us-ascii?Q?O8KtUAtyHGVMKIUrrVme7qGoqVyFXCmpA8pYVnWGPNuxHATmFN/mAzswFq1o?=
- =?us-ascii?Q?oSIAw5jjJWCLhU1ZqBiSuVhrf42Q4VWmKudG1M7KCilKK50A3IO2/QV4wxCI?=
- =?us-ascii?Q?ROUQvB/ijgW22runUq2Vg3aTMKjjD2VKa5IhmuedRzxovFiSjX8SUmSsnOIF?=
- =?us-ascii?Q?0RRPt1/XYDkZleuLAZHM/csWpTEr0BYXbBbil80DNIlyTMYOCmY60/UaS04A?=
- =?us-ascii?Q?8GcTs7Zf2hdOzFkPI545NIca9ScIZuYrwvBIUBSsgma4sppGND3hId4FbZ1E?=
- =?us-ascii?Q?W+vu4wcONMPSTm0iyYDsugQaIvGIqNXUxNrM1mwH4LBjxVk2/mz6WCMEgfdx?=
- =?us-ascii?Q?8bO7ESMhCITWuh8sVjQLy9q543c7WgSgAqT5lmmPP09nVFnuVbWm2evkzt15?=
- =?us-ascii?Q?iXINBXLECTVz8k/rYeMvLNMO9Csqp8FQOFtpukRiA5RCBftrDEec/QoimDVK?=
- =?us-ascii?Q?vwAJi9OmN5Pw6SL02X4/hcHktCDzvlwrbnJel1nrcRR7TnJU07FG6FY45twh?=
- =?us-ascii?Q?6QHSI4Xso58ZqB/fnCHMtCwQw9cgRvKwIbY1o1EFbBaYoueJoLhQv2I+DIkV?=
- =?us-ascii?Q?j/Hm6TmQL7096PAIknCxv0x9CESQtowAiTpLKL0cDeZxzRBtSn2ijipied5/?=
- =?us-ascii?Q?CaqV9i3G3zf5LdDKCGBkmd2j/8Pw9fkhfb6MREGK8yNzzBCFnyEzVVQmD5IN?=
- =?us-ascii?Q?PqY1PBQQfifdUUNlo/X8qwUrW3RhqoxosaZ2HC16ArK2eF7q5RHen6+fIPIi?=
- =?us-ascii?Q?jNVyef5votgdveqnwXpft9jkZnGj0f28SMHXpsFmwt8BpT3cj1uwEqAKU0kr?=
- =?us-ascii?Q?CBd4DN8pOzxFWm+/6owgupoVfAOn3bDvw8rYNE/wxSuM4qIGap3FrYeVpEeQ?=
- =?us-ascii?Q?OvFLo2SGmzxUwtFHniJF9IAxu4xi?=
-X-Forefront-Antispam-Report:
-	CIP:216.228.117.161;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc6edge2.nvidia.com;CAT:NONE;SFS:(13230040)(36860700013)(7416014)(376014)(82310400026)(1800799024);DIR:OUT;SFP:1101;
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 27 Sep 2024 06:32:27.9056
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: d71aa1d9-9ac6-453b-9528-08dcdebe2841
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.117.161];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource:
-	SJ1PEPF00002312.namprd03.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DS7PR12MB5792
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-MTK: N
 
-On Fri, Sep 27, 2024 at 01:54:45PM +0800, Yi Liu wrote:
-> > > > Baolu told me that Intel may have the same: different domain IDs
-> > > > on different IOMMUs; multiple IOMMU instances on one chip:
-> > > > https://lore.kernel.org/linux-iommu/cf4fe15c-8bcb-4132-a1fd-b2c8ddf2731b@linux.intel.com/
-> > > > So, I think we are having the same situation here.
-> > > 
-> > > yes, it's called iommu unit or dmar. A typical Intel server can have
-> > > multiple iommu units. But like Baolu mentioned in that thread, the intel
-> > > iommu driver maintains separate domain ID spaces for iommu units, which
-> > > means a given iommu domain has different DIDs when associated with
-> > > different iommu units. So intel side is not suffering from this so far.
-> > 
-> > An ARM SMMU has its own VMID pool as well. The suffering comes
-> > from associating VMIDs to one shared parent S2 domain.
-> 
-> Is this because of the VMID is tied with a S2 domain?
+The infracfg_ao node in mt8195.dtsi was causing a dtbs_check error.
+The error message was:
 
-On ARM, yes. VMID is a part of S2 domain stuff.
+syscon@10001000: compatible: ['mediatek,mt8195-infracfg_ao', 'syscon',
+                 'simple-mfd'] is too long
 
-> > Does a DID per S1 nested domain or parent S2? If it is per S2,
-> > I think the same suffering applies when we share the S2 across
-> > IOMMU instances?
-> 
-> per S1 I think. The iotlb efficiency is low as S2 caches would be
-> tagged with different DIDs even the page table is the same. :)
+To resolve this, remove 'simple-mfd' from the 'compatible' property of the
+infracfg_ao node.
 
-On ARM, the stage-1 is tagged with an ASID (Address Space ID)
-while the stage-2 is tagged with a VMID. Then an invalidation
-for a nested S1 domain must require the VMID from the S2. The
-ASID may be also required if the invalidation is specific to
-that address space (otherwise, broadcast per VMID.)
+Fixes: 37f2582883be ("arm64: dts: Add mediatek SoC mt8195 and evaluation board")
+Signed-off-by: Macpaul Lin <macpaul.lin@mediatek.com>
+Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
+---
+ arch/arm64/boot/dts/mediatek/mt8195.dtsi | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-I feel these two might act somehow similarly to the two DIDs
-during nested translations?
+Changes for v2 and v3:
+ - no change.
 
-> > > > Adding another vIOMMU wrapper on the other hand can allow us to
-> > > > allocate different VMIDs/DIDs for different IOMMUs.
-> > > 
-> > > that looks like to generalize the association of the iommu domain and the
-> > > iommu units?
-> > 
-> > A vIOMMU is a presentation/object of a physical IOMMU instance
-> > in a VM.
-> 
-> a slice of a physical IOMMU. is it?
+diff --git a/arch/arm64/boot/dts/mediatek/mt8195.dtsi b/arch/arm64/boot/dts/mediatek/mt8195.dtsi
+index e89ba384c4aa..2e1b41359b43 100644
+--- a/arch/arm64/boot/dts/mediatek/mt8195.dtsi
++++ b/arch/arm64/boot/dts/mediatek/mt8195.dtsi
+@@ -487,7 +487,7 @@ topckgen: syscon@10000000 {
+ 		};
+ 
+ 		infracfg_ao: syscon@10001000 {
+-			compatible = "mediatek,mt8195-infracfg_ao", "syscon", "simple-mfd";
++			compatible = "mediatek,mt8195-infracfg_ao", "syscon";
+ 			reg = <0 0x10001000 0 0x1000>;
+ 			#clock-cells = <1>;
+ 			#reset-cells = <1>;
+-- 
+2.45.2
 
-Yes. When multiple nested translations happen at the same time,
-IOMMU (just like a CPU) is shared by these slices. And so is an
-invalidation queue executing multiple requests.
-
-Perhaps calling it a slice sounds more accurate, as I guess all
-the confusion comes from the name "vIOMMU" that might be thought
-to be a user space object/instance that likely holds all virtual
-stuff like stage-1 HWPT or so?
-
-> and you treat S2 hwpt as a resource of the physical IOMMU as well.
-
-Yes. A parent HWPT (in the old day, we called it "kernel-manged"
-HWPT) is not a user space thing. This belongs to a kernel owned
-object.
-
-> > This presentation gives a VMM some capability to take
-> > advantage of some of HW resource of the physical IOMMU:
-> > - a VMID is a small HW reousrce to tag the cache;
-> > - a vIOMMU invalidation allows to access device cache that's
-> >    not straightforwardly done via an S1 HWPT invalidation;
-> > - a virtual device presentation of a physical device in a VM,
-> >    related to the vIOMMU in the VM, which contains some VM-level
-> >    info: virtual device ID, security level (ARM CCA), and etc;
-> > - Non-PRI IRQ forwarding to the guest VM;
-> > - HW-accelerated virtualization resource: vCMDQ, AMD VIOMMU;
-> 
-> might be helpful to draw a diagram to show what the vIOMMU obj contains.:)
-
-That's what I plan to. Basically looks like:
-  device---->stage1--->[ viommu [s2_hwpt, vmid, virq, HW-acc, etc.] ]
-
-Thanks
-Nic
