@@ -1,135 +1,198 @@
-Received: from mail-qt1-f171.google.com (mail-qt1-f171.google.com [209.85.160.171])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from NAM10-BN7-obe.outbound.protection.outlook.com (mail-bn7nam10on2044.outbound.protection.outlook.com [40.107.92.44])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0F1BD18B1A
-	for <iommu@lists.linux.dev>; Fri, 27 Sep 2024 15:59:41 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.160.171
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1727452783; cv=none; b=ssAwhbmAAAIZYAhoeG5A/GL5eQJna9aqTof6amrbLWTRINA+kF2KyaNBhenm2jQo6xn3ZyWjjStMpLO65HqDH9JMUrIu3/oj5p3e8OzKSaIpR8iG7sGk+One3ntaDtYFckjRGsw110EQcNm65D6UzTVDyyuPm1O6j2nS5a+GHZ4=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1727452783; c=relaxed/simple;
-	bh=mNcJxIvrUlKBRWm7kcRpla8DkgOPTgYac1kq5Li84zw=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=ng4rjGqFiKkEv6SZCzEMkWcY3L6ymkSFKUnKNljBI9ErZUID1TtAIzx931823/VzVIgNiIR3X53ShJ5Fi4nRfAR+Kk67wrgdPjJpYoRcUeaWtj28uzaPYOWf3xCV4xf5XwM/O+QzvJrh6gH6OcQks+VRRLGvUWwyKy1klBzkXQg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=O362Lqkw; arc=none smtp.client-ip=209.85.160.171
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AB8BA1C245F
+	for <iommu@lists.linux.dev>; Fri, 27 Sep 2024 19:53:08 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.92.44
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1727466790; cv=fail; b=kMi+5TnXvVkBEMS+XfvosEAGSotwKelDUCsLg8EqmKIH4ipG3+xDh4/wIgD6XFWnz/LkoYVkZLecSasCYipESXba15rZEnKQylnwPG0PP6vcQAKzylIMngD28xkyU+Q++hK46F8xhuTYbmjT+7WqAUjoByTvVK6zJu8kI24EypI=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1727466790; c=relaxed/simple;
+	bh=q5LBGAZO4ORgj1kc3DvwYoK1LXPQY4/KV9/7C/mlV+w=;
+	h=Date:From:To:CC:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=hqwgzTB3mwQ9tOoOdb8xMRUW49MD+FbTYLfQBmj0VnDBCzuyokvBF1iKdu/9GpUAhMqG3hwU+dP9cGp1mTPaPxwoXecyg0mllaiY5JDtiLuwiQpxnuZ3/T/ClC7atzW9LPABWszCJ9NUBjj6nUEQJ9aWUaYo+X1rBgpWb2cehj8=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=H5dC/HYs; arc=fail smtp.client-ip=40.107.92.44
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="O362Lqkw"
-Received: by mail-qt1-f171.google.com with SMTP id d75a77b69052e-4582a5b495cso246651cf.1
-        for <iommu@lists.linux.dev>; Fri, 27 Sep 2024 08:59:41 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20230601; t=1727452781; x=1728057581; darn=lists.linux.dev;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=mNcJxIvrUlKBRWm7kcRpla8DkgOPTgYac1kq5Li84zw=;
-        b=O362LqkwWYZvzwyUjXorMLJxozcfzMwczAvVe/vOdOvsCyxN1CKgO0IKgNdVa5RcyI
-         LeztXfcMtLyXL+cQMuEUwh0tDtxhsYCrqPkp4yHjrCq90jBliBoXhUwum6QcbhCFWLQw
-         0vDz5o3GkJPZku2aPrjeh3wN3dy/nC1eM4vrLRNTnEbMfJOQ86O8M3E8dTAf0Rbago/c
-         oMdI/XuYZM3Fqrb4I1cCTxK8ihNzb7sYuavmzU87rGE0Wc/G678awoSpHmpec08gdcSp
-         kcgoJtP/KVZED+sOr6r36Io7G66s0tMTHO69dU2aQpyZMUNp7pvXdpqwH9dYh/H++c3k
-         X1bA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1727452781; x=1728057581;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=mNcJxIvrUlKBRWm7kcRpla8DkgOPTgYac1kq5Li84zw=;
-        b=IgKPybzFzzhw6uUCIVtBYRhe5/70HAz0SvaPqItXj6zzMmWudrjD7L1YKg5kW9m9B/
-         QjgdUyk+vGPlj+Zc4hNkU3Div86GSlqw5jcNBTvENZ/xNwN954jitY9KQGqwocPSuQTf
-         4KkeJH3+qQO3jxz7XOf6gQZE1BYcETYnyOhu2HuK0bK3bo3aqAG+y0XFdXmAFYDE61q+
-         Q92OyABiayZVSlh7e8GY0ck8YVTd6LgIdprHr4vTSnTcdL74Te2EUcefO4/q0B6Gt8dm
-         ZGEN3M5r5TsJFppd1Y5DOscFRS0QHvWLeN7qP3a+JfDgQ1HaF+8A7z3Es3Q7RYGXekWq
-         AoyA==
-X-Forwarded-Encrypted: i=1; AJvYcCUtN9R3AFzxEhTXGSbG8B16nMfPqBuqyHC3tLGnAzVWMNnVqBeyPHK6pOqGTFHEjskl325qHQ==@lists.linux.dev
-X-Gm-Message-State: AOJu0YzRkfhcWvZIeWKRcyzONyQxh1e7BKEiR1zhiupgQG6auOhcEOOo
-	E2SEL2SxT0Ko2VqDaotWCd5zjXggllegSAE1VxmnHfumw26CmYQJxkCgRTdjViZ7JRyH60k0QsH
-	07f/aO4L/ZLLrmF3dlDXVWtCZdzB+QSaHrjnU
-X-Google-Smtp-Source: AGHT+IFh0GldhtACuS2QaxWHGVDuBc4fpilU9wj8Ngw31fpS/kV2OS2lVOxcZUl6UKTvobIZccHNBjO0lZzjRDP7+Ko=
-X-Received: by 2002:a05:622a:a491:b0:453:58c8:3fd1 with SMTP id
- d75a77b69052e-45c9feb0724mr3810001cf.0.1727452780668; Fri, 27 Sep 2024
- 08:59:40 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="H5dC/HYs"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=XR3/Z1kMm2b7Lf1+NE56zhy1NpiO2dQbjQIDpvVHRF7TzEwTtk/oaNboQPYmV1hKuBpKw3WEzWAEVR+OZCqz7bPxtneqQlDmN35yLNdukQZ01cfW+Wxr3dKhFtJfmNUG/6wr2UZNYlYSc3jm8ycVxTBXM1zSIHh658mlaNH5iul1r4ciyT04sDz6d0+f04V1fifPQD96peTUXwJxC+VSvJjXZMya89Mk+Vb1CsAV1TleALkMRdk0sBPvC4TQ29O9d9ZJVJ+DitB7uS5rT7FXTx6Wl0/fUhLl/G7TrhLAlGbtwJJrgPoUwR6s1ygAdnavDFnmfL+eMDE4FFFlFGOpeA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=/wLcBOsK2icChrsOWypD9yOQdXg2rCXvRGTX0kaqx3U=;
+ b=Q6BWI6UvV4sfU70HjjCcDQ0V9aE/S2B0Qq0pGRwCn7En5vjOlgbPAYYgDjnqDXm2/8XFC3c9b6ALknJzVsnHmGbx7DIlMs4moksrGLsxL3zNCtF/mUmhRNWR4CbXAOdXT/1hpBkvmFGuwKmGB9Ze6L1StGRBInVCIG37xQlwoxtpqEl13n/P7QSWszDnUV7NhCXrUH5XtIYWze+O2BDufoIkcJWIEAQyget457nBwOhplI5jyUJhenXnJ5RJvYp22owGaizLb/pA+/vOAwII51ZytHRWaVxRvb9L0rB/eqX0veip6sZw+5nmulvX8j/cA6tVH27p7IX8UUrNXv3A1Q==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 216.228.118.233) smtp.rcpttodomain=google.com smtp.mailfrom=nvidia.com;
+ dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
+ dkim=none (message not signed); arc=none (0)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=/wLcBOsK2icChrsOWypD9yOQdXg2rCXvRGTX0kaqx3U=;
+ b=H5dC/HYsIbBgzA/1LITmWP6vs5uKQdldu+lvH8BsTCVzg14kHTfJFtT8kBqMlWAvBnpGY+PEpvQl1OUSWDggqXAgPd6+R1Qt3KS7vRE9PMd6+VEcBTW+ENXRJIskQ3cIFbN0uC3G8dL6ZpH8YxJrKqJtMPPibeqZzp6nHFuyGwPIwdp0BbVvWtyOjvNLhLR7D3mjRMpDp7Xo9L+mXhHzIkr+o4MCwrR+erqYOT7OBkTCUcLopC+Re9eb7qh3nVsN3qdEIj+/z77al6w7lebBAlkQ1KPX5FSXKoWzLXvZAENGG5O1kINg+AOPxKAPAQrSFOvHJ84vHiPOsMf50Im6Fg==
+Received: from PH8PR15CA0014.namprd15.prod.outlook.com (2603:10b6:510:2d2::17)
+ by IA0PR12MB7507.namprd12.prod.outlook.com (2603:10b6:208:441::13) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7982.29; Fri, 27 Sep
+ 2024 19:53:04 +0000
+Received: from MWH0EPF000A672F.namprd04.prod.outlook.com
+ (2603:10b6:510:2d2:cafe::e0) by PH8PR15CA0014.outlook.office365.com
+ (2603:10b6:510:2d2::17) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.8005.22 via Frontend
+ Transport; Fri, 27 Sep 2024 19:53:03 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.118.233)
+ smtp.mailfrom=nvidia.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=nvidia.com;
+Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
+ 216.228.118.233 as permitted sender) receiver=protection.outlook.com;
+ client-ip=216.228.118.233; helo=mail.nvidia.com; pr=C
+Received: from mail.nvidia.com (216.228.118.233) by
+ MWH0EPF000A672F.mail.protection.outlook.com (10.167.249.21) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.8005.15 via Frontend Transport; Fri, 27 Sep 2024 19:53:03 +0000
+Received: from drhqmail202.nvidia.com (10.126.190.181) by mail.nvidia.com
+ (10.127.129.6) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1544.4; Fri, 27 Sep
+ 2024 12:52:56 -0700
+Received: from drhqmail202.nvidia.com (10.126.190.181) by
+ drhqmail202.nvidia.com (10.126.190.181) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.1544.4; Fri, 27 Sep 2024 12:52:56 -0700
+Received: from Asurada-Nvidia (10.127.8.14) by mail.nvidia.com
+ (10.126.190.181) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1544.4 via Frontend
+ Transport; Fri, 27 Sep 2024 12:52:55 -0700
+Date: Fri, 27 Sep 2024 12:52:54 -0700
+From: Nicolin Chen <nicolinc@nvidia.com>
+To: Jason Gunthorpe <jgg@nvidia.com>
+CC: Yi Liu <yi.l.liu@intel.com>, <kevin.tian@intel.com>, <will@kernel.org>,
+	<joro@8bytes.org>, <suravee.suthikulpanit@amd.com>, <robin.murphy@arm.com>,
+	<dwmw2@infradead.org>, <baolu.lu@linux.intel.com>, <shuah@kernel.org>,
+	<linux-kernel@vger.kernel.org>, <iommu@lists.linux.dev>,
+	<linux-arm-kernel@lists.infradead.org>, <linux-kselftest@vger.kernel.org>,
+	<eric.auger@redhat.com>, <jean-philippe@linaro.org>, <mdf@kernel.org>,
+	<mshavit@google.com>, <shameerali.kolothum.thodi@huawei.com>,
+	<smostafa@google.com>
+Subject: Re: [PATCH v2 04/19] iommufd: Allow pt_id to carry viommu_id for
+ IOMMU_HWPT_ALLOC
+Message-ID: <ZvcNFsECe0gV696e@Asurada-Nvidia>
+References: <cover.1724776335.git.nicolinc@nvidia.com>
+ <2d469a5279ef05820d5993df752d32239878338d.1724776335.git.nicolinc@nvidia.com>
+ <3ddf97a3-cf5b-4907-bbe4-296456951e6b@intel.com>
+ <ZvW/vS5/vulxw3co@Asurada-Nvidia>
+ <ac6c371b-857a-42f3-9b71-969ef19a54ba@intel.com>
+ <ZvZKfUQpiv33MQw+@Asurada-Nvidia>
+ <20240927115925.GX9417@nvidia.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <cover.1724776335.git.nicolinc@nvidia.com> <6348cc7a72ce9f2ac0e9caf9737e70177a01eb74.1724776335.git.nicolinc@nvidia.com>
- <Zva4PJ3FhpMlWxhF@google.com> <20240927140141.GA4568@nvidia.com>
- <Zva_nFXZgT4MEfDg@google.com> <20240927145808.GB4568@nvidia.com>
-In-Reply-To: <20240927145808.GB4568@nvidia.com>
-From: Mostafa Saleh <smostafa@google.com>
-Date: Fri, 27 Sep 2024 16:59:29 +0100
-Message-ID: <CAFgf54q9j1NjEBxHtf8sqpx5i01PAqwpuwZg-Bt5AOAf-Rwaew@mail.gmail.com>
-Subject: Re: [PATCH v2 06/19] iommufd/viommu: Add IOMMU_VIOMMU_SET/UNSET_VDEV_ID
- ioctl
-To: Jason Gunthorpe <jgg@nvidia.com>
-Cc: Nicolin Chen <nicolinc@nvidia.com>, kevin.tian@intel.com, will@kernel.org, 
-	joro@8bytes.org, suravee.suthikulpanit@amd.com, robin.murphy@arm.com, 
-	dwmw2@infradead.org, baolu.lu@linux.intel.com, shuah@kernel.org, 
-	linux-kernel@vger.kernel.org, iommu@lists.linux.dev, 
-	linux-arm-kernel@lists.infradead.org, linux-kselftest@vger.kernel.org, 
-	eric.auger@redhat.com, jean-philippe@linaro.org, mdf@kernel.org, 
-	mshavit@google.com, shameerali.kolothum.thodi@huawei.com, yi.l.liu@intel.com
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: inline
+In-Reply-To: <20240927115925.GX9417@nvidia.com>
+X-NV-OnPremToCloud: ExternallySecured
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: MWH0EPF000A672F:EE_|IA0PR12MB7507:EE_
+X-MS-Office365-Filtering-Correlation-Id: acd42fac-6c26-4a66-4abe-08dcdf2dffce
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam:
+	BCL:0;ARA:13230040|36860700013|376014|7416014|82310400026|1800799024;
+X-Microsoft-Antispam-Message-Info:
+	=?us-ascii?Q?55y7N6/iJe4OuGR7944iQn33Q3rWMno64wKhA+zYBSFKnKQTFXq1ACuoRYMM?=
+ =?us-ascii?Q?v6TV1NJJSzKsrIRvQ23FZmvThh+nmG4q45oQRN9lfUoDXVXjS94qHNAygtmc?=
+ =?us-ascii?Q?U+kdJkXVHyx5sm1MtJf7tfuYrIvQI75jCNDDFP1mCQYT/VireltkvRzg8C/R?=
+ =?us-ascii?Q?U7p5kQ593peS3Oai3YwlMzjDuF/e6hNcIDdRgGx8DMq14VSEMlSnoNPT2mVD?=
+ =?us-ascii?Q?KfzXJ0oNtCaSzYIAIqYsvJ41ShdU4koI9oyZeSgindxnqaP0mPNsudM40q1G?=
+ =?us-ascii?Q?7ICHFtbvCkvRHLUfl7AaL2DeS4mEzzUnlBKFbXBsSxNjm46qXtxB95T59pru?=
+ =?us-ascii?Q?9/SyPHThZRUljjOIEFROE+kEbaYdTvkQEy2It/Fq60DmfL1+8Xz3C27VCw9E?=
+ =?us-ascii?Q?QlGRebpeo6igq7v+3dF9+6M8YKFCaLQFpodD9fKml0VdY0YHeZmoVcQouCeD?=
+ =?us-ascii?Q?AZbGU32OkX+s+o/5m8K4INKGXReKk//jZa6fKsKdP4fuME/c5u5q97lpQxrc?=
+ =?us-ascii?Q?cWfkhe626ObkBnDSyioQvJImjJ0qa+x7F2UP3LUMLL179j4XeGcIPkUKqT4v?=
+ =?us-ascii?Q?XTo7lOXY/Yvmn5m3nJOozKS6O7FlTfus+2DMDm7maWbmyIzPNx2Wbp9pEJ+r?=
+ =?us-ascii?Q?MHZNdYZ2fF1e/GH2cTPAiBSXE/fsddKYlwxLFNyqw71n3AKAJmOSbLSahW8J?=
+ =?us-ascii?Q?RhRkKrDQPEK/GLs1+E7zUd+oAVVtzWoaOTtBG95Tb8ecRSvrJJj/vR5Kl/xL?=
+ =?us-ascii?Q?ZkIQOaShLcyKEPtN0fhzqyd5qNRzk9tK9xx4vH3vGtx1PmXijBFI5ooUcdZA?=
+ =?us-ascii?Q?D+ZQFak5EFb7CKELtWVa1GT6v+aT0u9yYMhBSdvRKCWOb+kD56gnasbZolMn?=
+ =?us-ascii?Q?Jf8LFeiQZq82+F+86pLslSW3uGntMy2E3uKCn6zRlMlK2iADArE+Z9UsJ5B0?=
+ =?us-ascii?Q?eUnxetoFCmg6JSlQ1RK2TYu0b9bFWTszEWujRS7RMP0FT247UhglBmlz6wwl?=
+ =?us-ascii?Q?LhEDDllJKibHm6H2FqTVMr0AwLu3RFv62Tn3Py/h07rTtv66HkOxfewYQjM8?=
+ =?us-ascii?Q?H43yoQEA90BwONPzpz1FMiFWSHSw59euJAQ7cNSFgfnyUUwdxxk0KeTzWJpQ?=
+ =?us-ascii?Q?shpBTBn7oKkvFW8penUcxYHz06vwibRfN31T4Bt0WFRcZPsqIZqOCvpMDDUd?=
+ =?us-ascii?Q?cOlCSxJ8SDHhrunzXW56MvoEMu6gydC8HqO3SYRDFXCPpHVezNR4z9uG2NGW?=
+ =?us-ascii?Q?WOelpJv+xUwkgqPWRYQEY36vqUYREuSGpwIxFpPjkJXdMSvAAjjY5ZneSbWU?=
+ =?us-ascii?Q?2ZNJU9xO7Jn0fVaSq/cPve+ERqPGs5eih+yirRmtmTZ8c2odn6z/QSwWyLqm?=
+ =?us-ascii?Q?1tWdGOuaKtHSOQrMHsZZP5naNcQg?=
+X-Forefront-Antispam-Report:
+	CIP:216.228.118.233;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc7edge2.nvidia.com;CAT:NONE;SFS:(13230040)(36860700013)(376014)(7416014)(82310400026)(1800799024);DIR:OUT;SFP:1101;
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 27 Sep 2024 19:53:03.7218
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: acd42fac-6c26-4a66-4abe-08dcdf2dffce
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.118.233];Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-AuthSource:
+	MWH0EPF000A672F.namprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: IA0PR12MB7507
 
-On Fri, Sep 27, 2024 at 3:58=E2=80=AFPM Jason Gunthorpe <jgg@nvidia.com> wr=
-ote:
->
-> On Fri, Sep 27, 2024 at 02:22:20PM +0000, Mostafa Saleh wrote:
->
-> > > We don't support multi SID through this interface, at least in this
-> > > version.
-> > >
-> > > To do multi-sid you have to inform the VM of all the different pSIDs
-> > > the device has and then setup the vSID/pSID translation to map them
-> > > all to the HW invalidation logic.
-> >
-> > Why would the VM need to know the pSID?
->
-> It doesn't need to know the pSID exactly, but it needs to know all the
-> pSIDs that exist and have them be labeled with vSIDs.
->
-> With cmdq direct assignment the VM has to issue an ATS invalidation
-> for each and every physical device using its vSID. There is no HW path
-> to handle a 1:N v/p SID relationship.
->
+On Fri, Sep 27, 2024 at 08:59:25AM -0300, Jason Gunthorpe wrote:
+> On Thu, Sep 26, 2024 at 11:02:37PM -0700, Nicolin Chen wrote:
+> > On Fri, Sep 27, 2024 at 01:38:08PM +0800, Yi Liu wrote:
+> > > > > Does it mean each vIOMMU of VM can only have
+> > > > > one s2 HWPT?
+> > > > 
+> > > > Giving some examples here:
+> > > >   - If a VM has 1 vIOMMU, there will be 1 vIOMMU object in the
+> > > >     kernel holding one S2 HWPT.
+> > > >   - If a VM has 2 vIOMMUs, there will be 2 vIOMMU objects in the
+> > > >     kernel that can hold two different S2 HWPTs, or share one S2
+> > > >     HWPT (saving memory).
+> > > 
+> > > So if you have two devices assigned to a VM, then you may have two
+> > > vIOMMUs or one vIOMMU exposed to guest. This depends on whether the two
+> > > devices are behind the same physical IOMMU. If it's two vIOMMUs, the two
+> > > can share the s2 hwpt if their physical IOMMU is compatible. is it?
+> > 
+> > Yes.
+> > 
+> > > To achieve the above, you need to know if the physical IOMMUs of the
+> > > assigned devices, hence be able to tell if physical IOMMUs are the
+> > > same and if they are compatible. How would userspace know such infos?
+> > 
+> > My draft implementation with QEMU does something like this:
+> >  - List all viommu-matched iommu nodes under /sys/class/iommu: LINKs
+> >  - Get PCI device's /sys/bus/pci/devices/0000:00:00.0/iommu: LINK0
+> >  - Compare the LINK0 against the LINKs
+> > 
+> > We so far don't have an ID for physical IOMMU instance, which can
+> > be an alternative to return via the hw_info call, otherwise.
+> 
+> We could return the sys/class/iommu string from some get_info or
+> something
 
-I see, that's for the cmdq assignment.
+I had a patch doing an ida alloc for each iommu_dev and returning
+the ID via hw_info. It wasn't useful at that time, as we went for
+fail-n-retry for S2 HWPT allocations on multi-pIOMMU platforms.
 
-> > Ah, I thought IOMMUFD would be used instead of VFIO_TYPE1*, which shoul=
-d cover
-> > platform devices (VFIO-platform) or am I missing something?
->
-> It does work with platform, but AFAIK nobody is interested in that so
-> it hasn't been any focus. Enabling multi-sid nesting, sub stream ids,
-> etc is some additional work I think.
->
-> But what I mean is the really hard use case for the vSID/pSID mapping
-> is ATS invalidation and you won't use ATS invalidation on platform so
-> multi-sid likely doesn't matter.
->
-> STE/CD invalidation could possibly be pushed down through the
-> per-domain ioctl and replicated to all domain attachments. We don't
-> have code in the series to do that, but it could work from a uAPI
-> perspective.
->
-> > If possible, can the UAPI be designed with this in mind, even if not
-> > implemented now?
->
-> It is reasonable to ask. I think things are extensible enough. I'd
-> imagine we can add a flag 'secondary ID' and then a new field
-> 'secondary ID index' to the vdev operations when someone wants to take
-> this on.
->
+Perhaps that could be cleaner than returning a string?
 
-Makes sense, I can take this when I start doing the pKVM work with
-IOMMUFD, in case it wasn't supported by then.
+> > For compatibility to share a stage-2 HWPT, basically we would do
+> > a device attach to one of the stage-2 HWPT from the list that VMM
+> > should keep. This attach has all the compatibility test, down to
+> > the IOMMU driver. If it fails, just allocate a new stage-2 HWPT.
+> 
+> Ideally just creating the viommu should validate the passed in hwpt is
+> compatible without attaching.
 
-Thanks,
-Mostafa
+I think I should add a validation between hwpt->domain->owner and
+dev_iommu_ops(idev->dev) then!
 
-> Jason
+Thanks
+Nicolin
