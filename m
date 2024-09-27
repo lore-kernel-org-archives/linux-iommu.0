@@ -1,271 +1,208 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.14])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-qt1-f172.google.com (mail-qt1-f172.google.com [209.85.160.172])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C64EB175D32
-	for <iommu@lists.linux.dev>; Fri, 27 Sep 2024 05:50:16 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=198.175.65.14
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1727416218; cv=fail; b=NC7BGjLhdWWYx5m6Z7MQZCkXDbrYvzgjgTj5EebQzmWqZkVh+CW4PKigAIomItEW1bkF0Zigr8aE5fgvU0XNSyiXdkNSgCOQLxTHubeBw17kLrkW519tZil7BiS8EzKwUpb1WzcEuQSN+ZG6gLAhStq5dnh9TxBGJAmnj2ks/dk=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1727416218; c=relaxed/simple;
-	bh=KYaa7izFhxsdpKw2l3MH4ykdDLB+DinPykEpEBvdMeE=;
-	h=Message-ID:Date:Subject:To:CC:References:From:In-Reply-To:
-	 Content-Type:MIME-Version; b=A78o30HP/p1qMBSSWxh4x3UdAAVlK1qgEMUo0+vG8/VkqB52pHtvwPviIb2lWCIeUu5dlQBKlwFGf9ikPON/eQRV7ncvbYoak1D2F7Pueu7/sJOrtxgI/FmuNtpFAZMI+FGd3nw1qlvnnQHrlRDLZRgwcZFzMfgCn+QwFp4Aqd0=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=d5k4+d1B; arc=fail smtp.client-ip=198.175.65.14
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B0A8D749C
+	for <iommu@lists.linux.dev>; Fri, 27 Sep 2024 05:54:16 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.160.172
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1727416458; cv=none; b=BQuZL8JuS62p8BO/WBT+DrRrR98fLanWmPzkpvX9f+AKJAUH477knJYnJ9YVxoMQX3wRhqq+YwgpBJ121j5UBQ5zzPiag+Vh6MZ+f3ZNi6WAPk7Olim9RywhIdsxDQxEnCo2bll1CFy9D4PfDfIkVjufTsZSQChS1WApB7FyR6Q=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1727416458; c=relaxed/simple;
+	bh=G4hpnvLo0m/PQe/eCqe2pef7O4TSc1+b2w1IPvUZUSM=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=UXFY+RNXJnisTe+hJN2s90aw/MTxl5NFL9w/NWwaskyRMHamLvcemi79NHJzOckplx0x53Hjs/omASW25xaMS44aL+nX85leckg9CBhLf3j1KqrA8NjZiECumw9Z4q7wWR+kWnxOqkQ9c8m96zGtBDMNQllIt1uwHZvygNWmrCE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=a5ft72qN; arc=none smtp.client-ip=209.85.160.172
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="d5k4+d1B"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1727416217; x=1758952217;
-  h=message-id:date:subject:to:cc:references:from:
-   in-reply-to:content-transfer-encoding:mime-version;
-  bh=KYaa7izFhxsdpKw2l3MH4ykdDLB+DinPykEpEBvdMeE=;
-  b=d5k4+d1BNQOy+qIyzwFoVRxnTkzudP3KXJgdF0J7174QtysAdXFBLDhz
-   oLV62PetP0tOI5wQO+lL2p4KNA3ujSJVoX52zEKG4oill2ON/Ve3OXU8s
-   SI7MgW209yuvY2gSN3yDC6Vghc6tXokMOo6qv7Ga5r2gE2YL+aFJln0UE
-   oagt/5At1Yu4CmXiVcIzViMXcARwpuP6JvFAJNI03+eejCOH2VFDM1BPs
-   PYux0ikQKuyc5smX3LcmjsH+tfs0cyEJtG1ynCVnu3FWCr3OTmn8klW4v
-   iIeKy8yy/BjforjY4M46lrVKFTwXsVpJRQrzZUIoITafc1QQrxHgiLY1w
-   A==;
-X-CSE-ConnectionGUID: /5LMa7chTva+TPj2s7vNFQ==
-X-CSE-MsgGUID: CC9dJFh8Rhy5HuzCkz78TA==
-X-IronPort-AV: E=McAfee;i="6700,10204,11207"; a="30340638"
-X-IronPort-AV: E=Sophos;i="6.11,157,1725346800"; 
-   d="scan'208";a="30340638"
-Received: from fmviesa008.fm.intel.com ([10.60.135.148])
-  by orvoesa106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Sep 2024 22:50:17 -0700
-X-CSE-ConnectionGUID: niS2G8NcT1q3z2SdrQ4ZvQ==
-X-CSE-MsgGUID: pqPFVwe5Q/WecOq8hFj9YQ==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.11,157,1725346800"; 
-   d="scan'208";a="72575390"
-Received: from fmsmsx602.amr.corp.intel.com ([10.18.126.82])
-  by fmviesa008.fm.intel.com with ESMTP/TLS/AES256-GCM-SHA384; 26 Sep 2024 22:50:16 -0700
-Received: from fmsmsx601.amr.corp.intel.com (10.18.126.81) by
- fmsmsx602.amr.corp.intel.com (10.18.126.82) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.39; Thu, 26 Sep 2024 22:50:15 -0700
-Received: from FMSEDG603.ED.cps.intel.com (10.1.192.133) by
- fmsmsx601.amr.corp.intel.com (10.18.126.81) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.39 via Frontend Transport; Thu, 26 Sep 2024 22:50:15 -0700
-Received: from NAM11-CO1-obe.outbound.protection.outlook.com (104.47.56.176)
- by edgegateway.intel.com (192.55.55.68) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.1.2507.39; Thu, 26 Sep 2024 22:50:15 -0700
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=lNeWh7qW1P6LMEF/AR0W2ZVVTO/Tc+ZHfpZgXHgS7DkvCzIcroZxTNoDpawQ07TnXqUekaPj13wc0qlLQQDAwBFBulhTwI30p++LAkRDRU8ZXFTEhE8r2le1tnPdrZSeNjMXO8VV8n5G42KsUBdRGqUcPf6wemSxhjYAILGVkJtp5/tWzqu7CfKJ7F4qtYGHtDKdwYN8wHT99Ilch7aV/t4zYxtFpUP2JjoJxii29ww+8YGu3boQLh2hWz2LxYjvEn74DYUk8HIAuSdKcioVBOqtajM+sMHUL+qkUf7vg4jyt9zCEG66h/udGiE5gMnutjw3NzpHEIvQUdfvkhBbRw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=TbMDAoqiKQEwsL1tHl4XeNMcLH5WT40Ylbj8WuFd1qE=;
- b=yv2lQS6v6HHpypHCdeDgB9VAeikq2ipsoYrqZtO7t3MRwHV+lhtRHJcgUQP2EsJv6xvdZMkYB8Q1C4kNo0DNd+cjj3xO9/+jStPRecFVlYuFXLw+phZb4mfMVjonLF0KHDordhfw+Kz4/3CTnSKA7YXM4zz3tx6Iwe07J/9fsGR/cOMnFPzq2U0b+f0jwGeD2GaVqiI93Znh7aO7KnkpvfbZARMZ7xEj6Ly0hm7AaFugBwP6dmjktJ3desG+DeewMpIpNj23+vRcOKW3UxpXSHGc6zzsLzMThtx51GAVnmeTJHp4FmrBiFUTNUTNy2gQ12dnPxMQXr9IwhCHWKQrQQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
- dkim=pass header.d=intel.com; arc=none
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=intel.com;
-Received: from DS0PR11MB7529.namprd11.prod.outlook.com (2603:10b6:8:141::20)
- by SA2PR11MB4810.namprd11.prod.outlook.com (2603:10b6:806:116::15) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.8005.23; Fri, 27 Sep
- 2024 05:50:13 +0000
-Received: from DS0PR11MB7529.namprd11.prod.outlook.com
- ([fe80::d244:15cd:1060:941a]) by DS0PR11MB7529.namprd11.prod.outlook.com
- ([fe80::d244:15cd:1060:941a%4]) with mapi id 15.20.7982.022; Fri, 27 Sep 2024
- 05:50:13 +0000
-Message-ID: <ff35efa5-ba7e-4974-94be-59bf794a14e3@intel.com>
-Date: Fri, 27 Sep 2024 13:54:45 +0800
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v2 00/19] iommufd: Add VIOMMU infrastructure (Part-1)
-To: Nicolin Chen <nicolinc@nvidia.com>
-CC: <jgg@nvidia.com>, <kevin.tian@intel.com>, <will@kernel.org>,
-	<joro@8bytes.org>, <suravee.suthikulpanit@amd.com>, <robin.murphy@arm.com>,
-	<dwmw2@infradead.org>, <baolu.lu@linux.intel.com>, <shuah@kernel.org>,
-	<linux-kernel@vger.kernel.org>, <iommu@lists.linux.dev>,
-	<linux-arm-kernel@lists.infradead.org>, <linux-kselftest@vger.kernel.org>,
-	<eric.auger@redhat.com>, <jean-philippe@linaro.org>, <mdf@kernel.org>,
-	<mshavit@google.com>, <shameerali.kolothum.thodi@huawei.com>,
-	<smostafa@google.com>
-References: <cover.1724776335.git.nicolinc@nvidia.com>
- <bf95f910-e837-4d79-8218-18d234ece730@intel.com>
- <ZvRcskGx2u94Vs+R@Asurada-Nvidia>
- <82632802-c55a-4199-b685-8b594a8e7104@intel.com>
- <ZvW+BoovlyJ/wziX@Asurada-Nvidia>
-Content-Language: en-US
-From: Yi Liu <yi.l.liu@intel.com>
-In-Reply-To: <ZvW+BoovlyJ/wziX@Asurada-Nvidia>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: SI2PR02CA0004.apcprd02.prod.outlook.com
- (2603:1096:4:194::14) To DS0PR11MB7529.namprd11.prod.outlook.com
- (2603:10b6:8:141::20)
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="a5ft72qN"
+Received: by mail-qt1-f172.google.com with SMTP id d75a77b69052e-4582fa01090so166411cf.0
+        for <iommu@lists.linux.dev>; Thu, 26 Sep 2024 22:54:16 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20230601; t=1727416455; x=1728021255; darn=lists.linux.dev;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=Fbg8QJSSUgH7Q4nHSRemybsPSlB855qz0uznqiadyvc=;
+        b=a5ft72qNTcrstHqr3QFjA42smQNtFcR5mclzP1lQ8Ah3jCBmA0j0PMkh0I5TMmjK9N
+         zloAI/xj0caf8U45Nl9BYViVDGMv7F/wQFQJaCqafasWzm5703/+XdTypRpfbAC2Ep25
+         FQOnf4UbvBnwiUMSTgiax4fc7xbuK5sXOgCaWB/fHxotPHmw2z07NgVM7s5W5rhbKvo/
+         QHpZxtiaigOrmWhCBW11If81JrexW4NHZX+MmYF3BeiSkiA88mHtpO4AQA0ibqh4gChK
+         w85iRMpWmvQNCXI1pSqPDEhqAX51ioKYct58rrFcF7iYPiL9ma7M8zeGJSkVw+qvY4v/
+         c56A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1727416455; x=1728021255;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=Fbg8QJSSUgH7Q4nHSRemybsPSlB855qz0uznqiadyvc=;
+        b=l2/mN24jtNwzk8ytdmHlaviujYDR0azE9ZDFKxl4a+hxNaOyq2FEEV8tbmlnmCJoIE
+         TlrU/vPWzDv5mtCsubvmn9a1rzFFJCTKJxSn9DgF4WECHDkY964G/V9aaei8dMM3/dmd
+         67iPcJ+lciA5NRLHYcvxueZYllu6m1bNV3yfb1Idl+vJrpdAATrZBMBJMVjTYYKYalei
+         YOTPpX9lvPgS9DFOz459gxO1nB/0cN2iUthH0cndDjR8pwQwR1P7jYH5AcR1snw9MiSI
+         sDEtqq/2hdZi4URUj73VZxX8xJttkRIIQZ1U837NEb+9jFBaA5nGEX/6gt3vYTSKTmZy
+         bRkA==
+X-Forwarded-Encrypted: i=1; AJvYcCV0Yx+VVcMOcyD39PnYH8ooj0YtR9CXkFWFhJlUX/sAMxUye6DjhCp5gEPXsqS4uaWWKZAJ3Q==@lists.linux.dev
+X-Gm-Message-State: AOJu0YzsbqMVyjui6uNs2EL5y9AwlN7N+fTwYfxT6EnfS8IvPzj3OOtR
+	RB/95MYjdTHo3vkK7xj6bjjI9tRFNnRslyR63JdOFK5PPXoeYIwOfL84gGR8OkEo4sRE1NxKAW3
+	oW6+8xnYOF4mgqF3TqLbE4cczhDYqr4g6of4h
+X-Google-Smtp-Source: AGHT+IFlWAzqms00GpX5qYW9TQZFSIQORw0rsVCeZaOGfdUcQ3vPP90oLkUJ8sEZ5IgWc6qBEG83z217FGnc5KOy/AE=
+X-Received: by 2002:a05:622a:7d0e:b0:453:58b6:e022 with SMTP id
+ d75a77b69052e-45ca02b0365mr2089571cf.28.1727416455179; Thu, 26 Sep 2024
+ 22:54:15 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: DS0PR11MB7529:EE_|SA2PR11MB4810:EE_
-X-MS-Office365-Filtering-Correlation-Id: 9be5f3d3-379c-4c30-6145-08dcdeb84136
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;ARA:13230040|376014|7416014|1800799024|366016;
-X-Microsoft-Antispam-Message-Info: =?utf-8?B?cFhydWprbDhQTTE4LzkvR2ppbWEvaU9UM1M3bW5zNVNnUHl4YUFMU0kzUC9E?=
- =?utf-8?B?a3NmTTk2RWxiUjZoQW5KR3A5dlVmMFp3ZzR5ZWRQMC9nZk5TNTJlV2FrV21L?=
- =?utf-8?B?d0Vwa0NqaHNBRHVCN2lzcWdDMVZjdWpBaEptY21XNEdkYWZwUGFFYmRhenRO?=
- =?utf-8?B?b2RiWVdySWlzWk4vMkFnUmxZMDVKVFdCbFJva1hZcmRhTGhRelhmV1NEZ3JD?=
- =?utf-8?B?V1RpeUZHWEt6RWdXK1BZUUYzNk54TGx3MlBlcVZSZHlaRlVROGZuTXMySkJK?=
- =?utf-8?B?MWFDTmJIVklVM2JDbTF5NUh1c1NmSjBrcjdQUmFydzNZejRIMEZVS2t5ZnVz?=
- =?utf-8?B?dkQ3aEJEcDh0S3I4NjBmb04zelFzRkZmUWdoU3c5Y2t2NTQxVWE5RjdROU9u?=
- =?utf-8?B?Z2hFR2JwUnIzTHNBbjQxMWF1U1RiTWxkSG44QjBuSXUwTlpId2xMTGpHaGR6?=
- =?utf-8?B?NGpuWlV6dkt5RkxtUWRFNDlzT0dIT3gzTWIvbmlWczRlb2dvZ1I0ZHpWZzE0?=
- =?utf-8?B?K3ZUMndlQjVWS3R5N1ljbnZSc1g0R09RaVJON1JZeWNpSmZxbWpDeHVKL1Yr?=
- =?utf-8?B?S0RnNHJxMkFhVFVhWGs3a0pvbjNsWjdFRS9MSWNYZFhEQloydDB3ZklLNmU3?=
- =?utf-8?B?b0N1QytPak5pdHRBbkFYYXluWHo2NTQ0YlM3VHJ3OVg2WE1PZDc0WTk4Z3ZW?=
- =?utf-8?B?TzBtalVFYk9UV2FFOVJFNHZMZG5PWnVEem9ZcUpMNG9SK08zMUVYWGpSWGVV?=
- =?utf-8?B?b1hkSVdaZG5naFlEL2lUdG4rSlp4U3JrSlZuVmxnMCtZWEFIT2JETFdxL1JK?=
- =?utf-8?B?b3RORnVzeFZjak5XRHE5TnZQRkk5R3EwL0JWWXhTalJJbTByM3pkSy83cHgv?=
- =?utf-8?B?MFJ3YUZhOFRrdGZnUm9QTkIwdjJieDk0aTRtM2RucGJDc3M0V3V2SU9Kd2RE?=
- =?utf-8?B?S1ZMUHZVUFYzYWFaM0NvaGtKOWsxQWdXZVUzZVB0dmdSZFNCN3oxRi9KYUVz?=
- =?utf-8?B?UmJZRkdWdkFOZjQrVHFwdVBZT2JBQXpYN3pYa1BTaDQ2WElUd1dRT3dkMjVv?=
- =?utf-8?B?NCtNcXZlTXFuTW95Y2lHQ1FFZlJXNWtDaGdEa0hnNzV3Njc1Y1c2VDRuR0N3?=
- =?utf-8?B?UlFGajZsL1hLRmN6bDJ3NHVoMnVLUkVTV25YbDJwQ2FNRDVFWHM0K29GYVFB?=
- =?utf-8?B?SGFNcGhPOFM4ZytJUDFmSkdDSXk1WDBnUFdUTUN5M0dJa051bjBuYmp4NGEx?=
- =?utf-8?B?Zk9BSUtOZFRBRHVDVElYWjduUHFSZk11c0JQMitwYi9seC9lYjZjc0lYYTE2?=
- =?utf-8?B?YTFoaWpvVTZJUDZpRzk1UEdvd3I1L2dweDhSclZoNG5hWGhqMEhBQVVCOTlG?=
- =?utf-8?B?TUtOMVBzaFB6NHo3M3duOTJ0WTR2ZmFzbXVvSkZUWEVXVmtBbC84T1NjT004?=
- =?utf-8?B?eE14czFGZGUwZkpPOTlYbTVSTTcrRmxBUkFSd3h6dWxVbVlSWE0vMWhIalFJ?=
- =?utf-8?B?OHl0UFJJakpFRVVDRkxxNGR6NitQdmZYc1RsbXF2NHBMT0pOUzhaZnF5Uy9Q?=
- =?utf-8?B?T21QcSt6QnRXblFXYldhM3VWZ3ZVS29oN2tlT2xtTVBDTGs0Uy96bHphZHFC?=
- =?utf-8?B?WDAwTWdjcmZRWGwrM20rSHpMUCtVTE94ZVBTeUI2VFFkNmI5VkNrUEZ3VHZn?=
- =?utf-8?B?U01WUVl1ZC9NaUM5ck1rY2FuSFB2dmt1YUFwaGVDN3pzUVk3U0JFcE53PT0=?=
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DS0PR11MB7529.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(376014)(7416014)(1800799024)(366016);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?WS81czU0K2F6WkZtaWZ2cmdKMFdZajRWWDB1VGJ2R2FLRFU0UkE1Nkx0Mmlr?=
- =?utf-8?B?TVBzam9sODRCd1lxSmZ6WHpnb2k1TVFhZkVuRitKWi9DUitqb2hKQ1h4UTNk?=
- =?utf-8?B?djI1eGtBWTQ2dkxTR2ZoQUMveTNiL1VkRTJoVjN5bnF3TzRFa285dHA4VFFD?=
- =?utf-8?B?TklDbTdwSVRtcEcxYS9yS0doL0Y0WGk5ZDBCV1RNMHpFVEZQUHdHUmo3U296?=
- =?utf-8?B?UzRDRkZOdndtVzNLL3d4QktucnhsVWl0WHdzZnVSV0lYK0c4L0hXL2wxWlNO?=
- =?utf-8?B?d0hCV2hJTGZFNlJJVXRPMFJUWHUxeEQyNVJkQ1lSb3oybThzUlVVWE9aTnpS?=
- =?utf-8?B?R2NjbG1zVXJyWmR6WXFGTnp4RlpycWR3WFk1SzUxRUNMUHFyVWxLV2dHQmN0?=
- =?utf-8?B?UUZGdzRuMk00dFQxVEY0dGhJUnhHNVpGeFExNDUzOWZkMlJ2ekdCZ1ZyM1lx?=
- =?utf-8?B?WEdvMVpuMXJGbnJBQlJGQ0dpVGFuKzVQN01CS3J4MjNLcDlPbmxUS2N5Yk1V?=
- =?utf-8?B?eUtpUHJmVmRybWUwYnA4SlQyNk9oTzZsMFhmaHMrMjI1alV5eHozNkVoNGhU?=
- =?utf-8?B?SWYxbnc1eEwxcVZvdHAwcCtoY2h1ZkVyR3Zaem13UThKZlBCYTd6U2Ryd3gz?=
- =?utf-8?B?MHJaYjY0VTFKN3l2RkkwYXdCNm5aVHJablFJS2VGU1AxSUFoRUZVcFZCTVkv?=
- =?utf-8?B?TkdkdFVFWXR2WmZmakdtTUR2V1hWZTYzbUtXMHhJd056UmhTUXdlQlZCZnBm?=
- =?utf-8?B?aGtoUEptRnV4NVVKSzV4UStpZ1VyWWJYckdvZTFCYnR5blE4amtuaE0zVGJS?=
- =?utf-8?B?SnZyQldZU2s1akVBcXNEcHF5dnRNblBCWm41OGc2dUMyZkdKK0tpWTV2UEFE?=
- =?utf-8?B?WnBPVEw4MEM3Mnl4RUZEanVnQktBdzAyNVorbVNncnVrQUJaSnNUQWZnWUxM?=
- =?utf-8?B?K0NGaWt0czZGQUhjWjJDQnFGTnBVYTZYdUQydEZwQW1pVnZPeE0wNkoveE5V?=
- =?utf-8?B?MW5zNzJMWGJtUFZTbFV0SGRaTnFreFAwN1BVWWxKS00xcTQwdUlqd0dzUWw4?=
- =?utf-8?B?RURTUXpDdURCSlBsL2x3OE9QQTE3a1dXcTU1NDkxckZtTE9MWGF0aGlpNjc4?=
- =?utf-8?B?dm1raUFXZnJxN1lCUkRhbDFFV2dRZmVVYzc1bHV4SE1GYi9HV1lJcDEzUEJ4?=
- =?utf-8?B?THZRbFZnQ2h0cTRWcjJiTlFNa2dKazV6dnExY2RLbW1GbkkwU0FVaDdHRHIy?=
- =?utf-8?B?K0pmNHNvOTNjR3pzWGhJclR6RmpBdGk1dUdBSnFLL0VCNkpNZlRvNWxSTXdx?=
- =?utf-8?B?ODY2SmFYMzkxVTdJV2FrMnlTRmZoTUxtajhDNjh1TTBHTC9ENWRqRHBPRFM3?=
- =?utf-8?B?TjVVMEEzZFJHcEo4NjBPUWU2ZlYrVHJIdDU0Z09OeE9jbkVsRzFLTTBPYTFD?=
- =?utf-8?B?amxMKy9rOVJyQjhiVGtHS1Vub2lnTHJ3ZlE5cEhqR3hxbFJvZ3VDVEc3UVVQ?=
- =?utf-8?B?eU0vR2hzKzUwbGdDOFVSYis1TnNUUzVvb3lwMkJla3pFTTJDMWpnWEQrTzhn?=
- =?utf-8?B?WXd6WDJ6L3ZBQ1NUVjExamFQdWZTQ3prcGhDNS9XQlo5OXlDTENQeFlDMTZH?=
- =?utf-8?B?Vk1sRHpyMEs4eW1CVWlCWlpGbEM1MTFuQ2hYNVZWN0FBcnVKa3IzOVRBTUg3?=
- =?utf-8?B?Y25FRm9mMlFLMkNyVDA5MzBHU1k1bytoeFNHd1RIdlRnd24zcVBXS28yei9Z?=
- =?utf-8?B?NWVhOVY0SmZWWUhDc1puMGR6OVNyUkRlajhsMTVOWUFsWGFlRXllN2Y1dGFF?=
- =?utf-8?B?T29lSW1tRTYxOUVQdWNudjRFYTNWMmVhTWhOWCtnVXhkbE9mNlpicHpOL0Qy?=
- =?utf-8?B?LzVUT0QxV0Vra0xpY2lrQlg5QnJiaEdJd2tieGZlYkZUWDNwY3ZVdmJsRmt2?=
- =?utf-8?B?eGNCdTFnTmtQVkNjT3k3bTdiTHBDb2hveWdteGYyZnc0c1RsVVlLaUFZRm51?=
- =?utf-8?B?ajRmWllaNWQ2SEFoKzc3ZDBWbVo4Ym5FSGptK3FMZzBUeWRaYVFtSHJaeUYz?=
- =?utf-8?B?N012ZjBIdkNxM3BnWW1kOVBGTFhNS0oxTDFONENiaTB5ZVFHd2NqNzhaRWxz?=
- =?utf-8?Q?gwPQ00liBlc/LiOJCvtlWh+h7?=
-X-MS-Exchange-CrossTenant-Network-Message-Id: 9be5f3d3-379c-4c30-6145-08dcdeb84136
-X-MS-Exchange-CrossTenant-AuthSource: DS0PR11MB7529.namprd11.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 27 Sep 2024 05:50:13.2124
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 46c98d88-e344-4ed4-8496-4ed7712e255d
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: MZUA4s8fEWLR4Eg2kNffQfjBDc2MIZjZ/hEVQI1VwvZqLzPq22VOs5C+fzpcp0ZW0h+qvI2jYWBJcK+ox++vWA==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SA2PR11MB4810
-X-OriginatorOrg: intel.com
+References: <20240925075707.3970187-1-linyunsheng@huawei.com>
+ <20240925075707.3970187-3-linyunsheng@huawei.com> <CAHS8izOxugzWJDTc-4CWqaKABTj=J4OHs=Lcb=SE9r8gX0J+yg@mail.gmail.com>
+ <842c8cc6-f716-437a-bc98-70bc26d6fd38@huawei.com>
+In-Reply-To: <842c8cc6-f716-437a-bc98-70bc26d6fd38@huawei.com>
+From: Mina Almasry <almasrymina@google.com>
+Date: Thu, 26 Sep 2024 22:54:01 -0700
+Message-ID: <CAHS8izN-3Ooiexsr+Xp2234=GqMUy0sTTMqExKVkXAgmjeWQ6w@mail.gmail.com>
+Subject: Re: [PATCH net v2 2/2] page_pool: fix IOMMU crash when driver has
+ already unbound
+To: Yunsheng Lin <linyunsheng@huawei.com>
+Cc: davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com, 
+	liuyonglong@huawei.com, fanghaiqing@huawei.com, zhangkun09@huawei.com, 
+	Robin Murphy <robin.murphy@arm.com>, Alexander Duyck <alexander.duyck@gmail.com>, 
+	IOMMU <iommu@lists.linux.dev>, Wei Fang <wei.fang@nxp.com>, 
+	Shenwei Wang <shenwei.wang@nxp.com>, Clark Wang <xiaoning.wang@nxp.com>, 
+	Eric Dumazet <edumazet@google.com>, Tony Nguyen <anthony.l.nguyen@intel.com>, 
+	Przemek Kitszel <przemyslaw.kitszel@intel.com>, 
+	Alexander Lobakin <aleksander.lobakin@intel.com>, Alexei Starovoitov <ast@kernel.org>, 
+	Daniel Borkmann <daniel@iogearbox.net>, Jesper Dangaard Brouer <hawk@kernel.org>, 
+	John Fastabend <john.fastabend@gmail.com>, Saeed Mahameed <saeedm@nvidia.com>, 
+	Leon Romanovsky <leon@kernel.org>, Tariq Toukan <tariqt@nvidia.com>, Felix Fietkau <nbd@nbd.name>, 
+	Lorenzo Bianconi <lorenzo@kernel.org>, Ryder Lee <ryder.lee@mediatek.com>, 
+	Shayne Chen <shayne.chen@mediatek.com>, Sean Wang <sean.wang@mediatek.com>, 
+	Kalle Valo <kvalo@kernel.org>, Matthias Brugger <matthias.bgg@gmail.com>, 
+	AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>, 
+	Andrew Morton <akpm@linux-foundation.org>, Ilias Apalodimas <ilias.apalodimas@linaro.org>, 
+	imx@lists.linux.dev, netdev@vger.kernel.org, linux-kernel@vger.kernel.org, 
+	intel-wired-lan@lists.osuosl.org, bpf@vger.kernel.org, 
+	linux-rdma@vger.kernel.org, linux-wireless@vger.kernel.org, 
+	linux-arm-kernel@lists.infradead.org, linux-mediatek@lists.infradead.org, 
+	linux-mm@kvack.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-On 2024/9/27 04:03, Nicolin Chen wrote:
-> On Thu, Sep 26, 2024 at 04:47:02PM +0800, Yi Liu wrote:
->> On 2024/9/26 02:55, Nicolin Chen wrote:
->>> On Wed, Sep 25, 2024 at 06:30:20PM +0800, Yi Liu wrote:
->>>> Hi Nic,
->>>>
->>>> On 2024/8/28 00:59, Nicolin Chen wrote:
->>>>> This series introduces a new VIOMMU infrastructure and related ioctls.
->>>>>
->>>>> IOMMUFD has been using the HWPT infrastructure for all cases, including a
->>>>> nested IO page table support. Yet, there're limitations for an HWPT-based
->>>>> structure to support some advanced HW-accelerated features, such as CMDQV
->>>>> on NVIDIA Grace, and HW-accelerated vIOMMU on AMD. Even for a multi-IOMMU
->>>>> environment, it is not straightforward for nested HWPTs to share the same
->>>>> parent HWPT (stage-2 IO pagetable), with the HWPT infrastructure alone.
->>>>
->>>> could you elaborate a bit for the last sentence in the above paragraph?
->>>
->>> Stage-2 HWPT/domain on ARM holds a VMID. If we share the parent
->>> domain across IOMMU instances, we'd have to make sure that VMID
->>> is available on all IOMMU instances. There comes the limitation
->>> and potential resource starving, so not ideal.
->>
->> got it.
->>
->>> Baolu told me that Intel may have the same: different domain IDs
->>> on different IOMMUs; multiple IOMMU instances on one chip:
->>> https://lore.kernel.org/linux-iommu/cf4fe15c-8bcb-4132-a1fd-b2c8ddf2731b@linux.intel.com/
->>> So, I think we are having the same situation here.
->>
->> yes, it's called iommu unit or dmar. A typical Intel server can have
->> multiple iommu units. But like Baolu mentioned in that thread, the intel
->> iommu driver maintains separate domain ID spaces for iommu units, which
->> means a given iommu domain has different DIDs when associated with
->> different iommu units. So intel side is not suffering from this so far.
-> 
-> An ARM SMMU has its own VMID pool as well. The suffering comes
-> from associating VMIDs to one shared parent S2 domain.
+On Thu, Sep 26, 2024 at 8:58=E2=80=AFPM Yunsheng Lin <linyunsheng@huawei.co=
+m> wrote:
+>
+> On 2024/9/27 2:15, Mina Almasry wrote:
+> >
+> >> In order not to do the dma unmmapping after driver has already
+> >> unbound and stall the unloading of the networking driver, add
+> >> the pool->items array to record all the pages including the ones
+> >> which are handed over to network stack, so the page_pool can
+> >> do the dma unmmapping for those pages when page_pool_destroy()
+> >> is called.
+> >
+> > One thing I could not understand from looking at the code: if the
+> > items array is in the struct page_pool, why do you need to modify the
+> > page_pool entry in the struct page and in the struct net_iov? I think
+> > the code could be made much simpler if you can remove these changes,
+> > and you wouldn't need to modify the public api of the page_pool.
+>
+> As mentioned in [1]:
+> "There is no space in 'struct page' to track the inflight pages, so
+> 'pp' in 'struct page' is renamed to 'pp_item' to enable the tracking
+> of inflight page"
+>
+> As we still need pp for "struct page_pool" for page_pool_put_page()
+> related API, the container_of() trick is used to get the pp from the
+> pp_item.
+>
+> As you had changed 'struct net_iov' to be mirroring the 'struct page',
+> so change 'struct net_iov' part accordingly.
+>
+> 1. https://lore.kernel.org/all/50a463d5-a5a1-422f-a4f7-d3587b12c265@huawe=
+i.com/
+>
 
-Is this because of the VMID is tied with a S2 domain?
+I'm not sure we need the pages themselves to have the list of pages
+that need to be dma unmapped on page_pool_destroy. The pool can have
+the list of pages that need to be unmapped on page_pool_destroy, and
+the individual pages need not track them, unless I'm missing
+something.
 
-> Does a DID per S1 nested domain or parent S2? If it is per S2,
-> I think the same suffering applies when we share the S2 across
-> IOMMU instances?
+> >
+> >> As the pool->items need to be large enough to avoid
+> >> performance degradation, add a 'item_full' stat to indicate the
+> >> allocation failure due to unavailability of pool->items.
+> >>
+> >
+> > I'm not sure there is any way to size the pool->items array correctly.
+>
+> Currently the size of pool->items is calculated in page_pool_create_percp=
+u()
+> as below, to make sure the size of pool->items is somewhat twice of the
+> size of pool->ring so that the number of page sitting in the driver's rx
+> ring waiting for the new packet is the similar to the number of page that=
+ is
+> still being handled in the network stack as most drivers seems to set the
+> pool->pool_size according to their rx ring size:
+>
+> +#define PAGE_POOL_MIN_INFLIGHT_ITEMS           512
+> +       unsigned int item_cnt =3D (params->pool_size ? : 1024) +
+> +                               PP_ALLOC_CACHE_SIZE + PAGE_POOL_MIN_INFLI=
+GHT_ITEMS;
+> +       item_cnt =3D roundup_pow_of_two(item_cnt);
+>
 
-per S1 I think. The iotlb efficiency is low as S2 caches would be
-tagged with different DIDs even the page table is the same. :)
+I'm not sure it's OK to add a limitation to the page_pool that it can
+only allocate N pages. At the moment, AFAIU, N is unlimited and it may
+become a regression if we add a limitation.
 
->>> Adding another vIOMMU wrapper on the other hand can allow us to
->>> allocate different VMIDs/DIDs for different IOMMUs.
->>
->> that looks like to generalize the association of the iommu domain and the
->> iommu units?
-> 
-> A vIOMMU is a presentation/object of a physical IOMMU instance
-> in a VM.
+> > Can you use a data structure here that can grow? Linked list or
+> > xarray?
+> >
+> > AFAIU what we want is when the page pool allocates a netmem it will
+> > add the netmem to the items array, and when the pp releases a netmem
+> > it will remove it from the array. Both of these operations are slow
+> > paths, right? So the performance of a data structure more complicated
+> > than an array may be ok. bench_page_pool_simple will tell for sure.
+>
+> The question would be why do we need the pool->items to grow with the
+> additional overhead and complication by dynamic allocation of item, using
+> complicated data structure and concurrent handling?
+>
+> As mentioned in [2], it was the existing semantics, but it does not means
+> we need to keep it. The changing of semantics seems like an advantage
+> to me, as we are able to limit how many pages is allowed to be used by
+> a page_pool instance.
+>
+> 2. https://lore.kernel.org/all/2fb8d278-62e0-4a81-a537-8f601f61e81d@huawe=
+i.com/
+>
+> >
+> >> Note, the devmem patchset seems to make the bug harder to fix,
+> >> and may make backporting harder too. As there is no actual user
+> >> for the devmem and the fixing for devmem is unclear for now,
+> >> this patch does not consider fixing the case for devmem yet.
+> >>
+> >
+> > net_iovs don't hit this bug, dma_unmap_page_attrs() is never called on
+> > them, so no special handling is needed really. However for code
+>
+> I am really doubtful about your above claim. As at least the below
+> implementaion of dma_buf_unmap_attachment_unlocked() called in
+> __net_devmem_dmabuf_binding_free() seems be using the DMA API directly:
+>
+> https://elixir.bootlin.com/linux/v6.7-rc8/source/drivers/gpu/drm/amd/amdg=
+pu/amdgpu_dma_buf.c#L215
+>
+> Or am I missing something obvious here?
+>
 
-a slice of a physical IOMMU. is it? and you treat S2 hwpt as a resource
-of the physical IOMMU as well.
+I mean currently net_iovs don't hit the __page_pool_release_page_dma
+function that causes the crash in the stack trace. The dmabuf layer
+handles the unmapping when the dmabuf dies (I assume correctly).
 
-> This presentation gives a VMM some capability to take
-> advantage of some of HW resource of the physical IOMMU:
-> - a VMID is a small HW reousrce to tag the cache;
-> - a vIOMMU invalidation allows to access device cache that's
->    not straightforwardly done via an S1 HWPT invalidation;
-> - a virtual device presentation of a physical device in a VM,
->    related to the vIOMMU in the VM, which contains some VM-level
->    info: virtual device ID, security level (ARM CCA), and etc;
-> - Non-PRI IRQ forwarding to the guest VM;
-> - HW-accelerated virtualization resource: vCMDQ, AMD VIOMMU;
-
-might be helpful to draw a diagram to show what the vIOMMU obj contains.:)
-
--- 
-Regards,
-Yi Liu
+--=20
+Thanks,
+Mina
