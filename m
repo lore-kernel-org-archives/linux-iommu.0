@@ -1,175 +1,182 @@
-Received: from mail-yb1-f201.google.com (mail-yb1-f201.google.com [209.85.219.201])
+Received: from mail-pg1-f170.google.com (mail-pg1-f170.google.com [209.85.215.170])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4D888101E2
-	for <iommu@lists.linux.dev>; Sat, 28 Sep 2024 00:52:14 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.219.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DDA071859
+	for <iommu@lists.linux.dev>; Sat, 28 Sep 2024 07:35:02 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.215.170
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1727484735; cv=none; b=rnfbblpBljZw/eCkpiaiz+Oo+xJf2BLWN71gcaKfDV0/8oP4kRbk+7qF3H1cYU0YqfshTx+xaXJYnCb6sb5ngsYRLMpbOpwTzg9O+OD9EeGUkU4UfWXl4dWSBSlBYyEVwi4WfANYwbJiOFUzo/6mlE9iV3IKir+kRXRTXUdkP4c=
+	t=1727508904; cv=none; b=pXkfcn6+uO7cIpQtKkdoQNoVWUeXUugkNX0oOqfkviCnnar4qzPBf+mNufkp298gJm891pCcCrCZyLsttQsLinhdKUO4NRO1/IsU3dNKNU9FNWMxnRS6ESgBNnkRT0DOhcvoR1XGDqu9/TfBF/roeNtZiCesrFoZ0hGeTFRhChw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1727484735; c=relaxed/simple;
-	bh=BpU4hwsiStguL41j6Qn+48PB1l2AANh32O73Np+rv6A=;
-	h=Date:In-Reply-To:Mime-Version:References:Message-ID:Subject:From:
-	 To:Cc:Content-Type; b=eKSpCcRm/PE/HHs9fKcTjXnHIYq1883h/tQ3hRtGBNmyYLOzp/nn/b2Fr4VUfl0GdT4WiXFmuT4mc7ajsKbLM4n765DVg2TA3FF5zM+RVmmsaIkDXGPRNgZgJFNt0OOcmEt1VintxZghoIOusL7rmsW1y9EW4yRC14GcZOZXhJU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=flex--praan.bounces.google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=0++F2YSz; arc=none smtp.client-ip=209.85.219.201
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=flex--praan.bounces.google.com
+	s=arc-20240116; t=1727508904; c=relaxed/simple;
+	bh=CZ3GJJVCrrzGvR7fAA0nSrjc16wiFeyBC54h9NaWyFQ=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=NLddICI+n2N+1DFGcK3DVvT2JpRrSjDXXG3+JPMTcBj08RFUUSbfW5/IVgkYq3Gc0mYjqxCvo+9J8kBk7IB9stmxHXE1Kz1NebtW4v63d6YL/7dQA2WBwEyh8J/igA0FUtwUIXt592jcocu7JAxz4yP4x5cgHKX1B8MhIcW9ZFg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org; spf=pass smtp.mailfrom=linaro.org; dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b=RVdetfDr; arc=none smtp.client-ip=209.85.215.170
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linaro.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="0++F2YSz"
-Received: by mail-yb1-f201.google.com with SMTP id 3f1490d57ef6-e2605ce4276so2627551276.3
-        for <iommu@lists.linux.dev>; Fri, 27 Sep 2024 17:52:14 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="RVdetfDr"
+Received: by mail-pg1-f170.google.com with SMTP id 41be03b00d2f7-7d916b6a73aso1895980a12.1
+        for <iommu@lists.linux.dev>; Sat, 28 Sep 2024 00:35:02 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20230601; t=1727484733; x=1728089533; darn=lists.linux.dev;
-        h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
-         :date:from:to:cc:subject:date:message-id:reply-to;
-        bh=wQ0jmBYIIbELrk6dJIUae6lDYZ8w4HZPhS2KvB8kQKA=;
-        b=0++F2YSzSvqm2d6AQA9eb3ANkqYKVFex9zXEgnqayEjkRpZNE63m+etUukzG1nk2Fi
-         I5FTISdLry8Px8DIAX0fojLV6Ozd4V2qqwN+tYsmeeg8jmARpu51H2R5xBRjgWwlNGVt
-         r4YmR37v2fq316pFJp/duco/pXgLQXa94Xu0jLAUbNXEw8q96r4FLlW+qjjh8Th5VBRP
-         gfprgLtQDE1mawkHej3BcCohG0AHduhUz442FOx4KbiikN3QH20XqC9wVK9MAgmaHKSX
-         QnIgsOIdFZsxw3UOm91gR/4VVMv81XIbsiXJKzKV4yiwt+FzwJ1qRY6C+MIXi7XAU0oq
-         udFA==
+        d=linaro.org; s=google; t=1727508902; x=1728113702; darn=lists.linux.dev;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date:message-id:reply-to;
+        bh=CZ3GJJVCrrzGvR7fAA0nSrjc16wiFeyBC54h9NaWyFQ=;
+        b=RVdetfDrUi/Sjy0e6PoSQm5PUTmxLn4b6wfG63CnTxKD2PZMA45oEUOXP5G5ijjosP
+         hVbltH+yFgd/N4u616/yWUlpf+suXpR9yIee+pDL7WlwyWpfcaDK/IqO6kiOY4m/vDj4
+         vOv0QgT0EV27WAuJ228gGdnkuS80MnxQyPT5VEFejegtgftMcQVK/UFbQdsBob02MZlX
+         d9RXHEwMiSx+Z502mcE/2KnXkYqL47G0ukBnnnh5CZRycdSgSfXkkleEQeHIr8iSLV6g
+         WYkO70PbPdD08ipjG8AXDepGHbAD/sJukCBcnyPnL8IdNgbrZ9TeKA1E0CqmbITNnGK3
+         bhVw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1727484733; x=1728089533;
-        h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
-         :date:x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=wQ0jmBYIIbELrk6dJIUae6lDYZ8w4HZPhS2KvB8kQKA=;
-        b=neeArhfg5TPyJAutkKhYXPnpl2DuLqwMqcVg/KDK8f8Hl5mxqjjrzhs+NpgHlQPcnD
-         2ABGpct0W3NnUeMvLFvhMKwDBltLwJwoTalX2zlhMd9foWmwVPXJo7jV1x+c+5j56zIY
-         E5CIx3JAl3TFE9SiMf9mzQhZLoq4Sda+J30BE1G+QELlzZeX0nJvI7TPr/S4jjuj2xFs
-         Dv5GT6peiRWzpefWZasj57GeD5HBJlNICHo4jrpgC9JqIVV2ILYJZzj5YwH1j/JU7yzK
-         BwWWzDlZTx6hD9DxQn1T4+KCSvHi5by1YzdWL/9po7ykncMKjuDhq0/k038kqKUeOxph
-         SG6A==
-X-Forwarded-Encrypted: i=1; AJvYcCXmkXRmaAbgcVReTItl+ddVVL7KhyMDaWWxMtC+raR3dnS/kmjN/cphWSPkWxZradsq5GYVnQ==@lists.linux.dev
-X-Gm-Message-State: AOJu0YxhmX9ibCIXyULQonEwD4n7J46a6JPhTNwQaAA3CLgyJzPJRe1M
-	WSSqCqcZITxTJLoxT+1jT/Dx7XwWwJllAqQIKMqqC6lCGsIj8LHk6s0i9doKMYRGOhDGm+vq4w=
-	=
-X-Google-Smtp-Source: AGHT+IFf3/iHpesSMtpeHxG3v7CVIw6Qw+opqV9x24V//WjOTEGWuDxDI+vj1+V3MAktGN5qcWYm1adbTA==
-X-Received: from praan.c.googlers.com ([fda3:e722:ac3:cc00:4f:4b78:c0a8:3e89])
- (user=praan job=sendgmr) by 2002:a25:fc06:0:b0:e25:c8fc:b78c with SMTP id
- 3f1490d57ef6-e2604c7ea2amr2934276.9.1727484733160; Fri, 27 Sep 2024 17:52:13
- -0700 (PDT)
-Date: Sat, 28 Sep 2024 00:51:43 +0000
-In-Reply-To: <20240928005143.2378938-1-praan@google.com>
+        d=1e100.net; s=20230601; t=1727508902; x=1728113702;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=CZ3GJJVCrrzGvR7fAA0nSrjc16wiFeyBC54h9NaWyFQ=;
+        b=kUBwh7bMSIjh5qADOfeGr/DtkR+RrveAJLkDEGzQbiiC6Kk0hIn3dyGL8C2ybYzrse
+         2kYloWep1ijZRwZcJLbWuEHW57/CWtTxCOAubGHjmp2ZEv8c3oaTE30fBV9hr8WK+L11
+         02KhqQCmFCe/nxR/uz/8aYVBZmehlOKyqSAf0vQRK1HqnTL5Lma2LXfFQObdTFb7KQt/
+         iaEYMB9thU06CxccuFlJiCgAxgwmRPHkjFyX9zJETOwOUWNx4mygOb/NsSswbABryfFq
+         tyYilkuKwOsH3KxRHtZNcP/BF1I4HAKdLcwTfyyNt3EwKJTw7t1wYy6sPgUUBuvGpfLr
+         e5WQ==
+X-Forwarded-Encrypted: i=1; AJvYcCXahKkaseodlXnGvdmiK9MZ1cwQjsZx5ryr2kVXyOU6zQXkp0IQFORXEx1UIx8JMZziHkQIRg==@lists.linux.dev
+X-Gm-Message-State: AOJu0Yy+wu2UwWTgPlrQTVMcy9ng8THpChOWcifvTztIxcmWuYJdcblg
+	xwLlDWF/G5hE6s/Zbkab1xxykl4Mw3I0dVfNfbUe0OAgKjGUeHfF9O+L++jQygW1Mk7auVzt/yo
+	YXgVvGX7zSFS+GwDX/G/YHF+TlntGMEKGK8VMGA==
+X-Google-Smtp-Source: AGHT+IE8STUqnUdbp16wn+jWytnLJo7GbATydnL1PXc5q5xA5jCeVCG+33+GkdczeH+HdjoM/t8GaXFW5O+RCkxcmVg=
+X-Received: by 2002:a05:6a00:8c2:b0:714:2482:ab3c with SMTP id
+ d2e1a72fcca58-71b25f40b4cmr9950991b3a.7.1727508902091; Sat, 28 Sep 2024
+ 00:35:02 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
-Mime-Version: 1.0
-References: <20240928005143.2378938-1-praan@google.com>
-X-Mailer: git-send-email 2.46.1.824.gd892dcdcdd-goog
-Message-ID: <20240928005143.2378938-3-praan@google.com>
-Subject: [PATCH v3 2/2] iommu/arm-smmu-v3: Adopt arm_smmu_event in handlers
-From: Pranjal Shrivastava <praan@google.com>
-To: Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>, 
-	Robin Murphy <robin.murphy@arm.com>
-Cc: Mostafa Saleh <smostafa@google.com>, Nicolin Chen <nicolinc@nvidia.com>, iommu@lists.linux.dev, 
-	Pranjal Shrivastava <praan@google.com>
+MIME-Version: 1.0
+References: <20240925075707.3970187-1-linyunsheng@huawei.com>
+ <20240925075707.3970187-3-linyunsheng@huawei.com> <CAHS8izOxugzWJDTc-4CWqaKABTj=J4OHs=Lcb=SE9r8gX0J+yg@mail.gmail.com>
+ <842c8cc6-f716-437a-bc98-70bc26d6fd38@huawei.com> <CAC_iWjLgNOtsbhqrhvvEz2C3S668qB8KatL_W+tPHMSkDrNS=w@mail.gmail.com>
+ <0ef315df-e8e9-41e8-9ba8-dcb69492c616@huawei.com> <CAC_iWjKeajwn3otjdEekE6VDLHGEvqmnQRwpN5R3yHj8UpEiDw@mail.gmail.com>
+ <934d601f-be43-4e04-b126-dc86890a4bfa@huawei.com>
+In-Reply-To: <934d601f-be43-4e04-b126-dc86890a4bfa@huawei.com>
+From: Ilias Apalodimas <ilias.apalodimas@linaro.org>
+Date: Sat, 28 Sep 2024 10:34:25 +0300
+Message-ID: <CAC_iWjL7m4ZL2W2OZM5F22dLvZhxU6fyCXV_xjyGf+W7UP43EQ@mail.gmail.com>
+Subject: Re: [PATCH net v2 2/2] page_pool: fix IOMMU crash when driver has
+ already unbound
+To: Yunsheng Lin <linyunsheng@huawei.com>
+Cc: Mina Almasry <almasrymina@google.com>, davem@davemloft.net, kuba@kernel.org, 
+	pabeni@redhat.com, liuyonglong@huawei.com, fanghaiqing@huawei.com, 
+	zhangkun09@huawei.com, Robin Murphy <robin.murphy@arm.com>, 
+	Alexander Duyck <alexander.duyck@gmail.com>, IOMMU <iommu@lists.linux.dev>, 
+	Wei Fang <wei.fang@nxp.com>, Shenwei Wang <shenwei.wang@nxp.com>, 
+	Clark Wang <xiaoning.wang@nxp.com>, Eric Dumazet <edumazet@google.com>, 
+	Tony Nguyen <anthony.l.nguyen@intel.com>, Przemek Kitszel <przemyslaw.kitszel@intel.com>, 
+	Alexander Lobakin <aleksander.lobakin@intel.com>, Alexei Starovoitov <ast@kernel.org>, 
+	Daniel Borkmann <daniel@iogearbox.net>, Jesper Dangaard Brouer <hawk@kernel.org>, 
+	John Fastabend <john.fastabend@gmail.com>, Saeed Mahameed <saeedm@nvidia.com>, 
+	Leon Romanovsky <leon@kernel.org>, Tariq Toukan <tariqt@nvidia.com>, Felix Fietkau <nbd@nbd.name>, 
+	Lorenzo Bianconi <lorenzo@kernel.org>, Ryder Lee <ryder.lee@mediatek.com>, 
+	Shayne Chen <shayne.chen@mediatek.com>, Sean Wang <sean.wang@mediatek.com>, 
+	Kalle Valo <kvalo@kernel.org>, Matthias Brugger <matthias.bgg@gmail.com>, 
+	AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>, 
+	Andrew Morton <akpm@linux-foundation.org>, imx@lists.linux.dev, netdev@vger.kernel.org, 
+	linux-kernel@vger.kernel.org, intel-wired-lan@lists.osuosl.org, 
+	bpf@vger.kernel.org, linux-rdma@vger.kernel.org, 
+	linux-wireless@vger.kernel.org, linux-arm-kernel@lists.infradead.org, 
+	linux-mediatek@lists.infradead.org, linux-mm@kvack.org
 Content-Type: text/plain; charset="UTF-8"
 
-Modify the event handler routines to leverage `struct arm_smmu_event`.
-Log the event within the `arm_smmu_handle_evt` routine.
+Hi Yunsheng,
 
-Signed-off-by: Pranjal Shrivastava <praan@google.com>
----
- drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 35 ++++++++++-----------
- 1 file changed, 17 insertions(+), 18 deletions(-)
+Overall this is a patch in the right direction. I want to get feedback
+from others since Jakub and Jesper seemed to prefer the stalling idea.
 
-diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-index 2b2949bd2d26..3c326f3a038a 100644
---- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-+++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-@@ -1845,17 +1845,14 @@ static void arm_smmu_dump_event(struct arm_smmu_device *smmu,
- }
- 
- /* IRQ and event handlers */
--static int arm_smmu_handle_evt(struct arm_smmu_device *smmu, u64 *evt)
-+static int arm_smmu_handle_evt(struct arm_smmu_device *smmu, struct arm_smmu_event *event)
- {
- 	int ret = 0;
- 	u32 perm = 0;
--	struct arm_smmu_master *master;
--	bool ssid_valid = evt[0] & EVTQ_0_SSV;
--	u32 sid = FIELD_GET(EVTQ_0_SID, evt[0]);
- 	struct iopf_fault fault_evt = { };
- 	struct iommu_fault *flt = &fault_evt.fault;
- 
--	switch (FIELD_GET(EVTQ_0_ID, evt[0])) {
-+	switch (event->id) {
- 	case EVT_ID_TRANSLATION_FAULT:
- 	case EVT_ID_ADDR_SIZE_FAULT:
- 	case EVT_ID_ACCESS_FAULT:
-@@ -1865,42 +1862,45 @@ static int arm_smmu_handle_evt(struct arm_smmu_device *smmu, u64 *evt)
- 		return -EOPNOTSUPP;
- 	}
- 
--	if (!(evt[1] & EVTQ_1_STALL))
-+	if (!event->stall)
- 		return -EOPNOTSUPP;
- 
--	if (evt[1] & EVTQ_1_RnW)
-+	if (event->read)
- 		perm |= IOMMU_FAULT_PERM_READ;
- 	else
- 		perm |= IOMMU_FAULT_PERM_WRITE;
- 
--	if (evt[1] & EVTQ_1_InD)
-+	if (event->instruction)
- 		perm |= IOMMU_FAULT_PERM_EXEC;
- 
--	if (evt[1] & EVTQ_1_PnU)
-+	if (event->privileged)
- 		perm |= IOMMU_FAULT_PERM_PRIV;
- 
- 	flt->type = IOMMU_FAULT_PAGE_REQ;
- 	flt->prm = (struct iommu_fault_page_request) {
- 		.flags = IOMMU_FAULT_PAGE_REQUEST_LAST_PAGE,
--		.grpid = FIELD_GET(EVTQ_1_STAG, evt[1]),
-+		.grpid = FIELD_GET(EVTQ_1_STAG, event->raw[1]),
- 		.perm = perm,
--		.addr = FIELD_GET(EVTQ_2_ADDR, evt[2]),
-+		.addr = event->iova,
- 	};
- 
--	if (ssid_valid) {
-+	if (event->ssid_valid) {
- 		flt->prm.flags |= IOMMU_FAULT_PAGE_REQUEST_PASID_VALID;
--		flt->prm.pasid = FIELD_GET(EVTQ_0_SSID, evt[0]);
-+		flt->prm.pasid = event->ssid;
- 	}
- 
- 	mutex_lock(&smmu->streams_mutex);
--	master = arm_smmu_find_master(smmu, sid);
--	if (!master) {
-+	event->master = arm_smmu_find_master(smmu, event->sid);
-+	if (!event->master) {
- 		ret = -EINVAL;
-+		event->master_name = "(unassigned sid)";
- 		goto out_unlock;
- 	}
- 
--	ret = iommu_report_device_fault(master->dev, &fault_evt);
-+	ret = iommu_report_device_fault(event->master->dev, &fault_evt);
- out_unlock:
-+	if (ret)
-+		arm_smmu_dump_event(smmu, event);
- 	mutex_unlock(&smmu->streams_mutex);
- 	return ret;
- }
-@@ -1949,11 +1949,10 @@ static irqreturn_t arm_smmu_evtq_thread(int irq, void *dev)
- 		while (!queue_remove_raw(q, evt)) {
- 
- 			arm_smmu_get_evt_info(smmu, evt, &event);
--			ret = arm_smmu_handle_evt(smmu, evt);
-+			ret = arm_smmu_handle_evt(smmu, &event);
- 			if (!ret || !__ratelimit(&rs))
- 				continue;
- 
--			arm_smmu_dump_event(smmu, &event);
- 			cond_resched();
- 		}
- 
--- 
-2.46.1.824.gd892dcdcdd-goog
+On Fri, 27 Sept 2024 at 14:29, Yunsheng Lin <linyunsheng@huawei.com> wrote:
+>
+> On 2024/9/27 17:58, Ilias Apalodimas wrote:
+>
+> ...
+>
+> >>
+> >>> importantly, though, why does struct page need to know about this?
+> >>> Can't we have the same information in page pool?
+> >>> When the driver allocates pages it does via page_pool_dev_alloc_XXXXX
+> >>> or something similar. Cant we do what you suggest here ? IOW when we
+> >>> allocate a page we put it in a list, and when that page returns to
+> >>> page_pool (and it's mapped) we remove it.
+> >>
+> >> Yes, that is the basic idea, but the important part is how to do that
+> >> with less performance impact.
+> >
+> > Yes, but do you think that keeping that list of allocated pages in
+> > struct page_pool will end up being more costly somehow compared to
+> > struct page?
+>
+> I am not sure if I understand your above question here.
+> I am supposing the question is about what's the cost between using
+> single/doubly linked list for the inflight pages or using a array
+> for the inflight pages like this patch does using pool->items?
 
+Yes, that wasn't very clear indeed, apologies for any confusion. I was
+trying to ask on a linked list that only lives in struct page_pool.
+But I now realize this was a bad idea since the lookup would be way
+slower.
+
+> If I understand question correctly, the single/doubly linked list
+> is more costly than array as the page_pool case as my understanding.
+>
+> For single linked list, it doesn't allow deleting a specific entry but
+> only support deleting the first entry and all the entries. It does support
+> lockless operation using llist, but have limitation as below:
+> https://elixir.bootlin.com/linux/v6.7-rc8/source/include/linux/llist.h#L13
+>
+> For doubly linked list, it needs two pointer to support deleting a specific
+> entry and it does not support lockless operation.
+
+I didn't look at the patch too carefully at first. Looking a bit
+closer now, the array is indeed better, since the lookup is faster.
+You just need the stored index in struct page to find the page we need
+to unmap. Do you remember if we can reduce the atomic pp_ref_count to
+32bits? If so we can reuse that space for the index. Looking at it
+requires a bit more work in netmem, but that's mostly swapping all the
+atomic64 calls to atomic ones.
+
+>
+> For pool->items, as the alloc side is protected by NAPI context, and the
+> free side use item->pp_idx to ensure there is only one producer for each
+> item, which means for each item in pool->items, there is only one consumer
+> and one producer, which seems much like the case when the page is not
+> recyclable in __page_pool_put_page, we don't need a lock protection when
+> calling page_pool_return_page(), the 'struct page' is also one consumer
+> and one producer as the pool->items[item->pp_idx] does:
+> https://elixir.bootlin.com/linux/v6.7-rc8/source/net/core/page_pool.c#L645
+>
+> We only need a lock protection when page_pool_destroy() is called to
+> check if there is inflight page to be unmapped as a consumer, and the
+> __page_pool_put_page() may also called to unmapped the inflight page as
+> another consumer,
+
+Thanks for the explanation. On the locking side, page_pool_destroy is
+called once from the driver and then it's either the workqueue for
+inflight packets or an SKB that got freed and tried to recycle right?
+But do we still need to do all the unmapping etc from the delayed
+work? Since the new function will unmap all packets in
+page_pool_destroy, we can just skip unmapping when the delayed work
+runs
+
+Thanks
+/Ilias
+
+
+
+
+
+> there is why the 'destroy_lock' is added for protection
+> when pool->destroy_cnt > 0.
+>
+> >
+> > Thanks
+> > /Ilias
