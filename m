@@ -1,182 +1,198 @@
-Received: from mail-pg1-f170.google.com (mail-pg1-f170.google.com [209.85.215.170])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DDA071859
-	for <iommu@lists.linux.dev>; Sat, 28 Sep 2024 07:35:02 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.215.170
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C48BB136358;
+	Sat, 28 Sep 2024 20:14:26 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1727508904; cv=none; b=pXkfcn6+uO7cIpQtKkdoQNoVWUeXUugkNX0oOqfkviCnnar4qzPBf+mNufkp298gJm891pCcCrCZyLsttQsLinhdKUO4NRO1/IsU3dNKNU9FNWMxnRS6ESgBNnkRT0DOhcvoR1XGDqu9/TfBF/roeNtZiCesrFoZ0hGeTFRhChw=
+	t=1727554466; cv=none; b=mYnC4A6DgMOKUlkEpWesRPiBizcMrcBRtUsDeMyBiuLftnJ064AlmtC6GEMoREdBaQH8KCHCxfBVOdGhL3o2Y7HPVuFNi9a1bJs+RJZlO55wnhuQegw7qLo+59K1rC1o4jVGPraARmOPayu6j+PQ0xffVf1yn9p1NZNFF+a57Ts=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1727508904; c=relaxed/simple;
-	bh=CZ3GJJVCrrzGvR7fAA0nSrjc16wiFeyBC54h9NaWyFQ=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=NLddICI+n2N+1DFGcK3DVvT2JpRrSjDXXG3+JPMTcBj08RFUUSbfW5/IVgkYq3Gc0mYjqxCvo+9J8kBk7IB9stmxHXE1Kz1NebtW4v63d6YL/7dQA2WBwEyh8J/igA0FUtwUIXt592jcocu7JAxz4yP4x5cgHKX1B8MhIcW9ZFg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org; spf=pass smtp.mailfrom=linaro.org; dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b=RVdetfDr; arc=none smtp.client-ip=209.85.215.170
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linaro.org
+	s=arc-20240116; t=1727554466; c=relaxed/simple;
+	bh=fyzkp8bwC+pgUCdnd/ipBoI0RRrRQvdTxtU1+uStjnE=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=NS4pkceHvPAdNJM28Qb7xjSWbIBV0i7+wpQOe/sH1/t9yb4dlz4rDqzp/smtBxJMHDehM++Kgudncv1+C/pMZhd1gsV71JAJnTjFjU7DofUxtj5HKrt3vkzzii0G78vVreoKl+cDb0chCMY4leBcheASaGWsarurXC33ej8RE6A=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=JSHM4egy; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="RVdetfDr"
-Received: by mail-pg1-f170.google.com with SMTP id 41be03b00d2f7-7d916b6a73aso1895980a12.1
-        for <iommu@lists.linux.dev>; Sat, 28 Sep 2024 00:35:02 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1727508902; x=1728113702; darn=lists.linux.dev;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=CZ3GJJVCrrzGvR7fAA0nSrjc16wiFeyBC54h9NaWyFQ=;
-        b=RVdetfDrUi/Sjy0e6PoSQm5PUTmxLn4b6wfG63CnTxKD2PZMA45oEUOXP5G5ijjosP
-         hVbltH+yFgd/N4u616/yWUlpf+suXpR9yIee+pDL7WlwyWpfcaDK/IqO6kiOY4m/vDj4
-         vOv0QgT0EV27WAuJ228gGdnkuS80MnxQyPT5VEFejegtgftMcQVK/UFbQdsBob02MZlX
-         d9RXHEwMiSx+Z502mcE/2KnXkYqL47G0ukBnnnh5CZRycdSgSfXkkleEQeHIr8iSLV6g
-         WYkO70PbPdD08ipjG8AXDepGHbAD/sJukCBcnyPnL8IdNgbrZ9TeKA1E0CqmbITNnGK3
-         bhVw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1727508902; x=1728113702;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=CZ3GJJVCrrzGvR7fAA0nSrjc16wiFeyBC54h9NaWyFQ=;
-        b=kUBwh7bMSIjh5qADOfeGr/DtkR+RrveAJLkDEGzQbiiC6Kk0hIn3dyGL8C2ybYzrse
-         2kYloWep1ijZRwZcJLbWuEHW57/CWtTxCOAubGHjmp2ZEv8c3oaTE30fBV9hr8WK+L11
-         02KhqQCmFCe/nxR/uz/8aYVBZmehlOKyqSAf0vQRK1HqnTL5Lma2LXfFQObdTFb7KQt/
-         iaEYMB9thU06CxccuFlJiCgAxgwmRPHkjFyX9zJETOwOUWNx4mygOb/NsSswbABryfFq
-         tyYilkuKwOsH3KxRHtZNcP/BF1I4HAKdLcwTfyyNt3EwKJTw7t1wYy6sPgUUBuvGpfLr
-         e5WQ==
-X-Forwarded-Encrypted: i=1; AJvYcCXahKkaseodlXnGvdmiK9MZ1cwQjsZx5ryr2kVXyOU6zQXkp0IQFORXEx1UIx8JMZziHkQIRg==@lists.linux.dev
-X-Gm-Message-State: AOJu0Yy+wu2UwWTgPlrQTVMcy9ng8THpChOWcifvTztIxcmWuYJdcblg
-	xwLlDWF/G5hE6s/Zbkab1xxykl4Mw3I0dVfNfbUe0OAgKjGUeHfF9O+L++jQygW1Mk7auVzt/yo
-	YXgVvGX7zSFS+GwDX/G/YHF+TlntGMEKGK8VMGA==
-X-Google-Smtp-Source: AGHT+IE8STUqnUdbp16wn+jWytnLJo7GbATydnL1PXc5q5xA5jCeVCG+33+GkdczeH+HdjoM/t8GaXFW5O+RCkxcmVg=
-X-Received: by 2002:a05:6a00:8c2:b0:714:2482:ab3c with SMTP id
- d2e1a72fcca58-71b25f40b4cmr9950991b3a.7.1727508902091; Sat, 28 Sep 2024
- 00:35:02 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="JSHM4egy"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0DA6CC4CEC3;
+	Sat, 28 Sep 2024 20:14:19 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1727554466;
+	bh=fyzkp8bwC+pgUCdnd/ipBoI0RRrRQvdTxtU1+uStjnE=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=JSHM4egySK3ezdTOqKcIpDj8cQX3z1AAr6lqvqqTdKVx0OWDlqhPhp908NTUbGMgv
+	 PB15gK0cQ4KW+H0wmbEbEltG3rsLnnpqEiN6xrXptgDaQ3UvYh4vQr3wDnyua+GdvM
+	 nGEJ87/BBQLVLp7Nqh/f79aNFNvEhnyEfQpxaYcNu9rzpOJFzKQ3fz/r6basWILMLI
+	 R9usdwOLwKR0Q4cmKmYi9dSbLMEQIXtO1s10v2XtQp8H2ZZ6nN6t2VIantBsAjiEKp
+	 6HP6A7RaJC4LveccmPV0bZCLchG4RoSA5OgIKEOlwdM8iVvVEPty8Bf2j1haujXQqH
+	 6imGmxrESn6FQ==
+Date: Sat, 28 Sep 2024 21:14:17 +0100
+From: Conor Dooley <conor@kernel.org>
+To: Moudy Ho =?utf-8?B?KOS9leWul+WOnyk=?= <Moudy.Ho@mediatek.com>
+Cc: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>,
+	Macpaul Lin =?utf-8?B?KOael+aZuuaWjCk=?= <Macpaul.Lin@mediatek.com>,
+	Pablo Sun =?utf-8?B?KOWtq+avk+e/lCk=?= <pablo.sun@mediatek.com>,
+	"linux-mediatek@lists.infradead.org" <linux-mediatek@lists.infradead.org>,
+	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+	Chris-qj Chen =?utf-8?B?KOmZs+Wlh+mAsik=?= <Chris-qj.Chen@mediatek.com>,
+	Bear Wang =?utf-8?B?KOiQqeWOn+aDn+W+tyk=?= <bear.wang@mediatek.com>,
+	"wenst@chromium.org" <wenst@chromium.org>,
+	"chunkuang.hu@kernel.org" <chunkuang.hu@kernel.org>,
+	"devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
+	"tzimmermann@suse.de" <tzimmermann@suse.de>,
+	"simona@ffwll.ch" <simona@ffwll.ch>,
+	"mripard@kernel.org" <mripard@kernel.org>,
+	Macross Chen =?utf-8?B?KOmZs+izoueiqSk=?= <macross.chen@mediatek.com>,
+	"joro@8bytes.org" <joro@8bytes.org>,
+	"robin.murphy@arm.com" <robin.murphy@arm.com>,
+	"p.zabel@pengutronix.de" <p.zabel@pengutronix.de>,
+	"macpaul@gmail.com" <macpaul@gmail.com>,
+	"maarten.lankhorst@linux.intel.com" <maarten.lankhorst@linux.intel.com>,
+	"conor+dt@kernel.org" <conor+dt@kernel.org>,
+	"robh@kernel.org" <robh@kernel.org>,
+	Yong Wu =?utf-8?B?KOWQtOWLhyk=?= <Yong.Wu@mediatek.com>,
+	"airlied@gmail.com" <airlied@gmail.com>,
+	"iommu@lists.linux.dev" <iommu@lists.linux.dev>,
+	"dri-devel@lists.freedesktop.org" <dri-devel@lists.freedesktop.org>,
+	"matthias.bgg@gmail.com" <matthias.bgg@gmail.com>,
+	Alexandre Mergnat <amergnat@baylibre.com>,
+	"krzk+dt@kernel.org" <krzk+dt@kernel.org>,
+	"linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>,
+	Sen Chu =?utf-8?B?KOWCqOajrik=?= <Sen.Chu@mediatek.com>,
+	"will@kernel.org" <will@kernel.org>,
+	Project_Global_Chrome_Upstream_Group <Project_Global_Chrome_Upstream_Group@mediatek.com>
+Subject: Re: [PATCH 3/6] dt-bindings: display: mediatek: Fix clocks count
+ constraint for new SoCs
+Message-ID: <20240928-hummus-carol-0f09081f892d@spud>
+References: <20240924103156.13119-1-macpaul.lin@mediatek.com>
+ <20240924103156.13119-3-macpaul.lin@mediatek.com>
+ <ffc1900b-3921-48ca-a2b2-1b798c57e572@collabora.com>
+ <20240924-commute-collision-13ad39717d31@spud>
+ <2821ef09-1b32-082d-69d1-e09a3a302447@mediatek.com>
+ <20240925-satisfy-epidermal-bd414891479a@spud>
+ <7a1315ef-4be5-4528-858b-9f07c814636d@collabora.com>
+ <93d9ffbe466ff61d5426b6f158a4b8464f56824d.camel@mediatek.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <20240925075707.3970187-1-linyunsheng@huawei.com>
- <20240925075707.3970187-3-linyunsheng@huawei.com> <CAHS8izOxugzWJDTc-4CWqaKABTj=J4OHs=Lcb=SE9r8gX0J+yg@mail.gmail.com>
- <842c8cc6-f716-437a-bc98-70bc26d6fd38@huawei.com> <CAC_iWjLgNOtsbhqrhvvEz2C3S668qB8KatL_W+tPHMSkDrNS=w@mail.gmail.com>
- <0ef315df-e8e9-41e8-9ba8-dcb69492c616@huawei.com> <CAC_iWjKeajwn3otjdEekE6VDLHGEvqmnQRwpN5R3yHj8UpEiDw@mail.gmail.com>
- <934d601f-be43-4e04-b126-dc86890a4bfa@huawei.com>
-In-Reply-To: <934d601f-be43-4e04-b126-dc86890a4bfa@huawei.com>
-From: Ilias Apalodimas <ilias.apalodimas@linaro.org>
-Date: Sat, 28 Sep 2024 10:34:25 +0300
-Message-ID: <CAC_iWjL7m4ZL2W2OZM5F22dLvZhxU6fyCXV_xjyGf+W7UP43EQ@mail.gmail.com>
-Subject: Re: [PATCH net v2 2/2] page_pool: fix IOMMU crash when driver has
- already unbound
-To: Yunsheng Lin <linyunsheng@huawei.com>
-Cc: Mina Almasry <almasrymina@google.com>, davem@davemloft.net, kuba@kernel.org, 
-	pabeni@redhat.com, liuyonglong@huawei.com, fanghaiqing@huawei.com, 
-	zhangkun09@huawei.com, Robin Murphy <robin.murphy@arm.com>, 
-	Alexander Duyck <alexander.duyck@gmail.com>, IOMMU <iommu@lists.linux.dev>, 
-	Wei Fang <wei.fang@nxp.com>, Shenwei Wang <shenwei.wang@nxp.com>, 
-	Clark Wang <xiaoning.wang@nxp.com>, Eric Dumazet <edumazet@google.com>, 
-	Tony Nguyen <anthony.l.nguyen@intel.com>, Przemek Kitszel <przemyslaw.kitszel@intel.com>, 
-	Alexander Lobakin <aleksander.lobakin@intel.com>, Alexei Starovoitov <ast@kernel.org>, 
-	Daniel Borkmann <daniel@iogearbox.net>, Jesper Dangaard Brouer <hawk@kernel.org>, 
-	John Fastabend <john.fastabend@gmail.com>, Saeed Mahameed <saeedm@nvidia.com>, 
-	Leon Romanovsky <leon@kernel.org>, Tariq Toukan <tariqt@nvidia.com>, Felix Fietkau <nbd@nbd.name>, 
-	Lorenzo Bianconi <lorenzo@kernel.org>, Ryder Lee <ryder.lee@mediatek.com>, 
-	Shayne Chen <shayne.chen@mediatek.com>, Sean Wang <sean.wang@mediatek.com>, 
-	Kalle Valo <kvalo@kernel.org>, Matthias Brugger <matthias.bgg@gmail.com>, 
-	AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>, 
-	Andrew Morton <akpm@linux-foundation.org>, imx@lists.linux.dev, netdev@vger.kernel.org, 
-	linux-kernel@vger.kernel.org, intel-wired-lan@lists.osuosl.org, 
-	bpf@vger.kernel.org, linux-rdma@vger.kernel.org, 
-	linux-wireless@vger.kernel.org, linux-arm-kernel@lists.infradead.org, 
-	linux-mediatek@lists.infradead.org, linux-mm@kvack.org
-Content-Type: text/plain; charset="UTF-8"
-
-Hi Yunsheng,
-
-Overall this is a patch in the right direction. I want to get feedback
-from others since Jakub and Jesper seemed to prefer the stalling idea.
-
-On Fri, 27 Sept 2024 at 14:29, Yunsheng Lin <linyunsheng@huawei.com> wrote:
->
-> On 2024/9/27 17:58, Ilias Apalodimas wrote:
->
-> ...
->
-> >>
-> >>> importantly, though, why does struct page need to know about this?
-> >>> Can't we have the same information in page pool?
-> >>> When the driver allocates pages it does via page_pool_dev_alloc_XXXXX
-> >>> or something similar. Cant we do what you suggest here ? IOW when we
-> >>> allocate a page we put it in a list, and when that page returns to
-> >>> page_pool (and it's mapped) we remove it.
-> >>
-> >> Yes, that is the basic idea, but the important part is how to do that
-> >> with less performance impact.
-> >
-> > Yes, but do you think that keeping that list of allocated pages in
-> > struct page_pool will end up being more costly somehow compared to
-> > struct page?
->
-> I am not sure if I understand your above question here.
-> I am supposing the question is about what's the cost between using
-> single/doubly linked list for the inflight pages or using a array
-> for the inflight pages like this patch does using pool->items?
-
-Yes, that wasn't very clear indeed, apologies for any confusion. I was
-trying to ask on a linked list that only lives in struct page_pool.
-But I now realize this was a bad idea since the lookup would be way
-slower.
-
-> If I understand question correctly, the single/doubly linked list
-> is more costly than array as the page_pool case as my understanding.
->
-> For single linked list, it doesn't allow deleting a specific entry but
-> only support deleting the first entry and all the entries. It does support
-> lockless operation using llist, but have limitation as below:
-> https://elixir.bootlin.com/linux/v6.7-rc8/source/include/linux/llist.h#L13
->
-> For doubly linked list, it needs two pointer to support deleting a specific
-> entry and it does not support lockless operation.
-
-I didn't look at the patch too carefully at first. Looking a bit
-closer now, the array is indeed better, since the lookup is faster.
-You just need the stored index in struct page to find the page we need
-to unmap. Do you remember if we can reduce the atomic pp_ref_count to
-32bits? If so we can reuse that space for the index. Looking at it
-requires a bit more work in netmem, but that's mostly swapping all the
-atomic64 calls to atomic ones.
-
->
-> For pool->items, as the alloc side is protected by NAPI context, and the
-> free side use item->pp_idx to ensure there is only one producer for each
-> item, which means for each item in pool->items, there is only one consumer
-> and one producer, which seems much like the case when the page is not
-> recyclable in __page_pool_put_page, we don't need a lock protection when
-> calling page_pool_return_page(), the 'struct page' is also one consumer
-> and one producer as the pool->items[item->pp_idx] does:
-> https://elixir.bootlin.com/linux/v6.7-rc8/source/net/core/page_pool.c#L645
->
-> We only need a lock protection when page_pool_destroy() is called to
-> check if there is inflight page to be unmapped as a consumer, and the
-> __page_pool_put_page() may also called to unmapped the inflight page as
-> another consumer,
-
-Thanks for the explanation. On the locking side, page_pool_destroy is
-called once from the driver and then it's either the workqueue for
-inflight packets or an SKB that got freed and tried to recycle right?
-But do we still need to do all the unmapping etc from the delayed
-work? Since the new function will unmap all packets in
-page_pool_destroy, we can just skip unmapping when the delayed work
-runs
-
-Thanks
-/Ilias
+Content-Type: multipart/signed; micalg=pgp-sha256;
+	protocol="application/pgp-signature"; boundary="AcDfy0agmX9jcKA8"
+Content-Disposition: inline
+In-Reply-To: <93d9ffbe466ff61d5426b6f158a4b8464f56824d.camel@mediatek.com>
 
 
+--AcDfy0agmX9jcKA8
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
+
+On Fri, Sep 27, 2024 at 02:27:14AM +0000, Moudy Ho (=E4=BD=95=E5=AE=97=E5=
+=8E=9F) wrote:
+> On Thu, 2024-09-26 at 11:38 +0200, AngeloGioacchino Del Regno wrote:
+> > Il 25/09/24 16:34, Conor Dooley ha scritto:
+> > > On Wed, Sep 25, 2024 at 04:42:59PM +0800, Macpaul Lin wrote:
+> > > >=20
+> > > > On 9/25/24 00:00, Conor Dooley wrote:
+> > > > > On Tue, Sep 24, 2024 at 01:42:01PM +0200, AngeloGioacchino Del
+> > > > > Regno wrote:
+> > > > > > Il 24/09/24 12:31, Macpaul Lin ha scritto:
+> > > > > > > The display node in mt8195.dtsi was triggering a CHECK_DTBS
+> > > > > > > error due
+> > > > > > > to an excessively long 'clocks' property:
+> > > > > > >      display@14f06000: clocks: [[31, 14], [31, 43], [31,
+> > > > > > > 44]] is too long
+> > > > > > >=20
+> > > > > > > To resolve this issue, add "maxItems: 3" to the 'clocks'
+> > > > > > > property in
+> > > > > > > the DT schema.
+> > > > > > >=20
+> > > > > > > Fixes: 4ed545e7d100 ("dt-bindings: display: mediatek: disp:
+> > > > > > > split each block to individual yaml")
+> > > > > > > Signed-off-by: Macpaul Lin <macpaul.lin@mediatek.com>
+> > > > > > > ---
+> > > > > > >     .../devicetree/bindings/display/mediatek/mediatek,split
+> > > > > > > .yaml     | 1 +
+> > > > > > >     1 file changed, 1 insertion(+)
+> > > > > > >=20
+> > > > > > > diff --git
+> > > > > > > a/Documentation/devicetree/bindings/display/mediatek/mediat
+> > > > > > > ek,split.yaml
+> > > > > > > b/Documentation/devicetree/bindings/display/mediatek/mediat
+> > > > > > > ek,split.yaml
+> > > > > > > index e4affc854f3d..42d2d483cc29 100644
+> > > > > > > ---
+> > > > > > > a/Documentation/devicetree/bindings/display/mediatek/mediat
+> > > > > > > ek,split.yaml
+> > > > > > > +++
+> > > > > > > b/Documentation/devicetree/bindings/display/mediatek/mediat
+> > > > > > > ek,split.yaml
+> > > > > > > @@ -57,6 +57,7 @@ properties:
+> > > > > > >       clocks:
+> > > > > > >         items:
+> > > > > > >           - description: SPLIT Clock
+> > > > > >=20
+> > > > > > That's at least confusing (granted that it works) - either
+> > > > > > add a description for
+> > > > > > each clock and then set `minItems: 1` (preferred), or remove
+> > > > > > this "SPLIT Clock"
+> > > > > > description and allow a maximum of 3 clocks.
+> > > > > >=20
+> > > > > > Removing the description can be done - IMO - because "SPLIT
+> > > > > > Clock" is, well,
+> > > > > > saying that the SPLIT block gets a SPLIT clock ... stating
+> > > > > > the obvious, anyway.
+> > > > >=20
+> > > > > Right, but what are the other two new clocks? Are they as
+> > > > > obvious?
+> > > > > There's no clock-names here to give any more information as to
+> > > > > what the
+> > > > > other clocks are supposed to be.
+> > > > >=20
+> > > > > Kinda unrelated, but I think that "SPLIT Clock" probably isn't
+> > > > > what the
+> > > > > name of the clock in the IP block is anyway, sounds more like
+> > > > > the name
+> > > > > for it on the provider end..
+> > > >=20
+> > > >=20
+>  * Thanks for the suggestions. I think Moudy could help on the new
+>    fixes
+> > > > for both DT schem and mt8195.dtsi. This patch could be separated
+> > > > from
+> > > > origin patch set.
+> > >=20
+> > > Not sure what you mean about separating it, if you mean correcting
+> > > the
+> > > description for the split clock sure. The other stuff I mentioned
+> > > needs
+> > > to be resolved before I'm willing to ack this.
+> >=20
+> > He means separating this patch from the rest of the series that he
+> > pushed - which
+> > is okay, as it's a bit mixed anyway :-)
+> >=20
+> > Besides ... Moudy, can you please help to clarify the description of
+> > those clocks?
+>=20
+> May I address the check error by adding 2 functional descriptions and
+> specifying 'minIeims: 1' for this property, and apply the limit by
+> setting 'maxItems: 3' in MT8195 additional condition?
 
 
+That sounds reasonable
 
-> there is why the 'destroy_lock' is added for protection
-> when pool->destroy_cnt > 0.
->
-> >
-> > Thanks
-> > /Ilias
+--AcDfy0agmX9jcKA8
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iHUEABYIAB0WIQRh246EGq/8RLhDjO14tDGHoIJi0gUCZvhjmQAKCRB4tDGHoIJi
+0t5tAP9AhQrQg5BdiPm51hIYX60FP2j5MfqK3fnJyGLtjY+MhgEAnLtFBSFfQFkq
+wjGbq54IMzZ/w/JrwtVg7Y9ctV0+GAc=
+=/UTH
+-----END PGP SIGNATURE-----
+
+--AcDfy0agmX9jcKA8--
