@@ -1,142 +1,71 @@
-Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
+Received: from bombadil.infradead.org (bombadil.infradead.org [198.137.202.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D16A11CA9C;
-	Sun, 29 Sep 2024 02:45:02 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=45.249.212.188
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8DDEF45C0B;
+	Sun, 29 Sep 2024 06:11:31 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.137.202.133
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1727577905; cv=none; b=m9Q1B8smutbJHruLhOY21nIvSV0qTfsGFZhbKvBd65bybPTW0GuSL0FPowuuSts7C0J/LJ/x80lQ7ZJLvW4sJX2ILXrAiofXSyQsUdEPxKWJiu5yLk7n1jv4Olm0beMHa5riHNxBYdj5qKgZKf0yfxWBVr6MdQ4mXqI/FPunhc8=
+	t=1727590297; cv=none; b=pPtz1twK5FsP1Wv4Oh54DAGdVgkX8vlHfonF6xISweysVDe4ky9RrfCelGhRyhar5KOIEEfQh298/LpmmuC9XMuo4RBQAbDvTzLMaWyno8r1n91nyFmM2yZeHm8YV5vjyMnlqSoqTGTRqwatxzTGJc7t+KwQr7f0Gb8YqJEWssw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1727577905; c=relaxed/simple;
-	bh=FiYG/fkLGxsbz6lmYbBjKleWZNMsSfiS+c65d3bFVCU=;
-	h=Message-ID:Date:MIME-Version:Subject:To:CC:References:From:
-	 In-Reply-To:Content-Type; b=dx1aYe5ieB6KYuk3IQUcNfqZq/tJ6fFH8HiqladNaqSs6A0E2GvZi4AzQTtCx3ARcieDEuxKmncZeCUPUbjPw58wHCVoUKZm4NkWQYoxSge6h9nI1F34+jwQ3unxLazAjsOm2WP1Um2Fbnj83GhMnXCaquQTvge+j1bxdPMTAWw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=huawei.com; spf=pass smtp.mailfrom=huawei.com; arc=none smtp.client-ip=45.249.212.188
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=huawei.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=huawei.com
-Received: from mail.maildlp.com (unknown [172.19.163.48])
-	by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4XGT571jzCzfbjm;
-	Sun, 29 Sep 2024 10:42:35 +0800 (CST)
-Received: from dggpemf200006.china.huawei.com (unknown [7.185.36.61])
-	by mail.maildlp.com (Postfix) with ESMTPS id 219E918007C;
-	Sun, 29 Sep 2024 10:44:54 +0800 (CST)
-Received: from [10.67.120.129] (10.67.120.129) by
- dggpemf200006.china.huawei.com (7.185.36.61) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.1544.11; Sun, 29 Sep 2024 10:44:53 +0800
-Message-ID: <ac2eec69-8f44-4adb-8182-02c78625851d@huawei.com>
-Date: Sun, 29 Sep 2024 10:44:53 +0800
+	s=arc-20240116; t=1727590297; c=relaxed/simple;
+	bh=Vqgnc+YtHtMndXB6U7oRfFpRqTHg49ZzmGVeR9qtLHQ=;
+	h=Date:From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:
+	 Content-Disposition; b=urtLqCXOYjbdoFNpE4XX8R9vmhpYnygKxRPvdq3MQ7KTbPIiCjH6Ie7pzKLyKYo74IjoBhFyimaEd4sCmpEba0cB9Eoi6/g9sQYSVXHSBP73MxNGSxsWX36iElurasetzDCEB0i3mArbkAqezCt2FBj64XR2poasdf/HAQaUwKI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=infradead.org; spf=none smtp.mailfrom=bombadil.srs.infradead.org; dkim=pass (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b=mets9J7E; arc=none smtp.client-ip=198.137.202.133
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=infradead.org
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=bombadil.srs.infradead.org
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b="mets9J7E"
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+	d=infradead.org; s=bombadil.20210309; h=Content-Type:MIME-Version:Message-ID:
+	Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
+	Content-Description:In-Reply-To:References;
+	bh=4+phOqV6atYOpBMLYLq6uiyyk+GbvRj3BC/6NaL3TEw=; b=mets9J7Eos2arY46ekbS26aEdm
+	iJHlSz9ejRXhajsgbLsgmaihIoBgNviQz01Qfam0jjOY00kflFtbBHBEjzDFZXJmFWmRY99iRhCIk
+	93fZO/i8ukdxfIZ+TfebBnZHLMA66ppRV1x1kpvPH+gfxKqo+kUMzSt5WclzQwuGlOU9Cbmqqm5Ms
+	kYbFbQnoJyaOv5gKi9nXFmTaovho41IpG3fLN3jDm9SetIEEpW7TcvReM9arUwOF1ilEQuz4LK1vW
+	MGg1Yn6V55sL+r5daypWUuJlr47X7op4IAzdTRynX7OArO83qG7GCJ8G+qKWclrIEHw6BJOaYb2JI
+	1CHRVcig==;
+Received: from 2a02-8389-2341-5b80-d0f8-a0ce-5717-ce1d.cable.dynamic.v6.surfer.at ([2a02:8389:2341:5b80:d0f8:a0ce:5717:ce1d] helo=localhost)
+	by bombadil.infradead.org with esmtpsa (Exim 4.98 #2 (Red Hat Linux))
+	id 1sun9W-0000000EFjR-0Ko3;
+	Sun, 29 Sep 2024 06:11:30 +0000
+Date: Sun, 29 Sep 2024 08:11:25 +0200
+From: Christoph Hellwig <hch@infradead.org>
+To: Linus Torvalds <torvalds@linux-foundation.org>
+Cc: linux-kernel@vger.kernel.org, iommu@lists.linux.dev
+Subject: [GIT PULL] dma-mapping fixes for Linux 6.12
+Message-ID: <ZvjvjcC9VhDkb9Rf@infradead.org>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH net v2 2/2] page_pool: fix IOMMU crash when driver has
- already unbound
-To: Ilias Apalodimas <ilias.apalodimas@linaro.org>
-CC: Mina Almasry <almasrymina@google.com>, <davem@davemloft.net>,
-	<kuba@kernel.org>, <pabeni@redhat.com>, <liuyonglong@huawei.com>,
-	<fanghaiqing@huawei.com>, <zhangkun09@huawei.com>, Robin Murphy
-	<robin.murphy@arm.com>, Alexander Duyck <alexander.duyck@gmail.com>, IOMMU
-	<iommu@lists.linux.dev>, Wei Fang <wei.fang@nxp.com>, Shenwei Wang
-	<shenwei.wang@nxp.com>, Clark Wang <xiaoning.wang@nxp.com>, Eric Dumazet
-	<edumazet@google.com>, Tony Nguyen <anthony.l.nguyen@intel.com>, Przemek
- Kitszel <przemyslaw.kitszel@intel.com>, Alexander Lobakin
-	<aleksander.lobakin@intel.com>, Alexei Starovoitov <ast@kernel.org>, Daniel
- Borkmann <daniel@iogearbox.net>, Jesper Dangaard Brouer <hawk@kernel.org>,
-	John Fastabend <john.fastabend@gmail.com>, Saeed Mahameed
-	<saeedm@nvidia.com>, Leon Romanovsky <leon@kernel.org>, Tariq Toukan
-	<tariqt@nvidia.com>, Felix Fietkau <nbd@nbd.name>, Lorenzo Bianconi
-	<lorenzo@kernel.org>, Ryder Lee <ryder.lee@mediatek.com>, Shayne Chen
-	<shayne.chen@mediatek.com>, Sean Wang <sean.wang@mediatek.com>, Kalle Valo
-	<kvalo@kernel.org>, Matthias Brugger <matthias.bgg@gmail.com>,
-	AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>, Andrew
- Morton <akpm@linux-foundation.org>, <imx@lists.linux.dev>,
-	<netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-	<intel-wired-lan@lists.osuosl.org>, <bpf@vger.kernel.org>,
-	<linux-rdma@vger.kernel.org>, <linux-wireless@vger.kernel.org>,
-	<linux-arm-kernel@lists.infradead.org>, <linux-mediatek@lists.infradead.org>,
-	<linux-mm@kvack.org>
-References: <20240925075707.3970187-1-linyunsheng@huawei.com>
- <20240925075707.3970187-3-linyunsheng@huawei.com>
- <CAHS8izOxugzWJDTc-4CWqaKABTj=J4OHs=Lcb=SE9r8gX0J+yg@mail.gmail.com>
- <842c8cc6-f716-437a-bc98-70bc26d6fd38@huawei.com>
- <CAC_iWjLgNOtsbhqrhvvEz2C3S668qB8KatL_W+tPHMSkDrNS=w@mail.gmail.com>
- <0ef315df-e8e9-41e8-9ba8-dcb69492c616@huawei.com>
- <CAC_iWjKeajwn3otjdEekE6VDLHGEvqmnQRwpN5R3yHj8UpEiDw@mail.gmail.com>
- <934d601f-be43-4e04-b126-dc86890a4bfa@huawei.com>
- <CAC_iWjL7m4ZL2W2OZM5F22dLvZhxU6fyCXV_xjyGf+W7UP43EQ@mail.gmail.com>
-Content-Language: en-US
-From: Yunsheng Lin <linyunsheng@huawei.com>
-In-Reply-To: <CAC_iWjL7m4ZL2W2OZM5F22dLvZhxU6fyCXV_xjyGf+W7UP43EQ@mail.gmail.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: dggems702-chm.china.huawei.com (10.3.19.179) To
- dggpemf200006.china.huawei.com (7.185.36.61)
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+X-SRS-Rewrite: SMTP reverse-path rewritten from <hch@infradead.org> by bombadil.infradead.org. See http://www.infradead.org/rpr.html
 
-On 2024/9/28 15:34, Ilias Apalodimas wrote:
+The following changes since commit b348b6d17fd1d5d89b86db602f02bea54a754bd8:
 
-...
+  dma-mapping: report unlimited DMA addressing in IOMMU DMA path (2024-09-23 08:38:56 +0200)
 
-> 
-> Yes, that wasn't very clear indeed, apologies for any confusion. I was
-> trying to ask on a linked list that only lives in struct page_pool.
-> But I now realize this was a bad idea since the lookup would be way
-> slower.
-> 
->> If I understand question correctly, the single/doubly linked list
->> is more costly than array as the page_pool case as my understanding.
->>
->> For single linked list, it doesn't allow deleting a specific entry but
->> only support deleting the first entry and all the entries. It does support
->> lockless operation using llist, but have limitation as below:
->> https://elixir.bootlin.com/linux/v6.7-rc8/source/include/linux/llist.h#L13
->>
->> For doubly linked list, it needs two pointer to support deleting a specific
->> entry and it does not support lockless operation.
-> 
-> I didn't look at the patch too carefully at first. Looking a bit
-> closer now, the array is indeed better, since the lookup is faster.
-> You just need the stored index in struct page to find the page we need
-> to unmap. Do you remember if we can reduce the atomic pp_ref_count to
-> 32bits? If so we can reuse that space for the index. Looking at it
+are available in the Git repository at:
 
-For 64 bits system, yes, we can reuse that.
-But for 32 bits system, we may have only 16 bits for each of them, and it
-seems that there is no atomic operation for variable that is less than 32
-bits.
+  git://git.infradead.org/users/hch/dma-mapping.git tags/dma-mapping-6.12-2024-09-29
 
-> requires a bit more work in netmem, but that's mostly swapping all the
-> atomic64 calls to atomic ones.
-> 
->>
->> For pool->items, as the alloc side is protected by NAPI context, and the
->> free side use item->pp_idx to ensure there is only one producer for each
->> item, which means for each item in pool->items, there is only one consumer
->> and one producer, which seems much like the case when the page is not
->> recyclable in __page_pool_put_page, we don't need a lock protection when
->> calling page_pool_return_page(), the 'struct page' is also one consumer
->> and one producer as the pool->items[item->pp_idx] does:
->> https://elixir.bootlin.com/linux/v6.7-rc8/source/net/core/page_pool.c#L645
->>
->> We only need a lock protection when page_pool_destroy() is called to
->> check if there is inflight page to be unmapped as a consumer, and the
->> __page_pool_put_page() may also called to unmapped the inflight page as
->> another consumer,
-> 
-> Thanks for the explanation. On the locking side, page_pool_destroy is
-> called once from the driver and then it's either the workqueue for
-> inflight packets or an SKB that got freed and tried to recycle right?
-> But do we still need to do all the unmapping etc from the delayed
-> work? Since the new function will unmap all packets in
-> page_pool_destroy, we can just skip unmapping when the delayed work
-> runs
+for you to fetch changes up to bfc4a245a794841cba5cf287034a0f60d3087402:
 
-Yes, the pool->dma_map is clear in page_pool_item_uninit() after it does
-the unmapping for all inflight pages with the protection of pool->destroy_lock,
-so that the unmapping is skipped in page_pool_return_page() when those inflight
-pages are returned back to page_pool.
+  dma-mapping: fix DMA API tracing for chained scatterlists (2024-09-26 20:08:12 +0200)
 
-> 
+----------------------------------------------------------------
+dma-mapping fixes for Linux 6.12
+
+ - handle chained SGLs in the new tracing code (Christoph Hellwig)
+
+----------------------------------------------------------------
+Christoph Hellwig (1):
+      dma-mapping: fix DMA API tracing for chained scatterlists
+
+ include/trace/events/dma.h | 37 +++++++++++++++++++------------------
+ 1 file changed, 19 insertions(+), 18 deletions(-)
