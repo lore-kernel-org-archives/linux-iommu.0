@@ -1,63 +1,147 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EEC37185937;
-	Sun, 29 Sep 2024 17:04:49 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E849110E6
+	for <iommu@lists.linux.dev>; Mon, 30 Sep 2024 00:47:05 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.19
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1727629490; cv=none; b=df6WeYNeGd4BjMSMs+heP3wUcDo5OfUi+vULjUX0hiDsCthqOkvXobKyc9UBmqqSMZsJdwCdhC+pXS9aR/RH1+cczLp2seSjMljbG8JOnHDR/mRsgxjvoogSTQ+KMaXqf8+lWcvRHzS/qiDGyvATsCsWltFuCfOwd07J3dJFvzs=
+	t=1727657227; cv=none; b=jgB1JsfvLJFg1CxgAlWHIoFiXTMgIUMYFsPvwXGFbnd+ea4y8QUxWv/0AgSpaLdYNlBznQQNrPJDEqlyeNt1y1V2+8RCtLWIbuMYJ8Q4M8F6/lgGuYmACn3Rz9bhScUFjf6jlXSx9RGKAbYPc52Xowt9nSBtmsrdLmwwyf0YfOQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1727629490; c=relaxed/simple;
-	bh=wVxS87Ek4pzVeuCFyciDlYf+/yxlQCXBfxkPcwJUAvA=;
-	h=Subject:From:In-Reply-To:References:Message-Id:Date:To:Cc; b=NO+oBCCTWc75baOG5qutHaoNrOEu/yPcldyATbCIMdO6YgeUq30PpDf0j7kh+fwr0eZn66EZDvuMoP07ypdOt6FiHh8hJ7kEXgFOKnigsumU1XEevXIWvuz3a3DrEixpbYU2hkt2qPrbaPgBLUyrLAg1InuFxsxk9UzsHuwpA0A=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=baO7MiNz; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1727657227; c=relaxed/simple;
+	bh=tkLECTB+l1Q6yRxTTrW2xT7OlIctPpTL1rDsIqZoMXM=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=X+F26tvguNC+D5PS21y5pcQRDJLCDt6SXnjLzrSeO0SiTapq+csQIgMVjt5on76iJf4Vx+WlJQKGizHGzNM+09WC9mEx6lmr6YsaxIItYpiF/c+JZnS1Ll/1iov901YRkmHidl2Caq9cNeJPzSPtUNX2jz/gz8TiDdMu/aGUXqw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=U40dk/Gw; arc=none smtp.client-ip=192.198.163.19
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="baO7MiNz"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9963AC4CEC5;
-	Sun, 29 Sep 2024 17:04:49 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1727629489;
-	bh=wVxS87Ek4pzVeuCFyciDlYf+/yxlQCXBfxkPcwJUAvA=;
-	h=Subject:From:In-Reply-To:References:Date:To:Cc:From;
-	b=baO7MiNzViYgXQyHLt7t7KjSXlBuO7m9Q3/Td6s1O25+b7kQVvtle7Q9OinEI7lbK
-	 64OzSmNKkDInubCYQ7E6nwiRAW2yxtsNLDw+rtOOYRzl6Er/ECwkmVM+S/u6XNWy0/
-	 E35OSZ40D36a4mgubh36APu3/gzVuNRmZFOxk3j4V1Us3HTB8Jj2aamY9VLEoptr/h
-	 rXzJjCRGqExpUWBv7OovJqTw9v/6nT1Tz7sQB6cDewBJ1MF9pm4RTVW1TOQJwgK3lD
-	 /mJYhPPqEgC92by6RuJWNql2UOhR5b31rZOdNU0BqeypDyiTPIja5CYkZW+svsAhRw
-	 r2y1PTSyJA7/g==
-Received: from [10.30.226.235] (localhost [IPv6:::1])
-	by aws-us-west-2-korg-oddjob-rhel9-1.codeaurora.org (Postfix) with ESMTP id AAB683809A80;
-	Sun, 29 Sep 2024 17:04:53 +0000 (UTC)
-Subject: Re: [GIT PULL] dma-mapping fixes for Linux 6.12
-From: pr-tracker-bot@kernel.org
-In-Reply-To: <ZvjvjcC9VhDkb9Rf@infradead.org>
-References: <ZvjvjcC9VhDkb9Rf@infradead.org>
-X-PR-Tracked-List-Id: <iommu.lists.linux.dev>
-X-PR-Tracked-Message-Id: <ZvjvjcC9VhDkb9Rf@infradead.org>
-X-PR-Tracked-Remote: git://git.infradead.org/users/hch/dma-mapping.git tags/dma-mapping-6.12-2024-09-29
-X-PR-Tracked-Commit-Id: bfc4a245a794841cba5cf287034a0f60d3087402
-X-PR-Merge-Tree: torvalds/linux.git
-X-PR-Merge-Refname: refs/heads/master
-X-PR-Merge-Commit-Id: b81b78dacc44b30b32c8137b29f36712cc1ea980
-Message-Id: <172762949219.2558104.15895730019425261080.pr-tracker-bot@kernel.org>
-Date: Sun, 29 Sep 2024 17:04:52 +0000
-To: Christoph Hellwig <hch@infradead.org>
-Cc: Linus Torvalds <torvalds@linux-foundation.org>, linux-kernel@vger.kernel.org, iommu@lists.linux.dev
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="U40dk/Gw"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1727657226; x=1759193226;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=tkLECTB+l1Q6yRxTTrW2xT7OlIctPpTL1rDsIqZoMXM=;
+  b=U40dk/GwXkjyLSlFEXGdDM5ZtiFBT+OLCmHR44b+9yxm+O4RthHaZZf3
+   Dr85AW2S3UNQsREvrke45OQk8AoxIyB4BbBawo6STKUebQHlF8AI+rGQV
+   oryQsr8+/Vus52IPvkfn3vr59xUo2Co5SBGz6GzKaX/argYyi1ZYeHaaW
+   8tqN3Tg9kF9Qr0M3Z0p21Sa4tl67ZdAhJegvI02w/nzL7QaF4suS+n379
+   VF4jbn16dhBsdYs7bkb3TXdyyW2ChUJevijgCoSRIkoI8jWIfSoceYslv
+   9JcoYcYtcD/eV1IGCuzQgRk8QOsMWBj4QDh3nzorQWPaRiR6/LxbqCj1q
+   g==;
+X-CSE-ConnectionGUID: 9ZSNg9ujSXCSRNqWTcr1Wg==
+X-CSE-MsgGUID: S6fASKzGQE2CFL5C1Itljw==
+X-IronPort-AV: E=McAfee;i="6700,10204,11210"; a="26237286"
+X-IronPort-AV: E=Sophos;i="6.11,164,1725346800"; 
+   d="scan'208";a="26237286"
+Received: from orviesa001.jf.intel.com ([10.64.159.141])
+  by fmvoesa113.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Sep 2024 17:47:05 -0700
+X-CSE-ConnectionGUID: gck1bmcAQiiXN2htoZ+DIw==
+X-CSE-MsgGUID: Bo96lJY5TSKfH9n6pHI06w==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.11,164,1725346800"; 
+   d="scan'208";a="110610850"
+Received: from allen-box.sh.intel.com ([10.239.159.127])
+  by orviesa001.jf.intel.com with ESMTP; 29 Sep 2024 17:47:03 -0700
+From: Lu Baolu <baolu.lu@linux.intel.com>
+To: Joerg Roedel <joro@8bytes.org>,
+	Will Deacon <will@kernel.org>,
+	Robin Murphy <robin.murphy@arm.com>,
+	Jason Gunthorpe <jgg@ziepe.ca>,
+	Kevin Tian <kevin.tian@intel.com>
+Cc: iommu@lists.linux.dev,
+	linux-kernel@vger.kernel.org,
+	Lu Baolu <baolu.lu@linux.intel.com>,
+	Jason Gunthorpe <jgg@nvidia.com>
+Subject: [PATCH 1/1] iommu: Remove iommu_present()
+Date: Mon, 30 Sep 2024 08:42:35 +0800
+Message-ID: <20240930004235.69368-1-baolu.lu@linux.intel.com>
+X-Mailer: git-send-email 2.43.0
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 
-The pull request you sent on Sun, 29 Sep 2024 08:11:25 +0200:
+The last callsite of iommu_present() is removed by commit <45c690aea8ee>
+("drm/tegra: Use iommu_paging_domain_alloc()"). Remove it to avoid dead
+code.
 
-> git://git.infradead.org/users/hch/dma-mapping.git tags/dma-mapping-6.12-2024-09-29
+Fixes: 45c690aea8ee ("drm/tegra: Use iommu_paging_domain_alloc()")
+Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
+Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
+---
+ include/linux/iommu.h |  6 ------
+ drivers/iommu/iommu.c | 25 -------------------------
+ 2 files changed, 31 deletions(-)
 
-has been merged into torvalds/linux.git:
-https://git.kernel.org/torvalds/c/b81b78dacc44b30b32c8137b29f36712cc1ea980
+Change log:
+- Originally posted here
+  https://lore.kernel.org/r/20240610085555.88197-21-baolu.lu@linux.intel.com
+  After several patches in that series were merged, this patch is
+  targeted for 6.12-rc.
 
-Thank you!
-
+diff --git a/include/linux/iommu.h b/include/linux/iommu.h
+index bd722f473635..62d1b85c80d3 100644
+--- a/include/linux/iommu.h
++++ b/include/linux/iommu.h
+@@ -785,7 +785,6 @@ static inline void iommu_iotlb_gather_init(struct iommu_iotlb_gather *gather)
+ }
+ 
+ extern int bus_iommu_probe(const struct bus_type *bus);
+-extern bool iommu_present(const struct bus_type *bus);
+ extern bool device_iommu_capable(struct device *dev, enum iommu_cap cap);
+ extern bool iommu_group_has_isolated_msi(struct iommu_group *group);
+ extern struct iommu_domain *iommu_domain_alloc(const struct bus_type *bus);
+@@ -1081,11 +1080,6 @@ struct iommu_iotlb_gather {};
+ struct iommu_dirty_bitmap {};
+ struct iommu_dirty_ops {};
+ 
+-static inline bool iommu_present(const struct bus_type *bus)
+-{
+-	return false;
+-}
+-
+ static inline bool device_iommu_capable(struct device *dev, enum iommu_cap cap)
+ {
+ 	return false;
+diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
+index 83c8e617a2c5..7bfd2caaf33b 100644
+--- a/drivers/iommu/iommu.c
++++ b/drivers/iommu/iommu.c
+@@ -1840,31 +1840,6 @@ int bus_iommu_probe(const struct bus_type *bus)
+ 	return 0;
+ }
+ 
+-/**
+- * iommu_present() - make platform-specific assumptions about an IOMMU
+- * @bus: bus to check
+- *
+- * Do not use this function. You want device_iommu_mapped() instead.
+- *
+- * Return: true if some IOMMU is present and aware of devices on the given bus;
+- * in general it may not be the only IOMMU, and it may not have anything to do
+- * with whatever device you are ultimately interested in.
+- */
+-bool iommu_present(const struct bus_type *bus)
+-{
+-	bool ret = false;
+-
+-	for (int i = 0; i < ARRAY_SIZE(iommu_buses); i++) {
+-		if (iommu_buses[i] == bus) {
+-			spin_lock(&iommu_device_lock);
+-			ret = !list_empty(&iommu_device_list);
+-			spin_unlock(&iommu_device_lock);
+-		}
+-	}
+-	return ret;
+-}
+-EXPORT_SYMBOL_GPL(iommu_present);
+-
+ /**
+  * device_iommu_capable() - check for a general IOMMU capability
+  * @dev: device to which the capability would be relevant, if available
 -- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/prtracker.html
+2.43.0
+
