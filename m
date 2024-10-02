@@ -1,186 +1,205 @@
-Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
+Received: from NAM12-BN8-obe.outbound.protection.outlook.com (mail-bn8nam12on2089.outbound.protection.outlook.com [40.107.237.89])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6FF6E51C45
-	for <iommu@lists.linux.dev>; Wed,  2 Oct 2024 05:16:36 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=210.61.82.184
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1727846198; cv=none; b=JtrtQ7XaU0XmUr82t2eSq2qT32ERC1mtkt4+GUNhq8lw3wSjfhQ5TeazwBB86ZcjnXGMG+b1ENgH3zFYyfZyJoy261UlC/9mruPmKPszePySBo0Auv9DwXZDgx2qn/2MIqbf6bMsIEJwQUuXE+9Dlf6byZfSr2bJHul5+h0ZPCA=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1727846198; c=relaxed/simple;
-	bh=nvKqaX5GL7v5ki5PpykdhtGUtehV0J3puVuLevDkZ3I=;
-	h=From:To:CC:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=pyVwF9api8ahAPFl16cY2yoJMnA9X9suac7n0kINUqiyg26w9LtUc90GpcrlhS0hPAfzqjKlZwx084bn3PyUfwZGWwcajDjQd5KvvWZJ8fZ0GiVzeaFX6D54+5oS3bICx7oZThQ5cVpVL0JmEOveLFfWpEVW9A/zVN9xC8rn1YA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=mediatek.com; spf=pass smtp.mailfrom=mediatek.com; dkim=pass (1024-bit key) header.d=mediatek.com header.i=@mediatek.com header.b=TL/sHVuJ; arc=none smtp.client-ip=210.61.82.184
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=mediatek.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=mediatek.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AD779171AF
+	for <iommu@lists.linux.dev>; Wed,  2 Oct 2024 05:30:44 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.237.89
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1727847046; cv=fail; b=tYyrTN7QfY7R9ttDR7AImd0+fZzhiHiaRyWzNMsRkenImNsqR0F2Xc7X41VsyDjcDqa5V3j3IsG45xRNPZlzp+OTghEIyg9i6+zcSw2AVTvkin5TlfFamcWHeKvSbLRkHFkMXTuQlrKnDME+sus/Lk++tjISejbz4Hj2ltBDrWQ=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1727847046; c=relaxed/simple;
+	bh=8Tvv+6M5UcSpQJVlMpKgAOtqbq9hLUtU8BEuLzlnlZM=;
+	h=Message-ID:Date:Subject:To:Cc:References:From:In-Reply-To:
+	 Content-Type:MIME-Version; b=RiDyyodxQAjgCkmxgE1Y5QWUMVfgBIYWw2w/3TaRhlJaIfQHPgTTBkKByKqDPrpmdciX2h52B1YM725MfUrcIGNl615nxBxd4kWeESP8af3HoYvpv+dODUgSwIGpx2FHetfZAtDrNFAdwo8KnLVSCQPRylnjkynDY8AGadt2U/U=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com; spf=fail smtp.mailfrom=amd.com; dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b=F5XFuueu; arc=fail smtp.client-ip=40.107.237.89
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=amd.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=mediatek.com header.i=@mediatek.com header.b="TL/sHVuJ"
-X-UUID: 7b0a5f18807d11ef8b96093e013ec31c-20241002
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=mediatek.com; s=dk;
-	h=Content-Type:Content-Transfer-Encoding:MIME-Version:References:In-Reply-To:Message-ID:Date:Subject:CC:To:From; bh=Bg67y45sJLDWjIhf42JgILUWAHQQxL5OwkXAp+pyoUM=;
-	b=TL/sHVuJ/HkEd0sGs5OyZ8Wm2AgpNJgS29R3/mC1HDOSSnP4iFS9MZPUCyVnzAj1lRv0wjMm9dQ7+/ZxVcEAG/izkWf/9Vegvge6AYD5OMA8TsWRa10zKDHGVGrciYjllEtfUz7/unR29FQIpplLIcovNeBdDVUXQqZFME+R2tI=;
-X-CID-P-RULE: Release_Ham
-X-CID-O-INFO: VERSION:1.1.41,REQID:cfd62d70-5c99-4b64-99ec-bf71d2228481,IP:0,U
-	RL:0,TC:0,Content:-5,EDM:-25,RT:0,SF:0,FILE:0,BULK:0,RULE:Release_Ham,ACTI
-	ON:release,TS:-30
-X-CID-META: VersionHash:6dc6a47,CLOUDID:fb3c93bd-085c-4112-81e0-4d6de274b71a,B
-	ulkID:nil,BulkQuantity:0,Recheck:0,SF:102,TC:nil,Content:0,EDM:1|19,IP:nil
-	,URL:1,File:nil,RT:nil,Bulk:nil,QS:nil,BEC:nil,COL:0,OSI:0,OSA:0,AV:0,LES:
-	1,SPR:NO,DKR:0,DKP:0,BRR:0,BRE:0,ARC:0
-X-CID-BVR: 0
-X-CID-BAS: 0,_,0,_
-X-CID-FACTOR: TF_CID_SPAM_SNR,TF_CID_SPAM_ULS
-X-UUID: 7b0a5f18807d11ef8b96093e013ec31c-20241002
-Received: from mtkmbs10n1.mediatek.inc [(172.21.101.34)] by mailgw02.mediatek.com
-	(envelope-from <macpaul.lin@mediatek.com>)
-	(Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
-	with ESMTP id 1176561340; Wed, 02 Oct 2024 13:16:29 +0800
-Received: from mtkmbs11n2.mediatek.inc (172.21.101.187) by
- MTKMBS14N2.mediatek.inc (172.21.101.76) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.1118.26; Wed, 2 Oct 2024 13:16:27 +0800
-Received: from mtksdccf07.mediatek.inc (172.21.84.99) by
- mtkmbs11n2.mediatek.inc (172.21.101.73) with Microsoft SMTP Server id
- 15.2.1118.26 via Frontend Transport; Wed, 2 Oct 2024 13:16:27 +0800
-From: Macpaul Lin <macpaul.lin@mediatek.com>
-To: Chun-Kuang Hu <chunkuang.hu@kernel.org>, Philipp Zabel
-	<p.zabel@pengutronix.de>, David Airlie <airlied@gmail.com>, Simona Vetter
-	<simona@ffwll.ch>, Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
-	Maxime Ripard <mripard@kernel.org>, Thomas Zimmermann <tzimmermann@suse.de>,
-	Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>,
-	Conor Dooley <conor+dt@kernel.org>, Yong Wu <yong.wu@mediatek.com>, "Joerg
- Roedel" <joro@8bytes.org>, Will Deacon <will@kernel.org>, Robin Murphy
-	<robin.murphy@arm.com>, Matthias Brugger <matthias.bgg@gmail.com>,
-	AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>, "Rohit
- Agarwal" <rohiagar@chromium.org>, <dri-devel@lists.freedesktop.org>,
-	<linux-mediatek@lists.infradead.org>, <devicetree@vger.kernel.org>,
-	<linux-kernel@vger.kernel.org>, <iommu@lists.linux.dev>,
-	<linux-arm-kernel@lists.infradead.org>, Alexandre Mergnat
-	<amergnat@baylibre.com>
-CC: Bear Wang <bear.wang@mediatek.com>, Pablo Sun <pablo.sun@mediatek.com>,
-	Macpaul Lin <macpaul.lin@mediatek.com>, Macpaul Lin <macpaul@gmail.com>, "Sen
- Chu" <sen.chu@mediatek.com>, Chris-qj chen <chris-qj.chen@mediatek.com>,
-	MediaTek Chromebook Upstream
-	<Project_Global_Chrome_Upstream_Group@mediatek.com>, Chen-Yu Tsai
-	<wenst@chromium.org>, Jitao Shi <jitao.shi@mediatek.com>
-Subject: [PATCH v5 5/5] dt-bindings: display: mediatek: dpi: correct power-domains property
-Date: Wed, 2 Oct 2024 13:16:20 +0800
-Message-ID: <20241002051620.2050-5-macpaul.lin@mediatek.com>
-X-Mailer: git-send-email 2.18.0
-In-Reply-To: <20241002051620.2050-1-macpaul.lin@mediatek.com>
-References: <20241002051620.2050-1-macpaul.lin@mediatek.com>
+	dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b="F5XFuueu"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=lUbqphwJzd/8qcIRtQPj7tWUOmbwtxB5np77N0x9pU4hqNrN5K+7svJe5s9ZIo/KeQdVXNmsZI1Wpvs2T5wsTq9nyCGIqR+zv2zn035lDeUpNDQPIlstfGWIdtnjqe9mEony4qF80oP7u9TFHgm6qAb681XcccDMW7kBfiwpX1g852AQsj/BwBWb0/h7HhLoJvJGSgk0Nbv51rUG7RTUTItqfq2etPGbPShjlXt6MfT83K5rahlBcr4wPSz92Ompw37p9CX69gm+I6jK4PcP/HMPTnyXWDKkiFzpOlkxKBeQEXbUF1NyvapYLXdC1m/3kqzVUqSBdXjDzAf4vpKnpQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=nn5O348PTcN6HO0TXf5UwWHPTMPxM+kCC8acecdO2Ms=;
+ b=u6A1X5/VNBp6E1ED4hmUMXtYycHbIB7SgjUxVmZxKvNIvnJ5w3E7vXcZtIShn4P9WfpCr6Afb7Yw8CviiNj+FPxSSsIYc+4Kz9hxPPol/sHv46Iw96GO1oF+K+Z7SfFtITMqJAHZ9YSfe72k9TdKyl1jONSTR7tKMn6qsFRlPPhv8HDGWQ2gKV79YK7PVC6FHJEZFOZps6WffNtJ4awwwYdF/jBD50dQzNcsGx1ggo+qYZl2gD8IWAm0kLuR6KAI0QlcNbJ17DP3O91zk6sn8vsXZ+foh6uKXKswT8CG3Byte0Iw14WPYHOOzUf3EBvD37RBCuqMBBs0cDsAi2wY2w==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=amd.com; dmarc=pass action=none header.from=amd.com; dkim=pass
+ header.d=amd.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=nn5O348PTcN6HO0TXf5UwWHPTMPxM+kCC8acecdO2Ms=;
+ b=F5XFuueuo4axM0HcvmjuL5Npipwc0f/X/9m+LAO84D2+QsbiqMiEkcKz7haD7O1c+9tHN2t89UqhwJJTEqY6OxIisBdeGYsXvVr0YadvhKwWn/32uutYcROBXaS34V2H8lrqozCF0r5KCNuHmohYDROpRzAdkFYUq0iTI4R2lQA=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=amd.com;
+Received: from DS7PR12MB6048.namprd12.prod.outlook.com (2603:10b6:8:9f::5) by
+ CY5PR12MB6273.namprd12.prod.outlook.com (2603:10b6:930:22::16) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.8005.27; Wed, 2 Oct 2024 05:30:41 +0000
+Received: from DS7PR12MB6048.namprd12.prod.outlook.com
+ ([fe80::6318:26e5:357a:74a5]) by DS7PR12MB6048.namprd12.prod.outlook.com
+ ([fe80::6318:26e5:357a:74a5%5]) with mapi id 15.20.8005.026; Wed, 2 Oct 2024
+ 05:30:41 +0000
+Message-ID: <970c6058-9e02-4cf6-bcb9-cfb8afb4eac1@amd.com>
+Date: Wed, 2 Oct 2024 11:00:32 +0530
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v2 0/8] iommu: Domain allocation enhancements
+To: iommu@lists.linux.dev, joro@8bytes.org, Jason Gunthorpe <jgg@ziepe.ca>,
+ Baolu Lu <baolu.lu@linux.intel.com>
+Cc: will@kernel.org, robin.murphy@arm.com, suravee.suthikulpanit@amd.com,
+ jgg@ziepe.ca, yi.l.liu@intel.com, baolu.lu@linux.intel.com,
+ kevin.tian@intel.com, jacob.pan@linux.microsoft.com
+References: <20240911101911.6269-1-vasant.hegde@amd.com>
+Content-Language: en-US
+From: Vasant Hegde <vasant.hegde@amd.com>
+In-Reply-To: <20240911101911.6269-1-vasant.hegde@amd.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: PN2PR01CA0127.INDPRD01.PROD.OUTLOOK.COM
+ (2603:1096:c01:6::12) To DS7PR12MB6048.namprd12.prod.outlook.com
+ (2603:10b6:8:9f::5)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-TM-AS-Product-Ver: SMEX-14.0.0.3152-9.1.1006-23728.005
-X-TM-AS-Result: No-10--10.634400-8.000000
-X-TMASE-MatchedRID: qW4A1GTxjidpqqYAQ+J6uSYRREGYqtmUmoKXVHfiMM9KUzR+o2IehUGW
-	yClQhQkvKY6B7sY8Ci7dRIKCUEZlk77J5yv1W35KY1bQMCMvmn4wCmrLlx+Sdd9RlPzeVuQQ5Jl
-	eqmLDfgeWjiti7ndJY6woSk24kDBQaxXbwRJk57z0hv/rD7WVZA+jS+LRpl81pzPA3TKVblhgIS
-	cCiWkKENIS3Y3mrYfnGcJ+wyELRguQwm5+b+ZNPWwbuvhCHs3cmyqQJWNsuklnuv8pVwMzSaPFj
-	JEFr+olwXCBO/GKkVqOhzOa6g8KrfkaNMSfS/D+K5v8OQfnaBP6qsC2xx+Wmy4ZRUSszZeETiVC
-	Ktsw/v8=
-X-TM-AS-User-Approved-Sender: No
-X-TM-AS-User-Blocked-Sender: No
-X-TMASE-Result: 10--10.634400-8.000000
-X-TMASE-Version: SMEX-14.0.0.3152-9.1.1006-23728.005
-X-TM-SNTS-SMTP:
-	08878B16980C801A2C015D8BC46D98EC4BC1ADCE8371B370D402AF6CB3CBE6B22000:8
-X-MTK: N
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: DS7PR12MB6048:EE_|CY5PR12MB6273:EE_
+X-MS-Office365-Filtering-Correlation-Id: 60b10f10-d49e-4fa5-10e4-08dce2a35aca
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;ARA:13230040|366016|1800799024|376014;
+X-Microsoft-Antispam-Message-Info:
+	=?utf-8?B?bzU4OGVubEVpNHFHTmxVZnNOTnpFM2JVcnZQQ0srY1pNOEllNkVjN1VCQ05h?=
+ =?utf-8?B?MVpzY3JaZ3hlR09wSWZ0Q0F6eXM4OVhjWHNSVDROVWNQM0tRNlMyUlpma0hH?=
+ =?utf-8?B?Mnl1QjJpTFdKOGZ1T0RweXVCalBndnN3K0V1OTdhSlR3MHRnOUF3ZFhTSWtP?=
+ =?utf-8?B?VWtKejI5YVJkeHdpK1dMWUhMYzFNWGkxQ3IvaUVyUjRPaFp3WUhMTVNxalJD?=
+ =?utf-8?B?b2tPQmtHa0xHZlVHVk4yQkp3U2k4TGRTeXNOTnVLbThxZ3R5VThzZUQybjhu?=
+ =?utf-8?B?RHlvdzM4TEtMYUpSSjF4UGdMdHAwR2VjWVZSaFRaWFdVM2JocHcySGFzSUE3?=
+ =?utf-8?B?RkRFVitvb0pWeUtock1Sd21nVzN4SXRiNzd0WllXeTAwUjltSWltZnhSenhm?=
+ =?utf-8?B?RDQrNGgwK0RNaFFhcFNCUExENEM3cEhTRWRsVTNIWkhsams0OFVKUFp0c1Bi?=
+ =?utf-8?B?VHB2cHBHekdMNVJtc2J0L0V4SWJBUVRZZDc5eEtYc1FTV3hrcDFuVnJGbi9a?=
+ =?utf-8?B?bHdUSzM4V25Wa1ZLYkFNNHFuTEk2bVZkcW1KQ0VtOEllZVdPTGVERVNlUzBo?=
+ =?utf-8?B?NVR0ZDBkK2Fja0VzMkE3L3FWTDFwbTIrZ3RDdjlLUCtPeTZrM2o5T0lOdUoy?=
+ =?utf-8?B?Q3BaSG45S0tyeW1BbjAwMmE2MUcwT0srNlMzdVY2ZHNGem5ybkJyWlBKRUxq?=
+ =?utf-8?B?ZmJtdVBodlVqWllZWHZEeUQ5OXV3akVXcmErK0F1dEZnc0VDcitzMkFqK2E3?=
+ =?utf-8?B?T0RiZjd2VEpJaTBNdnRLN0Y3dzhnbnRRMTBMZ3FsQTVQVWlXTEMzYkFYUHNV?=
+ =?utf-8?B?UnpQY2hoVGVuOGVYTUdhM3RvWUZOdDhCMU5LajRRRVlxMVR4YzZTUnFIVitJ?=
+ =?utf-8?B?Y01DYytkYkdRVWJ0SFhDZDRNSXZGQU4wbklZUDVOVjZ1RTBqV2hmVW5jTzNX?=
+ =?utf-8?B?bEduRDdtMnVDeWQ3SHYyQVp6YjlZcnd4N1ZKanpiWjJoSG91Nzl3ckhtVTRi?=
+ =?utf-8?B?cVJrZnl0NlgxOENlVThtV0lUSEJZcmFpbnhGVy85dTJVR2xzcVlnOG8xMWdD?=
+ =?utf-8?B?UmlnbzJGWVp2ckZZamNnYUlwV0hBdkdvY3gxcUN1WC9hMjVwVE5KQlJ0T3du?=
+ =?utf-8?B?STlnNWlXaUcwS3UreWpSRVp1R3RsN2NMRWRhOVFlSGgxWEFYVi94MzdOL3R1?=
+ =?utf-8?B?aTBxZjRTSnJTUzNiUDBkSHc3VXNoUlpvUVVPaDhlQitMbjZJcXJva0wzTGJN?=
+ =?utf-8?B?T3dKNWlNZGx4eFRobUY0K2Y5N1dPS2x6R05OMm0zYzNiSTYvdUp1VHpHZ1RT?=
+ =?utf-8?B?eFpxVjkrQzRGOTRzczY2OXRlZFo1K2MyeS8zNHFYcVlrbzZRRDNEN2JtdkJW?=
+ =?utf-8?B?R21KWWc1c1kyc2pLdSsyaW9nWm1uMW1CTitreSs2TVV1U3lMd2lJaWJMQVZQ?=
+ =?utf-8?B?UWVxOU4xWVdNQThjNnhCaG1NUzFRaXV0Z2tSeEJ6RGlnTWpmeXhWeGtRa0E3?=
+ =?utf-8?B?YUR0dWN2QlJxcjRxSS8xK0xGWnJQSzVvVm0weWFINHRsWGg0cFNyeWVjTzRO?=
+ =?utf-8?B?Y1l2TG9xZ0ZKWUpDakZuMng1cUVlT2FNY2pTR3VWNThhQlUxbktkeUF0NlZI?=
+ =?utf-8?B?WkhQRmxtQUZuK0lhY0E2VFg4Y2ozUjU0MGxwRUR5RFBZYUx4S3FYU0dob2Mz?=
+ =?utf-8?B?WnVIZzlQeGRaWm1SNTdKb0xIbWpzTFpFamx2Wk8xUEZqMjBaZ09laEpnPT0=?=
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DS7PR12MB6048.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(366016)(1800799024)(376014);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?utf-8?B?cHBNbmhkSmZoQ0oxZ1hZKzQxZ3Z6SGRZYzRzOGUySzVFbzdTMWZFMnR6bU1X?=
+ =?utf-8?B?eEJ1Rk1vQSs2OVQ3bGwyNmp3OEV6Wm9NaFdnbjE0SlhFQ044dk12MWlUWTVN?=
+ =?utf-8?B?UUUra3kzRHg3M0FzSlk3dEhmaldMbmhvcjNjVndzTHFET3JaL2NDWTk5V1A4?=
+ =?utf-8?B?VGIrYjByK293dC9UWmI1R09VdElBZ3hqZXkzeXpOUVFIdmRldnZwMFJzRnZ6?=
+ =?utf-8?B?QjVudW9wcUZ6Z3M2VVVvZ3RUS0o4TU45c2ZyaEVtRXNkTG1LdytXaGJIdWl2?=
+ =?utf-8?B?V3hHTnl6OGprTWR2VnEybjRzcUpCK0xaK3orSTNrK3lJczI3UW1vRmtjQ2hL?=
+ =?utf-8?B?UnVCR1c5cnRDemVNYndDeC9XM1ZqcWZNZU5TWXl1Z0xyOGVmcFpMb25pcUFS?=
+ =?utf-8?B?NGdONnNPV0txQksvSHF0K0grQW1nMGpRSXRzZVp3dys5eGNlenhLV0lFbkh3?=
+ =?utf-8?B?K3ZWcXdmeWxNL2Rkc2E5Q3hZVUU0M1lndjV2TStqKyttVnlHTE5pRTk0L3N2?=
+ =?utf-8?B?L1pUS3A1TXpYZUhxWExMV2UvV1pSa3YydzFOckl6Y2FWY3ZWYnBMOUZRcEVL?=
+ =?utf-8?B?NUtIUVhxQmZxdjYxMDE4QTljb0tDSjYwTndhbW45YjVuazFJWHJHeUEwWUkv?=
+ =?utf-8?B?dWkzZElVZFUzWTFGNHRyeVAwM2o4UFlYcEdFNUN0WE5xbWpHNC9UU3pWREhI?=
+ =?utf-8?B?QitaZUZlRHl3ZitHMlhpYVNFZCtHS3ZMWGQxcVVYZTE4bnRHQmJpTkpqY0Er?=
+ =?utf-8?B?UkJ1NloydGlEV1NrOTNQZm80ME85L3prRGc3MXNHMFJHMFM0SCsvTmlyL0ts?=
+ =?utf-8?B?S2YyOGpHWFplb0NpM2x4cGFxdWlKeWk5cTVBVERyVjV4aUYyeExWSWxjNEFM?=
+ =?utf-8?B?QWF2c1JZTURGbjZjcGd5TUFLUFZGTnRQT0hnYjdqMVNrR2g4WEg3OUt1YUV1?=
+ =?utf-8?B?eks1REVvNTdSbnI5RGRpTkh2UHpKZjV5UkgzQ3ZMU1VkV0dOQWRFTkdxWExh?=
+ =?utf-8?B?c1lRRG1RQi81WDduTUVwVCtFYldZMCtadSs4VDhNUzhGbGRjQStXeG1ieVlN?=
+ =?utf-8?B?MDZsMmlKdXY2Tk5DS2V4VUhsK2RQeEhPNjhMZDBDYkUwZ1k1NmZzN0xNZk1G?=
+ =?utf-8?B?VHM4Qm05dXpqMmZUSkZGbXBLNy9DdElYT0tjWjNoWFlUSHZMSzBFU2RTa0dO?=
+ =?utf-8?B?aENKeGJodlJnWWlVbUFLRHNZeGJHT2ViVnN5U09JVEhWK0pnbUVab0MzTzBH?=
+ =?utf-8?B?bXdGUHd6eDZRNVFVajBKaUttRk1qR3I5ZGJwQzFpakV0STNaWmpUcGcycC8v?=
+ =?utf-8?B?a08xOGlIaEhiUzR0U2E3UEFKdkh1UnNuSUh0YXBaQ2pTYmRtNSswSmwrUnMv?=
+ =?utf-8?B?NVFYbG5QY3dXelVLMTRNN0VqaTR4Y1ZUb29ZcjVyZGtvcG9QWFFrekswamM3?=
+ =?utf-8?B?VzdKaFlqMFpLWkRzdnU3VHBnQWZLckNGNTExeHM2Z0NzdFIyamlVa0JESklm?=
+ =?utf-8?B?YW1Sa2J4SllzcUt6RjNzNGZ3cVgwVWtwTHBmbXluZnVabWlMNGl6dnRvd1N1?=
+ =?utf-8?B?UkZwWFlyb3FJTTIxcFVsdmVWK04zNHYzam12bFRqLzNXQ09aaTBGL014STBR?=
+ =?utf-8?B?NXF5Wml6blNyZHMzNkV0OU5kTENDaFFZWGlnajNENkowb0p2Z29EMkFzekdk?=
+ =?utf-8?B?U1NFMVFZb3BUWHpQbEZmM041elNLYWtuQWs1TXBhYmxvSHBwM0hKREJGUngy?=
+ =?utf-8?B?d2EzZnB4b3N3eGFNRitjVk9iTy9rQ2N0OGQ0VjR5bmZkdCszQmlTODBkem82?=
+ =?utf-8?B?Nk9xR21EOTVodzhNYWNZWDRmaElxenIvaEc4UlkvSjF2UzkzOWNHTWdlY0RU?=
+ =?utf-8?B?ZFpWanZoTXRaQ2dVdnl2YVBjV2RmN09RT1pEdHF4Z0RkRURHbXZBM0EvTzZp?=
+ =?utf-8?B?WlZjUXFtc0Y0cnA2ZjZkLzJGVENhM2d2UDFkNTM0VHdscWJTaUIwWFZzSTl1?=
+ =?utf-8?B?Vlh2NHFnd0dWMVZUT0x0VFBhaGNYZEpHb2pkU3c0a2ZrbjhHa2tuNVQrZXU0?=
+ =?utf-8?B?aUpvNXRPTS9RVUdQRVNyZDRkNHFNTFF6SXRIM016SmNnQVlneGk3N1o3TUdH?=
+ =?utf-8?Q?THMCxz+fS69b574K+yrrrHUTs?=
+X-OriginatorOrg: amd.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 60b10f10-d49e-4fa5-10e4-08dce2a35aca
+X-MS-Exchange-CrossTenant-AuthSource: DS7PR12MB6048.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 02 Oct 2024 05:30:41.3618
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: TNz0vQ5WD1VhL7/DGyFULvwSL2oMUqRnYK9X2/46GvMNxgtipatYo5mH0yceYUIhraBzrVhrrEQ+EMZHiytk2A==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: CY5PR12MB6273
 
-The MediaTek DPI module is typically associated with one of the
-following multimedia power domains:
- - POWER_DOMAIN_DISPLAY
- - POWER_DOMAIN_VDOSYS
- - POWER_DOMAIN_MM
-The specific power domain used varies depending on the SoC design.
+Jason, Baolu,
 
-These power domains are shared by multiple devices within the SoC.
-In most cases, these power domains are enabled by other devices.
-As a result, the DPI module of legacy SoCs often functions correctly
-even without explicit configuration.
+On 9/11/2024 3:49 PM, Vasant Hegde wrote:
+> This series adds iommu_paging_domain_alloc_flags() which takes flags to
+> pass additional details for domain allocation (like domain with PASID
+> support).
+> 
+> Also updates AMD IOMMU driver domain allocation code. With this by
+> default it will allocate domain with V2 page table for PASID capable
+> device and v1 page table for rest of the devices.
+> 
+> @Baolu,
+>   With this changes (patch 1), to allocate PASID capable device core
+>   will call domain_alloc_user() interface. Do we need any changes to
+>   intel driver?
 
-It is recommended to explicitly add the appropriate power domain
-property to the DPI node in the device tree. Hence drop the
-compatible checking for specific SoCs.
+@Baolu,
+  Looks like intel driver works fine with this change. Is that correct -OR- do
+we need any changes to intel_iommu_domain_alloc_user() ?
 
-Fixes: 5474d49b2f79 ("dt-bindings: display: mediatek: dpi: Add power domains")
-Signed-off-by: Macpaul Lin <macpaul.lin@mediatek.com>
-Signed-off-by: Jitao Shi <jitao.shi@mediatek.com>
-Signed-off-by: Pablo Sun <pablo.sun@mediatek.com>
-Reviewed-by: Krzysztof Kozlowski <krzk@kernel.org>
----
- .../display/mediatek/mediatek,dpi.yaml        | 24 ++++++++-----------
- 1 file changed, 10 insertions(+), 14 deletions(-)
 
-Changes for v2:
- - Because of the corresponding dts fix has been reviewed with a Reviewed-by: tag.
-   [1] https://lore.kernel.org/all/20240925080515.16377-1-macpaul.lin@mediatek.com/
-   We still need this change to fix the 2 dtbs_check errors.
-   So keeps no change here.
+> 
+> @Jason,
+>   Do we need any changes to arm-smm-v3 driver?
 
-Changes for v3:
- - The origin patch is [2]
-   https://lore.kernel.org/all/20240926111449.9245-2-macpaul.lin@mediatek.com/
- - Thanks for Conor's reminding, after MediaTek's internal discussion,
-   This patch v3 is the replacement of [2] v2.
-   Because the DPI module should has a explicit configuration with power domain.
- - Drop Acked-by: tag since v3 is nearly a new patch for different approach.
+@Jason,
 
-Changes for v4:
- - No change. Please help to review it again.
+Looking into SMM3 driver it looks like some changes required. Does something
+like below works?
 
-Changes for v5:
- - Add missing Reviewed-by Tag from Krzysztof. Thanks.
 
-diff --git a/Documentation/devicetree/bindings/display/mediatek/mediatek,dpi.yaml b/Documentation/devicetree/bindings/display/mediatek/mediatek,dpi.yaml
-index 3a82aec9021c..497c0eb4ed0b 100644
---- a/Documentation/devicetree/bindings/display/mediatek/mediatek,dpi.yaml
-+++ b/Documentation/devicetree/bindings/display/mediatek/mediatek,dpi.yaml
-@@ -63,6 +63,16 @@ properties:
-       - const: sleep
- 
-   power-domains:
-+    description: |
-+      The MediaTek DPI module is typically associated with one of the
-+      following multimedia power domains:
-+        POWER_DOMAIN_DISPLAY
-+        POWER_DOMAIN_VDOSYS
-+        POWER_DOMAIN_MM
-+      The specific power domain used varies depending on the SoC design.
+diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+index 737c5b882355..4d4af11c5fda 100644
+--- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
++++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+@@ -3088,6 +3088,9 @@ arm_smmu_domain_alloc_user(struct device *dev, u32 flags,
+ 	struct arm_smmu_domain *smmu_domain;
+ 	int ret;
+
++	if (flags & IOMMU_HWPT_ALLOC_PASID)
++		return arm_smmu_domain_alloc_paging(dev);
 +
-+      It is recommended to explicitly add the appropriate power domain
-+      property to the DPI node in the device tree.
-     maxItems: 1
- 
-   port:
-@@ -79,20 +89,6 @@ required:
-   - clock-names
-   - port
- 
--allOf:
--  - if:
--      not:
--        properties:
--          compatible:
--            contains:
--              enum:
--                - mediatek,mt6795-dpi
--                - mediatek,mt8173-dpi
--                - mediatek,mt8186-dpi
--    then:
--      properties:
--        power-domains: false
--
- additionalProperties: false
- 
- examples:
--- 
-2.45.2
+ 	if (flags & ~PAGING_FLAGS)
+ 		return ERR_PTR(-EOPNOTSUPP);
+ 	if (parent || user_data)
+
+
+-Vasant
+
 
