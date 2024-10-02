@@ -1,137 +1,117 @@
-Received: from mail-lf1-f51.google.com (mail-lf1-f51.google.com [209.85.167.51])
+Received: from mail-yb1-f181.google.com (mail-yb1-f181.google.com [209.85.219.181])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 00EAA1D1E85
-	for <iommu@lists.linux.dev>; Wed,  2 Oct 2024 17:58:27 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.51
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 540AF216A19
+	for <iommu@lists.linux.dev>; Wed,  2 Oct 2024 18:55:23 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.219.181
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1727891909; cv=none; b=RZwMp5APT7Eq2fmtC4/KGcXGMmOv8pownP4u5Ge2GhM/N2WD26Z/TGjsXmhP6/T/OJBdV5Ck9tcc+Y2KYOY7FWPzUUqTeRzIOJcG7PHBo9+yqbVqVaxMHk9Aqktf+zkbvV5/2CSBwomHHlWixT3mafB0b6zlyG3Q42nmkGGme5o=
+	t=1727895324; cv=none; b=acPyrMkkdRKSzU8Mg6s+E605v2Qb8zAFq79OIQ55T8FOioBAVaOSTnpURvAlPz7kBIvC4GQHwipiDwT47FTHCs/gYhrr10Y/gVID+ipFgGQaksw+pXPXkdpGnYO40nM8B8ItyeLNim4hZFavGQq+mJ479HRLP77waZHUUIF1bts=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1727891909; c=relaxed/simple;
-	bh=xwkBuhSjkTlBiMz8Xr2IeV1xOh5JXrfBl+ZNGTMHehg=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=leGza2nbf8nuYYrSSef5nHuocMMLYfPLnuH8vMJG346xIEYMcn43+ICSrLPUDLR8oU6nDUgv1VUFgO0PuD5KthNEOepKZloGf0hZ9RxTpFS3Owz1IVUXqi6R2LnQqBhgV12wK3GrIMJSgC6Getyyfs0d7BfpcGbfV1lt+vDus6o=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=ji2++2x4; arc=none smtp.client-ip=209.85.167.51
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
+	s=arc-20240116; t=1727895324; c=relaxed/simple;
+	bh=0ElWqU503cDmthQrkETKoibn+yxrDRTlI0NA4DOSxVY=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=GgHWHqIcpSr/MpkrnHQa8TCLDbMfzqtvy63zYzFNmUNgW8SJktcKw/wrFc35XV1KYkBNrqZJ1MNGYHZ88dyRMQR6iIKUmcWZnIubKD3fd75yQ4iT6FPlLM7kQXc0uDL+XIY5of1xkKxSPiQQqBOxks7BqzsiqKVXPMzX+1ajuWE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=RQl8Y6Om; arc=none smtp.client-ip=209.85.219.181
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="ji2++2x4"
-Received: by mail-lf1-f51.google.com with SMTP id 2adb3069b0e04-536552fcc07so2244e87.1
-        for <iommu@lists.linux.dev>; Wed, 02 Oct 2024 10:58:27 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="RQl8Y6Om"
+Received: by mail-yb1-f181.google.com with SMTP id 3f1490d57ef6-e25cfe70b37so130080276.1
+        for <iommu@lists.linux.dev>; Wed, 02 Oct 2024 11:55:23 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20230601; t=1727891906; x=1728496706; darn=lists.linux.dev;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=3CmciQRMdqJJmdA+o4Yczg2B0DLFpVISB3vcsHITkRI=;
-        b=ji2++2x4ohvT1xg6IGIyWr53tE7arSgufyu9vmeZw6O6hacOYaSKlPTKohqIhxu0i+
-         iw1DvVpLECa+Q+faJU1xI2qhWSZz7Bp7wP6JyA9P+WU48L0NKlLnK9mHAVx4xORgjQzn
-         I6X8yECgdGflzTPj1UeV/WIczWPTlcnNKtFZZwP6Q2RgSEBUZYmsuKt80YG7/B/k7G4l
-         o8+7WK1NIWVvd6vMMOaZfcRadji0PAPcnzZyN7iDdFs8Ui7uV8tIU3R6YHWPhI35UrVT
-         jBBJu2nPG+JtBod7ZzpGwgODX0/Lte1A1Ms3ZgbRQf7mIiQOSf6Vw1ECIsOCGwgueWp5
-         3Gow==
+        d=ziepe.ca; s=google; t=1727895322; x=1728500122; darn=lists.linux.dev;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=0ElWqU503cDmthQrkETKoibn+yxrDRTlI0NA4DOSxVY=;
+        b=RQl8Y6Om6vKImTD9WikLPZDEQRFnXcgHlnZuxCYNW+dS2GhwqE4PIFvWi22EKmUajj
+         yXsu4XAQY3UygsA8AbpeXvOew0Rwe4W9rXnypxoV2O2NjNIyDi0C26emRTGZ+HI8bt61
+         s+Fxe1kFCNOxTPiKGl7mGonw48ljxJT6gWM1YHmesA6q6lxyzplclwGTSjNOwd4bPIfM
+         P9tCcqlN8l/EDFlOFCW4b/ri/SjKUEU3oNECZzNGUlNWBbJ8hO1KDVF+0bzfyBCDUoHL
+         A2KSYcdrByp8QLjQER3fxYdSHsly6hOOLpiKAqfbeYw1b3e52SEEs3/fkLRaOUsTpzO2
+         8+HQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1727891906; x=1728496706;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=3CmciQRMdqJJmdA+o4Yczg2B0DLFpVISB3vcsHITkRI=;
-        b=AkyQirhbJkyHPJEPumnxdR3TTZbxbv0Nl/PE5p89/GXsndxepqJQvleVnvJedpDgUz
-         8iJ+14Hr0HkCYkgZJAE85ZTsUrXf59eqEGkvHCuS5T6QK1i2HwYiR0iCUsRGy2BNLI5H
-         nkxTsPHopJHoAzfMyN0okeIMTQk6RP/agxNhE797UTYC80Z+iTjTPaff+z3omnzQrJZY
-         NamD4jCGhTY9J0a99T2nAMyPeN4UhzJYPbbcVag4VDpx+uMf/gNzmFtl4mG1kPNohgx2
-         VKlN3vTydNUEf7W+KxUWQ8CHzE44sS/5JmuSVijnQWLte8pKOw4CNYsuwbPwwzXj41ov
-         Cg4Q==
-X-Gm-Message-State: AOJu0YyluPa3zxF71k7P2NAuHyQvc+yNu8ptvwuWjEHnGnBIeR5wsNYp
-	knSUnhEQiTers6VNqDYbfHwwC+pKo0o2tVh9goiatQp4AIURCueiPp4vf5WKS99s2Ndbh3z8dzM
-	7bebT5bbgBody/iT1QkgIxVhkNuZsQhoMw55S
-X-Google-Smtp-Source: AGHT+IGXB1RimgWc+7vVzjuyh0WZ76qU8lNNL5d2jOOshylw6MgWVFaY5Y1R85PQukBSl6+UxCcB4LX5B2N/nmUYMrg=
-X-Received: by 2002:a05:6512:238f:b0:539:9f44:db7b with SMTP id
- 2adb3069b0e04-539a6d780a9mr13174e87.1.1727891905550; Wed, 02 Oct 2024
- 10:58:25 -0700 (PDT)
+        d=1e100.net; s=20230601; t=1727895322; x=1728500122;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=0ElWqU503cDmthQrkETKoibn+yxrDRTlI0NA4DOSxVY=;
+        b=q6U2AvNPxTKLW/zhygy8YNsIrbawxo2RHntUhMIyOescYsThj9QpZY4ZknmC9rIYOZ
+         Bwbz4WUlGzn0vL9KqYD34l9iI/8X3vrjx1kQ+1i+1KI/bViym3I2O5tIpDJcaqi1pEqD
+         cTqJLJbV8ZdpEyHVELaTTwos1hL0YriR1qcGrf0iLKS6lNHRofMSagIRp2Hm/STig3hM
+         okA+wMQHvp7WIthg2bA0ZBZUJb96dOs3/Wj+fuQjuyj1ghRTuWzsIzjQTuz31iqpS9J4
+         O3Ue6CvbZWppdsfWIO/xO34VUlywU+aO5FufidGLXV6xPbnC6MKwsWZhKCQZ1uc98oeD
+         iPvw==
+X-Forwarded-Encrypted: i=1; AJvYcCVVHOTS0of+1EOZvBmWFEQGBy7cqM7t56tkyJRR5j1vXSKu8WPEMHWcvHdFshPJmTaE82vynw==@lists.linux.dev
+X-Gm-Message-State: AOJu0YyFJEa5uZoCTjPMniKEC6OVFyvE4cNae12R7eslDtm20HkaBkzb
+	CJHxK77yeUhYH5uzT2zV/nldLiPX7LOKvkP1mde0A7YudXaO0RTOij/hSyy4Ej8=
+X-Google-Smtp-Source: AGHT+IE/4YDKGNMGbzf1cBV3ciJ6gTYpbDOAXQ+3Q/QHeGIUP/Ee9BC7INUAzJEGFa5vHK8ha9AvWQ==
+X-Received: by 2002:a05:6902:1002:b0:e20:268b:8ad0 with SMTP id 3f1490d57ef6-e263838509amr3699684276.5.1727895322247;
+        Wed, 02 Oct 2024 11:55:22 -0700 (PDT)
+Received: from ziepe.ca (hlfxns017vw-142-68-128-5.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.68.128.5])
+        by smtp.gmail.com with ESMTPSA id d75a77b69052e-45d74dacc1csm20873031cf.36.2024.10.02.11.55.21
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 02 Oct 2024 11:55:21 -0700 (PDT)
+Received: from jgg by wakko with local (Exim 4.95)
+	(envelope-from <jgg@ziepe.ca>)
+	id 1sw4VM-00AAFG-Sb;
+	Wed, 02 Oct 2024 15:55:20 -0300
+Date: Wed, 2 Oct 2024 15:55:20 -0300
+From: Jason Gunthorpe <jgg@ziepe.ca>
+To: James Gowans <jgowans@amazon.com>
+Cc: linux-kernel@vger.kernel.org, Kevin Tian <kevin.tian@intel.com>,
+	Joerg Roedel <joro@8bytes.org>,
+	Krzysztof =?utf-8?Q?Wilczy=C5=84ski?= <kw@linux.com>,
+	Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
+	Mike Rapoport <rppt@kernel.org>,
+	"Madhavan T. Venkataraman" <madvenka@linux.microsoft.com>,
+	iommu@lists.linux.dev, Sean Christopherson <seanjc@google.com>,
+	Paolo Bonzini <pbonzini@redhat.com>, kvm@vger.kernel.org,
+	David Woodhouse <dwmw2@infradead.org>,
+	Lu Baolu <baolu.lu@linux.intel.com>,
+	Alexander Graf <graf@amazon.de>, anthony.yznaga@oracle.com,
+	steven.sistare@oracle.com, nh-open-source@amazon.com,
+	"Saenz Julienne, Nicolas" <nsaenz@amazon.es>
+Subject: Re: [RFC PATCH 05/13] iommufd: Serialise persisted iommufds and ioas
+Message-ID: <20241002185520.GL1369530@ziepe.ca>
+References: <20240916113102.710522-1-jgowans@amazon.com>
+ <20240916113102.710522-6-jgowans@amazon.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <20241002015357.1766934-1-danielmentz@google.com> <ZvzGg0P5Bj2sgNZm@Asurada-Nvidia>
-In-Reply-To: <ZvzGg0P5Bj2sgNZm@Asurada-Nvidia>
-From: Daniel Mentz <danielmentz@google.com>
-Date: Wed, 2 Oct 2024 10:58:14 -0700
-Message-ID: <CAE2F3rAQ8BpYcZZBS6BfFeZtMkH9LK7WZ7nniJSbTBW4xDq_rQ@mail.gmail.com>
-Subject: Re: [PATCH] iommu/arm-smmu-v3: Fix last_sid_idx calculation for sid_bits==32
-To: Nicolin Chen <nicolinc@nvidia.com>, Yang Shi <yang@os.amperecomputing.com>
-Cc: iommu@lists.linux.dev, linux-kernel@vger.kernel.org, 
-	Jason Gunthorpe <jgg@nvidia.com>, Ryan Huang <tzukui@google.com>, Will Deacon <will@kernel.org>, 
-	Mostafa Saleh <smostafa@google.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20240916113102.710522-6-jgowans@amazon.com>
 
-On Tue, Oct 1, 2024 at 9:05=E2=80=AFPM Nicolin Chen <nicolinc@nvidia.com> w=
-rote:
->
-> On Tue, Oct 01, 2024 at 06:53:57PM -0700, Daniel Mentz wrote:
-> >
-> > The function arm_smmu_init_strtab_2lvl uses the expression
-> >
-> > ((1 << smmu->sid_bits) - 1)
-> >
-> > to calculate the largest StreamID value. However, this fails for the
-> > maximum allowed value of SMMU_IDR1.SIDSIZE which is 32. The C standard
-> > states:
-> >
-> > "If the value of the right operand is negative or is greater than or
-> > equal to the width of the promoted left operand, the behavior is
-> > undefined."
-> >
-> > With smmu->sid_bits being 32, the prerequisites for undefined behavior
-> > are met.  We observed that the value of (1 << 32) is 1 and not 0 as we
-> > initially expected.
-> >
-> > Similar bit shift operations in arm_smmu_init_strtab_linear seem to not
-> > be affected, because it appears to be unlikely for an SMMU to have
-> > SMMU_IDR1.SIDSIZE set to 32 but then not support 2-level Stream tables
-> >
-> > This issue was found by Ryan Huang <tzukui@google.com> on our team.
->
-> There is a patch that's sent a few hours earlier :)
-> https://lore.kernel.org/linux-arm-kernel/20241001180346.1485194-1-yang@os=
-.amperecomputing.com/
+On Mon, Sep 16, 2024 at 01:30:54PM +0200, James Gowans wrote:
+> Now actually implementing the serialise callback for iommufd.
+> On KHO activate, iterate through all persisted domains and write their
+> metadata to the device tree format. For now just a few fields are
+> serialised to demonstrate the concept. To actually make this useful a
+> lot more field and related objects will need to be serialised too.
 
-Thanks Nicolin.
+But isn't that a rather difficult problem? The "a lot more fields"
+include things like pointers to the mm struct, the user_struct and
+task_struct, then all the pinning accounting as well.
 
-Yang, in your change, I believe you are arguing based on the Arm spec
-("dest =3D src << (shift % 32)"). Consider mentioning that the C
-standard states that this behavior is undefined.
+Coming work extends this to memfds and more is coming. I would expect
+this KHO stuff to use the memfd-like path to access the physical VM
+memory too.
 
->
-> Thanks
-> Nicolin
->
-> > Fixes: ce410410f1a7 ("iommu/arm-smmu-v3: Add arm_smmu_strtab_l1/2_idx()=
-")
-> > Signed-off-by: Daniel Mentz <danielmentz@google.com>
-> > ---
-> >  drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 2 +-
-> >  1 file changed, 1 insertion(+), 1 deletion(-)
-> >
-> > diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iomm=
-u/arm/arm-smmu-v3/arm-smmu-v3.c
-> > index 737c5b882355..b55327d6058e 100644
-> > --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-> > +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-> > @@ -3625,7 +3625,7 @@ static int arm_smmu_init_strtab_2lvl(struct arm_s=
-mmu_device *smmu)
-> >         u32 l1size;
-> >         struct arm_smmu_strtab_cfg *cfg =3D &smmu->strtab_cfg;
-> >         unsigned int last_sid_idx =3D
-> > -               arm_smmu_strtab_l1_idx((1 << smmu->sid_bits) - 1);
-> > +               arm_smmu_strtab_l1_idx((1ULL << smmu->sid_bits) - 1);
-> >
-> >         /* Calculate the L1 size, capped to the SIDSIZE. */
-> >         cfg->l2.num_l1_ents =3D min(last_sid_idx + 1, STRTAB_MAX_L1_ENT=
-RIES);
-> > --
-> > 2.46.1.824.gd892dcdcdd-goog
-> >
+I think expecting to serialize and restore everything like this is
+probably much too complicated.
+
+If you could just retain a small portion and then directly reconstruct
+the missing parts it seems like it would be more maintainable.
+
+Ie "recover" a HWPT from a KHO on a manually created a IOAS with the
+right "memfd" for the backing storage. Then the recovery can just
+validate that things are correct and adopt the iommu_domain as the
+hwpt.
+
+Eventually you'll want this to work for the viommus as well, and that
+seems like a lot more tricky complexity..
+
+Jason
