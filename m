@@ -1,137 +1,135 @@
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-pj1-f43.google.com (mail-pj1-f43.google.com [209.85.216.43])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 40F5C19408D
-	for <iommu@lists.linux.dev>; Wed,  2 Oct 2024 07:38:02 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=170.10.129.124
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0CB50194AD9
+	for <iommu@lists.linux.dev>; Wed,  2 Oct 2024 08:23:59 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.216.43
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1727854683; cv=none; b=jvwXj1GgiXXbMrRpXAH3gRoO38uSKTDB1HZAfQks2Pjj89lkIVHrwCWezv4s9Zi4vWOdEx1NfePRgf9CNz3VpweQz+56ABtGtwfo7Qvisal0NfDM/cKhfabyBK5nw4q7RMFEcYwMahWv9On1ftKVfXPCQKEis8yGl0QIc1wXSW8=
+	t=1727857441; cv=none; b=lqnKaxu7g6ADs7gWevm1S2HbKjGDKGAkxmTR5MU52MMLiAirL5oSaqRWK+Ln+7kbAdHL93y4ozwfkdMEmxJx+FE5CHQ819uwhv00Q9R+uDUodMDBmUdvxGuM5dc8yEuJnCcXPjOIdNctUJk+ifn2e+kv8x4dIpWj6Op7Npprdco=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1727854683; c=relaxed/simple;
-	bh=WE+06bxezNDAqpcu2ZttnmMzwPNs3mFTLb9xN/v5LS8=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=Lc/WJd6xEL7v/wdx6J2PQ4DzQq9y61wY22gInV1JQluVp1VnnJ2kiF5cdo13fwlNXhrrUUN6Fl5Wf9tKkDy3uMrzO1XS2SYg+SaUnNTtAz71QpnWdj7CR2eNm1uyYfjuZo7otA2PTMqd3B1KoQdUOwI9TfO3uchG1lVdGFL53CM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=redhat.com; spf=pass smtp.mailfrom=redhat.com; dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b=KNVes14/; arc=none smtp.client-ip=170.10.129.124
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=redhat.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=redhat.com
+	s=arc-20240116; t=1727857441; c=relaxed/simple;
+	bh=8qT8AJdSAevn7Lon301IIUYaxahlZK6BFR3I/iQhyNk=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=RxO0FJFheLM16qnoUDyrHjeloGh+4ws3pL+HNrrtVujavhzmnXvxpqFivCay8nlV9NQCm9ttMR+GXCPqv9Wgp3fxKljzgrg+FqavjVUandq4yS2FoU2dUDEXkyoN0nuvs94VcMfp12kq0/PNg10GWu5PEd3aib9rgKgtpgI1h4I=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org; spf=pass smtp.mailfrom=linaro.org; dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b=BHW5lW5B; arc=none smtp.client-ip=209.85.216.43
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linaro.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="KNVes14/"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-	s=mimecast20190719; t=1727854681;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references;
-	bh=j08eYaNn2uqZATIiA0jZfTZrfzeBz+jlQCTj6GcTpN8=;
-	b=KNVes14/3JJRBoN+munY7ry+URfle+5VKEkhjArwd9GY5WxZ9uS3phiI5WVOkkasuAM0+N
-	Kz9JS2wbb0y8GSdBTt9NMFJSM6KQVlJ03s94EdOpB2Tzu2FaykBb/tZTMUHoxeeiJaoJl+
-	bzGQS3d0cqbDQh6fOj3OgU7AihfV65A=
-Received: from mail-wm1-f70.google.com (mail-wm1-f70.google.com
- [209.85.128.70]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
- us-mta-639-ByBLSv2tMYaRxAytl5D6Fw-1; Wed, 02 Oct 2024 03:37:59 -0400
-X-MC-Unique: ByBLSv2tMYaRxAytl5D6Fw-1
-Received: by mail-wm1-f70.google.com with SMTP id 5b1f17b1804b1-42cb080ab53so48964185e9.0
-        for <iommu@lists.linux.dev>; Wed, 02 Oct 2024 00:37:59 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="BHW5lW5B"
+Received: by mail-pj1-f43.google.com with SMTP id 98e67ed59e1d1-2e0b0142bbfso428037a91.1
+        for <iommu@lists.linux.dev>; Wed, 02 Oct 2024 01:23:59 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google; t=1727857439; x=1728462239; darn=lists.linux.dev;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date:message-id:reply-to;
+        bh=8qT8AJdSAevn7Lon301IIUYaxahlZK6BFR3I/iQhyNk=;
+        b=BHW5lW5B2eWwX/ymaNnMH3EzHTMBPTPjbBfH8FFfBhcuirPABn8jVYPtsZYSLmIRc4
+         SoRskx13nv+HiW+8bZ34pKV9Qt3f+sasEnUV6eIH1MO8o6xuGqh4nnN9pnWgAP4jd3pE
+         FBA3OAzoPo/diWrG8UEeCJctjlA7AsHdodaTAWYR1SR9ZBj7YGs3B/uV3+oL+EmxGOgM
+         E2kjuastt6ezELl2dDPrMm414wKwYCxZOd7lwKQgUsQueQeLzNhzcootfaLrMvJZP2Ra
+         l2hCZCeCvGmZ4HsN5VBI5uUf7KYmuOEno9bGcPY3JDvSEEPTj3BJ5ByQ3v8NlglNqcCk
+         jAEw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1727854678; x=1728459478;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=j08eYaNn2uqZATIiA0jZfTZrfzeBz+jlQCTj6GcTpN8=;
-        b=wfFK3bYKZtKcMC+wROcdgRiQNgribjQM1FGNZiRwrlW64i45hoa4Aq9nMo3LECa/G9
-         gbf9lMcaNkpR2/Jrbx4vaQK18P4jyXCU/XdmgcjaKcYletETjeyeZ6P56ofLGEYn/AvE
-         KKLYXsV3+/aIysfm09nE5+sCl5TOfsoY6qq27g715d+W7pIpUbmjkr3aEyE9ADcd6zS8
-         hMoNgnLBIkREuA2L/Bcw8EsAuxs47mO1nnchajjczOvRZyMvXwiGUuAuChNqUlxaBw9f
-         Dn5v2Qq9iLlDdbUEDp23Je4l3mNwh3uqEDRUqo6KcynaAjXbXg9qYq7l/MfmhuLH6Zii
-         hUSA==
-X-Forwarded-Encrypted: i=1; AJvYcCXl/btWGA2YOaGSvKilDrZyefnRgvEfgxOJA2T2XCpbj12vx/D6PvsDyzxsuVPzXuYm9yYq/A==@lists.linux.dev
-X-Gm-Message-State: AOJu0Yx0fNXDMTY9Hkag9iz+RcwHRk0z9E3kViX/o96Viw9w1vrPvNHD
-	Zgv5HnEDRj5a59gop7fA2eiIGbYfpAa5fg6fIe7EFHl7G2rqkcCz3cTSfgk0v0uiUAHeRwqiySu
-	zXoad2aplLQ75v5VJOEBE4Ho41WQKIJ4EOb9mXZ+eUxH0dt8E3Tnu
-X-Received: by 2002:a05:600c:1549:b0:42c:b4f1:f281 with SMTP id 5b1f17b1804b1-42f778ffef3mr14810445e9.34.1727854678277;
-        Wed, 02 Oct 2024 00:37:58 -0700 (PDT)
-X-Google-Smtp-Source: AGHT+IEexnVZvq0noKxS76pRMj9/ZaTG1nDs7t0bSMBHW4+0LcSgagoa/Bz8vlb6jQ6CnVv6cUGFfw==
-X-Received: by 2002:a05:600c:1549:b0:42c:b4f1:f281 with SMTP id 5b1f17b1804b1-42f778ffef3mr14809895e9.34.1727854677827;
-        Wed, 02 Oct 2024 00:37:57 -0700 (PDT)
-Received: from [192.168.88.248] (146-241-47-72.dyn.eolo.it. [146.241.47.72])
-        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-42f7a01fc92sm10806665e9.36.2024.10.02.00.37.55
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 02 Oct 2024 00:37:57 -0700 (PDT)
-Message-ID: <4316fa2d-8dd8-44f2-b211-4b2ef3200d75@redhat.com>
-Date: Wed, 2 Oct 2024 09:37:54 +0200
+        d=1e100.net; s=20230601; t=1727857439; x=1728462239;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=8qT8AJdSAevn7Lon301IIUYaxahlZK6BFR3I/iQhyNk=;
+        b=bHY6+aFuibOLqjtDICZRmc4WluFyO62jLGB3oV8cHwiGSiC8lFJ18bK6SpMbC9JalP
+         p/oo5S8v7RMkwYvsb3Rg8+8nsfRshTqFBnDCoyR/Fx4/9TToQuhBgTqTnX6TjFmMJBmw
+         vM3om8zxSbGAtZx/8d3YtaUt99Q2kiS/PEji2X2/ctPGiet/5/H3bvuSeNYtZIEs1JBz
+         KwPm/IInS1irhEWj86iB2a4WQyIjWabGSQ4IOz+rLt+kDj6MZ6AQEiqMtK0TQPPszEWq
+         BmB3cCO5FsHFaRjHl6tw2GwiTkASKnchdKneICV1iz9Cq57tV6pG8lsHkhsC8dT+hjkr
+         DQUA==
+X-Forwarded-Encrypted: i=1; AJvYcCUWZ6sDtl/i4A/VW+Fq9JcLYAOeH3Eka3Q7ltpJnHtGxNBQIhY4im9qL3Bmn7sS0yYrQ4bYzg==@lists.linux.dev
+X-Gm-Message-State: AOJu0YwHlaHtWup8ejpBNvKvFHaakmzKRdD/Iu/8hkyeg0STmFiofS84
+	OkFNpaJmBh70MkSjeCKBxEB70EyePyUqSFbxXTZ5jJ3vnQSjVyRrufhzYpBwnW+21d8/4u4GxSS
+	eYIPnVgjiZelk+aCgUR9b/UGRlFQwSAFsQwB6Jw==
+X-Google-Smtp-Source: AGHT+IEr1vFU0a1kvwV4sZXMH05Rcdg/y0G4x0gieaTwktCZi4DvPvG3W8WrO/0W27YGf2bHaceIX2iLNO+x3PuzjLM=
+X-Received: by 2002:a17:90a:cb8f:b0:2c9:36bf:ba6f with SMTP id
+ 98e67ed59e1d1-2e1851496c6mr3427473a91.3.1727857439139; Wed, 02 Oct 2024
+ 01:23:59 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
+References: <20240925075707.3970187-1-linyunsheng@huawei.com>
+ <20240925075707.3970187-3-linyunsheng@huawei.com> <4968c2ec-5584-4a98-9782-143605117315@redhat.com>
+ <33f23809-abec-4d39-ab80-839dc525a2e6@gmail.com> <4316fa2d-8dd8-44f2-b211-4b2ef3200d75@redhat.com>
+In-Reply-To: <4316fa2d-8dd8-44f2-b211-4b2ef3200d75@redhat.com>
+From: Ilias Apalodimas <ilias.apalodimas@linaro.org>
+Date: Wed, 2 Oct 2024 11:23:22 +0300
+Message-ID: <CAC_iWjLBE9UY2wk_kKE=t=npRBF13HoLWODLUpQJ6F3P8sv4rw@mail.gmail.com>
 Subject: Re: [PATCH net v2 2/2] page_pool: fix IOMMU crash when driver has
  already unbound
-To: Yunsheng Lin <yunshenglin0825@gmail.com>,
- Yunsheng Lin <linyunsheng@huawei.com>,
- Ilias Apalodimas <ilias.apalodimas@linaro.org>
-Cc: liuyonglong@huawei.com, fanghaiqing@huawei.com, zhangkun09@huawei.com,
- Robin Murphy <robin.murphy@arm.com>,
- Alexander Duyck <alexander.duyck@gmail.com>, IOMMU <iommu@lists.linux.dev>,
- Wei Fang <wei.fang@nxp.com>, Shenwei Wang <shenwei.wang@nxp.com>,
- Clark Wang <xiaoning.wang@nxp.com>, Eric Dumazet <edumazet@google.com>,
- Tony Nguyen <anthony.l.nguyen@intel.com>,
- Przemek Kitszel <przemyslaw.kitszel@intel.com>,
- Alexander Lobakin <aleksander.lobakin@intel.com>,
- Alexei Starovoitov <ast@kernel.org>, Daniel Borkmann <daniel@iogearbox.net>,
- Jesper Dangaard Brouer <hawk@kernel.org>,
- John Fastabend <john.fastabend@gmail.com>, Saeed Mahameed
- <saeedm@nvidia.com>, Leon Romanovsky <leon@kernel.org>,
- Tariq Toukan <tariqt@nvidia.com>, Felix Fietkau <nbd@nbd.name>,
- Lorenzo Bianconi <lorenzo@kernel.org>, Ryder Lee <ryder.lee@mediatek.com>,
- Shayne Chen <shayne.chen@mediatek.com>, Sean Wang <sean.wang@mediatek.com>,
- Kalle Valo <kvalo@kernel.org>, Matthias Brugger <matthias.bgg@gmail.com>,
- AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>,
- Andrew Morton <akpm@linux-foundation.org>, imx@lists.linux.dev,
- netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
- intel-wired-lan@lists.osuosl.org, bpf@vger.kernel.org,
- linux-rdma@vger.kernel.org, linux-wireless@vger.kernel.org,
- linux-arm-kernel@lists.infradead.org, linux-mediatek@lists.infradead.org,
- linux-mm@kvack.org, davem@davemloft.net, kuba@kernel.org
-References: <20240925075707.3970187-1-linyunsheng@huawei.com>
- <20240925075707.3970187-3-linyunsheng@huawei.com>
- <4968c2ec-5584-4a98-9782-143605117315@redhat.com>
- <33f23809-abec-4d39-ab80-839dc525a2e6@gmail.com>
-From: Paolo Abeni <pabeni@redhat.com>
-In-Reply-To: <33f23809-abec-4d39-ab80-839dc525a2e6@gmail.com>
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: redhat.com
-Content-Language: en-US
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+To: Paolo Abeni <pabeni@redhat.com>
+Cc: Yunsheng Lin <yunshenglin0825@gmail.com>, Yunsheng Lin <linyunsheng@huawei.com>, 
+	liuyonglong@huawei.com, fanghaiqing@huawei.com, zhangkun09@huawei.com, 
+	Robin Murphy <robin.murphy@arm.com>, Alexander Duyck <alexander.duyck@gmail.com>, 
+	IOMMU <iommu@lists.linux.dev>, Wei Fang <wei.fang@nxp.com>, 
+	Shenwei Wang <shenwei.wang@nxp.com>, Clark Wang <xiaoning.wang@nxp.com>, 
+	Eric Dumazet <edumazet@google.com>, Tony Nguyen <anthony.l.nguyen@intel.com>, 
+	Przemek Kitszel <przemyslaw.kitszel@intel.com>, 
+	Alexander Lobakin <aleksander.lobakin@intel.com>, Alexei Starovoitov <ast@kernel.org>, 
+	Daniel Borkmann <daniel@iogearbox.net>, Jesper Dangaard Brouer <hawk@kernel.org>, 
+	John Fastabend <john.fastabend@gmail.com>, Saeed Mahameed <saeedm@nvidia.com>, 
+	Leon Romanovsky <leon@kernel.org>, Tariq Toukan <tariqt@nvidia.com>, Felix Fietkau <nbd@nbd.name>, 
+	Lorenzo Bianconi <lorenzo@kernel.org>, Ryder Lee <ryder.lee@mediatek.com>, 
+	Shayne Chen <shayne.chen@mediatek.com>, Sean Wang <sean.wang@mediatek.com>, 
+	Kalle Valo <kvalo@kernel.org>, Matthias Brugger <matthias.bgg@gmail.com>, 
+	AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>, 
+	Andrew Morton <akpm@linux-foundation.org>, imx@lists.linux.dev, netdev@vger.kernel.org, 
+	linux-kernel@vger.kernel.org, intel-wired-lan@lists.osuosl.org, 
+	bpf@vger.kernel.org, linux-rdma@vger.kernel.org, 
+	linux-wireless@vger.kernel.org, linux-arm-kernel@lists.infradead.org, 
+	linux-mediatek@lists.infradead.org, linux-mm@kvack.org, davem@davemloft.net, 
+	kuba@kernel.org
+Content-Type: text/plain; charset="UTF-8"
 
-Hi,
+Hi Paolo,
 
-On 10/2/24 04:34, Yunsheng Lin wrote:
-> On 10/1/2024 9:32 PM, Paolo Abeni wrote:
->> Is the problem only tied to VFs drivers? It's a pity all the page_pool
->> users will have to pay a bill for it...
-> 
-> I am afraid it is not only tied to VFs drivers, as:
-> attempting DMA unmaps after the driver has already unbound may leak
-> resources or at worst corrupt memory.
-> 
-> Unloading PFs driver might cause the above problems too, I guess the
-> probability of crashing is low for the PF as PF can not be disable
-> unless it can be hot-unplug'ed, but the probability of leaking resources
-> behind the dma mapping might be similar.
+On Wed, 2 Oct 2024 at 10:38, Paolo Abeni <pabeni@redhat.com> wrote:
+>
+> Hi,
+>
+> On 10/2/24 04:34, Yunsheng Lin wrote:
+> > On 10/1/2024 9:32 PM, Paolo Abeni wrote:
+> >> Is the problem only tied to VFs drivers? It's a pity all the page_pool
+> >> users will have to pay a bill for it...
+> >
+> > I am afraid it is not only tied to VFs drivers, as:
+> > attempting DMA unmaps after the driver has already unbound may leak
+> > resources or at worst corrupt memory.
+> >
+> > Unloading PFs driver might cause the above problems too, I guess the
+> > probability of crashing is low for the PF as PF can not be disable
+> > unless it can be hot-unplug'ed, but the probability of leaking resources
+> > behind the dma mapping might be similar.
+>
+> Out of sheer ignorance, why/how the refcount acquired by the page pool
+> on the device does not prevent unloading?
+>
+> I fear the performance impact could be very high: AFICS, if the item
+> array become fragmented, insertion will take linar time, with the quite
+> large item_count/pool size. If so, it looks like a no-go.
 
-Out of sheer ignorance, why/how the refcount acquired by the page pool 
-on the device does not prevent unloading?
+It would be could if someone could test that. I'll look around in case
+we have any test machines with cards that run on page pool.
 
-I fear the performance impact could be very high: AFICS, if the item 
-array become fragmented, insertion will take linar time, with the quite 
-large item_count/pool size. If so, it looks like a no-go.
+>
+> I fear we should consider blocking the device removal until all the
+> pages are returned/unmapped ?!? (I hope that could be easier/faster)
 
-I fear we should consider blocking the device removal until all the 
-pages are returned/unmapped ?!? (I hope that could be easier/faster)
+Jakub send an RFC doing that [0]. Yes, this is far far simpler and
+does not affect performance, but aren't we implicitly breaking
+userspace?
 
-/P
+[0] https://lore.kernel.org/netdev/20240806151618.1373008-1-kuba@kernel.org/
 
+Thanks
+/Ilias
+>
+> /P
+>
