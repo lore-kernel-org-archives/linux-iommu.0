@@ -1,96 +1,111 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-yw1-f201.google.com (mail-yw1-f201.google.com [209.85.128.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6B1E3802;
-	Wed,  2 Oct 2024 01:51:21 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A362823BB
+	for <iommu@lists.linux.dev>; Wed,  2 Oct 2024 01:54:01 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1727833881; cv=none; b=mmu9eUHmwZr66bGwTmyEqD8bksGGjjamo7iFxzv6So+gPtia3lAovgoqQF1QsgM27/9usMcxvZKK4pCyvQj9wi4NXOGJlL4ymxQUbN663m80N3dlOUT7GzdF/u8hvwTFlH2k/UL/Pn8hhEEG+0U9F9VPHho2JD6t8r+RA/9bwmY=
+	t=1727834043; cv=none; b=kTRuYb1kNOhVM24aUMSLYP6oou8psJXc42SZf7+6Rh0h1yyJu8GM5Lks8qT5uzabBlO95QyJ1xWFJC9mhqc1HYeWEQbcKkfHlPPS5VNhGS5ulZnZTE+v0HcaBvDrCs1Dh2qCTJ9IxMbbSy0KSbZy5s2sIDfKouFPtDtRpuL2APo=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1727833881; c=relaxed/simple;
-	bh=5zXX1GxmTVudwxxhQ5BxxstLJNAqQANcQJXzqffqHKE=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=HlvhIPXMyW8z0rF2fF6yjEn+OB7Q0SyQWHMrMmKtRwQ/wdtY3rRe1h3Kp/uhSpnFtCGPqWN85z8wUvgS7/JpjAZ04LzTEaMB71phc30bF42LW/S4/WF2C8BVAjHSIncPqWm0NZ2EnOH8cGx4jsiSSoVVYBxzIOL/no2Dx8J0+js=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=fgXrHyln; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1727834043; c=relaxed/simple;
+	bh=iPmQ53/8uwlzl108KEIavw7gfZhKpeC9rw9spHywT/M=;
+	h=Date:Mime-Version:Message-ID:Subject:From:To:Cc:Content-Type; b=ZPzj8ICDA2Q7fx0q122Jkflv/+XJ8XVAow+gXoKxAj+O4n2sSAfIlw/txgeUT0wrsTdudRtF2bB3N3gET2ERXnCPLhxyEZA7Td4ib1hwC6DyAKEVLHCEe9BcZEns08yTEEvjvxM94mscrqR4sLxIFydh21bLdmPyfwasv72i9zE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=flex--danielmentz.bounces.google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=b1Rpos2J; arc=none smtp.client-ip=209.85.128.201
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=flex--danielmentz.bounces.google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="fgXrHyln"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B85B4C4CEC6;
-	Wed,  2 Oct 2024 01:51:20 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1727833880;
-	bh=5zXX1GxmTVudwxxhQ5BxxstLJNAqQANcQJXzqffqHKE=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=fgXrHylnk4H2qzVpJwHSQAJfkFOvBS6/r9g91vMACFhmXgP7zU+vLRokgPa6LkNY7
-	 bXSPx8cmJOqvFJuEnRBasaHi7xf1cUzHvKZuXLqMObFKbMi57bErYHm23AkzW/+bvC
-	 LMfSWF90ZR7Zs5X3u0bjgPH5TXJz91afowjY1jIZNNuhhB1BCvE8PTvmPchffoSzWj
-	 v0s8XkiGTGtKJWWadIIU6qQiPLzEUC90VbFCsZU/IBGo9gPegMMuOIlSMzxL81cAM1
-	 P93xMA7fWMzVolNuI0scTNJzgDzFw6LefUd2B4uqbUXLizU2lX3AqB+E9pgmgLlvdu
-	 GLdNR7bWWsY6g==
-Date: Tue, 1 Oct 2024 20:51:20 -0500
-From: Rob Herring <robh@kernel.org>
-To: Macpaul Lin <macpaul.lin@mediatek.com>
-Cc: Chun-Kuang Hu <chunkuang.hu@kernel.org>,
-	Philipp Zabel <p.zabel@pengutronix.de>,
-	David Airlie <airlied@gmail.com>, Simona Vetter <simona@ffwll.ch>,
-	Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
-	Maxime Ripard <mripard@kernel.org>,
-	Thomas Zimmermann <tzimmermann@suse.de>,
-	Krzysztof Kozlowski <krzk+dt@kernel.org>,
-	Conor Dooley <conor+dt@kernel.org>, Yong Wu <yong.wu@mediatek.com>,
-	Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
-	Robin Murphy <robin.murphy@arm.com>,
-	Matthias Brugger <matthias.bgg@gmail.com>,
-	AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>,
-	Rohit Agarwal <rohiagar@chromium.org>,
-	dri-devel@lists.freedesktop.org, linux-mediatek@lists.infradead.org,
-	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-	iommu@lists.linux.dev, linux-arm-kernel@lists.infradead.org,
-	Alexandre Mergnat <amergnat@baylibre.com>,
-	Bear Wang <bear.wang@mediatek.com>,
-	Pablo Sun <pablo.sun@mediatek.com>, Macpaul Lin <macpaul@gmail.com>,
-	Sen Chu <sen.chu@mediatek.com>,
-	Chris-qj chen <chris-qj.chen@mediatek.com>,
-	MediaTek Chromebook Upstream <Project_Global_Chrome_Upstream_Group@mediatek.com>,
-	Chen-Yu Tsai <wenst@chromium.org>,
-	Jitao Shi <jitao.shi@mediatek.com>
-Subject: Re: [PATCH v4 5/5] dt-bindings: display: mediatek: dpi: correct
- power-domains property
-Message-ID: <20241002015120.GA236278-robh@kernel.org>
-References: <20240930083854.7267-1-macpaul.lin@mediatek.com>
- <20240930083854.7267-5-macpaul.lin@mediatek.com>
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="b1Rpos2J"
+Received: by mail-yw1-f201.google.com with SMTP id 00721157ae682-6e28b624fc6so38063417b3.3
+        for <iommu@lists.linux.dev>; Tue, 01 Oct 2024 18:54:01 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20230601; t=1727834040; x=1728438840; darn=lists.linux.dev;
+        h=cc:to:from:subject:message-id:mime-version:date:from:to:cc:subject
+         :date:message-id:reply-to;
+        bh=xwNwLD5VPrrbmrHEO02rJObyH9FboBGpkB8LL0CUjZ4=;
+        b=b1Rpos2JbVTSEAR25LbpChW4/h4c7Lzk06tfGuJPJjEIGh9TIyEXWKH8Ut337zhVSl
+         f+xOy3Q/mPGuvn0LZbI9BV7B+LGKA9pmgW3tqM4DDy9cRn7iyEQfxYqrJRlMPw4Igo5s
+         I8CuYfIe84c1VcHQm5JThgJLiN4Y2XdMHJKUgKb1zRW7AGt3qJe6x2kdQlbLqruAh/MY
+         WlMXROw6MVoCWbeCl3uFeIdZP5HHg/qRMbrimn+q0EMgJ0R7HdCPTVxe2es3aGobtKuj
+         210h1smxDwe7dp/qx51r06Mk62jzqMCzjTkZgqH2iMz7Hprm6+WejOgvPK8t08IOpj1l
+         dCmQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1727834040; x=1728438840;
+        h=cc:to:from:subject:message-id:mime-version:date:x-gm-message-state
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=xwNwLD5VPrrbmrHEO02rJObyH9FboBGpkB8LL0CUjZ4=;
+        b=tai5UZf0IZMhHJb6k3lzrj3kX+zSctXlv0DnKCBsAOnaZSFNizrpEH0qcdrjLtIBbB
+         A+PfVlmyLQRN52tZuNCWXbK/3BdpbQ4K8RWnOw9MbIU7N44Wgsl3p+Bi40YnfvOxmLCD
+         BNgkX731t2FxrHQAHbzaM18pL6aGTEmotVAO4q51t9YsbwpiJBHo1YTDWKHx2hcSB5E8
+         EVJcZOj9/+NtQ9Fxis67OaEE3bXFTw2H064+TdF7dCBoK4qNgI8d+CBcMLQR9gZ8cmiG
+         V2QCf1rP4L3ZIpreNO3hOBuVWzmmMB/RsUxFD2xA/MM80nB1YJHskTVwplF1OJQkLCXf
+         KQFQ==
+X-Gm-Message-State: AOJu0YwOBcSy0ZNmmbx4/TIBSf214eglu3RCDNzRS8e4ANwWG8zGCU+x
+	vF0em5QqZeGg4tIjNhpThRh00AuPNDsuwC6ifVmdRmUF6JkB0onh6lez6NVx1CARIyw7sTB6Lnk
+	6QtjbS/9o3Sc3r7IcmQdFycbxYUp0/Vdwfbl+CnR3DDgAaSZuCcrKU/LQV8fGgOeCJmhP/hFsSd
+	qZrYnqsr6e7i4+FL/d30BJURlJW4GHRFy/jDVz3zOjreUWlNR934yfa1OkCA==
+X-Google-Smtp-Source: AGHT+IEreRxj3UJ+eyKPDi6Sf4q3fIvXsjlvsCIK555j7t8s/9KSqq6Ritz7lEozWnEFR990rByVwRgkzbJfngDmfw==
+X-Received: from danielmentz2.mtv.corp.google.com ([2620:15c:72:202:bd57:7475:38c3:b469])
+ (user=danielmentz job=sendgmr) by 2002:a05:690c:7090:b0:6e2:1ab6:699a with
+ SMTP id 00721157ae682-6e2a3064928mr211467b3.7.1727834040420; Tue, 01 Oct 2024
+ 18:54:00 -0700 (PDT)
+Date: Tue,  1 Oct 2024 18:53:57 -0700
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20240930083854.7267-5-macpaul.lin@mediatek.com>
+Mime-Version: 1.0
+X-Mailer: git-send-email 2.46.1.824.gd892dcdcdd-goog
+Message-ID: <20241002015357.1766934-1-danielmentz@google.com>
+Subject: [PATCH] iommu/arm-smmu-v3: Fix last_sid_idx calculation for sid_bits==32
+From: Daniel Mentz <danielmentz@google.com>
+To: iommu@lists.linux.dev, linux-kernel@vger.kernel.org
+Cc: Jason Gunthorpe <jgg@nvidia.com>, Nicolin Chen <nicolinc@nvidia.com>, Ryan Huang <tzukui@google.com>, 
+	Will Deacon <will@kernel.org>, Mostafa Saleh <smostafa@google.com>, 
+	Daniel Mentz <danielmentz@google.com>
+Content-Type: text/plain; charset="UTF-8"
 
-On Mon, Sep 30, 2024 at 04:38:54PM +0800, Macpaul Lin wrote:
-> The MediaTek DPI module is typically associated with one of the
-> following multimedia power domains:
->  - POWER_DOMAIN_DISPLAY
->  - POWER_DOMAIN_VDOSYS
->  - POWER_DOMAIN_MM
-> The specific power domain used varies depending on the SoC design.
-> 
-> These power domains are shared by multiple devices within the SoC.
-> In most cases, these power domains are enabled by other devices.
-> As a result, the DPI module of legacy SoCs often functions correctly
-> even without explicit configuration.
-> 
-> It is recommended to explicitly add the appropriate power domain
-> property to the DPI node in the device tree. Hence drop the
-> compatible checking for specific SoCs.
-> 
-> Fixes: 5474d49b2f79 ("dt-bindings: display: mediatek: dpi: Add power domains")
-> Signed-off-by: Macpaul Lin <macpaul.lin@mediatek.com>
-> Signed-off-by: Jitao Shi <jitao.shi@mediatek.com>
-> Signed-off-by: Pablo Sun <pablo.sun@mediatek.com>
-> ---
->  .../display/mediatek/mediatek,dpi.yaml        | 24 ++++++++-----------
->  1 file changed, 10 insertions(+), 14 deletions(-)
+The function arm_smmu_init_strtab_2lvl uses the expression
 
-You missed Krzysztof's R-by tag.
+((1 << smmu->sid_bits) - 1)
+
+to calculate the largest StreamID value. However, this fails for the
+maximum allowed value of SMMU_IDR1.SIDSIZE which is 32. The C standard
+states:
+
+"If the value of the right operand is negative or is greater than or
+equal to the width of the promoted left operand, the behavior is
+undefined."
+
+With smmu->sid_bits being 32, the prerequisites for undefined behavior
+are met.  We observed that the value of (1 << 32) is 1 and not 0 as we
+initially expected.
+
+Similar bit shift operations in arm_smmu_init_strtab_linear seem to not
+be affected, because it appears to be unlikely for an SMMU to have
+SMMU_IDR1.SIDSIZE set to 32 but then not support 2-level Stream tables
+
+This issue was found by Ryan Huang <tzukui@google.com> on our team.
+
+Fixes: ce410410f1a7 ("iommu/arm-smmu-v3: Add arm_smmu_strtab_l1/2_idx()")
+Signed-off-by: Daniel Mentz <danielmentz@google.com>
+---
+ drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+index 737c5b882355..b55327d6058e 100644
+--- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
++++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+@@ -3625,7 +3625,7 @@ static int arm_smmu_init_strtab_2lvl(struct arm_smmu_device *smmu)
+ 	u32 l1size;
+ 	struct arm_smmu_strtab_cfg *cfg = &smmu->strtab_cfg;
+ 	unsigned int last_sid_idx =
+-		arm_smmu_strtab_l1_idx((1 << smmu->sid_bits) - 1);
++		arm_smmu_strtab_l1_idx((1ULL << smmu->sid_bits) - 1);
+ 
+ 	/* Calculate the L1 size, capped to the SIDSIZE. */
+ 	cfg->l2.num_l1_ents = min(last_sid_idx + 1, STRTAB_MAX_L1_ENTRIES);
+-- 
+2.46.1.824.gd892dcdcdd-goog
+
