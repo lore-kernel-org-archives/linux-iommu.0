@@ -1,53 +1,53 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.16])
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A3329624;
-	Wed,  2 Oct 2024 00:14:19 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.16
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9AC551FA4;
+	Wed,  2 Oct 2024 01:07:43 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1727828062; cv=none; b=pVt3k9pVW4WiHhWZeR+uYF7qbIvUvV7dBFOWes7QC4HpKXtbBEs2bEt6pe1t/3ZqpAXa55r7TuezKrPZEKrQtrzle3xAlSWtoHZf8066Nj2GTtSeRSp4jcQxW1Wi87+elENWSadh1nRAazP5gENl9hg3o7HGyy5pZodFo+oLyC4=
+	t=1727831265; cv=none; b=Pr4wzP2D6t8RaUDqDnxckqLskb6H7HfjG2YjkOi41/dpmpq1z0vqUdgqFkcNFv+xj+yuI3s/uiwS7piivdIyQ4qBMf4zw0KLGhAMIwcfKKYzIpfZdN2ab2RWUFGwnKLcWbpxQpnWivFbniyUcKxH1MxfT+RpEOY65pInL/WgkX0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1727828062; c=relaxed/simple;
-	bh=v9C6ilDiJg0A0ytpHCTqTr0C3nnG5RgBkwEzFypgyZg=;
+	s=arc-20240116; t=1727831265; c=relaxed/simple;
+	bh=LkjFi6v3vLf+bfDTftYzlcbFaz3AIiseSki2Mn1jeb8=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=m6ivMANMK6BKHfKByDLiz7bTHUxEpmNBtbu4yzb0LEV0YlCPq3tZrWw/NFfZx37Z1/FXgWKLCrL+330fn6xGCgIDVBs3hySP58J2Pr27eHvbxUARD5VKQ4dtsLPYuM8hvuXJt/pFQthl//z8jzZA0Glp7G6Dys87ZJr+5j/5En4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=O+JQIHMu; arc=none smtp.client-ip=198.175.65.16
+	 Content-Type:Content-Disposition:In-Reply-To; b=Gtx+dfKkmP+7sME368asrftvt4hFmJbjcfFMV/QbBkXQ92DSFjba33Vz4Rk3ofKScAh/sppgewmSJe5sRL6X6j2SshSJtT2R7T+x5DNpE3jHIzDx6effHx4xImVPUGhkgKEW5xsi/Vnwm/7r+0yVl283lH6jUheo+ErDFXJQSag=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=QnOqz1U0; arc=none smtp.client-ip=192.198.163.18
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="O+JQIHMu"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="QnOqz1U0"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1727828059; x=1759364059;
+  t=1727831264; x=1759367264;
   h=date:from:to:cc:subject:message-id:references:
    mime-version:in-reply-to;
-  bh=v9C6ilDiJg0A0ytpHCTqTr0C3nnG5RgBkwEzFypgyZg=;
-  b=O+JQIHMuDPZT52G8AVStUlWX88VmH4YU82LpPyBFlIYJ+FFeMYiiezmi
-   DVyMZNpeP8nX4/WSB9u0s23tHi+sbNzZO+I5iUh9DchR/nycMzGK3qqXa
-   6bGnDystb30xAUq/4cnbguzCoUewtf34vFFs9uPtLWwoXr/BHEPK/Y+Q/
-   pUPXZDuF521WYTdpD886epoa6/PkQWFnEijxXIh2F9SdAgPer2VawpuRe
-   PyAMgObCXPar8eycmJUbYv1QKkT7nL178CEoychcFDDafOtAm8Rlda6zp
-   C8I+1yY/XJ8FZNbcUMCKDg7Nl+ksHYyv8+xwVQ693nVNUYwJkSr8ZOtni
-   Q==;
-X-CSE-ConnectionGUID: bZ5AuMJNSGiyiMg2HUXKyQ==
-X-CSE-MsgGUID: RFvSD5jmSqmxwoW4yiEUJg==
-X-IronPort-AV: E=McAfee;i="6700,10204,11212"; a="27080702"
-X-IronPort-AV: E=Sophos;i="6.11,169,1725346800"; 
-   d="scan'208";a="27080702"
-Received: from orviesa004.jf.intel.com ([10.64.159.144])
-  by orvoesa108.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Oct 2024 17:14:19 -0700
-X-CSE-ConnectionGUID: 7UNkonJCRau/To8i+iMeHA==
-X-CSE-MsgGUID: HV1l8ql8RUWkOv1auV4sDQ==
+  bh=LkjFi6v3vLf+bfDTftYzlcbFaz3AIiseSki2Mn1jeb8=;
+  b=QnOqz1U0go9uQv2oUpoTxEqjziTkt3GSjvHjGra+5NFJz64rhxidAAlH
+   opn6i0UyhVzjwYpXsVvug4xsQhMPbl3ydb3tmH9xRmqWScNR3gdq6cxCf
+   o7iNjHQyiUZaz72ec/pMfbiwHJ4I6Xoft8x3eMeC7PUgWeK8NMx3Ifqtf
+   4/xZcOJ4qURmMWzXwqf+UIg5UAV/tmTDHGQ3ipK1DxwgFMS1ydGci44bu
+   EgJYfqY+6C6L+f4UnduYU1QMemyIGYN6j9qEFb2ni4MEANucBG3KFGJYj
+   K1pbM82sksYj/9gQHF0cLFLy/Oxst4YYqyF3vWyIJ5ZRPOpS/2wDiNdYS
+   w==;
+X-CSE-ConnectionGUID: 4CUPj3OwRE+qXZigoUZPgw==
+X-CSE-MsgGUID: Dua8mH7JTn+x/PhIy+FtiA==
+X-IronPort-AV: E=McAfee;i="6700,10204,11212"; a="26457719"
+X-IronPort-AV: E=Sophos;i="6.11,170,1725346800"; 
+   d="scan'208";a="26457719"
+Received: from fmviesa003.fm.intel.com ([10.60.135.143])
+  by fmvoesa112.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Oct 2024 18:07:43 -0700
+X-CSE-ConnectionGUID: ElPzYp++TlKRUIodJxJzpg==
+X-CSE-MsgGUID: 1jj51WQsRMijeU3fBjmjIA==
 X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.11,169,1725346800"; 
-   d="scan'208";a="78816944"
+X-IronPort-AV: E=Sophos;i="6.11,170,1725346800"; 
+   d="scan'208";a="77882719"
 Received: from lkp-server01.sh.intel.com (HELO 53e96f405c61) ([10.239.97.150])
-  by orviesa004.jf.intel.com with ESMTP; 01 Oct 2024 17:14:16 -0700
+  by fmviesa003.fm.intel.com with ESMTP; 01 Oct 2024 18:07:40 -0700
 Received: from kbuild by 53e96f405c61 with local (Exim 4.96)
 	(envelope-from <lkp@intel.com>)
-	id 1svn0P-000RLV-1R;
-	Wed, 02 Oct 2024 00:14:13 +0000
-Date: Wed, 2 Oct 2024 08:14:00 +0800
+	id 1svnq5-000ROB-2G;
+	Wed, 02 Oct 2024 01:07:37 +0000
+Date: Wed, 2 Oct 2024 09:07:09 +0800
 From: kernel test robot <lkp@intel.com>
 To: Pratyush Brahma <quic_pbrahma@quicinc.com>, will@kernel.org
 Cc: oe-kbuild-all@lists.linux.dev, robin.murphy@arm.com, joro@8bytes.org,
@@ -59,7 +59,7 @@ Cc: oe-kbuild-all@lists.linux.dev, robin.murphy@arm.com, joro@8bytes.org,
 	Prakash Gupta <quic_guptap@quicinc.com>
 Subject: Re: [PATCH] iommu/arm-smmu: Defer probe of clients after smmu device
  bound
-Message-ID: <202410020820.gY0d4AkK-lkp@intel.com>
+Message-ID: <202410020856.Gp3LtJKA-lkp@intel.com>
 References: <20241001055633.21062-1-quic_pbrahma@quicinc.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
@@ -73,10 +73,10 @@ In-Reply-To: <20241001055633.21062-1-quic_pbrahma@quicinc.com>
 
 Hi Pratyush,
 
-kernel test robot noticed the following build warnings:
+kernel test robot noticed the following build errors:
 
-[auto build test WARNING on soc/for-next]
-[also build test WARNING on linus/master v6.12-rc1 next-20241001]
+[auto build test ERROR on soc/for-next]
+[also build test ERROR on linus/master v6.12-rc1 next-20241001]
 [If your patch is applied to the wrong git tree, kindly drop us a note.
 And when submitting patch, we suggest to use '--base' as documented in
 https://git-scm.com/docs/git-format-patch#_base_tree_information]
@@ -85,19 +85,19 @@ url:    https://github.com/intel-lab-lkp/linux/commits/Pratyush-Brahma/iommu-arm
 base:   https://git.kernel.org/pub/scm/linux/kernel/git/soc/soc.git for-next
 patch link:    https://lore.kernel.org/r/20241001055633.21062-1-quic_pbrahma%40quicinc.com
 patch subject: [PATCH] iommu/arm-smmu: Defer probe of clients after smmu device bound
-config: i386-buildonly-randconfig-004-20241002 (https://download.01.org/0day-ci/archive/20241002/202410020820.gY0d4AkK-lkp@intel.com/config)
-compiler: gcc-12 (Debian 12.2.0-14) 12.2.0
-reproduce (this is a W=1 build): (https://download.01.org/0day-ci/archive/20241002/202410020820.gY0d4AkK-lkp@intel.com/reproduce)
+config: s390-allyesconfig (https://download.01.org/0day-ci/archive/20241002/202410020856.Gp3LtJKA-lkp@intel.com/config)
+compiler: s390-linux-gcc (GCC) 14.1.0
+reproduce (this is a W=1 build): (https://download.01.org/0day-ci/archive/20241002/202410020856.Gp3LtJKA-lkp@intel.com/reproduce)
 
 If you fix the issue in a separate patch/commit (i.e. not just a new version of
 the same patch/commit), kindly add following tags
 | Reported-by: kernel test robot <lkp@intel.com>
-| Closes: https://lore.kernel.org/oe-kbuild-all/202410020820.gY0d4AkK-lkp@intel.com/
+| Closes: https://lore.kernel.org/oe-kbuild-all/202410020856.Gp3LtJKA-lkp@intel.com/
 
-All warnings (new ones prefixed by >>):
+All errors (new ones prefixed by >>):
 
    drivers/iommu/arm/arm-smmu/arm-smmu.c: In function 'arm_smmu_probe_device':
->> drivers/iommu/arm/arm-smmu/arm-smmu.c:1441:32: warning: returning 'int' from a function with return type 'struct iommu_device *' makes pointer from integer without a cast [-Wint-conversion]
+>> drivers/iommu/arm/arm-smmu/arm-smmu.c:1441:32: error: returning 'int' from a function with return type 'struct iommu_device *' makes pointer from integer without a cast [-Wint-conversion]
     1441 |                         return dev_err_probe(dev, -EPROBE_DEFER, "smmu dev has not bound yet\n");
          |                                ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
