@@ -1,170 +1,126 @@
-Received: from bali.collaboradmins.com (bali.collaboradmins.com [148.251.105.195])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-wm1-f46.google.com (mail-wm1-f46.google.com [209.85.128.46])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4CC971E633E
-	for <iommu@lists.linux.dev>; Wed,  2 Oct 2024 10:12:18 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=148.251.105.195
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B9AD61E52C
+	for <iommu@lists.linux.dev>; Wed,  2 Oct 2024 13:08:58 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.46
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1727863940; cv=none; b=DTGdkg5OyYlDyPYtWRKOLxFrCeAfYRNPl9dHL0t+W+3oRyH6Zgjcq8dj7oevvUGCLFsMJxMk/+9SSMTqEIMgo5llOBd0ZAYlwuIdo9S7DZusZYuvEUH3ga6nOv5zZ1whaSkCCMa9Lj8g5i159ibGWkHHKDRY709qOe5Omv2iz64=
+	t=1727874540; cv=none; b=DhB0H5spgQONrm8k7zGkNLIOC7Jjc8wxnfX468pbv0LXud3PlqoxjxIVvg7ZKfFiceP/37cGVr3cxM5ChWXLD8W7rdOUFFj1ePp9bECyI3vLuApsCoIVhW5qK2kGQbXuMBXx/3BIgdskY2OxnCd1lsTzggVnP+LQ7wK/dgGP2Qk=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1727863940; c=relaxed/simple;
-	bh=Q1ywTNB9lkgOQO9Ms/otIbM6l1ohtJ5nkE73nfT4W4A=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=u5JWYi0K20z0rD7Zcuq9E7eR18iGUO61u1Ek/LgSA8hV9uGAK4lLhH0NKbGRi50TIrUV1lyvbbD8cvDbEcGczhNPhPjZGuI1WXMhBrFvsYii+fNkvQ6Jsh4X3eoYDVQ37l2rJA0O8MAakdCl5lqmmoOEsxERrWewBiQhdqT5nSo=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=collabora.com; spf=pass smtp.mailfrom=collabora.com; dkim=pass (2048-bit key) header.d=collabora.com header.i=@collabora.com header.b=Rv9Qo73V; arc=none smtp.client-ip=148.251.105.195
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=collabora.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=collabora.com
+	s=arc-20240116; t=1727874540; c=relaxed/simple;
+	bh=5JzLNnQQnrOmpQls1H8OZPPLSuyJxI4wo7X30H+T75o=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=kVs1khCjqwLXzaJ1KC83bm27N1Rmj2mwAmixYJVh+JVW0MfHacXHy9NkIHsVL/lNeoGPlQdzn7Ve3ctyQUGJXeBKM4o/BNf2A25JM5yalm5xd0Z+/GxtzXEVP56r/VS3iPoE0enrmOkFYOj3tGsfm9nlmg6m1UBuYvmY+QWSePE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=fV/vxy8l; arc=none smtp.client-ip=209.85.128.46
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=collabora.com header.i=@collabora.com header.b="Rv9Qo73V"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-	s=mail; t=1727863936;
-	bh=Q1ywTNB9lkgOQO9Ms/otIbM6l1ohtJ5nkE73nfT4W4A=;
-	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-	b=Rv9Qo73V3EUDx56HkQEEO2qvo2sdZ/FM+dPqx3fDZsJqmtp6+M5+hsXpdziSvNxBF
-	 wClZ2AgIwXsek37vXzRz9QN7lAxUNoNaAvLXEitHlj/P6GIaV4UqkV8FjiplPxXxrX
-	 3iDyEXOwKWcYwoUk+fMZRAWPw6rfxv0QPy+nD4+Tq8y36CVTczqymkNevqkv0sfmoH
-	 dkf/Oo7AEglmo4i/H73KROqwVBgG43I2pGVBF6U0BbdTlCfYSwEIMgRaGl5zIqk2GN
-	 hQKmavYQhND0B4iNpSUeEQMbfw0zuJJKINdT9cLYMNaIFYanTkvfK5OiXRkbEUzZSK
-	 4JHKnUW04+PyQ==
-Received: from [192.168.1.100] (2-237-20-237.ip236.fastwebnet.it [2.237.20.237])
-	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
-	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
-	(No client certificate requested)
-	(Authenticated sender: kholk11)
-	by bali.collaboradmins.com (Postfix) with ESMTPSA id 3D49E17E121F;
-	Wed,  2 Oct 2024 12:12:15 +0200 (CEST)
-Message-ID: <c952603f-2c01-48f1-9cd3-7ebc8f06a98c@collabora.com>
-Date: Wed, 2 Oct 2024 12:12:14 +0200
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="fV/vxy8l"
+Received: by mail-wm1-f46.google.com with SMTP id 5b1f17b1804b1-42cbe624c59so54243125e9.3
+        for <iommu@lists.linux.dev>; Wed, 02 Oct 2024 06:08:58 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20230601; t=1727874537; x=1728479337; darn=lists.linux.dev;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=iDzLb9HAzFTHgXYVz3PmjPQQXCozDoYo6tlRepDN6bo=;
+        b=fV/vxy8lW70oH3e1EFeAUpDgVIXbj3g15rB3QgRz2DJYu9GPLdMPEA7KKjxulIjiID
+         Of/68b1+V3rjB06ehA/m3WsE1jH05sWcJbkbnd8KXR735FP+DOaGjEZhT2Lwkp43Ez6u
+         aIpY3PJFcSzbUTN/SyXR0hGYO0w6NCFbqlv6sQHR/dlBfGOIxnCCEVDljqDVxGPkwOl+
+         Th3gbSh4OTpDwq837aJG9W3wAMyRcVG01eRZn6HMr34FSyRA84GiAZfz0BOqfa9asLVw
+         PD0tbImiDf5Y3MyBJfUpYE+PAPSrWUysRkR6hN6OuQKs1xkfF20beFIzeRvc60mtcob3
+         QW9g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1727874537; x=1728479337;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=iDzLb9HAzFTHgXYVz3PmjPQQXCozDoYo6tlRepDN6bo=;
+        b=tN8pjcdoHaSs8rp6bammJyyzKQSkrBml42xVZ2DOXg2ZH/b/kxm/nDmrgwb67DgeIG
+         bikJWBMNGVgej/seUzxrBlWpt0VlQKLttmz6cpH4KR1pJGDh59AbhD938eBypDDgIqYL
+         PcHkAVbTBhgMzuJ/VmwmwTHBx4flnWn6zn+R7x/EKPfJtObh0vhK5Zv55wN1lbo6vVWu
+         aZIEbET+N/Wy5TXoFobnSy1Dt6Nzd29NZ5a9iTIjpN/ABWc3ACXmhwdAjCvSInYJsRIp
+         HqY6FIkyXvVHsbE3GrjL9nyXryrC9gtNv4rIqSekvPTlZ4q4Fp6R/7JDKK0oVwhOex7d
+         n3mg==
+X-Forwarded-Encrypted: i=1; AJvYcCVyPc9yYr8VgLIk4WDmKGiQUO674Qbhvha0vE73SYczvPnrpH5pUuQGI7nYyBVkox94YHy0bA==@lists.linux.dev
+X-Gm-Message-State: AOJu0YwN3tgh3vQVSh/Jb3YQFMCLlslQUN8hlLUcQXioLotXAWoHqsP6
+	j9+USDgEuVMkVHIb84OjrfY7d+nvRSUFby5cQk1eRHLKQ4LPmmrX
+X-Google-Smtp-Source: AGHT+IHR6RcwL9ReqzZogaagqjsddxTFMWs1j+r9XSbzqBMh60lKg0uPR+rCk40BiTv3g2mACBc/0A==
+X-Received: by 2002:a05:600c:3b05:b0:42c:b750:19ce with SMTP id 5b1f17b1804b1-42f777b628fmr22785625e9.1.1727874536784;
+        Wed, 02 Oct 2024 06:08:56 -0700 (PDT)
+Received: from localhost (net-2-44-101-4.cust.vodafonedsl.it. [2.44.101.4])
+        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-42f79ec066fsm18151785e9.13.2024.10.02.06.08.55
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 02 Oct 2024 06:08:56 -0700 (PDT)
+Date: Wed, 2 Oct 2024 15:08:54 +0200
+From: Alessandro Zanni <alessandro.zanni87@gmail.com>
+To: Robin Murphy <robin.murphy@arm.com>
+Cc: joro@8bytes.org, will@kernel.org, iommu@lists.linux.dev, 
+	linux-kernel@vger.kernel.org, skhan@linuxfoundation.org, anupnewsmail@gmail.com
+Subject: Re: [PATCH] iommu/dma: Potential uninitialized variable in
+ iommu_dma_unmap_sg
+Message-ID: <5qpb5dotpef5livw36yok7vnbe7ylj5hg34azlpow6t5ca2xoh@sppdu63wbx3o>
+References: <20241002083131.18135-1-alessandro.zanni87@gmail.com>
+ <472d2dcc-82ce-44f3-b991-6aba1e4d18f9@arm.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v2 2/5] dt-bindings: iommu: mediatek: Fix interrupt count
- constraint for new SoCs
-To: Macpaul Lin <macpaul.lin@mediatek.com>,
- Chun-Kuang Hu <chunkuang.hu@kernel.org>,
- Philipp Zabel <p.zabel@pengutronix.de>, David Airlie <airlied@gmail.com>,
- Simona Vetter <simona@ffwll.ch>,
- Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
- Maxime Ripard <mripard@kernel.org>, Thomas Zimmermann <tzimmermann@suse.de>,
- Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>,
- Conor Dooley <conor+dt@kernel.org>, Yong Wu <yong.wu@mediatek.com>,
- Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
- Robin Murphy <robin.murphy@arm.com>,
- Matthias Brugger <matthias.bgg@gmail.com>, CK Hu <ck.hu@mediatek.com>,
- Jitao shi <jitao.shi@mediatek.com>, Tinghan Shen
- <tinghan.shen@mediatek.com>, Seiya Wang <seiya.wang@mediatek.com>,
- Ben Lok <ben.lok@mediatek.com>, "Nancy . Lin" <nancy.lin@mediatek.com>,
- dri-devel@lists.freedesktop.org, linux-mediatek@lists.infradead.org,
- devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
- iommu@lists.linux.dev, linux-arm-kernel@lists.infradead.org,
- Alexandre Mergnat <amergnat@baylibre.com>
-Cc: Bear Wang <bear.wang@mediatek.com>, Pablo Sun <pablo.sun@mediatek.com>,
- Macpaul Lin <macpaul@gmail.com>, Sen Chu <sen.chu@mediatek.com>,
- Chris-qj chen <chris-qj.chen@mediatek.com>,
- MediaTek Chromebook Upstream
- <Project_Global_Chrome_Upstream_Group@mediatek.com>,
- Chen-Yu Tsai <wenst@chromium.org>
-References: <20240926111449.9245-1-macpaul.lin@mediatek.com>
- <20240926111449.9245-2-macpaul.lin@mediatek.com>
- <8883c84d-8333-4b04-83b5-022be5b6153c@collabora.com>
- <a41bf3aa-812e-2234-cca8-c68a8420f9e4@mediatek.com>
-From: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
-Content-Language: en-US
-In-Reply-To: <a41bf3aa-812e-2234-cca8-c68a8420f9e4@mediatek.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <472d2dcc-82ce-44f3-b991-6aba1e4d18f9@arm.com>
 
-Il 02/10/24 07:01, Macpaul Lin ha scritto:
-> 
-> 
-> On 9/30/24 16:49, AngeloGioacchino Del Regno wrote:
->> Il 26/09/24 13:14, Macpaul Lin ha scritto:
->>> The infra-iommu node in mt8195.dtsi was triggering a CHECK_DTBS error due
->>> to an excessively long 'interrupts' property. The error message was:
->>>
-> 
-> [snip]
-> 
->>>
->>> diff --git a/Documentation/devicetree/bindings/iommu/mediatek,iommu.yaml 
->>> b/Documentation/devicetree/bindings/iommu/mediatek,iommu.yaml
->>> index ea6b0f5f24de..fdd2996d2a31 100644
->>> --- a/Documentation/devicetree/bindings/iommu/mediatek,iommu.yaml
->>> +++ b/Documentation/devicetree/bindings/iommu/mediatek,iommu.yaml
->>> @@ -96,7 +96,8 @@ properties:
->>>       maxItems: 1
->>>     interrupts:
->>> -    maxItems: 1
->>> +    minItems: 1
->>> +    maxItems: 5
->>>     clocks:
->>>       items:
->>> @@ -210,6 +211,28 @@ allOf:
->>>         required:
->>>           - mediatek,larbs
->>> +  - if:
->>> +      properties:
->>> +        compatible:
->>> +          contains:
->>> +            enum:
->>> +              - mediatek,mt8195-iommu-infra
->>> +
->>> +    then:
->>> +      properties:
->>> +        interrupts:
->>> +          description: |
->>
->> Do you really need to keep the formatting?
->>
->> If you rephrase that as:
->>
->> The infra IOMMU in MT8195 has five banks: each features one set
->> of APB registers for the normal world (set 0), one
-> 
-> Shouldn't we use a 'three' here?
+Hi,
 
-Oops, yes, that's three. I wrote 'one' but described three. Heh!
+this fix has been raised by a static analysis tool and it's more a similar to
+a warning than a error/bug, even if the tool labels it as error.
 
-> Three APB register sets for the protected world 1, protected world 2,
-> and protected world 3.
+I checked the code but, honestly, is quite hard to me to find a combination 
+that might lead to an issue because it's strictly dependent on how the driver
+works and the causes may be multiple, as you said: sg_dma_is_bus_address() 
+true for all; sg_dma_len() false on the first; zero segments for the loop.
 
-three APB register sets for the protected world (sets 1/2/3) -- or
-three APB register sets for the protected world (sets 1-3)
+I sent this patch because maybe can be useful to avoid a possibile, unlikely,
+combination that may lead to an error.
 
-I mean, repeating "protected world X" three times is too much I think :-)
+Up to you to decide either it's useful or not.
 
+Thanks,
+Alessandro
+
+On 24/10/02 10:45, Robin Murphy wrote:
+> On 2024-10-02 9:31 am, Alessandro Zanni wrote:
+> > This patch fix the possibility to have the variable 'start'
+> > not initialized.
 > 
->> for the protected
->> world (sets 1-3) and one for the secure world (set 4), and each set
->> has its own interrupt. Therefore, five interrupts are needed.
->>
->> ...you won't need the bar :-)
+> Why should it need initialising though? For "start" to never be set, then
+> either sg_dma_is_bus_address() is true for the whole list, or the list is
+> bogus and has sg_dma_len()==0 on the very first segment. Either way, the
+> second loop will then do nothing, "if (end)" will remain false, and thus
+> "start" will not be used. Where's the bug?
 > 
-> Thanks for the suggestion. The description has been moved to
-> top common property in v3, and v4,
-> hence the bar is still required to explain the
-> others SOCs. I'll try to rephrase the description for MT8195 also.
-
-Sure. You're welcome!
-
+> Thanks,
+> Robin.
 > 
->>> +            The IOMMU of MT8195 has 5 banks: 0/1/2/3/4.
->>> +            Each bank has a set of APB registers corresponding to the
->>> +            normal world, protected world 1/2/3, and secure world, respectively.
->>> +            Therefore, 5 interrupt numbers are needed.
->>> +          maxItems: 5
->>
->> minItems: 5
->>
->> Cheers,
->> Angelo
->>
->>
-> 
-> Thanks
-> Macpaul Lin
-
+> > Smatch tool raises the error:
+> > drivers/iommu/dma-iommu.c:1510
+> > iommu_dma_unmap_sg() error: uninitialized symbol 'start'.
+> > 
+> > Signed-off-by: Alessandro Zanni <alessandro.zanni87@gmail.com>
+> > ---
+> >   drivers/iommu/dma-iommu.c | 2 +-
+> >   1 file changed, 1 insertion(+), 1 deletion(-)
+> > 
+> > diff --git a/drivers/iommu/dma-iommu.c b/drivers/iommu/dma-iommu.c
+> > index 2a9fa0c8cc00..5b2596f4b24f 100644
+> > --- a/drivers/iommu/dma-iommu.c
+> > +++ b/drivers/iommu/dma-iommu.c
+> > @@ -1496,7 +1496,7 @@ int iommu_dma_map_sg(struct device *dev, struct scatterlist *sg, int nents,
+> >   void iommu_dma_unmap_sg(struct device *dev, struct scatterlist *sg, int nents,
+> >   		enum dma_data_direction dir, unsigned long attrs)
+> >   {
+> > -	dma_addr_t end = 0, start;
+> > +	dma_addr_t end = 0, start = 0;
+> >   	struct scatterlist *tmp;
+> >   	int i;
