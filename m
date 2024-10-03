@@ -1,56 +1,56 @@
-Received: from mail-pl1-f180.google.com (mail-pl1-f180.google.com [209.85.214.180])
+Received: from mail-pl1-f172.google.com (mail-pl1-f172.google.com [209.85.214.172])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B0FB328373
-	for <iommu@lists.linux.dev>; Thu,  3 Oct 2024 03:54:13 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.180
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1569840879
+	for <iommu@lists.linux.dev>; Thu,  3 Oct 2024 03:54:14 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.172
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1727927655; cv=none; b=MalTs82hMBs4dHfEx558JbVBur9UNlcdFfYNFNFEnE3++7DzfYJrsX+iIJic9QLpWxHTmoNPpPA8WyUQpoC7ukhiEy5hjNAo4HXEs2Vi7GCQEoGKQXRjRINDPEEAFmD0VtkapZYDPtwjZa9VXQ72DzV21WaZPH65Z79I7MdiVWo=
+	t=1727927656; cv=none; b=FnHrTHnHEaxoceVG8hmD3vwU3N2A21DwEW/4He+jEHiIbrCCh0uRvT59HgNwrMJ/TWhZqKujlC3kSYtCkD/Sxj1uy8eKyo2fHQOQB3W5d8/BFF/WoPyWDMIwd4pZNfF/6HjN6il+5KOIS4hul9urj36vktN9GS+wE+hqAFv8IbI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1727927655; c=relaxed/simple;
-	bh=Ls1umv3AoV9OAW7lcwxqmR9VNmxVlUZafJfEKvveDpc=;
+	s=arc-20240116; t=1727927656; c=relaxed/simple;
+	bh=pneaunq42UDCs3Bs1TW/8ZciN54md0YfS4FpuQiIs44=;
 	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
-	 MIME-Version; b=de+F3V1dKtp4j2+y64Bn0/r2fTa8K+PuNREgDyim2hE9TKlxQnzsWOthKKVcYuhzFAauJ1UPwxkg3VBjmyfTPO1TcgkEQk+2qk9NmzShXxynKpadYHjvZebvrCV8KueMdFVnXkVEk8rgMkBupb3sWQqi+2euQ9zkDg24qhoGdCA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=MwQhaqJ4; arc=none smtp.client-ip=209.85.214.180
+	 MIME-Version; b=b6lUd3SoLsbvsh7c7IGpHC5o9vl+A2BPRNRDdP9LkfJbGYPlj8qZEpBdkkUTpxWr4XiL07C1kBkE5S93uz7U1EBsXZfgM/Xry+rMMjqFjK23QIQQ8JCSWFg2v4w3fqgxTiToM+9G+VmjzKHDfcow1LqA+BaQPIuipL7WQVUGRfY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=fKmev3C5; arc=none smtp.client-ip=209.85.214.172
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="MwQhaqJ4"
-Received: by mail-pl1-f180.google.com with SMTP id d9443c01a7336-20bc2970df5so3155095ad.3
-        for <iommu@lists.linux.dev>; Wed, 02 Oct 2024 20:54:13 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="fKmev3C5"
+Received: by mail-pl1-f172.google.com with SMTP id d9443c01a7336-207115e3056so3450395ad.2
+        for <iommu@lists.linux.dev>; Wed, 02 Oct 2024 20:54:14 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1727927653; x=1728532453; darn=lists.linux.dev;
+        d=gmail.com; s=20230601; t=1727927654; x=1728532454; darn=lists.linux.dev;
         h=content-transfer-encoding:mime-version:reply-to:references
          :in-reply-to:message-id:date:subject:cc:to:from:from:to:cc:subject
          :date:message-id:reply-to;
-        bh=rl3DJj69ip2vtdwvZRZRwJS0N9IcEuELubliNXpPJz0=;
-        b=MwQhaqJ40tTxiL4gDPlHokvBrAT2yD45yhIqJNJ7he0idHqhdCdghkL+SEZD2nxHWL
-         Z4bRTGIYl+r0aSoDoQunwZaCEu5uj/Nw9BgjwDvRgIWpguF9+nPi2nTR970XsR9Qbpzn
-         dh13FyV9eQdedvvE3XRwVm7mYIdTQ97WD4Bqvrc5Iodbw46vhFBqkPzPqI+R6Nc7xGn7
-         xHXpeHbjfHvJfZKKj9qHpLYEd0/GUge3+Okl0wGn2t4aG9DZe/5TaHagvaGb1WlpRPJk
-         q2qDiVDPE293CtqHvH/RGgpcRg04pMx3JOQJMf0mF3bCKZp8y7uE4MzxdlBS2z2EV6wq
-         3xPg==
+        bh=cq0XjbGrpMlRn53fkSkj2ZE6QfO3xJ5aVKsySHlaSk8=;
+        b=fKmev3C5z0m9hV8fc1xWWgNMZIMmb+MF9CYRIs0xkix9ImlvoUqekdo1ezay4oBmhY
+         VBheMeHLCvi0nYKwfOXylhjLNpbXcq2Ooh4A8eiXv/O7F6YPeFlDU9j+AmgngqtjSmIT
+         +wr/hHrKSMmtDKDpN8DrEm3nfNuuFnZtnMvlW1qrKJY90zk+L/dtoCLYmNXwSYVdcOdp
+         xNOlu3t1j1FE36buwOT8Y87FpAQMZS7ZZB3GlwoYKlQcDgyphg9MLJH+js3LDWjytxYi
+         EK+z7OIf1pW9CdwDfmw/S6QQI25QDhjuJVL6oSJoe22OvvEnlBWGXTifbvr/LxyLy4xF
+         4qXg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1727927653; x=1728532453;
+        d=1e100.net; s=20230601; t=1727927654; x=1728532454;
         h=content-transfer-encoding:mime-version:reply-to:references
          :in-reply-to:message-id:date:subject:cc:to:from:x-gm-message-state
          :from:to:cc:subject:date:message-id:reply-to;
-        bh=rl3DJj69ip2vtdwvZRZRwJS0N9IcEuELubliNXpPJz0=;
-        b=fXGcIFjO8yvTngdLfcvEPi7MXR/rFjTg1UsbhqbC6Tgch1EwKD1lt3wnLhuqRz7Zof
-         E7KCBklLU4t+E5FiFoB2D/1Ss7BKGDS2r7qPfXZwA7ppSXDkN4MGZSAZrB47eBMydhHA
-         PHIcN6nntbqQDll9tVC0hTU8lZRNjHjXR4F879Iz2Yj/m9y1s6pn4YJ5xv0No8sjiMiZ
-         XnJIspc7V3TOo147EOrkb5N0W2LR1V0XGjgRejkBDTTn5w4Z5+vkRxw+wau6sj5iFkOv
-         JR9Eez86v3PPn/M8iQFYR91QeV0jCqWIhFLyiIBnS+zoCDM8neqqp/AQ+iT63N2VrVQ+
-         xTPw==
-X-Gm-Message-State: AOJu0Yw7NDaycjwDn6z5nINAkltyrpLWpe0Vbm9gBzvKdryjdk0cmMGg
-	o6rEfSTq8UYIhMweRAYPCEfIqUc0QFl3Y+dB5shyw1EHs4OQ0lzJ
-X-Google-Smtp-Source: AGHT+IHU9fSIrpIZr2B/Cle3Jn+UyUSHLNjXtriJssD67baJWW1ZC7PtSkc/R6T/Z0ZRvy1RrGfrSw==
-X-Received: by 2002:a17:903:944:b0:207:6e8:1d84 with SMTP id d9443c01a7336-20bc5a4e9d2mr68426335ad.42.1727927652878;
-        Wed, 02 Oct 2024 20:54:12 -0700 (PDT)
+        bh=cq0XjbGrpMlRn53fkSkj2ZE6QfO3xJ5aVKsySHlaSk8=;
+        b=IjuukxQ2Rcp2tFlG7zhG1usavmxbTSZDRt+qAS3BHQZhvrajy08f20XmdPble7okte
+         sCAOQ+6bfkAtcCOY3mfphK2x99cyHMKCbIp2PlW/xbKXYDq0X2840OG+Fwd6rHlEv6+9
+         FsBTGQXjbZ6Ons9LE14VV7nK64GBbXINeq2PqxAUGd+mgIAw6KSKrA3dUx3Jg6g+a/IU
+         rifd7Yjh8Z1dfv7s5koCM/YCNbRBODLxwBwI9pa+RMkninE7VtQweIOgQru/RT/DmTwC
+         jKyM1NVCqzfOolP+86Mq5S8LbijFXTHPKYUnBHsYHr/oT384d/afWMefrYNyZhvzeK1O
+         Cslg==
+X-Gm-Message-State: AOJu0YwiBTJoEH+yiPGho7qn0pNfj0sXaG7sUOYqlCMFblp/pYu98ArR
+	DBLNTs4vSi7TfuFp0x1LXzkXqrVkxD4WwrBTutByiJqN3JkGuLBm
+X-Google-Smtp-Source: AGHT+IHQarg1wLyg3MVulXjHU7XNbDYC9jQJBTn5bjTS6CS6tyLfUuDFFuLBjAX11JvWqCMk5JvUAg==
+X-Received: by 2002:a17:902:d4cd:b0:20b:c264:fde8 with SMTP id d9443c01a7336-20bc59f9fcfmr79593655ad.22.1727927654255;
+        Wed, 02 Oct 2024 20:54:14 -0700 (PDT)
 Received: from localhost.localdomain (c-67-160-120-253.hsd1.wa.comcast.net. [67.160.120.253])
-        by smtp.gmail.com with ESMTPSA id d9443c01a7336-20beead8dc2sm906115ad.44.2024.10.02.20.54.11
+        by smtp.gmail.com with ESMTPSA id d9443c01a7336-20beead8dc2sm906115ad.44.2024.10.02.20.54.13
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 02 Oct 2024 20:54:12 -0700 (PDT)
+        Wed, 02 Oct 2024 20:54:13 -0700 (PDT)
 From: mhkelley58@gmail.com
 X-Google-Original-From: mhklinux@outlook.com
 To: kys@microsoft.com,
@@ -77,9 +77,9 @@ Cc: iommu@lists.linux.dev,
 	linux-hyperv@vger.kernel.org,
 	linux-kernel@vger.kernel.org,
 	linux-scsi@vger.kernel.org
-Subject: [PATCH 1/5] x86/hyperv: Don't assume cpu_possible_mask is dense
-Date: Wed,  2 Oct 2024 20:53:29 -0700
-Message-Id: <20241003035333.49261-2-mhklinux@outlook.com>
+Subject: [PATCH 2/5] Drivers: hv: Don't assume cpu_possible_mask is dense
+Date: Wed,  2 Oct 2024 20:53:30 -0700
+Message-Id: <20241003035333.49261-3-mhklinux@outlook.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20241003035333.49261-1-mhklinux@outlook.com>
 References: <20241003035333.49261-1-mhklinux@outlook.com>
@@ -94,44 +94,57 @@ Content-Transfer-Encoding: 8bit
 
 From: Michael Kelley <mhklinux@outlook.com>
 
-Current code allocates the hv_vp_assist_page array with size
+Current code allocates the hv_vp_index array with size
 num_possible_cpus(). This code assumes cpu_possible_mask is dense,
 which is not true in the general case per [1]. If cpu_possible_mask
 is sparse, the array might be indexed by a value beyond the size of
 the array.
 
 However, the configurations that Hyper-V provides to guest VMs on x86
-hardware, in combination with how x86 code assigns Linux CPU numbers,
-*does* always produce a dense cpu_possible_mask. So the dense assumption
-is not currently causing failures. But for robustness against future
-changes in how cpu_possible_mask is populated, update the code to no
-longer assume dense.
+and ARM64 hardware, in combination with how architecture specific code
+assigns Linux CPU numbers, *does* always produce a dense cpu_possible_mask.
+So the dense assumption is not currently causing failures. But for
+robustness against future changes in how cpu_possible_mask is populated,
+update the code to no longer assume dense.
 
-The correct approach is to allocate the array with size "nr_cpu_ids".
-While this leaves unused array entries corresponding to holes in
-cpu_possible_mask, the holes are assumed to be minimal and hence the
-amount of memory wasted by unused entries is minimal.
+The correct approach is to allocate and initialize the array using size
+"nr_cpu_ids". While this leaves unused array entries corresponding to
+holes in cpu_possible_mask, the holes are assumed to be minimal and hence
+the amount of memory wasted by unused entries is minimal.
+
+Using nr_cpu_ids also reduces initialization time, in that the loop to
+initialize the array currently rescans cpu_possible_mask on each
+iteration. This is n-squared in the number of CPUs, which could be
+significant for large CPU counts.
 
 [1] https://lore.kernel.org/lkml/SN6PR02MB4157210CC36B2593F8572E5ED4692@SN6PR02MB4157.namprd02.prod.outlook.com/
 
 Signed-off-by: Michael Kelley <mhklinux@outlook.com>
 ---
- arch/x86/hyperv/hv_init.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/hv/hv_common.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/arch/x86/hyperv/hv_init.c b/arch/x86/hyperv/hv_init.c
-index 95eada2994e1..2cec4dfec165 100644
---- a/arch/x86/hyperv/hv_init.c
-+++ b/arch/x86/hyperv/hv_init.c
-@@ -473,7 +473,7 @@ void __init hyperv_init(void)
- 	if (hv_isolation_type_tdx())
- 		hv_vp_assist_page = NULL;
- 	else
--		hv_vp_assist_page = kcalloc(num_possible_cpus(),
-+		hv_vp_assist_page = kcalloc(nr_cpu_ids,
- 					    sizeof(*hv_vp_assist_page),
- 					    GFP_KERNEL);
- 	if (!hv_vp_assist_page) {
+diff --git a/drivers/hv/hv_common.c b/drivers/hv/hv_common.c
+index d50caf0d723d..8c44938cb084 100644
+--- a/drivers/hv/hv_common.c
++++ b/drivers/hv/hv_common.c
+@@ -345,14 +345,14 @@ int __init hv_common_init(void)
+ 		BUG_ON(!hyperv_pcpu_output_arg);
+ 	}
+ 
+-	hv_vp_index = kmalloc_array(num_possible_cpus(), sizeof(*hv_vp_index),
++	hv_vp_index = kmalloc_array(nr_cpu_ids, sizeof(*hv_vp_index),
+ 				    GFP_KERNEL);
+ 	if (!hv_vp_index) {
+ 		hv_common_free();
+ 		return -ENOMEM;
+ 	}
+ 
+-	for (i = 0; i < num_possible_cpus(); i++)
++	for (i = 0; i < nr_cpu_ids; i++)
+ 		hv_vp_index[i] = VP_INVAL;
+ 
+ 	return 0;
 -- 
 2.25.1
 
