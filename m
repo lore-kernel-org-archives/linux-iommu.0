@@ -1,70 +1,40 @@
-Received: from mail-pl1-f182.google.com (mail-pl1-f182.google.com [209.85.214.182])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9A73E748D
-	for <iommu@lists.linux.dev>; Thu,  3 Oct 2024 21:34:43 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.182
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 498DF1BD01F;
+	Thu,  3 Oct 2024 21:39:34 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1727991285; cv=none; b=cPObYgMc0IdPSrIV1D06d869Y0dL7hpIvMeUvmxVgWarn57s9Mh7d3xpiAbD9DACzLlZCdaP9FyS1fW/Q1XElBWyuf9AIfrqwDDnLI68SlQICFv3LNnub9hN37bzjUHTlYiJxgJPmQ2mupENUacxBi0VPi9y1ARtmUCr2JHZaEI=
+	t=1727991575; cv=none; b=uqt0KXcQrIZyuZ5zDGPcBCPxEENb27WMAWMc2O7I4Jpogwpv8p2DAhBj4fTOoGXC6hrAj9XORfpWLzux/J/KEqZN5l9lR3/CYRnHUkz929XOxr2IAFHrhI9au6D3V9nmUPmynyr0GQeebMNifIm8OaXkkVA5KwOf4rV3VoUQBus=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1727991285; c=relaxed/simple;
-	bh=qNY+5NSaCAJYNalWulvIs88Q8iSOGCHW0wnlJOF/CkA=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=f4Ff1r3aSiOeZf3K7o60Kqz8YkCV3cxNfJYvYfAJMuxX0Q29ILKX119milvPaxTsK+uD3XkjQ+j6JpOWTrG2GeR1eGjc7fnGQUWfTRkwa6E4Vp5TNx7zEe2L4/SRvqNW6oJ1SPktlNYQ/0bQtzY9OzwQ45Vw31ZfmYS+68rJWQA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=idlrTZUU; arc=none smtp.client-ip=209.85.214.182
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
+	s=arc-20240116; t=1727991575; c=relaxed/simple;
+	bh=g9FV0YPeoBlLFnXeB9872pXI8atzqPwVsaTCFwhYqRI=;
+	h=Date:From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:
+	 Content-Disposition:In-Reply-To; b=SSoCvPy/aeuN1DPTyOvb+VUWCpdN3BXZ+zov4lnZ9/sT32sQqeBII1la8zTB47keKgtr8HFY1vSH+FG5UxlYWp2nOKfaQbJ+xSpO9wa+nfqqHhgWERcvlBEJsNkdnvbrM3fKEfj/2hMT91kfyiZhgx4MzxwZxXTPOHTKtfFhjxo=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=kjQmAtzE; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="idlrTZUU"
-Received: by mail-pl1-f182.google.com with SMTP id d9443c01a7336-20b3d1a77bbso62375ad.0
-        for <iommu@lists.linux.dev>; Thu, 03 Oct 2024 14:34:43 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20230601; t=1727991283; x=1728596083; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=L4ETA/oZHNQ8ZYrD1eF7OuF/od9qN8JKOa4YFKcaMO8=;
-        b=idlrTZUU4NIVIL3vAFR5Rp/2PN0zW4tcCo4Xq4B0XASbNDIPxssIx/aZZbUbg81jyE
-         l4fdqGBGSxpQI+P6sCqfRbD9dG3Tbok7VqyBSDqtgN1T5Ijl5+Au/9kCxkpdnjZk0LPH
-         /2PkTIii2EJe8L8MW8hIS1bgZWFNEozVGosM/NPzRsstFnUJoyoFwZ6OZz9oW9kD1BYF
-         StQuuNRfZJfsth14soUqeszeSlxB2uZBaPSTnQA5S3UgNC1C4aPDryyU3GyekwoJuzsG
-         XDtyCkfksFSWFxCB1dtq4prp6tkcU9lpZ56dobKKnXRFh9kyQ2UAnyVdo6JUwBfnKuEz
-         BoIw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1727991283; x=1728596083;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=L4ETA/oZHNQ8ZYrD1eF7OuF/od9qN8JKOa4YFKcaMO8=;
-        b=WUUFXXmxlJCskwqpbQ2CvaI1G9HKhi18fm79xaKvrZLoQmOH/xEMkYEMraprMcTvv8
-         2GkJT4IbNs7NSWyvaUjDTykZ+sFbK6bHG2EWYgZC+E1cfJDJjyOwTeo3msdlP5pZA4nW
-         l03aja/SPTf3t8m0aW+iughK8iCfSXFAfYgRWUOYydOC5oilvklG2oCXGS1PW/9IUJ8r
-         STw97ECRUcnLTvIYsc+u7pPBmst16iIzMGfaBOKG/v2E9Pj76epcXoufZSStf2qW1cOp
-         0DqS72RLagVhjmpbe7Ong89AVAhIPG0ynILNZG6fxBSYyT81X9k+6xKyViAfWhjDoK+A
-         Jskg==
-X-Forwarded-Encrypted: i=1; AJvYcCVTQXQchnvuQGNa069zy9UbdHWOz46qv/XuZulS/JfxQhCKVedDJU6pRnyn4h9Cx0q5dja17w==@lists.linux.dev
-X-Gm-Message-State: AOJu0Yxva6G6WVpOt1Ri0gwMdK2VEXakzDm0NHsfAkFs9ABovG9StUmU
-	nFdu1AQM6czwtX4/F8diHQvzYkOQQ3Z4s4NAJbdcJ02kMTQVBAxG5UFk3mZFTA==
-X-Google-Smtp-Source: AGHT+IE3j6HRjW51a7wbZtrttn/jacQzvPukK4dxzXvBHbwgPjVPfDVSCJgftXH/A243bLNahICOxw==
-X-Received: by 2002:a17:902:da8f:b0:206:ae39:9f9 with SMTP id d9443c01a7336-20c00dcefd8mr399175ad.21.1727991282517;
-        Thu, 03 Oct 2024 14:34:42 -0700 (PDT)
-Received: from google.com (62.166.143.34.bc.googleusercontent.com. [34.143.166.62])
-        by smtp.gmail.com with ESMTPSA id 41be03b00d2f7-7e9dcb138b2sm1205869a12.39.2024.10.03.14.34.40
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 03 Oct 2024 14:34:42 -0700 (PDT)
-Date: Thu, 3 Oct 2024 21:34:35 +0000
-From: Pranjal Shrivastava <praan@google.com>
-To: Nicolin Chen <nicolinc@nvidia.com>
-Cc: Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
-	Robin Murphy <robin.murphy@arm.com>,
-	Mostafa Saleh <smostafa@google.com>, iommu@lists.linux.dev
-Subject: Re: [PATCH v3 2/2] iommu/arm-smmu-v3: Adopt arm_smmu_event in
- handlers
-Message-ID: <Zv8N6yIeNXao_Yqm@google.com>
-References: <20240928005143.2378938-1-praan@google.com>
- <20240928005143.2378938-3-praan@google.com>
- <Zvr8xUEHNg1GiA8V@Asurada-Nvidia>
- <ZvxjcpQCFM5SU9P-@google.com>
- <Zvx+6qBY3og8lRWe@Asurada-Nvidia>
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="kjQmAtzE"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 73E5FC4CEC5;
+	Thu,  3 Oct 2024 21:39:34 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1727991574;
+	bh=g9FV0YPeoBlLFnXeB9872pXI8atzqPwVsaTCFwhYqRI=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:From;
+	b=kjQmAtzEi2SuMXXTRmdlVZbFtSuWuIsGwPtPQ/Qr8B/rts7zHSm7OWYyJGzridcHE
+	 ENSYUFGWbh63/3dCy3Kfy04B9pZqzmeE4Nq6Ls4v7zorcf1PVAr/ukx2rVtpR20y73
+	 VP0EwoL/Zye97Iri6alowj2vESpusajCzmdARU5Zl2BhDujKmDWGBKWWoYTNh8mJj/
+	 ZfuT08Uiycu1Y9LLBYFqASe4aiFvpr7dQ9bRMAhVU/kxy83bca+eve3Zps9aT23g39
+	 aCg0kZ32vOtTwCZY1rfLKdKer6lDKwMpLATZQzdxtNL8eB86wSNTvvO0i9dYWWnh81
+	 snrGQ+eR1NaIg==
+Date: Thu, 3 Oct 2024 16:39:32 -0500
+From: Bjorn Helgaas <helgaas@kernel.org>
+To: Lu Baolu <baolu.lu@linux.intel.com>, Kevin Tian <kevin.tian@intel.com>,
+	Joerg Roedel <jroedel@suse.de>
+Cc: David Woodhouse <dwmw2@infradead.org>, linux-pci@vger.kernel.org,
+	iommu@lists.linux.dev
+Subject: Re: [Bug 219349] New: RIP: 0010:pci_for_each_dma_alias
+ (./include/linux/pci.h:692 drivers/pci/search.c:41)
+Message-ID: <20241003213932.GA324584@bhelgaas>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -73,79 +43,308 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <Zvx+6qBY3og8lRWe@Asurada-Nvidia>
+In-Reply-To: <bug-219349-41252@https.bugzilla.kernel.org/>
 
-On Tue, Oct 01, 2024 at 03:59:54PM -0700, Nicolin Chen wrote:
-> On Tue, Oct 01, 2024 at 09:02:42PM +0000, Pranjal Shrivastava wrote:
-> > On Mon, Sep 30, 2024 at 12:32:21PM -0700, Nicolin Chen wrote:
-> > > On Sat, Sep 28, 2024 at 12:51:43AM +0000, Pranjal Shrivastava wrote:
-> > > >         mutex_lock(&smmu->streams_mutex);
-> > > > -       master = arm_smmu_find_master(smmu, sid);
-> > > > -       if (!master) {
-> > > > +       event->master = arm_smmu_find_master(smmu, event->sid);
-> > > > +       if (!event->master) {
-> > > >                 ret = -EINVAL;
-> > > > +               event->master_name = "(unassigned sid)";
-> > > >                 goto out_unlock;
-> > > >         }
-> > >
-> > > The PATCH-1 already did arm_smmu_find_master() to event->master in
-> > > arm_smmu_get_evt_info()?
-> > >
-> > > Maybe we still need a wider mutex to lock arm_smmu_get_evt_info and
-> > > arm_smmu_handle_evt.
-> > >
-> > 
-> > Yea, we did, I'm wondering if we really need to read the master_name in
-> > arm_smmu_get_evt_info ? I mean, we can find and populate the name here
-> > itself under the safety of this mutex and entirely remove that lock from
-> > arm_smmu_get_evt_info as we anyway will dump the event after this line.
+On Thu, Oct 03, 2024 at 08:15:16PM +0000, bugzilla-daemon@kernel.org wrote:
+> https://bugzilla.kernel.org/show_bug.cgi?id=219349
 > 
-> We could. I guess the two patches organized in the slightly odd
-> way that the arm_smmu_dump_event() gets moved around in the 2nd
-> patch, so things look a bit redundant after all.
+>            Summary: RIP: 0010:pci_for_each_dma_alias
+>                     (./include/linux/pci.h:692 drivers/pci/search.c:41)
+>     Kernel Version: 6.12.0-rc1  8c245fe7dde3
+>         Regression: Yes
 > 
-> I think we could do two patches like:
-> PATCH-1: Add struct arm_smmu_event and swap all FIELD_GETs with
->          the structure members.
-> PATCH-2: Add arm_smmu_dump_event() and put in arm_smmu_handle_evt
->          directly.
-
-Ahh, right! That makes more sense. I'll re-organize them like this.
-
+> Created attachment 306959
+>   --> https://bugzilla.kernel.org/attachment.cgi?id=306959&action=edit
+> lspci -vv
 > 
-> The master and master_name are not that necessary to be in the
-> arm_smmu_event. I would keep both of them as local variables in
-> arm_smmu_handle_evt and pass master_name in to dump().
+> Hello,
+> I see BUG: kernel NULL pointer dereference using kernel 6.12.0-rc1 (actually at
+> 8c245fe7dde3 but don't know what is first bad commit).
 
-Hmm, right or maybe ONLY have the master_name in arm_smmu_event?
+Thanks very much for this report!  You marked this as a regression;
+Marcin, do you know the most recent kernel where you did not see this
+issue?
 
+> RPC: Registered tcp NFSv4.1 backchannel transport module.
+> intel-lpss 0000:00:15.0: enabling device (0000 -> 0002)#012 SUBSYSTEM=pci#012
+> DEVICE=+pci:0000:00:15.0
+> platform idma64.0: Adding to iommu group 12#012 SUBSYSTEM=platform#012
+> DEVICE=+platform:idma64.0
+> BUG: kernel NULL pointer dereference, address: 00000000000000d8
+> #PF: supervisor read access in kernel mode
+> #PF: error_code(0x0000) - not-present page
+> PGD 0 P4D 0
+> Oops: Oops: 0000 [#1] PREEMPT SMP DEBUG_PAGEALLOC
+> CPU: 0 UID: 0 PID: 430 Comm: (udev-worker) Not tainted
+> 6.12.0-rc1-00113-g8c245fe7dde3 #50
+> Hardware name: MSI MS-7982/B150M PRO-VDH (MS-7982), BIOS 3.H0 07/10/2018
+> RIP: 0010:pci_for_each_dma_alias (./include/linux/pci.h:692
+> drivers/pci/search.c:41)
+> Code: 00 0f 1f 40 00 0f 1f 44 00 00 41 56 41 55 41 54 49 89 d4 55 48 89 f5 53
+> e8 18 d2 ff ff 4c 89 e2 48 89 c3 48 8b 40 10 48 89 df <0f> b6 b0 d8 00 00 00 c1
+> e6 08 66 0b 73 38 0f b7 f6 ff d5 85 c0 41
+> All code
+> ========
+>    0:   00 0f                   add    %cl,(%rdi)
+>    2:   1f                      (bad)
+>    3:   40 00 0f                rex add %cl,(%rdi)
+>    6:   1f                      (bad)
+>    7:   44 00 00                add    %r8b,(%rax)
+>    a:   41 56                   push   %r14
+>    c:   41 55                   push   %r13
+>    e:   41 54                   push   %r12
+>   10:   49 89 d4                mov    %rdx,%r12
+>   13:   55                      push   %rbp
+>   14:   48 89 f5                mov    %rsi,%rbp
+>   17:   53                      push   %rbx
+>   18:   e8 18 d2 ff ff          call   0xffffffffffffd235
+>   1d:   4c 89 e2                mov    %r12,%rdx
+>   20:   48 89 c3                mov    %rax,%rbx
+>   23:   48 8b 40 10             mov    0x10(%rax),%rax
+>   27:   48 89 df                mov    %rbx,%rdi
+>   2a:*  0f b6 b0 d8 00 00 00    movzbl 0xd8(%rax),%esi          <-- trapping
+> instruction
+>   31:   c1 e6 08                shl    $0x8,%esi
+>   34:   66 0b 73 38             or     0x38(%rbx),%si
+>   38:   0f b7 f6                movzwl %si,%esi
+>   3b:   ff d5                   call   *%rbp
+>   3d:   85 c0                   test   %eax,%eax
+>   3f:   41                      rex.B
 > 
-> The dev_name() returns "const char *init_name", so it'd likely
-> be safe to put the arm_smmu_dump_event(&event, master_name) call
-> outside the mutex.
-> 
-> > I'm not too sure if we should hold this lock for the entire duration of
-> > get_evt_info and handle_evt ?
-> 
-> It should be fine for being a mutex. Yet, shrinking its scope is
-> always optimal.
+> Code starting with the faulting instruction
+> ===========================================
+>    0:   0f b6 b0 d8 00 00 00    movzbl 0xd8(%rax),%esi
+>    7:   c1 e6 08                shl    $0x8,%esi
+>    a:   66 0b 73 38             or     0x38(%rbx),%si
+>    e:   0f b7 f6                movzwl %si,%esi
+>   11:   ff d5                   call   *%rbp
+>   13:   85 c0                   test   %eax,%eax
+>   15:   41                      rex.B
+> RSP: 0018:ffffbff6006bb3a8 EFLAGS: 00010296
+> RAX: 0000000000000000 RBX: ffff9dd828880348 RCX: 0000000000000000
+> RDX: ffff9dd80f838ea0 RSI: ffffffffac8045b0 RDI: ffff9dd828880348
+> RBP: ffffffffac8045b0 R08: 0000000000000000 R09: 0000000200000025
+> R10: 000000000000007c R11: 00000000000001f4 R12: ffff9dd80f838ea0
+> R13: ffff9dd826ab9700 R14: 0000000000000001 R15: 0000000000000001
+> FS:  00007fe4921ab5c0(0000) GS:ffff9ddb5c600000(0000) knlGS:0000000000000000
+> CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+> CR2: 00000000000000d8 CR3: 000000010fa9b004 CR4: 00000000003706f0
+> DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+> DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+> Call Trace:
+>  <TASK>
+>  ? __die (arch/x86/kernel/dumpstack.c:421 arch/x86/kernel/dumpstack.c:434)
+>  ? page_fault_oops (arch/x86/mm/fault.c:715)
+>  ? do_user_addr_fault (./include/linux/kprobes.h:589 (discriminator 1)
+> arch/x86/mm/fault.c:1240 (discriminator 1))
+>  ? _raw_spin_unlock_irqrestore (./include/linux/spinlock_api_smp.h:152
+> kernel/locking/spinlock.c:194)
+>  ? exc_page_fault (./arch/x86/include/asm/irqflags.h:37
+> ./arch/x86/include/asm/irqflags.h:92 arch/x86/mm/fault.c:1489
+> arch/x86/mm/fault.c:1539)
+>  ? asm_exc_page_fault (./arch/x86/include/asm/idtentry.h:623)
+>  ? domain_context_clear_one (drivers/iommu/intel/iommu.c:3328)
+>  ? domain_context_clear_one (drivers/iommu/intel/iommu.c:3328)
+>  ? pci_for_each_dma_alias (./include/linux/pci.h:692 drivers/pci/search.c:41)
+>  ? pci_for_each_dma_alias (drivers/pci/search.c:41 (discriminator 1))
+>  device_block_translation (drivers/iommu/intel/iommu.c:3370)
+>  intel_iommu_attach_device (drivers/iommu/intel/iommu.c:3635)
+>  __iommu_attach_device (drivers/iommu/iommu.c:2084)
+>  __iommu_device_set_domain (drivers/iommu/iommu.c:2272)
 
-Ack.
+I suspect this path:
 
+  __iommu_device_set_domain
+    __iommu_attach_device
+      domain->ops->attach_dev
+        intel_iommu_attach_device
+          device_block_translation
+            domain_context_clear
+              if (!dev_is_pci(info->dev))
+                domain_context_clear_one
+              pci_for_each_dma_alias
+
+and 9a16ab9d6402 ("iommu/vt-d: Make context clearing consistent with
+context mapping") looks a little suspicious to me since
+domain_context_clear() now calls domain_context_clear_one() for
+non-PCI devices, but then goes on to also use pci_for_each_dma_alias()
+for ALL devices, even non-PCI ones.
+
+But 9a16ab9d6402 appeared in v6.7-rc4, so it's been around a while.
+Maybe a more recent change added non-PCI devices into the mix, so
+previously we only got there with PCI devices?
+
+>  iommu_setup_default_domain (drivers/iommu/iommu.c:2326 (discriminator 2)
+> drivers/iommu/iommu.c:2992 (discriminator 2))
+>  __iommu_probe_device (drivers/iommu/iommu.c:567)
+>  iommu_probe_device (drivers/iommu/iommu.c:604)
+>  iommu_bus_notifier (drivers/iommu/iommu.c:1668 drivers/iommu/iommu.c:1659)
+>  notifier_call_chain (kernel/notifier.c:95)
+>  blocking_notifier_call_chain (kernel/notifier.c:389 kernel/notifier.c:376)
+>  bus_notify (./include/linux/kobject.h:193 drivers/base/base.h:73
+> drivers/base/bus.c:999)
+>  device_add (drivers/base/core.c:3656)
+>  platform_device_add (drivers/base/platform.c:717)
+>  mfd_add_device (drivers/mfd/mfd-core.c:274) mfd_core
+>  ? alloc_inode (fs/inode.c:265)
+>  ? make_kgid (kernel/user_namespace.c:483)
+>  ? inode_init_always (fs/inode.c:219)
+>  mfd_add_devices (drivers/mfd/mfd-core.c:329) mfd_core
+>  intel_lpss_probe (drivers/mfd/intel-lpss.c:443 drivers/mfd/intel-lpss.c:390)
+> intel_lpss
+>  ? _raw_spin_lock_irqsave (./arch/x86/include/asm/paravirt.h:584
+> ./arch/x86/include/asm/qspinlock.h:51 ./include/asm-generic/qspinlock.h:114
+> ./include/linux/spinlock.h:187 ./include/linux/spinlock_api_smp.h:111
+> kernel/locking/spinlock.c:162)
+>  ? pci_conf1_write (arch/x86/pci/direct.c:78)
+>  intel_lpss_pci_probe (drivers/mfd/intel-lpss-pci.c:80) intel_lpss_pci
+>  local_pci_probe (drivers/pci/pci-driver.c:325)
+>  pci_device_probe (drivers/pci/pci-driver.c:392 (discriminator 1)
+> drivers/pci/pci-driver.c:417 (discriminator 1) drivers/pci/pci-driver.c:451
+> (discriminator 1))
+>  really_probe (drivers/base/dd.c:581 drivers/base/dd.c:658)
+>  ? __device_attach_driver (drivers/base/dd.c:1157)
+>  __driver_probe_device (drivers/base/dd.c:800)
+>  driver_probe_device (drivers/base/dd.c:831)
+>  __driver_attach (drivers/base/dd.c:1217 drivers/base/dd.c:1156)
+>  bus_for_each_dev (drivers/base/bus.c:369)
+>  bus_add_driver (drivers/base/bus.c:676)
+>  driver_register (drivers/base/driver.c:247)
+>  ? 0xffffffffc061b000
+>  do_one_initcall (init/main.c:1269)
+>  do_init_module (kernel/module/main.c:2544)
+>  init_module_from_file (kernel/module/main.c:3199)
+>  idempotent_init_module (kernel/module/main.c:3210)
+>  __x64_sys_finit_module (./include/linux/file.h:68 kernel/module/main.c:3238
+> kernel/module/main.c:3220 kernel/module/main.c:3220)
+>  do_syscall_64 (arch/x86/entry/common.c:52 (discriminator 1)
+> arch/x86/entry/common.c:83 (discriminator 1))
+>  ? mntput_no_expire (fs/namespace.c:1460)
+>  ? terminate_walk (fs/namei.c:693 (discriminator 1))
+>  ? path_openat (fs/namei.c:3934)
+>  ? do_filp_open (fs/namei.c:3961 (discriminator 2))
+>  ? copy_from_kernel_nofault (mm/maccess.c:31 (discriminator 1))
+>  ? kmem_cache_alloc_noprof (mm/slub.c:494 mm/slub.c:539 mm/slub.c:528
+> mm/slub.c:3964 mm/slub.c:4123 mm/slub.c:4142)
+>  ? do_sys_openat2 (fs/open.c:1424)
+>  ? syscall_exit_to_user_mode (./arch/x86/include/asm/processor.h:701
+> ./arch/x86/include/asm/entry-common.h:100 ./include/linux/entry-common.h:364
+> kernel/entry/common.c:220)
+>  ? do_syscall_64 (arch/x86/entry/common.c:102)
+>  ? do_syscall_64 (arch/x86/entry/common.c:102)
+>  ? do_syscall_64 (arch/x86/entry/common.c:102)
+>  ? do_syscall_64 (arch/x86/entry/common.c:102)
+>  ? syscall_exit_to_user_mode (./arch/x86/include/asm/processor.h:701
+> ./arch/x86/include/asm/entry-common.h:100 ./include/linux/entry-common.h:364
+> kernel/entry/common.c:220)
+>  ? do_syscall_64 (arch/x86/entry/common.c:102)
+>  ? syscall_exit_to_user_mode (./arch/x86/include/asm/processor.h:701
+> ./arch/x86/include/asm/entry-common.h:100 ./include/linux/entry-common.h:364
+> kernel/entry/common.c:220)
+>  ? do_syscall_64 (arch/x86/entry/common.c:102)
+>  entry_SYSCALL_64_after_hwframe (arch/x86/entry/entry_64.S:130)
+> RIP: 0033:0x7fe49238eb8d
+> Code: ff c3 66 2e 0f 1f 84 00 00 00 00 00 90 f3 0f 1e fa 48 89 f8 48 89 f7 48
+> 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01
+> c3 48 8b 0d 6b 72 0c 00 f7 d8 64 89 01 48
+> All code
+> ========
+>    0:   ff c3                   inc    %ebx
+>    2:   66 2e 0f 1f 84 00 00    cs nopw 0x0(%rax,%rax,1)
+>    9:   00 00 00
+>    c:   90                      nop
+>    d:   f3 0f 1e fa             endbr64
+>   11:   48 89 f8                mov    %rdi,%rax
+>   14:   48 89 f7                mov    %rsi,%rdi
+>   17:   48 89 d6                mov    %rdx,%rsi
+>   1a:   48 89 ca                mov    %rcx,%rdx
+>   1d:   4d 89 c2                mov    %r8,%r10
+>   20:   4d 89 c8                mov    %r9,%r8
+>   23:   4c 8b 4c 24 08          mov    0x8(%rsp),%r9
+>   28:   0f 05                   syscall
+>   2a:*  48 3d 01 f0 ff ff       cmp    $0xfffffffffffff001,%rax         <--
+> trapping instruction
+>   30:   73 01                   jae    0x33
+>   32:   c3                      ret
+>   33:   48 8b 0d 6b 72 0c 00    mov    0xc726b(%rip),%rcx        # 0xc72a5
+>   3a:   f7 d8                   neg    %eax
+>   3c:   64 89 01                mov    %eax,%fs:(%rcx)
+>   3f:   48                      rex.W
 > 
-> > Also, shall we rename it to `arm_smmu_read_evt_info` ?
+> Code starting with the faulting instruction
+> ===========================================
+>    0:   48 3d 01 f0 ff ff       cmp    $0xfffffffffffff001,%rax
+>    6:   73 01                   jae    0x9
+>    8:   c3                      ret
+>    9:   48 8b 0d 6b 72 0c 00    mov    0xc726b(%rip),%rcx        # 0xc727b
+>   10:   f7 d8                   neg    %eax
+>   12:   64 89 01                mov    %eax,%fs:(%rcx)
+>   15:   48                      rex.W
+> RSP: 002b:00007ffdf72f16f8 EFLAGS: 00000246 ORIG_RAX: 0000000000000139
+> RAX: ffffffffffffffda RBX: 000055b0dae03330 RCX: 00007fe49238eb8d
+> RDX: 0000000000000004 RSI: 00007fe49252231b RDI: 000000000000000d
+> RBP: 0000000000000004 R08: 000055b0dae05940 R09: 000055b0dae03e80
+> R10: 0000000000000000 R11: 0000000000000246 R12: 00007fe49252231b
+> R13: 0000000000020000 R14: 000055b0dadd00e0 R15: 000055b0dae03330
+>  </TASK>
+> Modules linked in: intel_lpss_pci(+) intel_lpss idma64 raid_class virt_dma
+> scsi_transport_sas mfd_core sunrpc dm_mirror dm_region_hash dm_log dm_mod btrfs
+> blake2b_generic
+> CR2: 00000000000000d8
+> ---[ end trace 0000000000000000 ]---
+> RIP: 0010:pci_for_each_dma_alias (./include/linux/pci.h:692
+> drivers/pci/search.c:41)
+> Code: 00 0f 1f 40 00 0f 1f 44 00 00 41 56 41 55 41 54 49 89 d4 55 48 89 f5 53
+> e8 18 d2 ff ff 4c 89 e2 48 89 c3 48 8b 40 10 48 89 df <0f> b6 b0 d8 00 00 00 c1
+> e6 08 66 0b 73 38 0f b7 f6 ff d5 85 c0 41
+> All code
+> ========
+>    0:   00 0f                   add    %cl,(%rdi)
+>    2:   1f                      (bad)
+>    3:   40 00 0f                rex add %cl,(%rdi)
+>    6:   1f                      (bad)
+>    7:   44 00 00                add    %r8b,(%rax)
+>    a:   41 56                   push   %r14
+>    c:   41 55                   push   %r13
+>    e:   41 54                   push   %r12
+>   10:   49 89 d4                mov    %rdx,%r12
+>   13:   55                      push   %rbp
+>   14:   48 89 f5                mov    %rsi,%rbp
+>   17:   53                      push   %rbx
+>   18:   e8 18 d2 ff ff          call   0xffffffffffffd235
+>   1d:   4c 89 e2                mov    %r12,%rdx
+>   20:   48 89 c3                mov    %rax,%rbx
+>   23:   48 8b 40 10             mov    0x10(%rax),%rax
+>   27:   48 89 df                mov    %rbx,%rdi
+>   2a:*  0f b6 b0 d8 00 00 00    movzbl 0xd8(%rax),%esi          <-- trapping
+> instruction
+>   31:   c1 e6 08                shl    $0x8,%esi
+>   34:   66 0b 73 38             or     0x38(%rbx),%si
+>   38:   0f b7 f6                movzwl %si,%esi
+>   3b:   ff d5                   call   *%rbp
+>   3d:   85 c0                   test   %eax,%eax
+>   3f:   41                      rex.B
 > 
-> I'd probably use arm_smmu_event_get_from_raw()? Trying to high-
-> light struct arm_smmu_event v.s. u64 evt[EVTQ_ENT_DWORDS]. Yet,
-> no strong feeling about that.
-> 
-
-Ack. How about `read_arm_smmu_event` :) 
-Unless, we wanna follow the arm_smmu_<func> convention?
-
-> Thanks
-> Nicolin
-
-Thanks!
-Praan
+> Code starting with the faulting instruction
+>    0:   0f b6 b0 d8 00 00 00    movzbl 0xd8(%rax),%esi
+>    7:   c1 e6 08                shl    $0x8,%esi
+>    a:   66 0b 73 38             or     0x38(%rbx),%si
+>    e:   0f b7 f6                movzwl %si,%esi
+>   11:   ff d5                   call   *%rbp
+>   13:   85 c0                   test   %eax,%eax
+>   15:   41                      rex.B
+> RSP: 0018:ffffbff6006bb3a8 EFLAGS: 00010296
+> RAX: 0000000000000000 RBX: ffff9dd828880348 RCX: 0000000000000000
+> RDX: ffff9dd80f838ea0 RSI: ffffffffac8045b0 RDI: ffff9dd828880348
+> RBP: ffffffffac8045b0 R08: 0000000000000000 R09: 0000000200000025
+> R10: 000000000000007c R11: 00000000000001f4 R12: ffff9dd80f838ea0
+> R13: ffff9dd826ab9700 R14: 0000000000000001 R15: 0000000000000001
+> FS:  00007fe4921ab5c0(0000) GS:ffff9ddb5c600000(0000) knlGS:0000000000000000
+> CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+> CR2: 00000000000000d8 CR3: 000000010fa9b004 CR4: 00000000003706f0
+> DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+> DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+> note: (udev-worker)[430] exited with irqs disabled
+> mpt3sas version 48.100.00.00 loaded
+> md/raid1: md22: active with 2 out of 2 mirrors
+> md22: detected capacity change from 0 to 62912512
