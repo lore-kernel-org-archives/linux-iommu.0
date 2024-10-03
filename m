@@ -1,56 +1,56 @@
-Received: from mail-pl1-f180.google.com (mail-pl1-f180.google.com [209.85.214.180])
+Received: from mail-pl1-f172.google.com (mail-pl1-f172.google.com [209.85.214.172])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2A30C4EB38
-	for <iommu@lists.linux.dev>; Thu,  3 Oct 2024 03:54:16 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.180
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F2C838003F
+	for <iommu@lists.linux.dev>; Thu,  3 Oct 2024 03:54:17 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.172
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1727927657; cv=none; b=Oe/uqBob00IiCuDGpNZQa6v0MBpCeJA2abbh8J4bGEwtzJqPPbiVvCNJslQOVThMvqH/TA6IFoIzdUA5yt02e2kvYDKrCRmjhuIsRxHJBGGcRyoXq5LhzcU5ODW/dcTGGNtEAlf4r9Gq0y/yynWv8A32NQnwncaejBPEXY9+MYk=
+	t=1727927659; cv=none; b=tg6RiBc7smN98q42bw9Honq0SBftxkvjR/5cS0h47nSTlZBRSd2aaENdJO/QsNOQg96qBYzbjgysewntiv/R3PSttElAi/YxUunV2oDLlKUHujP4NFEU63s0cZUB99rlRflHr7035oSFssBVcEHlp/hXtujs9mlUl5aoCWhiYpU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1727927657; c=relaxed/simple;
-	bh=mHoaQT1JoyG6LkyzWkFbXUPdVaWzkJTm5hCach2QWbM=;
+	s=arc-20240116; t=1727927659; c=relaxed/simple;
+	bh=x6Zn7HjTzGMYc9FJ3+apAp57nj/OHxiWOSQMFh0tXkM=;
 	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
-	 MIME-Version; b=TxVLtz9B0IHJp3B0j9epa0c6W9EtOQ0sMagg0RVndyqczLf6FzCbZleOdAC4C2pykkmnFIyIQWXiEZNqz4w6ALVCchbXKJnCQc7i3XQqg78FHD316aig9nxKBzUbr4a7CQufwviTfpj/yAXjVdoxmL4A8wjUDcYGp57oT0pGL28=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=bbpHdh/o; arc=none smtp.client-ip=209.85.214.180
+	 MIME-Version; b=Tz5xhfQdxw25OIO9pai9tBrngx8qr3owHjxdKoSP/J2u8ATZmCSGbU6qjUqS8PpSW4JiZFVXIIflrrsXaz35Im7E1VtRbHf+K4cRBUHlTgSSdXt4E1lhlmcYsKZTQ37o3Hs2Cqpo9+fpuOa3htqtgBTFCL9NqbOElZAsJRYcnNg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=BRfaZtFV; arc=none smtp.client-ip=209.85.214.172
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="bbpHdh/o"
-Received: by mail-pl1-f180.google.com with SMTP id d9443c01a7336-20b6c311f62so4118165ad.0
-        for <iommu@lists.linux.dev>; Wed, 02 Oct 2024 20:54:16 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="BRfaZtFV"
+Received: by mail-pl1-f172.google.com with SMTP id d9443c01a7336-20b58f2e1f4so2693045ad.2
+        for <iommu@lists.linux.dev>; Wed, 02 Oct 2024 20:54:17 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1727927655; x=1728532455; darn=lists.linux.dev;
+        d=gmail.com; s=20230601; t=1727927657; x=1728532457; darn=lists.linux.dev;
         h=content-transfer-encoding:mime-version:reply-to:references
          :in-reply-to:message-id:date:subject:cc:to:from:from:to:cc:subject
          :date:message-id:reply-to;
-        bh=tDuFxybHODEaeVrwvh+oodf/QVAaDeDVDDTRMXteliU=;
-        b=bbpHdh/oRuS4ne90zFpEbMi3+ZaPf8REi6NdFgFeQbFkwntsqJHt+5LFhgLy0WLi3D
-         pK1HooX2YpGvt6OpSStVLoYZb00mttnm7ev3droKOWI2WwWesabkQJ/h5c7+amEkEeiw
-         WOJw0jXNN/l+987OYK0qs/Qk+OjyndJ/Vu48XWbCzim/sxoLpXAjgeeiXwGRnAsVzfiq
-         SLus2pOmnnqsaYC+wsYjGRglZWKSxzQJcRXB6uGvwuNjIlbiLJNGgBrQI2ZjWYNOWgRX
-         PJJPhnLhOxXwChWyjI/QuHMYAvQGsKsCAh8ZQd5M0iidQth/99cyZFl7EQTGL6R8/xNy
-         lAug==
+        bh=DIVjY9QXcz2STFKs3TT5rFa2kP9kKUnHMheJi7enQS4=;
+        b=BRfaZtFVJPp0RbFbSrpiCENkkOhNg4pVU/bQQhpg+Ve8uyuyMhRhsaPMxsRuLMzvpH
+         81xL6HuFjo98CdkbRq575Oauai8+8jDUe+Uq53kT5itTgAj+PLtFHMixUOZY5ssHR6Xe
+         5bTyONMDzZ+kb8cGm3VG3x/KEv5xqPUMXD1JrQZaYdx+Ebsq7cG7TBW1Snc5qV2XqcX3
+         7deHf06L+DddjCsThCTDKX8w/kCO1wx/fz9ToQcBmyMNiYcJbpP/eSaZXuLWZuLGzXlm
+         ssNj/ryEHERl1aqDhXPQ0urmae8KhKJXfogcMhC1onCrB99QqDop/pxKGeJjiOUxZ36Q
+         lbsw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1727927655; x=1728532455;
+        d=1e100.net; s=20230601; t=1727927657; x=1728532457;
         h=content-transfer-encoding:mime-version:reply-to:references
          :in-reply-to:message-id:date:subject:cc:to:from:x-gm-message-state
          :from:to:cc:subject:date:message-id:reply-to;
-        bh=tDuFxybHODEaeVrwvh+oodf/QVAaDeDVDDTRMXteliU=;
-        b=e6GItZior6JNqHsSsG/ouw2bwbupD5+5jxVGNSERd5x0IaVIVoXId1aMjTKO/PVTY4
-         uGczvB3IRte/3sQ0aLGCPGEoJk4HggL1xEvWS/VYvXu9mltwKW8eUHah00mijkjdTayJ
-         UCb6qFjaxPhvO2M+6Qn+mZPyeZII1yRfU/G01nyHnxJjpN3ZfO22DlZKJdwhcLiwA9Z8
-         lYf/nvmKTZFNm2TfLMX0sKUnWt1IfOjWI0NirQc3WiBy6fbfc8ABq8PjLVKAWsmFq/T/
-         FpxtE50N7c1H/UMzta6xjg5jltDvQtYXZFRDVRLq6dqokt1t7Vm5qrSdGnzvWArSWYSb
-         04kQ==
-X-Gm-Message-State: AOJu0Yyu954wJErfSHv1Ldam4NzRZaA1xkxK55s2s/CgMqLHr9AlAbMw
-	kCkmXDTppWpAVKQu1Z9KBEwbKmKEPUgTfC+X4r5PXtP9A0nMePmd
-X-Google-Smtp-Source: AGHT+IFKLPlcSp9SUFRml4GIrUDRe7i+pHx0/lLBWbzLd4R0zTcKVcErbP/p5ZwNke1aAWlNDTBqqg==
-X-Received: by 2002:a17:903:c5:b0:20b:a431:8f2f with SMTP id d9443c01a7336-20bc5a701bbmr52713415ad.55.1727927655583;
-        Wed, 02 Oct 2024 20:54:15 -0700 (PDT)
+        bh=DIVjY9QXcz2STFKs3TT5rFa2kP9kKUnHMheJi7enQS4=;
+        b=umqGClVq227DtCMBMTHvw7XwnHtUq0IUfHXejwJVqRtQgkPysmkiui1E2ycDXvAXkU
+         RFtqw61UJ8lX4mj7xj0Hth8V7Mb4Yc84PD3471E1fxng3QfA06CM5te3VdFu8YLv0RSm
+         CHJ0XoAJyWSJWNAtGtdguaOpm6YQt4h08pks4F3+GklC3Nm8okQC1VPw1C6p8W8icfpr
+         kKA+q8p9fwIeFuPoOYG662aGSJdQ1PVth1sIqvkzeNaY5rKspp2XJKyDgsef7kMdFVix
+         lcWNwRW99dIhsXniR/A5WZUZTvVoJVssn73jkhHO3Gdl65eK3xYHpBxMgV9Yef7T2rsB
+         mXpg==
+X-Gm-Message-State: AOJu0YyriDbV2e9EnP2ZmcONyRyWJaG54k8vCLTh6plc4nT/1i/CAizK
+	muzHeMWgr3M1oGXi7vpt8M5+WXKUkBc11GeYbVYxpTY0MP6Cw2pb
+X-Google-Smtp-Source: AGHT+IGYAsSvN1ppKu/WfTnxiRO2Z7TJtHRQQ6nzYxEJteJVC5HlpEBwNUkwvfBEkQqK2Sk6/i2hLw==
+X-Received: by 2002:a17:902:d2c5:b0:206:ba20:dd40 with SMTP id d9443c01a7336-20bc59f4da9mr80367265ad.27.1727927656951;
+        Wed, 02 Oct 2024 20:54:16 -0700 (PDT)
 Received: from localhost.localdomain (c-67-160-120-253.hsd1.wa.comcast.net. [67.160.120.253])
-        by smtp.gmail.com with ESMTPSA id d9443c01a7336-20beead8dc2sm906115ad.44.2024.10.02.20.54.14
+        by smtp.gmail.com with ESMTPSA id d9443c01a7336-20beead8dc2sm906115ad.44.2024.10.02.20.54.15
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 02 Oct 2024 20:54:15 -0700 (PDT)
+        Wed, 02 Oct 2024 20:54:16 -0700 (PDT)
 From: mhkelley58@gmail.com
 X-Google-Original-From: mhklinux@outlook.com
 To: kys@microsoft.com,
@@ -77,9 +77,9 @@ Cc: iommu@lists.linux.dev,
 	linux-hyperv@vger.kernel.org,
 	linux-kernel@vger.kernel.org,
 	linux-scsi@vger.kernel.org
-Subject: [PATCH 3/5] iommu/hyper-v: Don't assume cpu_possible_mask is dense
-Date: Wed,  2 Oct 2024 20:53:31 -0700
-Message-Id: <20241003035333.49261-4-mhklinux@outlook.com>
+Subject: [PATCH 4/5] scsi: storvsc: Don't assume cpu_possible_mask is dense
+Date: Wed,  2 Oct 2024 20:53:32 -0700
+Message-Id: <20241003035333.49261-5-mhklinux@outlook.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20241003035333.49261-1-mhklinux@outlook.com>
 References: <20241003035333.49261-1-mhklinux@outlook.com>
@@ -94,45 +94,55 @@ Content-Transfer-Encoding: 8bit
 
 From: Michael Kelley <mhklinux@outlook.com>
 
-Current code gets the APIC IDs for CPUs numbered 255 and lower.
+Current code allocates the stor_chns array with size num_possible_cpus().
 This code assumes cpu_possible_mask is dense, which is not true in
-the general case per [1]. If cpu_possible_mask contains holes,
-num_possible_cpus() is less than nr_cpu_ids, so some CPUs might get
-skipped. Furthermore, getting the APIC ID of a CPU that isn't in
-cpu_possible_mask is invalid.
+the general case per [1]. If cpu_possible_mask is sparse, the array
+might be indexed by a value beyond the size of the array.
 
 However, the configurations that Hyper-V provides to guest VMs on x86
-hardware, in combination with how x86 code assigns Linux CPU numbers,
-*does* always produce a dense cpu_possible_mask. So the dense assumption
-is not currently causing failures. But for robustness against future
-changes in how cpu_possible_mask is populated, update the code to no
-longer assume dense.
+and ARM64 hardware, in combination with how architecture specific code
+assigns Linux CPU numbers, *does* always produce a dense cpu_possible_mask.
+So the dense assumption is not currently causing failures. But for
+robustness against future changes in how cpu_possible_mask is populated,
+update the code to no longer assume dense.
 
-The correct approach is to determine the range to scan based on
-nr_cpu_ids, and skip any CPUs that are not in the cpu_possible_mask.
+The correct approach is to allocate and initialize the array using size
+"nr_cpu_ids". While this leaves unused array entries corresponding to
+holes in cpu_possible_mask, the holes are assumed to be minimal and hence
+the amount of memory wasted by unused entries is minimal.
 
 [1] https://lore.kernel.org/lkml/SN6PR02MB4157210CC36B2593F8572E5ED4692@SN6PR02MB4157.namprd02.prod.outlook.com/
 
 Signed-off-by: Michael Kelley <mhklinux@outlook.com>
 ---
- drivers/iommu/hyperv-iommu.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/scsi/storvsc_drv.c | 13 ++++++-------
+ 1 file changed, 6 insertions(+), 7 deletions(-)
 
-diff --git a/drivers/iommu/hyperv-iommu.c b/drivers/iommu/hyperv-iommu.c
-index 8a5c17b97310..2a86aa5d54c6 100644
---- a/drivers/iommu/hyperv-iommu.c
-+++ b/drivers/iommu/hyperv-iommu.c
-@@ -164,8 +164,8 @@ static int __init hyperv_prepare_irq_remapping(void)
- 	 * max cpu affinity for IOAPIC irqs. Scan cpu 0-255 and set cpu
- 	 * into ioapic_max_cpumask if its APIC ID is less than 256.
- 	 */
--	for (i = min_t(unsigned int, num_possible_cpus() - 1, 255); i >= 0; i--)
--		if (cpu_physical_id(i) < 256)
-+	for (i = min_t(unsigned int, nr_cpu_ids - 1, 255); i >= 0; i--)
-+		if (cpu_possible(i) && cpu_physical_id(i) < 256)
- 			cpumask_set_cpu(i, &ioapic_max_cpumask);
+diff --git a/drivers/scsi/storvsc_drv.c b/drivers/scsi/storvsc_drv.c
+index 11b3fc3b24c9..f2beb6b23284 100644
+--- a/drivers/scsi/storvsc_drv.c
++++ b/drivers/scsi/storvsc_drv.c
+@@ -917,14 +917,13 @@ static int storvsc_channel_init(struct hv_device *device, bool is_fc)
  
- 	return 0;
+ 	/*
+ 	 * Allocate state to manage the sub-channels.
+-	 * We allocate an array based on the numbers of possible CPUs
+-	 * (Hyper-V does not support cpu online/offline).
+-	 * This Array will be sparseley populated with unique
+-	 * channels - primary + sub-channels.
+-	 * We will however populate all the slots to evenly distribute
+-	 * the load.
++	 * We allocate an array based on the number of CPU ids. This array
++	 * is initially sparsely populated for the CPUs assigned to channels:
++	 * primary + sub-channels. As I/Os are initiated by different CPUs,
++	 * the slots for all online CPUs are populated to evenly distribute
++	 * the load across all channels.
+ 	 */
+-	stor_device->stor_chns = kcalloc(num_possible_cpus(), sizeof(void *),
++	stor_device->stor_chns = kcalloc(nr_cpu_ids, sizeof(void *),
+ 					 GFP_KERNEL);
+ 	if (stor_device->stor_chns == NULL)
+ 		return -ENOMEM;
 -- 
 2.25.1
 
