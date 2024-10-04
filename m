@@ -1,221 +1,211 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from NAM11-CO1-obe.outbound.protection.outlook.com (mail-co1nam11on2070.outbound.protection.outlook.com [40.107.220.70])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D87471DDC02;
-	Fri,  4 Oct 2024 19:11:14 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1728069075; cv=none; b=Td1tO3vdfWUccAsCTmcT/S2izMHAP/UrkuqznWewkh/iXnA3UB0TrZtW198U6KRHiB9AmrP49GTwXunnA9pUWEUAxzT/XEe2tCpMcHprUdDPOD24TqpjX60mQLfAEM1SV/+JcVaSnN40Wqd6+Wtnvt+CeI3a4pglWMnuAvKtPRA=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1728069075; c=relaxed/simple;
-	bh=YYYFR4xM6pq64tyhxGwfZ3sPFhLIXiPYgsZ0dStL10M=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=drByXn6E+WvRJYgCQxuk7XS/szLTW1Y7Q646CX38oIcjFp28X5ZJYCSieDG5BrdQ05ZLpHl2fv8wtBRjfWKRYS8CrcjRHbdEv3hJA1utieY6gMqwSb4/TjASoMT8CaaNPaESw6Oo2NE0CTMylVklkgQuWsKIx6n+/6MoiWhRHhk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=LYfU5nCF; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 092481DD542
+	for <iommu@lists.linux.dev>; Fri,  4 Oct 2024 19:25:50 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.220.70
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1728069952; cv=fail; b=khKYQB+LOLVSING1ggdEGU/m8bItxz4Yi2aBjlsGPhQzAqHObmaZh6m8K4mcR3s8vDjOnbyFgcn5mTqiozgbPV6vPrSGkt/VwhWixmjq3LIWP3ZogA8J4+Nc8eZ5uMUCCUzmCfqHBVc0Iz3UpYXvwSOKrvW5EOVqhOutEv+lkqE=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1728069952; c=relaxed/simple;
+	bh=5BYXFGTD61PtAfKB18NrTUDri9E+Uk23xRv6mqS+h7I=;
+	h=Date:From:To:CC:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=OC//ziooBvUU0TC1/uGeQ8UbUw/FrMkBi2e+9FA074YMSfuDdgLgHCdK7C6Dy38P8QamqVAqFWj2B1X9VMOfTpAEOlqcIVIpKgN3lf6DEKAqgPPCHkeXhLcjkQTWSPihseaR3m8Nt4Zh+7dKxEFJ/J9dXX8bePQX7JEE2jXsKxg=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=umUAe2si; arc=fail smtp.client-ip=40.107.220.70
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="LYfU5nCF"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 109CEC4CEC6;
-	Fri,  4 Oct 2024 19:11:06 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1728069074;
-	bh=YYYFR4xM6pq64tyhxGwfZ3sPFhLIXiPYgsZ0dStL10M=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=LYfU5nCF1IhcG9r/BLUlZ83fopNKYX/W4gNeO7INGLlb3hG5q7ZfL/MItsNOF7lvD
-	 Z0TfCzp7GYj74VR2pfNgN7Q//fzAy3lRSXTLX/YNyIB2c4P24z0ZJizhfSxu/y8/Bn
-	 xtlL5gXdG/ygxQ8t7ZTAswkYupUyG+14LV5wjlxC3QTC+B4Tkat8cU/9fQIjRu407n
-	 Y2dIB/ITsG6b2oH0nwxPpgrhcjKCN2rWwK6UkDUe5m6pkwrygKAZJO1vGsl8PPR86D
-	 dHzMujwLCbQYn7S/FYdKe9qAowdS8s5p4I9nlpPVoY+oHL3F3dHvy5JJATMDW8qHln
-	 fk6pRwV/iNalA==
-Date: Fri, 4 Oct 2024 20:11:04 +0100
-From: Simon Horman <horms@kernel.org>
-To: Nuno Das Neves <nunodasneves@linux.microsoft.com>
-Cc: linux-hyperv@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-	linux-kernel@vger.kernel.org, kvm@vger.kernel.org,
-	iommu@lists.linux.dev, netdev@vger.kernel.org,
-	linux-pci@vger.kernel.org, linux-arch@vger.kernel.org,
-	virtualization@lists.linux.dev, kys@microsoft.com,
-	haiyangz@microsoft.com, wei.liu@kernel.org, decui@microsoft.com,
-	catalin.marinas@arm.com, will@kernel.org, luto@kernel.org,
-	tglx@linutronix.de, mingo@redhat.com, bp@alien8.de,
-	dave.hansen@linux.intel.com, x86@kernel.org, hpa@zytor.com,
-	seanjc@google.com, pbonzini@redhat.com, peterz@infradead.org,
-	daniel.lezcano@linaro.org, joro@8bytes.org, robin.murphy@arm.com,
-	davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-	pabeni@redhat.com, lpieralisi@kernel.org, kw@linux.com,
-	robh@kernel.org, bhelgaas@google.com, arnd@arndb.de,
-	sgarzare@redhat.com, jinankjain@linux.microsoft.com,
-	muminulrussell@gmail.com, skinsburskii@linux.microsoft.com,
-	mukeshrathor@microsoft.com
-Subject: Re: [PATCH 5/5] hyperv: Use hvhdk.h instead of hyperv-tlfs.h in
- Hyper-V code
-Message-ID: <20241004191104.GI1310185@kernel.org>
-References: <1727985064-18362-1-git-send-email-nunodasneves@linux.microsoft.com>
- <1727985064-18362-6-git-send-email-nunodasneves@linux.microsoft.com>
+	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="umUAe2si"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=vqn6qW/NMuVWv35f0UCgnAFbv23nmncor6sYcIuUo1+R+ZAdYG0T7osRz1x8+6O1jlvjwxuDnX4neUA5F3jf9X+0eCc9ue1iBqOBw/KC723QI+FLCJl8FxVh6fM4Bs+Ry8En4fFu08OCsfftsftqOBaSooccZisYByHPrwdrR18SeMQeWPcJOvG780B7O63+IyERe5axqW52T+TpGFvv/mKZy9d6I2mmYt0N+5IzJA9yGcVGBuEPfNIFvFcCYgTNM8vbbiHLQ8aHkT8FX7jobSFipwsmzrA42+6Ms+osuc/Co1u1s1Q6YMHhAIIdxGfVcgXknTGYKZz3Gcl0KSSTdg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=5koOAAOBfs/zoRxcjQryx9W8OWGFPhL4cMUSamYGXVI=;
+ b=woct/5zgAHhtRkY+F1Oe6DqAq8OD3HTclhgmVO3nZbH5ATz6emZc/502rOSE1RaPFyiz8Zh3dtxGe4XV2sr9JWrB5aS5lwR5xCkNI+KrjFKaRwe/FVMBxJD8hKcRcWtaUlD5w82To0Y5n2iixoyMgf1ipUwbKl1TDJK+4O+KF21ikifceBy521C/F28Z0DY+trGEB4k4cHtoTV9BtzxqJFsx4chyXir8QO5U3xmAnerKcAGbURbtXADdfe+vx+xwrJI3b/ugjZsnV25fe0z6sCcuKJv1iuTKslvK8s2NqWQZWhRjfyvHlwtRfrBdc5BBGCnb31fZ6QFG4h+adoBnDw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 216.228.117.161) smtp.rcpttodomain=huawei.com smtp.mailfrom=nvidia.com;
+ dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
+ dkim=none (message not signed); arc=none (0)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=5koOAAOBfs/zoRxcjQryx9W8OWGFPhL4cMUSamYGXVI=;
+ b=umUAe2sizYrG6J77UJHkI0k0CZAoS6DvoXrRaGntF4MCrEdPwuXVjUUV66142pr0nJclWNNQwipsCt9fRPUvdfxgK2E5o3oefTKRmE3byfFvisOEmagjJ0pXoPytPCxMl+9/Wo27FH8A6AgeZJyi/n3m+m1oFL8pclVQUMKm7DOLf05zXFTMq++I7PZE0Yzt76X/Gw1jpIp6EVmaQvktKTHkTi93pLAjtFCtTotLchdpJXjOenDa1U6WQtbuiWG91Q12extt8eb4IFPleQfrpKOMFcEaJyLBK1kr05/UJ+w/Jc36xieZlbdo+nXBQl6+Xl69V9UVUgETg7DrAhq8pA==
+Received: from PH7P221CA0072.NAMP221.PROD.OUTLOOK.COM (2603:10b6:510:328::10)
+ by MN0PR12MB6002.namprd12.prod.outlook.com (2603:10b6:208:37e::10) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.8026.18; Fri, 4 Oct
+ 2024 19:25:43 +0000
+Received: from CY4PEPF0000EE38.namprd03.prod.outlook.com
+ (2603:10b6:510:328:cafe::d2) by PH7P221CA0072.outlook.office365.com
+ (2603:10b6:510:328::10) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.8026.19 via Frontend
+ Transport; Fri, 4 Oct 2024 19:25:43 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.117.161)
+ smtp.mailfrom=nvidia.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=nvidia.com;
+Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
+ 216.228.117.161 as permitted sender) receiver=protection.outlook.com;
+ client-ip=216.228.117.161; helo=mail.nvidia.com; pr=C
+Received: from mail.nvidia.com (216.228.117.161) by
+ CY4PEPF0000EE38.mail.protection.outlook.com (10.167.242.10) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.8026.11 via Frontend Transport; Fri, 4 Oct 2024 19:25:41 +0000
+Received: from rnnvmail204.nvidia.com (10.129.68.6) by mail.nvidia.com
+ (10.129.200.67) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1544.4; Fri, 4 Oct 2024
+ 12:25:23 -0700
+Received: from rnnvmail204.nvidia.com (10.129.68.6) by rnnvmail204.nvidia.com
+ (10.129.68.6) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1544.4; Fri, 4 Oct 2024
+ 12:25:22 -0700
+Received: from Asurada-Nvidia (10.127.8.13) by mail.nvidia.com (10.129.68.6)
+ with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1544.4 via Frontend
+ Transport; Fri, 4 Oct 2024 12:25:21 -0700
+Date: Fri, 4 Oct 2024 12:25:19 -0700
+From: Nicolin Chen <nicolinc@nvidia.com>
+To: Jason Gunthorpe <jgg@nvidia.com>
+CC: Alexey Kardashevskiy <aik@amd.com>, <kevin.tian@intel.com>,
+	<will@kernel.org>, <joro@8bytes.org>, <suravee.suthikulpanit@amd.com>,
+	<robin.murphy@arm.com>, <dwmw2@infradead.org>, <baolu.lu@linux.intel.com>,
+	<shuah@kernel.org>, <linux-kernel@vger.kernel.org>, <iommu@lists.linux.dev>,
+	<linux-arm-kernel@lists.infradead.org>, <linux-kselftest@vger.kernel.org>,
+	<eric.auger@redhat.com>, <jean-philippe@linaro.org>, <mdf@kernel.org>,
+	<mshavit@google.com>, <shameerali.kolothum.thodi@huawei.com>,
+	<smostafa@google.com>, <yi.l.liu@intel.com>
+Subject: Re: [PATCH v2 06/19] iommufd/viommu: Add
+ IOMMU_VIOMMU_SET/UNSET_VDEV_ID ioctl
+Message-ID: <ZwBBH+9hwuGKOstl@Asurada-Nvidia>
+References: <cover.1724776335.git.nicolinc@nvidia.com>
+ <6348cc7a72ce9f2ac0e9caf9737e70177a01eb74.1724776335.git.nicolinc@nvidia.com>
+ <35701c5e-030a-4f52-b6f6-ed18368fb2cd@amd.com>
+ <20241004114147.GF1365916@nvidia.com>
+ <ZwAwWr+q3ZGkZCSM@Asurada-Nvidia>
+ <20241004185019.GJ1365916@nvidia.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset="us-ascii"
 Content-Disposition: inline
-In-Reply-To: <1727985064-18362-6-git-send-email-nunodasneves@linux.microsoft.com>
+In-Reply-To: <20241004185019.GJ1365916@nvidia.com>
+X-NV-OnPremToCloud: ExternallySecured
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: CY4PEPF0000EE38:EE_|MN0PR12MB6002:EE_
+X-MS-Office365-Filtering-Correlation-Id: a2bb0eaa-b133-47d3-a4fa-08dce4aa55b3
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam:
+	BCL:0;ARA:13230040|7416014|376014|36860700013|1800799024|82310400026;
+X-Microsoft-Antispam-Message-Info:
+	=?us-ascii?Q?Gc7/cUAsmuM3DB3Roe2L1M+Oq+S62gnNz2sOiMs6PzgXgnjcJOL0hksi/5zg?=
+ =?us-ascii?Q?3It9sZ5X++ILD9N889QAjgv3IkLUeXMdFfWRmxF2Awm668sv/+WxCwW8//VE?=
+ =?us-ascii?Q?1Q4BfX28N7IAfWDy7rPK8DOdQ4cAp5bxvvTBlRe5j2vh0pmSt5oIpsgoSfd1?=
+ =?us-ascii?Q?8CIPtg45UPdC2uw55/vxnjtd+65rtspEvQSHbUlFEkzkNHb2SVQguUUUezSI?=
+ =?us-ascii?Q?8tN9dA/IxlmRqITEFmWQgQkNwjkrqC7GK92Iew0DhXrB7XaojZ2LbFHFX4AO?=
+ =?us-ascii?Q?kEC/3YF30REKwkG5XUOBaAflQ25tm8roQD5WhaxXv1VxFk0T2tEGtd8bYP8j?=
+ =?us-ascii?Q?lDIFBeeqSyjjke9c+1ZbfxtF953fQOybRC4eBpevk16qHOlpsNUTeZHeyk9h?=
+ =?us-ascii?Q?53L9Xgrf+1F+Vja6TdVp0g3s77Gtj3SchT2DqWg2F9jVnRt602pIfKLGmMQ1?=
+ =?us-ascii?Q?1hwKGsPp4PcvCYVWeysFniSDQHwqCn5UENcMMhMiVJUXN7MQ50JCc9lxAtFJ?=
+ =?us-ascii?Q?dfcTVAvJUbY41qyqHF085XLTLmKTBRcZDsATAmTAJTW2rW/fC9R6n47iZtF7?=
+ =?us-ascii?Q?RjFDmDEfpMC4uDqhOUEWzdgVLHZW02LjC5dE/IVQ5C26zSiQsqrdtLKL13NA?=
+ =?us-ascii?Q?9ijiWNb8OXcjncK7uy+4bWLvlQVkZUeZJAo2+Y7SSXV5lEvA9GRjpaIH8vW/?=
+ =?us-ascii?Q?s9TsqYmi7xBn5+T2/prspfEr98x9OPmjgcVe/mFVbcXmtlIIzMT2+RGZhgrv?=
+ =?us-ascii?Q?RSjeF0Ep8HGMH8wwhE45z/9JHaGAIpZ/W8ttFsLe/2Fqh9vt3U0zJzw20+ec?=
+ =?us-ascii?Q?iFHNXRj0gXoqPcfgruqMBgz2MnTFDfDWG75r/9z8oLdQ5L2Lb2ewTn1ydiVf?=
+ =?us-ascii?Q?tlR/S5J0mfpIO/1nJR2rXzphgocfvCfSRvKIpC7mocTuzhtz0hqma3HifRrp?=
+ =?us-ascii?Q?c2/Em2QG22Bj414zObjjLADUHcGbH+xDBS90J/LBKmBbLIIhB6LdNM5pCsj7?=
+ =?us-ascii?Q?iRirRLyzfp2fXgSRUno4WFnVvAzSa4YOGvR77w2Pp4SsQiRl/nnLEh64wv47?=
+ =?us-ascii?Q?tfIEoREYYaw+3nR5UU2b1ns9cn9eBnMWFOA99oRTDKigt/KC36ZtxTru3h8O?=
+ =?us-ascii?Q?HwN/RAfglkeYMuL6unc/bajs9wsFALaZmhlYYUIrEckiOJ0kKcYRvKm/gBit?=
+ =?us-ascii?Q?6fT66fURa03JX2/Kmt6fIoF437fzlnYrRmf1POIuQWsAbdVJ2SruUBFf27mJ?=
+ =?us-ascii?Q?DabVtIe6CX6AfqeLNDrHdkyAG2P9itvAVm3WA1Q8rtaCWCfdLbjg95gkyacj?=
+ =?us-ascii?Q?j1EaFhppyCpxLNtZajJs0SXAY8YSzfFop+IPi+n0u7AcNIUgXO4pLDzCRuZB?=
+ =?us-ascii?Q?DdWCWDNLI+5lpES9//pDYR/zTwSu?=
+X-Forefront-Antispam-Report:
+	CIP:216.228.117.161;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc6edge2.nvidia.com;CAT:NONE;SFS:(13230040)(7416014)(376014)(36860700013)(1800799024)(82310400026);DIR:OUT;SFP:1101;
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 04 Oct 2024 19:25:41.1927
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: a2bb0eaa-b133-47d3-a4fa-08dce4aa55b3
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.117.161];Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-AuthSource:
+	CY4PEPF0000EE38.namprd03.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN0PR12MB6002
 
-On Thu, Oct 03, 2024 at 12:51:04PM -0700, Nuno Das Neves wrote:
-> To move toward importing headers from Hyper-V directly, switch to
-> using hvhdk.h in all Hyper-V code. KVM code that uses Hyper-V
-> definitions from hyperv-tlfs.h remains untouched.
+On Fri, Oct 04, 2024 at 03:50:19PM -0300, Jason Gunthorpe wrote:
+> On Fri, Oct 04, 2024 at 11:13:46AM -0700, Nicolin Chen wrote:
+> > On Fri, Oct 04, 2024 at 08:41:47AM -0300, Jason Gunthorpe wrote:
+> > > On Fri, Oct 04, 2024 at 02:32:28PM +1000, Alexey Kardashevskiy wrote:
+> > > > For my SEV-TIO exercise ("trusted IO"), I am looking for a kernel interface
+> > > > to pass the guest's BDFs for a specific host device (which is passed
+> > > > through) and nothing in the kernel has any knowledge of it atm, is this the
+> > > > right place, or another ioctl() is needed here?
+> > > 
+> > > We probably need to add the vRID as well to this struct for that
+> > > reason.
+> > 
+> > "vRID"/"vBDF" doesn't sound very generic to me to put in this
+> > structure, though PCI devices are and very likely will be the
+> > only users of this Virtual Device for a while. Any good idea?
 > 
-> Add HYPERV_NONTLFS_HEADERS everywhere mshyperv.h, asm/svm.h,
-> clocksource/hyperv_timer.h is included in Hyper-V code.
+> It isn't necessarily bad to have a pci field as long as we can
+> somehow understand when it is used.
+
+OK.
+
+> > Also, I am wondering if the uAPI structure of Virtual Device
+> > should have a driver-specific data structure. And the vdev_id
+> > should be in the driver-specific struct. So, it could stay in
+> > corresponding naming, "Stream ID", "Device ID" or "Context ID"
+> > v.s. a generic "Virtual ID" in the top-level structure? Then,
+> > other info like CCA can be put in the driver-level structure
+> > of SMMU's.
 > 
-> Replace hyperv-tlfs.h with hvhdk.h directly in linux/hyperv.h, and
-> define HYPERV_NONTLFS_HEADERS there, since it is only used in
-> Hyper-V device code.
+> I'd to avoid a iommu-driver specific structure here, but I fear we
+> will have a "lowervisor" (sigh) specific structure for the widely
+> varied CC/pkvm/etc world.
+
+The design of the structure also impacts how we implement the
+API between iommufd and the drivers. Right now, forwarding the
+ID via a function parameter is fine, but we would need a user
+structure once we have more stuff to forward.
+
+With that, I wonder what is better for the initial version of
+this structure, a generic virtual ID or a driver-named ID like
+"Stream ID"? The latter might be more understandable/flexible, 
+so we won't need to justify a generic virtual ID along the way
+if something changes in the nature?
+
+> > Agreed. That also implies that a vRID is quite independent to
+> > the IOMMU right? So, I think that the reason of adding a vRID
+> > to the virtual deivce uAPI/structure should be IOMMU requiring
+> > it?
 > 
-> Update a couple of definitions to updated names found in the new
-> headers: HV_EXT_MEM_HEAT_HINT, HV_SUBNODE_TYPE_ANY.
-> 
-> Signed-off-by: Nuno Das Neves <nunodasneves@linux.microsoft.com>
+> I would like to use this API to link in the CC/pkvm/etc world, and use
+> it to create not just the vIOMMU components but link up to the
+> "lowervisor" components as well, since it is all the same stuff
+> basically.
 
-...
+That sounds wider than what I defined it for in my patch:
+ * struct iommu_vdevice_alloc - ioctl(IOMMU_VDEVICE_ALLOC)
+ * ...
+ * Allocate a virtual device instance (for a physical device) against a vIOMMU.
+ * This instance holds the device's information in a VM, related to its vIOMMU.
 
-> diff --git a/arch/arm64/hyperv/mshyperv.c b/arch/arm64/hyperv/mshyperv.c
-> index b1a4de4eee29..62b2a270ae65 100644
-> --- a/arch/arm64/hyperv/mshyperv.c
-> +++ b/arch/arm64/hyperv/mshyperv.c
-> @@ -15,6 +15,7 @@
->  #include <linux/errno.h>
->  #include <linux/version.h>
->  #include <linux/cpuhotplug.h>
-> +#define HYPERV_NONTLFS_HEADERS
->  #include <asm/mshyperv.h>
->  
->  static bool hyperv_initialized;
+Would you please help rephrase it? It'd be also helpful for me
+to update the doc.
 
-Hi,
+Though I feel slightly odd if we define it wider than "vIOMMU"
+since this is an iommufd header...
 
-With this change in place I see allmodconfig x86_64 builds reporting that
-HV_REGISTER_FEATURES is undeclared.
-
-arch/arm64/hyperv/mshyperv.c: In function 'hyperv_init':
-arch/arm64/hyperv/mshyperv.c:53:26: error: 'HV_REGISTER_FEATURES' undeclared (first use in this function); did you mean 'HV_REGISTER_FEATURES_INFO'?
-   53 |         hv_get_vpreg_128(HV_REGISTER_FEATURES, &result);
-      |                          ^~~~~~~~~~~~~~~~~~~~
-      |                          HV_REGISTER_FEATURES_INFO
-arch/arm64/hyperv/mshyperv.c:53:26: note: each undeclared identifier is reported only once for each function it appears in
-arch/arm64/hyperv/mshyperv.c:58:26: error: 'HV_REGISTER_ENLIGHTENMENTS' undeclared (first use in this function); did you mean 'HV_ACCESS_REENLIGHTENMENT'?
-   58 |         hv_get_vpreg_128(HV_REGISTER_ENLIGHTENMENTS, &result);
-      |                          ^~~~~~~~~~~~~~~~~~~~~~~~~~
-      |                          HV_ACCESS_REENLIGHTENMENT
-
-> diff --git a/arch/x86/entry/vdso/vma.c b/arch/x86/entry/vdso/vma.c
-> index 6d83ceb7f1ba..5f4053c49658 100644
-> --- a/arch/x86/entry/vdso/vma.c
-> +++ b/arch/x86/entry/vdso/vma.c
-> @@ -25,6 +25,7 @@
->  #include <asm/page.h>
->  #include <asm/desc.h>
->  #include <asm/cpufeature.h>
-> +#define HYPERV_NONTLFS_HEADERS
->  #include <clocksource/hyperv_timer.h>
->  
->  #undef _ASM_X86_VVAR_H
-> diff --git a/arch/x86/hyperv/hv_apic.c b/arch/x86/hyperv/hv_apic.c
-> index f022d5f64fb6..4fe3b3b13256 100644
-> --- a/arch/x86/hyperv/hv_apic.c
-> +++ b/arch/x86/hyperv/hv_apic.c
-> @@ -26,6 +26,7 @@
->  #include <linux/slab.h>
->  #include <linux/cpuhotplug.h>
->  #include <asm/hypervisor.h>
-> +#define HYPERV_NONTLFS_HEADERS
->  #include <asm/mshyperv.h>
->  #include <asm/apic.h>
->  
-> diff --git a/arch/x86/hyperv/hv_init.c b/arch/x86/hyperv/hv_init.c
-> index fc3c3d76c181..680c4abc456e 100644
-> --- a/arch/x86/hyperv/hv_init.c
-> +++ b/arch/x86/hyperv/hv_init.c
-> @@ -19,6 +19,7 @@
->  #include <asm/sev.h>
->  #include <asm/ibt.h>
->  #include <asm/hypervisor.h>
-> +#define HYPERV_NONTLFS_HEADERS
->  #include <asm/mshyperv.h>
->  #include <asm/idtentry.h>
->  #include <asm/set_memory.h>
-
-And here too, with x86_64 allmodconfig.
-
-In file included from ./include/linux/string.h:390,
-                 from ./include/linux/efi.h:16,
-                 from arch/x86/hyperv/hv_init.c:12:
-arch/x86/hyperv/hv_init.c: In function 'get_vtl':
-./include/linux/overflow.h:372:23: error: invalid application of 'sizeof' to incomplete type 'struct hv_get_vp_registers_input'
-  372 |                 sizeof(*(p)) + flex_array_size(p, member, count),       \
-      |                       ^
-./include/linux/fortify-string.h:502:42: note: in definition of macro '__fortify_memset_chk'
-  502 |         size_t __fortify_size = (size_t)(size);                         \
-      |                                          ^~~~
-arch/x86/hyperv/hv_init.c:427:9: note: in expansion of macro 'memset'
-  427 |         memset(input, 0, struct_size(input, element, 1));
-      |         ^~~~~~
-arch/x86/hyperv/hv_init.c:427:26: note: in expansion of macro 'struct_size'
-  427 |         memset(input, 0, struct_size(input, element, 1));
-      |                          ^~~~~~~~~~~
-
-[errors trimmed for the sake of brevity]
-
-...
-
-> diff --git a/arch/x86/hyperv/hv_vtl.c b/arch/x86/hyperv/hv_vtl.c
-> index 04775346369c..a8bb6ad7efb6 100644
-> --- a/arch/x86/hyperv/hv_vtl.c
-> +++ b/arch/x86/hyperv/hv_vtl.c
-> @@ -10,6 +10,7 @@
->  #include <asm/boot.h>
->  #include <asm/desc.h>
->  #include <asm/i8259.h>
-> +#define HYPERV_NONTLFS_HEADERS
->  #include <asm/mshyperv.h>
->  #include <asm/realmode.h>
->  #include <../kernel/smpboot.h>
-
-And, likewise, with this patch applied I see a number of errors when
-compiling this file. This is with allmodconfig on x86_64 with:
-
-Modified: CONFIG_HYPERV=y (instead of m)
-Added: CONFIG_HYPERV_VTL_MODE=y
-
-arch/x86/hyperv/hv_vtl.c: In function 'hv_vtl_bringup_vcpu':
-arch/x86/hyperv/hv_vtl.c:154:34: error: 'HVCALL_ENABLE_VP_VTL' undeclared (first use in this function)
-  154 |         status = hv_do_hypercall(HVCALL_ENABLE_VP_VTL, input, NULL);
-      |                                  ^~~~~~~~~~~~~~~~~~~~
-arch/x86/hyperv/hv_vtl.c:154:34: note: each undeclared identifier is reported only once for each function it appears in
-In file included from ./include/linux/string.h:390,
-                 from ./include/linux/bitmap.h:13,
-                 from ./include/linux/cpumask.h:12,
-                 from ./arch/x86/include/asm/apic.h:5,
-                 from arch/x86/hyperv/hv_vtl.c:9:
-arch/x86/hyperv/hv_vtl.c: In function 'hv_vtl_apicid_to_vp_id':
-arch/x86/hyperv/hv_vtl.c:189:32: error: invalid application of 'sizeof' to incomplete type 'struct hv_get_vp_from_apic_id_in'
-  189 |         memset(input, 0, sizeof(*input));
-      |                                ^
-./include/linux/fortify-string.h:502:42: note: in definition of macro '__fortify_memset_chk'
-  502 |         size_t __fortify_size = (size_t)(size);                         \
-      |                                          ^~~~
-arch/x86/hyperv/hv_vtl.c:189:9: note: in expansion of macro 'memset'
-  189 |         memset(input, 0, sizeof(*input));
-      |         ^~~~~~
-arch/x86/hyperv/hv_vtl.c:190:14: error: invalid use of undefined type 'struct hv_get_vp_from_apic_id_in'
-  190 |         input->partition_id = HV_PARTITION_ID_SELF;
-      |              ^~
-arch/x86/hyperv/hv_vtl.c:191:14: error: invalid use of undefined type 'struct hv_get_vp_from_apic_id_in'
-  191 |         input->apic_ids[0] = apic_id;
-      |              ^~
-arch/x86/hyperv/hv_vtl.c:195:45: error: 'HVCALL_GET_VP_ID_FROM_APIC_ID' undeclared (first use in this function)
-  195 |         control = HV_HYPERCALL_REP_COMP_1 | HVCALL_GET_VP_ID_FROM_APIC_ID;
-      |                                             ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-...
+Thanks
+Nicolin
