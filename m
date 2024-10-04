@@ -1,104 +1,72 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.11])
+Received: from desiato.infradead.org (desiato.infradead.org [90.155.92.199])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7FF1B1537CB
-	for <iommu@lists.linux.dev>; Fri,  4 Oct 2024 09:41:32 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.11
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 20FF413A257;
+	Fri,  4 Oct 2024 10:07:54 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=90.155.92.199
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1728034894; cv=none; b=VLPhxVv3xKTECnvYuPT9oRfhT72sev//+kKmHyAXyk7j+NuR2lh+ladmWKhMQJ/DCiMAyY+/3WeXSEPiGK30CbqM6RsnEqGsbT0J9XW2T/swX+R0vA9un3WfrqVWzVRfKI1cbQdestvhiOk9gzBlRtvWDIokiZVjiJY+3opRC04=
+	t=1728036477; cv=none; b=eJhrVFqjV8+4fuADlAzJ4psercRsp4P47jr7P4RRpKcGWmAcCg3sau75VggzDW09vxX1c2O013sSZtw0cjVrHi3wlS1tp1/cGF7Zu+Vfqw8VYZmhxNh3xEmNpGRG6nt4FLCjgG7fpo3Aq+0d5Nvk+VwbPA6uOdzZ+dUvYysO04I=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1728034894; c=relaxed/simple;
-	bh=n4KF3dBjJucW5uKA3f4JXugGchbXk/nbttaph2dNEeU=;
-	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
-	 MIME-Version; b=KGZso5/3Nazojkx5XYX7/BW34qbIW6r0xTWgq5YuF2agXoFrzUpXxkEVTzKVFsTfCq4U7DN6B6MBZjv4zANWtTT2gGfu9S3VccJhxI5w6Y5Cu8TKa8NP1dmZbX0IbLwSjkXu6spWEz8fZT4LolX2gmFXB7K7XrZzFSydZ0V0EGI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=VqbpC1Yi; arc=none smtp.client-ip=192.198.163.11
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
+	s=arc-20240116; t=1728036477; c=relaxed/simple;
+	bh=0ErE4yIzJ4CNSK9JS5t8RilNBwBBL9q+8Xv9BI3Apzo=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=FGHyIvZ9evasH16Z2IrnECi8sZPrOy7st318QUJZsklEm8w2l5N9bXBdWuvDiKePLB/VbkhWDdXBhga2xhXvSyQKsiUbNQwsI+2CUNSsV/cjRM5BBBDyPzX35vO/K+5d0Dtj1JHsRXfqnS+oAnw3PgBduukc8oRQin74H34/LTI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=infradead.org; spf=none smtp.mailfrom=infradead.org; dkim=pass (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b=eeM1whbH; arc=none smtp.client-ip=90.155.92.199
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=infradead.org
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=infradead.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="VqbpC1Yi"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1728034893; x=1759570893;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=n4KF3dBjJucW5uKA3f4JXugGchbXk/nbttaph2dNEeU=;
-  b=VqbpC1YilYbxjKYQGUFBm0eDK6iNFRFgAR9oiCTaLZBG839SbiAwRSbY
-   GgdEavC/ZdVSbBRDLmbcD5KBIe/n8scW9lcbLFqO+hxtND7vNwc5kvnSh
-   XsBi33QWksgMILiMFkTBrSdktsqr3ssANjmpGnJQT3b8hvJK3dlOJga+s
-   IMBfRSk2ukVCUds/LjP9zZrXDp6nsVfWunn+PFZUPwrMlLkhuLWIvZHKG
-   5HDSiuD8mD/K7K4uMTOwuptTzbGkrhJ+oU+Ivo8ZTN+eEUG2ssL9hpyGl
-   1tb4awVvjYqGrF/Lldl73KetxB38+x27JnXXU7MA50yjt7UMJLTDwFrGq
-   g==;
-X-CSE-ConnectionGUID: uDsxOHMQTSKfYrTEfvxGrg==
-X-CSE-MsgGUID: gm9cgjlCRT6xX3VQSbkoQg==
-X-IronPort-AV: E=McAfee;i="6700,10204,11214"; a="37856288"
-X-IronPort-AV: E=Sophos;i="6.11,177,1725346800"; 
-   d="scan'208";a="37856288"
-Received: from fmviesa007.fm.intel.com ([10.60.135.147])
-  by fmvoesa105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Oct 2024 02:41:31 -0700
-X-CSE-ConnectionGUID: Otx8UPjeS0WU/6ygcjZ9hQ==
-X-CSE-MsgGUID: nyDUhajAS4aDSGF+jSAM8w==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.11,177,1725346800"; 
-   d="scan'208";a="74331943"
-Received: from turnipsi.fi.intel.com (HELO kekkonen.fi.intel.com) ([10.237.72.44])
-  by fmviesa007-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Oct 2024 02:41:28 -0700
-Received: from punajuuri.localdomain (punajuuri.localdomain [192.168.240.130])
-	by kekkonen.fi.intel.com (Postfix) with ESMTP id 45283120F46;
-	Fri,  4 Oct 2024 12:41:23 +0300 (EEST)
-Received: from sailus by punajuuri.localdomain with local (Exim 4.96)
-	(envelope-from <sakari.ailus@linux.intel.com>)
-	id 1sweoN-000TaV-0r;
-	Fri, 04 Oct 2024 12:41:23 +0300
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
-From: Sakari Ailus <sakari.ailus@linux.intel.com>
-To: Will Deacon <will@kernel.org>,
-	Robin Murphy <robin.murphy@arm.com>,
-	Joerg Roedel <joro@8bytes.org>,
-	Jason Gunthorpe <jgg@ziepe.ca>,
-	Pranjal Shrivastava <praan@google.com>,
-	Rob Clark <robdclark@chromium.org>,
-	Georgi Djakov <quic_c_gdjako@quicinc.com>,
-	Sakari Ailus <sakari.ailus@linux.intel.com>
-Cc: linux-arm-kernel@lists.infradead.org,
-	iommu@lists.linux.dev
-Subject: [PATCH 22/51] iommu/arm-smmu: Switch to __pm_runtime_put_autosuspend()
-Date: Fri,  4 Oct 2024 12:41:23 +0300
-Message-Id: <20241004094123.113725-1-sakari.ailus@linux.intel.com>
-X-Mailer: git-send-email 2.39.5
-In-Reply-To: <20241004094101.113349-1-sakari.ailus@linux.intel.com>
-References: <20241004094101.113349-1-sakari.ailus@linux.intel.com>
+	dkim=pass (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b="eeM1whbH"
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+	d=infradead.org; s=desiato.20200630; h=In-Reply-To:Content-Type:MIME-Version:
+	References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+	Content-Transfer-Encoding:Content-ID:Content-Description;
+	bh=xqlikl0bG4GDsTQjaI8kd8CnGG7Ve6tkOtKZn8x5TY4=; b=eeM1whbHI/rFHiUwezCgI/bZ+R
+	HXNswooL56X6/oGJqMRyOAanoRxmGuhhvrmBk7gNA9x+tYx70Z2pE1AW8+etEkfvv5Va5X82eiI1E
+	J8nmw/BkWyvoqGaKRu876fSGyOVNtlF49WTx4OsAvYUrJ/Xx84PMUtroGsIQGqC5VTciUQgzpzLIj
+	ssVM8ctoBL9geCR4R0Qu8vXFYAJpXFlK9w9FxUrsMNqGgSN04t7npSKv9r8xrMq8x1AKMMo7nFUJz
+	uLj5nHU+e38Q2uP1sjYBAWy1V0zcAccfRLmne+Cd41vJlPV2vBkOuKE69+S3l3rLyQKAqGUWq0G3Y
+	nAC4B0Rg==;
+Received: from j130084.upc-j.chello.nl ([24.132.130.84] helo=noisy.programming.kicks-ass.net)
+	by desiato.infradead.org with esmtpsa (Exim 4.98 #2 (Red Hat Linux))
+	id 1swfDr-00000003ofA-1fE6;
+	Fri, 04 Oct 2024 10:07:43 +0000
+Received: by noisy.programming.kicks-ass.net (Postfix, from userid 1000)
+	id 9B45A30083E; Fri,  4 Oct 2024 12:07:42 +0200 (CEST)
+Date: Fri, 4 Oct 2024 12:07:42 +0200
+From: Peter Zijlstra <peterz@infradead.org>
+To: mhklinux@outlook.com
+Cc: kys@microsoft.com, haiyangz@microsoft.com, wei.liu@kernel.org,
+	decui@microsoft.com, tglx@linutronix.de, mingo@redhat.com,
+	bp@alien8.de, dave.hansen@linux.intel.com, x86@kernel.org,
+	hpa@zytor.com, joro@8bytes.org, will@kernel.org,
+	robin.murphy@arm.com, davem@davemloft.net, edumazet@google.com,
+	kuba@kernel.org, pabeni@redhat.com,
+	James.Bottomley@hansenpartnership.com, martin.petersen@oracle.com,
+	iommu@lists.linux.dev, netdev@vger.kernel.org,
+	linux-hyperv@vger.kernel.org, linux-kernel@vger.kernel.org,
+	linux-scsi@vger.kernel.org
+Subject: Re: [PATCH 0/5] hyper-v: Don't assume cpu_possible_mask is dense
+Message-ID: <20241004100742.GO18071@noisy.programming.kicks-ass.net>
+References: <20241003035333.49261-1-mhklinux@outlook.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20241003035333.49261-1-mhklinux@outlook.com>
 
-pm_runtime_put_autosuspend() will soon be changed to include a call to
-pm_runtime_mark_last_busy(). This patch switches the current users to
-__pm_runtime_put_autosuspend() which will continue to have the
-functionality of old pm_runtime_put_autosuspend().
+On Wed, Oct 02, 2024 at 08:53:28PM -0700, mhkelley58@gmail.com wrote:
+> 
+> Michael Kelley (5):
+>   x86/hyperv: Don't assume cpu_possible_mask is dense
+>   Drivers: hv: Don't assume cpu_possible_mask is dense
+>   iommu/hyper-v: Don't assume cpu_possible_mask is dense
+>   scsi: storvsc: Don't assume cpu_possible_mask is dense
+>   hv_netvsc: Don't assume cpu_possible_mask is dense
 
-Signed-off-by: Sakari Ailus <sakari.ailus@linux.intel.com>
----
- drivers/iommu/arm/arm-smmu/arm-smmu.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+Thanks, these look sane.
 
-diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu.c b/drivers/iommu/arm/arm-smmu/arm-smmu.c
-index 8321962b3714..cad02d5dc6d2 100644
---- a/drivers/iommu/arm/arm-smmu/arm-smmu.c
-+++ b/drivers/iommu/arm/arm-smmu/arm-smmu.c
-@@ -79,7 +79,7 @@ static inline int arm_smmu_rpm_get(struct arm_smmu_device *smmu)
- static inline void arm_smmu_rpm_put(struct arm_smmu_device *smmu)
- {
- 	if (pm_runtime_enabled(smmu->dev))
--		pm_runtime_put_autosuspend(smmu->dev);
-+		__pm_runtime_put_autosuspend(smmu->dev);
- }
- 
- static void arm_smmu_rpm_use_autosuspend(struct arm_smmu_device *smmu)
--- 
-2.39.5
-
+Acked-by: Peter Zijlstra (Intel) <peterz@infradead.org>
