@@ -1,185 +1,203 @@
-Received: from NAM12-MW2-obe.outbound.protection.outlook.com (mail-mw2nam12on2074.outbound.protection.outlook.com [40.107.244.74])
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6823E1DD888
-	for <iommu@lists.linux.dev>; Fri,  4 Oct 2024 20:17:51 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.244.74
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1728073072; cv=fail; b=OACsWdNUu28jIE8uo3p481gMUOojsa/cZOqLLuiwmG+sTMc7/+8039Rx+vRgfwTbI0I5egLI2g68fCF8nuqeWw3WXmR5qET/SRcwt1vK2h+ICIsLOp7CzhzfiaPpn5IjNxhuu+OH5Y5aLHtQDxU73EwfxAJAM44raEj8nUS/Wqs=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1728073072; c=relaxed/simple;
-	bh=iDtHpX1v0TQwSf4sC2p6V9j4DnwYjY6kH95SPVD4rjA=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:Content-Type:
-	 Content-Disposition:In-Reply-To:MIME-Version; b=L8r5DXdihV53hW1DjqBPmPbBBIg4h0MnbWw3zbMm/cnhIleW6XS1btkYEqpNGgp6kH7IXeO2aLiIDFA93a20YRDDnGrFfJzuB8GSpm2Y300HsdQ6geNag8H88PQU4KHH8NBOsiPsKhm1TG6eRd7eKNXZgj3ZiUpZnOwUx/B6SwI=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=RNgu7eDB; arc=fail smtp.client-ip=40.107.244.74
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CC3D322067
+	for <iommu@lists.linux.dev>; Fri,  4 Oct 2024 20:20:17 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=170.10.133.124
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1728073219; cv=none; b=rOSsTMzfO3p/5Uo3t6BdoBY2mt0jo+WnAL0DWI1xA7tXVWJwZhIUT8pLQsEM2ZG2XS7gf5m1WwYA8jVqPHgp2K+GjQGWGG9eSRINdMjfnPQ5Xi1irKWKXY8xOgcFIDaYQxj9DGRQP8jWPh3fy+MyVpJjZpzC7l97qYTQKAeLbMI=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1728073219; c=relaxed/simple;
+	bh=Y36gZNAGtZ6EswUYrjmdXaKuVNGvLPZ+BaG/Kte/lsc=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=NC97khBaXqXFMbkj07P+ECnHJX41oHn8Kc//OV4jpumDW6IV4ajJ1OMIHnhpc/xJuy4wq0XdxMaOJk4X7D1kt5k1+B8GVkr8LYxfVYm8G+kJT+/CbqKLqVAgOj7TZtfRErsTVo295et6vRbfI+BwRo7hQxTyx/3uGbCxkABqsaE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=redhat.com; spf=pass smtp.mailfrom=redhat.com; dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b=BjOvPOfe; arc=none smtp.client-ip=170.10.133.124
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=redhat.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=redhat.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="RNgu7eDB"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=oRSxFGMOjo6/Wx5p/qKPaToG71BkwLIEU8hX2RAjvhSCIyLJD93tMfuM3mTl4dEhbYcHhx9aCQOzlt8d8xdA82TBbkiQXLJDI+jHIcjZiz9KRy3rzB9BYRsXw7zA/On/EQxGtqkVnrDVBVUCoWGV32fR2LoN2VnqepnqBO2rUPo3CVKeRVCWE2q0TLQeOBX5NQ9hZyBh68N+2F9fYNR8GVGCZN/2Tl1+doZ1B7VV3/LnT3bR7x2ctnRcm+SZDu+/7gSqRNpEwFX5sXsJh5DYVjOQTxp+/XTX7g+nY355XhYwCLtXd5yyEDEPnhYNNbysX+0B9htIjzIajzrb1wvEkA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=iMVdrA5ty3hnSJaBH92IzkjbF4suwljJPiMSU+6dAks=;
- b=evOkluLFruDuN54CeipTK5V9ej519usMQb27tYI+zWH9QbySXwErrcw/x4Igh2j0DZPWQiHyQnyAU+GmcE9WnFNOIcjlLYERTEdk2jLrDy8+ToJ4gOjjKgudqG0F0JHKwkJvox/7WedeW+Y4y7b+Cry08h1KRMsy95YcQlBuEFhMTLiKjaTNmSs7HP3l6WTplyy6x/l5xvZRKh9RcnsOilzP14eC+Zo66IJYf9Y112tl8GSapTu2wRiXGwYuuIAiGfaQdo+gQiVu5qNuHHAfckFB6pwcb26p4KwVHwySJvdzGi3IEWNxOvPuR4Obj6JwU6CiGJK94GDkz7UDdO5Z2w==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=iMVdrA5ty3hnSJaBH92IzkjbF4suwljJPiMSU+6dAks=;
- b=RNgu7eDBAxIRCcS9a6Bkzl3wxaNeQq9H6i5mrDKqOVJwxDB2aPUOFK9HfGDBrb1bdtghfbn4jm7C+y3DP3wUM0NnOzfuKEqOH47LUoZzkBHvp7C1Zs0Ph602cB87Uw5IWAAWi0GuIQ+vDgiWDRQ4XUHplS9BbbnagiMJBC/6xe26q1ZSv6Iunl6l8780xcQ5CxqUpZNZYxpiX/BOJ9t7hw6cuZvNmK0NYMkqsIyWr6JMhkFDtBH02ceW4pmpQq51RQa7Rl/t63DU8ZHAEuHjhfeOZ+PT9C5K6T8oRIdnd0im3kzzE7v70TzyXHUD/0QDDorWmHMUr01cKcXjNMBI1g==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-Received: from CH3PR12MB8659.namprd12.prod.outlook.com (2603:10b6:610:17c::13)
- by PH7PR12MB6693.namprd12.prod.outlook.com (2603:10b6:510:1b0::6) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.8026.18; Fri, 4 Oct
- 2024 20:17:48 +0000
-Received: from CH3PR12MB8659.namprd12.prod.outlook.com
- ([fe80::6eb6:7d37:7b4b:1732]) by CH3PR12MB8659.namprd12.prod.outlook.com
- ([fe80::6eb6:7d37:7b4b:1732%4]) with mapi id 15.20.8026.017; Fri, 4 Oct 2024
- 20:17:47 +0000
-Date: Fri, 4 Oct 2024 17:17:46 -0300
-From: Jason Gunthorpe <jgg@nvidia.com>
-To: Nicolin Chen <nicolinc@nvidia.com>
-Cc: Alexey Kardashevskiy <aik@amd.com>, kevin.tian@intel.com,
-	will@kernel.org, joro@8bytes.org, suravee.suthikulpanit@amd.com,
-	robin.murphy@arm.com, dwmw2@infradead.org, baolu.lu@linux.intel.com,
-	shuah@kernel.org, linux-kernel@vger.kernel.org,
-	iommu@lists.linux.dev, linux-arm-kernel@lists.infradead.org,
-	linux-kselftest@vger.kernel.org, eric.auger@redhat.com,
-	jean-philippe@linaro.org, mdf@kernel.org, mshavit@google.com,
-	shameerali.kolothum.thodi@huawei.com, smostafa@google.com,
-	yi.l.liu@intel.com
-Subject: Re: [PATCH v2 06/19] iommufd/viommu: Add
- IOMMU_VIOMMU_SET/UNSET_VDEV_ID ioctl
-Message-ID: <20241004201746.GK1365916@nvidia.com>
-References: <cover.1724776335.git.nicolinc@nvidia.com>
- <6348cc7a72ce9f2ac0e9caf9737e70177a01eb74.1724776335.git.nicolinc@nvidia.com>
- <35701c5e-030a-4f52-b6f6-ed18368fb2cd@amd.com>
- <20241004114147.GF1365916@nvidia.com>
- <ZwAwWr+q3ZGkZCSM@Asurada-Nvidia>
- <20241004185019.GJ1365916@nvidia.com>
- <ZwBBH+9hwuGKOstl@Asurada-Nvidia>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <ZwBBH+9hwuGKOstl@Asurada-Nvidia>
-X-ClientProxiedBy: BLAPR03CA0118.namprd03.prod.outlook.com
- (2603:10b6:208:32a::33) To CH3PR12MB8659.namprd12.prod.outlook.com
- (2603:10b6:610:17c::13)
+	dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="BjOvPOfe"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+	s=mimecast20190719; t=1728073216;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding:
+	 in-reply-to:in-reply-to:references:references:autocrypt:autocrypt;
+	bh=fOR382Uq6BdZtcEM+a/S6p3TMaL7eIlFaKTePlFuJkQ=;
+	b=BjOvPOfeSSqJmDIpWM/sXgPsps81SHifHXkBkDsvdHeNyls905F7G+XCciB1iTm2xo2bYQ
+	LEhUpMf71t7YgrD6+6JKA8iMMG0g9dtam3dPJBUHolbu7gtQJZBKLp/cZcpIvxji/p8pAk
+	bqjnw2OBy6ye9OTgvHPjDtC2yWqvtn4=
+Received: from mail-wm1-f69.google.com (mail-wm1-f69.google.com
+ [209.85.128.69]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
+ us-mta-356-FDvUl92qPVmnEsWPZ0nq6A-1; Fri, 04 Oct 2024 16:20:15 -0400
+X-MC-Unique: FDvUl92qPVmnEsWPZ0nq6A-1
+Received: by mail-wm1-f69.google.com with SMTP id 5b1f17b1804b1-42cdeac2da6so18933085e9.2
+        for <iommu@lists.linux.dev>; Fri, 04 Oct 2024 13:20:15 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1728073214; x=1728678014;
+        h=content-transfer-encoding:in-reply-to:organization:autocrypt:from
+         :content-language:references:cc:to:subject:user-agent:mime-version
+         :date:message-id:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=fOR382Uq6BdZtcEM+a/S6p3TMaL7eIlFaKTePlFuJkQ=;
+        b=uP9q6pmBNUJwF7EBAUxvpS69xb88MTmdzOfYBSdan2OkZnysOIOsrzhTj11cCWJ9gp
+         /iOfpwX9OKhVPHQK8lmTcJLlvTrFLzGnOIhc9J2K8ZWS8ay+bvqm2KQafVomYdjIQndW
+         2ciO0jXWTX0mD/uh0yOICYtFi8yoJZM6xuN+dSHRhS0ZdI3RI5yNPGWDNmvMHU0vVFo7
+         cL/s3hTIzUNIh5dqDT9XID9E+S8c5kGBPBHaHVp7GK6KHRTYUvog0PV1XNTvzRT5yaeX
+         NcS0dr2zDURQ+2yvPlJKSAGy0TwSY9VH/e/QArHBWnuhIHTDGUsPfQPs9gN9boeM8WGZ
+         Da4g==
+X-Forwarded-Encrypted: i=1; AJvYcCVpTO1svWw/fRj6OAVMdtPTQkMaa2gadsckjK+jzCH7ybHtjrFwcB40CA0JFZjAZeQVFNmDLg==@lists.linux.dev
+X-Gm-Message-State: AOJu0YyFYWSez9mBWGUt6mq6e4qWhiSTBtUTY8IRpMj+jd+K+0gso6sF
+	e0Iw8zTS8wemCiY1tudBEI7SlsmzCBq5JFuUNMbJ4UkxUgZl2lS+q9/+t15MBP2P2sCUlH5sYi/
+	9BQe0uPPmganUpepq08UUFXm5mSB/ljmNdTFtYTU8AVXHY1tjilZI
+X-Received: by 2002:a05:600c:46c6:b0:42c:b905:2bf9 with SMTP id 5b1f17b1804b1-42f85ab7cbbmr32880145e9.16.1728073213926;
+        Fri, 04 Oct 2024 13:20:13 -0700 (PDT)
+X-Google-Smtp-Source: AGHT+IEKY01Jqf5vMSvhz0hWepxFWHrjCcGKicALLDDeFZ+aMFgp8pKRXNH5dJg+4oKHY1ezYNFQ5Q==
+X-Received: by 2002:a05:600c:46c6:b0:42c:b905:2bf9 with SMTP id 5b1f17b1804b1-42f85ab7cbbmr32880035e9.16.1728073213560;
+        Fri, 04 Oct 2024 13:20:13 -0700 (PDT)
+Received: from ?IPV6:2003:cb:c714:d00:a1ab:bff4:268f:d7c5? (p200300cbc7140d00a1abbff4268fd7c5.dip0.t-ipconnect.de. [2003:cb:c714:d00:a1ab:bff4:268f:d7c5])
+        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-42f89ec61ecsm5178755e9.29.2024.10.04.13.20.11
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 04 Oct 2024 13:20:13 -0700 (PDT)
+Message-ID: <804766d3-da43-4860-beeb-8e9b9ffe81fd@redhat.com>
+Date: Fri, 4 Oct 2024 22:20:11 +0200
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: CH3PR12MB8659:EE_|PH7PR12MB6693:EE_
-X-MS-Office365-Filtering-Correlation-Id: d0257981-dc2d-401b-87ba-08dce4b19d37
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;ARA:13230040|366016|7416014|376014|1800799024;
-X-Microsoft-Antispam-Message-Info:
-	=?us-ascii?Q?Dv6TBRFFj+ag+s1HBOs0mYQ6nvksJHAu7Hv1nrLuzCQb/C99tOWxxMMNmfTd?=
- =?us-ascii?Q?daO7OnviDhBGpIlto4ieOb2r/my7tGfMXkpUvVSs2yGaWPale9C4HwE4/G9k?=
- =?us-ascii?Q?y8pCW66LfhN13nzNEyh5ml7GXjWEechvi7ciubRBiqyND96Iy9rHW+41OsZg?=
- =?us-ascii?Q?+gfnJ9p32yYMxeUnRvEvWpC9Lgv2ItlAYYXfVShYeTtRrGFHZBdN7yyZ/IK9?=
- =?us-ascii?Q?0xn603KUbfjP5Y+anvjhiPjRQUz48ElgECsJ0KcBXqDJmoB7kVCenU8M5t0h?=
- =?us-ascii?Q?LpP17IRBqQ728jS8viFPtg4Wn6qMibgTO5/5D4zwm+pqd7j/g4zpFRGUGrty?=
- =?us-ascii?Q?eNoF7Vua+LBw0s6tFO3ZcFmGPxF9MYDZHj5JJs4bfYpa0SX/2dpJDScY0l4d?=
- =?us-ascii?Q?+YDfBwRf0ALqSTJY43eSu8yT2o0MIdzbRuVEsHVhPLA/Xa1QGQiCMwNOyL0U?=
- =?us-ascii?Q?cTzXEtKpj/QjdUBxOUjS0ZlMhlnJ2uouZg6/1sB1MU/tHT0SHjz7sCsgp4G/?=
- =?us-ascii?Q?Yn9GGQxMUaWPi5XPWRbOQMgBiMB00S5wckxFfHviYSX3SgOQN8GL+U2yrUgy?=
- =?us-ascii?Q?Lm+0iU4X7Bxtl7pdJ6InEk3WdcdA3ffOCt1Vb9GJJ7Td+/tTjdeCqPB597Pu?=
- =?us-ascii?Q?hwTc/eLaBJ345uG5C07tFLTtFR6LmrfHTlhvv32jvAxcWXXrVOzppA8J2hgP?=
- =?us-ascii?Q?d/CzTeaRNfQhmUWXkhl2vYL4ChYVwUBQ0TK9X5oeOl+ULj4HLWMLp8xUgJLE?=
- =?us-ascii?Q?3rmksWW677GkshknjKGcbeORL12zfUYG9GlDXXIeiPlJ5bJbdlT43hirYy8l?=
- =?us-ascii?Q?S8LitrkQKmDw4KDeAjpbI8lQSDRtTxmLQerpq7d4RkD8pN9z+nA3DF9G2tqG?=
- =?us-ascii?Q?wjxuRGlo1fiyXxDNUiVsA0ffe7/DnCTjyeIg1LGoepSGF1gLOYUhkJmTtLBB?=
- =?us-ascii?Q?IrFAblJbcaYpyhY6/Glugsz1i3PzhItzftfeF7hNYqArMZ8bv9RpIiYiDcJI?=
- =?us-ascii?Q?WZ4/5b5AFxZY7Fhmi/2Zglf1b/xCbz1pOFAs7p13624heZV+K0GiO0QJGvla?=
- =?us-ascii?Q?KR/aVxJ/Y/MI80HXwFtmUYivyW+OJmdkERnkv8wl88drzZAEyF3KL07yS6h1?=
- =?us-ascii?Q?zMtSSw4G52pjyqiyhFcCCBNTY2FutaAYR0lzlt4xPosRhleMQk2IQZLUns3p?=
- =?us-ascii?Q?jF4ghzC4QJjXh7ADLoIHZG7cEZCVqRb6M/MY+HrvaU0Vczqt+YngiouxRjqD?=
- =?us-ascii?Q?v/dyUdek0/Hpmyx9GOkWhmDX9T/AmIlnCWRxJ8Svqw=3D=3D?=
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CH3PR12MB8659.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(366016)(7416014)(376014)(1800799024);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?us-ascii?Q?s0O7OYlO27tKMuLEceg9NGVlShRBt4CytO9jP4NlIC0PDNu3DL6LXLUB1dvO?=
- =?us-ascii?Q?ImuK1BWCn2TPGGwWFF+XbgRJu2ZGKWfXPKVUeryHoIl819Ah1MIWWWyr1VfI?=
- =?us-ascii?Q?lDtTaNXWSWyBLBUVxCQI7asqJWjC8jiKI/rBJ7E9Jje5jJOmFzJJgwpIZMvy?=
- =?us-ascii?Q?dGF4cAx0utO+qhpsGK3WspMziW2iljIx0Gn3+eIWwjeqHXyPDsWZ5TVw31CD?=
- =?us-ascii?Q?CIasXDRvI/adv9X56NyD6SN7PcLxMMe8PrUMLquutEa00JVL6JPS50LVxh1E?=
- =?us-ascii?Q?yvE0Oz3dJHOsdb35Qa9RBDfuV+FHxUn9lRXey8oDcx0zJcj8jsxyb7ZUi/AU?=
- =?us-ascii?Q?9lQLBqFse6Iu4JbnvCEGAGnrdpW5VW9+f3oO+dJ/CMgorAAtJ4LcYcAYEsm1?=
- =?us-ascii?Q?V8LX1Di8hoBBtpf+xDpZBHLZTJsnr2nH/RuaEdjl47iJw0juVRqMdfiX7bVK?=
- =?us-ascii?Q?4Hk0ughKKz9NJtJCMBm3mPL0ifuYeGTPizBeSwvrpYp8E4mNBD0HS6lc0gW9?=
- =?us-ascii?Q?zXyG7Iea08dAuFAZeHouNUAHcmtoqqjHH52wyYUC+5XYn0vLH3L5WiULSOPL?=
- =?us-ascii?Q?HZHODxenXNcf6pPtk1Mb/yT8bbHt24ukshM8Xpfmf8FhiTi4jW+IY38WyMMc?=
- =?us-ascii?Q?MBrXIg8IRy0JUG90BhsPW64y0f/K565buv4bQN/xwsDCVY0SVQtZWKsm361p?=
- =?us-ascii?Q?ELzdEOpTyV/KwLvht4q0Y80tnbRB/lVJDW+vxjjrAjokBc7J621+InuWJKqS?=
- =?us-ascii?Q?LqLTW6W9/FVMbXg4WduWq+n9fMiMeezMr8NE5y9luV+QmrJ3/fu75S+BPCbH?=
- =?us-ascii?Q?yOkETSowFXzjcx7gqSOZCgwz7fCzVpw1ZdYunSx2m8EJjb1pCrXFC0j9N8pm?=
- =?us-ascii?Q?hkwIk1idMhKdb6fZ/D2srHDcVo6v/47pcWXmpGYODrPWHvdOc4/qRZmyQZcI?=
- =?us-ascii?Q?4bszlBWJYt4StqpawG9aZLWIqWZtgm4alqlPcCOxy7WXVVCSP7UDTmDyBo4d?=
- =?us-ascii?Q?/ghNTgcUp6GrJyVDYr//apMphnJwaUE7lCXDF587G/RqF8Y3Vc9BBNQ+OSGp?=
- =?us-ascii?Q?SQv43vFE5+f+cNV6kQkq+i4kzgHV1FkPrfQPJAyykIxkZrpHOrSFZVTMPaAA?=
- =?us-ascii?Q?d3zSC5+KTmufHllVsUJO8Vj6MCiNJmo4pcumeHYa4ez7lmRYHDy3K73J38Nv?=
- =?us-ascii?Q?fxenDaXyBSmOr7e8OuElDzKyx7rVr1Nep8SK1aR4MC9KJMC8CxVobBqpem8o?=
- =?us-ascii?Q?NyPUd5LM1vgWsIrqoQFOyl9ieHme4BUnXN6BowSXXlqDlK8RUCYPFwRd+jMt?=
- =?us-ascii?Q?AOF7XUlx2+uOF/BWxiPjeiSDd6U6pG5EaTXc7FOCf4IvyO0bUBbMWV1VPPdL?=
- =?us-ascii?Q?nc3Hkr8s8ZfTuRJ6lia0ir0O4TN3kOL+fAfcvcbtY00hX1a8vT5F7jn7vpnR?=
- =?us-ascii?Q?2xWPQlZT0CItAjlHfI2t4SzwRA3QAajJDca01TT5kFkEyqrr9jVs8QScbD88?=
- =?us-ascii?Q?d+2qHXtkENZss4zQzABCvxw7vq+bL4RYY+wL39qBIUqfuZBYsb+Uc5ZNT7Lb?=
- =?us-ascii?Q?bfq9XCYiz/popHO0XFw=3D?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: d0257981-dc2d-401b-87ba-08dce4b19d37
-X-MS-Exchange-CrossTenant-AuthSource: CH3PR12MB8659.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 04 Oct 2024 20:17:47.8941
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: OENtIF2wrXKjFKGmIKiYq7T6X8173YndfF3a35v+0yBQkP4Pah6GxMCr66vql/qG
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH7PR12MB6693
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH V3 1/9] mm/gup: folio_add_pins
+To: Steven Sistare <steven.sistare@oracle.com>, linux-mm@kvack.org
+Cc: Jason Gunthorpe <jgg@nvidia.com>, Kevin Tian <kevin.tian@intel.com>,
+ Nicolin Chen <nicolinc@nvidia.com>, iommu@lists.linux.dev,
+ Andrew Morton <akpm@linux-foundation.org>,
+ Matthew Wilcox <willy@infradead.org>, Nico Pache <npache@redhat.com>
+References: <1728067700-32092-1-git-send-email-steven.sistare@oracle.com>
+ <1728067700-32092-2-git-send-email-steven.sistare@oracle.com>
+ <53b4b083-f238-432f-a59c-61d20d03511f@oracle.com>
+From: David Hildenbrand <david@redhat.com>
+Autocrypt: addr=david@redhat.com; keydata=
+ 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
+ WNyWQQ==
+Organization: Red Hat
+In-Reply-To: <53b4b083-f238-432f-a59c-61d20d03511f@oracle.com>
+X-Mimecast-Spam-Score: 0
+X-Mimecast-Originator: redhat.com
+Content-Language: en-US
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-On Fri, Oct 04, 2024 at 12:25:19PM -0700, Nicolin Chen wrote:
-
-> With that, I wonder what is better for the initial version of
-> this structure, a generic virtual ID or a driver-named ID like
-> "Stream ID"? The latter might be more understandable/flexible, 
-> so we won't need to justify a generic virtual ID along the way
-> if something changes in the nature?
-
-I think the name could be a bit more specific "viommu_device_id"
-maybe? And elaborate in the kdoc that this is about the identifier
-that the iommu HW itself uses.
-> That sounds wider than what I defined it for in my patch:
->  * struct iommu_vdevice_alloc - ioctl(IOMMU_VDEVICE_ALLOC)
->  * ...
->  * Allocate a virtual device instance (for a physical device) against a vIOMMU.
->  * This instance holds the device's information in a VM, related to its vIOMMU.
+On 04.10.24 20:52, Steven Sistare wrote:
+> cc mm folks.
 > 
-> Would you please help rephrase it? It'd be also helpful for me
-> to update the doc.
+> On 10/4/2024 2:48 PM, Steve Sistare wrote:
+>> Export a function that adds pins to an already-pinned huge-page folio.
+>> This allows any range of small pages within the folio to be unpinned later.
+>> For example, pages pinned via memfd_pin_folios and modified by
+>> folio_add_pins could be unpinned via unpin_user_page(s).
+>>
+>> Suggested-by: Jason Gunthorpe <jgg@nvidia.com>
+>> Suggested-by: David Hildenbrand <david@redhat.com>
+>> Signed-off-by: Steve Sistare <steven.sistare@oracle.com>
+>> ---
+>>    include/linux/mm.h |  1 +
+>>    mm/gup.c           | 24 ++++++++++++++++++++++++
+>>    2 files changed, 25 insertions(+)
+>>
+>> diff --git a/include/linux/mm.h b/include/linux/mm.h
+>> index 13bff7c..70d5293 100644
+>> --- a/include/linux/mm.h
+>> +++ b/include/linux/mm.h
+>> @@ -2521,6 +2521,7 @@ long pin_user_pages_unlocked(unsigned long start, unsigned long nr_pages,
+>>    long memfd_pin_folios(struct file *memfd, loff_t start, loff_t end,
+>>    		      struct folio **folios, unsigned int max_folios,
+>>    		      pgoff_t *offset);
+>> +int folio_add_pins(struct folio *folio, unsigned int pins);
+>>    
+>>    int get_user_pages_fast(unsigned long start, int nr_pages,
+>>    			unsigned int gup_flags, struct page **pages);
+>> diff --git a/mm/gup.c b/mm/gup.c
+>> index fcd602b..11c5f27 100644
+>> --- a/mm/gup.c
+>> +++ b/mm/gup.c
+>> @@ -3733,3 +3733,27 @@ long memfd_pin_folios(struct file *memfd, loff_t start, loff_t end,
+>>    	return ret;
+>>    }
+>>    EXPORT_SYMBOL_GPL(memfd_pin_folios);
+>> +
+>> +/**
+>> + * folio_add_pins() - add pins to an already-pinned folio
+>> + * @folio: the folio to add more pins to
+>> + * @pins: number of pins to add
+>> + *
+>> + * Try to add more pins to an already-pinned folio. The semantics
+>> + * of the pin (e.g., FOLL_WRITE) follow any existing pin and cannot
+>> + * be changed.
+>> + *
+>> + * This function is helpful when having obtained a pin on a large folio
+>> + * using memfd_pin_folios(), but wanting to logically unpin parts
+>> + * (e.g., individual pages) of the folio later, for example, using
+>> + * unpin_user_page_range_dirty_lock().
+>> + *
+>> + * This is not the right interface to initially pin a folio.
+>> + */
+>> +int folio_add_pins(struct folio *folio, unsigned int pins)
+>> +{
+>> +	VM_WARN_ON_ONCE(!folio_maybe_dma_pinned(folio));
+>> +
+>> +	return try_grab_folio(folio, pins, FOLL_PIN);
+>> +}
+>> +EXPORT_SYMBOL_GPL(folio_add_pins);
+> 
 
-I think that is still OK for the moment.
 
-> Though I feel slightly odd if we define it wider than "vIOMMU"
-> since this is an iommufd header...
+Acked-by: David Hildenbrand <david@redhat.com>
 
-The notion I have is that vIOMMU would expand to encompass not just
-the physical hypervisor controled vIOMMU but also the vIOMMU
-controlled by the trusted "lowervisor" in a pkvm/cc/whatever world.
+-- 
+Cheers,
 
-Alexey is working on vIOMMU support in CC which has the trusted world
-do some of the trusted vIOMMU components. I'm hoping the other people
-in this area will look at his design and make it fit nicely to
-everyone.
+David / dhildenb
 
-Jason
