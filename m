@@ -1,77 +1,54 @@
-Received: from mail-ot1-f50.google.com (mail-ot1-f50.google.com [209.85.210.50])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4B3C11E3DD7
-	for <iommu@lists.linux.dev>; Fri,  4 Oct 2024 15:31:46 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.50
+Received: from linux.microsoft.com (linux.microsoft.com [13.77.154.182])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 619521C3023;
+	Fri,  4 Oct 2024 15:58:14 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=13.77.154.182
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1728055908; cv=none; b=rkDIUpyzLgKqlzW1flzPSE/8yYS6sC3INU4doywM1E9YE5SUpyS9bmrdYMPoyQa/aBfH4b+PvQhCQ8OZIRWaoUn1qvZnp0dnGwzAEsU7a7DfGwOKV8vZSaCKpl9tZu/e3HHedxZ+HucjrWUjgDu4T4SlR2YA6vYSbHPt/upOnk0=
+	t=1728057495; cv=none; b=S6XqXh5c4cOLpkIxG2IONj1AxZBwfj3d6Zzx8KDXwC5DlfllohP6eWamEGhS97cLBpwRVI+qW+cQeQuwY5nV2ujBdiuoMca6fjA5WWHm4kAH1BISj/ligZxGEzTAOOOkRUqzRumSvGBfVgCOxuGN/HiVIjd+rsG3n3MjfesWJFw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1728055908; c=relaxed/simple;
-	bh=Gqk4mDcFzBVevxCSuWfb1IkFnn2QXTe8muucY2+Ijao=;
+	s=arc-20240116; t=1728057495; c=relaxed/simple;
+	bh=8uh4TNkp6twpeWAanVhV11PWicdwb1B5v29oz3feF58=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=KTQ2rvDO2TVN9A2ynpl44ojWB7+kpl0Apgz8b2w+BLwmxVCUCMZ92LvgmBdrTP6dSXeC14Lk9mtojjoHApPgSraDGzVCRK3R35HSbWKD7Y2UXIUZDy9Sja+m9fNkeFAc/Syb1kVytDJbgbuklmAcrOxHdvH6xH+e3QiqVa0UQT4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=NVjwxVS4; arc=none smtp.client-ip=209.85.210.50
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
+	 Content-Type:Content-Disposition:In-Reply-To; b=ZCwkLbJF6j4pJ/qKH4UaOHz1lYY6D4MiiVXCPOXSX8Jr26XkJeI2Eq5RIZJPFM/J9M0+VuCKvSTqHETdIyvCUaqqA9VJZdh+mX+HnP1Z/akrrj/dQgn7OW/Go/yY4pqMcok0T+/UAv9xN9aDBtvLPNep84kUHdb4bETNZPEG5Hk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com; spf=pass smtp.mailfrom=linux.microsoft.com; dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b=gF4x0mXg; arc=none smtp.client-ip=13.77.154.182
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.microsoft.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="NVjwxVS4"
-Received: by mail-ot1-f50.google.com with SMTP id 46e09a7af769-71116d8504bso1390599a34.3
-        for <iommu@lists.linux.dev>; Fri, 04 Oct 2024 08:31:46 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google; t=1728055905; x=1728660705; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=m/r0XcxwvX8DGEJaetAH8HLEcHZJ0Nm0nno+bUbMhbw=;
-        b=NVjwxVS4J3nJbMX7f5myHTnRHyqwwwrfPF2aj0/0Ijsn+NPG8S7fsQDSXMnP8aSgw/
-         3RHpVZ2lBNRA8uIspB8rPQ/1y7dB86+zMGMmN6508oI4TZA7tY/T0JZGBOOtM8IXvv/J
-         8RtvsYM34hzmPCrp3BeOqQkT2h1giE/IvSO9Lj71XrPSwrLfq9kjRhN/LFNfvSZEll4X
-         P3A53SlJqjg05xxY4We4UpBWWp5oGzkoIjf4sBxhMi7HMOxExyyOmgRlT+4w/EVVYJGk
-         5fMlEHMUTa6tDnOckQUb/W3kZ0JrJ57BQjTialcnOxynOB3NCqc9k1tGvSNtNbrW4gvZ
-         RWIw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1728055905; x=1728660705;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=m/r0XcxwvX8DGEJaetAH8HLEcHZJ0Nm0nno+bUbMhbw=;
-        b=Rpv3t6JukjP88f/1NNO6MoNpLxPsp1DPQjgUjB0iGINnZdbTA8B8kSFv55F5ym73kj
-         D0kMc8CI2Mc6lTjhRIYV31pAnKVgl6bzxAiMu8AdGV8P+E+Uwdjmtn0dsdVHlUI/66m7
-         02YuTRB2IYmpjyt0AG5zHPyam2HvuVfDSxzsO1J6JXdWTggIQra31YawPzExwNq20cgq
-         2aUu78VKl6gUAnR6UC6/3saskE54mCf7QWFDgaaA5XTzkCdtlC27/F48rxGjojkYNVbR
-         c83apVKAUBPkcwzJz5zmh+aYKOISXxK4ZwVvNEUeEzl7elmtfvPxVgSXoeEZd4pFuFuK
-         W1Pg==
-X-Gm-Message-State: AOJu0Ywb0rvGl2Yn0mnSfBNqnNrTTtK0UwULc6w1RiRKkRkb+CnYJCAm
-	+d+/D1KXTYi66pVw5GCH7B3s38rKmJeDWKAXGxuXTHtsWfpe/X47MhIjEn+1kh2h4fNUUOuHzf6
-	6
-X-Google-Smtp-Source: AGHT+IEVBqEReJJMXxhaMwmoooubLLpX90dZRANcC76XtkyBvt0yxNG6/LfTcW2KU1CY2q8cUN1rLA==
-X-Received: by 2002:a05:6358:e4a7:b0:1bc:d1ba:225 with SMTP id e5c5f4694b2df-1c2b7f6efc1mr112473155d.10.1728055905325;
-        Fri, 04 Oct 2024 08:31:45 -0700 (PDT)
-Received: from ziepe.ca (hlfxns017vw-142-68-128-5.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.68.128.5])
-        by smtp.gmail.com with ESMTPSA id d75a77b69052e-45da760f2f0sm41961cf.78.2024.10.04.08.31.44
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 04 Oct 2024 08:31:44 -0700 (PDT)
-Received: from jgg by wakko with local (Exim 4.95)
-	(envelope-from <jgg@ziepe.ca>)
-	id 1swkHQ-00DKdI-0k;
-	Fri, 04 Oct 2024 12:31:44 -0300
-Date: Fri, 4 Oct 2024 12:31:44 -0300
-From: Jason Gunthorpe <jgg@ziepe.ca>
-To: Vasant Hegde <vasant.hegde@amd.com>,
-	Lu Baolu <baolu.lu@linux.intel.com>
-Cc: iommu@lists.linux.dev, joro@8bytes.org, will@kernel.org,
-	robin.murphy@arm.com, suravee.suthikulpanit@amd.com,
-	yi.l.liu@intel.com, baolu.lu@linux.intel.com, kevin.tian@intel.com,
-	jacob.pan@linux.microsoft.com
-Subject: Re: [PATCH v2 7/8] iommu/amd: Add iommu_ops->domain_alloc_paging
- support
-Message-ID: <20241004153144.GI2456194@ziepe.ca>
-References: <20240911101911.6269-1-vasant.hegde@amd.com>
- <20240911101911.6269-8-vasant.hegde@amd.com>
- <20241002193345.GR1369530@ziepe.ca>
- <1f6110a2-a21d-45e9-bfcb-7d3650ff889d@amd.com>
- <20241004125606.GH2456194@ziepe.ca>
- <a604541d-6de5-49f4-a8c2-190e68356acf@amd.com>
+	dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b="gF4x0mXg"
+Received: from skinsburskii. (c-73-193-101-196.hsd1.wa.comcast.net [73.193.101.196])
+	by linux.microsoft.com (Postfix) with ESMTPSA id 1C52C20DB372;
+	Fri,  4 Oct 2024 08:58:13 -0700 (PDT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com 1C52C20DB372
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
+	s=default; t=1728057493;
+	bh=/pii58jwh0dxjUTnCB4wKd4qDYL0zJalmcFRaKg1Rk0=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=gF4x0mXgY2976aPpUyHfvCeU5mN01LE3LGlyOHoNNmhz8QucEf5NFFia21mNaMF+J
+	 A9fhvHE8aJt2tUhuBAhwTZK0iABMpBt/d6Vl5LxteuF02PZuyT5njzYTAvaoKnCvMd
+	 7onaHNpCblZSb2s/35ZJ8j+tjDmi+pvAwj4hrA2k=
+Date: Fri, 4 Oct 2024 08:58:10 -0700
+From: Stanislav Kinsburskii <skinsburskii@linux.microsoft.com>
+To: Nuno Das Neves <nunodasneves@linux.microsoft.com>
+Cc: linux-hyperv@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+	linux-kernel@vger.kernel.org, kvm@vger.kernel.org,
+	iommu@lists.linux.dev, netdev@vger.kernel.org,
+	linux-pci@vger.kernel.org, linux-arch@vger.kernel.org,
+	virtualization@lists.linux.dev, kys@microsoft.com,
+	haiyangz@microsoft.com, wei.liu@kernel.org, decui@microsoft.com,
+	catalin.marinas@arm.com, will@kernel.org, luto@kernel.org,
+	tglx@linutronix.de, mingo@redhat.com, bp@alien8.de,
+	dave.hansen@linux.intel.com, x86@kernel.org, hpa@zytor.com,
+	seanjc@google.com, pbonzini@redhat.com, peterz@infradead.org,
+	daniel.lezcano@linaro.org, joro@8bytes.org, robin.murphy@arm.com,
+	davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+	pabeni@redhat.com, lpieralisi@kernel.org, kw@linux.com,
+	robh@kernel.org, bhelgaas@google.com, arnd@arndb.de,
+	sgarzare@redhat.com, jinankjain@linux.microsoft.com,
+	muminulrussell@gmail.com, mukeshrathor@microsoft.com
+Subject: Re: [PATCH 5/5] hyperv: Use hvhdk.h instead of hyperv-tlfs.h in
+ Hyper-V code
+Message-ID: <20241004155810.GA15304@skinsburskii.>
+References: <1727985064-18362-1-git-send-email-nunodasneves@linux.microsoft.com>
+ <1727985064-18362-6-git-send-email-nunodasneves@linux.microsoft.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -80,45 +57,24 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <a604541d-6de5-49f4-a8c2-190e68356acf@amd.com>
+In-Reply-To: <1727985064-18362-6-git-send-email-nunodasneves@linux.microsoft.com>
 
-On Fri, Oct 04, 2024 at 08:00:15PM +0530, Vasant Hegde wrote:
-> >> I thought eventually we want to remove ops->domain_alloc() interface. Hence I
-> >> introduced domain_alloc_paging(). I didn't remove amd_iommu_domain_alloc() in
-> >> this series. I was planning to do it in later.
-> > 
-> > We do want to remove domain_alloc
-> > 
-> >> If we are fine to keep ops->domain_alloc() then I can just drop this patch.
-> > 
-> > But why not just remove it and not add amd_iommu_domain_alloc_paging ?
-> 
-> Because we have __iommu_domain_alloc() which calls domain_alloc_paging /
-> domain_alloc().
+Hi Nuno,
 
-Oh, I see what you are worried about. __iommu_domain_alloc() is almost
-never called now that most of Lu's patches are merged, and it is not
-needed for any x86 platform case.
+On Thu, Oct 03, 2024 at 12:51:04PM -0700, Nuno Das Neves wrote:
+> diff --git a/arch/arm64/hyperv/hv_core.c b/arch/arm64/hyperv/hv_core.c
+> index 9d1969b875e9..bb7f28f74bf4 100644
+> --- a/arch/arm64/hyperv/hv_core.c
+> +++ b/arch/arm64/hyperv/hv_core.c
+> @@ -14,6 +14,7 @@
+>  #include <linux/arm-smccc.h>
+>  #include <linux/module.h>
+>  #include <asm-generic/bug.h>
+> +#define HYPERV_NONTLFS_HEADERS
+>  #include <asm/mshyperv.h>
+>  
 
-Here are two more patches you can grab that will remove it from the
-remaining core cases and then you don't need to worry about it,
-everything for AMD will go through __iommu_paging_domain_alloc_flags():
+Perhaps it would be cleaner to introduce a new header file to be
+included, containing the new define and including <asm/mshyperv.h> instead.
 
-  https://github.com/jgunthorpe/linux/commits/for-vasant
-
-Lu should be able to delete the function this cycle as well.
-
-Also I noticed a little mistake:
-
---- a/drivers/iommu/iommu.c
-+++ b/drivers/iommu/iommu.c
-@@ -2071,7 +2071,7 @@ static struct iommu_domain *__iommu_paging_domain_alloc_flags(struct device *dev
-        else if (ops->domain_alloc_user)
-                domain = ops->domain_alloc_user(dev, flags, NULL, NULL);
-        else if (ops->domain_alloc && !flags)
--               domain = ops->domain_alloc(IOMMU_DOMAIN_UNMANAGED);
-+               domain = ops->domain_alloc(type);
-        else
-                return ERR_PTR(-EOPNOTSUPP);
-
-Jason
+Stas
