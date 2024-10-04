@@ -1,57 +1,57 @@
 Received: from mx0b-00069f02.pphosted.com (mx0b-00069f02.pphosted.com [205.220.177.32])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7A8861EF956
-	for <iommu@lists.linux.dev>; Fri,  4 Oct 2024 18:48:32 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 78AA31EF945
+	for <iommu@lists.linux.dev>; Fri,  4 Oct 2024 18:48:33 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.177.32
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1728067714; cv=none; b=btedkQqeK83HgLqbRLo5fo7G1SFRHBCGKV0BH4mLVhV0p5OBQgAXD1zA49ytr+Tfeha6XAQTMpWpMmDboKodJB1WqNG320ru7etSUB31R/J3ZancWYRHpTkNZMAjxN4MrFog1HMsdd3nZwsyvEkICMnjoo+HViO3wzJzNPj0x6c=
+	t=1728067715; cv=none; b=AeMIGA2CpOoaLF+OWjRf4MzvA4EO7LwbGHY/R45mbjYEkP8HtMxNGKX65/3YUhRSUM8Ri5E52ZvlaSepEJtpgYgGVhKUHgF6x+/W3VjK/tp05adbkUfQtTTl+b8KTADhzHuksKzO/gdM9EkzSEfzIVOQrjxBDSF6zkurBy3Dt5g=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1728067714; c=relaxed/simple;
-	bh=hcsJjKHqocOcj/h//SKZxHleg1XAMHX4W4blWh/FO1M=;
-	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References; b=mHIU0xSmucEbofLgYoQcxMK0v98jFvwuJjB80nrUxqao2AHyDhJEUn7MuyjvDAMcxalceThbLRdIJeNtgerwxp89cJAAyaFpjbnhR3J400dqP6lntmfrI6diPQYDFnNYrYeb9LeGcUc6etIHVW6u0FMw0QGBIs79StquoISd9q0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oracle.com; spf=pass smtp.mailfrom=oracle.com; dkim=pass (2048-bit key) header.d=oracle.com header.i=@oracle.com header.b=KAsF12sI; arc=none smtp.client-ip=205.220.177.32
+	s=arc-20240116; t=1728067715; c=relaxed/simple;
+	bh=xnNSrhn6YkqFB3VBNpVKRCF4ANJnpGZ756ekAl8TenQ=;
+	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References; b=mb9nHOyMgF/3zRKiqaRWFCb5JWT3DHM0RDbL9C92zri70AdzCG/6h1DghMpsDVmr4KZ0yDAwYUI52aQNCagBa8Zp1wIfSyV0IAcc55jGVg7kJFhwptgsGz13doXhmu0bshjGqmT+v3r6avSCuvb+7DDLH0yoIjrvzRNkuMSn5YE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oracle.com; spf=pass smtp.mailfrom=oracle.com; dkim=pass (2048-bit key) header.d=oracle.com header.i=@oracle.com header.b=d2FVJKM5; arc=none smtp.client-ip=205.220.177.32
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oracle.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=oracle.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=oracle.com header.i=@oracle.com header.b="KAsF12sI"
-Received: from pps.filterd (m0246630.ppops.net [127.0.0.1])
-	by mx0b-00069f02.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 494HfdYl027793;
-	Fri, 4 Oct 2024 18:48:30 GMT
+	dkim=pass (2048-bit key) header.d=oracle.com header.i=@oracle.com header.b="d2FVJKM5"
+Received: from pps.filterd (m0246632.ppops.net [127.0.0.1])
+	by mx0b-00069f02.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 494HfbuE030400;
+	Fri, 4 Oct 2024 18:48:31 GMT
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=
 	from:to:cc:subject:date:message-id:in-reply-to:references; s=
-	corp-2023-11-20; bh=wQyhyK/O9rqX46o+SCp/sTpY7215bH6WbtXLXzhhZig=; b=
-	KAsF12sIXu9qEpui9aqriS63QVRtbGqeOpD4wcBKu6jIXghZyy5dLXEUl/XlvaYj
-	05A4l4LCJDCx2aImMXMoFFenNAucmZaHrJ6AubjFTrEw03J6SeyDLOxnxdYqj4AT
-	ns08QrADRoPDzIFkiIGLb5SpYTAD8X/elT4KZ44eu0q3YBkSjtMVoqqi50DwqLTa
-	U6yteEN1XHh9nlWAz7dv1WhDJukAokOIOaMtUsbkNp4Z9vIlqpL70ZMlzfkdjm87
-	sNMWHmSt2rzNIsKngR0pk7WuQF2bOe8z0FdWXhyY7BsWvRTZD/S0EBEr+q2H46JY
-	dU8rf3Rr7zTwo8Iv5ITdVA==
+	corp-2023-11-20; bh=tYC+UFll2lh6Kw3ARqMJCOgUvd8oUBtFSxpeDkXv/+g=; b=
+	d2FVJKM5mgFvY2laJfHsIYnW6HqFhxipYdCzIlXQK6tB/Qu70baSZH9WxNiKRy3I
+	t+vXIPbm8EVfttw4C6xYd2wZBFve6JqGlplAZJ7yO2GZHEp5ZUh5Whu1QDIMZEB6
+	XQP141wPVjK9roToEuT3nU1kNBW48iRyZmulr5rt6raVA1YK9AyK8Vzc2vgcSZJm
+	Rz+gQopYo+Wnwg56DSV318EwRg/snATWJG3jf+ldsjWbbEKfPEO9jh9QAMgbhd6V
+	Yk+2l5OjiSf2wVcbn22rfUsY0jbymp3iym4iXKJMdr7eEOgKATZtZw41o34mBKsF
+	VxFZnovYfCE0QEhDKucV0w==
 Received: from phxpaimrmta02.imrmtpd1.prodappphxaev1.oraclevcn.com (phxpaimrmta02.appoci.oracle.com [147.154.114.232])
-	by mx0b-00069f02.pphosted.com (PPS) with ESMTPS id 422049291h-1
+	by mx0b-00069f02.pphosted.com (PPS) with ESMTPS id 42204b29qr-1
 	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-	Fri, 04 Oct 2024 18:48:30 +0000 (GMT)
+	Fri, 04 Oct 2024 18:48:31 +0000 (GMT)
 Received: from pps.filterd (phxpaimrmta02.imrmtpd1.prodappphxaev1.oraclevcn.com [127.0.0.1])
-	by phxpaimrmta02.imrmtpd1.prodappphxaev1.oraclevcn.com (8.18.1.2/8.18.1.2) with ESMTP id 494HFEWo038116;
-	Fri, 4 Oct 2024 18:48:29 GMT
+	by phxpaimrmta02.imrmtpd1.prodappphxaev1.oraclevcn.com (8.18.1.2/8.18.1.2) with ESMTP id 494HKv0k037876;
+	Fri, 4 Oct 2024 18:48:30 GMT
 Received: from pps.reinject (localhost [127.0.0.1])
-	by phxpaimrmta02.imrmtpd1.prodappphxaev1.oraclevcn.com (PPS) with ESMTPS id 422057p5wy-1
+	by phxpaimrmta02.imrmtpd1.prodappphxaev1.oraclevcn.com (PPS) with ESMTPS id 422057p5xd-1
 	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-	Fri, 04 Oct 2024 18:48:29 +0000
+	Fri, 04 Oct 2024 18:48:30 +0000
 Received: from phxpaimrmta02.imrmtpd1.prodappphxaev1.oraclevcn.com (phxpaimrmta02.imrmtpd1.prodappphxaev1.oraclevcn.com [127.0.0.1])
-	by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 494ImLaC029789;
-	Fri, 4 Oct 2024 18:48:28 GMT
+	by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 494ImLaE029789;
+	Fri, 4 Oct 2024 18:48:29 GMT
 Received: from ca-dev63.us.oracle.com (ca-dev63.us.oracle.com [10.211.8.221])
-	by phxpaimrmta02.imrmtpd1.prodappphxaev1.oraclevcn.com (PPS) with ESMTP id 422057p5sn-9;
-	Fri, 04 Oct 2024 18:48:28 +0000
+	by phxpaimrmta02.imrmtpd1.prodappphxaev1.oraclevcn.com (PPS) with ESMTP id 422057p5sn-10;
+	Fri, 04 Oct 2024 18:48:29 +0000
 From: Steve Sistare <steven.sistare@oracle.com>
 To: iommu@lists.linux.dev
 Cc: Jason Gunthorpe <jgg@nvidia.com>, Kevin Tian <kevin.tian@intel.com>,
         Nicolin Chen <nicolinc@nvidia.com>,
         Steve Sistare <steven.sistare@oracle.com>
-Subject: [PATCH V3 8/9] iommufd: optimize file mapping
-Date: Fri,  4 Oct 2024 11:48:19 -0700
-Message-Id: <1728067700-32092-9-git-send-email-steven.sistare@oracle.com>
+Subject: [PATCH V3 9/9] iommufd: map file selftest
+Date: Fri,  4 Oct 2024 11:48:20 -0700
+Message-Id: <1728067700-32092-10-git-send-email-steven.sistare@oracle.com>
 X-Mailer: git-send-email 1.8.3.1
 In-Reply-To: <1728067700-32092-1-git-send-email-steven.sistare@oracle.com>
 References: <1728067700-32092-1-git-send-email-steven.sistare@oracle.com>
@@ -62,251 +62,401 @@ X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 phishscore=0 mlxl
  adultscore=0 suspectscore=0 mlxscore=0 malwarescore=0 spamscore=0
  bulkscore=0 classifier=spam adjust=0 reason=mlx scancount=1
  engine=8.12.0-2409260000 definitions=main-2410040129
-X-Proofpoint-GUID: n6V0pOJFI1G_ORMwhhEx70tcMOK-6M7I
-X-Proofpoint-ORIG-GUID: n6V0pOJFI1G_ORMwhhEx70tcMOK-6M7I
+X-Proofpoint-ORIG-GUID: YfGb1V4Ng4dLEmsq1ScbEjzZYVe_nhxO
+X-Proofpoint-GUID: YfGb1V4Ng4dLEmsq1ScbEjzZYVe_nhxO
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 
-When filling a batch, avoid the intermediate step of expanding folios
-into upages[] in pin_memfd_pages, via the new helper functions
-batch_from_folios_huge and batch_add_pfn_num.
-
-However, we must still expand to upages for the iopt_pages_fill path.
+Add test cases to exercise IOMMU_IOAS_MAP_FILE.
 
 Signed-off-by: Steve Sistare <steven.sistare@oracle.com>
 ---
- drivers/iommu/iommufd/pages.c | 146 +++++++++++++++++++++++++++++++++++-------
- 1 file changed, 123 insertions(+), 23 deletions(-)
+ tools/testing/selftests/iommu/iommufd.c       | 151 +++++++++++++++++++++++---
+ tools/testing/selftests/iommu/iommufd_utils.h |  41 +++++++
+ 2 files changed, 177 insertions(+), 15 deletions(-)
 
-diff --git a/drivers/iommu/iommufd/pages.c b/drivers/iommu/iommufd/pages.c
-index 2db2b06..b57c2b9 100644
---- a/drivers/iommu/iommufd/pages.c
-+++ b/drivers/iommu/iommufd/pages.c
-@@ -347,25 +347,41 @@ static void batch_destroy(struct pfn_batch *batch, void *backup)
- 		kfree(batch->pfns);
+diff --git a/tools/testing/selftests/iommu/iommufd.c b/tools/testing/selftests/iommu/iommufd.c
+index 4927b9a..3525670 100644
+--- a/tools/testing/selftests/iommu/iommufd.c
++++ b/tools/testing/selftests/iommu/iommufd.c
+@@ -3,6 +3,8 @@
+ #include <stdlib.h>
+ #include <sys/mman.h>
+ #include <sys/eventfd.h>
++#include <sys/syscall.h>
++#include <asm/unistd.h>
+ 
+ #define __EXPORTED_HEADERS__
+ #include <linux/vfio.h>
+@@ -10,6 +12,8 @@
+ #include "iommufd_utils.h"
+ 
+ static unsigned long HUGEPAGE_SIZE;
++static void *mfd_buffer;
++static int mfd;
+ 
+ #define MOCK_PAGE_SIZE (PAGE_SIZE / 2)
+ #define MOCK_HUGE_PAGE_SIZE (512 * MOCK_PAGE_SIZE)
+@@ -33,6 +37,19 @@ static unsigned long get_huge_page_size(void)
+ 	return strtoul(buf, NULL, 10);
  }
  
--/* true if the pfn was added, false otherwise */
--static bool batch_add_pfn(struct pfn_batch *batch, unsigned long pfn)
-+/* returns the number of pfn's added */
-+static int batch_add_pfn_num(struct pfn_batch *batch, unsigned long pfn,
-+			     unsigned long nr)
++static void *memfd_mmap(size_t length, int prot, int flags, int *mfd_p)
++{
++	int mfd_flags = (flags & MAP_HUGETLB) ? MFD_HUGETLB : 0;
++	int mfd = memfd_create("buffer", mfd_flags);
++
++	if (mfd <= 0)
++		return MAP_FAILED;
++	if (ftruncate(mfd, length))
++		return MAP_FAILED;
++	*mfd_p = mfd;
++	return mmap(0, length, prot, flags, mfd, 0);
++}
++
+ static __attribute__((constructor)) void setup_sizes(void)
  {
--	const unsigned int MAX_NPFNS = type_max(typeof(*batch->npfns));
-+	const unsigned long MAX_NPFNS = type_max(typeof(*batch->npfns));
-+	unsigned long pfn_end, npfn_end;
-+	unsigned long n = 0;
- 
--	if (batch->end &&
--	    pfn == batch->pfns[batch->end - 1] + batch->npfns[batch->end - 1] &&
--	    batch->npfns[batch->end - 1] != MAX_NPFNS) {
--		batch->npfns[batch->end - 1]++;
--		batch->total_pfns++;
--		return true;
-+	if (batch->end) {
-+		npfn_end = batch->npfns[batch->end - 1];
-+		pfn_end = batch->pfns[batch->end - 1];
+ 	void *vrc;
+@@ -49,6 +66,9 @@ static __attribute__((constructor)) void setup_sizes(void)
+ 	vrc = mmap(buffer, BUFFER_SIZE, PROT_READ | PROT_WRITE,
+ 		   MAP_SHARED | MAP_ANONYMOUS | MAP_FIXED, -1, 0);
+ 	assert(vrc == buffer);
 +
-+		if (pfn == pfn_end + npfn_end && npfn_end < MAX_NPFNS) {
-+			n = min_t(unsigned long, MAX_NPFNS - npfn_end, nr);
-+			batch->npfns[batch->end - 1] += n;
-+			batch->total_pfns += n;
-+			if (nr == n)
-+				return n;
-+			nr -= n;
-+		}
- 	}
- 	if (batch->end == batch->array_size)
--		return false;
--	batch->total_pfns++;
-+		return n;
-+	nr = min_t(unsigned long, MAX_NPFNS, nr);
-+	batch->total_pfns += nr;
- 	batch->pfns[batch->end] = pfn;
--	batch->npfns[batch->end] = 1;
-+	batch->npfns[batch->end] = nr;
- 	batch->end++;
--	return true;
-+	return n + nr;
-+}
-+
-+/* true if the pfn was added, false otherwise */
-+static bool batch_add_pfn(struct pfn_batch *batch, unsigned long pfn)
-+{
-+	return batch_add_pfn_num(batch, pfn, 1) == 1;
++	mfd_buffer = memfd_mmap(BUFFER_SIZE, PROT_READ | PROT_WRITE, MAP_SHARED,
++				&mfd);
  }
  
- /*
-@@ -623,6 +639,67 @@ static void batch_from_pages(struct pfn_batch *batch, struct page **pages,
- 			break;
- }
- 
-+static void batch_from_folios(struct pfn_batch *batch, struct folio **folios,
-+			      size_t npages)
-+{
-+	struct folio **end = folios + npages;
-+
-+	for (; folios != end; folios++)
-+		if (!batch_add_pfn(batch, page_to_pfn(&folios[0]->page)))
-+			break;
-+}
-+
-+static void batch_from_folios_huge(struct pfn_batch *batch,
-+				   struct folio ***folios_p,
-+				   unsigned long *offset_p,
-+				   unsigned long npages)
-+{
-+	unsigned long nr, n, pfn, i = 0;
-+	struct folio *folio, **folios = *folios_p;
-+	unsigned long offset = *offset_p;
-+
-+	while (npages) {
-+		folio = folios[i++];
-+		nr = folio_nr_pages(folio) - offset;
-+		nr = min_t(unsigned long, nr, npages);
-+		while (nr) {
-+			pfn = page_to_pfn(folio_page(folio, offset));
-+			n = batch_add_pfn_num(batch, pfn, nr);
-+			if (n == 0) {
-+				*folios_p = folios + i - 1;
-+				*offset_p = offset;
-+				return;
-+			}
-+			npages -= n;
-+			nr -= n;
-+			offset += n;
-+		}
-+		offset = 0;
-+	}
-+}
-+
-+static void folios_unpin_partial(struct folio **folios, unsigned long offset,
-+				 unsigned long npages)
-+{
-+	unsigned long nr, i = 0;
-+	struct folio *folio;
-+	struct page *page;
-+
-+	while (npages) {
-+		folio = folios[i++];
-+		nr = folio_nr_pages(folio);
-+		if (offset == 0 && nr < npages) {
-+			unpin_folio(folio);
-+		} else {
-+			nr = min_t(unsigned long, npages, nr - offset);
-+			page = folio_page(folio, offset);
-+			unpin_user_page_range_dirty_lock(page, nr, false);
-+			offset = 0;
-+		}
-+		npages -= nr;
-+	}
-+}
-+
- static void batch_unpin(struct pfn_batch *batch, struct iopt_pages *pages,
- 			unsigned int first_page_off, size_t npages)
+ FIXTURE(iommufd)
+@@ -1372,6 +1392,7 @@ static void check_access_rw(struct __test_metadata *_metadata, int fd,
  {
-@@ -709,6 +786,9 @@ struct pfn_reader_user {
- 	struct file *file;
- 	struct folio **ufolios;
- 	unsigned long ufolios_len;
-+	unsigned long ufolios_offset;
-+	struct folio **ufolios_next;
-+	bool ufolios_huge;
+ 	unsigned int mock_domains;
+ 	bool hugepages;
++	bool file;
  };
  
- static void pfn_reader_user_init(struct pfn_reader_user *user,
-@@ -726,6 +806,9 @@ static void pfn_reader_user_init(struct pfn_reader_user *user,
- 	user->file = (pages->type == IOPT_ADDRESS_FILE) ? pages->file : NULL;
- 	user->ufolios = NULL;
- 	user->ufolios_len = 0;
-+	user->ufolios_huge = false;
-+	user->ufolios_next = NULL;
-+	user->ufolios_offset = 0;
+ FIXTURE_SETUP(iommufd_mock_domain)
+@@ -1410,26 +1431,45 @@ static void check_access_rw(struct __test_metadata *_metadata, int fd,
+ {
+ 	.mock_domains = 1,
+ 	.hugepages = false,
++	.file = false,
+ };
+ 
+ FIXTURE_VARIANT_ADD(iommufd_mock_domain, two_domains)
+ {
+ 	.mock_domains = 2,
+ 	.hugepages = false,
++	.file = false,
+ };
+ 
+ FIXTURE_VARIANT_ADD(iommufd_mock_domain, one_domain_hugepage)
+ {
+ 	.mock_domains = 1,
+ 	.hugepages = true,
++	.file = false,
+ };
+ 
+ FIXTURE_VARIANT_ADD(iommufd_mock_domain, two_domains_hugepage)
+ {
+ 	.mock_domains = 2,
+ 	.hugepages = true,
++	.file = false,
+ };
+ 
++FIXTURE_VARIANT_ADD(iommufd_mock_domain, one_domain_file)
++{
++	.mock_domains = 1,
++	.hugepages = false,
++	.file = true,
++};
++
++FIXTURE_VARIANT_ADD(iommufd_mock_domain, one_domain_file_hugepage)
++{
++	.mock_domains = 1,
++	.hugepages = true,
++	.file = true,
++};
++
++
+ /* Have the kernel check that the user pages made it to the iommu_domain */
+ #define check_mock_iova(_ptr, _iova, _length)                                \
+ 	({                                                                   \
+@@ -1455,7 +1495,10 @@ static void check_access_rw(struct __test_metadata *_metadata, int fd,
+ 		}                                                            \
+ 	})
+ 
+-TEST_F(iommufd_mock_domain, basic)
++static void
++test_basic_mmap(struct __test_metadata *_metadata,
++		struct _test_data_iommufd_mock_domain *self,
++		const struct _fixture_variant_iommufd_mock_domain *variant)
+ {
+ 	size_t buf_size = self->mmap_buf_size;
+ 	uint8_t *buf;
+@@ -1478,12 +1521,52 @@ static void check_access_rw(struct __test_metadata *_metadata, int fd,
+ 	test_err_ioctl_ioas_map(EFAULT, buf, buf_size, &iova);
  }
  
- static void pfn_reader_user_destroy(struct pfn_reader_user *user,
-@@ -763,6 +846,8 @@ static long pin_memfd_pages(struct pfn_reader_user *user, unsigned long start,
- 		return nfolios;
- 
- 	offset >>= PAGE_SHIFT;
-+	user->ufolios_next = user->ufolios;
-+	user->ufolios_offset = offset;
- 	npages_out = 0;
- 
- 	for (i = 0; i < nfolios; i++) {
-@@ -774,8 +859,11 @@ static long pin_memfd_pages(struct pfn_reader_user *user, unsigned long start,
- 			if (rc)
- 				return rc;
- 		}
--		for (j = offset; j < offset + npin; j++)
--			*upages++ = folio_page(folio, j);
-+		if (nr > 1)
-+			user->ufolios_huge = true;
-+		if (upages)
-+			for (j = offset; j < offset + npin; j++)
-+				*upages++ = folio_page(folio, j);
- 		npages -= npin;
- 		npages_out += npin;
- 		offset = 0;
-@@ -799,7 +887,7 @@ static int pfn_reader_user_pin(struct pfn_reader_user *user,
- 	    WARN_ON(last_index < start_index))
- 		return -EINVAL;
- 
--	if (!user->upages) {
-+	if (!user->file && !user->upages) {
- 		/* All undone in pfn_reader_destroy() */
- 		user->upages_len = npages * sizeof(*user->upages);
- 		user->upages = temp_kmalloc(&user->upages_len, NULL, 0);
-@@ -812,11 +900,6 @@ static int pfn_reader_user_pin(struct pfn_reader_user *user,
- 		user->ufolios = temp_kmalloc(&user->ufolios_len, NULL, 0);
- 		if (!user->ufolios)
- 			return -ENOMEM;
--
--		/* Bail for now.  Be more robust when we optimize for folios. */
--		if (user->ufolios_len / sizeof(*user->ufolios) <
--		    user->upages_len / sizeof(*user->upages))
--			return -ENOMEM;
- 	}
- 
- 	if (user->locked == -1) {
-@@ -1087,7 +1170,16 @@ static int pfn_reader_fill_span(struct pfn_reader *pfns)
- 
- 	npages = user->upages_end - start_index;
- 	start_index -= user->upages_start;
--	batch_from_pages(&pfns->batch, user->upages + start_index, npages);
++static void
++test_basic_file(struct __test_metadata *_metadata,
++		struct _test_data_iommufd_mock_domain *self,
++		const struct _fixture_variant_iommufd_mock_domain *variant)
++{
++	size_t buf_size = self->mmap_buf_size;
++	uint8_t *buf;
++	__u64 iova;
++	int mfd_tmp;
++	int prot = PROT_READ | PROT_WRITE;
 +
-+	if (!user->file)
-+		batch_from_pages(&pfns->batch, user->upages + start_index,
-+				 npages);
-+	else if (!user->ufolios_huge)
-+		batch_from_folios(&pfns->batch, user->ufolios + start_index,
-+				  npages);
++	/* Simple one page map */
++	test_ioctl_ioas_map_file(mfd, 0, PAGE_SIZE, &iova);
++	check_mock_iova(mfd_buffer, iova, PAGE_SIZE);
++
++	buf = memfd_mmap(buf_size, prot, MAP_SHARED, &mfd_tmp);
++	ASSERT_NE(MAP_FAILED, buf);
++
++	/* EFAULT half way through mapping */
++	ASSERT_EQ(0, munmap(buf + buf_size / 2, buf_size / 2));
++	test_err_ioctl_ioas_map_file(EFAULT, 0, buf_size, &iova);
++
++	/* EFAULT on first page */
++	ASSERT_EQ(0, munmap(buf, buf_size / 2));
++	test_err_ioctl_ioas_map_file(EFAULT, 0, buf_size, &iova);
++
++	close(mfd_tmp);
++}
++
++TEST_F(iommufd_mock_domain, basic)
++{
++	if (variant->file)
++		test_basic_file(_metadata, self, variant);
 +	else
-+		batch_from_folios_huge(&pfns->batch, &user->ufolios_next,
-+				       &user->ufolios_offset, npages);
- 	return 0;
++		test_basic_mmap(_metadata, self, variant);
++}
++
+ TEST_F(iommufd_mock_domain, ro_unshare)
+ {
+ 	uint8_t *buf;
+ 	__u64 iova;
+ 	int fd;
+ 
++	if (variant->file)
++		SKIP(return, "redundant test");
++
+ 	fd = open("/proc/self/exe", O_RDONLY);
+ 	ASSERT_NE(-1, fd);
+ 
+@@ -1513,9 +1596,13 @@ static void check_access_rw(struct __test_metadata *_metadata, int fd,
+ 	unsigned int start;
+ 	unsigned int end;
+ 	uint8_t *buf;
++	int prot = PROT_READ | PROT_WRITE;
++	int mfd;
+ 
+-	buf = mmap(0, buf_size, PROT_READ | PROT_WRITE, self->mmap_flags, -1,
+-		   0);
++	if (variant->file)
++		buf = memfd_mmap(buf_size, prot, MAP_SHARED, &mfd);
++	else
++		buf = mmap(0, buf_size, prot, self->mmap_flags, -1, 0);
+ 	ASSERT_NE(MAP_FAILED, buf);
+ 	check_refs(buf, buf_size, 0);
+ 
+@@ -1532,7 +1619,12 @@ static void check_access_rw(struct __test_metadata *_metadata, int fd,
+ 			size_t length = end - start;
+ 			__u64 iova;
+ 
+-			test_ioctl_ioas_map(buf + start, length, &iova);
++			if (variant->file) {
++				test_ioctl_ioas_map_file(mfd, start, length,
++							 &iova);
++			} else {
++				test_ioctl_ioas_map(buf + start, length, &iova);
++			}
+ 			check_mock_iova(buf + start, iova, length);
+ 			check_refs(buf + start / PAGE_SIZE * PAGE_SIZE,
+ 				   end / PAGE_SIZE * PAGE_SIZE -
+@@ -1544,6 +1636,8 @@ static void check_access_rw(struct __test_metadata *_metadata, int fd,
+ 	}
+ 	check_refs(buf, buf_size, 0);
+ 	ASSERT_EQ(0, munmap(buf, buf_size));
++	if (variant->file)
++		close(mfd);
  }
  
-@@ -1169,7 +1261,15 @@ static void pfn_reader_release_pins(struct pfn_reader *pfns)
+ TEST_F(iommufd_mock_domain, all_aligns_copy)
+@@ -1554,9 +1648,13 @@ static void check_access_rw(struct __test_metadata *_metadata, int fd,
+ 	unsigned int start;
+ 	unsigned int end;
+ 	uint8_t *buf;
++	int prot = PROT_READ | PROT_WRITE;
++	int mfd;
  
- 		npages = user->upages_end - pfns->batch_end_index;
- 		start_index = pfns->batch_end_index - user->upages_start;
--		unpin_user_pages(user->upages + start_index, npages);
-+
-+		if (!user->file)
-+			unpin_user_pages(user->upages + start_index, npages);
-+		else if (!user->ufolios_huge)
-+			unpin_folios(user->ufolios + start_index, npages);
-+		else
-+			folios_unpin_partial(user->ufolios_next,
-+					     user->ufolios_offset, npages);
-+
- 		iopt_pages_sub_npinned(pages, npages);
- 		user->upages_end = pfns->batch_end_index;
+-	buf = mmap(0, buf_size, PROT_READ | PROT_WRITE, self->mmap_flags, -1,
+-		   0);
++	if (variant->file)
++		buf = memfd_mmap(buf_size, prot, MAP_SHARED, &mfd);
++	else
++		buf = mmap(0, buf_size, prot, self->mmap_flags, -1, 0);
+ 	ASSERT_NE(MAP_FAILED, buf);
+ 	check_refs(buf, buf_size, 0);
+ 
+@@ -1575,7 +1673,12 @@ static void check_access_rw(struct __test_metadata *_metadata, int fd,
+ 			uint32_t mock_stdev_id;
+ 			__u64 iova;
+ 
+-			test_ioctl_ioas_map(buf + start, length, &iova);
++			if (variant->file) {
++				test_ioctl_ioas_map_file(mfd, start, length,
++							 &iova);
++			} else {
++				test_ioctl_ioas_map(buf + start, length, &iova);
++			}
+ 
+ 			/* Add and destroy a domain while the area exists */
+ 			old_id = self->hwpt_ids[1];
+@@ -1596,15 +1699,18 @@ static void check_access_rw(struct __test_metadata *_metadata, int fd,
  	}
+ 	check_refs(buf, buf_size, 0);
+ 	ASSERT_EQ(0, munmap(buf, buf_size));
++	if (variant->file)
++		close(mfd);
+ }
+ 
+ TEST_F(iommufd_mock_domain, user_copy)
+ {
++	void *buf = variant->file ? mfd_buffer : buffer;
+ 	struct iommu_test_cmd access_cmd = {
+ 		.size = sizeof(access_cmd),
+ 		.op = IOMMU_TEST_OP_ACCESS_PAGES,
+ 		.access_pages = { .length = BUFFER_SIZE,
+-				  .uptr = (uintptr_t)buffer },
++				  .uptr = (uintptr_t)buf },
+ 	};
+ 	struct iommu_ioas_copy copy_cmd = {
+ 		.size = sizeof(copy_cmd),
+@@ -1623,9 +1729,13 @@ static void check_access_rw(struct __test_metadata *_metadata, int fd,
+ 
+ 	/* Pin the pages in an IOAS with no domains then copy to an IOAS with domains */
+ 	test_ioctl_ioas_alloc(&ioas_id);
+-	test_ioctl_ioas_map_id(ioas_id, buffer, BUFFER_SIZE,
+-			       &copy_cmd.src_iova);
+-
++	if (variant->file) {
++		test_ioctl_ioas_map_id_file(ioas_id, mfd, 0, BUFFER_SIZE,
++					    &copy_cmd.src_iova);
++	} else {
++		test_ioctl_ioas_map_id(ioas_id, buf, BUFFER_SIZE,
++				       &copy_cmd.src_iova);
++	}
+ 	test_cmd_create_access(ioas_id, &access_cmd.id,
+ 			       MOCK_FLAGS_ACCESS_CREATE_NEEDS_PIN_PAGES);
+ 
+@@ -1635,12 +1745,17 @@ static void check_access_rw(struct __test_metadata *_metadata, int fd,
+ 			&access_cmd));
+ 	copy_cmd.src_ioas_id = ioas_id;
+ 	ASSERT_EQ(0, ioctl(self->fd, IOMMU_IOAS_COPY, &copy_cmd));
+-	check_mock_iova(buffer, MOCK_APERTURE_START, BUFFER_SIZE);
++	check_mock_iova(buf, MOCK_APERTURE_START, BUFFER_SIZE);
+ 
+ 	/* Now replace the ioas with a new one */
+ 	test_ioctl_ioas_alloc(&new_ioas_id);
+-	test_ioctl_ioas_map_id(new_ioas_id, buffer, BUFFER_SIZE,
+-			       &copy_cmd.src_iova);
++	if (variant->file) {
++		test_ioctl_ioas_map_id_file(new_ioas_id, mfd, 0, BUFFER_SIZE,
++					    &copy_cmd.src_iova);
++	} else {
++		test_ioctl_ioas_map_id(new_ioas_id, buf, BUFFER_SIZE,
++				       &copy_cmd.src_iova);
++	}
+ 	test_cmd_access_replace_ioas(access_cmd.id, new_ioas_id);
+ 
+ 	/* Destroy the old ioas and cleanup copied mapping */
+@@ -1654,7 +1769,7 @@ static void check_access_rw(struct __test_metadata *_metadata, int fd,
+ 			&access_cmd));
+ 	copy_cmd.src_ioas_id = new_ioas_id;
+ 	ASSERT_EQ(0, ioctl(self->fd, IOMMU_IOAS_COPY, &copy_cmd));
+-	check_mock_iova(buffer, MOCK_APERTURE_START, BUFFER_SIZE);
++	check_mock_iova(buf, MOCK_APERTURE_START, BUFFER_SIZE);
+ 
+ 	test_cmd_destroy_access_pages(
+ 		access_cmd.id, access_cmd.access_pages.out_access_pages_id);
+@@ -1667,6 +1782,9 @@ static void check_access_rw(struct __test_metadata *_metadata, int fd,
+ {
+ 	uint32_t ioas_id;
+ 
++	if (variant->file)
++		SKIP(return, "redundant test");
++
+ 	test_ioctl_ioas_alloc(&ioas_id);
+ 
+ 	test_cmd_mock_domain_replace(self->stdev_ids[0], ioas_id);
+@@ -1697,6 +1815,9 @@ static void check_access_rw(struct __test_metadata *_metadata, int fd,
+ {
+ 	int i;
+ 
++	if (variant->file)
++		SKIP(return, "redundant test");
++
+ 	for (i = 0; i != variant->mock_domains; i++) {
+ 		uint32_t hwpt_id[2];
+ 		uint32_t stddev_id;
+diff --git a/tools/testing/selftests/iommu/iommufd_utils.h b/tools/testing/selftests/iommu/iommufd_utils.h
+index 40f6f14..7bc664e 100644
+--- a/tools/testing/selftests/iommu/iommufd_utils.h
++++ b/tools/testing/selftests/iommu/iommufd_utils.h
+@@ -589,6 +589,47 @@ static int _test_ioctl_ioas_unmap(int fd, unsigned int ioas_id, uint64_t iova,
+ 	EXPECT_ERRNO(_errno, _test_ioctl_ioas_unmap(self->fd, self->ioas_id, \
+ 						    iova, length, NULL))
+ 
++static int _test_ioctl_ioas_map_file(int fd, unsigned int ioas_id, int mfd,
++				     size_t start, size_t length, __u64 *iova,
++				     unsigned int flags)
++{
++	struct iommu_ioas_map_file cmd = {
++		.size = sizeof(cmd),
++		.flags = flags,
++		.ioas_id = ioas_id,
++		.fd = mfd,
++		.start = start,
++		.length = length,
++	};
++	int ret;
++
++	if (flags & IOMMU_IOAS_MAP_FIXED_IOVA)
++		cmd.iova = *iova;
++
++	ret = ioctl(fd, IOMMU_IOAS_MAP_FILE, &cmd);
++	*iova = cmd.iova;
++	return ret;
++}
++
++#define test_ioctl_ioas_map_file(mfd, start, length, iova_p)                 \
++	ASSERT_EQ(0, _test_ioctl_ioas_map_file(self->fd, self->ioas_id, mfd, \
++					       start, length, iova_p,        \
++					       IOMMU_IOAS_MAP_WRITEABLE |    \
++						   IOMMU_IOAS_MAP_READABLE))
++
++#define test_err_ioctl_ioas_map_file(_errno, start, length, iova_p)	     \
++	EXPECT_ERRNO(_errno,                                                 \
++		     _test_ioctl_ioas_map_file(self->fd, self->ioas_id, mfd, \
++					       start, length, iova_p,        \
++					       IOMMU_IOAS_MAP_WRITEABLE |    \
++						   IOMMU_IOAS_MAP_READABLE))
++
++#define test_ioctl_ioas_map_id_file(ioas_id, mfd, start, length, iova_p)     \
++	ASSERT_EQ(0, _test_ioctl_ioas_map_file(self->fd, ioas_id, mfd,       \
++					  start, length, iova_p,             \
++					  IOMMU_IOAS_MAP_WRITEABLE |         \
++						  IOMMU_IOAS_MAP_READABLE))
++
+ static int _test_ioctl_set_temp_memory_limit(int fd, unsigned int limit)
+ {
+ 	struct iommu_test_cmd memlimit_cmd = {
 -- 
 1.8.3.1
 
