@@ -1,205 +1,204 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.13])
+Received: from NAM11-DM6-obe.outbound.protection.outlook.com (mail-dm6nam11on2052.outbound.protection.outlook.com [40.107.223.52])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 279CB4A3E;
-	Sat,  5 Oct 2024 01:54:56 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.13
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1728093299; cv=none; b=ZWgKLiAQ77dR/m+SBk+lSAYll96MvhKESNRTVg3kd+oF/2cQS8GVBd9vkW8iOwmBm1lgx+5hc+6xPYwn8FS2jfXgEvlOtegjf6s3XYbkNDR1PU5Recdd5bm2mOXLPSHkci65Dig1LqIs1z049O5DcgBY54MU3OdpomBIVovEz1o=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1728093299; c=relaxed/simple;
-	bh=uXRVWVG114f3/9yWUkqrx/Xg92Pkui3oaEXL/RgQMY0=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=jZH78vGTo/hv9Lt3IrVaxGMCLKpsFcNXybpuAfSG/Ug054ZTGNwTRYkX915t69orAChUMb4NyhAIS+NIjUCb9Ovx6yEy4N8keHfQTv1KD5kwukqMV9JT18hfxyv+W3OsT45fadlnlTkcqsiDRURHEDSj0ZGxX1/JnmptMWk4AUY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=Ao9Py+r1; arc=none smtp.client-ip=192.198.163.13
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7135229422
+	for <iommu@lists.linux.dev>; Sat,  5 Oct 2024 05:19:57 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.223.52
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1728105598; cv=fail; b=bkcpKkuzOh4+GmCQ1MnXTvunG64Od02w3+ZxAgg7AkEBhNvz3vFl0VMWJLlvA2aj0BNuKDEC5BFNYLxz7NO2PmhDxZ8dQHuwQjulg9LOds+XaZ2Gy/pnuBUsIQfQLsjDamOZ9O0xLYZSXVIc1hfdvZ6Wei0uY1BsW4Hcn+Xt0aE=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1728105598; c=relaxed/simple;
+	bh=8MejqAD1cgaJuYBSi5R9Qkx45foB5oGYxzS0fwP7PYE=;
+	h=Date:From:To:CC:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=IhvfPQWecxcFGqEzA2nu8VNZJM1/k5YvVuA0Nrz4wPaQStsN0i+lBUKCI6rsZy3uTK6qT7kvzg8qjVGxQWxVssNp9Aop1m5yhQbWO+n/OYRYE9aTALqeUL2TaO9FI2T+6MI8z/4In87FGJNom9SU5odB4VERzsGKkw54SbEQL+g=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=WmSb3mfK; arc=fail smtp.client-ip=40.107.223.52
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="Ao9Py+r1"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1728093297; x=1759629297;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=uXRVWVG114f3/9yWUkqrx/Xg92Pkui3oaEXL/RgQMY0=;
-  b=Ao9Py+r1zsvQ36BTg4jeQNu1LdJdPrT9tLQw0sa09Nx2hfY9SfFXFztf
-   3lnpkUGczFQWXuV6b7zUfAR5Q8nmp+1IzGnKfaSLKYhB0Q3YWY9wi3uK9
-   7/9EFM6xvBKZVspMXIQVTdg2gXbvZvYKaUpPpqe9UDLKSDH6k9qM1XesU
-   cW0B888mANCNAOVxkuOwZajP7AHlMYKUHVyUPXKo8uuJUjRn3xepwxhbr
-   oiJl0S/C1QJsqZn8PxfRylVFnGKiWuU1Hg+zVR2ApXRuZxE1KlOYmfzBD
-   cDgT3tfjBDKbuRBGqfnU/IaVIHi+vY9jQf29WIb2myVLO5cI+YBuFIc4d
-   w==;
-X-CSE-ConnectionGUID: gHuAcwnNR6mz9ALblFGp6Q==
-X-CSE-MsgGUID: 8HxoViVASxmU8QOcDnywJA==
-X-IronPort-AV: E=McAfee;i="6700,10204,11215"; a="30209796"
-X-IronPort-AV: E=Sophos;i="6.11,179,1725346800"; 
-   d="scan'208";a="30209796"
-Received: from fmviesa010.fm.intel.com ([10.60.135.150])
-  by fmvoesa107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Oct 2024 18:54:56 -0700
-X-CSE-ConnectionGUID: dq26sFVKRNOHr4dJL9jIYA==
-X-CSE-MsgGUID: pHBLfBJjQk2TiDi2g3fVEA==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.11,179,1725346800"; 
-   d="scan'208";a="75214238"
-Received: from lkp-server01.sh.intel.com (HELO a48cf1aa22e8) ([10.239.97.150])
-  by fmviesa010.fm.intel.com with ESMTP; 04 Oct 2024 18:54:49 -0700
-Received: from kbuild by a48cf1aa22e8 with local (Exim 4.96)
-	(envelope-from <lkp@intel.com>)
-	id 1swu0N-0002RI-13;
-	Sat, 05 Oct 2024 01:54:47 +0000
-Date: Sat, 5 Oct 2024 09:54:36 +0800
-From: kernel test robot <lkp@intel.com>
-To: Nuno Das Neves <nunodasneves@linux.microsoft.com>,
-	linux-hyperv@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-	linux-kernel@vger.kernel.org, kvm@vger.kernel.org,
-	iommu@lists.linux.dev, netdev@vger.kernel.org,
-	linux-pci@vger.kernel.org, linux-arch@vger.kernel.org,
-	virtualization@lists.linux.dev
-Cc: llvm@lists.linux.dev, oe-kbuild-all@lists.linux.dev, kys@microsoft.com,
-	haiyangz@microsoft.com, wei.liu@kernel.org, decui@microsoft.com,
-	catalin.marinas@arm.com, will@kernel.org, luto@kernel.org,
-	tglx@linutronix.de, mingo@redhat.com, bp@alien8.de,
-	dave.hansen@linux.intel.com, x86@kernel.org, hpa@zytor.com,
-	seanjc@google.com, pbonzini@redhat.com, peterz@infradead.org,
-	daniel.lezcano@linaro.org, joro@8bytes.org, robin.murphy@arm.com,
-	davem@davemloft.net, edumazet@google.com
-Subject: Re: [PATCH 5/5] hyperv: Use hvhdk.h instead of hyperv-tlfs.h in
- Hyper-V code
-Message-ID: <202410050921.0o9FH5Ai-lkp@intel.com>
-References: <1727985064-18362-6-git-send-email-nunodasneves@linux.microsoft.com>
+	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="WmSb3mfK"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=S4kYUuE/9d42gtjov85hhMU3Bk0MXOJ65uaY/TUYc1FxmlvzdqfIeRzInJhBf4+822b1PKBK0+/+hFftV0DxQ5vM9YCKE00KNi+x/kHf0LcUy9OqzpSxy5x2qroxZYsvFALVqeC/mn5wG2xd5oAUVZ/0XczykBkaLnhpVal0pCfTO79ewyxlAGLtkZFuL5cAo4BLUjdYrCN46m20HL3bn/RK+MJPiPWgc4l1jAsPewRUrNlATiM0m8eIDsY9Vd+hHVCiWU4CikrT45A3k+ERGV6nQQdzDQGVMQe276Oa6fb+gYfUVRtgwRU/dG0ixCG4I/5Zx2ASYftzu0B504B5tw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=6d8129+O9M+81Xp2K2eWCNB2YicHw6rcQ0VAu1Kx5jI=;
+ b=K6yXJx0ECWotz3lEFWVBaB34i2Bhh2YVpBgnKF3lvfHk6Ib975rFOvC5ZHSiWS19u1YYXChI8k5OuIXs8qsEsE9S+ZVFnWpGtBDefPpJaw+l2Y7M/I9as0qQzlhBC0P/UdoX6NCpUT1xAsXXSoeKWdMFAglfDMby6MwrFJkKwXoLd62jW1Dth+P+0JaTA1oaU6z36AY7SizHqS87lSZcBNULOfsXybxlKy89Hk8NFFpq9ZQG+X/VrnLu2Vt9O4Mx8JxnmQINNlPAt89cd+/sO97OSgXcVNNuUH04VTEmts7PZlC8syoQZQuas0nDw70/MuPd/h6hmK6LiSExxdUwVQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 216.228.117.160) smtp.rcpttodomain=huawei.com smtp.mailfrom=nvidia.com;
+ dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
+ dkim=none (message not signed); arc=none (0)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=6d8129+O9M+81Xp2K2eWCNB2YicHw6rcQ0VAu1Kx5jI=;
+ b=WmSb3mfKjYCUuXiVTBAsfwduRn2ASq2s8VV8bNZehtq9Ie7tUR3luMI4Nu5g0GNwewQq0ctlKF4R4Z4mB7ZiR4worV2zb+W/p6xnknqBxsnNlDckmiBIcvwAclTf1CxOoqEDxpd7fYZLsXFkQqDVDbjsyCs7iE9eSjSZZndce+aDj1S8Fm+yOtjVti1+akheP6/vonFXYR4b2CXAwzankplw8kx0u/r5i5KrQXO4c9nRU2vzCSEUW/oR1jfAZAzOUzF5VE5Y2edzKbpEI6od9rQxiPxMnKXwBPRhilVzfFbo7ppT3OJT3762sARxxnEgX4cOBluUNBypVfF8yOjwkg==
+Received: from DS7PR03CA0190.namprd03.prod.outlook.com (2603:10b6:5:3b6::15)
+ by DS0PR12MB8218.namprd12.prod.outlook.com (2603:10b6:8:f2::15) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.8026.18; Sat, 5 Oct
+ 2024 05:19:54 +0000
+Received: from DS1PEPF00017092.namprd03.prod.outlook.com
+ (2603:10b6:5:3b6:cafe::d6) by DS7PR03CA0190.outlook.office365.com
+ (2603:10b6:5:3b6::15) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.8026.20 via Frontend
+ Transport; Sat, 5 Oct 2024 05:19:54 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.117.160)
+ smtp.mailfrom=nvidia.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=nvidia.com;
+Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
+ 216.228.117.160 as permitted sender) receiver=protection.outlook.com;
+ client-ip=216.228.117.160; helo=mail.nvidia.com; pr=C
+Received: from mail.nvidia.com (216.228.117.160) by
+ DS1PEPF00017092.mail.protection.outlook.com (10.167.17.135) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.8026.11 via Frontend Transport; Sat, 5 Oct 2024 05:19:52 +0000
+Received: from rnnvmail202.nvidia.com (10.129.68.7) by mail.nvidia.com
+ (10.129.200.66) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1544.4; Fri, 4 Oct 2024
+ 22:19:46 -0700
+Received: from rnnvmail203.nvidia.com (10.129.68.9) by rnnvmail202.nvidia.com
+ (10.129.68.7) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1544.4; Fri, 4 Oct 2024
+ 22:19:45 -0700
+Received: from Asurada-Nvidia (10.127.8.13) by mail.nvidia.com (10.129.68.9)
+ with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1544.4 via Frontend
+ Transport; Fri, 4 Oct 2024 22:19:44 -0700
+Date: Fri, 4 Oct 2024 22:19:43 -0700
+From: Nicolin Chen <nicolinc@nvidia.com>
+To: Jason Gunthorpe <jgg@nvidia.com>
+CC: <kevin.tian@intel.com>, <will@kernel.org>, <joro@8bytes.org>,
+	<suravee.suthikulpanit@amd.com>, <robin.murphy@arm.com>,
+	<dwmw2@infradead.org>, <baolu.lu@linux.intel.com>, <shuah@kernel.org>,
+	<linux-kernel@vger.kernel.org>, <iommu@lists.linux.dev>,
+	<linux-arm-kernel@lists.infradead.org>, <linux-kselftest@vger.kernel.org>,
+	<eric.auger@redhat.com>, <jean-philippe@linaro.org>, <mdf@kernel.org>,
+	<mshavit@google.com>, <shameerali.kolothum.thodi@huawei.com>,
+	<smostafa@google.com>, <yi.l.liu@intel.com>
+Subject: Re: [PATCH v2 10/19] iommufd/viommu: Add vdev_id helpers for IOMMU
+ drivers
+Message-ID: <ZwDMb3F8/cCFhwcQ@Asurada-Nvidia>
+References: <cover.1724776335.git.nicolinc@nvidia.com>
+ <6ccdfb27c7aa5a5bb7e153165cf90114cae4687c.1724776335.git.nicolinc@nvidia.com>
+ <20240905161415.GS1358970@nvidia.com>
+ <ZtnwG/Kmaf+fZFAv@nvidia.com>
+ <20240911231103.GR58321@nvidia.com>
+ <ZuJdPHRbMeYFATT7@nvidia.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset="us-ascii"
 Content-Disposition: inline
-In-Reply-To: <1727985064-18362-6-git-send-email-nunodasneves@linux.microsoft.com>
+In-Reply-To: <ZuJdPHRbMeYFATT7@nvidia.com>
+X-NV-OnPremToCloud: ExternallySecured
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: DS1PEPF00017092:EE_|DS0PR12MB8218:EE_
+X-MS-Office365-Filtering-Correlation-Id: 14c456b7-0b41-412e-98c0-08dce4fd57af
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam:
+	BCL:0;ARA:13230040|82310400026|7416014|376014|36860700013|1800799024;
+X-Microsoft-Antispam-Message-Info:
+	=?us-ascii?Q?QWwXvkYtS5Y0G7URwFQxyrUNiYyeqdfpzlGxWqf+KyGiDESarSSoA8VwJeQj?=
+ =?us-ascii?Q?tPgmoBvJ+4lGvCRwigQS4kcGQdo0ONuXvvHkRTbw1COG/rDV8gQaHr5OWAhe?=
+ =?us-ascii?Q?4s06D59dX4to3JGQ3pxUJXKBJFNSVSdQ7OhvKisIETDvl1fwchgXO2YHJtOQ?=
+ =?us-ascii?Q?e2TMoDKYOlNuJHQYhuQsWJAusIr9GMng8/cZ5QhlS6os9ULeaZ2UnJ+dFB6Y?=
+ =?us-ascii?Q?L+Ois/xoUM1hXXfn9Pbg12Udo0I5fbxyFATOEvUa0443J+SCvrg02hAntGUW?=
+ =?us-ascii?Q?dgyQojmT37C2waTm582XvpqnrkDg+zNSXJUgTdw783bE8dbluMjG7aqQHGYJ?=
+ =?us-ascii?Q?B41g/WH2xRw199uRB84Q5aswy4V4tp6W61eFHD6/iFmYjWtJ3Z/IF8Drs+kH?=
+ =?us-ascii?Q?BlCxDESLxlAgN4xJHWgAk91z0/a5wvFVEVf6V1IqDB35hjOPLSIah4lw9W5J?=
+ =?us-ascii?Q?aGp+vomcq6HJplXkY7M2MZosdsVqG97jCRgOuMOiDpo9334vpvoK9bL5VKKB?=
+ =?us-ascii?Q?twUkBPjopUcLDvRK+DEnDTvzqqzD6kInKGQycAiRv9EJTqDVf+/UjtKvOof9?=
+ =?us-ascii?Q?xdy71TVPeAWcgWlpyrdvoc+LL0TOCUVKCSZUOUMvqqI3x/WvWGTjT41Yq9oe?=
+ =?us-ascii?Q?RlQYsCVauFjYSfBViO7HDD9+JHQ4eFKiOkEL8AGgAfUJFr2n8LhwYaX0HXyc?=
+ =?us-ascii?Q?9H26daeXEIhHjZM6SijpQ9jWkQWM7pqPWjnjIIuMp/DPOV313Xh2oBBhgP4y?=
+ =?us-ascii?Q?C+qsXmZ6y40Fc3tJBASMA+N5GHcDkVGLRH5vouVYPngYRSaFYWAIUieQ5JwC?=
+ =?us-ascii?Q?LnlzGuBJYXJM9SAkjjs+JRVpSyE0JKugpEhfLW83T+6OgMp0iohY9TfaYDxa?=
+ =?us-ascii?Q?xoIg6a3omJe7WwiTJ4HmMQ8+CxaAK4ct6jGbfSkoepzEBokZA1GsyThisSAy?=
+ =?us-ascii?Q?8qWXmQDIQfCD0Zrg6CP0pMKAZZoRBdesruH87D9bvOrmETDeq3I2MPVwcSze?=
+ =?us-ascii?Q?dBTOdBK2eeg9X+ITn5BOXwKFux6Gbz5aU78IfJTwQgQ8QM3ayXHFDySwz0UV?=
+ =?us-ascii?Q?VqwTj4FQOs17B4oaNwZvMV1Yu9p8uS3FhLGYJ3WVyvnXFmAi6vYdRB9M/g/A?=
+ =?us-ascii?Q?H8Z7jPLStlZLPyDs776nL7cShgUTr/JUDF6cFGZP+0x6ZI8eJdk0z7CZgcsS?=
+ =?us-ascii?Q?XE2JUfidCPiTl/sk8xXz6/mR1Ufwln87UWEHn/Mv7s+ilgAHQb+ArAomIQGu?=
+ =?us-ascii?Q?d8wxwrBqK+Dy3BYviyFSHSknh/ao18DuuiUc2RvzCcCx2oIaVSeVQjMSAqaH?=
+ =?us-ascii?Q?lyGOFyUW7fl5agtpQFL90dkF9pEEolQ61nuJS868cyo8WrTopHFNKANbIbdW?=
+ =?us-ascii?Q?CPs3qI8+IB72IEExPrJDAoiEosoQ?=
+X-Forefront-Antispam-Report:
+	CIP:216.228.117.160;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc6edge1.nvidia.com;CAT:NONE;SFS:(13230040)(82310400026)(7416014)(376014)(36860700013)(1800799024);DIR:OUT;SFP:1101;
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 05 Oct 2024 05:19:52.7814
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: 14c456b7-0b41-412e-98c0-08dce4fd57af
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.117.160];Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-AuthSource:
+	DS1PEPF00017092.namprd03.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DS0PR12MB8218
 
-Hi Nuno,
+On Wed, Sep 11, 2024 at 08:17:22PM -0700, Nicolin Chen wrote:
+> On Wed, Sep 11, 2024 at 08:11:03PM -0300, Jason Gunthorpe wrote:
+> > On Thu, Sep 05, 2024 at 10:53:31AM -0700, Nicolin Chen wrote:
+> > > On Thu, Sep 05, 2024 at 01:14:15PM -0300, Jason Gunthorpe wrote:
+> > > > On Tue, Aug 27, 2024 at 09:59:47AM -0700, Nicolin Chen wrote:
+> > > > > Driver can call the iommufd_viommu_find_device() to find a device pointer
+> > > > > using its per-viommu virtual ID. The returned device must be protected by
+> > > > > the pair of iommufd_viommu_lock/unlock_vdev_id() function.
+> > > > > 
+> > > > > Put these three functions into a new viommu_api file, to build it with the
+> > > > > IOMMUFD_DRIVER config.
+> > > > > 
+> > > > > Signed-off-by: Nicolin Chen <nicolinc@nvidia.com>
+> > > > > ---
+> > > > >  drivers/iommu/iommufd/Makefile     |  2 +-
+> > > > >  drivers/iommu/iommufd/viommu_api.c | 39 ++++++++++++++++++++++++++++++
+> > > > >  include/linux/iommufd.h            | 16 ++++++++++++
+> > > > >  3 files changed, 56 insertions(+), 1 deletion(-)
+> > > > >  create mode 100644 drivers/iommu/iommufd/viommu_api.c
+> > > > 
+> > > > I still think this is better to just share the struct content with the
+> > > > driver, eventually we want to do this anyhow as the driver will
+> > > > want to use container_of() techniques to reach its private data.
+> > > 
+> > > In my mind, exposing everything to the driver is something that
+> > > we have to (for driver-managed structures) v.s. we want to...
+> > > Even in that case, a driver actually only need to know the size
+> > > of the core structure, without touching what's inside(?).
+> > > 
+> > > I am a bit worried that drivers would abuse the content in the
+> > > core-level structure.. Providing a set of API would encourage
+> > > them to keep the core structure intact, hopefully..
+> > 
+> > This is always a tension in the kernel. If the core apis can be nice
+> > and tidy then it is a reasonable direction
+> > 
+> > But here I think we've cross some threshold where the APIs are
+> > complex, want to be inlined and really we just want to expose data not
+> > APIs to drivers.
+> 
+> OK. I'll think of a rework. And might need another justification
+> for a DEFAULT type of vIOMMU object to fit in.
 
-kernel test robot noticed the following build errors:
+I tried exposing the struct iommufd_viommu to drivers, and was
+able to drop a couple of helpers, except these two:
 
-[auto build test ERROR on tip/x86/core]
-[also build test ERROR on arm64/for-next/core kvm/queue linus/master v6.12-rc1 next-20241004]
-[cannot apply to kvm/linux-next]
-[If your patch is applied to the wrong git tree, kindly drop us a note.
-And when submitting patch, we suggest to use '--base' as documented in
-https://git-scm.com/docs/git-format-patch#_base_tree_information]
+struct device *vdev_to_dev(struct iommufd_vdevice *vdev)
+{
+	return vdev ? vdev->idev->dev : NULL;
+} // Without it, we need to expose struct iommufd_device.
 
-url:    https://github.com/intel-lab-lkp/linux/commits/Nuno-Das-Neves/hyperv-Move-hv_connection_id-to-hyperv-tlfs-h/20241004-035418
-base:   tip/x86/core
-patch link:    https://lore.kernel.org/r/1727985064-18362-6-git-send-email-nunodasneves%40linux.microsoft.com
-patch subject: [PATCH 5/5] hyperv: Use hvhdk.h instead of hyperv-tlfs.h in Hyper-V code
-config: arm64-allmodconfig (https://download.01.org/0day-ci/archive/20241005/202410050921.0o9FH5Ai-lkp@intel.com/config)
-compiler: clang version 20.0.0git (https://github.com/llvm/llvm-project fef3566a25ff0e34fb87339ba5e13eca17cec00f)
-reproduce (this is a W=1 build): (https://download.01.org/0day-ci/archive/20241005/202410050921.0o9FH5Ai-lkp@intel.com/reproduce)
+struct iommu_domain *
+iommufd_viommu_to_parent_domain(struct iommufd_viommu *viommu)
+{
+	if (!viommu || !viommu->hwpt)
+		return NULL;
+	return viommu->hwpt->common.domain;
+} // Without it, we need to expose struct iommufd_hwpt_page.
 
-If you fix the issue in a separate patch/commit (i.e. not just a new version of
-the same patch/commit), kindly add following tags
-| Reported-by: kernel test robot <lkp@intel.com>
-| Closes: https://lore.kernel.org/oe-kbuild-all/202410050921.0o9FH5Ai-lkp@intel.com/
-
-All errors (new ones prefixed by >>):
-
-   In file included from arch/arm64/hyperv/mshyperv.c:13:
-   In file included from include/linux/acpi.h:39:
-   In file included from include/acpi/acpi_io.h:7:
-   In file included from arch/arm64/include/asm/acpi.h:14:
-   In file included from include/linux/memblock.h:12:
-   In file included from include/linux/mm.h:2228:
-   include/linux/vmstat.h:500:43: warning: arithmetic between different enumeration types ('enum zone_stat_item' and 'enum numa_stat_item') [-Wenum-enum-conversion]
-     500 |         return vmstat_text[NR_VM_ZONE_STAT_ITEMS +
-         |                            ~~~~~~~~~~~~~~~~~~~~~ ^
-     501 |                            item];
-         |                            ~~~~
-   include/linux/vmstat.h:507:43: warning: arithmetic between different enumeration types ('enum zone_stat_item' and 'enum numa_stat_item') [-Wenum-enum-conversion]
-     507 |         return vmstat_text[NR_VM_ZONE_STAT_ITEMS +
-         |                            ~~~~~~~~~~~~~~~~~~~~~ ^
-     508 |                            NR_VM_NUMA_EVENT_ITEMS +
-         |                            ~~~~~~~~~~~~~~~~~~~~~~
-   include/linux/vmstat.h:514:36: warning: arithmetic between different enumeration types ('enum node_stat_item' and 'enum lru_list') [-Wenum-enum-conversion]
-     514 |         return node_stat_name(NR_LRU_BASE + lru) + 3; // skip "nr_"
-         |                               ~~~~~~~~~~~ ^ ~~~
-   include/linux/vmstat.h:519:43: warning: arithmetic between different enumeration types ('enum zone_stat_item' and 'enum numa_stat_item') [-Wenum-enum-conversion]
-     519 |         return vmstat_text[NR_VM_ZONE_STAT_ITEMS +
-         |                            ~~~~~~~~~~~~~~~~~~~~~ ^
-     520 |                            NR_VM_NUMA_EVENT_ITEMS +
-         |                            ~~~~~~~~~~~~~~~~~~~~~~
-   include/linux/vmstat.h:528:43: warning: arithmetic between different enumeration types ('enum zone_stat_item' and 'enum numa_stat_item') [-Wenum-enum-conversion]
-     528 |         return vmstat_text[NR_VM_ZONE_STAT_ITEMS +
-         |                            ~~~~~~~~~~~~~~~~~~~~~ ^
-     529 |                            NR_VM_NUMA_EVENT_ITEMS +
-         |                            ~~~~~~~~~~~~~~~~~~~~~~
->> arch/arm64/hyperv/mshyperv.c:53:19: error: use of undeclared identifier 'HV_REGISTER_FEATURES'; did you mean 'HV_REGISTER_FEATURES_INFO'?
-      53 |         hv_get_vpreg_128(HV_REGISTER_FEATURES, &result);
-         |                          ^~~~~~~~~~~~~~~~~~~~
-         |                          HV_REGISTER_FEATURES_INFO
-   include/hyperv/hvgdk_mini.h:807:2: note: 'HV_REGISTER_FEATURES_INFO' declared here
-     807 |         HV_REGISTER_FEATURES_INFO                               = 0x00000201,
-         |         ^
->> arch/arm64/hyperv/mshyperv.c:58:19: error: use of undeclared identifier 'HV_REGISTER_ENLIGHTENMENTS'
-      58 |         hv_get_vpreg_128(HV_REGISTER_ENLIGHTENMENTS, &result);
-         |                          ^
-   5 warnings and 2 errors generated.
-
-
-vim +53 arch/arm64/hyperv/mshyperv.c
-
-410779d8d81fcf Nuno Das Neves 2024-03-07  30  
-9bbb888824e38c Michael Kelley 2021-08-04  31  static int __init hyperv_init(void)
-9bbb888824e38c Michael Kelley 2021-08-04  32  {
-9bbb888824e38c Michael Kelley 2021-08-04  33  	struct hv_get_vp_registers_output	result;
-9bbb888824e38c Michael Kelley 2021-08-04  34  	u64	guest_id;
-9bbb888824e38c Michael Kelley 2021-08-04  35  	int	ret;
-9bbb888824e38c Michael Kelley 2021-08-04  36  
-9bbb888824e38c Michael Kelley 2021-08-04  37  	/*
-9bbb888824e38c Michael Kelley 2021-08-04  38  	 * Allow for a kernel built with CONFIG_HYPERV to be running in
-9bbb888824e38c Michael Kelley 2021-08-04  39  	 * a non-Hyper-V environment, including on DT instead of ACPI.
-9bbb888824e38c Michael Kelley 2021-08-04  40  	 * In such cases, do nothing and return success.
-9bbb888824e38c Michael Kelley 2021-08-04  41  	 */
-9bbb888824e38c Michael Kelley 2021-08-04  42  	if (acpi_disabled)
-9bbb888824e38c Michael Kelley 2021-08-04  43  		return 0;
-9bbb888824e38c Michael Kelley 2021-08-04  44  
-9bbb888824e38c Michael Kelley 2021-08-04  45  	if (strncmp((char *)&acpi_gbl_FADT.hypervisor_id, "MsHyperV", 8))
-9bbb888824e38c Michael Kelley 2021-08-04  46  		return 0;
-9bbb888824e38c Michael Kelley 2021-08-04  47  
-9bbb888824e38c Michael Kelley 2021-08-04  48  	/* Setup the guest ID */
-d5ebde1e2b4615 Li kunyu       2022-09-28  49  	guest_id = hv_generate_guest_id(LINUX_VERSION_CODE);
-b967df6293510b Nuno Das Neves 2024-03-12  50  	hv_set_vpreg(HV_REGISTER_GUEST_OS_ID, guest_id);
-9bbb888824e38c Michael Kelley 2021-08-04  51  
-9bbb888824e38c Michael Kelley 2021-08-04  52  	/* Get the features and hints from Hyper-V */
-9bbb888824e38c Michael Kelley 2021-08-04 @53  	hv_get_vpreg_128(HV_REGISTER_FEATURES, &result);
-9bbb888824e38c Michael Kelley 2021-08-04  54  	ms_hyperv.features = result.as32.a;
-9bbb888824e38c Michael Kelley 2021-08-04  55  	ms_hyperv.priv_high = result.as32.b;
-9bbb888824e38c Michael Kelley 2021-08-04  56  	ms_hyperv.misc_features = result.as32.c;
-9bbb888824e38c Michael Kelley 2021-08-04  57  
-9bbb888824e38c Michael Kelley 2021-08-04 @58  	hv_get_vpreg_128(HV_REGISTER_ENLIGHTENMENTS, &result);
-9bbb888824e38c Michael Kelley 2021-08-04  59  	ms_hyperv.hints = result.as32.a;
-9bbb888824e38c Michael Kelley 2021-08-04  60  
-9bbb888824e38c Michael Kelley 2021-08-04  61  	pr_info("Hyper-V: privilege flags low 0x%x, high 0x%x, hints 0x%x, misc 0x%x\n",
-9bbb888824e38c Michael Kelley 2021-08-04  62  		ms_hyperv.features, ms_hyperv.priv_high, ms_hyperv.hints,
-9bbb888824e38c Michael Kelley 2021-08-04  63  		ms_hyperv.misc_features);
-9bbb888824e38c Michael Kelley 2021-08-04  64  
-9bbb888824e38c Michael Kelley 2021-08-04  65  	ret = hv_common_init();
-9bbb888824e38c Michael Kelley 2021-08-04  66  	if (ret)
-9bbb888824e38c Michael Kelley 2021-08-04  67  		return ret;
-9bbb888824e38c Michael Kelley 2021-08-04  68  
-52ae076c3a9b36 Michael Kelley 2023-05-23  69  	ret = cpuhp_setup_state(CPUHP_AP_HYPERV_ONLINE, "arm64/hyperv_init:online",
-9bbb888824e38c Michael Kelley 2021-08-04  70  				hv_common_cpu_init, hv_common_cpu_die);
-9bbb888824e38c Michael Kelley 2021-08-04  71  	if (ret < 0) {
-9bbb888824e38c Michael Kelley 2021-08-04  72  		hv_common_free();
-9bbb888824e38c Michael Kelley 2021-08-04  73  		return ret;
-9bbb888824e38c Michael Kelley 2021-08-04  74  	}
-9bbb888824e38c Michael Kelley 2021-08-04  75  
-f2580a907e5c0e Michael Kelley 2024-03-18  76  	ms_hyperv_late_init();
-f2580a907e5c0e Michael Kelley 2024-03-18  77  
-9bbb888824e38c Michael Kelley 2021-08-04  78  	hyperv_initialized = true;
-9bbb888824e38c Michael Kelley 2021-08-04  79  	return 0;
-9bbb888824e38c Michael Kelley 2021-08-04  80  }
-9bbb888824e38c Michael Kelley 2021-08-04  81  
-
--- 
-0-DAY CI Kernel Test Service
-https://github.com/intel/lkp-tests/wiki
+Thanks
+Nicolin
