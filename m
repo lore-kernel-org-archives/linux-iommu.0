@@ -1,199 +1,369 @@
-Received: from NAM12-BN8-obe.outbound.protection.outlook.com (mail-bn8nam12on2077.outbound.protection.outlook.com [40.107.237.77])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5D1971DD548
-	for <iommu@lists.linux.dev>; Mon,  7 Oct 2024 17:18:47 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.237.77
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1728321528; cv=fail; b=jXZH1CnR9Qd1bmX1qSW1Jvueh4dciwHAW7+vjcELsqblkn5P9X6ndT4hGffnXq6t3CInNHJbfF4COroWxBGSWH7qhsBJTsAxnq1/7IYQFAY1tlcejB7J43sTre9J3Kmog6e5q8BE962AVayC1oS65L38bo5Dm1BGGLWdnaTuL3Q=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1728321528; c=relaxed/simple;
-	bh=3ZSoLaaxnD36inMMkLuedxruyFXFNql5EsInhUH0GLA=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:Content-Type:
-	 Content-Disposition:In-Reply-To:MIME-Version; b=Rj8WvF8ekl7BQMcISIdjeOt4eCFFeu80lJbVDFACXfZEYq6+npM56rSPd9AcPM4Rsigq3zU9wrg+KHw6RkqhOCGe2l0OS0bi7EXif4IZBHaxUeVIUiHUCn9irumOEWPhJRRswUO4veYq+OraNN75nnGZ04k4xTtFWeV830ke5EE=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=hF9KJVCe; arc=fail smtp.client-ip=40.107.237.77
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 369F518BBB2;
+	Mon,  7 Oct 2024 17:20:03 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1728321604; cv=none; b=u+PlCn563hcm8JKWgDpytvf6ukAdwDsYBZWt7P10AcSXKwWfOK3Y21z7Qrop3BNjXTTayIDCSxYwlmoNEmSTnbO3KPc5/zJS8OtJjcc9oskd4T/95VQYVifZ3oG90mhKQLH+TAbkmHN82d4nS1trIV/CITkHBpYRFNz/Nnvw1jQ=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1728321604; c=relaxed/simple;
+	bh=/6cuJXSJ0+dZhbzuOH/2Sf0T5uix55JR/2eAWrJmBOg=;
+	h=Date:From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:
+	 Content-Disposition:In-Reply-To; b=AZ2ehN4rRx8iAU4Wq3CemHra3pfQzZpoAiAuWCl7hMfHZ5ZKKoaYmsylL+MZaA/D2yK6oPI6+hMDVBOiIcRSJ2kJfNBnWbZ4WQqud4XsZdyhobgSzBksVcpBSRwF+na/mR9o17JHDsVBlR3V4Yn9WuHvR985nCSO0pS4ENS97CQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=VZwX1yPj; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="hF9KJVCe"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=e3UU7apuB7svXpUtOZmF05Zzn1O4Ifv/KSP5wIQmrDqyHRjCGxZlcWy4d3vcy9OUnpdHYDjaEAD3q6u0GZsLyEbnlMhdj9BeMJVeHXfE2LcOl/M1QluW9Fk4Q2/hA+V5nCfL4OmTsoPipRXtWZbhMpM/MWJiJEp+XbqMMSJEI8mwWR7vEOnJ186CGjiQKKU/R1N583wj7q6bq8mjhiq2vOo4yANvgGScr6n1vyiJ+SzdAvKBRHo7QMK4Xkq3ph1mZW2161hThm5zoNhjInGL5oJHW0nm8+ic6Bfl9g0owbiG3346dRTqS47Id8OPNcF4PdalqE5SoFl5YtsS6qkhAQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=V8OLWQbUi+Yi2zYM7704hs/16fmhGc7Cfe4rITJEBgY=;
- b=XbYvKLE9EnfKqVwRs8k4p09cnDEDlc3ZEUuBeszt0dM0bdj54+z/d5bboyAytwpUU3y+Le4hDYjtUBZCT1ATV77vVeURyXDJ7nn12B7PfI2CVgPyFYINSrRFcTuAOCi+plaS2BKubPN1dJpvD/CAm1mlTgo4wvIptA75bAmkwkXvrQKXAUHe9KZGcnNAipgt4BgXce6xlBgANyiwhSkFCNfw8jFDf+Mw8HUIG9eyi2doAfI8x6rUyTxLmfzkrK81z50Q/pj3MbYLU8Bnh2B28rcfSwUvjCuQ9LlvGB8csIQ4n3DytbSHGw9d4pa7d18Qna2KvVcyyIBQ6ov5MDvH4Q==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=V8OLWQbUi+Yi2zYM7704hs/16fmhGc7Cfe4rITJEBgY=;
- b=hF9KJVCewRoIDwKx7y4XKDw9lkYWZRcmS9UMtYPHuBxkpK7UaU9QJQVuCtbehukpj907oRnQnGqFtJMPP6vgR6/i+tTpGHAyjv+S5ZfmwXZClDO48OqmrZks5+PW7xNi0TEjblGZau2DzBa6FE/KM8/Daw3AM3WIDUr+oircf29Lmhibzlqkexe94OO78qfLD4aFinnvvExT0HrYVcM5ndI6Y4KYLdHxP9i2aM51eE8eJ4hJa1LjZsNVZ5Jopxcp6GZCsNNs0Y9YMMV7Juy/JDMRvGFEH5BUqpzziHMYBkqStzOeCgBaB4RHso07nGVa7maKz+2OQws+KPklu6VNqw==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-Received: from CH3PR12MB8659.namprd12.prod.outlook.com (2603:10b6:610:17c::13)
- by DM6PR12MB4331.namprd12.prod.outlook.com (2603:10b6:5:21a::20) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.8026.23; Mon, 7 Oct
- 2024 17:18:41 +0000
-Received: from CH3PR12MB8659.namprd12.prod.outlook.com
- ([fe80::6eb6:7d37:7b4b:1732]) by CH3PR12MB8659.namprd12.prod.outlook.com
- ([fe80::6eb6:7d37:7b4b:1732%4]) with mapi id 15.20.8026.020; Mon, 7 Oct 2024
- 17:18:41 +0000
-Date: Mon, 7 Oct 2024 14:18:40 -0300
-From: Jason Gunthorpe <jgg@nvidia.com>
-To: Nicolin Chen <nicolinc@nvidia.com>
-Cc: Alexey Kardashevskiy <aik@amd.com>, kevin.tian@intel.com,
-	will@kernel.org, joro@8bytes.org, suravee.suthikulpanit@amd.com,
-	robin.murphy@arm.com, dwmw2@infradead.org, baolu.lu@linux.intel.com,
-	shuah@kernel.org, linux-kernel@vger.kernel.org,
-	iommu@lists.linux.dev, linux-arm-kernel@lists.infradead.org,
-	linux-kselftest@vger.kernel.org, eric.auger@redhat.com,
-	jean-philippe@linaro.org, mdf@kernel.org, mshavit@google.com,
-	shameerali.kolothum.thodi@huawei.com, smostafa@google.com,
-	yi.l.liu@intel.com
-Subject: Re: [PATCH v2 06/19] iommufd/viommu: Add
- IOMMU_VIOMMU_SET/UNSET_VDEV_ID ioctl
-Message-ID: <20241007171840.GZ1365916@nvidia.com>
-References: <cover.1724776335.git.nicolinc@nvidia.com>
- <6348cc7a72ce9f2ac0e9caf9737e70177a01eb74.1724776335.git.nicolinc@nvidia.com>
- <35701c5e-030a-4f52-b6f6-ed18368fb2cd@amd.com>
- <20241004114147.GF1365916@nvidia.com>
- <ZwAwWr+q3ZGkZCSM@Asurada-Nvidia>
- <20241004185019.GJ1365916@nvidia.com>
- <ZwBBH+9hwuGKOstl@Asurada-Nvidia>
- <20241004201746.GK1365916@nvidia.com>
- <ZwBRHfwrRJCKXrn7@Asurada-Nvidia>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <ZwBRHfwrRJCKXrn7@Asurada-Nvidia>
-X-ClientProxiedBy: BL1PR13CA0004.namprd13.prod.outlook.com
- (2603:10b6:208:256::9) To CH3PR12MB8659.namprd12.prod.outlook.com
- (2603:10b6:610:17c::13)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="VZwX1yPj"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 90BDBC4CEC6;
+	Mon,  7 Oct 2024 17:20:03 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1728321603;
+	bh=/6cuJXSJ0+dZhbzuOH/2Sf0T5uix55JR/2eAWrJmBOg=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:From;
+	b=VZwX1yPjSE6J8xTDvfazfXKkn1UfV97NHHjp9HD/UxVVUxi8Nazs4mAF//qumIiuw
+	 JlhEX+KOLJE0l0Bq3Nn7iqQRbEzGd3k65AWPd5kpa2533x5YNUUHx+o9BU3SZV5Dm7
+	 XOTFAcudNg1Dv3gE+Ogmr6tMKLxFCw9zpBoOfn6XeXvNKKl3nydKoy3pvXJc8gYwth
+	 2pJbVuAT6l/6BcAbr4kqj07sePlFUABBZn4HcLLkjX+s7Ki946QcWH53ZN6a9Dkf1k
+	 A339NJZGFg6XmnQhLSmIeVQlD6rEk/TebwQhvSYMwqqdqoJbNlG8PMEAdsSSC9XM07
+	 pGtpGG52hJIcQ==
+Date: Mon, 7 Oct 2024 12:20:01 -0500
+From: Bjorn Helgaas <helgaas@kernel.org>
+To: Lu Baolu <baolu.lu@linux.intel.com>
+Cc: Kevin Tian <kevin.tian@intel.com>, Joerg Roedel <jroedel@suse.de>,
+	David Woodhouse <dwmw2@infradead.org>, linux-pci@vger.kernel.org,
+	iommu@lists.linux.dev,
+	Marcin =?utf-8?B?TWlyb3PFgmF3?= <marcin@mejor.pl>
+Subject: Re: [Bug 219349] New: RIP: 0010:pci_for_each_dma_alias
+ (./include/linux/pci.h:692 drivers/pci/search.c:41)
+Message-ID: <20241007172001.GA441460@bhelgaas>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: CH3PR12MB8659:EE_|DM6PR12MB4331:EE_
-X-MS-Office365-Filtering-Correlation-Id: 20f12743-9251-4d4f-1257-08dce6f41723
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;ARA:13230040|376014|7416014|1800799024|366016;
-X-Microsoft-Antispam-Message-Info:
-	=?us-ascii?Q?bQAPgyYdEHY5I7a5SZuWSHVbAVCY74/3mNsWYmMjQUUbiHdsWVlCc9Vco67v?=
- =?us-ascii?Q?q0V2nhJ/uPOMxpvbzQRRsKBiFCJhUbYHoCDIFrRG2jwB3VxXZ3WN8QZhY3Mk?=
- =?us-ascii?Q?3R3gi26pEu4amSBb98SEILUZx5phEomiBZ15oSr2drJezi1CeBPCHtQMIm9F?=
- =?us-ascii?Q?unniX7ybQDeuucB9dmWiINy+4yoEfhSUKzPErvZHr7F+yifOCWj0KbmvEdTK?=
- =?us-ascii?Q?TmPc7aYPv1KMXgHn/xCIWg0lIIcSuslGxrvkMXDuvroY1Fts6TttJIhSHjls?=
- =?us-ascii?Q?1C2Ra+vbAlCTMDmtFKJ7o69TvN2tcYrMFTpW5Pk/ohtwasCpVaLgtvabPgOl?=
- =?us-ascii?Q?ocqmS9cuhmR3xPqP4ZtSHr9XwridIw/Fjq+BFhIr8o4TYD0lFX6zflL4Ooyp?=
- =?us-ascii?Q?MqUC5nllLRg2mvT2Bs9Tkwpk6Odnmtbq8ibeo4OHeW2YdOnaRe2zD1FbDXo+?=
- =?us-ascii?Q?QhTdPygQ6qTxI1VItzULuC1oGd6qk7kfFSPLApdPHXEpCw6WdFNmK076xmdT?=
- =?us-ascii?Q?iMQBxU49jtIhco1V1xg2UFlimxCgETmDDBpYDf4jU1JNLLZBY0ZVwncIhOTW?=
- =?us-ascii?Q?Y9YTmpy6Uq2p0KkZmZE0D9xjeEnaiFZjkz6KHQW2ke8nB9mKgWf4BVlfpJa8?=
- =?us-ascii?Q?99NtE4k2U4AgauPukwN3cQsHffNwmSIOi7mSh/uGT1pIh6FuzwljZHca+bSL?=
- =?us-ascii?Q?jloA32Acc8uU2MRBwckrIZb5AczCQRP4UOVR2HmewDuuISPGttnFVr2ZlmpO?=
- =?us-ascii?Q?hV+oE/7vrQiOv3Rwp42IYWvsDYIMQoptYAGFnyEAc49PnyBpO9zhPLbQ2i9y?=
- =?us-ascii?Q?nU07NO/fk7aJVQbdn8kIsw5ihzPh5oLNqAEtW57AzKyYfzocnTo1r/wOo0KU?=
- =?us-ascii?Q?ogODCeq4K9aARWBycRUyiK1IUdBkmuhGmZ3dIpgEodqCZCgosLXPQLEKHgH6?=
- =?us-ascii?Q?9fxeGlqEVtSUdvna+8nhAVv8vCvgPjWsJKVWUlq8zy55gwWQypvJqfrrN7Ao?=
- =?us-ascii?Q?lDJ716IzdMsoWmUl6TI0BShnolCs8ciPyq9fgJ31IzM9U4dupxbP/PgAkbC5?=
- =?us-ascii?Q?/JnhmOIwp9MYY9bkvBiJWEgUxkBT69qD5Xocav8Y9eBVS/zVisr5BVzp39jN?=
- =?us-ascii?Q?7lS7vZ3v2X/N+rWCsR+SDHw84D7pUI/5wluHlyI+rXqE/QCtxh250SEO5hl5?=
- =?us-ascii?Q?UrYe/nti8J9cMLOmZLlM+ZUcZp+cWPn32M2k7h2qDkb+WUUGlVVCAVeCpQvv?=
- =?us-ascii?Q?+Jt0/af2pQrb9uFc4NUgmV0/njjNnuS9VAPIyzJk4g=3D=3D?=
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CH3PR12MB8659.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(376014)(7416014)(1800799024)(366016);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?us-ascii?Q?a3gYxErivtCRyB3rY+CcoX/J3Z8aA+HI/6t+gFt83Zjel1GEiEkMV+AxqQWa?=
- =?us-ascii?Q?e8pg1ut1G3c4tNukauAF7hsyAiL41BPuWRoemmCzvd90GPzTlIuG+3N9Q2H/?=
- =?us-ascii?Q?85NkpMFMNHd6Mmv9xHCkBnmKARK30RRFQ8SCq3BMtyB8B4wPhaQo+uKrVgOf?=
- =?us-ascii?Q?PoKM/8obPod5KlIPQr+N4yTZ6L5MDFA2j76FkSgaCGhswwMALivLBP+Ummsq?=
- =?us-ascii?Q?RGroNGheFSr05ES+jmxivaP2WGgTs74/+/pLV+3Z0Me3mgoWIs/o6hx5mhzo?=
- =?us-ascii?Q?VLfh6U7IpYw61UXP53G9uRAlNFOirGkSgltZRvoW+xV6QEqNAuwrs48yujkk?=
- =?us-ascii?Q?8fk/CQmM1Tee70z4w6rv2NTzGABdCQCMgIOa73bgaef7OLyi9Ke8/61ukVG+?=
- =?us-ascii?Q?+xOhT1SfcmEWW8S2RjslIISqC4SwZfLqRkCn4JyE4cjq/bI06tIlwNx0bPu2?=
- =?us-ascii?Q?yrMRRUtIgIMFKXMq1q2+maNPJiut4fux6YT54PG4hHrkY9vkfo2i7nmb2tLF?=
- =?us-ascii?Q?ahyaRpKiRlqJtVZcTrT7EH/sTl4oztjPKKIl2E65A5XJTlanOB9hHPrD5BGB?=
- =?us-ascii?Q?E7Q3G1zP+lCjFMSIbHmnCfldZ0/SN/s8GtaTRvMo3y/d6G8J7+dOp+raMlRc?=
- =?us-ascii?Q?3/1SND5i5YZhS1W9qSOT8xcf3b2UhMUBgH2ImGLzc2gDQB7+1HGikVEAy0Tq?=
- =?us-ascii?Q?hLklzl2uB4M6KA4Ahf8YmcqrUVh5IjZeBUfnn1l+nyCq8KbEfRp0op07Hv62?=
- =?us-ascii?Q?Cv/PBVWGeR7ZPtnmlnh9/JgqsvQSyWt4XopV46Vt6a+SME5h8DLvclDS5sfS?=
- =?us-ascii?Q?2iUSVeOn8u+vr66btDf+Xi95Pa1ZIX1XcOS0XwjwoVZIOf9Idvh6bA/RymuS?=
- =?us-ascii?Q?Sm+7Zn+YfPXogAn+Z90a0SRrxjvEUlj9q97mqr04TwZ8c4Qrgr9mMfFCK9g3?=
- =?us-ascii?Q?h5Os5koRD+AJ3v+ZZ548l1nk+p6mCKPRbkugO3dL8tKs4FuqAn49w9cQ3Al0?=
- =?us-ascii?Q?rUbYR6TTzcMzA9KdfOnss8W2jamDip4iKVQAeJeZkUEcN3pD/B3f9sLgejWh?=
- =?us-ascii?Q?nGKvZ0OVo8A8eZHKTkW4TRhpIGoIF//obK2SsM4YHJCkVC4MkNSolklUivX4?=
- =?us-ascii?Q?wETuqntomBhACAJiGGT2lK89sBNLe9vTkaJwA0uM6hmHWGKEg4vDlQDt49RV?=
- =?us-ascii?Q?zBVAHLkIQ2XVUbHRAnmFDlevlcBrT6q5bSBIco0HNsNJsp4DE1JYrLU2T/xx?=
- =?us-ascii?Q?vLAYJdEoEsDSc5GUZ87g5EVxj94kU7mjgVz268nmMoHRYjySKOVYmxrrHOU9?=
- =?us-ascii?Q?bl1DiJkk3xdw119KVMXQQETFctYd2BSyF2iGD2q3jImCtUpTmpWKMjWB8rQi?=
- =?us-ascii?Q?iqM2NRpblWDeZd3bd90CL4NXhDGyLt0NYBi1KZycIUlUfe0fOz4T75sCyDsL?=
- =?us-ascii?Q?DvSUHASQAEn3qqzNy34uOxJlsar7HpEQhPHpD2l3Ht6e7eBnQ8g/jGykFBem?=
- =?us-ascii?Q?E9DpwBF8uaYkYSMwhvDp8D6zaz498ZDYyE6Q0qAVO337IIpHm+/79TquvL6I?=
- =?us-ascii?Q?/zwitV8skjXCmLcKxkA=3D?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 20f12743-9251-4d4f-1257-08dce6f41723
-X-MS-Exchange-CrossTenant-AuthSource: CH3PR12MB8659.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 07 Oct 2024 17:18:41.5785
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: JN30Byutb6i75cgqcSaLSgIGzUS3aZMGrzcvDMVOHMtXsoYZWV2MzHw2JsgIdUqT
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR12MB4331
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <05a69933-cd90-4d68-8eb0-95013d3a98c9@mejor.pl>
 
-On Fri, Oct 04, 2024 at 01:33:33PM -0700, Nicolin Chen wrote:
-> On Fri, Oct 04, 2024 at 05:17:46PM -0300, Jason Gunthorpe wrote:
-> > On Fri, Oct 04, 2024 at 12:25:19PM -0700, Nicolin Chen wrote:
+[+to Lu, author of 2031c469f816]
+
+On Fri, Oct 04, 2024 at 07:55:29AM +0200, Marcin Mirosław wrote:
+> W dniu 03.10.2024 o 23:39, Bjorn Helgaas pisze:
+> > On Thu, Oct 03, 2024 at 08:15:16PM +0000, bugzilla-daemon@kernel.org wrote:
+> > > https://bugzilla.kernel.org/show_bug.cgi?id=219349
+> > > 
+> > >             Summary: RIP: 0010:pci_for_each_dma_alias
+> > >                      (./include/linux/pci.h:692 drivers/pci/search.c:41)
+> > >      Kernel Version: 6.12.0-rc1  8c245fe7dde3
+> > >          Regression: Yes
+> > > 
+> > > Created attachment 306959
+> > >    --> https://bugzilla.kernel.org/attachment.cgi?id=306959&action=edit
+> > > lspci -vv
+> > > 
+> > > Hello,
+> > > I see BUG: kernel NULL pointer dereference using kernel 6.12.0-rc1 (actually at
+> > > 8c245fe7dde3 but don't know what is first bad commit).
 > > 
-> > > With that, I wonder what is better for the initial version of
-> > > this structure, a generic virtual ID or a driver-named ID like
-> > > "Stream ID"? The latter might be more understandable/flexible, 
-> > > so we won't need to justify a generic virtual ID along the way
-> > > if something changes in the nature?
+> > Thanks very much for this report!  You marked this as a regression;
+> > Marcin, do you know the most recent kernel where you did not see this
+> > issue?
+> 
+> Kernel 6.11 works correctly, I didn't narrow suspect commit yet.
+
+Update from the bugzilla:
+
+Marcin bisected the problem to 2031c469f816 ("iommu/vt-d: Add support
+for static identity domain") and verified that reverting that commit
+from v6.12-rc2 avoids the problem.
+
+> > > RPC: Registered tcp NFSv4.1 backchannel transport module.
+> > > intel-lpss 0000:00:15.0: enabling device (0000 -> 0002)#012 SUBSYSTEM=pci#012
+> > > DEVICE=+pci:0000:00:15.0
+> > > platform idma64.0: Adding to iommu group 12#012 SUBSYSTEM=platform#012
+> > > DEVICE=+platform:idma64.0
+> > > BUG: kernel NULL pointer dereference, address: 00000000000000d8
+> > > #PF: supervisor read access in kernel mode
+> > > #PF: error_code(0x0000) - not-present page
+> > > PGD 0 P4D 0
+> > > Oops: Oops: 0000 [#1] PREEMPT SMP DEBUG_PAGEALLOC
+> > > CPU: 0 UID: 0 PID: 430 Comm: (udev-worker) Not tainted
+> > > 6.12.0-rc1-00113-g8c245fe7dde3 #50
+> > > Hardware name: MSI MS-7982/B150M PRO-VDH (MS-7982), BIOS 3.H0 07/10/2018
+> > > RIP: 0010:pci_for_each_dma_alias (./include/linux/pci.h:692
+> > > drivers/pci/search.c:41)
+> > > Code: 00 0f 1f 40 00 0f 1f 44 00 00 41 56 41 55 41 54 49 89 d4 55 48 89 f5 53
+> > > e8 18 d2 ff ff 4c 89 e2 48 89 c3 48 8b 40 10 48 89 df <0f> b6 b0 d8 00 00 00 c1
+> > > e6 08 66 0b 73 38 0f b7 f6 ff d5 85 c0 41
+> > > All code
+> > > ========
+> > >     0:   00 0f                   add    %cl,(%rdi)
+> > >     2:   1f                      (bad)
+> > >     3:   40 00 0f                rex add %cl,(%rdi)
+> > >     6:   1f                      (bad)
+> > >     7:   44 00 00                add    %r8b,(%rax)
+> > >     a:   41 56                   push   %r14
+> > >     c:   41 55                   push   %r13
+> > >     e:   41 54                   push   %r12
+> > >    10:   49 89 d4                mov    %rdx,%r12
+> > >    13:   55                      push   %rbp
+> > >    14:   48 89 f5                mov    %rsi,%rbp
+> > >    17:   53                      push   %rbx
+> > >    18:   e8 18 d2 ff ff          call   0xffffffffffffd235
+> > >    1d:   4c 89 e2                mov    %r12,%rdx
+> > >    20:   48 89 c3                mov    %rax,%rbx
+> > >    23:   48 8b 40 10             mov    0x10(%rax),%rax
+> > >    27:   48 89 df                mov    %rbx,%rdi
+> > >    2a:*  0f b6 b0 d8 00 00 00    movzbl 0xd8(%rax),%esi          <-- trapping
+> > > instruction
+> > >    31:   c1 e6 08                shl    $0x8,%esi
+> > >    34:   66 0b 73 38             or     0x38(%rbx),%si
+> > >    38:   0f b7 f6                movzwl %si,%esi
+> > >    3b:   ff d5                   call   *%rbp
+> > >    3d:   85 c0                   test   %eax,%eax
+> > >    3f:   41                      rex.B
+> > > 
+> > > Code starting with the faulting instruction
+> > > ===========================================
+> > >     0:   0f b6 b0 d8 00 00 00    movzbl 0xd8(%rax),%esi
+> > >     7:   c1 e6 08                shl    $0x8,%esi
+> > >     a:   66 0b 73 38             or     0x38(%rbx),%si
+> > >     e:   0f b7 f6                movzwl %si,%esi
+> > >    11:   ff d5                   call   *%rbp
+> > >    13:   85 c0                   test   %eax,%eax
+> > >    15:   41                      rex.B
+> > > RSP: 0018:ffffbff6006bb3a8 EFLAGS: 00010296
+> > > RAX: 0000000000000000 RBX: ffff9dd828880348 RCX: 0000000000000000
+> > > RDX: ffff9dd80f838ea0 RSI: ffffffffac8045b0 RDI: ffff9dd828880348
+> > > RBP: ffffffffac8045b0 R08: 0000000000000000 R09: 0000000200000025
+> > > R10: 000000000000007c R11: 00000000000001f4 R12: ffff9dd80f838ea0
+> > > R13: ffff9dd826ab9700 R14: 0000000000000001 R15: 0000000000000001
+> > > FS:  00007fe4921ab5c0(0000) GS:ffff9ddb5c600000(0000) knlGS:0000000000000000
+> > > CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+> > > CR2: 00000000000000d8 CR3: 000000010fa9b004 CR4: 00000000003706f0
+> > > DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+> > > DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+> > > Call Trace:
+> > >   <TASK>
+> > >   ? __die (arch/x86/kernel/dumpstack.c:421 arch/x86/kernel/dumpstack.c:434)
+> > >   ? page_fault_oops (arch/x86/mm/fault.c:715)
+> > >   ? do_user_addr_fault (./include/linux/kprobes.h:589 (discriminator 1)
+> > > arch/x86/mm/fault.c:1240 (discriminator 1))
+> > >   ? _raw_spin_unlock_irqrestore (./include/linux/spinlock_api_smp.h:152
+> > > kernel/locking/spinlock.c:194)
+> > >   ? exc_page_fault (./arch/x86/include/asm/irqflags.h:37
+> > > ./arch/x86/include/asm/irqflags.h:92 arch/x86/mm/fault.c:1489
+> > > arch/x86/mm/fault.c:1539)
+> > >   ? asm_exc_page_fault (./arch/x86/include/asm/idtentry.h:623)
+> > >   ? domain_context_clear_one (drivers/iommu/intel/iommu.c:3328)
+> > >   ? domain_context_clear_one (drivers/iommu/intel/iommu.c:3328)
+> > >   ? pci_for_each_dma_alias (./include/linux/pci.h:692 drivers/pci/search.c:41)
+> > >   ? pci_for_each_dma_alias (drivers/pci/search.c:41 (discriminator 1))
+> > >   device_block_translation (drivers/iommu/intel/iommu.c:3370)
+> > >   intel_iommu_attach_device (drivers/iommu/intel/iommu.c:3635)
+> > >   __iommu_attach_device (drivers/iommu/iommu.c:2084)
+> > >   __iommu_device_set_domain (drivers/iommu/iommu.c:2272)
 > > 
-> > I think the name could be a bit more specific "viommu_device_id"
-> > maybe? And elaborate in the kdoc that this is about the identifier
-> > that the iommu HW itself uses.
+> > I suspect this path:
+> > 
+> >    __iommu_device_set_domain
+> >      __iommu_attach_device
+> >        domain->ops->attach_dev
+> >          intel_iommu_attach_device
+> >            device_block_translation
+> >              domain_context_clear
+> >                if (!dev_is_pci(info->dev))
+> >                  domain_context_clear_one
+> >                pci_for_each_dma_alias
+> > 
+> > and 9a16ab9d6402 ("iommu/vt-d: Make context clearing consistent with
+> > context mapping") looks a little suspicious to me since
+> > domain_context_clear() now calls domain_context_clear_one() for
+> > non-PCI devices, but then goes on to also use pci_for_each_dma_alias()
+> > for ALL devices, even non-PCI ones.
+> > 
+> > But 9a16ab9d6402 appeared in v6.7-rc4, so it's been around a while.
+> > Maybe a more recent change added non-PCI devices into the mix, so
+> > previously we only got there with PCI devices?
+> > 
+> > >   iommu_setup_default_domain (drivers/iommu/iommu.c:2326 (discriminator 2)
+> > > drivers/iommu/iommu.c:2992 (discriminator 2))
+> > >   __iommu_probe_device (drivers/iommu/iommu.c:567)
+> > >   iommu_probe_device (drivers/iommu/iommu.c:604)
+> > >   iommu_bus_notifier (drivers/iommu/iommu.c:1668 drivers/iommu/iommu.c:1659)
+> > >   notifier_call_chain (kernel/notifier.c:95)
+> > >   blocking_notifier_call_chain (kernel/notifier.c:389 kernel/notifier.c:376)
+> > >   bus_notify (./include/linux/kobject.h:193 drivers/base/base.h:73
+> > > drivers/base/bus.c:999)
+> > >   device_add (drivers/base/core.c:3656)
+> > >   platform_device_add (drivers/base/platform.c:717)
+> > >   mfd_add_device (drivers/mfd/mfd-core.c:274) mfd_core
+> > >   ? alloc_inode (fs/inode.c:265)
+> > >   ? make_kgid (kernel/user_namespace.c:483)
+> > >   ? inode_init_always (fs/inode.c:219)
+> > >   mfd_add_devices (drivers/mfd/mfd-core.c:329) mfd_core
+> > >   intel_lpss_probe (drivers/mfd/intel-lpss.c:443 drivers/mfd/intel-lpss.c:390)
+> > > intel_lpss
+> > >   ? _raw_spin_lock_irqsave (./arch/x86/include/asm/paravirt.h:584
+> > > ./arch/x86/include/asm/qspinlock.h:51 ./include/asm-generic/qspinlock.h:114
+> > > ./include/linux/spinlock.h:187 ./include/linux/spinlock_api_smp.h:111
+> > > kernel/locking/spinlock.c:162)
+> > >   ? pci_conf1_write (arch/x86/pci/direct.c:78)
+> > >   intel_lpss_pci_probe (drivers/mfd/intel-lpss-pci.c:80) intel_lpss_pci
+> > >   local_pci_probe (drivers/pci/pci-driver.c:325)
+> > >   pci_device_probe (drivers/pci/pci-driver.c:392 (discriminator 1)
+> > > drivers/pci/pci-driver.c:417 (discriminator 1) drivers/pci/pci-driver.c:451
+> > > (discriminator 1))
+> > >   really_probe (drivers/base/dd.c:581 drivers/base/dd.c:658)
+> > >   ? __device_attach_driver (drivers/base/dd.c:1157)
+> > >   __driver_probe_device (drivers/base/dd.c:800)
+> > >   driver_probe_device (drivers/base/dd.c:831)
+> > >   __driver_attach (drivers/base/dd.c:1217 drivers/base/dd.c:1156)
+> > >   bus_for_each_dev (drivers/base/bus.c:369)
+> > >   bus_add_driver (drivers/base/bus.c:676)
+> > >   driver_register (drivers/base/driver.c:247)
+> > >   ? 0xffffffffc061b000
+> > >   do_one_initcall (init/main.c:1269)
+> > >   do_init_module (kernel/module/main.c:2544)
+> > >   init_module_from_file (kernel/module/main.c:3199)
+> > >   idempotent_init_module (kernel/module/main.c:3210)
+> > >   __x64_sys_finit_module (./include/linux/file.h:68 kernel/module/main.c:3238
+> > > kernel/module/main.c:3220 kernel/module/main.c:3220)
+> > >   do_syscall_64 (arch/x86/entry/common.c:52 (discriminator 1)
+> > > arch/x86/entry/common.c:83 (discriminator 1))
+> > >   ? mntput_no_expire (fs/namespace.c:1460)
+> > >   ? terminate_walk (fs/namei.c:693 (discriminator 1))
+> > >   ? path_openat (fs/namei.c:3934)
+> > >   ? do_filp_open (fs/namei.c:3961 (discriminator 2))
+> > >   ? copy_from_kernel_nofault (mm/maccess.c:31 (discriminator 1))
+> > >   ? kmem_cache_alloc_noprof (mm/slub.c:494 mm/slub.c:539 mm/slub.c:528
+> > > mm/slub.c:3964 mm/slub.c:4123 mm/slub.c:4142)
+> > >   ? do_sys_openat2 (fs/open.c:1424)
+> > >   ? syscall_exit_to_user_mode (./arch/x86/include/asm/processor.h:701
+> > > ./arch/x86/include/asm/entry-common.h:100 ./include/linux/entry-common.h:364
+> > > kernel/entry/common.c:220)
+> > >   ? do_syscall_64 (arch/x86/entry/common.c:102)
+> > >   ? do_syscall_64 (arch/x86/entry/common.c:102)
+> > >   ? do_syscall_64 (arch/x86/entry/common.c:102)
+> > >   ? do_syscall_64 (arch/x86/entry/common.c:102)
+> > >   ? syscall_exit_to_user_mode (./arch/x86/include/asm/processor.h:701
+> > > ./arch/x86/include/asm/entry-common.h:100 ./include/linux/entry-common.h:364
+> > > kernel/entry/common.c:220)
+> > >   ? do_syscall_64 (arch/x86/entry/common.c:102)
+> > >   ? syscall_exit_to_user_mode (./arch/x86/include/asm/processor.h:701
+> > > ./arch/x86/include/asm/entry-common.h:100 ./include/linux/entry-common.h:364
+> > > kernel/entry/common.c:220)
+> > >   ? do_syscall_64 (arch/x86/entry/common.c:102)
+> > >   entry_SYSCALL_64_after_hwframe (arch/x86/entry/entry_64.S:130)
+> > > RIP: 0033:0x7fe49238eb8d
+> > > Code: ff c3 66 2e 0f 1f 84 00 00 00 00 00 90 f3 0f 1e fa 48 89 f8 48 89 f7 48
+> > > 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01
+> > > c3 48 8b 0d 6b 72 0c 00 f7 d8 64 89 01 48
+> > > All code
+> > > ========
+> > >     0:   ff c3                   inc    %ebx
+> > >     2:   66 2e 0f 1f 84 00 00    cs nopw 0x0(%rax,%rax,1)
+> > >     9:   00 00 00
+> > >     c:   90                      nop
+> > >     d:   f3 0f 1e fa             endbr64
+> > >    11:   48 89 f8                mov    %rdi,%rax
+> > >    14:   48 89 f7                mov    %rsi,%rdi
+> > >    17:   48 89 d6                mov    %rdx,%rsi
+> > >    1a:   48 89 ca                mov    %rcx,%rdx
+> > >    1d:   4d 89 c2                mov    %r8,%r10
+> > >    20:   4d 89 c8                mov    %r9,%r8
+> > >    23:   4c 8b 4c 24 08          mov    0x8(%rsp),%r9
+> > >    28:   0f 05                   syscall
+> > >    2a:*  48 3d 01 f0 ff ff       cmp    $0xfffffffffffff001,%rax         <--
+> > > trapping instruction
+> > >    30:   73 01                   jae    0x33
+> > >    32:   c3                      ret
+> > >    33:   48 8b 0d 6b 72 0c 00    mov    0xc726b(%rip),%rcx        # 0xc72a5
+> > >    3a:   f7 d8                   neg    %eax
+> > >    3c:   64 89 01                mov    %eax,%fs:(%rcx)
+> > >    3f:   48                      rex.W
+> > > 
+> > > Code starting with the faulting instruction
+> > > ===========================================
+> > >     0:   48 3d 01 f0 ff ff       cmp    $0xfffffffffffff001,%rax
+> > >     6:   73 01                   jae    0x9
+> > >     8:   c3                      ret
+> > >     9:   48 8b 0d 6b 72 0c 00    mov    0xc726b(%rip),%rcx        # 0xc727b
+> > >    10:   f7 d8                   neg    %eax
+> > >    12:   64 89 01                mov    %eax,%fs:(%rcx)
+> > >    15:   48                      rex.W
+> > > RSP: 002b:00007ffdf72f16f8 EFLAGS: 00000246 ORIG_RAX: 0000000000000139
+> > > RAX: ffffffffffffffda RBX: 000055b0dae03330 RCX: 00007fe49238eb8d
+> > > RDX: 0000000000000004 RSI: 00007fe49252231b RDI: 000000000000000d
+> > > RBP: 0000000000000004 R08: 000055b0dae05940 R09: 000055b0dae03e80
+> > > R10: 0000000000000000 R11: 0000000000000246 R12: 00007fe49252231b
+> > > R13: 0000000000020000 R14: 000055b0dadd00e0 R15: 000055b0dae03330
+> > >   </TASK>
+> > > Modules linked in: intel_lpss_pci(+) intel_lpss idma64 raid_class virt_dma
+> > > scsi_transport_sas mfd_core sunrpc dm_mirror dm_region_hash dm_log dm_mod btrfs
+> > > blake2b_generic
+> > > CR2: 00000000000000d8
+> > > ---[ end trace 0000000000000000 ]---
+> > > RIP: 0010:pci_for_each_dma_alias (./include/linux/pci.h:692
+> > > drivers/pci/search.c:41)
+> > > Code: 00 0f 1f 40 00 0f 1f 44 00 00 41 56 41 55 41 54 49 89 d4 55 48 89 f5 53
+> > > e8 18 d2 ff ff 4c 89 e2 48 89 c3 48 8b 40 10 48 89 df <0f> b6 b0 d8 00 00 00 c1
+> > > e6 08 66 0b 73 38 0f b7 f6 ff d5 85 c0 41
+> > > All code
+> > > ========
+> > >     0:   00 0f                   add    %cl,(%rdi)
+> > >     2:   1f                      (bad)
+> > >     3:   40 00 0f                rex add %cl,(%rdi)
+> > >     6:   1f                      (bad)
+> > >     7:   44 00 00                add    %r8b,(%rax)
+> > >     a:   41 56                   push   %r14
+> > >     c:   41 55                   push   %r13
+> > >     e:   41 54                   push   %r12
+> > >    10:   49 89 d4                mov    %rdx,%r12
+> > >    13:   55                      push   %rbp
+> > >    14:   48 89 f5                mov    %rsi,%rbp
+> > >    17:   53                      push   %rbx
+> > >    18:   e8 18 d2 ff ff          call   0xffffffffffffd235
+> > >    1d:   4c 89 e2                mov    %r12,%rdx
+> > >    20:   48 89 c3                mov    %rax,%rbx
+> > >    23:   48 8b 40 10             mov    0x10(%rax),%rax
+> > >    27:   48 89 df                mov    %rbx,%rdi
+> > >    2a:*  0f b6 b0 d8 00 00 00    movzbl 0xd8(%rax),%esi          <-- trapping
+> > > instruction
+> > >    31:   c1 e6 08                shl    $0x8,%esi
+> > >    34:   66 0b 73 38             or     0x38(%rbx),%si
+> > >    38:   0f b7 f6                movzwl %si,%esi
+> > >    3b:   ff d5                   call   *%rbp
+> > >    3d:   85 c0                   test   %eax,%eax
+> > >    3f:   41                      rex.B
+> > > 
+> > > Code starting with the faulting instruction
+> > >     0:   0f b6 b0 d8 00 00 00    movzbl 0xd8(%rax),%esi
+> > >     7:   c1 e6 08                shl    $0x8,%esi
+> > >     a:   66 0b 73 38             or     0x38(%rbx),%si
+> > >     e:   0f b7 f6                movzwl %si,%esi
+> > >    11:   ff d5                   call   *%rbp
+> > >    13:   85 c0                   test   %eax,%eax
+> > >    15:   41                      rex.B
+> > > RSP: 0018:ffffbff6006bb3a8 EFLAGS: 00010296
+> > > RAX: 0000000000000000 RBX: ffff9dd828880348 RCX: 0000000000000000
+> > > RDX: ffff9dd80f838ea0 RSI: ffffffffac8045b0 RDI: ffff9dd828880348
+> > > RBP: ffffffffac8045b0 R08: 0000000000000000 R09: 0000000200000025
+> > > R10: 000000000000007c R11: 00000000000001f4 R12: ffff9dd80f838ea0
+> > > R13: ffff9dd826ab9700 R14: 0000000000000001 R15: 0000000000000001
+> > > FS:  00007fe4921ab5c0(0000) GS:ffff9ddb5c600000(0000) knlGS:0000000000000000
+> > > CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+> > > CR2: 00000000000000d8 CR3: 000000010fa9b004 CR4: 00000000003706f0
+> > > DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+> > > DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+> > > note: (udev-worker)[430] exited with irqs disabled
+> > > mpt3sas version 48.100.00.00 loaded
+> > > md/raid1: md22: active with 2 out of 2 mirrors
+> > > md22: detected capacity change from 0 to 62912512
+> > 
 > 
-> A "vIOMMU Device ID" might sound a bit confusing with an ID of a
-> vIOMMU itself :-/
 > 
-> At this moment, I named it "virt_id" in uAPI with a description:
-> " * @virt_id: Virtual device ID per vIOMMU"
+> Marcin
 > 
-> I could add to that (or just in the documentation):
-> "e.g. ARM's Stream ID, AMD's DeviceID, Intel's Context Table ID"
-> to clarify it further.
-
-Yeah probably best
-
-> > Alexey is working on vIOMMU support in CC which has the trusted world
-> > do some of the trusted vIOMMU components. I'm hoping the other people
-> > in this area will look at his design and make it fit nicely to
-> > everyone.
-> 
-> Oh, I didn't connect the dots that lowervisor must rely on the
-> vIOMMU too -- I'd need to check the CC stuff in detail. In that
-> case, having it in vIOMMU uAPI totally makes sense.
-
-I think we are still getting through this, and I do wonder how to
-manage it with so much stuff still in flux and sometimes private.
-
-At least for AMD's CC case where there is an entanglement with the
-physical IOMMU it seems like it makes sense.
-
-Even in the pKVM type case I think you end up ripping the translation
-away from the "physical" iommu and there should be some coordination
-to ensure this handover is clean and undone when iommufd is
-closed. But I wonder how the S2 works there..
-
-Jason
