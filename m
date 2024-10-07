@@ -1,215 +1,150 @@
-Received: from NAM11-BN8-obe.outbound.protection.outlook.com (mail-bn8nam11on2071.outbound.protection.outlook.com [40.107.236.71])
+Received: from smtp-fw-52004.amazon.com (smtp-fw-52004.amazon.com [52.119.213.154])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 500275733A
-	for <iommu@lists.linux.dev>; Mon,  7 Oct 2024 04:15:54 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.236.71
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1728274555; cv=fail; b=kxJw/DQa9ZL1Jr/6cGqMIzqG5n4kEBH22iNB55fJu/YcaH7g+usJYDPBdh2pNVX85IGMtOAwcV44lRgoSjhm0uqIaBUs9fuNQvSkPOzlzCvaSthNk4y0WyESNUuQga/5NogmWFSeEzMKQ5i7mKZlG2X7dJchJZPzEJLqQbjhts4=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1728274555; c=relaxed/simple;
-	bh=GfZN3SwkoxfG4k+/7HvtZ+FdCi4I95DN1XaEyyxgarY=;
-	h=From:To:CC:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=Z/sOi2sp3quqU3IqeN4bongodw3Bmov104aaJbWl7/vdgGA+V54xV9gFhz7FNFPATIhrb4wqp7PHBJPdC3dFR3Gbob4rQzwvmN4l7AP+GrTRTLZnTwvnQ7jO7sEpfeH7TgXXqEF1z32YG2xvdxriC02ASet1Af8dXonhATqWwJw=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com; spf=fail smtp.mailfrom=amd.com; dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b=eCCxiRsQ; arc=fail smtp.client-ip=40.107.236.71
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=amd.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7EB1518D655
+	for <iommu@lists.linux.dev>; Mon,  7 Oct 2024 08:39:58 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=52.119.213.154
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1728290400; cv=none; b=tgZAQAr8Vi7rcQ3D5Bqj0D/BNCgfAw0N4ijdu3NOCgpKgvubfAYdypOrPX0O6lCkcuSbYyMYMfcelBPzgAKlVX6/yuGqOJGwxikf9kMSHadZgtzoD1PTZpcz2+y5PFT9wFmfBgPpbx9xxn5aaPpco0ZVtWwWB9PG6syhjqpOrSU=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1728290400; c=relaxed/simple;
+	bh=EBAjgvul+ZTB8DVmIuz8Y4+ZgX34R4lHsqOrjUlZgKc=;
+	h=Subject:From:To:CC:Date:Message-ID:References:In-Reply-To:
+	 Content-Type:MIME-Version; b=Lk2KUlFugWTNpvYw0sLWaUXiHMdYTL49EE5WiJMTlpHeVBgRutUsKqAdRo8tgC4H/ZPY3qjOD0lxLwqobVlQCyeF09wzZYQ1wsB3euiPGkFKwJtpuh39FS8E94ZiTMC+05UcexEwkESizUqk0ly0+IiK8ygPV1+ZmoyVx9A0VYk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amazon.com; spf=pass smtp.mailfrom=amazon.com; dkim=pass (1024-bit key) header.d=amazon.com header.i=@amazon.com header.b=pgs0mvBR; arc=none smtp.client-ip=52.119.213.154
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amazon.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=amazon.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b="eCCxiRsQ"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=D9Ml+yFVIIOQUmpFQwHQc5h94gLlvQKQfSsnSsfpWqWXwVNRhvbCoYDlfm7YcTGTgpkYVehw5IK2fnA5kc857T9jGhYyOSSTE8wD8RAfVTQ31cMYQyiMurDqGdLMPYXg7lJvl7K2mmcvPpSn4RdO32iA/BQDBzGAWCQcoasJYCcp1+w/pzQy7BZbohdkIJjlZt7k8gdhLX63g5YvwuI06bZtBEkmBxbUdlkvDU0+e47NXQ3cA0m130pZdU/CkIgSvzNG/1SLYOciiiAWdKznNC2GsCni+Q5TGJNx7Dy6BVqk+vcssLY81v82fgB0Q77vTUPrE0Q7gqwthjOtwlIKww==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=xd/P6Jm0/LjtEB+j4JWFkGyaSdhmTMGgeAReCIF67rg=;
- b=wmemp8thkZxKI4cE2v9OoOaERENS/wnnNXVaB9c4zK1zuv+82thTbJ5/HiTZesNjEm8qwdnQST0LRg05I+qO7/frCwdqNERaQBCpDrDh/W0FRxVVmiPfziZG7ZdoTME0MtN7j7aQ+eNt6xFQE3WBaJJmxOAvA6FnKUqZqwEgtivgzN4T2EgHHAa4NzsUiMnjp65K8dvVeZpDXeiBJNXiHUSAcNOAvq/whGUapnphFKBoFa/DSjXX0lWYOephNwAhrrkEjmX//lsPeMe4o2Pbe4cfg1Q93vqwKt+Kog10xZ9NXSbPdGFB+6vhBm3Wn4MQNx5WVAZMYnzwpa5TJIe9Mw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 165.204.84.17) smtp.rcpttodomain=vger.kernel.org smtp.mailfrom=amd.com;
- dmarc=pass (p=quarantine sp=quarantine pct=100) action=none
- header.from=amd.com; dkim=none (message not signed); arc=none (0)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=xd/P6Jm0/LjtEB+j4JWFkGyaSdhmTMGgeAReCIF67rg=;
- b=eCCxiRsQtb+BF6qVZWoaaGGp8Lg+GYNfxeyFEeqPuT31UqNM6/WYaFl1Fy+eIkblVJ+SY/ufn+hPaimnDjht2ZFD3ijWUw34orc95XaTjgUkNS+vxsUqcO8Mp4O/O9WNimFs3NkmhdG/q6gjGDygjm90d0HIUcetfKTdFxYv4hk=
-Received: from MW4PR03CA0144.namprd03.prod.outlook.com (2603:10b6:303:8c::29)
- by SA0PR12MB4432.namprd12.prod.outlook.com (2603:10b6:806:98::16) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7982.27; Mon, 7 Oct
- 2024 04:15:50 +0000
-Received: from SJ1PEPF00002316.namprd03.prod.outlook.com
- (2603:10b6:303:8c:cafe::eb) by MW4PR03CA0144.outlook.office365.com
- (2603:10b6:303:8c::29) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.8026.20 via Frontend
- Transport; Mon, 7 Oct 2024 04:15:49 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 165.204.84.17)
- smtp.mailfrom=amd.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=amd.com;
-Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
- 165.204.84.17 as permitted sender) receiver=protection.outlook.com;
- client-ip=165.204.84.17; helo=SATLEXMB04.amd.com; pr=C
-Received: from SATLEXMB04.amd.com (165.204.84.17) by
- SJ1PEPF00002316.mail.protection.outlook.com (10.167.242.170) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.20.8048.13 via Frontend Transport; Mon, 7 Oct 2024 04:15:49 +0000
-Received: from purico-ed03host.amd.com (10.180.168.240) by SATLEXMB04.amd.com
- (10.181.40.145) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2507.39; Sun, 6 Oct
- 2024 23:15:45 -0500
-From: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
-To: <linux-kernel@vger.kernel.org>, <iommu@lists.linux.dev>
-CC: <joro@8bytes.org>, <robin.murphy@arm.com>, <vasant.hegde@amd.com>,
-	<jgg@nvidia.com>, <kevin.tian@intel.com>, <jon.grimm@amd.com>,
-	<santosh.shukla@amd.com>, <pandoh@google.com>, <kumaranand@google.com>,
-	Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
-Subject: [PATCH v5 6/6] iommu/amd: Lock DTE before updating the entry with WRITE_ONCE()
-Date: Mon, 7 Oct 2024 04:13:53 +0000
-Message-ID: <20241007041353.4756-7-suravee.suthikulpanit@amd.com>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20241007041353.4756-1-suravee.suthikulpanit@amd.com>
-References: <20241007041353.4756-1-suravee.suthikulpanit@amd.com>
+	dkim=pass (1024-bit key) header.d=amazon.com header.i=@amazon.com header.b="pgs0mvBR"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
+  t=1728290399; x=1759826399;
+  h=from:to:cc:date:message-id:references:in-reply-to:
+   content-id:content-transfer-encoding:mime-version:subject;
+  bh=EBAjgvul+ZTB8DVmIuz8Y4+ZgX34R4lHsqOrjUlZgKc=;
+  b=pgs0mvBRtoSefTKT6YxJle5Od7eAzfxgNc2/86ucYbNtnbR6s3WGxA3/
+   wMjz76Ajd+R6ctNZKrcngsJbQ3LX8MdmmQHMBQk+qEU3nWYBduiPVwgws
+   QoLHU/qioxsv/nPwS83vLs4Kqdwq+h03OWxrgSpiWM3ET5TnpNfyhmnP5
+   M=;
+X-IronPort-AV: E=Sophos;i="6.11,183,1725321600"; 
+   d="scan'208";a="237253782"
+Subject: Re: [RFC PATCH 05/13] iommufd: Serialise persisted iommufds and ioas
+Thread-Topic: [RFC PATCH 05/13] iommufd: Serialise persisted iommufds and ioas
+Received: from iad12-co-svc-p1-lb1-vlan2.amazon.com (HELO smtpout.prod.us-east-1.prod.farcaster.email.amazon.dev) ([10.43.8.2])
+  by smtp-border-fw-52004.iad7.amazon.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Oct 2024 08:39:56 +0000
+Received: from EX19MTAEUA001.ant.amazon.com [10.0.10.100:29908]
+ by smtpin.naws.eu-west-1.prod.farcaster.email.amazon.dev [10.0.11.190:2525] with esmtp (Farcaster)
+ id 40ed856a-621f-402f-880b-1aefd5a3859d; Mon, 7 Oct 2024 08:39:54 +0000 (UTC)
+X-Farcaster-Flow-ID: 40ed856a-621f-402f-880b-1aefd5a3859d
+Received: from EX19D004EUC002.ant.amazon.com (10.252.51.225) by
+ EX19MTAEUA001.ant.amazon.com (10.252.50.50) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA) id 15.2.1258.34;
+ Mon, 7 Oct 2024 08:39:54 +0000
+Received: from EX19D014EUC004.ant.amazon.com (10.252.51.182) by
+ EX19D004EUC002.ant.amazon.com (10.252.51.225) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA) id 15.2.1258.34;
+ Mon, 7 Oct 2024 08:39:54 +0000
+Received: from EX19D014EUC004.ant.amazon.com ([fe80::76dd:4020:4ff2:1e41]) by
+ EX19D014EUC004.ant.amazon.com ([fe80::76dd:4020:4ff2:1e41%3]) with mapi id
+ 15.02.1258.034; Mon, 7 Oct 2024 08:39:54 +0000
+From: "Gowans, James" <jgowans@amazon.com>
+To: "jgg@ziepe.ca" <jgg@ziepe.ca>
+CC: "kvm@vger.kernel.org" <kvm@vger.kernel.org>, "rppt@kernel.org"
+	<rppt@kernel.org>, "kw@linux.com" <kw@linux.com>, "iommu@lists.linux.dev"
+	<iommu@lists.linux.dev>, "madvenka@linux.microsoft.com"
+	<madvenka@linux.microsoft.com>, "anthony.yznaga@oracle.com"
+	<anthony.yznaga@oracle.com>, "robin.murphy@arm.com" <robin.murphy@arm.com>,
+	"baolu.lu@linux.intel.com" <baolu.lu@linux.intel.com>,
+	"nh-open-source@amazon.com" <nh-open-source@amazon.com>,
+	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+	"seanjc@google.com" <seanjc@google.com>, "Saenz Julienne, Nicolas"
+	<nsaenz@amazon.es>, "pbonzini@redhat.com" <pbonzini@redhat.com>,
+	"kevin.tian@intel.com" <kevin.tian@intel.com>, "dwmw2@infradead.org"
+	<dwmw2@infradead.org>, "steven.sistare@oracle.com"
+	<steven.sistare@oracle.com>, "Graf (AWS), Alexander" <graf@amazon.de>,
+	"will@kernel.org" <will@kernel.org>, "joro@8bytes.org" <joro@8bytes.org>
+Thread-Index: AQHbCCwuWjwUDEQNSEmjPqzUeT3bK7Jz6OkAgAcvr4A=
+Date: Mon, 7 Oct 2024 08:39:53 +0000
+Message-ID: <d6328467adc9b7512f6dd88a6f8f843b8efdc154.camel@amazon.com>
+References: <20240916113102.710522-1-jgowans@amazon.com>
+	 <20240916113102.710522-6-jgowans@amazon.com>
+	 <20241002185520.GL1369530@ziepe.ca>
+In-Reply-To: <20241002185520.GL1369530@ziepe.ca>
+Accept-Language: en-ZA, en-US
+Content-Language: en-US
+X-MS-Has-Attach:
+X-MS-TNEF-Correlator:
+Content-Type: text/plain; charset="utf-8"
+Content-ID: <212419BEF6508A4BAF19C4A337C1FD5D@amazon.com>
+Content-Transfer-Encoding: base64
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-ClientProxiedBy: SATLEXMB03.amd.com (10.181.40.144) To SATLEXMB04.amd.com
- (10.181.40.145)
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: SJ1PEPF00002316:EE_|SA0PR12MB4432:EE_
-X-MS-Office365-Filtering-Correlation-Id: cec7904e-ebd9-4c6f-e348-08dce686b9d9
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|376014|36860700013|82310400026|1800799024;
-X-Microsoft-Antispam-Message-Info:
-	=?us-ascii?Q?dG5Z9Q4ftErB/RpCONZBgojbGS2YZVM0grtIXIsYygAbYxU6Opq3Urg4WRos?=
- =?us-ascii?Q?5TiWi1ozlfcZ4Q2TV6tXUfdNAmceLEf5EpUHbjszynOaCo7R+CfooUmB3wZN?=
- =?us-ascii?Q?DcXDsaxxW2WjFjlwYPGPpqDaXPWXnsbOeCK/6aag1a1UvpOELX8dBEyRaqct?=
- =?us-ascii?Q?WM+xjRyJbiN+wkKfujVVPIx36aNMDaTu1mUekp27PUnQYNsDmVrEUh0bw0Ur?=
- =?us-ascii?Q?Y/LoZ2p3YQEdYhDHqqCnjzq5y5l+w9wSB5StWq1P8ug2r+hQRaZGdIIlHsab?=
- =?us-ascii?Q?hP1/SCV6ZXdU+4u8MlsOanXxfXExXbDctI+MkIoDgiKSM39dnIY1sUBmXTsP?=
- =?us-ascii?Q?XYq824CWrhTs0hrA7TycBYZOAx1Hv2N7EA9vtJXEKgeTxuG5aXsnewlaQ4AO?=
- =?us-ascii?Q?LtK/D70Rhlsde++5zrS0d0XQjN6PUzz5x3AEciS8butucv7RDZvYrKRnLw1Y?=
- =?us-ascii?Q?cqXs48Pk+4YhdIz/GcOcrD10k0y7X59zvhlU4CDT0ZUWHHMKi3kZBUho6Kwj?=
- =?us-ascii?Q?0msPsgIkgdgF5hVz17//nZw5D7osVCLdY7oo1tyJ29hFnZAkL8drl+hsAAK5?=
- =?us-ascii?Q?TdI4ou2B43uHc2Ofe5tKWHXwMhiMsppyJUOvrjvapwg/YOenw4twvj3MyfVG?=
- =?us-ascii?Q?5jXGv3E8dGjDKUpGn4WmeWhZvUAXyRHmzMQXdFs/P0UkgKZHADisf1i8PRwM?=
- =?us-ascii?Q?rAL7hDJ9GPB5YnGV/P80q/MsF7p7y5FVRR0E3ajvw/2FMyzojzz5bR+XMksa?=
- =?us-ascii?Q?Tw324Kd+1Ainom8MkYslMcV7JRdxlgASxvXkwmu0A1F+JKJgwxo6uaSCM7Jz?=
- =?us-ascii?Q?FPAHrSFf+VN3fwsjbNEYB7wF0KtpPisi5i1pC5R9d7cJrWyZ6onm0Fidxpc6?=
- =?us-ascii?Q?oPPylb2mHs6sLKuUG6v+22UyPyTCqyCpCsrIJYjXbsjXi/tcfnhjeNnXxs7Y?=
- =?us-ascii?Q?GdsCYPA1XmOlvWGEwCmx24gIC/fyub1lV0I21NqGkaXtF6QXOJ2bPMyynT72?=
- =?us-ascii?Q?/KXblLAgT59qSI4arqlRHwoh8YI0zly8W8NMLzJM71Sazt1s+ILHlUqxevx7?=
- =?us-ascii?Q?WMnws/ep4L48/KrxtM24vAl+oX9OK9sBtgSFDwtZp9QZC+uI0nbloppvcSXh?=
- =?us-ascii?Q?9N/1he5l3DHSWxnTNCSuk6nxWZJDPDSXuZa8GxGw1TNyVWDBI/OSakbYeTW+?=
- =?us-ascii?Q?+UaS2RcNVjKpKvgSf3gOItiYSAwdI2XN9FSxLXok+gtVdmYaQ7Rwz0JmzYEr?=
- =?us-ascii?Q?hRD+Ippf66oLXaCG6Y38cBGEZl7KufmK6/l4918RGfjm4UDWRpwQ+nsHHqvn?=
- =?us-ascii?Q?REvuuSHxbvOi/Whw8BtEBr8ppY6ub03lxtO/42C0h1PWu/d2SknYKfx1HDlV?=
- =?us-ascii?Q?vw8M5jsAGLRfiCgsGMTswdJCisaV?=
-X-Forefront-Antispam-Report:
-	CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB04.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230040)(376014)(36860700013)(82310400026)(1800799024);DIR:OUT;SFP:1101;
-X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 07 Oct 2024 04:15:49.6119
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: cec7904e-ebd9-4c6f-e348-08dce686b9d9
-X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[SATLEXMB04.amd.com]
-X-MS-Exchange-CrossTenant-AuthSource:
-	SJ1PEPF00002316.namprd03.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SA0PR12MB4432
 
-When updating only within a 64-bit tuple of a DTE, just lock the DTE and
-use WRITE_ONCE() because it is writing to memory read back by HW.
-
-Suggested-by: Jason Gunthorpe <jgg@nvidia.com>
-Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
-Signed-off-by: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
----
- drivers/iommu/amd/iommu.c | 42 ++++++++++++++++++++++-----------------
- 1 file changed, 24 insertions(+), 18 deletions(-)
-
-diff --git a/drivers/iommu/amd/iommu.c b/drivers/iommu/amd/iommu.c
-index dd7b02b00be6..18a60b4345f1 100644
---- a/drivers/iommu/amd/iommu.c
-+++ b/drivers/iommu/amd/iommu.c
-@@ -2783,12 +2783,12 @@ static int amd_iommu_set_dirty_tracking(struct iommu_domain *domain,
- 					bool enable)
- {
- 	struct protection_domain *pdomain = to_pdomain(domain);
--	struct dev_table_entry *dev_table;
-+	struct dev_table_entry *dte;
- 	struct iommu_dev_data *dev_data;
- 	bool domain_flush = false;
- 	struct amd_iommu *iommu;
- 	unsigned long flags;
--	u64 pte_root;
-+	u64 new;
- 
- 	spin_lock_irqsave(&pdomain->lock, flags);
- 	if (!(pdomain->dirty_tracking ^ enable)) {
-@@ -2797,16 +2797,15 @@ static int amd_iommu_set_dirty_tracking(struct iommu_domain *domain,
- 	}
- 
- 	list_for_each_entry(dev_data, &pdomain->dev_list, list) {
-+		spin_lock(&dev_data->dte_lock);
- 		iommu = get_amd_iommu_from_dev_data(dev_data);
--
--		dev_table = get_dev_table(iommu);
--		pte_root = dev_table[dev_data->devid].data[0];
--
--		pte_root = (enable ? pte_root | DTE_FLAG_HAD :
--				     pte_root & ~DTE_FLAG_HAD);
-+		dte = &get_dev_table(iommu)[dev_data->devid];
-+		new = dte->data[0];
-+		new = (enable ? new | DTE_FLAG_HAD : new & ~DTE_FLAG_HAD);
-+		WRITE_ONCE(dte->data[0], new);
-+		spin_unlock(&dev_data->dte_lock);
- 
- 		/* Flush device DTE */
--		dev_table[dev_data->devid].data[0] = pte_root;
- 		device_flush_dte(dev_data);
- 		domain_flush = true;
- 	}
-@@ -3071,17 +3070,24 @@ static void iommu_flush_irt_and_complete(struct amd_iommu *iommu, u16 devid)
- static void set_dte_irq_entry(struct amd_iommu *iommu, u16 devid,
- 			      struct irq_remap_table *table)
- {
--	u64 dte;
--	struct dev_table_entry *dev_table = get_dev_table(iommu);
-+	u64 new;
-+	struct dev_table_entry *dte = &get_dev_table(iommu)[devid];
-+	struct iommu_dev_data *dev_data = search_dev_data(iommu, devid);
-+
-+	if (dev_data)
-+		spin_lock(&dev_data->dte_lock);
-+
-+	new = dte->data[2];
-+	new &= ~DTE_IRQ_PHYS_ADDR_MASK;
-+	new |= iommu_virt_to_phys(table->table);
-+	new |= DTE_IRQ_REMAP_INTCTL;
-+	new |= DTE_INTTABLEN;
-+	new |= DTE_IRQ_REMAP_ENABLE;
- 
--	dte	= dev_table[devid].data[2];
--	dte	&= ~DTE_IRQ_PHYS_ADDR_MASK;
--	dte	|= iommu_virt_to_phys(table->table);
--	dte	|= DTE_IRQ_REMAP_INTCTL;
--	dte	|= DTE_INTTABLEN;
--	dte	|= DTE_IRQ_REMAP_ENABLE;
-+	WRITE_ONCE(dte->data[2], new);
- 
--	dev_table[devid].data[2] = dte;
-+	if (dev_data)
-+		spin_unlock(&dev_data->dte_lock);
- }
- 
- static struct irq_remap_table *get_irq_table(struct amd_iommu *iommu, u16 devid)
--- 
-2.34.1
-
+T24gV2VkLCAyMDI0LTEwLTAyIGF0IDE1OjU1IC0wMzAwLCBKYXNvbiBHdW50aG9ycGUgd3JvdGU6
+DQo+IE9uIE1vbiwgU2VwIDE2LCAyMDI0IGF0IDAxOjMwOjU0UE0gKzAyMDAsIEphbWVzIEdvd2Fu
+cyB3cm90ZToNCj4gPiBOb3cgYWN0dWFsbHkgaW1wbGVtZW50aW5nIHRoZSBzZXJpYWxpc2UgY2Fs
+bGJhY2sgZm9yIGlvbW11ZmQuDQo+ID4gT24gS0hPIGFjdGl2YXRlLCBpdGVyYXRlIHRocm91Z2gg
+YWxsIHBlcnNpc3RlZCBkb21haW5zIGFuZCB3cml0ZSB0aGVpcg0KPiA+IG1ldGFkYXRhIHRvIHRo
+ZSBkZXZpY2UgdHJlZSBmb3JtYXQuIEZvciBub3cganVzdCBhIGZldyBmaWVsZHMgYXJlDQo+ID4g
+c2VyaWFsaXNlZCB0byBkZW1vbnN0cmF0ZSB0aGUgY29uY2VwdC4gVG8gYWN0dWFsbHkgbWFrZSB0
+aGlzIHVzZWZ1bCBhDQo+ID4gbG90IG1vcmUgZmllbGQgYW5kIHJlbGF0ZWQgb2JqZWN0cyB3aWxs
+IG5lZWQgdG8gYmUgc2VyaWFsaXNlZCB0b28uDQo+IA0KPiBCdXQgaXNuJ3QgdGhhdCBhIHJhdGhl
+ciBkaWZmaWN1bHQgcHJvYmxlbT8gVGhlICJhIGxvdCBtb3JlIGZpZWxkcyINCj4gaW5jbHVkZSB0
+aGluZ3MgbGlrZSBwb2ludGVycyB0byB0aGUgbW0gc3RydWN0LCB0aGUgdXNlcl9zdHJ1Y3QgYW5k
+DQo+IHRhc2tfc3RydWN0LCB0aGVuIGFsbCB0aGUgcGlubmluZyBhY2NvdW50aW5nIGFzIHdlbGwu
+DQo+IA0KPiBDb21pbmcgd29yayBleHRlbmRzIHRoaXMgdG8gbWVtZmRzIGFuZCBtb3JlIGlzIGNv
+bWluZy4gSSB3b3VsZCBleHBlY3QNCj4gdGhpcyBLSE8gc3R1ZmYgdG8gdXNlIHRoZSBtZW1mZC1s
+aWtlIHBhdGggdG8gYWNjZXNzIHRoZSBwaHlzaWNhbCBWTQ0KPiBtZW1vcnkgdG9vLg0KPiANCj4g
+SSB0aGluayBleHBlY3RpbmcgdG8gc2VyaWFsaXplIGFuZCByZXN0b3JlIGV2ZXJ5dGhpbmcgbGlr
+ZSB0aGlzIGlzDQo+IHByb2JhYmx5IG11Y2ggdG9vIGNvbXBsaWNhdGVkLg0KDQpPbiByZWZsZWN0
+aW9uIEkgdGhpbmsgeW91J3JlIHJpZ2h0IC0gdGhpcyB3aWxsIGJlIGNvbXBsZXggYm90aCBmcm9t
+IGENCmRldmVsb3BtZW50IGFuZCBhIG1haW50ZW5hbmNlIHBlcnNwZWN0aXZlLCB0cnlpbmcgdG8g
+bWFrZSBzdXJlIHdlDQpzZXJpYWxpc2UgYWxsIHRoZSBuZWNlc3Nhcnkgc3RhdGUgYW5kIHJlY29u
+c3RydWN0IGl0IGNvcnJlY3RseS4gRXZlbg0KbW9yZSBjb21wbGV4IHdoZW4gc3RydWN0cyBhcmUg
+cmVmYWN0b3JlZC9jaGFuZ2VkIGFjcm9zcyBrZXJuZWwgdmVyc2lvbnMuDQpBbiBpbXBvcnRhbnQg
+cmVxdWlyZW1lbnQgb2YgdGhpcyBmdW5jdGlvbmFsaXR5IGlzIHRoZSBhYmlsaXR5IHRvIGtleGVj
+DQpiZXR3ZWVuIGRpZmZlcmVudCBrZXJuZWwgdmVyc2lvbnMgaW5jbHVkaW5nIGdvaW5nIGJhY2sg
+dG8gYW4gb2xkZXINCmtlcm5lbCB2ZXJzaW9uIGluIHRoZSBjYXNlIG9mIGEgcm9sbGJhY2suDQoN
+ClNvLCBsZXQncyBsb29rIGF0IG90aGVyIG9wdGlvbnM6DQoNCj4gDQo+IElmIHlvdSBjb3VsZCBq
+dXN0IHJldGFpbiBhIHNtYWxsIHBvcnRpb24gYW5kIHRoZW4gZGlyZWN0bHkgcmVjb25zdHJ1Y3QN
+Cj4gdGhlIG1pc3NpbmcgcGFydHMgaXQgc2VlbXMgbGlrZSBpdCB3b3VsZCBiZSBtb3JlIG1haW50
+YWluYWJsZS4NCg0KSSB0aGluayB3ZSBoYXZlIHR3byBvdGhlciBwb3NzaWJsZSBhcHByb2FjaGVz
+IGhlcmU6DQoNCjEuIFdoYXQgdGhpcyBSRkMgaXMgc2tldGNoaW5nIG91dCwgc2VyaWFsaXNpbmcg
+ZmllbGRzIGZyb20gdGhlIHN0cnVjdHMNCmFuZCBzZXR0aW5nIHRob3NlIGZpZWxkcyBhZ2FpbiBv
+biBkZXNlcmlhbGlzZS4gQXMgeW91IHBvaW50IG91dCB0aGlzDQp3aWxsIGJlIGNvbXBsaWNhdGVk
+Lg0KDQoyLiBHZXQgdXNlcnNwYWNlIHRvIGRvIHRoZSB3b3JrOiB1c2Vyc3BhY2UgbmVlZHMgdG8g
+cmUtZG8gdGhlIGlvY3Rscw0KYWZ0ZXIga2V4ZWMgdG8gcmVjb25zdHJ1Y3QgdGhlIG9iamVjdHMu
+IE15IG1haW4gaXNzdWUgd2l0aCB0aGlzIGFwcHJvYWNoDQppcyB0aGF0IHRoZSBrZXJuZWwgbmVl
+ZHMgdG8gZG8gc29tZSBzb3J0IG9mIHRydXN0IGJ1dCB2ZXJpZnkgYXBwcm9hY2ggdG8NCmVuc3Vy
+ZSB0aGF0IHVzZXJzcGFjZSBjb25zdHJ1Y3RzIGV2ZXJ5dGhpbmcgdGhlIHNhbWUgd2F5IGFmdGVy
+IGtleGVjIGFzDQppdCB3YXMgYmVmb3JlIGtleGVjLiBXZSBkb24ndCB3YW50IHRvIGVuZCB1cCBp
+biBhIHN0YXRlIHdoZXJlIHRoZQ0KaW9tbXVmZCBvYmplY3RzIGRvbid0IG1hdGNoIHRoZSBwZXJz
+aXN0ZWQgcGFnZSB0YWJsZXMuDQoNCjMuIFNlcmlhbGlzZSBhbmQgcmVwbHkgdGhlIGlvY3Rscy4g
+SW9jdGwgQVBJcyBhbmQgcGF5bG9hZHMgc2hvdWxkDQoobXVzdD8pIGJlIHN0YWJsZSBhY3Jvc3Mg
+a2VybmVsIHZlcnNpb25zLiBJZiBJT01NVUZEIHJlY29yZHMgdGhlIGlvY3Rscw0KZXhlY3V0ZWQg
+YnkgdXNlcnNwYWNlIHRoZW4gaXQgY291bGQgcmVwbGF5IHRoZW0gYXMgcGFydCBvZiBkZXNlcmlh
+bGlzZQ0KYW5kIGdpdmUgdXNlcnNwYWNlIGEgaGFuZGxlIHRvIHRoZSByZXN1bHRpbmcgb2JqZWN0
+cyBhZnRlciBrZXhlYy4gVGhpcw0Kd2F5IHdlIGFyZSBndWFyYW50ZWVkIGNvbnNpc3RlbnQgaW9t
+bXVmZCAvIElPQVMgb2JqZWN0cy4gQnkgImNvbnNpc3RlbnQiDQpJIG1lYW4gdGhleSBhcmUgdGhl
+IHNhbWUgYXMgYmVmb3JlIGtleGVjIGFuZCBtYXRjaCB0aGUgcGVyc2lzdGVkIHBhZ2UNCnRhYmxl
+cy4gQnkgaGF2aW5nIHRoZSBrZXJuZWwgZG8gdGhpcyBpdCBtZWFucyBpdCBkb2Vzbid0IG5lZWQg
+dG8gZGVwZW5kDQpvbiB1c2Vyc3BhY2UgZG9pbmcgdGhlIGNvcnJlY3QgdGhpbmcuDQoNCldoYXQg
+ZG8geW91IHRoaW5rIG9mIHRoaXMgM3JkIGFwcHJvYWNoPyBJIGNhbiB0cnkgdG8gc2tldGNoIGl0
+IG91dCBhbmQNCnNlbmQgYW5vdGhlciBSRkMgaWYgeW91IHRoaW5rIGl0IHNvdW5kcyByZWFzb25h
+YmxlLg0KDQo+IA0KPiBJZSAicmVjb3ZlciIgYSBIV1BUIGZyb20gYSBLSE8gb24gYSBtYW51YWxs
+eSBjcmVhdGVkIGEgSU9BUyB3aXRoIHRoZQ0KPiByaWdodCAibWVtZmQiIGZvciB0aGUgYmFja2lu
+ZyBzdG9yYWdlLiBUaGVuIHRoZSByZWNvdmVyeSBjYW4ganVzdA0KPiB2YWxpZGF0ZSB0aGF0IHRo
+aW5ncyBhcmUgY29ycmVjdCBhbmQgYWRvcHQgdGhlIGlvbW11X2RvbWFpbiBhcyB0aGUNCj4gaHdw
+dC4NCg0KVGhpcyBzb3VuZHMgbW9yZSBsaWtlIG9wdGlvbiAyIHdoZXJlIHdlIGV4cGVjdCB1c2Vy
+c3BhY2UgdG8gcmUtZHJpdmUgdGhlDQppb2N0bHMsIGJ1dCB2ZXJpZnkgdGhhdCB0aGV5IGhhdmUg
+Y29ycmVzcG9uZGluZyBwYXlsb2FkcyBhcyBiZWZvcmUga2V4ZWMNCnNvIHRoYXQgaW9tbXVmZCBv
+YmplY3RzIGFyZSBjb25zaXN0ZW50IHdpdGggcGVyc2lzdGVkIHBhZ2UgdGFibGVzLg0KSWYgdGhl
+IGtlcm5lbCBpcyBkb2luZyB2ZXJpZmljYXRpb24gd291bGRuJ3QgaXQgYmUgYmV0dGVyIGZvciB0
+aGUga2VybmVsDQp0byBkbyB0aGUgaW9jdGwgd29yayBpdHNlbGYgYW5kIGdpdmUgdGhlIHJlc3Vs
+dGluZyBvYmplY3RzIHRvIHVzZXJzcGFjZT8NCg0KPiANCj4gRXZlbnR1YWxseSB5b3UnbGwgd2Fu
+dCB0aGlzIHRvIHdvcmsgZm9yIHRoZSB2aW9tbXVzIGFzIHdlbGwsIGFuZCB0aGF0DQo+IHNlZW1z
+IGxpa2UgYSBsb3QgbW9yZSB0cmlja3kgY29tcGxleGl0eS4uDQo+IA0KPiBKYXNvbg0KDQo=
