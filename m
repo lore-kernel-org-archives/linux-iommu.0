@@ -1,180 +1,110 @@
-Received: from mail-lf1-f52.google.com (mail-lf1-f52.google.com [209.85.167.52])
+Received: from mail-qk1-f176.google.com (mail-qk1-f176.google.com [209.85.222.176])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 245C71D1E89
-	for <iommu@lists.linux.dev>; Mon,  7 Oct 2024 14:42:33 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.52
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B55FD1D4353
+	for <iommu@lists.linux.dev>; Mon,  7 Oct 2024 15:01:41 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.222.176
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1728312155; cv=none; b=fxjXWB/Vn3aT7EgVjM5Sqc7P6riXOTPwVUzItVv7Nv1iibCvqCS9LwpRs6JhvGuoY8Th2VF0HFTJis7XKQv0MqIAtwh+gOsB7xd7b49XMqXj8iWV2QQxN83jGL+xZfjwTecsqDAH7S5nn2hDbRb71ZxVDXus+0gf5ZuvfAu5NpM=
+	t=1728313303; cv=none; b=Nahlty8V+lU/WEh2MfwKvY7adGKIYie4YgVsCuRHlpLGKXZaBc0EZurFeetAZ5HOzY1YBRoURRIsWPbeTZEb9+ZYaP2Se/BNVnlCjPGQyVI6i6tNUhF4P4X2kFqaL+JeEs0iapH6CzG3ibXgpC7SdJZz4X4Qfn4+JNVDWywudY8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1728312155; c=relaxed/simple;
-	bh=D5kVbpKzUhQvMtWTZRZg9zhd9Je1CQMs6r/pautCquw=;
-	h=Content-Type:Message-ID:Date:MIME-Version:Subject:To:Cc:
-	 References:From:In-Reply-To; b=kVT0l9Nqdu9gTMc8+O8gxQwq8UTP26GT3UjCh4eXXczno6a90YdTYSnM5ScS+Pn5oB9uWzfKytAPVH8gAlZ7SOPNVF7tw+sh70kwec2rV7sD5s3mkDS/aQtDJBgTitpzXRwxxmccxJ/6y6R2v7gXb5d2a1itc/L3pYmjg6Iq6Mo=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=Tz195ljb; arc=none smtp.client-ip=209.85.167.52
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1728313303; c=relaxed/simple;
+	bh=rRVuIaOx8RNrteaDGFooPVCgbWZsVHEatmlbzj7fViY=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=aOQzGm90b4ETSBGpeJBTK25Uaj4U4N/QLahaJ0zJ7GT/fh9wpxOouRdER7XC4r0xdLv3IHXSKDDh/6R3vTG3cs9k5KLZBRvv3EPz+X3Ld9/ZDh4CF64Bn06VPKD0LccerW5s/dZCLDkp2Eds44H+BEiv0jdQ6fo8zNCWaNWGKmI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=ADw9yx+G; arc=none smtp.client-ip=209.85.222.176
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="Tz195ljb"
-Received: by mail-lf1-f52.google.com with SMTP id 2adb3069b0e04-5399041167cso6923576e87.0
-        for <iommu@lists.linux.dev>; Mon, 07 Oct 2024 07:42:33 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="ADw9yx+G"
+Received: by mail-qk1-f176.google.com with SMTP id af79cd13be357-7ae491dacaeso546846585a.0
+        for <iommu@lists.linux.dev>; Mon, 07 Oct 2024 08:01:41 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1728312152; x=1728916952; darn=lists.linux.dev;
-        h=in-reply-to:from:content-language:references:cc:to:subject
-         :user-agent:mime-version:date:message-id:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=5OG0U1jbBXC/7HilBWvE9sxBBHqzXaiJZGz0KVtp1OY=;
-        b=Tz195ljbW3gOSlnu0iFBjbRM56ir968I+kJ1YW5pEPmdeDJzok62/w7lloPHBWeP4y
-         0XkJN2/g4P6xKidz6VRVdsn5iIoehc3vLT4hWPtfvUrdkaEWKhBFsRrda1Bme9OcQ6XU
-         f1jhFEX4Bwy7+Rfv0BE8JV3/z89Haj3D786W2ux/lCy/61XNxBo9CivcRe0s2sB+oAo3
-         //mA9NDp51GnbhiRf0eGRuCGN6GwAv92JBoQFjQsk/1WLWesCMGOkymuxBkSckvR60Ke
-         6fDcGKxTmFHWaR1D+X3wDZCnPCJHroDgiMKV3UJ3gMjjeh5qZj9sbceXPw48t8yeHu0h
-         yOKw==
+        d=ziepe.ca; s=google; t=1728313300; x=1728918100; darn=lists.linux.dev;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=4bInHqGw/7pXdDA3IXyTgOVdi79kStxfjp6yDL0daeE=;
+        b=ADw9yx+GeLyrO88OjvPSw1MIJjs0beNJLxuw7TqFgyU4slZ5g7fZ+/NoOSqWYhU0ss
+         ia50QgIHCa/rggqtBzq6tVafe2p+dcbv5Mnitp78VWaCn7HSpGVU+mwekOlYYTAIwa4D
+         MGvi3BvKTYxIJyYmImxES/12GozFNdbo2XWd6M9tKtiikHa6giatIb6SyGITlaMH2BIq
+         PingFLGiHg8yzdNCWY+dOxkBV7gW4NT0aJ4+/O4HKHp5IFD4ja6J/Jl5Pguy11w2x3xq
+         SHxvrZyDtVBNgQl8sHM1+CxwD0cUMX95N9ji4Vo+f7qUJvK4A8ihT/SedaKCgMfBcBQA
+         JlTQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1728312152; x=1728916952;
-        h=in-reply-to:from:content-language:references:cc:to:subject
-         :user-agent:mime-version:date:message-id:x-gm-message-state:from:to
-         :cc:subject:date:message-id:reply-to;
-        bh=5OG0U1jbBXC/7HilBWvE9sxBBHqzXaiJZGz0KVtp1OY=;
-        b=Th2mgyhUG8z0GkVJgFTDWZy1NgS0g4uwjZDb2xWGPpGX94gLSbjPcXDIt+WXJN868H
-         qiUUKI7wgcvlvNhZbNkvQxQNysWS1Oy0TRm8xAC14smgsBfAsVNjty6zPw1TxUl6bqGZ
-         tB9j1grr4VB7RcZdMRMW9zMF/ojGo4TQtMiQwNpI2D5/ycx9QhaO4uOKnwE/623Or0ml
-         lBmecXZxRiIe6n9kq5dp/KGNPHKNxC0eWxXZAfa08t9bVEH69pWhqFu8bqjJl+7REioC
-         M3P6a4C2pgDNjcGIMCC6sO8d/DbQljrKZc2bHmYMowyLIalCbUmHM0pO1sZ+Z/SEWY/q
-         IQMA==
-X-Forwarded-Encrypted: i=1; AJvYcCU0wfPsP5/BddMMzJoG+BimFbDGxUcImMi+g6eN5QIvX353f34KCg0b78n+EZJ2eepaefSYnA==@lists.linux.dev
-X-Gm-Message-State: AOJu0YzChhrS2kgar93xVOtY7vK7oknlfXvF5gL1b5tooPZ41tgDlKUj
-	9WhAilZAJgr3PSjfIZt4SMTBgqSUGX460fBiTGCJlg2lH+RggrCk
-X-Google-Smtp-Source: AGHT+IGztI27Tmigl5KSZUpChAclReVjTvDqzmCe6NGfCs6+JNfloCcqixsHuiDwKgpyiigf26s/Rw==
-X-Received: by 2002:a05:6512:138d:b0:533:4497:9f29 with SMTP id 2adb3069b0e04-539ab87dd29mr7436136e87.31.1728312151890;
-        Mon, 07 Oct 2024 07:42:31 -0700 (PDT)
-Received: from [192.168.1.100] ([46.248.82.114])
-        by smtp.gmail.com with ESMTPSA id a640c23a62f3a-a9949a37f79sm240442766b.44.2024.10.07.07.42.30
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 07 Oct 2024 07:42:31 -0700 (PDT)
-Content-Type: multipart/mixed; boundary="------------DOSrrXCulbNPxmqX14qrO8oc"
-Message-ID: <cc44a5ca-ddf9-ca7a-93f8-38bf26ac1f1f@gmail.com>
-Date: Mon, 7 Oct 2024 16:42:30 +0200
+        d=1e100.net; s=20230601; t=1728313300; x=1728918100;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=4bInHqGw/7pXdDA3IXyTgOVdi79kStxfjp6yDL0daeE=;
+        b=j7NXxjfu1v3lGHAPloCkI8otSG8RCRcxH+0gw/POlxzv5sADbamNXZzfgn1SrEELiK
+         Z8UMOde2wgm24cFuP4JwPLjh7if90wt6hVFNg3GyikuBL3jPa28/5pe109KWh12VUwEk
+         ZntoJxxPQ2YNUyuJCzPFo7A8WYFa8OmSnXBQYr6Hw+chzQBMB8GhxT+XMIE+BVI5bBIS
+         dmi3AGDIRApK41Y9ynlbICERvRBFtpqHr7ftQ8Def8aqUm9MHTogs4gkmvXvfn9NcnVV
+         AtDrrpN0KB4oawhRY6eqfUxSDEzlwOIdSvV7RA7bl3H/OQBQFTkdaIuMOCbXqaf6zvE6
+         cqrg==
+X-Forwarded-Encrypted: i=1; AJvYcCUUfAHs3ou78De/jrvwfOmHSU99+GVR/qeWNObJJW0I/A2vsI8GmeA5+ZnnePm+QlJ7CJdFvA==@lists.linux.dev
+X-Gm-Message-State: AOJu0YwED1h8CvmUV4lhbpmHChxZ8JziHCCHFltftKYIQ6wW4+vFW9Bt
+	NUwGS49zATsYplFunBfNzL4LzVW69/TKY5drlJQ7fjlEXOyV/aiGsyGhqN1/T5I=
+X-Google-Smtp-Source: AGHT+IEC12fI88Gp57MHDcshS4/IkrApM2kBYgZQIiBILAEfDwFMFN//oZi0JmEkR0VcJlcGa+25Vw==
+X-Received: by 2002:a05:620a:40cd:b0:7a9:b914:279c with SMTP id af79cd13be357-7ae6f3aecbamr1931318585a.0.1728313300551;
+        Mon, 07 Oct 2024 08:01:40 -0700 (PDT)
+Received: from ziepe.ca (hlfxns017vw-142-68-128-5.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.68.128.5])
+        by smtp.gmail.com with ESMTPSA id af79cd13be357-7ae7563619fsm264722085a.62.2024.10.07.08.01.39
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 07 Oct 2024 08:01:39 -0700 (PDT)
+Received: from jgg by wakko with local (Exim 4.95)
+	(envelope-from <jgg@ziepe.ca>)
+	id 1sxpEw-002Wvt-Te;
+	Mon, 07 Oct 2024 12:01:38 -0300
+Date: Mon, 7 Oct 2024 12:01:38 -0300
+From: Jason Gunthorpe <jgg@ziepe.ca>
+To: "Gowans, James" <jgowans@amazon.com>
+Cc: "dwmw2@infradead.org" <dwmw2@infradead.org>,
+	"kvm@vger.kernel.org" <kvm@vger.kernel.org>,
+	"rppt@kernel.org" <rppt@kernel.org>, "kw@linux.com" <kw@linux.com>,
+	"iommu@lists.linux.dev" <iommu@lists.linux.dev>,
+	"madvenka@linux.microsoft.com" <madvenka@linux.microsoft.com>,
+	"anthony.yznaga@oracle.com" <anthony.yznaga@oracle.com>,
+	"robin.murphy@arm.com" <robin.murphy@arm.com>,
+	"baolu.lu@linux.intel.com" <baolu.lu@linux.intel.com>,
+	"nh-open-source@amazon.com" <nh-open-source@amazon.com>,
+	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+	"seanjc@google.com" <seanjc@google.com>,
+	"Saenz Julienne, Nicolas" <nsaenz@amazon.es>,
+	"pbonzini@redhat.com" <pbonzini@redhat.com>,
+	"kevin.tian@intel.com" <kevin.tian@intel.com>,
+	"maz@kernel.org" <maz@kernel.org>,
+	"steven.sistare@oracle.com" <steven.sistare@oracle.com>,
+	"Graf (AWS), Alexander" <graf@amazon.de>,
+	"will@kernel.org" <will@kernel.org>,
+	"joro@8bytes.org" <joro@8bytes.org>
+Subject: Re: [RFC PATCH 05/13] iommufd: Serialise persisted iommufds and ioas
+Message-ID: <20241007150138.GM2456194@ziepe.ca>
+References: <20240916113102.710522-1-jgowans@amazon.com>
+ <20240916113102.710522-6-jgowans@amazon.com>
+ <20241002185520.GL1369530@ziepe.ca>
+ <d6328467adc9b7512f6dd88a6f8f843b8efdc154.camel@amazon.com>
+ <e458d48a797043b7efc853fc65b9c4d043b12ed4.camel@infradead.org>
+ <1d331c55a299d414e49ba5eb6f46dccb525bf788.camel@amazon.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.15.1
-Subject: Re: [PATCH v5 2/6] iommu/amd: Introduce helper function to update
- 256-bit DTE
-To: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
- linux-kernel@vger.kernel.org, iommu@lists.linux.dev
-Cc: joro@8bytes.org, robin.murphy@arm.com, vasant.hegde@amd.com,
- jgg@nvidia.com, kevin.tian@intel.com, jon.grimm@amd.com,
- santosh.shukla@amd.com, pandoh@google.com, kumaranand@google.com
-References: <20241007041353.4756-1-suravee.suthikulpanit@amd.com>
- <20241007041353.4756-3-suravee.suthikulpanit@amd.com>
-Content-Language: en-US
-From: Uros Bizjak <ubizjak@gmail.com>
-In-Reply-To: <20241007041353.4756-3-suravee.suthikulpanit@amd.com>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <1d331c55a299d414e49ba5eb6f46dccb525bf788.camel@amazon.com>
 
-This is a multi-part message in MIME format.
---------------DOSrrXCulbNPxmqX14qrO8oc
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+On Mon, Oct 07, 2024 at 08:57:07AM +0000, Gowans, James wrote:
+> With the ARM SMMUv3 for example I think there are break-before-make
+> requirement, so is it possible to do an atomic switch of the SMMUv3 page
+> table PGD in a hitless way? 
 
+The BBM rules are only about cached translations. If all your IOPTEs
+result in the same translation *size* then you are safe. You can
+change the radix memory storing the IOPTEs freely, AFAIK.
 
+BBM level 2 capable HW doesn't have those limitations either and
+everything is possible.
 
-On 7. 10. 24 06:13, Suravee Suthikulpanit wrote:
-
-> +
->   /****************************************************************************
->    *
->    * Helper functions
->    *
->    ****************************************************************************/
->   
-> +static void write_dte_upper128(struct dev_table_entry *ptr, struct dev_table_entry *new)
-> +{
-> +	struct dev_table_entry old = {};
-> +
-> +	do {
-> +		old.data128[1] = ptr->data128[1];
-> +		new->data[2] &= ~DTE_DATA2_INTR_MASK;
-> +		new->data[2] |= old.data[2] & (DTE_DATA2_INTR_MASK | DTE_DATA2_RESV_MASK);
-> +	} while (!try_cmpxchg128(&ptr->data128[1], &old.data128[1], new->data128[1]));
-
-Please note that try_cmpxchg inherently updates &old.data128[1] above on 
-failure. There is no need to update value again in the loop.
-
-Please also note that the value from ptr->data128[1] should be read 
-using READ_ONCE() to prevent compiler from merging, refetching or 
-reordering the read. Currently, there is no READ_ONCE() implemented for 
-__int128, so something like the attached patch should be used.
-
-Based on the above, the loop should be rewritten as:
-
-	old.data128[1] = READ_ONCE(ptr->data128[1]);
-	do {
-		new->data[2] &= ~DTE_DATA2_INTR_MASK;
-		new->data[2] |= old.data[2] & (DTE_DATA2_INTR_MASK | DTE_DATA2_RESV_MASK);
-	} while (!try_cmpxchg128(&ptr->data128[1], &old.data128[1], 
-new->data128[1]));
-
-> +}
-> +
-> +static void write_dte_lower128(struct dev_table_entry *ptr, struct dev_table_entry *new)
-> +{
-> +	struct dev_table_entry old = {};
-> +
-> +	/*
-> +	 * Need to preserve DTE[96:106], which can be set by information in IVRS table.
-> +	 * See set_dev_entry_from_acpi().
-> +	 */
-> +	new->data[1] |= ptr->data[1] & DTE_FLAG_MASK;
-> +
-> +	do {
-> +		old.data128[0] = ptr->data128[0];
-> +	} while (!try_cmpxchg128(&ptr->data128[0], &old.data128[0], new->data128[0]));
-
-And this one as:
-
-	old.data128[0] = READ_ONCE(ptr->data128[0]);
-	do {
-	} while (!try_cmpxchg128(&ptr->data128[0], &old.data128[0], 
-new->data128[0]));
-
-Best regards,
-Uros.
---------------DOSrrXCulbNPxmqX14qrO8oc
-Content-Type: text/plain; charset=UTF-8; name="p.diff.txt"
-Content-Disposition: attachment; filename="p.diff.txt"
-Content-Transfer-Encoding: base64
-
-ZGlmZiAtLWdpdCBhL2luY2x1ZGUvYXNtLWdlbmVyaWMvcndvbmNlLmggYi9pbmNsdWRlL2Fz
-bS1nZW5lcmljL3J3b25jZS5oCmluZGV4IDhkMGE2MjgwZTk4Mi4uOGJmOTQyYWQ1ZWYzIDEw
-MDY0NAotLS0gYS9pbmNsdWRlL2FzbS1nZW5lcmljL3J3b25jZS5oCisrKyBiL2luY2x1ZGUv
-YXNtLWdlbmVyaWMvcndvbmNlLmgKQEAgLTMzLDcgKzMzLDcgQEAKICAqIChlLmcuIGEgdmly
-dHVhbCBhZGRyZXNzKSBhbmQgYSBzdHJvbmcgcHJldmFpbGluZyB3aW5kLgogICovCiAjZGVm
-aW5lIGNvbXBpbGV0aW1lX2Fzc2VydF9yd29uY2VfdHlwZSh0KQkJCQkJXAotCWNvbXBpbGV0
-aW1lX2Fzc2VydChfX25hdGl2ZV93b3JkKHQpIHx8IHNpemVvZih0KSA9PSBzaXplb2YobG9u
-ZyBsb25nKSwJXAorCWNvbXBpbGV0aW1lX2Fzc2VydChfX25hdGl2ZV93b3JkKHQpIHx8IHNp
-emVvZih0KSA9PSBzaXplb2YoX19kd29yZF90eXBlKSwgXAogCQkiVW5zdXBwb3J0ZWQgYWNj
-ZXNzIHNpemUgZm9yIHtSRUFELFdSSVRFfV9PTkNFKCkuIikKIAogLyoKZGlmZiAtLWdpdCBh
-L2luY2x1ZGUvbGludXgvY29tcGlsZXJfdHlwZXMuaCBiL2luY2x1ZGUvbGludXgvY29tcGls
-ZXJfdHlwZXMuaAppbmRleCA5NGI4ZmVkZmIwNzcuLjg2MTVlOTFmNDhmZCAxMDA2NDQKLS0t
-IGEvaW5jbHVkZS9saW51eC9jb21waWxlcl90eXBlcy5oCisrKyBiL2luY2x1ZGUvbGludXgv
-Y29tcGlsZXJfdHlwZXMuaApAQCAtNDY5LDYgKzQ2OSwxMiBAQCBzdHJ1Y3QgZnRyYWNlX2xp
-a2VseV9kYXRhIHsKIAkJdW5zaWduZWQgdHlwZToJKHVuc2lnbmVkIHR5cGUpMCwJCQlcCiAJ
-CXNpZ25lZCB0eXBlOgkoc2lnbmVkIHR5cGUpMAogCisjaWZkZWYgX19TSVpFT0ZfSU5UMTI4
-X18KKyNkZWZpbmUgX19kd29yZF90eXBlIF9faW50MTI4CisjZWxzZQorI2RlZmluZSBfX2R3
-b3JkX3R5cGUgbG9uZyBsb25nCisjZW5kaWYKKwogI2RlZmluZSBfX3VucXVhbF9zY2FsYXJf
-dHlwZW9mKHgpIHR5cGVvZigJCQkJXAogCQlfR2VuZXJpYygoeCksCQkJCQkJXAogCQkJIGNo
-YXI6CShjaGFyKTAsCQkJCVwKQEAgLTQ3Niw3ICs0ODIsNyBAQCBzdHJ1Y3QgZnRyYWNlX2xp
-a2VseV9kYXRhIHsKIAkJCSBfX3NjYWxhcl90eXBlX3RvX2V4cHJfY2FzZXMoc2hvcnQpLAkJ
-XAogCQkJIF9fc2NhbGFyX3R5cGVfdG9fZXhwcl9jYXNlcyhpbnQpLAkJXAogCQkJIF9fc2Nh
-bGFyX3R5cGVfdG9fZXhwcl9jYXNlcyhsb25nKSwJCVwKLQkJCSBfX3NjYWxhcl90eXBlX3Rv
-X2V4cHJfY2FzZXMobG9uZyBsb25nKSwJXAorCQkJIF9fc2NhbGFyX3R5cGVfdG9fZXhwcl9j
-YXNlcyhfX2R3b3JkX3R5cGUpLAlcCiAJCQkgZGVmYXVsdDogKHgpKSkKIAogLyogSXMgdGhp
-cyB0eXBlIGEgbmF0aXZlIHdvcmQgc2l6ZSAtLSB1c2VmdWwgZm9yIGF0b21pYyBvcGVyYXRp
-b25zICovCg==
-
---------------DOSrrXCulbNPxmqX14qrO8oc--
+Jason
