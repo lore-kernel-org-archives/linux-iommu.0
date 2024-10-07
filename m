@@ -1,167 +1,81 @@
-Received: from NAM12-MW2-obe.outbound.protection.outlook.com (mail-mw2nam12on2055.outbound.protection.outlook.com [40.107.244.55])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 035631DE3B7
-	for <iommu@lists.linux.dev>; Mon,  7 Oct 2024 19:57:03 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.244.55
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1728331025; cv=fail; b=MV3Q8Nj0V1bgLIcRKnh+QbuKqjENBzx/LaIOeAZ2YvccCeod3RUORgGl+zSF74bhJ7of4Ws81AtfOn0lYoOVYbFdPm/6FtbpAaZjqBt3UlA338MlhzwA+zCpb6cr3WK/OjTM8ABz4uBUfO7pV16VYyFumOoSXMr9siwUvpfJQ0E=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1728331025; c=relaxed/simple;
-	bh=GPoG/jyTA7IpWnUOdyH3STBKVB/KmgZzex14AW6Sl5Q=;
-	h=Date:From:To:CC:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=iaU7h6bRlOHvpML3oxLnoTR8bGmlBHIOZW4+Xupsk+Bi79Ut4y7AAF25667zheHTW5pWVqLhnQeV0XlFy7+h7kNwGxaKl3vclTPdSQHj9ctAfan7Ped4PX/qqlXKFOixvFsrpF67PsBZ0ZPZlQs9qJd3rJhfhfhOJlytMSvtFBs=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=Oie7h3r7; arc=fail smtp.client-ip=40.107.244.55
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C98FE17624D;
+	Mon,  7 Oct 2024 20:46:48 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1728334008; cv=none; b=i4WH58npQzVA2axCw/j5fjiX7HZu5O9XBksWz9ddA5ckloBg/e/ZEOZXKC84/jCOm8dDHF6hbZZ7lrpNO/+r4MgUsgVxgZb2X9K8eGztB3rRcvhsMzHmCmoy2tZ1eini3p/6juaAQFE3JA1/MlIUHwLQPQtfQ08uSOeR3r/9c3M=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1728334008; c=relaxed/simple;
+	bh=6NU6Lgxk4ULd9jdqthLkDjy5JXIEzzVVZizCSL+NbHo=;
+	h=Date:From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:
+	 Content-Disposition:In-Reply-To; b=AOPbCcddaFnKZ+ma8WAA5b6HjAOKZFTu1fMLroW/ixG4p0kbpPu9rkGKmvT1y8o/8yd9/9TPRGu2Pptm/bssyzEDJq88f5iIvU3L9aeryT+G0v4sAelCICoBJe7CVXHwFmIsNbtmKwqFZdrtk0G9daiqCb4c+vuFN/33qDyQve4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=aQXcKiFa; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="Oie7h3r7"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=X0+z3HBW14MUaRpusOuHFUb45IgJE8FROJ7cI0/jJSgeM5vcfjDDBx84Q7vACdAtJfIXmIlLH1Tp5bcTDh83QUXLjjAEDmLZS3hTTTpIyMr0Q4eLIafOF9cxkL4WaytzAOmMwdgt7WXSoFSxV1C1RJPpUqHFs7HFMAWbWcR75RERrxCigC0RNRXnNgxJLAq09RhnQ3EIQjdFjBubXP64zdqfoLf3cxbTfayY3f1x6PcTe9PO05/d3RPwdlx8XYDwsKFlINZALBCskzLUKMvANcCqdROZjoHsnNLY4/a2Nwe1pLPb0D5ZyuVFIcTkXfMVJNpTsudYE9uoJwD+KbJyMw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=mmLlHnO+N2GqhTILqJcG0bE3a8yX4UvGbFaSjXni4J0=;
- b=gYHW40nSPz44tBsUBWcMIWjsx7CLnPvCGmvDeGomhe2egkUMbVFHaDHDvQiB/95QTQqYmnZ/Zql3soGHjHncJTy0HgvN+SMLjB0txM0263vz8+vl1nYIRWZZmJuumdYPfkxpKdgowyDvmd6qchrglUhkX/CXY63MocmE2ZRpj9DZlp6v7nbHC3K4+fONlk4I785hpDJ1hRTntTGbSmBjlOZxpSFQW1EdwGivfD13qQWjclV8nIJcdVJVMEUxUuarK+9FQ8BIiCrlkIC4axr5X8Xe+hyen25HeAIt3v0gQNOIcHNvqmjDlTzXJGKZmJ6XXNdPWnAf2l6a6YVq2RZo0g==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 216.228.117.161) smtp.rcpttodomain=huawei.com smtp.mailfrom=nvidia.com;
- dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
- dkim=none (message not signed); arc=none (0)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=mmLlHnO+N2GqhTILqJcG0bE3a8yX4UvGbFaSjXni4J0=;
- b=Oie7h3r71gbsokKbwUxrPV84neONPeWJnJdnEjBx9vEXa+LHqkpRIYPwvXx3Cq49sJm6Pg8N1seVFKViK7vrMk9obQG2yiIhfg7s+RnyKhQTJO2Ecv8W9MpJtxAUziq4CaSfwLWhMNPY285LFpsiz45EVWG/n6NiC0ZCwJ14IvSNZ+9R7L9eqey/NzZzRmbgTFlbmCyGJGbHeI0iurWo1W7zR2UTMYT06kK1JmwEaPE8Y7yjSAtoZ3YYxMIkPinr+xA2eZ8mS3tgzuhrfDKvU1OoBSBWIosis3r7p8obnndXwYpgdGmczhBAfR4LZJ2FWyfgpOeZt9MxZWD98YqnJw==
-Received: from CH2PR11CA0015.namprd11.prod.outlook.com (2603:10b6:610:54::25)
- by PH7PR12MB5733.namprd12.prod.outlook.com (2603:10b6:510:1e0::22) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.8026.22; Mon, 7 Oct
- 2024 19:57:00 +0000
-Received: from CY4PEPF0000EE3E.namprd03.prod.outlook.com
- (2603:10b6:610:54:cafe::79) by CH2PR11CA0015.outlook.office365.com
- (2603:10b6:610:54::25) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.8026.23 via Frontend
- Transport; Mon, 7 Oct 2024 19:57:00 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.117.161)
- smtp.mailfrom=nvidia.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=nvidia.com;
-Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 216.228.117.161 as permitted sender) receiver=protection.outlook.com;
- client-ip=216.228.117.161; helo=mail.nvidia.com; pr=C
-Received: from mail.nvidia.com (216.228.117.161) by
- CY4PEPF0000EE3E.mail.protection.outlook.com (10.167.242.16) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.8048.13 via Frontend Transport; Mon, 7 Oct 2024 19:56:59 +0000
-Received: from rnnvmail205.nvidia.com (10.129.68.10) by mail.nvidia.com
- (10.129.200.67) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1544.4; Mon, 7 Oct 2024
- 12:56:44 -0700
-Received: from rnnvmail201.nvidia.com (10.129.68.8) by rnnvmail205.nvidia.com
- (10.129.68.10) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1544.4; Mon, 7 Oct 2024
- 12:56:43 -0700
-Received: from Asurada-Nvidia (10.127.8.12) by mail.nvidia.com (10.129.68.8)
- with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1544.4 via Frontend
- Transport; Mon, 7 Oct 2024 12:56:42 -0700
-Date: Mon, 7 Oct 2024 12:56:40 -0700
-From: Nicolin Chen <nicolinc@nvidia.com>
-To: Jason Gunthorpe <jgg@nvidia.com>
-CC: <kevin.tian@intel.com>, <will@kernel.org>, <joro@8bytes.org>,
-	<suravee.suthikulpanit@amd.com>, <robin.murphy@arm.com>,
-	<dwmw2@infradead.org>, <baolu.lu@linux.intel.com>, <shuah@kernel.org>,
-	<linux-kernel@vger.kernel.org>, <iommu@lists.linux.dev>,
-	<linux-arm-kernel@lists.infradead.org>, <linux-kselftest@vger.kernel.org>,
-	<eric.auger@redhat.com>, <jean-philippe@linaro.org>, <mdf@kernel.org>,
-	<mshavit@google.com>, <shameerali.kolothum.thodi@huawei.com>,
-	<smostafa@google.com>, <yi.l.liu@intel.com>
-Subject: Re: [PATCH v2 10/19] iommufd/viommu: Add vdev_id helpers for IOMMU
- drivers
-Message-ID: <ZwQ8+ENkxSEaDem4@Asurada-Nvidia>
-References: <20240905161415.GS1358970@nvidia.com>
- <ZtnwG/Kmaf+fZFAv@nvidia.com>
- <20240911231103.GR58321@nvidia.com>
- <ZuJdPHRbMeYFATT7@nvidia.com>
- <ZwDMb3F8/cCFhwcQ@Asurada-Nvidia>
- <20241007153837.GT1365916@nvidia.com>
- <ZwQOAvoJrMWOuxxd@Asurada-Nvidia>
- <20241007171119.GY1365916@nvidia.com>
- <ZwQZbYiCdf6WVGG5@Asurada-Nvidia>
- <20241007182816.GD1365916@nvidia.com>
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="aQXcKiFa"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2F488C4CEC6;
+	Mon,  7 Oct 2024 20:46:48 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1728334008;
+	bh=6NU6Lgxk4ULd9jdqthLkDjy5JXIEzzVVZizCSL+NbHo=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:From;
+	b=aQXcKiFaoKXktiJ5laxwJ8DU6Fpy8UAZiMI7v4iNaoWBq1lOlJAepBg96QF9Of6bu
+	 GaZE4WXQLyO/io95sWnhRn8vz8mylJrjXxLQqcJWzpYPvpDEtfEPvxv/To4lqPPkju
+	 qbbnprJx8mGZEL2FeicKfUQ9n0rjst7LKdLhbmuPNtQkz+I+8hYDP131vKaruS+zew
+	 3TGbA/TfyeRMwsZ3iLO0/0478tE0/DmrQQxDFqIO/8SRhvth5LpJQgsySk1CGTdzud
+	 mgx49dczcwdwW5gRoQDQiCyfpAHRq1dBnMXB9NmxerTL1D/1t3UJvvW7fCdWuDyx/P
+	 JrUKdlzRT4S+w==
+Date: Mon, 7 Oct 2024 15:46:46 -0500
+From: Bjorn Helgaas <helgaas@kernel.org>
+To: Lu Baolu <baolu.lu@linux.intel.com>
+Cc: Kevin Tian <kevin.tian@intel.com>, Joerg Roedel <jroedel@suse.de>,
+	David Woodhouse <dwmw2@infradead.org>, linux-pci@vger.kernel.org,
+	iommu@lists.linux.dev,
+	Marcin =?utf-8?B?TWlyb3PFgmF3?= <marcin@mejor.pl>
+Subject: Re: [Bug 219349] New: RIP: 0010:pci_for_each_dma_alias
+ (./include/linux/pci.h:692 drivers/pci/search.c:41)
+Message-ID: <20241007204646.GA450114@bhelgaas>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <20241007182816.GD1365916@nvidia.com>
-X-NV-OnPremToCloud: ExternallySecured
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: CY4PEPF0000EE3E:EE_|PH7PR12MB5733:EE_
-X-MS-Office365-Filtering-Correlation-Id: fdbd344f-c9b5-4053-3bfb-08dce70a3489
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|1800799024|376014|82310400026|36860700013|7416014;
-X-Microsoft-Antispam-Message-Info:
-	=?us-ascii?Q?W3ZjSCyKDfhztkL1rrAppoyHSHWyBJesl3f4VDi3hYz1a1P/NuFi+6WujcMw?=
- =?us-ascii?Q?W7Jtn6Le7Qf8z94ieGqJwBqfdDvevZ5aSchLY7Nf9OdWtrCMYD7CMu5c1aGe?=
- =?us-ascii?Q?ltyp7uy/JbyHruWXVmH4hk2xG7AWex57DCjcJVQ+gNsMrpxScOw9ttPhoo2s?=
- =?us-ascii?Q?CGzfLsy4BC6eQcLP4XXMkHKbgU5UVgV3wXYnjj6G+PJ4HNnvtjfUvJeK8eek?=
- =?us-ascii?Q?tRFH2KNuX693K2TMKzOj5d1SVdQ0x6MCwwkWJnOxm5d3hatjqB74ChIWwyFD?=
- =?us-ascii?Q?w1Zfhc2np7pbYllJc/ePrCdI6qZLVQGjbB68GdfQNymIv1q1D/QwI3HspVoX?=
- =?us-ascii?Q?bRxNHPoAM3RjGiKqgxjHxXdfmN6X9dRo9t+K+EO742jX7mbptwL85I/8cgE3?=
- =?us-ascii?Q?5i3yuajb8eOzXH9MbuaoIqevX6hk5pqM0qfJ9WpfEef0DLtry9Ys15ZWJKvs?=
- =?us-ascii?Q?nxTw8SDgLExPPjkWzQxURLORXzqiuUFVFm65mD+QFP2fR/JV3XiLQjMZkjJI?=
- =?us-ascii?Q?koclDS6CAO0cs2biCQyrjHOJfqnSK1at+9kFb5hDBmKuMQpQnMXvwRmzO+Yp?=
- =?us-ascii?Q?m5/TFAPVMOg04bpHDRaxF5jVPuK7vYqu8QMld8d7MfnTngR0Prit9cuNS8z2?=
- =?us-ascii?Q?uXaqHbUg66ipxOSl0p4v+pzYgnPfJgyXENNLiLk4PXwE7Kf1wXJJef8YNcjS?=
- =?us-ascii?Q?94xjIfPhf6Jfg+3ein90uAoebMeVjn95BQjbXUNadKtj8Ol+WDUILLaS/VYc?=
- =?us-ascii?Q?hvmj4saSgLlGAsAPjDi6zHPtq2K/csEi9cgh+f0/zLFNeyAWrqPNxIG8qnNn?=
- =?us-ascii?Q?Q+wfv+SQy6NGFZhwL80AQOGSoOprLkMO4jbcq2TtHyxVF1dX/z2gVgVZ0xyq?=
- =?us-ascii?Q?MUFXchw/22RQBiFf2t/o+ipocYZiHGVyOCdEJOynTA7g4wGsHd2ey+tM/HHS?=
- =?us-ascii?Q?LJKyKMk80u8zaaUht1fqfLp7DX4IunSfhWjLJQ987mpA5QIkjdiX5yF/JEF6?=
- =?us-ascii?Q?HxvSJp0cyqFGu5TWov2Z+Bo10CJMr+T+UIW8mgFintFkFaQMqEwY+yDQHFt9?=
- =?us-ascii?Q?1wBzuyDFbrrG7MGQFwDCG0r0JU3MqfFVk7lzGozqdPY26DvnrqCSqSnb+IPN?=
- =?us-ascii?Q?hjD9bPdigxBtEa79VN7QbWuJjtFWIBvMZV41x24+3SwefubOHQwwG9zztYM4?=
- =?us-ascii?Q?3jO0LckEajbniKzLCzVyx5buEe+e8uFw6974O949NXB74DvU/AqaMctiNMUa?=
- =?us-ascii?Q?2O5SFUrTrVqkBGaRlZ8raCespVnrPPwQqk9zlpj3aI1aaG39uYCri6aoX4jF?=
- =?us-ascii?Q?PJw0v6+Sg5dRMM2NMFgsMjCVCDYN6zgffgjn3JqaB51NSS6YMtYU5U3k+KgS?=
- =?us-ascii?Q?2ODziWsjZioEjD9vneys3i9UscX2?=
-X-Forefront-Antispam-Report:
-	CIP:216.228.117.161;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc6edge2.nvidia.com;CAT:NONE;SFS:(13230040)(1800799024)(376014)(82310400026)(36860700013)(7416014);DIR:OUT;SFP:1101;
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 07 Oct 2024 19:56:59.5772
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: fdbd344f-c9b5-4053-3bfb-08dce70a3489
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.117.161];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource:
-	CY4PEPF0000EE3E.namprd03.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH7PR12MB5733
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20241007172001.GA441460@bhelgaas>
 
-On Mon, Oct 07, 2024 at 03:28:16PM -0300, Jason Gunthorpe wrote:
-> On Mon, Oct 07, 2024 at 10:25:01AM -0700, Nicolin Chen wrote:
-> 
-> > This is for vdev/dev v.s. hwpt. We need the lock for viommu's
-> > vdev xarray.
+On Mon, Oct 07, 2024 at 12:20:01PM -0500, Bjorn Helgaas wrote:
+> On Fri, Oct 04, 2024 at 07:55:29AM +0200, Marcin Mirosław wrote:
+> > W dniu 03.10.2024 o 23:39, Bjorn Helgaas pisze:
+> > > On Thu, Oct 03, 2024 at 08:15:16PM +0000, bugzilla-daemon@kernel.org wrote:
+> > > > https://bugzilla.kernel.org/show_bug.cgi?id=219349
+> > > > 
+> > > >             Summary: RIP: 0010:pci_for_each_dma_alias
+> > > >                      (./include/linux/pci.h:692 drivers/pci/search.c:41)
+> > > >      Kernel Version: 6.12.0-rc1  8c245fe7dde3
+> > > >          Regression: Yes
+> > > > 
+> > > > Created attachment 306959
+> > > >    --> https://bugzilla.kernel.org/attachment.cgi?id=306959&action=edit
+> > > > lspci -vv
+> > > > 
+> > > > Hello,
+> > > > I see BUG: kernel NULL pointer dereference using kernel 6.12.0-rc1 (actually at
+> > > > 8c245fe7dde3 but don't know what is first bad commit).
+> > > 
+> > > Thanks very much for this report!  You marked this as a regression;
+> > > Marcin, do you know the most recent kernel where you did not see this
+> > > issue?
 > > 
-> > Yet, giving a 2nd thought, I feel the lock would be useless if
-> > a driver tries to refer the returned vdev (with this helper)
-> > after the vdev object is destroyed..
-> > 
-> > We could only note something similar that caller must be aware
-> > of the life cycle of vdev itself..
+> > Kernel 6.11 works correctly, I didn't narrow suspect commit yet.
 > 
-> Yes, I imagined you'd use the xa_lock for this an it solves both
-> problems at once.
+> Update from the bugzilla:
+> 
+> Marcin bisected the problem to 2031c469f816 ("iommu/vt-d: Add support
+> for static identity domain") and verified that reverting that commit
+> from v6.12-rc2 avoids the problem.
 
-Ah! We don't even need a rwsem then..
-
-Thanks!
-Nicolin
+#regzbot introduced: 2031c469f816 ("iommu/vt-d: Add support for static identity domain")
