@@ -1,163 +1,240 @@
-Received: from mail-ej1-f42.google.com (mail-ej1-f42.google.com [209.85.218.42])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mx0b-0031df01.pphosted.com (mx0b-0031df01.pphosted.com [205.220.180.131])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B2533215026
-	for <iommu@lists.linux.dev>; Tue,  8 Oct 2024 20:38:06 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.218.42
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 82D2F179954
+	for <iommu@lists.linux.dev>; Tue,  8 Oct 2024 22:07:53 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.180.131
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1728419890; cv=none; b=FtX7HYX7t5tkEKbyEtAiRUZiOYQvp6kZhLMk6leMfKIArM/29Nlb1o5QWYC/yNnkxD37xdsqIj+vTwlFHWk1pSztjwmXTluGdtMJANSp8zRnzYAkn45CaO9S/St/PIm9b0Ygx7HE8uylbL87IM9UpK4xyuBFzimtHxb1vegO7wU=
+	t=1728425275; cv=none; b=jW32CPQAj9C3DW8aSGxijNBRHgoSlaGy5M0RPwztOtE8o6oxHYSnrHAXXbS2J/CTxFDO+22LVdoJcxmVcnCFdlcN1TcTFrM4o+wDJlOXNV9uhLQC1XdlTAKU5ON0OPtkS0dvUVr/o8SUuJQ2Ip27sRxCfdysq94m0dok53SPbw0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1728419890; c=relaxed/simple;
-	bh=jBKc56vBxPYaOUWcC+VFZKlnp8sdizUoPysD1KL2n2Y=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=R9hxaFCZfFLwnFxoE8pcsaXAydYU0GwOgr6rmCIpMx5h37u2P1xfx0CYRFXuLNDr9PGcovNB3FjmTovUUbKSdbeWgDCwU6ohDhLNESS2h6hWDxuFyTM1f5joi0uLr58h9u/KFnYHmubIdTLd+NWQR8uJat4+UppM/s1D+YqgT2Y=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b=p9a6v0cu; arc=none smtp.client-ip=209.85.218.42
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baylibre.com
+	s=arc-20240116; t=1728425275; c=relaxed/simple;
+	bh=GK61cQ3mFSEWeMf+t1FMxrAGCvM8O5dxwMZJAPMq+tc=;
+	h=From:To:CC:Subject:Date:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=WkN/03/JMlRZOk9oprdjHB7sVw3mb2YS3KVaZ5H6jlxBkLXA/9UStlSoFcKzT+g5JFrx/VxIHxykVEBaZuYPMkxAQ5g29rvMeWwBT1a0GhpEWXmg/xTFg74P2taK19+Jw/ASYLxjdK7AtBoHsIKD/7hSR9rsrCtlzwFtlPIKTog=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com; spf=pass smtp.mailfrom=quicinc.com; dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b=kZeLUSL3; arc=none smtp.client-ip=205.220.180.131
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=quicinc.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b="p9a6v0cu"
-Received: by mail-ej1-f42.google.com with SMTP id a640c23a62f3a-a9951fba3b4so404168866b.1
-        for <iommu@lists.linux.dev>; Tue, 08 Oct 2024 13:38:06 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre-com.20230601.gappssmtp.com; s=20230601; t=1728419885; x=1729024685; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=jBKc56vBxPYaOUWcC+VFZKlnp8sdizUoPysD1KL2n2Y=;
-        b=p9a6v0cuERVomugY10c7+XNqpHSOv9HtvWSZYTxl1EkrIPKq2mJzoWwR3X8QHfUhmD
-         9IY3jRcBh2W9W6RxBmLlSVjuPrcJQGeEpa8q2zOOjU6C5xf9EpL9iwaxBK1RTzmaj19h
-         lb10Lh+Tx0e97ODDSV0oRLvy/++0xQ9reOoBL8ioEuQizM7UhmbkLXyP+q00mH6VpdsJ
-         QLHumpgyRITuUzt2EJZtbTY1AtFLqt1yUkLVGipip2joBieND86BP1/HyV0WJRHvE22B
-         jfk3+cyUwDdm3YDJhxkgyhtFXFzlVzZ8iu1O1rvJ6MKqn5esYd2jZrQ21xH39D0pG4gs
-         5anA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1728419885; x=1729024685;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=jBKc56vBxPYaOUWcC+VFZKlnp8sdizUoPysD1KL2n2Y=;
-        b=oGAii+uvRn2KbUQR1J9k9VPk9LobvY8F+j6ung200BtanoeXOOc/6aWazzJidvS6B0
-         pTBC2haZJ5VyVm4ZpBUYaomsZIfUwCu5spyrJBJELZfq2SDEBnlQKR9fokZzY2D/DEtB
-         OXq3Gtpolc7dd7slH+sSKNavI/WnEyWDc4bVxukC4vcsrirFtyj4sUbNggMxt19TYdXP
-         P5aPwuoFMLbw7zkmEIrdTOuxu72iuJj8G8wHisd/yXJ3hJABma6DhBawARgT+WBlryGy
-         K4nuGtMukY/QPk7szFVOHh0AEwZhfcrLfenqmhMW3NRPzFuxFfYij9uWKhkO51oMxAVf
-         Dieg==
-X-Forwarded-Encrypted: i=1; AJvYcCVlla1ScOCkC+KkNJ+EHSA5XOWahFIp6gjsSswdlEFP5ObDqca6KI1gOlbL33ZXx0aJ/050Wg==@lists.linux.dev
-X-Gm-Message-State: AOJu0YxQ8GRZs5bJBzexzZxwtQBhEjlgbeu2oBXmM8ha3LyTrfg0HFFa
-	syZ0N5k+bjSW2TaLaIAqa59lW/eRov4v/SraSuCWjbTp96KCGfsJ5AasdfiotaU=
-X-Google-Smtp-Source: AGHT+IFQsuFQDnMORn6KRqls83kXMRALTmz1xji/Zv3nzyXsaV17OwyYMIY5gtZ7u9n9SjQRNHRlFg==
-X-Received: by 2002:a17:907:94d4:b0:a8d:250a:52b2 with SMTP id a640c23a62f3a-a998d114bbemr3268366b.6.1728419884897;
-        Tue, 08 Oct 2024 13:38:04 -0700 (PDT)
-Received: from localhost ([2a02:8071:b783:6940:c420:a9b6:c5e1:5b65])
-        by smtp.gmail.com with ESMTPSA id a640c23a62f3a-a996274deeesm196971266b.103.2024.10.08.13.38.04
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 08 Oct 2024 13:38:04 -0700 (PDT)
-Date: Tue, 8 Oct 2024 22:38:02 +0200
-From: Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@baylibre.com>
-To: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
-Cc: Ulf Hansson <ulf.hansson@linaro.org>, 
-	Sakari Ailus <sakari.ailus@linux.intel.com>, dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org, 
-	linux-bluetooth@vger.kernel.org, linux-clk@vger.kernel.org, linux-crypto@vger.kernel.org, 
-	dmaengine@vger.kernel.org, linux-gpio@vger.kernel.org, amd-gfx@lists.freedesktop.org, 
-	nouveau@lists.freedesktop.org, linux-stm32@st-md-mailman.stormreply.com, 
-	linux-arm-kernel@lists.infradead.org, linux-i2c@vger.kernel.org, linux-i3c@lists.infradead.org, 
-	linux-iio@vger.kernel.org, linux-input@vger.kernel.org, patches@opensource.cirrus.com, 
-	iommu@lists.linux.dev, imx@lists.linux.dev, linux-mediatek@lists.infradead.org, 
-	linux-media@vger.kernel.org, linux-mmc@vger.kernel.org, linux-mtd@lists.infradead.org, 
-	netdev@vger.kernel.org, linux-wireless@vger.kernel.org, linux-pci@vger.kernel.org, 
-	linux-phy@lists.infradead.org, linux-pwm@vger.kernel.org, linux-remoteproc@vger.kernel.org, 
-	linux-sound@vger.kernel.org, linux-spi@vger.kernel.org, linux-staging@lists.linux.dev, 
-	linux-usb@vger.kernel.org, linux-serial@vger.kernel.org, greybus-dev@lists.linaro.org, 
-	asahi@lists.linux.dev, rafael@kernel.org, Andy Shevchenko <andy.shevchenko@gmail.com>
-Subject: Re: [PATCH 00/51] treewide: Switch to __pm_runtime_put_autosuspend()
-Message-ID: <ttmnzgsdyng5vab63pvj7csrotbsmwnultjelvdotrvyg2snac@iv7afgect5f3>
-References: <20241004094101.113349-1-sakari.ailus@linux.intel.com>
- <CAPDyKFp0N6UJhnHS164Tdf=xkWB0jzq65L9TdvYazeBQ-6WjeQ@mail.gmail.com>
- <20241007184924.GH14766@pendragon.ideasonboard.com>
+	dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b="kZeLUSL3"
+Received: from pps.filterd (m0279870.ppops.net [127.0.0.1])
+	by mx0a-0031df01.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 498Ew9Tn029264;
+	Tue, 8 Oct 2024 22:07:44 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=quicinc.com; h=
+	cc:content-transfer-encoding:content-type:date:from:in-reply-to
+	:message-id:mime-version:references:subject:to; s=qcppdkim1; bh=
+	61KLYYbFXr/uwE+fC9yma3isXx1jdUM/pnhUeWSDiWs=; b=kZeLUSL3xRBhSm4e
+	F61tQofG6E9H6vwxp4m5VD8d1TgTYlQIODq42U0wqv1mt8LRisNkVGrP7CrQbQ+U
+	w3CIALNY1OMM6Zi5xRL2D0bdb9PFkKwD84PcGDsbBCdVwr/ohN25y0uWne26HzjW
+	ljfZ1Pos/p6w1fGRmXRLbBZUqT0iFtRNcFME5kbvKUGwptq0NLsa7HbTeXyccabs
+	E0tCEcQIyIHcoMGAaJFoYTz07qFa3nDMYE6EW0gfDwNa6g1Mj/PXUTF7Dpkct3bI
+	ST0Duus3N3sxE94XLOolVex3dfYAvX6aVMF1mBvi2hzKVm1/q8phXwkn/ywbgIbG
+	LT24rg==
+Received: from nalasppmta04.qualcomm.com (Global_NAT1.qualcomm.com [129.46.96.20])
+	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 424yj02jn0-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Tue, 08 Oct 2024 22:07:44 +0000 (GMT)
+Received: from nalasex01b.na.qualcomm.com (nalasex01b.na.qualcomm.com [10.47.209.197])
+	by NALASPPMTA04.qualcomm.com (8.18.1.2/8.18.1.2) with ESMTPS id 498M7gMK025189
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Tue, 8 Oct 2024 22:07:43 GMT
+Received: from hu-obabatun-lv.qualcomm.com (10.49.16.6) by
+ nalasex01b.na.qualcomm.com (10.47.209.197) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.1544.9; Tue, 8 Oct 2024 15:07:40 -0700
+From: Oreoluwa Babatunde <quic_obabatun@quicinc.com>
+To: <robh@kernel.org>
+CC: <aisheng.dong@nxp.com>, <andy@black.fi.intel.com>,
+        <catalin.marinas@arm.com>, <devicetree@vger.kernel.org>, <hch@lst.de>,
+        <iommu@lists.linux.dev>, <kernel@quicinc.com>, <klarasmodin@gmail.com>,
+        <linux-kernel@vger.kernel.org>, <m.szyprowski@samsung.com>,
+        <quic_ninanaik@quicinc.com>, <robin.murphy@arm.com>,
+        <saravanak@google.com>, <will@kernel.org>,
+        Oreoluwa Babatunde <quic_obabatun@quicinc.com>
+Subject: [PATCH v10 2/2] of: reserved_mem: Add code to dynamically allocate reserved_mem array
+Date: Tue, 8 Oct 2024 15:06:24 -0700
+Message-ID: <20241008220624.551309-3-quic_obabatun@quicinc.com>
+X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20241008220624.551309-1-quic_obabatun@quicinc.com>
+References: <20241008220624.551309-1-quic_obabatun@quicinc.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-	protocol="application/pgp-signature"; boundary="2ocqjla6tcmukjn3"
-Content-Disposition: inline
-In-Reply-To: <20241007184924.GH14766@pendragon.ideasonboard.com>
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-ClientProxiedBy: nalasex01b.na.qualcomm.com (10.47.209.197) To
+ nalasex01b.na.qualcomm.com (10.47.209.197)
+X-QCInternal: smtphost
+X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
+X-Proofpoint-GUID: qZlN18c2mZHCgcPGFSAGtLAWnROSEtfY
+X-Proofpoint-ORIG-GUID: qZlN18c2mZHCgcPGFSAGtLAWnROSEtfY
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.293,Aquarius:18.0.1039,Hydra:6.0.680,FMLib:17.12.60.29
+ definitions=2024-09-06_09,2024-09-06_01,2024-09-02_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 phishscore=0 impostorscore=0
+ bulkscore=0 mlxlogscore=999 mlxscore=0 adultscore=0 clxscore=1015
+ lowpriorityscore=0 suspectscore=0 priorityscore=1501 spamscore=0
+ malwarescore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.19.0-2409260000 definitions=main-2410080141
 
+The reserved_mem array is statically allocated with a size of
+MAX_RESERVED_REGIONS(64). Therefore, if the number of reserved_mem
+regions exceeds this size, there will not be enough space to store
+all the data.
 
---2ocqjla6tcmukjn3
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+Hence, extend the use of the static array by introducing a
+dynamically allocated array based on the number of reserved memory
+regions specified in the DT.
 
-Hello,
+On architectures such as arm64, memblock allocated memory is not
+writable until after the page tables have been setup. Hence, the
+dynamic allocation of the reserved_mem array will need to be done only
+after the page tables have been setup.
 
-On Mon, Oct 07, 2024 at 09:49:24PM +0300, Laurent Pinchart wrote:
-> On Fri, Oct 04, 2024 at 04:38:36PM +0200, Ulf Hansson wrote:
-> > On Fri, 4 Oct 2024 at 11:41, Sakari Ailus <sakari.ailus@linux.intel.com=
-> wrote:
-> > >
-> > > Hello everyone,
-> > >
-> > > This set will switch the users of pm_runtime_put_autosuspend() to
-> > > __pm_runtime_put_autosuspend() while the former will soon be re-purpo=
-sed
-> > > to include a call to pm_runtime_mark_last_busy(). The two are almost
-> > > always used together, apart from bugs which are likely common. Going
-> > > forward, most new users should be using pm_runtime_put_autosuspend().
-> > >
-> > > Once this conversion is done and pm_runtime_put_autosuspend() re-purp=
-osed,
-> > > I'll post another set to merge the calls to __pm_runtime_put_autosusp=
-end()
-> > > and pm_runtime_mark_last_busy().
-> >=20
-> > That sounds like it could cause a lot of churns.
-> >=20
-> > Why not add a new helper function that does the
-> > pm_runtime_put_autosuspend() and the pm_runtime_mark_last_busy()
-> > things? Then we can start moving users over to this new interface,
-> > rather than having this intermediate step?
->=20
-> I think the API would be nicer if we used the shortest and simplest
-> function names for the most common use cases. Following
-> pm_runtime_put_autosuspend() with pm_runtime_mark_last_busy() is that
-> most common use case. That's why I like Sakari's approach of repurposing
-> pm_runtime_put_autosuspend(), and introducing
-> __pm_runtime_put_autosuspend() for the odd cases where
-> pm_runtime_mark_last_busy() shouldn't be called.
+As a result, a temporary static array is still needed in the initial
+stages to store the information of the dynamically-placed reserved
+memory regions because the start address is selected only at run-time
+and is not stored anywhere else.
+It is not possible to wait until the reserved_mem array is allocated
+because this is done after the page tables are setup and the reserved
+memory regions need to be initialized before then.
 
-That's ok for me. However this patch series isn't the optimal path to
-there because most drivers (i.e. those that already today do
-pm_runtime_mark_last_busy() in combination with
-pm_runtime_put_autosuspend()) have to be patched twice.
+After the reserved_mem array is allocated, all entries from the static
+array is copied over to the new array, and the rest of the information
+for the statically-placed reserved memory regions are read in from the
+DT and stored in the new array as well.
 
-The saner route is: Only convert the drivers with a sole
-pm_runtime_put_autosuspend() (i.e. without pm_runtime_mark_last_busy())
-to __pm_runtime_put_autosuspend(). Then add the mark_last_busy() bits to
-pm_runtime_put_autosuspend() and then drop the explicit calls to
-pm_runtime_mark_last_busy() before pm_runtime_put_autosuspend().
+Once the init process is completed, the temporary static array is
+released back to the system because it is no longer needed. This is
+achieved by marking it as __initdata.
 
-(Note this doesn't take into account Rafael's position that
-pm_runtime_put() might be the saner option. My argument applies for that
-conversion analogously.)
+Signed-off-by: Oreoluwa Babatunde <quic_obabatun@quicinc.com>
+---
+ drivers/of/of_reserved_mem.c | 63 +++++++++++++++++++++++++++++++++---
+ 1 file changed, 59 insertions(+), 4 deletions(-)
 
-Best regards
-Uwe
+diff --git a/drivers/of/of_reserved_mem.c b/drivers/of/of_reserved_mem.c
+index 2011174211f9..45517b9e57b1 100644
+--- a/drivers/of/of_reserved_mem.c
++++ b/drivers/of/of_reserved_mem.c
+@@ -27,7 +27,9 @@
+ 
+ #include "of_private.h"
+ 
+-static struct reserved_mem reserved_mem[MAX_RESERVED_REGIONS];
++static struct reserved_mem reserved_mem_array[MAX_RESERVED_REGIONS] __initdata;
++static struct reserved_mem *reserved_mem __refdata = reserved_mem_array;
++static int total_reserved_mem_cnt = MAX_RESERVED_REGIONS;
+ static int reserved_mem_count;
+ 
+ static int __init early_init_dt_alloc_reserved_memory_arch(phys_addr_t size,
+@@ -55,6 +57,50 @@ static int __init early_init_dt_alloc_reserved_memory_arch(phys_addr_t size,
+ 	return err;
+ }
+ 
++/*
++ * alloc_reserved_mem_array() - allocate memory for the reserved_mem
++ * array using memblock
++ *
++ * This function is used to allocate memory for the reserved_mem
++ * array according to the total number of reserved memory regions
++ * defined in the DT.
++ * After the new array is allocated, the information stored in
++ * the initial static array is copied over to this new array and
++ * the new array is used from this point on.
++ */
++static void __init alloc_reserved_mem_array(void)
++{
++	struct reserved_mem *new_array;
++	size_t alloc_size, copy_size, memset_size;
++
++	alloc_size = array_size(total_reserved_mem_cnt, sizeof(*new_array));
++	if (alloc_size == SIZE_MAX) {
++		pr_err("Failed to allocate memory for reserved_mem array with err: %d", -EOVERFLOW);
++		return;
++	}
++
++	new_array = memblock_alloc(alloc_size, SMP_CACHE_BYTES);
++	if (!new_array) {
++		pr_err("Failed to allocate memory for reserved_mem array with err: %d", -ENOMEM);
++		return;
++	}
++
++	copy_size = array_size(reserved_mem_count, sizeof(*new_array));
++	if (copy_size == SIZE_MAX) {
++		memblock_free(new_array, alloc_size);
++		total_reserved_mem_cnt = MAX_RESERVED_REGIONS;
++		pr_err("Failed to allocate memory for reserved_mem array with err: %d", -EOVERFLOW);
++		return;
++	}
++
++	memset_size = alloc_size - copy_size;
++
++	memcpy(new_array, reserved_mem, copy_size);
++	memset(new_array + reserved_mem_count, 0, memset_size);
++
++	reserved_mem = new_array;
++}
++
+ static void __init fdt_init_reserved_mem_node(struct reserved_mem *rmem);
+ /*
+  * fdt_reserved_mem_save_node() - save fdt node for second pass initialization
+@@ -64,7 +110,7 @@ static void __init fdt_reserved_mem_save_node(unsigned long node, const char *un
+ {
+ 	struct reserved_mem *rmem = &reserved_mem[reserved_mem_count];
+ 
+-	if (reserved_mem_count == ARRAY_SIZE(reserved_mem)) {
++	if (reserved_mem_count == total_reserved_mem_cnt) {
+ 		pr_err("not enough space for all defined regions.\n");
+ 		return;
+ 	}
+@@ -193,6 +239,9 @@ void __init fdt_scan_reserved_mem_reg_nodes(void)
+ 		return;
+ 	}
+ 
++	/* Attempt dynamic allocation of a new reserved_mem array */
++	alloc_reserved_mem_array();
++
+ 	if (__reserved_mem_check_root(node)) {
+ 		pr_err("Reserved memory: unsupported node format, ignoring\n");
+ 		return;
+@@ -232,7 +281,7 @@ static int __init __reserved_mem_alloc_size(unsigned long node, const char *unam
+ int __init fdt_scan_reserved_mem(void)
+ {
+ 	int node, child;
+-	int dynamic_nodes_cnt = 0;
++	int dynamic_nodes_cnt = 0, count = 0;
+ 	int dynamic_nodes[MAX_RESERVED_REGIONS];
+ 	const void *fdt = initial_boot_params;
+ 
+@@ -255,6 +304,8 @@ int __init fdt_scan_reserved_mem(void)
+ 		uname = fdt_get_name(fdt, child, NULL);
+ 
+ 		err = __reserved_mem_reserve_reg(child, uname);
++		if (!err)
++			count++;
+ 		/*
+ 		 * Save the nodes for the dynamically-placed regions
+ 		 * into an array which will be used for allocation right
+@@ -269,11 +320,15 @@ int __init fdt_scan_reserved_mem(void)
+ 	}
+ 	for (int i = 0; i < dynamic_nodes_cnt; i++) {
+ 		const char *uname;
++		int err;
+ 
+ 		child = dynamic_nodes[i];
+ 		uname = fdt_get_name(fdt, child, NULL);
+-		__reserved_mem_alloc_size(child, uname);
++		err = __reserved_mem_alloc_size(child, uname);
++		if (!err)
++			count++;
+ 	}
++	total_reserved_mem_cnt = count;
+ 	return 0;
+ }
+ 
+-- 
+2.34.1
 
---2ocqjla6tcmukjn3
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEP4GsaTp6HlmJrf7Tj4D7WH0S/k4FAmcFmCEACgkQj4D7WH0S
-/k6xnwf/QOZhbtT562rFFa3JIiBatDxTcqyEXoXClrP7jSyQFY/VFzq2S2jRHOFt
-wM6zQUX1bTUqDtC4HozJIbQDjLxd3qFgc5RoTRLV8VhRJbcq9cOo5Nf1h4KJ5Ip9
-nhpzoHwUHoEjEHj1f9UvEWfnFAVCSLFxgb14ZDHZyb2pQue3G5OYI2f2cJYT8YVB
-xQktDFp7rUu4xWDTzoIxNKvR1Ipy5fGxdf9R2/+IQhW64sWuDG2ZH6tAmfn6mEb8
-ecspbesJx+NMbZ06Zl7wqBvyj/DpQGgPaCnWUQ5cI0Of/kOzqxh4+65JK68CLLs0
-/Goin2zz55IZITGC5zHuAA07bW/c7Q==
-=7Wup
------END PGP SIGNATURE-----
-
---2ocqjla6tcmukjn3--
