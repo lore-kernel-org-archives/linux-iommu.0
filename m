@@ -1,178 +1,88 @@
-Received: from mail-yb1-f175.google.com (mail-yb1-f175.google.com [209.85.219.175])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6C8D618CC19
-	for <iommu@lists.linux.dev>; Mon,  7 Oct 2024 22:35:27 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.219.175
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 05D4140858;
+	Tue,  8 Oct 2024 03:18:50 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1728340529; cv=none; b=tKZ21L1okcwVVOe34juAIvpYD60rghVO+TRPkjYtAOL+vs8TSLfA3J6Bos3mYCcmPTMHIXLNbZG4Ao6zdQY4BDsJuzVD188swLMRE9coal13HYsduyteYvIKEjWAnEW/pm6ps+ajmwICk0LEB70h0lzUT3eirDZ7a+H2Q+RXV/Y=
+	t=1728357531; cv=none; b=SLxMSUTDEFHYgm8YKlC0vb4yuyskQLvhjWkDRGUY/WQex55J/+JjgEUzihzLFt39pILb9KxLAYCkt4rjl64rZun01kMq3qg21YRC0J4FvVNQ4TxbZ5VSUJaIn14MOl9ciFwfRMcGAMLx5vaWnC2eARG30bU50oL0juZnpC21SOA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1728340529; c=relaxed/simple;
-	bh=gesjil9Y0RZgbcjmX5qHd/S97rHztDCcedkOm+1cl0k=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=J5jJ1GE1mcF8Pn3apuZcNbHtQ9J30CE+QfArQn9I6FclTXXYajo+yQEMfhVjp+RH6Wc4QCnwVFcaBgM2+9pRoMYuca8nqbSzBrnvvZgMKLtsKBYSFbT8H9D/YFonclOG2wbHB2CIv92JMUx32dr0c2eeddHLbd5ImcGT6gO4t8Q=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org; spf=pass smtp.mailfrom=linaro.org; dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b=sOB0r7tr; arc=none smtp.client-ip=209.85.219.175
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linaro.org
+	s=arc-20240116; t=1728357531; c=relaxed/simple;
+	bh=Ua933CzRTJumVMvUdj0HaC4dU69RBkIzAn0YeOYi6sQ=;
+	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version; b=AnCfHb9AhYCaf2tB23bazx5ljsKZoamQ73CFqqSikMKrLqQp3zV4a0vKoYu3SlYii1ouidoAwVjdv5zZOU4cesmtUQ9OTD7BG+Ox19WasfQ7On3Zrho4doEUe5/4jMIzAaZetk5QoYbmrB38IGLTP2/R8gNCHLWh2QK3oXR8Jb0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=FZ3akMKu; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="sOB0r7tr"
-Received: by mail-yb1-f175.google.com with SMTP id 3f1490d57ef6-e25cf3c7278so4378291276.3
-        for <iommu@lists.linux.dev>; Mon, 07 Oct 2024 15:35:27 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1728340526; x=1728945326; darn=lists.linux.dev;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=gesjil9Y0RZgbcjmX5qHd/S97rHztDCcedkOm+1cl0k=;
-        b=sOB0r7trCnvRpgopvI16wbEf1ZtKWssvDrQydRD1H9d0pBHoc6S41tRzH5ELlNDgft
-         Y4aU1ZlNAMOaqT0pEkvn5aY3VXkdRNq8gGqpppJmJVhN7XZSNTqYVPy+5j7ck93os9j1
-         ktUFY1qSj+9k2tcf7/AUJcYtbW/n+zwqK3DzzBnhBdz/hXJFDUSavV4AaQX/QBMTNjWZ
-         dgs1iG8vscWPQxiIAdxKxnfm0Mj0Kc/F8KMaA5ke/2CPkrzynemKeN1C9iyOPmddmJuH
-         gR2Q/S3hcLefd3E42G+kKuFZ8EzECMAi9nlantf6EarYZX94oafTu+fxh8AOD4lZj+lj
-         cZzw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1728340526; x=1728945326;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=gesjil9Y0RZgbcjmX5qHd/S97rHztDCcedkOm+1cl0k=;
-        b=FizpcapCePY+J8Z5LgTwjDewrpMWtuYcTAVVKjiG2Kp/QL/cAoAefh06iS0NtOvS5m
-         gnGnqgqYxBK4bFcOsMB9LiDO7kqzBuvJv+4PowIww3YZmTbBqKknG+Sw44BwpnWXrSVZ
-         17a9kzHdIXHYi0ImH9TGhL5jtUA9P/FqYEiDvdSM0HXsj5ULJmx1i5P8MVlcW8zC5CVW
-         e5waDMoSNAtpC/xJX3wtN4e0YlOpX95oaenOvG6GARTw77Qs53Me0V4Is9x4MhbH7GQC
-         Xp/Liz7Dor6tYQKfNvFCm3g6zd+Uc5mLoKCN9ESFjaeJGFjIeTZcWpQTxIMUW1soCaD0
-         EolA==
-X-Forwarded-Encrypted: i=1; AJvYcCXF6LGRId8lolZxunAZ9JoGxKtWjPd8ES9lG3k4DumDKfL31MPmUC3EdEsvvhSwOR13BVweCA==@lists.linux.dev
-X-Gm-Message-State: AOJu0Yy99G+7cp9a/N3oWd1fwe1BL/pumQoLHEZQElPVQg1IYbWsTb2p
-	oGPkHWJWUzc8F11Q6hMf4GXqdR7kSStR8dWg65rlLHk0N5oLUSVAKSI+R6H3sXTboARoajuMoVN
-	aIC/qS43HYaNEAgSV7tBSpoBDoeXB7yyyj9AfRQ==
-X-Google-Smtp-Source: AGHT+IGYLLRVc3CeXKReIUVnntYlZ+ULRb29gPUl3UTx4hoqAUGdx6q2aFDzdnacRWqcM/cOYseo4GoEdp7e3a8qLZE=
-X-Received: by 2002:a05:6902:2305:b0:e28:6ec7:4353 with SMTP id
- 3f1490d57ef6-e2893964043mr10612649276.54.1728340526338; Mon, 07 Oct 2024
- 15:35:26 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="FZ3akMKu"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A2DB2C4CED0;
+	Tue,  8 Oct 2024 03:18:47 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1728357530;
+	bh=Ua933CzRTJumVMvUdj0HaC4dU69RBkIzAn0YeOYi6sQ=;
+	h=From:To:Cc:Subject:Date:From;
+	b=FZ3akMKui/CJtn3sffpchhRNiHNfThic/+bw7MCNtF2Vbg44VQatISMGVRIB3NAUS
+	 jA6YKz/x+1CTEC9MNcAZ1CWMlIvlQkp6L542zPWLJ9MHXSzMlD37nZ7LVxxjBYf4Uc
+	 2FzoXU5us6kQ/1ERiJrzpWtfE0zWVpHC07UzXfm1RpAMWv9IOCJCpJRiQjlwEXY5td
+	 rFg9t1Q1CDqEPirmQPHNlsM5H2tM37wM9fofAsOW8RP/E/+Ax1hETR8M2NvYuK9AEg
+	 1qY9ZHCh3lxw+4l4Q7f/OD7erR7+qnaXncXxn45yPaQK3tAzkbJeRitV9cEKDM0uEk
+	 vT6aWlq2PzJJA==
+From: "Aneesh Kumar K.V (Arm)" <aneesh.kumar@kernel.org>
+To: linux-kernel@vger.kernel.org,
+	iommu@lists.linux.dev
+Cc: jean-philippe@linaro.org,
+	"Aneesh Kumar K.V (Arm)" <aneesh.kumar@kernel.org>,
+	Nicolin Chen <nicolinc@nvidia.com>,
+	Jason Gunthorpe <jgg@nvidia.com>,
+	Will Deacon <will@kernel.org>
+Subject: [PATCH] iommu/arm-smmu-v3: Fix overflow with sid_bits when computing level1 table index
+Date: Tue,  8 Oct 2024 08:48:31 +0530
+Message-Id: <20241008031831.1254130-1-aneesh.kumar@kernel.org>
+X-Mailer: git-send-email 2.34.1
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <20241004094101.113349-1-sakari.ailus@linux.intel.com>
- <CAPDyKFp0N6UJhnHS164Tdf=xkWB0jzq65L9TdvYazeBQ-6WjeQ@mail.gmail.com>
- <20241007184924.GH14766@pendragon.ideasonboard.com> <CAPDyKFpQVnF7eQv3dup8k-3EijnMjuveCG9sZ=Rpey1Y6MBJEg@mail.gmail.com>
- <20241007222502.GG30699@pendragon.ideasonboard.com>
-In-Reply-To: <20241007222502.GG30699@pendragon.ideasonboard.com>
-From: Ulf Hansson <ulf.hansson@linaro.org>
-Date: Tue, 8 Oct 2024 00:34:49 +0200
-Message-ID: <CAPDyKFrGNwna6Y2pqSRaBbRYHKRaD2ayqQHLtoqLPOu9Et7qTg@mail.gmail.com>
-Subject: Re: [PATCH 00/51] treewide: Switch to __pm_runtime_put_autosuspend()
-To: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
-Cc: Sakari Ailus <sakari.ailus@linux.intel.com>, dri-devel@lists.freedesktop.org, 
-	linux-kernel@vger.kernel.org, linux-bluetooth@vger.kernel.org, 
-	linux-clk@vger.kernel.org, linux-crypto@vger.kernel.org, 
-	dmaengine@vger.kernel.org, linux-gpio@vger.kernel.org, 
-	amd-gfx@lists.freedesktop.org, nouveau@lists.freedesktop.org, 
-	linux-stm32@st-md-mailman.stormreply.com, 
-	linux-arm-kernel@lists.infradead.org, linux-i2c@vger.kernel.org, 
-	linux-i3c@lists.infradead.org, linux-iio@vger.kernel.org, 
-	linux-input@vger.kernel.org, patches@opensource.cirrus.com, 
-	iommu@lists.linux.dev, imx@lists.linux.dev, 
-	linux-mediatek@lists.infradead.org, linux-media@vger.kernel.org, 
-	linux-mmc@vger.kernel.org, linux-mtd@lists.infradead.org, 
-	netdev@vger.kernel.org, linux-wireless@vger.kernel.org, 
-	linux-pci@vger.kernel.org, linux-phy@lists.infradead.org, 
-	linux-pwm@vger.kernel.org, linux-remoteproc@vger.kernel.org, 
-	linux-sound@vger.kernel.org, linux-spi@vger.kernel.org, 
-	linux-staging@lists.linux.dev, linux-usb@vger.kernel.org, 
-	linux-serial@vger.kernel.org, greybus-dev@lists.linaro.org, 
-	asahi@lists.linux.dev, rafael@kernel.org, 
-	Andy Shevchenko <andy.shevchenko@gmail.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 
-On Tue, 8 Oct 2024 at 00:25, Laurent Pinchart
-<laurent.pinchart@ideasonboard.com> wrote:
->
-> Hi Ulf,
->
-> On Tue, Oct 08, 2024 at 12:08:24AM +0200, Ulf Hansson wrote:
-> > On Mon, 7 Oct 2024 at 20:49, Laurent Pinchart wrote:
-> > > On Fri, Oct 04, 2024 at 04:38:36PM +0200, Ulf Hansson wrote:
-> > > > On Fri, 4 Oct 2024 at 11:41, Sakari Ailus wrote:
-> > > > >
-> > > > > Hello everyone,
-> > > > >
-> > > > > This set will switch the users of pm_runtime_put_autosuspend() to
-> > > > > __pm_runtime_put_autosuspend() while the former will soon be re-purposed
-> > > > > to include a call to pm_runtime_mark_last_busy(). The two are almost
-> > > > > always used together, apart from bugs which are likely common. Going
-> > > > > forward, most new users should be using pm_runtime_put_autosuspend().
-> > > > >
-> > > > > Once this conversion is done and pm_runtime_put_autosuspend() re-purposed,
-> > > > > I'll post another set to merge the calls to __pm_runtime_put_autosuspend()
-> > > > > and pm_runtime_mark_last_busy().
-> > > >
-> > > > That sounds like it could cause a lot of churns.
-> > > >
-> > > > Why not add a new helper function that does the
-> > > > pm_runtime_put_autosuspend() and the pm_runtime_mark_last_busy()
-> > > > things? Then we can start moving users over to this new interface,
-> > > > rather than having this intermediate step?
-> > >
-> > > I think the API would be nicer if we used the shortest and simplest
-> > > function names for the most common use cases. Following
-> > > pm_runtime_put_autosuspend() with pm_runtime_mark_last_busy() is that
-> > > most common use case. That's why I like Sakari's approach of repurposing
-> > > pm_runtime_put_autosuspend(), and introducing
-> > > __pm_runtime_put_autosuspend() for the odd cases where
-> > > pm_runtime_mark_last_busy() shouldn't be called.
-> >
-> > Okay, so the reason for this approach is because we couldn't find a
-> > short and descriptive name that could be used in favor of
-> > pm_runtime_put_autosuspend(). Let me throw some ideas at it and maybe
-> > you like it - or not. :-)
->
-> I like the idea at least :-)
->
-> > I don't know what options you guys discussed, but to me the entire
-> > "autosuspend"-suffix isn't really that necessary in my opinion. There
-> > are more ways than calling pm_runtime_put_autosuspend() that triggers
-> > us to use the RPM_AUTO flag for rpm_suspend(). For example, just
-> > calling pm_runtime_put() has the similar effect.
->
-> To be honest, I'm lost there. pm_runtime_put() calls
-> __pm_runtime_idle(RPM_GET_PUT | RPM_ASYNC), while
-> pm_runtime_put_autosuspend() calls __pm_runtime_suspend(RPM_GET_PUT |
-> RPM_ASYNC | RPM_AUTO).
+As per the spec, max bits of StreamID can be a value between 0 - 32
+inclusive. With the FVP model, SMMU_IDR1.SID_SIZE returns value 32 which
+results in arm_smmu_init_strtab_2lvl computing the last_sid_idx wrongly.
+This caused a failure in ahci disk initialization with the FVP model as
+shown below.
 
-__pm_runtime_idle() ends up calling rpm_idle(), which may call
-rpm_suspend() - if it succeeds to idle the device. In that case, it
-tags on the RPM_AUTO flag in the call to rpm_suspend(). Quite similar
-to what is happening when calling pm_runtime_put_autosuspend().
+[    7.147067] ata1.00: qc timeout after 5000 msecs (cmd 0xec)
+[    7.147177] ata1.00: failed to IDENTIFY (I/O error, err_mask=0x4)
+[    7.458320] ata1: SATA link up 6.0 Gbps (SStatus 133 SControl 300)
+[   17.643140] ata1.00: qc timeout after 10000 msecs (cmd 0xec)
+[   17.643251] ata1.00: failed to IDENTIFY (I/O error, err_mask=0x4)
+[   17.643359] ata1: limiting SATA link speed to 3.0 Gbps
+[   17.954651] ata1: SATA link up 6.0 Gbps (SStatus 133 SControl 320)
+[   48.107079] ata1.00: qc timeout after 30000 msecs (cmd 0xec)
+[   48.107190] ata1.00: failed to IDENTIFY (I/O error, err_mask=0x4)
 
->
-> >
-> > Moreover, it's similar for pm_runtime_mark_last_busy(), it's called
-> > during rpm_resume() too, for example. So why bother about having
-> > "mark_last_busy" in the new name too.
-> >
-> > That said, my suggestion is simply "pm_runtime_put_suspend".
->
-> Can we do even better, and make pm_runtime_put() to handle autosuspend
-> automatically when autosuspend is enabled ?
+Cc: Nicolin Chen <nicolinc@nvidia.com>
+Cc: Jason Gunthorpe <jgg@nvidia.com>
+Cc: Will Deacon <will@kernel.org>
+Fixes: ce410410f1a7 ("iommu/arm-smmu-v3: Add arm_smmu_strtab_l1/2_idx()")
+Signed-off-by: Aneesh Kumar K.V (Arm) <aneesh.kumar@kernel.org>
+---
+ drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-As stated above, this is already the case.
+diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+index 737c5b882355..01a2faee04bc 100644
+--- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
++++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+@@ -3625,7 +3625,7 @@ static int arm_smmu_init_strtab_2lvl(struct arm_smmu_device *smmu)
+ 	u32 l1size;
+ 	struct arm_smmu_strtab_cfg *cfg = &smmu->strtab_cfg;
+ 	unsigned int last_sid_idx =
+-		arm_smmu_strtab_l1_idx((1 << smmu->sid_bits) - 1);
++		arm_smmu_strtab_l1_idx((1UL << smmu->sid_bits) - 1);
+ 
+ 	/* Calculate the L1 size, capped to the SIDSIZE. */
+ 	cfg->l2.num_l1_ents = min(last_sid_idx + 1, STRTAB_MAX_L1_ENTRIES);
+-- 
+2.34.1
 
->
-> > If you don't like it, I will certainly not object to your current
-> > approach, even if I think it leads to unnecessary churns.
-> >
-> > [...]
-> >
-> > Kind regards
-> > Uffe
->
-> --
-> Regards,
->
-> Laurent Pinchart
-
-Kind regards
-Uffe
