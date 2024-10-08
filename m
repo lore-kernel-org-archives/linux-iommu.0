@@ -1,52 +1,45 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2CE08212D19;
-	Tue,  8 Oct 2024 18:24:18 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1BD44212D2B
+	for <iommu@lists.linux.dev>; Tue,  8 Oct 2024 18:24:20 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1728411859; cv=none; b=QQC+hKzdP2dlGZvVIlDkkBJ/Tl+Is8msU9AE3OgCF0cku3Y60aqJY5Uflhl9uo5sszBXTB6J+AUsp1rqX1AJX00tLXPOClEGx+kk8y57VeV0j2AEm+zTb5QcJoq97SNvE1AKbjaQxlV+f0ffIwogGzN8hpL+hKlRNUuY/Ls0M/I=
+	t=1728411861; cv=none; b=kmuWkc08PMKZnBuFbjQitqnu6GGYkjI5ZbS1RCkcCjv9sgLukD2dizwcM2dTBwZTz3w8WIDexajynX+6DpRmQ1pR9SmImf8erRSbH34cXBNZIUdQ2dAPUDhzFSif+vZG8oy9Ewiud+jmIiYKOjQec1nv4VWA1dsAuj4jM8RIPXs=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1728411859; c=relaxed/simple;
-	bh=HZlnqo+1ZAcu5d/47LtzTbNi6jaK0jMUp+f63esCaGw=;
+	s=arc-20240116; t=1728411861; c=relaxed/simple;
+	bh=n4S+1fx0NlNrk04YQn4c8yzmilu8UbXYGmQH8vnZb7Y=;
 	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=ichdCrcLQk6JEwKfK439wZtq+COGzEcouJ1ijbb1hkKLuD6GTPT5r36OtjmB0HQ8hn7Vu8sEcIntFe98WQw4sQpWeC5FwmxFlxbF053JQXSMXH5QBvxGtyKEwoebDYPxsQnPpt8WbzHL6kZqFaSzJDds0QWJIJq0u2oIeV9IMfs=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Zb1hKXUC; arc=none smtp.client-ip=10.30.226.201
+	 MIME-Version:Content-Type; b=GvqlkBRDVTJ25vsmODi++sa8SxHfAbKl1jHLQsont7C7HUWH82PrvFus8vT5I43yB+SEBDG+mfGPjXYMRi83/qNKAVq8LdoKEy5y1hfE0tjU70jExtcPm6iwu8F6T3GbzdnWzBoHpsqOTP+gFRVPdwLIEcs/18aOElk7KI3qLFA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=A/WuOhQV; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Zb1hKXUC"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 57678C4CECE;
-	Tue,  8 Oct 2024 18:24:16 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="A/WuOhQV"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3F7B8C4CEC7;
+	Tue,  8 Oct 2024 18:24:19 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1728411858;
-	bh=HZlnqo+1ZAcu5d/47LtzTbNi6jaK0jMUp+f63esCaGw=;
+	s=k20201202; t=1728411860;
+	bh=n4S+1fx0NlNrk04YQn4c8yzmilu8UbXYGmQH8vnZb7Y=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-	b=Zb1hKXUChH8iNdBE6a4Ea7EdE1gcoboPgumc2L7H2g705QaAwK6qzSLPDM0wNAZAK
-	 bE1OncLFVga6S5YJd9cyEISMbKXVce1/Jov1ed+tSZ7st/OqMyKFPHgzMnl/m4ie90
-	 s2gYOorirYdVfUt02UjBpP8zIpscaOz2wh6UdsfrOgx+Lp0vnIkENasY2cVG1w006K
-	 DvDP0fFwewKWISoOEkvfX8xZhiTDOSon9ofaUdAW0UJpdoUIvcYYt1Fyus8VemBcG+
-	 NCWj7dW6M73MxhPg5Twb4BILMhm6zdxl5l360+6bdfk5e2bkBU+RSl5oQts4SRxjc8
-	 5/kbzhMRsRoBw==
+	b=A/WuOhQVQsq3ULmYf/RJFrgjuVpViPvEycCwNp9GmqfwT9T1NQvP2JjrwwEI8dO2/
+	 RKlkCUFIKAB2XN8sTkTemXfClQImHqd41s5Ie6ySeXw5d7KUEKC3Bu8P9DT1bmcbNE
+	 TuNinnMrdpdfdzJgO1VXCLgO713NqBDUHUmWS2tvEnFCn66TrF83mLo+0FQVXqjr+K
+	 2zLYWyK+ub6pOCZpNlsz3ZWpYTPwQ8BgsRCDLHk58H5vPxm9SfrojV/R2vzQO9ULZd
+	 I+AbmzQ/aEwGK+zG1wMjBLOe7Q4toEKSXO7gVJ96R3Jduj3gaoUCnRO/ZH+jpZceOF
+	 q5KmHgdcR0PoA==
 From: Will Deacon <will@kernel.org>
-To: robin.murphy@arm.com,
-	joro@8bytes.org,
-	jgg@ziepe.ca,
-	nicolinc@nvidia.com,
-	mshavit@google.com,
-	smostafa@google.com,
-	baolu.lu@linux.intel.com,
-	Chen Ni <nichen@iscas.ac.cn>
+To: joro@8bytes.org,
+	Robin Murphy <robin.murphy@arm.com>
 Cc: catalin.marinas@arm.com,
 	kernel-team@android.com,
 	Will Deacon <will@kernel.org>,
-	linux-arm-kernel@lists.infradead.org,
 	iommu@lists.linux.dev,
-	linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2] iommu/arm-smmu-v3: Convert comma to semicolon
-Date: Tue,  8 Oct 2024 19:24:09 +0100
-Message-Id: <172840911539.3011557.12588658852433747200.b4-ty@kernel.org>
+	linux-arm-kernel@lists.infradead.org
+Subject: Re: [PATCH v2] iommu/arm-smmu: Clarify MMU-500 CPRE workaround
+Date: Tue,  8 Oct 2024 19:24:10 +0100
+Message-Id: <172840894159.3010969.17557611673793266245.b4-ty@kernel.org>
 X-Mailer: git-send-email 2.20.1
-In-Reply-To: <20240923021557.3432068-1-nichen@iscas.ac.cn>
-References: <20240923021557.3432068-1-nichen@iscas.ac.cn>
+In-Reply-To: <dfa82171b5248ad7cf1f25592101a6eec36b8c9a.1728400877.git.robin.murphy@arm.com>
+References: <dfa82171b5248ad7cf1f25592101a6eec36b8c9a.1728400877.git.robin.murphy@arm.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -56,23 +49,18 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 
-On Mon, 23 Sep 2024 10:15:57 +0800, Chen Ni wrote:
-> Replace comma between expressions with semicolons.
+On Tue, 08 Oct 2024 16:21:17 +0100, Robin Murphy wrote:
+> CPRE workarounds are implicated in at least 5 MMU-500 errata, some of
+> which remain unfixed. The comment and warning message have proven to be
+> unhelpfully misleading about this scope, so reword them to get the point
+> across with less risk of going out of date or confusing users.
 > 
-> Using a ',' in place of a ';' can have unintended side effects.
-> Although that is not the case here, it is seems best to use ';'
-> unless ',' is intended.
 > 
-> Found by inspection.
-> No functional change intended.
-> Compile tested only.
-> 
-> [...]
 
 Applied to will (for-joerg/arm-smmu/fixes), thanks!
 
-[1/1] iommu/arm-smmu-v3: Convert comma to semicolon
-      https://git.kernel.org/will/c/7de7d35429aa
+[1/1] iommu/arm-smmu: Clarify MMU-500 CPRE workaround
+      https://git.kernel.org/will/c/0dfe314cdd0d
 
 Cheers,
 -- 
