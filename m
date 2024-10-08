@@ -1,93 +1,196 @@
-Received: from mail-qt1-f170.google.com (mail-qt1-f170.google.com [209.85.160.170])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CD60A210C35
-	for <iommu@lists.linux.dev>; Tue,  8 Oct 2024 18:12:34 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.160.170
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 8A8FF20B20
+	for <iommu@lists.linux.dev>; Tue,  8 Oct 2024 18:20:09 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1728411156; cv=none; b=U/1LEre6TX+37aHPS4T1c1cJUSa4/e9d5JVxXTywhRuPCfL7IETDnn4P/6RHY5E8sakJ8kpLJWGz7rwGf9KVB1BboGRrYqL4HUL1nP0GR9D1pwMPx5voggwir8xzkaqsYaZgfDgH3c95IMqvk2sGYTx1Ua+UrpYTXzTDxeajR1M=
+	t=1728411611; cv=none; b=L5x5HdejKvfJotm484Uchmod68oOfXZBGVreBLvemZfMAUySK4vEDfgjcw5rRZsBdsXNToH4Ddcr+zMsDtRq6kArev4LGgwVstUMWDEThgzZ2PkTwRdfDEy/TvAWXYNFadTX9sVE5gMouIJqFMEK8GJcBnU7uSXBJutQcC9hPRQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1728411156; c=relaxed/simple;
-	bh=KZtnorh+6De5MzRF06EfiOi8deC4jcrfngGuRSraIlc=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=pNvA/0C7/EaBYKTHyIlpPEgzRosNzyOz7dnHDRGlRL5xv+rT98YvCrF+uxyVmouRv1EVc0SCEogY4CnlXGsHQo06AyCrYMhFlnEAMHhZpNyMZgkN3V3xBYqMvubU+m18ePCsl9WgFQVJflHVqc5AWGe2tmS6AMEhT9RlSDIiUNY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=hXcA67/P; arc=none smtp.client-ip=209.85.160.170
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="hXcA67/P"
-Received: by mail-qt1-f170.google.com with SMTP id d75a77b69052e-45aeef3ce92so41022661cf.2
-        for <iommu@lists.linux.dev>; Tue, 08 Oct 2024 11:12:34 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google; t=1728411154; x=1729015954; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=n+daBNbE4A3/IkoAmsu5dUuddPR6v/H43OmoGOvQMFg=;
-        b=hXcA67/PlnQIU5PMQdJXOh5YoZhZr5F6sKWU5H7YZTK6EvJkUxWzpkjMpaO0VtIdiO
-         qKnOlEPcPAFRM69jxOJIhd76EK/+tm0krdECiNPm/8VRLYzujmGvm9jKThMCiUwHyPNm
-         ca3IvocTjgQnhunrJZ/hlqJ8J33rZHCiIZn6/EduF9OHzuibj4QT7/snUZ9WFEE5bBuk
-         ocMof10bY/W9k+u8UEUVOHYGMNoFz3DrpWpn22RhmrUsHY52yuOL2ABcSaB5TO3OVPTj
-         KGKCNr8IQdl7styZmkE10m8LEgNIy6gCt95KiJsqDHZ/xzU1ESqSntsT6EygNhi82CrY
-         oWQg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1728411154; x=1729015954;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=n+daBNbE4A3/IkoAmsu5dUuddPR6v/H43OmoGOvQMFg=;
-        b=R7rlf8VL75H7sXIHUn+PK8kTCOFSRE8LHXGdt5vyhNVT/ABMODlu2khl2Bj1e/f4rc
-         UIbL5NEEOV/P+OhwscTcrEhY+RGA0z/yp2uu/pc93TMYcSbJ3ylGUXV8ApBxXqUFZCKj
-         tvqygXPI9YtuI59BRgxz++GoA9rJf1NS57KtvLt21icqHlfk/Me97LXDmiy4kMz9ac5w
-         9bBsf1UEywjlmEllu+2pCS7ra8iLekG9tzz+HaEkwoOlAZd0hz74pOMu08Rt3owDR7Dx
-         dYdgta5aGubB4FEy0gck7PL9+aij45GjMbzNBL+orOguzr9XynVjlVPmkD4o3iqQHgoK
-         itRw==
-X-Gm-Message-State: AOJu0Yzl9M+Gwc1y2FYmXUHNwPDFCF7Blq+R+9xVH+E4ixkKkf5nri1G
-	g8C9WtBIAoq/stjnEE6nRNHZpGudXOzkisZWaWJr0scBY4h6UaTj4yLYOFISyqQ=
-X-Google-Smtp-Source: AGHT+IFZ7849aZEK7tygFhqWieCpfCpQYJY7F+nz/8tdd79wkaQ8EwIY9JISq9FkFonwvaH6jvNvDg==
-X-Received: by 2002:a05:622a:1a87:b0:458:5011:6671 with SMTP id d75a77b69052e-45d9badaf62mr199367281cf.39.1728411153683;
-        Tue, 08 Oct 2024 11:12:33 -0700 (PDT)
-Received: from ziepe.ca (hlfxns017vw-142-68-128-5.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.68.128.5])
-        by smtp.gmail.com with ESMTPSA id d75a77b69052e-45da763fdbdsm38396711cf.82.2024.10.08.11.12.33
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 08 Oct 2024 11:12:33 -0700 (PDT)
-Received: from jgg by wakko with local (Exim 4.95)
-	(envelope-from <jgg@ziepe.ca>)
-	id 1syEhE-006qUW-Iy;
-	Tue, 08 Oct 2024 15:12:32 -0300
-Date: Tue, 8 Oct 2024 15:12:32 -0300
-From: Jason Gunthorpe <jgg@ziepe.ca>
-To: Uros Bizjak <ubizjak@gmail.com>
-Cc: iommu@lists.linux.dev, linux-kernel@vger.kernel.org,
-	Joerg Roedel <joro@8bytes.org>,
-	Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
-	Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>
-Subject: Re: [PATCH] iommu/amd: Use atomic64_inc_return() in iommu.c
-Message-ID: <20241008181232.GD762027@ziepe.ca>
-References: <20241007084356.47799-1-ubizjak@gmail.com>
+	s=arc-20240116; t=1728411611; c=relaxed/simple;
+	bh=MrlCSStZxCy+qwEaQzYsTzseUQ+MqWbnwJDFXtMHokc=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=QqyCBTPYKieARvllcU0P/uvW6mbMql43MH35tqMN31rMw9N5tNsavg3hfUfs6EgTtDEPkmc5O72bmBCY/oiiz/+jjhwRthUmj1xr0BWQqcSesOUbv8kaLabCGpLYyb04Ce4LBtDEbLmoRGtdC+U5J4KIv5L/9j8FVOHoWqArJYk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; arc=none smtp.client-ip=217.140.110.172
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 5E294113E;
+	Tue,  8 Oct 2024 11:20:38 -0700 (PDT)
+Received: from [10.1.196.40] (e121345-lin.cambridge.arm.com [10.1.196.40])
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id D113A3F64C;
+	Tue,  8 Oct 2024 11:20:07 -0700 (PDT)
+Message-ID: <5c3ea490-f2f5-49e5-99fd-1dc239aee28d@arm.com>
+Date: Tue, 8 Oct 2024 19:20:06 +0100
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20241007084356.47799-1-ubizjak@gmail.com>
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH] iommu/omap: Don't register ops by fwnode
+To: "H. Nikolaus Schaller" <hns@goldelico.com>
+Cc: joro@8bytes.org, will@kernel.org, iommu@lists.linux.dev,
+ Jason Gunthorpe <jgg@nvidia.com>, Linux-OMAP <linux-omap@vger.kernel.org>,
+ Beleswar Padhi <b-padhi@ti.com>, Andreas Kemnade <andreas@kemnade.info>
+References: <c44545c6d07c65d89daa297298c27bb0f15c8b84.1728393458.git.robin.murphy@arm.com>
+ <2863ACA9-2836-49F6-9D85-749CE480804D@goldelico.com>
+ <10d3a86c-d7a8-4ac5-8ad3-010a91c0a25f@arm.com>
+ <FCFEB115-846A-4577-A489-D1537AC77DEA@goldelico.com>
+From: Robin Murphy <robin.murphy@arm.com>
+Content-Language: en-GB
+In-Reply-To: <FCFEB115-846A-4577-A489-D1537AC77DEA@goldelico.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-On Mon, Oct 07, 2024 at 10:43:31AM +0200, Uros Bizjak wrote:
-> Use atomic64_inc_return(&ref) instead of atomic64_add_return(1, &ref)
-> to use optimized implementation and ease register pressure around
-> the primitive for targets that implement optimized variant.
+On 08/10/2024 5:13 pm, H. Nikolaus Schaller wrote:
+> Hi Robin,
 > 
-> Signed-off-by: Uros Bizjak <ubizjak@gmail.com>
-> Cc: Joerg Roedel <joro@8bytes.org>
-> Cc: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
-> Cc: Will Deacon <will@kernel.org>
-> Cc: Robin Murphy <robin.murphy@arm.com>
-> ---
->  drivers/iommu/amd/iommu.c | 4 ++--
->  1 file changed, 2 insertions(+), 2 deletions(-)
+>> Am 08.10.2024 um 16:00 schrieb Robin Murphy <robin.murphy@arm.com>:
+>>
+>> On 08/10/2024 2:32 pm, H. Nikolaus Schaller wrote:
+>>> Hi Robin,
+>>>> Am 08.10.2024 um 15:17 schrieb Robin Murphy <robin.murphy@arm.com>:
+>>>>
+>>>> The OMAP driver still has its own traditional firmware parsing and
+>>>> instance handling in omap_iommu_probe_device(), rather than using the
+>>>> generic fwnode-based paths. However, it also passes a hwdev to
+>>>> iommu_device_register(), thus registering a fwnode for each ops
+>>>> instance, wherein __iommu_probe_device() then fails to find matching ops
+>>>> for a client device with no fwspec and thus a NULL iommu_fwnode.
+>>>>
+>>>> Since omap-iommu is not known to coexist with any other IOMMU hardware
+>>>> and shares the same ops between all instances, we can reasonably remove
+>>>> the hwdev/fwnode registration to put it back into "legacy" mode where
+>>>> the ops are effectively global and ->probe_device remains responsible
+>>>> for filtering individual clients.
+>>>>
+>>>> Reported-by: Beleswar Padhi <b-padhi@ti.com>
+>>>> Reported-by: H. Nikolaus Schaller <hns@goldelico.com>
+>>>> Fixes: 17de3f5fdd35 ("iommu: Retire bus ops")
+>>>> Signed-off-by: Robin Murphy <robin.murphy@arm.com>
+>>>> ---
+>>>> drivers/iommu/omap-iommu.c | 2 +-
+>>>> 1 file changed, 1 insertion(+), 1 deletion(-)
+>>>>
+>>>> diff --git a/drivers/iommu/omap-iommu.c b/drivers/iommu/omap-iommu.c
+>>>> index c9528065a59a..425ae8e551dc 100644
+>>>> --- a/drivers/iommu/omap-iommu.c
+>>>> +++ b/drivers/iommu/omap-iommu.c
+>>>> @@ -1230,7 +1230,7 @@ static int omap_iommu_probe(struct platform_device *pdev)
+>>>> if (err)
+>>>> return err;
+>>>>
+>>>> - err = iommu_device_register(&obj->iommu, &omap_iommu_ops, &pdev->dev);
+>>>> + err = iommu_device_register(&obj->iommu, &omap_iommu_ops, NULL);
+>>> Thanks for this proposal, but this prevents my OMAP3 system completely
+>>> from booting (at least with v6.8-rc1):
+>>> ## Booting kernel from Legacy Image at 82000000 ...
+>>>     Image Name:   Linux-6.8.0-rc1-letux+
+>>>     Image Type:   ARM Linux Kernel Image (uncompressed)
+>>>     Data Size:    6491520 Bytes = 6.2 MiB
+>>>     Load Address: 80008000
+>>>     Entry Point:  80008000
+>>>     Verifying Checksum ... OK
+>>> ## Flattened Device Tree blob at 81c00000
+>>>     Booting using the fdt blob at 0x81c00000
+>>>     Loading Kernel Image ... OK
+>>>     Using Device Tree in place at 81c00000, end 81c1fe8e
+>>> Starting kernel ...
+>>> --- no further reaction --
+>>
+>> Urgh... is it possible to get earlycon/ealyprintk output on this platform?
+> 
+> Ah, my mistake. earlycon did reveal a NULL pointer dereference coming from that
+> I have added some printk() to iommu_device_register() and friends. And one
+> assumed that hwdev is not a NULL pointer and we can print hwdev->kobj.name...
+> 
+>>
+>> As a stab in the dark by inspection, there might potentially be some interaction with "iommu: Move bus setup to IOMMU device registration" as well, for which the additional diff below might help...
+>>
+>> Thanks,
+>> Robin.
+>>
+>> ---->8----
+>> diff --git a/drivers/iommu/omap-iommu.c b/drivers/iommu/omap-iommu.c
+>> index 425ae8e551dc..9112178e22d8 100644
+>> --- a/drivers/iommu/omap-iommu.c
+>> +++ b/drivers/iommu/omap-iommu.c
+>> @@ -1691,7 +1691,8 @@ static struct iommu_device *omap_iommu_probe_device(struct device *dev)
+>> if (!oiommu) {
+>> of_node_put(np);
+>> kfree(arch_data);
+>> - return ERR_PTR(-EINVAL);
+>> + /* Not fatal, will re-probe once the right instance registers itself */
+>> + return ERR_PTR(-ENODEV);
+>> }
+>>
+>> tmp->iommu_dev = oiommu;
+> 
+> Now I can boot with both patches applied (and Jason's patch and my printk removed),
+> but there is still (exactly the same as with Jason's patch):
+> 
+> root@letux:~# uname -a
+> Linux letux 6.8.0-rc1-letux+ #19517 SMP PREEMPT Tue Oct  8 17:23:11 CEST 2024 armv7l GNU/Linux
+> root@letux:~# dmesg|fgrep iommu
+> [    0.700195] iommu: Default domain type: Translated
+> [    0.705078] iommu: DMA domain TLB invalidation policy: strict mode
+> [    0.728393] platform 480bc000.isp: Adding to iommu group 0
+> [    0.734161] omap-iommu 480bd400.mmu: 480bd400.mmu registered
+> [   23.565216] omap3isp 480bc000.isp: iommu configuration for device failed with -ETIMEDOUT
+> [   23.605102] omap-iommu 480bd400.mmu: 480bd400.mmu: version 1.1
+> root@letux:~# dmesg|fgrep isp
+> [    0.000000] OMAP3630/DM3730 ES1.2 (l2cache iva sgx neon isp 192mhz_clk)
+> [    0.728393] platform 480bc000.isp: Adding to iommu group 0
+> [   11.472045] omapdss_dss 48050000.dss: bound 48050400.dispc (ops dsi_vc_flush_receive_data [omapdrm])		<-- false positive of fgrep
+> [   23.557586] omap3isp 480bc000.isp: deferred probe timeout, ignoring dependency
+> [   23.565216] omap3isp 480bc000.isp: iommu configuration for device failed with -ETIMEDOUT		<-- duplicate with fgrep iommu
+> [   23.625183] omap3isp 480bc000.isp: supply vdd-csiphy1 not found, using dummy regulator
+> [   23.657135] omap3isp 480bc000.isp: supply vdd-csiphy2 not found, using dummy regulator
+> [   23.665832] omap3isp 480bc000.isp: Revision 15.0 found
+> [   23.700073] omap3isp 480bc000.isp: failed to attach device to VA mapping
+> [   23.724182] omap3isp 480bc000.isp: unable to attach to IOMMU
+> [   23.731262] omap3isp: probe of 480bc000.isp failed with error -16
+> root@letux:~#
+> 
+> The -ETIMEDOUT seems to come from of_iommu_configure().
 
-Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
+Oof, yeah, now we've wound up with the opposite problem that because 
+it's the generic "iommus" binding, it gets as far as of_iommu_xlate() 
+but now the NULL fwnode no longer matches the phandle target so that 
+thinks it's waiting for an instance which hasn't registered yet :(
 
-Jason
+OK, different track, does the diff below fare any better? (I've not 
+written it up fully yet as the DRA7 special cases will need some more 
+work still)
+
+Thanks,
+Robin.
+
+----->8-----
+
+diff --git a/drivers/iommu/omap-iommu.c b/drivers/iommu/omap-iommu.c
+index c9528065a59a..44e09d60e861 100644
+--- a/drivers/iommu/omap-iommu.c
++++ b/drivers/iommu/omap-iommu.c
+@@ -1723,12 +1723,19 @@ static void omap_iommu_release_device(struct 
+device *dev)
+
+  }
+
++int omap_iommu_of_xlate(struct device *dev, const struct 
+of_phandle_args *args)
++{
++	/* TODO: collect args->np to save re-parsing in probe above */
++	return 0;
++}
++
+  static const struct iommu_ops omap_iommu_ops = {
+  	.identity_domain = &omap_iommu_identity_domain,
+  	.domain_alloc_paging = omap_iommu_domain_alloc_paging,
+  	.probe_device	= omap_iommu_probe_device,
+  	.release_device	= omap_iommu_release_device,
+  	.device_group	= generic_single_device_group,
++	.of_xlate	= omap_iommu_of_xlate,
+  	.pgsize_bitmap	= OMAP_IOMMU_PGSIZES,
+  	.default_domain_ops = &(const struct iommu_domain_ops) {
+  		.attach_dev	= omap_iommu_attach_dev,
