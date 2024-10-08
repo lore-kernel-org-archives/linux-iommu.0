@@ -1,284 +1,187 @@
-Received: from mo4-p01-ob.smtp.rzone.de (mo4-p01-ob.smtp.rzone.de [85.215.255.53])
+Received: from DM5PR21CU001.outbound.protection.outlook.com (mail-centralusazon11021096.outbound.protection.outlook.com [52.101.62.96])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2822A1DE2A2
-	for <iommu@lists.linux.dev>; Tue,  8 Oct 2024 16:14:11 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=85.215.255.53
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7E07D1E0DE5
+	for <iommu@lists.linux.dev>; Tue,  8 Oct 2024 17:05:00 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.101.62.96
 ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1728404056; cv=pass; b=SE4jesWaVn7xC3sxyLCA5Mv42sSm3wFBCC6f76Dg2iMgSpdWXVEVvIoFt1azzNHCTw3yFV44D89tzEMcmwq5M3LsZRDQCOdxfe//wsPz2xYVxh3dJYxrOwpoOXW82Ar1r9q1ZiW2q9d2pKH3MzJHNg/GB5tA9KfgCMy0mb+5LZc=
+	t=1728407102; cv=fail; b=jqgsEb+SvWVwSVZEWq8oKykGUqsXe1wjsEmO28V37OJmSwoXgpn3SppVuuhT+UEsQgOeeq2Bb00dBBBtAAyTJmQm2HFNCLqYRRfOgnXGVhdAFuY3Jfft00Qmn9pAkplJuICePTdWT8QQt+Fbz3wqTXEpF7RTpfwsSPUevV8CNw8=
 ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1728404056; c=relaxed/simple;
-	bh=HFUbGUYayJ5EBTvhLi9PVxdHbD8i/UBxGxvi0xjA9HY=;
-	h=Content-Type:Mime-Version:Subject:From:In-Reply-To:Date:Cc:
-	 Message-Id:References:To; b=aqSr3gq6HHTHlhi1ZEy9gU0j086oys3XEMr1rx/hGScIagbbss3MI3u4g/eNBTM5XVJchCK9uBaUW5WY46zEe4drhsNL7oIEZKe8sIui9bP4GF0h8D9lTg1i4RKT5YCHwScwZoX6tcxmswGc6MDmufhC8tzg11fdPDW2VMm1sg0=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=goldelico.com; spf=pass smtp.mailfrom=goldelico.com; dkim=pass (2048-bit key) header.d=goldelico.com header.i=@goldelico.com header.b=KqGTt1PE; dkim=permerror (0-bit key) header.d=goldelico.com header.i=@goldelico.com header.b=KZP2TNzT; arc=pass smtp.client-ip=85.215.255.53
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=goldelico.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=goldelico.com
+	s=arc-20240116; t=1728407102; c=relaxed/simple;
+	bh=y7M7j41K9gNRLhXwZ8PA0u89zzTPXMjXt+zCRJMJvag=;
+	h=Message-ID:Date:Subject:To:Cc:References:From:In-Reply-To:
+	 Content-Type:MIME-Version; b=IhyLkij6vX7Ez4EzNijHa/r88t/ExlrrEfJrXDdCyS1oFAQiSAqmagIrXFUw3OJeTG5PRkB0JWGtVjmusbtYzA9dbBdtzyNxLfdmTmJtvtF76wdjKMioB2rluS1wn8iefHCBn+gGCpyoiPAB4/1BwnmZF8cr04UtWVSqwu08ENA=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=os.amperecomputing.com; spf=pass smtp.mailfrom=os.amperecomputing.com; dkim=pass (1024-bit key) header.d=os.amperecomputing.com header.i=@os.amperecomputing.com header.b=OUnizXtp; arc=fail smtp.client-ip=52.101.62.96
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=os.amperecomputing.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=os.amperecomputing.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=goldelico.com header.i=@goldelico.com header.b="KqGTt1PE";
-	dkim=permerror (0-bit key) header.d=goldelico.com header.i=@goldelico.com header.b="KZP2TNzT"
-ARC-Seal: i=1; a=rsa-sha256; t=1728404020; cv=none;
-    d=strato.com; s=strato-dkim-0002;
-    b=lbsO6hAgaI/Z1RqaRr7EDgIGugzKF0AgvTPExT3S3VtINxO3r9j/tpJikUEjcSVdE1
-    nVkP2CnWuqX+JQ6c4gKGN9yXa/NIwejpKFYGz8Srd645i0ZI/Met9CfzjnO5rxDepIK2
-    bTrlEb7+ZwWVYBzl8jkWB7WX0gQijtxbPe5fJtywfcN9549F8oSbur5h+d6Ke45rwTsq
-    mV1FPNpkfdh0y/Nfx491UqqvPPR44EOUwJ7n9vfDFi4ZuoOvbiHlKAO4gnuspc5G0LYq
-    G/IGVg3KlQLGUN34TDxxVrLkH7qzU3bqWtxYtb5/YnAuEo4wwg5+MXgKuluutUdXELBY
-    GmRQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; t=1728404020;
-    s=strato-dkim-0002; d=strato.com;
-    h=To:References:Message-Id:Cc:Date:In-Reply-To:From:Subject:Cc:Date:
-    From:Subject:Sender;
-    bh=muRRFBS233rXbkrS27EZFeOnSjKr5MDVsTRN47Cx9kg=;
-    b=Wtqv+Cdk64iHZ46vRV5JxnFMIZHk8OQW+Ie+gseHStBvXhhtD1+MrGbPDXxH1t1R/d
-    j7jFZKA89/LVe8UGOaIjO5niS3saZHf8YwS3QaGWexjFeGPzqvVHWmRgw9EXqHxDFy94
-    DmZZmZW/ZNq4P4yX4XUldIh1RLUe8fendeCUHxPGtIVnRpYvH96XeWodT0X+N4c4MY1O
-    iuvrtUgL3UrFeNmg0h7FpEZ1elWDljdxH1IiwIfcDcIPd0S0nV4SfDgB6+zRlHNWtEra
-    6/Js9WJccVh1gwzPcfRXbVi4xHjWOLXN21O1oh7KTgvaj1v3p62OunbdM56OKmY4/Bi+
-    oEVw==
-ARC-Authentication-Results: i=1; strato.com;
-    arc=none;
-    dkim=none
-X-RZG-CLASS-ID: mo01
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; t=1728404020;
-    s=strato-dkim-0002; d=goldelico.com;
-    h=To:References:Message-Id:Cc:Date:In-Reply-To:From:Subject:Cc:Date:
-    From:Subject:Sender;
-    bh=muRRFBS233rXbkrS27EZFeOnSjKr5MDVsTRN47Cx9kg=;
-    b=KqGTt1PE94iRTlI39VRiEhMTUKgp6XRT8VXS4cUzlNK/yLgl8QFNDvZ0D4Vf7W+3+x
-    sSlt2TjXiDKvzY5a6j1RlrUCO2IqjPH15BgKvAhn0JCNapxbDb70aMy0r3D9k36F5Btl
-    LmY+OIRBfT77CP4TUsxA1Ifwdx9xKA99ePnfCn+iCKWEYUF8Y2/D+yXhTWyw1zJLj7ah
-    QfjmLS8qOPtEmQUHURRLGwXCDXKzyeI4hXh9FUryX8D4ljxTPLRF0D2EvQ5pb7P9uUhS
-    oBRCzISOSPa1puGydIESW1I0B6mFeqixnYUyHmMDoV2ZtwDTZ83JMpCaX1CTdlLlgn6a
-    TQ9g==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; t=1728404020;
-    s=strato-dkim-0003; d=goldelico.com;
-    h=To:References:Message-Id:Cc:Date:In-Reply-To:From:Subject:Cc:Date:
-    From:Subject:Sender;
-    bh=muRRFBS233rXbkrS27EZFeOnSjKr5MDVsTRN47Cx9kg=;
-    b=KZP2TNzTGhmx755r/i0Fjs0QoV1PVhO0KRbwdSUEKnBOiPVBF5/+8dpRcgHKOfBf3O
-    cVwDg8a1TFHgKDWd7BCQ==
-X-RZG-AUTH: ":JGIXVUS7cutRB/49FwqZ7WcJeFKiMhflhwDubTJ9o12DNOsPj0lFzL1yfzkZ"
-Received: from smtpclient.apple
-    by smtp.strato.de (RZmta 51.2.7 DYNA|AUTH)
-    with ESMTPSA id Qd0dc2098GDeYub
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (curve X9_62_prime256v1 with 256 ECDH bits, eq. 3072 bits RSA))
-	(Client did not present a certificate);
-    Tue, 8 Oct 2024 18:13:40 +0200 (CEST)
-Content-Type: text/plain;
-	charset=us-ascii
+	dkim=pass (1024-bit key) header.d=os.amperecomputing.com header.i=@os.amperecomputing.com header.b="OUnizXtp"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=i8ESPlP+5tLRGu43Vc9nYeXV/SS9PFTG4VK+2Re3mWrLrde/ZEIls2gLVIkuhrSYm/agFPil5wyX+AgxhHAjPtdthaGlv/lk2Qu3IJUMs7rbPFeDnpA6zTe2bs3ABwUbryX7Uq6Vq/zVPcoH/JkHSyxqGhxy9BDY6rEPOpD5eVIG0o4lBhYi9iKuBEFxnUbAdg5Rw2yPbzCAc+GFGljZ0WOo1YXrDJqbrB46XC5nfmNlG9RXjdneNfWU/K8yK6MOWco9S9LahD5qRDkvEQ5pBGyn2aFMhxfWZ2SExafm+atit2AukHanB/SMk3YvYMuNi1sLkpScyllsWACTo21WaA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=xK0D09nMZN2GMQGtMny+vuI5h18Yqpf2RRhzFHb/6gI=;
+ b=p8okf1/37e+aJQWUvSQncADba6oHa48NqLP91ELtsz1nWGxdwv9UEu1A3d7cLH6AvDnr22wlBP3va1nM0rtWySbkwMhkn1NOIE7Eqpjzn43h1E426ezrSaH+BUhVGckJuTInt+x0k5vd7rD2JyIN/nJpCEcHcXzLYUjxrmvuHnYJ0f/7QeL4oKD7JHUFQue2TAronfBRJ2SeUMKhyFcy+8ERApdzL2jvZ2jNYr7ZaXtKYf44Mq1oG4FWZBas16R0t5XU2TQotD33RiMfB/sOEJlJAwxSPk215J6g2Ky5QylriVZwRfLhEaksMf5DXzpjMIuMjPFgLbSV3xUxcR9eOQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=os.amperecomputing.com; dmarc=pass action=none
+ header.from=os.amperecomputing.com; dkim=pass
+ header.d=os.amperecomputing.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=os.amperecomputing.com; s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=xK0D09nMZN2GMQGtMny+vuI5h18Yqpf2RRhzFHb/6gI=;
+ b=OUnizXtpH8tnpXtd9Ba1aobNR0j+iOtc3f0Fn1tEDvUXeOhXqrgEMUniehMAgDvWDIFTUVhkYQSVz0syWQ9T2LyFTpDCvcFazZwH0lk6ZSqL5IvGBEjw5yBm560JkxYloBcbYqkLmK5XRgy95co0SWW1lv+ailz4dUf4zjNqve4=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=os.amperecomputing.com;
+Received: from CH0PR01MB6873.prod.exchangelabs.com (2603:10b6:610:112::22) by
+ CYYPR01MB8292.prod.exchangelabs.com (2603:10b6:930:c2::7) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.7982.29; Tue, 8 Oct 2024 17:04:54 +0000
+Received: from CH0PR01MB6873.prod.exchangelabs.com
+ ([fe80::3850:9112:f3bf:6460]) by CH0PR01MB6873.prod.exchangelabs.com
+ ([fe80::3850:9112:f3bf:6460%5]) with mapi id 15.20.7982.033; Tue, 8 Oct 2024
+ 17:04:54 +0000
+Message-ID: <b5725875-d04c-42e3-bcbe-e119019de7e1@os.amperecomputing.com>
+Date: Tue, 8 Oct 2024 10:04:50 -0700
+User-Agent: Mozilla Thunderbird
+Subject: Re: [v3 PATCH] iommu/arm-smmu-v3: Fix L1 stream table index
+ calculation for 32-bit sid size
+To: Will Deacon <will@kernel.org>, Jason Gunthorpe <jgg@ziepe.ca>
+Cc: nicolinc@nvidia.com, james.morse@arm.com, robin.murphy@arm.com,
+ linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev,
+ linux-kernel@vger.kernel.org
+References: <20241004180405.555194-1-yang@os.amperecomputing.com>
+ <20241008133458.GA10474@willie-the-truck> <20241008151506.GC762027@ziepe.ca>
+Content-Language: en-US
+From: Yang Shi <yang@os.amperecomputing.com>
+In-Reply-To: <20241008151506.GC762027@ziepe.ca>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: BYAPR01CA0060.prod.exchangelabs.com (2603:10b6:a03:94::37)
+ To CH0PR01MB6873.prod.exchangelabs.com (2603:10b6:610:112::22)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
-Mime-Version: 1.0 (Mac OS X Mail 16.0 \(3776.700.51.11.1\))
-Subject: Re: [PATCH] iommu/omap: Don't register ops by fwnode
-From: "H. Nikolaus Schaller" <hns@goldelico.com>
-In-Reply-To: <10d3a86c-d7a8-4ac5-8ad3-010a91c0a25f@arm.com>
-Date: Tue, 8 Oct 2024 18:13:29 +0200
-Cc: joro@8bytes.org,
- will@kernel.org,
- iommu@lists.linux.dev,
- Jason Gunthorpe <jgg@nvidia.com>,
- Linux-OMAP <linux-omap@vger.kernel.org>,
- Beleswar Padhi <b-padhi@ti.com>,
- Andreas Kemnade <andreas@kemnade.info>
-Content-Transfer-Encoding: quoted-printable
-Message-Id: <FCFEB115-846A-4577-A489-D1537AC77DEA@goldelico.com>
-References: <c44545c6d07c65d89daa297298c27bb0f15c8b84.1728393458.git.robin.murphy@arm.com>
- <2863ACA9-2836-49F6-9D85-749CE480804D@goldelico.com>
- <10d3a86c-d7a8-4ac5-8ad3-010a91c0a25f@arm.com>
-To: Robin Murphy <robin.murphy@arm.com>
-X-Mailer: Apple Mail (2.3776.700.51.11.1)
+MIME-Version: 1.0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: CH0PR01MB6873:EE_|CYYPR01MB8292:EE_
+X-MS-Office365-Filtering-Correlation-Id: 8fdb8f35-b1cf-46aa-3988-08dce7bb5469
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;ARA:13230040|376014|366016|1800799024;
+X-Microsoft-Antispam-Message-Info:
+	=?utf-8?B?ZTJ6Y3ErSzBaVGhuVzlVN1luT255RzNOQmZyRnhleDFnbEFRTDJMOGp4bDR0?=
+ =?utf-8?B?eEc0ZW5iODRLUW5nU0NTdWdyaTVXUUNySHJ2SXFxMUk1MG9oOVlXN1lJY1cy?=
+ =?utf-8?B?aWNwajdlUFVCY1lrdG5lbFMyWW5VTVhYaHYxYW9FemlRaFFublkxSEZBNEw1?=
+ =?utf-8?B?MkxtTmlkWkQwWDFOSWdFNUMxTDNHelBqTnhHUHd3a1VBUG8rMXkveE5GckNG?=
+ =?utf-8?B?Q3RFSjBvcEF5RHp5Q0pFTDN3MDcyRmVESEduZCtNbXR1Mll6bHNWZENzZ2dX?=
+ =?utf-8?B?aUdSWW1naVAvcjNjTFZZUXNYSXh3RCtXczJvbkJFcDRZTjZ3SGdXQU52REIr?=
+ =?utf-8?B?NTAxRjcyaFo4SEtsRWZxbmRQK0kwNDc5eURJTXg2YkEyQTZJNHVuaVFKUnMw?=
+ =?utf-8?B?TXVCeEkzWUVyUXVhRzhhQ29maW4vWWRFNGZIdHgyeWU2VVMyY3BlRDVkeitQ?=
+ =?utf-8?B?dTZhMklVNThYTXVlbm13U3hXSHhmTStJSGJEOWx6UXdvMWNuUlBHTFpCN3h1?=
+ =?utf-8?B?MWcwZjlCaCtpYkluM3NFZGg5UVRqVTBuOHdIVG5TTjhGOWxMOUhkNHZ6Sng1?=
+ =?utf-8?B?K3lxTjZ2dzJ4cXo2WXlLUmg4YmVZTTdhNG1ndnBLenY4TEdJMkxVSVBvcDNw?=
+ =?utf-8?B?YXRJdW52d0JTL0hoNjRvUVJ2R2JRVVl0cmZ6OVFtd0dHRDV6TmpZNXpDMHIz?=
+ =?utf-8?B?YUZjYm1OT2NLTkdEa1lNeU1BazNQREY5dGthTTc5Vi9tdmRtWEwyWTdPM3Ft?=
+ =?utf-8?B?NzZOc1loWDJwYUExZHZjVHlwL0duL0ZKU3ZDRnRYbzRlazB5THZmcE9QbTNq?=
+ =?utf-8?B?VHdsTTF0Q1JOS3plcmVyeTZzRUQ2MTNoVUo2Qm9DVnMxWXhhOFJvNnF5NVBW?=
+ =?utf-8?B?V2FKeDF3WXNhd1cxV1JSWE5SeC9TbXgzYjExZzEydVVvM3llMG1mVmxTUVpn?=
+ =?utf-8?B?cjlOOWZZZXF5cnZUM2NnS2pBVHFza3M5eU1SdTcwaGRuSnl1b25scFFqZVlj?=
+ =?utf-8?B?YUJHOXhuVXR6YjBGMVltcS8rREhYZTI1ZDZDcGsyb2NIdzJlWEIyd0dtV2Ev?=
+ =?utf-8?B?d0hnVE1kY0pnUFF2aUNzT1pSWS9MVlh3b214R1hMS2ViSGc4aHVMa0hrK3BK?=
+ =?utf-8?B?cXQ3azNzOGxxMHpVZ0h6NDRYbk5MUmw2UEVUWDRlZU5TbW1mU0pDRnpzM2ZY?=
+ =?utf-8?B?SHhnZ1FBVEtCT2M3OGFJYzdsRHlPVzYrcXAvZi90U2tYNXVmK296R3hqYWdr?=
+ =?utf-8?B?MENkcXRhMVZIUWUwY2ZtYzhUTFJFeXdqMUVrSHZJdGJkbzJGc2oyZVBubzJN?=
+ =?utf-8?B?eHBEcmIwY1N2cnB2V0MyZExkeEx3Ulk2dk5kc2xEYTl0cTQrR1VDVkUvZkhR?=
+ =?utf-8?B?d0xTVUdMcmpwMjdhOWg5L2J1VFRGdUhHT1hWbm1mZFhBWVJUVEhrek93emNO?=
+ =?utf-8?B?a0RjVWVGYWdCV0ZJVWxyUDhjbFN0VVdQOXBsM3dCWFc0NUhBVHNiVHJCaUlr?=
+ =?utf-8?B?cHM0RTVWdVIveTJhdVRNVDFuNmIwL0UwYkwxL25uMk54ZDJUa0tzaUp2bHdT?=
+ =?utf-8?B?SjVOYmlNZWw4QWJadmFRZGx4M2lYbWp5Ukd3OXlKR0c5alRURStKRkliUDA4?=
+ =?utf-8?B?OG5XV3NEbThCbSs1c1lIQ0l6YmNUbHdxaytlRElIdDVJRE93dVBMSVl5aEgv?=
+ =?utf-8?B?QVVYUUNKbnB6c0N5ZUY1cnNWdXN1ZS8rVVI3MTIxei9SQ0tQL0p2K0pRPT0=?=
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CH0PR01MB6873.prod.exchangelabs.com;PTR:;CAT:NONE;SFS:(13230040)(376014)(366016)(1800799024);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?utf-8?B?NjhWNGJrcU5iR0JiaUVGdkd2cTV4OEdlZ09wQmxONGI5bmNkTzU1ZEg4Ykl2?=
+ =?utf-8?B?bStaaHdkbFNEa05naGRlTGV4aER0WkFHYXpzNTZwVVBIRExKQ0RkTGc0MWo0?=
+ =?utf-8?B?QmFUZDhwUDFjQU1XaDZGS2lXVUd0SjZrY0g5UlJUbU5uT2pDczlzK2JXazE5?=
+ =?utf-8?B?amY4WCs2dDlzZGN6Z2JnbGNMVElYQzVYa05rOElwNVU3MkxmaHZmOFAzZmVt?=
+ =?utf-8?B?cCtiWkNJSjFoM28zeUdGY3IxMzdjOHFueTE4Z3RTc1A1SllnM09ON2F6MGQv?=
+ =?utf-8?B?STFJTHVINElZUDFMNXJUenRoeHUyaUorQnBLb1FaN1hQeFFSMzRhMlc5SlNa?=
+ =?utf-8?B?K0J5S3dTTWJhRGhlNTFxa0I5Vm9IWXpIclRzZ2Juc0JRSmQ3VlhNczBrSTcv?=
+ =?utf-8?B?RityUXhlY3lpVVg0OEdvUTZkcTBZK0gyNjI0TitFL2lGdFZHOXpwNzNiY2ZN?=
+ =?utf-8?B?L2E0aUxDTVNDS2ZNR29rWmRVbno4WHZYSHZBeGZpU3h5emdCR3FGQ0pmbTJH?=
+ =?utf-8?B?VnJOcnV1dG1UVE5JNVVpTU9KQ2JwdWd5TEhjUTNzUmtNTjBESmVCc0k1Q0Ri?=
+ =?utf-8?B?LzBwRjFzcmVjbTc2dDNUaXdVTGNDU2RvajJTcTROZnRHZzU3c1RIVENvYXNv?=
+ =?utf-8?B?b0Nkb2NFN2lUU3d5cFJIU0Vuc3BodHVPMC9HOC91V1JTckg3cG91MzI0b0kv?=
+ =?utf-8?B?NHZWR3JiNEpIRTdjclo4Q1djTW8vdWZ1S0d6L3VGeGZMVWgwTkxKSEdWc0Ra?=
+ =?utf-8?B?MVFqS3hwVlJ3VG5oMkJzRGFjU2hqQjhxQjQwTDZpZmdyTFVxT1l6ZzlSTmMy?=
+ =?utf-8?B?K2Vyd3pMT0I0YmMvbWJTRG5JWm55NisvSkJ1MVlpeWNzWW91a1pMTndJUGk0?=
+ =?utf-8?B?SzQweEhndndjWlhjREJINHZzalZwaE5tYStNNjJUZ0tMbUlvdUtQN1FhREUz?=
+ =?utf-8?B?aFFnTE1Va2lYa0UrZlNWWUtTb0pyZzU4bnZ4blowNldTY2l2aVNiVEdxczlt?=
+ =?utf-8?B?MlFtUVVuRFQ4cHpWRVJ1cFAzTVJhY0R3NVpLanNtREU1QUI0NlZacWpiR0RV?=
+ =?utf-8?B?YW9lcExjdnAreXduTVM5cHl1RlpVaXlnVmQ4ekR6OW9Jc0dZQmJqU1lJSHY4?=
+ =?utf-8?B?ZjRXNEttM09LQjk4UFRCOE52cTc2RndUTFNlTW9MRzRqVWZwQzAyTUhwVTNp?=
+ =?utf-8?B?YS8weVF3U0tTRTNtZk0wZjV3WXlBSStrZCtmM3BFYUlyZ0FQS0g4a3BRa01w?=
+ =?utf-8?B?bWpzWGUydUgvc3ZaTGR1OGFsOHZuTjQzNnVaQlNWckZtbTZLVGVrQVI3RC9z?=
+ =?utf-8?B?dXU5MmNpMFJ1MjB4NnEvSGZJUU1IZ3pOR2JkWlk2Y0JWcDkxNXpVZVhYNEh5?=
+ =?utf-8?B?VkdRN2ErN2JZb2tzeC9LZmFhYzEwSzh4eW1yQzRtckoxZXVoblVlWFkwVjhO?=
+ =?utf-8?B?YjhSUmJRSkJBaSt0ZDBzMFZ5NFNXWldlcldkci9UY29ad0hycDFVTndxUUJr?=
+ =?utf-8?B?UmZlbnRnZ1NUeC9hdDIySlc0elRMOXhLaHRacGR4Zy9nemY0RytnTmNNbkdj?=
+ =?utf-8?B?amt0RTRNZkFiV21LcjZhS2ZweW00eVZZRzhGTmU3VU03eDMvVDNjaURnTHNw?=
+ =?utf-8?B?QmFGc0J6Y1cwTE1ZRm9LSDV6b242NSswOEViWGR1WlZFT1dzRVVLMzdzYjVH?=
+ =?utf-8?B?WGlQZVE1N3NlS1pNd3hoY3ppS3NNY1QrdnlXb0FtdnpjS3ZtZmpBUjJrS0pu?=
+ =?utf-8?B?NkpGSjNvNEhMVmJ2NTlRQ0cvRzI4d2VYMVpTTzYxY1RqS240TkJUQS9sSU1t?=
+ =?utf-8?B?alNuTUVQRDJpQkFwQ3BKWC9ZL1lFOXBhaE5CVzd3K3hSRTBTNEY0RXNGZVRU?=
+ =?utf-8?B?Ym9CTlVLTUxVOTNCeWUycFFSM2wrOTFqc05YcFJwdFRKVENTSHNuOWpndE50?=
+ =?utf-8?B?b1lVWlVFM1RKNWlOdk1mMEk0cGQ3aFpXa0V6NkhwMzhZWnZnL2l1d0pNWVpq?=
+ =?utf-8?B?UnY0Ukl3T0VpL3NYNEsxODdaeFBIYTRtZVFQeTNEaXhyaUsvSk1WVWQwL1lV?=
+ =?utf-8?B?ZUlzYU02c0RJVDFnWk9xdkVoeW9FOHNLdEpWYkNNVzFsazYrdGl5V01IT3Q2?=
+ =?utf-8?B?emE1WkNTZHJrQmxieXNmRlA3QUlvY2tMZWsvYjlIekhBTWlJWFdHMFlXTXFR?=
+ =?utf-8?B?Vnc9PQ==?=
+X-OriginatorOrg: os.amperecomputing.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 8fdb8f35-b1cf-46aa-3988-08dce7bb5469
+X-MS-Exchange-CrossTenant-AuthSource: CH0PR01MB6873.prod.exchangelabs.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 08 Oct 2024 17:04:54.2790
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 3bc2b170-fd94-476d-b0ce-4229bdc904a7
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: oHx4wJomruKZPFxWlTaP7mNIsh4RrIfO8da2ayrJ+2A2bmR0e3t1ymm3Me9zGS7/GO/KVHJueoO90Gvprewcplk8RP1bJNDj2vMG4jpLFGw=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: CYYPR01MB8292
 
-Hi Robin,
 
-> Am 08.10.2024 um 16:00 schrieb Robin Murphy <robin.murphy@arm.com>:
->=20
-> On 08/10/2024 2:32 pm, H. Nikolaus Schaller wrote:
->> Hi Robin,
->>> Am 08.10.2024 um 15:17 schrieb Robin Murphy <robin.murphy@arm.com>:
->>>=20
->>> The OMAP driver still has its own traditional firmware parsing and
->>> instance handling in omap_iommu_probe_device(), rather than using =
-the
->>> generic fwnode-based paths. However, it also passes a hwdev to
->>> iommu_device_register(), thus registering a fwnode for each ops
->>> instance, wherein __iommu_probe_device() then fails to find matching =
-ops
->>> for a client device with no fwspec and thus a NULL iommu_fwnode.
->>>=20
->>> Since omap-iommu is not known to coexist with any other IOMMU =
-hardware
->>> and shares the same ops between all instances, we can reasonably =
-remove
->>> the hwdev/fwnode registration to put it back into "legacy" mode =
-where
->>> the ops are effectively global and ->probe_device remains =
-responsible
->>> for filtering individual clients.
->>>=20
->>> Reported-by: Beleswar Padhi <b-padhi@ti.com>
->>> Reported-by: H. Nikolaus Schaller <hns@goldelico.com>
->>> Fixes: 17de3f5fdd35 ("iommu: Retire bus ops")
->>> Signed-off-by: Robin Murphy <robin.murphy@arm.com>
->>> ---
->>> drivers/iommu/omap-iommu.c | 2 +-
->>> 1 file changed, 1 insertion(+), 1 deletion(-)
->>>=20
->>> diff --git a/drivers/iommu/omap-iommu.c b/drivers/iommu/omap-iommu.c
->>> index c9528065a59a..425ae8e551dc 100644
->>> --- a/drivers/iommu/omap-iommu.c
->>> +++ b/drivers/iommu/omap-iommu.c
->>> @@ -1230,7 +1230,7 @@ static int omap_iommu_probe(struct =
-platform_device *pdev)
->>> if (err)
->>> return err;
->>>=20
->>> - err =3D iommu_device_register(&obj->iommu, &omap_iommu_ops, =
-&pdev->dev);
->>> + err =3D iommu_device_register(&obj->iommu, &omap_iommu_ops, NULL);
->> Thanks for this proposal, but this prevents my OMAP3 system =
-completely
->> from booting (at least with v6.8-rc1):
->> ## Booting kernel from Legacy Image at 82000000 ...
->>    Image Name:   Linux-6.8.0-rc1-letux+
->>    Image Type:   ARM Linux Kernel Image (uncompressed)
->>    Data Size:    6491520 Bytes =3D 6.2 MiB
->>    Load Address: 80008000
->>    Entry Point:  80008000
->>    Verifying Checksum ... OK
->> ## Flattened Device Tree blob at 81c00000
->>    Booting using the fdt blob at 0x81c00000
->>    Loading Kernel Image ... OK
->>    Using Device Tree in place at 81c00000, end 81c1fe8e
->> Starting kernel ...
->> --- no further reaction --
->=20
-> Urgh... is it possible to get earlycon/ealyprintk output on this =
-platform?
 
-Ah, my mistake. earlycon did reveal a NULL pointer dereference coming =
-from that
-I have added some printk() to iommu_device_register() and friends. And =
-one
-assumed that hwdev is not a NULL pointer and we can print =
-hwdev->kobj.name...
+On 10/8/24 8:15 AM, Jason Gunthorpe wrote:
+> On Tue, Oct 08, 2024 at 02:34:58PM +0100, Will Deacon wrote:
+>
+>> This all looks a bit messy to me. The architecture guarantees that
+>> 2-level stream tables are supported once we hit 7-bit SIDs and, although
+>> the driver relaxes this to > 8-bit SIDs, we'll never run into overflow
+>> problems in the linear table code above.
+> My original point was about the confidential compute position (sigh)
+> that the untrusted hypverisor should not corrupt the driver.
+>
+> So your statement is architecturally true, but we never check that
+> IDR0_ST_LVL_2LVL is set if IDR1_SIDSIZE > 2**7, and so we can get into
+> this situation where the hypervisor could trigger some kind of bad
+> behavior.
 
->=20
-> As a stab in the dark by inspection, there might potentially be some =
-interaction with "iommu: Move bus setup to IOMMU device registration" as =
-well, for which the additional diff below might help...
->=20
-> Thanks,
-> Robin.
->=20
-> ---->8----
-> diff --git a/drivers/iommu/omap-iommu.c b/drivers/iommu/omap-iommu.c
-> index 425ae8e551dc..9112178e22d8 100644
-> --- a/drivers/iommu/omap-iommu.c
-> +++ b/drivers/iommu/omap-iommu.c
-> @@ -1691,7 +1691,8 @@ static struct iommu_device =
-*omap_iommu_probe_device(struct device *dev)
-> if (!oiommu) {
-> of_node_put(np);
-> kfree(arch_data);
-> - return ERR_PTR(-EINVAL);
-> + /* Not fatal, will re-probe once the right instance registers itself =
-*/
-> + return ERR_PTR(-ENODEV);
-> }
->=20
-> tmp->iommu_dev =3D oiommu;
+Jason's concern seems valid to me IMHO. But if the simpler version is 
+preferred, I'd suggest add some comments at least or the check suggested 
+by Jason to make the architecture guarantee more clear. Just in case 
+someone else won't repeat what we had done just because they see "1ULL" 
+in 2lvl code but not in linear code.
 
-Now I can boot with both patches applied (and Jason's patch and my =
-printk removed),
-but there is still (exactly the same as with Jason's patch):
-
-root@letux:~# uname -a
-Linux letux 6.8.0-rc1-letux+ #19517 SMP PREEMPT Tue Oct  8 17:23:11 CEST =
-2024 armv7l GNU/Linux
-root@letux:~# dmesg|fgrep iommu
-[    0.700195] iommu: Default domain type: Translated
-[    0.705078] iommu: DMA domain TLB invalidation policy: strict mode
-[    0.728393] platform 480bc000.isp: Adding to iommu group 0
-[    0.734161] omap-iommu 480bd400.mmu: 480bd400.mmu registered
-[   23.565216] omap3isp 480bc000.isp: iommu configuration for device =
-failed with -ETIMEDOUT
-[   23.605102] omap-iommu 480bd400.mmu: 480bd400.mmu: version 1.1
-root@letux:~# dmesg|fgrep isp
-[    0.000000] OMAP3630/DM3730 ES1.2 (l2cache iva sgx neon isp =
-192mhz_clk)
-[    0.728393] platform 480bc000.isp: Adding to iommu group 0
-[   11.472045] omapdss_dss 48050000.dss: bound 48050400.dispc (ops =
-dsi_vc_flush_receive_data [omapdrm])		<-- false positive of =
-fgrep
-[   23.557586] omap3isp 480bc000.isp: deferred probe timeout, ignoring =
-dependency
-[   23.565216] omap3isp 480bc000.isp: iommu configuration for device =
-failed with -ETIMEDOUT		<-- duplicate with fgrep iommu
-[   23.625183] omap3isp 480bc000.isp: supply vdd-csiphy1 not found, =
-using dummy regulator
-[   23.657135] omap3isp 480bc000.isp: supply vdd-csiphy2 not found, =
-using dummy regulator
-[   23.665832] omap3isp 480bc000.isp: Revision 15.0 found
-[   23.700073] omap3isp 480bc000.isp: failed to attach device to VA =
-mapping
-[   23.724182] omap3isp 480bc000.isp: unable to attach to IOMMU
-[   23.731262] omap3isp: probe of 480bc000.isp failed with error -16
-root@letux:~#=20
-
-The -ETIMEDOUT seems to come from of_iommu_configure().
-
-I also did now run the same with v6.7 to compare timing and message =
-sequence:
-
-root@letux:~# uname -a
-Linux letux 6.7.0-letux+ #19518 SMP PREEMPT Tue Oct  8 17:48:27 CEST =
-2024 armv7l GNU/Linux
-root@letux:~# dmesg|fgrep iommu
-[    0.412078] iommu: Default domain type: Translated
-[    0.412109] iommu: DMA domain TLB invalidation policy: strict mode
-[    0.415008] platform 480bc000.isp: Adding to iommu group 0
-[    0.415191] omap-iommu 480bd400.mmu: 480bd400.mmu registered
-[   11.046630] omap-iommu 480bd400.mmu: 480bd400.mmu: version 1.1
-root@letux:~# dmesg|fgrep isp
-[    0.000000] OMAP3630/DM3730 ES1.2 (l2cache iva sgx neon isp =
-192mhz_clk)
-[    0.415008] platform 480bc000.isp: Adding to iommu group 0
-[   10.885711] omap3isp 480bc000.isp: supply vdd-csiphy1 not found, =
-using dummy regulator
-[   10.953338] omap3isp 480bc000.isp: supply vdd-csiphy2 not found, =
-using dummy regulator
-[   11.025482] omap3isp 480bc000.isp: Revision 15.0 found
-[   11.084014] omap3isp 480bc000.isp: hist: using DMA channel dma0chan15
-[   11.150695] omap3isp 480bc000.isp: Entity type for entity OMAP3 ISP =
-CCP2 was not initialized!
-[   11.162109] omap3isp 480bc000.isp: isp_xclk_set_rate: cam_xclka set =
-to 24685714 Hz (div 7)
-[   11.199523] omap3isp 480bc000.isp: Entity type for entity OMAP3 ISP =
-CSI2a was not initialized!
-[   11.291931] omap3isp 480bc000.isp: Entity type for entity OMAP3 ISP =
-CCDC was not initialized!
-[   11.321807] omap3isp 480bc000.isp: Entity type for entity OMAP3 ISP =
-preview was not initialized!
-[   11.393188] omap3isp 480bc000.isp: Entity type for entity OMAP3 ISP =
-resizer was not initialized!
-[   11.425109] omap3isp 480bc000.isp: Entity type for entity OMAP3 ISP =
-AEWB was not initialized!
-[   11.434082] omap3isp 480bc000.isp: Entity type for entity OMAP3 ISP =
-AF was not initialized!
-[   11.534820] omap3isp 480bc000.isp: Entity type for entity OMAP3 ISP =
-histogram was not initialized!
-[   11.565155] omap3isp 480bc000.isp: parsing parallel interface
-[   12.589965] omapdss_dss 48050000.dss: bound 48050400.dispc (ops =
-dsi_vc_flush_receive_data [omapdrm])
-root@letux:~#=20
-
-Interestingly, there is no -ETIMEOUT and initialization start much =
-earlier.
-
-BR and thanks,
-Nikolaus
+>
+>> So I'm inclined to take Daniel's one-liner [1] which just chucks the
+>> 'ULL' suffix into the 2-level case. Otherwise, we're in a weird
+> I think you should take it and let better be for the CC crowd.
+>
+> Jason
 
