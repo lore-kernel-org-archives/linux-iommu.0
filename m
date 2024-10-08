@@ -1,88 +1,133 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 027A61DF272
-	for <iommu@lists.linux.dev>; Tue,  8 Oct 2024 13:36:37 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id B8CB81CF7A1
+	for <iommu@lists.linux.dev>; Tue,  8 Oct 2024 14:00:20 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1728394598; cv=none; b=UVwIsFjM5j1RL/e/I4Fkln2v3FpX4AxjfhlSIqYZogCJKtjjwSA365R0gZ+jUz0hOCdNcvS7fWp+2MVWCh6D4ACujljekDAJ/H0W/J8UFKOgUjFBmrQ7Rm9en6M3Yr92eT0i2PM25vD+VZ5Rk7pgxHxG/0062jhmge2lOVbVHqk=
+	t=1728396022; cv=none; b=LKZbl6Uc3ijB1b+ubAvWsCBq5vZD5mUJMxUaRvw8pWTdbFjbdNramgX5RvJ08wFzqh2fmrtRYrHLmoQBbE3GRqjYuE/J2a9NtR/nqrQDAmtwKHbpQztJJ+THtj6TD2vRw4dDv9P0aa765YwBNGafKT8somZWLERQJ/byKhTVrw8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1728394598; c=relaxed/simple;
-	bh=PuIYzcysAfSHnSCThrVlJX4qjVPu9JSnwDtckBrbmjU=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=WZoWNLYx1MvXF1Ckk9vPU7fjZIG7dqbLdLXutYJ6a97huRxI/7vCSF01BaLV+5lbH9fCMTm9piZDgQBTQAFHGQ2XcuwAstoQzOP0ZCFfoV6+odSNG5uXc4xMREinUIfHSoSOEA0Lxnhaf/KGbcPZ5PWnt+qQZRgCnTFkyWvljYo=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=e8dwyEOm; arc=none smtp.client-ip=10.30.226.201
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="e8dwyEOm"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id AD646C4CECC;
-	Tue,  8 Oct 2024 13:36:36 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1728394597;
-	bh=PuIYzcysAfSHnSCThrVlJX4qjVPu9JSnwDtckBrbmjU=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=e8dwyEOm6u2oJiFAMawRmQZwZVydXtiZIJpD9aHwZm7cJX0gEAq7T7Mj49TI4vVwI
-	 p8GVTi8/4ZhgL0Y5EXlvGUK62rHO7JwUPynT1hgxH/4pLWh53r1yDmSU1Fo/IoGBFz
-	 WzF3madCSfj8iIlRlLxMsmIEvWp2eSK42XaSC0zoZIyOHNs+wz0MbXnMzR1XuLaflB
-	 ETFHAIOOrLR5HzE0kPkTiYOxaQkM0++t9zSUvGXklVzPS6UHUNEot+TWjbyzKSBm9r
-	 Ztb4x+ikKl6Sy8umDNbiN8S7HvBVzL+pfFyOuutzsAuB+akO5AhRupNR2g/I+JbvXC
-	 LofaRN7yO0YLw==
-Date: Tue, 8 Oct 2024 14:36:33 +0100
-From: Will Deacon <will@kernel.org>
-To: Robin Murphy <robin.murphy@arm.com>
-Cc: joro@8bytes.org, iommu@lists.linux.dev,
-	linux-arm-kernel@lists.infradead.org
-Subject: Re: [PATCH] iommu/arm-smmu: Clarify MMU-500 CPRE workaround
-Message-ID: <20241008133633.GB10474@willie-the-truck>
-References: <467590c40029ef0712b1fd38f2928fd4f08d09af.1726232138.git.robin.murphy@arm.com>
- <7c426dc0-4fde-4d1e-bb91-538984bd8b59@arm.com>
+	s=arc-20240116; t=1728396022; c=relaxed/simple;
+	bh=D5b/vTNmHezYmt1DXe6RoyKgOQI4inWxD1AEe+j+v2Y=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=N/qM4kdq4lBC6Qn/DxX77K0G0F2eKrbRn3P3dibCTKlvOC4dgB+bjisfBbKMJKDKkCj6u8QRJJkOQQyjgkFZvmxBJpF1oSZCwMw0wsSzx+dQs2PpDcOMGwdVKitsvktxEGHKg6Qr1CGpbK5ghte18RzWQxa6ugoz4eOkmrG2cF0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; arc=none smtp.client-ip=217.140.110.172
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id AE3C0DA7;
+	Tue,  8 Oct 2024 07:00:49 -0700 (PDT)
+Received: from [10.1.196.40] (e121345-lin.cambridge.arm.com [10.1.196.40])
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 2CD4B3F58B;
+	Tue,  8 Oct 2024 07:00:19 -0700 (PDT)
+Message-ID: <10d3a86c-d7a8-4ac5-8ad3-010a91c0a25f@arm.com>
+Date: Tue, 8 Oct 2024 15:00:17 +0100
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <7c426dc0-4fde-4d1e-bb91-538984bd8b59@arm.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH] iommu/omap: Don't register ops by fwnode
+To: "H. Nikolaus Schaller" <hns@goldelico.com>
+Cc: joro@8bytes.org, will@kernel.org, iommu@lists.linux.dev,
+ Jason Gunthorpe <jgg@nvidia.com>, Linux-OMAP <linux-omap@vger.kernel.org>,
+ Beleswar Padhi <b-padhi@ti.com>, Andreas Kemnade <andreas@kemnade.info>
+References: <c44545c6d07c65d89daa297298c27bb0f15c8b84.1728393458.git.robin.murphy@arm.com>
+ <2863ACA9-2836-49F6-9D85-749CE480804D@goldelico.com>
+From: Robin Murphy <robin.murphy@arm.com>
+Content-Language: en-GB
+In-Reply-To: <2863ACA9-2836-49F6-9D85-749CE480804D@goldelico.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-On Fri, Sep 13, 2024 at 04:13:29PM +0100, Robin Murphy wrote:
-> On 2024-09-13 1:55 pm, Robin Murphy wrote:
-> > CPRE workarounds are implicated in at least 5 MMU-500 errata, some of
-> > which remain unfixed. The comment and warning message have proven to be
-> > unhelpfully misleading about this scope, so reword them to get the point
-> > across with less risk of going out of date or confusing users.
-> > 
-> > Signed-off-by: Robin Murphy <robin.murphy@arm.com>
-> > ---
-> >   drivers/iommu/arm/arm-smmu/arm-smmu-impl.c | 4 ++--
-> >   1 file changed, 2 insertions(+), 2 deletions(-)
-> > 
-> > diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu-impl.c b/drivers/iommu/arm/arm-smmu/arm-smmu-impl.c
-> > index 9dc772f2cbb2..2edb1c1658ad 100644
-> > --- a/drivers/iommu/arm/arm-smmu/arm-smmu-impl.c
-> > +++ b/drivers/iommu/arm/arm-smmu/arm-smmu-impl.c
-> > @@ -130,7 +130,7 @@ int arm_mmu500_reset(struct arm_smmu_device *smmu)
-> >   	/*
-> >   	 * Disable MMU-500's not-particularly-beneficial next-page
-> > -	 * prefetcher for the sake of errata #841119 and #826419.
-> > +	 * prefetcher for the sake of at least 5 known errata.
-> >   	 */
-> >   	for (i = 0; i < smmu->num_context_banks; ++i) {
-> >   		reg = arm_smmu_cb_read(smmu, i, ARM_SMMU_CB_ACTLR);
-> > @@ -138,7 +138,7 @@ int arm_mmu500_reset(struct arm_smmu_device *smmu)
-> >   		arm_smmu_cb_write(smmu, i, ARM_SMMU_CB_ACTLR, reg);
-> >   		reg = arm_smmu_cb_read(smmu, i, ARM_SMMU_CB_ACTLR);
-> >   		if (reg & ARM_MMU500_ACTLR_CPRE)
-> > -			dev_warn_once(smmu->dev, "Failed to disable prefetcher [errata #841119 and #826419], check ACR.CACHE_LOCK\n");
-> > +			dev_warn_once(smmu->dev, "Failed to disable prefetcher for errata workarounds, check ACR.CACHE_LOCK\n");
+On 08/10/2024 2:32 pm, H. Nikolaus Schaller wrote:
+> Hi Robin,
 > 
-> Come to think of it, this should probably also refer to SACR rather than
-> ACR, given that we already *have* attempted to program the Non-Secure
-> side...
+>> Am 08.10.2024 um 15:17 schrieb Robin Murphy <robin.murphy@arm.com>:
+>>
+>> The OMAP driver still has its own traditional firmware parsing and
+>> instance handling in omap_iommu_probe_device(), rather than using the
+>> generic fwnode-based paths. However, it also passes a hwdev to
+>> iommu_device_register(), thus registering a fwnode for each ops
+>> instance, wherein __iommu_probe_device() then fails to find matching ops
+>> for a client device with no fwspec and thus a NULL iommu_fwnode.
+>>
+>> Since omap-iommu is not known to coexist with any other IOMMU hardware
+>> and shares the same ops between all instances, we can reasonably remove
+>> the hwdev/fwnode registration to put it back into "legacy" mode where
+>> the ops are effectively global and ->probe_device remains responsible
+>> for filtering individual clients.
+>>
+>> Reported-by: Beleswar Padhi <b-padhi@ti.com>
+>> Reported-by: H. Nikolaus Schaller <hns@goldelico.com>
+>> Fixes: 17de3f5fdd35 ("iommu: Retire bus ops")
+>> Signed-off-by: Robin Murphy <robin.murphy@arm.com>
+>> ---
+>> drivers/iommu/omap-iommu.c | 2 +-
+>> 1 file changed, 1 insertion(+), 1 deletion(-)
+>>
+>> diff --git a/drivers/iommu/omap-iommu.c b/drivers/iommu/omap-iommu.c
+>> index c9528065a59a..425ae8e551dc 100644
+>> --- a/drivers/iommu/omap-iommu.c
+>> +++ b/drivers/iommu/omap-iommu.c
+>> @@ -1230,7 +1230,7 @@ static int omap_iommu_probe(struct platform_device *pdev)
+>> if (err)
+>> return err;
+>>
+>> - err = iommu_device_register(&obj->iommu, &omap_iommu_ops, &pdev->dev);
+>> + err = iommu_device_register(&obj->iommu, &omap_iommu_ops, NULL);
+> 
+> Thanks for this proposal, but this prevents my OMAP3 system completely
+> from booting (at least with v6.8-rc1):
+> 
+> ## Booting kernel from Legacy Image at 82000000 ...
+>     Image Name:   Linux-6.8.0-rc1-letux+
+>     Image Type:   ARM Linux Kernel Image (uncompressed)
+>     Data Size:    6491520 Bytes = 6.2 MiB
+>     Load Address: 80008000
+>     Entry Point:  80008000
+>     Verifying Checksum ... OK
+> ## Flattened Device Tree blob at 81c00000
+>     Booting using the fdt blob at 0x81c00000
+>     Loading Kernel Image ... OK
+>     Using Device Tree in place at 81c00000, end 81c1fe8e
+> 
+> Starting kernel ...
+> 
+> --- no further reaction --
 
-I'm happy to pick up a v2 with that change.
+Urgh... is it possible to get earlycon/ealyprintk output on this platform?
 
-Cheers,
+As a stab in the dark by inspection, there might potentially be some 
+interaction with "iommu: Move bus setup to IOMMU device registration" as 
+well, for which the additional diff below might help...
 
-Will
+Thanks,
+Robin.
+
+---->8----
+diff --git a/drivers/iommu/omap-iommu.c b/drivers/iommu/omap-iommu.c
+index 425ae8e551dc..9112178e22d8 100644
+--- a/drivers/iommu/omap-iommu.c
++++ b/drivers/iommu/omap-iommu.c
+@@ -1691,7 +1691,8 @@ static struct iommu_device 
+*omap_iommu_probe_device(struct device *dev)
+  		if (!oiommu) {
+  			of_node_put(np);
+  			kfree(arch_data);
+-			return ERR_PTR(-EINVAL);
++			/* Not fatal, will re-probe once the right instance registers itself */
++			return ERR_PTR(-ENODEV);
+  		}
+
+  		tmp->iommu_dev = oiommu;
+
+
+> 
+> As far as I see, all relevant devices are in the iommu_device_list but
+> only omap3.isp is really using iommu. So some other devices may fail by
+> this change.
+> 
+> BR,
+> Nikolaus
+> 
