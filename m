@@ -1,183 +1,157 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from mo4-p01-ob.smtp.rzone.de (mo4-p01-ob.smtp.rzone.de [85.215.255.53])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A3D8F20ADFB;
-	Tue,  8 Oct 2024 18:25:07 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1728411907; cv=none; b=XtjreJyoYXfr1/9eiT0MfBB58rDqy85NIfHAkPgauLj2BkHplSaf7d2/wAaobP+WxxSEyoqOrfNuzXCHf3oSfyY/4XV5kuue3dAS0wvLMmW3GocWV7S5MiTcp9Hj0bad2V4vQSf8AXv0u750F/KgzTDAdky7b7R5BS6IgGETQv8=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1728411907; c=relaxed/simple;
-	bh=gbTLwyB5anW/NVNa27O4GYEgcT7Zt8zwGlDOBl4w9X4=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=iKn1cBg6wAf5/asBt6gAc5/gkyUddWK+Q7H/JslFRAbkOl32zyhHqbI6mgVPXfzIFkJWweY+sc6VZDAYpvKYIY6hIKUEhGNSG6YRpVgFyNYjThMEMcKKZqc8RJos+0ggnHfoc7FgwUoPHH5ZdVQVemrsXdthgai3Ih07I8I/W/w=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=QWv3+c7h; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B3341212D21
+	for <iommu@lists.linux.dev>; Tue,  8 Oct 2024 19:52:57 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=85.215.255.53
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1728417181; cv=pass; b=QuYFu5jFVizBRirIHV1b/ycAwWVCWpHze0LHCM+CYUEpFsYowNsEj5eVjZjqSTDuiFZdBYv7x0i8ebOiZzCseqQxqlnkAha7qF6tuy6pj3RUJhaTJGPLwn00WH7yfxqUg07+xx7qAzwlLczzuffuPWXpo6i5noSRAMROKgzEVrE=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1728417181; c=relaxed/simple;
+	bh=LWLQRMuk6VLiGGjtPa/jD7fbvOT5+5xGJfOHGVME580=;
+	h=Content-Type:Mime-Version:Subject:From:In-Reply-To:Date:Cc:
+	 Message-Id:References:To; b=bgioRAtPQCpDrSuim8P40+PTiOozuDrXsz4dvKf+vJ/cInDLQa110phRLFDTmJHVn825hXoaolzblBd2T0Uf+9jGQ/hKKiBn6pvfa+/9rh29inRmNO6dIX/iEI5B6CcjRe88KUmcFq0I13gEp9W80vWiltNEv9fbQ7rwmAyFfMI=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=goldelico.com; spf=pass smtp.mailfrom=goldelico.com; dkim=pass (2048-bit key) header.d=goldelico.com header.i=@goldelico.com header.b=BtScDeoK; dkim=permerror (0-bit key) header.d=goldelico.com header.i=@goldelico.com header.b=iVLNGIX2; arc=pass smtp.client-ip=85.215.255.53
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=goldelico.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=goldelico.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="QWv3+c7h"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 47127C4AF09;
-	Tue,  8 Oct 2024 18:25:07 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1728411907;
-	bh=gbTLwyB5anW/NVNa27O4GYEgcT7Zt8zwGlDOBl4w9X4=;
-	h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-	b=QWv3+c7hgheNar52dT93kuaRJqQGwrTlm+2qt+dJoGyQzAHIgU0jubrC8ThWhyZIZ
-	 RS8ECJijkXPnKWXZt/DHYo4oNlel2cdA7QmeMfgDuBLkCfLLpl6vQcl4DNTcV5EyFH
-	 5h8XYKukhwE21LUBMtMTij4WxRmO6XhWfjQaEwayPWgg9ncS5s6vbgtpgFKR2d4Ze1
-	 U8RaeSIFzvB8vNoypQgBEdP43kZiPZVbc5vt/+kjhif0hCbio5j23Z7Fbcd2MdU+Eu
-	 u4mqS8NwdiP912BRPYfCL4ckK1zD9U7UpC3cflIOLH9kTp0r9qM6ScGNZWHbmYuBvP
-	 5BPH6goJRp7XQ==
-Received: by mail-oo1-f54.google.com with SMTP id 006d021491bc7-5e5d0a80db4so3217624eaf.3;
-        Tue, 08 Oct 2024 11:25:07 -0700 (PDT)
-X-Forwarded-Encrypted: i=1; AJvYcCU80eXlOO5kixUyE9F/u/y68e2e9ltZgJSxGZT0iwH5GDFNb2uA5wqe5QZEjKBzEAMGJTM+@lists.linux.dev, AJvYcCV+dS6FkNtq7yCRExmS4+FC+UThA2NfaaFKvjSxjRSN3nRLutiQucRQRhrSmYre0s4d7p8DW14=@lists.linux.dev, AJvYcCXJZNIGOPEvunz6HDar2Zo/PxYabaZ4p9d/lWYF2np3KtG6kfyM0CLEIGORt5MYQmUi+NEbYw==@lists.linux.dev, AJvYcCXoCQCBY24aZTpwO6EWr6BGkjVQHO2H77jxX+hpqzZ8ShgXFVei7j9nZOBLPhYDL347Tcv4CMttLZkRCIPGlA==@lists.linux.dev
-X-Gm-Message-State: AOJu0Yy75QQqiJIi0eaxYwzJVvbNTxM0+zjdD7b4Z50hXO5XVmapveBP
-	AjPEGAuNzyBhDXxcbrWtSxz8Kwr5yz41j/XSTPPGU99zQoLByhgWTaxVoYMTwH5VdJlP+ADIr4C
-	uXPkcYK6V4fsKMrYKXlZqx8DuzTg=
-X-Google-Smtp-Source: AGHT+IE8/UzrmOfg0dgL+a7sFpnmZmTmVZlVfZVXeH9h9sR6Zbx0f+k3/XHDUWx/NQFfJo1odWsZ7gtN5j50xL2u+GA=
-X-Received: by 2002:a05:6820:228e:b0:5e1:d741:6f04 with SMTP id
- 006d021491bc7-5e7cc079979mr12626737eaf.3.1728411906564; Tue, 08 Oct 2024
- 11:25:06 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=goldelico.com header.i=@goldelico.com header.b="BtScDeoK";
+	dkim=permerror (0-bit key) header.d=goldelico.com header.i=@goldelico.com header.b="iVLNGIX2"
+ARC-Seal: i=1; a=rsa-sha256; t=1728417144; cv=none;
+    d=strato.com; s=strato-dkim-0002;
+    b=n2Rdqemcd+BKy2VSrn2OclWuGQn7Z3sbb5w0+ZgJhoZDFFnRQoQopbUyHjbfN4PK7x
+    Rzrvw/m5nDmxKnH0sM7J+dAM5EPtOuBgWZyRTMFXH6TK9tjMKImpyRorHPD7KwZ7JNq2
+    QN6QFHeU2dEBWuQ+gt4xCN2dLbQyOXsihe1Z47i9Tz899meGzWJZASnW0DBQIWxoPF/M
+    s96O6ZK9zb45T5CuDWa0/cn7oI+NeMjowsfQZaUnrDOuQp1K5voNetO/1Afgjgrejwbg
+    xnsELhnx5acIq+iNNx25u+1SWW4wDAPrO01x+2ti7MqPPCTtjzWdqeNYkBJatoqEclVY
+    4xtg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; t=1728417144;
+    s=strato-dkim-0002; d=strato.com;
+    h=To:References:Message-Id:Cc:Date:In-Reply-To:From:Subject:Cc:Date:
+    From:Subject:Sender;
+    bh=LWLQRMuk6VLiGGjtPa/jD7fbvOT5+5xGJfOHGVME580=;
+    b=Iq2h5eylq4s0OWIsg0zkT/tK4J3HsW/l8QP2ePUx2siihvHTv8YCxP7/KRrM0fLI1j
+    egdYIuFYLeEUSQS9FBHin9nCdLPH0EcqPvb59HAbzxo+2cu9sB/OkV/SIp2CJJQayNVQ
+    hgLuwaxyAtZjpARyDNaSAV0qGiWcsH1IWiTO3jB3h6iiLIzCPQPAEMzym7ID1knI05Tf
+    f7i04vHxyw3DBoc3PSMUUQnKGpT0yiE0o3XvJ7LUHuTtAJC3olpcAiaQC3eaFE1qkv4m
+    myS4WFcZUyapLNoG6nN3J12zmGBLjnEidEC4JCztzcb4hAhLR9bJHokv+6oLNJbnHkk9
+    hiGw==
+ARC-Authentication-Results: i=1; strato.com;
+    arc=none;
+    dkim=none
+X-RZG-CLASS-ID: mo01
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; t=1728417144;
+    s=strato-dkim-0002; d=goldelico.com;
+    h=To:References:Message-Id:Cc:Date:In-Reply-To:From:Subject:Cc:Date:
+    From:Subject:Sender;
+    bh=LWLQRMuk6VLiGGjtPa/jD7fbvOT5+5xGJfOHGVME580=;
+    b=BtScDeoK/ji9JGNl8QUihTPGOZR9r9VLf4qrwZSl3uT/cdyM1X24+hP5dRtj8nIF9o
+    LqvHwF/lpTTLcz801zUWIh+qSZFMjyaIFWWLLpn5nMYf/bUPxBxVwllUO874fuO2lnhV
+    7bkmNw2zjIeJYqZzDe7ulOVYJ/Bg989fcDaAqXOr1uvtXmKCC1UOPdto9fE5UPE/E1Zt
+    gXHXM4GlGHBH7jRSwR9t+B5nyO1+2CY/5oAJhOwGNgCYSq8DE8Vav9rlxiSDNauhFkl9
+    hGdeScTTwPCmSuh+Mw/BMe4dh2PqHqKGIou5uSYFXVU69LhCzXwJ+t8nMZHi/3nP30OX
+    RkBw==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; t=1728417144;
+    s=strato-dkim-0003; d=goldelico.com;
+    h=To:References:Message-Id:Cc:Date:In-Reply-To:From:Subject:Cc:Date:
+    From:Subject:Sender;
+    bh=LWLQRMuk6VLiGGjtPa/jD7fbvOT5+5xGJfOHGVME580=;
+    b=iVLNGIX2Vbu2J+CMFMb/9GMMVFrkpgf72QHhS5xhGPQNu/dVsSYfjQrkLJN9C/CIGY
+    TH62qmH4euEX4wRBvWAA==
+X-RZG-AUTH: ":JGIXVUS7cutRB/49FwqZ7WcJeFKiMhflhwDubTJ9o12DNOsPj0lFzL1yfzkZ"
+Received: from smtpclient.apple
+    by smtp.strato.de (RZmta 51.2.7 DYNA|AUTH)
+    with ESMTPSA id Qd0dc2098JqOZaR
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (curve X9_62_prime256v1 with 256 ECDH bits, eq. 3072 bits RSA))
+	(Client did not present a certificate);
+    Tue, 8 Oct 2024 21:52:24 +0200 (CEST)
+Content-Type: text/plain;
+	charset=us-ascii
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
-MIME-Version: 1.0
-References: <20241004094101.113349-1-sakari.ailus@linux.intel.com>
- <CAPDyKFp0N6UJhnHS164Tdf=xkWB0jzq65L9TdvYazeBQ-6WjeQ@mail.gmail.com>
- <20241007184924.GH14766@pendragon.ideasonboard.com> <CAPDyKFpQVnF7eQv3dup8k-3EijnMjuveCG9sZ=Rpey1Y6MBJEg@mail.gmail.com>
- <20241007222502.GG30699@pendragon.ideasonboard.com> <CAPDyKFrGNwna6Y2pqSRaBbRYHKRaD2ayqQHLtoqLPOu9Et7qTg@mail.gmail.com>
-In-Reply-To: <CAPDyKFrGNwna6Y2pqSRaBbRYHKRaD2ayqQHLtoqLPOu9Et7qTg@mail.gmail.com>
-From: "Rafael J. Wysocki" <rafael@kernel.org>
-Date: Tue, 8 Oct 2024 20:24:55 +0200
-X-Gmail-Original-Message-ID: <CAJZ5v0jvJyS7D5-wURi2kyWN-rmNa+YqupeQJ000pQRVd9VBcQ@mail.gmail.com>
-Message-ID: <CAJZ5v0jvJyS7D5-wURi2kyWN-rmNa+YqupeQJ000pQRVd9VBcQ@mail.gmail.com>
-Subject: Re: [PATCH 00/51] treewide: Switch to __pm_runtime_put_autosuspend()
-To: Ulf Hansson <ulf.hansson@linaro.org>, 
-	Laurent Pinchart <laurent.pinchart@ideasonboard.com>, 
-	Sakari Ailus <sakari.ailus@linux.intel.com>
-Cc: dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org, 
-	linux-bluetooth@vger.kernel.org, linux-clk@vger.kernel.org, 
-	linux-crypto@vger.kernel.org, dmaengine@vger.kernel.org, 
-	linux-gpio@vger.kernel.org, amd-gfx@lists.freedesktop.org, 
-	nouveau@lists.freedesktop.org, linux-stm32@st-md-mailman.stormreply.com, 
-	linux-arm-kernel@lists.infradead.org, linux-i2c@vger.kernel.org, 
-	linux-i3c@lists.infradead.org, linux-iio@vger.kernel.org, 
-	linux-input@vger.kernel.org, patches@opensource.cirrus.com, 
-	iommu@lists.linux.dev, imx@lists.linux.dev, 
-	linux-mediatek@lists.infradead.org, linux-media@vger.kernel.org, 
-	linux-mmc@vger.kernel.org, linux-mtd@lists.infradead.org, 
-	netdev@vger.kernel.org, linux-wireless@vger.kernel.org, 
-	linux-pci@vger.kernel.org, linux-phy@lists.infradead.org, 
-	linux-pwm@vger.kernel.org, linux-remoteproc@vger.kernel.org, 
-	linux-sound@vger.kernel.org, linux-spi@vger.kernel.org, 
-	linux-staging@lists.linux.dev, linux-usb@vger.kernel.org, 
-	linux-serial@vger.kernel.org, greybus-dev@lists.linaro.org, 
-	asahi@lists.linux.dev, Andy Shevchenko <andy.shevchenko@gmail.com>
-Content-Type: text/plain; charset="UTF-8"
+Mime-Version: 1.0 (Mac OS X Mail 16.0 \(3776.700.51.11.1\))
+Subject: Re: [PATCH] iommu/omap: Don't register ops by fwnode
+From: "H. Nikolaus Schaller" <hns@goldelico.com>
+In-Reply-To: <5c3ea490-f2f5-49e5-99fd-1dc239aee28d@arm.com>
+Date: Tue, 8 Oct 2024 21:52:13 +0200
+Cc: joro@8bytes.org,
+ will@kernel.org,
+ iommu@lists.linux.dev,
+ Jason Gunthorpe <jgg@nvidia.com>,
+ Linux-OMAP <linux-omap@vger.kernel.org>,
+ Beleswar Padhi <b-padhi@ti.com>,
+ Andreas Kemnade <andreas@kemnade.info>
 Content-Transfer-Encoding: quoted-printable
+Message-Id: <F4A297DC-8EBD-4434-97EA-BFEEBB062042@goldelico.com>
+References: <c44545c6d07c65d89daa297298c27bb0f15c8b84.1728393458.git.robin.murphy@arm.com>
+ <2863ACA9-2836-49F6-9D85-749CE480804D@goldelico.com>
+ <10d3a86c-d7a8-4ac5-8ad3-010a91c0a25f@arm.com>
+ <FCFEB115-846A-4577-A489-D1537AC77DEA@goldelico.com>
+ <5c3ea490-f2f5-49e5-99fd-1dc239aee28d@arm.com>
+To: Robin Murphy <robin.murphy@arm.com>
+X-Mailer: Apple Mail (2.3776.700.51.11.1)
 
-On Tue, Oct 8, 2024 at 12:35=E2=80=AFAM Ulf Hansson <ulf.hansson@linaro.org=
-> wrote:
->
-> On Tue, 8 Oct 2024 at 00:25, Laurent Pinchart
-> <laurent.pinchart@ideasonboard.com> wrote:
-> >
-> > Hi Ulf,
-> >
-> > On Tue, Oct 08, 2024 at 12:08:24AM +0200, Ulf Hansson wrote:
-> > > On Mon, 7 Oct 2024 at 20:49, Laurent Pinchart wrote:
-> > > > On Fri, Oct 04, 2024 at 04:38:36PM +0200, Ulf Hansson wrote:
-> > > > > On Fri, 4 Oct 2024 at 11:41, Sakari Ailus wrote:
-> > > > > >
-> > > > > > Hello everyone,
-> > > > > >
-> > > > > > This set will switch the users of pm_runtime_put_autosuspend() =
-to
-> > > > > > __pm_runtime_put_autosuspend() while the former will soon be re=
--purposed
-> > > > > > to include a call to pm_runtime_mark_last_busy(). The two are a=
-lmost
-> > > > > > always used together, apart from bugs which are likely common. =
-Going
-> > > > > > forward, most new users should be using pm_runtime_put_autosusp=
-end().
-> > > > > >
-> > > > > > Once this conversion is done and pm_runtime_put_autosuspend() r=
-e-purposed,
-> > > > > > I'll post another set to merge the calls to __pm_runtime_put_au=
-tosuspend()
-> > > > > > and pm_runtime_mark_last_busy().
-> > > > >
-> > > > > That sounds like it could cause a lot of churns.
-> > > > >
-> > > > > Why not add a new helper function that does the
-> > > > > pm_runtime_put_autosuspend() and the pm_runtime_mark_last_busy()
-> > > > > things? Then we can start moving users over to this new interface=
-,
-> > > > > rather than having this intermediate step?
-> > > >
-> > > > I think the API would be nicer if we used the shortest and simplest
-> > > > function names for the most common use cases. Following
-> > > > pm_runtime_put_autosuspend() with pm_runtime_mark_last_busy() is th=
-at
-> > > > most common use case. That's why I like Sakari's approach of repurp=
-osing
-> > > > pm_runtime_put_autosuspend(), and introducing
-> > > > __pm_runtime_put_autosuspend() for the odd cases where
-> > > > pm_runtime_mark_last_busy() shouldn't be called.
-> > >
-> > > Okay, so the reason for this approach is because we couldn't find a
-> > > short and descriptive name that could be used in favor of
-> > > pm_runtime_put_autosuspend(). Let me throw some ideas at it and maybe
-> > > you like it - or not. :-)
-> >
-> > I like the idea at least :-)
-> >
-> > > I don't know what options you guys discussed, but to me the entire
-> > > "autosuspend"-suffix isn't really that necessary in my opinion. There
-> > > are more ways than calling pm_runtime_put_autosuspend() that triggers
-> > > us to use the RPM_AUTO flag for rpm_suspend(). For example, just
-> > > calling pm_runtime_put() has the similar effect.
-> >
-> > To be honest, I'm lost there. pm_runtime_put() calls
-> > __pm_runtime_idle(RPM_GET_PUT | RPM_ASYNC), while
-> > pm_runtime_put_autosuspend() calls __pm_runtime_suspend(RPM_GET_PUT |
-> > RPM_ASYNC | RPM_AUTO).
->
-> __pm_runtime_idle() ends up calling rpm_idle(), which may call
-> rpm_suspend() - if it succeeds to idle the device. In that case, it
-> tags on the RPM_AUTO flag in the call to rpm_suspend(). Quite similar
-> to what is happening when calling pm_runtime_put_autosuspend().
 
-Right.
 
-For almost everybody, except for a small bunch of drivers that
-actually have a .runtime_idle() callback, pm_runtime_put() is
-literally equivalent to pm_runtime_put_autosuspend().
+> Am 08.10.2024 um 20:20 schrieb Robin Murphy <robin.murphy@arm.com>:
 
-So really the question is why anyone who doesn't provide a
-.runtime_idle() callback bothers with using this special
-pm_runtime_put_autosuspend() thing, which really means "do a
-runtime_put(), but skip my .runtime_idle() callback".
+>> The -ETIMEDOUT seems to come from of_iommu_configure().
+>=20
+> Oof, yeah, now we've wound up with the opposite problem that because =
+it's the generic "iommus" binding, it gets as far as of_iommu_xlate() =
+but now the NULL fwnode no longer matches the phandle target so that =
+thinks it's waiting for an instance which hasn't registered yet :(
+>=20
+> OK, different track, does the diff below fare any better? (I've not =
+written it up fully yet as the DRA7 special cases will need some more =
+work still)
+>=20
+> Thanks,
+> Robin.
+>=20
+> ----->8-----
+>=20
+> diff --git a/drivers/iommu/omap-iommu.c b/drivers/iommu/omap-iommu.c
+> index c9528065a59a..44e09d60e861 100644
+> --- a/drivers/iommu/omap-iommu.c
+> +++ b/drivers/iommu/omap-iommu.c
+> @@ -1723,12 +1723,19 @@ static void omap_iommu_release_device(struct =
+device *dev)
+>=20
+> }
+>=20
+> +int omap_iommu_of_xlate(struct device *dev, const struct =
+of_phandle_args *args)
+> +{
+> + /* TODO: collect args->np to save re-parsing in probe above */
+> + return 0;
+> +}
+> +
+> static const struct iommu_ops omap_iommu_ops =3D {
+> .identity_domain =3D &omap_iommu_identity_domain,
+> .domain_alloc_paging =3D omap_iommu_domain_alloc_paging,
+> .probe_device =3D omap_iommu_probe_device,
+> .release_device =3D omap_iommu_release_device,
+> .device_group =3D generic_single_device_group,
+> + .of_xlate =3D omap_iommu_of_xlate,
+> .pgsize_bitmap =3D OMAP_IOMMU_PGSIZES,
+> .default_domain_ops =3D &(const struct iommu_domain_ops) {
+> .attach_dev =3D omap_iommu_attach_dev,
 
-> >
-> > >
-> > > Moreover, it's similar for pm_runtime_mark_last_busy(), it's called
-> > > during rpm_resume() too, for example. So why bother about having
-> > > "mark_last_busy" in the new name too.
-> > >
-> > > That said, my suggestion is simply "pm_runtime_put_suspend".
-> >
-> > Can we do even better, and make pm_runtime_put() to handle autosuspend
-> > automatically when autosuspend is enabled ?
->
-> As stated above, this is already the case.
 
-What really is needed appears to be a combination of
-pm_runtime_mark_last_busy() with pm_runtime_put().
+Unfortunately no change :(
 
-Granted, pm_runtime_put() could do the pm_runtime_mark_last_busy()
-thing automatically if autosuspend is enabled and the only consequence
-of it might be delaying a suspend of the device until its autosuspend
-timer expires, which should not be a problem in the vast majority of
-cases.
+A very tiny issue was that the second argument can not have a const =
+specifier in the
+v6.8 series, but starting with v6.9 it should be there. But since 6.8 =
+and 6.9 are
+already EOL, there will be no back-ports anyways. And if someone does =
+really
+backport (like me for testing purposes) it is obvious what to do.
+
+BR and thanks,
+Nikolaus
+
