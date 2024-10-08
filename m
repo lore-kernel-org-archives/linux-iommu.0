@@ -1,133 +1,100 @@
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id B8CB81CF7A1
-	for <iommu@lists.linux.dev>; Tue,  8 Oct 2024 14:00:20 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
+Received: from mail-qk1-f180.google.com (mail-qk1-f180.google.com [209.85.222.180])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D76EA1E04AA
+	for <iommu@lists.linux.dev>; Tue,  8 Oct 2024 15:15:09 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.222.180
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1728396022; cv=none; b=LKZbl6Uc3ijB1b+ubAvWsCBq5vZD5mUJMxUaRvw8pWTdbFjbdNramgX5RvJ08wFzqh2fmrtRYrHLmoQBbE3GRqjYuE/J2a9NtR/nqrQDAmtwKHbpQztJJ+THtj6TD2vRw4dDv9P0aa765YwBNGafKT8somZWLERQJ/byKhTVrw8=
+	t=1728400511; cv=none; b=cpaexjeOzXtjJCftpq0eHYx7PRY8T0hmCGkOHliGGmlUcf3zSFrMcYgaLfwOdTX3r4vMZnCXiCZx/8GePoFC0uvlfjND4cCTeBKFqMJ5hfj+pqPS2/Ga9iht5h5UXXMNnrW9dCCO0toIknYwJ8Dlft4BpW7QfCtoSpQppudnCDg=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1728396022; c=relaxed/simple;
-	bh=D5b/vTNmHezYmt1DXe6RoyKgOQI4inWxD1AEe+j+v2Y=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=N/qM4kdq4lBC6Qn/DxX77K0G0F2eKrbRn3P3dibCTKlvOC4dgB+bjisfBbKMJKDKkCj6u8QRJJkOQQyjgkFZvmxBJpF1oSZCwMw0wsSzx+dQs2PpDcOMGwdVKitsvktxEGHKg6Qr1CGpbK5ghte18RzWQxa6ugoz4eOkmrG2cF0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; arc=none smtp.client-ip=217.140.110.172
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id AE3C0DA7;
-	Tue,  8 Oct 2024 07:00:49 -0700 (PDT)
-Received: from [10.1.196.40] (e121345-lin.cambridge.arm.com [10.1.196.40])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 2CD4B3F58B;
-	Tue,  8 Oct 2024 07:00:19 -0700 (PDT)
-Message-ID: <10d3a86c-d7a8-4ac5-8ad3-010a91c0a25f@arm.com>
-Date: Tue, 8 Oct 2024 15:00:17 +0100
+	s=arc-20240116; t=1728400511; c=relaxed/simple;
+	bh=YsqpEHSxQs1WSXGDQ6CWUY1+FoJF5J2RonY3yGje8Cw=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=ksQfw5i/P/+fY34AirBjJ2p1qTXU2VFkvOAgGmvJNu3W9LyT/nGeQ5nCWuOfGeG4hsTqG5ZvbO3JiGm6Lo7Y8LU3TscB+j07YpjQzzErI2lfMxEfYb49IPjQw+tgA5ytXPdigW3r67Lrelw0h3EiszSxSxflKrRfUXTGU3pw4gA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=meM8IOMC; arc=none smtp.client-ip=209.85.222.180
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="meM8IOMC"
+Received: by mail-qk1-f180.google.com with SMTP id af79cd13be357-7a9ae8fc076so620388785a.2
+        for <iommu@lists.linux.dev>; Tue, 08 Oct 2024 08:15:09 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=ziepe.ca; s=google; t=1728400508; x=1729005308; darn=lists.linux.dev;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=YsqpEHSxQs1WSXGDQ6CWUY1+FoJF5J2RonY3yGje8Cw=;
+        b=meM8IOMCdvqjEtL5F7VuOKjpLg2mjYJvdK+qR3CxsoTLk65X4cw5Z65QxHDRRRg5/i
+         Kv5QTnE+HY7zqWSBIBVL8gzd713HpMLEJSiEo5SCbtkS1vNoDV1jZntsUg3ZpfMVCnF1
+         v5fMyPPUQYfPMIxl2fc8SwWi7CzLRBp0eHn4lRjhGvZptWFmpya2frZ62zikqK3OxIKb
+         LKFCgUqf/Qg5iOquw24rnKtRQPwm8FYb9iFyzz1sb6BNa3ExVwJBFqwXaPDNI5+K8rCl
+         7HuFHryQcrxrzwxRNI1rUlG9mUH03CWU//Tp4Y/3q7s6FMqHlhydBqzfZaEICHjlKWUb
+         ECog==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1728400508; x=1729005308;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=YsqpEHSxQs1WSXGDQ6CWUY1+FoJF5J2RonY3yGje8Cw=;
+        b=UJIZOD3vULAL5+VaCZxAlU+opm8ItMVDd/AOBoWudSEhKeQ4aAIlY5rD7WWHcOmMHe
+         akSX3gN8QOUJO+q4WdPmQijXdyqJSOYui+zmhr/LeNbNyPB12ictmKEbss3IggMbDIhF
+         bDDyvmKpy2GTwGdUWN/Ksi//6PoD6rKXY1Eta0z2zowm1VR6VFDZcyaiY0pnEEOA6Zuo
+         I5YSUvHUR63cagZzNbrGXL5sJL26y4bYLuiGbwpn8BxSHd67c5QwX1BdK7Y4y8UELKJ6
+         io+uRB3S7dD3Kse06l6G941KD+FTjS7SXp/tUK5A++JV8l/F3RDcwzkG1J+1LgTOPbAl
+         Bc1g==
+X-Forwarded-Encrypted: i=1; AJvYcCVAiQJkz5tLTiZO86vI7PhlFAe1psjg+XgMGUMNr4OgCPwXjaRduJgG8iWoxCbYt1UyIJYdQg==@lists.linux.dev
+X-Gm-Message-State: AOJu0YwjBAn5804DFFvrGT1Rp8GAgkwxyIgy/pmu1cdggaRZYPzkNGBN
+	sbacR1xTia6FXJskmfcBdENSqmxu3Ad3P6UtZhz9ZqUNCXJHim1DrXw98+6C7Wo=
+X-Google-Smtp-Source: AGHT+IH2uRC2UfcD0r1BF9aCv8jK6ZDJjGODQUbS2anKumzSrd3t/zuWy5T9g/mXSSYSymaMjGgK/Q==
+X-Received: by 2002:a05:620a:192a:b0:7a9:b114:471d with SMTP id af79cd13be357-7ae6f4541a6mr2723208285a.33.1728400508653;
+        Tue, 08 Oct 2024 08:15:08 -0700 (PDT)
+Received: from ziepe.ca (hlfxns017vw-142-68-128-5.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.68.128.5])
+        by smtp.gmail.com with ESMTPSA id af79cd13be357-7ae75764d2dsm361159185a.117.2024.10.08.08.15.07
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 08 Oct 2024 08:15:07 -0700 (PDT)
+Received: from jgg by wakko with local (Exim 4.95)
+	(envelope-from <jgg@ziepe.ca>)
+	id 1syBvW-00684j-QA;
+	Tue, 08 Oct 2024 12:15:06 -0300
+Date: Tue, 8 Oct 2024 12:15:06 -0300
+From: Jason Gunthorpe <jgg@ziepe.ca>
+To: Will Deacon <will@kernel.org>
+Cc: Yang Shi <yang@os.amperecomputing.com>, nicolinc@nvidia.com,
+	james.morse@arm.com, robin.murphy@arm.com,
+	linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev,
+	linux-kernel@vger.kernel.org
+Subject: Re: [v3 PATCH] iommu/arm-smmu-v3: Fix L1 stream table index
+ calculation for 32-bit sid size
+Message-ID: <20241008151506.GC762027@ziepe.ca>
+References: <20241004180405.555194-1-yang@os.amperecomputing.com>
+ <20241008133458.GA10474@willie-the-truck>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH] iommu/omap: Don't register ops by fwnode
-To: "H. Nikolaus Schaller" <hns@goldelico.com>
-Cc: joro@8bytes.org, will@kernel.org, iommu@lists.linux.dev,
- Jason Gunthorpe <jgg@nvidia.com>, Linux-OMAP <linux-omap@vger.kernel.org>,
- Beleswar Padhi <b-padhi@ti.com>, Andreas Kemnade <andreas@kemnade.info>
-References: <c44545c6d07c65d89daa297298c27bb0f15c8b84.1728393458.git.robin.murphy@arm.com>
- <2863ACA9-2836-49F6-9D85-749CE480804D@goldelico.com>
-From: Robin Murphy <robin.murphy@arm.com>
-Content-Language: en-GB
-In-Reply-To: <2863ACA9-2836-49F6-9D85-749CE480804D@goldelico.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20241008133458.GA10474@willie-the-truck>
 
-On 08/10/2024 2:32 pm, H. Nikolaus Schaller wrote:
-> Hi Robin,
-> 
->> Am 08.10.2024 um 15:17 schrieb Robin Murphy <robin.murphy@arm.com>:
->>
->> The OMAP driver still has its own traditional firmware parsing and
->> instance handling in omap_iommu_probe_device(), rather than using the
->> generic fwnode-based paths. However, it also passes a hwdev to
->> iommu_device_register(), thus registering a fwnode for each ops
->> instance, wherein __iommu_probe_device() then fails to find matching ops
->> for a client device with no fwspec and thus a NULL iommu_fwnode.
->>
->> Since omap-iommu is not known to coexist with any other IOMMU hardware
->> and shares the same ops between all instances, we can reasonably remove
->> the hwdev/fwnode registration to put it back into "legacy" mode where
->> the ops are effectively global and ->probe_device remains responsible
->> for filtering individual clients.
->>
->> Reported-by: Beleswar Padhi <b-padhi@ti.com>
->> Reported-by: H. Nikolaus Schaller <hns@goldelico.com>
->> Fixes: 17de3f5fdd35 ("iommu: Retire bus ops")
->> Signed-off-by: Robin Murphy <robin.murphy@arm.com>
->> ---
->> drivers/iommu/omap-iommu.c | 2 +-
->> 1 file changed, 1 insertion(+), 1 deletion(-)
->>
->> diff --git a/drivers/iommu/omap-iommu.c b/drivers/iommu/omap-iommu.c
->> index c9528065a59a..425ae8e551dc 100644
->> --- a/drivers/iommu/omap-iommu.c
->> +++ b/drivers/iommu/omap-iommu.c
->> @@ -1230,7 +1230,7 @@ static int omap_iommu_probe(struct platform_device *pdev)
->> if (err)
->> return err;
->>
->> - err = iommu_device_register(&obj->iommu, &omap_iommu_ops, &pdev->dev);
->> + err = iommu_device_register(&obj->iommu, &omap_iommu_ops, NULL);
-> 
-> Thanks for this proposal, but this prevents my OMAP3 system completely
-> from booting (at least with v6.8-rc1):
-> 
-> ## Booting kernel from Legacy Image at 82000000 ...
->     Image Name:   Linux-6.8.0-rc1-letux+
->     Image Type:   ARM Linux Kernel Image (uncompressed)
->     Data Size:    6491520 Bytes = 6.2 MiB
->     Load Address: 80008000
->     Entry Point:  80008000
->     Verifying Checksum ... OK
-> ## Flattened Device Tree blob at 81c00000
->     Booting using the fdt blob at 0x81c00000
->     Loading Kernel Image ... OK
->     Using Device Tree in place at 81c00000, end 81c1fe8e
-> 
-> Starting kernel ...
-> 
-> --- no further reaction --
+On Tue, Oct 08, 2024 at 02:34:58PM +0100, Will Deacon wrote:
 
-Urgh... is it possible to get earlycon/ealyprintk output on this platform?
+> This all looks a bit messy to me. The architecture guarantees that
+> 2-level stream tables are supported once we hit 7-bit SIDs and, although
+> the driver relaxes this to > 8-bit SIDs, we'll never run into overflow
+> problems in the linear table code above.
 
-As a stab in the dark by inspection, there might potentially be some 
-interaction with "iommu: Move bus setup to IOMMU device registration" as 
-well, for which the additional diff below might help...
+My original point was about the confidential compute position (sigh)
+that the untrusted hypverisor should not corrupt the driver.
 
-Thanks,
-Robin.
+So your statement is architecturally true, but we never check that
+IDR0_ST_LVL_2LVL is set if IDR1_SIDSIZE > 2**7, and so we can get into
+this situation where the hypervisor could trigger some kind of bad
+behavior.
 
----->8----
-diff --git a/drivers/iommu/omap-iommu.c b/drivers/iommu/omap-iommu.c
-index 425ae8e551dc..9112178e22d8 100644
---- a/drivers/iommu/omap-iommu.c
-+++ b/drivers/iommu/omap-iommu.c
-@@ -1691,7 +1691,8 @@ static struct iommu_device 
-*omap_iommu_probe_device(struct device *dev)
-  		if (!oiommu) {
-  			of_node_put(np);
-  			kfree(arch_data);
--			return ERR_PTR(-EINVAL);
-+			/* Not fatal, will re-probe once the right instance registers itself */
-+			return ERR_PTR(-ENODEV);
-  		}
+> So I'm inclined to take Daniel's one-liner [1] which just chucks the
+> 'ULL' suffix into the 2-level case. Otherwise, we're in a weird
 
-  		tmp->iommu_dev = oiommu;
+I think you should take it and let better be for the CC crowd.
 
-
-> 
-> As far as I see, all relevant devices are in the iommu_device_list but
-> only omap3.isp is really using iommu. So some other devices may fail by
-> this change.
-> 
-> BR,
-> Nikolaus
-> 
+Jason
