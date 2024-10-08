@@ -1,157 +1,163 @@
-Received: from mo4-p01-ob.smtp.rzone.de (mo4-p01-ob.smtp.rzone.de [85.215.255.53])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-ej1-f42.google.com (mail-ej1-f42.google.com [209.85.218.42])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B3341212D21
-	for <iommu@lists.linux.dev>; Tue,  8 Oct 2024 19:52:57 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=85.215.255.53
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1728417181; cv=pass; b=QuYFu5jFVizBRirIHV1b/ycAwWVCWpHze0LHCM+CYUEpFsYowNsEj5eVjZjqSTDuiFZdBYv7x0i8ebOiZzCseqQxqlnkAha7qF6tuy6pj3RUJhaTJGPLwn00WH7yfxqUg07+xx7qAzwlLczzuffuPWXpo6i5noSRAMROKgzEVrE=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1728417181; c=relaxed/simple;
-	bh=LWLQRMuk6VLiGGjtPa/jD7fbvOT5+5xGJfOHGVME580=;
-	h=Content-Type:Mime-Version:Subject:From:In-Reply-To:Date:Cc:
-	 Message-Id:References:To; b=bgioRAtPQCpDrSuim8P40+PTiOozuDrXsz4dvKf+vJ/cInDLQa110phRLFDTmJHVn825hXoaolzblBd2T0Uf+9jGQ/hKKiBn6pvfa+/9rh29inRmNO6dIX/iEI5B6CcjRe88KUmcFq0I13gEp9W80vWiltNEv9fbQ7rwmAyFfMI=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=goldelico.com; spf=pass smtp.mailfrom=goldelico.com; dkim=pass (2048-bit key) header.d=goldelico.com header.i=@goldelico.com header.b=BtScDeoK; dkim=permerror (0-bit key) header.d=goldelico.com header.i=@goldelico.com header.b=iVLNGIX2; arc=pass smtp.client-ip=85.215.255.53
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=goldelico.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=goldelico.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B2533215026
+	for <iommu@lists.linux.dev>; Tue,  8 Oct 2024 20:38:06 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.218.42
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1728419890; cv=none; b=FtX7HYX7t5tkEKbyEtAiRUZiOYQvp6kZhLMk6leMfKIArM/29Nlb1o5QWYC/yNnkxD37xdsqIj+vTwlFHWk1pSztjwmXTluGdtMJANSp8zRnzYAkn45CaO9S/St/PIm9b0Ygx7HE8uylbL87IM9UpK4xyuBFzimtHxb1vegO7wU=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1728419890; c=relaxed/simple;
+	bh=jBKc56vBxPYaOUWcC+VFZKlnp8sdizUoPysD1KL2n2Y=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=R9hxaFCZfFLwnFxoE8pcsaXAydYU0GwOgr6rmCIpMx5h37u2P1xfx0CYRFXuLNDr9PGcovNB3FjmTovUUbKSdbeWgDCwU6ohDhLNESS2h6hWDxuFyTM1f5joi0uLr58h9u/KFnYHmubIdTLd+NWQR8uJat4+UppM/s1D+YqgT2Y=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b=p9a6v0cu; arc=none smtp.client-ip=209.85.218.42
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baylibre.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=goldelico.com header.i=@goldelico.com header.b="BtScDeoK";
-	dkim=permerror (0-bit key) header.d=goldelico.com header.i=@goldelico.com header.b="iVLNGIX2"
-ARC-Seal: i=1; a=rsa-sha256; t=1728417144; cv=none;
-    d=strato.com; s=strato-dkim-0002;
-    b=n2Rdqemcd+BKy2VSrn2OclWuGQn7Z3sbb5w0+ZgJhoZDFFnRQoQopbUyHjbfN4PK7x
-    Rzrvw/m5nDmxKnH0sM7J+dAM5EPtOuBgWZyRTMFXH6TK9tjMKImpyRorHPD7KwZ7JNq2
-    QN6QFHeU2dEBWuQ+gt4xCN2dLbQyOXsihe1Z47i9Tz899meGzWJZASnW0DBQIWxoPF/M
-    s96O6ZK9zb45T5CuDWa0/cn7oI+NeMjowsfQZaUnrDOuQp1K5voNetO/1Afgjgrejwbg
-    xnsELhnx5acIq+iNNx25u+1SWW4wDAPrO01x+2ti7MqPPCTtjzWdqeNYkBJatoqEclVY
-    4xtg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; t=1728417144;
-    s=strato-dkim-0002; d=strato.com;
-    h=To:References:Message-Id:Cc:Date:In-Reply-To:From:Subject:Cc:Date:
-    From:Subject:Sender;
-    bh=LWLQRMuk6VLiGGjtPa/jD7fbvOT5+5xGJfOHGVME580=;
-    b=Iq2h5eylq4s0OWIsg0zkT/tK4J3HsW/l8QP2ePUx2siihvHTv8YCxP7/KRrM0fLI1j
-    egdYIuFYLeEUSQS9FBHin9nCdLPH0EcqPvb59HAbzxo+2cu9sB/OkV/SIp2CJJQayNVQ
-    hgLuwaxyAtZjpARyDNaSAV0qGiWcsH1IWiTO3jB3h6iiLIzCPQPAEMzym7ID1knI05Tf
-    f7i04vHxyw3DBoc3PSMUUQnKGpT0yiE0o3XvJ7LUHuTtAJC3olpcAiaQC3eaFE1qkv4m
-    myS4WFcZUyapLNoG6nN3J12zmGBLjnEidEC4JCztzcb4hAhLR9bJHokv+6oLNJbnHkk9
-    hiGw==
-ARC-Authentication-Results: i=1; strato.com;
-    arc=none;
-    dkim=none
-X-RZG-CLASS-ID: mo01
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; t=1728417144;
-    s=strato-dkim-0002; d=goldelico.com;
-    h=To:References:Message-Id:Cc:Date:In-Reply-To:From:Subject:Cc:Date:
-    From:Subject:Sender;
-    bh=LWLQRMuk6VLiGGjtPa/jD7fbvOT5+5xGJfOHGVME580=;
-    b=BtScDeoK/ji9JGNl8QUihTPGOZR9r9VLf4qrwZSl3uT/cdyM1X24+hP5dRtj8nIF9o
-    LqvHwF/lpTTLcz801zUWIh+qSZFMjyaIFWWLLpn5nMYf/bUPxBxVwllUO874fuO2lnhV
-    7bkmNw2zjIeJYqZzDe7ulOVYJ/Bg989fcDaAqXOr1uvtXmKCC1UOPdto9fE5UPE/E1Zt
-    gXHXM4GlGHBH7jRSwR9t+B5nyO1+2CY/5oAJhOwGNgCYSq8DE8Vav9rlxiSDNauhFkl9
-    hGdeScTTwPCmSuh+Mw/BMe4dh2PqHqKGIou5uSYFXVU69LhCzXwJ+t8nMZHi/3nP30OX
-    RkBw==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; t=1728417144;
-    s=strato-dkim-0003; d=goldelico.com;
-    h=To:References:Message-Id:Cc:Date:In-Reply-To:From:Subject:Cc:Date:
-    From:Subject:Sender;
-    bh=LWLQRMuk6VLiGGjtPa/jD7fbvOT5+5xGJfOHGVME580=;
-    b=iVLNGIX2Vbu2J+CMFMb/9GMMVFrkpgf72QHhS5xhGPQNu/dVsSYfjQrkLJN9C/CIGY
-    TH62qmH4euEX4wRBvWAA==
-X-RZG-AUTH: ":JGIXVUS7cutRB/49FwqZ7WcJeFKiMhflhwDubTJ9o12DNOsPj0lFzL1yfzkZ"
-Received: from smtpclient.apple
-    by smtp.strato.de (RZmta 51.2.7 DYNA|AUTH)
-    with ESMTPSA id Qd0dc2098JqOZaR
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (curve X9_62_prime256v1 with 256 ECDH bits, eq. 3072 bits RSA))
-	(Client did not present a certificate);
-    Tue, 8 Oct 2024 21:52:24 +0200 (CEST)
-Content-Type: text/plain;
-	charset=us-ascii
+	dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b="p9a6v0cu"
+Received: by mail-ej1-f42.google.com with SMTP id a640c23a62f3a-a9951fba3b4so404168866b.1
+        for <iommu@lists.linux.dev>; Tue, 08 Oct 2024 13:38:06 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=baylibre-com.20230601.gappssmtp.com; s=20230601; t=1728419885; x=1729024685; darn=lists.linux.dev;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=jBKc56vBxPYaOUWcC+VFZKlnp8sdizUoPysD1KL2n2Y=;
+        b=p9a6v0cuERVomugY10c7+XNqpHSOv9HtvWSZYTxl1EkrIPKq2mJzoWwR3X8QHfUhmD
+         9IY3jRcBh2W9W6RxBmLlSVjuPrcJQGeEpa8q2zOOjU6C5xf9EpL9iwaxBK1RTzmaj19h
+         lb10Lh+Tx0e97ODDSV0oRLvy/++0xQ9reOoBL8ioEuQizM7UhmbkLXyP+q00mH6VpdsJ
+         QLHumpgyRITuUzt2EJZtbTY1AtFLqt1yUkLVGipip2joBieND86BP1/HyV0WJRHvE22B
+         jfk3+cyUwDdm3YDJhxkgyhtFXFzlVzZ8iu1O1rvJ6MKqn5esYd2jZrQ21xH39D0pG4gs
+         5anA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1728419885; x=1729024685;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=jBKc56vBxPYaOUWcC+VFZKlnp8sdizUoPysD1KL2n2Y=;
+        b=oGAii+uvRn2KbUQR1J9k9VPk9LobvY8F+j6ung200BtanoeXOOc/6aWazzJidvS6B0
+         pTBC2haZJ5VyVm4ZpBUYaomsZIfUwCu5spyrJBJELZfq2SDEBnlQKR9fokZzY2D/DEtB
+         OXq3Gtpolc7dd7slH+sSKNavI/WnEyWDc4bVxukC4vcsrirFtyj4sUbNggMxt19TYdXP
+         P5aPwuoFMLbw7zkmEIrdTOuxu72iuJj8G8wHisd/yXJ3hJABma6DhBawARgT+WBlryGy
+         K4nuGtMukY/QPk7szFVOHh0AEwZhfcrLfenqmhMW3NRPzFuxFfYij9uWKhkO51oMxAVf
+         Dieg==
+X-Forwarded-Encrypted: i=1; AJvYcCVlla1ScOCkC+KkNJ+EHSA5XOWahFIp6gjsSswdlEFP5ObDqca6KI1gOlbL33ZXx0aJ/050Wg==@lists.linux.dev
+X-Gm-Message-State: AOJu0YxQ8GRZs5bJBzexzZxwtQBhEjlgbeu2oBXmM8ha3LyTrfg0HFFa
+	syZ0N5k+bjSW2TaLaIAqa59lW/eRov4v/SraSuCWjbTp96KCGfsJ5AasdfiotaU=
+X-Google-Smtp-Source: AGHT+IFQsuFQDnMORn6KRqls83kXMRALTmz1xji/Zv3nzyXsaV17OwyYMIY5gtZ7u9n9SjQRNHRlFg==
+X-Received: by 2002:a17:907:94d4:b0:a8d:250a:52b2 with SMTP id a640c23a62f3a-a998d114bbemr3268366b.6.1728419884897;
+        Tue, 08 Oct 2024 13:38:04 -0700 (PDT)
+Received: from localhost ([2a02:8071:b783:6940:c420:a9b6:c5e1:5b65])
+        by smtp.gmail.com with ESMTPSA id a640c23a62f3a-a996274deeesm196971266b.103.2024.10.08.13.38.04
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 08 Oct 2024 13:38:04 -0700 (PDT)
+Date: Tue, 8 Oct 2024 22:38:02 +0200
+From: Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@baylibre.com>
+To: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
+Cc: Ulf Hansson <ulf.hansson@linaro.org>, 
+	Sakari Ailus <sakari.ailus@linux.intel.com>, dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org, 
+	linux-bluetooth@vger.kernel.org, linux-clk@vger.kernel.org, linux-crypto@vger.kernel.org, 
+	dmaengine@vger.kernel.org, linux-gpio@vger.kernel.org, amd-gfx@lists.freedesktop.org, 
+	nouveau@lists.freedesktop.org, linux-stm32@st-md-mailman.stormreply.com, 
+	linux-arm-kernel@lists.infradead.org, linux-i2c@vger.kernel.org, linux-i3c@lists.infradead.org, 
+	linux-iio@vger.kernel.org, linux-input@vger.kernel.org, patches@opensource.cirrus.com, 
+	iommu@lists.linux.dev, imx@lists.linux.dev, linux-mediatek@lists.infradead.org, 
+	linux-media@vger.kernel.org, linux-mmc@vger.kernel.org, linux-mtd@lists.infradead.org, 
+	netdev@vger.kernel.org, linux-wireless@vger.kernel.org, linux-pci@vger.kernel.org, 
+	linux-phy@lists.infradead.org, linux-pwm@vger.kernel.org, linux-remoteproc@vger.kernel.org, 
+	linux-sound@vger.kernel.org, linux-spi@vger.kernel.org, linux-staging@lists.linux.dev, 
+	linux-usb@vger.kernel.org, linux-serial@vger.kernel.org, greybus-dev@lists.linaro.org, 
+	asahi@lists.linux.dev, rafael@kernel.org, Andy Shevchenko <andy.shevchenko@gmail.com>
+Subject: Re: [PATCH 00/51] treewide: Switch to __pm_runtime_put_autosuspend()
+Message-ID: <ttmnzgsdyng5vab63pvj7csrotbsmwnultjelvdotrvyg2snac@iv7afgect5f3>
+References: <20241004094101.113349-1-sakari.ailus@linux.intel.com>
+ <CAPDyKFp0N6UJhnHS164Tdf=xkWB0jzq65L9TdvYazeBQ-6WjeQ@mail.gmail.com>
+ <20241007184924.GH14766@pendragon.ideasonboard.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
-Mime-Version: 1.0 (Mac OS X Mail 16.0 \(3776.700.51.11.1\))
-Subject: Re: [PATCH] iommu/omap: Don't register ops by fwnode
-From: "H. Nikolaus Schaller" <hns@goldelico.com>
-In-Reply-To: <5c3ea490-f2f5-49e5-99fd-1dc239aee28d@arm.com>
-Date: Tue, 8 Oct 2024 21:52:13 +0200
-Cc: joro@8bytes.org,
- will@kernel.org,
- iommu@lists.linux.dev,
- Jason Gunthorpe <jgg@nvidia.com>,
- Linux-OMAP <linux-omap@vger.kernel.org>,
- Beleswar Padhi <b-padhi@ti.com>,
- Andreas Kemnade <andreas@kemnade.info>
+MIME-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha512;
+	protocol="application/pgp-signature"; boundary="2ocqjla6tcmukjn3"
+Content-Disposition: inline
+In-Reply-To: <20241007184924.GH14766@pendragon.ideasonboard.com>
+
+
+--2ocqjla6tcmukjn3
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 Content-Transfer-Encoding: quoted-printable
-Message-Id: <F4A297DC-8EBD-4434-97EA-BFEEBB062042@goldelico.com>
-References: <c44545c6d07c65d89daa297298c27bb0f15c8b84.1728393458.git.robin.murphy@arm.com>
- <2863ACA9-2836-49F6-9D85-749CE480804D@goldelico.com>
- <10d3a86c-d7a8-4ac5-8ad3-010a91c0a25f@arm.com>
- <FCFEB115-846A-4577-A489-D1537AC77DEA@goldelico.com>
- <5c3ea490-f2f5-49e5-99fd-1dc239aee28d@arm.com>
-To: Robin Murphy <robin.murphy@arm.com>
-X-Mailer: Apple Mail (2.3776.700.51.11.1)
 
+Hello,
 
-
-> Am 08.10.2024 um 20:20 schrieb Robin Murphy <robin.murphy@arm.com>:
-
->> The -ETIMEDOUT seems to come from of_iommu_configure().
+On Mon, Oct 07, 2024 at 09:49:24PM +0300, Laurent Pinchart wrote:
+> On Fri, Oct 04, 2024 at 04:38:36PM +0200, Ulf Hansson wrote:
+> > On Fri, 4 Oct 2024 at 11:41, Sakari Ailus <sakari.ailus@linux.intel.com=
+> wrote:
+> > >
+> > > Hello everyone,
+> > >
+> > > This set will switch the users of pm_runtime_put_autosuspend() to
+> > > __pm_runtime_put_autosuspend() while the former will soon be re-purpo=
+sed
+> > > to include a call to pm_runtime_mark_last_busy(). The two are almost
+> > > always used together, apart from bugs which are likely common. Going
+> > > forward, most new users should be using pm_runtime_put_autosuspend().
+> > >
+> > > Once this conversion is done and pm_runtime_put_autosuspend() re-purp=
+osed,
+> > > I'll post another set to merge the calls to __pm_runtime_put_autosusp=
+end()
+> > > and pm_runtime_mark_last_busy().
+> >=20
+> > That sounds like it could cause a lot of churns.
+> >=20
+> > Why not add a new helper function that does the
+> > pm_runtime_put_autosuspend() and the pm_runtime_mark_last_busy()
+> > things? Then we can start moving users over to this new interface,
+> > rather than having this intermediate step?
 >=20
-> Oof, yeah, now we've wound up with the opposite problem that because =
-it's the generic "iommus" binding, it gets as far as of_iommu_xlate() =
-but now the NULL fwnode no longer matches the phandle target so that =
-thinks it's waiting for an instance which hasn't registered yet :(
->=20
-> OK, different track, does the diff below fare any better? (I've not =
-written it up fully yet as the DRA7 special cases will need some more =
-work still)
->=20
-> Thanks,
-> Robin.
->=20
-> ----->8-----
->=20
-> diff --git a/drivers/iommu/omap-iommu.c b/drivers/iommu/omap-iommu.c
-> index c9528065a59a..44e09d60e861 100644
-> --- a/drivers/iommu/omap-iommu.c
-> +++ b/drivers/iommu/omap-iommu.c
-> @@ -1723,12 +1723,19 @@ static void omap_iommu_release_device(struct =
-device *dev)
->=20
-> }
->=20
-> +int omap_iommu_of_xlate(struct device *dev, const struct =
-of_phandle_args *args)
-> +{
-> + /* TODO: collect args->np to save re-parsing in probe above */
-> + return 0;
-> +}
-> +
-> static const struct iommu_ops omap_iommu_ops =3D {
-> .identity_domain =3D &omap_iommu_identity_domain,
-> .domain_alloc_paging =3D omap_iommu_domain_alloc_paging,
-> .probe_device =3D omap_iommu_probe_device,
-> .release_device =3D omap_iommu_release_device,
-> .device_group =3D generic_single_device_group,
-> + .of_xlate =3D omap_iommu_of_xlate,
-> .pgsize_bitmap =3D OMAP_IOMMU_PGSIZES,
-> .default_domain_ops =3D &(const struct iommu_domain_ops) {
-> .attach_dev =3D omap_iommu_attach_dev,
+> I think the API would be nicer if we used the shortest and simplest
+> function names for the most common use cases. Following
+> pm_runtime_put_autosuspend() with pm_runtime_mark_last_busy() is that
+> most common use case. That's why I like Sakari's approach of repurposing
+> pm_runtime_put_autosuspend(), and introducing
+> __pm_runtime_put_autosuspend() for the odd cases where
+> pm_runtime_mark_last_busy() shouldn't be called.
 
+That's ok for me. However this patch series isn't the optimal path to
+there because most drivers (i.e. those that already today do
+pm_runtime_mark_last_busy() in combination with
+pm_runtime_put_autosuspend()) have to be patched twice.
 
-Unfortunately no change :(
+The saner route is: Only convert the drivers with a sole
+pm_runtime_put_autosuspend() (i.e. without pm_runtime_mark_last_busy())
+to __pm_runtime_put_autosuspend(). Then add the mark_last_busy() bits to
+pm_runtime_put_autosuspend() and then drop the explicit calls to
+pm_runtime_mark_last_busy() before pm_runtime_put_autosuspend().
 
-A very tiny issue was that the second argument can not have a const =
-specifier in the
-v6.8 series, but starting with v6.9 it should be there. But since 6.8 =
-and 6.9 are
-already EOL, there will be no back-ports anyways. And if someone does =
-really
-backport (like me for testing purposes) it is obvious what to do.
+(Note this doesn't take into account Rafael's position that
+pm_runtime_put() might be the saner option. My argument applies for that
+conversion analogously.)
 
-BR and thanks,
-Nikolaus
+Best regards
+Uwe
 
+--2ocqjla6tcmukjn3
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCgAdFiEEP4GsaTp6HlmJrf7Tj4D7WH0S/k4FAmcFmCEACgkQj4D7WH0S
+/k6xnwf/QOZhbtT562rFFa3JIiBatDxTcqyEXoXClrP7jSyQFY/VFzq2S2jRHOFt
+wM6zQUX1bTUqDtC4HozJIbQDjLxd3qFgc5RoTRLV8VhRJbcq9cOo5Nf1h4KJ5Ip9
+nhpzoHwUHoEjEHj1f9UvEWfnFAVCSLFxgb14ZDHZyb2pQue3G5OYI2f2cJYT8YVB
+xQktDFp7rUu4xWDTzoIxNKvR1Ipy5fGxdf9R2/+IQhW64sWuDG2ZH6tAmfn6mEb8
+ecspbesJx+NMbZ06Zl7wqBvyj/DpQGgPaCnWUQ5cI0Of/kOzqxh4+65JK68CLLs0
+/Goin2zz55IZITGC5zHuAA07bW/c7Q==
+=7Wup
+-----END PGP SIGNATURE-----
+
+--2ocqjla6tcmukjn3--
