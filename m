@@ -1,41 +1,40 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DF4051DED48;
-	Tue,  8 Oct 2024 13:35:03 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 027A61DF272
+	for <iommu@lists.linux.dev>; Tue,  8 Oct 2024 13:36:37 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1728394504; cv=none; b=u4uwDkbfK9oLzEh/qcIUa3kaHuHVaak+2Qy2D2bGAqOtUmtwBXcb+Y84UQMRfXk0jn1o4yKaZLcoM4YsCmvmuBtKFaQ3MyrUrV8LQwSBnTsoooUU6cVPZvzTMu0hWX/19LiP1WLeKavWLqT5R7YbWKAxj7FsKz6lz2JlPzjZUOs=
+	t=1728394598; cv=none; b=UVwIsFjM5j1RL/e/I4Fkln2v3FpX4AxjfhlSIqYZogCJKtjjwSA365R0gZ+jUz0hOCdNcvS7fWp+2MVWCh6D4ACujljekDAJ/H0W/J8UFKOgUjFBmrQ7Rm9en6M3Yr92eT0i2PM25vD+VZ5Rk7pgxHxG/0062jhmge2lOVbVHqk=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1728394504; c=relaxed/simple;
-	bh=rhzeorojdWXbtQKT/eLfgADYU779cPzVT9gYFI0nvR8=;
+	s=arc-20240116; t=1728394598; c=relaxed/simple;
+	bh=PuIYzcysAfSHnSCThrVlJX4qjVPu9JSnwDtckBrbmjU=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=e3EfIlAEIr0hYnjMa611/WpTIienoIJYa8xoHnGRblbPqhpDvaWOkJX7Y/kHXi0yyBq1UuwmNT35kcI8dezxWhv6rnd+XiUKeSza1Yh3pdkYl94vKW5i/i3NsRxM+y+hFLVC+8VB0gW3G936WW9VIxMdxz+m+qd/ARPbucn0EFM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=UEm8Zo3K; arc=none smtp.client-ip=10.30.226.201
+	 Content-Type:Content-Disposition:In-Reply-To; b=WZoWNLYx1MvXF1Ckk9vPU7fjZIG7dqbLdLXutYJ6a97huRxI/7vCSF01BaLV+5lbH9fCMTm9piZDgQBTQAFHGQ2XcuwAstoQzOP0ZCFfoV6+odSNG5uXc4xMREinUIfHSoSOEA0Lxnhaf/KGbcPZ5PWnt+qQZRgCnTFkyWvljYo=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=e8dwyEOm; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="UEm8Zo3K"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id F2A08C4CEC7;
-	Tue,  8 Oct 2024 13:35:01 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="e8dwyEOm"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AD646C4CECC;
+	Tue,  8 Oct 2024 13:36:36 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1728394503;
-	bh=rhzeorojdWXbtQKT/eLfgADYU779cPzVT9gYFI0nvR8=;
+	s=k20201202; t=1728394597;
+	bh=PuIYzcysAfSHnSCThrVlJX4qjVPu9JSnwDtckBrbmjU=;
 	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=UEm8Zo3K+6x1JaQ/8/pddrhX+o+jYj/XQOtf9+t9/XJoNanY9At4FsmQaFs/4XdjL
-	 akH2k2aAtqAP7odf/xIqdf4qSxNWqv8e1+CkjXPOSvTbE+qIU0pBrLRWX42sPdfPGG
-	 K3ZMBcEBW6bRLftIJtUlgLu0yQA8H58lEJE00GG5QYviaBX6AjblxQLGBlMXsS4E+f
-	 i78vfQovNAMFYfnBNh4pIcQpk4LenLyCMTVRg9+NAp3bvp8efI4eyTUHlefjnhEFLy
-	 qd8iQw8zVRzR1Ky3OvTOxjIz0Z+JRJSn4kV6UA40cksOTPPlaeoA0ikFja9BFBjNyF
-	 2a9C1upNMtehw==
-Date: Tue, 8 Oct 2024 14:34:58 +0100
+	b=e8dwyEOm6u2oJiFAMawRmQZwZVydXtiZIJpD9aHwZm7cJX0gEAq7T7Mj49TI4vVwI
+	 p8GVTi8/4ZhgL0Y5EXlvGUK62rHO7JwUPynT1hgxH/4pLWh53r1yDmSU1Fo/IoGBFz
+	 WzF3madCSfj8iIlRlLxMsmIEvWp2eSK42XaSC0zoZIyOHNs+wz0MbXnMzR1XuLaflB
+	 ETFHAIOOrLR5HzE0kPkTiYOxaQkM0++t9zSUvGXklVzPS6UHUNEot+TWjbyzKSBm9r
+	 Ztb4x+ikKl6Sy8umDNbiN8S7HvBVzL+pfFyOuutzsAuB+akO5AhRupNR2g/I+JbvXC
+	 LofaRN7yO0YLw==
+Date: Tue, 8 Oct 2024 14:36:33 +0100
 From: Will Deacon <will@kernel.org>
-To: Yang Shi <yang@os.amperecomputing.com>
-Cc: jgg@ziepe.ca, nicolinc@nvidia.com, james.morse@arm.com,
-	robin.murphy@arm.com, linux-arm-kernel@lists.infradead.org,
-	iommu@lists.linux.dev, linux-kernel@vger.kernel.org
-Subject: Re: [v3 PATCH] iommu/arm-smmu-v3: Fix L1 stream table index
- calculation for 32-bit sid size
-Message-ID: <20241008133458.GA10474@willie-the-truck>
-References: <20241004180405.555194-1-yang@os.amperecomputing.com>
+To: Robin Murphy <robin.murphy@arm.com>
+Cc: joro@8bytes.org, iommu@lists.linux.dev,
+	linux-arm-kernel@lists.infradead.org
+Subject: Re: [PATCH] iommu/arm-smmu: Clarify MMU-500 CPRE workaround
+Message-ID: <20241008133633.GB10474@willie-the-truck>
+References: <467590c40029ef0712b1fd38f2928fd4f08d09af.1726232138.git.robin.murphy@arm.com>
+ <7c426dc0-4fde-4d1e-bb91-538984bd8b59@arm.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -44,115 +43,46 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20241004180405.555194-1-yang@os.amperecomputing.com>
+In-Reply-To: <7c426dc0-4fde-4d1e-bb91-538984bd8b59@arm.com>
 User-Agent: Mutt/1.10.1 (2018-07-13)
 
-Hi folks,
+On Fri, Sep 13, 2024 at 04:13:29PM +0100, Robin Murphy wrote:
+> On 2024-09-13 1:55 pm, Robin Murphy wrote:
+> > CPRE workarounds are implicated in at least 5 MMU-500 errata, some of
+> > which remain unfixed. The comment and warning message have proven to be
+> > unhelpfully misleading about this scope, so reword them to get the point
+> > across with less risk of going out of date or confusing users.
+> > 
+> > Signed-off-by: Robin Murphy <robin.murphy@arm.com>
+> > ---
+> >   drivers/iommu/arm/arm-smmu/arm-smmu-impl.c | 4 ++--
+> >   1 file changed, 2 insertions(+), 2 deletions(-)
+> > 
+> > diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu-impl.c b/drivers/iommu/arm/arm-smmu/arm-smmu-impl.c
+> > index 9dc772f2cbb2..2edb1c1658ad 100644
+> > --- a/drivers/iommu/arm/arm-smmu/arm-smmu-impl.c
+> > +++ b/drivers/iommu/arm/arm-smmu/arm-smmu-impl.c
+> > @@ -130,7 +130,7 @@ int arm_mmu500_reset(struct arm_smmu_device *smmu)
+> >   	/*
+> >   	 * Disable MMU-500's not-particularly-beneficial next-page
+> > -	 * prefetcher for the sake of errata #841119 and #826419.
+> > +	 * prefetcher for the sake of at least 5 known errata.
+> >   	 */
+> >   	for (i = 0; i < smmu->num_context_banks; ++i) {
+> >   		reg = arm_smmu_cb_read(smmu, i, ARM_SMMU_CB_ACTLR);
+> > @@ -138,7 +138,7 @@ int arm_mmu500_reset(struct arm_smmu_device *smmu)
+> >   		arm_smmu_cb_write(smmu, i, ARM_SMMU_CB_ACTLR, reg);
+> >   		reg = arm_smmu_cb_read(smmu, i, ARM_SMMU_CB_ACTLR);
+> >   		if (reg & ARM_MMU500_ACTLR_CPRE)
+> > -			dev_warn_once(smmu->dev, "Failed to disable prefetcher [errata #841119 and #826419], check ACR.CACHE_LOCK\n");
+> > +			dev_warn_once(smmu->dev, "Failed to disable prefetcher for errata workarounds, check ACR.CACHE_LOCK\n");
+> 
+> Come to think of it, this should probably also refer to SACR rather than
+> ACR, given that we already *have* attempted to program the Non-Secure
+> side...
 
-Sorry I'm late to the party, I went fishing.
+I'm happy to pick up a v2 with that change.
 
-On Fri, Oct 04, 2024 at 11:04:05AM -0700, Yang Shi wrote:
-> The commit ce410410f1a7 ("iommu/arm-smmu-v3: Add arm_smmu_strtab_l1/2_idx()")
-> calculated the last index of L1 stream table by 1 << smmu->sid_bits. 1
-> is 32 bit value.
-> However some platforms, for example, AmpereOne and the platforms with
-> ARM MMU-700, have 32-bit stream id size.  This resulted in ouf-of-bound shift.
-> The disassembly of shift is:
-> 
->     ldr     w2, [x19, 828]  //, smmu_7(D)->sid_bits
->     mov     w20, 1
->     lsl     w20, w20, w2
-> 
-> According to ARM spec, if the registers are 32 bit, the instruction actually
-> does:
->     dest = src << (shift % 32)
-> 
-> So it actually shifted by zero bit.
-> 
-> The out-of-bound shift is also undefined behavior according to C
-> language standard.
-> 
-> This caused v6.12-rc1 failed to boot on such platforms.
-> 
-> UBSAN also reported:
-> 
-> UBSAN: shift-out-of-bounds in drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c:3628:29
-> shift exponent 32 is too large for 32-bit type 'int'
-> 
-> Using 64 bit immediate when doing shift can solve the problem.  The
-> disassembly after the fix looks like:
->     ldr     w20, [x19, 828] //, smmu_7(D)->sid_bits
->     mov     x0, 1
->     lsl     x0, x0, x20
-> 
-> There are a couple of problematic places, extracted the shift into a helper.
-> 
-> Fixes: ce410410f1a7 ("iommu/arm-smmu-v3: Add arm_smmu_strtab_l1/2_idx()")
-> Tested-by: James Morse <james.morse@arm.com>
-> Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
-> Signed-off-by: Yang Shi <yang@os.amperecomputing.com>
-> ---
->  drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 16 +++++++++++-----
->  drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h |  5 +++++
->  2 files changed, 16 insertions(+), 5 deletions(-)
-
-[...]
-
-> diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-> index 737c5b882355..9d4fc91d9258 100644
-> --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-> +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-> @@ -3624,8 +3624,9 @@ static int arm_smmu_init_strtab_2lvl(struct arm_smmu_device *smmu)
->  {
->  	u32 l1size;
->  	struct arm_smmu_strtab_cfg *cfg = &smmu->strtab_cfg;
-> +	u64 num_sids = arm_smmu_strtab_num_sids(smmu);
->  	unsigned int last_sid_idx =
-> -		arm_smmu_strtab_l1_idx((1 << smmu->sid_bits) - 1);
-> +		arm_smmu_strtab_l1_idx(num_sids - 1);
->  
->  	/* Calculate the L1 size, capped to the SIDSIZE. */
->  	cfg->l2.num_l1_ents = min(last_sid_idx + 1, STRTAB_MAX_L1_ENTRIES);
-> @@ -3655,20 +3656,25 @@ static int arm_smmu_init_strtab_2lvl(struct arm_smmu_device *smmu)
->  
->  static int arm_smmu_init_strtab_linear(struct arm_smmu_device *smmu)
->  {
-> -	u32 size;
-> +	u64 size;
->  	struct arm_smmu_strtab_cfg *cfg = &smmu->strtab_cfg;
-> +	u64 num_sids = arm_smmu_strtab_num_sids(smmu);
-> +
-> +	size = num_sids * sizeof(struct arm_smmu_ste);
-> +	/* The max size for dmam_alloc_coherent() is 32-bit */
-> +	if (size > SIZE_MAX)
-> +		return -EINVAL;
->  
-> -	size = (1 << smmu->sid_bits) * sizeof(struct arm_smmu_ste);
->  	cfg->linear.table = dmam_alloc_coherent(smmu->dev, size,
->  						&cfg->linear.ste_dma,
->  						GFP_KERNEL);
->  	if (!cfg->linear.table) {
->  		dev_err(smmu->dev,
-> -			"failed to allocate linear stream table (%u bytes)\n",
-> +			"failed to allocate linear stream table (%llu bytes)\n",
->  			size);
->  		return -ENOMEM;
->  	}
-> -	cfg->linear.num_ents = 1 << smmu->sid_bits;
-> +	cfg->linear.num_ents = num_sids;
-
-This all looks a bit messy to me. The architecture guarantees that
-2-level stream tables are supported once we hit 7-bit SIDs and, although
-the driver relaxes this to > 8-bit SIDs, we'll never run into overflow
-problems in the linear table code above.
-
-So I'm inclined to take Daniel's one-liner [1] which just chucks the
-'ULL' suffix into the 2-level case. Otherwise, we're in a weird
-situation where the size is 64-bit for a short while until it gets
-truncated anyway when we assign it to a 32-bit field.
-
-Any objections?
+Cheers,
 
 Will
-
-[1] https://lore.kernel.org/r/20241002015357.1766934-1-danielmentz@google.com
