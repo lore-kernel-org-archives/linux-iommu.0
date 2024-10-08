@@ -1,48 +1,52 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6720720ADE2;
-	Tue,  8 Oct 2024 18:24:16 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2CE08212D19;
+	Tue,  8 Oct 2024 18:24:18 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1728411856; cv=none; b=sXbEDOQn6V+GVIWalnsA0xe3emUF0sEkEOGk1SKXdhHufzppL951yUf+meDgDTiNvvtI4v68hYi9RxIQSbhwj4tKWq0VTDyiRm4A8dpH1f4byleHWWEh7PzsVAR5U1sj4ICi/b5An5VH1/h4UxTVHmPuS04Jz8SjpfRMic72Xvw=
+	t=1728411859; cv=none; b=QQC+hKzdP2dlGZvVIlDkkBJ/Tl+Is8msU9AE3OgCF0cku3Y60aqJY5Uflhl9uo5sszBXTB6J+AUsp1rqX1AJX00tLXPOClEGx+kk8y57VeV0j2AEm+zTb5QcJoq97SNvE1AKbjaQxlV+f0ffIwogGzN8hpL+hKlRNUuY/Ls0M/I=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1728411856; c=relaxed/simple;
-	bh=XQgtMSU1T6/9qw4C71yOhvNbkERpgiqPaf4dwMPdm80=;
+	s=arc-20240116; t=1728411859; c=relaxed/simple;
+	bh=HZlnqo+1ZAcu5d/47LtzTbNi6jaK0jMUp+f63esCaGw=;
 	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=jPvGSbzP8mvZgd/jy+dXaOjtZf1aKstKcJRUxFu9BrS9CcIYVORRfG6WMWuBHNA0Re1ViaHI3RJWYcm4Q4w3Y1htDdg8WsQ2GEqbJ3ypxg61VCEP9iof2QaWfTCc/TL1ZekMIUt+o3L5FXKB4aC6OmgRdpEQGs9sPsNIxuWWZqE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=gkS/0Bfw; arc=none smtp.client-ip=10.30.226.201
+	 MIME-Version:Content-Type; b=ichdCrcLQk6JEwKfK439wZtq+COGzEcouJ1ijbb1hkKLuD6GTPT5r36OtjmB0HQ8hn7Vu8sEcIntFe98WQw4sQpWeC5FwmxFlxbF053JQXSMXH5QBvxGtyKEwoebDYPxsQnPpt8WbzHL6kZqFaSzJDds0QWJIJq0u2oIeV9IMfs=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Zb1hKXUC; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="gkS/0Bfw"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 06341C4CEC7;
-	Tue,  8 Oct 2024 18:24:13 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Zb1hKXUC"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 57678C4CECE;
+	Tue,  8 Oct 2024 18:24:16 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1728411855;
-	bh=XQgtMSU1T6/9qw4C71yOhvNbkERpgiqPaf4dwMPdm80=;
+	s=k20201202; t=1728411858;
+	bh=HZlnqo+1ZAcu5d/47LtzTbNi6jaK0jMUp+f63esCaGw=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-	b=gkS/0Bfw8bcTCckGe5dDYONvxh5YkZq6Lt0jObtd7ECBlWTdkKpGJp39MykhWJekF
-	 JwdvXe4eJDfjx7XtI40WVmqyWow5CEBQAZQ2duu9boTgPL569QDfsvn6wjPDafxrlc
-	 POtA9/tv3jDhC7l5YCgVTJRHdGYF6guX9ToRTuvopjU0dqqenax95EgD9KiRGhO7oF
-	 N+jzB6JBelFczVB8ulJQdAsO8L8/7Ob3EQy5sI1ErwDgCwEbmHLAqw2ADqvifvOqIL
-	 IBT31LAiE5Z74FKAohp8HK5qwlKa73gpFsFywr0lRDORz37RwR2A9m5M1SxxWM7TFA
-	 BWFFus+XplQVw==
+	b=Zb1hKXUChH8iNdBE6a4Ea7EdE1gcoboPgumc2L7H2g705QaAwK6qzSLPDM0wNAZAK
+	 bE1OncLFVga6S5YJd9cyEISMbKXVce1/Jov1ed+tSZ7st/OqMyKFPHgzMnl/m4ie90
+	 s2gYOorirYdVfUt02UjBpP8zIpscaOz2wh6UdsfrOgx+Lp0vnIkENasY2cVG1w006K
+	 DvDP0fFwewKWISoOEkvfX8xZhiTDOSon9ofaUdAW0UJpdoUIvcYYt1Fyus8VemBcG+
+	 NCWj7dW6M73MxhPg5Twb4BILMhm6zdxl5l360+6bdfk5e2bkBU+RSl5oQts4SRxjc8
+	 5/kbzhMRsRoBw==
 From: Will Deacon <will@kernel.org>
-To: iommu@lists.linux.dev,
-	linux-kernel@vger.kernel.org,
-	Daniel Mentz <danielmentz@google.com>
+To: robin.murphy@arm.com,
+	joro@8bytes.org,
+	jgg@ziepe.ca,
+	nicolinc@nvidia.com,
+	mshavit@google.com,
+	smostafa@google.com,
+	baolu.lu@linux.intel.com,
+	Chen Ni <nichen@iscas.ac.cn>
 Cc: catalin.marinas@arm.com,
 	kernel-team@android.com,
 	Will Deacon <will@kernel.org>,
-	Nicolin Chen <nicolinc@nvidia.com>,
-	Ryan Huang <tzukui@google.com>,
-	Mostafa Saleh <smostafa@google.com>,
-	Jason Gunthorpe <jgg@ziepe.ca>
-Subject: Re: [PATCH] iommu/arm-smmu-v3: Fix last_sid_idx calculation for sid_bits==32
-Date: Tue,  8 Oct 2024 19:24:08 +0100
-Message-Id: <172840906883.3011353.5847751267067117740.b4-ty@kernel.org>
+	linux-arm-kernel@lists.infradead.org,
+	iommu@lists.linux.dev,
+	linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2] iommu/arm-smmu-v3: Convert comma to semicolon
+Date: Tue,  8 Oct 2024 19:24:09 +0100
+Message-Id: <172840911539.3011557.12588658852433747200.b4-ty@kernel.org>
 X-Mailer: git-send-email 2.20.1
-In-Reply-To: <20241002015357.1766934-1-danielmentz@google.com>
-References: <20241002015357.1766934-1-danielmentz@google.com>
+In-Reply-To: <20240923021557.3432068-1-nichen@iscas.ac.cn>
+References: <20240923021557.3432068-1-nichen@iscas.ac.cn>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -52,21 +56,23 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 
-On Tue, 01 Oct 2024 18:53:57 -0700, Daniel Mentz wrote:
-> The function arm_smmu_init_strtab_2lvl uses the expression
+On Mon, 23 Sep 2024 10:15:57 +0800, Chen Ni wrote:
+> Replace comma between expressions with semicolons.
 > 
-> ((1 << smmu->sid_bits) - 1)
+> Using a ',' in place of a ';' can have unintended side effects.
+> Although that is not the case here, it is seems best to use ';'
+> unless ',' is intended.
 > 
-> to calculate the largest StreamID value. However, this fails for the
-> maximum allowed value of SMMU_IDR1.SIDSIZE which is 32. The C standard
-> states:
+> Found by inspection.
+> No functional change intended.
+> Compile tested only.
 > 
 > [...]
 
 Applied to will (for-joerg/arm-smmu/fixes), thanks!
 
-[1/1] iommu/arm-smmu-v3: Fix last_sid_idx calculation for sid_bits==32
-      https://git.kernel.org/will/c/f63237f54cf1
+[1/1] iommu/arm-smmu-v3: Convert comma to semicolon
+      https://git.kernel.org/will/c/7de7d35429aa
 
 Cheers,
 -- 
