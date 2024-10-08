@@ -1,158 +1,158 @@
-Received: from mo4-p01-ob.smtp.rzone.de (mo4-p01-ob.smtp.rzone.de [81.169.146.167])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CA4EB1DF733
-	for <iommu@lists.linux.dev>; Tue,  8 Oct 2024 13:33:26 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=81.169.146.167
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1728394411; cv=pass; b=rjqI7UMzSwxQhuKEAyXKPz7GabgSsL/zZbcKvpZ2k7YJSqmv23VVFslHHEFZCNiQih7V/Mt2Nlrs6QdlYKQo6RbdGPp8c+00k1kUnz7Kpu5/4hMs/ypA45VRiJl5j18ZRgdLlVafSjchlWEmTlpQzX6ahs3ny9xy3L2kl33YQrM=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1728394411; c=relaxed/simple;
-	bh=Z1wvsLydr+99qx+pkA7vhDwCBrYDHNtFzI86hgXBIts=;
-	h=Content-Type:Mime-Version:Subject:From:In-Reply-To:Date:Cc:
-	 Message-Id:References:To; b=b0ItmjLipZ7BO4C7v8bfwE0/e+adJbLC7hfyEjymmmJdQzuAL5dERk+KvhHtitiVSWIaqxdAHbMcOklFIXA8bZ6z1knlZCNR5rL233MVsogf5A9S/jGnKwpUNdBeH/NH2BIR7N+a5PbiU/VioL9J1kdopTppBPR3Y9j67+tSAHw=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=goldelico.com; spf=pass smtp.mailfrom=goldelico.com; dkim=pass (2048-bit key) header.d=goldelico.com header.i=@goldelico.com header.b=rqn93OfO; dkim=permerror (0-bit key) header.d=goldelico.com header.i=@goldelico.com header.b=po7aofvJ; arc=pass smtp.client-ip=81.169.146.167
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=goldelico.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=goldelico.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DF4051DED48;
+	Tue,  8 Oct 2024 13:35:03 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1728394504; cv=none; b=u4uwDkbfK9oLzEh/qcIUa3kaHuHVaak+2Qy2D2bGAqOtUmtwBXcb+Y84UQMRfXk0jn1o4yKaZLcoM4YsCmvmuBtKFaQ3MyrUrV8LQwSBnTsoooUU6cVPZvzTMu0hWX/19LiP1WLeKavWLqT5R7YbWKAxj7FsKz6lz2JlPzjZUOs=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1728394504; c=relaxed/simple;
+	bh=rhzeorojdWXbtQKT/eLfgADYU779cPzVT9gYFI0nvR8=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=e3EfIlAEIr0hYnjMa611/WpTIienoIJYa8xoHnGRblbPqhpDvaWOkJX7Y/kHXi0yyBq1UuwmNT35kcI8dezxWhv6rnd+XiUKeSza1Yh3pdkYl94vKW5i/i3NsRxM+y+hFLVC+8VB0gW3G936WW9VIxMdxz+m+qd/ARPbucn0EFM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=UEm8Zo3K; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=goldelico.com header.i=@goldelico.com header.b="rqn93OfO";
-	dkim=permerror (0-bit key) header.d=goldelico.com header.i=@goldelico.com header.b="po7aofvJ"
-ARC-Seal: i=1; a=rsa-sha256; t=1728394369; cv=none;
-    d=strato.com; s=strato-dkim-0002;
-    b=J0JamUA1b1N1OCaOEjrkR1jtX5Po8aSwmlgwiD+BhqERQHAb4enw2dUgovdtqvgO/c
-    sYZ13O9RP6mNu3C1qhhbgf5bkdRiAjOx0LBgcUjwKkMxmjt06PUxzewUdHJYa88yQeao
-    eQlqH+kiCWp4Le8PBhygLTMdaqzDu8d4AOYDRYd9/K2TiAX8pz5cxSdoSyJ4MxgDHWLW
-    61Pd56T0PZ/MXJB3zQgfZs/K0rmqSQWmTJ04PryBAIdbahplewyIo7MvZGRK0841D28B
-    8h+fN0s0jlcek1g5qGo/UU1jSYHtN8EngOONl13lPUkYKQUFvavIWypQUGANRB+/47MF
-    hVpQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; t=1728394369;
-    s=strato-dkim-0002; d=strato.com;
-    h=To:References:Message-Id:Cc:Date:In-Reply-To:From:Subject:Cc:Date:
-    From:Subject:Sender;
-    bh=AR8SYURrqnGiMjgrR8Q+FTATt9fo1cMfRQZEjjo7VzA=;
-    b=CbThfIh1X4PY5+gbvfuJmSLPipknLTzwXQHOLQ5+Qul8hBsp3HIU3Q1TBlOWWxkXWH
-    dDRQuBS5M82eU/1ABM6xkiNtYrZGBAiMZW1G3P9Sex5h+d5HpvtM1dmb4Zvb+Guwlz5V
-    CuJsnLxC5356xtGBR/jUjjcvpSkdAcYwLgwmomSeghlu/F8soJOy8f4qh7X5T00+5O79
-    Rnzq1JLwBL3MWCWkWK5dnbDQOZI03D24jazqRUCNZGlZtqD5HWBn7NgxkLHL3o2YVd7N
-    E3KzKCEBaH5Vir1RDsc0lajfeyQUE4N5ClGf65SeH1tuU2w0JvDxwTVH5XI6MN4X4C7V
-    nYnw==
-ARC-Authentication-Results: i=1; strato.com;
-    arc=none;
-    dkim=none
-X-RZG-CLASS-ID: mo01
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; t=1728394369;
-    s=strato-dkim-0002; d=goldelico.com;
-    h=To:References:Message-Id:Cc:Date:In-Reply-To:From:Subject:Cc:Date:
-    From:Subject:Sender;
-    bh=AR8SYURrqnGiMjgrR8Q+FTATt9fo1cMfRQZEjjo7VzA=;
-    b=rqn93OfOC8a8Ap41xYHIt5/X6gEYZ9OSBG2peoy9y2Bg5xRs0DsNmePfrvvQl1MOdG
-    9TJMIh9/5E5X3Zy6NWX4Jqzj0STCsK9Ve2ojfr3b8LapbBWE+iRFzT/Te6A0YjoqxNeO
-    Pf5H+Wmx6gjeI0SRsE4eJpL8nzMGLsJdrrFkuluOhTeTyHueJzMKSe+uWKjU7XOe6PrF
-    U5UIMx0KCNEBWJxB0GjoElUW3pFWWMFoNh3EDjjgvr5r8QwTqXKcVRnYyACzKY91NGxT
-    3k4bNwgywa/iHRwplFv7NAI0049fPoVbwdID1v50rXofCS8w6y208b4J5w6GC092/6kb
-    Aqeg==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; t=1728394369;
-    s=strato-dkim-0003; d=goldelico.com;
-    h=To:References:Message-Id:Cc:Date:In-Reply-To:From:Subject:Cc:Date:
-    From:Subject:Sender;
-    bh=AR8SYURrqnGiMjgrR8Q+FTATt9fo1cMfRQZEjjo7VzA=;
-    b=po7aofvJtlg9E/19UGdsmwtBo5+BJiOELcH79UFmShrVvhVaKL58308KjeMq4LopEh
-    zmVlD3i924u9ZxLl9WCQ==
-X-RZG-AUTH: ":JGIXVUS7cutRB/49FwqZ7WcJeFKiMhflhwDubTJ9o12DNOsPj0lFzL1yfzkZ"
-Received: from smtpclient.apple
-    by smtp.strato.de (RZmta 51.2.7 DYNA|AUTH)
-    with ESMTPSA id Qd0dc2098DWnYAU
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (curve X9_62_prime256v1 with 256 ECDH bits, eq. 3072 bits RSA))
-	(Client did not present a certificate);
-    Tue, 8 Oct 2024 15:32:49 +0200 (CEST)
-Content-Type: text/plain;
-	charset=us-ascii
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="UEm8Zo3K"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id F2A08C4CEC7;
+	Tue,  8 Oct 2024 13:35:01 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1728394503;
+	bh=rhzeorojdWXbtQKT/eLfgADYU779cPzVT9gYFI0nvR8=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=UEm8Zo3K+6x1JaQ/8/pddrhX+o+jYj/XQOtf9+t9/XJoNanY9At4FsmQaFs/4XdjL
+	 akH2k2aAtqAP7odf/xIqdf4qSxNWqv8e1+CkjXPOSvTbE+qIU0pBrLRWX42sPdfPGG
+	 K3ZMBcEBW6bRLftIJtUlgLu0yQA8H58lEJE00GG5QYviaBX6AjblxQLGBlMXsS4E+f
+	 i78vfQovNAMFYfnBNh4pIcQpk4LenLyCMTVRg9+NAp3bvp8efI4eyTUHlefjnhEFLy
+	 qd8iQw8zVRzR1Ky3OvTOxjIz0Z+JRJSn4kV6UA40cksOTPPlaeoA0ikFja9BFBjNyF
+	 2a9C1upNMtehw==
+Date: Tue, 8 Oct 2024 14:34:58 +0100
+From: Will Deacon <will@kernel.org>
+To: Yang Shi <yang@os.amperecomputing.com>
+Cc: jgg@ziepe.ca, nicolinc@nvidia.com, james.morse@arm.com,
+	robin.murphy@arm.com, linux-arm-kernel@lists.infradead.org,
+	iommu@lists.linux.dev, linux-kernel@vger.kernel.org
+Subject: Re: [v3 PATCH] iommu/arm-smmu-v3: Fix L1 stream table index
+ calculation for 32-bit sid size
+Message-ID: <20241008133458.GA10474@willie-the-truck>
+References: <20241004180405.555194-1-yang@os.amperecomputing.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
-Mime-Version: 1.0 (Mac OS X Mail 16.0 \(3776.700.51.11.1\))
-Subject: Re: [PATCH] iommu/omap: Don't register ops by fwnode
-From: "H. Nikolaus Schaller" <hns@goldelico.com>
-In-Reply-To: <c44545c6d07c65d89daa297298c27bb0f15c8b84.1728393458.git.robin.murphy@arm.com>
-Date: Tue, 8 Oct 2024 15:32:38 +0200
-Cc: joro@8bytes.org,
- will@kernel.org,
- iommu@lists.linux.dev,
- Jason Gunthorpe <jgg@nvidia.com>,
- Linux-OMAP <linux-omap@vger.kernel.org>,
- Beleswar Padhi <b-padhi@ti.com>,
- Andreas Kemnade <andreas@kemnade.info>
-Content-Transfer-Encoding: quoted-printable
-Message-Id: <2863ACA9-2836-49F6-9D85-749CE480804D@goldelico.com>
-References: <c44545c6d07c65d89daa297298c27bb0f15c8b84.1728393458.git.robin.murphy@arm.com>
-To: Robin Murphy <robin.murphy@arm.com>
-X-Mailer: Apple Mail (2.3776.700.51.11.1)
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20241004180405.555194-1-yang@os.amperecomputing.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 
-Hi Robin,
+Hi folks,
 
-> Am 08.10.2024 um 15:17 schrieb Robin Murphy <robin.murphy@arm.com>:
->=20
-> The OMAP driver still has its own traditional firmware parsing and
-> instance handling in omap_iommu_probe_device(), rather than using the
-> generic fwnode-based paths. However, it also passes a hwdev to
-> iommu_device_register(), thus registering a fwnode for each ops
-> instance, wherein __iommu_probe_device() then fails to find matching =
-ops
-> for a client device with no fwspec and thus a NULL iommu_fwnode.
->=20
-> Since omap-iommu is not known to coexist with any other IOMMU hardware
-> and shares the same ops between all instances, we can reasonably =
-remove
-> the hwdev/fwnode registration to put it back into "legacy" mode where
-> the ops are effectively global and ->probe_device remains responsible
-> for filtering individual clients.
->=20
-> Reported-by: Beleswar Padhi <b-padhi@ti.com>
-> Reported-by: H. Nikolaus Schaller <hns@goldelico.com>
-> Fixes: 17de3f5fdd35 ("iommu: Retire bus ops")
-> Signed-off-by: Robin Murphy <robin.murphy@arm.com>
+Sorry I'm late to the party, I went fishing.
+
+On Fri, Oct 04, 2024 at 11:04:05AM -0700, Yang Shi wrote:
+> The commit ce410410f1a7 ("iommu/arm-smmu-v3: Add arm_smmu_strtab_l1/2_idx()")
+> calculated the last index of L1 stream table by 1 << smmu->sid_bits. 1
+> is 32 bit value.
+> However some platforms, for example, AmpereOne and the platforms with
+> ARM MMU-700, have 32-bit stream id size.  This resulted in ouf-of-bound shift.
+> The disassembly of shift is:
+> 
+>     ldr     w2, [x19, 828]  //, smmu_7(D)->sid_bits
+>     mov     w20, 1
+>     lsl     w20, w20, w2
+> 
+> According to ARM spec, if the registers are 32 bit, the instruction actually
+> does:
+>     dest = src << (shift % 32)
+> 
+> So it actually shifted by zero bit.
+> 
+> The out-of-bound shift is also undefined behavior according to C
+> language standard.
+> 
+> This caused v6.12-rc1 failed to boot on such platforms.
+> 
+> UBSAN also reported:
+> 
+> UBSAN: shift-out-of-bounds in drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c:3628:29
+> shift exponent 32 is too large for 32-bit type 'int'
+> 
+> Using 64 bit immediate when doing shift can solve the problem.  The
+> disassembly after the fix looks like:
+>     ldr     w20, [x19, 828] //, smmu_7(D)->sid_bits
+>     mov     x0, 1
+>     lsl     x0, x0, x20
+> 
+> There are a couple of problematic places, extracted the shift into a helper.
+> 
+> Fixes: ce410410f1a7 ("iommu/arm-smmu-v3: Add arm_smmu_strtab_l1/2_idx()")
+> Tested-by: James Morse <james.morse@arm.com>
+> Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
+> Signed-off-by: Yang Shi <yang@os.amperecomputing.com>
 > ---
-> drivers/iommu/omap-iommu.c | 2 +-
-> 1 file changed, 1 insertion(+), 1 deletion(-)
->=20
-> diff --git a/drivers/iommu/omap-iommu.c b/drivers/iommu/omap-iommu.c
-> index c9528065a59a..425ae8e551dc 100644
-> --- a/drivers/iommu/omap-iommu.c
-> +++ b/drivers/iommu/omap-iommu.c
-> @@ -1230,7 +1230,7 @@ static int omap_iommu_probe(struct =
-platform_device *pdev)
-> if (err)
-> return err;
->=20
-> - err =3D iommu_device_register(&obj->iommu, &omap_iommu_ops, =
-&pdev->dev);
-> + err =3D iommu_device_register(&obj->iommu, &omap_iommu_ops, NULL);
+>  drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 16 +++++++++++-----
+>  drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h |  5 +++++
+>  2 files changed, 16 insertions(+), 5 deletions(-)
 
-Thanks for this proposal, but this prevents my OMAP3 system completely
-from booting (at least with v6.8-rc1):
+[...]
 
-## Booting kernel from Legacy Image at 82000000 ...
-   Image Name:   Linux-6.8.0-rc1-letux+
-   Image Type:   ARM Linux Kernel Image (uncompressed)
-   Data Size:    6491520 Bytes =3D 6.2 MiB
-   Load Address: 80008000
-   Entry Point:  80008000
-   Verifying Checksum ... OK
-## Flattened Device Tree blob at 81c00000
-   Booting using the fdt blob at 0x81c00000
-   Loading Kernel Image ... OK
-   Using Device Tree in place at 81c00000, end 81c1fe8e
+> diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+> index 737c5b882355..9d4fc91d9258 100644
+> --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+> +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+> @@ -3624,8 +3624,9 @@ static int arm_smmu_init_strtab_2lvl(struct arm_smmu_device *smmu)
+>  {
+>  	u32 l1size;
+>  	struct arm_smmu_strtab_cfg *cfg = &smmu->strtab_cfg;
+> +	u64 num_sids = arm_smmu_strtab_num_sids(smmu);
+>  	unsigned int last_sid_idx =
+> -		arm_smmu_strtab_l1_idx((1 << smmu->sid_bits) - 1);
+> +		arm_smmu_strtab_l1_idx(num_sids - 1);
+>  
+>  	/* Calculate the L1 size, capped to the SIDSIZE. */
+>  	cfg->l2.num_l1_ents = min(last_sid_idx + 1, STRTAB_MAX_L1_ENTRIES);
+> @@ -3655,20 +3656,25 @@ static int arm_smmu_init_strtab_2lvl(struct arm_smmu_device *smmu)
+>  
+>  static int arm_smmu_init_strtab_linear(struct arm_smmu_device *smmu)
+>  {
+> -	u32 size;
+> +	u64 size;
+>  	struct arm_smmu_strtab_cfg *cfg = &smmu->strtab_cfg;
+> +	u64 num_sids = arm_smmu_strtab_num_sids(smmu);
+> +
+> +	size = num_sids * sizeof(struct arm_smmu_ste);
+> +	/* The max size for dmam_alloc_coherent() is 32-bit */
+> +	if (size > SIZE_MAX)
+> +		return -EINVAL;
+>  
+> -	size = (1 << smmu->sid_bits) * sizeof(struct arm_smmu_ste);
+>  	cfg->linear.table = dmam_alloc_coherent(smmu->dev, size,
+>  						&cfg->linear.ste_dma,
+>  						GFP_KERNEL);
+>  	if (!cfg->linear.table) {
+>  		dev_err(smmu->dev,
+> -			"failed to allocate linear stream table (%u bytes)\n",
+> +			"failed to allocate linear stream table (%llu bytes)\n",
+>  			size);
+>  		return -ENOMEM;
+>  	}
+> -	cfg->linear.num_ents = 1 << smmu->sid_bits;
+> +	cfg->linear.num_ents = num_sids;
 
-Starting kernel ...
+This all looks a bit messy to me. The architecture guarantees that
+2-level stream tables are supported once we hit 7-bit SIDs and, although
+the driver relaxes this to > 8-bit SIDs, we'll never run into overflow
+problems in the linear table code above.
 
---- no further reaction --
+So I'm inclined to take Daniel's one-liner [1] which just chucks the
+'ULL' suffix into the 2-level case. Otherwise, we're in a weird
+situation where the size is 64-bit for a short while until it gets
+truncated anyway when we assign it to a 32-bit field.
 
-As far as I see, all relevant devices are in the iommu_device_list but
-only omap3.isp is really using iommu. So some other devices may fail by
-this change.
+Any objections?
 
-BR,
-Nikolaus
+Will
 
+[1] https://lore.kernel.org/r/20241002015357.1766934-1-danielmentz@google.com
