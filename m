@@ -1,190 +1,188 @@
-Received: from NAM11-DM6-obe.outbound.protection.outlook.com (mail-dm6nam11on2063.outbound.protection.outlook.com [40.107.223.63])
+Received: from mx0b-001ae601.pphosted.com (mx0a-001ae601.pphosted.com [67.231.149.25])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F34AE1922FA
-	for <iommu@lists.linux.dev>; Wed,  9 Oct 2024 12:31:20 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.223.63
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1728477082; cv=fail; b=Wd+4ac5SxveJT4LoZX9ipKDe52CjcQ0+BADiyI7nYLIsYsW9KBg6kCqYfodtZWV1HUWIMKLXEYFPyoiYpS0XB2cEgKU+EKnRSc5XQ3bj6625Kc1GS+H+nj/fhDLQheqMPHhqEVVGhhw2QkU8ieTudTfIvHCvs4xRx4JBA++Y7xQ=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1728477082; c=relaxed/simple;
-	bh=14ObNfEC7FsCHsG0MJoJC2eTDKFr1oY+daAzx1Kqhns=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:Content-Type:
-	 Content-Disposition:In-Reply-To:MIME-Version; b=ZfCRib18Fiz/c+kmxqbJt+sYiTvW2bbfQAbTBqRs4tcgsFHiipQsrcS6t3rDqksPUUFEo5gV2EIBihoYbPtFgSPp4U9L7XqnJ35Ss+PQw+ji32OmpHVYDlahfpHg87cu0r0UV70CLtXLxHBL0YVtc8KrirGqZVuFrFZ2SipcbpE=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=Su4VTRAg; arc=fail smtp.client-ip=40.107.223.63
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 56932291E;
+	Wed,  9 Oct 2024 13:14:30 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=67.231.149.25
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1728479673; cv=none; b=apr2C+vhmbZwswFjUiiLZjE6r5TkWlxQaGbN+gcqJRhGAi7dCb2w9Ynx//VKXBP0jrlAQS584jElRaj3xBtJoqfGxlM1BBQRBfUwFIgOkM27nL3oAuggrOBDP8yRNNGpmIOlVrV9NAzhqwtVGTuGukBtAsqbYeIwGLI3ufXe8LA=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1728479673; c=relaxed/simple;
+	bh=YINrfZsek2PYwQzx5aXAqFR5N5hGjnKx66rviiTj1Yw=;
+	h=Message-ID:Date:MIME-Version:Subject:To:CC:References:From:
+	 In-Reply-To:Content-Type; b=YS+pyLemzjnTE0fRNtxOYrvsSJrTgTwoEqEfmDpAs25sPM+Gw0CmKDxQSPZV1qOE0jbHEPigc8EWFjta6r0kKFRH5SkUQHJRpord6nveTPWGGNOIdpiTLN12Qvva2BTb25b/AKxInxhdxmzn5JsWFy0WdR3eejWUfkmKugUlOnM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=opensource.cirrus.com; spf=pass smtp.mailfrom=opensource.cirrus.com; dkim=pass (2048-bit key) header.d=cirrus.com header.i=@cirrus.com header.b=WI0sVayc; arc=none smtp.client-ip=67.231.149.25
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=opensource.cirrus.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=opensource.cirrus.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="Su4VTRAg"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=OZbRAisb+bcyW8FUG5pHV+WzbMRapITvIg7kNCMT+R1hyr29LJqRy3D66FUkMxwl7KEO17rqf254e2aR6hycXls7YdskFAEc37J/oHjHoPL3v1guFtJ8LmLHPjTk9RdwqhfbpkapHZTxTa19Fk4+t+LhxUblytjCiYFxFDkz03PXWI2fejg/9oynwAmNWvSw0TUBzifUrLEOTekIFsihYcGQgRle0WrQaKt3xnnn4aWhYk8SCC3fwdpvTtqfWV3Bz2BS/KFXooLbLs7jJQjbP4sg99Y0oYS9JNT5a5RbS60HTGECZcuR96Mx4Mbni94nFcIk0zwD91AwfSXjnqX/0g==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=6+CbsK4y6cgegEQ0ZUeimvZo8WKVr3o0uDmxAZjKSB8=;
- b=JjaxRONFJMaVoASXNB/ARXHi6Rt9x5vUJ8pS5+xKw5hOrIeqTTvrD0qmBKxhePAwvs7lwaRmyq7QmGmFSpGyJXrpb3QOTBMO0plGhlHexAyAfyzrjzMzQkoLKAVReqRUshDdLkKR3jqTxahjaN4CktvqW0kKMszRRLAMnKyhaETrHAE0TJQVNegT6v5M3cELKZVVUnb8O/rTEDifApL5AVw845tWrX52c/XK5z1Nmz0Cfvy7/w3P5MA7xbqbiSmXZvbDzBqr0dT5y8+PvpBIysy4Yl5gB8U/AryoGuvdQ1ZcRkSyzDDVcfkozeM4WSKk1wBa2yiWLTvnbC2+3khR+g==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=6+CbsK4y6cgegEQ0ZUeimvZo8WKVr3o0uDmxAZjKSB8=;
- b=Su4VTRAgb60iDa0hj2INcHdVdmwCYKw6F9yS5MIRaJU08CusV5ECBJDBdepw4z89AJcMHT73Vs3+Qg4C1rxp3Bgdu3+GXOyNUG/aX+BqTASvXg0n5M496ymJU2bouM3dSCImFnyadN2XLSmV+w4MRFIA1oxo3YdvO9SO5G2Bo/eWrQKP8A11cnqqBaT1nyjYvGi4EfhM2Medz+tNxk/y5lpt8+j+2f0fc4P1rsk8QKNPLZ40Pj6pxm6xl9/AWY72VNPm0Xi6iYikC1RXjD2jFoqef/QehJND9QJ6YWTSgwm8FJmO4A051jGfeNjra9sCrnZgIFjzSnL4YHE7+L1dsA==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-Received: from CH3PR12MB8659.namprd12.prod.outlook.com (2603:10b6:610:17c::13)
- by LV8PR12MB9207.namprd12.prod.outlook.com (2603:10b6:408:187::15) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.8026.23; Wed, 9 Oct
- 2024 12:31:17 +0000
-Received: from CH3PR12MB8659.namprd12.prod.outlook.com
- ([fe80::6eb6:7d37:7b4b:1732]) by CH3PR12MB8659.namprd12.prod.outlook.com
- ([fe80::6eb6:7d37:7b4b:1732%4]) with mapi id 15.20.8048.013; Wed, 9 Oct 2024
- 12:31:17 +0000
-Date: Wed, 9 Oct 2024 09:31:15 -0300
-From: Jason Gunthorpe <jgg@nvidia.com>
-To: Yi Liu <yi.l.liu@intel.com>
-Cc: Nicolin Chen <nicolinc@nvidia.com>, kevin.tian@intel.com,
-	will@kernel.org, joro@8bytes.org, suravee.suthikulpanit@amd.com,
-	robin.murphy@arm.com, dwmw2@infradead.org, baolu.lu@linux.intel.com,
-	shuah@kernel.org, linux-kernel@vger.kernel.org,
-	iommu@lists.linux.dev, linux-arm-kernel@lists.infradead.org,
-	linux-kselftest@vger.kernel.org, eric.auger@redhat.com,
-	jean-philippe@linaro.org, mdf@kernel.org, mshavit@google.com,
-	shameerali.kolothum.thodi@huawei.com, smostafa@google.com
-Subject: Re: [PATCH v2 00/19] iommufd: Add VIOMMU infrastructure (Part-1)
-Message-ID: <20241009123115.GG1365916@nvidia.com>
-References: <ZvRcskGx2u94Vs+R@Asurada-Nvidia>
- <82632802-c55a-4199-b685-8b594a8e7104@intel.com>
- <ZvW+BoovlyJ/wziX@Asurada-Nvidia>
- <ff35efa5-ba7e-4974-94be-59bf794a14e3@intel.com>
- <ZvZRapZlAsEGDIge@Asurada-Nvidia>
- <8440cd72-ced6-4887-b724-ce6a1650db13@intel.com>
- <ZvcZFDqu6Xf5P0Xr@Asurada-Nvidia>
- <380fe58a-934a-4e57-aa18-f4e0841b5fb4@intel.com>
- <ZvsfViW28vF+v6uN@Asurada-Nvidia>
- <e2567891-44dc-48d5-abd0-e3fcfa02a4e6@intel.com>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <e2567891-44dc-48d5-abd0-e3fcfa02a4e6@intel.com>
-X-ClientProxiedBy: BN0PR08CA0006.namprd08.prod.outlook.com
- (2603:10b6:408:142::26) To CH3PR12MB8659.namprd12.prod.outlook.com
- (2603:10b6:610:17c::13)
+	dkim=pass (2048-bit key) header.d=cirrus.com header.i=@cirrus.com header.b="WI0sVayc"
+Received: from pps.filterd (m0077473.ppops.net [127.0.0.1])
+	by mx0a-001ae601.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 4994xc0x003245;
+	Wed, 9 Oct 2024 07:48:18 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=cirrus.com; h=cc
+	:content-transfer-encoding:content-type:date:from:in-reply-to
+	:message-id:mime-version:references:subject:to; s=
+	PODMain02222019; bh=b9CbWLDMZti2ojgRTihH3RA0WYLUzEcG7aX6pdihoQY=; b=
+	WI0sVaycTZYkwMgmtYcXXMdvigsiua8Ix4Qh02mNCGH2fBXcoCmYBNNsEO5BXVde
+	1Bz9WSIl3H9aytV4MjeLGq5iNgl4nMnifXKD7gZBG7Nh0M0RDNAmEax34ZlRrQpc
+	BqxwXp6rQsj7d8HBI3neZNecBDiZiUXrqk9SjO/XH7GSP3KBa0vc3lo3Nh2evgTs
+	vMpU/eouIhXwHQgJkPlVYadHgMk2W3tKDA7WeoPiKLk9i2DcqwNiAeCbgFtNS1E3
+	D/03y3ryRn8KcZ7U0bo3WMxdHCmB9tG9qfIm/V0gyX7oGE/Hh+fOgbX3EkFod4UH
+	WWLlkgIPTShr+Vylj7CyYA==
+Received: from ediex02.ad.cirrus.com ([84.19.233.68])
+	by mx0a-001ae601.pphosted.com (PPS) with ESMTPS id 4232uy5xfs-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Wed, 09 Oct 2024 07:48:17 -0500 (CDT)
+Received: from ediex01.ad.cirrus.com (198.61.84.80) by ediex02.ad.cirrus.com
+ (198.61.84.81) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1544.9; Wed, 9 Oct 2024
+ 13:48:15 +0100
+Received: from ediswmail9.ad.cirrus.com (198.61.86.93) by
+ anon-ediex01.ad.cirrus.com (198.61.84.80) with Microsoft SMTP Server id
+ 15.2.1544.9 via Frontend Transport; Wed, 9 Oct 2024 13:48:15 +0100
+Received: from [198.90.208.18] (ediswws06.ad.cirrus.com [198.90.208.18])
+	by ediswmail9.ad.cirrus.com (Postfix) with ESMTP id 33C5E82024A;
+	Wed,  9 Oct 2024 12:48:15 +0000 (UTC)
+Message-ID: <41a0ad69-912b-4eb3-84f7-fb385433c056@opensource.cirrus.com>
+Date: Wed, 9 Oct 2024 13:48:15 +0100
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: CH3PR12MB8659:EE_|LV8PR12MB9207:EE_
-X-MS-Office365-Filtering-Correlation-Id: 4ea54d2c-0d50-4f08-1359-08dce85e454b
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;ARA:13230040|7416014|1800799024|376014|366016;
-X-Microsoft-Antispam-Message-Info:
-	=?us-ascii?Q?YIC9n4Xb9g/h7pn7OAeLXWSY2SRZvNLu8c8SY3fsvwINImzAhKD8V15/DI9X?=
- =?us-ascii?Q?Q7eSDk2ZkStZEft/qzv0L2/HZQIxvBGWyvI91v/i+pqqaHZa4WCW9JdQRdJi?=
- =?us-ascii?Q?yYyo5F4y1FBN8rpKtJGa02QXz8/wJsaJkdHEydjWkyCSLyOdXpYVZcLnqZ2H?=
- =?us-ascii?Q?AaqQkvAKG+CrjXrT+OmFTa803VoTDIr7T7il/ur6MAnXdMzBoulmIYMRk1f4?=
- =?us-ascii?Q?TFCBVdPdSc+oxSzcdYH7+LfmihfU/yRqMSlMZuwDenLuzpedmVsUUsDLSS1u?=
- =?us-ascii?Q?Ku/i/gw/5mB4A5cGOKGPy8r4cAMdeKRVmsw6GewKQ+lykEF5dssJFASFxNuh?=
- =?us-ascii?Q?+m2z2USOSlQhGtzZ9DpFTs1DByq9j1Z7MNiDJ7w24VSejHeqo4VJgqv1kYeA?=
- =?us-ascii?Q?V+3krzHxM2Y3z62TjxEvYm26inN3mFcYtgeneIlmeRP/mY+e7otyBN+/0rN2?=
- =?us-ascii?Q?HlEQW3lIaNdR/YnzAi6SxgUy5+Ai1oTFS2mpzMDUgdL7nWQLNM39eXcclujm?=
- =?us-ascii?Q?zAKcC7AZmZNJkPdshn9lPInEEVXQ9DwHZbKNBqEARnYSVtZtos9XO3kQ64Nr?=
- =?us-ascii?Q?p7RQM3vZKNm5fzbYBUa/w3LAffUB6wOF1L+H/fOzjv8GG7RLoDYZb3UXSNnB?=
- =?us-ascii?Q?6J8W75L7Ren4XB5mit6xNAW1U8p5PQCWFTzKQQhmwqlB1Aa2UzuRD671y+Z0?=
- =?us-ascii?Q?fX9xnuU/AeD18RrijakJsuTFnEjQGBq87tpf6Go6lBv8+WMw+KYaIy1o3h8H?=
- =?us-ascii?Q?sOTczclEFEPzs9W1c3+B1G7Smk8nZ6Rrxg2roGesPh/V7HsMvNMaAMf2Na/+?=
- =?us-ascii?Q?Et7tCc4ByIgDWmsP1KA6v3mpokWoMg7D8napoHdpQD1m8akyrsosf10eXZYJ?=
- =?us-ascii?Q?6ehuhX15Abd7RVuDpUomTGKTzGxOAjfRa1zYRHXJgOpARfNWfQw87IWSNfJM?=
- =?us-ascii?Q?PbLBSXdlerh98+QdurLcyd2Q5lrPn+nvDfBasWqkozIw1xLn3VE8b9pIdWQt?=
- =?us-ascii?Q?Sp1uXG8+X1DFOe560xOG4UYjy68Nw4PWYUJwdDELkpHTirYI+5O4+p5JCPye?=
- =?us-ascii?Q?LHHhsjPfhJPj5BFrnPZ+o0bGlkwH+0bxrmpHbIZ78vUORoW/WA8h5GfnUeFe?=
- =?us-ascii?Q?TbLUKHs4mD+RwVDVIxJkOXH+6Uzz/bJ1TCb5Ow/q7+Fc/504wSnV5cZRCr43?=
- =?us-ascii?Q?HhXDRb6isY3lYdRJdtZ0KSKG5xNV28HsYqaoof4PiGopO1mNZ5QYY/ZLCs5S?=
- =?us-ascii?Q?U9+KBAPq5WqbmqQ+ziMSjq0IcwmXGukKh/9VtePQeA=3D=3D?=
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CH3PR12MB8659.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(7416014)(1800799024)(376014)(366016);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?us-ascii?Q?NWsclOJM08G7xgYBMw3cb3f+TQyzqpHBPU3/WlB4ccc5vhIPOhSb0tgB8mDo?=
- =?us-ascii?Q?bQLQ7iT+Xpf6bkUuDyviS2wuLxHCVFmaHyB/aIka1+vhqNPBP7FLCRtPyhBt?=
- =?us-ascii?Q?qbD36JmFFIZCG497Igyk0r3bnK/lcXMYYq+rH3JeV8QAmO2vr5py4FWGW45a?=
- =?us-ascii?Q?y0zqsNKtbiqfpRUpHVsGxIBkhPkk7bIY+tq21tryWvJEVyyhvDjPeJ/uGiuH?=
- =?us-ascii?Q?7diawErc9+vDCmFXuuweLPQj69/ClrYG7ISDZthxrU/mijxIIc1JY4rUvnOm?=
- =?us-ascii?Q?HXu1sMXiB4tKNDzeBfowSlAkalNHWvKIyT10K8BfWx5e3CZ0GOGQtxtAtnv8?=
- =?us-ascii?Q?uUQQplJqPUaX+IgtMMoSQF71kbem+Ubx6POJ9pKN0OHbIu1gR6AQifBCTPbS?=
- =?us-ascii?Q?RAMtjax8QndUI7xqf37p2BPFQIUzzQzaXtGyTwkaX75Gvtlu+EZxkLVlNMA0?=
- =?us-ascii?Q?e5jjpQ9q8mUHJ5JZmT4N3Q4NeRZmmzVF00gmNoG2sXGXSwKLLWlUFWLAchlH?=
- =?us-ascii?Q?CrX+jvBgzewEK6AaqMv0JL4RwFaNWv7bFh9HPHaDbMvBlmpyTT6zYXa3rvNM?=
- =?us-ascii?Q?Lznbnku6fJ9wJcGH/+OeTqXmKqkwp6HXD0YI39CZgqP7u8P0M5kT17uxS6+9?=
- =?us-ascii?Q?07U7fIz7o6jGQlz8p71KrLdtUPFEMFuBcjzUEZVjKiNlupsASGiWGiCxe0pN?=
- =?us-ascii?Q?WBqyzdhQ/Ce0A4OOe95lTb3lTohNy3aq8By/JudhnU3Wnvvdj7vib2FNAt5z?=
- =?us-ascii?Q?pow6KY9jMj1h2+kTXfp0cRpE6JFk3h9AH1+/RAmLIU/hplscDIH6sVwLgy9w?=
- =?us-ascii?Q?h03KusQoKlD6iulCAXau4KxRnS530hTLFBVTsehVIBPemRYlQ0dlbBh+7w/y?=
- =?us-ascii?Q?kFSkpd+q9dsvbb1AMhl4erLFO0uIWGL94wZ/EnOp6+FguvlTQ7w1OU4XZoM+?=
- =?us-ascii?Q?+0g4Ma1hIm4ZnX3sV34jNE6GjU1lC0YBZ1m2ooX/0dCcru8+vCH8T1wuWg30?=
- =?us-ascii?Q?a3Vt8WIVpWFfbReIleWERIWIT2w6yPaxSb0WUp6VDEgqGdBWxuuUsbLA+O9I?=
- =?us-ascii?Q?YxdbgK01u8LfJie/fr1mX8yeS/vxmRKG0r6PPKYinqOGhTmPmIn1pYmVYaW1?=
- =?us-ascii?Q?1YCs982JDV19EM1+HeSqWWICmwc+ZUHE/eV767iaF/UEVADUrJfhxbgcJxJx?=
- =?us-ascii?Q?BBNmgsPk7HqqR1ayckUAMHOGua2VQYbqZNA8PW/41yyDC4CuBEcJ3sX2kMqr?=
- =?us-ascii?Q?yQ8T/Sql51pJQyY+N0xE7ek+HQi5kE8taylZAhLJtNdI4Tvcs9vB8CPNN6/r?=
- =?us-ascii?Q?NwKJK1lysHoTFmBUrSpneyw+ng+Yot3h0hsmSusexdjJUoKKFv0rGSLWHYTX?=
- =?us-ascii?Q?noffqG5siF3aXFa/PBBBsiT3MEthptt9CW4VT5Q8cGs8PEnOoSjd8q4Vq+lG?=
- =?us-ascii?Q?WL7c3cVVsiBMzYsTxqmzk64ORPCYlnAr8du8GIbnYhADxvuWpyfOtm2eft0p?=
- =?us-ascii?Q?MWss+9WYit5tlt2wtG442cXYPD46tvKRDFtiJ/wSbyDQQsmDM4KTsiXkN2NG?=
- =?us-ascii?Q?n9Lu1NPSjmnoaQKm19k=3D?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 4ea54d2c-0d50-4f08-1359-08dce85e454b
-X-MS-Exchange-CrossTenant-AuthSource: CH3PR12MB8659.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 09 Oct 2024 12:31:16.9469
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: 4zy8IPfyzU/as3vfYHUpruZr3/LxPNw9hxTsxLSAtTMgmJOH2oGZiXrCY4Z0RLPK
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: LV8PR12MB9207
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH 00/51] treewide: Switch to __pm_runtime_put_autosuspend()
+To: "Rafael J. Wysocki" <rafael@kernel.org>,
+        Ulf Hansson
+	<ulf.hansson@linaro.org>,
+        Laurent Pinchart
+	<laurent.pinchart@ideasonboard.com>,
+        Sakari Ailus
+	<sakari.ailus@linux.intel.com>
+CC: <dri-devel@lists.freedesktop.org>, <linux-kernel@vger.kernel.org>,
+        <linux-bluetooth@vger.kernel.org>, <linux-clk@vger.kernel.org>,
+        <linux-crypto@vger.kernel.org>, <dmaengine@vger.kernel.org>,
+        <linux-gpio@vger.kernel.org>, <amd-gfx@lists.freedesktop.org>,
+        <nouveau@lists.freedesktop.org>,
+        <linux-stm32@st-md-mailman.stormreply.com>,
+        <linux-arm-kernel@lists.infradead.org>, <linux-i2c@vger.kernel.org>,
+        <linux-i3c@lists.infradead.org>, <linux-iio@vger.kernel.org>,
+        <linux-input@vger.kernel.org>, <patches@opensource.cirrus.com>,
+        <iommu@lists.linux.dev>, <imx@lists.linux.dev>,
+        <linux-mediatek@lists.infradead.org>, <linux-media@vger.kernel.org>,
+        <linux-mmc@vger.kernel.org>, <linux-mtd@lists.infradead.org>,
+        <netdev@vger.kernel.org>, <linux-wireless@vger.kernel.org>,
+        <linux-pci@vger.kernel.org>, <linux-phy@lists.infradead.org>,
+        <linux-pwm@vger.kernel.org>, <linux-remoteproc@vger.kernel.org>,
+        <linux-sound@vger.kernel.org>, <linux-spi@vger.kernel.org>,
+        <linux-staging@lists.linux.dev>, <linux-usb@vger.kernel.org>,
+        <linux-serial@vger.kernel.org>, <greybus-dev@lists.linaro.org>,
+        <asahi@lists.linux.dev>, Andy Shevchenko <andy.shevchenko@gmail.com>
+References: <20241004094101.113349-1-sakari.ailus@linux.intel.com>
+ <CAPDyKFp0N6UJhnHS164Tdf=xkWB0jzq65L9TdvYazeBQ-6WjeQ@mail.gmail.com>
+ <20241007184924.GH14766@pendragon.ideasonboard.com>
+ <CAPDyKFpQVnF7eQv3dup8k-3EijnMjuveCG9sZ=Rpey1Y6MBJEg@mail.gmail.com>
+ <20241007222502.GG30699@pendragon.ideasonboard.com>
+ <CAPDyKFrGNwna6Y2pqSRaBbRYHKRaD2ayqQHLtoqLPOu9Et7qTg@mail.gmail.com>
+ <CAJZ5v0jvJyS7D5-wURi2kyWN-rmNa+YqupeQJ000pQRVd9VBcQ@mail.gmail.com>
+Content-Language: en-GB
+From: Richard Fitzgerald <rf@opensource.cirrus.com>
+In-Reply-To: <CAJZ5v0jvJyS7D5-wURi2kyWN-rmNa+YqupeQJ000pQRVd9VBcQ@mail.gmail.com>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 8bit
+X-Proofpoint-GUID: ltWPFp1gnPUjzPmaRQ9EaXCq91PhMVjU
+X-Proofpoint-ORIG-GUID: ltWPFp1gnPUjzPmaRQ9EaXCq91PhMVjU
+X-Proofpoint-Spam-Reason: safe
 
-On Wed, Oct 09, 2024 at 03:20:57PM +0800, Yi Liu wrote:
-> On 2024/10/1 05:59, Nicolin Chen wrote:
-> > On Sun, Sep 29, 2024 at 03:16:55PM +0800, Yi Liu wrote:
-> > > > > > I feel these two might act somehow similarly to the two DIDs
-> > > > > > during nested translations?
-> > > > > 
-> > > > > not quite the same. Is it possible that the ASID is the same for stage-1?
-> > > > > Intel VT-d side can have the pasid to be the same. Like the gIOVA, all
-> > > > > devices use the same ridpasid. Like the scenario I replied to Baolu[1],
-> > > > > do er choose to use different DIDs to differentiate the caches for the
-> > > > > two devices.
-> > > > 
-> > > > On ARM, each S1 domain (either a normal stage-1 PASID=0 domain or
-> > > > an SVA PASID>0 domain) has a unique ASID.
-> > > 
-> > > I see. Looks like ASID is not the PASID.
-> > 
-> > It's not. PASID is called Substream ID in SMMU term. It's used to
-> > index the PASID table. For cache invalidations, a PASID (ssid) is
-> > for ATC (dev cache) or PASID table entry invalidation only.
+On 08/10/2024 7:24 pm, Rafael J. Wysocki wrote:
+> On Tue, Oct 8, 2024 at 12:35 AM Ulf Hansson <ulf.hansson@linaro.org> wrote:
+>>
+>> On Tue, 8 Oct 2024 at 00:25, Laurent Pinchart
+>> <laurent.pinchart@ideasonboard.com> wrote:
+>>>
+>>> Hi Ulf,
+>>>
+>>> On Tue, Oct 08, 2024 at 12:08:24AM +0200, Ulf Hansson wrote:
+>>>> On Mon, 7 Oct 2024 at 20:49, Laurent Pinchart wrote:
+>>>>> On Fri, Oct 04, 2024 at 04:38:36PM +0200, Ulf Hansson wrote:
+>>>>>> On Fri, 4 Oct 2024 at 11:41, Sakari Ailus wrote:
+>>>>>>>
+>>>>>>> Hello everyone,
+>>>>>>>
+>>>>>>> This set will switch the users of pm_runtime_put_autosuspend() to
+>>>>>>> __pm_runtime_put_autosuspend() while the former will soon be re-purposed
+>>>>>>> to include a call to pm_runtime_mark_last_busy(). The two are almost
+>>>>>>> always used together, apart from bugs which are likely common. Going
+>>>>>>> forward, most new users should be using pm_runtime_put_autosuspend().
+>>>>>>>
+>>>>>>> Once this conversion is done and pm_runtime_put_autosuspend() re-purposed,
+>>>>>>> I'll post another set to merge the calls to __pm_runtime_put_autosuspend()
+>>>>>>> and pm_runtime_mark_last_busy().
+>>>>>>
+>>>>>> That sounds like it could cause a lot of churns.
+>>>>>>
+>>>>>> Why not add a new helper function that does the
+>>>>>> pm_runtime_put_autosuspend() and the pm_runtime_mark_last_busy()
+>>>>>> things? Then we can start moving users over to this new interface,
+>>>>>> rather than having this intermediate step?
+>>>>>
+>>>>> I think the API would be nicer if we used the shortest and simplest
+>>>>> function names for the most common use cases. Following
+>>>>> pm_runtime_put_autosuspend() with pm_runtime_mark_last_busy() is that
+>>>>> most common use case. That's why I like Sakari's approach of repurposing
+>>>>> pm_runtime_put_autosuspend(), and introducing
+>>>>> __pm_runtime_put_autosuspend() for the odd cases where
+>>>>> pm_runtime_mark_last_busy() shouldn't be called.
+>>>>
+>>>> Okay, so the reason for this approach is because we couldn't find a
+>>>> short and descriptive name that could be used in favor of
+>>>> pm_runtime_put_autosuspend(). Let me throw some ideas at it and maybe
+>>>> you like it - or not. :-)
+>>>
+>>> I like the idea at least :-)
+>>>
+>>>> I don't know what options you guys discussed, but to me the entire
+>>>> "autosuspend"-suffix isn't really that necessary in my opinion. There
+>>>> are more ways than calling pm_runtime_put_autosuspend() that triggers
+>>>> us to use the RPM_AUTO flag for rpm_suspend(). For example, just
+>>>> calling pm_runtime_put() has the similar effect.
+>>>
+>>> To be honest, I'm lost there. pm_runtime_put() calls
+>>> __pm_runtime_idle(RPM_GET_PUT | RPM_ASYNC), while
+>>> pm_runtime_put_autosuspend() calls __pm_runtime_suspend(RPM_GET_PUT |
+>>> RPM_ASYNC | RPM_AUTO).
+>>
+>> __pm_runtime_idle() ends up calling rpm_idle(), which may call
+>> rpm_suspend() - if it succeeds to idle the device. In that case, it
+>> tags on the RPM_AUTO flag in the call to rpm_suspend(). Quite similar
+>> to what is happening when calling pm_runtime_put_autosuspend().
 > 
-> sure. Is there any relationship between PASID and ASID? Per the below
-> link, ASID is used to tag the TLB entries of an application. So it's
-> used in the SVA case. right?
+> Right.
+> 
+> For almost everybody, except for a small bunch of drivers that
+> actually have a .runtime_idle() callback, pm_runtime_put() is
+> literally equivalent to pm_runtime_put_autosuspend().
+> 
+> So really the question is why anyone who doesn't provide a
+> .runtime_idle() callback bothers with using this special
+> pm_runtime_put_autosuspend() thing,
 
-Unlike Intel and AMD the IOTLB tag is entirely controlled by
-software. So the HW will lookup the PASID and retrieve an ASID, then
-use that as a cache tag.
+Because they are following the documentation? It says:
 
-Intel and AMD will use the PASID as the cache tag.
+"Drivers should call pm_runtime_mark_last_busy() to update this field
+after carrying out I/O, typically just before calling
+pm_runtime_put_autosuspend()."
 
-As we've talked about several times using the PASID directly as a
-cache tag robs the SW of optimization possibilities in some cases.
+and
 
-The extra ASID indirection allows the SW to always tag the same page
-table top pointer with the same ASID regardless of what PASID it is
-assigned to and guarentee IOTLB sharing.
+"In order to use autosuspend, subsystems or drivers must call
+pm_runtime_use_autosuspend() (...), and thereafter they should use the
+various `*_autosuspend()` helper functions instead of the non#
+autosuspend counterparts"
 
-Jason
+So the documentation says I should be using pm_runtime_put_autosuspend()
+instead of pm_runtime_put().
+
+Seems unfair to criticise people for following the documentation.
+
