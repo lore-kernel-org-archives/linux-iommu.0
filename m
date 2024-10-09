@@ -1,152 +1,99 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.12])
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.11])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3D24C14A611
-	for <iommu@lists.linux.dev>; Wed,  9 Oct 2024 01:09:33 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.12
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4764518EBF;
+	Wed,  9 Oct 2024 01:32:22 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.11
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1728436175; cv=none; b=kLPUqhnYMMwQeDsxMbwm/PjeZNZHdpWmNBEw14bl9dU7hL/8/Ge3guj70aLmss+9QZrNttP2hD/HgDGmNDapJxYBUSHvuJoZkoqttHPekDwr1M4k8qiGpGmu8G5kzZheH8uD4+qDn9Vg55JQhapZrN09kbPeBbanPjtcKKjR3G4=
+	t=1728437544; cv=none; b=HtIkqNNnOFpy9TE18ozahTJsOQTHWGi/TcOQz9oypQ2p0sSk5hUIg2QrUgNvzawETFM7Ea3EPuSd2yDDbthfKNvqC5jxiFkQJpNV1wzA9v3JPq/yJ9hLOZECMaOiZN0a0biBohUkQzfrdhaf7c/d8GpjSvMi+OyWeOAvRUee6H8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1728436175; c=relaxed/simple;
-	bh=Uv3ph2Jbb71RnVGQn6CQgpcPAjQBngBYdLG0ZjCTVAM=;
-	h=Message-ID:Date:MIME-Version:Cc:Subject:To:References:From:
-	 In-Reply-To:Content-Type; b=qTvTjA8Dhgz+zHe+S+vxbfpyLW70wIdsP+zGur/mDeAfRSt/eB1JZJWxdpQ1VlOfizQlkoodKlDkUxmsrakHA4G8Nv5UsFTk68I9rSYVQUKQGSRhbkN7uw5dO5TzJmV6fI7N36oxyXjN5rCHDcQGEjxfzeuKXB2rN4fU4t7GSmw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=hd9FN0uc; arc=none smtp.client-ip=198.175.65.12
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
+	s=arc-20240116; t=1728437544; c=relaxed/simple;
+	bh=a0+uf+NfJtuPcLf+rkvKkv9Vp5YWhsAqpXpzGodzWmM=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=R53G2T9uGX9jxJyDU8IGk9gzOWHs60OyYzw3R25UobQp41elGS20TJN+DwxoQxQUiSgl7xYvMlgm4ddoS24J58ksUaEAaZxzsDNVfb2dFF7mJ7ddXAQzin5hzI1U6+GRrqtvGEF77ObNjLjTsbNcC3bnVjZEuRRUqsrFnhhtCyw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=eeeQx1Fb; arc=none smtp.client-ip=198.175.65.11
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="hd9FN0uc"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="eeeQx1Fb"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1728436174; x=1759972174;
-  h=message-id:date:mime-version:cc:subject:to:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=Uv3ph2Jbb71RnVGQn6CQgpcPAjQBngBYdLG0ZjCTVAM=;
-  b=hd9FN0uciDdeAUfsaAABIOVzYJ685ePc4/TfuJ4jGUnlIognlDQxQTsk
-   hUYz2b2VNCTrxYfcDdS9AMvc7BjG1xMtlGJBzve/7pq3evsnI55FwI8UU
-   jE0NDL/CT+LRwEbaQF/+6L3u++RjolpIOeM/8F7Dd2wf9RKFkBOz3wSbr
-   hrzlkd1eLUh3RSTtEtiX9eVW7Kxr8KTz3Ja2lypWAjZ9AMGFcJspK0Vnt
-   VbQyF1GAC2dXQIP5NXycxrYHAif6zttAcCugmK64kwXq6CWHEqmWaWBkl
-   Dytt0JkuOL/41wlFlHtY3dUrOCmmcn1BwEmP3Ha0CH2qpdAN4dUIZQ8Y7
+  t=1728437543; x=1759973543;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=a0+uf+NfJtuPcLf+rkvKkv9Vp5YWhsAqpXpzGodzWmM=;
+  b=eeeQx1FbhVCfl0WSWB6MVSKxiGIhsKCV7azwP2vJCsxPB4wd3tjGjMKq
+   jaOGoj5GPASutXRLiBWTjpSwoDXb7js60nLi8Var3zF3EjuousbtwHDWB
+   BOPLjsfkK+DXlRtqQkmuC7IuzncIEHv0ukvoXEhK6JLqcLLJYGHrOm09v
+   QWFqyR/1fg9ZEVwPtS1GNL5xL0Qn1Tzbyv2/e5fM8SZgw47XFv102Nv/2
+   kiBM7DA1g/OkkA+cZyT1qcpA/ZkmfIvXNptO1LrU2Kc9GdvsxZ5y5WsFN
+   cG+oGgJowTsh/W8TWF2hh7ACtQmTyNcy6WyA32ydaEKdl9io8ERpzyQiJ
    g==;
-X-CSE-ConnectionGUID: tdcnF41xSly1KFKCHaQ7WA==
-X-CSE-MsgGUID: qE623tsvQhGSHZ7Gy3xqKA==
-X-IronPort-AV: E=McAfee;i="6700,10204,11219"; a="39093016"
+X-CSE-ConnectionGUID: 251SodlkSLyEGLXX9whCcg==
+X-CSE-MsgGUID: XxLqC+VSSLWpATod1/2AuA==
+X-IronPort-AV: E=McAfee;i="6700,10204,11219"; a="38270817"
 X-IronPort-AV: E=Sophos;i="6.11,188,1725346800"; 
-   d="scan'208";a="39093016"
-Received: from fmviesa002.fm.intel.com ([10.60.135.142])
-  by orvoesa104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Oct 2024 18:09:30 -0700
-X-CSE-ConnectionGUID: g1QmcFj6T+m8eR+E/mZ5mA==
-X-CSE-MsgGUID: w0G7lixHR36IJkASZuyVTw==
+   d="scan'208";a="38270817"
+Received: from orviesa005.jf.intel.com ([10.64.159.145])
+  by orvoesa103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Oct 2024 18:32:22 -0700
+X-CSE-ConnectionGUID: 5RhY4zlETvCg1SzjXE5oGQ==
+X-CSE-MsgGUID: t+GgeUnaQT+AWsVc7A576A==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.11,188,1725346800"; 
-   d="scan'208";a="99414093"
-Received: from unknown (HELO [10.238.0.51]) ([10.238.0.51])
-  by fmviesa002-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Oct 2024 18:09:27 -0700
-Message-ID: <50824ceb-71c4-4b1b-95ba-291461d647b6@linux.intel.com>
-Date: Wed, 9 Oct 2024 09:09:25 +0800
+   d="scan'208";a="80874780"
+Received: from lkp-server01.sh.intel.com (HELO a48cf1aa22e8) ([10.239.97.150])
+  by orviesa005.jf.intel.com with ESMTP; 08 Oct 2024 18:32:19 -0700
+Received: from kbuild by a48cf1aa22e8 with local (Exim 4.96)
+	(envelope-from <lkp@intel.com>)
+	id 1syLYn-0008Zw-2C;
+	Wed, 09 Oct 2024 01:32:17 +0000
+Date: Wed, 9 Oct 2024 09:32:03 +0800
+From: kernel test robot <lkp@intel.com>
+To: Dheeraj Kumar Srivastava <dheerajkumar.srivastava@amd.com>,
+	joro@8bytes.org, suravee.suthikulpanit@amd.com, will@kernel.org,
+	robin.murphy@arm.com, linux-kernel@vger.kernel.org,
+	iommu@lists.linux.dev
+Cc: oe-kbuild-all@lists.linux.dev
+Subject: Re: [PATCH 8/8] iommu/amd: Add documentation for AMD IOMMU debugfs
+ support
+Message-ID: <202410090917.z8aO1bNH-lkp@intel.com>
+References: <20241008104035.4008-9-dheerajkumar.srivastava@amd.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Cc: baolu.lu@linux.intel.com,
- "alex.williamson@redhat.com" <alex.williamson@redhat.com>,
- "eric.auger@redhat.com" <eric.auger@redhat.com>,
- "nicolinc@nvidia.com" <nicolinc@nvidia.com>,
- "chao.p.peng@linux.intel.com" <chao.p.peng@linux.intel.com>,
- "iommu@lists.linux.dev" <iommu@lists.linux.dev>,
- "Duan, Zhenzhong" <zhenzhong.duan@intel.com>,
- "linux-kselftest@vger.kernel.org" <linux-kselftest@vger.kernel.org>,
- "vasant.hegde@amd.com" <vasant.hegde@amd.com>
-Subject: Re: [PATCH v2 3/6] iommu/vt-d: Make intel_iommu_set_dev_pasid() to
- handle domain replacement
-To: "Tian, Kevin" <kevin.tian@intel.com>, "Liu, Yi L" <yi.l.liu@intel.com>,
- "joro@8bytes.org" <joro@8bytes.org>, "jgg@nvidia.com" <jgg@nvidia.com>
-References: <20240912130427.10119-1-yi.l.liu@intel.com>
- <20240912130427.10119-4-yi.l.liu@intel.com>
- <a2cbc96f-7be3-4f70-a38b-540eddfd7c23@linux.intel.com>
- <52ec3423-6061-4178-8728-832b5f61af15@linux.intel.com>
- <BN9PR11MB5276AF2CB65A36369CF10A008C762@BN9PR11MB5276.namprd11.prod.outlook.com>
-Content-Language: en-US
-From: Baolu Lu <baolu.lu@linux.intel.com>
-In-Reply-To: <BN9PR11MB5276AF2CB65A36369CF10A008C762@BN9PR11MB5276.namprd11.prod.outlook.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20241008104035.4008-9-dheerajkumar.srivastava@amd.com>
 
-On 2024/9/30 15:19, Tian, Kevin wrote:
->> From: Baolu Lu <baolu.lu@linux.intel.com>
->> Sent: Friday, September 13, 2024 10:17 AM
->>
->> On 9/13/24 9:35 AM, Baolu Lu wrote:
->>> On 9/12/24 9:04 PM, Yi Liu wrote:
->>>> +static void intel_iommu_remove_dev_pasid(struct device *dev, ioasid_t
->>>> pasid,
->>>> +                     struct iommu_domain *domain)
->>>> +{
->>>> +    struct device_domain_info *info = dev_iommu_priv_get(dev);
->>>> +    struct intel_iommu *iommu = info->iommu;
->>>> +
->>>>        intel_pasid_tear_down_entry(iommu, dev, pasid,
->>>>                        INTEL_PASID_TEARDOWN_DRAIN_PRQ);
->>>> +    if (domain->type == IOMMU_DOMAIN_IDENTITY)
->>>> +        return;
->>>
->>> The static identity domain is not capable of handling page requests.
->>> Therefore there is no need to drain PRQ for an identity domain removal.
->>>
->>> So it probably should be something like this:
->>>
->>>       if (domain->type == IOMMU_DOMAIN_IDENTITY) {
->>>           intel_pasid_tear_down_entry(iommu, dev, pasid, 0);
->>>           return;
->>>       }
->>>
->>>       intel_pasid_tear_down_entry(iommu, dev, pasid,
->>>                                       INTEL_PASID_TEARDOWN_DRAIN_PRQ);
->>
->> Just revisited this. It seems that we just need to drain PRQ if the
->> attached domain is iopf-capable. Therefore, how about making it like
->> this?
->>
->> 	unsigned int flags = 0;
->>
->> 	if (domain->iopf_handler)
->> 		flags |= INTEL_PASID_TEARDOWN_DRAIN_PRQ;
->>
->> 	intel_pasid_tear_down_entry(iommu, dev, pasid, flags);
->>
->> 	/* Identity domain has no meta data for pasid. */
->> 	if (domain->type == IOMMU_DOMAIN_IDENTITY)
->> 		return;
->>
-> 
-> this is the right thing to do, but also suggesting a bug in existing
-> code. intel_pasid_tear_down_entry() is not just for PRQ drain.
-> It's also about iotlb/devtlb invalidation. From device p.o.v it
-> has no idea about the translation mode in the IOMMU side and
-> always caches the valid mappings in devtlb when ATS is enabled.
+Hi Dheeraj,
 
-Yes. You are right.
+kernel test robot noticed the following build warnings:
 
-intel_pasid_tear_down_entry() takes care of iotlb/devtlb invalidation.
-So it's fine as long as intel_pasid_tear_down_entry() is called for the
-IDENTITY domain path, right?
+[auto build test WARNING on 8cf0b93919e13d1e8d4466eb4080a4c4d9d66d7b]
 
-> Existing code skips all those housekeeping for identify domain
-> by early return before intel_pasid_tear_down_entry(). We need
-> a separate fix for it before this series?
+url:    https://github.com/intel-lab-lkp/linux/commits/Dheeraj-Kumar-Srivastava/iommu-amd-Refactor-AMD-IOMMU-debugfs-initial-setup/20241008-184419
+base:   8cf0b93919e13d1e8d4466eb4080a4c4d9d66d7b
+patch link:    https://lore.kernel.org/r/20241008104035.4008-9-dheerajkumar.srivastava%40amd.com
+patch subject: [PATCH 8/8] iommu/amd: Add documentation for AMD IOMMU debugfs support
+reproduce: (https://download.01.org/0day-ci/archive/20241009/202410090917.z8aO1bNH-lkp@intel.com/reproduce)
 
-Existing code doesn't skip intel_pasid_tear_down_entry().
+If you fix the issue in a separate patch/commit (i.e. not just a new version of
+the same patch/commit), kindly add following tags
+| Reported-by: kernel test robot <lkp@intel.com>
+| Closes: https://lore.kernel.org/oe-kbuild-all/202410090917.z8aO1bNH-lkp@intel.com/
 
-         if (domain->type == IOMMU_DOMAIN_IDENTITY) {
-                 intel_pasid_tear_down_entry(iommu, dev, pasid, false);
-                 return;
-         }
+All warnings (new ones prefixed by >>):
 
-Or anything I overlooked?
+   Warning: Documentation/devicetree/bindings/regulator/siliconmitus,sm5703-regulator.yaml references a file that doesn't exist: Documentation/devicetree/bindings/mfd/siliconmitus,sm5703.yaml
+   Warning: Documentation/hwmon/g762.rst references a file that doesn't exist: Documentation/devicetree/bindings/hwmon/g762.txt
+   Warning: MAINTAINERS references a file that doesn't exist: Documentation/devicetree/bindings/reserved-memory/qcom
+   Warning: MAINTAINERS references a file that doesn't exist: Documentation/devicetree/bindings/misc/fsl,qoriq-mc.txt
+>> Warning: /sys/kernel/debug/iommu/devtbl is defined 2 times:  ./Documentation/ABI/testing/debugfs-amd-iommu:105  ./Documentation/ABI/testing/debugfs-amd-iommu:119
+   Using alabaster theme
 
-Thanks,
-baolu
+-- 
+0-DAY CI Kernel Test Service
+https://github.com/intel/lkp-tests/wiki
