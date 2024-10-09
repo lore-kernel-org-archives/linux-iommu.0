@@ -1,99 +1,108 @@
-Received: from mail-lf1-f52.google.com (mail-lf1-f52.google.com [209.85.167.52])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 09AD21E1A34
-	for <iommu@lists.linux.dev>; Wed,  9 Oct 2024 19:02:06 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.52
+Received: from linux.microsoft.com (linux.microsoft.com [13.77.154.182])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 3E6941EA73
+	for <iommu@lists.linux.dev>; Wed,  9 Oct 2024 21:14:21 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=13.77.154.182
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1728500528; cv=none; b=WRgG8KIHA7B0qtGeUqJrIbLWl8xSUED75wQMYgdv9CQJ0rzZ3bae7CNP5C15n2Y8vIm/KekLyLpxJDIntf6cKMHqy21diGKwh2Ftv8FU6uxULTbez3pQW0BF3+v0XwNhGlxVsttFwW7ew1jaMcma/mvsCOmHIMMm8uo3RL3+5og=
+	t=1728508462; cv=none; b=EUCmNatMHijY/zbN5ROGoUCeIiMfcMbDoHf+OyHYfuNmlwIK8BP4KGGLa3fooFfHjVzBryd6V0bTzUzvrbQxGK/n5ULPQbt6pKNIhHhV2rfmGEZWP3dSQhkLwdouwYEUDMB5EclEHxIVF9Xh6rCD6JOMxZv7ofZFPli8lByarhk=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1728500528; c=relaxed/simple;
-	bh=Y9AhP4Ij9yYbpvP42cTvVt9kdtqB5fM50/MgwEp4SyY=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=GGvLDDShnlC+22vGTA+w5XhjR1fF+JSTiwry8uKWz/ngmkLpnk0WeNUiiUSm825AjLkI8MKY+GnEfp+uhXkk8gkfE7xjao9pF7BvMXMQzc8sxg1LcHu258VSKGEz0VYSwqI0pWTzW9c6XMns7z7gsJzg47MPApj5IeKKjR0xYkM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org; spf=pass smtp.mailfrom=linaro.org; dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b=WSivFh7j; arc=none smtp.client-ip=209.85.167.52
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linaro.org
+	s=arc-20240116; t=1728508462; c=relaxed/simple;
+	bh=eD7mO4MFFEA3EjfxAHwWzsyr0cIM6q4dFqlzARJ8BwI=;
+	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=WOqZRC+DDi3uHhNNf94viMC8KN8DoJ+1GEYHA5ZZD1xTah4cgdKruOptYz4H2j8rVIecfrbq8ZRJcowH5mPrfx8/+0krvWXdB/wJHd7ijmWNq4KF3UjYiJzGI2/4ViZolg+IE5ZyShfJs2pF5koT5M1q/chzDVcrMdesgJ4cIFY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com; spf=pass smtp.mailfrom=linux.microsoft.com; dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b=Dyi1QXtf; arc=none smtp.client-ip=13.77.154.182
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.microsoft.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="WSivFh7j"
-Received: by mail-lf1-f52.google.com with SMTP id 2adb3069b0e04-5398a26b64fso55442e87.3
-        for <iommu@lists.linux.dev>; Wed, 09 Oct 2024 12:02:06 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1728500525; x=1729105325; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=qQ5+ACbZx+UOJv09QvSfDOymcofkqLkZcQ+uGiaQiAI=;
-        b=WSivFh7jRtHCN0boj2Zi6oIE8flbIkaBIX15XKKeNSVMM0w8/jJrFeLLS5qJPuXPJT
-         S0HFl8QD6Pm8b5tK7UvR0QLgs1KZM97Ynwlp7qnIlMoKVTOQPt4kC0uWJin8XWtKmNOk
-         au7e+tWr9JZt5rPdu0WTrOH6vVat6FlzRRyCygFrkHwcw6YLf02yM9xSSslKVRXmV8DE
-         7+Q/rWmL9u+/Z9oSl3dqkfjHddIT+mK5eWkE19dH7ZRYcoFLgsVe7qBk6efs9yiQgB69
-         lnWN1sIye2hPkk0+5HkWEwXr+OiNgjNKsp/qi1LerVTa16ANxpP1TgLjxy2dZg62GuSf
-         7UFw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1728500525; x=1729105325;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=qQ5+ACbZx+UOJv09QvSfDOymcofkqLkZcQ+uGiaQiAI=;
-        b=l13w/ewyjAo5Ivd+zqN2I2xcu5BSan4z46FcKzcbLbBPKkainijaQ0X3ZFEVq9IY0D
-         dD5dx1EWueemxbqCaERM1GHWmGCWmaMUZYFeqMTq70NKeWyUyoyty2r1xzOdtBZjHhsx
-         L5pN5nmQsY2+uqPyfmsFBVPXEe2z++7DfqlM4rQybykD4NyU7s8f263uJT27Ba0Ic3Kx
-         CJO2hFGYVBQCmxJuaxMLGt/jHD9C4WNhkJfGhHFW76a6HolzHSQGZuriMvAHDECCuoGG
-         /IjyVD1mdL1OtGsUhYWMvPSOtFk06MWmRVSWeIM/98LsINEeDpd5qgh8UFOwVw15G/4n
-         qeiw==
-X-Forwarded-Encrypted: i=1; AJvYcCU0Xd8bqOZUNa12PSb6otY6EXYyfyOsEwdeuSJmlkx69AmRnmA7pkWafzxNK2WfGUUfpF0VTg==@lists.linux.dev
-X-Gm-Message-State: AOJu0YzEsOIWtMx4gcGQ1BjUvzSGO5YbPelyrSyVfiXI/5jBqHkMoTEG
-	GdY/6dlwGaltzqGl2n7mMzwFh7oN/dAaOzJBEod8EwV04cXZVoRoFGWreuMtEYU=
-X-Google-Smtp-Source: AGHT+IEekgkxN0FoqtvPj+djHpCzoAdpqcQVG0lO0MMFyXD4siMsEcttXGyf6xKYoA9aRSDcmj33Jg==
-X-Received: by 2002:a05:6512:3ca7:b0:538:9e40:94b with SMTP id 2adb3069b0e04-539c489754fmr2427993e87.19.1728500525147;
-        Wed, 09 Oct 2024 12:02:05 -0700 (PDT)
-Received: from eriador.lumag.spb.ru (2001-14ba-a0c3-3a00--7a1.rev.dnainternet.fi. [2001:14ba:a0c3:3a00::7a1])
-        by smtp.gmail.com with ESMTPSA id 2adb3069b0e04-539aff28034sm1594268e87.250.2024.10.09.12.02.02
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 09 Oct 2024 12:02:03 -0700 (PDT)
-Date: Wed, 9 Oct 2024 22:02:00 +0300
-From: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
-To: Bibek Kumar Patro <quic_bibekkum@quicinc.com>
-Cc: robdclark@gmail.com, will@kernel.org, robin.murphy@arm.com, 
-	joro@8bytes.org, jgg@ziepe.ca, jsnitsel@redhat.com, robh@kernel.org, 
-	krzysztof.kozlowski@linaro.org, quic_c_gdjako@quicinc.com, iommu@lists.linux.dev, 
-	linux-arm-msm@vger.kernel.org, linux-arm-kernel@lists.infradead.org, 
-	linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v16 4/5] iommu/arm-smmu: introduction of ACTLR for custom
- prefetcher settings
-Message-ID: <qfglrrksmb5674fxwtnqs7osku4wqri7nxrymju6fa4ey6zrto@e7ww725n3cfc>
-References: <20241008125410.3422512-1-quic_bibekkum@quicinc.com>
- <20241008125410.3422512-5-quic_bibekkum@quicinc.com>
+	dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b="Dyi1QXtf"
+Received: from DESKTOP-0403QTC. (unknown [50.53.30.84])
+	by linux.microsoft.com (Postfix) with ESMTPSA id 3737720DEA74;
+	Wed,  9 Oct 2024 14:14:15 -0700 (PDT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com 3737720DEA74
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
+	s=default; t=1728508455;
+	bh=SJ3xAzZvatWGYl0tLdbJUJMAjvplB1sBnVrn8PArUUc=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:References:Reply-To:From;
+	b=Dyi1QXtfodMoejhbvNJV55r+MEsFji9qKqRWoHGZCjVhiBZwxkN7KyFl2uTX/7LsJ
+	 CjmwgBGwmHeLxiKrRyvPusNW99DMb1NJm+STTO8yLbrDIAgc/859yrjJafHt7YE+kq
+	 /9Y3q3raiHdvpK7j3v4yd1rMUj1L2ulCF92bXUwU=
+Date: Wed, 9 Oct 2024 14:14:14 -0700
+From: Jacob Pan <jacob.pan@linux.microsoft.com>
+To: Vasant Hegde <vasant.hegde@amd.com>
+Cc: <iommu@lists.linux.dev>, <joro@8bytes.org>, <will@kernel.org>,
+ <robin.murphy@arm.com>, <suravee.suthikulpanit@amd.com>, <jgg@ziepe.ca>,
+ <yi.l.liu@intel.com>, <baolu.lu@linux.intel.com>, <kevin.tian@intel.com>,
+ jacob.pan@linux.microsoft.com
+Subject: Re: [PATCH v2 2/8] iommu: Introduce
+ iommu_paging_domain_alloc_flags()
+Message-ID: <20241009141414.1ec7441a@DESKTOP-0403QTC.>
+In-Reply-To: <20240911101911.6269-3-vasant.hegde@amd.com>
+References: <20240911101911.6269-1-vasant.hegde@amd.com>
+	<20240911101911.6269-3-vasant.hegde@amd.com>
+Reply-To: jacob.pan@linux.microsoft.com
+X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.33; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20241008125410.3422512-5-quic_bibekkum@quicinc.com>
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 
-On Tue, Oct 08, 2024 at 06:24:09PM GMT, Bibek Kumar Patro wrote:
-> Currently in Qualcomm  SoCs the default prefetch is set to 1 which allows
-> the TLB to fetch just the next page table. MMU-500 features ACTLR
-> register which is implementation defined and is used for Qualcomm SoCs
-> to have a custom prefetch setting enabling TLB to prefetch the next set
-> of page tables accordingly allowing for faster translations.
-> 
-> ACTLR value is unique for each SMR (Stream matching register) and stored
-> in a pre-populated table. This value is set to the register during
-> context bank initialisation.
-> 
-> Signed-off-by: Bibek Kumar Patro <quic_bibekkum@quicinc.com>
-> ---
->  drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c | 26 ++++++++++++++++++++++
->  drivers/iommu/arm/arm-smmu/arm-smmu-qcom.h |  1 +
->  2 files changed, 27 insertions(+)
-> 
+Hi Vasant,
 
-Reviewed-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+On Wed, 11 Sep 2024 10:19:05 +0000
+Vasant Hegde <vasant.hegde@amd.com> wrote:
 
--- 
-With best wishes
-Dmitry
+> -struct iommu_domain *iommu_paging_domain_alloc(struct device *dev)
+> +struct iommu_domain *iommu_paging_domain_alloc_flags(struct device
+> *dev,
+> +						     unsigned int
+> flags) {
+> +	const struct iommu_ops *ops;
+> +	struct iommu_domain *domain;
+> +
+>  	if (!dev_has_iommu(dev))
+>  		return ERR_PTR(-ENODEV);
+>  
+> -	return __iommu_domain_alloc(dev_iommu_ops(dev), dev,
+> IOMMU_DOMAIN_UNMANAGED);
+> +	ops = dev_iommu_ops(dev);
+> +
+> +	if (ops->domain_alloc_paging && !flags)
+> +		domain = ops->domain_alloc_paging(dev);
+> +	else if (ops->domain_alloc_user)
+> +		domain = ops->domain_alloc_user(dev, flags, NULL,
+> NULL);
+Since this can be outside iommufd, the following comment needs update.
+
+diff --git a/include/linux/iommu.h b/include/linux/iommu.h
+index 9842c6a797dc..6aeb6d9c985f 100644
+--- a/include/linux/iommu.h
++++ b/include/linux/iommu.h
+@@ -517,7 +517,7 @@ static inline int __iommu_copy_struct_from_user_array(
+  *                the caller iommu_domain_alloc() returns.
+  * @domain_alloc_user: Allocate an iommu domain corresponding to the input
+  *                     parameters as defined in include/uapi/linux/iommufd.h.
+- *                     Unlike @domain_alloc, it is called only by IOMMUFD and
++ *                     Unlike @domain_alloc, it
+  *                     must fully initialize the new domain before return.
+  *                     Upon success, if the @user_data is valid and the @parent
+  *                     points to a kernel-managed domain, the new
+
+> +	else if (ops->domain_alloc && !flags)
+> +		domain = ops->domain_alloc(IOMMU_DOMAIN_UNMANAGED);
+> +	else
+> +		return ERR_PTR(-EOPNOTSUPP);
+> +
+> +	if (IS_ERR(domain))
+> +		return domain;
+> +	if (!domain)
+> +		return ERR_PTR(-ENOMEM);
+> +
+> +	iommu_domain_init(domain, IOMMU_DOMAIN_UNMANAGED, ops);
+> +	return domain;
+>  }
+> -EXPORT_SYMBOL_GPL(iommu_paging_domain_alloc);
+> +EXPORT_SYMBOL_GPL(iommu_paging_domain_alloc_flags);
+
