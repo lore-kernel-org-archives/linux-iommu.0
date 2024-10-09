@@ -1,129 +1,180 @@
-Received: from smtp-fw-9106.amazon.com (smtp-fw-9106.amazon.com [207.171.188.206])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-qv1-f49.google.com (mail-qv1-f49.google.com [209.85.219.49])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 560511922D5
-	for <iommu@lists.linux.dev>; Wed,  9 Oct 2024 11:44:47 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=207.171.188.206
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6791718D623
+	for <iommu@lists.linux.dev>; Wed,  9 Oct 2024 12:15:51 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.219.49
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1728474288; cv=none; b=YcSYehrakFQGxyjZH/wyBbf1kpgR/e7eZgO1C51Tk9X2kv6hZoODWpW1s3oHlpYmuqy7Oukxb/wDZlednYPTT9ZrMHS0JMsmDzd3QVL/BqXa3AS+d2ffYxUH87jUsH+JYEN6+jTknEQNymBCaFQSwDz7z2eQYbbG91Sb1LLd1sY=
+	t=1728476153; cv=none; b=mJ4oQ34gxwqVSby+Ng6EIfsRJscwuQT938g1LPjRMWJr7y2Tl5xuCU05c53NaGWnG3Nsb/LSTogYbPjvGIyqagtM79OuyRjmByBefJvbmCaA71UNBx7wxZWPXSJPoANmQxZCD+SY3tKJag4kXYXGzc+995lBJGm3chbfkG85zTk=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1728474288; c=relaxed/simple;
-	bh=UcKvFO+TsNSbZ5qXvdfNQzdJpe62EFjWfL/jyLbZmqI=;
-	h=Subject:From:To:CC:Date:Message-ID:References:In-Reply-To:
-	 Content-Type:MIME-Version; b=DgQN4AIiF8gjx0MXpgwMrn9NDUL3M32hkkWx0fS1toEOaLlO9YT8jpW9Kko6XV44LJ8+kkyDL6HItuvcoEWa090SvsY/mHL3QTT0/OEFbk6iMPfQj4fexB6QMSxjtv5IFHGUsgFpbc1hGyM7KC8vK+evok+otZzlI1zZg4/nkJE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amazon.com; spf=pass smtp.mailfrom=amazon.com; dkim=pass (1024-bit key) header.d=amazon.com header.i=@amazon.com header.b=kLDZdA9s; arc=none smtp.client-ip=207.171.188.206
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amazon.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=amazon.com
+	s=arc-20240116; t=1728476153; c=relaxed/simple;
+	bh=bQgPrB8mvU+ZVBUTVMTXl+7ThkKj9tOIGniYd2MzKQQ=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=LnskK5FcgeHALSuftdvCZCU3sVKfyWmw6AjylYmvYW0isv/1/yeBKRmqzEdQBMw1C2cmrR+WcxuR0OZwXRCXMynLrgnHR+Wvp7ar5pEwWUAbfgXD0VuY2nHyzYvnXKg3ezb4E+gxG1VJy/0Lw1WCPCyTbfYP5HEfgjeoHpkVqEo=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=RYJ2Gskr; arc=none smtp.client-ip=209.85.219.49
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=amazon.com header.i=@amazon.com header.b="kLDZdA9s"
+	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="RYJ2Gskr"
+Received: by mail-qv1-f49.google.com with SMTP id 6a1803df08f44-6cbd1ae26a6so2387216d6.1
+        for <iommu@lists.linux.dev>; Wed, 09 Oct 2024 05:15:51 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
-  t=1728474288; x=1760010288;
-  h=from:to:cc:date:message-id:references:in-reply-to:
-   content-id:content-transfer-encoding:mime-version:subject;
-  bh=UcKvFO+TsNSbZ5qXvdfNQzdJpe62EFjWfL/jyLbZmqI=;
-  b=kLDZdA9swz8sK8wQ6UxkVDqfAdPUvVJZvxACAJFtALgj337u7kLw8+fZ
-   oB0PZtt4HGKMHbH9XmRzNH6qhTWWxzSBpyKyjgAjWg/K41kdEcwlUPdSl
-   iZ8Int0um/IoalVEU4xPwMJfKyJXmQX5hu10mnNGx5vnZ5kUpHHxw61R/
-   4=;
-X-IronPort-AV: E=Sophos;i="6.11,189,1725321600"; 
-   d="scan'208";a="765049900"
-Subject: Re: [RFC PATCH 05/13] iommufd: Serialise persisted iommufds and ioas
-Thread-Topic: [RFC PATCH 05/13] iommufd: Serialise persisted iommufds and ioas
-Received: from pdx4-co-svc-p1-lb2-vlan2.amazon.com (HELO smtpout.prod.us-east-1.prod.farcaster.email.amazon.dev) ([10.25.36.210])
-  by smtp-border-fw-9106.sea19.amazon.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Oct 2024 11:44:34 +0000
-Received: from EX19MTAEUA001.ant.amazon.com [10.0.10.100:55271]
- by smtpin.naws.eu-west-1.prod.farcaster.email.amazon.dev [10.0.3.68:2525] with esmtp (Farcaster)
- id 6223964c-61b1-498f-a40a-44a95eba2766; Wed, 9 Oct 2024 11:44:32 +0000 (UTC)
-X-Farcaster-Flow-ID: 6223964c-61b1-498f-a40a-44a95eba2766
-Received: from EX19D004EUC003.ant.amazon.com (10.252.51.249) by
- EX19MTAEUA001.ant.amazon.com (10.252.50.50) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA) id 15.2.1258.34;
- Wed, 9 Oct 2024 11:44:31 +0000
-Received: from EX19D014EUC004.ant.amazon.com (10.252.51.182) by
- EX19D004EUC003.ant.amazon.com (10.252.51.249) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA) id 15.2.1258.34;
- Wed, 9 Oct 2024 11:44:31 +0000
-Received: from EX19D014EUC004.ant.amazon.com ([fe80::76dd:4020:4ff2:1e41]) by
- EX19D014EUC004.ant.amazon.com ([fe80::76dd:4020:4ff2:1e41%3]) with mapi id
- 15.02.1258.034; Wed, 9 Oct 2024 11:44:31 +0000
-From: "Gowans, James" <jgowans@amazon.com>
-To: "jgg@ziepe.ca" <jgg@ziepe.ca>
-CC: "kvm@vger.kernel.org" <kvm@vger.kernel.org>, "rppt@kernel.org"
-	<rppt@kernel.org>, "kw@linux.com" <kw@linux.com>, "iommu@lists.linux.dev"
-	<iommu@lists.linux.dev>, "madvenka@linux.microsoft.com"
-	<madvenka@linux.microsoft.com>, "anthony.yznaga@oracle.com"
-	<anthony.yznaga@oracle.com>, "robin.murphy@arm.com" <robin.murphy@arm.com>,
-	"baolu.lu@linux.intel.com" <baolu.lu@linux.intel.com>,
-	"nh-open-source@amazon.com" <nh-open-source@amazon.com>,
-	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-	"seanjc@google.com" <seanjc@google.com>, "Saenz Julienne, Nicolas"
-	<nsaenz@amazon.es>, "pbonzini@redhat.com" <pbonzini@redhat.com>,
-	"kevin.tian@intel.com" <kevin.tian@intel.com>, "dwmw2@infradead.org"
-	<dwmw2@infradead.org>, "steven.sistare@oracle.com"
-	<steven.sistare@oracle.com>, "Graf (AWS), Alexander" <graf@amazon.de>,
-	"will@kernel.org" <will@kernel.org>, "joro@8bytes.org" <joro@8bytes.org>,
-	"maz@kernel.org" <maz@kernel.org>
-Thread-Index: AQHbCCwuWjwUDEQNSEmjPqzUeT3bK7Jz6OkAgAcvr4CAAAJBgIAAAo+AgABl3QCAAu2RAA==
-Date: Wed, 9 Oct 2024 11:44:30 +0000
-Message-ID: <b76aa005c0fb75199cbb1fa0790858b9c808c90a.camel@amazon.com>
-References: <20240916113102.710522-1-jgowans@amazon.com>
-	 <20240916113102.710522-6-jgowans@amazon.com>
-	 <20241002185520.GL1369530@ziepe.ca>
-	 <d6328467adc9b7512f6dd88a6f8f843b8efdc154.camel@amazon.com>
-	 <e458d48a797043b7efc853fc65b9c4d043b12ed4.camel@infradead.org>
-	 <1d331c55a299d414e49ba5eb6f46dccb525bf788.camel@amazon.com>
-	 <20241007150138.GM2456194@ziepe.ca>
-In-Reply-To: <20241007150138.GM2456194@ziepe.ca>
-Accept-Language: en-ZA, en-US
-Content-Language: en-US
-X-MS-Has-Attach:
-X-MS-TNEF-Correlator:
-Content-Type: text/plain; charset="utf-8"
-Content-ID: <33562CF835D94F48866753933764304C@amazon.com>
-Content-Transfer-Encoding: base64
+        d=ziepe.ca; s=google; t=1728476150; x=1729080950; darn=lists.linux.dev;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=//O4UssP3kPcriATbh1SUGw2BRvtAqceh8yy962RN9I=;
+        b=RYJ2GskrVNfB9H6Sx96tcSMnG4Bp1ma6qAwLqVE5kSrvR3A/ydPxRIhuOCm7pZddgD
+         8VJgLqtLtN/FiWzu6UT7w2tZ+YxffcFKsj497Y1B+QH8i+qNUNU+6IxRiNvdbDn/gXpG
+         YuKfnEHXfHEMixxPK6RzDmDQfpy45mEbHA2+UsgLqeJ6r5ybQQyV3yK+DEc5eqp/AAX9
+         bFX1BmIC69RvBVwKtUbaWd8QKApopJJcrGPxY13LHjJve+87K+wHpKS3QXCBIB2EItRM
+         epGntEE7xOZ7FN6DNHQaHa2ZUIaGMCnCbqCwY90ejQ7GXfshz7dXspUoqvLApdN5OdcY
+         FZqA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1728476150; x=1729080950;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=//O4UssP3kPcriATbh1SUGw2BRvtAqceh8yy962RN9I=;
+        b=IvUulJwLicSYF1J7QxlVMetujUXH1OjQs3V50k2SkBjhjpcvrLj8492Bkoa1woQ0fw
+         4cYrlJFDYSJnLdBYwJdT2aU+78Ilzg3oUCTlXpiiDajlu5TqGQ07lPJCzU+yq5xK/WPS
+         GSctdwjwUtgpULkI0FbS3BgLUBhM0rhmGRYhtIHqWzV6/oXePu2VqHhrjwGWhQAVVY5Q
+         fdtUWdMYIGliJjmlgDy1TOwlUB9ZRfaBhVKJC4DueK+fMuDf/VT/0yGZiHtnUJrINVmB
+         7pGy/2y9sbEun90vh8ECO8qQSw3cBdXZ5cs5RgZ5gnEm5sAeA5FWmFnACslKhG3IMUqm
+         a0gw==
+X-Forwarded-Encrypted: i=1; AJvYcCV+CnG0zv/vKzFkLhsDiupR3tM8PyR1MU7yADydevnJKdI7iYd1Z5HBoa5a01eW/eJj8P/9sQ==@lists.linux.dev
+X-Gm-Message-State: AOJu0YwUlkvFmy3DcAegAX5OeJUjGP/oZV5qcZMLU8amvtg4gAGlsKvZ
+	7JRvWeLpzL4kOS5hFoDT0c3j/fiqFd/rSWLTSqCrnKQIPdndtPD9+CbG3ErRG7M=
+X-Google-Smtp-Source: AGHT+IG+A6hOLbYKAbXVsJyotyTyNmuSQUw6mr433GY2JNkN91xRgKJl39mz9EIJ7K/ZRNh18dCsDw==
+X-Received: by 2002:a0c:f412:0:b0:6cb:3c08:6a6a with SMTP id 6a1803df08f44-6cbc95d818emr32757716d6.49.1728476150204;
+        Wed, 09 Oct 2024 05:15:50 -0700 (PDT)
+Received: from ziepe.ca (hlfxns017vw-142-68-128-5.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.68.128.5])
+        by smtp.gmail.com with ESMTPSA id 6a1803df08f44-6cbd568a405sm979206d6.31.2024.10.09.05.15.49
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 09 Oct 2024 05:15:49 -0700 (PDT)
+Received: from jgg by wakko with local (Exim 4.95)
+	(envelope-from <jgg@ziepe.ca>)
+	id 1syVbY-00BH27-UV;
+	Wed, 09 Oct 2024 09:15:48 -0300
+Date: Wed, 9 Oct 2024 09:15:48 -0300
+From: Jason Gunthorpe <jgg@ziepe.ca>
+To: Vasant Hegde <vasant.hegde@amd.com>
+Cc: Baolu Lu <baolu.lu@linux.intel.com>, iommu@lists.linux.dev,
+	joro@8bytes.org, will@kernel.org, robin.murphy@arm.com,
+	suravee.suthikulpanit@amd.com, yi.l.liu@intel.com,
+	kevin.tian@intel.com, jacob.pan@linux.microsoft.com
+Subject: Re: [PATCH v2 0/8] iommu: Domain allocation enhancements
+Message-ID: <20241009121548.GE762027@ziepe.ca>
+References: <20240911101911.6269-1-vasant.hegde@amd.com>
+ <970c6058-9e02-4cf6-bcb9-cfb8afb4eac1@amd.com>
+ <71d20ff3-0a85-4670-8559-70ca5e6543c0@linux.intel.com>
+ <9d0101b4-af13-4bf6-94a5-43a79f4d9989@amd.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <9d0101b4-af13-4bf6-94a5-43a79f4d9989@amd.com>
 
-T24gTW9uLCAyMDI0LTEwLTA3IGF0IDEyOjAxIC0wMzAwLCBKYXNvbiBHdW50aG9ycGUgd3JvdGU6
-DQo+IE9uIE1vbiwgT2N0IDA3LCAyMDI0IGF0IDA4OjU3OjA3QU0gKzAwMDAsIEdvd2FucywgSmFt
-ZXMgd3JvdGU6DQo+ID4gV2l0aCB0aGUgQVJNIFNNTVV2MyBmb3IgZXhhbXBsZSBJIHRoaW5rIHRo
-ZXJlIGFyZSBicmVhay1iZWZvcmUtbWFrZQ0KPiA+IHJlcXVpcmVtZW50LCBzbyBpcyBpdCBwb3Nz
-aWJsZSB0byBkbyBhbiBhdG9taWMgc3dpdGNoIG9mIHRoZSBTTU1VdjMgcGFnZQ0KPiA+IHRhYmxl
-IFBHRCBpbiBhIGhpdGxlc3Mgd2F5Pw0KPiANCj4gVGhlIEJCTSBydWxlcyBhcmUgb25seSBhYm91
-dCBjYWNoZWQgdHJhbnNsYXRpb25zLiBJZiBhbGwgeW91ciBJT1BURXMNCj4gcmVzdWx0IGluIHRo
-ZSBzYW1lIHRyYW5zbGF0aW9uICpzaXplKiB0aGVuIHlvdSBhcmUgc2FmZS4gWW91IGNhbg0KPiBj
-aGFuZ2UgdGhlIHJhZGl4IG1lbW9yeSBzdG9yaW5nIHRoZSBJT1BURXMgZnJlZWx5LCBBRkFJSy4N
-Cg0KT2theSwgYnV0IGluIGdlbmVyYWwgdGhpcyBzdGlsbCBtZWFucyB0aGF0IHRoZSBwYWdlIHRh
-YmxlcyBtdXN0IGhhdmUNCmV4YWN0bHkgdGhlIHNhbWUgdHJhbnNsYXRpb25zIGlmIHdlIHRyeSB0
-byBzd2l0Y2ggZnJvbSBvbmUgc2V0IHRvDQphbm90aGVyLiBJZiBpdCBpcyBwb3NzaWJsZSB0byBj
-aGFuZ2UgdHJhbnNsYXRpb25zIHRoZW4gdHJhbnNsYXRpb24gdGFibGUNCmVudHJpZXMgY291bGQg
-YmUgY3JlYXRlZCBhdCBkaWZmZXJlbnQgZ3JhbnVsYXJpdHkgKFBURSwgUE1ELCBQVUQpIGxldmVs
-DQp3aGljaCB3b3VsZCB2aW9sYXRlIHRoaXMgcmVxdWlyZW1lbnQuIA0KDQpJdCdzIGFsc28gcG9z
-c2libGUgZm9yIGRpZmZlcmVudCBJT01NVSBkcml2ZXIgdmVyc2lvbnMgdG8gc2V0IHVwIHRoZSB0
-aGUNCnNhbWUgdHJhbnNsYXRpb25zLCBidXQgYXQgZGlmZmVyZW50IHBhZ2UgdGFibGUgbGV2ZWxz
-LiBQZXJoYXBzIGFuIG9sZGVyDQp2ZXJzaW9uIGRpZCBub3QgY29hbGVzY2UgY29tZSBQVEVzLCBi
-dXQgYSBuZXdlciB2ZXJzaW9uIGRvZXMgY29hbGVzY2UuDQpXb3VsZCB0aGUgc2FtZSB0cmFuc2xh
-dGlvbnMgYnV0IGF0IGEgZGlmZmVyZW50IHNpemUgdmlvbGF0ZSBCQk0/DQoNCklmIHdlIHNheSB0
-aGF0IHRvIGJlIHNhZmUvY29ycmVjdCBpbiB0aGUgZ2VuZXJhbCBjYXNlIHRoZW4gaXQgaXMNCm5l
-Y2Vzc2FyeSBmb3IgdGhlIHRyYW5zbGF0aW9ucyB0byBiZSAqZXhhY3RseSogdGhlIHNhbWUgYmVm
-b3JlIGFuZCBhZnRlcg0Ka2V4ZWMsIGlzIHRoZXJlIGFueSBiZW5lZml0IHRvIGJ1aWxkaW5nIG5l
-dyB0cmFuc2xhdGlvbiB0YWJsZXMgYW5kDQpzd2l0Y2hpbmcgdG8gdGhlbT8gV2UgbWF5IGFzIHdl
-bGwgY29udGludWUgdG8gdXNlIHRoZSBleGFjdCBzYW1lIHBhZ2UNCnRhYmxlcyBhbmQgY29uc3Ry
-dWN0IGlvbW11ZmQgb2JqZWN0cyAoSU9BUywgZXRjKSB0byBtYXRjaC4NCg0KVGhlcmUgaXMgYWxz
-byBhIHBlcmZvcm1hbmNlIGNvbnNpZGVyYXRpb24gaGVyZTogd2hlbiBkb2luZyBsaXZlIHVwZGF0
-ZQ0KZXZlcnkgbWlsbGlzZWNvbmQgb2YgZG93biB0aW1lIG1hdHRlcnMuIEknbSBub3Qgc3VyZSBp
-ZiB0aGlzIGlvbW11ZmQgcmUtDQppbml0aWFsaXNhdGlvbiB3aWxsIGVuZCB1cCBiZWluZyBpbiB0
-aGUgaG90IHBhdGggb2YgdGhpbmdzIHRoYXQgbmVlZCB0bw0KYmUgZG9uZSBiZWZvcmUgdGhlIFZN
-IGNhbiBzdGFydCBydW5uaW5nIGFnYWluLiBJZiBpdCBpbiB0aGUgaG90IHBhdGgNCnRoZW4gaXQg
-d291bGQgYmUgdXNlZnVsIHRvIGF2b2lkIHJlYnVpbGRpbmcgaWRlbnRpY2FsIHRhYmxlcy4gTWF5
-YmUgaXQNCmVuZHMgdXAgYmVpbmcgaW4gdGhlICJ3YXJtIiBwYXRoIC0gdGhlIFZNIGNhbiBzdGFy
-dCBydW5uaW5nIGJ1dCB3aWxsDQpzbGVlcCBpZiB0YWtpbmcgYSBwYWdlIGZhdWx0IGJlZm9yZSBJ
-T01NVUZEIGlzIHJlLWluaXRhbGlzZWQuLi4NCg0KU28gb3ZlcmFsbCBteSBwb2ludCBpcyB0aGF0
-IEkgdGhpbmsgd2UgZW5kIHVwIHdpdGggYSByZXF1aXJlbWVudCB0aGF0DQp0aGUgcGd0YWJsZXMg
-YXJlIGlkZW50aWNhbCBiZWZvcmUgYW5kIGFmdGVyIGtleGVjIHNvIHRoZXJlIGlzIGFueQ0KYmVu
-ZWZpdCBpbiByZWJ1aWxkaW5nIHRoZW0/DQoNCkpHDQo=
+On Wed, Oct 09, 2024 at 03:23:16PM +0530, Vasant Hegde wrote:
+
+> > This change might cause a functional regression when it comes to nested
+> > translation. In nested translation mode, the user page table (e.g.,
+> > created and managed by a guest VM for guest kernel DMA) must be in the
+> > first-stage page table format. Then, it can be nested on a second-stage
+> > page table managed by the host kernel.
+> > 
+> > Currently, the kernel automatically selects the page table formats. For
+> > example, the Intel IOMMU driver always uses the first-stage page table
+> > for guest kernel DMA. After this change, this assumption no longer holds
+> > true. This means the kernel might use a second-stage page table for
+> > guest kernel DMA, breaking nested translation.
+> 
+> Hmmm. I assumed after discussion in v1 series you are fine. Looks like I misread it?
+
+It is a bug in the implementation in the intel driver.
+
+intel_iommu_domain_alloc_user() should always allocate a page table
+that works, if you are in a guest context it must allocate a first
+level/guest page table otherwise nested VFIO will be broken.
+
+For this reason Intel driver should always allocate the guest
+compatible page table unless IOMMU_HWPT_ALLOC_NEST_PARENT is
+specified.
+
+Something like this:
+
+diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
+index 9f6b0780f2ef5e..cfae6c2973e0ee 100644
+--- a/drivers/iommu/intel/iommu.c
++++ b/drivers/iommu/intel/iommu.c
+@@ -1440,7 +1440,7 @@ static void free_dmar_iommu(struct intel_iommu *iommu)
+  * Check and return whether first level is used by default for
+  * DMA translation.
+  */
+-static bool first_level_by_default(unsigned int type)
++static bool first_level_by_default(void)
+ {
+ 	/* Only SL is available in legacy mode */
+ 	if (!scalable_mode_support())
+@@ -1450,8 +1450,8 @@ static bool first_level_by_default(unsigned int type)
+ 	if (intel_cap_flts_sanity() ^ intel_cap_slts_sanity())
+ 		return intel_cap_flts_sanity();
+ 
+-	/* Both levels are available, decide it based on domain type */
+-	return type != IOMMU_DOMAIN_UNMANAGED;
++	/* Both levels are available, use FL */
++	return true;
+ }
+ 
+ static struct dmar_domain *alloc_domain(unsigned int type)
+@@ -1463,7 +1463,7 @@ static struct dmar_domain *alloc_domain(unsigned int type)
+ 		return NULL;
+ 
+ 	domain->nid = NUMA_NO_NODE;
+-	if (first_level_by_default(type))
++	if (first_level_by_default())
+ 		domain->use_first_level = true;
+ 	INIT_LIST_HEAD(&domain->devices);
+ 	INIT_LIST_HEAD(&domain->dev_pasids);
+@@ -3287,8 +3287,7 @@ int __init intel_iommu_init(void)
+ 		 * is likely to be much lower than the overhead of synchronizing
+ 		 * the virtual and physical IOMMU page-tables.
+ 		 */
+-		if (cap_caching_mode(iommu->cap) &&
+-		    !first_level_by_default(IOMMU_DOMAIN_DMA)) {
++		if (cap_caching_mode(iommu->cap) && !first_level_by_default()) {
+ 			pr_info_once("IOMMU batching disallowed due to virtualization\n");
+ 			iommu_set_dma_strict();
+ 		}
+@@ -3530,6 +3529,7 @@ intel_iommu_domain_alloc_user(struct device *dev, u32 flags,
+ 	struct intel_iommu *iommu = info->iommu;
+ 	struct dmar_domain *dmar_domain;
+ 	struct iommu_domain *domain;
++	bool first_level;
+ 
+ 	/* Must be NESTING domain */
+ 	if (parent) {
+@@ -3541,13 +3541,18 @@ intel_iommu_domain_alloc_user(struct device *dev, u32 flags,
+ 	if (flags &
+ 	    (~(IOMMU_HWPT_ALLOC_NEST_PARENT | IOMMU_HWPT_ALLOC_DIRTY_TRACKING)))
+ 		return ERR_PTR(-EOPNOTSUPP);
++	if ((flags & IOMMU_HWPT_ALLOC_NEST_PARENT) && !intel_cap_slts_sanity())
++		return ERR_PTR(-EOPNOTSUPP);
+ 	if (nested_parent && !nested_supported(iommu))
+ 		return ERR_PTR(-EOPNOTSUPP);
+ 	if (user_data || (dirty_tracking && !ssads_supported(iommu)))
+ 		return ERR_PTR(-EOPNOTSUPP);
+ 
+-	/* Do not use first stage for user domain translation. */
+-	dmar_domain = paging_domain_alloc(dev, false);
++	if (flags & IOMMU_HWPT_ALLOC_NEST_PARENT)
++		first_level = false;
++	else
++		first_level = first_level_by_default();
++	dmar_domain = paging_domain_alloc(dev, first_level);
+ 	if (IS_ERR(dmar_domain))
+ 		return ERR_CAST(dmar_domain);
+ 	domain = &dmar_domain->domain;
