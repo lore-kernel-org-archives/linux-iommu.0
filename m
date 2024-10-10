@@ -1,132 +1,266 @@
-Received: from mail-pl1-f180.google.com (mail-pl1-f180.google.com [209.85.214.180])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from DM5PR21CU001.outbound.protection.outlook.com (mail-centralusazolkn19011024.outbound.protection.outlook.com [52.103.13.24])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8B7E21C7B6E
-	for <iommu@lists.linux.dev>; Thu, 10 Oct 2024 15:33:20 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.180
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1728574402; cv=none; b=heB83uh3cvXwI1+5ebdpO1tHsEyXihJ7OaZ/Cy7nf2IH2WMup3iPQpnKM//e5zDhMrudeQHjO2W6itvrWMvBP41knRkboAiXbAqqet1lo/qX5rAtfICH2j25IDpXk25ZtZpJq7+U9yPb9hMzKum7rZUoIebb3tJCF3jmxm0Mq98=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1728574402; c=relaxed/simple;
-	bh=huzcYhaj1QkMs2A+WerOIGgErQX8Kuj8Hm//GXsV3xI=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=ahVWAL3xtquYsPZyJNfX84zLSz5Zo12fb5CGK1bZ4w0MmrPT827DRL5ce3pyhf2PYLdSXDFmvKXJI8gUfKKuEkdMbSUxzwyWvBZaR/ArqidM1hYE++6X0HZXFYxJ2smHgZVdzyt7v9ERmQr+ryawpUZyg+4dnu8jO+rPZmlevSg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=NBxhee6/; arc=none smtp.client-ip=209.85.214.180
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 69E311C9B93;
+	Thu, 10 Oct 2024 18:21:33 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.103.13.24
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1728584495; cv=fail; b=YaPkZ+m0ydn6WFMD3MYUTq5XiBONH49KuurTeoJVr/IQ1nYLWQoT3tnhaP2YlT7+SV9T1qUXh5sdVGPJ0SOqhcHafzm5V3E8bHtTBbsw/a+jH3cIwiGO0cYSSiYL+SS8bGVZrmE+Zv7v0TiYJKASknGZ/Dg9nd7ywc+OeLNb8zY=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1728584495; c=relaxed/simple;
+	bh=noX6FyuVjxq7V+/g8eZdzuLegOyxugCQBWsOf6lnq58=;
+	h=From:To:CC:Subject:Date:Message-ID:References:In-Reply-To:
+	 Content-Type:MIME-Version; b=lNJIOJNgzStoOmUH5R9GFIIa1q5kJMBfDMgAtrrcznCfAtZwhiWI4INrxeZXjLjZ3XZG6Fzm0AZvzYvNhhYY6UVzwt1mGcorIzieoSRqsJI3EdjRwB2ySn3ssyIntVsQ/VwEipsykEEUbigFzimMBsyo2Awdz9cK3XgB2rhduSs=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=outlook.com; spf=pass smtp.mailfrom=outlook.com; dkim=pass (2048-bit key) header.d=outlook.com header.i=@outlook.com header.b=GheaFGd1; arc=fail smtp.client-ip=52.103.13.24
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=outlook.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=outlook.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="NBxhee6/"
-Received: by mail-pl1-f180.google.com with SMTP id d9443c01a7336-20b061b7299so172825ad.1
-        for <iommu@lists.linux.dev>; Thu, 10 Oct 2024 08:33:20 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20230601; t=1728574400; x=1729179200; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=w/ZmpxU5Ar2FNW/jteZs/sVfkGodgjpZwiHNQvHm7l0=;
-        b=NBxhee6/l8bZckgkid0Tjdz52BzM54BZ2gNzjodqxxhdG6XK6tsI+/kRtzy1BnVL5U
-         QJAX8hAEOwF2d66NE8g5gWNzBArGv2MHYF04bVIgqhnAp6ZfgCngOHKNgUJYFU98DVhT
-         n2j85gmJq/Ioxny6K/+3ijIXrDrYh8HWnybwu2rMJTyJVcnn4lUtL9YRlJNwXtR/BxLx
-         WzoeJkv2/uEdRL+Q18jzvRg1YE+Z+9LAZahR8q/p05XLJ9hGRi7WLq4wRy6vK40QGKTM
-         3xd2+ACdSiMsMKJgNt2Jnlr2IkhpvDCN7NXx442/YHmCyQM800QdLPoOWF5I6PdBP5ax
-         UlnQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1728574400; x=1729179200;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=w/ZmpxU5Ar2FNW/jteZs/sVfkGodgjpZwiHNQvHm7l0=;
-        b=EVW8qBmbiWGFJR7MBPPxe9kCKFgnsKiqvA3MBRVXzWpSDjNoI7m3qNFUJ77AsLCWSK
-         GFcw/oFSj0b1bqOFnX5OiY0MQqFs7qMBDVviEP3RS9qh4um9mpbUaOYoD2B8UhhQzU+f
-         QrE77Dh5/Qq1t7qIsEZBzhlYIi4dqI/QhVGeCK4Mg+72xSw7s4bn0qjfoZ+FjEY6ykq5
-         wMfXh5KUHBPK2B4l6i+5+wrYzBrw0K3onE9HFYGUUoJN2zuyhcMXUgj9Zax96nHXX/my
-         pH3R4NvVj124eY3dOvWjWb9FYTltEPq7Q7qthcWmrK9lO7rbpG72z+5I6ykY8x7EMJ+y
-         YAtQ==
-X-Forwarded-Encrypted: i=1; AJvYcCXe/25qw05khW5zeW3vHoe5xtc7PB+WbxtSbCBl4Q+jnFj3DIlSqoBKKXMuZVO4fDGYd1MgOQ==@lists.linux.dev
-X-Gm-Message-State: AOJu0Ywf3XPwirwWTMk5QtcpsjFn4Y4QF/zXvQ7RkX6TJ85NCm/vziC8
-	2DdTUhaTza8NPeqRBivrd+jbdAxaUDfqvZyBcJB4iJraaae6m5DZasApXtgC4w==
-X-Google-Smtp-Source: AGHT+IGckJvBw34/8XK0AfFY3nhmk4JYCNb2V2wP3vhB3S6j5MJz7Bqeauq+12aWJVrNrkRGxHknOQ==
-X-Received: by 2002:a17:902:eccd:b0:20b:7784:278a with SMTP id d9443c01a7336-20c82eb95f0mr3152015ad.22.1728574399488;
-        Thu, 10 Oct 2024 08:33:19 -0700 (PDT)
-Received: from google.com (62.166.143.34.bc.googleusercontent.com. [34.143.166.62])
-        by smtp.gmail.com with ESMTPSA id 98e67ed59e1d1-2e2d5fc5c53sm1452540a91.51.2024.10.10.08.33.17
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 10 Oct 2024 08:33:19 -0700 (PDT)
-Date: Thu, 10 Oct 2024 15:33:11 +0000
-From: Pranjal Shrivastava <praan@google.com>
-To: Sakari Ailus <sakari.ailus@linux.intel.com>
-Cc: Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
-	Joerg Roedel <joro@8bytes.org>, Jason Gunthorpe <jgg@ziepe.ca>,
-	Rob Clark <robdclark@chromium.org>,
-	Georgi Djakov <quic_c_gdjako@quicinc.com>,
-	linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev
-Subject: Re: [PATCH 22/51] iommu/arm-smmu: Switch to
- __pm_runtime_put_autosuspend()
-Message-ID: <ZwfztwoGAcvyvlWL@google.com>
-References: <20241004094101.113349-1-sakari.ailus@linux.intel.com>
- <20241004094123.113725-1-sakari.ailus@linux.intel.com>
+	dkim=pass (2048-bit key) header.d=outlook.com header.i=@outlook.com header.b="GheaFGd1"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=ewwpaDX5izSyNhb3Xjnk3Gpa+qEuBYpGBj19VCHU8yMMA5IOrROx+smVvF3aGIt6wel4gktn2MIEktyZRPB1Kx/b2J1qcvDlcP5Njq1UZYU3VIEXXLZXROmH7bNmQQGC0o/8aTQMxoaXAQIJdkfbVwmkYoNshXrUc2VTTFUq2WVDUA8g+Dqwsn8Xhj04TMUBIVVNpBgyCq70Pe/SMiCkTPrzcTP/IT1E1j0ffhmAue6/VEu8j0MY6PvwXtAW7DpRyp0tl/4EFnTnNOltWnuiQg/+LxPiwOivBssxFVjuLPMNWvba2VbzOibi0Bm/LcDHhvmxbrXt1MLG+rZHS3r55Q==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=sr+nc7AY++tXOGAc+Ufu5zfZRflk7UdYks6SnelkzjI=;
+ b=uIwh0ZnSoxJ38zhUYnkEaD8LDfYPH0coRybktWW7IpHums6zjk7OoFozAmE5nItIU5nF3D3ho/mmWVEmAMoh0flgEQH9pc14hBrIZ2eoqgQMb6UkrTEt+0rpA4O8Gf+N212ncg+LmFH/WoACe5DuAfAR21Y+/NNDfyVr5tzuDAF+faVxnWX9J++6d+W643aYMPHChlPei7zCMvHkoOSwWOhup2wfdsliIksNdmiPr8uAsVlGV2RFFq0b+AkI9Fs3bKiHQa/Sl2ciHRfUrfxtS49GUBe3IbBJAktU3ITI4uZDcMogssAR/pirXHf3YYOFg41KaEsSsvqS37SKl7nRPA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=none; dmarc=none;
+ dkim=none; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=outlook.com;
+ s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=sr+nc7AY++tXOGAc+Ufu5zfZRflk7UdYks6SnelkzjI=;
+ b=GheaFGd1FMEEEaxmS8SrZSr5H0DXlWrNmHNTxvo5FVfCJtRAfzofo+iqWrWjYXofXQpGJgnchcl+FIC4D6jkhRSxkoGOOYWuxP0Q2t2hCbYtUAvIWVFWqm4I4dHIeBgCQOec0+2KZe7gIpyi2zWujSeDOOnaPrih6m2sv/7xR4t8XeTlKb6wG7fuoxdIcHFu25rVhE5kD0mKQED/6xkk25+vKniwS8Peiy2owFQ/z5yT7UQuUoHvlQp/nnZqgV1v9BqwV1jlcLyXN2IbFHByxqTi+WBcfw7DMPY9EqwsKbKHCdBkwSNl3WVz6zFhNitd14p3ykOK3momczHE92L63g==
+Received: from SN6PR02MB4157.namprd02.prod.outlook.com (2603:10b6:805:33::23)
+ by LV3PR02MB10761.namprd02.prod.outlook.com (2603:10b6:408:281::5) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.8048.18; Thu, 10 Oct
+ 2024 18:21:28 +0000
+Received: from SN6PR02MB4157.namprd02.prod.outlook.com
+ ([fe80::cedd:1e64:8f61:b9df]) by SN6PR02MB4157.namprd02.prod.outlook.com
+ ([fe80::cedd:1e64:8f61:b9df%3]) with mapi id 15.20.8026.020; Thu, 10 Oct 2024
+ 18:21:28 +0000
+From: Michael Kelley <mhklinux@outlook.com>
+To: Nuno Das Neves <nunodasneves@linux.microsoft.com>,
+	"linux-hyperv@vger.kernel.org" <linux-hyperv@vger.kernel.org>,
+	"linux-arm-kernel@lists.infradead.org"
+	<linux-arm-kernel@lists.infradead.org>, "linux-kernel@vger.kernel.org"
+	<linux-kernel@vger.kernel.org>, "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
+	"iommu@lists.linux.dev" <iommu@lists.linux.dev>, "netdev@vger.kernel.org"
+	<netdev@vger.kernel.org>, "linux-pci@vger.kernel.org"
+	<linux-pci@vger.kernel.org>, "linux-arch@vger.kernel.org"
+	<linux-arch@vger.kernel.org>, "virtualization@lists.linux.dev"
+	<virtualization@lists.linux.dev>
+CC: "kys@microsoft.com" <kys@microsoft.com>, "haiyangz@microsoft.com"
+	<haiyangz@microsoft.com>, "wei.liu@kernel.org" <wei.liu@kernel.org>,
+	"decui@microsoft.com" <decui@microsoft.com>, "catalin.marinas@arm.com"
+	<catalin.marinas@arm.com>, "will@kernel.org" <will@kernel.org>,
+	"luto@kernel.org" <luto@kernel.org>, "tglx@linutronix.de"
+	<tglx@linutronix.de>, "mingo@redhat.com" <mingo@redhat.com>, "bp@alien8.de"
+	<bp@alien8.de>, "dave.hansen@linux.intel.com" <dave.hansen@linux.intel.com>,
+	"x86@kernel.org" <x86@kernel.org>, "hpa@zytor.com" <hpa@zytor.com>,
+	"seanjc@google.com" <seanjc@google.com>, "pbonzini@redhat.com"
+	<pbonzini@redhat.com>, "peterz@infradead.org" <peterz@infradead.org>,
+	"daniel.lezcano@linaro.org" <daniel.lezcano@linaro.org>, "joro@8bytes.org"
+	<joro@8bytes.org>, "robin.murphy@arm.com" <robin.murphy@arm.com>,
+	"davem@davemloft.net" <davem@davemloft.net>, "edumazet@google.com"
+	<edumazet@google.com>, "kuba@kernel.org" <kuba@kernel.org>,
+	"pabeni@redhat.com" <pabeni@redhat.com>, "lpieralisi@kernel.org"
+	<lpieralisi@kernel.org>, "kw@linux.com" <kw@linux.com>, "robh@kernel.org"
+	<robh@kernel.org>, "bhelgaas@google.com" <bhelgaas@google.com>,
+	"arnd@arndb.de" <arnd@arndb.de>, "sgarzare@redhat.com" <sgarzare@redhat.com>,
+	"jinankjain@linux.microsoft.com" <jinankjain@linux.microsoft.com>,
+	"muminulrussell@gmail.com" <muminulrussell@gmail.com>,
+	"skinsburskii@linux.microsoft.com" <skinsburskii@linux.microsoft.com>,
+	"mukeshrathor@microsoft.com" <mukeshrathor@microsoft.com>
+Subject: RE: [PATCH 0/5] Add new headers for Hyper-V Dom0
+Thread-Topic: [PATCH 0/5] Add new headers for Hyper-V Dom0
+Thread-Index: AQHbFc3gheIHrTrmm0yVUene//yVY7J/bLBw
+Date: Thu, 10 Oct 2024 18:21:28 +0000
+Message-ID:
+ <SN6PR02MB4157F6EA7B2454D2F6CBF2ECD4782@SN6PR02MB4157.namprd02.prod.outlook.com>
+References:
+ <1727985064-18362-1-git-send-email-nunodasneves@linux.microsoft.com>
+In-Reply-To:
+ <1727985064-18362-1-git-send-email-nunodasneves@linux.microsoft.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach:
+X-MS-TNEF-Correlator:
+x-ms-publictraffictype: Email
+x-ms-traffictypediagnostic: SN6PR02MB4157:EE_|LV3PR02MB10761:EE_
+x-ms-office365-filtering-correlation-id: 59106c8f-f636-437a-ec4f-08dce9585bbb
+x-microsoft-antispam:
+ BCL:0;ARA:14566002|8060799006|15080799006|7042599007|461199028|19110799003|8062599003|440099028|3412199025|4302099013|56899033|1602099012|10035399004|102099032;
+x-microsoft-antispam-message-info:
+ aRFcZDHgQd8oYVvQEKvi4jLqOhsq91Ji6wIag2/nomFmbey9Gmjgw6TdR2BN5evGWZRxp+2dJ/pOriTPd15qZymkUyIJwWwutAyLAFWOG0tTVv+t7IvIGxBot/O44a/66ioHUuHkgGTunPqj/mhUe1lFkeu1W1TxZ/V1y6MMEjPgqmGrkomdsinf4U3jZgjUSmEPFKzEVGzGbDqmzEtQK5NHfFd4WzVvrWKxqBXDZXGLOhj4nPX8BKaplA2k8OIMqb80P/LHU9/gZuQhiQ80KqdbeGRHgDbGXIhWmMM1J26bQLakTbRdu9Uu8XFN4zwJeABFgFSaX7OC4+AOJj4+ruGvmFBLMnMrfUuAhtWz7OzMNH9iRLcqvNxwGhNUh4yfK9i6tzu+BoklxtQiYCi8mJwIePGNUHV7cZRTKrZLeTIx/FwKqgSu304J0LFuD9wQOFfOzsTTZ5ZH24v6Kgk6pAHVYckAWGok6AraY1hannB6FVJeNUmgB3tmjjsd2xEie03Z2NImRTnnwNsd5E4BKqIcvnX+3XP+tCiRsOPU4ycLzXraEBFNXAJys+jaHpYrEHg72urM9PonQG4czD3HQvA2sx6rM9eRHxSjoZsfAAhijyBtRSq5XmQYPURKX0S9ytI6mFIEykokYYH+dC5N459Iiak5QWe6TU7mwk6ew573fBE317WyeAZlZQFu766UCghVPK9I0iZFhqcb2dcEQP28yAqtVluPIdsdQz+y4zAUoNsu4LSb/40tjQrwufQyV5jOOLsaZEwxjZxyKvG4FDMRWjDr+B7d51RdsHEHduoSsD+NQXdZQnPbYeMygxaO2/i3Sm0iDF28iIzlzJtU+dRkP+ZGH4Ni7XWH2DVpoD7hbm3s/euL8xMLQ85OukH5MX24lnDmnt3pCyDkSUWU/CuykxBdI/w8Ijgb7MZxnCk=
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0:
+ =?us-ascii?Q?y+dEHloI1Y/ghQhxbscCatnBnrWYrUe/ZZ8QAw7F7j3upE7Brmsrogs83ONk?=
+ =?us-ascii?Q?NvXxUQmQNH15TzS6lM3/h80mkUjnFcoUyllUnxbAx8E4oZ/ry00xpLJhgaJD?=
+ =?us-ascii?Q?4K1Nkng8BrPGxaAX3F2mc4MyBHXDIPjEGb9k7VSXec6s84SHFiPmmCF25PqZ?=
+ =?us-ascii?Q?2ZMfM++zUAHLgDhJiY7R3UA3LzzJP2nwrVLZdBNF0QjTwLhQxafgeyMwFYPa?=
+ =?us-ascii?Q?ns9SbPmOVGZE2YeM2pgfZ6KiUn7KFPYMmYlRtGGkTx8cAjFhQRZC7rYBnSrI?=
+ =?us-ascii?Q?0spYgDkY6A7R1Grl08rNsgGp5AurDeo+2cz7Hhsj06jH92X5RRa5dtDTLhF3?=
+ =?us-ascii?Q?gfxR2XucQ2yuA51EajvVshHc277nLRwfItVj7y9oPlOaS09arcveKMlNWqoi?=
+ =?us-ascii?Q?8VpWJLo8iXUWv61uc6IB8yQ5Pz0tYwehmLoHmpjp/JeGhSsJQwvcxFfoNmKQ?=
+ =?us-ascii?Q?vs4w7w4uRFnYmK5UephbiJeuZo+sdKYZH/2DnpXZFI/H0Ym9yKfLtff1FJlD?=
+ =?us-ascii?Q?PrtLMytwbDsi0YXH7m7x0zjdZMsa6PUkXEOGMLHkYq4000BRLS2W18bSYxGh?=
+ =?us-ascii?Q?zh2BdWiPA2lLvjBsdAuoqQHDDuzNNZVid1L/oM0zVZtN6lk8IPgcoQ2mfhLr?=
+ =?us-ascii?Q?qxIfjYN8HtuF70lSvV0Lh2pXQyjRwygvqepZG4x2wP7epLVdrQYWzLkICJPk?=
+ =?us-ascii?Q?ShImQIiVCpN9jkWBjtRyVnmNeG1ZWt0KnKjLYkKQSJpWpw5qg9+PQXb8whvV?=
+ =?us-ascii?Q?bC1DaxbCd6zSgTWm4fEpRs0OYYYXU8O/tTuqpq7rvwqchw+nJNou1LOMlUGn?=
+ =?us-ascii?Q?3m3ZhMudCvWw1T3oigwe6mY4i6aDv/UdWUihylM1Ag4wDS9FkUYEeACmE9gt?=
+ =?us-ascii?Q?Tb+D4Wyk1vUlj6qQXb9qOkLNbUSw5g7tDXnQlxM6Z4vcM5/FJ9eVmC5cVtu5?=
+ =?us-ascii?Q?RLH8/3nq3pudVLGa8D6kI3J7rJ0AtxdKugcodwCQD77FdzrRNNj5ospoE9OI?=
+ =?us-ascii?Q?XWk6cgG8XVYMwsL4MgV8KfZbedsmpRzTsodha+MLXcNxjosup4KkJnnl+3iK?=
+ =?us-ascii?Q?eqEztzt6cYphUKg5/zS2UJG5ihPDiMeDmeYlk09k+J2i3zx0tbj8nix8qOuD?=
+ =?us-ascii?Q?ekzy4decC7O6uQZIoOyUuIQ45Hz/InYo23IXLpar6jq0CXjk2cUiO51EuJ99?=
+ =?us-ascii?Q?9frmI7so7/LNWSKjuvlWdUANBINHvcS6kKtDYukJJcNYqJXknNO0KnKk05M?=
+ =?us-ascii?Q?=3D?=
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20241004094123.113725-1-sakari.ailus@linux.intel.com>
+X-OriginatorOrg: outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: SN6PR02MB4157.namprd02.prod.outlook.com
+X-MS-Exchange-CrossTenant-RMS-PersistedConsumerOrg: 00000000-0000-0000-0000-000000000000
+X-MS-Exchange-CrossTenant-Network-Message-Id: 59106c8f-f636-437a-ec4f-08dce9585bbb
+X-MS-Exchange-CrossTenant-rms-persistedconsumerorg: 00000000-0000-0000-0000-000000000000
+X-MS-Exchange-CrossTenant-originalarrivaltime: 10 Oct 2024 18:21:28.4712
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 84df9e7f-e9f6-40af-b435-aaaaaaaaaaaa
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: LV3PR02MB10761
 
-On Fri, Oct 04, 2024 at 12:41:23PM +0300, Sakari Ailus wrote:
-> pm_runtime_put_autosuspend() will soon be changed to include a call to
-> pm_runtime_mark_last_busy(). This patch switches the current users to
-> __pm_runtime_put_autosuspend() which will continue to have the
-> functionality of old pm_runtime_put_autosuspend().
-> 
-> Signed-off-by: Sakari Ailus <sakari.ailus@linux.intel.com>
-> ---
->  drivers/iommu/arm/arm-smmu/arm-smmu.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu.c b/drivers/iommu/arm/arm-smmu/arm-smmu.c
-> index 8321962b3714..cad02d5dc6d2 100644
-> --- a/drivers/iommu/arm/arm-smmu/arm-smmu.c
-> +++ b/drivers/iommu/arm/arm-smmu/arm-smmu.c
-> @@ -79,7 +79,7 @@ static inline int arm_smmu_rpm_get(struct arm_smmu_device *smmu)
->  static inline void arm_smmu_rpm_put(struct arm_smmu_device *smmu)
->  {
->  	if (pm_runtime_enabled(smmu->dev))
-> -		pm_runtime_put_autosuspend(smmu->dev);
-> +		__pm_runtime_put_autosuspend(smmu->dev);
->  }
+From: Nuno Das Neves <nunodasneves@linux.microsoft.com> Sent: Thursday, Oct=
+ober 3, 2024 12:51 PM
+>=20
+> To support Hyper-V Dom0 (aka Linux as root partition), many new
+> definitions are required.
+>=20
+> The plan going forward is to directly import headers from
+> Hyper-V. This is a more maintainable way to import definitions
+> rather than via the TLFS doc. This patch series introduces
+> new headers (hvhdk.h, hvgdk.h, etc, see patch #3) directly
+> derived from Hyper-V code.
+>=20
+> This patch series replaces hyperv-tlfs.h with hvhdk.h, but only
+> in Microsoft-maintained Hyper-V code where they are needed. This
+> leaves the existing hyperv-tlfs.h in use elsewhere - notably for
+> Hyper-V enlightenments on KVM guests.
 
-Seems like a straightforward change as a result of [1].
-Although, I had a few things to discuss:
+Could you elaborate on why the bifurcation is necessary? Is it an
+interim step until the KVM code can use the new scheme as well?
+Also, does "Hyper-V enlightenments on KVM guests" refer to
+nested KVM running at L1 on an L0 Hyper-V, and supporting L2 guests?
+Or is it the more general KVM support for mimicking Hyper-V for
+the purposes of running Windows guests? From these patches, it
+looks like your intention is for all KVM support for Hyper-V
+functionality to continue to use the existing hyperv-tlfs.h file.
 
-1. The `rpm_resume` in drivers/base/power/runtime.c seems to call
-`pm_runtime_mark_last_busy` in case the ->runtime_resume callback
-returned successfully. In such a case, why would we want to move
-`pm_runtime_mark_last_busy` within `pm_runtime_put_autosuspend` ?
+>=20
+> An intermediary header "hv_defs.h" is introduced to conditionally
+> include either hyperv-tlfs.h or hvhdk.h. This is required because
+> several headers which today include hyperv-tlfs.h, are shared
+> between Hyper-V and KVM code (e.g. mshyperv.h).
 
-2. In the arm-smmu driver, we seem to rely on the rpm_resume to call
-`pm_runtime_mark_last_busy` as a part of the ->runtime_resume callback.
-The only other case, where we might wanna `*mark_last_busy` is if we
-want the autosuspend timer to be re-started in case of a failed suspend.
-However, the `arm_smmu_runtime_suspend` doesn't return errno in any case
-hence, I don't see any other case where we'd benefit from using
-`mark_last_busy` in the arm-smmu driver. 
+Have you considered user space code that uses
+include/linux/hyperv.h? Which of the two schemes will it use? That code
+needs to compile correctly on x86 and ARM64 after your changes.
+User space code includes the separate DPDK project, and some of the
+tools in the kernel tree under tools/hv. Anything that uses the
+uio_hv_generic.c driver falls into this category.
 
-On the other hand, I don't see a problem with using it either :)
-Any thoughts Will/Rob/Robin?
+I think there's also user space code that is built for vDSO that might pull
+in the .h files you are modifying. There are in-progress patches dealing
+with vDSO include files, such as [1]. My general comment on vDSO
+is to be careful in making #include file changes that it uses, but I'm
+not knowledgeable enough on how vDSO is built to give specific
+guidance. :-(
 
->  
->  static void arm_smmu_rpm_use_autosuspend(struct arm_smmu_device *smmu)
-> -- 
-> 2.39.5
-> 
+Michael
 
-Apart from the above discussion, for this patch alone:
-Reviewed-by: Pranjal Shrivastava <praan@google.com>
+[1] https://lore.kernel.org/lkml/20241010135146.181175-1-vincenzo.frascino@=
+arm.com/
 
-Thanks,
-Pranjal
+>=20
+> Summary:
+> Patch 1-2: Cleanup patches
+> Patch 3: Add the new headers (hvhdk.h, etc..) in include/hyperv/
+> Patch 4: Add hv_defs.h and use it in mshyperv.h, svm.h,
+>          hyperv_timer.h
+> Patch 5: Switch to the new headers, only in Hyper-V code
+>=20
+> Nuno Das Neves (5):
+>   hyperv: Move hv_connection_id to hyperv-tlfs.h
+>   hyperv: Remove unnecessary #includes
+>   hyperv: Add new Hyper-V headers
+>   hyperv: Add hv_defs.h to conditionally include hyperv-tlfs.h or
+>     hvhdk.h
+>   hyperv: Use hvhdk.h instead of hyperv-tlfs.h in Hyper-V code
+>=20
+>  arch/arm64/hyperv/hv_core.c              |    3 +-
+>  arch/arm64/hyperv/mshyperv.c             |    1 +
+>  arch/arm64/include/asm/mshyperv.h        |    2 +-
+>  arch/x86/entry/vdso/vma.c                |    1 +
+>  arch/x86/hyperv/hv_apic.c                |    2 +-
+>  arch/x86/hyperv/hv_init.c                |    3 +-
+>  arch/x86/hyperv/hv_proc.c                |    4 +-
+>  arch/x86/hyperv/hv_spinlock.c            |    1 +
+>  arch/x86/hyperv/hv_vtl.c                 |    1 +
+>  arch/x86/hyperv/irqdomain.c              |    1 +
+>  arch/x86/hyperv/ivm.c                    |    2 +-
+>  arch/x86/hyperv/mmu.c                    |    2 +-
+>  arch/x86/hyperv/nested.c                 |    2 +-
+>  arch/x86/include/asm/kvm_host.h          |    1 -
+>  arch/x86/include/asm/mshyperv.h          |    3 +-
+>  arch/x86/include/asm/svm.h               |    2 +-
+>  arch/x86/include/asm/vdso/gettimeofday.h |    1 +
+>  arch/x86/kernel/cpu/mshyperv.c           |    2 +-
+>  arch/x86/kernel/cpu/mtrr/generic.c       |    1 +
+>  arch/x86/kvm/vmx/vmx_onhyperv.h          |    1 -
+>  arch/x86/mm/pat/set_memory.c             |    2 -
+>  drivers/clocksource/hyperv_timer.c       |    2 +-
+>  drivers/hv/channel.c                     |    1 +
+>  drivers/hv/channel_mgmt.c                |    1 +
+>  drivers/hv/connection.c                  |    1 +
+>  drivers/hv/hv.c                          |    1 +
+>  drivers/hv/hv_balloon.c                  |    5 +-
+>  drivers/hv/hv_common.c                   |    2 +-
+>  drivers/hv/hv_kvp.c                      |    1 -
+>  drivers/hv/hv_snapshot.c                 |    1 -
+>  drivers/hv/hv_util.c                     |    1 +
+>  drivers/hv/hyperv_vmbus.h                |    1 -
+>  drivers/hv/ring_buffer.c                 |    1 +
+>  drivers/hv/vmbus_drv.c                   |    1 +
+>  drivers/iommu/hyperv-iommu.c             |    1 +
+>  drivers/net/hyperv/netvsc.c              |    1 +
+>  drivers/pci/controller/pci-hyperv.c      |    1 +
+>  include/asm-generic/hyperv-tlfs.h        |    9 +
+>  include/asm-generic/mshyperv.h           |    2 +-
+>  include/clocksource/hyperv_timer.h       |    2 +-
+>  include/hyperv/hv_defs.h                 |   29 +
+>  include/hyperv/hvgdk.h                   |   66 ++
+>  include/hyperv/hvgdk_ext.h               |   46 +
+>  include/hyperv/hvgdk_mini.h              | 1212 ++++++++++++++++++++++
+>  include/hyperv/hvhdk.h                   |  733 +++++++++++++
+>  include/hyperv/hvhdk_mini.h              |  310 ++++++
+>  include/linux/hyperv.h                   |   12 +-
+>  net/vmw_vsock/hyperv_transport.c         |    1 -
+>  48 files changed, 2442 insertions(+), 40 deletions(-)
+>  create mode 100644 include/hyperv/hv_defs.h
+>  create mode 100644 include/hyperv/hvgdk.h
+>  create mode 100644 include/hyperv/hvgdk_ext.h
+>  create mode 100644 include/hyperv/hvgdk_mini.h
+>  create mode 100644 include/hyperv/hvhdk.h
+>  create mode 100644 include/hyperv/hvhdk_mini.h
+>=20
+> --
+> 2.34.1
+>=20
 
-[1]
- https://lore.kernel.org/all/20240109133639.111210-1-sakari.ailus@linux.intel.com/
