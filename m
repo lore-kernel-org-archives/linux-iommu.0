@@ -1,94 +1,69 @@
-Received: from mail-oo1-f52.google.com (mail-oo1-f52.google.com [209.85.161.52])
+Received: from mail-pl1-f180.google.com (mail-pl1-f180.google.com [209.85.214.180])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9F9481C9ED3
-	for <iommu@lists.linux.dev>; Thu, 10 Oct 2024 15:32:50 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.161.52
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8B7E21C7B6E
+	for <iommu@lists.linux.dev>; Thu, 10 Oct 2024 15:33:20 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.180
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1728574372; cv=none; b=FSzJ228D18PkdFDJf9UbzAr0UFMdKBfnLk0eeRNmF6D6swcD4dlNyinRwhaB71nuZJRQ5foKwQ3uFIZqJqCmoPnfhCstIL1B5MNGGR7P/OtPMb3xFSDpU8FYwLqfKQfaIbt9ms22eWzPTTzx5OZ648BukXdC5moRqTK4FQN7WRQ=
+	t=1728574402; cv=none; b=heB83uh3cvXwI1+5ebdpO1tHsEyXihJ7OaZ/Cy7nf2IH2WMup3iPQpnKM//e5zDhMrudeQHjO2W6itvrWMvBP41knRkboAiXbAqqet1lo/qX5rAtfICH2j25IDpXk25ZtZpJq7+U9yPb9hMzKum7rZUoIebb3tJCF3jmxm0Mq98=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1728574372; c=relaxed/simple;
-	bh=0qRq6GLRROiieAAtLUvv4MImLCc+TYAbMc5Likzwm5o=;
+	s=arc-20240116; t=1728574402; c=relaxed/simple;
+	bh=huzcYhaj1QkMs2A+WerOIGgErQX8Kuj8Hm//GXsV3xI=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=dUS8oTxxoXxPXPPbPXjgUGskZimdmOKpmfQUAqF5Os4yVUnG2UqOev3OsG5jvMPsRBUb8KXrP/CRiRi9Jo3yxqlsRKF6KbhwJ6xgoPn/RxjdLnljGeHvZiTDLa5UfVxD5w4Kk53ESSPogjCww9SBy6Cq/atLxEOqUMWOg+iZWt4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=Rfthin5U; arc=none smtp.client-ip=209.85.161.52
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
+	 Content-Type:Content-Disposition:In-Reply-To; b=ahVWAL3xtquYsPZyJNfX84zLSz5Zo12fb5CGK1bZ4w0MmrPT827DRL5ce3pyhf2PYLdSXDFmvKXJI8gUfKKuEkdMbSUxzwyWvBZaR/ArqidM1hYE++6X0HZXFYxJ2smHgZVdzyt7v9ERmQr+ryawpUZyg+4dnu8jO+rPZmlevSg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=NBxhee6/; arc=none smtp.client-ip=209.85.214.180
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="Rfthin5U"
-Received: by mail-oo1-f52.google.com with SMTP id 006d021491bc7-5eb148f42a2so193047eaf.2
-        for <iommu@lists.linux.dev>; Thu, 10 Oct 2024 08:32:50 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="NBxhee6/"
+Received: by mail-pl1-f180.google.com with SMTP id d9443c01a7336-20b061b7299so172825ad.1
+        for <iommu@lists.linux.dev>; Thu, 10 Oct 2024 08:33:20 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google; t=1728574370; x=1729179170; darn=lists.linux.dev;
+        d=google.com; s=20230601; t=1728574400; x=1729179200; darn=lists.linux.dev;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=JSULaLo7bx82nTcyVbVqGRizSGyTmlxCBPKO2rG1izk=;
-        b=Rfthin5UoxKIYUtqIv5ciu6HdX5c4gqPu7xRo6vsqgaJ9MdbOxD7mrwNDYAOquoMK4
-         1DCuzSrn65Wc465dz7mMbsfotWSOsDBw4hhGEA7c/3YQPYQZdwTqS3/+6BzDA63BpB3d
-         xYeLkVjo5IbQRTArhNjtGzkitNkHhkJhsuaxgbow+Kd3unb/Ww7fV3hyqFqHtqfa2dKI
-         QzCc+EI/9iBueOn6E8omlbbjiM0lQhD2zsjupngu2MAbv9rKQVC01BMBi4s9+kb7+c8i
-         HxnnrFEcVH6Pczg85fvYTZJ63GDR/VW0eKW1P1totHEeYKScUC6uJHjpKS9MGQ1Zmzo9
-         ff6Q==
+        bh=w/ZmpxU5Ar2FNW/jteZs/sVfkGodgjpZwiHNQvHm7l0=;
+        b=NBxhee6/l8bZckgkid0Tjdz52BzM54BZ2gNzjodqxxhdG6XK6tsI+/kRtzy1BnVL5U
+         QJAX8hAEOwF2d66NE8g5gWNzBArGv2MHYF04bVIgqhnAp6ZfgCngOHKNgUJYFU98DVhT
+         n2j85gmJq/Ioxny6K/+3ijIXrDrYh8HWnybwu2rMJTyJVcnn4lUtL9YRlJNwXtR/BxLx
+         WzoeJkv2/uEdRL+Q18jzvRg1YE+Z+9LAZahR8q/p05XLJ9hGRi7WLq4wRy6vK40QGKTM
+         3xd2+ACdSiMsMKJgNt2Jnlr2IkhpvDCN7NXx442/YHmCyQM800QdLPoOWF5I6PdBP5ax
+         UlnQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1728574370; x=1729179170;
+        d=1e100.net; s=20230601; t=1728574400; x=1729179200;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=JSULaLo7bx82nTcyVbVqGRizSGyTmlxCBPKO2rG1izk=;
-        b=H+lvZVgaBCb2RUIt5nLwzZXbLX+TXqgLqjNj+TCNZcxWfMk37EQ4wJjpLTkLHxp9EI
-         +bfqeEiYRS2VigQ5byzHvZnj4fvtlTmqKPI40wWyEnq1K+yw0gk7Vd+3AhdeE5vbzgtn
-         cFpAfSDAx8REbUiSc7G29OvdHet25XaxN/mjmQotBEeAq7YrTECnURlma0zyzisCnO1x
-         C7WsBXykMUiW1KhQltMyYnqgjRMFyKadGlugVbE/21N5EkiWeCQNVFX6isJlp0oT3XNm
-         LZm6KxOhmyld2eY/7Kye7/u8xd/fqG9g/ZysEtaSiuKHXkLLIrPBRGi8UkqQspgE6TlI
-         ybuA==
-X-Forwarded-Encrypted: i=1; AJvYcCWaIrPMy+OU2FSdu+6mMRTs/kzyLx5hPhjSlKcbYzU+Ul8pZTtNS+/Zj1/zLfnYeZzoi03auw==@lists.linux.dev
-X-Gm-Message-State: AOJu0Yx+2tBv/dzS9DDxH8kBB5ZVkknpWELt7qe+vSOuAMsF18+u95QG
-	gQBYvZRyUt90Z8R7ARMCKD80UhDP92pfamBmgKefWdG4oipM2NKjpZwLfoju0X8=
-X-Google-Smtp-Source: AGHT+IEo+4uPxrqwFzTBdQMNuBXazTiZjFczZi3xfkmJGwDNGM0oEJ3Dpqs7IWLoU8PX7kF2Wo4uAg==
-X-Received: by 2002:a05:6358:e4a2:b0:1aa:a01a:23dc with SMTP id e5c5f4694b2df-1c30811ae44mr195185455d.15.1728574369566;
-        Thu, 10 Oct 2024 08:32:49 -0700 (PDT)
-Received: from ziepe.ca (hlfxns017vw-142-68-128-5.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.68.128.5])
-        by smtp.gmail.com with ESMTPSA id 6a1803df08f44-6cbe862fe87sm6186216d6.106.2024.10.10.08.32.48
+        bh=w/ZmpxU5Ar2FNW/jteZs/sVfkGodgjpZwiHNQvHm7l0=;
+        b=EVW8qBmbiWGFJR7MBPPxe9kCKFgnsKiqvA3MBRVXzWpSDjNoI7m3qNFUJ77AsLCWSK
+         GFcw/oFSj0b1bqOFnX5OiY0MQqFs7qMBDVviEP3RS9qh4um9mpbUaOYoD2B8UhhQzU+f
+         QrE77Dh5/Qq1t7qIsEZBzhlYIi4dqI/QhVGeCK4Mg+72xSw7s4bn0qjfoZ+FjEY6ykq5
+         wMfXh5KUHBPK2B4l6i+5+wrYzBrw0K3onE9HFYGUUoJN2zuyhcMXUgj9Zax96nHXX/my
+         pH3R4NvVj124eY3dOvWjWb9FYTltEPq7Q7qthcWmrK9lO7rbpG72z+5I6ykY8x7EMJ+y
+         YAtQ==
+X-Forwarded-Encrypted: i=1; AJvYcCXe/25qw05khW5zeW3vHoe5xtc7PB+WbxtSbCBl4Q+jnFj3DIlSqoBKKXMuZVO4fDGYd1MgOQ==@lists.linux.dev
+X-Gm-Message-State: AOJu0Ywf3XPwirwWTMk5QtcpsjFn4Y4QF/zXvQ7RkX6TJ85NCm/vziC8
+	2DdTUhaTza8NPeqRBivrd+jbdAxaUDfqvZyBcJB4iJraaae6m5DZasApXtgC4w==
+X-Google-Smtp-Source: AGHT+IGckJvBw34/8XK0AfFY3nhmk4JYCNb2V2wP3vhB3S6j5MJz7Bqeauq+12aWJVrNrkRGxHknOQ==
+X-Received: by 2002:a17:902:eccd:b0:20b:7784:278a with SMTP id d9443c01a7336-20c82eb95f0mr3152015ad.22.1728574399488;
+        Thu, 10 Oct 2024 08:33:19 -0700 (PDT)
+Received: from google.com (62.166.143.34.bc.googleusercontent.com. [34.143.166.62])
+        by smtp.gmail.com with ESMTPSA id 98e67ed59e1d1-2e2d5fc5c53sm1452540a91.51.2024.10.10.08.33.17
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 10 Oct 2024 08:32:48 -0700 (PDT)
-Received: from jgg by wakko with local (Exim 4.95)
-	(envelope-from <jgg@ziepe.ca>)
-	id 1syv9k-000zwn-5N;
-	Thu, 10 Oct 2024 12:32:48 -0300
-Date: Thu, 10 Oct 2024 12:32:48 -0300
-From: Jason Gunthorpe <jgg@ziepe.ca>
-To: "Gowans, James" <jgowans@amazon.com>
-Cc: "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
-	"rppt@kernel.org" <rppt@kernel.org>, "kw@linux.com" <kw@linux.com>,
-	"iommu@lists.linux.dev" <iommu@lists.linux.dev>,
-	"madvenka@linux.microsoft.com" <madvenka@linux.microsoft.com>,
-	"anthony.yznaga@oracle.com" <anthony.yznaga@oracle.com>,
-	"robin.murphy@arm.com" <robin.murphy@arm.com>,
-	"baolu.lu@linux.intel.com" <baolu.lu@linux.intel.com>,
-	"nh-open-source@amazon.com" <nh-open-source@amazon.com>,
-	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-	"seanjc@google.com" <seanjc@google.com>,
-	"Saenz Julienne, Nicolas" <nsaenz@amazon.es>,
-	"pbonzini@redhat.com" <pbonzini@redhat.com>,
-	"kevin.tian@intel.com" <kevin.tian@intel.com>,
-	"dwmw2@infradead.org" <dwmw2@infradead.org>,
-	"steven.sistare@oracle.com" <steven.sistare@oracle.com>,
-	"Graf (AWS), Alexander" <graf@amazon.de>,
-	"will@kernel.org" <will@kernel.org>,
-	"joro@8bytes.org" <joro@8bytes.org>,
-	"maz@kernel.org" <maz@kernel.org>
-Subject: Re: [RFC PATCH 05/13] iommufd: Serialise persisted iommufds and ioas
-Message-ID: <20241010153248.GH762027@ziepe.ca>
-References: <20240916113102.710522-1-jgowans@amazon.com>
- <20240916113102.710522-6-jgowans@amazon.com>
- <20241002185520.GL1369530@ziepe.ca>
- <d6328467adc9b7512f6dd88a6f8f843b8efdc154.camel@amazon.com>
- <e458d48a797043b7efc853fc65b9c4d043b12ed4.camel@infradead.org>
- <1d331c55a299d414e49ba5eb6f46dccb525bf788.camel@amazon.com>
- <20241007150138.GM2456194@ziepe.ca>
- <b76aa005c0fb75199cbb1fa0790858b9c808c90a.camel@amazon.com>
- <20241009122830.GF762027@ziepe.ca>
- <673df8a09723d3398ca9e9c638893547b0b0ec63.camel@amazon.com>
+        Thu, 10 Oct 2024 08:33:19 -0700 (PDT)
+Date: Thu, 10 Oct 2024 15:33:11 +0000
+From: Pranjal Shrivastava <praan@google.com>
+To: Sakari Ailus <sakari.ailus@linux.intel.com>
+Cc: Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
+	Joerg Roedel <joro@8bytes.org>, Jason Gunthorpe <jgg@ziepe.ca>,
+	Rob Clark <robdclark@chromium.org>,
+	Georgi Djakov <quic_c_gdjako@quicinc.com>,
+	linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev
+Subject: Re: [PATCH 22/51] iommu/arm-smmu: Switch to
+ __pm_runtime_put_autosuspend()
+Message-ID: <ZwfztwoGAcvyvlWL@google.com>
+References: <20241004094101.113349-1-sakari.ailus@linux.intel.com>
+ <20241004094123.113725-1-sakari.ailus@linux.intel.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -97,73 +72,61 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <673df8a09723d3398ca9e9c638893547b0b0ec63.camel@amazon.com>
+In-Reply-To: <20241004094123.113725-1-sakari.ailus@linux.intel.com>
 
-On Thu, Oct 10, 2024 at 03:12:09PM +0000, Gowans, James wrote:
-> > If this little issue already scares you then I don't think I want to
-> > see you serialize anything more complex, there are endless scenarios
-> > for compatibility problems :\
+On Fri, Oct 04, 2024 at 12:41:23PM +0300, Sakari Ailus wrote:
+> pm_runtime_put_autosuspend() will soon be changed to include a call to
+> pm_runtime_mark_last_busy(). This patch switches the current users to
+> __pm_runtime_put_autosuspend() which will continue to have the
+> functionality of old pm_runtime_put_autosuspend().
 > 
-> The things that scare me is some subtle page table difference which
-> causes silent data corruption... This is one of the reasons I liked re-
-> using the existing tables, there is no way for this sort of subtle bug
-> to happen.
-
-> > > If we say that to be safe/correct in the general case then it is
-> > > necessary for the translations to be *exactly* the same before and after
-> > > kexec, is there any benefit to building new translation tables and
-> > > switching to them? We may as well continue to use the exact same page
-> > > tables and construct iommufd objects (IOAS, etc) to match.
-> > 
-> > The benifit is principally that you did all the machinery to get up to
-> > that point, including re-pinning and so forth all the memory, instead
-> > of trying to magically recover that additional state.
-> > 
-> > This is the philosophy that you replay instead of de-serialize, so you
-> > have to replay into a page table at some level to make that work.
+> Signed-off-by: Sakari Ailus <sakari.ailus@linux.intel.com>
+> ---
+>  drivers/iommu/arm/arm-smmu/arm-smmu.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
 > 
-> We could have some "skip_pgtable_update" flag which the replay machinery
-> sets, allowing IOMMUFD to create fresh objects internally and leave the
-> page tables alone?
+> diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu.c b/drivers/iommu/arm/arm-smmu/arm-smmu.c
+> index 8321962b3714..cad02d5dc6d2 100644
+> --- a/drivers/iommu/arm/arm-smmu/arm-smmu.c
+> +++ b/drivers/iommu/arm/arm-smmu/arm-smmu.c
+> @@ -79,7 +79,7 @@ static inline int arm_smmu_rpm_get(struct arm_smmu_device *smmu)
+>  static inline void arm_smmu_rpm_put(struct arm_smmu_device *smmu)
+>  {
+>  	if (pm_runtime_enabled(smmu->dev))
+> -		pm_runtime_put_autosuspend(smmu->dev);
+> +		__pm_runtime_put_autosuspend(smmu->dev);
+>  }
 
-The point made before was that iommufd hard depends on the content of
-the iommu_domain for correctness since it uses it as the storage for
-the PFNs.
+Seems like a straightforward change as a result of [1].
+Although, I had a few things to discuss:
 
-Making an assumption that the prior kernle domain matches what iommufd
-requires opens up the easy possibility of hypervisor kernel
-corruption.
+1. The `rpm_resume` in drivers/base/power/runtime.c seems to call
+`pm_runtime_mark_last_busy` in case the ->runtime_resume callback
+returned successfully. In such a case, why would we want to move
+`pm_runtime_mark_last_busy` within `pm_runtime_put_autosuspend` ?
 
-I think this is a bad direction..
+2. In the arm-smmu driver, we seem to rely on the rpm_resume to call
+`pm_runtime_mark_last_busy` as a part of the ->runtime_resume callback.
+The only other case, where we might wanna `*mark_last_busy` is if we
+want the autosuspend timer to be re-started in case of a failed suspend.
+However, the `arm_smmu_runtime_suspend` doesn't return errno in any case
+hence, I don't see any other case where we'd benefit from using
+`mark_last_busy` in the arm-smmu driver. 
 
-You have to at least validate that userspace has set things up in a
-way that is consistent with the prior domain before adopting it.
+On the other hand, I don't see a problem with using it either :)
+Any thoughts Will/Rob/Robin?
 
-It would be easier to understand this if the performance costs of
-doing such a validation was more understood. Perhaps it can be
-optimized somehow.
-
-> > > then it would be useful to avoid rebuilding identical tables. Maybe it
-> > > ends up being in the "warm" path - the VM can start running but will
-> > > sleep if taking a page fault before IOMMUFD is re-initalised...
-> > 
-> > I didn't think you'd support page faults? There are bigger issues here
-> > if you expect to have a vIOMMU in the guest.
+>  
+>  static void arm_smmu_rpm_use_autosuspend(struct arm_smmu_device *smmu)
+> -- 
+> 2.39.5
 > 
-> vIOMMU is one case, but another is memory oversubscription. With PRI/ATS
-> we can oversubscribe memory which is DMA mapped. In that case a page
-> fault would be a blocking operation until IOMMUFD is all set up and
-> ready to go. I suspect there will be benefit in getting this fast, but
-> as long as we have a path to optimise it in future I'm totally fine to
-> start with re-creating everything.
 
-Yes, this is true, but if you intend to do this kind of manipulation
-of the page table then it really should be in the exact format the new
-kernel is tested to understand. Expecting the new kernel to interwork
-with the old kernel's page table is likely to be OK, but also along
-the same lines of your fear there could be differences :\
+Apart from the above discussion, for this patch alone:
+Reviewed-by: Pranjal Shrivastava <praan@google.com>
 
-Still, PRI/ATS for backing guests storage is a pretty advanced
-concept, we don't have support for that yet.
+Thanks,
+Pranjal
 
-Jason
+[1]
+ https://lore.kernel.org/all/20240109133639.111210-1-sakari.ailus@linux.intel.com/
