@@ -1,84 +1,123 @@
-Received: from szxga07-in.huawei.com (szxga07-in.huawei.com [45.249.212.35])
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DEFB3B66C;
-	Thu, 10 Oct 2024 01:48:59 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=45.249.212.35
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A27A919F10A
+	for <iommu@lists.linux.dev>; Thu, 10 Oct 2024 06:40:21 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1728524942; cv=none; b=RJr2fn6jNYJEvyoTcDrQOX8h4TmfwGVBRBkXMb72qsi4WuAMQPQjygYa3iCJGWVGtddmPbkYxbvzNJTQh9yOxhprqsjg2GGM0f60pqlugigrYi+v4uNuVpQKJlVLB/4e2GANxTGwpsJrxWp4mjDR8Sd2hiy624teiAmevxBC+a4=
+	t=1728542423; cv=none; b=MRTwsBFWyjXnnVqpasfCRdvGzXlpRqvoUVi6vd8NTE/1QZhjp1KDe7W5rE50/jDpFV2YEpArzZIUd3TUk6MX639Yfn2Mhu9qbfVpM4zHCmPGXigO589SbM6bgQqv68GbrdIa2yDNnQ3wOTpeNxXKHhmNu276g0SDX4Qc8scpC7A=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1728524942; c=relaxed/simple;
-	bh=hueCzQH/AfAa2c9bLUILdhl3uuN8EfCbcDmuU3f6jk0=;
-	h=Subject:To:CC:References:From:Message-ID:Date:MIME-Version:
-	 In-Reply-To:Content-Type; b=Ei3YrcZmfttvpux/ted4dvuTSY5mIzgWUZ8HjKwJrf3CyUe7RUEYHQIppZY6B/ZnLtkkhcK5YMwGwtDTAGR4VRnQw+sHMdSntirKH3EDN551AeDS6299rJLo++uwPH+R0l5NnIwFBRB+TibiP8n/ukWLtoiE41/pxPascZVNMns=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=huawei.com; spf=pass smtp.mailfrom=huawei.com; arc=none smtp.client-ip=45.249.212.35
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=huawei.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=huawei.com
-Received: from mail.maildlp.com (unknown [172.19.88.163])
-	by szxga07-in.huawei.com (SkyGuard) with ESMTP id 4XPCLt2fhFz1SCQ3;
-	Thu, 10 Oct 2024 09:47:50 +0800 (CST)
-Received: from dggpemf500002.china.huawei.com (unknown [7.185.36.57])
-	by mail.maildlp.com (Postfix) with ESMTPS id 0795E18001B;
-	Thu, 10 Oct 2024 09:48:57 +0800 (CST)
-Received: from [10.174.178.247] (10.174.178.247) by
- dggpemf500002.china.huawei.com (7.185.36.57) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.1544.11; Thu, 10 Oct 2024 09:48:55 +0800
-Subject: Re: [PATCH v3 2/9] ACPICA: IORT: Update for revision E.f
-To: Jason Gunthorpe <jgg@nvidia.com>, <acpica-devel@lists.linux.dev>,
-	<iommu@lists.linux.dev>, Joerg Roedel <joro@8bytes.org>, Kevin Tian
-	<kevin.tian@intel.com>, <kvm@vger.kernel.org>, Len Brown <lenb@kernel.org>,
-	<linux-acpi@vger.kernel.org>, <linux-arm-kernel@lists.infradead.org>, Lorenzo
- Pieralisi <lpieralisi@kernel.org>, "Rafael J. Wysocki" <rafael@kernel.org>,
-	Robert Moore <robert.moore@intel.com>, Robin Murphy <robin.murphy@arm.com>,
-	Sudeep Holla <sudeep.holla@arm.com>, Will Deacon <will@kernel.org>
-CC: Alex Williamson <alex.williamson@redhat.com>, Eric Auger
-	<eric.auger@redhat.com>, Jean-Philippe Brucker <jean-philippe@linaro.org>,
-	Moritz Fischer <mdf@kernel.org>, Michael Shavit <mshavit@google.com>, Nicolin
- Chen <nicolinc@nvidia.com>, <patches@lists.linux.dev>, "Rafael J. Wysocki"
-	<rafael.j.wysocki@intel.com>, Shameerali Kolothum Thodi
-	<shameerali.kolothum.thodi@huawei.com>, Mostafa Saleh <smostafa@google.com>
-References: <2-v3-e2e16cd7467f+2a6a1-smmuv3_nesting_jgg@nvidia.com>
-From: Hanjun Guo <guohanjun@huawei.com>
-Message-ID: <c19cd18c-fe36-52d9-754e-135af2018f0b@huawei.com>
-Date: Thu, 10 Oct 2024 09:48:55 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:68.0) Gecko/20100101
- Thunderbird/68.6.0
+	s=arc-20240116; t=1728542423; c=relaxed/simple;
+	bh=vcx79OQMKguYnBywchkkXPj/Lw/EntkIkXPAlqdnjvI=;
+	h=Message-ID:Date:MIME-Version:Cc:Subject:To:References:From:
+	 In-Reply-To:Content-Type; b=JfJlLd3Rkn6r3R7phS4egJDmpahZ/dGizdLwwvs3VkiVG0rq3urJjEhOkBab9O9PzvI2qccFNO1yjX3w6wggjXLO3rYBXqXMzCG+LEq3a6YfdAVQIBqi0cQyrJiwNgKbrGHLByHcRooXd0jbDWCT9SH6AE1YBVdN5TTUe9BTA/o=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=GgzFoZpn; arc=none smtp.client-ip=198.175.65.18
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="GgzFoZpn"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1728542422; x=1760078422;
+  h=message-id:date:mime-version:cc:subject:to:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=vcx79OQMKguYnBywchkkXPj/Lw/EntkIkXPAlqdnjvI=;
+  b=GgzFoZpn9BUYUsbcIIVxA0Q4RFUqCtXIn0p4/vcrgPGR7u33WiDAlbH6
+   gXYdd3tmIPeJVcP4EJBrwWhU9477mGiutfAHGJYWnR2OWaFjWHl288km6
+   yE93r6Cg7mrhSogMXzLD8RGL0b5bPfxngynnk2DDpSdYStz6e7ZWUB6sW
+   GxGqtnlOw18F+SrzK0ua0dr6N90NnvWHaGjrxWrI7zGqDuM2UvHU1eyUe
+   TurjykgqG/Z4CNLi1VGxTTu8t638kMAXigt68FZ+4/lAb6snNyvZ5xJH3
+   dnO9UGDL80uFSq3dRzGHkKHy4AahOMQ//T9fD+MTo4KDqc4JVssz0NKnw
+   w==;
+X-CSE-ConnectionGUID: zjfMODNiSlGuPECXV/Rb5Q==
+X-CSE-MsgGUID: FN59fRyXTQe0UDkrno24Pw==
+X-IronPort-AV: E=McAfee;i="6700,10204,11220"; a="28011540"
+X-IronPort-AV: E=Sophos;i="6.11,192,1725346800"; 
+   d="scan'208";a="28011540"
+Received: from fmviesa004.fm.intel.com ([10.60.135.144])
+  by orvoesa110.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Oct 2024 23:40:21 -0700
+X-CSE-ConnectionGUID: rvzZVR3BQ6atM0wbcbmHFQ==
+X-CSE-MsgGUID: OeEj4AACT8KLdxHL8CQCKg==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.11,192,1725346800"; 
+   d="scan'208";a="81064585"
+Received: from blu2-mobl.ccr.corp.intel.com (HELO [10.125.248.220]) ([10.125.248.220])
+  by fmviesa004-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Oct 2024 23:40:18 -0700
+Message-ID: <f8cf4532-3bfe-4b0a-9399-0760ab6a4612@linux.intel.com>
+Date: Thu, 10 Oct 2024 14:40:16 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-In-Reply-To: <2-v3-e2e16cd7467f+2a6a1-smmuv3_nesting_jgg@nvidia.com>
-Content-Type: text/plain; charset="utf-8"; format=flowed
-Content-Language: en-GB
+User-Agent: Mozilla Thunderbird
+Cc: baolu.lu@linux.intel.com, iommu@lists.linux.dev, joro@8bytes.org,
+ will@kernel.org, robin.murphy@arm.com, suravee.suthikulpanit@amd.com,
+ yi.l.liu@intel.com, kevin.tian@intel.com, jacob.pan@linux.microsoft.com
+Subject: Re: [PATCH v2 0/8] iommu: Domain allocation enhancements
+To: Jason Gunthorpe <jgg@ziepe.ca>, Vasant Hegde <vasant.hegde@amd.com>
+References: <20240911101911.6269-1-vasant.hegde@amd.com>
+ <970c6058-9e02-4cf6-bcb9-cfb8afb4eac1@amd.com>
+ <71d20ff3-0a85-4670-8559-70ca5e6543c0@linux.intel.com>
+ <9d0101b4-af13-4bf6-94a5-43a79f4d9989@amd.com>
+ <20241009121548.GE762027@ziepe.ca>
+Content-Language: en-US
+From: Baolu Lu <baolu.lu@linux.intel.com>
+In-Reply-To: <20241009121548.GE762027@ziepe.ca>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: dggems703-chm.china.huawei.com (10.3.19.180) To
- dggpemf500002.china.huawei.com (7.185.36.57)
 
-On 2024/10/10 0:23, Jason Gunthorpe wrote:
-> From: Nicolin Chen <nicolinc@nvidia.com>
+On 2024/10/9 20:15, Jason Gunthorpe wrote:
+> On Wed, Oct 09, 2024 at 03:23:16PM +0530, Vasant Hegde wrote:
 > 
-> ACPICA commit c4f5c083d24df9ddd71d5782c0988408cf0fc1ab
+>>> This change might cause a functional regression when it comes to nested
+>>> translation. In nested translation mode, the user page table (e.g.,
+>>> created and managed by a guest VM for guest kernel DMA) must be in the
+>>> first-stage page table format. Then, it can be nested on a second-stage
+>>> page table managed by the host kernel.
+>>>
+>>> Currently, the kernel automatically selects the page table formats. For
+>>> example, the Intel IOMMU driver always uses the first-stage page table
+>>> for guest kernel DMA. After this change, this assumption no longer holds
+>>> true. This means the kernel might use a second-stage page table for
+>>> guest kernel DMA, breaking nested translation.
+>> Hmmm. I assumed after discussion in v1 series you are fine. Looks like I misread it?
+> It is a bug in the implementation in the intel driver.
 > 
-> The IORT spec, Issue E.f (April 2024), adds a new CANWBS bit to the Memory
-> Access Flag field in the Memory Access Properties table, mainly for a PCI
-> Root Complex.
+> intel_iommu_domain_alloc_user() should always allocate a page table
+> that works, if you are in a guest context it must allocate a first
+> level/guest page table otherwise nested VFIO will be broken.
 > 
-> This CANWBS defines the coherency of memory accesses to be not marked IOWB
-> cacheable/shareable. Its value further implies the coherency impact from a
-> pair of mismatched memory attributes (e.g. in a nested translation case):
->    0x0: Use of mismatched memory attributes for accesses made by this
->         device may lead to a loss of coherency.
->    0x1: Coherency of accesses made by this device to locations in
->         Conventional memory are ensured as follows, even if the memory
->         attributes for the accesses presented by the device or provided by
->         the SMMU are different from Inner and Outer Write-back cacheable,
->         Shareable.
+> For this reason Intel driver should always allocate the guest
+> compatible page table unless IOMMU_HWPT_ALLOC_NEST_PARENT is
+> specified.
 > 
+> Something like this:
 
-Acked-by: Hanjun Guo <guohanjun@huawei.com>
+This will break the existing dirty page tracking functionality. Intel
+IOMMU only supports enabling or disabling dirty page tracking at the
+second-stage page table.
 
-Thanks
-Hanjun
+/*
+  * Set up dirty tracking on a second only or nested translation type.
+  */
+int intel_pasid_setup_dirty_tracking(struct intel_iommu *iommu,
+                                      struct device *dev, u32 pasid,
+                                      bool enabled)
+{
+[...]
+         pgtt = pasid_pte_get_pgtt(pte);
+         if (pgtt != PASID_ENTRY_PGTT_SL_ONLY &&
+             pgtt != PASID_ENTRY_PGTT_NESTED) {
+                 spin_unlock(&iommu->lock);
+                 dev_err_ratelimited(
+                         dev,
+                         "Dirty tracking not supported on translation 
+type %d\n",
+                         pgtt);
+                 return -EOPNOTSUPP;
+         }
+
+Thanks,
+baolu
