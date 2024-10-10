@@ -1,97 +1,173 @@
-Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-qt1-f179.google.com (mail-qt1-f179.google.com [209.85.160.179])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D65E01FF7BB;
-	Thu, 10 Oct 2024 07:45:12 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=45.249.212.188
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 18ACF1C460D
+	for <iommu@lists.linux.dev>; Thu, 10 Oct 2024 11:38:20 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.160.179
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1728546314; cv=none; b=uv5WIlUBb3dZ63ItG2Xl9ozHWtg7NLGMCvAKwWtHHAVLcubyHBGvlhVxf8FdnzGG1KhUB/CEH19hH6VFxEr54toabVffRcU1TNIZZKGXJnlfMD1CdtwszFpgCNUnB3ycbyuOTLHSvHR68WIzKuf0V6mgAN8nN6gA5VMOOkWjgbs=
+	t=1728560303; cv=none; b=jgiLCzyYxIx86hnHL5ezqMzOF0OJ7LF1g7KctZR3ZD70iKbIDah88+fvWICFttGk+WrqNGYeKHKm9+huOy062AZgtCfW1OQRayw0Y5B++4E4HHth0pcMM/WwByWzRdz0PVtMyUAa0ILFgz7t/SUcmm3PEVhU8vfoLFx5rBOyYOY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1728546314; c=relaxed/simple;
-	bh=cS2TIFxGUB5Comdq0Q2G2vFiFm96puaf/ga5iXFe2ts=;
-	h=Subject:To:CC:References:From:Message-ID:Date:MIME-Version:
-	 In-Reply-To:Content-Type; b=Pdy6o0Oz2QpAF+13FG4U0f7tY4ZA8m6JH6rwiDnHGJUE/ahgiRW8ZZ9ATWE1c4tCFWKafKYsjgvYKkSmBmHbw9fls339qW/clPfMoKBZzv8eDhC8eG7qCjxJIZz92QGDP+Lym5HS/MAefpIvxKZabUfAtCG6+H8BdjqTjFWOaKU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=huawei.com; spf=pass smtp.mailfrom=huawei.com; arc=none smtp.client-ip=45.249.212.188
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=huawei.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=huawei.com
-Received: from mail.maildlp.com (unknown [172.19.163.174])
-	by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4XPMDQ21KDzfdCy;
-	Thu, 10 Oct 2024 15:42:46 +0800 (CST)
-Received: from dggpemf500002.china.huawei.com (unknown [7.185.36.57])
-	by mail.maildlp.com (Postfix) with ESMTPS id 700BB1400D8;
-	Thu, 10 Oct 2024 15:45:10 +0800 (CST)
-Received: from [10.174.178.247] (10.174.178.247) by
- dggpemf500002.china.huawei.com (7.185.36.57) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.1544.11; Thu, 10 Oct 2024 15:45:09 +0800
-Subject: Re: [PATCH v3 3/9] ACPI/IORT: Support CANWBS memory access flag
-To: Jason Gunthorpe <jgg@nvidia.com>, <acpica-devel@lists.linux.dev>,
-	<iommu@lists.linux.dev>, Joerg Roedel <joro@8bytes.org>, Kevin Tian
-	<kevin.tian@intel.com>, <kvm@vger.kernel.org>, Len Brown <lenb@kernel.org>,
-	<linux-acpi@vger.kernel.org>, <linux-arm-kernel@lists.infradead.org>, Lorenzo
- Pieralisi <lpieralisi@kernel.org>, "Rafael J. Wysocki" <rafael@kernel.org>,
-	Robert Moore <robert.moore@intel.com>, Robin Murphy <robin.murphy@arm.com>,
-	Sudeep Holla <sudeep.holla@arm.com>, Will Deacon <will@kernel.org>
-CC: Alex Williamson <alex.williamson@redhat.com>, Eric Auger
-	<eric.auger@redhat.com>, Jean-Philippe Brucker <jean-philippe@linaro.org>,
-	Moritz Fischer <mdf@kernel.org>, Michael Shavit <mshavit@google.com>, Nicolin
- Chen <nicolinc@nvidia.com>, <patches@lists.linux.dev>, "Rafael J. Wysocki"
-	<rafael.j.wysocki@intel.com>, Shameerali Kolothum Thodi
-	<shameerali.kolothum.thodi@huawei.com>, Mostafa Saleh <smostafa@google.com>
-References: <3-v3-e2e16cd7467f+2a6a1-smmuv3_nesting_jgg@nvidia.com>
-From: Hanjun Guo <guohanjun@huawei.com>
-Message-ID: <180134a4-051e-3a92-1652-0c3c53ffd6fa@huawei.com>
-Date: Thu, 10 Oct 2024 15:45:08 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:68.0) Gecko/20100101
- Thunderbird/68.6.0
+	s=arc-20240116; t=1728560303; c=relaxed/simple;
+	bh=X157x1lEnmpK7zlE8AjdX+3AdHSZX+MExlIhqj/XVac=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=LSQclp8J5ZnoxRHCuO2Q/10JzIlcEWW+fhwosreKS2ZGpaPuWSLlx/W0vVRCMa2h6ffM62WvN7hebZWhrPo8PTaKAgep3tpa2ZxU/FrlUlM0mVkRrnZ7nX7oZsCH4FIO5+avbDV5mF93Vlf5n25d36eOI7RGjYOJbGKyo2sc0fs=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=UaW54hI0; arc=none smtp.client-ip=209.85.160.179
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="UaW54hI0"
+Received: by mail-qt1-f179.google.com with SMTP id d75a77b69052e-46041d86566so3752281cf.3
+        for <iommu@lists.linux.dev>; Thu, 10 Oct 2024 04:38:20 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=ziepe.ca; s=google; t=1728560300; x=1729165100; darn=lists.linux.dev;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=JiodtxMOxBFQynayNIigQAsZeXWH8GXY8t4wa5yffJA=;
+        b=UaW54hI0y8YPDbPiGVlDpXwHrdy8N1fostmy4JR6jBMRwhaYQOMOJYexKLEFEBmihP
+         hEAYj0xGpOtN65C3kT0TOeJVYmvicLA8Oqau8BAA2KO93ZBbcjmEZN66mL1Y8u9sryw3
+         eVhKV4RxabLT4BV+bmkAi3lUar/hhSZo9KmJiuy7TciRm5N9E9fM0DylfOhyeqDcuicN
+         jDBflbm7aJO80AeaExVlJvIIMBlMhyLD8uAooghczVHayYIXHSWCTkz23ujEijWi86ga
+         ATfXIufRhu7fBPq2qgFeg1dUfxNZEewVezO9uPAK0PGG6axkKCaHtP1tqFOpewpm5HR1
+         xm0g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1728560300; x=1729165100;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=JiodtxMOxBFQynayNIigQAsZeXWH8GXY8t4wa5yffJA=;
+        b=PXBUy/n/ZM3kFqrN1OtasP0IfcZoB4kbpH1UkFD5aKuCcpQntWjcUnKJ8HpTwR26Nc
+         tZY1uSchEEGF1efg8fyOArHFJ0k81al9tUNF+oWU/NEiAAdTJdWigeLsG0/zJ1ixD7f4
+         a/h1BOKMjR+QvttNsVkq50sRrA639DCnYbN3UArz9r9X8nFUtNmvomxG6M7427+DZK8N
+         RWu7mHruShtPhO+cPVHqSZsnipOI8fz6bJ75zTD9lvrWU8rlR3Y3TocE0OGiJTWy3Uf2
+         Vb++6OVSLJ/VaOzqOu5AOxxjivb3jqbgR5mGDQhAsmC5bukAiTFYj+fFH76YRRNPcMEf
+         3BBg==
+X-Forwarded-Encrypted: i=1; AJvYcCWOxmjA8E5cIyfqCHITNeCfDUUZGXFmvEIiFwitshUsR0Q4Q+nU9Z4ZjLTnmrPsznMNNppzxg==@lists.linux.dev
+X-Gm-Message-State: AOJu0YySSI41OogY87CtsgvzBxzb6gW1jvVAym6Lx/nOjE80N6jFs+YP
+	RqijbaJXvp3JvD1WXQZb1VfTWD0ZOqNTGVN+1t/huk9Q2ld5pEIl9we4xrRp3jU=
+X-Google-Smtp-Source: AGHT+IEAjwIBMLHfdRUcX6KoW7C8lozeujfrNokB4axl/f43fp/uHhER7Uppj2S9oKARuTwkZK0Iog==
+X-Received: by 2002:a05:622a:1e87:b0:45f:7eb7:c283 with SMTP id d75a77b69052e-45fa5f217admr86917801cf.29.1728560299604;
+        Thu, 10 Oct 2024 04:38:19 -0700 (PDT)
+Received: from ziepe.ca (hlfxns017vw-142-68-128-5.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.68.128.5])
+        by smtp.gmail.com with ESMTPSA id d75a77b69052e-460427d4f62sm4619051cf.26.2024.10.10.04.38.17
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 10 Oct 2024 04:38:18 -0700 (PDT)
+Received: from jgg by wakko with local (Exim 4.95)
+	(envelope-from <jgg@ziepe.ca>)
+	id 1syrUn-00HP88-8t;
+	Thu, 10 Oct 2024 08:38:17 -0300
+Date: Thu, 10 Oct 2024 08:38:17 -0300
+From: Jason Gunthorpe <jgg@ziepe.ca>
+To: Baolu Lu <baolu.lu@linux.intel.com>
+Cc: Vasant Hegde <vasant.hegde@amd.com>, iommu@lists.linux.dev,
+	joro@8bytes.org, will@kernel.org, robin.murphy@arm.com,
+	suravee.suthikulpanit@amd.com, yi.l.liu@intel.com,
+	kevin.tian@intel.com, jacob.pan@linux.microsoft.com
+Subject: Re: [PATCH v2 0/8] iommu: Domain allocation enhancements
+Message-ID: <20241010113817.GG762027@ziepe.ca>
+References: <20240911101911.6269-1-vasant.hegde@amd.com>
+ <970c6058-9e02-4cf6-bcb9-cfb8afb4eac1@amd.com>
+ <71d20ff3-0a85-4670-8559-70ca5e6543c0@linux.intel.com>
+ <9d0101b4-af13-4bf6-94a5-43a79f4d9989@amd.com>
+ <20241009121548.GE762027@ziepe.ca>
+ <f8cf4532-3bfe-4b0a-9399-0760ab6a4612@linux.intel.com>
+ <2ba53bb0-b84a-4eae-91da-4ff7d13b582b@linux.intel.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-In-Reply-To: <3-v3-e2e16cd7467f+2a6a1-smmuv3_nesting_jgg@nvidia.com>
-Content-Type: text/plain; charset="utf-8"; format=flowed
-Content-Language: en-GB
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: dggems704-chm.china.huawei.com (10.3.19.181) To
- dggpemf500002.china.huawei.com (7.185.36.57)
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <2ba53bb0-b84a-4eae-91da-4ff7d13b582b@linux.intel.com>
 
-On 2024/10/10 0:23, Jason Gunthorpe wrote:
-> From: Nicolin Chen<nicolinc@nvidia.com>
+On Thu, Oct 10, 2024 at 02:48:09PM +0800, Baolu Lu wrote:
+> On 2024/10/10 14:40, Baolu Lu wrote:
+> > On 2024/10/9 20:15, Jason Gunthorpe wrote:
+> > > On Wed, Oct 09, 2024 at 03:23:16PM +0530, Vasant Hegde wrote:
+> > > 
+> > > > > This change might cause a functional regression when it comes to nested
+> > > > > translation. In nested translation mode, the user page table (e.g.,
+> > > > > created and managed by a guest VM for guest kernel DMA) must be in the
+> > > > > first-stage page table format. Then, it can be nested on a second-stage
+> > > > > page table managed by the host kernel.
+> > > > > 
+> > > > > Currently, the kernel automatically selects the page table formats. For
+> > > > > example, the Intel IOMMU driver always uses the first-stage page table
+> > > > > for guest kernel DMA. After this change, this assumption no
+> > > > > longer holds
+> > > > > true. This means the kernel might use a second-stage page table for
+> > > > > guest kernel DMA, breaking nested translation.
+> > > > Hmmm. I assumed after discussion in v1 series you are fine.
+> > > > Looks like I misread it?
+> > > It is a bug in the implementation in the intel driver.
+> > > 
+> > > intel_iommu_domain_alloc_user() should always allocate a page table
+> > > that works, if you are in a guest context it must allocate a first
+> > > level/guest page table otherwise nested VFIO will be broken.
+> > > 
+> > > For this reason Intel driver should always allocate the guest
+> > > compatible page table unless IOMMU_HWPT_ALLOC_NEST_PARENT is
+> > > specified.
+> > > 
+> > > Something like this:
+> > 
+> > This will break the existing dirty page tracking functionality. Intel
+> > IOMMU only supports enabling or disabling dirty page tracking at the
+> > second-stage page table.
 > 
-> The IORT spec, Issue E.f (April 2024), adds a new CANWBS bit to the Memory
-> Access Flag field in the Memory Access Properties table, mainly for a PCI
-> Root Complex.
+> So, perhaps something like below?
 > 
-> This CANWBS defines the coherency of memory accesses to be not marked IOWB
-> cacheable/shareable. Its value further implies the coherency impact from a
-> pair of mismatched memory attributes (e.g. in a nested translation case):
->    0x0: Use of mismatched memory attributes for accesses made by this
->         device may lead to a loss of coherency.
->    0x1: Coherency of accesses made by this device to locations in
->         Conventional memory are ensured as follows, even if the memory
->         attributes for the accesses presented by the device or provided by
->         the SMMU are different from Inner and Outer Write-back cacheable,
->         Shareable.
+> diff --git a/drivers/iommu/intel/iommu.h b/drivers/iommu/intel/iommu.h
+> index 1497f3112b12..e11dde259afa 100644
+> --- a/drivers/iommu/intel/iommu.h
+> +++ b/drivers/iommu/intel/iommu.h
+> @@ -544,6 +544,8 @@ enum {
+>                                 ecap_slads((iommu)->ecap))
+>  #define nested_supported(iommu)        (sm_supported(iommu) &&         \
+>                                  ecap_nest((iommu)->ecap))
+> +#define flts_supported(iommu)  (sm_supported(iommu) &&                 \
+> +                                ecap_flts((iommu)->ecap))
 > 
-> Note that the loss of coherency on a CANWBS-unsupported HW typically could
-> occur to an SMMU that doesn't implement the S2FWB feature where additional
-> cache flush operations would be required to prevent that from happening.
+>  struct pasid_entry;
+>  struct pasid_state_entry;
+> diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
+> index 9f6b0780f2ef..d1a7378489a4 100644
+> --- a/drivers/iommu/intel/iommu.c
+> +++ b/drivers/iommu/intel/iommu.c
+> @@ -3530,6 +3530,7 @@ intel_iommu_domain_alloc_user(struct device *dev, u32
+> flags,
+>         struct intel_iommu *iommu = info->iommu;
+>         struct dmar_domain *dmar_domain;
+>         struct iommu_domain *domain;
+> +       bool first_stage;
 > 
-> Add a new ACPI_IORT_MF_CANWBS flag and set IOMMU_FWSPEC_PCI_RC_CANWBS upon
-> the presence of this new flag.
+>         /* Must be NESTING domain */
+>         if (parent) {
+> @@ -3546,8 +3547,14 @@ intel_iommu_domain_alloc_user(struct device *dev, u32
+> flags,
+>         if (user_data || (dirty_tracking && !ssads_supported(iommu)))
+>                 return ERR_PTR(-EOPNOTSUPP);
 > 
-> CANWBS and S2FWB are similar features, in that they both guarantee the VM
-> can not violate coherency, however S2FWB can be bypassed by PCI No Snoop
-> TLPs, while CANWBS cannot. Thus CANWBS meets the requirements to set
-> IOMMU_CAP_ENFORCE_CACHE_COHERENCY.
-> 
-> Architecturally ARM has expected that VFIO would disable No Snoop through
-> PCI Config space, if this is done then the two would have the same
-> protections.
+> -       /* Do not use first stage for user domain translation. */
+> -       dmar_domain = paging_domain_alloc(dev, false);
+> +       /*
+> +        * Always allocate the guest compatible page table unless
+> +        * IOMMU_HWPT_ALLOC_NEST_PARENT or IOMMU_HWPT_ALLOC_DIRTY_TRACKING
+> +        * is specified.
+> +        */
+> +       first_stage = (nested_parent || dirty_tracking) ?
+> +                       false : flts_supported(iommu);
 
-Acked-by: Hanjun Guo <guohanjun@huawei.com>
+That makes sense, but these flags still need to be rejected if the
+second level is not supported in the HW.
 
-Thanks
-Hanjun
++	if ((flags & (IOMMU_HWPT_ALLOC_NEST_PARENT | IOMMU_HWPT_ALLOC_DIRTY_TRACKING)) && !intel_cap_slts_sanity())
++		return ERR_PTR(-EOPNOTSUPP);
+
+I also think my version was cleaner as we should be using
+first_level_by_default() consistently to make that decision.
+
+Also don't care for ternary expressions :)
+
+Jason
