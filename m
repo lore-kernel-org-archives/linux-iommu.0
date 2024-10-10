@@ -1,169 +1,156 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.17])
+Received: from smtp-fw-9102.amazon.com (smtp-fw-9102.amazon.com [207.171.184.29])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 64B321C8FBA
-	for <iommu@lists.linux.dev>; Thu, 10 Oct 2024 14:06:11 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.17
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EDB3A1CB511
+	for <iommu@lists.linux.dev>; Thu, 10 Oct 2024 15:12:16 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=207.171.184.29
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1728569173; cv=none; b=NxaAsGGDqDRQQWiR1ZIs+Vs0hC2mz2lzt5sKSZdhMD7EE3hT/MbP3MUADrciRGAmOTZ0fR1ZPeGUnrxq7BJDiEWSCXME7NLYsEzkQ3u6g+dUFR9DPTwph99RVB4A1DyVKf0dJE8qPvK9trx4VzKy+FN87O8nJOfUtqKMvVX8Z58=
+	t=1728573140; cv=none; b=Tp4Y7QABTuSgjeeZD98Xg45+uBy4K8hIO/vJcAIB+OMpgWNqDsreXbVXPfihDd/oisB75qU2ryVaFi5UZB0dMPMlwmxZ4SZ1lTKJ14zjlZfqO7I0lwkhkc6RmS3HyxirhO1D6vsuDaNMeXEr8uAL+xJ/gTqXE1F+l2EWwL4BUeo=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1728569173; c=relaxed/simple;
-	bh=JkHJp34IYIvqsSnI1yqdi0T331jiFtzzKSsoryx4qCM=;
-	h=Message-ID:Date:MIME-Version:Cc:Subject:To:References:From:
-	 In-Reply-To:Content-Type; b=LBG/PctEe4X9mbHMzWNf2W287WgiIb6euquJxm0sWa8mSSAUG5Ipz80ZGzoehLmHZpaYhWPmOAkvxk98yo6r2oGpc0oMHTqAYmxGojRconzfUSlU8xLx+tCbaaw7k3WLblD84o5kwwA6yxbQGIK8pWCBpqMbowchY7CiYJEnwCs=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=Vl2awmnp; arc=none smtp.client-ip=198.175.65.17
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
+	s=arc-20240116; t=1728573140; c=relaxed/simple;
+	bh=XYbYMyrvyIZznB5NrpkR3LG5qcSt9nJ42W4qjIjJPrY=;
+	h=Subject:From:To:CC:Date:Message-ID:References:In-Reply-To:
+	 Content-Type:MIME-Version; b=L4ttGYoAtLGCY7viwo5g/EXX2xtcBZzBWsu9mNrryl71WDRrHeQdElBBvrSyl24kkCCymv4Ws5N5JFg4+vfMmkWYf6H9Re//OLsMravWe630Ty4X09ivFezCQ7Oy84ANXZDILznfNC23bpKNNH3NM8cA7Stv86R8ODIUep+PsLk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amazon.com; spf=pass smtp.mailfrom=amazon.com; dkim=pass (1024-bit key) header.d=amazon.com header.i=@amazon.com header.b=Bp9kmKS/; arc=none smtp.client-ip=207.171.184.29
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amazon.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=amazon.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="Vl2awmnp"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1728569172; x=1760105172;
-  h=message-id:date:mime-version:cc:subject:to:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=JkHJp34IYIvqsSnI1yqdi0T331jiFtzzKSsoryx4qCM=;
-  b=Vl2awmnpyy0FKT698iJr7HmVnq1DL+K3XQ/o6BrtSdTz6GA4sVfXd89m
-   bqtm8d2iS0DonEnPfFCfPsJotjeMRhShSCHLSvZ+3FOARuHe1Tfwv9eMr
-   bNuqIsLMgsr6ZvCgw9Cj0Uv5ena1ne+cibGHtdJ/77DAo89mZM/8N+EmM
-   oKwUehVRu6jwvV0Wyt5WWpLHlMcO9UF9CGiVJ6boNBtEfR+eDoeYvnjfw
-   wehhIPY0jKx87bURcvCfwWTFPZs2IPfZAmJWsD7NNJwMha2WlGZr0vCyy
-   phQmi9e1wFNuguPsC7TvnbhAP29+hfm3m4I2jiAP3/sqd3gZQaIBmi9Ig
-   Q==;
-X-CSE-ConnectionGUID: NYUb1jGXRsC4ykB+j+qE7g==
-X-CSE-MsgGUID: +n4kGkYaSGCzyXLCPScJKw==
-X-IronPort-AV: E=McAfee;i="6700,10204,11220"; a="28042998"
-X-IronPort-AV: E=Sophos;i="6.11,193,1725346800"; 
-   d="scan'208";a="28042998"
-Received: from fmviesa007.fm.intel.com ([10.60.135.147])
-  by orvoesa109.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Oct 2024 07:06:11 -0700
-X-CSE-ConnectionGUID: h6NxArEFSPSXXj0E5P+r5A==
-X-CSE-MsgGUID: hVJo1ZzBQqCWM/bH3EZSMQ==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.11,193,1725346800"; 
-   d="scan'208";a="76262850"
-Received: from blu2-mobl.ccr.corp.intel.com (HELO [10.125.248.220]) ([10.125.248.220])
-  by fmviesa007-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Oct 2024 07:06:08 -0700
-Message-ID: <3e83bc8a-c827-413d-b652-893a154d6dc9@linux.intel.com>
-Date: Thu, 10 Oct 2024 22:06:06 +0800
+	dkim=pass (1024-bit key) header.d=amazon.com header.i=@amazon.com header.b="Bp9kmKS/"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
+  t=1728573139; x=1760109139;
+  h=from:to:cc:date:message-id:references:in-reply-to:
+   content-id:content-transfer-encoding:mime-version:subject;
+  bh=XYbYMyrvyIZznB5NrpkR3LG5qcSt9nJ42W4qjIjJPrY=;
+  b=Bp9kmKS/KRNNZ17HUTS/5B1uY+bcxE1o2QMSteNGwJl+yXLsMWWsOTmP
+   qSm1CwXMp5Za2e9+mQlG6bjndnT2ZaJae0rOfssR1g50nhn34fb2do4E5
+   VjJdmEuuv5LWdBGTUVD6dVYnfYKRVA+5HEqExUzmYXb+aTtqEjlBNbCJF
+   w=;
+X-IronPort-AV: E=Sophos;i="6.11,193,1725321600"; 
+   d="scan'208";a="459640414"
+Subject: Re: [RFC PATCH 05/13] iommufd: Serialise persisted iommufds and ioas
+Thread-Topic: [RFC PATCH 05/13] iommufd: Serialise persisted iommufds and ioas
+Received: from pdx4-co-svc-p1-lb2-vlan3.amazon.com (HELO smtpout.prod.us-west-2.prod.farcaster.email.amazon.dev) ([10.25.36.214])
+  by smtp-border-fw-9102.sea19.amazon.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Oct 2024 15:12:11 +0000
+Received: from EX19MTAEUC002.ant.amazon.com [10.0.10.100:42932]
+ by smtpin.naws.eu-west-1.prod.farcaster.email.amazon.dev [10.0.0.200:2525] with esmtp (Farcaster)
+ id 90e4b000-0dbf-4a04-b95f-00a5f0e18b9e; Thu, 10 Oct 2024 15:12:10 +0000 (UTC)
+X-Farcaster-Flow-ID: 90e4b000-0dbf-4a04-b95f-00a5f0e18b9e
+Received: from EX19D004EUC002.ant.amazon.com (10.252.51.225) by
+ EX19MTAEUC002.ant.amazon.com (10.252.51.181) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA) id 15.2.1258.34;
+ Thu, 10 Oct 2024 15:12:10 +0000
+Received: from EX19D014EUC004.ant.amazon.com (10.252.51.182) by
+ EX19D004EUC002.ant.amazon.com (10.252.51.225) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA) id 15.2.1258.34;
+ Thu, 10 Oct 2024 15:12:09 +0000
+Received: from EX19D014EUC004.ant.amazon.com ([fe80::76dd:4020:4ff2:1e41]) by
+ EX19D014EUC004.ant.amazon.com ([fe80::76dd:4020:4ff2:1e41%3]) with mapi id
+ 15.02.1258.034; Thu, 10 Oct 2024 15:12:09 +0000
+From: "Gowans, James" <jgowans@amazon.com>
+To: "jgg@ziepe.ca" <jgg@ziepe.ca>
+CC: "kvm@vger.kernel.org" <kvm@vger.kernel.org>, "rppt@kernel.org"
+	<rppt@kernel.org>, "kw@linux.com" <kw@linux.com>, "iommu@lists.linux.dev"
+	<iommu@lists.linux.dev>, "madvenka@linux.microsoft.com"
+	<madvenka@linux.microsoft.com>, "anthony.yznaga@oracle.com"
+	<anthony.yznaga@oracle.com>, "robin.murphy@arm.com" <robin.murphy@arm.com>,
+	"baolu.lu@linux.intel.com" <baolu.lu@linux.intel.com>,
+	"nh-open-source@amazon.com" <nh-open-source@amazon.com>,
+	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+	"seanjc@google.com" <seanjc@google.com>, "Saenz Julienne, Nicolas"
+	<nsaenz@amazon.es>, "pbonzini@redhat.com" <pbonzini@redhat.com>,
+	"kevin.tian@intel.com" <kevin.tian@intel.com>, "dwmw2@infradead.org"
+	<dwmw2@infradead.org>, "steven.sistare@oracle.com"
+	<steven.sistare@oracle.com>, "Graf (AWS), Alexander" <graf@amazon.de>,
+	"will@kernel.org" <will@kernel.org>, "joro@8bytes.org" <joro@8bytes.org>,
+	"maz@kernel.org" <maz@kernel.org>
+Thread-Index: AQHbCCwuWjwUDEQNSEmjPqzUeT3bK7Jz6OkAgAcvr4CAAAJBgIAAAo+AgABl3QCAAu2RAIAADFAAgAHADQA=
+Date: Thu, 10 Oct 2024 15:12:09 +0000
+Message-ID: <673df8a09723d3398ca9e9c638893547b0b0ec63.camel@amazon.com>
+References: <20240916113102.710522-1-jgowans@amazon.com>
+	 <20240916113102.710522-6-jgowans@amazon.com>
+	 <20241002185520.GL1369530@ziepe.ca>
+	 <d6328467adc9b7512f6dd88a6f8f843b8efdc154.camel@amazon.com>
+	 <e458d48a797043b7efc853fc65b9c4d043b12ed4.camel@infradead.org>
+	 <1d331c55a299d414e49ba5eb6f46dccb525bf788.camel@amazon.com>
+	 <20241007150138.GM2456194@ziepe.ca>
+	 <b76aa005c0fb75199cbb1fa0790858b9c808c90a.camel@amazon.com>
+	 <20241009122830.GF762027@ziepe.ca>
+In-Reply-To: <20241009122830.GF762027@ziepe.ca>
+Accept-Language: en-ZA, en-US
+Content-Language: en-US
+X-MS-Has-Attach:
+X-MS-TNEF-Correlator:
+Content-Type: text/plain; charset="utf-8"
+Content-ID: <F8E3F23707ECCD428D0DF754138CB191@amazon.com>
+Content-Transfer-Encoding: base64
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Cc: baolu.lu@linux.intel.com, Vasant Hegde <vasant.hegde@amd.com>,
- iommu@lists.linux.dev, joro@8bytes.org, will@kernel.org,
- robin.murphy@arm.com, suravee.suthikulpanit@amd.com, yi.l.liu@intel.com,
- kevin.tian@intel.com, jacob.pan@linux.microsoft.com
-Subject: Re: [PATCH v2 0/8] iommu: Domain allocation enhancements
-To: Jason Gunthorpe <jgg@ziepe.ca>
-References: <20240911101911.6269-1-vasant.hegde@amd.com>
- <970c6058-9e02-4cf6-bcb9-cfb8afb4eac1@amd.com>
- <71d20ff3-0a85-4670-8559-70ca5e6543c0@linux.intel.com>
- <9d0101b4-af13-4bf6-94a5-43a79f4d9989@amd.com>
- <20241009121548.GE762027@ziepe.ca>
- <f8cf4532-3bfe-4b0a-9399-0760ab6a4612@linux.intel.com>
- <2ba53bb0-b84a-4eae-91da-4ff7d13b582b@linux.intel.com>
- <20241010113817.GG762027@ziepe.ca>
-Content-Language: en-US
-From: Baolu Lu <baolu.lu@linux.intel.com>
-In-Reply-To: <20241010113817.GG762027@ziepe.ca>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
 
-On 2024/10/10 19:38, Jason Gunthorpe wrote:
-> On Thu, Oct 10, 2024 at 02:48:09PM +0800, Baolu Lu wrote:
->> On 2024/10/10 14:40, Baolu Lu wrote:
->>> On 2024/10/9 20:15, Jason Gunthorpe wrote:
->>>> On Wed, Oct 09, 2024 at 03:23:16PM +0530, Vasant Hegde wrote:
->>>>
->>>>>> This change might cause a functional regression when it comes to nested
->>>>>> translation. In nested translation mode, the user page table (e.g.,
->>>>>> created and managed by a guest VM for guest kernel DMA) must be in the
->>>>>> first-stage page table format. Then, it can be nested on a second-stage
->>>>>> page table managed by the host kernel.
->>>>>>
->>>>>> Currently, the kernel automatically selects the page table formats. For
->>>>>> example, the Intel IOMMU driver always uses the first-stage page table
->>>>>> for guest kernel DMA. After this change, this assumption no
->>>>>> longer holds
->>>>>> true. This means the kernel might use a second-stage page table for
->>>>>> guest kernel DMA, breaking nested translation.
->>>>> Hmmm. I assumed after discussion in v1 series you are fine.
->>>>> Looks like I misread it?
->>>> It is a bug in the implementation in the intel driver.
->>>>
->>>> intel_iommu_domain_alloc_user() should always allocate a page table
->>>> that works, if you are in a guest context it must allocate a first
->>>> level/guest page table otherwise nested VFIO will be broken.
->>>>
->>>> For this reason Intel driver should always allocate the guest
->>>> compatible page table unless IOMMU_HWPT_ALLOC_NEST_PARENT is
->>>> specified.
->>>>
->>>> Something like this:
->>> This will break the existing dirty page tracking functionality. Intel
->>> IOMMU only supports enabling or disabling dirty page tracking at the
->>> second-stage page table.
->> So, perhaps something like below?
->>
->> diff --git a/drivers/iommu/intel/iommu.h b/drivers/iommu/intel/iommu.h
->> index 1497f3112b12..e11dde259afa 100644
->> --- a/drivers/iommu/intel/iommu.h
->> +++ b/drivers/iommu/intel/iommu.h
->> @@ -544,6 +544,8 @@ enum {
->>                                  ecap_slads((iommu)->ecap))
->>   #define nested_supported(iommu)        (sm_supported(iommu) &&         \
->>                                   ecap_nest((iommu)->ecap))
->> +#define flts_supported(iommu)  (sm_supported(iommu) &&                 \
->> +                                ecap_flts((iommu)->ecap))
->>
->>   struct pasid_entry;
->>   struct pasid_state_entry;
->> diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
->> index 9f6b0780f2ef..d1a7378489a4 100644
->> --- a/drivers/iommu/intel/iommu.c
->> +++ b/drivers/iommu/intel/iommu.c
->> @@ -3530,6 +3530,7 @@ intel_iommu_domain_alloc_user(struct device *dev, u32
->> flags,
->>          struct intel_iommu *iommu = info->iommu;
->>          struct dmar_domain *dmar_domain;
->>          struct iommu_domain *domain;
->> +       bool first_stage;
->>
->>          /* Must be NESTING domain */
->>          if (parent) {
->> @@ -3546,8 +3547,14 @@ intel_iommu_domain_alloc_user(struct device *dev, u32
->> flags,
->>          if (user_data || (dirty_tracking && !ssads_supported(iommu)))
->>                  return ERR_PTR(-EOPNOTSUPP);
->>
->> -       /* Do not use first stage for user domain translation. */
->> -       dmar_domain = paging_domain_alloc(dev, false);
->> +       /*
->> +        * Always allocate the guest compatible page table unless
->> +        * IOMMU_HWPT_ALLOC_NEST_PARENT or IOMMU_HWPT_ALLOC_DIRTY_TRACKING
->> +        * is specified.
->> +        */
->> +       first_stage = (nested_parent || dirty_tracking) ?
->> +                       false : flts_supported(iommu);
-> That makes sense, but these flags still need to be rejected if the
-> second level is not supported in the HW.
-> 
-> +	if ((flags & (IOMMU_HWPT_ALLOC_NEST_PARENT | IOMMU_HWPT_ALLOC_DIRTY_TRACKING)) && !intel_cap_slts_sanity())
-> +		return ERR_PTR(-EOPNOTSUPP);
-> 
-> I also think my version was cleaner as we should be using
-> first_level_by_default() consistently to make that decision.
-> 
-> Also don't care for ternary expressions 🙂
-
-Okay, seems that we are on the same page now. :-)
-
-I have a series to add domain_alloc_paging support in the Intel iommu
-driver. I will convert the change in a formal patch and put it in that
-series for further review.
-
-Thanks,
-baolu
+T24gV2VkLCAyMDI0LTEwLTA5IGF0IDA5OjI4IC0wMzAwLCBKYXNvbiBHdW50aG9ycGUgd3JvdGU6
+DQo+IE9uIFdlZCwgT2N0IDA5LCAyMDI0IGF0IDExOjQ0OjMwQU0gKzAwMDAsIEdvd2FucywgSmFt
+ZXMgd3JvdGU6DQo+IA0KPiA+IE9rYXksIGJ1dCBpbiBnZW5lcmFsIHRoaXMgc3RpbGwgbWVhbnMg
+dGhhdCB0aGUgcGFnZSB0YWJsZXMgbXVzdCBoYXZlDQo+ID4gZXhhY3RseSB0aGUgc2FtZSB0cmFu
+c2xhdGlvbnMgaWYgd2UgdHJ5IHRvIHN3aXRjaCBmcm9tIG9uZSBzZXQgdG8NCj4gPiBhbm90aGVy
+LiBJZiBpdCBpcyBwb3NzaWJsZSB0byBjaGFuZ2UgdHJhbnNsYXRpb25zIHRoZW4gdHJhbnNsYXRp
+b24gdGFibGUNCj4gPiBlbnRyaWVzIGNvdWxkIGJlIGNyZWF0ZWQgYXQgZGlmZmVyZW50IGdyYW51
+bGFyaXR5IChQVEUsIFBNRCwgUFVEKSBsZXZlbA0KPiA+IHdoaWNoIHdvdWxkIHZpb2xhdGUgdGhp
+cyByZXF1aXJlbWVudC4NCj4gDQo+IFllcywgYnV0IHdlIHN0cml2ZSB0byBtYWtlIHBhZ2UgdGFi
+bGVzIGNvbnNpc3RlbnRseSBhbmQgaXQgaXNuJ3QgdGhhdA0KPiBvZnRlbiB0aGF0IHdlIGdldCBu
+ZXcgZmVhdHVyZXMgdGhhdCB3b3VsZCBjaGFuZyB0aGUgbGF5b3V0IChjb250aWcgYml0DQo+IGZv
+ciBpbnN0YW5jZSkuIEknZCBzdWdnZXN0IGluIHRoZXNlIGNhc2VzIHlvdSdkIGFkZCBzb21lIGNy
+ZWF0aW9uIGZsYWcNCj4gdG8gdGhlIEhXUFQgdGhhdCBjYW4gaW5oaWJpdCB0aGUgbmV3IGZlYXR1
+cmUgYW5kIHlvdXIgVk1NIHdpbGwgZGVhbA0KPiB3aXRoIGl0Lg0KPiANCj4gT3IgeW91IHN3ZWVw
+IGl0IGFuZCBtYW51YWxseSBzcGxpdC9qb2luIHRvIGRlYWwgd2l0aCBCQk0gPCBsZXZlbA0KPiAy
+LiBHZW5lcmljIHB0IHdpbGwgaGF2ZSBjb2RlIHRvIGRvIGFsbCBvZiB0aGlzIHNvIGl0IGlzIG5v
+dCB0aGF0IGJhZC4NCj4gDQo+IElmIHRoaXMgbGl0dGxlIGlzc3VlIGFscmVhZHkgc2NhcmVzIHlv
+dSB0aGVuIEkgZG9uJ3QgdGhpbmsgSSB3YW50IHRvDQo+IHNlZSB5b3Ugc2VyaWFsaXplIGFueXRo
+aW5nIG1vcmUgY29tcGxleCwgdGhlcmUgYXJlIGVuZGxlc3Mgc2NlbmFyaW9zDQo+IGZvciBjb21w
+YXRpYmlsaXR5IHByb2JsZW1zIDpcDQoNClRoZSB0aGluZ3MgdGhhdCBzY2FyZSBtZSBpcyBzb21l
+IHN1YnRsZSBwYWdlIHRhYmxlIGRpZmZlcmVuY2Ugd2hpY2gNCmNhdXNlcyBzaWxlbnQgZGF0YSBj
+b3JydXB0aW9uLi4uIFRoaXMgaXMgb25lIG9mIHRoZSByZWFzb25zIEkgbGlrZWQgcmUtDQp1c2lu
+ZyB0aGUgZXhpc3RpbmcgdGFibGVzLCB0aGVyZSBpcyBubyB3YXkgZm9yIHRoaXMgc29ydCBvZiBz
+dWJ0bGUgYnVnDQp0byBoYXBwZW4uDQpJbiBnZW5lcmFsIEkgYWdyZWUgd2l0aCB5b3VyIHBvaW50
+IGFib3V0IHJlZHVjaW5nIHRoZSBjb21wbGV4aXR5IG9mIHdoYXQNCndlIHNlcmlhbGlzZSBhbmQg
+cmF0aGVyIGV4ZXJjaXNpbmcgdGhlIG1hY2hpbmVyeSBhZ2FpbiBhZnRlciBrZXhlYyB0bw0KY3Jl
+YXRlIGZyZXNoIG9iamVjdHMuIFRoZSBvbmx5ICg/KSBjb3VudGVyIHBvaW50IHRvIHRoYXQgaXMg
+YWJvdXQNCnBlcmZvcm1hbmNlIG9mIGFueXRoaW5nIGluIHRoZSBob3QgcGF0aCAoZGlzY3Vzc2Vk
+IG1vcmUgYmVsb3cpLg0KDQoNCj4gDQo+ID4gSWYgd2Ugc2F5IHRoYXQgdG8gYmUgc2FmZS9jb3Jy
+ZWN0IGluIHRoZSBnZW5lcmFsIGNhc2UgdGhlbiBpdCBpcw0KPiA+IG5lY2Vzc2FyeSBmb3IgdGhl
+IHRyYW5zbGF0aW9ucyB0byBiZSAqZXhhY3RseSogdGhlIHNhbWUgYmVmb3JlIGFuZCBhZnRlcg0K
+PiA+IGtleGVjLCBpcyB0aGVyZSBhbnkgYmVuZWZpdCB0byBidWlsZGluZyBuZXcgdHJhbnNsYXRp
+b24gdGFibGVzIGFuZA0KPiA+IHN3aXRjaGluZyB0byB0aGVtPyBXZSBtYXkgYXMgd2VsbCBjb250
+aW51ZSB0byB1c2UgdGhlIGV4YWN0IHNhbWUgcGFnZQ0KPiA+IHRhYmxlcyBhbmQgY29uc3RydWN0
+IGlvbW11ZmQgb2JqZWN0cyAoSU9BUywgZXRjKSB0byBtYXRjaC4NCj4gDQo+IFRoZSBiZW5pZml0
+IGlzIHByaW5jaXBhbGx5IHRoYXQgeW91IGRpZCBhbGwgdGhlIG1hY2hpbmVyeSB0byBnZXQgdXAg
+dG8NCj4gdGhhdCBwb2ludCwgaW5jbHVkaW5nIHJlLXBpbm5pbmcgYW5kIHNvIGZvcnRoIGFsbCB0
+aGUgbWVtb3J5LCBpbnN0ZWFkDQo+IG9mIHRyeWluZyB0byBtYWdpY2FsbHkgcmVjb3ZlciB0aGF0
+IGFkZGl0aW9uYWwgc3RhdGUuDQo+IA0KPiBUaGlzIGlzIHRoZSBwaGlsb3NvcGh5IHRoYXQgeW91
+IHJlcGxheSBpbnN0ZWFkIG9mIGRlLXNlcmlhbGl6ZSwgc28geW91DQo+IGhhdmUgdG8gcmVwbGF5
+IGludG8gYSBwYWdlIHRhYmxlIGF0IHNvbWUgbGV2ZWwgdG8gbWFrZSB0aGF0IHdvcmsuDQoNCldl
+IGNvdWxkIGhhdmUgc29tZSAic2tpcF9wZ3RhYmxlX3VwZGF0ZSIgZmxhZyB3aGljaCB0aGUgcmVw
+bGF5IG1hY2hpbmVyeQ0Kc2V0cywgYWxsb3dpbmcgSU9NTVVGRCB0byBjcmVhdGUgZnJlc2ggb2Jq
+ZWN0cyBpbnRlcm5hbGx5IGFuZCBsZWF2ZSB0aGUNCnBhZ2UgdGFibGVzIGFsb25lPw0KDQpBbnl3
+YXksIHRoYXQgc29ydCBvZiB0aGluZyBpcyBhIHBvdGVudGlhbCBmdXR1cmUgb3B0aW1pc2F0aW9u
+IHdlIGNvdWxkDQpkby4gSW4gdGhlIGludGVyZXN0cyBvZiBtYWtpbmcgcHJvZ3Jlc3MgSSdsbCBy
+ZS13b3JrIHRoaXMgUkZDIHRvIHJlLQ0KY3JlYXRlIGV2ZXJ5dGhpbmcgKGlvbW11ZmQgb2JqZWN0
+cywgSU9NTVUgZHJpdmVyIGRvbWFpbnMgYW5kIHBhZ2UNCnRhYmxlcykgYW5kIGRvIHRoZSBhdG9t
+aWMgaGFuZG92ZXIgb2YgcGFnZSB0YWJsZXMgYWZ0ZXIgcmUtDQppbml0aWFsaXNhdGlvbi4NCg0K
+PiANCj4gDQo+ID4gdGhlbiBpdCB3b3VsZCBiZSB1c2VmdWwgdG8gYXZvaWQgcmVidWlsZGluZyBp
+ZGVudGljYWwgdGFibGVzLiBNYXliZSBpdA0KPiA+IGVuZHMgdXAgYmVpbmcgaW4gdGhlICJ3YXJt
+IiBwYXRoIC0gdGhlIFZNIGNhbiBzdGFydCBydW5uaW5nIGJ1dCB3aWxsDQo+ID4gc2xlZXAgaWYg
+dGFraW5nIGEgcGFnZSBmYXVsdCBiZWZvcmUgSU9NTVVGRCBpcyByZS1pbml0YWxpc2VkLi4uDQo+
+IA0KPiBJIGRpZG4ndCB0aGluayB5b3UnZCBzdXBwb3J0IHBhZ2UgZmF1bHRzPyBUaGVyZSBhcmUg
+YmlnZ2VyIGlzc3VlcyBoZXJlDQo+IGlmIHlvdSBleHBlY3QgdG8gaGF2ZSBhIHZJT01NVSBpbiB0
+aGUgZ3Vlc3QuDQoNCnZJT01NVSBpcyBvbmUgY2FzZSwgYnV0IGFub3RoZXIgaXMgbWVtb3J5IG92
+ZXJzdWJzY3JpcHRpb24uIFdpdGggUFJJL0FUUw0Kd2UgY2FuIG92ZXJzdWJzY3JpYmUgbWVtb3J5
+IHdoaWNoIGlzIERNQSBtYXBwZWQuIEluIHRoYXQgY2FzZSBhIHBhZ2UNCmZhdWx0IHdvdWxkIGJl
+IGEgYmxvY2tpbmcgb3BlcmF0aW9uIHVudGlsIElPTU1VRkQgaXMgYWxsIHNldCB1cCBhbmQNCnJl
+YWR5IHRvIGdvLiBJIHN1c3BlY3QgdGhlcmUgd2lsbCBiZSBiZW5lZml0IGluIGdldHRpbmcgdGhp
+cyBmYXN0LCBidXQNCmFzIGxvbmcgYXMgd2UgaGF2ZSBhIHBhdGggdG8gb3B0aW1pc2UgaXQgaW4g
+ZnV0dXJlIEknbSB0b3RhbGx5IGZpbmUgdG8NCnN0YXJ0IHdpdGggcmUtY3JlYXRpbmcgZXZlcnl0
+aGluZy4NCg0KSkcNCg==
