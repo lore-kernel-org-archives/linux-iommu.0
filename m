@@ -1,48 +1,48 @@
 Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.16])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BD1171F9AA4
-	for <iommu@lists.linux.dev>; Fri, 11 Oct 2024 04:32:11 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 787E3207A36
+	for <iommu@lists.linux.dev>; Fri, 11 Oct 2024 04:32:14 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.16
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1728621133; cv=none; b=CLm8GUd/jawUDpZ6ubZwibKIz14ToOLmk1nPokluOWRa9mi3GxmdGaxfjNg3PqwxF8Hz6s3fCT3I5KEV057MDpt1/k4N1jGhZao53gTL025gcD0gFlKs69pW+ynf886g2GVdDa+Xljhc2ppWUfekpZlVq+VQ672Jh8rswFvoPz4=
+	t=1728621135; cv=none; b=LBJ4asOUucEsTCyMdOLxg68LAR7bDKuS/XDsBqfdbh+HgGEJ9IkP1atHdHjs94RgexHRvEUcb3hR7A4wspw9065ievORI3l6X5AjWeN+1yM9eXWxtut/W6UPXdcf/bV8FfYzcvOZGoVgyxOvldmVfCDCxH/o82D1WJFwsx47SnY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1728621133; c=relaxed/simple;
-	bh=UTBlQOi+stEX3XIyVuR9P1VuUd5LAYimx8CGympPPL8=;
+	s=arc-20240116; t=1728621135; c=relaxed/simple;
+	bh=dofyf/kVAJlM/vTTaWQs6uLAoF7OnNzbz4cPHBZ/QaU=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=l5vh3yiUxb8ohdiYDLP0f/FWvvqwiUXarLUDFqJ9Ep72gW2oYMB1P0XFMulIVqYo/ZTMMUKo7WGyphTKDuRGpdeJRo1OH+riGSIbEFfyg7sDJSDixhjvHZiFIHzYuNZXT4CetOQ6NuIQhp7jy+MclUNGo2xI8RmBhXT1cQGJ9bU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=WkACw/Pn; arc=none smtp.client-ip=198.175.65.16
+	 MIME-Version; b=q1IRmNaQD+Fg3hH4ofpCkPuJzemn9MljBx2L9zzN1Hsnx2X1Dq5eCB0WUy7bG5p5DlYEnnRodCkvZbD0lXRr9STb50EkBFrNZkMaD6jcXHnNl5vmZr+UblLicDKhGaMEjrSP2RByQwozttoTlBX1AaU+govzJLOyG1mUQFUzCrQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=Y+MSxcrC; arc=none smtp.client-ip=198.175.65.16
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="WkACw/Pn"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="Y+MSxcrC"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1728621132; x=1760157132;
+  t=1728621134; x=1760157134;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=UTBlQOi+stEX3XIyVuR9P1VuUd5LAYimx8CGympPPL8=;
-  b=WkACw/PnmXjw6GaGjvpgkHEgxk7gdfVLYvTzVAIA8By7FWcaZ47WgLOV
-   r84864Lx5p0hw9V+Y4UI7/mKJRwypZt2V8eHxwp7XG69l5iaqfI7pl3K6
-   cYtBXqYJW/wL1Q3YWf9m/C+nfrAgDXb3PK0MQgswV7eb8aTH9u+pxmHAA
-   LMKYJOSRA2qX0xpXVwyymQXIpqZQehlBd4g++hVYSV0QVs2e85YEjILMP
-   3WRDZyTNUFyG2JBBM6tfv+ON7ORC4eqz8cX/2Lt9IOeKZ+xnwHlf8tyqn
-   A/J4KWa5vztsolHPDtneCIQYjjTgX/BDzKzMuuAyAtSkHAPX/s7A5TS6w
-   A==;
-X-CSE-ConnectionGUID: MdEgMAQGT3OUGEjeYws5FQ==
-X-CSE-MsgGUID: nbUz1TZQRICYpNo625jztA==
-X-IronPort-AV: E=McAfee;i="6700,10204,11221"; a="28101769"
+  bh=dofyf/kVAJlM/vTTaWQs6uLAoF7OnNzbz4cPHBZ/QaU=;
+  b=Y+MSxcrC8HuAjt/VacnamfbroI7cdWtyrgOmpDdWMOZpfVm60KIeZdAY
+   3EsqR6FxOoHDLInFV3MyoYPIT+AlBcwDxCufRcv+20juvwByRAMX7ouEX
+   Oef70Uaz9INu+BXSYVmoMnVEFS8PgDYUQhNrVG/0C6/2hKHfxiQhvBxYQ
+   V4bLLMZQ2TmtPZSg8WGJ7Yse+U1QADuAPzvm+zeueHeqqcd2IGXNyVeFH
+   FBn71LCYQ/6HLKA2rMXUJAZec3VlbCEB18N8cSUvGf7KzsEbrhWAd1Gfo
+   RW+2DMmIjsZqqqZcvg/Yh0TrJaZtiMWm8EzHgd7bEec8T9mVIVR5IhE1b
+   w==;
+X-CSE-ConnectionGUID: lKqStf/NT1Gg5u/VGeRKEw==
+X-CSE-MsgGUID: rATR/IIKRXqjcrWtwWETbA==
+X-IronPort-AV: E=McAfee;i="6700,10204,11221"; a="28101785"
 X-IronPort-AV: E=Sophos;i="6.11,194,1725346800"; 
-   d="scan'208";a="28101769"
+   d="scan'208";a="28101785"
 Received: from fmviesa004.fm.intel.com ([10.60.135.144])
-  by orvoesa108.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Oct 2024 21:32:11 -0700
-X-CSE-ConnectionGUID: Kw3eTvwuThyKT90ND2+ooQ==
-X-CSE-MsgGUID: RIGdyHj0Ti2a1Nf+skQsVA==
+  by orvoesa108.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Oct 2024 21:32:14 -0700
+X-CSE-ConnectionGUID: ekGjqVSQSw+CukaEJAad3Q==
+X-CSE-MsgGUID: /4iaumopR7SBdjfkgpKSIQ==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.11,194,1725346800"; 
-   d="scan'208";a="81412185"
+   d="scan'208";a="81412204"
 Received: from allen-box.sh.intel.com ([10.239.159.127])
-  by fmviesa004.fm.intel.com with ESMTP; 10 Oct 2024 21:32:09 -0700
+  by fmviesa004.fm.intel.com with ESMTP; 10 Oct 2024 21:32:11 -0700
 From: Lu Baolu <baolu.lu@linux.intel.com>
 To: iommu@lists.linux.dev
 Cc: Joerg Roedel <joro@8bytes.org>,
@@ -54,9 +54,9 @@ Cc: Joerg Roedel <joro@8bytes.org>,
 	Vasant Hegde <vasant.hegde@amd.com>,
 	linux-kernel@vger.kernel.org,
 	Lu Baolu <baolu.lu@linux.intel.com>
-Subject: [PATCH 3/7] iommu/vt-d: Enhance compatibility check for paging domain attach
-Date: Fri, 11 Oct 2024 12:27:18 +0800
-Message-ID: <20241011042722.73930-4-baolu.lu@linux.intel.com>
+Subject: [PATCH 4/7] iommu/vt-d: Remove domain_update_iommu_cap()
+Date: Fri, 11 Oct 2024 12:27:19 +0800
+Message-ID: <20241011042722.73930-5-baolu.lu@linux.intel.com>
 X-Mailer: git-send-email 2.43.0
 In-Reply-To: <20241011042722.73930-1-baolu.lu@linux.intel.com>
 References: <20241011042722.73930-1-baolu.lu@linux.intel.com>
@@ -68,194 +68,151 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-The driver now supports domain_alloc_paging, ensuring that a valid device
-pointer is provided whenever a paging domain is allocated. Additionally,
-the dmar_domain attributes are set up at the time of allocation.
-
-Consistent with the established semantics in the IOMMU core, if a domain is
-attached to a device and found to be incompatible with the IOMMU hardware
-capabilities, the operation will return an -EINVAL error. This implicitly
-advises the caller to allocate a new domain for the device and attempt the
-domain attachment again.
+The attributes of a paging domain are initialized during the allocation
+process, and any attempt to attach a domain that is not compatible will
+result in a failure. Therefore, there is no need to update the domain
+attributes at the time of domain attachment.
 
 Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
 ---
- drivers/iommu/intel/iommu.c | 70 ++++++++++++-------------------------
- drivers/iommu/intel/pasid.c | 28 +--------------
- 2 files changed, 24 insertions(+), 74 deletions(-)
+ drivers/iommu/intel/iommu.h |  1 -
+ drivers/iommu/intel/iommu.c | 83 -------------------------------------
+ 2 files changed, 84 deletions(-)
 
+diff --git a/drivers/iommu/intel/iommu.h b/drivers/iommu/intel/iommu.h
+index 1497f3112b12..a4bff90c2d07 100644
+--- a/drivers/iommu/intel/iommu.h
++++ b/drivers/iommu/intel/iommu.h
+@@ -1232,7 +1232,6 @@ void domain_detach_iommu(struct dmar_domain *domain, struct intel_iommu *iommu);
+ void device_block_translation(struct device *dev);
+ int prepare_domain_attach_device(struct iommu_domain *domain,
+ 				 struct device *dev);
+-void domain_update_iommu_cap(struct dmar_domain *domain);
+ 
+ int dmar_ir_support(void);
+ 
 diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
-index dd158ff5fd45..f6a3266b17d4 100644
+index f6a3266b17d4..ada271e7be50 100644
 --- a/drivers/iommu/intel/iommu.c
 +++ b/drivers/iommu/intel/iommu.c
-@@ -1606,7 +1606,7 @@ static int domain_context_mapping_one(struct dmar_domain *domain,
- 	int translation = CONTEXT_TT_MULTI_LEVEL;
- 	struct dma_pte *pgd = domain->pgd;
- 	struct context_entry *context;
--	int agaw, ret;
-+	int ret;
- 
- 	pr_debug("Set context mapping for %02x:%02x.%d\n",
- 		bus, PCI_SLOT(devfn), PCI_FUNC(devfn));
-@@ -1623,27 +1623,15 @@ static int domain_context_mapping_one(struct dmar_domain *domain,
- 
- 	copied_context_tear_down(iommu, context, bus, devfn);
- 	context_clear_entry(context);
--
- 	context_set_domain_id(context, did);
- 
--	/*
--	 * Skip top levels of page tables for iommu which has
--	 * less agaw than default. Unnecessary for PT mode.
--	 */
--	for (agaw = domain->agaw; agaw > iommu->agaw; agaw--) {
--		ret = -ENOMEM;
--		pgd = phys_to_virt(dma_pte_addr(pgd));
--		if (!dma_pte_present(pgd))
--			goto out_unlock;
--	}
--
- 	if (info && info->ats_supported)
- 		translation = CONTEXT_TT_DEV_IOTLB;
- 	else
- 		translation = CONTEXT_TT_MULTI_LEVEL;
- 
- 	context_set_address_root(context, virt_to_phys(pgd));
--	context_set_address_width(context, agaw);
-+	context_set_address_width(context, domain->agaw);
- 	context_set_translation_type(context, translation);
- 	context_set_fault_enable(context);
- 	context_set_present(context);
-@@ -1876,20 +1864,9 @@ static int domain_setup_first_level(struct intel_iommu *iommu,
- 				    u32 pasid)
- {
- 	struct dma_pte *pgd = domain->pgd;
--	int agaw, level;
--	int flags = 0;
-+	int level, flags = 0;
- 
--	/*
--	 * Skip top levels of page tables for iommu which has
--	 * less agaw than default. Unnecessary for PT mode.
--	 */
--	for (agaw = domain->agaw; agaw > iommu->agaw; agaw--) {
--		pgd = phys_to_virt(dma_pte_addr(pgd));
--		if (!dma_pte_present(pgd))
--			return -ENOMEM;
--	}
--
--	level = agaw_to_level(agaw);
-+	level = agaw_to_level(domain->agaw);
- 	if (level != 4 && level != 5)
- 		return -EINVAL;
- 
-@@ -3506,27 +3483,26 @@ int prepare_domain_attach_device(struct iommu_domain *domain,
- 	if (domain->dirty_ops && !ssads_supported(iommu))
- 		return -EINVAL;
- 
--	/* check if this iommu agaw is sufficient for max mapped address */
--	addr_width = agaw_to_width(iommu->agaw);
--	if (addr_width > cap_mgaw(iommu->cap))
--		addr_width = cap_mgaw(iommu->cap);
--
--	if (dmar_domain->max_addr > (1LL << addr_width))
-+	if (dmar_domain->iommu_coherency !=
-+			iommu_paging_structure_coherency(iommu))
- 		return -EINVAL;
--	dmar_domain->gaw = addr_width;
--
--	/*
--	 * Knock out extra levels of page tables if necessary
--	 */
--	while (iommu->agaw < dmar_domain->agaw) {
--		struct dma_pte *pte;
--
--		pte = dmar_domain->pgd;
--		if (dma_pte_present(pte)) {
--			dmar_domain->pgd = phys_to_virt(dma_pte_addr(pte));
--			iommu_free_page(pte);
--		}
--		dmar_domain->agaw--;
-+
-+	if (domain->type & __IOMMU_DOMAIN_PAGING) {
-+		if (dmar_domain->iommu_superpage !=
-+				iommu_superpage_capability(iommu, dmar_domain->use_first_level))
-+			return -EINVAL;
-+
-+		if (dmar_domain->use_first_level &&
-+		    (!sm_supported(iommu) || !ecap_flts(iommu->ecap)))
-+			return -EINVAL;
-+
-+		/* check if this iommu agaw is sufficient for max mapped address */
-+		addr_width = agaw_to_width(iommu->agaw);
-+		if (addr_width > cap_mgaw(iommu->cap))
-+			addr_width = cap_mgaw(iommu->cap);
-+
-+		if (dmar_domain->gaw > addr_width || dmar_domain->agaw > iommu->agaw)
-+			return -EINVAL;
- 	}
- 
- 	if (sm_supported(iommu) && !dev_is_real_dma_subdevice(dev) &&
-diff --git a/drivers/iommu/intel/pasid.c b/drivers/iommu/intel/pasid.c
-index 2e5fa0a23299..53157e1194f4 100644
---- a/drivers/iommu/intel/pasid.c
-+++ b/drivers/iommu/intel/pasid.c
-@@ -345,25 +345,6 @@ int intel_pasid_setup_first_level(struct intel_iommu *iommu,
- 	return 0;
+@@ -352,36 +352,6 @@ static bool iommu_paging_structure_coherency(struct intel_iommu *iommu)
+ 			ecap_smpwc(iommu->ecap) : ecap_coherent(iommu->ecap);
  }
  
--/*
-- * Skip top levels of page tables for iommu which has less agaw
-- * than default. Unnecessary for PT mode.
-- */
--static int iommu_skip_agaw(struct dmar_domain *domain,
--			   struct intel_iommu *iommu,
--			   struct dma_pte **pgd)
+-static void domain_update_iommu_coherency(struct dmar_domain *domain)
 -{
--	int agaw;
+-	struct iommu_domain_info *info;
+-	struct dmar_drhd_unit *drhd;
+-	struct intel_iommu *iommu;
+-	bool found = false;
+-	unsigned long i;
 -
--	for (agaw = domain->agaw; agaw > iommu->agaw; agaw--) {
--		*pgd = phys_to_virt(dma_pte_addr(*pgd));
--		if (!dma_pte_present(*pgd))
--			return -EINVAL;
+-	domain->iommu_coherency = true;
+-	xa_for_each(&domain->iommu_array, i, info) {
+-		found = true;
+-		if (!iommu_paging_structure_coherency(info->iommu)) {
+-			domain->iommu_coherency = false;
+-			break;
+-		}
 -	}
+-	if (found)
+-		return;
 -
--	return agaw;
+-	/* No hardware attached; use lowest common denominator */
+-	rcu_read_lock();
+-	for_each_active_iommu(iommu, drhd) {
+-		if (!iommu_paging_structure_coherency(iommu)) {
+-			domain->iommu_coherency = false;
+-			break;
+-		}
+-	}
+-	rcu_read_unlock();
 -}
 -
- /*
-  * Set up the scalable mode pasid entry for second only translation type.
-  */
-@@ -374,7 +355,6 @@ int intel_pasid_setup_second_level(struct intel_iommu *iommu,
- 	struct pasid_entry *pte;
- 	struct dma_pte *pgd;
- 	u64 pgd_val;
--	int agaw;
- 	u16 did;
+ static int domain_update_iommu_superpage(struct dmar_domain *domain,
+ 					 struct intel_iommu *skip)
+ {
+@@ -412,29 +382,6 @@ static int domain_update_iommu_superpage(struct dmar_domain *domain,
+ 	return fls(mask);
+ }
  
- 	/*
-@@ -388,12 +368,6 @@ int intel_pasid_setup_second_level(struct intel_iommu *iommu,
- 	}
- 
- 	pgd = domain->pgd;
--	agaw = iommu_skip_agaw(domain, iommu, &pgd);
--	if (agaw < 0) {
--		dev_err(dev, "Invalid domain page table\n");
--		return -EINVAL;
--	}
+-static int domain_update_device_node(struct dmar_domain *domain)
+-{
+-	struct device_domain_info *info;
+-	int nid = NUMA_NO_NODE;
+-	unsigned long flags;
 -
- 	pgd_val = virt_to_phys(pgd);
- 	did = domain_id_iommu(domain, iommu);
+-	spin_lock_irqsave(&domain->lock, flags);
+-	list_for_each_entry(info, &domain->devices, link) {
+-		/*
+-		 * There could possibly be multiple device numa nodes as devices
+-		 * within the same domain may sit behind different IOMMUs. There
+-		 * isn't perfect answer in such situation, so we select first
+-		 * come first served policy.
+-		 */
+-		nid = dev_to_node(info->dev);
+-		if (nid != NUMA_NO_NODE)
+-			break;
+-	}
+-	spin_unlock_irqrestore(&domain->lock, flags);
+-
+-	return nid;
+-}
+-
+ /* Return the super pagesize bitmap if supported. */
+ static unsigned long domain_super_pgsize_bitmap(struct dmar_domain *domain)
+ {
+@@ -452,34 +399,6 @@ static unsigned long domain_super_pgsize_bitmap(struct dmar_domain *domain)
+ 	return bitmap;
+ }
  
-@@ -412,7 +386,7 @@ int intel_pasid_setup_second_level(struct intel_iommu *iommu,
- 	pasid_clear_entry(pte);
- 	pasid_set_domain_id(pte, did);
- 	pasid_set_slptr(pte, pgd_val);
--	pasid_set_address_width(pte, agaw);
-+	pasid_set_address_width(pte, domain->agaw);
- 	pasid_set_translation_type(pte, PASID_ENTRY_PGTT_SL_ONLY);
- 	pasid_set_fault_enable(pte);
- 	pasid_set_page_snoop(pte, !!ecap_smpwc(iommu->ecap));
+-/* Some capabilities may be different across iommus */
+-void domain_update_iommu_cap(struct dmar_domain *domain)
+-{
+-	domain_update_iommu_coherency(domain);
+-	domain->iommu_superpage = domain_update_iommu_superpage(domain, NULL);
+-
+-	/*
+-	 * If RHSA is missing, we should default to the device numa domain
+-	 * as fall back.
+-	 */
+-	if (domain->nid == NUMA_NO_NODE)
+-		domain->nid = domain_update_device_node(domain);
+-
+-	/*
+-	 * First-level translation restricts the input-address to a
+-	 * canonical address (i.e., address bits 63:N have the same
+-	 * value as address bit [N-1], where N is 48-bits with 4-level
+-	 * paging and 57-bits with 5-level paging). Hence, skip bit
+-	 * [N-1].
+-	 */
+-	if (domain->use_first_level)
+-		domain->domain.geometry.aperture_end = __DOMAIN_MAX_ADDR(domain->gaw - 1);
+-	else
+-		domain->domain.geometry.aperture_end = __DOMAIN_MAX_ADDR(domain->gaw);
+-
+-	domain->domain.pgsize_bitmap |= domain_super_pgsize_bitmap(domain);
+-}
+-
+ struct context_entry *iommu_context_addr(struct intel_iommu *iommu, u8 bus,
+ 					 u8 devfn, int alloc)
+ {
+@@ -1493,7 +1412,6 @@ int domain_attach_iommu(struct dmar_domain *domain, struct intel_iommu *iommu)
+ 		ret = xa_err(curr) ? : -EBUSY;
+ 		goto err_clear;
+ 	}
+-	domain_update_iommu_cap(domain);
+ 
+ 	spin_unlock(&iommu->lock);
+ 	return 0;
+@@ -1519,7 +1437,6 @@ void domain_detach_iommu(struct dmar_domain *domain, struct intel_iommu *iommu)
+ 		clear_bit(info->did, iommu->domain_ids);
+ 		xa_erase(&domain->iommu_array, iommu->seq_id);
+ 		domain->nid = NUMA_NO_NODE;
+-		domain_update_iommu_cap(domain);
+ 		kfree(info);
+ 	}
+ 	spin_unlock(&iommu->lock);
 -- 
 2.43.0
 
