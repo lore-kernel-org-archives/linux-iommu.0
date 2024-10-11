@@ -1,826 +1,252 @@
-Received: from mail-pj1-f52.google.com (mail-pj1-f52.google.com [209.85.216.52])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from CY4PR02CU008.outbound.protection.outlook.com (mail-westcentralusazon11021078.outbound.protection.outlook.com [40.93.199.78])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E03191EF083
-	for <iommu@lists.linux.dev>; Thu, 10 Oct 2024 19:48:41 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.216.52
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1728589724; cv=none; b=eC1RDvQWQZnzQSRx+NOWWmolceAtwAmJTL7zmUSXcB1EjdnVoGUn2MjMcdlMxE/Cahb76vnDQaizwXfNOMsZPYnvi3CoRWq9yP5dGdcqDo0JojbMC0arwGMK+N79t9kIlFmhyT7KaUYhQsgVxT9xNv9fchj3XrObCv97JyYL1Wg=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1728589724; c=relaxed/simple;
-	bh=ICe8jaYpLMidisY0XOyKWTjSC/bhiea9jeHC0r4cruI=;
-	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=ZLR6+Iu1uofVdTValSwpUFFzzHmrw0K7sZGu0ZT90fbVvdeCu6ZLYgOmluiicCwpFbRaFEBNwJjNXCmzqCuuwOJnzFPbP7qdpAYUn8CQYIBkcYeeu7PfHfFbQFRHcC4kkgabA7CxggIz9EUTBWNsM94NaE4hVQd/TcBa4H3Iau4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=rivosinc.com; spf=pass smtp.mailfrom=rivosinc.com; dkim=pass (2048-bit key) header.d=rivosinc-com.20230601.gappssmtp.com header.i=@rivosinc-com.20230601.gappssmtp.com header.b=X43m/x1F; arc=none smtp.client-ip=209.85.216.52
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=rivosinc.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=rivosinc.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2EE074A31;
+	Fri, 11 Oct 2024 01:34:52 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.93.199.78
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1728610494; cv=fail; b=OuAyVSz4hybfTXF81qlZiii2VWgrKli8zWTraMqRWdDImW9oXd6BwmkHJaw78TfPreHnopPGvL/Jd8bGlohiO0/lkcCt0AqYt5MerwssJwfB2/hu2/JQYZHxZ4T2Y8g/63iJnA3FqE+nNEZrDow1Q0ap6YAeoqrDCwiRo7nYeeU=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1728610494; c=relaxed/simple;
+	bh=y78aC1MOJO1KgVzKLNy0pdE4j5F2xRW40CAPLjNwurg=;
+	h=From:To:CC:Subject:Date:Message-ID:References:In-Reply-To:
+	 Content-Type:MIME-Version; b=FVWT0csRBhSB5QROqZ8JkPo1eW/apbYc7eYdyuVZBqjKuGvUUzJj0Xan/gm0P18TT7kt+AeDZIxyBzLo8dGIzYkoQLdAI6TxlQ/6NNxp6n5bp+ovoYIL7rSAqC3JoNCPygsIeMiF6GnK5TxcxxzNldA5aVQenjVwEwJHbTZFMWY=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=microsoft.com; spf=pass smtp.mailfrom=microsoft.com; dkim=pass (1024-bit key) header.d=microsoft.com header.i=@microsoft.com header.b=hjNRFRFU; arc=fail smtp.client-ip=40.93.199.78
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=microsoft.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=microsoft.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=rivosinc-com.20230601.gappssmtp.com header.i=@rivosinc-com.20230601.gappssmtp.com header.b="X43m/x1F"
-Received: by mail-pj1-f52.google.com with SMTP id 98e67ed59e1d1-2e2b159c609so1248091a91.2
-        for <iommu@lists.linux.dev>; Thu, 10 Oct 2024 12:48:41 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=rivosinc-com.20230601.gappssmtp.com; s=20230601; t=1728589721; x=1729194521; darn=lists.linux.dev;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=YKcG0w26oBCqHKJeIU4HSl1V9+Ydtliz/b73RcdZwuc=;
-        b=X43m/x1FkomiH7yh66X55JcGaRWj2jKRN00Dd96+bdylb4ns1tYCqlF2WSDp0f0Hp/
-         kDrFkM+NnRmx1s/rWmAmzeaLzQvvka8gyS++/XkuILIALwvu/H1maL++LKDC+oW/tITt
-         Mi6WpE3pLhWRPhdYmHcdeIBd2hS9z5H2JPIUbw0Ivlk10L91Ip1NLOni186VymN6+k9V
-         +kspt2Xz+VHWHXrUisKj+7CgWWQ9Gxeo+pQXK7ZxZr4zNmq1M8QlYF4UV/ybBZ/dlmos
-         sPT1634+Z75iXO796W0WVgShTRa2wxebAV4jDCwkQ+Jwvmw+MW4s0ZOiVM82aZY3e3cQ
-         sirw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1728589721; x=1729194521;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=YKcG0w26oBCqHKJeIU4HSl1V9+Ydtliz/b73RcdZwuc=;
-        b=ACyEnT4AUtNWBhu5yLv/V5j1+uT4nrXBQlj1OjsUolXE0AXKNY9BWRgLSCJaMxroUC
-         7wtuTGdxFOMa+a9ZrG44Zvsw/Cxh7fphKrY9wiQi0pGvGNeTqEyvAC+I4hccXSFtXt1X
-         /AxNt+uUycDJSbC2ZTvn8styVBan0gv9t8Ms0SMePE4fAqoWwhWetDMxH4PUF8xrv1th
-         LAPZBhASb+U0aoDAWxes/q3SBZZl14PaYUUX9s/i0CIuDIFXg5gRdx2Sw6//1Y29r+iz
-         PwYqu3tObstE740IMfd2yi+fd7rQGPEnfEraQM2QjZ5m+k0cSraOldDUFUFPl+ySc0q6
-         TZxg==
-X-Forwarded-Encrypted: i=1; AJvYcCWlhq+qnAA47OsSQuItIoj+p5ByDPLHdtgynxLRmYxUstm/wSU4iO9OZVdloG4T1kTgoTE00Q==@lists.linux.dev
-X-Gm-Message-State: AOJu0Yyljq11NygghcDOJPUAuCmuDtWrHGS4l9bhSW9nC+OG1ls5CG0C
-	CDnf1/dXZyxUPYuq/MvoyJiQg39RNYbuMp8yw05xxlDIMCgxAqowGteo5OT0If0=
-X-Google-Smtp-Source: AGHT+IET0+Kkbv2eS/F6ixv+mJXDf57heCCSdfJhrKL1uNUO1GxFocrXg3jRCUNw42qvV7sEvad70Q==
-X-Received: by 2002:a17:90b:4009:b0:2e2:bd68:b8d8 with SMTP id 98e67ed59e1d1-2e2f0a065b8mr401737a91.8.1728589721171;
-        Thu, 10 Oct 2024 12:48:41 -0700 (PDT)
-Received: from tjeznach.ba.rivosinc.com ([64.71.180.162])
-        by smtp.gmail.com with ESMTPSA id 98e67ed59e1d1-2e2e6ef1ad0sm749135a91.49.2024.10.10.12.48.39
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 10 Oct 2024 12:48:40 -0700 (PDT)
-From: Tomasz Jeznach <tjeznach@rivosinc.com>
-To: Joerg Roedel <joro@8bytes.org>,
-	Will Deacon <will@kernel.org>,
-	Robin Murphy <robin.murphy@arm.com>,
-	Paul Walmsley <paul.walmsley@sifive.com>
-Cc: Palmer Dabbelt <palmer@dabbelt.com>,
-	Albert Ou <aou@eecs.berkeley.edu>,
-	Anup Patel <apatel@ventanamicro.com>,
-	Sunil V L <sunilvl@ventanamicro.com>,
-	Nick Kossifidis <mick@ics.forth.gr>,
-	Sebastien Boeuf <seb@rivosinc.com>,
-	Rob Herring <robh+dt@kernel.org>,
-	Krzysztof Kozlowski <krzk+dt@kernel.org>,
-	Conor Dooley <conor+dt@kernel.org>,
-	devicetree@vger.kernel.org,
-	iommu@lists.linux.dev,
-	linux-riscv@lists.infradead.org,
-	linux-kernel@vger.kernel.org,
-	linux@rivosinc.com,
-	Tomasz Jeznach <tjeznach@rivosinc.com>,
-	Lu Baolu <baolu.lu@linux.intel.com>,
-	Zong Li <zong.li@sifive.com>
-Subject: [PATCH v9 7/7] iommu/riscv: Paging domain support
-Date: Thu, 10 Oct 2024 12:48:10 -0700
-Message-Id: <3d0f71ee9178c9fcb9d62db135776895a91c3d70.1728579958.git.tjeznach@rivosinc.com>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <cover.1728579958.git.tjeznach@rivosinc.com>
-References: <cover.1728579958.git.tjeznach@rivosinc.com>
+	dkim=pass (1024-bit key) header.d=microsoft.com header.i=@microsoft.com header.b="hjNRFRFU"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=EKbHILYloUvJkW/zB8bm5KlZ5y9RHtGmkcOk/o8FUPd9kbNU3wVD3P6bx5sx9QjaL3OhM7IuG64GA/fya+SOeaM5FegS/AFhGKqz0RUpymFUd65vaS1y1zovX4Zc2IjRGJATwlqvQWVYjSgXjkmFfbeIk+EtatuIAu1wlQG75l3ectu5EVC18kTyaBs1mY2Fw8HXRqOd63YP1aiGZgMGZuMuI1y1wHCJkNOO2Xssym4Br+nFVdM9eN/x2slC2cWk3m67gIrXA1sXgiRjO21GXF8cvFhKZbtuAwaUjIAKcmIXxImK4nUAbtfP+3dH0JmsUkVUjjlULYifGL9pNGplxQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=y78aC1MOJO1KgVzKLNy0pdE4j5F2xRW40CAPLjNwurg=;
+ b=cad9cFzOfE2xNq7p1Etq0DN+FfhLOw3OtZgodnvq1AFeTRXP8fgiA3u2WX0aIhbQyv3O/M36Tibp+dVZwv3Rd8m6W2qiT9NunHGqOc7h2jlpRvG7S6XMNFXnAqZRHCDQVb+wvtHM2UYKMxhJAC3XzmgUq5X97AlBh6yw5ObKhY1OvBoVJHcXW17Skqde3/pwTZOPjwaSyKkdIT3Bo8jlR6xMb/Y0pDPvmkjJ+0PJ36obPJVAbmJ6JdblbYMHxKitUPOYEo7ixzUUndyqA13gd52zJMZOr9ZYLvEix52ZyH2nRUdeOFCD1N8l+CZ1su3b7roWwwij4R7XXAFFpkomAA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=microsoft.com; dmarc=pass action=none
+ header.from=microsoft.com; dkim=pass header.d=microsoft.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=y78aC1MOJO1KgVzKLNy0pdE4j5F2xRW40CAPLjNwurg=;
+ b=hjNRFRFUwIQK5bVT8alckIuyutzt0g6/GDPmcA5i5dzyHIpeqP0ee2rz7EggUQ3jDbAI87a2imX4Ve3EykCZldQfthquadwKq3SosPXaijpARLl3CmZBGdDaAM3Nl0l7uxyj6VspwJshAbpNWfMte9UPvfhbANXu3B04uQ8knpo=
+Received: from DM6PR21MB1434.namprd21.prod.outlook.com (2603:10b6:5:25a::10)
+ by DM4PR21MB4542.namprd21.prod.outlook.com (2603:10b6:8:66::16) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.8069.6; Fri, 11 Oct
+ 2024 01:34:50 +0000
+Received: from DM6PR21MB1434.namprd21.prod.outlook.com
+ ([fe80::790a:4e07:a440:55cd]) by DM6PR21MB1434.namprd21.prod.outlook.com
+ ([fe80::790a:4e07:a440:55cd%6]) with mapi id 15.20.8069.001; Fri, 11 Oct 2024
+ 01:34:50 +0000
+From: MUKESH RATHOR <mukeshrathor@microsoft.com>
+To: Michael Kelley <mhklinux@outlook.com>, Nuno Das Neves
+	<nunodasneves@linux.microsoft.com>, "linux-hyperv@vger.kernel.org"
+	<linux-hyperv@vger.kernel.org>, "linux-arm-kernel@lists.infradead.org"
+	<linux-arm-kernel@lists.infradead.org>, "linux-kernel@vger.kernel.org"
+	<linux-kernel@vger.kernel.org>, "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
+	"iommu@lists.linux.dev" <iommu@lists.linux.dev>, "netdev@vger.kernel.org"
+	<netdev@vger.kernel.org>, "linux-pci@vger.kernel.org"
+	<linux-pci@vger.kernel.org>, "linux-arch@vger.kernel.org"
+	<linux-arch@vger.kernel.org>, "virtualization@lists.linux.dev"
+	<virtualization@lists.linux.dev>
+CC: KY Srinivasan <kys@microsoft.com>, Haiyang Zhang <haiyangz@microsoft.com>,
+	"wei.liu@kernel.org" <wei.liu@kernel.org>, Dexuan Cui <decui@microsoft.com>,
+	"catalin.marinas@arm.com" <catalin.marinas@arm.com>, "will@kernel.org"
+	<will@kernel.org>, "luto@kernel.org" <luto@kernel.org>, "tglx@linutronix.de"
+	<tglx@linutronix.de>, "mingo@redhat.com" <mingo@redhat.com>, "bp@alien8.de"
+	<bp@alien8.de>, "dave.hansen@linux.intel.com" <dave.hansen@linux.intel.com>,
+	"x86@kernel.org" <x86@kernel.org>, "hpa@zytor.com" <hpa@zytor.com>,
+	"seanjc@google.com" <seanjc@google.com>, "pbonzini@redhat.com"
+	<pbonzini@redhat.com>, "peterz@infradead.org" <peterz@infradead.org>,
+	"daniel.lezcano@linaro.org" <daniel.lezcano@linaro.org>, "joro@8bytes.org"
+	<joro@8bytes.org>, "robin.murphy@arm.com" <robin.murphy@arm.com>,
+	"davem@davemloft.net" <davem@davemloft.net>, "edumazet@google.com"
+	<edumazet@google.com>, "kuba@kernel.org" <kuba@kernel.org>,
+	"pabeni@redhat.com" <pabeni@redhat.com>, "lpieralisi@kernel.org"
+	<lpieralisi@kernel.org>, "kw@linux.com" <kw@linux.com>, "robh@kernel.org"
+	<robh@kernel.org>, "bhelgaas@google.com" <bhelgaas@google.com>,
+	"arnd@arndb.de" <arnd@arndb.de>, "sgarzare@redhat.com" <sgarzare@redhat.com>,
+	"jinankjain@linux.microsoft.com" <jinankjain@linux.microsoft.com>,
+	"muminulrussell@gmail.com" <muminulrussell@gmail.com>,
+	"skinsburskii@linux.microsoft.com" <skinsburskii@linux.microsoft.com>
+Subject: Re: [EXTERNAL] RE: [PATCH 3/5] hyperv: Add new Hyper-V headers
+Thread-Topic: [EXTERNAL] RE: [PATCH 3/5] hyperv: Add new Hyper-V headers
+Thread-Index: AQHbFc2fpELizClC20+KdB1By4J6TbKAVvmAgAB48YA=
+Date: Fri, 11 Oct 2024 01:34:50 +0000
+Message-ID: <3432a47a-0936-9d1a-896f-d1e019905131@microsoft.com>
+References:
+ <1727985064-18362-1-git-send-email-nunodasneves@linux.microsoft.com>
+ <1727985064-18362-4-git-send-email-nunodasneves@linux.microsoft.com>
+ <SN6PR02MB415716A55D46E5D4F37D7DD2D4782@SN6PR02MB4157.namprd02.prod.outlook.com>
+In-Reply-To:
+ <SN6PR02MB415716A55D46E5D4F37D7DD2D4782@SN6PR02MB4157.namprd02.prod.outlook.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach:
+X-MS-TNEF-Correlator:
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=microsoft.com;
+x-ms-publictraffictype: Email
+x-ms-traffictypediagnostic: DM6PR21MB1434:EE_|DM4PR21MB4542:EE_
+x-ms-office365-filtering-correlation-id: f1a4eb0c-2ce5-455e-92e3-08dce994e5da
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam:
+ BCL:0;ARA:13230040|7416014|376014|366016|1800799024|921020|38070700018;
+x-microsoft-antispam-message-info:
+ =?utf-8?B?MnFZZDNPNFlxK0hDTzIvZ3F2YVNwbXoydzI0Q0VqL1h6Z2FlUUliYmgzZ3JU?=
+ =?utf-8?B?V0Nhb1BLZmxLS0k3TjN1S0YxcFdScFJSaHYvR3hmNlhqSzN3L2FpNE9xK1Z1?=
+ =?utf-8?B?b1ZRa00vSk5ISy93K0xTSHFNZC84N2o3SCswSnJVWXpkelJMZE8vcFg0S1J5?=
+ =?utf-8?B?d0RJdStBaE56SFdKdlV5MzliMTByS0JDOUlIeG81UUlvQkZ3cTdGQjZKTnow?=
+ =?utf-8?B?UDY3ZDJ4eVVDV3R4VDZSaGtFK0JndU8rb0dVUng1SGZ0VzlwWTVoS0lxQ3hw?=
+ =?utf-8?B?ck9UaDhIQXpZdUtNRXJHWW1LdGVMNlpsOG90bWJ5czVJaTdrL1ArMCtaRkU3?=
+ =?utf-8?B?SGhlT09wVkd1WXZ2aUZ3V0lhRFV4V0lTMmJ0Mk1US25LNmsxaHNXMEN3eVZz?=
+ =?utf-8?B?NmJjWHFVaFMyNmFtMjdqTXZlckVzZ21FYjk1RkhPUVVIcFpLNyt3ZlRSWGJK?=
+ =?utf-8?B?cVJ2MXJYSDlHcmFEMEZIUGFoYUMwWlZUN0RoUElkUVBCYVhoMjdpbnZsZVQy?=
+ =?utf-8?B?QzJQeXN0bmtyaEVjRC9UbEhaTE9Jbkw3TGlJYjZveGNaUk5QVUVDcHF3WGRF?=
+ =?utf-8?B?M1kySGQ0bXl2clBZOXBTMmtrMGxMZktmS25NQ1M5U1lPYVFSMGhQMlJmc3hI?=
+ =?utf-8?B?d1Raa1M1QUQrOVpKUW1nZ3lMNkZ1dWhlSis2UHpvMFA2Wm9Zak9pN2NwNm9u?=
+ =?utf-8?B?anFpMTFzUi9QMG1HaXJNa0Zua0c0MmREaHV1Y3VlR29HQjRFdUMya2ZPc2h2?=
+ =?utf-8?B?NHhYWi9UWnFEdjhZbzlDY0RUMTlra3c1U0RGclVrNlZEdUVXd0ZVSGp2SU5k?=
+ =?utf-8?B?cWRFT3dPaWNSajhReHhvRjVNb05LYW8xOGl0cC93RDdPSFVBRTNHNW5GdCtH?=
+ =?utf-8?B?bmR4RW0rTUhuRjNPTGNjTWIwYi8xenROM29tdDNoc1c2dWYzMldXTWtSR2c1?=
+ =?utf-8?B?UHd1bkNIZGRyTHFMOCtVVFIyNXp2UWd0UFQ3c0RQY1YxTHV3d3RObkhPNlhS?=
+ =?utf-8?B?QlhkQXZQdXlyc1pheG5PZ2NqQXpUODFLQ0xyWU5QQk9pWU92eDhQUTU3cWJJ?=
+ =?utf-8?B?NUpPNEk0eDNHb0U1L1U1WTlHa09FYUk3Y3RDWFQyRFcrNFdWY25XNVMrWWxT?=
+ =?utf-8?B?VGE5Z0pwUVY2MDdRdGp0ZHQ4QVhkaUo2Q3JLc1RCdkNhNHRiZjVUUzR2emtQ?=
+ =?utf-8?B?VmlPczROVkNXTFY1bCtrZmhQa0wxTnJvV09NUnY2VURtMHhLNnY5d2hySE50?=
+ =?utf-8?B?emdySVM5V2VDVzBya0RHYlBtaGVzSjRPYjhJQWdSWGsya2NyNHNPYXBRcHd5?=
+ =?utf-8?B?UnJQdmpFQUhGZmYvc3E4bEV0cHp6TFpBODFWampOQWR2V3JBWFRsQ0UxckRz?=
+ =?utf-8?B?RmlQcGhGUHNpUWxnblpTS25DOHR6L2Uwb0RRSEFjWWQxeStjeXlDYkZnME1Z?=
+ =?utf-8?B?SklpSG1WSVdpS0M1NlF2VE5KTTBkSUFadkFVYWlRT2lXcWxrZmZod0M4NDBD?=
+ =?utf-8?B?NnYyYUsxNDFDZ05qTjBXdGFwWDN3cndlclRpNUczWXFFWnQyNVd2OFJCTXhC?=
+ =?utf-8?B?TitVb2ZaRDVmSDFDK1RJWTdRa2hkRG1CUnh0UzVTQU0zMkY0c0k2cnZualhj?=
+ =?utf-8?B?SmhNMUNPM0t4QlBpdFZZWmJQeDQ2dzhEaUlaQnFkSkRlYkc3SVJ1cVNWOHpI?=
+ =?utf-8?B?U1UxNDY4VVhsZTJUK2R5Sm1nT1FpNnBYaW5KRGM3eCtuRDhMUm0vcUVSL2dB?=
+ =?utf-8?B?cFhHekwwcjF0bk1kaUlBV1BzMHZXWTNmNWVBOGpSQWtjWHdBK2loeE85OUNy?=
+ =?utf-8?B?SXc2UzhYY3UrTEx4d3REdz09?=
+x-forefront-antispam-report:
+ CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM6PR21MB1434.namprd21.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(7416014)(376014)(366016)(1800799024)(921020)(38070700018);DIR:OUT;SFP:1102;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0:
+ =?utf-8?B?K05pTmpDSWVLNlJmT3dPaWZpQlBKTjdQYzgrUU9BRE02OHpLWlZFU1UrZlNH?=
+ =?utf-8?B?YVRtNXh4dnVuWTQrZi93WERXeGJSWGs4UGl6Q1d6dkZGQ0MwdzE3aHBnMWtN?=
+ =?utf-8?B?OVlMZWwrRnZ2UjJKQTgyWGUyUEt3bGQ2Y3Q5OVhZL3A5elpYQllhTmxtWjBq?=
+ =?utf-8?B?UVhRdmFaY3JHcWlZL0JESTF4R3VrQzBORnhjQzNqUkdMUkYwNFFlTzVTODZi?=
+ =?utf-8?B?bGdlMVFMNGhSRHJZVlI4QXc2eklKQmIxSEpVTndvYldxRFJvT0dEQTJyenFt?=
+ =?utf-8?B?eTB1SGFmTFkrVTdzUEExdkpvSFVXOG1kaVkvd0puK1pLZWlWeVdBeDNSVXND?=
+ =?utf-8?B?VHJFVHFMd3lOUGJFSEx5NzBaV2RjRExEVzFRT2tJVnF1ZUFyUjhnbXI0V2cx?=
+ =?utf-8?B?cTRhcUFUTDlrTFpGcU01SlFEK2JmcEZSVnZ6c01iaXp3bDhiT3pFKzFEQThm?=
+ =?utf-8?B?eC9URllqb1B3Nkx6TkNhK3BGdHI0S3Q2SDdpZmhIaTAyRFZGTUhZQngxMkw3?=
+ =?utf-8?B?ZjUxZ1dPRlZ2djlPYmg4TG9wNjg1OGtvRU42YnNoUkRqZTA4bDd1eVNNNHBO?=
+ =?utf-8?B?bUp5Z1FVNElCVk8wTkloYWhRUzI1Z242bjA2L1VpK25rSGpaRjIranl2MVdX?=
+ =?utf-8?B?ckpmbHorVTJRSlhoZ3FEc3RKTmtwMVV6UGZLVktUNk1GankxaTZndEZtWC96?=
+ =?utf-8?B?OW5IK3puUUl1VDVkMjY2bFdVUXJkRFl5cyt4YUhSRzhvbzlvd2JhV2F5QlBV?=
+ =?utf-8?B?aFROZTliaDRKa2RJVktFWGxvTjZicjk2UWlGbk0vQ0lPTnAvNnF0YjQ3ZDZK?=
+ =?utf-8?B?TXR4OVU4L0VKMXJYNTFUMFkvU0wxYmNZREsxaUdQamdrYVhnWFpyWWlqYnpi?=
+ =?utf-8?B?ejEydmUyYzNGd2tEbnJTL3QvRkhoc3QyMUh4UTJhQzZTRUZzZnBDcUVIU2Z3?=
+ =?utf-8?B?L0VVaC9DYlVBWW9jZ2JuQzJ0WUNPMmNuREYxeTd3V3dlYVRPR2ZSeHNGaUFx?=
+ =?utf-8?B?VjZvTjJKVTRGWkorM2dXNEFGZzRjVHArOWlScko4UU1heDllaUMwVFF6TVFk?=
+ =?utf-8?B?czBsUldIWWZFZWVIek5ycmNQejhHeHVkajB5WDBKT0RqV1ltb0JjZzY3eXRs?=
+ =?utf-8?B?dXo3NW5CSTB5THRNWVVwS29EKy8vcXlVTXdjdnZBbXBnWlpqNnNrTnRmVldO?=
+ =?utf-8?B?NnBqRGJMNnVZZUhEUmhvMTM5b0w0ckY2VkJoUERSd3BueitmdnBENVRySW5o?=
+ =?utf-8?B?RU9Fcnk4TTUwTW1vYjUxcnJGdWZKMm5xcm81ZXR5R2NmeG02VGRRalZjcmdq?=
+ =?utf-8?B?akhIRFc1S2V1eWgvVlVlNnZJUERoSjd3aTE5ZmVOZ3drTjRlMlRMUFMzdFhP?=
+ =?utf-8?B?WmljbDhOdkZ0KzlhQWpDaWdXVUY0TktWQTc1b3FiQWFUQU5WWkl1ejR5aVpm?=
+ =?utf-8?B?K2NKdGVOYzFjS2wvY09vZ2F0K0tSSmVhZlkyRFRGaWh1dWYvRDNzS2duVkU0?=
+ =?utf-8?B?S05aaGEyeEFKaHdqckgxZ3ZtVjc5VFlqSzQyRW9lWVVqSmF6YzkzN0x4K2lm?=
+ =?utf-8?B?bkF0ZHJKTG9Ob2h0Y3R3UXBCMmZmSjBEVTNpZ3R3eko3UnBwT09qRDQzbGtv?=
+ =?utf-8?B?RGVHbGkvUUZZU3IrRkE5UnY4cGszZFdLMkxTbDJGcVE1dWZnM0w2em9rdytL?=
+ =?utf-8?B?b3I2Z0UwQjBwb1NCK1dkS1lTUHFpNXZxRDZ6cEJLR1JNQlpEOXk1NkRlcDd5?=
+ =?utf-8?B?SXdVenF3bWltMHZ4U1dtMjUwQ2F2bVJxTThudzZBb3lwK05HVWZXWkFoVFlN?=
+ =?utf-8?B?VzA3NW9hbHhva29WR0ZoZXczNWlGM21aUkFtVWFvay9MWkNoR3FKdGRHeHZl?=
+ =?utf-8?B?enVkSjdidFRHdk43c0k2UWhxUHhha2s5MEIxM1JoU1VJVGRkN3ZVV1Z3MnRn?=
+ =?utf-8?B?a0NuUEl3YUpkcjFNU3dOdUcyRHVtOGNaTWkwR3h5QmVBS1g1bGYySVRQbzQr?=
+ =?utf-8?B?eGZGQmx4blpwajd3c2NRNXQyRFZobmQ4MGIwdmpTblUvYVg1NTY1MHBGcGV6?=
+ =?utf-8?Q?qx+FW4?=
+Content-Type: text/plain; charset="utf-8"
+Content-ID: <5803F32AA60C3D46A97C6CC53BDD2CDC@namprd21.prod.outlook.com>
+Content-Transfer-Encoding: base64
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+X-OriginatorOrg: microsoft.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: DM6PR21MB1434.namprd21.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: f1a4eb0c-2ce5-455e-92e3-08dce994e5da
+X-MS-Exchange-CrossTenant-originalarrivaltime: 11 Oct 2024 01:34:50.0426
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 72f988bf-86f1-41af-91ab-2d7cd011db47
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: JuDshbOl4a9qA/5W0ypo+eYvUqVrNVbmCNbU62c+vQuplPcSbAP6XHnni/YUJ6ztmQ3J5W4f4Bd0FJNTDdPKQI9GX5QRMb87oRWIFE1zR5E=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM4PR21MB4542
 
-Introduce first-stage address translation support.
-
-Page table configured by the IOMMU driver will use the highest mode
-implemented by the hardware, unless not known at the domain allocation
-time falling back to the CPU’s MMU page mode.
-
-This change introduces IOTINVAL.VMA command, required to invalidate
-any cached IOATC entries after mapping is updated and/or removed from
-the paging domain.  Invalidations for the non-leaf page entries use
-IOTINVAL for all addresses assigned to the protection domain for
-hardware not supporting more granular non-leaf page table cache
-invalidations.
-
-Reviewed-by: Lu Baolu <baolu.lu@linux.intel.com>
-Reviewed-by: Zong Li <zong.li@sifive.com>
-Signed-off-by: Tomasz Jeznach <tjeznach@rivosinc.com>
----
- drivers/iommu/riscv/iommu.c | 614 +++++++++++++++++++++++++++++++++++-
- 1 file changed, 611 insertions(+), 3 deletions(-)
-
-diff --git a/drivers/iommu/riscv/iommu.c b/drivers/iommu/riscv/iommu.c
-index a00396a61439..30701d2d19b8 100644
---- a/drivers/iommu/riscv/iommu.c
-+++ b/drivers/iommu/riscv/iommu.c
-@@ -41,6 +41,10 @@
- #define dev_to_iommu(dev) \
- 	iommu_get_iommu_dev(dev, struct riscv_iommu_device, iommu)
- 
-+/* IOMMU PSCID allocation namespace. */
-+static DEFINE_IDA(riscv_iommu_pscids);
-+#define RISCV_IOMMU_MAX_PSCID		(BIT(20) - 1)
-+
- /* Device resource-managed allocations */
- struct riscv_iommu_devres {
- 	void *addr;
-@@ -779,6 +783,197 @@ static int riscv_iommu_iodir_set_mode(struct riscv_iommu_device *iommu,
- 	return 0;
- }
- 
-+/* This struct contains protection domain specific IOMMU driver data. */
-+struct riscv_iommu_domain {
-+	struct iommu_domain domain;
-+	struct list_head bonds;
-+	spinlock_t lock;		/* protect bonds list updates. */
-+	int pscid;
-+	bool amo_enabled;
-+	int numa_node;
-+	unsigned int pgd_mode;
-+	unsigned long *pgd_root;
-+};
-+
-+#define iommu_domain_to_riscv(iommu_domain) \
-+	container_of(iommu_domain, struct riscv_iommu_domain, domain)
-+
-+/* Private IOMMU data for managed devices, dev_iommu_priv_* */
-+struct riscv_iommu_info {
-+	struct riscv_iommu_domain *domain;
-+};
-+
-+/*
-+ * Linkage between an iommu_domain and attached devices.
-+ *
-+ * Protection domain requiring IOATC and DevATC translation cache invalidations,
-+ * should be linked to attached devices using a riscv_iommu_bond structure.
-+ * Devices should be linked to the domain before first use and unlinked after
-+ * the translations from the referenced protection domain can no longer be used.
-+ * Blocking and identity domains are not tracked here, as the IOMMU hardware
-+ * does not cache negative and/or identity (BARE mode) translations, and DevATC
-+ * is disabled for those protection domains.
-+ *
-+ * The device pointer and IOMMU data remain stable in the bond struct after
-+ * _probe_device() where it's attached to the managed IOMMU, up to the
-+ * completion of the _release_device() call. The release of the bond structure
-+ * is synchronized with the device release.
-+ */
-+struct riscv_iommu_bond {
-+	struct list_head list;
-+	struct rcu_head rcu;
-+	struct device *dev;
-+};
-+
-+static int riscv_iommu_bond_link(struct riscv_iommu_domain *domain,
-+				 struct device *dev)
-+{
-+	struct riscv_iommu_device *iommu = dev_to_iommu(dev);
-+	struct riscv_iommu_bond *bond;
-+	struct list_head *bonds;
-+
-+	bond = kzalloc(sizeof(*bond), GFP_KERNEL);
-+	if (!bond)
-+		return -ENOMEM;
-+	bond->dev = dev;
-+
-+	/*
-+	 * List of devices attached to the domain is arranged based on
-+	 * managed IOMMU device.
-+	 */
-+
-+	spin_lock(&domain->lock);
-+	list_for_each(bonds, &domain->bonds)
-+		if (dev_to_iommu(list_entry(bonds, struct riscv_iommu_bond, list)->dev) == iommu)
-+			break;
-+	list_add_rcu(&bond->list, bonds);
-+	spin_unlock(&domain->lock);
-+
-+	/* Synchronize with riscv_iommu_iotlb_inval() sequence. See comment below. */
-+	smp_mb();
-+
-+	return 0;
-+}
-+
-+static void riscv_iommu_bond_unlink(struct riscv_iommu_domain *domain,
-+				    struct device *dev)
-+{
-+	struct riscv_iommu_device *iommu = dev_to_iommu(dev);
-+	struct riscv_iommu_bond *bond, *found = NULL;
-+	struct riscv_iommu_command cmd;
-+	int count = 0;
-+
-+	if (!domain)
-+		return;
-+
-+	spin_lock(&domain->lock);
-+	list_for_each_entry(bond, &domain->bonds, list) {
-+		if (found && count)
-+			break;
-+		else if (bond->dev == dev)
-+			found = bond;
-+		else if (dev_to_iommu(bond->dev) == iommu)
-+			count++;
-+	}
-+	if (found)
-+		list_del_rcu(&found->list);
-+	spin_unlock(&domain->lock);
-+	kfree_rcu(found, rcu);
-+
-+	/*
-+	 * If this was the last bond between this domain and the IOMMU
-+	 * invalidate all cached entries for domain's PSCID.
-+	 */
-+	if (!count) {
-+		riscv_iommu_cmd_inval_vma(&cmd);
-+		riscv_iommu_cmd_inval_set_pscid(&cmd, domain->pscid);
-+		riscv_iommu_cmd_send(iommu, &cmd);
-+
-+		riscv_iommu_cmd_sync(iommu, RISCV_IOMMU_IOTINVAL_TIMEOUT);
-+	}
-+}
-+
-+/*
-+ * Send IOTLB.INVAL for whole address space for ranges larger than 2MB.
-+ * This limit will be replaced with range invalidations, if supported by
-+ * the hardware, when RISC-V IOMMU architecture specification update for
-+ * range invalidations update will be available.
-+ */
-+#define RISCV_IOMMU_IOTLB_INVAL_LIMIT	(2 << 20)
-+
-+static void riscv_iommu_iotlb_inval(struct riscv_iommu_domain *domain,
-+				    unsigned long start, unsigned long end)
-+{
-+	struct riscv_iommu_bond *bond;
-+	struct riscv_iommu_device *iommu, *prev;
-+	struct riscv_iommu_command cmd;
-+	unsigned long len = end - start + 1;
-+	unsigned long iova;
-+
-+	/*
-+	 * For each IOMMU linked with this protection domain (via bonds->dev),
-+	 * an IOTLB invaliation command will be submitted and executed.
-+	 *
-+	 * Possbile race with domain attach flow is handled by sequencing
-+	 * bond creation - riscv_iommu_bond_link(), and device directory
-+	 * update - riscv_iommu_iodir_update().
-+	 *
-+	 * PTE Update / IOTLB Inval           Device attach & directory update
-+	 * --------------------------         --------------------------
-+	 * update page table entries          add dev to the bond list
-+	 * FENCE RW,RW                        FENCE RW,RW
-+	 * For all IOMMUs: (can be empty)     Update FSC/PSCID
-+	 *   FENCE IOW,IOW                      FENCE IOW,IOW
-+	 *   IOTLB.INVAL                        IODIR.INVAL
-+	 *   IOFENCE.C
-+	 *
-+	 * If bond list is not updated with new device, directory context will
-+	 * be configured with already valid page table content. If an IOMMU is
-+	 * linked to the protection domain it will receive invalidation
-+	 * requests for updated page table entries.
-+	 */
-+	smp_mb();
-+
-+	rcu_read_lock();
-+
-+	prev = NULL;
-+	list_for_each_entry_rcu(bond, &domain->bonds, list) {
-+		iommu = dev_to_iommu(bond->dev);
-+
-+		/*
-+		 * IOTLB invalidation request can be safely omitted if already sent
-+		 * to the IOMMU for the same PSCID, and with domain->bonds list
-+		 * arranged based on the device's IOMMU, it's sufficient to check
-+		 * last device the invalidation was sent to.
-+		 */
-+		if (iommu == prev)
-+			continue;
-+
-+		riscv_iommu_cmd_inval_vma(&cmd);
-+		riscv_iommu_cmd_inval_set_pscid(&cmd, domain->pscid);
-+		if (len && len < RISCV_IOMMU_IOTLB_INVAL_LIMIT) {
-+			for (iova = start; iova < end; iova += PAGE_SIZE) {
-+				riscv_iommu_cmd_inval_set_addr(&cmd, iova);
-+				riscv_iommu_cmd_send(iommu, &cmd);
-+			}
-+		} else {
-+			riscv_iommu_cmd_send(iommu, &cmd);
-+		}
-+		prev = iommu;
-+	}
-+
-+	prev = NULL;
-+	list_for_each_entry_rcu(bond, &domain->bonds, list) {
-+		iommu = dev_to_iommu(bond->dev);
-+		if (iommu == prev)
-+			continue;
-+
-+		riscv_iommu_cmd_sync(iommu, RISCV_IOMMU_IOTINVAL_TIMEOUT);
-+		prev = iommu;
-+	}
-+	rcu_read_unlock();
-+}
-+
- #define RISCV_IOMMU_FSC_BARE 0
- 
- /*
-@@ -798,10 +993,28 @@ static void riscv_iommu_iodir_update(struct riscv_iommu_device *iommu,
- {
- 	struct iommu_fwspec *fwspec = dev_iommu_fwspec_get(dev);
- 	struct riscv_iommu_dc *dc;
-+	struct riscv_iommu_command cmd;
-+	bool sync_required = false;
- 	u64 tc;
- 	int i;
- 
--	/* Device context invalidation ignored for now. */
-+	for (i = 0; i < fwspec->num_ids; i++) {
-+		dc = riscv_iommu_get_dc(iommu, fwspec->ids[i]);
-+		tc = READ_ONCE(dc->tc);
-+		if (!(tc & RISCV_IOMMU_DC_TC_V))
-+			continue;
-+
-+		WRITE_ONCE(dc->tc, tc & ~RISCV_IOMMU_DC_TC_V);
-+
-+		/* Invalidate device context cached values */
-+		riscv_iommu_cmd_iodir_inval_ddt(&cmd);
-+		riscv_iommu_cmd_iodir_set_did(&cmd, fwspec->ids[i]);
-+		riscv_iommu_cmd_send(iommu, &cmd);
-+		sync_required = true;
-+	}
-+
-+	if (sync_required)
-+		riscv_iommu_cmd_sync(iommu, RISCV_IOMMU_IOTINVAL_TIMEOUT);
- 
- 	/*
- 	 * For device context with DC_TC_PDTV = 0, translation attributes valid bit
-@@ -817,15 +1030,388 @@ static void riscv_iommu_iodir_update(struct riscv_iommu_device *iommu,
- 		/* Update device context, write TC.V as the last step. */
- 		dma_wmb();
- 		WRITE_ONCE(dc->tc, tc);
-+
-+		/* Invalidate device context after update */
-+		riscv_iommu_cmd_iodir_inval_ddt(&cmd);
-+		riscv_iommu_cmd_iodir_set_did(&cmd, fwspec->ids[i]);
-+		riscv_iommu_cmd_send(iommu, &cmd);
-+	}
-+
-+	riscv_iommu_cmd_sync(iommu, RISCV_IOMMU_IOTINVAL_TIMEOUT);
-+}
-+
-+/*
-+ * IOVA page translation tree management.
-+ */
-+
-+static void riscv_iommu_iotlb_flush_all(struct iommu_domain *iommu_domain)
-+{
-+	struct riscv_iommu_domain *domain = iommu_domain_to_riscv(iommu_domain);
-+
-+	riscv_iommu_iotlb_inval(domain, 0, ULONG_MAX);
-+}
-+
-+static void riscv_iommu_iotlb_sync(struct iommu_domain *iommu_domain,
-+				   struct iommu_iotlb_gather *gather)
-+{
-+	struct riscv_iommu_domain *domain = iommu_domain_to_riscv(iommu_domain);
-+
-+	riscv_iommu_iotlb_inval(domain, gather->start, gather->end);
-+}
-+
-+#define PT_SHIFT (PAGE_SHIFT - ilog2(sizeof(pte_t)))
-+
-+#define _io_pte_present(pte)	((pte) & (_PAGE_PRESENT | _PAGE_PROT_NONE))
-+#define _io_pte_leaf(pte)	((pte) & _PAGE_LEAF)
-+#define _io_pte_none(pte)	((pte) == 0)
-+#define _io_pte_entry(pn, prot)	((_PAGE_PFN_MASK & ((pn) << _PAGE_PFN_SHIFT)) | (prot))
-+
-+static void riscv_iommu_pte_free(struct riscv_iommu_domain *domain,
-+				 unsigned long pte, struct list_head *freelist)
-+{
-+	unsigned long *ptr;
-+	int i;
-+
-+	if (!_io_pte_present(pte) || _io_pte_leaf(pte))
-+		return;
-+
-+	ptr = (unsigned long *)pfn_to_virt(__page_val_to_pfn(pte));
-+
-+	/* Recursively free all sub page table pages */
-+	for (i = 0; i < PTRS_PER_PTE; i++) {
-+		pte = READ_ONCE(ptr[i]);
-+		if (!_io_pte_none(pte) && cmpxchg_relaxed(ptr + i, pte, 0) == pte)
-+			riscv_iommu_pte_free(domain, pte, freelist);
- 	}
-+
-+	if (freelist)
-+		list_add_tail(&virt_to_page(ptr)->lru, freelist);
-+	else
-+		iommu_free_page(ptr);
-+}
-+
-+static unsigned long *riscv_iommu_pte_alloc(struct riscv_iommu_domain *domain,
-+					    unsigned long iova, size_t pgsize,
-+					    gfp_t gfp)
-+{
-+	unsigned long *ptr = domain->pgd_root;
-+	unsigned long pte, old;
-+	int level = domain->pgd_mode - RISCV_IOMMU_DC_FSC_IOSATP_MODE_SV39 + 2;
-+	void *addr;
-+
-+	do {
-+		const int shift = PAGE_SHIFT + PT_SHIFT * level;
-+
-+		ptr += ((iova >> shift) & (PTRS_PER_PTE - 1));
-+		/*
-+		 * Note: returned entry might be a non-leaf if there was
-+		 * existing mapping with smaller granularity. Up to the caller
-+		 * to replace and invalidate.
-+		 */
-+		if (((size_t)1 << shift) == pgsize)
-+			return ptr;
-+pte_retry:
-+		pte = READ_ONCE(*ptr);
-+		/*
-+		 * This is very likely incorrect as we should not be adding
-+		 * new mapping with smaller granularity on top
-+		 * of existing 2M/1G mapping. Fail.
-+		 */
-+		if (_io_pte_present(pte) && _io_pte_leaf(pte))
-+			return NULL;
-+		/*
-+		 * Non-leaf entry is missing, allocate and try to add to the
-+		 * page table. This might race with other mappings, retry.
-+		 */
-+		if (_io_pte_none(pte)) {
-+			addr = iommu_alloc_page_node(domain->numa_node, gfp);
-+			if (!addr)
-+				return NULL;
-+			old = pte;
-+			pte = _io_pte_entry(virt_to_pfn(addr), _PAGE_TABLE);
-+			if (cmpxchg_relaxed(ptr, old, pte) != old) {
-+				iommu_free_page(addr);
-+				goto pte_retry;
-+			}
-+		}
-+		ptr = (unsigned long *)pfn_to_virt(__page_val_to_pfn(pte));
-+	} while (level-- > 0);
-+
-+	return NULL;
-+}
-+
-+static unsigned long *riscv_iommu_pte_fetch(struct riscv_iommu_domain *domain,
-+					    unsigned long iova, size_t *pte_pgsize)
-+{
-+	unsigned long *ptr = domain->pgd_root;
-+	unsigned long pte;
-+	int level = domain->pgd_mode - RISCV_IOMMU_DC_FSC_IOSATP_MODE_SV39 + 2;
-+
-+	do {
-+		const int shift = PAGE_SHIFT + PT_SHIFT * level;
-+
-+		ptr += ((iova >> shift) & (PTRS_PER_PTE - 1));
-+		pte = READ_ONCE(*ptr);
-+		if (_io_pte_present(pte) && _io_pte_leaf(pte)) {
-+			*pte_pgsize = (size_t)1 << shift;
-+			return ptr;
-+		}
-+		if (_io_pte_none(pte))
-+			return NULL;
-+		ptr = (unsigned long *)pfn_to_virt(__page_val_to_pfn(pte));
-+	} while (level-- > 0);
-+
-+	return NULL;
-+}
-+
-+static int riscv_iommu_map_pages(struct iommu_domain *iommu_domain,
-+				 unsigned long iova, phys_addr_t phys,
-+				 size_t pgsize, size_t pgcount, int prot,
-+				 gfp_t gfp, size_t *mapped)
-+{
-+	struct riscv_iommu_domain *domain = iommu_domain_to_riscv(iommu_domain);
-+	size_t size = 0;
-+	unsigned long *ptr;
-+	unsigned long pte, old, pte_prot;
-+	int rc = 0;
-+	LIST_HEAD(freelist);
-+
-+	if (!(prot & IOMMU_WRITE))
-+		pte_prot = _PAGE_BASE | _PAGE_READ;
-+	else if (domain->amo_enabled)
-+		pte_prot = _PAGE_BASE | _PAGE_READ | _PAGE_WRITE;
-+	else
-+		pte_prot = _PAGE_BASE | _PAGE_READ | _PAGE_WRITE | _PAGE_DIRTY;
-+
-+	while (pgcount) {
-+		ptr = riscv_iommu_pte_alloc(domain, iova, pgsize, gfp);
-+		if (!ptr) {
-+			rc = -ENOMEM;
-+			break;
-+		}
-+
-+		old = READ_ONCE(*ptr);
-+		pte = _io_pte_entry(phys_to_pfn(phys), pte_prot);
-+		if (cmpxchg_relaxed(ptr, old, pte) != old)
-+			continue;
-+
-+		riscv_iommu_pte_free(domain, old, &freelist);
-+
-+		size += pgsize;
-+		iova += pgsize;
-+		phys += pgsize;
-+		--pgcount;
-+	}
-+
-+	*mapped = size;
-+
-+	if (!list_empty(&freelist)) {
-+		/*
-+		 * In 1.0 spec version, the smallest scope we can use to
-+		 * invalidate all levels of page table (i.e. leaf and non-leaf)
-+		 * is an invalidate-all-PSCID IOTINVAL.VMA with AV=0.
-+		 * This will be updated with hardware support for
-+		 * capability.NL (non-leaf) IOTINVAL command.
-+		 */
-+		riscv_iommu_iotlb_inval(domain, 0, ULONG_MAX);
-+		iommu_put_pages_list(&freelist);
-+	}
-+
-+	return rc;
-+}
-+
-+static size_t riscv_iommu_unmap_pages(struct iommu_domain *iommu_domain,
-+				      unsigned long iova, size_t pgsize,
-+				      size_t pgcount,
-+				      struct iommu_iotlb_gather *gather)
-+{
-+	struct riscv_iommu_domain *domain = iommu_domain_to_riscv(iommu_domain);
-+	size_t size = pgcount << __ffs(pgsize);
-+	unsigned long *ptr, old;
-+	size_t unmapped = 0;
-+	size_t pte_size;
-+
-+	while (unmapped < size) {
-+		ptr = riscv_iommu_pte_fetch(domain, iova, &pte_size);
-+		if (!ptr)
-+			return unmapped;
-+
-+		/* partial unmap is not allowed, fail. */
-+		if (iova & (pte_size - 1))
-+			return unmapped;
-+
-+		old = READ_ONCE(*ptr);
-+		if (cmpxchg_relaxed(ptr, old, 0) != old)
-+			continue;
-+
-+		iommu_iotlb_gather_add_page(&domain->domain, gather, iova,
-+					    pte_size);
-+
-+		iova += pte_size;
-+		unmapped += pte_size;
-+	}
-+
-+	return unmapped;
-+}
-+
-+static phys_addr_t riscv_iommu_iova_to_phys(struct iommu_domain *iommu_domain,
-+					    dma_addr_t iova)
-+{
-+	struct riscv_iommu_domain *domain = iommu_domain_to_riscv(iommu_domain);
-+	unsigned long pte_size;
-+	unsigned long *ptr;
-+
-+	ptr = riscv_iommu_pte_fetch(domain, iova, &pte_size);
-+	if (_io_pte_none(*ptr) || !_io_pte_present(*ptr))
-+		return 0;
-+
-+	return pfn_to_phys(__page_val_to_pfn(*ptr)) | (iova & (pte_size - 1));
-+}
-+
-+static void riscv_iommu_free_paging_domain(struct iommu_domain *iommu_domain)
-+{
-+	struct riscv_iommu_domain *domain = iommu_domain_to_riscv(iommu_domain);
-+	const unsigned long pfn = virt_to_pfn(domain->pgd_root);
-+
-+	WARN_ON(!list_empty(&domain->bonds));
-+
-+	if ((int)domain->pscid > 0)
-+		ida_free(&riscv_iommu_pscids, domain->pscid);
-+
-+	riscv_iommu_pte_free(domain, _io_pte_entry(pfn, _PAGE_TABLE), NULL);
-+	kfree(domain);
-+}
-+
-+static bool riscv_iommu_pt_supported(struct riscv_iommu_device *iommu, int pgd_mode)
-+{
-+	switch (pgd_mode) {
-+	case RISCV_IOMMU_DC_FSC_IOSATP_MODE_SV39:
-+		return iommu->caps & RISCV_IOMMU_CAPABILITIES_SV39;
-+
-+	case RISCV_IOMMU_DC_FSC_IOSATP_MODE_SV48:
-+		return iommu->caps & RISCV_IOMMU_CAPABILITIES_SV48;
-+
-+	case RISCV_IOMMU_DC_FSC_IOSATP_MODE_SV57:
-+		return iommu->caps & RISCV_IOMMU_CAPABILITIES_SV57;
-+	}
-+	return false;
-+}
-+
-+static int riscv_iommu_attach_paging_domain(struct iommu_domain *iommu_domain,
-+					    struct device *dev)
-+{
-+	struct riscv_iommu_domain *domain = iommu_domain_to_riscv(iommu_domain);
-+	struct riscv_iommu_device *iommu = dev_to_iommu(dev);
-+	struct riscv_iommu_info *info = dev_iommu_priv_get(dev);
-+	u64 fsc, ta;
-+
-+	if (!riscv_iommu_pt_supported(iommu, domain->pgd_mode))
-+		return -ENODEV;
-+
-+	fsc = FIELD_PREP(RISCV_IOMMU_PC_FSC_MODE, domain->pgd_mode) |
-+	      FIELD_PREP(RISCV_IOMMU_PC_FSC_PPN, virt_to_pfn(domain->pgd_root));
-+	ta = FIELD_PREP(RISCV_IOMMU_PC_TA_PSCID, domain->pscid) |
-+	     RISCV_IOMMU_PC_TA_V;
-+
-+	if (riscv_iommu_bond_link(domain, dev))
-+		return -ENOMEM;
-+
-+	riscv_iommu_iodir_update(iommu, dev, fsc, ta);
-+	riscv_iommu_bond_unlink(info->domain, dev);
-+	info->domain = domain;
-+
-+	return 0;
-+}
-+
-+static const struct iommu_domain_ops riscv_iommu_paging_domain_ops = {
-+	.attach_dev = riscv_iommu_attach_paging_domain,
-+	.free = riscv_iommu_free_paging_domain,
-+	.map_pages = riscv_iommu_map_pages,
-+	.unmap_pages = riscv_iommu_unmap_pages,
-+	.iova_to_phys = riscv_iommu_iova_to_phys,
-+	.iotlb_sync = riscv_iommu_iotlb_sync,
-+	.flush_iotlb_all = riscv_iommu_iotlb_flush_all,
-+};
-+
-+static struct iommu_domain *riscv_iommu_alloc_paging_domain(struct device *dev)
-+{
-+	struct riscv_iommu_domain *domain;
-+	struct riscv_iommu_device *iommu;
-+	unsigned int pgd_mode;
-+	dma_addr_t va_mask;
-+	int va_bits;
-+
-+	iommu = dev_to_iommu(dev);
-+	if (iommu->caps & RISCV_IOMMU_CAPABILITIES_SV57) {
-+		pgd_mode = RISCV_IOMMU_DC_FSC_IOSATP_MODE_SV57;
-+		va_bits = 57;
-+	} else if (iommu->caps & RISCV_IOMMU_CAPABILITIES_SV48) {
-+		pgd_mode = RISCV_IOMMU_DC_FSC_IOSATP_MODE_SV48;
-+		va_bits = 48;
-+	} else if (iommu->caps & RISCV_IOMMU_CAPABILITIES_SV39) {
-+		pgd_mode = RISCV_IOMMU_DC_FSC_IOSATP_MODE_SV39;
-+		va_bits = 39;
-+	} else {
-+		dev_err(dev, "cannot find supported page table mode\n");
-+		return ERR_PTR(-ENODEV);
-+	}
-+
-+	domain = kzalloc(sizeof(*domain), GFP_KERNEL);
-+	if (!domain)
-+		return ERR_PTR(-ENOMEM);
-+
-+	INIT_LIST_HEAD_RCU(&domain->bonds);
-+	spin_lock_init(&domain->lock);
-+	domain->numa_node = dev_to_node(iommu->dev);
-+	domain->amo_enabled = !!(iommu->caps & RISCV_IOMMU_CAPABILITIES_AMO_HWAD);
-+	domain->pgd_mode = pgd_mode;
-+	domain->pgd_root = iommu_alloc_page_node(domain->numa_node,
-+						 GFP_KERNEL_ACCOUNT);
-+	if (!domain->pgd_root) {
-+		kfree(domain);
-+		return ERR_PTR(-ENOMEM);
-+	}
-+
-+	domain->pscid = ida_alloc_range(&riscv_iommu_pscids, 1,
-+					RISCV_IOMMU_MAX_PSCID, GFP_KERNEL);
-+	if (domain->pscid < 0) {
-+		iommu_free_page(domain->pgd_root);
-+		kfree(domain);
-+		return ERR_PTR(-ENOMEM);
-+	}
-+
-+	/*
-+	 * Note: RISC-V Privilege spec mandates that virtual addresses
-+	 * need to be sign-extended, so if (VA_BITS - 1) is set, all
-+	 * bits >= VA_BITS need to also be set or else we'll get a
-+	 * page fault. However the code that creates the mappings
-+	 * above us (e.g. iommu_dma_alloc_iova()) won't do that for us
-+	 * for now, so we'll end up with invalid virtual addresses
-+	 * to map. As a workaround until we get this sorted out
-+	 * limit the available virtual addresses to VA_BITS - 1.
-+	 */
-+	va_mask = DMA_BIT_MASK(va_bits - 1);
-+
-+	domain->domain.geometry.aperture_start = 0;
-+	domain->domain.geometry.aperture_end = va_mask;
-+	domain->domain.geometry.force_aperture = true;
-+	domain->domain.pgsize_bitmap = va_mask & (SZ_4K | SZ_2M | SZ_1G | SZ_512G);
-+
-+	domain->domain.ops = &riscv_iommu_paging_domain_ops;
-+
-+	return &domain->domain;
- }
- 
- static int riscv_iommu_attach_blocking_domain(struct iommu_domain *iommu_domain,
- 					      struct device *dev)
- {
- 	struct riscv_iommu_device *iommu = dev_to_iommu(dev);
-+	struct riscv_iommu_info *info = dev_iommu_priv_get(dev);
- 
-+	/* Make device context invalid, translation requests will fault w/ #258 */
- 	riscv_iommu_iodir_update(iommu, dev, RISCV_IOMMU_FSC_BARE, 0);
-+	riscv_iommu_bond_unlink(info->domain, dev);
-+	info->domain = NULL;
- 
- 	return 0;
- }
-@@ -841,8 +1427,11 @@ static int riscv_iommu_attach_identity_domain(struct iommu_domain *iommu_domain,
- 					      struct device *dev)
- {
- 	struct riscv_iommu_device *iommu = dev_to_iommu(dev);
-+	struct riscv_iommu_info *info = dev_iommu_priv_get(dev);
- 
- 	riscv_iommu_iodir_update(iommu, dev, RISCV_IOMMU_FSC_BARE, RISCV_IOMMU_PC_TA_V);
-+	riscv_iommu_bond_unlink(info->domain, dev);
-+	info->domain = NULL;
- 
- 	return 0;
- }
-@@ -856,7 +1445,7 @@ static struct iommu_domain riscv_iommu_identity_domain = {
- 
- static int riscv_iommu_device_domain_type(struct device *dev)
- {
--	return IOMMU_DOMAIN_IDENTITY;
-+	return 0;
- }
- 
- static struct iommu_group *riscv_iommu_device_group(struct device *dev)
-@@ -875,6 +1464,7 @@ static struct iommu_device *riscv_iommu_probe_device(struct device *dev)
- {
- 	struct iommu_fwspec *fwspec = dev_iommu_fwspec_get(dev);
- 	struct riscv_iommu_device *iommu;
-+	struct riscv_iommu_info *info;
- 	struct riscv_iommu_dc *dc;
- 	u64 tc;
- 	int i;
-@@ -893,6 +1483,9 @@ static struct iommu_device *riscv_iommu_probe_device(struct device *dev)
- 	if (iommu->ddt_mode <= RISCV_IOMMU_DDTP_IOMMU_MODE_BARE)
- 		return ERR_PTR(-ENODEV);
- 
-+	info = kzalloc(sizeof(*info), GFP_KERNEL);
-+	if (!info)
-+		return ERR_PTR(-ENOMEM);
- 	/*
- 	 * Allocate and pre-configure device context entries in
- 	 * the device directory. Do not mark the context valid yet.
-@@ -902,24 +1495,39 @@ static struct iommu_device *riscv_iommu_probe_device(struct device *dev)
- 		tc |= RISCV_IOMMU_DC_TC_SADE;
- 	for (i = 0; i < fwspec->num_ids; i++) {
- 		dc = riscv_iommu_get_dc(iommu, fwspec->ids[i]);
--		if (!dc)
-+		if (!dc) {
-+			kfree(info);
- 			return ERR_PTR(-ENODEV);
-+		}
- 		if (READ_ONCE(dc->tc) & RISCV_IOMMU_DC_TC_V)
- 			dev_warn(dev, "already attached to IOMMU device directory\n");
- 		WRITE_ONCE(dc->tc, tc);
- 	}
- 
-+	dev_iommu_priv_set(dev, info);
-+
- 	return &iommu->iommu;
- }
- 
-+static void riscv_iommu_release_device(struct device *dev)
-+{
-+	struct riscv_iommu_info *info = dev_iommu_priv_get(dev);
-+
-+	synchronize_rcu();
-+	kfree(info);
-+}
-+
- static const struct iommu_ops riscv_iommu_ops = {
-+	.pgsize_bitmap = SZ_4K,
- 	.of_xlate = riscv_iommu_of_xlate,
- 	.identity_domain = &riscv_iommu_identity_domain,
- 	.blocked_domain = &riscv_iommu_blocking_domain,
- 	.release_domain = &riscv_iommu_blocking_domain,
-+	.domain_alloc_paging = riscv_iommu_alloc_paging_domain,
- 	.def_domain_type = riscv_iommu_device_domain_type,
- 	.device_group = riscv_iommu_device_group,
- 	.probe_device = riscv_iommu_probe_device,
-+	.release_device	= riscv_iommu_release_device,
- };
- 
- static int riscv_iommu_init_check(struct riscv_iommu_device *iommu)
--- 
-2.34.1
-
+SGkgTWljaGFlbCwNCg0KSSBjYW4gYW5zd2VyIHNvbWUgb2YgdGhlIHF1ZXN0aW9ucyBzaW5jZSBJ
+IGluc3RpZ2F0ZWQgdGhpcyBlZmZvcnQNCndoaWxlIGFnbyAoeW91IG1pZ2h0IGZpbmQgb2xkIGVt
+YWlsIGNoYWluL3MpLg0KDQoNCk9uIDEwLzEwLzI0IDExOjIxLCBNaWNoYWVsIEtlbGxleSB3cm90
+ZToNCiA+IEZyb206IE51bm8gRGFzIE5ldmVzIDxudW5vZGFzbmV2ZXNAbGludXgubWljcm9zb2Z0
+LmNvbT4gU2VudDogDQpUaHVyc2RheSwgT2N0b2JlciAzLCAyMDI0IDEyOjUxIFBNDQogPj4NCiA+
+PiBBZGQgZGVmaW5pdGlvbnMgbmVlZGVkIGZvciBwcml2aWxlZ2VkIEh5cGVyLVYgcGFydGl0aW9u
+cy4NCiA+Pg0KID4+IFRoZXNlIGZpbGVzIGFyZSBkZXJpdmVkIGZyb20gaGVhZGVycyBleHBvcnRl
+ZCBmcm9tIHRoZSBoeXBlcnZpc29yIGNvZGUuDQogPg0KID4gQ291bGQgeW91IGVsYWJvcmF0ZSBv
+biB0aGUgbmFtaW5nIGNvbnZlbnRpb25zIGZvciB0aGUgbmV3IGZpbGVzLA0KID4gYW5kIHRoZSBy
+dWxlcyB0aGF0IGdvdmVybiB3aGF0IGdvZXMgaW4gd2hhdCBmaWxlcz8gU3BlY2lmaWNhbGx5LA0K
+ID4gd2hhdCBpcyAiaHZnZGsiIHZzLiAiaHZoZGsiLCBhbmQgd2hhdCBhcmUgdGhlIF9leHQgYW5k
+IF9taW5pDQogPiBzdWZmaXhlcz8gRXZlbiBpZiB0aGUgZmlsZW5hbWVzIGFyZSBkZXJpdmVkIGZy
+b20gV2luZG93cw0KDQogICBodmhkayA6IGh5cCBob3N0IGRldmVsb3BtZW50IGtpdA0KICAgaHZn
+ZGsgOiBoeXAgZ3Vlc3QgZGV2ZWxvcG1lbnQga2l0DQoNCklPVywgaGRrIGZpbGVzIGluY2x1ZGUg
+ZGF0YSBzdHJ1Y3R1cmVzIGZvciBhIHByaXZpbGVnZWQgVk0sIGFrYQ0KZG9tMC9yb290L2hvc3Qs
+IGFuZCBnZGsgdGFyZ2V0cyBhbiB1bnByaXZpbGVnZWQgVk1zLCBpZSwgZ3Vlc3RzLg0KDQpUaGUg
+X21pbmkgaW1wbGllcyB0YXJnZXQgaXMgaG9zdC9ndWVzdCBrZXJuZWwsIGFuZCBub24tbWluaQ0K
+dGFyZ2V0cyBWTU1zLCBidXQgdGhhdCBhcHBlYXJzIG1vcmUgaGlzdG9yaWMgYXMgb3ZlciB0aW1l
+DQp0aGluZ3MgbW92ZWQgZnJvbSBrZXJuZWwgdG8gdXNlciBzcGFjZS4NCg0KVGhlIGh2Z2RrX2V4
+dCB3YXMgY3JlYXRlZCBmb3IgZXh0ZW5kZWQgaHlwZXJjYWxscy4NCg0KUGxlYXNlIG5vdGUsIHRo
+ZXNlIGhlYWRlcnMgYXJlIHB1YmxpY2x5IGV4cG9ydGVkIGJ5IHRoZSBoeXBlcnZpc29yDQphbmQg
+Y29uc3VtZWQgYXMgaXMgYnkgV2luZG93cyB0b2RheSAobm90IHN1cmUgYWJvdXQgQlNEIGFuZCBv
+dGhlcnMpLA0Kc28gY2hhbmdpbmcgdGhlbSBpcyBwcm9iIG5vdCBmZWFzaWJsZS4NCg0KLi4uDQog
+Pj4gVGhpcyBpcyBhIHN0ZXAgdG93YXJkIGltcG9ydGluZyBoZWFkZXJzIGRpcmVjdGx5LCBzaW1p
+bGFyIHRvIFhlbiBwdWJsaWMNCiA+PiBmaWxlcyBpbiBpbmNsdWRlL3hlbi9pbnRlcmZhY2UvLg0K
+ID4NCiA+IEknbSBub3QgdW5kZXJzdGFuZGluZyB0aGlzIHN0YXRlbWVudC4gVGhlIG5ldyBmaWxl
+cyBpbiB0aGlzIHBhdGNoDQogPiBhcmUgb2J2aW91c2x5IGZvbGxvd2luZyBMaW51eCBrZXJuZWwg
+Y29kaW5nIHN0eWxlLCB3aXRoIExpbnV4IGtlcm5lbA0KID4gdHlwZXMsIGV0Yy4gSSdtIGd1ZXNz
+aW5nIHRoZXJlIHdhcyBhIGxvdCBvZiAiYnVzeSB3b3JrIiB0byB0YWtlDQogPiBXaW5kb3dzIEh5
+cGVyLVYgY29kZSBhbmQgbWFrZSBpdCBsb29rIGxpa2UgTGludXgga2VybmVsIGNvZGUuIDotKA0K
+ID4gV2hhdCB3b3VsZCAiaW1wb3J0aW5nIGhlYWRlcnMgZGlyZWN0bHkiIGxvb2sgbGlrZSwgYW5k
+IGhvdyBpcyB0aGlzDQogPiBhbiBpbnRlcmltIHN0ZXA/DQoNCkNvcnJlY3QsIHRoZXkgYXJlIGN1
+cnJlbnRseSBub3QgZGlyZWN0bHkgaW1wb3J0ZWQuIFRoZSBjb2Rpbmcgc3R5bGUNCmlzIGRpZmZl
+cmVudCBhbmQgYWxzbyB0aGUgaHlwIGlzIG5vdCBidWlsdCB1c2luZyBnY2MvY2xhbmcuIFNvLCB3
+ZSd2ZQ0Kc29tZSB3b3JrIHRvIGRvIGJlZm9yZSB3ZSBjYW4gdXNlIHRoZW0gYXMgaXMuIEZvciBu
+b3csIHdlIGhhdmUNCiJtaXJyb3JlZCIgdGhlbSBtYW51YWxseSBlbmZvcmNpbmcgTGludXggc3R5
+bGUuIEdvaW5nIGZvcndhcmQsIHdlDQpoYXZlIHRvIGRlY2lkZSBpZiB3ZSBjYW4gdXNlIHRoZW0g
+YXMgaXMgKHRoZXJlIGlzIHNvbWUgcHJlY2VkZW50IGluDQpsaW51eCBmb3IgZHJpdmVycyBpbmNs
+dWRpbmcgaGVhZGVycyB3aXRoIGRpZmZlcmVudCBjb2Rpbmcgc3R5bGUpIG9yDQp3ZSBjYW4gYXV0
+byBjb252ZXJ0IHRoZW0gdmlhIHNvbWUgdG9vbCBvciB3ZSBjYW4ga2VlcCB0aGVtIG1hbnVhbA0K
+YW5kIG1vZGlmeSB0aGVtIGluIHN5bmMgd2l0aCBoeXAgbW9kaWZ5aW5nIHRoZW0uIEluIGFueSBj
+YXNlLCBpdA0Kc2hvdWxkIGJlIHJhcmUgb3BlcmF0aW9uLiBNYXRjaGluZyB0aGVtIG5vdyBhbGxv
+d3MgdXMgdG8gZ2V0IHRoZXJlLg0KDQpZb3UgYXJlIGNvcnJlY3QsIGl0IHdhcyAiYnVzeSB3b3Jr
+IiwgdG9vayBtZSBtb3JlIHRoYW4gdHdvIHdlZWtzIGluDQphZGRpdGlvbiB0byB0aW1lIE51bm8g
+YWxzbyBzcGVudC4NCg0KID4gQWxzbywgaXQgbG9va3MgbGlrZSB0aGVzZSBuZXcgZmlsZXMgdGFr
+ZSBhIGRpZmZlcmVudCBhcHByb2FjaCBmb3INCiA+IGluc3RydWN0aW9uIHNldCBhcmNoaXRlY3R1
+cmUgZGlmZmVyZW5jZXMuIFRoZXJlIGFyZSBpbmxpbmUgI2lmZGVmJ3MNCiA+IGluc3RlYWQgb2Yg
+dGhlIGN1cnJlbnQgbWV0aG9kIG9mIGhhdmluZyBhIGNvbW1vbiBmaWxlLCBhbmQgdGhlbg0KID4g
+YXJjaGl0ZWN0dXJlIHNwZWNpZmljIHZlcnNpb25zIHRoYXQgaW5jbHVkZSB0aGUgY29tbW9uIGZp
+bGUuIE15DQogPiBzZW5zZSBpcyB0aGF0IExpbnV4IGtlcm5lbCBjb2RlIHByZWZlcnMgdGhlIGN1
+cnJlbnQgYXBwcm9hY2ggaW4NCiA+IG9yZGVyIHRvIGF2b2lkICNpZmRlZidlcnksIGJ1dCBtYXli
+ZSB0aGF0J3MgbGVzcyBwcmFjdGljYWwgd2hlbiB0aGUNCiA+IGRlZmluaXRpb25zIGFyZSBkZXJp
+dmVkIGZyb20gV2luZG93cyBIeXBlci1WIGNvZGUuIEFuZCB3aXRoDQogPiBvbmx5IHR3byBhcmNo
+aXRlY3R1cmVzIHRvIGRlYWwgd2l0aCwgdGhlICNpZmRlZidzIGRvbid0IGdldA0KID4gd2lsZC1h
+bmQtY3JhenksIHdoaWNoIGlzIGdvb2QuDQoNCldlbGwsIHdlIGFyZSB0cnlpbmcgdG8ga2VlcCB0
+aGVtIGFzIGNsb3NlIHRvIHRoZSBvcmlnaW5hbHMgYXMNCnBvc3NpYmxlLiBCdXQgbm93IHRoYXQg
+bGludXggc3VwcG9ydCBpcyBoZXJlLCB3ZSB3aWxsIHdvcmsgd2l0aA0KdGhlIHByb2R1Y2VycyBv
+ZiB0aGVzZSBoZWFkZXJzLCBpZSwgdGhlIGh5cCB0ZWFtLCB0byBtYWtlIHRoZW0NCm1vcmUgbGlu
+dXggZnJpZW5kbHkgZ29pbmcgZm9yd2FyZC4gR2l2ZW4gdGhlcmUgYXJlIG90aGVyIGRpcmVjdA0K
+Y29uc3VtZXJzIG9mIHRoZSBoZWFkZXJzLCBXaW5kb3dzL0JTRC8uLiwgaXQgd29uJ3QgYmUgcmln
+aHQgYXdheSwNCmFzIHdlJ2QgaGF2ZSB0byBjb29yZGluYXRlIGFuZCBtYWtlIHN1cmUgYWxsIGFy
+ZSBoYXBweS4NCg0KSG9wZSB0aGF0IG1ha2VzIHNlbnNlLg0KDQpUaGFua3MsDQotTXVrZXNoDQoN
+Cg==
