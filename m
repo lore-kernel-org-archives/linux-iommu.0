@@ -1,183 +1,124 @@
-Received: from mx0a-0031df01.pphosted.com (mx0a-0031df01.pphosted.com [205.220.168.131])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9F71D20A5CA;
-	Fri, 11 Oct 2024 06:32:05 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.168.131
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6634F635;
+	Fri, 11 Oct 2024 06:48:21 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1728628327; cv=none; b=YcKyU1bGlrrXk/9cbJgXyEGQt/guBz0XdLxQciD3g8uuk3s1ekwOFnQ9SywFUMA7k9qnoMgGw0jvOIGU7pNewm9D3Ij9hxNQhBdsT6jrIx0CjBlrSYll++meOEGiqKlvqGMSqllB27epmRLItF2EANquZEjjn5QvNQ4jBttWv9I=
+	t=1728629301; cv=none; b=p0tT1VW7WL7x3mXmVCTwCajuXtwkmfwjZ/TbfoA3QopS46DBKF0E0cUbf7paxHHR1BxhS/vpMxFQXscXavL5bKyrEfxfeR8VaGtgHr/akDLkIGlWty03Ux2ycepGdfVT4/H1CNZGkifcrG4e14+ePtV8CRIPKwypHMq5Gn7/5cI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1728628327; c=relaxed/simple;
-	bh=/lRN1fRtvgCddmJE4BwxegqnA5l7P5tfodhFSQlZFiU=;
-	h=From:To:CC:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=g/CZ3gh2mmY2DLBO0PK9IGTuRfBjHcYzEp7kKVixeTC6qeZI1fBCcVwsjWNpsFku+U+SRNPUg6wIj+9vvgUdY0h28WZz0lZKRjcrBD5MsyUihXK7leqDqsbW4lIwdUprA0GPkbpZYUaD9Zrm1wVJZ6IKhiE5R+4epxbQewcwglE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com; spf=pass smtp.mailfrom=quicinc.com; dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b=FnyGTEMM; arc=none smtp.client-ip=205.220.168.131
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=quicinc.com
+	s=arc-20240116; t=1728629301; c=relaxed/simple;
+	bh=iDZhdIxYZMMWE5+ui7EYay/hZBqt1UfaPAlvnX1cZm4=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=Ou0bS9DdQY/s2cCUqTaPdWFenqjJNtPl8yhfMfdrt8Z6FuNCAmtHomsiWnAkpkaTruLTnbk+ALwQm7l/Uz6JzgywHMKZPrwKjRXtK/C5+8djpZTKVF9ttakslCJk5dWEAs5tUOs45Wec9hu14qGDwwLadNBfdFFTuISibAQHSU0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=UbSv01sw; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b="FnyGTEMM"
-Received: from pps.filterd (m0279866.ppops.net [127.0.0.1])
-	by mx0a-0031df01.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 49ANvvVS022616;
-	Fri, 11 Oct 2024 06:31:57 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=quicinc.com; h=
-	cc:content-type:date:from:in-reply-to:message-id:mime-version
-	:references:subject:to; s=qcppdkim1; bh=rQJTztl2bhM1pzaqlxEKn6nB
-	XXChw5OuypaqDbySJV0=; b=FnyGTEMMSRRUWtnc6wJt+Z+ImENrb+RJZWytU6Wc
-	dD6YBJz7wlK9p+pqmQN1cATf/qiha8FAkCK4oE2Wzwj7XRo7pvh0DjKzwUMKIypc
-	mnsd4qZS8lph08uRlUVoiKaPgVORUGMEO2Orb7ge5WIVLuckqkPBMhFLSMiyP195
-	BVb1ECDZ4nzq89MPoIN7g6nII30+4ewZQ6tNiIYVbLOI//kiWsSRlPDCK4J4qyrr
-	d0Ap2sprXC/l8hucYk+93MuYU1GV80VHLRgficptEnx12fIYd5zqS8BoRmleTXcZ
-	9YOFkztbJr3aW1o9xIDocZzrGZN2Z4sGWL0gng4kpaywhw==
-Received: from nalasppmta03.qualcomm.com (Global_NAT1.qualcomm.com [129.46.96.20])
-	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 426db7jms8-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Fri, 11 Oct 2024 06:31:57 +0000 (GMT)
-Received: from nalasex01b.na.qualcomm.com (nalasex01b.na.qualcomm.com [10.47.209.197])
-	by NALASPPMTA03.qualcomm.com (8.18.1.2/8.18.1.2) with ESMTPS id 49B6VuaB007203
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Fri, 11 Oct 2024 06:31:56 GMT
-Received: from hu-qqzhou-sha.qualcomm.com (10.80.80.8) by
- nalasex01b.na.qualcomm.com (10.47.209.197) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.1544.9; Thu, 10 Oct 2024 23:31:52 -0700
-From: Qingqing Zhou <quic_qqzhou@quicinc.com>
-To: <andersson@kernel.org>, <konradybcio@kernel.org>, <robh@kernel.org>,
-        <krzk+dt@kernel.org>, <conor+dt@kernel.org>, <robimarko@gmail.com>,
-        <quic_gurus@quicinc.com>, <will@kernel.org>, <robin.murphy@arm.com>,
-        <joro@8bytes.org>
-CC: <linux-arm-msm@vger.kernel.org>, <devicetree@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, <iommu@lists.linux.dev>,
-        Qingqing Zhou
-	<quic_qqzhou@quicinc.com>
-Subject: [PATCH 4/4] arm64: dts: qcom: qcs615: add the APPS SMMU node
-Date: Fri, 11 Oct 2024 12:01:12 +0530
-Message-ID: <20241011063112.19087-5-quic_qqzhou@quicinc.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20241011063112.19087-1-quic_qqzhou@quicinc.com>
-References: <20241011063112.19087-1-quic_qqzhou@quicinc.com>
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="UbSv01sw"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 97754C4CEC7;
+	Fri, 11 Oct 2024 06:48:15 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1728629301;
+	bh=iDZhdIxYZMMWE5+ui7EYay/hZBqt1UfaPAlvnX1cZm4=;
+	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+	b=UbSv01swW8lEZHcqBcdcJbm+LECSIRtf23eQwIMlJjhUZkspQLpEOH38ShVXP+nwX
+	 +ZMVblZytek10DG8pFEODbb14BZWK/a8XW1b69jMSDFewKmx6apjcpIRtzxIR0nDm6
+	 BVJW/YmBFGoaWUsNr7v36nB3eSj96aaTwMNJ7sqAa0sBbv88T+7zMukypXkluf5lLW
+	 rQtwdp5UmZVUhrZN3Uj5B28OxcZV+ilqQCMy5jVvK+PyEFc3He3hfkMLLZWgKHkUr5
+	 KcIsBT7kl+3EUX+0NETNO5M1z7IN6klO1+rjqmdOJ4PTfEpNHZ2RNeZdgFJvLoBIQo
+	 Wr62NfMvGaySQ==
+Message-ID: <af81be27-fdfa-4dec-a18c-56c7022e3c75@kernel.org>
+Date: Fri, 11 Oct 2024 08:48:12 +0200
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-ClientProxiedBy: nasanex01a.na.qualcomm.com (10.52.223.231) To
- nalasex01b.na.qualcomm.com (10.47.209.197)
-X-QCInternal: smtphost
-X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
-X-Proofpoint-ORIG-GUID: 4sQTpp5WM4JVcdxzgZa448L3MSusv3EN
-X-Proofpoint-GUID: 4sQTpp5WM4JVcdxzgZa448L3MSusv3EN
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.293,Aquarius:18.0.1039,Hydra:6.0.680,FMLib:17.12.60.29
- definitions=2024-09-06_09,2024-09-06_01,2024-09-02_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 suspectscore=0
- priorityscore=1501 impostorscore=0 mlxlogscore=733 bulkscore=0
- malwarescore=0 mlxscore=0 phishscore=0 clxscore=1015 spamscore=0
- adultscore=0 lowpriorityscore=0 classifier=spam adjust=0 reason=mlx
- scancount=1 engine=8.19.0-2409260000 definitions=main-2410110042
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH 2/4] dt-bindings: arm-smmu: Document Qualcomm QCS615 apps
+ smmu
+To: Qingqing Zhou <quic_qqzhou@quicinc.com>, andersson@kernel.org,
+ konradybcio@kernel.org, robh@kernel.org, krzk+dt@kernel.org,
+ conor+dt@kernel.org, robimarko@gmail.com, quic_gurus@quicinc.com,
+ will@kernel.org, robin.murphy@arm.com, joro@8bytes.org
+Cc: linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org,
+ linux-kernel@vger.kernel.org, iommu@lists.linux.dev
+References: <20241011063112.19087-1-quic_qqzhou@quicinc.com>
+ <20241011063112.19087-3-quic_qqzhou@quicinc.com>
+From: Krzysztof Kozlowski <krzk@kernel.org>
+Content-Language: en-US
+Autocrypt: addr=krzk@kernel.org; keydata=
+ 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 fv0=
+In-Reply-To: <20241011063112.19087-3-quic_qqzhou@quicinc.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 
-Add the APPS SMMU node for qcs615-based platforms. Add the dma-ranges
-to limit DMA address range to 36bit width to align with system
-architecture.
+On 11/10/2024 08:31, Qingqing Zhou wrote:
+> Add devicetree binding for apps smmu on Qualcomm QCS615 SoC. SMMU function
+> is required by multiple functions including USB/UFS/Ethernet.
 
-Signed-off-by: Qingqing Zhou <quic_qqzhou@quicinc.com>
----
- arch/arm64/boot/dts/qcom/qcs615.dtsi | 74 ++++++++++++++++++++++++++++
- 1 file changed, 74 insertions(+)
+Do not explain what SMMU is, because it is obvious, but explain how this
+hardware differs from everything existing.
 
-diff --git a/arch/arm64/boot/dts/qcom/qcs615.dtsi b/arch/arm64/boot/dts/qcom/qcs615.dtsi
-index 027c5125f36b..fcba83fca7cf 100644
---- a/arch/arm64/boot/dts/qcom/qcs615.dtsi
-+++ b/arch/arm64/boot/dts/qcom/qcs615.dtsi
-@@ -379,6 +379,7 @@
- 	soc: soc@0 {
- 		compatible = "simple-bus";
- 		ranges = <0 0 0 0 0x10 0>;
-+		dma-ranges = <0 0 0 0 0x10 0>;
- 		#address-cells = <2>;
- 		#size-cells = <2>;
- 
-@@ -524,6 +525,79 @@
- 			reg = <0x0 0x0c3f0000 0x0 0x400>;
- 		};
- 
-+		apps_smmu: iommu@15000000 {
-+			compatible = "qcom,qcs615-smmu-500", "qcom,smmu-500", "arm,mmu-500";
-+			reg = <0x0 0x15000000 0x0 0x80000>;
-+			#iommu-cells = <2>;
-+			#global-interrupts = <1>;
-+
-+			interrupts = <GIC_SPI 65 IRQ_TYPE_LEVEL_HIGH>,
-+					<GIC_SPI 94 IRQ_TYPE_LEVEL_HIGH>,
-+					<GIC_SPI 95 IRQ_TYPE_LEVEL_HIGH>,
-+					<GIC_SPI 96 IRQ_TYPE_LEVEL_HIGH>,
-+					<GIC_SPI 97 IRQ_TYPE_LEVEL_HIGH>,
-+					<GIC_SPI 98 IRQ_TYPE_LEVEL_HIGH>,
-+					<GIC_SPI 99 IRQ_TYPE_LEVEL_HIGH>,
-+					<GIC_SPI 100 IRQ_TYPE_LEVEL_HIGH>,
-+					<GIC_SPI 101 IRQ_TYPE_LEVEL_HIGH>,
-+					<GIC_SPI 102 IRQ_TYPE_LEVEL_HIGH>,
-+					<GIC_SPI 103 IRQ_TYPE_LEVEL_HIGH>,
-+					<GIC_SPI 104 IRQ_TYPE_LEVEL_HIGH>,
-+					<GIC_SPI 105 IRQ_TYPE_LEVEL_HIGH>,
-+					<GIC_SPI 106 IRQ_TYPE_LEVEL_HIGH>,
-+					<GIC_SPI 107 IRQ_TYPE_LEVEL_HIGH>,
-+					<GIC_SPI 108 IRQ_TYPE_LEVEL_HIGH>,
-+					<GIC_SPI 109 IRQ_TYPE_LEVEL_HIGH>,
-+					<GIC_SPI 110 IRQ_TYPE_LEVEL_HIGH>,
-+					<GIC_SPI 111 IRQ_TYPE_LEVEL_HIGH>,
-+					<GIC_SPI 112 IRQ_TYPE_LEVEL_HIGH>,
-+					<GIC_SPI 113 IRQ_TYPE_LEVEL_HIGH>,
-+					<GIC_SPI 114 IRQ_TYPE_LEVEL_HIGH>,
-+					<GIC_SPI 115 IRQ_TYPE_LEVEL_HIGH>,
-+					<GIC_SPI 116 IRQ_TYPE_LEVEL_HIGH>,
-+					<GIC_SPI 117 IRQ_TYPE_LEVEL_HIGH>,
-+					<GIC_SPI 118 IRQ_TYPE_LEVEL_HIGH>,
-+					<GIC_SPI 181 IRQ_TYPE_LEVEL_HIGH>,
-+					<GIC_SPI 182 IRQ_TYPE_LEVEL_HIGH>,
-+					<GIC_SPI 183 IRQ_TYPE_LEVEL_HIGH>,
-+					<GIC_SPI 184 IRQ_TYPE_LEVEL_HIGH>,
-+					<GIC_SPI 185 IRQ_TYPE_LEVEL_HIGH>,
-+					<GIC_SPI 186 IRQ_TYPE_LEVEL_HIGH>,
-+					<GIC_SPI 187 IRQ_TYPE_LEVEL_HIGH>,
-+					<GIC_SPI 188 IRQ_TYPE_LEVEL_HIGH>,
-+					<GIC_SPI 189 IRQ_TYPE_LEVEL_HIGH>,
-+					<GIC_SPI 190 IRQ_TYPE_LEVEL_HIGH>,
-+					<GIC_SPI 191 IRQ_TYPE_LEVEL_HIGH>,
-+					<GIC_SPI 192 IRQ_TYPE_LEVEL_HIGH>,
-+					<GIC_SPI 315 IRQ_TYPE_LEVEL_HIGH>,
-+					<GIC_SPI 316 IRQ_TYPE_LEVEL_HIGH>,
-+					<GIC_SPI 317 IRQ_TYPE_LEVEL_HIGH>,
-+					<GIC_SPI 318 IRQ_TYPE_LEVEL_HIGH>,
-+					<GIC_SPI 319 IRQ_TYPE_LEVEL_HIGH>,
-+					<GIC_SPI 320 IRQ_TYPE_LEVEL_HIGH>,
-+					<GIC_SPI 321 IRQ_TYPE_LEVEL_HIGH>,
-+					<GIC_SPI 322 IRQ_TYPE_LEVEL_HIGH>,
-+					<GIC_SPI 323 IRQ_TYPE_LEVEL_HIGH>,
-+					<GIC_SPI 324 IRQ_TYPE_LEVEL_HIGH>,
-+					<GIC_SPI 325 IRQ_TYPE_LEVEL_HIGH>,
-+					<GIC_SPI 326 IRQ_TYPE_LEVEL_HIGH>,
-+					<GIC_SPI 327 IRQ_TYPE_LEVEL_HIGH>,
-+					<GIC_SPI 328 IRQ_TYPE_LEVEL_HIGH>,
-+					<GIC_SPI 329 IRQ_TYPE_LEVEL_HIGH>,
-+					<GIC_SPI 330 IRQ_TYPE_LEVEL_HIGH>,
-+					<GIC_SPI 331 IRQ_TYPE_LEVEL_HIGH>,
-+					<GIC_SPI 332 IRQ_TYPE_LEVEL_HIGH>,
-+					<GIC_SPI 333 IRQ_TYPE_LEVEL_HIGH>,
-+					<GIC_SPI 334 IRQ_TYPE_LEVEL_HIGH>,
-+					<GIC_SPI 335 IRQ_TYPE_LEVEL_HIGH>,
-+					<GIC_SPI 336 IRQ_TYPE_LEVEL_HIGH>,
-+					<GIC_SPI 337 IRQ_TYPE_LEVEL_HIGH>,
-+					<GIC_SPI 338 IRQ_TYPE_LEVEL_HIGH>,
-+					<GIC_SPI 339 IRQ_TYPE_LEVEL_HIGH>,
-+					<GIC_SPI 340 IRQ_TYPE_LEVEL_HIGH>,
-+					<GIC_SPI 341 IRQ_TYPE_LEVEL_HIGH>;
-+		};
-+
- 		intc: interrupt-controller@17a00000 {
- 			compatible = "arm,gic-v3";
- 			reg = <0x0 0x17a00000 0x0 0x10000>,     /* GICD */
--- 
-2.17.1
+> 
+> Signed-off-by: Qingqing Zhou <quic_qqzhou@quicinc.com>
+> ---
+>  Documentation/devicetree/bindings/iommu/arm,smmu.yaml | 1 +
+>  1 file changed, 1 insertion(+)
+> 
+> diff --git a/Documentation/devicetree/bindings/iommu/arm,smmu.yaml b/Documentation/devicetree/bindings/iommu/arm,smmu.yaml
+> index 92d350b8e01a..9e62c2cdda08 100644
+> --- a/Documentation/devicetree/bindings/iommu/arm,smmu.yaml
+> +++ b/Documentation/devicetree/bindings/iommu/arm,smmu.yaml
+> @@ -36,6 +36,7 @@ properties:
+>          items:
+>            - enum:
+>                - qcom,qcm2290-smmu-500
+> +              - qcom,qcs615-smmu-500
+
+This is incomplete? No clocks? No power-domains?
+
+Best regards,
+Krzysztof
 
