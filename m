@@ -1,70 +1,70 @@
-Received: from mail-qt1-f169.google.com (mail-qt1-f169.google.com [209.85.160.169])
+Received: from mail-qk1-f176.google.com (mail-qk1-f176.google.com [209.85.222.176])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D0310199923
-	for <iommu@lists.linux.dev>; Fri, 11 Oct 2024 16:31:25 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.160.169
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4E2F2183CA5
+	for <iommu@lists.linux.dev>; Fri, 11 Oct 2024 16:31:55 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.222.176
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1728664290; cv=none; b=ZNMGF8ovlXfPEG793fZhwi0evnaX9SDkyIYn1hwilwyxZ0cxR1QiLvtCxGRh/nMDvnzHaoP8NS6dktp/ydp+wgDu7JRqxtekEoPCuQGX5XBshpxvEqcmbGk/dIoZCC8LqvhGxOzCUUL+dTSsEov4LXAJq3m+f4KFOnVOe8TON8M=
+	t=1728664316; cv=none; b=MLRwNB59n1Ek44Bo+otG5Y+MDJ+63rRN0fE+u17f/L+ATFA5rWmwhc+A7z9bOp1G5TovTL7dA8srM/c3HxUZUNbprTEHcVVLntszh8EHMsXPpfic/I0gxMeK+8kGuCE79i8fSXIguePfIgxbSGyr/tDLEmDNRv0APfBy+PBR2FA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1728664290; c=relaxed/simple;
-	bh=525ehD9jVRzxqbpKXu59TfkRlURdR2IlhfGKgW7tqZA=;
+	s=arc-20240116; t=1728664316; c=relaxed/simple;
+	bh=woSR6Y75fZOeQBGQO24VdwIFZvxkz6FLKJFAaRwMgJo=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=BW+aJT+SJ7wqGEsA9Tr6EYgKKUBVbF0lUNOh6pWaG2W1DQpGqlrm2KsJU/ReJltJygEUl6dc7vkQMmaaQCZBCkWJcVynG77nGwOoMqUdBs3icEI6Zijsf8eXmeUnorwglwqe2uRHXOs2+Tgb59bP8XUNfrV1LPooTTjs5ZorAp4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=cBRjJhYt; arc=none smtp.client-ip=209.85.160.169
+	 Content-Type:Content-Disposition:In-Reply-To; b=MR9+7ZMC5ZlgMSDU5IgZ/1EMYbHty288NgZV1pou2wxTAsX0DS/CK4TwSo23bHvh7G0OU2f70636tIM0p0qjDS8ny9IN+HCDcMMb1jX6Zieamw7FaoS+O3VidkiTxG6O84+HU0dZGa/yk6gPGC42cio7xSV5tIPNsVyPqN7Glbo=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=Ckg9Av5D; arc=none smtp.client-ip=209.85.222.176
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="cBRjJhYt"
-Received: by mail-qt1-f169.google.com with SMTP id d75a77b69052e-460391553ecso19678191cf.1
-        for <iommu@lists.linux.dev>; Fri, 11 Oct 2024 09:31:25 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="Ckg9Av5D"
+Received: by mail-qk1-f176.google.com with SMTP id af79cd13be357-7b1205e0e03so7302985a.3
+        for <iommu@lists.linux.dev>; Fri, 11 Oct 2024 09:31:55 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google; t=1728664285; x=1729269085; darn=lists.linux.dev;
+        d=ziepe.ca; s=google; t=1728664314; x=1729269114; darn=lists.linux.dev;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=ATpam0YiZTzpjTWMzxJV5L02/OwsB3UVIOf2m/lEpH8=;
-        b=cBRjJhYtBgG6cOQuxropjnEVownmvn9sC+mbSIO/HVEVIU5yvdlPI0wdgf/RvqHJbZ
-         hxAIabKpxWueDr+1IbpZCy24qytgqumSmA5R1NwPUXOUMyixd6roZ5TEA/oZciNzTqBO
-         QXA3v0GNybMrxUNXowulfl8Tjr12P4/vlQKN30Qn6mOBlYlaZQWFaChDB4SSfY5Styfw
-         Vm5MM9zHp/6hNG2zAHdp/AR/KkEjreRfEE/jGChb5vlc5MgSDZyW0huoKq5Mu4uPwZ5Z
-         F6shWtvTOdZnjx2vNc3MtakjHaNtBV3WkFIFXLhcpiRcXlT1Z4FCnApOBRlqpA0EhdEP
-         u5Ww==
+        bh=NwEPzyjMz9lNyBSEKsUJavhwQs/1hDwuBWtKqgoIY1I=;
+        b=Ckg9Av5DGcRizkllN23+tPdAi6Ev5H4QGxyW8w/zS7mETdMOtjV2XJUuDO145Mh/Xq
+         jxe4AWRzOtrEVBtJJfL/mOnVHTV/PwJwF9S+LhOcWDrG8rsNlpQgncI2GfFzaEQOBk0+
+         LhADP0SzenWuB3Eq2DY9yZO9Jg0oSsA1fpT9G/d7NOz3rR3Qbo6kf0HNorM0j7B4nWeW
+         QmbhpvkS58qb67yP0KR+4TJ2yV8OKbctLOTqFkY893NtzsBM9iVtoYWUJcUPkicpLnQJ
+         xMmsWSlL8bARlqIWl5zutUVH1QbT1aFw/n9aQtnBtDfM6GNsqqhouU2Wop9lIhI5CdFb
+         YPJA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1728664285; x=1729269085;
+        d=1e100.net; s=20230601; t=1728664314; x=1729269114;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=ATpam0YiZTzpjTWMzxJV5L02/OwsB3UVIOf2m/lEpH8=;
-        b=XWEUJ4I49opDbfJcWXDTYhqicSz+VrHLOPIZ9+Tzu/JHlkfPFRYzEg8dgpo22WDXac
-         KzODu/tpvI/5itQ2pr6wC57faGP9l7AxVTIV4YxTEGqqixI3u0e63vqdtJjhkdZsXRzb
-         zn3polSzOiMXuB7D0nSS6rGSaOx45F3KjITbVppJZlDdN8mbvXmfMCTa4588g0uN0DA3
-         5hGHiIgIYBO0t+2K9IAewR8NgeRFE6XrDdqDLdeNS97P0Q2GvkVBeDj2q4GtQ+xGAMGi
-         XRavK5raF4ZESkqRkk3pyYjVdm9LF3DmcJddXzZgeTCBwkUuODSfTyYjn25oPDluUvKA
-         ChGA==
-X-Gm-Message-State: AOJu0Yy4YBM6AelcEdXM9eaefykUrDOYtPhKam5N993XA7nzNgwJOlCt
-	gmHLQBxuivoLHJDPHS64ElU65YpREnvVpvWWyM6m8k738jNJUo8jPkREBIj5iAc=
-X-Google-Smtp-Source: AGHT+IG75EhZG0d5M9MeHOGeqzGArKbIsd9k8HqJa104wmM37x2TGfXxpHNROC2Jk+MqDGWYtqA4YA==
-X-Received: by 2002:ac8:7d13:0:b0:458:2fb7:5035 with SMTP id d75a77b69052e-460583e8b95mr2814621cf.3.1728664284832;
-        Fri, 11 Oct 2024 09:31:24 -0700 (PDT)
+        bh=NwEPzyjMz9lNyBSEKsUJavhwQs/1hDwuBWtKqgoIY1I=;
+        b=qZy+aMCUjXSP0I0v2diWyrg6JAdCgHul2ZY73gpprXE4ExOF8Xxbm+MBVhqQNkuq8X
+         AaHYUNLm96sg33+2M7vlcI4O396WnbeoYyC3lZl4OwKWv0F5pFZeakciIJRa9IW3cmWc
+         ZUE6wVmIUSCS8fLkzc8YDdU/ZK81peSqaDS4E/8cMqT1+fR64i7mp89U19VIdgYQ+Srh
+         Go33kdH6httTer/BgotrL7nMPInYjf7l3v+E16U1VyipNnj+HmpN9TZGHOURwGm6ZY7+
+         FOjxKNSArVWDSrA4xHOEYYFNYbVTFC23ue2LZtMArQf/+s3UuqMjaC8SXDmceiQdI9Gp
+         HJbg==
+X-Gm-Message-State: AOJu0YyDwUGZPE+8QB7HTySeMyXbQD8p4aqG7E3k5QGdayEZtbhMAObR
+	c6tj/k8Wu8v+bwrolnYM21KJxkq5qaPdJWrkrkujvvi4Fw8gt1/aeDl4UcmGJ5Y=
+X-Google-Smtp-Source: AGHT+IFSqYpeyoL3JBtt2icvevdHUOGvDnGIXVpy91lCgbjPXgn3EqB0Bri9z5CcvXC6KNpLC2+w8w==
+X-Received: by 2002:a05:620a:2622:b0:7b1:1cf6:cfb9 with SMTP id af79cd13be357-7b11cf6d056mr281355985a.55.1728664313746;
+        Fri, 11 Oct 2024 09:31:53 -0700 (PDT)
 Received: from ziepe.ca (hlfxns017vw-142-68-128-5.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.68.128.5])
-        by smtp.gmail.com with ESMTPSA id d75a77b69052e-460428069c6sm16882951cf.49.2024.10.11.09.31.24
+        by smtp.gmail.com with ESMTPSA id af79cd13be357-7b11c0a8902sm55860385a.31.2024.10.11.09.31.53
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 11 Oct 2024 09:31:24 -0700 (PDT)
+        Fri, 11 Oct 2024 09:31:53 -0700 (PDT)
 Received: from jgg by wakko with local (Exim 4.95)
 	(envelope-from <jgg@ziepe.ca>)
-	id 1szIXz-007eJV-Qa;
-	Fri, 11 Oct 2024 13:31:23 -0300
-Date: Fri, 11 Oct 2024 13:31:23 -0300
+	id 1szIYS-007eRe-Rv;
+	Fri, 11 Oct 2024 13:31:52 -0300
+Date: Fri, 11 Oct 2024 13:31:52 -0300
 From: Jason Gunthorpe <jgg@ziepe.ca>
 To: Lu Baolu <baolu.lu@linux.intel.com>
 Cc: iommu@lists.linux.dev, Joerg Roedel <joro@8bytes.org>,
 	Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
 	Kevin Tian <kevin.tian@intel.com>, Yi Liu <yi.l.liu@intel.com>,
 	Vasant Hegde <vasant.hegde@amd.com>, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 6/7] iommu/vt-d: Refactor first_level_by_default()
-Message-ID: <20241011163123.GO762027@ziepe.ca>
+Subject: Re: [PATCH 7/7] iommu/vt-d: Refine intel_iommu_domain_alloc_user()
+Message-ID: <20241011163152.GP762027@ziepe.ca>
 References: <20241011042722.73930-1-baolu.lu@linux.intel.com>
- <20241011042722.73930-7-baolu.lu@linux.intel.com>
+ <20241011042722.73930-8-baolu.lu@linux.intel.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -73,32 +73,22 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20241011042722.73930-7-baolu.lu@linux.intel.com>
+In-Reply-To: <20241011042722.73930-8-baolu.lu@linux.intel.com>
 
-On Fri, Oct 11, 2024 at 12:27:21PM +0800, Lu Baolu wrote:
-> The first stage page table is compatible across host and guest kernels.
-> Therefore, this driver uses the first stage page table as the default for
-> paging domains.
+On Fri, Oct 11, 2024 at 12:27:22PM +0800, Lu Baolu wrote:
+> The domain_alloc_user ops should always allocate a guest-compatible page
+> table unless specific allocation flags are specified.
 > 
-> The helper first_level_by_default() determines the feasibility of using
-> the first stage page table based on a global policy. This policy requires
-> consistency in scalable mode and first stage translation capability among
-> all iommu units. However, this is unnecessary as domain allocation,
-> attachment, and removal operations are performed on a per-device basis.
+> Currently, IOMMU_HWPT_ALLOC_NEST_PARENT and IOMMU_HWPT_ALLOC_DIRTY_TRACKING
+> require special handling, as both require hardware support for scalable
+> mode and second-stage translation. In such cases, the driver should select
+> a second-stage page table for the paging domain.
 > 
-> The domain type (IOMMU_DOMAIN_DMA vs. IOMMU_DOMAIN_UNMANAGED) should not
-> be a factor in determining the first stage page table usage. Both types
-> are for paging domains, and there's no fundamental difference between them.
-> The driver should not be aware of this distinction unless the core
-> specifies allocation flags that require special handling.
-> 
-> Convert first_level_by_default() from global to per-iommu and remove the
-> 'type' input.
-> 
+> Suggested-by: Jason Gunthorpe <jgg@nvidia.com>
 > Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
 > ---
->  drivers/iommu/intel/iommu.c | 17 +++++++++--------
->  1 file changed, 9 insertions(+), 8 deletions(-)
+>  drivers/iommu/intel/iommu.c | 17 +++++++++++++++--
+>  1 file changed, 15 insertions(+), 2 deletions(-)
 
 Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
 
