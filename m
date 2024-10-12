@@ -1,138 +1,84 @@
-Received: from mail-lf1-f48.google.com (mail-lf1-f48.google.com [209.85.167.48])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D99A5145B16
-	for <iommu@lists.linux.dev>; Sat, 12 Oct 2024 10:18:14 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.48
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1F5861714BA
+	for <iommu@lists.linux.dev>; Sat, 12 Oct 2024 12:06:25 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=45.249.212.188
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1728728296; cv=none; b=lOyIbFOVIhslPDk59NU0tvCdvUkY2obknYjMBFjSICtJekD183XMCIlEa4QojmW7P+EP7bljyPsWWY3daQxaE7wcrkkZgSBP8ui4lLaUz7KnA/UkWSeiE7dX0V+equqQtNHmZ9G11ijTt2XMfkw8tBL/Mvl+38gA49j1wVPAFks=
+	t=1728734788; cv=none; b=ewZWPKb0GHJ5+6CE6UOv13TY1MIz0sN/2a92QKoKzkzQXByUSHiMKRWgsSMKdQzgGiEClXrYF4+LuYfP5ARAt18b4C+IBS0zho+9jn5Fll4XEW9k64sAr/U5usrqSZSWShQjwAvypcZnFOtxA9Nwa8CAvyGBdB5+7mtH17fCQxo=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1728728296; c=relaxed/simple;
-	bh=suB/gvK3RVIdTIVj3t4mfWLPv0ww9krbFp7E65wTf2I=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=iYx21+P2UWqDCEMvNCRm3dI9b0yB4xH1STQVdtr6dBj4cNdJXuua4lRNsh8BZ6E8rutfCRR0BYidfkXnTqEyaTxVhIUS8EXB+YGQCs3cfHaLHYtdP5M5NmQO6IJmPNzAQ7VFw5Gk9RIarfTfu4oOoW/YC2qbkUxx8cp5083zo30=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org; spf=pass smtp.mailfrom=linaro.org; dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b=UnTjxjDD; arc=none smtp.client-ip=209.85.167.48
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linaro.org
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="UnTjxjDD"
-Received: by mail-lf1-f48.google.com with SMTP id 2adb3069b0e04-5398cc2fcb7so3391451e87.1
-        for <iommu@lists.linux.dev>; Sat, 12 Oct 2024 03:18:14 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1728728293; x=1729333093; darn=lists.linux.dev;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=TqMjcC1AHeZ0rlGgmH16x4sW7vgPdZLOnPDdmB4aH0c=;
-        b=UnTjxjDDjCalTOTXYk96NR76Od3gbv5xd13rfryjILHMEE4nrBux/Q881K5JtuBai7
-         s2CiXKIwIkCeGUxU3V2BCBfoRqnBmGITaeE6PUcTeeenOJxTkks1vKMAeZYtklpiUcJd
-         3UDte0NdO8hmlEtMtjhYbI/HT+L+cPF1pN/tHGAvIzSRL4VqAa8mPfQSF+nUK/fkWx56
-         dDkT8+VOU4wLTqr6GRK/kogyfYHM8NMrr0zz39U3mniE5BqBdTXTTCnBtagrPExL+ujd
-         Q7j5b4BANjZRVCQSWvn2XmTu85w/wBfAuFdZKxnLZL4wIh45JbFMtw9o6PkDANyQKYq3
-         uiCA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1728728293; x=1729333093;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=TqMjcC1AHeZ0rlGgmH16x4sW7vgPdZLOnPDdmB4aH0c=;
-        b=Lj6eYEKx4x5Ct4GFgLcuT/YnvpfdQE9/yagYFeeSdWKn+D4zKA27ixfxkCHEez11QU
-         BkblxmbkIWUyXkQrPFeklHaIxDiVKHr2u0okt0IHtzhRyMYycmoXlpxCG+f2MFDbwvNR
-         HkNZg2u/DsfzI9bQyOSopJK+Sf2i4xQCpA2tPmoQjzie/lI0dfXvyLG0dH8qGrOjkU4n
-         i2dshac0vVELCf6gUUGjtS8ZvbJPWf358G0bwfNF3IhbLayxCjrrYy6UIPVhxJAKWNWq
-         dnwMGK4gMy8+uBAUy9ZFfXVBEJ6qyr7RfGdQ8/WfLPlra9X0QPA+0R8HnRZGURIa9p7j
-         LGsQ==
-X-Forwarded-Encrypted: i=1; AJvYcCWbq3fUb3p6WgQo+thy/nblYvlbZsw3O6ZYnmCEL5OV4zJnbT/sSBkEYd3yRCuffbqIkZD02Q==@lists.linux.dev
-X-Gm-Message-State: AOJu0YxdRZq4lT3xspGmD07flTVjqJDM4ITcJWeWUFJpE9s3cw4jCj+5
-	J4Y7ddbNjNTcUD3et6SL71oRfWa7wJfeq/LrJ74oEv7eB46hR+zOCdmT9zmJ38VmXj0BmKY8xLN
-	wOq+I7TBGl4j1rVKF3rDbUxeNsGBTjSs50yHJmQ==
-X-Google-Smtp-Source: AGHT+IGKwx5nKYmIdfK4265lwZmlfRajEDE6ymLUhhDbGn/6VtvHNpCQcZb2C0Db73mm6sCx/G3nlJDjNP9fje8CkFg=
-X-Received: by 2002:a05:6512:b9e:b0:52e:fa6b:e54a with SMTP id
- 2adb3069b0e04-539da4d53femr2076954e87.30.1728728292983; Sat, 12 Oct 2024
- 03:18:12 -0700 (PDT)
+	s=arc-20240116; t=1728734788; c=relaxed/simple;
+	bh=IwUtYPQKqU20Pw5cpn9ykl4bTHIrKjZbpIEJm7B8vG8=;
+	h=Message-ID:Date:MIME-Version:Subject:To:CC:References:From:
+	 In-Reply-To:Content-Type; b=Old1nOF4Xygf+XXuieo6b2HY9MxpVdsEb0whSwn030FkwhDj8cXLyX5Fym4BzXhYj82pG8yrSPOl4A6UDsYzAVlKBA9P9K7Rd/mXLFUXOzMSdXPy5/89wRxjILOmRM8H8zCQuoWarx+K/S54DiMOTtqs8403Blsybw9g2EQ60lw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=huawei.com; spf=pass smtp.mailfrom=huawei.com; arc=none smtp.client-ip=45.249.212.188
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=huawei.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=huawei.com
+Received: from mail.maildlp.com (unknown [172.19.88.105])
+	by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4XQhvv1XPnzkWcD;
+	Sat, 12 Oct 2024 20:03:07 +0800 (CST)
+Received: from dggpemf200006.china.huawei.com (unknown [7.185.36.61])
+	by mail.maildlp.com (Postfix) with ESMTPS id 66A98140393;
+	Sat, 12 Oct 2024 20:05:32 +0800 (CST)
+Received: from [10.67.120.129] (10.67.120.129) by
+ dggpemf200006.china.huawei.com (7.185.36.61) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.1544.11; Sat, 12 Oct 2024 20:05:32 +0800
+Message-ID: <b1fd5ece-b967-4e56-ad4f-64ec437e2634@huawei.com>
+Date: Sat, 12 Oct 2024 20:05:31 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <cover.1728491453.git.nicolinc@nvidia.com> <88114b5c725bb3300a9599d3eeebded221a0b1f9.1728491453.git.nicolinc@nvidia.com>
- <CABQgh9Eaj_vy1=sS2Pf7RC7Vy5PopDfwoshECULEU-jK3JF_sQ@mail.gmail.com> <Zwn/4m8Ac0xEiJi8@Asurada-Nvidia>
-In-Reply-To: <Zwn/4m8Ac0xEiJi8@Asurada-Nvidia>
-From: Zhangfei Gao <zhangfei.gao@linaro.org>
-Date: Sat, 12 Oct 2024 18:18:01 +0800
-Message-ID: <CABQgh9Ft=xxJK-bjS6wCZ5BN4AiKtF9fzdBkevA3x2yb_4O4Kg@mail.gmail.com>
-Subject: Re: [PATCH v3 03/11] iommufd: Introduce IOMMUFD_OBJ_VIOMMU and its
- related struct
-To: Nicolin Chen <nicolinc@nvidia.com>
-Cc: jgg@nvidia.com, kevin.tian@intel.com, will@kernel.org, joro@8bytes.org, 
-	suravee.suthikulpanit@amd.com, robin.murphy@arm.com, dwmw2@infradead.org, 
-	baolu.lu@linux.intel.com, shuah@kernel.org, linux-kernel@vger.kernel.org, 
-	iommu@lists.linux.dev, linux-arm-kernel@lists.infradead.org, 
-	linux-kselftest@vger.kernel.org, eric.auger@redhat.com, 
-	jean-philippe@linaro.org, mdf@kernel.org, mshavit@google.com, 
-	shameerali.kolothum.thodi@huawei.com, smostafa@google.com, yi.l.liu@intel.com, 
-	aik@amd.com, patches@lists.linux.dev
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH net v2 0/2] fix two bugs related to page_pool
+To: <davem@davemloft.net>, <kuba@kernel.org>, <pabeni@redhat.com>
+CC: <liuyonglong@huawei.com>, <fanghaiqing@huawei.com>,
+	<zhangkun09@huawei.com>, Alexander Lobakin <aleksander.lobakin@intel.com>,
+	Robin Murphy <robin.murphy@arm.com>, Alexander Duyck
+	<alexander.duyck@gmail.com>, IOMMU <iommu@lists.linux.dev>, Alexei
+ Starovoitov <ast@kernel.org>, Daniel Borkmann <daniel@iogearbox.net>, Jesper
+ Dangaard Brouer <hawk@kernel.org>, John Fastabend <john.fastabend@gmail.com>,
+	Matthias Brugger <matthias.bgg@gmail.com>, AngeloGioacchino Del Regno
+	<angelogioacchino.delregno@collabora.com>, <netdev@vger.kernel.org>,
+	<intel-wired-lan@lists.osuosl.org>, <bpf@vger.kernel.org>,
+	<linux-kernel@vger.kernel.org>, <linux-arm-kernel@lists.infradead.org>,
+	<linux-mediatek@lists.infradead.org>
+References: <20240925075707.3970187-1-linyunsheng@huawei.com>
+Content-Language: en-US
+From: Yunsheng Lin <linyunsheng@huawei.com>
+In-Reply-To: <20240925075707.3970187-1-linyunsheng@huawei.com>
 Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: dggems701-chm.china.huawei.com (10.3.19.178) To
+ dggpemf200006.china.huawei.com (7.185.36.61)
 
-On Sat, 12 Oct 2024 at 12:49, Nicolin Chen <nicolinc@nvidia.com> wrote:
->
-> On Sat, Oct 12, 2024 at 11:23:07AM +0800, Zhangfei Gao wrote:
->
-> > > diff --git a/drivers/iommu/iommufd/viommu_api.c b/drivers/iommu/iommufd/viommu_api.c
-> > > new file mode 100644
-> > > index 000000000000..c1731f080d6b
-> > > --- /dev/null
-> > > +++ b/drivers/iommu/iommufd/viommu_api.c
-> > > @@ -0,0 +1,57 @@
-> > > +// SPDX-License-Identifier: GPL-2.0-only
-> > > +/* Copyright (c) 2024, NVIDIA CORPORATION & AFFILIATES
-> > > + */
-> > > +
-> > > +#include "iommufd_private.h"
-> > > +
-> > > +struct iommufd_object *iommufd_object_alloc_elm(struct iommufd_ctx *ictx,
-> > > +                                               size_t size,
-> > > +                                               enum iommufd_object_type type)
-> > > +{
-> > > +       struct iommufd_object *obj;
-> > > +       int rc;
-> > > +
-> > > +       obj = kzalloc(size, GFP_KERNEL_ACCOUNT);
-> > > +       if (!obj)
-> > > +               return ERR_PTR(-ENOMEM);
-> > > +       obj->type = type;
-> > > +       /* Starts out bias'd by 1 until it is removed from the xarray */
-> > > +       refcount_set(&obj->shortterm_users, 1);
-> > > +       refcount_set(&obj->users, 1);
-> >
-> > here set refcont 1
-> >
-> > iommufd_device_bind -> iommufd_object_alloc(ictx, idev,
-> > IOMMUFD_OBJ_DEVICE): refcont -> 1
-> > refcount_inc(&idev->obj.users); refcount -> 2
-> > will cause iommufd_device_unbind fail.
-> >
-> > May remove refcount_inc(&idev->obj.users) in iommufd_device_bind
->
-> Hmm, why would it fail? Or is it failing on your system?
+On 2024/9/25 15:57, Yunsheng Lin wrote:
+> Patch 1 fix a possible time window problem for page_pool.
+> Patch 2 fix the kernel crash problem at iommu_get_dma_domain
+> reported in [1].
 
-Not sure, still in check, it may only be on my platform.
+Hi, all
 
-it hit
-iommufd_object_remove:
-if (WARN_ON(obj != to_destroy))
+Through the discussions, it seems there are some main concerns
+as below:
+1. Semantics changing of supporting unlimited inflight pages
+   to limited inflight pages that are as large as the pool_size
+   of page_pool.
+2. The overhead of finding available pool->items in
+   page_pool_item_add().
 
-iommufd_device_bind refcount=2
-iommufd_device_attach refcount=3
-//still not sure which operation inc the count?
-iommufd_device_detach refcount=4
+Any other concerns I missed here?
+As it is unclear about the impact of the above concerns, which seemed
+to lead Paolo to suggest this patchset targetting net-next tree
+instead of net tree, so I am planning to target the net-next tree
+keeping the 'Fixes' tag for the next version, if there is any other
+opinion here, please let me know.
 
-Thanks
+Also, I still have the page_frag refactoring patchset pending in the
+nex-next, please let me know if I should wait for that patchset to
+be applied before sending this one to the net-next tree.
 
-
-
->
-> This patch doesn't change the function but only moved it..
->
-> Thanks
-> Nicolin
+> 
