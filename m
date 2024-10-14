@@ -1,111 +1,114 @@
-Received: from mx0a-0031df01.pphosted.com (mx0a-0031df01.pphosted.com [205.220.168.131])
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.11])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C102A146D55;
-	Mon, 14 Oct 2024 09:53:36 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.168.131
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BD216197A7F
+	for <iommu@lists.linux.dev>; Mon, 14 Oct 2024 10:45:37 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.11
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1728899618; cv=none; b=uHBhkXcVR4OjwI8bJ3xqDwwlDRpbCpqpY02GHJOhj5+x8KZh4NxYR0EdgvNhBzgZRpD5UJLiLWTl7O4dC9+vHW97uCXSI2sxZYNaMpeQV9zCRNaumA7BFvQe2uUPM2058a1w8pPKZiFL5KW7+Ch9aHdEw1J/Gc3aUaxhC9wIiL0=
+	t=1728902739; cv=none; b=A1EXdxVg4PPEhcBj3TT5baL99bd/3RdUw606oh6M/laOu5P6Y9k4SQJG/p7Y2l8xRg36/b5T8KtOpFRJDmfsYechmNBgp4VX67IxC4uSpOxt9fbxZNHvq/75Txh5/EAnpoYCKTDeMt4G4Yn/eZxM1EC02GIxburhQTqMuMNZ8Og=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1728899618; c=relaxed/simple;
-	bh=e+Bwo2NC+pMNRd8ckI+Vz0wV5wuZi+wfJeI6HwZ7nfg=;
-	h=Message-ID:Date:MIME-Version:Subject:To:CC:References:From:
-	 In-Reply-To:Content-Type; b=McKhfGozn1bZBY6+nqiUsrOAaI04HuIJOFA3h4bj1usroIhBVbN+u8tMZJEsHZvmG4XzxoHTLKAB0kWAdxf2iB6pwujCHNRyzajIw6PE08RkgV5P0+maj9JRl9uIF4VEkDKnZ2hMygTEMHGemuohg4//qulouRdPTQAfRqyaUcQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com; spf=pass smtp.mailfrom=quicinc.com; dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b=lzxpxFjR; arc=none smtp.client-ip=205.220.168.131
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=quicinc.com
+	s=arc-20240116; t=1728902739; c=relaxed/simple;
+	bh=yoLyLZ9ZX/fObQ8mnxyo/4YWg5mFnXFKiHF5SttoGY4=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version:Content-Type; b=OJuhKAIpCcC0IonAufYxM7HsXiYZbSwiaq8n6ZMhZMn9BQESF+3PgjK7EB7Ti5mlihElxB+tmrbW86fIKfcTucDrIXYbajP8FsZ2lvbSCFyCivk6zKf/JdHr2bwhFn6K+hitX91Sv31Xr0v+mfUzmpDquhoxpTOFrFEjZsKyxuY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=RYNXvKeb; arc=none smtp.client-ip=198.175.65.11
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b="lzxpxFjR"
-Received: from pps.filterd (m0279862.ppops.net [127.0.0.1])
-	by mx0a-0031df01.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 49DMvgj0015046;
-	Mon, 14 Oct 2024 09:53:26 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=quicinc.com; h=
-	cc:content-transfer-encoding:content-type:date:from:in-reply-to
-	:message-id:mime-version:references:subject:to; s=qcppdkim1; bh=
-	x943eeIf1OGm4gHh4eXaE9srZxFaW2nqi0KQm3uYLxE=; b=lzxpxFjRdCAZ2ftC
-	LPQv/rMcHl8AWBpsQdrdPiq0Z21pX5J4Ktb+0s87LXZY4B5+JLuckTSlAIDscSgi
-	V6n7Rrc7MIvFRjmNbhe4Nc7VNDrspF1PSxe6uiF4Uuc0+8fjl0Ujrykv3CmkwVz3
-	auNChqG1akDYNqd25xSsFzXKaubQlqLPIgNfpnSe+Rr8NOPj3IC/C4VbeZZ7WtS1
-	qGjv2xyaiug55QsoAld5XpGpi+gpK3wl96oqXKFbC1Kq/pd0rlSB8495f5TyCLTT
-	ZWeK+tN5dUYguGpTLwXVXE5Pg1N2ZjhHOBKEqMrFchtYubZDty6Q51wfhP3QdJpf
-	XdGTeg==
-Received: from nalasppmta02.qualcomm.com (Global_NAT1.qualcomm.com [129.46.96.20])
-	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 427hvfuwsx-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Mon, 14 Oct 2024 09:53:26 +0000 (GMT)
-Received: from nalasex01b.na.qualcomm.com (nalasex01b.na.qualcomm.com [10.47.209.197])
-	by NALASPPMTA02.qualcomm.com (8.18.1.2/8.18.1.2) with ESMTPS id 49E9rPIF025380
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Mon, 14 Oct 2024 09:53:25 GMT
-Received: from [10.239.132.41] (10.80.80.8) by nalasex01b.na.qualcomm.com
- (10.47.209.197) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1544.9; Mon, 14 Oct
- 2024 02:53:21 -0700
-Message-ID: <c316c6ff-b741-4186-8f03-f103efc51d1c@quicinc.com>
-Date: Mon, 14 Oct 2024 17:53:18 +0800
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="RYNXvKeb"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1728902737; x=1760438737;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=yoLyLZ9ZX/fObQ8mnxyo/4YWg5mFnXFKiHF5SttoGY4=;
+  b=RYNXvKebVky0iTgRVzE2+uUO3DC6w9qMzRzLa4vgnFKBxp5ngMeTI3A7
+   QjrHesPqVc25YS0xD1SRxNlXY1rkLpCWvEVaExO7lnC1joKY+NZNVY3zt
+   S/VQMkJDASVVpJU6o+KA5CWsHQLZsAyv3robc/NZ9RnbgdTtjFJz/64GA
+   9MKACt1Wkt6/2cJOCrDbjVuaSk4d2pp65eNnJ1rpUjIhtkndO3ko1wYCT
+   zMN+T1UCPfWorRz747Mrzc+VmlK+ttOiCiNRx441/NrTIVVn8zz9/3Lfx
+   B6r/mnGUoKIQqK7T3Q9reF5WfpGNfZdK9uhiQGgXvQoF6H6cIr9vSYcJc
+   A==;
+X-CSE-ConnectionGUID: N2SzMmQ6Q82YxqYQw3JFRQ==
+X-CSE-MsgGUID: W/P3AE4/RJeWAYxJPVuGZA==
+X-IronPort-AV: E=McAfee;i="6700,10204,11222"; a="38799585"
+X-IronPort-AV: E=Sophos;i="6.11,199,1725346800"; 
+   d="scan'208";a="38799585"
+Received: from orviesa001.jf.intel.com ([10.64.159.141])
+  by orvoesa103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Oct 2024 03:45:36 -0700
+X-CSE-ConnectionGUID: AVT9CvHaSd+sarV/5vZSpQ==
+X-CSE-MsgGUID: rgWQ74yqRC6qNPMh7MzA4A==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.11,202,1725346800"; 
+   d="scan'208";a="114990292"
+Received: from black.fi.intel.com ([10.237.72.28])
+  by orviesa001.jf.intel.com with ESMTP; 14 Oct 2024 03:45:34 -0700
+Received: by black.fi.intel.com (Postfix, from userid 1003)
+	id E5B722E6; Mon, 14 Oct 2024 13:45:32 +0300 (EEST)
+From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To: Joerg Roedel <jroedel@suse.de>,
+	Lu Baolu <baolu.lu@linux.intel.com>,
+	Tina Zhang <tina.zhang@intel.com>,
+	iommu@lists.linux.dev,
+	linux-kernel@vger.kernel.org
+Cc: David Woodhouse <dwmw2@infradead.org>,
+	Joerg Roedel <joro@8bytes.org>,
+	Will Deacon <will@kernel.org>,
+	Robin Murphy <robin.murphy@arm.com>,
+	Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Subject: [PATCH v1 1/1] iommu/vt-d: Increase buffer size for device name
+Date: Mon, 14 Oct 2024 13:45:29 +0300
+Message-ID: <20241014104529.4025937-1-andriy.shevchenko@linux.intel.com>
+X-Mailer: git-send-email 2.43.0.rc1.1336.g36b5255a03ac
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH 2/4] dt-bindings: arm-smmu: Document Qualcomm QCS615 apps
- smmu
-To: Krzysztof Kozlowski <krzk@kernel.org>, <andersson@kernel.org>,
-        <konradybcio@kernel.org>, <robh@kernel.org>, <krzk+dt@kernel.org>,
-        <conor+dt@kernel.org>, <robimarko@gmail.com>, <quic_gurus@quicinc.com>,
-        <will@kernel.org>, <robin.murphy@arm.com>, <joro@8bytes.org>
-CC: <linux-arm-msm@vger.kernel.org>, <devicetree@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, <iommu@lists.linux.dev>
-References: <20241011063112.19087-1-quic_qqzhou@quicinc.com>
- <20241011063112.19087-3-quic_qqzhou@quicinc.com>
- <af81be27-fdfa-4dec-a18c-56c7022e3c75@kernel.org>
- <2224b2fe-4e72-4371-9f0b-d5ee211c2210@quicinc.com>
- <4102024c-d4a9-494d-b855-c5f770228788@kernel.org>
-From: Qingqing Zhou <quic_qqzhou@quicinc.com>
-In-Reply-To: <4102024c-d4a9-494d-b855-c5f770228788@kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
- nalasex01b.na.qualcomm.com (10.47.209.197)
-X-QCInternal: smtphost
-X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
-X-Proofpoint-GUID: LsRrV4vBcDNpys5sRunHPVuFPmZE2lxD
-X-Proofpoint-ORIG-GUID: LsRrV4vBcDNpys5sRunHPVuFPmZE2lxD
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.293,Aquarius:18.0.1039,Hydra:6.0.680,FMLib:17.12.60.29
- definitions=2024-09-06_09,2024-09-06_01,2024-09-02_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 priorityscore=1501
- phishscore=0 bulkscore=0 mlxlogscore=999 malwarescore=0 mlxscore=0
- clxscore=1015 adultscore=0 spamscore=0 suspectscore=0 lowpriorityscore=0
- impostorscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.19.0-2409260000 definitions=main-2410140071
 
+GCC is not happy with the current code, e.g.:
 
+.../iommu/intel/dmar.c:1063:9: note: ‘sprintf’ output between 6 and 15 bytes into a destination of size 13
+ 1063 |         sprintf(iommu->name, "dmar%d", iommu->seq_id);
 
-在 10/14/2024 2:52 PM, Krzysztof Kozlowski 写道:
-> On 14/10/2024 05:09, Qingqing Zhou wrote:
->>>> ---
->>>>  Documentation/devicetree/bindings/iommu/arm,smmu.yaml | 1 +
->>>>  1 file changed, 1 insertion(+)
->>>>
->>>> diff --git a/Documentation/devicetree/bindings/iommu/arm,smmu.yaml b/Documentation/devicetree/bindings/iommu/arm,smmu.yaml
->>>> index 92d350b8e01a..9e62c2cdda08 100644
->>>> --- a/Documentation/devicetree/bindings/iommu/arm,smmu.yaml
->>>> +++ b/Documentation/devicetree/bindings/iommu/arm,smmu.yaml
->>>> @@ -36,6 +36,7 @@ properties:
->>>>          items:
->>>>            - enum:
->>>>                - qcom,qcm2290-smmu-500
->>>> +              - qcom,qcs615-smmu-500
->>>
->>> This is incomplete? No clocks? No power-domains?
->> This is APPS SMMU, no clocks and no power-domains are needed for DT.
-> 
-> Then express it in the binding.
-OK, will add this in next patch version.
-> 
-> Best regards,
-> Krzysztof
-> 
+When `make W=1` is supplied, this prevents kernel building. Fix it by
+increasing the buffer size for device name and use sizeoF() instead of
+hard coded constants.
+
+Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+---
+ drivers/iommu/intel/dmar.c  | 2 +-
+ drivers/iommu/intel/iommu.h | 2 +-
+ 2 files changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/iommu/intel/dmar.c b/drivers/iommu/intel/dmar.c
+index eaf862e8dea1..e16c2b1d7633 100644
+--- a/drivers/iommu/intel/dmar.c
++++ b/drivers/iommu/intel/dmar.c
+@@ -1060,7 +1060,7 @@ static int alloc_iommu(struct dmar_drhd_unit *drhd)
+ 		err = iommu->seq_id;
+ 		goto error;
+ 	}
+-	sprintf(iommu->name, "dmar%d", iommu->seq_id);
++	snprintf(iommu->name, sizeof(iommu->name), "dmar%d", iommu->seq_id);
+ 
+ 	err = map_iommu(iommu, drhd);
+ 	if (err) {
+diff --git a/drivers/iommu/intel/iommu.h b/drivers/iommu/intel/iommu.h
+index 1497f3112b12..61701c1c22d3 100644
+--- a/drivers/iommu/intel/iommu.h
++++ b/drivers/iommu/intel/iommu.h
+@@ -720,7 +720,7 @@ struct intel_iommu {
+ 	int		msagaw; /* max sagaw of this iommu */
+ 	unsigned int	irq, pr_irq, perf_irq;
+ 	u16		segment;     /* PCI segment# */
+-	unsigned char 	name[13];    /* Device Name */
++	unsigned char 	name[16];    /* Device Name */
+ 
+ #ifdef CONFIG_INTEL_IOMMU
+ 	unsigned long 	*domain_ids; /* bitmap of domains */
+-- 
+2.43.0.rc1.1336.g36b5255a03ac
+
