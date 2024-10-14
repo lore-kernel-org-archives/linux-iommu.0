@@ -1,114 +1,93 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.11])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-il1-f180.google.com (mail-il1-f180.google.com [209.85.166.180])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BD216197A7F
-	for <iommu@lists.linux.dev>; Mon, 14 Oct 2024 10:45:37 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.11
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DCFD01CC179
+	for <iommu@lists.linux.dev>; Mon, 14 Oct 2024 15:17:15 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.166.180
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1728902739; cv=none; b=A1EXdxVg4PPEhcBj3TT5baL99bd/3RdUw606oh6M/laOu5P6Y9k4SQJG/p7Y2l8xRg36/b5T8KtOpFRJDmfsYechmNBgp4VX67IxC4uSpOxt9fbxZNHvq/75Txh5/EAnpoYCKTDeMt4G4Yn/eZxM1EC02GIxburhQTqMuMNZ8Og=
+	t=1728919038; cv=none; b=j6/aP6B9cL/HEdEzl83iKpHqj7BaBQocyLao6v+MC4LbsbA+1GTCqE3NVeZDtG+5t4Z31qreXrlXkPXliksksbpaEdfI91sbo0WcXa1+P9O6c7fLORB86qmiWoVU5bS0Bd4xjFIX8hr8gqnjWzldjx2tySg2mkVCaWIfW5Nbi0A=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1728902739; c=relaxed/simple;
-	bh=yoLyLZ9ZX/fObQ8mnxyo/4YWg5mFnXFKiHF5SttoGY4=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version:Content-Type; b=OJuhKAIpCcC0IonAufYxM7HsXiYZbSwiaq8n6ZMhZMn9BQESF+3PgjK7EB7Ti5mlihElxB+tmrbW86fIKfcTucDrIXYbajP8FsZ2lvbSCFyCivk6zKf/JdHr2bwhFn6K+hitX91Sv31Xr0v+mfUzmpDquhoxpTOFrFEjZsKyxuY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=RYNXvKeb; arc=none smtp.client-ip=198.175.65.11
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
+	s=arc-20240116; t=1728919038; c=relaxed/simple;
+	bh=qZjZkJC8TvuLicHKx/g9ilkvy1AyBGceBizbkfzAbO8=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=Ji9paFJccTAKSyYr5/bJd3eM/q0vyhppFrRDRhyiaQVaT6zJxRfcNxs05V+Y0rj/isMlFuzrOD+aEysXxInRS1Usa5ktFjJxMpvhTvkRQMU3Uoi1Rass9RILHUeSUIX/J3XY+Y7pgefRKUv/m1JHcRifJPJSYvGJ1EtWQF4hRSA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=kernel.dk; spf=pass smtp.mailfrom=kernel.dk; dkim=pass (2048-bit key) header.d=kernel-dk.20230601.gappssmtp.com header.i=@kernel-dk.20230601.gappssmtp.com header.b=uHxknDtF; arc=none smtp.client-ip=209.85.166.180
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=kernel.dk
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=kernel.dk
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="RYNXvKeb"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1728902737; x=1760438737;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=yoLyLZ9ZX/fObQ8mnxyo/4YWg5mFnXFKiHF5SttoGY4=;
-  b=RYNXvKebVky0iTgRVzE2+uUO3DC6w9qMzRzLa4vgnFKBxp5ngMeTI3A7
-   QjrHesPqVc25YS0xD1SRxNlXY1rkLpCWvEVaExO7lnC1joKY+NZNVY3zt
-   S/VQMkJDASVVpJU6o+KA5CWsHQLZsAyv3robc/NZ9RnbgdTtjFJz/64GA
-   9MKACt1Wkt6/2cJOCrDbjVuaSk4d2pp65eNnJ1rpUjIhtkndO3ko1wYCT
-   zMN+T1UCPfWorRz747Mrzc+VmlK+ttOiCiNRx441/NrTIVVn8zz9/3Lfx
-   B6r/mnGUoKIQqK7T3Q9reF5WfpGNfZdK9uhiQGgXvQoF6H6cIr9vSYcJc
-   A==;
-X-CSE-ConnectionGUID: N2SzMmQ6Q82YxqYQw3JFRQ==
-X-CSE-MsgGUID: W/P3AE4/RJeWAYxJPVuGZA==
-X-IronPort-AV: E=McAfee;i="6700,10204,11222"; a="38799585"
-X-IronPort-AV: E=Sophos;i="6.11,199,1725346800"; 
-   d="scan'208";a="38799585"
-Received: from orviesa001.jf.intel.com ([10.64.159.141])
-  by orvoesa103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Oct 2024 03:45:36 -0700
-X-CSE-ConnectionGUID: AVT9CvHaSd+sarV/5vZSpQ==
-X-CSE-MsgGUID: rgWQ74yqRC6qNPMh7MzA4A==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.11,202,1725346800"; 
-   d="scan'208";a="114990292"
-Received: from black.fi.intel.com ([10.237.72.28])
-  by orviesa001.jf.intel.com with ESMTP; 14 Oct 2024 03:45:34 -0700
-Received: by black.fi.intel.com (Postfix, from userid 1003)
-	id E5B722E6; Mon, 14 Oct 2024 13:45:32 +0300 (EEST)
-From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To: Joerg Roedel <jroedel@suse.de>,
-	Lu Baolu <baolu.lu@linux.intel.com>,
-	Tina Zhang <tina.zhang@intel.com>,
-	iommu@lists.linux.dev,
-	linux-kernel@vger.kernel.org
-Cc: David Woodhouse <dwmw2@infradead.org>,
-	Joerg Roedel <joro@8bytes.org>,
-	Will Deacon <will@kernel.org>,
-	Robin Murphy <robin.murphy@arm.com>,
-	Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Subject: [PATCH v1 1/1] iommu/vt-d: Increase buffer size for device name
-Date: Mon, 14 Oct 2024 13:45:29 +0300
-Message-ID: <20241014104529.4025937-1-andriy.shevchenko@linux.intel.com>
-X-Mailer: git-send-email 2.43.0.rc1.1336.g36b5255a03ac
+	dkim=pass (2048-bit key) header.d=kernel-dk.20230601.gappssmtp.com header.i=@kernel-dk.20230601.gappssmtp.com header.b="uHxknDtF"
+Received: by mail-il1-f180.google.com with SMTP id e9e14a558f8ab-3a39cabb9b8so12352895ab.1
+        for <iommu@lists.linux.dev>; Mon, 14 Oct 2024 08:17:15 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=kernel-dk.20230601.gappssmtp.com; s=20230601; t=1728919035; x=1729523835; darn=lists.linux.dev;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=1f6tWVkVeZpuD6W55vu43bMEka9Bgfs26D5vnHOkHNk=;
+        b=uHxknDtFElWGlG28VLSEH8h6WWFxqL+1DARWh/FM70ZvUvgh1r8ftjE7zuORkebHze
+         EGpI4QuCWaLlJIIEAf5ZpIcjymeMTuirIvojlFe12+JtgnyNrF2xVryFzf7MaEjol8Pp
+         rvddmzq+KjacynDS54FWuY4k7YahepLU4tMc+7leIAlXcQHhb6Eh2HlFfnZ1S8fgwnMc
+         MzwgMhKaN839xC/l2ArVorfS4xrS3vyIfFWl9uYLS14BbcxcEFoaPMbMLBl/nDjW45wZ
+         x4q7JHXuROzk3ImP8RTSaMsc8WTkfbe0rJnSG++URprJfU5YZcgYHOwgD/ATMlsxMsec
+         wT+g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1728919035; x=1729523835;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=1f6tWVkVeZpuD6W55vu43bMEka9Bgfs26D5vnHOkHNk=;
+        b=AijngY7i6FsjRy6EllK7lR1hvOcYDuh4rrj4nAVhGA93vX4jw+oME99+44Oi+hJ7PL
+         /FWeXLus3My6Iw8OhutnP6hU5AwbtLdWAsVrlGFMDDAWB8DEgqApGfEhpGQf1RgDYMdh
+         QFE/yRtB+6LWgy0HtiD+8PY21/ceMvGaCmInV3GIFiTcHrUFCV4L0ybBhjkw/5lCYARJ
+         U8K2bCY+3YWhglU4UMUYjDP6NI09UE/UbJ226jV1KW3/et+Kr4I/8GeDmemFQdruSMiW
+         OXuWjCWFckFJ3qk8EQZMTXK04UU8BUbSWAnTMLAWZpe/tkdgzMwKu1TPgmuZtHWnxomK
+         JvGA==
+X-Forwarded-Encrypted: i=1; AJvYcCUY5B/bQouEJbH2P5enXYY5mOkfGWw+7AUfkwvMvWpslCIAsGYVRhY5zwGXw4IvUZMGrSstOw==@lists.linux.dev
+X-Gm-Message-State: AOJu0YxqPy5ksUNHq5KPKj4HEEvhPfCmpbZBJp2GXzZz+3BwQseBYQgu
+	s46H6FT9SLcOClL8y6BIwKXIGMMCNlIyNQaK32fqGi7kUKkiO+s45I2YXtO1iI0=
+X-Google-Smtp-Source: AGHT+IFxU+6iK4vm/BjVbsnxaxXdxk8G3H1g9vd9g5QB1bRM6/lXrHOk9SFlCvgoUX4Lt8bWzNOpnA==
+X-Received: by 2002:a05:6e02:2192:b0:3a0:7687:8c2d with SMTP id e9e14a558f8ab-3a3b6019b61mr78076955ab.26.1728919034952;
+        Mon, 14 Oct 2024 08:17:14 -0700 (PDT)
+Received: from [192.168.1.116] ([96.43.243.2])
+        by smtp.gmail.com with ESMTPSA id e9e14a558f8ab-3a3afde8cb4sm56162565ab.76.2024.10.14.08.17.13
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 14 Oct 2024 08:17:14 -0700 (PDT)
+Message-ID: <a9fcd235-18b5-4b17-bd4f-75dc2d228e17@kernel.dk>
+Date: Mon, 14 Oct 2024 09:17:13 -0600
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
+User-Agent: Mozilla Thunderbird
+Subject: Re: [Report] annoyed dma debug warning "cacheline tracking EEXIST,
+ overlapping mappings aren't supported"
+To: Ming Lei <ming.lei@redhat.com>,
+ Hamza Mahfooz <someguy@effective-light.com>, Christoph Hellwig <hch@lst.de>,
+ Dan Williams <dan.j.williams@intel.com>
+Cc: linux-block@vger.kernel.org, io-uring@vger.kernel.org,
+ linux-raid@vger.kernel.org, iommu@lists.linux.dev,
+ linux-kernel@vger.kernel.org
+References: <ZwxzdWmYcBK27mUs@fedora>
+Content-Language: en-US
+From: Jens Axboe <axboe@kernel.dk>
+In-Reply-To: <ZwxzdWmYcBK27mUs@fedora>
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
 
-GCC is not happy with the current code, e.g.:
+On 10/13/24 7:27 PM, Ming Lei wrote:
+> Hello Guys,
+> 
+> I got more and more reports on DMA debug warning "cacheline tracking EEXIST,
+> overlapping mappings aren't supported" in storage related tests:
 
-.../iommu/intel/dmar.c:1063:9: note: ‘sprintf’ output between 6 and 15 bytes into a destination of size 13
- 1063 |         sprintf(iommu->name, "dmar%d", iommu->seq_id);
+This is easily triggerable with dio and reusing a buffer. But it looks
+like this will only trigger if CONFIG_DMA_API_DEBUG is set, so should
+not be a prod issue? If so, I'd say that debug printk should be killed.
 
-When `make W=1` is supplied, this prevents kernel building. Fix it by
-increasing the buffer size for device name and use sizeoF() instead of
-hard coded constants.
+Maybe turn it into a pr_warn_once() or something?
 
-Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
----
- drivers/iommu/intel/dmar.c  | 2 +-
- drivers/iommu/intel/iommu.h | 2 +-
- 2 files changed, 2 insertions(+), 2 deletions(-)
-
-diff --git a/drivers/iommu/intel/dmar.c b/drivers/iommu/intel/dmar.c
-index eaf862e8dea1..e16c2b1d7633 100644
---- a/drivers/iommu/intel/dmar.c
-+++ b/drivers/iommu/intel/dmar.c
-@@ -1060,7 +1060,7 @@ static int alloc_iommu(struct dmar_drhd_unit *drhd)
- 		err = iommu->seq_id;
- 		goto error;
- 	}
--	sprintf(iommu->name, "dmar%d", iommu->seq_id);
-+	snprintf(iommu->name, sizeof(iommu->name), "dmar%d", iommu->seq_id);
- 
- 	err = map_iommu(iommu, drhd);
- 	if (err) {
-diff --git a/drivers/iommu/intel/iommu.h b/drivers/iommu/intel/iommu.h
-index 1497f3112b12..61701c1c22d3 100644
---- a/drivers/iommu/intel/iommu.h
-+++ b/drivers/iommu/intel/iommu.h
-@@ -720,7 +720,7 @@ struct intel_iommu {
- 	int		msagaw; /* max sagaw of this iommu */
- 	unsigned int	irq, pr_irq, perf_irq;
- 	u16		segment;     /* PCI segment# */
--	unsigned char 	name[13];    /* Device Name */
-+	unsigned char 	name[16];    /* Device Name */
- 
- #ifdef CONFIG_INTEL_IOMMU
- 	unsigned long 	*domain_ids; /* bitmap of domains */
 -- 
-2.43.0.rc1.1336.g36b5255a03ac
+Jens Axboe
 
