@@ -1,97 +1,151 @@
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-lf1-f53.google.com (mail-lf1-f53.google.com [209.85.167.53])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E42041384BF
-	for <iommu@lists.linux.dev>; Mon, 14 Oct 2024 07:58:21 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=170.10.129.124
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 82AEA14F10E
+	for <iommu@lists.linux.dev>; Mon, 14 Oct 2024 07:59:08 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.53
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1728892703; cv=none; b=SOcd5hel/h2RgmquARTdcKi/8XaKUGTB8n+rvrjRxYxHAhIilLzFN/0xMa2fB0QPRWvVj1sr9p7PlPqSbhZ660Iswl+/ODJtuNhxyAyW9BFc9fJ0ByQkvrkwmmUybf8sqO/3/kq7I960YVwvD6e5y+LEdEIdSNIHrCl4jQTVV/I=
+	t=1728892750; cv=none; b=SF1g+u61rE+oC47HgFnI/TvL7SjmJB2py8y+hxLVGJRfJGrhDD7+bYlBRnZb5aPsrg4DyP7oMPw83PZvFecCZonaun7fFshsnIq4GeQgx2w23aZg9I8NGEZFzz4pLiJxG2s/eZyDLurFgyHiOP+LHcuhpo3jB3LB6tdZmoplmk0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1728892703; c=relaxed/simple;
-	bh=okUCVxZQmNBCZOnwLzSniC5oceCmOwUWK0e9RpAsbxI=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=IEsEf4lKJpzwj/e/GfkgESHa7CVfhyu+r7F2RFTRhshiSgJ4/pkKH0RHBs0P2jMudROWTOq4Psy9winZFd5ae1CRKbfYaarOHYo4+QTYokL0QSo0URSES3fpgcNRvr6ccLK5apQ29lVMMXjdjg20Q2wmSyYs0zVpNkjAmpLey60=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=redhat.com; spf=pass smtp.mailfrom=redhat.com; dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b=KQ6BGJAy; arc=none smtp.client-ip=170.10.129.124
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=redhat.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=redhat.com
+	s=arc-20240116; t=1728892750; c=relaxed/simple;
+	bh=oFF6VHGttnHusqmr3FN2QG++jdlGO4+8p6CDui+ULbk=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=OAuG71dn2ouvqckI9U023uazDQ+D3D4dRfrkXn4X4vYgdLhekr/XtvUITDzPMFkt0kVJ3pxEbcZZrSZEY9MByKcKoAw0zy7ybpXrWNeinJSL9NeGh7hn+CxADMwLrXV9Zsg8I0cDwHao0qFWP3aNiFQKJTWyCHGB7e1UbRMQpbA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org; spf=pass smtp.mailfrom=linaro.org; dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b=eDsSokh/; arc=none smtp.client-ip=209.85.167.53
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linaro.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="KQ6BGJAy"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-	s=mimecast20190719; t=1728892700;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 in-reply-to:in-reply-to:references:references;
-	bh=wBWYGh1L8mzLbunG0zkaPybO/VfGp8yc/5u12WiFxg0=;
-	b=KQ6BGJAySse2WPJWEVU6t2J0k0aVTyiXa6RNp2wap4RwryfMHymEFY2UnJR4TOXVOfT/jY
-	qeuYupdwY3phdTQ1FwueRB9dc/hUr80e0vKL0yKVy3E21KYvKKFdcJm4KX5KW8oKWakFk4
-	jbSog5bYqZI+Dunyu34xmicZtMkp8hI=
-Received: from mx-prod-mc-05.mail-002.prod.us-west-2.aws.redhat.com
- (ec2-54-186-198-63.us-west-2.compute.amazonaws.com [54.186.198.63]) by
- relay.mimecast.com with ESMTP with STARTTLS (version=TLSv1.3,
- cipher=TLS_AES_256_GCM_SHA384) id us-mta-45-gto0hQeUPoivTJQQlE95vQ-1; Mon,
- 14 Oct 2024 03:58:19 -0400
-X-MC-Unique: gto0hQeUPoivTJQQlE95vQ-1
-Received: from mx-prod-int-04.mail-002.prod.us-west-2.aws.redhat.com (mx-prod-int-04.mail-002.prod.us-west-2.aws.redhat.com [10.30.177.40])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
-	(No client certificate requested)
-	by mx-prod-mc-05.mail-002.prod.us-west-2.aws.redhat.com (Postfix) with ESMTPS id 8893C1956080;
-	Mon, 14 Oct 2024 07:58:17 +0000 (UTC)
-Received: from fedora (unknown [10.72.116.128])
-	by mx-prod-int-04.mail-002.prod.us-west-2.aws.redhat.com (Postfix) with ESMTPS id 523B519560AA;
-	Mon, 14 Oct 2024 07:58:10 +0000 (UTC)
-Date: Mon, 14 Oct 2024 15:58:05 +0800
-From: Ming Lei <ming.lei@redhat.com>
-To: Christoph Hellwig <hch@lst.de>
-Cc: Hannes Reinecke <hare@suse.de>,
-	Hamza Mahfooz <someguy@effective-light.com>,
-	Dan Williams <dan.j.williams@intel.com>,
-	linux-block@vger.kernel.org, io-uring@vger.kernel.org,
-	linux-raid@vger.kernel.org, iommu@lists.linux.dev,
-	linux-kernel@vger.kernel.org
-Subject: Re: [Report] annoyed dma debug warning "cacheline tracking EEXIST,
- overlapping mappings aren't supported"
-Message-ID: <ZwzPDU5Lgt6MbpYt@fedora>
-References: <ZwxzdWmYcBK27mUs@fedora>
- <426b5600-7489-43a7-8007-ac4d9dbc9aca@suse.de>
- <20241014074151.GA22419@lst.de>
+	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="eDsSokh/"
+Received: by mail-lf1-f53.google.com with SMTP id 2adb3069b0e04-539e8607c2aso1486510e87.3
+        for <iommu@lists.linux.dev>; Mon, 14 Oct 2024 00:59:08 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google; t=1728892747; x=1729497547; darn=lists.linux.dev;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date:message-id:reply-to;
+        bh=ScjclWrKfNDFbBysTklj+SJ3rFHMGEWxbh3si/BH/Zk=;
+        b=eDsSokh/d3w9yHQ+Us/Fae7b7TtYJrLuJEbAD91QMBckEtBLvJ7e4BD+WYuOrcA8z7
+         GJ8wYDUQGMJM28lrxa44TZTAosrPEMnla8c+mtbHxc0ZSsgRCy0dCwVt3qDwFSCuSIFR
+         UzIpYg0OeWg3abxELeg6DaLOLnkOVgzd15Tmlgfv7cTBQXojS7YNkeQTq30uHBain2je
+         q8idhRYTYi5hdPnCxA89E+GyE9icHH9l4CBzwiXMBJlsAyPEETezh8K0ICuUDIjMAg6w
+         edo7UnbDpknmMnLWr/PHns37gGChpwFX3037yF/si3xAJrqYQgTtJtWbfBiOJoXAJvdZ
+         1Uiw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1728892747; x=1729497547;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=ScjclWrKfNDFbBysTklj+SJ3rFHMGEWxbh3si/BH/Zk=;
+        b=AQOb0IW5Uk33fpxvw2DEbvHql937gQ6A1flxCzn7brS+g1tRm8imwiBPHGVcDsODGf
+         GBdgMlwkyzoM60ZCtVkOJOUTG2Y3rOxdCxij0C4qLvLZ5L7+2zvcTEoeqLqajsDa0T1E
+         EoB0sIOEKrpNOjvnEVNSWDFr5nvvoyMZhkv/6rUJwpY/AgybGim1wUy/vxCgDhtioZrW
+         +eLd6JffsXgnv5kJTcuMerQDBLvVcoWmpUl0EePDysS68f8yTeYfuDUjpqL8tBc8ssNZ
+         cjChq+lZPS2rjjZt9AziyxXRhIgEin9FcLWoNgn7Gn6z2S8hWqJm9cxpMxf9b1vxVmYc
+         wTEw==
+X-Forwarded-Encrypted: i=1; AJvYcCVBWJiP2P2zx7KFZ0YlLvOBcPUazjwMMFBUexa97XgwucTx+JHelBDEm3NZeoDp6ziGEQg6GQ==@lists.linux.dev
+X-Gm-Message-State: AOJu0YzbqOtdjT4YxwgVL+rsHmwONBNG2DjenMer4G2f8O8xf5DbNDAp
+	JpFVYCvF61EoavXxDMPaRNx1dgyR/NQDdmFzYI4HwjWuyleKN7+vqanls4neewvO/ySlOqy1MeL
+	nrcp+WWmodohkWr4bB6ssWJ8DsmKBVE/pFQLUug==
+X-Google-Smtp-Source: AGHT+IEKyEtol/S+SVKZojpSYhC7ViJe62dDg31X0hlm2J4WIW4keP+c77Z9R7yIc1BX887mjL23tAglKwfPJlsZKB8=
+X-Received: by 2002:a05:6512:3e21:b0:539:ebb6:7b36 with SMTP id
+ 2adb3069b0e04-539ebb67d8cmr1600580e87.25.1728892746567; Mon, 14 Oct 2024
+ 00:59:06 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20241014074151.GA22419@lst.de>
-X-Scanned-By: MIMEDefang 3.0 on 10.30.177.40
+References: <cover.1728491453.git.nicolinc@nvidia.com> <88114b5c725bb3300a9599d3eeebded221a0b1f9.1728491453.git.nicolinc@nvidia.com>
+ <CABQgh9Eaj_vy1=sS2Pf7RC7Vy5PopDfwoshECULEU-jK3JF_sQ@mail.gmail.com>
+ <Zwn/4m8Ac0xEiJi8@Asurada-Nvidia> <CABQgh9Ft=xxJK-bjS6wCZ5BN4AiKtF9fzdBkevA3x2yb_4O4Kg@mail.gmail.com>
+In-Reply-To: <CABQgh9Ft=xxJK-bjS6wCZ5BN4AiKtF9fzdBkevA3x2yb_4O4Kg@mail.gmail.com>
+From: Zhangfei Gao <zhangfei.gao@linaro.org>
+Date: Mon, 14 Oct 2024 15:58:55 +0800
+Message-ID: <CABQgh9HP1M8GAXMwf0ZNn5EpMBAvJU3JLRWcN5H1wfGrqXSe1Q@mail.gmail.com>
+Subject: Re: [PATCH v3 03/11] iommufd: Introduce IOMMUFD_OBJ_VIOMMU and its
+ related struct
+To: Nicolin Chen <nicolinc@nvidia.com>
+Cc: jgg@nvidia.com, kevin.tian@intel.com, will@kernel.org, joro@8bytes.org, 
+	suravee.suthikulpanit@amd.com, robin.murphy@arm.com, dwmw2@infradead.org, 
+	baolu.lu@linux.intel.com, shuah@kernel.org, linux-kernel@vger.kernel.org, 
+	iommu@lists.linux.dev, linux-arm-kernel@lists.infradead.org, 
+	linux-kselftest@vger.kernel.org, eric.auger@redhat.com, 
+	jean-philippe@linaro.org, mdf@kernel.org, mshavit@google.com, 
+	shameerali.kolothum.thodi@huawei.com, smostafa@google.com, yi.l.liu@intel.com, 
+	aik@amd.com, patches@lists.linux.dev
+Content-Type: text/plain; charset="UTF-8"
 
-On Mon, Oct 14, 2024 at 09:41:51AM +0200, Christoph Hellwig wrote:
-> On Mon, Oct 14, 2024 at 09:23:14AM +0200, Hannes Reinecke wrote:
-> >> 3) some storage utilities
-> >> - dm thin provisioning utility of thin_check
-> >> - `dt`(https://github.com/RobinTMiller/dt)
-> >>
-> >> I looks like same user buffer is used in more than 1 dio.
-> >>
-> >> 4) some self cooked test code which does same thing with 1)
-> >>
-> >> In storage stack, the buffer provider is far away from the actual DMA
-> >> controller operating code, which doesn't have the knowledge if
-> >> DMA_ATTR_SKIP_CPU_SYNC should be set.
-> >>
-> >> And suggestions for avoiding this noise?
-> >>
-> > Can you check if this is the NULL page? Operations like 'discard' will 
-> > create bios with several bvecs all pointing to the same NULL page.
-> > That would be the most obvious culprit.
-> 
-> The only case I fully understand without looking into the details
-> is raid1, and that will obviously map the same data multiple times
+Hi, Nico
 
-The other cases should be concurrent DIOs on same userspace buffer.
+On Sat, 12 Oct 2024 at 18:18, Zhangfei Gao <zhangfei.gao@linaro.org> wrote:
+>
+> On Sat, 12 Oct 2024 at 12:49, Nicolin Chen <nicolinc@nvidia.com> wrote:
+> >
+> > On Sat, Oct 12, 2024 at 11:23:07AM +0800, Zhangfei Gao wrote:
+> >
+> > > > diff --git a/drivers/iommu/iommufd/viommu_api.c b/drivers/iommu/iommufd/viommu_api.c
+> > > > new file mode 100644
+> > > > index 000000000000..c1731f080d6b
+> > > > --- /dev/null
+> > > > +++ b/drivers/iommu/iommufd/viommu_api.c
+> > > > @@ -0,0 +1,57 @@
+> > > > +// SPDX-License-Identifier: GPL-2.0-only
+> > > > +/* Copyright (c) 2024, NVIDIA CORPORATION & AFFILIATES
+> > > > + */
+> > > > +
+> > > > +#include "iommufd_private.h"
+> > > > +
+> > > > +struct iommufd_object *iommufd_object_alloc_elm(struct iommufd_ctx *ictx,
+> > > > +                                               size_t size,
+> > > > +                                               enum iommufd_object_type type)
+> > > > +{
+> > > > +       struct iommufd_object *obj;
+> > > > +       int rc;
+> > > > +
+> > > > +       obj = kzalloc(size, GFP_KERNEL_ACCOUNT);
+> > > > +       if (!obj)
+> > > > +               return ERR_PTR(-ENOMEM);
+> > > > +       obj->type = type;
+> > > > +       /* Starts out bias'd by 1 until it is removed from the xarray */
+> > > > +       refcount_set(&obj->shortterm_users, 1);
+> > > > +       refcount_set(&obj->users, 1);
+> > >
+> > > here set refcont 1
+> > >
+> > > iommufd_device_bind -> iommufd_object_alloc(ictx, idev,
+> > > IOMMUFD_OBJ_DEVICE): refcont -> 1
+> > > refcount_inc(&idev->obj.users); refcount -> 2
+> > > will cause iommufd_device_unbind fail.
+> > >
+> > > May remove refcount_inc(&idev->obj.users) in iommufd_device_bind
+> >
+> > Hmm, why would it fail? Or is it failing on your system?
+>
+> Not sure, still in check, it may only be on my platform.
+>
+> it hit
+> iommufd_object_remove:
+> if (WARN_ON(obj != to_destroy))
+>
+> iommufd_device_bind refcount=2
+> iommufd_device_attach refcount=3
+> //still not sure which operation inc the count?
+> iommufd_device_detach refcount=4
+>
 
+Have a question,
+when should iommufd_vdevice_destroy be called, before or after
+iommufd_device_unbind.
 
-Thanks,
-Ming
+Now iommufd_vdevice_destroy (ref--) is after unbind, hits the if
+(!refcount_dec_if_one(&obj->users)) check.
 
+iommufd_device_bind
+iommufd_device_attach
+iommufd_vdevice_alloc_ioctl
+
+iommufd_device_detach
+iommufd_device_unbind // refcount check fail
+iommufd_vdevice_destroy ref--
+
+Thanks
