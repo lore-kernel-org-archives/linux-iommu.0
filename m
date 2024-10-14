@@ -1,94 +1,88 @@
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.15])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E1483125D5
-	for <iommu@lists.linux.dev>; Mon, 14 Oct 2024 01:27:33 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=170.10.133.124
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2B04A33C9
+	for <iommu@lists.linux.dev>; Mon, 14 Oct 2024 01:39:25 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.15
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1728869255; cv=none; b=TXAF0lY6ISzEdIojoDBi5xFybmbSR7yYLwi7tBqPq6+/JVBQWQjEiwZc3HlZaso1URE59lLgG/Uf7gZ+4yjjpYfWpKiSrRXepybPaK0GB7qDXECWg3NCuykXEmw76yyj0aJ7PVhjp7+OOdy0gDK1p3aYux2XyV7c85hJ1QoZSsQ=
+	t=1728869966; cv=none; b=chCFrNcOTb0+kWXGVe+PONFszVK5tcrGULwJXOTi6cHaLYo6lvUcBav+WBgPwG0uFaMXDZzZzjhkPik0zL9Mz0xBtAk4KIqSLtBWwY/MXrHP0Je/nM7z85XwmTYqDMS1o0hhl9KRUbk068k21ytwvrL9UjNml52gNCB+HyCN4NQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1728869255; c=relaxed/simple;
-	bh=4ZUXS+fpXMj0rqGVsOfAWazL9hWyK+uoeVHAyuMdy7c=;
-	h=Date:From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:
-	 Content-Disposition; b=q6ZsdBvWc1APb0bbANlILsdSt8Q+PCd5UYl/2AU7FSUXbdE0qsZ/WD5+kGCxB9yPziKWv7ljBBC3fg6GGxreGHtq0t6960VwvMgEAV7GnM3MeUvLFIHTqwLafQGhd2boV0cajuai20iuDEQzqA7BuWbdacXHYr3scnXXF2f/k40=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=redhat.com; spf=pass smtp.mailfrom=redhat.com; dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b=TNx+r6LO; arc=none smtp.client-ip=170.10.133.124
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=redhat.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=redhat.com
+	s=arc-20240116; t=1728869966; c=relaxed/simple;
+	bh=9yGpnLRQqo4qFc61E+nRYS3zDFC+qK7mTDtGZhkszFI=;
+	h=Message-ID:Date:MIME-Version:Cc:Subject:To:References:From:
+	 In-Reply-To:Content-Type; b=jbF/2N+0KbOXKNikmAKLW+LK/Fvmg7QgJ3eKOYPbZilSeKvz6KQ8zeTqRzNLvj+bHd756ZQSorVLSttZiXFJeQhMaxBqZ+kZy8ZbInf3+SS07BkKX/4IXZ+7lFoKE9mTShFgX5qAf6bKRQqkLjrsDSjVAIu/FsF+wAVYwgg/wcY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=LJvYhZ4j; arc=none smtp.client-ip=198.175.65.15
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="TNx+r6LO"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-	s=mimecast20190719; t=1728869252;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type;
-	bh=4ZUXS+fpXMj0rqGVsOfAWazL9hWyK+uoeVHAyuMdy7c=;
-	b=TNx+r6LO0VmC0i8t0fHKkwxBtVEpQHhnZpP4QdW2IM6uE8+dAIrSj2j2Xd+3kqmF1FO3VD
-	5PM2IU8TTbNmihad2uXrs7QI8LryJ3twI2iQfA86P0MXve/Negwco7/K/WfVoMkFX2Kfbm
-	v9jatioHchCbVg/MPE5KiQEJDS00WCQ=
-Received: from mx-prod-mc-03.mail-002.prod.us-west-2.aws.redhat.com
- (ec2-54-186-198-63.us-west-2.compute.amazonaws.com [54.186.198.63]) by
- relay.mimecast.com with ESMTP with STARTTLS (version=TLSv1.3,
- cipher=TLS_AES_256_GCM_SHA384) id us-mta-580-xMTe649hPVCV0sK32Rfkpw-1; Sun,
- 13 Oct 2024 21:27:31 -0400
-X-MC-Unique: xMTe649hPVCV0sK32Rfkpw-1
-Received: from mx-prod-int-04.mail-002.prod.us-west-2.aws.redhat.com (mx-prod-int-04.mail-002.prod.us-west-2.aws.redhat.com [10.30.177.40])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
-	(No client certificate requested)
-	by mx-prod-mc-03.mail-002.prod.us-west-2.aws.redhat.com (Postfix) with ESMTPS id 1A80619560B1;
-	Mon, 14 Oct 2024 01:27:29 +0000 (UTC)
-Received: from fedora (unknown [10.72.116.46])
-	by mx-prod-int-04.mail-002.prod.us-west-2.aws.redhat.com (Postfix) with ESMTPS id 3794819560AA;
-	Mon, 14 Oct 2024 01:27:22 +0000 (UTC)
-Date: Mon, 14 Oct 2024 09:27:17 +0800
-From: Ming Lei <ming.lei@redhat.com>
-To: Hamza Mahfooz <someguy@effective-light.com>,
-	Christoph Hellwig <hch@lst.de>,
-	Dan Williams <dan.j.williams@intel.com>
-Cc: ming.lei@redhat.com, linux-block@vger.kernel.org,
-	io-uring@vger.kernel.org, linux-raid@vger.kernel.org,
-	iommu@lists.linux.dev, linux-kernel@vger.kernel.org
-Subject: [Report] annoyed dma debug warning "cacheline tracking EEXIST,
- overlapping mappings aren't supported"
-Message-ID: <ZwxzdWmYcBK27mUs@fedora>
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="LJvYhZ4j"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1728869966; x=1760405966;
+  h=message-id:date:mime-version:cc:subject:to:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=9yGpnLRQqo4qFc61E+nRYS3zDFC+qK7mTDtGZhkszFI=;
+  b=LJvYhZ4j4oRxAnJXsrk7Y2bRtVOO0QNLWR0sZtpOe8+UMgl5GOppKoUx
+   ruA+92e4NyjkVcUzc//C1M4qUtam9Kj9U5+bVBYzQNrTmgVYOu6tRFUUd
+   6GBo2BzWzZ4La5fY/WsIJ6PYycW0EAUWBAHsNPYQdTRj7Zn5QpNP9xh3l
+   1NHO5xjWyT/FBNztRpfo1Zo8WEjoj22tVlv6SGKTWPqJkuID/mwsJKM+f
+   8v/FMmtqIRa4tle1giOs4uyYNo+iJU+cYl5FVn1LdIt9qc5xuQuBuxk26
+   88wIp3E8yEgEl13jP6sm0YAtpZRyfgCLXc0eP+xXZHweAnjoyDJUfTcFQ
+   w==;
+X-CSE-ConnectionGUID: UgiMrr6nTjmJxnHMw1K4Hg==
+X-CSE-MsgGUID: GpUwB2v2Q3+r7U4qBpygyA==
+X-IronPort-AV: E=McAfee;i="6700,10204,11222"; a="31899880"
+X-IronPort-AV: E=Sophos;i="6.11,199,1725346800"; 
+   d="scan'208";a="31899880"
+Received: from orviesa008.jf.intel.com ([10.64.159.148])
+  by orvoesa107.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Oct 2024 18:39:25 -0700
+X-CSE-ConnectionGUID: ivQGbxgCR3a8hFE/jjo/7g==
+X-CSE-MsgGUID: Ttu0Sd/GRdeaxNfmb6/gwQ==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.11,202,1725346800"; 
+   d="scan'208";a="78252560"
+Received: from unknown (HELO [10.238.0.51]) ([10.238.0.51])
+  by orviesa008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Oct 2024 18:39:22 -0700
+Message-ID: <e81fb7bb-4a80-4c45-b9fa-5fc485e134ca@linux.intel.com>
+Date: Mon, 14 Oct 2024 09:39:20 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-X-Scanned-By: MIMEDefang 3.0 on 10.30.177.40
+User-Agent: Mozilla Thunderbird
+Cc: baolu.lu@linux.intel.com, Todd Brandt <todd.e.brandt@intel.com>,
+ iommu@lists.linux.dev, linux-kernel@vger.kernel.org, stable@vger.kernel.org
+Subject: Re: [PATCH 1/1] iommu/vt-d: Fix incorrect pci_for_each_dma_alias()
+ for non-PCI devices
+To: Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
+ Robin Murphy <robin.murphy@arm.com>, Kevin Tian <kevin.tian@intel.com>
+References: <20241012030720.90218-1-baolu.lu@linux.intel.com>
+Content-Language: en-US
+From: Baolu Lu <baolu.lu@linux.intel.com>
+In-Reply-To: <20241012030720.90218-1-baolu.lu@linux.intel.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-Hello Guys,
+On 2024/10/12 11:07, Lu Baolu wrote:
+> Previously, the domain_context_clear() function incorrectly called
+> pci_for_each_dma_alias() to set up context entries for non-PCI devices.
+> This could lead to kernel hangs or other unexpected behavior.
+> 
+> Add a check to only call pci_for_each_dma_alias() for PCI devices. For
+> non-PCI devices, domain_context_clear_one() is called directly.
+> 
+> Reported-by: Todd Brandt<todd.e.brandt@intel.com>
+> Closes:https://bugzilla.kernel.org/show_bug.cgi?id=219363
+> Fixes: 9a16ab9d6402 ("iommu/vt-d: Make context clearing consistent with context mapping")
+> Cc:stable@vger.kernel.org
+> Signed-off-by: Lu Baolu<baolu.lu@linux.intel.com>
+> ---
+>   drivers/iommu/intel/iommu.c | 4 +++-
+>   1 file changed, 3 insertions(+), 1 deletion(-)
 
-I got more and more reports on DMA debug warning "cacheline tracking EEXIST,
-overlapping mappings aren't supported" in storage related tests:
-
-1) liburing
-- test/iopoll-overflow.t
-- test/sq-poll-dup.t
-
-Same buffer is used in more than 1 IO.
-
-2) raid1 driver
-
-- same buffer is used in more than 1 bio
-
-3) some storage utilities
-- dm thin provisioning utility of thin_check
-- `dt`(https://github.com/RobinTMiller/dt)
-
-I looks like same user buffer is used in more than 1 dio.
-
-4) some self cooked test code which does same thing with 1)
-
-In storage stack, the buffer provider is far away from the actual DMA
-controller operating code, which doesn't have the knowledge if
-DMA_ATTR_SKIP_CPU_SYNC should be set.
-
-And suggestions for avoiding this noise?
+Queued for v6.12-rc.
 
 Thanks,
-Ming
-
+baolu
