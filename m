@@ -1,99 +1,115 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.14])
+Received: from mx0a-0031df01.pphosted.com (mx0a-0031df01.pphosted.com [205.220.168.131])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CB7D617C91
-	for <iommu@lists.linux.dev>; Mon, 14 Oct 2024 01:42:29 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.14
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8D4B28467;
+	Mon, 14 Oct 2024 03:10:23 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.168.131
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1728870151; cv=none; b=tBfDybI3DugKp8MF5plARItoTmpsDM3DcE3kMsUFbSe/vVs2OquB0e8qfIAaXxJkn5jAMC3iiQuhwaNJWKEg1orj2fxZ9JUWmGw6DLRASAWkZOASAGK4hc6UkvnpWuwxOZd5pV/PW2m9BOwyRAm5jOKoGNU79VADtonUMuVdAVM=
+	t=1728875425; cv=none; b=TVyQn4Y8b9MmSBVCp4s7UlvziBKpnmUcWNGmND5mWfrxLWtU3rDzb9rf+P1+XIkLechGy/F71frEDR/q6KnwaYEWIYcuCCZ2/WwkIVOG5nj8E5y6RPEVS/WthMeY5DMugAbZ0s4k3kmBwbbF3zgsilac007Ic0WIuLvUN2oHNYM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1728870151; c=relaxed/simple;
-	bh=q3D1q2iubT8uEHm0mI7fu9YayFjRPXmqoTIwkpJs3Co=;
-	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=edVP+HCZlMzDv/62I2nAV1zs1sZQA7XyLvitCNbEwsb9bnCAxk0oMI7Rf0ZmF0dgbJLmArDLdeNnL3RAlf0r6nPdsF+LKJAMTVUGvhfOyl09C+UoGmpkCpXpH4GJdNHRd9izG2Eio24Qn3OVBz4joxlX+xZ/8twiVaK22eOJ6w0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=DYaUvLG+; arc=none smtp.client-ip=192.198.163.14
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
+	s=arc-20240116; t=1728875425; c=relaxed/simple;
+	bh=DdQ/o5IyAE1ef2BCYx1IXwALl3MWzI8TPRzuZrl3jQ0=;
+	h=Message-ID:Date:MIME-Version:Subject:To:CC:References:From:
+	 In-Reply-To:Content-Type; b=Bx0gcKospiDcEC9NimPDtETJYhbSpbyD7Jn6hGdzm20wPEsQsGiREshjVpEPmIfdICVBgcG0wouHSEb6dH4pqCCgkv+SU1aqOtCZoDiuRrN21yyE6GLrwWIoup31fcaf+wK2iPaNGobVC1KZX7Ae6BLMiUMDvrSdNHPZ8JumnUk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com; spf=pass smtp.mailfrom=quicinc.com; dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b=U41PJ2iQ; arc=none smtp.client-ip=205.220.168.131
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=quicinc.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="DYaUvLG+"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1728870150; x=1760406150;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=q3D1q2iubT8uEHm0mI7fu9YayFjRPXmqoTIwkpJs3Co=;
-  b=DYaUvLG+Ir7W7GCxg94+lokwZEu7nl8dixaNsCOYiMp4D+vVi+1AkXs+
-   fZmVzx8YPbaYccnyNzU8+2WFvENfJes0uvQN7UwFyJga+6FC+pOwZ+Uae
-   ZleSFBqxxIhlMngalnQEidFDY2Ertz5jemDcD2ueVKhq9LnvxpbznnqjU
-   4lvnbLS8ufcojVkGs4sDOBAv5WXPAYB7KbbOfqYYhiOxvWBrTffTAUwc9
-   LOoRpFfJM70DKkzzHxVwIuUP2PU5wMRJjY33/KCaJu8FghWccT6UMWWk9
-   KwTBfThuHyzCZClkBSJqOFanK/cnQBcaw3OGYEdpUHguls87A2HaAIO/r
-   Q==;
-X-CSE-ConnectionGUID: kEhMvuKYRJOZIDcyrH9jAQ==
-X-CSE-MsgGUID: cB/TWr9ITqa9uwvyYidUUA==
-X-IronPort-AV: E=McAfee;i="6700,10204,11224"; a="28389760"
-X-IronPort-AV: E=Sophos;i="6.11,202,1725346800"; 
-   d="scan'208";a="28389760"
-Received: from orviesa007.jf.intel.com ([10.64.159.147])
-  by fmvoesa108.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Oct 2024 18:42:28 -0700
-X-CSE-ConnectionGUID: WCDr7wGrTf23uXaIG//fNA==
-X-CSE-MsgGUID: VrodvMIXR8CEmqDJnn2tDQ==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.11,202,1725346800"; 
-   d="scan'208";a="77867587"
-Received: from allen-box.sh.intel.com ([10.239.159.127])
-  by orviesa007.jf.intel.com with ESMTP; 13 Oct 2024 18:42:27 -0700
-From: Lu Baolu <baolu.lu@linux.intel.com>
-To: Joerg Roedel <joro@8bytes.org>
-Cc: iommu@lists.linux.dev,
-	linux-kernel@vger.kernel.org
-Subject: [PATCH 1/1] iommu/vt-d: Fix incorrect pci_for_each_dma_alias() for non-PCI devices
-Date: Mon, 14 Oct 2024 09:37:44 +0800
-Message-ID: <20241014013744.102197-2-baolu.lu@linux.intel.com>
-X-Mailer: git-send-email 2.43.0
-In-Reply-To: <20241014013744.102197-1-baolu.lu@linux.intel.com>
-References: <20241014013744.102197-1-baolu.lu@linux.intel.com>
+	dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b="U41PJ2iQ"
+Received: from pps.filterd (m0279866.ppops.net [127.0.0.1])
+	by mx0a-0031df01.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 49E0NYdo001018;
+	Mon, 14 Oct 2024 03:10:02 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=quicinc.com; h=
+	cc:content-transfer-encoding:content-type:date:from:in-reply-to
+	:message-id:mime-version:references:subject:to; s=qcppdkim1; bh=
+	KeAYuDGyuiL1QDxIhtx6FIuHKkO563Nn7tQ/PODSPfY=; b=U41PJ2iQw6SWw75s
+	0Wu6y5K3GO0jt+/xL2yL6921Zl5bmNqJ7aIVPYRNpsEooSKqR7pv6zmqmNiVsEIk
+	+4wlCXQdwLESfCN1I8/vlpxrM+zvsR1kMrizDaOEntEzpK/cpqKQLRCaMyEeRPcz
+	oHBeeM/jl9tLDaa32BLKlipWRymfw8hn+EJVwwgrw8bG9hYR5vBoSkuNqSyda3B2
+	U8rROn8qUNYN2o0avgB1lWKKByKxZ0pkOa+3ENdClQaV+vJEZB/QQfs0wZMHOJin
+	tYSl3pU5ut/IBDnblyWgz7ikp8ba5Vlr/0y1JWIzoVOE0uJ4DWnAzLX5belhaI2E
+	19DzJA==
+Received: from nalasppmta01.qualcomm.com (Global_NAT1.qualcomm.com [129.46.96.20])
+	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 427jd8u1k1-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Mon, 14 Oct 2024 03:10:01 +0000 (GMT)
+Received: from nalasex01b.na.qualcomm.com (nalasex01b.na.qualcomm.com [10.47.209.197])
+	by NALASPPMTA01.qualcomm.com (8.18.1.2/8.18.1.2) with ESMTPS id 49E3A1bE010849
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Mon, 14 Oct 2024 03:10:01 GMT
+Received: from [10.239.132.41] (10.80.80.8) by nalasex01b.na.qualcomm.com
+ (10.47.209.197) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1544.9; Sun, 13 Oct
+ 2024 20:09:57 -0700
+Message-ID: <2224b2fe-4e72-4371-9f0b-d5ee211c2210@quicinc.com>
+Date: Mon, 14 Oct 2024 11:09:53 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH 2/4] dt-bindings: arm-smmu: Document Qualcomm QCS615 apps
+ smmu
+To: Krzysztof Kozlowski <krzk@kernel.org>, <andersson@kernel.org>,
+        <konradybcio@kernel.org>, <robh@kernel.org>, <krzk+dt@kernel.org>,
+        <conor+dt@kernel.org>, <robimarko@gmail.com>, <quic_gurus@quicinc.com>,
+        <will@kernel.org>, <robin.murphy@arm.com>, <joro@8bytes.org>
+CC: <linux-arm-msm@vger.kernel.org>, <devicetree@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>, <iommu@lists.linux.dev>
+References: <20241011063112.19087-1-quic_qqzhou@quicinc.com>
+ <20241011063112.19087-3-quic_qqzhou@quicinc.com>
+ <af81be27-fdfa-4dec-a18c-56c7022e3c75@kernel.org>
+From: Qingqing Zhou <quic_qqzhou@quicinc.com>
+In-Reply-To: <af81be27-fdfa-4dec-a18c-56c7022e3c75@kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: 8bit
+X-ClientProxiedBy: nasanex01a.na.qualcomm.com (10.52.223.231) To
+ nalasex01b.na.qualcomm.com (10.47.209.197)
+X-QCInternal: smtphost
+X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
+X-Proofpoint-GUID: wm-Jb0utSsOu_EBBr2vz4zGZn5fUxE4A
+X-Proofpoint-ORIG-GUID: wm-Jb0utSsOu_EBBr2vz4zGZn5fUxE4A
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.293,Aquarius:18.0.1039,Hydra:6.0.680,FMLib:17.12.60.29
+ definitions=2024-09-06_09,2024-09-06_01,2024-09-02_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 spamscore=0
+ lowpriorityscore=0 phishscore=0 suspectscore=0 impostorscore=0 bulkscore=0
+ mlxscore=0 mlxlogscore=999 malwarescore=0 priorityscore=1501 adultscore=0
+ clxscore=1011 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.19.0-2409260000 definitions=main-2410140022
 
-Previously, the domain_context_clear() function incorrectly called
-pci_for_each_dma_alias() to set up context entries for non-PCI devices.
-This could lead to kernel hangs or other unexpected behavior.
 
-Add a check to only call pci_for_each_dma_alias() for PCI devices. For
-non-PCI devices, domain_context_clear_one() is called directly.
 
-Reported-by: Todd Brandt <todd.e.brandt@intel.com>
-Closes: https://bugzilla.kernel.org/show_bug.cgi?id=219363
-Closes: https://bugzilla.kernel.org/show_bug.cgi?id=219349
-Fixes: 9a16ab9d6402 ("iommu/vt-d: Make context clearing consistent with context mapping")
-Cc: stable@vger.kernel.org
-Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
----
- drivers/iommu/intel/iommu.c | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
-
-diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
-index 9f6b0780f2ef..e860bc9439a2 100644
---- a/drivers/iommu/intel/iommu.c
-+++ b/drivers/iommu/intel/iommu.c
-@@ -3340,8 +3340,10 @@ static int domain_context_clear_one_cb(struct pci_dev *pdev, u16 alias, void *op
-  */
- static void domain_context_clear(struct device_domain_info *info)
- {
--	if (!dev_is_pci(info->dev))
-+	if (!dev_is_pci(info->dev)) {
- 		domain_context_clear_one(info, info->bus, info->devfn);
-+		return;
-+	}
- 
- 	pci_for_each_dma_alias(to_pci_dev(info->dev),
- 			       &domain_context_clear_one_cb, info);
--- 
-2.43.0
-
+在 10/11/2024 2:48 PM, Krzysztof Kozlowski 写道:
+> On 11/10/2024 08:31, Qingqing Zhou wrote:
+>> Add devicetree binding for apps smmu on Qualcomm QCS615 SoC. SMMU function
+>> is required by multiple functions including USB/UFS/Ethernet.
+> 
+> Do not explain what SMMU is, because it is obvious, but explain how this
+> hardware differs from everything existing.
+OK, will improve the comments in next patch version.
+> 
+>>
+>> Signed-off-by: Qingqing Zhou <quic_qqzhou@quicinc.com>
+>> ---
+>>  Documentation/devicetree/bindings/iommu/arm,smmu.yaml | 1 +
+>>  1 file changed, 1 insertion(+)
+>>
+>> diff --git a/Documentation/devicetree/bindings/iommu/arm,smmu.yaml b/Documentation/devicetree/bindings/iommu/arm,smmu.yaml
+>> index 92d350b8e01a..9e62c2cdda08 100644
+>> --- a/Documentation/devicetree/bindings/iommu/arm,smmu.yaml
+>> +++ b/Documentation/devicetree/bindings/iommu/arm,smmu.yaml
+>> @@ -36,6 +36,7 @@ properties:
+>>          items:
+>>            - enum:
+>>                - qcom,qcm2290-smmu-500
+>> +              - qcom,qcs615-smmu-500
+> 
+> This is incomplete? No clocks? No power-domains?
+This is APPS SMMU, no clocks and no power-domains are needed for DT.
+> 
+> Best regards,
+> Krzysztof
+> 
