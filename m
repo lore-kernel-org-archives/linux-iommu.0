@@ -1,167 +1,94 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.9])
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5BC5DF9DA
-	for <iommu@lists.linux.dev>; Mon, 14 Oct 2024 01:25:08 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.9
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E1483125D5
+	for <iommu@lists.linux.dev>; Mon, 14 Oct 2024 01:27:33 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=170.10.133.124
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1728869109; cv=none; b=d5lhvE5qSWLUB5qIOfM2T/vFk2tIu6AtgdEGTPje4HS7t678uo5mrgmK9ia+ko8lRW/bAITK+uQuy6s34nnXKXOH4C9EaxE5jgZ5/9uEz8GCe9/dkCgYw5cUQwOANVlHeHzzLICZS8EhYIKxVA69FeOqQUbaEyjYUTWNIXPIXhc=
+	t=1728869255; cv=none; b=TXAF0lY6ISzEdIojoDBi5xFybmbSR7yYLwi7tBqPq6+/JVBQWQjEiwZc3HlZaso1URE59lLgG/Uf7gZ+4yjjpYfWpKiSrRXepybPaK0GB7qDXECWg3NCuykXEmw76yyj0aJ7PVhjp7+OOdy0gDK1p3aYux2XyV7c85hJ1QoZSsQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1728869109; c=relaxed/simple;
-	bh=/UGDAC+4PK1ck+fBKjjaMv0EW+NPqEfMx+m4dWl/y/g=;
-	h=Message-ID:Date:MIME-Version:Cc:Subject:To:References:From:
-	 In-Reply-To:Content-Type; b=do/YWJa0HBiHNdEyBrjElU5jS8HBwWR5t/HzmqEewjufw4qHdpd46/eA11l4npKiGi+CDbJ0ZRLWbWJ/hp17/D8PJ3cwJ7mJd5hPwlUPDQTTE3zRjHeR8cpAG9XN2o8SNHA+w7PasAyW/Tqf5R+pxnsO8if3o+3+IzOO3tGEwRs=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=DR9/Piwp; arc=none smtp.client-ip=192.198.163.9
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
+	s=arc-20240116; t=1728869255; c=relaxed/simple;
+	bh=4ZUXS+fpXMj0rqGVsOfAWazL9hWyK+uoeVHAyuMdy7c=;
+	h=Date:From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:
+	 Content-Disposition; b=q6ZsdBvWc1APb0bbANlILsdSt8Q+PCd5UYl/2AU7FSUXbdE0qsZ/WD5+kGCxB9yPziKWv7ljBBC3fg6GGxreGHtq0t6960VwvMgEAV7GnM3MeUvLFIHTqwLafQGhd2boV0cajuai20iuDEQzqA7BuWbdacXHYr3scnXXF2f/k40=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=redhat.com; spf=pass smtp.mailfrom=redhat.com; dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b=TNx+r6LO; arc=none smtp.client-ip=170.10.133.124
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=redhat.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=redhat.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="DR9/Piwp"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1728869108; x=1760405108;
-  h=message-id:date:mime-version:cc:subject:to:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=/UGDAC+4PK1ck+fBKjjaMv0EW+NPqEfMx+m4dWl/y/g=;
-  b=DR9/Piwp9GCmnIrS7628fEwxs3R66gJpPcPw/d5wAmryUD5k0Zs3TicO
-   1Xz7MHNQs0kXaWthNszrHX9+yLtEdOurBZgxN+jMGLukVjDu8H9Bl4gXl
-   C8OpzrY276mJdEBJeT9qeUh5jgABqMnLFiIbDLooLYf2z/SC+bj0/btaV
-   gAsp5Lkj4LSvC4pg3+7UexPkHE3jn5mpkOUGyzgNpPpCkxFovj7eTh7nU
-   3O2wFeSZF+7sabrpet/Le59aHkFzshK7+H22X54Ap1DLybHGzRBY2dUH3
-   +LnBUWAfqWz7slWNY1lhIvIUGo0B5rY5qHKSXx8UYFEn1B+b3cl1NchSU
-   Q==;
-X-CSE-ConnectionGUID: ZpdogJenSpWgzvc4XHfwIg==
-X-CSE-MsgGUID: jwSXcqwYQTyHlFsoYrEZCA==
-X-IronPort-AV: E=McAfee;i="6700,10204,11224"; a="38847170"
-X-IronPort-AV: E=Sophos;i="6.11,202,1725346800"; 
-   d="scan'208";a="38847170"
-Received: from fmviesa003.fm.intel.com ([10.60.135.143])
-  by fmvoesa103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Oct 2024 18:25:08 -0700
-X-CSE-ConnectionGUID: ynU1ahT2T1amC3rS/YcacQ==
-X-CSE-MsgGUID: qCjarkRsQHu5eA7haGiJyQ==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.11,202,1725346800"; 
-   d="scan'208";a="81420591"
-Received: from unknown (HELO [10.238.0.51]) ([10.238.0.51])
-  by fmviesa003-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Oct 2024 18:25:06 -0700
-Message-ID: <7f829e9e-5db9-4861-8a58-27a57edbd9da@linux.intel.com>
-Date: Mon, 14 Oct 2024 09:25:03 +0800
+	dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="TNx+r6LO"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+	s=mimecast20190719; t=1728869252;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type;
+	bh=4ZUXS+fpXMj0rqGVsOfAWazL9hWyK+uoeVHAyuMdy7c=;
+	b=TNx+r6LO0VmC0i8t0fHKkwxBtVEpQHhnZpP4QdW2IM6uE8+dAIrSj2j2Xd+3kqmF1FO3VD
+	5PM2IU8TTbNmihad2uXrs7QI8LryJ3twI2iQfA86P0MXve/Negwco7/K/WfVoMkFX2Kfbm
+	v9jatioHchCbVg/MPE5KiQEJDS00WCQ=
+Received: from mx-prod-mc-03.mail-002.prod.us-west-2.aws.redhat.com
+ (ec2-54-186-198-63.us-west-2.compute.amazonaws.com [54.186.198.63]) by
+ relay.mimecast.com with ESMTP with STARTTLS (version=TLSv1.3,
+ cipher=TLS_AES_256_GCM_SHA384) id us-mta-580-xMTe649hPVCV0sK32Rfkpw-1; Sun,
+ 13 Oct 2024 21:27:31 -0400
+X-MC-Unique: xMTe649hPVCV0sK32Rfkpw-1
+Received: from mx-prod-int-04.mail-002.prod.us-west-2.aws.redhat.com (mx-prod-int-04.mail-002.prod.us-west-2.aws.redhat.com [10.30.177.40])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+	(No client certificate requested)
+	by mx-prod-mc-03.mail-002.prod.us-west-2.aws.redhat.com (Postfix) with ESMTPS id 1A80619560B1;
+	Mon, 14 Oct 2024 01:27:29 +0000 (UTC)
+Received: from fedora (unknown [10.72.116.46])
+	by mx-prod-int-04.mail-002.prod.us-west-2.aws.redhat.com (Postfix) with ESMTPS id 3794819560AA;
+	Mon, 14 Oct 2024 01:27:22 +0000 (UTC)
+Date: Mon, 14 Oct 2024 09:27:17 +0800
+From: Ming Lei <ming.lei@redhat.com>
+To: Hamza Mahfooz <someguy@effective-light.com>,
+	Christoph Hellwig <hch@lst.de>,
+	Dan Williams <dan.j.williams@intel.com>
+Cc: ming.lei@redhat.com, linux-block@vger.kernel.org,
+	io-uring@vger.kernel.org, linux-raid@vger.kernel.org,
+	iommu@lists.linux.dev, linux-kernel@vger.kernel.org
+Subject: [Report] annoyed dma debug warning "cacheline tracking EEXIST,
+ overlapping mappings aren't supported"
+Message-ID: <ZwxzdWmYcBK27mUs@fedora>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Cc: baolu.lu@linux.intel.com, iommu@lists.linux.dev,
- Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
- Robin Murphy <robin.murphy@arm.com>, Kevin Tian <kevin.tian@intel.com>,
- Yi Liu <yi.l.liu@intel.com>, Vasant Hegde <vasant.hegde@amd.com>,
- linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 3/7] iommu/vt-d: Enhance compatibility check for paging
- domain attach
-To: Jason Gunthorpe <jgg@ziepe.ca>
-References: <20241011042722.73930-1-baolu.lu@linux.intel.com>
- <20241011042722.73930-4-baolu.lu@linux.intel.com>
- <20241011162703.GL762027@ziepe.ca>
-Content-Language: en-US
-From: Baolu Lu <baolu.lu@linux.intel.com>
-In-Reply-To: <20241011162703.GL762027@ziepe.ca>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+X-Scanned-By: MIMEDefang 3.0 on 10.30.177.40
 
-On 2024/10/12 0:27, Jason Gunthorpe wrote:
-> On Fri, Oct 11, 2024 at 12:27:18PM +0800, Lu Baolu wrote:
-> 
->> @@ -1623,27 +1623,15 @@ static int domain_context_mapping_one(struct dmar_domain *domain,
->>   
->>   	copied_context_tear_down(iommu, context, bus, devfn);
->>   	context_clear_entry(context);
->> -
->>   	context_set_domain_id(context, did);
->>   
->> -	/*
->> -	 * Skip top levels of page tables for iommu which has
->> -	 * less agaw than default. Unnecessary for PT mode.
->> -	 */
->> -	for (agaw = domain->agaw; agaw > iommu->agaw; agaw--) {
->> -		ret = -ENOMEM;
->> -		pgd = phys_to_virt(dma_pte_addr(pgd));
->> -		if (!dma_pte_present(pgd))
->> -			goto out_unlock;
->> -	}
-> 
-> Yikes, this is nasty racy stuff, glad to see it go
-> 
-> But should the agaw stuff be in its own patch?
+Hello Guys,
 
-The agaw stuff is now in the paging domain allocation path.
+I got more and more reports on DMA debug warning "cacheline tracking EEXIST,
+overlapping mappings aren't supported" in storage related tests:
 
-'agaw' represents the levels that the page table could support. With the
-domain allocation callbacks always have a valid device pointer, the page
-table levels of a domain could be determined during allocation.
+1) liburing
+- test/iopoll-overflow.t
+- test/sq-poll-dup.t
 
-When the domain is attached to a new device, the domain's levels will be
-checked again the iommu capabilities of the device. If the iommu is not
-capable of supporting the page levels, -EINVAL (not compatible) will be
-returned, suggesting that the caller should use a new domain for the
-device.
+Same buffer is used in more than 1 IO.
 
-> 
->> @@ -3506,27 +3483,26 @@ int prepare_domain_attach_device(struct iommu_domain *domain,
->>   	if (domain->dirty_ops && !ssads_supported(iommu))
->>   		return -EINVAL;
->>   
->> -	/* check if this iommu agaw is sufficient for max mapped address */
->> -	addr_width = agaw_to_width(iommu->agaw);
->> -	if (addr_width > cap_mgaw(iommu->cap))
->> -		addr_width = cap_mgaw(iommu->cap);
->> -
->> -	if (dmar_domain->max_addr > (1LL << addr_width))
->> +	if (dmar_domain->iommu_coherency !=
->> +			iommu_paging_structure_coherency(iommu))
->>   		return -EINVAL;
->> -	dmar_domain->gaw = addr_width;
->> -
->> -	/*
->> -	 * Knock out extra levels of page tables if necessary
->> -	 */
->> -	while (iommu->agaw < dmar_domain->agaw) {
->> -		struct dma_pte *pte;
->> -
->> -		pte = dmar_domain->pgd;
->> -		if (dma_pte_present(pte)) {
->> -			dmar_domain->pgd = phys_to_virt(dma_pte_addr(pte));
->> -			iommu_free_page(pte);
->> -		}
->> -		dmar_domain->agaw--;
->> +
->> +	if (domain->type & __IOMMU_DOMAIN_PAGING) {
-> 
-> It looks like this entire function is already never called for
-> anything but paging?
-> 
-> The only three callers are:
-> 
-> 	.default_domain_ops = &(const struct iommu_domain_ops) {
-> 		.attach_dev		= intel_iommu_attach_device,
-> 		.set_dev_pasid		= intel_iommu_set_dev_pasid,
-> 
-> and
-> 
-> static const struct iommu_domain_ops intel_nested_domain_ops = {
-> 	.attach_dev		= intel_nested_attach_dev,
-> 
-> And none of those cases can be anything except a paging domain by
-> definition.
+2) raid1 driver
 
-A nested domain is not a paging domain. It represents a user-space page
-table that nested on a parent paging domain. Perhaps I overlooked
-anything?
+- same buffer is used in more than 1 bio
 
-> 
-> So this if should go away, or be turned into a WARN_ON.
-> 
-> Jason
+3) some storage utilities
+- dm thin provisioning utility of thin_check
+- `dt`(https://github.com/RobinTMiller/dt)
+
+I looks like same user buffer is used in more than 1 dio.
+
+4) some self cooked test code which does same thing with 1)
+
+In storage stack, the buffer provider is far away from the actual DMA
+controller operating code, which doesn't have the knowledge if
+DMA_ATTR_SKIP_CPU_SYNC should be set.
+
+And suggestions for avoiding this noise?
 
 Thanks,
-baolu
+Ming
+
