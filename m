@@ -1,33 +1,81 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.223.130])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D31C614601F;
-	Mon, 14 Oct 2024 06:52:43 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B6903146D7F
+	for <iommu@lists.linux.dev>; Mon, 14 Oct 2024 07:23:16 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=195.135.223.130
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1728888764; cv=none; b=upJb4xYNUcBw8AiYPhjd2hSuRS8+K+ahx3f2x0Ef1xuOUgzWwg25XgIP7ozUtvlADLjbsiaDKLWaFhIDfAvVgPXuKxJhp7xW5W/MEtF5rwCCGB1dnVCerplAZwjQHxNMegbYWDh09nJXBbtgDAR55FMu/M1LcwY1yrJ0fgtw2hY=
+	t=1728890598; cv=none; b=r4jO8ITB3rQZb1yKhgCmVglMq3NqV3sJ6MHW5IAze5M7baWEnIHJnD10B9vvKHDNZILAuGgU3T+2oJ9QGvo1/NFjvQxUevG0uX5/5/7wEw/zhFvdmHkDe6rA5vufdbY6BnNnAUI6hgZGHz/w/kWgMoef5F1jDW3owQmgjgYmd0s=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1728888764; c=relaxed/simple;
-	bh=qREW/euOH9DYT//QF1mzpX6twa9S//GNV4iRbrtjq2o=;
+	s=arc-20240116; t=1728890598; c=relaxed/simple;
+	bh=nUptIs5JX0n5QlfYndHLd2APG2v84RKY+QebMe1xhrA=;
 	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=AcfWQsaX+CKBLu2++ul5cBkwIqYWhD9AfsGk+78Fu5PWJhGHbQQZBUapuZr74LgWrO4ZMl5hJBWkUWNXOFuidBterkGNM5yBByTsCx2lALk8spdAPVDeH37VFqbhhBTsTlQy7cntBUtCH7P742P/BTQyAOdJl5pZuwF4y3YqpZE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=tkHSeraW; arc=none smtp.client-ip=10.30.226.201
+	 In-Reply-To:Content-Type; b=ps6bbOYz/snSnhNz99RtAoWo/ZTz+coAgFCWxkUa2J/NZ8GeY6xYh6hLWnQpud+Ue3sbw+7RdCzlgW6EzWzP4GmWaaAP+CF7g3/bGZUzrCR/RVEQ4HiSqkrEkEL2rHMNpGkUQJtiX8yiiWevpAq+Yd2I++cy9QMDnCCeOCHq6Xk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=suse.de; spf=pass smtp.mailfrom=suse.de; dkim=pass (1024-bit key) header.d=suse.de header.i=@suse.de header.b=H52ysEnd; dkim=permerror (0-bit key) header.d=suse.de header.i=@suse.de header.b=u7ZeLjm8; dkim=pass (1024-bit key) header.d=suse.de header.i=@suse.de header.b=H52ysEnd; dkim=permerror (0-bit key) header.d=suse.de header.i=@suse.de header.b=u7ZeLjm8; arc=none smtp.client-ip=195.135.223.130
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=suse.de
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=suse.de
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="tkHSeraW"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CA52EC4CEC3;
-	Mon, 14 Oct 2024 06:52:37 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1728888763;
-	bh=qREW/euOH9DYT//QF1mzpX6twa9S//GNV4iRbrtjq2o=;
-	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-	b=tkHSeraWRx8nU0nkmgQbkFX3D7Acs8lHVPYotlcG0ktn3bm3Uoximql1ZnIAmGACE
-	 +O8IzsBu59BPhS/yDi2Eh412872vWe0byu5cdaSlQiru0P6meQexqfqC8sk7sbxFVx
-	 yS031ujpVuVp3pl2WwnmQLYJ2drNphmy9B3mYk90+LYEpoMu/vTWubfIRRBbWjAm/X
-	 eicikr9cyxRcHq35gbs3N2/+AsbdamSzLJY2DvCQ8KpG7Rhda/DeROBRzl6LpMzqkx
-	 0EijlgN/PiUFnPQkWiXlb6j+SR2N2ZfdiAG+fMCz6ejxRTuSaojVQH3xbDdzJ4BHPw
-	 6+bXA/27HF6AQ==
-Message-ID: <4102024c-d4a9-494d-b855-c5f770228788@kernel.org>
-Date: Mon, 14 Oct 2024 08:52:35 +0200
+	dkim=pass (1024-bit key) header.d=suse.de header.i=@suse.de header.b="H52ysEnd";
+	dkim=permerror (0-bit key) header.d=suse.de header.i=@suse.de header.b="u7ZeLjm8";
+	dkim=pass (1024-bit key) header.d=suse.de header.i=@suse.de header.b="H52ysEnd";
+	dkim=permerror (0-bit key) header.d=suse.de header.i=@suse.de header.b="u7ZeLjm8"
+Received: from imap1.dmz-prg2.suse.org (imap1.dmz-prg2.suse.org [IPv6:2a07:de40:b281:104:10:150:64:97])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+	(No client certificate requested)
+	by smtp-out1.suse.de (Postfix) with ESMTPS id 084FB21E38;
+	Mon, 14 Oct 2024 07:23:15 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
+	t=1728890595; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+	 mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding:
+	 in-reply-to:in-reply-to:references:references;
+	bh=duGxDXXdZAawpa7Nko+oty9RNyuPyJvZapFJEqETSOg=;
+	b=H52ysEndLGIFPwpFNewgvUeCtgBorw4715nluU3dSU5jdx8Rb8LvxYrE3V7GL0I/+hGuqe
+	NIRvI3VZ/DDxw/ifozCil4lbElXFFwWnDXPIrk4KcW8y6gxUzRkSsXkhjE0/76Gu5kWauV
+	eDt3MaszL4CJ0Vi5fN00wcefOg2XG+M=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
+	s=susede2_ed25519; t=1728890595;
+	h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+	 mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding:
+	 in-reply-to:in-reply-to:references:references;
+	bh=duGxDXXdZAawpa7Nko+oty9RNyuPyJvZapFJEqETSOg=;
+	b=u7ZeLjm89eHdB9Ki4R6rmHu3ERra/IcUGowoXny5IK6dUyhTKECDeZkP1cl4D9yu9V4LJ5
+	/NMOiIy+OM2cp/BA==
+Authentication-Results: smtp-out1.suse.de;
+	dkim=pass header.d=suse.de header.s=susede2_rsa header.b=H52ysEnd;
+	dkim=pass header.d=suse.de header.s=susede2_ed25519 header.b=u7ZeLjm8
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
+	t=1728890595; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+	 mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding:
+	 in-reply-to:in-reply-to:references:references;
+	bh=duGxDXXdZAawpa7Nko+oty9RNyuPyJvZapFJEqETSOg=;
+	b=H52ysEndLGIFPwpFNewgvUeCtgBorw4715nluU3dSU5jdx8Rb8LvxYrE3V7GL0I/+hGuqe
+	NIRvI3VZ/DDxw/ifozCil4lbElXFFwWnDXPIrk4KcW8y6gxUzRkSsXkhjE0/76Gu5kWauV
+	eDt3MaszL4CJ0Vi5fN00wcefOg2XG+M=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
+	s=susede2_ed25519; t=1728890595;
+	h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+	 mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding:
+	 in-reply-to:in-reply-to:references:references;
+	bh=duGxDXXdZAawpa7Nko+oty9RNyuPyJvZapFJEqETSOg=;
+	b=u7ZeLjm89eHdB9Ki4R6rmHu3ERra/IcUGowoXny5IK6dUyhTKECDeZkP1cl4D9yu9V4LJ5
+	/NMOiIy+OM2cp/BA==
+Received: from imap1.dmz-prg2.suse.org (localhost [127.0.0.1])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+	(No client certificate requested)
+	by imap1.dmz-prg2.suse.org (Postfix) with ESMTPS id A1EFE13A51;
+	Mon, 14 Oct 2024 07:23:14 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([2a07:de40:b281:106:10:150:64:167])
+	by imap1.dmz-prg2.suse.org with ESMTPSA
+	id SF7sJeLGDGdeXAAAD6G6ig
+	(envelope-from <hare@suse.de>); Mon, 14 Oct 2024 07:23:14 +0000
+Message-ID: <426b5600-7489-43a7-8007-ac4d9dbc9aca@suse.de>
+Date: Mon, 14 Oct 2024 09:23:14 +0200
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -35,87 +83,93 @@ List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH 2/4] dt-bindings: arm-smmu: Document Qualcomm QCS615 apps
- smmu
-To: Qingqing Zhou <quic_qqzhou@quicinc.com>, andersson@kernel.org,
- konradybcio@kernel.org, robh@kernel.org, krzk+dt@kernel.org,
- conor+dt@kernel.org, robimarko@gmail.com, quic_gurus@quicinc.com,
- will@kernel.org, robin.murphy@arm.com, joro@8bytes.org
-Cc: linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org,
- linux-kernel@vger.kernel.org, iommu@lists.linux.dev
-References: <20241011063112.19087-1-quic_qqzhou@quicinc.com>
- <20241011063112.19087-3-quic_qqzhou@quicinc.com>
- <af81be27-fdfa-4dec-a18c-56c7022e3c75@kernel.org>
- <2224b2fe-4e72-4371-9f0b-d5ee211c2210@quicinc.com>
-From: Krzysztof Kozlowski <krzk@kernel.org>
+Subject: Re: [Report] annoyed dma debug warning "cacheline tracking EEXIST,
+ overlapping mappings aren't supported"
+To: Ming Lei <ming.lei@redhat.com>,
+ Hamza Mahfooz <someguy@effective-light.com>, Christoph Hellwig <hch@lst.de>,
+ Dan Williams <dan.j.williams@intel.com>
+Cc: linux-block@vger.kernel.org, io-uring@vger.kernel.org,
+ linux-raid@vger.kernel.org, iommu@lists.linux.dev,
+ linux-kernel@vger.kernel.org
+References: <ZwxzdWmYcBK27mUs@fedora>
 Content-Language: en-US
-Autocrypt: addr=krzk@kernel.org; keydata=
- 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 fv0=
-In-Reply-To: <2224b2fe-4e72-4371-9f0b-d5ee211c2210@quicinc.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+From: Hannes Reinecke <hare@suse.de>
+In-Reply-To: <ZwxzdWmYcBK27mUs@fedora>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
+X-Rspamd-Queue-Id: 084FB21E38
+X-Spam-Score: -4.51
+X-Rspamd-Action: no action
+X-Spamd-Result: default: False [-4.51 / 50.00];
+	BAYES_HAM(-3.00)[99.99%];
+	NEURAL_HAM_LONG(-1.00)[-1.000];
+	R_DKIM_ALLOW(-0.20)[suse.de:s=susede2_rsa,suse.de:s=susede2_ed25519];
+	NEURAL_HAM_SHORT(-0.20)[-1.000];
+	MIME_GOOD(-0.10)[text/plain];
+	MX_GOOD(-0.01)[];
+	RBL_SPAMHAUS_BLOCKED_OPENRESOLVER(0.00)[2a07:de40:b281:104:10:150:64:97:from];
+	RCVD_VIA_SMTP_AUTH(0.00)[];
+	RCVD_TLS_ALL(0.00)[];
+	ARC_NA(0.00)[];
+	MIME_TRACE(0.00)[0:+];
+	ASN(0.00)[asn:25478, ipnet:::/0, country:RU];
+	TO_DN_SOME(0.00)[];
+	RECEIVED_SPAMHAUS_BLOCKED_OPENRESOLVER(0.00)[2a07:de40:b281:106:10:150:64:167:received];
+	MID_RHS_MATCH_FROM(0.00)[];
+	SPAMHAUS_XBL(0.00)[2a07:de40:b281:104:10:150:64:97:from];
+	RCVD_COUNT_TWO(0.00)[2];
+	FROM_EQ_ENVFROM(0.00)[];
+	FROM_HAS_DN(0.00)[];
+	RCPT_COUNT_SEVEN(0.00)[9];
+	DBL_BLOCKED_OPENRESOLVER(0.00)[imap1.dmz-prg2.suse.org:rdns,imap1.dmz-prg2.suse.org:helo,suse.de:dkim,suse.de:mid,suse.de:email];
+	DKIM_SIGNED(0.00)[suse.de:s=susede2_rsa,suse.de:s=susede2_ed25519];
+	TO_MATCH_ENVRCPT_ALL(0.00)[];
+	FUZZY_BLOCKED(0.00)[rspamd.com];
+	DKIM_TRACE(0.00)[suse.de:+]
+X-Rspamd-Server: rspamd1.dmz-prg2.suse.org
+X-Spam-Flag: NO
+X-Spam-Level: 
 
-On 14/10/2024 05:09, Qingqing Zhou wrote:
->>> ---
->>>  Documentation/devicetree/bindings/iommu/arm,smmu.yaml | 1 +
->>>  1 file changed, 1 insertion(+)
->>>
->>> diff --git a/Documentation/devicetree/bindings/iommu/arm,smmu.yaml b/Documentation/devicetree/bindings/iommu/arm,smmu.yaml
->>> index 92d350b8e01a..9e62c2cdda08 100644
->>> --- a/Documentation/devicetree/bindings/iommu/arm,smmu.yaml
->>> +++ b/Documentation/devicetree/bindings/iommu/arm,smmu.yaml
->>> @@ -36,6 +36,7 @@ properties:
->>>          items:
->>>            - enum:
->>>                - qcom,qcm2290-smmu-500
->>> +              - qcom,qcs615-smmu-500
->>
->> This is incomplete? No clocks? No power-domains?
-> This is APPS SMMU, no clocks and no power-domains are needed for DT.
+On 10/14/24 03:27, Ming Lei wrote:
+> Hello Guys,
+> 
+> I got more and more reports on DMA debug warning "cacheline tracking EEXIST,
+> overlapping mappings aren't supported" in storage related tests:
+> 
+> 1) liburing
+> - test/iopoll-overflow.t
+> - test/sq-poll-dup.t
+> 
+> Same buffer is used in more than 1 IO.
+> 
+> 2) raid1 driver
+> 
+> - same buffer is used in more than 1 bio
+> 
+> 3) some storage utilities
+> - dm thin provisioning utility of thin_check
+> - `dt`(https://github.com/RobinTMiller/dt)
+> 
+> I looks like same user buffer is used in more than 1 dio.
+> 
+> 4) some self cooked test code which does same thing with 1)
+> 
+> In storage stack, the buffer provider is far away from the actual DMA
+> controller operating code, which doesn't have the knowledge if
+> DMA_ATTR_SKIP_CPU_SYNC should be set.
+> 
+> And suggestions for avoiding this noise?
+> 
+Can you check if this is the NULL page? Operations like 'discard' will 
+create bios with several bvecs all pointing to the same NULL page.
+That would be the most obvious culprit.
 
-Then express it in the binding.
+Cheers,
 
-Best regards,
-Krzysztof
+Hannes
+-- 
+Dr. Hannes Reinecke                  Kernel Storage Architect
+hare@suse.de                                +49 911 74053 688
+SUSE Software Solutions GmbH, Frankenstr. 146, 90461 Nürnberg
+HRB 36809 (AG Nürnberg), GF: I. Totev, A. McDonald, W. Knoblich
 
