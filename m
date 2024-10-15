@@ -1,76 +1,72 @@
-Received: from mail-pl1-f171.google.com (mail-pl1-f171.google.com [209.85.214.171])
+Received: from mail-qt1-f180.google.com (mail-qt1-f180.google.com [209.85.160.180])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DBC451EB9F1
-	for <iommu@lists.linux.dev>; Tue, 15 Oct 2024 16:10:58 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.171
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8D6E31F76A4
+	for <iommu@lists.linux.dev>; Tue, 15 Oct 2024 16:13:01 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.160.180
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1729008660; cv=none; b=mDq396mcgrJ2/TofjrxuNpZiEeQMJZKdG3LJ1WmNqTETXgtsbfzIibZ2mVRWEhVQHF/vQ2YBW9VOksUMox9/INL3smk9+Ct5q4GmO4OBg4HyaoBFjwlJGjdx1Qmh303iEGGujgWZxIjyozmuFgYUHpUN/gzU+AbJ0h3MaSEvXp8=
+	t=1729008783; cv=none; b=twI8Xp72bonu1jGpZUIqyLupGr82Whjh7a337r7EiLL6sTcOIWNDyqK0gWW1LvjVbTNZBceSRib/5pJNxYSsfY37Wxs22WD1TsCfNUXn81bOgL3nAcF9v/5rU/f1cEAgqwXkUDizFYN6En5x/3coQjQuA7PzUmuNb1x2hZ7xBNg=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1729008660; c=relaxed/simple;
-	bh=GA7Fc81A7ztI7UbjRC/32RuEiP8RKKb4G220B9ue1HI=;
+	s=arc-20240116; t=1729008783; c=relaxed/simple;
+	bh=Vw/mrFNHwGX1puvy/afLyrQYEorWzsNo4hg5/7t1KY8=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=Qwt+rLUjvOgWJ+OPj3/2ZQjAel/T+ujfvrrRB/nUhuSz2OyztYlN56PvYdDc7Nwq/TXTngUOOBtK1yOZUrdKouTTjgZcabuLjoIl7YabQS09543YrMjl6ruBj+X/DdBozsdnJcN92IbXUUvOLk6Jz1mQ+l2zQVkYhmrDnPPbHSE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=evVerFGD; arc=none smtp.client-ip=209.85.214.171
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
+	 Content-Type:Content-Disposition:In-Reply-To; b=dq05fV2ywN6oiekFf1obKKydA7rSh3imtDnTnPFXyp+r4IO9/YKO7vYLilzkNd4/p6ZmuHxvAMyclAui+fXPxsCMQgrq4p8c5nT7njaMWWKek7u7BpWPAzA9OiMNw7wqtQtqPjEa1og14mJDmIxD5lKqSG8XgUezcbLs9HEy1Mg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=IEB1+Q7s; arc=none smtp.client-ip=209.85.160.180
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="evVerFGD"
-Received: by mail-pl1-f171.google.com with SMTP id d9443c01a7336-20ca03687fdso553915ad.0
-        for <iommu@lists.linux.dev>; Tue, 15 Oct 2024 09:10:58 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="IEB1+Q7s"
+Received: by mail-qt1-f180.google.com with SMTP id d75a77b69052e-45f07eb6f5fso51141971cf.1
+        for <iommu@lists.linux.dev>; Tue, 15 Oct 2024 09:13:01 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20230601; t=1729008658; x=1729613458; darn=lists.linux.dev;
+        d=ziepe.ca; s=google; t=1729008780; x=1729613580; darn=lists.linux.dev;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=xGYhfp2OqW3Qzmg96OVHEI/GKpsDJXQmbA11pdTZQhk=;
-        b=evVerFGDDiT3NHCDG1FpelVIDcksxNpidf7pYB/8W2eQzfhYa/6q/eoDZf3xqcqyEi
-         jsloNg/44KSov621dgpAe0kghdvdJHVa0xM8ISNIGkBoNjGAj9CC/o0ot8VXUI4yEVRa
-         pvvszthkxZeLfku1AGAadfihJ8a9RdH00J5xn7rpEKQGUPDUFw84mZIG9ULe0Bva4Lk5
-         OvBNsN9uMHHnfZTrunn+BGAiadIYtoKQE+YNd1aLC1ZjZKJ2MSv2Wd1ZFz+lRdViKXcA
-         ERAx1Tbokvk4lY7PTuLJIj02C0XS2+6v2fFOMIQFR8MBnCrHyirme41j2MorjmEW+yDS
-         MXAg==
+        bh=hVWh/tiIYKXqvBSyTiuwmYcBhGV/hVL1sZ2dOM/2U+k=;
+        b=IEB1+Q7s7zZyBYpiwdp4nVmexIszhEvIMh6Yu48lM4Vep+LLJQ92XiD/aAhk8x+l1X
+         c4aD1t9/X4rFthzea17KgFVGizzGdzKVv7b8TyxQjOpWOC9sY5mIjio79+AnwO7sXr5G
+         RoXRZHu+N40TM+joLrf+s5aJanVww6zVqfOkUcwO7evKR8FSagFoJ0yDy1aBR9GREDKR
+         qewLbk2EkLPwM0OWG1LL2Mu2+Na4pCQwiegq4KxN1f9uIpo+rvdGgfM7cCny87RLFqqr
+         fw2i6kbkmgbCdQgqAVC5oXBxlRtobpCOd/LAodVxPplDw3ZhuhK+NOjnFBgipW1d0S7U
+         TApA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1729008658; x=1729613458;
+        d=1e100.net; s=20230601; t=1729008780; x=1729613580;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=xGYhfp2OqW3Qzmg96OVHEI/GKpsDJXQmbA11pdTZQhk=;
-        b=mN2HFthzeT8EOgu4FYiMqdRqbzuCeAUL6ldwZ1AIKBhwRuIn5euGSnoTUPZdcUEMaL
-         6yOgGDR6RSAgpx2KKnXU8qMqH5OoVcm7Iau+uzWNms/YmE1GBTPjbvFVi9WIVHPjymR9
-         jiNrehkWldIrhqc/HzzMZgw7CiY1nQzfxMJWqHyOY2Vkn0Ee9G2Acydbu2MCXynf3QmS
-         aL8OA31NhN/qwy9Xhdte98M9WAf7EllHaQvW4jF2abHHgYB166Bp7vhg0TbhplpVpCNN
-         cxh5/fFf+wVslLti7euPQ/LmfLewuYjA0OawmapxKl4dFu8p5Y8K/vn3S3rljLzz6CZ6
-         ZXFA==
-X-Forwarded-Encrypted: i=1; AJvYcCVBJJoVicEufUrdlhN4jtpWFpoet+l2HBnQ48OhR303mXdWnrDtMy5r2K9CWzfDPWebPgaa2g==@lists.linux.dev
-X-Gm-Message-State: AOJu0YxISV14UVa+cLwWT9hT5NvjzVZBGL2Yqju4Ci+CSI6wmdqcvmU8
-	UDVAYn9pMGGH70cxTDRlmTnMCqKgmIvb/2zilvW5NUB/LS0JFUIWMMqvrKuOXg==
-X-Google-Smtp-Source: AGHT+IHSgi8+1o+3iy2Nr5pCUXFLnZB8SwGxpqHUBhSE2VfhssmbiQ27u4lhyDBdI5kO8qO8nZD2aQ==
-X-Received: by 2002:a17:903:22c6:b0:207:14ca:f0c1 with SMTP id d9443c01a7336-20cbce670dfmr7329985ad.16.1729008657827;
-        Tue, 15 Oct 2024 09:10:57 -0700 (PDT)
-Received: from google.com (62.166.143.34.bc.googleusercontent.com. [34.143.166.62])
-        by smtp.gmail.com with ESMTPSA id 98e67ed59e1d1-2e392e8ec9esm2017723a91.7.2024.10.15.09.10.54
+        bh=hVWh/tiIYKXqvBSyTiuwmYcBhGV/hVL1sZ2dOM/2U+k=;
+        b=Eg7U+3r0mNMDacqYEYoHpzRg8Gz+NVBjyYRks9+eXSrCxRYnrBfxwCXYR/Q2afPEyt
+         d2dXsqtwL3wPRs0dTSMhKFg2m2qlQIEpD4Scz6bTd6vPGRjebz0rjUEhz5yH4QYiLkf1
+         gh4n5HcBVOb3X7wWyzt/tuAm3jH2Wld/Jrw0MGx3ZjPb6UoLcLOGSTmYZdIbsVP2bIp7
+         zBrNvYrSF1BDS0HF6XCGyHvlqpo/LI8O1wClpCwypSsMt+2+JrjcgXzktHhvGA5vYUiK
+         L+N7cXOciEcE9NNk/lKTodXLsT5wUPnFoeU3zCzHfTCg31x5psQeHVEclQeES6PKQsZI
+         VFOQ==
+X-Forwarded-Encrypted: i=1; AJvYcCXIpIT0dyrqvZio5tftPtCSDwpQ5e4q+3exMjxnIHYGhkq8xMaGe44OM7DCIkzpFwop+b74sQ==@lists.linux.dev
+X-Gm-Message-State: AOJu0YxahOjCMRGYSP3A/T4D+3OZ0ofGuF0SqO8mevSyBLn7uGkNtpoI
+	4eTMBkmRVlEVuKCGsYTla/9haLf3mhtrNtWQ1NWJrE2mnBc5tUniAXrJiBX2mNs=
+X-Google-Smtp-Source: AGHT+IF9R1ecI2BuQn7YtpVBXtF1Q8KuLSoMEXaFgWwBik91z4LYaGtRUFygn0WtLUeb1wxii6bBsQ==
+X-Received: by 2002:a05:622a:1483:b0:456:919a:11e4 with SMTP id d75a77b69052e-4604b2fd3cdmr245238231cf.20.1729008780476;
+        Tue, 15 Oct 2024 09:13:00 -0700 (PDT)
+Received: from ziepe.ca (hlfxns017vw-142-68-128-5.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.68.128.5])
+        by smtp.gmail.com with ESMTPSA id d75a77b69052e-4607b4a0882sm7920331cf.95.2024.10.15.09.12.59
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 15 Oct 2024 09:10:57 -0700 (PDT)
-Date: Tue, 15 Oct 2024 16:10:48 +0000
-From: Pranjal Shrivastava <praan@google.com>
-To: Robin Murphy <robin.murphy@arm.com>
-Cc: Jason Gunthorpe <jgg@ziepe.ca>, "Peng Fan (OSS)" <peng.fan@oss.nxp.com>,
-	Will Deacon <will@kernel.org>, Joerg Roedel <joro@8bytes.org>,
-	Rob Herring <robh@kernel.org>,
-	Krzysztof Kozlowski <krzk+dt@kernel.org>,
-	Conor Dooley <conor+dt@kernel.org>, Joy Zou <joy.zou@nxp.com>,
-	linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev,
-	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-	Peng Fan <peng.fan@nxp.com>
-Subject: Re: [PATCH RFC 2/2] iommu/arm-smmu-v3: Bypass SID0 for NXP i.MX95
-Message-ID: <Zw6UCLprZj6aaajY@google.com>
-References: <20241015-smmuv3-v1-0-e4b9ed1b5501@nxp.com>
- <20241015-smmuv3-v1-2-e4b9ed1b5501@nxp.com>
- <Zw4kKDFOcXEC78mb@google.com>
- <20241015124723.GI1825128@ziepe.ca>
- <ab21d602-5349-47be-b346-2fbc041fa13e@arm.com>
- <20241015153110.GM1825128@ziepe.ca>
- <ce7cc76f-426f-4d19-b4be-3964647a2f2d@arm.com>
+        Tue, 15 Oct 2024 09:12:59 -0700 (PDT)
+Received: from jgg by wakko with local (Exim 4.95)
+	(envelope-from <jgg@ziepe.ca>)
+	id 1t0kAM-00Du7w-HW;
+	Tue, 15 Oct 2024 13:12:58 -0300
+Date: Tue, 15 Oct 2024 13:12:58 -0300
+From: Jason Gunthorpe <jgg@ziepe.ca>
+To: Vasant Hegde <vasant.hegde@amd.com>
+Cc: Joerg Roedel <joro@8bytes.org>, iommu@lists.linux.dev, will@kernel.org,
+	robin.murphy@arm.com, suravee.suthikulpanit@amd.com
+Subject: Re: [PATCH v2 06/10] iommu/amd: Reduce domain lock scope in attach
+ device path
+Message-ID: <20241015161258.GN1825128@ziepe.ca>
+References: <20240910065812.6091-1-vasant.hegde@amd.com>
+ <20240910065812.6091-7-vasant.hegde@amd.com>
+ <Zw4p7Gc099DtQ_f1@8bytes.org>
+ <24421a38-3d65-48bf-a40b-7a5b15f9b1fc@amd.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -79,37 +75,44 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <ce7cc76f-426f-4d19-b4be-3964647a2f2d@arm.com>
+In-Reply-To: <24421a38-3d65-48bf-a40b-7a5b15f9b1fc@amd.com>
 
-On Tue, Oct 15, 2024 at 04:37:25PM +0100, Robin Murphy wrote:
-> On 2024-10-15 4:31 pm, Jason Gunthorpe wrote:
-> > On Tue, Oct 15, 2024 at 04:13:13PM +0100, Robin Murphy wrote:
-> > > On 2024-10-15 1:47 pm, Jason Gunthorpe wrote:
-> > > > On Tue, Oct 15, 2024 at 08:13:28AM +0000, Pranjal Shrivastava wrote:
-> > > > 
-> > > > > Umm.. this was specific for rmr not a generic thing. I'd suggest to
-> > > > > avoid meddling with the STEs directly for acheiving bypass. Playing
-> > > > > with the iommu domain type could be neater. Perhaps, modify the
-> > > > > ops->def_domain_type to return an appropriate domain?
-> > > > 
-> > > > Yeah, that is the expected way, to force the def_domain_type to
-> > > > IDENTITY and refuse to attach a PAGING/BLOCKED domain.
-> > > 
-> > > There is no domain, this is bypassing an arbitrary StreamID not associated
-> > > with any device.
+On Tue, Oct 15, 2024 at 06:00:25PM +0530, Vasant Hegde wrote:
+> Hi Joerg,
+> 
+> 
+> On 10/15/2024 2:08 PM, Joerg Roedel wrote:
+> > Hi Vasant,
 > > 
-> > If the stream ID is going to flow traffic shouldn't it have a DT node
-> > for it? Something must be driving the DMA on this SID, and the kernel
-> > does need to know what that is in some way, even for basic security
-> > things like making sure VFIO doesn't get a hold of it :\
+> > On Tue, Sep 10, 2024 at 06:58:08AM +0000, Vasant Hegde wrote:
+> >> @@ -2119,11 +2135,8 @@ static int attach_device(struct device *dev,
+> >>  			 struct protection_domain *domain)
+> >>  {
+> >>  	struct iommu_dev_data *dev_data;
+> >> -	unsigned long flags;
+> >>  	int ret = 0;
+> >>  
+> >> -	spin_lock_irqsave(&domain->lock, flags);
+> >> -
+> >>  	dev_data = dev_iommu_priv_get(dev);
+> >>  
+> >>  	spin_lock(&dev_data->lock);
+> > 
+> > This patch inverses the locking order of domain->lock and
+> > dev_data->lock, have you checked all places to make sure it is safe to
+> > do so? Has this change been tested with lockdep enabled?
 > 
-> Exactly, hence this RFC is definitely not the right approach.
-
-Agreed. I assumed the bypass was needed for a registered SID.
-
+> Sorry. I missed to explain this part in commit message.
 > 
-> Thanks,
-> Robin.
+> With all changes locking sequence will be :
+>   group->mutex -> dev_data->mutex -> domain->lock
+> 
+> In defer attach path (iommu_deferred_attach()), core call attach_device() w/o
+> group->mutex lock. So I retained dev_data lock.
 
-Thanks,
-Pranjal
+deferred attach is broken to not have the core code take the lock, all
+most all drivers depend on group_mutex for correctness.
+
+I think we should fix that, not retain unnecessary locks in drivers :\
+
+Jason
