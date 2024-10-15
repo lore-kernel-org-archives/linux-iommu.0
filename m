@@ -1,157 +1,182 @@
-Received: from mail-il1-f199.google.com (mail-il1-f199.google.com [209.85.166.199])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 793171F80A1
-	for <iommu@lists.linux.dev>; Tue, 15 Oct 2024 19:09:26 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.166.199
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 215B31F80AC
+	for <iommu@lists.linux.dev>; Tue, 15 Oct 2024 20:03:58 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1729019369; cv=none; b=dACV2g4XSTW0T8hSSckhUpZqBy9Dy51CzRYCBNkzyUCJ74P/U9NY+eI3BrItrJbzihR7gELVEoD17eJTfYbu/zgFHEvBxGR8XpCqobOKgoyB1V0t6kEL5uOX6jNY+Ffi/AAuN/DQY5vxq8YlwWL1JA6QfMFLo7fjWEh72W2jNRo=
+	t=1729022642; cv=none; b=INmV8e8RbE+OkD6DGBEOVkpn8kLL6V6B6hveDN7N16JIRzO2EqEd5icXjG7cUHaD3gDa82o7MMJyQtdnrx411MueYGdXcNtJFRsHwfS40unXvenzrK/458qE1doSnIVvdMGjkyadGJ6xAcqpBE72bFyQCS2yqybfXExbO6ZNWto=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1729019369; c=relaxed/simple;
-	bh=u1uAwktf6kk8nVT1WwQn5qWjduf1jXs8aWE0d1BVCG4=;
-	h=MIME-Version:Date:Message-ID:Subject:From:To:Content-Type; b=FwEJ7GgEM9WyxhDBUQlybmcTk6hffaONVEFOlNb5Wpo/WPcAtARGFuNzNetRx+Z1fIz7j2mBgds+oZcMjh0piaXyul2c6raw2ayRqdkKJyIWYyjkQq4A7l9kbgtM0egC1V6y4q0DQCTV4QLvapbz83ptX1GUaepZS30LrXGHlM0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.166.199
-Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com
-Received: by mail-il1-f199.google.com with SMTP id e9e14a558f8ab-3a3ba4fcf24so42775675ab.0
-        for <iommu@lists.linux.dev>; Tue, 15 Oct 2024 12:09:26 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1729019365; x=1729624165;
-        h=to:from:subject:message-id:date:mime-version:x-gm-message-state
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=ITeBmiKPxke1DH9sYqgNIlVHlUNkQ0WHvvDjCpx3+Bc=;
-        b=XDldSkKeuzstv+51SUcex+MaHUuTN5xX6K4ff+XjgpmoQNCl2Ha/W5nbAUagjbOtWL
-         TvAaoHXWIdeP1EziZHmTT9kRay4R2kbpIh7ni0skdyJHGvLmbnENxFwrpzEYxnUdcf9E
-         FmmQpQatQP37E8XgswcQ/2dtEHkrjAU6tObzXpxfmQ0LK5kt9dCRvUZmIca/EjrifA33
-         ohg59ExVCMMRy2I2a+AzHW4MIVU5e2eqZMHkFHCTydSg4TZJuDCh32APyuTLnA2B6F7T
-         1p/jV45hc5V7Y7sNDtWE0Jq7DLqO5HaMZUtD82DdsaE/zocQt0F0/T/+6LeaEO6TXbBO
-         ne9A==
-X-Forwarded-Encrypted: i=1; AJvYcCVjJ/gFGT+SGtI7GGweGZGpc9im2H7YqrhoV2fdVrWTH4ihJUDoLwffgS2oqSV+gVlD+e4lPg==@lists.linux.dev
-X-Gm-Message-State: AOJu0YzKJVMUumkQVDgGGFdYq0Sl5vGUqF3wRuI3ofxZ/HSWP+Rlmn9v
-	qE0H5+/7/O2l8MBENKQhXcD50hYiU9StSa0gZXLRPqF+N7Kx49gqx8IXmVb+CX1siszx7AGik+Y
-	YDj4lnUvRtck70KWS1F7FXWM9SW1sJcOEoRSQH7YjhlL2/OwOMvr69Bs=
-X-Google-Smtp-Source: AGHT+IGpa/p4mxM4VBJEqmkiVGZ8cJWslOWsSMrxRUbbSmaJdDs5orv+v+JB1Enu97wMr+0RJBPRjJkwpL520np+r35DT4O/0bZ6
+	s=arc-20240116; t=1729022642; c=relaxed/simple;
+	bh=ZbTXm1Omn0jSRIuahYNZMh7N/M0D0GnsWyqMc563uC8=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=Db3gcMCLCXJYqIE6xFdv7Uip6GhVYOBhBsd1mx1E9d5/KMYb3pZUJr04oPk0qJf5/tfDG+SUOEerZ35ghsk8U+K3+i5aPil8uxHxR8M/chLcxWHHrQZzAyw2ICoatk7cgyDIOMIISdfO4qz3X6PXxjTmIqqQh6+jWeutEWUODoc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; arc=none smtp.client-ip=217.140.110.172
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id A9AF7FEC;
+	Tue, 15 Oct 2024 13:04:27 -0700 (PDT)
+Received: from [10.57.87.12] (unknown [10.57.87.12])
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id B64F63F71E;
+	Tue, 15 Oct 2024 13:03:56 -0700 (PDT)
+Message-ID: <cac41a3d-b5fc-4269-8a87-a70cf33f410b@arm.com>
+Date: Tue, 15 Oct 2024 21:03:54 +0100
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-Received: by 2002:a05:6e02:188e:b0:3a3:afa3:5155 with SMTP id
- e9e14a558f8ab-3a3b6050e70mr145590025ab.25.1729019365547; Tue, 15 Oct 2024
- 12:09:25 -0700 (PDT)
-Date: Tue, 15 Oct 2024 12:09:25 -0700
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <670ebde5.050a0220.d9b66.0154.GAE@google.com>
-Subject: [syzbot] [iommu?] kernel BUG in dma_alloc_attrs
-From: syzbot <syzbot+b4bfacdec173efaa8567@syzkaller.appspotmail.com>
-To: hch@lst.de, iommu@lists.linux.dev, linux-kernel@vger.kernel.org, 
-	m.szyprowski@samsung.com, robin.murphy@arm.com, 
-	syzkaller-bugs@googlegroups.com
-Content-Type: text/plain; charset="UTF-8"
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v3 2/2] iommu/arm-smmu-v3: Adopt arm_smmu_event in
+ handlers
+To: Pranjal Shrivastava <praan@google.com>
+Cc: Nicolin Chen <nicolinc@nvidia.com>, Joerg Roedel <joro@8bytes.org>,
+ Will Deacon <will@kernel.org>, Mostafa Saleh <smostafa@google.com>,
+ iommu@lists.linux.dev
+References: <Zvr8xUEHNg1GiA8V@Asurada-Nvidia> <ZvxjcpQCFM5SU9P-@google.com>
+ <Zvx+6qBY3og8lRWe@Asurada-Nvidia> <Zv8N6yIeNXao_Yqm@google.com>
+ <Zv8gW9KjTcktgve1@Asurada-Nvidia> <ZwjZ9txpvqd8kUdS@google.com>
+ <5eda3ba6-c35a-432b-be87-48bd8a0a3bf1@arm.com> <ZwkB4OTUChexImZd@google.com>
+ <ZwkGzWSUIpuhHozl@google.com> <ec9e47cc-f3c2-4142-8395-3bbb8e055261@arm.com>
+ <Zw61rP2F0sm_eDiK@google.com>
+From: Robin Murphy <robin.murphy@arm.com>
+Content-Language: en-GB
+In-Reply-To: <Zw61rP2F0sm_eDiK@google.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-Hello,
+On 2024-10-15 7:34 pm, Pranjal Shrivastava wrote:
+> Just a few things before I respin,
+> On Fri, Oct 11, 2024 at 01:59:36PM +0100, Robin Murphy wrote:
+>> On 2024-10-11 12:06 pm, Pranjal Shrivastava wrote:
+>>> On Fri, Oct 11, 2024 at 10:45:52AM +0000, Pranjal Shrivastava wrote:
+>>>> On Fri, Oct 11, 2024 at 11:21:48AM +0100, Robin Murphy wrote:
+>>>>> On 2024-10-11 8:55 am, Pranjal Shrivastava wrote:
+>>>>>> On Thu, Oct 03, 2024 at 03:53:15PM -0700, Nicolin Chen wrote:
+>>>>>>> On Thu, Oct 03, 2024 at 09:34:35PM +0000, Pranjal Shrivastava wrote:
+>>>>>>>>> The master and master_name are not that necessary to be in the
+>>>>>>>>> arm_smmu_event. I would keep both of them as local variables in
+>>>>>>>>> arm_smmu_handle_evt and pass master_name in to dump().
+>>>>>>>>
+>>>>>>>> Hmm, right or maybe ONLY have the master_name in arm_smmu_event?
+>>>>>>>
+>>>>>>> Just move both out of arm_smmu_event. Keep the master_name as a
+>>>>>>> local variable like the "master". You'd just need to pass it in
+>>>>>>> to the dump(). They both are in that same handle_evt().
+>>>>>>>
+>>>>>>
+>>>>>> Ack.
+>>>>>>
+>>>>>>>>>> Also, shall we rename it to `arm_smmu_read_evt_info` ?
+>>>>>>>>>
+>>>>>>>>> I'd probably use arm_smmu_event_get_from_raw()? Trying to high-
+>>>>>>>>> light struct arm_smmu_event v.s. u64 evt[EVTQ_ENT_DWORDS]. Yet,
+>>>>>>>>> no strong feeling about that.
+>>>>>>>>>
+>>>>>>>>
+>>>>>>>> Ack. How about `read_arm_smmu_event` :)
+>>>>>>>> Unless, we wanna follow the arm_smmu_<func> convention?
+>>>>>>>
+>>>>>>> I think it'd be nicer if we do.
+>>>>>>>
+>>>>>>
+>>>>>> Ack. `arm_smmu_get_evt_from_raw` it is!
+>>>>>
+>>>>> FWIW that sounds needlessly overcomplicated to me - the "raw" event array
+>>>>> should be a member of arm_smmu_event itself, since it seems silly to have
+>>>>> them separate with one pointing to the other when they have the exact same
+>>>>> scope and lifetime anyway. There still shouldn't need to be more than a
+>>>>> single logical step to process an evtq record into a finished
+>>>>> arm_smmu_event, just that that processing is now going to go a bit further
+>>>>> than simply le64_to_cpu().
+>>>>
+>>>> Hmm, are you suggesting something like queue_remove_raw(q, event->raw)?
+>>>> OR do you mean we should have our own queue_parse_evt(q, &event) that
+>>>> parses out the raw event into an `arm_smmu_event` record eliminating the
+>>>> need for the `arm_smmu_read_evt_info` altogether?
+>>>>
+>>>> Because we'd still need to store the raw event anyway since we're still
+>>>> logging the raw event.
+>>>>
+>>>> I think we can go with the former, i.e. queue_remove_raw(q, event->raw)
+>>>> and then use ``arm_smmu_read_evt_info` to populate other `event` fields
+>>>
+>>> Based on your comment, I was thinking like the attached sample code.
+>>> LMK if you were referring to something like that?
+>>
+>> Ah, apologies, it had slipped my mind that queue_read() is already buried
+>> two layers deep in an abstraction shared with the priq... so yeah, rather
+>> than start trying to turn that inside-out, I guess the neatest approach is
+>> to effectively flip this series instead - i.e. start with the minor shift
+>> to:
+>>
+>> 	struct arm_smmu_event evt;
+>>
+>> 	while (!queue_remove_raw(q, evt.raw)) {
+>> 		ret = arm_smmu_handle_evt(smmu, &evt);
+>> 		...
+>> 		dev_info(smmu->dev, "event 0x%02x received:\n", evt.id);
+>> 		//etc.
+>>
+>> and leave arm_smmu_handle_evt() decoding the event as both it and
+>> arm_smmu_handle_ppr() already do, just now using the new structure instead
+>> of locals. Then we can come in to factor out and enhance the unhandled event
+>> report, and anything else specific to that reporting beyond the actual SMMU
+>> event record, like device names and ratelimiting, can remain private to
+>> arm_smmu_dump_event().
+> 
+> Quick clarification, the ratelimiting here was ONLY for logs or to limit
+> the number of thread / loop executions?
 
-syzbot found the following issue on:
+Yes, the ratelimit is purely for the printks, so once those are factored 
+out into a dedicated function it can move with them. The cond_resched() 
+is what keeps the loop itself well-behaved if there's a giant flood of 
+events; we never want to skip trying to handle any of them.
 
-HEAD commit:    1d227fcc7222 Merge tag 'net-6.12-rc3' of git://git.kernel...
-git tree:       upstream
-console output: https://syzkaller.appspot.com/x/log.txt?x=12c56f07980000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=7cd9e7e4a8a0a15b
-dashboard link: https://syzkaller.appspot.com/bug?extid=b4bfacdec173efaa8567
-compiler:       Debian clang version 15.0.6, GNU ld (GNU Binutils for Debian) 2.40
-syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=14572840580000
-C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=12572840580000
+>>
+>> AFAICS the locking concern seems avoidable as well - we don't actually need
+>> the whole arm_smmu_master in either case, just the device, so then end of
+>> arm_smmu_handle_evt() could easily be a little simpler:
+>>
+>> 	...
+>> 	mutex_lock(&smmu->streams_mutex);
+>> 	master = arm_smmu_find_master(smmu, sid);
+>> 	if (master)
+>> 		event->dev = get_device(master->dev);
+>> 	mutex_unlock(&smmu->streams_mutex);
+>>
+>> 	if (!event->dev)
+>> 		return -EINVAL;
+> 
+> Thinking about this a little more, I guess there are a few paths that
+> may return before we even get to the `mutex_lock(&smmu->streams_mutex)`
+> For example: if (!event->stall) return -ENOTSUPP; and the default case
+> return from the switch case. Which has the following implications:
+> 
+> 1. We might return from `arm_smmu_handle_evt` before logging the event
+> 2. Even if we move the logging out of `arm_smmu_handle_evt` as presented
+>     by Robin's snippet above, event->dev might still be NULL.
 
-Downloadable assets:
-disk image (non-bootable): https://storage.googleapis.com/syzbot-assets/7feb34a89c2a/non_bootable_disk-1d227fcc.raw.xz
-vmlinux: https://storage.googleapis.com/syzbot-assets/ea82465646ea/vmlinux-1d227fcc.xz
-kernel image: https://storage.googleapis.com/syzbot-assets/f764dd6d008a/bzImage-1d227fcc.xz
+The point is that it *can* be NULL in general, and the logging must 
+expect that. Just move the arm_smmu_find_master() stanza to the top of 
+arm_smmu_handle_evt() to grab the device reference before any of the 
+actual handling may start wanting to bail out - same as you'll want to 
+do for all the other decoding as well - then we know it's either valid 
+(and stable) or NULL for the lifetime of the event through all 
+subsequent processing. AFAICS calling iommu_report_device_fault() under 
+streams_mutex isn't meaningful in itself, right now it just seems to be 
+about protecting the inline "master->dev" dereference against "master" 
+going away.
 
-IMPORTANT: if you fix the issue, please add the following tag to the commit:
-Reported-by: syzbot+b4bfacdec173efaa8567@syzkaller.appspotmail.com
+We can still have multiple returns as appropriate in the actual handling 
+*after* collecting all the arm_smmu_event data, which is a big part of 
+why I've suggested keeping the same effective structure as currently - 
+we have one function to decode and try to handle the event, and based on 
+the final outcome of that function, we may then want to report if it 
+wasn't handled (subject to other constraints like ratelimiting). There's 
+absolutely no need to tie the control flow in knots attempting to 
+nano-optimise that into a tail call - using the returned value in the 
+returned-to scope is natural, simple and obvious.
 
-------------[ cut here ]------------
-kernel BUG at arch/x86/mm/physaddr.c:28!
-Oops: invalid opcode: 0000 [#1] PREEMPT SMP KASAN NOPTI
-CPU: 0 UID: 0 PID: 5114 Comm: syz-executor411 Not tainted 6.12.0-rc2-syzkaller-00205-g1d227fcc7222 #0
-Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.16.3-debian-1.16.3-2~bpo12+1 04/01/2014
-RIP: 0010:__phys_addr+0x162/0x170 arch/x86/mm/physaddr.c:28
-Code: e8 23 e8 51 00 48 c7 c7 c0 86 7a 8e 4c 89 f6 4c 89 fa e8 f1 98 b1 03 e9 45 ff ff ff e8 07 e8 51 00 90 0f 0b e8 ff e7 51 00 90 <0f> 0b e8 f7 e7 51 00 90 0f 0b 0f 1f 40 00 90 90 90 90 90 90 90 90
-RSP: 0018:ffffc90002d4f4c0 EFLAGS: 00010293
-RAX: ffffffff8142ff51 RBX: 0000000000000001 RCX: ffff88800023a440
-RDX: 0000000000000000 RSI: 0000000000000001 RDI: 0000000000000000
-RBP: ffffc90002d4f5e8 R08: ffffffff8142fe9c R09: 312e64313a30303a
-R10: dffffc0000000000 R11: fffff91ffff86755 R12: ffffe8ffffc33a60
-R13: dffffc0000000000 R14: 000040800b111000 R15: 000000000000002e
-FS:  0000555576947380(0000) GS:ffff88801fc00000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 00007ffabc3020f0 CR3: 000000004020a000 CR4: 0000000000352ef0
-DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-Call Trace:
- <TASK>
- virt_to_phys arch/x86/include/asm/io.h:131 [inline]
- perf_trace_dma_alloc+0x3dd/0x620 include/trace/events/dma.h:117
- trace_dma_alloc include/trace/events/dma.h:117 [inline]
- dma_alloc_attrs+0x46c/0x4e0 kernel/dma/mapping.c:622
- usbdev_mmap+0x247/0x900 drivers/usb/core/devio.c:251
- call_mmap include/linux/fs.h:2172 [inline]
- mmap_region+0x1add/0x2990 mm/mmap.c:1440
- do_mmap+0x8f0/0x1000 mm/mmap.c:496
- vm_mmap_pgoff+0x1dd/0x3d0 mm/util.c:588
- ksys_mmap_pgoff+0x4eb/0x720 mm/mmap.c:542
- do_syscall_x64 arch/x86/entry/common.c:52 [inline]
- do_syscall_64+0xf3/0x230 arch/x86/entry/common.c:83
- entry_SYSCALL_64_after_hwframe+0x77/0x7f
-RIP: 0033:0x7ffabc28b979
-Code: 28 00 00 00 75 05 48 83 c4 28 c3 e8 c1 17 00 00 90 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 b8 ff ff ff f7 d8 64 89 01 48
-RSP: 002b:00007ffd4658b118 EFLAGS: 00000246 ORIG_RAX: 0000000000000009
-RAX: ffffffffffffffda RBX: 0000000000000000 RCX: 00007ffabc28b979
-RDX: 0000000001000002 RSI: 0000000000400000 RDI: 0000000020000000
-RBP: 00007ffabc2fe5f0 R08: 0000000000000004 R09: 0000000000000000
-R10: 0000000000011012 R11: 0000000000000246 R12: 0000000000000001
-R13: 431bde82d7b634db R14: 0000000000000001 R15: 0000000000000001
- </TASK>
-Modules linked in:
----[ end trace 0000000000000000 ]---
-RIP: 0010:__phys_addr+0x162/0x170 arch/x86/mm/physaddr.c:28
-Code: e8 23 e8 51 00 48 c7 c7 c0 86 7a 8e 4c 89 f6 4c 89 fa e8 f1 98 b1 03 e9 45 ff ff ff e8 07 e8 51 00 90 0f 0b e8 ff e7 51 00 90 <0f> 0b e8 f7 e7 51 00 90 0f 0b 0f 1f 40 00 90 90 90 90 90 90 90 90
-RSP: 0018:ffffc90002d4f4c0 EFLAGS: 00010293
-RAX: ffffffff8142ff51 RBX: 0000000000000001 RCX: ffff88800023a440
-RDX: 0000000000000000 RSI: 0000000000000001 RDI: 0000000000000000
-RBP: ffffc90002d4f5e8 R08: ffffffff8142fe9c R09: 312e64313a30303a
-R10: dffffc0000000000 R11: fffff91ffff86755 R12: ffffe8ffffc33a60
-R13: dffffc0000000000 R14: 000040800b111000 R15: 000000000000002e
-FS:  0000555576947380(0000) GS:ffff88801fc00000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 00007ffabc3020f0 CR3: 000000004020a000 CR4: 0000000000352ef0
-DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-
-
----
-This report is generated by a bot. It may contain errors.
-See https://goo.gl/tpsmEJ for more information about syzbot.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
-
-syzbot will keep track of this issue. See:
-https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
-
-If the report is already addressed, let syzbot know by replying with:
-#syz fix: exact-commit-title
-
-If you want syzbot to run the reproducer, reply with:
-#syz test: git://repo/address.git branch-or-commit-hash
-If you attach or paste a git patch, syzbot will apply it before testing.
-
-If you want to overwrite report's subsystems, reply with:
-#syz set subsystems: new-subsystem
-(See the list of subsystem names on the web dashboard)
-
-If the report is a duplicate of another one, reply with:
-#syz dup: exact-subject-of-another-report
-
-If you want to undo deduplication, reply with:
-#syz undup
+Thanks,
+Robin.
