@@ -1,270 +1,126 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.10])
+Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E41541B85E3
-	for <iommu@lists.linux.dev>; Tue, 15 Oct 2024 09:58:48 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=198.175.65.10
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1728986331; cv=fail; b=APes2V83mkGmnZglO4Y3KfnhGqo7+WogzBfX8qYEASUIvGH59rvpDKKwUQtRmqsrVBlbD7cetqhZSjxJpwhgvD48C4sn18S5VEjS4kJ0A3gaCwsHd899p33VbDvkAwPnyiawj7xbc0Wy2uEc4bxaEmz1Hz4W1vy8v2/CSVW9qVw=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1728986331; c=relaxed/simple;
-	bh=8y0BXa9LN4N87a9wDk6HSzaS9ge9o1nXPvONsgpd0EU=;
-	h=Message-ID:Date:Subject:To:CC:References:From:In-Reply-To:
-	 Content-Type:MIME-Version; b=PhaBUizZXqGnmEtwnJtPjPWqL/4NTV6oJae2FjUwm5hsCuWopG8AN/VnPRK6UEqaLIwW/8bZB6+Xbol2JJZCu1Hbd3gYbwktoBQ5tUL79CW0eXkuUMTFayjXkSiDWZ4cNx+dN4uUZLRFBx2tsEFD1lm0E7WG+5L7zrFwmm0U4XI=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=FAX+rpDh; arc=fail smtp.client-ip=198.175.65.10
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="FAX+rpDh"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1728986329; x=1760522329;
-  h=message-id:date:subject:to:cc:references:from:
-   in-reply-to:content-transfer-encoding:mime-version;
-  bh=8y0BXa9LN4N87a9wDk6HSzaS9ge9o1nXPvONsgpd0EU=;
-  b=FAX+rpDhbXWakK4Kt1yCcNDBDFtA75HGePgyVFf2Uosgsk0rdW4TkQX+
-   MwbccYKr3Glnk9FZtFdsDHNXq/0uwKFMD+fKgeHY92qOoKImDgmnmSQ1L
-   7vaxMOAoQGaHIreRXoPEHrk6SlAZz3bOo3f2gbID+f50qu1RhhcX/AHEd
-   fLzjSAJwPYAIDXphh33rXgyV+tyl9tBvsrCWeMziYlzzuYdXD46617iqo
-   /t6el8qN+xVYDKlLgbAkxm7/ctmeJfyo38RG2eDRiePHayPlIinFN9MfH
-   RgLmy7FtVleHeoTe6ZzQNEnrO/0CgDTiUvkLPw/r+w5KdjgoGqPDNHF8h
-   A==;
-X-CSE-ConnectionGUID: G1NfNcgFQvC90P0aiRi81w==
-X-CSE-MsgGUID: yERudVOKQJWyU3aA4siPQw==
-X-IronPort-AV: E=McAfee;i="6700,10204,11222"; a="45841289"
-X-IronPort-AV: E=Sophos;i="6.11,199,1725346800"; 
-   d="scan'208";a="45841289"
-Received: from orviesa005.jf.intel.com ([10.64.159.145])
-  by orvoesa102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Oct 2024 02:58:48 -0700
-X-CSE-ConnectionGUID: W/waomEnR4mLVYIboRHuog==
-X-CSE-MsgGUID: ZfmID/6RSS+c94p+YPmx+g==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.11,204,1725346800"; 
-   d="scan'208";a="82623965"
-Received: from orsmsx602.amr.corp.intel.com ([10.22.229.15])
-  by orviesa005.jf.intel.com with ESMTP/TLS/AES256-GCM-SHA384; 15 Oct 2024 02:58:48 -0700
-Received: from orsmsx611.amr.corp.intel.com (10.22.229.24) by
- ORSMSX602.amr.corp.intel.com (10.22.229.15) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.39; Tue, 15 Oct 2024 02:58:47 -0700
-Received: from orsmsx603.amr.corp.intel.com (10.22.229.16) by
- ORSMSX611.amr.corp.intel.com (10.22.229.24) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.39; Tue, 15 Oct 2024 02:58:46 -0700
-Received: from ORSEDG601.ED.cps.intel.com (10.7.248.6) by
- orsmsx603.amr.corp.intel.com (10.22.229.16) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.39 via Frontend Transport; Tue, 15 Oct 2024 02:58:46 -0700
-Received: from NAM12-MW2-obe.outbound.protection.outlook.com (104.47.66.46) by
- edgegateway.intel.com (134.134.137.102) with Microsoft SMTP Server
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0E5341DE2C5
+	for <iommu@lists.linux.dev>; Tue, 15 Oct 2024 10:52:37 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=45.249.212.188
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1728989560; cv=none; b=XlA6kEDmLPrHtYkSIA2zw0wTUFcqbJ9Li3BXuNOA0KTvzKKtqVgUz4yTPa+5Q9WKS/7olHIYsRUHoCei7fxWLl2/m2FXzLgwQR75VDqMQzMKWEP3ugEl29jUvtCrFOzyL8AW83xnPpCgczPdJZaA/WJPt0SaUKiUZwTNToMeWzQ=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1728989560; c=relaxed/simple;
+	bh=JbYhV7N7Mb4Y/IMjLhPKo5oTfSI5VQYw4oDX2w97mTs=;
+	h=Message-ID:Date:MIME-Version:Subject:To:CC:References:From:
+	 In-Reply-To:Content-Type; b=Y9m+drDEuBZCEsSRbzbLxKQv3wmaAAzMUNZ+IF9bmEKbBa95XVZs3Zbqzx6u6/rRvA9NMuGT8pBJGj2v/7hOE/61Ay8kRBK9g8Bz5YoxBDnKGbHjIVfL0s+4QdNeA+vtqwEsxa7CF43z2vhrT7NOptdqZuhJYxBhWUQ7RnOJ2pw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=huawei.com; spf=pass smtp.mailfrom=huawei.com; arc=none smtp.client-ip=45.249.212.188
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=huawei.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=huawei.com
+Received: from mail.maildlp.com (unknown [172.19.88.105])
+	by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4XSW8J5gS7zfdGR;
+	Tue, 15 Oct 2024 18:50:08 +0800 (CST)
+Received: from dggpemf200006.china.huawei.com (unknown [7.185.36.61])
+	by mail.maildlp.com (Postfix) with ESMTPS id 5FC56140257;
+	Tue, 15 Oct 2024 18:52:35 +0800 (CST)
+Received: from [10.67.120.129] (10.67.120.129) by
+ dggpemf200006.china.huawei.com (7.185.36.61) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.1.2507.39; Tue, 15 Oct 2024 02:58:46 -0700
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=AnOoJOvoycuCpQfRFdSoVFFdbeTwdMyV6T06Dyxp5mrfGs9yt9ftNe7DgY/dTChZEaTZra7HVWQhLp9t8P6d6ORUegU91lwBlxf+Q/A7di0aROpwFi98MrJSuuvAZWW04YnDeA2hS+96ld9M7pbKdndEwTZ5EOf0Egt1Q54vG2mKjPCoknzdglhpyeAoBe19B4q/1HvEV2zagy3pb7/I029nXw0J3/vY9nfxIgmfSvd/XR5DBrBPgOsnUe4d7LJo8yT8afkihClUuWiuBU+bBXZ1XGWHYNb288LZg08YLrDaYm1caovVFYWshXNmgIVJ11FhWgFqpf2YtuemnX14PA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=j1zEhmD4kvPRFlvNsXNWcRYQEqvWorVS9065PXj5OH8=;
- b=ZSTEPi8hAF/HgTC2NYq1vED2tOfasIUO3A5lE51ABQFboz4ee12ksiGOzIyeJbZyQq2Fp4ld7G6yE5KVlxGp2Jg6T0kqpSbSFLpvU56WdULjIgVbArM5Vp+paiy0OvJBVoYyRPBqVl8HpF600SQZS2wVZWG5aOsqfiPsQEnTfI8WTx3j6W/ML/nhILyJFdLgQY9bEDsULQ1RBpg0VxVKAqK51oJIfPCAuAR8JTVFwq3MRF/Yl+W0LHcpbT+YDKq4XWeX62pn9YU/5g1ZBprxgyzW3C/DOCHk7p/1oCBtfxuFZ5SdECkBFipw0j+giy98e0oNM9NG6+ZSpPAN1Ltj/Q==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
- dkim=pass header.d=intel.com; arc=none
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=intel.com;
-Received: from DS0PR11MB7529.namprd11.prod.outlook.com (2603:10b6:8:141::20)
- by DM4PR11MB5993.namprd11.prod.outlook.com (2603:10b6:8:5c::19) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.8048.27; Tue, 15 Oct
- 2024 09:58:42 +0000
-Received: from DS0PR11MB7529.namprd11.prod.outlook.com
- ([fe80::d244:15cd:1060:941a]) by DS0PR11MB7529.namprd11.prod.outlook.com
- ([fe80::d244:15cd:1060:941a%4]) with mapi id 15.20.8048.020; Tue, 15 Oct 2024
- 09:58:42 +0000
-Message-ID: <637314d1-425b-4d99-9134-383a7865c9e1@intel.com>
-Date: Tue, 15 Oct 2024 18:03:16 +0800
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v2 5/6] iommu/arm-smmu-v3: Make smmuv3 set_dev_pasid() op
- support replace
-To: Will Deacon <will@kernel.org>
-CC: <joro@8bytes.org>, <jgg@nvidia.com>, <kevin.tian@intel.com>,
-	<baolu.lu@linux.intel.com>, <alex.williamson@redhat.com>,
-	<eric.auger@redhat.com>, <nicolinc@nvidia.com>,
-	<chao.p.peng@linux.intel.com>, <iommu@lists.linux.dev>,
-	<zhenzhong.duan@intel.com>, <linux-kselftest@vger.kernel.org>,
-	<vasant.hegde@amd.com>
-References: <20240912130427.10119-1-yi.l.liu@intel.com>
- <20240912130427.10119-6-yi.l.liu@intel.com>
- <20241015084322.GA19079@willie-the-truck>
-Content-Language: en-US
-From: Yi Liu <yi.l.liu@intel.com>
-In-Reply-To: <20241015084322.GA19079@willie-the-truck>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: SGXP274CA0021.SGPP274.PROD.OUTLOOK.COM (2603:1096:4:b8::33)
- To DS0PR11MB7529.namprd11.prod.outlook.com (2603:10b6:8:141::20)
+ 15.2.1544.11; Tue, 15 Oct 2024 18:52:35 +0800
+Message-ID: <5d9ea7bd-67bb-4a9d-a120-c8f290c31a47@huawei.com>
+Date: Tue, 15 Oct 2024 18:52:34 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: DS0PR11MB7529:EE_|DM4PR11MB5993:EE_
-X-MS-Office365-Filtering-Correlation-Id: 97e2f712-0128-4b0c-be7d-08dcecfff320
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;ARA:13230040|7416014|376014|1800799024|366016;
-X-Microsoft-Antispam-Message-Info: =?utf-8?B?UzhYY3kyY01lRmZraTdpRS8rbkN0SjV1VEluT09LYTRoUHBIZEF4V0hMaDdt?=
- =?utf-8?B?R3pjWFVQdlpOQlhvV0pLNDVPWkhxRlZoLzRrTlZ6ZFJwblVHd0Z5Smw0cDBv?=
- =?utf-8?B?cS85cmM1clAyWFlSbWZsZzhiSDk1Skw5UmNnb0Y2OE1nSEgvTElHQnBvaVhr?=
- =?utf-8?B?VEc2emZuVkE2QkdsTGZycEN0L3hlVlNTMGJianFMZlNBSjRmZWt5Q1BxYTQw?=
- =?utf-8?B?L0JBNDZpa1BDc1Z2N1U1SlRWOGMxN2tUVzlVVTROendJL3BwR0FQNHp5N1k5?=
- =?utf-8?B?K09XS1lMU3pmcHQ3L20xbGY2Mk1pZWZoK0NnQVU2cFZMVFVPNGRrNzEyQmcw?=
- =?utf-8?B?M0NJUVcvQnBacTk1VTNSMmlHbWJ3MFhqZjFudExtSXpYUDVuRmczRUJITmF1?=
- =?utf-8?B?NWF4a3JpSUtQMXVSMnh4eWp3U3ZFdWw1ckdZdTBEdVdjdnFQeUgyRzlHaG5R?=
- =?utf-8?B?YjNlSXN4RWgweS9CbFk3cU4ybmhCSE13SC9IOUVuVktSRDJQTThsV0VzSElS?=
- =?utf-8?B?b3FmVnBuWU5oUzFsMkVWMDh5c0k4bEdjMmJmMGNVeExxNmdCb2szQ2QrUVoz?=
- =?utf-8?B?R2lZQWZHTU9DY0NOWXJYcERlQmxyR0J1aUtVNGV5OXRlRmhJb1gzbFV5d0pX?=
- =?utf-8?B?SC9saE1yWmpFOGRjOEw0ZUlSbHdzMmZYMkpNYXNjczltMW5YTUFrQjRLTXJS?=
- =?utf-8?B?NkxTdjRBRFlWR1JpRnY2Vlp0YTc3bTEwMDhBWktlOUxLZ2hXSUZZSEVKSE9P?=
- =?utf-8?B?akRQREFRQ01FV0xqWnAxVXdGQlhGSW14WVFUbkE4dFBubEhEQk5vNzdlTkRW?=
- =?utf-8?B?YStzZXRTWm0vNzZzWjlTeEF4RFhIblp4clJkSk5URVZ5UWpCTEhGNHFwOC9a?=
- =?utf-8?B?RUJZVTJaanduYURqREhOSFdXUTFUa0tDWFdWYW5uRk1PRVY2U0I4KzJ6bE91?=
- =?utf-8?B?YW1nRkVSWlBQY3hTNGpWem9pajRXdXJMaTRtVlFSNHlEWndSd1orRjNvZDdE?=
- =?utf-8?B?S0pOU1FPNFVZdHQyNEZVRG1BR1ZUN21MWVFzQ3FkL21NUGtPMTlYOWhObG5l?=
- =?utf-8?B?L2JlSytsQW5KYU55Q1FrejNIMDE2NHlRN2ZpREtCaHBTMDcvZDNzVEVyaGF4?=
- =?utf-8?B?djFuVFVKWXRrNWF0anNMKzNIdlA0bXFCenpwbVBXdy90WktVY1pKQng3ck5T?=
- =?utf-8?B?ZFpEVjk1QlBFOHdDUTMwanJuUDV4QVNBdmpJYk9aU0dWWWJzT1BvQUhmRDlD?=
- =?utf-8?B?U2RhdDRIVm4zMzZUZ2s4S3BNRTJ2RXNyUmxpM1JHUVoyS1g0YUpvTHpOMXJq?=
- =?utf-8?B?MDFMalFvbG1uNmphVGpLTVQxd0RJaDFGbTBvbHlVYVkwb2hHdnI4WnU2S1NY?=
- =?utf-8?B?S0xxQ2dDU2x3NXJoYmlaWmlzK1VVV1NqRHhVamVORDk5VnNiMThXbGZsc0Z5?=
- =?utf-8?B?eEJwOUwxNzZMRFdIZkN2RlpidGNtZm5tT2pCbFdDQjdoeXVjQ2NOTnFxNXFy?=
- =?utf-8?B?bFJMajBXN0VsUEYzZ1RzRjEzWWVSM1NPMHlTWUZUUE9oMnU3ZFVQd1VXT011?=
- =?utf-8?B?TTVWTERCY3h1V0ZCNWQ0QXhlcnZBK0lzVVJ3THo2ZE1BVGpQNW1zbll1MG5Y?=
- =?utf-8?B?Z1lhQW5ydDBxbWxwc2IzOFd4NUlHZVdWQ3FyZjNzK0Zma2x2cG51cVo1UFYw?=
- =?utf-8?B?bFZUd1FkU3BleGo2TFNtRUZkV3poRDVWOFZHYjAyVHZ3clZrVWQ2VW9nPT0=?=
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DS0PR11MB7529.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(7416014)(376014)(1800799024)(366016);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?OVZoQ0xYVDRxWUp5K0h0a240NXpwbEpidnFzUzVtbnpUMnhlYURmT29WK0dW?=
- =?utf-8?B?M0l4NHF0ZC85Sko0SkVubFVmNTBwMjVUeVdGRk9mZUlWdXpjL2IzRzVPNVNS?=
- =?utf-8?B?cUlUOUhla3Vzc2xQamtUbEtKTzdsWWhsV05kUWg1WWMrdW5kQ01SMERMWFFv?=
- =?utf-8?B?Z2ZGZWxmSlVGdjhQcXVJUy9TKzhRd3NTbCtGcmZNMFVJSVBxczA4cVVpYWJM?=
- =?utf-8?B?Slh3c0FVLzhQVmdOVDNoQmJUUi9zZnlVeGNpeGx2dm9TQktIYlJiWHIyekYw?=
- =?utf-8?B?blpKL0t1V0dtV3laVXpFajV4VklNYm5uVHBlNEpNQ1dDNUtvTGtKdnEwZ0g3?=
- =?utf-8?B?bkVXa2c5SUZ2Y1JRZExQZlo2QU5wRWZsS2NOd0Q4T3A3QU1NanpxME45WUVl?=
- =?utf-8?B?aGJITmNPMENMNi9zQnFpeTJvQy8zeFg2M1Ezc0ROZUNzL3FKc1dadmIwcTI3?=
- =?utf-8?B?TmlteGxuOVlWcTVzcmdwWGJpZmdwVzhOTkd2VzUySlMxVVF0dE9WMlVaOUJ6?=
- =?utf-8?B?bjJFL0Q2RS9RUFVXRWE0aHBUZ2FPR2RmckhQc0pHaURTNXJEenlreFRlU2JY?=
- =?utf-8?B?NWppbWFpYzFYMGNaZElUMkZmbzVmeUdhN2toZjVpL3BDQTdvWnd6eDYxbnlD?=
- =?utf-8?B?WjNjODVYaXM3R0I3TU80RXdOcHdRVGJLTEwvVzZ3VE1MREdwR1RMaUJtZXJH?=
- =?utf-8?B?bXZGd0hlWUc1UnZ2OEJ0dU1QL211cE4wbEVXRnlpbFM1WEtmT01yVlBMdWNP?=
- =?utf-8?B?aHh5ZHp1eWl1R2NuSEMwaUphdGdWTTNHYS9GZlplSDhRaDdId0tvSVE1eWsw?=
- =?utf-8?B?QTQ3Zkp6UEs3bk9DYWh6aG03UWVlaE5NNENrZUNGb3pZMXkybSs5WEUyWGhq?=
- =?utf-8?B?V1FQQXFnTTA2eGlJNmRrZmVnSTYwOE0xU2tNaDAxNmRtbUQxWkF3dFc1c2ly?=
- =?utf-8?B?RnRNaXhKUlIvT2FTSDlhQThWNnNlRXBYK2V0ZXZJYS9CdEorc1JyZi8xVmc4?=
- =?utf-8?B?M0syWjM0dTl6ai9Ld1ZqbzNlYXRyTXk1akFOZXFkVTZaeHRZbW5hSnVDSzIr?=
- =?utf-8?B?SGhROVdWZkpqa2pLb2Nwd1NaZzFWa1haaFljaE04Mi9SRG93RGxIbjM0WlEx?=
- =?utf-8?B?U05UWnM3eWgraFlLMFd0TG41WDJCV050QmZJYW1XSWRxbVREUDhxYVUyTytU?=
- =?utf-8?B?V1FkSnV1akgraUpEOFJQaXBEd09FWnV2Z3kxWFI5VkhMa2ZCdFJSQitPMllB?=
- =?utf-8?B?SklqT3ZzRXpBSVpEMFVDU1NHeElna1FWWXZvTVFhUnMyN2JidUxCd0Fob2Fi?=
- =?utf-8?B?cFZ4QlRtUXlzNzR1dWFyRFVvSzhJNit6L0VRNnVEV3NyN3RKUTF2RnNhZysv?=
- =?utf-8?B?d1kyTm9ZVklEZThmVDB6QWx5dzJFbVdFditibWoxdnJjK3Z5RC9GZFhLalFa?=
- =?utf-8?B?QmYrSnBpTCtqbVcxbGZLcGhPdFBZaHliaUp0bitXSkhaODQxNTJFOGNJN2FL?=
- =?utf-8?B?ODlCaXdockpXaW81U1NBY3NLNXBTdDVwbXpIY1lKajRsVURPdkhjSFM1WTFV?=
- =?utf-8?B?NU5qcGNhY3BNMEdZTzRBU0FGRCtYVGNoT1F6Q2U5cDdYMlBKd3JoQ0RuZWsz?=
- =?utf-8?B?akJlUGNWbDhuN3dGbGdyZGpNSzhXd3FvcGwwekptNlBIWnhyZU9FamtOS0NS?=
- =?utf-8?B?V1lqYnpsZnBFNlFOWkR3Wi9rZ1ZibnY5ZDdwQ3VGdXNYSHBIejRqbVVSRkla?=
- =?utf-8?B?d1JYVkQwSzNCSkxvQ0U1VURCYk43SU1QcnkvY09wb3RPMk9nZE5CRTdoTmxF?=
- =?utf-8?B?RGRxVU13cDJHdEg2b0ZxemxZbXlTaGNyUElzdzdQanFVM3ZJcUFmS2VPUGRi?=
- =?utf-8?B?M2dhSlBPWmoydGNJdmJ5R2hZM0RqV01lc0RId2RlaFhkeXhYMk0vdWwzUVNK?=
- =?utf-8?B?anVkYzhsVjNYaTRML2pQZkRNSktTSDlXS2czL1VWcGhOdUFlcmFDeU5LMnJR?=
- =?utf-8?B?SnBjamFDM3I2bDduRkxjcjhsU1FwWEhOeHBnSkRiN3FiT0thSjN6dnZqaDJK?=
- =?utf-8?B?Q3o4N0RYSEpVSkprcUY5SXJwelU2TVR1QVVUbHg3VkhzZXlPNTN5V1hHeHJm?=
- =?utf-8?Q?QGK8KylSAYF409yKTbL4qeEIr?=
-X-MS-Exchange-CrossTenant-Network-Message-Id: 97e2f712-0128-4b0c-be7d-08dcecfff320
-X-MS-Exchange-CrossTenant-AuthSource: DS0PR11MB7529.namprd11.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 15 Oct 2024 09:58:42.2792
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 46c98d88-e344-4ed4-8496-4ed7712e255d
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: tsDad+c8ieRK8nN1oqjmXgtHXSFhuIRQ2TaUckEWScC3m8Mlq7GSmtK67zaGZKWXNtOfdsa8YgAdqSIkfevJLA==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM4PR11MB5993
-X-OriginatorOrg: intel.com
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH net v2 0/2] fix two bugs related to page_pool
+To: Jakub Kicinski <kuba@kernel.org>
+CC: <davem@davemloft.net>, <pabeni@redhat.com>, <liuyonglong@huawei.com>,
+	<fanghaiqing@huawei.com>, <zhangkun09@huawei.com>, Alexander Lobakin
+	<aleksander.lobakin@intel.com>, Robin Murphy <robin.murphy@arm.com>,
+	Alexander Duyck <alexander.duyck@gmail.com>, IOMMU <iommu@lists.linux.dev>,
+	Alexei Starovoitov <ast@kernel.org>, Daniel Borkmann <daniel@iogearbox.net>,
+	Jesper Dangaard Brouer <hawk@kernel.org>, John Fastabend
+	<john.fastabend@gmail.com>, Matthias Brugger <matthias.bgg@gmail.com>,
+	AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>,
+	<netdev@vger.kernel.org>, <intel-wired-lan@lists.osuosl.org>,
+	<bpf@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+	<linux-arm-kernel@lists.infradead.org>, <linux-mediatek@lists.infradead.org>
+References: <20240925075707.3970187-1-linyunsheng@huawei.com>
+ <b1fd5ece-b967-4e56-ad4f-64ec437e2634@huawei.com>
+ <20241014171406.43e730c9@kernel.org>
+Content-Language: en-US
+From: Yunsheng Lin <linyunsheng@huawei.com>
+In-Reply-To: <20241014171406.43e730c9@kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: dggems703-chm.china.huawei.com (10.3.19.180) To
+ dggpemf200006.china.huawei.com (7.185.36.61)
 
-On 2024/10/15 16:43, Will Deacon wrote:
-> On Thu, Sep 12, 2024 at 06:04:26AM -0700, Yi Liu wrote:
->> From: Jason Gunthorpe <jgg@nvidia.com>
->>
->> set_dev_pasid() op is going to be enhanced to support domain replacement
->> of a pasid. This prepares for this op definition.
->>
->> Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
->> Signed-off-by: Yi Liu <yi.l.liu@intel.com>
->> ---
->>   drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c | 2 +-
->>   drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c     | 8 +++++---
->>   drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h     | 2 +-
->>   3 files changed, 7 insertions(+), 5 deletions(-)
->>
->> diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c
->> index 645da7b69bed..1d3e71569775 100644
->> --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c
->> +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c
->> @@ -349,7 +349,7 @@ static int arm_smmu_sva_set_dev_pasid(struct iommu_domain *domain,
->>   	 * get reassigned
->>   	 */
->>   	arm_smmu_make_sva_cd(&target, master, domain->mm, smmu_domain->cd.asid);
->> -	ret = arm_smmu_set_pasid(master, smmu_domain, id, &target);
->> +	ret = arm_smmu_set_pasid(master, smmu_domain, id, &target, old);
->>   
->>   	mmput(domain->mm);
->>   	return ret;
->> diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
->> index ed2b106e02dd..f7a73b854151 100644
->> --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
->> +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
->> @@ -2824,7 +2824,8 @@ static int arm_smmu_attach_dev(struct iommu_domain *domain, struct device *dev)
->>   }
->>   
->>   static int arm_smmu_s1_set_dev_pasid(struct iommu_domain *domain,
->> -				      struct device *dev, ioasid_t id)
->> +				     struct device *dev, ioasid_t id,
->> +				     struct iommu_domain *old)
->>   {
->>   	struct arm_smmu_domain *smmu_domain = to_smmu_domain(domain);
->>   	struct arm_smmu_master *master = dev_iommu_priv_get(dev);
->> @@ -2850,7 +2851,7 @@ static int arm_smmu_s1_set_dev_pasid(struct iommu_domain *domain,
->>   	 */
->>   	arm_smmu_make_s1_cd(&target_cd, master, smmu_domain);
->>   	return arm_smmu_set_pasid(master, to_smmu_domain(domain), id,
->> -				  &target_cd);
->> +				  &target_cd, old);
->>   }
->>   
->>   static void arm_smmu_update_ste(struct arm_smmu_master *master,
->> @@ -2880,7 +2881,7 @@ static void arm_smmu_update_ste(struct arm_smmu_master *master,
->>   
->>   int arm_smmu_set_pasid(struct arm_smmu_master *master,
->>   		       struct arm_smmu_domain *smmu_domain, ioasid_t pasid,
->> -		       struct arm_smmu_cd *cd)
->> +		       struct arm_smmu_cd *cd, struct iommu_domain *old)
->>   {
->>   	struct iommu_domain *sid_domain = iommu_get_domain_for_dev(master->dev);
->>   	struct arm_smmu_attach_state state = {
->> @@ -2890,6 +2891,7 @@ int arm_smmu_set_pasid(struct arm_smmu_master *master,
->>   		 * already attached, no need to set old_domain.
->>   		 */
->>   		.ssid = pasid,
->> +		.old_domain = old,
+On 2024/10/15 8:14, Jakub Kicinski wrote:
+> On Sat, 12 Oct 2024 20:05:31 +0800 Yunsheng Lin wrote:
+>> 1. Semantics changing of supporting unlimited inflight pages
+>>    to limited inflight pages that are as large as the pool_size
+>>    of page_pool.
 > 
-> nit: The existing comment says "no need to set old_domain" and now you're
-> doing exactly that! Please can you update the commentary (probably just
-> remove the comment entirely)?
+> How can this possibly work?
 
-oops, indeed, should remove this comment entirely. thanks for spotting it.
+As a similar comment in [1], do we really need unlimited inflight pages
+for the page_pool to work? If we do, it seems there is something really
+need fixing here. I am agreed changing of semantics here might introduce
+regressions here because there may be some subsystem depending on the
+previous semantics or incorrect calculating of how many inflight pages it
+is needed, so I am agreed that it might be better to target the net-next
+tree to give some cycles of testing before backporting it.
 
--- 
-Regards,
-Yi Liu
+1. https://lore.kernel.org/all/842c8cc6-f716-437a-bc98-70bc26d6fd38@huawei.com/
+
+> 
+> The main thing stopping me from reposting my fix that it'd be nice to
+> figure out if a real IOMMU device is bound or not. If we don't have
+
+device_iommu_mapped() might be used to check if a real IOMMU device is
+bound or not.
+I am afraid it is not just about IOMMU here as there might be other
+resource behind the dma mapping, like the bounce buffer memory as below:
+
+https://elixir.bootlin.com/linux/v6.7-rc8/source/drivers/iommu/dma-iommu.c#L1204
+https://elixir.bootlin.com/linux/v6.7-rc8/source/kernel/dma/direct.h#L125
+
+And we may argue is_swiotlb_active() can be used check if there is any
+bounce buffer memory behind the dma mapping as the device_iommu_mapped()
+does, but I am not sure if there is any other resource besides iommu and
+bounce buffer.
+
+> real per-device mappings we presumably don't have to wait. If we can 
+
+For not having to wait part:
+I am not sure if the page_pool_destroy()/__page_pool_release_page_dma()
+need to synchronize with arch_teardown_dma_ops() or how to synchronize
+with it, as it seems to be called when driver unloading even if we have
+ensured that there is no IOMMU or bounce buffer memory behind the device
+by the above checking:
+__device_release_driver -> device_unbind_cleanup -> arch_teardown_dma_ops
+
+> check this condition we are guaranteed not to introduce regressions,
+> since we would be replacing a crash by a wait, which is strictly better.
+
+For the waiting part:
+The problem is how much time we need to wait when device_iommu_mapped()
+or is_swiotlb_active() return true here, as mentioned in [2], [3]. And
+currently the waiting might be infinite as the testing in [4].
+
+> 
+> If we'd need to fiddle with too many internals to find out if we have
+> to wait - let's just always wait and see if anyone complains.
+
+Does the testing report in [4] classify as someone complaining? As
+the driver unloading seems to be stalling forever, and the cause of the
+infinite stalling is skb_attempt_defer_free() by debugging as mentioned
+in [2].
+
+2. https://lore.kernel.org/all/2c5ccfff-6ab4-4aea-bff6-3679ff72cc9a@huawei.com/
+3. https://lore.kernel.org/netdev/d50ac1a9-f1e2-49ee-b89b-05dac9bc6ee1@huawei.com/
+4. https://lore.kernel.org/netdev/758b4d47-c980-4f66-b4a4-949c3fc4b040@huawei.com/
+
+> 
