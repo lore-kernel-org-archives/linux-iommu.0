@@ -1,74 +1,116 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from mx0b-0031df01.pphosted.com (mx0b-0031df01.pphosted.com [205.220.180.131])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 066E41D9669;
-	Tue, 15 Oct 2024 08:59:51 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 39D087F7FC;
+	Tue, 15 Oct 2024 09:54:08 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.180.131
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1728982792; cv=none; b=D2R4mqSF0jk+3r23UtmMs2da0gLPyrLYTqGxJkPXmO9f2+Ct9ZnlwfBVVK2qXHfxhp3VIH4Ym0qMhcN8ZDDF4Yu8k8qOpNpyR+nsMHmPdByo1H24zdkqZjt5vqj5jWUhWLDtDiXLKlObTRN0VlBzAnIN0axPqQ2ImLny2XsZ9kg=
+	t=1728986051; cv=none; b=HFzanGkt2HmcqFoKgZSVzgGbOkX3FFN7A4RtOov4LJ3oLQlLoMTaLxac1Udb/OOIyshsYQATYxYKtdHdHcDMbSw5jnNfzDt1fOa8nk/snebEWQi6WlzCah3qmvXeA9UQ4iD6t4NWz8jOj54DWUEe37W3uKyvp4ClwvD85uk9cnI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1728982792; c=relaxed/simple;
-	bh=y3aK+OC3+bmAwtiyXzBhoRjPUn7oC1omzxWkKEaweQw=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=LGXkCP7t8er3LiCLUaSaZI45MXxYkilcMjJs3s1eLZuR0UpPJdlNpC0CLe1CEzDaWFqTw+19wWL8T18dtoeQTsZl53glcc/bjV+ZK9JZ4h+4/ljc8GnV1kE6ueSRnX1STpx9TJKSbqc07ZNxLz+dIHLQFaHkOHNPiJcX7+YNsNs=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=DNvBY8Rb; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1728986051; c=relaxed/simple;
+	bh=VxH0d8OiCc+yI1zRcswIOsXhZoYIMl9urHl70yfxeao=;
+	h=Message-ID:Date:MIME-Version:Subject:To:CC:References:From:
+	 In-Reply-To:Content-Type; b=LEqZn1r4XNO/U6rYzbePQAkMZJUHy/xlMO3MxbrGApGl+lsytLl/j0Pq63EbH4LMOMGlbscsqTNEwWPV6fACAK0a1pFUFLN5I2gLwPv3WECoo84aM/iDdrDoF1PcB/khCMiGIEgSTb/W4wGAXeR/vWBCbYlV9dxXprbGeq7rtcM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com; spf=pass smtp.mailfrom=quicinc.com; dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b=Yn4Beh69; arc=none smtp.client-ip=205.220.180.131
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=quicinc.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="DNvBY8Rb"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9C35DC4CEC6;
-	Tue, 15 Oct 2024 08:59:48 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1728982791;
-	bh=y3aK+OC3+bmAwtiyXzBhoRjPUn7oC1omzxWkKEaweQw=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=DNvBY8RbYZyW4uIXyvjZb7rC0g0Dkmw0bowhZixXU3TgcAe8Tdou+A1/BSJX5p8m6
-	 kHMuuCu+6Umd1KgKySjGYD6HLzjA3IXG7w/P1L+DC5pK1M/Q2iv3ubfT1aGKMqSKCk
-	 iNkuVHtfe5Lu07Fr+ZrC5zdY/q6HaZGFESY0Osb/mmUinKZ4Kp8iDHt6Y4q3GKsIzO
-	 OyDT0UaJo/4dRnRINUGRAH4mvmEmK9gzdW/NpZWBR14lCWLOHnlq4kJYY/a6iBqZKQ
-	 aDIEpw29fBzj2njrU+bsBPK9wRkXDy1RkcyakFs3hSirX7pHWTD/qGm90vc/+SsRhR
-	 7Na8oo9GHo4Mw==
-Date: Tue, 15 Oct 2024 09:59:45 +0100
-From: Will Deacon <will@kernel.org>
-To: Joerg Roedel <joro@8bytes.org>
-Cc: Tomasz Jeznach <tjeznach@rivosinc.com>,
-	Robin Murphy <robin.murphy@arm.com>,
-	Paul Walmsley <paul.walmsley@sifive.com>,
-	Palmer Dabbelt <palmer@dabbelt.com>,
-	Albert Ou <aou@eecs.berkeley.edu>,
-	Anup Patel <apatel@ventanamicro.com>,
-	Sunil V L <sunilvl@ventanamicro.com>,
-	Nick Kossifidis <mick@ics.forth.gr>,
-	Sebastien Boeuf <seb@rivosinc.com>,
-	Rob Herring <robh+dt@kernel.org>,
-	Krzysztof Kozlowski <krzk+dt@kernel.org>,
-	Conor Dooley <conor+dt@kernel.org>, devicetree@vger.kernel.org,
-	iommu@lists.linux.dev, linux-riscv@lists.infradead.org,
-	linux-kernel@vger.kernel.org, linux@rivosinc.com
-Subject: Re: [PATCH v9 0/7] Linux RISC-V IOMMU Support
-Message-ID: <20241015085945.GC19110@willie-the-truck>
-References: <cover.1728579958.git.tjeznach@rivosinc.com>
- <Zw4s3BHQZ6x4d79-@8bytes.org>
+	dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b="Yn4Beh69"
+Received: from pps.filterd (m0279870.ppops.net [127.0.0.1])
+	by mx0a-0031df01.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 49F9G5Xa019351;
+	Tue, 15 Oct 2024 09:53:59 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=quicinc.com; h=
+	cc:content-transfer-encoding:content-type:date:from:in-reply-to
+	:message-id:mime-version:references:subject:to; s=qcppdkim1; bh=
+	gIzGYTNAP570onZc1Q9SZ0BCayz48+49eB4KT3Q0w+o=; b=Yn4Beh69hIeMH9hG
+	TH8cCYS8Go5MVduJ8jKPA4IpQWYZQyyp95fsEjzTXKrab20KG9um2x+dVNyh4fXm
+	H8jYpU28rjYazd/xlWVMPix5hAPtdBDAfORLfRxlv3EljAxiJLaYy2l5k1rXaZ+e
+	liK1slAA+LgtWem3l7mZcUF3UX+IoqDX0VRHHhypmtt9xcKoAwdD2R7RXeSCBzuO
+	DlV/sIQpX1f8dhIICNt+2Fcsu/M85rSL8lYv1lD2MVjHglif477WfbD+cKnTuBu2
+	5c6CSXV36a0dJDhwzWamXJbhNacLh+rhZlI4qEIFReKZuinrr8wSXxpaTmg005GQ
+	xGsjwQ==
+Received: from nalasppmta04.qualcomm.com (Global_NAT1.qualcomm.com [129.46.96.20])
+	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 429nm3g306-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Tue, 15 Oct 2024 09:53:59 +0000 (GMT)
+Received: from nalasex01b.na.qualcomm.com (nalasex01b.na.qualcomm.com [10.47.209.197])
+	by NALASPPMTA04.qualcomm.com (8.18.1.2/8.18.1.2) with ESMTPS id 49F9rwD6001924
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Tue, 15 Oct 2024 09:53:58 GMT
+Received: from [10.239.132.41] (10.80.80.8) by nalasex01b.na.qualcomm.com
+ (10.47.209.197) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1544.9; Tue, 15 Oct
+ 2024 02:53:54 -0700
+Message-ID: <85a13e7c-b48c-4105-a633-a48ebebe9fdf@quicinc.com>
+Date: Tue, 15 Oct 2024 17:53:52 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <Zw4s3BHQZ6x4d79-@8bytes.org>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v2 0/4] Add support for APPS SMMU on QCS615
+To: Krzysztof Kozlowski <krzk@kernel.org>, <andersson@kernel.org>,
+        <konradybcio@kernel.org>, <robh@kernel.org>, <krzk+dt@kernel.org>,
+        <conor+dt@kernel.org>, <robimarko@gmail.com>, <will@kernel.org>,
+        <robin.murphy@arm.com>, <joro@8bytes.org>
+CC: <linux-arm-msm@vger.kernel.org>, <devicetree@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>, <iommu@lists.linux.dev>
+References: <20241015081603.30643-1-quic_qqzhou@quicinc.com>
+ <e0bd108f-1133-473a-a0e5-6efe1b19f50d@kernel.org>
+From: Qingqing Zhou <quic_qqzhou@quicinc.com>
+In-Reply-To: <e0bd108f-1133-473a-a0e5-6efe1b19f50d@kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
+ nalasex01b.na.qualcomm.com (10.47.209.197)
+X-QCInternal: smtphost
+X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
+X-Proofpoint-GUID: pkVBa3nGe1uQilYiIB6dfxCdyJpfAk4T
+X-Proofpoint-ORIG-GUID: pkVBa3nGe1uQilYiIB6dfxCdyJpfAk4T
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.293,Aquarius:18.0.1039,Hydra:6.0.680,FMLib:17.12.60.29
+ definitions=2024-09-06_09,2024-09-06_01,2024-09-02_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 impostorscore=0 clxscore=1015
+ lowpriorityscore=0 malwarescore=0 adultscore=0 phishscore=0
+ priorityscore=1501 mlxscore=0 spamscore=0 suspectscore=0 bulkscore=0
+ mlxlogscore=999 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.19.0-2409260000 definitions=main-2410150067
 
-On Tue, Oct 15, 2024 at 10:50:36AM +0200, Joerg Roedel wrote:
-> On Thu, Oct 10, 2024 at 12:48:03PM -0700, Tomasz Jeznach wrote:
-> > This patch series introduces support for RISC-V IOMMU architected
-> > hardware into the Linux kernel.
+
+
+在 10/15/2024 4:20 PM, Krzysztof Kozlowski 写道:
+> On 15/10/2024 10:15, Qingqing Zhou wrote:
+>> Enable APPS SMMU function on QCS615 platform. APPS SMMU is required
+>> for address translation in devices including Ethernet/UFS/USB and
+>> so on.
+>>
+>> Add the SCM node for SMMU probing normally. SMMU driver probe will
+>> check qcom_scm ready or not, without SCM node, SMMU driver probe will
+>> defer.
+>> The dmesg log without SCM node:
+>> platform 15000000.iommu: deferred probe pending: arm-smmu: qcom_scm not ready
+>>
+>> With the SCM node, SMMU can probe normally, but SCM driver still fails
+>> to probe because of one SCM bug:
+>> qcom_scm firmware:scm: error (____ptrval____): Failed to enable the TrustZone memory allocator
+>> qcom_scm firmware:scm: probe with driver qcom_scm failed with error 4
+>> The above SCM bug is fixed by:
+>> https://lore.kernel.org/all/20241005140150.4109700-2-quic_kuldsing@quicinc.com/
+>> But above patch doesn't impact building of current patch series, this patch
+>> series can build successfully without above patch.
+>>
+>> Dependency:
+>> https://lore.kernel.org/all/20240926-add_initial_support_for_qcs615-v3-0-e37617e91c62@quicinc.com/
+>>
+>> Changes in v2:
+>> - Address the comments on bindings from Krzysztof.
 > 
-> Thanks Tomasz. I plan to merge this driver into the IOMMU tree if no
-> further objections are raised in this thread by Friday.
+> Which comments? Be specific what changed.
+Got it, will change into "Add QCS615 into compatibles disallowing clocks in arm,smmu.yaml to address the comments in arm,smmu bindings patch from Krzysztof." in next version. Is it fine?
+> 
+> Best regards,
+> Krzysztof
+> 
 
-Sorry, bad timing on my part -- I just left a couple of questions/comments
-after Drew poked me at LPC to look at this.
-
-Hopefully we'll get those resolved asap.
-
-Will
