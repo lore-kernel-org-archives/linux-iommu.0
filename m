@@ -1,112 +1,107 @@
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.20])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B63AF79C8
-	for <iommu@lists.linux.dev>; Tue, 15 Oct 2024 02:31:30 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=170.10.129.124
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C68646AB8
+	for <iommu@lists.linux.dev>; Tue, 15 Oct 2024 02:52:24 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.20
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1728959493; cv=none; b=YtrAlsDvKJARI3ybmB1Bry28kX9dYdxo8R8YPjHspUjuX95H+y10STktsEMqWspSyylgSr0Jai+MgGx6kWBOlKyvK8JKpY7LAhqDRWVnmG9HuogTblpp0T5grYaRzJdOFKf6LRQ6eSrcIUPosHrXQEkZPE0W5Fb1dtMrAkiaBkg=
+	t=1728960746; cv=none; b=Vezq2HX6luZg/BB0iHUKOlwnyr+b0pZls0QwxJRrHagAjIhZt3rmtK/KmISFuzLP4FLGCPgB8pspwE4KMN7P28XXl5qpGH+mYS3t/MWHwqeZIMdohimK517jbDP95U/fUMAdAdj7zzWk+j90M/1guDWJZc+IhZZ6924gCm0wv2g=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1728959493; c=relaxed/simple;
-	bh=Eht3kaE8TPAUFrMmB2wYBK16NKLPLwgMkqIgrhPGAHY=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=ZDJmveU1EDb8pasF4jh8+DdHWAqScysLNWW0M6ikd5tQW+Du+KfAfc4TDlp5iVnQs6pZwfjTOC2dy9JieDErDnb8XXZ94igpWX3SlOqRZTrbGzH7SSx9ocLicLsc09GZtAiLseE6pLNxoyxTrD2aK9vSLshJUuHbe/nKwqLIHQY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=redhat.com; spf=pass smtp.mailfrom=redhat.com; dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b=gHGJNDjB; arc=none smtp.client-ip=170.10.129.124
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=redhat.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=redhat.com
+	s=arc-20240116; t=1728960746; c=relaxed/simple;
+	bh=79H2QjsjtvXf3dJkXoGSjOxOcJofOiPirAO1+Uyw+vg=;
+	h=Message-ID:Date:MIME-Version:Cc:Subject:To:References:From:
+	 In-Reply-To:Content-Type; b=Dy1I35d6/cP4KJcuWIeysEGFYCYBTEef7Atzz8prjeLF0h4I0U52lkSEZB3B671+cweuF1SZmglzwXdHCCUMsWlZaMfdRmyrhtlO+ZDvwvaOWDKGfCXognVGh7bZrqjpT0FsI4k6CpG/LxWChBhjBVAQlD9lFK+f8RjWeitbTfA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=ioIkWJxd; arc=none smtp.client-ip=198.175.65.20
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="gHGJNDjB"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-	s=mimecast20190719; t=1728959489;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 in-reply-to:in-reply-to:references:references;
-	bh=d92jJ6kW+oBkOfqEEGf2E2wbMnllb1zRN+YLBEPwhFs=;
-	b=gHGJNDjBxTIQKRz2GxgnZ37hI03TNk0pPcEoGLQbMtsiGEHcLAR5M6U2Na15kCHaAgDCmM
-	mGA1pKVdLJ+ZgcJpcrD0PGvqQZShkuMcrPVD1t1svTxyl6gsRez/u5ffPLK6kkLgHddD0V
-	xNcegJyxSgMRejWWQ9w8QPGNjnTOoRg=
-Received: from mx-prod-mc-04.mail-002.prod.us-west-2.aws.redhat.com
- (ec2-54-186-198-63.us-west-2.compute.amazonaws.com [54.186.198.63]) by
- relay.mimecast.com with ESMTP with STARTTLS (version=TLSv1.3,
- cipher=TLS_AES_256_GCM_SHA384) id us-mta-645-zeZ5XHc8O_a_kjd-wL27mQ-1; Mon,
- 14 Oct 2024 22:31:25 -0400
-X-MC-Unique: zeZ5XHc8O_a_kjd-wL27mQ-1
-Received: from mx-prod-int-04.mail-002.prod.us-west-2.aws.redhat.com (mx-prod-int-04.mail-002.prod.us-west-2.aws.redhat.com [10.30.177.40])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
-	(No client certificate requested)
-	by mx-prod-mc-04.mail-002.prod.us-west-2.aws.redhat.com (Postfix) with ESMTPS id E52EE19560A3;
-	Tue, 15 Oct 2024 02:31:23 +0000 (UTC)
-Received: from fedora (unknown [10.72.116.119])
-	by mx-prod-int-04.mail-002.prod.us-west-2.aws.redhat.com (Postfix) with ESMTPS id 6266519560AE;
-	Tue, 15 Oct 2024 02:31:16 +0000 (UTC)
-Date: Tue, 15 Oct 2024 10:31:11 +0800
-From: Ming Lei <ming.lei@redhat.com>
-To: Christoph Hellwig <hch@lst.de>
-Cc: Hannes Reinecke <hare@suse.de>,
-	Hamza Mahfooz <someguy@effective-light.com>,
-	Dan Williams <dan.j.williams@intel.com>,
-	linux-block@vger.kernel.org, io-uring@vger.kernel.org,
-	linux-raid@vger.kernel.org, iommu@lists.linux.dev,
-	linux-kernel@vger.kernel.org, ming.lei@redhat.com,
-	Keith Busch <kbusch@kernel.org>
-Subject: Re: [Report] annoyed dma debug warning "cacheline tracking EEXIST,
- overlapping mappings aren't supported"
-Message-ID: <Zw3T7-6pxGelQX_s@fedora>
-References: <ZwxzdWmYcBK27mUs@fedora>
- <426b5600-7489-43a7-8007-ac4d9dbc9aca@suse.de>
- <20241014074151.GA22419@lst.de>
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="ioIkWJxd"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1728960745; x=1760496745;
+  h=message-id:date:mime-version:cc:subject:to:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=79H2QjsjtvXf3dJkXoGSjOxOcJofOiPirAO1+Uyw+vg=;
+  b=ioIkWJxdEs9+KSMnqScoLeCw125kopVSn6Wq5JCMUpQyqljqndKTCjf4
+   suiqjlv5vF+I5tf8jmVxV98wZxcFt6XTOhWW87QddNxUcEbJdaNA8GK4h
+   4b+OmyuaJis60/gsSzOsV3CVOJ9xBbk3FbeYr1kEUEQ7OGKkFK1L7Aljx
+   jnTh007eM9GsXkjCDu+JjiPtL8XAt0n2T3RUt/3GA2RndkIYMyOyBdad7
+   QOgWgWgDWgQHNtzcVKnQlsVKp3xSSxRbfPflXM97tFdQ7hGNUB4cqEsVX
+   DTSlzQJ0q8Jj58JfBJB8XQRk+5pufCA84tLugS5FGu7HvfHcO1jP7VC7S
+   g==;
+X-CSE-ConnectionGUID: Ikdo92fUR3yr2+IiCXlh1Q==
+X-CSE-MsgGUID: 96hVPcIOS52pukdRZ57yJw==
+X-IronPort-AV: E=McAfee;i="6700,10204,11222"; a="28121041"
+X-IronPort-AV: E=Sophos;i="6.11,199,1725346800"; 
+   d="scan'208";a="28121041"
+Received: from orviesa003.jf.intel.com ([10.64.159.143])
+  by orvoesa112.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Oct 2024 19:52:24 -0700
+X-CSE-ConnectionGUID: 9LH1pEz4Tj2xDXPBFWwL7Q==
+X-CSE-MsgGUID: fdNCDooUSvaqHJ7/E9wmrA==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.11,199,1725346800"; 
+   d="scan'208";a="82530036"
+Received: from unknown (HELO [10.238.0.51]) ([10.238.0.51])
+  by ORVIESA003-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Oct 2024 19:52:22 -0700
+Message-ID: <a95e8a10-6240-41db-b234-d9f29386694c@linux.intel.com>
+Date: Tue, 15 Oct 2024 10:52:19 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20241014074151.GA22419@lst.de>
-X-Scanned-By: MIMEDefang 3.0 on 10.30.177.40
+User-Agent: Mozilla Thunderbird
+Cc: baolu.lu@linux.intel.com, iommu@lists.linux.dev,
+ Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
+ Robin Murphy <robin.murphy@arm.com>, Kevin Tian <kevin.tian@intel.com>,
+ Yi Liu <yi.l.liu@intel.com>, Vasant Hegde <vasant.hegde@amd.com>,
+ linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 3/7] iommu/vt-d: Enhance compatibility check for paging
+ domain attach
+To: Jason Gunthorpe <jgg@ziepe.ca>
+References: <20241011042722.73930-1-baolu.lu@linux.intel.com>
+ <20241011042722.73930-4-baolu.lu@linux.intel.com>
+ <20241011162703.GL762027@ziepe.ca>
+ <7f829e9e-5db9-4861-8a58-27a57edbd9da@linux.intel.com>
+ <20241014192436.GD1825128@ziepe.ca>
+Content-Language: en-US
+From: Baolu Lu <baolu.lu@linux.intel.com>
+In-Reply-To: <20241014192436.GD1825128@ziepe.ca>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-On Mon, Oct 14, 2024 at 09:41:51AM +0200, Christoph Hellwig wrote:
-> On Mon, Oct 14, 2024 at 09:23:14AM +0200, Hannes Reinecke wrote:
-> >> 3) some storage utilities
-> >> - dm thin provisioning utility of thin_check
-> >> - `dt`(https://github.com/RobinTMiller/dt)
-> >>
-> >> I looks like same user buffer is used in more than 1 dio.
-> >>
-> >> 4) some self cooked test code which does same thing with 1)
-> >>
-> >> In storage stack, the buffer provider is far away from the actual DMA
-> >> controller operating code, which doesn't have the knowledge if
-> >> DMA_ATTR_SKIP_CPU_SYNC should be set.
-> >>
-> >> And suggestions for avoiding this noise?
-> >>
-> > Can you check if this is the NULL page? Operations like 'discard' will 
-> > create bios with several bvecs all pointing to the same NULL page.
-> > That would be the most obvious culprit.
+On 2024/10/15 3:24, Jason Gunthorpe wrote:
+> On Mon, Oct 14, 2024 at 09:25:03AM +0800, Baolu Lu wrote:
+>>>> +	if (domain->type & __IOMMU_DOMAIN_PAGING) {
+>>> It looks like this entire function is already never called for
+>>> anything but paging?
+>>>
+>>> The only three callers are:
+>>>
+>>> 	.default_domain_ops = &(const struct iommu_domain_ops) {
+>>> 		.attach_dev		= intel_iommu_attach_device,
+>>> 		.set_dev_pasid		= intel_iommu_set_dev_pasid,
+>>>
+>>> and
+>>>
+>>> static const struct iommu_domain_ops intel_nested_domain_ops = {
+>>> 	.attach_dev		= intel_nested_attach_dev,
+>>>
+>>> And none of those cases can be anything except a paging domain by
+>>> definition.
+>> A nested domain is not a paging domain. It represents a user-space page
+>> table that nested on a parent paging domain. Perhaps I overlooked
+>> anything?
+> It only calls it on the s2_parent which is always a paging domain?
 > 
-> The only case I fully understand without looking into the details
-> is raid1, and that will obviously map the same data multiple times
-> because it writes it out multiple time.  Now mapping a buffer
-> multiple times for a DMA_TO_DEVICE is relatively harmless in
-> practice as the data is transferred to the device, but it it
-> still breaks the dma buffer ownership model in the dma which is
-> really helpful to find bugs where people don't think about this
-> at all.  Not sure if there is any good solution here.
->
+> 	ret = prepare_domain_attach_device(&dmar_domain->s2_domain->domain, dev);
 
-Another related topic:
+Yea, you are right. I overlooked that part.  I'll remove the 'if'
+statement and utilize a WARN_ON() function instead.
 
-Recently direct IO buffer alignment changes to just respect DMA
-controller alignment which is often too relax, such as dma_alignment
-is just 3 for many host controllers, then two direct IO buffers may
-cross same DMA mapping cache line.
-
-Is this one real problem?
-
+And also, I will rename this function with a meaningful name,some like
+paging_domain_is_compatible()?
 
 Thanks,
-Ming
-
+baolu
