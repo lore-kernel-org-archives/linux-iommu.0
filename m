@@ -1,102 +1,149 @@
-Received: from mx0b-0031df01.pphosted.com (mx0b-0031df01.pphosted.com [205.220.180.131])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C99BA1CDFDF;
-	Tue, 15 Oct 2024 08:51:00 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.180.131
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6D9A21CDA0A;
+	Tue, 15 Oct 2024 08:58:22 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1728982262; cv=none; b=EDHyT3HJByErsqzGr5ObaFLxZSx31qf9g9BkYmKiWs8tKCehrq1dMxBG3UMpUku/dZ++5EmfU0MWyQklv53TjZh+MlNtTQm30fsoCMWM0nCfMiYiBiRaJ7ZJqZGw1Znt1axCafyd1VO12HPA6en9ljNHZeKM4V6FDSdGbepbn98=
+	t=1728982702; cv=none; b=tV/hLaRnZGfwE/SWRUh/zYTZ9YkhqKTSs7R0r3ivuJlmgjGZ1kVxoj/H3j/sgU4j8f0/B/1bguG067yT2kAD7/rD6/87ijc/46ip1mVN6Jzr8nY4jKFR9YSufXA1xqJT4LjQ1/TYWG6TCpTeHz8qPgOxbmWh0Bwh1uL2QFlSxzg=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1728982262; c=relaxed/simple;
-	bh=rdAWY29XMVbQeeBjoqujS4lUpaFsJZL9mYrWhS/o9Ew=;
-	h=Message-ID:Date:MIME-Version:Subject:To:CC:References:From:
-	 In-Reply-To:Content-Type; b=HYQ/I/MTuXC7lT/imenQkE2OTtYPpsDd0stMDtVCYGse6E8O2RiRhlT/AUXaFBgHaSQQrbTXyh2QQjx52xdgyBKY5pzQknkSIVxaF6eLstwnWXRnQlAD16a+rWl5XK5sXENZhoghIzV7Ttzg9GDMGhdCjvbTnbWEeuWWX5ae+vY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com; spf=pass smtp.mailfrom=quicinc.com; dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b=lRKtyiZX; arc=none smtp.client-ip=205.220.180.131
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=quicinc.com
+	s=arc-20240116; t=1728982702; c=relaxed/simple;
+	bh=JeHs09n/fgnm8DLFzXGTaECcHXz114f/ynuKFiM5gYs=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=crD9mGlWTHPAkiU7X6nEFToHKWbnwk8MFS9pj3bCYWvHE27/OYFRyfpijcN/aDu9N5xgg7U7RB1mIb2FKmXFZefk4QinHEDfXZDI/GG0SdGEnxwQggOoHkZlsu9Q+7p3Q01EWfc+hOfddnXuzzs15xWKEofLW+JcQ1yFhBLza5M=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=ey99cQkO; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b="lRKtyiZX"
-Received: from pps.filterd (m0279870.ppops.net [127.0.0.1])
-	by mx0a-0031df01.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 49EKjRlc026495;
-	Tue, 15 Oct 2024 08:50:53 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=quicinc.com; h=
-	cc:content-transfer-encoding:content-type:date:from:in-reply-to
-	:message-id:mime-version:references:subject:to; s=qcppdkim1; bh=
-	Y2KOQofzJxcJDCMGd3KQ95cvXHyGL0mOLePvwey/zWI=; b=lRKtyiZXEuo8Z9sF
-	vT7kBj7PfHEMU3CsQb9G03az/dr9s6jgmUCKcrlEEEs5izRPyK8m1c3qWDK6YURz
-	IvPvReuF1Mwsq1lG+X8hf0SFA4+hV/cqxJ+i1f+vwoZmVAve6CWoiw/gxOljEgGm
-	HxujRiPlS/bDx5Ty5aXIB1MznJ0L9h1MdB96+aTopozPgTzhIKcutaMr5oic5eOD
-	GHT1WpnZZcf3TbVe33e/ZTK+PlxSkrwSVrNkKBlxwbspoafVoM8LSj4PLt6cRplF
-	v0JFguAzbkaPOauO0jojy2i2yXh5Ir8nPxNhqSIfHjthTpsl0phe42RfvBp3tykL
-	DtJ3/w==
-Received: from nalasppmta03.qualcomm.com (Global_NAT1.qualcomm.com [129.46.96.20])
-	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 427h6ty1yh-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Tue, 15 Oct 2024 08:50:52 +0000 (GMT)
-Received: from nalasex01b.na.qualcomm.com (nalasex01b.na.qualcomm.com [10.47.209.197])
-	by NALASPPMTA03.qualcomm.com (8.18.1.2/8.18.1.2) with ESMTPS id 49F8opXv006662
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Tue, 15 Oct 2024 08:50:51 GMT
-Received: from [10.239.132.41] (10.80.80.8) by nalasex01b.na.qualcomm.com
- (10.47.209.197) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1544.9; Tue, 15 Oct
- 2024 01:50:48 -0700
-Message-ID: <91774528-4cee-4872-bcea-7023c9a961f3@quicinc.com>
-Date: Tue, 15 Oct 2024 16:50:45 +0800
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="ey99cQkO"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 637D4C4CEC6;
+	Tue, 15 Oct 2024 08:58:18 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1728982702;
+	bh=JeHs09n/fgnm8DLFzXGTaECcHXz114f/ynuKFiM5gYs=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=ey99cQkOIUsPYERXg+Q4eS8nc4wDGlv9ioNHnrjCSwao5Ap/L2ogxIFqEesuZcqcL
+	 EZqqFkOiY2Wzf9e9/pE/oalVnXTUuBOjQTuLtKXbofdqz0IntyzmXj9hfBWv+Ou/TZ
+	 6BindokGGdA3W3tAPKzUTsKHuPUwMjC6DVyUq24o+S1eLaNjfGF9UnYhuUTXeGoBha
+	 fRVjGQXhVYkT0LhzQZiHbJx1PNhspbP9sYwCpC28CWsz1AHN/IjVUZ0sDAYWB7zJoy
+	 Yr7hyXLqUsU4TT94X4ziXutxZBPP2OyypQrNE9Zur+AF32dpA3sxEcWX/Rvly+ivG5
+	 uQEMfntoWgF6Q==
+Date: Tue, 15 Oct 2024 09:58:14 +0100
+From: Will Deacon <will@kernel.org>
+To: Tomasz Jeznach <tjeznach@rivosinc.com>
+Cc: Joerg Roedel <joro@8bytes.org>, Robin Murphy <robin.murphy@arm.com>,
+	Paul Walmsley <paul.walmsley@sifive.com>,
+	Palmer Dabbelt <palmer@dabbelt.com>,
+	Albert Ou <aou@eecs.berkeley.edu>,
+	Anup Patel <apatel@ventanamicro.com>,
+	Sunil V L <sunilvl@ventanamicro.com>,
+	Nick Kossifidis <mick@ics.forth.gr>,
+	Sebastien Boeuf <seb@rivosinc.com>,
+	Rob Herring <robh+dt@kernel.org>,
+	Krzysztof Kozlowski <krzk+dt@kernel.org>,
+	Conor Dooley <conor+dt@kernel.org>, devicetree@vger.kernel.org,
+	iommu@lists.linux.dev, linux-riscv@lists.infradead.org,
+	linux-kernel@vger.kernel.org, linux@rivosinc.com,
+	Lu Baolu <baolu.lu@linux.intel.com>, Zong Li <zong.li@sifive.com>
+Subject: Re: [PATCH v9 6/7] iommu/riscv: Command and fault queue support
+Message-ID: <20241015085814.GB19110@willie-the-truck>
+References: <cover.1728579958.git.tjeznach@rivosinc.com>
+ <6916f5308478013c7b4cda77403c1e9aa9982384.1728579958.git.tjeznach@rivosinc.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v2 1/4] dt-bindings: firmware: qcom,scm: document QCS615
- SCM
-To: Krzysztof Kozlowski <krzk@kernel.org>, <andersson@kernel.org>,
-        <konradybcio@kernel.org>, <robh@kernel.org>, <krzk+dt@kernel.org>,
-        <conor+dt@kernel.org>, <robimarko@gmail.com>, <will@kernel.org>,
-        <robin.murphy@arm.com>, <joro@8bytes.org>
-CC: <linux-arm-msm@vger.kernel.org>, <devicetree@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, <iommu@lists.linux.dev>
-References: <20241015081603.30643-1-quic_qqzhou@quicinc.com>
- <20241015081603.30643-2-quic_qqzhou@quicinc.com>
- <a08e76a7-8e68-4ae6-9b83-67e5d20468b9@kernel.org>
-From: Qingqing Zhou <quic_qqzhou@quicinc.com>
-In-Reply-To: <a08e76a7-8e68-4ae6-9b83-67e5d20468b9@kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 8bit
-X-ClientProxiedBy: nasanex01a.na.qualcomm.com (10.52.223.231) To
- nalasex01b.na.qualcomm.com (10.47.209.197)
-X-QCInternal: smtphost
-X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
-X-Proofpoint-GUID: Q-YJWgi4b2Gfx8GaxwTvjANrPmdWReDR
-X-Proofpoint-ORIG-GUID: Q-YJWgi4b2Gfx8GaxwTvjANrPmdWReDR
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.293,Aquarius:18.0.1039,Hydra:6.0.680,FMLib:17.12.60.29
- definitions=2024-09-06_09,2024-09-06_01,2024-09-02_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 bulkscore=0 phishscore=0
- mlxlogscore=917 malwarescore=0 lowpriorityscore=0 mlxscore=0 adultscore=0
- spamscore=0 suspectscore=0 clxscore=1015 priorityscore=1501
- impostorscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.19.0-2409260000 definitions=main-2410150059
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <6916f5308478013c7b4cda77403c1e9aa9982384.1728579958.git.tjeznach@rivosinc.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 
+On Thu, Oct 10, 2024 at 12:48:09PM -0700, Tomasz Jeznach wrote:
+> Introduce device command submission and fault reporting queues,
+> as described in Chapter 3.1 and 3.2 of the RISC-V IOMMU Architecture
+> Specification.
+> 
+> Command and fault queues are instantiated in contiguous system memory
+> local to IOMMU device domain, or mapped from fixed I/O space provided
+> by the hardware implementation. Detection of the location and maximum
+> allowed size of the queue utilize WARL properties of queue base control
+> register. Driver implementation will try to allocate up to 128KB of
+> system memory, while respecting hardware supported maximum queue size.
+> 
+> Interrupts allocation is based on interrupt vectors availability and
+> distributed to all queues in simple round-robin fashion. For hardware
+> Implementation with fixed event type to interrupt vector assignment
+> IVEC WARL property is used to discover such mappings.
+> 
+> Address translation, command and queue fault handling in this change
+> is limited to simple fault reporting without taking any action.
+> 
+> Reviewed-by: Lu Baolu <baolu.lu@linux.intel.com>
+> Reviewed-by: Zong Li <zong.li@sifive.com>
+> Signed-off-by: Tomasz Jeznach <tjeznach@rivosinc.com>
+> ---
+>  drivers/iommu/riscv/iommu-bits.h |  75 +++++
+>  drivers/iommu/riscv/iommu.c      | 507 ++++++++++++++++++++++++++++++-
+>  drivers/iommu/riscv/iommu.h      |  21 ++
+>  3 files changed, 601 insertions(+), 2 deletions(-)
 
+[...]
 
-在 10/15/2024 4:21 PM, Krzysztof Kozlowski 写道:
-> On 15/10/2024 10:16, Qingqing Zhou wrote:
->> Add the compatible for Qualcomm QCS615 SCM.
->>
->> Signed-off-by: Qingqing Zhou <quic_qqzhou@quicinc.com>
-> 
-> I give up on this.
-> 
-> Please reach internally to get proper guidance how to send patches and
-> what to do with tags.
-Oh, sorry for missing your ack tag, will add in next version. And thanks for your review.
-> 
-> I am not going to do the work twice.
-> 
-> Best regards,
-> Krzysztof
-> 
+> +/* Enqueue an entry and wait to be processed if timeout_us > 0
+> + *
+> + * Error handling for IOMMU hardware not responding in reasonable time
+> + * will be added as separate patch series along with other RAS features.
+> + * For now, only report hardware failure and continue.
+> + */
+> +static unsigned int riscv_iommu_queue_send(struct riscv_iommu_queue *queue,
+> +					   void *entry, size_t entry_size)
+> +{
+> +	unsigned int prod;
+> +	unsigned int head;
+> +	unsigned int tail;
+> +	unsigned long flags;
+> +
+> +	/* Do not preempt submission flow. */
+> +	local_irq_save(flags);
+> +
+> +	/* 1. Allocate some space in the queue */
+> +	prod = atomic_inc_return(&queue->prod) - 1;
+> +	head = atomic_read(&queue->head);
+> +
+> +	/* 2. Wait for space availability. */
+> +	if ((prod - head) > queue->mask) {
+> +		if (readx_poll_timeout(atomic_read, &queue->head,
+> +				       head, (prod - head) < queue->mask,
+> +				       0, RISCV_IOMMU_QUEUE_TIMEOUT))
+> +			goto err_busy;
+> +	} else if ((prod - head) == queue->mask) {
+> +		const unsigned int last = Q_ITEM(queue, head);
+> +
+> +		if (riscv_iommu_readl_timeout(queue->iommu, Q_HEAD(queue), head,
+> +					      !(head & ~queue->mask) && head != last,
+> +					      0, RISCV_IOMMU_QUEUE_TIMEOUT))
+> +			goto err_busy;
+> +		atomic_add((head - last) & queue->mask, &queue->head);
+> +	}
+> +
+> +	/* 3. Store entry in the ring buffer. */
+> +	memcpy(queue->base + Q_ITEM(queue, prod) * entry_size, entry, entry_size);
+> +
+> +	/* 4. Wait for all previous entries to be ready */
+> +	if (readx_poll_timeout(atomic_read, &queue->tail, tail, prod == tail,
+> +			       0, RISCV_IOMMU_QUEUE_TIMEOUT))
+> +		goto err_busy;
+> +
+> +	/* 5. Complete submission and restore local interrupts */
+> +	dma_wmb();
+> +	riscv_iommu_writel(queue->iommu, Q_TAIL(queue), Q_ITEM(queue, prod + 1));
 
+Please explain why a dma_wmb() is sufficient to order the memcpy() stores
+before the tail update.
+
+> +	atomic_inc(&queue->tail);
+
+I think this can be reordered before the relaxed MMIO write to tail,
+causing other CPUs to exit their polling early.
+
+Will
