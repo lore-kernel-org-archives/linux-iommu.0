@@ -1,247 +1,190 @@
-Received: from mail-pl1-f181.google.com (mail-pl1-f181.google.com [209.85.214.181])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from NAM10-MW2-obe.outbound.protection.outlook.com (mail-mw2nam10on2073.outbound.protection.outlook.com [40.107.94.73])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4C59C1FBF44
-	for <iommu@lists.linux.dev>; Tue, 15 Oct 2024 18:34:28 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.181
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1729017270; cv=none; b=YGrQd1ls7dmnfDCTl2RLgqT1ZjGxxozo7h4HtZ97Y2BPPSLeJG0UqyLsZRSY5+gbhL9CzOpG7Bg5h1oyHHSlxrcFdrTz390b/RTRO/1FEtxuLX/McleZI/N9ZnCD9kXKXnl7TLdm/GHg3w1+fGsAzwPooMI5Tw4A74fzyx7FOg0=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1729017270; c=relaxed/simple;
-	bh=6pHOetNbCEpKHfUMQxyWOJf/3wxmqm+Uz8p+VV+SsII=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=oaEAgb/waoICSS/R+6t4scAapHsqxDD1lAiCR/0ZLaD/jVRp4Z0x6RCXJ6b72TWd0JI8LmLJ6xSSTIkO3ilxCcMPRFdy95OmXmFOad8Pw3Jnu8N+QAVXN78OhXvDEIa++sRExwyu1JY182o8/EjvyqbHRYg92NX+wgZoFwMO3Zk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=p7dJEdb7; arc=none smtp.client-ip=209.85.214.181
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DC6082036E5;
+	Tue, 15 Oct 2024 18:44:48 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.94.73
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1729017890; cv=fail; b=nNJOknoXklDnXkSqVnoOHj/NKhZcLcJqSo/sYnnPzAkcdqiEtgH9uRl3XNJZmYVAKwzQm/GVKELNmpq2qFwoKx8QinY1SAg5m63t5NW26gdCbgoboYLZ1JbbSBVF/aNVrwAZoXWyw5phNXl3GzKhtPUvvhHigalz7IDR2akbUok=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1729017890; c=relaxed/simple;
+	bh=lV/waf3dj9ixD6WBUtBXclr9DKjZhoRshNVYIsNqkrg=;
+	h=Date:From:To:CC:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=sFlAYGmmQcIEuNjPR/cbo/GpjEVn1ssv9u7Uikqsd50r8MDyKAZrQ0hjnMc3nzf4+l9ufjc6L9dCwaSj/QqrY6pDILxL0L/5GeKkVCRLMxDIESXjmDEXIIemtD20+l+sYglqXXzvZoR4h28krj471zaRmHiBMFpmo/K+uZcRdWA=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=AeKZkwDi; arc=fail smtp.client-ip=40.107.94.73
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="p7dJEdb7"
-Received: by mail-pl1-f181.google.com with SMTP id d9443c01a7336-20c87b0332cso560875ad.1
-        for <iommu@lists.linux.dev>; Tue, 15 Oct 2024 11:34:28 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20230601; t=1729017268; x=1729622068; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=f03rXe5Ib3rThGqOQiwJJnXgSTzTs9dfF7CZNkmA+4s=;
-        b=p7dJEdb7kttaz3QP/fqNzkhX5kE3UxnP8U6OBY8AEFIupJok8yAlH1dTLPAn7AGnga
-         NF1vHJYM+t2YV3zcPvFyVX3KiSTRcdqxhrjM35ZkrXqV62DLbQbVb86p23HMSWfXNf/i
-         y0iCaAyCwwG8yVW7S6k12ANm2PMgT1PrMdEQPuPxZy8ut99wExL23DZ/ehSxTkP7de4B
-         L9eoj7WxiLDlMrBvxoG1oJzJfJ2G3xx/9wdiRjeKZLthJMJOR1CyHLmHHvb+N0LGBJDX
-         o28arIL6DJSSPBezuWyXyKXFQAst6hZQuozMa1aPa79AIECTpaY/0Q83zfDG5mGtHy4p
-         GH8w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1729017268; x=1729622068;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=f03rXe5Ib3rThGqOQiwJJnXgSTzTs9dfF7CZNkmA+4s=;
-        b=rNiYq+1gOKGJBLo12FbfQ2pRwInm+xJ3vUaWTQ5IlMxXjIW2+S1GRJW9mAXT6QB+sM
-         5v+5AtAkh6vDvJg9o0TfY8lYe0d1I/f8fvpZgJxnTK40+tZgvMnVDm9jmW6hEJqkYanO
-         rnYztu66DW/W9eXzAv0FAtieX4pSalx1SbatenPVVvnmyovHhRHXlV5zePPmwsmNMJk8
-         SiVcRVcd8icUjMhZu1YMcUzpxcCnulhRjYZ1qM09spSdWL4EaboojbjqpNwR0lDWn8Bc
-         vOsEQ13qeTH8LjKo/PwLZW8rBuWyQr3OmOnAu5/hw11VqaFjl+mxQeGzgtK3YMo6JwFm
-         h+EQ==
-X-Forwarded-Encrypted: i=1; AJvYcCVtAt9VSh0YlSmRUDKJ/0ITmhpGskLtq8Sn0lKBOKQrJlQtEV3R4cctAFcn9nBAhY2aSVlQJQ==@lists.linux.dev
-X-Gm-Message-State: AOJu0Yy956H1opC16a7yp0HF8vZwXOiFnMMo2EfJC8NFFIEIcV9IfRPl
-	lIF8s4PbFlsGrIKb0pep2qU+GvE9I1qmVEeFuR1Wu91qVA1ICMIkAAiPydPoqg==
-X-Google-Smtp-Source: AGHT+IF72lkkUEVxELEKi4N2gsEkUuppYX/bdcMu/n0puSU0DARc4h9h/8Nmvw4lhyDeCal+FfAGsw==
-X-Received: by 2002:a17:903:234b:b0:201:fba5:3ed with SMTP id d9443c01a7336-20d2e2e1109mr212395ad.27.1729017268022;
-        Tue, 15 Oct 2024 11:34:28 -0700 (PDT)
-Received: from google.com (62.166.143.34.bc.googleusercontent.com. [34.143.166.62])
-        by smtp.gmail.com with ESMTPSA id 98e67ed59e1d1-2e392f7541bsm2171847a91.48.2024.10.15.11.34.26
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 15 Oct 2024 11:34:27 -0700 (PDT)
-Date: Tue, 15 Oct 2024 18:34:20 +0000
-From: Pranjal Shrivastava <praan@google.com>
-To: Robin Murphy <robin.murphy@arm.com>
-Cc: Nicolin Chen <nicolinc@nvidia.com>, Joerg Roedel <joro@8bytes.org>,
-	Will Deacon <will@kernel.org>, Mostafa Saleh <smostafa@google.com>,
-	iommu@lists.linux.dev
-Subject: Re: [PATCH v3 2/2] iommu/arm-smmu-v3: Adopt arm_smmu_event in
- handlers
-Message-ID: <Zw61rP2F0sm_eDiK@google.com>
-References: <Zvr8xUEHNg1GiA8V@Asurada-Nvidia>
- <ZvxjcpQCFM5SU9P-@google.com>
- <Zvx+6qBY3og8lRWe@Asurada-Nvidia>
- <Zv8N6yIeNXao_Yqm@google.com>
- <Zv8gW9KjTcktgve1@Asurada-Nvidia>
- <ZwjZ9txpvqd8kUdS@google.com>
- <5eda3ba6-c35a-432b-be87-48bd8a0a3bf1@arm.com>
- <ZwkB4OTUChexImZd@google.com>
- <ZwkGzWSUIpuhHozl@google.com>
- <ec9e47cc-f3c2-4142-8395-3bbb8e055261@arm.com>
+	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="AeKZkwDi"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=n/kUlng1Gcdm/O1ZZX71RBKrbplcAznbV9EGKdKoMuoIZ6VO9TQayq2ABlt2dUM7BbkRBoDjzTgzu4kRlxQv8i2is1ojP+ECcfQ7istOGURu/2PLA7EIa5OO+psNtL5I1zQouXGZuYEzbOe1XXV6bwyLbbMyMI+2qv7T/LcGXUIHd9YMHy8+Ry512ajEkdxerV7+2jAMyJbpP4cb8JookCt8hqQDtx8zNWKNUGWaGZJoZ8Z+2i9JaeG1KELiGued/BJlwZ8FmtX6vMvfn/vi7mPFOea8BtND7RYO5Wni3lPStSc1CfBOTWtgL2OPiuzT5MfzYHPR2TKiLcMAtUdIKw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=gn2bfcvgxg4MTjebZXoAH7f67FBhAajiFIaOgzyY2Ms=;
+ b=gPz+TJi4UH+WW9hUBz0R8I8z8HrEDnk75ll+MpLpaYTJZD/N3DXa/QchcX/yxHoi+5SAAxo0DCIVBl1YKOOu+5cT+cRbaLmIX4ey00ahuk4VH4ESmQRGCmQRVXuU7Xt9NcS1cGwMj+/iB/5lFmS6hqzajKM6CzojVOsqBz6LuE2kUPqnzMkMTplISdHbQBwT0yFKGuQk8+NOOv5tWdiVo9smVt9MXEcNbBTKSjv1NeX0Ssi8k5Rodzqn+Nw8hhKVvhlrJ/0uctHHt4EBMQf5kr5PYWx9IxEW4ALG/Nnpmc/Bg5em04BW1iFHJKsOfC0shCFncThrnU4hvscY9XNtZw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 216.228.117.160) smtp.rcpttodomain=linaro.org smtp.mailfrom=nvidia.com;
+ dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
+ dkim=none (message not signed); arc=none (0)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=gn2bfcvgxg4MTjebZXoAH7f67FBhAajiFIaOgzyY2Ms=;
+ b=AeKZkwDiKnI03DEUOsXdTjsXveMUbZK9lCgUUt8lObvtOWc34GDA+kfRJ/LrNjJJDZYDFi5UUtoUkGB3LCvEqngabO06ERes0PrmQDgpVdeYtOdKQ+VVp6zoUD4HUfQbDHqM6FsInCMlm7LeocCqsRKtdPm8YrEJbU2X7+9YYnGJtwCxzYNLQgZWnFo8C/NFYaVZaw3n5YQu6kdY07uoNISJUUsOVGG5so8rbiTBYiUu/gP+TTIpQ32QyjhSpoft3bwpsaigrHf2JcVSF7T7OAG95gCc+iUuVJEu9fTw5UH5P3JmMob1q0qp8+HhfTpxK4mWf4nZfUWEA5JBCd8m1g==
+Received: from SA1P222CA0055.NAMP222.PROD.OUTLOOK.COM (2603:10b6:806:2c1::7)
+ by CY5PR12MB6225.namprd12.prod.outlook.com (2603:10b6:930:23::21) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.8048.28; Tue, 15 Oct
+ 2024 18:44:44 +0000
+Received: from SA2PEPF00001509.namprd04.prod.outlook.com
+ (2603:10b6:806:2c1:cafe::3a) by SA1P222CA0055.outlook.office365.com
+ (2603:10b6:806:2c1::7) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.8048.27 via Frontend
+ Transport; Tue, 15 Oct 2024 18:44:44 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.117.160)
+ smtp.mailfrom=nvidia.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=nvidia.com;
+Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
+ 216.228.117.160 as permitted sender) receiver=protection.outlook.com;
+ client-ip=216.228.117.160; helo=mail.nvidia.com; pr=C
+Received: from mail.nvidia.com (216.228.117.160) by
+ SA2PEPF00001509.mail.protection.outlook.com (10.167.242.41) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.8069.17 via Frontend Transport; Tue, 15 Oct 2024 18:44:44 +0000
+Received: from rnnvmail204.nvidia.com (10.129.68.6) by mail.nvidia.com
+ (10.129.200.66) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1544.4; Tue, 15 Oct
+ 2024 11:44:30 -0700
+Received: from rnnvmail201.nvidia.com (10.129.68.8) by rnnvmail204.nvidia.com
+ (10.129.68.6) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1544.4; Tue, 15 Oct
+ 2024 11:44:30 -0700
+Received: from Asurada-Nvidia (10.127.8.11) by mail.nvidia.com (10.129.68.8)
+ with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1544.4 via Frontend
+ Transport; Tue, 15 Oct 2024 11:44:29 -0700
+Date: Tue, 15 Oct 2024 11:44:27 -0700
+From: Nicolin Chen <nicolinc@nvidia.com>
+To: Zhangfei Gao <zhangfei.gao@linaro.org>
+CC: <jgg@nvidia.com>, <kevin.tian@intel.com>, <will@kernel.org>,
+	<joro@8bytes.org>, <suravee.suthikulpanit@amd.com>, <robin.murphy@arm.com>,
+	<dwmw2@infradead.org>, <baolu.lu@linux.intel.com>, <shuah@kernel.org>,
+	<linux-kernel@vger.kernel.org>, <iommu@lists.linux.dev>,
+	<linux-arm-kernel@lists.infradead.org>, <linux-kselftest@vger.kernel.org>,
+	<eric.auger@redhat.com>, <jean-philippe@linaro.org>, <mdf@kernel.org>,
+	<mshavit@google.com>, <shameerali.kolothum.thodi@huawei.com>,
+	<smostafa@google.com>, <yi.l.liu@intel.com>, <aik@amd.com>,
+	<patches@lists.linux.dev>
+Subject: Re: [PATCH v3 03/11] iommufd: Introduce IOMMUFD_OBJ_VIOMMU and its
+ related struct
+Message-ID: <Zw64C7bQicoAmAM3@Asurada-Nvidia>
+References: <cover.1728491453.git.nicolinc@nvidia.com>
+ <88114b5c725bb3300a9599d3eeebded221a0b1f9.1728491453.git.nicolinc@nvidia.com>
+ <CABQgh9Eaj_vy1=sS2Pf7RC7Vy5PopDfwoshECULEU-jK3JF_sQ@mail.gmail.com>
+ <Zwn/4m8Ac0xEiJi8@Asurada-Nvidia>
+ <CABQgh9Ft=xxJK-bjS6wCZ5BN4AiKtF9fzdBkevA3x2yb_4O4Kg@mail.gmail.com>
+ <CABQgh9HP1M8GAXMwf0ZNn5EpMBAvJU3JLRWcN5H1wfGrqXSe1Q@mail.gmail.com>
+ <Zw08z9TOFL57z07O@Asurada-Nvidia>
+ <CABQgh9H-SB7q1v_XtWaO12K7jMMaq8Lj7F4kpDv9sJ5v-F6DZw@mail.gmail.com>
+ <Zw3M/h1KYe9MjcZK@Asurada-Nvidia>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset="us-ascii"
 Content-Disposition: inline
-In-Reply-To: <ec9e47cc-f3c2-4142-8395-3bbb8e055261@arm.com>
+In-Reply-To: <Zw3M/h1KYe9MjcZK@Asurada-Nvidia>
+X-NV-OnPremToCloud: ExternallySecured
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: SA2PEPF00001509:EE_|CY5PR12MB6225:EE_
+X-MS-Office365-Filtering-Correlation-Id: 9e55e24a-7043-4696-d169-08dced496fcc
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam:
+	BCL:0;ARA:13230040|82310400026|7416014|1800799024|36860700013|376014;
+X-Microsoft-Antispam-Message-Info:
+	=?us-ascii?Q?26u01tNFqHspxYmazKt6k7GGEetp0PXGBBVpY+Q3vDCGYPRwVx12uGG8ez3l?=
+ =?us-ascii?Q?bXXBCmtVj2ekBwxJpDpArBsenWxhrZHH0zpEcIpCgWiADXKwKE5S5uK66WEL?=
+ =?us-ascii?Q?FCpH+nSr5e5qua7bOTFzI4gL8k3fDWOjlrODKRecKcLkjg9YEkddH3VybVlq?=
+ =?us-ascii?Q?s7geaiIKDx1nhfNXBBsCYoN1MulzVNdnOuMCpLKs/Jr7Leh9PX6w22MSGvYq?=
+ =?us-ascii?Q?xPhvVgO2/+Ctp6B5UnfKaY3H3Oe/VRqibYeqA17O39w6ddt4HxO6t60paUwI?=
+ =?us-ascii?Q?hBvH3wUbqw+NVYdjcLglPLTGBLk1JevzlZa/TS87AybMY2a74Lc/zUawQs4y?=
+ =?us-ascii?Q?p8TgBYgkfXnKXgoUz1nCW6jB9uzPZ0NlmBFg6AVXBJamfCNxE3liFRQ5x7uw?=
+ =?us-ascii?Q?WqVgbugDzD5uTGMobsD9Gmss34G6YlP9dcKQKNQprTPX8awwVqtTH+OuIv5S?=
+ =?us-ascii?Q?ACusB+R/wr8Cq3AUaZdQeU6h/KY/dbloayoZxyYmVW+9dp9rCRkCKqiIhS/0?=
+ =?us-ascii?Q?hVk7LdoxJGUTClwJ3eAkcev3J35OYq7vsAMuwE/+utSrsruu+NdAL1/AQ8nX?=
+ =?us-ascii?Q?ERzZUo1lN/wb6ykm8IUpP6HtZ4T+GsK/091F5lh6VUMVDQUBfFY+rlap+eIS?=
+ =?us-ascii?Q?HzeujPBdhdvaonBEHRcsI4lbdF3RrnbET6v0ck3xjdap7fxVvuBtPWqsSVVm?=
+ =?us-ascii?Q?68Hm1q9mWFxU/DkXhhlpEZm3SrxipnG85lvcfqXI/YOU6+UdOkdv4ZoDQdsO?=
+ =?us-ascii?Q?gX2+CUPvgpkLwTl9pyV81ks80KpqzZq/7altzXaYVftYuZhw6nAuGxXe1q65?=
+ =?us-ascii?Q?+WlvV76gSdxDiP/KtxxYSxzIK/Xq6BN4WAzlG28zuNwbtLiBYJbv1WqR13bm?=
+ =?us-ascii?Q?MJTettyJUt9ZiFz4Y0evJQONyH4x2jYwpaAlnsxEM1bzCkNk14gKpbOSgofL?=
+ =?us-ascii?Q?1deIs3qf7FjIcQHlTQ4S9XEs36LMGZweisgxCOa82gH8KZwL1rqFT642Nwn1?=
+ =?us-ascii?Q?cAXK8G4rp9pg86Qe+WAH1quZyH4Zt6XwF43AbfaGoGnG5xXdqAa1SiQT4TBj?=
+ =?us-ascii?Q?2rxCfpDVUEx31upL3ihYYHgxbxF2U7qAzTH4WTv5QPP6//DirXCPKEQdj35Z?=
+ =?us-ascii?Q?M/SgEussdXDlskmkW3ysGCOL9hzyVz+2qpTQTpX3nOl+eQudAB5t/Tc6M9D7?=
+ =?us-ascii?Q?BcArniqj8yOjI8kRUEAfCnN7jPNjd+fRCoHe+k4N7CkBcvPqzhdLyADWmj4N?=
+ =?us-ascii?Q?AfbuL1ryRU9BM8Vf/iNxtfl/njXaTjUFC0+Pgy6SDR1TRFTIXjIxOErx7aG+?=
+ =?us-ascii?Q?XSBbd0yVjbWMGd5ea5ft9INxYCdVj8FB0eJqCbCjdbqlIfzV3OAk4Xgqr5JV?=
+ =?us-ascii?Q?yFOT8z+ghALBWDcoduDnh0KnfGDy?=
+X-Forefront-Antispam-Report:
+	CIP:216.228.117.160;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc6edge1.nvidia.com;CAT:NONE;SFS:(13230040)(82310400026)(7416014)(1800799024)(36860700013)(376014);DIR:OUT;SFP:1101;
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 15 Oct 2024 18:44:44.2294
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: 9e55e24a-7043-4696-d169-08dced496fcc
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.117.160];Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-AuthSource:
+	SA2PEPF00001509.namprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: CY5PR12MB6225
 
-Just a few things before I respin,
-On Fri, Oct 11, 2024 at 01:59:36PM +0100, Robin Murphy wrote:
-> On 2024-10-11 12:06 pm, Pranjal Shrivastava wrote:
-> > On Fri, Oct 11, 2024 at 10:45:52AM +0000, Pranjal Shrivastava wrote:
-> > > On Fri, Oct 11, 2024 at 11:21:48AM +0100, Robin Murphy wrote:
-> > > > On 2024-10-11 8:55 am, Pranjal Shrivastava wrote:
-> > > > > On Thu, Oct 03, 2024 at 03:53:15PM -0700, Nicolin Chen wrote:
-> > > > > > On Thu, Oct 03, 2024 at 09:34:35PM +0000, Pranjal Shrivastava wrote:
-> > > > > > > > The master and master_name are not that necessary to be in the
-> > > > > > > > arm_smmu_event. I would keep both of them as local variables in
-> > > > > > > > arm_smmu_handle_evt and pass master_name in to dump().
-> > > > > > > 
-> > > > > > > Hmm, right or maybe ONLY have the master_name in arm_smmu_event?
-> > > > > > 
-> > > > > > Just move both out of arm_smmu_event. Keep the master_name as a
-> > > > > > local variable like the "master". You'd just need to pass it in
-> > > > > > to the dump(). They both are in that same handle_evt().
-> > > > > > 
-> > > > > 
-> > > > > Ack.
-> > > > > 
-> > > > > > > > > Also, shall we rename it to `arm_smmu_read_evt_info` ?
-> > > > > > > > 
-> > > > > > > > I'd probably use arm_smmu_event_get_from_raw()? Trying to high-
-> > > > > > > > light struct arm_smmu_event v.s. u64 evt[EVTQ_ENT_DWORDS]. Yet,
-> > > > > > > > no strong feeling about that.
-> > > > > > > > 
-> > > > > > > 
-> > > > > > > Ack. How about `read_arm_smmu_event` :)
-> > > > > > > Unless, we wanna follow the arm_smmu_<func> convention?
-> > > > > > 
-> > > > > > I think it'd be nicer if we do.
-> > > > > > 
-> > > > > 
-> > > > > Ack. `arm_smmu_get_evt_from_raw` it is!
-> > > > 
-> > > > FWIW that sounds needlessly overcomplicated to me - the "raw" event array
-> > > > should be a member of arm_smmu_event itself, since it seems silly to have
-> > > > them separate with one pointing to the other when they have the exact same
-> > > > scope and lifetime anyway. There still shouldn't need to be more than a
-> > > > single logical step to process an evtq record into a finished
-> > > > arm_smmu_event, just that that processing is now going to go a bit further
-> > > > than simply le64_to_cpu().
-> > > 
-> > > Hmm, are you suggesting something like queue_remove_raw(q, event->raw)?
-> > > OR do you mean we should have our own queue_parse_evt(q, &event) that
-> > > parses out the raw event into an `arm_smmu_event` record eliminating the
-> > > need for the `arm_smmu_read_evt_info` altogether?
-> > > 
-> > > Because we'd still need to store the raw event anyway since we're still
-> > > logging the raw event.
-> > > 
-> > > I think we can go with the former, i.e. queue_remove_raw(q, event->raw)
-> > > and then use ``arm_smmu_read_evt_info` to populate other `event` fields
+On Mon, Oct 14, 2024 at 07:01:40PM -0700, Nicolin Chen wrote:
+> On Tue, Oct 15, 2024 at 09:15:01AM +0800, Zhangfei Gao wrote:
+> 
+> > > > iommufd_device_bind
+> > > > iommufd_device_attach
+> > > > iommufd_vdevice_alloc_ioctl
+> > > >
+> > > > iommufd_device_detach
+> > > > iommufd_device_unbind // refcount check fail
+> > > > iommufd_vdevice_destroy ref--
+> > >
+> > > Things should be symmetric. As you suspected, vdevice should be
+> > > destroyed before iommufd_device_detach.
 > > 
-> > Based on your comment, I was thinking like the attached sample code.
-> > LMK if you were referring to something like that?
+> > I am trying based on your for_iommufd_viommu_p2-v3 branch, do you have
+> > this issue?
+> > In checking whether close fd before unbind?
 > 
-> Ah, apologies, it had slipped my mind that queue_read() is already buried
-> two layers deep in an abstraction shared with the priq... so yeah, rather
-> than start trying to turn that inside-out, I guess the neatest approach is
-> to effectively flip this series instead - i.e. start with the minor shift
-> to:
-> 
-> 	struct arm_smmu_event evt;
-> 
-> 	while (!queue_remove_raw(q, evt.raw)) {
-> 		ret = arm_smmu_handle_evt(smmu, &evt);
-> 		...
-> 		dev_info(smmu->dev, "event 0x%02x received:\n", evt.id);
-> 		//etc.
-> 
-> and leave arm_smmu_handle_evt() decoding the event as both it and
-> arm_smmu_handle_ppr() already do, just now using the new structure instead
-> of locals. Then we can come in to factor out and enhance the unhandled event
-> report, and anything else specific to that reporting beyond the actual SMMU
-> event record, like device names and ratelimiting, can remain private to
-> arm_smmu_dump_event().
+> Oops, my bad. I will provide a fix.
 
-Quick clarification, the ratelimiting here was ONLY for logs or to limit
-the number of thread / loop executions?
+This should fix the problem:
 
-> 
-> AFAICS the locking concern seems avoidable as well - we don't actually need
-> the whole arm_smmu_master in either case, just the device, so then end of
-> arm_smmu_handle_evt() could easily be a little simpler:
-> 
-> 	...
-> 	mutex_lock(&smmu->streams_mutex);
-> 	master = arm_smmu_find_master(smmu, sid);
-> 	if (master)
-> 		event->dev = get_device(master->dev);
-> 	mutex_unlock(&smmu->streams_mutex);
-> 
-> 	if (!event->dev)
-> 		return -EINVAL;
+---------------------------------------------------------------------
+diff --git a/drivers/iommu/iommufd/device.c b/drivers/iommu/iommufd/device.c
+index 5fd3dd420290..13100cfea29d 100644
+--- a/drivers/iommu/iommufd/device.c
++++ b/drivers/iommu/iommufd/device.c
+@@ -277,6 +277,11 @@ EXPORT_SYMBOL_NS_GPL(iommufd_ctx_has_group, IOMMUFD);
+  */
+ void iommufd_device_unbind(struct iommufd_device *idev)
+ {
++	mutex_lock(&idev->igroup->lock);
++	/* idev->vdev object should be destroyed prior, yet just in case.. */
++	if (idev->vdev)
++		iommufd_object_remove(idev->ictx, NULL, idev->vdev->obj.id, 0);
++	mutex_unlock(&idev->igroup->lock);
+ 	iommufd_object_destroy_user(idev->ictx, &idev->obj);
+ }
+ EXPORT_SYMBOL_NS_GPL(iommufd_device_unbind, IOMMUFD);
+---------------------------------------------------------------------
 
-Thinking about this a little more, I guess there are a few paths that
-may return before we even get to the `mutex_lock(&smmu->streams_mutex)`
-For example: if (!event->stall) return -ENOTSUPP; and the default case
-return from the switch case. Which has the following implications:
-
-1. We might return from `arm_smmu_handle_evt` before logging the event
-2. Even if we move the logging out of `arm_smmu_handle_evt` as presented
-   by Robin's snippet above, event->dev might still be NULL.
-
-In order to fix this, there are two ways to go:
-
-1. Add a new "goto" label and instead of returning, jump to that label.
-   Yet, we'd have to acquire the mutex again and read the dev ptr, like:
-	
-	...
-	out_unlock:
-		mutex_unlock(&smmu->streams_mutex);
-	out_dump_evt:
-		mutex_lock(&smmu->stream_mutext);
-		// Find master and populate event->dev
-		mutex_unlock(&smmu->streams_mutex);
-		if (ret)
-			arm_smmu_dump_event(event);
-
-	return ret;
-	...
-
-Personally, I find this to be pretty messy!
-Instead, it'd be nice to  simply read the dev ptr within the
-`arm_smmu_get_event_from_raw` as:
-
-	/* Pick out the good stuff */
-	event->id = FIELD_GET(EVTQ_0_ID, event->raw[0]);
-	event->sid = FIELD_GET(EVTQ_0_SID, event->raw[0]);
-
-	...
-	mutex_lock(&smmu->streams_mutex);
-	master = arm_smmu_find_master(smmu, sid);    	
-	if (master)
-		event->dev = get_device(master->dev);
-	mutex_unlock(&smmu->streams_mutex);
-	...
-
-And then dump based on the return value as we do now and maybe
-put_device(evt->dev) in the `arm_smmu_dump_event` after logging?
-
-> 
-> 	return iommu_report_device_fault(event->dev, &fault_evt);
-> 
-> then arm_smmu_dump_event() is safe to use a construct like:
-> 
-> 	event->dev ? dev_name(event->dev) : "(unassigned)"
-> 
-> and finally a cleanup in the evtq loop, which by that point probably
-> condenses down to something like:
-> 
-> 	while (!queue_remove_raw(q, evt.raw)) {
-> 		if (arm_smmu_handle_evt(smmu, &evt))
-> 			arm_smmu_dump_event(&evt);
-> 		put_device(evt.dev);
-> 		cond_resched();
-> 	}
-> 
-> Thanks,
-> Robin.
-
-Thanks,
-Pranjal
+Thanks
+Nicolin
