@@ -1,190 +1,157 @@
-Received: from NAM10-MW2-obe.outbound.protection.outlook.com (mail-mw2nam10on2073.outbound.protection.outlook.com [40.107.94.73])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-il1-f199.google.com (mail-il1-f199.google.com [209.85.166.199])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DC6082036E5;
-	Tue, 15 Oct 2024 18:44:48 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.94.73
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1729017890; cv=fail; b=nNJOknoXklDnXkSqVnoOHj/NKhZcLcJqSo/sYnnPzAkcdqiEtgH9uRl3XNJZmYVAKwzQm/GVKELNmpq2qFwoKx8QinY1SAg5m63t5NW26gdCbgoboYLZ1JbbSBVF/aNVrwAZoXWyw5phNXl3GzKhtPUvvhHigalz7IDR2akbUok=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1729017890; c=relaxed/simple;
-	bh=lV/waf3dj9ixD6WBUtBXclr9DKjZhoRshNVYIsNqkrg=;
-	h=Date:From:To:CC:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=sFlAYGmmQcIEuNjPR/cbo/GpjEVn1ssv9u7Uikqsd50r8MDyKAZrQ0hjnMc3nzf4+l9ufjc6L9dCwaSj/QqrY6pDILxL0L/5GeKkVCRLMxDIESXjmDEXIIemtD20+l+sYglqXXzvZoR4h28krj471zaRmHiBMFpmo/K+uZcRdWA=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=AeKZkwDi; arc=fail smtp.client-ip=40.107.94.73
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="AeKZkwDi"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=n/kUlng1Gcdm/O1ZZX71RBKrbplcAznbV9EGKdKoMuoIZ6VO9TQayq2ABlt2dUM7BbkRBoDjzTgzu4kRlxQv8i2is1ojP+ECcfQ7istOGURu/2PLA7EIa5OO+psNtL5I1zQouXGZuYEzbOe1XXV6bwyLbbMyMI+2qv7T/LcGXUIHd9YMHy8+Ry512ajEkdxerV7+2jAMyJbpP4cb8JookCt8hqQDtx8zNWKNUGWaGZJoZ8Z+2i9JaeG1KELiGued/BJlwZ8FmtX6vMvfn/vi7mPFOea8BtND7RYO5Wni3lPStSc1CfBOTWtgL2OPiuzT5MfzYHPR2TKiLcMAtUdIKw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=gn2bfcvgxg4MTjebZXoAH7f67FBhAajiFIaOgzyY2Ms=;
- b=gPz+TJi4UH+WW9hUBz0R8I8z8HrEDnk75ll+MpLpaYTJZD/N3DXa/QchcX/yxHoi+5SAAxo0DCIVBl1YKOOu+5cT+cRbaLmIX4ey00ahuk4VH4ESmQRGCmQRVXuU7Xt9NcS1cGwMj+/iB/5lFmS6hqzajKM6CzojVOsqBz6LuE2kUPqnzMkMTplISdHbQBwT0yFKGuQk8+NOOv5tWdiVo9smVt9MXEcNbBTKSjv1NeX0Ssi8k5Rodzqn+Nw8hhKVvhlrJ/0uctHHt4EBMQf5kr5PYWx9IxEW4ALG/Nnpmc/Bg5em04BW1iFHJKsOfC0shCFncThrnU4hvscY9XNtZw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 216.228.117.160) smtp.rcpttodomain=linaro.org smtp.mailfrom=nvidia.com;
- dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
- dkim=none (message not signed); arc=none (0)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=gn2bfcvgxg4MTjebZXoAH7f67FBhAajiFIaOgzyY2Ms=;
- b=AeKZkwDiKnI03DEUOsXdTjsXveMUbZK9lCgUUt8lObvtOWc34GDA+kfRJ/LrNjJJDZYDFi5UUtoUkGB3LCvEqngabO06ERes0PrmQDgpVdeYtOdKQ+VVp6zoUD4HUfQbDHqM6FsInCMlm7LeocCqsRKtdPm8YrEJbU2X7+9YYnGJtwCxzYNLQgZWnFo8C/NFYaVZaw3n5YQu6kdY07uoNISJUUsOVGG5so8rbiTBYiUu/gP+TTIpQ32QyjhSpoft3bwpsaigrHf2JcVSF7T7OAG95gCc+iUuVJEu9fTw5UH5P3JmMob1q0qp8+HhfTpxK4mWf4nZfUWEA5JBCd8m1g==
-Received: from SA1P222CA0055.NAMP222.PROD.OUTLOOK.COM (2603:10b6:806:2c1::7)
- by CY5PR12MB6225.namprd12.prod.outlook.com (2603:10b6:930:23::21) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.8048.28; Tue, 15 Oct
- 2024 18:44:44 +0000
-Received: from SA2PEPF00001509.namprd04.prod.outlook.com
- (2603:10b6:806:2c1:cafe::3a) by SA1P222CA0055.outlook.office365.com
- (2603:10b6:806:2c1::7) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.8048.27 via Frontend
- Transport; Tue, 15 Oct 2024 18:44:44 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.117.160)
- smtp.mailfrom=nvidia.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=nvidia.com;
-Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 216.228.117.160 as permitted sender) receiver=protection.outlook.com;
- client-ip=216.228.117.160; helo=mail.nvidia.com; pr=C
-Received: from mail.nvidia.com (216.228.117.160) by
- SA2PEPF00001509.mail.protection.outlook.com (10.167.242.41) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.8069.17 via Frontend Transport; Tue, 15 Oct 2024 18:44:44 +0000
-Received: from rnnvmail204.nvidia.com (10.129.68.6) by mail.nvidia.com
- (10.129.200.66) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1544.4; Tue, 15 Oct
- 2024 11:44:30 -0700
-Received: from rnnvmail201.nvidia.com (10.129.68.8) by rnnvmail204.nvidia.com
- (10.129.68.6) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1544.4; Tue, 15 Oct
- 2024 11:44:30 -0700
-Received: from Asurada-Nvidia (10.127.8.11) by mail.nvidia.com (10.129.68.8)
- with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1544.4 via Frontend
- Transport; Tue, 15 Oct 2024 11:44:29 -0700
-Date: Tue, 15 Oct 2024 11:44:27 -0700
-From: Nicolin Chen <nicolinc@nvidia.com>
-To: Zhangfei Gao <zhangfei.gao@linaro.org>
-CC: <jgg@nvidia.com>, <kevin.tian@intel.com>, <will@kernel.org>,
-	<joro@8bytes.org>, <suravee.suthikulpanit@amd.com>, <robin.murphy@arm.com>,
-	<dwmw2@infradead.org>, <baolu.lu@linux.intel.com>, <shuah@kernel.org>,
-	<linux-kernel@vger.kernel.org>, <iommu@lists.linux.dev>,
-	<linux-arm-kernel@lists.infradead.org>, <linux-kselftest@vger.kernel.org>,
-	<eric.auger@redhat.com>, <jean-philippe@linaro.org>, <mdf@kernel.org>,
-	<mshavit@google.com>, <shameerali.kolothum.thodi@huawei.com>,
-	<smostafa@google.com>, <yi.l.liu@intel.com>, <aik@amd.com>,
-	<patches@lists.linux.dev>
-Subject: Re: [PATCH v3 03/11] iommufd: Introduce IOMMUFD_OBJ_VIOMMU and its
- related struct
-Message-ID: <Zw64C7bQicoAmAM3@Asurada-Nvidia>
-References: <cover.1728491453.git.nicolinc@nvidia.com>
- <88114b5c725bb3300a9599d3eeebded221a0b1f9.1728491453.git.nicolinc@nvidia.com>
- <CABQgh9Eaj_vy1=sS2Pf7RC7Vy5PopDfwoshECULEU-jK3JF_sQ@mail.gmail.com>
- <Zwn/4m8Ac0xEiJi8@Asurada-Nvidia>
- <CABQgh9Ft=xxJK-bjS6wCZ5BN4AiKtF9fzdBkevA3x2yb_4O4Kg@mail.gmail.com>
- <CABQgh9HP1M8GAXMwf0ZNn5EpMBAvJU3JLRWcN5H1wfGrqXSe1Q@mail.gmail.com>
- <Zw08z9TOFL57z07O@Asurada-Nvidia>
- <CABQgh9H-SB7q1v_XtWaO12K7jMMaq8Lj7F4kpDv9sJ5v-F6DZw@mail.gmail.com>
- <Zw3M/h1KYe9MjcZK@Asurada-Nvidia>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 793171F80A1
+	for <iommu@lists.linux.dev>; Tue, 15 Oct 2024 19:09:26 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.166.199
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1729019369; cv=none; b=dACV2g4XSTW0T8hSSckhUpZqBy9Dy51CzRYCBNkzyUCJ74P/U9NY+eI3BrItrJbzihR7gELVEoD17eJTfYbu/zgFHEvBxGR8XpCqobOKgoyB1V0t6kEL5uOX6jNY+Ffi/AAuN/DQY5vxq8YlwWL1JA6QfMFLo7fjWEh72W2jNRo=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1729019369; c=relaxed/simple;
+	bh=u1uAwktf6kk8nVT1WwQn5qWjduf1jXs8aWE0d1BVCG4=;
+	h=MIME-Version:Date:Message-ID:Subject:From:To:Content-Type; b=FwEJ7GgEM9WyxhDBUQlybmcTk6hffaONVEFOlNb5Wpo/WPcAtARGFuNzNetRx+Z1fIz7j2mBgds+oZcMjh0piaXyul2c6raw2ayRqdkKJyIWYyjkQq4A7l9kbgtM0egC1V6y4q0DQCTV4QLvapbz83ptX1GUaepZS30LrXGHlM0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.166.199
+Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com
+Received: by mail-il1-f199.google.com with SMTP id e9e14a558f8ab-3a3ba4fcf24so42775675ab.0
+        for <iommu@lists.linux.dev>; Tue, 15 Oct 2024 12:09:26 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1729019365; x=1729624165;
+        h=to:from:subject:message-id:date:mime-version:x-gm-message-state
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=ITeBmiKPxke1DH9sYqgNIlVHlUNkQ0WHvvDjCpx3+Bc=;
+        b=XDldSkKeuzstv+51SUcex+MaHUuTN5xX6K4ff+XjgpmoQNCl2Ha/W5nbAUagjbOtWL
+         TvAaoHXWIdeP1EziZHmTT9kRay4R2kbpIh7ni0skdyJHGvLmbnENxFwrpzEYxnUdcf9E
+         FmmQpQatQP37E8XgswcQ/2dtEHkrjAU6tObzXpxfmQ0LK5kt9dCRvUZmIca/EjrifA33
+         ohg59ExVCMMRy2I2a+AzHW4MIVU5e2eqZMHkFHCTydSg4TZJuDCh32APyuTLnA2B6F7T
+         1p/jV45hc5V7Y7sNDtWE0Jq7DLqO5HaMZUtD82DdsaE/zocQt0F0/T/+6LeaEO6TXbBO
+         ne9A==
+X-Forwarded-Encrypted: i=1; AJvYcCVjJ/gFGT+SGtI7GGweGZGpc9im2H7YqrhoV2fdVrWTH4ihJUDoLwffgS2oqSV+gVlD+e4lPg==@lists.linux.dev
+X-Gm-Message-State: AOJu0YzKJVMUumkQVDgGGFdYq0Sl5vGUqF3wRuI3ofxZ/HSWP+Rlmn9v
+	qE0H5+/7/O2l8MBENKQhXcD50hYiU9StSa0gZXLRPqF+N7Kx49gqx8IXmVb+CX1siszx7AGik+Y
+	YDj4lnUvRtck70KWS1F7FXWM9SW1sJcOEoRSQH7YjhlL2/OwOMvr69Bs=
+X-Google-Smtp-Source: AGHT+IGpa/p4mxM4VBJEqmkiVGZ8cJWslOWsSMrxRUbbSmaJdDs5orv+v+JB1Enu97wMr+0RJBPRjJkwpL520np+r35DT4O/0bZ6
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: inline
-In-Reply-To: <Zw3M/h1KYe9MjcZK@Asurada-Nvidia>
-X-NV-OnPremToCloud: ExternallySecured
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: SA2PEPF00001509:EE_|CY5PR12MB6225:EE_
-X-MS-Office365-Filtering-Correlation-Id: 9e55e24a-7043-4696-d169-08dced496fcc
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|82310400026|7416014|1800799024|36860700013|376014;
-X-Microsoft-Antispam-Message-Info:
-	=?us-ascii?Q?26u01tNFqHspxYmazKt6k7GGEetp0PXGBBVpY+Q3vDCGYPRwVx12uGG8ez3l?=
- =?us-ascii?Q?bXXBCmtVj2ekBwxJpDpArBsenWxhrZHH0zpEcIpCgWiADXKwKE5S5uK66WEL?=
- =?us-ascii?Q?FCpH+nSr5e5qua7bOTFzI4gL8k3fDWOjlrODKRecKcLkjg9YEkddH3VybVlq?=
- =?us-ascii?Q?s7geaiIKDx1nhfNXBBsCYoN1MulzVNdnOuMCpLKs/Jr7Leh9PX6w22MSGvYq?=
- =?us-ascii?Q?xPhvVgO2/+Ctp6B5UnfKaY3H3Oe/VRqibYeqA17O39w6ddt4HxO6t60paUwI?=
- =?us-ascii?Q?hBvH3wUbqw+NVYdjcLglPLTGBLk1JevzlZa/TS87AybMY2a74Lc/zUawQs4y?=
- =?us-ascii?Q?p8TgBYgkfXnKXgoUz1nCW6jB9uzPZ0NlmBFg6AVXBJamfCNxE3liFRQ5x7uw?=
- =?us-ascii?Q?WqVgbugDzD5uTGMobsD9Gmss34G6YlP9dcKQKNQprTPX8awwVqtTH+OuIv5S?=
- =?us-ascii?Q?ACusB+R/wr8Cq3AUaZdQeU6h/KY/dbloayoZxyYmVW+9dp9rCRkCKqiIhS/0?=
- =?us-ascii?Q?hVk7LdoxJGUTClwJ3eAkcev3J35OYq7vsAMuwE/+utSrsruu+NdAL1/AQ8nX?=
- =?us-ascii?Q?ERzZUo1lN/wb6ykm8IUpP6HtZ4T+GsK/091F5lh6VUMVDQUBfFY+rlap+eIS?=
- =?us-ascii?Q?HzeujPBdhdvaonBEHRcsI4lbdF3RrnbET6v0ck3xjdap7fxVvuBtPWqsSVVm?=
- =?us-ascii?Q?68Hm1q9mWFxU/DkXhhlpEZm3SrxipnG85lvcfqXI/YOU6+UdOkdv4ZoDQdsO?=
- =?us-ascii?Q?gX2+CUPvgpkLwTl9pyV81ks80KpqzZq/7altzXaYVftYuZhw6nAuGxXe1q65?=
- =?us-ascii?Q?+WlvV76gSdxDiP/KtxxYSxzIK/Xq6BN4WAzlG28zuNwbtLiBYJbv1WqR13bm?=
- =?us-ascii?Q?MJTettyJUt9ZiFz4Y0evJQONyH4x2jYwpaAlnsxEM1bzCkNk14gKpbOSgofL?=
- =?us-ascii?Q?1deIs3qf7FjIcQHlTQ4S9XEs36LMGZweisgxCOa82gH8KZwL1rqFT642Nwn1?=
- =?us-ascii?Q?cAXK8G4rp9pg86Qe+WAH1quZyH4Zt6XwF43AbfaGoGnG5xXdqAa1SiQT4TBj?=
- =?us-ascii?Q?2rxCfpDVUEx31upL3ihYYHgxbxF2U7qAzTH4WTv5QPP6//DirXCPKEQdj35Z?=
- =?us-ascii?Q?M/SgEussdXDlskmkW3ysGCOL9hzyVz+2qpTQTpX3nOl+eQudAB5t/Tc6M9D7?=
- =?us-ascii?Q?BcArniqj8yOjI8kRUEAfCnN7jPNjd+fRCoHe+k4N7CkBcvPqzhdLyADWmj4N?=
- =?us-ascii?Q?AfbuL1ryRU9BM8Vf/iNxtfl/njXaTjUFC0+Pgy6SDR1TRFTIXjIxOErx7aG+?=
- =?us-ascii?Q?XSBbd0yVjbWMGd5ea5ft9INxYCdVj8FB0eJqCbCjdbqlIfzV3OAk4Xgqr5JV?=
- =?us-ascii?Q?yFOT8z+ghALBWDcoduDnh0KnfGDy?=
-X-Forefront-Antispam-Report:
-	CIP:216.228.117.160;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc6edge1.nvidia.com;CAT:NONE;SFS:(13230040)(82310400026)(7416014)(1800799024)(36860700013)(376014);DIR:OUT;SFP:1101;
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 15 Oct 2024 18:44:44.2294
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 9e55e24a-7043-4696-d169-08dced496fcc
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.117.160];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource:
-	SA2PEPF00001509.namprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: CY5PR12MB6225
+X-Received: by 2002:a05:6e02:188e:b0:3a3:afa3:5155 with SMTP id
+ e9e14a558f8ab-3a3b6050e70mr145590025ab.25.1729019365547; Tue, 15 Oct 2024
+ 12:09:25 -0700 (PDT)
+Date: Tue, 15 Oct 2024 12:09:25 -0700
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <670ebde5.050a0220.d9b66.0154.GAE@google.com>
+Subject: [syzbot] [iommu?] kernel BUG in dma_alloc_attrs
+From: syzbot <syzbot+b4bfacdec173efaa8567@syzkaller.appspotmail.com>
+To: hch@lst.de, iommu@lists.linux.dev, linux-kernel@vger.kernel.org, 
+	m.szyprowski@samsung.com, robin.murphy@arm.com, 
+	syzkaller-bugs@googlegroups.com
+Content-Type: text/plain; charset="UTF-8"
 
-On Mon, Oct 14, 2024 at 07:01:40PM -0700, Nicolin Chen wrote:
-> On Tue, Oct 15, 2024 at 09:15:01AM +0800, Zhangfei Gao wrote:
-> 
-> > > > iommufd_device_bind
-> > > > iommufd_device_attach
-> > > > iommufd_vdevice_alloc_ioctl
-> > > >
-> > > > iommufd_device_detach
-> > > > iommufd_device_unbind // refcount check fail
-> > > > iommufd_vdevice_destroy ref--
-> > >
-> > > Things should be symmetric. As you suspected, vdevice should be
-> > > destroyed before iommufd_device_detach.
-> > 
-> > I am trying based on your for_iommufd_viommu_p2-v3 branch, do you have
-> > this issue?
-> > In checking whether close fd before unbind?
-> 
-> Oops, my bad. I will provide a fix.
+Hello,
 
-This should fix the problem:
+syzbot found the following issue on:
 
----------------------------------------------------------------------
-diff --git a/drivers/iommu/iommufd/device.c b/drivers/iommu/iommufd/device.c
-index 5fd3dd420290..13100cfea29d 100644
---- a/drivers/iommu/iommufd/device.c
-+++ b/drivers/iommu/iommufd/device.c
-@@ -277,6 +277,11 @@ EXPORT_SYMBOL_NS_GPL(iommufd_ctx_has_group, IOMMUFD);
-  */
- void iommufd_device_unbind(struct iommufd_device *idev)
- {
-+	mutex_lock(&idev->igroup->lock);
-+	/* idev->vdev object should be destroyed prior, yet just in case.. */
-+	if (idev->vdev)
-+		iommufd_object_remove(idev->ictx, NULL, idev->vdev->obj.id, 0);
-+	mutex_unlock(&idev->igroup->lock);
- 	iommufd_object_destroy_user(idev->ictx, &idev->obj);
- }
- EXPORT_SYMBOL_NS_GPL(iommufd_device_unbind, IOMMUFD);
----------------------------------------------------------------------
+HEAD commit:    1d227fcc7222 Merge tag 'net-6.12-rc3' of git://git.kernel...
+git tree:       upstream
+console output: https://syzkaller.appspot.com/x/log.txt?x=12c56f07980000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=7cd9e7e4a8a0a15b
+dashboard link: https://syzkaller.appspot.com/bug?extid=b4bfacdec173efaa8567
+compiler:       Debian clang version 15.0.6, GNU ld (GNU Binutils for Debian) 2.40
+syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=14572840580000
+C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=12572840580000
 
-Thanks
-Nicolin
+Downloadable assets:
+disk image (non-bootable): https://storage.googleapis.com/syzbot-assets/7feb34a89c2a/non_bootable_disk-1d227fcc.raw.xz
+vmlinux: https://storage.googleapis.com/syzbot-assets/ea82465646ea/vmlinux-1d227fcc.xz
+kernel image: https://storage.googleapis.com/syzbot-assets/f764dd6d008a/bzImage-1d227fcc.xz
+
+IMPORTANT: if you fix the issue, please add the following tag to the commit:
+Reported-by: syzbot+b4bfacdec173efaa8567@syzkaller.appspotmail.com
+
+------------[ cut here ]------------
+kernel BUG at arch/x86/mm/physaddr.c:28!
+Oops: invalid opcode: 0000 [#1] PREEMPT SMP KASAN NOPTI
+CPU: 0 UID: 0 PID: 5114 Comm: syz-executor411 Not tainted 6.12.0-rc2-syzkaller-00205-g1d227fcc7222 #0
+Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.16.3-debian-1.16.3-2~bpo12+1 04/01/2014
+RIP: 0010:__phys_addr+0x162/0x170 arch/x86/mm/physaddr.c:28
+Code: e8 23 e8 51 00 48 c7 c7 c0 86 7a 8e 4c 89 f6 4c 89 fa e8 f1 98 b1 03 e9 45 ff ff ff e8 07 e8 51 00 90 0f 0b e8 ff e7 51 00 90 <0f> 0b e8 f7 e7 51 00 90 0f 0b 0f 1f 40 00 90 90 90 90 90 90 90 90
+RSP: 0018:ffffc90002d4f4c0 EFLAGS: 00010293
+RAX: ffffffff8142ff51 RBX: 0000000000000001 RCX: ffff88800023a440
+RDX: 0000000000000000 RSI: 0000000000000001 RDI: 0000000000000000
+RBP: ffffc90002d4f5e8 R08: ffffffff8142fe9c R09: 312e64313a30303a
+R10: dffffc0000000000 R11: fffff91ffff86755 R12: ffffe8ffffc33a60
+R13: dffffc0000000000 R14: 000040800b111000 R15: 000000000000002e
+FS:  0000555576947380(0000) GS:ffff88801fc00000(0000) knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 00007ffabc3020f0 CR3: 000000004020a000 CR4: 0000000000352ef0
+DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+Call Trace:
+ <TASK>
+ virt_to_phys arch/x86/include/asm/io.h:131 [inline]
+ perf_trace_dma_alloc+0x3dd/0x620 include/trace/events/dma.h:117
+ trace_dma_alloc include/trace/events/dma.h:117 [inline]
+ dma_alloc_attrs+0x46c/0x4e0 kernel/dma/mapping.c:622
+ usbdev_mmap+0x247/0x900 drivers/usb/core/devio.c:251
+ call_mmap include/linux/fs.h:2172 [inline]
+ mmap_region+0x1add/0x2990 mm/mmap.c:1440
+ do_mmap+0x8f0/0x1000 mm/mmap.c:496
+ vm_mmap_pgoff+0x1dd/0x3d0 mm/util.c:588
+ ksys_mmap_pgoff+0x4eb/0x720 mm/mmap.c:542
+ do_syscall_x64 arch/x86/entry/common.c:52 [inline]
+ do_syscall_64+0xf3/0x230 arch/x86/entry/common.c:83
+ entry_SYSCALL_64_after_hwframe+0x77/0x7f
+RIP: 0033:0x7ffabc28b979
+Code: 28 00 00 00 75 05 48 83 c4 28 c3 e8 c1 17 00 00 90 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 b8 ff ff ff f7 d8 64 89 01 48
+RSP: 002b:00007ffd4658b118 EFLAGS: 00000246 ORIG_RAX: 0000000000000009
+RAX: ffffffffffffffda RBX: 0000000000000000 RCX: 00007ffabc28b979
+RDX: 0000000001000002 RSI: 0000000000400000 RDI: 0000000020000000
+RBP: 00007ffabc2fe5f0 R08: 0000000000000004 R09: 0000000000000000
+R10: 0000000000011012 R11: 0000000000000246 R12: 0000000000000001
+R13: 431bde82d7b634db R14: 0000000000000001 R15: 0000000000000001
+ </TASK>
+Modules linked in:
+---[ end trace 0000000000000000 ]---
+RIP: 0010:__phys_addr+0x162/0x170 arch/x86/mm/physaddr.c:28
+Code: e8 23 e8 51 00 48 c7 c7 c0 86 7a 8e 4c 89 f6 4c 89 fa e8 f1 98 b1 03 e9 45 ff ff ff e8 07 e8 51 00 90 0f 0b e8 ff e7 51 00 90 <0f> 0b e8 f7 e7 51 00 90 0f 0b 0f 1f 40 00 90 90 90 90 90 90 90 90
+RSP: 0018:ffffc90002d4f4c0 EFLAGS: 00010293
+RAX: ffffffff8142ff51 RBX: 0000000000000001 RCX: ffff88800023a440
+RDX: 0000000000000000 RSI: 0000000000000001 RDI: 0000000000000000
+RBP: ffffc90002d4f5e8 R08: ffffffff8142fe9c R09: 312e64313a30303a
+R10: dffffc0000000000 R11: fffff91ffff86755 R12: ffffe8ffffc33a60
+R13: dffffc0000000000 R14: 000040800b111000 R15: 000000000000002e
+FS:  0000555576947380(0000) GS:ffff88801fc00000(0000) knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 00007ffabc3020f0 CR3: 000000004020a000 CR4: 0000000000352ef0
+DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+
+
+---
+This report is generated by a bot. It may contain errors.
+See https://goo.gl/tpsmEJ for more information about syzbot.
+syzbot engineers can be reached at syzkaller@googlegroups.com.
+
+syzbot will keep track of this issue. See:
+https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
+
+If the report is already addressed, let syzbot know by replying with:
+#syz fix: exact-commit-title
+
+If you want syzbot to run the reproducer, reply with:
+#syz test: git://repo/address.git branch-or-commit-hash
+If you attach or paste a git patch, syzbot will apply it before testing.
+
+If you want to overwrite report's subsystems, reply with:
+#syz set subsystems: new-subsystem
+(See the list of subsystem names on the web dashboard)
+
+If the report is a duplicate of another one, reply with:
+#syz dup: exact-subject-of-another-report
+
+If you want to undo deduplication, reply with:
+#syz undup
