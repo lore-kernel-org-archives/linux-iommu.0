@@ -1,334 +1,96 @@
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-qt1-f171.google.com (mail-qt1-f171.google.com [209.85.160.171])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 60BFA13B284
-	for <iommu@lists.linux.dev>; Tue, 15 Oct 2024 16:22:23 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=170.10.129.124
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5A67114F117
+	for <iommu@lists.linux.dev>; Tue, 15 Oct 2024 16:27:43 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.160.171
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1729009346; cv=none; b=TsY3RRHuGqmC1MTBsK62GEDdj4yzjiryUSCfq66zE/JU5914PDD22iSSFazNp/tXLJm5HFd+x6pINi0b5WPUsgCpEteiM4P6RxDIG6mDKK3va449EL7UDYDSV5iWr4J+Uimlj/yXxRvYH6Gp1Djh7dyD4x4zctV4sIa0f2XZXPU=
+	t=1729009666; cv=none; b=aj0H39sBxkXSDbiBBO119ODduPWsAg1kY98ZW7HZWVXgSaP5QoGRaa+RvZW7zPh24GrM4lfCd0OK7aoSeACK0DGaDK8BspWFwGm7CIQNHbBO2PoKNjnQ2xC/j7puKfEGRqNZNsuA3W9jG/WiONZxD6cFHsvetXukNTrQuphzOU8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1729009346; c=relaxed/simple;
-	bh=pjhtjFni5E0oYauVMFJxw2/cRKimK2at950HXSmnLU4=;
-	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=WOXQl1DgJWPNidgZGOFq98Yg2udGjAUUQ/knYygBFf/OvcsH1Dk9KlNf9FJxd9fyqYqo7E/3WlRRHknjAZ7wB7BQt55CqqpV8RlQXie6nqJJBDuhthzm3reeFre94dTxPcd539xGwAyenO16hlNbwCPOgK8FKonV0bXum7wHrQ4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=redhat.com; spf=pass smtp.mailfrom=redhat.com; dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b=Iu5rv6Sr; arc=none smtp.client-ip=170.10.129.124
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=redhat.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=redhat.com
+	s=arc-20240116; t=1729009666; c=relaxed/simple;
+	bh=IfTx3vgL6pSLq4angIlM+l/b4KtlX0k2j+qUWgjDCxM=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=py+peHZ1IMViTI0ZmJKEiWLA0JvU8dGP1FHuOSOwITN8Q2acPniB/xMC4nNnwleenC5CD1A2+xfvMmxnInFvT0KD1PnKYKsTZ5jLPt0aM769WuHcZSd5FJL+t+db5JyunUXpR9MshHZJyZnAZQrQ759Rlh5kdBJDXGV/gcfeeVM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=a7QDR9Y3; arc=none smtp.client-ip=209.85.160.171
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="Iu5rv6Sr"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-	s=mimecast20190719; t=1729009342;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references;
-	bh=D0ogSl2e+pzxm9DQxkr5ZhkXB5GDU2MP8w9r7SynvqI=;
-	b=Iu5rv6Sr44cddDEdEJ434fNMhr2tRTnySPwxN0cZD6gv9SB9RqIaXx7hdW6meUOIIbo32N
-	vYBl0JStoBG6AmjulB8pzJLvcchDTBZaTLUzq1LFelXDc5qt8/fF5KtB5qadcRZ6kVkw8Q
-	BgftHozrUgSWPlSlhRRXCJthnt44QQM=
-Received: from mail-io1-f70.google.com (mail-io1-f70.google.com
- [209.85.166.70]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
- us-mta-77-Lu3z6oJYNueEmf_XmNnvgA-1; Tue, 15 Oct 2024 12:22:21 -0400
-X-MC-Unique: Lu3z6oJYNueEmf_XmNnvgA-1
-Received: by mail-io1-f70.google.com with SMTP id ca18e2360f4ac-83547df1194so61578339f.3
-        for <iommu@lists.linux.dev>; Tue, 15 Oct 2024 09:22:21 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="a7QDR9Y3"
+Received: by mail-qt1-f171.google.com with SMTP id d75a77b69052e-4603f47b2c8so58179031cf.1
+        for <iommu@lists.linux.dev>; Tue, 15 Oct 2024 09:27:43 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=ziepe.ca; s=google; t=1729009662; x=1729614462; darn=lists.linux.dev;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=7nYiEdfLljkLAihKzr7zxxvEFSnvCT9Qo8ze1Fo1KOo=;
+        b=a7QDR9Y3NqHwStCoSs7CYBAKihEg0emtaJcuORRITZtXXnwUxrvuzjJrMD4Mo2bEgn
+         qbi7WbrYOOdXrlrQDgLDPL/rKgwhlUOnwHA6negLYuJJNtd+V5oQ9NjkD1lYCTIdFfsS
+         Z1HciAYeUrPAUo59PNqeGyWnfoqPUciRKp4tcdWLzH6Nwodn+NgkGXlE1LFabfM5stQf
+         qvvvp0samTycobiAythRINtn0xpOo9daQ0F+RvKXosAUrNagkSwi1fSf6m8xAAVolTjt
+         6AUY6myyiqsSJsLUHIRHI1nPLOV6DTjb14rUFO/GXwMGi5cHh9ckqRx0j1iVcYIm2ziD
+         8m/g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1729009340; x=1729614140;
-        h=content-transfer-encoding:mime-version:organization:references
-         :in-reply-to:message-id:subject:cc:to:from:date:x-gm-message-state
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=D0ogSl2e+pzxm9DQxkr5ZhkXB5GDU2MP8w9r7SynvqI=;
-        b=uCpt00ACBeflPdRXKTmt2LhNxufY4IH5MmD8ntUypTc4bT1q3NMeA7cbKK6xCNwqlX
-         wS2tfDHyPp7pcZGs0bBocI79RY2fuTtWhx/BpINAPq3YSU1v3a5OHGZTYmzRfYh6Binu
-         8EPPjhnGIXAc6X4l3VSSUGuvE1HvglSDhxps1+BNj8Wca/1DG30ilIs8lewaqos7DsQM
-         12aVgHQq9SkkRFCfmkU9JTp2ZenvkEieHPhk0Qa39TIkHrQO8s0HZQLhwj8R8lq/0Ikt
-         Avly0tqCZOxEPmnG2ZAjHsGfwtVigbddYiCv7zV6fdOr+yIysTTJIoQbApbMy2re6Tv9
-         W9Jg==
-X-Forwarded-Encrypted: i=1; AJvYcCV0jTESrqgT4mNl/8iuUMTtbPZEhiToLBz+w8urpvCgOctgzzsZw51CcYfpp6mUtndpfq9nGQ==@lists.linux.dev
-X-Gm-Message-State: AOJu0Yxm4ksrxXUGYig1lFwJfveEV7/MCR/zON+43/Ol1M/cfPtGu8hW
-	kXsCzh1OnhiBS7WD4SwJZE+bJwGETu4issUz08VEwvsoXAQfgcVdMwIZkmWlajHb7dEx8UqRxsW
-	nZ3bzSQiLwlO3bD2p9n7O9Cxy6CdDatZgHs5oZ8h1PTeGG6UsecoA
-X-Received: by 2002:a05:6602:3352:b0:81f:86e1:5a84 with SMTP id ca18e2360f4ac-83792419c98mr345227539f.2.1729009340185;
-        Tue, 15 Oct 2024 09:22:20 -0700 (PDT)
-X-Google-Smtp-Source: AGHT+IHSkc6Y2bSMoTB4zwDROjEeyJ5tTGduXy6mtiXimE0HBSzkJTAanaRw2GITeakEsvwM2yiPPA==
-X-Received: by 2002:a05:6602:3352:b0:81f:86e1:5a84 with SMTP id ca18e2360f4ac-83792419c98mr345226239f.2.1729009339749;
-        Tue, 15 Oct 2024 09:22:19 -0700 (PDT)
-Received: from redhat.com ([38.15.36.11])
-        by smtp.gmail.com with ESMTPSA id ca18e2360f4ac-83a8b50d10dsm36606439f.40.2024.10.15.09.22.18
+        d=1e100.net; s=20230601; t=1729009662; x=1729614462;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=7nYiEdfLljkLAihKzr7zxxvEFSnvCT9Qo8ze1Fo1KOo=;
+        b=a3t2hfWugXdmOgwJJRuLPrbokIFXzmKpoEN3fchMjF5CEnwqDWKzKfoQJK/2qkqlDL
+         LFX0ccpDeuLOqnW6uCZLDdaTjqllQJ+To1z28ePuMBtJgaL4pbFgntQ5LedXtLG7hxhj
+         2hGr7JJjPbyCnbZn1Zxr2+VxNbQzoSgfikPaapfK3mfcUnaMwySe2hIj31chJlK8HLY9
+         B3wXl3AkNYP1pb7I/h019sQoVpp1VmLWFtxggIXvA3lU9qPJAgO56GNELboxpADohDnY
+         WbXYSCXJnYvlCGoBkUKFoX/A9vnH40RZcwTxsVw3YLldzam/Tz2XtJlpe/loOat6IRpK
+         26dw==
+X-Forwarded-Encrypted: i=1; AJvYcCUskJa7wXt2Qcj3sQgsPuW5TVuoLjqptSzWXi9mPPfO6wPvZfKsOnM/1oq4fmdV/VEEXt7bNQ==@lists.linux.dev
+X-Gm-Message-State: AOJu0YxjJ1MfCX8xwIEHxi3r944+bp5u/UGz1yLOaEUZXtm1ZiyFUGRv
+	ZebrlesZLXxRauCvKXSnDw2uEji15D+12RZYLQhEa396fD3FdUhyybEDZCQRnFE=
+X-Google-Smtp-Source: AGHT+IFEnSXFncC2+x06UZbubyc95m0LQJm7m6gZHQJF2kRCO9sJXD/FqqaGm4BFNB4Arf3LyOhHgw==
+X-Received: by 2002:a05:622a:5408:b0:454:e669:c8dd with SMTP id d75a77b69052e-4608a4f4959mr12876331cf.20.1729009662214;
+        Tue, 15 Oct 2024 09:27:42 -0700 (PDT)
+Received: from ziepe.ca (hlfxns017vw-142-68-128-5.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.68.128.5])
+        by smtp.gmail.com with ESMTPSA id d75a77b69052e-4607b394a7csm8001401cf.92.2024.10.15.09.27.41
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 15 Oct 2024 09:22:19 -0700 (PDT)
-Date: Tue, 15 Oct 2024 10:22:15 -0600
-From: Alex Williamson <alex.williamson@redhat.com>
-To: Yi Liu <yi.l.liu@intel.com>
-Cc: Jason Gunthorpe <jgg@nvidia.com>, "Tian, Kevin" <kevin.tian@intel.com>,
- "joro@8bytes.org" <joro@8bytes.org>, "baolu.lu@linux.intel.com"
- <baolu.lu@linux.intel.com>, "eric.auger@redhat.com"
- <eric.auger@redhat.com>, "nicolinc@nvidia.com" <nicolinc@nvidia.com>,
- "kvm@vger.kernel.org" <kvm@vger.kernel.org>, "chao.p.peng@linux.intel.com"
- <chao.p.peng@linux.intel.com>, "iommu@lists.linux.dev"
- <iommu@lists.linux.dev>, "Duan, Zhenzhong" <zhenzhong.duan@intel.com>,
- "linux-kselftest@vger.kernel.org" <linux-kselftest@vger.kernel.org>,
- "vasant.hegde@amd.com" <vasant.hegde@amd.com>
-Subject: Re: [PATCH v3 3/4] vfio: Add
- VFIO_DEVICE_PASID_[AT|DE]TACH_IOMMUFD_PT
-Message-ID: <20241015102215.05cd16c7.alex.williamson@redhat.com>
-In-Reply-To: <2e5733a2-560e-4e8f-b547-ed75618afca5@intel.com>
-References: <20240912131729.14951-1-yi.l.liu@intel.com>
-	<20240912131729.14951-4-yi.l.liu@intel.com>
-	<BN9PR11MB5276D2D0EEAC2904EDB60B048C762@BN9PR11MB5276.namprd11.prod.outlook.com>
-	<20241001121126.GC1365916@nvidia.com>
-	<a435de20-2c25-46f5-a883-f10d425ef37e@intel.com>
-	<20241014094911.46fba20e.alex.williamson@redhat.com>
-	<2e5733a2-560e-4e8f-b547-ed75618afca5@intel.com>
-Organization: Red Hat
+        Tue, 15 Oct 2024 09:27:41 -0700 (PDT)
+Received: from jgg by wakko with local (Exim 4.95)
+	(envelope-from <jgg@ziepe.ca>)
+	id 1t0kOa-00Dxtf-Ry;
+	Tue, 15 Oct 2024 13:27:40 -0300
+Date: Tue, 15 Oct 2024 13:27:40 -0300
+From: Jason Gunthorpe <jgg@ziepe.ca>
+To: Will Deacon <will@kernel.org>
+Cc: Yi Liu <yi.l.liu@intel.com>, joro@8bytes.org, kevin.tian@intel.com,
+	baolu.lu@linux.intel.com, alex.williamson@redhat.com,
+	eric.auger@redhat.com, nicolinc@nvidia.com,
+	chao.p.peng@linux.intel.com, iommu@lists.linux.dev,
+	zhenzhong.duan@intel.com, linux-kselftest@vger.kernel.org,
+	vasant.hegde@amd.com
+Subject: Re: [PATCH v2 5/6] iommu/arm-smmu-v3: Make smmuv3 set_dev_pasid() op
+ support replace
+Message-ID: <20241015162740.GP1825128@ziepe.ca>
+References: <20240912130427.10119-1-yi.l.liu@intel.com>
+ <20240912130427.10119-6-yi.l.liu@intel.com>
+ <20241015084322.GA19079@willie-the-truck>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: redhat.com
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20241015084322.GA19079@willie-the-truck>
 
-On Tue, 15 Oct 2024 19:07:52 +0800
-Yi Liu <yi.l.liu@intel.com> wrote:
+On Tue, Oct 15, 2024 at 09:43:24AM +0100, Will Deacon wrote:
+> > @@ -2890,6 +2891,7 @@ int arm_smmu_set_pasid(struct arm_smmu_master *master,
+> >  		 * already attached, no need to set old_domain.
+> >  		 */
+> >  		.ssid = pasid,
+> > +		.old_domain = old,
+> 
+> nit: The existing comment says "no need to set old_domain" and now you're
+> doing exactly that! Please can you update the commentary (probably just
+> remove the comment entirely)?
 
-> On 2024/10/14 23:49, Alex Williamson wrote:
-> > On Sat, 12 Oct 2024 21:49:05 +0800
-> > Yi Liu <yi.l.liu@intel.com> wrote:
-> >   
-> >> On 2024/10/1 20:11, Jason Gunthorpe wrote:  
-> >>> On Mon, Sep 30, 2024 at 07:55:08AM +0000, Tian, Kevin wrote:
-> >>>      
-> >>>>> +struct vfio_device_pasid_attach_iommufd_pt {
-> >>>>> +	__u32	argsz;
-> >>>>> +	__u32	flags;
-> >>>>> +	__u32	pasid;
-> >>>>> +	__u32	pt_id;
-> >>>>> +};
-> >>>>> +
-> >>>>> +#define VFIO_DEVICE_PASID_ATTACH_IOMMUFD_PT	_IO(VFIO_TYPE,
-> >>>>> VFIO_BASE + 21)  
-> >>>>
-> >>>> Not sure whether this was discussed before. Does it make sense
-> >>>> to reuse the existing VFIO_DEVICE_ATTACH_IOMMUFD_PT
-> >>>> by introducing a new pasid field and a new flag bit?  
-> >>>
-> >>> Maybe? I don't have a strong feeling either way.
-> >>>
-> >>> There is somewhat less code if you reuse the ioctl at least  
-> >>
-> >> I had a rough memory that I was suggested to add a separate ioctl for
-> >> PASID. Let's see Alex's opinion.  
-> > 
-> > I don't recall any previous arguments for separate ioctls, but it seems
-> > to make a lot of sense to me to extend the existing ioctls with a flag
-> > to indicate pasid cscope and id.  Thanks,  
-> 
-> thanks for the confirmation. How about the below?
-> 
-> diff --git a/drivers/vfio/device_cdev.c b/drivers/vfio/device_cdev.c
-> index bb1817bd4ff3..c78533bce3c6 100644
-> --- a/drivers/vfio/device_cdev.c
-> +++ b/drivers/vfio/device_cdev.c
-> @@ -162,21 +162,34 @@ void vfio_df_unbind_iommufd(struct vfio_device_file *df)
->   int vfio_df_ioctl_attach_pt(struct vfio_device_file *df,
->   			    struct vfio_device_attach_iommufd_pt __user *arg)
->   {
-> -	struct vfio_device *device = df->device;
-> +	unsigned long minsz = offsetofend(
-> +			struct vfio_device_attach_iommufd_pt, pt_id);
->   	struct vfio_device_attach_iommufd_pt attach;
-> -	unsigned long minsz;
-> +	struct vfio_device *device = df->device;
-> +	u32 user_size;
->   	int ret;
-> 
-> -	minsz = offsetofend(struct vfio_device_attach_iommufd_pt, pt_id);
-> +	ret = get_user(user_size, (u32 __user *)arg);
-> +	if (ret)
-> +		return ret;
-> 
-> -	if (copy_from_user(&attach, arg, minsz))
-> -		return -EFAULT;
-> +	ret = copy_struct_from_user(&attach, sizeof(attach), arg, user_size);
-> +	if (ret)
-> +		return ret;
++1
 
-I think this could break current users.  For better or worse, we don't
-currently have any requirements for the remainder of the user buffer,
-whereas copy_struct_from_user() returns an error for non-zero trailing
-bytes.  I think we need to monotonically increase the structure size,
-but maybe something more like below, using flags.  The expectation
-would be that if we add another flag that extends the structure, we'd
-test that flag after PASID and clobber xend to a new value further into
-the new structure.  We'd also add that flag to the flags mask, but we'd
-share the copy code.
-
-	if (attach.argsz < minsz)
-		return -EINVAL;
-
-	if (attach.flags & (~VFIO_DEVICE_ATTACH_PASID))
-		return -EINVAL;
-
-	if (attach.flags & VFIO_DEVICE_ATTACH_PASID)
-		xend = offsetofend(struct vfio_device_attach_iommufd_pt, pasid);
-
-	if (xend) {
-		if (attach.argsz < xend)
-			return -EINVAL;
-	
-		if (copy_from_user((void *)&attach + minsz,
-				    (void __user *)arg + minsz, xend - minsz))
-			return -EFAULT;
-	}
-
-Maybe there are still more elegant options available.
-
-We also generally try to label flags with FLAGS in the name, but it
-does get rather unwieldy, so I'm open to suggestions.  Thanks,
-
-Alex
-
-> 
-> -	if (attach.argsz < minsz || attach.flags)
-> +	if (attach.argsz < minsz || attach.flags & (~VFIO_DEVICE_ATTACH_PASID))
->   		return -EINVAL;
-> 
-> +	if ((attach.flags & VFIO_DEVICE_ATTACH_PASID) &&
-> +	    !device->ops->pasid_attach_ioas)
-> +		return -EOPNOTSUPP;
-> +
->   	mutex_lock(&device->dev_set->lock);
-> -	ret = device->ops->attach_ioas(device, &attach.pt_id);
-> +	if (attach.flags & VFIO_DEVICE_ATTACH_PASID)
-> +		ret = device->ops->pasid_attach_ioas(device, attach.pasid,
-> +						     &attach.pt_id);
-> +	else
-> +		ret = device->ops->attach_ioas(device, &attach.pt_id);
->   	if (ret)
->   		goto out_unlock;
-> 
-> @@ -198,20 +211,33 @@ int vfio_df_ioctl_attach_pt(struct vfio_device_file *df,
->   int vfio_df_ioctl_detach_pt(struct vfio_device_file *df,
->   			    struct vfio_device_detach_iommufd_pt __user *arg)
->   {
-> -	struct vfio_device *device = df->device;
-> +	unsigned long minsz =
-> +		offsetofend(struct vfio_device_detach_iommufd_pt, flags);
->   	struct vfio_device_detach_iommufd_pt detach;
-> -	unsigned long minsz;
-> +	struct vfio_device *device = df->device;
-> +	u32 user_size;
-> +	int ret;
-> 
-> -	minsz = offsetofend(struct vfio_device_detach_iommufd_pt, flags);
-> +	ret = get_user(user_size, (u32 __user *)arg);
-> +	if (ret)
-> +		return ret;
-> 
-> -	if (copy_from_user(&detach, arg, minsz))
-> -		return -EFAULT;
-> +	ret = copy_struct_from_user(&detach, sizeof(detach), arg, user_size);
-> +	if (ret)
-> +		return ret;
-> 
-> -	if (detach.argsz < minsz || detach.flags)
-> +	if (detach.argsz < minsz || detach.flags & (~VFIO_DEVICE_DETACH_PASID))
->   		return -EINVAL;
-> 
-> +	if ((detach.flags & VFIO_DEVICE_DETACH_PASID) &&
-> +	    !device->ops->pasid_detach_ioas)
-> +		return -EOPNOTSUPP;
-> +
->   	mutex_lock(&device->dev_set->lock);
-> -	device->ops->detach_ioas(device);
-> +	if (detach.flags & VFIO_DEVICE_DETACH_PASID)
-> +		device->ops->pasid_detach_ioas(device, detach.pasid);
-> +	else
-> +		device->ops->detach_ioas(device);
->   	mutex_unlock(&device->dev_set->lock);
-> 
->   	return 0;
-> diff --git a/include/uapi/linux/vfio.h b/include/uapi/linux/vfio.h
-> index 2b68e6cdf190..40b414e642f5 100644
-> --- a/include/uapi/linux/vfio.h
-> +++ b/include/uapi/linux/vfio.h
-> @@ -931,29 +931,34 @@ struct vfio_device_bind_iommufd {
->    * VFIO_DEVICE_ATTACH_IOMMUFD_PT - _IOW(VFIO_TYPE, VFIO_BASE + 19,
->    *					struct vfio_device_attach_iommufd_pt)
->    * @argsz:	User filled size of this data.
-> - * @flags:	Must be 0.
-> + * @flags:	Flags for attach.
->    * @pt_id:	Input the target id which can represent an ioas or a hwpt
->    *		allocated via iommufd subsystem.
->    *		Output the input ioas id or the attached hwpt id which could
->    *		be the specified hwpt itself or a hwpt automatically created
->    *		for the specified ioas by kernel during the attachment.
-> + * @pasid:	The pasid to be attached, only meaningful when
-> + *		VFIO_DEVICE_ATTACH_PASID is set in @flags
->    *
->    * Associate the device with an address space within the bound iommufd.
->    * Undo by VFIO_DEVICE_DETACH_IOMMUFD_PT or device fd close.  This is only
->    * allowed on cdev fds.
->    *
-> - * If a vfio device is currently attached to a valid hw_pagetable, without 
-> doing
-> - * a VFIO_DEVICE_DETACH_IOMMUFD_PT, a second VFIO_DEVICE_ATTACH_IOMMUFD_PT 
-> ioctl
-> - * passing in another hw_pagetable (hwpt) id is allowed. This action, also 
-> known
-> - * as a hw_pagetable replacement, will replace the device's currently attached
-> - * hw_pagetable with a new hw_pagetable corresponding to the given pt_id.
-> + * If a vfio device or a pasid of this device is currently attached to a valid
-> + * hw_pagetable (hwpt), without doing a VFIO_DEVICE_DETACH_IOMMUFD_PT, a 
-> second
-> + * VFIO_DEVICE_ATTACH_IOMMUFD_PT ioctl passing in another hwpt id is allowed.
-> + * This action, also known as a hw_pagetable replacement, will replace the
-> + * currently attached hwpt of the device or the pasid of this device with 
-> a new
-> + * hwpt corresponding to the given pt_id.
->    *
->    * Return: 0 on success, -errno on failure.
->    */
->   struct vfio_device_attach_iommufd_pt {
->   	__u32	argsz;
->   	__u32	flags;
-> +#define VFIO_DEVICE_ATTACH_PASID	(1 << 0)
->   	__u32	pt_id;
-> +	__u32	pasid;
->   };
-> 
->   #define VFIO_DEVICE_ATTACH_IOMMUFD_PT		_IO(VFIO_TYPE, VFIO_BASE + 19)
-> @@ -962,17 +967,21 @@ struct vfio_device_attach_iommufd_pt {
->    * VFIO_DEVICE_DETACH_IOMMUFD_PT - _IOW(VFIO_TYPE, VFIO_BASE + 20,
->    *					struct vfio_device_detach_iommufd_pt)
->    * @argsz:	User filled size of this data.
-> - * @flags:	Must be 0.
-> + * @flags:	Flags for detach.
-> + * @pasid:	The pasid to be detached, only meaningful when
-> + *		VFIO_DEVICE_DETACH_PASID is set in @flags
->    *
-> - * Remove the association of the device and its current associated address
-> - * space.  After it, the device should be in a blocking DMA state.  This 
-> is only
-> - * allowed on cdev fds.
-> + * Remove the association of the device or a pasid of the device and its 
-> current
-> + * associated address space.  After it, the device or the pasid should be in a
-> + * blocking DMA state.  This is only allowed on cdev fds.
->    *
->    * Return: 0 on success, -errno on failure.
->    */
->   struct vfio_device_detach_iommufd_pt {
->   	__u32	argsz;
->   	__u32	flags;
-> +#define VFIO_DEVICE_DETACH_PASID	(1 << 0)
-> +	__u32	pasid;
->   };
-> 
->   #define VFIO_DEVICE_DETACH_IOMMUFD_PT		_IO(VFIO_TYPE, VFIO_BASE + 20)
-
+Jason
