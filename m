@@ -1,110 +1,166 @@
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+Received: from NAM10-DM6-obe.outbound.protection.outlook.com (mail-dm6nam10on2075.outbound.protection.outlook.com [40.107.93.75])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1264C158DB9
-	for <iommu@lists.linux.dev>; Tue, 15 Oct 2024 01:59:22 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=170.10.133.124
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1728957564; cv=none; b=rQ4P1wrJnOmV4ZcG74hzD2ytJAk3AmR66gWDgxiTN5xqlmwO2nc0LQ3PatTsHuQZSxFmv41JnXXms7+511akXIKcJtWTk7xSZbv6eqSEXznavllG7kz7SH8bn+37mI5Ia6jnXzm9yXok+ZtyQgKFVfJdlZbXObK7PcGMa4I4rqw=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1728957564; c=relaxed/simple;
-	bh=/mpWQQUg4SLGbw0b6uVKlir/V5LQ1XvyAyhlgfEndo8=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=hC4rhbu6oBPNKkRE3YtLFPuFOiVcPTgRASLdc9bli1Rp/IKJCvxebZ08+cRFSXZFd4sTCod44BulgeTTabVhqJSS/LV+SOXqwoV1LlCvoptEjnkhf4BwNf4VuUhTP2VRG8VU+D0AVM+uho8KbKNDSd+IChXgvM3hW8tn82saxCg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=redhat.com; spf=pass smtp.mailfrom=redhat.com; dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b=UM4miPzk; arc=none smtp.client-ip=170.10.133.124
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=redhat.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=redhat.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 75EC315539A;
+	Tue, 15 Oct 2024 02:01:59 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.93.75
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1728957721; cv=fail; b=oXrgBcUERTKlI02OdDpz88mwZDuMfnc/Xevh7blfRzHKx0alRKRAej7ozX8XENpLH3emDLHmI1TpvImx+XnnatnV/oSRuY8J3xvwN3pmVbJUFWDQzVmQu1xzJcxEjc4gdSdKBE7fBJ6VFfIFCLr2YBICp9SjU9spaMrd7fwZEj0=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1728957721; c=relaxed/simple;
+	bh=4cSU1TZFucouVtdNIvaFgcfBvlezjLhwIQpKb7N43iU=;
+	h=Date:From:To:CC:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=VgDH/4JqaCx9eJXlnGZSA/RW6h0vZ22+PlxznqrGZXNXXvoI+f6xEubti0l2pZ2CVRxePrXUQXV4/P1ktJvGJVg0+JqwPQhbS+R/3ta79ckDvE5Gnc+cCCOmfKzusr+PFIPHkH1n1383nM6Tkv5bwtVLOQ3jKHaqc6aJsrFr8HE=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=cEen0aRi; arc=fail smtp.client-ip=40.107.93.75
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="UM4miPzk"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-	s=mimecast20190719; t=1728957562;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 in-reply-to:in-reply-to:references:references;
-	bh=ml1ZBBcs96kgD+D7cgCrxHrlfi6RlfUgZkDg/aeocjg=;
-	b=UM4miPzkzHMk1wh9RyHxbnyxf1EKFnrCYfd1ECzuvdj+vrJKYl+8AmZf1j/JBaxBAuIig8
-	fcWeNytQCL98aNvlFYacsWn7NjFKfVZHkpQf0VRz8DZn7kio19itLterjPSe4Yh55C8RMg
-	nwoQj6mac/T2z3TqXHd5U0oETtSgI38=
-Received: from mx-prod-mc-01.mail-002.prod.us-west-2.aws.redhat.com
- (ec2-54-186-198-63.us-west-2.compute.amazonaws.com [54.186.198.63]) by
- relay.mimecast.com with ESMTP with STARTTLS (version=TLSv1.3,
- cipher=TLS_AES_256_GCM_SHA384) id us-mta-370-m3OzuSbkP1ilKYyrQmSsqg-1; Mon,
- 14 Oct 2024 21:59:16 -0400
-X-MC-Unique: m3OzuSbkP1ilKYyrQmSsqg-1
-Received: from mx-prod-int-04.mail-002.prod.us-west-2.aws.redhat.com (mx-prod-int-04.mail-002.prod.us-west-2.aws.redhat.com [10.30.177.40])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
-	(No client certificate requested)
-	by mx-prod-mc-01.mail-002.prod.us-west-2.aws.redhat.com (Postfix) with ESMTPS id 74E88195608B;
-	Tue, 15 Oct 2024 01:59:14 +0000 (UTC)
-Received: from fedora (unknown [10.72.116.119])
-	by mx-prod-int-04.mail-002.prod.us-west-2.aws.redhat.com (Postfix) with ESMTPS id E666419560AA;
-	Tue, 15 Oct 2024 01:59:07 +0000 (UTC)
-Date: Tue, 15 Oct 2024 09:59:02 +0800
-From: Ming Lei <ming.lei@redhat.com>
-To: Robin Murphy <robin.murphy@arm.com>
-Cc: Christoph Hellwig <hch@lst.de>, Hannes Reinecke <hare@suse.de>,
-	Hamza Mahfooz <someguy@effective-light.com>,
-	Dan Williams <dan.j.williams@intel.com>,
-	linux-block@vger.kernel.org, io-uring@vger.kernel.org,
-	linux-raid@vger.kernel.org, iommu@lists.linux.dev,
-	linux-kernel@vger.kernel.org
-Subject: Re: [Report] annoyed dma debug warning "cacheline tracking EEXIST,
- overlapping mappings aren't supported"
-Message-ID: <Zw3MZrK_l7DuFfFd@fedora>
-References: <ZwxzdWmYcBK27mUs@fedora>
- <426b5600-7489-43a7-8007-ac4d9dbc9aca@suse.de>
- <20241014074151.GA22419@lst.de>
- <ZwzPDU5Lgt6MbpYt@fedora>
- <7411ae1d-5e36-46da-99cf-c485ebdb31bc@arm.com>
+	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="cEen0aRi"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=ZpNsRgbZ6gx5bGI353Sc5dLIIkxOxBRPnzNfYkS16nnSfy8QIROioZWtYIQxilzFLr7re6X8BvTMx4MOZkz72jLhvMiM1GLL4YkYuwpHBHeTe39JFGFM8N1Jg72qBTeUPL2zKYSlL3t3XFDZ5e0aVS4mDyRZqVv9gtH6Ofjr40XtodNxmUpX+2kmRvCUWLpmJsZkWnF85aTBvudBM2NAAuScf6BmgJJ6bmss0D0PLNrywC7jXCVpt1W/3a2rHTIUnfExYk3Bb5SSDLEsDsTWCC/sqJCz3MQiebiJD1sKnMyE1dSXuuRcfU3IDmjN9O2HRHm5FV5HsDx54BBfs2b/Ww==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=O5Ps2CAKPpJwy7nUeVQPb6Ut/8+UDPvqAhFKjqwx7uQ=;
+ b=RQn86+u0eGeIXkcRvnbVut9Cq9QA8wGToahWzOUsvVL6io0AQ6uI1yqS8Tb+z4aayTdOxs0x9MHMTD5bGnub3uvf+M6rpo1a9peIeX61QlqRdKic1cu3BfrKxwOo3QHhuPKhXJJx0WQEtsgszZUEKqJAaJBTyY/KS1crIeBMoEHgIn7SeNEYmno1lMvSEYRe5hBjWO6CLzY06DyISZpw8EKg+1nH8RxV6cPQhDwTU+2Qn29BTw8qGZvc9SGlS5qyTF00bfySojgYOat+xnfZn9Uvc29Hq8ZbJgIDzHoSTruEYrRwLXIIno0D449XAnaCV0qrK7UyFsl0MG3T0CyRaw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 216.228.117.161) smtp.rcpttodomain=linaro.org smtp.mailfrom=nvidia.com;
+ dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
+ dkim=none (message not signed); arc=none (0)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=O5Ps2CAKPpJwy7nUeVQPb6Ut/8+UDPvqAhFKjqwx7uQ=;
+ b=cEen0aRiHhApGv6lBj/3a8dl6h6259aXJ/jTSkgP31DC8Ve+nD9rhX9x013LDXkrgR7bUQT5URZ4I7YKlD9jX0qHW6S3ckTeL/NnL9W377LGrk+7KkkLKb+8s4vpUqtUTWGg9FuLaye0Y2EtD/F4qTXEThSJ5y592ogBxS6UdN599PGMbbZUEyJcKK3eLBXCG+nd23CBPyC0RFbo7Pw0d5cgA7qExvaI8X/LTx1TY8frt/sa6boO2+ghmPaRMrUKG3clxb378k/q4p82UyoGdgQuorF+HPCUJDcyMv7MNN0VKLM/0x9cB9YoTWss3GTdWDDFFk1cYgsmaM/jb0Solg==
+Received: from MN2PR20CA0027.namprd20.prod.outlook.com (2603:10b6:208:e8::40)
+ by MW4PR12MB7336.namprd12.prod.outlook.com (2603:10b6:303:21a::9) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.8048.26; Tue, 15 Oct
+ 2024 02:01:56 +0000
+Received: from BL6PEPF00022574.namprd02.prod.outlook.com
+ (2603:10b6:208:e8:cafe::75) by MN2PR20CA0027.outlook.office365.com
+ (2603:10b6:208:e8::40) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.8048.27 via Frontend
+ Transport; Tue, 15 Oct 2024 02:01:55 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.117.161)
+ smtp.mailfrom=nvidia.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=nvidia.com;
+Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
+ 216.228.117.161 as permitted sender) receiver=protection.outlook.com;
+ client-ip=216.228.117.161; helo=mail.nvidia.com; pr=C
+Received: from mail.nvidia.com (216.228.117.161) by
+ BL6PEPF00022574.mail.protection.outlook.com (10.167.249.42) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.8069.17 via Frontend Transport; Tue, 15 Oct 2024 02:01:55 +0000
+Received: from rnnvmail205.nvidia.com (10.129.68.10) by mail.nvidia.com
+ (10.129.200.67) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1544.4; Mon, 14 Oct
+ 2024 19:01:37 -0700
+Received: from rnnvmail202.nvidia.com (10.129.68.7) by rnnvmail205.nvidia.com
+ (10.129.68.10) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1544.4; Mon, 14 Oct
+ 2024 19:01:37 -0700
+Received: from Asurada-Nvidia (10.127.8.11) by mail.nvidia.com (10.129.68.7)
+ with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1544.4 via Frontend
+ Transport; Mon, 14 Oct 2024 19:01:35 -0700
+Date: Mon, 14 Oct 2024 19:01:34 -0700
+From: Nicolin Chen <nicolinc@nvidia.com>
+To: Zhangfei Gao <zhangfei.gao@linaro.org>
+CC: <jgg@nvidia.com>, <kevin.tian@intel.com>, <will@kernel.org>,
+	<joro@8bytes.org>, <suravee.suthikulpanit@amd.com>, <robin.murphy@arm.com>,
+	<dwmw2@infradead.org>, <baolu.lu@linux.intel.com>, <shuah@kernel.org>,
+	<linux-kernel@vger.kernel.org>, <iommu@lists.linux.dev>,
+	<linux-arm-kernel@lists.infradead.org>, <linux-kselftest@vger.kernel.org>,
+	<eric.auger@redhat.com>, <jean-philippe@linaro.org>, <mdf@kernel.org>,
+	<mshavit@google.com>, <shameerali.kolothum.thodi@huawei.com>,
+	<smostafa@google.com>, <yi.l.liu@intel.com>, <aik@amd.com>,
+	<patches@lists.linux.dev>
+Subject: Re: [PATCH v3 03/11] iommufd: Introduce IOMMUFD_OBJ_VIOMMU and its
+ related struct
+Message-ID: <Zw3M/h1KYe9MjcZK@Asurada-Nvidia>
+References: <cover.1728491453.git.nicolinc@nvidia.com>
+ <88114b5c725bb3300a9599d3eeebded221a0b1f9.1728491453.git.nicolinc@nvidia.com>
+ <CABQgh9Eaj_vy1=sS2Pf7RC7Vy5PopDfwoshECULEU-jK3JF_sQ@mail.gmail.com>
+ <Zwn/4m8Ac0xEiJi8@Asurada-Nvidia>
+ <CABQgh9Ft=xxJK-bjS6wCZ5BN4AiKtF9fzdBkevA3x2yb_4O4Kg@mail.gmail.com>
+ <CABQgh9HP1M8GAXMwf0ZNn5EpMBAvJU3JLRWcN5H1wfGrqXSe1Q@mail.gmail.com>
+ <Zw08z9TOFL57z07O@Asurada-Nvidia>
+ <CABQgh9H-SB7q1v_XtWaO12K7jMMaq8Lj7F4kpDv9sJ5v-F6DZw@mail.gmail.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset="us-ascii"
 Content-Disposition: inline
-In-Reply-To: <7411ae1d-5e36-46da-99cf-c485ebdb31bc@arm.com>
-X-Scanned-By: MIMEDefang 3.0 on 10.30.177.40
+In-Reply-To: <CABQgh9H-SB7q1v_XtWaO12K7jMMaq8Lj7F4kpDv9sJ5v-F6DZw@mail.gmail.com>
+X-NV-OnPremToCloud: ExternallySecured
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: BL6PEPF00022574:EE_|MW4PR12MB7336:EE_
+X-MS-Office365-Filtering-Correlation-Id: d4f0adc7-fcc5-418b-198a-08dcecbd5884
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam:
+	BCL:0;ARA:13230040|7416014|82310400026|36860700013|376014|1800799024;
+X-Microsoft-Antispam-Message-Info:
+	=?us-ascii?Q?9QDtV321rwDiY4fFKIZzWYbAb7+Fji9R3sJJzx1TkGMtBqMlmJ1vNfosWKCb?=
+ =?us-ascii?Q?+kiqx33k4iiJVH0prjq/VhF9/KBaNMQrIen0Xz+2r6KFBSCirvQuB3R1idak?=
+ =?us-ascii?Q?xIbOPj6XufHD+yFTEp4RHzJHnIt1EKZ5IIrjmok1GrAxrqmMXXuulsKGxe6x?=
+ =?us-ascii?Q?LPK0sxMhARybraTuExMVM0yo/ihaNGuviQTSV3e1rOX5qkgjNNCqXNEdC2/X?=
+ =?us-ascii?Q?0Y0oAaYSLue2Kcui5tuUJp7N+HNoPze8hqWi4XHhHGb0MpcIuX8o3rYBRhZ/?=
+ =?us-ascii?Q?1OHMztCdNEulo9PYiyMq+3yy908FiSllrxQbtdLmGDVuR+shzIcc50qeLzHz?=
+ =?us-ascii?Q?fhyohuW6TYYCS248XQyOpwnhilnGq0piMp6qyVVx7d4IdLdr4wxfGEc+SwEg?=
+ =?us-ascii?Q?RQdSo8Pq7OTBrYlm0xRZlv9vlXlr+GyMNIh6tkv7viC0Q7r6+Dxhm4D2MibF?=
+ =?us-ascii?Q?k2Z6Jk9muLTdRREt8FnPvdhmVyT2XL+lNUlFJHQwptRhBLN1bVAPHgfdjc3C?=
+ =?us-ascii?Q?guW/ls2bJfbMMiFnR/KoAyewxxH3pPu9DdBHw4B2+cqUWO+PYB95HOnJuup4?=
+ =?us-ascii?Q?q7bcrgK8AydSHPfvpnusDtAoEhNAU1cwN9Z7OQuZZGnpRggs8Pj1htxCaLh/?=
+ =?us-ascii?Q?cgamM/g3nrnwNAk2kO7rQZ+iS2z5QRjnHyN1GVfHK9s9DIn8KxjkSp+ejObF?=
+ =?us-ascii?Q?MCLNND8xWhEceQ5WM5xAdJ7yRAhwD2k6R0E9NCGMF+4mocd/Zx2xN309Xb42?=
+ =?us-ascii?Q?Hhg8vB1RDYA2rIpkLtqJO7JklI8BdJZATolz8/j4RFIgAmMZDGFo+QNmavfh?=
+ =?us-ascii?Q?DXArp5KzllKa1p9rmE5R79KHviVPNxOodjEqx3qf1HZAQ4HxT+URQerQ0lnW?=
+ =?us-ascii?Q?PFHQCdGUOMDGATKxy7FBgkPhS9DpG4n9f+nCRAWD9lMUCVwLDpGRvT8aDI0N?=
+ =?us-ascii?Q?qSHeSCP3EWtR+ObO0t0YYIB60K9j7LjPfioPIDlg2usmm8sPBzXWz8JzWnpO?=
+ =?us-ascii?Q?wQvtPx4piZ4RMIO1WYW1ivPRHrf14A1kq+C7up/IPiZS8Jzm1TSKKNcrLSx5?=
+ =?us-ascii?Q?VfdH4O8xdG381MPUT+BWbGzsIE0Lb7Dh/GyJECawUn2IkOSjgjGnqLMp11+A?=
+ =?us-ascii?Q?bS3UOl1sNcvjTgnifpz1CSEWiRkrNOG8hyuvelJjJgz7M17X2Qooen36pUeV?=
+ =?us-ascii?Q?4ZNcOcMQcGU+WCAEEGpLDXcg2+CrwciI59k95VoLVwRETCK6qLx+SUWf+ytf?=
+ =?us-ascii?Q?B9+P2tPft0TciyW+a5JzFlIkvZzt30SistltC/fO7b8NcW4II/RZBKwd48US?=
+ =?us-ascii?Q?JpuEclGXz93KmpMicAeQiLy1AR36QZTcHCHQjyNc3oQWfLOLunnzFqZqbbDc?=
+ =?us-ascii?Q?Vro3GfQUB7j4knTQ3rZVl3nwAe8P?=
+X-Forefront-Antispam-Report:
+	CIP:216.228.117.161;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc6edge2.nvidia.com;CAT:NONE;SFS:(13230040)(7416014)(82310400026)(36860700013)(376014)(1800799024);DIR:OUT;SFP:1101;
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 15 Oct 2024 02:01:55.5762
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: d4f0adc7-fcc5-418b-198a-08dcecbd5884
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.117.161];Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-AuthSource:
+	BL6PEPF00022574.namprd02.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MW4PR12MB7336
 
-On Mon, Oct 14, 2024 at 07:09:08PM +0100, Robin Murphy wrote:
-> On 14/10/2024 8:58 am, Ming Lei wrote:
-> > On Mon, Oct 14, 2024 at 09:41:51AM +0200, Christoph Hellwig wrote:
-> > > On Mon, Oct 14, 2024 at 09:23:14AM +0200, Hannes Reinecke wrote:
-> > > > > 3) some storage utilities
-> > > > > - dm thin provisioning utility of thin_check
-> > > > > - `dt`(https://github.com/RobinTMiller/dt)
-> > > > > 
-> > > > > I looks like same user buffer is used in more than 1 dio.
-> > > > > 
-> > > > > 4) some self cooked test code which does same thing with 1)
-> > > > > 
-> > > > > In storage stack, the buffer provider is far away from the actual DMA
-> > > > > controller operating code, which doesn't have the knowledge if
-> > > > > DMA_ATTR_SKIP_CPU_SYNC should be set.
-> > > > > 
-> > > > > And suggestions for avoiding this noise?
-> > > > > 
-> > > > Can you check if this is the NULL page? Operations like 'discard' will
-> > > > create bios with several bvecs all pointing to the same NULL page.
-> > > > That would be the most obvious culprit.
-> > > 
-> > > The only case I fully understand without looking into the details
-> > > is raid1, and that will obviously map the same data multiple times
-> > 
-> > The other cases should be concurrent DIOs on same userspace buffer.
+On Tue, Oct 15, 2024 at 09:15:01AM +0800, Zhangfei Gao wrote:
+
+> > > iommufd_device_bind
+> > > iommufd_device_attach
+> > > iommufd_vdevice_alloc_ioctl
+> > >
+> > > iommufd_device_detach
+> > > iommufd_device_unbind // refcount check fail
+> > > iommufd_vdevice_destroy ref--
+> >
+> > Things should be symmetric. As you suspected, vdevice should be
+> > destroyed before iommufd_device_detach.
 > 
-> active_cacheline_insert() does already bail out for DMA_TO_DEVICE, so it
-> returning -EEXIST to tickle the warning would seem to genuinely imply these
-> are DMA mappings requesting to *write* the same cacheline concurrently,
-> which is indeed broken in general.
+> I am trying based on your for_iommufd_viommu_p2-v3 branch, do you have
+> this issue?
+> In checking whether close fd before unbind?
 
-The two io_uring tests are READ, and the dm thin_check are READ too.
+Oops, my bad. I will provide a fix.
 
-For the raid1 case, the warning is from raid1_sync_request() which may
-have both READ/WRITE IO.
-
-Thanks,
-Ming
-
+Nicolin
