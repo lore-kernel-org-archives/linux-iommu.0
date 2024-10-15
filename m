@@ -1,45 +1,45 @@
 Received: from mail.8bytes.org (mail.8bytes.org [85.214.250.239])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 504A418A6B7
-	for <iommu@lists.linux.dev>; Tue, 15 Oct 2024 08:38:57 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 6234018BBA2
+	for <iommu@lists.linux.dev>; Tue, 15 Oct 2024 08:39:20 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=85.214.250.239
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1728981538; cv=none; b=u0/exrGKp7sFL7YlgSE1pSgyDK7CgSvfIPTLOwYYCuGr6kqxz97utTu4RJb9wZOjuKNuVnU81KJLIG8GYmwaahCfYeeOUd1thuJPI/WMRwLSnRajMJUxm+JqYXTpvn330UAjR3U3ngJ5GGCAiyWxSemxvC5QNtb4gCR47GKYcWc=
+	t=1728981562; cv=none; b=mBDufmbh3Y4iOHFX+Qm652l8VnRizurIrFBQvImLNQy6glUNEvZ6mKcIAs7BZGd0/qWWeJsXfDB6DObHcVS8kcIRlChA6HiaWYS9n2A3xgge0EZRz6vCXSbXYqYoSrYNH8Pirf+NwgmBM17pQPZPIf2STfI7OEBkB5w3decIxf4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1728981538; c=relaxed/simple;
-	bh=0FbnWK8i7zh/Uzcrh9SXp7p6PHAOtyguRZjxi5hwyqE=;
+	s=arc-20240116; t=1728981562; c=relaxed/simple;
+	bh=6MeeYMCx7IGVlA5tDhutIlFwfDSDpZVFBDMGj+nFIs4=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=brFapKSKMxopHYhCc3zr4tWc+PW21SaCQ1VgTJObEiRAJZFwlLy/nFz9jZhwTBID5CeIMAEfJWWyUx1TKq3wpYa2sSf/E44mTQY6odtIYkk1I8n5U7A96gxiH4S2UMbsjiwNBI9wchQjksU1ttR0aToIVZQvjOgsNkODm21WKl8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=8bytes.org; spf=pass smtp.mailfrom=8bytes.org; dkim=pass (2048-bit key) header.d=8bytes.org header.i=@8bytes.org header.b=4ZfsAFl6; arc=none smtp.client-ip=85.214.250.239
+	 Content-Type:Content-Disposition:In-Reply-To; b=L3QMV2WK7XnB7paYePTV5Wds7fKQBnPKj3WnUoegCHuv1vXKLLqdXcx/qw+b8jVc2PcHNEdU3Gw53OYw67CSDvPEko21xdpQPtjaspOO1Qya638xSBzwRz6r0FVCSTEHTwzFTZWVjD7/QIN9Rhgklt2JKilhhqu9L7UIQxA2orE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=8bytes.org; spf=pass smtp.mailfrom=8bytes.org; dkim=pass (2048-bit key) header.d=8bytes.org header.i=@8bytes.org header.b=l2WhzKHL; arc=none smtp.client-ip=85.214.250.239
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=8bytes.org
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=8bytes.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=8bytes.org header.i=@8bytes.org header.b="4ZfsAFl6"
+	dkim=pass (2048-bit key) header.d=8bytes.org header.i=@8bytes.org header.b="l2WhzKHL"
 Received: from 8bytes.org (p549219d2.dip0.t-ipconnect.de [84.146.25.210])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange ECDHE (P-256) server-signature RSA-PSS (2048 bits) server-digest SHA256)
 	(No client certificate requested)
-	by mail.8bytes.org (Postfix) with ESMTPSA id 50FF62A6C15;
-	Tue, 15 Oct 2024 10:38:56 +0200 (CEST)
+	by mail.8bytes.org (Postfix) with ESMTPSA id 5BD5A2A6C15;
+	Tue, 15 Oct 2024 10:39:19 +0200 (CEST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=8bytes.org;
-	s=default; t=1728981536;
-	bh=0FbnWK8i7zh/Uzcrh9SXp7p6PHAOtyguRZjxi5hwyqE=;
+	s=default; t=1728981559;
+	bh=6MeeYMCx7IGVlA5tDhutIlFwfDSDpZVFBDMGj+nFIs4=;
 	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=4ZfsAFl6383aQCCFOfzGUTezbb0jcBVCVReb1DmC/i6D2eVq6o4+4LLlvNBiu+W8Z
-	 W8MN3B8dmRHRfV/DfzdIBk3lbHcSPzXnBgoIEDn6sVmosuXm51+cT/ByxIaEce5j0j
-	 7PvlpVrEMVW2K/KrEab+Vpn6R6C++zGdwvgBfEBjYZKca8wDrfzA4ZRMzgdw+Db0Zw
-	 rYF+ytvSI9NdZ+SnI9F6gdXKuyYHSaY//scxWwPxxPEmLnmzmcHjiywmZumA95Z/s6
-	 ROJal8TD1980+3gtjCly0N13ds3lEux5qQkeLoXHFZSLOkDGs9emTAw9CvM5w/PEVm
-	 rOWmmqJNg9QHw==
-Date: Tue, 15 Oct 2024 10:38:55 +0200
+	b=l2WhzKHL5yF17xbhKEclhhGScuomkdko396s4/jNK+OFRM/UChaogKfdSKklXtqdH
+	 rMhyHR+ZZuvN5mzeGtwMZLhKLBHbKktD4X/vNuwyaJxrIy5gsc531N3avWwoKjxDtQ
+	 5TqFFaAn2gHF9ITbMl3am5vPkPjcn1nCXXwOFGXM5bctRkpEfs9DwEvTHme3l9Mqsz
+	 e+Mw3hHX3j8IzESr2iCtcz6z+lvwSxwQ4FCAT6wuLNPVRTxD/dRvBBMVSZJN2iskHF
+	 gAd4x2bl/U8DBhgQZnt2XhlDPuzSZPQp5MtZH+VT6AimL9fh/o25Znu0pzP2vaBocl
+	 hX65lsQYq08Ug==
+Date: Tue, 15 Oct 2024 10:39:18 +0200
 From: Joerg Roedel <joro@8bytes.org>
 To: Vasant Hegde <vasant.hegde@amd.com>
 Cc: iommu@lists.linux.dev, will@kernel.org, robin.murphy@arm.com,
 	suravee.suthikulpanit@amd.com
-Subject: Re: [PATCH v2 01/10] iommu/amd: Use ida interface to manage
- protection domain ID
-Message-ID: <Zw4qHwmZ0vRuyHNI@8bytes.org>
+Subject: Re: [PATCH v2 02/10] iommu/amd: Remove protection_domain.dev_cnt
+ variable
+Message-ID: <Zw4qNuihQKW1lbBD@8bytes.org>
 References: <20240910065812.6091-1-vasant.hegde@amd.com>
- <20240910065812.6091-2-vasant.hegde@amd.com>
+ <20240910065812.6091-3-vasant.hegde@amd.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -48,17 +48,20 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20240910065812.6091-2-vasant.hegde@amd.com>
+In-Reply-To: <20240910065812.6091-3-vasant.hegde@amd.com>
 
-On Tue, Sep 10, 2024 at 06:58:03AM +0000, Vasant Hegde wrote:
-> Replace custom domain ID allocator with IDA interface.
+On Tue, Sep 10, 2024 at 06:58:04AM +0000, Vasant Hegde wrote:
+> protection_domain->dev_list tracks list of attached devices to
+> domain. We can use list_* functions on dev_list to get device count.
+> Hence remove 'dev_cnt' variable.
+> 
+> No functional change intended.
 > 
 > Signed-off-by: Vasant Hegde <vasant.hegde@amd.com>
+> Reviewed-by: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
 > ---
->  drivers/iommu/amd/amd_iommu.h       |  2 +
->  drivers/iommu/amd/amd_iommu_types.h |  3 --
->  drivers/iommu/amd/init.c            | 29 +++++----------
->  drivers/iommu/amd/iommu.c           | 58 ++++++++++++++---------------
->  4 files changed, 40 insertions(+), 52 deletions(-)
-
+>  drivers/iommu/amd/amd_iommu_types.h | 1 -
+>  drivers/iommu/amd/iommu.c           | 7 +------
+>  2 files changed, 1 insertion(+), 7 deletions(-)
+ 
 Reviewed-by: Joerg Roedel <jroedel@suse.de>
