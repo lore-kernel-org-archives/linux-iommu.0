@@ -1,179 +1,133 @@
-Received: from mail-pl1-f175.google.com (mail-pl1-f175.google.com [209.85.214.175])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mx0a-0031df01.pphosted.com (mx0a-0031df01.pphosted.com [205.220.168.131])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 56C7E1B85DF
-	for <iommu@lists.linux.dev>; Tue, 15 Oct 2024 08:13:38 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.175
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 581011C7617;
+	Tue, 15 Oct 2024 08:16:34 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.168.131
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1728980019; cv=none; b=Tb7IMgBuQQNe+efYGpKDb+lhVDofDUW08UvFkUD2O6bWfPBSIVxbv8CVawM+L7Kq8Bzyu0PqOAI4LuhDqK7nY0OEUl4PgTAPZx1pTRZnCjdlavQFGN2EB4AMMO5Zwmzqm/d6D1x2H6Z7F4JA+imfn4ejLiT9FBuN7AOiAVDYMm0=
+	t=1728980197; cv=none; b=Ydr8BbM6vlD2o3ybegjpEJDsvvaJHSsZRweEE3CBcNweV56yLuEkdgOLyfwfehhS7xpLFgao60nbaky+9yqYx+41PyFol2fkpGAViz2j4cq5BwtfBfzX5a2uxihug0rjxD11jXcHBWrxTAbO1nKyTkgXRvXGe/kLbHNOTvbXHaU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1728980019; c=relaxed/simple;
-	bh=76s6i7gYpLDwoZZ7QD2swz8F8rh0lhU+G6L9FONSb5M=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=YUly0eDsCRDFPy9VEcjlY1U4jnbpMx3lcorjzbp/cjV1AvJLLGmbPhPbWDJi5ywNym0uFVjMM6N+TwuqgPUSxwloeG2PMM94+H8dQpisCy2RsyRNvt8+zbs1q0M5M6yTg/QRcU9dS/I6IGQO7KjVeU4bX201c1PBzVCbR/ZMBKk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=pQskWq5X; arc=none smtp.client-ip=209.85.214.175
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
+	s=arc-20240116; t=1728980197; c=relaxed/simple;
+	bh=dTBx89CrN28r6BhWLTutFCsiCaXmzQGGx8LoLYKVUBU=;
+	h=From:To:CC:Subject:Date:Message-ID:MIME-Version:Content-Type; b=B6m985dDhIHmQAV+NzpoilOUH5nHuB6NTg/YBKPgB2Cq1C6jSGcJ9ifkBb/83jh2+wdwS05/RPmLSxI2IMOY3l2rWVJZOb2H4daH/YtIlMml1gC5WBlngN2j2r9IkVPazTJ+hjbyKYAYdQCIK+i32hWVUhJTjE6awLMhB+bG1mE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com; spf=pass smtp.mailfrom=quicinc.com; dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b=U0N60SUt; arc=none smtp.client-ip=205.220.168.131
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=quicinc.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="pQskWq5X"
-Received: by mail-pl1-f175.google.com with SMTP id d9443c01a7336-20ca03687fdso451535ad.0
-        for <iommu@lists.linux.dev>; Tue, 15 Oct 2024 01:13:38 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20230601; t=1728980018; x=1729584818; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=TA16MG/7R5xQpvUXP/XMeAYs+VSbwm9U48Qbuo70jHU=;
-        b=pQskWq5Xt5pcVxmB7eBznSq+OKkz04RL5+uYI5N2veh0DYRP9lK+Mm7asA6kfNWhYz
-         MySP1QGnYnt8wfa8m8N2FOWSHGKD1g+5agGfd+iY6GQItwbypL2srtcz4sZTfFx0Z3xQ
-         0HhPa/gwg06w//PakCtUVal7IupX2nuxPBRsat65az1GqbJ6G/oPaqnjgbezFqYtEshS
-         hZMMDQAcJM9XckwsAw6EXmrz27T7n1TuCf85m1IeYgFokIz/0fQbXm3JCrYvKFGD5VUt
-         chr7YXrAA0+4yHDzroUrhbsTGTsd9UVpl70wC5txoYA14MqkgSA8sdXxL4AklS/ABCkA
-         lBnQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1728980018; x=1729584818;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=TA16MG/7R5xQpvUXP/XMeAYs+VSbwm9U48Qbuo70jHU=;
-        b=Wa3tKKojj+lWeom/DCKZzUJRBTlk6/R1lppIVytcSoIRO3yOBnkT0WXf5+pJ+PFG5V
-         CYf+cfOIaqRpDQbCbKaKDdPwPk4/vGlTK/1KqDg2vLe28oSH4moUTXtgIzpjks+QKPMY
-         TLV2TnnfRVyX6Zkt/bzQOQPdVBTmB/Nfpn6isQaBOYGxizfQsIWXOZEMTz51vHSdsCCs
-         BCyapM7oGl7+VtrXY7+zSApR73fR+mQUJnZuu9xkgJ6EieYLHiPyAfCqSdKpvwxjLo9/
-         zbpke7gjyA4ex/y6H/qHpLv1Rp1LdrBjSM/ALWV/d6m9kBpMJhDR+01BaFGYka3/JkkP
-         shEw==
-X-Forwarded-Encrypted: i=1; AJvYcCXwNU+JcL6qf3ta/ULTkqS/pKYFzpyuFQ77rgyv1viCtaCEDpjTgFyjObJQUKxM1xZcV4Ouzg==@lists.linux.dev
-X-Gm-Message-State: AOJu0YyHUQEWyf+D7lOvqCIibg3CM3b5aVK52Ussb+pco1BO+1GGnrqh
-	Tq8FoXm8ME0p4O9Sv+rJSPhmmWmyZrg9vmLuB2LMbSIlUR6juY5M3LVqV3E7JA==
-X-Google-Smtp-Source: AGHT+IFPYSMCddOeaPqNVedMQyNkNHHitiRtEnpSVjBP9NxlbBg1ePA85fokMg2Rqob3akpUMvOQwg==
-X-Received: by 2002:a17:903:41c8:b0:20b:81bb:4a81 with SMTP id d9443c01a7336-20cc02a3b50mr5194105ad.7.1728980017312;
-        Tue, 15 Oct 2024 01:13:37 -0700 (PDT)
-Received: from google.com (62.166.143.34.bc.googleusercontent.com. [34.143.166.62])
-        by smtp.gmail.com with ESMTPSA id d9443c01a7336-20d17f87cbcsm6978725ad.8.2024.10.15.01.13.34
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 15 Oct 2024 01:13:36 -0700 (PDT)
-Date: Tue, 15 Oct 2024 08:13:28 +0000
-From: Pranjal Shrivastava <praan@google.com>
-To: "Peng Fan (OSS)" <peng.fan@oss.nxp.com>
-Cc: Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
-	Joerg Roedel <joro@8bytes.org>, Rob Herring <robh@kernel.org>,
-	Krzysztof Kozlowski <krzk+dt@kernel.org>,
-	Conor Dooley <conor+dt@kernel.org>, Joy Zou <joy.zou@nxp.com>,
-	linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev,
-	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-	Peng Fan <peng.fan@nxp.com>, Jason Gunthorpe <jgg@ziepe.ca>
-Subject: Re: [PATCH RFC 2/2] iommu/arm-smmu-v3: Bypass SID0 for NXP i.MX95
-Message-ID: <Zw4kKDFOcXEC78mb@google.com>
-References: <20241015-smmuv3-v1-0-e4b9ed1b5501@nxp.com>
- <20241015-smmuv3-v1-2-e4b9ed1b5501@nxp.com>
+	dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b="U0N60SUt"
+Received: from pps.filterd (m0279865.ppops.net [127.0.0.1])
+	by mx0a-0031df01.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 49F1UIMc019156;
+	Tue, 15 Oct 2024 08:16:25 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=quicinc.com; h=
+	cc:content-type:date:from:message-id:mime-version:subject:to; s=
+	qcppdkim1; bh=ljwquIIH+aARtWboUpPEeCCRYNHZTbnu0I5DzBvD83k=; b=U0
+	N60SUt5u8Ge5v0hTfKbXqsNW1ZFsuAJ052cU1dLgdy7WqvAS4iEKw+uzMsBfjhbU
+	dda7T1fap9c6z/F7Wo7W2aTdGDQtIAWME8iDTZSw2iXAn0xdc2Sm1LujlF83LLnP
+	jqijhc4f892xcD0RSLCrb840jSkFH0rB0VFKqzI1YhpiigtFmfXKa9BNaKt+DG6B
+	skQm4Zn0M5e629kz1zzYXyt4j9dVCQ/wEBKobCDm8HBu5jO1JzNlt7U5TzUVsKRP
+	ej/fVFnXmbmgtACwxKEig2co5SVWD9YuTxsfPD0vSDVj1OAm0a1C5RwoqjIsTnCS
+	n0cx7pSbVDYvfkUZHXHQ==
+Received: from nalasppmta04.qualcomm.com (Global_NAT1.qualcomm.com [129.46.96.20])
+	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 427g2rpwcq-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Tue, 15 Oct 2024 08:16:24 +0000 (GMT)
+Received: from nalasex01b.na.qualcomm.com (nalasex01b.na.qualcomm.com [10.47.209.197])
+	by NALASPPMTA04.qualcomm.com (8.18.1.2/8.18.1.2) with ESMTPS id 49F8GNqF005566
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Tue, 15 Oct 2024 08:16:23 GMT
+Received: from hu-qqzhou-sha.qualcomm.com (10.80.80.8) by
+ nalasex01b.na.qualcomm.com (10.47.209.197) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.1544.9; Tue, 15 Oct 2024 01:16:20 -0700
+From: Qingqing Zhou <quic_qqzhou@quicinc.com>
+To: <andersson@kernel.org>, <konradybcio@kernel.org>, <robh@kernel.org>,
+        <krzk+dt@kernel.org>, <conor+dt@kernel.org>, <robimarko@gmail.com>,
+        <will@kernel.org>, <robin.murphy@arm.com>, <joro@8bytes.org>
+CC: <linux-arm-msm@vger.kernel.org>, <devicetree@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>, <iommu@lists.linux.dev>,
+        Qingqing Zhou
+	<quic_qqzhou@quicinc.com>
+Subject: [PATCH v2 0/4] Add support for APPS SMMU on QCS615
+Date: Tue, 15 Oct 2024 13:45:59 +0530
+Message-ID: <20241015081603.30643-1-quic_qqzhou@quicinc.com>
+X-Mailer: git-send-email 2.17.1
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20241015-smmuv3-v1-2-e4b9ed1b5501@nxp.com>
+Content-Type: text/plain
+X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
+ nalasex01b.na.qualcomm.com (10.47.209.197)
+X-QCInternal: smtphost
+X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
+X-Proofpoint-ORIG-GUID: RggG4Y5ymahbTU_F1-mYrMIHrOJJO8lL
+X-Proofpoint-GUID: RggG4Y5ymahbTU_F1-mYrMIHrOJJO8lL
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.293,Aquarius:18.0.1039,Hydra:6.0.680,FMLib:17.12.60.29
+ definitions=2024-09-06_09,2024-09-06_01,2024-09-02_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 priorityscore=1501
+ lowpriorityscore=0 suspectscore=0 phishscore=0 malwarescore=0
+ clxscore=1015 spamscore=0 adultscore=0 mlxlogscore=999 impostorscore=0
+ mlxscore=0 bulkscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.19.0-2409260000 definitions=main-2410150055
 
-On Tue, Oct 15, 2024 at 11:14:43AM +0800, Peng Fan (OSS) wrote:
-> From: Peng Fan <peng.fan@nxp.com>
-> 
-> i.MX95 eDMA3 connects to DSU ACP, supporting dma coherent memory to
-> memory operations. However TBU is in the path between eDMA3 and ACP,
-> need to bypass the default SID 0 to make eDMA3 work properly.
-> 
-> Signed-off-by: Peng Fan <peng.fan@nxp.com>
-> ---
->  drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 19 ++++++++++++++++---
->  drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h |  1 +
->  2 files changed, 17 insertions(+), 3 deletions(-)
-> 
-> diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-> index 737c5b88235510e3ddb91a28cecbdcdc14854b32..3db7b3e2ac94e16130fc0356f7954ffa1a9dfb33 100644
-> --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-> +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-> @@ -80,6 +80,7 @@ DEFINE_MUTEX(arm_smmu_asid_lock);
->  static struct arm_smmu_option_prop arm_smmu_options[] = {
->  	{ ARM_SMMU_OPT_SKIP_PREFETCH, "hisilicon,broken-prefetch-cmd" },
->  	{ ARM_SMMU_OPT_PAGE0_REGS_ONLY, "cavium,cn9900-broken-page1-regspace"},
-> +	{ ARM_SMMU_OPT_IMX95_BYPASS_SID0, "nxp,imx95-bypass-sid-zero"},
->  	{ 0, NULL},
->  };
+Enable APPS SMMU function on QCS615 platform. APPS SMMU is required
+for address translation in devices including Ethernet/UFS/USB and
+so on.
 
-Aghh, let's not put HW-specific bypass under `arm_smmu_options`.
-Otherwise, this might become a huge list of SoCs wanting to bypass SIDs.
+Add the SCM node for SMMU probing normally. SMMU driver probe will
+check qcom_scm ready or not, without SCM node, SMMU driver probe will
+defer.
+The dmesg log without SCM node:
+platform 15000000.iommu: deferred probe pending: arm-smmu: qcom_scm not ready
 
->  
-> @@ -4465,7 +4466,7 @@ static void __iomem *arm_smmu_ioremap(struct device *dev, resource_size_t start,
->  	return devm_ioremap_resource(dev, &res);
->  }
->  
-> -static void arm_smmu_rmr_install_bypass_ste(struct arm_smmu_device *smmu)
-> +static void arm_smmu_install_bypass_ste(struct arm_smmu_device *smmu)
->  {
->  	struct list_head rmr_list;
->  	struct iommu_resv_region *e;
-> @@ -4496,6 +4497,18 @@ static void arm_smmu_rmr_install_bypass_ste(struct arm_smmu_device *smmu)
->  	}
->  
->  	iort_put_rmr_sids(dev_fwnode(smmu->dev), &rmr_list);
-> +
-> +	if (smmu->options & ARM_SMMU_OPT_IMX95_BYPASS_SID0) {
-> +		int ret = arm_smmu_init_sid_strtab(smmu, 0);
-> +
-> +		if (ret) {
-> +			dev_err(smmu->dev, "i.MX95 SID0 bypass failed\n");
-> +			return;
-> +		}
-> +
-> +		arm_smmu_make_bypass_ste(smmu,
-> +					 arm_smmu_get_step_for_sid(smmu, 0));
-> +	}
->  }
+With the SCM node, SMMU can probe normally, but SCM driver still fails
+to probe because of one SCM bug:
+qcom_scm firmware:scm: error (____ptrval____): Failed to enable the TrustZone memory allocator
+qcom_scm firmware:scm: probe with driver qcom_scm failed with error 4
+The above SCM bug is fixed by:
+https://lore.kernel.org/all/20241005140150.4109700-2-quic_kuldsing@quicinc.com/
+But above patch doesn't impact building of current patch series, this patch
+series can build successfully without above patch.
 
-Umm.. this was specific for rmr not a generic thing. I'd suggest to
-avoid meddling with the STEs directly for acheiving bypass. Playing
-with the iommu domain type could be neater. Perhaps, modify the
-ops->def_domain_type to return an appropriate domain?
+Dependency:
+https://lore.kernel.org/all/20240926-add_initial_support_for_qcs615-v3-0-e37617e91c62@quicinc.com/
 
-In general, adding a property/config for bypassing SIDs/devices could
-potentially cause security concerns if *somehow* a device can spoof an
-SID. For example, if a PCIe device is bypassed it would be easy for
-another PCIe endpoint to spoof it's ID. Similarly, certain HW
-implementations may provide the option to programmable SIDs, for
-example, a HW register to set SIDs, which if compromised can spoof other
-SIDs. Although, I'd like to see what the others think about this.
+Changes in v2:
+- Address the comments on bindings from Krzysztof.
+- Improve the commit messages and cover letter.
+- Link to v1: https://lore.kernel.org/all/20241011063112.19087-1-quic_qqzhou@quicinc.com/
 
->  
->  static void arm_smmu_impl_remove(void *data)
-> @@ -4614,8 +4627,8 @@ static int arm_smmu_device_probe(struct platform_device *pdev)
->  	/* Record our private device structure */
->  	platform_set_drvdata(pdev, smmu);
->  
-> -	/* Check for RMRs and install bypass STEs if any */
-> -	arm_smmu_rmr_install_bypass_ste(smmu);
-> +	/* Install bypass STEs if any */
-> +	arm_smmu_install_bypass_ste(smmu);
->  
->  	/* Reset the device */
->  	ret = arm_smmu_device_reset(smmu);
-> diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
-> index 1e9952ca989f87957197f4d4b400f9d74bb685ac..06481b923284776e7dc4f3301e5cbe8ab7869a9c 100644
-> --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
-> +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
-> @@ -733,6 +733,7 @@ struct arm_smmu_device {
->  #define ARM_SMMU_OPT_MSIPOLL		(1 << 2)
->  #define ARM_SMMU_OPT_CMDQ_FORCE_SYNC	(1 << 3)
->  #define ARM_SMMU_OPT_TEGRA241_CMDQV	(1 << 4)
-> +#define ARM_SMMU_OPT_IMX95_BYPASS_SID0	(1 << 5)
->  	u32				options;
->  
->  	struct arm_smmu_cmdq		cmdq;
->
-> -- 
-> 2.37.1
-> 
->
+Qingqing Zhou (4):
+  dt-bindings: firmware: qcom,scm: document QCS615 SCM
+  dt-bindings: arm-smmu: document QCS615 APPS SMMU
+  arm64: dts: qcom: qcs615: add the SCM node
+  arm64: dts: qcom: qcs615: add the APPS SMMU node
 
-Thanks,
-Pranjal
+ .../bindings/firmware/qcom,scm.yaml           |  1 +
+ .../devicetree/bindings/iommu/arm,smmu.yaml   |  2 +
+ arch/arm64/boot/dts/qcom/qcs615.dtsi          | 81 +++++++++++++++++++
+ 3 files changed, 84 insertions(+)
+
+
+base-commit: 0cca97bf23640ff68a6e8a74e9b6659fdc27f48c
+prerequisite-patch-id: 3a76212d3a3e930d771312ff9349f87aee5c55d5
+prerequisite-patch-id: 8a2454d5e07e56a6dd03f762f498051065635d85
+prerequisite-patch-id: 46cdc5640598b60d2f5449af444d6d4e479c00b8
+prerequisite-patch-id: 050d1dd8cc9397618e570e6de2d81d0c32c10d7a
+prerequisite-patch-id: cd9fc0a399ab430e293764d0911a38109664ca91
+prerequisite-patch-id: 07f2c7378c7bbd560f26b61785b6814270647f1b
+prerequisite-patch-id: f9680e3c90d8f05babbcadd7b7f5174f484a8275
+prerequisite-patch-id: 760a2b8f2acff7a9683bfe8f2d353f7caa6e5580
+prerequisite-patch-id: 54b4dd987711302b083f714c6f230726c7781042
+prerequisite-patch-id: 624720e543d7857e46d3ee49b8cea413772deb4c
+prerequisite-patch-id: 04ca722967256efddc402b7bab94136a5174b0b9
+prerequisite-patch-id: ab88a42ec69ad90e8509c9c5b7c6bdd595a7f783
+prerequisite-patch-id: 918724fafe43acaa4c4b980bfabe36e9c3212cd1
+prerequisite-patch-id: 3bae513ca3da06d6f175502924a1fec6f9424def
+prerequisite-patch-id: 57afeee80c9aa069ee243f5a5b634702867d20f1
+-- 
+2.17.1
+
