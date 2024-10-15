@@ -1,125 +1,65 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 07D9C17DFE3;
-	Tue, 15 Oct 2024 08:20:59 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+Received: from mail.8bytes.org (mail.8bytes.org [85.214.250.239])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 3E56D1C879E
+	for <iommu@lists.linux.dev>; Tue, 15 Oct 2024 08:21:44 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=85.214.250.239
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1728980460; cv=none; b=kPfRGyp8vXwgYT1LaEGYMI3mWiRatvrWkToOiIP/nvZFIc45nItnnmGqd5n+YsUWFigYbIbj2nLpeAqUfn7juGbDq4Yu3M3J38ha0P1P236WFA+rp4XQ/OqAtB5W+gW6zGhGm+zPKhU00ERgsBIM6J1LqOHfEXqENSNgP1QHdoI=
+	t=1728980505; cv=none; b=WXW6a7FjdUmoDE5vx6bkBgVOXueTKe5u50w7z24UTbxCnwIX0OBBeqzwT10/QfcHKXjxZZX8tK2P2kvnJZF+elqplqk1lxVU9c9UEVNVsW09EFNY/MvLkcmwhCGXY6RJHn4SOPK2pIEZ1hNSoxysQfJj53RHH99IaORPU243w6k=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1728980460; c=relaxed/simple;
-	bh=BEsjhAloys+92l43HI3l8hVpnayCsccPCe1Fx59B3GY=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=i8BM0Lh6Xhly+YeLT/+1EFj9DyhM/5UxOU3/wQ0N0K/oJRjMcCxJFeAlDAsDmKejyHT4VBqrrjkx7iBEuaXr7uSVVFjMbZBi7TAQoVUZbXQAObCDG0EHB9KHnKT2IGdhsJ36faCWpZ8uJaaB27FYivYmBZqhQYf9G9qyAmCREOw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=WrzBY8Ig; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1728980505; c=relaxed/simple;
+	bh=FJu8jxT7yybdlKVwSMNi866ZJN5F9ybvNy+FS1T0B/g=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=ifKhn0l02MZkpOxsUvH/Dc2L1r6jDp3KrfkHnLdp8b+L+ukH/KYFlXTNSOcJcI4p6ot5ivcsQM2DYC1xLtXQCnJw44/kXUnru3fpj5TuaUHEAk+uRPALaevQqn6v58KWf10mJDUd3YRFALVCL8GXeqZgYZA1VA4ZF13n/LLl6gA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=8bytes.org; spf=pass smtp.mailfrom=8bytes.org; dkim=pass (2048-bit key) header.d=8bytes.org header.i=@8bytes.org header.b=fm6R22uW; arc=none smtp.client-ip=85.214.250.239
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=8bytes.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=8bytes.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="WrzBY8Ig"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D65AAC4CEC7;
-	Tue, 15 Oct 2024 08:20:54 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1728980459;
-	bh=BEsjhAloys+92l43HI3l8hVpnayCsccPCe1Fx59B3GY=;
-	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-	b=WrzBY8Ig6dySzuCTHRPNFgnyUtKHfY4UW4jE4ULsCkHYtb2RPRFXQF4apvkS99OxK
-	 OzjWh9uIpl0vkns4114m2ttqMz12NEPFoCr43uZZ2rNN+lbMPIO5bVK8jwzjMccmR2
-	 /N2zXEJ+yEleJ9wOYQv+9n4h1yJPKLh0RM/6BybaF7fYwQ8QSQ04VZwQpkjBxMdY06
-	 lzhZTlHqGpu/bSJeGlgeBVSQUXZeyog1U2RrriLhtk/ajRK7UDbgYszLyI8tue24B6
-	 7+KqqB+4382YnGrsyM/S33KbE7n9Zm+3J00VtcXxYpnNl+qkALTJ+XiDq7T6D6adC2
-	 mk7Fb4fu6MtEg==
-Message-ID: <e0bd108f-1133-473a-a0e5-6efe1b19f50d@kernel.org>
-Date: Tue, 15 Oct 2024 10:20:51 +0200
+	dkim=pass (2048-bit key) header.d=8bytes.org header.i=@8bytes.org header.b="fm6R22uW"
+Received: from 8bytes.org (p549219d2.dip0.t-ipconnect.de [84.146.25.210])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange ECDHE (P-256) server-signature RSA-PSS (2048 bits) server-digest SHA256)
+	(No client certificate requested)
+	by mail.8bytes.org (Postfix) with ESMTPSA id 55C1C2A7853;
+	Tue, 15 Oct 2024 10:21:43 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=8bytes.org;
+	s=default; t=1728980503;
+	bh=FJu8jxT7yybdlKVwSMNi866ZJN5F9ybvNy+FS1T0B/g=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=fm6R22uWlTJA/xlFMaT7zegiH0tqkvyC8coAgom2ZDO1xhwDe9S++kP3FqI/FfEsU
+	 gy4Xs8L3u1NkEe0wzEG8TlM1u56N9z/T3XObwsrb5azhSUabCU40NLhKEUY3UwuBfy
+	 9OESxafPRMMMaGUTOpwFPGmjH9s42Rs2+cGu44wPQaUEudCgDun8fQukzeny3UrnZX
+	 KJq8qDJ7WOKv+C/wqJbbEVVAKZxUiCA78uxBkF1mXfwN5IPZ4v/1ofUGt0tPiAryQk
+	 txxcdbXHFKS+lkdMtiKxNb7GgagpiHQK+J2/d4EVgWnE8OvL4CPjn4p2WunBEckPHu
+	 S/6jBl94svJYQ==
+Date: Tue, 15 Oct 2024 10:21:42 +0200
+From: Joerg Roedel <joro@8bytes.org>
+To: Julia Lawall <Julia.Lawall@inria.fr>
+Cc: kernel-janitors@vger.kernel.org, Will Deacon <will@kernel.org>,
+	Robin Murphy <robin.murphy@arm.com>, iommu@lists.linux.dev,
+	linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 19/35] iommu: Reorganize kerneldoc parameter names
+Message-ID: <Zw4mFoOGqif1xmv_@8bytes.org>
+References: <20240930112121.95324-1-Julia.Lawall@inria.fr>
+ <20240930112121.95324-20-Julia.Lawall@inria.fr>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v2 0/4] Add support for APPS SMMU on QCS615
-To: Qingqing Zhou <quic_qqzhou@quicinc.com>, andersson@kernel.org,
- konradybcio@kernel.org, robh@kernel.org, krzk+dt@kernel.org,
- conor+dt@kernel.org, robimarko@gmail.com, will@kernel.org,
- robin.murphy@arm.com, joro@8bytes.org
-Cc: linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org,
- linux-kernel@vger.kernel.org, iommu@lists.linux.dev
-References: <20241015081603.30643-1-quic_qqzhou@quicinc.com>
-From: Krzysztof Kozlowski <krzk@kernel.org>
-Content-Language: en-US
-Autocrypt: addr=krzk@kernel.org; keydata=
- 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 fv0=
-In-Reply-To: <20241015081603.30643-1-quic_qqzhou@quicinc.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20240930112121.95324-20-Julia.Lawall@inria.fr>
 
-On 15/10/2024 10:15, Qingqing Zhou wrote:
-> Enable APPS SMMU function on QCS615 platform. APPS SMMU is required
-> for address translation in devices including Ethernet/UFS/USB and
-> so on.
+On Mon, Sep 30, 2024 at 01:21:05PM +0200, Julia Lawall wrote:
+> Reorganize kerneldoc parameter names to match the parameter
+> order in the function header.
 > 
-> Add the SCM node for SMMU probing normally. SMMU driver probe will
-> check qcom_scm ready or not, without SCM node, SMMU driver probe will
-> defer.
-> The dmesg log without SCM node:
-> platform 15000000.iommu: deferred probe pending: arm-smmu: qcom_scm not ready
+> Problems identified using Coccinelle.
 > 
-> With the SCM node, SMMU can probe normally, but SCM driver still fails
-> to probe because of one SCM bug:
-> qcom_scm firmware:scm: error (____ptrval____): Failed to enable the TrustZone memory allocator
-> qcom_scm firmware:scm: probe with driver qcom_scm failed with error 4
-> The above SCM bug is fixed by:
-> https://lore.kernel.org/all/20241005140150.4109700-2-quic_kuldsing@quicinc.com/
-> But above patch doesn't impact building of current patch series, this patch
-> series can build successfully without above patch.
+> Signed-off-by: Julia Lawall <Julia.Lawall@inria.fr>
 > 
-> Dependency:
-> https://lore.kernel.org/all/20240926-add_initial_support_for_qcs615-v3-0-e37617e91c62@quicinc.com/
-> 
-> Changes in v2:
-> - Address the comments on bindings from Krzysztof.
+> ---
+>  drivers/iommu/iommu.c |    2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
 
-Which comments? Be specific what changed.
-
-Best regards,
-Krzysztof
-
+Applied, thanks.
