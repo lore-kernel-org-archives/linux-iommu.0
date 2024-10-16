@@ -1,148 +1,53 @@
-Received: from mail-lf1-f44.google.com (mail-lf1-f44.google.com [209.85.167.44])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from verein.lst.de (verein.lst.de [213.95.11.211])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BE3C7187850
-	for <iommu@lists.linux.dev>; Wed, 16 Oct 2024 07:09:03 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.44
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 595EB1D319B
+	for <iommu@lists.linux.dev>; Wed, 16 Oct 2024 08:02:50 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=213.95.11.211
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1729062546; cv=none; b=dp/erPN6Pq+uHYSDLpSYOn1XrH3tEEiLG1mYhseb56Hfl44X+0Ij58Scjn/1gdqj8UwiYuQINZkFVdcKOtlBMZGVvqXQNDR0tLymMUHVPCuqf1R1DPr8kfPbkWlIwHla0zEVrcC4z2SrfukR7lODA3w5lf0DowfUFBPIbLmIx6Q=
+	t=1729065772; cv=none; b=JAiAwSScEQ/kLMCzPKId06hJ1Q+bojWMESy1AWii/xPAS3zQDC0vvxfifChKecNpbPy3bMasglbRgWRhOLQtmHuYfiDQAaXQS43QBNN/38/UxpVN2Xc08W6nhjDpgWh5Q2n79bSxUBWnGHTuA00gAQXq/5UM+aRwCD0cS+BOnUQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1729062546; c=relaxed/simple;
-	bh=gcnOGBR9KP/UNGr3AkdELOzAOvVCqPN6A1wxZVJU840=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=pX1rHOodmtLDfqqJUCF3x2jenp+kXQ/H79JJtSNwteMkv2zrIaY/lUk+KHImt/r2/qL8uvBUeFwl5Uv7gTjR1F2G/K3f9ndrgRsBqTOsf18pbgUo+j2Q/28ckzYdzhOJcqedocC74eFPSsGBHtmjZ6ke/GyKFfHs0HzePLbvCs8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org; spf=pass smtp.mailfrom=linaro.org; dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b=D5WqmVvk; arc=none smtp.client-ip=209.85.167.44
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linaro.org
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="D5WqmVvk"
-Received: by mail-lf1-f44.google.com with SMTP id 2adb3069b0e04-539e6c754bdso3459312e87.2
-        for <iommu@lists.linux.dev>; Wed, 16 Oct 2024 00:09:03 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1729062542; x=1729667342; darn=lists.linux.dev;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=QCm13YryhPmYIK6474p+L4eQPIt7tXj7ERqjZjp8M3A=;
-        b=D5WqmVvkJOu40PYFAnyCXNZhywzZqudZ9eo395ZvbELspNyRMU6vZEKG+whqiT56Eg
-         pcTscSIcOnzvZmgRCT9MIioFvNKn4ay3rykC/IKidHzb3mJ7dHSWkNI+BoGGDAMmtP2A
-         APSpmz6zUhVHDUQWIGtnw081V3srSJPZP4Un5slecoTmRriqcWbJqXKV6qPM65mLNK8C
-         auO/LBL+eDNI1h9eAqVGDzAgMi1g9V568FzwMW6Ep25cNzOUhtoC1YeCQf6JR2wrbX80
-         gdkc+YaVubAhqIO4pBaSO7Ox0ixy8XIb9cKq9sbveiZJjkftooOnNRHvg0h315ylJkgZ
-         lQBQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1729062542; x=1729667342;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=QCm13YryhPmYIK6474p+L4eQPIt7tXj7ERqjZjp8M3A=;
-        b=F1b73gm4mQiIfJHQ3gPJCNwmcbzQXCs6u5cbhOeu62n+60Eb7zvc2SziRsBRohUzi1
-         Vkgg/jK/fD8fjF3hEeRwAXJ1NcyQ/y/2htXf5cLoGgpUhkqWXDMw+2zCdYg5eWTD8aHA
-         fnThee3LmKw9ZNLLtfAOCDOBZMAYMBZWeeFovKfRC6Uz4wvNA7a8/BwP9WsjKqxzezny
-         HnOp15CAIBirnpm/yUaUZBOg8c8NMY1lPYf3uHsQzQkqPAJBw2leljtLZJiGv1K1PqEf
-         tH23xbLcFSnFNfGqMiqzFnlfUuGj3QHdHeakD1CtvTTiyraJq6DtQz2gcelxwMgRhNZ7
-         t+Kg==
-X-Forwarded-Encrypted: i=1; AJvYcCUtmUKrLmWUE7TtY0MKptMESvUepPGO2N5j8jOQp6/sxD+wazaWEKZqr29ZBs5F72sGEKH8Pg==@lists.linux.dev
-X-Gm-Message-State: AOJu0YwPK8F4OaWl0IwD7PKKgj+LzzcSTHaWyOqG/yxQslXgX0p5+JYd
-	GOVt+LTF7/brwz/ouKase9JcqVWUT9ZRu+8kONieKNJm49NNhSApJmIHW094SHTXs8YBau2NLdG
-	blRGY1E+eZrmbW/b0o1OGUweOyc0Rl440elR1oA==
-X-Google-Smtp-Source: AGHT+IEc3HtDZMgD9lYvHKiuP10mQcQTLlMzzROBzl6HIMjJA6RX3+ummOZE0ggSdNv9oAbjQQeiq5tKEojMcR8arwc=
-X-Received: by 2002:a05:6512:2248:b0:539:fcba:cc6d with SMTP id
- 2adb3069b0e04-539fcbacd7amr3773128e87.42.1729062541873; Wed, 16 Oct 2024
- 00:09:01 -0700 (PDT)
+	s=arc-20240116; t=1729065772; c=relaxed/simple;
+	bh=LFnBnUs45XY9hwhutuM9DVjgpgYtMIVDMh3OHNwYp8I=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=nmwBUhUg78PwFu69lW9QduAx3uqy++hLWPNfvoANOpW9MedSsIXrV0Qn88xGCy62HSA/j8LNq+xqrgtM2wWlAUMt3h1XkwGJ1ullcUUfnXsA1GPPLfFdOfXts2XhAkfKZ5Sgfd78fcncdpQpPWObarwfzMiqQisBaCrCbCFq85s=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=lst.de; spf=pass smtp.mailfrom=lst.de; arc=none smtp.client-ip=213.95.11.211
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=lst.de
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=lst.de
+Received: by verein.lst.de (Postfix, from userid 2407)
+	id BD063227A87; Wed, 16 Oct 2024 10:02:40 +0200 (CEST)
+Date: Wed, 16 Oct 2024 10:02:40 +0200
+From: Christoph Hellwig <hch@lst.de>
+To: syzbot <syzbot+b4bfacdec173efaa8567@syzkaller.appspotmail.com>
+Cc: hch@lst.de, iommu@lists.linux.dev, linux-kernel@vger.kernel.org,
+	m.szyprowski@samsung.com, robin.murphy@arm.com,
+	syzkaller-bugs@googlegroups.com,
+	Sean Anderson <sean.anderson@linux.dev>
+Subject: Re: [syzbot] [iommu?] kernel BUG in dma_alloc_attrs
+Message-ID: <20241016080240.GA30380@lst.de>
+References: <670ebde5.050a0220.d9b66.0154.GAE@google.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <88114b5c725bb3300a9599d3eeebded221a0b1f9.1728491453.git.nicolinc@nvidia.com>
- <CABQgh9Eaj_vy1=sS2Pf7RC7Vy5PopDfwoshECULEU-jK3JF_sQ@mail.gmail.com>
- <Zwn/4m8Ac0xEiJi8@Asurada-Nvidia> <CABQgh9Ft=xxJK-bjS6wCZ5BN4AiKtF9fzdBkevA3x2yb_4O4Kg@mail.gmail.com>
- <CABQgh9HP1M8GAXMwf0ZNn5EpMBAvJU3JLRWcN5H1wfGrqXSe1Q@mail.gmail.com>
- <Zw08z9TOFL57z07O@Asurada-Nvidia> <CABQgh9H-SB7q1v_XtWaO12K7jMMaq8Lj7F4kpDv9sJ5v-F6DZw@mail.gmail.com>
- <Zw3M/h1KYe9MjcZK@Asurada-Nvidia> <Zw64C7bQicoAmAM3@Asurada-Nvidia>
- <CABQgh9Fea006HPwVTAuxk7KGh-7-YbjRhoUttVo_iACjAbr0CQ@mail.gmail.com> <Zw9ijVgDlvRajsSY@Asurada-Nvidia>
-In-Reply-To: <Zw9ijVgDlvRajsSY@Asurada-Nvidia>
-From: Zhangfei Gao <zhangfei.gao@linaro.org>
-Date: Wed, 16 Oct 2024 15:08:49 +0800
-Message-ID: <CABQgh9GAyGNPz1KNCm3ZT9dtECdGyKU-L_aNnahY8K=RG7AODg@mail.gmail.com>
-Subject: Re: [PATCH v3 03/11] iommufd: Introduce IOMMUFD_OBJ_VIOMMU and its
- related struct
-To: Nicolin Chen <nicolinc@nvidia.com>
-Cc: jgg@nvidia.com, kevin.tian@intel.com, will@kernel.org, joro@8bytes.org, 
-	suravee.suthikulpanit@amd.com, robin.murphy@arm.com, dwmw2@infradead.org, 
-	baolu.lu@linux.intel.com, shuah@kernel.org, linux-kernel@vger.kernel.org, 
-	iommu@lists.linux.dev, linux-arm-kernel@lists.infradead.org, 
-	linux-kselftest@vger.kernel.org, eric.auger@redhat.com, 
-	jean-philippe@linaro.org, mdf@kernel.org, mshavit@google.com, 
-	shameerali.kolothum.thodi@huawei.com, smostafa@google.com, yi.l.liu@intel.com, 
-	aik@amd.com, patches@lists.linux.dev
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <670ebde5.050a0220.d9b66.0154.GAE@google.com>
+User-Agent: Mutt/1.5.17 (2007-11-01)
 
-On Wed, 16 Oct 2024 at 14:52, Nicolin Chen <nicolinc@nvidia.com> wrote:
->
-> On Wed, Oct 16, 2024 at 09:56:51AM +0800, Zhangfei Gao wrote:
-> > On Wed, 16 Oct 2024 at 02:44, Nicolin Chen <nicolinc@nvidia.com> wrote:
-> > >
-> > > On Mon, Oct 14, 2024 at 07:01:40PM -0700, Nicolin Chen wrote:
-> > > > On Tue, Oct 15, 2024 at 09:15:01AM +0800, Zhangfei Gao wrote:
-> > > >
-> > > > > > > iommufd_device_bind
-> > > > > > > iommufd_device_attach
-> > > > > > > iommufd_vdevice_alloc_ioctl
-> > > > > > >
-> > > > > > > iommufd_device_detach
-> > > > > > > iommufd_device_unbind // refcount check fail
-> > > > > > > iommufd_vdevice_destroy ref--
-> > > > > >
-> > > > > > Things should be symmetric. As you suspected, vdevice should be
-> > > > > > destroyed before iommufd_device_detach.
-> > > > >
-> > > > > I am trying based on your for_iommufd_viommu_p2-v3 branch, do you have
-> > > > > this issue?
-> > > > > In checking whether close fd before unbind?
-> > > >
-> > > > Oops, my bad. I will provide a fix.
-> > >
-> > > This should fix the problem:
-> > >
-> > > ---------------------------------------------------------------------
-> > > diff --git a/drivers/iommu/iommufd/device.c b/drivers/iommu/iommufd/device.c
-> > > index 5fd3dd420290..13100cfea29d 100644
-> > > --- a/drivers/iommu/iommufd/device.c
-> > > +++ b/drivers/iommu/iommufd/device.c
-> > > @@ -277,6 +277,11 @@ EXPORT_SYMBOL_NS_GPL(iommufd_ctx_has_group, IOMMUFD);
-> > >   */
-> > >  void iommufd_device_unbind(struct iommufd_device *idev)
-> > >  {
-> > > +       mutex_lock(&idev->igroup->lock);
-> > > +       /* idev->vdev object should be destroyed prior, yet just in case.. */
-> > > +       if (idev->vdev)
-> > > +               iommufd_object_remove(idev->ictx, NULL, idev->vdev->obj.id, 0);
-> > > +       mutex_unlock(&idev->igroup->lock);
-> > >         iommufd_object_destroy_user(idev->ictx, &idev->obj);
-> > >  }
-> > >  EXPORT_SYMBOL_NS_GPL(iommufd_device_unbind, IOMMUFD);
-> > > ---------------------------------------------------------------------
-> >
-> > Not yet
-> > [  574.162112] Unable to handle kernel NULL pointer dereference at
-> > virtual address 0000000000000004
-> > [  574.261102] pc : iommufd_object_remove+0x7c/0x278
-> > [  574.265795] lr : iommufd_device_unbind+0x44/0x98
-> > in check
->
-> Hmm, it's kinda odd it crashes inside iommufd_object_remove().
-> Did you happen to change something there?
->
-> The added iommufd_object_remove() is equivalent to userspace
-> calling the destroy ioctl on the vDEVICE object.
->
-Yes, double confirmed, it can solve the issue.
-The guest can stop and run again
+The problem is that the dma alloc/free tracing calls virt_to_phys
+on the allocated/free memory.  But that memory can be vmalloced as
+in this case.  I think we don't have weirdo allocators or pools any
+more that are neither in the direct kernel mapping or vmalloc, so
+we might be able to do an
 
-The Null pointer may be caused by the added debug.
+		if (is_vmalloc_addr())
+			page_to_phys(vmalloc_to_page()))
+		else
+			virt_to_page()
 
-Thanks Nico.
+here.  Or just switch to tracing the virtual address to always be
+on the safe side.
 
-> Nicolin
