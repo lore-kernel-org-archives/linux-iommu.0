@@ -1,105 +1,148 @@
-Received: from mail-il1-f181.google.com (mail-il1-f181.google.com [209.85.166.181])
+Received: from mail-lf1-f44.google.com (mail-lf1-f44.google.com [209.85.167.44])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1D74E1991D9
-	for <iommu@lists.linux.dev>; Wed, 16 Oct 2024 06:59:00 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.166.181
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BE3C7187850
+	for <iommu@lists.linux.dev>; Wed, 16 Oct 2024 07:09:03 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.44
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1729061942; cv=none; b=OJ/tzwSfQD9nT1lrKs886U3D0bHmxvkB2K7Kvo/kKBada8LGyLx1P1GLVIsldRq3jge7Q5Fim6aLlfVZz/HSng84fgjJ+kyC8pAeDhMe6zxUR1IESoc3doqceu//XB8Y+Ucq2pNkCFh+MaI2vQlEPyvqEsT/OMYyvtO55IClIKc=
+	t=1729062546; cv=none; b=dp/erPN6Pq+uHYSDLpSYOn1XrH3tEEiLG1mYhseb56Hfl44X+0Ij58Scjn/1gdqj8UwiYuQINZkFVdcKOtlBMZGVvqXQNDR0tLymMUHVPCuqf1R1DPr8kfPbkWlIwHla0zEVrcC4z2SrfukR7lODA3w5lf0DowfUFBPIbLmIx6Q=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1729061942; c=relaxed/simple;
-	bh=GgqhkQIww3EnUduiJMY68fYIYly68qVF8vVZyUZJznY=;
+	s=arc-20240116; t=1729062546; c=relaxed/simple;
+	bh=gcnOGBR9KP/UNGr3AkdELOzAOvVCqPN6A1wxZVJU840=;
 	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=MDamaR89F0NWuNivOk7ug5Db2yMQHOpJdZdlamxC+HGlfbP5nsn2BC8N4oxx7UB6zskm3BvgE/EJ0rbUCq/WOFZtdZzaN/eopCZOvJl9Ps5Rco/TDj2Y3Qs9pVvuasMFMb9nCmxTbt0mKdHYVlVIUgF/Av3htp1lyuefoAMdtsI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=rivosinc.com; spf=pass smtp.mailfrom=rivosinc.com; dkim=pass (2048-bit key) header.d=rivosinc-com.20230601.gappssmtp.com header.i=@rivosinc-com.20230601.gappssmtp.com header.b=dEw3Onfk; arc=none smtp.client-ip=209.85.166.181
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=rivosinc.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=rivosinc.com
+	 To:Cc:Content-Type; b=pX1rHOodmtLDfqqJUCF3x2jenp+kXQ/H79JJtSNwteMkv2zrIaY/lUk+KHImt/r2/qL8uvBUeFwl5Uv7gTjR1F2G/K3f9ndrgRsBqTOsf18pbgUo+j2Q/28ckzYdzhOJcqedocC74eFPSsGBHtmjZ6ke/GyKFfHs0HzePLbvCs8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org; spf=pass smtp.mailfrom=linaro.org; dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b=D5WqmVvk; arc=none smtp.client-ip=209.85.167.44
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linaro.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=rivosinc-com.20230601.gappssmtp.com header.i=@rivosinc-com.20230601.gappssmtp.com header.b="dEw3Onfk"
-Received: by mail-il1-f181.google.com with SMTP id e9e14a558f8ab-3a3b4663e40so28475875ab.2
-        for <iommu@lists.linux.dev>; Tue, 15 Oct 2024 23:59:00 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="D5WqmVvk"
+Received: by mail-lf1-f44.google.com with SMTP id 2adb3069b0e04-539e6c754bdso3459312e87.2
+        for <iommu@lists.linux.dev>; Wed, 16 Oct 2024 00:09:03 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=rivosinc-com.20230601.gappssmtp.com; s=20230601; t=1729061940; x=1729666740; darn=lists.linux.dev;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=GgqhkQIww3EnUduiJMY68fYIYly68qVF8vVZyUZJznY=;
-        b=dEw3Onfkl9pg68jLU0XTz/7UvhmU+NvoFOBO+RSYNhQBsxLVyUcg/DWlAPCfp8txgX
-         eXJQGMPvW2+HUPH737oPQ1605eSUzIJ8l3jpfbVmwYVEtePaZvaXRrAsslfLdmllUnHR
-         LfDNmFm91K7ZmzVc/7CcVMYL66bFPC/zB75Hp8eadQ5Bl2G9FnMxKNdTaLg/OwwBWU8Q
-         Dggw3J6CX+93L4+dKPIqfxF82NqJlJSzT/N6G57TfY7ZRb6dw0SB2WWW38tBvJS+PtPM
-         tCdzQ1H2cNs0lUz7n27p+RwoTuocB5lkP/Y3Cp6uB+r56VhDYeGKgr2ErBnrr1GnSSh2
-         Effg==
+        d=linaro.org; s=google; t=1729062542; x=1729667342; darn=lists.linux.dev;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date:message-id:reply-to;
+        bh=QCm13YryhPmYIK6474p+L4eQPIt7tXj7ERqjZjp8M3A=;
+        b=D5WqmVvkJOu40PYFAnyCXNZhywzZqudZ9eo395ZvbELspNyRMU6vZEKG+whqiT56Eg
+         pcTscSIcOnzvZmgRCT9MIioFvNKn4ay3rykC/IKidHzb3mJ7dHSWkNI+BoGGDAMmtP2A
+         APSpmz6zUhVHDUQWIGtnw081V3srSJPZP4Un5slecoTmRriqcWbJqXKV6qPM65mLNK8C
+         auO/LBL+eDNI1h9eAqVGDzAgMi1g9V568FzwMW6Ep25cNzOUhtoC1YeCQf6JR2wrbX80
+         gdkc+YaVubAhqIO4pBaSO7Ox0ixy8XIb9cKq9sbveiZJjkftooOnNRHvg0h315ylJkgZ
+         lQBQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1729061940; x=1729666740;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=GgqhkQIww3EnUduiJMY68fYIYly68qVF8vVZyUZJznY=;
-        b=rqKSGzbN0WQxy/950huBemm+fcdFGmV3waatSd+M4wQmH2oo/AXoPNtoqFsRl5ktFS
-         7ovuabD/GwrUPMy0yLELyxiRtWkHuiUqRgldKpVr5JZuAq9JitKLeGIeEOfdPetNjUV9
-         aLcPcpOE2tn+CZ4ao9lbAk9lD27ph0tcgu51uKj4AWLJa/niRr6UPwiVDKEvfnTeeho7
-         0OLSWZOOH9Lu0m9VfPVuh7s6dAXLb1dkQyrhBeNHDW6BcoItrohGcUhz1y5sXc3XSdxL
-         kHhVfowtqxn/Ne1FSgJDjkeef1Iqbx8XChcFNFDgZsHsGp1Rp4SXmaas/ZP99rk5TW55
-         O4Jw==
-X-Forwarded-Encrypted: i=1; AJvYcCVa+xuzjYMlBfykzJBMfG1an1tfzduZR203tNTJzh20XceOlbqwATy/1hraHcKJaZhLNUFnuQ==@lists.linux.dev
-X-Gm-Message-State: AOJu0YyGxM4tc3MuK5Mg/CpuUMZOf1e14ZkpV7D8tqlajgKhsF37L6sD
-	q7jtSadOvviUZM4k1zvMD40zZOQ3PV0kgXnXbQn6nHQAVcZEjw1/88S+N90xocEsqyrkZ8yCTDo
-	TZQdDy3L5T3uJIbXPJ5ridUk/K/IVgyoAZ1mJMA==
-X-Google-Smtp-Source: AGHT+IErhSKXVFLT/FTSTbt5YKWJYoMqeAPP9Z85ar2ZS+Bbj8qfmYFetiQos0G6hD7PlYuMWAq/MbtzSisSbfzWG1w=
-X-Received: by 2002:a05:6e02:1385:b0:3a2:7651:9864 with SMTP id
- e9e14a558f8ab-3a3bcdc6befmr119191555ab.12.1729061940262; Tue, 15 Oct 2024
- 23:59:00 -0700 (PDT)
+        d=1e100.net; s=20230601; t=1729062542; x=1729667342;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=QCm13YryhPmYIK6474p+L4eQPIt7tXj7ERqjZjp8M3A=;
+        b=F1b73gm4mQiIfJHQ3gPJCNwmcbzQXCs6u5cbhOeu62n+60Eb7zvc2SziRsBRohUzi1
+         Vkgg/jK/fD8fjF3hEeRwAXJ1NcyQ/y/2htXf5cLoGgpUhkqWXDMw+2zCdYg5eWTD8aHA
+         fnThee3LmKw9ZNLLtfAOCDOBZMAYMBZWeeFovKfRC6Uz4wvNA7a8/BwP9WsjKqxzezny
+         HnOp15CAIBirnpm/yUaUZBOg8c8NMY1lPYf3uHsQzQkqPAJBw2leljtLZJiGv1K1PqEf
+         tH23xbLcFSnFNfGqMiqzFnlfUuGj3QHdHeakD1CtvTTiyraJq6DtQz2gcelxwMgRhNZ7
+         t+Kg==
+X-Forwarded-Encrypted: i=1; AJvYcCUtmUKrLmWUE7TtY0MKptMESvUepPGO2N5j8jOQp6/sxD+wazaWEKZqr29ZBs5F72sGEKH8Pg==@lists.linux.dev
+X-Gm-Message-State: AOJu0YwPK8F4OaWl0IwD7PKKgj+LzzcSTHaWyOqG/yxQslXgX0p5+JYd
+	GOVt+LTF7/brwz/ouKase9JcqVWUT9ZRu+8kONieKNJm49NNhSApJmIHW094SHTXs8YBau2NLdG
+	blRGY1E+eZrmbW/b0o1OGUweOyc0Rl440elR1oA==
+X-Google-Smtp-Source: AGHT+IEc3HtDZMgD9lYvHKiuP10mQcQTLlMzzROBzl6HIMjJA6RX3+ummOZE0ggSdNv9oAbjQQeiq5tKEojMcR8arwc=
+X-Received: by 2002:a05:6512:2248:b0:539:fcba:cc6d with SMTP id
+ 2adb3069b0e04-539fcbacd7amr3773128e87.42.1729062541873; Wed, 16 Oct 2024
+ 00:09:01 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <cover.1728579958.git.tjeznach@rivosinc.com> <Zw4s3BHQZ6x4d79-@8bytes.org>
- <20241015085945.GC19110@willie-the-truck>
-In-Reply-To: <20241015085945.GC19110@willie-the-truck>
-From: Tomasz Jeznach <tjeznach@rivosinc.com>
-Date: Tue, 15 Oct 2024 23:58:48 -0700
-Message-ID: <CAH2o1u5UMQHvaNNUgKQk1e97c03ntuJALUTaW7gYaCuyfY471g@mail.gmail.com>
-Subject: Re: [PATCH v9 0/7] Linux RISC-V IOMMU Support
-To: Will Deacon <will@kernel.org>
-Cc: Joerg Roedel <joro@8bytes.org>, Robin Murphy <robin.murphy@arm.com>, 
-	Paul Walmsley <paul.walmsley@sifive.com>, Palmer Dabbelt <palmer@dabbelt.com>, 
-	Albert Ou <aou@eecs.berkeley.edu>, Anup Patel <apatel@ventanamicro.com>, 
-	Sunil V L <sunilvl@ventanamicro.com>, Nick Kossifidis <mick@ics.forth.gr>, 
-	Sebastien Boeuf <seb@rivosinc.com>, Rob Herring <robh+dt@kernel.org>, 
-	Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, devicetree@vger.kernel.org, 
-	iommu@lists.linux.dev, linux-riscv@lists.infradead.org, 
-	linux-kernel@vger.kernel.org, linux@rivosinc.com
+References: <88114b5c725bb3300a9599d3eeebded221a0b1f9.1728491453.git.nicolinc@nvidia.com>
+ <CABQgh9Eaj_vy1=sS2Pf7RC7Vy5PopDfwoshECULEU-jK3JF_sQ@mail.gmail.com>
+ <Zwn/4m8Ac0xEiJi8@Asurada-Nvidia> <CABQgh9Ft=xxJK-bjS6wCZ5BN4AiKtF9fzdBkevA3x2yb_4O4Kg@mail.gmail.com>
+ <CABQgh9HP1M8GAXMwf0ZNn5EpMBAvJU3JLRWcN5H1wfGrqXSe1Q@mail.gmail.com>
+ <Zw08z9TOFL57z07O@Asurada-Nvidia> <CABQgh9H-SB7q1v_XtWaO12K7jMMaq8Lj7F4kpDv9sJ5v-F6DZw@mail.gmail.com>
+ <Zw3M/h1KYe9MjcZK@Asurada-Nvidia> <Zw64C7bQicoAmAM3@Asurada-Nvidia>
+ <CABQgh9Fea006HPwVTAuxk7KGh-7-YbjRhoUttVo_iACjAbr0CQ@mail.gmail.com> <Zw9ijVgDlvRajsSY@Asurada-Nvidia>
+In-Reply-To: <Zw9ijVgDlvRajsSY@Asurada-Nvidia>
+From: Zhangfei Gao <zhangfei.gao@linaro.org>
+Date: Wed, 16 Oct 2024 15:08:49 +0800
+Message-ID: <CABQgh9GAyGNPz1KNCm3ZT9dtECdGyKU-L_aNnahY8K=RG7AODg@mail.gmail.com>
+Subject: Re: [PATCH v3 03/11] iommufd: Introduce IOMMUFD_OBJ_VIOMMU and its
+ related struct
+To: Nicolin Chen <nicolinc@nvidia.com>
+Cc: jgg@nvidia.com, kevin.tian@intel.com, will@kernel.org, joro@8bytes.org, 
+	suravee.suthikulpanit@amd.com, robin.murphy@arm.com, dwmw2@infradead.org, 
+	baolu.lu@linux.intel.com, shuah@kernel.org, linux-kernel@vger.kernel.org, 
+	iommu@lists.linux.dev, linux-arm-kernel@lists.infradead.org, 
+	linux-kselftest@vger.kernel.org, eric.auger@redhat.com, 
+	jean-philippe@linaro.org, mdf@kernel.org, mshavit@google.com, 
+	shameerali.kolothum.thodi@huawei.com, smostafa@google.com, yi.l.liu@intel.com, 
+	aik@amd.com, patches@lists.linux.dev
 Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
 
-On Tue, Oct 15, 2024 at 1:59=E2=80=AFAM Will Deacon <will@kernel.org> wrote=
-:
+On Wed, 16 Oct 2024 at 14:52, Nicolin Chen <nicolinc@nvidia.com> wrote:
 >
-> On Tue, Oct 15, 2024 at 10:50:36AM +0200, Joerg Roedel wrote:
-> > On Thu, Oct 10, 2024 at 12:48:03PM -0700, Tomasz Jeznach wrote:
-> > > This patch series introduces support for RISC-V IOMMU architected
-> > > hardware into the Linux kernel.
+> On Wed, Oct 16, 2024 at 09:56:51AM +0800, Zhangfei Gao wrote:
+> > On Wed, 16 Oct 2024 at 02:44, Nicolin Chen <nicolinc@nvidia.com> wrote:
+> > >
+> > > On Mon, Oct 14, 2024 at 07:01:40PM -0700, Nicolin Chen wrote:
+> > > > On Tue, Oct 15, 2024 at 09:15:01AM +0800, Zhangfei Gao wrote:
+> > > >
+> > > > > > > iommufd_device_bind
+> > > > > > > iommufd_device_attach
+> > > > > > > iommufd_vdevice_alloc_ioctl
+> > > > > > >
+> > > > > > > iommufd_device_detach
+> > > > > > > iommufd_device_unbind // refcount check fail
+> > > > > > > iommufd_vdevice_destroy ref--
+> > > > > >
+> > > > > > Things should be symmetric. As you suspected, vdevice should be
+> > > > > > destroyed before iommufd_device_detach.
+> > > > >
+> > > > > I am trying based on your for_iommufd_viommu_p2-v3 branch, do you have
+> > > > > this issue?
+> > > > > In checking whether close fd before unbind?
+> > > >
+> > > > Oops, my bad. I will provide a fix.
+> > >
+> > > This should fix the problem:
+> > >
+> > > ---------------------------------------------------------------------
+> > > diff --git a/drivers/iommu/iommufd/device.c b/drivers/iommu/iommufd/device.c
+> > > index 5fd3dd420290..13100cfea29d 100644
+> > > --- a/drivers/iommu/iommufd/device.c
+> > > +++ b/drivers/iommu/iommufd/device.c
+> > > @@ -277,6 +277,11 @@ EXPORT_SYMBOL_NS_GPL(iommufd_ctx_has_group, IOMMUFD);
+> > >   */
+> > >  void iommufd_device_unbind(struct iommufd_device *idev)
+> > >  {
+> > > +       mutex_lock(&idev->igroup->lock);
+> > > +       /* idev->vdev object should be destroyed prior, yet just in case.. */
+> > > +       if (idev->vdev)
+> > > +               iommufd_object_remove(idev->ictx, NULL, idev->vdev->obj.id, 0);
+> > > +       mutex_unlock(&idev->igroup->lock);
+> > >         iommufd_object_destroy_user(idev->ictx, &idev->obj);
+> > >  }
+> > >  EXPORT_SYMBOL_NS_GPL(iommufd_device_unbind, IOMMUFD);
+> > > ---------------------------------------------------------------------
 > >
-> > Thanks Tomasz. I plan to merge this driver into the IOMMU tree if no
-> > further objections are raised in this thread by Friday.
-
-Thanks Joerg. I'll try to address any remaining issues asap.
-
+> > Not yet
+> > [  574.162112] Unable to handle kernel NULL pointer dereference at
+> > virtual address 0000000000000004
+> > [  574.261102] pc : iommufd_object_remove+0x7c/0x278
+> > [  574.265795] lr : iommufd_device_unbind+0x44/0x98
+> > in check
 >
-> Sorry, bad timing on my part -- I just left a couple of questions/comment=
-s
-> after Drew poked me at LPC to look at this.
+> Hmm, it's kinda odd it crashes inside iommufd_object_remove().
+> Did you happen to change something there?
 >
-> Hopefully we'll get those resolved asap.
+> The added iommufd_object_remove() is equivalent to userspace
+> calling the destroy ioctl on the vDEVICE object.
 >
+Yes, double confirmed, it can solve the issue.
+The guest can stop and run again
 
-Will, thank you for your valuable feedback.
-Hopefully v10 addressed those comments.
+The Null pointer may be caused by the added debug.
 
-Best Regards,
-- Tomasz
+Thanks Nico.
 
-> Will
+> Nicolin
