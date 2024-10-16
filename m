@@ -1,46 +1,46 @@
-Received: from NAM10-MW2-obe.outbound.protection.outlook.com (mail-mw2nam10on2047.outbound.protection.outlook.com [40.107.94.47])
+Received: from NAM04-DM6-obe.outbound.protection.outlook.com (mail-dm6nam04on2050.outbound.protection.outlook.com [40.107.102.50])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0FC9018C323
-	for <iommu@lists.linux.dev>; Wed, 16 Oct 2024 05:38:09 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.94.47
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0943616C687
+	for <iommu@lists.linux.dev>; Wed, 16 Oct 2024 05:38:29 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.102.50
 ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1729057091; cv=fail; b=YXpJM6T/CVXFUxUocWBgUeky4BvWjXD4mLuDzpb712J2TfLJFK/lCtYnS/9v+qlwzSpgn0VOhwcSO3P6eOtBLAmF/YbvuhJBaqs+PIMmTHzVvD+5xzH+iqnNEQKT2C7kNT+asWpc50IamzDo/4SWNjGGBnHhjmk4idkCGJkeZBQ=
+	t=1729057111; cv=fail; b=HPDn4wWmYydflQEmQwY7oXUswcvG8+yJqDXgSUPwp0GB/KE4mWdhbbvYYFBKSyjLAztPrSYZ0fo7dcOQAN4matX7QTKYIP9kuO3LPxIBkMQ5SZxC3rOfzA7IuwNFt2fFKq+b2Ep7TyT9fjJ4eueARpseCM6TCccs0wm/Ib4GgP4=
 ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1729057091; c=relaxed/simple;
-	bh=M7BCpVBK/3LYyQcc58Ffwgx8S57ZDoqkusfZtzs6yyw=;
+	s=arc-20240116; t=1729057111; c=relaxed/simple;
+	bh=9W9cYYZIcW8bvU+ERRXnjaXjO6ZRcfDprMODbK2cyMc=;
 	h=From:To:CC:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=t+S3qCaKnbDF6zAPXhViC2sOdHXxWZJ4qEHQ/1qnKWhHfSSCn2Afo0bXWgQJBQvnR371zZ9943YzTbkDqGuS/OasZq6I2vWbFGq7CyWwiO/mhEhhtS0d6jdl8bS1FSDUbvQRDWQLib/X45Oi3ep9/6cQO1GkDiJbpgIOxjy7pU0=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com; spf=fail smtp.mailfrom=amd.com; dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b=vzbOyQQ/; arc=fail smtp.client-ip=40.107.94.47
+	 MIME-Version:Content-Type; b=MT/0yW/Ihnw3uYycf/CyWtzG1UkWWobucXSzXqU+BBLNahdcHkq8meGpYe/MSDlePigVWPV/Myt9BH5F/+XM3uoBraL4Lcs9jsm/CYyq4HWB6uWxcPyZahjIuCbArlkWqsAjdgenofKoh4AVJpIw64R3H3vQbuSzKVdktu9ap+4=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com; spf=fail smtp.mailfrom=amd.com; dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b=r/NnhuKw; arc=fail smtp.client-ip=40.107.102.50
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com
 Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=amd.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b="vzbOyQQ/"
+	dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b="r/NnhuKw"
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=Bw5WTQfuZNmj+VfF26o1Tbthh4f2vCMnB20TO2zT4+zRMD51bYkJdlrjiLBBdzcahnyzAGKQAIpZ8xhKC8Uky94pJxmAuT5OsKb5tLi7F8CPY4ijk4odvorS3JIhc4hQgekzuGhWys8md0myP86J5Zklkff+/Mh5o0LAQ55uD9vudmyAPVO+aUmAd0ZcV4xENESC/cDdxIw+C9xKiFTghUVIT4uVnbZcyLPRkRb8wk5Tu0cpfyMc+ACWR8jJB3+sqmZqNvy176tegexGNyMIHKR0YHQBikfcseJnTNX4k7jvnp0CJ/QvvyAaZIVtsBzPTbTXPIGyyJpZ/rvRO7C9NA==
+ b=c763rPFKFrfS8LoNTNBc2YvUQ83IVzYowU11peD9kPoJzmm9IDIe+XFWxbYlPoKT1myXHCmn9bhQklasDSELxD0OhcjOYPADW4IYfvNLEpLC1zmE/UfZ3ZQo1TUDaF0HbEzlwEV/pAIoWEAGAgAR1b+Gds0wh1x2ZbfmkI1YPvlVdOa2uQlgTbt/7BI/bfDfGqG0kHpsBmkd7i9xxrBpfHfY7367sVOyYVYbsKqZ5u6VZFXrTpf1mk2YYGTDFL7sH2/gmclciue5iJXlMMmg4KMi8abhN+FHLfxcJiJemEecBcA3PkPcUtNOkMOqWhTnVVpXbTpm/00+fiFmKs0bMA==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector10001;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=9skhqww0F/YY13Fxeob1iuB5/IKADCGFG+AaXOxjM0I=;
- b=HY/kSlndo/KV5egaKE1C3n0/EyzuB5iNgB1WB0t8piqMv0IYw7d2ioMDP7ybBoSaOUXU+FoPM8oiHE80H6rnlJFNrBd5BviTHZDJXdjVf98dMoFG6VtKFnAvxAUCUmRTWE1ytgTh8jsnWYZAYLZG3j9RpVhZgQyfskEj+ZpyUekp89WjZKPvjMbA2aHBXHfxju4b0qr+LgTOycZsPulISjfFuWl4yrQt9ZoVn4PYH4LiDdf/12ftNF85U0pGeQMmpvVFYQqQZNiTecC8Qdw1ly1kf6jkxBSJK2xuodXOyIMSPxg2cw/igRTHMhwL1vnCISKnUSDxfvEYt+q5HuHvmA==
+ bh=vCBUpY5BhU9v443UOpVrUWyc+AsCbmX4Or/+QBj+3yQ=;
+ b=rdczx+iE8ccOS2SMTiiiU3/dAHI7ihB2i0vz3OQU8ko1ZRohHtiKU1MSiM3BFgUioDumzTrp0Xyu4ozJX9W4YN1E/OfC07Fp/V+jwKUmNv8+/5NBNS/IlX4QGyzx2djr3j+p4t97BFeZRinPkHa2rE/uWPO81d6dBZYtWEHaK/wjZUIQfZdKbXTcT8hh0ojc7hofsqG0om+IIu1193dnRRKB9yEB8bNSJIpQK1cwsurGw/3KNEMzQ8iegrZAzNH7kw3hnbxokp3nbcDd8fvRAm/8epTHeeRsiTW/8Uul9dw6l0THEtQmHLWw+QrT0Ok33TAkh4vq1/iBPAUZ6YOByQ==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
  165.204.84.17) smtp.rcpttodomain=lists.linux.dev smtp.mailfrom=amd.com;
  dmarc=pass (p=quarantine sp=quarantine pct=100) action=none
  header.from=amd.com; dkim=none (message not signed); arc=none (0)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=9skhqww0F/YY13Fxeob1iuB5/IKADCGFG+AaXOxjM0I=;
- b=vzbOyQQ/l6EOejbCc2aY7rdf8K1YwGLzvvP1DK+wBxneL3A/tECoL+JYkdDwubOSzvOZKGb3WtqyOSioeuaujXXM1xra10fY8vPWMicefRm+xyyjAJ+wSpIVhfU9mNg4095qi2SZ1u6lUZ67y6hCI0BroBSadSqQY1nm26oI6A0=
-Received: from BN0PR07CA0013.namprd07.prod.outlook.com (2603:10b6:408:141::19)
- by SJ2PR12MB8956.namprd12.prod.outlook.com (2603:10b6:a03:53a::6) with
+ bh=vCBUpY5BhU9v443UOpVrUWyc+AsCbmX4Or/+QBj+3yQ=;
+ b=r/NnhuKwZGaSArTdDf/p3QMN2svoyKnccy1m2FIwJ5gmS5DGaB6qbi/6yNJ90CSD16TXV/5FeR9mngejcunG50IauhKW3XKKB6XK5R3xAU80r8qR7tPKmx3ijmI9+LNuJe+i2Dui8FKmFVa0R5bebDQPlnG/dkc3E+/LAh4p5NE=
+Received: from BN8PR12CA0036.namprd12.prod.outlook.com (2603:10b6:408:60::49)
+ by CH0PR12MB8577.namprd12.prod.outlook.com (2603:10b6:610:18b::14) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.8048.27; Wed, 16 Oct
- 2024 05:38:06 +0000
-Received: from BN3PEPF0000B078.namprd04.prod.outlook.com
- (2603:10b6:408:141:cafe::5a) by BN0PR07CA0013.outlook.office365.com
- (2603:10b6:408:141::19) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.8069.18 via Frontend
- Transport; Wed, 16 Oct 2024 05:38:05 +0000
+ 2024 05:38:27 +0000
+Received: from BN3PEPF0000B074.namprd04.prod.outlook.com
+ (2603:10b6:408:60:cafe::42) by BN8PR12CA0036.outlook.office365.com
+ (2603:10b6:408:60::49) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.8069.17 via Frontend
+ Transport; Wed, 16 Oct 2024 05:38:26 +0000
 X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 165.204.84.17)
  smtp.mailfrom=amd.com; dkim=none (message not signed)
  header.d=none;dmarc=pass action=none header.from=amd.com;
@@ -48,21 +48,21 @@ Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
  165.204.84.17 as permitted sender) receiver=protection.outlook.com;
  client-ip=165.204.84.17; helo=SATLEXMB04.amd.com; pr=C
 Received: from SATLEXMB04.amd.com (165.204.84.17) by
- BN3PEPF0000B078.mail.protection.outlook.com (10.167.243.123) with Microsoft
+ BN3PEPF0000B074.mail.protection.outlook.com (10.167.243.119) with Microsoft
  SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.20.8069.17 via Frontend Transport; Wed, 16 Oct 2024 05:38:05 +0000
+ 15.20.8069.17 via Frontend Transport; Wed, 16 Oct 2024 05:38:26 +0000
 Received: from kali.amd.com (10.180.168.240) by SATLEXMB04.amd.com
  (10.181.40.145) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2507.39; Wed, 16 Oct
- 2024 00:38:02 -0500
+ 2024 00:38:23 -0500
 From: Vasant Hegde <vasant.hegde@amd.com>
 To: <iommu@lists.linux.dev>, <joro@8bytes.org>
 CC: <will@kernel.org>, <robin.murphy@arm.com>,
 	<suravee.suthikulpanit@amd.com>, Vasant Hegde <vasant.hegde@amd.com>, "Joerg
  Roedel" <jroedel@suse.de>
-Subject: [PATCH v3 07/10] iommu/amd: Rearrange attach device code
-Date: Wed, 16 Oct 2024 05:34:58 +0000
-Message-ID: <20241016053501.97497-8-vasant.hegde@amd.com>
+Subject: [PATCH v3 08/10] iommu/amd: Convert dev_data lock from spinlock to mutex
+Date: Wed, 16 Oct 2024 05:34:59 +0000
+Message-ID: <20241016053501.97497-9-vasant.hegde@amd.com>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20241016053501.97497-1-vasant.hegde@amd.com>
 References: <20241016053501.97497-1-vasant.hegde@amd.com>
@@ -78,191 +78,140 @@ X-ClientProxiedBy: SATLEXMB03.amd.com (10.181.40.144) To SATLEXMB04.amd.com
  (10.181.40.145)
 X-EOPAttributedMessage: 0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: BN3PEPF0000B078:EE_|SJ2PR12MB8956:EE_
-X-MS-Office365-Filtering-Correlation-Id: 4b26ef5f-6cb6-4151-6db3-08dceda4b57f
+X-MS-TrafficTypeDiagnostic: BN3PEPF0000B074:EE_|CH0PR12MB8577:EE_
+X-MS-Office365-Filtering-Correlation-Id: 1d0786b9-70bd-4aa1-f945-08dceda4c216
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|1800799024|376014|36860700013|82310400026;
+	BCL:0;ARA:13230040|1800799024|36860700013|376014|82310400026;
 X-Microsoft-Antispam-Message-Info:
-	=?us-ascii?Q?2aNsFEgEPioPFyUr62jE898XxwF1F+jnv7TY/W8vAqAyPTPmxGZKvcYFM11p?=
- =?us-ascii?Q?s9fMKs+Zs9y+yCger9Nd1DqbZ3gs00Nhr48RPywukDPmSzlo2MrEbPNNz/jX?=
- =?us-ascii?Q?A202oysp4boLlKlxruhIfNojZCrEKP6RxIjfh+5tC0FPY7NjmVncqF639EoQ?=
- =?us-ascii?Q?lAG+S7wdhVf/dmCaYWaoo+ObagxyKl/YDxrce21mZ+UcryIr/W+PUtTIUSzF?=
- =?us-ascii?Q?690rPg/Pi5bXSiYgGKC5Nv/WV4/OWHX503pDCNsATyTGJ2x+sEYecpHYspgX?=
- =?us-ascii?Q?8skqenPbZnoBcIyZL5sGGGTnvqPsxk1KAuJ/jz9tDS5LS4OVoAbJNY+PlIQC?=
- =?us-ascii?Q?RJQkwb//estflgOp50BvEL5zBwjiObGhQNGlEUaHcuvFBRlN0sQj4KVyzQxf?=
- =?us-ascii?Q?U9lqPctK+v3orYgF/DPWQnzB6VZ77SgAhzJCML7f6fCRvoqiyTyPjmeDv8oP?=
- =?us-ascii?Q?2oPVLZP83yIbwh5Q6v3VJAdcRgxjc4k7abk7ytC6EOtvvRBCFYd5bP+PpaD0?=
- =?us-ascii?Q?6zQI7yRF7MpyZaBB4QcwcBkTAGlskN9VtccBJGAoRPcr8XaiDNHAd3V/A7UL?=
- =?us-ascii?Q?u2IR9NfNISdnEiqy0nNewzONNLck0Ya7XdoSkViisXwhzkt2MQ+apOO3b9ZP?=
- =?us-ascii?Q?pKpYcNZxhSjr/RiXhmvrAPv8eYpBgtjyYiiKdfRqf3ztTQjh411C/vnEngUw?=
- =?us-ascii?Q?IG2d822TFSuuUpCkLZ1nftPuNNeQ+SUf/HzMTyQZgoV8JNh1wjqOsEF7+RX4?=
- =?us-ascii?Q?1QJh8jtdpsHtLChkqmSRsCYgdEuB+tRNsqxtdNjACqj9qLjZ/q7zQMr19aFa?=
- =?us-ascii?Q?6xNT8VheVWdoklgxvFYvdhjRkskDu3LziGFlyLS7hTc/vGUEHJnnL4iUVFJU?=
- =?us-ascii?Q?Q3hXZUdBl+zzzErPQmyJGiMY9nQipPtAUFcBQS5S1Tj+NGFdGe6OFT3TPh1I?=
- =?us-ascii?Q?wfaLnoiAkmShAx5W1zKSqk7hlAivpwf26aRwW6hvVRkrMTyUn0JMDCOa4Vpn?=
- =?us-ascii?Q?zNreTvT0YOZLgDCDSUqjrRi3/eUYcqY41M3o6jHdewQ3JEasAC+VGxry5/+P?=
- =?us-ascii?Q?9Kn3fnkhnDNF3DrQT5tnx591WN2KoBLSEaF6+BSvsAfy6CQt4pcmwjX3TOmz?=
- =?us-ascii?Q?ym5tq+8LhZeNZpDaX0oeSLi3LkEa2FxIxx+RxPqIbGZqQ8Yx6OE0Kesja1QR?=
- =?us-ascii?Q?cy3622yjfB7w17qZPMRj9PAqBFtjloMbXcAhNLzqXF3lU3p9ocQB5iXGYCTk?=
- =?us-ascii?Q?CP/x6ehg8VmSQHoY57kII10rNrpOfoaidPiLZKlMwYQIy1Ul79wZ7PwAGd11?=
- =?us-ascii?Q?JYbnk3FN1ySSzTTG2VHyUrjY6XzXf4GjUJD97dhx/s2hOBvmaGhkiK65HiIO?=
- =?us-ascii?Q?gpDXrthsM5Ba9Wv/Let0qQnaEJ41?=
+	=?us-ascii?Q?y56+kXG1cHSoA/UrI8zpiKvMhrCZwFDED+KIX/u/gmtSzCjIN7TCXDsEI5UX?=
+ =?us-ascii?Q?DPP8USgtaFsXqkbudnbLBx2meKDlVWVmphWN5RzHdTtTQsw7k+OfmpuyI8Zt?=
+ =?us-ascii?Q?RkJP74SFR8FFlzWRItb+4j3hI1xx84CaI3GCarSTLJH4CV3cDKul7yeRAsRV?=
+ =?us-ascii?Q?LMqqmHwhAQNQQg3ZQdmwBU1CMbgB+LuFeNX/5wf4xVL2yxhyX76ed3NK5q6l?=
+ =?us-ascii?Q?EGwNPWMBx6pl/gUYClDkTbrMNZT2E/YrrhdejC/3+5S2qbl6ztegUFOTdzNf?=
+ =?us-ascii?Q?J96tlEyBt6aCImcG+O9GIuAMh4SOB2Ak2KdY4Vc8UrizqwLpfxFvXJpCyapu?=
+ =?us-ascii?Q?mjZerAKbA2Nr0jfnojxWgnEbW0Kxn+X5mXrSEYdgRYUEOFQgXCFNbntQZCfh?=
+ =?us-ascii?Q?kcEfrqaTViVpVXi7LOhhkLNzNj8cjKOt1bCk+y381dCwrbM3as1JDm8xNgdg?=
+ =?us-ascii?Q?tsvLEiZD/hL3MXuhlMAVaiU1fuOQgcayS0SBFjTBtfAzUVzVo443KPsbbgCf?=
+ =?us-ascii?Q?eUeixciuzQkbsS8oQ/rRDJhhZZHpQcrNtyG6RWBmwOOhIDfQnXCxKi1utPK6?=
+ =?us-ascii?Q?rC6257aE3nrlEnvrgoOp0DoWQoQ7oIeyNQnB5ZoJgcHPige/ZuqG8vm3lZ+I?=
+ =?us-ascii?Q?oBfoVmk1jJk3lKM8Noh4CMaOU8fwdHsbH3gV65iMBcA5srvk+67VxjaBfoou?=
+ =?us-ascii?Q?PlviYwGxuL9Bluxn2YTaUH3/IgkrL3mhjZBFWrfVAL3PTJYAEBtORvmFqnsj?=
+ =?us-ascii?Q?8o+6GhrlD0cfIpbBuaPWJ9oY8j/RSxRc8/psknuKC7i1E67K6V7LxQprOf9Z?=
+ =?us-ascii?Q?WiDdXK8wLCiAEyi9SoNZrCnxgQW94sBWCIi7Id3J8Nma+vbx4UvyXjO4hlzq?=
+ =?us-ascii?Q?AclsH1aVbyUJbH2TL1iZCN6JpbD85onfw4F+P7f40bNA70N9SkRTYkR8pJSQ?=
+ =?us-ascii?Q?m84rU20KE1cqnH4gaoac5OIDpri+inWHGuEXr8grK/2deXbIVZelaJCoo8Mk?=
+ =?us-ascii?Q?bVULXKA5s5T/Vmxw0PM+4nDi1+Fgt0DiLjmhPh8YVBHFbRyim8FZ+EEjOK1B?=
+ =?us-ascii?Q?StNIOwXPTO6itygMtXbpZoV9jgF+ps7WNXlJNddD3LPsDMFwYrMc0V0PFPQR?=
+ =?us-ascii?Q?uVODTJfbQszLnHZLZaw6mQcAgPKYXcws8NFXHrzttG+5FM1lS/OCLR4VO06F?=
+ =?us-ascii?Q?SH37a3LdrI3Eo6Rx6jvjAOkgiEhhT7k9rbUZcg1lKAWfZnDD/LNZGffyu0lw?=
+ =?us-ascii?Q?uVzON8bPwSg0t+PE/5ZHs9kYxul/d7D4HRh1faebANkUl2SAWhKr9UyeGQ5H?=
+ =?us-ascii?Q?vD0jBfoYDl3YfaCVGYtTasOQ9Hk65qMa2BQfK20k/y0EIY4J2cFzr2whASG/?=
+ =?us-ascii?Q?o7mQztC2iiEXbuDzZwax78GuN1h0?=
 X-Forefront-Antispam-Report:
-	CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB04.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230040)(1800799024)(376014)(36860700013)(82310400026);DIR:OUT;SFP:1101;
+	CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB04.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230040)(1800799024)(36860700013)(376014)(82310400026);DIR:OUT;SFP:1101;
 X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 16 Oct 2024 05:38:05.4433
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 16 Oct 2024 05:38:26.5847
  (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 4b26ef5f-6cb6-4151-6db3-08dceda4b57f
+X-MS-Exchange-CrossTenant-Network-Message-Id: 1d0786b9-70bd-4aa1-f945-08dceda4c216
 X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
 X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[SATLEXMB04.amd.com]
 X-MS-Exchange-CrossTenant-AuthSource:
-	BN3PEPF0000B078.namprd04.prod.outlook.com
+	BN3PEPF0000B074.namprd04.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Anonymous
 X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SJ2PR12MB8956
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: CH0PR12MB8577
 
-attach_device() is just holding lock and calling do_attach(). There is
-not need to have another function. Just move do_attach() code to
-attach_device(). Similary move do_detach() code to detach_device().
+Currently in attach device path it takes dev_data->spinlock. But as per
+design attach device path can sleep. Also if device is PRI capable then
+it adds device to IOMMU fault handler queue which takes mutex. Hence
+currently PRI enablement is done outside dev_data lock.
+
+Covert dev_data lock from spinlock to mutex so that it follows the
+design and also PRI enablement can be done properly.
 
 Signed-off-by: Vasant Hegde <vasant.hegde@amd.com>
 Reviewed-by: Joerg Roedel <jroedel@suse.de>
 ---
- drivers/iommu/amd/iommu.c | 85 +++++++++++++++------------------------
- 1 file changed, 33 insertions(+), 52 deletions(-)
+ drivers/iommu/amd/amd_iommu_types.h |  2 +-
+ drivers/iommu/amd/iommu.c           | 14 +++++++-------
+ 2 files changed, 8 insertions(+), 8 deletions(-)
 
+diff --git a/drivers/iommu/amd/amd_iommu_types.h b/drivers/iommu/amd/amd_iommu_types.h
+index ad6ce13c0b7b..a13c347baffd 100644
+--- a/drivers/iommu/amd/amd_iommu_types.h
++++ b/drivers/iommu/amd/amd_iommu_types.h
+@@ -836,7 +836,7 @@ struct devid_map {
+  */
+ struct iommu_dev_data {
+ 	/*Protect against attach/detach races */
+-	spinlock_t lock;
++	struct mutex mutex;
+ 
+ 	struct list_head list;		  /* For domain->dev_list */
+ 	struct llist_node dev_data_list;  /* For global dev_data_list */
 diff --git a/drivers/iommu/amd/iommu.c b/drivers/iommu/amd/iommu.c
-index a738d2d7f0c4..dd1fb3bedd33 100644
+index dd1fb3bedd33..2fefb7abb9ab 100644
 --- a/drivers/iommu/amd/iommu.c
 +++ b/drivers/iommu/amd/iommu.c
-@@ -2077,12 +2077,24 @@ static void pdom_detach_iommu(struct amd_iommu *iommu,
- 	spin_unlock_irqrestore(&pdom->lock, flags);
- }
+@@ -207,7 +207,7 @@ static struct iommu_dev_data *alloc_dev_data(struct amd_iommu *iommu, u16 devid)
+ 	if (!dev_data)
+ 		return NULL;
  
--static int do_attach(struct iommu_dev_data *dev_data,
--		     struct protection_domain *domain)
-+/*
-+ * If a device is not yet associated with a domain, this function makes the
-+ * device visible in the domain
-+ */
-+static int attach_device(struct device *dev,
-+			 struct protection_domain *domain)
- {
-+	struct iommu_dev_data *dev_data = dev_iommu_priv_get(dev);
+-	spin_lock_init(&dev_data->lock);
++	mutex_init(&dev_data->mutex);
+ 	dev_data->devid = devid;
+ 	ratelimit_default_init(&dev_data->rs);
+ 
+@@ -2088,7 +2088,7 @@ static int attach_device(struct device *dev,
  	struct amd_iommu *iommu = get_amd_iommu_from_dev_data(dev_data);
  	int ret = 0;
  
-+	spin_lock(&dev_data->lock);
-+
-+	if (dev_data->domain != NULL) {
-+		ret = -EBUSY;
-+		goto out;
-+	}
-+
- 	/* Update data structures */
- 	dev_data->domain = domain;
- 	list_add(&dev_data->list, &domain->dev_list);
-@@ -2090,64 +2102,17 @@ static int do_attach(struct iommu_dev_data *dev_data,
- 	/* Do reference counting */
- 	ret = pdom_attach_iommu(iommu, domain);
- 	if (ret)
--		return ret;
-+		goto out;
+-	spin_lock(&dev_data->lock);
++	mutex_lock(&dev_data->mutex);
  
- 	/* Setup GCR3 table */
- 	if (pdom_is_sva_capable(domain)) {
- 		ret = init_gcr3_table(dev_data, domain);
- 		if (ret) {
- 			pdom_detach_iommu(iommu, domain);
--			return ret;
-+			goto out;
- 		}
+ 	if (dev_data->domain != NULL) {
+ 		ret = -EBUSY;
+@@ -2114,7 +2114,7 @@ static int attach_device(struct device *dev,
  	}
  
--	return ret;
--}
--
--static void do_detach(struct iommu_dev_data *dev_data)
--{
--	struct protection_domain *domain = dev_data->domain;
--	struct amd_iommu *iommu = get_amd_iommu_from_dev_data(dev_data);
--
--	/* Clear DTE and flush the entry */
--	dev_update_dte(dev_data, false);
--
--	/* Flush IOTLB and wait for the flushes to finish */
--	amd_iommu_domain_flush_all(domain);
--
--	/* Clear GCR3 table */
--	if (pdom_is_sva_capable(domain))
--		destroy_gcr3_table(dev_data, domain);
--
--	/* Update data structures */
--	dev_data->domain = NULL;
--	list_del(&dev_data->list);
--
--	/* decrease reference counters - needs to happen after the flushes */
--	pdom_detach_iommu(iommu, domain);
--}
--
--/*
-- * If a device is not yet associated with a domain, this function makes the
-- * device visible in the domain
-- */
--static int attach_device(struct device *dev,
--			 struct protection_domain *domain)
--{
--	struct iommu_dev_data *dev_data;
--	int ret = 0;
--
--	dev_data = dev_iommu_priv_get(dev);
--
--	spin_lock(&dev_data->lock);
--
--	if (dev_data->domain != NULL) {
--		ret = -EBUSY;
--		goto out;
--	}
--
--	ret = do_attach(dev_data, domain);
--
  out:
- 	spin_unlock(&dev_data->lock);
+-	spin_unlock(&dev_data->lock);
++	mutex_unlock(&dev_data->mutex);
  
-@@ -2161,6 +2126,7 @@ static void detach_device(struct device *dev)
- {
- 	struct iommu_dev_data *dev_data = dev_iommu_priv_get(dev);
- 	struct amd_iommu *iommu = get_amd_iommu_from_dev_data(dev_data);
-+	struct protection_domain *domain = dev_data->domain;
+ 	return ret;
+ }
+@@ -2129,7 +2129,7 @@ static void detach_device(struct device *dev)
+ 	struct protection_domain *domain = dev_data->domain;
  	bool ppr = dev_data->ppr;
  
- 	spin_lock(&dev_data->lock);
-@@ -2181,7 +2147,22 @@ static void detach_device(struct device *dev)
- 		dev_data->ppr = false;
- 	}
+-	spin_lock(&dev_data->lock);
++	mutex_lock(&dev_data->mutex);
  
--	do_detach(dev_data);
-+	/* Clear DTE and flush the entry */
-+	dev_update_dte(dev_data, false);
-+
-+	/* Flush IOTLB and wait for the flushes to finish */
-+	amd_iommu_domain_flush_all(domain);
-+
-+	/* Clear GCR3 table */
-+	if (pdom_is_sva_capable(domain))
-+		destroy_gcr3_table(dev_data, domain);
-+
-+	/* Update data structures */
-+	dev_data->domain = NULL;
-+	list_del(&dev_data->list);
-+
-+	/* decrease reference counters - needs to happen after the flushes */
-+	pdom_detach_iommu(iommu, domain);
+ 	/*
+ 	 * First check if the device is still attached. It might already
+@@ -2165,7 +2165,7 @@ static void detach_device(struct device *dev)
+ 	pdom_detach_iommu(iommu, domain);
  
  out:
- 	spin_unlock(&dev_data->lock);
+-	spin_unlock(&dev_data->lock);
++	mutex_unlock(&dev_data->mutex);
+ 
+ 	/* Remove IOPF handler */
+ 	if (ppr)
+@@ -2430,9 +2430,9 @@ static int blocked_domain_attach_device(struct iommu_domain *domain,
+ 		detach_device(dev);
+ 
+ 	/* Clear DTE and flush the entry */
+-	spin_lock(&dev_data->lock);
++	mutex_lock(&dev_data->mutex);
+ 	dev_update_dte(dev_data, false);
+-	spin_unlock(&dev_data->lock);
++	mutex_unlock(&dev_data->mutex);
+ 
+ 	return 0;
+ }
 -- 
 2.31.1
 
