@@ -1,125 +1,107 @@
-Received: from mail-lf1-f47.google.com (mail-lf1-f47.google.com [209.85.167.47])
+Received: from mail-lf1-f53.google.com (mail-lf1-f53.google.com [209.85.167.53])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D1528171A7
-	for <iommu@lists.linux.dev>; Wed, 16 Oct 2024 01:58:49 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.47
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BE05D1859
+	for <iommu@lists.linux.dev>; Wed, 16 Oct 2024 02:24:02 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.53
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1729043931; cv=none; b=QntRiIXHMRDfoLvBg1/e42IEDIpm/WcRKUbkM2M3OKD9+nJm0CuhX8GvaRX/q3nNDkVt3tjBaFqphsA/LPMhCa/Sqy2bHpi9fXXmEtEikLuH2Y/yBUw3ae3kd8PTghYAOiR3Zd0dLz/JwR64brQ6URq8XBQBbxGtTYt+8zTXp1c=
+	t=1729045444; cv=none; b=gJsmXEkde7Ca9OPYLNm9z1+SUNxP+PbBJ6xmz6FD7cO8U4xtIlWFTR/fyodaT3NGJHF8qIv/plOV5JvisswZxmor4g+eRnAG2EvUZN7aLKkLN9zQldiYSgFpXZ5hEmfrThPQxgHjhnwLIXrdwcxSP7GYz6LBepzuVY7YMj3ADtM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1729043931; c=relaxed/simple;
-	bh=dVq8802sNgxsYQrKPhpLGl2Ji48gzebkMI0KMfI8BG8=;
+	s=arc-20240116; t=1729045444; c=relaxed/simple;
+	bh=+GF1oCaa4XIdm2rCPBWvV+uTROdOd1KyxDhkbhawAvc=;
 	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=eptjHVXWx57uRvErY6z7USsu4mCkScZr4Ld3IUBFEWeZO1OBaScUXopNz2Xn0R7f4P41r76y13bs82bIdaD1l2cf8oz+0yU2mTHZ/1M3YJNcE3u86SS7iYNGwZuGb/k6j9Zyzqm408L+M9NLlNQhsW+0X/e/cR0MmwodQiySVkA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org; spf=pass smtp.mailfrom=linaro.org; dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b=iF0j/cA+; arc=none smtp.client-ip=209.85.167.47
+	 To:Cc:Content-Type; b=OeCO0FH3KwngCS4fK8StQ9qizt400EoxiQng93gfu7mlBvxaM+N7R5BL3/ZQrB61o9992Z/11Tz564/iw3L2s8RMgX+I3CfGBFaK/p5Ur5V/I/rcl9v6m4Lo/prsY64WITJMi63NtryK81q7N+CfG75ciAtJGroVHeQEKaTYC/U=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org; spf=pass smtp.mailfrom=linaro.org; dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b=nofvZaOf; arc=none smtp.client-ip=209.85.167.53
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linaro.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="iF0j/cA+"
-Received: by mail-lf1-f47.google.com with SMTP id 2adb3069b0e04-539fe02c386so443142e87.0
-        for <iommu@lists.linux.dev>; Tue, 15 Oct 2024 18:58:49 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="nofvZaOf"
+Received: by mail-lf1-f53.google.com with SMTP id 2adb3069b0e04-539f4d8ef66so3931770e87.1
+        for <iommu@lists.linux.dev>; Tue, 15 Oct 2024 19:24:02 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1729043928; x=1729648728; darn=lists.linux.dev;
+        d=linaro.org; s=google; t=1729045441; x=1729650241; darn=lists.linux.dev;
         h=cc:to:subject:message-id:date:from:in-reply-to:references
          :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=A/rtU2ORxq4VQYJugdVXcy5ZyrAZXc1jQ9TPE/XvnVI=;
-        b=iF0j/cA+tMC58oHzIhNX9W5gk0zsnG7PDpUOaBgPvi8uI3E3UHCkecRvoixp7kEszu
-         MV3av3BqlF+htRahjFgV7ljpovKfC8yf8hCKreg3liieL8ttYSHCEJa5Us6Xj7wcEwkd
-         gr94qIJql0Pa46EXEzd49YstickRaAdKwXnFm4S5JvtzlJmibzLSo8Ub+nHePqjZiVA7
-         qxtfmjtXrjPrtdLpk8AbyIqFeI9fHPv2CRe0UkYfrZ9fTv81Hi+KpnkFUb2uBmpqb6ZP
-         bMxJOHJ5d+nsRHtFfZK29CqkgOP0FE0Nk8kdojxL8++mw8GmgbEUABrToQJGTJsTOFK4
-         jrSg==
+        bh=qiWvrpKzeq83YnQqOE7ISPaRFxYtddrp60dv+zolb9U=;
+        b=nofvZaOfyWsBjfzInq6Nt5348snRx1WfxC8/qUyceii+muEi+UPrZLzPtbO35vJmzY
+         WoOnUDYgUY7NS935HNxhPMqa738rDPNZJl9/t//bhdwBox68qoOzfS/Fb8ImybKAtmwc
+         811UEjfXwKpbEJxjuTTO8k3i7bAgDdimRnn7yfZpZR22aEqHFGQ8zRn9wSyff4DH8smz
+         6rI8kXlZL4ExKYnY1uvWSvhwdzMJnBP+E7ZBq20Z2hLPgjE0VDZ8M1lyFwtzYWnUatrt
+         LE1Dmd6TCcljMgkSHq9Mk1us+qHMezNwxA2vfDMRJmbTJmCXu6oCpP10d4iWxNYPXkYp
+         bCrw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1729043928; x=1729648728;
+        d=1e100.net; s=20230601; t=1729045441; x=1729650241;
         h=cc:to:subject:message-id:date:from:in-reply-to:references
          :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
          :reply-to;
-        bh=A/rtU2ORxq4VQYJugdVXcy5ZyrAZXc1jQ9TPE/XvnVI=;
-        b=ZvZuzrXaMqSxeJlfE60lgVCqaWwT9G76EzAbhArALTohxe87fXW+3PZM7OrMil6wpq
-         H3jnyMGxgFi5NXVfbH8s7q0n8kCDTWLrrlmNlMk89NSiY6dFKIBC6vUxN0DgTEmhYsY0
-         hIb3bnX2oLJqh+yu8JgsEv+suXJPiUcnFeSiEReRpBAHJ5iNMHHOGNxWVWW07yPZSWuY
-         l9VMl+YMipMiUQEHFENHuIjWZihjf8xOCKqpqaEFmhlv06PcMtrxwYQzL9Jbp7+HwMUh
-         haQB3mZMAA/A3gzFbinrrVyk4wB/lo+6n1u5L/GWL+upru3z0kKxLJkFTThP7VTEkWjR
-         DaYQ==
-X-Forwarded-Encrypted: i=1; AJvYcCUOBW3lc0/lghW0fK12wd0ezLKbRtP3aUy9mQieNpRO6qMLXJGaOdlou6nRkwordAo5UjqUWA==@lists.linux.dev
-X-Gm-Message-State: AOJu0YzOyFL3Gy9VXkX7QE4h+dVHUOAb/Ime5pX3xsgodvJj8koUY6z7
-	o47mTVBh43WgXCPAVXb2mETz2tNRtLxHMvKJK331JOyAozq154Kx0VZ2s+emACFhRaumLNmhupZ
-	c2ycb7Z8q0D++4IxdqrtT5yjqAkCZuPTIAQQqOg==
-X-Google-Smtp-Source: AGHT+IEB/XndljAYmvf9daRxR8zUkYMGinPm83aD1j6YhAnINHWEAphdGASnRtu0uajjdc4lTF2hFS3dM0SJE/wV/i4=
-X-Received: by 2002:a05:6512:3a94:b0:539:fc1b:36d1 with SMTP id
- 2adb3069b0e04-53a03c8fc81mr731316e87.6.1729043927809; Tue, 15 Oct 2024
- 18:58:47 -0700 (PDT)
+        bh=qiWvrpKzeq83YnQqOE7ISPaRFxYtddrp60dv+zolb9U=;
+        b=UQ/m0LXKgYhyMbfewJexkbqADksqm1dFUSeT0mjaQBFseEWrFsabDs+XcDHORKLrvR
+         OGzfFKN7/mWIQUU2K5UekC+5crm+rugMQTjaoYG8sqy1WFlb2ITXp+fhSs9dRKUIuCZ2
+         w5qekt/KVGnZyrX+kutHLogFbBTJpyj9V4N5+++sXL8BPwa9H+QUJJ+rXb86U86aHTBN
+         2aUNL28pH1nc11shGcLHhVZGXNZgBfvXjP+z6j8RBcbKyp9M/4kJpERs0uVDGuMt86Vr
+         I8dd858PD7DTVqga+kNxpmqBPh9MfzlwxqNcSd2xTTXkcA7Obdf5tLdHP/AQEaM2Wz1Z
+         XloQ==
+X-Forwarded-Encrypted: i=1; AJvYcCUdcCkaBcynZkIEPvL/4+MaFKsg8M4TwcRgNH+Jwd4Z9sye8aif0SlZ7695PzqusgE3J/OTTQ==@lists.linux.dev
+X-Gm-Message-State: AOJu0YwaaCJmBmnznsxg52OQi9RvYY6kxQOky1AJ6K7QPAywlW1IYcS6
+	ZtzzZhuI9dH6g1lcv3m7pcjhurYjEq779F00OT0mx5RaIwTDb5Zhym9+EpL7lXgIMVxVWup6++Y
+	gdzDWlXVURDRS4TwsJsIi6p37IJKiKHmlquSTlw==
+X-Google-Smtp-Source: AGHT+IEV/byr5lu2UsUC2RRVM2gDVA1eLiMxNLS7gT854PVdY6PhxgM/HLAZnNXx36HxSizxkKPg933nd9PyJjzpqHw=
+X-Received: by 2002:a05:6512:3094:b0:539:da76:c77e with SMTP id
+ 2adb3069b0e04-53a03f045ecmr1718387e87.5.1729045440632; Tue, 15 Oct 2024
+ 19:24:00 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <20240702063444.105814-1-baolu.lu@linux.intel.com>
- <20240702063444.105814-8-baolu.lu@linux.intel.com> <CABQgh9EeKtYuu+vTTM0fwaKrLxdyC355MQxN8o8_OL9Y1NkE8A@mail.gmail.com>
- <20241015125420.GK1825128@ziepe.ca>
-In-Reply-To: <20241015125420.GK1825128@ziepe.ca>
+References: <0-v2-621370057090+91fec-smmuv3_nesting_jgg@nvidia.com>
+In-Reply-To: <0-v2-621370057090+91fec-smmuv3_nesting_jgg@nvidia.com>
 From: Zhangfei Gao <zhangfei.gao@linaro.org>
-Date: Wed, 16 Oct 2024 09:58:36 +0800
-Message-ID: <CABQgh9E+AnuyJgcM9tf1gEOUqcC_QSrA__Xha9sKYZp=NVRwhQ@mail.gmail.com>
-Subject: Re: [PATCH v8 07/10] iommufd: Fault-capable hwpt attach/detach/replace
-To: Jason Gunthorpe <jgg@ziepe.ca>
-Cc: Lu Baolu <baolu.lu@linux.intel.com>, Kevin Tian <kevin.tian@intel.com>, 
-	Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>, 
-	Jean-Philippe Brucker <jean-philippe@linaro.org>, Nicolin Chen <nicolinc@nvidia.com>, 
-	Yi Liu <yi.l.liu@intel.com>, Jacob Pan <jacob.jun.pan@linux.intel.com>, 
-	Joel Granados <j.granados@samsung.com>, iommu@lists.linux.dev, 
-	virtualization@lists.linux-foundation.org, linux-kernel@vger.kernel.org, 
-	Shameerali Kolothum Thodi <shameerali.kolothum.thodi@huawei.com>
+Date: Wed, 16 Oct 2024 10:23:49 +0800
+Message-ID: <CABQgh9E32c5inrn=Q5HWThuJQ4xV=EFWLGwbyxVLHQVUZ_uYCA@mail.gmail.com>
+Subject: Re: [PATCH v2 0/8] Initial support for SMMUv3 nested translation
+To: Jason Gunthorpe <jgg@nvidia.com>
+Cc: acpica-devel@lists.linux.dev, Hanjun Guo <guohanjun@huawei.com>, 
+	iommu@lists.linux.dev, Joerg Roedel <joro@8bytes.org>, Kevin Tian <kevin.tian@intel.com>, 
+	kvm@vger.kernel.org, Len Brown <lenb@kernel.org>, linux-acpi@vger.kernel.org, 
+	linux-arm-kernel@lists.infradead.org, 
+	Lorenzo Pieralisi <lpieralisi@kernel.org>, "Rafael J. Wysocki" <rafael@kernel.org>, 
+	Robert Moore <robert.moore@intel.com>, Robin Murphy <robin.murphy@arm.com>, 
+	Sudeep Holla <sudeep.holla@arm.com>, Will Deacon <will@kernel.org>, 
+	Alex Williamson <alex.williamson@redhat.com>, Eric Auger <eric.auger@redhat.com>, 
+	Jean-Philippe Brucker <jean-philippe@linaro.org>, Moritz Fischer <mdf@kernel.org>, 
+	Michael Shavit <mshavit@google.com>, Nicolin Chen <nicolinc@nvidia.com>, patches@lists.linux.dev, 
+	Shameerali Kolothum Thodi <shameerali.kolothum.thodi@huawei.com>, Mostafa Saleh <smostafa@google.com>
 Content-Type: text/plain; charset="UTF-8"
 
-On Tue, 15 Oct 2024 at 20:54, Jason Gunthorpe <jgg@ziepe.ca> wrote:
->
-> On Tue, Oct 15, 2024 at 11:19:33AM +0800, Zhangfei Gao wrote:
-> > > +static int iommufd_fault_iopf_enable(struct iommufd_device *idev)
-> > > +{
-> > > +       struct device *dev = idev->dev;
-> > > +       int ret;
-> > > +
-> > > +       /*
-> > > +        * Once we turn on PCI/PRI support for VF, the response failure code
-> > > +        * should not be forwarded to the hardware due to PRI being a shared
-> > > +        * resource between PF and VFs. There is no coordination for this
-> > > +        * shared capability. This waits for a vPRI reset to recover.
-> > > +        */
-> > > +       if (dev_is_pci(dev) && to_pci_dev(dev)->is_virtfn)
-> > > +               return -EINVAL;
-> >
-> > I am using the SMMUv3 stall feature, and need to forward this to hardware,
-> > And now I am hacking to comment this check.
-> > Any suggestions?
->
-> Are you using PCI SRIOV and stall together?
+Hi, Jason
 
-Only use smmuv3 stall feature.
+On Tue, 27 Aug 2024 at 23:51, Jason Gunthorpe <jgg@nvidia.com> wrote:
+>
+> This brings support for the IOMMFD ioctls:
+>
+>  - IOMMU_GET_HW_INFO
+>  - IOMMU_HWPT_ALLOC_NEST_PARENT
+>  - IOMMU_DOMAIN_NESTED
+>  - ops->enforce_cache_coherency()
+>
+> This is quite straightforward as the nested STE can just be built in the
+> special NESTED domain op and fed through the generic update machinery.
+>
+> The design allows the user provided STE fragment to control several
+> aspects of the translation, including putting the STE into a "virtual
+> bypass" or a aborting state. This duplicates functionality available by
+> other means, but it allows trivially preserving the VMID in the STE as we
+> eventually move towards the VIOMMU owning the VMID.
+>
+> Nesting support requires the system to either support S2FWB or the
+> stronger CANWBS ACPI flag. This is to ensure the VM cannot bypass the
+> cache and view incoherent data, currently VFIO lacks any cache flushing
+> that would make this safe.
 
->
-> > > +       mutex_lock(&idev->iopf_lock);
-> > > +       /* Device iopf has already been on. */
-> > > +       if (++idev->iopf_enabled > 1) {
-> > > +               mutex_unlock(&idev->iopf_lock);
-> > > +               return 0;
-> > > +       }
-> > > +
-> > > +       ret = iommu_dev_enable_feature(dev, IOMMU_DEV_FEAT_IOPF);
-> > > +       if (ret)
-> > > +               --idev->iopf_enabled;
-> > > +       mutex_unlock(&idev->iopf_lock);
-> >
-> > Also iommu_dev_enable_feature(idev->dev, IOMMU_DEV_FEAT_SVA); is required
-> > In thinking how to add it properly.
->
-> FEAT_SVA needs to be deleted, not added too.
->
-> smmu-v3 needs some more fixing to move that
-> arm_smmu_master_enable_sva() logic into domain attachment.
+What if the system does not support S2FWB or CANWBS, any workaround to
+passthrough?
+Currently I am testing nesting by ignoring this check.
 
-Will think about this, Thanks Jason
-
->
-> Jason
+Thanks
