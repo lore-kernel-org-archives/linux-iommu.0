@@ -1,46 +1,46 @@
-Received: from NAM11-CO1-obe.outbound.protection.outlook.com (mail-co1nam11on2056.outbound.protection.outlook.com [40.107.220.56])
+Received: from NAM11-CO1-obe.outbound.protection.outlook.com (mail-co1nam11on2086.outbound.protection.outlook.com [40.107.220.86])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4443718D634
-	for <iommu@lists.linux.dev>; Wed, 16 Oct 2024 05:18:47 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.220.56
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B5E7718DF6A
+	for <iommu@lists.linux.dev>; Wed, 16 Oct 2024 05:18:51 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.220.86
 ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1729055929; cv=fail; b=lKzu3a+77aO/FY09eq88EBJaSjHwES/g0JTMSX+p72tcvu/cKFOlyONVkS77txApnnFVnPhdX+LsBGQLS8VNjUdnP4Yuy8VA7CSJbso5rihm6eyqEzK38f2mLFUVnX+XOHgyNl/WIT8rLn9UVY1OwzsFtI3mOX+TkIUpHO9xRC0=
+	t=1729055933; cv=fail; b=U3jV5xgsR+3tVYKiHNxH3SCIo8qAqMft+eIksBv+Ag8BP3U5An3dxNU2q6fHOTnNxCyUXDeOD4187SqsV99CfKJhNcVrIyXn7aVlNWow4MHJ80ivYnV0Hu8OmJjQEHbH/jbSxBKmtyY6D4v9Bx3obvbAJGGbkoJJro9OFQ1UIgo=
 ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1729055929; c=relaxed/simple;
-	bh=Mf5YeYPit8QmRC6dq/td8ambOmoFakWRRU5ZX8gmwQM=;
+	s=arc-20240116; t=1729055933; c=relaxed/simple;
+	bh=02fAY5m6AqBUMSF4l3o0k/vpsAkiemL+Y3VKDqCH4oM=;
 	h=From:To:CC:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=Upx2I/YewK/SZCciJy+1az1Sxx8MwVfSUFJaZ5Uw54KKVhx8CpPJXbgmgXTbBimLMQs0Abm0E+ta50/HWnIsprRQwTTixK2yTq/Kw+8ERVEs0P0E0i+QlhCTMZkkasg1q9iWPymZoOkZyqMt1hosxFn2V1qfSpQuqMZrWKQ/ztY=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com; spf=fail smtp.mailfrom=amd.com; dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b=OPSTgnR9; arc=fail smtp.client-ip=40.107.220.56
+	 MIME-Version:Content-Type; b=sy1dsYR0BtLzi5ZyePT8nYzn0dLeuFG1pZIMHs4FE8SN2L9izfXncq8CTXBUZyuCx3ZQLIdul+tNgjme++C3w1lnvUQHQpwvWMWYhxJT+TJwnJ0yTKtzTs4rFmd6E23hOGmH0DP/dlnitVDPtUfn2QSWMtuFL611QsiPkkmyUSM=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com; spf=fail smtp.mailfrom=amd.com; dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b=KNtR3E4W; arc=fail smtp.client-ip=40.107.220.86
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com
 Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=amd.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b="OPSTgnR9"
+	dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b="KNtR3E4W"
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=SajDhYYZ0p7DBTDul4EuhRWweyeqs975fP6vA0AqHX6pPsQ5FnJOlo0lbfQk23gF32cratELetiXyZHfm6yYGRg/L4gr4CnPu47WlBkMn5kcD0BiXDPmzZ8gWsobDGc8jKj/WXlDKz28O1K/gcc1zLYlYawRPNG9fMa1k3ICGZPDmqqWmfg+T9ZWT83SE6cuqIEssoMy975YdmhYTJOpejDkM1a5FBAJJ1fRr73asAmtKnXK/wYOep0+dlmA6Sp9iPpvbN54bA8Jr/4s3l/G2SGyGHQKqj247y0/kVR+Nd2vKvEF0uSDgX8oUde573HkqCc3pteR89ek5wNeujlFkw==
+ b=kz3zGzVJIewsCgRYDPRYBsvwEa2a0Dn7v+51cw7VXDFk7eFleScSVIpDoIVXpj7D+NKrGT0K+gds2lh9/Hb1H7hN71YmerP6GkhAdBUakz4Qmbq22o9K/V7TdwQkEf8hAxLLUqvJa7gfTM9a+s1bw4gJULPwGghSlZuaDWBBOYPRtNCMdcNbkemH1dPqtW3S9Px94FvEo9iYShlAQGUwc6Tteo11XFzeTSbA+uIN+ar8oODRAn4EdM/CHUH7eFVrL80MnmTdTTpFK1UZn0AVhsXVml5wHOENb4IFVRTJgdExvcsRQ3Gy/128Ie4NB9qpHlpBg1+eg6NdttoD6mYqRg==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector10001;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=FE9HSkOisQO1a0Ay4amwT+5wzl0WcdiS7FDWhCdhpKk=;
- b=Ovz4/hiTef9RmHW/RdiTwxsDvYCabTbAdGakMZEEXPp+Cy3sF80fh2nMYTh3e8AOgWjGhQfc0BfKTtHCyzdC4KASfwv1/elui64B5r+gYu+xLRcjrVurNFlTQumDOlp8cCNnGiT7OcuWXYZEMw29Ug86Md3M8d9w2rsYahrVB4p/yFukn2J9bvyxysyBt0Li88Pc5Kjz5N3fLYhhTxmeAquSbMShWZLQIRdNJQZjtNUUdncOOX2wufYlSOU/KfMl0ACHNjR+2fzvCx3vFnoYOV1iguUSXgmUUSfFp6PaLxQLAhxsV5hOAQV1T7RmzCZXRfLHhbZ2Xiys74Vdcwui7Q==
+ bh=rbW5q2lwQp3r6p/1SXYhokhF1i4ixSHIZRPYkEJfy2k=;
+ b=j2M/QvNDUxyDPC3qwMar7wzNUZroE9pxdnfYf+/pg9VEzBDdjsAa5rlKICm/+eOlogOi/lvZ8zPNl5yA68XLpC9BqqLAjUunip6/K0W/+azS6jZszutRZ2JCLAmZeiQRhlLDVuejFyC6Z9qY/n9TqlmCxC5UgsC8J8rBQrt1YOiVW72WAvIFx8QtZuSvidHJf0QDwvW2hlbZvbhy+ggpsvvrVRxvT/gAF9MW3evA1uG8r/obIhlTXxl5XIp2WgbCA96KczQb/VWWtLh9ZSQR0BlDZdp8/Gx5NjKCd7gOmTB9csA6PDkOv2A0PBDC1VZPumZGIpBvtzFC1phe3yBmqg==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
  165.204.84.17) smtp.rcpttodomain=vger.kernel.org smtp.mailfrom=amd.com;
  dmarc=pass (p=quarantine sp=quarantine pct=100) action=none
  header.from=amd.com; dkim=none (message not signed); arc=none (0)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=FE9HSkOisQO1a0Ay4amwT+5wzl0WcdiS7FDWhCdhpKk=;
- b=OPSTgnR9Uc/aGa0nmzPMW4jJmWd/Agc8VViYc/91/ufAtZp+FnzdXCn56WA1nfM8qL1lzE1yRBpli9NagIYEm2JQD7DHD20bVdbGS9lrsvMzs6jeAWcixBPiqn5hLh2NFkQy8yJora4ta8r6/ScmdsOv94K4Y4Ja2Er9D1E8wgE=
-Received: from SA9PR13CA0111.namprd13.prod.outlook.com (2603:10b6:806:24::26)
- by MW4PR12MB6875.namprd12.prod.outlook.com (2603:10b6:303:209::5) with
+ bh=rbW5q2lwQp3r6p/1SXYhokhF1i4ixSHIZRPYkEJfy2k=;
+ b=KNtR3E4W8TbGEFcOH+bu8Uj5skK9dOqDgCxPxzMQ6S4bBwD40Su8qK8zCnWF9uH6dpgRk0XgM0/pXv5Qa4cZxwxhgWKTDvSO+A5CjErllyBiIp7EGcIIT4+6B0eDwq9hEHLZ8D4rfjVYHTSv0ADP2dQBFX5/UYRius5ctGVWJG0=
+Received: from SA1PR02CA0024.namprd02.prod.outlook.com (2603:10b6:806:2cf::24)
+ by SA1PR12MB7270.namprd12.prod.outlook.com (2603:10b6:806:2b9::11) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.8048.25; Wed, 16 Oct
- 2024 05:18:43 +0000
-Received: from SA2PEPF00003AE8.namprd02.prod.outlook.com
- (2603:10b6:806:24:cafe::39) by SA9PR13CA0111.outlook.office365.com
- (2603:10b6:806:24::26) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.8069.18; Wed, 16 Oct
+ 2024 05:18:47 +0000
+Received: from SA2PEPF00003AE9.namprd02.prod.outlook.com
+ (2603:10b6:806:2cf:cafe::37) by SA1PR02CA0024.outlook.office365.com
+ (2603:10b6:806:2cf::24) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.8069.18 via Frontend
- Transport; Wed, 16 Oct 2024 05:18:43 +0000
+ Transport; Wed, 16 Oct 2024 05:18:47 +0000
 X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 165.204.84.17)
  smtp.mailfrom=amd.com; dkim=none (message not signed)
  header.d=none;dmarc=pass action=none header.from=amd.com;
@@ -48,22 +48,22 @@ Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
  165.204.84.17 as permitted sender) receiver=protection.outlook.com;
  client-ip=165.204.84.17; helo=SATLEXMB04.amd.com; pr=C
 Received: from SATLEXMB04.amd.com (165.204.84.17) by
- SA2PEPF00003AE8.mail.protection.outlook.com (10.167.248.8) with Microsoft
+ SA2PEPF00003AE9.mail.protection.outlook.com (10.167.248.9) with Microsoft
  SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.20.8069.17 via Frontend Transport; Wed, 16 Oct 2024 05:18:43 +0000
+ 15.20.8069.17 via Frontend Transport; Wed, 16 Oct 2024 05:18:47 +0000
 Received: from purico-ed03host.amd.com (10.180.168.240) by SATLEXMB04.amd.com
  (10.181.40.145) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2507.39; Wed, 16 Oct
- 2024 00:18:38 -0500
+ 2024 00:18:42 -0500
 From: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
 To: <linux-kernel@vger.kernel.org>, <iommu@lists.linux.dev>
 CC: <joro@8bytes.org>, <robin.murphy@arm.com>, <vasant.hegde@amd.com>,
 	<jgg@nvidia.com>, <kevin.tian@intel.com>, <jon.grimm@amd.com>,
 	<santosh.shukla@amd.com>, <pandoh@google.com>, <kumaranand@google.com>,
 	Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
-Subject: [PATCH v6 7/9] iommu/amd: Move erratum 63 logic to write_dte_lower128()
-Date: Wed, 16 Oct 2024 05:17:54 +0000
-Message-ID: <20241016051756.4317-8-suravee.suthikulpanit@amd.com>
+Subject: [PATCH v6 8/9] iommu/amd: Modify clear_dte_entry() to avoid in-place update
+Date: Wed, 16 Oct 2024 05:17:55 +0000
+Message-ID: <20241016051756.4317-9-suravee.suthikulpanit@amd.com>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20241016051756.4317-1-suravee.suthikulpanit@amd.com>
 References: <20241016051756.4317-1-suravee.suthikulpanit@amd.com>
@@ -79,172 +79,98 @@ X-ClientProxiedBy: SATLEXMB03.amd.com (10.181.40.144) To SATLEXMB04.amd.com
  (10.181.40.145)
 X-EOPAttributedMessage: 0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: SA2PEPF00003AE8:EE_|MW4PR12MB6875:EE_
-X-MS-Office365-Filtering-Correlation-Id: 86d5a05b-f055-4f85-4848-08dceda200b9
+X-MS-TrafficTypeDiagnostic: SA2PEPF00003AE9:EE_|SA1PR12MB7270:EE_
+X-MS-Office365-Filtering-Correlation-Id: f51f484a-94a9-4b74-2a0b-08dceda20328
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam:
 	BCL:0;ARA:13230040|376014|82310400026|36860700013|1800799024;
 X-Microsoft-Antispam-Message-Info:
-	=?us-ascii?Q?NoHx7a0D9qsQW/jFhQ3+ai2/0iOqzoB7vhz4x/A4pCLSt1H0uQy0Z5t8uJMS?=
- =?us-ascii?Q?kNt9LTsjzLVNAlbVjzXvfz2r1HAuYMD83KfOyQ019M35/nLef00DrVwOl3Il?=
- =?us-ascii?Q?ofDbx7z6f7URGyzqb3pKg8OMI+aQzfpZ1yMIAiimyIZcmfzdWJ6zWiS/PTwa?=
- =?us-ascii?Q?kyEaRK3iSoBHVUzWUj/bUy6ESajqniZthCrbiaRX53dZxXN/j6bj0OEXD0rY?=
- =?us-ascii?Q?dZPcNMq9L6UJqxvs241CrA+t7748h+omQG/9yeFd67wQ83+nvIlH+RVR4bJn?=
- =?us-ascii?Q?g7xjHLNzEAQuCyLThIjWexcbJ/XxQJIQnL/tUry89HHlgPwUogrTnmwZpR4G?=
- =?us-ascii?Q?CpK/drvxpF+YG19jhA52sHXnhTx9honLatz5kXY6MwkMubYyWe07KQyEWxcr?=
- =?us-ascii?Q?O9QaigHIazlOkN+g4qrf5AroRUNYlKuba8cJo0vqoQ/prTDxYR6mYMwEzY6S?=
- =?us-ascii?Q?GJQcuOHn4Bvty94hHpZexewmtxU5P9EoTnnmGj/wQ0nuiMsv22V0Ma8kSBZO?=
- =?us-ascii?Q?KaWIlNU4Ya7GZwD6OSLAPrB60RNGY4EoQruckyNeUG04r+pG2gb3Ihet+nPE?=
- =?us-ascii?Q?+eIS33HQmIuQfuZ7b/tHL5BcLf6tBg5zACUcxv2nijfQTtcxBkJShdiWUoUD?=
- =?us-ascii?Q?pE/P4E5bZiKX/qy+L2EMcvnoNxE5QQ+FZ8FsbTxUocUXw6l29a6MJarFnsss?=
- =?us-ascii?Q?ob7/b8m+EiJrsw+ZVD22oDBkZwy6HY0dKmqFxs2wQohI8UtCNZXXqSvV9pQQ?=
- =?us-ascii?Q?dnGiRSm40iygxM4pdysY3kveYMiydPtrqLmXUMa8+yoPGA8gpRuLUqzGmRqt?=
- =?us-ascii?Q?k0JDrkob+70pECO+01zTMa4yFg8xQBPKpwoBOKwiP4xta6luUI1NxwaXpsKy?=
- =?us-ascii?Q?leDKzto6BRHUHlm2E4QZK3zJJesUTTW7eSe2bkM324d4Qa7L09j6sGIe307V?=
- =?us-ascii?Q?dJweIqGrWvs7YZInlaf8eWQCjEND4nJQpgPhwDFS5QQIvRZVENtDlu3wTifQ?=
- =?us-ascii?Q?Cz4CrfJpCqhOpBcQNVx4ifhED0DQdCltdWO8bpV/E7Ie4PPAeTMsoKzN+1k6?=
- =?us-ascii?Q?KrK3p6FyXPcCD+F3Qj/vuBYQfRj+Xyn5gu27GikVZemhJQqJa9Y2f6ZrMFEX?=
- =?us-ascii?Q?G8C1KdWKeLYQ9EXDe/JGxHhSEi1gK5XP5GcOnMrJ4Wphgqj/EA3ARnQMuNXW?=
- =?us-ascii?Q?8Hiq2MnncmBggEioOYCRfNNHciGNsMwt2IE8SnyeonVJ1nJyEOGfoDJ7UMxE?=
- =?us-ascii?Q?PRgER356jgBQFDt7sRfM1SnBEVI9/atLpMUy5OYAODUIO5ospQJsY0lEo2ck?=
- =?us-ascii?Q?vX2LHMy4xcD4meACIudcvmXcE+EG7QkKJgGs3VE8vJe+EZTSeqHd0JUOlu2V?=
- =?us-ascii?Q?dmyDB+gFxgl7zyNKL7canHzfgRnV?=
+	=?us-ascii?Q?6A22KZW+6bVjVyHmu9cqLPbbe58teXmJ1RtBwUraouWL7gwgATbnf/Reg3gF?=
+ =?us-ascii?Q?5jxqPDbs3zh1XMVjpsO0eW//t3WA/JaQs1l0yCp7ET6Pqu4ehoZsJIRJ9d0s?=
+ =?us-ascii?Q?LwmjLNqSIujuz73ZwXsAazjO5UO/0A+ECzK0X5nirfO9XzufvSsDOSU1v16L?=
+ =?us-ascii?Q?nyAc68BRrv/pgLDD7YwuPFvOYo3gJmGfmRytXWRmmTWUbE5pvIzPcE58mtQr?=
+ =?us-ascii?Q?Wmzmsr53cMad0l8Y+FT98LUpP5WcC8WZ6fjRsjRrl5NqOfDMGqLlWanxYkzL?=
+ =?us-ascii?Q?EyN0L6vzImEAz5Qpx1qEacxQeJ5lciDnTaD4z613k7C68UScWe8GQzPZAeCn?=
+ =?us-ascii?Q?ZJCvDALRkB5v1dHWC1dc9omqGk0Zbyw11G4GLKXMAS82hYzA1GTieQdI2p6g?=
+ =?us-ascii?Q?Lkvaefm6EcDpxNXH+sCSwgFk+x0kfjw4kw1gJBZV6V1dGbEDa4lGEmQ/u8T1?=
+ =?us-ascii?Q?1eGvydfGZNW8plO6BoxaB5ai5Rm3Ui1wlusW8j/ys0npN8KrH7QUr+eETAeP?=
+ =?us-ascii?Q?kKBZuzkiAziwM5EdnXBJC9Sq8JusYWBhgD7a0iBUdT15MhTJO5Tt11Bxnfni?=
+ =?us-ascii?Q?gXfJ0j+U0onRux+2liQOXTSSSe7ert1Yxj+i2qS44ud5vI9lcb84A47rLlJj?=
+ =?us-ascii?Q?5cLqQJML9oGWsrVTgPPjfBsiW+heL0Dzeq3tnzfcEWOq5CrGM6ERskIXCOs0?=
+ =?us-ascii?Q?+dlCOrDekAmajqEVOxoisT1H2nbaOSAZUJZKJnqe4O4UXQrp1RzSld7Y9Hml?=
+ =?us-ascii?Q?Ut4Ym6KQICt3+7QchE5Q/SvMj4akCjPxYR8JiOwJFOjVRz7d+5CzO6dQMd2S?=
+ =?us-ascii?Q?7+jRAlKaqj+bJkusD8k/c0I2dCLnGSRknxmEkgDtaVryFTUgIxNVZaWOd4AL?=
+ =?us-ascii?Q?yUpqBb2+rV+7HbVv/N18lEOYMiwJm/V8EQEh5qCZLZycKYYuGcjocxXBdR2p?=
+ =?us-ascii?Q?YxtFcVJ/a5BtQANtmK4PERj1PuEPaf8EFdbLUx0TwUb7uUZpvEU8xZpaV8V9?=
+ =?us-ascii?Q?sw1S9KDe10BPHyoAWKZnf9FMRXQPoWCEE38hPEsLEGO+tpBr/odwHhAqC6xc?=
+ =?us-ascii?Q?V/d1Wbj7/ANWUj/emqBaNOCJ83IF3u6cMumfUoF9ezhUhicQNjN2mPeOfqZ3?=
+ =?us-ascii?Q?yWXNcD68ZhjtojVUmp1tbdJbDapOEpUvXVXAVZX0aqL1V67s26d/EJzf2OZA?=
+ =?us-ascii?Q?GDVoAdjVvNsJ8aAHLE4xURaOc9tjq+MN78rcfQtl8krXg0Q9VMMbLID3+TwO?=
+ =?us-ascii?Q?7s4ht7FrNk/rUtD/J1nzS0bCyG2ejHxpmZ2xoettj0+Iz1r76UbH+e329isQ?=
+ =?us-ascii?Q?97ErNX17zTbt1p4ScHEGhZrIZRGVYxrZqZOqIM4yjOLJH0BSOVsf0aM+mNZt?=
+ =?us-ascii?Q?eONrZWqQX6yd98KLYUH/EGPEZw65?=
 X-Forefront-Antispam-Report:
 	CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB04.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230040)(376014)(82310400026)(36860700013)(1800799024);DIR:OUT;SFP:1101;
 X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 16 Oct 2024 05:18:43.1457
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 16 Oct 2024 05:18:47.2122
  (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 86d5a05b-f055-4f85-4848-08dceda200b9
+X-MS-Exchange-CrossTenant-Network-Message-Id: f51f484a-94a9-4b74-2a0b-08dceda20328
 X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
 X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[SATLEXMB04.amd.com]
 X-MS-Exchange-CrossTenant-AuthSource:
-	SA2PEPF00003AE8.namprd02.prod.outlook.com
+	SA2PEPF00003AE9.namprd02.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Anonymous
 X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MW4PR12MB6875
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SA1PR12MB7270
 
-To simplify DTE programming, and remove amd_iommu_apply_erratum_63() and
-helper functions since no longer used.
+By reusing the make_clear_dte() and update_dte256().
 
+Also, there is no need to set TV bit for non-SNP system when clearing DTE
+for blocked domain.
+
+Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
 Signed-off-by: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
 ---
- drivers/iommu/amd/amd_iommu.h       |  1 -
- drivers/iommu/amd/amd_iommu_types.h |  2 ++
- drivers/iommu/amd/init.c            | 36 -----------------------------
- drivers/iommu/amd/iommu.c           |  6 +++--
- 4 files changed, 6 insertions(+), 39 deletions(-)
+ drivers/iommu/amd/iommu.c | 16 ++++++----------
+ 1 file changed, 6 insertions(+), 10 deletions(-)
 
-diff --git a/drivers/iommu/amd/amd_iommu.h b/drivers/iommu/amd/amd_iommu.h
-index 96c3bfc234f8..1467bfc34fdf 100644
---- a/drivers/iommu/amd/amd_iommu.h
-+++ b/drivers/iommu/amd/amd_iommu.h
-@@ -16,7 +16,6 @@ irqreturn_t amd_iommu_int_thread_evtlog(int irq, void *data);
- irqreturn_t amd_iommu_int_thread_pprlog(int irq, void *data);
- irqreturn_t amd_iommu_int_thread_galog(int irq, void *data);
- irqreturn_t amd_iommu_int_handler(int irq, void *data);
--void amd_iommu_apply_erratum_63(struct amd_iommu *iommu, u16 devid);
- void amd_iommu_restart_log(struct amd_iommu *iommu, const char *evt_type,
- 			   u8 cntrl_intr, u8 cntrl_log,
- 			   u32 status_run_mask, u32 status_overflow_mask);
-diff --git a/drivers/iommu/amd/amd_iommu_types.h b/drivers/iommu/amd/amd_iommu_types.h
-index 3f53d3bc79cb..53e129835b26 100644
---- a/drivers/iommu/amd/amd_iommu_types.h
-+++ b/drivers/iommu/amd/amd_iommu_types.h
-@@ -220,6 +220,8 @@
- #define DEV_ENTRY_EX            0x67
- #define DEV_ENTRY_SYSMGT1       0x68
- #define DEV_ENTRY_SYSMGT2       0x69
-+#define DTE_DATA1_SYSMGT_MASK	GENMASK_ULL(41, 40)
-+
- #define DEV_ENTRY_IRQ_TBL_EN	0x80
- #define DEV_ENTRY_INIT_PASS     0xb8
- #define DEV_ENTRY_EINT_PASS     0xb9
-diff --git a/drivers/iommu/amd/init.c b/drivers/iommu/amd/init.c
-index 552a13f7668c..31f10a071abd 100644
---- a/drivers/iommu/amd/init.c
-+++ b/drivers/iommu/amd/init.c
-@@ -1014,29 +1014,6 @@ static void __set_dev_entry_bit(struct dev_table_entry *dev_table,
- 	dev_table[devid].data[i] |= (1UL << _bit);
- }
- 
--static void set_dev_entry_bit(struct amd_iommu *iommu, u16 devid, u8 bit)
--{
--	struct dev_table_entry *dev_table = get_dev_table(iommu);
--
--	return __set_dev_entry_bit(dev_table, devid, bit);
--}
--
--static int __get_dev_entry_bit(struct dev_table_entry *dev_table,
--			       u16 devid, u8 bit)
--{
--	int i = (bit >> 6) & 0x03;
--	int _bit = bit & 0x3f;
--
--	return (dev_table[devid].data[i] & (1UL << _bit)) >> _bit;
--}
--
--static int get_dev_entry_bit(struct amd_iommu *iommu, u16 devid, u8 bit)
--{
--	struct dev_table_entry *dev_table = get_dev_table(iommu);
--
--	return __get_dev_entry_bit(dev_table, devid, bit);
--}
--
- static bool __copy_device_table(struct amd_iommu *iommu)
- {
- 	u64 int_ctl, int_tab_len, entry = 0;
-@@ -1152,17 +1129,6 @@ static bool copy_device_table(void)
- 	return true;
- }
- 
--void amd_iommu_apply_erratum_63(struct amd_iommu *iommu, u16 devid)
--{
--	int sysmgt;
--
--	sysmgt = get_dev_entry_bit(iommu, devid, DEV_ENTRY_SYSMGT1) |
--		 (get_dev_entry_bit(iommu, devid, DEV_ENTRY_SYSMGT2) << 1);
--
--	if (sysmgt == 0x01)
--		set_dev_entry_bit(iommu, devid, DEV_ENTRY_IW);
--}
--
- /*
-  * This function takes the device specific flags read from the ACPI
-  * table and sets up the device table entry with that information
-@@ -1185,8 +1151,6 @@ static void __init set_dev_entry_from_acpi(struct amd_iommu *iommu,
- 	if (flags & ACPI_DEVFLAG_LINT1)
- 		set_dte_cache_bit(iommu, devid, DEV_ENTRY_LINT1_PASS);
- 
--	amd_iommu_apply_erratum_63(iommu, devid);
--
- 	amd_iommu_set_rlookup_table(iommu, devid);
- }
- 
 diff --git a/drivers/iommu/amd/iommu.c b/drivers/iommu/amd/iommu.c
-index c03e2d9d2990..a8c0a57003a8 100644
+index a8c0a57003a8..9ef6ddae3b66 100644
 --- a/drivers/iommu/amd/iommu.c
 +++ b/drivers/iommu/amd/iommu.c
-@@ -105,6 +105,10 @@ static void write_dte_lower128(struct dev_table_entry *ptr, struct dev_table_ent
- 
- 	old.data128[0] = READ_ONCE(ptr->data128[0]);
- 	do {
-+		/* Apply erratum 63 */
-+		if (FIELD_GET(DTE_DATA1_SYSMGT_MASK, new->data[1]) == 0x1)
-+			new->data[0] |= DTE_FLAG_IW;
-+
- 	/* Note: try_cmpxchg inherently update &old.data128[0] on failure */
- 	} while (!try_cmpxchg128(&ptr->data128[0], &old.data128[0], new->data128[0]));
+@@ -2110,17 +2110,13 @@ static void set_dte_entry(struct amd_iommu *iommu,
+ 	}
  }
-@@ -2117,8 +2121,6 @@ static void clear_dte_entry(struct amd_iommu *iommu, u16 devid)
- 		dev_table[devid].data[0] |= DTE_FLAG_TV;
  
- 	dev_table[devid].data[1] &= DTE_FLAG_MASK;
+-static void clear_dte_entry(struct amd_iommu *iommu, u16 devid)
++static void clear_dte_entry(struct amd_iommu *iommu, struct iommu_dev_data *dev_data)
+ {
+-	struct dev_table_entry *dev_table = get_dev_table(iommu);
 -
--	amd_iommu_apply_erratum_63(iommu, devid);
+-	/* remove entry from the device table seen by the hardware */
+-	dev_table[devid].data[0]  = DTE_FLAG_V;
+-
+-	if (!amd_iommu_snp_en)
+-		dev_table[devid].data[0] |= DTE_FLAG_TV;
++	struct dev_table_entry new = {};
++	struct dev_table_entry *dte = &get_dev_table(iommu)[dev_data->devid];
+ 
+-	dev_table[devid].data[1] &= DTE_FLAG_MASK;
++	make_clear_dte(dev_data, dte, &new);
++	update_dte256(iommu, dev_data, &new);
  }
  
  /* Update and flush DTE for the given device */
+@@ -2131,7 +2127,7 @@ static void dev_update_dte(struct iommu_dev_data *dev_data, bool set)
+ 	if (set)
+ 		set_dte_entry(iommu, dev_data);
+ 	else
+-		clear_dte_entry(iommu, dev_data->devid);
++		clear_dte_entry(iommu, dev_data);
+ 
+ 	clone_aliases(iommu, dev_data->dev);
+ 	device_flush_dte(dev_data);
 -- 
 2.34.1
 
