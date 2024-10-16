@@ -1,68 +1,68 @@
-Received: from mail-il1-f176.google.com (mail-il1-f176.google.com [209.85.166.176])
+Received: from mail-il1-f175.google.com (mail-il1-f175.google.com [209.85.166.175])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D9B2118C347
-	for <iommu@lists.linux.dev>; Wed, 16 Oct 2024 06:46:39 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.166.176
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E4AF218C351
+	for <iommu@lists.linux.dev>; Wed, 16 Oct 2024 06:49:59 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.166.175
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1729061201; cv=none; b=SZK2bn0DuHkRBnKuTGzUnKC2jPCCLWjhrUZZWADq+wylytMWKN9WiYmYIkg22T3o0YUt9WGYNOQt0iON7ZIO4MET0lVhwUcH0JYDlEFisr9uT7BsI3/WzPQGelMmD1lLXp/472xks/r9VdRJTtvQmCkYUZoe9tqSTlAH6NnMkIM=
+	t=1729061401; cv=none; b=QgNpfsxHQPxjMaDy/j5bgjfsK1DFNjKszuf1zKjtnC1t8VVVqSHTqOiZKPg5qpZoDyKm7wDN2tv9NJ0uc5Bvv/FtYKNSxAV2/DdHSFk+zv6FVnlH1nk0CZCNVAhx+52Lea9KNePD7kBbF0yZS4TVj9G14S1ybnOhINrcMEJNfOc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1729061201; c=relaxed/simple;
-	bh=PXSEBqhU5Gd07/QuG/Zc6PGX+IDY/LoLery1Q1MNLMY=;
+	s=arc-20240116; t=1729061401; c=relaxed/simple;
+	bh=rRhNbgxDbHoTGblJsjtteoTssjVJ96IBqykNoFh/vww=;
 	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=U/anw5qiIC2WXdt5xSMJ1e1t6c31Aq+qbR+b1r+vQTKrBWVA77HK2jjA0rYxAC9cXtImTJQRLFt7QbAGFU5E3a5ywodTakBI7qo17SaKnnPhigepAASfsnCfWKhn8WbwrONlBlDR13T0f2A8vOZwTNYwWstKQwoPZRrCz8qBp3Y=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=rivosinc.com; spf=pass smtp.mailfrom=rivosinc.com; dkim=pass (2048-bit key) header.d=rivosinc-com.20230601.gappssmtp.com header.i=@rivosinc-com.20230601.gappssmtp.com header.b=09+OTJl+; arc=none smtp.client-ip=209.85.166.176
+	 To:Cc:Content-Type; b=HfY+9qsrlm1KYDPdGGgGNdKCS4rXp3SONeM9iGY/xpNGNM3k9jQ2FHMkOH7dT5VHXk4XBLj3bTrZscANJAvfteUQp9eUg++gBmc5yvcpDGUS8VHSnDOnFqYl83ztJBU2OBvp4fbBqyx5y582HYj6aiuw96CGVaJQ6WtOGCJJa+8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=rivosinc.com; spf=pass smtp.mailfrom=rivosinc.com; dkim=pass (2048-bit key) header.d=rivosinc-com.20230601.gappssmtp.com header.i=@rivosinc-com.20230601.gappssmtp.com header.b=RPZguKYp; arc=none smtp.client-ip=209.85.166.175
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=rivosinc.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=rivosinc.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=rivosinc-com.20230601.gappssmtp.com header.i=@rivosinc-com.20230601.gappssmtp.com header.b="09+OTJl+"
-Received: by mail-il1-f176.google.com with SMTP id e9e14a558f8ab-3a3bd42955bso16110305ab.1
-        for <iommu@lists.linux.dev>; Tue, 15 Oct 2024 23:46:39 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=rivosinc-com.20230601.gappssmtp.com header.i=@rivosinc-com.20230601.gappssmtp.com header.b="RPZguKYp"
+Received: by mail-il1-f175.google.com with SMTP id e9e14a558f8ab-3a3b0247d67so20184365ab.3
+        for <iommu@lists.linux.dev>; Tue, 15 Oct 2024 23:49:59 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=rivosinc-com.20230601.gappssmtp.com; s=20230601; t=1729061199; x=1729665999; darn=lists.linux.dev;
+        d=rivosinc-com.20230601.gappssmtp.com; s=20230601; t=1729061399; x=1729666199; darn=lists.linux.dev;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=F+UWG+iQDx7/sDsMqknKCoFlNlO/iTQrpby5lYUUqTw=;
-        b=09+OTJl+HISQGZ7fxyyzXIYqcaBz150x/hBEtZNLc4PaQgjDqgxGClKo9/6TYl9DlU
-         tx07noxwJ0+J6hdFgTEAN1jl1PSYr0kiPqpBwDmrFfc9FnZJxbWmiP0ts4xbbIm0dBZk
-         aiOBiGqfiei9RWjvMpyVNkIi/uWCqNey2u+0AVZ01OUZNP2y1aPEpETqKy2BfVJLiZRO
-         2H4h7HivzHlI5M/lvSt6Et35OANhxh17waf+bEHXA0OQVPVZ061IE+fAbhpcIpShVFdW
-         afh0EXV8amvpcfwK8UONwJPfskA2MBWM3670000KuBaHAzbzGdkyoo0t0ZYvhfUT3QX0
-         /fAw==
+        bh=LuvWiWzGwPfPen/TP7UxW2wIuKmmBLuM/D7bBxMmtuI=;
+        b=RPZguKYpA5RMedQkW6RtFVwMZrcXBfUpCG7sN2Td7PJyyKRPaoBbX+09Fj8d44DfTn
+         Y2TfZQx9tXRW7FyA0rXR6Gn/myE1aS+fE5TVzUP27mL58NyqeVG7FTaUwVAlwpB2/6us
+         2fT5Xx859kENIRu9hmzdn32AuOluyGJXDf7qA/p9xo0uI/yPS/ToVZ+DVy/Ief0xR/qk
+         p+vkr4IxaKEodFHzv7r5O4DiVA3TzUmqxCDCJh37C5RiNoW4lCXsfDCH/frbbL36EKjy
+         D1NBQt28vWcBijsAVgQEycI0MB9cdz/BJS09ZkV+okdIoM75+lge0W6IM12Mrvt3ov7J
+         SHDw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1729061199; x=1729665999;
+        d=1e100.net; s=20230601; t=1729061399; x=1729666199;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=F+UWG+iQDx7/sDsMqknKCoFlNlO/iTQrpby5lYUUqTw=;
-        b=az1mk3mAiAraC6AHEXu+vk1B/OZ/rsJbcfdTSvZRaZmSdx6Q7qj35qKtx0Xlx/nZxb
-         3/GVJSck2iCQAS61mi1HkJbevUAjcvSCzpZ0rXX1R71we4FEMoZehRiCUN+KX0R4BKUN
-         Wi+/iHuTYmmOMV3hPzl4hpUmwZqktIYM9lDZ1HLY6aF7Gujxbsr3sqyFkYagFBVZV3o/
-         y2aFc2gn7LJ3f3EIMuF+L5rjYKpyoT2yVU9HHXDDuG1yiP9r9OHy7F2hogkax9ODmyup
-         FuiENjghdwM3JUTX/mdxqTSBLWXzemouOOsbdtUmnOd+xyKoU5tVs7MEGVc0mqzY9Zwp
-         A1/g==
-X-Forwarded-Encrypted: i=1; AJvYcCVmNqSK3QglkXO1sKn8lnnJYi2ICYi1CnL2MtyNsBvwTyqj4dGhaSXpeJTD4968x+aQQllR5g==@lists.linux.dev
-X-Gm-Message-State: AOJu0Ywo4tCBBmf+o4h2sli1Yzn8x9NyxoIfahwINkPguFw7upHDV0ei
-	R5ilY/9J2DKZBYyGZXqjSDNQ4Kzb1esBxrFQ+BOMyhOCBwA0XejmQy9EEPHCS1wavfG+NaxMHoo
-	nTYON8PpTBVTwgAlM5X4SHnkMv9/dhWXI0+JuhQ==
-X-Google-Smtp-Source: AGHT+IG0i/JYD0IC1+8ATNDbsKwtcxr+LgejQV1B7YdOhS4ht6Ui8pkwiop1o21oFn6m9FR3zioopWhLOktOCqkpAjM=
-X-Received: by 2002:a05:6e02:194d:b0:3a0:480c:6ac4 with SMTP id
- e9e14a558f8ab-3a3b5fc413cmr160135915ab.22.1729061198896; Tue, 15 Oct 2024
- 23:46:38 -0700 (PDT)
+        bh=LuvWiWzGwPfPen/TP7UxW2wIuKmmBLuM/D7bBxMmtuI=;
+        b=w2WJUDjqD+ahp23Q5x5maxJwOvYTS1TJbg4MegE1YIJMdn2/gffN5wcjr2+wl91unR
+         +YrnMlJQgeScb/t5+dRf2X21k9EtX8lfzviP7pyU2NDOGj4AfOkUMf1qW2Cq2YhB8pDy
+         7XRg3UH+kLtDFfL9fe2thvaStVZ07hhATaPlquGiO2FuumBfY8fAx5O80EBMKtSoh/cD
+         gXgSG0eaWqGOczT919Dg7cS/5TYFLgI4t+tk4s0rJV+8W3Y98xpR4SurUsTUul+VEcvB
+         5SuhUDMcMpiV72FBxsLBxzJ19eW1YzbFyHubXCTao4RpIXnPxgpEKoSE8TOHOXLOZU9N
+         r07g==
+X-Forwarded-Encrypted: i=1; AJvYcCWsKmnK8M9sl/om5krTAuiSrrYqxHPc2TgaiQ5jTozmRCFlAL0z/UwBCiIe/w4PQgXrZKuBEQ==@lists.linux.dev
+X-Gm-Message-State: AOJu0Yw/GZx4LgArCI3/31Uikbb2WvpYfDAv6FQqVOode+BeDKTFFyxI
+	P9LG25M7VEeqsIsNs+mTdfLHevfUT0SsFF5Vse3tpPSBEEyR6USrdMYUPQz3P4U9Lpsb0d2wnn9
+	PmFzpVL91Kj4hG5ObHCSGXyxJTtvqknE1uq4qhg==
+X-Google-Smtp-Source: AGHT+IFNJEtM2qSm9Q8EfSRdRlQdHW4tYyXrD+ovJ8ZHMJJ/SIGchnJLPemWmR8X+ZItdkgt/8/Gty81UCalEdYkjjw=
+X-Received: by 2002:a05:6e02:1a4f:b0:3a3:b254:ca2c with SMTP id
+ e9e14a558f8ab-3a3bce11c80mr131491775ab.25.1729061399011; Tue, 15 Oct 2024
+ 23:49:59 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <cover.1728579958.git.tjeznach@rivosinc.com> <b8da2b00aec3f7b4b2e3a7cc194f7961bf656f24.1728579958.git.tjeznach@rivosinc.com>
- <20241015085044.GA19110@willie-the-truck>
-In-Reply-To: <20241015085044.GA19110@willie-the-truck>
+References: <cover.1728579958.git.tjeznach@rivosinc.com> <6916f5308478013c7b4cda77403c1e9aa9982384.1728579958.git.tjeznach@rivosinc.com>
+ <20241015085814.GB19110@willie-the-truck>
+In-Reply-To: <20241015085814.GB19110@willie-the-truck>
 From: Tomasz Jeznach <tjeznach@rivosinc.com>
-Date: Tue, 15 Oct 2024 23:46:28 -0700
-Message-ID: <CAH2o1u75x3YQ7amKU4WEQVMZ5h9-PTAXnyoWLw6rQsVG2C=Qcw@mail.gmail.com>
-Subject: Re: [PATCH v9 2/7] iommu/riscv: Add RISC-V IOMMU platform device driver
+Date: Tue, 15 Oct 2024 23:49:48 -0700
+Message-ID: <CAH2o1u5YLDuMNAy573ZrxS+Z8qqc0y1W9QoLyJ7P=AwcQ8LsxA@mail.gmail.com>
+Subject: Re: [PATCH v9 6/7] iommu/riscv: Command and fault queue support
 To: Will Deacon <will@kernel.org>
 Cc: Joerg Roedel <joro@8bytes.org>, Robin Murphy <robin.murphy@arm.com>, 
 	Paul Walmsley <paul.walmsley@sifive.com>, Palmer Dabbelt <palmer@dabbelt.com>, 
@@ -72,124 +72,117 @@ Cc: Joerg Roedel <joro@8bytes.org>, Robin Murphy <robin.murphy@arm.com>,
 	Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, devicetree@vger.kernel.org, 
 	iommu@lists.linux.dev, linux-riscv@lists.infradead.org, 
 	linux-kernel@vger.kernel.org, linux@rivosinc.com, 
-	Lu Baolu <baolu.lu@linux.intel.com>
+	Lu Baolu <baolu.lu@linux.intel.com>, Zong Li <zong.li@sifive.com>
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-On Tue, Oct 15, 2024 at 1:50=E2=80=AFAM Will Deacon <will@kernel.org> wrote=
+On Tue, Oct 15, 2024 at 1:58=E2=80=AFAM Will Deacon <will@kernel.org> wrote=
 :
 >
-> On Thu, Oct 10, 2024 at 12:48:05PM -0700, Tomasz Jeznach wrote:
-> > Introduce platform device driver for implementation of RISC-V IOMMU
-> > architected hardware.
+> On Thu, Oct 10, 2024 at 12:48:09PM -0700, Tomasz Jeznach wrote:
+> > Introduce device command submission and fault reporting queues,
+> > as described in Chapter 3.1 and 3.2 of the RISC-V IOMMU Architecture
+> > Specification.
 > >
-> > Hardware interface definition located in file iommu-bits.h is based on
-> > ratified RISC-V IOMMU Architecture Specification version 1.0.0.
+> > Command and fault queues are instantiated in contiguous system memory
+> > local to IOMMU device domain, or mapped from fixed I/O space provided
+> > by the hardware implementation. Detection of the location and maximum
+> > allowed size of the queue utilize WARL properties of queue base control
+> > register. Driver implementation will try to allocate up to 128KB of
+> > system memory, while respecting hardware supported maximum queue size.
 > >
-> > This patch implements platform device initialization, early check and
-> > configuration of the IOMMU interfaces and enables global pass-through
-> > address translation mode (iommu_mode =3D=3D BARE), without registering
-> > hardware instance in the IOMMU subsystem.
+> > Interrupts allocation is based on interrupt vectors availability and
+> > distributed to all queues in simple round-robin fashion. For hardware
+> > Implementation with fixed event type to interrupt vector assignment
+> > IVEC WARL property is used to discover such mappings.
 > >
-> > Link: https://github.com/riscv-non-isa/riscv-iommu
-> > Co-developed-by: Nick Kossifidis <mick@ics.forth.gr>
-> > Signed-off-by: Nick Kossifidis <mick@ics.forth.gr>
-> > Co-developed-by: Sebastien Boeuf <seb@rivosinc.com>
-> > Signed-off-by: Sebastien Boeuf <seb@rivosinc.com>
+> > Address translation, command and queue fault handling in this change
+> > is limited to simple fault reporting without taking any action.
+> >
 > > Reviewed-by: Lu Baolu <baolu.lu@linux.intel.com>
+> > Reviewed-by: Zong Li <zong.li@sifive.com>
 > > Signed-off-by: Tomasz Jeznach <tjeznach@rivosinc.com>
 > > ---
+> >  drivers/iommu/riscv/iommu-bits.h |  75 +++++
+> >  drivers/iommu/riscv/iommu.c      | 507 ++++++++++++++++++++++++++++++-
+> >  drivers/iommu/riscv/iommu.h      |  21 ++
+> >  3 files changed, 601 insertions(+), 2 deletions(-)
 >
 > [...]
 >
-> > diff --git a/drivers/iommu/riscv/iommu.h b/drivers/iommu/riscv/iommu.h
-> > new file mode 100644
-> > index 000000000000..700e33dc2446
-> > --- /dev/null
-> > +++ b/drivers/iommu/riscv/iommu.h
-> > @@ -0,0 +1,62 @@
-> > +/* SPDX-License-Identifier: GPL-2.0-only */
-> > +/*
-> > + * Copyright =C2=A9 2022-2024 Rivos Inc.
-> > + * Copyright =C2=A9 2023 FORTH-ICS/CARV
+> > +/* Enqueue an entry and wait to be processed if timeout_us > 0
 > > + *
-> > + * Authors
-> > + *   Tomasz Jeznach <tjeznach@rivosinc.com>
-> > + *   Nick Kossifidis <mick@ics.forth.gr>
+> > + * Error handling for IOMMU hardware not responding in reasonable time
+> > + * will be added as separate patch series along with other RAS feature=
+s.
+> > + * For now, only report hardware failure and continue.
 > > + */
+> > +static unsigned int riscv_iommu_queue_send(struct riscv_iommu_queue *q=
+ueue,
+> > +                                        void *entry, size_t entry_size=
+)
+> > +{
+> > +     unsigned int prod;
+> > +     unsigned int head;
+> > +     unsigned int tail;
+> > +     unsigned long flags;
 > > +
-> > +#ifndef _RISCV_IOMMU_H_
-> > +#define _RISCV_IOMMU_H_
+> > +     /* Do not preempt submission flow. */
+> > +     local_irq_save(flags);
 > > +
-> > +#include <linux/iommu.h>
-> > +#include <linux/types.h>
-> > +#include <linux/iopoll.h>
+> > +     /* 1. Allocate some space in the queue */
+> > +     prod =3D atomic_inc_return(&queue->prod) - 1;
+> > +     head =3D atomic_read(&queue->head);
 > > +
-> > +#include "iommu-bits.h"
+> > +     /* 2. Wait for space availability. */
+> > +     if ((prod - head) > queue->mask) {
+> > +             if (readx_poll_timeout(atomic_read, &queue->head,
+> > +                                    head, (prod - head) < queue->mask,
+> > +                                    0, RISCV_IOMMU_QUEUE_TIMEOUT))
+> > +                     goto err_busy;
+> > +     } else if ((prod - head) =3D=3D queue->mask) {
+> > +             const unsigned int last =3D Q_ITEM(queue, head);
 > > +
-> > +struct riscv_iommu_device {
-> > +     /* iommu core interface */
-> > +     struct iommu_device iommu;
+> > +             if (riscv_iommu_readl_timeout(queue->iommu, Q_HEAD(queue)=
+, head,
+> > +                                           !(head & ~queue->mask) && h=
+ead !=3D last,
+> > +                                           0, RISCV_IOMMU_QUEUE_TIMEOU=
+T))
+> > +                     goto err_busy;
+> > +             atomic_add((head - last) & queue->mask, &queue->head);
+> > +     }
 > > +
-> > +     /* iommu hardware */
-> > +     struct device *dev;
+> > +     /* 3. Store entry in the ring buffer. */
+> > +     memcpy(queue->base + Q_ITEM(queue, prod) * entry_size, entry, ent=
+ry_size);
 > > +
-> > +     /* hardware control register space */
-> > +     void __iomem *reg;
+> > +     /* 4. Wait for all previous entries to be ready */
+> > +     if (readx_poll_timeout(atomic_read, &queue->tail, tail, prod =3D=
+=3D tail,
+> > +                            0, RISCV_IOMMU_QUEUE_TIMEOUT))
+> > +             goto err_busy;
 > > +
-> > +     /* supported and enabled hardware capabilities */
-> > +     u64 caps;
-> > +     u32 fctl;
-> > +
-> > +     /* available interrupt numbers, MSI or WSI */
-> > +     unsigned int irqs[RISCV_IOMMU_INTR_COUNT];
-> > +     unsigned int irqs_count;
-> > +};
-> > +
-> > +int riscv_iommu_init(struct riscv_iommu_device *iommu);
-> > +void riscv_iommu_remove(struct riscv_iommu_device *iommu);
-> > +
-> > +#define riscv_iommu_readl(iommu, addr) \
-> > +     readl_relaxed((iommu)->reg + (addr))
-> > +
-> > +#define riscv_iommu_readq(iommu, addr) \
-> > +     readq_relaxed((iommu)->reg + (addr))
-> > +
-> > +#define riscv_iommu_writel(iommu, addr, val) \
-> > +     writel_relaxed((val), (iommu)->reg + (addr))
-> > +
-> > +#define riscv_iommu_writeq(iommu, addr, val) \
-> > +     writeq_relaxed((val), (iommu)->reg + (addr))
-> > +
-> > +#define riscv_iommu_readq_timeout(iommu, addr, val, cond, delay_us, ti=
-meout_us) \
-> > +     readx_poll_timeout(readq_relaxed, (iommu)->reg + (addr), val, con=
-d, \
-> > +                        delay_us, timeout_us)
-> > +
-> > +#define riscv_iommu_readl_timeout(iommu, addr, val, cond, delay_us, ti=
-meout_us) \
-> > +     readx_poll_timeout(readl_relaxed, (iommu)->reg + (addr), val, con=
-d, \
-> > +                        delay_us, timeout_us)
-> > +
-> > +#endif
+> > +     /* 5. Complete submission and restore local interrupts */
+> > +     dma_wmb();
+> > +     riscv_iommu_writel(queue->iommu, Q_TAIL(queue), Q_ITEM(queue, pro=
+d + 1));
 >
-> Curious: why do you need these MMIO wrappers if the driver depends on
-> 64BIT?
+> Please explain why a dma_wmb() is sufficient to order the memcpy() stores
+> before the tail update.
 >
 
-Hello Will,
+Thanks, comment added in v10
 
-These wrappers were initially created to support 32-bit CPU
-architectures but were later discontinued to concentrate on practical
-driver use cases. It has been observed that some RISC-V IOMMU hardware
-implementations might only allow 32-bit MMIO access, even on 64-bit
-systems. The wrappers are left in place to accommodate these potential
-designs if they arise. I'd leave them for now and reevaluate their
-necessity in a few months.
+> > +     atomic_inc(&queue->tail);
+>
+> I think this can be reordered before the relaxed MMIO write to tail,
+> causing other CPUs to exit their polling early.
+>
 
-Thanks,
+Very valid point, thank you! Should be fixed in v10
+
+Best,
 - Tomasz
 
 > Will
