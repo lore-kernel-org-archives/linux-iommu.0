@@ -1,206 +1,193 @@
-Received: from NAM11-BN8-obe.outbound.protection.outlook.com (mail-bn8nam11on2089.outbound.protection.outlook.com [40.107.236.89])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-pl1-f171.google.com (mail-pl1-f171.google.com [209.85.214.171])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 65C35171E70;
-	Wed, 16 Oct 2024 06:52:16 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.236.89
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1729061537; cv=fail; b=SJGMbGEywI6SxWOdjg8/WO4/3ZzgKC/H6HC523il10fXHBjrEpl6UQGZ0bxWTnhUwqftZytH632ZQIm1HzyjKmFe5hBR5BKxWIAtUKd5PBKFsV3a3+dCOyB8aGoeIbj6QGv1eFBNxWuw4KHpC4jqeAO4M+/O4su/scX0QMa4bNQ=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1729061537; c=relaxed/simple;
-	bh=T1acIc4gHswJWr+Uw5EVxLjNN51wmG/U0tD3MvOG7sY=;
-	h=Date:From:To:CC:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=kYIYLNE546TV34/8fIkoGgJ9f/SuXn/GFEbLWyY2rwFaSbEzMDI8qlsXYHuGJ20AtrtNFia93kh7LJxab45ltVsGqbyvWcTWJUoIXhi+APz7Cbav2w1qB/u9HZwloc0RUu9mh78tGUoCErwFW7upf+Cbi40MnOjmgaa0g8ssylM=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=JMc3Pja+; arc=fail smtp.client-ip=40.107.236.89
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7F25018C351
+	for <iommu@lists.linux.dev>; Wed, 16 Oct 2024 06:52:27 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.171
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1729061550; cv=none; b=lzMWWjIb4b3wKmiKnKRvL7ZCSpBwqNWfVmWMO3XXB1rghHTv0VlIq4a9ajZrRhoTQHlp1NUPBPomSVEMCbsUC2zXFHxisJT7V3BOcpLaE60Fgx2JX/i9YCJ63nXk1liEtRPNZ8BENPyufYm7d8TmsH0xJqZLT7lBFQeuTMwnLLc=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1729061550; c=relaxed/simple;
+	bh=MkWfXMUGA1Oq5dX8D1nuLXWEyvxOfaGw034/IAEqVdg=;
+	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version:Content-Type; b=OCHPs0ILf/QtI5w5Ip6w+QM7pMkQ8hoRvVhOCjAKYh6PTFqFXfISHLxMxoMwLvPO/Q/TZwXuQIi+xz39YvrErn2OJF2J4saTJmfRg2aU3/1zEjcSsywg9L/Nhk9p4j24Vz3OKN6nLEw7+NX1CM10w7a9THnJETysWu8gmXbyu6o=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=rivosinc.com; spf=pass smtp.mailfrom=rivosinc.com; dkim=pass (2048-bit key) header.d=rivosinc-com.20230601.gappssmtp.com header.i=@rivosinc-com.20230601.gappssmtp.com header.b=DgxmG2Ce; arc=none smtp.client-ip=209.85.214.171
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=rivosinc.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=rivosinc.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="JMc3Pja+"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=tyRuwpGAxPzXrUDSYH9iJVewVmb/W2nq9iCewFOrlKKHqWYPWs6yxkN/Qr1EhZiIvddpw9ga6Rwl0ZuJe95McVvg34Pb4tAkl2vF6jUHGnbakgZlP4pT2ZfUwhjXjx40jdgHa9d0hDhhkByRT1LskNRtWtWI7I4ePaL8YnwXLOt9jsCNyat2WfNMS10wyTcYVIEyUqFF0pQV0zfN+khZXo8+davredzHWf/hiwz/5PkXBKtH0Lm8w1ZiOsblLZsUY/LzX19AJ5ue2BUfKTvYk5FDVVlBsPS9Q6wt773ezID7WXXvJW00c3ye4EIr93eCpdeU7mg7oeQXFNRDsqG5LQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=HWGny2zaGW33Xh5laCRiwMF9F4pfllBcCiDjhJegLcc=;
- b=qWxukjheyYzUbxWSJfNAa3EHr65SBdLYbOQrgIkA1fNk+eIpjToMt6M7nJm3PT7tYCt2M+aEOaWwNv4gGIl9wFoLILJkmHsIFzhEuONqeIC9sfbWnmUs1It670gbA/nsdQ/fuBOFLAhVyuFrNkW1SGVKQWsNzdQr9lEPSN3dqRqT6rqj+F7A1En/IKygiulJThfXYya1e1I/FgYMhn0n0/un3SOjBmA4AbXmBtWs8a7RPr1ytKnp4ucHaIM0FULKtxYAm4ipyhcD+HwtP8lAIiHgMT0qB1iY1TbSWlVtIvlmzfvnPvcU0yjAbUe2OaKH3+rObmyBCfIyO+gpMw3X+A==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 216.228.118.232) smtp.rcpttodomain=linaro.org smtp.mailfrom=nvidia.com;
- dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
- dkim=none (message not signed); arc=none (0)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=HWGny2zaGW33Xh5laCRiwMF9F4pfllBcCiDjhJegLcc=;
- b=JMc3Pja+LEaPBiBSXVJtkx/AtdqrHpYNcHqXQdEXd+fhEAoVepneA5lA2cYINp2SIL+YkrOMmgHJQ7ZzO81g/UXoazIwC+GKGiNWq36LaMgjfu4O1Dv4mInCCZKVUsE2lPLpiW12Eg3yLpUXxJyUJPZUCKvbfRltToX/C1BrUPLRepbFOSiA3JVkK047xoDa7LSOPdRFw/nmGqBgevB2GXWBe6V/HdoMyCiLVpPkbaqhbBA0wPyqX1tcMfk/vd51k1kumD9JZlHYOh3QNM1MsxnSmqKnhpiw7++5izpsFDTFyDXJ3FNOW/R+88JQtvbbD+rzZ45rSkuCBCxKCq9pGw==
-Received: from BL0PR02CA0019.namprd02.prod.outlook.com (2603:10b6:207:3c::32)
- by IA1PR12MB9064.namprd12.prod.outlook.com (2603:10b6:208:3a8::19) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.8069.17; Wed, 16 Oct
- 2024 06:52:12 +0000
-Received: from MN1PEPF0000F0E1.namprd04.prod.outlook.com
- (2603:10b6:207:3c:cafe::56) by BL0PR02CA0019.outlook.office365.com
- (2603:10b6:207:3c::32) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.8069.17 via Frontend
- Transport; Wed, 16 Oct 2024 06:52:12 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.118.232)
- smtp.mailfrom=nvidia.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=nvidia.com;
-Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 216.228.118.232 as permitted sender) receiver=protection.outlook.com;
- client-ip=216.228.118.232; helo=mail.nvidia.com; pr=C
-Received: from mail.nvidia.com (216.228.118.232) by
- MN1PEPF0000F0E1.mail.protection.outlook.com (10.167.242.39) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.8069.17 via Frontend Transport; Wed, 16 Oct 2024 06:52:12 +0000
-Received: from drhqmail202.nvidia.com (10.126.190.181) by mail.nvidia.com
- (10.127.129.5) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1544.4; Tue, 15 Oct
- 2024 23:51:59 -0700
-Received: from drhqmail203.nvidia.com (10.126.190.182) by
- drhqmail202.nvidia.com (10.126.190.181) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.1544.4; Tue, 15 Oct 2024 23:51:59 -0700
-Received: from Asurada-Nvidia (10.127.8.11) by mail.nvidia.com
- (10.126.190.182) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1544.4 via Frontend
- Transport; Tue, 15 Oct 2024 23:51:58 -0700
-Date: Tue, 15 Oct 2024 23:51:57 -0700
-From: Nicolin Chen <nicolinc@nvidia.com>
-To: Zhangfei Gao <zhangfei.gao@linaro.org>
-CC: <jgg@nvidia.com>, <kevin.tian@intel.com>, <will@kernel.org>,
-	<joro@8bytes.org>, <suravee.suthikulpanit@amd.com>, <robin.murphy@arm.com>,
-	<dwmw2@infradead.org>, <baolu.lu@linux.intel.com>, <shuah@kernel.org>,
-	<linux-kernel@vger.kernel.org>, <iommu@lists.linux.dev>,
-	<linux-arm-kernel@lists.infradead.org>, <linux-kselftest@vger.kernel.org>,
-	<eric.auger@redhat.com>, <jean-philippe@linaro.org>, <mdf@kernel.org>,
-	<mshavit@google.com>, <shameerali.kolothum.thodi@huawei.com>,
-	<smostafa@google.com>, <yi.l.liu@intel.com>, <aik@amd.com>,
-	<patches@lists.linux.dev>
-Subject: Re: [PATCH v3 03/11] iommufd: Introduce IOMMUFD_OBJ_VIOMMU and its
- related struct
-Message-ID: <Zw9ijVgDlvRajsSY@Asurada-Nvidia>
-References: <88114b5c725bb3300a9599d3eeebded221a0b1f9.1728491453.git.nicolinc@nvidia.com>
- <CABQgh9Eaj_vy1=sS2Pf7RC7Vy5PopDfwoshECULEU-jK3JF_sQ@mail.gmail.com>
- <Zwn/4m8Ac0xEiJi8@Asurada-Nvidia>
- <CABQgh9Ft=xxJK-bjS6wCZ5BN4AiKtF9fzdBkevA3x2yb_4O4Kg@mail.gmail.com>
- <CABQgh9HP1M8GAXMwf0ZNn5EpMBAvJU3JLRWcN5H1wfGrqXSe1Q@mail.gmail.com>
- <Zw08z9TOFL57z07O@Asurada-Nvidia>
- <CABQgh9H-SB7q1v_XtWaO12K7jMMaq8Lj7F4kpDv9sJ5v-F6DZw@mail.gmail.com>
- <Zw3M/h1KYe9MjcZK@Asurada-Nvidia>
- <Zw64C7bQicoAmAM3@Asurada-Nvidia>
- <CABQgh9Fea006HPwVTAuxk7KGh-7-YbjRhoUttVo_iACjAbr0CQ@mail.gmail.com>
+	dkim=pass (2048-bit key) header.d=rivosinc-com.20230601.gappssmtp.com header.i=@rivosinc-com.20230601.gappssmtp.com header.b="DgxmG2Ce"
+Received: by mail-pl1-f171.google.com with SMTP id d9443c01a7336-20c77459558so49456525ad.0
+        for <iommu@lists.linux.dev>; Tue, 15 Oct 2024 23:52:27 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=rivosinc-com.20230601.gappssmtp.com; s=20230601; t=1729061547; x=1729666347; darn=lists.linux.dev;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=edrP7O7a6NncjkyeVVAJ0jiJhAYB2+mktJx+SnmTMmo=;
+        b=DgxmG2Ce0RlrJ+sKXtO4qs0nAsg5BGyC03Ux3yGIBBCyw/JBul+qBqLwFBdqasI/Vr
+         I94lPcLNDAEfaLE6t7nd4fAz7VaPwbH5fw77B9aYBstze6WT6eM35TudMWSu3dlG/2Vy
+         hkUPePpIUVU7M6WzgQWlgc33IacwfmxXTx6vq5Sm7z3TVHvEYAM4Jhhn6NyL6H+Nqu5r
+         J5N1IO+AdLtGAosng5X2BXe5PkJzruhh/z67zFAwTpIPUsEBs1FJX5sZ4hHeC6E6T3ct
+         1ixbLk4Bt99ZCxiR+ry1kLyPCUIOvLnhOS0XjFahgh5Um0QdINvSJnR7M4oHvIfKS5ZO
+         Pmrw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1729061547; x=1729666347;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=edrP7O7a6NncjkyeVVAJ0jiJhAYB2+mktJx+SnmTMmo=;
+        b=N0HP41X9jLYIIb03kNArWqa7uvXJFcGaJw7DtfIHSMEO182UQdaqAHs9zMjs2OJo0K
+         iekzs/eaiHyuNQmBrF4kZV6datHgcwaVfXqINZutbZg4foY9vIduxAGekkA7/hnjSmeo
+         6lv6h2XC64otqql4cFBMcr/isSPf4fjZurDdyye49MQ49jg2zyAr3FcZ4iPbKnSKoWJ3
+         tg3XUiD8PJiKAAYoop7SPmynCq9BBBYo9nuylgZVc/yk8yRB/fAPIhC2N8j4bhe3xd/y
+         U5cffZfbEoKBQobZwla4GOYU/5TOu1jM1VHFGoiWmWzZ7dwIqZVo4XJ20cG/a2qLz5u5
+         OmLw==
+X-Forwarded-Encrypted: i=1; AJvYcCXr5tkzSBPKa8WdXnsoif35B52R8A7IkMUqRKbPu7PO9tNo5S50W+XcCcFalJdRi10Qw9IC8A==@lists.linux.dev
+X-Gm-Message-State: AOJu0YwJXP8Kjtwhq0mtujn++JoZmFMoaQrkrfecMo4tjPcj/TTQv1Oa
+	avHZ821iW02DPc0XYX9XwP+7YdykJQPOrEmzMER95N3QKQeeFnvpN6HN36xc0Ho=
+X-Google-Smtp-Source: AGHT+IHFpMiQBbiEBTkmPNQuDjgrwQrsX5LcLAK0wa6OKlIr/7npj2NUGYvuYiUcx/vU1hhIAlG0YA==
+X-Received: by 2002:a05:6a20:c888:b0:1d0:3a32:c3f8 with SMTP id adf61e73a8af0-1d8bcfaa0ffmr23847001637.39.1729061546751;
+        Tue, 15 Oct 2024 23:52:26 -0700 (PDT)
+Received: from tjeznach.ba.rivosinc.com ([64.71.180.162])
+        by smtp.gmail.com with ESMTPSA id d2e1a72fcca58-71e77370a83sm2410762b3a.5.2024.10.15.23.52.25
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 15 Oct 2024 23:52:26 -0700 (PDT)
+From: Tomasz Jeznach <tjeznach@rivosinc.com>
+To: Joerg Roedel <joro@8bytes.org>,
+	Will Deacon <will@kernel.org>,
+	Robin Murphy <robin.murphy@arm.com>,
+	Paul Walmsley <paul.walmsley@sifive.com>
+Cc: Palmer Dabbelt <palmer@dabbelt.com>,
+	Albert Ou <aou@eecs.berkeley.edu>,
+	Anup Patel <apatel@ventanamicro.com>,
+	Sunil V L <sunilvl@ventanamicro.com>,
+	Nick Kossifidis <mick@ics.forth.gr>,
+	Sebastien Boeuf <seb@rivosinc.com>,
+	Rob Herring <robh+dt@kernel.org>,
+	Krzysztof Kozlowski <krzk+dt@kernel.org>,
+	Conor Dooley <conor+dt@kernel.org>,
+	devicetree@vger.kernel.org,
+	iommu@lists.linux.dev,
+	linux-riscv@lists.infradead.org,
+	linux-kernel@vger.kernel.org,
+	linux@rivosinc.com,
+	Tomasz Jeznach <tjeznach@rivosinc.com>
+Subject: [PATCH v10 0/7] Linux RISC-V IOMMU Support
+Date: Tue, 15 Oct 2024 23:52:12 -0700
+Message-Id: <cover.1729059707.git.tjeznach@rivosinc.com>
+X-Mailer: git-send-email 2.34.1
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: inline
-In-Reply-To: <CABQgh9Fea006HPwVTAuxk7KGh-7-YbjRhoUttVo_iACjAbr0CQ@mail.gmail.com>
-X-NV-OnPremToCloud: ExternallySecured
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: MN1PEPF0000F0E1:EE_|IA1PR12MB9064:EE_
-X-MS-Office365-Filtering-Correlation-Id: 08787815-814b-4a6e-0954-08dcedaf0fff
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|376014|36860700013|7416014|82310400026|1800799024;
-X-Microsoft-Antispam-Message-Info:
-	=?us-ascii?Q?2D0OnpGvw2eGHDF8uuytpjBjeorwvO1+JJ1deX+mARDyi1PL9jH7CiOnBre1?=
- =?us-ascii?Q?JXVewTMTzrrQsjo0bO6SyuE1Cb2+9W1+pn4Idij6kJ8yckHTct6+zNde8nEv?=
- =?us-ascii?Q?EEebDw/b0G8iuKIuTox8M7wcV6hyXHNpAxKLobp5f42uO6v9CZNl/TAvs70J?=
- =?us-ascii?Q?1vCAfoTqV+2YMzcr/8k3FInna3sC76Hw2wvM7gkpbyIA0jRM42ylU1GQ2PDX?=
- =?us-ascii?Q?/W19HDuW9HgrZgpuZWwmWpOa4pfCn1NPicFb9xDGFo9nHU9N+jKL5kxHgXiv?=
- =?us-ascii?Q?/t7B14/5Fm5iE5gJfbfsR82DwYbXUZOmPDAnB6WPpTeo6AtKv5RO4eSrUXPm?=
- =?us-ascii?Q?sTeNHf08dlRMcK3j+RnYoZobftxyCX6wBcwxWU6SG2IqAeoNDIo73cZilKty?=
- =?us-ascii?Q?vGLBh+pbM39Hf2Xbd4VOXx3OF1wSm42zExEEmkuf2eIrQWaPmhaq9J2a2BYf?=
- =?us-ascii?Q?bU7+yuLE65MlMqCBiC6dP64oaBg0Lz0spGNKLSPjrNk7/zHOV04zYyyRpiwE?=
- =?us-ascii?Q?Ygjtl/SLO5201zn7JumLCPEuUnvBi02NL2Zy5NcLnLwtDlHXOW/CFIn7gxZb?=
- =?us-ascii?Q?BB4kHgIC2irVp5D/AKCeKFqIY1CtEIIqyPw4+dFn5O0MN4X6ng5x6gMIOC2L?=
- =?us-ascii?Q?PZ+Eb4oIRpPTO/sx8axXjJwJ6UJxllwAs6r2MatMUFzNAHog+HeC+CXVF6eH?=
- =?us-ascii?Q?O+vqe5BC4p3D98towevIdcFeZra0sWeHgrt4CL4ohdNgsyrJ6nIgrOmlnvLf?=
- =?us-ascii?Q?S/kxufwUoWHEMeSk2Fdw/V0Wry4WBZ3hJ82RigJAIOJpXmcdXeQsG9l/ZSnB?=
- =?us-ascii?Q?bgbQO39g0v+K4T/dNoh4KPEi0/65tk7tKiG9zTEDv8Mpy+7A8rnGzqYtKzsK?=
- =?us-ascii?Q?G0k5aNLLVArXNTEftA3JdrcpRvvFgaxJRKIFvbDy2uwNjXtpD+CSi1JNqXt9?=
- =?us-ascii?Q?dtSKWX7meYUrjOhfGpKVPsGwn4x68nmzqGRNHfbGPqYrhzOsGu+MAwxkurTf?=
- =?us-ascii?Q?Z5YF/4PY+dFPfyqzvFNXJZbu6AHKl/mHSlJJu+xxsGSh3nB8qokmdrgSjRmi?=
- =?us-ascii?Q?9fYpGaDzITtMC05RdLVU5n4knRz9GG1xz/vl7tBZ8K3qBjV0G6NjyndY2MQQ?=
- =?us-ascii?Q?JBQ2GVEq0WqFE4JP0OEbIsF9FDAaRs7UB4JWRQbzj2qvBKGJlhLVP90/1gvd?=
- =?us-ascii?Q?onuo4Chz86Y2fTze+fuilUmvg+1jxDN/6TsNtD7G0ApbfB4cQ+dgni2lb5UZ?=
- =?us-ascii?Q?ECDE0snzPDr+Tf+pq7klrucuf+w0QPgmDUasNgv5s29sh3bftMZFZWlUhx4e?=
- =?us-ascii?Q?2TC4hT4tBxuq6ChjYCDMbXlhjBzxsxRS5HO2APsrzmkc9eo+FwP1x59+uGXp?=
- =?us-ascii?Q?VsP7ubK3zHe/x/HOtaY+DhHfHDyA?=
-X-Forefront-Antispam-Report:
-	CIP:216.228.118.232;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc7edge1.nvidia.com;CAT:NONE;SFS:(13230040)(376014)(36860700013)(7416014)(82310400026)(1800799024);DIR:OUT;SFP:1101;
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 16 Oct 2024 06:52:12.1793
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 08787815-814b-4a6e-0954-08dcedaf0fff
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.118.232];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource:
-	MN1PEPF0000F0E1.namprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: IA1PR12MB9064
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 
-On Wed, Oct 16, 2024 at 09:56:51AM +0800, Zhangfei Gao wrote:
-> On Wed, 16 Oct 2024 at 02:44, Nicolin Chen <nicolinc@nvidia.com> wrote:
-> >
-> > On Mon, Oct 14, 2024 at 07:01:40PM -0700, Nicolin Chen wrote:
-> > > On Tue, Oct 15, 2024 at 09:15:01AM +0800, Zhangfei Gao wrote:
-> > >
-> > > > > > iommufd_device_bind
-> > > > > > iommufd_device_attach
-> > > > > > iommufd_vdevice_alloc_ioctl
-> > > > > >
-> > > > > > iommufd_device_detach
-> > > > > > iommufd_device_unbind // refcount check fail
-> > > > > > iommufd_vdevice_destroy ref--
-> > > > >
-> > > > > Things should be symmetric. As you suspected, vdevice should be
-> > > > > destroyed before iommufd_device_detach.
-> > > >
-> > > > I am trying based on your for_iommufd_viommu_p2-v3 branch, do you have
-> > > > this issue?
-> > > > In checking whether close fd before unbind?
-> > >
-> > > Oops, my bad. I will provide a fix.
-> >
-> > This should fix the problem:
-> >
-> > ---------------------------------------------------------------------
-> > diff --git a/drivers/iommu/iommufd/device.c b/drivers/iommu/iommufd/device.c
-> > index 5fd3dd420290..13100cfea29d 100644
-> > --- a/drivers/iommu/iommufd/device.c
-> > +++ b/drivers/iommu/iommufd/device.c
-> > @@ -277,6 +277,11 @@ EXPORT_SYMBOL_NS_GPL(iommufd_ctx_has_group, IOMMUFD);
-> >   */
-> >  void iommufd_device_unbind(struct iommufd_device *idev)
-> >  {
-> > +       mutex_lock(&idev->igroup->lock);
-> > +       /* idev->vdev object should be destroyed prior, yet just in case.. */
-> > +       if (idev->vdev)
-> > +               iommufd_object_remove(idev->ictx, NULL, idev->vdev->obj.id, 0);
-> > +       mutex_unlock(&idev->igroup->lock);
-> >         iommufd_object_destroy_user(idev->ictx, &idev->obj);
-> >  }
-> >  EXPORT_SYMBOL_NS_GPL(iommufd_device_unbind, IOMMUFD);
-> > ---------------------------------------------------------------------
-> 
-> Not yet
-> [  574.162112] Unable to handle kernel NULL pointer dereference at
-> virtual address 0000000000000004
-> [  574.261102] pc : iommufd_object_remove+0x7c/0x278
-> [  574.265795] lr : iommufd_device_unbind+0x44/0x98
-> in check
+This patch series introduces support for RISC-V IOMMU architected
+hardware into the Linux kernel.
 
-Hmm, it's kinda odd it crashes inside iommufd_object_remove().
-Did you happen to change something there?
+The RISC-V IOMMU specification, which this series is based on, is
+ratified and available at GitHub/riscv-non-isa [1].
 
-The added iommufd_object_remove() is equivalent to userspace
-calling the destroy ioctl on the vDEVICE object.
+At a high level, the RISC-V IOMMU specification defines:
 
-Nicolin
+1) Data structures:
+  - Device-context: Associates devices with address spaces and holds
+    per-device parameters for address translations.
+  - Process-contexts: Associates different virtual address spaces based
+    on device-provided process identification numbers.
+  - MSI page table configuration used to direct an MSI to a guest
+    interrupt file in an IMSIC.
+2) In-memory queue interface:
+  - Command-queue for issuing commands to the IOMMU.
+  - Fault/event queue for reporting faults and events.
+  - Page-request queue for reporting "Page Request" messages received
+    from PCIe devices.
+  - Message-signaled and wire-signaled interrupt mechanisms.
+3) Memory-mapped programming interface:
+  - Mandatory and optional register layout and description.
+  - Software guidelines for device initialization and capabilities discovery.
+
+
+This series introduces RISC-V IOMMU hardware initialization and complete
+single-stage translation with paging domain support.
+
+The patches are organized as follows:
+
+Patch 1: Introduces minimal required device tree bindings for the driver.
+Patch 2: Defines RISC-V IOMMU data structures, hardware programming interface
+         registers layout, and minimal initialization code for enabling global
+         pass-through for all connected masters.
+Patch 3: Implements the device driver for PCIe implementation of RISC-V IOMMU
+         architected hardware.
+Patch 4: Introduces IOMMU interfaces to the kernel subsystem.
+Patch 5: Implements device directory management with discovery sequences for
+         I/O mapped or in-memory device directory table location, hardware
+         capabilities discovery, and device to domain attach implementation.
+Patch 6: Implements command and fault queue, and introduces directory cache
+         invalidation sequences.
+Patch 7: Implements paging domain, using highest page-table mode advertised
+         by the hardware. This series enables only 4K mappings; complete support
+         for large page mappings will be introduced in follow-up patch series.
+
+Follow-up patch series providing MSI interrupt remapping, complete ATS/PRI/SVA
+and VFIO/IOMMUFD support are available at the GitHub [2], and has been tested
+with published QEMU RISC-V IOMMU device model [3].
+
+Changes from v9:
+- rebase on v6.12-rc3
+- #6 Memory ordering fix and updated commentary, based on Will’s suggestions.
+- #7 Remove riscv_iommu_device_domain_type() and use head-less kfree_rcu in
+     riscv_iommu_release_device(), based on Jason's suggestions.
+
+Best regards,
+ Tomasz Jeznach
+
+[1] link: https://github.com/riscv-non-isa/riscv-iommu
+[2] link: https://github.com/tjeznach/linux/riscv_iommu.next
+[3] link: https://lore.kernel.org/qemu-devel/20241004155721.2154626-1-dbarboza@ventanamicro.com/
+v9 link:  https://lore.kernel.org/linux-iommu/cover.1728579958.git.tjeznach@rivosinc.com/
+v8 link:  https://lore.kernel.org/linux-iommu/cover.1718388908.git.tjeznach@rivosinc.com/
+v7 link:  https://lore.kernel.org/linux-iommu/cover.1717612298.git.tjeznach@rivosinc.com/
+v6 link:  https://lore.kernel.org/linux-iommu/cover.1716578450.git.tjeznach@rivosinc.com/
+v5 link:  https://lore.kernel.org/linux-iommu/cover.1715708679.git.tjeznach@rivosinc.com/
+v4 link:  https://lore.kernel.org/linux-iommu/cover.1714752293.git.tjeznach@rivosinc.com/
+v3 link:  https://lore.kernel.org/linux-iommu/cover.1714494653.git.tjeznach@rivosinc.com/
+v2 link:  https://lore.kernel.org/linux-iommu/cover.1713456597.git.tjeznach@rivosinc.com/
+v1 link:  https://lore.kernel.org/linux-iommu/cover.1689792825.git.tjeznach@rivosinc.com/
+
+Tomasz Jeznach (7):
+  dt-bindings: iommu: riscv: Add bindings for RISC-V IOMMU
+  iommu/riscv: Add RISC-V IOMMU platform device driver
+  iommu/riscv: Add RISC-V IOMMU PCIe device driver
+  iommu/riscv: Enable IOMMU registration and device probe.
+  iommu/riscv: Device directory management.
+  iommu/riscv: Command and fault queue support
+  iommu/riscv: Paging domain support
+
+ .../bindings/iommu/riscv,iommu.yaml           |  147 ++
+ MAINTAINERS                                   |    9 +
+ drivers/iommu/Kconfig                         |    1 +
+ drivers/iommu/Makefile                        |    2 +-
+ drivers/iommu/riscv/Kconfig                   |   20 +
+ drivers/iommu/riscv/Makefile                  |    3 +
+ drivers/iommu/riscv/iommu-bits.h              |  784 ++++++++
+ drivers/iommu/riscv/iommu-pci.c               |  120 ++
+ drivers/iommu/riscv/iommu-platform.c          |   92 +
+ drivers/iommu/riscv/iommu.c                   | 1661 +++++++++++++++++
+ drivers/iommu/riscv/iommu.h                   |   88 +
+ 11 files changed, 2926 insertions(+), 1 deletion(-)
+ create mode 100644 Documentation/devicetree/bindings/iommu/riscv,iommu.yaml
+ create mode 100644 drivers/iommu/riscv/Kconfig
+ create mode 100644 drivers/iommu/riscv/Makefile
+ create mode 100644 drivers/iommu/riscv/iommu-bits.h
+ create mode 100644 drivers/iommu/riscv/iommu-pci.c
+ create mode 100644 drivers/iommu/riscv/iommu-platform.c
+ create mode 100644 drivers/iommu/riscv/iommu.c
+ create mode 100644 drivers/iommu/riscv/iommu.h
+
+
+base-commit: 8e929cb546ee42c9a61d24fae60605e9e3192354
+-- 
+2.34.1
+
