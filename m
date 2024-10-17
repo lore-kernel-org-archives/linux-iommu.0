@@ -1,112 +1,134 @@
-Received: from mail-qv1-f43.google.com (mail-qv1-f43.google.com [209.85.219.43])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B4B971DE2C6
-	for <iommu@lists.linux.dev>; Thu, 17 Oct 2024 13:39:20 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.219.43
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id B616D1DDA24
+	for <iommu@lists.linux.dev>; Thu, 17 Oct 2024 13:54:34 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1729172363; cv=none; b=SVx6TpHn7UBb9IH+H7WEo1DlKMZAzCwn0517XleJl4ibF5ARQAlKMlgrD7yugdhEWLAGeztNuktmao8Y86UG1andX/q0GxQdkFNJ9VPJRrrU7sROqfGR78/IbARAF1GmL6adCcMHAejbD5f0KXOgbBBak2bbHcvlnycfNjiE7u0=
+	t=1729173279; cv=none; b=u1XdxoBpemS4uwjHYfFAi1KUmKPAdZWqzOIPprZWVkv++wwlsWoe9Ji/erJRq+vLhb7A+QpD0zwej2DSgK20XzjeiIovst1tSEll/PITh3VqRjyJTDhkda7zg3+50gW6bdwc8fcGa6dC1JexmrSLB9E6EGzpy3CKCZH2bcgGOfM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1729172363; c=relaxed/simple;
-	bh=i49EmUAf1ohGxeeM8x4UmNwfL4yCIxHLWgWUOM/iP9w=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=cca+LkOzCtcN4XAYJj2Pt1iTSXaLDl8Ndw7al6bP3gVpHytszYplG89JZpXCET4SLIuXy7wyzy9/Dhj6J88pxnbJdzS6ElIugeulLlSemVQip/BllH8/Cg5NqdjKrPMGGAr8BKNOA5oOG+ELtYdXZ6V+2mRCiBcwv070oGFlkFU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=GhXN4aUq; arc=none smtp.client-ip=209.85.219.43
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="GhXN4aUq"
-Received: by mail-qv1-f43.google.com with SMTP id 6a1803df08f44-6cbd12b38b4so6685036d6.2
-        for <iommu@lists.linux.dev>; Thu, 17 Oct 2024 06:39:20 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google; t=1729172360; x=1729777160; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=YFOPvFmUvMrcCCI6GWnkGToXsm7aD34183MCg5+ujP0=;
-        b=GhXN4aUq2OGQHK6bQudk1EfD8yyvy1XQQvVTd2sU4HHUEdA3ofwY4TdwPqaJ1ot+9y
-         H59aOWIKvalHBFdvY2b3S3Fyx1c6+zJnhxdVXnX3g5UOBwTjK2L1GI0f7L7svwMDLf4S
-         dg8qnXklyVRFNWJB3oU9A4P0EQozDdzB+3OzwFm+YCCrirzWviE8GUcv2KXEJjE54G4J
-         303d7m/TYpf0HpEwZlPtK8LqJgD3ZwhnJSBnMAHOpxh8RjIwgfmPYNGb2GBw/9CcuZD7
-         DBI+7E/F6O2KnS1qceTvUOA/wwVEhO6cnnu0oZZxFj88WDOrRraJJEr0TZBZFijswDPR
-         PowA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1729172360; x=1729777160;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=YFOPvFmUvMrcCCI6GWnkGToXsm7aD34183MCg5+ujP0=;
-        b=YdFGlgszl19YohtuYL35i+Odie37ACdndN49N6fzAGTff6FkjSdQE+hsVOTt5NVP32
-         myAP5khCAxgxGdvOJ8YOhTnS7bGkwXizTe6iXfMOND1c5eLmNnrJnsEqe8Qo4PBYxit6
-         gdLvbGVqhOxcJtUY1mOMwFoTTGyu3sBPB7CGAoxJN/UU4gNjuNelIAy8KzzPlcsgwqcb
-         qwfXAmR7BMgfzKuHyVyNVMsSVAy1QEoaEQTOj/vupR6O1bhWd3dwtr3+CXDmsD18U48b
-         4XLvFcZWJyeSB7Tug2IzM/DRq8BBE7MFcehUs/bH6ENaT7y/J2D5R7EcdhmVm7vRSjos
-         +ITw==
-X-Gm-Message-State: AOJu0Ywjrymxv+EDIQuRfN3l9ycjtK5AHyjb+G8zrlxIsNj6RB5eOstT
-	4oxs1v9I8HHFsZnkslY0aJtLqycnk/Mo5aZcqXTNfhAy0vZZ/WzkmFzm1sd99aA=
-X-Google-Smtp-Source: AGHT+IHjh9e9U1k0tJPEjpgr9pc1r/E2HwavXr3BlfA27vfUlw65IMjMHBFK984S7YH0V1eD8gMSNg==
-X-Received: by 2002:a0c:e84f:0:b0:6cc:2c76:d2e4 with SMTP id 6a1803df08f44-6cc2c76d316mr69232956d6.53.1729172359542;
-        Thu, 17 Oct 2024 06:39:19 -0700 (PDT)
-Received: from ziepe.ca (hlfxns017vw-142-68-128-5.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.68.128.5])
-        by smtp.gmail.com with ESMTPSA id 6a1803df08f44-6cc2291dbd5sm28380436d6.50.2024.10.17.06.39.19
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 17 Oct 2024 06:39:19 -0700 (PDT)
-Received: from jgg by wakko with local (Exim 4.95)
-	(envelope-from <jgg@ziepe.ca>)
-	id 1t1Qik-003yqY-LN;
-	Thu, 17 Oct 2024 10:39:18 -0300
-Date: Thu, 17 Oct 2024 10:39:18 -0300
-From: Jason Gunthorpe <jgg@ziepe.ca>
-To: Vasant Hegde <vasant.hegde@amd.com>
-Cc: iommu@lists.linux.dev, joro@8bytes.org, will@kernel.org,
-	robin.murphy@arm.com, suravee.suthikulpanit@amd.com,
-	Joerg Roedel <jroedel@suse.de>
-Subject: Re: [PATCH v3 10/10] iommu/amd: Improve amd_iommu_release_device()
-Message-ID: <20241017133918.GT4020792@ziepe.ca>
-References: <20241016053501.97497-1-vasant.hegde@amd.com>
- <20241016053501.97497-11-vasant.hegde@amd.com>
+	s=arc-20240116; t=1729173279; c=relaxed/simple;
+	bh=dR1/iF0hamAmACkYIu6ORSod6DVPZnh+qVKWQ1c6eVQ=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=YINjmg7lWX84DTKuvA+JpWuYOBpGP+vXjAVtZrNbxtL0LolHNeTdd8FQ0D2xTBuQAvzqr2FjG5lIpgV3WW0g204gVE9w5HB87Qj/7jY8CcQVBAPDBEbXin//Z4Y3cqHaAV/dTnMNqry6F7GVc0LOFS9223IzK+MQnjCZj3T0Nhc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; arc=none smtp.client-ip=217.140.110.172
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id D5ACCDA7;
+	Thu, 17 Oct 2024 06:55:03 -0700 (PDT)
+Received: from [10.1.196.40] (e121345-lin.cambridge.arm.com [10.1.196.40])
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id CD09A3F528;
+	Thu, 17 Oct 2024 06:54:31 -0700 (PDT)
+Message-ID: <3925d2f0-3b1f-4200-acc4-8f991616ec0f@arm.com>
+Date: Thu, 17 Oct 2024 14:54:29 +0100
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20241016053501.97497-11-vasant.hegde@amd.com>
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v2] iommu/arm-smmu: Defer probe of clients after smmu
+ device bound
+To: Pratyush Brahma <quic_pbrahma@quicinc.com>, will@kernel.org
+Cc: joro@8bytes.org, jgg@ziepe.ca, jsnitsel@redhat.com,
+ robdclark@chromium.org, quic_c_gdjako@quicinc.com,
+ dmitry.baryshkov@linaro.org, linux-arm-kernel@lists.infradead.org,
+ iommu@lists.linux.dev, linux-kernel@vger.kernel.org,
+ quic_charante@quicinc.com, stable@vger.kernel.org,
+ Prakash Gupta <quic_guptap@quicinc.com>
+References: <20241004090428.2035-1-quic_pbrahma@quicinc.com>
+ <d4a52579-0e2a-4df3-a1fa-e8e154ff1e90@quicinc.com>
+From: Robin Murphy <robin.murphy@arm.com>
+Content-Language: en-GB
+In-Reply-To: <d4a52579-0e2a-4df3-a1fa-e8e154ff1e90@quicinc.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 
-On Wed, Oct 16, 2024 at 05:35:01AM +0000, Vasant Hegde wrote:
+On 15/10/2024 2:31 pm, Pratyush Brahma wrote:
+> 
+> On 10/4/2024 2:34 PM, Pratyush Brahma wrote:
+>> Null pointer dereference occurs due to a race between smmu
+>> driver probe and client driver probe, when of_dma_configure()
+>> for client is called after the iommu_device_register() for smmu driver
+>> probe has executed but before the driver_bound() for smmu driver
+>> has been called.
+>>
+>> Following is how the race occurs:
+>>
+>> T1:Smmu device probe        T2: Client device probe
+>>
+>> really_probe()
+>> arm_smmu_device_probe()
+>> iommu_device_register()
+>>                     really_probe()
+>>                     platform_dma_configure()
+>>                     of_dma_configure()
+>>                     of_dma_configure_id()
+>>                     of_iommu_configure()
+>>                     iommu_probe_device()
+>>                     iommu_init_device()
+>>                     arm_smmu_probe_device()
+>>                     arm_smmu_get_by_fwnode()
+>>                         driver_find_device_by_fwnode()
+>>                         driver_find_device()
+>>                         next_device()
+>>                         klist_next()
+>>                             /* null ptr
+>>                                assigned to smmu */
+>>                     /* null ptr dereference
+>>                        while smmu->streamid_mask */
+>> driver_bound()
+>>     klist_add_tail()
+>>
+>> When this null smmu pointer is dereferenced later in
+>> arm_smmu_probe_device, the device crashes.
+>>
+>> Fix this by deferring the probe of the client device
+>> until the smmu device has bound to the arm smmu driver.
+>>
+>> Fixes: 021bb8420d44 ("iommu/arm-smmu: Wire up generic configuration 
+>> support")
+>> Cc: stable@vger.kernel.org
+>> Co-developed-by: Prakash Gupta <quic_guptap@quicinc.com>
+>> Signed-off-by: Prakash Gupta <quic_guptap@quicinc.com>
+>> Signed-off-by: Pratyush Brahma <quic_pbrahma@quicinc.com>
+>> ---
+>> Changes in v2:
+>>   Fix kernel test robot warning
+>>   Add stable kernel list in cc
+>>   Link to v1: 
+>> https://lore.kernel.org/all/20241001055633.21062-1-quic_pbrahma@quicinc.com/
+>>
+>>   drivers/iommu/arm/arm-smmu/arm-smmu.c | 3 +++
+>>   1 file changed, 3 insertions(+)
+>>
+>> diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu.c 
+>> b/drivers/iommu/arm/arm-smmu/arm-smmu.c
+>> index 723273440c21..7c778b7eb8c8 100644
+>> --- a/drivers/iommu/arm/arm-smmu/arm-smmu.c
+>> +++ b/drivers/iommu/arm/arm-smmu/arm-smmu.c
+>> @@ -1437,6 +1437,9 @@ static struct iommu_device 
+>> *arm_smmu_probe_device(struct device *dev)
+>>               goto out_free;
+>>       } else {
+>>           smmu = arm_smmu_get_by_fwnode(fwspec->iommu_fwnode);
+>> +        if (!smmu)
+>> +            return ERR_PTR(dev_err_probe(dev, -EPROBE_DEFER,
+>> +                        "smmu dev has not bound yet\n"));
+>>       }
+>>       ret = -EINVAL;
+> 
+> 
+> Hi
+> Can someone please review this patch? Let me know if any further 
+> information is required.
 
-> @@ -2251,7 +2234,18 @@ static void amd_iommu_release_device(struct device *dev)
->  	if (!iommu)
->  		return;
->  
-> -	amd_iommu_uninit_device(dev);
-> +	dev_data = dev_iommu_priv_get(dev);
-> +	if (!dev_data)
-> +		return;
+This really shouldn't be leaking into drivers... :(
 
-This can never happen, the core code never calls an op unless
-probe_device succeeded.
+Honestly, I'm now so fed up of piling on hacks around the fundamental 
+mis-design here, I think it's finally time to blow everything else off 
+and spend a few days figuring out the most expedient way to fix it 
+properly once and for all. Watch this space...
 
-> +	if (dev_data->domain)
-> +		detach_device(dev);
-
-This is also can't happen. The driver sets release_domain then the
-core code never calls this with anything other than release_domain
-attached.
-
-Suggest just 
-
- struct iommu_dev_data *dev_data = dev_iommu_priv_get(dev);
-
- WARN_ON(dev->data->domain);
-
-> +	/*
-> +	 * We keep dev_data around for unplugged devices and reuse it when the
-> +	 * device is re-plugged - not doing so would introduce a ton of races.
-> +	 */
-> +
-
-Yikes.. Sounds sketchy. Why doesn't any other driver have these races?
-
-Jason
+Thanks,
+Robin.
