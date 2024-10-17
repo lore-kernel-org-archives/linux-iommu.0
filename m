@@ -1,138 +1,131 @@
-Received: from mail-lf1-f49.google.com (mail-lf1-f49.google.com [209.85.167.49])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 727191D5173
-	for <iommu@lists.linux.dev>; Thu, 17 Oct 2024 12:35:38 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.49
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 965231DCB0F
+	for <iommu@lists.linux.dev>; Thu, 17 Oct 2024 12:58:16 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.176.79.56
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1729168541; cv=none; b=e/wL8HMEytf0wfmJEe3xBQyocLF7a26PRM+uMrrTM7qDUFBIx0x1Tj84fOJapUE4ONVDa4uKLPyo001xNClkwbcYi8V6VPy17lY4Ww1GGDdmX8PswVDx+OrikGjkxipO0LZYIRtvQhnMKRWSR250CIIi9mOVmWUsoROFihBhNkc=
+	t=1729169899; cv=none; b=BdJxFzw7d0DmlM+FyXfMKg7kjPCzR6ZBoSlLjEscyWuH3ngPBXK9m4g0jtd6FgS6KnbYW6+QXN6w0Lq0SrFMs0/3itLJfel16VxIf4XQ2TG2rIPMnVe15Eua+KZLg3R1dyb7t5p3AS3yul0T4WijXD7D75p5TvIznK6SR1wL4lk=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1729168541; c=relaxed/simple;
-	bh=stgROs37qwDGESBufWBachz+WHBFXWh4SvTQfT/sml0=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=WkA28OlXuCwqFXG4hgWLihCieEZUgGEwPXyx2OybCvVoCjynCl+4+NLRShixfhuFPWaCk9Q6ON89qf9dLAedldpS0XsMP33fknEin7EXU5VCCX2NZIqQ6Xdqvbi3+4mHusRM1wsTww7pi86wUenN2FZXghjJWqvmQZCiDlnc7Lk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org; spf=pass smtp.mailfrom=linaro.org; dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b=oN9kUXb4; arc=none smtp.client-ip=209.85.167.49
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linaro.org
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="oN9kUXb4"
-Received: by mail-lf1-f49.google.com with SMTP id 2adb3069b0e04-539e5c15fd3so879311e87.3
-        for <iommu@lists.linux.dev>; Thu, 17 Oct 2024 05:35:38 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1729168536; x=1729773336; darn=lists.linux.dev;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=kM7OrfRTdZQrTofk4LGSXNvpUV7LDhsGRtxbKPLtBSM=;
-        b=oN9kUXb4NF8WB0TJuOO12f6r4uxd/OX6ZGrFPtqZX6ZO+oFuCmkWCDK2uwrT2MTlgY
-         mED/4X6LQ9NAJuHnLKY7LRhl4ljbLPRHWA37vxA0+P5vzlxpG50anQZHFn9agGcZUg1o
-         ++4V7/PJxwq8wkdycLni33nCyGv27fmQubbbkeBPzVR4BzmajG1pdeQOVz88K95IC0vO
-         LiW7Abxoelpt/UnRlUk7hfonvQo+frE6WeJjufmXB0jffOEVvrFVfurnPtDl94r7Cr7w
-         VcyAWhxNuaMr06i+oHfEVb9vX9OEw9c08i+E4WirkYUg9k5Nao7qIjhfrANwkCL6BnTI
-         75Gw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1729168536; x=1729773336;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=kM7OrfRTdZQrTofk4LGSXNvpUV7LDhsGRtxbKPLtBSM=;
-        b=uXDZcgHGVUiDFPxGmuPWYqu3aJ95vbGkIvXYNqOu7Vm7miG2KCmOefOiZuXKUHIMj6
-         Lz5A+EeBm4bhRSs8YHuHf+aLnYEv4Vwa3ePE+ay/KpvpgwB737U1omfwqtmjWnNl0gpb
-         xO6uHX7rt4LzBHSrwcJnBylPa0tBLO6qkSaAjrj83uiBje/opVp3d8YzU7ZQLSYXvCxq
-         iP/rpQe18JUITxk9ehpccbg8LHp8QSDGHEWf/eCM6AmH/OLlPGalD9Gzak6nYmRjYy96
-         MrX7GA9/qE3KOTIPsEWxYQlZnEDWvxykH/Cb+rF22Bqw8H1scRQQeb/wEnfj98hf2ixP
-         fzrw==
-X-Forwarded-Encrypted: i=1; AJvYcCVvroDmwA9G2B6qpfRjr64igrkzp+dJVuk5Ohy1KzkfCuDdPmlrR+amcPmStaXN2bcR0ODfAw==@lists.linux.dev
-X-Gm-Message-State: AOJu0YyNYqC6ZYkFO7YPL6w1euNqs7nMa4zcdFyIxuxNDJEah7EBscvy
-	AESu9SMyf/XgTX8a0qAzS83/mz2HTKliiUUPeWDr6j6pUhMKIey9OXr6JRoxcVRijjLyxPF/wD4
-	54uqa0H2geqWHges6dqsO8vpYyoWO4pr5gHWWJw==
-X-Google-Smtp-Source: AGHT+IH4WJKolhUJPprqECOsvSWy5mgerznZLfFjdhTs0fsqDZ0hzHkE+rz7FwoNqJnQZ8jgoGMGTXT1t5RYO39n54k=
-X-Received: by 2002:a05:6512:3085:b0:539:e873:6e6 with SMTP id
- 2adb3069b0e04-53a03f82439mr5602333e87.43.1729168536304; Thu, 17 Oct 2024
- 05:35:36 -0700 (PDT)
+	s=arc-20240116; t=1729169899; c=relaxed/simple;
+	bh=QTEIK+hjRYcsCWe0UVg7ofyNR9soooVcGWuUXTn5uls=;
+	h=From:To:CC:Subject:Date:Message-ID:References:In-Reply-To:
+	 Content-Type:MIME-Version; b=KNFGfmbr0bdIxgQVyegFqKk9YHW4mOlcgYM0xmC0QXfrSwc5EjrHELRzhowdoyuxw/Jftn8dYYh9bcPVuHdjkpYg9C8Bcpg8IiMztsPlI/on7cxzN2kqlYZE572nQ2qRXVT6rgK3VWQK2tUc8yAEhl+bvnSSziTdvUf122hQcHI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=huawei.com; spf=pass smtp.mailfrom=huawei.com; arc=none smtp.client-ip=185.176.79.56
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=huawei.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=huawei.com
+Received: from mail.maildlp.com (unknown [172.18.186.231])
+	by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4XTns92yJQz6FGnM;
+	Thu, 17 Oct 2024 20:56:29 +0800 (CST)
+Received: from frapeml100007.china.huawei.com (unknown [7.182.85.133])
+	by mail.maildlp.com (Postfix) with ESMTPS id 818D01400F4;
+	Thu, 17 Oct 2024 20:58:13 +0800 (CST)
+Received: from frapeml500008.china.huawei.com (7.182.85.71) by
+ frapeml100007.china.huawei.com (7.182.85.133) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.1.2507.39; Thu, 17 Oct 2024 14:58:13 +0200
+Received: from frapeml500008.china.huawei.com ([7.182.85.71]) by
+ frapeml500008.china.huawei.com ([7.182.85.71]) with mapi id 15.01.2507.039;
+ Thu, 17 Oct 2024 14:58:13 +0200
+From: Shameerali Kolothum Thodi <shameerali.kolothum.thodi@huawei.com>
+To: Zhangfei Gao <zhangfei.gao@linaro.org>, Jason Gunthorpe <jgg@ziepe.ca>
+CC: Lu Baolu <baolu.lu@linux.intel.com>, Kevin Tian <kevin.tian@intel.com>,
+	Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>, Robin Murphy
+	<robin.murphy@arm.com>, Jean-Philippe Brucker <jean-philippe@linaro.org>,
+	Nicolin Chen <nicolinc@nvidia.com>, Yi Liu <yi.l.liu@intel.com>, Jacob Pan
+	<jacob.jun.pan@linux.intel.com>, Joel Granados <j.granados@samsung.com>,
+	"iommu@lists.linux.dev" <iommu@lists.linux.dev>,
+	"virtualization@lists.linux-foundation.org"
+	<virtualization@lists.linux-foundation.org>, "linux-kernel@vger.kernel.org"
+	<linux-kernel@vger.kernel.org>
+Subject: RE: [PATCH v8 07/10] iommufd: Fault-capable hwpt
+ attach/detach/replace
+Thread-Topic: [PATCH v8 07/10] iommufd: Fault-capable hwpt
+ attach/detach/replace
+Thread-Index: AQHazEqXxVp4lf+dEUeIMwqdhDxFmrKHp/+AgACgmACAANsfAIAA4VKAgACtBACAAK2BAIAACGkAgAAneCA=
+Date: Thu, 17 Oct 2024 12:58:13 +0000
+Message-ID: <50ee0c0b052b40f6b67d1ad3b1b0eeb9@huawei.com>
+References: <20240702063444.105814-1-baolu.lu@linux.intel.com>
+ <20240702063444.105814-8-baolu.lu@linux.intel.com>
+ <CABQgh9EeKtYuu+vTTM0fwaKrLxdyC355MQxN8o8_OL9Y1NkE8A@mail.gmail.com>
+ <20241015125420.GK1825128@ziepe.ca>
+ <CABQgh9E+AnuyJgcM9tf1gEOUqcC_QSrA__Xha9sKYZp=NVRwhQ@mail.gmail.com>
+ <20241016152503.GB4020792@ziepe.ca>
+ <CABQgh9FCJcOa0G0Kj__NUm-Q8C9uH4ud04XcHv+3c48T2qEnug@mail.gmail.com>
+ <20241017120518.GI4020792@ziepe.ca>
+ <CABQgh9EnEqDKkxg3VUgjSqBzz27h8B3Ct4w=A0vR6JK=d7fXHQ@mail.gmail.com>
+In-Reply-To: <CABQgh9EnEqDKkxg3VUgjSqBzz27h8B3Ct4w=A0vR6JK=d7fXHQ@mail.gmail.com>
+Accept-Language: en-GB, en-US
+Content-Language: en-US
+X-MS-Has-Attach:
+X-MS-TNEF-Correlator:
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <20240702063444.105814-1-baolu.lu@linux.intel.com>
- <20240702063444.105814-8-baolu.lu@linux.intel.com> <CABQgh9EeKtYuu+vTTM0fwaKrLxdyC355MQxN8o8_OL9Y1NkE8A@mail.gmail.com>
- <20241015125420.GK1825128@ziepe.ca> <CABQgh9E+AnuyJgcM9tf1gEOUqcC_QSrA__Xha9sKYZp=NVRwhQ@mail.gmail.com>
- <20241016152503.GB4020792@ziepe.ca> <CABQgh9FCJcOa0G0Kj__NUm-Q8C9uH4ud04XcHv+3c48T2qEnug@mail.gmail.com>
- <20241017120518.GI4020792@ziepe.ca>
-In-Reply-To: <20241017120518.GI4020792@ziepe.ca>
-From: Zhangfei Gao <zhangfei.gao@linaro.org>
-Date: Thu, 17 Oct 2024 20:35:24 +0800
-Message-ID: <CABQgh9EnEqDKkxg3VUgjSqBzz27h8B3Ct4w=A0vR6JK=d7fXHQ@mail.gmail.com>
-Subject: Re: [PATCH v8 07/10] iommufd: Fault-capable hwpt attach/detach/replace
-To: Jason Gunthorpe <jgg@ziepe.ca>
-Cc: Lu Baolu <baolu.lu@linux.intel.com>, Kevin Tian <kevin.tian@intel.com>, 
-	Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>, 
-	Jean-Philippe Brucker <jean-philippe@linaro.org>, Nicolin Chen <nicolinc@nvidia.com>, 
-	Yi Liu <yi.l.liu@intel.com>, Jacob Pan <jacob.jun.pan@linux.intel.com>, 
-	Joel Granados <j.granados@samsung.com>, iommu@lists.linux.dev, 
-	virtualization@lists.linux-foundation.org, linux-kernel@vger.kernel.org, 
-	Shameerali Kolothum Thodi <shameerali.kolothum.thodi@huawei.com>
-Content-Type: text/plain; charset="UTF-8"
 
-On Thu, 17 Oct 2024 at 20:05, Jason Gunthorpe <jgg@ziepe.ca> wrote:
->
-> On Thu, Oct 17, 2024 at 09:44:18AM +0800, Zhangfei Gao wrote:
-> > On Wed, 16 Oct 2024 at 23:25, Jason Gunthorpe <jgg@ziepe.ca> wrote:
-> > >
-> > > On Wed, Oct 16, 2024 at 09:58:36AM +0800, Zhangfei Gao wrote:
-> > > > On Tue, 15 Oct 2024 at 20:54, Jason Gunthorpe <jgg@ziepe.ca> wrote:
-> > > > >
-> > > > > On Tue, Oct 15, 2024 at 11:19:33AM +0800, Zhangfei Gao wrote:
-> > > > > > > +static int iommufd_fault_iopf_enable(struct iommufd_device *idev)
-> > > > > > > +{
-> > > > > > > +       struct device *dev = idev->dev;
-> > > > > > > +       int ret;
-> > > > > > > +
-> > > > > > > +       /*
-> > > > > > > +        * Once we turn on PCI/PRI support for VF, the response failure code
-> > > > > > > +        * should not be forwarded to the hardware due to PRI being a shared
-> > > > > > > +        * resource between PF and VFs. There is no coordination for this
-> > > > > > > +        * shared capability. This waits for a vPRI reset to recover.
-> > > > > > > +        */
-> > > > > > > +       if (dev_is_pci(dev) && to_pci_dev(dev)->is_virtfn)
-> > > > > > > +               return -EINVAL;
-> > > > > >
-> > > > > > I am using the SMMUv3 stall feature, and need to forward this to hardware,
-> > > > > > And now I am hacking to comment this check.
-> > > > > > Any suggestions?
-> > > > >
-> > > > > Are you using PCI SRIOV and stall together?
-> > > >
-> > > > Only use smmuv3 stall feature.
-Sorry, this is not correct
-
-> > >
-> > > Then isn't to_pci_dev(dev)->is_virtfn == false?
-> > >
-> > > That should only be true with SRIOV
-> >
-> > Do you mean
-> > if (dev_is_pci(dev) && to_pci_dev(dev)->is_virtfn == false)
-> >     return -EINVAL;
-> >
-> > This is fine
->
-> No, I mean on your test system you are not using SRIOV so all your PCI
-> devices will have is_virtfn == false and the above if shouldn't be a
-> problem. is_virtfn indicates the PCI device is a SRIOV VF.
->
-> Your explanation for your problem doesn't really make sense, or there
-> is something wrong someplace else to get a bogus is_virtfn..
->
-> If you are doing SRIOV with stall, then that is understandable.
-
-Yes, you are right
- I am using SRIOV vf and stall feature, so is_virtfn == true
-
-Our ACC devices are fake pci endpoint devices which supports stall,
-And they also supports sriov
-
-So I have to ignore the limitation.
-
-Thanks
+DQoNCj4gLS0tLS1PcmlnaW5hbCBNZXNzYWdlLS0tLS0NCj4gRnJvbTogWmhhbmdmZWkgR2FvIDx6
+aGFuZ2ZlaS5nYW9AbGluYXJvLm9yZz4NCj4gU2VudDogVGh1cnNkYXksIE9jdG9iZXIgMTcsIDIw
+MjQgMTozNSBQTQ0KPiBUbzogSmFzb24gR3VudGhvcnBlIDxqZ2dAemllcGUuY2E+DQo+IENjOiBM
+dSBCYW9sdSA8YmFvbHUubHVAbGludXguaW50ZWwuY29tPjsgS2V2aW4gVGlhbg0KPiA8a2V2aW4u
+dGlhbkBpbnRlbC5jb20+OyBKb2VyZyBSb2VkZWwgPGpvcm9AOGJ5dGVzLm9yZz47IFdpbGwgRGVh
+Y29uDQo+IDx3aWxsQGtlcm5lbC5vcmc+OyBSb2JpbiBNdXJwaHkgPHJvYmluLm11cnBoeUBhcm0u
+Y29tPjsgSmVhbi0NCj4gUGhpbGlwcGUgQnJ1Y2tlciA8amVhbi1waGlsaXBwZUBsaW5hcm8ub3Jn
+PjsgTmljb2xpbiBDaGVuDQo+IDxuaWNvbGluY0BudmlkaWEuY29tPjsgWWkgTGl1IDx5aS5sLmxp
+dUBpbnRlbC5jb20+OyBKYWNvYiBQYW4NCj4gPGphY29iLmp1bi5wYW5AbGludXguaW50ZWwuY29t
+PjsgSm9lbCBHcmFuYWRvcw0KPiA8ai5ncmFuYWRvc0BzYW1zdW5nLmNvbT47IGlvbW11QGxpc3Rz
+LmxpbnV4LmRldjsNCj4gdmlydHVhbGl6YXRpb25AbGlzdHMubGludXgtZm91bmRhdGlvbi5vcmc7
+IGxpbnV4LWtlcm5lbEB2Z2VyLmtlcm5lbC5vcmc7DQo+IFNoYW1lZXJhbGkgS29sb3RodW0gVGhv
+ZGkgPHNoYW1lZXJhbGkua29sb3RodW0udGhvZGlAaHVhd2VpLmNvbT4NCj4gU3ViamVjdDogUmU6
+IFtQQVRDSCB2OCAwNy8xMF0gaW9tbXVmZDogRmF1bHQtY2FwYWJsZSBod3B0DQo+IGF0dGFjaC9k
+ZXRhY2gvcmVwbGFjZQ0KPiANCj4gT24gVGh1LCAxNyBPY3QgMjAyNCBhdCAyMDowNSwgSmFzb24g
+R3VudGhvcnBlIDxqZ2dAemllcGUuY2E+IHdyb3RlOg0KPiA+DQo+ID4gT24gVGh1LCBPY3QgMTcs
+IDIwMjQgYXQgMDk6NDQ6MThBTSArMDgwMCwgWmhhbmdmZWkgR2FvIHdyb3RlOg0KPiA+ID4gT24g
+V2VkLCAxNiBPY3QgMjAyNCBhdCAyMzoyNSwgSmFzb24gR3VudGhvcnBlIDxqZ2dAemllcGUuY2E+
+IHdyb3RlOg0KPiA+ID4gPg0KPiA+ID4gPiBPbiBXZWQsIE9jdCAxNiwgMjAyNCBhdCAwOTo1ODoz
+NkFNICswODAwLCBaaGFuZ2ZlaSBHYW8gd3JvdGU6DQo+ID4gPiA+ID4gT24gVHVlLCAxNSBPY3Qg
+MjAyNCBhdCAyMDo1NCwgSmFzb24gR3VudGhvcnBlIDxqZ2dAemllcGUuY2E+DQo+IHdyb3RlOg0K
+PiA+ID4gPiA+ID4NCj4gPiA+ID4gPiA+IE9uIFR1ZSwgT2N0IDE1LCAyMDI0IGF0IDExOjE5OjMz
+QU0gKzA4MDAsIFpoYW5nZmVpIEdhbyB3cm90ZToNCj4gPiA+ID4gPiA+ID4gPiArc3RhdGljIGlu
+dCBpb21tdWZkX2ZhdWx0X2lvcGZfZW5hYmxlKHN0cnVjdA0KPiA+ID4gPiA+ID4gPiA+ICtpb21t
+dWZkX2RldmljZSAqaWRldikgew0KPiA+ID4gPiA+ID4gPiA+ICsgICAgICAgc3RydWN0IGRldmlj
+ZSAqZGV2ID0gaWRldi0+ZGV2Ow0KPiA+ID4gPiA+ID4gPiA+ICsgICAgICAgaW50IHJldDsNCj4g
+PiA+ID4gPiA+ID4gPiArDQo+ID4gPiA+ID4gPiA+ID4gKyAgICAgICAvKg0KPiA+ID4gPiA+ID4g
+PiA+ICsgICAgICAgICogT25jZSB3ZSB0dXJuIG9uIFBDSS9QUkkgc3VwcG9ydCBmb3IgVkYsIHRo
+ZSByZXNwb25zZQ0KPiBmYWlsdXJlIGNvZGUNCj4gPiA+ID4gPiA+ID4gPiArICAgICAgICAqIHNo
+b3VsZCBub3QgYmUgZm9yd2FyZGVkIHRvIHRoZSBoYXJkd2FyZSBkdWUgdG8gUFJJDQo+IGJlaW5n
+IGEgc2hhcmVkDQo+ID4gPiA+ID4gPiA+ID4gKyAgICAgICAgKiByZXNvdXJjZSBiZXR3ZWVuIFBG
+IGFuZCBWRnMuIFRoZXJlIGlzIG5vIGNvb3JkaW5hdGlvbg0KPiBmb3IgdGhpcw0KPiA+ID4gPiA+
+ID4gPiA+ICsgICAgICAgICogc2hhcmVkIGNhcGFiaWxpdHkuIFRoaXMgd2FpdHMgZm9yIGEgdlBS
+SSByZXNldCB0byByZWNvdmVyLg0KPiA+ID4gPiA+ID4gPiA+ICsgICAgICAgICovDQo+ID4gPiA+
+ID4gPiA+ID4gKyAgICAgICBpZiAoZGV2X2lzX3BjaShkZXYpICYmIHRvX3BjaV9kZXYoZGV2KS0+
+aXNfdmlydGZuKQ0KPiA+ID4gPiA+ID4gPiA+ICsgICAgICAgICAgICAgICByZXR1cm4gLUVJTlZB
+TDsNCj4gPiA+ID4gPiA+ID4NCj4gPiA+ID4gPiA+ID4gSSBhbSB1c2luZyB0aGUgU01NVXYzIHN0
+YWxsIGZlYXR1cmUsIGFuZCBuZWVkIHRvIGZvcndhcmQNCj4gPiA+ID4gPiA+ID4gdGhpcyB0byBo
+YXJkd2FyZSwgQW5kIG5vdyBJIGFtIGhhY2tpbmcgdG8gY29tbWVudCB0aGlzIGNoZWNrLg0KPiA+
+ID4gPiA+ID4gPiBBbnkgc3VnZ2VzdGlvbnM/DQo+ID4gPiA+ID4gPg0KPiA+ID4gPiA+ID4gQXJl
+IHlvdSB1c2luZyBQQ0kgU1JJT1YgYW5kIHN0YWxsIHRvZ2V0aGVyPw0KPiA+ID4gPiA+DQo+ID4g
+PiA+ID4gT25seSB1c2Ugc21tdXYzIHN0YWxsIGZlYXR1cmUuDQo+IFNvcnJ5LCB0aGlzIGlzIG5v
+dCBjb3JyZWN0DQo+IA0KPiA+ID4gPg0KPiA+ID4gPiBUaGVuIGlzbid0IHRvX3BjaV9kZXYoZGV2
+KS0+aXNfdmlydGZuID09IGZhbHNlPw0KPiA+ID4gPg0KPiA+ID4gPiBUaGF0IHNob3VsZCBvbmx5
+IGJlIHRydWUgd2l0aCBTUklPVg0KPiA+ID4NCj4gPiA+IERvIHlvdSBtZWFuDQo+ID4gPiBpZiAo
+ZGV2X2lzX3BjaShkZXYpICYmIHRvX3BjaV9kZXYoZGV2KS0+aXNfdmlydGZuID09IGZhbHNlKQ0K
+PiA+ID4gICAgIHJldHVybiAtRUlOVkFMOw0KPiA+ID4NCj4gPiA+IFRoaXMgaXMgZmluZQ0KPiA+
+DQo+ID4gTm8sIEkgbWVhbiBvbiB5b3VyIHRlc3Qgc3lzdGVtIHlvdSBhcmUgbm90IHVzaW5nIFNS
+SU9WIHNvIGFsbCB5b3VyIFBDSQ0KPiA+IGRldmljZXMgd2lsbCBoYXZlIGlzX3ZpcnRmbiA9PSBm
+YWxzZSBhbmQgdGhlIGFib3ZlIGlmIHNob3VsZG4ndCBiZSBhDQo+ID4gcHJvYmxlbS4gaXNfdmly
+dGZuIGluZGljYXRlcyB0aGUgUENJIGRldmljZSBpcyBhIFNSSU9WIFZGLg0KPiA+DQo+ID4gWW91
+ciBleHBsYW5hdGlvbiBmb3IgeW91ciBwcm9ibGVtIGRvZXNuJ3QgcmVhbGx5IG1ha2Ugc2Vuc2Us
+IG9yIHRoZXJlDQo+ID4gaXMgc29tZXRoaW5nIHdyb25nIHNvbWVwbGFjZSBlbHNlIHRvIGdldCBh
+IGJvZ3VzIGlzX3ZpcnRmbi4uDQo+ID4NCj4gPiBJZiB5b3UgYXJlIGRvaW5nIFNSSU9WIHdpdGgg
+c3RhbGwsIHRoZW4gdGhhdCBpcyB1bmRlcnN0YW5kYWJsZS4NCj4gDQo+IFllcywgeW91IGFyZSBy
+aWdodA0KPiAgSSBhbSB1c2luZyBTUklPViB2ZiBhbmQgc3RhbGwgZmVhdHVyZSwgc28gaXNfdmly
+dGZuID09IHRydWUNCj4gDQo+IE91ciBBQ0MgZGV2aWNlcyBhcmUgZmFrZSBwY2kgZW5kcG9pbnQg
+ZGV2aWNlcyB3aGljaCBzdXBwb3J0cyBzdGFsbCwgQW5kDQo+IHRoZXkgYWxzbyBzdXBwb3J0cyBz
+cmlvdg0KDQpNYXkgYmUgdGhpcyB3aWxsIGhlbHAgdG8gZ2V0IHRoZSBiYWNrZ3JvdW5kOg0KaHR0
+cHM6Ly9sb3JlLmtlcm5lbC5vcmcvYWxsLzE2MjYxNDQ4NzYtMTEzNTItMS1naXQtc2VuZC1lbWFp
+bC16aGFuZ2ZlaS5nYW9AbGluYXJvLm9yZy8NCg0KU2hhbWVlcg0KDQo=
