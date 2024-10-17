@@ -1,226 +1,207 @@
-Received: from mail-pl1-f170.google.com (mail-pl1-f170.google.com [209.85.214.170])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from NAM04-MW2-obe.outbound.protection.outlook.com (mail-mw2nam04on2083.outbound.protection.outlook.com [40.107.101.83])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A69371D0DE7
-	for <iommu@lists.linux.dev>; Thu, 17 Oct 2024 08:06:48 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.170
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1729152410; cv=none; b=G2OIMPH2dkj7kqmcpwE3yto93pW3MN3AJGVO8w+uv1/8uz4CBiuUNcHu3Ebw4SmDiXo0myeck61j5MstLz7HD9PEpqI+yOy3dxcer3l/z8l2bc2WJeD/PXHDOAf0JPTd3BJ3PsiXge5vb6UjcE0IKH0xF2YbvsfwxTWhIK4zWEU=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1729152410; c=relaxed/simple;
-	bh=+n+Ljc2ekVz2o7feEiQCTUHXbGFsW3wKA7gtB1udWdo=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=X8QnMfRb5wK0SZhZljFe8clcxdeXTY4a6fxBGfPW+tMhPg0PxuYNPBnk5SIlyNtItzCpNGhJ80+/tj0/oW381gRDzlEIp3zvgVfp4ZO1GWbCVqiLUqJs/UwTrcQ7aEpP25Otyzx6VC/P6FjvwGZYP2tp36X7RDHpmbJfBgWiTUQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=Uz3BvwiE; arc=none smtp.client-ip=209.85.214.170
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 68F90259C
+	for <iommu@lists.linux.dev>; Thu, 17 Oct 2024 11:03:45 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.101.83
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1729163028; cv=fail; b=iZoeduhjyfks6KmtR/E6RiZf1vEJInAktSox2T92aQhqxGpHMRGVtOvbMksH/da/UAk2ElqgWrf6Gn3C+am1Zv3TIScMB2yRB9d0th4kyOcP8NnUDesc8iIX+MqQnX0DMY1Ha3BsTNQE4GY87C9ptyKvR7HRq4uQWriuvtPxUog=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1729163028; c=relaxed/simple;
+	bh=012ZUfnDAFug/bdVi2YnmW+zVEl0jxW6sazZaG93erY=;
+	h=Message-ID:Date:Subject:To:Cc:References:From:In-Reply-To:
+	 Content-Type:MIME-Version; b=F7qLCYsiXGYx793eC+aYh8WqFauXj8r3+Ozg5Av8rZnu9D4NbUBodyF1XEPHyAm87AztF+0kZ/VfC4UFeaqfc//imexEmQMEskS15tbaCJueIpf6UibC3encYyVaiFHwptwYobrO7+LmjDGlUCOz7lIKLMa1X670GCLUc2BquFw=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com; spf=fail smtp.mailfrom=amd.com; dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b=Qa7jKKny; arc=fail smtp.client-ip=40.107.101.83
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=amd.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="Uz3BvwiE"
-Received: by mail-pl1-f170.google.com with SMTP id d9443c01a7336-20ca03687fdso137465ad.0
-        for <iommu@lists.linux.dev>; Thu, 17 Oct 2024 01:06:48 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20230601; t=1729152408; x=1729757208; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=5elGTjDUvI82Jjoz2XxLRSuIWAHhCe11X21BLWcP//c=;
-        b=Uz3BvwiE/eRUrZxWevx9DvjUJd40gUFosEiD2NfT+IylBp+0n20J6dlCyOEqXnfoqw
-         YpdTAXTH99dEkj8KZsezANlK8q/XoEY279UlsSAUtGhwljbwJ59Sk23JPcxoQzPkeolF
-         jVWmSZC0BOodnYFbrRFpIIjG66MrfHEDJBaq3Aj/pN9UAQAlhqTxa9r1VmxFTeB7/1RI
-         JOzjK+zy6kLRcAy2cUTjPIMQYmL/Ku+B3w4h5aJX05jiyB8ILIO6XdslvhlM9KXVLuxP
-         5yNNd2r2XGjRfW2zbCHzifhCBc3nN6BGgdGcGzkC/AWpfNsBqb6vc4QhsFJz4pOgQeel
-         qYIA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1729152408; x=1729757208;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=5elGTjDUvI82Jjoz2XxLRSuIWAHhCe11X21BLWcP//c=;
-        b=PrOhK49BqNWfTr/CBCuR5fCn6Um+QL00vY13ykI/BsFoHJjbdgsC+pkPNGDAqtDGsr
-         Z4+NiIwdmQ9kSPdgahdGhGPNDLGGkSNU9Nk5IGUVowKPxHXR/IrvyRk/ro/I8nv2PdlR
-         /bRkc1Su7ZUOpW6CVFo9t4ubTyv8I8w5ZiFqZ6iHj5LEAKrEQ0wGtEcuNsv3kV0EoPkh
-         xsBEshmHbdfxwN7jhtS9IEZNlNVdmnzVk8rDYczofsxpb/pd/pS9zKm8A977e90NPYgW
-         FPJ4VZ3zvHCQD9KOup83+Yw9sl3RLiauxGz8c5vbFiTcmiedNBNEJYVMHoNLWTSPQ1E9
-         GxPA==
-X-Forwarded-Encrypted: i=1; AJvYcCVztiBsV7j+Pt7T4Pyt3MxOzj18aVYP5405q/G1z4iihP+oiA1fWxC5m2DzC3XhCMnbM6R0oQ==@lists.linux.dev
-X-Gm-Message-State: AOJu0YzePF225z1fpAv/C24gf0kaVbSKFhAibdOfSr+wWlcQpmpiw2Vc
-	Fh6vCPMQYxMmEzwQVDKdqPXoFhaeSnjtVGTLd5mj2bQLy76BtM3opul75sK5DA==
-X-Google-Smtp-Source: AGHT+IH+dIZUoCEM3cFhMtxRIhkIMMrXvr3KQwEuxVVZe2d2vVEiqjoJ4C8F020Hn5Fm2NVVZi5XOg==
-X-Received: by 2002:a17:902:f542:b0:20c:f87f:b7ef with SMTP id d9443c01a7336-20d49640d27mr2105605ad.22.1729152407536;
-        Thu, 17 Oct 2024 01:06:47 -0700 (PDT)
-Received: from google.com (62.166.143.34.bc.googleusercontent.com. [34.143.166.62])
-        by smtp.gmail.com with ESMTPSA id 98e67ed59e1d1-2e3e094a416sm1201300a91.50.2024.10.17.01.06.45
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 17 Oct 2024 01:06:47 -0700 (PDT)
-Date: Thu, 17 Oct 2024 08:06:39 +0000
-From: Pranjal Shrivastava <praan@google.com>
-To: Robin Murphy <robin.murphy@arm.com>
-Cc: Nicolin Chen <nicolinc@nvidia.com>, Joerg Roedel <joro@8bytes.org>,
-	Will Deacon <will@kernel.org>, Mostafa Saleh <smostafa@google.com>,
-	iommu@lists.linux.dev
-Subject: Re: [PATCH v3 2/2] iommu/arm-smmu-v3: Adopt arm_smmu_event in
- handlers
-Message-ID: <ZxDFj57n1AxBPESD@google.com>
-References: <Zvx+6qBY3og8lRWe@Asurada-Nvidia>
- <Zv8N6yIeNXao_Yqm@google.com>
- <Zv8gW9KjTcktgve1@Asurada-Nvidia>
- <ZwjZ9txpvqd8kUdS@google.com>
- <5eda3ba6-c35a-432b-be87-48bd8a0a3bf1@arm.com>
- <ZwkB4OTUChexImZd@google.com>
- <ZwkGzWSUIpuhHozl@google.com>
- <ec9e47cc-f3c2-4142-8395-3bbb8e055261@arm.com>
- <Zw61rP2F0sm_eDiK@google.com>
- <cac41a3d-b5fc-4269-8a87-a70cf33f410b@arm.com>
+	dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b="Qa7jKKny"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=ooZFelhoSfl2BFgixsMi8sLwlAHwUBMrJHJ+oP3pqnDaomkJagMPX3kvIm29nw8cdsMsCoYNxkKWjTfauVvfipmuZG6Suibjfo/zC5aY2EFRkYbX0XxbshB2lzkEB28WipuCpmG2uFu9xya8krOswO+VNtq2ghB6L7u5k8yrEtxrlNU9BfgGo4cqekbRz4lTD32Ak5EAoOH6eXyo5IwrZiTblQxuFZLQTyAWEfyHZY8zpErRoblaxHgilaSV8/LarZPWw8W14Z3+cNXe5uUiAd2kRuB3oxft6md6OmkMPCoJMVstwPBkPIDKxAnSabnaaOjDIyJQacbmWflKQz3ImQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=/gQqoWaswTTy9V22/y+xLGvI2ratpMHYLEIlSBQSJc8=;
+ b=aECEwYyOHSJmKyxZzpKOA6P6Jy5tn35ROn+IoOpRgntbvCApp00jxbh5py3UNy0WGjBH6svOSVt7It0lvw7kXWHhSQ6y5I0M3COG4EAbfQ5iWMfNm3hd+KcN7IoC1IKNrQlbEu6lOd23ic+xWmG5hSarmdAAiuoK21G8SumPQU5wDZiXAcfeDj6DnwA5cWQD7uN4E4LyazxsqOaT4m4JtZwNvkFC27xZ4bUJERvSdhwm1wvjCfBO1NBICmlQv5SAd4ETibj2fT1xMJR4EtQ+GAiEDCK8wc5WUoQHznfO/hszln3vB88WgcHYeoQg/hyi/HGFO9a92r5guvDrhOb0dA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=amd.com; dmarc=pass action=none header.from=amd.com; dkim=pass
+ header.d=amd.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=/gQqoWaswTTy9V22/y+xLGvI2ratpMHYLEIlSBQSJc8=;
+ b=Qa7jKKnyamJJRzlq7By8TyA1w57if9KjxPFzDZWH68S9YREvJLYf7b/GZZramQyuY2XJA85lhVr2sAGENV9qCWyZY3g2G0E6CLKbgt+WaEC6LR1sGcIU/yfwH4SE7UzV5oV/bo2J4OUD7bpWu0Y+szS8tIe/Ks0VN/YElbiLxC4=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=amd.com;
+Received: from DS7PR12MB6048.namprd12.prod.outlook.com (2603:10b6:8:9f::5) by
+ BY5PR12MB4162.namprd12.prod.outlook.com (2603:10b6:a03:201::11) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.8069.20; Thu, 17 Oct
+ 2024 11:03:42 +0000
+Received: from DS7PR12MB6048.namprd12.prod.outlook.com
+ ([fe80::6318:26e5:357a:74a5]) by DS7PR12MB6048.namprd12.prod.outlook.com
+ ([fe80::6318:26e5:357a:74a5%4]) with mapi id 15.20.8048.020; Thu, 17 Oct 2024
+ 11:03:42 +0000
+Message-ID: <b5284a48-9d40-45c2-8aa0-7a85627feb7a@amd.com>
+Date: Thu, 17 Oct 2024 16:33:33 +0530
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v2 6/8] iommu/amd: Enhance domain_alloc_user() to allocate
+ PASID capable domain
+To: "Tian, Kevin" <kevin.tian@intel.com>, Jason Gunthorpe <jgg@ziepe.ca>
+Cc: "iommu@lists.linux.dev" <iommu@lists.linux.dev>,
+ "joro@8bytes.org" <joro@8bytes.org>, "will@kernel.org" <will@kernel.org>,
+ "robin.murphy@arm.com" <robin.murphy@arm.com>,
+ "suravee.suthikulpanit@amd.com" <suravee.suthikulpanit@amd.com>,
+ "Liu, Yi L" <yi.l.liu@intel.com>,
+ "baolu.lu@linux.intel.com" <baolu.lu@linux.intel.com>,
+ "jacob.pan@linux.microsoft.com" <jacob.pan@linux.microsoft.com>
+References: <20240911101911.6269-1-vasant.hegde@amd.com>
+ <20240911101911.6269-7-vasant.hegde@amd.com>
+ <BN9PR11MB5276124F430867613D7117E88C452@BN9PR11MB5276.namprd11.prod.outlook.com>
+ <20241015124018.GG1825128@ziepe.ca>
+ <BN9PR11MB52769DE1B3AED678713550D18C462@BN9PR11MB5276.namprd11.prod.outlook.com>
+ <20241016152846.GC4020792@ziepe.ca>
+ <BN9PR11MB5276A8F6DFDB1DDBAFD9A0AA8C472@BN9PR11MB5276.namprd11.prod.outlook.com>
+Content-Language: en-US
+From: Vasant Hegde <vasant.hegde@amd.com>
+In-Reply-To: <BN9PR11MB5276A8F6DFDB1DDBAFD9A0AA8C472@BN9PR11MB5276.namprd11.prod.outlook.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: PN2PR01CA0152.INDPRD01.PROD.OUTLOOK.COM
+ (2603:1096:c01:26::7) To DS7PR12MB6048.namprd12.prod.outlook.com
+ (2603:10b6:8:9f::5)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <cac41a3d-b5fc-4269-8a87-a70cf33f410b@arm.com>
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: DS7PR12MB6048:EE_|BY5PR12MB4162:EE_
+X-MS-Office365-Filtering-Correlation-Id: 8a408435-3cbc-4ce7-e623-08dcee9b5cab
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;ARA:13230040|1800799024|376014|366016;
+X-Microsoft-Antispam-Message-Info:
+	=?utf-8?B?Vk1rS05TZGU5R21DMWx0azJBYXdxbVd4aVdzT3JXTk5sb2wxaEczVUxNUTA3?=
+ =?utf-8?B?RFBoOUlXeSsybzcwUGREUWlVN0Z0Q2kzWnVIYlJKTm0yVjh0ZGsvT0Rac0dF?=
+ =?utf-8?B?NUdlcitEcHZMN1V1Q2tvdXJuYXFFNy9zVTdrNGxLU1Bpb3BkdnExVEh5dUdH?=
+ =?utf-8?B?ajI0Vmx4dWRnSlJBS2JFS1ExbCtMN3JpcWRWNW5sUkhLUmltR1J1QTRpVFZ5?=
+ =?utf-8?B?dXpXL1U1Q0hZMDQ0VkJrTzZMWGpvSTdkT3VmaHRSSExWZGtpMWl2MEI0Yk5G?=
+ =?utf-8?B?N3JUM2lVclhneDE1NWZWRy91bUJLaGZOdENMMHB3Qnk2VlZKNkd0RHBQSFYx?=
+ =?utf-8?B?WUtvNUVZWHBIWHd4eHdSTUhKNnF6M0RyeTFsNTNpTTI5RXQ5T1NoZnAzLzNu?=
+ =?utf-8?B?ZGxlNEE4Ui9uSHhjUE5ZdklTVFArem1ZTUp1T0MycWVRVkZwdXkyV3BwVUM0?=
+ =?utf-8?B?MFlFRGtrL2hybVIxYkJlb05BY3NTd3k3cUxmTEZOa2FNaUROdHlPdXJLUUNN?=
+ =?utf-8?B?OU9QM2RlN042NUY3REp2M21mbS96UW5QdVhUSndWR29XWGxwRGowVUQxRWJz?=
+ =?utf-8?B?YldIT0dSVnlxZGNSbEpVZ1Y4eHFSMTBKNGZpZFVvZ2JMQm1aTit1UzJOREtu?=
+ =?utf-8?B?VXlIYm5JeE1zeEcxM2ZWSG9FaWJnZTJuMUN0ZGlwWXBRK3VaZVRzM0ZtMTFB?=
+ =?utf-8?B?YmlUWkpxZkJYcVN3VWN2ajk4MXlLR2NoM3dweEdvaU4xaUNjTVNpSWhKYUpk?=
+ =?utf-8?B?ZUhEZitlNFNkaWlRV0dRaVZJbXFXY3NrNjRtUlloem04WGRjZGRrSU9tMWNR?=
+ =?utf-8?B?M0psWHhLU255V2c0a24vdFVaV2JQVHdmQVBoUEZ5WTl6VGxtcDdyQlNUc0tl?=
+ =?utf-8?B?cnY5aUd6SUNNWFZTZDZaZjZrZHNTQmU0d1Z5QVBJSXNEeDhJWkV2aGhaRC9N?=
+ =?utf-8?B?UnF3S2EybnBiUmpSVVlxWDdqZGhOWFpqNnRpTXpSWEdaWXh0c3VmU3IzL1NQ?=
+ =?utf-8?B?dThKdmhwNk5JdXNFQ0F3QVcxK0dsN1QvL2FrSTlGOUtPMkcrcERIWWRicUlo?=
+ =?utf-8?B?bFp3My90Z3UyenY2dVpuYTAyMnlUT2hINk9QZFJJSTNVT0VvblNCNW5RU2xC?=
+ =?utf-8?B?YXlpRkdZWWFMZ1pPcW9md3Y3cmV6ZGUrbzhsd3c4R2hoaWdKcUVGWU9tMkwr?=
+ =?utf-8?B?SlJxYmlrSXZaL25lTnZYb2E3cmhKM3A1VnVnZWxEdGNKMnVpTVB3NDNsN1JC?=
+ =?utf-8?B?U3VIZEYyajVSWWg3RGdVcHY5T3JVTGh3c1NuNmRFSDNSTzZDeEdjME1qUXUv?=
+ =?utf-8?B?QkliNm92eXhZZWRxSnVrYU12VSs2MjJ4ek5NSHhYRVJaVTJPdFYvczMvMjFH?=
+ =?utf-8?B?aCtSbGgzWG8vdVFaT0RxWWcwNC9KMW85RjA3MU40bTZHWjFleXc0ZFJsRHhN?=
+ =?utf-8?B?aTVWemlabHFtZnV4YWR5TENnTklCSHp5NGVWemd4R2RGMkc2OEthN1I4d1VK?=
+ =?utf-8?B?anFNWjBYV1g0cDVML2ZRRHZha2gzS0d6Q2E2eU9remg3c0VSaVY2cWFOanI4?=
+ =?utf-8?B?dW5HdmttZk4rQnhNWGtadi9XcXU3WHdVWXFzYkgzVmVqSmZVREtWWVhCRmQ2?=
+ =?utf-8?B?MlNyQUtpbzkxc1hWV3hURFRHVC9tQTRtL0lNSDBkT3lBaXBQV3BCU3pnbmNu?=
+ =?utf-8?B?WDErRVdiMzZoa2xhY05kTURTcU1JVy9nY1kvajdFSUZZVXZiVS8vUFA0VG9V?=
+ =?utf-8?Q?EiJJ63c8mllVMPMEZkY+Np6BpSjbc+4Pa4mGSae?=
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DS7PR12MB6048.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(1800799024)(376014)(366016);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?utf-8?B?bTk1WkFwdkVNUTRudnhLNjVyMEw0bmJrM0p3N1FINUp0S1VnTERtaE5mbjY0?=
+ =?utf-8?B?QjRsSnZxd1EyTWl5MHk0SnRmcmxROW9aMWhPWE5Wd01XanAxNnNXejUxR2lW?=
+ =?utf-8?B?UlJFdlRhZ1BWK0lMd21WYlZ0ZkxoK0ZUQWhXRTFLWWxQSjJqbG1HN1Vsdzdq?=
+ =?utf-8?B?MzBYRGFWU0NQTHpLR0JPL2tadUc4YlFDd1dtZWpOSTQ2US91ejhWWXRib256?=
+ =?utf-8?B?aTdHRFJiZnIvdGxuaGhNalIrdXpDbm1SYmUzSTJjM3h0eTREZFZXQWkvcHZm?=
+ =?utf-8?B?NDIyRXpCODZ3c3JtZFZqalNaUkdKNE1hUE1yRk9qWWhpdE9KOFI2V2tVNVZ6?=
+ =?utf-8?B?NzkwYUpOblJCVS90S09aZ3hWL0VDUGJBLzlNY1pxM3Y4UVkvUk5lbGoreEV0?=
+ =?utf-8?B?MGYvbWwrcktUMXBBc0FoeGZoZklmM0tTQ2RtcWRJdmtOeE40clFGQ1ZwWE5D?=
+ =?utf-8?B?TmxDd041Y3c0VXhFWkFmT2hBd2wxZHh2UjVyY0ZSblllU1NXQ1hKU2M2ZlBi?=
+ =?utf-8?B?eTdNZkdiRGFOZVIraUcrTHZxZGEvSDNTdS9sank4VlRZWUp3VVVyM0RQejhS?=
+ =?utf-8?B?aGxWdmtYVEIxYnQxbDJJanpMcXZSMjRXK0o4QWZXRWlGdE5YWExlNUM1UHBh?=
+ =?utf-8?B?YmNZZjRJL2lickJsMmZ4Nmx4c0Z3MGNwbVg0aEJBTXhDVjNXRlpEWGxCTk1L?=
+ =?utf-8?B?U1dwcTlMbUhDVlNuM0QxU1hVeWFBMTUyYkVoZjJoMXZram9lK2FmbmhLUTdw?=
+ =?utf-8?B?NFhTamppZmR6aDlrUFF5Q0M0NTRkRHJ6SFFEVFhsNzlYSFIybE9vMTNwTitW?=
+ =?utf-8?B?dG5GY3NTWHpCRUpOZVJrZnZjeWQ3TS94ak9nTmQyU3VlcStjQTljSTFLdVdt?=
+ =?utf-8?B?MWRsMzBLckh1V1BlMW5aZ3NoLzJhUUtsSTZ6TGhTY2FUbkhsSzRlSkhzRTY5?=
+ =?utf-8?B?UVZtbGtRR3FsUTJaWkNWY3BJczk4SVprdW40VTFhOXBib0dKb1hTZ0VjQWx6?=
+ =?utf-8?B?Uy92VlBBVVFFVDlMU005RHZUbGtsQzVMb2tZYVZIU3JISEFjc244RXMxank1?=
+ =?utf-8?B?Z0w4d1hnTjB1Ly9GbUlFNllteGtZOXdoVm53NTZtR3dWenNVSVJaQVcwRXAv?=
+ =?utf-8?B?S003YWtvKzRHQXJCTnQ2anRBYkdHVWZJTjUvcjVKNndaSWFGSStLVXRzbmpS?=
+ =?utf-8?B?Wm5ycEg3NTN3MExNcHFLVkViRXh3MGlkdlJmNUdyNnhwR2ZlRTBIeU5OU0pH?=
+ =?utf-8?B?YzRjdVhCTEorS3JLZEZWa2ZlMXoweHNnbUxaSjNJNWFEaldBQnRUK0hYU0Vt?=
+ =?utf-8?B?SGJpUWlnbDl6MDRFckVsRU0rK281aEtzcFNGZDl6Y0R3aVNBMkpBMStYWnIy?=
+ =?utf-8?B?Qkp2WWh0VGRJaUNiMnJ3YWpBRzZzSVNHSndBRkM2dlhMekw3UXlyTUFJdzNt?=
+ =?utf-8?B?ZDNuUHV5USsyQmFKSFBqdUcvR2NrQkFLdm83QXRIUjcvazhUODJoSE51dUtj?=
+ =?utf-8?B?M2tCbkxyODVyY0lnVU8xelZ5K3c1RExZdit1ZEU0QkVJc3JnQ1FzL2xZN0FK?=
+ =?utf-8?B?Q2I4QVJ0Z2JmSVRjRnNxdSt2Y3JBbDVUbWR6RU5qMnFsdFQ4ZzlOZ2xIampP?=
+ =?utf-8?B?dVRkYXA1eHRPN0dWelJ0UEIvc0FqUnJObHZobU85SU5vYXg0MUtYWnB5TG5s?=
+ =?utf-8?B?MWEwMzVVZUhWUm5za3R3Y0dpZHhFR3MxbUFETzlNRHVvZnZvb29zVjVtZ1px?=
+ =?utf-8?B?bS8rR2ZQTkxJUC9FVkJTeVJackl6TjVmb1hNUUNXbHprb0Vqa3NUNm9aNnFr?=
+ =?utf-8?B?MUczRnFhYmJhRVJxUVhQWFM1dG5TZ0JnZkgrSlh4KzR4VzBhMVFnRWhyZFQ2?=
+ =?utf-8?B?bk4zWC9sUTI2MHAxOWR3SXF6aXE3TTNiUlg1aXU1UjVTSWwrSElLMWtnR1Zo?=
+ =?utf-8?B?azZLTjNzYXRETTc4dEt3MTZYcThUbTJpbmgzcmk0S0QwZmh0VGNqOW5wYUU0?=
+ =?utf-8?B?eDF3V0hqRWpLc0N3OUl6cVA5dUlDY1ljdmFsUlJLODRGOVJpZmt2RGVkV01a?=
+ =?utf-8?B?MTc4VlJnVElRVmFRMU9zajlNeXgvNThvdURRYzhncVZSRGlPWWp4Njc0SDJW?=
+ =?utf-8?Q?l3st7WXKRcEZNDZPifigbxIrP?=
+X-OriginatorOrg: amd.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 8a408435-3cbc-4ce7-e623-08dcee9b5cab
+X-MS-Exchange-CrossTenant-AuthSource: DS7PR12MB6048.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 17 Oct 2024 11:03:42.5074
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: 14j0kcLsKKM+pnAplUie1322MAyDErJWp0iNurKxg4Z73YXyeG7LJEYPqoij2qmBVahXhffp3WNWGqNlz4VAbA==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BY5PR12MB4162
 
-On Tue, Oct 15, 2024 at 09:03:54PM +0100, Robin Murphy wrote:
-> On 2024-10-15 7:34 pm, Pranjal Shrivastava wrote:
-> > Just a few things before I respin,
-> > On Fri, Oct 11, 2024 at 01:59:36PM +0100, Robin Murphy wrote:
-> > > On 2024-10-11 12:06 pm, Pranjal Shrivastava wrote:
-> > > > On Fri, Oct 11, 2024 at 10:45:52AM +0000, Pranjal Shrivastava wrote:
-> > > > > On Fri, Oct 11, 2024 at 11:21:48AM +0100, Robin Murphy wrote:
-> > > > > > On 2024-10-11 8:55 am, Pranjal Shrivastava wrote:
-> > > > > > > On Thu, Oct 03, 2024 at 03:53:15PM -0700, Nicolin Chen wrote:
-> > > > > > > > On Thu, Oct 03, 2024 at 09:34:35PM +0000, Pranjal Shrivastava wrote:
-> > > > > > > > > > The master and master_name are not that necessary to be in the
-> > > > > > > > > > arm_smmu_event. I would keep both of them as local variables in
-> > > > > > > > > > arm_smmu_handle_evt and pass master_name in to dump().
-> > > > > > > > > 
-> > > > > > > > > Hmm, right or maybe ONLY have the master_name in arm_smmu_event?
-> > > > > > > > 
-> > > > > > > > Just move both out of arm_smmu_event. Keep the master_name as a
-> > > > > > > > local variable like the "master". You'd just need to pass it in
-> > > > > > > > to the dump(). They both are in that same handle_evt().
-> > > > > > > > 
-> > > > > > > 
-> > > > > > > Ack.
-> > > > > > > 
-> > > > > > > > > > > Also, shall we rename it to `arm_smmu_read_evt_info` ?
-> > > > > > > > > > 
-> > > > > > > > > > I'd probably use arm_smmu_event_get_from_raw()? Trying to high-
-> > > > > > > > > > light struct arm_smmu_event v.s. u64 evt[EVTQ_ENT_DWORDS]. Yet,
-> > > > > > > > > > no strong feeling about that.
-> > > > > > > > > > 
-> > > > > > > > > 
-> > > > > > > > > Ack. How about `read_arm_smmu_event` :)
-> > > > > > > > > Unless, we wanna follow the arm_smmu_<func> convention?
-> > > > > > > > 
-> > > > > > > > I think it'd be nicer if we do.
-> > > > > > > > 
-> > > > > > > 
-> > > > > > > Ack. `arm_smmu_get_evt_from_raw` it is!
-> > > > > > 
-> > > > > > FWIW that sounds needlessly overcomplicated to me - the "raw" event array
-> > > > > > should be a member of arm_smmu_event itself, since it seems silly to have
-> > > > > > them separate with one pointing to the other when they have the exact same
-> > > > > > scope and lifetime anyway. There still shouldn't need to be more than a
-> > > > > > single logical step to process an evtq record into a finished
-> > > > > > arm_smmu_event, just that that processing is now going to go a bit further
-> > > > > > than simply le64_to_cpu().
-> > > > > 
-> > > > > Hmm, are you suggesting something like queue_remove_raw(q, event->raw)?
-> > > > > OR do you mean we should have our own queue_parse_evt(q, &event) that
-> > > > > parses out the raw event into an `arm_smmu_event` record eliminating the
-> > > > > need for the `arm_smmu_read_evt_info` altogether?
-> > > > > 
-> > > > > Because we'd still need to store the raw event anyway since we're still
-> > > > > logging the raw event.
-> > > > > 
-> > > > > I think we can go with the former, i.e. queue_remove_raw(q, event->raw)
-> > > > > and then use ``arm_smmu_read_evt_info` to populate other `event` fields
-> > > > 
-> > > > Based on your comment, I was thinking like the attached sample code.
-> > > > LMK if you were referring to something like that?
-> > > 
-> > > Ah, apologies, it had slipped my mind that queue_read() is already buried
-> > > two layers deep in an abstraction shared with the priq... so yeah, rather
-> > > than start trying to turn that inside-out, I guess the neatest approach is
-> > > to effectively flip this series instead - i.e. start with the minor shift
-> > > to:
-> > > 
-> > > 	struct arm_smmu_event evt;
-> > > 
-> > > 	while (!queue_remove_raw(q, evt.raw)) {
-> > > 		ret = arm_smmu_handle_evt(smmu, &evt);
-> > > 		...
-> > > 		dev_info(smmu->dev, "event 0x%02x received:\n", evt.id);
-> > > 		//etc.
-> > > 
-> > > and leave arm_smmu_handle_evt() decoding the event as both it and
-> > > arm_smmu_handle_ppr() already do, just now using the new structure instead
-> > > of locals. Then we can come in to factor out and enhance the unhandled event
-> > > report, and anything else specific to that reporting beyond the actual SMMU
-> > > event record, like device names and ratelimiting, can remain private to
-> > > arm_smmu_dump_event().
-> > 
-> > Quick clarification, the ratelimiting here was ONLY for logs or to limit
-> > the number of thread / loop executions?
+Hi Kevin,
+
+
+On 10/17/2024 11:41 AM, Tian, Kevin wrote:
+>> From: Jason Gunthorpe <jgg@ziepe.ca>
+>> Sent: Wednesday, October 16, 2024 11:29 PM
+>>
+>> On Wed, Oct 16, 2024 at 02:48:04AM +0000, Tian, Kevin wrote:
+>>>> From: Jason Gunthorpe <jgg@ziepe.ca>
+>>>> Sent: Tuesday, October 15, 2024 8:40 PM
+>>>>
+>>>> On Tue, Oct 15, 2024 at 08:41:48AM +0000, Tian, Kevin wrote:
+>>>>
+>>>>>> -	return do_iommu_domain_alloc(type, dev, flags,
+>> AMD_IOMMU_V1);
+>>>>>> +	/* Allocate v2 page table if IOMMU and device supports
+>> PASID. */
+>>>>>> +	if (flags & IOMMU_HWPT_ALLOC_PASID) {
+>>>>>> +		if (!amd_iommu_pasid_supported() ||
+>>>>>> +		    !pdev_pasid_supported(dev_data))
+>>>>>> +			return ERR_PTR(-EINVAL);
+>>>>>
+>>>>> Just check the iommu capability here? IMHO it's a sane case to first
+>>>>> create a PASID-compatible domain for a device which doesn't support
+>>>>> PASID and then attach the domain to a PASID-capable device later.
+>>>>
+>>>> The point of this series is to allow AMD to select the v1 format as
+>>>> often as possible because v1 has better performance than v2
+>>>
+>>> If the user wants better performance then it should not set the flag.
+>>
+>> Well, I do tend to agree with that, you mean remove the
+>> pdev_pasid_supported() ?
+>>
 > 
-> Yes, the ratelimit is purely for the printks, so once those are factored out
-> into a dedicated function it can move with them. The cond_resched() is what
-> keeps the loop itself well-behaved if there's a giant flood of events; we
-> never want to skip trying to handle any of them.
-> 
-> > > 
-> > > AFAICS the locking concern seems avoidable as well - we don't actually need
-> > > the whole arm_smmu_master in either case, just the device, so then end of
-> > > arm_smmu_handle_evt() could easily be a little simpler:
-> > > 
-> > > 	...
-> > > 	mutex_lock(&smmu->streams_mutex);
-> > > 	master = arm_smmu_find_master(smmu, sid);
-> > > 	if (master)
-> > > 		event->dev = get_device(master->dev);
-> > > 	mutex_unlock(&smmu->streams_mutex);
-> > > 
-> > > 	if (!event->dev)
-> > > 		return -EINVAL;
-> > 
-> > Thinking about this a little more, I guess there are a few paths that
-> > may return before we even get to the `mutex_lock(&smmu->streams_mutex)`
-> > For example: if (!event->stall) return -ENOTSUPP; and the default case
-> > return from the switch case. Which has the following implications:
-> > 
-> > 1. We might return from `arm_smmu_handle_evt` before logging the event
-> > 2. Even if we move the logging out of `arm_smmu_handle_evt` as presented
-> >     by Robin's snippet above, event->dev might still be NULL.
-> 
-> The point is that it *can* be NULL in general, and the logging must expect
-> that. Just move the arm_smmu_find_master() stanza to the top of
-> arm_smmu_handle_evt() to grab the device reference before any of the actual
-> handling may start wanting to bail out - same as you'll want to do for all
-> the other decoding as well - then we know it's either valid (and stable) or
-> NULL for the lifetime of the event through all subsequent processing. AFAICS
-> calling iommu_report_device_fault() under streams_mutex isn't meaningful in
-> itself, right now it just seems to be about protecting the inline
-> "master->dev" dereference against "master" going away.
+> yes
 
-Ahh, alright. Let me refactor that too then.
+Yeah. That should be fine I guess.  Will fix it.
 
-> 
-> We can still have multiple returns as appropriate in the actual handling
-> *after* collecting all the arm_smmu_event data, which is a big part of why
-> I've suggested keeping the same effective structure as currently - we have
-> one function to decode and try to handle the event, and based on the final
-> outcome of that function, we may then want to report if it wasn't handled
-> (subject to other constraints like ratelimiting). There's absolutely no need
-> to tie the control flow in knots attempting to nano-optimise that into a
-> tail call - using the returned value in the returned-to scope is natural,
-> simple and obvious.
-> 
+-Vasant
 
-Agreed.
-
-> Thanks,
-> Robin.
-
-Thanks,
-Pranjal
