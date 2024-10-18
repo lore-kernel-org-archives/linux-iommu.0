@@ -1,462 +1,161 @@
-Received: from mx0a-00069f02.pphosted.com (mx0a-00069f02.pphosted.com [205.220.165.32])
+Received: from NAM10-BN7-obe.outbound.protection.outlook.com (mail-bn7nam10on2050.outbound.protection.outlook.com [40.107.92.50])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C03D3205AD1
-	for <iommu@lists.linux.dev>; Fri, 18 Oct 2024 21:27:48 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.165.32
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1729286870; cv=none; b=Lkim2dyjvLuc83HF5wGl9oz0pVMmdZ7nxsOaj+IVGG/YSsaLox2XVm+13E1bfivNDwjiQ7AUfD5GeyAtp00Kp39zLyxJSBOWgMLA3QQrd9BFcnAYEsMv9VKSiUYTLyQcb0jDLHzX63fVBlJ+pb/exTWUPZzZ2CUa6LLffrGVeBQ=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1729286870; c=relaxed/simple;
-	bh=xnNSrhn6YkqFB3VBNpVKRCF4ANJnpGZ756ekAl8TenQ=;
-	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References; b=LiY7eTu2wloZDWUJgVpGptsmwKXVZ7sanDSYMiP5p/Wac3qQRdUa21R2pNGBMWOy69q0dmfMfBQJw57L9VJpSpcWGNq6LQ6OH+dersjM+if6lMq56/Rft/9WGMp4M9pA2TFWz1rpl/ZzMArc2mH95YyYDxaxxW8Z2bKB+HbCmdk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oracle.com; spf=pass smtp.mailfrom=oracle.com; dkim=pass (2048-bit key) header.d=oracle.com header.i=@oracle.com header.b=ZnkLjrEa; arc=none smtp.client-ip=205.220.165.32
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oracle.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=oracle.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 006BA7485
+	for <iommu@lists.linux.dev>; Fri, 18 Oct 2024 22:51:49 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.92.50
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1729291911; cv=fail; b=tGswBHDNdDAtlDEZnNDErZxp/oE57BeKA/w+WtP4PPNxB6j0/gD0z7w8Opiyl2JV3Qf6Avws7MZEsyjhytNhjnUBLG6pGyyCcd+RtepOuMN3ydmbD+WEd+n+3nfADsjhr2tmMNhCqpc59ulTqEPpx4AtXxg3IiXjbYA1uOSX2s8=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1729291911; c=relaxed/simple;
+	bh=cijnkhsgt5uohqIFr/YCl6S5tDY2wJBEZ+319Ymk1fI=;
+	h=Date:From:To:CC:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=WlL8NEGXqHgSEQL0IPqT1ekXL013jWYK/nQo7wNs4H6vy6wGL6dTfxVuW/aS+CC5Vpk6gvurdsvUZpIauc8s23lU3jpuv6O0Rs8JaR664p1Yg0aSNBNUM9AilJ1SpXakKseknOZZasXz2z7POw3lr83mTNohI107c7eRsHPLWtc=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=j6KXx2WC; arc=fail smtp.client-ip=40.107.92.50
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=oracle.com header.i=@oracle.com header.b="ZnkLjrEa"
-Received: from pps.filterd (m0246627.ppops.net [127.0.0.1])
-	by mx0b-00069f02.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 49IKBf0d015495;
-	Fri, 18 Oct 2024 21:27:47 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=cc
-	:date:from:in-reply-to:message-id:references:subject:to; s=
-	corp-2023-11-20; bh=tYC+UFll2lh6Kw3ARqMJCOgUvd8oUBtFSxpeDkXv/+g=; b=
-	ZnkLjrEa5RjLcHhrZc/i1rh0pZ0k5Vd7xRM2eaiQYzytfvb1N+Qj4JF05ksB3ODO
-	/DrGwmgi6+Yh83h0TGhqBuLRhyfV4obhnxqn/3ntM2Upz8GxoChW+6wxDsDGpho1
-	5Woi7oewPGOG++sBQExScWq2jBKBh9Fng9Na6w+wB1b2xr7rlTBNlr9rS5wpgIjw
-	xK6q+zGwzjmR1LEbFClKJFlQXbh+31W5PGOT8/1D2ff8I7AxIcuFM/WhG7bri83Z
-	AL20PAyWQ5HVwvBqfifmA3n4+yZjX6ozJM0xh1lu4nGSzNOtap3fTNBQT3cg+ok9
-	bhjAJN/Vhz/NPD/lQ8BopA==
-Received: from iadpaimrmta02.imrmtpd1.prodappiadaev1.oraclevcn.com (iadpaimrmta02.appoci.oracle.com [147.154.18.20])
-	by mx0b-00069f02.pphosted.com (PPS) with ESMTPS id 427gq7st8y-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-	Fri, 18 Oct 2024 21:27:47 +0000 (GMT)
-Received: from pps.filterd (iadpaimrmta02.imrmtpd1.prodappiadaev1.oraclevcn.com [127.0.0.1])
-	by iadpaimrmta02.imrmtpd1.prodappiadaev1.oraclevcn.com (8.18.1.2/8.18.1.2) with ESMTP id 49IJ54hP027117;
-	Fri, 18 Oct 2024 21:27:46 GMT
-Received: from pps.reinject (localhost [127.0.0.1])
-	by iadpaimrmta02.imrmtpd1.prodappiadaev1.oraclevcn.com (PPS) with ESMTPS id 427fjjq9ua-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-	Fri, 18 Oct 2024 21:27:46 +0000
-Received: from iadpaimrmta02.imrmtpd1.prodappiadaev1.oraclevcn.com (iadpaimrmta02.imrmtpd1.prodappiadaev1.oraclevcn.com [127.0.0.1])
-	by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 49ILRcVr023093;
-	Fri, 18 Oct 2024 21:27:45 GMT
-Received: from ca-dev63.us.oracle.com (ca-dev63.us.oracle.com [10.211.8.221])
-	by iadpaimrmta02.imrmtpd1.prodappiadaev1.oraclevcn.com (PPS) with ESMTP id 427fjjq9r5-10;
-	Fri, 18 Oct 2024 21:27:45 +0000
-From: Steve Sistare <steven.sistare@oracle.com>
-To: iommu@lists.linux.dev
-Cc: Jason Gunthorpe <jgg@nvidia.com>, Kevin Tian <kevin.tian@intel.com>,
-        Nicolin Chen <nicolinc@nvidia.com>,
-        Steve Sistare <steven.sistare@oracle.com>
-Subject: [PATCH V4 9/9] iommufd: map file selftest
-Date: Fri, 18 Oct 2024 14:27:36 -0700
-Message-Id: <1729286856-127844-10-git-send-email-steven.sistare@oracle.com>
-X-Mailer: git-send-email 1.8.3.1
-In-Reply-To: <1729286856-127844-1-git-send-email-steven.sistare@oracle.com>
+	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="j6KXx2WC"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=xU09xPYc8kqGjQHPUy3Yxg597aMxU18IL7TUSfw9LAZYiFx5FsTEYUV6mhJ8wXZMtgamOBHMbpZJlvLxvdkFatIadkMj8iTaM4TvlLX0O0MERuZeO4PTopZEZYoYkUJXn+2WMVIfDesPyTElznq04WYK74FJsHTujLKSi2sAT3nIT6R+hcP/l209TcNEAQs44Pb3M5dKWVfLFN0KhxkrSpLwrtYbvNKXlKgSoeDoXe38HP8jAXKv/SbNrDaCUWPAvURk0fF3deBC5MfeYCWLp3k7Rrrr1gpKQDSJRP9hMZqiv1LeOUmzfuhs6V48Vaqj/ze9sBmSyX0pUpGXhTIw4Q==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=BXVccTb78YPBdL8XOyj7dYGXo2k0W4xgBXY8uVsp5tY=;
+ b=xup3Ti5wg5VfoZ6ZhLhV7fIw8cBCk8vZ4eI+fZ7eY5TY52RVfvCUtNPdBtmJNFKH3ItrJZkseaFKrPv60GLVlmgP4bG/K5+w5xz4yv2tDUS6hIzkG3ZQM5xMRioKikIfa5KdyaimwVUN+lpuPVgzYIo4k6n62RCoqncceGjLLTq11PFeNf8ylkLGq+PIWHw8xSznzM252MoDVEuUJG6CBDQWHbfeGJ9Z3KT+vY7YtccwH0qRINPeqkWmIFvQkNhXJ7Nji3SXR2n3UV2hoK6/bxKoTQPCa6kmBhi67qFRtAEhBNpWBuituCgi8WXOq1PZccNgWZBG6W982mJJGS/u4w==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 216.228.118.232) smtp.rcpttodomain=oracle.com smtp.mailfrom=nvidia.com;
+ dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
+ dkim=none (message not signed); arc=none (0)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=BXVccTb78YPBdL8XOyj7dYGXo2k0W4xgBXY8uVsp5tY=;
+ b=j6KXx2WCcVx+WChhHQzNSlZGQ2wDUTgpBPnnj2ucou+g5B5D2kOyW3AYuY8I9eonWEuqsJzPZgnEJ2+YyeyHHy2sy+t5+fs80kmQASXY3k+R55s+dp9Q3PpSWeAwWt/MT9JqZuVdJ3nZ347K8s7LDllzBNswRWuE5UnY6BU2ilnIbD4Am59n7KU+cTisZ7v1P8p1oBuBBLTJ+iyTnDidlscaB8fGhdOIZysWHTSdWyJwQghOJeZv68DNxrCeujwQTcsWVj/yqCpB/iEGHARGCGHaCInlYS/rkYxLXJZo6pNO3N88jP7TQK5dvFIuPvsUnG3Yr5/PjJ57pYaJUxlYQg==
+Received: from BYAPR05CA0089.namprd05.prod.outlook.com (2603:10b6:a03:e0::30)
+ by SA1PR12MB8858.namprd12.prod.outlook.com (2603:10b6:806:385::7) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.8048.21; Fri, 18 Oct
+ 2024 22:51:45 +0000
+Received: from SJ5PEPF000001F5.namprd05.prod.outlook.com
+ (2603:10b6:a03:e0:cafe::c2) by BYAPR05CA0089.outlook.office365.com
+ (2603:10b6:a03:e0::30) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.8093.8 via Frontend
+ Transport; Fri, 18 Oct 2024 22:51:45 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.118.232)
+ smtp.mailfrom=nvidia.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=nvidia.com;
+Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
+ 216.228.118.232 as permitted sender) receiver=protection.outlook.com;
+ client-ip=216.228.118.232; helo=mail.nvidia.com; pr=C
+Received: from mail.nvidia.com (216.228.118.232) by
+ SJ5PEPF000001F5.mail.protection.outlook.com (10.167.242.73) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.8069.17 via Frontend Transport; Fri, 18 Oct 2024 22:51:45 +0000
+Received: from drhqmail203.nvidia.com (10.126.190.182) by mail.nvidia.com
+ (10.127.129.5) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1544.4; Fri, 18 Oct
+ 2024 15:51:45 -0700
+Received: from drhqmail202.nvidia.com (10.126.190.181) by
+ drhqmail203.nvidia.com (10.126.190.182) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.1544.4; Fri, 18 Oct 2024 15:51:44 -0700
+Received: from Asurada-Nvidia (10.127.8.11) by mail.nvidia.com
+ (10.126.190.181) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1544.4 via Frontend
+ Transport; Fri, 18 Oct 2024 15:51:44 -0700
+Date: Fri, 18 Oct 2024 15:51:43 -0700
+From: Nicolin Chen <nicolinc@nvidia.com>
+To: Steve Sistare <steven.sistare@oracle.com>
+CC: <iommu@lists.linux.dev>, Jason Gunthorpe <jgg@nvidia.com>, Kevin Tian
+	<kevin.tian@intel.com>
+Subject: Re: [PATCH V4 9/9] iommufd: map file selftest
+Message-ID: <ZxLmfyfXJ2wN72DD@Asurada-Nvidia>
 References: <1729286856-127844-1-git-send-email-steven.sistare@oracle.com>
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.293,Aquarius:18.0.1051,Hydra:6.0.680,FMLib:17.12.62.30
- definitions=2024-10-18_16,2024-10-17_01,2024-09-30_01
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 mlxlogscore=999 adultscore=0
- spamscore=0 malwarescore=0 bulkscore=0 suspectscore=0 mlxscore=0
- phishscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2409260000 definitions=main-2410180137
-X-Proofpoint-ORIG-GUID: 1_Aa_47xBaDBGtL2POzqOLp0xmbR_Rrt
-X-Proofpoint-GUID: 1_Aa_47xBaDBGtL2POzqOLp0xmbR_Rrt
+ <1729286856-127844-10-git-send-email-steven.sistare@oracle.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
+MIME-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: inline
+In-Reply-To: <1729286856-127844-10-git-send-email-steven.sistare@oracle.com>
+X-NV-OnPremToCloud: ExternallySecured
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: SJ5PEPF000001F5:EE_|SA1PR12MB8858:EE_
+X-MS-Office365-Filtering-Correlation-Id: 28b977f7-da5f-4233-7846-08dcefc77106
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam:
+	BCL:0;ARA:13230040|36860700013|1800799024|82310400026|376014;
+X-Microsoft-Antispam-Message-Info:
+	=?us-ascii?Q?6IPtHyCcRWod+sVXDF2gh6UU4FwKFrZvdw4Bcbg2WXsmP0ncRMO3kE70cGO7?=
+ =?us-ascii?Q?w7je8qY9Yur5AiyN1E1/YgWQDKsjk+SQg5tmFuXyHeq/in+VEx3q9Wtn0BzG?=
+ =?us-ascii?Q?jtTSLRlm0nakrN5jf7EeOWkr8N7S1kOfwjz0GQuJ6UBz6/Y2XqY9dlwqd5bM?=
+ =?us-ascii?Q?/5/tm+h9kKOSdGm6gzsQ/ZGSNA/0IDuEREiJHDtncShwNJvhlV3LZj4iTo/4?=
+ =?us-ascii?Q?rGcgqpDeklRAeBMwnAycc3wQrDylAJPXDDpe1OnnbRxaiIsp1P0A9et3TqpY?=
+ =?us-ascii?Q?aSqQF0j+9GClPeda+mnUBdD4hpfqdIyr4JZLwrGqG+1gN8ZpfdqutrL5R9K3?=
+ =?us-ascii?Q?JleUwFLVzZjahDcGVmR07x9ZlMIai5Q0k4XOivvshoFM/x/hSvDzX0KA4aoD?=
+ =?us-ascii?Q?pQHdxfQdMf0JlLwbHdN4gIT2HpTaOgaWUjftGLVh6BibVjdP7SFMAsUdsjrS?=
+ =?us-ascii?Q?lgRHegwIzaFp7OBiiDaL76rWzDdhSgpTdMjgfsiEatepZUBjzpTJOnAPY06R?=
+ =?us-ascii?Q?9CHHDqUtFf6DM3Zb7KbAUdBdmJgF0o8rYtsSLS8kgWnlqle1GpRJ9EeF0qeS?=
+ =?us-ascii?Q?UdjHmjFczypKoBrrsxIWUqcmmcwgAJEwF3uVHjqLLeUKpd471wuEE4ZDHWeV?=
+ =?us-ascii?Q?zMi8pNDHOCNgAoOicfGBskz1lrOBNWCwmTpuQanMKzUQygnjGPpKuKAME1oM?=
+ =?us-ascii?Q?WqPn+aU/ydPATkx1VyxE9UgYEwAYS/OGi04cw0a/I1Blcw+ZXmKKPkFRhNzA?=
+ =?us-ascii?Q?NI9xBLiXssKZjuxUMYlZYnmAfqLW9fGuMHxIgMxZucValIctDX3JyqKcP6F+?=
+ =?us-ascii?Q?55ck8aD7jSs6XjWvX9+aTv1xOezemQUmEE9NqUQqqnWF5CyM4FtcBKrdPyG5?=
+ =?us-ascii?Q?ho3ycq0sqRGJ4pmIJXWyrlfzhyLsO+CeHLg3DzbQGJfZac8VUUHXP3Hka+SG?=
+ =?us-ascii?Q?CkZ9l6XWoDrE/C5dVmjtNQUyF/MDGbjPociXE6XvaydzFrMJ4ttYOv7arByC?=
+ =?us-ascii?Q?Ot+6tBRnxwe32Udzu+YLHAjvU7en7tOLuIyBfhj9aL+S4xDZhimFveUcTP3B?=
+ =?us-ascii?Q?6Y8LM2GPgItkmeBJ96LykEJjq/7xZIYAZpDyvIewlWyJoJ2hcI0InvVFVvkY?=
+ =?us-ascii?Q?3lczP8/cr570kCYPc3w4BeM9XNH4iW2vZSJwX9ttb0ml2kXYsWk3nXYUUm5X?=
+ =?us-ascii?Q?dp15SQcraLDnV7t/+uda+AxjQ/PemOAVfpaXkwENN3tNop0tKlxMZok2D8J+?=
+ =?us-ascii?Q?PcGMPUf2x4l/iQOBssQHUYYw7IInFQuUgY00FOMLe/PhoKMdbAeCraiFeQ6y?=
+ =?us-ascii?Q?ghuoxo6ZFtjmkgvZ3596V1c/hNl9ebK7avtoPcg0zh99BJQe9CwMM1mq7IEL?=
+ =?us-ascii?Q?l5W5erIMaRavg0Is7xqJ47YZnJNTYOVlwg9QaxBYtWHdrnIjwg=3D=3D?=
+X-Forefront-Antispam-Report:
+	CIP:216.228.118.232;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc7edge1.nvidia.com;CAT:NONE;SFS:(13230040)(36860700013)(1800799024)(82310400026)(376014);DIR:OUT;SFP:1101;
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 18 Oct 2024 22:51:45.3391
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: 28b977f7-da5f-4233-7846-08dcefc77106
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.118.232];Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-AuthSource: SJ5PEPF000001F5.namprd05.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SA1PR12MB8858
 
-Add test cases to exercise IOMMU_IOAS_MAP_FILE.
+On Fri, Oct 18, 2024 at 02:27:36PM -0700, Steve Sistare wrote:
+> 
+> Add test cases to exercise IOMMU_IOAS_MAP_FILE.
+[...]
+> +static int _test_ioctl_ioas_map_file(int fd, unsigned int ioas_id, int mfd,
+> +                                    size_t start, size_t length, __u64 *iova,
+> +                                    unsigned int flags)
+> +{
+> +       struct iommu_ioas_map_file cmd = {
+> +               .size = sizeof(cmd),
+> +               .flags = flags,
+> +               .ioas_id = ioas_id,
+> +               .fd = mfd,
+> +               .start = start,
+> +               .length = length,
+> +       };
+> +       int ret;
+> +
+> +       if (flags & IOMMU_IOAS_MAP_FIXED_IOVA)
+> +               cmd.iova = *iova;
+> +
+> +       ret = ioctl(fd, IOMMU_IOAS_MAP_FILE, &cmd);
 
-Signed-off-by: Steve Sistare <steven.sistare@oracle.com>
----
- tools/testing/selftests/iommu/iommufd.c       | 151 +++++++++++++++++++++++---
- tools/testing/selftests/iommu/iommufd_utils.h |  41 +++++++
- 2 files changed, 177 insertions(+), 15 deletions(-)
+For a new ioctl command, There should a TEST_LENGTH in
+TEST_F(iommufd, cmd_length).
 
-diff --git a/tools/testing/selftests/iommu/iommufd.c b/tools/testing/selftests/iommu/iommufd.c
-index 4927b9a..3525670 100644
---- a/tools/testing/selftests/iommu/iommufd.c
-+++ b/tools/testing/selftests/iommu/iommufd.c
-@@ -3,6 +3,8 @@
- #include <stdlib.h>
- #include <sys/mman.h>
- #include <sys/eventfd.h>
-+#include <sys/syscall.h>
-+#include <asm/unistd.h>
- 
- #define __EXPORTED_HEADERS__
- #include <linux/vfio.h>
-@@ -10,6 +12,8 @@
- #include "iommufd_utils.h"
- 
- static unsigned long HUGEPAGE_SIZE;
-+static void *mfd_buffer;
-+static int mfd;
- 
- #define MOCK_PAGE_SIZE (PAGE_SIZE / 2)
- #define MOCK_HUGE_PAGE_SIZE (512 * MOCK_PAGE_SIZE)
-@@ -33,6 +37,19 @@ static unsigned long get_huge_page_size(void)
- 	return strtoul(buf, NULL, 10);
- }
- 
-+static void *memfd_mmap(size_t length, int prot, int flags, int *mfd_p)
-+{
-+	int mfd_flags = (flags & MAP_HUGETLB) ? MFD_HUGETLB : 0;
-+	int mfd = memfd_create("buffer", mfd_flags);
-+
-+	if (mfd <= 0)
-+		return MAP_FAILED;
-+	if (ftruncate(mfd, length))
-+		return MAP_FAILED;
-+	*mfd_p = mfd;
-+	return mmap(0, length, prot, flags, mfd, 0);
-+}
-+
- static __attribute__((constructor)) void setup_sizes(void)
- {
- 	void *vrc;
-@@ -49,6 +66,9 @@ static __attribute__((constructor)) void setup_sizes(void)
- 	vrc = mmap(buffer, BUFFER_SIZE, PROT_READ | PROT_WRITE,
- 		   MAP_SHARED | MAP_ANONYMOUS | MAP_FIXED, -1, 0);
- 	assert(vrc == buffer);
-+
-+	mfd_buffer = memfd_mmap(BUFFER_SIZE, PROT_READ | PROT_WRITE, MAP_SHARED,
-+				&mfd);
- }
- 
- FIXTURE(iommufd)
-@@ -1372,6 +1392,7 @@ static void check_access_rw(struct __test_metadata *_metadata, int fd,
- {
- 	unsigned int mock_domains;
- 	bool hugepages;
-+	bool file;
- };
- 
- FIXTURE_SETUP(iommufd_mock_domain)
-@@ -1410,26 +1431,45 @@ static void check_access_rw(struct __test_metadata *_metadata, int fd,
- {
- 	.mock_domains = 1,
- 	.hugepages = false,
-+	.file = false,
- };
- 
- FIXTURE_VARIANT_ADD(iommufd_mock_domain, two_domains)
- {
- 	.mock_domains = 2,
- 	.hugepages = false,
-+	.file = false,
- };
- 
- FIXTURE_VARIANT_ADD(iommufd_mock_domain, one_domain_hugepage)
- {
- 	.mock_domains = 1,
- 	.hugepages = true,
-+	.file = false,
- };
- 
- FIXTURE_VARIANT_ADD(iommufd_mock_domain, two_domains_hugepage)
- {
- 	.mock_domains = 2,
- 	.hugepages = true,
-+	.file = false,
- };
- 
-+FIXTURE_VARIANT_ADD(iommufd_mock_domain, one_domain_file)
-+{
-+	.mock_domains = 1,
-+	.hugepages = false,
-+	.file = true,
-+};
-+
-+FIXTURE_VARIANT_ADD(iommufd_mock_domain, one_domain_file_hugepage)
-+{
-+	.mock_domains = 1,
-+	.hugepages = true,
-+	.file = true,
-+};
-+
-+
- /* Have the kernel check that the user pages made it to the iommu_domain */
- #define check_mock_iova(_ptr, _iova, _length)                                \
- 	({                                                                   \
-@@ -1455,7 +1495,10 @@ static void check_access_rw(struct __test_metadata *_metadata, int fd,
- 		}                                                            \
- 	})
- 
--TEST_F(iommufd_mock_domain, basic)
-+static void
-+test_basic_mmap(struct __test_metadata *_metadata,
-+		struct _test_data_iommufd_mock_domain *self,
-+		const struct _fixture_variant_iommufd_mock_domain *variant)
- {
- 	size_t buf_size = self->mmap_buf_size;
- 	uint8_t *buf;
-@@ -1478,12 +1521,52 @@ static void check_access_rw(struct __test_metadata *_metadata, int fd,
- 	test_err_ioctl_ioas_map(EFAULT, buf, buf_size, &iova);
- }
- 
-+static void
-+test_basic_file(struct __test_metadata *_metadata,
-+		struct _test_data_iommufd_mock_domain *self,
-+		const struct _fixture_variant_iommufd_mock_domain *variant)
-+{
-+	size_t buf_size = self->mmap_buf_size;
-+	uint8_t *buf;
-+	__u64 iova;
-+	int mfd_tmp;
-+	int prot = PROT_READ | PROT_WRITE;
-+
-+	/* Simple one page map */
-+	test_ioctl_ioas_map_file(mfd, 0, PAGE_SIZE, &iova);
-+	check_mock_iova(mfd_buffer, iova, PAGE_SIZE);
-+
-+	buf = memfd_mmap(buf_size, prot, MAP_SHARED, &mfd_tmp);
-+	ASSERT_NE(MAP_FAILED, buf);
-+
-+	/* EFAULT half way through mapping */
-+	ASSERT_EQ(0, munmap(buf + buf_size / 2, buf_size / 2));
-+	test_err_ioctl_ioas_map_file(EFAULT, 0, buf_size, &iova);
-+
-+	/* EFAULT on first page */
-+	ASSERT_EQ(0, munmap(buf, buf_size / 2));
-+	test_err_ioctl_ioas_map_file(EFAULT, 0, buf_size, &iova);
-+
-+	close(mfd_tmp);
-+}
-+
-+TEST_F(iommufd_mock_domain, basic)
-+{
-+	if (variant->file)
-+		test_basic_file(_metadata, self, variant);
-+	else
-+		test_basic_mmap(_metadata, self, variant);
-+}
-+
- TEST_F(iommufd_mock_domain, ro_unshare)
- {
- 	uint8_t *buf;
- 	__u64 iova;
- 	int fd;
- 
-+	if (variant->file)
-+		SKIP(return, "redundant test");
-+
- 	fd = open("/proc/self/exe", O_RDONLY);
- 	ASSERT_NE(-1, fd);
- 
-@@ -1513,9 +1596,13 @@ static void check_access_rw(struct __test_metadata *_metadata, int fd,
- 	unsigned int start;
- 	unsigned int end;
- 	uint8_t *buf;
-+	int prot = PROT_READ | PROT_WRITE;
-+	int mfd;
- 
--	buf = mmap(0, buf_size, PROT_READ | PROT_WRITE, self->mmap_flags, -1,
--		   0);
-+	if (variant->file)
-+		buf = memfd_mmap(buf_size, prot, MAP_SHARED, &mfd);
-+	else
-+		buf = mmap(0, buf_size, prot, self->mmap_flags, -1, 0);
- 	ASSERT_NE(MAP_FAILED, buf);
- 	check_refs(buf, buf_size, 0);
- 
-@@ -1532,7 +1619,12 @@ static void check_access_rw(struct __test_metadata *_metadata, int fd,
- 			size_t length = end - start;
- 			__u64 iova;
- 
--			test_ioctl_ioas_map(buf + start, length, &iova);
-+			if (variant->file) {
-+				test_ioctl_ioas_map_file(mfd, start, length,
-+							 &iova);
-+			} else {
-+				test_ioctl_ioas_map(buf + start, length, &iova);
-+			}
- 			check_mock_iova(buf + start, iova, length);
- 			check_refs(buf + start / PAGE_SIZE * PAGE_SIZE,
- 				   end / PAGE_SIZE * PAGE_SIZE -
-@@ -1544,6 +1636,8 @@ static void check_access_rw(struct __test_metadata *_metadata, int fd,
- 	}
- 	check_refs(buf, buf_size, 0);
- 	ASSERT_EQ(0, munmap(buf, buf_size));
-+	if (variant->file)
-+		close(mfd);
- }
- 
- TEST_F(iommufd_mock_domain, all_aligns_copy)
-@@ -1554,9 +1648,13 @@ static void check_access_rw(struct __test_metadata *_metadata, int fd,
- 	unsigned int start;
- 	unsigned int end;
- 	uint8_t *buf;
-+	int prot = PROT_READ | PROT_WRITE;
-+	int mfd;
- 
--	buf = mmap(0, buf_size, PROT_READ | PROT_WRITE, self->mmap_flags, -1,
--		   0);
-+	if (variant->file)
-+		buf = memfd_mmap(buf_size, prot, MAP_SHARED, &mfd);
-+	else
-+		buf = mmap(0, buf_size, prot, self->mmap_flags, -1, 0);
- 	ASSERT_NE(MAP_FAILED, buf);
- 	check_refs(buf, buf_size, 0);
- 
-@@ -1575,7 +1673,12 @@ static void check_access_rw(struct __test_metadata *_metadata, int fd,
- 			uint32_t mock_stdev_id;
- 			__u64 iova;
- 
--			test_ioctl_ioas_map(buf + start, length, &iova);
-+			if (variant->file) {
-+				test_ioctl_ioas_map_file(mfd, start, length,
-+							 &iova);
-+			} else {
-+				test_ioctl_ioas_map(buf + start, length, &iova);
-+			}
- 
- 			/* Add and destroy a domain while the area exists */
- 			old_id = self->hwpt_ids[1];
-@@ -1596,15 +1699,18 @@ static void check_access_rw(struct __test_metadata *_metadata, int fd,
- 	}
- 	check_refs(buf, buf_size, 0);
- 	ASSERT_EQ(0, munmap(buf, buf_size));
-+	if (variant->file)
-+		close(mfd);
- }
- 
- TEST_F(iommufd_mock_domain, user_copy)
- {
-+	void *buf = variant->file ? mfd_buffer : buffer;
- 	struct iommu_test_cmd access_cmd = {
- 		.size = sizeof(access_cmd),
- 		.op = IOMMU_TEST_OP_ACCESS_PAGES,
- 		.access_pages = { .length = BUFFER_SIZE,
--				  .uptr = (uintptr_t)buffer },
-+				  .uptr = (uintptr_t)buf },
- 	};
- 	struct iommu_ioas_copy copy_cmd = {
- 		.size = sizeof(copy_cmd),
-@@ -1623,9 +1729,13 @@ static void check_access_rw(struct __test_metadata *_metadata, int fd,
- 
- 	/* Pin the pages in an IOAS with no domains then copy to an IOAS with domains */
- 	test_ioctl_ioas_alloc(&ioas_id);
--	test_ioctl_ioas_map_id(ioas_id, buffer, BUFFER_SIZE,
--			       &copy_cmd.src_iova);
--
-+	if (variant->file) {
-+		test_ioctl_ioas_map_id_file(ioas_id, mfd, 0, BUFFER_SIZE,
-+					    &copy_cmd.src_iova);
-+	} else {
-+		test_ioctl_ioas_map_id(ioas_id, buf, BUFFER_SIZE,
-+				       &copy_cmd.src_iova);
-+	}
- 	test_cmd_create_access(ioas_id, &access_cmd.id,
- 			       MOCK_FLAGS_ACCESS_CREATE_NEEDS_PIN_PAGES);
- 
-@@ -1635,12 +1745,17 @@ static void check_access_rw(struct __test_metadata *_metadata, int fd,
- 			&access_cmd));
- 	copy_cmd.src_ioas_id = ioas_id;
- 	ASSERT_EQ(0, ioctl(self->fd, IOMMU_IOAS_COPY, &copy_cmd));
--	check_mock_iova(buffer, MOCK_APERTURE_START, BUFFER_SIZE);
-+	check_mock_iova(buf, MOCK_APERTURE_START, BUFFER_SIZE);
- 
- 	/* Now replace the ioas with a new one */
- 	test_ioctl_ioas_alloc(&new_ioas_id);
--	test_ioctl_ioas_map_id(new_ioas_id, buffer, BUFFER_SIZE,
--			       &copy_cmd.src_iova);
-+	if (variant->file) {
-+		test_ioctl_ioas_map_id_file(new_ioas_id, mfd, 0, BUFFER_SIZE,
-+					    &copy_cmd.src_iova);
-+	} else {
-+		test_ioctl_ioas_map_id(new_ioas_id, buf, BUFFER_SIZE,
-+				       &copy_cmd.src_iova);
-+	}
- 	test_cmd_access_replace_ioas(access_cmd.id, new_ioas_id);
- 
- 	/* Destroy the old ioas and cleanup copied mapping */
-@@ -1654,7 +1769,7 @@ static void check_access_rw(struct __test_metadata *_metadata, int fd,
- 			&access_cmd));
- 	copy_cmd.src_ioas_id = new_ioas_id;
- 	ASSERT_EQ(0, ioctl(self->fd, IOMMU_IOAS_COPY, &copy_cmd));
--	check_mock_iova(buffer, MOCK_APERTURE_START, BUFFER_SIZE);
-+	check_mock_iova(buf, MOCK_APERTURE_START, BUFFER_SIZE);
- 
- 	test_cmd_destroy_access_pages(
- 		access_cmd.id, access_cmd.access_pages.out_access_pages_id);
-@@ -1667,6 +1782,9 @@ static void check_access_rw(struct __test_metadata *_metadata, int fd,
- {
- 	uint32_t ioas_id;
- 
-+	if (variant->file)
-+		SKIP(return, "redundant test");
-+
- 	test_ioctl_ioas_alloc(&ioas_id);
- 
- 	test_cmd_mock_domain_replace(self->stdev_ids[0], ioas_id);
-@@ -1697,6 +1815,9 @@ static void check_access_rw(struct __test_metadata *_metadata, int fd,
- {
- 	int i;
- 
-+	if (variant->file)
-+		SKIP(return, "redundant test");
-+
- 	for (i = 0; i != variant->mock_domains; i++) {
- 		uint32_t hwpt_id[2];
- 		uint32_t stddev_id;
-diff --git a/tools/testing/selftests/iommu/iommufd_utils.h b/tools/testing/selftests/iommu/iommufd_utils.h
-index 40f6f14..7bc664e 100644
---- a/tools/testing/selftests/iommu/iommufd_utils.h
-+++ b/tools/testing/selftests/iommu/iommufd_utils.h
-@@ -589,6 +589,47 @@ static int _test_ioctl_ioas_unmap(int fd, unsigned int ioas_id, uint64_t iova,
- 	EXPECT_ERRNO(_errno, _test_ioctl_ioas_unmap(self->fd, self->ioas_id, \
- 						    iova, length, NULL))
- 
-+static int _test_ioctl_ioas_map_file(int fd, unsigned int ioas_id, int mfd,
-+				     size_t start, size_t length, __u64 *iova,
-+				     unsigned int flags)
-+{
-+	struct iommu_ioas_map_file cmd = {
-+		.size = sizeof(cmd),
-+		.flags = flags,
-+		.ioas_id = ioas_id,
-+		.fd = mfd,
-+		.start = start,
-+		.length = length,
-+	};
-+	int ret;
-+
-+	if (flags & IOMMU_IOAS_MAP_FIXED_IOVA)
-+		cmd.iova = *iova;
-+
-+	ret = ioctl(fd, IOMMU_IOAS_MAP_FILE, &cmd);
-+	*iova = cmd.iova;
-+	return ret;
-+}
-+
-+#define test_ioctl_ioas_map_file(mfd, start, length, iova_p)                 \
-+	ASSERT_EQ(0, _test_ioctl_ioas_map_file(self->fd, self->ioas_id, mfd, \
-+					       start, length, iova_p,        \
-+					       IOMMU_IOAS_MAP_WRITEABLE |    \
-+						   IOMMU_IOAS_MAP_READABLE))
-+
-+#define test_err_ioctl_ioas_map_file(_errno, start, length, iova_p)	     \
-+	EXPECT_ERRNO(_errno,                                                 \
-+		     _test_ioctl_ioas_map_file(self->fd, self->ioas_id, mfd, \
-+					       start, length, iova_p,        \
-+					       IOMMU_IOAS_MAP_WRITEABLE |    \
-+						   IOMMU_IOAS_MAP_READABLE))
-+
-+#define test_ioctl_ioas_map_id_file(ioas_id, mfd, start, length, iova_p)     \
-+	ASSERT_EQ(0, _test_ioctl_ioas_map_file(self->fd, ioas_id, mfd,       \
-+					  start, length, iova_p,             \
-+					  IOMMU_IOAS_MAP_WRITEABLE |         \
-+						  IOMMU_IOAS_MAP_READABLE))
-+
- static int _test_ioctl_set_temp_memory_limit(int fd, unsigned int limit)
- {
- 	struct iommu_test_cmd memlimit_cmd = {
--- 
-1.8.3.1
+Also, we might need something in iommufd_fail_nth.c too.
 
+Thanks
+Nicolin
