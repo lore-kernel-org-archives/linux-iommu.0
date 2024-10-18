@@ -1,89 +1,66 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.14])
+Received: from verein.lst.de (verein.lst.de [213.95.11.211])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EE43620E31C
-	for <iommu@lists.linux.dev>; Fri, 18 Oct 2024 04:05:03 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.14
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B91F620E30D
+	for <iommu@lists.linux.dev>; Fri, 18 Oct 2024 05:27:42 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=213.95.11.211
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1729224305; cv=none; b=Nhh4li/urCKuyUpiw8QxYrBxPAy1mjiBQhrrhLe7ImIUpfKWKPrNH1v+uJYMkG+5ulTdGoMxPwKwTVKTqQ0W7q+WXWqjMNjLue3Sg7fKYC6b6Eu7Ti4+4e3Jr5ufxG1kD9IcSjK0hbdH6iAU1xdVlflgqN8F8l1ITlQmZoe++mQ=
+	t=1729229264; cv=none; b=Wh4s3NLQ4icceEZEVwJzW7p76oUxalhSBpfPHICB/Oo1JYH7AY/zaXxGRzdwwJv/WnoTXN5kXS1hyFGwMinv+2Q4Jb8EBIC9prSOaxffiok110GDAajes4LfQ0xUS+Xs9BwfitK8mj/IamiXe+c89RWMn3TUspzTYtv7nPMHP5U=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1729224305; c=relaxed/simple;
-	bh=RhO9HgF2c4ywndxIJOQRONYb70dEOOOvx6A3K/zv4Ik=;
-	h=Message-ID:Date:MIME-Version:Cc:Subject:To:References:From:
-	 In-Reply-To:Content-Type; b=ObSF3f7WB5uP2Ym4BxSBC9LD1nyXFfv0QzR94nPpf8avK3FusW16ihR9h4kRu8cjglClBNGJxaQ9C6pao83D0ubPO8/vSLgmAOwVhdx+P+IIDnG3AR8KjAJakJo3nRNip+cRnDquaM3RUOLI/AxTBRDL1dxjtPZjlzvwvLp4icw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=m8kAt/sG; arc=none smtp.client-ip=198.175.65.14
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="m8kAt/sG"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1729224304; x=1760760304;
-  h=message-id:date:mime-version:cc:subject:to:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=RhO9HgF2c4ywndxIJOQRONYb70dEOOOvx6A3K/zv4Ik=;
-  b=m8kAt/sGmFELTBlr9VUmacgYeXmbiEakjiSoK5RD9/rG8vltgc3pPpAa
-   ptuzveUrOLOWwapu0OhrsW9CfIkdftZp6Vy7h5b9GxTaJW31A0iwj1Cya
-   amju06Q062TaEo85mneeifB1/I+0p62HH6Ef3te+McsX62dAbrlxaJosQ
-   /MrDMSYgEanieuYzWg7wLCxZWarKtMeRPX2h2ZuURGNdQXySFGmSSh1+k
-   Av5twMqQCAgcbix5hMiqd9oQJhXezyxyOoZlmrYUzTnpqO5H8lHMboZwZ
-   ufL9d4f9lGoOzBNGj8bAuByumBC+ZyV8YvcKj4b7EMPDkqmmHKTCMD8dN
-   Q==;
-X-CSE-ConnectionGUID: QxfGgkz7RySk8ZIQhrI6gA==
-X-CSE-MsgGUID: 6IFnasK4QOCPExHesAaKEA==
-X-IronPort-AV: E=McAfee;i="6700,10204,11228"; a="32541419"
-X-IronPort-AV: E=Sophos;i="6.11,212,1725346800"; 
-   d="scan'208";a="32541419"
-Received: from fmviesa002.fm.intel.com ([10.60.135.142])
-  by orvoesa106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Oct 2024 21:05:03 -0700
-X-CSE-ConnectionGUID: iUvrY8QnQ3uu6G6DOwuUKg==
-X-CSE-MsgGUID: 7MfdidbQRyaDzCcna61b4Q==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.11,212,1725346800"; 
-   d="scan'208";a="102051337"
-Received: from unknown (HELO [10.238.0.51]) ([10.238.0.51])
-  by fmviesa002-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Oct 2024 21:05:00 -0700
-Message-ID: <51b7c19e-fdbb-4e2c-8d52-44a336aeec10@linux.intel.com>
-Date: Fri, 18 Oct 2024 12:04:57 +0800
+	s=arc-20240116; t=1729229264; c=relaxed/simple;
+	bh=zuvQWdEGQt2takvATObbj2UEmAahbnLWjYKE3v8ZmAQ=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=oJuTtyyi2cguVFxyswgdOLLwiNKsi+IghdetCWsRisXHgCPr9xV0OHdFrHlHzl3FNZ9kZu8ETNclGMeGb1Tbkw1kYrr5zgq4mZwMbANHx1H09kxU4UnZt1PpTsQlfOzpQwBBpw+S2Zqu5JlCnGUpSX8dBv4wnZh3LuEJCOvop9E=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=lst.de; spf=pass smtp.mailfrom=lst.de; arc=none smtp.client-ip=213.95.11.211
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=lst.de
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=lst.de
+Received: by verein.lst.de (Postfix, from userid 2407)
+	id 98A6A227A8E; Fri, 18 Oct 2024 07:27:38 +0200 (CEST)
+Date: Fri, 18 Oct 2024 07:27:38 +0200
+From: Christoph Hellwig <hch@lst.de>
+To: Sean Anderson <sean.anderson@linux.dev>
+Cc: Christoph Hellwig <hch@lst.de>, iommu@lists.linux.dev,
+	linux-trace-kernel@vger.kernel.org,
+	Masami Hiramatsu <mhiramat@kernel.org>,
+	linux-kernel@vger.kernel.org, Robin Murphy <robin.murphy@arm.com>,
+	Mathieu Desnoyers <mathieu.desnoyers@efficios.com>,
+	Steven Rostedt <rostedt@goodmis.org>,
+	Marek Szyprowski <m.szyprowski@samsung.com>
+Subject: Re: [PATCH 2/3] dma-mapping: Use trace_dma_alloc for dma_alloc*
+ instead of using trace_dma_map
+Message-ID: <20241018052738.GA20045@lst.de>
+References: <20241017181354.2834674-1-sean.anderson@linux.dev> <20241017181354.2834674-3-sean.anderson@linux.dev>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Cc: baolu.lu@linux.intel.com, will@kernel.org, robin.murphy@arm.com,
- suravee.suthikulpanit@amd.com, jgg@ziepe.ca, yi.l.liu@intel.com,
- kevin.tian@intel.com, jacob.pan@linux.microsoft.com,
- Jason Gunthorpe <jgg@nvidia.com>
-Subject: Re: [PATCH v3 12/12] iommu: Create __iommu_alloc_identity_domain()
-To: Vasant Hegde <vasant.hegde@amd.com>, iommu@lists.linux.dev,
- joro@8bytes.org
-References: <20241017140137.6028-1-vasant.hegde@amd.com>
- <20241017140137.6028-13-vasant.hegde@amd.com>
-Content-Language: en-US
-From: Baolu Lu <baolu.lu@linux.intel.com>
-In-Reply-To: <20241017140137.6028-13-vasant.hegde@amd.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20241017181354.2834674-3-sean.anderson@linux.dev>
+User-Agent: Mutt/1.5.17 (2007-11-01)
 
-On 2024/10/17 22:01, Vasant Hegde wrote:
-> From: Jason Gunthorpe<jgg@nvidia.com>
-> 
-> Consolidate all the code to create an IDENTITY domain into one
-> function. This the legacy __iommu_domain_alloc() path from all core code
-> paths, and preps it for final removal.
-> 
-> BLOCKED/IDENTITY/PAGING are now always allocated via a type specific
-> function.
-> 
-> Signed-off-by: Jason Gunthorpe<jgg@nvidia.com>
-> Signed-off-by: Vasant Hegde<vasant.hegde@amd.com>
-> ---
->   drivers/iommu/iommu.c | 43 ++++++++++++++++++++++++++++---------------
->   1 file changed, 28 insertions(+), 15 deletions(-)
+On Thu, Oct 17, 2024 at 02:13:53PM -0400, Sean Anderson wrote:
+> +DECLARE_EVENT_CLASS(_dma_alloc,
+>  	TP_PROTO(struct device *dev, void *virt_addr, dma_addr_t dma_addr,
+>  		 size_t size, enum dma_data_direction dir, gfp_t flags,
+>  		 unsigned long attrs),
+> @@ -149,7 +149,60 @@ TRACE_EVENT(dma_alloc,
+>  		decode_dma_attrs(__entry->attrs))
+>  );
+>  
+> -TRACE_EVENT(dma_free,
+> +DEFINE_EVENT(_dma_alloc, dma_alloc,
+> +	TP_PROTO(struct device *dev, void *virt_addr, dma_addr_t dma_addr,
+> +		 size_t size, enum dma_data_direction dir, gfp_t flags,
+> +		 unsigned long attrs),
+> +	TP_ARGS(dev, virt_addr, dma_addr, size, dir, flags, attrs));
+> +
+> +DEFINE_EVENT(_dma_alloc, dma_alloc_pages,
 
-Reviewed-by: Lu Baolu <baolu.lu@linux.intel.com>
+The scheme we used in XFS (fs/xfs/xfs_trace.h) for the event classes is
+to give the class a _class postdix, and use macros to avoid the repeated
+DEFINE_EVENT boilerplate.  Any chance you could rewrite this to use
+a similar scheme?
 
-Thanks,
-baolu
