@@ -1,130 +1,59 @@
-Received: from mx0a-0031df01.pphosted.com (mx0a-0031df01.pphosted.com [205.220.168.131])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7D193185940;
-	Fri, 18 Oct 2024 06:20:37 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.168.131
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0A61B178389;
+	Fri, 18 Oct 2024 07:18:28 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1729232438; cv=none; b=NE4ZxLjXWakepy97KTKPRMFTCTGtm9kYqAjfofjczNJHU1dCv+L49v5ytbdgsQwEiUTFbPAID3jLZ/9oHr4peJIxK+nV7Wgcv8+XMvUipguYiIgky2jczGoOzUItIeaOQk9YIfOy2zxSOgqu1W3nDpRZHmI1mB2YYcvVVaeUwAw=
+	t=1729235909; cv=none; b=MKpHmD25OFnrfjsa/4Gmk+2cq4JPjXykC/Yndq5qZzbfQZi9I7JneKObdUmKwOsMqezmm6vD8Tb+SesPf3O4J/N2E7ZLTrtiLLCMhpScpWI83WJwHK0/ykVekF6DW9liRNaNhnoZ8sE3cJqIiWDRm/l+nj9Day2nI8qt57r5TU4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1729232438; c=relaxed/simple;
-	bh=xu+jS3B9BumegwpGTJUP/35naim9XMDQS2UkCTpvZc8=;
-	h=Message-ID:Date:MIME-Version:Subject:To:CC:References:From:
-	 In-Reply-To:Content-Type; b=SfAfT/4CqmszXYsIS6S4wq4hm4hQIc9vXcyp7NckLU75cex01zDAr1Lo9oVyi2P0DlOV01JHkdmHe5uHLSXTY+HNhFl18ILoHXYUP8A5DNJG5Nv5BonzOGRO9Qrw+2Ge1xcyhrO1eeimhjT71uhOXYPXOBSNGOsxar4YscWto5Q=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com; spf=pass smtp.mailfrom=quicinc.com; dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b=TS/mQuex; arc=none smtp.client-ip=205.220.168.131
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=quicinc.com
+	s=arc-20240116; t=1729235909; c=relaxed/simple;
+	bh=ehOETYkuKIotttopeo2dULCGCO76r/IrdQtVGIyU9K0=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=umObgNnm2JXd9d/Hx72iRRKF+liC8I1zatoim6xmT5xJBaho8Ehb4kL0jKqCLt+tqJUwCajVXY06Xo3eGHUxnjZTxtnm04Lh+H+eSzxIwSNkzushFiPVkmsQQ6YSY+Ww2DLb/jZosX6WCZ4AHhW4a0C+JGuxNdRL1q3nXoMAV6U=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=l/h6/L+8; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b="TS/mQuex"
-Received: from pps.filterd (m0279864.ppops.net [127.0.0.1])
-	by mx0a-0031df01.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 49HINIVu001599;
-	Fri, 18 Oct 2024 06:20:27 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=quicinc.com; h=
-	cc:content-transfer-encoding:content-type:date:from:in-reply-to
-	:message-id:mime-version:references:subject:to; s=qcppdkim1; bh=
-	aeoZjJOUtXcClbaluWeCJ1NdBvrinphCpZdaTSo19EY=; b=TS/mQuexw6rxbHCL
-	9rPmkcvesMCz1319HcvKt+Uv9OSWm8Pwi1D8xjwbYxRYb7CJCRXU95Ma3DU2rkUk
-	fvYu5HfmkdCqpQCzvzMSv8Pp49fN/EmHtQOYvRFkHZyDxMdiU2OJtVkQN05DNo0J
-	Fpkkh1tabrkSZktOevC8EWf4qbv0cABcXABjsIZLcEK08igZMexwAJmIXcjfWomM
-	6WB92bL8CE97gpWYNLZnTBUnr3tC1Ck7/BnogvkYcrTYhBjMpdE2VMbM5+f50z4o
-	wXOJyT0vUvM0PrXr8pDE4HFyZOK1h2ScL7jfAVb+U87Oq/OmdhRWy1y++Vi6wWwK
-	FJJcqg==
-Received: from nalasppmta04.qualcomm.com (Global_NAT1.qualcomm.com [129.46.96.20])
-	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 42ajm5d2kv-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Fri, 18 Oct 2024 06:20:27 +0000 (GMT)
-Received: from nalasex01b.na.qualcomm.com (nalasex01b.na.qualcomm.com [10.47.209.197])
-	by NALASPPMTA04.qualcomm.com (8.18.1.2/8.18.1.2) with ESMTPS id 49I6KQqb002882
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Fri, 18 Oct 2024 06:20:26 GMT
-Received: from [10.239.132.41] (10.80.80.8) by nalasex01b.na.qualcomm.com
- (10.47.209.197) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1544.9; Thu, 17 Oct
- 2024 23:20:23 -0700
-Message-ID: <ed4209a8-fb37-4354-a717-60dc1b5c29ab@quicinc.com>
-Date: Fri, 18 Oct 2024 14:20:20 +0800
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="l/h6/L+8"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 02C99C4CEC3;
+	Fri, 18 Oct 2024 07:18:27 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1729235908;
+	bh=ehOETYkuKIotttopeo2dULCGCO76r/IrdQtVGIyU9K0=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=l/h6/L+87yLd4I9FZNmo0d8rCaZygT91GgQHJsBNzvO/qcqUUasBaUGncoZvxo5KY
+	 WUOqCXAfTmRwkuWO1gSrQvr5xjSx4LnZ9QtHqMd+Ed4pyaC1rvxAyZ66UH4lg7oZHg
+	 cFxbwFuF//rPcD4lh2oF8ugZ6zmyq/bdg47ZVXO+DZ89g1X4WY+S7q53BynkpWrwRm
+	 0av0e+JOkSnLrgGVHmVqrmW9KyLsfAa5xIT/XoZIyZhFUzisxEFhCOcSkLxXI2We7f
+	 O8oIoWgyJE5WR1Zh/XNSNvy1nwagnpyFdwpEoB6t/Tt9Y+JEjz+s6MI4c6H9Z0YMHd
+	 /pHB1k71WBNvQ==
+Date: Fri, 18 Oct 2024 09:18:24 +0200
+From: Krzysztof Kozlowski <krzk@kernel.org>
+To: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+Cc: Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>, 
+	Joerg Roedel <joro@8bytes.org>, Rob Herring <robh@kernel.org>, 
+	Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, 
+	Rob Clark <robdclark@gmail.com>, linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev, 
+	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, linux-arm-msm@vger.kernel.org
+Subject: Re: [PATCH] dt-bindings: iommu: arm,smmu: Add SAR2130P compatible
+Message-ID: <pzbwj6e4oc2oufacybzmcjlrnhbk6wwgk3ebyyg7fdldgttqtn@fvvqr2nbjpvg>
+References: <20241017-sar2130p-iommu-v1-1-29d75f91fcf5@linaro.org>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v2 4/4] arm64: dts: qcom: qcs615: add the APPS SMMU node
-To: Konrad Dybcio <konrad.dybcio@oss.qualcomm.com>, <andersson@kernel.org>,
-        <konradybcio@kernel.org>, <robh@kernel.org>, <krzk+dt@kernel.org>,
-        <conor+dt@kernel.org>, <robimarko@gmail.com>, <will@kernel.org>,
-        <robin.murphy@arm.com>, <joro@8bytes.org>
-CC: <linux-arm-msm@vger.kernel.org>, <devicetree@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, <iommu@lists.linux.dev>
-References: <20241015081603.30643-1-quic_qqzhou@quicinc.com>
- <20241015081603.30643-5-quic_qqzhou@quicinc.com>
- <ac5081ce-e2e4-4201-bd7c-eb4ec2cf7e2d@oss.qualcomm.com>
-From: Qingqing Zhou <quic_qqzhou@quicinc.com>
-In-Reply-To: <ac5081ce-e2e4-4201-bd7c-eb4ec2cf7e2d@oss.qualcomm.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 8bit
-X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
- nalasex01b.na.qualcomm.com (10.47.209.197)
-X-QCInternal: smtphost
-X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
-X-Proofpoint-GUID: PGT6mhWlywbQJ9cEAVkhvXQ6NHJkptkk
-X-Proofpoint-ORIG-GUID: PGT6mhWlywbQJ9cEAVkhvXQ6NHJkptkk
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.293,Aquarius:18.0.1039,Hydra:6.0.680,FMLib:17.12.60.29
- definitions=2024-09-06_09,2024-09-06_01,2024-09-02_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 adultscore=0 mlxlogscore=999
- mlxscore=0 impostorscore=0 lowpriorityscore=0 malwarescore=0
- priorityscore=1501 spamscore=0 suspectscore=0 clxscore=1015 phishscore=0
- bulkscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.19.0-2409260000 definitions=main-2410180038
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <20241017-sar2130p-iommu-v1-1-29d75f91fcf5@linaro.org>
 
+On Thu, Oct 17, 2024 at 09:06:36PM +0300, Dmitry Baryshkov wrote:
+> Document compatible for ARM-500 SMMU controller on SAR2130P platform.
 
+s/SAR2130P/Qualcomm SAR2130P/
 
-在 10/18/2024 4:05 AM, Konrad Dybcio 写道:
-> On 15.10.2024 10:16 AM, Qingqing Zhou wrote:
->> Add the APPS SMMU node for QCS615 platform. Add the dma-ranges
->> to limit DMA address range to 36bit width to align with system
->> architecture.
->>
->> Signed-off-by: Qingqing Zhou <quic_qqzhou@quicinc.com>
->> ---
->>  arch/arm64/boot/dts/qcom/qcs615.dtsi | 74 ++++++++++++++++++++++++++++
->>  1 file changed, 74 insertions(+)
->>
->> diff --git a/arch/arm64/boot/dts/qcom/qcs615.dtsi b/arch/arm64/boot/dts/qcom/qcs615.dtsi
->> index 027c5125f36b..fcba83fca7cf 100644
->> --- a/arch/arm64/boot/dts/qcom/qcs615.dtsi
->> +++ b/arch/arm64/boot/dts/qcom/qcs615.dtsi
->> @@ -379,6 +379,7 @@
->>  	soc: soc@0 {
->>  		compatible = "simple-bus";
->>  		ranges = <0 0 0 0 0x10 0>;
->> +		dma-ranges = <0 0 0 0 0x10 0>;
->>  		#address-cells = <2>;
->>  		#size-cells = <2>;
->>  
->> @@ -524,6 +525,79 @@
->>  			reg = <0x0 0x0c3f0000 0x0 0x400>;
->>  		};
->>  
->> +		apps_smmu: iommu@15000000 {
->> +			compatible = "qcom,qcs615-smmu-500", "qcom,smmu-500", "arm,mmu-500";
->> +			reg = <0x0 0x15000000 0x0 0x80000>;
->> +			#iommu-cells = <2>;
->> +			#global-interrupts = <1>;
->> +
->> +			interrupts = <GIC_SPI 65 IRQ_TYPE_LEVEL_HIGH>,
->> +					<GIC_SPI 94 IRQ_TYPE_LEVEL_HIGH>,
->> +					<GIC_SPI 95 IRQ_TYPE_LEVEL_HIGH>,
-> 
-> The list seems perfectly sorted, which is suspicious.. if we set
-> i = n - #global-interrupts, interrupt[i] signifies an error in the i-th
-> context bank. If the order is wrong, we'll get bogus reports
-Thanks for the review, the list refers to Qualcomm Interrupts design spec, checking this platform again, the list is right, first line is global interrupt and the others are context interrupts with right order.
-> 
-> Also, this is not aligned properly ('<' under '<')
-Got it, will update and align the spaces in next version.
-> 
-> Konrad
+You also need to update the if:then: sections.
+
+Best regards,
+Krzysztof
 
