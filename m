@@ -1,117 +1,113 @@
-Received: from mail-lj1-f169.google.com (mail-lj1-f169.google.com [209.85.208.169])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.15])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 64B934D8BC
-	for <iommu@lists.linux.dev>; Fri, 18 Oct 2024 02:45:24 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.169
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6E7CF291E
+	for <iommu@lists.linux.dev>; Fri, 18 Oct 2024 03:10:50 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.15
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1729219526; cv=none; b=f0czLEvCmWdSaVTnnYDEBVhFQ6X+sXee1OSmdlrNxeydJ/3X2slx91wqcSaB/3ITumv6/q2QicQLAeGjWu0VU4R8uKZ1XmVo1F5cUnFvM4GEO1nob8CxmsGhGhEizngwi1u2Ew3orYVLXBDVY4eHeyB3GLX3NPRmpYGOpaPR5Ww=
+	t=1729221052; cv=none; b=B6IKVdHkXAUvqQn9AJiJYCxGQymKNFCs0dOgBCfFLSAlupwymfIbgvZmMGqEB6HCuev+PnE4C4fnSquvCAUr3ayQAfYIn2olCElAKebFifHqbg1dwFT5d+o+2cGA++zR5dM652xZxk7+1w6IL+PcMR3CWneHPF12KjPZWcsGPnI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1729219526; c=relaxed/simple;
-	bh=kgRRZiy9FfZN7xD7EZSFKYhFZvRCjUnO4G3r4bM18nU=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=brw4/2Iv79UdUa8yIlVKyXj1sonYu0jMRl/Pc2EV3iDmMM3jhuo5FfOJNmxU8OUVEHQNXRISz8H9nuPJpgDk7jzk0myLhmzwdJ06alsF7TGMTjpKdBQQQFX0tVbw+JgiqgjINRj2LoXMnBf5o9V96tgS84C6Gp9JERuUTRk2R+M=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org; spf=pass smtp.mailfrom=linaro.org; dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b=lei/pF9R; arc=none smtp.client-ip=209.85.208.169
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linaro.org
+	s=arc-20240116; t=1729221052; c=relaxed/simple;
+	bh=vIoJ2cvDwDJM42nkGDfYZGuhyiL+RbClbcwuAr0eHDs=;
+	h=Message-ID:Date:MIME-Version:Cc:Subject:To:References:From:
+	 In-Reply-To:Content-Type; b=htBSNi4IK4QHyIUG3VY7J6b5HZNhL3iPZmDtcKRF5x/Rjm54q+eavcJUlw2zT301OdBgmAqRar75E1Ks9zT5z4pb3pHvfdxRMRxJG/wRmf2j+1WNd9kPP0Uuixx3eGw9b5YHfkA5ff1IIr+A/7va7gt9vgtUGBr8MvaZHbs7X2g=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=fvkT+92D; arc=none smtp.client-ip=192.198.163.15
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="lei/pF9R"
-Received: by mail-lj1-f169.google.com with SMTP id 38308e7fff4ca-2fb3debdc09so14244811fa.3
-        for <iommu@lists.linux.dev>; Thu, 17 Oct 2024 19:45:24 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1729219522; x=1729824322; darn=lists.linux.dev;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=1sLZ/lXwGBM2rahMvEDIQo5diSLBoxj3foQMEQZCG+M=;
-        b=lei/pF9RSS4wg9l16IbsB/JMb7fx04kpROzJLFJD9DIYpn15VTYsGvzX5S6lKyFc9L
-         eKUSydWn4EDkX1zUUSWPeWHLz1++ngdLFBQs6xpSJLPbyeITLTIGk2PTJmDVs+ZPorR0
-         rnvaRPZDPnnmlJwnmYiCoaEOxD4yLpVku9HLLIDEinkymH578bhgr2L225VQdiK7muC1
-         G60WmRpFO1xnhFCoQdSOxMva8Aho7EwjHFtrkJ3Tg5j1EgKdP00zsz2UKwJ2Z26SD3/O
-         hpG5FmzARATj5BVg4RZmoNAlCG5Dh58QMRaUoQ/zcQjrkfWYxfuRGHrNq9kPGnLZCFf9
-         h9yA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1729219522; x=1729824322;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=1sLZ/lXwGBM2rahMvEDIQo5diSLBoxj3foQMEQZCG+M=;
-        b=rBUYsTwaPMdQBnPemUjlpF8afMD/vlhwJsVwOQfsJFLmVlFaqPl1KGQgBgYAGPsEc2
-         YpQsc/+DJYpx9S6q+C9CYJY8T56bUoikykSckkxl/DSIM7i0miGO6Vl8U/M8r4i8nE2N
-         uapIu4qd7E+D7rYxQWHili4pGroR5bfRzXIRNqalaVf+PywWLpVOlAd58pi3/UmlMr8V
-         XIQOFYGj/X9PyAP8UY3+6pWtPXGaLfgTJEVi0s3X1hSgbCQaTfLzov4EEWZiM74LGEHR
-         bglUz3mBBCDTRAxp+xOlBwDPueBW9T9Anl24HlHNCiGvAd3l5m6Id/CHL7VxGTse6bEC
-         tbxw==
-X-Forwarded-Encrypted: i=1; AJvYcCVgbaA3+i3LuaYNHKSK+A55inZoSG9QR7nAHzQZ6CZax5CHpCR1i0hsdor12j8hzPtyYvcEXg==@lists.linux.dev
-X-Gm-Message-State: AOJu0YxZ9ijASwcsZqY2SzJ7r1I+6rYqsOyjExjmCSPUv44w4jRLTkNh
-	k7hGiQ55IhQ3mc/Q2chJu92rg8E+ZIPHIROeT0phw3jWJmtZaVcuxwOtni+Jb7IuS1GyEpKJyZK
-	zXxc1fWvYsPgBYNOQw9gW0WXHPmSzZ2CVHaYViw==
-X-Google-Smtp-Source: AGHT+IE4lNRH1NWbi5vrC+GoEkZzjuYwAofdC4w+Awg53/xnT+cp6AFOUD/q+symJRS/APkqXdj2/T+NOFXcw+CS00A=
-X-Received: by 2002:a05:6512:128f:b0:539:f1ce:5fa8 with SMTP id
- 2adb3069b0e04-53a1550b9e6mr438878e87.49.1729219522198; Thu, 17 Oct 2024
- 19:45:22 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="fvkT+92D"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1729221051; x=1760757051;
+  h=message-id:date:mime-version:cc:subject:to:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=vIoJ2cvDwDJM42nkGDfYZGuhyiL+RbClbcwuAr0eHDs=;
+  b=fvkT+92D1JdmABPxfFHwXEO2rI0iukYsiBTCFx2D9PJHccQd9T52shGD
+   gyYM4ZL/Sgr4rxyaGwyhDZVyrCECG2roqz0bkumkcxEKqIEZTxqSdl/Iu
+   A30oMllQmnKRAiJyeqKQw0x4v6X61mx/8Gb80TP+MdTf+uWDC3p4vDhGU
+   RuaYFzsO+6QmNg5efLkfgVWsgFenBKCeZAjc7D2MIaE9XIE3oemlxBcw2
+   KVAxNHKXs6DgBU+JGucJl1N61eQ2J4CcaycevOBdjhoLLp86ls6Ett3Ox
+   fjTBfBtUuO17BBTLu0NKSgnoYrYsLNE7Bxvo8WRSYH5KQuglyXuYGv18t
+   A==;
+X-CSE-ConnectionGUID: x7e07RzGQPS9q69hD/nqvA==
+X-CSE-MsgGUID: T4VFEQQrSmiB2YooL2ORtw==
+X-IronPort-AV: E=McAfee;i="6700,10204,11228"; a="28871790"
+X-IronPort-AV: E=Sophos;i="6.11,212,1725346800"; 
+   d="scan'208";a="28871790"
+Received: from fmviesa010.fm.intel.com ([10.60.135.150])
+  by fmvoesa109.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Oct 2024 20:10:50 -0700
+X-CSE-ConnectionGUID: HciKyT69RqmUl/1X3M6FNA==
+X-CSE-MsgGUID: bYC/7C29TZeVRsEGmhEvyA==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.11,212,1725346800"; 
+   d="scan'208";a="79088859"
+Received: from unknown (HELO [10.238.0.51]) ([10.238.0.51])
+  by fmviesa010-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Oct 2024 20:10:47 -0700
+Message-ID: <fce1b1b7-6cab-4f3d-a215-fe1b38df3e9e@linux.intel.com>
+Date: Fri, 18 Oct 2024 11:10:45 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <20240702063444.105814-1-baolu.lu@linux.intel.com>
- <20240702063444.105814-8-baolu.lu@linux.intel.com> <CABQgh9EeKtYuu+vTTM0fwaKrLxdyC355MQxN8o8_OL9Y1NkE8A@mail.gmail.com>
- <20241015125420.GK1825128@ziepe.ca> <CABQgh9E+AnuyJgcM9tf1gEOUqcC_QSrA__Xha9sKYZp=NVRwhQ@mail.gmail.com>
- <20241016152503.GB4020792@ziepe.ca> <CABQgh9FCJcOa0G0Kj__NUm-Q8C9uH4ud04XcHv+3c48T2qEnug@mail.gmail.com>
- <20241017120518.GI4020792@ziepe.ca> <CABQgh9EnEqDKkxg3VUgjSqBzz27h8B3Ct4w=A0vR6JK=d7fXHQ@mail.gmail.com>
- <20241017130805.GA926121@ziepe.ca> <f218230c-ae01-4168-b36e-5e502de6b3db@linux.intel.com>
-In-Reply-To: <f218230c-ae01-4168-b36e-5e502de6b3db@linux.intel.com>
-From: Zhangfei Gao <zhangfei.gao@linaro.org>
-Date: Fri, 18 Oct 2024 10:45:11 +0800
-Message-ID: <CABQgh9GU4xp=7Svs_Ni=bvNKECKKUjHgq4d-FjT5Y_4wu44kDA@mail.gmail.com>
-Subject: Re: [PATCH v8 07/10] iommufd: Fault-capable hwpt attach/detach/replace
-To: Baolu Lu <baolu.lu@linux.intel.com>
-Cc: Jason Gunthorpe <jgg@ziepe.ca>, Kevin Tian <kevin.tian@intel.com>, Joerg Roedel <joro@8bytes.org>, 
-	Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>, 
-	Jean-Philippe Brucker <jean-philippe@linaro.org>, Nicolin Chen <nicolinc@nvidia.com>, 
-	Yi Liu <yi.l.liu@intel.com>, Jacob Pan <jacob.jun.pan@linux.intel.com>, 
-	Joel Granados <j.granados@samsung.com>, iommu@lists.linux.dev, 
-	virtualization@lists.linux-foundation.org, linux-kernel@vger.kernel.org, 
-	Shameerali Kolothum Thodi <shameerali.kolothum.thodi@huawei.com>
-Content-Type: text/plain; charset="UTF-8"
+User-Agent: Mozilla Thunderbird
+Cc: baolu.lu@linux.intel.com, will@kernel.org, robin.murphy@arm.com,
+ suravee.suthikulpanit@amd.com, jgg@ziepe.ca, yi.l.liu@intel.com,
+ kevin.tian@intel.com, jacob.pan@linux.microsoft.com
+Subject: Re: [PATCH v3 00/12] iommu: Domain allocation enhancements
+To: Vasant Hegde <vasant.hegde@amd.com>, iommu@lists.linux.dev,
+ joro@8bytes.org
+References: <20241017140137.6028-1-vasant.hegde@amd.com>
+Content-Language: en-US
+From: Baolu Lu <baolu.lu@linux.intel.com>
+In-Reply-To: <20241017140137.6028-1-vasant.hegde@amd.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-Hi, Baolu
+On 2024/10/17 22:01, Vasant Hegde wrote:
+> This series adds iommu_paging_domain_alloc_flags() which takes flags to
+> pass additional details for domain allocation (like domain with PASID
+> support). Also adjusts core code to handler variuos domain allocations.
+> 
+> Also updates AMD IOMMU driver domain allocation code. With this by
+> default it will allocate domain with V2 page table for PASID capable
+> device and v1 page table for rest of the devices.
+> 
+> 
+> TODO:
+> @Jason, @Kevin, @Baolu,
+>    With this series if driver implements domain_alloc_user() then we assume
+>    IOMMU always supports PASID. If IOMMU doesn't support PASID (ex: AMD driver
 
-On Fri, 18 Oct 2024 at 09:58, Baolu Lu <baolu.lu@linux.intel.com> wrote:
->
-> On 2024/10/17 21:08, Jason Gunthorpe wrote:
-> > On Thu, Oct 17, 2024 at 08:35:24PM +0800, Zhangfei Gao wrote:
-> >
-> >> Yes, you are right
-> >>   I am using SRIOV vf and stall feature, so is_virtfn == true
-> >>
-> >> Our ACC devices are fake pci endpoint devices which supports stall,
-> >> And they also supports sriov
-> >>
-> >> So I have to ignore the limitation.
-> > I see, so that is more complicated.
-> >
-> > Lu, what do you think about also checking if the PCI function has PRI
-> > ? If not PRI assume the fault is special and doesn't follow PRI rules?
-> >
-> > Or maybe we can have the iommu driver tag the event as a PRI/not-PRI
-> > fault?
->
-> This limitation applies to PRI on PCI/SRIOV VFs because the PRI might be
-> a shared resource and current iommu subsystem is not ready to support
-> enabling/disabling PRI on a VF without any impact on others.
->
-> In my understanding, it's fine to remove this limitation from the use
-> case of non-PRI on SRIOV VFs. Perhaps something like below?
->
-#include <linux/pci-ats.h>
->         if (dev_is_pci(dev)) {
->                 struct pci_dev *pdev = to_pci_dev(dev);
->                 if (pdev->is_virtfn && pci_pri_supported(pdev))
->                         return -EINVAL;
->         }
+I don't think this assumption is true for all iommu drivers. In my
+opinion, domain_alloc_user() will eventually be a common callback used
+by the iommu core to allocate paging domains. It includes an allocation
+flag that specifies various requirements, including PASID, which is a
+special requirement for the amd iommu driver.
 
-Yes, this works on our platform.
+>    not supporting V2 page table) and device is PASID capable, then driver will
+>    return error. Device probe will fail.
+> 
+>    I think if driver return error, core layer should retry without
+>    IOMMU_HWPT_ALLOC_PASID flag. Other option is indivisual driver in error path
+>    of domain_alloc_user allocating non-PASID capable domain.
+> 
+>    I prefer first option. Just wanted to discuss before implementing. Any preferred
+>    option here? OR any other better way to solve this?
+> 
+> 
+> Note :
+>    vt-d specific changes is handled in separate series [1].
+> 
+> [1]https://lore.kernel.org/linux-iommu/20241011042722.73930-8- 
+> baolu.lu@linux.intel.com/
+> 
+> @Baolu,
+>    Do you want me to include above patch in this series so that it doesn't break intel driver?
 
-Thanks Baolu.
+I haven't read through the whole series yet, but let's avoid creating
+unnecessary dependencies.
+
+Thanks,
+baolu
