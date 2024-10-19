@@ -1,40 +1,40 @@
 Received: from mail.mainlining.org (mail.mainlining.org [5.75.144.95])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A08271E0DFC
-	for <iommu@lists.linux.dev>; Sat, 19 Oct 2024 11:50:53 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4A4761E1023
+	for <iommu@lists.linux.dev>; Sat, 19 Oct 2024 11:50:54 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=5.75.144.95
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1729338656; cv=none; b=dz8PpeoVSJh5YdZ8EDEPkQkckNB2OkeG4s5Mo6ezl/X14tzHw4zVIWkdhXjZ7qJtB2K8o0Tc36mSMMw4N1glKZ8/+2yJKmSFfLVn6S0FnufDXWzzoNRoY0A5X8nQ/1nAOSZ8rvj8n5co+XoYMpX6T66+NSICgWWetfYyj/6B+hk=
+	t=1729338656; cv=none; b=ttmunLf5T/TaXVesqP5ahCnLSnKoDnvDx4Ajz7TEufXN98OKI8C8gJ/F6lpFTn5f/4Ok3Tte30wL7PPlj+mzUaw6RQyC8y+xxrmHXEe8EO/Xr8FCKOdcCbVKiHmOQRDh00E55T+yEGu3q6qH+G6HcVZp6+L7gOUPMssCHAuoJq0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
 	s=arc-20240116; t=1729338656; c=relaxed/simple;
-	bh=u8x5Y76BpR7GHm0tcI8s42oOSgTRRalW68806GGcELk=;
+	bh=+auV2xbHnH8Ew5XeZexktMLe4HULByqQHcRGhcce8AI=;
 	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=H/kju6RLwmCnt19DPZ0Va9jov8IlBbL38gy9gSurPzDLamgTT3tztSy9NxqviKBgBta4IlRS8SZ32kYuAALmiCsOUlAbQ3MXtDN5wfkT7JJ7tCtcK1ZINaDKTq3ImPYAc7+76BFgf0/hf72TJfHyk9HA+DSjUX3Z1i2s2S2gFwE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=mainlining.org; spf=pass smtp.mailfrom=mainlining.org; dkim=pass (2048-bit key) header.d=mainlining.org header.i=@mainlining.org header.b=gH16FJTL; arc=none smtp.client-ip=5.75.144.95
+	 In-Reply-To:To:Cc; b=nO9H+yM/GbVTCOt31YsnjH/b0fDU0KeaCX1ckxSBQmKbLkNmNClBtb9J1ZTCriCcqhPotVa+Ya5a1/3jxikrWKQsaMbAKeEsDf6VTaEYRoqbv09JshLl39vMFvib4B6La+HU+R4hJwU7KYiSzJ6L31iiI0SQ1YVHW/30PG+he7M=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=mainlining.org; spf=pass smtp.mailfrom=mainlining.org; dkim=pass (2048-bit key) header.d=mainlining.org header.i=@mainlining.org header.b=G0kj8Kd7; arc=none smtp.client-ip=5.75.144.95
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=mainlining.org
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=mainlining.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=mainlining.org header.i=@mainlining.org header.b="gH16FJTL"
+	dkim=pass (2048-bit key) header.d=mainlining.org header.i=@mainlining.org header.b="G0kj8Kd7"
 Received: from [192.168.1.130] (51B6DD9D.dsl.pool.telekom.hu [81.182.221.157])
-	by mail.mainlining.org (Postfix) with ESMTPSA id 0B203E45A4;
-	Sat, 19 Oct 2024 11:50:47 +0000 (UTC)
+	by mail.mainlining.org (Postfix) with ESMTPSA id B7EE1E45A6;
+	Sat, 19 Oct 2024 11:50:48 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=mainlining.org;
-	s=psm; t=1729338647;
+	s=psm; t=1729338649;
 	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
 	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
 	 content-transfer-encoding:content-transfer-encoding:
 	 in-reply-to:in-reply-to:references:references;
-	bh=V3+UAizzWXsZekrxnLJdeu9Ruj4MIRyoNFA7cvKypSE=;
-	b=gH16FJTLWMW4j5HW38K6k0StfWUvgA5cwGnDQITxWaP05n/4JCceElAkuEYRhrlXaevFuI
-	6NTZT7NVYRm2uG5ZGW5nnG5nQgojg80TB+LkS+5Rw5IV4NP1ubL6g3K61kWyhE4ta3PvW7
-	Nxqke26VTtOZ4Ayx1TZKhKjBOVkpxg6gDz8FlitUgTbGijrSwkZt3Prkv/Dz5KeJp9NH7p
-	T3xQdmdVaR7lUQIQdDi/JvYvquIJgeU4vTvFRoXe3I1uZGxx5LCiOTu8UUgY36VGE59SF7
-	LMlIncnX3TBa+IkSK/LSxU0BBUVm78nGEdAtPMEfPXiAUrtzafyKRATe97gDPw==
+	bh=wSjtl8egN/7amHQK4rd+lA7Mo+LBp5UxTJkQiEalxxA=;
+	b=G0kj8Kd7yFJp1V011CW6hIEGyP3Z8wa22Pw2s9JlobBOBpsWkz/ztSMhXY1x9vKxhf2lum
+	VnK7d1D9RIfj5S+cifq5cjzN6dNKNzehUs2JcgFCTBYAkqn7Pd8JAaKHawScEO3d+uExl9
+	yEaYIV7e/ZUvEMaw65kz9+nb8PdlmwNKVKvbi4qmHwtwXgSTQ8+XJM+ng9/ZH9Vh5E4UKN
+	xTWfA9w4C7Y0aiAFIpzGN2GwtVnghx1G0E/J72ausBDJvtLRBDEuK7ypWN0m/J58Z+TEEe
+	Rh9Eh9FWoWRFPvjR5XkI11/VG/V0LPITeSsz3/cqKf4wGPeh8og1euWxqBFnvA==
 From: =?utf-8?q?Barnab=C3=A1s_Cz=C3=A9m=C3=A1n?= <barnabas.czeman@mainlining.org>
-Date: Sat, 19 Oct 2024 13:50:45 +0200
-Subject: [PATCH RFC 08/14] dt-bindings: mfd: qcom,tcsr: Add compatible for
- MSM8917
+Date: Sat, 19 Oct 2024 13:50:47 +0200
+Subject: [PATCH RFC 10/14] dt-bindings: iommu: qcom,iommu: Add MSM8917
+ IOMMU to SMMUv1 compatibles
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -43,7 +43,7 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-Message-Id: <20241019-msm8917-v1-8-f1f3ca1d88e5@mainlining.org>
+Message-Id: <20241019-msm8917-v1-10-f1f3ca1d88e5@mainlining.org>
 References: <20241019-msm8917-v1-0-f1f3ca1d88e5@mainlining.org>
 In-Reply-To: <20241019-msm8917-v1-0-f1f3ca1d88e5@mainlining.org>
 To: Bjorn Andersson <andersson@kernel.org>, 
@@ -62,33 +62,35 @@ Cc: linux-arm-msm@vger.kernel.org, linux-gpio@vger.kernel.org,
  linux-pm@vger.kernel.org, iommu@lists.linux.dev, 
  =?utf-8?q?Barnab=C3=A1s_Cz=C3=A9m=C3=A1n?= <barnabas.czeman@mainlining.org>
 X-Mailer: b4 0.14.2
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1729338640; l=824;
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1729338640; l=939;
  i=barnabas.czeman@mainlining.org; s=20240730; h=from:subject:message-id;
- bh=u8x5Y76BpR7GHm0tcI8s42oOSgTRRalW68806GGcELk=;
- b=i+NdQ+S9ej8/pGzje2ajBDoOYtWjt16eE0oIprmWbmXEKq+IypS3/uIR7WP+TdJpDvDuOYJeK
- LUl/aoemcqfAe4JHE+SUImsB8TnS3dIFmAYyYVgb0EjdTPYcMwzdfQw
+ bh=+auV2xbHnH8Ew5XeZexktMLe4HULByqQHcRGhcce8AI=;
+ b=mNOPhhrVpRQixxGld4RDKS/wBnAShh0zzApIWIZiN9PugJfI29a1VYKHo4+ninOR9hr+za1SC
+ cm/glkJsPZDC56qJ7K0oM3IeIeQ/jnbgUgpqe2jLYDKQWaBwixRwiPH
 X-Developer-Key: i=barnabas.czeman@mainlining.org; a=ed25519;
  pk=TWUSIGgwW/Sn4xnX25nw+lszj1AT/A3bzkahn7EhOFc=
 
-Document the qcom,msm8917-tcsr compatible.
+Add MSM8917 compatible string with "qcom,msm-iommu-v1" as fallback
+for the MSM8917 IOMMU which is compatible with Qualcomm's secure
+fw "SMMU v1" implementation.
 
 Signed-off-by: Barnabás Czémán <barnabas.czeman@mainlining.org>
 ---
- Documentation/devicetree/bindings/mfd/qcom,tcsr.yaml | 1 +
+ Documentation/devicetree/bindings/iommu/qcom,iommu.yaml | 1 +
  1 file changed, 1 insertion(+)
 
-diff --git a/Documentation/devicetree/bindings/mfd/qcom,tcsr.yaml b/Documentation/devicetree/bindings/mfd/qcom,tcsr.yaml
-index c4fcf501f502724b5ca36bc4a26f77a00104ac48..79add913e35c848363941a8634a361c45d296392 100644
---- a/Documentation/devicetree/bindings/mfd/qcom,tcsr.yaml
-+++ b/Documentation/devicetree/bindings/mfd/qcom,tcsr.yaml
-@@ -50,6 +50,7 @@ properties:
-           - qcom,tcsr-msm8226
-           - qcom,tcsr-msm8660
-           - qcom,tcsr-msm8916
-+          - qcom,tcsr-msm8917
-           - qcom,tcsr-msm8953
-           - qcom,tcsr-msm8960
-           - qcom,tcsr-msm8974
+diff --git a/Documentation/devicetree/bindings/iommu/qcom,iommu.yaml b/Documentation/devicetree/bindings/iommu/qcom,iommu.yaml
+index f8cebc9e8cd9d46b449cd297153dbebe5c84bf3f..5ae9a628261fd251c1e991a70662c6d37ef2c4e3 100644
+--- a/Documentation/devicetree/bindings/iommu/qcom,iommu.yaml
++++ b/Documentation/devicetree/bindings/iommu/qcom,iommu.yaml
+@@ -21,6 +21,7 @@ properties:
+       - items:
+           - enum:
+               - qcom,msm8916-iommu
++              - qcom,msm8917-iommu
+               - qcom,msm8953-iommu
+           - const: qcom,msm-iommu-v1
+       - items:
 
 -- 
 2.47.0
