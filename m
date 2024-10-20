@@ -1,193 +1,189 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.21])
+Received: from NAM02-DM3-obe.outbound.protection.outlook.com (mail-dm3nam02on2068.outbound.protection.outlook.com [40.107.95.68])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B1A3113C682;
-	Sat, 19 Oct 2024 18:42:53 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.21
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1729363376; cv=none; b=O3t1WHttDIGec68DOXhLlgpwpJqcUidkn8WqDN7otySTzm3yVOrJI97K7hflhJEMBdE5VcLQmeK0EF2RJiS57q8hOtcCA6nPtKItc0MeCEa5KpX71JXgJD01oCebdf55jz4kNYFhEPJspdYR5UUMdfku+jxvaSOlLVFOxZa8W5Y=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1729363376; c=relaxed/simple;
-	bh=FXSuO3b4NxEtMsI5CXXfnk89nMhmsvd4lNTyl2o1u5Q=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=WBLtFYi7Ed5oNC/bNNgNi7nPUowEnzWk/PeUsiSoRuqArwjJ/1sxa7LqDEow03gHOA1N7pEOoUXMFglZQ5uXVb+Hi9kqqxWLAB2uCt1aSlTsrDior3NhWI9oJvEiG0WfsQKz0Xj1frHNSU9HE0a5snNv2uT17yUoc0RR8Hw3O+k=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=eK//fGcA; arc=none smtp.client-ip=198.175.65.21
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 81E1463D;
+	Sun, 20 Oct 2024 01:35:55 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.95.68
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1729388157; cv=fail; b=RmQbLMIGhklF1q1oMJ68OWHJ/8sZeBEUav7T40MB89u39Y9jkopN+MgnAapAP5eeJglydR8cyv/8QtVoe39KPD16T1A7JkvKAifmSL1RonYI3c3b2lab1i1pdMicDVCjZzaGsLRekcAOQDZc77jsEueJl47365W29P47/S34r2Y=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1729388157; c=relaxed/simple;
+	bh=hEWQ1O/yPYwCiBIEEvHyKBaVsjqKhpqFliGdl9EkgDg=;
+	h=Date:From:To:CC:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=Ke4R6bzUfxo9Q0Xf/t1EY5vVLh4wb313PvLoKoiuoqtpIpoE0l/LydvGuqvj9sqvTH0EoAVxzaNgzNlP6D8cRURZ5IqO8PpHkQzJjBO414OmlVhPEFJvMLjILYuF4Z1ckKWlq8us65iR3/jsEhH6JfqLMnIqqZCq3CcwHKKzmoU=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=pllLiP7W; arc=fail smtp.client-ip=40.107.95.68
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="eK//fGcA"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1729363374; x=1760899374;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=FXSuO3b4NxEtMsI5CXXfnk89nMhmsvd4lNTyl2o1u5Q=;
-  b=eK//fGcAdVb4TiDqNyBJ20wT1asnhu/c3Xehhc+Y8cacA2Le5GZBBGi1
-   y1GgkZbCee3qlox7rbmr1AT9mfDgpHo4NBNNj7LaloKh5YCmelXuT7yW3
-   UhaLYlDc0BDvxm4RexnL8MZJg3jYnNifnNa93jychGRb8oz1B0H8F0W/L
-   G1vzpdSg98hnbNFPaj1VrKyBYtSrlUs7hfTck2HvMHAbhr7LdOIk29tvC
-   gyrrTW9PvSGIi8Iu5PW0Rmye/yVtgbnjQeN++APxxWtcGc9BAPioaogJc
-   TlYeptL3uqpyqEazbNJfqdfa4Vlc6bGEX3pAyVxmbu5zNd6aTD1JxiJx8
-   A==;
-X-CSE-ConnectionGUID: nj+1Ir3uTqSpXuQrl9vOeg==
-X-CSE-MsgGUID: qR+JnIabQHmpZ7FVftHDhw==
-X-IronPort-AV: E=McAfee;i="6700,10204,11222"; a="28837160"
-X-IronPort-AV: E=Sophos;i="6.11,199,1725346800"; 
-   d="scan'208";a="28837160"
-Received: from orviesa010.jf.intel.com ([10.64.159.150])
-  by orvoesa113.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Oct 2024 11:42:53 -0700
-X-CSE-ConnectionGUID: h1f0RtyuS9ultywJks+2bg==
-X-CSE-MsgGUID: vuCYtW8hQF6KecNxONarkw==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.11,217,1725346800"; 
-   d="scan'208";a="79111734"
-Received: from lkp-server01.sh.intel.com (HELO a48cf1aa22e8) ([10.239.97.150])
-  by orviesa010.jf.intel.com with ESMTP; 19 Oct 2024 11:42:52 -0700
-Received: from kbuild by a48cf1aa22e8 with local (Exim 4.96)
-	(envelope-from <lkp@intel.com>)
-	id 1t2EPZ-000PQF-0x;
-	Sat, 19 Oct 2024 18:42:49 +0000
-Date: Sun, 20 Oct 2024 02:41:57 +0800
-From: kernel test robot <lkp@intel.com>
-To: Steve Sistare <steven.sistare@oracle.com>, iommu@lists.linux.dev
-Cc: oe-kbuild-all@lists.linux.dev, Jason Gunthorpe <jgg@nvidia.com>,
-	Kevin Tian <kevin.tian@intel.com>,
-	Nicolin Chen <nicolinc@nvidia.com>,
-	Steve Sistare <steven.sistare@oracle.com>
-Subject: Re: [PATCH V4 6/9] iommufd: pfn reader for file mappings
-Message-ID: <202410200205.mriS8xuS-lkp@intel.com>
-References: <1729286856-127844-7-git-send-email-steven.sistare@oracle.com>
+	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="pllLiP7W"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=nxkXr3Q9d718hLEa9vqcwh44TIQ/dSoB2e4DMySad27Ejk53vPu0OGkC26VNcTYdd2Z5ynAnnkijO4bKSVdBQO6X7a/HCbxigufVVr2Q4t/4sej8zv61tMXuEy8k52UCDXth0JfoZG0p8tnkpVAJJP+j001ed79bJPeGLgUOZUMjz1ahGOul3AkfV3EW7jjlnNEBG7rU/Kw+st+2TTQ9r8+rsyYxetLa17w0ieEt1HblKyUL0BsbpWzfQXtleeyuEu+tuAb20v2wPBew/q0AgZqWAgv6Rkgv1qFdCosp2n4MgWZnF1gRnJgwSNNAf0BzXicvLeSsBaBny2TFDardPA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=4+ibpAVR+QFcvVdTx4qMiifjf8cA9uyuckRiTmJ1k8M=;
+ b=BnbVicjj9EyL7TADQtoFobcmG7bNWlC6FsnAqFlEK5XcBMZAWccN5P7tz8k80ZYIWFQa9tgTDGIxKruSVWzjUfhWweZgd/vU/5oxRdNd4vKJ7/qMMc1vA7WDIAGJz9R7zm9G2n07axStUE6bIMBPpJIyWGA2XU4z0wALbAFeyFDMCWqk61ROxuvKZaybUD/P5+fLcDoAdHm00hbfW1+auVAUAfhwDwlVpo7i3V8xj5KskS5BoBNToQhICVgapiVwNF/Deu3KaU9bx1dflKD2+YUOn2IymTi5Q/4iZnIdTJ2graV7Gs9IBY2jh+EfweoUwJjDwco6X39ehDVlEZ6rvA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 216.228.118.232) smtp.rcpttodomain=intel.com smtp.mailfrom=nvidia.com;
+ dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
+ dkim=none (message not signed); arc=none (0)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=4+ibpAVR+QFcvVdTx4qMiifjf8cA9uyuckRiTmJ1k8M=;
+ b=pllLiP7WaDotsdWUGxmyx+oZTL5aY9trDpd6cXFrkcuUiM973+2G5ryEElEJsgZSGHKNJB5PMXEXpNVc2WHS1mrB58sC3NzQv7mMEFCZFMO92CiXFUfInm0LUI/5GQQi7bfVwrr1izUesMbXmA8oMGpQqrC3lEi36R2U/3U4N69ga0y8orH1Hx3/BPKDSfrOLhyxnpHn8raD1aC3GUU5iL7G4yrgrCMeXTV0xY47gtJKvk5VxO9BfC7aegR9Q44oSo/l9fegFwwsmhjyXyA9SGxujLNTwsUr3L6h2+kOjYh3xqV8uwWJh/gq9S1lGsDnwbRSAJwGtYjBRKlMrpaXLw==
+Received: from PH8PR05CA0023.namprd05.prod.outlook.com (2603:10b6:510:2cc::8)
+ by SA1PR12MB9002.namprd12.prod.outlook.com (2603:10b6:806:38b::14) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.8048.19; Sun, 20 Oct
+ 2024 01:35:50 +0000
+Received: from CY4PEPF0000EDD2.namprd03.prod.outlook.com
+ (2603:10b6:510:2cc:cafe::12) by PH8PR05CA0023.outlook.office365.com
+ (2603:10b6:510:2cc::8) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.8093.13 via Frontend
+ Transport; Sun, 20 Oct 2024 01:35:50 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.118.232)
+ smtp.mailfrom=nvidia.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=nvidia.com;
+Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
+ 216.228.118.232 as permitted sender) receiver=protection.outlook.com;
+ client-ip=216.228.118.232; helo=mail.nvidia.com; pr=C
+Received: from mail.nvidia.com (216.228.118.232) by
+ CY4PEPF0000EDD2.mail.protection.outlook.com (10.167.241.198) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.8093.14 via Frontend Transport; Sun, 20 Oct 2024 01:35:49 +0000
+Received: from drhqmail203.nvidia.com (10.126.190.182) by mail.nvidia.com
+ (10.127.129.5) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1544.4; Sat, 19 Oct
+ 2024 18:35:47 -0700
+Received: from drhqmail203.nvidia.com (10.126.190.182) by
+ drhqmail203.nvidia.com (10.126.190.182) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.1544.4; Sat, 19 Oct 2024 18:35:47 -0700
+Received: from Asurada-Nvidia (10.127.8.11) by mail.nvidia.com
+ (10.126.190.182) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1544.4 via Frontend
+ Transport; Sat, 19 Oct 2024 18:35:46 -0700
+Date: Sat, 19 Oct 2024 18:35:45 -0700
+From: Nicolin Chen <nicolinc@nvidia.com>
+To: Jason Gunthorpe <jgg@nvidia.com>
+CC: <kevin.tian@intel.com>, <will@kernel.org>, <joro@8bytes.org>,
+	<suravee.suthikulpanit@amd.com>, <robin.murphy@arm.com>,
+	<dwmw2@infradead.org>, <baolu.lu@linux.intel.com>, <shuah@kernel.org>,
+	<linux-kernel@vger.kernel.org>, <iommu@lists.linux.dev>,
+	<linux-arm-kernel@lists.infradead.org>, <linux-kselftest@vger.kernel.org>,
+	<eric.auger@redhat.com>, <jean-philippe@linaro.org>, <mdf@kernel.org>,
+	<mshavit@google.com>, <shameerali.kolothum.thodi@huawei.com>,
+	<smostafa@google.com>, <yi.l.liu@intel.com>, <aik@amd.com>,
+	<patches@lists.linux.dev>
+Subject: Re: [PATCH v3 01/16] iommufd/viommu: Introduce IOMMUFD_OBJ_VDEVICE
+ and its related struct
+Message-ID: <ZxRecZKbXd7cLOqy@Asurada-Nvidia>
+References: <cover.1728491532.git.nicolinc@nvidia.com>
+ <556347d2e69e8b236ec946a93132181385344d4f.1728491532.git.nicolinc@nvidia.com>
+ <20241017184556.GQ3559746@nvidia.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset="us-ascii"
 Content-Disposition: inline
-In-Reply-To: <1729286856-127844-7-git-send-email-steven.sistare@oracle.com>
+In-Reply-To: <20241017184556.GQ3559746@nvidia.com>
+X-NV-OnPremToCloud: ExternallySecured
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: CY4PEPF0000EDD2:EE_|SA1PR12MB9002:EE_
+X-MS-Office365-Filtering-Correlation-Id: 89cd7101-cb67-4fd3-87d2-08dcf0a78754
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam:
+	BCL:0;ARA:13230040|376014|36860700013|7416014|82310400026|1800799024;
+X-Microsoft-Antispam-Message-Info:
+	=?us-ascii?Q?Ppw3qTGKLHcCwVeZa62DIdGpuvHj1LvVwyCEbjh+M39DEZG/6oUfevr0Iu90?=
+ =?us-ascii?Q?AGO1D0Ajfj3O11PwRErudUjarvdnpri5OXfrBt6ZkCvx9Fv1pBUD4a7kHmzU?=
+ =?us-ascii?Q?IIyXXEDwkD3wCm4qbnjPYz2xpLyQZpHQt4eD0HHjGVDatFzRmRXt+cfOBesp?=
+ =?us-ascii?Q?nXii0q4mWIEyXWe6i4pddzqhjZhZ5E18E83XZWzY0/TucbvpaonqJU4dhzHL?=
+ =?us-ascii?Q?zlBa5MJCszfXzsL5BhlHnvN7uA7TEQS5xV8aRWAnnPK6GJbCvVt2OGSaNFof?=
+ =?us-ascii?Q?kP5kD9v4hL2DupiqnyXSqVn7VPD6pc+SGTTwFsyOEdTWWEH4LRMHyNEDsiT2?=
+ =?us-ascii?Q?Z/HjiPRFftP5SXcTkTqff4lkm0GrApQ+oJXBz4LjA6oP6mlnVRmqez/10Qlh?=
+ =?us-ascii?Q?QW8BQJPiHqC+JNmko9DhRn8tQkh7DKF6lN/P84J5dVGSwPliGHgMtOg1XU9A?=
+ =?us-ascii?Q?QFHHJfTgXYidg9Rf24fbyomDBWQ/9CUqQVvzB6GTeMIIv/c6UNy/l92vT2qg?=
+ =?us-ascii?Q?MtsL4860VffsZf+5rUkPV8pZR3KoKoBtWZr3deg23tFSxpXQD6QsMnUugLIj?=
+ =?us-ascii?Q?Abs/oF1EHwJBvWiQh525Lc08xj1xznW2JL5VU1xbyxePaY1ePsrkAlvf94fR?=
+ =?us-ascii?Q?m07xKmVM77xBs2082xOJILzaQ8XMXPrw565NzJ087nxyAYeVQ91PmOwcEWV6?=
+ =?us-ascii?Q?A4mxBkbR73CqqKtvhNyrgjAKqAggDA0Q21hPBFN/YTc0M32D7MxS4sWIhMBX?=
+ =?us-ascii?Q?oeNcTeuMKiXZ34Q6BKS0+SjdDvaa1vlVR2XTqogoU1tC18BoK9cUc7p2QJyf?=
+ =?us-ascii?Q?UHW9DPM5xBvlfdvIsMhrR5cT7foz+PzWPODgDffFNcGRY32Dv3j/hbw1FfaD?=
+ =?us-ascii?Q?XT1KrWrzz+4rHDFrcAFcxbJbyLODT1o/dyyxoNk57zgqCUqV8PdTTXArDrFy?=
+ =?us-ascii?Q?xPw0AQfPoDA4YPf/0hn8VxjBO3N3GbQZCvqmoNPV2Y0LWbBLl+4tQcFDMA/I?=
+ =?us-ascii?Q?M2TkPLpxE35YJsGjKDHTP9avmF9PMH22ubPsv6LEAyz8a/GL7e6n3KQQj2FF?=
+ =?us-ascii?Q?NUEFzVHjkog05AL8O61h1GCO9++TwFaax1uLKyYyWkzxvzbGxFC1z2OHM5MC?=
+ =?us-ascii?Q?M8yMOIzUuOoN+fkPQahahcuMxH+0BSzTIO2NYtF/zg0et8IVPOczF9A5oEzB?=
+ =?us-ascii?Q?m2MLvJO9wQgj+bU94XkZT8bHz11Gk9O/2FlBF6X8TfvJ0E8X7oRlU+mRK1sE?=
+ =?us-ascii?Q?7Ljfvghpej8WsXDgq+vRUT9/bYlQJmJRPI4ofjnts8wJhmi01FM8kZyU9MAZ?=
+ =?us-ascii?Q?tx7RRF3qoHuDZvhxfC5k0zl5aeDK2/JvXu/td1GK2Z1Q7cfbvFAPie/ov+jw?=
+ =?us-ascii?Q?tWLrOKdPgJ0dmwsoDF2fxvPPq7aynhtBuzA3gA/EKCyiQqiMlQ=3D=3D?=
+X-Forefront-Antispam-Report:
+	CIP:216.228.118.232;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc7edge1.nvidia.com;CAT:NONE;SFS:(13230040)(376014)(36860700013)(7416014)(82310400026)(1800799024);DIR:OUT;SFP:1101;
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 20 Oct 2024 01:35:49.9498
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: 89cd7101-cb67-4fd3-87d2-08dcf0a78754
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.118.232];Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-AuthSource:
+	CY4PEPF0000EDD2.namprd03.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SA1PR12MB9002
 
-Hi Steve,
+On Thu, Oct 17, 2024 at 03:45:56PM -0300, Jason Gunthorpe wrote:
+> > +struct iommufd_vdevice *
+> > +__iommufd_vdevice_alloc(struct iommufd_ctx *ictx, size_t size)
+> > +{
+> > +	struct iommufd_object *obj;
+> > +
+> > +	if (WARN_ON(size < sizeof(struct iommufd_vdevice)))
+> > +		return ERR_PTR(-EINVAL);
+> > +	obj = iommufd_object_alloc_elm(ictx, size, IOMMUFD_OBJ_VDEVICE);
+> > +	if (IS_ERR(obj))
+> > +		return ERR_CAST(obj);
+> > +	return container_of(obj, struct iommufd_vdevice, obj);
+> > +}
+> 
+> Like for the viommu this can all just be folded into the #define
 
-kernel test robot noticed the following build errors:
+It seems that we have to keep two small functions as followings,
+unless we want to expose the enum iommufd_object_type.
 
-[auto build test ERROR on e2d8fe9148b79ed1cbf0663edc988db7769173dc]
+---------------------------------------------------------------
+diff --git a/drivers/iommu/iommufd/driver.c b/drivers/iommu/iommufd/driver.c
+index 4495f1aaccca..fdd203487bac 100644
+--- a/drivers/iommu/iommufd/driver.c
++++ b/drivers/iommu/iommufd/driver.c
+@@ -38,10 +38,19 @@ _iommufd_object_alloc_member(struct iommufd_ctx *ictx, size_t size,
+ EXPORT_SYMBOL_NS_GPL(_iommufd_object_alloc_member, IOMMUFD);
 
-url:    https://github.com/intel-lab-lkp/linux/commits/Steve-Sistare/mm-gup-folio_add_pins/20241019-053644
-base:   e2d8fe9148b79ed1cbf0663edc988db7769173dc
-patch link:    https://lore.kernel.org/r/1729286856-127844-7-git-send-email-steven.sistare%40oracle.com
-patch subject: [PATCH V4 6/9] iommufd: pfn reader for file mappings
-config: m68k-allmodconfig (https://download.01.org/0day-ci/archive/20241020/202410200205.mriS8xuS-lkp@intel.com/config)
-compiler: m68k-linux-gcc (GCC) 14.1.0
-reproduce (this is a W=1 build): (https://download.01.org/0day-ci/archive/20241020/202410200205.mriS8xuS-lkp@intel.com/reproduce)
+ struct iommufd_viommu *_iommufd_viommu_alloc(struct iommufd_ctx *ictx,
+                                             size_t size)
+ {
+        return container_of(_iommufd_object_alloc_member(ictx, size,
+                                                         IOMMUFD_OBJ_VIOMMU),
+                            struct iommufd_viommu, obj);
+ }
+ EXPORT_SYMBOL_NS_GPL(_iommufd_viommu_alloc, IOMMUFD);
++
++struct iommufd_vdevice *_iommufd_vdevice_alloc(struct iommufd_ctx *ictx,
++                                              size_t size)
++{
++       return container_of(_iommufd_object_alloc_member(ictx, size,
++                                                        IOMMUFD_OBJ_VDEVICE),
++                           struct iommufd_vdevice, obj);
++}
++EXPORT_SYMBOL_NS_GPL(_iommufd_vdevice_alloc, IOMMUFD);
+---------------------------------------------------------------
 
-If you fix the issue in a separate patch/commit (i.e. not just a new version of
-the same patch/commit), kindly add following tags
-| Reported-by: kernel test robot <lkp@intel.com>
-| Closes: https://lore.kernel.org/oe-kbuild-all/202410200205.mriS8xuS-lkp@intel.com/
-
-All errors (new ones prefixed by >>):
-
-   drivers/iommu/iommufd/pages.c: In function 'pfn_reader_user_pin':
->> drivers/iommu/iommufd/pages.c:886:46: error: passing argument 1 of 'temp_kmalloc' from incompatible pointer type [-Wincompatible-pointer-types]
-     886 |                 user->ufolios = temp_kmalloc(&user->ufolios_len, NULL, 0);
-         |                                              ^~~~~~~~~~~~~~~~~~
-         |                                              |
-         |                                              long unsigned int *
-   drivers/iommu/iommufd/pages.c:74:35: note: expected 'size_t *' {aka 'unsigned int *'} but argument is of type 'long unsigned int *'
-      74 | static void *temp_kmalloc(size_t *size, void *backup, size_t backup_len)
-         |                           ~~~~~~~~^~~~
-
-Kconfig warnings: (for reference only)
-   WARNING: unmet direct dependencies detected for GET_FREE_REGION
-   Depends on [n]: SPARSEMEM [=n]
-   Selected by [m]:
-   - RESOURCE_KUNIT_TEST [=m] && RUNTIME_TESTING_MENU [=y] && KUNIT [=m]
-
-
-vim +/temp_kmalloc +886 drivers/iommu/iommufd/pages.c
-
-   859	
-   860	static int pfn_reader_user_pin(struct pfn_reader_user *user,
-   861				       struct iopt_pages *pages,
-   862				       unsigned long start_index,
-   863				       unsigned long last_index)
-   864	{
-   865		bool remote_mm = pages->source_mm != current->mm;
-   866		unsigned long npages = last_index - start_index + 1;
-   867		unsigned long start;
-   868		unsigned long unum;
-   869		uintptr_t uptr;
-   870		long rc;
-   871	
-   872		if (IS_ENABLED(CONFIG_IOMMUFD_TEST) &&
-   873		    WARN_ON(last_index < start_index))
-   874			return -EINVAL;
-   875	
-   876		if (!user->file && !user->upages) {
-   877			/* All undone in pfn_reader_destroy() */
-   878			user->upages_len = npages * sizeof(*user->upages);
-   879			user->upages = temp_kmalloc(&user->upages_len, NULL, 0);
-   880			if (!user->upages)
-   881				return -ENOMEM;
-   882		}
-   883	
-   884		if (user->file && !user->ufolios) {
-   885			user->ufolios_len = npages * sizeof(*user->ufolios);
- > 886			user->ufolios = temp_kmalloc(&user->ufolios_len, NULL, 0);
-   887			if (!user->ufolios)
-   888				return -ENOMEM;
-   889		}
-   890	
-   891		if (user->locked == -1) {
-   892			/*
-   893			 * The majority of usages will run the map task within the mm
-   894			 * providing the pages, so we can optimize into
-   895			 * get_user_pages_fast()
-   896			 */
-   897			if (!user->file && remote_mm) {
-   898				if (!mmget_not_zero(pages->source_mm))
-   899					return -EFAULT;
-   900			}
-   901			user->locked = 0;
-   902		}
-   903	
-   904		unum = user->file ? user->ufolios_len / sizeof(*user->ufolios) :
-   905				    user->upages_len / sizeof(*user->upages);
-   906		npages = min_t(unsigned long, npages, unum);
-   907	
-   908		if (iommufd_should_fail())
-   909			return -EFAULT;
-   910	
-   911		if (user->file) {
-   912			start = pages->start + (start_index * PAGE_SIZE);
-   913			rc = pin_memfd_pages(user, start, npages);
-   914		} else if (!remote_mm) {
-   915			uptr = (uintptr_t)(pages->uptr + start_index * PAGE_SIZE);
-   916			rc = pin_user_pages_fast(uptr, npages, user->gup_flags,
-   917						 user->upages);
-   918		} else {
-   919			uptr = (uintptr_t)(pages->uptr + start_index * PAGE_SIZE);
-   920			if (!user->locked) {
-   921				mmap_read_lock(pages->source_mm);
-   922				user->locked = 1;
-   923			}
-   924			rc = pin_user_pages_remote(pages->source_mm, uptr, npages,
-   925						   user->gup_flags, user->upages,
-   926						   &user->locked);
-   927		}
-   928		if (rc <= 0) {
-   929			if (WARN_ON(!rc))
-   930				return -EFAULT;
-   931			return rc;
-   932		}
-   933		iopt_pages_add_npinned(pages, rc);
-   934		user->upages_start = start_index;
-   935		user->upages_end = start_index + rc;
-   936		return 0;
-   937	}
-   938	
-
--- 
-0-DAY CI Kernel Test Service
-https://github.com/intel/lkp-tests/wiki
+Thanks
+Nicolin
