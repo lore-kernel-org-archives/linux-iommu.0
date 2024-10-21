@@ -1,266 +1,222 @@
-Received: from mx0b-00069f02.pphosted.com (mx0b-00069f02.pphosted.com [205.220.177.32])
+Received: from out-185.mta1.migadu.com (out-185.mta1.migadu.com [95.215.58.185])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4F90B1EB9FD
-	for <iommu@lists.linux.dev>; Mon, 21 Oct 2024 14:29:14 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=205.220.177.32
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1729520957; cv=fail; b=UBUNdswPAydvRntdjmHfkeSRlD53boaUonY1tzU8dRFqdOzDshJkXMkk6Q8qmHLcbop7rqUsNbJBZHXsjjApbA2ScYi7XRIHfJ0J0Q1XAT49O4bCJnNlQ+RoSaLzCOk5NZRD6AFg6ZyHr22fzolvoDUp7maPUkucQ1++3srdT7M=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1729520957; c=relaxed/simple;
-	bh=uRHKSR+IDYRhSzmeLchkMo0U04uVKDKI/EQw+JocOcg=;
-	h=Message-ID:Date:Subject:From:To:Cc:References:In-Reply-To:
-	 Content-Type:MIME-Version; b=OFoT00cFT/IarOut2u+uonQUqsj5FYTaI/qqYkr/wRVM3nY5ABGvDfzh13sZEgf6JC2He92GlAZP/vYFw+nyh1F6WJ1yEOQe+6mIVyKMBScCsiWx82NlC5yp2AmlbHZX9dDZ0T1r70aRDWF0KT4osQah7SyiUGG5PtG5bU/Pi2g=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oracle.com; spf=pass smtp.mailfrom=oracle.com; dkim=pass (2048-bit key) header.d=oracle.com header.i=@oracle.com header.b=Du0fMXeS; dkim=pass (1024-bit key) header.d=oracle.onmicrosoft.com header.i=@oracle.onmicrosoft.com header.b=X4smrzCH; arc=fail smtp.client-ip=205.220.177.32
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oracle.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=oracle.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 758831E8851
+	for <iommu@lists.linux.dev>; Mon, 21 Oct 2024 14:37:13 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=95.215.58.185
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1729521436; cv=none; b=hh2E5rE9Tt+u1NOaxNXnsUxyLIBiXsJq/24bNtouQa3s5RNCtbPYcGPoUKL08ooBM3zVhuRduvAA+rgCHHGxTbu65JG2xbZRvcEBg+FFa5S/WRz86wgxPTSsOw9GGnKqpCwiAtc7jRPXgKC5ggDtwF2odP1YDKrg1O9VlND/hGs=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1729521436; c=relaxed/simple;
+	bh=w9UslHje9Y25HqAgD6FbzkeP4dbMjaWhYX4yiay4hlk=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=GHtQxoOQ+l1iyiuBweHL1UvFEmX95nVrW3CswxlF+Pya8r1SqFEBnT5UeONLlvZwmSqaj4RsH824MJFCnwFBTmmcmgktpbW0p7NSOUOyoJHX69wjYKB3c1sysgdsKVFgG1Cji8Hixqmgn+idjO8uLxK0G09ScTDbufqR3U6rMoU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.dev; spf=pass smtp.mailfrom=linux.dev; dkim=pass (1024-bit key) header.d=linux.dev header.i=@linux.dev header.b=eJ2u1bPs; arc=none smtp.client-ip=95.215.58.185
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.dev
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.dev
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=oracle.com header.i=@oracle.com header.b="Du0fMXeS";
-	dkim=pass (1024-bit key) header.d=oracle.onmicrosoft.com header.i=@oracle.onmicrosoft.com header.b="X4smrzCH"
-Received: from pps.filterd (m0246632.ppops.net [127.0.0.1])
-	by mx0b-00069f02.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 49L96s3O005585;
-	Mon, 21 Oct 2024 14:29:12 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=cc
-	:content-transfer-encoding:content-type:date:from:in-reply-to
-	:message-id:mime-version:references:subject:to; s=
-	corp-2023-11-20; bh=TGOogFhvR4DvHWJI4HU/HtvtnPwkQHxgF2VxyQH+Iwg=; b=
-	Du0fMXeSZyQQQjzpw1lDYUy2qL27wvswlikAM0X+g+rOJLg/MKOD+ZbcWpNdGYw+
-	s6/Daw+/bGE4QTFCicmLwuiIKoEUhEVB3IK6YaJoWI2MN6Em1tvDMc5Oi+40b+RN
-	L9YG/6Zh4lWBn7Nlg44fhYvF24b45mtsTuKChTQ3Zx1WIxz12tQv9yZHUjKjGjwr
-	8q0m7QZbxNBBFKTS2zfaUaAe4p0eINPjowrmvMEYvZBHblIZfkUDU9t+m0ochTRz
-	jujU+iSouAgK1vNZeGLOTfZy+SLjQA8xEmoxl8U2GjU50YWbw3fBwci/N6PPxU/a
-	nq+gJMWN1ryUWuwzIT/5VQ==
-Received: from phxpaimrmta01.imrmtpd1.prodappphxaev1.oraclevcn.com (phxpaimrmta01.appoci.oracle.com [138.1.114.2])
-	by mx0b-00069f02.pphosted.com (PPS) with ESMTPS id 42ckkqtj6x-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-	Mon, 21 Oct 2024 14:29:11 +0000 (GMT)
-Received: from pps.filterd (phxpaimrmta01.imrmtpd1.prodappphxaev1.oraclevcn.com [127.0.0.1])
-	by phxpaimrmta01.imrmtpd1.prodappphxaev1.oraclevcn.com (8.18.1.2/8.18.1.2) with ESMTP id 49LDin9m026219;
-	Mon, 21 Oct 2024 14:29:10 GMT
-Received: from nam11-dm6-obe.outbound.protection.outlook.com (mail-dm6nam11lp2177.outbound.protection.outlook.com [104.47.57.177])
-	by phxpaimrmta01.imrmtpd1.prodappphxaev1.oraclevcn.com (PPS) with ESMTPS id 42c376d8k9-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-	Mon, 21 Oct 2024 14:29:10 +0000
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=AtEYUCwn1JR4bdzmsHfSDT8uNt64QUqRhVJVMjdcV99C10eXrmFzMtjfrryVdITcfcu3kMXEbFY+5ic6Oin66fKKewvjIlLMXHL99L83yC8bFXFuvijEN2IBWhvTF37rbYQyg0bGtQe4JeUxnRkUrBzWPBBf0cOFFYrexSc5SfUU72rbD+p3bR7lMtplueWFpk6ZWnaeEofUzvnK7D7+i+4O9YKHnpAUEsXZ76lbfUR9aCGErPflJpZQeyBFrdhXltvAlzkHveg7FCpUSBy4QAEo02jsjIAmqueqn4gXel6ahHLaeClIqMzsIcU0+SInrWejQknWKWpek+7d10lKqw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=TGOogFhvR4DvHWJI4HU/HtvtnPwkQHxgF2VxyQH+Iwg=;
- b=Q3YMVQJCoD8xKqTwCXGWDURpJxsRtKRbVH+1lYEvRO+iWaOYxCx7//Xg8H50cSGOg1tF6MRYnx3yiC8FSwEYmch0ntOTir3Z86OflwwSAucRa6F3h+EgaA5OgZS34HT9vXbUi+09k3yFScyOLu4ONRc3QxH72q//2dn22bfB2KiSIMzCb0R24blGcga4TQmhkRXBYvkdNpz+Xj+lsy2cmZqBR2LEaZr5SRXEszpC8jrmipnoK6liS75a+qUA6c6yB9QHF2h0jUouLGeY+MNUcQCfAzaEZdCfm3PjDplk0zW/9LD1tyFxdf8a/JxsVRuCNkvGi9HQzPp+jet/hnhYMQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=oracle.com; dmarc=pass action=none header.from=oracle.com;
- dkim=pass header.d=oracle.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=oracle.onmicrosoft.com; s=selector2-oracle-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=TGOogFhvR4DvHWJI4HU/HtvtnPwkQHxgF2VxyQH+Iwg=;
- b=X4smrzCHS/xhdlN4+0KiNruh5RA+MNJckZMWx8OfSXqXj+drGTJnk7ok8Z0hAc88hcCgh4RbpfRqePBjcN1GRA9QlaZCWZHN7j9FQ5/8KX5/u50eVJOXUqOvLmwTHdw3gLv4ztvaK4tF6YZ0GHR3kRhYH8E56l6nCcJR/AU3jAo=
-Received: from IA1PR10MB7447.namprd10.prod.outlook.com (2603:10b6:208:44c::10)
- by IA1PR10MB7360.namprd10.prod.outlook.com (2603:10b6:208:3d8::13) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.8069.28; Mon, 21 Oct
- 2024 14:29:07 +0000
-Received: from IA1PR10MB7447.namprd10.prod.outlook.com
- ([fe80::f2fe:d6c6:70c4:4572]) by IA1PR10MB7447.namprd10.prod.outlook.com
- ([fe80::f2fe:d6c6:70c4:4572%4]) with mapi id 15.20.8069.027; Mon, 21 Oct 2024
- 14:29:07 +0000
-Message-ID: <9c0f4c03-6373-4263-b389-262f8018ad02@oracle.com>
-Date: Mon, 21 Oct 2024 10:29:02 -0400
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH V3 8/9] iommufd: optimize file mapping
-From: Steven Sistare <steven.sistare@oracle.com>
-To: Jason Gunthorpe <jgg@nvidia.com>
-Cc: iommu@lists.linux.dev, Kevin Tian <kevin.tian@intel.com>,
-        Nicolin Chen <nicolinc@nvidia.com>
-References: <20241016130001.GI3559746@nvidia.com>
- <6fdad0c2-8b6a-433e-9405-016aaee40413@oracle.com>
- <20241017192418.GD3559746@nvidia.com>
- <c4574487-346a-427e-a97d-6e1ee366ed1a@oracle.com>
- <20241018001046.GF3559746@nvidia.com>
- <279c7e80-1d72-407e-bfb8-d286760a5e11@oracle.com>
- <20241018160430.GJ3559746@nvidia.com>
- <dc59dc36-027f-42c1-971a-8218c658c5a0@oracle.com>
- <20241018175951.GK3559746@nvidia.com>
- <55027ff1-05cb-4ce9-adad-8dca586a26ac@oracle.com>
- <20241018231011.GL3559746@nvidia.com>
- <561a1712-8613-4f88-ae60-7f12a4b7c244@oracle.com>
-Content-Language: en-US
-Organization: Oracle Corporation
-In-Reply-To: <561a1712-8613-4f88-ae60-7f12a4b7c244@oracle.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
-X-ClientProxiedBy: BYAPR03CA0005.namprd03.prod.outlook.com
- (2603:10b6:a02:a8::18) To IA1PR10MB7447.namprd10.prod.outlook.com
- (2603:10b6:208:44c::10)
+	dkim=pass (1024-bit key) header.d=linux.dev header.i=@linux.dev header.b="eJ2u1bPs"
+Message-ID: <a61b0a48-d55b-494b-a7e8-04b02dc87e21@linux.dev>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
+	t=1729521431;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding:
+	 in-reply-to:in-reply-to:references:references;
+	bh=mA3Yw+C9FhQPBZ1Ah8zRphQ8BomtwMtOAV4fpiUEPcc=;
+	b=eJ2u1bPspCyKDFZxOYZF29T/F5YR3lGU6492LgXb8AdIZzBVRtPhQseMWnXFwjoj34pFEu
+	sKP9lxrJA6CzixQ0rwCZRsSEeqU1ooRRSJ6G80JOv6L/YeQ25aqCDcIEKGNfoJG6jYhjZq
+	9PhKEImi9KUCn+kUt8TkQPdAmugnTuc=
+Date: Mon, 21 Oct 2024 10:37:07 -0400
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: IA1PR10MB7447:EE_|IA1PR10MB7360:EE_
-X-MS-Office365-Filtering-Correlation-Id: 8f6893a4-c65e-496a-ce75-08dcf1dcb87a
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;ARA:13230040|1800799024|376014|366016;
-X-Microsoft-Antispam-Message-Info:
-	=?utf-8?B?U0VSQ291WWQ2ZXlyQjRLU0ljNjZGVmYwd0xLYnlUQXdsQnpxck80OFFnaWlr?=
- =?utf-8?B?ZDlZSGRUVWF1NnpYREY3SlE0bG83eDl2OWN3Z0dNd0hicmRLNCtUdWthMDhz?=
- =?utf-8?B?VElrL3JpMTBXZGVJbEFqc2k0dEdCTXJYc2E1Q3pGQW9wZjNpTnJsUldrV3dZ?=
- =?utf-8?B?cit5YnhkK0QwdkZTYVBkQzFCT2VtUEZXZGp3bE54L3NJdElMSC93SVdVMUJu?=
- =?utf-8?B?eEoxWHUwaE9EMXpJZFdlcUF4alhhNUFWOTFGdEZJNGlscHRwVXlBNVpYWGFY?=
- =?utf-8?B?TnNrcFZ5eUtRU1AzaDRZZU9UeHByOEFMd1hHMzNYRGhJZVpybzVvN2ZYUSts?=
- =?utf-8?B?VWtIeFZoUCtFOEFUUWxZODRncjYvcnU0NTVkejRnWVN0aU5mWHp3RUFpSisx?=
- =?utf-8?B?bmZZbkpSVmlneFNTSDdKNTFzTzlQUTVXUjNXZmJhQUhEcnphTFpzaTRNTWlN?=
- =?utf-8?B?TXZ2MnJ1RGVIOFJ3NkJsTk8wMWN1WVdZOW1JZnVZbkYrTko0anFWaUI4Tkdq?=
- =?utf-8?B?NkRYT3pHR3BzWlU4ZG5jR3RCSlhIZ0MyNFl4UXdHUy8vZENBN3dmVkR2ZEdt?=
- =?utf-8?B?Q1lJdnNyVjA3T0VjWHVNZHB4SEloRk5qMDUyeW54UnBSLzZ6QjRHRHhZZ2pK?=
- =?utf-8?B?ZHFXOEZwNVU2dFVrTFBpUldCRkJ1MkJ0cllLOU9uUHJMZ21mN1ZFV1Z5SDE3?=
- =?utf-8?B?ZE1lNWRBZWZwWThxa04rOEM0eDhLSy9ZNnFWM2N1Q1h4Tm5LNG1YSVNWaTNt?=
- =?utf-8?B?T0xxMjVuVSt2QU53eDQ3NjVIUXJDbFpJRTRhb2lXeXBIdlNmUDFtR05aUUpi?=
- =?utf-8?B?WWgwRVJ1Tlh5ZzN3Q0ZYanA3L3VjL1ZIdVRVN3YrRjB3SWw1cDVJSGxEY1k1?=
- =?utf-8?B?eUptbUV1R2l3SmFjZ1AyRDdZdkpMREcrYnFoS2V1bzd4a0x6S01oQi9SYm10?=
- =?utf-8?B?WjRJWHRHUzU4NCtkckdwVTVnb1AxU05uaGhOc09KcUM3aHdJRGZQZVRGK1Nm?=
- =?utf-8?B?ZWpUeEpYNDhtUlRUc20rNmYxZ3JDV0xHbzJJOGNTMGJyendzN2NCNXh1SU1M?=
- =?utf-8?B?U1ZPNzJjUFl3enNmbHpZMzN4b3NDQU9udXY0TzdMakhrM2lMb20yWFhRMFhF?=
- =?utf-8?B?ZmJNNkhvd01IMVJ2VnRNUXlKWEJCMjRscjRkTzA4d3ZsMDRVbW5pNTdUOFZy?=
- =?utf-8?B?dnBtME1QZElCb3c1c1k3SUV4Q2FRMFhnTnlqMWJsOUluM0RiNWlPNEJocFZR?=
- =?utf-8?B?aHBUQi9ZbHJqSjdxZWs1eTYxbm12STdUamhkakdLdmNicktRRWl6U0h6MWt3?=
- =?utf-8?B?QUM3b1g3d0hOS1Iwbzc5aWxTR0tWU1ZBV2NmRjJJdE01ZlFiSUFsVCtudjMw?=
- =?utf-8?B?b0RkUDZVamorcGxSVkhwNEp0eEFhN3VnQWdqaFJBaFdSdURHMzduNk9RN01C?=
- =?utf-8?B?Sm53elAvTDYwdVgrTGFPTE1FeEZoUjJzMjl3Q3JHbnBWTlFNZzZvYWxnQ2kx?=
- =?utf-8?B?blU0cHlFeU5CME5JTW5lb1VrdHZkd3FSVktLbmdjNDZFZjlzbWhXYW5TYlVa?=
- =?utf-8?B?QXp4bDFFVFU5R2RieXZMcDNWN3ZJVnNZTlRaRm4rRGpxZC9RSnJpU0g0a0Nh?=
- =?utf-8?B?YUQ3cHJjc0ZWU09oSFJremJGOXRnU3NRYXFYaXlNdysvVldRdDJRZGNSVmVG?=
- =?utf-8?B?UExvUkg1YnVoZzBoVmpwZkFycFRyRzUwRDkwZmVNWE9UVFJsS24yUzNXVWlI?=
- =?utf-8?Q?CPjq3eMl3GwiLq8xyjCRc8V98mn1r88fBym5tFz?=
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:IA1PR10MB7447.namprd10.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(1800799024)(376014)(366016);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?utf-8?B?VkMrbFVqZGRoWGxTRDVKMTNZQkVPSjM1aHdDVnU1U3hxcFhmM1B1SGxFUXMv?=
- =?utf-8?B?U0d5V3djeWR0WlBPY05ocWtoR2UrbUM2ZGF0RzlNZ2ZWV2lCcWVBNVF0eDlt?=
- =?utf-8?B?MndGN0paaExWRUY4ZkhxNE50ZUdiZ2FTY3d4YkVDcnUxUTJVZUJrVVJaaGtt?=
- =?utf-8?B?UHdmdGVmSlFkS2w0Z2Vtb3AzRWxwWDhWTjMvNDJRQjliM1kzV0xsQW1JOU5Q?=
- =?utf-8?B?K3I1SGVNc1ZZcWVtK1FLVjBtSFBoTkJ5UkxWeFFxZzdEeW5aR2RKWGIzS1RK?=
- =?utf-8?B?eDRqdTFqTTljN0NwVzNsMXRZaGpxT0d1OXVSNkxLZ3ovbWpHME5PdyttdlVh?=
- =?utf-8?B?L0FVZVVDOTk0bjU2Q1FuSFY5ek5jb3dPWkpuSFRCSWI5amFDbE9BQVU4TzF2?=
- =?utf-8?B?Rk4vVVJZcnFrUFVTWm1OelZPYWxLNFRYYUNuNml3VDdxWk9ST2s5Szg3TW1E?=
- =?utf-8?B?K2JOOUZsYWdvaUhXRjRKeFBLVnQ2ZklNQ240aE5BeXpaZENNYUcraGZJNTFG?=
- =?utf-8?B?bmdTM3U4Y2JVcXFNNkpvdzB0aytGOG9maFlDWFh4dTA0cGIyMkpMZ1plWFdF?=
- =?utf-8?B?bW9aVVlBYitzTVZuanNvU0xiamJwWGh0MTZLKzNFZWJ3Tkx3MGRsV3BZTTEr?=
- =?utf-8?B?dmNSamMyU3A2YVdrREdIZmltVVgvbiswWGo1ZUdiTEtzdGtqZkQyaFpKWmpM?=
- =?utf-8?B?Z1NFSnFTSWdmeEZoL2RKdWNFaGZhQ2FXSGEwVnc1M2s2MHhWVlNNT00yQ0N4?=
- =?utf-8?B?b1FyVEFjL0Jrbmo3MEJWZ1pFcVdxTjJlclh5b043ZDNNR3pxQUdSM2FreHZH?=
- =?utf-8?B?TXU4Q3pwVUZkV0NHN2tkaENoNTcrTko0QUIrd3VRUS9XczUwTkFKV3pUSFNs?=
- =?utf-8?B?RWdjVDVjang4RGJITzNMQ3JnU2Q3d1VaemNOS0dBV1RSWkU4TTU4bHBTYjdo?=
- =?utf-8?B?bUZ2cUcxK3N6SFRtbXJva3I0SFcxOGpOZjMxNHIvN2QzaHJYWVFTSms2eXNG?=
- =?utf-8?B?SmNwanVmeU5PYUtTQmZWUkZkc0lzQTc4cFFnbERYbWg5SzQ0Ti9lRmxSZG5m?=
- =?utf-8?B?S0ZZYVU2WlhHN1J4cVhwdGpGSFVVKzVWckY4YldyZFZQS2JHM2drYWRHYkRu?=
- =?utf-8?B?SDV0Zmh1TW1USDFLWCs0SnRDU3JXRVRTQXdtclp5MWxYZ3NyM1p2QlVnNUk0?=
- =?utf-8?B?aXFRbVpwY0JXc3NPTllKM1I4MUgrNWc3Ry9MaGdwVWl2UHFVZ1FYcDlTL0dH?=
- =?utf-8?B?TzA0NktpcE13VUUzQjMrVlVOWGRQaVdsYndQQTFuSFBKcmpabmR5QjlramEy?=
- =?utf-8?B?ZVpzSGdxWjRLVmhyZHltS3E4NXVrb3oxdnA4Ty9EL2cyaHFLZ0xHWHZkc2RG?=
- =?utf-8?B?NkRDcnAwZ0wxam1jK3BGUWJxL0JmUWhvVW5qSWFNQ3ZvMDJMT2t3blNDdlBE?=
- =?utf-8?B?VndXakdiUTRMTzBBc242Qk16Z0NGSjV0bmZheUNibko2R0ozZ3AyeTBCU3RR?=
- =?utf-8?B?eFVXcU1xZDQxMG95eWxmNmJxVnplOHFYR0ZUaS9YR2lkS1ZlOHN1V3NJVTkv?=
- =?utf-8?B?VGkyKzZ4Ry9hTXNQSWUrRVIwbm5ISEVQUlVSTkJiYmtHeWhhNFRUWU52RFNP?=
- =?utf-8?B?Q0Z1Mms1UVQ0MnFBZzJsZWh4YXl0bG9DSk16RkdzTitBYkdZMXpaYmUvYlNs?=
- =?utf-8?B?NHBRa0NvQ25ZZmRPeG5DZFVjcGdnaklHNU5aUzdCUCtETmxrVXhIekhpUjlx?=
- =?utf-8?B?K0lDUGdZd0xxTHJuSkdKeERiNTBaZ0hTeW8xU09RenhjODVzSDFCcXlQMnBo?=
- =?utf-8?B?QVRwSHVhVzA3Nmg2TlFOTDY2WDJzazlXSDRQMU93dXZIWThQdktPRGJuOWlI?=
- =?utf-8?B?WTRJZ1V4SnB4R0wvWTIxZStzUEt2M21ycG9TMUFrcVY0OVNJSG9Ba0JFK0Rw?=
- =?utf-8?B?OVM0UlY1ZXNGMkdqR096VjlEazgvamgvS0dWdjVFME9ibG1LUGx5SVRTOEwx?=
- =?utf-8?B?ZGdlZE9Wd1JaRVMxc3dDZVpnM3I2MitkblpReWcrYjZBZDdyNmYraEJIdFMx?=
- =?utf-8?B?RWZOQTNPQVllUFN4d0lEOTBtTWJaV2JYdWpKeHN4WkxaMVR6UGdNbEpJVUkw?=
- =?utf-8?B?MTAyV0RNcGpiblQvb0Y5TzV4SUVScUx4WnowSmNnZ29KaEptWWphWHlCNjdu?=
- =?utf-8?B?NlE9PQ==?=
-X-MS-Exchange-AntiSpam-ExternalHop-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-ExternalHop-MessageData-0:
-	aFMCZYEKwYItixkyZgfZeogZBFubELsubFozPUKWcFJKltyjqNR/2Pf5uwH26knEtxsX0pOI9Iw+qJb30NhpHxP637dKtZnh0TbB9u8WDEL0RWyqjJ5A6O7jfEsK6R/hk5wYS6S5X/b/SHmX6kelg+pJyPpSjJiYFX34X3LYBzyXurPEQZYmYNnZt6OynAlpXw9hX9pIBTe/k0DpGcC1M5yZi+2NiBoPmD/QW8FlJZigLIUEFACUgnmJo6Zklv6doCG5s+seT9uNhSS9/SWP/pmm+VkSgWdknp0k3FcQfNxKlXaqZoLSslo88BrKR7WODhOQq42KDQTap4+zMvVW0EV9bSDLV4hTsOtvr1ggaJpFL6fQDaKGNr7n6XnsUDyEkpr479lbeqTka9TVjvxbucXu8+Lhqt9JZVDdhFG2OJXsps6lStRqfrLPD/ebxlUzICWXxM4VvNnMVgdyxNAwanzE3nYLxsg+WgFiTueCl727puupDmoMjAqWvTmjjbcrG5hJoJO23AX13uVrkH6zBPm0hZq2guY5iq1fPkuhce4pKCCj0fa36rnz7a/HMfDJO/a7/zfBpQfo3Q8AP0V9o5cy9b8OWanylENgUg4VmQg=
-X-OriginatorOrg: oracle.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 8f6893a4-c65e-496a-ce75-08dcf1dcb87a
-X-MS-Exchange-CrossTenant-AuthSource: IA1PR10MB7447.namprd10.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 21 Oct 2024 14:29:07.2137
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 4e2c6054-71cb-48f1-bd6c-3a9705aca71b
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: K9gAAgqwFY8vva9hVfWac5jdBi2GaPr2rSiOA5+TSyjnKMTSuy23sXWdGmvMfA9bURXbAg28XIUli6PBJg26WXmA1vV+M5wkpmURQHYw6U8=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: IA1PR10MB7360
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.293,Aquarius:18.0.1051,Hydra:6.0.680,FMLib:17.12.62.30
- definitions=2024-10-21_11,2024-10-21_01,2024-09-30_01
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 bulkscore=0 adultscore=0 suspectscore=0
- spamscore=0 malwarescore=0 mlxscore=0 mlxlogscore=999 phishscore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2409260000
- definitions=main-2410210103
-X-Proofpoint-GUID: C9-iKq9bFL6GMhOcMjgRwsATMQ47EI5C
-X-Proofpoint-ORIG-GUID: C9-iKq9bFL6GMhOcMjgRwsATMQ47EI5C
+Subject: Re: [PATCH 3/3] dma-mapping: Trace more error paths
+To: Robin Murphy <robin.murphy@arm.com>, Christoph Hellwig <hch@lst.de>,
+ iommu@lists.linux.dev
+Cc: linux-trace-kernel@vger.kernel.org, Masami Hiramatsu
+ <mhiramat@kernel.org>, linux-kernel@vger.kernel.org,
+ Mathieu Desnoyers <mathieu.desnoyers@efficios.com>,
+ Steven Rostedt <rostedt@goodmis.org>,
+ Marek Szyprowski <m.szyprowski@samsung.com>
+References: <20241017181354.2834674-1-sean.anderson@linux.dev>
+ <20241017181354.2834674-4-sean.anderson@linux.dev>
+ <5e01b376-b905-4775-badf-41d31d2a821c@arm.com>
+Content-Language: en-US
+X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
+From: Sean Anderson <sean.anderson@linux.dev>
+In-Reply-To: <5e01b376-b905-4775-badf-41d31d2a821c@arm.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-Migadu-Flow: FLOW_OUT
 
-On 10/21/2024 10:06 AM, Steven Sistare wrote:
-> On 10/18/2024 7:10 PM, Jason Gunthorpe wrote:
->> On Fri, Oct 18, 2024 at 02:10:26PM -0400, Steven Sistare wrote:
+On 10/21/24 06:38, Robin Murphy wrote:
+> On 2024-10-17 7:13 pm, Sean Anderson wrote:
+>> It can be surprising to the user if DMA functions are only traced on
+>> success. On failure, it can be unclear what the source of the problem
+>> is. Fix this by tracing all functions even when they fail. Cases where
+>> we BUG/WARN are skipped, since those should be sufficiently noisy
+>> already.
 >>
->>>>>> But why is that such a problem? The ufolios_offset already handles a
->>>>>> partial folio.
->>>>>>
->>>>>> If the batch fills you leave ufolios_next alone and adjust
->>>>>> ufolios_offset. The next iteration does exactly the same as the first
->>>>>> iteration and takes the partial folio.
->>>>>>
->>>>>> The refcount has to be handled carefully as the the portion that has
->>>>>> been put in the batch needs to be refcounted at 4k and the remainder
->>>>>> remain a single ref, but that just means adjusting the refcount after
->>>>>> putting it in the batch.
->>>>>>
->>>>>> It seems like it just works naturally and avoids the double loop
->>>>>
->>>>> Yes, I can squash the nested loop in batch_from_folios_huge.  (I was off
->>>>> point because I thought you were suggesting something else).
->>>>>
->>>>> Do you want me to delete ufolios_huge and its special cases?
->>>>
->>>> I think yes, if you can get to one loop then it would be a degradation
->>>> to sweep the folio list an extra time just to figure out ufolios_huge.
->>>
->>> So now I'm confused again and don't know which "double loops" you want me
->>> to eliminate. There is still a loop in pin_memfd_pages.  It calls folio_add_pins,
->>> which I could push to batch_from_folios_huge, but it also counts and returns
->>> pages.
+>> Signed-off-by: Sean Anderson <sean.anderson@linux.dev>
+>> ---
 >>
->> This is the one I was looking at, yes..
+>>   include/trace/events/dma.h | 41 ++++++++++++++++++++++++++++++++++++++
+>>   kernel/dma/mapping.c       | 27 +++++++++++++++++--------
+>>   2 files changed, 60 insertions(+), 8 deletions(-)
 >>
->>> It must do the count because the caller calls
->>> iopt_pages_add_npinned().
->>
->> Ah, this is what I was trying to get to, if there was some reason why
->> this loop and this pages calculation was needed..
->>
->> So, to fix that up you'd need to adjust the memfd_pin_folios() to also
->> return back the end va of what it returned - it calls it start_idx
->> internally. Then that can directly give the npages for add_npinned
->> with simple math and the loop in pin_memfd_pages can go away.
->>
->> Then you have a single loop in the batch_from_folios(), which
->> is what I am thinking about.
->>
->> What do you think?
+>> diff --git a/include/trace/events/dma.h b/include/trace/events/dma.h
+>> index 9bc647f9ad4d..321cce327404 100644
+>> --- a/include/trace/events/dma.h
+>> +++ b/include/trace/events/dma.h
+>> @@ -161,6 +161,12 @@ DEFINE_EVENT(_dma_alloc, dma_alloc_pages,
+>>            unsigned long attrs),
+>>       TP_ARGS(dev, virt_addr, dma_addr, size, dir, flags, attrs));
+>>   +DEFINE_EVENT(_dma_alloc, dma_alloc_sgt_err,
+>> +    TP_PROTO(struct device *dev, void *virt_addr, dma_addr_t dma_addr,
+>> +         size_t size, enum dma_data_direction dir, gfp_t flags,
+>> +         unsigned long attrs),
+>> +    TP_ARGS(dev, virt_addr, dma_addr, size, dir, flags, attrs));
+>> +
+>>   TRACE_EVENT(dma_alloc_sgt,
+>>       TP_PROTO(struct device *dev, struct sg_table *sgt, size_t size,
+>>            enum dma_data_direction dir, gfp_t flags, unsigned long attrs),
+>> @@ -325,6 +331,41 @@ TRACE_EVENT(dma_map_sg,
+>>           decode_dma_attrs(__entry->attrs))
+>>   );
+>>   +TRACE_EVENT(dma_map_sg_err,
+>> +    TP_PROTO(struct device *dev, struct scatterlist *sgl, int nents,
+>> +         int err, enum dma_data_direction dir, unsigned long attrs),
+>> +    TP_ARGS(dev, sgl, nents, err, dir, attrs),
+>> +
+>> +    TP_STRUCT__entry(
+>> +        __string(device, dev_name(dev))
+>> +        __dynamic_array(u64, phys_addrs, nents)
+>> +        __field(int, err)
+>> +        __field(enum dma_data_direction, dir)
+>> +        __field(unsigned long, attrs)
+>> +    ),
+>> +
+>> +    TP_fast_assign(
+>> +        struct scatterlist *sg;
+>> +        int i;
+>> +
+>> +        __assign_str(device);
+>> +        for_each_sg(sgl, sg, nents, i)
+>> +            ((u64 *)__get_dynamic_array(phys_addrs))[i] = sg_phys(sg);
+>> +        __entry->err = err;
+>> +        __entry->dir = dir;
+>> +        __entry->attrs = attrs;
+>> +    ),
+>> +
+>> +    TP_printk("%s dir=%s dma_addrs=%s err=%d attrs=%s",
+>> +        __get_str(device),
+>> +        decode_dma_data_direction(__entry->dir),
+>> +        __print_array(__get_dynamic_array(phys_addrs),
+>> +                  __get_dynamic_array_len(phys_addrs) /
+>> +                sizeof(u64), sizeof(u64)),
+>> +        __entry->err,
+>> +        decode_dma_attrs(__entry->attrs))
+>> +);
+>> +
+>>   TRACE_EVENT(dma_unmap_sg,
+>>       TP_PROTO(struct device *dev, struct scatterlist *sgl, int nents,
+>>            enum dma_data_direction dir, unsigned long attrs),
+>> diff --git a/kernel/dma/mapping.c b/kernel/dma/mapping.c
+>> index b8a6bc492fae..636dbb0629a4 100644
+>> --- a/kernel/dma/mapping.c
+>> +++ b/kernel/dma/mapping.c
+>> @@ -223,6 +223,7 @@ static int __dma_map_sg_attrs(struct device *dev, struct scatterlist *sg,
+>>           debug_dma_map_sg(dev, sg, nents, ents, dir, attrs);
+>>       } else if (WARN_ON_ONCE(ents != -EINVAL && ents != -ENOMEM &&
+>>                   ents != -EIO && ents != -EREMOTEIO)) {
+>> +        trace_dma_map_sg_err(dev, sg, nents, ents, dir, attrs);
 > 
-> Yes, this would eliminate the extra loop in pin_memfd_pages for the !upages
-> case.  However, we still need all of that code when upages must be filled,
-> so pin_memfd_pages does not get any simpler.
+> Isn't this just a case of moving the existing tracepoint up outside the "if (ents > 0)" condition?
+
+This is a separate tracepoint (_err) to simplify collecting/printing the
+addresses.
+
 > 
-> But, we cannot change the signature of the exported function memfd_pin_folios.
-> It would have been nice if the end parameter was an inout.
+>>           return -EIO;
+>>       }
+>>   @@ -604,20 +605,26 @@ void *dma_alloc_attrs(struct device *dev, size_t size, dma_addr_t *dma_handle,
+>>       if (WARN_ON_ONCE(flag & __GFP_COMP))
+>>           return NULL;
+>>   -    if (dma_alloc_from_dev_coherent(dev, size, dma_handle, &cpu_addr))
+>> +    if (dma_alloc_from_dev_coherent(dev, size, dma_handle, &cpu_addr)) {
+>> +        trace_dma_alloc(dev, cpu_addr, *dma_handle, size,
+>> +                DMA_BIDIRECTIONAL, flag, attrs);
+>>           return cpu_addr;
+>> +    }
+>>         /* let the implementation decide on the zone to allocate from: */
+>>       flag &= ~(__GFP_DMA | __GFP_DMA32 | __GFP_HIGHMEM);
+>>   -    if (dma_alloc_direct(dev, ops))
+>> +    if (dma_alloc_direct(dev, ops)) {
+>>           cpu_addr = dma_direct_alloc(dev, size, dma_handle, flag, attrs);
+>> -    else if (use_dma_iommu(dev))
+>> +    } else if (use_dma_iommu(dev)) {
+>>           cpu_addr = iommu_dma_alloc(dev, size, dma_handle, flag, attrs);
+>> -    else if (ops->alloc)
+>> +    } else if (ops->alloc) {
+>>           cpu_addr = ops->alloc(dev, size, dma_handle, flag, attrs);
+>> -    else
+>> +    } else {
+>> +        trace_dma_alloc(dev, NULL, 0, size, DMA_BIDIRECTIONAL, flag,
+>> +                attrs);
+>>           return NULL;
+> 
+> Similarly just move this return down past the tracepoint, same as the hunk below?
 
-Despite this I can make one further simplification of the V4 code.  In pin_memfd_pages,
-if !upages, I can skip folio_add_pins and instead call it from batch_from_folios.  This
-guarantees that in pfn_reader_release_pins, each folio to be released has only 1 pin,
-so I can call the existing unpin_folios and delete folios_unpin_partial.
+OK
 
-- Steve
+>> +    }
+>>         trace_dma_alloc(dev, cpu_addr, *dma_handle, size, DMA_BIDIRECTIONAL,
+>>               flag, attrs);
+>> @@ -642,11 +649,11 @@ void dma_free_attrs(struct device *dev, size_t size, void *cpu_addr,
+>>        */
+>>       WARN_ON(irqs_disabled());
+>>   -    if (!cpu_addr)
+>> -        return;
+>> -
+>>       trace_dma_free(dev, cpu_addr, dma_handle, size, DMA_BIDIRECTIONAL,
+>>                  attrs);
+>> +    if (!cpu_addr)
+>> +        return;
+>> +
+>>       debug_dma_free_coherent(dev, size, cpu_addr, dma_handle);
+>>       if (dma_alloc_direct(dev, ops))
+>>           dma_direct_free(dev, size, cpu_addr, dma_handle, attrs);
+>> @@ -688,6 +695,8 @@ struct page *dma_alloc_pages(struct device *dev, size_t size,
+>>           trace_dma_alloc_pages(dev, page_to_virt(page), *dma_handle,
+>>                         size, dir, gfp, 0);
+>>           debug_dma_map_page(dev, page, 0, size, dir, *dma_handle, 0);
+>> +    } else {
+>> +        trace_dma_alloc_pages(dev, NULL, 0, size, dir, gfp, 0);
+> 
+> Could we move the page_to_virt() into the event definiton and let that handle NULL, then similarly hoist the tracepoint out of the condition?
 
+Then we cannot reuse the event class for trace_dma_alloc, which does not
+have a struct page available.
+
+>>       }
+>>       return page;
+>>   }
+>> @@ -772,6 +781,8 @@ struct sg_table *dma_alloc_noncontiguous(struct device *dev, size_t size,
+>>           sgt->nents = 1;
+>>           trace_dma_alloc_sgt(dev, sgt, size, dir, gfp, attrs);
+>>           debug_dma_map_sg(dev, sgt->sgl, sgt->orig_nents, 1, dir, attrs);
+>> +    } else {
+>> +        trace_dma_alloc_sgt_err(dev, NULL, 0, size, gfp, dir, attrs);
+> 
+> And again similarly here - if I'm interested in calls to dma_alloc_contiguous(), I'd rather have a "dma_alloc_contiguous" tracepoint which can tell me both the arguments and the result at a glance, than have to remember to trace two distinct other things based on internal details.
+
+Isn't it a case of just doing `perf record -e 'dma:dma_alloc_sgt*'`?
+
+Fundamentally, these events have different information available, and
+dealing with this in a generic manner is inconvenient.
+
+--Sean
