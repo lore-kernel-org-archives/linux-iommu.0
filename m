@@ -1,72 +1,140 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 51F471D0B98;
-	Mon, 21 Oct 2024 06:55:13 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1302E15575F
+	for <iommu@lists.linux.dev>; Mon, 21 Oct 2024 06:59:19 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1729493713; cv=none; b=ujQJKAV6CoBlGyI/Q5Ftz5zrgS+lGdnYAtLzpPo7s78UdcTlvgEeI21Ve/K/ESwCkxbEHVxxo060auEexcEo87bmLo0it3TCTU+iewI50nMoe5xMD5QjIv7ZeD7m+U/hfd2GfxpAe8ViiiI20wm79QRgtgAykRp9H3/dQjhDWJY=
+	t=1729493962; cv=none; b=biTfc0NlLVU4ihasmD404KDu242bY3FZp/B+ZP9lhQq5HkPfqLsPGQ9udxsDfjRAqT/C4jwsxRnAOnCmEUhdWZxzki5ypv9Z7tN0lhd/+SMlUG4ipUv5V8/wewDMW4s9KzQssODVk+70q9rlrmN4EkLV10waENfP61uzUH7Bqcc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1729493713; c=relaxed/simple;
-	bh=8PCol88A2ncEPIJmEoeILZX16B39Y6hAq9nQ5qaD65Q=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=GKUWSWNzdM1JCMtKKoOAeyMF6v5qC5M8erivHAzzq/h1EPc6cKS3WwOc+ZH/UGjBtMZBjWBRnLJpmSJBf9xlod4GW/XAY6nCQoG/SgVu4MJrWZnytz7X00ARP/+gRALLb+qKR0Vm3eXD3R0sFldyW+Htdv6VO6Fxw7g3rLcouWU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=dAq8B577; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1729493962; c=relaxed/simple;
+	bh=Vm1igIvX9C+8oPSZofGBuElI7aRld2YMhzcuRxpz+xM=;
+	h=Message-ID:Date:MIME-Version:Cc:Subject:To:References:From:
+	 In-Reply-To:Content-Type; b=Oi+0lbmHreO73zxoFG6fvWnnzH8XnQ8Tof2hP0Gf64rF1NIOjJAokWwDbmu0rjvoUIP7zpzQKqSh3qjfz/KIaiuWehGm0RYP0aZnoFc+ePyHiw6TUvO57WUBvXFSqPxZCfNYLnyyHXJOdlQEiOKFJ4kKJvG2OfhshTK0eqXxSZg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=EYwjmwS9; arc=none smtp.client-ip=192.198.163.18
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="dAq8B577"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 155EBC4CEC3;
-	Mon, 21 Oct 2024 06:55:12 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1729493712;
-	bh=8PCol88A2ncEPIJmEoeILZX16B39Y6hAq9nQ5qaD65Q=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=dAq8B577+0ECrnl1hxg57JvaIAERfsMygM1RTe73txDgtUVOofRuD9unBnx4hmSeZ
-	 EIQ5qQQPxBsulq9iTwBntYRm/SUYdCu6/HxYgi+lK9WjTb7A+Ls0aRl5aSPmMotDwt
-	 N3T/9ZHy09RxzzPqnDa95Hr/vjirO4UDi0ghvjFN8diNiDnFtTcLhqgkCCl0rX6x93
-	 wdBRWkuYTfAr3C81FnS3swCEYFUtATB4ivCt6mYDhSSl8TSAI0ZdFS8O1xFMZmAxY8
-	 KrIi4Edm8wGXgrUXAP/ZgLI5X6A/bHmLP9XCRQnDOerrdfgsZC2W/acdwYH+nvrpU6
-	 rn7KqZeh9D7Eg==
-Date: Mon, 21 Oct 2024 08:55:09 +0200
-From: Krzysztof Kozlowski <krzk@kernel.org>
-To: =?utf-8?B?QmFybmFiw6FzIEN6w6ltw6Fu?= <barnabas.czeman@mainlining.org>
-Cc: Bjorn Andersson <andersson@kernel.org>, 
-	Linus Walleij <linus.walleij@linaro.org>, Rob Herring <robh@kernel.org>, 
-	Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, 
-	Konrad Dybcio <konradybcio@kernel.org>, Lee Jones <lee@kernel.org>, Amit Kucheria <amitk@kernel.org>, 
-	Thara Gopinath <thara.gopinath@gmail.com>, "Rafael J. Wysocki" <rafael@kernel.org>, 
-	Daniel Lezcano <daniel.lezcano@linaro.org>, Zhang Rui <rui.zhang@intel.com>, 
-	Lukasz Luba <lukasz.luba@arm.com>, Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>, 
-	Robin Murphy <robin.murphy@arm.com>, Srinivas Kandagatla <srinivas.kandagatla@linaro.org>, 
-	linux-arm-msm@vger.kernel.org, linux-gpio@vger.kernel.org, devicetree@vger.kernel.org, 
-	linux-kernel@vger.kernel.org, linux-pm@vger.kernel.org, iommu@lists.linux.dev, 
-	Dang Huynh <danct12@riseup.net>, Dmitry Baryshkov <dmitry.baryshkov@linaro.org>, 
-	Otto =?utf-8?Q?Pfl=C3=BCger?= <otto.pflueger@abscue.de>
-Subject: Re: [PATCH RFC 00/14] Add MSM8917/PM8937/Redmi 5A
-Message-ID: <gh55k7a3b6rmkloq45mkfcms5g3x6stelzoikag3uo7idvkb7g@ncslfa5tzsnf>
-References: <20241019-msm8917-v1-0-f1f3ca1d88e5@mainlining.org>
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="EYwjmwS9"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1729493961; x=1761029961;
+  h=message-id:date:mime-version:cc:subject:to:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=Vm1igIvX9C+8oPSZofGBuElI7aRld2YMhzcuRxpz+xM=;
+  b=EYwjmwS9H6p8DVmuhReijZxsFy6vzNHC/4Bjrzpyz2FvMjwVMjgvQOQm
+   MfwGWPKD1hW5Iogul5kFO1avh379cDG73z2fVIe3j7mOV4O/RZXb5s+LZ
+   rIcyc/yt52dz5IIuw4NRtZHGWO5HAqeJ5k2tGu1WJEld+fV795yB0fKcU
+   bdK92l2qiWg4dePljGGg1a08aM8iDBmbHrlXy2VDsZQxz8mK0CMYv9/zd
+   DTGDvW7uCUJ7Y8axH/QKWe1BpC90NRD7cry2zVhpJp90cDJzQhx2bj2BV
+   a4ZjBqbD5ef3yMDv1SuyJOhc+Np8ZQ9FXy+p4e2U/VYUXFbN65hA25zFz
+   Q==;
+X-CSE-ConnectionGUID: cmBxgJYvSvuEt2uyGDE8pQ==
+X-CSE-MsgGUID: 8BLQffuOSbq//81uD4b77g==
+X-IronPort-AV: E=McAfee;i="6700,10204,11231"; a="28397068"
+X-IronPort-AV: E=Sophos;i="6.11,220,1725346800"; 
+   d="scan'208";a="28397068"
+Received: from fmviesa003.fm.intel.com ([10.60.135.143])
+  by fmvoesa112.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Oct 2024 23:59:19 -0700
+X-CSE-ConnectionGUID: gF9XuQjHS/+HePbhGTYdqA==
+X-CSE-MsgGUID: H8AZrQHVTQOlU7MjtKqlsw==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.11,220,1725346800"; 
+   d="scan'208";a="83431439"
+Received: from unknown (HELO [10.238.0.51]) ([10.238.0.51])
+  by fmviesa003-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Oct 2024 23:59:16 -0700
+Message-ID: <ce78d006-53d8-4194-ae9d-249ab38c1d6d@linux.intel.com>
+Date: Mon, 21 Oct 2024 14:59:14 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
-In-Reply-To: <20241019-msm8917-v1-0-f1f3ca1d88e5@mainlining.org>
+User-Agent: Mozilla Thunderbird
+Cc: baolu.lu@linux.intel.com, alex.williamson@redhat.com,
+ eric.auger@redhat.com, nicolinc@nvidia.com, kvm@vger.kernel.org,
+ chao.p.peng@linux.intel.com, iommu@lists.linux.dev,
+ zhenzhong.duan@intel.com, vasant.hegde@amd.com
+Subject: Re: [PATCH v3 3/9] iommu/vt-d: Let intel_pasid_tear_down_entry()
+ return pasid entry
+To: Yi Liu <yi.l.liu@intel.com>, joro@8bytes.org, jgg@nvidia.com,
+ kevin.tian@intel.com, will@kernel.org
+References: <20241018055402.23277-1-yi.l.liu@intel.com>
+ <20241018055402.23277-4-yi.l.liu@intel.com>
+ <e5cd1de4-37f7-4d55-aa28-f37d49d46ac6@linux.intel.com>
+ <521b4f3e-1979-46f5-bfad-87951db2b6ed@intel.com>
+Content-Language: en-US
+From: Baolu Lu <baolu.lu@linux.intel.com>
+In-Reply-To: <521b4f3e-1979-46f5-bfad-87951db2b6ed@intel.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 
-On Sat, Oct 19, 2024 at 01:50:37PM +0200, Barnab=C3=A1s Cz=C3=A9m=C3=A1n wr=
-ote:
-> This patch series add support for MSM8917 soc with PM8937 and
-> Xiaomi Redmi 5A (riva).
+On 2024/10/21 14:35, Yi Liu wrote:
+> On 2024/10/21 14:13, Baolu Lu wrote:
+>> On 2024/10/18 13:53, Yi Liu wrote:
+>>> intel_pasid_tear_down_entry() finds the pasid entry and tears it down.
+>>> There are paths that need to get the pasid entry, tear it down and
+>>> re-configure it. Letting intel_pasid_tear_down_entry() return the pasid
+>>> entry can avoid duplicate codes to get the pasid entry. No functional
+>>> change is intended.
+>>>
+>>> Signed-off-by: Yi Liu<yi.l.liu@intel.com>
+>>> ---
+>>>   drivers/iommu/intel/pasid.c | 11 ++++++++---
+>>>   drivers/iommu/intel/pasid.h |  5 +++--
+>>>   2 files changed, 11 insertions(+), 5 deletions(-)
+>>>
+>>> diff --git a/drivers/iommu/intel/pasid.c b/drivers/iommu/intel/pasid.c
+>>> index 2898e7af2cf4..336f9425214c 100644
+>>> --- a/drivers/iommu/intel/pasid.c
+>>> +++ b/drivers/iommu/intel/pasid.c
+>>> @@ -239,9 +239,12 @@ devtlb_invalidation_with_pasid(struct 
+>>> intel_iommu *iommu,
+>>>   /*
+>>>    * Caller can request to drain PRQ in this helper if it hasn't done 
+>>> so,
+>>>    * e.g. in a path which doesn't follow remove_dev_pasid().
+>>> + * Return the pasid entry pointer if the entry is found or NULL if no
+>>> + * entry found.
+>>>    */
+>>> -void intel_pasid_tear_down_entry(struct intel_iommu *iommu, struct 
+>>> device *dev,
+>>> -                 u32 pasid, u32 flags)
+>>> +struct pasid_entry *
+>>> +intel_pasid_tear_down_entry(struct intel_iommu *iommu, struct device 
+>>> *dev,
+>>> +                u32 pasid, u32 flags)
+>>>   {
+>>>       struct pasid_entry *pte;
+>>>       u16 did, pgtt;
+>>> @@ -250,7 +253,7 @@ void intel_pasid_tear_down_entry(struct 
+>>> intel_iommu *iommu, struct device *dev,
+>>>       pte = intel_pasid_get_entry(dev, pasid);
+>>>       if (WARN_ON(!pte) || !pasid_pte_is_present(pte)) {
+>>>           spin_unlock(&iommu->lock);
+>>> -        return;
+>>> +        goto out;
+>>
+>> The pasid table entry is protected by iommu->lock. It's  not reasonable
+>> to return the pte pointer which is beyond the lock protected range.
+> 
+> Per my understanding, the iommu->lock protects the content of the entry,
+> so the modifications to the entry need to hold it. While, it looks not
+> necessary to protect the pasid entry pointer itself. The pasid table should
+> exist during device probe and release. is it?
 
-Please always give some hint why this is not suitable for merging (you
-tagged this as RFC). Every patch is for "comments", so if you mark it as
-RFC means it is not ready.
+The pattern of the code that modifies a pasid table entry is,
 
-Some maintainers ignore RFC patches because of that. There is a lot of
-stuff here, so it's also easier for me to skip it, if this is not ready.
+	spin_lock(&iommu->lock);
+	pte = intel_pasid_get_entry(dev, pasid);
+	... modify the pasid table entry ...
+	spin_unlock(&iommu->lock);
 
-Best regards,
-Krzysztof
+Returning the pte pointer to the caller introduces a potential race
+condition. If the caller subsequently modifies the pte without re-
+acquiring the spin lock, there's a risk of data corruption or
+inconsistencies.
 
+Thanks,
+baolu
