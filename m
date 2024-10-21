@@ -1,183 +1,207 @@
-Received: from NAM11-DM6-obe.outbound.protection.outlook.com (mail-dm6nam11on2041.outbound.protection.outlook.com [40.107.223.41])
+Received: from bali.collaboradmins.com (bali.collaboradmins.com [148.251.105.195])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C19071D04BB
-	for <iommu@lists.linux.dev>; Mon, 21 Oct 2024 09:10:51 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.223.41
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1729501853; cv=fail; b=cBtfRjVFtzYljBn872rk0z428lxKXvE5AH762jtBQ1W4X8P8dV//vFli+7HRaIe/5oFmCZq8VYIKveTOcuf1JwY81pd38W8XKs9SxVAouNimHHA9Q4aM9nybmKdA5eYNbatsOOFZrDJuC9WGil3+noAwBX6pQR2vPf4s5mXmAX0=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1729501853; c=relaxed/simple;
-	bh=dy5L1XjY7dB3K3c+bhMIQ4qzMO+oS5ScJSrmPzc4jZs=;
-	h=Message-ID:Date:Subject:To:Cc:References:From:In-Reply-To:
-	 Content-Type:MIME-Version; b=kIRtuj5GfuLhExYNJRr+Kbll3oLIFPqE41Mml/+7mZilbWLVpyW9wWm0arR/eAwN7IqnWtxqQNEC5fPCEejEdJmVeflGgCWp1RoRV9OrjGo4z7tqQlaFf3vJIPy38znRSmwzhGxJ31XVI84QMRWx0vEL2inOgJx6MHknkgMNoS4=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com; spf=fail smtp.mailfrom=amd.com; dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b=R84klV3U; arc=fail smtp.client-ip=40.107.223.41
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=amd.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 02A274437;
+	Mon, 21 Oct 2024 09:18:10 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=148.251.105.195
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1729502293; cv=none; b=MmQ+G3Dn8P7OMrZBSMjnelPpXNvkqLccoRuh0ijoI1JJJoQ0GUywlpb+Xe0NYvYNVzCdwftoPvZzafN0Kh0Q4RlaIAzda1DFFoGgnQrz4v1t5QiddiEK60+KYKmmHdsp8/IgNyRMB7LICOAZQoceKYnX6TOWP8ZPYiSn6az4hrY=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1729502293; c=relaxed/simple;
+	bh=llXWt9EDhIYDizPZ/i9tAy/u1WhV07tHJvNbQJI8fKs=;
+	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=oJiPccZDtRe0PQmVfexF33TLkB8Slt05ykeG5+Xc4qGg0uvPoEav+zTtxDjZBrfR/IlV/bo+xnpV+orQsRnCR3jHL5/qIfDCeBovy1ow5PeSE9kG/x5904IHlIxlXzpS1AlUKs4O7U7Hr+ou0k4n9f8N5Kc48UiK+8yBpZ9Cs30=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=collabora.com; spf=pass smtp.mailfrom=collabora.com; dkim=pass (2048-bit key) header.d=collabora.com header.i=@collabora.com header.b=iRiLxaJY; arc=none smtp.client-ip=148.251.105.195
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=collabora.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=collabora.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b="R84klV3U"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=flRogTiVtEE5tAxPXjMvYmK6Tad30JzG5EdX2eZI1SP0BZD1I2b9BiyrnyRHRxECyeDTXPfbw3RnCSm7yjoEWmALAAD41k1RnI0D+JUM9M7bVeFIrBRXmglrfU/bAHi3KHvC1+GU2vkKEQzowxn+H+nt0WFX6Ycz7wwYdz6TqUQNqX6QklheZviqe1jDbe04+wvowuIw/zI8u2ddx4tMaBaCkEh1/yRbRUykWQ02ceZeUnZevvheaUqsQjXw3bmCUaEJqMaESdWoe9Sye3h5+jK4UGOxZZmhtoPNlieZlOA4Wnrm9/E2CnlFeH3X+2GWDu1KLeLoBX+l9/imH3QX/Q==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=LkFKDH9A+kVvOVvz0Mf5bkJNae/+N0cAlUAOEskIqj8=;
- b=Gt6GOXFIDH5rB8D7asjs+dGHbSevLZ2hSUrRGTtY4i/a4wfaqGMBsXomaD0oiY2ehYSuENwKt+kwFnpkOOnrFRnd4ns24F/fhw8k56RLhC7qN9axqQ7SpRSzjTd2Hjh5CE0QwdTdgHigQSG3Ovfs4RqfS3eziGfhbgJN+gwoONIzZGlcWwcMI/Horm9MiVHtLKdUjUtU3aK4m2wsQOeRKOCHpLN0HkQkkN+ZK5+8X8ikPpvXFGAUPefL1rUuRvhAxQg6WLV4lFtNTnQ0lx4sHCzJ36jNhDArTY6C1RQlE9CI/yF20zkCgcei8M8U3DpsP5aFCWmS3Rykhrw1CeX0Wg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=amd.com; dmarc=pass action=none header.from=amd.com; dkim=pass
- header.d=amd.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=LkFKDH9A+kVvOVvz0Mf5bkJNae/+N0cAlUAOEskIqj8=;
- b=R84klV3UX6jhRqB5m/SiTOFizOTy9o1ZrJB5i/3k/LE2nGshQek7wxOCu6uE1tLv74Ju6vj+6KeplIIXNGw4wuocJq9PRePejvrbDFE7DvLJ97t3G3wA3e3t9jyFQQF78gdsWaDw/5FGiXLKE/loMO3ZOoY+uJI0WfhIHIgYfZU=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=amd.com;
-Received: from DS7PR12MB6048.namprd12.prod.outlook.com (2603:10b6:8:9f::5) by
- CYYPR12MB8922.namprd12.prod.outlook.com (2603:10b6:930:b8::7) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.8069.28; Mon, 21 Oct 2024 09:10:49 +0000
-Received: from DS7PR12MB6048.namprd12.prod.outlook.com
- ([fe80::6318:26e5:357a:74a5]) by DS7PR12MB6048.namprd12.prod.outlook.com
- ([fe80::6318:26e5:357a:74a5%4]) with mapi id 15.20.8069.027; Mon, 21 Oct 2024
- 09:10:49 +0000
-Message-ID: <d6084bb8-4b81-4590-94f2-4244705272b6@amd.com>
-Date: Mon, 21 Oct 2024 14:40:41 +0530
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v3 01/12] iommu: Refactor __iommu_domain_alloc()
-To: Yi Liu <yi.l.liu@intel.com>, iommu@lists.linux.dev, joro@8bytes.org
-Cc: will@kernel.org, robin.murphy@arm.com, suravee.suthikulpanit@amd.com,
- jgg@ziepe.ca, baolu.lu@linux.intel.com, kevin.tian@intel.com,
- jacob.pan@linux.microsoft.com, Jason Gunthorpe <jgg@nvidia.com>
-References: <20241017140137.6028-1-vasant.hegde@amd.com>
- <20241017140137.6028-2-vasant.hegde@amd.com>
- <ecf96e21-c249-417d-9c55-c6a89f8e6d13@intel.com>
-Content-Language: en-US
-From: Vasant Hegde <vasant.hegde@amd.com>
-In-Reply-To: <ecf96e21-c249-417d-9c55-c6a89f8e6d13@intel.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: PN3PR01CA0138.INDPRD01.PROD.OUTLOOK.COM
- (2603:1096:c01:bf::10) To DS7PR12MB6048.namprd12.prod.outlook.com
- (2603:10b6:8:9f::5)
+	dkim=pass (2048-bit key) header.d=collabora.com header.i=@collabora.com header.b="iRiLxaJY"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
+	s=mail; t=1729502282;
+	bh=llXWt9EDhIYDizPZ/i9tAy/u1WhV07tHJvNbQJI8fKs=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+	b=iRiLxaJYj2gJ8NB+toquY4hFDZlDvXrtQOIjIVyInTjcCyWgo6y4me+DUzJnRZidj
+	 ogODuuGnQq0CyLvAdQEXXhZZ+AdBGGRxcTlrd3mcpqxUoU+RAY7S88Fuw6tIs1a/G4
+	 zJN2w8MSlv5JxDHrpY4sjuNnPXeLLan0ntA2goGvPWmb4xHrGrUnqXOWENnMwDgOaS
+	 JrUNzCt+/F8IafMZUs0pUBt162K6Ktoc6w6FF10QOa/yaKPcfo7xBWsBfeyL0Ym6OF
+	 LN0nARUNuYt4s6qnYwuS0Nv3jrizRGPxIijnxl5c8OVC+ZYLREK8jUpkY1zLLLYufv
+	 C17ckxOyMHBZw==
+Received: from localhost (unknown [IPv6:2a01:e0a:2c:6930:5cf4:84a1:2763:fe0d])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+	(No client certificate requested)
+	(Authenticated sender: bbrezillon)
+	by bali.collaboradmins.com (Postfix) with ESMTPSA id 35E0F17E05BD;
+	Mon, 21 Oct 2024 11:18:02 +0200 (CEST)
+Date: Mon, 21 Oct 2024 11:17:58 +0200
+From: Boris Brezillon <boris.brezillon@collabora.com>
+To: Jason Gunthorpe <jgg@nvidia.com>
+Cc: iommu@lists.linux.dev, Joerg Roedel <joro@8bytes.org>,
+ linux-arm-kernel@lists.infradead.org, Robin Murphy <robin.murphy@arm.com>,
+ Will Deacon <will@kernel.org>, dri-devel@lists.freedesktop.org, Liviu Dudau
+ <liviu.dudau@arm.com>, patches@lists.linux.dev, Steven Price
+ <steven.price@arm.com>
+Subject: Re: [PATCH] iommu/io-pgtable-arm: Remove split on unmap behavior
+Message-ID: <20241021111758.561c81ca@collabora.com>
+In-Reply-To: <0-v1-8c5f369ec2e5+75-arm_no_split_jgg@nvidia.com>
+References: <0-v1-8c5f369ec2e5+75-arm_no_split_jgg@nvidia.com>
+Organization: Collabora
+X-Mailer: Claws Mail 4.3.0 (GTK 3.24.43; x86_64-redhat-linux-gnu)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: DS7PR12MB6048:EE_|CYYPR12MB8922:EE_
-X-MS-Office365-Filtering-Correlation-Id: a968d70d-329d-4648-ca9c-08dcf1b04156
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;ARA:13230040|1800799024|366016|376014|7416014;
-X-Microsoft-Antispam-Message-Info:
-	=?utf-8?B?dHh3cUNjZm5tcEFsVWlWMFBKaEZ6UTJYc0N5bGY1L1o0WmxLS0xYTE9aVFo0?=
- =?utf-8?B?RjlNZ1hCSklQL0p2UUFEMU9LdHVCNllnNVdmNlpMd2paWUJiZ1ZXN1VMcndS?=
- =?utf-8?B?NHF5WDlzdG5PalovK1JOWmNiR1crMDlJSWtRYTZ4RitHVW1HS2srRFdCQlNJ?=
- =?utf-8?B?Rk1VODE2M3dLRE43MzMycU52QXhLYk8xSkxYajVBWGFTVHc4QjMrZldTWDZ2?=
- =?utf-8?B?UG40bmgwUlZvK3h6RTduMVJ3TG4zQ25IMTBCa09qY2tYcW1sU013azg0dnc1?=
- =?utf-8?B?cy9Rb1lOWVR5bWVoYXpXV0JoZGtQWUxoa3NZeTZaSmVpWGErbUIzOG9TcFhh?=
- =?utf-8?B?RFFkNWxpc1U3bjB2M29sdEM1YXZpOGJIMDJOTkhueWVxZCtrdU13YnNJVmN2?=
- =?utf-8?B?S2FiYnBSY0MwLzNKak5VRjNBOVRvRFp2Rk5ZMDRDSjdZbEt2Y1hXeXdLWmE3?=
- =?utf-8?B?ZzZwaUEyTFBhZXBCNkpXb3B0ZlhlS3k5dmxpRDA0TGJ6WjErY2x2aHRaUGFJ?=
- =?utf-8?B?ZXJnZE9VUFh6NlJ1TzBUdnRvWW1FSVEvdkY3ZTdoOFl1LzNTVktJMzZtUmJs?=
- =?utf-8?B?eklkOWZLSUllL1lHbmZ5emVqaEVPaFBzRm9MVnZCWmlSOTV1QnJ2ckUrRVhJ?=
- =?utf-8?B?U2ZtdjhCcVlJQ2lhR0kzTWZoR1diL09uZStDWFFVNjY0K2dvbkh0bTE0Ymw2?=
- =?utf-8?B?T3BaRTBzd1cyaEp5ZC9iU2xEcGpRc0gwUVM2K2xBZ1pQS1ZRQ2lNWGJoR2pG?=
- =?utf-8?B?THBrQS83OWE0OEErNCtmWGxOdTBxSlhoSGFwZVN2YkU4Q25aT1QxMWp5bldF?=
- =?utf-8?B?bXg3UmxIeEtGTWtjUExlYzNTT0tPM2xnUU9GOStleDNxRzlZM2JKMUJIRGla?=
- =?utf-8?B?Smo0Q1V3ODlqT2NiMHhDZ09TblRGTURpK0t5K3hQeFNoSjlXZ2UrVlR5cE05?=
- =?utf-8?B?QW1hMUxJbmNaTlk0Uy8yTEN0Rkd6bVFrN29tKy9PR1VTSVkrNWkxeldpUHor?=
- =?utf-8?B?cHhkdDgxVHU2R3JnTXc0cnRaVVhKZ01xb1ZsRnJRVW9RbDhzS3Y2UnRzYUhX?=
- =?utf-8?B?VnQ1bDNHUlFHOFQ1SE9OcnBaUFYrOVNqZXpPUFp1clB3NXhHdzBPeG5WUnFC?=
- =?utf-8?B?Sjcxdzg4VVQ4TktQaHRraXgvUFRtYmFNM2I4WStDc2VPZDFodCtUUk5wVzdF?=
- =?utf-8?B?NDF2bHFTanRNQm1BMzUrTERCdWIzRmN4ZGwyY3ZPVThrOFhTckhBQjZ5UzVR?=
- =?utf-8?B?T2ZrWmNwOEU0QVF3bi91ZkpVNnlMQWEwVW9ta2F6em9BaWE4UE5ma3Y1U1E3?=
- =?utf-8?B?b2R4a0oyUU5pU2dLY3pkMmRoblJ6V0VHVkNuTXYxMUptWGJlaC9VSXoyWFJU?=
- =?utf-8?B?Q2ZETTRhVnUzeSsrZHZXbWNtSHMyLzFGTkE5b2RFcjl2YzU3eVhOdElqOGRF?=
- =?utf-8?B?Q2xkSVhnWlluem8xNE1PcnQ5cTNWRno0UjNNblJRUWFuWC9Lb2hwZEJmdENx?=
- =?utf-8?B?R3ZBdTJYM0lFMDZYcnJrMHdmYTI5a0tPWXYyU21FRHNsM0ZSRUNMM01MaVd0?=
- =?utf-8?B?eUlsS2FjOU04R0x1ZjR5Z2pLSWNLbi9ZMTdlWEg5aEM5Mk1uRU13QmtScjRU?=
- =?utf-8?B?a0ZuRS9CYUt3S3ZnNTNvT0wzS0Jpcm5qTCsvRXZmSGt5ZzZrcUxIZWVNVEJl?=
- =?utf-8?B?UXhydXMzbTJvVGNHUDFmVUY0VFBqMjVNYTBtbjZEbjluemVyUnUxR1ZwTjlO?=
- =?utf-8?Q?Y84kYopFBdkZPwc47HAh33vw7FBvVBhfJVD55i7?=
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DS7PR12MB6048.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(1800799024)(366016)(376014)(7416014);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?utf-8?B?T2hUdmFUbmdpZjBIdkFJWkdWWnF3S2RrRkpZWjI4anltZlJkRnBNaGVSd0tD?=
- =?utf-8?B?QncxZVdZdWhKVmo2elZYeUNuQmFCWXh3S05GZGF6QlRhOHM3TWh6K1NQRDU2?=
- =?utf-8?B?N0dOL29kSDZaYytTWWg4RkViQmt3a1lsdnRXclhBd0RkQmlza00yNWFtMW5S?=
- =?utf-8?B?N1VaeEVzUXdIQ3h1dmdScmlIeVRnbWhva1BjdjdxVVFya1YwVXRUQlJRRUJy?=
- =?utf-8?B?VXozc1dtMERtMFVTbUlUSWdhbVBMaWFqS1Bucm9ENnkxUGVtdHdIVk90WitX?=
- =?utf-8?B?T1BuWitFWWdKbWMyZjhFczZweFIrS0NDWnBCekFhUy9URWg3bE14R05DU1ZJ?=
- =?utf-8?B?bjlDSXgrWURLMGR2QVRFQjVQRXhSZXFQajRiNkpiTndzOXZmNENIZk9IOGZP?=
- =?utf-8?B?eWhFYm1QMy9iNHVFK2F5UzlQSVBpU0E5TEZQWXJGbTBmK1FZT3RzTENlVXcr?=
- =?utf-8?B?QTl2TldTOUJVT0p6aU5VUEY4T05jOUN5NU1iNHZnOGNLWCtYaG5PM3h0MWgr?=
- =?utf-8?B?NFE4TS9Ndmd4Y2FOMW5EVGEyTUcwSmFRSmdJb2VPSFNpaUszU04yT3hkcmtU?=
- =?utf-8?B?K2hDT3BqQlFhQlNtbDd0UFE4eVllVm9UUTN5TzZIVFRGeFVFeHpGRVlVcXpx?=
- =?utf-8?B?V2xVaEplbFpISnd0dnc1WmtSODBHUXk1RmNPWnplNjdmODljc1QwVWx4eWZK?=
- =?utf-8?B?eDJwV0hWeHFwSDFvWmhCTlFoM2s5RWVZQTFiaXhCZjIxa0lZT0hnVVhvQ3hw?=
- =?utf-8?B?cmVwczJlcmF1OU9VM21kSWlqNHRrY3p0citBTHd5L1R6SXFGSnk4NVRycmNq?=
- =?utf-8?B?MU5xQ2ppMThsRTZCYk9HN3V2ZldhcDJQZ2U2TnoxKzhnVXhqOCt2SVJtWGlQ?=
- =?utf-8?B?UmY4Qy9QK1paSWJuUHIrTzhWMWtadzVjcWpXbHdadFUva0grUnNJcVJDK0Ex?=
- =?utf-8?B?Und3Y0ZBamR2Nm14ak1lRmJjTm5Jcjl4SHg5c0FLcHJVaFZmRGdUeU82dUty?=
- =?utf-8?B?ZmNuV3BhaFloOTB0WmdLZ0RKU042WHYwWG0reWtWQWhFU2pHMTVGbEVnQ1lX?=
- =?utf-8?B?cGdaWUZEVVJCdWFWQ0JhK0laK1FQRGw1Szh4dFRDa2pUczFteG51eTdRNitC?=
- =?utf-8?B?clcxS1dFT0RZeUM1WkcrQ1N4eGFhRGhkQys5N0NIanN5eU50UWp1UlJkMktL?=
- =?utf-8?B?N3pGc1FLSDBzejk0M2dSZFlTb3RNS29BaXZZYzhtdi9MbUN1T2ZHUmtEc0Zn?=
- =?utf-8?B?TExYeUg4aGtLNDJBUDdkd0VzbklJWHFxQ1VrN1JQZkZWU09FUVhmQ2ZRc0dK?=
- =?utf-8?B?RXJXb0tDRXg1RUVhaHIvcU9OZVI0cUJpNlVoVklSbEkramc5OWxiMytvUzRQ?=
- =?utf-8?B?TEczZTlOL2I4OERreTl1YUJtYnVXRFl0QnZmcm4raEFGakhjVEZiQnBRdS81?=
- =?utf-8?B?Yk1CcXVMc1BQZCt6dmF5aXExa0FnYW9YK1NoZ3VqNGdrUEhLWWxDdHUwWDdz?=
- =?utf-8?B?NWNhUGltOSswWUsxenRjMGdlUW9nYTRTVzNtUlN1U04rcnB2QTVRUjdYRDJI?=
- =?utf-8?B?L0Nzdml1UTA2d0RDV0VndDRvWVJCQUE3NDlLbUJtelc0RmluZkZIajlkaFdq?=
- =?utf-8?B?dS9FVTF1d1NYUUVLaTRsbmhZQUhydjlZREE4cm1pWmhIYnRRazJ6bzhwakxu?=
- =?utf-8?B?N2V1RkphRHdDYmhUZTExVXZaY2dnSEdPSnFuVkp6RlRPRjczc3VPVUNNZUxa?=
- =?utf-8?B?QXRuZnZZMnZwUFJ1ZFJvTFRHMjdPNGJJUS8ySVNBczBRUEV5UFNnS2RkWk91?=
- =?utf-8?B?QmJ6NTdTQlNCbjlRVGdBZkF0MjFqM1lzS3R0VWJZN1RkR3JrcnNPeEdFakkw?=
- =?utf-8?B?M3Y5SmtxQnYvcGc4SGlvOFk1dEpjVVlkRDloQW9jSWxydUF4Y2ltT0x1cEkv?=
- =?utf-8?B?amdrOHVFbFVsbzFTeUIwaGcyMFU1eE95WlVUWTRPUmdMc1A2K2p0RGlBcUYw?=
- =?utf-8?B?SVl3U2IrdWJwcG5Ya2ZTcVdBYXFRcnJnbkFIcDdWUElkaStwbGxQNkZIczFB?=
- =?utf-8?B?YzNMb1hBemhXR3VUUEFyaGpvR0E4NGdncSt6TnkzRWtDV0tMQThudzA3Sk9S?=
- =?utf-8?Q?7NVp6cTx7LOhbT8GExggO/Ute?=
-X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: a968d70d-329d-4648-ca9c-08dcf1b04156
-X-MS-Exchange-CrossTenant-AuthSource: DS7PR12MB6048.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 21 Oct 2024 09:10:49.5569
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: o7IQtLa7bEjr75etREG1u61kcxDmDZI8oom3J/OspYmceISgvSOd9D6MkVLFEWRhPXdkaZTzaknZGkJZx3247g==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: CYYPR12MB8922
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 
-Hi Yi,
+On Fri, 18 Oct 2024 14:19:26 -0300
+Jason Gunthorpe <jgg@nvidia.com> wrote:
 
-On 10/21/2024 12:59 PM, Yi Liu wrote:
-> On 2024/10/17 22:01, Vasant Hegde wrote:
->> From: Jason Gunthorpe <jgg@ziepe.ca>
->>
->> Following patch will introduce iommu_paging_domain_alloc_flags() API.
->> Hence move domain init code to separate function so that it can be
->> resued.
+> Of the page table implementations (AMD v1/2, VT-D SS, ARM32, DART)
+> arm_lpae is unique in how it handles partial unmap of large IOPTEs.
 > 
-> A nit: s/resued/reused/
+> All other drivers will unmap the large IOPTE and return it's length.  For
+> example if a 2M IOPTE is present and the first 4K is requested to be
+> unmapped then unmap will remove the whole 2M and report 2M as the result.
+> 
+> arm_lpae instead replaces the IOPTE with a table of smaller IOPTEs, unmaps
+> the 4K and returns 4k. This is actually an illegal/non-hitless operation
+> on at least SMMUv3 because of the BBM level 0 rules.
+> 
+> Long ago VFIO could trigger a path like this, today I know of no user of
+> this functionality.
+> 
+> Given it doesn't work fully correctly on SMMUv3 and would create
+> portability problems if any user depends on it, remove the unique support
+> in arm_lpae and align with the expected iommu interface.
+> 
+> Outside the iommu users, this will potentially effect io_pgtable users of
+> ARM_32_LPAE_S1, ARM_32_LPAE_S2, ARM_64_LPAE_S1, ARM_64_LPAE_S2, and
+> ARM_MALI_LPAE formats.
+> 
+> Cc: Boris Brezillon <boris.brezillon@collabora.com>
+> Cc: Steven Price <steven.price@arm.com>
+> Cc: Liviu Dudau <liviu.dudau@arm.com>
+> Cc: dri-devel@lists.freedesktop.org
+> Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
+> ---
+>  drivers/iommu/io-pgtable-arm.c | 72 +++-------------------------------
+>  1 file changed, 6 insertions(+), 66 deletions(-)
+> 
+> I don't know anything in the iommu space that needs this, and this is the only
+> page table implementation in iommu that does it.
+> 
+> I'm not sure about DRM, I looked for awhile and only Panthor was unclear.
 
-Ack. Will fix it.
-> 
->>
->> Also move iommu_get_dma_cookie() setup iommu_setup_default_domain() as
->> its required in DMA API mode only.
-> 
-> a nit: s/its/it's/
-> 
-> Otherwise, LGTM.
-> 
-> Reviewed-by: Yi Liu <yi.l.liu@intel.com>
+I theory, Panthor can do partial unmaps (unmapping a subregion of a
+physically contiguous 2M section). In practice, it's not something we
+rely on yet, so I don't think it's a blocker. If we ever want to support
+that, we can always do it in two steps (unmap the 2M region and remap
+the borders). At some point it'd be good to have some kind of atomic
+page table updates, so we don't have this short period of time during
+which nothing is mapped (between the unmap and the remap), but that's a
+different story.
 
-Thanks
--Vasant
+> 
+> If DRM does use this, I'd respin this to make it into a quirk and iommu won't
+> set it.
+> 
+> Thanks,
+> Jason
+> 
+> 
+> diff --git a/drivers/iommu/io-pgtable-arm.c b/drivers/iommu/io-pgtable-arm.c
+> index 0e67f1721a3d98..a51fae9c909111 100644
+> --- a/drivers/iommu/io-pgtable-arm.c
+> +++ b/drivers/iommu/io-pgtable-arm.c
+> @@ -569,66 +569,6 @@ static void arm_lpae_free_pgtable(struct io_pgtable *iop)
+>  	kfree(data);
+>  }
+>  
+> -static size_t arm_lpae_split_blk_unmap(struct arm_lpae_io_pgtable *data,
+> -				       struct iommu_iotlb_gather *gather,
+> -				       unsigned long iova, size_t size,
+> -				       arm_lpae_iopte blk_pte, int lvl,
+> -				       arm_lpae_iopte *ptep, size_t pgcount)
+> -{
+> -	struct io_pgtable_cfg *cfg = &data->iop.cfg;
+> -	arm_lpae_iopte pte, *tablep;
+> -	phys_addr_t blk_paddr;
+> -	size_t tablesz = ARM_LPAE_GRANULE(data);
+> -	size_t split_sz = ARM_LPAE_BLOCK_SIZE(lvl, data);
+> -	int ptes_per_table = ARM_LPAE_PTES_PER_TABLE(data);
+> -	int i, unmap_idx_start = -1, num_entries = 0, max_entries;
+> -
+> -	if (WARN_ON(lvl == ARM_LPAE_MAX_LEVELS))
+> -		return 0;
+> -
+> -	tablep = __arm_lpae_alloc_pages(tablesz, GFP_ATOMIC, cfg, data->iop.cookie);
+> -	if (!tablep)
+> -		return 0; /* Bytes unmapped */
+> -
+> -	if (size == split_sz) {
+> -		unmap_idx_start = ARM_LPAE_LVL_IDX(iova, lvl, data);
+> -		max_entries = ptes_per_table - unmap_idx_start;
+> -		num_entries = min_t(int, pgcount, max_entries);
+> -	}
+> -
+> -	blk_paddr = iopte_to_paddr(blk_pte, data);
+> -	pte = iopte_prot(blk_pte);
+> -
+> -	for (i = 0; i < ptes_per_table; i++, blk_paddr += split_sz) {
+> -		/* Unmap! */
+> -		if (i >= unmap_idx_start && i < (unmap_idx_start + num_entries))
+> -			continue;
+> -
+> -		__arm_lpae_init_pte(data, blk_paddr, pte, lvl, 1, &tablep[i]);
+> -	}
+> -
+> -	pte = arm_lpae_install_table(tablep, ptep, blk_pte, data);
+> -	if (pte != blk_pte) {
+> -		__arm_lpae_free_pages(tablep, tablesz, cfg, data->iop.cookie);
+> -		/*
+> -		 * We may race against someone unmapping another part of this
+> -		 * block, but anything else is invalid. We can't misinterpret
+> -		 * a page entry here since we're never at the last level.
+> -		 */
+> -		if (iopte_type(pte) != ARM_LPAE_PTE_TYPE_TABLE)
+> -			return 0;
+> -
+> -		tablep = iopte_deref(pte, data);
+> -	} else if (unmap_idx_start >= 0) {
+> -		for (i = 0; i < num_entries; i++)
+> -			io_pgtable_tlb_add_page(&data->iop, gather, iova + i * size, size);
+> -
+> -		return num_entries * size;
+> -	}
+> -
+> -	return __arm_lpae_unmap(data, gather, iova, size, pgcount, lvl, tablep);
+> -}
+> -
+>  static size_t __arm_lpae_unmap(struct arm_lpae_io_pgtable *data,
+>  			       struct iommu_iotlb_gather *gather,
+>  			       unsigned long iova, size_t size, size_t pgcount,
+> @@ -678,12 +618,12 @@ static size_t __arm_lpae_unmap(struct arm_lpae_io_pgtable *data,
+>  
+>  		return i * size;
+>  	} else if (iopte_leaf(pte, lvl, iop->fmt)) {
+> -		/*
+> -		 * Insert a table at the next level to map the old region,
+> -		 * minus the part we want to unmap
+> -		 */
+> -		return arm_lpae_split_blk_unmap(data, gather, iova, size, pte,
+> -						lvl + 1, ptep, pgcount);
+> +		/* Unmap the entire large IOPTE and return its size */
+> +		size = ARM_LPAE_BLOCK_SIZE(lvl, data);
+> +		__arm_lpae_clear_pte(ptep, &iop->cfg, 1);
+> +		if (gather && !iommu_iotlb_gather_queued(gather))
+> +			io_pgtable_tlb_add_page(iop, gather, iova, size);
+> +		return size;
+>  	}
+>  
+>  	/* Keep on walkin' */
+> 
+> base-commit: 27ab08d646a1b53330229a97100200c9567d28b5
 
