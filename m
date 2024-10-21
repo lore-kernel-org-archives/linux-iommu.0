@@ -1,207 +1,233 @@
-Received: from bali.collaboradmins.com (bali.collaboradmins.com [148.251.105.195])
+Received: from NAM10-MW2-obe.outbound.protection.outlook.com (mail-mw2nam10on2065.outbound.protection.outlook.com [40.107.94.65])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 02A274437;
-	Mon, 21 Oct 2024 09:18:10 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=148.251.105.195
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1729502293; cv=none; b=MmQ+G3Dn8P7OMrZBSMjnelPpXNvkqLccoRuh0ijoI1JJJoQ0GUywlpb+Xe0NYvYNVzCdwftoPvZzafN0Kh0Q4RlaIAzda1DFFoGgnQrz4v1t5QiddiEK60+KYKmmHdsp8/IgNyRMB7LICOAZQoceKYnX6TOWP8ZPYiSn6az4hrY=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1729502293; c=relaxed/simple;
-	bh=llXWt9EDhIYDizPZ/i9tAy/u1WhV07tHJvNbQJI8fKs=;
-	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=oJiPccZDtRe0PQmVfexF33TLkB8Slt05ykeG5+Xc4qGg0uvPoEav+zTtxDjZBrfR/IlV/bo+xnpV+orQsRnCR3jHL5/qIfDCeBovy1ow5PeSE9kG/x5904IHlIxlXzpS1AlUKs4O7U7Hr+ou0k4n9f8N5Kc48UiK+8yBpZ9Cs30=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=collabora.com; spf=pass smtp.mailfrom=collabora.com; dkim=pass (2048-bit key) header.d=collabora.com header.i=@collabora.com header.b=iRiLxaJY; arc=none smtp.client-ip=148.251.105.195
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=collabora.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=collabora.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 27A2B4437
+	for <iommu@lists.linux.dev>; Mon, 21 Oct 2024 09:20:02 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.94.65
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1729502405; cv=fail; b=mdU9BFWdnjWP/JCz5ZHI8+5eg9PKwyJUzqYkbaTgj+MyrQxjWResGZA0ssMLZVvILGaCQz129eBMw1UxUjf5hoe5A0cApMtsPlIdowIqcwD0kDcmr5eLeRgJfrIF1TfV2XvoMx7OnZetMNdPBT+fBqsjGh5L1De1AhHaMBlx98I=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1729502405; c=relaxed/simple;
+	bh=jvUaLqBJYpvR7oDzew1op15jX0hkI67XIVZO2aQvl0Q=;
+	h=Message-ID:Date:Subject:To:Cc:References:From:In-Reply-To:
+	 Content-Type:MIME-Version; b=XpickfZY/BuyY+/EjpaQdFxBr/eeu3YAfW8BRK6NhR/aSFtiE8MCs0G/x0Spqf2xTt9pBNCKZNKzbu5UvkzuVIBoWgiMVi5niXOb44ZZ80m7JN+bV4M64xztC1RIXUGmVlDredXfp6BS7s/f0odPcD9JXXE32BrMS+JsDpu5cJE=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com; spf=fail smtp.mailfrom=amd.com; dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b=fRf7+L3r; arc=fail smtp.client-ip=40.107.94.65
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=amd.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=collabora.com header.i=@collabora.com header.b="iRiLxaJY"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-	s=mail; t=1729502282;
-	bh=llXWt9EDhIYDizPZ/i9tAy/u1WhV07tHJvNbQJI8fKs=;
-	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-	b=iRiLxaJYj2gJ8NB+toquY4hFDZlDvXrtQOIjIVyInTjcCyWgo6y4me+DUzJnRZidj
-	 ogODuuGnQq0CyLvAdQEXXhZZ+AdBGGRxcTlrd3mcpqxUoU+RAY7S88Fuw6tIs1a/G4
-	 zJN2w8MSlv5JxDHrpY4sjuNnPXeLLan0ntA2goGvPWmb4xHrGrUnqXOWENnMwDgOaS
-	 JrUNzCt+/F8IafMZUs0pUBt162K6Ktoc6w6FF10QOa/yaKPcfo7xBWsBfeyL0Ym6OF
-	 LN0nARUNuYt4s6qnYwuS0Nv3jrizRGPxIijnxl5c8OVC+ZYLREK8jUpkY1zLLLYufv
-	 C17ckxOyMHBZw==
-Received: from localhost (unknown [IPv6:2a01:e0a:2c:6930:5cf4:84a1:2763:fe0d])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
-	(No client certificate requested)
-	(Authenticated sender: bbrezillon)
-	by bali.collaboradmins.com (Postfix) with ESMTPSA id 35E0F17E05BD;
-	Mon, 21 Oct 2024 11:18:02 +0200 (CEST)
-Date: Mon, 21 Oct 2024 11:17:58 +0200
-From: Boris Brezillon <boris.brezillon@collabora.com>
-To: Jason Gunthorpe <jgg@nvidia.com>
-Cc: iommu@lists.linux.dev, Joerg Roedel <joro@8bytes.org>,
- linux-arm-kernel@lists.infradead.org, Robin Murphy <robin.murphy@arm.com>,
- Will Deacon <will@kernel.org>, dri-devel@lists.freedesktop.org, Liviu Dudau
- <liviu.dudau@arm.com>, patches@lists.linux.dev, Steven Price
- <steven.price@arm.com>
-Subject: Re: [PATCH] iommu/io-pgtable-arm: Remove split on unmap behavior
-Message-ID: <20241021111758.561c81ca@collabora.com>
-In-Reply-To: <0-v1-8c5f369ec2e5+75-arm_no_split_jgg@nvidia.com>
-References: <0-v1-8c5f369ec2e5+75-arm_no_split_jgg@nvidia.com>
-Organization: Collabora
-X-Mailer: Claws Mail 4.3.0 (GTK 3.24.43; x86_64-redhat-linux-gnu)
+	dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b="fRf7+L3r"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=eM1FFNfL8T4kEZEMQ27IDUbnrolO0xsxzixu6ywCb9sDRj2IC2suZPEsT247f4PI++wGWe0GFPjiTjV3+74auYk7uEM21e/0y8JwMhqilZYVrKIZXuwVxeG6eAxpzv+NTTYZAlXJvJhnY978gRC6jlj1U6oLFRAKU1l4CetU/PL6pXq4h+4ogN4UlX2Wnl6m1XUX8xXS8KsRTRw++xCAhf8rtan4hrvTf7pqNdEq1x7noxAfyUOmgHBecW/m/Yr1kI39RRs2d2US5PCbZdQ2M2PoR5sMFl7ISqozPK7N8sg4ECOGOpfoNpR64IHSX7arsCERMvGBX5fV4aQ1bFARXg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=gwPKDv0SvqExwjk5YTDnMOeU11ajDnpublJ9KwbnIQw=;
+ b=ACL4bD5IZYwf1vTBx6sBkNE97dFc4CZDCw5cyynNlsgpB1u0f1bXCMsXXttMqVP9fyeSf7Tpubt0OIFupvTIF4pxNru0dynt40RUNCqDGy2EuFpLjHPLEZAWgq+kL1PiDtqDvlYJ9ivYU2Fv3fBl0QJIT7xuiqkFz6ys3g77rwOJos3E1DsWhF3+jnjgMLepNVAOXCpCdalY4KBszfwoiCN1Buep9dnZU2Rh22Za5QX1U/YDc/CsKI37DFQNPL9/xwoKDzp1LgvOH8ztzY0vO+6kIuoHmk0DkzWBAnFn3JS9Vw/aVRiMj7+wxQ22sywB/9LvUY1ZxtRxAvTabBpEnw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=amd.com; dmarc=pass action=none header.from=amd.com; dkim=pass
+ header.d=amd.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=gwPKDv0SvqExwjk5YTDnMOeU11ajDnpublJ9KwbnIQw=;
+ b=fRf7+L3rUvCKptk2trIEoU05RAkVl7pavl1Tiz8IFjyTRoJBL4F6qGKRRBdTmWC20SX3/k7AFtjZAXu//ghfWT93LVLYU3aC7YxZjH72I3DEzn7i+w7qzf5+Jbqs7mBK0YBm8hw/ocv0+HQ98gxIOT4nYlv9cDjBoT6lG71ivAI=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=amd.com;
+Received: from DS7PR12MB6048.namprd12.prod.outlook.com (2603:10b6:8:9f::5) by
+ PH0PR12MB7983.namprd12.prod.outlook.com (2603:10b6:510:28e::8) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.8069.27; Mon, 21 Oct 2024 09:20:00 +0000
+Received: from DS7PR12MB6048.namprd12.prod.outlook.com
+ ([fe80::6318:26e5:357a:74a5]) by DS7PR12MB6048.namprd12.prod.outlook.com
+ ([fe80::6318:26e5:357a:74a5%4]) with mapi id 15.20.8069.027; Mon, 21 Oct 2024
+ 09:20:00 +0000
+Message-ID: <33d759f2-5517-4010-bd35-bb6097224bf1@amd.com>
+Date: Mon, 21 Oct 2024 14:49:51 +0530
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v3 02/12] iommu: Introduce
+ iommu_paging_domain_alloc_flags()
+To: Yi Liu <yi.l.liu@intel.com>, iommu@lists.linux.dev, joro@8bytes.org
+Cc: will@kernel.org, robin.murphy@arm.com, suravee.suthikulpanit@amd.com,
+ jgg@ziepe.ca, baolu.lu@linux.intel.com, kevin.tian@intel.com,
+ jacob.pan@linux.microsoft.com, Jason Gunthorpe <jgg@nvidia.com>
+References: <20241017140137.6028-1-vasant.hegde@amd.com>
+ <20241017140137.6028-3-vasant.hegde@amd.com>
+ <942e7019-a477-496c-b04f-b0fb12283187@intel.com>
+Content-Language: en-US
+From: Vasant Hegde <vasant.hegde@amd.com>
+In-Reply-To: <942e7019-a477-496c-b04f-b0fb12283187@intel.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+X-ClientProxiedBy: PN1PEPF000067F6.INDPRD01.PROD.OUTLOOK.COM
+ (2603:1096:c04::37) To DS7PR12MB6048.namprd12.prod.outlook.com
+ (2603:10b6:8:9f::5)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: DS7PR12MB6048:EE_|PH0PR12MB7983:EE_
+X-MS-Office365-Filtering-Correlation-Id: 1ba24acb-fbee-4701-8761-08dcf1b18998
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;ARA:13230040|1800799024|366016|376014|7416014;
+X-Microsoft-Antispam-Message-Info:
+	=?utf-8?B?NnI2dUp2R3N0Ry9NZ1gzWFFrdGpQWHF5SCswd0ZxdEo3NDlMSzFrU0lUWXgw?=
+ =?utf-8?B?VFM4a2NGUkxQUGlTQ3ZRSDNQaGFrcHNKc2tHT1EzRHBNdkZEMEpUWTMxUTZp?=
+ =?utf-8?B?R1NjQXhHdkFHSENuWkVSakV6SjJuRk9XSkc3T1NwcCs4T1VmVkl2SUtKdEJ5?=
+ =?utf-8?B?QlRrWHoyeldnQWVvcURLWENIN0JKaDVaMFFKOGxZNENXb2d6V2pkZ0V1T1lV?=
+ =?utf-8?B?L2lBV01JTWY1RzBRa2FWRm5iQ2JaWEo0NDRZL1RZQU8ycG8zbmV4blB5MDZ3?=
+ =?utf-8?B?OXlDWXFnaVZXWlpOV25KZUpMVGI0ZW9scHp5RlEyUTdNME1XbU9MYXd6SXFv?=
+ =?utf-8?B?T1Z6NG9ZbmQ4WE9qbEdWS3N6cHlwaGkvS2g0TXBINmR0SEVYT3NjQnZXLzdv?=
+ =?utf-8?B?MW9zdkxON0dwTzEwQVh4bzNmaGw1SFpzc0hHRFBXNTdoTVlYQ29MUE5GMERT?=
+ =?utf-8?B?OVcrZFhtV1V3WkJ5WDF5QzY3L0x2L0pOZWZWNzl1TDdGVEZZZGFJZEhtQWpN?=
+ =?utf-8?B?RFVYVllvYk9aM0RFMGtPZEpWc3BrK2EyT2g1RzdhRndRZnBhMVFFekdSdU1Y?=
+ =?utf-8?B?YUZ6ejhGL1l0UitNY1JhdnlpTUwyS3BzMTAwOGZRVGNENWZaOE5KNTZDRWk3?=
+ =?utf-8?B?YTcrc2Z0dEJFbnhiUktBQ3d1SkVLaGErNHRMbjJkSlAvdGxtYkFWV2xldDIx?=
+ =?utf-8?B?REFrZ2JVVVVicldGSS85VWM2Ry91OGpMeHRGQ1RNY0dUekE5djg0UlROM3hi?=
+ =?utf-8?B?ZXJrcTFBeTl0eWRqQUNqZDNPNlFkOHlpRFFUVzJodlhEUThpeThOU1pnYVh0?=
+ =?utf-8?B?T2VDbEh6WUZwMmc2WTdoWlYrckNHOWNzejVVRGc2dSsva1Z3cUpDbS9kUlVp?=
+ =?utf-8?B?cWpiQUxyckZiWE1DM1E5UktrR0FGUk9HZjZwN1ZxTVByRjk0WWRPT2JXdGlv?=
+ =?utf-8?B?OW83QjZqeUdVN0hVeXl2dm5HSUMxeHJxbkNMY3cwN2tqZS8wQVVJN3lvYjRZ?=
+ =?utf-8?B?ajRxMXZ6RFMweFY1YUtDM2x1cHNqRXY5aEpiUjMxL0VnWmw2a3VkbXFpeXd5?=
+ =?utf-8?B?bkowc2tBeE42QTV5M284SkdDbklIem5sS2pqYytxZDVaeUdCellSRkU1dmZH?=
+ =?utf-8?B?V1RJTG01Nk9FdUxtdkxwQXMwTWloTkdsS0Z6YktBUHZJbVlNSmFKc1ZGaDFB?=
+ =?utf-8?B?U0xiM2ExekhKZmVXSFpyc2w5L3BEWTh1eVVwblcrcHFXVWU3a1I1eWtGNExz?=
+ =?utf-8?B?bEdkQWZ4aGpFM3dQeUNBb1lVVFpycWk4MSsva3dmbkdzaERVVXBrcUhXTDdS?=
+ =?utf-8?B?QnNKUG52T1o1eS9pYTR5UElPK1RheVo3NURUNnBkbmdESFVjbStBVCtYTE5p?=
+ =?utf-8?B?OVNJZDQwb2xxajdZTFFPRCsxcHdac1V0MHN5bi90SXJ0azJhem4ydklCVDQ4?=
+ =?utf-8?B?WTA4M3FOOW9xOGJxNnU0aTNycEcxdHNGMTJQYlFLV3NXY09iMC9rZVgyOGxZ?=
+ =?utf-8?B?ZmJxRlFRUkM3alBjaXhlcFFKYjBjRXNhZFljcWdJcG9La2hwdlFncVp5NXNq?=
+ =?utf-8?B?Zlc2dEpUcEd0SVh0cXFXL3M2RmdiVVlWdnpkUmh6OEtobmhlQ1VOY1dadHBn?=
+ =?utf-8?B?Z1FpK2I3bXh1Sml2UGF3U2I3Q2pNbm01dUlsZ3JOK01wUy9tNGVVUW9leUdB?=
+ =?utf-8?B?aHRjbWNkTHlqYVNkMVdNdnFpYzFnYUhOd3R4cHV3Q3g4S1NKYUtlcmtWcnlu?=
+ =?utf-8?Q?0L7feonN9HqEZu/f6i9QHYpgMzsmXEUf5GhCkHv?=
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DS7PR12MB6048.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(1800799024)(366016)(376014)(7416014);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?utf-8?B?YVl6S1BNQVo4MWN5K3UyZXN1SXdNeWgxc0lLSXpGM1VWaHd2TVRBK3JWVnhS?=
+ =?utf-8?B?ODAya1VLTE50TFRaSmZrejRzZGs0VHY0TElZSGYrT0RDN3dCY1hGYlBjYnNx?=
+ =?utf-8?B?N1QxNHJqM2I1S3VWTEpMM0Q1K3hRK2FlNzJWY0g0N2dEYktEZHEvTUxKR3Fy?=
+ =?utf-8?B?THhrVDRNRkZwem9Nd05BN1daUkpxcTFOdytEclpVZHNHSW1Gdmt3cWpXUzJG?=
+ =?utf-8?B?aVphclpVNjMxelFzekNEcWl3UzF5V0Z5VEZwcGRkUG9mWUl3SG8wS1NhVFBn?=
+ =?utf-8?B?S1lHaVA3SXJFdEhQLzhBK3JoTkN0MEl1cmlmWEY5YzlWeTNuNGV1S1ZINEUv?=
+ =?utf-8?B?aW02aVFkWFM4MmhRcFR3Tm9OY0tNZWFGekZQVkxRQkpOSFhjTFd1dmtLOGl2?=
+ =?utf-8?B?dmdzUlhmcGVjTGRsRGZjRmVNSHdkaGJTY0VZUFlBU1JVU3daV3J6SUxueG9w?=
+ =?utf-8?B?dERqbERaQlQ4N2kxSVNuMFVsakxiMm5JZnRoUldYeW5UUlk3eHdUalZsSmpk?=
+ =?utf-8?B?V01laWZNeCtqQnA4MWdNM29LMHZFZ3F0WU9pWjdIanZVNFBTejBIY2FNazd1?=
+ =?utf-8?B?S1RnY0c0eHRoVXBPYWxPbmIvalhiY3p4YVA2VjVPbjF0emRBYkpENzNIczRp?=
+ =?utf-8?B?d1pKaUFkeEdwLy9LV3dmbWI5cytKWTZieDA3YWptUjdFRGFOSEYzN2JMQlF3?=
+ =?utf-8?B?dUx3TUU0cC8wY3JvSFpKbGpuNmtnTkVlWDNtd1NLcnpTbXZMQ1pTOHo0Y29m?=
+ =?utf-8?B?TE85NDY5ZEdXakxEcTBZRFdLQ0NCblpjNjJwSWdvcTVIRkpncWZmSFdldHF1?=
+ =?utf-8?B?WHRPSE9MejJQbmROUTVIUjN5bEM1cE5ibDFtK20ySC9OYk9qS0MxbjI2aUdR?=
+ =?utf-8?B?MkE5NVBheWMyV29wZ0pDQ1hzOHByT1ZMRUdOT1M3VW5jakdGZjlpYkN6bGRj?=
+ =?utf-8?B?Zkc2aHkzVVZkdC9wczlNSXFwM1ZwdEJoNXJpLzd5OGFubjdqdXlIZmRmejl4?=
+ =?utf-8?B?dmlDMnBJTmhxN0d4VHhuN0JCeHFZeDd6b2FaSDJXNkJsK2pyWGFPVDdwWDhp?=
+ =?utf-8?B?VUpaaUx0OXA5U0FFNXUvZjJPQndkRC9RcnVkNDhzZ1pGRHFzSi9teno0cHpE?=
+ =?utf-8?B?TzI0NkFVaXRYRG9oOU5lbHNiQUNvbEJyOHhKYUlpR3VRamlsWlVBZDhCRFc2?=
+ =?utf-8?B?aTdxWFJxTmtRMFZ5SzJ0N3VRbmdPbjNQZ2RiRTNWTmswQWdkd055Y0Q1eUs5?=
+ =?utf-8?B?dDBQcjhVVGsweTVPVm9rVE1TeG1DL1lwTlZQK2pTSkdnNGFXUHpiU1FVYTBO?=
+ =?utf-8?B?N3NrR2M1dHhxMS9jeTJvSGtmNFZhNnptUzN1UEpxSHFVcmdxVklodG1YYlI0?=
+ =?utf-8?B?MTJmM1FMSENkODhDUHQwTUwxVGdVelhzQUNrcVczWXpXK05SMXlTWEt1QmNL?=
+ =?utf-8?B?ZWxTb25vS0VKVzdoelcwWkdkcTlIYmk0TlVvQWYyaURWSmRXSDY4SGMvQjNq?=
+ =?utf-8?B?ZmdqRWdYNlBESFliWUt4QVluNlV2cGYzMlF4OHBRdGN4L3RIeHRwMFJhdUJH?=
+ =?utf-8?B?c0ZKeTlQak9YWjJQVnA5RWlaLytTREhxd1dVbmw1b29wWnNjWGp4K09sSzFF?=
+ =?utf-8?B?Zzh0aEd5cFYydGFCMnl6L3puVWs5U0gwSUJGNWJmMVNJakZBMzFSOGJaZmJC?=
+ =?utf-8?B?MmM5T3VFc2EwRjBJRzltUWFqdHpXeUdzcWx0R25UVGhOUFVvdU96UXhkSS9y?=
+ =?utf-8?B?ZEtaeVY2VGFKVVpLdzdrdDl5VklXVkZBMGhLdmxqZ2xmaTYxcW5RUGtaUzBP?=
+ =?utf-8?B?U1VIV2ZqMVZ4c3Y3RFdrUTVsOVBnd08wYXlIUkozZm45Ui9qcGdYRFdxdmw5?=
+ =?utf-8?B?WmZpelZVNHVad2lzV2o2UTRQR1dHTDI5bFRsWm0xaTNwbWI5RE45QzA1cjBJ?=
+ =?utf-8?B?UzZWeWpqeDhWSjBYMFhuZjBDRmZkZGFUd0JuMjFKdTljWTVsMHZlY2pEOEhw?=
+ =?utf-8?B?eWQ2TjhFOVVWZjhBTWtRc2U1aTlTMExoS2s2QTd1d2JVRGF3Y2lWalRrUnI3?=
+ =?utf-8?B?Y0RMQlBMaFpMbGpobHY1b3N3WHMvWXgyT1BUa2dYdWtzZmJpODZWSXNjKzIw?=
+ =?utf-8?Q?ttlzFz8Aq0XK61zN95xMhStJQ?=
+X-OriginatorOrg: amd.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 1ba24acb-fbee-4701-8761-08dcf1b18998
+X-MS-Exchange-CrossTenant-AuthSource: DS7PR12MB6048.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 21 Oct 2024 09:20:00.2827
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: ZFT8PR4zVGQgQoxkR5HIZ5jmF7KU1YPZLZqlI8fFRdBgiticoRfjwcHwVWZkWnP3lgX2kN3Da5rDHtEQk8aWUQ==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH0PR12MB7983
 
-On Fri, 18 Oct 2024 14:19:26 -0300
-Jason Gunthorpe <jgg@nvidia.com> wrote:
+Yi,
 
-> Of the page table implementations (AMD v1/2, VT-D SS, ARM32, DART)
-> arm_lpae is unique in how it handles partial unmap of large IOPTEs.
-> 
-> All other drivers will unmap the large IOPTE and return it's length.  For
-> example if a 2M IOPTE is present and the first 4K is requested to be
-> unmapped then unmap will remove the whole 2M and report 2M as the result.
-> 
-> arm_lpae instead replaces the IOPTE with a table of smaller IOPTEs, unmaps
-> the 4K and returns 4k. This is actually an illegal/non-hitless operation
-> on at least SMMUv3 because of the BBM level 0 rules.
-> 
-> Long ago VFIO could trigger a path like this, today I know of no user of
-> this functionality.
-> 
-> Given it doesn't work fully correctly on SMMUv3 and would create
-> portability problems if any user depends on it, remove the unique support
-> in arm_lpae and align with the expected iommu interface.
-> 
-> Outside the iommu users, this will potentially effect io_pgtable users of
-> ARM_32_LPAE_S1, ARM_32_LPAE_S2, ARM_64_LPAE_S1, ARM_64_LPAE_S2, and
-> ARM_MALI_LPAE formats.
-> 
-> Cc: Boris Brezillon <boris.brezillon@collabora.com>
-> Cc: Steven Price <steven.price@arm.com>
-> Cc: Liviu Dudau <liviu.dudau@arm.com>
-> Cc: dri-devel@lists.freedesktop.org
-> Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
-> ---
->  drivers/iommu/io-pgtable-arm.c | 72 +++-------------------------------
->  1 file changed, 6 insertions(+), 66 deletions(-)
-> 
-> I don't know anything in the iommu space that needs this, and this is the only
-> page table implementation in iommu that does it.
-> 
-> I'm not sure about DRM, I looked for awhile and only Panthor was unclear.
 
-I theory, Panthor can do partial unmaps (unmapping a subregion of a
-physically contiguous 2M section). In practice, it's not something we
-rely on yet, so I don't think it's a blocker. If we ever want to support
-that, we can always do it in two steps (unmap the 2M region and remap
-the borders). At some point it'd be good to have some kind of atomic
-page table updates, so we don't have this short period of time during
-which nothing is mapped (between the unmap and the remap), but that's a
-different story.
+On 10/21/2024 1:17 PM, Yi Liu wrote:
+> On 2024/10/17 22:01, Vasant Hegde wrote:
+>> From: Jason Gunthorpe <jgg@ziepe.ca>
+>>
+>> Currently drivers calls iommu_paging_domain_alloc(dev) to get an
+>> UNMANAGED domain. This is not sufficient to support PASID with
+>> UNMANAGED domain as some HW like AMD requires certain page table type
+>> to support PASIDs.
+>>
+>> Also domain_alloc_paging() passes device as param for domain
+> 
+> The below may look clearer to reader. :)
+> "Also the domain_alloc_paging op only passes device as param for domain"
+
+Better. Fixed.
 
 > 
-> If DRM does use this, I'd respin this to make it into a quirk and iommu won't
-> set it.
+>> allocation. This is not sufficient for AMD driver to decide the right
+>> page table.
+>> > Hence add iommu_paging_domain_alloc_flags() API which takes flags as
+>> parameter. Driver can pass additional parameter to indicate type of
+>> domain required, etc. iommu_paging_domain_alloc_flags() internally calls
+>> appropriate callback function to allocate a domain.
 > 
-> Thanks,
-> Jason
+> how about mentioning that the domain_alloc_user op accepts flags from
+> user which meets the AMD driver's requirement? Hence, it's clear why
+> we are not extending the domain_alloc_paging op to accept flags. :)
+
+I have added below sentence instead.
+
+Instead of extending ops->domain_alloc_paging() it was decided to
+enhance ops->domain_alloc_user() so that caller can pass various
+additional flags.
+
 > 
+>>
+>> Signed-off-by: Jason Gunthorpe <jgg@ziepe.ca>
+>> [Added description - Vasant]
+>> Signed-off-by: Vasant Hegde <vasant.hegde@amd.com>
+>> Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
+>> ---
+>>   drivers/iommu/iommu.c | 30 ++++++++++++++++++++++++++----
+>>   include/linux/iommu.h | 14 +++++++++++---
+>>   2 files changed, 37 insertions(+), 7 deletions(-)
+>>
+>> diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
+>> index 811748bec4b0..e13d64ffd14f 100644
+>> --- a/drivers/iommu/iommu.c
+>> +++ b/drivers/iommu/iommu.c
+>> @@ -2027,20 +2027,42 @@ struct iommu_domain *iommu_domain_alloc(const struct
+>> bus_type *bus)
+>>   EXPORT_SYMBOL_GPL(iommu_domain_alloc);
+>>     /**
+>> - * iommu_paging_domain_alloc() - Allocate a paging domain
+>> + * iommu_paging_domain_alloc_flags() - Allocate a paging domain
+>>    * @dev: device for which the domain is allocated
+>> + * @flags: Bitmap of iommufd_hwpt_alloc_flags
 > 
-> diff --git a/drivers/iommu/io-pgtable-arm.c b/drivers/iommu/io-pgtable-arm.c
-> index 0e67f1721a3d98..a51fae9c909111 100644
-> --- a/drivers/iommu/io-pgtable-arm.c
-> +++ b/drivers/iommu/io-pgtable-arm.c
-> @@ -569,66 +569,6 @@ static void arm_lpae_free_pgtable(struct io_pgtable *iop)
->  	kfree(data);
->  }
->  
-> -static size_t arm_lpae_split_blk_unmap(struct arm_lpae_io_pgtable *data,
-> -				       struct iommu_iotlb_gather *gather,
-> -				       unsigned long iova, size_t size,
-> -				       arm_lpae_iopte blk_pte, int lvl,
-> -				       arm_lpae_iopte *ptep, size_t pgcount)
-> -{
-> -	struct io_pgtable_cfg *cfg = &data->iop.cfg;
-> -	arm_lpae_iopte pte, *tablep;
-> -	phys_addr_t blk_paddr;
-> -	size_t tablesz = ARM_LPAE_GRANULE(data);
-> -	size_t split_sz = ARM_LPAE_BLOCK_SIZE(lvl, data);
-> -	int ptes_per_table = ARM_LPAE_PTES_PER_TABLE(data);
-> -	int i, unmap_idx_start = -1, num_entries = 0, max_entries;
-> -
-> -	if (WARN_ON(lvl == ARM_LPAE_MAX_LEVELS))
-> -		return 0;
-> -
-> -	tablep = __arm_lpae_alloc_pages(tablesz, GFP_ATOMIC, cfg, data->iop.cookie);
-> -	if (!tablep)
-> -		return 0; /* Bytes unmapped */
-> -
-> -	if (size == split_sz) {
-> -		unmap_idx_start = ARM_LPAE_LVL_IDX(iova, lvl, data);
-> -		max_entries = ptes_per_table - unmap_idx_start;
-> -		num_entries = min_t(int, pgcount, max_entries);
-> -	}
-> -
-> -	blk_paddr = iopte_to_paddr(blk_pte, data);
-> -	pte = iopte_prot(blk_pte);
-> -
-> -	for (i = 0; i < ptes_per_table; i++, blk_paddr += split_sz) {
-> -		/* Unmap! */
-> -		if (i >= unmap_idx_start && i < (unmap_idx_start + num_entries))
-> -			continue;
-> -
-> -		__arm_lpae_init_pte(data, blk_paddr, pte, lvl, 1, &tablep[i]);
-> -	}
-> -
-> -	pte = arm_lpae_install_table(tablep, ptep, blk_pte, data);
-> -	if (pte != blk_pte) {
-> -		__arm_lpae_free_pages(tablep, tablesz, cfg, data->iop.cookie);
-> -		/*
-> -		 * We may race against someone unmapping another part of this
-> -		 * block, but anything else is invalid. We can't misinterpret
-> -		 * a page entry here since we're never at the last level.
-> -		 */
-> -		if (iopte_type(pte) != ARM_LPAE_PTE_TYPE_TABLE)
-> -			return 0;
-> -
-> -		tablep = iopte_deref(pte, data);
-> -	} else if (unmap_idx_start >= 0) {
-> -		for (i = 0; i < num_entries; i++)
-> -			io_pgtable_tlb_add_page(&data->iop, gather, iova + i * size, size);
-> -
-> -		return num_entries * size;
-> -	}
-> -
-> -	return __arm_lpae_unmap(data, gather, iova, size, pgcount, lvl, tablep);
-> -}
-> -
->  static size_t __arm_lpae_unmap(struct arm_lpae_io_pgtable *data,
->  			       struct iommu_iotlb_gather *gather,
->  			       unsigned long iova, size_t size, size_t pgcount,
-> @@ -678,12 +618,12 @@ static size_t __arm_lpae_unmap(struct arm_lpae_io_pgtable *data,
->  
->  		return i * size;
->  	} else if (iopte_leaf(pte, lvl, iop->fmt)) {
-> -		/*
-> -		 * Insert a table at the next level to map the old region,
-> -		 * minus the part we want to unmap
-> -		 */
-> -		return arm_lpae_split_blk_unmap(data, gather, iova, size, pte,
-> -						lvl + 1, ptep, pgcount);
-> +		/* Unmap the entire large IOPTE and return its size */
-> +		size = ARM_LPAE_BLOCK_SIZE(lvl, data);
-> +		__arm_lpae_clear_pte(ptep, &iop->cfg, 1);
-> +		if (gather && !iommu_iotlb_gather_queued(gather))
-> +			io_pgtable_tlb_add_page(iop, gather, iova, size);
-> +		return size;
->  	}
->  
->  	/* Keep on walkin' */
+> maybe "enum iommufd_hwpt_alloc_flags" would be more accurate.
+
+Ack.
+
 > 
-> base-commit: 27ab08d646a1b53330229a97100200c9567d28b5
+>>    *
+>>    * Allocate a paging domain which will be managed by a kernel driver. Return
+>>    * allocated domain if successful, or a ERR pointer for failure.
+> 
+> nit: s/a/an/
+
+Fixed.
+
+-Vasant
 
