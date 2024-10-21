@@ -1,222 +1,156 @@
-Received: from out-185.mta1.migadu.com (out-185.mta1.migadu.com [95.215.58.185])
+Received: from NAM11-CO1-obe.outbound.protection.outlook.com (mail-co1nam11on2069.outbound.protection.outlook.com [40.107.220.69])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 758831E8851
-	for <iommu@lists.linux.dev>; Mon, 21 Oct 2024 14:37:13 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=95.215.58.185
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1729521436; cv=none; b=hh2E5rE9Tt+u1NOaxNXnsUxyLIBiXsJq/24bNtouQa3s5RNCtbPYcGPoUKL08ooBM3zVhuRduvAA+rgCHHGxTbu65JG2xbZRvcEBg+FFa5S/WRz86wgxPTSsOw9GGnKqpCwiAtc7jRPXgKC5ggDtwF2odP1YDKrg1O9VlND/hGs=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1729521436; c=relaxed/simple;
-	bh=w9UslHje9Y25HqAgD6FbzkeP4dbMjaWhYX4yiay4hlk=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=GHtQxoOQ+l1iyiuBweHL1UvFEmX95nVrW3CswxlF+Pya8r1SqFEBnT5UeONLlvZwmSqaj4RsH824MJFCnwFBTmmcmgktpbW0p7NSOUOyoJHX69wjYKB3c1sysgdsKVFgG1Cji8Hixqmgn+idjO8uLxK0G09ScTDbufqR3U6rMoU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.dev; spf=pass smtp.mailfrom=linux.dev; dkim=pass (1024-bit key) header.d=linux.dev header.i=@linux.dev header.b=eJ2u1bPs; arc=none smtp.client-ip=95.215.58.185
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.dev
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.dev
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9924A29408
+	for <iommu@lists.linux.dev>; Mon, 21 Oct 2024 16:10:54 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.220.69
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1729527056; cv=fail; b=cTQkKnI6EYorNBOKBgvMrKG4MwLRLpBC6n5Gw8Hvw8qGioWYa+GiJNOIbkWJ5OxJK2+TY0+vcHhgx4ctsLSdTGScmjcA04ofpyX+DipImwchFw40CJIp+krAJwZXfm0Y2mW5uS9KHG5uIZZ4HNtIMivzAiR3DcfuRRk5wx+z8sY=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1729527056; c=relaxed/simple;
+	bh=qU/UT4LMu0slR8cTNMU3c/FBiFoQ4UEX2JJLV1b44Nk=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:Content-Type:
+	 Content-Disposition:In-Reply-To:MIME-Version; b=keckGK4ra7sHZf4tl/Jcc/5c9pR51g96dkRczB5UOQR6+9XbK2jHDNndz/VRxzBR/M5tpLUXAY1CCT2s02VULd5QsO6ObAzY3cYKRUh6F2G8QPDvXq1L7eZui7/O+RMUuw7w0Dg1piB6aI+/T8PXOvjefIQ8qlwTh9txViai1Ck=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=kSQNNyXh; arc=fail smtp.client-ip=40.107.220.69
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linux.dev header.i=@linux.dev header.b="eJ2u1bPs"
-Message-ID: <a61b0a48-d55b-494b-a7e8-04b02dc87e21@linux.dev>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
-	t=1729521431;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references;
-	bh=mA3Yw+C9FhQPBZ1Ah8zRphQ8BomtwMtOAV4fpiUEPcc=;
-	b=eJ2u1bPspCyKDFZxOYZF29T/F5YR3lGU6492LgXb8AdIZzBVRtPhQseMWnXFwjoj34pFEu
-	sKP9lxrJA6CzixQ0rwCZRsSEeqU1ooRRSJ6G80JOv6L/YeQ25aqCDcIEKGNfoJG6jYhjZq
-	9PhKEImi9KUCn+kUt8TkQPdAmugnTuc=
-Date: Mon, 21 Oct 2024 10:37:07 -0400
+	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="kSQNNyXh"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=o7yfU3JaTs9q6K9wSoaBCRe1Smyp7Qq7TJH3MJHEQZ55b8dcs02dZk/PnwF4ZuCULw7gAWZglUktHs9tdwAXSwVtqCokR9pP/UqkWok37ZKU9CF+M6H5An357zYhDEIPZzwny35MIcV9jB48VMzxoODiFRLwHM+tNitG7bzvwXc9dD6j92rG1w1WeULfnaFBMGYFmBHOV3pKZEvO028M1gXp6a+ScR4hrOGUdbuAT15A3d1oMPL3fq9SX527uRYAUNiB5LZpI/nQlEm6sT6/vRC3IuuFZ7o8/FSMMy+DWnI9ZiRqzv4Mo/oc8PNlPOhOOksGXPL6zJbcwgUrl9Gbtw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=qU/UT4LMu0slR8cTNMU3c/FBiFoQ4UEX2JJLV1b44Nk=;
+ b=UUa506lTvTbKlwNbEZMf/vqB1D43NOoGxlZ08mQAPxPb/z9MxAOU1TjR2uXNOob19K6Dcssen75Rk08O0C5rRGzop7mjtT9c+okS+XQATf731COtLCY6u9UkDPk/0hak9k/vucDFs21sD9VNFN0pQr1tZlIj6XsYEuhNKsrha4rYrzR2HshfpcRdVid50mfKJ9Y25nA0e+DIqvhy/duhhHHD+lqfn2Ybuq4wUCSpGikYoB291bUyuExpGBG2KE3pzPtYzJA+M13H4y4G6oTmnstxBuRWVh7UigVUJVsHFX4zQksk+Llq+HlJLuzBhBFeteqB0l0b8zCQ8NKQ2+y8qQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=qU/UT4LMu0slR8cTNMU3c/FBiFoQ4UEX2JJLV1b44Nk=;
+ b=kSQNNyXhNf1xs5OwBfk6IwtQDRxOM3VSMl/zzL7eDDq1LZXqxqkjoxyVlnaUJ0EN2qH6dG0BfTrKr1mXHd5dZWJ9MerUeJZB5leZwjMRTuAuWl/O6y6JUKMwpK/6I1wQsxmN0toKWWrec26xN9GK/8w7JpwZUf7yXXVsCCbJ5W+9aGh9QNqE4awrzdhmHm2xy06Mvj5UyixRPRb3r+vgL5n7yagqfr+5739Td0f/+Ls+/60Rsbmt9WEDJtEoAPlFE8pMYCy+rRrW/irRknWxbkFsiRKrUWEmmyaZa7CWjWcbU81FvgaMa3TI7bmAdQuYy0yqDF+1dtdJQk8i7+dUpA==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nvidia.com;
+Received: from CH3PR12MB8659.namprd12.prod.outlook.com (2603:10b6:610:17c::13)
+ by DS7PR12MB8321.namprd12.prod.outlook.com (2603:10b6:8:ec::17) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.8069.28; Mon, 21 Oct
+ 2024 16:10:49 +0000
+Received: from CH3PR12MB8659.namprd12.prod.outlook.com
+ ([fe80::6eb6:7d37:7b4b:1732]) by CH3PR12MB8659.namprd12.prod.outlook.com
+ ([fe80::6eb6:7d37:7b4b:1732%4]) with mapi id 15.20.8069.027; Mon, 21 Oct 2024
+ 16:10:49 +0000
+Date: Mon, 21 Oct 2024 13:10:48 -0300
+From: Jason Gunthorpe <jgg@nvidia.com>
+To: Steven Sistare <steven.sistare@oracle.com>
+Cc: iommu@lists.linux.dev, Kevin Tian <kevin.tian@intel.com>,
+	Nicolin Chen <nicolinc@nvidia.com>
+Subject: Re: [PATCH V3 8/9] iommufd: optimize file mapping
+Message-ID: <20241021161048.GA13034@nvidia.com>
+References: <20241017192418.GD3559746@nvidia.com>
+ <c4574487-346a-427e-a97d-6e1ee366ed1a@oracle.com>
+ <20241018001046.GF3559746@nvidia.com>
+ <279c7e80-1d72-407e-bfb8-d286760a5e11@oracle.com>
+ <20241018160430.GJ3559746@nvidia.com>
+ <dc59dc36-027f-42c1-971a-8218c658c5a0@oracle.com>
+ <20241018175951.GK3559746@nvidia.com>
+ <55027ff1-05cb-4ce9-adad-8dca586a26ac@oracle.com>
+ <20241018231011.GL3559746@nvidia.com>
+ <561a1712-8613-4f88-ae60-7f12a4b7c244@oracle.com>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <561a1712-8613-4f88-ae60-7f12a4b7c244@oracle.com>
+X-ClientProxiedBy: MN2PR06CA0016.namprd06.prod.outlook.com
+ (2603:10b6:208:23d::21) To CH3PR12MB8659.namprd12.prod.outlook.com
+ (2603:10b6:610:17c::13)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Subject: Re: [PATCH 3/3] dma-mapping: Trace more error paths
-To: Robin Murphy <robin.murphy@arm.com>, Christoph Hellwig <hch@lst.de>,
- iommu@lists.linux.dev
-Cc: linux-trace-kernel@vger.kernel.org, Masami Hiramatsu
- <mhiramat@kernel.org>, linux-kernel@vger.kernel.org,
- Mathieu Desnoyers <mathieu.desnoyers@efficios.com>,
- Steven Rostedt <rostedt@goodmis.org>,
- Marek Szyprowski <m.szyprowski@samsung.com>
-References: <20241017181354.2834674-1-sean.anderson@linux.dev>
- <20241017181354.2834674-4-sean.anderson@linux.dev>
- <5e01b376-b905-4775-badf-41d31d2a821c@arm.com>
-Content-Language: en-US
-X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
-From: Sean Anderson <sean.anderson@linux.dev>
-In-Reply-To: <5e01b376-b905-4775-badf-41d31d2a821c@arm.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-Migadu-Flow: FLOW_OUT
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: CH3PR12MB8659:EE_|DS7PR12MB8321:EE_
+X-MS-Office365-Filtering-Correlation-Id: 1143640f-3190-4ff3-ca0f-08dcf1eaed89
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;ARA:13230040|366016|376014|1800799024;
+X-Microsoft-Antispam-Message-Info:
+	=?us-ascii?Q?VnZQdS2qvf/thorpdlw0DALfVvNp913HJWe8JcvnAktKCfvStw4bNkg5aR++?=
+ =?us-ascii?Q?dMDFgLg8qIZnc3u2R4s427AQTN/zFrOLn8ne28umQFnjzuyk0Fz8+81n+DMT?=
+ =?us-ascii?Q?PTdRhQ1uv/RIvatru3dJAlAJaGTMYNm98MqXhTQ1RSq54vws9bSf10x1YcCT?=
+ =?us-ascii?Q?gh3t5sjkEjV2B9FGcdQUt2J1hv//XyOusm9AdXWE5bWu6oqKffX1D9MYoqBC?=
+ =?us-ascii?Q?GT5Kk5gY2Qq+phoHQ/LeIFLQ+S9IV3nH3Ra7biqoGxs72rvwn3Jb5uB+c6Oc?=
+ =?us-ascii?Q?xWfs9SdXn8GF3OdTnvfgej5lTEoMcXbkqWmaU8HPv8teOHxAn1yrWeDkysrH?=
+ =?us-ascii?Q?JRn0oEOl1Wax3Wq1zJkFFnIdXON+AT/aTeumuHnlK026FyrYRGptzQhFw35Y?=
+ =?us-ascii?Q?muQ+LNsw3HxMGLQ+lSGqI/Y61OSZa3rPIYE7TRXWC/aT4O1ttlZog92nfpnr?=
+ =?us-ascii?Q?y2OmgjcA1RcpPpCXBvk0yZeCCpWq+jjR96EfN9t8o/Esw78CFvMYgnfomsPb?=
+ =?us-ascii?Q?pFsxQsBluQNOOSHeuTUzGqwN1oLJjpXec4aC1AO5C9wpIqdOPeFrQt+ijoyJ?=
+ =?us-ascii?Q?EM8NHqFXZipQaw5DKQYlr8viFoUShHBmeGJ/JgfIFm2buj5933F+jP8X326T?=
+ =?us-ascii?Q?PZcuiXR8DMepfopIrb0a40JyLZAIq2gl/3L3nQ54qlTk88pJSoaabkgc9vPI?=
+ =?us-ascii?Q?lnKY1DJwn5q60Bpxu4BPLoTONxqmy9xSVGFou+4u/BEUVqx7taK6sFj4JAVr?=
+ =?us-ascii?Q?+vn60Be+2rfWbaH1xvBYmN9wgc9M4SIEPeVtkwtcNO36gVmkI2WKDw6Xjkas?=
+ =?us-ascii?Q?SyRBul4dlRyaVzCLctKZz+ens8p4/THcINcZsITZLZrjo+UE+QYsXLNC6cIn?=
+ =?us-ascii?Q?8BuJBwXVg63PWyi/gAfcmPJAERQJhsQESz3mKYZHK83GN8ir4ZAQ9DG2CZm1?=
+ =?us-ascii?Q?wKyPQVickQv55wbJRjzgHQZbgBx4SAYGrvpyCBKvrmKL9e/CdC/ySr/idYqe?=
+ =?us-ascii?Q?+X+IfqTO18x/hCIx94C6rrfYtM05cgk4l6fHByDZnsX6MbzI9UVWlGiN+8F4?=
+ =?us-ascii?Q?fb5Q8EycsxSJ4l28yVXPpdzGep/HJZ8DIPueMBgBLC1jK/z9irptoAQM+nzc?=
+ =?us-ascii?Q?0D5fUVUzFVyEf4yTLQQLGkCxDgJtAKw9c++5up+VJly5yVFa7GVP+j05YMs/?=
+ =?us-ascii?Q?kmu9sJH+GeHpuhiMoVQtjII2q3Yb5To00w10n+3J8niUD98Q7qucEAbaeStX?=
+ =?us-ascii?Q?UOksKAAzrkRHPQOQ1P5d5MyNVkyMGfNXQce/6aV3B/x1jl9HSdromipcpBfQ?=
+ =?us-ascii?Q?Cqv1DL3EBfuBidHGEyw3QCjh?=
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CH3PR12MB8659.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(366016)(376014)(1800799024);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?us-ascii?Q?lhjzzyVAV7KrogkS1hM7HT6KGWxHDApKp8ZTlLgUWeOb3OZ468//f7jEdPUa?=
+ =?us-ascii?Q?cqanHqyTfH99PWnj6A4W/hPiZZ5Ahb0zziL0qJdmyq6nhW4/nXjKBynogiYK?=
+ =?us-ascii?Q?lZwflCWC3zPR0rLsc6te76n+iXzx7hgTWrmFYp4XhPrBWsS3GejHuHc1R2ct?=
+ =?us-ascii?Q?kX6LJtA9lthyd2uM1Q1CAUYn6XznEQAKd6/2tS7dvgKu+NA7cJpCCYG1YIUn?=
+ =?us-ascii?Q?dSXeWdw/mLsIImt0QM0WxnMqp5O9tDyLkAelrawFC1IaqlwGebwXLChxei14?=
+ =?us-ascii?Q?CYRmVp+b2XJROBkdnDAR8eZUEOUqUnfPuoF2wa4BszUAKIzKk47njNQNmep5?=
+ =?us-ascii?Q?ZD0K/0mfkPJEk+gevDbCXu8l2Y5NC8AizAd/pdjg5vzCUxvb+TsPbwEoUgXP?=
+ =?us-ascii?Q?BYPrNf9WP6YlfXC34ZY1Z6/qexKOf97mqClEN6pDHMkbxUUNfQZ7y0Qj2sFt?=
+ =?us-ascii?Q?wIV11KcpVcsXeX5EQl/s9cWo/q0PMejc7K7omuxgOuXfhQVq/jo6GK6N5uX/?=
+ =?us-ascii?Q?zC5nk7l2arL/Rwu35D0INot1Mzhk315/uxZRZb0naYj7Jt2jQ/B/uL/BdAj9?=
+ =?us-ascii?Q?J+oWd02BFSqb7uJ+90+Hyfp2ORtxLA14KsCuFbxdhJIasLk0Vh5wkMQQ62s8?=
+ =?us-ascii?Q?pvCLagElj6tpWG6HiwLod1v+9MY70WYtz1c88tYWdNUFNn34vbiHrfIkdweP?=
+ =?us-ascii?Q?ckmnzyXq9OXwU5Jalw+wqO9ZIbPQkFoiJ/MXNbkcS5ziNeRJvuTRs3DyjPSQ?=
+ =?us-ascii?Q?srZ3ayH6yRAr8rQpwdr6pJRi2HZj4bZRppj6diefV5yRMALzMR916WmTcGFz?=
+ =?us-ascii?Q?DcUlh3lItamXxt+r/xP+4z9EdbOl0v1wt85FPzIHv46r9o5yXlOCF2a6GLOR?=
+ =?us-ascii?Q?RFjxew5vXL9XBjG4WU1EgdfcttHS9ri1gtG5CrQBMy3Kj0AVj8cCz8MNh8dQ?=
+ =?us-ascii?Q?N00R4kbyYVj8slSRJxw4VDU3U3jDAlWdk4vPcfkSHZJDAUfR7ZO7M2UMAbEA?=
+ =?us-ascii?Q?yqCHSjVXuRhVSgX7AA9lt5rS2bMqgT89Ul8WREOILdQ1+BjadQh3MOYXBMP0?=
+ =?us-ascii?Q?MS5/cJ4mHJX3QkR9fYye8ZS3ueWkxx2m5x0vP5eVFin+HHzWHn/rnM5AHtsh?=
+ =?us-ascii?Q?UwJ+3XLU2FfO8r1geh0EX0P/leq61JY1t/6Ymw8g/RKi/DpCeymrWjjCP63j?=
+ =?us-ascii?Q?QOibYlxdJhRQ1iQ2BGL/LHibIljSEyjCIR94N9fEkbXdoohgGfZdHSDhdLv1?=
+ =?us-ascii?Q?Ijtntigisrn5rjBz5MTqLftrn+bwf7feIf8lJoJNjQ1SWQXawFebAWWFnD6L?=
+ =?us-ascii?Q?ZTfc8O9+QvN7xNtZpETj5yrYqT1Q3ou/TcrtTfbXvso0vF2idED30qm0uqbm?=
+ =?us-ascii?Q?vJuOC8mxpB0S6GoT9ZsVIGqUvLkr38gWs/1EDki7x4Kxqk448x3QyKcKwRTw?=
+ =?us-ascii?Q?mFSJxGlb2+kUcLieoO/qZfqDytYP/9e9QCww8+hHyC6MvNPSh9jCx//ve+Fk?=
+ =?us-ascii?Q?VTXNnyEu59kB1aqmancq2F+S2IOvdaNJG0CGJY6RWsX2+st3T0krGn6iiouj?=
+ =?us-ascii?Q?1zyeMfhe8+yK6Aav53Q=3D?=
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 1143640f-3190-4ff3-ca0f-08dcf1eaed89
+X-MS-Exchange-CrossTenant-AuthSource: CH3PR12MB8659.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 21 Oct 2024 16:10:49.1843
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: v2ktY2HvfeL4lFhZ53k/OWJrGEdRF/7u8KOYBORh/8GwbMzw7ByEwHwDdiHpjLEB
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DS7PR12MB8321
 
-On 10/21/24 06:38, Robin Murphy wrote:
-> On 2024-10-17 7:13 pm, Sean Anderson wrote:
->> It can be surprising to the user if DMA functions are only traced on
->> success. On failure, it can be unclear what the source of the problem
->> is. Fix this by tracing all functions even when they fail. Cases where
->> we BUG/WARN are skipped, since those should be sufficiently noisy
->> already.
->>
->> Signed-off-by: Sean Anderson <sean.anderson@linux.dev>
->> ---
->>
->>   include/trace/events/dma.h | 41 ++++++++++++++++++++++++++++++++++++++
->>   kernel/dma/mapping.c       | 27 +++++++++++++++++--------
->>   2 files changed, 60 insertions(+), 8 deletions(-)
->>
->> diff --git a/include/trace/events/dma.h b/include/trace/events/dma.h
->> index 9bc647f9ad4d..321cce327404 100644
->> --- a/include/trace/events/dma.h
->> +++ b/include/trace/events/dma.h
->> @@ -161,6 +161,12 @@ DEFINE_EVENT(_dma_alloc, dma_alloc_pages,
->>            unsigned long attrs),
->>       TP_ARGS(dev, virt_addr, dma_addr, size, dir, flags, attrs));
->>   +DEFINE_EVENT(_dma_alloc, dma_alloc_sgt_err,
->> +    TP_PROTO(struct device *dev, void *virt_addr, dma_addr_t dma_addr,
->> +         size_t size, enum dma_data_direction dir, gfp_t flags,
->> +         unsigned long attrs),
->> +    TP_ARGS(dev, virt_addr, dma_addr, size, dir, flags, attrs));
->> +
->>   TRACE_EVENT(dma_alloc_sgt,
->>       TP_PROTO(struct device *dev, struct sg_table *sgt, size_t size,
->>            enum dma_data_direction dir, gfp_t flags, unsigned long attrs),
->> @@ -325,6 +331,41 @@ TRACE_EVENT(dma_map_sg,
->>           decode_dma_attrs(__entry->attrs))
->>   );
->>   +TRACE_EVENT(dma_map_sg_err,
->> +    TP_PROTO(struct device *dev, struct scatterlist *sgl, int nents,
->> +         int err, enum dma_data_direction dir, unsigned long attrs),
->> +    TP_ARGS(dev, sgl, nents, err, dir, attrs),
->> +
->> +    TP_STRUCT__entry(
->> +        __string(device, dev_name(dev))
->> +        __dynamic_array(u64, phys_addrs, nents)
->> +        __field(int, err)
->> +        __field(enum dma_data_direction, dir)
->> +        __field(unsigned long, attrs)
->> +    ),
->> +
->> +    TP_fast_assign(
->> +        struct scatterlist *sg;
->> +        int i;
->> +
->> +        __assign_str(device);
->> +        for_each_sg(sgl, sg, nents, i)
->> +            ((u64 *)__get_dynamic_array(phys_addrs))[i] = sg_phys(sg);
->> +        __entry->err = err;
->> +        __entry->dir = dir;
->> +        __entry->attrs = attrs;
->> +    ),
->> +
->> +    TP_printk("%s dir=%s dma_addrs=%s err=%d attrs=%s",
->> +        __get_str(device),
->> +        decode_dma_data_direction(__entry->dir),
->> +        __print_array(__get_dynamic_array(phys_addrs),
->> +                  __get_dynamic_array_len(phys_addrs) /
->> +                sizeof(u64), sizeof(u64)),
->> +        __entry->err,
->> +        decode_dma_attrs(__entry->attrs))
->> +);
->> +
->>   TRACE_EVENT(dma_unmap_sg,
->>       TP_PROTO(struct device *dev, struct scatterlist *sgl, int nents,
->>            enum dma_data_direction dir, unsigned long attrs),
->> diff --git a/kernel/dma/mapping.c b/kernel/dma/mapping.c
->> index b8a6bc492fae..636dbb0629a4 100644
->> --- a/kernel/dma/mapping.c
->> +++ b/kernel/dma/mapping.c
->> @@ -223,6 +223,7 @@ static int __dma_map_sg_attrs(struct device *dev, struct scatterlist *sg,
->>           debug_dma_map_sg(dev, sg, nents, ents, dir, attrs);
->>       } else if (WARN_ON_ONCE(ents != -EINVAL && ents != -ENOMEM &&
->>                   ents != -EIO && ents != -EREMOTEIO)) {
->> +        trace_dma_map_sg_err(dev, sg, nents, ents, dir, attrs);
-> 
-> Isn't this just a case of moving the existing tracepoint up outside the "if (ents > 0)" condition?
+On Mon, Oct 21, 2024 at 10:06:44AM -0400, Steven Sistare wrote:
 
-This is a separate tracepoint (_err) to simplify collecting/printing the
-addresses.
+> But, we cannot change the signature of the exported function
+> memfd_pin_folios.
 
-> 
->>           return -EIO;
->>       }
->>   @@ -604,20 +605,26 @@ void *dma_alloc_attrs(struct device *dev, size_t size, dma_addr_t *dma_handle,
->>       if (WARN_ON_ONCE(flag & __GFP_COMP))
->>           return NULL;
->>   -    if (dma_alloc_from_dev_coherent(dev, size, dma_handle, &cpu_addr))
->> +    if (dma_alloc_from_dev_coherent(dev, size, dma_handle, &cpu_addr)) {
->> +        trace_dma_alloc(dev, cpu_addr, *dma_handle, size,
->> +                DMA_BIDIRECTIONAL, flag, attrs);
->>           return cpu_addr;
->> +    }
->>         /* let the implementation decide on the zone to allocate from: */
->>       flag &= ~(__GFP_DMA | __GFP_DMA32 | __GFP_HIGHMEM);
->>   -    if (dma_alloc_direct(dev, ops))
->> +    if (dma_alloc_direct(dev, ops)) {
->>           cpu_addr = dma_direct_alloc(dev, size, dma_handle, flag, attrs);
->> -    else if (use_dma_iommu(dev))
->> +    } else if (use_dma_iommu(dev)) {
->>           cpu_addr = iommu_dma_alloc(dev, size, dma_handle, flag, attrs);
->> -    else if (ops->alloc)
->> +    } else if (ops->alloc) {
->>           cpu_addr = ops->alloc(dev, size, dma_handle, flag, attrs);
->> -    else
->> +    } else {
->> +        trace_dma_alloc(dev, NULL, 0, size, DMA_BIDIRECTIONAL, flag,
->> +                attrs);
->>           return NULL;
-> 
-> Similarly just move this return down past the tracepoint, same as the hunk below?
+Well, we can, that is how the upstream kernel works...
 
-OK
+Question is if it is worthwhile
 
->> +    }
->>         trace_dma_alloc(dev, cpu_addr, *dma_handle, size, DMA_BIDIRECTIONAL,
->>               flag, attrs);
->> @@ -642,11 +649,11 @@ void dma_free_attrs(struct device *dev, size_t size, void *cpu_addr,
->>        */
->>       WARN_ON(irqs_disabled());
->>   -    if (!cpu_addr)
->> -        return;
->> -
->>       trace_dma_free(dev, cpu_addr, dma_handle, size, DMA_BIDIRECTIONAL,
->>                  attrs);
->> +    if (!cpu_addr)
->> +        return;
->> +
->>       debug_dma_free_coherent(dev, size, cpu_addr, dma_handle);
->>       if (dma_alloc_direct(dev, ops))
->>           dma_direct_free(dev, size, cpu_addr, dma_handle, attrs);
->> @@ -688,6 +695,8 @@ struct page *dma_alloc_pages(struct device *dev, size_t size,
->>           trace_dma_alloc_pages(dev, page_to_virt(page), *dma_handle,
->>                         size, dir, gfp, 0);
->>           debug_dma_map_page(dev, page, 0, size, dir, *dma_handle, 0);
->> +    } else {
->> +        trace_dma_alloc_pages(dev, NULL, 0, size, dir, gfp, 0);
-> 
-> Could we move the page_to_virt() into the event definiton and let that handle NULL, then similarly hoist the tracepoint out of the condition?
-
-Then we cannot reuse the event class for trace_dma_alloc, which does not
-have a struct page available.
-
->>       }
->>       return page;
->>   }
->> @@ -772,6 +781,8 @@ struct sg_table *dma_alloc_noncontiguous(struct device *dev, size_t size,
->>           sgt->nents = 1;
->>           trace_dma_alloc_sgt(dev, sgt, size, dir, gfp, attrs);
->>           debug_dma_map_sg(dev, sgt->sgl, sgt->orig_nents, 1, dir, attrs);
->> +    } else {
->> +        trace_dma_alloc_sgt_err(dev, NULL, 0, size, gfp, dir, attrs);
-> 
-> And again similarly here - if I'm interested in calls to dma_alloc_contiguous(), I'd rather have a "dma_alloc_contiguous" tracepoint which can tell me both the arguments and the result at a glance, than have to remember to trace two distinct other things based on internal details.
-
-Isn't it a case of just doing `perf record -e 'dma:dma_alloc_sgt*'`?
-
-Fundamentally, these events have different information available, and
-dealing with this in a generic manner is inconvenient.
-
---Sean
+Jason
