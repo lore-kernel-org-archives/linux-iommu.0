@@ -1,48 +1,48 @@
 Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.14])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 001FC1E3DF4
-	for <iommu@lists.linux.dev>; Mon, 21 Oct 2024 08:56:37 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9DFC61E4123
+	for <iommu@lists.linux.dev>; Mon, 21 Oct 2024 08:56:40 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.14
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1729500999; cv=none; b=slwU/Uk/z8TfeLRhlz+JesRChYmEYpsV1KfrqUmHq6zzqHh0CJm0otdd0ZgsAbkepO6ppyCSpYLqsnRSNlsH9DGzdQtsx0QwjA/vYsS8UtMsXtQs4Q1IX17tr9T4stZ/t3ISLJw54zRZOkzfKI5TmnH5wejI4VEnUoa1htm1c8k=
+	t=1729501002; cv=none; b=L/WTe76McsMCpBDBCozGQAW+SXM8iox4VFKa9d+8TVPn2u+ZdwDl5tfZIY56tjmPo92l0nFi+jWQjH+Ytl4CmitzSZH0Feb25OStFEOdUKLl2sQomUS5XeTfOWO2HPXfC9wZ/H1ksH/btOzcNckwF2izv+hxmhFAK0KQRbXdybE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1729500999; c=relaxed/simple;
-	bh=kqJ81w2X5hak4sjUBjP1L0SagSpWOgRvgVPYFi3njhc=;
+	s=arc-20240116; t=1729501002; c=relaxed/simple;
+	bh=Tbzk8V51fVW+LwkB30xCPUlXehhiTd4lUy3vVxrhRKw=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=PtNVav3e4Gw1kKZr4z5XaUkDQigKTMsoSzJd3hngWEe4UtWzr5sJmSssVZRx0RD8LH13A8qmfaBLxE5gkWSL7RRJs7HShUnjNk+KnVXeiajnZQhxnZyVPHuOYNT7QPhOIILOTxA0gfwK9dwso0xo3lLEnBv534CR9Tb9HBsTZSM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=GlJxJm3y; arc=none smtp.client-ip=198.175.65.14
+	 MIME-Version; b=vDoFp2i6LJpxLHCJGIZIFstWEUR1ND1fDwlTpM5tcctVDRVLFU6nLqZg9jpjynoWrV/u2idgjzXR2HWRHIqJALnJVpSWAiuIiicRW2Tr7SzfBxVLhMtcW3l5o7rzz4DE4wAMF7/KVPNV8EoUInT9NVG0O7MPMX1Gn7WPHJaXR8o=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=AjEkMnPO; arc=none smtp.client-ip=198.175.65.14
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="GlJxJm3y"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="AjEkMnPO"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1729500999; x=1761036999;
+  t=1729501001; x=1761037001;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=kqJ81w2X5hak4sjUBjP1L0SagSpWOgRvgVPYFi3njhc=;
-  b=GlJxJm3yCD7QQBXo2VEKb5iPf913cciKfr3EY2q+au1t3ERT1On+hIXu
-   1ehBCgZTpNZUqR56T5x9OEXkkCrJY9grph9tGWRJHhKg1GqIFG5/bsjtj
-   slnYXaOhfoeXb8IArG/ERX25ZbUMe2I43N2SnZYgVa735BrSITbqqvcVG
-   AYFp4g/sOWAUkcduL/fAqftFoyhEjcmdAAvZes4uAJW7v5yAFu2yRJrlc
-   6jBDFzIrQUrQXdCeT0Y9Un6StI9Gpd6PFxaxzNGTKX82XwnIQEQhrLxGd
-   Mikfzb6HF2bdrb3w3nmSMKY8a9Pzit8/8uFF1pqiufrP5Wd9nO0PKr/6q
+  bh=Tbzk8V51fVW+LwkB30xCPUlXehhiTd4lUy3vVxrhRKw=;
+  b=AjEkMnPOD/N7fCTnNVwVdnijLKl6KgOk5Asti1FNaS1JaTQY+bKyPsup
+   Y82gxdElsOoHEU3nEGeZ/4Zt0u9LVoGJHnSGV2FhzIVh3TpX4cCjokKdE
+   iq2SRcDkXWkttxVtiYccEbRiyMcAOynArnKLhhEvgjX4cmjVaIN/raQtl
+   ujs/RoILaYu88KJ+9allZDpTpVVXVtj7Pm3rJtwlpStZxNII5g4+moVEV
+   320Elmr1bOuYPNUZcCf5ES5pqloSaOxjvw+JF4rRtFyx2H+LNGicvdsdp
+   AciXXBmleUiPVqtsrdyIvQSxHn4FUtSWip7MKXIK48wrE2VlwYA3GVaRx
    g==;
-X-CSE-ConnectionGUID: JPrY+h/xQAO5kNEOsu392g==
-X-CSE-MsgGUID: 6DIMiYxQSK+57UAUq54iqA==
-X-IronPort-AV: E=McAfee;i="6700,10204,11231"; a="32780381"
+X-CSE-ConnectionGUID: ZJMaGuSRSZqT3US4NLVs6g==
+X-CSE-MsgGUID: LpXCsXnkRYC2Bf9W3XV+gQ==
+X-IronPort-AV: E=McAfee;i="6700,10204,11231"; a="32780391"
 X-IronPort-AV: E=Sophos;i="6.11,220,1725346800"; 
-   d="scan'208";a="32780381"
+   d="scan'208";a="32780391"
 Received: from fmviesa010.fm.intel.com ([10.60.135.150])
-  by orvoesa106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Oct 2024 01:56:38 -0700
-X-CSE-ConnectionGUID: ni7yTVQpSxeKmHIGG23Zhw==
-X-CSE-MsgGUID: +dy3oQjkTnabhFoJXYluqw==
+  by orvoesa106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Oct 2024 01:56:41 -0700
+X-CSE-ConnectionGUID: ZdfzkpVEQTKMlDCFIOscXw==
+X-CSE-MsgGUID: NzmZKRbdTgC9gNuCVrvutA==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.11,220,1725346800"; 
-   d="scan'208";a="79812784"
+   d="scan'208";a="79812794"
 Received: from allen-box.sh.intel.com ([10.239.159.127])
-  by fmviesa010.fm.intel.com with ESMTP; 21 Oct 2024 01:56:35 -0700
+  by fmviesa010.fm.intel.com with ESMTP; 21 Oct 2024 01:56:38 -0700
 From: Lu Baolu <baolu.lu@linux.intel.com>
 To: iommu@lists.linux.dev
 Cc: Joerg Roedel <joro@8bytes.org>,
@@ -55,9 +55,9 @@ Cc: Joerg Roedel <joro@8bytes.org>,
 	linux-kernel@vger.kernel.org,
 	Lu Baolu <baolu.lu@linux.intel.com>,
 	Jason Gunthorpe <jgg@nvidia.com>
-Subject: [PATCH v2 6/7] iommu/vt-d: Refactor first_level_by_default()
-Date: Mon, 21 Oct 2024 16:51:23 +0800
-Message-ID: <20241021085125.192333-7-baolu.lu@linux.intel.com>
+Subject: [PATCH v2 7/7] iommu/vt-d: Refine intel_iommu_domain_alloc_user()
+Date: Mon, 21 Oct 2024 16:51:24 +0800
+Message-ID: <20241021085125.192333-8-baolu.lu@linux.intel.com>
 X-Mailer: git-send-email 2.43.0
 In-Reply-To: <20241021085125.192333-1-baolu.lu@linux.intel.com>
 References: <20241021085125.192333-1-baolu.lu@linux.intel.com>
@@ -69,82 +69,56 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-The first stage page table is compatible across host and guest kernels.
-Therefore, this driver uses the first stage page table as the default for
-paging domains.
+The domain_alloc_user ops should always allocate a guest-compatible page
+table unless specific allocation flags are specified.
 
-The helper first_level_by_default() determines the feasibility of using
-the first stage page table based on a global policy. This policy requires
-consistency in scalable mode and first stage translation capability among
-all iommu units. However, this is unnecessary as domain allocation,
-attachment, and removal operations are performed on a per-device basis.
+Currently, IOMMU_HWPT_ALLOC_NEST_PARENT and IOMMU_HWPT_ALLOC_DIRTY_TRACKING
+require special handling, as both require hardware support for scalable
+mode and second-stage translation. In such cases, the driver should select
+a second-stage page table for the paging domain.
 
-The domain type (IOMMU_DOMAIN_DMA vs. IOMMU_DOMAIN_UNMANAGED) should not
-be a factor in determining the first stage page table usage. Both types
-are for paging domains, and there's no fundamental difference between them.
-The driver should not be aware of this distinction unless the core
-specifies allocation flags that require special handling.
-
-Convert first_level_by_default() from global to per-iommu and remove the
-'type' input.
-
+Suggested-by: Jason Gunthorpe <jgg@nvidia.com>
 Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
 Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
 ---
- drivers/iommu/intel/iommu.c | 17 +++++++++--------
- 1 file changed, 9 insertions(+), 8 deletions(-)
+ drivers/iommu/intel/iommu.c | 17 +++++++++++++++--
+ 1 file changed, 15 insertions(+), 2 deletions(-)
 
 diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
-index 36854b683b11..bad9593f2464 100644
+index bad9593f2464..2b5027dd0c96 100644
 --- a/drivers/iommu/intel/iommu.c
 +++ b/drivers/iommu/intel/iommu.c
-@@ -1329,18 +1329,17 @@ static void free_dmar_iommu(struct intel_iommu *iommu)
-  * Check and return whether first level is used by default for
-  * DMA translation.
-  */
--static bool first_level_by_default(unsigned int type)
-+static bool first_level_by_default(struct intel_iommu *iommu)
- {
- 	/* Only SL is available in legacy mode */
--	if (!scalable_mode_support())
-+	if (!sm_supported(iommu))
- 		return false;
- 
- 	/* Only level (either FL or SL) is available, just use it */
--	if (intel_cap_flts_sanity() ^ intel_cap_slts_sanity())
--		return intel_cap_flts_sanity();
-+	if (ecap_flts(iommu->ecap) ^ ecap_slts(iommu->ecap))
-+		return ecap_flts(iommu->ecap);
- 
--	/* Both levels are available, decide it based on domain type */
--	return type != IOMMU_DOMAIN_UNMANAGED;
-+	return true;
- }
- 
- int domain_attach_iommu(struct dmar_domain *domain, struct intel_iommu *iommu)
-@@ -3110,7 +3109,7 @@ int __init intel_iommu_init(void)
- 		 * the virtual and physical IOMMU page-tables.
- 		 */
- 		if (cap_caching_mode(iommu->cap) &&
--		    !first_level_by_default(IOMMU_DOMAIN_DMA)) {
-+		    !first_level_by_default(iommu)) {
- 			pr_info_once("IOMMU batching disallowed due to virtualization\n");
- 			iommu_set_dma_strict();
- 		}
-@@ -4359,10 +4358,12 @@ static struct iommu_domain identity_domain = {
- 
- static struct iommu_domain *intel_iommu_domain_alloc_paging(struct device *dev)
- {
-+	struct device_domain_info *info = dev_iommu_priv_get(dev);
-+	struct intel_iommu *iommu = info->iommu;
+@@ -3297,6 +3297,7 @@ intel_iommu_domain_alloc_user(struct device *dev, u32 flags,
+ 	struct intel_iommu *iommu = info->iommu;
  	struct dmar_domain *dmar_domain;
- 	bool first_stage;
+ 	struct iommu_domain *domain;
++	bool first_stage;
  
--	first_stage = first_level_by_default(0);
-+	first_stage = first_level_by_default(iommu);
- 	dmar_domain = paging_domain_alloc(dev, first_stage);
+ 	/* Must be NESTING domain */
+ 	if (parent) {
+@@ -3313,8 +3314,20 @@ intel_iommu_domain_alloc_user(struct device *dev, u32 flags,
+ 	if (user_data || (dirty_tracking && !ssads_supported(iommu)))
+ 		return ERR_PTR(-EOPNOTSUPP);
+ 
+-	/* Do not use first stage for user domain translation. */
+-	dmar_domain = paging_domain_alloc(dev, false);
++	/*
++	 * Always allocate the guest compatible page table unless
++	 * IOMMU_HWPT_ALLOC_NEST_PARENT or IOMMU_HWPT_ALLOC_DIRTY_TRACKING
++	 * is specified.
++	 */
++	if (nested_parent || dirty_tracking) {
++		if (!sm_supported(iommu) || !ecap_slts(iommu->ecap))
++			return ERR_PTR(-EOPNOTSUPP);
++		first_stage = false;
++	} else {
++		first_stage = first_level_by_default(iommu);
++	}
++
++	dmar_domain = paging_domain_alloc(dev, first_stage);
  	if (IS_ERR(dmar_domain))
  		return ERR_CAST(dmar_domain);
+ 	domain = &dmar_domain->domain;
 -- 
 2.43.0
 
