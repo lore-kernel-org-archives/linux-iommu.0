@@ -1,50 +1,50 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.10])
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.13])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2744C171CD;
-	Mon, 21 Oct 2024 05:19:06 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.10
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7EE731CEEBB
+	for <iommu@lists.linux.dev>; Mon, 21 Oct 2024 05:55:56 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.13
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1729487949; cv=none; b=MfolWO0d0u2M+zjKxuIPoHGmeLKRfxUGViVIacPSw7e3RdfAit54bzYZo6pk4qSGxnS7qPdbvbW2J2JvrKSLB1+1pAqLIuoYaAPgv1Hh7qsa0TdUOE/Ni0QVXri0+GC609cYdIhzygMp4HiwH8QRAKmjo7LVCl8y1EdPLRzys0o=
+	t=1729490158; cv=none; b=udpLgXEGib9u+xEroXyJ4XXwa2G9SDrcYsAS5EhhTd/B0bRY+GmPUfNM2lhWVYp/uCtk86qTmf0dtUbdQUoKgnZJc7cRUX4IXhtj5jurAIcvY0wew2YRsMH7vO2xmyrgZxuKN5+6qznJBbMZBSgFfef6VyyvbGWVTjOK+3JNO1k=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1729487949; c=relaxed/simple;
-	bh=/+0TmvQgn9hMWa5pa22v9YMtPWzMD7iF4wenTuwsu2s=;
+	s=arc-20240116; t=1729490158; c=relaxed/simple;
+	bh=0xIdgpc6Mle7xsuPWCeEdsQ8GrVxiDUUQGdaw2uVQJI=;
 	h=Message-ID:Date:MIME-Version:Cc:Subject:To:References:From:
-	 In-Reply-To:Content-Type; b=Mo4HgKG3e9AzJzrDrv2KOfXAULBR1/SLISaVqLFZV3OZ9vKxOKlLc9/jmbib7bq9TR5nvDjHtVKvI8g0CKUpzFdJ+5o9maGqB6xbp+sUx5Lfa6b7DHbgLlfXVdu5V2ehQ084kT3J7xyMJcLgk58Pxj0PWEM0QFcBha3dElKV3nc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=iZ1ZsPFO; arc=none smtp.client-ip=198.175.65.10
+	 In-Reply-To:Content-Type; b=JtWaRGBMxXynkSTRh1X7IeckEsNfufe2Dz3gERaEDIQ5k+Qi2mqLVnjIeyU+FhjUEzHNnUOJvMdURGpukMUWtdcFnWKDTA8x7Y7zBC/v4sMm3kPLOq/fSxFOwTLLTvLGhfpIoTSQ+y44tKwsscgLAu9mJmZTNfLtIac4Bn1+XQk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=FkCmp3Pj; arc=none smtp.client-ip=198.175.65.13
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="iZ1ZsPFO"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="FkCmp3Pj"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1729487948; x=1761023948;
+  t=1729490156; x=1761026156;
   h=message-id:date:mime-version:cc:subject:to:references:
    from:in-reply-to:content-transfer-encoding;
-  bh=/+0TmvQgn9hMWa5pa22v9YMtPWzMD7iF4wenTuwsu2s=;
-  b=iZ1ZsPFO56Y3VpLkNN+nvDBRcZKXdzuOADSYe1qC7C/fBZpqPzYGoqBT
-   Ec1SCL7w4g7PFiB5k7QyOCdIHy3PVnEC3qo2dyIYmd8h9pZAQepCE6nht
-   bHFwsVOas4aoQAfR9RTQ/enxqYDI18C8aGavGI9gAytmwmDqqVLwbtC+9
-   jS1PcPnZlOvCFPC+aULFayv5urYGkI4uG7rDWRlSADteuiszhUNIPH3ws
-   +Y01SXICQ11tqOqIVzqNSZy5CWPjMB7IAo+5aqTdG+h2C38bfQZwzepE9
-   IwgViSthPxKb5mNGYIe/H0qOosZfMjbnyzG5deUkH9bvkwdeW9WYSD8ky
-   Q==;
-X-CSE-ConnectionGUID: 2Chw+mimTR2xsO4o2ap63Q==
-X-CSE-MsgGUID: /2Ep/UavR4i5KOQf2e2eMg==
-X-IronPort-AV: E=McAfee;i="6700,10204,11222"; a="46421613"
+  bh=0xIdgpc6Mle7xsuPWCeEdsQ8GrVxiDUUQGdaw2uVQJI=;
+  b=FkCmp3Pjam5wOvqO3w1CeVyLutZ1Y9shCPWrPWvLQwNqsUqCR9tr4MCz
+   /6NqczeWDfgKLNSvSzmf342mdy+WzobuhV/hXAISHtrOipC9pnS8moYBR
+   0CPw6QeMELgrxql+qxmLc08TBiU1bHYhQXQ+6lgWaL6rLbBRZfOHDhkyf
+   eL/S0Nd4ydWe3pCYiwsQ1f08XU7dwlomkJx4+xjLZSmXXgKBv+FMCPJjd
+   CkkaDH0KaQieMwGWWz8Rw/+DbV3cz99PoaSkmuu0ZbPfl/+FHKRfqIkQy
+   TVCyZGT1hUBojVX99PtRP28oVmkeuMHjgt+5EYfSqGgUqkezfIDpiAmox
+   w==;
+X-CSE-ConnectionGUID: gpnnLNsUShWuiGs6iS89KQ==
+X-CSE-MsgGUID: d8N4UDq+SA6SYuBNenr1YQ==
+X-IronPort-AV: E=McAfee;i="6700,10204,11222"; a="40081453"
 X-IronPort-AV: E=Sophos;i="6.11,199,1725346800"; 
-   d="scan'208";a="46421613"
-Received: from orviesa009.jf.intel.com ([10.64.159.149])
-  by orvoesa102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Oct 2024 22:19:07 -0700
-X-CSE-ConnectionGUID: 59m5WRKWTZSv0IQo5A617g==
-X-CSE-MsgGUID: YExLnss2TSWat4KLRqfaUQ==
+   d="scan'208";a="40081453"
+Received: from orviesa003.jf.intel.com ([10.64.159.143])
+  by orvoesa105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Oct 2024 22:55:56 -0700
+X-CSE-ConnectionGUID: mOPLqu6nTn2+KquNDp1tHg==
+X-CSE-MsgGUID: vZ4wetlrR56zUyrxBUVPHQ==
 X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.11,219,1725346800"; 
-   d="scan'208";a="79350544"
+X-IronPort-AV: E=Sophos;i="6.11,199,1725346800"; 
+   d="scan'208";a="84242046"
 Received: from unknown (HELO [10.238.0.51]) ([10.238.0.51])
-  by orviesa009-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Oct 2024 22:19:05 -0700
-Message-ID: <9892d0e6-554b-4c15-b012-813edc3e0427@linux.intel.com>
-Date: Mon, 21 Oct 2024 13:19:02 +0800
+  by ORVIESA003-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Oct 2024 22:55:53 -0700
+Message-ID: <0ad9fbd3-c796-4e0d-bc0f-f7926575b634@linux.intel.com>
+Date: Mon, 21 Oct 2024 13:55:50 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -52,35 +52,43 @@ List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Cc: baolu.lu@linux.intel.com, patches@lists.linux.dev
-Subject: Re: [PATCH] iommu: Remove useless flush from
- iommu_create_device_direct_mappings()
-To: Jason Gunthorpe <jgg@nvidia.com>, iommu@lists.linux.dev,
- Joerg Roedel <joro@8bytes.org>, Robin Murphy <robin.murphy@arm.com>,
- Will Deacon <will@kernel.org>
-References: <0-v1-bb6c694e1b07+a29e1-iommu_no_flush_all_jgg@nvidia.com>
+Cc: baolu.lu@linux.intel.com, alex.williamson@redhat.com,
+ eric.auger@redhat.com, nicolinc@nvidia.com, kvm@vger.kernel.org,
+ chao.p.peng@linux.intel.com, iommu@lists.linux.dev,
+ zhenzhong.duan@intel.com, vasant.hegde@amd.com
+Subject: Re: [PATCH v3 1/9] iommu: Pass old domain to set_dev_pasid op
+To: Yi Liu <yi.l.liu@intel.com>, joro@8bytes.org, jgg@nvidia.com,
+ kevin.tian@intel.com, will@kernel.org
+References: <20241018055402.23277-1-yi.l.liu@intel.com>
+ <20241018055402.23277-2-yi.l.liu@intel.com>
 Content-Language: en-US
 From: Baolu Lu <baolu.lu@linux.intel.com>
-In-Reply-To: <0-v1-bb6c694e1b07+a29e1-iommu_no_flush_all_jgg@nvidia.com>
+In-Reply-To: <20241018055402.23277-2-yi.l.liu@intel.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 
-On 2024/10/19 1:01, Jason Gunthorpe wrote:
-> These days iommu_map() does not require external flushing, it always
-> internally handles any required flushes. Since
-> iommu_create_device_direct_mappings() only calls iommu_map(), remove
-> the extra call.
+On 2024/10/18 13:53, Yi Liu wrote:
+> To support domain replacement for pasid, the underlying iommu driver needs
+> to know the old domain hence be able to clean up the existing attachment.
+> It would be much convenient for iommu layer to pass down the old domain.
+> Otherwise, iommu drivers would need to track domain for pasids by themselves,
+> this would duplicate code among the iommu drivers. Or iommu drivers would
+> rely group->pasid_array to get domain, which may not always the correct
+> one.
 > 
-> Since this is the last call site for iommu_flush_iotlb_all() remove it
-> too.
-> 
-> Signed-off-by: Jason Gunthorpe<jgg@nvidia.com>
+> Suggested-by: Jason Gunthorpe<jgg@nvidia.com>
+> Reviewed-by: Jason Gunthorpe<jgg@nvidia.com>
+> Reviewed-by: Kevin Tian<kevin.tian@intel.com>
+> Signed-off-by: Yi Liu<yi.l.liu@intel.com>
 > ---
->   drivers/iommu/iommu.c |  4 ----
->   include/linux/iommu.h | 10 ----------
->   2 files changed, 14 deletions(-)
-
-It's fine for the intel driver, so
+>   drivers/iommu/amd/amd_iommu.h                   | 3 ++-
+>   drivers/iommu/amd/pasid.c                       | 3 ++-
+>   drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c | 3 ++-
+>   drivers/iommu/intel/iommu.c                     | 6 ++++--
+>   drivers/iommu/intel/svm.c                       | 3 ++-
+>   drivers/iommu/iommu.c                           | 3 ++-
+>   include/linux/iommu.h                           | 2 +-
+>   7 files changed, 15 insertions(+), 8 deletions(-)
 
 Reviewed-by: Lu Baolu <baolu.lu@linux.intel.com>
 
