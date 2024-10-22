@@ -1,117 +1,134 @@
-Received: from mail-yb1-f201.google.com (mail-yb1-f201.google.com [209.85.219.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mx0b-00069f02.pphosted.com (mx0b-00069f02.pphosted.com [205.220.177.32])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EC13919DF9E
-	for <iommu@lists.linux.dev>; Tue, 22 Oct 2024 19:00:54 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.219.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C66E2153BE4
+	for <iommu@lists.linux.dev>; Tue, 22 Oct 2024 21:00:43 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.177.32
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1729623656; cv=none; b=WRy9+KHiQC+/QmyyvhtcXXyb1yqbkYCSNruE5mb1icRxBMQYp2Dl4VJ249v4vzXlvZbPNC5h32vgg3BnBgusq11BSCxGd9uKv94ITm+VLXat7XIDiRajABKsThR8i89OQD69a2j+TA/GdHoNKgWKkzXrNCfoEke2l0thEKlwyRQ=
+	t=1729630845; cv=none; b=X1ulNH5ZjdvkT9XmdR7RTTD89mhBxquvaevG2rwFzBEf8zDpYV+PbXOQq//CI3H2jPDya4PyHBMuckwJfVyTgwscRTmzb1ZmVrueYcFXpMHJwb83FM6pVEPJDgknmK/r/Jsuq5GkhGPlERejtuH70E2OI2ffC7dc4ol3xboAs9o=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1729623656; c=relaxed/simple;
-	bh=ha7ePI1h8iQoHbzruRXiN0x3RDdtMaNlStfwZOXb78M=;
-	h=Date:In-Reply-To:Mime-Version:References:Message-ID:Subject:From:
-	 To:Cc:Content-Type; b=O98b9RGogH2LxEGhEFpETFBHcmYuwZ0NzocKEArF94aiAM7NKQnEBmT+sekBBTIXGKRKvpDp3urpJlRUNiPQ1nnipJ1siCJTTIMQOOSNdoHYKdFzBYEdmJOSwgVBAd/JMtsiyOt+Q7XqNLlKLqy+5GDUzHRuim4tF/E10nZka2Q=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=flex--seanjc.bounces.google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=xUqhr7lZ; arc=none smtp.client-ip=209.85.219.201
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=flex--seanjc.bounces.google.com
+	s=arc-20240116; t=1729630845; c=relaxed/simple;
+	bh=975ZlWrtltl9tmjelYdfVdmVkrY/EgswLs1eBXVDGI4=;
+	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References; b=D1P4f925iUS6SSD+a9eoPnvWumaGaJMd7JnlMCLZ3QR7m74kqJi0D8dD7XqeTwP6vZZL2FVrJ0GV9ssaHGKIxZQpLK4BSxdMtWQV7r08tNIQKlqTygPv8Wt1HL3Dm5iXDyIn3Vop5tWtr3LNrm4ugUwbxHX40CRYYPGrYqr3Vbw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oracle.com; spf=pass smtp.mailfrom=oracle.com; dkim=pass (2048-bit key) header.d=oracle.com header.i=@oracle.com header.b=RYkTrAIh; arc=none smtp.client-ip=205.220.177.32
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oracle.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=oracle.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="xUqhr7lZ"
-Received: by mail-yb1-f201.google.com with SMTP id 3f1490d57ef6-e2974759f5fso208793276.0
-        for <iommu@lists.linux.dev>; Tue, 22 Oct 2024 12:00:54 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20230601; t=1729623654; x=1730228454; darn=lists.linux.dev;
-        h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
-         :date:from:to:cc:subject:date:message-id:reply-to;
-        bh=DrBrn35LjV4fle0zz8oDGlad/5uSTJzGLTSWOS1Px4s=;
-        b=xUqhr7lZFnSmUfiPXod/taBrdL8iUwxIdxucne9INpjjeLO+laNnA2keROwswijqHA
-         mndgF8xUTrGuEmilSG4flKvNWfETM30/EVjV8WOQ9nti/HBzAizSjBBHKc2GeJw+x4KW
-         CXHxgEF9FHuaDT6r1caYHo7JxDFuDJyftkX+tBqup1tBacsIndjLUxVO/buQSFVbyDrY
-         l6zYc4IHOT+Av5Zemb/XZaeaxPNDd9kBUZ1HFGid/yhGRaK5O4Bzd1nlF2wqbz1/DevO
-         da4OCRmJR3QuC5Tl2CQ1Ba5kNdJzJJDOD4dSM1sWd5jGWxMiA2zN+8OC+ZsGGBgJRvJT
-         I2aQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1729623654; x=1730228454;
-        h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
-         :date:x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=DrBrn35LjV4fle0zz8oDGlad/5uSTJzGLTSWOS1Px4s=;
-        b=tbkt9fKISYYtVsFqued6GeV/2XBD1tzYYK6no2qmy8k6s160w+KfsXMZuWoxklwqki
-         Q0pqmKD+5rDFKo3dB3HZvWe3UXN0PW5vHiI8Nu/jYetfz4sLBh0b/YXoPih7KOWgLp0K
-         CNprZgWPIMbMTVfc4bAdBgbqWG2P2gN47OveImxe1L8m5VxOKhm/R0k9Vck5ZSeiPD89
-         Y71te+9XsxLXQt07YZ9N55f3cex2vyEi67Mvowv6ij6oYeGVzMP3YvXOC18SvDblk1fx
-         qA2W5pn7dh6JXsNH81SNjgLGh2tWwt0IMx08lJp/HAnfDi/y5dxBpQLoPPhmM/acrKI6
-         lTsw==
-X-Forwarded-Encrypted: i=1; AJvYcCUU+/Wfse3mnGDfyDdgwP2maw9h8v/m4nQGU+jzzyMOPRXEVk1A/BVvfH9ZItP5LGh5u43vZw==@lists.linux.dev
-X-Gm-Message-State: AOJu0YzJysQqASzgnilwD8KyGA0kqL20lj/u5rVYLWy1jB7DNVua0eIl
-	Yz1YTEp4fAN4CopqZH3hGeD+7VQRZAJQlVebKnbrhwysIM53CTtolNnzIy1G5PQ+CMu7RZ009wb
-	eMw==
-X-Google-Smtp-Source: AGHT+IHbl0Q/eeAVwKL16JD6RI9BME7YNfz+VrN478T5E+rYVmLa3hGPlShaVUdcv9jsDUrZk7bS7mixkfY=
-X-Received: from zagreus.c.googlers.com ([fda3:e722:ac3:cc00:9d:3983:ac13:c240])
- (user=seanjc job=sendgmr) by 2002:a25:aa12:0:b0:e2e:2c2e:277b with SMTP id
- 3f1490d57ef6-e2e2c2e316cmr19368276.3.1729623653976; Tue, 22 Oct 2024 12:00:53
- -0700 (PDT)
-Date: Tue, 22 Oct 2024 12:00:52 -0700
-In-Reply-To: <Zxb4D_JCC-L7OQDT@google.com>
+	dkim=pass (2048-bit key) header.d=oracle.com header.i=@oracle.com header.b="RYkTrAIh"
+Received: from pps.filterd (m0333520.ppops.net [127.0.0.1])
+	by mx0b-00069f02.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 49MKqLn5009702;
+	Tue, 22 Oct 2024 21:00:41 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=cc
+	:date:from:in-reply-to:message-id:references:subject:to; s=
+	corp-2023-11-20; bh=LzaKpkZYRJZsQLdeV5e4KMjA+eBDzDZi/X3sdKgMo4c=; b=
+	RYkTrAIhm9ovT8XaW3Mnc8y8NuCh5uHoFdCpjhiNtbwORE8lS3u99w07JRzhWYRZ
+	tLquyIrcG/Wx53DLqHGdDK3qtOiEA6rKZAPfw5ouoTFHYlANiT9BkDHBID2gzZti
+	E08Lvn39XeSdyCPTzLw4zGoxB0q2C8XrTHXprdwxDsgm4xLwcTGO6LciDm+LEShV
+	qBjsJuKfSaiCEFGQj3VJY9WEpHvEyR2Qw5ORgyd9/I7H8RlBcV5O5aSYDcJF9ZZN
+	jDlxRCguUBYOHiFT2xh48kO5nXb0K+Dt3LD+kjT3kR9+5mdpG3TjO9X+WkwrNQIk
+	7RF88OJDr8Rj7hFxnEWxEQ==
+Received: from iadpaimrmta02.imrmtpd1.prodappiadaev1.oraclevcn.com (iadpaimrmta02.appoci.oracle.com [147.154.18.20])
+	by mx0b-00069f02.pphosted.com (PPS) with ESMTPS id 42c5456s6r-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+	Tue, 22 Oct 2024 21:00:41 +0000 (GMT)
+Received: from pps.filterd (iadpaimrmta02.imrmtpd1.prodappiadaev1.oraclevcn.com [127.0.0.1])
+	by iadpaimrmta02.imrmtpd1.prodappiadaev1.oraclevcn.com (8.18.1.2/8.18.1.2) with ESMTP id 49MJpfIF012058;
+	Tue, 22 Oct 2024 21:00:40 GMT
+Received: from pps.reinject (localhost [127.0.0.1])
+	by iadpaimrmta02.imrmtpd1.prodappiadaev1.oraclevcn.com (PPS) with ESMTPS id 42c3781aak-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+	Tue, 22 Oct 2024 21:00:40 +0000
+Received: from iadpaimrmta02.imrmtpd1.prodappiadaev1.oraclevcn.com (iadpaimrmta02.imrmtpd1.prodappiadaev1.oraclevcn.com [127.0.0.1])
+	by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 49ML0dEc016716;
+	Tue, 22 Oct 2024 21:00:40 GMT
+Received: from ca-dev63.us.oracle.com (ca-dev63.us.oracle.com [10.211.8.221])
+	by iadpaimrmta02.imrmtpd1.prodappiadaev1.oraclevcn.com (PPS) with ESMTP id 42c3781a7p-2;
+	Tue, 22 Oct 2024 21:00:40 +0000
+From: Steve Sistare <steven.sistare@oracle.com>
+To: iommu@lists.linux.dev
+Cc: Jason Gunthorpe <jgg@nvidia.com>, Kevin Tian <kevin.tian@intel.com>,
+        Nicolin Chen <nicolinc@nvidia.com>,
+        Steve Sistare <steven.sistare@oracle.com>
+Subject: [PATCH V5 1/9] mm/gup: folio_add_pins
+Date: Tue, 22 Oct 2024 14:00:30 -0700
+Message-Id: <1729630838-24586-2-git-send-email-steven.sistare@oracle.com>
+X-Mailer: git-send-email 1.8.3.1
+In-Reply-To: <1729630838-24586-1-git-send-email-steven.sistare@oracle.com>
+References: <1729630838-24586-1-git-send-email-steven.sistare@oracle.com>
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.293,Aquarius:18.0.1051,Hydra:6.0.680,FMLib:17.12.62.30
+ definitions=2024-10-22_23,2024-10-22_01,2024-09-30_01
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 bulkscore=0 malwarescore=0
+ suspectscore=0 adultscore=0 mlxscore=0 spamscore=0 mlxlogscore=999
+ phishscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2409260000 definitions=main-2410220135
+X-Proofpoint-ORIG-GUID: OiFEb4A-bpf2lw-smiPmmNM76HGYmffr
+X-Proofpoint-GUID: OiFEb4A-bpf2lw-smiPmmNM76HGYmffr
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
-Mime-Version: 1.0
-References: <20231002115723.175344-1-mlevitsk@redhat.com> <ZRsYNnYEEaY1gMo5@google.com>
- <1d6044e0d71cd95c477e319d7e47819eee61a8fc.camel@redhat.com> <Zxb4D_JCC-L7OQDT@google.com>
-Message-ID: <Zxf2ZK7HS7jL7TQk@google.com>
-Subject: Re: [PATCH v3 0/4] Allow AVIC's IPI virtualization to be optional
-From: Sean Christopherson <seanjc@google.com>
-To: Maxim Levitsky <mlevitsk@redhat.com>
-Cc: kvm@vger.kernel.org, Will Deacon <will@kernel.org>, linux-kernel@vger.kernel.org, 
-	Borislav Petkov <bp@alien8.de>, Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org, 
-	Ingo Molnar <mingo@redhat.com>, "H. Peter Anvin" <hpa@zytor.com>, Thomas Gleixner <tglx@linutronix.de>, 
-	Joerg Roedel <joro@8bytes.org>, Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>, 
-	Robin Murphy <robin.murphy@arm.com>, iommu@lists.linux.dev, 
-	Paolo Bonzini <pbonzini@redhat.com>
-Content-Type: text/plain; charset="us-ascii"
 
-On Mon, Oct 21, 2024, Sean Christopherson wrote:
-> On Wed, Oct 04, 2023, Maxim Levitsky wrote:
-> > About the added 'vcpu->loaded' variable, I added it also because it is
-> > something that is long overdue to be added, I remember that in IPIv code
-> > there was also a need for this, and probalby more places in KVM can be
-> > refactored to take advantage of it, instead of various hacks.
-> 
-> I don't view using the information from the Physical ID table as a hack.  It very
-> explicitly uses the ir_list_lock to ensure that the pCPU that's programmed into
-> the IRTE is the pCPU on which the vCPU is loaded, and provides rather strict
-> ordering between task migration and device assignment.  It's not a super hot path,
-> so I don't think lockless programming is justified.
-> 
-> I also think we should keep IsRunning=1 when the vCPU is unloaded.  That approach
-> won't run afoul of your concern with signaling the wrong pCPU, because KVM can
-> still keep the ID up-to-date, e.g. if the task is migrated when a pCPU is being
-> offlined.
-> 
-> The motiviation for keeping IsRunning=1 is to avoid unnecessary VM-Exits and GA
-> log IRQs.  E.g. if a vCPU exits to userspace, there's zero reason to force IPI
-> senders to exit, because KVM can't/won't notify userspace, and the pending virtual
-> interrupt will be processed on the next VMRUN.
+Export a function that adds pins to an already-pinned huge-page folio.
+This allows any range of small pages within the folio to be unpinned later.
+For example, pages pinned via memfd_pin_folios and modified by
+folio_add_pins could be unpinned via unpin_user_page(s).
 
-My only hesitation to keeping IsRunning=1 is that there could, in theory, be a
-noisy neighbor problem.  E.g. if there is meaningful overhead when the CPU responds
-to the doorbell.  Hrm, and if another vCPU is scheduled in on the same pCPU, that
-vCPU could end up processing a virtual interrupt in response to a doorbell intended
-for a different vCPU.
+Suggested-by: Jason Gunthorpe <jgg@nvidia.com>
+Suggested-by: David Hildenbrand <david@redhat.com>
+Signed-off-by: Steve Sistare <steven.sistare@oracle.com>
+Acked-by: David Hildenbrand <david@redhat.com>
+Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
+---
+ include/linux/mm.h |  1 +
+ mm/gup.c           | 24 ++++++++++++++++++++++++
+ 2 files changed, 25 insertions(+)
 
-The counter-argument to both concerns is that APICv Posted Interrupts have had a
-_worse_ version of that behavior for years, and no one has complained.  KVM sets
-PID.SN only when a vCPU is _preempted_, and so devices (and now virtual IPIs) will
-send notification IRQs to pCPUs that aren't actively running the vCPU, or are
-running a different vCPU.
+diff --git a/include/linux/mm.h b/include/linux/mm.h
+index ecf63d2..f9de33a 100644
+--- a/include/linux/mm.h
++++ b/include/linux/mm.h
+@@ -2524,6 +2524,7 @@ long pin_user_pages_unlocked(unsigned long start, unsigned long nr_pages,
+ long memfd_pin_folios(struct file *memfd, loff_t start, loff_t end,
+ 		      struct folio **folios, unsigned int max_folios,
+ 		      pgoff_t *offset);
++int folio_add_pins(struct folio *folio, unsigned int pins);
+ 
+ int get_user_pages_fast(unsigned long start, int nr_pages,
+ 			unsigned int gup_flags, struct page **pages);
+diff --git a/mm/gup.c b/mm/gup.c
+index a82890b..4ac3e567 100644
+--- a/mm/gup.c
++++ b/mm/gup.c
+@@ -3717,3 +3717,27 @@ long memfd_pin_folios(struct file *memfd, loff_t start, loff_t end,
+ 	return ret;
+ }
+ EXPORT_SYMBOL_GPL(memfd_pin_folios);
++
++/**
++ * folio_add_pins() - add pins to an already-pinned folio
++ * @folio: the folio to add more pins to
++ * @pins: number of pins to add
++ *
++ * Try to add more pins to an already-pinned folio. The semantics
++ * of the pin (e.g., FOLL_WRITE) follow any existing pin and cannot
++ * be changed.
++ *
++ * This function is helpful when having obtained a pin on a large folio
++ * using memfd_pin_folios(), but wanting to logically unpin parts
++ * (e.g., individual pages) of the folio later, for example, using
++ * unpin_user_page_range_dirty_lock().
++ *
++ * This is not the right interface to initially pin a folio.
++ */
++int folio_add_pins(struct folio *folio, unsigned int pins)
++{
++	VM_WARN_ON_ONCE(!folio_maybe_dma_pinned(folio));
++
++	return try_grab_folio(folio, pins, FOLL_PIN);
++}
++EXPORT_SYMBOL_GPL(folio_add_pins);
+-- 
+1.8.3.1
 
-The counter-counter-argument is that (a) IPI virtualization is a recent addition,
-and device posted interrupts are unlikely to be used in a CPU oversubscribed setup,
-and (b) Posted Interrupts are effectively rate-limited to a single "spurious"
-notification per vCPU, as notification IRQs are sent if and only if PID.ON=0.
-
-That said, while I'm somewhat less confident that keeping IsRunning=1 is desirable
-for all use cases than I was yesterday, I still think we should avoid tightly
-coupling it to whether or not the vCPU is loaded, because there are undoubtedly
-setups where it _is_ desirable, e.g. if vCPUs are pinned 1:1 to pCPUs.
