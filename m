@@ -1,50 +1,50 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.19])
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.11])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 18B2818E02D;
-	Tue, 22 Oct 2024 08:59:15 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.19
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A8C828120D
+	for <iommu@lists.linux.dev>; Tue, 22 Oct 2024 09:23:35 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.11
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1729587557; cv=none; b=tXQJj07lybCkMxaAc1kwzqTslmiGH46rgCeK9HB0kMtYjmPY1GDOaA6yF/l7vblGBsoWwndrtIZftvV6uyq9DJ4dSb/IFYepOAc58U7YvwHOcrznh1Gi3FBAfGmCOFqJb4v8YvB0Nn1R62DrW2m2iq9VN6eXXz955ifNDLSu+sg=
+	t=1729589017; cv=none; b=gGmUKi3uLrMFNNAE98+dU1ALUpFaDTQWjiJ6hHqPdQotdgr0cHGXsaGdlIPUxr4f/k0sUGfM4UST9p4x3Ovy/SDf5QO6+TbAetf4k4pDjsbvFkNfVWgpGnhc5DTH1Cu/gQmbzSQrxQkHTOIhr9lG/S/Uy9w/ePYwPDrMkpLaN8I=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1729587557; c=relaxed/simple;
-	bh=PAGAisR6ewXfOUos22t2tN5MyLH3MNDX5PNO1iIvpyA=;
+	s=arc-20240116; t=1729589017; c=relaxed/simple;
+	bh=ZDt+qPw7wsKcrlPrUutVtr9aTxJWu9f+fNl+xeHpl9k=;
 	h=Message-ID:Date:MIME-Version:Cc:Subject:To:References:From:
-	 In-Reply-To:Content-Type; b=rY2a8r2ZN5H68P8x+Olzntdnx8gs8pAyy+uddb38F0qvUgKf7K/39qs6ZcSLlLdiAu9E9z/f2DoPfoLOA149SmMVUM5zUkzebJQi/Z+XZZQ8S652/4HSAuv6QPzcVua2X7GcPaOejSCg0jaAJSM/AutNkKTBPOQV/rwUkfqrPuM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=I/pt7c7K; arc=none smtp.client-ip=192.198.163.19
+	 In-Reply-To:Content-Type; b=VHcUS3EjG5ADmbpWIunbAE/Yz99RcVvv6LxUq5BbwtiN6rIrHxlX54kXDAI490D/VEpy1VvIqnMoXwAM+CwrJmw+xX4dAg7hv65CM7qEZxX52er7MbTIBZsmgBIrMlSgTV0hNW2GFhNtXIvdnTgCxvh2uFPREqQH6rBVC01n32E=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=HyR1jLnQ; arc=none smtp.client-ip=192.198.163.11
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="I/pt7c7K"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="HyR1jLnQ"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1729587556; x=1761123556;
+  t=1729589015; x=1761125015;
   h=message-id:date:mime-version:cc:subject:to:references:
    from:in-reply-to:content-transfer-encoding;
-  bh=PAGAisR6ewXfOUos22t2tN5MyLH3MNDX5PNO1iIvpyA=;
-  b=I/pt7c7K/pUC1PnBxzFqJTt6LmOxeCFHz08SIaBR8xK8lqyRnQ4jxVoC
-   GZ2s2mAjtUmTu5E5/Izvd5Gv9CfZetbGg7XDhCQPH2Lt4TIIcB+eQwWZb
-   e7YYmTxKU1n1Go2H1AgPeWiSAYZuYg1+fwfICN934FVoIGFQPfdfJlW2s
-   OBAuZ9Ku5fBR7odWa7T/Q01YC4OWii87QhmJbNZK/gJyNS2qrXeb9uIt4
-   fjEZzGr9fzBADRiLbdA6dIeQq4ipnds5fa+/kn8oQ5Ssi1SHX/Ok9gFsN
-   lGA/1Y1yTIXxPd5ZPvxRNC6SAga5+LMgYoxXp/RJqCi0r0E3Tx9B+Rrlg
-   A==;
-X-CSE-ConnectionGUID: 8eEotAVMTT+CPx44MuU8bQ==
-X-CSE-MsgGUID: v7tJ+yncS7WXF5/BllXdwA==
-X-IronPort-AV: E=McAfee;i="6700,10204,11232"; a="28565096"
+  bh=ZDt+qPw7wsKcrlPrUutVtr9aTxJWu9f+fNl+xeHpl9k=;
+  b=HyR1jLnQvrlOXNC5MVlSKDI5akp5Mony7ssdjeg8CPFb2Pcy2xoqkr5b
+   cGgxx2EUXQC5/Z85vU9ZXqAZDUi+6eDCZ4jOCljYpzXsIuw9wDKDxPjH5
+   WDu7JB31GmIFcX2Zb5o9VPu2S25O3IxWtxf/tOvV+P3e7KMOSZ2iTaeaN
+   HLRwSVdh02Vv30RULgxzPO2q/mywu4lHMk5vHUAvNyZaZoJJD/wTR9Ase
+   0O1zFkhTbdwjFx2cXmf07BWIIgeobQu5g2qrLPBvaSi0viCc9PGG7Tfba
+   k5BsQU6qbmMFwr1kDwKxwGzJFPlpxs2Me/vke3xzn6bWuURVBncPG/7Id
+   w==;
+X-CSE-ConnectionGUID: Bm+t7iFeSrKVpwM7DaQA1Q==
+X-CSE-MsgGUID: wuBSpJxCTjCcUl8glS06aA==
+X-IronPort-AV: E=McAfee;i="6700,10204,11232"; a="39695599"
 X-IronPort-AV: E=Sophos;i="6.11,222,1725346800"; 
-   d="scan'208";a="28565096"
+   d="scan'208";a="39695599"
 Received: from orviesa002.jf.intel.com ([10.64.159.142])
-  by fmvoesa113.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Oct 2024 01:59:15 -0700
-X-CSE-ConnectionGUID: FNRSmUgqTXuU/HdcuQ6hIA==
-X-CSE-MsgGUID: Sezsu89GSvK2DH0qqjq6Pw==
+  by fmvoesa105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Oct 2024 02:23:35 -0700
+X-CSE-ConnectionGUID: cFC3aHDLR9+RN0CGI82V9Q==
+X-CSE-MsgGUID: faHbF45wRp25wCfWq1Xjtw==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.11,222,1725346800"; 
-   d="scan'208";a="110616836"
+   d="scan'208";a="110623539"
 Received: from blu2-mobl.ccr.corp.intel.com (HELO [10.124.240.228]) ([10.124.240.228])
-  by orviesa002-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Oct 2024 01:59:10 -0700
-Message-ID: <dd7eb37f-13c6-4c6e-8adc-954ad9974b93@linux.intel.com>
-Date: Tue, 22 Oct 2024 16:59:07 +0800
+  by orviesa002-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Oct 2024 02:23:31 -0700
+Message-ID: <9d726285-730a-400d-8d45-f494b2c62205@linux.intel.com>
+Date: Tue, 22 Oct 2024 17:23:29 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -52,64 +52,126 @@ List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Cc: baolu.lu@linux.intel.com, jgg@nvidia.com, kevin.tian@intel.com,
- will@kernel.org, joro@8bytes.org, suravee.suthikulpanit@amd.com,
- robin.murphy@arm.com, dwmw2@infradead.org, shuah@kernel.org,
- linux-kernel@vger.kernel.org, iommu@lists.linux.dev,
- linux-arm-kernel@lists.infradead.org, linux-kselftest@vger.kernel.org,
- eric.auger@redhat.com, jean-philippe@linaro.org, mdf@kernel.org,
- mshavit@google.com, shameerali.kolothum.thodi@huawei.com,
- smostafa@google.com, yi.l.liu@intel.com, aik@amd.com,
- zhangfei.gao@linaro.org, patches@lists.linux.dev
-Subject: Re: [PATCH v4 02/11] iommufd: Introduce IOMMUFD_OBJ_VIOMMU and its
- related struct
-To: Nicolin Chen <nicolinc@nvidia.com>
-References: <cover.1729553811.git.nicolinc@nvidia.com>
- <74fec8c38a7d568bd88beba9082b4a5a4bc2046f.1729553811.git.nicolinc@nvidia.com>
- <b2c75705-2998-4e51-90f4-00b8bab785f5@linux.intel.com>
- <ZxcspVGPBmABjUPu@nvidia.com>
+Cc: baolu.lu@linux.intel.com, alex.williamson@redhat.com,
+ eric.auger@redhat.com, nicolinc@nvidia.com, kvm@vger.kernel.org,
+ chao.p.peng@linux.intel.com, iommu@lists.linux.dev,
+ zhenzhong.duan@intel.com, vasant.hegde@amd.com
+Subject: Re: [PATCH v3 3/9] iommu/vt-d: Let intel_pasid_tear_down_entry()
+ return pasid entry
+To: Yi Liu <yi.l.liu@intel.com>, joro@8bytes.org, jgg@nvidia.com,
+ kevin.tian@intel.com, will@kernel.org
+References: <20241018055402.23277-1-yi.l.liu@intel.com>
+ <20241018055402.23277-4-yi.l.liu@intel.com>
+ <e5cd1de4-37f7-4d55-aa28-f37d49d46ac6@linux.intel.com>
+ <521b4f3e-1979-46f5-bfad-87951db2b6ed@intel.com>
+ <ce78d006-53d8-4194-ae9d-249ab38c1d6d@linux.intel.com>
+ <bab356e9-de34-41bb-9942-de639ee7d3de@intel.com>
 Content-Language: en-US
 From: Baolu Lu <baolu.lu@linux.intel.com>
-In-Reply-To: <ZxcspVGPBmABjUPu@nvidia.com>
+In-Reply-To: <bab356e9-de34-41bb-9942-de639ee7d3de@intel.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 
-On 2024/10/22 12:40, Nicolin Chen wrote:
-> On Tue, Oct 22, 2024 at 10:28:30AM +0800, Baolu Lu wrote:
->> On 2024/10/22 8:19, Nicolin Chen wrote:
->>> + * @viommu_alloc: Allocate an iommufd_viommu on a physical IOMMU instance behind
->>> + *                the @dev, as the set of virtualization resources shared/passed
->>> + *                to user space IOMMU instance. And associate it with a nesting
->>> + *                @parent_domain. The @viommu_type must be defined in the header
->>> + *                include/uapi/linux/iommufd.h
->>> + *                It is suggested to call iommufd_viommu_alloc() helper for
->>> + *                a bundled allocation of the core and the driver structures,
->>> + *                using the given @ictx pointer.
->>>     * @pgsize_bitmap: bitmap of all possible supported page sizes
->>>     * @owner: Driver module providing these ops
->>>     * @identity_domain: An always available, always attachable identity
->>> @@ -591,6 +601,10 @@ struct iommu_ops {
->>>        void (*remove_dev_pasid)(struct device *dev, ioasid_t pasid,
->>>                                 struct iommu_domain *domain);
+On 2024/10/21 15:24, Yi Liu wrote:
+> On 2024/10/21 14:59, Baolu Lu wrote:
+>> On 2024/10/21 14:35, Yi Liu wrote:
+>>> On 2024/10/21 14:13, Baolu Lu wrote:
+>>>> On 2024/10/18 13:53, Yi Liu wrote:
+>>>>> intel_pasid_tear_down_entry() finds the pasid entry and tears it down.
+>>>>> There are paths that need to get the pasid entry, tear it down and
+>>>>> re-configure it. Letting intel_pasid_tear_down_entry() return the 
+>>>>> pasid
+>>>>> entry can avoid duplicate codes to get the pasid entry. No functional
+>>>>> change is intended.
+>>>>>
+>>>>> Signed-off-by: Yi Liu<yi.l.liu@intel.com>
+>>>>> ---
+>>>>>   drivers/iommu/intel/pasid.c | 11 ++++++++---
+>>>>>   drivers/iommu/intel/pasid.h |  5 +++--
+>>>>>   2 files changed, 11 insertions(+), 5 deletions(-)
+>>>>>
+>>>>> diff --git a/drivers/iommu/intel/pasid.c b/drivers/iommu/intel/pasid.c
+>>>>> index 2898e7af2cf4..336f9425214c 100644
+>>>>> --- a/drivers/iommu/intel/pasid.c
+>>>>> +++ b/drivers/iommu/intel/pasid.c
+>>>>> @@ -239,9 +239,12 @@ devtlb_invalidation_with_pasid(struct 
+>>>>> intel_iommu *iommu,
+>>>>>   /*
+>>>>>    * Caller can request to drain PRQ in this helper if it hasn't 
+>>>>> done so,
+>>>>>    * e.g. in a path which doesn't follow remove_dev_pasid().
+>>>>> + * Return the pasid entry pointer if the entry is found or NULL if no
+>>>>> + * entry found.
+>>>>>    */
+>>>>> -void intel_pasid_tear_down_entry(struct intel_iommu *iommu, struct 
+>>>>> device *dev,
+>>>>> -                 u32 pasid, u32 flags)
+>>>>> +struct pasid_entry *
+>>>>> +intel_pasid_tear_down_entry(struct intel_iommu *iommu, struct 
+>>>>> device *dev,
+>>>>> +                u32 pasid, u32 flags)
+>>>>>   {
+>>>>>       struct pasid_entry *pte;
+>>>>>       u16 did, pgtt;
+>>>>> @@ -250,7 +253,7 @@ void intel_pasid_tear_down_entry(struct 
+>>>>> intel_iommu *iommu, struct device *dev,
+>>>>>       pte = intel_pasid_get_entry(dev, pasid);
+>>>>>       if (WARN_ON(!pte) || !pasid_pte_is_present(pte)) {
+>>>>>           spin_unlock(&iommu->lock);
+>>>>> -        return;
+>>>>> +        goto out;
+>>>>
+>>>> The pasid table entry is protected by iommu->lock. It's  not reasonable
+>>>> to return the pte pointer which is beyond the lock protected range.
 >>>
->>> +     struct iommufd_viommu *(*viommu_alloc)(
->>> +             struct device *dev, struct iommu_domain *parent_domain,
->>> +             struct iommufd_ctx *ictx, unsigned int viommu_type);
->> Is the vIOMMU object limited to a parent domain?
-> Yes, for each vIOMMU (a slice of physical IOMMU per VM), one S2
-> parent domain is enough. Typically, it has the mappings between
-> gPAs and hPAs. If its format/compatibility allows, this single
-> parent domain can be shared with other vIOMMUs.
+>>> Per my understanding, the iommu->lock protects the content of the entry,
+>>> so the modifications to the entry need to hold it. While, it looks not
+>>> necessary to protect the pasid entry pointer itself. The pasid table 
+>>> should
+>>> exist during device probe and release. is it?
+>>
+>> The pattern of the code that modifies a pasid table entry is,
+>>
+>>      spin_lock(&iommu->lock);
+>>      pte = intel_pasid_get_entry(dev, pasid);
+>>      ... modify the pasid table entry ...
+>>      spin_unlock(&iommu->lock);
+>>
+>> Returning the pte pointer to the caller introduces a potential race
+>> condition. If the caller subsequently modifies the pte without re-
+>> acquiring the spin lock, there's a risk of data corruption or
+>> inconsistencies.
+> 
+> it appears that we are on the same page about if pte pointer needs to be
+> protected or not. And I agree the modifications to the pte should be
+> protected by iommu->lock. If so, will documenting that the caller must hold
+> iommu->lock if is tries to modify the content of pte work? Also, it might
+> be helpful to add lockdep to make sure all the modifications of pte entry
+> are under protection.
 
-Is it feasible to make vIOMMU object more generic, rather than strictly
-tying it to nested translation? For example, a normal paging domain that
-translates gPAs to hPAs could also have a vIOMMU object associated with
-it.
+People will soon forget about this lock and may modify the returned pte
+pointer without locking, introducing a race condition silently.
 
-While we can only support vIOMMU object allocation uAPI for S2 paging
-domains in the context of this series, we could consider leaving the
-option open to associate a vIOMMU object with other normal paging
-domains that are not a nested parent?
+> Or any suggestion from you given a path that needs to get pte first, check
+> if it exists and then call intel_pasid_tear_down_entry(). For example the
+> intel_pasid_setup_first_level() [1], in my series, I need to call the
+> unlock iommu->lock and call intel_pasid_tear_down_entry() and then lock
+> iommu->lock and do more modifications on the pasid entry. It would invoke
+> the intel_pasid_get_entry() twice if no change to
+> intel_pasid_tear_down_entry().
+
+There is no need to check the present of a pte entry before calling into
+intel_pasid_tear_down_entry(). The helper will return directly if the
+pte is not present:
+
+         spin_lock(&iommu->lock);
+         pte = intel_pasid_get_entry(dev, pasid);
+         if (WARN_ON(!pte) || !pasid_pte_is_present(pte)) {
+                 spin_unlock(&iommu->lock);
+                 return;
+         }
+
+Does it work for you?
 
 Thanks,
 baolu
