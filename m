@@ -1,57 +1,57 @@
 Received: from mx0b-00069f02.pphosted.com (mx0b-00069f02.pphosted.com [205.220.177.32])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 72F431CB31B
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 26CB816F826
 	for <iommu@lists.linux.dev>; Tue, 22 Oct 2024 21:00:48 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.177.32
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1729630850; cv=none; b=nAwfwoSjr/4GD1hw+vOD+680LyRx6CvAKVZ/Oa/n9Ca+jviR/IsMBhxMy987JEmWnA9iR/TThMYf1dInLqfNBPjIbpMEAEzH3SBNYgrGsTBXigPOIJYDpylpG/juAbWFOlma3elNIGqhYp+HGiDLLKiDRpm902NOhb2BxHaVMnU=
+	t=1729630850; cv=none; b=Zp7Gv1fsScf0FtYi3c5hI0CWgCEmfcW6pcrte0x7R4ZxThcurVgdPXHGqmTugr6OjUVAMVse3WROf6axIqV0t8orv4QuCgWjspbFJyWIE/iSIUxGtLodImdkqkt2m6szepyVjLx6hZoxWPQWmrYkh3Im8XiAEyxsmjN1cn4ONGs=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
 	s=arc-20240116; t=1729630850; c=relaxed/simple;
-	bh=7ctXk1j04tjtvcYNL5MQfwqTm1kODBT1W5caSKodfRE=;
-	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References; b=q1DPA6TGOeSAMYnIHsdf8OYsVACN4sGj87318ruGYT58s56Qy1CPQdhjXTDZjhjv3KSl9guUw1B0Wji9jNrWH3VaSeGolW9Qt8QiI6euZ+55YErvigo6HDQyqRtm0agb+ZQhSldaz0qmXXTDu+PsU2kNtjGuOc3VMVUHsFoZRkI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oracle.com; spf=pass smtp.mailfrom=oracle.com; dkim=pass (2048-bit key) header.d=oracle.com header.i=@oracle.com header.b=NOqQSZs9; arc=none smtp.client-ip=205.220.177.32
+	bh=515iWE+t61Z3DDKFLHiNj0Z/kf4odx6+Xy4Soh8Lk/k=;
+	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References; b=pcal4hDbF6jcAgDzdyyq8bI6WOShDtJ9O/1AUQ4rHBcbul65KwWzeXpBiXykNLc3z2vlARb5t7Yaw9zSdRJwKZmW+wkhpRgYZbhe2PwZsQ3DWQU3Z3mdvBzhofeFcuHWEQ2rvf+Q83bS5AZ36cnraAeyU5UVM+1S/ETxII0ttr0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oracle.com; spf=pass smtp.mailfrom=oracle.com; dkim=pass (2048-bit key) header.d=oracle.com header.i=@oracle.com header.b=BfqLGtMW; arc=none smtp.client-ip=205.220.177.32
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oracle.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=oracle.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=oracle.com header.i=@oracle.com header.b="NOqQSZs9"
-Received: from pps.filterd (m0246632.ppops.net [127.0.0.1])
-	by mx0b-00069f02.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 49MKqKLp032219;
-	Tue, 22 Oct 2024 21:00:46 GMT
+	dkim=pass (2048-bit key) header.d=oracle.com header.i=@oracle.com header.b="BfqLGtMW"
+Received: from pps.filterd (m0246630.ppops.net [127.0.0.1])
+	by mx0b-00069f02.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 49MKqNL5028009;
+	Tue, 22 Oct 2024 21:00:47 GMT
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=cc
 	:date:from:in-reply-to:message-id:references:subject:to; s=
-	corp-2023-11-20; bh=HGSKBThNSXDzr6v8VFYvsiYKjfbwW2hJdSEMRoSnni0=; b=
-	NOqQSZs9qTWCUlsc+vzBjIyKd47cLoD3luqFfuPrxi/Yhzrdenl/jFt54jI1sKbB
-	5NV5orAWXcVh3weZQYT+9AmQaxRYTU/xrqYfK5Fnorrtl2epS6AdWUM4ZPoJNx4A
-	WChadBaZ2FRaSNJNcdidzWH2yNdy6DaGu8V3MANoAmehEGoV45Z1QHV7i8Av7WOo
-	dOOLFn8+tyn1x0C+qjuCnm6gFpg/K8SHzKHUBwnK0h0dRCtbokfEjChrzfPPI90a
-	D6DaVRZ+SA97smXV9r/rjfT0eyPYgwCTj6SZAooJtQXiFFlDrIRBeJS+UvX8ZJC6
-	fME3S28gTcumtrm4nlFAWw==
+	corp-2023-11-20; bh=HyBRK3TuGn8VRX7ZhOx4uXHIp77NuBzwrI+tBRXi04E=; b=
+	BfqLGtMWnO3mZZd6PDREnFMZucTb2LDeT3mBKbjNzS203VVmwBYowaQwIlkREcQG
+	37wdJUQqrXTVpV2WDVPIMVIC7CelY1CdOjWfS5mou9uN0oZhja0t/sj8u1B70rYy
+	tyJEE1pgX7mHIDjZ8vVuLkIbVHpD1a8nbSXtQWjR7JaDN6LhaVmLjopIU36ZBPHq
+	8qCkyzZKNlYtccQmzF5acU+mjlXabsSHUDENTAxW0mcdEM/87UwAy37iaEfBTo8k
+	IzdHkl1Kq5+6lI1dji7OsjVfIunbDqbwPYYX2hbDWGGcdIZ6bI13HvFXb5ERbLeu
+	1iYGPWLVS9pV2uOnb/58kw==
 Received: from iadpaimrmta02.imrmtpd1.prodappiadaev1.oraclevcn.com (iadpaimrmta02.appoci.oracle.com [147.154.18.20])
-	by mx0b-00069f02.pphosted.com (PPS) with ESMTPS id 42ckkqx0dg-1
+	by mx0b-00069f02.pphosted.com (PPS) with ESMTPS id 42cqv3du75-1
 	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
 	Tue, 22 Oct 2024 21:00:46 +0000 (GMT)
 Received: from pps.filterd (iadpaimrmta02.imrmtpd1.prodappiadaev1.oraclevcn.com [127.0.0.1])
-	by iadpaimrmta02.imrmtpd1.prodappiadaev1.oraclevcn.com (8.18.1.2/8.18.1.2) with ESMTP id 49MKflH3012240;
-	Tue, 22 Oct 2024 21:00:45 GMT
+	by iadpaimrmta02.imrmtpd1.prodappiadaev1.oraclevcn.com (8.18.1.2/8.18.1.2) with ESMTP id 49MJF9Dv011981;
+	Tue, 22 Oct 2024 21:00:44 GMT
 Received: from pps.reinject (localhost [127.0.0.1])
-	by iadpaimrmta02.imrmtpd1.prodappiadaev1.oraclevcn.com (PPS) with ESMTPS id 42c3781ajw-1
+	by iadpaimrmta02.imrmtpd1.prodappiadaev1.oraclevcn.com (PPS) with ESMTPS id 42c3781ahd-1
 	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-	Tue, 22 Oct 2024 21:00:45 +0000
+	Tue, 22 Oct 2024 21:00:44 +0000
 Received: from iadpaimrmta02.imrmtpd1.prodappiadaev1.oraclevcn.com (iadpaimrmta02.imrmtpd1.prodappiadaev1.oraclevcn.com [127.0.0.1])
-	by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 49ML0dEm016716;
-	Tue, 22 Oct 2024 21:00:45 GMT
+	by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 49ML0dEk016716;
+	Tue, 22 Oct 2024 21:00:44 GMT
 Received: from ca-dev63.us.oracle.com (ca-dev63.us.oracle.com [10.211.8.221])
-	by iadpaimrmta02.imrmtpd1.prodappiadaev1.oraclevcn.com (PPS) with ESMTP id 42c3781a7p-7;
-	Tue, 22 Oct 2024 21:00:45 +0000
+	by iadpaimrmta02.imrmtpd1.prodappiadaev1.oraclevcn.com (PPS) with ESMTP id 42c3781a7p-6;
+	Tue, 22 Oct 2024 21:00:44 +0000
 From: Steve Sistare <steven.sistare@oracle.com>
 To: iommu@lists.linux.dev
 Cc: Jason Gunthorpe <jgg@nvidia.com>, Kevin Tian <kevin.tian@intel.com>,
         Nicolin Chen <nicolinc@nvidia.com>,
         Steve Sistare <steven.sistare@oracle.com>
-Subject: [PATCH V5 6/9] iommufd: pfn reader for file mappings
-Date: Tue, 22 Oct 2024 14:00:35 -0700
-Message-Id: <1729630838-24586-7-git-send-email-steven.sistare@oracle.com>
+Subject: [PATCH V5 5/9] iommufd: folio subroutines
+Date: Tue, 22 Oct 2024 14:00:34 -0700
+Message-Id: <1729630838-24586-6-git-send-email-steven.sistare@oracle.com>
 X-Mailer: git-send-email 1.8.3.1
 In-Reply-To: <1729630838-24586-1-git-send-email-steven.sistare@oracle.com>
 References: <1729630838-24586-1-git-send-email-steven.sistare@oracle.com>
@@ -62,271 +62,124 @@ X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 bulkscore=0 malwa
  suspectscore=0 adultscore=0 mlxscore=0 spamscore=0 mlxlogscore=999
  phishscore=0 classifier=spam adjust=0 reason=mlx scancount=1
  engine=8.12.0-2409260000 definitions=main-2410220135
-X-Proofpoint-GUID: H6ReyMVmkfNXF13Zjvy8Eyld3EEFIodf
-X-Proofpoint-ORIG-GUID: H6ReyMVmkfNXF13Zjvy8Eyld3EEFIodf
+X-Proofpoint-ORIG-GUID: JSZlWPK628J1kPDLfR5-YRQBM2-0feQw
+X-Proofpoint-GUID: JSZlWPK628J1kPDLfR5-YRQBM2-0feQw
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 
-Extend pfn_reader_user to pin file mappings, by calling memfd_pin_folios.
-Repin at small page granularity, and fill the batch from folios.  Expand
-folios to upages for the iopt_pages_fill path.
+Add subroutines for copying folios to a batch.
 
 Signed-off-by: Steve Sistare <steven.sistare@oracle.com>
-Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
 ---
- drivers/iommu/iommufd/io_pagetable.h |   5 ++
- drivers/iommu/iommufd/pages.c        | 128 ++++++++++++++++++++++++++++++-----
- 2 files changed, 116 insertions(+), 17 deletions(-)
+ drivers/iommu/iommufd/pages.c | 79 +++++++++++++++++++++++++++++++++++--------
+ 1 file changed, 64 insertions(+), 15 deletions(-)
 
-diff --git a/drivers/iommu/iommufd/io_pagetable.h b/drivers/iommu/iommufd/io_pagetable.h
-index 8e48266..5ac4eed 100644
---- a/drivers/iommu/iommufd/io_pagetable.h
-+++ b/drivers/iommu/iommufd/io_pagetable.h
-@@ -177,6 +177,7 @@ enum {
- 
- enum iopt_address_type {
- 	IOPT_ADDRESS_USER = 0,
-+	IOPT_ADDRESS_FILE = 1,
- };
- 
- /*
-@@ -202,6 +203,10 @@ struct iopt_pages {
- 	enum iopt_address_type type;
- 	union {
- 		void __user *uptr;		/* IOPT_ADDRESS_USER */
-+		struct {			/* IOPT_ADDRESS_FILE */
-+			struct file *file;
-+			unsigned long start;
-+		};
- 	};
- 	bool writable:1;
- 	u8 account_mode;
 diff --git a/drivers/iommu/iommufd/pages.c b/drivers/iommu/iommufd/pages.c
-index 635b1fe..59d40c1 100644
+index 0cf5b65..635b1fe 100644
 --- a/drivers/iommu/iommufd/pages.c
 +++ b/drivers/iommu/iommufd/pages.c
-@@ -752,19 +752,32 @@ struct pfn_reader_user {
- 	 * neither
- 	 */
- 	int locked;
-+
-+	/* The following are only valid if file != NULL. */
-+	struct file *file;
-+	struct folio **ufolios;
-+	size_t ufolios_len;
-+	unsigned long ufolios_offset;
-+	struct folio **ufolios_next;
- };
- 
- static void pfn_reader_user_init(struct pfn_reader_user *user,
- 				 struct iopt_pages *pages)
- {
- 	user->upages = NULL;
-+	user->upages_len = 0;
- 	user->upages_start = 0;
- 	user->upages_end = 0;
- 	user->locked = -1;
--
- 	user->gup_flags = FOLL_LONGTERM;
- 	if (pages->writable)
- 		user->gup_flags |= FOLL_WRITE;
-+
-+	user->file = (pages->type == IOPT_ADDRESS_FILE) ? pages->file : NULL;
-+	user->ufolios = NULL;
-+	user->ufolios_len = 0;
-+	user->ufolios_next = NULL;
-+	user->ufolios_offset = 0;
+@@ -346,27 +346,41 @@ static void batch_destroy(struct pfn_batch *batch, void *backup)
+ 		kfree(batch->pfns);
  }
  
- static void pfn_reader_user_destroy(struct pfn_reader_user *user,
-@@ -773,13 +786,67 @@ static void pfn_reader_user_destroy(struct pfn_reader_user *user,
- 	if (user->locked != -1) {
- 		if (user->locked)
- 			mmap_read_unlock(pages->source_mm);
--		if (pages->source_mm != current->mm)
-+		if (!user->file && pages->source_mm != current->mm)
- 			mmput(pages->source_mm);
- 		user->locked = -1;
- 	}
+-/* true if the pfn was added, false otherwise */
+-static bool batch_add_pfn(struct pfn_batch *batch, unsigned long pfn)
++static bool batch_add_pfn_num(struct pfn_batch *batch, unsigned long pfn,
++			      unsigned long nr)
+ {
+-	const unsigned int MAX_NPFNS = type_max(typeof(*batch->npfns));
++	const unsigned long MAX_NPFNS = type_max(typeof(*batch->npfns));
++	int i = batch->end;
  
- 	kfree(user->upages);
- 	user->upages = NULL;
-+	kfree(user->ufolios);
-+	user->ufolios = NULL;
+-	if (batch->end &&
+-	    pfn == batch->pfns[batch->end - 1] + batch->npfns[batch->end - 1] &&
+-	    batch->npfns[batch->end - 1] != MAX_NPFNS) {
+-		batch->npfns[batch->end - 1]++;
+-		batch->total_pfns++;
+-		return true;
+-	}
+-	if (batch->end == batch->array_size)
++	if (i && pfn == batch->pfns[i - 1] + batch->npfns[i - 1] &&
++	    nr <= MAX_NPFNS - batch->npfns[i - 1]) {
++		batch->npfns[i - 1] += nr;
++	} else if (i < batch->array_size) {
++		batch->pfns[i] = pfn;
++		batch->npfns[i] = nr;
++		batch->end++;
++	} else {
+ 		return false;
+-	batch->total_pfns++;
+-	batch->pfns[batch->end] = pfn;
+-	batch->npfns[batch->end] = 1;
+-	batch->end++;
++	}
++
++	batch->total_pfns += nr;
+ 	return true;
+ }
+ 
++static void batch_remove_pfn_num(struct pfn_batch *batch, unsigned long nr)
++{
++	batch->npfns[batch->end - 1] -= nr;
++	if (batch->npfns[batch->end - 1] == 0)
++		batch->end--;
++	batch->total_pfns -= nr;
 +}
 +
-+static long pin_memfd_pages(struct pfn_reader_user *user, unsigned long start,
-+			    unsigned long npages)
++/* true if the pfn was added, false otherwise */
++static bool batch_add_pfn(struct pfn_batch *batch, unsigned long pfn)
 +{
-+	unsigned long i;
-+	unsigned long offset;
-+	unsigned long npages_out = 0;
-+	struct page **upages = user->upages;
-+	unsigned long end = start + (npages << PAGE_SHIFT) - 1;
-+	long nfolios = user->ufolios_len / sizeof(*user->ufolios);
++	return batch_add_pfn_num(batch, pfn, 1);
++}
 +
-+	/*
-+	 * todo: memfd_pin_folios should return the last pinned offset so
-+	 * we can compute npages pinned, and avoid looping over folios here
-+	 * if upages == NULL.
-+	 */
-+	nfolios = memfd_pin_folios(user->file, start, end, user->ufolios,
-+				   nfolios, &offset);
-+	if (nfolios <= 0)
-+		return nfolios;
+ /*
+  * Fill the batch with pfns from the domain. When the batch is full, or it
+  * reaches last_index, the function will return. The caller should use
+@@ -622,6 +636,41 @@ static void batch_from_pages(struct pfn_batch *batch, struct page **pages,
+ 			break;
+ }
+ 
++static int batch_from_folios(struct pfn_batch *batch, struct folio ***folios_p,
++			     unsigned long *offset_p, unsigned long npages)
++{
++	int rc = 0;
++	struct folio **folios = *folios_p;
++	unsigned long offset = *offset_p;
 +
-+	offset >>= PAGE_SHIFT;
-+	user->ufolios_next = user->ufolios;
-+	user->ufolios_offset = offset;
++	while (npages) {
++		struct folio *folio = *folios;
++		unsigned long nr = folio_nr_pages(folio) - offset;
++		unsigned long pfn = page_to_pfn(folio_page(folio, offset));
 +
-+	for (i = 0; i < nfolios; i++) {
-+		struct folio *folio = user->ufolios[i];
-+		unsigned long nr = folio_nr_pages(folio);
-+		unsigned long npin = min(nr - offset, npages);
++		nr = min(nr, npages);
++		npages -= nr;
 +
-+		npages -= npin;
-+		npages_out += npin;
-+
-+		if (upages) {
-+			if (npin == 1) {
-+				*upages++ = folio_page(folio, offset);
-+			} else {
-+				int rc = folio_add_pins(folio, npin - 1);
-+
-+				if (rc)
-+					return rc;
-+
-+				while (npin--)
-+					*upages++ = folio_page(folio, offset++);
++		if (!batch_add_pfn_num(batch, pfn, nr))
++			break;
++		if (nr > 1) {
++			rc = folio_add_pins(folio, nr - 1);
++			if (rc) {
++				batch_remove_pfn_num(batch, nr);
++				goto out;
 +			}
 +		}
 +
++		folios++;
 +		offset = 0;
 +	}
 +
-+	return npages_out;
- }
- 
- static int pfn_reader_user_pin(struct pfn_reader_user *user,
-@@ -788,7 +855,9 @@ static int pfn_reader_user_pin(struct pfn_reader_user *user,
- 			       unsigned long last_index)
- {
- 	bool remote_mm = pages->source_mm != current->mm;
--	unsigned long npages;
-+	unsigned long npages = last_index - start_index + 1;
-+	unsigned long start;
-+	unsigned long unum;
- 	uintptr_t uptr;
- 	long rc;
- 
-@@ -796,40 +865,50 @@ static int pfn_reader_user_pin(struct pfn_reader_user *user,
- 	    WARN_ON(last_index < start_index))
- 		return -EINVAL;
- 
--	if (!user->upages) {
-+	if (!user->file && !user->upages) {
- 		/* All undone in pfn_reader_destroy() */
--		user->upages_len =
--			(last_index - start_index + 1) * sizeof(*user->upages);
-+		user->upages_len = npages * sizeof(*user->upages);
- 		user->upages = temp_kmalloc(&user->upages_len, NULL, 0);
- 		if (!user->upages)
- 			return -ENOMEM;
- 	}
- 
-+	if (user->file && !user->ufolios) {
-+		user->ufolios_len = npages * sizeof(*user->ufolios);
-+		user->ufolios = temp_kmalloc(&user->ufolios_len, NULL, 0);
-+		if (!user->ufolios)
-+			return -ENOMEM;
-+	}
-+
- 	if (user->locked == -1) {
- 		/*
- 		 * The majority of usages will run the map task within the mm
- 		 * providing the pages, so we can optimize into
- 		 * get_user_pages_fast()
- 		 */
--		if (remote_mm) {
-+		if (!user->file && remote_mm) {
- 			if (!mmget_not_zero(pages->source_mm))
- 				return -EFAULT;
- 		}
- 		user->locked = 0;
- 	}
- 
--	npages = min_t(unsigned long, last_index - start_index + 1,
--		       user->upages_len / sizeof(*user->upages));
--
-+	unum = user->file ? user->ufolios_len / sizeof(*user->ufolios) :
-+			    user->upages_len / sizeof(*user->upages);
-+	npages = min_t(unsigned long, npages, unum);
- 
- 	if (iommufd_should_fail())
- 		return -EFAULT;
- 
--	uptr = (uintptr_t)(pages->uptr + start_index * PAGE_SIZE);
--	if (!remote_mm)
-+	if (user->file) {
-+		start = pages->start + (start_index * PAGE_SIZE);
-+		rc = pin_memfd_pages(user, start, npages);
-+	} else if (!remote_mm) {
-+		uptr = (uintptr_t)(pages->uptr + start_index * PAGE_SIZE);
- 		rc = pin_user_pages_fast(uptr, npages, user->gup_flags,
- 					 user->upages);
--	else {
-+	} else {
-+		uptr = (uintptr_t)(pages->uptr + start_index * PAGE_SIZE);
- 		if (!user->locked) {
- 			mmap_read_lock(pages->source_mm);
- 			user->locked = 1;
-@@ -887,7 +966,8 @@ static int update_mm_locked_vm(struct iopt_pages *pages, unsigned long npages,
- 		mmap_read_unlock(pages->source_mm);
- 		user->locked = 0;
- 		/* If we had the lock then we also have a get */
--	} else if ((!user || !user->upages) &&
-+
-+	} else if ((!user || (!user->upages && !user->ufolios)) &&
- 		   pages->source_mm != current->mm) {
- 		if (!mmget_not_zero(pages->source_mm))
- 			return -EINVAL;
-@@ -1068,8 +1148,15 @@ static int pfn_reader_fill_span(struct pfn_reader *pfns)
- 
- 	npages = user->upages_end - start_index;
- 	start_index -= user->upages_start;
--	batch_from_pages(&pfns->batch, user->upages + start_index, npages);
--	return 0;
-+	rc = 0;
-+
-+	if (!user->file)
-+		batch_from_pages(&pfns->batch, user->upages + start_index,
-+				 npages);
-+	else
-+		rc = batch_from_folios(&pfns->batch, &user->ufolios_next,
-+				       &user->ufolios_offset, npages);
++out:
++	*folios_p = folios;
++	*offset_p = offset;
 +	return rc;
- }
- 
- static bool pfn_reader_done(struct pfn_reader *pfns)
-@@ -1151,7 +1238,14 @@ static void pfn_reader_release_pins(struct pfn_reader *pfns)
- 		unsigned long start_index = pfns->batch_end_index -
- 					    user->upages_start;
- 
--		unpin_user_pages(user->upages + start_index, npages);
-+		if (!user->file) {
-+			unpin_user_pages(user->upages + start_index, npages);
-+		} else {
-+			long n = user->ufolios_len / sizeof(*user->ufolios);
++}
 +
-+			unpin_folios(user->ufolios_next,
-+				     user->ufolios + n - user->ufolios_next);
-+		}
- 		iopt_pages_sub_npinned(pages, npages);
- 		user->upages_end = pfns->batch_end_index;
- 	}
+ static void batch_unpin(struct pfn_batch *batch, struct iopt_pages *pages,
+ 			unsigned int first_page_off, size_t npages)
+ {
 -- 
 1.8.3.1
 
