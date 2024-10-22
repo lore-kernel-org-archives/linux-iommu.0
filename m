@@ -1,105 +1,199 @@
-Received: from mx.treblig.org (mx.treblig.org [46.235.229.95])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-yw1-f202.google.com (mail-yw1-f202.google.com [209.85.128.202])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F390956458;
-	Tue, 22 Oct 2024 00:27:15 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=46.235.229.95
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0E5C15FB9C
+	for <iommu@lists.linux.dev>; Tue, 22 Oct 2024 00:55:45 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.202
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1729556837; cv=none; b=OIetflVHzbzWjTxv2G4WIBJXpEt1TUuaVE+1OcK4qhAnNGR9OU3SupUGhlgo6ybhmgnf1VGrM6JO4DevVohfm+iNgLFd41jh7YvbZMg8h+D+o6H5iq8TBYs69V8IuZe1PyuqbNWLDnGn3+VJL1RzEHJ7wwUOFmwfkhPMToN+15o=
+	t=1729558548; cv=none; b=mAR+efd7O7ACAkBz6GhDGJTCgg3G8/4cUCj+5ykqwEsyhRvBxUHsPOH+88D5ROCGF7zUcx9/yZagc8v5K+mSIw5DwMqLeGHy/6c7HZ0F+lGvfyPi4TogNMmSlzyy6fYJT+MVwLgaV+wGzroKKBjDo4omAqZZzxeg8gNpvXuGPlY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1729556837; c=relaxed/simple;
-	bh=FUwOYCqb0UIvmCcIp5UgWEV3vFGgqExwTek6OSk1pJQ=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=JqmA9GSCK3whDRFA7T83qap8sfUu0TPGK4hzvMhx71hYiKN+eMqWKIAep5FWxHtcgYg6nPT4ysaGng7YlV37y5EFmvCPcKEbU4FX0MrEL80PayoI4BL4n1NptsfjGjDdMUcGt2f7XQsVKZdffP4CkSjipCysmJrMGrWtLdu1md8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=treblig.org; spf=pass smtp.mailfrom=treblig.org; dkim=pass (2048-bit key) header.d=treblig.org header.i=@treblig.org header.b=iTUta9D1; arc=none smtp.client-ip=46.235.229.95
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=treblig.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=treblig.org
+	s=arc-20240116; t=1729558548; c=relaxed/simple;
+	bh=D91LW0u/aFo2LHxpaGxk97lhk+pdYY8G6zMOXYJ2nvs=;
+	h=Date:In-Reply-To:Mime-Version:References:Message-ID:Subject:From:
+	 To:Cc:Content-Type; b=Gfa9FSVMrbnLTwT05DMl8ENO6NqlVDEDWLe3PO/NN0fyc/m99YjwE3p4cLi0cjhvM0/GeSPXU9vTpcwT+maCsGi9w3r4UBGukuAspgwgEw79/x1NMWmi4kEDLRrl5EDW2/utukpvJxR/WyHI+e+lDdhZV/AS90FpelidRdkXEpc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=flex--seanjc.bounces.google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=nMdlXnKI; arc=none smtp.client-ip=209.85.128.202
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=flex--seanjc.bounces.google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=treblig.org header.i=@treblig.org header.b="iTUta9D1"
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=treblig.org
-	; s=bytemarkmx; h=MIME-Version:Message-ID:Date:Subject:From:Content-Type:From
-	:Subject; bh=t3cQdB5tT/CTlqWs31rOhZvN0HUT9n1StunejcJjhYk=; b=iTUta9D1KBjd+GaM
-	xo3YiN4/n43NqnMa2j8gxfhxKV6265F536et3G0rtsFKB/dw2HZWC7CV0XozqFU6ElQpP6TqBGkNi
-	u4nqie01Y7XNHX5qsGGSzvSAS7mYqwC6ii0bccWNwAs+yB/TON0D2sV9v0rkGznwyM14nSl8YbhUx
-	wz+7xMsH/BzuNesa09AQudwDYl6V/oDFJRHkwdO4A0U485QWuWIQ2rnMljfeaVHVrdzqzPWLFcZyN
-	q0P0LG8agKkwprLaKfrsWFBx9RNi2Yp8Xx7Vt3gVIKSkH3ieS6xDgxrDghJoNCffEI9fU5qXtW54T
-	0g2Khs3tjQsu72aYYw==;
-Received: from localhost ([127.0.0.1] helo=dalek.home.treblig.org)
-	by mx.treblig.org with esmtp (Exim 4.96)
-	(envelope-from <linux@treblig.org>)
-	id 1t32jn-00CeJr-2r;
-	Tue, 22 Oct 2024 00:27:03 +0000
-From: linux@treblig.org
-To: dwmw2@infradead.org,
-	baolu.lu@linux.intel.com,
-	joro@8bytes.org,
-	will@kernel.org,
-	robin.murphy@arm.com
-Cc: iommu@lists.linux.dev,
-	linux-kernel@vger.kernel.org,
-	"Dr. David Alan Gilbert" <linux@treblig.org>
-Subject: [PATCH] iommu/vt-d: Remove unused dmar_msi_read
-Date: Tue, 22 Oct 2024 01:27:02 +0100
-Message-ID: <20241022002702.302728-1-linux@treblig.org>
-X-Mailer: git-send-email 2.47.0
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="nMdlXnKI"
+Received: by mail-yw1-f202.google.com with SMTP id 00721157ae682-6e3c638cc27so87269717b3.0
+        for <iommu@lists.linux.dev>; Mon, 21 Oct 2024 17:55:45 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20230601; t=1729558545; x=1730163345; darn=lists.linux.dev;
+        h=content-transfer-encoding:cc:to:from:subject:message-id:references
+         :mime-version:in-reply-to:date:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=Tq3cNUO91Vvfgq5tI/z1NounXZjIn6GDS1+EJ7csv/E=;
+        b=nMdlXnKIVoEwF+5caKOwpjujxoPvtXt98E90vEu+QsXLpn5E6n3bwNFNggASxxqfK5
+         8Q0X8xBy5oOMdTXUH4yoXXJlkfKWuw7muNASCK2COcJ+O2QUDNEal3E8uDNltlIt26h3
+         p6eSC/QA+tdvaJjQQFqjjP97MJctX5WRWIUj6LKi6Keq3Lk5njrij3PwduG1bSO4i48V
+         PPfdgGrka5pTd99j/+RhY+u74izcc2cNrdcnbKwsntcl3hNkq0jR4tCD8xs9V+iT0AMD
+         nXjselJRN97/d3FYUbjFlvOb04vgw/6JUCiVL0o+fm/6OBcvbtf1rCheqxLgknpZb8Ru
+         xAdw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1729558545; x=1730163345;
+        h=content-transfer-encoding:cc:to:from:subject:message-id:references
+         :mime-version:in-reply-to:date:x-gm-message-state:from:to:cc:subject
+         :date:message-id:reply-to;
+        bh=Tq3cNUO91Vvfgq5tI/z1NounXZjIn6GDS1+EJ7csv/E=;
+        b=fxXRPKOpO7BJXN5jSRgFhG6frhgH82al8fj00JsYezOXWq8qc5MS+BltZ9egqxPExu
+         lJ4u3g8nxZr3l90esHeL0SOdRaU6cZMhQvaZPsXa/LcId4ZWjtl1hETLs5mdGwezf6dv
+         AIpEWA9E4DjVNH9ivs9+AoPExEe2yZoZuiWSQpLWobPgjA4HMgkkjXUwirJ9tlojApwz
+         TboTa4nnbfMgsrP2tMBLWD+iYsUiBRvpjbGD/XfBdNyRMs3tK1r39jKeCZtdbYGhhWo5
+         FNtw5iMpWR+SE87Iu0EOzKGgBcGacy2TQzt0ctT5FI/ii1F2pknPyxQ00MX7CK1otvDI
+         8Wgg==
+X-Forwarded-Encrypted: i=1; AJvYcCUkP3MRRB4KtHoE6qT3aSJEb4rPT2/13G1qHTyKNlQFiNzEMAohGa8UCez8jOYEiMr61cHwbA==@lists.linux.dev
+X-Gm-Message-State: AOJu0Yy6AfAh6oDbv9SSiQN2385Tpeclq8WfPqIsI0Uzr6l+6xXG+Xuu
+	7lfBMZc2h7X94NEtf+lC8/3NrRfz+hjxeQd4BW74GslpCJFBf+SGoL/mII0y2X7wtnpanhL/q3X
+	TJQ==
+X-Google-Smtp-Source: AGHT+IH7kfJdxNMEfZg9Xeveg6Vy9o9/9o56WmGVBFGfMm/buRcX/ZXrs9PYDx+l/JDWHiEcvXeAcDKATc4=
+X-Received: from zagreus.c.googlers.com ([fda3:e722:ac3:cc00:9d:3983:ac13:c240])
+ (user=seanjc job=sendgmr) by 2002:a25:97c7:0:b0:e0b:af9b:fb79 with SMTP id
+ 3f1490d57ef6-e2bb12db995mr31889276.3.1729558544863; Mon, 21 Oct 2024 17:55:44
+ -0700 (PDT)
+Date: Mon, 21 Oct 2024 17:55:43 -0700
+In-Reply-To: <1d6044e0d71cd95c477e319d7e47819eee61a8fc.camel@redhat.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Mime-Version: 1.0
+References: <20231002115723.175344-1-mlevitsk@redhat.com> <ZRsYNnYEEaY1gMo5@google.com>
+ <1d6044e0d71cd95c477e319d7e47819eee61a8fc.camel@redhat.com>
+Message-ID: <Zxb4D_JCC-L7OQDT@google.com>
+Subject: Re: [PATCH v3 0/4] Allow AVIC's IPI virtualization to be optional
+From: Sean Christopherson <seanjc@google.com>
+To: Maxim Levitsky <mlevitsk@redhat.com>
+Cc: kvm@vger.kernel.org, Will Deacon <will@kernel.org>, linux-kernel@vger.kernel.org, 
+	Borislav Petkov <bp@alien8.de>, Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org, 
+	Ingo Molnar <mingo@redhat.com>, "H. Peter Anvin" <hpa@zytor.com>, Thomas Gleixner <tglx@linutronix.de>, 
+	Joerg Roedel <joro@8bytes.org>, Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>, 
+	Robin Murphy <robin.murphy@arm.com>, iommu@lists.linux.dev, 
+	Paolo Bonzini <pbonzini@redhat.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: quoted-printable
 
-From: "Dr. David Alan Gilbert" <linux@treblig.org>
+Finally got back to this...
 
-dmar_msi_read() has been unused since 2022 in
-commit cf8e8658100d ("arch: Remove Itanium (IA-64) architecture")
+On Wed, Oct 04, 2023, Maxim Levitsky wrote:
+> =D0=A3 =D0=BF=D0=BD, 2023-10-02 =D1=83 12:21 -0700, Sean Christopherson =
+=D0=BF=D0=B8=D1=88=D0=B5:
+> > On Mon, Oct 02, 2023, Maxim Levitsky wrote:
+> > > Hi!
+> > >=20
+> > > This patch allows AVIC's ICR emulation to be optional and thus allows
+> > > to workaround AVIC's errata #1235 by disabling this portion of the fe=
+ature.
+> > >=20
+> > > This is v3 of my patch series 'AVIC bugfixes and workarounds' includi=
+ng
+> > > review feedback.
+> >=20
+> > Please respond to my idea[*] instead of sending more patches.=20
+>=20
+> Hi,
+>=20
+> For the v2 of the patch I was already on the fence if to do it this way o=
+r to
+> refactor the code, and back when I posted it, I decided still to avoid th=
+e
+> refactoring.
+>=20
+> However, your idea of rewriting this patch, while it does change less lin=
+es
+> of code, is even less obvious and consequently required you to write even
+> longer comment to justify it which is not a good sign.
 
-Remove it.
+Agreed.  And FWIW, if we keep the local "entry" variables, I actually like =
+your
+version much better.
 
-(dmar_msi_write still exists and is used once).
+> In particular I don't want someone to find out later, and in the hard way
+> that sometimes real physid table is accessed, and sometimes a fake copy o=
+f it
+> is.
 
-Signed-off-by: Dr. David Alan Gilbert <linux@treblig.org>
----
- drivers/iommu/intel/dmar.c | 13 -------------
- include/linux/dmar.h       |  1 -
- 2 files changed, 14 deletions(-)
+Note, this quirk is present in your v2 as well.  I bring that up only becau=
+se I
+prefer your v2, and rebased it (with massaging) on top of the next version =
+of the
+max vCPUs.  This is what I have currently:
 
-diff --git a/drivers/iommu/intel/dmar.c b/drivers/iommu/intel/dmar.c
-index eaf862e8dea1..7881d9e46622 100644
---- a/drivers/iommu/intel/dmar.c
-+++ b/drivers/iommu/intel/dmar.c
-@@ -1895,19 +1895,6 @@ void dmar_msi_write(int irq, struct msi_msg *msg)
- 	raw_spin_unlock_irqrestore(&iommu->register_lock, flag);
- }
- 
--void dmar_msi_read(int irq, struct msi_msg *msg)
--{
--	struct intel_iommu *iommu = irq_get_handler_data(irq);
--	int reg = dmar_msi_reg(iommu, irq);
--	unsigned long flag;
--
--	raw_spin_lock_irqsave(&iommu->register_lock, flag);
--	msg->data = readl(iommu->reg + reg + 4);
--	msg->address_lo = readl(iommu->reg + reg + 8);
--	msg->address_hi = readl(iommu->reg + reg + 12);
--	raw_spin_unlock_irqrestore(&iommu->register_lock, flag);
--}
--
- static int dmar_fault_do_one(struct intel_iommu *iommu, int type,
- 		u8 fault_reason, u32 pasid, u16 source_id,
- 		unsigned long long addr)
-diff --git a/include/linux/dmar.h b/include/linux/dmar.h
-index 499bb2c63483..692b2b445761 100644
---- a/include/linux/dmar.h
-+++ b/include/linux/dmar.h
-@@ -292,7 +292,6 @@ static inline void dmar_copy_shared_irte(struct irte *dst, struct irte *src)
- struct irq_data;
- extern void dmar_msi_unmask(struct irq_data *data);
- extern void dmar_msi_mask(struct irq_data *data);
--extern void dmar_msi_read(int irq, struct msi_msg *msg);
- extern void dmar_msi_write(int irq, struct msi_msg *msg);
- extern int dmar_set_interrupt(struct intel_iommu *iommu);
- extern irqreturn_t dmar_fault(int irq, void *dev_id);
--- 
-2.47.0
+-       WRITE_ONCE(kvm_svm->avic_physical_id_table[vcpu->vcpu_id], entry);
++       svm->avic_physical_id_entry =3D entry;
++
++       /*
++        * If IPI virtualization is disable, don't update the actual Physic=
+al
++        * ID table, so that the CPU never sees IsRunning=3D1.
++        */
++       if (enable_ipiv)
++               WRITE_ONCE(kvm_svm->avic_physical_id_table[vcpu->vcpu_id], =
+entry);
++
 
+I have no objection to writing the "real" table, but with IsRunning=3D0.  T=
+hat's
+easy enough to do, e.g. tweak the above to:
+
+	/*
+	 * If IPI virtualization is disabled, clear IsRunning when updating the
+	 * actual Physical ID table, so that the CPU never sees IsRunning=3D1.
+	 */
+	if (!enable_ipiv)
+		entry &=3D ~AVIC_PHYSICAL_ID_ENTRY_IS_RUNNING_MASK;
+
+	WRITE_ONCE(kvm_svm->avic_physical_id_table[vcpu->vcpu_id], entry);
+
+> So I decided to fix the root cause by not reading the physid table back,
+> which made the code cleaner, and even with the workaround the code IMHO i=
+s
+> still simpler than it was before.
+>=20
+> About the added 'vcpu->loaded' variable, I added it also because it is
+> something that is long overdue to be added, I remember that in IPIv code
+> there was also a need for this, and probalby more places in KVM can be
+> refactored to take advantage of it, instead of various hacks.
+
+I don't view using the information from the Physical ID table as a hack.  I=
+t very
+explicitly uses the ir_list_lock to ensure that the pCPU that's programmed =
+into
+the IRTE is the pCPU on which the vCPU is loaded, and provides rather stric=
+t
+ordering between task migration and device assignment.  It's not a super ho=
+t path,
+so I don't think lockless programming is justified.
+
+I also think we should keep IsRunning=3D1 when the vCPU is unloaded.  That =
+approach
+won't run afoul of your concern with signaling the wrong pCPU, because KVM =
+can
+still keep the ID up-to-date, e.g. if the task is migrated when a pCPU is b=
+eing
+offlined.
+
+The motiviation for keeping IsRunning=3D1 is to avoid unnecessary VM-Exits =
+and GA
+log IRQs.  E.g. if a vCPU exits to userspace, there's zero reason to force =
+IPI
+senders to exit, because KVM can't/won't notify userspace, and the pending =
+virtual
+interrupt will be processed on the next VMRUN.
+
+> I did adopt your idea of using 'enable_ipiv', although I am still not 100=
+%
+> sure that this is more readable than 'avic_zen2_workaround'.
+
+The problem with "avic_zen2_workaround" is that it becomes nonsensical if a=
+ user
+wants to disable IPI virtualization on a CPU that isn't affected by the err=
+atum.
+And I also think KVM should disallow enabling IPI virtualization if the CPU=
+ is
+affected by the erratum; even with HLT-exiting disabled on every VM, kvm_vc=
+pu_block()
+is still reachable, so I don't think it's at all reasonable to expect a use=
+r to
+be able to know when it's safe to ignore the erratum.
