@@ -1,250 +1,203 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.15])
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.16])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6C3A8145B24
-	for <iommu@lists.linux.dev>; Tue, 22 Oct 2024 10:09:51 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=198.175.65.15
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1729591793; cv=fail; b=l5XqLdgQXWa6WKotg5GVZ06mQ3ojoCOtECADpDiggD7l0d2k86EfIFrxAOWrf4w4kX2VhWsyRzV4dOJpGzG3cDeeca9fwlmlwc3GKZmdL1Y6eA6aXRolnsTVpAYe5JRA/Gh8mM/JXsG9MXs0lHyVQlvQAqstlYSeTTg/8MEIhvc=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1729591793; c=relaxed/simple;
-	bh=W6YyRBWWGzxj22aBP093rUW7/KmxXzLODQExRurLjm8=;
-	h=Message-ID:Date:Subject:To:CC:References:From:In-Reply-To:
-	 Content-Type:MIME-Version; b=NA9pyVAiFA4ELtPCz5CCFF/CRvn1DYfPTl8f1lIIF38Ok0QTVcOW8xdJ0dQsW+Y3Z2w33aJD8uBqJ7JLpv8s/+bQPqjIu1u3QJOW4rC7cfr/f7d+eWBO3q+6c1kn7AGJn4dfOiJSeb+cY2c925mdSfTQ8ACcjBfBX3S5QVQxM7A=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=TdYnlwUV; arc=fail smtp.client-ip=198.175.65.15
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2BDAB19ABBF
+	for <iommu@lists.linux.dev>; Tue, 22 Oct 2024 11:24:01 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.16
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1729596242; cv=none; b=A8kZ6XPbq+B7yDMp763/Hy8z3oMooVLjuA99+f8XD1Nd6Dq4Rv7cSU8WcrqEk6TuC8c/dT+hj/gHwflxuaxqLvpNBSIvUA22Fhu5c500UtrBmurcjnAsE/vjEeplPTMrPnpnlTtscxb0f/EtvgqMLL7jhNcPwniuR86E5aRDf6Y=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1729596242; c=relaxed/simple;
+	bh=aZ1FjAA3zutn9kIQtZLnBI173lME+dbSz5uR/w+7e34=;
+	h=Message-ID:Date:MIME-Version:Cc:Subject:To:References:From:
+	 In-Reply-To:Content-Type; b=Jhf49usTTSlt/QqeSbPrT5Nw6BND/ydXLMj/Pz7CBDpT5Iug3IkWnHhVC47XmCpD/vT+49KxIf9iL9C3yXdCUxGweAcedt52jeZYQQybJdsPjK7tYTn5bSGFESB16PGATPJvb2FKjhXQ+H29PJhSzNNwexQlewfCXnIREpx6wBQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=BPWLdONR; arc=none smtp.client-ip=192.198.163.16
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="TdYnlwUV"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="BPWLdONR"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1729591791; x=1761127791;
-  h=message-id:date:subject:to:cc:references:from:
-   in-reply-to:content-transfer-encoding:mime-version;
-  bh=W6YyRBWWGzxj22aBP093rUW7/KmxXzLODQExRurLjm8=;
-  b=TdYnlwUVIN42d80H06GUQ8rd2eWoTMpBanFswHrgW3v6UGdEbA/lL+S6
-   gSqTFUXu1/8zVL46LGVA1XJaxV1C5ZhMmtPVvZuwbgssKHzTWUJN8IFpy
-   U7aAqmeVobMDzBlOK7IlN0WVJURp0c91bvXr9rYAl3O4HuZNiugU5yHQy
-   UWKzJGOStszVFMiIb6XG3l7z+xIA+56weaDMMl1YAa5A8Ay+wtl4aswin
-   4eZBAJ7cUh7CQC59ejX8gFz2xAPFsoT6Z6rvS/SnnYRfmDFTal4sQUPBp
-   9E6PX7HR8ImYVl8mTfyeBI61F2NMtV/HVu+xbi19M/wQNxmhZXd/35pOm
+  t=1729596241; x=1761132241;
+  h=message-id:date:mime-version:cc:subject:to:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=aZ1FjAA3zutn9kIQtZLnBI173lME+dbSz5uR/w+7e34=;
+  b=BPWLdONRU0Ubo8Ri76oJbM5aPDLG7c4Aujzeck9WzLKd8HxIYFUlpi1T
+   up0RgBX83m19BxeEpCRNu3rL3jiYSt8+J++ISIRcue7taGVnuu0jjRkiR
+   Z+yXjsNI0sHhcH+v4KKkYp6omucmGWbMRt/otAzMgKRcak5H8U/RP2xdS
+   Y5N5gDkB+8ov1TK672cxmcFwFJFayGzQiPCO3hBgNzBlIyJwqkn8Z27F9
+   Ev/7oAUQYSHiQ7cbTmxukIdpDTHaFaOsMh6IqxA0s/+IC6DOpLRfwpQHo
+   g1JMd8NaKYSawjPem7iQkAeWayyNY9Jz/dVhieWX4ZCZRrKgxkpq1vJU+
    Q==;
-X-CSE-ConnectionGUID: jKw5MSIiTSWvexOffO+e8g==
-X-CSE-MsgGUID: vIHhwweyRdy6i0N3gC/qug==
-X-IronPort-AV: E=McAfee;i="6700,10204,11222"; a="32807980"
-X-IronPort-AV: E=Sophos;i="6.11,199,1725346800"; 
-   d="scan'208";a="32807980"
-Received: from fmviesa008.fm.intel.com ([10.60.135.148])
-  by orvoesa107.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Oct 2024 03:09:49 -0700
-X-CSE-ConnectionGUID: S82//sA9Sh2Ou672NKkaVA==
-X-CSE-MsgGUID: o0t2t0voSLaWBQnQL1BsBg==
+X-CSE-ConnectionGUID: J/EZcobNTiyoyJk3VDi7Dw==
+X-CSE-MsgGUID: WXaJM0otSJGFEDTYvWJ2ng==
+X-IronPort-AV: E=McAfee;i="6700,10204,11232"; a="16753542"
+X-IronPort-AV: E=Sophos;i="6.11,223,1725346800"; 
+   d="scan'208";a="16753542"
+Received: from orviesa009.jf.intel.com ([10.64.159.149])
+  by fmvoesa110.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Oct 2024 04:24:01 -0700
+X-CSE-ConnectionGUID: p+bxeUHtSgukwmWPvI0pVw==
+X-CSE-MsgGUID: p7Kgxz3GRPavMGnAG9V2Bw==
 X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.11,222,1725346800"; 
-   d="scan'208";a="79890638"
-Received: from fmsmsx603.amr.corp.intel.com ([10.18.126.83])
-  by fmviesa008.fm.intel.com with ESMTP/TLS/AES256-GCM-SHA384; 22 Oct 2024 03:09:45 -0700
-Received: from fmsmsx603.amr.corp.intel.com (10.18.126.83) by
- fmsmsx603.amr.corp.intel.com (10.18.126.83) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.39; Tue, 22 Oct 2024 03:09:45 -0700
-Received: from fmsedg602.ED.cps.intel.com (10.1.192.136) by
- fmsmsx603.amr.corp.intel.com (10.18.126.83) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.39 via Frontend Transport; Tue, 22 Oct 2024 03:09:45 -0700
-Received: from NAM12-MW2-obe.outbound.protection.outlook.com (104.47.66.46) by
- edgegateway.intel.com (192.55.55.71) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.1.2507.39; Tue, 22 Oct 2024 03:09:44 -0700
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=sG7ll2hA4majwgEwUxp82sTY4QOLwaFVMeSEMx6geicPNv3QInpmUGHN/bNUkuvJfXvcS7GLB9kMXetuTw6aPBc5b7lV80Vdet/lybrLQyAhBiMRP2cTRY8I7b11QRCNp8SpnY84qX+QOX7koh8hHbaz/TYxcLNWMVW/bR6/MPH21G8fD7I/bEeui+Kv4rMLySDVLTOHfFGDxUdIgpLVrJLh8GNcqrA1Zpbk4oVdkKHjBoGssU015PydE4XzciWx23eIc9u0dnyQQ4/OGslpGbk2FXDB9dJp5CO2sst98nugCW2P8bVlZ83FiWoxW1TSeh0bKZ5aMOqMMSzfQSTjHQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=GBtF1WQ8AutlWxWwofWefvUeQWhGMkJBRkXdcEDS5R8=;
- b=HmWtTN9sqHtzKR/GVLAMK/bjDv40hO+B7tVTettKHWAwXvvC9W83y6nxjGK7rTYoc55ZKvp20/CWGpzJe/C8ojYGB5HNGcz8njgF/4bPpbmJSLPWHfHJr/YLP0uKG/cRq4JJ3YrRZ5LAf16EkLZqR+GQZ0muAVvKvNuA5DIHcZYuT4GNmx18b+VFYPsJTDlqTFywJo2QTGaaCyc/G+jJMbLG1HgHLfw2fMZQH0GLD64trQK5LJcta4NmtlNSZGMyrU1OeqingDOteKA+O6d0FvbwDRydMPno35B3jFI/A5JdS/bY3k3XJhyz+SS1UsFV6kz7lpydVAS0JRml7MG+xw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
- dkim=pass header.d=intel.com; arc=none
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=intel.com;
-Received: from DS0PR11MB7529.namprd11.prod.outlook.com (2603:10b6:8:141::20)
- by CO1PR11MB4995.namprd11.prod.outlook.com (2603:10b6:303:9f::22) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.8069.29; Tue, 22 Oct
- 2024 10:09:42 +0000
-Received: from DS0PR11MB7529.namprd11.prod.outlook.com
- ([fe80::d244:15cd:1060:941a]) by DS0PR11MB7529.namprd11.prod.outlook.com
- ([fe80::d244:15cd:1060:941a%4]) with mapi id 15.20.8069.027; Tue, 22 Oct 2024
- 10:09:42 +0000
-Message-ID: <3c381896-fa24-4445-aefc-6320965d9b0b@intel.com>
-Date: Tue, 22 Oct 2024 18:14:18 +0800
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v2 0/3] Support attaching PASID to the blocked_domain
-To: Vasant Hegde <vasant.hegde@amd.com>, <joro@8bytes.org>, <jgg@nvidia.com>,
-	<kevin.tian@intel.com>, <baolu.lu@linux.intel.com>, <will@kernel.org>
-CC: <alex.williamson@redhat.com>, <eric.auger@redhat.com>,
-	<nicolinc@nvidia.com>, <kvm@vger.kernel.org>, <chao.p.peng@linux.intel.com>,
-	<iommu@lists.linux.dev>, <zhenzhong.duan@intel.com>
-References: <20241018055824.24880-1-yi.l.liu@intel.com>
- <b6f7f648-c509-4e95-a697-f2c09b1cbf6e@amd.com>
-Content-Language: en-US
-From: Yi Liu <yi.l.liu@intel.com>
-In-Reply-To: <b6f7f648-c509-4e95-a697-f2c09b1cbf6e@amd.com>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: SI2PR02CA0027.apcprd02.prod.outlook.com
- (2603:1096:4:195::14) To DS0PR11MB7529.namprd11.prod.outlook.com
- (2603:10b6:8:141::20)
+X-IronPort-AV: E=Sophos;i="6.11,223,1725346800"; 
+   d="scan'208";a="79754928"
+Received: from blu2-mobl.ccr.corp.intel.com (HELO [10.124.240.228]) ([10.124.240.228])
+  by orviesa009-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Oct 2024 04:23:57 -0700
+Message-ID: <965fe7e8-9a23-48a7-a84d-819f0c330cde@linux.intel.com>
+Date: Tue, 22 Oct 2024 19:23:54 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: DS0PR11MB7529:EE_|CO1PR11MB4995:EE_
-X-MS-Office365-Filtering-Correlation-Id: 380108c2-51ad-4e22-3f78-08dcf281a560
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;ARA:13230040|366016|376014|7416014|1800799024;
-X-Microsoft-Antispam-Message-Info: =?utf-8?B?MGlCcjFXdHJta1JHcXMwL2JHeUljdG1rbTFCYkt4cGg2UTYzemp1VVZ4cnZx?=
- =?utf-8?B?MUlBOWxjYWpiWU5wcDZyZUJaUUdtKzFHWGl0T3JEdEtJUXhhcjBiRUFxRlBy?=
- =?utf-8?B?c0NXakVxNHR4L2h1UE4xVEtZNkdYbEQ1VVUzZ0Q4MnFqWnEwZzFLajNudXdS?=
- =?utf-8?B?ZjlxenA0SlIrTFprR3JqZlRtZXpUN1Fpby85MjV1anRSRVNDK3ZiYUhNV1Bs?=
- =?utf-8?B?SnJqeHBJZmlLSXYyMG1SVVZUb0tIRjIrb3pqM2Y3SlA1UmVnN0cwUnVUTE01?=
- =?utf-8?B?a2VlRUNoUk90Q0x4dXBpTnpmQlc2dkIwSG1OR0pOV0hhWStwcnM3TGNrcTlF?=
- =?utf-8?B?bVlVbG1QazB3enFnT0ZKdU50aTFqVGtURkNEUlRuK1ZhemI1RmJiV1c1d1dm?=
- =?utf-8?B?ZG9iSGdub1FRRzF2ZzhrVTJMMm5xK2hZOFZCSzAxRzVkWXkrMSsxZlludnI4?=
- =?utf-8?B?Y29ZZVB2NGh1VWdqck81TjZwbHBvcFg0M3BTSkZSV05vUEV6bDhEaE03WEFS?=
- =?utf-8?B?WDFlRU4yRWFZdXZxam1UZ2NkNit5eisxbEtwL0pGR0R2WTJKSjZoR0FDUTRD?=
- =?utf-8?B?MzdqNHhQcndLSkRyTkp6eFBka2ozYmhVQ3RPS21ORlg5eEF4V09IQ0F0bDFv?=
- =?utf-8?B?bCtMU0xlNG1JeG1pakR5OTVINW9oOG1aL0paM1F2cGlkQUpLY3FkSEh0Wm1M?=
- =?utf-8?B?N0Y2RnNIZENrVjQvNVA4MTNpVEV5aFM4c3RBRVE5bWJlTXl4NzlZdUJDM2Yv?=
- =?utf-8?B?bSthQzB5Tkl1Vy9XWFFrQzJmNWZuSFE4RHRBL1FhTll1dnBGY1FIdUQ3Qzdw?=
- =?utf-8?B?MVZLdjR0dThXb2MzOFN4NUFBUXVJaWdsbXRBL2lTNFdKZGd6OEwyS3VhSjdJ?=
- =?utf-8?B?MkRvQVF3L1NkT2s5SEY2R0E5OVozclZjQjNBL25OeXV4cm5mOWMwSjM3dHZ6?=
- =?utf-8?B?SUhwQVFDQ25iUXRUMUI4V0NQb3NIQ0E3OVVoN296ckd0bjFqdXNEei9OTi9m?=
- =?utf-8?B?TXdsNnNNUTVWWjYyT3VDd1h2Q1d5WEJMNDlBVURaRTRoNXBSbDRDcnE1WWto?=
- =?utf-8?B?eDBndm1NcWRmRTZqN285eFd2cVp2aldYM1QrQTZpK3BoeUdEblNZZkk0YzNv?=
- =?utf-8?B?QWsyUGF1emsyRk5RMzJXK0VDVFYzR1pmRlhSd2RqOWdYU0ZwbGlGbXVZNUg5?=
- =?utf-8?B?Qkk2UWFJcytNc1VqeHUwWVA0T1NpY0FIM1FlN28renRGRUVYc1I5QXlkK21s?=
- =?utf-8?B?ZzJQNmhCM1dhM2xVMk5ldUhxdEhmU3lNNzlhcFo4OGtsWnd3djhJMm9GNHg3?=
- =?utf-8?B?TTl6LytIOFFGbTN0c1Ryc0sxeXNZZTFqVi9KMy9SMXVLSlluMC93RDlDMDYz?=
- =?utf-8?B?Y0NQc1A5Z250Uy9aUlVXRXFzU05hbTh3a0crSnViclRVUDNQUC91bjAyMmdN?=
- =?utf-8?B?dkRRTW9UYUtXeUpuTDd2elpabjFta0tnTkw5SFJIUkxCdDM1Z2dJTENFUmpB?=
- =?utf-8?B?bC9rT1ZWQUg2SUFaRlkyby9rTjZmQzBucjBraXgvUzNpZkx6cnA5dGFvdjBY?=
- =?utf-8?B?UGJ2SkpkZlZYMm9KUHpvZ2ZVZlRZWDBRZW82cnlLRGN1L05LcDNwY0oyd1Fl?=
- =?utf-8?B?c3pvVmFoRTNyWmkrYVJCcGxydnpNbDUwZkZ4MlY0OEJ1S2dHdmgzRFBHb3Nm?=
- =?utf-8?B?djF3M2VwTm5vdG9YRVNpamUrczVWZ0FkQlUrZ2l3N1prU2dwM0R6eWpNdUNM?=
- =?utf-8?Q?P3WQThoz7JDS9YByvIwpwxsH+z/XpQulhWT3x9j?=
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DS0PR11MB7529.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(366016)(376014)(7416014)(1800799024);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?S1cyUG5oUzBla1dYQmhWV250U0h2ck9XNGx5cWtQZlNTblp3bUNxV0EzSnNN?=
- =?utf-8?B?QUl0TWg5TnFDYTdsLzVLQ2FnWEl6YkJoUWE4UURZcFVvNjRaU3E3cFdWMlFR?=
- =?utf-8?B?cEZDbXcyeWgzUzdnY2pldmtqZ2ZUS2U1RUczdHZOUVhkWFJDdGRFaFJYOXhI?=
- =?utf-8?B?NVVoRHd0WVlpMDJGVVhXR2xRRS82RmFYWFByeVkzVERidDM4Qmhjc081R1dF?=
- =?utf-8?B?eE9jMm5UQ2ZEbE92OUNXRVNKV2VZQUIwSWVHejh0dUpKN1ZJNDJ6ZzFlU2Yx?=
- =?utf-8?B?QVZxaXRjbGVXTVpoYVJKNVQrUXc1WVpMaDZSejZ2c2prL2Nad01IVW5CUmtP?=
- =?utf-8?B?VWEwZURMQWNlK1UyL1Z3N25uSXVMampUNGJSOWZKWHYzTXlJWGh1djlBc3gw?=
- =?utf-8?B?ZkhoT3lYdVlHUjdkSWlIbjZMcTdyRUNUOFFpdWZxMFI5L1UwZ0RSdVo4YlBB?=
- =?utf-8?B?Z0pXSnBlUFl6MUdSbHBSajJxV2ptS25id3JTMlZVY3cxWjNXbFVqK1g4MlV6?=
- =?utf-8?B?TVJDaXQ4ZkRwbkN2RWVmTDE0WHo1NHl5R0kwMkV5cStmT2xSanNBN0NNRkdn?=
- =?utf-8?B?UHZNVVlBUThiNDMvWnpldW5BaS9PT3N1dzhqKzd1ZHBwTW03YlMwY0JRS2pr?=
- =?utf-8?B?Qmh5M29JQmhpeHZFL3ZGa2NHOVpXcGpGbmVqK1llVzFTYzNWd0NGbE1tdDQy?=
- =?utf-8?B?c2c1Q3M5QmEwcGpzVUZ1c2xvTmJEVXdacnZ2Wm41b1BPTTlwVGxFR3VyY2JV?=
- =?utf-8?B?Rkd2S0lBMTErYU45ZFNIOURJOFdWVFFiS1hjNXB5V0dNL2RUb0NUMy9jY0Q4?=
- =?utf-8?B?aFVRUzJVOFQ2WmFMYTcwTGJXOFMrczZqWjJhNWpYdFpKV3JyWDFseHhIWU1a?=
- =?utf-8?B?SHhoVEtVQXZKa1B1b04zdnFtVUlYVVlONVRHbSt1ckZWU09FTVlod0o3L1Fu?=
- =?utf-8?B?Y2NqdjBKdFFwbEp5dGZWcVFOUjNtUVFEOUxUNzlmTWFRMGdqR2lBb250YlBG?=
- =?utf-8?B?MTE4SHVzclF1MlYzakxhY2lYdCtwQ0dzUVpiV1VUbE1LazlwUGZ0Q0E4TUla?=
- =?utf-8?B?RlFWaU1GVDVXWldJcEhSdlVrL24zZHAzY3RNanpSYlFES0NkTUp1S25sY3hO?=
- =?utf-8?B?NVRjbE0vZGJXRU1SQm1JcDQ2b29SRzNzWHdpRHZEUG91WmYwSStUSmxkNDFx?=
- =?utf-8?B?TDgrMlpLcnF2UWlhdVVKQjN5QnRhK2t4OUIzdFdySzdIMUlUYXNxc2FIN1p2?=
- =?utf-8?B?a0t6YkdqTk9YNitQZkV0NjFRR2lMOVVIcXVlVXhLdDJnQlZxZDVBczhtdEg3?=
- =?utf-8?B?ZE1GN2xmT0xCUUplL2tqaDFnVjVuSFZUaTZicjZHYUVGcDNnRTNpMm5BK1Ji?=
- =?utf-8?B?NzdXRkJVSjhwaStvZ0lJaXlzcG52bXR4QmZXWmh2T3c1U3Z1SGxpdW5NeXhF?=
- =?utf-8?B?SDNybkZmL3pZOTRoakNCZy94MFQrUGNheVIwUXZnUWFTZ2F3cFJ4QXFwVVpB?=
- =?utf-8?B?bkdlQUZMWVAxSGRBOUU3WXBnQ2JFRW9WY2JKd1RLNEo1dW1HU3NxSlVURTBn?=
- =?utf-8?B?UWV1bkF6RFFFOEhhNTNUNFF6V01PUk5tZHFSMGR2dm4yN0dDSURUUjIycWtB?=
- =?utf-8?B?ZnhSTXZMUUpjaXJ3c2s4ZWNINGdSSmFPNzZMTkN2a0lnY09qLzkrZlRVV3Zy?=
- =?utf-8?B?Z2QrVVNDbzQ1QkhIcE1TNWtST1RwdlFxckh0N1JaVWxHbjhWN29jK0J5cGRT?=
- =?utf-8?B?VWFtQjAyc2NNeEFhZVlmT0VIQk81VVFvZmk4L1lJR3VCM1BVSVlOaWt0K1pt?=
- =?utf-8?B?VWRsNU1PUzNaTXNVZ3RkengwdVRpc0QyaHkwY2JMTjFYYTYrZUVQaHdQVWQz?=
- =?utf-8?B?bXBiSXZOMFprUk1YVlREaElFSGxpUy9sVWl2aTJINnd5MjkvL1I0WFVRTVJD?=
- =?utf-8?B?TUdQem1nVm5kdS9FdlJKWkh0UmJBSTcxRDl5Qk5ibzhRbXcveXYxV3ptNEg5?=
- =?utf-8?B?QTl6VDdZNjRBL3o4eUNXdmplbTVtYmJqdEFpdGkyU20yUXdNeEw2TkhrTXFF?=
- =?utf-8?B?ZXVVL0wwb3lqR1VRSzB1L0F5aU9ZSE1rVnNOS0g0YVAreDJxVEtXMW1EM0RF?=
- =?utf-8?Q?bkV2ukn/lnlMd5qCz+6AKbNQq?=
-X-MS-Exchange-CrossTenant-Network-Message-Id: 380108c2-51ad-4e22-3f78-08dcf281a560
-X-MS-Exchange-CrossTenant-AuthSource: DS0PR11MB7529.namprd11.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 22 Oct 2024 10:09:42.2257
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 46c98d88-e344-4ed4-8496-4ed7712e255d
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: 66Z2lb89ElXWFjCQlhAb1WZPV+mLJdapLQ6h2nIgZTMpi0RYJ7yRhypXEfYlWi4mtJ3uSne/w6NRsDVPfOi0Eg==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: CO1PR11MB4995
-X-OriginatorOrg: intel.com
+User-Agent: Mozilla Thunderbird
+Cc: baolu.lu@linux.intel.com, alex.williamson@redhat.com,
+ eric.auger@redhat.com, nicolinc@nvidia.com, kvm@vger.kernel.org,
+ chao.p.peng@linux.intel.com, iommu@lists.linux.dev,
+ zhenzhong.duan@intel.com, vasant.hegde@amd.com
+Subject: Re: [PATCH v3 3/9] iommu/vt-d: Let intel_pasid_tear_down_entry()
+ return pasid entry
+To: Yi Liu <yi.l.liu@intel.com>, joro@8bytes.org, jgg@nvidia.com,
+ kevin.tian@intel.com, will@kernel.org
+References: <20241018055402.23277-1-yi.l.liu@intel.com>
+ <20241018055402.23277-4-yi.l.liu@intel.com>
+ <e5cd1de4-37f7-4d55-aa28-f37d49d46ac6@linux.intel.com>
+ <521b4f3e-1979-46f5-bfad-87951db2b6ed@intel.com>
+ <ce78d006-53d8-4194-ae9d-249ab38c1d6d@linux.intel.com>
+ <bab356e9-de34-41bb-9942-de639ee7d3de@intel.com>
+ <9d726285-730a-400d-8d45-f494b2c62205@linux.intel.com>
+ <fe88f071-0d06-4838-9ce6-a5bcccf10163@intel.com>
+Content-Language: en-US
+From: Baolu Lu <baolu.lu@linux.intel.com>
+In-Reply-To: <fe88f071-0d06-4838-9ce6-a5bcccf10163@intel.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 
-On 2024/10/22 17:44, Vasant Hegde wrote:
-> Hi Yi,
+On 2024/10/22 17:38, Yi Liu wrote:
+> On 2024/10/22 17:23, Baolu Lu wrote:
+>> On 2024/10/21 15:24, Yi Liu wrote:
+>>> On 2024/10/21 14:59, Baolu Lu wrote:
+>>>> On 2024/10/21 14:35, Yi Liu wrote:
+>>>>> On 2024/10/21 14:13, Baolu Lu wrote:
+>>>>>> On 2024/10/18 13:53, Yi Liu wrote:
+>>>>>>> intel_pasid_tear_down_entry() finds the pasid entry and tears it 
+>>>>>>> down.
+>>>>>>> There are paths that need to get the pasid entry, tear it down and
+>>>>>>> re-configure it. Letting intel_pasid_tear_down_entry() return the 
+>>>>>>> pasid
+>>>>>>> entry can avoid duplicate codes to get the pasid entry. No 
+>>>>>>> functional
+>>>>>>> change is intended.
+>>>>>>>
+>>>>>>> Signed-off-by: Yi Liu<yi.l.liu@intel.com>
+>>>>>>> ---
+>>>>>>>   drivers/iommu/intel/pasid.c | 11 ++++++++---
+>>>>>>>   drivers/iommu/intel/pasid.h |  5 +++--
+>>>>>>>   2 files changed, 11 insertions(+), 5 deletions(-)
+>>>>>>>
+>>>>>>> diff --git a/drivers/iommu/intel/pasid.c b/drivers/iommu/intel/ 
+>>>>>>> pasid.c
+>>>>>>> index 2898e7af2cf4..336f9425214c 100644
+>>>>>>> --- a/drivers/iommu/intel/pasid.c
+>>>>>>> +++ b/drivers/iommu/intel/pasid.c
+>>>>>>> @@ -239,9 +239,12 @@ devtlb_invalidation_with_pasid(struct 
+>>>>>>> intel_iommu *iommu,
+>>>>>>>   /*
+>>>>>>>    * Caller can request to drain PRQ in this helper if it hasn't 
+>>>>>>> done so,
+>>>>>>>    * e.g. in a path which doesn't follow remove_dev_pasid().
+>>>>>>> + * Return the pasid entry pointer if the entry is found or NULL 
+>>>>>>> if no
+>>>>>>> + * entry found.
+>>>>>>>    */
+>>>>>>> -void intel_pasid_tear_down_entry(struct intel_iommu *iommu, 
+>>>>>>> struct device *dev,
+>>>>>>> -                 u32 pasid, u32 flags)
+>>>>>>> +struct pasid_entry *
+>>>>>>> +intel_pasid_tear_down_entry(struct intel_iommu *iommu, struct 
+>>>>>>> device *dev,
+>>>>>>> +                u32 pasid, u32 flags)
+>>>>>>>   {
+>>>>>>>       struct pasid_entry *pte;
+>>>>>>>       u16 did, pgtt;
+>>>>>>> @@ -250,7 +253,7 @@ void intel_pasid_tear_down_entry(struct 
+>>>>>>> intel_iommu *iommu, struct device *dev,
+>>>>>>>       pte = intel_pasid_get_entry(dev, pasid);
+>>>>>>>       if (WARN_ON(!pte) || !pasid_pte_is_present(pte)) {
+>>>>>>>           spin_unlock(&iommu->lock);
+>>>>>>> -        return;
+>>>>>>> +        goto out;
+>>>>>>
+>>>>>> The pasid table entry is protected by iommu->lock. It's  not 
+>>>>>> reasonable
+>>>>>> to return the pte pointer which is beyond the lock protected range.
+>>>>>
+>>>>> Per my understanding, the iommu->lock protects the content of the 
+>>>>> entry,
+>>>>> so the modifications to the entry need to hold it. While, it looks not
+>>>>> necessary to protect the pasid entry pointer itself. The pasid 
+>>>>> table should
+>>>>> exist during device probe and release. is it?
+>>>>
+>>>> The pattern of the code that modifies a pasid table entry is,
+>>>>
+>>>>      spin_lock(&iommu->lock);
+>>>>      pte = intel_pasid_get_entry(dev, pasid);
+>>>>      ... modify the pasid table entry ...
+>>>>      spin_unlock(&iommu->lock);
+>>>>
+>>>> Returning the pte pointer to the caller introduces a potential race
+>>>> condition. If the caller subsequently modifies the pte without re-
+>>>> acquiring the spin lock, there's a risk of data corruption or
+>>>> inconsistencies.
+>>>
+>>> it appears that we are on the same page about if pte pointer needs to be
+>>> protected or not. And I agree the modifications to the pte should be
+>>> protected by iommu->lock. If so, will documenting that the caller 
+>>> must hold
+>>> iommu->lock if is tries to modify the content of pte work? Also, it 
+>>> might
+>>> be helpful to add lockdep to make sure all the modifications of pte 
+>>> entry
+>>> are under protection.
+>>
+>> People will soon forget about this lock and may modify the returned pte
+>> pointer without locking, introducing a race condition silently.
+>>
+>>> Or any suggestion from you given a path that needs to get pte first, 
+>>> check
+>>> if it exists and then call intel_pasid_tear_down_entry(). For example 
+>>> the
+>>> intel_pasid_setup_first_level() [1], in my series, I need to call the
+>>> unlock iommu->lock and call intel_pasid_tear_down_entry() and then lock
+>>> iommu->lock and do more modifications on the pasid entry. It would 
+>>> invoke
+>>> the intel_pasid_get_entry() twice if no change to
+>>> intel_pasid_tear_down_entry().
+>>
+>> There is no need to check the present of a pte entry before calling into
+>> intel_pasid_tear_down_entry(). The helper will return directly if the
+>> pte is not present:
+>>
+>>          spin_lock(&iommu->lock);
+>>          pte = intel_pasid_get_entry(dev, pasid);
+>>          if (WARN_ON(!pte) || !pasid_pte_is_present(pte)) {
+>>                  spin_unlock(&iommu->lock);
+>>                  return;
+>>          }
+>>
+>> Does it work for you?
 > 
-> 
-> On 10/18/2024 11:28 AM, Yi Liu wrote:
->> During the review of iommufd pasid series, Kevin and Jason suggested
->> attaching PASID to the blocked domain hence replacing the usage of
->> remove_dev_pasid() op [1]. This makes sense as it makes the PASID path
->> aligned with the RID path which attaches the RID to the blocked_domain
->> when it is to be blocked. To do it, it requires passing the old domain
->> to the iommu driver. This has been done in [2].
-> 
-> I understand attaching RID to blocked_domain. But I am not getting why
-> we have to do same for PASID. In remove_dev_pasid() path we clear the entry in
-> PASID table (AMD case GCR3 table). So no further access is allowed anyway.
-> 
-> Is it just to align with RID flow -OR- do we have any other reason?
+> This is not I'm talking about. My intention is to avoid duplicated
+> intel_pasid_get_entry() call when calling intel_pasid_tear_down_entry() in
+> intel_pasid_setup_first_level(). Both the two functions call the
+> intel_pasid_get_entry() to get pte pointer. So I think it might be good to
+> save one of them.
 
-yes, this is also my understanding.:)
+Then, perhaps you can add a pasid_entry_tear_down() helper which asserts
+iommu->lock and call it in both intel_pasid_tear_down_entry() and
+intel_pasid_setup_first_level()?
 
-Regards,
-Yi Liu
-
-> 
-> -Vasant
-> 
-> 
->>
->> This series makes the Intel iommu driver and ARM SMMUv3 driver support
->> attaching PASID to the blocked domain. While the AMD iommu driver does
->> not have the blocked domain yet, so still uses the remove_dev_pasid() op.
->>
->> [1] https://lore.kernel.org/linux-iommu/20240816130202.GB2032816@nvidia.com/
->> [2] https://lore.kernel.org/linux-iommu/20241018055402.23277-2-yi.l.liu@intel.com/
->>
->> v2:
->>   - Add Kevin's r-b
->>   - Adjust the order of patch 03 of v1, it should be the first patch (Baolu)
->>
->> v1: https://lore.kernel.org/linux-iommu/20240912130653.11028-1-yi.l.liu@intel.com/
->>
->> Regards,
->> 	Yi Liu
->>
->> Jason Gunthorpe (1):
->>    iommu/arm-smmu-v3: Make the blocked domain support PASID
->>
->> Yi Liu (2):
->>    iommu: Add a wrapper for remove_dev_pasid
->>    iommu/vt-d: Make the blocked domain support PASID
->>
->>   drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 12 ++++-----
->>   drivers/iommu/intel/iommu.c                 | 19 ++++++++-----
->>   drivers/iommu/intel/pasid.c                 |  3 ++-
->>   drivers/iommu/iommu.c                       | 30 ++++++++++++++++-----
->>   4 files changed, 45 insertions(+), 19 deletions(-)
->>
-
--- 
-Regards,
-Yi Liu
+Thanks,
+baolu
