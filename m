@@ -1,238 +1,283 @@
-Received: from szxga06-in.huawei.com (szxga06-in.huawei.com [45.249.212.32])
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.8])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 529491607B7
-	for <iommu@lists.linux.dev>; Wed, 23 Oct 2024 08:59:57 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=45.249.212.32
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1729673999; cv=none; b=jcqde9JZoGBnCLi7NDFHiFTPtm9dGSoRlHxTxnm3edffnV7trIVKY/UGOAO0q7lQccqAhKJIYpVecsqlcKS1K1CwGgTfK6BUb3tbYHJNdY1TZUIdA7lPHEAOKnx3bJg48pSD+fg+7aBUlq5cMhpJbXIFEPplq/maXfQEo/P2I/g=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1729673999; c=relaxed/simple;
-	bh=Jw+DmzBHar7iZZ6B+14E8lFU06r4nIFW7AqGx1XmAQA=;
-	h=Message-ID:Date:MIME-Version:Subject:To:CC:References:From:
-	 In-Reply-To:Content-Type; b=YGERINAo31umvHwKcXOs+V/yar8cn5W1BJtcEidIwM04Omd5zFvGWwrxhmFQsCQHk8mE80f6qaA3YSyY6b11C59hTnFiG6/qyvkbS2q44pblkeA86v39QLgpMqRF2h7JAPjqGFWtoV2j8WH7WT5/Rp3SC1+3d2V9S0P32bGm4y4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=huawei.com; spf=pass smtp.mailfrom=huawei.com; arc=none smtp.client-ip=45.249.212.32
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=huawei.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=huawei.com
-Received: from mail.maildlp.com (unknown [172.19.163.17])
-	by szxga06-in.huawei.com (SkyGuard) with ESMTP id 4XYNKY549Yz1ylvv;
-	Wed, 23 Oct 2024 17:00:01 +0800 (CST)
-Received: from dggpemf200006.china.huawei.com (unknown [7.185.36.61])
-	by mail.maildlp.com (Postfix) with ESMTPS id 73BF41A0188;
-	Wed, 23 Oct 2024 16:59:54 +0800 (CST)
-Received: from [10.67.120.129] (10.67.120.129) by
- dggpemf200006.china.huawei.com (7.185.36.61) with Microsoft SMTP Server
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 850AB18953D
+	for <iommu@lists.linux.dev>; Wed, 23 Oct 2024 09:41:36 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=192.198.163.8
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1729676498; cv=fail; b=QS/hunJU3XwkuFuTyT2JHQHGMXC9+1p1PWatyyCN+6wu4qBcK2bbsl+9zwbitbrWGeceBUGkr2Qe2QPNDYqrmYv/P7//Xsideh3v92+oF+JfpYIGnEvWIkwKNcr3VdraBJJwLjsqLA+153GbXir+c9GiofyEbWV8Bfv2Bg/G9VI=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1729676498; c=relaxed/simple;
+	bh=hDWpagJhH+MoNaUDG0EIHbwl9d+AJyHcF7ViC11ts4w=;
+	h=From:To:CC:Subject:Date:Message-ID:References:In-Reply-To:
+	 Content-Type:MIME-Version; b=N47CTvvxuKGUICbYSR6GrpL2UuTDGECiQS8GTSc25hG+WY7kds5rlpTEyFdFN6mJ61ElJP77G5ufUmErY5q8biPxWPsZktVmUXRoYUKwclnERv5CqK984UqQfT7xYbFqpvMHKcjqpV/DNyDIFYJ7xMe1cnTXfE56/TkiKqFutWQ=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=dFrtG42w; arc=fail smtp.client-ip=192.198.163.8
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="dFrtG42w"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1729676497; x=1761212497;
+  h=from:to:cc:subject:date:message-id:references:
+   in-reply-to:content-transfer-encoding:mime-version;
+  bh=hDWpagJhH+MoNaUDG0EIHbwl9d+AJyHcF7ViC11ts4w=;
+  b=dFrtG42wfYzHDQUFsQjgXeMAvlT4AaUJtHQdilyf0nrwwAsNnKZHCOSa
+   oMOIMbJkdTPBYjKAqG9gzr0bXunjZwLtkxZpzWimForMDPx/lk2vL2fWu
+   AuOFGj+Uub07X73r02GChEy7YowXwkEbFKRWMDmxx+bCsBJYhoOgiOkLF
+   QivBmlsidWRLcRhxBNOCJKcSLl9c8j4vwiwWPZCvzZgeCaVaSVfqTpSGN
+   sswNR11d3lZtcps6Ps5S+5iGzlNyc0jedykRMnBToxiYVo7rpMwga0s0p
+   5LqntRPm9TW+LyjrZA/RtVP3rdNvWTEg2+Z3p9QrZXX4L56nYwzqAvFQo
+   w==;
+X-CSE-ConnectionGUID: a45GPyN1T3+np3Igr6XZdg==
+X-CSE-MsgGUID: BsP2DdrxRDuZQ68zejDe9Q==
+X-IronPort-AV: E=McAfee;i="6700,10204,11233"; a="46738004"
+X-IronPort-AV: E=Sophos;i="6.11,225,1725346800"; 
+   d="scan'208";a="46738004"
+Received: from orviesa006.jf.intel.com ([10.64.159.146])
+  by fmvoesa102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Oct 2024 02:41:36 -0700
+X-CSE-ConnectionGUID: xCgyIU5PTLuE99XeOLo+mw==
+X-CSE-MsgGUID: Az8jmhwbQHS0xglgB2EcEw==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.11,225,1725346800"; 
+   d="scan'208";a="80333603"
+Received: from orsmsx603.amr.corp.intel.com ([10.22.229.16])
+  by orviesa006.jf.intel.com with ESMTP/TLS/AES256-GCM-SHA384; 23 Oct 2024 02:41:35 -0700
+Received: from orsmsx601.amr.corp.intel.com (10.22.229.14) by
+ ORSMSX603.amr.corp.intel.com (10.22.229.16) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.39; Wed, 23 Oct 2024 02:41:35 -0700
+Received: from orsedg603.ED.cps.intel.com (10.7.248.4) by
+ orsmsx601.amr.corp.intel.com (10.22.229.14) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.39 via Frontend Transport; Wed, 23 Oct 2024 02:41:35 -0700
+Received: from NAM12-MW2-obe.outbound.protection.outlook.com (104.47.66.44) by
+ edgegateway.intel.com (134.134.137.100) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.1544.11; Wed, 23 Oct 2024 16:59:53 +0800
-Message-ID: <113c9835-f170-46cf-92ba-df4ca5dfab3d@huawei.com>
-Date: Wed, 23 Oct 2024 16:59:53 +0800
+ 15.1.2507.39; Wed, 23 Oct 2024 02:41:34 -0700
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=s9JO8FGKtjaqZPCEqhWdAR2aGpw7rL2vZMXcGTL6L8yA0ItnXcZFfLhGNgo4bAZyFGdDCUoUDKJmtom1++miLhoLxIj8tuNiNv8+1TWaA02fdXVuzXpLAeDXLFPn/d2jPI+zYT2I5J2B0qWjTP9y4W6QeWjlhFJBfTaKyQwCf17eNhjDYc/WzMdE0tTO6Vy2+RkHKqIEea78HIuruA+HT3icEkBUyY276Yw3kBFbno3bpdv6SvvqEuHmaMGUTSxT8fUAZTyEArwBRC81ZxsnRQYGDZikOnON1EfKslhTKVUNBnSlWwwLQI3b3Ga8/JHC3JDDzXSc1wutMW07MAawCg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=Gi6Nbu7KZh55cAhzXhp2fKgTIbY1HTCWN6sF148RlZg=;
+ b=nUhEuwGNDFEogbGPClsAhEugGyeZHXBurp26EPw5elGig6pmtE6Ut76cmvJu89PkM5PPS1tUhMpxD5n4Xd2N7LeQUHRt+hPSc29KsdNPbzthlpBvahMuRfyfZybUexw458sS7501AmwMoNV0JeSA9QJDQ6DujatPwW0UK6tFtDKs6OgviAh73FmrYfSvFS6zcsvNr8jbmon/7z95IwFXKXm5oYViH6epY2b9GI3L538oBbBhfvEji4kB3MIhSZMErGcjkOVv4RY6nEZGxcSUMV9bQilGyhrgq1P2o6Ww/ibs2afiyTBexhCNBa4QaaaSLMLVX+S0EYEcc4WqT0s6Yw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
+ dkim=pass header.d=intel.com; arc=none
+Received: from SJ0PR11MB6744.namprd11.prod.outlook.com (2603:10b6:a03:47d::10)
+ by DM4PR11MB6190.namprd11.prod.outlook.com (2603:10b6:8:ad::13) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.8069.29; Wed, 23 Oct
+ 2024 09:41:28 +0000
+Received: from SJ0PR11MB6744.namprd11.prod.outlook.com
+ ([fe80::fe49:d628:48b1:6091]) by SJ0PR11MB6744.namprd11.prod.outlook.com
+ ([fe80::fe49:d628:48b1:6091%5]) with mapi id 15.20.8069.027; Wed, 23 Oct 2024
+ 09:41:27 +0000
+From: "Duan, Zhenzhong" <zhenzhong.duan@intel.com>
+To: "iommu@lists.linux.dev" <iommu@lists.linux.dev>,
+	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+CC: "dwmw2@infradead.org" <dwmw2@infradead.org>, "baolu.lu@linux.intel.com"
+	<baolu.lu@linux.intel.com>, "joro@8bytes.org" <joro@8bytes.org>,
+	"will@kernel.org" <will@kernel.org>, "robin.murphy@arm.com"
+	<robin.murphy@arm.com>, "Peng, Chao P" <chao.p.peng@intel.com>, "Kyung Min
+ Park" <kyung.min.park@intel.com>
+Subject: RE: [PATCH v2 1/2] iommu/vt-d: Fix checks in dmar_fault_dump_ptes()
+Thread-Topic: [PATCH v2 1/2] iommu/vt-d: Fix checks in dmar_fault_dump_ptes()
+Thread-Index: AQHbJSdPSnb4xC7NaEu/ihZ/UamZq7KUFG7g
+Date: Wed, 23 Oct 2024 09:41:27 +0000
+Message-ID: <SJ0PR11MB6744272E218E88BCB7F05956924D2@SJ0PR11MB6744.namprd11.prod.outlook.com>
+References: <20241023083715.582149-1-zhenzhong.duan@intel.com>
+ <20241023083715.582149-2-zhenzhong.duan@intel.com>
+In-Reply-To: <20241023083715.582149-2-zhenzhong.duan@intel.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach:
+X-MS-TNEF-Correlator:
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=intel.com;
+x-ms-publictraffictype: Email
+x-ms-traffictypediagnostic: SJ0PR11MB6744:EE_|DM4PR11MB6190:EE_
+x-ms-office365-filtering-correlation-id: 2d3475cf-819c-4e16-bdfe-08dcf346dda0
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;ARA:13230040|376014|366016|1800799024|38070700018;
+x-microsoft-antispam-message-info: =?us-ascii?Q?nKOsUlqLb/nHDYx/a+idOp/KrZ7U83SKNsN/MOss36oy1Ru/hAeKI615GSpu?=
+ =?us-ascii?Q?61GqUrK/KgPciOGA/Dw3DWJ5NlWUL2myzrpYLUO6tau1OsKZpgUusEXg3IAT?=
+ =?us-ascii?Q?LYkrTgh21EoCv1XBTdVYQS7AcL2MYDBOj1+JRdxt4JE9TndBJDa5gysj+N3O?=
+ =?us-ascii?Q?Mivtk/RUP6BRK/OZZzvhbEwUmzQfBsZBYo3dkYQSgVZF3YBHJDRxyDAgg+rT?=
+ =?us-ascii?Q?N7RLavjWxqC9IDoP5bK1nGv/I/0qJspdrc2Q9WbsexAKAt5R8CnBL4nOEXPE?=
+ =?us-ascii?Q?kEpdi6PrqdNLUAkhahIbRW93s24INkf55PEGDLqKJ259p9aeNmaPIGNQWtiy?=
+ =?us-ascii?Q?6JgsQ9Ij1HnAXbraVghpmKGvr+YEtQM6cIxjTtbiBDJNEIMm/nF6Ixv+gtO5?=
+ =?us-ascii?Q?G6ELLoVXlKdGqQ+ssJTJJH5EhoeWT2ed6vdBOHuw9izbZh6Owlty45l7zcbr?=
+ =?us-ascii?Q?CEaE6aV2c9eittVTeB/SCyxgxcL+0XuNI1JhTuHQQd9e1mT4pwIO8oxp6xa8?=
+ =?us-ascii?Q?nQ1CcRBL5Pe+GLK45Aqizqq50z50ASz4WRcWXyWMHAsSOd+ZV61BQvsiG2x2?=
+ =?us-ascii?Q?HVNZmv79Qpn9dFz467nTDru3NIIOkQ3mV/LsnS+Mv33fcXNt9v1vm472DTN8?=
+ =?us-ascii?Q?bOegOhmrn9fOSn9IBu2gmAivYrLP2wH76McU0/wp6Q7DDiOIC+UsE73rn/q3?=
+ =?us-ascii?Q?HW+hxEL7qaKs0htPT3kTzqmyhSKFck1CRRKccjv7dsu7s51fOeiEwYyXSJRr?=
+ =?us-ascii?Q?yhcobJcsjBmTg6M05ngLjIDn4ljkZeYVhI89bfa7K39M+2WY22no2v0E22uT?=
+ =?us-ascii?Q?EFHk7NRLAi3NomMA5KfewtUhACPWugLKRC3gmVxgNEplXn+qVFEHcvD35nae?=
+ =?us-ascii?Q?LJbPKK/F8hIznopsowoYQPunIeZMDARzhowdpaHSgTk3QAzUnoRw/2iUJ9Ix?=
+ =?us-ascii?Q?ENUTgLA408rO9RpErTKbdavBvmvVEg1/eJrpmf28zwJXcVfR16uqqmqcV4yR?=
+ =?us-ascii?Q?rapTylYnAuvdZnmDqE/CJuQ7+7NxT0oroLmp4cCxEQbqoQStI+Az8UdkI+Wj?=
+ =?us-ascii?Q?31dkLJPTq2YNtInWXp3V9X3XXM1boGjOjCsqUBHRIQTJW1kh9+YEnInmRrpZ?=
+ =?us-ascii?Q?G/bZm/3z+cjyzAJaQJCPTE4UWhBu+wT+QHQ5E9MFjcfZrGqwJ2DRZXzrERlj?=
+ =?us-ascii?Q?5NAU74bvjdW3U32+3OWnrWLSYtzBzziN445rrOV7TBB9BudtEN9s6zLmuh58?=
+ =?us-ascii?Q?9LMkOfk3IG/dpn+v95Hs/N3wiM/EU7RLLpr/4elHsyLoBI3ezSwIeUhnSp1X?=
+ =?us-ascii?Q?qUPDKql6rhiw28sMcOOxxlsHAC9fbQwUVpwi7QSjKB9iJ3DYRiwE+cXRLHsd?=
+ =?us-ascii?Q?XkxLT8o=3D?=
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:SJ0PR11MB6744.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(376014)(366016)(1800799024)(38070700018);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?KkqeQ7eSdytRJgNLcdrGLjo5MBxV4VjfIRgmIcPNcbMYm3EmpComOj9xPltB?=
+ =?us-ascii?Q?9XV8bkj9GCrHVniC7bp52wrYXRi8Jm5gwdIJpEs/w0/ovsINvURzWcwNSDnv?=
+ =?us-ascii?Q?fgkA7Xnr1dF7Afndj0ISL0RlXqhKUc0VrjBZRvhU0TZnBdp1KRarKNCZe+mY?=
+ =?us-ascii?Q?TtTMqFYcHBEYhG1tOV6EmJhMg5itd8W4pUAc5T65+j+Kvan6pzt9UNFsJfsS?=
+ =?us-ascii?Q?FqnUSDPDKLpqOzYU7TELGq9eVfS4lNgcIF4Q2xWHn99sP7GB87pjHMR+i8NX?=
+ =?us-ascii?Q?osVU3W7DklsJ91K2CzGDSED/iPNuuuuzP26K+8daxZYDWafaITpsmxNWS8e7?=
+ =?us-ascii?Q?HEUir2NvsniQZgXiBUdzu5cbbIA0xx+1bPm22AksnehRzDkQZEKwFS+yOodR?=
+ =?us-ascii?Q?2oihuH2a3TCDWM9W7Pb6QAQLPh00rlrU+ZSpvM+jPVryjiIZBu7Nf2XGRWO2?=
+ =?us-ascii?Q?GTuYNbAmGmkdCCqnvoSFxW/yKf10iA1EZzljSlLjrGNcgnsSXOjVxyxhiEl/?=
+ =?us-ascii?Q?ut14CEaBqUcI+Z1d46QUzdSyi+bj5OotLv6IV5RmZjTfsQsG7QXNziuglM9e?=
+ =?us-ascii?Q?aWL7FiWHvyAFSnm4hWyWU/L9eKW0aHG4GRLo6N2wF7TG+/XiNDS4H82Lr70P?=
+ =?us-ascii?Q?xkQ2+VeF9f5QNPTeOmWu4VVZSYq/6aShYfp5LAKls6jX0oY9/AtbPH0SvYP/?=
+ =?us-ascii?Q?tM0U0evRGgqwTCCPjU7ztq8+PPooz9q4Wgk6JXEl0TqloKX+lxKrxZlKCrFK?=
+ =?us-ascii?Q?uvWabvurAofLkXOI0yotT1iJMUHQ86nAekjoeT6RYVJGrJpFPBpJ6y0RzJxt?=
+ =?us-ascii?Q?7vl0ddF1emqsPqKos9egtae18cvboiJzMeFrwdQeTVQhc77/znA81xdiIouq?=
+ =?us-ascii?Q?nZhXUPazx0Qymq+eA2gRIuenSdpXbBrLK4y6j/6qQ4hZAozF85X596HZZsok?=
+ =?us-ascii?Q?TdL4Sb8wDlUV1nLJOCxlHt/k6KastaISMY9OQSLoImV1PNas+2oVDsaZZTPX?=
+ =?us-ascii?Q?q9+MbE5gaB6DOz68ncyhBv1k4LECSMaaYReR18jY6QD6SbA5AQy4YMtdRDvd?=
+ =?us-ascii?Q?czXPQManZF5PHTi4Aa2dzbPWfGfbggnH/hhqhZUDbjT/fJD9+7FWf/RsLxY1?=
+ =?us-ascii?Q?1a8mbzQJCkyFFg9mZmObuNpDH2dWAkUMpHuaMOKIJfnQywCLBB8Q3Hhuv0xA?=
+ =?us-ascii?Q?ReE6T5oZgQG1iQduA13lZlouBL7tzSKN9wrGVOAI8jsyjQSJSZsvOqaTSW8o?=
+ =?us-ascii?Q?+QS9OQkwtgunIe9EOGdGts5G/P78pQrgJChplj1CSRWHSFSZUkrD/AL1BGTu?=
+ =?us-ascii?Q?X8+2MmrBeJLT7bkmh0o+G91w2m8vIDvPNzKHRCAOveoCrgrllSGF/8niE/Ju?=
+ =?us-ascii?Q?794MMuBVkTEyOBVL+qxZIcbbkDqUPAMdewT3NFXRhU+1IA8dyXVJYKkFcKfy?=
+ =?us-ascii?Q?fBVovthny+d8HjZRTWiQCCbAEq+tYAQTKgTaQseuBjADOCNosNqJqhs6x7hO?=
+ =?us-ascii?Q?nZY/HDdcmun9GeZtD63FKDS6nG5ybe8Vt1aTPUeAtqgDhSnNnjpEtOTgdO8m?=
+ =?us-ascii?Q?xmg51q9sxeKiSaZZJ1qOiW4xr1tHI27KZ3azktCD?=
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH net-next v3 3/3] page_pool: fix IOMMU crash when driver
- has already unbound
-To: Jesper Dangaard Brouer <hawk@kernel.org>, <davem@davemloft.net>,
-	<kuba@kernel.org>, <pabeni@redhat.com>
-CC: <zhangkun09@huawei.com>, <fanghaiqing@huawei.com>,
-	<liuyonglong@huawei.com>, Robin Murphy <robin.murphy@arm.com>, Alexander
- Duyck <alexander.duyck@gmail.com>, IOMMU <iommu@lists.linux.dev>, Andrew
- Morton <akpm@linux-foundation.org>, Eric Dumazet <edumazet@google.com>, Ilias
- Apalodimas <ilias.apalodimas@linaro.org>, <linux-mm@kvack.org>,
-	<linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>, kernel-team
-	<kernel-team@cloudflare.com>
-References: <20241022032214.3915232-1-linyunsheng@huawei.com>
- <20241022032214.3915232-4-linyunsheng@huawei.com>
- <dbd7dca7-d144-4a0f-9261-e8373be6f8a1@kernel.org>
-Content-Language: en-US
-From: Yunsheng Lin <linyunsheng@huawei.com>
-In-Reply-To: <dbd7dca7-d144-4a0f-9261-e8373be6f8a1@kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 8bit
-X-ClientProxiedBy: dggems701-chm.china.huawei.com (10.3.19.178) To
- dggpemf200006.china.huawei.com (7.185.36.61)
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: SJ0PR11MB6744.namprd11.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 2d3475cf-819c-4e16-bdfe-08dcf346dda0
+X-MS-Exchange-CrossTenant-originalarrivaltime: 23 Oct 2024 09:41:27.1306
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 46c98d88-e344-4ed4-8496-4ed7712e255d
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: +e8+tFXHuyk6TSe66LxfQ+NFIJtNTqzU1e4nOuDD17LVwAROPsto8ZBhOhMaI+/5wbjYI3pDFuaxGZyXxHNfBj0U6a3z5M2x7Te8KIQlQj0=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM4PR11MB6190
+X-OriginatorOrg: intel.com
 
-On 2024/10/23 2:14, Jesper Dangaard Brouer wrote:
-> 
-> 
-> On 22/10/2024 05.22, Yunsheng Lin wrote:
->> Networking driver with page_pool support may hand over page
->> still with dma mapping to network stack and try to reuse that
->> page after network stack is done with it and passes it back
->> to page_pool to avoid the penalty of dma mapping/unmapping.
->> With all the caching in the network stack, some pages may be
->> held in the network stack without returning to the page_pool
->> soon enough, and with VF disable causing the driver unbound,
->> the page_pool does not stop the driver from doing it's
->> unbounding work, instead page_pool uses workqueue to check
->> if there is some pages coming back from the network stack
->> periodically, if there is any, it will do the dma unmmapping
->> related cleanup work.
->>
->> As mentioned in [1], attempting DMA unmaps after the driver
->> has already unbound may leak resources or at worst corrupt
->> memory. Fundamentally, the page pool code cannot allow DMA
->> mappings to outlive the driver they belong to.
->>
->> Currently it seems there are at least two cases that the page
->> is not released fast enough causing dma unmmapping done after
->> driver has already unbound:
->> 1. ipv4 packet defragmentation timeout: this seems to cause
->>     delay up to 30 secs.
->> 2. skb_defer_free_flush(): this may cause infinite delay if
->>     there is no triggering for net_rx_action().
->>
->> In order not to do the dma unmmapping after driver has already
->> unbound and stall the unloading of the networking driver, add
->> the pool->items array to record all the pages including the ones
->> which are handed over to network stack, so the page_pool can
-> 
-> I really really dislike this approach!
-> 
-> Nacked-by: Jesper Dangaard Brouer <hawk@kernel.org>
-> 
-> Having to keep an array to record all the pages including the ones
-> which are handed over to network stack, goes against the very principle
-> behind page_pool. We added members to struct page, such that pages could
-> be "outstanding".
+Just found I mixed the present bit processing with non-present entry in thi=
+s patch,
+I'll resend after fix, please ignore it. Sorry for the noise.
 
-Before and after this patch both support "outstanding", the difference is
-how many "outstanding" pages do they support.
+Thanks
+Zhenzhong
 
-The question seems to be do we really need unlimited inflight page for
-page_pool to work as mentioned in [1]?
+>-----Original Message-----
+>From: Duan, Zhenzhong <zhenzhong.duan@intel.com>
+>Subject: [PATCH v2 1/2] iommu/vt-d: Fix checks in dmar_fault_dump_ptes()
+>
+>In dmar_fault_dump_ptes(), return value of phys_to_virt() is used for
+>checking if an entry is present. It's never NULL on x86 platform at least.
+>This makes some zero entries are dumped like below:
+>
+>[  442.240357] DMAR: pasid dir entry: 0x000000012c83e001
+>[  442.246661] DMAR: pasid table entry[0]: 0x0000000000000000
+>[  442.253429] DMAR: pasid table entry[1]: 0x0000000000000000
+>[  442.260203] DMAR: pasid table entry[2]: 0x0000000000000000
+>[  442.266969] DMAR: pasid table entry[3]: 0x0000000000000000
+>[  442.273733] DMAR: pasid table entry[4]: 0x0000000000000000
+>[  442.280479] DMAR: pasid table entry[5]: 0x0000000000000000
+>[  442.287234] DMAR: pasid table entry[6]: 0x0000000000000000
+>[  442.293989] DMAR: pasid table entry[7]: 0x0000000000000000
+>[  442.300742] DMAR: PTE not present at level 2
+>
+>Fix it by checking present bit of an entry before dump its content.
+>
+>Fixes: 914ff7719e8a ("iommu/vt-d: Dump DMAR translation structure when DMA
+>fault occurs")
+>Signed-off-by: Zhenzhong Duan <zhenzhong.duan@intel.com>
+>---
+> drivers/iommu/intel/iommu.c | 31 ++++++++++++++++++++-----------
+> 1 file changed, 20 insertions(+), 11 deletions(-)
+>
+>diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
+>index a564eeaf2375..8288b0ee7a61 100644
+>--- a/drivers/iommu/intel/iommu.c
+>+++ b/drivers/iommu/intel/iommu.c
+>@@ -733,12 +733,17 @@ void dmar_fault_dump_ptes(struct intel_iommu
+>*iommu, u16 source_id,
+> 	u8 devfn =3D source_id & 0xff;
+> 	u8 bus =3D source_id >> 8;
+> 	struct dma_pte *pgtable;
+>+	u64 entry;
+>
+> 	pr_info("Dump %s table entries for IOVA 0x%llx\n", iommu->name, addr);
+>
+> 	/* root entry dump */
+> 	rt_entry =3D &iommu->root_entry[bus];
+>-	if (!rt_entry) {
+>+	entry =3D rt_entry->lo;
+>+	if (sm_supported(iommu) && devfn >=3D 0x80)
+>+		entry =3D rt_entry->hi;
+>+
+>+	if (!(entry & 1)) {
+> 		pr_info("root table entry is not present\n");
+> 		return;
+> 	}
+>@@ -766,28 +771,32 @@ void dmar_fault_dump_ptes(struct intel_iommu
+>*iommu, u16 source_id,
+> 		goto pgtable_walk;
+> 	}
+>
+>+	/* For request-without-pasid, get the pasid from context entry */
+>+	if (pasid =3D=3D IOMMU_PASID_INVALID)
+>+		pasid =3D IOMMU_NO_PASID;
+>+
+> 	/* get the pointer to pasid directory entry */
+> 	dir =3D phys_to_virt(ctx_entry->lo & VTD_PAGE_MASK);
+>-	if (!dir) {
+>+	dir_index =3D pasid >> PASID_PDE_SHIFT;
+>+	pde =3D &dir[dir_index];
+>+
+>+	if (!pasid_pde_is_present(pde)) {
+> 		pr_info("pasid directory entry is not present\n");
+> 		return;
+> 	}
+>-	/* For request-without-pasid, get the pasid from context entry */
+>-	if (intel_iommu_sm && pasid =3D=3D IOMMU_PASID_INVALID)
+>-		pasid =3D IOMMU_NO_PASID;
+>
+>-	dir_index =3D pasid >> PASID_PDE_SHIFT;
+>-	pde =3D &dir[dir_index];
+> 	pr_info("pasid dir entry: 0x%016llx\n", pde->val);
+>
+> 	/* get the pointer to the pasid table entry */
+>-	entries =3D get_pasid_table_from_pde(pde);
+>-	if (!entries) {
+>+	entries =3D phys_to_virt(READ_ONCE(pde->val) & PDE_PFN_MASK);
+>+	index =3D pasid & PASID_PTE_MASK;
+>+	pte =3D &entries[index];
+>+
+>+	if (!pasid_pte_is_present(pte)) {
+> 		pr_info("pasid table entry is not present\n");
+> 		return;
+> 	}
+>-	index =3D pasid & PASID_PTE_MASK;
+>-	pte =3D &entries[index];
+>+
+> 	for (i =3D 0; i < ARRAY_SIZE(pte->val); i++)
+> 		pr_info("pasid table entry[%d]: 0x%016llx\n", i, pte->val[i]);
+>
+>--
+>2.34.1
 
-1. https://lore.kernel.org/all/5d9ea7bd-67bb-4a9d-a120-c8f290c31a47@huawei.com/
-
-> 
-> The page_pool already have a system for waiting for these outstanding /
-> inflight packets to get returned.  As I suggested before, the page_pool
-> should simply take over the responsability (from net_device) to free the
-> struct device (after inflight reach zero), where AFAIK the DMA device is
-> connected via.
-
-It seems you mentioned some similar suggestion in previous version,
-it would be good to show some code about the idea in your mind, I am sure
-that Yonglong Liu Cc'ed will be happy to test it if there some code like
-POC/RFC is provided.
-
-I should mention that it seems that DMA device is not longer vaild when
-remove() function of the device driver returns, as mentioned in [2], which
-means dma API is not allowed to called after remove() function of the device
-driver returns.
-
-2. https://www.spinics.net/lists/netdev/msg1030641.html
-
-> 
-> The alternative is what Kuba suggested (and proposed an RFC for),  that
-> the net_device teardown waits for the page_pool inflight packets.
-
-As above, the question is how long does the waiting take here?
-Yonglong tested Kuba's RFC, see [3], the waiting took forever due to
-reason as mentioned in commit log:
-"skb_defer_free_flush(): this may cause infinite delay if there is no
-triggering for net_rx_action()."
-
-And there seems to be some device lock held during the waiting causing
-hung_task log in [3] too, as it is the vf disabling causing the driver
-unbound.
-
-3. https://lore.kernel.org/netdev/758b4d47-c980-4f66-b4a4-949c3fc4b040@huawei.com/
-
-> 
-> 
->> do the dma unmmapping for those pages when page_pool_destroy()
->> is called. As the pool->items need to be large enough to avoid
->> performance degradation, add a 'item_full' stat to indicate the
->> allocation failure due to unavailability of pool->items.
-> 
-> Are you saying page_pool will do allocation failures, based on the size
-> of this pool->items array?
-
-Yes.
-
-> 
-> Production workloads will have very large number of outstanding packet
-> memory in e.g. in TCP sockets.  In production I'm seeing TCP memory
-> reach 24 GiB (on machines with 384GiB memory).
-
-It would be good to provide more information here:
-1. How much is the above '24 GiB' memory it is about rx?
-2. What is value of /proc/sys/net/ipv4/tcp_rmem?
-3. How many network port does the machine is using?
-4. How many queues and what is queue depth of each network port?
-
-Like there need to be a specific number of entries that a nic hw queue
-are using, I believe there need to be a specific number of inflight pages
-for page_pool to reach the best performance, it just can not be unlimit,
-otherwise it will eat up all of the '384GiB memory'.
-
-If the number of inflight pages needed is so dynamic and hard to calculate,
-linked list can always be used instead of fixed array here, but I am not
-sure if it is worthing the complexity here yet.
-
-> 
-> 
->> Note, the devmem patchset seems to make the bug harder to fix,
->> and may make backporting harder too. As there is no actual user
->> for the devmem and the fixing for devmem is unclear for now,
->> this patch does not consider fixing the case for devmem yet.
->>
->> 1. https://lore.kernel.org/lkml/8067f204-1380-4d37-8ffd-007fc6f26738@kernel.org/T/
->>
->> Fixes: f71fec47c2df ("page_pool: make sure struct device is stable")
->> Signed-off-by: Yunsheng Lin <linyunsheng@huawei.com>
->> Tested-by: Yonglong Liu <liuyonglong@huawei.com>
->> CC: Robin Murphy <robin.murphy@arm.com>
->> CC: Alexander Duyck <alexander.duyck@gmail.com>
->> CC: IOMMU <iommu@lists.linux.dev>
->> ---
->>   include/linux/mm_types.h        |   2 +-
->>   include/linux/skbuff.h          |   1 +
->>   include/net/netmem.h            |  10 +-
->>   include/net/page_pool/helpers.h |   4 +-
->>   include/net/page_pool/types.h   |  17 ++-
->>   net/core/devmem.c               |   4 +-
->>   net/core/netmem_priv.h          |   5 +-
->>   net/core/page_pool.c            | 213 ++++++++++++++++++++++++++------
->>   net/core/page_pool_priv.h       |  10 +-
->>   9 files changed, 210 insertions(+), 56 deletions(-)
->>
->> diff --git a/include/linux/mm_types.h b/include/linux/mm_types.h
->> index 6e3bdf8e38bc..d3e30dcfa021 100644
->> --- a/include/linux/mm_types.h
->> +++ b/include/linux/mm_types.h
->> @@ -120,7 +120,7 @@ struct page {
->>                * page_pool allocated pages.
->>                */
->>               unsigned long pp_magic;
->> -            struct page_pool *pp;
->> +            struct page_pool_item *pp_item;
-> 
-> Why do we need to change the pp pointer?
-> 
-> Why can't we access the "items" array like pp->items?
-
-The info about which entry of pp->items a specific 'struct page' is
-using need to be in the 'struct page', so that the specific entry of
-pp->items can be reused for another new page when the old page is
-returned back to the page allocator.
-
-And we still need the info about which page_pool does a specific
-page belong to, that info is avaliable through the below helper:
-
-static inline struct page_pool *page_pool_to_pp(struct page *page)
-{
-	struct page_pool_item *item = page->pp_item;
-
-	return container_of(item, struct page_pool, items[item->pp_idx]);
-}
-
-> 
-> 
->>               unsigned long _pp_mapping_pad;
->>               unsigned long dma_addr;
->>               atomic_long_t pp_ref_count;
