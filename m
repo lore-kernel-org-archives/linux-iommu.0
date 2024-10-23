@@ -1,76 +1,110 @@
-Received: from out-175.mta0.migadu.com (out-175.mta0.migadu.com [91.218.175.175])
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8EAE112CD96
-	for <iommu@lists.linux.dev>; Wed, 23 Oct 2024 03:25:58 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=91.218.175.175
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 484684C7C
+	for <iommu@lists.linux.dev>; Wed, 23 Oct 2024 04:49:49 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.19
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1729653961; cv=none; b=gDpW6u1EhS3Nn8927vUSoQqphbpo3ByWlc9rVh6ErM1VitKErz7jTHk5q10AU4+jLiRezEA/3/mOI06BHmB41k5CNthq3uZLB0icuE9o6+7+dL9iAuai6gfJ0EfEV5XOmy7iBg3zLd+llrvUvjC1mSVg0+HYfa9++uegcM4wAqc=
+	t=1729658991; cv=none; b=LVmHktg6XIsR4V6bsvn0TN1MBVPCfSGC/KInQPhgPCnAYg/y53clKngUKqt/9XUW/YkOWpQsGzTZ7qblnTvdZE1hSb1S7vG7tp6YPVBg1DxdX8iScXnJJ+aMHqKiPIhSlsY4W6cCQ43tJHOJQAf8pQqwbxBoHYI2fQpghfrMDV8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1729653961; c=relaxed/simple;
-	bh=0xDWPvnfbgrU91PYgKeB/1iKFUnwc8D+YKpWNGw1P1U=;
-	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version; b=rN8S26uYwHPif/b1fQMcW6gFzl91EzXeZjGdAuZmHRoeKiCr4SyNK7AMYHEFAtMdxnQWSHzwU8FSh9lGB9WxCAP8aTz8r485+4b3sE6I35K5OBHnqvpQ1q577qFyMwUzYAFAomLVS8IWIMyl2ev+j5QetcL8ub6PBzr5NEiJ8uc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.dev; spf=pass smtp.mailfrom=linux.dev; dkim=pass (1024-bit key) header.d=linux.dev header.i=@linux.dev header.b=QV+BoYFF; arc=none smtp.client-ip=91.218.175.175
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.dev
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.dev
+	s=arc-20240116; t=1729658991; c=relaxed/simple;
+	bh=f2yXnjITIt85IcBIn57+JEnGX7bPxudFkpc0kQq6JdM=;
+	h=Message-ID:Date:MIME-Version:Cc:Subject:To:References:From:
+	 In-Reply-To:Content-Type; b=RhSt7wf69TIt1WOTuvF7fPp3fLYTUA4W2/E6o6O86CCWbzgbzdWVVAdOJH8K71crxovW7zmZxIcwKIcQB+l6CudDc/Qt22le/9waFdS9KKOsZcXOrITyyLBdM/grEb+j0gUamWZXyCDPSLdAxnjlOexsI2wrcKpafJFLnwy9aTk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=bNpELxqX; arc=none smtp.client-ip=198.175.65.19
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linux.dev header.i=@linux.dev header.b="QV+BoYFF"
-X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
-	t=1729653956;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:
-	 content-transfer-encoding:content-transfer-encoding;
-	bh=dW5t4q7L8xLiWx5eCKLtNbxm+tJPClVqlJ+VFYgf8yk=;
-	b=QV+BoYFF1M8vNmiupz3oGzTCt8fbyxqgKRYl4nT4BiMdjNisa8J3wPrbWcGwi3Rz5ixBFA
-	7fcn9in+vRE4wKLiQVIH8B94/zwUQvXGdhd5qLvHN6VWnCp2s4r1Nqt2uCqO6WWG/uqPqb
-	o7GHu/bjxx3LQHSnZo192MDm+kn121I=
-From: Sui Jingfeng <sui.jingfeng@linux.dev>
-To: Christoph Hellwig <hch@lst.de>,
-	Marek Szyprowski <m.szyprowski@samsung.com>,
-	Robin Murphy <robin.murphy@arm.com>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
-	iommu@lists.linux.dev,
-	linux-kernel@vger.kernel.org,
-	Sui Jingfeng <sui.jingfeng@linux.dev>
-Subject: [PATCH] dma-mapping: dma-map-ops.h: Remove an outdated comment
-Date: Wed, 23 Oct 2024 11:25:44 +0800
-Message-Id: <20241023032544.2809331-1-sui.jingfeng@linux.dev>
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="bNpELxqX"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1729658989; x=1761194989;
+  h=message-id:date:mime-version:cc:subject:to:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=f2yXnjITIt85IcBIn57+JEnGX7bPxudFkpc0kQq6JdM=;
+  b=bNpELxqXbntBYQMfbkP6IQJ7srmoR34pRKYi7JS4tqt1SHsyhH/6OuN/
+   1uuBREPQcfDiNA96JVy3X3irJobfRCG04X+bwyPaETWTCB8OKyktOy2d9
+   TICYQrKqMFpdY3SN2RzypH9v0XBTRdHUEM9aF+TeawvkXer8m/0zRsCbN
+   P2HWO8Icf5Zt/YcywnQ9Jxpio0+h9Sm7klJXqK/GpcWSRRC8lKxbnOWan
+   OMImgZuaYwhSmHbWRobPjEELRhQ4fRNJklBqdQFCOU2xZbTg8DvgpITZP
+   B3LaK6mgNZdqQQW2Oy6+LhlV3+3fnrFc80seZT38ZS6/8EVZR49k4g0QC
+   w==;
+X-CSE-ConnectionGUID: V95cTeytREua+tN6ApFN6A==
+X-CSE-MsgGUID: lYxk9qQ/SyuMn5B5AtY2bw==
+X-IronPort-AV: E=McAfee;i="6700,10204,11222"; a="29104547"
+X-IronPort-AV: E=Sophos;i="6.11,199,1725346800"; 
+   d="scan'208";a="29104547"
+Received: from fmviesa006.fm.intel.com ([10.60.135.146])
+  by orvoesa111.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Oct 2024 21:49:49 -0700
+X-CSE-ConnectionGUID: Xa3vEpUyTyWSg/nBXKZ4jA==
+X-CSE-MsgGUID: Zgp435YRS3em+cbkWuPnqA==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.11,225,1725346800"; 
+   d="scan'208";a="79651501"
+Received: from unknown (HELO [10.238.0.51]) ([10.238.0.51])
+  by fmviesa006-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Oct 2024 21:49:46 -0700
+Message-ID: <813d32e8-e84c-4744-bc2c-b76adc10d00f@linux.intel.com>
+Date: Wed, 23 Oct 2024 12:49:44 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Migadu-Flow: FLOW_OUT
+User-Agent: Mozilla Thunderbird
+Cc: baolu.lu@linux.intel.com, dwmw2@infradead.org, joro@8bytes.org,
+ will@kernel.org, robin.murphy@arm.com, chao.p.peng@intel.com,
+ Kyung Min Park <kyung.min.park@intel.com>
+Subject: Re: [PATCH 2/2] iommu/vt-d: Fix checks in pgtable_walk()
+To: Zhenzhong Duan <zhenzhong.duan@intel.com>, iommu@lists.linux.dev,
+ linux-kernel@vger.kernel.org
+References: <20241022095017.479081-1-zhenzhong.duan@intel.com>
+ <20241022095017.479081-3-zhenzhong.duan@intel.com>
+Content-Language: en-US
+From: Baolu Lu <baolu.lu@linux.intel.com>
+In-Reply-To: <20241022095017.479081-3-zhenzhong.duan@intel.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-The "/* CONFIG_ARCH_HAS_DMA_COHERENCE_H */" was an description about the
-ARCH_HAS_DMA_COHERENCE_H configure option, but it has been removed since
-the dma_default_coherent variable was lifted from the mips architecture
-to the driver core. Therefore it doesn't match any compile guard now.
-Just remove it.
+On 2024/10/22 17:50, Zhenzhong Duan wrote:
+> It's not accurate to dump super page as non-present page,
+> meanwhile bit7 in first level page table entry is PAT bit,
 
-Fixes: 6d4e9a8efe3d ("driver core: lift dma_default_coherent into common code")
-Signed-off-by: Sui Jingfeng <sui.jingfeng@linux.dev>
----
- include/linux/dma-map-ops.h | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+Can you please explain how the 'bit7 in first level page table entry' is
+relevant to the changes made in this patch?
 
-diff --git a/include/linux/dma-map-ops.h b/include/linux/dma-map-ops.h
-index 4abc60f04209..7689f6fb4148 100644
---- a/include/linux/dma-map-ops.h
-+++ b/include/linux/dma-map-ops.h
-@@ -271,7 +271,7 @@ static inline bool dev_is_dma_coherent(struct device *dev)
- {
- 	return true;
- }
--#endif /* CONFIG_ARCH_HAS_DMA_COHERENCE_H */
-+#endif
- 
- /*
-  * Check whether potential kmalloc() buffers are safe for non-coherent DMA.
--- 
-2.34.1
+Also, please make full use of the maximum length of the commit message
+line.
 
+> also pointer pte is never NULL in pgtable_walk() context.
+> 
+> Fixes: 914ff7719e8a ("iommu/vt-d: Dump DMAR translation structure when DMA fault occurs")
+> Signed-off-by: Zhenzhong Duan <zhenzhong.duan@intel.com>
+> ---
+>   drivers/iommu/intel/iommu.c | 4 ++--
+>   1 file changed, 2 insertions(+), 2 deletions(-)
+> 
+> diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
+> index 8288b0ee7a61..fec5cc1147f3 100644
+> --- a/drivers/iommu/intel/iommu.c
+> +++ b/drivers/iommu/intel/iommu.c
+> @@ -707,14 +707,14 @@ static void pgtable_walk(struct intel_iommu *iommu, unsigned long pfn,
+>   	while (1) {
+>   		offset = pfn_level_offset(pfn, level);
+>   		pte = &parent[offset];
+> -		if (!pte || (dma_pte_superpage(pte) || !dma_pte_present(pte))) {
+> +		if (!dma_pte_present(pte)) {
+>   			pr_info("PTE not present at level %d\n", level);
+>   			break;
+>   		}
+>   
+>   		pr_info("pte level: %d, pte value: 0x%016llx\n", level, pte->val);
+>   
+> -		if (level == 1)
+> +		if (level == 1 || dma_pte_superpage(pte))
+>   			break;
+>   
+>   		parent = phys_to_virt(dma_pte_addr(pte));
+
+Thanks,
+baolu
