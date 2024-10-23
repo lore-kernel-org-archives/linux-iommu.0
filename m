@@ -1,323 +1,192 @@
-Received: from mx0b-0031df01.pphosted.com (mx0b-0031df01.pphosted.com [205.220.180.131])
+Received: from NAM12-MW2-obe.outbound.protection.outlook.com (mail-mw2nam12on2058.outbound.protection.outlook.com [40.107.244.58])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CC3E614658F
-	for <iommu@lists.linux.dev>; Wed, 23 Oct 2024 19:07:58 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.180.131
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1729710480; cv=none; b=IOzNu6mNQ7e3AzB8MLvo2DMPeIYjcsLoAju6jHfVPdmFJHOk4ZQPXYGch9hHVEtx1OUjFd+3kbjhH+fo+J6wXiblO1VbwmrQCHvGYW2D1TTA4yB28MA4/0zMOll2Ww5HKYgB3TjVIaFFSBWnCe6LDXc70aDamSxZsiS2DuoExSs=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1729710480; c=relaxed/simple;
-	bh=XFYVvB82WKLdYsaf/OYSdJFDGMA/lnDA1Gl+p7izErk=;
-	h=Message-ID:Date:MIME-Version:Subject:To:CC:References:From:
-	 In-Reply-To:Content-Type; b=gqma2VdsnhR16SDy1PgqDVi9CgmRO8REyeCxjvUTyWcNeQ5UMJP4js8hDJ5KtqclPBLDCNfu5PY9y2lS8oh+1t0u0SGLRjyrshjQFL+BMTAGc2cD73fYkJFuq9NkbkxB+mdImeRt0M+Cd8j5MkEsm+zMyoQORtNTNm8YYDDFZxI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com; spf=pass smtp.mailfrom=quicinc.com; dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b=jHWR6aDM; arc=none smtp.client-ip=205.220.180.131
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=quicinc.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6CD5F1D1E74
+	for <iommu@lists.linux.dev>; Wed, 23 Oct 2024 20:16:04 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.244.58
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1729714565; cv=fail; b=eaoa0X2rxLnPsWPXsTWwimivJwKaiBrD9FTPpPz1wsk+N47l3wEXwewYI8OoY/lNfHw1N0X/uVUOPH65Y8Fumzx8Ub2YJbur07ZqO+5c32o6GcZwZFW6Bk/rQEZdse9Hk0e8nRVvi6NSDlDqGLuI32HI8RpY4ZfrfdQDB84wAXE=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1729714565; c=relaxed/simple;
+	bh=YlKb3kEgV3OYdo6FfAK9eo04PQ+uQX1g8qAxtDmZUBY=;
+	h=Date:From:To:CC:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=OdQ0EgxtsKXCxqE+HwX/dbxmseq5gil2c/E4OzGeGaoUjk2uXy4YXklwmW6h83G61nEASQa1lAPTpFsnlzbVqKzsxODosDlGLQWas9J64S3j5+r1N1JK3nq4+KBvpJKP6KTUxM0SmR2QH47+VN42szkpRgdecXQdsz9LScsFefU=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=Sxn7IxGE; arc=fail smtp.client-ip=40.107.244.58
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b="jHWR6aDM"
-Received: from pps.filterd (m0279870.ppops.net [127.0.0.1])
-	by mx0a-0031df01.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 49N9hOYe017380;
-	Wed, 23 Oct 2024 19:07:38 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=quicinc.com; h=
-	cc:content-transfer-encoding:content-type:date:from:in-reply-to
-	:message-id:mime-version:references:subject:to; s=qcppdkim1; bh=
-	ixPboXFLncjCGfcn1Px7/dyiEtdHOB4ARrQRJIwkNrg=; b=jHWR6aDMHlg8B0Pl
-	F/iIeTtU6TlLVTqk3PXadcle7I8mnxZ2ga9Bq/OLU0zaaWin3OZARbzudIDpNza7
-	MpIUgXpjMBgrw37EWC6CmFPPL+lEtfdKXNlYJoFqk3cJZeNDAtRudlOycFDdhx6Y
-	GD1SBudA9c4SIO/LzxP9pGpIy5EgQ4DoePElsLePsUaB6EsqZP1a/0Riw9WHZc4V
-	HH8gGyopHFl3faKXbJQSMSHxKSJHqkJRIcYlfvR/iIGvZqHhuVntcI29iapokkwN
-	R/LzhVtiTsYVF7qok6BDahgTHSjJw9uRFh2NTNhD6+HT6Z1+RF5TR+vGQtPxjpC6
-	rSkwQg==
-Received: from nasanppmta01.qualcomm.com (i-global254.qualcomm.com [199.106.103.254])
-	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 42em3wb8hk-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Wed, 23 Oct 2024 19:07:38 +0000 (GMT)
-Received: from nasanex01b.na.qualcomm.com (nasanex01b.na.qualcomm.com [10.46.141.250])
-	by NASANPPMTA01.qualcomm.com (8.18.1.2/8.18.1.2) with ESMTPS id 49NJ7aJ9002251
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Wed, 23 Oct 2024 19:07:36 GMT
-Received: from [10.216.33.50] (10.80.80.8) by nasanex01b.na.qualcomm.com
- (10.46.141.250) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1544.9; Wed, 23 Oct
- 2024 12:07:32 -0700
-Message-ID: <c8bdc8e3-91ca-4c1e-81e0-e98cd6b43951@quicinc.com>
-Date: Thu, 24 Oct 2024 00:37:24 +0530
+	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="Sxn7IxGE"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=wxl/MuVW6bMu1Trr90Fw0wECJcN2txeCSaMvbOYMZ2p/PUWNPyVp3dH/S/W9r/zkerhPUHvv0YkT3BX/tdknirjHUBd5aaTlQBfSlkvFVsdjjJxb3x//sW1jZivJRr6INtWrCje21OEgZR+lRcR3hEPwskAlF76X2To3Yg4PlS0nRgrpaQ0p8AKtfHkx6gsPfFpdAFTpotWx1/DD0tdovaXYBkTPFbNRdK1ZsgMaGXBt45qMfnPoJR3VCC1GH2q/rLP30laeE3m5yN9VRYDj8RoS920nZbxDxGwtcsefVL8eetgd5+vUyNcywV6f6RwDX8czjV7btdujcPGd67S/lg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=5wQfcuzSL4HSBQlY4o1O6czrlZojp8FMKFnXwCAsHwI=;
+ b=LDxfzsVI76UQ0KV+4fOE2voF6otlN98qKWP/KLItITOsUXKVvl/2SQnKJ6sZVlwtbzGlPuwRlcnyqnt7FStgf3EXZWfdxZR3MUjdGJz1dZPQOygd1fJyxFFEsC9PCNeV6TwZQN8jXRAAnpHCbRPkzQoJp33ZiO6yy3dLKlvbX+elCQGm0asB/TPVcRWNmCCJr5es7bLF1/VjzzNZr4mNzOcspzMjURs2nYfArUEvV4yxvMOQ8m9wsrbwO09w/kJUmTS9NMeTvUeN1bWq6EHfL8LdTNyv5UMlMKDFzhnZRO8lZhiY9AAXBLVLPSPiInjiiWBI0pgCgA6tRdl1jqn8Yg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 216.228.117.160) smtp.rcpttodomain=oracle.com smtp.mailfrom=nvidia.com;
+ dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
+ dkim=none (message not signed); arc=none (0)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=5wQfcuzSL4HSBQlY4o1O6czrlZojp8FMKFnXwCAsHwI=;
+ b=Sxn7IxGEmPDvVt3VLYkN5h9FBcxFEFwJoC1atdHfPlPs36wnEndt43505ZmXzCMtiJC7+XoNlJGWM3h3BvGt7ivgw7ZdvCdVZidr9XCU/53i4WVfjSRiS2VMfIjeRYGxV8xDyrNGs1VvDjyT8EwahgLh+6BHPoRfZbC9ti+yinBCUGAs/8t9WcBzYNwpnykI+KJrQvyAnKCjOVSsLU3bCg1M25vMON43j+sVr617TgZ1OFIcJOncnwRE97px794VhlEFdnDSfgcyxfeDkQVK8KAFdM0GentgJMPMSi6+AfhttvZxBGSE4r5tRmwzuRfTWXXni5VLR51nEIXNtFxjOw==
+Received: from PH0P220CA0010.NAMP220.PROD.OUTLOOK.COM (2603:10b6:510:d3::20)
+ by SA1PR12MB8966.namprd12.prod.outlook.com (2603:10b6:806:385::16) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.8069.28; Wed, 23 Oct
+ 2024 20:15:59 +0000
+Received: from CY4PEPF0000EE3D.namprd03.prod.outlook.com
+ (2603:10b6:510:d3:cafe::80) by PH0P220CA0010.outlook.office365.com
+ (2603:10b6:510:d3::20) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.8093.16 via Frontend
+ Transport; Wed, 23 Oct 2024 20:15:59 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.117.160)
+ smtp.mailfrom=nvidia.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=nvidia.com;
+Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
+ 216.228.117.160 as permitted sender) receiver=protection.outlook.com;
+ client-ip=216.228.117.160; helo=mail.nvidia.com; pr=C
+Received: from mail.nvidia.com (216.228.117.160) by
+ CY4PEPF0000EE3D.mail.protection.outlook.com (10.167.242.15) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.8093.14 via Frontend Transport; Wed, 23 Oct 2024 20:15:59 +0000
+Received: from rnnvmail202.nvidia.com (10.129.68.7) by mail.nvidia.com
+ (10.129.200.66) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1544.4; Wed, 23 Oct
+ 2024 13:15:43 -0700
+Received: from rnnvmail205.nvidia.com (10.129.68.10) by rnnvmail202.nvidia.com
+ (10.129.68.7) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1544.4; Wed, 23 Oct
+ 2024 13:15:42 -0700
+Received: from Asurada-Nvidia (10.127.8.9) by mail.nvidia.com (10.129.68.10)
+ with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1544.4 via Frontend
+ Transport; Wed, 23 Oct 2024 13:15:42 -0700
+Date: Wed, 23 Oct 2024 13:15:40 -0700
+From: Nicolin Chen <nicolinc@nvidia.com>
+To: Steve Sistare <steven.sistare@oracle.com>
+CC: <iommu@lists.linux.dev>, Jason Gunthorpe <jgg@nvidia.com>, Kevin Tian
+	<kevin.tian@intel.com>
+Subject: Re: [PATCH V5 9/9] iommufd: map file selftest
+Message-ID: <ZxlZbBP3XE6alSPe@Asurada-Nvidia>
+References: <1729630838-24586-1-git-send-email-steven.sistare@oracle.com>
+ <1729630838-24586-10-git-send-email-steven.sistare@oracle.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v16 0/5] iommu/arm-smmu: introduction of ACTLR
- implementation for Qualcomm SoCs
-To: <robdclark@gmail.com>, <will@kernel.org>, <robin.murphy@arm.com>,
-        <joro@8bytes.org>, <jgg@ziepe.ca>, <jsnitsel@redhat.com>,
-        <robh@kernel.org>, <krzysztof.kozlowski@linaro.org>,
-        <quic_c_gdjako@quicinc.com>, <dmitry.baryshkov@linaro.org>
-CC: <iommu@lists.linux.dev>, <linux-arm-msm@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>, <linux-kernel@vger.kernel.org>
-References: <20241008125410.3422512-1-quic_bibekkum@quicinc.com>
-Content-Language: en-US
-From: Bibek Kumar Patro <quic_bibekkum@quicinc.com>
-In-Reply-To: <20241008125410.3422512-1-quic_bibekkum@quicinc.com>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
- nasanex01b.na.qualcomm.com (10.46.141.250)
-X-QCInternal: smtphost
-X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
-X-Proofpoint-GUID: qBxp4ICLGut2SPYvkejF8QrimnRTkicQ
-X-Proofpoint-ORIG-GUID: qBxp4ICLGut2SPYvkejF8QrimnRTkicQ
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.293,Aquarius:18.0.1039,Hydra:6.0.680,FMLib:17.12.60.29
- definitions=2024-09-06_09,2024-09-06_01,2024-09-02_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 spamscore=0 malwarescore=0
- mlxscore=0 lowpriorityscore=0 phishscore=0 impostorscore=0 clxscore=1011
- priorityscore=1501 mlxlogscore=999 suspectscore=0 bulkscore=0 adultscore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.19.0-2409260000
- definitions=main-2410230122
+Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: inline
+In-Reply-To: <1729630838-24586-10-git-send-email-steven.sistare@oracle.com>
+X-NV-OnPremToCloud: ExternallySecured
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: CY4PEPF0000EE3D:EE_|SA1PR12MB8966:EE_
+X-MS-Office365-Filtering-Correlation-Id: 2a17080f-6098-4894-9eff-08dcf39f826d
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam:
+	BCL:0;ARA:13230040|376014|36860700013|1800799024|82310400026;
+X-Microsoft-Antispam-Message-Info:
+	=?us-ascii?Q?JwFxZY/XMm+GM61AhHJ8JaiEV0EQNWF3SLGQdMyN3CpmyVl6l4S8pH8jQYkp?=
+ =?us-ascii?Q?3DBYr9zVNTpFYC0nGRKbTuXRM7xHGdQ+r+U/Duen+YV+7sCU+pNQLGMboAC7?=
+ =?us-ascii?Q?o7WEuE7Sn6LN9XihOaKTo6Obd/Xn+G5oOcrG/U6VKrLvkvoCW9e3dXFxNjrt?=
+ =?us-ascii?Q?15CH2hIw0j27iHDYGqTVYlldXVgYhJd/6Ui2hQ1kFa3NBRzdZcAstkeveaYT?=
+ =?us-ascii?Q?/9Qsrqn13lk9FXSRf6FEkawTtB3ykwTbNNcTOk/CNqKLqOdkP9c/DZEizwYM?=
+ =?us-ascii?Q?7KFg1gfo9eb7MI3wegmqiagxhd4KYJMJm1VWPc6bvFD+Y2VFpaRLMYkdsJ9z?=
+ =?us-ascii?Q?5ahvkZaSKJ+iLPOPRscCQUVEnUcfpxt9ZHuEPxOPtLPOK6w32uiR0zR1tpEM?=
+ =?us-ascii?Q?dhOhZM2H2ivwZJ0KK8QQr6vZaZV+bYTwm+swbBS3KSpnDVkxrSZGAGprKKMA?=
+ =?us-ascii?Q?GzPpYq+cpe9e8EsFozctHNRNCvasLAT5NobBME2XjkTvElBLgefLeOIufygm?=
+ =?us-ascii?Q?YqDc7XSeWUOzTaVOrLeU6Lsof1JcDES2e82UVG5emFuH/DdtOFUH5JwXkfkx?=
+ =?us-ascii?Q?Urz6TzpAZL89678bWZ+umJQURpGLfOSia9U6INBxNsuaoXuCK9XpKcrx+AD4?=
+ =?us-ascii?Q?xROoIcP6LGGTcJNf8FpY7wqxVJmHf/2d7HE9TMhoDC9OMM7cjOgXuTHQ3kbb?=
+ =?us-ascii?Q?zV1EUlG4LGDtTEiM7XdJzrQNDsOAHC6gjStlG7sbHCI0kEXmYl7k4OKWvph0?=
+ =?us-ascii?Q?I3GZIJZQ5qg/lgR+L9q4DOPrtaYoV87DHFEtUCu4FGwiq4rLYjKsMIDOwDgE?=
+ =?us-ascii?Q?pEZwRvPkAddPXZIyRDHRPRTQ5rDZYWl9vbl4uRTwJMLGfVh9bSKlMq6jP54f?=
+ =?us-ascii?Q?lzZG9OLyhmH8EzDjlXolpFYOlVW3jhHXoANsDU2tZf0U+Qou3+qWBwUhJ7NV?=
+ =?us-ascii?Q?BlQUFN42iTu27mwuSGG0d2CswhWW6VZER0S1/1dZCu4UUxAeY7vy8l0zJ6Bj?=
+ =?us-ascii?Q?XPWqmVkAftWiB4NrHqZ413w7KQTFjH6iriWuJs9n112gqq3Npo5WjavRCP7M?=
+ =?us-ascii?Q?EUNkUyQfPvDe2QgdTLtMbDx5O5mXr7GXwRuub1a+CIFPtqF7P6hDTf1XZPDn?=
+ =?us-ascii?Q?/GhVEwcbEqfqlRNRplFOHq5XNu2N0H4bbj4zgI3PU5ldGb7DU0C9HUcaFGnx?=
+ =?us-ascii?Q?HmXvYu4xMl1VaybuLXcQ2SMwXuhxrGrd8I3Pm3u5EvKSZXXwWHVmLsmfhyxS?=
+ =?us-ascii?Q?Pd+EPaFKP9MUTMtMVgpqP3buDMUnP53YBVZQQRZyxP5iYxtx5ryUT4l+t/aB?=
+ =?us-ascii?Q?NSsNRUUK2/iLbOhC1KdgkUe8SnsYMRU5o7rn3KrYlQRPp4kyPiDVmxc2I1tq?=
+ =?us-ascii?Q?k5r1RSzssslwDsX+qg0qxklpONo/R2JhhIBOqJb9Vyld79s8gA=3D=3D?=
+X-Forefront-Antispam-Report:
+	CIP:216.228.117.160;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc6edge1.nvidia.com;CAT:NONE;SFS:(13230040)(376014)(36860700013)(1800799024)(82310400026);DIR:OUT;SFP:1101;
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 23 Oct 2024 20:15:59.2245
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: 2a17080f-6098-4894-9eff-08dcf39f826d
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.117.160];Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-AuthSource: CY4PEPF0000EE3D.namprd03.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SA1PR12MB8966
 
-Hi Rob,
+On Tue, Oct 22, 2024 at 02:00:38PM -0700, Steve Sistare wrote:
 
-Just wanted to check if anything else need to be addressed here to gain
-further attention on this series.
+> Add test cases to exercise IOMMU_IOAS_MAP_FILE.
+> 
+> Signed-off-by: Steve Sistare <steven.sistare@oracle.com>
 
-Thanks & regards,
-Bibek
+LGTM overall.
 
-On 10/8/2024 6:24 PM, Bibek Kumar Patro wrote:
-> This patch series consist of six parts and covers the following:
+Reviewed-by: Nicolin Chen <nicolinc@nvidia.com>
+
+With some nits:
+
+> ---
+>  tools/testing/selftests/iommu/iommufd.c          | 136 ++++++++++++++++++++---
+>  tools/testing/selftests/iommu/iommufd_fail_nth.c |  39 +++++++
+>  tools/testing/selftests/iommu/iommufd_utils.h    |  57 ++++++++++
+>  3 files changed, 217 insertions(+), 15 deletions(-)
 > 
-> 1. Re-enable context caching for Qualcomm SoCs to retain prefetcher
->     settings during reset and runtime suspend.
+> diff --git a/tools/testing/selftests/iommu/iommufd.c b/tools/testing/selftests/iommu/iommufd.c
+> index 4927b9a..3d62951 100644
+> --- a/tools/testing/selftests/iommu/iommufd.c
+> +++ b/tools/testing/selftests/iommu/iommufd.c
+> @@ -3,6 +3,7 @@
+>  #include <stdlib.h>
+>  #include <sys/mman.h>
+>  #include <sys/eventfd.h>
+> +#include <asm/unistd.h>
+
+Can we add it to the top of the list for an alphabetical order?
+
+>  TEST_F(iommufd_mock_domain, ro_unshare)
+>  {
+>         uint8_t *buf;
+>         __u64 iova;
+>         int fd;
 > 
-> 2. Remove cfg inside qcom_smmu structure and replace it with single
->     pointer to qcom_smmu_match_data avoiding replication of multiple
->     members from same.
-> 
-> 3. Add support for ACTLR PRR bit setup via adreno-smmu-priv interface.
-> 
-> 4. Introduce intital set of driver changes to implement ACTLR register
->     for custom prefetcher settings in Qualcomm SoCs.
-> 
-> 5. Add ACTLR data and support for qcom_smmu_500.
-> 
-> Changes in v16 from v15:
->   - Incorporate Dimitry's suggestion on patch 4/5 to use dev_dbg instead of dev_notice.
->   - Fix kernel test robot warning [1] coming for 32bit architecture configuration.
->   - Updatingthe tags
->   [1]: https://lore.kernel.org/all/202409230343.Q8KnYl2w-lkp@intel.com/
->   Link to v15:
->   https://lore.kernel.org/all/20240920155813.3434021-1-quic_bibekkum@quicinc.com/
-> 
-> Changes in v15 from v14:
->   - As discussed with Robin and Dmitry modify the actlr table and logic to use
->     compatible string instead of sid, mask for device matching which is
->     similar to qcom_smmu_client_of_match mechanism.
->   - Expand the comment in qcom_smmu500_reset to document reason why CPRE bit is re-enabled again
->     after arm_mmu500_reset resets the bit.
->   - Rearrange the series in order to keep prefetch setting patches in the end.
->   Link to v14:
->   https://lore.kernel.org/all/20240816174259.2056829-1-quic_bibekkum@quicinc.com/
-> 
-> Changes in v14 from v13:
->   Patch 6/6:
->   - As discussed incorprate changes to carry out PRR implementation only for
->     targets based on MMU-500 by using compat string based SMMU version detection.
->   - Split the set_actlr interface into two separate interface namely set_prr_bit
->     and set_prr_addr to set the prr enable bit and prr page address resepectively.
->   Patch 3/6:
->    - Fix a bug in gfx actlr_config which is uncovered while testing the gfx actlr setting in sc7280
->      during PRR experiment which prevented clients on certain sids of gfx smmmu to be skipped during
->      setting up of the ACTLR values : Fix involves swapping the arguments passed in smr_is_subset to make
->       device smr <from devicetree> a subset of actlr_config table entries < defined in the driver>.
->   Patch 4/6, 5/6:
->    - Sort the actlr table values in increasing order of the SIDs.
->   Link to v13:
->   https://lore.kernel.org/all/20240628140435.1652374-1-quic_bibekkum@quicinc.com/
-> 
-> Changes in v13 from v12:
->   - Fix the compilation issues reported by kernel test robot [1].
->   [1]: https://lore.kernel.org/all/202406281241.xEX0TWjt-lkp@intel.com/#t
->   Link to v12:
->   https://lore.kernel.org/all/20240626143020.3682243-1-quic_bibekkum@quicinc.com/
-> 
-> Changes in v12 from v11:
->   Changes to incorporate suggestion from Rob:
->   - Fix the set and reset logic for prr bit as pointed out in v11-6/6.
->   - Rename set_actlr_bit function name to set_prr.
->   - Add extension for PRR name as Partially-Resident-Region in comments
->     for set_prr function.
->   - Add few missing sids for sc7280 in patch-5/6.
->   Link to v11:
->   https://lore.kernel.org/all/20240605121713.3596499-1-quic_bibekkum@quicinc.com/
-> 
-> Changes in v11 from v10:
->   - Include a new patch 6/6 to add support for ACTLR PRR bit
->     through adreno-smmu-priv interface as suggested by Rob and Dmitry.
->   Link to v10:
->   https://lore.kernel.org/all/20240524131800.2288259-1-quic_bibekkum@quicinc.com/
-> 
-> Changes in v10 from v9:
->   - Added reviewed-by tags 1/5,2/5,3/5.
->   Changes incorporated:
->   - Remove redundant PRR bit setting from gfx actlr table(patch 4/5,5/5)
->     as this bit needs special handling in the gfx driver along with
->     the associated register settings.
->   Link to discussion on PRR bit:
->   https://lore.kernel.org/all/f2222714-1e00-424e-946d-c314d55541b8@quicinc.com/
->   Link to v9:
->   https://lore.kernel.org/all/20240123144543.9405-1-quic_bibekkum@quicinc.com/
-> 
-> Changes in v9 from v8:
->   Changes to incorporate suggestions from Konrad as follows:
->   - Re-wrap struct members of actlr_variant in patch 4/5,5/5
->     in a cleaner way.
->   - Move actlr_config members to the header.
->   Link to v8:
->   https://lore.kernel.org/all/20240116150411.23876-1-quic_bibekkum@quicinc.com/
-> 
-> Changes in v8 from v7:
->   - Added reviewed-by tags on patch 1/5, 2/5.
->   Changes to incorporate suggestions from Pavan and Konrad:
->   - Remove non necessary extra lines.
->   - Use num_smmu and num_actlrcfg to store the array size and use the
->     same to traverse the table and save on sentinel space along with
->     indentation levels.
->   - Refactor blocks containing qcom_smmu_set_actlr to remove block
->     repetition in patch 3/5.
->   - Change copyright year from 2023 to 2022-2023 in patch 3/5.
->   - Modify qcom_smmu_match_data.actlrvar and actlr_variant.actlrcfg to
->     const pointer to a const resource.
->   - use C99 designated initializers and put the address first.
->   Link to v7:
->   https://lore.kernel.org/all/20240109114220.30243-1-quic_bibekkum@quicinc.com/
-> 
-> Changes in v7 from v6:
->   Changes to incorporate suggestions from Dmitry as follows:
->   - Use io_start address instead of compatible string to identify the
->     correct instance by comparing with smmu start address and check for
->     which smmu the corresponding actlr table is to be picked.
-> Link to v6:
-> https://lore.kernel.org/all/20231220133808.5654-1-quic_bibekkum@quicinc.com/
-> 
-> Changes in v6 from v5:
->   - Remove extra Suggested-by tags.
->   - Add return check for arm_mmu500_reset in 1/5 as discussed.
-> Link to v5:
-> https://lore.kernel.org/all/20231219135947.1623-1-quic_bibekkum@quicinc.com/
-> 
-> Changes in v5 from v4:
->   New addition:
->   - Modify copyright year in arm-smmu-qcom.h to 2023 from 2022.
->   Changes to incorporate suggestions from Dmitry as follows:
->   - Modify the defines for prefetch in (foo << bar) format
->     as suggested.(FIELD_PREP could not be used in defines
->     is not inside any block/function)
->   Changes to incorporate suggestions from Konrad as follows:
->   - Shift context caching enablement patch as 1/5 instead of 5/5 to
->     be picked up as independent patch.
->   - Fix the codestyle to orient variables in reverse xmas tree format
->     for patch 1/5.
->   - Fix variable name in patch 1/5 as suggested.
->   Link to v4:
-> https://lore.kernel.org/all/20231215101827.30549-1-quic_bibekkum@quicinc.com/
-> 
-> Changes in v4 from v3:
->   New addition:
->   - Remove actlrcfg_size and use NULL end element instead to traverse
->     the actlr table, as this would be a cleaner approach by removing
->     redundancy of actlrcfg_size.
->   - Renaming of actlr set function to arm_smmu_qcom based proprietary
->     convention.
->   - break from loop once sid is found and ACTLR value is initialized
->     in qcom_smmu_set_actlr.
->   - Modify the GFX prefetch value separating into 2 sensible defines.
->   - Modify comments for prefetch defines as per SMMU-500 TRM.
->   Changes to incorporate suggestions from Konrad as follows:
->   - Use Reverse-Christmas-tree sorting wherever applicable.
->   - Pass arguments directly to arm_smmu_set_actlr instead of creating
->     duplicate variables.
->   - Use array indexing instead of direct pointer addressed by new
->     addition of eliminating actlrcfg_size.
->   - Switch the HEX value's case from upper to lower case in SC7280
->     actlrcfg table.
->   Changes to incorporate suggestions from Dmitry as follows:
->   - Separate changes not related to ACTLR support to different commit
->     with patch 5/5.
->   - Using pointer to struct for arguments in smr_is_subset().
->   Changes to incorporate suggestions from Bjorn as follows:
->   - fix the commit message for patch 2/5 to properly document the
->     value space to avoid confusion.
->   Fixed build issues reported by kernel test robot [1] for
->   arm64-allyesconfig [2].
->   [1]: https://lore.kernel.org/all/202312011750.Pwca3TWE-lkp@intel.com/
->   [2]:
-> https://download.01.org/0day-ci/archive/20231201/202312011750.Pwca3TWE-lkp@intel.com/config
->   Link to v3:
-> https://lore.kernel.org/all/20231127145412.3981-1-quic_bibekkum@quicinc.com/
-> 
-> Changes in v3 from v2:
->   New addition:
->   - Include patch 3/4 for adding ACTLR support and data for SC7280.
->   - Add driver changes for actlr support in gpu smmu.
->   - Add target wise actlr data and implementation ops for gpu smmu.
->   Changes to incorporate suggestions from Robin as follows:
->   - Match the ACTLR values with individual corresponding SID instead
->     of assuming that any SMR will be programmed to match a superset of
->     the data.
->   - Instead of replicating each elements from qcom_smmu_match_data to
->     qcom_smmu structre during smmu device creation, replace the
->     replicated members with qcom_smmu_match_data structure inside
->     qcom_smmu structre and handle the dereference in places that
->     requires them.
->   Changes to incorporate suggestions from Dmitry and Konrad as follows:
->   - Maintain actlr table inside a single structure instead of
->     nested structure.
->   - Rename prefetch defines to more appropriately describe their
->     behavior.
->   - Remove SM8550 specific implementation ops and roll back to default
->     qcom_smmu_500_impl implementation ops.
->   - Add back the removed comments which are NAK.
->   - Fix commit description for patch 4/4.
->   Link to v2:
-> https://lore.kernel.org/all/20231114135654.30475-1-quic_bibekkum@quicinc.com/
-> 
-> Changes in v2 from v1:
->   - Incorporated suggestions on v1 from Dmitry,Konrad,Pratyush.
->   - Added defines for ACTLR values.
->   - Linked sm8550 implementation structure to corresponding
->     compatible string.
->   - Repackaged actlr value set implementation to separate function.
->   - Fixed indentation errors.
->   - Link to v1:
-> https://lore.kernel.org/all/20231103215124.1095-1-quic_bibekkum@quicinc.com/
-> 
-> Changes in v1 from RFC:
->   - Incorporated suggestion form Robin on RFC
->   - Moved the actlr data table into driver, instead of maintaining
->     it inside soc specific DT and piggybacking on exisiting iommus
->     property (iommu = <SID, MASK, ACTLR>) to set this value during
->     smmu probe.
->   - Link to RFC:
-> https://lore.kernel.org/all/a01e7e60-6ead-4a9e-ba90-22a8a6bbd03f@quicinc.com/
-> 
-> Bibek Kumar Patro (5):
->    iommu/arm-smmu: re-enable context caching in smmu reset operation
->    iommu/arm-smmu: refactor qcom_smmu structure to include single pointer
->    iommu/arm-smmu: add support for PRR bit setup
->    iommu/arm-smmu: introduction of ACTLR for custom prefetcher settings
->    iommu/arm-smmu: add ACTLR data and support for qcom_smmu_500
-> 
->   .../iommu/arm/arm-smmu/arm-smmu-qcom-debug.c  |   2 +-
->   drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c    | 134 +++++++++++++++++-
->   drivers/iommu/arm/arm-smmu/arm-smmu-qcom.h    |   3 +-
->   drivers/iommu/arm/arm-smmu/arm-smmu.h         |   2 +
->   include/linux/adreno-smmu-priv.h              |  10 +-
->   5 files changed, 144 insertions(+), 7 deletions(-)
-> 
-> --
-> 2.34.1
-> 
+> +       if (variant->file)
+> +               SKIP(return, "redundant test");
+
+Why is it redundant? A line of comments maybe?
+
+> +/* iopt_area_fill_domains() and iopt_area_fill_domain() */
+> +TEST_FAIL_NTH(basic_fail_nth, map_file_domain)
+> +{
+[...]
+> +       if (_test_ioctl_ioas_map_file(self->fd, ioas_id, mfd, 0, 262144, &iova,
+> +                                IOMMU_IOAS_MAP_WRITEABLE |
+> +                                        IOMMU_IOAS_MAP_READABLE))
+[...]
+> +#define test_ioctl_ioas_map_id_file(ioas_id, mfd, start, length, iova_p)     \
+> +       ASSERT_EQ(0, _test_ioctl_ioas_map_file(self->fd, ioas_id, mfd,       \
+> +                                         start, length, iova_p,             \
+> +                                         IOMMU_IOAS_MAP_WRITEABLE |         \
+> +                                                 IOMMU_IOAS_MAP_READABLE))
+> +
+
+The indentations are a bit odd here. Would you please do git-
+clang-format to fix them?
+
+Thanks
+Nicolin
