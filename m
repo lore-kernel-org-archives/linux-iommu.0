@@ -1,165 +1,76 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.13])
+Received: from out-175.mta0.migadu.com (out-175.mta0.migadu.com [91.218.175.175])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C8A1885947
-	for <iommu@lists.linux.dev>; Wed, 23 Oct 2024 03:13:02 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.13
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8EAE112CD96
+	for <iommu@lists.linux.dev>; Wed, 23 Oct 2024 03:25:58 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=91.218.175.175
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1729653184; cv=none; b=c34m1UkB2jLL8wRTkoSAIK8FsbpFKbO8TcHqW5ylsuTFvSg2zcVSyPUHKp8OvtWIgyqCRpgWpPUvXrm+6vA1xzTFMpiGkgypkUHkIU5CgERbeHOAj315VwvcTSDVW9IwfEI+mz0LmzqW06uA1GWjKRNZErInUT4PqRbaIJGtYwA=
+	t=1729653961; cv=none; b=gDpW6u1EhS3Nn8927vUSoQqphbpo3ByWlc9rVh6ErM1VitKErz7jTHk5q10AU4+jLiRezEA/3/mOI06BHmB41k5CNthq3uZLB0icuE9o6+7+dL9iAuai6gfJ0EfEV5XOmy7iBg3zLd+llrvUvjC1mSVg0+HYfa9++uegcM4wAqc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1729653184; c=relaxed/simple;
-	bh=ovOUeYGD+9xfQijHXUxKSMebMEDWnSXXiNZVdcVnk3k=;
-	h=Message-ID:Date:MIME-Version:Cc:Subject:To:References:From:
-	 In-Reply-To:Content-Type; b=N+SPNfquqP7B0rEr9/DKChDhlGZ60ijEv/uVM1BdEYav6YVBmPWwqHa/9Z2TEzFi67IvIJoFY7OJyK2xYDbyGXjWu7nPfZCnfX9+gBrF0NkkyVrtWJsGk5XIh8gI6D+sm+kA8AyIDxXjRuVe7v+hR+L+ll3qlOA2rH2aQO9s784=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=RxvbV0Mj; arc=none smtp.client-ip=192.198.163.13
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
+	s=arc-20240116; t=1729653961; c=relaxed/simple;
+	bh=0xDWPvnfbgrU91PYgKeB/1iKFUnwc8D+YKpWNGw1P1U=;
+	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version; b=rN8S26uYwHPif/b1fQMcW6gFzl91EzXeZjGdAuZmHRoeKiCr4SyNK7AMYHEFAtMdxnQWSHzwU8FSh9lGB9WxCAP8aTz8r485+4b3sE6I35K5OBHnqvpQ1q577qFyMwUzYAFAomLVS8IWIMyl2ev+j5QetcL8ub6PBzr5NEiJ8uc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.dev; spf=pass smtp.mailfrom=linux.dev; dkim=pass (1024-bit key) header.d=linux.dev header.i=@linux.dev header.b=QV+BoYFF; arc=none smtp.client-ip=91.218.175.175
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.dev
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.dev
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="RxvbV0Mj"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1729653183; x=1761189183;
-  h=message-id:date:mime-version:cc:subject:to:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=ovOUeYGD+9xfQijHXUxKSMebMEDWnSXXiNZVdcVnk3k=;
-  b=RxvbV0MjBLWEDucW3JxPJuvtTm/JObNrMi8JzRNdynurG8f473RXm1x/
-   puDSJIWP34Q2+gs1TB25upVlPutrK9RjHyKaaW1HiiVy+MFpmjQhDaff6
-   hSAm16ycnpltUIACHisc0hdy7LccbDdZ1J1JM7mQ1FHgQOnzJ0dD+8boL
-   OGMk1+FRWzGjR7h7Iw4EN++48dqMDCgugpS1rVUUkvTDe8z06dXf9NQDc
-   mH476AI5zArEgDSknM/zMcELitJsXbuVAZtL/MZydInt8LEWpdNUwjTuU
-   5qxH3V90dPBtSHT8qRfA6W7vhXjrWvk/ax8xModzUMhCseT0eCm2LvMIk
-   Q==;
-X-CSE-ConnectionGUID: q6M5KLEBRXSm60OU4Xt5SA==
-X-CSE-MsgGUID: NR6fCEYLTgW/vHzEzDVBCQ==
-X-IronPort-AV: E=McAfee;i="6700,10204,11233"; a="32077452"
-X-IronPort-AV: E=Sophos;i="6.11,223,1725346800"; 
-   d="scan'208";a="32077452"
-Received: from orviesa006.jf.intel.com ([10.64.159.146])
-  by fmvoesa107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Oct 2024 20:13:02 -0700
-X-CSE-ConnectionGUID: Jh4nGejGTLSRPInxziSPtw==
-X-CSE-MsgGUID: xk/nBIi6T2K29186cBBFiQ==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.11,223,1725346800"; 
-   d="scan'208";a="80249089"
-Received: from unknown (HELO [10.238.0.51]) ([10.238.0.51])
-  by orviesa006-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Oct 2024 20:13:00 -0700
-Message-ID: <b524d09e-62ea-41ca-904c-e9c94aef2b76@linux.intel.com>
-Date: Wed, 23 Oct 2024 11:12:57 +0800
+	dkim=pass (1024-bit key) header.d=linux.dev header.i=@linux.dev header.b="QV+BoYFF"
+X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
+	t=1729653956;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:
+	 content-transfer-encoding:content-transfer-encoding;
+	bh=dW5t4q7L8xLiWx5eCKLtNbxm+tJPClVqlJ+VFYgf8yk=;
+	b=QV+BoYFF1M8vNmiupz3oGzTCt8fbyxqgKRYl4nT4BiMdjNisa8J3wPrbWcGwi3Rz5ixBFA
+	7fcn9in+vRE4wKLiQVIH8B94/zwUQvXGdhd5qLvHN6VWnCp2s4r1Nqt2uCqO6WWG/uqPqb
+	o7GHu/bjxx3LQHSnZo192MDm+kn121I=
+From: Sui Jingfeng <sui.jingfeng@linux.dev>
+To: Christoph Hellwig <hch@lst.de>,
+	Marek Szyprowski <m.szyprowski@samsung.com>,
+	Robin Murphy <robin.murphy@arm.com>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
+	iommu@lists.linux.dev,
+	linux-kernel@vger.kernel.org,
+	Sui Jingfeng <sui.jingfeng@linux.dev>
+Subject: [PATCH] dma-mapping: dma-map-ops.h: Remove an outdated comment
+Date: Wed, 23 Oct 2024 11:25:44 +0800
+Message-Id: <20241023032544.2809331-1-sui.jingfeng@linux.dev>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Cc: baolu.lu@linux.intel.com, dwmw2@infradead.org, joro@8bytes.org,
- will@kernel.org, robin.murphy@arm.com, chao.p.peng@intel.com
-Subject: Re: [PATCH 1/2] iommu/vt-d: Fix checks in dmar_fault_dump_ptes()
-To: Zhenzhong Duan <zhenzhong.duan@intel.com>, iommu@lists.linux.dev,
- linux-kernel@vger.kernel.org
-References: <20241022095017.479081-1-zhenzhong.duan@intel.com>
- <20241022095017.479081-2-zhenzhong.duan@intel.com>
-Content-Language: en-US
-From: Baolu Lu <baolu.lu@linux.intel.com>
-In-Reply-To: <20241022095017.479081-2-zhenzhong.duan@intel.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+X-Migadu-Flow: FLOW_OUT
 
-On 2024/10/22 17:50, Zhenzhong Duan wrote:
-> In dmar_fault_dump_ptes(), return value of phys_to_virt() is used for
-> checking if an entry is present. It's never NULL on x86 platform at least.
-> This makes some zero entries are dumped like below:
-> 
-> [  442.240357] DMAR: pasid dir entry: 0x000000012c83e001
-> [  442.246661] DMAR: pasid table entry[0]: 0x0000000000000000
-> [  442.253429] DMAR: pasid table entry[1]: 0x0000000000000000
-> [  442.260203] DMAR: pasid table entry[2]: 0x0000000000000000
-> [  442.266969] DMAR: pasid table entry[3]: 0x0000000000000000
-> [  442.273733] DMAR: pasid table entry[4]: 0x0000000000000000
-> [  442.280479] DMAR: pasid table entry[5]: 0x0000000000000000
-> [  442.287234] DMAR: pasid table entry[6]: 0x0000000000000000
-> [  442.293989] DMAR: pasid table entry[7]: 0x0000000000000000
-> [  442.300742] DMAR: PTE not present at level 2
-> 
-> Fix it by checking present bit in all entries.
-> 
-> Signed-off-by: Zhenzhong Duan <zhenzhong.duan@intel.com>
+The "/* CONFIG_ARCH_HAS_DMA_COHERENCE_H */" was an description about the
+ARCH_HAS_DMA_COHERENCE_H configure option, but it has been removed since
+the dma_default_coherent variable was lifted from the mips architecture
+to the driver core. Therefore it doesn't match any compile guard now.
+Just remove it.
 
-It seems that we still need a Fixes tag here.
+Fixes: 6d4e9a8efe3d ("driver core: lift dma_default_coherent into common code")
+Signed-off-by: Sui Jingfeng <sui.jingfeng@linux.dev>
+---
+ include/linux/dma-map-ops.h | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-> ---
->   drivers/iommu/intel/iommu.c | 31 ++++++++++++++++++++-----------
->   1 file changed, 20 insertions(+), 11 deletions(-)
-> 
-> diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
-> index a564eeaf2375..8288b0ee7a61 100644
-> --- a/drivers/iommu/intel/iommu.c
-> +++ b/drivers/iommu/intel/iommu.c
-> @@ -733,12 +733,17 @@ void dmar_fault_dump_ptes(struct intel_iommu *iommu, u16 source_id,
->   	u8 devfn = source_id & 0xff;
->   	u8 bus = source_id >> 8;
->   	struct dma_pte *pgtable;
-> +	u64 entry;
->   
->   	pr_info("Dump %s table entries for IOVA 0x%llx\n", iommu->name, addr);
->   
->   	/* root entry dump */
->   	rt_entry = &iommu->root_entry[bus];
-> -	if (!rt_entry) {
-> +	entry = rt_entry->lo;
-> +	if (sm_supported(iommu) && devfn >= 0x80)
-> +		entry = rt_entry->hi;
-> +
-> +	if (!(entry & 1)) {
->   		pr_info("root table entry is not present\n");
->   		return;
->   	}
-> @@ -766,28 +771,32 @@ void dmar_fault_dump_ptes(struct intel_iommu *iommu, u16 source_id,
->   		goto pgtable_walk;
->   	}
->   
-> +	/* For request-without-pasid, get the pasid from context entry */
-> +	if (pasid == IOMMU_PASID_INVALID)
-> +		pasid = IOMMU_NO_PASID;
-> +
->   	/* get the pointer to pasid directory entry */
->   	dir = phys_to_virt(ctx_entry->lo & VTD_PAGE_MASK);
+diff --git a/include/linux/dma-map-ops.h b/include/linux/dma-map-ops.h
+index 4abc60f04209..7689f6fb4148 100644
+--- a/include/linux/dma-map-ops.h
++++ b/include/linux/dma-map-ops.h
+@@ -271,7 +271,7 @@ static inline bool dev_is_dma_coherent(struct device *dev)
+ {
+ 	return true;
+ }
+-#endif /* CONFIG_ARCH_HAS_DMA_COHERENCE_H */
++#endif
+ 
+ /*
+  * Check whether potential kmalloc() buffers are safe for non-coherent DMA.
+-- 
+2.34.1
 
-Is above code correct in the scalable mode?
-
-> -	if (!dir) {
-> +	dir_index = pasid >> PASID_PDE_SHIFT;
-> +	pde = &dir[dir_index];
-> +
-> +	if (!pasid_pde_is_present(pde)) {
->   		pr_info("pasid directory entry is not present\n");
->   		return;
->   	}
-> -	/* For request-without-pasid, get the pasid from context entry */
-> -	if (intel_iommu_sm && pasid == IOMMU_PASID_INVALID)
-> -		pasid = IOMMU_NO_PASID;
->   
-> -	dir_index = pasid >> PASID_PDE_SHIFT;
-> -	pde = &dir[dir_index];
->   	pr_info("pasid dir entry: 0x%016llx\n", pde->val);
->   
->   	/* get the pointer to the pasid table entry */
-> -	entries = get_pasid_table_from_pde(pde);
-> -	if (!entries) {
-> +	entries = phys_to_virt(READ_ONCE(pde->val) & PDE_PFN_MASK);
-> +	index = pasid & PASID_PTE_MASK;
-> +	pte = &entries[index];
-> +
-> +	if (!pasid_pte_is_present(pte)) {
->   		pr_info("pasid table entry is not present\n");
->   		return;
->   	}
-> -	index = pasid & PASID_PTE_MASK;
-> -	pte = &entries[index];
-> +
->   	for (i = 0; i < ARRAY_SIZE(pte->val); i++)
->   		pr_info("pasid table entry[%d]: 0x%016llx\n", i, pte->val[i]);
->   
-
-Thanks,
-baolu
