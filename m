@@ -1,31 +1,31 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id ADD6A1CEAA0;
-	Wed, 23 Oct 2024 14:30:32 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D03D01FF7BB;
+	Wed, 23 Oct 2024 14:31:31 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1729693832; cv=none; b=HGlBLcLQErNJ6cHi+zk3ZPsUHGr3pOJe6h5PCgm7yjecEty7ZpNtOwRSohmNIC/emf3fbim20I5LifXmBlI0xnbvX9c87kPJJ0OHJ+UWaFxPwPLzY2QRjkTX+M48Yzqf1yXIVS8v4JHwjhfkm67vcLtpVEmrQtlwwKzQ6o34H0o=
+	t=1729693891; cv=none; b=mTXK2xX5QxUlCvzoh42fwTW/oi9EojsncIznkdrnrDcklM8nsTSAOxGsNGED5Rxcj0rPVcbB7vS6pWg4bu7HrvZZYSOWz0H9S3fmBpc46piCL7fw0BEnUKcO/bd7cHnXTuo8q0BwmmNlDiqwVEy1kIgeoYEu0BK8/48dQepAcUs=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1729693832; c=relaxed/simple;
+	s=arc-20240116; t=1729693891; c=relaxed/simple;
 	bh=DTPT4zl44npMYzjERrEH9EvBCMsinVpzO0mfU1W/K+s=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=sve7XZpwVkpb0b7cADg8jEQx4c++gre19nYJoY1+2+5lvspUWUFxqMZEJmXf6cPiCWT33BgoYxpOU0ln8Kybq++CGUE0Q0+9QN0eSt3mpKJGa+Xw3MIHpYP8zAwkN0kVn0bDv5Qo5oWUAcxfVlmokPavfYF3fSh+90KL/mAXIGc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=gZZGLJl+; arc=none smtp.client-ip=10.30.226.201
+	 MIME-Version; b=H+ZfzCAsPZkGRLkTClt5M4SPnwuFKW8IlbaCJ50IhqcANUY1uv3bd3QdVbesunQ9VjZzLj9z0SzpuefZcNOG5V/5BaxAPSlCO9Ji5LohOKWRpcQq5BJ3zOkCtTuxCoh+N0Vnct5XdBn3p3BMCI7fBpj3sVdydImE0SoDrDW3i9I=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Hb9j67H0; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="gZZGLJl+"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9F5EAC4CEC6;
-	Wed, 23 Oct 2024 14:30:31 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Hb9j67H0"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B0210C4CEC6;
+	Wed, 23 Oct 2024 14:31:30 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1729693832;
+	s=k20201202; t=1729693891;
 	bh=DTPT4zl44npMYzjERrEH9EvBCMsinVpzO0mfU1W/K+s=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-	b=gZZGLJl+iG9JdNz/tDltYSPBH+P1BzVIeOb+X5mKKGdkSzWrFAIDwkXVngoUfzLxe
-	 Txo7XVFgUlnmwc4msYAbE94uBGxmYdHMhO4Qx+psH5nrx8ZAM0PBGGCY+tLvvgULSx
-	 VBCfOWwe4kx8U2ICOoQus9DH0OBEc7L+k02XMaA9UBKX4PeyTDqihClw36LggcEoYt
-	 RlJbMeDI2IdI4oxEy+mstaLK57kwSWlxi5qnzHMfhOAbl20aMkKJQuIuKhxOcD2ah4
-	 Xk6GdgIBTT74600jLyBof/AxR2HNo+cud8fpLegrixWTzdJFo+/VZWRnYoCb4ypW5x
-	 inqT+FU0B23ig==
+	b=Hb9j67H0cQJisbeOByZnDrvtNRkiL0B/AQ60yQMivg7recmbCI3cpy9hLv7dt0iSr
+	 ZHGFcgklUTzkrYEgqtboOWpMpoEAlcATRRXtn6oUMMP8E6NkZOERzQSgkD+mLd9Ufe
+	 2U0VnpexlJDbSgR3+nuxg3s9uTBObiTd8OKuiRWgKfjG2HZ4g8z/RniynOD8EVBrNQ
+	 NoYyx5ASofpW2GHYNjpPR8d1ZE+fXCKPVuBsVF/J7uvpg+YaX0T8QSFoVgUmEZAyEH
+	 o8Y3tSgBshTjZXLIGPXR+qt5egiR3iyLpBCwa/+tIJlquzC8zgZyboezniA/MUZb0A
+	 mjNFmakYW/bWw==
 From: Sasha Levin <sashal@kernel.org>
 To: linux-kernel@vger.kernel.org,
 	stable@vger.kernel.org
@@ -35,12 +35,12 @@ Cc: Robin Murphy <robin.murphy@arm.com>,
 	joro@8bytes.org,
 	linux-arm-kernel@lists.infradead.org,
 	iommu@lists.linux.dev
-Subject: [PATCH AUTOSEL 6.11 12/30] iommu/arm-smmu: Clarify MMU-500 CPRE workaround
-Date: Wed, 23 Oct 2024 10:29:37 -0400
-Message-ID: <20241023143012.2980728-12-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 6.6 09/23] iommu/arm-smmu: Clarify MMU-500 CPRE workaround
+Date: Wed, 23 Oct 2024 10:30:53 -0400
+Message-ID: <20241023143116.2981369-9-sashal@kernel.org>
 X-Mailer: git-send-email 2.43.0
-In-Reply-To: <20241023143012.2980728-1-sashal@kernel.org>
-References: <20241023143012.2980728-1-sashal@kernel.org>
+In-Reply-To: <20241023143116.2981369-1-sashal@kernel.org>
+References: <20241023143116.2981369-1-sashal@kernel.org>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -49,7 +49,7 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
-X-stable-base: Linux 6.11.5
+X-stable-base: Linux 6.6.58
 Content-Transfer-Encoding: 8bit
 
 From: Robin Murphy <robin.murphy@arm.com>
