@@ -1,105 +1,87 @@
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-wm1-f73.google.com (mail-wm1-f73.google.com [209.85.128.73])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D6FB31E7675
-	for <iommu@lists.linux.dev>; Thu, 24 Oct 2024 15:34:27 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=170.10.129.124
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 891CE1CBA17
+	for <iommu@lists.linux.dev>; Thu, 24 Oct 2024 16:25:27 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.73
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1729784069; cv=none; b=dCBg9sU2PrgzKMFyIVJk4TWJ1J4awRkd+4qrgPpqqfW4Og6Z+eW9HHuxSng+9JPZdGPo6V1mnR5JiB4kVDLTZjttBJ5sUUeaJyPnY06Y397KwjAAnsTdVBT+kcPHeSuMV5TS1trMirYFR29m8AUcZLXP1R0+QlIVnqWM0q265cY=
+	t=1729787129; cv=none; b=UYAevTnNcgrTKckSk5ZK6J9WXRp/kO1NK7EsMFkLEiqpff1+ZgtHl+0iFosvgWZkqZVhT+1JGpH81s6L2fHD3aE19E5du2kuHXQBNrI/oxf/Pd1EAccFxsiatOpXkrzYOPqcKvSEdTSe9jMEShSkVQOnQf96cruD3MukrjOigjU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1729784069; c=relaxed/simple;
-	bh=DmaNumx1B9Ch/TRtvCjSsjZvuo2pfUkSNhQa17xSru8=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=W5qXPdcrMCCefFKAhnhvbqU3gt3wDklRD6V/oF2XgaUYccKav5U7/CzTMLtzBPq+4glg7FKciluXWbcBCCJWdWq4qx8OLlH1M8C47y+0Xjp0m9XJ8QlGbIY2DT7W//lPf0UK/pyggwaJ2GTSeBFixZpPHHBxp/N9zfv3V5SZakM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=redhat.com; spf=pass smtp.mailfrom=redhat.com; dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b=HBPVGDmt; arc=none smtp.client-ip=170.10.129.124
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=redhat.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=redhat.com
+	s=arc-20240116; t=1729787129; c=relaxed/simple;
+	bh=jmlTYrYntbS4IGYc2EP4iWxxwtC5Jg9tZX0AcgAK4zs=;
+	h=Date:Mime-Version:Message-ID:Subject:From:To:Cc:Content-Type; b=d3roCOo16FWJUgdHDbt3Rea2eTRa154bItib7Ls7y424o/dNZx9QIurpBPx5S67hn70EqstqxOsk/Q1o+eBcTioeygIEnCsyk8E4LnemKIFU2/V5tPHCUOPzMPCz9KkfTrLk8uOyemr5pC3tadmXWlP3HOt2QuplcvrfOT9Y8tk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=flex--smostafa.bounces.google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=d0owVbQF; arc=none smtp.client-ip=209.85.128.73
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=flex--smostafa.bounces.google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="HBPVGDmt"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-	s=mimecast20190719; t=1729784066;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:
-	 content-transfer-encoding:content-transfer-encoding;
-	bh=cXUUAup2BSwJWOmEG3JvcIkWwS4Ltp5hO2So1hfEC/o=;
-	b=HBPVGDmt3Jo7btTPSj3M6rc2qxrTULZNSD8FiFAphvaQWdSzm4pSosuPCaVTOXlXi1tNpp
-	utKZHrxkHdG6C6LPF08IJK5uyb6YRa3RGZrXODL2LSoprJiDtqYUvCkVTYVG/NMSC8uCg2
-	dfJpVRumFjJJNTGVfJaMUYfEPxEUfQM=
-Received: from mx-prod-mc-01.mail-002.prod.us-west-2.aws.redhat.com
- (ec2-54-186-198-63.us-west-2.compute.amazonaws.com [54.186.198.63]) by
- relay.mimecast.com with ESMTP with STARTTLS (version=TLSv1.3,
- cipher=TLS_AES_256_GCM_SHA384) id us-mta-613-Pkhxl-hhPlWK5XtZSJRhmA-1; Thu,
- 24 Oct 2024 11:34:21 -0400
-X-MC-Unique: Pkhxl-hhPlWK5XtZSJRhmA-1
-Received: from mx-prod-int-01.mail-002.prod.us-west-2.aws.redhat.com (mx-prod-int-01.mail-002.prod.us-west-2.aws.redhat.com [10.30.177.4])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
-	(No client certificate requested)
-	by mx-prod-mc-01.mail-002.prod.us-west-2.aws.redhat.com (Postfix) with ESMTPS id EF16C1955D50;
-	Thu, 24 Oct 2024 15:34:19 +0000 (UTC)
-Received: from cantor.redhat.com (unknown [10.2.144.217])
-	by mx-prod-int-01.mail-002.prod.us-west-2.aws.redhat.com (Postfix) with ESMTP id 287D73000198;
-	Thu, 24 Oct 2024 15:34:17 +0000 (UTC)
-From: Jerry Snitselaar <jsnitsel@redhat.com>
-To: iommu@lists.linux.dev
-Cc: Robin Murphy <robin.murphy@arm.com>,
-	Joerg Roedel <joro@8bytes.org>,
-	Will Deacon <will@kernel.org>,
-	linux-kernel@vger.kernel.org,
-	stable@vger.kernel.org
-Subject: [PATCH] iommu/dma: Reserve iova ranges for reserved regions of all devices
-Date: Thu, 24 Oct 2024 08:34:12 -0700
-Message-ID: <20241024153412.141765-1-jsnitsel@redhat.com>
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="d0owVbQF"
+Received: by mail-wm1-f73.google.com with SMTP id 5b1f17b1804b1-4316ac69e6dso9127615e9.0
+        for <iommu@lists.linux.dev>; Thu, 24 Oct 2024 09:25:27 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20230601; t=1729787126; x=1730391926; darn=lists.linux.dev;
+        h=cc:to:from:subject:message-id:mime-version:date:from:to:cc:subject
+         :date:message-id:reply-to;
+        bh=KR+B5L4cIU9DDdYRJ/PwALZk56liTvqbQa9wbDbtP2w=;
+        b=d0owVbQFIYDW6YElXrIppJbVYvINUT/MvtDnlEE3wH4ZtNjd/vp2fjStz/o6nGCLGk
+         TCsVaxX3hyB05BUA05/5UV5Sq6ghE7ibHHm912tqE7BbpFVCLNbE2i5uqI4PmTQbbxK1
+         PQHbBJKTo1U2cZdJB5nAOLDdxi9e06HYa6rT2FX1095BU3RkR6XAAX+RsGtdkwY6AdWF
+         KKYsL/FxqZpD8Eb5WXSIaiZiMHBwrLW3r1LsfVfPSfKGRBePOu9ay4bp/Vm3p6c0Wb6T
+         qcDLqkY3cehr9aKw15EMxXcLpf/wH/R7EOqMDUg5Rp7YfNqfHFsE2y/0rNO/RgIC4ZrQ
+         LeOQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1729787126; x=1730391926;
+        h=cc:to:from:subject:message-id:mime-version:date:x-gm-message-state
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=KR+B5L4cIU9DDdYRJ/PwALZk56liTvqbQa9wbDbtP2w=;
+        b=CPNhxJXwr9/vSxB1Wq8uP0Loo1HY9kO0yjXA0IfjtQ3mBDrpYi6raQ4ms0hIiRUAw2
+         hib5VjSesgKbleImTN1GeXrtFJLQuF5fxgoKGjM5N70JWnIJXC1V3hThGCn1/4rk+3Vd
+         VnB7ovEZte80k4sDydsy0FYz3TW/ruNnhwiqwSeA7B2mvDLD+1dAtUe0obKZb3iOglPp
+         HdAzpQEE0gIGufkIMx9gtIgw/xdDjUkblw3tYNEkA0m0ZP+pp8GSomTvjbW4o7ZjrCvW
+         EUOBdFFmUaVA44u0YhhieXOvi0etLgmANeBPDXvstWhIgmrLeKTW0Euv5yTNIns4Ki2r
+         pDPg==
+X-Forwarded-Encrypted: i=1; AJvYcCV448WIbUkQv6jImkl7kozuGGnIldROwnaoh+1BQwVEz24gSgwQxBI9mjAjqmebeudE931Xlw==@lists.linux.dev
+X-Gm-Message-State: AOJu0YwH4HKzq4RHl+AmA7QRQkFtHyuVwy8Qjr3RMsMq244Gi40Y2V6i
+	XIsdhyhYQ31aN/jy6Wu/ltx/opFS1LJfdh6haqW3HPOXLKFpQIGYwDcm8E4oHWDJTPWMIZs8cfE
+	l+VSLUXM7Fw==
+X-Google-Smtp-Source: AGHT+IEa0fdCs9TdeI1S154h4FVCg2RPzpPawn874ObbhYWCTqLcJW9Fp8UBsiTi8lK8mBxACgZ6DDCkYsBLxQ==
+X-Received: from mostafa.c.googlers.com ([fda3:e722:ac3:cc00:28:9cb1:c0a8:333c])
+ (user=smostafa job=sendgmr) by 2002:a05:600c:4483:b0:42c:ac8c:9725 with SMTP
+ id 5b1f17b1804b1-4318c76565bmr59885e9.8.1729787125428; Thu, 24 Oct 2024
+ 09:25:25 -0700 (PDT)
+Date: Thu, 24 Oct 2024 16:25:14 +0000
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 3.4.1 on 10.30.177.4
+Mime-Version: 1.0
+X-Mailer: git-send-email 2.47.0.105.g07ac214952-goog
+Message-ID: <20241024162516.2005652-1-smostafa@google.com>
+Subject: [PATCH 0/2] iommu/io-pgtable-arm: Fix for stage-2 map/unmap
+From: Mostafa Saleh <smostafa@google.com>
+To: linux-kernel@vger.kernel.org, iommu@lists.linux.dev, 
+	linux-arm-kernel@lists.infradead.org
+Cc: will@kernel.org, robin.murphy@arm.com, joro@8bytes.org, 
+	Mostafa Saleh <smostafa@google.com>
+Content-Type: text/plain; charset="UTF-8"
 
-Only the first device that is passed when the domain is set up will
-have its reserved regions reserved in the iova address space.  So if
-there are other devices in the group with unique reserved regions,
-those regions will not get reserved in the iova address space.  All of
-the ranges do get set up in the iopagetables via calls to
-iommu_create_device_direct_mappings for all devices in a group.
+The first patch is a bug fix for stage-2 handling of concatenated pgds
+that can break map/unmap for some cases.
 
-In the case of vt-d system this resulted in messages like the following:
+The second patch is adding these cases to selfs tests.
 
-[ 1632.693264] DMAR: ERROR: DMA PTE for vPFN 0xf1f7e already set (to f1f7e003 not 173025001)
+While looking at that, I also noticed that the concated page tables support
+is minimal and not supported for many cases (level = 0, 2, 3), I wrote some
+code to support that so I can test further, I can send it later in another
+patch.
 
-To make sure iova ranges are reserved for the reserved regions all of
-the devices, call iova_reserve_iommu_regions in iommu_dma_init_domain
-prior to exiting in the case where the domain is already initialized.
+Mostafa Saleh (2):
+  iommu/io-pgtable-arm: Fix stage-2 map/umap for concatenated tables
+  iommu/io-pgtable-arm: Add self test for the last page in the IAS
 
-Cc: Robin Murphy <robin.murphy@arm.com>
-Cc: Joerg Roedel <joro@8bytes.org>
-Cc: Will Deacon <will@kernel.org>
-Cc: linux-kernel@vger.kernel.org
-Cc: stable@vger.kernel.org
-Fixes: 7c1b058c8b5a ("iommu/dma: Handle IOMMU API reserved regions")
-Signed-off-by: Jerry Snitselaar <jsnitsel@redhat.com>
----
-Robin: I wasn't positive if this is the correct solution, or if it should be
-       done for the entire group at once.
+ drivers/iommu/io-pgtable-arm.c | 34 +++++++++++++++++++++++++++++++---
+ 1 file changed, 31 insertions(+), 3 deletions(-)
 
- drivers/iommu/dma-iommu.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/drivers/iommu/dma-iommu.c b/drivers/iommu/dma-iommu.c
-index 2a9fa0c8cc00..5fd3cccbb233 100644
---- a/drivers/iommu/dma-iommu.c
-+++ b/drivers/iommu/dma-iommu.c
-@@ -707,7 +707,7 @@ static int iommu_dma_init_domain(struct iommu_domain *domain, struct device *dev
- 			goto done_unlock;
- 		}
- 
--		ret = 0;
-+		ret = iova_reserve_iommu_regions(dev, domain);
- 		goto done_unlock;
- 	}
- 
 -- 
-2.44.0
+2.47.0.105.g07ac214952-goog
 
