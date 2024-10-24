@@ -1,196 +1,214 @@
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+Received: from NAM02-SN1-obe.outbound.protection.outlook.com (mail-sn1nam02on2042.outbound.protection.outlook.com [40.107.96.42])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8D5061EF09C
-	for <iommu@lists.linux.dev>; Thu, 24 Oct 2024 14:40:47 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=170.10.129.124
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1729780850; cv=none; b=DxnpXlEm0U6JJLlQuzpZ3zBOLfO2tU6DPCt7yjmeA9z9I5iwodAMZRvITA03hqSjK6B8TAHmo7XA76rjKAUXiYliAvAHix8np9ImmVcOgSUXxGR3byYqQGJVORg2pao/MDSK84lutPA34GSu5KKtx1yc1FsyO+ELzrxq8n+AhPU=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1729780850; c=relaxed/simple;
-	bh=RHSCv9bt2jpShj23dRckGzXNJ1xifqFFBkLD9MkzBQQ=;
-	h=From:To:Cc:Subject:In-Reply-To:References:Date:Message-ID:
-	 MIME-Version:Content-Type; b=oOw80oW/8ryAvJsyEtaF7aGaQM8fCNvd5cOY6JflmBwlJR+KJGCVOEnOhPQUJnEJMn5Ib1wvIkhOqKlUVV+cx2kOmRCQOD2uEQKE6mK3NFiLK4G0y8k53KjPhKi/BJ7zbnQFHb/qiIuGvOL7D/kCRFEPgA4mhQHg4W1zm/cULkc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=redhat.com; spf=pass smtp.mailfrom=redhat.com; dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b=JrivXQmM; arc=none smtp.client-ip=170.10.129.124
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=redhat.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=redhat.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E2B061E0E0A
+	for <iommu@lists.linux.dev>; Thu, 24 Oct 2024 14:41:29 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.96.42
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1729780891; cv=fail; b=BXfxQ7KUrnolPzmFSah1xRS0cRsMtKekeVO3n/w/HvEcQA9EyPePuz9x0ZwZVomm93CL4zqnDBcxO+2Ipq3teHnWwo1hRt86+BBDRQo1HczZ3/eTjNVGqowd5Xea9keFlf0nzgxJ6RPn76BiJSJuUZsTNkSh7n6PN1F4yQhezc4=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1729780891; c=relaxed/simple;
+	bh=3gMo7vsVAYZRd1LK81k2rTD5naU2gbyL/3NcNxhSOZM=;
+	h=Message-ID:Date:Subject:To:Cc:References:From:In-Reply-To:
+	 Content-Type:MIME-Version; b=AOeKR/4S3oFPT/jtojkpEgavkeaPUd3io4QYel9gdGSKJ4t3hS1+sTZjuaAnPpC92h75iUr6rvPRRycuWd9ipmCj4c795uEsICj2NAp9TGL1zsjm0HvNoaPr6aXRx3D5HAq6q1tNUHfz9HeEIZiNXdsPMAE3IiF+of1+nL9vzQE=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com; spf=fail smtp.mailfrom=amd.com; dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b=iBAjDCXT; arc=fail smtp.client-ip=40.107.96.42
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=amd.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="JrivXQmM"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-	s=mimecast20190719; t=1729780846;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references;
-	bh=RHSCv9bt2jpShj23dRckGzXNJ1xifqFFBkLD9MkzBQQ=;
-	b=JrivXQmMkzKr9dKNnypMCM83wTob520kRQgWfBnbrfYeH/wGhNYZWUCXtcGCLnUdBVD1OU
-	nbsCGM9fPVP1zbqwvtzRjovQ76wQAacM4EPqgaHWa/xGazhIZUt6+tJw75UJ7HQgVT4kpG
-	Xr8MWUdhBu4wlYxMy5lNOm4v38zcJZA=
-Received: from mail-wr1-f70.google.com (mail-wr1-f70.google.com
- [209.85.221.70]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
- us-mta-505-2E_zw42cPhSgUo-01rCH8Q-1; Thu, 24 Oct 2024 10:40:43 -0400
-X-MC-Unique: 2E_zw42cPhSgUo-01rCH8Q-1
-Received: by mail-wr1-f70.google.com with SMTP id ffacd0b85a97d-37d52ccc50eso490722f8f.3
-        for <iommu@lists.linux.dev>; Thu, 24 Oct 2024 07:40:43 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1729780842; x=1730385642;
-        h=content-transfer-encoding:mime-version:message-id:date:references
-         :in-reply-to:subject:cc:to:from:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=+CjMdzWLILQKd2T9F7nyB4WETCRS6M6pCeZeEmGLW54=;
-        b=eSdqQcg0FZOuy8IDTpOUd6XgSKfAveLM1zILk0gBhnj1ei3Q9pB0TkEDiQXXEr4zmp
-         kzTJ6nUsqRj1mX7BhdAxP6NfTFJ90AYAEFk3udlJ2HoNXxXfvQDdvKFVJzlKF4cbGnOa
-         pU5s1f0VF3v/rr4SR5eeYkpbDkwf8VPe0Fl1HCYttXu5+Yba03ArD8KG8dmI1bBv4QeU
-         cQcZZOwfTw90uHuR90HN3bsSU/8lgNyakcbWDqwvUah3BKO7QfY3fUQwv00+ILuyQJkf
-         E6RvdsKtwe18qApeUy1GXrT+mBk/NlbBo0k8VVJWSAfyYAE7AfdYmjMZc6Wbv38EIVN6
-         flEg==
-X-Forwarded-Encrypted: i=1; AJvYcCX/0u+dIyYZu5E81A+TlhA3CtAzq2CTkQkSFcqWwpS/ualc+wSOXBBxdIa5PalO+1NbemXoCw==@lists.linux.dev
-X-Gm-Message-State: AOJu0YxmYfwB9tQqpp0J4czA/hQK1Parz2p0N1HE4mNukCWX4WB7DX1t
-	oL4vjFhA50lyY63C/O/WFjoWWNdBB1fai/18Ja6qqfJ1ep9dnW59qP4AcebDgRVstW13YihPXEx
-	HJAIx4ksNIvXOTIg9ES3YV1YlyCuUqt5wdhQZm5GWvsWJZApiu2a5
-X-Received: by 2002:adf:f850:0:b0:37d:50f8:a801 with SMTP id ffacd0b85a97d-380458ec65bmr1564899f8f.47.1729780842078;
-        Thu, 24 Oct 2024 07:40:42 -0700 (PDT)
-X-Google-Smtp-Source: AGHT+IEHlCZfIV1vlnJ8aUV+taDRYgNoiomN86d8HqIw3XbXDwesM0GycuE5hSHY+Pb/gN5r8/Xadw==
-X-Received: by 2002:adf:f850:0:b0:37d:50f8:a801 with SMTP id ffacd0b85a97d-380458ec65bmr1564881f8f.47.1729780841620;
-        Thu, 24 Oct 2024 07:40:41 -0700 (PDT)
-Received: from alrua-x1.borgediget.toke.dk ([45.145.92.2])
-        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-37ee0b94356sm11505321f8f.67.2024.10.24.07.40.40
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 24 Oct 2024 07:40:41 -0700 (PDT)
-Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
-	id 41B6B160B4E3; Thu, 24 Oct 2024 16:40:40 +0200 (CEST)
-From: Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
-To: Yunsheng Lin <linyunsheng@huawei.com>, Jesper Dangaard Brouer
- <hawk@kernel.org>, davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com
-Cc: zhangkun09@huawei.com, fanghaiqing@huawei.com, liuyonglong@huawei.com,
- Robin Murphy <robin.murphy@arm.com>, Alexander Duyck
- <alexander.duyck@gmail.com>, IOMMU <iommu@lists.linux.dev>, Andrew Morton
- <akpm@linux-foundation.org>, Eric Dumazet <edumazet@google.com>, Ilias
- Apalodimas <ilias.apalodimas@linaro.org>, linux-mm@kvack.org,
- linux-kernel@vger.kernel.org, netdev@vger.kernel.org, kernel-team
- <kernel-team@cloudflare.com>
-Subject: Re: [PATCH net-next v3 3/3] page_pool: fix IOMMU crash when driver
- has already unbound
-In-Reply-To: <113c9835-f170-46cf-92ba-df4ca5dfab3d@huawei.com>
-References: <20241022032214.3915232-1-linyunsheng@huawei.com>
- <20241022032214.3915232-4-linyunsheng@huawei.com>
- <dbd7dca7-d144-4a0f-9261-e8373be6f8a1@kernel.org>
- <113c9835-f170-46cf-92ba-df4ca5dfab3d@huawei.com>
-X-Clacks-Overhead: GNU Terry Pratchett
-Date: Thu, 24 Oct 2024 16:40:40 +0200
-Message-ID: <878qudftsn.fsf@toke.dk>
+	dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b="iBAjDCXT"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=hQ+5DhAKmL4lcnKgGgv/lQFnx/FMkl8mwhB12PYgiGEMlX+MbliAMM7rmy/mbVvC5tcJ1eCEUwmhzfl/lxD3s7ps/9n6a681mJUa3F2GtPl/kAWHTsKz8TmTKnNDfTDDwIfXhk0+rda4Z1BdmpAFhLp9tkG46YCyQ7+hoROBsOB7kZ6h17UwJ1Q0kOXR1lyWjZ8IWKlGFQDYjN6nGEamYvJIG2GFIFT0tOAkXd/TYhhtbAMWIsKl2z52Yp1qjA8+bXcTgatm5yHKzGX0tTy7K7PH3KFC3wknHNrmWzB8AAwye3H+qJ6r6H/KojZ+mJoa7JVgx50FYtCNlz4vwb/LOA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=2GAKU9er/R5TitRrXWL/WxXwK30MHWb6uY0x7ErfqFM=;
+ b=HEfkV64peRhxnEIUKGfoLdpjhT1lMA5f3xqumACdqlXm91zt/duQhCU1hto8zkizdsbt1V/JV7FlUeB1kHpHQbpIiivz1pnAUfRqIztIniGdabDlu3micswEfFceBFoAnYdFCxoMrG+vZotKXooClVoejlKXe1mnfaeEtoaCGaQKP5Z56yYdnnxRgoPD4OvDdEwg71KZg/xouYrRC3nKjCn1hlxQ5Iu2gw7FHtw5GBm6XGWfnFXgcXpOY+Pady3YDdLtRE+ROaqzG0OQuIjD62nnfnjnmekATXp7c0+IDyBa7RjayxqEamJAfcOdA5Vv5+e+WqKJ9FzOtfKE1rOnkA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=amd.com; dmarc=pass action=none header.from=amd.com; dkim=pass
+ header.d=amd.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=2GAKU9er/R5TitRrXWL/WxXwK30MHWb6uY0x7ErfqFM=;
+ b=iBAjDCXTsDtz+a3kFIG6ya3QXz/SSI1XEUdl5xJs9TXbA3e3IqGMCLkuBxHK8q45LqbKy44FsTTWHedOv/QIMzFC1fq5rDvmjK+E0hSrg9VVNiswdClMlqzjFgqzw+qafsqOxG3QciQGLf3cQph56/rPyHVYckoxqnkwKGiFL08=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=amd.com;
+Received: from DS7PR12MB6048.namprd12.prod.outlook.com (2603:10b6:8:9f::5) by
+ CYYPR12MB8853.namprd12.prod.outlook.com (2603:10b6:930:cb::7) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.8048.20; Thu, 24 Oct 2024 14:41:22 +0000
+Received: from DS7PR12MB6048.namprd12.prod.outlook.com
+ ([fe80::6318:26e5:357a:74a5]) by DS7PR12MB6048.namprd12.prod.outlook.com
+ ([fe80::6318:26e5:357a:74a5%4]) with mapi id 15.20.8069.027; Thu, 24 Oct 2024
+ 14:41:22 +0000
+Message-ID: <38881be4-d3e8-49b1-91d8-04b03fac2937@amd.com>
+Date: Thu, 24 Oct 2024 20:11:14 +0530
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v3 06/10] iommu/amd: Reduce domain lock scope in attach
+ device path
+To: Jason Gunthorpe <jgg@ziepe.ca>
+Cc: iommu@lists.linux.dev, joro@8bytes.org, will@kernel.org,
+ robin.murphy@arm.com, suravee.suthikulpanit@amd.com
+References: <20241016053501.97497-1-vasant.hegde@amd.com>
+ <20241016053501.97497-7-vasant.hegde@amd.com>
+ <20241017133244.GP4020792@ziepe.ca>
+Content-Language: en-US
+From: Vasant Hegde <vasant.hegde@amd.com>
+In-Reply-To: <20241017133244.GP4020792@ziepe.ca>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: PN0PR01CA0007.INDPRD01.PROD.OUTLOOK.COM
+ (2603:1096:c01:4f::12) To DS7PR12MB6048.namprd12.prod.outlook.com
+ (2603:10b6:8:9f::5)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: redhat.com
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: DS7PR12MB6048:EE_|CYYPR12MB8853:EE_
+X-MS-Office365-Filtering-Correlation-Id: 3e23b2e7-2b22-4011-91ab-08dcf439eda3
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;ARA:13230040|366016|376014|1800799024;
+X-Microsoft-Antispam-Message-Info:
+	=?utf-8?B?MUQvSERkc3dsSnl2d25RdFE3bFFJM3NUdzRVdklRR2dxWUIrZCtYQy94REVM?=
+ =?utf-8?B?L3BuOHBSZjFwZFRkM3pWVmZSVkF5M2JVVTQzNDZOV0szU3JtRXIzMktxbUlN?=
+ =?utf-8?B?ekpVUDZGNmdEbTB1WEJyZnArUjQ2SGYvYjJzdTd3dGdrbHd1cyt0SzBPbE9K?=
+ =?utf-8?B?R1lwTGgyNjNrMlIyZUk5UjBuYjlpVC9KdGM2ZFVCZXlLK1VZeXc5dEltRnhF?=
+ =?utf-8?B?R3lUSXZ3UWQ3NHJISXlxaThRcUNwVHNtbFEwMU05TUFtOENIb2lDUmJvYXph?=
+ =?utf-8?B?TlhHekk2VjZpT1VTVDNBOHlNK2xhd2g4NGdjRll3eHp6MU9OdlNPUDNQNHlG?=
+ =?utf-8?B?dHo3NlpPM0ZxNjJnQUlyejVNOU40KzNIYXdxY1kvZlFpSDJCd2RNNHgrd1BX?=
+ =?utf-8?B?emRNbGo4SGM2RUhhRlZOQ1d2bjd0QWNtUzk4WVNIMldxaG5vRURiYU4rbUpB?=
+ =?utf-8?B?b3QyeHg0ZFFwTEtCL1BxUldBODFhNEx1Y3htMkpqVStvaGY2Vy9na2UxM2Ez?=
+ =?utf-8?B?Rnp0dHlGNmk3N3dldWlxdlQzRzRIQ3ZkZmpoK2R0SWM3aHdjbTFEVm9SeFVs?=
+ =?utf-8?B?Y0tWbTJ1WEZkWlJxV2F3c05oQXVsWWRwUHRnNmpqbXBwektBM3VEK1VVUGYx?=
+ =?utf-8?B?RkJqWlhsNEdlc0dsdDhzZGk2NXV2Slc3UFJQcWthcjhURUtuYytzUlo4eTNZ?=
+ =?utf-8?B?NE54Y1oxY0w0VExmNTRndmplYTlsdzlHem9CVTFDV0k0RDdUN3B6RXlRcHVj?=
+ =?utf-8?B?Y2thbm5mVmdIK1p4L3FHT01GNVJpc0RlY1d5bW95SVF0MFlIZ2pIc3FwMm1h?=
+ =?utf-8?B?MUFCaEtSbWVRYjhDRU04ak9OOERmQm9RMTVQS0VpcGdZSVFmZ3Rza3lzbGNP?=
+ =?utf-8?B?ZnZMU1RYR2pQK3VWendCS3doTmt1dSsyY0pHZlF2dE45OExXUllDYXlzUFZi?=
+ =?utf-8?B?c1dkbE95OXJia21QRkIrT05aU0lRL0x3OWxXSmNxQmdJZzYzR2M4d0luaTcy?=
+ =?utf-8?B?R2F4Zjc5QzFnSldzeWtRU3VkVnpHMS9UenVvYk55aTBydmlVbm05Qm9CdEt4?=
+ =?utf-8?B?UEpWVC9GLy91SnRnVFI5YzZ6V09VR3hNUGNwSW9mN25idTVZbGNmd2tnWjc4?=
+ =?utf-8?B?NFRUYmpZcDlNTkdFNTVSSzBjb2dzTmN1Ukt6ZDF5VG1MN3dOMGo4Q3dEazB0?=
+ =?utf-8?B?aWxNT3J1MTV2b0NWSkZlTnFFSUJEa0lyeFN0L2pyQU5yYmVUMFUxTlZpNDZB?=
+ =?utf-8?B?Ym9FWmxRdVhuRzNnUVJza0s5eVZFM1lqL1BYYjhFYzlMV2FlaDNFcWVBVlBH?=
+ =?utf-8?B?bnRTMkZGWHhSOFR5UHkyUWdxMERaU0thcVJqNlFmcGh2MHlWckJMS1ljWkpO?=
+ =?utf-8?B?b0ErYXE3SG1hQ1hZOUV2UXpWYmk5QVVKRzArbTJnUitPYUYyYmtaTnlaTkhE?=
+ =?utf-8?B?d1JZTmw5TUF4R1BkZWJkOGM4UjArTnpJdnFhRnZyMlgrOWliUWRUeFZ0MjZ6?=
+ =?utf-8?B?eUVUdkpCZnduZndHOHBraTVFTWo2OTU1TTczcjlrNWo3dEt2TmdjaUNNb0Vo?=
+ =?utf-8?B?VWdRelJ5VzFRTGNWdUkrNDdza2h2d2ZDUGtVQmd3alRNa0xzNVhjS3BwN2lJ?=
+ =?utf-8?B?eWhJbEpuWEREZmhYK2tOMVFRNnhXVG5PY0ZJbFBnYnhaNThSTjR1OTYwc21o?=
+ =?utf-8?B?ajdBTU80KzhSemJTNmxUcDNKSW1GZjRiVU5pNVYrcU9vbXV3WjZ0RWhkNStQ?=
+ =?utf-8?Q?Fgw9tgoLt7xoKyIKdNZa3i4ToJIlQjP7R86O8Tq?=
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DS7PR12MB6048.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(366016)(376014)(1800799024);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?utf-8?B?QUtSM09kUGM1UUZRRVdaT3NadGt0V0xLckwvVE5nZTUybE5admlZQTBjWXpz?=
+ =?utf-8?B?ZTdtVXZRQ0FZRGhWL2JCdWdVeXFSdDhiWWdybmZPSHpGWTFUaVRyMndkZExX?=
+ =?utf-8?B?ZFJyRjBrcWQ4L3RBS25wdFNOQitUaGhGWHd3aXFRaXVoOWhFQnllcWZpRlg5?=
+ =?utf-8?B?Ynd3UWJiYU13Y2UrTFdDL1B4OUo5OTBOMVJvUm1OcHFBVnYwMmhuQzQ0ZG1Y?=
+ =?utf-8?B?TUQ0cSt6OUxGSzFCM2pnbmtRbnhreGgva2w5ckplZElXNVovS3h4a2NZcFI3?=
+ =?utf-8?B?WnIweVVRRFpxb3dzWGtFRlZORVZ1UFhDRU5FWVB4d3MzWWtSNXF4UGY3bU8r?=
+ =?utf-8?B?MW1pUWt5VG5jNWduUjR4RDE0V2tjZ3pKc0JFNUU3NDdHbUtrNCswT2dUbm1h?=
+ =?utf-8?B?aTF4M0I4RFlRRVRLclJZQUlBNnRjM2lxWndVQ1ZMYW5oRktETVZZcWxybk5N?=
+ =?utf-8?B?bTRMMnNrL0NQM1RHbkRPcnVyNWI0ZHFFYlZseEd1aktzQ0RHWjZ6WHltdTVK?=
+ =?utf-8?B?YjFEMkhNUlhiYXR6OEx4aFdxdERvS2ZvL3NvRVVzYUpmMzZKTVBlVnRZcW9V?=
+ =?utf-8?B?WFU3OE5JaHlxK1pQQ3R1OVN5RzUyQnZFWTBwdUtrQ2RwODNVeXZFYzBhUE5Z?=
+ =?utf-8?B?WWlDMUtCdjNRNk92NlpZeDR3TlFiRHJCSUV2UGlva0lqUDBkdFVHU3dYTW14?=
+ =?utf-8?B?SmdjeUY5RGY4MjRSdEpuMUcrU281Y0FWd24zNUdLN3ErQWNQMVd2YmZxRVhz?=
+ =?utf-8?B?dEpxMlF1U3BINE1pNkYxTXR2NTFvcFA3Y0tXWkxMUTF0dDBpQXdzVmxaVVZB?=
+ =?utf-8?B?N2FGK0FoM1VDMVVGeVpyVVl0aGF0QW5WZDVpcVV2QldHNDBKSFgzYzJ0MnFs?=
+ =?utf-8?B?L0xENnJ1OHJIVk1VMzF6SGlRbUNPd2xhSEdsZEN2K1RIa0NXKy9zc0Y4dERm?=
+ =?utf-8?B?eW1DaFN3STBtamt0cWxybTFHWjFOdEtBcVBhL3cxMU1LZnc2Q3VqQTZhMFhp?=
+ =?utf-8?B?R3hEeDI2eStFWlZYd2dqOVhDR1BWZjVzeUhwSWFMUmR6aUhxWG5XRHNZVXRG?=
+ =?utf-8?B?ZzFzSkJmWVljWnJYcHRvT1dCQzArSE9wdnNUS1ZnY2hBeVNQYVI0Z1hsZ3JL?=
+ =?utf-8?B?K2toSXQ1aHJsd2tGNW1SM1ovTDZnUFU1TWFYSVgxV04vOE5kMkxGcGxvd2pL?=
+ =?utf-8?B?dEUxZUhiRGNXSTE3SWFxcDNZdG4wK1RaaHdIdFB6VjdwQzhzTjQ1aEVvaUNL?=
+ =?utf-8?B?VlBoMndxYXdZaGFVY1k4NDZJamFpenIzQzN1S1N4NHFCWGVzMkljL3FHci9O?=
+ =?utf-8?B?MnJEZE44R0dvN1dIZmJRbEoxNHJnYnk2dFhiK0JKdjNuMmFpM1V5VDdWTDBE?=
+ =?utf-8?B?OG5ES29GV09hU2phbjEvREJxWFRhbG16Mm8vQ2ZyNmhRVVdtZVF4Ly9ocVFK?=
+ =?utf-8?B?RGlzS0poVnNFd3dmczI0ek9HcU4wTDBIN3lXWHFxZ0puZ3E4UStsbXk1UFJy?=
+ =?utf-8?B?SnhnNVFRWlJ5ZkhWT1IvVUw4UUdhcVF4Y2xYWnFvclFGYmVEVmczaENGcEtG?=
+ =?utf-8?B?N2kxSDhIc3VYVURqZkNtS080NkhJeHgyL0xDeU45UnNDVFo5M2drTEZlZEhs?=
+ =?utf-8?B?SlorekxmSm8yQ1JPRmJ2M2lUUW43dFVTVndyRkFpandJeEtpVisxZFJ2aUo5?=
+ =?utf-8?B?b2F4c29qeE9ySGlqWHdRTXdxR3dGTkZvamJGWVJlTTg5ekIwdXhEMVdoNStC?=
+ =?utf-8?B?SnRhYjZ4a0QyenA1UlB3VXRRZWVub0svL2k4S2dnemZXbU9nWFppOXMxcTNu?=
+ =?utf-8?B?dGE4eXYwUGZuT05kYmpVSzVTVTBHK2hianRla3hLaGplL3lORFltSC9NVEpT?=
+ =?utf-8?B?V01aSmRKbDA0VVUvUGlWOFhWbGg4S0V5NHZaS2lYekQ2R2kreU1aTVIxYlZ1?=
+ =?utf-8?B?S202WGhUNFFvaHpBMXZrZkNWck5aVnJ4T0xsK0RUNUI0ZFAxRWM2dkFpaVg0?=
+ =?utf-8?B?RWtRbVJPblUxMHl0aWQ5YU5YRDlpeXlkS3NLZUpXWHMrYjZzMHc2eWNMbTNK?=
+ =?utf-8?B?RUVuUENuWFc4WWtrei9xT1lXbWxxMzAvdnNyd3NvcXRWcTdsSTBPSG9PUWJW?=
+ =?utf-8?Q?SHaWzW5fuGWKip87kjQ/kr/JN?=
+X-OriginatorOrg: amd.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 3e23b2e7-2b22-4011-91ab-08dcf439eda3
+X-MS-Exchange-CrossTenant-AuthSource: DS7PR12MB6048.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 24 Oct 2024 14:41:22.0286
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: 6zOxV4lBz6qL0uIwsyaf9bgFAFZgzq9D17gzq8ja3r0r29psaRKSTzdG5JLIp/p45pmlpCcbiHDLBQoe1/QC1g==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: CYYPR12MB8853
 
-Yunsheng Lin <linyunsheng@huawei.com> writes:
+Jason,
 
-> On 2024/10/23 2:14, Jesper Dangaard Brouer wrote:
->>=20
->>=20
->> On 22/10/2024 05.22, Yunsheng Lin wrote:
->>> Networking driver with page_pool support may hand over page
->>> still with dma mapping to network stack and try to reuse that
->>> page after network stack is done with it and passes it back
->>> to page_pool to avoid the penalty of dma mapping/unmapping.
->>> With all the caching in the network stack, some pages may be
->>> held in the network stack without returning to the page_pool
->>> soon enough, and with VF disable causing the driver unbound,
->>> the page_pool does not stop the driver from doing it's
->>> unbounding work, instead page_pool uses workqueue to check
->>> if there is some pages coming back from the network stack
->>> periodically, if there is any, it will do the dma unmmapping
->>> related cleanup work.
->>>
->>> As mentioned in [1], attempting DMA unmaps after the driver
->>> has already unbound may leak resources or at worst corrupt
->>> memory. Fundamentally, the page pool code cannot allow DMA
->>> mappings to outlive the driver they belong to.
->>>
->>> Currently it seems there are at least two cases that the page
->>> is not released fast enough causing dma unmmapping done after
->>> driver has already unbound:
->>> 1. ipv4 packet defragmentation timeout: this seems to cause
->>> =C2=A0=C2=A0=C2=A0 delay up to 30 secs.
->>> 2. skb_defer_free_flush(): this may cause infinite delay if
->>> =C2=A0=C2=A0=C2=A0 there is no triggering for net_rx_action().
->>>
->>> In order not to do the dma unmmapping after driver has already
->>> unbound and stall the unloading of the networking driver, add
->>> the pool->items array to record all the pages including the ones
->>> which are handed over to network stack, so the page_pool can
->>=20
->> I really really dislike this approach!
->>=20
->> Nacked-by: Jesper Dangaard Brouer <hawk@kernel.org>
->>=20
->> Having to keep an array to record all the pages including the ones
->> which are handed over to network stack, goes against the very principle
->> behind page_pool. We added members to struct page, such that pages could
->> be "outstanding".
->
-> Before and after this patch both support "outstanding", the difference is
-> how many "outstanding" pages do they support.
->
-> The question seems to be do we really need unlimited inflight page for
-> page_pool to work as mentioned in [1]?
->
-> 1. https://lore.kernel.org/all/5d9ea7bd-67bb-4a9d-a120-c8f290c31a47@huawe=
-i.com/
 
-Well, yes? Imposing an arbitrary limit on the number of in-flight
-packets (especially such a low one as in this series) is a complete
-non-starter. Servers have hundreds of gigs of memory these days, and if
-someone wants to use that for storing in-flight packets, the kernel
-definitely shouldn't impose some (hard-coded!) limit on that.
+On 10/17/2024 7:02 PM, Jason Gunthorpe wrote:
+> On Wed, Oct 16, 2024 at 05:34:57AM +0000, Vasant Hegde wrote:
+>> Currently attach device path takes protection domain lock followed by
+>> dev_data lock. Most of the operations in this function is specific to
+>> device data except pdom_attach_iommu() where it updates protection
+>> domain structure. Hence reduce the scope of protection domain lock.
+>>
+>> Note that this changes the locking order. Now it takes device lock
+>> before taking domain lock (group->mutex -> dev_data->lock ->
+>> pdom->lock). dev_data->lock is used only in device attachment path.
+>> So changing order is fine. It will not create any issue.
+>>
+>> Finally move numa node assignment to pdom_attach_iommu().
+> 
+> numa node assignment should only be done during domain
+> allocation. This is important because the domain can be mapped prior
+> to being attached and without the right nid table levels will be mis
+> allocated.
+> 
+> However, that needs your other series, so let's just leave this as an
+> future direction note..
 
->>=20
->> The page_pool already have a system for waiting for these outstanding /
->> inflight packets to get returned.=C2=A0 As I suggested before, the page_=
-pool
->> should simply take over the responsability (from net_device) to free the
->> struct device (after inflight reach zero), where AFAIK the DMA device is
->> connected via.
->
-> It seems you mentioned some similar suggestion in previous version,
-> it would be good to show some code about the idea in your mind, I am sure
-> that Yonglong Liu Cc'ed will be happy to test it if there some code like
-> POC/RFC is provided.
+Correct. Once these two series gets merged will remove this check.
 
-I believe Jesper is basically referring to Jakub's RFC that you
-mentioned below.
+> 
+>> diff --git a/drivers/iommu/amd/iommu.c b/drivers/iommu/amd/iommu.c
+>> index d74d3b65c939..a738d2d7f0c4 100644
+>> --- a/drivers/iommu/amd/iommu.c
+>> +++ b/drivers/iommu/amd/iommu.c
+>> @@ -2016,16 +2016,23 @@ static int pdom_attach_iommu(struct amd_iommu *iommu,
+>>  			     struct protection_domain *pdom)
+>>  {
+>>  	struct pdom_iommu_info *pdom_iommu_info, *curr;
+>> +	struct io_pgtable_cfg *cfg = &pdom->iop.pgtbl.cfg;
+>> +	unsigned long flags;
+>> +	int ret = 0;
+>> +
+>> +	spin_lock_irqsave(&pdom->lock, flags);
+>>  
+>>  	pdom_iommu_info = xa_load(&pdom->iommu_array, iommu->index);
+> 
+> It would probably make sense to use the xa_lock to protect the xa
+> instead of overloading the pdom->lock. Then you don't get forced into
+> using GFP_ATOMIC here. That could be a future direction.
 
-> I should mention that it seems that DMA device is not longer vaild when
-> remove() function of the device driver returns, as mentioned in [2], whic=
-h
-> means dma API is not allowed to called after remove() function of the dev=
-ice
-> driver returns.
->
-> 2. https://www.spinics.net/lists/netdev/msg1030641.html
->
->>=20
->> The alternative is what Kuba suggested (and proposed an RFC for),=C2=A0 =
-that
->> the net_device teardown waits for the page_pool inflight packets.
->
-> As above, the question is how long does the waiting take here?
-> Yonglong tested Kuba's RFC, see [3], the waiting took forever due to
-> reason as mentioned in commit log:
-> "skb_defer_free_flush(): this may cause infinite delay if there is no
-> triggering for net_rx_action()."
+Right. We can do follow up series.
 
-Honestly, this just seems like a bug (the "no triggering of
-net_rx_action()") that should be root caused and fixed; not a reason
-that waiting can't work.
+> 
+> Anyhow, it is already a big improvement to narrow the scope of this
+> lock quite a bit
+> 
+> Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
 
--Toke
-
+Thanks
+-Vasant
