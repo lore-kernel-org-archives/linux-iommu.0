@@ -1,48 +1,25 @@
-Received: from mx0b-0031df01.pphosted.com (mx0b-0031df01.pphosted.com [205.220.180.131])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 862D32003B4
-	for <iommu@lists.linux.dev>; Fri, 25 Oct 2024 14:22:55 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.180.131
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 70DE21FB8A7
+	for <iommu@lists.linux.dev>; Fri, 25 Oct 2024 14:27:34 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1729866177; cv=none; b=slU6mo0hRYIKTvV3hHdyymWYedQ52arqAweHzDpW1PxTqCAx0cI1//Z3exlm0Q2SmiKlta8jZ9OZwsrUswhnqQ4nldTaRr4eQEyUimxbPCliAAym/eGBbmlo5A6MzvfNEeUBqwszZV26p2kNvKYDax7X8e45pHCN8632Fb1iVzg=
+	t=1729866456; cv=none; b=rfoTL0kv42+UDqyIpRHpBxOJ/aSiKcFRGpYiV+j//FFUZ45P/lKYdJfhsSiu0Kq8Q11zrHynMrHlb6JJLHiYNjyI8PjE2HbX8apEKkqH/kPUsgAJIyQT1eCsxcL2D8nuFFG1AZUDoO9YUc46h4lkoJPQEVUQSpI7tT04K2dkhlQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1729866177; c=relaxed/simple;
-	bh=rvJ5UrpH8CAj6aSMv+fxBBx82elqojErPfgDYbT+2DA=;
-	h=Message-ID:Date:MIME-Version:Subject:To:CC:References:From:
-	 In-Reply-To:Content-Type; b=ahIhG6o+oGjcVEzayKtqnhEUHUK1OThIas/Rs7daxkpjM8GzmSEI0uRJQeTpjInNAIr0MfeyAVKfu2o438aK4ysDxbfn5wMUJOa71epNjo1fzmFnkDLi9iQb31eqVIflr5GTVsUofeeyVQPbilttiyUShMLuTROJbvj2dy9D2FE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com; spf=pass smtp.mailfrom=quicinc.com; dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b=ZE0KHZ+G; arc=none smtp.client-ip=205.220.180.131
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=quicinc.com
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b="ZE0KHZ+G"
-Received: from pps.filterd (m0279870.ppops.net [127.0.0.1])
-	by mx0a-0031df01.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 49PBC3IQ017697;
-	Fri, 25 Oct 2024 14:22:41 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=quicinc.com; h=
-	cc:content-transfer-encoding:content-type:date:from:in-reply-to
-	:message-id:mime-version:references:subject:to; s=qcppdkim1; bh=
-	fbRBhp0nksiEsDwTJjRTX0/cwvwxa/39KRzDImBUbOA=; b=ZE0KHZ+GY85xP6fS
-	p7gBZWklnjbqKAPIXNenvdNFftGJ6h4uwgMMDLtFg4VlMwkA5boaHBm4M20ozYs2
-	P/cnbHlHKlMkMTCRs6Idtr2jKugWVRXwORyG/SrPRSYj6V6Xq6kI0TyzvKSRs1CJ
-	anr9wF8dLoA210/Xp9tSPSk2keyELZZAaxKg1W6F/dP5EAQtahIowENrSmcvn4up
-	ZmNMglWxPUQvKAPObc0sFEkX5FIA8oVJorQoV3dbyKmJo341a+iSvKs/2OgKWQQJ
-	tfofNBH5KtdGpumjm3hugsuicXTSBXjhB8gxYgHmjl9/vqD/HG4MTJXbQQasJ34T
-	KkkriQ==
-Received: from nasanppmta05.qualcomm.com (i-global254.qualcomm.com [199.106.103.254])
-	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 42em3whe9m-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Fri, 25 Oct 2024 14:22:41 +0000 (GMT)
-Received: from nasanex01b.na.qualcomm.com (nasanex01b.na.qualcomm.com [10.46.141.250])
-	by NASANPPMTA05.qualcomm.com (8.18.1.2/8.18.1.2) with ESMTPS id 49PEMeov023378
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Fri, 25 Oct 2024 14:22:40 GMT
-Received: from [10.214.227.50] (10.80.80.8) by nasanex01b.na.qualcomm.com
- (10.46.141.250) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1544.9; Fri, 25 Oct
- 2024 07:21:54 -0700
-Message-ID: <092db44e-f254-4abd-abea-e9a64e70df12@quicinc.com>
-Date: Fri, 25 Oct 2024 19:51:22 +0530
+	s=arc-20240116; t=1729866456; c=relaxed/simple;
+	bh=40eOsWpBkyjEEzDVxLYU6zqXUWiZv8YYSiAG/diekao=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=bMPQlWYaiw1IvYUDlCz4m6zxClp652GIoEW0Vj3PVTCJL7mWK5mDix6bjjC1UhWedaiNKcoz34ZUpqrELk0UgEjqmz98NnVxXwlH6ObYbHFywgSDocY3/gjnTnp35eF54PFI1ubYzQJDmWS6t8kfqjMuPU3iX5EQx51+jvNWG4g=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; arc=none smtp.client-ip=217.140.110.172
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 58381339;
+	Fri, 25 Oct 2024 07:28:03 -0700 (PDT)
+Received: from [10.1.196.40] (e121345-lin.cambridge.arm.com [10.1.196.40])
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 4FE0C3F73B;
+	Fri, 25 Oct 2024 07:27:32 -0700 (PDT)
+Message-ID: <1a0ff734-73b2-4d73-839b-71e2017ae3c4@arm.com>
+Date: Fri, 25 Oct 2024 15:27:09 +0100
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -50,136 +27,100 @@ List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v16 1/5] iommu/arm-smmu: re-enable context caching in smmu
- reset operation
-To: Will Deacon <will@kernel.org>
-CC: <robdclark@gmail.com>, <robin.murphy@arm.com>, <joro@8bytes.org>,
-        <jgg@ziepe.ca>, <jsnitsel@redhat.com>, <robh@kernel.org>,
-        <krzysztof.kozlowski@linaro.org>, <quic_c_gdjako@quicinc.com>,
-        <dmitry.baryshkov@linaro.org>, <iommu@lists.linux.dev>,
-        <linux-arm-msm@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>, <linux-kernel@vger.kernel.org>,
-        Konrad Dybcio <konrad.dybcio@linaro.org>
-References: <20241008125410.3422512-1-quic_bibekkum@quicinc.com>
- <20241008125410.3422512-2-quic_bibekkum@quicinc.com>
- <20241024125241.GD30704@willie-the-truck>
-Content-Language: en-US
-From: Bibek Kumar Patro <quic_bibekkum@quicinc.com>
-In-Reply-To: <20241024125241.GD30704@willie-the-truck>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
+Subject: Re: [PATCH] iommu/omap: Don't register ops by fwnode
+To: "H. Nikolaus Schaller" <hns@goldelico.com>
+Cc: joro@8bytes.org, will@kernel.org, iommu@lists.linux.dev,
+ Jason Gunthorpe <jgg@nvidia.com>, Linux-OMAP <linux-omap@vger.kernel.org>,
+ Beleswar Padhi <b-padhi@ti.com>, Andreas Kemnade <andreas@kemnade.info>
+References: <c44545c6d07c65d89daa297298c27bb0f15c8b84.1728393458.git.robin.murphy@arm.com>
+ <2863ACA9-2836-49F6-9D85-749CE480804D@goldelico.com>
+ <10d3a86c-d7a8-4ac5-8ad3-010a91c0a25f@arm.com>
+ <FCFEB115-846A-4577-A489-D1537AC77DEA@goldelico.com>
+ <5c3ea490-f2f5-49e5-99fd-1dc239aee28d@arm.com>
+ <F4A297DC-8EBD-4434-97EA-BFEEBB062042@goldelico.com>
+From: Robin Murphy <robin.murphy@arm.com>
+Content-Language: en-GB
+In-Reply-To: <F4A297DC-8EBD-4434-97EA-BFEEBB062042@goldelico.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
- nasanex01b.na.qualcomm.com (10.46.141.250)
-X-QCInternal: smtphost
-X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
-X-Proofpoint-GUID: y1Vf84Z4S45OAOubf3kdrxvTuc6LPKz7
-X-Proofpoint-ORIG-GUID: y1Vf84Z4S45OAOubf3kdrxvTuc6LPKz7
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.293,Aquarius:18.0.1039,Hydra:6.0.680,FMLib:17.12.60.29
- definitions=2024-09-06_09,2024-09-06_01,2024-09-02_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 spamscore=0 malwarescore=0
- mlxscore=0 lowpriorityscore=0 phishscore=0 impostorscore=0 clxscore=1011
- priorityscore=1501 mlxlogscore=999 suspectscore=0 bulkscore=0 adultscore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.19.0-2409260000
- definitions=main-2410250111
 
-
-
-On 10/24/2024 6:22 PM, Will Deacon wrote:
-> On Tue, Oct 08, 2024 at 06:24:06PM +0530, Bibek Kumar Patro wrote:
->> Default MMU-500 reset operation disables context caching in
->> prefetch buffer. It is however expected for context banks using
->> the ACTLR register to retain their prefetch value during reset
->> and runtime suspend.
+On 08/10/2024 8:52 pm, H. Nikolaus Schaller wrote:
+> 
+> 
+>> Am 08.10.2024 um 20:20 schrieb Robin Murphy <robin.murphy@arm.com>:
+> 
+>>> The -ETIMEDOUT seems to come from of_iommu_configure().
 >>
->> Replace default MMU-500 reset operation with Qualcomm specific reset
->> operation which envelope the default reset operation and re-enables
->> context caching in prefetch buffer for Qualcomm SoCs.
+>> Oof, yeah, now we've wound up with the opposite problem that because it's the generic "iommus" binding, it gets as far as of_iommu_xlate() but now the NULL fwnode no longer matches the phandle target so that thinks it's waiting for an instance which hasn't registered yet :(
 >>
->> Reviewed-by: Konrad Dybcio <konrad.dybcio@linaro.org>
->> Signed-off-by: Bibek Kumar Patro <quic_bibekkum@quicinc.com>
->> ---
->>   drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c | 45 ++++++++++++++++++++--
->>   1 file changed, 42 insertions(+), 3 deletions(-)
+>> OK, different track, does the diff below fare any better? (I've not written it up fully yet as the DRA7 special cases will need some more work still)
 >>
->> diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
->> index 087fb4f6f4d3..0cb10b354802 100644
->> --- a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
->> +++ b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
->> @@ -16,6 +16,16 @@
+>> Thanks,
+>> Robin.
 >>
->>   #define QCOM_DUMMY_VAL	-1
+>> ----->8-----
 >>
->> +/*
->> + * SMMU-500 TRM defines BIT(0) as CMTLB (Enable context caching in the
->> + * macro TLB) and BIT(1) as CPRE (Enable context caching in the prefetch
->> + * buffer). The remaining bits are implementation defined and vary across
->> + * SoCs.
->> + */
->> +
->> +#define CPRE			(1 << 1)
->> +#define CMTLB			(1 << 0)
->> +
->>   static struct qcom_smmu *to_qcom_smmu(struct arm_smmu_device *smmu)
->>   {
->>   	return container_of(smmu, struct qcom_smmu, smmu);
->> @@ -396,11 +406,40 @@ static int qcom_smmu_def_domain_type(struct device *dev)
->>   	return match ? IOMMU_DOMAIN_IDENTITY : 0;
->>   }
+>> diff --git a/drivers/iommu/omap-iommu.c b/drivers/iommu/omap-iommu.c
+>> index c9528065a59a..44e09d60e861 100644
+>> --- a/drivers/iommu/omap-iommu.c
+>> +++ b/drivers/iommu/omap-iommu.c
+>> @@ -1723,12 +1723,19 @@ static void omap_iommu_release_device(struct device *dev)
 >>
->> +static int qcom_smmu500_reset(struct arm_smmu_device *smmu)
+>> }
+>>
+>> +int omap_iommu_of_xlate(struct device *dev, const struct of_phandle_args *args)
 >> +{
->> +	int ret;
->> +	u32 val;
->> +	int i;
+>> + /* TODO: collect args->np to save re-parsing in probe above */
+>> + return 0;
+>> +}
 >> +
->> +	ret = arm_mmu500_reset(smmu);
->> +	if (ret)
->> +		return ret;
->> +
->> +	/*
->> +	 * arm_mmu500_reset() disables CPRE which is re-enabled here.
->> +	 * The errata for MMU-500 before the r2p2 revision requires CPRE to be
->> +	 * disabled. The arm_mmu500_reset function disables CPRE to accommodate all
->> +	 * RTL revisions. Since all Qualcomm SoCs are on the r2p4 revision, where
->> +	 * the CPRE bit can be enabled, the qcom_smmu500_reset function re-enables
->> +	 * the CPRE bit for the next-page prefetcher to retain the prefetch value
->> +	 * during reset and runtime suspend operations.
->> +	 */
->> +
->> +	for (i = 0; i < smmu->num_context_banks; ++i) {
->> +		val = arm_smmu_cb_read(smmu, i, ARM_SMMU_CB_ACTLR);
->> +		val |= CPRE;
->> +		arm_smmu_cb_write(smmu, i, ARM_SMMU_CB_ACTLR, val);
->> +	}
+>> static const struct iommu_ops omap_iommu_ops = {
+>> .identity_domain = &omap_iommu_identity_domain,
+>> .domain_alloc_paging = omap_iommu_domain_alloc_paging,
+>> .probe_device = omap_iommu_probe_device,
+>> .release_device = omap_iommu_release_device,
+>> .device_group = generic_single_device_group,
+>> + .of_xlate = omap_iommu_of_xlate,
+>> .pgsize_bitmap = OMAP_IOMMU_PGSIZES,
+>> .default_domain_ops = &(const struct iommu_domain_ops) {
+>> .attach_dev = omap_iommu_attach_dev,
 > 
-> If CPRE only needs to be disabled prior to r2p2, then please teach the
-> MMU-500 code about that instead of adding qualcomm-specific logic here.
 > 
+> Unfortunately no change :(
 
-Doing this on MMU-500 code would make it generic and reflect for SoC of 
-all the vendors on this platform.
-We can make sure that it won't cause any problems in Qualcomm SoCs as we 
-have been enabling this since for some years now and could not 
-observe/reproduce any issues around these errata.
+Hmm, I dug around and found a Pandaboard in the cupboard, and ostensibly 
+this seems to work as expected there:
 
-But we won't be able to guarantee the same behavior in SoC for other 
-vendors where these errata might still be applicable as per [1] and [2].
-So as per my understanding it's safe to include in Qualcomm specific 
-implementation and not changing the default behavior in all other 
-vendors' SoC even if they are not prior to r2p2 revision [3].
+6:12-rc3:
+chu-chu-rocket:~ # dmesg | grep -i iommu
+[    0.628601] iommu: Default domain type: Translated
+[    0.633575] iommu: DMA domain TLB invalidation policy: strict mode
+[    1.636047] omap-iommu 4a066000.mmu: 4a066000.mmu registered
+[    3.265869] omap-iommu 55082000.mmu: 55082000.mmu registered
 
-[1]: 
-https://lore.kernel.org/all/4db1b4d2-0aa9-4640-b7d7-7d18ab64569a@arm.com/
-[2]: 
-https://lore.kernel.org/all/467590c40029ef0712b1fd38f2928fd4f08d09af.1726232138.git.robin.murphy@arm.com/
-[3]: 
-https://lore.kernel.org/all/CAA8EJprHppoN6rg8-rS1F+4kynQqmV1L3OiHFnJ0HyrshywFig@mail.gmail.com/ 
+6.12-rc3 + of_xlate:
+chu-chu-rocket:~ # dmesg | grep -i iommu
+[    0.629577] iommu: Default domain type: Translated
+[    0.634582] iommu: DMA domain TLB invalidation policy: strict mode
+[    1.622802] omap-iommu 4a066000.mmu: 4a066000.mmu registered
+[    3.316009] omap-iommu 55082000.mmu: 55082000.mmu registered
+[    3.329040] omap-rproc ocp:dsp: Adding to iommu group 0
+[    3.335083] omap-iommu 4a066000.mmu: 4a066000.mmu: version 2.0
+[    3.356506] omap-rproc 55020000.ipu: Adding to iommu group 1
+[    3.362396] omap-iommu 55082000.mmu: 55082000.mmu: version 2.1
 
+Guess I'm going to have to dig further for an OMAP3 to figure out what 
+additional shenanigans that ISP driver is up to... :/
 
-Thanks & regards,
-Bibek
+Thanks,
+Robin.
 
-
-
-> Will
+> 
+> A very tiny issue was that the second argument can not have a const specifier in the
+> v6.8 series, but starting with v6.9 it should be there. But since 6.8 and 6.9 are
+> already EOL, there will be no back-ports anyways. And if someone does really
+> backport (like me for testing purposes) it is obvious what to do.
+> 
+> BR and thanks,
+> Nikolaus
+> 
