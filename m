@@ -1,94 +1,217 @@
-Received: from mail-lj1-f179.google.com (mail-lj1-f179.google.com [209.85.208.179])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtpbgjp3.qq.com (smtpbgjp3.qq.com [54.92.39.34])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 04CDD1DD0C9
-	for <iommu@lists.linux.dev>; Fri, 25 Oct 2024 11:06:17 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.179
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C343F22B646
+	for <iommu@lists.linux.dev>; Fri, 25 Oct 2024 11:15:52 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=54.92.39.34
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1729854380; cv=none; b=DzbEdFT5QOStdJIE5WP76ilZiPi/1XlCAg4iFHvdIAKYqd5ER21wZllVT9MmpE0KvBg/EFOY+bcHsxBmMdPIrh6oGHEnD1aPyStVPJ10FByN3of2HMskL8W/0jBaLXktut2jwrcPAUrw/QbdnDbKBfFvykQSm0Vzyg3mEBzZnfk=
+	t=1729854957; cv=none; b=YQeerR4hLgpJoyJD9XZFdHdvWkXe4OtTfEgLV2hsjdgJPuD71957CZ5QGhfBcKta0lmvvSJuu8GQTrvP7Op5NJrMtEsFPY/EnQIYv+RijJ6/VbDOD6QOKRyu4VtjZ/r5cXdKdC48EX2Bwsb2vIsnQVQOhe9pDdoMgRfWdQEFL68=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1729854380; c=relaxed/simple;
-	bh=jtaPclHrmNUj0OOQtmFmi0d/L5BXAUDlUF8D6hLtdhg=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=I49ejr9S1EmjBLeCR9EJn+Lfr5FFXZlqtmgwCxt70xNvT+3zcG31brxOo6KH05zpRgdPWdKNOJU3mpW+4V7WKYXK/jH8ft4DJ1Ki7KwVPMjg0SPvrS+TzsUFhdC7WbCenIZRy0lxkjdmqudM0ws+yKNAantRfxjUqC4h9ky/5hI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org; spf=pass smtp.mailfrom=linaro.org; dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b=Xmuc5wmF; arc=none smtp.client-ip=209.85.208.179
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linaro.org
+	s=arc-20240116; t=1729854957; c=relaxed/simple;
+	bh=iv07cwFKhxd7Lg/3b2DM6oO6urm3JYH7zimEF+KWivY=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=F6hQkj5jS+s/ysYAfObFlEojqtJXjsGQ4w8jFEgAYdqmZpvlkcFU9NzV3yDiSMdxnyAgB+6FrRQS/MIAVsYKwtq6AfjjmdirZHYKvOpet0GJ+y4ET61R3LDiYvu1rd/cZTgFY7AKZU4+x1G1aaJz7k43fI316n4bKniJvIp8h2k=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=uniontech.com; spf=pass smtp.mailfrom=uniontech.com; dkim=pass (1024-bit key) header.d=uniontech.com header.i=@uniontech.com header.b=qGbrcPEM; arc=none smtp.client-ip=54.92.39.34
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=uniontech.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=uniontech.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="Xmuc5wmF"
-Received: by mail-lj1-f179.google.com with SMTP id 38308e7fff4ca-2fb50e84ec7so16455671fa.1
-        for <iommu@lists.linux.dev>; Fri, 25 Oct 2024 04:06:17 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1729854376; x=1730459176; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=AQ408GkSv6FKcDj3LbYcJBQXIjGsLP11MfIJYKrpseo=;
-        b=Xmuc5wmFw4JNBDThq0tU3dVjQBbl04CdnDfOXejRAT+9qKnmBQ1Oy69bvXSq4NTehE
-         RWrKU3h77/K0+fZYYTIpwymyFmWiTf0OQqVaIPHDggKCxKHF7Tt/Eo/2oJ0BCdjYOnF/
-         Bmepx/CdG1OJdPiEtRbeH/r8fsbA3YAdi9bcW/Le0TdnzdWLdcO78d9BeAsJoezsRhbr
-         S/lkDPdozVNuWqFtKe4Esm7zSZYG8B3LvkV86nfgfHi/U+jF2l/dWFUb1Zm4OSA/59Bs
-         xGU7RU97FkBFNCcYe3EOrg9JenWgA72pgUSepl0HolCBU/3/zGArQnB+3uLmdfZt60zx
-         TTCA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1729854376; x=1730459176;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=AQ408GkSv6FKcDj3LbYcJBQXIjGsLP11MfIJYKrpseo=;
-        b=dch05DOrNWbnlbt676nVUlXRiRGZA3JWjFdzaTLi1u8H3HCw0eMjiWUjLY8+B+nbrR
-         7eTHl2PeuOzuS2se8t2U+q8wE4NlsWSN/bgWfU3etzQT8RljKgurnWdoMtSIbKqVTgGK
-         TfD1gft7g3VmsXLQHvRDcwvAPhc0EQdNfBXrTQmIzqnzdQk0E20CxtBPvHkG0D4F/IeT
-         yCpd8biClNeXBd5DDAZdN379xFeOUcQkeYHuD11ndpTxh0XPFGcH2HdUwfj5OR7RA8R6
-         eeiCCx4UXgBN4dzBRM1XTGeSB02Xe9hl+Mkqstxry//2Nirw19rfEReHZyjMMaFWUwoK
-         YRMg==
-X-Forwarded-Encrypted: i=1; AJvYcCXAd3Hmvdvitcup11VvbwGQu66K7IDhdqwo/f2PjdMWJEAUZ+WJReXyTIS2cNCP1bsUDZD8fQ==@lists.linux.dev
-X-Gm-Message-State: AOJu0YzkYTshcpcfAm48CJq12f8AjSVeLhrjdC5G+ik70imHE7XxiteS
-	4TRti0oVHkr8hH5+KaoEQ7BSIXEk0mXQ3uCCS1YJlk6nkLrb2vGgEIVgu+GEHKo=
-X-Google-Smtp-Source: AGHT+IF+VxvbiEWOkVh7f/0HfI+Gnuj/Q5Tm25LhUJRLQVlSwMKKkXkucoVkGr+79kTD4Fupo5kr7A==
-X-Received: by 2002:a2e:4612:0:b0:2fb:5a7e:5072 with SMTP id 38308e7fff4ca-2fca825b992mr24918301fa.34.1729854375895;
-        Fri, 25 Oct 2024 04:06:15 -0700 (PDT)
-Received: from eriador.lumag.spb.ru (2001-14ba-a0c3-3a00--7a1.rev.dnainternet.fi. [2001:14ba:a0c3:3a00::7a1])
-        by smtp.gmail.com with ESMTPSA id 38308e7fff4ca-2fcb45d19c1sm1449371fa.82.2024.10.25.04.06.14
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 25 Oct 2024 04:06:14 -0700 (PDT)
-Date: Fri, 25 Oct 2024 14:06:13 +0300
-From: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
-To: Konrad Dybcio <konrad.dybcio@oss.qualcomm.com>
-Cc: Qingqing Zhou <quic_qqzhou@quicinc.com>, andersson@kernel.org, 
-	konradybcio@kernel.org, robh@kernel.org, krzk+dt@kernel.org, conor+dt@kernel.org, 
-	robimarko@gmail.com, will@kernel.org, robin.murphy@arm.com, joro@8bytes.org, 
-	linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, 
-	iommu@lists.linux.dev
-Subject: Re: [PATCH v3 4/4] arm64: dts: qcom: qcs615: add the APPS SMMU node
-Message-ID: <zsphor7rpbwx4km6uxpepky2h7atbgjn2435puygmpssfc36mc@wkquqxud2yij>
-References: <20241025030732.29743-1-quic_qqzhou@quicinc.com>
- <20241025030732.29743-5-quic_qqzhou@quicinc.com>
- <8a60b729-b312-4afc-835b-a18060ad3f03@oss.qualcomm.com>
+	dkim=pass (1024-bit key) header.d=uniontech.com header.i=@uniontech.com header.b="qGbrcPEM"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=uniontech.com;
+	s=onoh2408; t=1729854879;
+	bh=ZOoxip5x7wI2+vc/NUDO1hx8anDEC5la6Zs6GJsKfJY=;
+	h=Message-ID:Date:MIME-Version:Subject:To:From;
+	b=qGbrcPEMXhS5tfWfmv5+xPPRf7bE1hjqlW2iksHOq1E8o8jLEUaWWtyLBbR52nc/Q
+	 ybQOqKTJwd3EIR2t8Up++13OZCzNms0vcOznVA7RejqEt1XWA24tbSj2jom1WEqvkb
+	 eloK2iAt57y2wG8WxLUBf6cVgZxwf8q11FfCfSjg=
+X-QQ-mid: bizesmtp90t1729854860t1aawzm2
+X-QQ-Originating-IP: vHczkqArfOOD17s222IqCdP+vlE37E3GSXdwUH2fgSc=
+Received: from [10.12.18.83] ( [123.124.208.226])
+	by bizesmtp.qq.com (ESMTP) with 
+	id ; Fri, 25 Oct 2024 19:14:18 +0800 (CST)
+X-QQ-SSF: 0000000000000000000000000000000
+X-QQ-GoodBg: 1
+X-BIZMAIL-ID: 5802649936481617229
+Message-ID: <5111574CD4361AE7+ecedd63e-e04a-4ada-be16-0e290498c7c4@uniontech.com>
+Date: Fri, 25 Oct 2024 19:14:18 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <8a60b729-b312-4afc-835b-a18060ad3f03@oss.qualcomm.com>
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH] iommu/arm-smmu: Add judgment on the size and granule
+ parameters passed in
+To: Robin Murphy <robin.murphy@arm.com>,
+ linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev,
+ linux-kernel@vger.kernel.org, Will Deacon <will@kernel.org>,
+ Joerg Roedel <joro@8bytes.org>, Jason Gunthorpe <jgg@ziepe.ca>,
+ Rob Clark <robdclark@chromium.org>,
+ Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+Cc: =?UTF-8?B?6Iuf5rWp?= <gouhao@uniontech.com>
+References: <20241024100224.62942-1-goutongchen@uniontech.com>
+ <aa763283-97fc-4b50-828d-8b64aa749bdd@arm.com>
+From: =?UTF-8?B?57yR5ZCM55Cb?= <goutongchen@uniontech.com>
+In-Reply-To: <aa763283-97fc-4b50-828d-8b64aa749bdd@arm.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
+X-QQ-SENDSIZE: 520
+Feedback-ID: bizesmtp:uniontech.com:qybglogicsvrgz:qybglogicsvrgz8a-0
+X-QQ-XMAILINFO: NTznjAszAYlzhx8qKWfZkH/wDM0WMa9p/VpwrTdvSkZFdWNYDq4SnZCk
+	ECVDXOxr/6C55fw4NEFLea1TqFBkpCzPUUWsyz4x+u8N06LgGjt92XJCswgiU4cL5N8vXSu
+	m9cYll/fRN1SiC6LznvpqOKxToum+z0Qe5jLv3Sijf6ZbgtDWWKaEQcr25Qtuge9gICh7FI
+	8LHnNWTxGfq/FmW7iwA4iWJWdy/obZw81U+JXfduIp8JuvSrGW1f5EUwtOod7YldRYuof4e
+	t5PtP9bMSsWzFVus3g0+2fi0MSGknlfE8KMc9ZOwOadh47ko7i7Lxuuaesu3vn81a5/tlU9
+	kj9stxTlSapQ4Bd6NIDwTMgO2t9k5lNwVqVNWQb3YEeOER+k856rX0hulXLhMSxFk2c3U85
+	1V+TPF6rHJEmeRYoKFzciumK+R015j9gVLhkU2iahwp1mPmhGQVxlZfI3SU5se2MrV7uCpF
+	04XjOA5IX1JhpE8e7PFKiU66spn+fsL5R4bg8IZqsXayRFvtLpTxOZdsthvNKaHcji9aQG2
+	R96JOZSmhQJAA3ghh9k5i4ktQtPB5UvfvW75HmqW8u6Y7UwQCGkqeYupKUigLRFQAIeBLzY
+	6BAY4e7HS9cZqc13+LCVg84bMw372nG+VHYb1pUR6is7IlscA3jCpW7Uskee/f8NA6brkqE
+	XQRT3kdloCJU9ycr5l6ncaYluIczG+bTJcPkBtmUjgWXH3YDs1eCspuzBsD6IGwegRI3Dcg
+	RdCAVrYERC2NHJ5Jg0p0jMJNJV79uZhZhOGEOoLuzygTsp1nIGceE3gtgJDfig67rl1xRxX
+	LTkbf9H2+G7KsLPI7UCwdvmDhkP/AqTCnpwIm6pNokiiRKlT1Qq1wKAhV5QnJd3vma6amug
+	+iWbYQDIPBZvthRqJKkoPthPQCHq56zpmfRMvSoFCbFwjJZjSeJQjnCBHmme3pt1ZIZgmWw
+	8gil9HWG1nEH/5Idm/NDtZA3pI4npMDa7lbQ=
+X-QQ-XMRINFO: M/715EihBoGSf6IYSX1iLFg=
+X-QQ-RECHKSPAM: 0
 
-On Fri, Oct 25, 2024 at 10:54:24AM +0200, Konrad Dybcio wrote:
-> On 25.10.2024 5:07 AM, Qingqing Zhou wrote:
-> > Add the APPS SMMU node for QCS615 platform. Add the dma-ranges
-> > to limit DMA address range to 36bit width to align with system
-> > architecture.
-> > 
-> > Signed-off-by: Qingqing Zhou <quic_qqzhou@quicinc.com>
-> > ---
-> 
-> You probably also want to mark it `dma-coherent` (see e.g.
-> x1e80100.dtsi)
 
-Is it? I don't think SM6150 had dma-coherent SMMU, at least it wasn't
-marked as such.
+在 2024/10/24 19:59, Robin Murphy 写道:
+> On 24/10/2024 11:02 am, goutongchen wrote:
+>> In the arm_smmu_tlb_inv_range_s1 and arm_smmu_tlb_inv_range_s2
+>> functions, the size and granule passed in must be judged.
+>> It must be ensured that the passed in parameter is not 0 and
+>> the size is an integer multiple of the granule, otherwise it
+>> will cause an infinite while loop.
+>>
+>> This was encountered during testing, and was initially triggered
+>> by passing in a size value of 0, causing the kernel to crash.
+>>
+>> [    8.214378][  T675] xhci_hcd 0000:0b:00.0: new USB bus registered, 
+>> assigned bus number 1
+>> [   68.246185][    C0] rcu: INFO: rcu_sched self-detected stall on CPU
+>> [   68.246866][    C0] rcu:     0-....: (5999 ticks this GP) 
+>> idle=796c/1/0x4000000000000000 softirq=161/161 fqs=2999
+>> [   68.247924][    C0] rcu:     (t=6000 jiffies g=-699 q=1 ncpus=128)
+>> [   68.248452][    C0] CPU: 0 PID: 675 Comm: kworker/0:2 Not tainted 
+>> 6.6.0-25.02.2500.002.uos25.aarch64 #1
+>> [   68.249237][    C0] Hardware name: Inspur     CS5260F 
+>> /CS5260F          , BIOS 4.0.16 05/31/22 16:53:51
+>> [   68.250029][    C0] Workqueue: events work_for_cpu_fn
+>> [   68.250497][    C0] pstate: a0000005 (NzCv daif -PAN -UAO -TCO 
+>> -DIT -SSBS BTYPE=--)
+>> [   68.251188][    C0] pc : arm_smmu_tlb_inv_range_s1+0xf0/0x158
+>> [   68.251704][    C0] lr : arm_smmu_tlb_inv_walk_s1+0x44/0x68
+>> [   68.252189][    C0] sp : ffff80008044b780
+>> [   68.252530][    C0] x29: ffff80008044b780 x28: 0000000000000000 
+>> x27: 0000000000001000
+>> [   68.253212][    C0] x26: 0000000000000600 x25: 0000000000000001 
+>> x24: 0000000000000600
+>> [   68.253857][    C0] x23: 0000000000000000 x22: 0000000000001000 
+>> x21: fffffc64e2e59000
+>> [   68.254544][    C0] x20: 0000000039c1d1a6 x19: ffff3fe944c40280 
+>> x18: 0000000000000000
+>> [   68.255240][    C0] x17: 626d756e20737562 x16: ffffb0e7e08c1008 
+>> x15: 0000000000000000
+>> [   68.255930][    C0] x14: ffff3ef8c1ea15cd x13: ffff3ef8c1ea15cb 
+>> x12: fffffcfba30e3880
+>> [   68.256538][    C0] x11: 00000000ffff7fff x10: ffff80008044b6b0 x9 
+>> : ffffb0e7decd1b5c
+>> [   68.257126][    C0] x8 : 0000000000000dc0 x7 : ffff3ee8c4148000 x6 
+>> : ffff3ee8c4148000
+>> [   68.257822][    C0] x5 : 0000000000000008 x4 : 0000000000000000 x3 
+>> : ffff3fe944c40800
+>> [   68.258497][    C0] x2 : 0000000000000010 x1 : 0000000000000020 x0 
+>> : ffffb0e7dfd6c3d0
+>> [   68.259185][    C0] Call trace:
+>> [   68.259451][    C0]  arm_smmu_tlb_inv_range_s1+0xf0/0x158
+>> [   68.259933][    C0]  arm_smmu_tlb_inv_walk_s1+0x44/0x68
+>> [   68.260384][    C0]  __arm_lpae_map+0x1f0/0x2c0
+>
+> Huh? This invalidation path is for mapping a block entry, and the size 
+> is the size of that block per ARM_LPAE_BLOCK_SIZE(lvl, data) - how can 
+> it possibly be 0?
+>
+> Thanks,
+> Robin.
+>
 
--- 
-With best wishes
-Dmitry
+Thank you for your reply. First of all, as you said, under normal 
+circumstances, the size will not be 0, but I think it is better to limit 
+it here.
+
+Because there is no guarantee that the parameter value passed in meets 
+the requirements, if a value that does not meet the requirements is set 
+manually during the call, it will fall into an infinite loop and cause 
+the kernel to fail to start, which is very fatal.
+
+It is precisely because we actually encountered such an error and this 
+problem that we submitted this patch to the upstream.
+
+
+Thanks,
+
+goutongchen.
+
+
+>> [   68.260796][    C0] arm_lpae_map_pages+0xec/0x150
+>> [   68.261215][    C0]  arm_smmu_map_pages+0x48/0x130
+>> [   68.261654][    C0]  __iommu_map+0x134/0x2a8
+>> [   68.262098][    C0]  iommu_map_sg+0xb8/0x1c8
+>> [   68.262500][    C0] 
+>> __iommu_dma_alloc_noncontiguous.constprop.0+0x180/0x270
+>> [   68.263145][    C0]  iommu_dma_alloc+0x178/0x238
+>> [   68.263557][    C0]  dma_alloc_attrs+0xf8/0x108
+>> [   68.263962][    C0]  xhci_mem_init+0x1e8/0x6d0
+>> [   68.264372][    C0]  xhci_init+0x88/0x1d0
+>> [   68.264736][    C0]  xhci_gen_setup+0x284/0x468
+>> [   68.265121][    C0]  xhci_pci_setup+0x60/0x1f8
+>> [   68.265506][    C0]  usb_add_hcd+0x278/0x650
+>> [   68.265860][    C0]  usb_hcd_pci_probe+0x218/0x458
+>> [   68.266256][    C0]  xhci_pci_probe+0x7c/0x270
+>> [   68.266660][    C0]  local_pci_probe+0x48/0xb8
+>> [   68.267074][    C0]  work_for_cpu_fn+0x24/0x40
+>> [   68.267548][    C0]  process_one_work+0x170/0x3c0
+>> [   68.267999][    C0]  worker_thread+0x234/0x3b8
+>> [   68.268383][    C0]  kthread+0xf0/0x108
+>> [   68.268704][    C0]  ret_from_fork+0x10/0x20
+>>
+>> Signed-off-by: goutongchen <goutongchen@uniontech.com>
+>> ---
+>>   drivers/iommu/arm/arm-smmu/arm-smmu.c | 14 ++++++++++++++
+>>   1 file changed, 14 insertions(+)
+>>
+>> diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu.c 
+>> b/drivers/iommu/arm/arm-smmu/arm-smmu.c
+>> index 8321962b3714..16b2e9ec0e60 100644
+>> --- a/drivers/iommu/arm/arm-smmu/arm-smmu.c
+>> +++ b/drivers/iommu/arm/arm-smmu/arm-smmu.c
+>> @@ -282,6 +282,13 @@ static void arm_smmu_tlb_inv_range_s1(unsigned 
+>> long iova, size_t size,
+>>       struct arm_smmu_cfg *cfg = &smmu_domain->cfg;
+>>       int idx = cfg->cbndx;
+>>   +    if (size == 0 || granule == 0 || (size % granule) != 0) {
+>> +        dev_err(smmu->dev,
+>> +                 "The size or granule passed in is err. size=%lu, 
+>> granule=%lu\n",
+>> +                 size, granule);
+>> +        return;
+>> +    }
+>> +
+>>       if (smmu->features & ARM_SMMU_FEAT_COHERENT_WALK)
+>>           wmb();
+>>   @@ -309,6 +316,13 @@ static void arm_smmu_tlb_inv_range_s2(unsigned 
+>> long iova, size_t size,
+>>       struct arm_smmu_device *smmu = smmu_domain->smmu;
+>>       int idx = smmu_domain->cfg.cbndx;
+>>   +    if (size == 0 || granule == 0 || (size % granule) != 0) {
+>> +        dev_err(smmu->dev,
+>> +                 "The size or granule passed in is err. size=%lu, 
+>> granule=%lu\n",
+>> +                 size, granule);
+>> +        return;
+>> +    }
+>> +
+>>       if (smmu->features & ARM_SMMU_FEAT_COHERENT_WALK)
+>>           wmb();
+>
