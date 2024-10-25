@@ -1,199 +1,242 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.21])
+Received: from NAM10-DM6-obe.outbound.protection.outlook.com (mail-dm6nam10on2050.outbound.protection.outlook.com [40.107.93.50])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2554D199221;
-	Fri, 25 Oct 2024 05:55:50 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.21
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1729835752; cv=none; b=V8XgW967wWMKUWqfDG2/JKXlRLHq4OnJ3aPtpXyVJrW9sw8LQFJ11TN7AetQ0nr6L8y147aB/e7Fxpv4BLJKYFlINX3cEDgzUoEC+hp1sK8NtkTX9H0fF+sJe47HAQDmQBzm9I5FYEBEb7aO3jX01L7ECuuFFuf30yFuYPZ4xj4=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1729835752; c=relaxed/simple;
-	bh=23FWiH3CKzmsNXt1ZdAz5LEfEzzjk6r3RpMxYdw4RFA=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=QksmZpmokJRUjxOsl/12e241YTCFhC9ItiQ/LrQtGKOrNf0ukZT5gApwwDplUCrv/ynlNAqRRzN2goPuQeSc6/gElA00X+vwTl3y2AXoMmgQibk+lmv173Ink27uHGyj0UAdmAUJWdmkyz3+cnDmqiOkQOYGA6mgCjLNmOj+ai4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=fB7odEix; arc=none smtp.client-ip=198.175.65.21
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9C73318C930;
+	Fri, 25 Oct 2024 05:58:46 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.93.50
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1729835928; cv=fail; b=YPG96oTbhsz+S+i/XkpRWHjsAriG/LxIebCFGtZvZJsdKa/uAhxdZ5Z+rCFsGRhRhHpb94NiSz52Dfj/L/3qeZzvbH9r4np0sroCXXN3wS4ohyMahdA4XOfKd+2FVbqkffaU6eqDG5RyQYRDDpIaSaC2/It2xmHKLqoTMVUO1n0=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1729835928; c=relaxed/simple;
+	bh=O6Xc2vLoCuODmmoX7LpIqxroaxOBq5FFfgbyccpTvho=;
+	h=Message-ID:Date:Subject:To:Cc:References:From:In-Reply-To:
+	 Content-Type:MIME-Version; b=cg4cGOYid+PGOXwG/VufxfehoRyckXo5ycn+AmcAMGV6FETQ2r+StaTGFzZK8RJMnj+b/zBLDnFbfjUZcX97Txllgd1zWCTnyvT2XHWn+5XrtjhaUdkGt1SFeFUheCivlfm4S2ohstOzE/qAjRCYPdSN32itGiKRXaclg2wdbAk=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com; spf=fail smtp.mailfrom=amd.com; dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b=sInP0h+S; arc=fail smtp.client-ip=40.107.93.50
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=amd.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="fB7odEix"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1729835750; x=1761371750;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=23FWiH3CKzmsNXt1ZdAz5LEfEzzjk6r3RpMxYdw4RFA=;
-  b=fB7odEixCexl+krhFRt+v8fBBhMdlIcwNySvF7dDj37cJ9kNUSg3yFZg
-   RioecP7XTpaIsBPeTDx1DiW+DM6d+OveWkx15Q/XYPfcWmSq+6mnQhrfh
-   6F9HRTIRoXD2LOwrB0rqSf7flBGQf9YsXEeuPWBByD5QovHp/MORsj3Kq
-   V7aEOplfsAy+E49AVQYLORov6bc7i3tZurPF9kgK+ssIUEm5am+gojDoq
-   2XxoZqnDW900yM+IDeN/6RNFwyCPbOeJUegaFACNFvYYnTkP2LAfJLLy1
-   jYucLS1QT6WtpjNBvr/e5cEFZZaHIvP+YTW/B6Owxm3VPw27ZD5xgxKaQ
-   g==;
-X-CSE-ConnectionGUID: AU/5MlUjQqidKZHPLnOazw==
-X-CSE-MsgGUID: YmyObVqyTViy/iD/Y/fGeQ==
-X-IronPort-AV: E=McAfee;i="6700,10204,11222"; a="29434836"
-X-IronPort-AV: E=Sophos;i="6.11,199,1725346800"; 
-   d="scan'208";a="29434836"
-Received: from orviesa008.jf.intel.com ([10.64.159.148])
-  by orvoesa113.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Oct 2024 22:55:47 -0700
-X-CSE-ConnectionGUID: yloQ/prCQlaJrmPLL5wONA==
-X-CSE-MsgGUID: bmK5WEtaRt+0XofvJf9EOw==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.11,231,1725346800"; 
-   d="scan'208";a="81651366"
-Received: from lkp-server01.sh.intel.com (HELO a48cf1aa22e8) ([10.239.97.150])
-  by orviesa008.jf.intel.com with ESMTP; 24 Oct 2024 22:55:43 -0700
-Received: from kbuild by a48cf1aa22e8 with local (Exim 4.96)
-	(envelope-from <lkp@intel.com>)
-	id 1t4DIT-000Xer-0C;
-	Fri, 25 Oct 2024 05:55:41 +0000
-Date: Fri, 25 Oct 2024 13:55:26 +0800
-From: kernel test robot <lkp@intel.com>
-To: goutongchen <goutongchen@uniontech.com>,
-	linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev,
-	linux-kernel@vger.kernel.org, Will Deacon <will@kernel.org>,
-	Robin Murphy <robin.murphy@arm.com>, Joerg Roedel <joro@8bytes.org>,
-	Jason Gunthorpe <jgg@ziepe.ca>, Rob Clark <robdclark@chromium.org>,
-	Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
-Cc: llvm@lists.linux.dev, oe-kbuild-all@lists.linux.dev,
-	goutongchen <goutongchen@uniontech.com>,
-	=?utf-8?B?6Iuf5rWp?= <gouhao@uniontech.com>
-Subject: Re: [PATCH] iommu/arm-smmu: Add judgment on the size and granule
- parameters passed in
-Message-ID: <202410251339.i3YUd5BO-lkp@intel.com>
-References: <20241024100224.62942-1-goutongchen@uniontech.com>
+	dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b="sInP0h+S"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=xqqSbulRZPgIN4FerAr2joaxEx/XhzVLB9tYZQoZ+/eg/CliSm8v8ovNecfqX9sZ3lpQg2od8Pj/T61tbjEZVwgSSSCdO/uDLOytzvHGwVsAOGnYMTGVE1dtOyn053jEzooJ79FCuZQBqq89Qz2oD+Xxr4aXlLTRr7y34VJxsJbgojQPJFBxoU92LuPXrfIS0HLeYsdII0Ue2G+vOp8QFevjnTDMFKcijv1hjT39HgdQi16f2HS7SmT7C4uxdtVRK1ZCvd4/M2Ty+wyS7z1GuBwz4DylDSkFSEj3lsS/H/dpPf6ORDNrE7Bx6+6I4PcofxiCdWBiMcMwdkoZfGKPMw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=DHPFv0ip7HCJfpY8mXjRdpzfNRb7TydUCSBeXjmkHv0=;
+ b=aZFnjfae/w49J5uiFPeguw32BrDlVVVOWNKPycdXfnYUXpLYkkAKi45X5azihzYVy96OCMPQVq/z2gUxw9d6CYipSN6XWx+xV2PAJPr4nMlyygSfg5z4dKIvBM8/+kYfvBKEqL3HDKPrP/KdilirkqQ4qz/FXg397CzWYscF7WYcrSibPE2dtGFkEh74hpRvtMmuM9AltQeA8HjMnEFcD3uS8NmP3vW1aGjrd59SU91sR+Aojh2GuI6QmFbWEOSeOHi5Oi9gi43Ovaum23ZPDcu5SAAa2Byxnsw2qO5kLWyrMEU0oQz+HPRJm+ZpVAFZuPgL9uaPudgqZIpL+djMfw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=amd.com; dmarc=pass action=none header.from=amd.com; dkim=pass
+ header.d=amd.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=DHPFv0ip7HCJfpY8mXjRdpzfNRb7TydUCSBeXjmkHv0=;
+ b=sInP0h+SHEuc52ZWeM10lkGrLXqUuvx1DFSZZ88HJhK0iHbE1RXDc4E93Plbmux22nzOfwfz74+e1e7wZSYbyJvoxY+mx25uvN3/pAxDyrURZmPIiX4hWT2tf5AY4SyRv29LF/74jytEmJjb4v+OvN3R3mdgObYZpLTEz4HF76E=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=amd.com;
+Received: from CH3PR12MB9194.namprd12.prod.outlook.com (2603:10b6:610:19f::7)
+ by DS0PR12MB9057.namprd12.prod.outlook.com (2603:10b6:8:c7::20) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.8069.28; Fri, 25 Oct
+ 2024 05:58:43 +0000
+Received: from CH3PR12MB9194.namprd12.prod.outlook.com
+ ([fe80::53fb:bf76:727f:d00f]) by CH3PR12MB9194.namprd12.prod.outlook.com
+ ([fe80::53fb:bf76:727f:d00f%4]) with mapi id 15.20.8069.020; Fri, 25 Oct 2024
+ 05:58:43 +0000
+Message-ID: <607d019e-25b7-45b8-8c85-3829d4b53a82@amd.com>
+Date: Fri, 25 Oct 2024 16:58:33 +1100
+User-Agent: Mozilla Thunderbird Beta
+Subject: Re: [PATCH v4 00/14] iommufd: Add vIOMMU infrastructure (Part-2:
+ vDEVICE)
+Content-Language: en-US
+To: Nicolin Chen <nicolinc@nvidia.com>
+Cc: jgg@nvidia.com, kevin.tian@intel.com, will@kernel.org, joro@8bytes.org,
+ suravee.suthikulpanit@amd.com, robin.murphy@arm.com, dwmw2@infradead.org,
+ baolu.lu@linux.intel.com, shuah@kernel.org, linux-kernel@vger.kernel.org,
+ iommu@lists.linux.dev, linux-arm-kernel@lists.infradead.org,
+ linux-kselftest@vger.kernel.org, eric.auger@redhat.com,
+ jean-philippe@linaro.org, mdf@kernel.org, mshavit@google.com,
+ shameerali.kolothum.thodi@huawei.com, smostafa@google.com,
+ yi.l.liu@intel.com, zhangfei.gao@linaro.org, patches@lists.linux.dev
+References: <cover.1729555967.git.nicolinc@nvidia.com>
+ <98a0e135-4f9b-4a2e-94b5-f1a830a49f19@amd.com>
+ <ZxslrakslZbphayO@Asurada-Nvidia>
+ <487ebe2c-718f-405c-8f20-213eab59ca0f@amd.com>
+ <ZxsvofcC9xSSEMHi@Asurada-Nvidia>
+From: Alexey Kardashevskiy <aik@amd.com>
+In-Reply-To: <ZxsvofcC9xSSEMHi@Asurada-Nvidia>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: SYAPR01CA0031.ausprd01.prod.outlook.com (2603:10c6:1:1::19)
+ To CH3PR12MB9194.namprd12.prod.outlook.com (2603:10b6:610:19f::7)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20241024100224.62942-1-goutongchen@uniontech.com>
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: CH3PR12MB9194:EE_|DS0PR12MB9057:EE_
+X-MS-Office365-Filtering-Correlation-Id: 5c16caa0-953c-4414-f900-08dcf4ba14aa
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;ARA:13230040|7416014|1800799024|366016|376014;
+X-Microsoft-Antispam-Message-Info:
+	=?utf-8?B?MGh0eml2OERTb01JSzRidmFyNHV3YXNTcjRyb2hKcEI5TVB2WUpOWDRjcHF1?=
+ =?utf-8?B?L1JuWGhtYmNWZ1MyWUgveUlUbzFvRFhpM2hKMlJ1SXhZQmpVVmxIbnZxeGRQ?=
+ =?utf-8?B?Z1BNK1N2SDl4S0hFOUdZUEYzeFNZaGVxWGtNZnlneDlzOEVDYTUwUWdQajg0?=
+ =?utf-8?B?Z1huNk55MndCd3l3NjNtNTdXa0hpaHN6WmlBeFBBcDlzUStYVTBaVGsxZTZT?=
+ =?utf-8?B?SFBKVEJSOTU1Z3N1d0RHUFU5L1A5ZHEyOUF5cjdGbUlaZG4xNDZsdnZac280?=
+ =?utf-8?B?Vk1CWkdKSWxtdnZRZFF4UDdPazNnemVLb0ZocTdHb0ZpcVo3WG5abHZGNlpX?=
+ =?utf-8?B?VTIzRlNHU3BQOHdFR1lPbmRCL2liVEdtcFBIai9nek43dHV4S3R2ZFBnbThM?=
+ =?utf-8?B?dXpUVUYxdkhyUXNXdjE0aERsWERuWEg0dDBkdlJWdjFNWXRMS1lRcjRYaDd4?=
+ =?utf-8?B?dHRkS2FLc1lWSE1oSHlRU0tYTUNkWDFNRkRZcVJ1SGlncDVJYTBTcWJacnlo?=
+ =?utf-8?B?TVZWeGFCcm5EMWRkaEtXdG9SODQ4OXl6aUhHRHp6NFZVUkFTcTZWY3ZjYWtH?=
+ =?utf-8?B?emQ2dkxDV1M5NWxrRUFvNkQ5ZnNsZE1MUkYxRWJLNXhlbXFBajduYlZ1U0pm?=
+ =?utf-8?B?cG9Rd1RoOXRIRVFrUzFBZmNyYldFWUFsYzAzV01pZ3FYZHJkdW1TQ3pHZ3RO?=
+ =?utf-8?B?SzUyYW1EK294cDVIckhZMlh5RmluRkkrTGVoRUpOeE9hK2hLeThIUzF5K2dM?=
+ =?utf-8?B?NEorTG9YZGJDTzdwU0Z0SzJFdHRjQ2FJcXl1UkRSTGswZGo1YXVCNUJTNk9B?=
+ =?utf-8?B?c2lkM3J4WUhadXhyVWtsa0F1cnZEZFRxMzVyQjQzR2xRVzR0Ylo3b01ka2pP?=
+ =?utf-8?B?SXlaTzBheGlwd0g5dUgvT0xyOEZGV2F0Tit1UUtUczRpWlZhRGNwQkxRMkNF?=
+ =?utf-8?B?eVBDNUlKMGplZk5IU2pmZ2g4MkJ6Ti9jYXlWeFBXcHBtTHBvcGliUmJKdFcy?=
+ =?utf-8?B?b2JWN0w0Sk83K1BFbzVaMmw1TnBNRnAwWlUxeXRKK3hUZXlTS2FKS1dtL1dW?=
+ =?utf-8?B?akFZVHc5WEVnL0dtY0pwZndxSURWQmQxcUlBdG9QQk9vcHhiK2hzbDEwRm5a?=
+ =?utf-8?B?RW5zTlNzUFloRXQvMnRRajJxNGNxbkRpbWwwSURXWXVxZjRXbDFUUk52Wm51?=
+ =?utf-8?B?eGZpZm9wdVcyL2lTQm5yR0dnVy94Yms4aHdTWm9hdHBNaVBCTURGdGw0TjB5?=
+ =?utf-8?B?M0wxTEJWdVp0WnBGMVlsU1I4VWtnUmtSWHZoZFlDREczY2F3ek1LSlRJQkdi?=
+ =?utf-8?B?RVE1MVpwMEVSZzhhMDRSTHY2eHJlSXBvMkh0d0NidWlzeVJ0b1c5M2kzRVlZ?=
+ =?utf-8?B?QlA0a1NDSkduakJjRmticDZIV3A1MmlqMjZFdnZuSlNzQ0lLVUJTSnBjUXVK?=
+ =?utf-8?B?c2F2V3VFNTROa285WGRRSW1IN3VsWkNHdEE2ZklwNUdVdEhueVAwL25lNGtD?=
+ =?utf-8?B?d3FGSllabVhsdXdaWStFcHZSdkZnVmViVVhiLzlZSnhOUkJTL0t2c2tqNnRn?=
+ =?utf-8?B?ZGd1bG5IR0I4TUZSaTAxVWgrR3BzNWFJL3ZtNGUvZjFnd0pqWEkrYjNEdVky?=
+ =?utf-8?B?bDlMRC9pelJSc2szc2pIb1M1TDJ1RjRJbTFvVmFBNVhyTmdhUllMSGY3SDdp?=
+ =?utf-8?B?d0hNMDNwMmtmcFV2OEJyL3AzTmI2RFZuU0RIZ0V1bW9jb1owOXg1WERRPT0=?=
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CH3PR12MB9194.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(7416014)(1800799024)(366016)(376014);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?utf-8?B?TEtCc0xYQXlsUTlQR3ZOWFFvV3VzRG0rS0drbVAwcTRmMTZXY2VsN3JkTjJS?=
+ =?utf-8?B?MmNCUm1HMUt4V0I3L1FyQWNkU3JxN2lSaENWUmVLWTBHeFlLNElWeUZxY3VO?=
+ =?utf-8?B?SEp5S0lvblVKK1FUS0xvQnBGMHdjQklZck13WnpWeDBzQ2dDOE41aEJNMkRn?=
+ =?utf-8?B?TTZHU3Q5WVlkME1Oc25TM2pPQXo4a2RUTWJXanBKSXFvYitpVFVWcUNqYSt1?=
+ =?utf-8?B?YjRDdmI1a2RWbkNGTmJ6c09TcUMvZFFBdFd1ZEhydjdYbUZLOUEwbDI1aW1E?=
+ =?utf-8?B?VzViY2liN0ZkMlZiNW12N3R2d2FXUldZdENOSmRacTgrVEdpcDZuWkliUStM?=
+ =?utf-8?B?VFAwNTJKdWcrR25mQkhpUFArOVc0UDFLQ3dXbjZtTGlkcU5VejQzNEhQUDF5?=
+ =?utf-8?B?aGZlT0RTbXFkdUVLY3RwSTZKUmFxV2tPNHRmbjFLZnNHSGZCdEN4UHdDakFo?=
+ =?utf-8?B?WHprblZaTE9CTVdSYnVJbVlGQnM3bG00ekFmbTVHdEl6SVNzL3FHUUc2WEhK?=
+ =?utf-8?B?QUlTdHVoQW05M2lML3Q5VDMrVnVISGkyVFc0bVgrSUl1UW03Tm9SdlV0OWp1?=
+ =?utf-8?B?VVNXYW0xM3R4UUFYYnlObDF3K0dISk9xSk43V3lsaUFUWFZvMXlTQ2xrdHpO?=
+ =?utf-8?B?akJXdFhJU0lCTzNlS1kxT3lmQmdHbFA1MFhybm81aXoxMDBWWFFNVTBKUUcv?=
+ =?utf-8?B?K3I3UmZUVlVoQ1FOb0ptNmVpZ0oyQStXL3RNR1dZKzJOakxaenBCaGQvb3JO?=
+ =?utf-8?B?Z3BBOUM5aFdJS0JGcVRTYWNSNzN3NDZub3hWS0lLU1VTbXZTQkNpQW9heERT?=
+ =?utf-8?B?TjNXbUtTWVJLMWl2V0t2MlZrNlBma1paRm9Kckg4eFRZMkovdFlvTitqeUJR?=
+ =?utf-8?B?VGFXOWx1d0FpT2hZQ2t5M1BnQVpZeWpab1Z4b2xEVUZxZUR4L21jUWt2R2tY?=
+ =?utf-8?B?T1RSRVRaSU5FV2NyTlpMcGo4QzhVRE9BQTJOSEVhdnpqNDBReHF2RHNkY2VW?=
+ =?utf-8?B?S2dJRnkyYyt5SnRNQWc5N1ZJM1pRWGI5Y0w2VVFwZTE2Y2cxb2luMFptV0Z4?=
+ =?utf-8?B?QmNUbU91QjBpVnVtb0Y3REI3QmZEUm83dGZ4bnRGTGJqRWdtY2xlTzA0ZjZq?=
+ =?utf-8?B?c2lTVDN6NU1JUC9GNC8zdWluRTZidWdxc1NWeHlTNE9RWXlLQmtVeFV3dnFp?=
+ =?utf-8?B?YkFtWE1nZ09EUytvdGlwajJRdExFc0ZpTkkyOWJJTmtBUkRtQnhQOTEzdnNu?=
+ =?utf-8?B?eU5rUHdkNW1QNWlmUGl4ckhUdWU2N2lwRzlIUDZMakY3SjRLMk9rWFhnaFVm?=
+ =?utf-8?B?MldFV2d5ZVN3WnJhN2EyTjZZN28vZEVVOVpJT1NrdmpJTjhvNGNKeWhJRTFZ?=
+ =?utf-8?B?dlNhNWljcndjQjdqZ0UvNVhSaTVwMGR5R0lqT1JkRXZJVko3Z3k5UFRobHg2?=
+ =?utf-8?B?V2pYcFVVL0dKejNSVWttK0dJMmx2NkZVUndwb0tvczNTcWxFeUh2UXlWNDdQ?=
+ =?utf-8?B?TGRqRW51Y0JDTHB6R01HMzN3SlEwT0tnMnVHa0g2NnVkbFExK1Ntc1FwUHRk?=
+ =?utf-8?B?SENQY1JhNWliU0ovZ1hiY3FJSXFGQkNiOFdqL2MxNmh2R0xLWFprR0VmdEtu?=
+ =?utf-8?B?aFBoRWhhUGN6Q014MSt1QjRVMDM2MzJFR0RBZUNzTmp6Qi91VGhzUk91cGRR?=
+ =?utf-8?B?cFZHTlpyS1JyaDNtUlhxOFVTRVp1U0gxK1o3S21VSkFSdGNFQTdaOEt5Tkhx?=
+ =?utf-8?B?Zm01SXZLYnU2cFJqQUNVREVPTDBpbnZSa3NzdGdGbkp5amdOVW8wQncxSUR4?=
+ =?utf-8?B?czJqaDdMT2wyVlplNkJXakw3dDdDTC84dXJFQmpjVjN5cS9JOG5wbHBXNTlj?=
+ =?utf-8?B?UHMyMGVtYytJZjZycGpaMU9LanNla29qQjUxb2dxTU1KUzhRSmkvSmFRaXcx?=
+ =?utf-8?B?L1dhVGVkOW4wZm5RM0NXL0JVdGlyd2RMSnhXanlMWExPVXZTSEwwdGtTdlh6?=
+ =?utf-8?B?RUlmeGpRS2s3bXphUEEwOG42MUFnYTZCNHpOSlE3aFdHOFUxZm0zUjZ6UnFn?=
+ =?utf-8?B?eVJZb0E2SUx4Z2tpT3ppZUVWdFMvTE81eUJXK2VJVWVyVERPRXUrcWUxZzYx?=
+ =?utf-8?Q?9OZ1UJtn/JBqt3WcUvbRYjwRu?=
+X-OriginatorOrg: amd.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 5c16caa0-953c-4414-f900-08dcf4ba14aa
+X-MS-Exchange-CrossTenant-AuthSource: CH3PR12MB9194.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 25 Oct 2024 05:58:43.0729
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: rhgh/vHSvNKqbJDo7a9mZmX8GEek1rddq/7WchtEKbDJqZ/wD+CNvcO8DUcaxKY9HoAbLyCYe9AgCzQyYgEcwA==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DS0PR12MB9057
 
-Hi goutongchen,
-
-kernel test robot noticed the following build warnings:
-
-[auto build test WARNING on soc/for-next]
-[also build test WARNING on arm-perf/for-next/perf linus/master joro-iommu/next v6.12-rc4 next-20241024]
-[If your patch is applied to the wrong git tree, kindly drop us a note.
-And when submitting patch, we suggest to use '--base' as documented in
-https://git-scm.com/docs/git-format-patch#_base_tree_information]
-
-url:    https://github.com/intel-lab-lkp/linux/commits/goutongchen/iommu-arm-smmu-Add-judgment-on-the-size-and-granule-parameters-passed-in/20241024-181048
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/soc/soc.git for-next
-patch link:    https://lore.kernel.org/r/20241024100224.62942-1-goutongchen%40uniontech.com
-patch subject: [PATCH] iommu/arm-smmu: Add judgment on the size and granule parameters passed in
-config: i386-buildonly-randconfig-003-20241025 (https://download.01.org/0day-ci/archive/20241025/202410251339.i3YUd5BO-lkp@intel.com/config)
-compiler: clang version 19.1.2 (https://github.com/llvm/llvm-project 7ba7d8e2f7b6445b60679da826210cdde29eaf8b)
-reproduce (this is a W=1 build): (https://download.01.org/0day-ci/archive/20241025/202410251339.i3YUd5BO-lkp@intel.com/reproduce)
-
-If you fix the issue in a separate patch/commit (i.e. not just a new version of
-the same patch/commit), kindly add following tags
-| Reported-by: kernel test robot <lkp@intel.com>
-| Closes: https://lore.kernel.org/oe-kbuild-all/202410251339.i3YUd5BO-lkp@intel.com/
-
-All warnings (new ones prefixed by >>):
-
-   In file included from drivers/iommu/arm/arm-smmu/arm-smmu.c:24:
-   In file included from include/linux/dma-mapping.h:11:
-   In file included from include/linux/scatterlist.h:8:
-   In file included from include/linux/mm.h:2213:
-   include/linux/vmstat.h:518:36: warning: arithmetic between different enumeration types ('enum node_stat_item' and 'enum lru_list') [-Wenum-enum-conversion]
-     518 |         return node_stat_name(NR_LRU_BASE + lru) + 3; // skip "nr_"
-         |                               ~~~~~~~~~~~ ^ ~~~
->> drivers/iommu/arm/arm-smmu/arm-smmu.c:288:6: warning: format specifies type 'unsigned long' but the argument has type 'size_t' (aka 'unsigned int') [-Wformat]
-     287 |                                  "The size or granule passed in is err. size=%lu, granule=%lu\n",
-         |                                                                              ~~~
-         |                                                                              %zu
-     288 |                                  size, granule);
-         |                                  ^~~~
-   include/linux/dev_printk.h:154:65: note: expanded from macro 'dev_err'
-     154 |         dev_printk_index_wrap(_dev_err, KERN_ERR, dev, dev_fmt(fmt), ##__VA_ARGS__)
-         |                                                                ~~~     ^~~~~~~~~~~
-   include/linux/dev_printk.h:110:23: note: expanded from macro 'dev_printk_index_wrap'
-     110 |                 _p_func(dev, fmt, ##__VA_ARGS__);                       \
-         |                              ~~~    ^~~~~~~~~~~
-   drivers/iommu/arm/arm-smmu/arm-smmu.c:288:12: warning: format specifies type 'unsigned long' but the argument has type 'size_t' (aka 'unsigned int') [-Wformat]
-     287 |                                  "The size or granule passed in is err. size=%lu, granule=%lu\n",
-         |                                                                                           ~~~
-         |                                                                                           %zu
-     288 |                                  size, granule);
-         |                                        ^~~~~~~
-   include/linux/dev_printk.h:154:65: note: expanded from macro 'dev_err'
-     154 |         dev_printk_index_wrap(_dev_err, KERN_ERR, dev, dev_fmt(fmt), ##__VA_ARGS__)
-         |                                                                ~~~     ^~~~~~~~~~~
-   include/linux/dev_printk.h:110:23: note: expanded from macro 'dev_printk_index_wrap'
-     110 |                 _p_func(dev, fmt, ##__VA_ARGS__);                       \
-         |                              ~~~    ^~~~~~~~~~~
-   drivers/iommu/arm/arm-smmu/arm-smmu.c:322:6: warning: format specifies type 'unsigned long' but the argument has type 'size_t' (aka 'unsigned int') [-Wformat]
-     321 |                                  "The size or granule passed in is err. size=%lu, granule=%lu\n",
-         |                                                                              ~~~
-         |                                                                              %zu
-     322 |                                  size, granule);
-         |                                  ^~~~
-   include/linux/dev_printk.h:154:65: note: expanded from macro 'dev_err'
-     154 |         dev_printk_index_wrap(_dev_err, KERN_ERR, dev, dev_fmt(fmt), ##__VA_ARGS__)
-         |                                                                ~~~     ^~~~~~~~~~~
-   include/linux/dev_printk.h:110:23: note: expanded from macro 'dev_printk_index_wrap'
-     110 |                 _p_func(dev, fmt, ##__VA_ARGS__);                       \
-         |                              ~~~    ^~~~~~~~~~~
-   drivers/iommu/arm/arm-smmu/arm-smmu.c:322:12: warning: format specifies type 'unsigned long' but the argument has type 'size_t' (aka 'unsigned int') [-Wformat]
-     321 |                                  "The size or granule passed in is err. size=%lu, granule=%lu\n",
-         |                                                                                           ~~~
-         |                                                                                           %zu
-     322 |                                  size, granule);
-         |                                        ^~~~~~~
-   include/linux/dev_printk.h:154:65: note: expanded from macro 'dev_err'
-     154 |         dev_printk_index_wrap(_dev_err, KERN_ERR, dev, dev_fmt(fmt), ##__VA_ARGS__)
-         |                                                                ~~~     ^~~~~~~~~~~
-   include/linux/dev_printk.h:110:23: note: expanded from macro 'dev_printk_index_wrap'
-     110 |                 _p_func(dev, fmt, ##__VA_ARGS__);                       \
-         |                              ~~~    ^~~~~~~~~~~
-   5 warnings generated.
 
 
-vim +288 drivers/iommu/arm/arm-smmu/arm-smmu.c
+On 25/10/24 16:41, Nicolin Chen wrote:
+> On Fri, Oct 25, 2024 at 04:32:10PM +1100, Alexey Kardashevskiy wrote:
+>> External email: Use caution opening links or attachments
+>>
+>>
+>> On 25/10/24 15:59, Nicolin Chen wrote:
+>>> On Fri, Oct 25, 2024 at 03:54:44PM +1100, Alexey Kardashevskiy wrote:
+>>>> On 22/10/24 11:20, Nicolin Chen wrote:
+>>>>> Following the previous vIOMMU series, this adds another vDEVICE structure,
+>>>>> representing the association from an iommufd_device to an iommufd_viommu.
+>>>>> This gives the whole architecture a new "v" layer:
+>>>>>      _______________________________________________________________________
+>>>>>     |                      iommufd (with vIOMMU/vDEVICE)                    |
+>>>>>     |                        _____________      _____________               |
+>>>>>     |                       |             |    |             |              |
+>>>>>     |      |----------------|    vIOMMU   |<---|   vDEVICE   |<------|      |
+>>>>>     |      |                |             |    |_____________|       |      |
+>>>>>     |      |     ______     |             |     _____________     ___|____  |
+>>>>>     |      |    |      |    |             |    |             |   |        | |
+>>>>>     |      |    | IOAS |<---|(HWPT_PAGING)|<---| HWPT_NESTED |<--| DEVICE | |
+>>>>>     |      |    |______|    |_____________|    |_____________|   |________| |
+>>>>>     |______|________|______________|__________________|_______________|_____|
+>>>>>            |        |              |                  |               |
+>>>>>      ______v_____   |        ______v_____       ______v_____       ___v__
+>>>>>     |   struct   |  |  PFN  |  (paging)  |     |  (nested)  |     |struct|
+>>>>>     |iommu_device|  |------>|iommu_domain|<----|iommu_domain|<----|device|
+>>>>>     |____________|   storage|____________|     |____________|     |______|
+>>>>>
+>>>>> This vDEVICE object is used to collect and store all vIOMMU-related device
+>>>>> information/attributes in a VM. As an initial series for vDEVICE, add only
+>>>>> the virt_id to the vDEVICE, which is a vIOMMU specific device ID in a VM:
+>>>>> e.g. vSID of ARM SMMUv3, vDeviceID of AMD IOMMU, and vID of Intel VT-d to
+>>>>> a Context Table. This virt_id helps IOMMU drivers to link the vID to a pID
+>>>>> of the device against the physical IOMMU instance. This is essential for a
+>>>>> vIOMMU-based invalidation, where the request contains a device's vID for a
+>>>>> device cache flush, e.g. ATC invalidation.
+>>>>>
+>>>>> Therefore, with this vDEVICE object, support a vIOMMU-based invalidation,
+>>>>> by reusing IOMMUFD_CMD_HWPT_INVALIDATE for a vIOMMU object to flush cache
+>>>>> with a given driver data.
+>>>>>
+>>>>> As for the implementation of the series, add driver support in ARM SMMUv3
+>>>>> for a real world use case.
+>>>>>
+>>>>> This series is on Github:
+>>>>> https://github.com/nicolinc/iommufd/commits/iommufd_viommu_p2-v4
+>>>>>
+>>>>> For testing, try this "with-rmr" branch:
+>>>>> https://github.com/nicolinc/iommufd/commits/iommufd_viommu_p2-v4-with-rmr
+>>>>
+>>>> Is there any real example of a .vdevice_alloc hook, besides the
+>>>> selftests? It is not in iommufd_viommu_p2-v4-with-rmr, hence the
+>>>> question. I am trying to sketch something with this new machinery and
+>>>> less guessing would be nice. Thanks,
+>>>
+>>> No, I am actually dropping that one, and moving the vdevice struct
+>>> to the private header, as there seems to be no use case:
+>>
+>> Why keep it then?
+> 
+> We need that structure to store per-vIOMMU virtual ID. Hiding it
+> in the core only means we need to provide another vIOMMU APIs for
+> drivers to look up the ID, v.s. exposing it for drivers to access
+> directly.
 
-   276	
-   277	static void arm_smmu_tlb_inv_range_s1(unsigned long iova, size_t size,
-   278					      size_t granule, void *cookie, int reg)
-   279	{
-   280		struct arm_smmu_domain *smmu_domain = cookie;
-   281		struct arm_smmu_device *smmu = smmu_domain->smmu;
-   282		struct arm_smmu_cfg *cfg = &smmu_domain->cfg;
-   283		int idx = cfg->cbndx;
-   284	
-   285		if (size == 0 || granule == 0 || (size % granule) != 0) {
-   286			dev_err(smmu->dev,
-   287					 "The size or granule passed in is err. size=%lu, granule=%lu\n",
- > 288					 size, granule);
-   289			return;
-   290		}
-   291	
-   292		if (smmu->features & ARM_SMMU_FEAT_COHERENT_WALK)
-   293			wmb();
-   294	
-   295		if (cfg->fmt != ARM_SMMU_CTX_FMT_AARCH64) {
-   296			iova = (iova >> 12) << 12;
-   297			iova |= cfg->asid;
-   298			do {
-   299				arm_smmu_cb_write(smmu, idx, reg, iova);
-   300				iova += granule;
-   301			} while (size -= granule);
-   302		} else {
-   303			iova >>= 12;
-   304			iova |= (u64)cfg->asid << 48;
-   305			do {
-   306				arm_smmu_cb_writeq(smmu, idx, reg, iova);
-   307				iova += granule >> 12;
-   308			} while (size -= granule);
-   309		}
-   310	}
-   311	
+Sorry I lost you here. If we need it, then there should be an example of 
+.vdevice_alloc() somewhere but you say they is not one. How do you test 
+this, with just selftests? :) Thanks,
+
+
+> 
+> Thanks
+> Nicolin
 
 -- 
-0-DAY CI Kernel Test Service
-https://github.com/intel/lkp-tests/wiki
+Alexey
+
