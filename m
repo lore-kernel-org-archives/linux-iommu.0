@@ -1,57 +1,60 @@
 Received: from mx0a-00069f02.pphosted.com (mx0a-00069f02.pphosted.com [205.220.165.32])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F241B1632D6
-	for <iommu@lists.linux.dev>; Fri, 25 Oct 2024 13:12:03 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 857821632E2
+	for <iommu@lists.linux.dev>; Fri, 25 Oct 2024 13:12:04 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.165.32
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1729861926; cv=none; b=iEcbLQjI6PbXqnMPHNCxpYNnf5C59X8ZYsLfeOnB/uyan85EiOohjb7uErsrOSo+YXt25VUpfNEPTXPmHB80ilo+URYeoTCTN4ASZ/2z+c88zg7z32DBbn6BOFtG3mczn0sr15uZfbU3wp/mtHApRaJMk8Jdzj/d8qQjh4YRe+0=
+	t=1729861926; cv=none; b=mRFPhuUISzhoXMrBDqqvMDPYny7+3/yYQemd5kJqypsFZuPqzTI9eXbO92NJQTUEIJpkv8m7usUbrWy1ojL4/eoOT9IyDzLyXUPdj+JS3xwhkZbnyuMBnrcIVcCmnkze8+bUfA48nJ98h9XY39l5/sAmOhws7RrQIwO5l0UhAuI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
 	s=arc-20240116; t=1729861926; c=relaxed/simple;
-	bh=EhqbLpz6NlPg8YpymEqiNYsYqd0bQF4SNAj1eJFUl2U=;
-	h=From:To:Cc:Subject:Date:Message-Id; b=LxuY3ickWlwQM4rXqiQg6gcRV8nwenw78EDtwNArNc3wIlWcYs/SMdR21tziT7pUE9XnwmmmsRrUp6RdttT+xBmaygxzzjPs9chw6tX6jPqMePg8qJf7TWd14Mdwh4+sOGf7+ayklUhK/kInUt/Ved/KO9kimYhoXciD7qcCOBw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oracle.com; spf=pass smtp.mailfrom=oracle.com; dkim=pass (2048-bit key) header.d=oracle.com header.i=@oracle.com header.b=HkJNEIYt; arc=none smtp.client-ip=205.220.165.32
+	bh=975ZlWrtltl9tmjelYdfVdmVkrY/EgswLs1eBXVDGI4=;
+	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References; b=aJVWM0AuL86087Ri5xeqFeLQtFrVvcyFE9FU8HJIViTPYH92OqT6trwBVlcDLCbPk1A93tu9vcNDAa0DSL+sqN4Rs1VtwMrG6jY5a0wUfMZhOWEKHVqbghZcUtSzeQMncrgD0mIWQD+EsMzn3Rly8VtjWVE3+U6wKj4fi6pjBwk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oracle.com; spf=pass smtp.mailfrom=oracle.com; dkim=pass (2048-bit key) header.d=oracle.com header.i=@oracle.com header.b=XB8RTaEj; arc=none smtp.client-ip=205.220.165.32
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oracle.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=oracle.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=oracle.com header.i=@oracle.com header.b="HkJNEIYt"
+	dkim=pass (2048-bit key) header.d=oracle.com header.i=@oracle.com header.b="XB8RTaEj"
 Received: from pps.filterd (m0333521.ppops.net [127.0.0.1])
-	by mx0b-00069f02.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 49PCU7og000335;
-	Fri, 25 Oct 2024 13:12:02 GMT
+	by mx0b-00069f02.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 49PCTf72032212;
+	Fri, 25 Oct 2024 13:12:03 GMT
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=cc
-	:date:from:message-id:subject:to; s=corp-2023-11-20; bh=uvTj2Aim
-	8iN4U2VE7t5Kn4TnudAS4YKRAM1a0giIys4=; b=HkJNEIYt8CxcGFc64w2ir50a
-	OlnJpZ0cXVTHdFXqOMhglVyD4EF4yM3T7KdgezgBlaC5YWOxPhPGPGFLsGLCuaIl
-	uZ97/TggAysaAJD9TnSIb8cfU7xg83rbE3cdPt9wY5pLIudAU9KwAviWRPxexG77
-	ugaWCug90q1rAEaQUT8KF4pLeIuFKjnAkOs6FW0nFOQbpLeoJ0Dh4aLbkEwVNeqe
-	DhxA49Rh1E78MVPKrsBX7acczbogWh40nrBJHViBQweEQ/rvrKJ8OZXthPxjwbr0
-	h4Y5YNNnr3t6uZncI9YgCb1QqLpvdShCp+p1ZABd+ONJPANwJxR5ptPzu24TQA==
+	:date:from:in-reply-to:message-id:references:subject:to; s=
+	corp-2023-11-20; bh=LzaKpkZYRJZsQLdeV5e4KMjA+eBDzDZi/X3sdKgMo4c=; b=
+	XB8RTaEj/hRd1Nwkz85gDt7k+Yqb7H3tLBvHUeCxEs++vuVKa/CFa39rzXi/23rR
+	2P7UCXw7WiJHExV/yb0Slf365CHcOZSVgyV2NNdBP8Ipzw6lZnsMgferLvFIgH/D
+	KbtXUelUS7WGuMmIRfvKeTNWTkJhdxPs7GE+vixfKr4WqZGaXeOeW6kKH2Sc0m30
+	EmS2bBeqFAX4fY94sTdGGw+6jAM9w6VNgoMsfCG8+0V8XGmyZxZIwudd5pFW0yNt
+	kbI7aRETRVBukQ+vrut2TZ3YJVWN5enLfIrsb6Sr1/JLCUK4siSrezbsL5EqeY9q
+	ANgK2+KPtWy76QgO5fopsQ==
 Received: from iadpaimrmta03.imrmtpd1.prodappiadaev1.oraclevcn.com (iadpaimrmta03.appoci.oracle.com [130.35.103.27])
-	by mx0b-00069f02.pphosted.com (PPS) with ESMTPS id 42c53uvwsu-1
+	by mx0b-00069f02.pphosted.com (PPS) with ESMTPS id 42c53uvwsx-1
 	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-	Fri, 25 Oct 2024 13:12:02 +0000 (GMT)
+	Fri, 25 Oct 2024 13:12:03 +0000 (GMT)
 Received: from pps.filterd (iadpaimrmta03.imrmtpd1.prodappiadaev1.oraclevcn.com [127.0.0.1])
-	by iadpaimrmta03.imrmtpd1.prodappiadaev1.oraclevcn.com (8.18.1.2/8.18.1.2) with ESMTP id 49PBxoj8016432;
-	Fri, 25 Oct 2024 13:12:01 GMT
+	by iadpaimrmta03.imrmtpd1.prodappiadaev1.oraclevcn.com (8.18.1.2/8.18.1.2) with ESMTP id 49PBxqZi016733;
+	Fri, 25 Oct 2024 13:12:02 GMT
 Received: from pps.reinject (localhost [127.0.0.1])
-	by iadpaimrmta03.imrmtpd1.prodappiadaev1.oraclevcn.com (PPS) with ESMTPS id 42emhdug02-1
+	by iadpaimrmta03.imrmtpd1.prodappiadaev1.oraclevcn.com (PPS) with ESMTPS id 42emhdug0h-1
 	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-	Fri, 25 Oct 2024 13:12:01 +0000
+	Fri, 25 Oct 2024 13:12:02 +0000
 Received: from iadpaimrmta03.imrmtpd1.prodappiadaev1.oraclevcn.com (iadpaimrmta03.imrmtpd1.prodappiadaev1.oraclevcn.com [127.0.0.1])
-	by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 49PDC0Rc000657;
-	Fri, 25 Oct 2024 13:12:00 GMT
+	by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 49PDC0Re000657;
+	Fri, 25 Oct 2024 13:12:01 GMT
 Received: from ca-dev63.us.oracle.com (ca-dev63.us.oracle.com [10.211.8.221])
-	by iadpaimrmta03.imrmtpd1.prodappiadaev1.oraclevcn.com (PPS) with ESMTP id 42emhdufy3-1;
-	Fri, 25 Oct 2024 13:12:00 +0000
+	by iadpaimrmta03.imrmtpd1.prodappiadaev1.oraclevcn.com (PPS) with ESMTP id 42emhdufy3-2;
+	Fri, 25 Oct 2024 13:12:01 +0000
 From: Steve Sistare <steven.sistare@oracle.com>
 To: iommu@lists.linux.dev
 Cc: Jason Gunthorpe <jgg@nvidia.com>, Kevin Tian <kevin.tian@intel.com>,
         Nicolin Chen <nicolinc@nvidia.com>,
         Steve Sistare <steven.sistare@oracle.com>
-Subject: [PATCH V7 0/9] iommu_ioas_map_file
-Date: Fri, 25 Oct 2024 06:11:50 -0700
-Message-Id: <1729861919-234514-1-git-send-email-steven.sistare@oracle.com>
+Subject: [PATCH V7 1/9] mm/gup: folio_add_pins
+Date: Fri, 25 Oct 2024 06:11:51 -0700
+Message-Id: <1729861919-234514-2-git-send-email-steven.sistare@oracle.com>
 X-Mailer: git-send-email 1.8.3.1
+In-Reply-To: <1729861919-234514-1-git-send-email-steven.sistare@oracle.com>
+References: <1729861919-234514-1-git-send-email-steven.sistare@oracle.com>
 X-Proofpoint-Virus-Version: vendor=baseguard
  engine=ICAP:2.0.293,Aquarius:18.0.1051,Hydra:6.0.680,FMLib:17.12.62.30
  definitions=2024-10-25_12,2024-10-25_02,2024-09-30_01
@@ -59,85 +62,73 @@ X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 spamscore=0 mlxsc
  suspectscore=0 bulkscore=0 adultscore=0 malwarescore=0 mlxlogscore=999
  classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2409260000
  definitions=main-2410250102
-X-Proofpoint-GUID: AuGI1GHjTbyKg2vlHcANcpQu6-RrN30X
-X-Proofpoint-ORIG-GUID: AuGI1GHjTbyKg2vlHcANcpQu6-RrN30X
+X-Proofpoint-GUID: B-UNO4H_27FhryA8OqA_ssbXDTW-rTJi
+X-Proofpoint-ORIG-GUID: B-UNO4H_27FhryA8OqA_ssbXDTW-rTJi
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 
-Provide the IOMMU_IOAS_MAP_FILE ioctl, which allows a user to register
-memory by passing a memfd plus offset and length.  Implement it using
-the memfd_map_folios KAPI, and the proposed folio_add_pins KAPI.
-See the individual patches for details.
+Export a function that adds pins to an already-pinned huge-page folio.
+This allows any range of small pages within the folio to be unpinned later.
+For example, pages pinned via memfd_pin_folios and modified by
+folio_add_pins could be unpinned via unpin_user_page(s).
 
-Changes in V2:
- * changed names and commit message in "rename uptr in iopt_alloc_iova"
- * normalized comments describing the iopt_map_user_pages interface
- * submitted folio_split_user_page_pin (fka folio_repin_unhugely) separately
- * replaced nupages[] optimization with folio-to-batch optimization
- * added selftests for map file
+Suggested-by: Jason Gunthorpe <jgg@nvidia.com>
+Suggested-by: David Hildenbrand <david@redhat.com>
+Signed-off-by: Steve Sistare <steven.sistare@oracle.com>
+Acked-by: David Hildenbrand <david@redhat.com>
+Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
+---
+ include/linux/mm.h |  1 +
+ mm/gup.c           | 24 ++++++++++++++++++++++++
+ 2 files changed, 25 insertions(+)
 
-Changes in V3:
-  * fixed bug setting user->locked
-  * fixed bug in pages->file refs
-  * replaced lockdep_off with down_write_nest_lock
-  * added ufolios_next to track folio consumption in reader
-  * combined IOMMU_IOAS_MAP_FILE interface and implementation
-  * added patch folio_add_pins (fka folio_split_user_page_pin )
-  * reformatted patches using clang-format
-  * misc cosmetic changes in response to review comments
-
-Changes in V4:
-  * deleted ufolios_huge optimization
-  * optimized batch_from_folios
-  * squashed "optimize file mapping" into "pfn reader for file mappings"
-  * moved length overflow check to iopt_alloc_file_pages
-  * one declaration per line, and use local scope declarations
-  * rebased to iommufd git tree
-
-Changes in V5:
-  * hoisted folio_add_pins call and deleted folios_unpin_partial
-  * simplified batch_add_pfn_num and its caller
-  * added cmd_length selftest for iommu_ioas_map_file
-  * added map_file case for iommufd_fail_nth selftest
-  * fixed an unreported mmput bug in pfn_reader_user_destroy that broke mdev
-
-Changes in V6:
-  * added argument checks in iommufd_ioas_map_file
-  * misc minor and cosmetic changes
-
-Changes in V7:
-  * fixed compilation of selftest
-
-Steve Sistare (9):
-  mm/gup: folio_add_pins
-  iommufd: rename uptr in iopt_alloc_iova
-  iommufd: generalize iopt_pages address
-  iommufd: pfn reader local variables
-  iommufd: folio subroutines
-  iommufd: pfn reader for file mappings
-  iommufd: IOMMU_IOAS_MAP_FILE
-  iommufd: file mappings for mdev
-  iommufd: map file selftest
-
- drivers/iommu/iommufd/io_pagetable.c             | 117 ++++++---
- drivers/iommu/iommufd/io_pagetable.h             |  20 +-
- drivers/iommu/iommufd/ioas.c                     |  47 ++++
- drivers/iommu/iommufd/iommufd_private.h          |   5 +
- drivers/iommu/iommufd/main.c                     |   2 +
- drivers/iommu/iommufd/pages.c                    | 307 +++++++++++++++++++----
- include/linux/mm.h                               |   1 +
- include/uapi/linux/iommufd.h                     |  25 ++
- mm/gup.c                                         |  24 ++
- tools/testing/selftests/iommu/iommufd.c          | 124 +++++++--
- tools/testing/selftests/iommu/iommufd_fail_nth.c |  39 +++
- tools/testing/selftests/iommu/iommufd_utils.h    |  57 +++++
- 12 files changed, 660 insertions(+), 108 deletions(-)
-
-base-commit: e2d8fe9148b79ed1cbf0663edc988db7769173dc
-
+diff --git a/include/linux/mm.h b/include/linux/mm.h
+index ecf63d2..f9de33a 100644
+--- a/include/linux/mm.h
++++ b/include/linux/mm.h
+@@ -2524,6 +2524,7 @@ long pin_user_pages_unlocked(unsigned long start, unsigned long nr_pages,
+ long memfd_pin_folios(struct file *memfd, loff_t start, loff_t end,
+ 		      struct folio **folios, unsigned int max_folios,
+ 		      pgoff_t *offset);
++int folio_add_pins(struct folio *folio, unsigned int pins);
+ 
+ int get_user_pages_fast(unsigned long start, int nr_pages,
+ 			unsigned int gup_flags, struct page **pages);
+diff --git a/mm/gup.c b/mm/gup.c
+index a82890b..4ac3e567 100644
+--- a/mm/gup.c
++++ b/mm/gup.c
+@@ -3717,3 +3717,27 @@ long memfd_pin_folios(struct file *memfd, loff_t start, loff_t end,
+ 	return ret;
+ }
+ EXPORT_SYMBOL_GPL(memfd_pin_folios);
++
++/**
++ * folio_add_pins() - add pins to an already-pinned folio
++ * @folio: the folio to add more pins to
++ * @pins: number of pins to add
++ *
++ * Try to add more pins to an already-pinned folio. The semantics
++ * of the pin (e.g., FOLL_WRITE) follow any existing pin and cannot
++ * be changed.
++ *
++ * This function is helpful when having obtained a pin on a large folio
++ * using memfd_pin_folios(), but wanting to logically unpin parts
++ * (e.g., individual pages) of the folio later, for example, using
++ * unpin_user_page_range_dirty_lock().
++ *
++ * This is not the right interface to initially pin a folio.
++ */
++int folio_add_pins(struct folio *folio, unsigned int pins)
++{
++	VM_WARN_ON_ONCE(!folio_maybe_dma_pinned(folio));
++
++	return try_grab_folio(folio, pins, FOLL_PIN);
++}
++EXPORT_SYMBOL_GPL(folio_add_pins);
 -- 
 1.8.3.1
 
