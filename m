@@ -1,195 +1,155 @@
-Received: from NAM10-BN7-obe.outbound.protection.outlook.com (mail-bn7nam10on2060.outbound.protection.outlook.com [40.107.92.60])
+Received: from mx0a-0031df01.pphosted.com (mx0a-0031df01.pphosted.com [205.220.168.131])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 06C141862AE
-	for <iommu@lists.linux.dev>; Fri, 25 Oct 2024 17:04:26 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.92.60
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1729875869; cv=fail; b=EG7w6aav0aJ4iZfvQWYEMxOVCjDuM/qhZQVe4yK0Wsftazrmo2WANR0GVqq0SKY01AfbcENwAILqW/eYxwXJZlJ4VJ7Hg+Ej4/gQk4Rm1ym1wXGkK1gj+6yTXEptSj6q+uXcpLmVExPX7VCSvfWr4OAGjeBdFGfUi9WYvxOK/do=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1729875869; c=relaxed/simple;
-	bh=VQEeOSedbiQ8TsfWTbRXj5h0awy9tnXcgx1sl4oM8dw=;
-	h=Date:From:To:CC:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=Uvb4zT8gfN7DKkIjItCoM7naR57kBhTPvrMwy70IazicGa0c4dvomEoX+MpH/oj9M9S9tW3mKgZqy3usbVmfJJU54WybAw8jB2wMkbF5c2mMEruiNiACOA7RSPeocQXJeh9t73R2+VFAn79g4OV3WaiHWwAtHTj5fICfo4/LGLo=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=DHvN7nrE; arc=fail smtp.client-ip=40.107.92.60
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EC1C6170A31
+	for <iommu@lists.linux.dev>; Fri, 25 Oct 2024 17:26:58 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.168.131
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1729877220; cv=none; b=QQ/ZSHQ6T798ONLB9YTa9Twp98sESouUdLfgvSH9CboJlN3LL71GpmjtDmjG1f/gHIFWl0n9UYUqtB3GAb+SkWyjMah3MXpEvfTmjCRPi7sAbfSKds1hMikylgWikyVWVpMqPzdZHxm5a8kizHOEcK/mfL70S4p+EKA7vFaF3Ak=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1729877220; c=relaxed/simple;
+	bh=ux4fyoryvlDRZZOu0dZOEtLyAosOVYVFlVj+nrSm3YU=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=XtBsfQuYRQoaj863u6goksQNecZhn+S/Di643F29dAx8iSF+K41k+ApoRYZBIC1htKGHKt1NeLBO1c73aPRStmz0BeHfrXs26CP+ugeJ2NTVH23xkMRnBLdHcJLjAStgUhU+WE4acuP7zPI2/+YiR7mAo1SEQaxQaZ96YNpiNlo=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com; spf=fail smtp.mailfrom=oss.qualcomm.com; dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b=dYJHjh1q; arc=none smtp.client-ip=205.220.168.131
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=oss.qualcomm.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="DHvN7nrE"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=oN0ql+s2+jsLLZSV2s4EeOA9h171SL4dI0kkDx0jo1aV3qLtVMN8i/WQ5iz/tt8e6ZK7yzBeSKZ6EYALh9gWoi9db7R+oVj3e0zxx83XKJOxWZg3JVkEdl6Dju8YgKZsuj0MoV1UKm7Gj2nQ8gjrGHDefB7+BaIWw5pYfU7dPkpFX4y0pLVR5rWErtGeL6P9SyP/gmyjc7QOSTI2Cj/6Hi1k00TGutJgxjro/HgIM4g9WBbNrtqbus7oNKaxPV67jgmEIzrGue1JJhazk+QfzVQQt9u6OBcFLvVNuP52/8GMU257bxcLOyZYts97Tk87LOa9AER+9YdjuESYZDjsag==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=t93iQJL3zKsJayIgp/mHmFom6FDU5LGkwoFN9MORCnc=;
- b=AMSU/iCph5ttknLpHsVleHf+mQyCbUPBUsrL/n9XkTz/TsvOkyHn2sSoxlegFnhcBkPz5BWBQh6TlX1GkkS4mTQwNEiVC0wpWr1zKhP/MP9IT+cm0t5fMPg8wR5hgypzo11JHsb71K+2xBv3Upx6+SfYa2gDaSsoaXEG5F98LdAPSSQPdSXthABJJN9KGHDNcl+p9Hgz1n4Weem/i/FX7jG33LEEYC2Pj3MqtzL6RK3A79YXKcD2udecL/sfUw0CNLC+o+cTiozZ4DEAyGraVlVvSAxeHccT76TEJYDbgvjbu2zQDuWsr6RIHwD5JK3iyMIyOFmkvobYLDuZtvU5vw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 216.228.117.161) smtp.rcpttodomain=oracle.com smtp.mailfrom=nvidia.com;
- dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
- dkim=none (message not signed); arc=none (0)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=t93iQJL3zKsJayIgp/mHmFom6FDU5LGkwoFN9MORCnc=;
- b=DHvN7nrESYQv+mNpqGvJmXhD3qBUpJMTWNISDf1dwDrMfKIDM7CZAefjMFolndTRS94YWq6k+tohSo9pkxsiKNcirEG6BkxBqe/ClxjI8BhAzaw55mGnHHYFNmzS7MJExMqT2jGj/jM5+LIiwVPcRZZvrDUD5e6/ZbiZITFREPJfcm32UyYL4RGx1+K2bAiJdM/sIQ+mHGK+PZ12y1gOo6EsoQd1Po2V3ShRZ5YZXthnfLkKnVT0sBwVLk8gASTQwlZR9FhWhhKhxKSTrYtt6ehjw1l9MNp69OVAfjzYpmxTK8CgGOJDu3LrXoj3EHKTxKC4YjdaCVSyp9h8phO7nQ==
-Received: from CH0PR13CA0020.namprd13.prod.outlook.com (2603:10b6:610:b1::25)
- by SJ2PR12MB8012.namprd12.prod.outlook.com (2603:10b6:a03:4c7::9) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.8069.27; Fri, 25 Oct
- 2024 17:04:20 +0000
-Received: from CH1PEPF0000AD7B.namprd04.prod.outlook.com
- (2603:10b6:610:b1:cafe::74) by CH0PR13CA0020.outlook.office365.com
- (2603:10b6:610:b1::25) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.8114.5 via Frontend
- Transport; Fri, 25 Oct 2024 17:04:19 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.117.161)
- smtp.mailfrom=nvidia.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=nvidia.com;
-Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 216.228.117.161 as permitted sender) receiver=protection.outlook.com;
- client-ip=216.228.117.161; helo=mail.nvidia.com; pr=C
-Received: from mail.nvidia.com (216.228.117.161) by
- CH1PEPF0000AD7B.mail.protection.outlook.com (10.167.244.58) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.8093.14 via Frontend Transport; Fri, 25 Oct 2024 17:04:19 +0000
-Received: from rnnvmail203.nvidia.com (10.129.68.9) by mail.nvidia.com
- (10.129.200.67) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1544.4; Fri, 25 Oct
- 2024 10:04:07 -0700
-Received: from rnnvmail205.nvidia.com (10.129.68.10) by rnnvmail203.nvidia.com
- (10.129.68.9) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1544.4; Fri, 25 Oct
- 2024 10:04:07 -0700
-Received: from Asurada-Nvidia (10.127.8.9) by mail.nvidia.com (10.129.68.10)
- with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1544.4 via Frontend
- Transport; Fri, 25 Oct 2024 10:04:06 -0700
-Date: Fri, 25 Oct 2024 10:04:05 -0700
-From: Nicolin Chen <nicolinc@nvidia.com>
-To: Steve Sistare <steven.sistare@oracle.com>
-CC: <iommu@lists.linux.dev>, Jason Gunthorpe <jgg@nvidia.com>, Kevin Tian
-	<kevin.tian@intel.com>
-Subject: Re: [PATCH V7 9/9] iommufd: map file selftest
-Message-ID: <ZxvPhQZOBR7g56eh@Asurada-Nvidia>
-References: <1729861919-234514-1-git-send-email-steven.sistare@oracle.com>
- <1729861919-234514-10-git-send-email-steven.sistare@oracle.com>
+	dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b="dYJHjh1q"
+Received: from pps.filterd (m0279864.ppops.net [127.0.0.1])
+	by mx0a-0031df01.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 49PFcRuS019962
+	for <iommu@lists.linux.dev>; Fri, 25 Oct 2024 17:26:58 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=qualcomm.com; h=
+	cc:content-transfer-encoding:content-type:date:from:in-reply-to
+	:message-id:mime-version:references:subject:to; s=qcppdkim1; bh=
+	kYOS61s+4Ua8E53ppWv27vHnk8+CmbTTSSY3hk6zX/4=; b=dYJHjh1qawP3ZGml
+	XD5dtFJJV3GZTAvB5MlM9R7F9pRBNvFSv2kqxvk9cdfVTaeLzeGvhd/9CD4Bb7Xl
+	ghQVBVnNMvtLaGhcDd5nM1WSBQBaYpZ/m5SYqhlSYcpC3tp1Fx8E1EuZcmZvth4a
+	092R/w+6CbnIWcor3PXmx40cQMgcAbCqEyxaP4VMWvQEzDXtBcu3VI1G472VvGbc
+	LrmDTSVsLh97nj2JSmQBRI2YTs1snAx9Rab5B22tJXnZC0pGdZSGZv3qQ4CwPJJH
+	p6RSSx0A5YRYGYa7MJJHdRKvANv7VyQVvJAXUQaRJgz//O9+6AH9B/2FltJlJOp6
+	dfh+sA==
+Received: from mail-qv1-f69.google.com (mail-qv1-f69.google.com [209.85.219.69])
+	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 42g6y91sq3-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
+	for <iommu@lists.linux.dev>; Fri, 25 Oct 2024 17:26:58 +0000 (GMT)
+Received: by mail-qv1-f69.google.com with SMTP id 6a1803df08f44-6cbf5a3192aso4653296d6.1
+        for <iommu@lists.linux.dev>; Fri, 25 Oct 2024 10:26:57 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1729877216; x=1730482016;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=kYOS61s+4Ua8E53ppWv27vHnk8+CmbTTSSY3hk6zX/4=;
+        b=fsAJnl4iYx4p+oivFWKrRMzt9TuuhSZaD8Zz0wQsoblvjAQgJBgtA8X6IBbS9k8uzj
+         oPk332Is1DMlDRNKqz+CSkFLIxVpVB96ss2OXsNFowaCK9dfKCSsLxbko9nXYVUKups7
+         71I5iQBSVefWudwpEWak0I4EicxCtRQ/CvF2wU9vIyCWwcR0No8zJyV0EFrE5Y06PUso
+         jWhp8jTbvaZITyDPfxrJkkMMUdAWG4x2QfYH+B5sD+GSfM2GDS3kaFOfWW2yUWM1L/gk
+         N6FhzLsq5z2jjkBLhqnYL4WdEdxSYDwiEJkWDnPPRiWk7eDvhmEWT3SMMR8WRUe7szgM
+         SGKQ==
+X-Forwarded-Encrypted: i=1; AJvYcCVZzHFF36owa+MBiqnlCaQvOt4lCc7FpUS9VtlsY/dpCDhJcUqXv0ZopyBrWSdIkCRgWulPJQ==@lists.linux.dev
+X-Gm-Message-State: AOJu0YzpMBphdpSZN2SGdBOSANoSZVAsmZcX0Wc51pCeG6rU/KvQ/R6H
+	vkHFhcfqUqcAk9rCmqgmPcGEEoqDVui0v8ghdS2k0XndiihniG17H4LaoW+WYIBAvhhBlclhEQZ
+	ZCkQ6k7QDr5XAux9PYVIs01RvtaijRIE9AaMn1vvgrRX2bZPnpVdzPQ==
+X-Received: by 2002:ad4:5c6c:0:b0:6cc:12d3:b589 with SMTP id 6a1803df08f44-6d1856f2258mr1385756d6.4.1729877216477;
+        Fri, 25 Oct 2024 10:26:56 -0700 (PDT)
+X-Google-Smtp-Source: AGHT+IEdtUaERmfWAnhiQDDdjVtcZz5sT4YcsSGXWw5y/MThZI4linWvUqyTaFyN8ev94EQBc+1Q8w==
+X-Received: by 2002:ad4:5c6c:0:b0:6cc:12d3:b589 with SMTP id 6a1803df08f44-6d1856f2258mr1385596d6.4.1729877216131;
+        Fri, 25 Oct 2024 10:26:56 -0700 (PDT)
+Received: from [192.168.212.120] (078088045245.garwolin.vectranet.pl. [78.88.45.245])
+        by smtp.gmail.com with ESMTPSA id a640c23a62f3a-a9b30f58991sm90413066b.159.2024.10.25.10.26.52
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 25 Oct 2024 10:26:55 -0700 (PDT)
+Message-ID: <f02537ef-81e1-441c-bc0a-9d4eb5786361@oss.qualcomm.com>
+Date: Fri, 25 Oct 2024 19:26:52 +0200
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: inline
-In-Reply-To: <1729861919-234514-10-git-send-email-steven.sistare@oracle.com>
-X-NV-OnPremToCloud: ExternallySecured
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: CH1PEPF0000AD7B:EE_|SJ2PR12MB8012:EE_
-X-MS-Office365-Filtering-Correlation-Id: 2cbbe399-748a-45ec-7d96-08dcf51710ea
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|1800799024|36860700013|82310400026|376014;
-X-Microsoft-Antispam-Message-Info:
-	=?us-ascii?Q?Nv8Q9FpmfZe/9C8YPwS/bXQJhfQ37zSlE8aJj+CxQhAgTVsDuoAgKnSohnUd?=
- =?us-ascii?Q?hR1hb3FHRDpP4rgknvdNG1ZmwyUHhwub06NwqRnNjfP+F7uhRBGbxfxgVKje?=
- =?us-ascii?Q?Us6CrYO6aKz3XB7r4gsHxmrLRom8IC4ReUJ3Rim2EzBMVyZL48hAyioUZ+gD?=
- =?us-ascii?Q?x6AmJZQFYqrMPqUTCllomycqbKMGghT/YLRF1JKaVUBcfo5/xDrjIDdvQh2h?=
- =?us-ascii?Q?g8Qex5ctUhPkmM4pTDd4y2nVBxgnYkLp1WxSlBojOgT1aiT9MP3CIfhU9Z3/?=
- =?us-ascii?Q?aFOrRmMwM/I37CPMcG9FzMVxjigUePadTqgGtWfZ+Iv+WShdUNQO+SKp17CT?=
- =?us-ascii?Q?v5nMCBeEBOCWZDSZtTzC2FUYZyuX+4KjM32fn2RwSTn0UKgZ+6AkOazRPp66?=
- =?us-ascii?Q?sI3HJxGd+AKN5kL30QGOJtEuYJuWjZiNkV3CgN375AdCxp4noPsUw228aOjV?=
- =?us-ascii?Q?qbHIp8MOuZZwmc2Fvjx4589YHRwqjv/PCJz6uK6TUY1x16LEAtZFhEwFaYkb?=
- =?us-ascii?Q?qIVkbTyvivPmeKTeassny97zCtbLgeBQxm1Q1FV/aYeXcrnXrVvHq9isRaaz?=
- =?us-ascii?Q?P6qU4YYBIKv4gu/O3nxaq1tdHPfxrBZCyRNF80sUMFPZwXc00fc3bJZo8z/Q?=
- =?us-ascii?Q?DCE6mFB2q3VhIo6jwnlMCP7Psq3sEK0M8yNeZc6+C2Kplb1yHu6VP+BItAid?=
- =?us-ascii?Q?S/xRQhGnHGWWXMvF8LvUq4x2CwpLqn9RDZfpbbfI3ibL+QpyR8DEx5JmqMvR?=
- =?us-ascii?Q?vfip9IOuPrG5ktah1bzCJ9i4/PX5afbhwTrlWtiYUeOX03KCQqNIyGZj6ql2?=
- =?us-ascii?Q?ffWd420KuOxvtsmHVHNlzxML4Mr6QK575ex1ELgrO4Fz3naeogs0qgcTVzET?=
- =?us-ascii?Q?yEw3fMuLHKJ7xWMzIovGCeDfnkghrzzesDoeKHvIkw5sSo76dWRJ9210NEVR?=
- =?us-ascii?Q?9xCrPvCbtCFHgwBYSc1YAPJ/wBO0oRh4RkDCaKWQkJsjWcIZ8liDYCakrZ8S?=
- =?us-ascii?Q?rZbvBhYcNspNbt5Zb5Xxf76x5QR1TXTmc6BblLhU/+4xbttfF5dp83Cuu0Fv?=
- =?us-ascii?Q?DGwdbVaFCiiwtYtM9KF8auYC6ewdsnJDLjXMLG0EOVvtZf2CF8JYeEAuJ9+i?=
- =?us-ascii?Q?aYG4MWTez38Jb/En/wOud7/t+pIHFC4YPHkNuyYzqD2Rqscvd2pdGKhQ3jEt?=
- =?us-ascii?Q?YUpEmsBPfVueeCybF01+iiDPn3NQZ/9MXBVo2PmJgcqwnb/GvFlmIKajaGkm?=
- =?us-ascii?Q?QBltu5gvfhWSr1jwySRqW+bxvHuoCCZGhnea91nAnE2HyXnoMZNwu2OHIP/q?=
- =?us-ascii?Q?Qx/J2qYt6ZV/fGHN5Vm3ym7sfKzZcPH03czVGothUv+ZeyuihQTqvNL2C/wT?=
- =?us-ascii?Q?t0cEFDkLPkO7jWF6OxdZMLpGWfX9TkrFRaOShnzSkzh3n0ykZA=3D=3D?=
-X-Forefront-Antispam-Report:
-	CIP:216.228.117.161;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc6edge2.nvidia.com;CAT:NONE;SFS:(13230040)(1800799024)(36860700013)(82310400026)(376014);DIR:OUT;SFP:1101;
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 25 Oct 2024 17:04:19.4748
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 2cbbe399-748a-45ec-7d96-08dcf51710ea
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.117.161];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource: CH1PEPF0000AD7B.namprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SJ2PR12MB8012
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v2 4/4] arm64: dts: qcom: qcs615: add the APPS SMMU node
+To: Qingqing Zhou <quic_qqzhou@quicinc.com>,
+        Konrad Dybcio <konrad.dybcio@oss.qualcomm.com>, andersson@kernel.org,
+        konradybcio@kernel.org, robh@kernel.org, krzk+dt@kernel.org,
+        conor+dt@kernel.org, robimarko@gmail.com, will@kernel.org,
+        robin.murphy@arm.com, joro@8bytes.org
+Cc: linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, iommu@lists.linux.dev
+References: <20241015081603.30643-1-quic_qqzhou@quicinc.com>
+ <20241015081603.30643-5-quic_qqzhou@quicinc.com>
+ <ac5081ce-e2e4-4201-bd7c-eb4ec2cf7e2d@oss.qualcomm.com>
+ <ed4209a8-fb37-4354-a717-60dc1b5c29ab@quicinc.com>
+ <bc1ab306-903a-4111-a428-8f28d8324207@quicinc.com>
+Content-Language: en-US
+From: Konrad Dybcio <konrad.dybcio@oss.qualcomm.com>
+In-Reply-To: <bc1ab306-903a-4111-a428-8f28d8324207@quicinc.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+X-Proofpoint-GUID: 7CqUm5J0HecEcSBGN3tzt2LiUh_8a50t
+X-Proofpoint-ORIG-GUID: 7CqUm5J0HecEcSBGN3tzt2LiUh_8a50t
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.293,Aquarius:18.0.1039,Hydra:6.0.680,FMLib:17.12.60.29
+ definitions=2024-09-06_09,2024-09-06_01,2024-09-02_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 impostorscore=0 phishscore=0
+ spamscore=0 adultscore=0 suspectscore=0 mlxlogscore=999 clxscore=1015
+ lowpriorityscore=0 priorityscore=1501 mlxscore=0 malwarescore=0
+ bulkscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.19.0-2409260000 definitions=main-2410250133
 
-On Fri, Oct 25, 2024 at 06:11:59AM -0700, Steve Sistare wrote:
+On 23.10.2024 7:48 AM, Qingqing Zhou wrote:
 > 
-> Add test cases to exercise IOMMU_IOAS_MAP_FILE.
 > 
-> Signed-off-by: Steve Sistare <steven.sistare@oracle.com>
-> Reviewed-by: Nicolin Chen <nicolinc@nvidia.com>
+> 在 10/18/2024 2:20 PM, Qingqing Zhou 写道:
+>>
+>>
+>> 在 10/18/2024 4:05 AM, Konrad Dybcio 写道:
+>>> On 15.10.2024 10:16 AM, Qingqing Zhou wrote:
+>>>> Add the APPS SMMU node for QCS615 platform. Add the dma-ranges
+>>>> to limit DMA address range to 36bit width to align with system
+>>>> architecture.
+>>>>
+>>>> Signed-off-by: Qingqing Zhou <quic_qqzhou@quicinc.com>
+>>>> ---
+>>>>  arch/arm64/boot/dts/qcom/qcs615.dtsi | 74 ++++++++++++++++++++++++++++
+>>>>  1 file changed, 74 insertions(+)
+>>>>
+>>>> diff --git a/arch/arm64/boot/dts/qcom/qcs615.dtsi b/arch/arm64/boot/dts/qcom/qcs615.dtsi
+>>>> index 027c5125f36b..fcba83fca7cf 100644
+>>>> --- a/arch/arm64/boot/dts/qcom/qcs615.dtsi
+>>>> +++ b/arch/arm64/boot/dts/qcom/qcs615.dtsi
+>>>> @@ -379,6 +379,7 @@
+>>>>  	soc: soc@0 {
+>>>>  		compatible = "simple-bus";
+>>>>  		ranges = <0 0 0 0 0x10 0>;
+>>>> +		dma-ranges = <0 0 0 0 0x10 0>;
+>>>>  		#address-cells = <2>;
+>>>>  		#size-cells = <2>;
+>>>>  
+>>>> @@ -524,6 +525,79 @@
+>>>>  			reg = <0x0 0x0c3f0000 0x0 0x400>;
+>>>>  		};
+>>>>  
+>>>> +		apps_smmu: iommu@15000000 {
+>>>> +			compatible = "qcom,qcs615-smmu-500", "qcom,smmu-500", "arm,mmu-500";
+>>>> +			reg = <0x0 0x15000000 0x0 0x80000>;
+>>>> +			#iommu-cells = <2>;
+>>>> +			#global-interrupts = <1>;
+>>>> +
+>>>> +			interrupts = <GIC_SPI 65 IRQ_TYPE_LEVEL_HIGH>,
+>>>> +					<GIC_SPI 94 IRQ_TYPE_LEVEL_HIGH>,
+>>>> +					<GIC_SPI 95 IRQ_TYPE_LEVEL_HIGH>,
+>>>
+>>> The list seems perfectly sorted, which is suspicious.. if we set
+>>> i = n - #global-interrupts, interrupt[i] signifies an error in the i-th
+>>> context bank. If the order is wrong, we'll get bogus reports
+>> Thanks for the review, the list refers to Qualcomm Interrupts design spec, checking this platform again, the list is right, first line is global interrupt and the others are context interrupts with right order.
+> Hi Konrad,
+> Hope above comments explain your question. If no more questions from you, I will post the next version. Thanks.
 
-The build passes, but I now see a few failing tests. Any idea?
+Sorry, forgot to reply.
 
-#  RUN           iommufd_mock_domain.one_domain_file.basic ...
-# iommufd.c:1521:basic:Expected 0 (0) == _test_ioctl_ioas_map_file( self->fd, self->ioas_id, mfd, 0, PAGE_SIZE, &iova, IOMMU_IOAS_MAP_WRITEABLE | IOMMU_IOAS_MAP_READABLE) (-1)
-# basic: Test terminated by assertion
-#          FAIL  iommufd_mock_domain.one_domain_file.basic
-not ok 136 iommufd_mock_domain.one_domain_file.basic
-#  RUN           iommufd_mock_domain.one_domain_file.ro_unshare ...
-#            OK  iommufd_mock_domain.one_domain_file.ro_unshare
-ok 137 iommufd_mock_domain.one_domain_file.ro_unshare
-#  RUN           iommufd_mock_domain.one_domain_file.all_aligns ...
-# iommufd.c:1602:all_aligns:Expected 0 (0) == _test_ioctl_ioas_map_file( self->fd, self->ioas_id, mfd, start, length, &iova, IOMMU_IOAS_MAP_WRITEABLE | IOMMU_IOAS_MAP_READABLE) (-1)
-# all_aligns: Test terminated by assertion
-#          FAIL  iommufd_mock_domain.one_domain_file.all_aligns
-not ok 138 iommufd_mock_domain.one_domain_file.all_aligns
-#  RUN           iommufd_mock_domain.one_domain_file.all_aligns_copy ...
-# iommufd.c:1656:all_aligns_copy:Expected 0 (0) == _test_ioctl_ioas_map_file( self->fd, self->ioas_id, mfd, start, length, &iova, IOMMU_IOAS_MAP_WRITEABLE | IOMMU_IOAS_MAP_READABLE) (-1)
-# all_aligns_copy: Test terminated by assertion
-#          FAIL  iommufd_mock_domain.one_domain_file.all_aligns_copy
-not ok 139 iommufd_mock_domain.one_domain_file.all_aligns_copy
-#  RUN           iommufd_mock_domain.one_domain_file.user_copy ...
-# iommufd.c:1712:user_copy:Expected 0 (0) == _test_ioctl_ioas_map_file( self->fd, ioas_id, mfd, 0, BUFFER_SIZE, &copy_cmd.src_iova, IOMMU_IOAS_MAP_WRITEABLE | IOMMU_IOAS_MAP_READABLE) (-1)
-# user_copy: Test terminated by assertion
-#          FAIL  iommufd_mock_domain.one_domain_file.user_copy
-not ok 140 iommufd_mock_domain.one_domain_file.user_copy
-#  RUN           iommufd_mock_domain.one_domain_file.replace ...
-#            OK  iommufd_mock_domain.one_domain_file.replace
-ok 141 iommufd_mock_domain.one_domain_file.replace
-#  RUN           iommufd_mock_domain.one_domain_file.alloc_hwpt ...
-#            OK  iommufd_mock_domain.one_domain_file.alloc_hwpt
-ok 142 iommufd_mock_domain.one_domain_file.alloc_hwpt
-#  RUN           iommufd_mock_domain.one_domain_file_hugepage.basic ...
-# iommufd.c:1521:basic:Expected 0 (0) == _test_ioctl_ioas_map_file( self->fd, self->ioas_id, mfd, 0, PAGE_SIZE, &iova, IOMMU_IOAS_MAP_WRITEABLE | IOMMU_IOAS_MAP_READABLE) (-1)
-# basic: Test terminated by assertion
-#          FAIL  iommufd_mock_domain.one_domain_file_hugepage.basic
-not ok 143 iommufd_mock_domain.one_domain_file_hugepage.basic
-#  RUN           iommufd_mock_domain.one_domain_file_hugepage.ro_unshare ...
-#            OK  iommufd_mock_domain.one_domain_file_hugepage.ro_unshare
-ok 144 iommufd_mock_domain.one_domain_file_hugepage.ro_unshare
-#  RUN           iommufd_mock_domain.one_domain_file_hugepage.all_aligns ...
-#            OK  iommufd_mock_domain.one_domain_file_hugepage.all_aligns
-ok 145 iommufd_mock_domain.one_domain_file_hugepage.all_aligns
-#  RUN           iommufd_mock_domain.one_domain_file_hugepage.all_aligns_copy ...
-#            OK  iommufd_mock_domain.one_domain_file_hugepage.all_aligns_copy
-ok 146 iommufd_mock_domain.one_domain_file_hugepage.all_aligns_copy
-#  RUN           iommufd_mock_domain.one_domain_file_hugepage.user_copy ...
-# iommufd.c:1712:user_copy:Expected 0 (0) == _test_ioctl_ioas_map_file( self->fd, ioas_id, mfd, 0, BUFFER_SIZE, &copy_cmd.src_iova, IOMMU_IOAS_MAP_WRITEABLE | IOMMU_IOAS_MAP_READABLE) (-1)
-# user_copy: Test terminated by assertion
-#          FAIL  iommufd_mock_domain.one_domain_file_hugepage.user_copy
-...
-ok 2 basic_fail_nth.map_domain
-#  RUN           basic_fail_nth.map_file_domain ...
-# iommufd_fail_nth.c:338:map_file_domain:Expected 0 (0) == test_nth_map_file_domain(_metadata, self, variant, &nth_state) (-1)
-# map_file_domain: Test terminated by assertion
-#          FAIL  basic_fail_nth.map_file_domain
-not ok 3 basic_fail_nth.map_file_domain
+I was able to confirm this is just a happy coincidence with the numbers.
 
+Konrad
