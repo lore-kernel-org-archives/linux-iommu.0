@@ -1,126 +1,121 @@
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 70DE21FB8A7
-	for <iommu@lists.linux.dev>; Fri, 25 Oct 2024 14:27:34 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.18])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A6AA21CF7DB
+	for <iommu@lists.linux.dev>; Fri, 25 Oct 2024 14:33:41 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1729866456; cv=none; b=rfoTL0kv42+UDqyIpRHpBxOJ/aSiKcFRGpYiV+j//FFUZ45P/lKYdJfhsSiu0Kq8Q11zrHynMrHlb6JJLHiYNjyI8PjE2HbX8apEKkqH/kPUsgAJIyQT1eCsxcL2D8nuFFG1AZUDoO9YUc46h4lkoJPQEVUQSpI7tT04K2dkhlQ=
+	t=1729866823; cv=none; b=fhbzVzllLtAnxfIDiJQM3RDnC+Wi9X78zu0ayKOrOJyPPNThFXPS/gEvBUJG6OIKk3xsUbjP15kDKcKMuS50sCcuknSa8lFXMXELUMC+fJGXrQgJ6JpLe6R1fl/1Dtx386yuLfYH/2kk15BjULdfMqbTmS0xdEzLlIUYB8a6s/Q=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1729866456; c=relaxed/simple;
-	bh=40eOsWpBkyjEEzDVxLYU6zqXUWiZv8YYSiAG/diekao=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=bMPQlWYaiw1IvYUDlCz4m6zxClp652GIoEW0Vj3PVTCJL7mWK5mDix6bjjC1UhWedaiNKcoz34ZUpqrELk0UgEjqmz98NnVxXwlH6ObYbHFywgSDocY3/gjnTnp35eF54PFI1ubYzQJDmWS6t8kfqjMuPU3iX5EQx51+jvNWG4g=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; arc=none smtp.client-ip=217.140.110.172
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 58381339;
-	Fri, 25 Oct 2024 07:28:03 -0700 (PDT)
-Received: from [10.1.196.40] (e121345-lin.cambridge.arm.com [10.1.196.40])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 4FE0C3F73B;
-	Fri, 25 Oct 2024 07:27:32 -0700 (PDT)
-Message-ID: <1a0ff734-73b2-4d73-839b-71e2017ae3c4@arm.com>
-Date: Fri, 25 Oct 2024 15:27:09 +0100
+	s=arc-20240116; t=1729866823; c=relaxed/simple;
+	bh=Knj201xEIzZb2h2MF8qbmY7ruPwSmvKe2wKMv3fHvzE=;
+	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version; b=LnNmOf6RWZowmbPwL+/Z0L/lrm7Ib4ALTj6v91HGzlLauKU6OY10NEutQSPnc6gJZogm4XU6ak8GuRbFYYyfap/V3e0JXPIu0jh039HL/u2DBTgaxT68YWxAg0WYxyYz2t0vVjrvg2fHnmG/Gx3rM+Xg56wiKqkbZ0GSKthYB9M=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=PzRVeWsk; arc=none smtp.client-ip=198.175.65.18
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="PzRVeWsk"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1729866822; x=1761402822;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=Knj201xEIzZb2h2MF8qbmY7ruPwSmvKe2wKMv3fHvzE=;
+  b=PzRVeWskdATP2HOBG7FI6GycMqvfYPAp9WAHpZ0dJ89lFBNFF0UBgdFz
+   NC16C9zHAtvwF/SeJjpF1x67aemcaKE/Rn0ZfH30y8VVuXfqgPqTjNUcU
+   ysKnBUhoAl3hqWyGbJLbIh54gSwdzIbjbV+gnhMby+5ifKQdzNnHK8pfb
+   WzD1LqypJ3gztCQ2SBGP7t+Uz1tjPiR81avqvWAdOeu3oTQgs8Df4C1/q
+   DmLB0qyvmNfCMZCrjfLD5RK2vkz6R7dqFjUVJaf2RDvgWGJfLOLo1UP2Q
+   C8LvE6NiCj6OiZ0ErX5sj6DdWNgZjIIZjtsSSgnovDKS/x1xzvLi7aPMh
+   g==;
+X-CSE-ConnectionGUID: dH7L8AwaSLy8eJqknC0rMA==
+X-CSE-MsgGUID: uA0fK0KcQSK5w+BaZ6944g==
+X-IronPort-AV: E=McAfee;i="6700,10204,11222"; a="29713387"
+X-IronPort-AV: E=Sophos;i="6.11,199,1725346800"; 
+   d="scan'208";a="29713387"
+Received: from orviesa010.jf.intel.com ([10.64.159.150])
+  by orvoesa110.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Oct 2024 07:33:41 -0700
+X-CSE-ConnectionGUID: Bx05FgDiQcyhPmQkETh6wA==
+X-CSE-MsgGUID: Za61K9Q6Tpm00+tyu9WvHw==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.11,232,1725346800"; 
+   d="scan'208";a="80846992"
+Received: from 984fee00a4c6.jf.intel.com ([10.165.58.231])
+  by orviesa010.jf.intel.com with ESMTP; 25 Oct 2024 07:33:40 -0700
+From: Yi Liu <yi.l.liu@intel.com>
+To: joro@8bytes.org,
+	kevin.tian@intel.com,
+	baolu.lu@linux.intel.com
+Cc: yi.l.liu@intel.com,
+	iommu@lists.linux.dev
+Subject: [PATCH] iommu/vt-d: Drop s1_pgtbl from dmar_domain
+Date: Fri, 25 Oct 2024 07:33:39 -0700
+Message-Id: <20241025143339.2328991-1-yi.l.liu@intel.com>
+X-Mailer: git-send-email 2.34.1
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH] iommu/omap: Don't register ops by fwnode
-To: "H. Nikolaus Schaller" <hns@goldelico.com>
-Cc: joro@8bytes.org, will@kernel.org, iommu@lists.linux.dev,
- Jason Gunthorpe <jgg@nvidia.com>, Linux-OMAP <linux-omap@vger.kernel.org>,
- Beleswar Padhi <b-padhi@ti.com>, Andreas Kemnade <andreas@kemnade.info>
-References: <c44545c6d07c65d89daa297298c27bb0f15c8b84.1728393458.git.robin.murphy@arm.com>
- <2863ACA9-2836-49F6-9D85-749CE480804D@goldelico.com>
- <10d3a86c-d7a8-4ac5-8ad3-010a91c0a25f@arm.com>
- <FCFEB115-846A-4577-A489-D1537AC77DEA@goldelico.com>
- <5c3ea490-f2f5-49e5-99fd-1dc239aee28d@arm.com>
- <F4A297DC-8EBD-4434-97EA-BFEEBB062042@goldelico.com>
-From: Robin Murphy <robin.murphy@arm.com>
-Content-Language: en-GB
-In-Reply-To: <F4A297DC-8EBD-4434-97EA-BFEEBB062042@goldelico.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 
-On 08/10/2024 8:52 pm, H. Nikolaus Schaller wrote:
-> 
-> 
->> Am 08.10.2024 um 20:20 schrieb Robin Murphy <robin.murphy@arm.com>:
-> 
->>> The -ETIMEDOUT seems to come from of_iommu_configure().
->>
->> Oof, yeah, now we've wound up with the opposite problem that because it's the generic "iommus" binding, it gets as far as of_iommu_xlate() but now the NULL fwnode no longer matches the phandle target so that thinks it's waiting for an instance which hasn't registered yet :(
->>
->> OK, different track, does the diff below fare any better? (I've not written it up fully yet as the DRA7 special cases will need some more work still)
->>
->> Thanks,
->> Robin.
->>
->> ----->8-----
->>
->> diff --git a/drivers/iommu/omap-iommu.c b/drivers/iommu/omap-iommu.c
->> index c9528065a59a..44e09d60e861 100644
->> --- a/drivers/iommu/omap-iommu.c
->> +++ b/drivers/iommu/omap-iommu.c
->> @@ -1723,12 +1723,19 @@ static void omap_iommu_release_device(struct device *dev)
->>
->> }
->>
->> +int omap_iommu_of_xlate(struct device *dev, const struct of_phandle_args *args)
->> +{
->> + /* TODO: collect args->np to save re-parsing in probe above */
->> + return 0;
->> +}
->> +
->> static const struct iommu_ops omap_iommu_ops = {
->> .identity_domain = &omap_iommu_identity_domain,
->> .domain_alloc_paging = omap_iommu_domain_alloc_paging,
->> .probe_device = omap_iommu_probe_device,
->> .release_device = omap_iommu_release_device,
->> .device_group = generic_single_device_group,
->> + .of_xlate = omap_iommu_of_xlate,
->> .pgsize_bitmap = OMAP_IOMMU_PGSIZES,
->> .default_domain_ops = &(const struct iommu_domain_ops) {
->> .attach_dev = omap_iommu_attach_dev,
-> 
-> 
-> Unfortunately no change :(
+dmar_domian has stored the s1_cfg which includes the s1_pgtbl info, so
+no need to store s1_pgtbl, hence drop it.
 
-Hmm, I dug around and found a Pandaboard in the cupboard, and ostensibly 
-this seems to work as expected there:
+Signed-off-by: Yi Liu <yi.l.liu@intel.com>
+---
+ drivers/iommu/intel/iommu.h  | 2 --
+ drivers/iommu/intel/nested.c | 1 -
+ drivers/iommu/intel/pasid.c  | 3 +--
+ 3 files changed, 1 insertion(+), 5 deletions(-)
 
-6:12-rc3:
-chu-chu-rocket:~ # dmesg | grep -i iommu
-[    0.628601] iommu: Default domain type: Translated
-[    0.633575] iommu: DMA domain TLB invalidation policy: strict mode
-[    1.636047] omap-iommu 4a066000.mmu: 4a066000.mmu registered
-[    3.265869] omap-iommu 55082000.mmu: 55082000.mmu registered
+diff --git a/drivers/iommu/intel/iommu.h b/drivers/iommu/intel/iommu.h
+index 1497f3112b12..009f518722e0 100644
+--- a/drivers/iommu/intel/iommu.h
++++ b/drivers/iommu/intel/iommu.h
+@@ -653,8 +653,6 @@ struct dmar_domain {
+ 		struct {
+ 			/* parent page table which the user domain is nested on */
+ 			struct dmar_domain *s2_domain;
+-			/* user page table pointer (in GPA) */
+-			unsigned long s1_pgtbl;
+ 			/* page table attributes */
+ 			struct iommu_hwpt_vtd_s1 s1_cfg;
+ 			/* link to parent domain siblings */
+diff --git a/drivers/iommu/intel/nested.c b/drivers/iommu/intel/nested.c
+index 433c58944401..3ce3c4fd210e 100644
+--- a/drivers/iommu/intel/nested.c
++++ b/drivers/iommu/intel/nested.c
+@@ -162,7 +162,6 @@ struct iommu_domain *intel_nested_domain_alloc(struct iommu_domain *parent,
+ 
+ 	domain->use_first_level = true;
+ 	domain->s2_domain = s2_domain;
+-	domain->s1_pgtbl = vtd.pgtbl_addr;
+ 	domain->s1_cfg = vtd;
+ 	domain->domain.ops = &intel_nested_domain_ops;
+ 	domain->domain.type = IOMMU_DOMAIN_NESTED;
+diff --git a/drivers/iommu/intel/pasid.c b/drivers/iommu/intel/pasid.c
+index 2e5fa0a23299..977c4ac00c4c 100644
+--- a/drivers/iommu/intel/pasid.c
++++ b/drivers/iommu/intel/pasid.c
+@@ -586,7 +586,6 @@ int intel_pasid_setup_nested(struct intel_iommu *iommu, struct device *dev,
+ 			     u32 pasid, struct dmar_domain *domain)
+ {
+ 	struct iommu_hwpt_vtd_s1 *s1_cfg = &domain->s1_cfg;
+-	pgd_t *s1_gpgd = (pgd_t *)(uintptr_t)domain->s1_pgtbl;
+ 	struct dmar_domain *s2_domain = domain->s2_domain;
+ 	u16 did = domain_id_iommu(domain, iommu);
+ 	struct dma_pte *pgd = s2_domain->pgd;
+@@ -637,7 +636,7 @@ int intel_pasid_setup_nested(struct intel_iommu *iommu, struct device *dev,
+ 	if (s1_cfg->addr_width == ADDR_WIDTH_5LEVEL)
+ 		pasid_set_flpm(pte, 1);
+ 
+-	pasid_set_flptr(pte, (uintptr_t)s1_gpgd);
++	pasid_set_flptr(pte, s1_cfg->pgtbl_addr);
+ 
+ 	if (s1_cfg->flags & IOMMU_VTD_S1_SRE) {
+ 		pasid_set_sre(pte);
+-- 
+2.34.1
 
-6.12-rc3 + of_xlate:
-chu-chu-rocket:~ # dmesg | grep -i iommu
-[    0.629577] iommu: Default domain type: Translated
-[    0.634582] iommu: DMA domain TLB invalidation policy: strict mode
-[    1.622802] omap-iommu 4a066000.mmu: 4a066000.mmu registered
-[    3.316009] omap-iommu 55082000.mmu: 55082000.mmu registered
-[    3.329040] omap-rproc ocp:dsp: Adding to iommu group 0
-[    3.335083] omap-iommu 4a066000.mmu: 4a066000.mmu: version 2.0
-[    3.356506] omap-rproc 55020000.ipu: Adding to iommu group 1
-[    3.362396] omap-iommu 55082000.mmu: 55082000.mmu: version 2.1
-
-Guess I'm going to have to dig further for an OMAP3 to figure out what 
-additional shenanigans that ISP driver is up to... :/
-
-Thanks,
-Robin.
-
-> 
-> A very tiny issue was that the second argument can not have a const specifier in the
-> v6.8 series, but starting with v6.9 it should be there. But since 6.8 and 6.9 are
-> already EOL, there will be no back-ports anyways. And if someone does really
-> backport (like me for testing purposes) it is obvious what to do.
-> 
-> BR and thanks,
-> Nikolaus
-> 
