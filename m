@@ -1,156 +1,194 @@
-Received: from NAM12-MW2-obe.outbound.protection.outlook.com (mail-mw2nam12on2081.outbound.protection.outlook.com [40.107.244.81])
+Received: from szxga08-in.huawei.com (szxga08-in.huawei.com [45.249.212.255])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1155920F3F0
-	for <iommu@lists.linux.dev>; Fri, 25 Oct 2024 23:58:55 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.244.81
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1729900737; cv=fail; b=CXyVmmDZCzJw2vMlvp3wC/Yss7LxbtEMQXGQGBy9eRSxybAkRCFRUkaAQM78APIBl2Re16fbSk7sqMLFen1/KJoDlyatKSt20pMR/3mtM5is1vooOPQGrIUUiDzlI35rbPDAvYFHlZ9el4F7dvqvRH9b4HSvvsnPF6o2rAhmeDQ=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1729900737; c=relaxed/simple;
-	bh=/K/+mf8o36EgXf41uKsQ7YNWvnXQtNQm9cj+Ff0isDs=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:Content-Type:
-	 Content-Disposition:In-Reply-To:MIME-Version; b=Jio7varnaePgRpEbGv8RbSa7+SCYLcBWGDl+JANxas/d+uqP59GY21qKP9yf3kJcoLVGBGJrktTb1wYXYuUUQLrIxMOXaTQMy42QE5AWULJKbul45fKq0nPsrYdrcewy3VjXJjqzJT/78+JuaTWjG7ddmpAA8Lm3SMf0tG+PkK8=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=MzuPowsg; arc=fail smtp.client-ip=40.107.244.81
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="MzuPowsg"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=lgS1dRDYyIAMrCgZmswd9Sb+QWm0/YTyi83TRsRA9iT9/ZP3YW7Sbv3eriTkyvzRBLl7zx6PwA2YGGkbAu7ukTdbXNDXJ2KNsel2dSo6ZYBPFkyHkxp0jFr2h2qFi+z+S/HPPOboMQCHS8M8Ou/K9839GM3AH49f7xZAJJKg5fZNYDPFgACZminUFHioo3VHEkdps0llFkVO79T4GYDkoRvTCmRl085fc7InqvHjDxl8BFX9yTUE/KgCR94uXCxJfu1zPumN19ip1C43Gacd5ISl3wMfY8+6WE6cvXmvMobL9QjdF7G0UNIwA7WYuKKzs0QucqNfxeER77gxl2QUhQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=fF+FAWV/ky+qHQkBLiCBOPAEVK1IG5+t+qXuSBPsnio=;
- b=mNchl5noytEF4sFq2pGpWaNYG9SwA8YS77hZsv7v9vWL9+3ZAzDZ18jfQ91qurRppVT/x1Ig51UyU/mEAR6dTaL8/gCLDttNxtOoRIwIGF//ddA09dLZNM3snFPUGMgJOfzWl/6jCt/t8H44FAiuN77MxGY84ehv1GQMfLSTE99bXr59j32qex+oA01vBnNy1QSCD0TGA3EYkg4gn3T5DIbwfTqG2wwz9HXQpdlfu7dTymED//T5149+kE+r0CHvlerjC+eJJu5JyNyfHimlB+3erqHdLFINpz6MyiNz5KGJIeWDZIj44xacAR60PCvzBmnFsc1me/GYSDoP9l6GSQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=fF+FAWV/ky+qHQkBLiCBOPAEVK1IG5+t+qXuSBPsnio=;
- b=MzuPowsg9DpLDQZJ8ALPpv5njGqmh4HiXy4luYTuzxwrF2QzPRnrvexR4j0IdrTH77blKO5bkA0mjbbqlA/xmVkTcI48X+YrnStbFodF2u+9h0vFRC9qE8AqLgz20qThEQIo2iwUAeh2GbJFmbmNM/WGvomVItdxUPOuObvP+3owHEvqve3psSIz/ywX+CYVosxB1EpAade58iuPx1ZVFrSuuk5YFYHdZZhBMT4AAZmjCtgF2ZMD63xUEo1B13sYLsft6z0x+irAsEhdZ6E0r5XT0LCpzZH/R3JpWhkroKAZ3OAFsz29YDQ3YqOTuAdVD3rctfq0Pv2u9y32T+FIIg==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-Received: from CH3PR12MB8659.namprd12.prod.outlook.com (2603:10b6:610:17c::13)
- by CY8PR12MB7659.namprd12.prod.outlook.com (2603:10b6:930:9f::20) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.8093.23; Fri, 25 Oct
- 2024 23:58:50 +0000
-Received: from CH3PR12MB8659.namprd12.prod.outlook.com
- ([fe80::6eb6:7d37:7b4b:1732]) by CH3PR12MB8659.namprd12.prod.outlook.com
- ([fe80::6eb6:7d37:7b4b:1732%4]) with mapi id 15.20.8093.018; Fri, 25 Oct 2024
- 23:58:50 +0000
-Date: Fri, 25 Oct 2024 20:58:49 -0300
-From: Jason Gunthorpe <jgg@nvidia.com>
-To: Nicolin Chen <nicolinc@nvidia.com>
-Cc: Steven Sistare <steven.sistare@oracle.com>, iommu@lists.linux.dev,
-	Kevin Tian <kevin.tian@intel.com>
-Subject: Re: [PATCH V7 9/9] iommufd: map file selftest
-Message-ID: <20241025235849.GL6956@nvidia.com>
-References: <1729861919-234514-1-git-send-email-steven.sistare@oracle.com>
- <1729861919-234514-10-git-send-email-steven.sistare@oracle.com>
- <ZxvPhQZOBR7g56eh@Asurada-Nvidia>
- <2c7edd3b-61c7-4012-b825-4972c0efcec5@oracle.com>
- <Zxvl7J0mWkKPS4GD@Asurada-Nvidia>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <Zxvl7J0mWkKPS4GD@Asurada-Nvidia>
-X-ClientProxiedBy: BL0PR02CA0041.namprd02.prod.outlook.com
- (2603:10b6:207:3d::18) To CH3PR12MB8659.namprd12.prod.outlook.com
- (2603:10b6:610:17c::13)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0DEEB70813
+	for <iommu@lists.linux.dev>; Sat, 26 Oct 2024 07:32:43 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=45.249.212.255
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1729927966; cv=none; b=J15cmHNaUblQxkchBkANk8V0nOQetWgOsGilNixJ8ItmfON3w0Yc8pMUM4NDrV5vOhETHJtGvWhy+bayTO2CeLb2MrExcr7HvzdDh1RtVb/HDSiq6cQpLEF7EbFfrUXguFHl5xEeVkTdHu5Zw6frlIoIAkbMpFXz6T6EUHAAWrM=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1729927966; c=relaxed/simple;
+	bh=0fImj/1xNzVI2mu3nRBq1x9gHCbv+R2NBwz8+OMc16g=;
+	h=Message-ID:Date:MIME-Version:Subject:To:CC:References:From:
+	 In-Reply-To:Content-Type; b=lIA4eYXbC3IKMclfu3nrS+a4zkHI7x8yfrRL+oMA2QklA9SJl2IGF9B4a5GaIuKFsTCY8ADTOI5Zy9FpS5rq7h+t0N1TWMCHQGZgLILz878fT/EENncBJY7se0g+DxZ2twQesKnvI29o3NKbS09Ca0EFgV978T8+poBeRQjNohg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=huawei.com; spf=pass smtp.mailfrom=huawei.com; arc=none smtp.client-ip=45.249.212.255
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=huawei.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=huawei.com
+Received: from mail.maildlp.com (unknown [172.19.88.194])
+	by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4XbBC01CYpz1T8gN;
+	Sat, 26 Oct 2024 15:30:36 +0800 (CST)
+Received: from dggpemf200006.china.huawei.com (unknown [7.185.36.61])
+	by mail.maildlp.com (Postfix) with ESMTPS id 8F20A140118;
+	Sat, 26 Oct 2024 15:32:41 +0800 (CST)
+Received: from [10.67.120.129] (10.67.120.129) by
+ dggpemf200006.china.huawei.com (7.185.36.61) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.1544.11; Sat, 26 Oct 2024 15:32:41 +0800
+Message-ID: <cf1911c5-622f-484c-9ee5-11e1ac83da24@huawei.com>
+Date: Sat, 26 Oct 2024 15:32:35 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: CH3PR12MB8659:EE_|CY8PR12MB7659:EE_
-X-MS-Office365-Filtering-Correlation-Id: c41f84e8-e879-456a-483f-08dcf550f8fa
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;ARA:13230040|1800799024|376014|366016;
-X-Microsoft-Antispam-Message-Info:
-	=?us-ascii?Q?LK2nlwKL4rIHRIRASigxQBxrYmiIIYX5uvDrXfv7HQpEpVz2FswRXlo1/rmS?=
- =?us-ascii?Q?j26DlFd8bCekPZcD0xceCztWtza8oK+m+S+WtYCCn7JWvvr+ezeOcwjoBTfO?=
- =?us-ascii?Q?jbzMbLZCf3sQxe8beDu2Vi8tQgLC+vFFUvYA3OELK74lJj74//wNs9pQbASk?=
- =?us-ascii?Q?B8i8gCiw9EexxlUS4DvEMVHRqJLq4qi742HiTkh9qJKHSWr6PSrIV4uBZeFe?=
- =?us-ascii?Q?BW85We1QV010G6UWnhv8Jz1INN5ZyDdSpp6QUInM1//idBzLm1wbkEGdJMca?=
- =?us-ascii?Q?1O2L3ZrNY2ZGsSQXvB2Bj9g099ZPrx45E6juOchztE7pLpRfmDWUmCHFJVh/?=
- =?us-ascii?Q?43fLxrVKsq88SXy1+HKGlTWlDSwjLzzfToEsoSxLi7nRECxo9aLRtVL5yoBn?=
- =?us-ascii?Q?k5bzEQAHspXzwTR3OCRkHBUR21fSGiG1qGCCZ//Be8PxOvXTD2v9rn8d3JII?=
- =?us-ascii?Q?plbSaZ4CwzYOJ4BYhiEdKMre477N8nCX5BIWSXBKB1wEoXLJuQU5dCG7W++6?=
- =?us-ascii?Q?8AGf1t/u1nZ+b6JTpQwbxz1Z07K0M1vCrQbMcIIZcIhFtsxMGnMPSS5pYuY8?=
- =?us-ascii?Q?TQnso4MjmKNF5Rp3cPqPN3R1Cq7c6WWiGFw5iVkyQdaMEg9pjP9UAz66d4bF?=
- =?us-ascii?Q?FP3IH/2PH7H9Qj9dKN6uukQ94ZAe8V6ALmQStGiIl29EY7lb7qnYftrLRTu9?=
- =?us-ascii?Q?vf2lsu24DDU40aqcOVO8mBcOy2HJ1WEAHu89AnClD/RZ+NZPJ6EMjzJVggR6?=
- =?us-ascii?Q?KJZYiMbw22HXdgTSI6jyGsDD5JVd4232jlbQSxhlA/zj5MHCSQncEDZzjQhg?=
- =?us-ascii?Q?q9hKRdhzPoKpZxFLBxE1VGbEsRlfzmNojW/zmNcZL8nbd0VnEJiWKo09j6Ty?=
- =?us-ascii?Q?P2boUqFggiSS6OEc6rIJbeGrabnvklY63HtzObHwAT8qlFG010JVzz1fbbJP?=
- =?us-ascii?Q?KeZztPbNErfNOtl1SSGTqsE0T9NWy+K5BcwY2f4WCzqB7d9Pfnhbba66/A33?=
- =?us-ascii?Q?t3IpjVW7onobL/EXAlEOOfNc3NLZim99lrA97DmIPxQT6ZfGPjVfO4ks9kt2?=
- =?us-ascii?Q?E9aLuqpsrH5HU2CvTuI4po43mYQcX9SXBoDE7UG5O+P3w7cpl1lGohsRovYP?=
- =?us-ascii?Q?0q7mU72ijldbJ04KyuNqYCoGDqpjEhSA/sKgcpyRHtAg34ISxBdS5+q47FbQ?=
- =?us-ascii?Q?pjrPmOvPVOYTC1CFg8mcM5qA3Udkk2SehqfPhZlEY0TX7GPTnsTEKhkFUUTv?=
- =?us-ascii?Q?ydmtYE577sj9YqdGZ1J9ajZLbTSovAQcEWD2fGV6nItj01tpmCjYeF/oE7yX?=
- =?us-ascii?Q?rsHf8Dd1MK0foEg6xuNES54C?=
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CH3PR12MB8659.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(1800799024)(376014)(366016);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?us-ascii?Q?Scby/7Sz5fQee4WBe4WizqVrCVGqQiwoXV8xmidfcJeUUht7pTUng0sLS2Dc?=
- =?us-ascii?Q?vF2hBB63yX4bfpo6NM8QncIzYh5gGYJ5Wd7lMJzLfem0I6NntUYCp6PA8/b+?=
- =?us-ascii?Q?RihmmAsITYv1ge8JzJlI3dz1CVm2aslo9KodDNa9FJ7YF+CqRuKXYh4QqF1e?=
- =?us-ascii?Q?QRfQLgVpaSevJo/i9qfA5bUmwwDulfT2LdQEhrRJxo6XV8uVfHqZ3vOgJ7lc?=
- =?us-ascii?Q?q71BU9yy1cJzY6kLVEMfw7tzbjobDGmAyc36OnNQm9muhNJiRICi5FjmynCC?=
- =?us-ascii?Q?KV18KgAMQPhSVtewglkeynVx7sAE6KAkyay0+aNHjk0uzQgvTvPzEU3xvdNf?=
- =?us-ascii?Q?U7nVbEy2rZja5VuHBYdmsPDYFq/4Q2m61tHzGycrchW18QhF2tJ2i3sx6x04?=
- =?us-ascii?Q?IWIczzIygcVmFDt7lvLzboX/Qmxcbluwqd0PYMcPh4GvHFxkt5k6CmcfTQbp?=
- =?us-ascii?Q?+n+UzSMKqI0o0HkSA/8ZlnKqBNbRSLmXR3oOnZNNuM8lTSV7kdrCIHVBE2qG?=
- =?us-ascii?Q?EjdEoHcnHwAYCVFSuYrSeq5jLv5ht8VUNCAenp2/kirHhSdGG/a5an+qcsX0?=
- =?us-ascii?Q?r57ax8EPYH0fkbVdAz46brpKWcI45hY1Y70mNLSjly4VysP0s/gbcYFlp7x2?=
- =?us-ascii?Q?K4EorJximc+21tRdao5jV1Q23pk7nuk7Q0/BOusib7ap9l+3xBaB1UeBVvLU?=
- =?us-ascii?Q?YM97RwHmiJ6yUvGTS4qd83pWHlEutapbPWfuMq1hkLbDymRiEa0y1M9ddMbL?=
- =?us-ascii?Q?YmWe+gEltd6GoC6/Z8NxOUzKjjNdUJ1gbrHNuAh3OtQ0Y9NHkBMM6bhurUyM?=
- =?us-ascii?Q?826Jkohc98Hl9oTFBGjXGgpj5S5sdlO+Mx4o85WjmpXZIm5avzgBqwTAClCb?=
- =?us-ascii?Q?332jiK8pIZ8Lb60xv5g45jC5PHwbhb2l9Ou2CmUwOX2dYETb3oMphSzL1teG?=
- =?us-ascii?Q?cHnx3tL7vMf3RdKFpn1AqinWdsIRgjycWoIYGy0LMWzcVfzfpRQ9fV4WcZ8/?=
- =?us-ascii?Q?EvRi68pnBmJblPi3XIvMmj/7YrdHv1oaflwkGEYnGbSf77bcQYKyZyN24DKJ?=
- =?us-ascii?Q?AYEQywZZS+m4pIXmSYOc1POOpVFF5wfchbxX+BBYzYWbdidSiaIfqoj/97XH?=
- =?us-ascii?Q?gsEBxny4XnkibVdKhX0/vck73faG//xmavFaO8Ml2JmHHoj57AjAJNXOx8kA?=
- =?us-ascii?Q?ovrrPclh5pNF3uKLE4sEfZdt8NHUeTe9ajQ1781vkPpnT5vu9i8XBeqpJvdF?=
- =?us-ascii?Q?XzMrndr5DLH3eANyWvxTjXbESD4egIDah6waKRRhI9l0DhGeVtrmjfqCPjKm?=
- =?us-ascii?Q?e8yHTbhK4n6ddckYT4eF7ZnyKYXWIUmvq/xzYp2HhkM4H341OZZ23ReYiuD5?=
- =?us-ascii?Q?puB/wBcfb86Yha6g1l9QE9fkPb1H5AaOf3WZYwc+yoFs0mn5uwKA6z+/WRcO?=
- =?us-ascii?Q?0xEi7UDFd0/IJnn00J7uVevP5PIWB6nSkPuBeT6UFNFTUFC+SuHcilG713/U?=
- =?us-ascii?Q?ST4TcwIqKy/B6LeB9EQQtE/GJUaVbfmv2I8u6EMCQGx07pmaV+MNHxYlEdsK?=
- =?us-ascii?Q?xvB2DkSkblUGai+BE98=3D?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: c41f84e8-e879-456a-483f-08dcf550f8fa
-X-MS-Exchange-CrossTenant-AuthSource: CH3PR12MB8659.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 25 Oct 2024 23:58:50.4352
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: 0yns/n5rDkBZuPfbYgYdEYHQCXirYpzCE9BubsmyZq4ZJe25HLCR9rEZepaWDQKj
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: CY8PR12MB7659
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH net-next v3 3/3] page_pool: fix IOMMU crash when driver
+ has already unbound
+To: =?UTF-8?Q?Toke_H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>, Jesper
+ Dangaard Brouer <hawk@kernel.org>, <davem@davemloft.net>, <kuba@kernel.org>,
+	<pabeni@redhat.com>
+CC: <zhangkun09@huawei.com>, <fanghaiqing@huawei.com>,
+	<liuyonglong@huawei.com>, Robin Murphy <robin.murphy@arm.com>, Alexander
+ Duyck <alexander.duyck@gmail.com>, IOMMU <iommu@lists.linux.dev>, Andrew
+ Morton <akpm@linux-foundation.org>, Eric Dumazet <edumazet@google.com>, Ilias
+ Apalodimas <ilias.apalodimas@linaro.org>, <linux-mm@kvack.org>,
+	<linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>, kernel-team
+	<kernel-team@cloudflare.com>
+References: <20241022032214.3915232-1-linyunsheng@huawei.com>
+ <20241022032214.3915232-4-linyunsheng@huawei.com>
+ <dbd7dca7-d144-4a0f-9261-e8373be6f8a1@kernel.org>
+ <113c9835-f170-46cf-92ba-df4ca5dfab3d@huawei.com> <878qudftsn.fsf@toke.dk>
+ <d8e0895b-dd37-44bf-ba19-75c93605fc5e@huawei.com> <87r084e8lc.fsf@toke.dk>
+Content-Language: en-US
+From: Yunsheng Lin <linyunsheng@huawei.com>
+In-Reply-To: <87r084e8lc.fsf@toke.dk>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+X-ClientProxiedBy: dggems705-chm.china.huawei.com (10.3.19.182) To
+ dggpemf200006.china.huawei.com (7.185.36.61)
 
-On Fri, Oct 25, 2024 at 11:39:40AM -0700, Nicolin Chen wrote:
+On 2024/10/25 19:16, Toke Høiland-Jørgensen wrote:
 
-> > I will try to reproduce your failures.
-> > What is your base commit?
+...
+
+>>
+>> You and Jesper seems to be mentioning a possible fact that there might
+>> be 'hundreds of gigs of memory' needed for inflight pages, it would be nice
+>> to provide more info or reasoning above why 'hundreds of gigs of memory' is
+>> needed here so that we don't do a over-designed thing to support recording
+>> unlimited in-flight pages if the driver unbound stalling turns out impossible
+>> and the inflight pages do need to be recorded.
 > 
-> I was using the for-next tree (rc1) from:
-> git git://git.kernel.org/pub/scm/linux/kernel/git/jgg/iommufd.git
+> I don't have a concrete example of a use that will blow the limit you
+> are setting (but maybe Jesper does), I am simply objecting to the
+> arbitrary imposing of any limit at all. It smells a lot of "640k ought
+> to be enough for anyone".
+
+From Jesper's link, it seems there is still some limit for those memory and
+the limit seems to be configured dynamically.
+
+Currently the number of supporting in-flight pages is depending on the rx
+queue number and their queue depth in this patch, as mentioned before, it
+always can be dynamic at some cost of complexity and maybe some overhead.
+
 > 
-> And it was failing, so I guess rc1 is missing something for memfd.
-> So, it should be a false alarm.
+>> I guess it is common sense to start with easy one until someone complains
+>> with some testcase and detailed reasoning if we need to go the hard way as
+>> you and Jesper are also prefering waiting over having to record the inflight
+>> pages.
+> 
+> AFAIU Jakub's comment on his RFC patch for waiting, he was suggesting
+> exactly this: Add the wait, and see if the cases where it can stall turn
+> out to be problems in practice.
 
-Oh, that's exciting. So I will have to base it on a rc that works so
-bisection works :\
+I should mention that jakub seemed to prefer to only check some condition
+to decide if the waiting is needed in [1].
 
-Jason
+If the below 'kick' need to be done during the waiting, it might be
+going the hard way instead of going the easy here comparing to recording
+the inflight pages IHMO.
+
+1. https://lore.kernel.org/all/20241014171406.43e730c9@kernel.org/
+
+> 
+>> More detailed about why we might need to go the hard way of having to record
+>> the inflight pages as below.
+>>
+>>>
+>>>>>
+>>>>> The page_pool already have a system for waiting for these outstanding /
+>>>>> inflight packets to get returned.  As I suggested before, the page_pool
+>>>>> should simply take over the responsability (from net_device) to free the
+>>>>> struct device (after inflight reach zero), where AFAIK the DMA device is
+>>>>> connected via.
+>>>>
+>>>> It seems you mentioned some similar suggestion in previous version,
+>>>> it would be good to show some code about the idea in your mind, I am sure
+>>>> that Yonglong Liu Cc'ed will be happy to test it if there some code like
+>>>> POC/RFC is provided.
+>>>
+>>> I believe Jesper is basically referring to Jakub's RFC that you
+>>> mentioned below.
+>>>
+>>>> I should mention that it seems that DMA device is not longer vaild when
+>>>> remove() function of the device driver returns, as mentioned in [2], which
+>>>> means dma API is not allowed to called after remove() function of the device
+>>>> driver returns.
+>>>>
+>>>> 2. https://www.spinics.net/lists/netdev/msg1030641.html
+>>>>
+>>>>>
+>>>>> The alternative is what Kuba suggested (and proposed an RFC for),  that
+>>>>> the net_device teardown waits for the page_pool inflight packets.
+>>>>
+>>>> As above, the question is how long does the waiting take here?
+>>>> Yonglong tested Kuba's RFC, see [3], the waiting took forever due to
+>>>> reason as mentioned in commit log:
+>>>> "skb_defer_free_flush(): this may cause infinite delay if there is no
+>>>> triggering for net_rx_action()."
+>>>
+>>> Honestly, this just seems like a bug (the "no triggering of
+>>> net_rx_action()") that should be root caused and fixed; not a reason
+>>> that waiting can't work.
+>>
+>> I would prefer the waiting too if simple waiting fixed the test cases that
+>> Youglong and Haiqing were reporting and I did not look into the rabbit hole
+>> of possible caching in networking.
+>>
+>> As mentioned in commit log and [1]:
+>> 1. ipv4 packet defragmentation timeout: this seems to cause delay up to 30
+>>    secs, which was reported by Haiqing.
+>> 2. skb_defer_free_flush(): this may cause infinite delay if there is no
+>>    triggering for net_rx_action(), which was reported by Yonglong.
+>>
+>> For case 1, is it really ok to stall the driver unbound up to 30 secs for the
+>> default setting of defragmentation timeout?
+>>
+>> For case 2, it is possible to add timeout for those kind of caching like the
+>> defragmentation timeout too, but as mentioned in [2], it seems to be a normal
+>> thing for this kind of caching in networking:
+> 
+> Both 1 and 2 seem to be cases where the netdev teardown code can just
+> make sure to kick the respective queues and make sure there's nothing
+> outstanding (for (1), walk the defrag cache and clear out anything
+> related to the netdev going away, for (2) make sure to kick
+> net_rx_action() as part of the teardown).
+
+It would be good to be more specific about the 'kick' here, does it mean
+taking the lock and doing one of below action for each cache instance?
+1. flush all the cache of each cache instance.
+2. scan for the page_pool owned page and do the finegrained flushing.
+
+> 
+>> "Eric pointed out/predicted there's no guarantee that applications will
+>> read / close their sockets so a page pool page may be stuck in a socket
+>> (but not leaked) forever."
+> 
+> As for this one, I would put that in the "well, let's see if this
+> becomes a problem in practice" bucket.
+
+As the commit log in [2], it seems it is already happening.
+
+Those cache are mostly per-cpu and per-socket, and there may be hundreds of
+CPUs and thousands of sockets in one system, are you really sure we need
+to take the lock of each cache instance, which may be thousands of them,
+and do the flushing/scaning of memory used in networking, which may be as
+large as '24 GiB' mentioned by Jesper?
+
+2. https://lore.kernel.org/all/20231126230740.2148636-13-kuba@kernel.org/
+
+> 
+> -Toke
+> 
+> 
