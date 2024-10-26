@@ -1,121 +1,103 @@
-Received: from szxga06-in.huawei.com (szxga06-in.huawei.com [45.249.212.32])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-lf1-f43.google.com (mail-lf1-f43.google.com [209.85.167.43])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C176E17BB07
-	for <iommu@lists.linux.dev>; Sat, 26 Oct 2024 07:33:31 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=45.249.212.32
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 90AB9224F0
+	for <iommu@lists.linux.dev>; Sat, 26 Oct 2024 18:18:34 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.43
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1729928014; cv=none; b=YdHxXv45GyRAGE0hPlDF9zUk5K3FulqUlhwF1JUct9pBYQyGS3DvCwaL2xizTqzuSNg6VSJWCs4e1MHNGQHG4NXru6q76/403GwWfZVztSMytQCl6q7J5n8LYogF/b54NeBb7UNPs3RnTUPdpKEBQbWGGaWrofJ5Espj0LRB3sc=
+	t=1729966716; cv=none; b=mC0weTYwZrSpEfFVTon0cSe218IdK8e2r2RIBQ4PTp1r5K+hYjgk0zF2sqr0vbQBl1I+6AUekj0oiyI2Mefgjp20rutr34NBL9Gc42UTHdH8C2Wy8rSDXnUbfMHPPeoEjA7ptZMkiq1Oz35p4ZuaOsHlhrdz9tmdi9+euFemwQk=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1729928014; c=relaxed/simple;
-	bh=n7utlUV9n5HtpAE/g/JIp5AtQo76IlU43lAwxB4lQC0=;
-	h=Message-ID:Date:MIME-Version:Subject:To:CC:References:From:
-	 In-Reply-To:Content-Type; b=ieKMNNKMEqOcMbiWIrXiMwrzszpHLvehNrVJqE5ViGWMhMhHB5A2uRtYSdwHUlgT1dTKBPYmjAaA//AWRdwKOZtqI70xy+GUD6qDTGAf7bohReiyOeiZ/jvwS8Vuxik0onMZuYINAHrB9iFbJCTbMznEOpGTbBPShEBY4RS88tY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=huawei.com; spf=pass smtp.mailfrom=huawei.com; arc=none smtp.client-ip=45.249.212.32
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=huawei.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=huawei.com
-Received: from mail.maildlp.com (unknown [172.19.88.214])
-	by szxga06-in.huawei.com (SkyGuard) with ESMTP id 4XbBGT00Zsz1ynN1;
-	Sat, 26 Oct 2024 15:33:36 +0800 (CST)
-Received: from dggpemf200006.china.huawei.com (unknown [7.185.36.61])
-	by mail.maildlp.com (Postfix) with ESMTPS id 286BE1A016C;
-	Sat, 26 Oct 2024 15:33:29 +0800 (CST)
-Received: from [10.67.120.129] (10.67.120.129) by
- dggpemf200006.china.huawei.com (7.185.36.61) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.1544.11; Sat, 26 Oct 2024 15:33:28 +0800
-Message-ID: <204272e7-82c3-4437-bb0d-2c3237275d1f@huawei.com>
-Date: Sat, 26 Oct 2024 15:33:28 +0800
+	s=arc-20240116; t=1729966716; c=relaxed/simple;
+	bh=mLUZ286GPbKzQ1G8TxZd2G/6DT+8CQKrGlwx0R4zdyc=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=Py2KSl9ZCnNT10S7NkbsiU/Gl9UalaTD9y5r3hkAgYL/8nqMuduFYk99Jv22RMjVWeE/o+pcPcUKotZ7KA7XeFLCgynxykt6MvBluluTtE2+cPFjjQVFJQBLvh4j+RHNoVFpTOwQ2VkylT4R30LUGFLdAc3SvJEtqqljYNtp0cc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org; spf=pass smtp.mailfrom=linaro.org; dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b=IdF/qIqV; arc=none smtp.client-ip=209.85.167.43
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linaro.org
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="IdF/qIqV"
+Received: by mail-lf1-f43.google.com with SMTP id 2adb3069b0e04-539e8607c2aso3282556e87.3
+        for <iommu@lists.linux.dev>; Sat, 26 Oct 2024 11:18:34 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google; t=1729966713; x=1730571513; darn=lists.linux.dev;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=lr+0jRvi1NT0IJOuOscYHQQgaFgqgoi2S8/w67o5wxU=;
+        b=IdF/qIqV+xtFitkzEeTBNaz+MqIB0+X2gT3abDHBx0025zG1x/KJs96HUOhVuFr++q
+         buquO34QKOY0kU/lLU91qdRXh/ZBQsArFPpiF3xYEk4WamXopDGWv5ifhWtIlXc13ip8
+         RU2xKmOMqsNcclNdFs3z/xLBaMTQ8RMRrPYWnZ5lKD+Srh2zCp+MxjJkG4ya3hrXFboF
+         Dq+sDVkoEkV7HJ6w3H2YqpwJJDGtKQfSUqqk16oVDS+VQy8NQAMjMPcLT0HtiQdJxCCF
+         Gg3R0/LhsdOJOh47pM4XOw8832cjwLyyK5gFKh4hZkFc2EeZ6S/flwjzc4UoYOeCOQ63
+         XByw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1729966713; x=1730571513;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=lr+0jRvi1NT0IJOuOscYHQQgaFgqgoi2S8/w67o5wxU=;
+        b=kgZDTMY3qL0Gf7uKZ+BYxh23oF4n+Dqkluf8JEe+Ei5wHrwpRYxhg8/veGcUWH8KyX
+         nhqDhnZ3OqKAQ/Neblxh4JEP3C4sE+gZVqwPMXQeF8atpbHUcEBKqkr6pZ2bTzlPIM14
+         YZnzjL4m9TwR86ynx8Z7rtPJ09kQiQplefNBJIGvOLoB2kQcXhIsDsUgGCRtC15tDQoA
+         LFTjwXXmfKmXfLF3uQz2cNNW3VYUohlH2s6cBWnwfHT5VUz4Qclq+vXUZBPI52qT25eB
+         d3gvRS8e29PnzWj1oCgoiFbWlTXIxApHmhPH7kT3LJErqQSlxQ2KWd1AYhhT6tnXXc72
+         rXKQ==
+X-Forwarded-Encrypted: i=1; AJvYcCUl+e70h7gY3nyd2IHoaJOWnQCMpkn1ahMQi1q3mtXEpBQksVt8HmxhBjwSfz7zwpE1orlsFA==@lists.linux.dev
+X-Gm-Message-State: AOJu0Yzcex29kVWd2cPPFyRPBP0laqyzWYC/urh4RyBildpnO/7lhOij
+	6y61H72sBVCN2jO8u8losjra+yaB1rki+SextRoBxNIlhESrNQbGtXwdQeLwc6A=
+X-Google-Smtp-Source: AGHT+IHV18CqxOkaMvlzQe0OOHQoINVJqyxJyEeaJmdcBaU//KGhWUqaFp4ObZCcBr8YBYAq+CXG0g==
+X-Received: by 2002:a05:6512:3b06:b0:539:f607:1d2b with SMTP id 2adb3069b0e04-53b348b7c7bmr1048338e87.7.1729966712681;
+        Sat, 26 Oct 2024 11:18:32 -0700 (PDT)
+Received: from eriador.lumag.spb.ru (2001-14ba-a0c3-3a00--7a1.rev.dnainternet.fi. [2001:14ba:a0c3:3a00::7a1])
+        by smtp.gmail.com with ESMTPSA id 2adb3069b0e04-53b2e124610sm567623e87.84.2024.10.26.11.18.30
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sat, 26 Oct 2024 11:18:31 -0700 (PDT)
+Date: Sat, 26 Oct 2024 21:18:28 +0300
+From: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+To: Konrad Dybcio <konrad.dybcio@oss.qualcomm.com>
+Cc: Qingqing Zhou <quic_qqzhou@quicinc.com>, andersson@kernel.org, 
+	konradybcio@kernel.org, robh@kernel.org, krzk+dt@kernel.org, conor+dt@kernel.org, 
+	robimarko@gmail.com, will@kernel.org, robin.murphy@arm.com, joro@8bytes.org, 
+	linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, 
+	iommu@lists.linux.dev
+Subject: Re: [PATCH v3 4/4] arm64: dts: qcom: qcs615: add the APPS SMMU node
+Message-ID: <nhthg2rlfatc2pyhsuoulvo5447cxg7buv4aq3r7r5amsmjjoq@pgfyvvegfron>
+References: <20241025030732.29743-1-quic_qqzhou@quicinc.com>
+ <20241025030732.29743-5-quic_qqzhou@quicinc.com>
+ <8a60b729-b312-4afc-835b-a18060ad3f03@oss.qualcomm.com>
+ <zsphor7rpbwx4km6uxpepky2h7atbgjn2435puygmpssfc36mc@wkquqxud2yij>
+ <8c9804f2-ef4d-412b-97ea-f521dfd35ec2@oss.qualcomm.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH net-next v3 3/3] page_pool: fix IOMMU crash when driver
- has already unbound
-To: Jesper Dangaard Brouer <hawk@kernel.org>,
-	=?UTF-8?Q?Toke_H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>,
-	<davem@davemloft.net>, <kuba@kernel.org>, <pabeni@redhat.com>
-CC: <zhangkun09@huawei.com>, <fanghaiqing@huawei.com>,
-	<liuyonglong@huawei.com>, Robin Murphy <robin.murphy@arm.com>, Alexander
- Duyck <alexander.duyck@gmail.com>, IOMMU <iommu@lists.linux.dev>, Andrew
- Morton <akpm@linux-foundation.org>, Eric Dumazet <edumazet@google.com>, Ilias
- Apalodimas <ilias.apalodimas@linaro.org>, <linux-mm@kvack.org>,
-	<linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>, kernel-team
-	<kernel-team@cloudflare.com>
-References: <20241022032214.3915232-1-linyunsheng@huawei.com>
- <20241022032214.3915232-4-linyunsheng@huawei.com>
- <dbd7dca7-d144-4a0f-9261-e8373be6f8a1@kernel.org>
- <113c9835-f170-46cf-92ba-df4ca5dfab3d@huawei.com> <878qudftsn.fsf@toke.dk>
- <d8e0895b-dd37-44bf-ba19-75c93605fc5e@huawei.com> <87r084e8lc.fsf@toke.dk>
- <0c146fb8-4c95-4832-941f-dfc3a465cf91@kernel.org>
-Content-Language: en-US
-From: Yunsheng Lin <linyunsheng@huawei.com>
-In-Reply-To: <0c146fb8-4c95-4832-941f-dfc3a465cf91@kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 8bit
-X-ClientProxiedBy: dggems705-chm.china.huawei.com (10.3.19.182) To
- dggpemf200006.china.huawei.com (7.185.36.61)
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <8c9804f2-ef4d-412b-97ea-f521dfd35ec2@oss.qualcomm.com>
 
-On 2024/10/25 22:07, Jesper Dangaard Brouer wrote:
+On Fri, Oct 25, 2024 at 06:45:01PM +0200, Konrad Dybcio wrote:
+> On 25.10.2024 1:06 PM, Dmitry Baryshkov wrote:
+> > On Fri, Oct 25, 2024 at 10:54:24AM +0200, Konrad Dybcio wrote:
+> >> On 25.10.2024 5:07 AM, Qingqing Zhou wrote:
+> >>> Add the APPS SMMU node for QCS615 platform. Add the dma-ranges
+> >>> to limit DMA address range to 36bit width to align with system
+> >>> architecture.
+> >>>
+> >>> Signed-off-by: Qingqing Zhou <quic_qqzhou@quicinc.com>
+> >>> ---
+> >>
+> >> You probably also want to mark it `dma-coherent` (see e.g.
+> >> x1e80100.dtsi)
+> > 
+> > Is it? I don't think SM6150 had dma-coherent SMMU, at least it wasn't
+> > marked as such.
+> 
+> I don't think I have any documentation on this, so.. one way to find out!
 
-...
+I don't have qcs615 at hand, so a purely theoretical question. But how
+should it break if we mark it as dma-coherent, while it is not?
 
-> 
->>> You and Jesper seems to be mentioning a possible fact that there might
->>> be 'hundreds of gigs of memory' needed for inflight pages, it would be nice
->>> to provide more info or reasoning above why 'hundreds of gigs of memory' is
->>> needed here so that we don't do a over-designed thing to support recording
->>> unlimited in-flight pages if the driver unbound stalling turns out impossible
->>> and the inflight pages do need to be recorded.
->>
->> I don't have a concrete example of a use that will blow the limit you
->> are setting (but maybe Jesper does), I am simply objecting to the
->> arbitrary imposing of any limit at all. It smells a lot of "640k ought
->> to be enough for anyone".
->>
-> 
-> As I wrote before. In *production* I'm seeing TCP memory reach 24 GiB
-> (on machines with 384GiB memory). I have attached a grafana screenshot
-> to prove what I'm saying.
-> 
-> As my co-worker Mike Freemon, have explain to me (and more details in
-> blogposts[1]). It is no coincident that graph have a strange "sealing"
-> close to 24 GiB (on machines with 384GiB total memory).  This is because
-> TCP network stack goes into a memory "under pressure" state when 6.25%
-> of total memory is used by TCP-stack. (Detail: The system will stay in
-> that mode until allocated TCP memory falls below 4.68% of total memory).
-> 
->  [1] https://blog.cloudflare.com/unbounded-memory-usage-by-tcp-for-receive-buffers-and-how-we-fixed-it/
-
-Thanks for the info.
-
-> 
-> 
->>> I guess it is common sense to start with easy one until someone complains
->>> with some testcase and detailed reasoning if we need to go the hard way as
->>> you and Jesper are also prefering waiting over having to record the inflight
->>> pages.
->>
->> AFAIU Jakub's comment on his RFC patch for waiting, he was suggesting
->> exactly this: Add the wait, and see if the cases where it can stall turn
->> out to be problems in practice.
-> 
-> +1
-> 
-> I like Jakub's approach.
-
-As mentioned in Toke's comment, I am still not convinced that there is some
-easy way of waiting here, doing the kick in the kernel space is hard enough,
-I am not even sure if kick need to be done or how it can be done in the user
-space if some page_pool owned page is held from user space for the cases of zero
-rx copy, io_uring and devmem tcp? killing the userspace app?
-
-If you and Toke still think the waiting is the way out for the problem here, maybe
-we should wait for jakub's opinion and let him decide if he want to proceed with
-his waiting patch.
-
-> 
-> --Jesper
+-- 
+With best wishes
+Dmitry
