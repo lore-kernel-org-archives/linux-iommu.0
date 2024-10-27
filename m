@@ -1,126 +1,172 @@
-Received: from mail-lf1-f41.google.com (mail-lf1-f41.google.com [209.85.167.41])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 855673F9D2
-	for <iommu@lists.linux.dev>; Sun, 27 Oct 2024 14:13:09 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.41
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 61F7013B58D;
+	Sun, 27 Oct 2024 14:21:31 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1730038391; cv=none; b=cAQIqUSvdzKsNHfXV1ttqqg9VWiXI5SO3r60s+S1bEPyKKUyqd3Q8YtqvpKCoYzWdnStbOMofC+uPvsQAh0aDtWAdpmhlv4rF+yLdRlULWc/Z7APJWb4wgN9Cw/uzXehB4lsdtmew5DpbPAQn+HVbS4uZzR1J+Nw7aSFwrTveGs=
+	t=1730038891; cv=none; b=G4FKm/zlDYhdM90Acv8426o+ReBQ2JYG7HckRkAC76gALUnI4rhD1KrIqXDWT18Avf0iBHm7W+4SkH2hs0K11vrBQ/TadLW6RqY4/x8a3mZImLhokd/jmneo7jgpjedbyE/KteEyTueZM73p+XrPWuJMA3zLKNjH7lY84ICmMc4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1730038391; c=relaxed/simple;
-	bh=NuJVWMDK6/NmMLATecVP6fHMJcRsxCQ6vGdOe7SC6Co=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=c9U4qiUpQFHe/vQf8W8a7Qht6eQwD6LIvt12qouU9dK0L48kVeo0AG7qsTfaXgfcnvFi11e0fNS5ZCX78EXlOcARAnkTqQSqZ6BMKdN0uUDiDeLrOY1R357aWO1vubav6RONbAjT4+q1R1vnLds9T4cAhjL7GwVYIwXMJT6CV1Q=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org; spf=pass smtp.mailfrom=linaro.org; dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b=Fl98W2AZ; arc=none smtp.client-ip=209.85.167.41
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linaro.org
+	s=arc-20240116; t=1730038891; c=relaxed/simple;
+	bh=yiDPGTeRo6kkrCL424ml+10YMw3MQYm4nZaRw+o9Rl8=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=pnjduLAIMiy/gtAFhEOOjC7mKfktvWY+YKSaXJIsMskBI1PxW33S2rnj3/Z7aYq79ep8pU/lSNGQ8Ux13gSCD8zElirRCVWwDbUjOg3oiKW3EUnAd28kHKHVjeMTxOmChT5uGmv2Tn+UgDE5xESCEX8HtxQ/CWG7DzwBhVypwpw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=ZJXLcikU; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="Fl98W2AZ"
-Received: by mail-lf1-f41.google.com with SMTP id 2adb3069b0e04-539f84907caso3718197e87.3
-        for <iommu@lists.linux.dev>; Sun, 27 Oct 2024 07:13:09 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1730038388; x=1730643188; darn=lists.linux.dev;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=mY015nA+JmXHvPrUJpYeYBU2P2Uf8UWr8WMYD7k1UEk=;
-        b=Fl98W2AZEAlYuwuTKpnWqgDu8FSOkneuvUi1Sqto1HQzBIMSkAydZqBxYFqbB2KrGg
-         igGy85NNf4/yQYyqEgqNrHKJ9Yxq6KWdtPEACJ9unbadwJgJysvpeWcQGPC4cBpRHwNG
-         wkmZu3DtBq0ASgw4DjNmvGs1LmjvZjqXva/1eYZizBstvqx0An0gpLhExtr0OrGNN9/G
-         YqKAMtA6Vb0m2QFkdxd/jQbb6ftSItf8Hzm7fP5MHdMIHpPjW86rNssQD+SCL5lzOKpR
-         0P3oMU3+kIqY6k4JPtftLVWMyac3KnbYBY2nvdqhNRFOG27jjzQUdPLcWGN7X0YLxf2t
-         ZSGA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1730038388; x=1730643188;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=mY015nA+JmXHvPrUJpYeYBU2P2Uf8UWr8WMYD7k1UEk=;
-        b=N25USXkfarNYGMrs+qx8UOASz8nOGvKn3B60Z8WptbI2FhGnp7MxENRezHqWu5lh8K
-         kM1iAkIGDGuMZx6JukfCytIBAv6IikK3Fah36ro1L1Yj5Olf2pA6wXjdJVzbejbljyTI
-         cHxsgnTW1BEME+aUfucxEMR33hCTfyMshwQsa6RdHdJipzwwQInOSGlqyKSa+arZqD8Q
-         /hY48PWoSIAXPo/T3c4hym3xFL4xhFPwr2Sy2kIY5wU+Bv5EcTfwB1K35id55PqPtPLc
-         UPUbNCcd9n9nY8ke0oeZnW+HEObzBVS38oR6LqlUBTSIbFoEr8leKidgB3xNwqCGFw01
-         Crrw==
-X-Forwarded-Encrypted: i=1; AJvYcCU6/VkOeapF6GX6B6bwnokucN8MH8QcE78QHYJGw1l6ZmCTsf70O+G2mGEMJ46DVFiaAagrvA==@lists.linux.dev
-X-Gm-Message-State: AOJu0Yz1XphVjtfSQ1MlSBZlFxYRtgc+CKBF/iROFtFG76LRpkvQACPG
-	UxoaaVzm4bVV26MkwpwTRBFJHYPSu1ApS146+GlBQByKcSpU47XcYrgL4if6uRJudI0MwWNG1mD
-	EPjx2M2QP4CqN/0ELtQojhy3FplhD+kn4vCJSPQ==
-X-Google-Smtp-Source: AGHT+IG4rD8sxA4zeN56s3nv4eo2saz2wQJT8dqXvPZ5lIrF4A6ASYbFn9RyJjsRApMWKVy/sZQFavLyt3vl81pP7/0=
-X-Received: by 2002:a05:6512:3b27:b0:539:de9c:c890 with SMTP id
- 2adb3069b0e04-53b34c5f9b5mr1778649e87.42.1730038387547; Sun, 27 Oct 2024
- 07:13:07 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="ZJXLcikU"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1F722C4CEC3;
+	Sun, 27 Oct 2024 14:21:30 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1730038890;
+	bh=yiDPGTeRo6kkrCL424ml+10YMw3MQYm4nZaRw+o9Rl8=;
+	h=From:To:Cc:Subject:Date:From;
+	b=ZJXLcikUOitybN0hao1J9Vd9spDMODBJQHEviT465Ah4u+MoxB1mFmOHyANGxw5ia
+	 30Bf6ThOTtlNMLBOOP2eKx/OtxsF4ACyy/E63V76kw9Srz48Q+zMmvzZyawo1/qkIF
+	 ddiJk3UvCTr8eaD8xPC0CphXPMhx/Whg8Z0IO0OafvVuzrewN0MLYdQN+RBLSAbr8z
+	 VMS/1jV+I/kno/tx99UhrFjJNGeo0dYa7Y+hdSQM6izl1RSW9fc5m7kTTZj0mvvo7r
+	 fzojmNtZXvaZxwQaqY0r08vfE+KjCx3P8dfFhVwisgJsul2XoWFiwIpfHubMYxtPPG
+	 kk7H9CbqENKHA==
+From: Leon Romanovsky <leon@kernel.org>
+To: Jens Axboe <axboe@kernel.dk>,
+	Jason Gunthorpe <jgg@ziepe.ca>,
+	Robin Murphy <robin.murphy@arm.com>,
+	Joerg Roedel <joro@8bytes.org>,
+	Will Deacon <will@kernel.org>,
+	Christoph Hellwig <hch@lst.de>,
+	Sagi Grimberg <sagi@grimberg.me>
+Cc: Keith Busch <kbusch@kernel.org>,
+	Bjorn Helgaas <bhelgaas@google.com>,
+	Logan Gunthorpe <logang@deltatee.com>,
+	Yishai Hadas <yishaih@nvidia.com>,
+	Shameer Kolothum <shameerali.kolothum.thodi@huawei.com>,
+	Kevin Tian <kevin.tian@intel.com>,
+	Alex Williamson <alex.williamson@redhat.com>,
+	Marek Szyprowski <m.szyprowski@samsung.com>,
+	=?UTF-8?q?J=C3=A9r=C3=B4me=20Glisse?= <jglisse@redhat.com>,
+	Andrew Morton <akpm@linux-foundation.org>,
+	Jonathan Corbet <corbet@lwn.net>,
+	linux-doc@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	linux-block@vger.kernel.org,
+	linux-rdma@vger.kernel.org,
+	iommu@lists.linux.dev,
+	linux-nvme@lists.infradead.org,
+	linux-pci@vger.kernel.org,
+	kvm@vger.kernel.org,
+	linux-mm@kvack.org
+Subject: [PATCH 00/18] Provide a new two step DMA mapping API
+Date: Sun, 27 Oct 2024 16:21:00 +0200
+Message-ID: <cover.1730037276.git.leon@kernel.org>
+X-Mailer: git-send-email 2.46.2
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <20240702063444.105814-1-baolu.lu@linux.intel.com>
- <20240702063444.105814-8-baolu.lu@linux.intel.com> <CABQgh9EeKtYuu+vTTM0fwaKrLxdyC355MQxN8o8_OL9Y1NkE8A@mail.gmail.com>
- <20241015125420.GK1825128@ziepe.ca> <CABQgh9E+AnuyJgcM9tf1gEOUqcC_QSrA__Xha9sKYZp=NVRwhQ@mail.gmail.com>
- <20241016152503.GB4020792@ziepe.ca> <CABQgh9FCJcOa0G0Kj__NUm-Q8C9uH4ud04XcHv+3c48T2qEnug@mail.gmail.com>
- <20241017120518.GI4020792@ziepe.ca> <CABQgh9EnEqDKkxg3VUgjSqBzz27h8B3Ct4w=A0vR6JK=d7fXHQ@mail.gmail.com>
- <20241017130805.GA926121@ziepe.ca> <f218230c-ae01-4168-b36e-5e502de6b3db@linux.intel.com>
- <CABQgh9GU4xp=7Svs_Ni=bvNKECKKUjHgq4d-FjT5Y_4wu44kDA@mail.gmail.com>
-In-Reply-To: <CABQgh9GU4xp=7Svs_Ni=bvNKECKKUjHgq4d-FjT5Y_4wu44kDA@mail.gmail.com>
-From: Zhangfei Gao <zhangfei.gao@linaro.org>
-Date: Sun, 27 Oct 2024 22:12:55 +0800
-Message-ID: <CABQgh9HYDRVOYtL=jgc4CqX0XhNmCtBDOCm8S6_mgBzBtZVk7Q@mail.gmail.com>
-Subject: Re: [PATCH v8 07/10] iommufd: Fault-capable hwpt attach/detach/replace
-To: Baolu Lu <baolu.lu@linux.intel.com>
-Cc: Jason Gunthorpe <jgg@ziepe.ca>, Kevin Tian <kevin.tian@intel.com>, Joerg Roedel <joro@8bytes.org>, 
-	Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>, 
-	Jean-Philippe Brucker <jean-philippe@linaro.org>, Nicolin Chen <nicolinc@nvidia.com>, 
-	Yi Liu <yi.l.liu@intel.com>, Jacob Pan <jacob.jun.pan@linux.intel.com>, 
-	Joel Granados <j.granados@samsung.com>, iommu@lists.linux.dev, 
-	virtualization@lists.linux-foundation.org, linux-kernel@vger.kernel.org, 
-	Shameerali Kolothum Thodi <shameerali.kolothum.thodi@huawei.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 
-Hi, Baolu
+Currently the only efficient way to map a complex memory description through
+the DMA API is by using the scatterlist APIs. The SG APIs are unique in that
+they efficiently combine the two fundamental operations of sizing and allocating
+a large IOVA window from the IOMMU and processing all the per-address
+swiotlb/flushing/p2p/map details.
 
-On Fri, 18 Oct 2024 at 10:45, Zhangfei Gao <zhangfei.gao@linaro.org> wrote:
->
-> Hi, Baolu
->
-> On Fri, 18 Oct 2024 at 09:58, Baolu Lu <baolu.lu@linux.intel.com> wrote:
-> >
-> > On 2024/10/17 21:08, Jason Gunthorpe wrote:
-> > > On Thu, Oct 17, 2024 at 08:35:24PM +0800, Zhangfei Gao wrote:
-> > >
-> > >> Yes, you are right
-> > >>   I am using SRIOV vf and stall feature, so is_virtfn == true
-> > >>
-> > >> Our ACC devices are fake pci endpoint devices which supports stall,
-> > >> And they also supports sriov
-> > >>
-> > >> So I have to ignore the limitation.
-> > > I see, so that is more complicated.
-> > >
-> > > Lu, what do you think about also checking if the PCI function has PRI
-> > > ? If not PRI assume the fault is special and doesn't follow PRI rules?
-> > >
-> > > Or maybe we can have the iommu driver tag the event as a PRI/not-PRI
-> > > fault?
-> >
-> > This limitation applies to PRI on PCI/SRIOV VFs because the PRI might be
-> > a shared resource and current iommu subsystem is not ready to support
-> > enabling/disabling PRI on a VF without any impact on others.
-> >
-> > In my understanding, it's fine to remove this limitation from the use
-> > case of non-PRI on SRIOV VFs. Perhaps something like below?
-> >
-> #include <linux/pci-ats.h>
-> >         if (dev_is_pci(dev)) {
-> >                 struct pci_dev *pdev = to_pci_dev(dev);
-> >                 if (pdev->is_virtfn && pci_pri_supported(pdev))
-> >                         return -EINVAL;
-> >         }
->
-> Yes, this works on our platform.
+This uniqueness has been a long standing pain point as the scatterlist API
+is mandatory, but expensive to use. It prevents any kind of optimization or
+feature improvement (such as avoiding struct page for P2P) due to the impossibility
+of improving the scatterlist.
 
-Will you send this patch?
+Several approaches have been explored to expand the DMA API with additional
+scatterlist-like structures (BIO[1], rlist[2]), instead split up the DMA API
+to allow callers to bring their own data structure.
 
-Tested-by: Zhangfei Gao <zhangfei.gao@linaro.org>
+The API is split up into parts:
+ - Allocate IOVA space:
+    To do any pre-allocation required. This is done based on the caller
+    supplying some details about how much IOMMU address space it would need
+    in worst case.
+ - Map and unmap relevant structures to pre-allocated IOVA space:
+    Perform the actual mapping into the pre-allocated IOVA. This is very
+    similar to dma_map_page().
+
+In this and the next series [1], examples of three different users are converted
+to the new API to show the benefits and its versatility. Each user has a unique
+flow:
+ 1. RDMA ODP is an example of "SVA mirroring" using HMM that needs to
+    dynamically map/unmap large numbers of single pages. This becomes
+    significantly faster in the IOMMU case as the map/unmap is now just
+    a page table walk, the IOVA allocation is pre-computed once. Significant
+    amounts of memory are saved as there is no longer a need to store the
+    dma_addr_t of each page.
+ 2. VFIO PCI live migration code is building a very large "page list"
+    for the device. Instead of allocating a scatter list entry per allocated
+    page it can just allocate an array of 'struct page *', saving a large
+    amount of memory.
+ 3. NVMe PCI demonstrates how a BIO can be converted to a HW scatter
+    list without having to allocate then populate an intermediate SG table.
+
+To make the use of the new API easier, HMM and block subsystems are extended
+to hide the optimization details from the caller. Among these optimizations:
+ * Memory reduction as in most real use cases there is no need to store mapped
+   DMA addresses and unmap them.
+ * Reducing the function call overhead by removing the need to call function
+   pointers and use direct calls instead.
+
+This step is first along a path to provide alternatives to scatterlist and
+solve some of the abuses and design mistakes, for instance in DMABUF's P2P
+support.
 
 Thanks
+
+[1] https://lore.kernel.org/all/cover.1730037261.git.leon@kernel.org
+
+Christoph Hellwig (6):
+  PCI/P2PDMA: refactor the p2pdma mapping helpers
+  dma-mapping: move the PCI P2PDMA mapping helpers to pci-p2pdma.h
+  iommu: generalize the batched sync after map interface
+  iommu/dma: Factor out a iommu_dma_map_swiotlb helper
+  dma-mapping: add a dma_need_unmap helper
+  docs: core-api: document the IOVA-based API
+
+Leon Romanovsky (12):
+  dma-mapping: Add check if IOVA can be used
+  dma: Provide an interface to allow allocate IOVA
+  dma-mapping: Implement link/unlink ranges API
+  mm/hmm: let users to tag specific PFN with DMA mapped bit
+  mm/hmm: provide generic DMA managing logic
+  RDMA/umem: Store ODP access mask information in PFN
+  RDMA/core: Convert UMEM ODP DMA mapping to caching IOVA and page
+    linkage
+  RDMA/umem: Separate implicit ODP initialization from explicit ODP
+  vfio/mlx5: Explicitly use number of pages instead of allocated length
+  vfio/mlx5: Rewrite create mkey flow to allow better code reuse
+  vfio/mlx5: Explicitly store page list
+  vfio/mlx5: Convert vfio to use DMA link API
+
+ Documentation/core-api/dma-api.rst   |  70 +++++
+ drivers/infiniband/core/umem_odp.c   | 250 +++++----------
+ drivers/infiniband/hw/mlx5/mlx5_ib.h |  12 +-
+ drivers/infiniband/hw/mlx5/odp.c     |  65 ++--
+ drivers/infiniband/hw/mlx5/umr.c     |  12 +-
+ drivers/iommu/dma-iommu.c            | 455 +++++++++++++++++++++++----
+ drivers/iommu/iommu.c                |  65 ++--
+ drivers/pci/p2pdma.c                 |  38 +--
+ drivers/vfio/pci/mlx5/cmd.c          | 312 +++++++++---------
+ drivers/vfio/pci/mlx5/cmd.h          |  24 +-
+ drivers/vfio/pci/mlx5/main.c         |  87 +++--
+ include/linux/dma-map-ops.h          |  54 ----
+ include/linux/dma-mapping.h          |  84 +++++
+ include/linux/hmm-dma.h              |  32 ++
+ include/linux/hmm.h                  |  16 +
+ include/linux/iommu.h                |   4 +
+ include/linux/pci-p2pdma.h           |  84 +++++
+ include/rdma/ib_umem_odp.h           |  25 +-
+ kernel/dma/direct.c                  |  43 ++-
+ kernel/dma/mapping.c                 |  20 ++
+ mm/hmm.c                             | 229 +++++++++++++-
+ 21 files changed, 1345 insertions(+), 636 deletions(-)
+ create mode 100644 include/linux/hmm-dma.h
+
+-- 
+2.46.2
+
