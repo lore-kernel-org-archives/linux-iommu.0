@@ -1,183 +1,235 @@
-Received: from mx0b-0031df01.pphosted.com (mx0b-0031df01.pphosted.com [205.220.180.131])
+Received: from mo4-p01-ob.smtp.rzone.de (mo4-p01-ob.smtp.rzone.de [81.169.146.165])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 259DC16BE3A
-	for <iommu@lists.linux.dev>; Sun, 27 Oct 2024 15:37:33 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.180.131
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1730043458; cv=none; b=PtEmrjD4W2lxHfElEULLR/sNPhRdO5RZgqse0daEN2O22NED/3INXlc8yZVUOARHxQ5uMqllZuFnmMRLu/jjFtkmXMySBdkIfBCsa+gQqwiTPa1eZyScgvkGLiCQmCoBjAICx03IOWnPZVW7nXn1bA+go/CXF2x3iuRL8PtxxW0=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1730043458; c=relaxed/simple;
-	bh=B0aY7cOry/DtnuvrZS2v4+CUzhOjGyMSgMMBV884kz0=;
-	h=Message-ID:Date:MIME-Version:Subject:To:CC:References:From:
-	 In-Reply-To:Content-Type; b=hbl5KebR0cQwx9ItVyq/SHZd6zEPQOsVssTwkCX3gRwqONdtqd347deg/e7xr0NUuYdHOHCxA+/n/xzqr1DLDfyrdlRcrxnpWjBPoT8LwI5msGsmrUBg7r8w7wtuz5hwNyKkSLYt4GOlLgoQ5PMSkhjn8YClTo2dJpkK9SmcJkc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com; spf=pass smtp.mailfrom=quicinc.com; dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b=l0aKoSdV; arc=none smtp.client-ip=205.220.180.131
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=quicinc.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 26E8FB640
+	for <iommu@lists.linux.dev>; Sun, 27 Oct 2024 17:15:50 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=81.169.146.165
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1730049355; cv=pass; b=E1FYA+uCY28kh3AU593JiSHrwiqvEuh1T9+QuP+lf5QGkhZS+R3nxr/AJFGqkicVSSB21xeBSb1N6+/HO+4iBtr0KZdd0GTU1jxFRYaYh05Ql44WOsjbcpdEiuGTh48TUsHCkrLaTKdWTLgzBP3R/CJq/RlbgLTzW7gOqvwPTZo=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1730049355; c=relaxed/simple;
+	bh=13pCcxQ2DalCH27MxNG8lrTw/DRdIS57Udt2uzRsXRs=;
+	h=Content-Type:Mime-Version:Subject:From:In-Reply-To:Date:Cc:
+	 Message-Id:References:To; b=tkEAkzfYPkrBral78egKO2zzBxLWhRxEvXafeiyTj9PUurqg/41CS4G6PiVjRUpeP+YyoWQ1vj5ZYTEZdUWUooB8xCFO8w4i9dSZJTzKdfXk3lsD3J33yH6TtPbegBOK3QuNKTw8mn73xpboW1PNkgeLU782Sx3L0qacq/y1RBI=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=goldelico.com; spf=pass smtp.mailfrom=goldelico.com; dkim=pass (2048-bit key) header.d=goldelico.com header.i=@goldelico.com header.b=iHxDWIpJ; dkim=permerror (0-bit key) header.d=goldelico.com header.i=@goldelico.com header.b=9ZzXET1a; arc=pass smtp.client-ip=81.169.146.165
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=goldelico.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=goldelico.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b="l0aKoSdV"
-Received: from pps.filterd (m0279870.ppops.net [127.0.0.1])
-	by mx0a-0031df01.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 49REIi6J020846;
-	Sun, 27 Oct 2024 15:37:03 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=quicinc.com; h=
-	cc:content-transfer-encoding:content-type:date:from:in-reply-to
-	:message-id:mime-version:references:subject:to; s=qcppdkim1; bh=
-	w0SVi4wuY31MEA962sDb73MizyKBANV4LsDxIEBcBrY=; b=l0aKoSdVTsmllT9Q
-	Q8E2g2TiRdeN1n2yADEr4Ss1oadNTl/PlF+ITidFlXxXSoB+wk3dNqbky7TU2SJw
-	zThsIWSxnYYD36G0gFahxDXl8yfru8kP7ZxG25sSauyGLj7OeAwdd0KPb/7EseU1
-	w+Tjoiiu3bsHr4HpiYo5SVd645di8ne41XEdmHBSUSvzF5KciQ5aLCOyNRZE0Bd5
-	StHJoXy17QL7YzLfkSdHW/+CvO5Cm2yY5Bt4UXR5vOZGWoaKMAgsTndDiqoqeK1H
-	ISGtIE4gNJqa9pquZ0H6cpmS/brSCaMmmlCZyKsCji2FGkVDMI3HWVBtqwEv+b2t
-	DxOodg==
-Received: from nasanppmta05.qualcomm.com (i-global254.qualcomm.com [199.106.103.254])
-	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 42grguajqu-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Sun, 27 Oct 2024 15:37:02 +0000 (GMT)
-Received: from nasanex01c.na.qualcomm.com (nasanex01c.na.qualcomm.com [10.45.79.139])
-	by NASANPPMTA05.qualcomm.com (8.18.1.2/8.18.1.2) with ESMTPS id 49RFb1eC030189
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Sun, 27 Oct 2024 15:37:01 GMT
-Received: from [10.216.8.251] (10.80.80.8) by nasanex01c.na.qualcomm.com
- (10.45.79.139) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1544.9; Sun, 27 Oct
- 2024 08:36:56 -0700
-Message-ID: <6b3d3815-ca7a-470e-993d-862f96249edb@quicinc.com>
-Date: Sun, 27 Oct 2024 21:06:53 +0530
+	dkim=pass (2048-bit key) header.d=goldelico.com header.i=@goldelico.com header.b="iHxDWIpJ";
+	dkim=permerror (0-bit key) header.d=goldelico.com header.i=@goldelico.com header.b="9ZzXET1a"
+ARC-Seal: i=1; a=rsa-sha256; t=1730049316; cv=none;
+    d=strato.com; s=strato-dkim-0002;
+    b=TjqVk7uLT46E7JMBLJBjzzASxcLZ1+SDpkFvrUeEun2ANFXCtDlus9kqRbOsQIaDcQ
+    tvx2pc18AmCcOspFBYb9jPmIIXuG8pjh5uNiLA5SPXSa5CniZY5UvRN3kPHCBBm4h5ib
+    U2Ef3dEVpVZxR+Xu+aUf+cWKiyS8PFsW6gTuDrM4Lhw5XYdAYdn1Gwl+4C3IrBKxYzrX
+    w2pYQanVgEw9adr/ZJsrCFj0VhiYbwC/3AhonrRpMCPBEtYwNIjD1WPf7fWji9rw0SKz
+    /ygE5yB1ipZE3zyc1FwwlAu5UCsO6CfSrG5Aj89MEWjRe+/w4JshxCsmqyTZVh5DtjTI
+    6JWQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; t=1730049316;
+    s=strato-dkim-0002; d=strato.com;
+    h=To:References:Message-Id:Cc:Date:In-Reply-To:From:Subject:Cc:Date:
+    From:Subject:Sender;
+    bh=tI891uCV8rH8Ekry85gmYeaU6ewziferoRWcgKZrRI0=;
+    b=meWiVH8VnJRYnzOvNLiXSZ+neKZtDgonyaOzYW4Pg6oz4yI5cMFDirR9TU416mweyh
+    7+EARxliSKTAKeITqlzg/e5tD3Ip1DLsGJYBsIhJ4/dzADH5OfZlwL5tOyr1PIgJvJhW
+    6jmGrnfjnp9M5roAHL3aRPCO/nDrcGSwuLaWL53r0jmI8YKCcMJ9Wx6/v9AjYJPvoEH+
+    xc0xmLQhA+mAcbXpI1OfMYl0xYUQLkaAn8CZRhlmTf/FTYzWwAYi4sDPSUzlgpYKDzFG
+    YYjiTF9coHzvfrOtrHQenIAlNUXjWnti6ZgldiucnOR/xIeFrEAXbbHybrjrE+BAaxSE
+    mABg==
+ARC-Authentication-Results: i=1; strato.com;
+    arc=none;
+    dkim=none
+X-RZG-CLASS-ID: mo01
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; t=1730049316;
+    s=strato-dkim-0002; d=goldelico.com;
+    h=To:References:Message-Id:Cc:Date:In-Reply-To:From:Subject:Cc:Date:
+    From:Subject:Sender;
+    bh=tI891uCV8rH8Ekry85gmYeaU6ewziferoRWcgKZrRI0=;
+    b=iHxDWIpJoLCoKyXyf/faxj2wHQ+HaPNZiUIOkuvSEAoq7mC67HyDwozPqigjlEdi4Z
+    9rNGCF08QLLLLrdEvn5aE4V5rKiVVRufAXGSuzrXjp1459IxzE7stp74zfvKttalTy5n
+    p0RMTZU8x/NRoumytJkr+suzzUXuYLrZoOc3VJ+AIG77pyVwAsBQvwYMEX+bQQuaOdyC
+    r6aTCAJBUKI1SIJY0bXN7OX+asVOVXm4eaR2Vp2ovZ+MtQymMQStigtUlJ28v36dSNpK
+    NSphan13VBp/6FTAwAN+bBvD6zvB68F5Mq5I5iupl802+Ck77k9/GWQXMwGT03Hz4fjx
+    PCBw==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; t=1730049316;
+    s=strato-dkim-0003; d=goldelico.com;
+    h=To:References:Message-Id:Cc:Date:In-Reply-To:From:Subject:Cc:Date:
+    From:Subject:Sender;
+    bh=tI891uCV8rH8Ekry85gmYeaU6ewziferoRWcgKZrRI0=;
+    b=9ZzXET1aoZ73jIZIBdlvqmgZQF7bpd2gH+zJLkwJ2G578Up273wN7UzBWq1Zhrt28w
+    OEVKTSn/IJ/L1QW8beBQ==
+X-RZG-AUTH: ":JGIXVUS7cutRB/49FwqZ7WcJeFKiMhflhwDubTJ9o12DNOsPj0lFzL1yeDsZ"
+Received: from smtpclient.apple
+    by smtp.strato.de (RZmta 51.2.11 DYNA|AUTH)
+    with ESMTPSA id Qb7e4009RHFFEGP
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (curve X9_62_prime256v1 with 256 ECDH bits, eq. 3072 bits RSA))
+	(Client did not present a certificate);
+    Sun, 27 Oct 2024 18:15:15 +0100 (CET)
+Content-Type: text/plain;
+	charset=us-ascii
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
-MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v2] iommu/arm-smmu: Defer probe of clients after smmu
- device bound
-To: Robin Murphy <robin.murphy@arm.com>, <will@kernel.org>
-CC: <joro@8bytes.org>, <jgg@ziepe.ca>, <jsnitsel@redhat.com>,
-        <robdclark@chromium.org>, <quic_c_gdjako@quicinc.com>,
-        <dmitry.baryshkov@linaro.org>, <linux-arm-kernel@lists.infradead.org>,
-        <iommu@lists.linux.dev>, <linux-kernel@vger.kernel.org>,
-        <quic_charante@quicinc.com>, <stable@vger.kernel.org>,
-        Prakash Gupta
-	<quic_guptap@quicinc.com>
-References: <20241004090428.2035-1-quic_pbrahma@quicinc.com>
- <d4a52579-0e2a-4df3-a1fa-e8e154ff1e90@quicinc.com>
- <3925d2f0-3b1f-4200-acc4-8f991616ec0f@arm.com>
-Content-Language: en-US
-From: Pratyush Brahma <quic_pbrahma@quicinc.com>
-In-Reply-To: <3925d2f0-3b1f-4200-acc4-8f991616ec0f@arm.com>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 8bit
-X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
- nasanex01c.na.qualcomm.com (10.45.79.139)
-X-QCInternal: smtphost
-X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
-X-Proofpoint-ORIG-GUID: jm-iVN1pNVfu1vBKJI6TSGdOIwF8CGpr
-X-Proofpoint-GUID: jm-iVN1pNVfu1vBKJI6TSGdOIwF8CGpr
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.293,Aquarius:18.0.1039,Hydra:6.0.680,FMLib:17.12.60.29
- definitions=2024-09-06_09,2024-09-06_01,2024-09-02_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 impostorscore=0 clxscore=1011
- lowpriorityscore=0 adultscore=0 mlxscore=0 bulkscore=0 suspectscore=0
- phishscore=0 spamscore=0 malwarescore=0 mlxlogscore=999 priorityscore=1501
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.19.0-2409260000
- definitions=main-2410270136
+Mime-Version: 1.0 (Mac OS X Mail 16.0 \(3776.700.51.11.1\))
+Subject: Re: [PATCH] iommu/omap: Don't register ops by fwnode
+From: "H. Nikolaus Schaller" <hns@goldelico.com>
+In-Reply-To: <1a0ff734-73b2-4d73-839b-71e2017ae3c4@arm.com>
+Date: Sun, 27 Oct 2024 18:15:05 +0100
+Cc: joro@8bytes.org,
+ will@kernel.org,
+ iommu@lists.linux.dev,
+ Jason Gunthorpe <jgg@nvidia.com>,
+ Linux-OMAP <linux-omap@vger.kernel.org>,
+ Beleswar Padhi <b-padhi@ti.com>,
+ Andreas Kemnade <andreas@kemnade.info>
+Content-Transfer-Encoding: quoted-printable
+Message-Id: <C6F2F131-2295-4655-A4E2-600200FD7318@goldelico.com>
+References: <c44545c6d07c65d89daa297298c27bb0f15c8b84.1728393458.git.robin.murphy@arm.com>
+ <2863ACA9-2836-49F6-9D85-749CE480804D@goldelico.com>
+ <10d3a86c-d7a8-4ac5-8ad3-010a91c0a25f@arm.com>
+ <FCFEB115-846A-4577-A489-D1537AC77DEA@goldelico.com>
+ <5c3ea490-f2f5-49e5-99fd-1dc239aee28d@arm.com>
+ <F4A297DC-8EBD-4434-97EA-BFEEBB062042@goldelico.com>
+ <1a0ff734-73b2-4d73-839b-71e2017ae3c4@arm.com>
+To: Robin Murphy <robin.murphy@arm.com>
+X-Mailer: Apple Mail (2.3776.700.51.11.1)
 
+Hi Robin,
 
-On 10/17/2024 7:24 PM, Robin Murphy wrote:
-> On 15/10/2024 2:31 pm, Pratyush Brahma wrote:
->>
->> On 10/4/2024 2:34 PM, Pratyush Brahma wrote:
->>> Null pointer dereference occurs due to a race between smmu
->>> driver probe and client driver probe, when of_dma_configure()
->>> for client is called after the iommu_device_register() for smmu driver
->>> probe has executed but before the driver_bound() for smmu driver
->>> has been called.
->>>
->>> Following is how the race occurs:
->>>
->>> T1:Smmu device probe        T2: Client device probe
->>>
->>> really_probe()
->>> arm_smmu_device_probe()
->>> iommu_device_register()
->>>                     really_probe()
->>>                     platform_dma_configure()
->>>                     of_dma_configure()
->>>                     of_dma_configure_id()
->>>                     of_iommu_configure()
->>>                     iommu_probe_device()
->>>                     iommu_init_device()
->>>                     arm_smmu_probe_device()
->>>                     arm_smmu_get_by_fwnode()
->>>                         driver_find_device_by_fwnode()
->>>                         driver_find_device()
->>>                         next_device()
->>>                         klist_next()
->>>                             /* null ptr
->>>                                assigned to smmu */
->>>                     /* null ptr dereference
->>>                        while smmu->streamid_mask */
->>> driver_bound()
->>>     klist_add_tail()
->>>
->>> When this null smmu pointer is dereferenced later in
->>> arm_smmu_probe_device, the device crashes.
->>>
->>> Fix this by deferring the probe of the client device
->>> until the smmu device has bound to the arm smmu driver.
->>>
->>> Fixes: 021bb8420d44 ("iommu/arm-smmu: Wire up generic configuration 
->>> support")
->>> Cc: stable@vger.kernel.org
->>> Co-developed-by: Prakash Gupta <quic_guptap@quicinc.com>
->>> Signed-off-by: Prakash Gupta <quic_guptap@quicinc.com>
->>> Signed-off-by: Pratyush Brahma <quic_pbrahma@quicinc.com>
->>> ---
->>> Changes in v2:
->>>   Fix kernel test robot warning
->>>   Add stable kernel list in cc
->>>   Link to v1: 
->>> https://lore.kernel.org/all/20241001055633.21062-1-quic_pbrahma@quicinc.com/
->>>
->>>   drivers/iommu/arm/arm-smmu/arm-smmu.c | 3 +++
->>>   1 file changed, 3 insertions(+)
->>>
->>> diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu.c 
->>> b/drivers/iommu/arm/arm-smmu/arm-smmu.c
->>> index 723273440c21..7c778b7eb8c8 100644
->>> --- a/drivers/iommu/arm/arm-smmu/arm-smmu.c
->>> +++ b/drivers/iommu/arm/arm-smmu/arm-smmu.c
->>> @@ -1437,6 +1437,9 @@ static struct iommu_device 
->>> *arm_smmu_probe_device(struct device *dev)
->>>               goto out_free;
->>>       } else {
->>>           smmu = arm_smmu_get_by_fwnode(fwspec->iommu_fwnode);
->>> +        if (!smmu)
->>> +            return ERR_PTR(dev_err_probe(dev, -EPROBE_DEFER,
->>> +                        "smmu dev has not bound yet\n"));
->>>       }
->>>       ret = -EINVAL;
->>
->>
->> Hi
->> Can someone please review this patch? Let me know if any further 
->> information is required.
->
-> This really shouldn't be leaking into drivers... :(
->
-> Honestly, I'm now so fed up of piling on hacks around the fundamental 
-> mis-design here, I think it's finally time to blow everything else off 
-> and spend a few days figuring out the most expedient way to fix it 
-> properly once and for all. Watch this space...
->
-> Thanks,
-> Robin.
+> Am 25.10.2024 um 16:27 schrieb Robin Murphy <robin.murphy@arm.com>:
+>=20
+> On 08/10/2024 8:52 pm, H. Nikolaus Schaller wrote:
+>>> Am 08.10.2024 um 20:20 schrieb Robin Murphy <robin.murphy@arm.com>:
+>>>> The -ETIMEDOUT seems to come from of_iommu_configure().
+>>>=20
+>=20
+> Hmm, I dug around and found a Pandaboard in the cupboard, and =
+ostensibly this seems to work as expected there:
+>=20
+> 6:12-rc3:
+> chu-chu-rocket:~ # dmesg | grep -i iommu
+> [    0.628601] iommu: Default domain type: Translated
+> [    0.633575] iommu: DMA domain TLB invalidation policy: strict mode
+> [    1.636047] omap-iommu 4a066000.mmu: 4a066000.mmu registered
+> [    3.265869] omap-iommu 55082000.mmu: 55082000.mmu registered
+>=20
+> 6.12-rc3 + of_xlate:
+> chu-chu-rocket:~ # dmesg | grep -i iommu
+> [    0.629577] iommu: Default domain type: Translated
+> [    0.634582] iommu: DMA domain TLB invalidation policy: strict mode
+> [    1.622802] omap-iommu 4a066000.mmu: 4a066000.mmu registered
+> [    3.316009] omap-iommu 55082000.mmu: 55082000.mmu registered
+> [    3.329040] omap-rproc ocp:dsp: Adding to iommu group 0
+> [    3.335083] omap-iommu 4a066000.mmu: 4a066000.mmu: version 2.0
+> [    3.356506] omap-rproc 55020000.ipu: Adding to iommu group 1
+> [    3.362396] omap-iommu 55082000.mmu: 55082000.mmu: version 2.1
+>=20
+> Guess I'm going to have to dig further for an OMAP3 to figure out what =
+additional shenanigans that ISP driver is up to... :/
 
-Hi Robin
+I was able to confirm on 6.12-rc4 ecept a small difference in the last =
+lines (ocp:dsp and no version 2.x):
 
-Do you have any approaches in mind that you are currently considering or 
-exploring?
+root@letux:~# dmesg|fgrep iommu
+[    0.402191] iommu: Default domain type: Translated
+[    0.402221] iommu: DMA domain TLB invalidation policy: strict mode
+[    0.741607] omap-iommu 4a066000.mmu: 4a066000.mmu registered
+[    2.461120] omap-iommu 55082000.mmu: 55082000.mmu registered
+[    2.474914] platform ocp:dsp: Adding to iommu group 0
+[    2.481719] platform 55020000.ipu: Adding to iommu group 1
+root@letux:~#=20
 
-Thanks
-Pratyush
+On OMAP3 it is similar. The patch is doing something.
+
+I get this w/o patch:
+
+root@letux:~# dmesg|fgrep iommu
+[    0.515808] iommu: Default domain type: Translated
+[    0.515808] iommu: DMA domain TLB invalidation policy: strict mode
+[    0.528686] omap-iommu 480bd400.mmu: 480bd400.mmu registered
+root@letux:~# dmesg|fgrep .isp
+[   10.924438] omap3isp 480bc000.isp: supply vdd-csiphy1 not found, =
+using dummy regulator
+[   10.989044] omap3isp 480bc000.isp: supply vdd-csiphy2 not found, =
+using dummy regulator
+[   11.082916] omap3isp 480bc000.isp: Revision 15.0 found
+[   11.107879] omap3isp 480bc000.isp: failed to create ARM IOMMU mapping
+[   11.160736] omap3isp 480bc000.isp: unable to attach to IOMMU
+[   11.181640] omap3isp 480bc000.isp: isp_xclk_set_rate: cam_xclka set =
+to 24685714 Hz (div 7)
+root@letux:~#=20
+
+with patch:
+
+root@letux:~# dmesg|fgrep iommu
+[    0.522552] iommu: Default domain type: Translated
+[    0.522583] iommu: DMA domain TLB invalidation policy: strict mode
+[    0.525543] platform 480bc000.isp: Adding to iommu group 0
+[    0.525726] omap-iommu 480bd400.mmu: 480bd400.mmu registered
+[   34.422973] omap-iommu 480bd400.mmu: 480bd400.mmu: version 1.1
+root@letux:~# dmesg|fgrep .isp
+[    0.525543] platform 480bc000.isp: Adding to iommu group 0
+[   34.413330] omap3isp 480bc000.isp: deferred probe timeout, ignoring =
+dependency
+[   34.429412] omap3isp 480bc000.isp: supply vdd-csiphy1 not found, =
+using dummy regulator
+[   34.446655] omap3isp 480bc000.isp: supply vdd-csiphy2 not found, =
+using dummy regulator
+[   34.456115] omap3isp 480bc000.isp: Revision 15.0 found
+[   34.463165] omap3isp 480bc000.isp: failed to attach device to VA =
+mapping
+[   34.470306] omap3isp 480bc000.isp: unable to attach to IOMMU
+[   34.477661] omap3isp 480bc000.isp: probe with driver omap3isp failed =
+with error -16
+root@letux:~#=20
+
+Maybe I am missing something from your latest patches. I currently have:
+
+diff --git a/drivers/iommu/omap-iommu.c b/drivers/iommu/omap-iommu.c
+index c9528065a59af..de14a3cd4b426 100644
+--- a/drivers/iommu/omap-iommu.c
++++ b/drivers/iommu/omap-iommu.c
+@@ -1230,7 +1230,8 @@ static int omap_iommu_probe(struct platform_device =
+*pdev)
+                if (err)
+                        return err;
+-               err =3D iommu_device_register(&obj->iommu, =
+&omap_iommu_ops, &pdev->dev);
++               err =3D iommu_device_register(&obj->iommu, =
+&omap_iommu_ops, NULL);
+                if (err)
+                        goto out_sysfs;
+                obj->has_iommu_driver =3D true;
+@@ -1691,7 +1692,8 @@ static struct iommu_device =
+*omap_iommu_probe_device(struct device *dev)
+                if (!oiommu) {
+                        of_node_put(np);
+                        kfree(arch_data);
+-                       return ERR_PTR(-EINVAL);
++                       /* Not fatal, will re-probe once the right =
+instance registers itself */
++                       return ERR_PTR(-ENODEV);
+                }
+                  tmp->iommu_dev =3D oiommu;
+
+Do you have a link to the patches you have tested?
+
+What I have also compared are the DTS and DTSI files of omap3/36xx and =
+omap4/omap4-l4.
+Although there are architectural differences I didn't find anything =
+significant.
+More different is how the omap3-isp vs. omap4-iva is handled.
+
+omap3-isp is a media driver calling arm_iommu_create_mapping() which =
+fails.
+omap4-iva is a remoteproc driver using a different strategy =
+(omap_rproc_of_get_internal_memories ?)
+where I do not know details where iommu comes into the game.
+
+Hope this helps.
+
+Best regards,
+Nikolaus
+
