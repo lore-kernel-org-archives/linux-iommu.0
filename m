@@ -1,213 +1,174 @@
-Received: from mail-pj1-f54.google.com (mail-pj1-f54.google.com [209.85.216.54])
+Received: from mail-ed1-f45.google.com (mail-ed1-f45.google.com [209.85.208.45])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CD4EA1F709E
-	for <iommu@lists.linux.dev>; Mon, 28 Oct 2024 21:35:32 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.216.54
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5985F1EE012
+	for <iommu@lists.linux.dev>; Mon, 28 Oct 2024 22:56:36 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.45
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1730151334; cv=none; b=CpXCvgexkCvYBCtU11lyzxQCJd+GvhLSFrqOtMJ5haCYg+OvRop6MtrTIRusLsCNm4zoAaPxT3HGWgVccr1ZcFj8itNywWpv6Bw/QtypgYvAXkYHQUUqpiaJbk3HTKLJ8sPkOXrgM/CS7s4JffZl7W16gDEggPRnV9GPRQumdzw=
+	t=1730156198; cv=none; b=BijcmaSw9ufzIn4Gl66q0bUknK2vkKyciepRLmfdRJSu+x5Z2MUFnz1VYMu2XDnAi3ljIuYLpUIbPJMN9EhlkcpUaRpbCteDauE17OYHxS3HjQ07YqxZ8xiFI+K+lCXJ5ucVYMuhwGufLNncdlw5XOgS69KBkHlfsZ1ueZ5U3Nk=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1730151334; c=relaxed/simple;
-	bh=1IW0rKnToNdG0cOCXnL5RIKthufJ6mM48jbncwAtXg0=;
-	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=MMf4ELuKrVA5TzmU5Nm6AQv0yp740JOvGenicoJN/cR9es8vDgP/TxAeSKgIWbi5wgGITbl2pAaV1gHIAyKgm+hMlncZXv0SClYRvA7rmyituNjOtgQryXN6Xu8DIrcAfXtddinPbwSR0n9esMOeVqJxyE0kyTCGJ4BsVI9zC64=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=esw3Nrnj; arc=none smtp.client-ip=209.85.216.54
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1730156198; c=relaxed/simple;
+	bh=o6pZVgQYnL1vcAt6O3B5rF0BAekC75DsbuXyHvigxyc=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=nFvurvqlpxv53FLUOVE+nhVSbRsvzY9JofrGUTkhdu0eqEJfnpii9zd9rb0ath5E0BEtt+q6ytiGb6IPqzTFy/NVeE9pcrnONrxSCQTARVcMk5pOwYRKQuMbDwshRK5fh37mf7ouMPozVRo9jUS/MMpmlT6AtvZVgQs/vd7cdX4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org; spf=pass smtp.mailfrom=linaro.org; dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b=Qv7Nu2ZM; arc=none smtp.client-ip=209.85.208.45
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linaro.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="esw3Nrnj"
-Received: by mail-pj1-f54.google.com with SMTP id 98e67ed59e1d1-2e30fb8cb07so3478018a91.3
-        for <iommu@lists.linux.dev>; Mon, 28 Oct 2024 14:35:32 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="Qv7Nu2ZM"
+Received: by mail-ed1-f45.google.com with SMTP id 4fb4d7f45d1cf-5c96b2a10e1so7515751a12.2
+        for <iommu@lists.linux.dev>; Mon, 28 Oct 2024 15:56:36 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1730151332; x=1730756132; darn=lists.linux.dev;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=gbrqhR1uEL2jCJsm1D5FRoqkoaeXMdXad6AR8iv6QD0=;
-        b=esw3NrnjHpslGYdiKUph4BMvSIYT715WOtVu1jBkPc/Tb3F3L8cd+8fmkp9kqJyq7T
-         HhEYaHrKspVZtGZY1NYJd68baNZtHbL6t/WzN9XEaCUoWvT/DqhBCZ2ru6flce/ZJReU
-         n2I/5hkseutuozsb8roEF08zUWasyJBFZxtWOuOMMgG5qgxKH3cJdNLH69Z569EJM+2K
-         oTPbSHdXzc8nymfDFUt5IwWgaOnGCc2YoXrjYOBBDEjYyFTCzdiBccGAfspZ9L0DF42C
-         reCpkTH9Tr95JWreofHwyvkUl1UJ+PR5psty9qfypaYbJ6Fbe44axGLasmmRATm9poS4
-         cJ0A==
+        d=linaro.org; s=google; t=1730156195; x=1730760995; darn=lists.linux.dev;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date:message-id:reply-to;
+        bh=XVirlTRNThIlw5izD//IoFLz8dbGPSlaVi5YQ6nWJuM=;
+        b=Qv7Nu2ZMQdOLBz6ghWOCA1jwvM85YUgqNbAjGwkBAKx3qXnTo5jOox5s8rgJ+TzOV5
+         1pM4O80zw/eQ5txYpBf4J/KoOErOHjTLVbJxAFF+7gMNyebD89D72OL1jgK+SD5APGBV
+         VxJBBQ8owgvIvRuKGs7MoKjtiFUXHSM0Txkh+1KN6YXtQeCvjC8gltLiWu0inQA1iqYo
+         Te+kNNnMcBADUIt1e/m52P+regQ40J6beAlTdQWGihniK24cCEVpPpHAPlAa4MzQdfAW
+         wDgpoq9bgpiziusyqhURDHL1aXni5REp8HxfVNHPYDTzedfNMwqQxHsqdXU77iytWIQ7
+         aX6g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1730151332; x=1730756132;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=gbrqhR1uEL2jCJsm1D5FRoqkoaeXMdXad6AR8iv6QD0=;
-        b=AHkBuAEJT2EzxZL1nQFgCP/gVLAYKSxI5PYV17J0TZ0oACUKZWbLrsGv+cSA7aMgER
-         HG/y/CPMmedkRvH0J0GWvdV+jd6hZrtpdvNEN4roEB27by84sqq/HUlPLsfNl6DajozT
-         lFn7N0mDigl3k7QLbjI3LO6UjMStADcPmFdf4/wsaRKJYkrzU/OCAusbps+PIt4irJvl
-         fyLJs/lRAnydhgU7M6kOtyfehft5Qb2qIy7yzVHWMkWS3SrrF40rbC3M0Pu6cbRzewY1
-         fLf7fol8j0hCN+qUkrRbPRz3zuADc/UDxQOhY96HjMJkkfiNO+caO+YM6pltwX0dhDQT
-         MdbA==
-X-Gm-Message-State: AOJu0Yy+L609INY1cfHZqtchwNnZruyqIokSgtV3KvVufrXmnYlxINaU
-	P4TI1YJs1blwkhC+rkamZj2Ycy6Xl9Uoc308XXHh+k6CPjtAWwGzDQnjZw==
-X-Google-Smtp-Source: AGHT+IEysUgfIGuPwPInO/AIyu87V/JxR3clSt3EqLCfx1Mnrp45hMw1ac/uhNWRU3d43OIVEeYaaw==
-X-Received: by 2002:a17:90b:30d4:b0:2e2:ad11:bd36 with SMTP id 98e67ed59e1d1-2e8f11bf815mr11714777a91.37.1730151331703;
-        Mon, 28 Oct 2024 14:35:31 -0700 (PDT)
-Received: from localhost ([2a00:79e1:2e00:1301:12e9:d196:a1e9:ab67])
-        by smtp.gmail.com with ESMTPSA id 98e67ed59e1d1-2e8e3555c71sm7863972a91.11.2024.10.28.14.35.30
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 28 Oct 2024 14:35:31 -0700 (PDT)
-From: Rob Clark <robdclark@gmail.com>
-To: iommu@lists.linux.dev
-Cc: linux-arm-msm@vger.kernel.org,
-	freedreno@lists.freedesktop.org,
-	Will Deacon <will@kernel.org>,
-	Robin Murphy <robin.murphy@arm.com>,
-	Mostafa Saleh <smostafa@google.com>,
-	Rob Clark <robdclark@chromium.org>,
-	Rob Clark <robdclark@gmail.com>,
-	Sean Paul <sean@poorly.run>,
-	Konrad Dybcio <konradybcio@kernel.org>,
-	Abhinav Kumar <quic_abhinavk@quicinc.com>,
-	Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
-	Marijn Suijten <marijn.suijten@somainline.org>,
-	David Airlie <airlied@gmail.com>,
-	Simona Vetter <simona@ffwll.ch>,
-	dri-devel@lists.freedesktop.org (open list:DRM DRIVER for Qualcomm Adreno GPUs),
-	linux-kernel@vger.kernel.org (open list)
-Subject: [PATCH v10 4/4] drm/msm: Extend gpu devcore dumps with pgtbl info
-Date: Mon, 28 Oct 2024 14:31:40 -0700
-Message-ID: <20241028213146.238941-5-robdclark@gmail.com>
-X-Mailer: git-send-email 2.47.0
-In-Reply-To: <20241028213146.238941-1-robdclark@gmail.com>
-References: <20241028213146.238941-1-robdclark@gmail.com>
+        d=1e100.net; s=20230601; t=1730156195; x=1730760995;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=XVirlTRNThIlw5izD//IoFLz8dbGPSlaVi5YQ6nWJuM=;
+        b=qjcbaqR6SyOfLwRsl+3s8uv6/v1ZkM9l00guyxTjVTzQR+65A2oZp11jwSaVqPIWO0
+         AQo+JFks9XJFfFDWfbo9gtyeOqs0pfY+VtJpA0+Ma9wFM6DEgV1PYbnf9I5rE+Dd2ROq
+         V7Ofbs47+B9ucMpdUXReEF348Ll2kv9g7Qsfmtn7z4HG0DdEy7D61FjxP6QCpevAyFfP
+         gQYeHUNTmppHA7iVIDNiSO21gCr3rqWE/I0om4Skuwl1P1gJbAFE1tCnX3qxwJyM9iai
+         jx99EXzI/dBm9Q8PlyjoZ2652ViAPCBUZ7IjfVNmEcimFTvJoaqyaPacQdPa4HR7dOCB
+         2sKQ==
+X-Forwarded-Encrypted: i=1; AJvYcCXLqXTqXh80Lf80XK1U/Go0DtihhiaxAVv/oqZaP4GG3Uyu5gG0Zy80IK0A0eCL275U5ScTkA==@lists.linux.dev
+X-Gm-Message-State: AOJu0YxuG3JGnJQloWGlfD48YufE97EYmzX2BTtXTRT0oemODOQKcqa+
+	uY5IIvsPWJRNkmdY4gGS2iVEFYS2KYc3ZAyAFjQA5M5JxPR4EsBiTk++8MI/sDeywgWUS8Obgka
+	efHUWtWg6yiuPQ39ygV1LEtaWfEaFVZbUJLj6lw==
+X-Google-Smtp-Source: AGHT+IF+nARq3xO0Wchcpvg4D+JUkbPZjSN4wHXbnO04jBNcQohZsJW3DXYyIkia0+QEiSgA8N9blw/TGhiEe8MkXiY=
+X-Received: by 2002:a05:6402:13c7:b0:5c9:547d:99 with SMTP id
+ 4fb4d7f45d1cf-5cbbf889742mr8302467a12.2.1730156194611; Mon, 28 Oct 2024
+ 15:56:34 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <cover.1730136799.git.robin.murphy@arm.com> <831CC29D-3B89-4091-8145-0E310FF838CB@goldelico.com>
+In-Reply-To: <831CC29D-3B89-4091-8145-0E310FF838CB@goldelico.com>
+From: Mathieu Poirier <mathieu.poirier@linaro.org>
+Date: Mon, 28 Oct 2024 16:56:23 -0600
+Message-ID: <CANLsYkyUCwb5RF378VWwW0axiOU1RT4oTa_sTTL+jSqVF5DawQ@mail.gmail.com>
+Subject: Re: [PATCH 0/4] Fix omap-iommu bitrot
+To: "H. Nikolaus Schaller" <hns@goldelico.com>
+Cc: Robin Murphy <robin.murphy@arm.com>, joro@8bytes.org, will@kernel.org, 
+	Laurent Pinchart <laurent.pinchart@ideasonboard.com>, mchehab@kernel.org, 
+	andersson@kernel.org, Beleswar Padhi <b-padhi@ti.com>, 
+	Andreas Kemnade <andreas@kemnade.info>, iommu@lists.linux.dev, 
+	arm-soc <linux-arm-kernel@lists.infradead.org>, 
+	Linux-OMAP <linux-omap@vger.kernel.org>, linux-media@vger.kernel.org, 
+	linux-remoteproc@vger.kernel.org, 
+	Discussions about the Letux Kernel <letux-kernel@openphoenux.org>
+Content-Type: text/plain; charset="UTF-8"
 
-From: Rob Clark <robdclark@chromium.org>
+On Mon, 28 Oct 2024 at 14:46, H. Nikolaus Schaller <hns@goldelico.com> wrote:
+>
+> Hi Robin,
+>
+> > Am 28.10.2024 um 18:58 schrieb Robin Murphy <robin.murphy@arm.com>:
+> >
+> > Hi all,
+> >
+> > It seems omap-iommu hasn't had enough mainline users to avoid bitrotting
+> > through the more recent evolution of the IOMMU API internals. These
+> > patches attempt to bring it and its consumers sufficiently up-to-date
+> > to work again, in a manner that's hopefully backportable. This is
+> > largely all written by inspection, but I have managed to lightly boot
+> > test patch #3 on an OMAP4 Pandaboard to confirm iommu_probe_device()
+> > working again.
+> >
+> > This supersedes my previous patch[1]. Patches #1 and #2 are functionally
+> > independent, and can be applied directly to their respective trees if
+> > preferred.
+>
+> I can confirm that this series works on omap3 with v6.12-rc5 and
+> Camera is back to the GTA04.
+>
+> So you can add:
+> Tested-by: H. Nikolaus Schaller <hns@goldelico.com>
+>
 
-In the case of iova fault triggered devcore dumps, include additional
-debug information based on what we think is the current page tables,
-including the TTBR0 value (which should match what we have in
-adreno_smmu_fault_info unless things have gone horribly wrong), and
-the pagetable entries traversed in the process of resolving the
-faulting iova.
+Many thanks for taking the time to test this, it is really appreciated.
 
-Signed-off-by: Rob Clark <robdclark@chromium.org>
----
- drivers/gpu/drm/msm/adreno/adreno_gpu.c | 10 ++++++++++
- drivers/gpu/drm/msm/msm_gpu.c           |  9 +++++++++
- drivers/gpu/drm/msm/msm_gpu.h           |  8 ++++++++
- drivers/gpu/drm/msm/msm_iommu.c         | 22 ++++++++++++++++++++++
- drivers/gpu/drm/msm/msm_mmu.h           |  3 ++-
- 5 files changed, 51 insertions(+), 1 deletion(-)
-
-diff --git a/drivers/gpu/drm/msm/adreno/adreno_gpu.c b/drivers/gpu/drm/msm/adreno/adreno_gpu.c
-index 465a4cd14a43..b96ce6fed649 100644
---- a/drivers/gpu/drm/msm/adreno/adreno_gpu.c
-+++ b/drivers/gpu/drm/msm/adreno/adreno_gpu.c
-@@ -868,6 +868,16 @@ void adreno_show(struct msm_gpu *gpu, struct msm_gpu_state *state,
- 		drm_printf(p, "  - dir=%s\n", info->flags & IOMMU_FAULT_WRITE ? "WRITE" : "READ");
- 		drm_printf(p, "  - type=%s\n", info->type);
- 		drm_printf(p, "  - source=%s\n", info->block);
-+
-+		/* Information extracted from what we think are the current
-+		 * pgtables.  Hopefully the TTBR0 matches what we've extracted
-+		 * from the SMMU registers in smmu_info!
-+		 */
-+		drm_puts(p, "pgtable-fault-info:\n");
-+		drm_printf(p, "  - ttbr0: %.16llx\n", (u64)info->pgtbl_ttbr0);
-+		drm_printf(p, "  - asid: %d\n", info->asid);
-+		drm_printf(p, "  - ptes: %.16llx %.16llx %.16llx %.16llx\n",
-+			   info->ptes[0], info->ptes[1], info->ptes[2], info->ptes[3]);
- 	}
- 
- 	drm_printf(p, "rbbm-status: 0x%08x\n", state->rbbm_status);
-diff --git a/drivers/gpu/drm/msm/msm_gpu.c b/drivers/gpu/drm/msm/msm_gpu.c
-index 0d4a3744cfcb..82f204f3bb8f 100644
---- a/drivers/gpu/drm/msm/msm_gpu.c
-+++ b/drivers/gpu/drm/msm/msm_gpu.c
-@@ -281,6 +281,15 @@ static void msm_gpu_crashstate_capture(struct msm_gpu *gpu,
- 	if (submit) {
- 		int i;
- 
-+		if (state->fault_info.ttbr0) {
-+			struct msm_gpu_fault_info *info = &state->fault_info;
-+			struct msm_mmu *mmu = submit->aspace->mmu;
-+
-+			msm_iommu_pagetable_params(mmu, &info->pgtbl_ttbr0,
-+						   &info->asid);
-+			msm_iommu_pagetable_walk(mmu, info->iova, info->ptes);
-+		}
-+
- 		state->bos = kcalloc(submit->nr_bos,
- 			sizeof(struct msm_gpu_state_bo), GFP_KERNEL);
- 
-diff --git a/drivers/gpu/drm/msm/msm_gpu.h b/drivers/gpu/drm/msm/msm_gpu.h
-index 7cabc8480d7c..e25009150579 100644
---- a/drivers/gpu/drm/msm/msm_gpu.h
-+++ b/drivers/gpu/drm/msm/msm_gpu.h
-@@ -101,6 +101,14 @@ struct msm_gpu_fault_info {
- 	int flags;
- 	const char *type;
- 	const char *block;
-+
-+	/* Information about what we think/expect is the current SMMU state,
-+	 * for example expected_ttbr0 should match smmu_info.ttbr0 which
-+	 * was read back from SMMU registers.
-+	 */
-+	phys_addr_t pgtbl_ttbr0;
-+	u64 ptes[4];
-+	int asid;
- };
- 
- /**
-diff --git a/drivers/gpu/drm/msm/msm_iommu.c b/drivers/gpu/drm/msm/msm_iommu.c
-index 2a94e82316f9..3e692818ba1f 100644
---- a/drivers/gpu/drm/msm/msm_iommu.c
-+++ b/drivers/gpu/drm/msm/msm_iommu.c
-@@ -195,6 +195,28 @@ struct iommu_domain_geometry *msm_iommu_get_geometry(struct msm_mmu *mmu)
- 	return &iommu->domain->geometry;
- }
- 
-+int
-+msm_iommu_pagetable_walk(struct msm_mmu *mmu, unsigned long iova, uint64_t ptes[4])
-+{
-+	struct msm_iommu_pagetable *pagetable;
-+	struct arm_lpae_io_pgtable_walk_data wd = {};
-+
-+	if (mmu->type != MSM_MMU_IOMMU_PAGETABLE)
-+		return -EINVAL;
-+
-+	pagetable = to_pagetable(mmu);
-+
-+	if (!pagetable->pgtbl_ops->pgtable_walk)
-+		return -EINVAL;
-+
-+	pagetable->pgtbl_ops->pgtable_walk(pagetable->pgtbl_ops, iova, &wd);
-+
-+	for (int i = 0; i < ARRAY_SIZE(wd.ptes); i++)
-+		ptes[i] = wd.ptes[i];
-+
-+	return 0;
-+}
-+
- static const struct msm_mmu_funcs pagetable_funcs = {
- 		.map = msm_iommu_pagetable_map,
- 		.unmap = msm_iommu_pagetable_unmap,
-diff --git a/drivers/gpu/drm/msm/msm_mmu.h b/drivers/gpu/drm/msm/msm_mmu.h
-index 88af4f490881..96e509bd96a6 100644
---- a/drivers/gpu/drm/msm/msm_mmu.h
-+++ b/drivers/gpu/drm/msm/msm_mmu.h
-@@ -53,7 +53,8 @@ static inline void msm_mmu_set_fault_handler(struct msm_mmu *mmu, void *arg,
- struct msm_mmu *msm_iommu_pagetable_create(struct msm_mmu *parent);
- 
- int msm_iommu_pagetable_params(struct msm_mmu *mmu, phys_addr_t *ttbr,
--		int *asid);
-+			       int *asid);
-+int msm_iommu_pagetable_walk(struct msm_mmu *mmu, unsigned long iova, uint64_t ptes[4]);
- struct iommu_domain_geometry *msm_iommu_get_geometry(struct msm_mmu *mmu);
- 
- #endif /* __MSM_MMU_H__ */
--- 
-2.47.0
-
+> BR and thanks,
+> Nikolaus
+>
+> root@letux:~# dmesg|fgrep iommu
+> [    0.522613] iommu: Default domain type: Translated
+> [    0.522644] iommu: DMA domain TLB invalidation policy: strict mode
+> [    0.525177] omap-iommu 480bd400.mmu: 480bd400.mmu registered
+> [   10.752563] omap3isp 480bc000.isp: Adding to iommu group 0
+> [   10.811218] omap-iommu 480bd400.mmu: 480bd400.mmu: version 1.1
+> [   11.039489] omap-iommu 480bd400.mmu: 480bd400.mmu: version 1.1
+> root@letux:~# dmesg|fgrep .isp
+> [   10.752563] omap3isp 480bc000.isp: Adding to iommu group 0
+> [   10.841522] omap3isp 480bc000.isp: supply vdd-csiphy1 not found, using dummy regulator
+> [   10.948577] omap3isp 480bc000.isp: supply vdd-csiphy2 not found, using dummy regulator
+> [   10.990814] omap3isp 480bc000.isp: Revision 15.0 found
+> [   11.089324] omap3isp 480bc000.isp: hist: using DMA channel dma0chan15
+> [   11.115905] omap3isp 480bc000.isp: Entity type for entity OMAP3 ISP CCP2 was not initialized!
+> [   11.168792] omap3isp 480bc000.isp: isp_xclk_set_rate: cam_xclka set to 24685714 Hz (div 7)
+> [   11.220062] omap3isp 480bc000.isp: Entity type for entity OMAP3 ISP CSI2a was not initialized!
+> [   11.291748] omap3isp 480bc000.isp: Entity type for entity OMAP3 ISP CCDC was not initialized!
+> [   11.362152] omap3isp 480bc000.isp: Entity type for entity OMAP3 ISP preview was not initialized!
+> [   11.404266] omap3isp 480bc000.isp: Entity type for entity OMAP3 ISP resizer was not initialized!
+> [   11.485687] omap3isp 480bc000.isp: Entity type for entity OMAP3 ISP AEWB was not initialized!
+> [   11.520874] omap3isp 480bc000.isp: Entity type for entity OMAP3 ISP AF was not initialized!
+> [   11.574981] omap3isp 480bc000.isp: Entity type for entity OMAP3 ISP histogram was not initialized!
+> [   11.594268] omap3isp 480bc000.isp: parsing parallel interface
+> [  106.102905] omap3isp 480bc000.isp: -------------CCDC Register dump-------------
+> [  106.110595] omap3isp 480bc000.isp: ###CCDC PCR=0x00000000
+> [  106.116973] omap3isp 480bc000.isp: ###CCDC SYN_MODE=0x00031704
+> [  106.123657] omap3isp 480bc000.isp: ###CCDC HD_VD_WID=0x00000000
+> [  106.129974] omap3isp 480bc000.isp: ###CCDC PIX_LINES=0x00000000
+> [  106.136810] omap3isp 480bc000.isp: ###CCDC HORZ_INFO=0x000004ff
+> [  106.143615] omap3isp 480bc000.isp: ###CCDC VERT_START=0x00000000
+> [  106.149932] omap3isp 480bc000.isp: ###CCDC VERT_LINES=0x000003ff
+> [  106.156799] omap3isp 480bc000.isp: ###CCDC CULLING=0xffff00ff
+> [  106.163299] omap3isp 480bc000.isp: ###CCDC HSIZE_OFF=0x00000a00
+> [  106.169616] omap3isp 480bc000.isp: ###CCDC SDOFST=0x00000000
+> [  106.176086] omap3isp 480bc000.isp: ###CCDC SDR_ADDR=0x40000000
+> [  106.182708] omap3isp 480bc000.isp: ###CCDC CLAMP=0x00000010
+> [  106.188598] omap3isp 480bc000.isp: ###CCDC DCSUB=0x00000000
+> [  106.195068] omap3isp 480bc000.isp: ###CCDC COLPTN=0xbb11bb11
+> [  106.201507] omap3isp 480bc000.isp: ###CCDC BLKCMP=0x00000000
+> [  106.207550] omap3isp 480bc000.isp: ###CCDC FPC=0x00000000
+> [  106.213684] omap3isp 480bc000.isp: ###CCDC FPC_ADDR=0x00000000
+> [  106.219909] omap3isp 480bc000.isp: ###CCDC VDINT=0x03fe02aa
+> [  106.226409] omap3isp 480bc000.isp: ###CCDC ALAW=0x00000006
+> [  106.232696] omap3isp 480bc000.isp: ###CCDC REC656IF=0x00000000
+> [  106.238830] omap3isp 480bc000.isp: ###CCDC CFG=0x00008800
+> [  106.244964] omap3isp 480bc000.isp: ###CCDC FMTCFG=0x00000000
+> [  106.251434] omap3isp 480bc000.isp: ###CCDC FMT_HORZ=0x00000000
+> [  106.257568] omap3isp 480bc000.isp: ###CCDC FMT_VERT=0x00000000
+> [  106.264251] omap3isp 480bc000.isp: ###CCDC PRGEVEN0=0x00000000
+> [  106.271606] omap3isp 480bc000.isp: ###CCDC PRGEVEN1=0x00000000
+> [  106.285400] omap3isp 480bc000.isp: ###CCDC PRGODD0=0x00000000
+> [  106.301147] omap3isp 480bc000.isp: ###CCDC PRGODD1=0x00000000
+> [  106.307220] omap3isp 480bc000.isp: ###CCDC VP_OUT=0x00000000
+> [  106.326019] omap3isp 480bc000.isp: ###CCDC LSC_CONFIG=0x00006600
+> [  106.340087] omap3isp 480bc000.isp: ###CCDC LSC_INITIAL=0x00000000
+> [  106.358001] omap3isp 480bc000.isp: ###CCDC LSC_TABLE_BASE=0x00000000
+> [  106.372985] omap3isp 480bc000.isp: ###CCDC LSC_TABLE_OFFSET=0x00000000
+> [  106.379882] omap3isp 480bc000.isp: --------------------------------------------
+> [  118.617980] omap3isp 480bc000.isp: OMAP3 ISP AEWB: user wants to disable module.
+> [  118.626068] omap3isp 480bc000.isp: OMAP3 ISP AEWB: module is being disabled
+> [  118.633392] omap3isp 480bc000.isp: OMAP3 ISP AF: user wants to disable module.
+> [  118.641937] omap3isp 480bc000.isp: OMAP3 ISP AF: module is being disabled
+> [  118.649627] omap3isp 480bc000.isp: OMAP3 ISP histogram: user wants to disable module.
+> [  118.658508] omap3isp 480bc000.isp: OMAP3 ISP histogram: module is being disabled
+> root@letux:~#
+>
+>
+>
