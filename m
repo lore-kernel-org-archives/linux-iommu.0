@@ -1,69 +1,68 @@
-Received: from mail-qk1-f178.google.com (mail-qk1-f178.google.com [209.85.222.178])
+Received: from mail-qt1-f171.google.com (mail-qt1-f171.google.com [209.85.160.171])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8616812F585
-	for <iommu@lists.linux.dev>; Mon, 28 Oct 2024 15:34:06 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.222.178
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8717F12F585
+	for <iommu@lists.linux.dev>; Mon, 28 Oct 2024 15:35:51 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.160.171
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1730129648; cv=none; b=RX49E62FiaBeWRTCB0jt9uRb/JD7wjahd73q0kBXLFcPIXx/iisN1QbBpB41/OSODKtEz9OqHVkEJT5uswkWK/uLb8DZeCCz7fTEddy27H/5aU3Mflo3+P0aWcVVm182LVkcOTkHHdU2TjTlIcjAXlVTDFvfRr8Xu91W7qukrIU=
+	t=1730129753; cv=none; b=qGdYkwpk8e5eC6HyC5HK/V0WfK1SIgNhFKo56HKLjCkyx9PHVFVgSlJn70BA2dcv7KrjSZwly0ft/jL8OeI5ceHWBqbtBvYyz7QeeteFlwtMVLwkak4+ubbvnD5K4mZu8ti8qSt0oAJxslZK9x36woSBaKYyrB/sqoXwzjm/2Uw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1730129648; c=relaxed/simple;
-	bh=wZEKx/DXAHuHKdfjnHhUYx5Hp4m97S9OxnbeUMqmJyU=;
+	s=arc-20240116; t=1730129753; c=relaxed/simple;
+	bh=LRtDnABo0aF6rbP17c/1SA+tl2/kEVb41QtjDfW55iI=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=fGf/ODWWydK1hMyf5DUO3aBuYxACsfqehZ5DreOzNp8p36H0dP2w/q1xpAd9ztDj5rJbQ1JkGU7UnEb8lYhrYXVbhGqz6q33MPhEUojHQgqml0AZDZ9C442gftAYWkaVi3ktt4aia6QO/X4+kf2ydvLY9bPq2HipvJaD4qMPT0k=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=CEQ+HjPN; arc=none smtp.client-ip=209.85.222.178
+	 Content-Type:Content-Disposition:In-Reply-To; b=bu8tVbgyZXR2m+6F9XYyInag66kkwQTAj41LZ3dYTEFxfNO9zInom78eriL4pxSMs0LMYinSoUDxWUS7ffdCN0Eo7tgH0H3TfwWi7a/uFaj3GUjr/4cTRKCEWPnimHqwfPbUz0bS9KAH7Rc1V9s8eY/J0c0GxvDFY5VcWpn18zY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=TZxn1YAd; arc=none smtp.client-ip=209.85.160.171
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="CEQ+HjPN"
-Received: by mail-qk1-f178.google.com with SMTP id af79cd13be357-7b157c9ad12so280319785a.1
-        for <iommu@lists.linux.dev>; Mon, 28 Oct 2024 08:34:06 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="TZxn1YAd"
+Received: by mail-qt1-f171.google.com with SMTP id d75a77b69052e-460ace055d8so31974231cf.1
+        for <iommu@lists.linux.dev>; Mon, 28 Oct 2024 08:35:51 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google; t=1730129645; x=1730734445; darn=lists.linux.dev;
+        d=ziepe.ca; s=google; t=1730129750; x=1730734550; darn=lists.linux.dev;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=MqUiKrCKE1w9UCunO7A8gBkZumb5Ws2zks0itfGYWjA=;
-        b=CEQ+HjPNzwl8xr9O2VnP4TQHU/OOOTNH5YQu88PxKxSjsNP1ouUmOiK7AuX88FrSOl
-         3SF5San7o4dNgrdeF3QLecP1OJ+jKlE09MJD3LEFrMGtsCplVsAeJlAbODdx5QIgg9Zc
-         X9pYuV3pw0HYhssPEw56oJTyrIbfHtZHYD4N8y4H8cQsKujwOTaacEHM6HZqk61wGSeW
-         S8jzgXsFJzItXqBLHCsQRyT6JHOQsOPCtQOMJsYxY91ayeLjp8T3/WSoAyHy+Pju6FGE
-         aLSf7uKkyZ9UGY/e0UeNasorS/Q25obJKmE+r9capTuPj9RE6JrIKXCUHCSDTs/6VWo2
-         wVdQ==
+        bh=EE7vSxeEYstH30s2qRIeSezPCDUxcS7HFE/EjwufDuc=;
+        b=TZxn1YAdVJCrKGY93YENDvmjW37DTOIdwl7sN8M35Y3BOR6Ko7sg2FuU+5S4ClCAJi
+         3w2WNlmTKl11tcgN6WAjucnD8RvBH/XYJL4Mu1Y7XqKKSCalr4pooW1N6aVpIph8V0E6
+         VzfJs2lqlzrIKvGZGJhrlWvKGzKlYTIgUijSnBP5OIJTLPmGUREUixHBoJWcuDny0yqx
+         Gmm8qxBwnBDhxscOErVAe++2ebYs6T09QJIv1ZptwUi2Wr3R7a9Bksz2uUFcGhyBNJ06
+         4sQcuIOLghac+Ok/gXJfp0n3TRv3xGgo1dIVfg6Vf2E1LQw5fGD+eeAgvljY6p4Q9AKf
+         Xbvg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1730129645; x=1730734445;
+        d=1e100.net; s=20230601; t=1730129750; x=1730734550;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=MqUiKrCKE1w9UCunO7A8gBkZumb5Ws2zks0itfGYWjA=;
-        b=C5Zz5Weq9WPOQEEDfWZK9RkRXozpb8AW/Fh3H1UrIxJZQOfsceOHzcuRlYTOef9lYy
-         apYrPiYb4BWQm8pIIb0vduokMYkJo2XaIs9jRS0Vc/N81zAQZ39a/aAtGmOezWrxrzDt
-         8GYKxv6vBhriz7wG54G8ObvGjLr6kjHG3YT1vqe8UC2LnDL77VGEZ5uA/cFnQG3ru/aQ
-         XlUqQ0cYbB5gOkVj9rin8jp94N0yh3hr0mHcmAa4/aIAuKTWaJ3Cwfo/POL9OWu50Yts
-         llNHOxkCfLYfduixSmoocIqmWpXJZujtuyNBXWhqPa7Tgw4XfYVYW3S594fcC9tREUlb
-         I+rQ==
-X-Gm-Message-State: AOJu0YyMCBPFYxU6KOW4oF5DQ+4rjlu//01+EP1aDLwNsALSkyraryy2
-	9TFr5iLq/auonsd6fwqh6Hr8MWRfxMNr4yLPKIDQ5ShDXnuKFVtFSxVX2YpX3KU=
-X-Google-Smtp-Source: AGHT+IFJqJBbMaLfHxWw7wXlmmzicfP5mz0nEIhtb6dVyeQSXXdGod2pYlJhgAHFALMxfufRMDFAjA==
-X-Received: by 2002:a05:620a:4108:b0:7ac:b213:36f3 with SMTP id af79cd13be357-7b193eeaf37mr1494669685a.14.1730129645321;
-        Mon, 28 Oct 2024 08:34:05 -0700 (PDT)
+        bh=EE7vSxeEYstH30s2qRIeSezPCDUxcS7HFE/EjwufDuc=;
+        b=xDNBbyRBppb0vzSX/H4FzsWilgHYKkEID4QtVs6zgMTP+RnepP2SqKq9AGHbcH9fb6
+         lvtu7/Y1c2qOBZHQvBP3QaeBca+tkk2UV871eAru03BxJZcz5OVBWOvLa2ObHwQ+68AY
+         VyQ91eSpF5nPg6aklo3peUncgITo/gkf0fyOagyCGxgWRB1av9aCc65X+rPdbj95Qd8A
+         oWLmLhHwEgKUWYi6Tko2wHiKQw9BRGxomeGU4la2f788dEgBiBccCI0SQWCK7TMBBiGx
+         1d4YdecDCNmT3ysrfEdtVagJ6nP3Mg3b7msIqBlEPpVEd62G79cAG+CsIm4UjVXxVMrF
+         hkNQ==
+X-Gm-Message-State: AOJu0Yz+BYBFwTBay1eEKKtTWPcAvnLPwNyvlaMjD/PnhnbzTChavMjS
+	qH4LVIQG9StCRn6TkcpAyyRR9lLRh7Wr8hkNDCdQszQOJGeuVayswXfEG92PoME=
+X-Google-Smtp-Source: AGHT+IG1IMNLx5zl7VjgNyXu/KpG2AsiaYgjEHcVyzIjKjudAssWv5m2XAxqEWZBnAfnZ828Ne7dtA==
+X-Received: by 2002:a05:622a:1a9e:b0:460:e643:d279 with SMTP id d75a77b69052e-4613c184d40mr125579171cf.45.1730129750418;
+        Mon, 28 Oct 2024 08:35:50 -0700 (PDT)
 Received: from ziepe.ca (hlfxns017vw-142-68-128-5.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.68.128.5])
-        by smtp.gmail.com with ESMTPSA id af79cd13be357-7b18d326206sm327616185a.93.2024.10.28.08.34.03
+        by smtp.gmail.com with ESMTPSA id d75a77b69052e-4613228efd9sm35508101cf.51.2024.10.28.08.35.48
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 28 Oct 2024 08:34:04 -0700 (PDT)
+        Mon, 28 Oct 2024 08:35:49 -0700 (PDT)
 Received: from jgg by wakko with local (Exim 4.97)
 	(envelope-from <jgg@ziepe.ca>)
-	id 1t5Rkp-00000000QpU-1otD;
-	Mon, 28 Oct 2024 12:34:03 -0300
-Date: Mon, 28 Oct 2024 12:34:03 -0300
+	id 1t5RmW-00000000QqM-1OTp;
+	Mon, 28 Oct 2024 12:35:48 -0300
+Date: Mon, 28 Oct 2024 12:35:48 -0300
 From: Jason Gunthorpe <jgg@ziepe.ca>
 To: Vasant Hegde <vasant.hegde@amd.com>
 Cc: iommu@lists.linux.dev, joro@8bytes.org, will@kernel.org,
 	robin.murphy@arm.com, suravee.suthikulpanit@amd.com
-Subject: Re: [PATCH v4 07/12] iommu/amd: Reduce domain lock scope in attach
- device path
-Message-ID: <20241028153403.GE20281@ziepe.ca>
+Subject: Re: [PATCH v4 11/12] iommu/amd: Add opa->release_domain
+Message-ID: <20241028153548.GF20281@ziepe.ca>
 References: <20241028113148.5774-1-vasant.hegde@amd.com>
- <20241028113148.5774-8-vasant.hegde@amd.com>
+ <20241028113148.5774-12-vasant.hegde@amd.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -72,25 +71,20 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20241028113148.5774-8-vasant.hegde@amd.com>
+In-Reply-To: <20241028113148.5774-12-vasant.hegde@amd.com>
 
-On Mon, Oct 28, 2024 at 11:31:43AM +0000, Vasant Hegde wrote:
-> Currently attach device path takes protection domain lock followed by
-> dev_data lock. Most of the operations in this function is specific to
-> device data except pdom_attach_iommu() where it updates protection
-> domain structure. Hence reduce the scope of protection domain lock.
+On Mon, Oct 28, 2024 at 11:31:47AM +0000, Vasant Hegde wrote:
+> In release path, remove device from existing domain and attach it to
+> blocked domain. So that all DMAs from device is blocked.
 > 
-> Note that this changes the locking order. Now it takes device lock
-> before taking doamin lock (group->mutex -> dev_data->lock ->
-> pdom->lock). dev_data->lock is used only in device attachment path.
-> So changing order is fine. It will not create any issue.
-> 
-> Finally move numa node assignment to pdom_attach_iommu().
-> 
-> Signed-off-by: Vasant Hegde <vasant.hegde@amd.com>
-> ---
->  drivers/iommu/amd/iommu.c | 52 ++++++++++++++++++++++-----------------
->  1 file changed, 30 insertions(+), 22 deletions(-)
+> Note that soon blocked_domain will support other ops like
+> set_dev_pasid() but release_domain supports only attach_dev ops.
+> Hence added separate 'release_domain' variable.
+
+You don't need two domains, so long as attach_dev does the right thing
+the other ops can be set too.
+
+Otherwise
 
 Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
 
