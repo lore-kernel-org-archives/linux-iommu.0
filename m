@@ -1,215 +1,215 @@
-Received: from NAM10-BN7-obe.outbound.protection.outlook.com (mail-bn7nam10on2053.outbound.protection.outlook.com [40.107.92.53])
+Received: from mo4-p01-ob.smtp.rzone.de (mo4-p01-ob.smtp.rzone.de [85.215.255.53])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 883791DF753;
-	Mon, 28 Oct 2024 20:19:41 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.92.53
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7555A18D649
+	for <iommu@lists.linux.dev>; Mon, 28 Oct 2024 20:47:05 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=85.215.255.53
 ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1730146784; cv=fail; b=F6wd2+hqulgGWVdGCEMCvgeCQ5r4dJmXZ+y3StDNjR6FPTFeKj75b3iV629azjWO6fd3hrWfQgCsqBqbzWVuIZGS2tJ9VxDzWAM9EeiA2zem4/wEjqS0GIIcSj3+CQHcb233ikLS6c4TA2UvKGRhK5PYItkJzHLp8E2wtp6Ls1U=
+	t=1730148429; cv=pass; b=Pr9JaljW5JrdMrs39Pw/q9S16yaeDfk4AuWeieLZYIS+Qosu7XKdBCcw9ghpscEMABQbVhqM83Q3GS6Gij3q06lN+6mYUoygu1NoISIioEpzLZ9POWVrZC80NIZN57I7pGuxkBwuZ59ILp37EhsfhqkFub+O+oJUqIDjLjhhSlo=
 ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1730146784; c=relaxed/simple;
-	bh=0phIrOmT4SCaWlQRNgIQcxmZWbeJMExZlsLGrn4soe0=;
-	h=Date:From:To:CC:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=tnCdlo3psiK1o/dw2nveEhdIZ2GgeDhAhR4LP/lRBDlSCW0IijHFSTAEA+GThfZhHuF64XjIhR4y3Vac0Vf4Lcg6pz8BaN9H2QlEtBOkCgA+ml0hPQHET1Wu2SpI1f7qHnrs/C9R8LTk7EZJDy4K0dw3WMHb40RQGwcalJgNcqQ=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=kO+q/oKJ; arc=fail smtp.client-ip=40.107.92.53
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
+	s=arc-20240116; t=1730148429; c=relaxed/simple;
+	bh=EQc5Hcq8F1xi6Djfdhy06Tpq0LJz7ARt5WkuSiyB5qg=;
+	h=Content-Type:Mime-Version:Subject:From:In-Reply-To:Date:Cc:
+	 Message-Id:References:To; b=lPz0zJpGHJwR8N2YEQvw6bPwhTx8pW+2op74MeLKRPxaSMZIYDUpqhbH3fhiviOn26UVMk5NIkhHX1ZbzI0AZMBF48qzMX1xJR7tgBQh9MU7QgxEt6ZuC9sAjlp9lQDuX7YPwdvtJaSWbgDgW7pvmkvVBocyRY0ZBlIQL9D7ac8=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=goldelico.com; spf=pass smtp.mailfrom=goldelico.com; dkim=pass (2048-bit key) header.d=goldelico.com header.i=@goldelico.com header.b=oXvXRNnn; dkim=permerror (0-bit key) header.d=goldelico.com header.i=@goldelico.com header.b=9i3butY1; arc=pass smtp.client-ip=85.215.255.53
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=goldelico.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=goldelico.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="kO+q/oKJ"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=B0mDlmnOIhcB2wT0LMah1QNwq2Jg+CCvYyNnsl2G/RXtuWALz0Bv6FHe2f2KlBcm+gJtvh0THHn4gShpO5CSPruC+iPaUq6yvNsVL01sKsdBOfNDENxv7L0nqc7M9h41/nx+8g1pcYb6YKMoAv/DYee34vzxJ7tDEs78GvThCAd+axvY9mLi9vrQjW0Uyog+wPm5qe5qqlhQ5ux9bHQbISSFOAR/qZGnODdgzlp0ye093GiCuEpuWfcF1lnXOjDid/kB7AE1J6mMJpdFvGEdGMfMlh9RRqRZ1y2jT8N9s//95waSepuv1pj5n7htDQf+ks2I6TIvVWHSDQIuRxG9pA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=5l085bFXEz7mX3NVXad/6xlstnHoyrhvXCeX72ETTvk=;
- b=I+K9IH65E81v0n0pwfppr6VLVnm6MndpSHYOv37qT38yMPtKqfFgtNDeTGRMQnPWkkFex0cOym9eSXLrGkSqARkWDJtIkzO95gIT3vv7P8UtH+cA0I0zDGDtLgLi33hFH+IrCI2Te80dU/G8WMo0QLOgqIRS6ndBLZPEKSWxHOy01mZcpdghVtz4pbljTWDvJGo+caWeKY5u8H3t54lSiDCvGK5aJ6FARkoDiQuHaUqGzZqDVrc2+Tt7JTJGsckIjTj/W1n9+jVnrUnbCQaqryusnM1elgib9u8um//UnYJx78N4rfb4nqWvmhlIMoNofPGlacv03mBXg2ZnTcEdQQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 216.228.118.233) smtp.rcpttodomain=intel.com smtp.mailfrom=nvidia.com;
- dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
- dkim=none (message not signed); arc=none (0)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=5l085bFXEz7mX3NVXad/6xlstnHoyrhvXCeX72ETTvk=;
- b=kO+q/oKJGY5ol/1KJ2IucyTSAoGmlV8IYf/8gqxcLRR+/Bz+MBMtgkfRkRH9z8pXFIfk79gmN+Soccs08+/d/S9FEW6nSCqDqbGL/Q3jFegjWfEaDL2DmyDssDDsvFAKpegx+cQCA1wBJIFLXtDw2Ao1WkIcrkggZ3/P2MQ2CTgQdbkbHN4K0zF4BxlhUyjUZ5s4ZAYxTEV+fwz8RAeJt/O2MFpcxm3zrE2eNVfAdpLJ4qheq0Cmyk52rnpSR1SvtEoW5x6/5RCf2yItrqyXfOXs4tishOa235iwUIc60XE9w8eu1TaY1VBrzV/rEa1r9s6anJGZim7pUsX6l2lbZQ==
-Received: from BN9PR03CA0624.namprd03.prod.outlook.com (2603:10b6:408:106::29)
- by DM6PR12MB4268.namprd12.prod.outlook.com (2603:10b6:5:223::15) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.8093.28; Mon, 28 Oct
- 2024 20:19:35 +0000
-Received: from MN1PEPF0000ECD8.namprd02.prod.outlook.com
- (2603:10b6:408:106:cafe::e5) by BN9PR03CA0624.outlook.office365.com
- (2603:10b6:408:106::29) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.8093.22 via Frontend
- Transport; Mon, 28 Oct 2024 20:19:35 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.118.233)
- smtp.mailfrom=nvidia.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=nvidia.com;
-Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 216.228.118.233 as permitted sender) receiver=protection.outlook.com;
- client-ip=216.228.118.233; helo=mail.nvidia.com; pr=C
-Received: from mail.nvidia.com (216.228.118.233) by
- MN1PEPF0000ECD8.mail.protection.outlook.com (10.167.242.137) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.8093.14 via Frontend Transport; Mon, 28 Oct 2024 20:19:35 +0000
-Received: from drhqmail203.nvidia.com (10.126.190.182) by mail.nvidia.com
- (10.127.129.6) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1544.4; Mon, 28 Oct
- 2024 13:18:52 -0700
-Received: from drhqmail202.nvidia.com (10.126.190.181) by
- drhqmail203.nvidia.com (10.126.190.182) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.1544.4; Mon, 28 Oct 2024 13:18:52 -0700
-Received: from Asurada-Nvidia (10.127.8.12) by mail.nvidia.com
- (10.126.190.181) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1544.4 via Frontend
- Transport; Mon, 28 Oct 2024 13:18:51 -0700
-Date: Mon, 28 Oct 2024 13:18:50 -0700
-From: Nicolin Chen <nicolinc@nvidia.com>
-To: "Tian, Kevin" <kevin.tian@intel.com>
-CC: "jgg@nvidia.com" <jgg@nvidia.com>, "will@kernel.org" <will@kernel.org>,
-	"joro@8bytes.org" <joro@8bytes.org>, "suravee.suthikulpanit@amd.com"
-	<suravee.suthikulpanit@amd.com>, "robin.murphy@arm.com"
-	<robin.murphy@arm.com>, "dwmw2@infradead.org" <dwmw2@infradead.org>,
-	"baolu.lu@linux.intel.com" <baolu.lu@linux.intel.com>, "shuah@kernel.org"
-	<shuah@kernel.org>, "linux-kernel@vger.kernel.org"
-	<linux-kernel@vger.kernel.org>, "iommu@lists.linux.dev"
-	<iommu@lists.linux.dev>, "linux-arm-kernel@lists.infradead.org"
-	<linux-arm-kernel@lists.infradead.org>, "linux-kselftest@vger.kernel.org"
-	<linux-kselftest@vger.kernel.org>, "eric.auger@redhat.com"
-	<eric.auger@redhat.com>, "jean-philippe@linaro.org"
-	<jean-philippe@linaro.org>, "mdf@kernel.org" <mdf@kernel.org>,
-	"mshavit@google.com" <mshavit@google.com>,
-	"shameerali.kolothum.thodi@huawei.com"
-	<shameerali.kolothum.thodi@huawei.com>, "smostafa@google.com"
-	<smostafa@google.com>, "Liu, Yi L" <yi.l.liu@intel.com>, "aik@amd.com"
-	<aik@amd.com>, "zhangfei.gao@linaro.org" <zhangfei.gao@linaro.org>,
-	"patches@lists.linux.dev" <patches@lists.linux.dev>
-Subject: Re: [PATCH v5 01/13] iommufd/viommu: Add IOMMUFD_OBJ_VDEVICE and
- IOMMU_VDEVICE_ALLOC ioctl
-Message-ID: <Zx/xqlvEBZgmV84d@Asurada-Nvidia>
-References: <cover.1729897278.git.nicolinc@nvidia.com>
- <53025c827c44d68edb6469bfd940a8e8bc6147a5.1729897278.git.nicolinc@nvidia.com>
- <BN9PR11MB52765EED4209A26DC60F138D8C4A2@BN9PR11MB5276.namprd11.prod.outlook.com>
+	dkim=pass (2048-bit key) header.d=goldelico.com header.i=@goldelico.com header.b="oXvXRNnn";
+	dkim=permerror (0-bit key) header.d=goldelico.com header.i=@goldelico.com header.b="9i3butY1"
+ARC-Seal: i=1; a=rsa-sha256; t=1730148399; cv=none;
+    d=strato.com; s=strato-dkim-0002;
+    b=NcDlSnE57617bMfC3xbE4wCADkegivbFIpctkNNfLTdPN8MD6NjCZJ7cVZcw5H09KN
+    lURcLTjgyYYnmBTct3UCVXnnvX9/EqZzj+68M4ym2PZ6SvLXAa7uyjNfVoaNq+9EKTtW
+    1UpqawFQZI0QPVCCkkxE8fywAyoo26bwL5a0CmW4BvwbCOP2UDvTLAIgdv5T3O51HtNa
+    1+YCExkWk8G8JmATjBKrncYefw4gqq/UMAP5/jdNFTRE7Gz/84+pPSQsnN+psVB+nhSM
+    Ljs8Ni8mZPcOjSK0Qn3j0odgM07ivUIYR7z8lOfqxk/aemZoKfgQLN5lGduz/ZzWGPxH
+    7fTw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; t=1730148399;
+    s=strato-dkim-0002; d=strato.com;
+    h=To:References:Message-Id:Cc:Date:In-Reply-To:From:Subject:Cc:Date:
+    From:Subject:Sender;
+    bh=/DBUgSl/fXm+QxrXuouOBjRsFk/JryARzx/x5XkmPtY=;
+    b=D2qMT3rfnzLRD9I+8sFDPHdBb141fsgyVYpB7svT/lQ6Or0DqDZB41DsCSQbi0PMW9
+    4NiyQtnB8LneWFaByNn32bpCvUQT1TebaRu/yjEa7d7ry4tzdLlqTLjUrWzxYh70pSFO
+    oV5EFUFeLVhwGN4q8A8zwPMhKA4bq/HpwsFlcoBZZKKZG0hUbaZ3//pfuzN5uBLH9ZSt
+    RsMdjxxhLLl4/7EcH8qwjFSr6y9BML4teiLnYEFADaV2tURanT8jaJ3RwpBO+ROF5iS2
+    3o0qE83XqetjTYLMikdCgY2I37nS+11wsAc9c0HPdI8qHWuzlXKF8dglL3I8mxgoHsBJ
+    uD4w==
+ARC-Authentication-Results: i=1; strato.com;
+    arc=none;
+    dkim=none
+X-RZG-CLASS-ID: mo01
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; t=1730148399;
+    s=strato-dkim-0002; d=goldelico.com;
+    h=To:References:Message-Id:Cc:Date:In-Reply-To:From:Subject:Cc:Date:
+    From:Subject:Sender;
+    bh=/DBUgSl/fXm+QxrXuouOBjRsFk/JryARzx/x5XkmPtY=;
+    b=oXvXRNnnDlh4EFDy2Jm1FVHTocq5/AgpOU3R7hx5Akyf98y4YaXDkiqhRayK1COrG3
+    aMkhVqhhEAVnwiId/XNd/Ar09Y22xOs5/ZiPXorjow7sLa6LJJjIA5H339Ks7dXXfp7C
+    DglorPhpHRUwqVZ2o7zoBf1QZ9Y8kylZiz09PhMGrqUD2bvAYY4cL8DrLfpAH7cJzTfg
+    t9pczeIH8rKvg5KcvuLKm8sxDi1PX0tDM0Gi+L1gEUnW2TnL3l7rjIeUrhYl/pdb3cfV
+    Nl1jmDLT47FLeOb9vCCnuOQUYsZHNugKkkUzFX+zrNogZvvbVpfLZ6So1JL18+Jhs5UV
+    +QCw==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; t=1730148399;
+    s=strato-dkim-0003; d=goldelico.com;
+    h=To:References:Message-Id:Cc:Date:In-Reply-To:From:Subject:Cc:Date:
+    From:Subject:Sender;
+    bh=/DBUgSl/fXm+QxrXuouOBjRsFk/JryARzx/x5XkmPtY=;
+    b=9i3butY11/2LpbfRMpDFkRYu3cQJmGU4qAx1SU+Em6HF1Va5Lmn2V918alzfwLvrpn
+    meRjg6YjhVAq6ep/V0Bw==
+X-RZG-AUTH: ":JGIXVUS7cutRB/49FwqZ7WcJeFKiMhflhwDubTJ9qVpwcQVkPW4I1HrV3ZoNnMiNdxeutsfZzRfx7IXe+fc9o4UKxSY="
+Received: from smtpclient.apple
+    by smtp.strato.de (RZmta 51.2.11 AUTH)
+    with ESMTPSA id Qb7e4009SKkcK9Y
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (curve X9_62_prime256v1 with 256 ECDH bits, eq. 3072 bits RSA))
+	(Client did not present a certificate);
+    Mon, 28 Oct 2024 21:46:38 +0100 (CET)
+Content-Type: text/plain;
+	charset=us-ascii
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
-MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: inline
-In-Reply-To: <BN9PR11MB52765EED4209A26DC60F138D8C4A2@BN9PR11MB5276.namprd11.prod.outlook.com>
-X-NV-OnPremToCloud: ExternallySecured
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: MN1PEPF0000ECD8:EE_|DM6PR12MB4268:EE_
-X-MS-Office365-Filtering-Correlation-Id: 33bbfe33-d547-4cce-169a-08dcf78dd735
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|36860700013|7416014|376014|82310400026|1800799024;
-X-Microsoft-Antispam-Message-Info:
-	=?us-ascii?Q?KhXB0R8AK7W4H6z6PegubjgPt8g7VaOZKIn0s8yUHlckmOV52WaZh9DgwoNV?=
- =?us-ascii?Q?hcKMLg8oodLA32VxrFYQ5JELZ3clRnltbqEjsYdI93+yScwXzO8s/wH8HfZf?=
- =?us-ascii?Q?kf14CRmzOwkvrBh0IUTZ6qXls13b6wvKjPyBMAaeKUlaRL2yYEJgMGNnHkVk?=
- =?us-ascii?Q?DmfBF+bizQIwRmKr8zk38LATSIorImbdGdid2KsXFCwZhaOUXMmzhraf594Q?=
- =?us-ascii?Q?72twZz5Tp2hWC+YuM50a9tcivoixLf2yxoA65X6oyzn5ZQ0L9RjG2P7SqW2K?=
- =?us-ascii?Q?AGoZKJpWoJYgNd+ZfxSWrKwfZq0PU0LvROla4iEONy+RxsDfOBywTEpw/bO1?=
- =?us-ascii?Q?vD41toYQcnudkGvpmzp5eRh6oWMUw9y7yKnh3eXu/v2DJNO+S504lOTp1ca3?=
- =?us-ascii?Q?CuTT53AyWcu8jQGa8GktlBtWMxnEO4UuQOWrt99RjE1KZPtR3XxV9E30awnH?=
- =?us-ascii?Q?DX9yFnXccfLhtN4WTCuLGU5Jh02vt3cwgzKhvN4dcMG+6rtDpil+cagRWS1B?=
- =?us-ascii?Q?C77EsT7fQ/KTCG/hvJKJT/UtaIy8K1vLsrlKoDD/Timk/QvOIyE/3/U9TACq?=
- =?us-ascii?Q?xg7Gv3rGJF1YJgRKJ9HysMpdxAZovCxEOXGyXVcEL8PMgvX0m2ukbbO5Sa8x?=
- =?us-ascii?Q?3NRgHu0LY1fy5lfnBQeY8Hs11LF6pVQYxt20R6yCn5L5KycsPd0xEp9WLq/5?=
- =?us-ascii?Q?bwRDlvjMWOPCbBhz1RQQZNMLRrNFFHS33aptQqCIDRqG2wqz0ROaU93HftCW?=
- =?us-ascii?Q?qL4R0LxSkSRQIsZ0m/RM7AY8TFhwdnNIMy7/wvOV0B1QJuCKjXxFMqxgvv9K?=
- =?us-ascii?Q?tlOM3RFi/9EnbZ1K6W3+0q4Dc70qdPKgYumo36cLAyoevsKr3O8PQ/cMlAJi?=
- =?us-ascii?Q?CBWUxGb0FgAHbqaQl1JbwTTSIW1Zmm26KkXMlbgdb8yGeN46ATVWbHlWIVqq?=
- =?us-ascii?Q?hKg7V1rSeSE4C4EyGGeZAv31pyEGP8YV2yh+e8vKoGRIIoxGmUneGz4E3hnL?=
- =?us-ascii?Q?o4hbm+75FCzSryLRWDjYb7OrJduUjTyjdBxpkpKv/oYfkmxN7Hb9Dg7l86jn?=
- =?us-ascii?Q?qObRL5cr0mA1ItbrGlbaLy95YcZ/QhDHx7DruvG+uUd1r1JPpl+dZmuwihwq?=
- =?us-ascii?Q?fOrCbBda9szp6ie9zz60+EVU3whchLb1+fRVgYbGRi3b1iS7MEIAQ5zfF2bf?=
- =?us-ascii?Q?RFhF8iIFtLp4ziEFg75gWMQ7bvKwE41ap0BawaWcFG2O88A/dbOGRowMkblD?=
- =?us-ascii?Q?W7wju/YdQ0FiIXkPVZA2/QEOQ3B99iMguHdUieU/efEB8NpyI8dVMNSj9TeK?=
- =?us-ascii?Q?6KPpayEsETi4QkjXsy88nelUfVRMwXrVT3AFx/utIcYT+Di3nB+hrtJAi8wq?=
- =?us-ascii?Q?sUclx4mZLGRf8mq9dic6Hv//sGt9nkzIp2c19IwqqG/GjDwtNg=3D=3D?=
-X-Forefront-Antispam-Report:
-	CIP:216.228.118.233;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc7edge2.nvidia.com;CAT:NONE;SFS:(13230040)(36860700013)(7416014)(376014)(82310400026)(1800799024);DIR:OUT;SFP:1101;
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 28 Oct 2024 20:19:35.0766
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 33bbfe33-d547-4cce-169a-08dcf78dd735
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.118.233];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource:
-	MN1PEPF0000ECD8.namprd02.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR12MB4268
+Mime-Version: 1.0 (Mac OS X Mail 16.0 \(3776.700.51.11.1\))
+Subject: Re: [PATCH 0/4] Fix omap-iommu bitrot
+From: "H. Nikolaus Schaller" <hns@goldelico.com>
+In-Reply-To: <cover.1730136799.git.robin.murphy@arm.com>
+Date: Mon, 28 Oct 2024 21:46:27 +0100
+Cc: joro@8bytes.org,
+ will@kernel.org,
+ Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
+ mchehab@kernel.org,
+ andersson@kernel.org,
+ mathieu.poirier@linaro.org,
+ Beleswar Padhi <b-padhi@ti.com>,
+ Andreas Kemnade <andreas@kemnade.info>,
+ iommu@lists.linux.dev,
+ arm-soc <linux-arm-kernel@lists.infradead.org>,
+ Linux-OMAP <linux-omap@vger.kernel.org>,
+ linux-media@vger.kernel.org,
+ linux-remoteproc@vger.kernel.org,
+ Discussions about the Letux Kernel <letux-kernel@openphoenux.org>
+Content-Transfer-Encoding: quoted-printable
+Message-Id: <831CC29D-3B89-4091-8145-0E310FF838CB@goldelico.com>
+References: <cover.1730136799.git.robin.murphy@arm.com>
+To: Robin Murphy <robin.murphy@arm.com>
+X-Mailer: Apple Mail (2.3776.700.51.11.1)
 
-On Mon, Oct 28, 2024 at 03:11:32AM +0000, Tian, Kevin wrote:
-> > From: Nicolin Chen <nicolinc@nvidia.com>
-> > Sent: Saturday, October 26, 2024 7:51 AM
-> >
-> > +
-> > +/**
-> > + * struct iommu_vdevice_alloc - ioctl(IOMMU_VDEVICE_ALLOC)
-> > + * @size: sizeof(struct iommu_vdevice_alloc)
-> > + * @viommu_id: vIOMMU ID to associate with the virtual device
-> > + * @dev_id: The pyhsical device to allocate a virtual instance on the
-> > vIOMMU
-> 
-> s/pyhsical/physical/, or just say 'iommufd device"
+Hi Robin,
 
-Ack for "physical", aligning with other @dev_id lines.
+> Am 28.10.2024 um 18:58 schrieb Robin Murphy <robin.murphy@arm.com>:
+>=20
+> Hi all,
+>=20
+> It seems omap-iommu hasn't had enough mainline users to avoid =
+bitrotting
+> through the more recent evolution of the IOMMU API internals. These
+> patches attempt to bring it and its consumers sufficiently up-to-date
+> to work again, in a manner that's hopefully backportable. This is
+> largely all written by inspection, but I have managed to lightly boot
+> test patch #3 on an OMAP4 Pandaboard to confirm iommu_probe_device()
+> working again.
+>=20
+> This supersedes my previous patch[1]. Patches #1 and #2 are =
+functionally
+> independent, and can be applied directly to their respective trees if
+> preferred.
 
-> > +
-> > +int iommufd_vdevice_alloc_ioctl(struct iommufd_ucmd *ucmd)
-> > +{
-> > +     struct iommu_vdevice_alloc *cmd = ucmd->cmd;
-> > +     struct iommufd_vdevice *vdev, *curr;
-> > +     struct iommufd_viommu *viommu;
-> > +     struct iommufd_device *idev;
-> > +     u64 virt_id = cmd->virt_id;
-> > +     int rc = 0;
-> > +
-> > +     if (virt_id > ULONG_MAX)
-> > +             return -EINVAL;
-> > +
-> > +     viommu = iommufd_get_viommu(ucmd, cmd->viommu_id);
-> > +     if (IS_ERR(viommu))
-> > +             return PTR_ERR(viommu);
-> > +
-> > +     idev = iommufd_get_device(ucmd, cmd->dev_id);
-> > +     if (IS_ERR(idev)) {
-> > +             rc = PTR_ERR(idev);
-> > +             goto out_put_viommu;
-> > +     }
-> > +
-> > +     mutex_lock(&idev->igroup->lock);
-> > +     if (idev->vdev) {
-> > +             rc = -EEXIST;
-> > +             goto out_unlock_igroup;
-> > +     }
-> > +
-> > +     vdev = iommufd_object_alloc(ucmd->ictx, vdev,
-> > IOMMUFD_OBJ_VDEVICE);
-> > +     if (IS_ERR(vdev)) {
-> > +             rc = PTR_ERR(vdev);
-> > +             goto out_unlock_igroup;
-> > +     }
-> > +
-> 
-> also need to check that the device and the viommu are associated
-> to a same physical iommu.
+I can confirm that this series works on omap3 with v6.12-rc5 and
+Camera is back to the GTA04.
 
-Ack. Will add this prior to mutex_lock(&idev->igroup->lock);
+So you can add:
+Tested-by: H. Nikolaus Schaller <hns@goldelico.com>
 
-+       if (viommu->iommu_dev != __iommu_get_iommu_dev(idev->dev)) {
-+               rc = -EINVAL;
-+               goto out_put_idev;
-+       }
+BR and thanks,
+Nikolaus
 
-Thanks!
-Nicolin
+root@letux:~# dmesg|fgrep iommu
+[    0.522613] iommu: Default domain type: Translated
+[    0.522644] iommu: DMA domain TLB invalidation policy: strict mode
+[    0.525177] omap-iommu 480bd400.mmu: 480bd400.mmu registered
+[   10.752563] omap3isp 480bc000.isp: Adding to iommu group 0
+[   10.811218] omap-iommu 480bd400.mmu: 480bd400.mmu: version 1.1
+[   11.039489] omap-iommu 480bd400.mmu: 480bd400.mmu: version 1.1
+root@letux:~# dmesg|fgrep .isp
+[   10.752563] omap3isp 480bc000.isp: Adding to iommu group 0
+[   10.841522] omap3isp 480bc000.isp: supply vdd-csiphy1 not found, =
+using dummy regulator
+[   10.948577] omap3isp 480bc000.isp: supply vdd-csiphy2 not found, =
+using dummy regulator
+[   10.990814] omap3isp 480bc000.isp: Revision 15.0 found
+[   11.089324] omap3isp 480bc000.isp: hist: using DMA channel dma0chan15
+[   11.115905] omap3isp 480bc000.isp: Entity type for entity OMAP3 ISP =
+CCP2 was not initialized!
+[   11.168792] omap3isp 480bc000.isp: isp_xclk_set_rate: cam_xclka set =
+to 24685714 Hz (div 7)
+[   11.220062] omap3isp 480bc000.isp: Entity type for entity OMAP3 ISP =
+CSI2a was not initialized!
+[   11.291748] omap3isp 480bc000.isp: Entity type for entity OMAP3 ISP =
+CCDC was not initialized!
+[   11.362152] omap3isp 480bc000.isp: Entity type for entity OMAP3 ISP =
+preview was not initialized!
+[   11.404266] omap3isp 480bc000.isp: Entity type for entity OMAP3 ISP =
+resizer was not initialized!
+[   11.485687] omap3isp 480bc000.isp: Entity type for entity OMAP3 ISP =
+AEWB was not initialized!
+[   11.520874] omap3isp 480bc000.isp: Entity type for entity OMAP3 ISP =
+AF was not initialized!
+[   11.574981] omap3isp 480bc000.isp: Entity type for entity OMAP3 ISP =
+histogram was not initialized!
+[   11.594268] omap3isp 480bc000.isp: parsing parallel interface
+[  106.102905] omap3isp 480bc000.isp: -------------CCDC Register =
+dump-------------
+[  106.110595] omap3isp 480bc000.isp: ###CCDC PCR=3D0x00000000
+[  106.116973] omap3isp 480bc000.isp: ###CCDC SYN_MODE=3D0x00031704
+[  106.123657] omap3isp 480bc000.isp: ###CCDC HD_VD_WID=3D0x00000000
+[  106.129974] omap3isp 480bc000.isp: ###CCDC PIX_LINES=3D0x00000000
+[  106.136810] omap3isp 480bc000.isp: ###CCDC HORZ_INFO=3D0x000004ff
+[  106.143615] omap3isp 480bc000.isp: ###CCDC VERT_START=3D0x00000000
+[  106.149932] omap3isp 480bc000.isp: ###CCDC VERT_LINES=3D0x000003ff
+[  106.156799] omap3isp 480bc000.isp: ###CCDC CULLING=3D0xffff00ff
+[  106.163299] omap3isp 480bc000.isp: ###CCDC HSIZE_OFF=3D0x00000a00
+[  106.169616] omap3isp 480bc000.isp: ###CCDC SDOFST=3D0x00000000
+[  106.176086] omap3isp 480bc000.isp: ###CCDC SDR_ADDR=3D0x40000000
+[  106.182708] omap3isp 480bc000.isp: ###CCDC CLAMP=3D0x00000010
+[  106.188598] omap3isp 480bc000.isp: ###CCDC DCSUB=3D0x00000000
+[  106.195068] omap3isp 480bc000.isp: ###CCDC COLPTN=3D0xbb11bb11
+[  106.201507] omap3isp 480bc000.isp: ###CCDC BLKCMP=3D0x00000000
+[  106.207550] omap3isp 480bc000.isp: ###CCDC FPC=3D0x00000000
+[  106.213684] omap3isp 480bc000.isp: ###CCDC FPC_ADDR=3D0x00000000
+[  106.219909] omap3isp 480bc000.isp: ###CCDC VDINT=3D0x03fe02aa
+[  106.226409] omap3isp 480bc000.isp: ###CCDC ALAW=3D0x00000006
+[  106.232696] omap3isp 480bc000.isp: ###CCDC REC656IF=3D0x00000000
+[  106.238830] omap3isp 480bc000.isp: ###CCDC CFG=3D0x00008800
+[  106.244964] omap3isp 480bc000.isp: ###CCDC FMTCFG=3D0x00000000
+[  106.251434] omap3isp 480bc000.isp: ###CCDC FMT_HORZ=3D0x00000000
+[  106.257568] omap3isp 480bc000.isp: ###CCDC FMT_VERT=3D0x00000000
+[  106.264251] omap3isp 480bc000.isp: ###CCDC PRGEVEN0=3D0x00000000
+[  106.271606] omap3isp 480bc000.isp: ###CCDC PRGEVEN1=3D0x00000000
+[  106.285400] omap3isp 480bc000.isp: ###CCDC PRGODD0=3D0x00000000
+[  106.301147] omap3isp 480bc000.isp: ###CCDC PRGODD1=3D0x00000000
+[  106.307220] omap3isp 480bc000.isp: ###CCDC VP_OUT=3D0x00000000
+[  106.326019] omap3isp 480bc000.isp: ###CCDC LSC_CONFIG=3D0x00006600
+[  106.340087] omap3isp 480bc000.isp: ###CCDC LSC_INITIAL=3D0x00000000
+[  106.358001] omap3isp 480bc000.isp: ###CCDC LSC_TABLE_BASE=3D0x00000000
+[  106.372985] omap3isp 480bc000.isp: ###CCDC =
+LSC_TABLE_OFFSET=3D0x00000000
+[  106.379882] omap3isp 480bc000.isp: =
+--------------------------------------------
+[  118.617980] omap3isp 480bc000.isp: OMAP3 ISP AEWB: user wants to =
+disable module.
+[  118.626068] omap3isp 480bc000.isp: OMAP3 ISP AEWB: module is being =
+disabled
+[  118.633392] omap3isp 480bc000.isp: OMAP3 ISP AF: user wants to =
+disable module.
+[  118.641937] omap3isp 480bc000.isp: OMAP3 ISP AF: module is being =
+disabled
+[  118.649627] omap3isp 480bc000.isp: OMAP3 ISP histogram: user wants to =
+disable module.
+[  118.658508] omap3isp 480bc000.isp: OMAP3 ISP histogram: module is =
+being disabled
+root@letux:~#=20
+
+
