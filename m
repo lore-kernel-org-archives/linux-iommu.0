@@ -1,175 +1,266 @@
-Received: from smtpbguseast1.qq.com (smtpbguseast1.qq.com [54.204.34.129])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-pl1-f175.google.com (mail-pl1-f175.google.com [209.85.214.175])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B419318C92A
-	for <iommu@lists.linux.dev>; Mon, 28 Oct 2024 03:50:15 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=54.204.34.129
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 476DDA59
+	for <iommu@lists.linux.dev>; Mon, 28 Oct 2024 04:25:02 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.175
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1730087421; cv=none; b=gw1De2a2HRS6fcJJOny8YZiC2dKZYgzQ/69DYfDRYavXclJHXJHk4A1kQkhf/ZsQY+moz+OFitZ8oubMaEDHvtdXBZJQvaZjXyLm5l+H/FFxnePimWsohV4zcUJyhj0KkDfcGvVwY7QKLA0RQQX3MB5+BthDhrNSMu9Y8uA38sY=
+	t=1730089504; cv=none; b=Q+49kpg60bS3VfKpekk8MhCfFauDlS9FSnnY1pBR9KMzH3HnyYvzVgOBs1c21WYgQVyKRB4Ge5uM/mJAZj7BPaZlsNH5ytEeyIUW2pnughJo4hmkfseZP6YJAkEfRqA1EM8KkS+mdx+L8k8hvF91yJgD2C7ODhvxcgChgqhQ2Zk=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1730087421; c=relaxed/simple;
-	bh=GKiYYsQxIjPYaFa4vLHh2atXLmYtIlb6yAhPioyEZik=;
-	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
-	 MIME-Version; b=gVjfTYBW5Ywir0EEqQRqHI9g8CgyW/aDtyvxn8oFJC19hnea+HHohI5EmTaYMmmZMGdgJ7Rr2YiTAhyolXS2hQNq+gXesqekHXh2bDYdkxR44O2jXdla8Mik+uF/dV+RWX3vkipz4gbQ5VEQBja0uFvlJnnaAzu20VTI0NmP0fg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=uniontech.com; spf=pass smtp.mailfrom=uniontech.com; dkim=pass (1024-bit key) header.d=uniontech.com header.i=@uniontech.com header.b=Q4kXXmjv; arc=none smtp.client-ip=54.204.34.129
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=uniontech.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=uniontech.com
+	s=arc-20240116; t=1730089504; c=relaxed/simple;
+	bh=Y9iGHqOHKOxRX/YuktGKzJY8/m4TQ2gtHKBpbGPfu08=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=nsxjt8Or9NRNvtg8Bu7HJM1tmuHER9TVkgdIwn/7EGsR1m1VADKLO1jERxQKSPWAnpCdkObjMONR7eo4kfpS2X3FHUvyRCPbhB/yc74ZEC3qPIeMC8SGMBIYEL+jeZRz6LcOzvxyWQsHC+MFpdzA8PYvDuj7WAixNdwF1jt6DrE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=eDlr6ze+; arc=none smtp.client-ip=209.85.214.175
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=uniontech.com header.i=@uniontech.com header.b="Q4kXXmjv"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=uniontech.com;
-	s=onoh2408; t=1730087334;
-	bh=ZfepWoHjCZNG7Hnofx9+U1FeKOBzJSKxe0L62gLgiEw=;
-	h=From:To:Subject:Date:Message-Id:MIME-Version;
-	b=Q4kXXmjvf/ibWt6l3MKLMYR2k+cgSWSaU73TW60lxgVH1DvnLf70gLUh5i3G0nrre
-	 8/vZ3fBKX+uqdYc8dGuaxOgp9MWrDifqZ3/9IrXr5w2qDY4Xw9iBH7g7JXOyM+0lpB
-	 Up/59/wmO3fa2k7+Mpf9Ha5nU04oD7E77u0T5A/Q=
-X-QQ-mid: bizesmtp85t1730087307tdhqh0l2
-X-QQ-Originating-IP: dCYFQrp0v7vMRUT66sXnuY2O2ebBilMy96q78ZgxUEE=
-Received: from localhost.localdomain ( [123.124.208.226])
-	by bizesmtp.qq.com (ESMTP) with 
-	id ; Mon, 28 Oct 2024 11:48:25 +0800 (CST)
-X-QQ-SSF: 0000000000000000000000000000000
-X-QQ-GoodBg: 1
-X-BIZMAIL-ID: 2145193820470880376
-From: goutongchen@uniontech.com
-To: goutongchen@uniontech.com
-Cc: dmitry.baryshkov@linaro.org,
-	gouhao@uniontech.com,
-	iommu@lists.linux.dev,
-	jgg@ziepe.ca,
-	joro@8bytes.org,
-	linux-arm-kernel@lists.infradead.org,
-	linux-kernel@vger.kernel.org,
-	robdclark@chromium.org,
-	robin.murphy@arm.com,
-	will@kernel.org
-Subject: [PATCH v2] iommu/arm-smmu: Add judgment on the size and granule parameters passed in
-Date: Mon, 28 Oct 2024 11:48:23 +0800
-Message-Id: <20241028034823.22838-1-goutongchen@uniontech.com>
-X-Mailer: git-send-email 2.20.1
-In-Reply-To: <20241024100224.62942-1-goutongchen@uniontech.com>
-References: <20241024100224.62942-1-goutongchen@uniontech.com>
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="eDlr6ze+"
+Received: by mail-pl1-f175.google.com with SMTP id d9443c01a7336-20cdda5cfb6so35723555ad.3
+        for <iommu@lists.linux.dev>; Sun, 27 Oct 2024 21:25:02 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20230601; t=1730089501; x=1730694301; darn=lists.linux.dev;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=m3x7sfjCk6an/jee3PqRBielnEix2rcYMcqqI8sdlR0=;
+        b=eDlr6ze+FmgZQSGHXiEs3Xk1fWVvkQQmsIBnc3zoGhfkJwwBqcdBQ72N4kourzfdxe
+         7pfDe1uEozOfF5URGvnhk02PBlDy9V89BIxbHyVsiRS+SpRmhMVec+IZwy7HiyL/gBY6
+         XBKLdw2JFUQNbQouSKR04zSXy43ea0MDLlPGVwhquDLtomGuhkzhClReQPXX/M8fqKRJ
+         FjP4SuLsr0tgyb7P+xb2ZqxFBWEX0+r6gQ4JeWoUFG/NESueUj36VojJ7UowZ/1YacK5
+         a/yfq+uWQxVN7DO6a+QLWww7bxUW/xBHE1sPgkb6eJGy89PTaGDsYkMIMjxwcC92d6ow
+         xxgQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1730089501; x=1730694301;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=m3x7sfjCk6an/jee3PqRBielnEix2rcYMcqqI8sdlR0=;
+        b=RLGJS6rOtdY/m6dk8t41ueH5AUKwnwKK1XX7gtXYBsgbNIy+kp0sz6OIOkE83GiKMz
+         +fZhBBioAflJpYZcyyTaM9Cqrv8DOXKRYBmO0Fz36nvNNvk7ldXINFQPwv0JijgXBINA
+         i77bbFCF8lI+PQMhvQgoppSLSBNZCZvi2Lh2RBeFF+E9YC7wwo8DxzMDdBtmsjLUuP1T
+         YfSbbK4+vE9xYoHe1WWTAY263FdMsigeWyHol2XUlH7KVNKtdNm+f+TM3e5dOC1KetZZ
+         1GAoUlJ8tdz2Dg88bf0inCCSwsbum4S2HA1FiDF6GsU78EUG7dKMzsrrrMK3IDeEnlw7
+         KCKg==
+X-Forwarded-Encrypted: i=1; AJvYcCX2xLw81ccwSki06e1BE7otrnxiIZP5yQ/xbHjmnzlqX38XWnhoUETZrcLrcYa0kCnkDGn06g==@lists.linux.dev
+X-Gm-Message-State: AOJu0Yyc4KvcZbx/gDa3RHxxX3RXZKXLCXhznmr5QWPbQgvjt+l7zBK4
+	OVyCkGlFkzt/QVT+nlvfDHWIup65PTxoRrLorGjEY1Zde2P6fWzh49p2c9GWe0hf1ypiC6PacvE
+	UvC0RbvdFdusd+2/ETr0rk7WvISw=
+X-Google-Smtp-Source: AGHT+IF/XbpZuxphQQOGSTKqE4rMFhTi6L+p1iG+0wHvbb3b0Zmpl46tdIWRMT6RjNj1jqQyIDmtIwt2bzj/qL3GX/U=
+X-Received: by 2002:a17:902:db02:b0:20c:b700:6e10 with SMTP id
+ d9443c01a7336-210c6c8856cmr116967905ad.34.1730089501376; Sun, 27 Oct 2024
+ 21:25:01 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-QQ-SENDSIZE: 520
-Feedback-ID: bizesmtp:uniontech.com:qybglogicsvrgz:qybglogicsvrgz8a-0
-X-QQ-XMAILINFO: NQUMxZLa5thm4xRs+e6BAyU8MEa4v1Ukbo2NA5f/ZsRBzbZ2YvgxoQMx
-	X9UxtHdeGXbC4fhKbDcaqTp8R2LuBFuJN80dB/6Gb7pg75jkcZ9kKsQuFbeFPWo13InuE2J
-	5OReAl0fIwuQaFyK4a4Rj9+OceainLGPd0/uk+BgCgIY23CpF077kui5/mYETGQpntHxN4h
-	3b5/EILDINCbDzgOFehTU+NVMyzLBbS1bSUuAOlZS2Cn8aBdr4DJCSv5idr0igSF3NsSIpi
-	2f1lqdsDNozx57w8gMA1WnJ2px5LA86jSSLhjW26zyCvnPPQADHcayucXYetN/JNhkNT+8J
-	vj72s5ZQfwpHlrwciz+4WekpzHGg+CJzM0ykZmB71Oc01Wcr5z7UeXQcwcb/2bIF1HkO8eA
-	92klhG6Gi0251f5MPBXmRSbO2mv3wXSEb4iJ3d9izaCXQgqKrimD1MvJB0GRJTRh8xwkYWP
-	qVgA/MmT327xSmdxMdRh63EkKwF+uey17hbco6I9LSvFvmL2x4wYukt9SAuVDxdD0+ocuT1
-	XCanopbBecLIaSffRIxeR61VZW+Oen3mQT0999z3xvVRKUfkcm1Ocz7SWc8GReDbrxibdoO
-	jscSxx4sNVIa4KEe2z4KtSoNOPRivBpXD/aqf94a7eTEY3akgj/DI1MFeYZcssIPY5gAD7t
-	jHYlTdbANyiTYmKQKzysPzxoV+2cbKiZdPd4/0Gm3V8ukDM9Uw3K7/n7X21eKtfycKQuUSZ
-	IXpxcgCGmVJXCxZ1Bv+25SMvwBHa97KRh8y+fLuL2eG3wG97YJnESPNZBVYWZYPQL7uz9zH
-	aqSis3LgjWvRT7mHQGI4wdYOgAHMmi93jcaA8MP9+kZEit7jcCe+y/yWUi+E41Q6sdlTtKn
-	PYhr3Mn9mGou9f+mYQdASNH1pAqoJbcURP9r8Z0gS30JSzSDfZ7oGKU7aX1/nJQMAO2gipd
-	RXRbTH/aSTmlW5NpaRiNkyHlN3cY4piDyZP8=
-X-QQ-XMRINFO: Nq+8W0+stu50PRdwbJxPCL0=
-X-QQ-RECHKSPAM: 0
+References: <cover.1730037276.git.leon@kernel.org> <844f3dcf9c341b8178bfbc90909ef13d11dd2193.1730037276.git.leon@kernel.org>
+In-Reply-To: <844f3dcf9c341b8178bfbc90909ef13d11dd2193.1730037276.git.leon@kernel.org>
+From: Srinivasulu Thanneeru <dev.srinivasulu@gmail.com>
+Date: Mon, 28 Oct 2024 09:54:49 +0530
+Message-ID: <CAMtOeKJeVrELCp5JpYTC64KdfKpbnW9a8QrnL6ziCYL48nc=qQ@mail.gmail.com>
+Subject: Re: [PATCH 05/18] dma: Provide an interface to allow allocate IOVA
+To: Leon Romanovsky <leon@kernel.org>
+Cc: Jens Axboe <axboe@kernel.dk>, Jason Gunthorpe <jgg@ziepe.ca>, Robin Murphy <robin.murphy@arm.com>, 
+	Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>, Christoph Hellwig <hch@lst.de>, 
+	Sagi Grimberg <sagi@grimberg.me>, Leon Romanovsky <leonro@nvidia.com>, Keith Busch <kbusch@kernel.org>, 
+	Bjorn Helgaas <bhelgaas@google.com>, Logan Gunthorpe <logang@deltatee.com>, 
+	Yishai Hadas <yishaih@nvidia.com>, 
+	Shameer Kolothum <shameerali.kolothum.thodi@huawei.com>, Kevin Tian <kevin.tian@intel.com>, 
+	Alex Williamson <alex.williamson@redhat.com>, Marek Szyprowski <m.szyprowski@samsung.com>, 
+	=?UTF-8?B?SsOpcsO0bWUgR2xpc3Nl?= <jglisse@redhat.com>, 
+	Andrew Morton <akpm@linux-foundation.org>, Jonathan Corbet <corbet@lwn.net>, linux-doc@vger.kernel.org, 
+	linux-kernel@vger.kernel.org, linux-block@vger.kernel.org, 
+	linux-rdma@vger.kernel.org, iommu@lists.linux.dev, 
+	linux-nvme@lists.infradead.org, linux-pci@vger.kernel.org, 
+	kvm@vger.kernel.org, linux-mm@kvack.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-From: goutongchen <goutongchen@uniontech.com>
+On Sun, Oct 27, 2024 at 10:23=E2=80=AFPM Leon Romanovsky <leon@kernel.org> =
+wrote:
+>
+> From: Leon Romanovsky <leonro@nvidia.com>
+>
+> The existing .map_page() callback provides both allocating of IOVA
+> and linking DMA pages. That combination works great for most of the
+> callers who use it in control paths, but is less effective in fast
+> paths where there may be multiple calls to map_page().
 
-In the arm_smmu_tlb_inv_range_s1 and arm_smmu_tlb_inv_range_s2
-functions, the size and granule passed in must be judged.
-It must be ensured that the passed in parameter is not 0 and
-the size is an integer multiple of the granule, otherwise it
-will cause an infinite while loop.
+Can you please share perf stats with this patch in fast path, if available?
 
-This was encountered during testing, and was initially triggered
-by passing in a size value of 0, causing the kernel to crash.
-
-[    8.214378][  T675] xhci_hcd 0000:0b:00.0: new USB bus registered, assigned bus number 1
-[   68.246185][    C0] rcu: INFO: rcu_sched self-detected stall on CPU
-[   68.246866][    C0] rcu:     0-....: (5999 ticks this GP) idle=796c/1/0x4000000000000000 softirq=161/161 fqs=2999
-[   68.247924][    C0] rcu:     (t=6000 jiffies g=-699 q=1 ncpus=128)
-[   68.248452][    C0] CPU: 0 PID: 675 Comm: kworker/0:2 Not tainted 6.6.0-25.02.2500.002.uos25.aarch64 #1
-[   68.249237][    C0] Hardware name: Inspur     CS5260F     /CS5260F          , BIOS 4.0.16 05/31/22 16:53:51
-[   68.250029][    C0] Workqueue: events work_for_cpu_fn
-[   68.250497][    C0] pstate: a0000005 (NzCv daif -PAN -UAO -TCO -DIT -SSBS BTYPE=--)
-[   68.251188][    C0] pc : arm_smmu_tlb_inv_range_s1+0xf0/0x158
-[   68.251704][    C0] lr : arm_smmu_tlb_inv_walk_s1+0x44/0x68
-[   68.252189][    C0] sp : ffff80008044b780
-[   68.252530][    C0] x29: ffff80008044b780 x28: 0000000000000000 x27: 0000000000001000
-[   68.253212][    C0] x26: 0000000000000600 x25: 0000000000000001 x24: 0000000000000600
-[   68.253857][    C0] x23: 0000000000000000 x22: 0000000000001000 x21: fffffc64e2e59000
-[   68.254544][    C0] x20: 0000000039c1d1a6 x19: ffff3fe944c40280 x18: 0000000000000000
-[   68.255240][    C0] x17: 626d756e20737562 x16: ffffb0e7e08c1008 x15: 0000000000000000
-[   68.255930][    C0] x14: ffff3ef8c1ea15cd x13: ffff3ef8c1ea15cb x12: fffffcfba30e3880
-[   68.256538][    C0] x11: 00000000ffff7fff x10: ffff80008044b6b0 x9 : ffffb0e7decd1b5c
-[   68.257126][    C0] x8 : 0000000000000dc0 x7 : ffff3ee8c4148000 x6 : ffff3ee8c4148000
-[   68.257822][    C0] x5 : 0000000000000008 x4 : 0000000000000000 x3 : ffff3fe944c40800
-[   68.258497][    C0] x2 : 0000000000000010 x1 : 0000000000000020 x0 : ffffb0e7dfd6c3d0
-[   68.259185][    C0] Call trace:
-[   68.259451][    C0]  arm_smmu_tlb_inv_range_s1+0xf0/0x158
-[   68.259933][    C0]  arm_smmu_tlb_inv_walk_s1+0x44/0x68
-[   68.260384][    C0]  __arm_lpae_map+0x1f0/0x2c0
-[   68.260796][    C0]  arm_lpae_map_pages+0xec/0x150
-[   68.261215][    C0]  arm_smmu_map_pages+0x48/0x130
-[   68.261654][    C0]  __iommu_map+0x134/0x2a8
-[   68.262098][    C0]  iommu_map_sg+0xb8/0x1c8
-[   68.262500][    C0]  __iommu_dma_alloc_noncontiguous.constprop.0+0x180/0x270
-[   68.263145][    C0]  iommu_dma_alloc+0x178/0x238
-[   68.263557][    C0]  dma_alloc_attrs+0xf8/0x108
-[   68.263962][    C0]  xhci_mem_init+0x1e8/0x6d0
-[   68.264372][    C0]  xhci_init+0x88/0x1d0
-[   68.264736][    C0]  xhci_gen_setup+0x284/0x468
-[   68.265121][    C0]  xhci_pci_setup+0x60/0x1f8
-[   68.265506][    C0]  usb_add_hcd+0x278/0x650
-[   68.265860][    C0]  usb_hcd_pci_probe+0x218/0x458
-[   68.266256][    C0]  xhci_pci_probe+0x7c/0x270
-[   68.266660][    C0]  local_pci_probe+0x48/0xb8
-[   68.267074][    C0]  work_for_cpu_fn+0x24/0x40
-[   68.267548][    C0]  process_one_work+0x170/0x3c0
-[   68.267999][    C0]  worker_thread+0x234/0x3b8
-[   68.268383][    C0]  kthread+0xf0/0x108
-[   68.268704][    C0]  ret_from_fork+0x10/0x20
-
-Signed-off-by: goutongchen <goutongchen@uniontech.com>
----
- drivers/iommu/arm/arm-smmu/arm-smmu.c | 14 ++++++++++++++
- 1 file changed, 14 insertions(+)
-
-diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu.c b/drivers/iommu/arm/arm-smmu/arm-smmu.c
-index 8321962b3714..fdd7d7e9ce06 100644
---- a/drivers/iommu/arm/arm-smmu/arm-smmu.c
-+++ b/drivers/iommu/arm/arm-smmu/arm-smmu.c
-@@ -282,6 +282,13 @@ static void arm_smmu_tlb_inv_range_s1(unsigned long iova, size_t size,
- 	struct arm_smmu_cfg *cfg = &smmu_domain->cfg;
- 	int idx = cfg->cbndx;
- 
-+	if (size == 0 || granule == 0 || (size % granule) != 0) {
-+		dev_err(smmu->dev,
-+				 "The size or granule passed in is err. size=%zu, granule=%zu\n",
-+				 size, granule);
-+		return;
-+	}
-+
- 	if (smmu->features & ARM_SMMU_FEAT_COHERENT_WALK)
- 		wmb();
- 
-@@ -309,6 +316,13 @@ static void arm_smmu_tlb_inv_range_s2(unsigned long iova, size_t size,
- 	struct arm_smmu_device *smmu = smmu_domain->smmu;
- 	int idx = smmu_domain->cfg.cbndx;
- 
-+	if (size == 0 || granule == 0 || (size % granule) != 0) {
-+		dev_err(smmu->dev,
-+				 "The size or granule passed in is err. size=%zu, granule=%zu\n",
-+				 size, granule);
-+		return;
-+	}
-+
- 	if (smmu->features & ARM_SMMU_FEAT_COHERENT_WALK)
- 		wmb();
- 
--- 
-2.20.1
-
+> These advanced callers already manage their data in some sort of
+> database and can perform IOVA allocation in advance, leaving range
+> linkage operation to be in fast path.
+>
+> Provide an interface to allocate/deallocate IOVA and next patch
+> link/unlink DMA ranges to that specific IOVA.
+>
+> The API is exported from dma-iommu as it is the only implementation
+> supported, the namespace is clearly different from iommu_* functions
+> which are not allowed to be used. This code layout allows us to save
+> function call per API call used in datapath as well as a lot of boilerpla=
+te
+> code.
+>
+> Signed-off-by: Leon Romanovsky <leonro@nvidia.com>
+> ---
+>  drivers/iommu/dma-iommu.c   | 79 +++++++++++++++++++++++++++++++++++++
+>  include/linux/dma-mapping.h | 15 +++++++
+>  2 files changed, 94 insertions(+)
+>
+> diff --git a/drivers/iommu/dma-iommu.c b/drivers/iommu/dma-iommu.c
+> index c422e36c0d66..0644152c5aad 100644
+> --- a/drivers/iommu/dma-iommu.c
+> +++ b/drivers/iommu/dma-iommu.c
+> @@ -1745,6 +1745,85 @@ size_t iommu_dma_max_mapping_size(struct device *d=
+ev)
+>         return SIZE_MAX;
+>  }
+>
+> +static bool iommu_dma_iova_alloc(struct device *dev,
+> +               struct dma_iova_state *state, phys_addr_t phys, size_t si=
+ze)
+> +{
+> +       struct iommu_domain *domain =3D iommu_get_dma_domain(dev);
+> +       struct iommu_dma_cookie *cookie =3D domain->iova_cookie;
+> +       struct iova_domain *iovad =3D &cookie->iovad;
+> +       size_t iova_off =3D iova_offset(iovad, phys);
+> +       dma_addr_t addr;
+> +
+> +       if (WARN_ON_ONCE(!size))
+> +               return false;
+> +       if (WARN_ON_ONCE(size & DMA_IOVA_USE_SWIOTLB))
+> +               return false;
+> +
+> +       addr =3D iommu_dma_alloc_iova(domain,
+> +                       iova_align(iovad, size + iova_off),
+> +                       dma_get_mask(dev), dev);
+> +       if (!addr)
+> +               return false;
+> +
+> +       state->addr =3D addr + iova_off;
+> +       state->__size =3D size;
+> +       return true;
+> +}
+> +
+> +/**
+> + * dma_iova_try_alloc - Try to allocate an IOVA space
+> + * @dev: Device to allocate the IOVA space for
+> + * @state: IOVA state
+> + * @phys: physical address
+> + * @size: IOVA size
+> + *
+> + * Check if @dev supports the IOVA-based DMA API, and if yes allocate IO=
+VA space
+> + * for the given base address and size.
+> + *
+> + * Note: @phys is only used to calculate the IOVA alignment. Callers tha=
+t always
+> + * do PAGE_SIZE aligned transfers can safely pass 0 here.
+> + *
+> + * Returns %true if the IOVA-based DMA API can be used and IOVA space ha=
+s been
+> + * allocated, or %false if the regular DMA API should be used.
+> + */
+> +bool dma_iova_try_alloc(struct device *dev, struct dma_iova_state *state=
+,
+> +               phys_addr_t phys, size_t size)
+> +{
+> +       memset(state, 0, sizeof(*state));
+> +       if (!use_dma_iommu(dev))
+> +               return false;
+> +       if (static_branch_unlikely(&iommu_deferred_attach_enabled) &&
+> +           iommu_deferred_attach(dev, iommu_get_domain_for_dev(dev)))
+> +               return false;
+> +       return iommu_dma_iova_alloc(dev, state, phys, size);
+> +}
+> +EXPORT_SYMBOL_GPL(dma_iova_try_alloc);
+> +
+> +/**
+> + * dma_iova_free - Free an IOVA space
+> + * @dev: Device to free the IOVA space for
+> + * @state: IOVA state
+> + *
+> + * Undoes a successful dma_try_iova_alloc().
+> + *
+> + * Note that all dma_iova_link() calls need to be undone first.  For cal=
+lers
+> + * that never call dma_iova_unlink(), dma_iova_destroy() can be used ins=
+tead
+> + * which unlinks all ranges and frees the IOVA space in a single efficie=
+nt
+> + * operation.
+> + */
+> +void dma_iova_free(struct device *dev, struct dma_iova_state *state)
+> +{
+> +       struct iommu_domain *domain =3D iommu_get_dma_domain(dev);
+> +       struct iommu_dma_cookie *cookie =3D domain->iova_cookie;
+> +       struct iova_domain *iovad =3D &cookie->iovad;
+> +       size_t iova_start_pad =3D iova_offset(iovad, state->addr);
+> +       size_t size =3D dma_iova_size(state);
+> +
+> +       iommu_dma_free_iova(cookie, state->addr - iova_start_pad,
+> +                       iova_align(iovad, size + iova_start_pad), NULL);
+> +}
+> +EXPORT_SYMBOL_GPL(dma_iova_free);
+> +
+>  void iommu_setup_dma_ops(struct device *dev)
+>  {
+>         struct iommu_domain *domain =3D iommu_get_domain_for_dev(dev);
+> diff --git a/include/linux/dma-mapping.h b/include/linux/dma-mapping.h
+> index 6075e0708deb..817f11bce7bc 100644
+> --- a/include/linux/dma-mapping.h
+> +++ b/include/linux/dma-mapping.h
+> @@ -11,6 +11,7 @@
+>  #include <linux/scatterlist.h>
+>  #include <linux/bug.h>
+>  #include <linux/mem_encrypt.h>
+> +#include <linux/iommu.h>
+>
+>  /**
+>   * List of possible attributes associated with a DMA mapping. The semant=
+ics
+> @@ -77,6 +78,7 @@
+>  #define DMA_BIT_MASK(n)        (((n) =3D=3D 64) ? ~0ULL : ((1ULL<<(n))-1=
+))
+>
+>  struct dma_iova_state {
+> +       dma_addr_t addr;
+>         size_t __size;
+>  };
+>
+> @@ -307,11 +309,24 @@ static inline bool dma_use_iova(struct dma_iova_sta=
+te *state)
+>  {
+>         return state->__size !=3D 0;
+>  }
+> +
+> +bool dma_iova_try_alloc(struct device *dev, struct dma_iova_state *state=
+,
+> +               phys_addr_t phys, size_t size);
+> +void dma_iova_free(struct device *dev, struct dma_iova_state *state);
+>  #else /* CONFIG_IOMMU_DMA */
+>  static inline bool dma_use_iova(struct dma_iova_state *state)
+>  {
+>         return false;
+>  }
+> +static inline bool dma_iova_try_alloc(struct device *dev,
+> +               struct dma_iova_state *state, phys_addr_t phys, size_t si=
+ze)
+> +{
+> +       return false;
+> +}
+> +static inline void dma_iova_free(struct device *dev,
+> +               struct dma_iova_state *state)
+> +{
+> +}
+>  #endif /* CONFIG_IOMMU_DMA */
+>
+>  #if defined(CONFIG_HAS_DMA) && defined(CONFIG_DMA_NEED_SYNC)
+> --
+> 2.46.2
+>
+>
