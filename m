@@ -1,188 +1,128 @@
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id DFDAA1DE880
-	for <iommu@lists.linux.dev>; Mon, 28 Oct 2024 15:58:54 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
+Received: from linux.microsoft.com (linux.microsoft.com [13.77.154.182])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id EA22A1D7E5F
+	for <iommu@lists.linux.dev>; Mon, 28 Oct 2024 16:03:13 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=13.77.154.182
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1730131138; cv=none; b=n3g9oXNkK0V+6OkXAzC5BB4CJprzweMCJhjpJVl54x9groyEPO9hiwz+4EJ12F+TFh1FDbHTeidqSacQaEGqU6gwT08cGaHxcgwncJWh1FgEkO3x9k+W2meSIOI3j/zt2OTeEhzWqhsn9FHjr6zv34loidBYqG7ddVuSNmf7qJ4=
+	t=1730131395; cv=none; b=XvWeHvl42xk1L7vwI33WfIOKWDRdr8TlJV++edCexT5faw5LHYsfBByIj15tGWP18JnXzOhVXAnUFYj33TNeymO/+NNryknfoIxNMPzfoLGMMgmpc/H8qztzvTQAT3X8EBkt3VYH5x8pwANqnfSPww4pLON1ChrTpR/uNf6JrH4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1730131138; c=relaxed/simple;
-	bh=/MshvjACWnxUNhjugoOtI7n8b/8Px1wYEMoFAXQ+Cok=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=qRdV6bC/4KOToUokZ4SdT9zFnG7TXazsBReeKdgOCAucbpzcpTiTFstaO8SxUZkPkI+OcVgAwGyNcJ3/T2NihQqIK2lrlzEjD8HjCSV+fhVRlIiIzaOA0/XqhOgi3s0nZ+obMgfNV/EaQw4ssOeptNWik7J4/oXedP+VRxODW18=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; arc=none smtp.client-ip=217.140.110.172
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id E5E6A497;
-	Mon, 28 Oct 2024 08:59:23 -0700 (PDT)
-Received: from [10.1.196.40] (e121345-lin.cambridge.arm.com [10.1.196.40])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 3A60F3F73B;
-	Mon, 28 Oct 2024 08:58:53 -0700 (PDT)
-Message-ID: <73426db8-ca40-4bd1-9e8e-aeb111e5104c@arm.com>
-Date: Mon, 28 Oct 2024 15:58:14 +0000
+	s=arc-20240116; t=1730131395; c=relaxed/simple;
+	bh=7MvWDbRgReMb4oWxzviab7n1ngXsZ//x54ni3s1qKWM=;
+	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=VAQ+Ka//BE5YRqr4TMO6+sohMqEvV/QEmNc3bNzb1u+xs7Ja4awCWAA9iw5mwqPiUGgLayR2e6/E7ZyuNthno2WriR2kPHgFed+tEwS0WOxbJNDCo0BvyuTJLvBtNMwBj5qd+HEmrjtrqqUlS1kA8qNoEoRThuK119O/Fdo0kOs=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com; spf=pass smtp.mailfrom=linux.microsoft.com; dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b=iVkfrSkf; arc=none smtp.client-ip=13.77.154.182
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.microsoft.com
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b="iVkfrSkf"
+Received: from DESKTOP-0403QTC. (unknown [50.53.30.84])
+	by linux.microsoft.com (Postfix) with ESMTPSA id A747A211F5E7;
+	Mon, 28 Oct 2024 09:03:12 -0700 (PDT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com A747A211F5E7
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
+	s=default; t=1730131393;
+	bh=DWUL2mPdKe3I13p5z61gbW4T4xaOhjwZlnNHegTzwUg=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:References:Reply-To:From;
+	b=iVkfrSkf95QZrzcYpwdyqMeWXi66DxVqoIHsp8moaRCpYdcVzQ1Ggi0sOBLYuDfbE
+	 G37oMo2530z9U1RbMBmF2iZLTpFTz3B+1VgzYt9jiRmxYrd+sNkWmRs9592y6NSd+5
+	 wrMr56ks+JwKFzYIGe9bYlSP2yfS5ysbvhkBpZ+A=
+Date: Mon, 28 Oct 2024 09:03:11 -0700
+From: Jacob Pan <jacob.pan@linux.microsoft.com>
+To: James Gowans <jgowans@amazon.com>
+Cc: jacob.pan@linux.microsoft.com, Saurabh Sengar
+ <ssengar@linux.microsoft.com>, <linux-kernel@vger.kernel.org>, Jason
+ Gunthorpe <jgg@ziepe.ca>, Kevin Tian <kevin.tian@intel.com>, "Joerg Roedel"
+ <joro@8bytes.org>, Krzysztof =?UTF-8?B?V2lsY3p5xYRza2k=?= <kw@linux.com>,
+ Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>, Mike
+ Rapoport <rppt@kernel.org>, "Madhavan T. Venkataraman"
+ <madvenka@linux.microsoft.com>, <iommu@lists.linux.dev>, "Sean
+ Christopherson" <seanjc@google.com>, Paolo Bonzini <pbonzini@redhat.com>,
+ <kvm@vger.kernel.org>, David Woodhouse <dwmw2@infradead.org>, Lu Baolu
+ <baolu.lu@linux.intel.com>, Alexander Graf <graf@amazon.de>,
+ <anthony.yznaga@oracle.com>, <steven.sistare@oracle.com>,
+ <nh-open-source@amazon.com>, "Saenz Julienne, Nicolas" <nsaenz@amazon.es>
+Subject: Re: [RFC PATCH 05/13] iommufd: Serialise persisted iommufds and
+ ioas
+Message-ID: <20241028090311.54bc537f@DESKTOP-0403QTC.>
+In-Reply-To: <20241016152047.2a604f08@DESKTOP-0403QTC.>
+References: <20240916113102.710522-1-jgowans@amazon.com>
+	<20240916113102.710522-6-jgowans@amazon.com>
+	<20241016152047.2a604f08@DESKTOP-0403QTC.>
+Reply-To: jacob.pan@linux.microsoft.com, "yi.l.liu@intel.com"
+ <yi.l.liu@intel.com>
+X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.33; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH] iommu/omap: Don't register ops by fwnode
-To: "H. Nikolaus Schaller" <hns@goldelico.com>
-Cc: joro@8bytes.org, will@kernel.org, iommu@lists.linux.dev,
- Jason Gunthorpe <jgg@nvidia.com>, Linux-OMAP <linux-omap@vger.kernel.org>,
- Beleswar Padhi <b-padhi@ti.com>, Andreas Kemnade <andreas@kemnade.info>
-References: <c44545c6d07c65d89daa297298c27bb0f15c8b84.1728393458.git.robin.murphy@arm.com>
- <2863ACA9-2836-49F6-9D85-749CE480804D@goldelico.com>
- <10d3a86c-d7a8-4ac5-8ad3-010a91c0a25f@arm.com>
- <FCFEB115-846A-4577-A489-D1537AC77DEA@goldelico.com>
- <5c3ea490-f2f5-49e5-99fd-1dc239aee28d@arm.com>
- <F4A297DC-8EBD-4434-97EA-BFEEBB062042@goldelico.com>
- <1a0ff734-73b2-4d73-839b-71e2017ae3c4@arm.com>
- <C6F2F131-2295-4655-A4E2-600200FD7318@goldelico.com>
-From: Robin Murphy <robin.murphy@arm.com>
-Content-Language: en-GB
-In-Reply-To: <C6F2F131-2295-4655-A4E2-600200FD7318@goldelico.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 
-On 27/10/2024 5:15 pm, H. Nikolaus Schaller wrote:
-> Hi Robin,
-> 
->> Am 25.10.2024 um 16:27 schrieb Robin Murphy <robin.murphy@arm.com>:
->>
->> On 08/10/2024 8:52 pm, H. Nikolaus Schaller wrote:
->>>> Am 08.10.2024 um 20:20 schrieb Robin Murphy <robin.murphy@arm.com>:
->>>>> The -ETIMEDOUT seems to come from of_iommu_configure().
->>>>
->>
->> Hmm, I dug around and found a Pandaboard in the cupboard, and ostensibly this seems to work as expected there:
->>
->> 6:12-rc3:
->> chu-chu-rocket:~ # dmesg | grep -i iommu
->> [    0.628601] iommu: Default domain type: Translated
->> [    0.633575] iommu: DMA domain TLB invalidation policy: strict mode
->> [    1.636047] omap-iommu 4a066000.mmu: 4a066000.mmu registered
->> [    3.265869] omap-iommu 55082000.mmu: 55082000.mmu registered
->>
->> 6.12-rc3 + of_xlate:
->> chu-chu-rocket:~ # dmesg | grep -i iommu
->> [    0.629577] iommu: Default domain type: Translated
->> [    0.634582] iommu: DMA domain TLB invalidation policy: strict mode
->> [    1.622802] omap-iommu 4a066000.mmu: 4a066000.mmu registered
->> [    3.316009] omap-iommu 55082000.mmu: 55082000.mmu registered
->> [    3.329040] omap-rproc ocp:dsp: Adding to iommu group 0
->> [    3.335083] omap-iommu 4a066000.mmu: 4a066000.mmu: version 2.0
->> [    3.356506] omap-rproc 55020000.ipu: Adding to iommu group 1
->> [    3.362396] omap-iommu 55082000.mmu: 55082000.mmu: version 2.1
->>
->> Guess I'm going to have to dig further for an OMAP3 to figure out what additional shenanigans that ISP driver is up to... :/
-> 
-> I was able to confirm on 6.12-rc4 ecept a small difference in the last lines (ocp:dsp and no version 2.x):
-> 
-> root@letux:~# dmesg|fgrep iommu
-> [    0.402191] iommu: Default domain type: Translated
-> [    0.402221] iommu: DMA domain TLB invalidation policy: strict mode
-> [    0.741607] omap-iommu 4a066000.mmu: 4a066000.mmu registered
-> [    2.461120] omap-iommu 55082000.mmu: 55082000.mmu registered
-> [    2.474914] platform ocp:dsp: Adding to iommu group 0
-> [    2.481719] platform 55020000.ipu: Adding to iommu group 1
-> root@letux:~#
-> 
-> On OMAP3 it is similar. The patch is doing something.
-> 
-> I get this w/o patch:
-> 
-> root@letux:~# dmesg|fgrep iommu
-> [    0.515808] iommu: Default domain type: Translated
-> [    0.515808] iommu: DMA domain TLB invalidation policy: strict mode
-> [    0.528686] omap-iommu 480bd400.mmu: 480bd400.mmu registered
-> root@letux:~# dmesg|fgrep .isp
-> [   10.924438] omap3isp 480bc000.isp: supply vdd-csiphy1 not found, using dummy regulator
-> [   10.989044] omap3isp 480bc000.isp: supply vdd-csiphy2 not found, using dummy regulator
-> [   11.082916] omap3isp 480bc000.isp: Revision 15.0 found
-> [   11.107879] omap3isp 480bc000.isp: failed to create ARM IOMMU mapping
-> [   11.160736] omap3isp 480bc000.isp: unable to attach to IOMMU
-> [   11.181640] omap3isp 480bc000.isp: isp_xclk_set_rate: cam_xclka set to 24685714 Hz (div 7)
-> root@letux:~#
-> 
-> with patch:
-> 
-> root@letux:~# dmesg|fgrep iommu
-> [    0.522552] iommu: Default domain type: Translated
-> [    0.522583] iommu: DMA domain TLB invalidation policy: strict mode
-> [    0.525543] platform 480bc000.isp: Adding to iommu group 0
-> [    0.525726] omap-iommu 480bd400.mmu: 480bd400.mmu registered
-> [   34.422973] omap-iommu 480bd400.mmu: 480bd400.mmu: version 1.1
-> root@letux:~# dmesg|fgrep .isp
-> [    0.525543] platform 480bc000.isp: Adding to iommu group 0
-> [   34.413330] omap3isp 480bc000.isp: deferred probe timeout, ignoring dependency
-> [   34.429412] omap3isp 480bc000.isp: supply vdd-csiphy1 not found, using dummy regulator
-> [   34.446655] omap3isp 480bc000.isp: supply vdd-csiphy2 not found, using dummy regulator
-> [   34.456115] omap3isp 480bc000.isp: Revision 15.0 found
-> [   34.463165] omap3isp 480bc000.isp: failed to attach device to VA mapping
+Hi James,
 
-Oh fiddle... this is getting complex...
+Just a gentle reminder. Let me also explain the problem we are trying
+to solve for the live update of OpenHCL paravisor[1]. OpenHCL has user
+space drivers based on VFIO noiommu mode, we are in the process of
+converting to iommufd cdev.
 
-I was testing the of_xlate patch rather than the diff below, which 
-should avoid the deferred probe timeout but otherwise achieve much the 
-same effect. Trouble is, that turns out to only "fix" things back to 
-another breakage due to 4720287c7bf7 ("iommu: Remove struct iommu_ops 
-*iommu from arch_setup_dma_ops()"), wherein we lost the fragile 
-combination of setting up the IOMMU while still causing 
-arm_setup_iommu_dma_ops() to ignore it. Thus what now happens here is 
-the domain from the ARM DMA ops gets in the way of the driver attaching 
-its own. Looks like I missed that with the remoteproc driver since it 
-only starts trying to do IOMMU API stuff upon successfully loading 
-firmware, which I didn't have.
+Similarly, running DMA continuously across updates is required, but
+unlike your case, OpenHCL updates do not involve preserving the IO page
+tables in that it is managed by the hypervisor which is not part of the
+update.
 
-I think the most practical answer is going to be to give the ISP and 
-remoteproc drivers the same workaround for that as the various DRM 
-drivers use, lemme write those up too...
+It seems reasonable to share the device persistence code path
+with the plan laid out in your cover letter. IOAS code path will be
+different since noiommu option does not have IOAS.
+
+If we were to revive noiommu support for iommufd cdev[2], can we use
+the persistent iommufd context to allow device persistence? Perhaps
+through IOMMUFD_OBJ_DEVICE and IOMMUFD_OBJ_ACCESS(used in [2])?
+
+@David, @Jason, @Alex, @Yi, any comments or suggestions?
+
 
 Thanks,
-Robin.
 
-> [   34.470306] omap3isp 480bc000.isp: unable to attach to IOMMU
-> [   34.477661] omap3isp 480bc000.isp: probe with driver omap3isp failed with error -16
-> root@letux:~#
-> 
-> Maybe I am missing something from your latest patches. I currently have:
-> 
-> diff --git a/drivers/iommu/omap-iommu.c b/drivers/iommu/omap-iommu.c
-> index c9528065a59af..de14a3cd4b426 100644
-> --- a/drivers/iommu/omap-iommu.c
-> +++ b/drivers/iommu/omap-iommu.c
-> @@ -1230,7 +1230,8 @@ static int omap_iommu_probe(struct platform_device *pdev)
->                  if (err)
->                          return err;
-> -               err = iommu_device_register(&obj->iommu, &omap_iommu_ops, &pdev->dev);
-> +               err = iommu_device_register(&obj->iommu, &omap_iommu_ops, NULL);
->                  if (err)
->                          goto out_sysfs;
->                  obj->has_iommu_driver = true;
-> @@ -1691,7 +1692,8 @@ static struct iommu_device *omap_iommu_probe_device(struct device *dev)
->                  if (!oiommu) {
->                          of_node_put(np);
->                          kfree(arch_data);
-> -                       return ERR_PTR(-EINVAL);
-> +                       /* Not fatal, will re-probe once the right instance registers itself */
-> +                       return ERR_PTR(-ENODEV);
->                  }
->                    tmp->iommu_dev = oiommu;
-> 
-> Do you have a link to the patches you have tested?
-> 
-> What I have also compared are the DTS and DTSI files of omap3/36xx and omap4/omap4-l4.
-> Although there are architectural differences I didn't find anything significant.
-> More different is how the omap3-isp vs. omap4-iva is handled.
-> 
-> omap3-isp is a media driver calling arm_iommu_create_mapping() which fails.
-> omap4-iva is a remoteproc driver using a different strategy (omap_rproc_of_get_internal_memories ?)
-> where I do not know details where iommu comes into the game.
-> 
-> Hope this helps.
-> 
-> Best regards,
-> Nikolaus
-> 
+Jacob
+
+1. (openvmm/Guide/src/reference/architecture/openhcl.md at main =C2=B7
+microsoft/openvmm.=20
+2. [PATCH v11 00/23] Add vfio_device cdev for
+iommufd support - Yi Liu
+
+On Wed, 16 Oct 2024 15:20:47 -0700 Jacob Pan
+<jacob.pan@linux.microsoft.com> wrote:
+
+> Hi James,
+>=20
+> On Mon, 16 Sep 2024 13:30:54 +0200
+> James Gowans <jgowans@amazon.com> wrote:
+>=20
+> > +static int serialise_iommufd(void *fdt, struct iommufd_ctx *ictx)
+> > +{
+> > +	int err =3D 0;
+> > +	char name[24];
+> > +	struct iommufd_object *obj;
+> > +	unsigned long obj_idx;
+> > +
+> > +	snprintf(name, sizeof(name), "%lu", ictx->persistent_id);
+> > +	err |=3D fdt_begin_node(fdt, name);
+> > +	err |=3D fdt_begin_node(fdt, "ioases");
+> > +	xa_for_each(&ictx->objects, obj_idx, obj) {
+> > +		struct iommufd_ioas *ioas;
+> > +		struct iopt_area *area;
+> > +		int area_idx =3D 0;
+> > +
+> > +		if (obj->type !=3D IOMMUFD_OBJ_IOAS)
+> > +			continue; =20
+> I was wondering how device state persistency is managed here. Is it
+> correct to assume that all devices bound to an iommufd context should
+> be persistent? If so, should we be serializing IOMMUFD_OBJ_DEVICE as
+> well?
+>=20
+> I'm considering this from the perspective of user mode drivers,
+> including those that use noiommu mode (need to be added to iommufd
+> cdev). In this scenario, we only need to maintain the device states
+> persistently without IOAS.
+
