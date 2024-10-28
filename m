@@ -1,149 +1,137 @@
-Received: from mail-il1-f180.google.com (mail-il1-f180.google.com [209.85.166.180])
+Received: from mail-io1-f44.google.com (mail-io1-f44.google.com [209.85.166.44])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5FBFB1E22E6
-	for <iommu@lists.linux.dev>; Mon, 28 Oct 2024 21:16:35 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.166.180
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7651F1E0B7C
+	for <iommu@lists.linux.dev>; Mon, 28 Oct 2024 21:33:24 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.166.44
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1730150198; cv=none; b=ZfRgoI3hiEGRbXZwDz782uPk6awqzjIgUj5qmIH5+ix5Ph2ruLyHPuFj8CWvvAPOzk5diJVPgrex4KSA6O6xBAwHWen33ho4fKitZR57CoAM59OEl7y7AljUpAAob6S/W9HLJkoUdWOjlumPaWhXBqe9NQ7GaiFFU/jah6G1LDU=
+	t=1730151206; cv=none; b=N4+GXmVpI1wfpR8a5GpI3WiRaHP3ucSe6q64CCdKzjm2br16RrAQTGvIxiGf6/xLsDMNVSCcGa1GwVsxJh6ilivmtMrL3c3Yw2Nf9NZFuTXvJlAQWwBeeKf24hIZpQYe2ZjxHzy2JSPrqhPpj5qGnon+RC6HCSOsRMVmIKruLP0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1730150198; c=relaxed/simple;
-	bh=TB/aR6e8qqZZ/NbQWYKoSmUDPWYT7mmVzJZlaNyn1Cw=;
+	s=arc-20240116; t=1730151206; c=relaxed/simple;
+	bh=mWHqBO7ggUCFVDg3HGgCG/OeU8lRFkRHqMQJvFNQjcg=;
 	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=Y1U21oXVlIeeucaAVlSEkPH8OdOoPv9E+q9zM2NBiFCdhW4Apf09s4/ozH3Yn+dAnWPJcqA/rG26GhuTVYtIzy611nyXMb4Vwyd8kdKdsKwgtnyxY9XjzZA8P0fNt/9av7n78LcAMb5FzYedtOKmIbU6e2oIdFQ7sp/m1ux+xzc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=hABLr6qG; arc=none smtp.client-ip=209.85.166.180
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	 To:Cc:Content-Type; b=UC66v2xxDfEG+OCW1NZ0rj3sHF2e2+hke/G+LhDWgeZEDTbRdKV3XRYu/LDREoPswmyS6agd9RAY6jZw4/VbUYfNxdcMLmYd/sj2+D7gsiBfyoO6BD2da69OQQuVY+K9pAxXkYqe/e2BxrklZFvGHYhTv0eFcobH41DoJy10ESc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=chromium.org; spf=pass smtp.mailfrom=chromium.org; dkim=pass (1024-bit key) header.d=chromium.org header.i=@chromium.org header.b=EtSkKPWC; arc=none smtp.client-ip=209.85.166.44
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=chromium.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=chromium.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="hABLr6qG"
-Received: by mail-il1-f180.google.com with SMTP id e9e14a558f8ab-3a3a6abcbf1so19036965ab.2
-        for <iommu@lists.linux.dev>; Mon, 28 Oct 2024 14:16:35 -0700 (PDT)
+	dkim=pass (1024-bit key) header.d=chromium.org header.i=@chromium.org header.b="EtSkKPWC"
+Received: by mail-io1-f44.google.com with SMTP id ca18e2360f4ac-83ab694ebe5so183969239f.0
+        for <iommu@lists.linux.dev>; Mon, 28 Oct 2024 14:33:24 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1730150194; x=1730754994; darn=lists.linux.dev;
+        d=chromium.org; s=google; t=1730151203; x=1730756003; darn=lists.linux.dev;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=ktS5JZlVOvEaixmraj14grQIGS0mOTMVZfsZ8ze71Ik=;
-        b=hABLr6qG14GeEa5efskuf9mO/Rs1+f0mMjC7su12z+r7qbe+xv72mV9lyOHiZ1qBeT
-         AkQ3OCSodQG6eg7kQoVWz0Dm14WBhtgmnLFswl+TOSBeK6s6Bi4ZkiKPPOOs33DYcguf
-         /XUduOcpV3G0KrwKRbVgzgSJ11equxNeHnJPGOlvghpUZz79UGXSg9/DUz8fRrCPLRmJ
-         600j/1lc+T2Gy22dzFgp0BGGfXgUvLjhg6KDWRThwehgG+2s4HkSoU6HvXG1Hf3QWLHh
-         B8nyxKcGq6+vGOCuHdQ/9RppnVxJW39zBT3Bz+49CPQK1MTXbNvT7AF6pj2CzUzH1/X5
-         3vFA==
+        bh=HFZKIzMwJccmjbRWz8hr4dF1BDbSPdCqeQ+MDKxNuD8=;
+        b=EtSkKPWCZfA+sDz8o9F15r4pLz9g0/+8xQ7EAgS15POkx3LNMOkBZBZMOIYdIiJ/Sg
+         K9KhaHHWMF9MXUCXlnBsE1we1FMtdDSh6o9XeWWpGw4sYH9fydQ5Ld8Kmz+zhthzvqHC
+         q2bEjrboXUTkfVJPUO5qW+vACLCxjyuGzwntc=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1730150194; x=1730754994;
+        d=1e100.net; s=20230601; t=1730151203; x=1730756003;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=ktS5JZlVOvEaixmraj14grQIGS0mOTMVZfsZ8ze71Ik=;
-        b=slZDANoet5Jdk48PoZ0FK4/wAYN4ZXbTK11DAyVOzvRkoDT+Vl5j3xQ8/CgdrM6nTz
-         zcAwzbZQ9kRg/5xTg6OYH60Aqzqnw8Nb/sRf40rOvUdM0Ici82l8880LmOHSUmXgwSJU
-         LvsjabE3KXkGXCMOfOfUSbcv/mUNVZrkHR/9juLfb/6LBWaUxFddNWcLbq15ebQ7POO4
-         FWSP/kqxwNgjwX1r+Tp8Ex6zJ1pHDwgjZn5KuACxr6qtSdv30sBgdC+N7iJSmUQBY/TL
-         ioTcsxjmTFcfJ6cpaU94rPf3gMwKPfxC3EnrvCQ8I4ejPLM/Ymu1t9l3LLvdzhRCK9ty
-         HRJg==
-X-Forwarded-Encrypted: i=1; AJvYcCUixwyBQjcM8hBXN2T2Rl5ACz219fF7X+/VP+kVD9h+Vq658t6EgRN0+Mrd3FVfMd9FBEz44Q==@lists.linux.dev
-X-Gm-Message-State: AOJu0Yx+USYLplrsDHwbmjHcKLg82QYePVdEhGPCii9XCCihz+cUb87D
-	Nd+r9ho26aeSUCLJ6mpGSRDfSg5nnu9t0+M3DANWb0Q10P+NP9uaWPHnihveG6+9Oer5wNETKpj
-	SgA+u7O3X9tv43ya59UgGlDRBuKk=
-X-Google-Smtp-Source: AGHT+IG9XrLh5NKIexOxyfcazqPge3CPHDgNBsyKjId3gtC/MJJHMtgd1LcfGFYvXzXYtIB2lAVzQZdmZdFDCxa0qBU=
-X-Received: by 2002:a05:6e02:20c8:b0:3a0:8c68:7705 with SMTP id
- e9e14a558f8ab-3a4ed3012b2mr68380955ab.21.1730150194399; Mon, 28 Oct 2024
- 14:16:34 -0700 (PDT)
+        bh=HFZKIzMwJccmjbRWz8hr4dF1BDbSPdCqeQ+MDKxNuD8=;
+        b=fWv8ybiWnZuCNeo5x7lOqOCBrIllSMGsuApd7TGu0/hx8a4+zDWwH3ZwrIBruI7o42
+         rd/gHHrDOYICKMq75daOvM43jCjde0gp4DKUd30opPz+UPrx0OuMvDQsfcl2+QzhWg96
+         3FrwllRYu6o7oYgpTthSsT58YXPSFxdGc0SUdEQRCHiKVAXw/6aXF81NThfrsi7fUBES
+         mQvhRxDh04vYDoOZI9QmOE/SUFukNESPOU9o8eScQ34Wwr+2punRVMkjZP5b0GrWAvcL
+         71XCD938gmy+0AoEcBYd7DUxuYAxF+NffFjnl4O/sn1r8t8JleXf8jZW8MUOgmubViv8
+         1VUg==
+X-Forwarded-Encrypted: i=1; AJvYcCV1LECF8U4B3Wb4Ur8xd7up9le//GhrHbpto8cFabKKPPbaH23GR92o50mTecntANlS8/0e/A==@lists.linux.dev
+X-Gm-Message-State: AOJu0Yw4ab3ui4fINSMj+FuPqhjPLtJvIpIrd8MHoG0uFvOzSfbeVK2U
+	aFv58yCGPKussF5loTdYWlb0Z/XVmXov5uSuzsnisInCqjU7E13sgU5E9rQHuWp3w0V1KMXOTMK
+	MPY2ZyOA00DTHCN4+jfbtvTAfuU8PznFbbVsE
+X-Google-Smtp-Source: AGHT+IFRf7Qdfzoq2U9A+NIDwOGbIKY7nZWXffb09QD8AJkz3xy2j34ROShaH6Jj6HGBK3DfHA78bcGG4mf4sL65r5o=
+X-Received: by 2002:a05:6602:1686:b0:82a:2a67:9429 with SMTP id
+ ca18e2360f4ac-83b1c3e7abemr939673139f.5.1730151203568; Mon, 28 Oct 2024
+ 14:33:23 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <20241008125410.3422512-1-quic_bibekkum@quicinc.com> <20241008125410.3422512-6-quic_bibekkum@quicinc.com>
-In-Reply-To: <20241008125410.3422512-6-quic_bibekkum@quicinc.com>
-From: Rob Clark <robdclark@gmail.com>
-Date: Mon, 28 Oct 2024 14:16:22 -0700
-Message-ID: <CAF6AEGtOn3+99KMVRvpH=8Qs-g52ajVQyeBkxThSES_dEdVH+Q@mail.gmail.com>
-Subject: Re: [PATCH v16 5/5] iommu/arm-smmu: add ACTLR data and support for qcom_smmu_500
-To: Bibek Kumar Patro <quic_bibekkum@quicinc.com>
-Cc: will@kernel.org, robin.murphy@arm.com, joro@8bytes.org, jgg@ziepe.ca, 
-	jsnitsel@redhat.com, robh@kernel.org, krzysztof.kozlowski@linaro.org, 
-	quic_c_gdjako@quicinc.com, dmitry.baryshkov@linaro.org, iommu@lists.linux.dev, 
-	linux-arm-msm@vger.kernel.org, linux-arm-kernel@lists.infradead.org, 
-	linux-kernel@vger.kernel.org
+References: <20240827181717.187245-1-robdclark@gmail.com> <Zx97PU7cUEVCnpPl@google.com>
+In-Reply-To: <Zx97PU7cUEVCnpPl@google.com>
+From: Rob Clark <robdclark@chromium.org>
+Date: Mon, 28 Oct 2024 14:33:12 -0700
+Message-ID: <CAJs_Fx6EB=0GMqe4cZVdxptFSV3b63HHybfTOgiYVBudgAafsA@mail.gmail.com>
+Subject: Re: [PATCH v9 0/4] io-pgtable-arm + drm/msm: Extend iova fault debugging
+To: Mostafa Saleh <smostafa@google.com>
+Cc: Rob Clark <robdclark@gmail.com>, iommu@lists.linux.dev, 
+	Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>, 
+	Boris Brezillon <boris.brezillon@collabora.com>, 
+	"open list:DRM DRIVER for Qualcomm Adreno GPUs" <dri-devel@lists.freedesktop.org>, 
+	"open list:DRM DRIVER for Qualcomm Adreno GPUs" <freedreno@lists.freedesktop.org>, Jason Gunthorpe <jgg@ziepe.ca>, 
+	Joao Martins <joao.m.martins@oracle.com>, Kevin Tian <kevin.tian@intel.com>, 
+	Konrad Dybcio <konrad.dybcio@linaro.org>, 
+	"moderated list:ARM SMMU DRIVERS" <linux-arm-kernel@lists.infradead.org>, 
+	"open list:DRM DRIVER for Qualcomm Adreno GPUs" <linux-arm-msm@vger.kernel.org>, open list <linux-kernel@vger.kernel.org>, 
+	"open list:SUSPEND TO RAM" <linux-pm@vger.kernel.org>, Marijn Suijten <marijn.suijten@somainline.org>, 
+	"Rafael J. Wysocki" <rafael@kernel.org>, Sean Paul <sean@poorly.run>, Steven Price <steven.price@arm.com>
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-On Tue, Oct 8, 2024 at 5:55=E2=80=AFAM Bibek Kumar Patro
-<quic_bibekkum@quicinc.com> wrote:
+On Mon, Oct 28, 2024 at 4:53=E2=80=AFAM Mostafa Saleh <smostafa@google.com>=
+ wrote:
 >
-> Add ACTLR data table for qcom_smmu_500 including
-> corresponding data entry and set prefetch value by
-> way of a list of compatible strings.
+> Hi Rob,
 >
-> Reviewed-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
-> Signed-off-by: Bibek Kumar Patro <quic_bibekkum@quicinc.com>
-> ---
->  drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c | 24 ++++++++++++++++++++++
->  1 file changed, 24 insertions(+)
+> On Tue, Aug 27, 2024 at 11:17:08AM -0700, Rob Clark wrote:
+> > From: Rob Clark <robdclark@chromium.org>
+> >
+> > This series extends io-pgtable-arm with a method to retrieve the page
+> > table entries traversed in the process of address translation, and then
+> > beefs up drm/msm gpu devcore dump to include this (and additional info)
+> > in the devcore dump.
+> >
+> > This is a respin of https://patchwork.freedesktop.org/series/94968/
+> > (minus a patch that was already merged)
+> >
+> > v2: Fix an armv7/32b build error in the last patch
+> > v3: Incorperate Will Deacon's suggestion to make the interface
+> >     callback based.
+> > v4: Actually wire up the callback
+> > v5: Drop the callback approach
+> > v6: Make walk-data struct pgtable specific and rename
+> >     io_pgtable_walk_data to arm_lpae_io_pgtable_walk_data
+> > v7: Re-use the pgtable walker added for arm_lpae_read_and_clear_dirty()
+> > v8: Pass pte pointer to callback so it can modify the actual pte
+> > v9: Fix selftests_running case
+> >
+> > Rob Clark (4):
+> >   iommu/io-pgtable-arm: Make pgtable walker more generic
+> >   iommu/io-pgtable-arm: Re-use the pgtable walk for iova_to_phys
+> >   iommu/io-pgtable-arm: Add way to debug pgtable walk
+> >   drm/msm: Extend gpu devcore dumps with pgtbl info
 >
-> diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c b/drivers/iommu/a=
-rm/arm-smmu/arm-smmu-qcom.c
-> index 2d2c1e75632c..dd4fb883ebcd 100644
-> --- a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
-> +++ b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
-> @@ -25,8 +25,31 @@
->
->  #define CPRE                   (1 << 1)
->  #define CMTLB                  (1 << 0)
-> +#define PREFETCH_SHIFT         8
-> +#define PREFETCH_DEFAULT       0
-> +#define PREFETCH_SHALLOW       (1 << PREFETCH_SHIFT)
-> +#define PREFETCH_MODERATE      (2 << PREFETCH_SHIFT)
-> +#define PREFETCH_DEEP          (3 << PREFETCH_SHIFT)
->  #define GFX_ACTLR_PRR          (1 << 5)
->
-> +static const struct of_device_id qcom_smmu_actlr_client_of_match[] =3D {
-> +       { .compatible =3D "qcom,adreno",
-> +                       .data =3D (const void *) (PREFETCH_DEEP | CPRE | =
-CMTLB) },
-> +       { .compatible =3D "qcom,adreno-gmu",
-> +                       .data =3D (const void *) (PREFETCH_DEEP | CPRE | =
-CMTLB) },
-> +       { .compatible =3D "qcom,adreno-smmu",
-> +                       .data =3D (const void *) (PREFETCH_DEEP | CPRE | =
-CMTLB) },
-> +       { .compatible =3D "qcom,fastrpc",
-> +                       .data =3D (const void *) (PREFETCH_DEEP | CPRE | =
-CMTLB) },
-> +       { .compatible =3D "qcom,sc7280-mdss",
-> +                       .data =3D (const void *) (PREFETCH_SHALLOW | CPRE=
- | CMTLB) },
-> +       { .compatible =3D "qcom,sc7280-venus",
-> +                       .data =3D (const void *) (PREFETCH_SHALLOW | CPRE=
- | CMTLB) },
-> +       { .compatible =3D "qcom,sm8550-mdss",
-> +                       .data =3D (const void *) (PREFETCH_DEFAULT | CMTL=
-B) },
-> +       { }
-> +};
+> Do you have plans to post another version of this series, as I am
+> working on some patches, that would use some of the common page walk
+> logic, so it would be more convenient to have them upstream.
+> Otherwise, I can have your series as a dependency.
 
-I guess by now there are some more entries to add
-("qcom,x1e80100-mdss", for example), but I guess those could be
-followup patches
+Sorry, this had dropped off my radar, I'll post an updated iteration
+in a couple minutes.
 
-Reviewed-by: Rob Clark <robdclark@gmail.com>
+BR,
+-R
 
-> +
->  static struct qcom_smmu *to_qcom_smmu(struct arm_smmu_device *smmu)
->  {
->         return container_of(smmu, struct qcom_smmu, smmu);
-> @@ -640,6 +663,7 @@ static const struct qcom_smmu_match_data qcom_smmu_50=
-0_impl0_data =3D {
->         .impl =3D &qcom_smmu_500_impl,
->         .adreno_impl =3D &qcom_adreno_smmu_500_impl,
->         .cfg =3D &qcom_smmu_impl0_cfg,
-> +       .client_match =3D qcom_smmu_actlr_client_of_match,
->  };
+> Thanks,
+> Mostafa
 >
->  /*
-> --
-> 2.34.1
 >
+> >
+> >  drivers/gpu/drm/msm/adreno/adreno_gpu.c |  10 ++
+> >  drivers/gpu/drm/msm/msm_gpu.c           |   9 ++
+> >  drivers/gpu/drm/msm/msm_gpu.h           |   8 ++
+> >  drivers/gpu/drm/msm/msm_iommu.c         |  22 ++++
+> >  drivers/gpu/drm/msm/msm_mmu.h           |   3 +-
+> >  drivers/iommu/io-pgtable-arm.c          | 149 +++++++++++++++---------
+> >  include/linux/io-pgtable.h              |  15 +++
+> >  7 files changed, 160 insertions(+), 56 deletions(-)
+> >
+> > --
+> > 2.46.0
+> >
