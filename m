@@ -1,128 +1,128 @@
-Received: from linux.microsoft.com (linux.microsoft.com [13.77.154.182])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id EA22A1D7E5F
-	for <iommu@lists.linux.dev>; Mon, 28 Oct 2024 16:03:13 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=13.77.154.182
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1730131395; cv=none; b=XvWeHvl42xk1L7vwI33WfIOKWDRdr8TlJV++edCexT5faw5LHYsfBByIj15tGWP18JnXzOhVXAnUFYj33TNeymO/+NNryknfoIxNMPzfoLGMMgmpc/H8qztzvTQAT3X8EBkt3VYH5x8pwANqnfSPww4pLON1ChrTpR/uNf6JrH4=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1730131395; c=relaxed/simple;
-	bh=7MvWDbRgReMb4oWxzviab7n1ngXsZ//x54ni3s1qKWM=;
-	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=VAQ+Ka//BE5YRqr4TMO6+sohMqEvV/QEmNc3bNzb1u+xs7Ja4awCWAA9iw5mwqPiUGgLayR2e6/E7ZyuNthno2WriR2kPHgFed+tEwS0WOxbJNDCo0BvyuTJLvBtNMwBj5qd+HEmrjtrqqUlS1kA8qNoEoRThuK119O/Fdo0kOs=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com; spf=pass smtp.mailfrom=linux.microsoft.com; dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b=iVkfrSkf; arc=none smtp.client-ip=13.77.154.182
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.microsoft.com
+Received: from mo4-p01-ob.smtp.rzone.de (mo4-p01-ob.smtp.rzone.de [85.215.255.54])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8763A18A939
+	for <iommu@lists.linux.dev>; Mon, 28 Oct 2024 16:03:49 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=85.215.255.54
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1730131433; cv=pass; b=ZtDAVmBbUVuKbmzbJwYXJ0XAW6CrANqemENUNHcLUfv0nV9QLisHYHZNDCan80yk0wXNoS7E6mq86Gnw31xIy3b79SRNpTdjPFnnAYboAoiMdyavAi4+0kYg5SyqoeVW1xTt5jZKsxPPLSbW7x9piXoK8HF5OfX9viLc97ms4+c=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1730131433; c=relaxed/simple;
+	bh=g5Qk0MWU1OrftTWRQgvHjAOi0KRWTYsGa4ngK/CCh6A=;
+	h=Content-Type:Mime-Version:Subject:From:In-Reply-To:Date:Cc:
+	 Message-Id:References:To; b=hZJ2A1HhX5xLwcIcSx7SocEthqCMYFqIZk0VZzqWu+7EpkFZMX1p3kwVdAIFXH2y4XJJz4PAWdNJ6pqYGX1xmOJqVqPQ4Ef7aL9dSSiYQI1vrnVQZpwpZJl9lcjBRkS5fMgRW3pFMPz47tUzXN/N3FWztmKoymPWyw2xl1axyVc=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=goldelico.com; spf=pass smtp.mailfrom=goldelico.com; dkim=pass (2048-bit key) header.d=goldelico.com header.i=@goldelico.com header.b=B+rmS5v0; dkim=permerror (0-bit key) header.d=goldelico.com header.i=@goldelico.com header.b=8/ObOuRE; arc=pass smtp.client-ip=85.215.255.54
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=goldelico.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=goldelico.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b="iVkfrSkf"
-Received: from DESKTOP-0403QTC. (unknown [50.53.30.84])
-	by linux.microsoft.com (Postfix) with ESMTPSA id A747A211F5E7;
-	Mon, 28 Oct 2024 09:03:12 -0700 (PDT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com A747A211F5E7
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
-	s=default; t=1730131393;
-	bh=DWUL2mPdKe3I13p5z61gbW4T4xaOhjwZlnNHegTzwUg=;
-	h=Date:From:To:Cc:Subject:In-Reply-To:References:Reply-To:From;
-	b=iVkfrSkf95QZrzcYpwdyqMeWXi66DxVqoIHsp8moaRCpYdcVzQ1Ggi0sOBLYuDfbE
-	 G37oMo2530z9U1RbMBmF2iZLTpFTz3B+1VgzYt9jiRmxYrd+sNkWmRs9592y6NSd+5
-	 wrMr56ks+JwKFzYIGe9bYlSP2yfS5ysbvhkBpZ+A=
-Date: Mon, 28 Oct 2024 09:03:11 -0700
-From: Jacob Pan <jacob.pan@linux.microsoft.com>
-To: James Gowans <jgowans@amazon.com>
-Cc: jacob.pan@linux.microsoft.com, Saurabh Sengar
- <ssengar@linux.microsoft.com>, <linux-kernel@vger.kernel.org>, Jason
- Gunthorpe <jgg@ziepe.ca>, Kevin Tian <kevin.tian@intel.com>, "Joerg Roedel"
- <joro@8bytes.org>, Krzysztof =?UTF-8?B?V2lsY3p5xYRza2k=?= <kw@linux.com>,
- Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>, Mike
- Rapoport <rppt@kernel.org>, "Madhavan T. Venkataraman"
- <madvenka@linux.microsoft.com>, <iommu@lists.linux.dev>, "Sean
- Christopherson" <seanjc@google.com>, Paolo Bonzini <pbonzini@redhat.com>,
- <kvm@vger.kernel.org>, David Woodhouse <dwmw2@infradead.org>, Lu Baolu
- <baolu.lu@linux.intel.com>, Alexander Graf <graf@amazon.de>,
- <anthony.yznaga@oracle.com>, <steven.sistare@oracle.com>,
- <nh-open-source@amazon.com>, "Saenz Julienne, Nicolas" <nsaenz@amazon.es>
-Subject: Re: [RFC PATCH 05/13] iommufd: Serialise persisted iommufds and
- ioas
-Message-ID: <20241028090311.54bc537f@DESKTOP-0403QTC.>
-In-Reply-To: <20241016152047.2a604f08@DESKTOP-0403QTC.>
-References: <20240916113102.710522-1-jgowans@amazon.com>
-	<20240916113102.710522-6-jgowans@amazon.com>
-	<20241016152047.2a604f08@DESKTOP-0403QTC.>
-Reply-To: jacob.pan@linux.microsoft.com, "yi.l.liu@intel.com"
- <yi.l.liu@intel.com>
-X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.33; x86_64-pc-linux-gnu)
+	dkim=pass (2048-bit key) header.d=goldelico.com header.i=@goldelico.com header.b="B+rmS5v0";
+	dkim=permerror (0-bit key) header.d=goldelico.com header.i=@goldelico.com header.b="8/ObOuRE"
+ARC-Seal: i=1; a=rsa-sha256; t=1730131407; cv=none;
+    d=strato.com; s=strato-dkim-0002;
+    b=XDb1B9JMQb7iexZAMDmUNuc5W5wl57SMwDviKy7ScHLYyEb6bzVnfesQRd5CJivTAY
+    eu1tMgndjEteQmTfrsGmDdwSoFGNgUN00mZdT+WcOO/n5c4WHO5F1NI13XI+aJu0uWbs
+    TxxjANFBgVasl+8ODHuXpFyreXabBdYjF5FC2lhpreo/sgxpgcQmBv1sTN94nnseXJfV
+    d/B32UlOgmWqW3OjekQCN8IEDsi+MTonTNc9DTX+C1T6Usz/LXEp+vGO3KOPUseSQd0f
+    L0+5CiGKH2bfD8GWGekwzG3fZfWNrbAIf53yh3XomXe1fY79N2PQL1QQTfCXIHSZaY/K
+    KCXg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; t=1730131407;
+    s=strato-dkim-0002; d=strato.com;
+    h=To:References:Message-Id:Cc:Date:In-Reply-To:From:Subject:Cc:Date:
+    From:Subject:Sender;
+    bh=g5Qk0MWU1OrftTWRQgvHjAOi0KRWTYsGa4ngK/CCh6A=;
+    b=bW97H1UvhmCBy3PIPlPi6MQ7aeMWbjwQMoGXr7EyvS2oDldnBsCHMksn51sQA7NKqI
+    kSgV8aX1qc6+VlNHHLLO5gVcjuqyCAn87gEFYTQM9NjVlnlLShFUcVxlMSO7qHs7bYMv
+    ruhTLrlqTbrBBXcRHubqB22nfK5rD1zV05lHD+IATpetM7tjyZGO4SSZcUxwEfMjtwIr
+    m1uGncgUkSUmJcoiymMfMnnbDwBhfloKmjYo7nsTsT/b8oxeg9sXo0EDsTb3jEMueS8u
+    ywAP8mFRFG4J9aY0tcEt3449V5mmZi1yZPMjx1zKfNnpfx9GUekFCD0LlxNiag//iyEX
+    AF9w==
+ARC-Authentication-Results: i=1; strato.com;
+    arc=none;
+    dkim=none
+X-RZG-CLASS-ID: mo01
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; t=1730131407;
+    s=strato-dkim-0002; d=goldelico.com;
+    h=To:References:Message-Id:Cc:Date:In-Reply-To:From:Subject:Cc:Date:
+    From:Subject:Sender;
+    bh=g5Qk0MWU1OrftTWRQgvHjAOi0KRWTYsGa4ngK/CCh6A=;
+    b=B+rmS5v0Y4ugpcFXfcuFXiB8/9dW7Cpz8k//7iWvT90fq5sLlye5vLhsez52YJoJ/o
+    7bz86LksKjUdmcKQ5A7mqtyqSvYUjbpKeczD9totOQRrQmI2Gpk+YeyNENnG8/eu0wfU
+    Oer2j22bc6Pgqvh77vRAnRoYlpBnoLK2fElH++spuzGdACSxHCiUSsP2oV4pGzWhHFt/
+    7YA3wB2Mgf1a+MdihCpgXX2MsQAnviL3du8qvvp+LrkAfLQBe9F0DIojHRD0xMVvkCQn
+    heOpunwB7CtrudQXPK+BBYQJlAHBD61bRMKAPMcMLONDEA3GbuECQMyl02u6RuAKIBA1
+    aL4A==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; t=1730131407;
+    s=strato-dkim-0003; d=goldelico.com;
+    h=To:References:Message-Id:Cc:Date:In-Reply-To:From:Subject:Cc:Date:
+    From:Subject:Sender;
+    bh=g5Qk0MWU1OrftTWRQgvHjAOi0KRWTYsGa4ngK/CCh6A=;
+    b=8/ObOuREeRcno3HrRDTQ1ieyRgITFE+ZRjXm3wr8w8SGfgWCa9aonf4xSU6h8mX7Ye
+    ry8eZ83qPEiF3l9tAGBw==
+X-RZG-AUTH: ":JGIXVUS7cutRB/49FwqZ7WcJeFKiMhflhwDubTJ9qVpwcQVkPW4I1HrV3ZoNnMiNdxeutsfZzRfx7IXe+fc9o4UKxSY="
+Received: from smtpclient.apple
+    by smtp.strato.de (RZmta 51.2.11 AUTH)
+    with ESMTPSA id Qb7e4009SG3QJ9E
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (curve X9_62_prime256v1 with 256 ECDH bits, eq. 3072 bits RSA))
+	(Client did not present a certificate);
+    Mon, 28 Oct 2024 17:03:26 +0100 (CET)
+Content-Type: text/plain;
+	charset=us-ascii
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+Mime-Version: 1.0 (Mac OS X Mail 16.0 \(3776.700.51.11.1\))
+Subject: Re: [PATCH] iommu/omap: Don't register ops by fwnode
+From: "H. Nikolaus Schaller" <hns@goldelico.com>
+In-Reply-To: <73426db8-ca40-4bd1-9e8e-aeb111e5104c@arm.com>
+Date: Mon, 28 Oct 2024 17:03:15 +0100
+Cc: joro@8bytes.org,
+ will@kernel.org,
+ iommu@lists.linux.dev,
+ Jason Gunthorpe <jgg@nvidia.com>,
+ Linux-OMAP <linux-omap@vger.kernel.org>,
+ Beleswar Padhi <b-padhi@ti.com>,
+ Andreas Kemnade <andreas@kemnade.info>
 Content-Transfer-Encoding: quoted-printable
-
-Hi James,
-
-Just a gentle reminder. Let me also explain the problem we are trying
-to solve for the live update of OpenHCL paravisor[1]. OpenHCL has user
-space drivers based on VFIO noiommu mode, we are in the process of
-converting to iommufd cdev.
-
-Similarly, running DMA continuously across updates is required, but
-unlike your case, OpenHCL updates do not involve preserving the IO page
-tables in that it is managed by the hypervisor which is not part of the
-update.
-
-It seems reasonable to share the device persistence code path
-with the plan laid out in your cover letter. IOAS code path will be
-different since noiommu option does not have IOAS.
-
-If we were to revive noiommu support for iommufd cdev[2], can we use
-the persistent iommufd context to allow device persistence? Perhaps
-through IOMMUFD_OBJ_DEVICE and IOMMUFD_OBJ_ACCESS(used in [2])?
-
-@David, @Jason, @Alex, @Yi, any comments or suggestions?
+Message-Id: <E2DAEA83-D012-4F1C-AB77-CE39E9256EB2@goldelico.com>
+References: <c44545c6d07c65d89daa297298c27bb0f15c8b84.1728393458.git.robin.murphy@arm.com>
+ <2863ACA9-2836-49F6-9D85-749CE480804D@goldelico.com>
+ <10d3a86c-d7a8-4ac5-8ad3-010a91c0a25f@arm.com>
+ <FCFEB115-846A-4577-A489-D1537AC77DEA@goldelico.com>
+ <5c3ea490-f2f5-49e5-99fd-1dc239aee28d@arm.com>
+ <F4A297DC-8EBD-4434-97EA-BFEEBB062042@goldelico.com>
+ <1a0ff734-73b2-4d73-839b-71e2017ae3c4@arm.com>
+ <C6F2F131-2295-4655-A4E2-600200FD7318@goldelico.com>
+ <73426db8-ca40-4bd1-9e8e-aeb111e5104c@arm.com>
+To: Robin Murphy <robin.murphy@arm.com>
+X-Mailer: Apple Mail (2.3776.700.51.11.1)
 
 
-Thanks,
 
-Jacob
-
-1. (openvmm/Guide/src/reference/architecture/openhcl.md at main =C2=B7
-microsoft/openvmm.=20
-2. [PATCH v11 00/23] Add vfio_device cdev for
-iommufd support - Yi Liu
-
-On Wed, 16 Oct 2024 15:20:47 -0700 Jacob Pan
-<jacob.pan@linux.microsoft.com> wrote:
-
-> Hi James,
+> Am 28.10.2024 um 16:58 schrieb Robin Murphy <robin.murphy@arm.com>:
 >=20
-> On Mon, 16 Sep 2024 13:30:54 +0200
-> James Gowans <jgowans@amazon.com> wrote:
 >=20
-> > +static int serialise_iommufd(void *fdt, struct iommufd_ctx *ictx)
-> > +{
-> > +	int err =3D 0;
-> > +	char name[24];
-> > +	struct iommufd_object *obj;
-> > +	unsigned long obj_idx;
-> > +
-> > +	snprintf(name, sizeof(name), "%lu", ictx->persistent_id);
-> > +	err |=3D fdt_begin_node(fdt, name);
-> > +	err |=3D fdt_begin_node(fdt, "ioases");
-> > +	xa_for_each(&ictx->objects, obj_idx, obj) {
-> > +		struct iommufd_ioas *ioas;
-> > +		struct iopt_area *area;
-> > +		int area_idx =3D 0;
-> > +
-> > +		if (obj->type !=3D IOMMUFD_OBJ_IOAS)
-> > +			continue; =20
-> I was wondering how device state persistency is managed here. Is it
-> correct to assume that all devices bound to an iommufd context should
-> be persistent? If so, should we be serializing IOMMUFD_OBJ_DEVICE as
-> well?
+> Oh fiddle... this is getting complex...
 >=20
-> I'm considering this from the perspective of user mode drivers,
-> including those that use noiommu mode (need to be added to iommufd
-> cdev). In this scenario, we only need to maintain the device states
-> persistently without IOAS.
+> I was testing the of_xlate patch rather than the diff below, which =
+should avoid the deferred probe timeout but otherwise achieve much the =
+same effect. Trouble is, that turns out to only "fix" things back to =
+another breakage due to 4720287c7bf7 ("iommu: Remove struct iommu_ops =
+*iommu from arch_setup_dma_ops()"), wherein we lost the fragile =
+combination of setting up the IOMMU while still causing =
+arm_setup_iommu_dma_ops() to ignore it. Thus what now happens here is =
+the domain from the ARM DMA ops gets in the way of the driver attaching =
+its own. Looks like I missed that with the remoteproc driver since it =
+only starts trying to do IOMMU API stuff upon successfully loading =
+firmware, which I didn't have.
+>=20
+> I think the most practical answer is going to be to give the ISP and =
+remoteproc drivers the same workaround for that as the various DRM =
+drivers use, lemme write those up too...
+
+Sounds good. Please let me know if you have something I can test.
+
+Best regards and thanks,
+Nikolaus
 
