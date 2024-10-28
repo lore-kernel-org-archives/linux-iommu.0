@@ -1,215 +1,176 @@
-Received: from mo4-p01-ob.smtp.rzone.de (mo4-p01-ob.smtp.rzone.de [85.215.255.53])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7555A18D649
-	for <iommu@lists.linux.dev>; Mon, 28 Oct 2024 20:47:05 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=85.215.255.53
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1730148429; cv=pass; b=Pr9JaljW5JrdMrs39Pw/q9S16yaeDfk4AuWeieLZYIS+Qosu7XKdBCcw9ghpscEMABQbVhqM83Q3GS6Gij3q06lN+6mYUoygu1NoISIioEpzLZ9POWVrZC80NIZN57I7pGuxkBwuZ59ILp37EhsfhqkFub+O+oJUqIDjLjhhSlo=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1730148429; c=relaxed/simple;
-	bh=EQc5Hcq8F1xi6Djfdhy06Tpq0LJz7ARt5WkuSiyB5qg=;
-	h=Content-Type:Mime-Version:Subject:From:In-Reply-To:Date:Cc:
-	 Message-Id:References:To; b=lPz0zJpGHJwR8N2YEQvw6bPwhTx8pW+2op74MeLKRPxaSMZIYDUpqhbH3fhiviOn26UVMk5NIkhHX1ZbzI0AZMBF48qzMX1xJR7tgBQh9MU7QgxEt6ZuC9sAjlp9lQDuX7YPwdvtJaSWbgDgW7pvmkvVBocyRY0ZBlIQL9D7ac8=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=goldelico.com; spf=pass smtp.mailfrom=goldelico.com; dkim=pass (2048-bit key) header.d=goldelico.com header.i=@goldelico.com header.b=oXvXRNnn; dkim=permerror (0-bit key) header.d=goldelico.com header.i=@goldelico.com header.b=9i3butY1; arc=pass smtp.client-ip=85.215.255.53
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=goldelico.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=goldelico.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5DE311DFE1C;
+	Mon, 28 Oct 2024 20:59:05 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1730149145; cv=none; b=IwWKSDkJkiHsCLPQpDeOGR5tFABIVQ2O7tZHohbWqIKczY8nI/uFVF7bryeYno2+Z9uGY+UwUPcA1Pf7Kz5icTs+Y/TrpmyTJxloHYiEO+cE0f1v7US7CiIHeXxo2wzh8gSrfGjwlCgRxtelk5y7BUbRrjg8oUr4wU/MZp5B8Dg=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1730149145; c=relaxed/simple;
+	bh=XDchRQtmy6pHQo4VldmyUQn5KpIMSBE9FuRx/IQ/fLc=;
+	h=Date:From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:
+	 Content-Disposition:In-Reply-To; b=ba/i5GJSzfWbnG6cDm5hqDqK02WJ9aIR73MA4UJvgfoayCXD69BlugrdoOGNP71ujMbWyTRPGgFsT3/+TlQAjK9+7cwoQl8Dss5CEmS5T7fVf7F4vg9td8FxKUHSSqYzblQd/LHdaVFTOUCColqZ78UojIU0LzkvuaaByoNlj+w=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=YHWCjZnS; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=goldelico.com header.i=@goldelico.com header.b="oXvXRNnn";
-	dkim=permerror (0-bit key) header.d=goldelico.com header.i=@goldelico.com header.b="9i3butY1"
-ARC-Seal: i=1; a=rsa-sha256; t=1730148399; cv=none;
-    d=strato.com; s=strato-dkim-0002;
-    b=NcDlSnE57617bMfC3xbE4wCADkegivbFIpctkNNfLTdPN8MD6NjCZJ7cVZcw5H09KN
-    lURcLTjgyYYnmBTct3UCVXnnvX9/EqZzj+68M4ym2PZ6SvLXAa7uyjNfVoaNq+9EKTtW
-    1UpqawFQZI0QPVCCkkxE8fywAyoo26bwL5a0CmW4BvwbCOP2UDvTLAIgdv5T3O51HtNa
-    1+YCExkWk8G8JmATjBKrncYefw4gqq/UMAP5/jdNFTRE7Gz/84+pPSQsnN+psVB+nhSM
-    Ljs8Ni8mZPcOjSK0Qn3j0odgM07ivUIYR7z8lOfqxk/aemZoKfgQLN5lGduz/ZzWGPxH
-    7fTw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; t=1730148399;
-    s=strato-dkim-0002; d=strato.com;
-    h=To:References:Message-Id:Cc:Date:In-Reply-To:From:Subject:Cc:Date:
-    From:Subject:Sender;
-    bh=/DBUgSl/fXm+QxrXuouOBjRsFk/JryARzx/x5XkmPtY=;
-    b=D2qMT3rfnzLRD9I+8sFDPHdBb141fsgyVYpB7svT/lQ6Or0DqDZB41DsCSQbi0PMW9
-    4NiyQtnB8LneWFaByNn32bpCvUQT1TebaRu/yjEa7d7ry4tzdLlqTLjUrWzxYh70pSFO
-    oV5EFUFeLVhwGN4q8A8zwPMhKA4bq/HpwsFlcoBZZKKZG0hUbaZ3//pfuzN5uBLH9ZSt
-    RsMdjxxhLLl4/7EcH8qwjFSr6y9BML4teiLnYEFADaV2tURanT8jaJ3RwpBO+ROF5iS2
-    3o0qE83XqetjTYLMikdCgY2I37nS+11wsAc9c0HPdI8qHWuzlXKF8dglL3I8mxgoHsBJ
-    uD4w==
-ARC-Authentication-Results: i=1; strato.com;
-    arc=none;
-    dkim=none
-X-RZG-CLASS-ID: mo01
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; t=1730148399;
-    s=strato-dkim-0002; d=goldelico.com;
-    h=To:References:Message-Id:Cc:Date:In-Reply-To:From:Subject:Cc:Date:
-    From:Subject:Sender;
-    bh=/DBUgSl/fXm+QxrXuouOBjRsFk/JryARzx/x5XkmPtY=;
-    b=oXvXRNnnDlh4EFDy2Jm1FVHTocq5/AgpOU3R7hx5Akyf98y4YaXDkiqhRayK1COrG3
-    aMkhVqhhEAVnwiId/XNd/Ar09Y22xOs5/ZiPXorjow7sLa6LJJjIA5H339Ks7dXXfp7C
-    DglorPhpHRUwqVZ2o7zoBf1QZ9Y8kylZiz09PhMGrqUD2bvAYY4cL8DrLfpAH7cJzTfg
-    t9pczeIH8rKvg5KcvuLKm8sxDi1PX0tDM0Gi+L1gEUnW2TnL3l7rjIeUrhYl/pdb3cfV
-    Nl1jmDLT47FLeOb9vCCnuOQUYsZHNugKkkUzFX+zrNogZvvbVpfLZ6So1JL18+Jhs5UV
-    +QCw==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; t=1730148399;
-    s=strato-dkim-0003; d=goldelico.com;
-    h=To:References:Message-Id:Cc:Date:In-Reply-To:From:Subject:Cc:Date:
-    From:Subject:Sender;
-    bh=/DBUgSl/fXm+QxrXuouOBjRsFk/JryARzx/x5XkmPtY=;
-    b=9i3butY11/2LpbfRMpDFkRYu3cQJmGU4qAx1SU+Em6HF1Va5Lmn2V918alzfwLvrpn
-    meRjg6YjhVAq6ep/V0Bw==
-X-RZG-AUTH: ":JGIXVUS7cutRB/49FwqZ7WcJeFKiMhflhwDubTJ9qVpwcQVkPW4I1HrV3ZoNnMiNdxeutsfZzRfx7IXe+fc9o4UKxSY="
-Received: from smtpclient.apple
-    by smtp.strato.de (RZmta 51.2.11 AUTH)
-    with ESMTPSA id Qb7e4009SKkcK9Y
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (curve X9_62_prime256v1 with 256 ECDH bits, eq. 3072 bits RSA))
-	(Client did not present a certificate);
-    Mon, 28 Oct 2024 21:46:38 +0100 (CET)
-Content-Type: text/plain;
-	charset=us-ascii
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="YHWCjZnS"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A8324C4CEC3;
+	Mon, 28 Oct 2024 20:59:04 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1730149144;
+	bh=XDchRQtmy6pHQo4VldmyUQn5KpIMSBE9FuRx/IQ/fLc=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:From;
+	b=YHWCjZnSvGD0FLXm38frIZRba2sQQ98rHEmaoqo7+IGWHJUxibwDnNsBZgESkMQf2
+	 TsIZgg66kDAZi3cQ/raC0xLCHxFt/n+Q+GfpSPikoPYWogMwVVkT2YGGo6r+mvlpQs
+	 LYcYZiWraEirilGEQRB7r1dSqxIlLl6PnIyzBEG69k5H5ZL/4V51yCX9ue/AQ9hoao
+	 YtQPx9n4wU6TLKUu3BMoGWW4nbSLG6WcdHPvYzg+727B9k+tQFNcmm7b2B+OIclaEr
+	 WoCdB/gjnaxlHYJSzABbNThj3fTHRWtRg5gmc802RNwzAtTGyuBAMLTzhdJzsWVOka
+	 YksEeTIOFMwbA==
+Date: Mon, 28 Oct 2024 15:59:02 -0500
+From: Bjorn Helgaas <helgaas@kernel.org>
+To: Leon Romanovsky <leon@kernel.org>
+Cc: Jens Axboe <axboe@kernel.dk>, Jason Gunthorpe <jgg@ziepe.ca>,
+	Robin Murphy <robin.murphy@arm.com>, Joerg Roedel <joro@8bytes.org>,
+	Will Deacon <will@kernel.org>, Christoph Hellwig <hch@lst.de>,
+	Sagi Grimberg <sagi@grimberg.me>, Keith Busch <kbusch@kernel.org>,
+	Bjorn Helgaas <bhelgaas@google.com>,
+	Logan Gunthorpe <logang@deltatee.com>,
+	Yishai Hadas <yishaih@nvidia.com>,
+	Shameer Kolothum <shameerali.kolothum.thodi@huawei.com>,
+	Kevin Tian <kevin.tian@intel.com>,
+	Alex Williamson <alex.williamson@redhat.com>,
+	Marek Szyprowski <m.szyprowski@samsung.com>,
+	=?utf-8?B?SsOpcsO0bWU=?= Glisse <jglisse@redhat.com>,
+	Andrew Morton <akpm@linux-foundation.org>,
+	Jonathan Corbet <corbet@lwn.net>, linux-doc@vger.kernel.org,
+	linux-kernel@vger.kernel.org, linux-block@vger.kernel.org,
+	linux-rdma@vger.kernel.org, iommu@lists.linux.dev,
+	linux-nvme@lists.infradead.org, linux-pci@vger.kernel.org,
+	kvm@vger.kernel.org, linux-mm@kvack.org
+Subject: Re: [PATCH 01/18] PCI/P2PDMA: refactor the p2pdma mapping helpers
+Message-ID: <20241028205902.GA1114413@bhelgaas>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
-Mime-Version: 1.0 (Mac OS X Mail 16.0 \(3776.700.51.11.1\))
-Subject: Re: [PATCH 0/4] Fix omap-iommu bitrot
-From: "H. Nikolaus Schaller" <hns@goldelico.com>
-In-Reply-To: <cover.1730136799.git.robin.murphy@arm.com>
-Date: Mon, 28 Oct 2024 21:46:27 +0100
-Cc: joro@8bytes.org,
- will@kernel.org,
- Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
- mchehab@kernel.org,
- andersson@kernel.org,
- mathieu.poirier@linaro.org,
- Beleswar Padhi <b-padhi@ti.com>,
- Andreas Kemnade <andreas@kemnade.info>,
- iommu@lists.linux.dev,
- arm-soc <linux-arm-kernel@lists.infradead.org>,
- Linux-OMAP <linux-omap@vger.kernel.org>,
- linux-media@vger.kernel.org,
- linux-remoteproc@vger.kernel.org,
- Discussions about the Letux Kernel <letux-kernel@openphoenux.org>
-Content-Transfer-Encoding: quoted-printable
-Message-Id: <831CC29D-3B89-4091-8145-0E310FF838CB@goldelico.com>
-References: <cover.1730136799.git.robin.murphy@arm.com>
-To: Robin Murphy <robin.murphy@arm.com>
-X-Mailer: Apple Mail (2.3776.700.51.11.1)
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <a4d93ca45f7ad09105a1cf347e6b6d6b6fb7e303.1730037276.git.leon@kernel.org>
 
-Hi Robin,
+Prefer subject capitalization in drivers/pci:
 
-> Am 28.10.2024 um 18:58 schrieb Robin Murphy <robin.murphy@arm.com>:
->=20
-> Hi all,
->=20
-> It seems omap-iommu hasn't had enough mainline users to avoid =
-bitrotting
-> through the more recent evolution of the IOMMU API internals. These
-> patches attempt to bring it and its consumers sufficiently up-to-date
-> to work again, in a manner that's hopefully backportable. This is
-> largely all written by inspection, but I have managed to lightly boot
-> test patch #3 on an OMAP4 Pandaboard to confirm iommu_probe_device()
-> working again.
->=20
-> This supersedes my previous patch[1]. Patches #1 and #2 are =
-functionally
-> independent, and can be applied directly to their respective trees if
-> preferred.
+  PCI/P2PDMA: Refactor ...
 
-I can confirm that this series works on omap3 with v6.12-rc5 and
-Camera is back to the GTA04.
+On Sun, Oct 27, 2024 at 04:21:01PM +0200, Leon Romanovsky wrote:
+> From: Christoph Hellwig <hch@lst.de>
+> 
+> The current scheme with a single helper to determine the P2P status
+> and map a scatterlist segment force users to always use the map_sg
+> helper to DMA map, which we're trying to get away from because they
+> are very cache inefficient.
+> ...
 
-So you can add:
-Tested-by: H. Nikolaus Schaller <hns@goldelico.com>
+Acked-by: Bjorn Helgaas <bhelgaas@google.com>
 
-BR and thanks,
-Nikolaus
+A couple minor nits below.
 
-root@letux:~# dmesg|fgrep iommu
-[    0.522613] iommu: Default domain type: Translated
-[    0.522644] iommu: DMA domain TLB invalidation policy: strict mode
-[    0.525177] omap-iommu 480bd400.mmu: 480bd400.mmu registered
-[   10.752563] omap3isp 480bc000.isp: Adding to iommu group 0
-[   10.811218] omap-iommu 480bd400.mmu: 480bd400.mmu: version 1.1
-[   11.039489] omap-iommu 480bd400.mmu: 480bd400.mmu: version 1.1
-root@letux:~# dmesg|fgrep .isp
-[   10.752563] omap3isp 480bc000.isp: Adding to iommu group 0
-[   10.841522] omap3isp 480bc000.isp: supply vdd-csiphy1 not found, =
-using dummy regulator
-[   10.948577] omap3isp 480bc000.isp: supply vdd-csiphy2 not found, =
-using dummy regulator
-[   10.990814] omap3isp 480bc000.isp: Revision 15.0 found
-[   11.089324] omap3isp 480bc000.isp: hist: using DMA channel dma0chan15
-[   11.115905] omap3isp 480bc000.isp: Entity type for entity OMAP3 ISP =
-CCP2 was not initialized!
-[   11.168792] omap3isp 480bc000.isp: isp_xclk_set_rate: cam_xclka set =
-to 24685714 Hz (div 7)
-[   11.220062] omap3isp 480bc000.isp: Entity type for entity OMAP3 ISP =
-CSI2a was not initialized!
-[   11.291748] omap3isp 480bc000.isp: Entity type for entity OMAP3 ISP =
-CCDC was not initialized!
-[   11.362152] omap3isp 480bc000.isp: Entity type for entity OMAP3 ISP =
-preview was not initialized!
-[   11.404266] omap3isp 480bc000.isp: Entity type for entity OMAP3 ISP =
-resizer was not initialized!
-[   11.485687] omap3isp 480bc000.isp: Entity type for entity OMAP3 ISP =
-AEWB was not initialized!
-[   11.520874] omap3isp 480bc000.isp: Entity type for entity OMAP3 ISP =
-AF was not initialized!
-[   11.574981] omap3isp 480bc000.isp: Entity type for entity OMAP3 ISP =
-histogram was not initialized!
-[   11.594268] omap3isp 480bc000.isp: parsing parallel interface
-[  106.102905] omap3isp 480bc000.isp: -------------CCDC Register =
-dump-------------
-[  106.110595] omap3isp 480bc000.isp: ###CCDC PCR=3D0x00000000
-[  106.116973] omap3isp 480bc000.isp: ###CCDC SYN_MODE=3D0x00031704
-[  106.123657] omap3isp 480bc000.isp: ###CCDC HD_VD_WID=3D0x00000000
-[  106.129974] omap3isp 480bc000.isp: ###CCDC PIX_LINES=3D0x00000000
-[  106.136810] omap3isp 480bc000.isp: ###CCDC HORZ_INFO=3D0x000004ff
-[  106.143615] omap3isp 480bc000.isp: ###CCDC VERT_START=3D0x00000000
-[  106.149932] omap3isp 480bc000.isp: ###CCDC VERT_LINES=3D0x000003ff
-[  106.156799] omap3isp 480bc000.isp: ###CCDC CULLING=3D0xffff00ff
-[  106.163299] omap3isp 480bc000.isp: ###CCDC HSIZE_OFF=3D0x00000a00
-[  106.169616] omap3isp 480bc000.isp: ###CCDC SDOFST=3D0x00000000
-[  106.176086] omap3isp 480bc000.isp: ###CCDC SDR_ADDR=3D0x40000000
-[  106.182708] omap3isp 480bc000.isp: ###CCDC CLAMP=3D0x00000010
-[  106.188598] omap3isp 480bc000.isp: ###CCDC DCSUB=3D0x00000000
-[  106.195068] omap3isp 480bc000.isp: ###CCDC COLPTN=3D0xbb11bb11
-[  106.201507] omap3isp 480bc000.isp: ###CCDC BLKCMP=3D0x00000000
-[  106.207550] omap3isp 480bc000.isp: ###CCDC FPC=3D0x00000000
-[  106.213684] omap3isp 480bc000.isp: ###CCDC FPC_ADDR=3D0x00000000
-[  106.219909] omap3isp 480bc000.isp: ###CCDC VDINT=3D0x03fe02aa
-[  106.226409] omap3isp 480bc000.isp: ###CCDC ALAW=3D0x00000006
-[  106.232696] omap3isp 480bc000.isp: ###CCDC REC656IF=3D0x00000000
-[  106.238830] omap3isp 480bc000.isp: ###CCDC CFG=3D0x00008800
-[  106.244964] omap3isp 480bc000.isp: ###CCDC FMTCFG=3D0x00000000
-[  106.251434] omap3isp 480bc000.isp: ###CCDC FMT_HORZ=3D0x00000000
-[  106.257568] omap3isp 480bc000.isp: ###CCDC FMT_VERT=3D0x00000000
-[  106.264251] omap3isp 480bc000.isp: ###CCDC PRGEVEN0=3D0x00000000
-[  106.271606] omap3isp 480bc000.isp: ###CCDC PRGEVEN1=3D0x00000000
-[  106.285400] omap3isp 480bc000.isp: ###CCDC PRGODD0=3D0x00000000
-[  106.301147] omap3isp 480bc000.isp: ###CCDC PRGODD1=3D0x00000000
-[  106.307220] omap3isp 480bc000.isp: ###CCDC VP_OUT=3D0x00000000
-[  106.326019] omap3isp 480bc000.isp: ###CCDC LSC_CONFIG=3D0x00006600
-[  106.340087] omap3isp 480bc000.isp: ###CCDC LSC_INITIAL=3D0x00000000
-[  106.358001] omap3isp 480bc000.isp: ###CCDC LSC_TABLE_BASE=3D0x00000000
-[  106.372985] omap3isp 480bc000.isp: ###CCDC =
-LSC_TABLE_OFFSET=3D0x00000000
-[  106.379882] omap3isp 480bc000.isp: =
---------------------------------------------
-[  118.617980] omap3isp 480bc000.isp: OMAP3 ISP AEWB: user wants to =
-disable module.
-[  118.626068] omap3isp 480bc000.isp: OMAP3 ISP AEWB: module is being =
-disabled
-[  118.633392] omap3isp 480bc000.isp: OMAP3 ISP AF: user wants to =
-disable module.
-[  118.641937] omap3isp 480bc000.isp: OMAP3 ISP AF: module is being =
-disabled
-[  118.649627] omap3isp 480bc000.isp: OMAP3 ISP histogram: user wants to =
-disable module.
-[  118.658508] omap3isp 480bc000.isp: OMAP3 ISP histogram: module is =
-being disabled
-root@letux:~#=20
+> @@ -1412,28 +1411,29 @@ int iommu_dma_map_sg(struct device *dev, struct scatterlist *sg, int nents,
+>  		size_t s_length = s->length;
+>  		size_t pad_len = (mask - iova_len + 1) & mask;
+>  
+> -		if (is_pci_p2pdma_page(sg_page(s))) {
+> -			map = pci_p2pdma_map_segment(&p2pdma_state, dev, s);
+> -			switch (map) {
+> -			case PCI_P2PDMA_MAP_BUS_ADDR:
+> -				/*
+> -				 * iommu_map_sg() will skip this segment as
+> -				 * it is marked as a bus address,
+> -				 * __finalise_sg() will copy the dma address
+> -				 * into the output segment.
+> -				 */
+> -				continue;
+> -			case PCI_P2PDMA_MAP_THRU_HOST_BRIDGE:
+> -				/*
+> -				 * Mapping through host bridge should be
+> -				 * mapped with regular IOVAs, thus we
+> -				 * do nothing here and continue below.
+> -				 */
+> -				break;
+> -			default:
+> -				ret = -EREMOTEIO;
+> -				goto out_restore_sg;
+> -			}
+> +		switch (pci_p2pdma_state(&p2pdma_state, dev, sg_page(s))) {
+> +		case PCI_P2PDMA_MAP_THRU_HOST_BRIDGE:
+> +			/*
+> +			 * Mapping through host bridge should be mapped with
+> +			 * regular IOVAs, thus we do nothing here and continue
+> +			 * below.
+> +			 */
 
+I guess this is technically not a fall-through to the next case
+because there's no executable code here, but since the comment
+separates these two cases, I would find it easier to read if you
+included the break here explicitly.
 
+> +		case PCI_P2PDMA_MAP_NONE:
+> +			break;
+
+> +void __pci_p2pdma_update_state(struct pci_p2pdma_map_state *state,
+> +		struct device *dev, struct page *page);
+> +
+> +/**
+> + * pci_p2pdma_state - check the P2P transfer state of a page
+> + * @state: 	P2P state structure
+
+Checkpatch complains about space before tab here.
+
+> + * pci_p2pdma_bus_addr_map - map a PCI_P2PDMA_MAP_BUS_ADDR P2P transfer
+> + * @state: 	P2P state structure
+
+And here.
+
+> @@ -462,34 +462,32 @@ int dma_direct_map_sg(struct device *dev, struct scatterlist *sgl, int nents,
+>  		enum dma_data_direction dir, unsigned long attrs)
+>  {
+>  	struct pci_p2pdma_map_state p2pdma_state = {};
+> -	enum pci_p2pdma_map_type map;
+>  	struct scatterlist *sg;
+>  	int i, ret;
+>  
+>  	for_each_sg(sgl, sg, nents, i) {
+> -		if (is_pci_p2pdma_page(sg_page(sg))) {
+> -			map = pci_p2pdma_map_segment(&p2pdma_state, dev, sg);
+> -			switch (map) {
+> -			case PCI_P2PDMA_MAP_BUS_ADDR:
+> -				continue;
+> -			case PCI_P2PDMA_MAP_THRU_HOST_BRIDGE:
+> -				/*
+> -				 * Any P2P mapping that traverses the PCI
+> -				 * host bridge must be mapped with CPU physical
+> -				 * address and not PCI bus addresses. This is
+> -				 * done with dma_direct_map_page() below.
+> -				 */
+> -				break;
+> -			default:
+> -				ret = -EREMOTEIO;
+> +		switch (pci_p2pdma_state(&p2pdma_state, dev, sg_page(sg))) {
+> +		case PCI_P2PDMA_MAP_THRU_HOST_BRIDGE:
+> +			/*
+> +			 * Any P2P mapping that traverses the PCI host bridge
+> +			 * must be mapped with CPU physical address and not PCI
+> +			 * bus addresses.
+> +			 */
+
+Same fall-through comment.
+
+> +		case PCI_P2PDMA_MAP_NONE:
+> +			sg->dma_address = dma_direct_map_page(dev, sg_page(sg),
+> +					sg->offset, sg->length, dir, attrs);
+> +			if (sg->dma_address == DMA_MAPPING_ERROR) {
+> +				ret = -EIO;
+>  				goto out_unmap;
+>  			}
+> -		}
