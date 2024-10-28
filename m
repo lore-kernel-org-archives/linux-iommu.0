@@ -1,184 +1,175 @@
-Received: from mail-lf1-f50.google.com (mail-lf1-f50.google.com [209.85.167.50])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtpbguseast1.qq.com (smtpbguseast1.qq.com [54.204.34.129])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3088E2C697
-	for <iommu@lists.linux.dev>; Mon, 28 Oct 2024 03:24:24 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.50
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B419318C92A
+	for <iommu@lists.linux.dev>; Mon, 28 Oct 2024 03:50:15 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=54.204.34.129
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1730085868; cv=none; b=ILSmx6Z6uiDrSHLL7Q7Fycu3cJW8ZAztfhNVzy3yNAg8yJvcPhYlhAWgrJrexx9wFrdSGaSBWHYl8iOfH+0Hi6GWcQ+ioXlPuQWdOHMJ5v1KW0FVM8yaehTH8F0ze9FBAmoXVFJpGFO8tcs0Xnq8GmrHaHgPTSytYindLliAQQw=
+	t=1730087421; cv=none; b=gw1De2a2HRS6fcJJOny8YZiC2dKZYgzQ/69DYfDRYavXclJHXJHk4A1kQkhf/ZsQY+moz+OFitZ8oubMaEDHvtdXBZJQvaZjXyLm5l+H/FFxnePimWsohV4zcUJyhj0KkDfcGvVwY7QKLA0RQQX3MB5+BthDhrNSMu9Y8uA38sY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1730085868; c=relaxed/simple;
-	bh=6/HcWulsp0sUfWKf/Rj2RN++KVB0uoFpXx1ouKtzxag=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=W4OTe+wcCchd/a1padGytdEmLBAryEUkdKSCn2jY/VuHtcN8DvQz84XaAUMT7vueiZFwRbCOvxpvDSJ+wa4uWvC06eWqbFJt9VBaugmC8wg7y1GshJ7sfS5FQOOfHZnwCFyPMx3Q6fUo4b6WIXHLLuh4G56xXfLWrwtpZY3J5xE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org; spf=pass smtp.mailfrom=linaro.org; dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b=ntGIPmuw; arc=none smtp.client-ip=209.85.167.50
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linaro.org
+	s=arc-20240116; t=1730087421; c=relaxed/simple;
+	bh=GKiYYsQxIjPYaFa4vLHh2atXLmYtIlb6yAhPioyEZik=;
+	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
+	 MIME-Version; b=gVjfTYBW5Ywir0EEqQRqHI9g8CgyW/aDtyvxn8oFJC19hnea+HHohI5EmTaYMmmZMGdgJ7Rr2YiTAhyolXS2hQNq+gXesqekHXh2bDYdkxR44O2jXdla8Mik+uF/dV+RWX3vkipz4gbQ5VEQBja0uFvlJnnaAzu20VTI0NmP0fg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=uniontech.com; spf=pass smtp.mailfrom=uniontech.com; dkim=pass (1024-bit key) header.d=uniontech.com header.i=@uniontech.com header.b=Q4kXXmjv; arc=none smtp.client-ip=54.204.34.129
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=uniontech.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=uniontech.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="ntGIPmuw"
-Received: by mail-lf1-f50.google.com with SMTP id 2adb3069b0e04-53b1fbb8be5so3864920e87.1
-        for <iommu@lists.linux.dev>; Sun, 27 Oct 2024 20:24:23 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1730085862; x=1730690662; darn=lists.linux.dev;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=tPB781Fw9J1BfJU7n/hLb4L32sFtxc+a4gofCEvfGmg=;
-        b=ntGIPmuwKYnSvS60cAZGqDVwMUAR80v0MfQh8DBac5LZkKWT86mtEQdtl8p8Rt5Swv
-         a09tYVSLsSSw/A3dwg9w0Gha49bUp0+VSUxV61IbqA5wm7CSx2BPrs1LtMGLGF0CWm2Z
-         1pSWk5tEj6q5K7dbmlJTnPzQMzaVHWTObILwgbaZjdvsV4AoC/Zq9TeKXSlvIe6BNVOq
-         wOX/Chie+dOKZwqzD5aEepd3e36GV5Jr15ckQ7oyZq/oHp/EfkOM9PWMol36IpjLoXhm
-         +ERlqjIgvpvYSgJiYRChQNqmVUchsYlueG3T1GNQCO3CD/OMyPHR3VstLXLZ95/ytgiZ
-         nHdg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1730085862; x=1730690662;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=tPB781Fw9J1BfJU7n/hLb4L32sFtxc+a4gofCEvfGmg=;
-        b=sVHgxMK0d2T++oboV2YyI7BBC21B7sI+MBccyTDmXqn0c1UVQmORInU+5vsMhjy3uL
-         rolWGjyMMTP/KZfK3BhyNjALPwnUY3TnaIFFZFbLgpvCqZEcgVh2ojfZ/fwHy46YQilF
-         d1gqL1l+nMvZ15+oJc/9eYyc4lsFG/U+C3KV+YywVepqhYIr4GcZOVBfB0TZ1tBQ+wRV
-         yEpzkBfmFdShxzR9KlrzsqD78Llt19Grujb/czr7LGrn0lfcuyCNy3vF3bWLG7Y5OWh2
-         74LSY+VT6SF0PMfRyi8KwgCL+wFcvhKNL1KmxRYj88r/eGh9UZZyDIBhreiOy0aXaF8q
-         dH2w==
-X-Forwarded-Encrypted: i=1; AJvYcCVHmG+CMSmc9BjmzzLg7EI6wI+h06yjti1X2kaEviVT00XrzJ3YJkgmu2JWiOKlhq57azx5aQ==@lists.linux.dev
-X-Gm-Message-State: AOJu0YyMtvxkrqahIdYWKeoYfRGq2sLsj3OolQahRVhpYLNO7mFb9LXc
-	HTawvrW41lAMQFl/up5sZRB72wFjbnqIR6OA1EY8RlS1xqtrhuH0BzVi+IfEXE5Vy8n9QGf9z8F
-	2aSJnX0wh2FzzAAK9aNFxaw1rb9m1uMzqGmQVqg==
-X-Google-Smtp-Source: AGHT+IE3RYlMkjtpEmFCkSX9mMBH+mzTWtOwY6YLaPVzyehp5OXOXoK0z0ORaPfXJdTZ0CLfc2oO9l8aOUX21W6z4Ew=
-X-Received: by 2002:a05:6512:3d16:b0:53a:423:6ea9 with SMTP id
- 2adb3069b0e04-53b33e159a1mr2038562e87.13.1730085862110; Sun, 27 Oct 2024
- 20:24:22 -0700 (PDT)
+	dkim=pass (1024-bit key) header.d=uniontech.com header.i=@uniontech.com header.b="Q4kXXmjv"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=uniontech.com;
+	s=onoh2408; t=1730087334;
+	bh=ZfepWoHjCZNG7Hnofx9+U1FeKOBzJSKxe0L62gLgiEw=;
+	h=From:To:Subject:Date:Message-Id:MIME-Version;
+	b=Q4kXXmjvf/ibWt6l3MKLMYR2k+cgSWSaU73TW60lxgVH1DvnLf70gLUh5i3G0nrre
+	 8/vZ3fBKX+uqdYc8dGuaxOgp9MWrDifqZ3/9IrXr5w2qDY4Xw9iBH7g7JXOyM+0lpB
+	 Up/59/wmO3fa2k7+Mpf9Ha5nU04oD7E77u0T5A/Q=
+X-QQ-mid: bizesmtp85t1730087307tdhqh0l2
+X-QQ-Originating-IP: dCYFQrp0v7vMRUT66sXnuY2O2ebBilMy96q78ZgxUEE=
+Received: from localhost.localdomain ( [123.124.208.226])
+	by bizesmtp.qq.com (ESMTP) with 
+	id ; Mon, 28 Oct 2024 11:48:25 +0800 (CST)
+X-QQ-SSF: 0000000000000000000000000000000
+X-QQ-GoodBg: 1
+X-BIZMAIL-ID: 2145193820470880376
+From: goutongchen@uniontech.com
+To: goutongchen@uniontech.com
+Cc: dmitry.baryshkov@linaro.org,
+	gouhao@uniontech.com,
+	iommu@lists.linux.dev,
+	jgg@ziepe.ca,
+	joro@8bytes.org,
+	linux-arm-kernel@lists.infradead.org,
+	linux-kernel@vger.kernel.org,
+	robdclark@chromium.org,
+	robin.murphy@arm.com,
+	will@kernel.org
+Subject: [PATCH v2] iommu/arm-smmu: Add judgment on the size and granule parameters passed in
+Date: Mon, 28 Oct 2024 11:48:23 +0800
+Message-Id: <20241028034823.22838-1-goutongchen@uniontech.com>
+X-Mailer: git-send-email 2.20.1
+In-Reply-To: <20241024100224.62942-1-goutongchen@uniontech.com>
+References: <20241024100224.62942-1-goutongchen@uniontech.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <cover.1729897352.git.nicolinc@nvidia.com> <4f5ed9d75c23a503ffe672a85cf9010569652794.1729897352.git.nicolinc@nvidia.com>
-In-Reply-To: <4f5ed9d75c23a503ffe672a85cf9010569652794.1729897352.git.nicolinc@nvidia.com>
-From: Zhangfei Gao <zhangfei.gao@linaro.org>
-Date: Mon, 28 Oct 2024 11:24:10 +0800
-Message-ID: <CABQgh9Gkt5tsw+wr_=WeA+m=Kz2xY5Z7aSBNhHCvBG2r=7O3TQ@mail.gmail.com>
-Subject: Re: [PATCH v5 06/13] iommufd: Allow pt_id to carry viommu_id for IOMMU_HWPT_ALLOC
-To: Nicolin Chen <nicolinc@nvidia.com>
-Cc: jgg@nvidia.com, kevin.tian@intel.com, will@kernel.org, joro@8bytes.org, 
-	suravee.suthikulpanit@amd.com, robin.murphy@arm.com, dwmw2@infradead.org, 
-	baolu.lu@linux.intel.com, shuah@kernel.org, linux-kernel@vger.kernel.org, 
-	iommu@lists.linux.dev, linux-arm-kernel@lists.infradead.org, 
-	linux-kselftest@vger.kernel.org, eric.auger@redhat.com, 
-	jean-philippe@linaro.org, mdf@kernel.org, mshavit@google.com, 
-	shameerali.kolothum.thodi@huawei.com, smostafa@google.com, yi.l.liu@intel.com, 
-	aik@amd.com, patches@lists.linux.dev
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+X-QQ-SENDSIZE: 520
+Feedback-ID: bizesmtp:uniontech.com:qybglogicsvrgz:qybglogicsvrgz8a-0
+X-QQ-XMAILINFO: NQUMxZLa5thm4xRs+e6BAyU8MEa4v1Ukbo2NA5f/ZsRBzbZ2YvgxoQMx
+	X9UxtHdeGXbC4fhKbDcaqTp8R2LuBFuJN80dB/6Gb7pg75jkcZ9kKsQuFbeFPWo13InuE2J
+	5OReAl0fIwuQaFyK4a4Rj9+OceainLGPd0/uk+BgCgIY23CpF077kui5/mYETGQpntHxN4h
+	3b5/EILDINCbDzgOFehTU+NVMyzLBbS1bSUuAOlZS2Cn8aBdr4DJCSv5idr0igSF3NsSIpi
+	2f1lqdsDNozx57w8gMA1WnJ2px5LA86jSSLhjW26zyCvnPPQADHcayucXYetN/JNhkNT+8J
+	vj72s5ZQfwpHlrwciz+4WekpzHGg+CJzM0ykZmB71Oc01Wcr5z7UeXQcwcb/2bIF1HkO8eA
+	92klhG6Gi0251f5MPBXmRSbO2mv3wXSEb4iJ3d9izaCXQgqKrimD1MvJB0GRJTRh8xwkYWP
+	qVgA/MmT327xSmdxMdRh63EkKwF+uey17hbco6I9LSvFvmL2x4wYukt9SAuVDxdD0+ocuT1
+	XCanopbBecLIaSffRIxeR61VZW+Oen3mQT0999z3xvVRKUfkcm1Ocz7SWc8GReDbrxibdoO
+	jscSxx4sNVIa4KEe2z4KtSoNOPRivBpXD/aqf94a7eTEY3akgj/DI1MFeYZcssIPY5gAD7t
+	jHYlTdbANyiTYmKQKzysPzxoV+2cbKiZdPd4/0Gm3V8ukDM9Uw3K7/n7X21eKtfycKQuUSZ
+	IXpxcgCGmVJXCxZ1Bv+25SMvwBHa97KRh8y+fLuL2eG3wG97YJnESPNZBVYWZYPQL7uz9zH
+	aqSis3LgjWvRT7mHQGI4wdYOgAHMmi93jcaA8MP9+kZEit7jcCe+y/yWUi+E41Q6sdlTtKn
+	PYhr3Mn9mGou9f+mYQdASNH1pAqoJbcURP9r8Z0gS30JSzSDfZ7oGKU7aX1/nJQMAO2gipd
+	RXRbTH/aSTmlW5NpaRiNkyHlN3cY4piDyZP8=
+X-QQ-XMRINFO: Nq+8W0+stu50PRdwbJxPCL0=
+X-QQ-RECHKSPAM: 0
 
-On Sat, 26 Oct 2024 at 07:50, Nicolin Chen <nicolinc@nvidia.com> wrote:
->
-> Now a vIOMMU holds a shareable nesting parent HWPT. So, it can act like
-> that nesting parent HWPT to allocate a nested HWPT.
->
-> Support that in the IOMMU_HWPT_ALLOC ioctl handler, and update its kdoc.
->
-> Also, add an iommufd_hwpt_nested_alloc_for_viommu helper to allocate a
-> nested HWPT for a vIOMMU object. Since a vIOMMU object holds the parent
-> hwpt's refcount already, increase the refcount of the vIOMMU only.
->
-> Signed-off-by: Nicolin Chen <nicolinc@nvidia.com>
-> ---
->  drivers/iommu/iommufd/iommufd_private.h |  1 +
->  include/uapi/linux/iommufd.h            | 14 ++---
->  drivers/iommu/iommufd/hw_pagetable.c    | 71 ++++++++++++++++++++++++-
->  3 files changed, 79 insertions(+), 7 deletions(-)
->
-> diff --git a/drivers/iommu/iommufd/iommufd_private.h b/drivers/iommu/iommufd/iommufd_private.h
-> index 9adf8d616796..8c9ab35eaea5 100644
-> --- a/drivers/iommu/iommufd/iommufd_private.h
-> +++ b/drivers/iommu/iommufd/iommufd_private.h
-> @@ -288,6 +288,7 @@ struct iommufd_hwpt_paging {
->  struct iommufd_hwpt_nested {
->         struct iommufd_hw_pagetable common;
->         struct iommufd_hwpt_paging *parent;
-> +       struct iommufd_viommu *viommu;
->  };
->
->  static inline bool hwpt_is_paging(struct iommufd_hw_pagetable *hwpt)
-> diff --git a/include/uapi/linux/iommufd.h b/include/uapi/linux/iommufd.h
-> index 3d320d069654..717659b9fdce 100644
-> --- a/include/uapi/linux/iommufd.h
-> +++ b/include/uapi/linux/iommufd.h
-> @@ -430,7 +430,7 @@ enum iommu_hwpt_data_type {
->   * @size: sizeof(struct iommu_hwpt_alloc)
->   * @flags: Combination of enum iommufd_hwpt_alloc_flags
->   * @dev_id: The device to allocate this HWPT for
-> - * @pt_id: The IOAS or HWPT to connect this HWPT to
-> + * @pt_id: The IOAS or HWPT or vIOMMU to connect this HWPT to
->   * @out_hwpt_id: The ID of the new HWPT
->   * @__reserved: Must be 0
->   * @data_type: One of enum iommu_hwpt_data_type
-> @@ -449,11 +449,13 @@ enum iommu_hwpt_data_type {
->   * IOMMU_HWPT_DATA_NONE. The HWPT can be allocated as a parent HWPT for a
->   * nesting configuration by passing IOMMU_HWPT_ALLOC_NEST_PARENT via @flags.
->   *
-> - * A user-managed nested HWPT will be created from a given parent HWPT via
-> - * @pt_id, in which the parent HWPT must be allocated previously via the
-> - * same ioctl from a given IOAS (@pt_id). In this case, the @data_type
-> - * must be set to a pre-defined type corresponding to an I/O page table
-> - * type supported by the underlying IOMMU hardware.
-> + * A user-managed nested HWPT will be created from a given vIOMMU (wrapping a
-> + * parent HWPT) or a parent HWPT via @pt_id, in which the parent HWPT must be
-> + * allocated previously via the same ioctl from a given IOAS (@pt_id). In this
-> + * case, the @data_type must be set to a pre-defined type corresponding to an
-> + * I/O page table type supported by the underlying IOMMU hardware. The device
-> + * via @dev_id and the vIOMMU via @pt_id must be associated to the same IOMMU
-> + * instance.
->   *
->   * If the @data_type is set to IOMMU_HWPT_DATA_NONE, @data_len and
->   * @data_uptr should be zero. Otherwise, both @data_len and @data_uptr
-> diff --git a/drivers/iommu/iommufd/hw_pagetable.c b/drivers/iommu/iommufd/hw_pagetable.c
-> index d06bf6e6c19f..1df5d40c93df 100644
-> --- a/drivers/iommu/iommufd/hw_pagetable.c
-> +++ b/drivers/iommu/iommufd/hw_pagetable.c
-> @@ -57,7 +57,10 @@ void iommufd_hwpt_nested_destroy(struct iommufd_object *obj)
->                 container_of(obj, struct iommufd_hwpt_nested, common.obj);
->
->         __iommufd_hwpt_destroy(&hwpt_nested->common);
-> -       refcount_dec(&hwpt_nested->parent->common.obj.users);
-> +       if (hwpt_nested->viommu)
-> +               refcount_dec(&hwpt_nested->viommu->obj.users);
-> +       else
-> +               refcount_dec(&hwpt_nested->parent->common.obj.users);
->  }
->
->  void iommufd_hwpt_nested_abort(struct iommufd_object *obj)
-> @@ -260,6 +263,56 @@ iommufd_hwpt_nested_alloc(struct iommufd_ctx *ictx,
->         return ERR_PTR(rc);
->  }
->
-> +/**
-> + * iommufd_viommu_alloc_hwpt_nested() - Get a hwpt_nested for a vIOMMU
-> + * @viommu: vIOMMU ojbect to associate the hwpt_nested/domain with
-> + * @user_data: user_data pointer. Must be valid
-> + *
-> + * Allocate a new IOMMU_DOMAIN_NESTED for a vIOMMU and return it as a NESTED
-> + * hw_pagetable.
-> + */
-> +static struct iommufd_hwpt_nested *
-> +iommufd_viommu_alloc_hwpt_nested(struct iommufd_viommu *viommu, u32 flags,
-> +                                const struct iommu_user_data *user_data)
-> +{
-> +       struct iommufd_hwpt_nested *hwpt_nested;
-> +       struct iommufd_hw_pagetable *hwpt;
-> +       int rc;
-> +
-> +       if (flags)
-> +               return ERR_PTR(-EOPNOTSUPP);
+From: goutongchen <goutongchen@uniontech.com>
 
-This check should be removed.
+In the arm_smmu_tlb_inv_range_s1 and arm_smmu_tlb_inv_range_s2
+functions, the size and granule passed in must be judged.
+It must be ensured that the passed in parameter is not 0 and
+the size is an integer multiple of the granule, otherwise it
+will cause an infinite while loop.
 
-When a user page fault is required, IOMMU_HWPT_FAULT_ID_VALID is set.
-if (cmd->flags & IOMMU_HWPT_FAULT_ID_VALID) {
+This was encountered during testing, and was initially triggered
+by passing in a size value of 0, causing the kernel to crash.
 
-By the way, has qemu changed compared with v3?
-I still got a hardware error in this version, in check
+[    8.214378][  T675] xhci_hcd 0000:0b:00.0: new USB bus registered, assigned bus number 1
+[   68.246185][    C0] rcu: INFO: rcu_sched self-detected stall on CPU
+[   68.246866][    C0] rcu:     0-....: (5999 ticks this GP) idle=796c/1/0x4000000000000000 softirq=161/161 fqs=2999
+[   68.247924][    C0] rcu:     (t=6000 jiffies g=-699 q=1 ncpus=128)
+[   68.248452][    C0] CPU: 0 PID: 675 Comm: kworker/0:2 Not tainted 6.6.0-25.02.2500.002.uos25.aarch64 #1
+[   68.249237][    C0] Hardware name: Inspur     CS5260F     /CS5260F          , BIOS 4.0.16 05/31/22 16:53:51
+[   68.250029][    C0] Workqueue: events work_for_cpu_fn
+[   68.250497][    C0] pstate: a0000005 (NzCv daif -PAN -UAO -TCO -DIT -SSBS BTYPE=--)
+[   68.251188][    C0] pc : arm_smmu_tlb_inv_range_s1+0xf0/0x158
+[   68.251704][    C0] lr : arm_smmu_tlb_inv_walk_s1+0x44/0x68
+[   68.252189][    C0] sp : ffff80008044b780
+[   68.252530][    C0] x29: ffff80008044b780 x28: 0000000000000000 x27: 0000000000001000
+[   68.253212][    C0] x26: 0000000000000600 x25: 0000000000000001 x24: 0000000000000600
+[   68.253857][    C0] x23: 0000000000000000 x22: 0000000000001000 x21: fffffc64e2e59000
+[   68.254544][    C0] x20: 0000000039c1d1a6 x19: ffff3fe944c40280 x18: 0000000000000000
+[   68.255240][    C0] x17: 626d756e20737562 x16: ffffb0e7e08c1008 x15: 0000000000000000
+[   68.255930][    C0] x14: ffff3ef8c1ea15cd x13: ffff3ef8c1ea15cb x12: fffffcfba30e3880
+[   68.256538][    C0] x11: 00000000ffff7fff x10: ffff80008044b6b0 x9 : ffffb0e7decd1b5c
+[   68.257126][    C0] x8 : 0000000000000dc0 x7 : ffff3ee8c4148000 x6 : ffff3ee8c4148000
+[   68.257822][    C0] x5 : 0000000000000008 x4 : 0000000000000000 x3 : ffff3fe944c40800
+[   68.258497][    C0] x2 : 0000000000000010 x1 : 0000000000000020 x0 : ffffb0e7dfd6c3d0
+[   68.259185][    C0] Call trace:
+[   68.259451][    C0]  arm_smmu_tlb_inv_range_s1+0xf0/0x158
+[   68.259933][    C0]  arm_smmu_tlb_inv_walk_s1+0x44/0x68
+[   68.260384][    C0]  __arm_lpae_map+0x1f0/0x2c0
+[   68.260796][    C0]  arm_lpae_map_pages+0xec/0x150
+[   68.261215][    C0]  arm_smmu_map_pages+0x48/0x130
+[   68.261654][    C0]  __iommu_map+0x134/0x2a8
+[   68.262098][    C0]  iommu_map_sg+0xb8/0x1c8
+[   68.262500][    C0]  __iommu_dma_alloc_noncontiguous.constprop.0+0x180/0x270
+[   68.263145][    C0]  iommu_dma_alloc+0x178/0x238
+[   68.263557][    C0]  dma_alloc_attrs+0xf8/0x108
+[   68.263962][    C0]  xhci_mem_init+0x1e8/0x6d0
+[   68.264372][    C0]  xhci_init+0x88/0x1d0
+[   68.264736][    C0]  xhci_gen_setup+0x284/0x468
+[   68.265121][    C0]  xhci_pci_setup+0x60/0x1f8
+[   68.265506][    C0]  usb_add_hcd+0x278/0x650
+[   68.265860][    C0]  usb_hcd_pci_probe+0x218/0x458
+[   68.266256][    C0]  xhci_pci_probe+0x7c/0x270
+[   68.266660][    C0]  local_pci_probe+0x48/0xb8
+[   68.267074][    C0]  work_for_cpu_fn+0x24/0x40
+[   68.267548][    C0]  process_one_work+0x170/0x3c0
+[   68.267999][    C0]  worker_thread+0x234/0x3b8
+[   68.268383][    C0]  kthread+0xf0/0x108
+[   68.268704][    C0]  ret_from_fork+0x10/0x20
 
-Thanks
+Signed-off-by: goutongchen <goutongchen@uniontech.com>
+---
+ drivers/iommu/arm/arm-smmu/arm-smmu.c | 14 ++++++++++++++
+ 1 file changed, 14 insertions(+)
+
+diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu.c b/drivers/iommu/arm/arm-smmu/arm-smmu.c
+index 8321962b3714..fdd7d7e9ce06 100644
+--- a/drivers/iommu/arm/arm-smmu/arm-smmu.c
++++ b/drivers/iommu/arm/arm-smmu/arm-smmu.c
+@@ -282,6 +282,13 @@ static void arm_smmu_tlb_inv_range_s1(unsigned long iova, size_t size,
+ 	struct arm_smmu_cfg *cfg = &smmu_domain->cfg;
+ 	int idx = cfg->cbndx;
+ 
++	if (size == 0 || granule == 0 || (size % granule) != 0) {
++		dev_err(smmu->dev,
++				 "The size or granule passed in is err. size=%zu, granule=%zu\n",
++				 size, granule);
++		return;
++	}
++
+ 	if (smmu->features & ARM_SMMU_FEAT_COHERENT_WALK)
+ 		wmb();
+ 
+@@ -309,6 +316,13 @@ static void arm_smmu_tlb_inv_range_s2(unsigned long iova, size_t size,
+ 	struct arm_smmu_device *smmu = smmu_domain->smmu;
+ 	int idx = smmu_domain->cfg.cbndx;
+ 
++	if (size == 0 || granule == 0 || (size % granule) != 0) {
++		dev_err(smmu->dev,
++				 "The size or granule passed in is err. size=%zu, granule=%zu\n",
++				 size, granule);
++		return;
++	}
++
+ 	if (smmu->features & ARM_SMMU_FEAT_COHERENT_WALK)
+ 		wmb();
+ 
+-- 
+2.20.1
+
