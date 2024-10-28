@@ -1,84 +1,82 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 14F971DF251;
-	Mon, 28 Oct 2024 17:46:03 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 9608821106
+	for <iommu@lists.linux.dev>; Mon, 28 Oct 2024 17:58:53 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1730137564; cv=none; b=Lr4lCDyzRpPl7iPe+WeCvxJ8qatFOPrvmNc9t0GEnjwafNrF/m0bXDSsWShWokA23HKzKbTrbvhe9c3YG2GqO75umSwqBVM+uE3VGy7vriSCtuJtiK4Rryx4Lgu+qi+7rpbMqOpF3aC7U9UOM0a2XlGntFLN2wY6bUeyF2Yf6lQ=
+	t=1730138335; cv=none; b=nAN/ZWEzYEMe8LcSgHK+djGKZBQSRcULopR7a6EXy+DiS5aHjg0idsZlPffppmiGcOpRnQKEnuV6N3Pp4B8fE/+7Ft17Q2+eE3Fo03EtILA+G5rdds0BNZu/PJZOfeq8Pzg91EBCE5O3DX0xCJhQ39k0z7cjP6sYs2q43XY9GWo=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1730137564; c=relaxed/simple;
-	bh=wBM3YyAQDgxYAAlMYnnUUBE+DwhHmnmpDhboAb817Yc=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=gaVKzORHqIVU4nuicpT8QjpGr6OyCRQ1LtGJgcEWmpxwIY6qbdiLOaoxeDiZtK/wXGW3osHPTV4vw7ssekkwXv1JKlWSclsUuQOgB/1Z3D5eZH2Q5deIvwMFS4nBNZZz7vKweOoecCgBdEXorEj3bcJ0cWrbUIErbmgZGgQWrKo=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A21FFC4CEC3;
-	Mon, 28 Oct 2024 17:46:01 +0000 (UTC)
-Date: Mon, 28 Oct 2024 17:45:59 +0000
-From: Catalin Marinas <catalin.marinas@arm.com>
-To: Ido Schimmel <idosch@idosch.org>
-Cc: Robin Murphy <robin.murphy@arm.com>, joro@8bytes.org, will@kernel.org,
-	iommu@lists.linux.dev, linux-kernel@vger.kernel.org,
-	zhangzekun11@huawei.com, john.g.garry@oracle.com,
-	dheerajkumar.srivastava@amd.com, jsnitsel@redhat.com
-Subject: Re: [PATCH v3 0/2] iommu/iova: Make the rcache depot properly
- flexible
-Message-ID: <Zx_N1xVHFskgx-KX@arm.com>
-References: <ZY1osaGLyT-sdKE8@shredder>
- <c9cf02b5-7add-46ea-8db1-46fdce191c1c@arm.com>
- <ZZ2AqZT4dD-s01q9@shredder>
- <ab22c439-e7da-49b5-b20b-856daf376c02@arm.com>
- <ZZ7atzgT6_kOvWnJ@arm.com>
- <ZZ-ky9UCoHwbyqfn@shredder>
- <ZZ-_LWz_4KxOkRsA@arm.com>
- <ZaFbPnDrYT5uGqJD@shredder>
- <ZaTb8KorPFPgRqD6@shredder>
- <Zx9Fepzvrs8b6_LX@shredder.mtl.com>
+	s=arc-20240116; t=1730138335; c=relaxed/simple;
+	bh=qQUJIc218FY4jP+zYDYMEfn40JNC6dBOJaSbdOuKCgs=;
+	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version; b=fgcFtGqHzXz5TjL+Dzn2q937b5ZZ1gdCNt9LJSLYm3Iyrrv+yImMexw/KCUouqHbXHj5NS3xgXP3kXU/hrx58PZ8lHKnC3eYBMkatsZ8OMCVIfZe0CDKgEg1DZS9nnQj9kCJf0WKf/qoaG744IWKZ7ftx5U9tahTPyRuo1yIl7U=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; arc=none smtp.client-ip=217.140.110.172
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id B1D29497;
+	Mon, 28 Oct 2024 10:59:16 -0700 (PDT)
+Received: from e121345-lin.cambridge.arm.com (e121345-lin.cambridge.arm.com [10.1.196.40])
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPA id 1A5BB3F66E;
+	Mon, 28 Oct 2024 10:58:44 -0700 (PDT)
+From: Robin Murphy <robin.murphy@arm.com>
+To: joro@8bytes.org,
+	will@kernel.org,
+	laurent.pinchart@ideasonboard.com,
+	mchehab@kernel.org,
+	andersson@kernel.org,
+	mathieu.poirier@linaro.org
+Cc: hns@goldelico.com,
+	b-padhi@ti.com,
+	andreas@kemnade.info,
+	iommu@lists.linux.dev,
+	linux-arm-kernel@lists.infradead.org,
+	linux-omap@vger.kernel.org,
+	linux-media@vger.kernel.org,
+	linux-remoteproc@vger.kernel.org
+Subject: [PATCH 0/4] Fix omap-iommu bitrot
+Date: Mon, 28 Oct 2024 17:58:34 +0000
+Message-Id: <cover.1730136799.git.robin.murphy@arm.com>
+X-Mailer: git-send-email 2.39.2.101.g768bb238c484.dirty
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <Zx9Fepzvrs8b6_LX@shredder.mtl.com>
+Content-Transfer-Encoding: 8bit
 
-On Mon, Oct 28, 2024 at 10:04:10AM +0200, Ido Schimmel wrote:
-> On Mon, Jan 15, 2024 at 09:17:04AM +0200, Ido Schimmel wrote:
-> > On Fri, Jan 12, 2024 at 05:31:15PM +0200, Ido Schimmel wrote:
-> > > On Thu, Jan 11, 2024 at 10:13:01AM +0000, Catalin Marinas wrote:
-> > > > On Thu, Jan 11, 2024 at 10:20:27AM +0200, Ido Schimmel wrote:
-> > > > > On Wed, Jan 10, 2024 at 05:58:15PM +0000, Catalin Marinas wrote:
-> > > > > > Transient false positives are possible, especially as the code doesn't
-> > > > > > use a double-linked list (for the latter, kmemleak does checksumming and
-> > > > > > detects the prev/next change, defers the reporting until the object
-> > > > > > becomes stable). That said, if a new scan is forced (echo scan >
-> > > > > > /sys/kernel/debug/kmemleak), are the same objects still listed as leaks?
-> > > > > > If yes, they may not be transient.
-> > > > > 
-> > > > > We are doing "scan" and "clear" after each test. I will disable the
-> > > > > "clear" and see if the leaks persist.
-> > > > 
-> > > > If it is indeed a false positive
-> > > 
-> > > Looks like the leaks are transient. After removing the "clear" step the
-> > > leaks do not seem to persist.
-> > > 
-> > > > you can try the patch below (I haven't given it any run-time test,
-> > > > only compiled):
-> > > 
-> > > Will try and let you know next week.
-> > 
-> > Looks good. Feel free to add:
-> > 
-> > Tested-by: Ido Schimmel <idosch@nvidia.com>
-> 
-> Catalin, we have been using this patch since you posted it and haven't
-> seen any issues. Can please submit it upstream?
+Hi all,
 
-Oh, I completely forgot about it. I'll try to do it this week. Thanks
-for the reminder.
+It seems omap-iommu hasn't had enough mainline users to avoid bitrotting
+through the more recent evolution of the IOMMU API internals. These
+patches attempt to bring it and its consumers sufficiently up-to-date
+to work again, in a manner that's hopefully backportable. This is
+largely all written by inspection, but I have managed to lightly boot
+test patch #3 on an OMAP4 Pandaboard to confirm iommu_probe_device()
+working again.
+
+This supersedes my previous patch[1]. Patches #1 and #2 are functionally
+independent, and can be applied directly to their respective trees if
+preferred.
+
+Thanks,
+Robin.
+
+[1] https://lore.kernel.org/linux-iommu/c44545c6d07c65d89daa297298c27bb0f15c8b84.1728393458.git.robin.murphy@arm.com/
+
+
+Robin Murphy (4):
+  remoteproc/omap: Handle ARM dma_iommu_mapping
+  media: omap3isp: Handle ARM dma_iommu_mapping
+  iommu/omap: Add minimal fwnode support
+  iommu: Make bus_iommu_probe() static
+
+ drivers/iommu/iommu.c                    |  3 ++-
+ drivers/iommu/omap-iommu.c               | 26 +++++++++++++++---------
+ drivers/media/platform/ti/omap3isp/isp.c |  7 +++++++
+ drivers/remoteproc/omap_remoteproc.c     | 17 ++++++++++++++++
+ include/linux/iommu.h                    |  1 -
+ 5 files changed, 42 insertions(+), 12 deletions(-)
 
 -- 
-Catalin
+2.39.2.101.g768bb238c484.dirty
+
