@@ -1,176 +1,246 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from NAM12-DM6-obe.outbound.protection.outlook.com (mail-dm6nam12on2045.outbound.protection.outlook.com [40.107.243.45])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5DE311DFE1C;
-	Mon, 28 Oct 2024 20:59:05 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1730149145; cv=none; b=IwWKSDkJkiHsCLPQpDeOGR5tFABIVQ2O7tZHohbWqIKczY8nI/uFVF7bryeYno2+Z9uGY+UwUPcA1Pf7Kz5icTs+Y/TrpmyTJxloHYiEO+cE0f1v7US7CiIHeXxo2wzh8gSrfGjwlCgRxtelk5y7BUbRrjg8oUr4wU/MZp5B8Dg=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1730149145; c=relaxed/simple;
-	bh=XDchRQtmy6pHQo4VldmyUQn5KpIMSBE9FuRx/IQ/fLc=;
-	h=Date:From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:
-	 Content-Disposition:In-Reply-To; b=ba/i5GJSzfWbnG6cDm5hqDqK02WJ9aIR73MA4UJvgfoayCXD69BlugrdoOGNP71ujMbWyTRPGgFsT3/+TlQAjK9+7cwoQl8Dss5CEmS5T7fVf7F4vg9td8FxKUHSSqYzblQd/LHdaVFTOUCColqZ78UojIU0LzkvuaaByoNlj+w=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=YHWCjZnS; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E53431E0E1D;
+	Mon, 28 Oct 2024 21:08:54 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.243.45
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1730149737; cv=fail; b=TnyQ9jOXFXtDP00vVkfOhsHL+mF8LDZtnpKF60mP3/uxvGE1pWsCD8VfiGCZJsGGf8bHNiWkpLR5RqwFqUAfGMcJwFnPtp1khl1Q8emeuIR7np7MxFq3FjpUKdWoEIBadbLK5digFqK+h24En4/kdnQ74bMDk9dk15afZdHGo/o=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1730149737; c=relaxed/simple;
+	bh=h3Ek8FSN8kh8AqcTPRFmJujaiabhLKgKFFL3wZtylQw=;
+	h=Date:From:To:CC:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=cioVAeHJt9xJ4KFEO2NArVkVqfIXKOMXkmNGtB50dWchtjnseFwo64GZKIZ3vwPOEo1fqBiFRzNXiLvkJkNfDgsPv0pJR5CPn5Ak72FZBbumOp5sFueh9J/en1zy2gWopFcGFEh685cKAGIi2Qjr0koIwJTEOg019qHhjDdequA=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=UseCCBb3; arc=fail smtp.client-ip=40.107.243.45
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="YHWCjZnS"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A8324C4CEC3;
-	Mon, 28 Oct 2024 20:59:04 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1730149144;
-	bh=XDchRQtmy6pHQo4VldmyUQn5KpIMSBE9FuRx/IQ/fLc=;
-	h=Date:From:To:Cc:Subject:In-Reply-To:From;
-	b=YHWCjZnSvGD0FLXm38frIZRba2sQQ98rHEmaoqo7+IGWHJUxibwDnNsBZgESkMQf2
-	 TsIZgg66kDAZi3cQ/raC0xLCHxFt/n+Q+GfpSPikoPYWogMwVVkT2YGGo6r+mvlpQs
-	 LYcYZiWraEirilGEQRB7r1dSqxIlLl6PnIyzBEG69k5H5ZL/4V51yCX9ue/AQ9hoao
-	 YtQPx9n4wU6TLKUu3BMoGWW4nbSLG6WcdHPvYzg+727B9k+tQFNcmm7b2B+OIclaEr
-	 WoCdB/gjnaxlHYJSzABbNThj3fTHRWtRg5gmc802RNwzAtTGyuBAMLTzhdJzsWVOka
-	 YksEeTIOFMwbA==
-Date: Mon, 28 Oct 2024 15:59:02 -0500
-From: Bjorn Helgaas <helgaas@kernel.org>
-To: Leon Romanovsky <leon@kernel.org>
-Cc: Jens Axboe <axboe@kernel.dk>, Jason Gunthorpe <jgg@ziepe.ca>,
-	Robin Murphy <robin.murphy@arm.com>, Joerg Roedel <joro@8bytes.org>,
-	Will Deacon <will@kernel.org>, Christoph Hellwig <hch@lst.de>,
-	Sagi Grimberg <sagi@grimberg.me>, Keith Busch <kbusch@kernel.org>,
-	Bjorn Helgaas <bhelgaas@google.com>,
-	Logan Gunthorpe <logang@deltatee.com>,
-	Yishai Hadas <yishaih@nvidia.com>,
-	Shameer Kolothum <shameerali.kolothum.thodi@huawei.com>,
-	Kevin Tian <kevin.tian@intel.com>,
-	Alex Williamson <alex.williamson@redhat.com>,
-	Marek Szyprowski <m.szyprowski@samsung.com>,
-	=?utf-8?B?SsOpcsO0bWU=?= Glisse <jglisse@redhat.com>,
-	Andrew Morton <akpm@linux-foundation.org>,
-	Jonathan Corbet <corbet@lwn.net>, linux-doc@vger.kernel.org,
-	linux-kernel@vger.kernel.org, linux-block@vger.kernel.org,
-	linux-rdma@vger.kernel.org, iommu@lists.linux.dev,
-	linux-nvme@lists.infradead.org, linux-pci@vger.kernel.org,
-	kvm@vger.kernel.org, linux-mm@kvack.org
-Subject: Re: [PATCH 01/18] PCI/P2PDMA: refactor the p2pdma mapping helpers
-Message-ID: <20241028205902.GA1114413@bhelgaas>
+	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="UseCCBb3"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=BIIRmxnipvJTmlFIBVFxbjSP8s1hGRi5a5GJJV16aV7Dic4EKJ/etU2GIIZnX2+gqIMzLLWu96qS+tMeTudbkllakmtcqz8KuJo9OLNgNLnDUyIVeLLMWtC1It2GK46X+JfP6xGCv6fM60hZF0t0RB8+I5DCRpMP/2AsdNccOp3N0ywcesbRFpLo+pZtcTw9TJR1FjrespKGyv2oidAjIDeoM0Osxu0eWvKalA7Cu/LOtSFVzsr3ckAzaFurgPP8ag3aG1fz2oohmZaYlMuSbbRXRrngT1bYivL9n9cbRAUZ7mDm9yZKm8RBU2Qqa4Nk2ehraS25MBFqG2yVTbQAPQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=5/94DjP8AZN+nyxAsn4CFaOPl50B8/B4vzqoL8xHL1I=;
+ b=GhlmGo1zABUSZy7qCK/7o347gIEwPqQBSKvsx8/IVz9QX4T/C3ow22+oSVuOJgvltj92iokmUYGztWHWtbpACqlY3xfHD4rUYJDabSkRqrKw1xc4xN4UTe6WL8gAEA+SStMOouJ7/W4DBW03S9bN+6f40JhQQI4Ah1S6lqOJ4UHU4H7BdbUq/KwV0nk5wZblYJPljMkq5rc6/gGA2LfVUsVqwMLHHwDkVb8gj9+T2ZwGgwGIKn7l7ODaPTZSPqnD0GGWK3BCPPkQ/Ff13OA7SI7mpyX3jnenlxY+IcmrVVBwlKg5dkyvLXD1LrYDKHvVE6NJWTVeLHSZWASTTgfXmA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 216.228.117.160) smtp.rcpttodomain=intel.com smtp.mailfrom=nvidia.com;
+ dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
+ dkim=none (message not signed); arc=none (0)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=5/94DjP8AZN+nyxAsn4CFaOPl50B8/B4vzqoL8xHL1I=;
+ b=UseCCBb3Ynh/0a60uQYL41jI8CiYaAq/XNH+TqH5XAzOqFv3cyQxeSLGSRAO75uuSt9GtafIsousDLtltoudPIo5oQ/MJUC0JUwW95y2Tp+ka9xoWLCyOmg+2HFjCDczTQ5UP07lAarc8EcJvT/M5sIPnXylNXmFAFtuC1GVsLR5KqUuFV5zrrDThQIOyht1TsphiAVl0hptKw7S1OEgJ6aUngjGJvn9eS3yc7q1yQ84Gz16THgA4u7iG+vlhIDMFlcAda/5dOIqrD35DW5IQOXcFAumA4YlhdQxEA+zOY1QUFVgH9b9EKrd2764RoVSbredrRhAi5TO+0km5x46BQ==
+Received: from MN2PR14CA0024.namprd14.prod.outlook.com (2603:10b6:208:23e::29)
+ by IA1PR12MB7685.namprd12.prod.outlook.com (2603:10b6:208:423::21) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.8093.27; Mon, 28 Oct
+ 2024 21:08:51 +0000
+Received: from BL02EPF00021F6D.namprd02.prod.outlook.com
+ (2603:10b6:208:23e:cafe::86) by MN2PR14CA0024.outlook.office365.com
+ (2603:10b6:208:23e::29) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.8093.26 via Frontend
+ Transport; Mon, 28 Oct 2024 21:08:51 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.117.160)
+ smtp.mailfrom=nvidia.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=nvidia.com;
+Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
+ 216.228.117.160 as permitted sender) receiver=protection.outlook.com;
+ client-ip=216.228.117.160; helo=mail.nvidia.com; pr=C
+Received: from mail.nvidia.com (216.228.117.160) by
+ BL02EPF00021F6D.mail.protection.outlook.com (10.167.249.9) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.8114.16 via Frontend Transport; Mon, 28 Oct 2024 21:08:50 +0000
+Received: from rnnvmail203.nvidia.com (10.129.68.9) by mail.nvidia.com
+ (10.129.200.66) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1544.4; Mon, 28 Oct
+ 2024 14:08:26 -0700
+Received: from rnnvmail201.nvidia.com (10.129.68.8) by rnnvmail203.nvidia.com
+ (10.129.68.9) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1544.4; Mon, 28 Oct
+ 2024 14:08:26 -0700
+Received: from Asurada-Nvidia (10.127.8.12) by mail.nvidia.com (10.129.68.8)
+ with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1544.4 via Frontend
+ Transport; Mon, 28 Oct 2024 14:08:24 -0700
+Date: Mon, 28 Oct 2024 14:08:23 -0700
+From: Nicolin Chen <nicolinc@nvidia.com>
+To: Jason Gunthorpe <jgg@nvidia.com>, <kevin.tian@intel.com>
+CC: Zhangfei Gao <zhangfei.gao@linaro.org>, <will@kernel.org>,
+	<joro@8bytes.org>, <suravee.suthikulpanit@amd.com>, <robin.murphy@arm.com>,
+	<dwmw2@infradead.org>, <baolu.lu@linux.intel.com>, <shuah@kernel.org>,
+	<linux-kernel@vger.kernel.org>, <iommu@lists.linux.dev>,
+	<linux-arm-kernel@lists.infradead.org>, <linux-kselftest@vger.kernel.org>,
+	<eric.auger@redhat.com>, <jean-philippe@linaro.org>, <mdf@kernel.org>,
+	<mshavit@google.com>, <shameerali.kolothum.thodi@huawei.com>,
+	<smostafa@google.com>, <yi.l.liu@intel.com>, <aik@amd.com>,
+	<patches@lists.linux.dev>
+Subject: Re: [PATCH v5 06/13] iommufd: Allow pt_id to carry viommu_id for
+ IOMMU_HWPT_ALLOC
+Message-ID: <Zx/9R5o59B2knsx6@Asurada-Nvidia>
+References: <cover.1729897352.git.nicolinc@nvidia.com>
+ <4f5ed9d75c23a503ffe672a85cf9010569652794.1729897352.git.nicolinc@nvidia.com>
+ <CABQgh9Gkt5tsw+wr_=WeA+m=Kz2xY5Z7aSBNhHCvBG2r=7O3TQ@mail.gmail.com>
+ <20241028130309.GP6956@nvidia.com>
+ <Zx+lGr9iD4DSkc8I@Asurada-Nvidia>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset="us-ascii"
 Content-Disposition: inline
-In-Reply-To: <a4d93ca45f7ad09105a1cf347e6b6d6b6fb7e303.1730037276.git.leon@kernel.org>
+In-Reply-To: <Zx+lGr9iD4DSkc8I@Asurada-Nvidia>
+X-NV-OnPremToCloud: ExternallySecured
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: BL02EPF00021F6D:EE_|IA1PR12MB7685:EE_
+X-MS-Office365-Filtering-Correlation-Id: e781456a-75ff-4c26-1f23-08dcf794b8f4
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam:
+	BCL:0;ARA:13230040|1800799024|36860700013|82310400026|376014|7416014;
+X-Microsoft-Antispam-Message-Info:
+	=?us-ascii?Q?DoJwqzvTgm2R8rlc3zAX8aGQGcr83niqJfAyedc4SaNz7L3tmPsoZ5dLgOR+?=
+ =?us-ascii?Q?YxN5eAHAVeMCb8oK3knO7Axk7QXDCY67AX7jwQproCjXCbyDZFJgg+bnWOgc?=
+ =?us-ascii?Q?kNa1szTERW7/WU+2bOjsJu26K64D7OuMszRiXOw4bcbsPjMeb9z/h6z/C6m9?=
+ =?us-ascii?Q?/Qntgy4e++YRuLGYilMNFIqBPzYpYoXZAxbjW/kVvB9bK9aUuZrSUq13/xyu?=
+ =?us-ascii?Q?lefUaqJVuO0RBAWHuEqWPcx4NXttIliW+ZWb//ClFCB2ZD9DZVbUg8VxVdxN?=
+ =?us-ascii?Q?L+vUzCvgsJs9jMpwrg0HGN7WeGC6tSO/YTalJmS9ZW7RdHapIvHO6mrmINc7?=
+ =?us-ascii?Q?4lh8p+Lq7mz5XjveLBH0gpbYnCHNmz55HdvRuqICr91Uk0yYvYlfIhD9yqVk?=
+ =?us-ascii?Q?aNigz2uN9+/+OH8UG2JUYgnMaOtCgW0WxrADJOq9vxF+2TgEq7JeDeEFAPcV?=
+ =?us-ascii?Q?a6OF5O+CKy1hmGXJNvUNdEKyQDeM1KWDI38w9RsKGskiKXVJXwNLYT1vcr5r?=
+ =?us-ascii?Q?sLsdhjfbVcgUvxR61W3jMxxb2BJSVHWxBHmSCoD2fTiseAegn/oFk+F8ACjc?=
+ =?us-ascii?Q?5OtQ9NVmwbpIyYndCdM3bjq9/bk9/ZxFsjjnX6T3hb5tLa3tbWSimhUI5WYv?=
+ =?us-ascii?Q?DYCaQFltSlzRnEZgReLTUs8zVj/qNM+8Vw85OCGPjJEPt0UPQYb13Bt4g1Ph?=
+ =?us-ascii?Q?yxWApkChoqrp/jdtXqPQOv/4xA1kWV9t8qrt/y3TF8o5qGYZ7qsXVSgY0H6y?=
+ =?us-ascii?Q?BnJLzDuOZsq47y1MK7JTT+DqaU/8s62hhuC86dTYrMlDwC93q4arY2bxF23d?=
+ =?us-ascii?Q?v8bB76RAjGoxkl4AjNMjLtitPA6jiLVoPcoUx+YL2NfXY+awxy3iNohqd1pW?=
+ =?us-ascii?Q?mbZsZEFqb104v6qNyuJc4FmLxmmysx0sI7F2MzQ25XidgpZsSqfupJTG+s24?=
+ =?us-ascii?Q?Wa9LzZ4wXCeoCl+8bGJXYTSd90frigYgS1ABtqnFUzbnfBDcpLLVS9BrL9+l?=
+ =?us-ascii?Q?dAqi+/YdfT9nIGs82/zga+kb1PoB5DHCeCXBvivpDlJ0TZaAVNgeeG8zyF89?=
+ =?us-ascii?Q?/m6oDVdKOiDg6VdQKrbUH+t9F/WhpsinjqUSXgiFnowBxJeiY/zqVYdKrxSl?=
+ =?us-ascii?Q?ocacrSdKfEWQuUlI8Rt+I1fnCY7q6adaWwme62aAe1Z8QgdcmKyAOgUGEpZT?=
+ =?us-ascii?Q?8F+rz5gEqTrm+qyLWgKqC1VeH0vgAjP80y6WiTprf5vTZgT2mx1FsK8wr44Z?=
+ =?us-ascii?Q?zT4xVUXIo5PD9yYa9xuJ2SqoWjji6JihtGK3BS2Wvk0gX8uvzverc9618ZQS?=
+ =?us-ascii?Q?X/vhhGr0cYgjCwABBqITxr0BYCdjF4Ru7qcv2WxKmKgEIPfeuC+m9qnRXHTu?=
+ =?us-ascii?Q?YZhYQIfRmKDDTx5d4o7MOcG3LjHRbL+6bKEmp5i7oJha8Vjeag=3D=3D?=
+X-Forefront-Antispam-Report:
+	CIP:216.228.117.160;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc6edge1.nvidia.com;CAT:NONE;SFS:(13230040)(1800799024)(36860700013)(82310400026)(376014)(7416014);DIR:OUT;SFP:1101;
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 28 Oct 2024 21:08:50.7026
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: e781456a-75ff-4c26-1f23-08dcf794b8f4
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.117.160];Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-AuthSource:
+	BL02EPF00021F6D.namprd02.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: IA1PR12MB7685
 
-Prefer subject capitalization in drivers/pci:
-
-  PCI/P2PDMA: Refactor ...
-
-On Sun, Oct 27, 2024 at 04:21:01PM +0200, Leon Romanovsky wrote:
-> From: Christoph Hellwig <hch@lst.de>
+On Mon, Oct 28, 2024 at 07:52:10AM -0700, Nicolin Chen wrote:
+> On Mon, Oct 28, 2024 at 10:03:09AM -0300, Jason Gunthorpe wrote:
+> > On Mon, Oct 28, 2024 at 11:24:10AM +0800, Zhangfei Gao wrote:
+> >
+> > > > +/**
+> > > > + * iommufd_viommu_alloc_hwpt_nested() - Get a hwpt_nested for a vIOMMU
+> > > > + * @viommu: vIOMMU ojbect to associate the hwpt_nested/domain with
+> > > > + * @user_data: user_data pointer. Must be valid
+> > > > + *
+> > > > + * Allocate a new IOMMU_DOMAIN_NESTED for a vIOMMU and return it as a NESTED
+> > > > + * hw_pagetable.
+> > > > + */
+> > > > +static struct iommufd_hwpt_nested *
+> > > > +iommufd_viommu_alloc_hwpt_nested(struct iommufd_viommu *viommu, u32 flags,
+> > > > +                                const struct iommu_user_data *user_data)
+> > > > +{
+> > > > +       struct iommufd_hwpt_nested *hwpt_nested;
+> > > > +       struct iommufd_hw_pagetable *hwpt;
+> > > > +       int rc;
+> > > > +
+> > > > +       if (flags)
+> > > > +               return ERR_PTR(-EOPNOTSUPP);
+> > >
+> > > This check should be removed.
+> > >
+> > > When a user page fault is required, IOMMU_HWPT_FAULT_ID_VALID is set.
+> > > if (cmd->flags & IOMMU_HWPT_FAULT_ID_VALID) {
+> >
+> > It can't just be removed..
+> >
+> > I suspect that IOMMU_HWPT_FAULT_ID_VALID should not be set on the
+> > nested domain but on the parent?
 > 
-> The current scheme with a single helper to determine the P2P status
-> and map a scatterlist segment force users to always use the map_sg
-> helper to DMA map, which we're trying to get away from because they
-> are very cache inefficient.
-> ...
+> By giving another look,
+> 
+> In iommufd_hwpt_paging_alloc(), we reject IOMMU_HWPT_FAULT_ID_VALID:
+>         const u32 valid_flags = IOMMU_HWPT_ALLOC_NEST_PARENT |
+>                                 IOMMU_HWPT_ALLOC_DIRTY_TRACKING;
+>         ...
+>         if (flags & ~valid_flags)
+>                 return ERR_PTR(-EOPNOTSUPP);
+> 
+> In iommufd_hwpt_nested_alloc(), we mask the flag away:
+>         if ((flags & ~IOMMU_HWPT_FAULT_ID_VALID) ||
+>             !user_data->len || !ops->domain_alloc_user)
+>                 return ERR_PTR(-EOPNOTSUPP);
+>         ...
+>         hwpt->domain = ops->domain_alloc_user(idev->dev,
+>                                               flags & ~IOMMU_HWPT_FAULT_ID_VALID,
+>                                               parent->common.domain, user_data);
+> 
+> Then, in the common function it has a section of
+>         if (cmd->flags & IOMMU_HWPT_FAULT_ID_VALID) {
+>         ...
+> 
+> It seems that this IOMMU_HWPT_FAULT_ID_VALID is for nested domains?
+> 
+> So, aligning with that, here we need:
+>         if ((flags & ~IOMMU_HWPT_FAULT_ID_VALID) || !user_data->len)
+>                 return ERR_PTR(-EOPNOTSUPP);
 
-Acked-by: Bjorn Helgaas <bhelgaas@google.com>
+I added a TEST_F for the coverage:
 
-A couple minor nits below.
++TEST_F(iommufd_viommu, viommu_alloc_nested_iopf)
++{
++       struct iommu_hwpt_selftest data = {
++               .iotlb = IOMMU_TEST_IOTLB_DEFAULT,
++       };
++       uint32_t viommu_id = self->viommu_id;
++       uint32_t dev_id = self->device_id;
++       uint32_t iopf_hwpt_id;
++       uint32_t fault_id;
++       uint32_t fault_fd;
++
++       if (self->device_id) {
++               test_ioctl_fault_alloc(&fault_id, &fault_fd);
++               test_err_hwpt_alloc_iopf(
++                       ENOENT, dev_id, viommu_id, UINT32_MAX,
++                       IOMMU_HWPT_FAULT_ID_VALID, &iopf_hwpt_id,
++                       IOMMU_HWPT_DATA_SELFTEST, &data, sizeof(data));
++               test_err_hwpt_alloc_iopf(
++                       EOPNOTSUPP, dev_id, viommu_id, fault_id,
++                       IOMMU_HWPT_FAULT_ID_VALID | (1 << 31), &iopf_hwpt_id,
++                       IOMMU_HWPT_DATA_SELFTEST, &data, sizeof(data));
++               test_cmd_hwpt_alloc_iopf(
++                       dev_id, viommu_id, fault_id, IOMMU_HWPT_FAULT_ID_VALID,
++                       &iopf_hwpt_id, IOMMU_HWPT_DATA_SELFTEST, &data,
++                       sizeof(data));
++
++               test_cmd_mock_domain_replace(self->stdev_id, iopf_hwpt_id);
++               EXPECT_ERRNO(EBUSY,
++                            _test_ioctl_destroy(self->fd, iopf_hwpt_id));
++               test_cmd_trigger_iopf(dev_id, fault_fd);
++
++               test_cmd_mock_domain_replace(self->stdev_id, self->ioas_id);
++               test_ioctl_destroy(iopf_hwpt_id);
++               close(fault_fd);
++               test_ioctl_destroy(fault_id);
++       }
++}
 
-> @@ -1412,28 +1411,29 @@ int iommu_dma_map_sg(struct device *dev, struct scatterlist *sg, int nents,
->  		size_t s_length = s->length;
->  		size_t pad_len = (mask - iova_len + 1) & mask;
->  
-> -		if (is_pci_p2pdma_page(sg_page(s))) {
-> -			map = pci_p2pdma_map_segment(&p2pdma_state, dev, s);
-> -			switch (map) {
-> -			case PCI_P2PDMA_MAP_BUS_ADDR:
-> -				/*
-> -				 * iommu_map_sg() will skip this segment as
-> -				 * it is marked as a bus address,
-> -				 * __finalise_sg() will copy the dma address
-> -				 * into the output segment.
-> -				 */
-> -				continue;
-> -			case PCI_P2PDMA_MAP_THRU_HOST_BRIDGE:
-> -				/*
-> -				 * Mapping through host bridge should be
-> -				 * mapped with regular IOVAs, thus we
-> -				 * do nothing here and continue below.
-> -				 */
-> -				break;
-> -			default:
-> -				ret = -EREMOTEIO;
-> -				goto out_restore_sg;
-> -			}
-> +		switch (pci_p2pdma_state(&p2pdma_state, dev, sg_page(s))) {
-> +		case PCI_P2PDMA_MAP_THRU_HOST_BRIDGE:
-> +			/*
-> +			 * Mapping through host bridge should be mapped with
-> +			 * regular IOVAs, thus we do nothing here and continue
-> +			 * below.
-> +			 */
-
-I guess this is technically not a fall-through to the next case
-because there's no executable code here, but since the comment
-separates these two cases, I would find it easier to read if you
-included the break here explicitly.
-
-> +		case PCI_P2PDMA_MAP_NONE:
-> +			break;
-
-> +void __pci_p2pdma_update_state(struct pci_p2pdma_map_state *state,
-> +		struct device *dev, struct page *page);
-> +
-> +/**
-> + * pci_p2pdma_state - check the P2P transfer state of a page
-> + * @state: 	P2P state structure
-
-Checkpatch complains about space before tab here.
-
-> + * pci_p2pdma_bus_addr_map - map a PCI_P2PDMA_MAP_BUS_ADDR P2P transfer
-> + * @state: 	P2P state structure
-
-And here.
-
-> @@ -462,34 +462,32 @@ int dma_direct_map_sg(struct device *dev, struct scatterlist *sgl, int nents,
->  		enum dma_data_direction dir, unsigned long attrs)
->  {
->  	struct pci_p2pdma_map_state p2pdma_state = {};
-> -	enum pci_p2pdma_map_type map;
->  	struct scatterlist *sg;
->  	int i, ret;
->  
->  	for_each_sg(sgl, sg, nents, i) {
-> -		if (is_pci_p2pdma_page(sg_page(sg))) {
-> -			map = pci_p2pdma_map_segment(&p2pdma_state, dev, sg);
-> -			switch (map) {
-> -			case PCI_P2PDMA_MAP_BUS_ADDR:
-> -				continue;
-> -			case PCI_P2PDMA_MAP_THRU_HOST_BRIDGE:
-> -				/*
-> -				 * Any P2P mapping that traverses the PCI
-> -				 * host bridge must be mapped with CPU physical
-> -				 * address and not PCI bus addresses. This is
-> -				 * done with dma_direct_map_page() below.
-> -				 */
-> -				break;
-> -			default:
-> -				ret = -EREMOTEIO;
-> +		switch (pci_p2pdma_state(&p2pdma_state, dev, sg_page(sg))) {
-> +		case PCI_P2PDMA_MAP_THRU_HOST_BRIDGE:
-> +			/*
-> +			 * Any P2P mapping that traverses the PCI host bridge
-> +			 * must be mapped with CPU physical address and not PCI
-> +			 * bus addresses.
-> +			 */
-
-Same fall-through comment.
-
-> +		case PCI_P2PDMA_MAP_NONE:
-> +			sg->dma_address = dma_direct_map_page(dev, sg_page(sg),
-> +					sg->offset, sg->length, dir, attrs);
-> +			if (sg->dma_address == DMA_MAPPING_ERROR) {
-> +				ret = -EIO;
->  				goto out_unmap;
->  			}
-> -		}
+Thanks
+Nicolin
