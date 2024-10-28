@@ -1,170 +1,138 @@
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 72EE61BDA8C
-	for <iommu@lists.linux.dev>; Mon, 28 Oct 2024 11:42:15 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
+Received: from mail-wm1-f51.google.com (mail-wm1-f51.google.com [209.85.128.51])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3EDC71D3648
+	for <iommu@lists.linux.dev>; Mon, 28 Oct 2024 11:53:39 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.51
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1730115739; cv=none; b=fPU3kp0avlaQaQiuOBuo/MIbcO3wXpb47ksnbr6OykXL6HZ4IZMy/ifQ3CogNmanyokgmgEfXMym2v3a4wdwV9qIgbvh9hoH0mzJywpplvDf2J7jRM6am2op6c4A3AWj6D8TUwJuMhHFDJji7ywvhlK2/adi+Cat5qaRz7iOt0U=
+	t=1730116421; cv=none; b=ZCEozsJnOBg/AejLkpPR+ericxDPj7PYZGfk3M4S9TsJuA8yKdqWltqcZ+G8hmuSc7VOgDv8D13DYoSDLiLYCdi/7N1X72u28A3B+7a26uG7w3c+s2aKjF8E/yonPvvKyb6RXXYmeuJ4OQ+7C3Atb/RrqOjdVJZ+serromRUNCc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1730115739; c=relaxed/simple;
-	bh=UlEo/D0PYwaOTSjDIdE48t8eIJw1DEC00/1qLQKjeHI=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=QC7EBS69yCeA5MNq9CV1SVPZx+4ml3M5mbk+MHRgXykkSu04qsHnFKNa/7fkg7o2854C+ia3EI7tKJ/rOBbkU1Y3P3qA3DQX3zQC57bjfbVwctIHR08i+wU6U7klld/Y/jPRQip+nbSNVnOnjXWfTuzkwkQ8i9eG8fqwEDElYL4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; arc=none smtp.client-ip=217.140.110.172
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 6A52B497;
-	Mon, 28 Oct 2024 04:42:44 -0700 (PDT)
-Received: from [10.57.89.58] (unknown [10.57.89.58])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 59E0C3F73B;
-	Mon, 28 Oct 2024 04:42:12 -0700 (PDT)
-Message-ID: <3d2041e7-95eb-4d60-92ab-d67e2f46531e@arm.com>
-Date: Mon, 28 Oct 2024 11:41:25 +0000
+	s=arc-20240116; t=1730116421; c=relaxed/simple;
+	bh=6QkgyBDKShlQ0y/cx9QH4amUPnbLqaaOreh4ogVY54Y=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=g6ko4ujE7CSNp6VVw86XwJ0vrhsyn4HGQDoeE2zvG2bkB9msPVr3kboZmBHpevn0F/45JXOOBYL631XPBpgAeoFAFjiL4Nfj/lCciz4K4jKAJTT6CF2HXyqb86FrA/JwbrN4cWxTTVdEH7fi0i4RQUqbL3gk1Y71pyZYfkqUlek=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=RBBTP2RU; arc=none smtp.client-ip=209.85.128.51
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="RBBTP2RU"
+Received: by mail-wm1-f51.google.com with SMTP id 5b1f17b1804b1-43150ea2db6so148105e9.0
+        for <iommu@lists.linux.dev>; Mon, 28 Oct 2024 04:53:38 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20230601; t=1730116417; x=1730721217; darn=lists.linux.dev;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=s8ohfpnIEvg7feisWnyEQsAMOz4YBMRZ4DT963EvlJY=;
+        b=RBBTP2RU/jxVMRQ4Vv22cCLCiebTK7ea4VlLlrf9wK1K9d38Q2PMTsA2EQ8I0WaHjI
+         mdWxc8XmGkeJlj1dBY142q5O1YW0/Y13JwL9iJ2QsSBzPClJ098AF8DwvCAJbqWzfTwr
+         3Gw0oOdSSWENV74IGyPyCdHmEBSgQJV9l+Ato8oW6Hr6Ob/17MlhuSZmJUQDxOEPNGag
+         G4LQ+U3K1IE1H3T4jt5ElCwGA8KhLyhBhfPVezJhe+jSn0aaajWNf1TCB3MRpRg2FFxh
+         rovgrm+mcAs4xOZRMzN11LrfWHPiObsi9U5ROuPT7aMTqRFmw327Tn4bK+IXhxJCZGur
+         8Mzg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1730116417; x=1730721217;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=s8ohfpnIEvg7feisWnyEQsAMOz4YBMRZ4DT963EvlJY=;
+        b=vvoB7MtP5jMmhwm+eQHgYm9yYwdUY077ySaUhLzcjFIPLlcWRQmJzXlRm7k1l3s8R6
+         tiIGaUecJUZtvQnMtySSZ78+9bPV4vL2pbEmC/KCIuBl7owkMOoRMuAXp2UfURecGwJ8
+         tqYYi1en+w9pN18QwdtZ7C5o74uGLdYY7osBTlVDLWu7RbhwZZISCm96D+2JSe/QHVx1
+         xfQa2rCP4OFJR3BE/eQSfsLpq+/WAyue7kcGM3NLbRDAAiEj2VjuHnrgzMbqEL6pVeig
+         uzTs7g7GZH9Aby9LqSEiqiFuEqjqRu2asUa3d0Rguy5wPPu/weNKkaCyNgyIv24H45S7
+         nxFw==
+X-Gm-Message-State: AOJu0Ywm2pEINcRK3SU2tihPMFPtw321E/Jy4m7PORQ6hhxmoW0ahf/K
+	iSaMd+xE0+0A1zp20iL4VrZF206l4GuXX6oiiC2jov7SPSifzuKDZNh4aM14HA==
+X-Google-Smtp-Source: AGHT+IFAG1wQgZSHD4GZ1FDVInCNhg5i9ZX5wl+jOWzRo1tsON7IOnOTabrNuttxFekm1NvUnzUp2w==
+X-Received: by 2002:a05:600c:1e8f:b0:426:66a0:6df6 with SMTP id 5b1f17b1804b1-4319ab034e8mr4472705e9.0.1730116417455;
+        Mon, 28 Oct 2024 04:53:37 -0700 (PDT)
+Received: from google.com (88.140.78.34.bc.googleusercontent.com. [34.78.140.88])
+        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-4319359527asm106666165e9.16.2024.10.28.04.53.36
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 28 Oct 2024 04:53:36 -0700 (PDT)
+Date: Mon, 28 Oct 2024 11:53:33 +0000
+From: Mostafa Saleh <smostafa@google.com>
+To: Rob Clark <robdclark@gmail.com>
+Cc: iommu@lists.linux.dev, Will Deacon <will@kernel.org>,
+	Robin Murphy <robin.murphy@arm.com>,
+	Rob Clark <robdclark@chromium.org>,
+	Boris Brezillon <boris.brezillon@collabora.com>,
+	"open list:DRM DRIVER for Qualcomm Adreno GPUs" <dri-devel@lists.freedesktop.org>,
+	"open list:DRM DRIVER for Qualcomm Adreno GPUs" <freedreno@lists.freedesktop.org>,
+	Jason Gunthorpe <jgg@ziepe.ca>,
+	Joao Martins <joao.m.martins@oracle.com>,
+	Kevin Tian <kevin.tian@intel.com>,
+	Konrad Dybcio <konrad.dybcio@linaro.org>,
+	"moderated list:ARM SMMU DRIVERS" <linux-arm-kernel@lists.infradead.org>,
+	"open list:DRM DRIVER for Qualcomm Adreno GPUs" <linux-arm-msm@vger.kernel.org>,
+	open list <linux-kernel@vger.kernel.org>,
+	"open list:SUSPEND TO RAM" <linux-pm@vger.kernel.org>,
+	Marijn Suijten <marijn.suijten@somainline.org>,
+	"Rafael J. Wysocki" <rafael@kernel.org>,
+	Sean Paul <sean@poorly.run>, Steven Price <steven.price@arm.com>
+Subject: Re: [PATCH v9 0/4] io-pgtable-arm + drm/msm: Extend iova fault
+ debugging
+Message-ID: <Zx97PU7cUEVCnpPl@google.com>
+References: <20240827181717.187245-1-robdclark@gmail.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v2] iommu/arm-smmu: Add judgment on the size and granule
- parameters passed in
-To: goutongchen@uniontech.com
-Cc: dmitry.baryshkov@linaro.org, gouhao@uniontech.com, iommu@lists.linux.dev,
- jgg@ziepe.ca, joro@8bytes.org, linux-arm-kernel@lists.infradead.org,
- linux-kernel@vger.kernel.org, robdclark@chromium.org, will@kernel.org
-References: <20241024100224.62942-1-goutongchen@uniontech.com>
- <20241028034823.22838-1-goutongchen@uniontech.com>
-From: Robin Murphy <robin.murphy@arm.com>
-Content-Language: en-GB
-In-Reply-To: <20241028034823.22838-1-goutongchen@uniontech.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20240827181717.187245-1-robdclark@gmail.com>
 
-On 2024-10-28 3:48 am, goutongchen@uniontech.com wrote:
-> From: goutongchen <goutongchen@uniontech.com>
+Hi Rob,
+
+On Tue, Aug 27, 2024 at 11:17:08AM -0700, Rob Clark wrote:
+> From: Rob Clark <robdclark@chromium.org>
 > 
-> In the arm_smmu_tlb_inv_range_s1 and arm_smmu_tlb_inv_range_s2
-> functions, the size and granule passed in must be judged.
-> It must be ensured that the passed in parameter is not 0 and
-> the size is an integer multiple of the granule, otherwise it
-> will cause an infinite while loop.
+> This series extends io-pgtable-arm with a method to retrieve the page
+> table entries traversed in the process of address translation, and then
+> beefs up drm/msm gpu devcore dump to include this (and additional info)
+> in the devcore dump.
 > 
-> This was encountered during testing, and was initially triggered
-> by passing in a size value of 0, causing the kernel to crash.
+> This is a respin of https://patchwork.freedesktop.org/series/94968/
+> (minus a patch that was already merged)
+> 
+> v2: Fix an armv7/32b build error in the last patch
+> v3: Incorperate Will Deacon's suggestion to make the interface
+>     callback based.
+> v4: Actually wire up the callback
+> v5: Drop the callback approach
+> v6: Make walk-data struct pgtable specific and rename
+>     io_pgtable_walk_data to arm_lpae_io_pgtable_walk_data
+> v7: Re-use the pgtable walker added for arm_lpae_read_and_clear_dirty()
+> v8: Pass pte pointer to callback so it can modify the actual pte
+> v9: Fix selftests_running case
+> 
+> Rob Clark (4):
+>   iommu/io-pgtable-arm: Make pgtable walker more generic
+>   iommu/io-pgtable-arm: Re-use the pgtable walk for iova_to_phys
+>   iommu/io-pgtable-arm: Add way to debug pgtable walk
+>   drm/msm: Extend gpu devcore dumps with pgtbl info
 
-Still NAK. If there is a bug in the upstream io-pgtable-arm code which 
-can actually cause this, please send a patch to fix *that* bug. 
-Otherwise, if you've made a broken downstream change then it is not 
-upstream's responsibility to maintain unnecessary code in a questionable 
-attempt to paper over (some small subset of) such brokenness.
-
-If you pass any sufficiently large size value which *does* happen to be 
-a multiple of the granule, you're still going to see the same RCU stalls 
-and failure to progress within reasonable time. If you pass something 
-inappropriate for the "cookie" pointer, you're likely to corrupt memory 
-or really crash. If you pass arguments which all look plausible but 
-still don't match what actually needs invalidating, the consequences of 
-under-invalidation can be even more subtle, nasty and hard to debug.
-
-The iommu_flush_ops are not a public interface intended to be called 
-arbitrarily from anywhere in the kernel with unchecked input, they are a 
-low-level private interface between IOMMU drivers and their respective 
-io-pgtable implementations, and as such they are designed for their 
-callers to call them correctly by construction. Calling them incorrectly 
-indicates a serious bug in the caller, since getting mapping and/or TLB 
-invalidation wrong often leads to memory corruption or other issues down 
-the line. Hence I'm not convinced this change is actually even desirable 
-as a downstream debugging aid - if you're lucky enough to get stuck on 
-an obviously-wrong call here, that's surely the clearest possible 
-indication of the source of the bug in its calling context, far better 
-than trying to ignore it and then having it drowned out by more distant 
-things blowing up later due to 2nd- and 3rd-order effects.
+Do you have plans to post another version of this series, as I am
+working on some patches, that would use some of the common page walk
+logic, so it would be more convenient to have them upstream.
+Otherwise, I can have your series as a dependency.
 
 Thanks,
-Robin.
+Mostafa
 
-> [    8.214378][  T675] xhci_hcd 0000:0b:00.0: new USB bus registered, assigned bus number 1
-> [   68.246185][    C0] rcu: INFO: rcu_sched self-detected stall on CPU
-> [   68.246866][    C0] rcu:     0-....: (5999 ticks this GP) idle=796c/1/0x4000000000000000 softirq=161/161 fqs=2999
-> [   68.247924][    C0] rcu:     (t=6000 jiffies g=-699 q=1 ncpus=128)
-> [   68.248452][    C0] CPU: 0 PID: 675 Comm: kworker/0:2 Not tainted 6.6.0-25.02.2500.002.uos25.aarch64 #1
-> [   68.249237][    C0] Hardware name: Inspur     CS5260F     /CS5260F          , BIOS 4.0.16 05/31/22 16:53:51
-> [   68.250029][    C0] Workqueue: events work_for_cpu_fn
-> [   68.250497][    C0] pstate: a0000005 (NzCv daif -PAN -UAO -TCO -DIT -SSBS BTYPE=--)
-> [   68.251188][    C0] pc : arm_smmu_tlb_inv_range_s1+0xf0/0x158
-> [   68.251704][    C0] lr : arm_smmu_tlb_inv_walk_s1+0x44/0x68
-> [   68.252189][    C0] sp : ffff80008044b780
-> [   68.252530][    C0] x29: ffff80008044b780 x28: 0000000000000000 x27: 0000000000001000
-> [   68.253212][    C0] x26: 0000000000000600 x25: 0000000000000001 x24: 0000000000000600
-> [   68.253857][    C0] x23: 0000000000000000 x22: 0000000000001000 x21: fffffc64e2e59000
-> [   68.254544][    C0] x20: 0000000039c1d1a6 x19: ffff3fe944c40280 x18: 0000000000000000
-> [   68.255240][    C0] x17: 626d756e20737562 x16: ffffb0e7e08c1008 x15: 0000000000000000
-> [   68.255930][    C0] x14: ffff3ef8c1ea15cd x13: ffff3ef8c1ea15cb x12: fffffcfba30e3880
-> [   68.256538][    C0] x11: 00000000ffff7fff x10: ffff80008044b6b0 x9 : ffffb0e7decd1b5c
-> [   68.257126][    C0] x8 : 0000000000000dc0 x7 : ffff3ee8c4148000 x6 : ffff3ee8c4148000
-> [   68.257822][    C0] x5 : 0000000000000008 x4 : 0000000000000000 x3 : ffff3fe944c40800
-> [   68.258497][    C0] x2 : 0000000000000010 x1 : 0000000000000020 x0 : ffffb0e7dfd6c3d0
-> [   68.259185][    C0] Call trace:
-> [   68.259451][    C0]  arm_smmu_tlb_inv_range_s1+0xf0/0x158
-> [   68.259933][    C0]  arm_smmu_tlb_inv_walk_s1+0x44/0x68
-> [   68.260384][    C0]  __arm_lpae_map+0x1f0/0x2c0
-> [   68.260796][    C0]  arm_lpae_map_pages+0xec/0x150
-> [   68.261215][    C0]  arm_smmu_map_pages+0x48/0x130
-> [   68.261654][    C0]  __iommu_map+0x134/0x2a8
-> [   68.262098][    C0]  iommu_map_sg+0xb8/0x1c8
-> [   68.262500][    C0]  __iommu_dma_alloc_noncontiguous.constprop.0+0x180/0x270
-> [   68.263145][    C0]  iommu_dma_alloc+0x178/0x238
-> [   68.263557][    C0]  dma_alloc_attrs+0xf8/0x108
-> [   68.263962][    C0]  xhci_mem_init+0x1e8/0x6d0
-> [   68.264372][    C0]  xhci_init+0x88/0x1d0
-> [   68.264736][    C0]  xhci_gen_setup+0x284/0x468
-> [   68.265121][    C0]  xhci_pci_setup+0x60/0x1f8
-> [   68.265506][    C0]  usb_add_hcd+0x278/0x650
-> [   68.265860][    C0]  usb_hcd_pci_probe+0x218/0x458
-> [   68.266256][    C0]  xhci_pci_probe+0x7c/0x270
-> [   68.266660][    C0]  local_pci_probe+0x48/0xb8
-> [   68.267074][    C0]  work_for_cpu_fn+0x24/0x40
-> [   68.267548][    C0]  process_one_work+0x170/0x3c0
-> [   68.267999][    C0]  worker_thread+0x234/0x3b8
-> [   68.268383][    C0]  kthread+0xf0/0x108
-> [   68.268704][    C0]  ret_from_fork+0x10/0x20
-> 
-> Signed-off-by: goutongchen <goutongchen@uniontech.com>
-> ---
->   drivers/iommu/arm/arm-smmu/arm-smmu.c | 14 ++++++++++++++
->   1 file changed, 14 insertions(+)
-> 
-> diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu.c b/drivers/iommu/arm/arm-smmu/arm-smmu.c
-> index 8321962b3714..fdd7d7e9ce06 100644
-> --- a/drivers/iommu/arm/arm-smmu/arm-smmu.c
-> +++ b/drivers/iommu/arm/arm-smmu/arm-smmu.c
-> @@ -282,6 +282,13 @@ static void arm_smmu_tlb_inv_range_s1(unsigned long iova, size_t size,
->   	struct arm_smmu_cfg *cfg = &smmu_domain->cfg;
->   	int idx = cfg->cbndx;
->   
-> +	if (size == 0 || granule == 0 || (size % granule) != 0) {
-> +		dev_err(smmu->dev,
-> +				 "The size or granule passed in is err. size=%zu, granule=%zu\n",
-> +				 size, granule);
-> +		return;
-> +	}
-> +
->   	if (smmu->features & ARM_SMMU_FEAT_COHERENT_WALK)
->   		wmb();
->   
-> @@ -309,6 +316,13 @@ static void arm_smmu_tlb_inv_range_s2(unsigned long iova, size_t size,
->   	struct arm_smmu_device *smmu = smmu_domain->smmu;
->   	int idx = smmu_domain->cfg.cbndx;
->   
-> +	if (size == 0 || granule == 0 || (size % granule) != 0) {
-> +		dev_err(smmu->dev,
-> +				 "The size or granule passed in is err. size=%zu, granule=%zu\n",
-> +				 size, granule);
-> +		return;
-> +	}
-> +
->   	if (smmu->features & ARM_SMMU_FEAT_COHERENT_WALK)
->   		wmb();
->   
 
+> 
+>  drivers/gpu/drm/msm/adreno/adreno_gpu.c |  10 ++
+>  drivers/gpu/drm/msm/msm_gpu.c           |   9 ++
+>  drivers/gpu/drm/msm/msm_gpu.h           |   8 ++
+>  drivers/gpu/drm/msm/msm_iommu.c         |  22 ++++
+>  drivers/gpu/drm/msm/msm_mmu.h           |   3 +-
+>  drivers/iommu/io-pgtable-arm.c          | 149 +++++++++++++++---------
+>  include/linux/io-pgtable.h              |  15 +++
+>  7 files changed, 160 insertions(+), 56 deletions(-)
+> 
+> -- 
+> 2.46.0
+> 
