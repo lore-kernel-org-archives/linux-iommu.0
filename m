@@ -1,54 +1,47 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DA26D1993B5;
-	Tue, 29 Oct 2024 16:15:31 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 97E631D9586;
+	Tue, 29 Oct 2024 16:15:35 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1730218532; cv=none; b=VClDhaLMgwuDSu+3ubggbur7M9LjDai8b86XzSCQqsQty+HePi8L0JAOvgoM7wv9bxfYxJdER3GnSGxGZKe5vRDC5Y3JQp4JJdAKsfUq30ns0PA9blTBF3y+fXSWnzikQe76usDFFE9xVrqa1LvZR8YDyi/V+uXRAuFq0gCkt2s=
+	t=1730218535; cv=none; b=WtvzkIwLuA3NAoKt2Mic4VQshrv6zx63Y36avANPX0ZinmzNk8HCt9pPBoju4vHcRiFcpi9y0M9xUXeGLdXXTt9xSNwgdYaF5U4GB0r/Hm3O5VDxNMSrys3f8RMA+nxsgLmaKSXUSmQcf8VE5rJmL2SHggAlxgP+ThcVsRI4NQY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1730218532; c=relaxed/simple;
-	bh=kMKc10j7VGxeNAMb2m4ny2C5ZWH83LXpdQnxhHidR+o=;
+	s=arc-20240116; t=1730218535; c=relaxed/simple;
+	bh=bZ3umWUB2daTUxDUPol2jd5kvJm+C26sRYBZhWz/XMo=;
 	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=reEOIil5VwBkEHbtY/A3G55b9QgSBm2otGF5VzquMo9z5I1s2GoOP4SF+tXzh0nl+WVwRfWbpEby58m87Uy8Z9lgpPkFwQiSe7wxZfaNAcK8P4D8BCjCCMTRwBMUxLmWHsiHNTgK6bWNRm+qXaIp+DSiwRUAxVt9D+oRw55C6/Y=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=XIdFo/xm; arc=none smtp.client-ip=10.30.226.201
+	 MIME-Version:Content-Type; b=q/YZ7n5XttiXvnpkyPT1MxKaTzSDX892VOCem9CeNtjiyH9nlVNpFUBHAVzKVM9kTBZzX4Svpj+Hd2SvAqxGIMl6S+Li/Gqy9JBpRz4WzivwtLQBMvvSKDoki9yx4PNIOz2CM0eGcaK6cHmKV15xwrkYNHGGYqyazru3TSphHTs=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=qxS/G3K5; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="XIdFo/xm"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9752BC4CEE8;
-	Tue, 29 Oct 2024 16:15:28 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="qxS/G3K5"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B7530C4CECD;
+	Tue, 29 Oct 2024 16:15:33 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1730218531;
-	bh=kMKc10j7VGxeNAMb2m4ny2C5ZWH83LXpdQnxhHidR+o=;
+	s=k20201202; t=1730218535;
+	bh=bZ3umWUB2daTUxDUPol2jd5kvJm+C26sRYBZhWz/XMo=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-	b=XIdFo/xmjJ/A5CqRYVA7v9r9UUp1/0vm8UzP2PZyPD1gXfJNYrja7Xv1b17rVD9Pv
-	 t98DbS0wAJN3988GoAvvJisJYvO+IaLbCJasI5dI5fR7pkumiiq0tmiEbfMoM2Ls3c
-	 otQJyl3tPZgN1ylyNfEMLyzrMN60XmMpj1Y5bSdruUlC05qh+YT/roLWGDGz8UqpS8
-	 TzZpropxMC0LTFXvukXPC7xMzswCuTG1vdqbiMCWjfulbiRo6I49WNsctUueOuhm46
-	 Mz81OZQfQUao6e7CzZbG0YXQKEP5PFTFUHgUCJuo379LAMa/q6IK+schDut7EdJBzx
-	 h7UeGnsCYovBA==
+	b=qxS/G3K5GcU+Td77rJL/3ypn1M8aqJ1u6PegKPGZzC06zh7nvomc1EQ74nMC2xEzo
+	 3T+Tw6sI0lqTLQlRKgPEaMg0GLW+72rncLuw6wDKsqeKA7xe9EaExYg1SnoItTTJM7
+	 UD4OmU9BNzcmcnxnWhq/wEku7RqJsrxTn3stYsV9NXe7x8HN3SiVCsRL6vul0uPviw
+	 lvewBpnjhs4t4BIN3MBkg02HM6d9kZ3kbKM5TKyy+HCmTmxa06cwvUwuz7elqzSqVK
+	 pQj1Qgl3DHHczqAoutBh1qhjk+pMOyKj3km+HHxGqYlar+Dqn4iJTmNDrITZ9JB6rP
+	 qE/8LLXao9m5g==
 From: Will Deacon <will@kernel.org>
-To: andersson@kernel.org,
-	konradybcio@kernel.org,
-	robh@kernel.org,
-	krzk+dt@kernel.org,
-	conor+dt@kernel.org,
-	robimarko@gmail.com,
-	robin.murphy@arm.com,
-	joro@8bytes.org,
-	Qingqing Zhou <quic_qqzhou@quicinc.com>
+To: linux-kernel@vger.kernel.org,
+	iommu@lists.linux.dev,
+	linux-arm-kernel@lists.infradead.org,
+	Mostafa Saleh <smostafa@google.com>
 Cc: catalin.marinas@arm.com,
 	kernel-team@android.com,
 	Will Deacon <will@kernel.org>,
-	linux-arm-msm@vger.kernel.org,
-	devicetree@vger.kernel.org,
-	linux-kernel@vger.kernel.org,
-	iommu@lists.linux.dev
-Subject: Re: [PATCH v3 0/4] Add support for APPS SMMU on QCS615
-Date: Tue, 29 Oct 2024 16:15:14 +0000
-Message-Id: <173021813714.1137827.1103662832817907135.b4-ty@kernel.org>
+	robin.murphy@arm.com,
+	joro@8bytes.org
+Subject: Re: [PATCH 0/2] iommu/io-pgtable-arm: Fix for stage-2 map/unmap
+Date: Tue, 29 Oct 2024 16:15:16 +0000
+Message-Id: <173021209382.4087086.8047959157749601171.b4-ty@kernel.org>
 X-Mailer: git-send-email 2.20.1
-In-Reply-To: <20241025030732.29743-1-quic_qqzhou@quicinc.com>
-References: <20241025030732.29743-1-quic_qqzhou@quicinc.com>
+In-Reply-To: <20241024162516.2005652-1-smostafa@google.com>
+References: <20241024162516.2005652-1-smostafa@google.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -58,23 +51,25 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 
-On Fri, 25 Oct 2024 08:37:28 +0530, Qingqing Zhou wrote:
-> Enable APPS SMMU function on QCS615 platform. APPS SMMU is required
-> for address translation in devices including Ethernet/UFS/USB and
-> so on.
+On Thu, 24 Oct 2024 16:25:14 +0000, Mostafa Saleh wrote:
+> The first patch is a bug fix for stage-2 handling of concatenated pgds
+> that can break map/unmap for some cases.
 > 
-> Add the SCM node for SMMU probing normally. SMMU driver probe will
-> check qcom_scm ready or not, without SCM node, SMMU driver probe will
-> defer.
-> The dmesg log without SCM node:
-> platform 15000000.iommu: deferred probe pending: arm-smmu: qcom_scm not ready
+> The second patch is adding these cases to selfs tests.
+> 
+> While looking at that, I also noticed that the concated page tables support
+> is minimal and not supported for many cases (level = 0, 2, 3), I wrote some
+> code to support that so I can test further, I can send it later in another
+> patch.
 > 
 > [...]
 
-Applied SMMU bindings change to will (for-joerg/arm-smmu/bindings), thanks!
+Applied to will (for-joerg/arm-smmu/updates), thanks!
 
-[2/4] dt-bindings: arm-smmu: document QCS615 APPS SMMU
-      https://git.kernel.org/will/c/515c8ff024ba
+[1/2] iommu/io-pgtable-arm: Fix stage-2 map/unmap for concatenated tables
+      https://git.kernel.org/will/c/d71fa842d33c
+[2/2] iommu/io-pgtable-arm: Add self test for the last page in the IAS
+      https://git.kernel.org/will/c/d64c8053378e
 
 Cheers,
 -- 
