@@ -1,55 +1,54 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 855631993B5;
-	Tue, 29 Oct 2024 16:15:28 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DA26D1993B5;
+	Tue, 29 Oct 2024 16:15:31 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1730218528; cv=none; b=JZ7PjufkMPX1mH6P0Z3oW+GYUS4a26+uRisLlF99PgzlVbC5ADF8zKXbc6nrOTpJ1bJL9nuDK46xQQbWrhLJ9dW9vDmLr6gXboRnT6eaRrTc1tLOtpDleCS5RdjJlQP1ZRWA+mEL3x0CA+jYEbrpDvwLmGOvAbUos8SXEgviRIA=
+	t=1730218532; cv=none; b=VClDhaLMgwuDSu+3ubggbur7M9LjDai8b86XzSCQqsQty+HePi8L0JAOvgoM7wv9bxfYxJdER3GnSGxGZKe5vRDC5Y3JQp4JJdAKsfUq30ns0PA9blTBF3y+fXSWnzikQe76usDFFE9xVrqa1LvZR8YDyi/V+uXRAuFq0gCkt2s=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1730218528; c=relaxed/simple;
-	bh=i9WM0s810nFXSxm0IvLGmYRKqPNMDw16wIj+exh5hto=;
+	s=arc-20240116; t=1730218532; c=relaxed/simple;
+	bh=kMKc10j7VGxeNAMb2m4ny2C5ZWH83LXpdQnxhHidR+o=;
 	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=eunk2pDDdr+5Cl/qJOHnbtOPBWYND6nWLA0F2S8qeKILxv6PTISkfBM1e+JRMnDdKZtuY8J7VyrnDTo2NlRMmV2xgpV6gCJIJKzDodS3yl3eSwaGQ10YXf001khd0sG8g/2E0vOzqVpUYMnrum6ALOHSzEEMMXOarK8TLOLSBJo=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=b/+Zrme6; arc=none smtp.client-ip=10.30.226.201
+	 MIME-Version:Content-Type; b=reEOIil5VwBkEHbtY/A3G55b9QgSBm2otGF5VzquMo9z5I1s2GoOP4SF+tXzh0nl+WVwRfWbpEby58m87Uy8Z9lgpPkFwQiSe7wxZfaNAcK8P4D8BCjCCMTRwBMUxLmWHsiHNTgK6bWNRm+qXaIp+DSiwRUAxVt9D+oRw55C6/Y=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=XIdFo/xm; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="b/+Zrme6"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 24DA2C4CEE4;
-	Tue, 29 Oct 2024 16:15:24 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="XIdFo/xm"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9752BC4CEE8;
+	Tue, 29 Oct 2024 16:15:28 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1730218528;
-	bh=i9WM0s810nFXSxm0IvLGmYRKqPNMDw16wIj+exh5hto=;
+	s=k20201202; t=1730218531;
+	bh=kMKc10j7VGxeNAMb2m4ny2C5ZWH83LXpdQnxhHidR+o=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-	b=b/+Zrme6lq1K/IkcOZ5fvRy8Lxiz/RQhLrmWdupPapsplmm40A7NZSSYjWLrDVcnF
-	 /HEVieklcc/gIKMua3hOfZCAMpdyKeb0PlTJN5ve8GhcwG9yx+iMrnPgTQR8BT+g1Z
-	 zSrYwuzy+07BgWrJ22Tzf/q45E8npT+Ob3L5b0+K7qCvZIg3ywJmCPGt9Q4lUdHSWl
-	 K2IS3E9OI6MaWYjrRkf/VHIN+nVyY6SFvSwbiF7qXcfe4RynwR8yKS/J/Rq9hEJXwd
-	 FSm2ZK+WAK9/CdcloXYX28GhSvZbfaVAAX7qPjOARBQOSM8raKi6gqZD0s6F7H7qWY
-	 LG35ad6meUoKw==
+	b=XIdFo/xmjJ/A5CqRYVA7v9r9UUp1/0vm8UzP2PZyPD1gXfJNYrja7Xv1b17rVD9Pv
+	 t98DbS0wAJN3988GoAvvJisJYvO+IaLbCJasI5dI5fR7pkumiiq0tmiEbfMoM2Ls3c
+	 otQJyl3tPZgN1ylyNfEMLyzrMN60XmMpj1Y5bSdruUlC05qh+YT/roLWGDGz8UqpS8
+	 TzZpropxMC0LTFXvukXPC7xMzswCuTG1vdqbiMCWjfulbiRo6I49WNsctUueOuhm46
+	 Mz81OZQfQUao6e7CzZbG0YXQKEP5PFTFUHgUCJuo379LAMa/q6IK+schDut7EdJBzx
+	 h7UeGnsCYovBA==
 From: Will Deacon <will@kernel.org>
-To: Pratyush Brahma <quic_pbrahma@quicinc.com>
+To: andersson@kernel.org,
+	konradybcio@kernel.org,
+	robh@kernel.org,
+	krzk+dt@kernel.org,
+	conor+dt@kernel.org,
+	robimarko@gmail.com,
+	robin.murphy@arm.com,
+	joro@8bytes.org,
+	Qingqing Zhou <quic_qqzhou@quicinc.com>
 Cc: catalin.marinas@arm.com,
 	kernel-team@android.com,
 	Will Deacon <will@kernel.org>,
-	robin.murphy@arm.com,
-	joro@8bytes.org,
-	jgg@ziepe.ca,
-	jsnitsel@redhat.com,
-	robdclark@chromium.org,
-	quic_c_gdjako@quicinc.com,
-	dmitry.baryshkov@linaro.org,
-	linux-arm-kernel@lists.infradead.org,
-	iommu@lists.linux.dev,
+	linux-arm-msm@vger.kernel.org,
+	devicetree@vger.kernel.org,
 	linux-kernel@vger.kernel.org,
-	quic_charante@quicinc.com,
-	stable@vger.kernel.org,
-	Prakash Gupta <quic_guptap@quicinc.com>
-Subject: Re: [PATCH v2] iommu/arm-smmu: Defer probe of clients after smmu device bound
-Date: Tue, 29 Oct 2024 16:15:13 +0000
-Message-Id: <173021496151.4097715.14758035881649445798.b4-ty@kernel.org>
+	iommu@lists.linux.dev
+Subject: Re: [PATCH v3 0/4] Add support for APPS SMMU on QCS615
+Date: Tue, 29 Oct 2024 16:15:14 +0000
+Message-Id: <173021813714.1137827.1103662832817907135.b4-ty@kernel.org>
 X-Mailer: git-send-email 2.20.1
-In-Reply-To: <20241004090428.2035-1-quic_pbrahma@quicinc.com>
-References: <20241004090428.2035-1-quic_pbrahma@quicinc.com>
+In-Reply-To: <20241025030732.29743-1-quic_qqzhou@quicinc.com>
+References: <20241025030732.29743-1-quic_qqzhou@quicinc.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -59,21 +58,23 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 
-On Fri, 04 Oct 2024 14:34:28 +0530, Pratyush Brahma wrote:
-> Null pointer dereference occurs due to a race between smmu
-> driver probe and client driver probe, when of_dma_configure()
-> for client is called after the iommu_device_register() for smmu driver
-> probe has executed but before the driver_bound() for smmu driver
-> has been called.
+On Fri, 25 Oct 2024 08:37:28 +0530, Qingqing Zhou wrote:
+> Enable APPS SMMU function on QCS615 platform. APPS SMMU is required
+> for address translation in devices including Ethernet/UFS/USB and
+> so on.
 > 
-> Following is how the race occurs:
+> Add the SCM node for SMMU probing normally. SMMU driver probe will
+> check qcom_scm ready or not, without SCM node, SMMU driver probe will
+> defer.
+> The dmesg log without SCM node:
+> platform 15000000.iommu: deferred probe pending: arm-smmu: qcom_scm not ready
 > 
 > [...]
 
-Applied to will (for-joerg/arm-smmu/updates), thanks!
+Applied SMMU bindings change to will (for-joerg/arm-smmu/bindings), thanks!
 
-[1/1] iommu/arm-smmu: Defer probe of clients after smmu device bound
-      https://git.kernel.org/will/c/229e6ee43d2a
+[2/4] dt-bindings: arm-smmu: document QCS615 APPS SMMU
+      https://git.kernel.org/will/c/515c8ff024ba
 
 Cheers,
 -- 
