@@ -1,44 +1,43 @@
 Received: from mail.8bytes.org (mail.8bytes.org [85.214.250.239])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 09D0D205144
-	for <iommu@lists.linux.dev>; Tue, 29 Oct 2024 10:58:59 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id DA4A2204920
+	for <iommu@lists.linux.dev>; Tue, 29 Oct 2024 11:23:04 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=85.214.250.239
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1730199542; cv=none; b=GaqNCrXPbGSp8FBXuETM65IpQnwlJaNdESxF0Jho93iKzQsoAHfms+CWXmSWSbN47qPg0vYdwgjHlMaxy6ESKGh5/7g2TNcBk1bsj1biQmWZmWCCU8xi4MOt4dSpiLAMz154N4c0lqK6igCRVpFFGJmELTLXX8aGhWVbU4ipJWg=
+	t=1730200987; cv=none; b=SMiYLw07N1zUrhr/r2iDfrilwxq3MHdKhwiFcZUDXIpSFzODxaRZTzb+tZ4X+E3w0bxAu5k4l+8nYSjxoxsMBtDqyX5lXTTkS9dR+aRU4bs8puyemTOCY3FqSkfRjebYrP6vWQiGddcITJDsuKA8FrAZoyi9CT//+vguEfLdsSI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1730199542; c=relaxed/simple;
-	bh=Bu+UtIAhe3Ye/jGsrewOK+Es0DYIe7uQyiPkNdcvCT8=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=pn4Vgc6tbyZBlX42FU03pvOsq0lHsY1k985geA1qQ7rBe7firqfAum4m71GSrD+IDwDUXnN/OioTgFX6h6r2VkLdWaLPtZCBiTW/hOUWUJRv4S1/QZgy+PXldpARrpLllgC/p/9HDx8+AC71SKJUUMEzEJ0H7Vsbu9Hvc3mXZIs=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=8bytes.org; spf=pass smtp.mailfrom=8bytes.org; dkim=pass (2048-bit key) header.d=8bytes.org header.i=@8bytes.org header.b=BFEf7Ury; arc=none smtp.client-ip=85.214.250.239
+	s=arc-20240116; t=1730200987; c=relaxed/simple;
+	bh=7MCFc5eHAe/gmFEJLw+RKq7pBeL/IP+i+GBYwIj0xoY=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=APpcfWcrCVgJcgOPVVyv6uWq3byjLdT3sxPPFzopNo8L2keiNmvpovPT/ExC9KFABSxV2e+IV2YetpK1VVyPf+Xei2cr/uXMXm1i+ouxsX8I6f/Ic26Q/VM0AT4M65W0URu65Q1qMVr371kCF7gkPshiOKw8OKqYBkxFz61SVrU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=8bytes.org; spf=pass smtp.mailfrom=8bytes.org; dkim=pass (2048-bit key) header.d=8bytes.org header.i=@8bytes.org header.b=5eGNiOkq; arc=none smtp.client-ip=85.214.250.239
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=8bytes.org
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=8bytes.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=8bytes.org header.i=@8bytes.org header.b="BFEf7Ury"
+	dkim=pass (2048-bit key) header.d=8bytes.org header.i=@8bytes.org header.b="5eGNiOkq"
 Received: from lemmy.home.8bytes.org (p549219d2.dip0.t-ipconnect.de [84.146.25.210])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
 	(No client certificate requested)
-	by mail.8bytes.org (Postfix) with ESMTPSA id CDE462A8D41;
-	Tue, 29 Oct 2024 11:58:58 +0100 (CET)
+	by mail.8bytes.org (Postfix) with ESMTPSA id A9C462A8D83;
+	Tue, 29 Oct 2024 12:23:03 +0100 (CET)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=8bytes.org;
-	s=default; t=1730199538;
-	bh=Bu+UtIAhe3Ye/jGsrewOK+Es0DYIe7uQyiPkNdcvCT8=;
+	s=default; t=1730200983;
+	bh=7MCFc5eHAe/gmFEJLw+RKq7pBeL/IP+i+GBYwIj0xoY=;
 	h=From:To:Cc:Subject:Date:From;
-	b=BFEf7Uryr9P69Jlfc9CpMDv5OgRW2CwT1ibNBTV0i8gUvTb9t9a6WZYG+45lt8DLH
-	 nW1KWSl0xAynVQN3bvUGYQfYQns6k/RhNFWaAcqu84ypjqxZ2jUHIMU+HZLmfR8t6i
-	 DK82jGJmYuKlbm1hEkw1mJi+YUFJ97WzhOGawUx75OKH4vUNyzOt9RaPwo5/eGnt7k
-	 a8IFdKdfiR8JcIkCd8YpPXcitg1E78yblKnN39FRdpmba5iqw+SOpdRpPAmNB8Oy7d
-	 SU48VAiaqYaOatl7aRtqWEfzW5ALY+oF3DvRBrDfPD8g5QtW0uXGJ2YNHEng64mq70
-	 jAL/shsFeRqpw==
+	b=5eGNiOkqMYtR4+NZWAlf1UjCbSgQ0fPMuNJuiybKsNdaOtEf3q5Frd19YcBFBSqDi
+	 s8rxU46FwcTYKJ0/AS2vhfgvwEIp5CYQ9ZVewldc3hvSwoAPsdYUa/iV5/I7/fBz1F
+	 3sfLAYb/529yJpBZRAJoo24nf1JC07uTLMMCDKCakj2XLJOygHtUU8lOBzRp+RFds4
+	 ECbwobJmzqFLR8oot1woJeIQvVQKw4sftDkStUKNid+B+2Z1MAQtF7Y+xGfWWOPDxN
+	 e9tMzdsmqBpqEhYEYx8kOsjIw2jZBSsvZdaLgpGZyjSvhzj15TKQfNBdn15iFpxKuW
+	 YIukhmWB0QHkw==
 From: Joerg Roedel <joro@8bytes.org>
 To: iommu@lists.linux.dev
 Cc: Will Deacon <will@kernel.org>,
 	linux-kernel@vger.kernel.org,
 	Joerg Roedel <jroedel@suse.de>,
-	Jason Gunthorpe <jgg@ziepe.ca>,
-	Vasant Hegde <vasant.hegde@amd.com>
-Subject: [PATCH] iommu: Fix prototype of iommu_paging_domain_alloc_flags()
-Date: Tue, 29 Oct 2024 11:58:49 +0100
-Message-ID: <20241029105849.52069-1-joro@8bytes.org>
+	Jason Gunthorpe <jgg@ziepe.ca>
+Subject: [PATCH] iommu: Restore iommu_flush_iotlb_all()
+Date: Tue, 29 Oct 2024 12:23:02 +0100
+Message-ID: <20241029112302.63639-1-joro@8bytes.org>
 X-Mailer: git-send-email 2.47.0
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
@@ -50,31 +49,53 @@ Content-Transfer-Encoding: 8bit
 
 From: Joerg Roedel <jroedel@suse.de>
 
-The iommu_paging_domain_alloc_flags() prototype for
-non-iommu kernel configurations lacks the 'static inline'
-prefixes.
+This patch restores the iommu_flush_iotlb_all() function.
+Commit
+
+	69e5a17511f6 ("iommu: Remove useless flush from iommu_create_device_direct_mappings()")
+
+claims it removed the last call-site, except it did not. There is still
+at least one caller in
+
+	drivers/gpu/drm/msm/msm_iommu.c
+
+so keep the function around until all call-sites are updated.
 
 Cc: Jason Gunthorpe <jgg@ziepe.ca>
-Cc: Vasant Hegde <vasant.hegde@amd.com>
-Fixes: 20858d4ebb42 ("iommu: Introduce iommu_paging_domain_alloc_flags()")
+Fixes: 69e5a17511f6 ("iommu: Remove useless flush from iommu_create_device_direct_mappings()")
 Signed-off-by: Joerg Roedel <jroedel@suse.de>
 ---
- include/linux/iommu.h | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ include/linux/iommu.h | 10 ++++++++++
+ 1 file changed, 10 insertions(+)
 
 diff --git a/include/linux/iommu.h b/include/linux/iommu.h
-index aa78d911fdda..522efdc7d815 100644
+index 522efdc7d815..8cce372a33f1 100644
 --- a/include/linux/iommu.h
 +++ b/include/linux/iommu.h
-@@ -1080,7 +1080,7 @@ static inline bool device_iommu_capable(struct device *dev, enum iommu_cap cap)
- 	return false;
+@@ -853,6 +853,12 @@ void iommu_set_dma_strict(void);
+ extern int report_iommu_fault(struct iommu_domain *domain, struct device *dev,
+ 			      unsigned long iova, int flags);
+ 
++static inline void iommu_flush_iotlb_all(struct iommu_domain *domain)
++{
++	if (domain->ops->flush_iotlb_all)
++		domain->ops->flush_iotlb_all(domain);
++}
++
+ static inline void iommu_iotlb_sync(struct iommu_domain *domain,
+ 				  struct iommu_iotlb_gather *iotlb_gather)
+ {
+@@ -1137,6 +1143,10 @@ static inline ssize_t iommu_map_sg(struct iommu_domain *domain,
+ 	return -ENODEV;
  }
  
--struct iommu_domain *iommu_paging_domain_alloc_flags(struct device *dev,
-+static inline struct iommu_domain *iommu_paging_domain_alloc_flags(struct device *dev,
- 						     unsigned int flags)
++static inline void iommu_flush_iotlb_all(struct iommu_domain *domain)
++{
++}
++
+ static inline void iommu_iotlb_sync(struct iommu_domain *domain,
+ 				  struct iommu_iotlb_gather *iotlb_gather)
  {
- 	return ERR_PTR(-ENODEV);
 -- 
 2.47.0
 
