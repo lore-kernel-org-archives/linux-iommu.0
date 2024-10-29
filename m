@@ -1,68 +1,75 @@
-Received: from mail-qt1-f178.google.com (mail-qt1-f178.google.com [209.85.160.178])
+Received: from mail-yw1-f170.google.com (mail-yw1-f170.google.com [209.85.128.170])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E3E53204035
-	for <iommu@lists.linux.dev>; Tue, 29 Oct 2024 11:43:04 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.160.178
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DD9261EF0B7
+	for <iommu@lists.linux.dev>; Tue, 29 Oct 2024 11:44:20 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.170
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1730202186; cv=none; b=AORCbr0DAj025awdp+/zXiU4h3NpcFAqkX3udhBSZw0c8A8ZrUD011r6aCUOBVHkaT8B7BgrTbfAxeeZault/b2AHAip5LNCkQXLF+O+XpOtLTsc2Aylb3NIBfVU9UmBaS8uq9XHm/6j6EW+iX5SvL2S5dyBwqU4FPAwXClwPgM=
+	t=1730202262; cv=none; b=S2+kvIiCYq74EHXd46zHxblkYVzeJXgYFZujlMLFq8yseuC176Q1MfkH43qv96wuHHscXItzf1RlZooS8vLwsFWdBqIoyoMRfa6divOZRiIRNB0OKImT/qpN2URokYfsa57Vz9+mTiuGEN9xTGLqgF+I4b/D5r60gPEvomOltr0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1730202186; c=relaxed/simple;
-	bh=s0NtxfN0YKYoxUnO3lQNTiob9NH9vvfb67Uvl0Fh7ng=;
+	s=arc-20240116; t=1730202262; c=relaxed/simple;
+	bh=D2/P0Y5pKp6me/ZpctTDSyEjiEpbZuPe2WgAwaVpQEU=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=Mwb32qfuuxMuwxkTSQAp3h4smm6MBbhMG/trhKVt/KWraw9mvOp37FH0xlpcUWSTUK7Nccl+hRA/9zVO+3v7tIVVGNCBjr38rm5bPuCPQtzyUahd8c3jfb1txdID7kglYbVIRV8hrXOcr60jzaZOaJUrPTC1bMVo5VYkCOy8byg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=ihluS9A4; arc=none smtp.client-ip=209.85.160.178
+	 Content-Type:Content-Disposition:In-Reply-To; b=hNbL5bGKYo6iIzrLAGJf2XzHMSVGOqgIfbMD+LUhzPHpvoD/BE618htNIv0NBE4cKBzXPF9K0nwcwnXMRQKLxvid2cNpJL7POQ1XiJjlCvr4cS24/Vfn/7c1S37QHEfrap9La3EZVcZTgqS8C/IG/CXYhijAZOAiI9fq5p5NEkc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=EY4qzyXs; arc=none smtp.client-ip=209.85.128.170
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="ihluS9A4"
-Received: by mail-qt1-f178.google.com with SMTP id d75a77b69052e-4609d75e2f8so52745851cf.1
-        for <iommu@lists.linux.dev>; Tue, 29 Oct 2024 04:43:04 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="EY4qzyXs"
+Received: by mail-yw1-f170.google.com with SMTP id 00721157ae682-6e3c3da5bcdso51721247b3.2
+        for <iommu@lists.linux.dev>; Tue, 29 Oct 2024 04:44:20 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google; t=1730202184; x=1730806984; darn=lists.linux.dev;
+        d=ziepe.ca; s=google; t=1730202260; x=1730807060; darn=lists.linux.dev;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=xvHsIFSTi0XZdx0k62e6OyvWU9dWkoQVlshw4U0DAXg=;
-        b=ihluS9A4QfrGSp7eP9FucL7hmqhWjbxFwWakdsrgISmck3RhhBr+XtxugbP9ZmGWrM
-         ouE1dHjkTdtGbi8PdlCFMwVdd3kQHvJnewR6P9j4L52qIukhQOHBMTNJjmm9pAaCz4U3
-         EjuU5hbvxSoZfjxcSaana3FlVxydoPdNxx7IuHrIHNKsYZVJC7+Tkr9Rw3U3GLZjqOqN
-         4wNFMJ1ueNg49Ee2y+gFx0U/whjm+qzeia7bujU4uP1GY7nAX7KOInBh0Do52nyFcgqN
-         NP/jfFnqBXhNvwAmMFHIvezXVpyG04q3PH/VMfxUw2tEfI6gFjKzASznmUGlW7+mLnHC
-         QDEQ==
+        bh=Tdu3IELipu3p/D74A0pX5WWwRqpoNt+qbtWxqKF5oIg=;
+        b=EY4qzyXsmPTmb3Bo+CEpIlnWglnykhW6Itg/kH6JJ29Q+1G6O5ycXcgIfjkWKEEPK9
+         OTZOP/jdeCG9761FTcqBYfbtyYwzC1T8fbWUaZYiv2BzGNnfpzyl5V0q8CndR4CCUitZ
+         WSizUs53TJlikWboInI9lgOt695FNsnQtRC9e03cgEEUmysooMUBBudf0TBgkMU2ipQS
+         /+gsmToeBccaKCiO6wkIJy+/4xGDp/yZiCsFlOpYMSeXo05a0CnUfvKj2vAbCa9FflQt
+         8NuAVZunK910SFcgBr1tvtb99kTrnVf0DMBf9gQEBiZXmDMclFIi2YjYwFZEAv2L1ZgA
+         5TkA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1730202184; x=1730806984;
+        d=1e100.net; s=20230601; t=1730202260; x=1730807060;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=xvHsIFSTi0XZdx0k62e6OyvWU9dWkoQVlshw4U0DAXg=;
-        b=ZUf3L2tQ9hFt8G/0JZ9F2aTMTbkHD5FUGb6/UT5gZ6a2O3yfGbv3LHQMSopo73po7W
-         6hd541QN63TJ3c0U0w5i79M9TTardh2CBJaBqlJW1QxsZyltlYcUgMIDnFuAqVsVipO0
-         0O68brJ9m+gy8u5bvuw78/U0jEjVmZY+akoxVH2kWRQUi3auh52hsvrCB1gbtTr2iuUL
-         vvNh6EQo8idNYz1gBkYBLt+qaTes2DP60DFHXyAcABsiPXwn9sTp7j0Gkz1R/KUegABl
-         2gZz5yysS96TjXq6I9gBYRcBzYvPBwpzlEDgLWCcxiOBeoS+AJgnLLbivdGImVTMLy2L
-         6OTw==
-X-Gm-Message-State: AOJu0YxHw5uB2MF8NQYYX4KwcHCskq+H89Bgwfg9YQ/beUZYLy5VBBXM
-	qZriQk0NcHTseDxpoo4+sBSc1OZnnZfo4tajRie7yGfy2swv03eBYG9mD3Fs79k=
-X-Google-Smtp-Source: AGHT+IHB2/Bh0ErrimuBLBmKhlXWmOBNgnoxFGD8U46br8NjpRaYQXlpVMZjkh13p9UY1aPjaplOlQ==
-X-Received: by 2002:ac8:5741:0:b0:460:3f3c:b3ba with SMTP id d75a77b69052e-4616814a7a8mr30157081cf.25.1730202183823;
-        Tue, 29 Oct 2024 04:43:03 -0700 (PDT)
+        bh=Tdu3IELipu3p/D74A0pX5WWwRqpoNt+qbtWxqKF5oIg=;
+        b=KdALVyKcaRggSPhWiVoZygZWkiRmJTI9wvQaesfwsudq+HnBJbE2gI3v8jbQBzAHiw
+         9JMN/VwP6zzUs3pwVEw1wqYFfxHUUYF5ivSEnoXj0PPU9SMASNz/v2YgASKuD8VY7t0n
+         uGd2Kqdg46RQYIBKZ9gJwsDhr64XDEw/Nq+aVjrHnCoSS6j7tCx9YMEzQqZQIQGvI3h2
+         D+GTaKnyAhtbmG7ubFS7aj8myc0vBXdLmI3NNWlXIJEfkQFRLlo4sq908CVK2kWc1My/
+         RuGJCh27X7VYt8C0m/iLCJqbu6105g4VO9xegzruAFCe4Pn4oTuG6D29QAOWTmK7tVGk
+         MmtA==
+X-Forwarded-Encrypted: i=1; AJvYcCW7jWfLIp3eWmC9ldC0DAqUx12stItF2Z80zPEmUNwl8r4ODC4z+u6hZVGcwMXiYF02RG2LoA==@lists.linux.dev
+X-Gm-Message-State: AOJu0Yxk4S8WJcKvlMrW5qBgkaLyjwBBsg2qMflaGYV7vX+k6TjusrTV
+	b8LSNMCZ2Rkn4m8oAFwqMA/4wF/Wu8o7yfHkmiSIsCvalNbr6btzlVKF43IAT34=
+X-Google-Smtp-Source: AGHT+IEhHhMgHBibsj89vlo3FpSboBqZgX525xqCBVrHcZEXwemaWsTbNPtOJsKqaWZCs5pZavMFZQ==
+X-Received: by 2002:a05:690c:f12:b0:6e6:1018:64ab with SMTP id 00721157ae682-6e9d897fad1mr107281457b3.5.1730202258436;
+        Tue, 29 Oct 2024 04:44:18 -0700 (PDT)
 Received: from ziepe.ca (hlfxns017vw-142-68-128-5.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.68.128.5])
-        by smtp.gmail.com with ESMTPSA id d75a77b69052e-461323741c0sm43669641cf.61.2024.10.29.04.43.02
+        by smtp.gmail.com with ESMTPSA id 6a1803df08f44-6d179a2ce60sm41001036d6.108.2024.10.29.04.44.17
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 29 Oct 2024 04:43:02 -0700 (PDT)
+        Tue, 29 Oct 2024 04:44:18 -0700 (PDT)
 Received: from jgg by wakko with local (Exim 4.97)
 	(envelope-from <jgg@ziepe.ca>)
-	id 1t5kco-00000000nXZ-1YVu;
-	Tue, 29 Oct 2024 08:43:02 -0300
-Date: Tue, 29 Oct 2024 08:43:02 -0300
+	id 1t5ke1-00000000nYV-1mP0;
+	Tue, 29 Oct 2024 08:44:17 -0300
+Date: Tue, 29 Oct 2024 08:44:17 -0300
 From: Jason Gunthorpe <jgg@ziepe.ca>
 To: Joerg Roedel <joro@8bytes.org>
-Cc: iommu@lists.linux.dev, Will Deacon <will@kernel.org>,
-	linux-kernel@vger.kernel.org, Joerg Roedel <jroedel@suse.de>,
-	Vasant Hegde <vasant.hegde@amd.com>
-Subject: Re: [PATCH] iommu: Fix prototype of iommu_paging_domain_alloc_flags()
-Message-ID: <20241029114302.GI20281@ziepe.ca>
-References: <20241029105849.52069-1-joro@8bytes.org>
+Cc: Vasant Hegde <vasant.hegde@amd.com>, iommu@lists.linux.dev,
+	will@kernel.org, robin.murphy@arm.com,
+	suravee.suthikulpanit@amd.com, yi.l.liu@intel.com,
+	baolu.lu@linux.intel.com, kevin.tian@intel.com,
+	jacob.pan@linux.microsoft.com
+Subject: Re: [PATCH v5 12/12] iommu: Create __iommu_alloc_identity_domain()
+Message-ID: <20241029114417.GJ20281@ziepe.ca>
+References: <20241028093810.5901-1-vasant.hegde@amd.com>
+ <20241028093810.5901-13-vasant.hegde@amd.com>
+ <ZyCtLXeZxhNHTPbX@8bytes.org>
+ <ad8bc41e-e6cc-4a91-8cef-6aaf06703cdd@amd.com>
+ <ZyC05ycHuceILlye@8bytes.org>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -71,25 +78,24 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20241029105849.52069-1-joro@8bytes.org>
+In-Reply-To: <ZyC05ycHuceILlye@8bytes.org>
 
-On Tue, Oct 29, 2024 at 11:58:49AM +0100, Joerg Roedel wrote:
-> From: Joerg Roedel <jroedel@suse.de>
+On Tue, Oct 29, 2024 at 11:11:51AM +0100, Joerg Roedel wrote:
+> Hi Vasant,
 > 
-> The iommu_paging_domain_alloc_flags() prototype for
-> non-iommu kernel configurations lacks the 'static inline'
-> prefixes.
+> On Tue, Oct 29, 2024 at 03:36:41PM +0530, Vasant Hegde wrote:
+> > In my base (v6.12-rc3) + this series, iommu_domain_alloc() calls above function.
+> > 
+> > Looks like you pull Baolu's series which removed iommu_domain_alloc() [1] as
+> > well. So now there is no user for above function and hit compilation error.
+> > 
+> > [1] https://lore.kernel.org/linux-iommu/ZyClPkzekxXKqTFV@8bytes.org/T/#t
 > 
-> Cc: Jason Gunthorpe <jgg@ziepe.ca>
-> Cc: Vasant Hegde <vasant.hegde@amd.com>
-> Fixes: 20858d4ebb42 ("iommu: Introduce iommu_paging_domain_alloc_flags()")
-> Signed-off-by: Joerg Roedel <jroedel@suse.de>
-> ---
->  include/linux/iommu.h | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
+> I see, that makes sense. Yes, I pulled in Baolus series as well before
+> this one.
+> 
+> So I added the removal of the function to this patch as well.
 
-Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
-
-Lacking 0-day again..
+Great, thanks, that was the plan!
 
 Jason
