@@ -1,101 +1,142 @@
-Received: from bmailout1.hostsharing.net (bmailout1.hostsharing.net [83.223.95.100])
+Received: from mo4-p02-ob.smtp.rzone.de (mo4-p02-ob.smtp.rzone.de [85.215.255.82])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 79A771E47BF
-	for <iommu@lists.linux.dev>; Wed, 30 Oct 2024 11:17:36 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=83.223.95.100
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1730287059; cv=none; b=TYjnBDjLBNuTkQhRV/Qj9pG0yNLfVe3f1mTERSPob/kmkFwJpSOedH28iNIETiej/Nh9kpHzif/2kXlFfzdIC4r5fFtkPbz4wzosyaW+swVIwmVBIZ9ccihMdyOFnHVISOXbGCSSZGgkC50kgr905lJkRtgKue7Cc2KaVyc26rY=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1730287059; c=relaxed/simple;
-	bh=przTDjQYYTgJs6OmbMeksLnt9utBBFTAptOHzRDnJrM=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=s0RPT/mpFotgWIaUZUiV4LefSjnXknFO6b80hwfboM99woWZ3NA1lZcrWdua5u0/qHqk/IkANcswsh1yms35w4XL0mHHFPJWeXiwW9BtTGATeCT8oWJAUdHu9x/TL+kbYn4sbKxUco+LR3zyTBB5ECuBTQuSvji96kTSU8W7CoY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=wunner.de; spf=none smtp.mailfrom=h08.hostsharing.net; arc=none smtp.client-ip=83.223.95.100
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=wunner.de
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=h08.hostsharing.net
-Received: from h08.hostsharing.net (h08.hostsharing.net [IPv6:2a01:37:1000::53df:5f1c:0])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256
-	 client-signature RSA-PSS (4096 bits) client-digest SHA256)
-	(Client CN "*.hostsharing.net", Issuer "RapidSSL TLS RSA CA G1" (verified OK))
-	by bmailout1.hostsharing.net (Postfix) with ESMTPS id 4F0E130008206;
-	Wed, 30 Oct 2024 12:11:33 +0100 (CET)
-Received: by h08.hostsharing.net (Postfix, from userid 100393)
-	id 36BFF22CE34; Wed, 30 Oct 2024 12:11:33 +0100 (CET)
-Date: Wed, 30 Oct 2024 12:11:33 +0100
-From: Lukas Wunner <lukas@wunner.de>
-To: Bjorn Helgaas <helgaas@kernel.org>
-Cc: Esther Shimanovich <eshimanovich@chromium.org>,
-	Bjorn Helgaas <bhelgaas@google.com>,
-	Rajat Jain <rajatja@google.com>,
-	"Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
-	Mario Limonciello <mario.limonciello@amd.com>,
-	Ilpo =?iso-8859-1?Q?J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>,
-	iommu@lists.linux.dev,
-	Mika Westerberg <mika.westerberg@linux.intel.com>,
-	linux-pci@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v5] PCI: Detect and trust built-in Thunderbolt chips
-Message-ID: <ZyIUZfFuUdAbVf25@wunner.de>
-References: <20240910-trust-tbt-fix-v5-1-7a7a42a5f496@chromium.org>
- <20241030001524.GA1180712@bhelgaas>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EA8EE1990CD
+	for <iommu@lists.linux.dev>; Wed, 30 Oct 2024 11:21:26 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=85.215.255.82
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1730287291; cv=pass; b=ij+4gOwq3kOCSUZ/+wkIylWaFGuyaKcRyiKij7s/RmWkhEW9mLp0d5KgN+quLCLyeWvG11T7Aks/l0JaKId6QDVmQIERMFtotbZb60Hc+X5r93tPS9c1L/Kc+y5zXPoglmJqkuguK92c6aAvEa54WjFJt/R0yxKhSnXu4Oc8+bM=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1730287291; c=relaxed/simple;
+	bh=eqlPk3VbpPRo0CwoqYeA+mkYbzA2YumBxWU5LsG9F6I=;
+	h=Content-Type:Mime-Version:Subject:From:In-Reply-To:Date:Cc:
+	 Message-Id:References:To; b=qM7gDGEIsd4EXVCIFNjUX3VvkWjxrra7QvBUv9O3YzQ+rHlBc5zWkGNRp59ufsgWoESPzIpjVCYH8JplRoJpsksMMc9wFoQkD1IptenpXatU5ppwI/0QejnX0Sw0Zno40P6vvcUn870suNdG76Z/k37/DKnbQLumDpzRm15NYTY=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=goldelico.com; spf=pass smtp.mailfrom=goldelico.com; dkim=pass (2048-bit key) header.d=goldelico.com header.i=@goldelico.com header.b=Qn5HcpE+; dkim=permerror (0-bit key) header.d=goldelico.com header.i=@goldelico.com header.b=6UZADULY; arc=pass smtp.client-ip=85.215.255.82
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=goldelico.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=goldelico.com
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=goldelico.com header.i=@goldelico.com header.b="Qn5HcpE+";
+	dkim=permerror (0-bit key) header.d=goldelico.com header.i=@goldelico.com header.b="6UZADULY"
+ARC-Seal: i=1; a=rsa-sha256; t=1730287242; cv=none;
+    d=strato.com; s=strato-dkim-0002;
+    b=LmkKYPnwFayGvNkyNGGwfTRPC30WQtV7XVBUPB46vNmTh2YUIvWSJJ3KTu2oXkPWg9
+    TQbPRw+CLNAPa0Z7npruX/zRsusDgjrQcxVYqaXL1tWDY0p0sPl4NanMz6fAvfJwXe0C
+    KUTGNayfcIHxeQdwzQQNOgzJeYObE27j9ZsBWz+uD6Y2Y1SXVK6poG3pWVPb9UBS+Lpq
+    ZY6FWCXj8CRkxAPQ0hy9izvHRDQHsAbqV0qN42ks+wvHybgBmSqh/AeZMoWYtCI9Gz6G
+    1y4yrzpMopQETTqMY0Mxiz11hVl9yX1KHPVKmF5HDZjGUjVIXHIMb9XdRO9VyX2FtZiz
+    t+4A==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; t=1730287242;
+    s=strato-dkim-0002; d=strato.com;
+    h=To:References:Message-Id:Cc:Date:In-Reply-To:From:Subject:Cc:Date:
+    From:Subject:Sender;
+    bh=eqlPk3VbpPRo0CwoqYeA+mkYbzA2YumBxWU5LsG9F6I=;
+    b=NBtam4dkLBq0eRjr70Gb2zRoQxURDptQp8EQT8w2lNfmJwaBkuPlKa3n7hWODPdPbZ
+    FnqxBLOVgQ3ShuH1k2YPGkCtQLYByn2RTQtK7jD4INLIv8sW2nZ/o3NeifENIlDSaMMx
+    d82ZPsfucbBpQqv4zpUQ1+mdVvj5fU6bzSo8QLJDeqSabiZE5eaOXZra5VEXX/o5Kyq5
+    YrYYJClbQ7ogLI90U5CJ+rv+EFiuG0n7HKNxb01XNoLtaoR3cnQmZYnsr619eMSG1xfF
+    JEUXjSPkNi2sZogTYpzoSgq2vsP57WccPFgOjkVlq3suIrdqAN9M3f5uH8pgwaBH4y2v
+    UJ6g==
+ARC-Authentication-Results: i=1; strato.com;
+    arc=none;
+    dkim=none
+X-RZG-CLASS-ID: mo02
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; t=1730287242;
+    s=strato-dkim-0002; d=goldelico.com;
+    h=To:References:Message-Id:Cc:Date:In-Reply-To:From:Subject:Cc:Date:
+    From:Subject:Sender;
+    bh=eqlPk3VbpPRo0CwoqYeA+mkYbzA2YumBxWU5LsG9F6I=;
+    b=Qn5HcpE+a9FbmOVJItB3kUbL0rgA+G2bddmVOCUSfLabE3qcPoE/Gr1J9tmmmwkpXP
+    v+o/GQkMBWuT8Wfq7YnXCqz4rQVVRL3f9l37pJCIvRpztlo/onzPjuxFWry40nFSRjwB
+    MhWu9ocxBgpDeJumK6dRUxer6tRSKk+W7tRKKChQahmiAp5hSGZUbTxtvmcyNzFFsmZ6
+    utC+bVhy3TrZDGsq6ycE56w+vq2vOQiD2DM4LuU3HQGsD71FT1ynBj5tOEnhe5UyM0K9
+    3x2IYcBYfJPW5VkHrWzEHhcXtB09Px13+ndbiChmRWnbGZTGHkGYV01z+qlHnRV4sbK2
+    1vyA==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; t=1730287242;
+    s=strato-dkim-0003; d=goldelico.com;
+    h=To:References:Message-Id:Cc:Date:In-Reply-To:From:Subject:Cc:Date:
+    From:Subject:Sender;
+    bh=eqlPk3VbpPRo0CwoqYeA+mkYbzA2YumBxWU5LsG9F6I=;
+    b=6UZADULYg4bR6wpt3xghzPOnsSR2uVqfNG6++6FbYSlefN4k43O5NvtlftKYmzEquZ
+    b3Mh5+sSFIUqA5xMIgBg==
+X-RZG-AUTH: ":JGIXVUS7cutRB/49FwqZ7WcJeFKiMhflhwDubTJ9qVpwcQVkPW4I1HrSiJpeyMiNH8TaiW2pBcBKxu1ib9gQlpMMsbZm"
+Received: from smtpclient.apple
+    by smtp.strato.de (RZmta 51.2.11 AUTH)
+    with ESMTPSA id Qb7e4009UBKgS5B
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (curve X9_62_prime256v1 with 256 ECDH bits, eq. 3072 bits RSA))
+	(Client did not present a certificate);
+    Wed, 30 Oct 2024 12:20:42 +0100 (CET)
+Content-Type: text/plain;
+	charset=us-ascii
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20241030001524.GA1180712@bhelgaas>
+Mime-Version: 1.0 (Mac OS X Mail 16.0 \(3776.700.51.11.1\))
+Subject: Re: [PATCH 0/4] Fix omap-iommu bitrot
+From: "H. Nikolaus Schaller" <hns@goldelico.com>
+In-Reply-To: <ZyIClriScBy4s6LX@8bytes.org>
+Date: Wed, 30 Oct 2024 12:20:31 +0100
+Cc: Robin Murphy <robin.murphy@arm.com>,
+ will@kernel.org,
+ Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
+ mchehab@kernel.org,
+ andersson@kernel.org,
+ mathieu.poirier@linaro.org,
+ Beleswar Padhi <b-padhi@ti.com>,
+ Andreas Kemnade <andreas@kemnade.info>,
+ iommu@lists.linux.dev,
+ arm-soc <linux-arm-kernel@lists.infradead.org>,
+ Linux-OMAP <linux-omap@vger.kernel.org>,
+ linux-media@vger.kernel.org,
+ linux-remoteproc@vger.kernel.org
+Content-Transfer-Encoding: quoted-printable
+Message-Id: <515D7932-3939-4C3E-BA3E-CC3152E64749@goldelico.com>
+References: <cover.1730136799.git.robin.murphy@arm.com>
+ <ZyIClriScBy4s6LX@8bytes.org>
+To: Joerg Roedel <joro@8bytes.org>
+X-Mailer: Apple Mail (2.3776.700.51.11.1)
 
-On Tue, Oct 29, 2024 at 07:15:24PM -0500, Bjorn Helgaas wrote:
-> I asked on the v4 patch whether we really need to make all this
-> ACPI specific, and I'm still curious about that, since we don't
-> actually use any ACPI interfaces directly.
 
-The patch works around a deficiency in a Microsoft spec which is
-specifically for ACPI-based systems, not devicetree-based systems:
 
-   "ACPI Interface: Device Specific Data (_DSD) for PCIe Root Ports
-    In Windows 10 (Version 1803), new ACPI _DSD methods have been added
-    to support Modern Standby and PCI hot plug scenarios."
+> Am 30.10.2024 um 10:55 schrieb Joerg Roedel <joro@8bytes.org>:
+>=20
+> On Mon, Oct 28, 2024 at 05:58:34PM +0000, Robin Murphy wrote:
+>> It seems omap-iommu hasn't had enough mainline users to avoid =
+bitrotting
+>> through the more recent evolution of the IOMMU API internals. These
+>> patches attempt to bring it and its consumers sufficiently up-to-date
+>> to work again, in a manner that's hopefully backportable. This is
+>> largely all written by inspection, but I have managed to lightly boot
+>> test patch #3 on an OMAP4 Pandaboard to confirm iommu_probe_device()
+>> working again.
+>=20
+> My initial reflex would have been to just wipe the omap drivers,
 
-    https://learn.microsoft.com/en-us/windows-hardware/drivers/pci/dsd-for-pcie-root-ports
+Why that? There was a discussion and everyone agreed to remove omap2,
+but not omap3 and later.
 
-The deficiency is that Microsoft says the ExternalFacingPort property
-must be below the Root Port...
+> hardware is 10+ years out of production, no? So who is still using =
+this
+> hardware with recent kernels for other purposes than kernel testing?
 
-   "This ACPI object enables the operating system to identify externally
-    exposed PCIe hierarchies, such as Thunderbolt. This object must be
-    implemented in the Root Port ACPI device scope."
+There are some devices besides the PandaBoard. I am aware of these where
+this is relevant: Epson BT200, Samsung Galaxy Tab 2, Pyra Handheld
+(in production) and we are currently thinking about producing a tiny =
+series
+of the DM3730 based GTA04A5 with spare parts.
 
-...but on the systems in question, external-facing ports do not
-originate from the Root Port, but from Downstream Ports.
-So there's the Root Port (with the external facing property),
-below that an Upstream Port and below that a Downstream Port
-(which is the actual external facing port).
+And of course we want to participate from the latest and greatest =
+upstream changes.
 
-I'm not sure if Windows on ARM systems use ACPI or devicetree.
-I'm also not sure whether the Qualcomm SnapDragon SoCs they use
-have Thunderbolt built-in, in which case they won't need a
-discrete Thunderbolt controller.  If they don't use discrete
-Thunderbolt controllers or if they don't use ACPI, they can't
-exhibit the problem.
-
-In any case I haven't heard of any Windows on ARM systems being
-affected by the issue.
-
-So it boils down to:  Should we compile the quirk in just in case
-ARM-based ACPI systems with discrete Thunderbolt controllers and
-problematic ACPI tables show up, or should we constrain it to x86,
-which is the only known architecture that actually needs it right now.
-
-My recommendation would be the latter because it's easy to move
-code around in the tree, should other arches become affected,
-but in the meantime we save memory and compile time on anything
-not x86.
+>=20
+>> This supersedes my previous patch[1]. Patches #1 and #2 are =
+functionally
+>> independent, and can be applied directly to their respective trees if
+>> preferred.
+>=20
+> I applied patches 3 and 4 to the ti/omap branch.
 
 Thanks,
+Nikolaus
 
-Lukas
