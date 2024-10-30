@@ -1,46 +1,44 @@
 Received: from mail.8bytes.org (mail.8bytes.org [85.214.250.239])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id D46731E3798
-	for <iommu@lists.linux.dev>; Wed, 30 Oct 2024 09:55:42 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id A8A4D1E2313
+	for <iommu@lists.linux.dev>; Wed, 30 Oct 2024 10:24:06 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=85.214.250.239
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1730282145; cv=none; b=f5C1oOKz0UvmJndLcSfjR4cQmGEVaQNDRbEKxp1IbkFVcfMLrziWuq3SvQp55wPZ9vQT8t0oNFiG8jEVsFGaRGI7NQR8sC521eydBnf+nqbiYIRaVp82yUqlkp4oyd1bwlFJOxlAoSZF/c8Wafj4GRKdojA6Zycag7mPxoeGrYQ=
+	t=1730283849; cv=none; b=Y6Zib7RLpJGI00nd5oYuU+8vt5qGsan9vdMkgc5aeQujyAHZYJ4emqthd61Sbw8YYefWDlgg5T/aAHbfCJydEefSfEIKIC2sJxp5kyJOAPVbrGHilCBPInj9059xr3kHrmLyBEoDgcZIQy/QrOPOgjNByM8KTUuvMYiokvcLt3Y=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1730282145; c=relaxed/simple;
-	bh=gMC0AIiI/Y2DVK7hFH5y4phwR672FvvHc69yRw+0m/I=;
+	s=arc-20240116; t=1730283849; c=relaxed/simple;
+	bh=LlF+sOJg66O+VtZNap9ROamreGp1SwzJISQDJwL4QG4=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=T9TyRa5rbQLW/IfBEGvOBGnQMmqB7XaT019yhphy2tE4jrXVkhm9PIu673rGFw36JQ++YAPZi+1g15YWsSZWzNReGeOzJ+QnSkQL/LKIOm/Hw7vwFyGBrMpUbwJunpD9gwgQHS0mRmAQhSRLiOxWbAxg0unXpiTEYw8Vn1+p9bM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=8bytes.org; spf=pass smtp.mailfrom=8bytes.org; dkim=pass (2048-bit key) header.d=8bytes.org header.i=@8bytes.org header.b=l9Y8+XJf; arc=none smtp.client-ip=85.214.250.239
+	 Content-Type:Content-Disposition:In-Reply-To; b=h4URlioELa9y2aZ9NdVzacuIAzjiKtITVwXjdM5Q6yWxa/jDoZwV6dy+CSGBfoLQHtvn83c0ZfRsp7YS2UXQW72Mkr6F20bTFq6WhAaGN+gycumeGceeuCAnAqhageNOXk09yDSO+tt7QfGUp/pYgsL4f918IIdZIq6nJPgmtTk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=8bytes.org; spf=pass smtp.mailfrom=8bytes.org; dkim=pass (2048-bit key) header.d=8bytes.org header.i=@8bytes.org header.b=lGMUh2Dk; arc=none smtp.client-ip=85.214.250.239
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=8bytes.org
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=8bytes.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=8bytes.org header.i=@8bytes.org header.b="l9Y8+XJf"
+	dkim=pass (2048-bit key) header.d=8bytes.org header.i=@8bytes.org header.b="lGMUh2Dk"
 Received: from 8bytes.org (p549219d2.dip0.t-ipconnect.de [84.146.25.210])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange ECDHE (P-256) server-signature RSA-PSS (2048 bits) server-digest SHA256)
 	(No client certificate requested)
-	by mail.8bytes.org (Postfix) with ESMTPSA id B402D2A8ABF;
-	Wed, 30 Oct 2024 10:55:35 +0100 (CET)
+	by mail.8bytes.org (Postfix) with ESMTPSA id 7DD392A8F74;
+	Wed, 30 Oct 2024 11:24:05 +0100 (CET)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=8bytes.org;
-	s=default; t=1730282135;
-	bh=gMC0AIiI/Y2DVK7hFH5y4phwR672FvvHc69yRw+0m/I=;
+	s=default; t=1730283845;
+	bh=LlF+sOJg66O+VtZNap9ROamreGp1SwzJISQDJwL4QG4=;
 	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=l9Y8+XJfPeU4YrZn/iITWmNXxiGDKQc9qI1YRQlNIxSR9WumxuMkbyjgpbnyMkeNc
-	 ZpvMFMOwCsn1RapHptt06thUPjJFkh44+dXEpEpDR1EkEf0Kl4DwpXawIXfAbmNRts
-	 X63R4zz+B5UrrHYkv5a6NF3OQr+shqw3no07xjIksEN6S1sLX+KlH/PbooL+mR2bi5
-	 mCU3WRDKz9hL+qgpaEX/7fIrDszVtauESl3Fv/cZH6HLx9d7pIgk1bl6c1oGUZK96m
-	 yBkcjkzNUZpDlpxcqfg8cm6Cnu6KcLLwcOuaCo1N3vspd6UsoZzChLL1PdTwreFLvE
-	 u3klQH+uJSSyw==
-Date: Wed, 30 Oct 2024 10:55:34 +0100
+	b=lGMUh2DkZDe6phpbDO7hFopiO2rKxmjfRwq4IVZSZ0KPpecnAsVtSUFtYcSKIW7nW
+	 DwMGBuijRiCJ+2hMWDY9f+SCMfzKEKWtO/bZ8LcnVaBNB9sdUsN7pIIOqKqAG1b502
+	 AwNlDnfKe4LsVRyJMclNWGzWqcf/VptvgzPP0GxlqM/ApZalqHKQv+ap4DLXpLKNI8
+	 wYQKysOl1Pi1zSVA8qMKQaTxxZPgPaUnD0xd26+Z7wDGkEsLJ8ai3L+0kqzkTcZEHU
+	 c5KPvKVl2enbT2fr+TA6jgO7Q5dcxkIKCsR/V18TP/K3rAB2VFEZNIYZF0EDYy2qwL
+	 vLzSjArIb2oVA==
+Date: Wed, 30 Oct 2024 11:24:04 +0100
 From: Joerg Roedel <joro@8bytes.org>
-To: Robin Murphy <robin.murphy@arm.com>
-Cc: will@kernel.org, laurent.pinchart@ideasonboard.com, mchehab@kernel.org,
-	andersson@kernel.org, mathieu.poirier@linaro.org, hns@goldelico.com,
-	b-padhi@ti.com, andreas@kemnade.info, iommu@lists.linux.dev,
-	linux-arm-kernel@lists.infradead.org, linux-omap@vger.kernel.org,
-	linux-media@vger.kernel.org, linux-remoteproc@vger.kernel.org
-Subject: Re: [PATCH 0/4] Fix omap-iommu bitrot
-Message-ID: <ZyIClriScBy4s6LX@8bytes.org>
-References: <cover.1730136799.git.robin.murphy@arm.com>
+To: Vasant Hegde <vasant.hegde@amd.com>
+Cc: iommu@lists.linux.dev, will@kernel.org, robin.murphy@arm.com,
+	suravee.suthikulpanit@amd.com, jgg@ziepe.ca
+Subject: Re: [PATCH v5 00/12] iommu/amd: Improve domain allocator and device
+ attach code path
+Message-ID: <ZyIJRHZW7-oIp_fp@8bytes.org>
+References: <20241030063556.6104-1-vasant.hegde@amd.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -49,27 +47,28 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <cover.1730136799.git.robin.murphy@arm.com>
+In-Reply-To: <20241030063556.6104-1-vasant.hegde@amd.com>
 
-On Mon, Oct 28, 2024 at 05:58:34PM +0000, Robin Murphy wrote:
-> It seems omap-iommu hasn't had enough mainline users to avoid bitrotting
-> through the more recent evolution of the IOMMU API internals. These
-> patches attempt to bring it and its consumers sufficiently up-to-date
-> to work again, in a manner that's hopefully backportable. This is
-> largely all written by inspection, but I have managed to lightly boot
-> test patch #3 on an OMAP4 Pandaboard to confirm iommu_probe_device()
-> working again.
+On Wed, Oct 30, 2024 at 06:35:44AM +0000, Vasant Hegde wrote:
+> Vasant Hegde (12):
+>   iommu/amd/pgtbl_v2: Take protection domain lock before invalidating
+>     TLB
+>   iommu/amd: Use ida interface to manage protection domain ID
+>   iommu/amd: Remove protection_domain.dev_cnt variable
+>   iommu/amd: xarray to track protection_domain->iommu list
+>   iommu/amd: Remove unused amd_iommus variable
+>   iommu/amd: Do not detach devices in domain free path
+>   iommu/amd: Reduce domain lock scope in attach device path
+>   iommu/amd: Rearrange attach device code
+>   iommu/amd: Convert dev_data lock from spinlock to mutex
+>   iommu/amd: Reorder attach device code
+>   iommu/amd: Add ops->release_domain
+>   iommu/amd: Improve amd_iommu_release_device()
+> 
+>  drivers/iommu/amd/amd_iommu_types.h |  23 +-
+>  drivers/iommu/amd/init.c            |  37 +--
+>  drivers/iommu/amd/io_pgtable_v2.c   |   3 +
+>  drivers/iommu/amd/iommu.c           | 360 +++++++++++++---------------
+>  4 files changed, 194 insertions(+), 229 deletions(-)
 
-My initial reflex would have been to just wipe the omap drivers,
-hardware is 10+ years out of production, no? So who is still using this
-hardware with recent kernels for other purposes than kernel testing?
-
-> This supersedes my previous patch[1]. Patches #1 and #2 are functionally
-> independent, and can be applied directly to their respective trees if
-> preferred.
-
-I applied patches 3 and 4 to the ti/omap branch.
-
-Regards,
-
-	Joerg
+Applied, thanks.
