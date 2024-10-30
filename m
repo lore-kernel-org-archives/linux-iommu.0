@@ -1,130 +1,211 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.9])
+Received: from mx0b-0031df01.pphosted.com (mx0b-0031df01.pphosted.com [205.220.180.131])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5A2AA1E907D
-	for <iommu@lists.linux.dev>; Wed, 30 Oct 2024 11:31:24 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.9
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CDE951E631D
+	for <iommu@lists.linux.dev>; Wed, 30 Oct 2024 11:32:11 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.180.131
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1730287886; cv=none; b=gZoSs2sQY8OIg1+8LWz/iXBfqrYiUhUtYlqjRDOkUlmY+7iYLjiFnDED3NCkhYlHd3ecm8ETnMzyMpP+aSqtuPvPhZd7t65i8JPGwO0TQbnElV46R+X6PGoC8ePAbuH9UxrjuRbN4JMKUbiPENTgd6kqZ/9uOA7M70l6ZffpDqo=
+	t=1730287934; cv=none; b=EZBa/o0IoJ+/3rBxqMxvrk0FoHqw6YiRmJJ0lIJ47cFsG6Ax5HBxOxsQ31kIvHMqA5aNEh22PLGWertl+Ek/OlJFDZkQWDneaiceJypRXc0OVBKP0vl12EIkynoz7b4ILXSuzbqBKEqf+I6FE1qegfUn38sgde1yTEIsiRMmLu4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1730287886; c=relaxed/simple;
-	bh=jGdZDsx0s9g6rg3dnMU2BE+xkNj1ngNNFczgoy6gzvM=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=JeAkU4CJ/sTVpUvs0pydgzKiqiIVn6NtuAe81lE9AqUweSL6Y2clEhw4oy6IlDOBXFESK4hWLkiIg2rs2VOkio/zI3+k5AkHBWFIl65/qteiutPFf9iwXUEMu/fzTknJR+1mTxrKNwjCYZsfNXKF5pDX2L5Q7V9iCl7YNPtd82s=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=n4MpXqDw; arc=none smtp.client-ip=192.198.163.9
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
+	s=arc-20240116; t=1730287934; c=relaxed/simple;
+	bh=w6H7Qq42d5eP8LdVc2TdnqklE3NAyDo0h846LZs1ff4=;
+	h=Message-ID:Date:MIME-Version:Subject:To:CC:References:From:
+	 In-Reply-To:Content-Type; b=IhlYklIKP1ZA1/oMwzyUa21e2ent+AA0XwYMGuTWDO2Gj0i0je5BJqlgUo55bZ12mGhDOnwy8NNvEZ+jbImSRHUsRgTSS0ubLX8RV3VdyMhawp5deNZ0pcJ6ZAJuV3EUDFy3iceb17KxVHn6tRfAVO0yfHex/GXVy7LxmttScFA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com; spf=pass smtp.mailfrom=quicinc.com; dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b=WHb6oIUO; arc=none smtp.client-ip=205.220.180.131
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=quicinc.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="n4MpXqDw"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1730287884; x=1761823884;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=jGdZDsx0s9g6rg3dnMU2BE+xkNj1ngNNFczgoy6gzvM=;
-  b=n4MpXqDw6a/FVdRhc+7iJeNCH6fs+STQ0NgHU+8X13WkyocOWiV3Pmap
-   9MHCYnEeyUAlA+Bdq2KRCxJYUrQrGjcDwL2QH4KiS8w4s1FM1rl5AyJrD
-   jE/+6VoIEg/cGiW6yyKLVpMqhsGidnqoEJzxmRRHLp/6k6tR3TZ3cnb0m
-   i4H049Jr7gkUP6CjsxcLSIuW5eeL3oU+74pfSMhlPPli1xRmnRKAdQCQ6
-   gpevNJdMZzbGvMKQJGcRUuhPwdsR4RvjVvj51eFD+NO1a41BwgxFHFfiB
-   t9OlxOgzFH0feMYAx7mm4N8DvlccIJcqHp2umTg69yjPhbqwg/1pBnGlD
-   A==;
-X-CSE-ConnectionGUID: wrPKx6brRqyooV5plBRoIw==
-X-CSE-MsgGUID: wFiyeBwaTryufjFrVg9nsw==
-X-IronPort-AV: E=McAfee;i="6700,10204,11240"; a="40589395"
-X-IronPort-AV: E=Sophos;i="6.11,245,1725346800"; 
-   d="scan'208";a="40589395"
-Received: from fmviesa007.fm.intel.com ([10.60.135.147])
-  by fmvoesa103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Oct 2024 04:31:24 -0700
-X-CSE-ConnectionGUID: NTZUZfUTSQSodWopAYiw2g==
-X-CSE-MsgGUID: TuXwUavjSwue7XGiLvWGCQ==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.11,245,1725346800"; 
-   d="scan'208";a="81936772"
-Received: from black.fi.intel.com ([10.237.72.28])
-  by fmviesa007.fm.intel.com with ESMTP; 30 Oct 2024 04:31:19 -0700
-Received: by black.fi.intel.com (Postfix, from userid 1001)
-	id 64AAF275; Wed, 30 Oct 2024 13:31:08 +0200 (EET)
-Date: Wed, 30 Oct 2024 13:31:08 +0200
-From: Mika Westerberg <mika.westerberg@linux.intel.com>
-To: Lukas Wunner <lukas@wunner.de>
-Cc: Bjorn Helgaas <helgaas@kernel.org>,
-	Esther Shimanovich <eshimanovich@chromium.org>,
-	Bjorn Helgaas <bhelgaas@google.com>,
-	Rajat Jain <rajatja@google.com>,
-	"Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
-	Mario Limonciello <mario.limonciello@amd.com>,
-	Ilpo =?utf-8?B?SsOkcnZpbmVu?= <ilpo.jarvinen@linux.intel.com>,
-	iommu@lists.linux.dev, linux-pci@vger.kernel.org,
-	linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v5] PCI: Detect and trust built-in Thunderbolt chips
-Message-ID: <20241030113108.GT275077@black.fi.intel.com>
-References: <20240910-trust-tbt-fix-v5-1-7a7a42a5f496@chromium.org>
- <20241030001524.GA1180712@bhelgaas>
- <ZyIUZfFuUdAbVf25@wunner.de>
+	dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b="WHb6oIUO"
+Received: from pps.filterd (m0279873.ppops.net [127.0.0.1])
+	by mx0a-0031df01.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 49U4msrZ027408;
+	Wed, 30 Oct 2024 11:31:58 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=quicinc.com; h=
+	cc:content-transfer-encoding:content-type:date:from:in-reply-to
+	:message-id:mime-version:references:subject:to; s=qcppdkim1; bh=
+	eOlC8HDfJ7U71PYiyPB7unuvlzouylxbI0NzZJCY39o=; b=WHb6oIUOBDKD0AvU
+	MC6BTJhP5meNs9Y3bn+QHSm4gHOfHUQaZvZWRE2yXSqWDhEtDAuQwS81ICGdHR1k
+	Z6ukYv9LdFWdUd4M/pE6ilRVMtNGfp5G84A0ibCJ6V2yKGXQkIB4KezA3u6AqQfT
+	Nc9DlQU7qYPr9UWhHFbaBKbJn1u4+kw/qZgzXOn/f9oOGlSdZabAKz5hMLhJ2HQ3
+	LGzShfcHtVyV++aGkitwmYqGUNmwlZhW+KAFGj5rD2nuB5BFzirLlsnAQyXA9UGs
+	qHuaCzOkvHz9uzvkrn0g/B4GmI7QL6sBXVsFUxR/fzkrduRBgds6UtjLqb9+oAkF
+	ehv8IA==
+Received: from nasanppmta02.qualcomm.com (i-global254.qualcomm.com [199.106.103.254])
+	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 42k1p33483-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Wed, 30 Oct 2024 11:31:57 +0000 (GMT)
+Received: from nasanex01b.na.qualcomm.com (nasanex01b.na.qualcomm.com [10.46.141.250])
+	by NASANPPMTA02.qualcomm.com (8.18.1.2/8.18.1.2) with ESMTPS id 49UBVtK7027520
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Wed, 30 Oct 2024 11:31:56 GMT
+Received: from [10.214.66.253] (10.80.80.8) by nasanex01b.na.qualcomm.com
+ (10.46.141.250) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1544.9; Wed, 30 Oct
+ 2024 04:31:08 -0700
+Message-ID: <e7a8e786-d67d-4ee7-a4d1-d9d02fd08bda@quicinc.com>
+Date: Wed, 30 Oct 2024 17:00:13 +0530
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <ZyIUZfFuUdAbVf25@wunner.de>
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v16 1/5] iommu/arm-smmu: re-enable context caching in smmu
+ reset operation
+To: Will Deacon <will@kernel.org>
+CC: <robdclark@gmail.com>, <robin.murphy@arm.com>, <joro@8bytes.org>,
+        <jgg@ziepe.ca>, <jsnitsel@redhat.com>, <robh@kernel.org>,
+        <krzysztof.kozlowski@linaro.org>, <quic_c_gdjako@quicinc.com>,
+        <dmitry.baryshkov@linaro.org>, <iommu@lists.linux.dev>,
+        <linux-arm-msm@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>, <linux-kernel@vger.kernel.org>,
+        Konrad Dybcio <konrad.dybcio@linaro.org>
+References: <20241008125410.3422512-1-quic_bibekkum@quicinc.com>
+ <20241008125410.3422512-2-quic_bibekkum@quicinc.com>
+ <20241024125241.GD30704@willie-the-truck>
+ <092db44e-f254-4abd-abea-e9a64e70df12@quicinc.com>
+ <20241029124708.GA4241@willie-the-truck>
+Content-Language: en-US
+From: Bibek Kumar Patro <quic_bibekkum@quicinc.com>
+In-Reply-To: <20241029124708.GA4241@willie-the-truck>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: nasanex01a.na.qualcomm.com (10.52.223.231) To
+ nasanex01b.na.qualcomm.com (10.46.141.250)
+X-QCInternal: smtphost
+X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
+X-Proofpoint-GUID: yI_kZ8z9PhJ4xMO0zQsOvTIwldSf4Fn1
+X-Proofpoint-ORIG-GUID: yI_kZ8z9PhJ4xMO0zQsOvTIwldSf4Fn1
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.293,Aquarius:18.0.1039,Hydra:6.0.680,FMLib:17.12.60.29
+ definitions=2024-09-06_09,2024-09-06_01,2024-09-02_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 priorityscore=1501
+ adultscore=0 spamscore=0 lowpriorityscore=0 mlxscore=0 malwarescore=0
+ phishscore=0 clxscore=1015 impostorscore=0 mlxlogscore=999 suspectscore=0
+ bulkscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.19.0-2409260000 definitions=main-2410300090
 
-On Wed, Oct 30, 2024 at 12:11:33PM +0100, Lukas Wunner wrote:
-> On Tue, Oct 29, 2024 at 07:15:24PM -0500, Bjorn Helgaas wrote:
-> > I asked on the v4 patch whether we really need to make all this
-> > ACPI specific, and I'm still curious about that, since we don't
-> > actually use any ACPI interfaces directly.
-> 
-> The patch works around a deficiency in a Microsoft spec which is
-> specifically for ACPI-based systems, not devicetree-based systems:
-> 
->    "ACPI Interface: Device Specific Data (_DSD) for PCIe Root Ports
->     In Windows 10 (Version 1803), new ACPI _DSD methods have been added
->     to support Modern Standby and PCI hot plug scenarios."
-> 
->     https://learn.microsoft.com/en-us/windows-hardware/drivers/pci/dsd-for-pcie-root-ports
-> 
-> The deficiency is that Microsoft says the ExternalFacingPort property
-> must be below the Root Port...
-> 
->    "This ACPI object enables the operating system to identify externally
->     exposed PCIe hierarchies, such as Thunderbolt. This object must be
->     implemented in the Root Port ACPI device scope."
-> 
-> ...but on the systems in question, external-facing ports do not
-> originate from the Root Port, but from Downstream Ports.
-> So there's the Root Port (with the external facing property),
-> below that an Upstream Port and below that a Downstream Port
-> (which is the actual external facing port).
-> 
-> I'm not sure if Windows on ARM systems use ACPI or devicetree.
-> I'm also not sure whether the Qualcomm SnapDragon SoCs they use
-> have Thunderbolt built-in, in which case they won't need a
-> discrete Thunderbolt controller.  If they don't use discrete
-> Thunderbolt controllers or if they don't use ACPI, they can't
-> exhibit the problem.
-> 
-> In any case I haven't heard of any Windows on ARM systems being
-> affected by the issue.
 
-Well they can do whatever they want without us knowing ;-) This problem
-does not happen even in x86 Windows probably because they do something
-similar than this patch.
 
-> So it boils down to:  Should we compile the quirk in just in case
-> ARM-based ACPI systems with discrete Thunderbolt controllers and
-> problematic ACPI tables show up, or should we constrain it to x86,
-> which is the only known architecture that actually needs it right now.
+On 10/29/2024 6:17 PM, Will Deacon wrote:
+> On Fri, Oct 25, 2024 at 07:51:22PM +0530, Bibek Kumar Patro wrote:
+>>
+>>
+>> On 10/24/2024 6:22 PM, Will Deacon wrote:
+>>> On Tue, Oct 08, 2024 at 06:24:06PM +0530, Bibek Kumar Patro wrote:
+>>>> Default MMU-500 reset operation disables context caching in
+>>>> prefetch buffer. It is however expected for context banks using
+>>>> the ACTLR register to retain their prefetch value during reset
+>>>> and runtime suspend.
+>>>>
+>>>> Replace default MMU-500 reset operation with Qualcomm specific reset
+>>>> operation which envelope the default reset operation and re-enables
+>>>> context caching in prefetch buffer for Qualcomm SoCs.
+>>>>
+>>>> Reviewed-by: Konrad Dybcio <konrad.dybcio@linaro.org>
+>>>> Signed-off-by: Bibek Kumar Patro <quic_bibekkum@quicinc.com>
+>>>> ---
+>>>>    drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c | 45 ++++++++++++++++++++--
+>>>>    1 file changed, 42 insertions(+), 3 deletions(-)
+>>>>
+>>>> diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
+>>>> index 087fb4f6f4d3..0cb10b354802 100644
+>>>> --- a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
+>>>> +++ b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
+>>>> @@ -16,6 +16,16 @@
+>>>>
+>>>>    #define QCOM_DUMMY_VAL	-1
+>>>>
+>>>> +/*
+>>>> + * SMMU-500 TRM defines BIT(0) as CMTLB (Enable context caching in the
+>>>> + * macro TLB) and BIT(1) as CPRE (Enable context caching in the prefetch
+>>>> + * buffer). The remaining bits are implementation defined and vary across
+>>>> + * SoCs.
+>>>> + */
+>>>> +
+>>>> +#define CPRE			(1 << 1)
+>>>> +#define CMTLB			(1 << 0)
+>>>> +
+>>>>    static struct qcom_smmu *to_qcom_smmu(struct arm_smmu_device *smmu)
+>>>>    {
+>>>>    	return container_of(smmu, struct qcom_smmu, smmu);
+>>>> @@ -396,11 +406,40 @@ static int qcom_smmu_def_domain_type(struct device *dev)
+>>>>    	return match ? IOMMU_DOMAIN_IDENTITY : 0;
+>>>>    }
+>>>>
+>>>> +static int qcom_smmu500_reset(struct arm_smmu_device *smmu)
+>>>> +{
+>>>> +	int ret;
+>>>> +	u32 val;
+>>>> +	int i;
+>>>> +
+>>>> +	ret = arm_mmu500_reset(smmu);
+>>>> +	if (ret)
+>>>> +		return ret;
+>>>> +
+>>>> +	/*
+>>>> +	 * arm_mmu500_reset() disables CPRE which is re-enabled here.
+>>>> +	 * The errata for MMU-500 before the r2p2 revision requires CPRE to be
+>>>> +	 * disabled. The arm_mmu500_reset function disables CPRE to accommodate all
+>>>> +	 * RTL revisions. Since all Qualcomm SoCs are on the r2p4 revision, where
+>>>> +	 * the CPRE bit can be enabled, the qcom_smmu500_reset function re-enables
+>>>> +	 * the CPRE bit for the next-page prefetcher to retain the prefetch value
+>>>> +	 * during reset and runtime suspend operations.
+>>>> +	 */
+>>>> +
+>>>> +	for (i = 0; i < smmu->num_context_banks; ++i) {
+>>>> +		val = arm_smmu_cb_read(smmu, i, ARM_SMMU_CB_ACTLR);
+>>>> +		val |= CPRE;
+>>>> +		arm_smmu_cb_write(smmu, i, ARM_SMMU_CB_ACTLR, val);
+>>>> +	}
+>>>
+>>> If CPRE only needs to be disabled prior to r2p2, then please teach the
+>>> MMU-500 code about that instead of adding qualcomm-specific logic here.
+>>>
+>>
+>> Doing this on MMU-500 code would make it generic and reflect for SoC of all
+>> the vendors on this platform.
+>> We can make sure that it won't cause any problems in Qualcomm SoCs as we
+>> have been enabling this since for some years now and could not
+>> observe/reproduce any issues around these errata.
 > 
-> My recommendation would be the latter because it's easy to move
-> code around in the tree, should other arches become affected,
-> but in the meantime we save memory and compile time on anything
-> not x86.
+> Unless you can explain definitively hy that's the case, I still don't
+> think we should be second-guessing the core SMMU driver code in the
+> Qualcomm backend.
+> 
+>> But we won't be able to guarantee the same behavior in SoC for other vendors
+>> where these errata might still be applicable as per [1] and [2].
+>> So as per my understanding it's safe to include in Qualcomm specific
+>> implementation and not changing the default behavior in all other vendors'
+>> SoC even if they are not prior to r2p2 revision [3].
+> 
+> If you want to gate the errata workarounds on policy, then please follow
+> what we do for the CPU: add a Kconfig option (e.g.
+> ARM_SMMU_WORKAROUND_BROKEN_CPRE) which defaults to "on" (assuming that
+> the relevant errata aren't all "rare") and update silicon-errata.rst
+> accordingly.
+> 
+> Then you can choose to disable them in your .config if you're happy to
+> pick up the pieces.
 
-IMHO this should be made generic enough that allows device tree based
-systems to take advantage of this right from the get-go. Note also there
-is already "external-facing" device tree property that matches the ACPI
-one defined in Documentation/devicetree/bindings/pci/pci.txt.
+This seems to be a good idea to me . I am thinking of this approach 
+based on your suggestion,
+i.e. we can bind the original workaround in
+arm_mmu500_reset implementation within ARM_SMMU_WORKAROUND_BROKEN_CPRE
+config (defualts to on, CPRE would be disabled) and in QCOM SoCs default 
+it to off
+(when ARM_SMMU_QCOM=Y -> switch ARM_SMMU_WORKAROUND_BROKEN_CPRE=N).
+
+In silicon-errata.rst would updating ARM_SMMU_WORKAROUND_BROKEN_CPRE be 
+okay , as the config names are based on erratum number.
+
+Thanks & regards,
+Bibek
+
+
+
+> 
+> As an aside, I'm happy with the rest of the series now.
+> 
+> Will
+
