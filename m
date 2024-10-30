@@ -1,196 +1,190 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1FE671EABA5;
-	Wed, 30 Oct 2024 14:28:24 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4A68221313F;
+	Wed, 30 Oct 2024 15:13:21 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1730298505; cv=none; b=ieeYTd/7EHvXGhPiEY5kmaEHq4Oc6Rq8pQOewcq1y6insy93w4qa80WOnMUrerFKs7mB6ZII9pMx5bDUjiOhcdOnDvwveazlC/mVKvRGr8ZzhgtFdy2Kc4GH9qgpNabGpBm/oc4v7otgg0ILwyyMHpYTvosHGX7YvsGuFED5KUo=
+	t=1730301201; cv=none; b=cI/AeyM2Ak3f0DOSwmdbkBUo2QZ5T/33CKDdQqpVrDZwczCnhRQ08tSgjPWVVH/Ww3vfhKIfooRIP1oVi0Ls5cd9O50nB7V8FpwuBpg31Lbg7WXgn6CwLajt0tFOjmdGHTwfmUiOJQpGRJ491x9Y4TznFOk0QLDVkJ0nqHjQwTA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1730298505; c=relaxed/simple;
-	bh=cik8CPZIYPW9LoZhpfSKFRXBikFEngZ05BGqUP+wAlM=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=kYMwPVT1kOeFVn5rxJH4rl8r+TvUcUeJ7iCTMK0ZG8y+nthJhV/r39HyHgtqeIeN2grPEci901FIEU41lgG2hYBzdWRRx81XxXxE9HBhudQaqodjVPoPNggSpbjFKZZPYcCYZyicGiNQJU397UjOk3VJ9nLAhSPu8yIJge4JA0k=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=WmxueWrz; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1730301201; c=relaxed/simple;
+	bh=BPbjQPb6vGxydr+aOv/vfeRL/hbb2O9lYDlE3QJn810=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=Fx6j5+LrFyZ8+F1QRNQzZk7MdiVZKXivwVRh5X43YHpyKvlrvXe8kwQlHE46S6qLZtB2pXpB2GeZ0ua2nqo8Dyq2VBjD1Tv0g9cLOJf2VZZqtFXKDD0ONXkACN4tAZ3hXb5HptW7H2CaiMOZWdSHhRs1r1nH37+dCLLLJwpuJIg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=gCP46uYg; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="WmxueWrz"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3BD2AC4CECE;
-	Wed, 30 Oct 2024 14:28:24 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="gCP46uYg"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 12AF6C4CED0;
+	Wed, 30 Oct 2024 15:13:20 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1730298504;
-	bh=cik8CPZIYPW9LoZhpfSKFRXBikFEngZ05BGqUP+wAlM=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=WmxueWrzfCVuFMHErUMRXyrCD1zxmw7JfJnuWjNIvSSVOh+yUpiaA92k8jjvTTxAW
-	 ivxwn/8dJA9rPojJhVr2MffiPVolJN1Qd/mbJHDlJyeOnbJo13snzVhd8gAjrD3pOI
-	 OYcKP8ecZfWnPHQ1bT5hS2vrAtfRARpHxF2z0a2AakOCOGzQ/fs+X1b3x4zbE7f6UD
-	 TVglVBXWecL0nqQvioxg1wfAmq04rw37CJy+uxNucyDd1Bu3X10/HLCrHL2mulqSfE
-	 1XhFuJ0K5OGP4170Am2DNoWtRI3K5tXLs3wu4E2Ih7Q1F/YvjgVcRo+Lx/bsdGb7/Y
-	 wOCe/k2h0S0DA==
-Date: Wed, 30 Oct 2024 15:28:19 +0100
-From: Joel Granados <joel.granados@kernel.org>
-To: Baolu Lu <baolu.lu@linux.intel.com>
-Cc: Yi Liu <yi.l.liu@intel.com>, David Woodhouse <dwmw2@infradead.org>, 
-	Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>, 
-	Robin Murphy <robin.murphy@arm.com>, Jason Gunthorpe <jgg@ziepe.ca>, 
-	Kevin Tian <kevin.tian@intel.com>, Klaus Jensen <its@irrelevant.dk>, linux-kernel@vger.kernel.org, 
-	iommu@lists.linux.dev, Klaus Jensen <k.jensen@samsung.com>
-Subject: Re: Re: [PATCH v4 2/5] iommu/vt-d: Remove the pasid present check in
- prq_event_thread
-Message-ID: <pdslu36mhfxbzs254tlte2wavfkmecm53xhdtdelm4nfnemt3f@m5ed4hn6zmbl>
-References: <20241015-jag-iopfv8-v4-0-b696ca89ba29@kernel.org>
- <20241015-jag-iopfv8-v4-2-b696ca89ba29@kernel.org>
- <90c772ce-6d2d-4a1d-bfec-5a7813be43e4@intel.com>
- <ujexsgcpvcjux2ugfes6mzjxl53j3icarfbu25imhzliqskyv6@l7f42nv4fhmy>
- <bbd95589-f4c9-4dcf-939b-c3c407eeed21@linux.intel.com>
+	s=k20201202; t=1730301200;
+	bh=BPbjQPb6vGxydr+aOv/vfeRL/hbb2O9lYDlE3QJn810=;
+	h=From:To:Cc:Subject:Date:From;
+	b=gCP46uYgAbBaI3H7fz/S8et11Yja3YaPso3wiIP1VABNA/Cw7GX7ylsdhwfYayuLN
+	 tvqEai8WwN5iYR5Fhi//NTee44xw07H0gUQ9GqWAIjaeptBjzdT5GrGfQ/TGUYfAKO
+	 7aDmA75HZ9TBEa0PI5aYKbQEau7P7laA9c+jxlBKHqxlEc3bj5Y0FSmX/h4YZTfcI2
+	 knjpXENs520PV7RRQEEr0W82jk+5mf7brt08Ba5elyHnS9fSx+le8ADdVhAE1Qju61
+	 JxO6MZ5Ey8fhyWUsyAm5P+5M1vp0qBfzfnYftLY6UQeDGK5n/E9Pyvw3w6TZBBaPxu
+	 cb1zWIi5tJ4sg==
+From: Leon Romanovsky <leon@kernel.org>
+To: Jens Axboe <axboe@kernel.dk>,
+	Jason Gunthorpe <jgg@ziepe.ca>,
+	Robin Murphy <robin.murphy@arm.com>,
+	Joerg Roedel <joro@8bytes.org>,
+	Will Deacon <will@kernel.org>,
+	Christoph Hellwig <hch@lst.de>,
+	Sagi Grimberg <sagi@grimberg.me>
+Cc: Keith Busch <kbusch@kernel.org>,
+	Bjorn Helgaas <bhelgaas@google.com>,
+	Logan Gunthorpe <logang@deltatee.com>,
+	Yishai Hadas <yishaih@nvidia.com>,
+	Shameer Kolothum <shameerali.kolothum.thodi@huawei.com>,
+	Kevin Tian <kevin.tian@intel.com>,
+	Alex Williamson <alex.williamson@redhat.com>,
+	Marek Szyprowski <m.szyprowski@samsung.com>,
+	=?UTF-8?q?J=C3=A9r=C3=B4me=20Glisse?= <jglisse@redhat.com>,
+	Andrew Morton <akpm@linux-foundation.org>,
+	Jonathan Corbet <corbet@lwn.net>,
+	linux-doc@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	linux-block@vger.kernel.org,
+	linux-rdma@vger.kernel.org,
+	iommu@lists.linux.dev,
+	linux-nvme@lists.infradead.org,
+	linux-pci@vger.kernel.org,
+	kvm@vger.kernel.org,
+	linux-mm@kvack.org
+Subject: [PATCH v1 00/17] Provide a new two step DMA mapping API
+Date: Wed, 30 Oct 2024 17:12:46 +0200
+Message-ID: <cover.1730298502.git.leon@kernel.org>
+X-Mailer: git-send-email 2.46.2
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <bbd95589-f4c9-4dcf-939b-c3c407eeed21@linux.intel.com>
+Content-Transfer-Encoding: 8bit
 
-On Tue, Oct 29, 2024 at 11:12:49AM +0800, Baolu Lu wrote:
-> On 2024/10/28 18:24, Joel Granados wrote:
-> > On Mon, Oct 28, 2024 at 03:50:46PM +0800, Yi Liu wrote:
-> >> On 2024/10/16 05:08, Joel Granados wrote:
-> >>> From: Klaus Jensen<k.jensen@samsung.com>
-> >>>
-> >>> PASID is not strictly needed when handling a PRQ event; remove the check
-> >>> for the pasid present bit in the request. This change was not included
-> >>> in the creation of prq.c to emphasize the change in capability checks
-> >>> when handing PRQ events.
-> >>>
-> >>> Signed-off-by: Klaus Jensen<k.jensen@samsung.com>
-> >>> Reviewed-by: Kevin Tian<kevin.tian@intel.com>
-> >>> Signed-off-by: Joel Granados<joel.granados@kernel.org>
-> >> looks like the PRQ draining is missed for the PRI usage. When a pasid
-> >> entry is destroyed, it might need to add helper similar to the
-> >> intel_drain_pasid_prq() to drain PRQ for the non-pasid usage.
-> > These types of user space PRIs (non-pasid, non-svm) are created by
-> > making use of iommufd_hwpt_replace_device. Which adds an entry to the
-> > pasid_array indexed on IOMMU_NO_PASID (0U) via the following path:
-> > 
-> > iommufd_hwpt_replace_device
-> >    -> iommufd_fault_domain_repalce_dev
-> >      -> __fault_domain_replace_dev
-> >        -> iommu_replace_group_handle
->             -> __iommu_group_set_domain
->               -> intel_iommu_attach_device
->                  -> device_block_translation
->                    -> intel_pasid_tear_down_entry(IOMMU_NO_PASID)
-> 
-> Here a domain is removed from the pasid entry, hence we need to flush
-> all page requests that are pending in the IOMMU page request queue or
-> the PCI fabric.
-This make a lot of sense: To use iommufd_hwpt_replace_device to replace
-the existing hwpt with a iopf enabled one, the soon to be irrelevant
-page requests from the existing hwpt need to be flushed. And we were not
-doing that here.
+Changelog:
+v1: 
+ * Squashed two VFIO patches into one
+ * Added Acked-by/Reviewed-by tags
+ * Fix docs spelling errors
+ * Simplified dma_iova_sync() API
+ * Added extra check in dma_iova_destroy() if mapped size to make code more clear
+ * Fixed checkpatch warnings in p2p patch
+ * Changed implementation of VFIO mlx5 mlx5vf_add_migration_pages() to
+   be more general
+ * Reduced the number of changes in VFIO patch
+v0: https://lore.kernel.org/all/cover.1730037276.git.leon@kernel.org
 
-> 
-> >          -> xa_reserve(&group->pasid_array, IOMMU_NO_PASID, GFP_KERNEL);
-> > 
-> > It is my understanding that this will provide the needed relation
-> > between the device and the prq in such a way that when  remove_dev_pasid
-> > is called, intel_iommu_drain_pasid_prq will be called with the
-> > appropriate pasid value set to IOMMU_NO_PASID. Please correct me if I'm
-> > mistaken.
-> 
-> Removing a domain from a RID and a PASID are different paths.
-> Previously, this IOMMU driver only supported page requests on PASID
-> (non-IOMMU_NO_PASID). It is acceptable that it does not flush the PRQ in
-> the domain-removing RID path.
-> 
-> With the changes made in this series, the driver now supports page
-> requests for RID. It should also flush the PRQ when removing a domain
-> from a PASID entry for IOMMU_NO_PASID.
+----------------------------------------------------------------------------
+The code can be downloaded from:
+https://git.kernel.org/pub/scm/linux/kernel/git/leon/linux-rdma.git tag:dma-split-oct-30
 
-Thank you for your explanation. Clarifies where I lacked understanding.
+----------------------------------------------------------------------------
+Currently the only efficient way to map a complex memory description through
+the DMA API is by using the scatterlist APIs. The SG APIs are unique in that
+they efficiently combine the two fundamental operations of sizing and allocating
+a large IOVA window from the IOMMU and processing all the per-address
+swiotlb/flushing/p2p/map details.
 
-> 
-> > 
-> > Does this answer your question? Do you have a specific path that you are
-> > looking at where a specific non-pasid drain is needed?
-> 
-> Perhaps we can simply add below change.
-> 
-> diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
-> index e860bc9439a2..a24a42649621 100644
-> --- a/drivers/iommu/intel/iommu.c
-> +++ b/drivers/iommu/intel/iommu.c
-> @@ -4283,7 +4283,6 @@ static void intel_iommu_remove_dev_pasid(struct 
-> device *dev, ioasid_t pasid,
->          intel_iommu_debugfs_remove_dev_pasid(dev_pasid);
->          kfree(dev_pasid);
->          intel_pasid_tear_down_entry(iommu, dev, pasid, false);
-> -       intel_drain_pasid_prq(dev, pasid);
->   }
-> 
->   static int intel_iommu_set_dev_pasid(struct iommu_domain *domain,
-> diff --git a/drivers/iommu/intel/pasid.c b/drivers/iommu/intel/pasid.c
-> index 2e5fa0a23299..8639f3eb4264 100644
-> --- a/drivers/iommu/intel/pasid.c
-> +++ b/drivers/iommu/intel/pasid.c
-> @@ -265,6 +265,7 @@ void intel_pasid_tear_down_entry(struct intel_iommu 
-> *iommu, struct device *dev,
->                  iommu->flush.flush_iotlb(iommu, did, 0, 0, 
-> DMA_TLB_DSI_FLUSH);
-> 
->          devtlb_invalidation_with_pasid(iommu, dev, pasid);
-> +       intel_drain_pasid_prq(dev, pasid);
->   }
-This make sense logically as the intel_drain_pasid_prq keeps being
-called at the end of intel_iommu_remove_dev_pasid, but it is now also
-included in the intel_pasid_tear_down_entry call which adds it to the
-case discussed.
+This uniqueness has been a long standing pain point as the scatterlist API
+is mandatory, but expensive to use. It prevents any kind of optimization or
+feature improvement (such as avoiding struct page for P2P) due to the impossibility
+of improving the scatterlist.
 
-> 
->   /*
-> diff --git a/drivers/iommu/intel/svm.c b/drivers/iommu/intel/svm.c
-> index 078d1e32a24e..ff88f31053d1 100644
-> --- a/drivers/iommu/intel/svm.c
-> +++ b/drivers/iommu/intel/svm.c
-> @@ -304,9 +304,6 @@ void intel_drain_pasid_prq(struct device *dev, u32 
-> pasid)
->          int qdep;
-> 
->          info = dev_iommu_priv_get(dev);
-> -       if (WARN_ON(!info || !dev_is_pci(dev)))
-> -               return;
-Did you mean to take out both checks?:
-  1. The info pointer check
-  2. the dev_is_pci check
+Several approaches have been explored to expand the DMA API with additional
+scatterlist-like structures (BIO, rlist), instead split up the DMA API
+to allow callers to bring their own data structure.
 
-I can understand the dev_is_pci check, but we should definitely take
-action if info is NULL. Right?
+The API is split up into parts:
+ - Allocate IOVA space:
+    To do any pre-allocation required. This is done based on the caller
+    supplying some details about how much IOMMU address space it would need
+    in worst case.
+ - Map and unmap relevant structures to pre-allocated IOVA space:
+    Perform the actual mapping into the pre-allocated IOVA. This is very
+    similar to dma_map_page().
 
-> -
->          if (!info->pri_enabled)
->                  return;
-> 
-> Generally, intel_drain_pasid_prq() should be called if
-> 
-> - a translation is removed from a pasid entry; and
-This is the path that is already mentiond
+In this and the next series [1], examples of three different users are converted
+to the new API to show the benefits and its versatility. Each user has a unique
+flow:
+ 1. RDMA ODP is an example of "SVA mirroring" using HMM that needs to
+    dynamically map/unmap large numbers of single pages. This becomes
+    significantly faster in the IOMMU case as the map/unmap is now just
+    a page table walk, the IOVA allocation is pre-computed once. Significant
+    amounts of memory are saved as there is no longer a need to store the
+    dma_addr_t of each page.
+ 2. VFIO PCI live migration code is building a very large "page list"
+    for the device. Instead of allocating a scatter list entry per allocated
+    page it can just allocate an array of 'struct page *', saving a large
+    amount of memory.
+ 3. NVMe PCI demonstrates how a BIO can be converted to a HW scatter
+    list without having to allocate then populate an intermediate SG table.
 
-> - PRI on this device is enabled.
-And this path is:
-  -> intel_iommu_enable_iopf
-    -> context_flip_pri
-      -> intel_context_flush_present
-        -> qi_flush_pasid_cache
+To make the use of the new API easier, HMM and block subsystems are extended
+to hide the optimization details from the caller. Among these optimizations:
+ * Memory reduction as in most real use cases there is no need to store mapped
+   DMA addresses and unmap them.
+ * Reducing the function call overhead by removing the need to call function
+   pointers and use direct calls instead.
 
-Right?
+This step is first along a path to provide alternatives to scatterlist and
+solve some of the abuses and design mistakes, for instance in DMABUF's P2P
+support.
 
-I'll put this in my next version if I see that there is a consensus in
-the current discussion.
+Thanks
 
-thx again for the feedback.
+[1] This still points to v0, as the change is just around handling dma_iova_sync():
+https://lore.kernel.org/all/cover.1730037261.git.leon@kernel.org
 
-Best
+Christoph Hellwig (6):
+  PCI/P2PDMA: Refactor the p2pdma mapping helpers
+  dma-mapping: move the PCI P2PDMA mapping helpers to pci-p2pdma.h
+  iommu: generalize the batched sync after map interface
+  iommu/dma: Factor out a iommu_dma_map_swiotlb helper
+  dma-mapping: add a dma_need_unmap helper
+  docs: core-api: document the IOVA-based API
+
+Leon Romanovsky (11):
+  dma-mapping: Add check if IOVA can be used
+  dma: Provide an interface to allow allocate IOVA
+  dma-mapping: Implement link/unlink ranges API
+  mm/hmm: let users to tag specific PFN with DMA mapped bit
+  mm/hmm: provide generic DMA managing logic
+  RDMA/umem: Store ODP access mask information in PFN
+  RDMA/core: Convert UMEM ODP DMA mapping to caching IOVA and page
+    linkage
+  RDMA/umem: Separate implicit ODP initialization from explicit ODP
+  vfio/mlx5: Explicitly use number of pages instead of allocated length
+  vfio/mlx5: Rewrite create mkey flow to allow better code reuse
+  vfio/mlx5: Convert vfio to use DMA link API
+
+ Documentation/core-api/dma-api.rst   |  70 ++++
+ drivers/infiniband/core/umem_odp.c   | 250 +++++----------
+ drivers/infiniband/hw/mlx5/mlx5_ib.h |  12 +-
+ drivers/infiniband/hw/mlx5/odp.c     |  65 ++--
+ drivers/infiniband/hw/mlx5/umr.c     |  12 +-
+ drivers/iommu/dma-iommu.c            | 459 +++++++++++++++++++++++----
+ drivers/iommu/iommu.c                |  65 ++--
+ drivers/pci/p2pdma.c                 |  38 +--
+ drivers/vfio/pci/mlx5/cmd.c          | 373 +++++++++++-----------
+ drivers/vfio/pci/mlx5/cmd.h          |  35 +-
+ drivers/vfio/pci/mlx5/main.c         |  87 +++--
+ include/linux/dma-map-ops.h          |  54 ----
+ include/linux/dma-mapping.h          |  85 +++++
+ include/linux/hmm-dma.h              |  32 ++
+ include/linux/hmm.h                  |  16 +
+ include/linux/iommu.h                |   4 +
+ include/linux/pci-p2pdma.h           |  84 +++++
+ include/rdma/ib_umem_odp.h           |  25 +-
+ kernel/dma/direct.c                  |  44 +--
+ kernel/dma/mapping.c                 |  20 ++
+ mm/hmm.c                             | 231 +++++++++++++-
+ 21 files changed, 1377 insertions(+), 684 deletions(-)
+ create mode 100644 include/linux/hmm-dma.h
+
 -- 
+2.46.2
 
-Joel Granados
