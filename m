@@ -1,142 +1,160 @@
-Received: from mo4-p02-ob.smtp.rzone.de (mo4-p02-ob.smtp.rzone.de [85.215.255.82])
+Received: from szxga05-in.huawei.com (szxga05-in.huawei.com [45.249.212.191])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EA8EE1990CD
-	for <iommu@lists.linux.dev>; Wed, 30 Oct 2024 11:21:26 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=85.215.255.82
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1730287291; cv=pass; b=ij+4gOwq3kOCSUZ/+wkIylWaFGuyaKcRyiKij7s/RmWkhEW9mLp0d5KgN+quLCLyeWvG11T7Aks/l0JaKId6QDVmQIERMFtotbZb60Hc+X5r93tPS9c1L/Kc+y5zXPoglmJqkuguK92c6aAvEa54WjFJt/R0yxKhSnXu4Oc8+bM=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1730287291; c=relaxed/simple;
-	bh=eqlPk3VbpPRo0CwoqYeA+mkYbzA2YumBxWU5LsG9F6I=;
-	h=Content-Type:Mime-Version:Subject:From:In-Reply-To:Date:Cc:
-	 Message-Id:References:To; b=qM7gDGEIsd4EXVCIFNjUX3VvkWjxrra7QvBUv9O3YzQ+rHlBc5zWkGNRp59ufsgWoESPzIpjVCYH8JplRoJpsksMMc9wFoQkD1IptenpXatU5ppwI/0QejnX0Sw0Zno40P6vvcUn870suNdG76Z/k37/DKnbQLumDpzRm15NYTY=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=goldelico.com; spf=pass smtp.mailfrom=goldelico.com; dkim=pass (2048-bit key) header.d=goldelico.com header.i=@goldelico.com header.b=Qn5HcpE+; dkim=permerror (0-bit key) header.d=goldelico.com header.i=@goldelico.com header.b=6UZADULY; arc=pass smtp.client-ip=85.215.255.82
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=goldelico.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=goldelico.com
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=goldelico.com header.i=@goldelico.com header.b="Qn5HcpE+";
-	dkim=permerror (0-bit key) header.d=goldelico.com header.i=@goldelico.com header.b="6UZADULY"
-ARC-Seal: i=1; a=rsa-sha256; t=1730287242; cv=none;
-    d=strato.com; s=strato-dkim-0002;
-    b=LmkKYPnwFayGvNkyNGGwfTRPC30WQtV7XVBUPB46vNmTh2YUIvWSJJ3KTu2oXkPWg9
-    TQbPRw+CLNAPa0Z7npruX/zRsusDgjrQcxVYqaXL1tWDY0p0sPl4NanMz6fAvfJwXe0C
-    KUTGNayfcIHxeQdwzQQNOgzJeYObE27j9ZsBWz+uD6Y2Y1SXVK6poG3pWVPb9UBS+Lpq
-    ZY6FWCXj8CRkxAPQ0hy9izvHRDQHsAbqV0qN42ks+wvHybgBmSqh/AeZMoWYtCI9Gz6G
-    1y4yrzpMopQETTqMY0Mxiz11hVl9yX1KHPVKmF5HDZjGUjVIXHIMb9XdRO9VyX2FtZiz
-    t+4A==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; t=1730287242;
-    s=strato-dkim-0002; d=strato.com;
-    h=To:References:Message-Id:Cc:Date:In-Reply-To:From:Subject:Cc:Date:
-    From:Subject:Sender;
-    bh=eqlPk3VbpPRo0CwoqYeA+mkYbzA2YumBxWU5LsG9F6I=;
-    b=NBtam4dkLBq0eRjr70Gb2zRoQxURDptQp8EQT8w2lNfmJwaBkuPlKa3n7hWODPdPbZ
-    FnqxBLOVgQ3ShuH1k2YPGkCtQLYByn2RTQtK7jD4INLIv8sW2nZ/o3NeifENIlDSaMMx
-    d82ZPsfucbBpQqv4zpUQ1+mdVvj5fU6bzSo8QLJDeqSabiZE5eaOXZra5VEXX/o5Kyq5
-    YrYYJClbQ7ogLI90U5CJ+rv+EFiuG0n7HKNxb01XNoLtaoR3cnQmZYnsr619eMSG1xfF
-    JEUXjSPkNi2sZogTYpzoSgq2vsP57WccPFgOjkVlq3suIrdqAN9M3f5uH8pgwaBH4y2v
-    UJ6g==
-ARC-Authentication-Results: i=1; strato.com;
-    arc=none;
-    dkim=none
-X-RZG-CLASS-ID: mo02
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; t=1730287242;
-    s=strato-dkim-0002; d=goldelico.com;
-    h=To:References:Message-Id:Cc:Date:In-Reply-To:From:Subject:Cc:Date:
-    From:Subject:Sender;
-    bh=eqlPk3VbpPRo0CwoqYeA+mkYbzA2YumBxWU5LsG9F6I=;
-    b=Qn5HcpE+a9FbmOVJItB3kUbL0rgA+G2bddmVOCUSfLabE3qcPoE/Gr1J9tmmmwkpXP
-    v+o/GQkMBWuT8Wfq7YnXCqz4rQVVRL3f9l37pJCIvRpztlo/onzPjuxFWry40nFSRjwB
-    MhWu9ocxBgpDeJumK6dRUxer6tRSKk+W7tRKKChQahmiAp5hSGZUbTxtvmcyNzFFsmZ6
-    utC+bVhy3TrZDGsq6ycE56w+vq2vOQiD2DM4LuU3HQGsD71FT1ynBj5tOEnhe5UyM0K9
-    3x2IYcBYfJPW5VkHrWzEHhcXtB09Px13+ndbiChmRWnbGZTGHkGYV01z+qlHnRV4sbK2
-    1vyA==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; t=1730287242;
-    s=strato-dkim-0003; d=goldelico.com;
-    h=To:References:Message-Id:Cc:Date:In-Reply-To:From:Subject:Cc:Date:
-    From:Subject:Sender;
-    bh=eqlPk3VbpPRo0CwoqYeA+mkYbzA2YumBxWU5LsG9F6I=;
-    b=6UZADULYg4bR6wpt3xghzPOnsSR2uVqfNG6++6FbYSlefN4k43O5NvtlftKYmzEquZ
-    b3Mh5+sSFIUqA5xMIgBg==
-X-RZG-AUTH: ":JGIXVUS7cutRB/49FwqZ7WcJeFKiMhflhwDubTJ9qVpwcQVkPW4I1HrSiJpeyMiNH8TaiW2pBcBKxu1ib9gQlpMMsbZm"
-Received: from smtpclient.apple
-    by smtp.strato.de (RZmta 51.2.11 AUTH)
-    with ESMTPSA id Qb7e4009UBKgS5B
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (curve X9_62_prime256v1 with 256 ECDH bits, eq. 3072 bits RSA))
-	(Client did not present a certificate);
-    Wed, 30 Oct 2024 12:20:42 +0100 (CET)
-Content-Type: text/plain;
-	charset=us-ascii
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8B5321D1E81
+	for <iommu@lists.linux.dev>; Wed, 30 Oct 2024 11:31:03 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=45.249.212.191
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1730287866; cv=none; b=LTI1YkOIQ8tm+kzIGBzomOtJh6GUv/8lFezYh+UOJewDEQOxJDWJ//ed+cit442xvJ4MPq82Z5mFZGnRziYzEpc025nmVrsQWN94OfxQxqpfhcWXt9O1vLZaxqykTMdO3z+yS/ZcXGeYjQEz3S4j/l8xPlVF6MXGtyHfyMkCGks=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1730287866; c=relaxed/simple;
+	bh=/V4I5KK9EnbYCxoSwhRFeioalYUVCW0qgVUR5YoNqC8=;
+	h=Message-ID:Date:MIME-Version:Subject:To:CC:References:From:
+	 In-Reply-To:Content-Type; b=ujACaw/ZVeJiCxgD60wUrLYZEnqb73fwwmn/lVosf5kPmO1GiSc5jMMwcUPB+spMXPi1ye2rey5soBowDKoWKps6GMT227f00QKV2llVObEQK4yoXNpA0jZME6qDmv7FRsf84OGsGMaToMe/sWid5+j1IGPVqpa8c0bPDEPUbLs=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=huawei.com; spf=pass smtp.mailfrom=huawei.com; arc=none smtp.client-ip=45.249.212.191
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=huawei.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=huawei.com
+Received: from mail.maildlp.com (unknown [172.19.163.17])
+	by szxga05-in.huawei.com (SkyGuard) with ESMTP id 4XdlJm37Sjz1jvlv;
+	Wed, 30 Oct 2024 19:29:28 +0800 (CST)
+Received: from dggpemf200006.china.huawei.com (unknown [7.185.36.61])
+	by mail.maildlp.com (Postfix) with ESMTPS id 64B021A0188;
+	Wed, 30 Oct 2024 19:31:00 +0800 (CST)
+Received: from [10.67.120.129] (10.67.120.129) by
+ dggpemf200006.china.huawei.com (7.185.36.61) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.1544.11; Wed, 30 Oct 2024 19:31:00 +0800
+Message-ID: <1eac33ae-e8e1-4437-9403-57291ba4ced6@huawei.com>
+Date: Wed, 30 Oct 2024 19:30:59 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
-Mime-Version: 1.0 (Mac OS X Mail 16.0 \(3776.700.51.11.1\))
-Subject: Re: [PATCH 0/4] Fix omap-iommu bitrot
-From: "H. Nikolaus Schaller" <hns@goldelico.com>
-In-Reply-To: <ZyIClriScBy4s6LX@8bytes.org>
-Date: Wed, 30 Oct 2024 12:20:31 +0100
-Cc: Robin Murphy <robin.murphy@arm.com>,
- will@kernel.org,
- Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
- mchehab@kernel.org,
- andersson@kernel.org,
- mathieu.poirier@linaro.org,
- Beleswar Padhi <b-padhi@ti.com>,
- Andreas Kemnade <andreas@kemnade.info>,
- iommu@lists.linux.dev,
- arm-soc <linux-arm-kernel@lists.infradead.org>,
- Linux-OMAP <linux-omap@vger.kernel.org>,
- linux-media@vger.kernel.org,
- linux-remoteproc@vger.kernel.org
-Content-Transfer-Encoding: quoted-printable
-Message-Id: <515D7932-3939-4C3E-BA3E-CC3152E64749@goldelico.com>
-References: <cover.1730136799.git.robin.murphy@arm.com>
- <ZyIClriScBy4s6LX@8bytes.org>
-To: Joerg Roedel <joro@8bytes.org>
-X-Mailer: Apple Mail (2.3776.700.51.11.1)
+MIME-Version: 1.0
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH net-next v3 3/3] page_pool: fix IOMMU crash when driver
+ has already unbound
+To: =?UTF-8?Q?Toke_H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>, Jesper
+ Dangaard Brouer <hawk@kernel.org>, <davem@davemloft.net>, <kuba@kernel.org>,
+	<pabeni@redhat.com>
+CC: <zhangkun09@huawei.com>, <fanghaiqing@huawei.com>,
+	<liuyonglong@huawei.com>, Robin Murphy <robin.murphy@arm.com>, Alexander
+ Duyck <alexander.duyck@gmail.com>, IOMMU <iommu@lists.linux.dev>, Andrew
+ Morton <akpm@linux-foundation.org>, Eric Dumazet <edumazet@google.com>, Ilias
+ Apalodimas <ilias.apalodimas@linaro.org>, <linux-mm@kvack.org>,
+	<linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>, kernel-team
+	<kernel-team@cloudflare.com>
+References: <20241022032214.3915232-1-linyunsheng@huawei.com>
+ <20241022032214.3915232-4-linyunsheng@huawei.com>
+ <dbd7dca7-d144-4a0f-9261-e8373be6f8a1@kernel.org>
+ <113c9835-f170-46cf-92ba-df4ca5dfab3d@huawei.com> <878qudftsn.fsf@toke.dk>
+ <d8e0895b-dd37-44bf-ba19-75c93605fc5e@huawei.com> <87r084e8lc.fsf@toke.dk>
+ <cf1911c5-622f-484c-9ee5-11e1ac83da24@huawei.com> <878qu7c8om.fsf@toke.dk>
+Content-Language: en-US
+From: Yunsheng Lin <linyunsheng@huawei.com>
+In-Reply-To: <878qu7c8om.fsf@toke.dk>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+X-ClientProxiedBy: dggems704-chm.china.huawei.com (10.3.19.181) To
+ dggpemf200006.china.huawei.com (7.185.36.61)
 
+On 2024/10/29 21:58, Toke Høiland-Jørgensen wrote:
+> Yunsheng Lin <linyunsheng@huawei.com> writes:
+> 
+>>>> I would prefer the waiting too if simple waiting fixed the test cases that
+>>>> Youglong and Haiqing were reporting and I did not look into the rabbit hole
+>>>> of possible caching in networking.
+>>>>
+>>>> As mentioned in commit log and [1]:
+>>>> 1. ipv4 packet defragmentation timeout: this seems to cause delay up to 30
+>>>>    secs, which was reported by Haiqing.
+>>>> 2. skb_defer_free_flush(): this may cause infinite delay if there is no
+>>>>    triggering for net_rx_action(), which was reported by Yonglong.
+>>>>
+>>>> For case 1, is it really ok to stall the driver unbound up to 30 secs for the
+>>>> default setting of defragmentation timeout?
+>>>>
+>>>> For case 2, it is possible to add timeout for those kind of caching like the
+>>>> defragmentation timeout too, but as mentioned in [2], it seems to be a normal
+>>>> thing for this kind of caching in networking:
+>>>
+>>> Both 1 and 2 seem to be cases where the netdev teardown code can just
+>>> make sure to kick the respective queues and make sure there's nothing
+>>> outstanding (for (1), walk the defrag cache and clear out anything
+>>> related to the netdev going away, for (2) make sure to kick
+>>> net_rx_action() as part of the teardown).
+>>
+>> It would be good to be more specific about the 'kick' here, does it mean
+>> taking the lock and doing one of below action for each cache instance?
+>> 1. flush all the cache of each cache instance.
+>> 2. scan for the page_pool owned page and do the finegrained flushing.
+> 
+> Depends on the context. The page pool is attached to a device, so it
+> should be possible to walk the skb frags queue and just remove any skbs
+> that refer to that netdevice, or something like that.
 
+I am not sure if netdevice is still the same when passing through all sorts
+of software netdevice, checking if it is the page_pool owned page seems safer?
 
-> Am 30.10.2024 um 10:55 schrieb Joerg Roedel <joro@8bytes.org>:
->=20
-> On Mon, Oct 28, 2024 at 05:58:34PM +0000, Robin Murphy wrote:
->> It seems omap-iommu hasn't had enough mainline users to avoid =
-bitrotting
->> through the more recent evolution of the IOMMU API internals. These
->> patches attempt to bring it and its consumers sufficiently up-to-date
->> to work again, in a manner that's hopefully backportable. This is
->> largely all written by inspection, but I have managed to lightly boot
->> test patch #3 on an OMAP4 Pandaboard to confirm iommu_probe_device()
->> working again.
->=20
-> My initial reflex would have been to just wipe the omap drivers,
+The scaning/flushing seems complicated and hard to get it right if it is
+depending on internal detail of other subsystem's cache implementation.
 
-Why that? There was a discussion and everyone agreed to remove omap2,
-but not omap3 and later.
+> 
+> As for the lack of net_rx_action(), this is related to the deferred
+> freeing of skbs, so it seems like just calling skb_defer_free_flush() on
+> teardown could be an option.
 
-> hardware is 10+ years out of production, no? So who is still using =
-this
-> hardware with recent kernels for other purposes than kernel testing?
+That was my initial thinking about the above case too if we know which percpu
+sd to be passed to skb_defer_free_flush() or which cpu to trigger its
+net_rx_action().
+But it seems hard to tell which cpu napi is running in before napi is disabled,
+which means skb_defer_free_flush() might need to be called for every cpu with
+softirq disabled, as skb_defer_free_flush() calls napi_consume_skb() with
+budget being 1 or call kick_defer_list_purge() for each CPU.
 
-There are some devices besides the PandaBoard. I am aware of these where
-this is relevant: Epson BT200, Samsung Galaxy Tab 2, Pyra Handheld
-(in production) and we are currently thinking about producing a tiny =
-series
-of the DM3730 based GTA04A5 with spare parts.
+> 
+>>>> "Eric pointed out/predicted there's no guarantee that applications will
+>>>> read / close their sockets so a page pool page may be stuck in a socket
+>>>> (but not leaked) forever."
+>>>
+>>> As for this one, I would put that in the "well, let's see if this
+>>> becomes a problem in practice" bucket.
+>>
+>> As the commit log in [2], it seems it is already happening.
+>>
+>> Those cache are mostly per-cpu and per-socket, and there may be hundreds of
+>> CPUs and thousands of sockets in one system, are you really sure we need
+>> to take the lock of each cache instance, which may be thousands of them,
+>> and do the flushing/scaning of memory used in networking, which may be as
+>> large as '24 GiB' mentioned by Jesper?
+> 
+> Well, as above, the two issues you mentioned are per-netns (or possibly
+> per-CPU), so those seem to be manageable to do on device teardown if the
+> wait is really a problem.
 
-And of course we want to participate from the latest and greatest =
-upstream changes.
+As above, I am not sure if it is still the same netns if the skb is passing
+through all sorts of software netdevice?
 
->=20
->> This supersedes my previous patch[1]. Patches #1 and #2 are =
-functionally
->> independent, and can be applied directly to their respective trees if
->> preferred.
->=20
-> I applied patches 3 and 4 to the ti/omap branch.
+> 
+> But, well, I'm not sure it is? You seem to be taking it as axiomatic
+> that the wait in itself is bad. Why? It's just a bit memory being held
+> on to while it is still in use, and so what?
 
-Thanks,
-Nikolaus
+Actually, I thought about adding some sort of timeout or kicking based on
+jakub's waiting patch too.
 
+But after looking at more caching in the networking, waiting and kicking/flushing
+seems harder than recording the inflight pages, mainly because kicking/flushing
+need very subsystem using page_pool owned page to provide a kicking/flushing
+mechanism for it to work, not to mention how much time does it take to do all
+the kicking/flushing.
+
+It seems rdma subsystem uses a similar mechanism:
+https://lwn.net/Articles/989087/
+
+> 
+> -Toke
+> 
+> 
+> 
