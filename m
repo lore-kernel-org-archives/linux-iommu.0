@@ -1,131 +1,188 @@
-Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
+Received: from mx0a-0031df01.pphosted.com (mx0a-0031df01.pphosted.com [205.220.168.131])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0D7421CBE92
-	for <iommu@lists.linux.dev>; Wed, 30 Oct 2024 18:41:30 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=45.249.212.188
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6C92F1BD9D9
+	for <iommu@lists.linux.dev>; Wed, 30 Oct 2024 20:29:00 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.168.131
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1730313694; cv=none; b=eiSu1O28H1qJ2+C/2lSNtAiHQHqNT2xLX0dUS00KoZFqjiaB7/4qGwjf5t8ecTHZMlRHxkoVgB6TqJ6wM8UXyOQwR+wu45TaUrhqV6ifFjNvpImY4sVbFx/T4LRMatCMCU8X4x5piJuc1FdXIOGOKoZ6aLeEXLoFvn0V/ft5EOA=
+	t=1730320142; cv=none; b=qYLKBqkyAxUvx4jdvfsRPT07x07BEBZo1TFejAGsnvmCqXHpll5+rHltJA7+IJEv0WNBPsHYw2m8B08taV9CpKBsh24J2RzX3T6sUcoojq78NbA98Td3RZwFqtvYeoPEt26AlJ80y9ElENogMXTalPrT3mFnVkeHJEfqefVk07Q=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1730313694; c=relaxed/simple;
-	bh=blu1yH6Q9PmkJh61KDuPWDeZCU2aXR2x9rkNvTsX3Eo=;
-	h=From:To:CC:Subject:Date:Message-ID:References:In-Reply-To:
-	 Content-Type:MIME-Version; b=WjcBaNb0X3YD1lvpLibCSbBPJObZeyG5Hj4lJtF00sqBah0lGncJlZV/m7AMnHWYkS8Tb7aRoTexRKqbeJ3+9++MLkfns601gd1YiTU7TucRyTi73n6EJWCMy0cdgH23wdIU3rF+XKahwZ8/T3l9rV0/+AcQjrudA42IkgdV+ZU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=huawei.com; spf=pass smtp.mailfrom=huawei.com; arc=none smtp.client-ip=45.249.212.188
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=huawei.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=huawei.com
-Received: from mail.maildlp.com (unknown [172.19.163.252])
-	by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4XdwrG4Pf3zdkNq;
-	Thu, 31 Oct 2024 02:38:54 +0800 (CST)
-Received: from kwepemd500012.china.huawei.com (unknown [7.221.188.25])
-	by mail.maildlp.com (Postfix) with ESMTPS id 5D8611800A7;
-	Thu, 31 Oct 2024 02:41:28 +0800 (CST)
-Received: from frapeml500008.china.huawei.com (7.182.85.71) by
- kwepemd500012.china.huawei.com (7.221.188.25) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.1258.34; Thu, 31 Oct 2024 02:41:27 +0800
-Received: from frapeml500008.china.huawei.com ([7.182.85.71]) by
- frapeml500008.china.huawei.com ([7.182.85.71]) with mapi id 15.01.2507.039;
- Wed, 30 Oct 2024 19:41:25 +0100
-From: Shameerali Kolothum Thodi <shameerali.kolothum.thodi@huawei.com>
-To: Joao Martins <joao.m.martins@oracle.com>, Jason Gunthorpe
-	<jgg@nvidia.com>, Zhangfei Gao <zhangfei.gao@linaro.org>
-CC: "iommu@lists.linux.dev" <iommu@lists.linux.dev>, Kevin Tian
-	<kevin.tian@intel.com>, Lu Baolu <baolu.lu@linux.intel.com>, Yi Liu
-	<yi.l.liu@intel.com>, Yi Y Sun <yi.y.sun@intel.com>, Nicolin Chen
-	<nicolinc@nvidia.com>, Joerg Roedel <joro@8bytes.org>, Suravee Suthikulpanit
-	<suravee.suthikulpanit@amd.com>, Will Deacon <will@kernel.org>, Robin Murphy
-	<robin.murphy@arm.com>, Zhenzhong Duan <zhenzhong.duan@intel.com>, "Alex
- Williamson" <alex.williamson@redhat.com>, "kvm@vger.kernel.org"
-	<kvm@vger.kernel.org>, Shameer Kolothum <shamiali2008@gmail.com>, "Wangzhou
- (B)" <wangzhou1@hisilicon.com>
-Subject: RE: [PATCH v6 00/18] IOMMUFD Dirty Tracking
-Thread-Topic: [PATCH v6 00/18] IOMMUFD Dirty Tracking
-Thread-Index: AQHaBoE27yp8pPeR+EGuD7wYVnICbbKhnzUAgAAF84CAAAMMAIAAEkFAgAABLQCAACqr8A==
-Date: Wed, 30 Oct 2024 18:41:25 +0000
-Message-ID: <63d5a152dc1143e69d062dd854d4dd7b@huawei.com>
-References: <20231024135109.73787-1-joao.m.martins@oracle.com>
-	<CABQgh9HRq8oXgm04XhY2ajvGrg-jJO_KirXvfZxRsn9WiZi7Dg@mail.gmail.com>
-	<20241030153619.GG6956@nvidia.com>
-	<9a2394ca-fd8d-471b-8131-55f241e9cf26@oracle.com>
-	<8401eb12c4a54826ba44e099a0ec67a9@huawei.com>
- <59d76989-3d7f-449d-8339-2edd31270b08@oracle.com>
-In-Reply-To: <59d76989-3d7f-449d-8339-2edd31270b08@oracle.com>
-Accept-Language: en-GB, en-US
-Content-Language: en-US
-X-MS-Has-Attach:
-X-MS-TNEF-Correlator:
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+	s=arc-20240116; t=1730320142; c=relaxed/simple;
+	bh=XQDf4KwhzoVupOYmXKc8Lx1WuIdBC30yWgl0O9pEZLg=;
+	h=Message-ID:Date:MIME-Version:Subject:To:CC:References:From:
+	 In-Reply-To:Content-Type; b=cQckZTMPS/1NruAuGwfqjYSvw0NRoYJW7mYUrnmHNNV+KWtPDkglzFOPZr19uiHmXLrxfaFQ3O2IRKukFAxkKkJWC69vyBekm+6bjCBQppJsppQ/m1Onulzav5hTK5EP+WD50efLJPfsdPp+AYCazTlMx4U1NvkgJtXVX8OjVzA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com; spf=pass smtp.mailfrom=quicinc.com; dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b=YSlotxyy; arc=none smtp.client-ip=205.220.168.131
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=quicinc.com
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b="YSlotxyy"
+Received: from pps.filterd (m0279865.ppops.net [127.0.0.1])
+	by mx0a-0031df01.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 49U9NqxQ030781;
+	Wed, 30 Oct 2024 20:28:47 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=quicinc.com; h=
+	cc:content-transfer-encoding:content-type:date:from:in-reply-to
+	:message-id:mime-version:references:subject:to; s=qcppdkim1; bh=
+	kr3pdSxJAC17iJeJYanChxc13xKqGSdNWwjLg2lSZvQ=; b=YSlotxyym6FVmk/V
+	SnXHsMD0n13gRWDZmsK3trIxBa4OvVGcSkaIMGMUd29nkmJXfQyfj+qy1eDM5ioC
+	UiNK3viw0QAQ1mM18CSaTXOfqPI2bximPf5mAYVObmYwDa7Ko571LlUJalLgbsaW
+	xqvWer8e4GhKSfNg4HXtc1PpUXl4NPR3SlRq3NmYYnLznX8aGxMrqvPOUtA3M0gN
+	xwEM1xMzDUQfmppV851r4nuq39PoVuW59tSCQI72e5SrUupedsqWVSJ4ctnBO2PC
+	5wVBfd3CLSARyd0oSQ+KS3/nWtnjsSfr6sQIk9rJnRXi4HVYATU446oxd5yjrYEa
+	lRwvCw==
+Received: from nasanppmta05.qualcomm.com (i-global254.qualcomm.com [199.106.103.254])
+	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 42gqcqwa0f-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Wed, 30 Oct 2024 20:28:46 +0000 (GMT)
+Received: from nasanex01b.na.qualcomm.com (nasanex01b.na.qualcomm.com [10.46.141.250])
+	by NASANPPMTA05.qualcomm.com (8.18.1.2/8.18.1.2) with ESMTPS id 49UKSktF031408
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Wed, 30 Oct 2024 20:28:46 GMT
+Received: from [10.216.13.3] (10.80.80.8) by nasanex01b.na.qualcomm.com
+ (10.46.141.250) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1544.9; Wed, 30 Oct
+ 2024 13:28:40 -0700
+Message-ID: <92f0df16-c755-49c2-8356-0b7b94754390@quicinc.com>
+Date: Thu, 31 Oct 2024 01:57:47 +0530
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v16 3/5] iommu/arm-smmu: add support for PRR bit setup
+To: Rob Clark <robdclark@gmail.com>, Robin Murphy <robin.murphy@arm.com>
+CC: <will@kernel.org>, <joro@8bytes.org>, <jgg@ziepe.ca>,
+        <jsnitsel@redhat.com>, <robh@kernel.org>,
+        <krzysztof.kozlowski@linaro.org>, <quic_c_gdjako@quicinc.com>,
+        <dmitry.baryshkov@linaro.org>, <iommu@lists.linux.dev>,
+        <linux-arm-msm@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>, <linux-kernel@vger.kernel.org>
+References: <20241008125410.3422512-1-quic_bibekkum@quicinc.com>
+ <20241008125410.3422512-4-quic_bibekkum@quicinc.com>
+ <2d651f1b-4f51-4984-903f-7f5a14151f84@arm.com>
+ <531d0144-e027-4589-b4ef-79f02583df8b@quicinc.com>
+ <65132b36-49f6-4b08-8e7d-6d6cb8da5960@arm.com>
+ <CAF6AEGvAYeY-fuk1Dg-0gsrod7Dy91qifKvChCd03=bs_zfs-g@mail.gmail.com>
+Content-Language: en-US
+From: Bibek Kumar Patro <quic_bibekkum@quicinc.com>
+In-Reply-To: <CAF6AEGvAYeY-fuk1Dg-0gsrod7Dy91qifKvChCd03=bs_zfs-g@mail.gmail.com>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 8bit
+X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
+ nasanex01b.na.qualcomm.com (10.46.141.250)
+X-QCInternal: smtphost
+X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
+X-Proofpoint-ORIG-GUID: 0DRIBPD_QtZswvcDiJ6fI5Eu4JlMrROk
+X-Proofpoint-GUID: 0DRIBPD_QtZswvcDiJ6fI5Eu4JlMrROk
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.293,Aquarius:18.0.1039,Hydra:6.0.680,FMLib:17.12.60.29
+ definitions=2024-09-06_09,2024-09-06_01,2024-09-02_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 lowpriorityscore=0
+ malwarescore=0 suspectscore=0 bulkscore=0 adultscore=0 spamscore=0
+ phishscore=0 impostorscore=0 clxscore=1015 priorityscore=1501 mlxscore=0
+ mlxlogscore=999 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.19.0-2409260000 definitions=main-2410300160
 
-DQoNCj4gLS0tLS1PcmlnaW5hbCBNZXNzYWdlLS0tLS0NCj4gRnJvbTogSm9hbyBNYXJ0aW5zIDxq
-b2FvLm0ubWFydGluc0BvcmFjbGUuY29tPg0KPiBTZW50OiBXZWRuZXNkYXksIE9jdG9iZXIgMzAs
-IDIwMjQgNDo1NyBQTQ0KPiBUbzogU2hhbWVlcmFsaSBLb2xvdGh1bSBUaG9kaQ0KPiA8c2hhbWVl
-cmFsaS5rb2xvdGh1bS50aG9kaUBodWF3ZWkuY29tPjsgSmFzb24gR3VudGhvcnBlDQo+IDxqZ2dA
-bnZpZGlhLmNvbT47IFpoYW5nZmVpIEdhbyA8emhhbmdmZWkuZ2FvQGxpbmFyby5vcmc+DQo+IENj
-OiBpb21tdUBsaXN0cy5saW51eC5kZXY7IEtldmluIFRpYW4gPGtldmluLnRpYW5AaW50ZWwuY29t
-PjsgTHUgQmFvbHUNCj4gPGJhb2x1Lmx1QGxpbnV4LmludGVsLmNvbT47IFlpIExpdSA8eWkubC5s
-aXVAaW50ZWwuY29tPjsgWWkgWSBTdW4NCj4gPHlpLnkuc3VuQGludGVsLmNvbT47IE5pY29saW4g
-Q2hlbiA8bmljb2xpbmNAbnZpZGlhLmNvbT47IEpvZXJnIFJvZWRlbA0KPiA8am9yb0A4Ynl0ZXMu
-b3JnPjsgU3VyYXZlZSBTdXRoaWt1bHBhbml0DQo+IDxzdXJhdmVlLnN1dGhpa3VscGFuaXRAYW1k
-LmNvbT47IFdpbGwgRGVhY29uIDx3aWxsQGtlcm5lbC5vcmc+OyBSb2Jpbg0KPiBNdXJwaHkgPHJv
-YmluLm11cnBoeUBhcm0uY29tPjsgWmhlbnpob25nIER1YW4NCj4gPHpoZW56aG9uZy5kdWFuQGlu
-dGVsLmNvbT47IEFsZXggV2lsbGlhbXNvbg0KPiA8YWxleC53aWxsaWFtc29uQHJlZGhhdC5jb20+
-OyBrdm1Admdlci5rZXJuZWwub3JnOyBTaGFtZWVyIEtvbG90aHVtDQo+IDxzaGFtaWFsaTIwMDhA
-Z21haWwuY29tPjsgV2FuZ3pob3UgKEIpIDx3YW5nemhvdTFAaGlzaWxpY29uLmNvbT4NCj4gU3Vi
-amVjdDogUmU6IFtQQVRDSCB2NiAwMC8xOF0gSU9NTVVGRCBEaXJ0eSBUcmFja2luZw0KPiANCj4g
-T24gMzAvMTAvMjAyNCAxNTo1NywgU2hhbWVlcmFsaSBLb2xvdGh1bSBUaG9kaSB3cm90ZToNCj4g
-Pj4gT24gMzAvMTAvMjAyNCAxNTozNiwgSmFzb24gR3VudGhvcnBlIHdyb3RlOg0KPiA+Pj4gT24g
-V2VkLCBPY3QgMzAsIDIwMjQgYXQgMTE6MTU6MDJQTSArMDgwMCwgWmhhbmdmZWkgR2FvIHdyb3Rl
-Og0KPiA+Pj4+IGh3L3ZmaW8vbWlncmF0aW9uLmMNCj4gPj4+PiAgICAgaWYgKHZmaW9fdmlvbW11
-X3ByZXNldCh2YmFzZWRldikpIHsNCj4gPj4+PiAgICAgICAgIGVycm9yX3NldGcoJmVyciwgIiVz
-OiBNaWdyYXRpb24gaXMgY3VycmVudGx5IG5vdCBzdXBwb3J0ZWQgIg0KPiA+Pj4+ICAgICAgICAg
-ICAgICAgICAgICAid2l0aCB2SU9NTVUgZW5hYmxlZCIsIHZiYXNlZGV2LT5uYW1lKTsNCj4gPj4+
-PiAgICAgICAgIGdvdG8gYWRkX2Jsb2NrZXI7DQo+ID4+Pj4gICAgIH0NCj4gPj4+DQo+ID4+PiBU
-aGUgdmlvbW11IGRyaXZlciBpdHNlbGYgZG9lcyBub3Qgc3VwcG9ydCBsaXZlIG1pZ3JhdGlvbiwg
-aXQgd291bGQNCj4gPj4+IG5lZWQgdG8gcHJlc2VydmUgYWxsIHRoZSBndWVzdCBjb25maWd1cmF0
-aW9uIGFuZCBicmluZyBpdCBhbGwgYmFjay4gSXQNCj4gPj4+IGRvZXNuJ3Qga25vdyBob3cgdG8g
-ZG8gdGhhdCB5ZXQuDQo+ID4+DQo+ID4+IEl0J3MgbW9yZSBvZiB2ZmlvIGNvZGUsIG5vdCBxdWl0
-ZSByZWxhdGVkIHRvIGFjdHVhbGx5IGh3IHZJT01NVS4NCj4gPj4NCj4gPj4gVGhlcmUncyBzb21l
-IHZmaW8gbWlncmF0aW9uICsgdklPTU1VIHN1cHBvcnQgcGF0Y2hlcyBJIGhhdmUgdG8gZm9sbG93
-DQo+IHVwDQo+ID4+ICh2NSkNCj4gPg0KPiA+IEFyZSB5b3UgcmVmZXJyaW5nIHRoaXMgc2VyaWVz
-IGhlcmU/DQo+ID4gaHR0cHM6Ly9sb3JlLmtlcm5lbC5vcmcvcWVtdS1kZXZlbC9kNWQzMGY1OC0z
-MWYwLTExMDMtNjk1Ni0NCj4gMzc3ZGUzNGE3OTBjQHJlZGhhdC5jb20vVC8NCj4gPg0KPiA+IElz
-IHRoYXQgZW5hYmxpbmcgbWlncmF0aW9uIG9ubHkgaWYgR3Vlc3QgZG9lc27igJl0IGRvIGFueSBE
-TUEgdHJhbnNsYXRpb25zPw0KPiA+DQo+IE5vLCBpdCBkb2VzIGl0IHdoZW4gZ3Vlc3QgaXMgdXNp
-bmcgdGhlIHN3IHZJT01NVSB0b28uIHRvIGJlIGNsZWFyOiB0aGlzIGhhcw0KPiBub3RoaW5nIHRv
-IGRvIHdpdGggbmVzdGVkIElPTU1VIG9yIGlmIHRoZSBndWVzdCBpcyBkb2luZyAoZW11bGF0ZWQp
-IGRpcnR5DQo+IHRyYWNraW5nLg0KDQpPay4gVGhhbmtzIGZvciBleHBsYWluaW5nLiBTbyBqdXN0
-IHRvIGNsYXJpZnksIHRoaXMgd29ya3MgZm9yIEludGVsIHZ0LWQgd2l0aA0KIiBjYWNoaW5nLW1v
-ZGU9b24iLiBpZSwgbm8gcmVhbCAyIHN0YWdlIHNldHVwIGlzIHJlcXVpcmVkICBsaWtlIGluIEFS
-TQ0KIFNNTVV2My4NCg0KPiBXaGVuIHRoZSBndWVzdCBkb2Vzbid0IGRvIERNQSB0cmFuc2xhdGlv
-biBpcyB0aGlzIHBhdGNoOg0KPiANCj4gaHR0cHM6Ly9sb3JlLmtlcm5lbC5vcmcvcWVtdS1kZXZl
-bC8yMDIzMDkwODEyMDUyMS41MDkwMy0xLQ0KPiBqb2FvLm0ubWFydGluc0BvcmFjbGUuY29tLw0K
-DQpPay4NCg0KPiANCj4gPj4gYnV0IHVuZXhwZWN0ZWQgc2V0IGJhY2tzIHVucmVsYXRlZCB0byB3
-b3JrIGRlbGF5IHNvbWUgb2YgbXkgcGxhbnMgZm9yDQo+ID4+IHFlbXUgOS4yLg0KPiA+PiBJIGV4
-cGVjdCB0byByZXN1bWUgaW4gZmV3IHdlZWtzLiBJIGNhbiBwb2ludCB5b3UgdG8gYSBicmFuY2gg
-d2hpbGUgSSBkb24ndA0KPiA+PiBzdWJtaXQgKHByb3ZpZGVkIHNvZnQtZnJlZXplIGlzIGNvbWlu
-ZykNCj4gPg0KPiA+IEFsc28sIEkgdGhpbmsgd2UgbmVlZCBhIG1lY2hhbmlzbSBmb3IgcGFnZSBm
-YXVsdCBoYW5kbGluZyBpbiBjYXNlIEd1ZXN0DQo+IGhhbmRsZXMNCj4gPiB0aGUgc3RhZ2UgMSBw
-bHVzIGRpcnR5IHRyYWNraW5nIGZvciBzdGFnZSAxIGFzIHdlbGwuDQo+ID4NCj4gDQo+IEkgaGF2
-ZSBlbXVsYXRpb24gZm9yIHg4NiBpb21tdXMgdG8gZGlydHkgdHJhY2tpbmcsIGJ1dCB0aGF0IGlz
-IHVucmVsYXRlZCB0bw0KPiBMMA0KPiBsaXZlIG1pZ3JhdGlvbiAtLSBJdCdzIG1vcmUgZm9yIHRl
-c3RpbmcgaW4gdGhlIGxhY2sgb2YgcmVjZW50IGhhcmR3YXJlLiBFdmVuDQo+IGVtdWxhdGVkIHBh
-Z2UgZmF1bHQgaGFuZGxpbmcgZG9lc24ndCBhZmZlY3QgdGhpcyB1bmxlc3MgeW91IGhhdmUgdG8g
-cmUtDQo+IG1hcC9tYXANCj4gbmV3IElPVkEsIHdoaWNoIHdvdWxkIGFsc28gYmUgY292ZXJlZCBp
-biB0aGlzIHNlcmllcyBJIHRoaW5rLg0KPiANCj4gVW5sZXNzIHlvdSBhcmUgdGFsa2luZyBhYm91
-dCBwaHlzaWNhbCBJT1BGIHRoYXQgcWVtdSBtYXkgdGVybWluYXRlLA0KPiB0aG91Z2ggd2UNCj4g
-ZG9uJ3QgaGF2ZSBzdWNoIHN1cHBvcnQgaW4gUWVtdSBhdG0uDQoNClllYWggSSB3YXMgcmVmZXJy
-aW5nIHRvIEFSTSBTTU1VdjMgY2FzZXMsIHdoZXJlIHdlIG5lZWQgbmVzdGVkLXNtbXV2Mw0Kc3Vw
-cG9ydCBmb3IgdmZpby1wY2kgYXNzaWdubWVudC4gQW5vdGhlciB1c2VjYXNlIHdlIGhhdmUgaXMg
-c3VwcG9ydCBTVkEgaW4NCkd1ZXN0LCAgd2l0aCBoYXJkd2FyZSBjYXBhYmxlICBvZiBwaHlzaWNh
-bCBJT1BGLg0KDQpJIHdpbGwgdGFrZSBhIGxvb2sgYXQgeW91ciBzZXJpZXMgYWJvdmUgYW5kIHdp
-bGwgc2VlIHdoYXQgZWxzZSBpcyByZXF1aXJlZA0KdG8gc3VwcG9ydCBBUk0uIFBsZWFzZSBDQyBp
-ZiB5b3UgcGxhbiB0byByZXNwaW4gb3IgaGF2ZSBhIGxhdGVzdCBicmFuY2guDQpUaGFua3MgZm9y
-IHlvdXIgZWZmb3J0cy4NCg0KU2hhbWVlcg0KIA0KDQo=
+
+
+On 10/30/2024 10:28 PM, Rob Clark wrote:
+> On Wed, Oct 30, 2024 at 8:23 AM Robin Murphy <robin.murphy@arm.com> wrote:
+>>
+>> On 30/10/2024 1:14 pm, Bibek Kumar Patro wrote:
+>>>
+>>>
+>>> On 10/29/2024 6:59 PM, Robin Murphy wrote:
+>>>> On 2024-10-08 1:54 pm, Bibek Kumar Patro wrote:
+>>>>> Add an adreno-smmu-priv interface for drm/msm to call
+>>>>> into arm-smmu-qcom and initiate the PRR bit setup or reset
+>>>>> sequence as per request.
+>>>>>
+>>>>> This will be used by GPU to setup the PRR bit and related
+>>>>> configuration registers through adreno-smmu private
+>>>>> interface instead of directly poking the smmu hardware.
+>>>>>
+>>>>> Suggested-by: Rob Clark <robdclark@gmail.com>
+>>>>> Signed-off-by: Bibek Kumar Patro <quic_bibekkum@quicinc.com>
+>>>>> ---
+>>>>>    drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c | 37 ++++++++++++++++++++++
+>>>>>    drivers/iommu/arm/arm-smmu/arm-smmu.h      |  2 ++
+>>>>>    include/linux/adreno-smmu-priv.h           | 10 +++++-
+>>>>>    3 files changed, 48 insertions(+), 1 deletion(-)
+>>>>>
+>>>>> diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c b/drivers/
+>>>>> iommu/arm/arm-smmu/arm-smmu-qcom.c
+>>>>> index 6e0a2a43e45a..38ac9cab763b 100644
+>>>>> --- a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
+>>>>> +++ b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
+>>>>> @@ -25,6 +25,7 @@
+>>>>>
+>>>>>    #define CPRE            (1 << 1)
+>>>>>    #define CMTLB            (1 << 0)
+>>>>> +#define GFX_ACTLR_PRR        (1 << 5)
+>>>>>
+>>>>>    static struct qcom_smmu *to_qcom_smmu(struct arm_smmu_device *smmu)
+>>>>>    {
+>>>>> @@ -109,6 +110,40 @@ static void
+>>>>> qcom_adreno_smmu_resume_translation(const void *cookie, bool termina
+>>>>>        arm_smmu_cb_write(smmu, cfg->cbndx, ARM_SMMU_CB_RESUME, reg);
+>>>>>    }
+>>>>>
+>>>>> +static void qcom_adreno_smmu_set_prr_bit(const void *cookie, bool set)
+>>>>> +{
+>>>>> +    struct arm_smmu_domain *smmu_domain = (void *)cookie;
+>>>>> +    struct arm_smmu_device *smmu = smmu_domain->smmu;
+>>>>> +    const struct device_node *np = smmu->dev->of_node;
+>>>>> +    struct arm_smmu_cfg *cfg = &smmu_domain->cfg;
+>>>>> +    u32 reg = 0;
+>>>>> +
+>>>>> +    if (of_device_is_compatible(np, "qcom,smmu-500") &&
+>>>>> +            of_device_is_compatible(np, "qcom,adreno-smmu")) {
+>>>>
+>>>> These conditions aren't going to change between calls - wouldn't it
+>>>> make more sense to conditionally assign the callbacks in the first
+>>>> place? Not the biggest deal if this is a one-off context-setup type
+>>>> thing, just that it looks a little funky.
+>>>>
+>>>
+>>> Let me know if you want to pursue this still.
+>>>   From the current PRR implementation in the graphics
+>>> vendor layer, this seems to be just setup kind-of thing.
+>>> Also if we keep this conditional check before assigning callbacks,
+>>> and vendor layer caller won't be having any such check,
+>>> wouldn't it be an issue in unsupported platforms (!qcom,smmu-500 or
+>>> !qcom,adreno-smmu)
+>>> as the callbacks won't be assigned?
+>>> So as per my understanding I think it would be safe to keep the
+>>> condition check here?
+>>
+>> Like I say, it makes more sense to me personally if SMMUs which don't
+>> have a PRR don't offer a callback for setting the PRR which they don't
+>> have, and for it to be the caller's responsibility not to call a NULL
+>> callback where they wouldn't need to call one anyway. But the
+>> adreno_priv interface is kind of Rob's thing, so I'll leave it to his
+>> preference.
+> 
+> We can go the route of NULL cb if it is not supported (but should make
+> note of that in the adreno-smmu-priv.h header comment)
+> 
+
+Actually I liked Robin's suggestion to use the compatible check before 
+assignment in the sense that there won't be repeated compatible checks
+for each call. My only concern was how to handle the non PRR supported 
+targets incase vendors called it.
+Thanks for clarifying the same, we can use null callbacks for non-PRR 
+supported targets with a note in adreno-smmu-priv.h header, so that
+caller could take care while implementing the same.
+I'll incorporate these changes in next patch along with the CPRE workaround.
+
+Thanks & regards,
+Bibek
+
+
+> BR,
+> -R
+> 
+>> Thanks,
+>> Robin.
+
